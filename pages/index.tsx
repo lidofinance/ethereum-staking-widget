@@ -10,7 +10,7 @@ import {
   Button,
 } from '@lidofinance/lido-ui';
 import Head from 'next/head';
-import Wallet from 'components/wallet';
+import { Wallet } from 'components/indexPage';
 import Section from 'components/section';
 import Layout from 'components/layout';
 import Faq from 'components/faq';
@@ -40,11 +40,11 @@ const Home: FC<HomeProps> = ({ faqList }) => {
 
   return (
     <Layout
-      title="Lido Frontend Template"
-      subtitle="Develop Lido Apps without hassle"
+      title="Stake Ether"
+      subtitle="Stake ETH and receive stETH while staking."
     >
       <Head>
-        <title>Lido | Frontend Template</title>
+        <title>Stake with Lido | Lido</title>
       </Head>
       <Wallet />
       <Block>

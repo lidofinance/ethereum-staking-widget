@@ -1,0 +1,67 @@
+import {
+  WalletCard,
+  WalletCardBalance,
+  WalletCardRow,
+  WalletCardAccount,
+} from 'components/walletCard';
+import { Divider } from '@lidofinance/lido-ui';
+import {
+  useEthereumBalance,
+  useSDK,
+  useSTETHBalance,
+  useTokenAddress,
+} from '@lido-sdk/react';
+import { useWeb3 } from '@lido-sdk/web3-react';
+import FormatToken from 'components/formatToken';
+import FallbackWallet from 'components/fallbackWallet';
+import TokenToWallet from 'components/tokenToWallet';
+import { WalletComponent } from './types';
+import { TOKENS } from '@lido-sdk/constants';
+import { css } from 'styled-components';
+
+const Wallet: WalletComponent = (props) => {
+  const { account } = useSDK();
+  const eth = useEthereumBalance();
+  const steth = useSTETHBalance();
+
+  const stethAddress = useTokenAddress(TOKENS.STETH);
+
+  return (
+    <WalletCard
+      {...props}
+      css={css`
+        background: linear-gradient(65.21deg, #37394a 19.1%, #3e4b4f 100%);
+      `}
+    >
+      <WalletCardRow>
+        <WalletCardBalance
+          title="Available to stake"
+          loading={eth.initialLoading}
+          value={<FormatToken amount={eth.data} symbol="ETH" />}
+        />
+        <WalletCardAccount account={account} />
+      </WalletCardRow>
+      <Divider />
+      <WalletCardRow>
+        <WalletCardBalance
+          small
+          title="Staked amount"
+          loading={steth.initialLoading}
+          value={
+            <>
+              <FormatToken amount={steth.data} symbol="stETH" />
+              <TokenToWallet address={stethAddress} />
+            </>
+          }
+        />
+      </WalletCardRow>
+    </WalletCard>
+  );
+};
+
+const WalletWrapper: WalletComponent = (props) => {
+  const { active } = useWeb3();
+  return active ? <Wallet {...props} /> : <FallbackWallet {...props} />;
+};
+
+export default WalletWrapper;
