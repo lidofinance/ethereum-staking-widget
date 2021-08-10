@@ -17,6 +17,7 @@ import Faq from 'components/faq';
 import { FAQItem, getFaqList } from 'lib/faqList';
 import styled from 'styled-components';
 import { useContractSWR, useSTETHContractRPC } from '@lido-sdk/react';
+import { DATA_UNAVAILABLE } from 'config';
 
 interface HomeProps {
   faqList: FAQItem[];
@@ -33,9 +34,15 @@ const Home: FC<HomeProps> = ({ faqList }) => {
   };
 
   const contractRpc = useSTETHContractRPC();
+
   const tokenName = useContractSWR({
     contract: contractRpc,
     method: 'name',
+  });
+
+  const lidoFee = useContractSWR({
+    contract: contractRpc,
+    method: 'getFee',
   });
 
   return (
@@ -71,7 +78,15 @@ const Home: FC<HomeProps> = ({ faqList }) => {
           </DataTable>
         </Block>
       </Section>
-      <Faq faqList={faqList} />
+      <Faq
+        faqList={faqList}
+        replacements={{
+          '%LIDO-FEE%':
+            lidoFee.initialLoading || !lidoFee.data
+              ? DATA_UNAVAILABLE
+              : `${lidoFee.data / 100}%`,
+        }}
+      />
     </Layout>
   );
 };

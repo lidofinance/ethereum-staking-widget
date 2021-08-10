@@ -18,7 +18,7 @@ import TokenToWallet from 'components/tokenToWallet';
 import { WalletComponent } from './types';
 import { TOKENS } from '@lido-sdk/constants';
 import { css } from 'styled-components';
-import { useLidoApr } from 'hooks/useLidoFee';
+import { useLidoApr } from 'hooks/useLidoApr';
 import { LidoAprStyled } from './components';
 import { LIDO_APR_TOOLTIP_TEXT } from 'config';
 
