@@ -4,7 +4,7 @@ import {
   WalletCardRow,
   WalletCardAccount,
 } from 'components/walletCard';
-import { Divider } from '@lidofinance/lido-ui';
+import { Divider, Question, Tooltip } from '@lidofinance/lido-ui';
 import {
   useEthereumBalance,
   useSDK,
@@ -18,6 +18,9 @@ import TokenToWallet from 'components/tokenToWallet';
 import { WalletComponent } from './types';
 import { TOKENS } from '@lido-sdk/constants';
 import { css } from 'styled-components';
+import { useLidoApr } from 'hooks/useLidoFee';
+import { LidoAprStyled } from './components';
+import { LIDO_APR_TOOLTIP_TEXT } from 'config';
 
 const Wallet: WalletComponent = (props) => {
   const { account } = useSDK();
@@ -25,6 +28,7 @@ const Wallet: WalletComponent = (props) => {
   const steth = useSTETHBalance();
 
   const stethAddress = useTokenAddress(TOKENS.STETH);
+  const lidoApr = useLidoApr();
 
   return (
     <WalletCard
@@ -53,6 +57,19 @@ const Wallet: WalletComponent = (props) => {
               <TokenToWallet address={stethAddress} />
             </>
           }
+        />
+        <WalletCardBalance
+          small
+          title={
+            <>
+              Lido APR{' '}
+              <Tooltip placement="bottom" title={LIDO_APR_TOOLTIP_TEXT}>
+                <Question />
+              </Tooltip>
+            </>
+          }
+          loading={lidoApr.initialLoading}
+          value={<LidoAprStyled>{lidoApr.data}%</LidoAprStyled>}
         />
       </WalletCardRow>
     </WalletCard>

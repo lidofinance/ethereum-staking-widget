@@ -6,3 +6,4 @@ export * from './cache';
 export * from './oracle';
 export * from './steth';
 export * from './api';
+export * from './text';

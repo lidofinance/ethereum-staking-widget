@@ -41,7 +41,12 @@ export const WalletCardBalanceStyle = styled.div`
   }
 `;
 
-export const WalletCardTitleStyle = styled.div``;
+export const WalletCardTitleStyle = styled.div`
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+`;
 
 export const WalletCardValueStyle = styled.div<{ $small: boolean }>`
   margin-top: 2px;
