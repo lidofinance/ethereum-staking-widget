@@ -5,10 +5,10 @@ const DEFAULT_PARAMS = {
   },
 };
 
-export type StandardFetcher = (
-  url: RequestInfo,
+type StandardFetcher = <T extends unknown>(
+  url: string,
   params?: RequestInit,
-) => Promise<Response>;
+) => Promise<T>;
 
 export const standardFetcher: StandardFetcher = async (url, params) => {
   const response = await fetch(url, {

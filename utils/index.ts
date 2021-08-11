@@ -6,3 +6,4 @@ export * from './stringToEther';
 export * from './getStethApr';
 export * from './getLidoStats';
 export * from './getEthPrice';
+export * from './prependBasePath';

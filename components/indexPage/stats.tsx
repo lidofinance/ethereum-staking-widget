@@ -10,7 +10,7 @@ import {
 } from '@lidofinance/lido-ui';
 import Section from 'components/section/section';
 import { getStethAddress, LIDO_APR_TOOLTIP_TEXT } from 'config';
-import { useLidoApr } from 'hooks/useLidoApr';
+import { useLidoApr, useLidoStats } from 'hooks';
 import { FC, memo, useMemo } from 'react';
 import { FlexCenterVertical } from './styles';
 
@@ -23,6 +23,8 @@ const LidoStats: FC = () => {
   );
 
   const lidoApr = useLidoApr();
+
+  const lidoStats = useLidoStats();
 
   return (
     <Section
@@ -44,6 +46,21 @@ const LidoStats: FC = () => {
             highlight
           >
             {lidoApr.data}%
+          </DataTableRow>
+          <DataTableRow
+            title="Total staked with Lido"
+            loading={lidoStats.initialLoading}
+          >
+            {lidoStats.data.totalStaked}
+          </DataTableRow>
+          <DataTableRow title="Stakers" loading={lidoStats.initialLoading}>
+            {lidoStats.data.stakers}
+          </DataTableRow>
+          <DataTableRow
+            title="stETH market cap"
+            loading={lidoStats.initialLoading}
+          >
+            {lidoStats.data.marketCap}
           </DataTableRow>
         </DataTable>
       </Block>
