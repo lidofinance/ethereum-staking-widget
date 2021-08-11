@@ -5,3 +5,4 @@ export * from './logger';
 export * from './stringToEther';
 export * from './getStethApr';
 export * from './getLidoStats';
+export * from './getEthPrice';

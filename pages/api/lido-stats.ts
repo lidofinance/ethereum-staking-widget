@@ -23,7 +23,7 @@ const lidoStats: API = async (req, res) => {
       res.status(200).json(lidoStats);
     }
   } catch (error) {
-    res.status(500).send(error.message ?? DEFAULT_API_ERROR_MESSAGE);
+    res.status(500).json(error.message ?? DEFAULT_API_ERROR_MESSAGE);
   }
 };
 

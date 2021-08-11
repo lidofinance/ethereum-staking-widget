@@ -5,5 +5,6 @@ export * from './example';
 export * from './cache';
 export * from './oracle';
 export * from './steth';
+export * from './aggregator';
 export * from './api';
 export * from './text';
