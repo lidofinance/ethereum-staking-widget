@@ -1,6 +1,6 @@
 import { replaceAll } from 'utils/replaceAll';
 
-describe('etherToString', () => {
+describe('replaceAll', () => {
   test('should replace correctly', () => {
     const str = 'hello REPLACE_THIS';
     const replaceMap = {
