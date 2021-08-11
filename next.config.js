@@ -5,6 +5,8 @@ const alchemyApiKey = process.env.ALCHEMY_API_KEY;
 const defaultChain = process.env.DEFAULT_CHAIN;
 const supportedChains = process.env.SUPPORTED_CHAINS;
 
+const ethplorerApiKey = process.env.ETHPLORER_API_KEY;
+
 module.exports = {
   basePath,
   future: {
@@ -31,6 +33,7 @@ module.exports = {
     basePath,
     infuraApiKey,
     alchemyApiKey,
+    ethplorerApiKey,
   },
   publicRuntimeConfig: {
     defaultChain,
