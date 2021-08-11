@@ -1,1 +1,2 @@
-export { default as Wallet } from './wallet';
+export { default as IndexWallet } from './wallet';
+export { default as LidoStats } from './stats';

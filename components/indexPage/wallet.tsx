@@ -19,8 +19,9 @@ import { WalletComponent } from './types';
 import { TOKENS } from '@lido-sdk/constants';
 import { css } from 'styled-components';
 import { useLidoApr } from 'hooks/useLidoApr';
-import { LidoAprStyled } from './components';
+import { LidoAprStyled } from './styles';
 import { LIDO_APR_TOOLTIP_TEXT } from 'config';
+import { memo } from 'react';
 
 const Wallet: WalletComponent = (props) => {
   const { account } = useSDK();
@@ -81,4 +82,4 @@ const WalletWrapper: WalletComponent = (props) => {
   return active ? <Wallet {...props} /> : <FallbackWallet {...props} />;
 };
 
-export default WalletWrapper;
+export default memo(WalletWrapper);

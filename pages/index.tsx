@@ -1,17 +1,8 @@
 import { FC, FormEventHandler } from 'react';
 import { GetServerSideProps } from 'next';
-import {
-  Block,
-  Link,
-  DataTable,
-  DataTableRow,
-  Input,
-  Steth,
-  Button,
-} from '@lidofinance/lido-ui';
+import { Block, Input, Steth, Button } from '@lidofinance/lido-ui';
 import Head from 'next/head';
-import { Wallet } from 'components/indexPage';
-import Section from 'components/section';
+import { IndexWallet, LidoStats } from 'components/indexPage';
 import Layout from 'components/layout';
 import Faq from 'components/faq';
 import { FAQItem, getFaqList } from 'lib/faqList';
@@ -35,11 +26,6 @@ const Home: FC<HomeProps> = ({ faqList }) => {
 
   const contractRpc = useSTETHContractRPC();
 
-  const tokenName = useContractSWR({
-    contract: contractRpc,
-    method: 'name',
-  });
-
   const lidoFee = useContractSWR({
     contract: contractRpc,
     method: 'getFee',
@@ -53,7 +39,7 @@ const Home: FC<HomeProps> = ({ faqList }) => {
       <Head>
         <title>Stake with Lido | Lido</title>
       </Head>
-      <Wallet />
+      <IndexWallet />
       <Block>
         <form action="" method="post" onSubmit={handleSubmit}>
           <InputWrapper>
@@ -69,15 +55,7 @@ const Home: FC<HomeProps> = ({ faqList }) => {
           </Button>
         </form>
       </Block>
-      <Section title="Data table" headerDecorator={<Link href="#">Link</Link>}>
-        <Block>
-          <DataTable>
-            <DataTableRow title="Token name" loading={tokenName.initialLoading}>
-              {tokenName.data}
-            </DataTableRow>
-          </DataTable>
-        </Block>
-      </Section>
+      <LidoStats />
       <Faq
         faqList={faqList}
         replacements={{
