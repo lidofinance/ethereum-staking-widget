@@ -1,12 +1,10 @@
-import { FC, FormEventHandler } from 'react';
+import { FC } from 'react';
 import { GetServerSideProps } from 'next';
-import { Block, Input, Steth, Button } from '@lidofinance/lido-ui';
 import Head from 'next/head';
-import { IndexWallet, LidoStats } from 'components/indexPage';
+import { IndexWallet, LidoStats, StakeForm } from 'components/indexPage';
 import Layout from 'components/layout';
 import Faq from 'components/faq';
 import { FAQItem, getFaqList } from 'lib/faqList';
-import styled from 'styled-components';
 import { useContractSWR, useSTETHContractRPC } from '@lido-sdk/react';
 import { DATA_UNAVAILABLE } from 'config';
 
@@ -14,16 +12,7 @@ interface HomeProps {
   faqList: FAQItem[];
 }
 
-const InputWrapper = styled.div`
-  margin-bottom: ${({ theme }) => theme.spaceMap.md}px;
-`;
-
 const Home: FC<HomeProps> = ({ faqList }) => {
-  const handleSubmit: FormEventHandler<HTMLFormElement> | undefined = (e) => {
-    e.preventDefault();
-    alert('Submitted');
-  };
-
   const contractRpc = useSTETHContractRPC();
 
   const lidoFee = useContractSWR({
@@ -40,21 +29,7 @@ const Home: FC<HomeProps> = ({ faqList }) => {
         <title>Stake with Lido | Lido</title>
       </Head>
       <IndexWallet />
-      <Block>
-        <form action="" method="post" onSubmit={handleSubmit}>
-          <InputWrapper>
-            <Input
-              fullwidth
-              placeholder="0"
-              leftDecorator={<Steth />}
-              label="Token amount"
-            />
-          </InputWrapper>
-          <Button fullwidth type="submit">
-            Submit
-          </Button>
-        </form>
-      </Block>
+      <StakeForm />
       <LidoStats />
       <Faq
         faqList={faqList}
