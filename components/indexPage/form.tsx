@@ -1,3 +1,4 @@
+import { useEthereumBalance } from '@lido-sdk/react';
 import { useWeb3 } from '@lido-sdk/web3-react';
 import { Block, Button, Steth } from '@lidofinance/lido-ui';
 import WalletConnect from 'components/walletConnect/walletConnect';
@@ -8,16 +9,24 @@ import { InputStyled } from './styles';
 
 const StakeForm: FC = () => {
   const { active } = useWeb3();
+  const eth = useEthereumBalance();
 
   const submit = useCallback(async (inputValue) => {
     await sleep(3000);
     console.log(inputValue);
   }, []);
 
-  const { inputValue, handleSubmit, handleChange, error, isSubmitting } =
-    useCurrencyInput({
-      submit,
-    });
+  const {
+    inputValue,
+    handleSubmit,
+    handleChange,
+    error,
+    isValidating,
+    isSubmitting,
+  } = useCurrencyInput({
+    submit,
+    limit: eth.data,
+  });
 
   return (
     <Block>
@@ -32,7 +41,11 @@ const StakeForm: FC = () => {
           error={error}
         />
         {active ? (
-          <Button fullwidth type="submit" disabled={isSubmitting}>
+          <Button
+            fullwidth
+            type="submit"
+            disabled={isValidating || isSubmitting}
+          >
             Submit
           </Button>
         ) : (

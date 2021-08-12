@@ -15,7 +15,7 @@ type UseCurrencyInputArgs = {
   initialError?: string;
   validateOnMount?: boolean;
   zeroValid?: boolean;
-  limits?: BigNumber[];
+  limit?: BigNumber;
   submit: (inputValue: string) => Promise<void>;
 };
 
@@ -36,7 +36,7 @@ export const useCurrencyInput: UseCurrencyInput = ({
   initialError = '',
   validateOnMount = false,
   zeroValid = false,
-  limits = [],
+  limit,
   submit,
 }) => {
   const [inputValue, setInputValue] = useState(initialValue);
@@ -111,16 +111,13 @@ export const useCurrencyInput: UseCurrencyInput = ({
         }
       }
 
-      if (limits.length > 0) {
-        for (let i = 0; i < limits.length; i++) {
-          const limit = limits[i];
-          if (amountBigNumber.gt(limit)) {
-            setError(
-              `${inputName} must not be greater than ${formatEther(limit)}`,
-            );
-            stopValidating();
-            return false;
-          }
+      if (limit) {
+        if (amountBigNumber.gt(limit)) {
+          setError(
+            `${inputName} must not be greater than ${formatEther(limit)}`,
+          );
+          stopValidating();
+          return false;
         }
       }
 
@@ -128,7 +125,7 @@ export const useCurrencyInput: UseCurrencyInput = ({
       setError('');
       return true;
     },
-    [startValidating, zeroValid, limits, inputName, stopValidating],
+    [startValidating, zeroValid, limit, inputName, stopValidating],
   );
 
   useEffect(() => {
