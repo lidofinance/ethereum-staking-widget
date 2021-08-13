@@ -20,3 +20,5 @@ export type ContractSteth = typeof StethAbi__factory;
 export const getStethContractFactory = (): ContractSteth => {
   return StethAbi__factory;
 };
+
+export const STETH_SUBMIT_GAS_LIMIT_DEFAULT = 90000;
