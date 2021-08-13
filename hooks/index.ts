@@ -7,4 +7,4 @@ export * from './useLidoApr';
 export * from './useCurrencyInput';
 export * from './usePrevious';
 export * from './useGasPrice';
-export * from './useTxCost';
+export * from './txCost';

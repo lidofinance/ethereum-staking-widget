@@ -8,3 +8,4 @@ export * from './getLidoStats';
 export * from './getEthPrice';
 export * from './prependBasePath';
 export * from './sleep';
+export * from './weiToEth';

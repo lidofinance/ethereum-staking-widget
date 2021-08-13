@@ -4,7 +4,7 @@ import { useEthereumBalance, useSTETHContractWeb3 } from '@lido-sdk/react';
 import { useWeb3 } from '@lido-sdk/web3-react';
 import { Block, Button, Steth } from '@lidofinance/lido-ui';
 import WalletConnect from 'components/walletConnect/walletConnect';
-import { useCurrencyInput, useTxCostInWei } from 'hooks';
+import { useCurrencyInput, useTxCostInUsd } from 'hooks';
 import { useStethSubmitGasLimit } from './hooks';
 import { FC, memo, useCallback, useEffect } from 'react';
 import { InputStyled } from './styles';
@@ -19,11 +19,11 @@ const StakeForm: FC = () => {
     value: parseEther('1'),
   });
 
-  const submitTxCost = useTxCostInWei(submitGasLimit);
+  const txCostInUsd = useTxCostInUsd(submitGasLimit);
 
   useEffect(() => {
-    console.log(submitTxCost);
-  }, [submitTxCost]);
+    console.log(txCostInUsd);
+  }, [txCostInUsd]);
 
   const submit = useCallback(
     async (inputValue) => {
