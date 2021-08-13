@@ -1,0 +1,1 @@
+export const STANDARD_GAS_LIMIT = 21000;

@@ -8,3 +8,4 @@ export * from './steth';
 export * from './aggregator';
 export * from './api';
 export * from './text';
+export * from './tx';
