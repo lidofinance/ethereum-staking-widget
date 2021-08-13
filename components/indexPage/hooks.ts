@@ -1,5 +1,5 @@
 import { AddressZero } from '@ethersproject/constants';
-import { useSTETHContractWeb3 } from '@lido-sdk/react';
+import { useSTETHContractRPC } from '@lido-sdk/react';
 import { STETH_SUBMIT_GAS_LIMIT_DEFAULT } from 'config';
 import { PayableOverrides } from 'ethers';
 import { useCallback, useEffect, useState } from 'react';
@@ -20,7 +20,7 @@ export const useStethSubmitGasLimit: UseStethSubmitGasLimit = (
 ) => {
   const [gasLimit, setGasLimit] = useState<number>();
 
-  const steth = useSTETHContractWeb3();
+  const steth = useSTETHContractRPC();
 
   const estimateGas = useCallback(async () => {
     if (steth) {

@@ -2,12 +2,18 @@ import { AddressZero } from '@ethersproject/constants';
 import { parseEther } from '@ethersproject/units';
 import { useEthereumBalance, useSTETHContractWeb3 } from '@lido-sdk/react';
 import { useWeb3 } from '@lido-sdk/web3-react';
-import { Block, Button, Steth } from '@lidofinance/lido-ui';
+import {
+  Block,
+  Button,
+  DataTable,
+  DataTableRow,
+  Steth,
+} from '@lidofinance/lido-ui';
 import WalletConnect from 'components/walletConnect/walletConnect';
 import { useCurrencyInput, useTxCostInUsd } from 'hooks';
 import { useStethSubmitGasLimit } from './hooks';
 import { FC, memo, useCallback, useEffect } from 'react';
-import { InputStyled } from './styles';
+import { FormStyled, InputStyled } from './styles';
 
 const StakeForm: FC = () => {
   const { active } = useWeb3();
@@ -51,7 +57,7 @@ const StakeForm: FC = () => {
 
   return (
     <Block>
-      <form action="" method="post" onSubmit={handleSubmit}>
+      <FormStyled action="" method="post" onSubmit={handleSubmit}>
         <InputStyled
           fullwidth
           placeholder="0"
@@ -72,7 +78,12 @@ const StakeForm: FC = () => {
         ) : (
           <WalletConnect fullwidth />
         )}
-      </form>
+      </FormStyled>
+      <DataTable>
+        <DataTableRow title="Transaction cost" loading={!txCostInUsd}>
+          ${txCostInUsd?.toFixed(2)}
+        </DataTableRow>
+      </DataTable>
     </Block>
   );
 };
