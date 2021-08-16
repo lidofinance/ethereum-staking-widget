@@ -1,5 +1,5 @@
 import { formatEther } from '@ethersproject/units';
-import { useLidoSWR } from '@lido-sdk/react';
+import { useEthPrice, useLidoSWR } from '@lido-sdk/react';
 import { DATA_UNAVAILABLE } from 'config';
 import { useMemo } from 'react';
 import { EthplorerResponse } from 'types';
@@ -19,10 +19,7 @@ export const useLidoStats = (): {
     standardFetcher,
   );
 
-  const ethPrice = useLidoSWR<string>(
-    prependBasePath('api/eth-price'),
-    standardFetcher,
-  );
+  const ethPrice = useEthPrice();
 
   const data = useMemo(() => {
     if (lidoStats.error || ethPrice.error) {
@@ -42,7 +39,7 @@ export const useLidoStats = (): {
     }
 
     const totalStaked = parseFloat(formatEther(lidoStats.data.totalSupply));
-    const marketCap = totalStaked * parseFloat(ethPrice.data);
+    const marketCap = totalStaked * ethPrice.data;
 
     return {
       totalStaked: `${totalStaked.toLocaleString('en-US')} ETH`,
