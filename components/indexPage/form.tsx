@@ -1,6 +1,10 @@
 import { AddressZero } from '@ethersproject/constants';
 import { parseEther } from '@ethersproject/units';
-import { useEthereumBalance, useSTETHContractWeb3 } from '@lido-sdk/react';
+import {
+  useEthereumBalance,
+  useSDK,
+  useSTETHContractWeb3,
+} from '@lido-sdk/react';
 import { useWeb3 } from '@lido-sdk/web3-react';
 import {
   Block,
@@ -14,9 +18,11 @@ import { useCurrencyInput, useTxCostInUsd } from 'hooks';
 import { useStethSubmitGasLimit } from './hooks';
 import { FC, memo, useCallback, useEffect } from 'react';
 import { FormStyled, InputStyled } from './styles';
+import { transaction } from 'components/transaction';
 
 const StakeForm: FC = () => {
   const { active } = useWeb3();
+  const { chainId } = useSDK();
   const eth = useEthereumBalance();
 
   const steth = useSTETHContractWeb3();
@@ -35,12 +41,14 @@ const StakeForm: FC = () => {
     async (inputValue) => {
       console.log(inputValue);
       if (steth) {
-        steth.submit(AddressZero, {
-          value: parseEther(inputValue),
+        await transaction('stake', chainId, async () => {
+          return steth.submit(AddressZero, {
+            value: parseEther(inputValue),
+          });
         });
       }
     },
-    [steth],
+    [chainId, steth],
   );
 
   const {
@@ -53,6 +61,7 @@ const StakeForm: FC = () => {
   } = useCurrencyInput({
     submit,
     limit: eth.data,
+    resetAfterSubmitting: true,
   });
 
   return (

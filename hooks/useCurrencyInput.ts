@@ -17,6 +17,7 @@ type UseCurrencyInputArgs = {
   zeroValid?: boolean;
   limit?: BigNumber;
   submit: (inputValue: string) => Promise<void>;
+  resetAfterSubmitting: boolean;
 };
 
 type UseCurrencyInputReturn = {
@@ -38,6 +39,7 @@ export const useCurrencyInput: UseCurrencyInput = ({
   zeroValid = false,
   limit,
   submit,
+  resetAfterSubmitting,
 }) => {
   const [inputValue, setInputValue] = useState(initialValue);
   const [error, setError] = useState(initialError);
@@ -63,6 +65,14 @@ export const useCurrencyInput: UseCurrencyInput = ({
   const stopValidating = useCallback(() => {
     setIsValidating(false);
   }, []);
+
+  const reset = useCallback(() => {
+    setInputValue(initialValue);
+    setError(initialError);
+    setShouldValidate(validateOnMount);
+    setIsValidating(false);
+    setIsSubmitting(false);
+  }, [initialError, initialValue, validateOnMount]);
 
   const validate: (value: string) => boolean = useCallback(
     (value: string) => {
@@ -142,9 +152,13 @@ export const useCurrencyInput: UseCurrencyInput = ({
         setIsSubmitting(true);
         await submit(inputValue);
         setIsSubmitting(false);
+
+        if (resetAfterSubmitting) {
+          reset();
+        }
       }
     },
-    [inputValue, submit, validate],
+    [inputValue, reset, resetAfterSubmitting, submit, validate],
   );
 
   return {
@@ -154,5 +168,6 @@ export const useCurrencyInput: UseCurrencyInput = ({
     isValidating,
     isSubmitting,
     handleSubmit,
+    reset,
   };
 };
