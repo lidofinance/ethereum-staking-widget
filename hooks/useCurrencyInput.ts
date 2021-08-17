@@ -17,7 +17,6 @@ type UseCurrencyInputArgs = {
   zeroValid?: boolean;
   limit?: BigNumber;
   submit: (inputValue: string) => Promise<void>;
-  resetAfterSubmitting: boolean;
 };
 
 type UseCurrencyInputReturn = {
@@ -39,7 +38,6 @@ export const useCurrencyInput: UseCurrencyInput = ({
   zeroValid = false,
   limit,
   submit,
-  resetAfterSubmitting,
 }) => {
   const [inputValue, setInputValue] = useState(initialValue);
   const [error, setError] = useState(initialError);
@@ -152,13 +150,9 @@ export const useCurrencyInput: UseCurrencyInput = ({
         setIsSubmitting(true);
         await submit(inputValue);
         setIsSubmitting(false);
-
-        if (resetAfterSubmitting) {
-          reset();
-        }
       }
     },
-    [inputValue, reset, resetAfterSubmitting, submit, validate],
+    [inputValue, submit, validate],
   );
 
   return {

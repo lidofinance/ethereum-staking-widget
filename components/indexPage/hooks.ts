@@ -29,7 +29,7 @@ export const useStethSubmitGasLimit: UseStethSubmitGasLimit = (
         setGasLimit(+gl);
       } catch (e) {
         setGasLimit(STETH_SUBMIT_GAS_LIMIT_DEFAULT);
-        console.error(e);
+        console.warn('Failed to estimate gas limit');
       }
     }
   }, [_referral, overrides, steth]);
