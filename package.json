@@ -1,5 +1,5 @@
 {
-  "name": "lido-template",
+  "name": "lido-staking-widget",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "eslint --ext ts,tsx .",
     "lint:fix": "yarn lint --fix",
-    "typechain": "typechain --target=ethers-v5 --out-dir ./generated './abi/*.json'",
+    "typechain123": "typechain --target=ethers-v5 --out-dir 'C:/projects/lidofinance/staking-widget-azat/widget/generated' 'C:/projects/lidofinance/staking-widget-azat/widget/abi/*.json'",
+    "typechain": "typechain --target=ethers-v5 --out-dir ./generated '/abi/*.json'",
     "postinstall": "husky install && yarn typechain",
     "test": "jest"
   },
@@ -27,7 +28,7 @@
     "@lido-sdk/helpers": "^1.3.1",
     "@lido-sdk/react": "^1.11.5",
     "@lido-sdk/web3-react": "^1.5.1",
-    "@lidofinance/lido-ui": "^1.8.0",
+    "@lidofinance/lido-ui": "^1.9.1",
     "copy-to-clipboard": "^3.3.1",
     "ethers": "^5.4.2",
     "gray-matter": "^4.0.3",

@@ -3,7 +3,7 @@ import { useWeb3 } from '@lido-sdk/web3-react';
 import { useSDK } from '@lido-sdk/react';
 import WalletButton from 'components/walletButton';
 import WalletConnect from 'components/walletConnect';
-import { HeaderWalletChainStyle } from './headerWalletStyles';
+import { HeaderWalletChainStyle, DotStyle } from './headerWalletStyles';
 import { CHAINS, getChainColor } from '@lido-sdk/constants';
 
 const HeaderWallet: FC = () => {
@@ -17,9 +17,12 @@ const HeaderWallet: FC = () => {
   return (
     <>
       {showNet && (
-        <HeaderWalletChainStyle $color={getChainColor(chainId)}>
-          {chainName}
-        </HeaderWalletChainStyle>
+        <>
+          <DotStyle />
+          <HeaderWalletChainStyle $color={getChainColor(chainId)}>
+            {chainName}
+          </HeaderWalletChainStyle>
+        </>
       )}
       {active ? <WalletButton /> : <WalletConnect size="sm" />}
     </>
