@@ -16,7 +16,7 @@ import {
 import WalletConnect from 'components/walletConnect/walletConnect';
 import { useCurrencyInput, useTxCostInUsd } from 'hooks';
 import { useStethSubmitGasLimit } from './hooks';
-import { FC, memo, useCallback, useState } from 'react';
+import { FC, memo, useCallback, useState, useMemo } from 'react';
 import { FormStyled, InputStyled } from './styles';
 import StakeModal, { TX_STAGE } from './stakeModal';
 import { runWithTransactionLogger } from 'utils';
@@ -90,6 +90,14 @@ const StakeForm: FC = () => {
     limit: eth.data,
   });
 
+  const willReceiveStEthValue = useMemo(() => {
+    if (!inputValue) {
+      return 0;
+    }
+
+    return inputValue;
+  }, [inputValue]);
+
   return (
     <Block>
       <FormStyled action="" method="post" onSubmit={handleSubmit}>
@@ -115,6 +123,10 @@ const StakeForm: FC = () => {
         )}
       </FormStyled>
       <DataTable>
+        <DataTableRow title="You will receive">
+          {willReceiveStEthValue} stETH
+        </DataTableRow>
+        <DataTableRow title="Exchange rate">1 ETH = 1 stETH</DataTableRow>
         <DataTableRow title="Transaction cost" loading={!txCostInUsd}>
           ${txCostInUsd?.toFixed(2)}
         </DataTableRow>
