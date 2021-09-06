@@ -1,8 +1,10 @@
 import { AddressZero } from '@ethersproject/constants';
 import { parseEther } from '@ethersproject/units';
 import {
+  useContractSWR,
   useEthereumBalance,
   useSTETHBalance,
+  useSTETHContractRPC,
   useSTETHContractWeb3,
 } from '@lido-sdk/react';
 import { useWeb3 } from '@lido-sdk/web3-react';
@@ -20,6 +22,7 @@ import { FC, memo, useCallback, useState, useMemo } from 'react';
 import { FormStyled, InputStyled } from './styles';
 import StakeModal, { TX_STAGE } from './stakeModal';
 import { runWithTransactionLogger } from 'utils';
+import { DATA_UNAVAILABLE } from '../../config';
 
 const StakeForm: FC = () => {
   const [txModalOpen, setTxModalOpen] = useState(false);
@@ -98,6 +101,13 @@ const StakeForm: FC = () => {
     return inputValue;
   }, [inputValue]);
 
+  const contractRpc = useSTETHContractRPC();
+
+  const lidoFee = useContractSWR({
+    contract: contractRpc,
+    method: 'getFee',
+  });
+
   return (
     <Block>
       <FormStyled action="" method="post" onSubmit={handleSubmit}>
@@ -129,6 +139,14 @@ const StakeForm: FC = () => {
         <DataTableRow title="Exchange rate">1 ETH = 1 stETH</DataTableRow>
         <DataTableRow title="Transaction cost" loading={!txCostInUsd}>
           ${txCostInUsd?.toFixed(2)}
+        </DataTableRow>
+        <DataTableRow
+          title="Reward fee"
+          loading={lidoFee.initialLoading}
+          help="Please note: this fee applies to staking rewards/earnings only,
+          and is NOT taken from your staked amount. It is a fee on earnings only."
+        >
+          {!lidoFee.data ? DATA_UNAVAILABLE : `${lidoFee.data / 100}%`}
         </DataTableRow>
       </DataTable>
       <StakeModal
