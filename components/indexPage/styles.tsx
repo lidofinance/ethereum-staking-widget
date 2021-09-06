@@ -123,3 +123,7 @@ export const ReferralLink = styled(Link)`
     color: #e79271;
   }
 `;
+
+export const MaxButton = styled(Button)`
+  letter-spacing: 0.4px;
+`;

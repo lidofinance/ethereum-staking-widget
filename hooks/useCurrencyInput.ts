@@ -26,6 +26,8 @@ type UseCurrencyInputReturn = {
   isValidating: boolean;
   isSubmitting: boolean;
   handleSubmit: FormEventHandler<HTMLFormElement> | undefined;
+  reset: () => void;
+  setMaxInputValue: (bn?: BigNumber) => void;
 };
 
 type UseCurrencyInput = (args: UseCurrencyInputArgs) => UseCurrencyInputReturn;
@@ -155,6 +157,14 @@ export const useCurrencyInput: UseCurrencyInput = ({
     [inputValue, submit, validate],
   );
 
+  const setMaxInputValue = (bnValue?: BigNumber) => {
+    if (!bnValue) {
+      return;
+    }
+
+    setInputValue(formatEther(bnValue));
+  };
+
   return {
     inputValue,
     handleChange,
@@ -163,5 +173,6 @@ export const useCurrencyInput: UseCurrencyInput = ({
     isSubmitting,
     handleSubmit,
     reset,
+    setMaxInputValue,
   };
 };
