@@ -1,5 +1,6 @@
 export * from './contracts';
 export * from './useCopyToClipboard';
+export * from './useENSAddress';
 export * from './useModal';
 export * from './useThemeToggle';
 export * from './useLidoStats';
