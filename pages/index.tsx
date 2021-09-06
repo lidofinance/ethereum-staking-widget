@@ -1,7 +1,12 @@
 import { FC } from 'react';
 import { GetServerSideProps } from 'next';
 import Head from 'next/head';
-import { IndexWallet, LidoStats, StakeForm } from 'components/indexPage';
+import {
+  IndexWallet,
+  LidoStats,
+  StakeForm,
+  ReferralCard,
+} from 'components/indexPage';
 import Layout from 'components/layout';
 import Faq from 'components/faq';
 import { FAQItem, getFaqList } from 'lib/faqList';
@@ -30,6 +35,7 @@ const Home: FC<HomeProps> = ({ faqList }) => {
       </Head>
       <IndexWallet />
       <StakeForm />
+      <ReferralCard />
       <LidoStats />
       <Faq
         faqList={faqList}
