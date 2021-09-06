@@ -11,7 +11,7 @@ import {
   Button,
   DataTable,
   DataTableRow,
-  Steth,
+  Eth,
 } from '@lidofinance/lido-ui';
 import WalletConnect from 'components/walletConnect/walletConnect';
 import { useCurrencyInput, useTxCostInUsd } from 'hooks';
@@ -96,7 +96,7 @@ const StakeForm: FC = () => {
         <InputStyled
           fullwidth
           placeholder="0"
-          leftDecorator={<Steth />}
+          leftDecorator={<Eth />}
           label="Amount"
           value={inputValue}
           onChange={handleChange}
