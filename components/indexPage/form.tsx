@@ -19,7 +19,7 @@ import WalletConnect from 'components/walletConnect/walletConnect';
 import { useCurrencyInput, useTxCostInUsd } from 'hooks';
 import { useStethSubmitGasLimit } from './hooks';
 import { FC, memo, useCallback, useState, useMemo } from 'react';
-import { FormStyled, InputStyled } from './styles';
+import { FormStyled, InputStyled, MaxButton } from './styles';
 import StakeModal, { TX_STAGE } from './stakeModal';
 import { runWithTransactionLogger } from 'utils';
 import { DATA_UNAVAILABLE } from '../../config';
@@ -88,6 +88,7 @@ const StakeForm: FC = () => {
     error,
     isValidating,
     isSubmitting,
+    setMaxInputValue,
   } = useCurrencyInput({
     submit,
     limit: eth.data,
@@ -108,6 +109,8 @@ const StakeForm: FC = () => {
     method: 'getFee',
   });
 
+  console.log('eth.data', eth.data);
+
   return (
     <Block>
       <FormStyled action="" method="post" onSubmit={handleSubmit}>
@@ -115,6 +118,17 @@ const StakeForm: FC = () => {
           fullwidth
           placeholder="0"
           leftDecorator={<Eth />}
+          rightDecorator={
+            <MaxButton
+              size="xxs"
+              variant="translucent"
+              onClick={() => {
+                setMaxInputValue(eth.data);
+              }}
+            >
+              MAX
+            </MaxButton>
+          }
           label="Amount"
           value={inputValue}
           onChange={handleChange}
