@@ -8,6 +8,7 @@ import React, {
   useState,
 } from 'react';
 import { HandleChange } from 'types';
+import { useMaxAmount } from 'hooks';
 
 type UseCurrencyInputArgs = {
   inputName?: string;
@@ -27,7 +28,7 @@ type UseCurrencyInputReturn = {
   isSubmitting: boolean;
   handleSubmit: FormEventHandler<HTMLFormElement> | undefined;
   reset: () => void;
-  setMaxInputValue: (bn?: BigNumber) => void;
+  setMaxInputValue: () => void;
 };
 
 type UseCurrencyInput = (args: UseCurrencyInputArgs) => UseCurrencyInputReturn;
@@ -157,13 +158,13 @@ export const useCurrencyInput: UseCurrencyInput = ({
     [inputValue, submit, validate],
   );
 
-  const setMaxInputValue = (bnValue?: BigNumber) => {
-    if (!bnValue) {
-      return;
-    }
+  const ethMaxAmount = useMaxAmount({
+    balance: limit ? limit : BigNumber.from(0),
+  });
 
-    setInputValue(formatEther(bnValue));
-  };
+  const setMaxInputValue = useCallback(() => {
+    setInputValue(ethMaxAmount);
+  }, [ethMaxAmount]);
 
   return {
     inputValue,

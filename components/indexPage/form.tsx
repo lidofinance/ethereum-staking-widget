@@ -109,8 +109,6 @@ const StakeForm: FC = () => {
     method: 'getFee',
   });
 
-  console.log('eth.data', eth.data);
-
   return (
     <Block>
       <FormStyled action="" method="post" onSubmit={handleSubmit}>
@@ -123,7 +121,7 @@ const StakeForm: FC = () => {
               size="xxs"
               variant="translucent"
               onClick={() => {
-                setMaxInputValue(eth.data);
+                setMaxInputValue();
               }}
             >
               MAX
