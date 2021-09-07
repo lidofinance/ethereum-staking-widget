@@ -1,7 +1,10 @@
 import { FC, memo, useMemo } from 'react';
 import { Copy } from '@lidofinance/lido-ui';
+import { css } from 'styled-components';
 
 import { useENSAddress, useCopyToClipboard } from 'hooks';
+import AbuseWarning from 'components/abuseWarning';
+
 import {
   ReferralCardBlock,
   ReferralTitleText,
@@ -39,6 +42,11 @@ const ReferralCard: FC = () => {
         other user{' '}
         <ReferralLink href="/referral">staked with your link.</ReferralLink>
       </ReferralInstructionText>
+      <AbuseWarning
+        css={css`
+          margin: 12px 0 0;
+        `}
+      />
     </ReferralCardBlock>
   );
 };
