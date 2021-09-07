@@ -2,7 +2,7 @@ import { FAQItem } from 'lib/faqList';
 
 export interface FaqProps {
   faqList: FAQItem[];
-  replacements: {
+  replacements?: {
     [key: string]: string;
   };
 }
