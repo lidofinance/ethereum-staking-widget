@@ -7,7 +7,7 @@ import { FAQItem, getFaqList } from 'lib/faqList';
 import Layout from 'components/layout';
 import Faq from 'components/faq';
 import Switch from 'components/switch';
-import { WrapWallet } from 'components/wrapPage';
+import { WrapWallet, WrapForm, UnWrapForm } from 'components/wrapPage';
 
 interface WrapPageProps {
   faqList: FAQItem[];
@@ -57,6 +57,7 @@ const WrapPage: FC<WrapPageProps> = ({ faqList }) => {
       <Head>
         <title>Wrap | Lido</title>
       </Head>
+
       <Switch
         checked={isUnwrapMode}
         onClick={toggleMode}
@@ -66,7 +67,11 @@ const WrapPage: FC<WrapPageProps> = ({ faqList }) => {
           margin: 0 auto 24px auto;
         `}
       />
+
       <WrapWallet />
+
+      {isUnwrapMode ? <UnWrapForm /> : <WrapForm />}
+
       <Faq
         faqList={faqList}
         replacements={{
