@@ -9,4 +9,6 @@ export * from './useCurrencyInput';
 export * from './usePrevious';
 export * from './useGasPrice';
 export * from './useMaxAmount';
+export * from './useWstethBySteth';
+export * from './useStethByWsteth';
 export * from './txCost';
