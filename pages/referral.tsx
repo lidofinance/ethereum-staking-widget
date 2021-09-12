@@ -9,7 +9,7 @@ const ReferralPage: FC = () => {
       subtitle="Earn rewards by spreading the benefits of staking with Lido."
     >
       <Head>
-        <title>Stake with Lido | Lido</title>
+        <title>Referral | Lido</title>
       </Head>
     </Layout>
   );

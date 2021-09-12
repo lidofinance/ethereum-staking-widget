@@ -55,7 +55,7 @@ const WrapPage: FC<WrapPageProps> = ({ faqList }) => {
       subtitle="Stable-balance stETH wrapper for DeFi"
     >
       <Head>
-        <title>Stake with Lido | Lido</title>
+        <title>Wrap | Lido</title>
       </Head>
       <Switch
         checked={isUnwrapMode}
