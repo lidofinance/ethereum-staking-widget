@@ -3,18 +3,21 @@ import {
   Block,
   DataTable,
   DataTableRow,
-  InputGroup,
+  Input,
   SelectIcon,
   Option,
-  Input,
   Eth,
   Steth,
+  Button,
+  Lock,
+  ButtonIcon,
 } from '@lidofinance/lido-ui';
 import { useWeb3 } from '@lido-sdk/web3-react';
 import { CHAINS } from '@lido-sdk/constants';
 import { parseEther } from '@ethersproject/units';
-import { FormStyled, MaxButton } from './styles';
+import { FormStyled, InputGroupStyled, MaxButton } from './styles';
 import FormatToken from 'components/formatToken';
+import WalletConnect from 'components/walletConnect/walletConnect';
 import { useWstethBySteth, useTxCostInUsd } from 'hooks';
 
 const approveGasLimit = 70000;
@@ -25,7 +28,7 @@ const iconsMap = {
 };
 
 const WrapForm: FC = () => {
-  const { chainId } = useWeb3();
+  const { active, chainId } = useWeb3();
 
   const wrapGasLimit = useMemo(
     () => (chainId === CHAINS.Goerli ? 180000 : 140000),
@@ -39,10 +42,12 @@ const WrapForm: FC = () => {
   const [selectedToken, setSelectedToken] =
     useState<keyof typeof iconsMap>('eth');
 
+  const needsApproval = false;
+
   return (
     <Block>
       <FormStyled action="" method="post" autoComplete="off">
-        <InputGroup fullwidth>
+        <InputGroupStyled fullwidth>
           <SelectIcon
             icon={iconsMap[selectedToken]}
             value={selectedToken}
@@ -66,7 +71,20 @@ const WrapForm: FC = () => {
               </MaxButton>
             }
           />
-        </InputGroup>
+        </InputGroupStyled>
+        {active ? (
+          needsApproval ? (
+            <ButtonIcon icon={<Lock />} fullwidth type="submit">
+              Unlock token to wrap
+            </ButtonIcon>
+          ) : (
+            <Button fullwidth type="submit">
+              Wrap
+            </Button>
+          )
+        ) : (
+          <WalletConnect fullwidth />
+        )}
       </FormStyled>
 
       <DataTable>

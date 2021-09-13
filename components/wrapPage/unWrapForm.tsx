@@ -5,22 +5,26 @@ import {
   DataTable,
   DataTableRow,
   Wsteth,
-  Input,
+  Button,
 } from '@lidofinance/lido-ui';
+import { useWeb3 } from '@lido-sdk/web3-react';
 import { useStethByWsteth, useTxCostInUsd } from 'hooks';
 import FormatToken from 'components/formatToken';
-import { FormStyled, MaxButton } from './styles';
+import WalletConnect from 'components/walletConnect/walletConnect';
+import { FormStyled, InputStyled, MaxButton } from './styles';
 
 const unwrapGasLimit = 140000;
 
 const UnWrapForm: FC = () => {
+  const { active } = useWeb3();
+
   const unwrapTxCostInUsd = useTxCostInUsd(unwrapGasLimit);
   const stethConverted = useStethByWsteth(parseEther('1'));
 
   return (
     <Block>
       <FormStyled action="" method="post" autoComplete="off">
-        <Input
+        <InputStyled
           fullwidth
           placeholder="0"
           leftDecorator={<Wsteth />}
@@ -31,6 +35,13 @@ const UnWrapForm: FC = () => {
           }
           label="Amount"
         />
+        {active ? (
+          <Button fullwidth type="submit">
+            Unwrap
+          </Button>
+        ) : (
+          <WalletConnect fullwidth />
+        )}
       </FormStyled>
 
       <DataTable>
