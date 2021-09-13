@@ -1,9 +1,15 @@
 import { FC, memo } from 'react';
 import { parseEther } from '@ethersproject/units';
-import { Block, DataTable, DataTableRow } from '@lidofinance/lido-ui';
+import {
+  Block,
+  DataTable,
+  DataTableRow,
+  Wsteth,
+  Input,
+} from '@lidofinance/lido-ui';
 import { useStethByWsteth, useTxCostInUsd } from 'hooks';
 import FormatToken from 'components/formatToken';
-import { FormStyled } from './styles';
+import { FormStyled, MaxButton } from './styles';
 
 const unwrapGasLimit = 140000;
 
@@ -14,7 +20,17 @@ const UnWrapForm: FC = () => {
   return (
     <Block>
       <FormStyled action="" method="post" autoComplete="off">
-        UnWrap
+        <Input
+          fullwidth
+          placeholder="0"
+          leftDecorator={<Wsteth />}
+          rightDecorator={
+            <MaxButton size="xxs" variant="translucent">
+              MAX
+            </MaxButton>
+          }
+          label="Amount"
+        />
       </FormStyled>
 
       <DataTable>
