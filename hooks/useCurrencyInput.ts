@@ -170,7 +170,11 @@ export const useCurrencyInput: UseCurrencyInput = ({
 
   const setMaxInputValue = useCallback(() => {
     setInputValue(ethMaxAmount);
-  }, [ethMaxAmount]);
+
+    if (externalSetInputValue) {
+      externalSetInputValue(ethMaxAmount);
+    }
+  }, [ethMaxAmount, externalSetInputValue]);
 
   return {
     inputValue,
