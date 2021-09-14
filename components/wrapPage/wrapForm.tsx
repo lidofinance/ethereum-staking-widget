@@ -1,4 +1,4 @@
-import { FC, memo, useMemo, useState } from 'react';
+import React, { FC, memo, useCallback, useMemo, useState } from 'react';
 import {
   Block,
   DataTable,
@@ -12,9 +12,17 @@ import {
   Lock,
   ButtonIcon,
 } from '@lidofinance/lido-ui';
+// import { getTokenAddress } from '@lido-sdk/constants';
 import { useWeb3 } from '@lido-sdk/web3-react';
+import {
+  useWSTETHContractWeb3,
+  // useApprove,
+  // useEthereumSWR,
+  // useSTETHContractWeb3,
+} from '@lido-sdk/react';
 import { CHAINS } from '@lido-sdk/constants';
 import { parseEther } from '@ethersproject/units';
+// import { AddressZero } from '@ethersproject/constants';
 import { FormStyled, InputGroupStyled, MaxButton } from './styles';
 import FormatToken from 'components/formatToken';
 import WalletConnect from 'components/walletConnect/walletConnect';
@@ -44,9 +52,56 @@ const WrapForm: FC = () => {
 
   const needsApproval = false;
 
+  const wstethContractWeb3 = useWSTETHContractWeb3();
+  // stETH to wstETH (approve)
+  // const amount = parseEther('1');
+  // const token = getTokenAddress(5, 'STETH');
+  // const spender = getTokenAddress(5, 'WSTETH');
+  // const { approve } = useApprove(amount, token, spender);
+  // /stETH to wstETH (approve)
+
+  // ETH to wstETH (wrap)
+  // const wstethTokenAddress = getTokenAddress(5, 'WSTETH');
+  // /ETH to wstETH (wrap)
+
+  const handleSubmit = useCallback(
+    async (event: React.FormEvent) => {
+      event.preventDefault();
+
+      if (!wstethContractWeb3) {
+        return;
+      }
+
+      // ETH to wstETH (wrap)
+      // console.log('start: ETH to wstETH');
+      // await wstethContractWeb3.signer.sendTransaction({
+      //   to: wstethTokenAddress,
+      //   value: parseEther('1'),
+      // });
+      // console.log('end: ETH to wstETH');
+
+      // stETH to wstETH (approve and wrap)
+      // console.log('start: stETH to wstETH');
+      // await approve();
+      // await wstethContractWeb3.wrap(parseEther('1'));
+      // console.log('end: stETH to wstETH');
+
+      // wstETH to stETH (unwrap)
+      // console.log('start: wstETH to stETH');
+      // await wstethContractWeb3.unwrap(parseEther('1'));
+      // console.log('end: wstETH to stETH');
+    },
+    [wstethContractWeb3],
+  );
+
   return (
     <Block>
-      <FormStyled action="" method="post" autoComplete="off">
+      <FormStyled
+        action=""
+        method="post"
+        autoComplete="off"
+        onSubmit={handleSubmit}
+      >
         <InputGroupStyled fullwidth>
           <SelectIcon
             icon={iconsMap[selectedToken]}
