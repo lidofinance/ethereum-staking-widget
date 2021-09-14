@@ -18,6 +18,7 @@ type UseCurrencyInputArgs = {
   zeroValid?: boolean;
   limit?: BigNumber;
   submit: (inputValue: string) => Promise<void>;
+  externalSetInputValue?: (inputValue: string) => void;
 };
 
 type UseCurrencyInputReturn = {
@@ -41,6 +42,7 @@ export const useCurrencyInput: UseCurrencyInput = ({
   zeroValid = false,
   limit,
   submit,
+  externalSetInputValue,
 }) => {
   const [inputValue, setInputValue] = useState(initialValue);
   const [error, setError] = useState(initialError);
@@ -52,11 +54,15 @@ export const useCurrencyInput: UseCurrencyInput = ({
     (event) => {
       setInputValue(event?.currentTarget.value);
 
+      if (externalSetInputValue) {
+        externalSetInputValue(event?.currentTarget.value);
+      }
+
       if (!shouldValidate) {
         setShouldValidate(true);
       }
     },
-    [shouldValidate],
+    [externalSetInputValue, shouldValidate],
   );
 
   const startValidating = useCallback(() => {

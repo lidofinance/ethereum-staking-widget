@@ -1,39 +1,41 @@
 import React, { FC, memo, useCallback, useMemo, useState } from 'react';
 import {
   Block,
+  Button,
+  ButtonIcon,
   DataTable,
   DataTableRow,
-  Input,
-  SelectIcon,
-  Option,
   Eth,
-  Steth,
-  Button,
+  Input,
   Lock,
-  ButtonIcon,
+  Option,
+  SelectIcon,
+  Steth,
 } from '@lidofinance/lido-ui';
-import { getTokenAddress } from '@lido-sdk/constants';
+import { CHAINS, getTokenAddress, TOKENS } from '@lido-sdk/constants';
 import { useWeb3 } from '@lido-sdk/web3-react';
 import {
+  useApprove,
   useEthereumBalance,
   useSTETHBalance,
   useWSTETHContractWeb3,
-  useApprove,
 } from '@lido-sdk/react';
-import { CHAINS } from '@lido-sdk/constants';
 import { parseEther } from '@ethersproject/units';
 import { FormStyled, InputGroupStyled, MaxButton } from './styles';
 import FormatToken from 'components/formatToken';
-import WalletConnect from 'components/walletConnect/walletConnect';
-import { useWstethBySteth, useTxCostInUsd, useCurrencyInput } from 'hooks';
+import WalletConnect from 'components/walletConnect';
+import InputLocked from 'components/inputLocked';
+import { useCurrencyInput, useTxCostInUsd, useWstethBySteth } from 'hooks';
 import StakeModal, { TX_STAGE } from '../indexPage/stakeModal';
 import { runWithTransactionLogger } from '../../utils';
 
 const approveGasLimit = 70000;
 
+const ETH = 'ETH';
+
 const iconsMap = {
-  eth: <Eth />,
-  steth: <Steth />,
+  [ETH]: <Eth />,
+  [TOKENS.STETH]: <Steth />,
 };
 
 const WrapForm: FC = () => {
@@ -42,12 +44,13 @@ const WrapForm: FC = () => {
   const stethBalance = useSTETHBalance();
   const wstethContractWeb3 = useWSTETHContractWeb3();
 
-  const stethTokenAddress = getTokenAddress(5, 'STETH');
-  const wstethTokenAddress = getTokenAddress(5, 'WSTETH');
+  const stethTokenAddress = getTokenAddress(5, TOKENS.STETH);
+  const wstethTokenAddress = getTokenAddress(5, TOKENS.WSTETH);
 
   const [selectedToken, setSelectedToken] =
-    useState<keyof typeof iconsMap>('eth');
+    useState<keyof typeof iconsMap>(ETH);
 
+  const [inputValue, setInputValue] = useState('0');
   const [txModalOpen, setTxModalOpen] = useState(false);
   const [txStage, setTxStage] = useState(TX_STAGE.SUCCESS);
   const [txHash, setTxHash] = useState<string>();
@@ -58,7 +61,7 @@ const WrapForm: FC = () => {
   );
 
   const balanceBySelectedToken = useMemo(
-    () => (selectedToken === 'eth' ? ethBalance.data : stethBalance.data),
+    () => (selectedToken === ETH ? ethBalance.data : stethBalance.data),
     [selectedToken, ethBalance, stethBalance],
   );
 
@@ -74,6 +77,19 @@ const WrapForm: FC = () => {
     setTxModalOpen(false);
   }, []);
 
+  const {
+    approve,
+    needsApprove,
+    // approving,
+    // initialLoading,
+    allowance,
+    loading: loadingUseApprove,
+  } = useApprove(
+    parseEther(inputValue ? inputValue : '0'),
+    stethTokenAddress,
+    wstethTokenAddress,
+  );
+
   const wrapProcessing = useCallback(
     async (inputValue) => {
       if (!wstethContractWeb3) {
@@ -81,39 +97,78 @@ const WrapForm: FC = () => {
       }
 
       try {
-        const callback = () =>
-          wstethContractWeb3.signer.sendTransaction({
-            to: wstethTokenAddress,
-            value: parseEther(inputValue),
-          });
+        if (selectedToken === ETH) {
+          const callback = () =>
+            wstethContractWeb3.signer.sendTransaction({
+              to: wstethTokenAddress,
+              value: parseEther(inputValue),
+            });
 
-        openTxModal();
-        setTxStage(TX_STAGE.SIGN);
+          openTxModal();
+          setTxStage(TX_STAGE.SIGN);
 
-        const transaction = await runWithTransactionLogger(
-          'Wrap signing',
-          callback,
-        );
+          const transaction = await runWithTransactionLogger(
+            'Wrap signing',
+            callback,
+          );
 
-        setTxHash(transaction.hash);
-        setTxStage(TX_STAGE.BLOCK);
+          setTxHash(transaction.hash);
+          setTxStage(TX_STAGE.BLOCK);
 
-        await runWithTransactionLogger('Wrap block confirmation', async () =>
-          transaction.wait(),
-        );
+          await runWithTransactionLogger('Wrap block confirmation', async () =>
+            transaction.wait(),
+          );
 
-        setTxStage(TX_STAGE.SUCCESS);
+          setTxStage(TX_STAGE.SUCCESS);
+          return;
+        }
+
+        if (selectedToken === TOKENS.STETH) {
+          if (needsApprove) {
+            // FIXME: transaction.hash
+            await approve();
+
+            setTxStage(TX_STAGE.SUCCESS);
+          } else {
+            const callback = () =>
+              wstethContractWeb3.wrap(parseEther(inputValue));
+
+            openTxModal();
+            setTxStage(TX_STAGE.SIGN);
+
+            const transaction = await runWithTransactionLogger(
+              'Wrap signing',
+              callback,
+            );
+
+            setTxHash(transaction.hash);
+            setTxStage(TX_STAGE.BLOCK);
+
+            await runWithTransactionLogger(
+              'Wrap block confirmation',
+              async () => transaction.wait(),
+            );
+
+            setTxStage(TX_STAGE.SUCCESS);
+          }
+        }
       } catch (e) {
         setTxStage(TX_STAGE.FAIL);
         setTxHash(undefined);
         console.error(e);
       }
     },
-    [openTxModal, wstethContractWeb3, wstethTokenAddress],
+    [
+      wstethContractWeb3,
+      selectedToken,
+      openTxModal,
+      wstethTokenAddress,
+      needsApprove,
+      approve,
+    ],
   );
 
   const {
-    inputValue,
     handleSubmit,
     handleChange,
     error,
@@ -123,13 +178,8 @@ const WrapForm: FC = () => {
   } = useCurrencyInput({
     submit: wrapProcessing,
     limit: balanceBySelectedToken,
+    externalSetInputValue: setInputValue,
   });
-
-  const { needsApprove } = useApprove(
-    parseEther(inputValue ? inputValue : '0'),
-    stethTokenAddress,
-    wstethTokenAddress,
-  );
 
   return (
     <Block>
@@ -147,10 +197,10 @@ const WrapForm: FC = () => {
               setSelectedToken(value as keyof typeof iconsMap)
             }
           >
-            <Option leftDecorator={iconsMap.steth} value="steth">
+            <Option leftDecorator={iconsMap[TOKENS.STETH]} value={TOKENS.STETH}>
               Lido (STETH)
             </Option>
-            <Option leftDecorator={iconsMap.eth} value="eth">
+            <Option leftDecorator={iconsMap[ETH]} value={ETH}>
               Ethereum (ETH)
             </Option>
           </SelectIcon>
@@ -158,15 +208,22 @@ const WrapForm: FC = () => {
             fullwidth
             placeholder="0"
             rightDecorator={
-              <MaxButton
-                size="xxs"
-                variant="translucent"
-                onClick={() => {
-                  setMaxInputValue();
-                }}
-              >
-                MAX
-              </MaxButton>
+              <>
+                <MaxButton
+                  size="xxs"
+                  variant="translucent"
+                  onClick={() => {
+                    setMaxInputValue();
+                  }}
+                >
+                  MAX
+                </MaxButton>
+                {needsApprove && selectedToken === TOKENS.STETH ? (
+                  <InputLocked />
+                ) : (
+                  ''
+                )}
+              </>
             }
             label="Amount"
             value={inputValue}
@@ -175,7 +232,7 @@ const WrapForm: FC = () => {
           />
         </InputGroupStyled>
         {active ? (
-          needsApprove ? (
+          needsApprove && selectedToken === TOKENS.STETH ? (
             <ButtonIcon
               icon={<Lock />}
               fullwidth
@@ -209,7 +266,9 @@ const WrapForm: FC = () => {
           1 stETH =
           <FormatToken amount={wstethConverted} symbol="wstETH" />
         </DataTableRow>
-        <DataTableRow title="Allowance" loading={true}></DataTableRow>
+        <DataTableRow title="Allowance" loading={loadingUseApprove}>
+          <FormatToken amount={allowance} symbol="" />
+        </DataTableRow>
         <DataTableRow title="You will receive" loading={true}></DataTableRow>
       </DataTable>
 
