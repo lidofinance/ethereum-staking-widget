@@ -21,6 +21,10 @@ import {
   useWSTETHContractWeb3,
 } from '@lido-sdk/react';
 import { parseEther } from '@ethersproject/units';
+import {
+  TransactionReceipt,
+  TransactionResponse,
+} from '@ethersproject/abstract-provider';
 import { FormStyled, InputGroupStyled, MaxButton } from './styles';
 import FormatToken from 'components/formatToken';
 import WalletConnect from 'components/walletConnect';
@@ -39,7 +43,7 @@ const iconsMap = {
 };
 
 const WrapForm: FC = () => {
-  const { active, chainId } = useWeb3();
+  const { active, chainId, account } = useWeb3();
   const ethBalance = useEthereumBalance();
   const stethBalance = useSTETHBalance();
   const wstethContractWeb3 = useWSTETHContractWeb3();
@@ -77,6 +81,33 @@ const WrapForm: FC = () => {
     setTxModalOpen(false);
   }, []);
 
+  const approveWrapper = useCallback(
+    async (
+      callback: () => Promise<TransactionResponse>,
+    ): Promise<TransactionReceipt> => {
+      openTxModal();
+      setTxStage(TX_STAGE.SIGN);
+
+      const transaction = await runWithTransactionLogger(
+        'Wrap signing',
+        callback,
+      );
+
+      setTxHash(transaction.hash);
+      setTxStage(TX_STAGE.BLOCK);
+
+      const result = await runWithTransactionLogger(
+        'Wrap block confirmation',
+        async () => transaction.wait(),
+      );
+
+      setTxStage(TX_STAGE.SUCCESS);
+
+      return result;
+    },
+    [openTxModal],
+  );
+
   const {
     approve,
     needsApprove,
@@ -88,6 +119,8 @@ const WrapForm: FC = () => {
     parseEther(inputValue ? inputValue : '0'),
     stethTokenAddress,
     wstethTokenAddress,
+    account ? account : undefined,
+    approveWrapper,
   );
 
   const wrapProcessing = useCallback(
@@ -125,10 +158,7 @@ const WrapForm: FC = () => {
 
         if (selectedToken === TOKENS.STETH) {
           if (needsApprove) {
-            // FIXME: transaction.hash
             await approve();
-
-            setTxStage(TX_STAGE.SUCCESS);
           } else {
             const callback = () =>
               wstethContractWeb3.wrap(parseEther(inputValue));
