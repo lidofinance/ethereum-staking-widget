@@ -32,6 +32,7 @@ import InputLocked from 'components/inputLocked';
 import { useCurrencyInput, useTxCostInUsd, useWstethBySteth } from 'hooks';
 import StakeModal, { TX_STAGE } from '../indexPage/stakeModal';
 import { runWithTransactionLogger } from '../../utils';
+import { BigNumber } from 'ethers';
 
 const approveGasLimit = 70000;
 
@@ -71,7 +72,7 @@ const WrapForm: FC = () => {
 
   const approveTxCostInUsd = useTxCostInUsd(approveGasLimit);
   const wrapTxCostInUsd = useTxCostInUsd(wrapGasLimit);
-  const wstethConverted = useWstethBySteth(parseEther('1'));
+  const oneWstethConverted = useWstethBySteth(parseEther('1'));
 
   const openTxModal = useCallback(() => {
     setTxModalOpen(true);
@@ -111,8 +112,6 @@ const WrapForm: FC = () => {
   const {
     approve,
     needsApprove,
-    // approving,
-    // initialLoading,
     allowance,
     loading: loadingUseApprove,
   } = useApprove(
@@ -122,6 +121,18 @@ const WrapForm: FC = () => {
     account ? account : undefined,
     approveWrapper,
   );
+
+  let forWillReceiveWsteth: BigNumber | undefined = undefined;
+  if (selectedToken === TOKENS.STETH) {
+    if (needsApprove) {
+      forWillReceiveWsteth = parseEther('0');
+    } else {
+      forWillReceiveWsteth = allowance;
+    }
+  } else {
+    forWillReceiveWsteth = parseEther(inputValue ? inputValue : '0');
+  }
+  const willReceiveWsteth = useWstethBySteth(forWillReceiveWsteth);
 
   const wrapProcessing = useCallback(
     async (inputValue) => {
@@ -292,14 +303,16 @@ const WrapForm: FC = () => {
         <DataTableRow title="Gas fee" loading={!wrapTxCostInUsd}>
           ${wrapTxCostInUsd?.toFixed(2)}
         </DataTableRow>
-        <DataTableRow title="Exchange rate" loading={!wstethConverted}>
+        <DataTableRow title="Exchange rate" loading={!oneWstethConverted}>
           1 stETH =
-          <FormatToken amount={wstethConverted} symbol="wstETH" />
+          <FormatToken amount={oneWstethConverted} symbol="wstETH" />
         </DataTableRow>
         <DataTableRow title="Allowance" loading={loadingUseApprove}>
           <FormatToken amount={allowance} symbol="" />
         </DataTableRow>
-        <DataTableRow title="You will receive" loading={true}></DataTableRow>
+        <DataTableRow title="You will receive">
+          <FormatToken amount={willReceiveWsteth} symbol="wstETH" />
+        </DataTableRow>
       </DataTable>
 
       <StakeModal
