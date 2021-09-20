@@ -26,7 +26,7 @@ import {
   TransactionReceipt,
   TransactionResponse,
 } from '@ethersproject/abstract-provider';
-import TxStageModal, { TX_STAGE } from 'components/txStageModal';
+import TxStageModal, { TX_STAGE, TX_OPERATION } from 'components/txStageModal';
 import FormatToken from 'components/formatToken';
 import WalletConnect from 'components/walletConnect';
 import InputLocked from 'components/inputLocked';
@@ -319,6 +319,7 @@ const WrapForm: FC = () => {
         open={txModalOpen}
         onClose={closeTxModal}
         txStage={txStage}
+        txOperation={TX_OPERATION.UNWRAPPING}
         txHash={txHash}
         amount={inputValue}
         balance={balanceBySelectedToken}

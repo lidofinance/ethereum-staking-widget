@@ -9,7 +9,7 @@ import {
 } from '@lidofinance/lido-ui';
 import { useWeb3 } from '@lido-sdk/web3-react';
 import { useWSTETHBalance, useWSTETHContractWeb3 } from '@lido-sdk/react';
-import TxStageModal, { TX_STAGE } from 'components/txStageModal';
+import TxStageModal, { TX_STAGE, TX_OPERATION } from 'components/txStageModal';
 import FormatToken from 'components/formatToken';
 import WalletConnect from 'components/walletConnect/walletConnect';
 import { useStethByWsteth, useTxCostInUsd, useCurrencyInput } from 'hooks';
@@ -141,6 +141,7 @@ const UnWrapForm: FC = () => {
         open={txModalOpen}
         onClose={closeTxModal}
         txStage={txStage}
+        txOperation={TX_OPERATION.UNWRAPPING}
         txHash={txHash}
         amount={inputValue}
         balance={wsteth.data}

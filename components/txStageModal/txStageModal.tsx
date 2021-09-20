@@ -14,6 +14,13 @@ import { useSDK } from '@lido-sdk/react';
 import { BigNumber } from 'ethers';
 import { formatEther } from '@ethersproject/units';
 
+export enum TX_OPERATION {
+  STAKING,
+  APPROVING,
+  WRAPPING,
+  UNWRAPPING,
+}
+
 export enum TX_STAGE {
   IDLE,
   SIGN,
@@ -24,16 +31,20 @@ export enum TX_STAGE {
 
 interface TxStageModalProps extends ModalProps {
   txStage: TX_STAGE;
+  txOperation: TX_OPERATION;
   amount: string;
   txHash?: string;
   balance?: BigNumber;
+  balanceSymbol?: string;
 }
 
 const TxStageModal: FC<TxStageModalProps> = ({
   txStage,
+  txOperation,
   txHash,
   amount,
   balance,
+  balanceSymbol,
   ...modalProps
 }) => {
   const { chainId } = useSDK();
@@ -43,7 +54,7 @@ const TxStageModal: FC<TxStageModalProps> = ({
     [balance],
   );
 
-  // inserts new lines in front of long numbers so that the currency symbol remains on the same line
+  // Inserts new lines in front of long numbers so that the currency symbol remains on the same line
   const withOptionaLineBreak = useCallback((text: string) => {
     return text.length < 8 ? (
       text
@@ -54,6 +65,56 @@ const TxStageModal: FC<TxStageModalProps> = ({
       </>
     );
   }, []);
+
+  const operationWasSuccessfulText = useMemo(() => {
+    switch (txOperation) {
+      case TX_OPERATION.STAKING:
+        return 'Staking operation was successful';
+      case TX_OPERATION.APPROVING:
+        return 'Approving operation was successful';
+      case TX_OPERATION.WRAPPING:
+        return 'Wrapping operation was successful';
+      case TX_OPERATION.UNWRAPPING:
+        return 'Unwrapping operation was successful';
+      default:
+        return 'Operation was successful';
+    }
+  }, [txOperation]);
+
+  const operationFailedText = useMemo(() => {
+    switch (txOperation) {
+      case TX_OPERATION.STAKING:
+        return 'Staking operation failed';
+      case TX_OPERATION.APPROVING:
+        return 'Approving operation failed';
+      case TX_OPERATION.WRAPPING:
+        return 'Wrapping operation failed';
+      case TX_OPERATION.UNWRAPPING:
+        return 'Unwrapping operation failed';
+      default:
+        return 'Operation failed';
+    }
+  }, [txOperation]);
+
+  const etherscanTxLinkBlock = useMemo(() => {
+    return (
+      <>
+        {txHash && (
+          <LightText
+            size="xxs"
+            color="secondary"
+            css={css`
+              margin-top: 38px;
+            `}
+          >
+            <Link href={getEtherscanTxLink(chainId, txHash)}>
+              View on Etherscan
+            </Link>
+          </LightText>
+        )}
+      </>
+    );
+  }, [chainId, txHash]);
 
   const content = useMemo(() => {
     switch (txStage) {
@@ -102,19 +163,7 @@ const TxStageModal: FC<TxStageModalProps> = ({
             >
               Awaiting block confirmation
             </LightText>
-            {txHash && (
-              <LightText
-                size="xxs"
-                color="secondary"
-                css={css`
-                  margin-top: 38px;
-                `}
-              >
-                <Link href={getEtherscanTxLink(chainId, txHash)}>
-                  View on Etherscan
-                </Link>
-              </LightText>
-            )}
+            {etherscanTxLinkBlock}
           </>
         );
       case TX_STAGE.SUCCESS:
@@ -136,21 +185,9 @@ const TxStageModal: FC<TxStageModalProps> = ({
                 margin-top: 4px;
               `}
             >
-              Staking operation was successful
+              {operationWasSuccessfulText}
             </LightText>
-            {txHash && (
-              <LightText
-                size="xxs"
-                color="secondary"
-                css={css`
-                  margin-top: 38px;
-                `}
-              >
-                <Link href={getEtherscanTxLink(chainId, txHash)}>
-                  View on Etherscan
-                </Link>
-              </LightText>
-            )}
+            {etherscanTxLinkBlock}
           </>
         ) : null;
       case TX_STAGE.FAIL:
@@ -172,21 +209,9 @@ const TxStageModal: FC<TxStageModalProps> = ({
                 margin-top: 4px;
               `}
             >
-              Staking operation failed
+              {operationFailedText}
             </LightText>
-            {txHash && (
-              <LightText
-                size="xxs"
-                color="secondary"
-                css={css`
-                  margin-top: 38px;
-                `}
-              >
-                <Link href={getEtherscanTxLink(chainId, txHash)}>
-                  View on Etherscan
-                </Link>
-              </LightText>
-            )}
+            {etherscanTxLinkBlock}
           </>
         );
     }
@@ -194,10 +219,12 @@ const TxStageModal: FC<TxStageModalProps> = ({
     txStage,
     withOptionaLineBreak,
     amount,
+    etherscanTxLinkBlock,
     txHash,
-    chainId,
     balance,
     balanceString,
+    operationWasSuccessfulText,
+    operationFailedText,
   ]);
 
   return <Modal {...modalProps}>{content}</Modal>;

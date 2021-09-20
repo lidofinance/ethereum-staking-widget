@@ -18,7 +18,7 @@ import {
 } from '@lidofinance/lido-ui';
 import { DATA_UNAVAILABLE } from 'config';
 import WalletConnect from 'components/walletConnect/walletConnect';
-import TxStageModal, { TX_STAGE } from 'components/txStageModal';
+import TxStageModal, { TX_STAGE, TX_OPERATION } from 'components/txStageModal';
 import { useCurrencyInput, useTxCostInUsd } from 'hooks';
 import { runWithTransactionLogger } from 'utils';
 import { useStethSubmitGasLimit } from './hooks';
@@ -165,6 +165,7 @@ const StakeForm: FC = () => {
         open={txModalOpen}
         onClose={closeTxModal}
         txStage={txStage}
+        txOperation={TX_OPERATION.STAKING}
         txHash={txHash}
         amount={inputValue}
         balance={stethBalance.data}
