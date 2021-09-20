@@ -1,4 +1,11 @@
-import React, { FC, memo, useCallback, useMemo, useState } from 'react';
+import React, {
+  FC,
+  memo,
+  useCallback,
+  useMemo,
+  useState,
+  useEffect,
+} from 'react';
 import {
   Block,
   Button,
@@ -33,8 +40,6 @@ import { useCurrencyInput, useTxCostInUsd, useWstethBySteth } from 'hooks';
 import { runWithTransactionLogger } from 'utils';
 import { FormStyled, InputGroupStyled, MaxButton } from './styles';
 
-const approveGasLimit = 70000;
-
 const ETH = 'ETH';
 
 const iconsMap = {
@@ -59,6 +64,9 @@ const WrapForm: FC = () => {
   const [txStage, setTxStage] = useState(TX_STAGE.SUCCESS);
   const [txHash, setTxHash] = useState<string>();
 
+  const approveGasLimit = useMemo(() => 70000, []);
+  const oneSteth = useMemo(() => parseEther('1'), []);
+
   const wrapGasLimit = useMemo(
     () => (chainId === CHAINS.Goerli ? 180000 : 140000),
     [chainId],
@@ -72,7 +80,6 @@ const WrapForm: FC = () => {
   const approveTxCostInUsd = useTxCostInUsd(approveGasLimit);
   const wrapTxCostInUsd = useTxCostInUsd(wrapGasLimit);
 
-  const oneSteth = useMemo(() => parseEther('1'), []);
   const oneWstethConverted = useWstethBySteth(oneSteth);
 
   const openTxModal = useCallback(() => {
@@ -225,6 +232,18 @@ const WrapForm: FC = () => {
     externalSetInputValue: setInputValue,
   });
 
+  const onChangeSelectToken = useCallback(
+    async (value) => {
+      setSelectedToken(value as keyof typeof iconsMap);
+      setMaxInputValue();
+    },
+    [setMaxInputValue],
+  );
+
+  useEffect(() => {
+    setMaxInputValue();
+  }, [balanceBySelectedToken, setMaxInputValue]);
+
   return (
     <Block>
       <FormStyled
@@ -237,9 +256,7 @@ const WrapForm: FC = () => {
           <SelectIcon
             icon={iconsMap[selectedToken]}
             value={selectedToken}
-            onChange={(value) =>
-              setSelectedToken(value as keyof typeof iconsMap)
-            }
+            onChange={onChangeSelectToken}
           >
             <Option leftDecorator={iconsMap[TOKENS.STETH]} value={TOKENS.STETH}>
               Lido (STETH)
