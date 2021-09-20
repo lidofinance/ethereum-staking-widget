@@ -1,4 +1,4 @@
-import { FC, memo, useCallback, useState, useMemo } from 'react';
+import { FC, memo, useCallback, useState, useMemo, useEffect } from 'react';
 import { parseEther } from '@ethersproject/units';
 import {
   Block,
@@ -86,6 +86,12 @@ const UnWrapForm: FC = () => {
     submit: unWrapProcessing,
     limit: wstethBalance.data,
   });
+
+  useEffect(() => {
+    if (wstethBalance && wstethBalance.data) {
+      setMaxInputValue();
+    }
+  }, [wstethBalance, setMaxInputValue]);
 
   return (
     <Block>
