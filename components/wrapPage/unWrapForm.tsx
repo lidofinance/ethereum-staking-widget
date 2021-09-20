@@ -1,4 +1,4 @@
-import { FC, memo, useCallback, useState } from 'react';
+import { FC, memo, useCallback, useState, useMemo } from 'react';
 import { parseEther } from '@ethersproject/units';
 import {
   Block,
@@ -16,19 +16,20 @@ import { useStethByWsteth, useTxCostInUsd, useCurrencyInput } from 'hooks';
 import { runWithTransactionLogger } from 'utils';
 import { FormStyled, InputStyled, MaxButton } from './styles';
 
-const unwrapGasLimit = 140000;
-
 const UnWrapForm: FC = () => {
   const { active } = useWeb3();
-  const wsteth = useWSTETHBalance();
+  const wstethBalance = useWSTETHBalance();
   const wstethContractWeb3 = useWSTETHContractWeb3();
 
   const [txModalOpen, setTxModalOpen] = useState(false);
   const [txStage, setTxStage] = useState(TX_STAGE.SUCCESS);
   const [txHash, setTxHash] = useState<string>();
 
+  const unwrapGasLimit = useMemo(() => 140000, []);
+  const oneWsteth = useMemo(() => parseEther('1'), []);
+
   const unwrapTxCostInUsd = useTxCostInUsd(unwrapGasLimit);
-  const stethConverted = useStethByWsteth(parseEther('1'));
+  const stethConverted = useStethByWsteth(oneWsteth);
 
   const openTxModal = useCallback(() => {
     setTxModalOpen(true);
@@ -83,7 +84,7 @@ const UnWrapForm: FC = () => {
     setMaxInputValue,
   } = useCurrencyInput({
     submit: unWrapProcessing,
-    limit: wsteth.data,
+    limit: wstethBalance.data,
   });
 
   return (
@@ -144,7 +145,7 @@ const UnWrapForm: FC = () => {
         txOperation={TX_OPERATION.UNWRAPPING}
         txHash={txHash}
         amount={inputValue}
-        balance={wsteth.data}
+        balance={wstethBalance.data}
       />
     </Block>
   );
