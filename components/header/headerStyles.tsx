@@ -11,7 +11,6 @@ export const HeaderStyle = styled(Container)`
 export const HeaderLogoStyle = styled.div`
   overflow: hidden;
   flex-shrink: 0;
-  margin-right: ${({ theme }) => theme.spaceMap.xxl}px;
 
   ${({ theme }) => theme.mediaQueries.md} {
     width: 14px;

@@ -6,6 +6,8 @@ export const AddressBadgeStyle = styled(IdenticonBadge)`
   box-sizing: border-box;
   overflow: hidden;
 
+  margin: 0;
+
   & > * {
     flex-shrink: 0;
   }

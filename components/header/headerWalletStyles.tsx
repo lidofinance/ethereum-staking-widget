@@ -1,7 +1,7 @@
 import styled, { keyframes } from 'styled-components';
 
 export const HeaderWalletChainStyle = styled.span<{ $color: string }>`
-  margin-right: ${({ theme }) => theme.spaceMap.xl}px;
+  margin-right: ${({ theme }) => theme.spaceMap.md}px;
   color: ${({ $color }) => $color};
   line-height: 1.2em;
 `;
