@@ -17,7 +17,7 @@ type UseCurrencyInputArgs = {
   validateOnMount?: boolean;
   zeroValid?: boolean;
   limit?: BigNumber;
-  submit: (inputValue: string) => Promise<void>;
+  submit: (inputValue: string, reset: () => void) => Promise<void>;
   externalSetInputValue?: (inputValue: string) => void;
 };
 
@@ -157,11 +157,11 @@ export const useCurrencyInput: UseCurrencyInput = ({
       const isValid = validate(inputValue);
       if (isValid) {
         setIsSubmitting(true);
-        await submit(inputValue);
+        await submit(inputValue, reset);
         setIsSubmitting(false);
       }
     },
-    [inputValue, submit, validate],
+    [inputValue, reset, submit, validate],
   );
 
   const ethMaxAmount = useMaxAmount({
