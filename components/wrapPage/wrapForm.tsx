@@ -59,7 +59,7 @@ const WrapForm: FC = () => {
   const [selectedToken, setSelectedToken] =
     useState<keyof typeof iconsMap>(ETH);
 
-  const [inputValue, setInputValue] = useState('0');
+  const [inputValue, setInputValue] = useState('');
   const [txModalOpen, setTxModalOpen] = useState(false);
   const [txStage, setTxStage] = useState(TX_STAGE.SUCCESS);
   const [txHash, setTxHash] = useState<string>();
@@ -241,7 +241,9 @@ const WrapForm: FC = () => {
   );
 
   useEffect(() => {
-    setMaxInputValue();
+    if (balanceBySelectedToken) {
+      setMaxInputValue();
+    }
   }, [balanceBySelectedToken, setMaxInputValue]);
 
   return (
