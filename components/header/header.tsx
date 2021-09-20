@@ -1,4 +1,5 @@
 import { FC } from 'react';
+import Link from 'next/link';
 import { LidoLogo } from '@lidofinance/lido-logo';
 import {
   HeaderStyle,
@@ -11,7 +12,9 @@ import Navigation from 'components/navigation';
 const Header: FC = () => (
   <HeaderStyle size="full" forwardedAs="header">
     <HeaderLogoStyle>
-      <LidoLogo />
+      <Link href="/">
+        <LidoLogo />
+      </Link>
     </HeaderLogoStyle>
     <Navigation />
     <HeaderActionsStyle>

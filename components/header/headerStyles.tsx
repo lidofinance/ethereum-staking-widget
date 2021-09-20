@@ -11,6 +11,7 @@ export const HeaderStyle = styled(Container)`
 export const HeaderLogoStyle = styled.div`
   overflow: hidden;
   flex-shrink: 0;
+  cursor: pointer;
 
   ${({ theme }) => theme.mediaQueries.md} {
     width: 14px;
