@@ -1,3 +1,5 @@
+// TODO: delete this component!
+
 import { FC, memo, useMemo } from 'react';
 import { Copy } from '@lidofinance/lido-ui';
 import { css } from 'styled-components';

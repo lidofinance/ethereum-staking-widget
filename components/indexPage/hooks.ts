@@ -1,8 +1,8 @@
+import { useCallback, useEffect, useState } from 'react';
+import { PayableOverrides } from 'ethers';
 import { AddressZero } from '@ethersproject/constants';
 import { useSTETHContractRPC } from '@lido-sdk/react';
 import { STETH_SUBMIT_GAS_LIMIT_DEFAULT } from 'config';
-import { PayableOverrides } from 'ethers';
-import { useCallback, useEffect, useState } from 'react';
 
 type UseStethSubmitGasLimit = (
   _referral?: string,
@@ -20,19 +20,22 @@ export const useStethSubmitGasLimit: UseStethSubmitGasLimit = (
 ) => {
   const [gasLimit, setGasLimit] = useState<number>();
 
-  const steth = useSTETHContractRPC();
+  const stethContractRPC = useSTETHContractRPC();
 
   const estimateGas = useCallback(async () => {
-    if (steth) {
+    if (stethContractRPC) {
       try {
-        const gl = await steth.estimateGas.submit(_referral, overrides);
+        const gl = await stethContractRPC.estimateGas.submit(
+          _referral,
+          overrides,
+        );
         setGasLimit(+gl);
       } catch (e) {
         setGasLimit(STETH_SUBMIT_GAS_LIMIT_DEFAULT);
         console.warn('Failed to estimate gas limit');
       }
     }
-  }, [_referral, overrides, steth]);
+  }, [_referral, overrides, stethContractRPC]);
 
   useEffect(() => {
     estimateGas();

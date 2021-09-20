@@ -1,3 +1,4 @@
+import { FC, memo, useMemo } from 'react';
 import { getEtherscanTokenLink } from '@lido-sdk/helpers';
 import { useSDK } from '@lido-sdk/react';
 import {
@@ -11,7 +12,6 @@ import {
 import Section from 'components/section/section';
 import { getStethAddress, LIDO_APR_TOOLTIP_TEXT } from 'config';
 import { useLidoApr, useLidoStats } from 'hooks';
-import { FC, memo, useMemo } from 'react';
 import { FlexCenterVertical } from './styles';
 
 const LidoStats: FC = () => {

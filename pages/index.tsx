@@ -1,17 +1,12 @@
 import { FC } from 'react';
 import { GetServerSideProps } from 'next';
 import Head from 'next/head';
-import {
-  IndexWallet,
-  LidoStats,
-  StakeForm,
-  ReferralCard,
-} from 'components/indexPage';
+import { useContractSWR, useSTETHContractRPC } from '@lido-sdk/react';
+import { DATA_UNAVAILABLE } from 'config';
+import { IndexWallet, LidoStats, StakeForm } from 'components/indexPage';
 import Layout from 'components/layout';
 import Faq from 'components/faq';
 import { FAQItem, getFaqList } from 'lib/faqList';
-import { useContractSWR, useSTETHContractRPC } from '@lido-sdk/react';
-import { DATA_UNAVAILABLE } from 'config';
 
 interface HomeProps {
   faqList: FAQItem[];
@@ -35,7 +30,6 @@ const Home: FC<HomeProps> = ({ faqList }) => {
       </Head>
       <IndexWallet />
       <StakeForm />
-      <ReferralCard />
       <LidoStats />
       <Faq
         faqList={faqList}
@@ -53,7 +47,7 @@ const Home: FC<HomeProps> = ({ faqList }) => {
 export default Home;
 
 export const getServerSideProps: GetServerSideProps<HomeProps> = async () => {
-  // list of .md files from /faq/
+  // list of .md files from ./faq
   const fileList = [
     'index-what-is-lido',
     'index-how-does-lido-work',

@@ -1,10 +1,7 @@
-import {
-  WalletCard,
-  WalletCardBalance,
-  WalletCardRow,
-  WalletCardAccount,
-} from 'components/walletCard';
+import { memo } from 'react';
+import { css } from 'styled-components';
 import { Divider, Question, Tooltip } from '@lidofinance/lido-ui';
+import { TOKENS } from '@lido-sdk/constants';
 import {
   useEthereumBalance,
   useSDK,
@@ -12,16 +9,19 @@ import {
   useTokenAddress,
 } from '@lido-sdk/react';
 import { useWeb3 } from '@lido-sdk/web3-react';
+import { LIDO_APR_TOOLTIP_TEXT } from 'config';
+import {
+  WalletCard,
+  WalletCardBalance,
+  WalletCardRow,
+  WalletCardAccount,
+} from 'components/walletCard';
 import FormatToken from 'components/formatToken';
 import FallbackWallet from 'components/fallbackWallet';
 import TokenToWallet from 'components/tokenToWallet';
-import { WalletComponent } from './types';
-import { TOKENS } from '@lido-sdk/constants';
-import { css } from 'styled-components';
 import { useLidoApr } from 'hooks/useLidoApr';
+import { WalletComponent } from './types';
 import { LidoAprStyled } from './styles';
-import { LIDO_APR_TOOLTIP_TEXT } from 'config';
-import { memo } from 'react';
 
 const Wallet: WalletComponent = (props) => {
   const { account } = useSDK();
