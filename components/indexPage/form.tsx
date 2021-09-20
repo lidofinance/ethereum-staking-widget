@@ -32,7 +32,19 @@ const StakeForm: FC = () => {
   const { active } = useWeb3();
   const eth = useEthereumBalance();
   const stethBalance = useSTETHBalance();
-  const steth = useSTETHContractWeb3();
+  const stethContractWeb3 = useSTETHContractWeb3();
+  const contractRpc = useSTETHContractRPC();
+
+  const lidoFee = useContractSWR({
+    contract: contractRpc,
+    method: 'getFee',
+  });
+
+  const submitGasLimit = useStethSubmitGasLimit(AddressZero, {
+    value: parseEther('1'),
+  });
+
+  const txCostInUsd = useTxCostInUsd(submitGasLimit);
 
   const openTxModal = useCallback(() => {
     setTxModalOpen(true);
@@ -42,18 +54,12 @@ const StakeForm: FC = () => {
     setTxModalOpen(false);
   }, []);
 
-  const submitGasLimit = useStethSubmitGasLimit(AddressZero, {
-    value: parseEther('1'),
-  });
-
-  const txCostInUsd = useTxCostInUsd(submitGasLimit);
-
   const submit = useCallback(
-    async (inputValue) => {
-      if (steth) {
+    async (inputValue, resetForm) => {
+      if (stethContractWeb3) {
         try {
           const callback = () =>
-            steth.submit(AddressZero, {
+            stethContractWeb3.submit(AddressZero, {
               value: parseEther(inputValue),
             });
 
@@ -71,6 +77,8 @@ const StakeForm: FC = () => {
           );
 
           setTxStage(TX_STAGE.SUCCESS);
+
+          resetForm();
         } catch (e) {
           setTxStage(TX_STAGE.FAIL);
           setTxHash(undefined);
@@ -78,7 +86,7 @@ const StakeForm: FC = () => {
         }
       }
     },
-    [openTxModal, steth],
+    [openTxModal, stethContractWeb3],
   );
 
   const {
@@ -101,13 +109,6 @@ const StakeForm: FC = () => {
 
     return inputValue;
   }, [inputValue]);
-
-  const contractRpc = useSTETHContractRPC();
-
-  const lidoFee = useContractSWR({
-    contract: contractRpc,
-    method: 'getFee',
-  });
 
   return (
     <Block>
