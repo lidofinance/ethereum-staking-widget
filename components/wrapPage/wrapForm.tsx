@@ -1,5 +1,4 @@
 import React, { FC, memo, useCallback, useMemo, useState } from 'react';
-import { BigNumber } from 'ethers';
 import {
   Block,
   Button,
@@ -72,7 +71,9 @@ const WrapForm: FC = () => {
 
   const approveTxCostInUsd = useTxCostInUsd(approveGasLimit);
   const wrapTxCostInUsd = useTxCostInUsd(wrapGasLimit);
-  const oneWstethConverted = useWstethBySteth(parseEther('1'));
+
+  const oneSteth = useMemo(() => parseEther('1'), []);
+  const oneWstethConverted = useWstethBySteth(oneSteth);
 
   const openTxModal = useCallback(() => {
     setTxModalOpen(true);
@@ -122,16 +123,18 @@ const WrapForm: FC = () => {
     approveWrapper,
   );
 
-  let forWillReceiveWsteth: BigNumber | undefined = undefined;
-  if (selectedToken === TOKENS.STETH) {
-    if (needsApprove) {
-      forWillReceiveWsteth = parseEther('0');
+  const forWillReceiveWsteth = useMemo(() => {
+    if (selectedToken === TOKENS.STETH) {
+      if (needsApprove) {
+        return parseEther('0');
+      } else {
+        return allowance;
+      }
     } else {
-      forWillReceiveWsteth = allowance;
+      // ETH
+      return parseEther(inputValue ? inputValue : '0');
     }
-  } else {
-    forWillReceiveWsteth = parseEther(inputValue ? inputValue : '0');
-  }
+  }, [allowance, inputValue, needsApprove, selectedToken]);
   const willReceiveWsteth = useWstethBySteth(forWillReceiveWsteth);
 
   const wrapProcessing = useCallback(
