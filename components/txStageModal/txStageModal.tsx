@@ -7,7 +7,7 @@ import {
   LightText,
   SuccessIcon,
   TxLoader,
-} from './styles';
+} from './txStageModalStyles';
 import { css } from 'styled-components';
 import { getEtherscanTxLink } from '@lido-sdk/helpers';
 import { useSDK } from '@lido-sdk/react';
@@ -22,14 +22,14 @@ export enum TX_STAGE {
   FAIL,
 }
 
-interface StakeModalProps extends ModalProps {
+interface TxStageModalProps extends ModalProps {
   txStage: TX_STAGE;
   amount: string;
   txHash?: string;
   balance?: BigNumber;
 }
 
-const StakeModal: FC<StakeModalProps> = ({
+const TxStageModal: FC<TxStageModalProps> = ({
   txStage,
   txHash,
   amount,
@@ -203,4 +203,4 @@ const StakeModal: FC<StakeModalProps> = ({
   return <Modal {...modalProps}>{content}</Modal>;
 };
 
-export default memo(StakeModal);
+export default memo(TxStageModal);
