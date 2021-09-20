@@ -1,4 +1,5 @@
 import React, { FC, memo, useCallback, useMemo, useState } from 'react';
+import { BigNumber } from 'ethers';
 import {
   Block,
   Button,
@@ -25,14 +26,13 @@ import {
   TransactionReceipt,
   TransactionResponse,
 } from '@ethersproject/abstract-provider';
-import { FormStyled, InputGroupStyled, MaxButton } from './styles';
+import TxStageModal, { TX_STAGE } from 'components/txStageModal';
 import FormatToken from 'components/formatToken';
 import WalletConnect from 'components/walletConnect';
 import InputLocked from 'components/inputLocked';
 import { useCurrencyInput, useTxCostInUsd, useWstethBySteth } from 'hooks';
-import StakeModal, { TX_STAGE } from '../indexPage/stakeModal';
-import { runWithTransactionLogger } from '../../utils';
-import { BigNumber } from 'ethers';
+import { runWithTransactionLogger } from 'utils';
+import { FormStyled, InputGroupStyled, MaxButton } from './styles';
 
 const approveGasLimit = 70000;
 
@@ -315,7 +315,7 @@ const WrapForm: FC = () => {
         </DataTableRow>
       </DataTable>
 
-      <StakeModal
+      <TxStageModal
         open={txModalOpen}
         onClose={closeTxModal}
         txStage={txStage}

@@ -1,3 +1,4 @@
+import { FC, memo, useCallback, useState, useMemo } from 'react';
 import { AddressZero } from '@ethersproject/constants';
 import { parseEther } from '@ethersproject/units';
 import {
@@ -15,14 +16,13 @@ import {
   DataTableRow,
   Eth,
 } from '@lidofinance/lido-ui';
+import { DATA_UNAVAILABLE } from 'config';
 import WalletConnect from 'components/walletConnect/walletConnect';
+import TxStageModal, { TX_STAGE } from 'components/txStageModal';
 import { useCurrencyInput, useTxCostInUsd } from 'hooks';
-import { useStethSubmitGasLimit } from './hooks';
-import { FC, memo, useCallback, useState, useMemo } from 'react';
-import { FormStyled, InputStyled, MaxButton } from './styles';
-import StakeModal, { TX_STAGE } from './stakeModal';
 import { runWithTransactionLogger } from 'utils';
-import { DATA_UNAVAILABLE } from '../../config';
+import { useStethSubmitGasLimit } from './hooks';
+import { FormStyled, InputStyled, MaxButton } from './styles';
 
 const StakeForm: FC = () => {
   const [txModalOpen, setTxModalOpen] = useState(false);
@@ -161,7 +161,7 @@ const StakeForm: FC = () => {
           {!lidoFee.data ? DATA_UNAVAILABLE : `${lidoFee.data / 100}%`}
         </DataTableRow>
       </DataTable>
-      <StakeModal
+      <TxStageModal
         open={txModalOpen}
         onClose={closeTxModal}
         txStage={txStage}

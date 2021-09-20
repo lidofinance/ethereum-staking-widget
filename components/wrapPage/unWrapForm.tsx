@@ -9,12 +9,12 @@ import {
 } from '@lidofinance/lido-ui';
 import { useWeb3 } from '@lido-sdk/web3-react';
 import { useWSTETHBalance, useWSTETHContractWeb3 } from '@lido-sdk/react';
-import { useStethByWsteth, useTxCostInUsd, useCurrencyInput } from 'hooks';
+import TxStageModal, { TX_STAGE } from 'components/txStageModal';
 import FormatToken from 'components/formatToken';
 import WalletConnect from 'components/walletConnect/walletConnect';
+import { useStethByWsteth, useTxCostInUsd, useCurrencyInput } from 'hooks';
+import { runWithTransactionLogger } from 'utils';
 import { FormStyled, InputStyled, MaxButton } from './styles';
-import StakeModal, { TX_STAGE } from '../indexPage/stakeModal';
-import { runWithTransactionLogger } from '../../utils';
 
 const unwrapGasLimit = 140000;
 
@@ -137,7 +137,7 @@ const UnWrapForm: FC = () => {
         </DataTableRow>
       </DataTable>
 
-      <StakeModal
+      <TxStageModal
         open={txModalOpen}
         onClose={closeTxModal}
         txStage={txStage}

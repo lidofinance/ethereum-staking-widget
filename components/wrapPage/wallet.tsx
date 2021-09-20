@@ -1,10 +1,7 @@
-import {
-  WalletCard,
-  WalletCardBalance,
-  WalletCardRow,
-  WalletCardAccount,
-} from 'components/walletCard';
+import { css } from 'styled-components';
+import { memo } from 'react';
 import { Divider, Text } from '@lidofinance/lido-ui';
+import { TOKENS } from '@lido-sdk/constants';
 import {
   useSDK,
   useEthereumBalance,
@@ -13,26 +10,29 @@ import {
   useTokenAddress,
 } from '@lido-sdk/react';
 import { useWeb3 } from '@lido-sdk/web3-react';
+import {
+  WalletCard,
+  WalletCardBalance,
+  WalletCardRow,
+  WalletCardAccount,
+} from 'components/walletCard';
 import FormatToken from 'components/formatToken';
 import FallbackWallet from 'components/fallbackWallet';
 import TokenToWallet from 'components/tokenToWallet';
 import { useWstethBySteth, useStethByWsteth } from 'hooks';
 import { WalletComponent } from './types';
-import { TOKENS } from '@lido-sdk/constants';
-import { css } from 'styled-components';
-import { memo } from 'react';
 
 const Wallet: WalletComponent = (props) => {
   const { account } = useSDK();
-  const eth = useEthereumBalance();
-  const steth = useSTETHBalance();
-  const wsteth = useWSTETHBalance();
+  const ethBalance = useEthereumBalance();
+  const stethBalance = useSTETHBalance();
+  const wstethBalance = useWSTETHBalance();
 
   const stethAddress = useTokenAddress(TOKENS.STETH);
   const wstethAddress = useTokenAddress(TOKENS.WSTETH);
 
-  const wstethConverted = useWstethBySteth(steth.data);
-  const stethConverted = useStethByWsteth(wsteth.data);
+  const wstethByStethBalance = useWstethBySteth(stethBalance.data);
+  const stethByWstethBalance = useStethByWsteth(wstethBalance.data);
 
   return (
     <WalletCard
@@ -44,8 +44,8 @@ const Wallet: WalletComponent = (props) => {
       <WalletCardRow>
         <WalletCardBalance
           title="ETH Balance"
-          loading={eth.initialLoading}
-          value={<FormatToken amount={eth.data} symbol="ETH" />}
+          loading={ethBalance.initialLoading}
+          value={<FormatToken amount={ethBalance.data} symbol="ETH" />}
         />
         <WalletCardAccount account={account} />
       </WalletCardRow>
@@ -54,13 +54,13 @@ const Wallet: WalletComponent = (props) => {
         <WalletCardBalance
           small
           title="stETH Balance"
-          loading={steth.initialLoading}
+          loading={stethBalance.initialLoading}
           value={
             <>
-              <FormatToken amount={steth.data} symbol="stETH" />
+              <FormatToken amount={stethBalance.data} symbol="stETH" />
               <TokenToWallet address={stethAddress} />
               <Text size={'xxs'} color={'secondary'}>
-                ≈ <FormatToken amount={wstethConverted} symbol="wstETH" />
+                ≈ <FormatToken amount={wstethByStethBalance} symbol="wstETH" />
               </Text>
             </>
           }
@@ -68,13 +68,13 @@ const Wallet: WalletComponent = (props) => {
         <WalletCardBalance
           small
           title="wstETH Balance"
-          loading={wsteth.initialLoading}
+          loading={wstethBalance.initialLoading}
           value={
             <>
-              <FormatToken amount={wsteth.data} symbol="wstETH" />
+              <FormatToken amount={wstethBalance.data} symbol="wstETH" />
               <TokenToWallet address={wstethAddress} />
               <Text size={'xxs'} color={'secondary'}>
-                ≈ <FormatToken amount={stethConverted} symbol="stETH" />
+                ≈ <FormatToken amount={stethByWstethBalance} symbol="stETH" />
               </Text>
             </>
           }
