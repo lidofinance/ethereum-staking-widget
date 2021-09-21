@@ -20,9 +20,9 @@ import { DATA_UNAVAILABLE } from 'config';
 import WalletConnect from 'components/walletConnect/walletConnect';
 import TxStageModal, { TX_STAGE, TX_OPERATION } from 'components/txStageModal';
 import { useCurrencyInput, useTxCostInUsd } from 'hooks';
-import { runWithTransactionLogger } from 'utils';
 import { useStethSubmitGasLimit } from './hooks';
 import { FormStyled, InputStyled, MaxButton } from './styles';
+import { stakeProcessing } from './processings';
 
 const StakeForm: FC = () => {
   const [txModalOpen, setTxModalOpen] = useState(false);
@@ -56,35 +56,14 @@ const StakeForm: FC = () => {
 
   const submit = useCallback(
     async (inputValue, resetForm) => {
-      if (stethContractWeb3) {
-        try {
-          const callback = () =>
-            stethContractWeb3.submit(AddressZero, {
-              value: parseEther(inputValue),
-            });
-
-          openTxModal();
-          setTxStage(TX_STAGE.SIGN);
-          const transaction = await runWithTransactionLogger(
-            'Stake signing',
-            callback,
-          );
-
-          setTxHash(transaction.hash);
-          setTxStage(TX_STAGE.BLOCK);
-          await runWithTransactionLogger('Stake block confirmation', async () =>
-            transaction.wait(),
-          );
-
-          setTxStage(TX_STAGE.SUCCESS);
-
-          resetForm();
-        } catch (e) {
-          setTxStage(TX_STAGE.FAIL);
-          setTxHash(undefined);
-          console.error(e);
-        }
-      }
+      await stakeProcessing(
+        stethContractWeb3,
+        openTxModal,
+        setTxStage,
+        setTxHash,
+        inputValue,
+        resetForm,
+      );
     },
     [openTxModal, stethContractWeb3],
   );
