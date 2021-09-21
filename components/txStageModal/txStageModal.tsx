@@ -33,9 +33,12 @@ interface TxStageModalProps extends ModalProps {
   txStage: TX_STAGE;
   txOperation: TX_OPERATION;
   amount: string;
+  amountToken: string;
+  willReceiveAmount?: string;
+  willReceiveAmountToken?: string;
   txHash?: string;
   balance?: BigNumber;
-  balanceSymbol?: string;
+  balanceToken?: string;
 }
 
 const TxStageModal: FC<TxStageModalProps> = ({
@@ -43,8 +46,11 @@ const TxStageModal: FC<TxStageModalProps> = ({
   txOperation,
   txHash,
   amount,
+  amountToken,
+  willReceiveAmount,
+  willReceiveAmountToken,
   balance,
-  balanceSymbol,
+  balanceToken,
   ...modalProps
 }) => {
   const { chainId } = useSDK();
@@ -96,6 +102,21 @@ const TxStageModal: FC<TxStageModalProps> = ({
     }
   }, [txOperation]);
 
+  const operationText = useMemo(() => {
+    switch (txOperation) {
+      case TX_OPERATION.STAKING:
+        return 'Staking';
+      case TX_OPERATION.APPROVING:
+        return 'Approving';
+      case TX_OPERATION.WRAPPING:
+        return 'Wrapping';
+      case TX_OPERATION.UNWRAPPING:
+        return 'Unwrapping';
+      default:
+        return 'Processing';
+    }
+  }, [txOperation]);
+
   const etherscanTxLinkBlock = useMemo(() => {
     return (
       <>
@@ -125,7 +146,15 @@ const TxStageModal: FC<TxStageModalProps> = ({
           <>
             <TxLoader size="large" />
             <BoldText>
-              You are now staking {withOptionaLineBreak(amount)} ETH
+              You are now{' '}
+              <span
+                css={css`
+                  text-transform: lowercase;
+                `}
+              >
+                {operationText}
+              </span>{' '}
+              {withOptionaLineBreak(amount)} {amountToken}
             </BoldText>
             <LightText
               size="xxs"
@@ -134,7 +163,8 @@ const TxStageModal: FC<TxStageModalProps> = ({
                 margin-top: 4px;
               `}
             >
-              Staking {amount} ETH. You will receive {amount} stETH
+              {operationText} {amount} {amountToken}. You will receive{' '}
+              {willReceiveAmount} {willReceiveAmountToken}
             </LightText>
             <LightText
               size="xxs"
@@ -152,7 +182,15 @@ const TxStageModal: FC<TxStageModalProps> = ({
           <>
             <TxLoader size="large" />
             <BoldText>
-              You are now staking {withOptionaLineBreak(amount)} ETH
+              You are now{' '}
+              <span
+                css={css`
+                  text-transform: lowercase;
+                `}
+              >
+                {operationText}
+              </span>{' '}
+              {withOptionaLineBreak(amount)} {amountToken}
             </BoldText>
             <LightText
               size="xxs"
@@ -175,7 +213,7 @@ const TxStageModal: FC<TxStageModalProps> = ({
             {balance && (
               <BoldText>
                 Your new balance is <wbr />
-                {withOptionaLineBreak(balanceString)} stETH
+                {withOptionaLineBreak(balanceString)} {balanceToken}
               </BoldText>
             )}
             <LightText
@@ -199,7 +237,7 @@ const TxStageModal: FC<TxStageModalProps> = ({
             {balance && (
               <BoldText>
                 Your balance is <wbr />
-                {withOptionaLineBreak(balanceString)} stETH
+                {withOptionaLineBreak(balanceString)} {balanceToken}
               </BoldText>
             )}
             <LightText
@@ -217,12 +255,17 @@ const TxStageModal: FC<TxStageModalProps> = ({
     }
   }, [
     txStage,
+    operationText,
     withOptionaLineBreak,
     amount,
+    amountToken,
+    willReceiveAmount,
+    willReceiveAmountToken,
     etherscanTxLinkBlock,
     txHash,
     balance,
     balanceString,
+    balanceToken,
     operationWasSuccessfulText,
     operationFailedText,
   ]);

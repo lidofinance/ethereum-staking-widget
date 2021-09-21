@@ -2,9 +2,9 @@ import React, {
   FC,
   memo,
   useCallback,
+  useEffect,
   useMemo,
   useState,
-  useEffect,
 } from 'react';
 import {
   Block,
@@ -32,12 +32,12 @@ import {
   TransactionReceipt,
   TransactionResponse,
 } from '@ethersproject/abstract-provider';
-import TxStageModal, { TX_STAGE, TX_OPERATION } from 'components/txStageModal';
+import TxStageModal, { TX_OPERATION, TX_STAGE } from 'components/txStageModal';
 import FormatToken from 'components/formatToken';
 import WalletConnect from 'components/walletConnect';
 import InputLocked from 'components/inputLocked';
 import { useCurrencyInput, useTxCostInUsd, useWstethBySteth } from 'hooks';
-import { runWithTransactionLogger } from 'utils';
+import { formatBalance, runWithTransactionLogger } from 'utils';
 import { FormStyled, InputGroupStyled, MaxButton } from './styles';
 
 const ETH = 'ETH';
@@ -341,9 +341,16 @@ const WrapForm: FC = () => {
         open={txModalOpen}
         onClose={closeTxModal}
         txStage={txStage}
-        txOperation={TX_OPERATION.UNWRAPPING}
+        txOperation={
+          needsApprove && selectedToken === TOKENS.STETH
+            ? TX_OPERATION.APPROVING
+            : TX_OPERATION.WRAPPING
+        }
         txHash={txHash}
         amount={inputValue}
+        amountToken={selectedToken}
+        willReceiveAmount={formatBalance(willReceiveWsteth)}
+        willReceiveAmountToken="wstETH"
         balance={balanceBySelectedToken}
       />
     </Block>

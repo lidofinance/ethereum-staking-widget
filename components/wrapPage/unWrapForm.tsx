@@ -12,8 +12,13 @@ import { useWSTETHBalance, useWSTETHContractWeb3 } from '@lido-sdk/react';
 import TxStageModal, { TX_STAGE, TX_OPERATION } from 'components/txStageModal';
 import FormatToken from 'components/formatToken';
 import WalletConnect from 'components/walletConnect/walletConnect';
-import { useStethByWsteth, useTxCostInUsd, useCurrencyInput } from 'hooks';
-import { runWithTransactionLogger } from 'utils';
+import {
+  useTxCostInUsd,
+  useCurrencyInput,
+  useWstethBySteth,
+  useStethByWsteth,
+} from 'hooks';
+import { runWithTransactionLogger, formatBalance } from 'utils';
 import { FormStyled, InputStyled, MaxButton } from './styles';
 
 const UnWrapForm: FC = () => {
@@ -93,6 +98,12 @@ const UnWrapForm: FC = () => {
     }
   }, [wstethBalance, setMaxInputValue]);
 
+  const inputValueBigNumber = useMemo(
+    () => parseEther(inputValue ? inputValue : '0'),
+    [inputValue],
+  );
+  const willReceiveSteth = useWstethBySteth(inputValueBigNumber);
+
   return (
     <Block>
       <FormStyled
@@ -151,6 +162,9 @@ const UnWrapForm: FC = () => {
         txOperation={TX_OPERATION.UNWRAPPING}
         txHash={txHash}
         amount={inputValue}
+        amountToken="wstETH"
+        willReceiveAmount={formatBalance(willReceiveSteth)}
+        willReceiveAmountToken="stETH"
         balance={wstethBalance.data}
       />
     </Block>

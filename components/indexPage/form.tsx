@@ -145,6 +145,7 @@ const StakeForm: FC = () => {
           <WalletConnect fullwidth />
         )}
       </FormStyled>
+
       <DataTable>
         <DataTableRow title="You will receive">
           {willReceiveStEthValue} stETH
@@ -162,6 +163,7 @@ const StakeForm: FC = () => {
           {!lidoFee.data ? DATA_UNAVAILABLE : `${lidoFee.data / 100}%`}
         </DataTableRow>
       </DataTable>
+
       <TxStageModal
         open={txModalOpen}
         onClose={closeTxModal}
@@ -169,6 +171,9 @@ const StakeForm: FC = () => {
         txOperation={TX_OPERATION.STAKING}
         txHash={txHash}
         amount={inputValue}
+        amountToken="ETH"
+        willReceiveAmount={inputValue}
+        willReceiveAmountToken="stETH"
         balance={stethBalance.data}
       />
     </Block>
