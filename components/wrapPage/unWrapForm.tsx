@@ -18,8 +18,9 @@ import {
   useWstethBySteth,
   useStethByWsteth,
 } from 'hooks';
-import { runWithTransactionLogger, formatBalance } from 'utils';
+import { formatBalance } from 'utils';
 import { FormStyled, InputStyled, MaxButton } from './styles';
+import { unwrapProcessing } from './processings';
 
 const UnWrapForm: FC = () => {
   const { active } = useWeb3();
@@ -46,35 +47,13 @@ const UnWrapForm: FC = () => {
 
   const unWrapProcessing = useCallback(
     async (inputValue) => {
-      if (!wstethContractWeb3) {
-        return;
-      }
-
-      try {
-        const callback = () =>
-          wstethContractWeb3.unwrap(parseEther(inputValue));
-
-        openTxModal();
-        setTxStage(TX_STAGE.SIGN);
-
-        const transaction = await runWithTransactionLogger(
-          'Unwrap signing',
-          callback,
-        );
-
-        setTxHash(transaction.hash);
-        setTxStage(TX_STAGE.BLOCK);
-
-        await runWithTransactionLogger('Unwrap block confirmation', async () =>
-          transaction.wait(),
-        );
-
-        setTxStage(TX_STAGE.SUCCESS);
-      } catch (e) {
-        setTxStage(TX_STAGE.FAIL);
-        setTxHash(undefined);
-        console.error(e);
-      }
+      await unwrapProcessing(
+        wstethContractWeb3,
+        openTxModal,
+        setTxStage,
+        setTxHash,
+        inputValue,
+      );
     },
     [openTxModal, wstethContractWeb3],
   );

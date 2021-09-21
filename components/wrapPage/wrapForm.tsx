@@ -39,6 +39,7 @@ import InputLocked from 'components/inputLocked';
 import { useCurrencyInput, useTxCostInUsd, useWstethBySteth } from 'hooks';
 import { formatBalance, runWithTransactionLogger } from 'utils';
 import { FormStyled, InputGroupStyled, MaxButton } from './styles';
+import { wrapProcessingWithApprove } from './processings';
 
 const ETH = 'ETH';
 
@@ -138,7 +139,7 @@ const WrapForm: FC = () => {
         return allowance;
       }
     } else {
-      // ETH
+      // It's ETH
       return parseEther(inputValue ? inputValue : '0');
     }
   }, [allowance, inputValue, needsApprove, selectedToken]);
@@ -146,77 +147,18 @@ const WrapForm: FC = () => {
 
   const wrapProcessing = useCallback(
     async (inputValue) => {
-      if (!wstethContractWeb3) {
-        return;
-      }
-
-      try {
-        if (selectedToken === ETH) {
-          const callback = () =>
-            wstethContractWeb3.signer.sendTransaction({
-              to: wstethTokenAddress,
-              value: parseEther(inputValue),
-            });
-
-          openTxModal();
-          setTxStage(TX_STAGE.SIGN);
-
-          const transaction = await runWithTransactionLogger(
-            'Wrap signing',
-            callback,
-          );
-
-          setTxHash(transaction.hash);
-          setTxStage(TX_STAGE.BLOCK);
-
-          await runWithTransactionLogger('Wrap block confirmation', async () =>
-            transaction.wait(),
-          );
-
-          setTxStage(TX_STAGE.SUCCESS);
-          return;
-        }
-
-        if (selectedToken === TOKENS.STETH) {
-          if (needsApprove) {
-            await approve();
-          } else {
-            const callback = () =>
-              wstethContractWeb3.wrap(parseEther(inputValue));
-
-            openTxModal();
-            setTxStage(TX_STAGE.SIGN);
-
-            const transaction = await runWithTransactionLogger(
-              'Wrap signing',
-              callback,
-            );
-
-            setTxHash(transaction.hash);
-            setTxStage(TX_STAGE.BLOCK);
-
-            await runWithTransactionLogger(
-              'Wrap block confirmation',
-              async () => transaction.wait(),
-            );
-
-            setTxStage(TX_STAGE.SUCCESS);
-          }
-        }
-      } catch (e) {
-        setTxStage(TX_STAGE.FAIL);
-        setTxHash(undefined);
-        console.error(e);
-      }
+      await wrapProcessingWithApprove(
+        wstethContractWeb3,
+        openTxModal,
+        setTxStage,
+        setTxHash,
+        inputValue,
+        selectedToken,
+        needsApprove,
+        approve,
+      );
     },
-    [
-      wstethContractWeb3,
-      selectedToken,
-      openTxModal,
-      wstethTokenAddress,
-      needsApprove,
-      approve,
-    ],
+    [wstethContractWeb3, selectedToken, openTxModal, needsApprove, approve],
   );
 
   const {
