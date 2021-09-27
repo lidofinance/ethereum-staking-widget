@@ -30,6 +30,7 @@ type UseTxCostInUsd = (gasLimit?: number) => number | undefined;
 export const useTxCostInUsd: UseTxCostInUsd = (gasLimit) => {
   const txCostInWei = useTxCostInWei(gasLimit);
 
+  // useEthPrice hook works via mainnet chain!
   const { data: ethInUsd } = useEthPrice() as {
     data?: number;
     update: () => void;
