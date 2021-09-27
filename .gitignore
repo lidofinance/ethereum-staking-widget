@@ -9,7 +9,7 @@
 /coverage
 
 # generated
-# /generated
+/generated
 
 # next.js
 /.next/
