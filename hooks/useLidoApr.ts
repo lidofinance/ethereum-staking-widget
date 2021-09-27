@@ -5,6 +5,6 @@ import { standardFetcher } from 'utils/standardFetcher';
 const { serverRuntimeConfig } = getConfig();
 const { basePath } = serverRuntimeConfig;
 
-export const useLidoApr = (): SWRResponse<Response, unknown> => {
+export const useLidoApr = (): SWRResponse<Response> | unknown => {
   return useLidoSWR(`${basePath ?? ''}/api/steth-apr`, standardFetcher);
 };
