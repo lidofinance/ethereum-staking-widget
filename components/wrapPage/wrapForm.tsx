@@ -22,6 +22,7 @@ import {
 import { CHAINS, getTokenAddress, TOKENS } from '@lido-sdk/constants';
 import { useWeb3 } from '@lido-sdk/web3-react';
 import {
+  useSDK,
   useApprove,
   useEthereumBalance,
   useSTETHBalance,
@@ -49,13 +50,12 @@ const iconsMap = {
 };
 
 const WrapForm: FC = () => {
-  const { active, chainId, account } = useWeb3();
+  const { active, account } = useWeb3();
+  const { chainId } = useSDK();
+
   const ethBalance = useEthereumBalance();
   const stethBalance = useSTETHBalance();
   const wstethContractWeb3 = useWSTETHContractWeb3();
-
-  const stethTokenAddress = getTokenAddress(5, TOKENS.STETH);
-  const wstethTokenAddress = getTokenAddress(5, TOKENS.WSTETH);
 
   const [selectedToken, setSelectedToken] =
     useState<keyof typeof iconsMap>(ETH);
@@ -64,6 +64,16 @@ const WrapForm: FC = () => {
   const [txModalOpen, setTxModalOpen] = useState(false);
   const [txStage, setTxStage] = useState(TX_STAGE.SUCCESS);
   const [txHash, setTxHash] = useState<string>();
+
+  const stethTokenAddress = useMemo(
+    () => getTokenAddress(chainId, TOKENS.STETH),
+    [chainId],
+  );
+
+  const wstethTokenAddress = useMemo(
+    () => getTokenAddress(chainId, TOKENS.WSTETH),
+    [chainId],
+  );
 
   const approveGasLimit = useMemo(() => 70000, []);
   const oneSteth = useMemo(() => parseEther('1'), []);
@@ -148,6 +158,7 @@ const WrapForm: FC = () => {
   const wrapProcessing = useCallback(
     async (inputValue) => {
       await wrapProcessingWithApprove(
+        chainId,
         wstethContractWeb3,
         openTxModal,
         setTxStage,
@@ -158,7 +169,14 @@ const WrapForm: FC = () => {
         approve,
       );
     },
-    [wstethContractWeb3, selectedToken, openTxModal, needsApprove, approve],
+    [
+      chainId,
+      wstethContractWeb3,
+      selectedToken,
+      openTxModal,
+      needsApprove,
+      approve,
+    ],
   );
 
   const {

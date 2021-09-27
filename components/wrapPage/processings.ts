@@ -5,7 +5,6 @@ import { TX_STAGE } from 'components/txStageModal';
 import { runWithTransactionLogger } from 'utils';
 
 const ETH = 'ETH';
-const wstethTokenAddress = getTokenAddress(5, TOKENS.WSTETH);
 
 type UnwrapProcessingProps = (
   stethContractWeb3: WstethAbi | null,
@@ -53,6 +52,7 @@ export const unwrapProcessing: UnwrapProcessingProps = async (
 };
 
 type WrapProcessingWithApproveProps = (
+  chainId: number | undefined,
   stethContractWeb3: WstethAbi | null,
   openTxModal: () => void,
   setTxStage: (value: TX_STAGE) => void,
@@ -64,6 +64,7 @@ type WrapProcessingWithApproveProps = (
 ) => Promise<void>;
 
 export const wrapProcessingWithApprove: WrapProcessingWithApproveProps = async (
+  chainId,
   wstethContractWeb3,
   openTxModal,
   setTxStage,
@@ -73,9 +74,11 @@ export const wrapProcessingWithApprove: WrapProcessingWithApproveProps = async (
   needsApprove,
   approve,
 ) => {
-  if (!wstethContractWeb3) {
+  if (!chainId || !wstethContractWeb3) {
     return;
   }
+
+  const wstethTokenAddress = getTokenAddress(chainId, TOKENS.WSTETH);
 
   try {
     if (selectedToken === ETH) {
