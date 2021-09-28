@@ -110,7 +110,7 @@ const WrapForm: FC = () => {
       setTxStage(TX_STAGE.SIGN);
 
       const transaction = await runWithTransactionLogger(
-        'Wrap signing',
+        'Approve signing',
         callback,
       );
 
@@ -118,7 +118,7 @@ const WrapForm: FC = () => {
       setTxStage(TX_STAGE.BLOCK);
 
       const result = await runWithTransactionLogger(
-        'Wrap block confirmation',
+        'Approve block confirmation',
         async () => transaction.wait(),
       );
 
@@ -164,6 +164,8 @@ const WrapForm: FC = () => {
         openTxModal,
         setTxStage,
         setTxHash,
+        ethBalance.update,
+        stethBalance.update,
         inputValue,
         selectedToken,
         needsApprove,
@@ -173,8 +175,10 @@ const WrapForm: FC = () => {
     [
       chainId,
       wstethContractWeb3,
-      selectedToken,
       openTxModal,
+      ethBalance.update,
+      stethBalance.update,
+      selectedToken,
       needsApprove,
       approve,
     ],
@@ -309,10 +313,11 @@ const WrapForm: FC = () => {
         }
         txHash={txHash}
         amount={inputValue}
-        amountToken={selectedToken}
+        amountToken={selectedToken === ETH ? 'ETH' : 'stETH'}
         willReceiveAmount={formatBalance(willReceiveWsteth)}
         willReceiveAmountToken="wstETH"
         balance={balanceBySelectedToken}
+        balanceToken={selectedToken === ETH ? 'ETH' : 'stETH'}
       />
     </Block>
   );

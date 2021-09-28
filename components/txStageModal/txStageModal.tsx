@@ -163,8 +163,12 @@ const TxStageModal: FC<TxStageModalProps> = ({
                 margin-top: 4px;
               `}
             >
-              {operationText} {amount} {amountToken}. You will receive{' '}
-              {willReceiveAmount} {willReceiveAmountToken}
+              {operationText} {amount} {amountToken}.
+              {txOperation !== TX_OPERATION.APPROVING && (
+                <>
+                  You will receive {willReceiveAmount} {willReceiveAmountToken}
+                </>
+              )}
             </LightText>
             <LightText
               size="xxs"
@@ -210,7 +214,7 @@ const TxStageModal: FC<TxStageModalProps> = ({
             <IconWrapper>
               <SuccessIcon />
             </IconWrapper>
-            {balance && (
+            {txOperation !== TX_OPERATION.APPROVING && balance && (
               <BoldText>
                 Your new balance is <wbr />
                 {withOptionaLineBreak(balanceString)} {balanceToken}
@@ -255,6 +259,7 @@ const TxStageModal: FC<TxStageModalProps> = ({
     }
   }, [
     txStage,
+    txOperation,
     operationText,
     withOptionaLineBreak,
     amount,

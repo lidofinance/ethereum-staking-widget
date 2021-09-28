@@ -61,6 +61,8 @@ type WrapProcessingWithApproveProps = (
   openTxModal: () => void,
   setTxStage: (value: TX_STAGE) => void,
   setTxHash: (value: string | undefined) => void,
+  ethBalanceUpdate: () => void,
+  stethBalanceUpdate: () => void,
   inputValue: string,
   selectedToken: string,
   needsApprove: boolean,
@@ -73,6 +75,8 @@ export const wrapProcessingWithApprove: WrapProcessingWithApproveProps = async (
   openTxModal,
   setTxStage,
   setTxHash,
+  ethBalanceUpdate,
+  stethBalanceUpdate,
   inputValue,
   selectedToken,
   needsApprove,
@@ -107,6 +111,9 @@ export const wrapProcessingWithApprove: WrapProcessingWithApproveProps = async (
         transaction.wait(),
       );
 
+      await ethBalanceUpdate();
+      await stethBalanceUpdate();
+
       setTxStage(TX_STAGE.SUCCESS);
     } else if (selectedToken === TOKENS.STETH) {
       if (needsApprove) {
@@ -128,6 +135,9 @@ export const wrapProcessingWithApprove: WrapProcessingWithApproveProps = async (
         await runWithTransactionLogger('Wrap block confirmation', async () =>
           transaction.wait(),
         );
+
+        await ethBalanceUpdate();
+        await stethBalanceUpdate();
 
         setTxStage(TX_STAGE.SUCCESS);
       }
