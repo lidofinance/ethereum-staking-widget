@@ -1,6 +1,6 @@
 import { FC, memo, useCallback, useState, useMemo } from 'react';
-import { AddressZero } from '@ethersproject/constants';
-import { parseEther } from '@ethersproject/units';
+// import { AddressZero } from '@ethersproject/constants';
+// import { parseEther } from '@ethersproject/units';
 import {
   useContractSWR,
   useEthereumBalance,
@@ -20,7 +20,7 @@ import { DATA_UNAVAILABLE } from 'config';
 import WalletConnect from 'components/walletConnect/walletConnect';
 import TxStageModal, { TX_STAGE, TX_OPERATION } from 'components/txStageModal';
 import { useCurrencyInput, useTxCostInUsd } from 'hooks';
-import { useStethSubmitGasLimit } from './hooks';
+// import { useStethSubmitGasLimit } from './hooks';
 import { FormStyled, InputStyled, MaxButton } from './styles';
 import { stakeProcessing } from './processings';
 
@@ -40,11 +40,12 @@ const StakeForm: FC = () => {
     method: 'getFee',
   });
 
-  const submitGasLimit = useStethSubmitGasLimit(AddressZero, {
-    value: parseEther('1'),
-  });
-
-  const txCostInUsd = useTxCostInUsd(submitGasLimit);
+  // TODO: Failed to estimate gas limit
+  // const submitGasLimit = useStethSubmitGasLimit(AddressZero, {
+  //   value: parseEther('1'),
+  // });
+  // const submitGasLimit = 120000;
+  const txCostInUsd = useTxCostInUsd(120000);
 
   const openTxModal = useCallback(() => {
     setTxModalOpen(true);
