@@ -57,8 +57,9 @@ const WrapForm: FC = () => {
   const stethBalance = useSTETHBalance();
   const wstethContractWeb3 = useWSTETHContractWeb3();
 
-  const [selectedToken, setSelectedToken] =
-    useState<keyof typeof iconsMap>(ETH);
+  const [selectedToken, setSelectedToken] = useState<keyof typeof iconsMap>(
+    TOKENS.STETH,
+  );
 
   const [inputValue, setInputValue] = useState('');
   const [txModalOpen, setTxModalOpen] = useState(false);
