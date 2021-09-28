@@ -1,4 +1,5 @@
-import { Referral, Stake, Wrap } from '@lidofinance/lido-ui';
+// import { Referral, Stake, Wrap } from '@lidofinance/lido-ui';
+import { Stake, Wrap } from '@lidofinance/lido-ui';
 import { useRouter } from 'next/router';
 import { FC, memo } from 'react';
 import { LocalLink } from './localLink';
@@ -16,11 +17,12 @@ const getRoutes = () => {
       path: '/wrap',
       icon: <Wrap />,
     },
-    {
-      name: 'Referral',
-      path: '/referral',
-      icon: <Referral />,
-    },
+    // TODO: delete?
+    // {
+    //   name: 'Referral',
+    //   path: '/referral',
+    //   icon: <Referral />,
+    // },
   ];
 
   // if (DEPOSIT_PAGE) {
