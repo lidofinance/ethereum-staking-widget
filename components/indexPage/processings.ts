@@ -9,6 +9,7 @@ type StakeProcessingProps = (
   openTxModal: () => void,
   setTxStage: (value: TX_STAGE) => void,
   setTxHash: (value: string | undefined) => void,
+  stethBalanceUpdate: () => void,
   inputValue: string,
   resetForm: () => void,
 ) => Promise<void>;
@@ -18,6 +19,7 @@ export const stakeProcessing: StakeProcessingProps = async (
   openTxModal,
   setTxStage,
   setTxHash,
+  stethBalanceUpdate,
   inputValue,
   resetForm,
 ) => {
@@ -43,6 +45,8 @@ export const stakeProcessing: StakeProcessingProps = async (
     await runWithTransactionLogger('Stake block confirmation', async () =>
       transaction.wait(),
     );
+
+    await stethBalanceUpdate();
 
     setTxStage(TX_STAGE.SUCCESS);
 

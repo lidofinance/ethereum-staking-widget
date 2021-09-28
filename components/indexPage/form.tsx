@@ -62,11 +62,12 @@ const StakeForm: FC = () => {
         openTxModal,
         setTxStage,
         setTxHash,
+        stethBalance.update,
         inputValue,
         resetForm,
       );
     },
-    [openTxModal, stethContractWeb3],
+    [openTxModal, stethContractWeb3, stethBalance.update],
   );
 
   const {
@@ -155,6 +156,7 @@ const StakeForm: FC = () => {
         willReceiveAmount={inputValue}
         willReceiveAmountToken="stETH"
         balance={stethBalance.data}
+        balanceToken="stETH"
       />
     </Block>
   );
