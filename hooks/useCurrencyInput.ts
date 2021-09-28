@@ -19,6 +19,7 @@ type UseCurrencyInputArgs = {
   limit?: BigNumber;
   submit: (inputValue: string, reset: () => void) => Promise<void>;
   externalSetInputValue?: (inputValue: string) => void;
+  token?: string;
 };
 
 type UseCurrencyInputReturn = {
@@ -43,6 +44,7 @@ export const useCurrencyInput: UseCurrencyInput = ({
   limit,
   submit,
   externalSetInputValue,
+  token = 'ETH',
 }) => {
   const [inputValue, setInputValue] = useState(initialValue);
   const [error, setError] = useState(initialError);
@@ -164,22 +166,23 @@ export const useCurrencyInput: UseCurrencyInput = ({
     [inputValue, reset, submit, validate],
   );
 
-  const ethMaxAmount = useMaxAmount({
+  const maxAmount = useMaxAmount({
     balance: limit ? limit : BigNumber.from(0),
+    token,
   });
 
   const setMaxInputValue = useCallback(() => {
     // todo: maybe problems
-    if (ethMaxAmount === '0.0') {
+    if (maxAmount === '0.0') {
       return;
     }
 
-    setInputValue(ethMaxAmount);
+    setInputValue(maxAmount);
 
     if (externalSetInputValue) {
-      externalSetInputValue(ethMaxAmount);
+      externalSetInputValue(maxAmount);
     }
-  }, [ethMaxAmount, externalSetInputValue]);
+  }, [maxAmount, externalSetInputValue]);
 
   return {
     inputValue,

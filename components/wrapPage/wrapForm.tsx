@@ -203,6 +203,7 @@ const WrapForm: FC = () => {
   } = useCurrencyInput({
     submit: wrapProcessing,
     limit: balanceBySelectedToken,
+    token: selectedToken,
     externalSetInputValue: setInputValue,
   });
 

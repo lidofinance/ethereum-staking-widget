@@ -7,6 +7,7 @@ import {
   Wsteth,
   Button,
 } from '@lidofinance/lido-ui';
+import { TOKENS } from '@lido-sdk/constants';
 import { useWeb3 } from '@lido-sdk/web3-react';
 import { useWSTETHBalance, useWSTETHContractWeb3 } from '@lido-sdk/react';
 import TxStageModal, { TX_STAGE, TX_OPERATION } from 'components/txStageModal';
@@ -78,6 +79,7 @@ const UnWrapForm: FC = () => {
   } = useCurrencyInput({
     submit: unWrapProcessing,
     limit: wstethBalance.data,
+    token: TOKENS.WSTETH,
   });
 
   // Set max wsteth balance to input field after page loaded.
