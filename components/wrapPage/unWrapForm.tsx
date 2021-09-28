@@ -64,7 +64,7 @@ const UnWrapForm: FC = () => {
         inputValue,
       );
     },
-    [openTxModal, wstethContractWeb3, wstethBalance],
+    [openTxModal, wstethContractWeb3, wstethBalance.update],
   );
 
   const {
