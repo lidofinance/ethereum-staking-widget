@@ -64,6 +64,7 @@ const WrapForm: FC = () => {
   const [inputValue, setInputValue] = useState('');
   const [txModalOpen, setTxModalOpen] = useState(false);
   const [txStage, setTxStage] = useState(TX_STAGE.SUCCESS);
+  const [txOperation, setTxOperation] = useState(TX_OPERATION.STAKING);
   const [txHash, setTxHash] = useState<string>();
 
   const stethTokenAddress = useMemo(
@@ -158,6 +159,14 @@ const WrapForm: FC = () => {
 
   const wrapProcessing = useCallback(
     async (inputValue) => {
+      // Set operation type of transaction
+      setTxOperation(
+        needsApprove && selectedToken === TOKENS.STETH
+          ? TX_OPERATION.APPROVING
+          : TX_OPERATION.WRAPPING,
+      );
+
+      // Run approving or wrapping
       await wrapProcessingWithApprove(
         chainId,
         wstethContractWeb3,
@@ -306,11 +315,7 @@ const WrapForm: FC = () => {
         open={txModalOpen}
         onClose={closeTxModal}
         txStage={txStage}
-        txOperation={
-          needsApprove && selectedToken === TOKENS.STETH
-            ? TX_OPERATION.APPROVING
-            : TX_OPERATION.WRAPPING
-        }
+        txOperation={txOperation}
         txHash={txHash}
         amount={inputValue}
         amountToken={selectedToken === ETH ? 'ETH' : 'stETH'}
