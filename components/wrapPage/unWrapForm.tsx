@@ -31,11 +31,19 @@ const UnWrapForm: FC = () => {
   const [txStage, setTxStage] = useState(TX_STAGE.SUCCESS);
   const [txHash, setTxHash] = useState<string>();
 
+  const wstethBalanceAsStringOrNull = useMemo(() => {
+    if (!wstethBalance || !wstethBalance.data) {
+      return null;
+    }
+
+    return formatBalance(wstethBalance.data);
+  }, [wstethBalance]);
   const unwrapGasLimit = useMemo(() => 140000, []);
-  const oneWsteth = useMemo(() => parseEther('1'), []);
+  const oneWstethAsBigNumber = useMemo(() => parseEther('1'), []);
 
   const unwrapTxCostInUsd = useTxCostInUsd(unwrapGasLimit);
-  const stethConverted = useStethByWsteth(oneWsteth);
+  const oneWstethConvertedToStethAsBigNumber =
+    useStethByWsteth(oneWstethAsBigNumber);
 
   const openTxModal = useCallback(() => {
     setTxModalOpen(true);
@@ -71,17 +79,24 @@ const UnWrapForm: FC = () => {
     limit: wstethBalance.data,
   });
 
+  // Set max wsteth balance to input field after page loaded.
+  // We can't use this `wstethBalance` var, because `wstethBalance` is object,
+  // so we get a input field that can't be changed.
   useEffect(() => {
-    if (wstethBalance && wstethBalance.data) {
+    if (wstethBalanceAsStringOrNull) {
       setMaxInputValue();
     }
-  }, [wstethBalance, setMaxInputValue]);
+  }, [wstethBalanceAsStringOrNull, setMaxInputValue]);
 
-  const inputValueBigNumber = useMemo(
-    () => parseEther(inputValue ? inputValue : '0'),
-    [inputValue],
-  );
-  const willReceiveSteth = useWstethBySteth(inputValueBigNumber);
+  // Needs for success tx modal
+  const inputValueAsBigNumber = useMemo(() => {
+    try {
+      return parseEther(inputValue ? inputValue : '0');
+    } catch {
+      return parseEther('0');
+    }
+  }, [inputValue]);
+  const willReceiveStethAsBigNumber = useWstethBySteth(inputValueAsBigNumber);
 
   return (
     <Block>
@@ -128,9 +143,15 @@ const UnWrapForm: FC = () => {
         <DataTableRow title="Gas fee" loading={!unwrapTxCostInUsd}>
           ${unwrapTxCostInUsd?.toFixed(2)}
         </DataTableRow>
-        <DataTableRow title="Exchange rate" loading={!stethConverted}>
+        <DataTableRow
+          title="Exchange rate"
+          loading={!oneWstethConvertedToStethAsBigNumber}
+        >
           1 wstETH =
-          <FormatToken amount={stethConverted} symbol="stETH" />
+          <FormatToken
+            amount={oneWstethConvertedToStethAsBigNumber}
+            symbol="stETH"
+          />
         </DataTableRow>
       </DataTable>
 
@@ -142,7 +163,7 @@ const UnWrapForm: FC = () => {
         txHash={txHash}
         amount={inputValue}
         amountToken="wstETH"
-        willReceiveAmount={formatBalance(willReceiveSteth)}
+        willReceiveAmount={formatBalance(willReceiveStethAsBigNumber)}
         willReceiveAmountToken="stETH"
         balance={wstethBalance.data}
       />
