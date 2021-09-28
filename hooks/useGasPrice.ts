@@ -10,6 +10,7 @@ export const useGasPrice = (): BigNumber | undefined => {
   const getGasPrice = useCallback(async () => {
     if (providerRpc) {
       try {
+        // TODO: use staticRpcBatchProvider
         const newGasPrice = await providerRpc.getGasPrice();
         setGasPrice(newGasPrice);
       } catch (e) {
