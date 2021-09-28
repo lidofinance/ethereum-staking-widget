@@ -11,6 +11,7 @@ type UnwrapProcessingProps = (
   openTxModal: () => void,
   setTxStage: (value: TX_STAGE) => void,
   setTxHash: (value: string | undefined) => void,
+  wstethBalanceUpdate: () => void,
   inputValue: string,
 ) => Promise<void>;
 
@@ -19,6 +20,7 @@ export const unwrapProcessing: UnwrapProcessingProps = async (
   openTxModal,
   setTxStage,
   setTxHash,
+  wstethBalanceUpdate,
   inputValue,
 ) => {
   if (!wstethContractWeb3) {
@@ -42,6 +44,8 @@ export const unwrapProcessing: UnwrapProcessingProps = async (
     await runWithTransactionLogger('Unwrap block confirmation', async () =>
       transaction.wait(),
     );
+
+    await wstethBalanceUpdate();
 
     setTxStage(TX_STAGE.SUCCESS);
   } catch (e) {

@@ -60,10 +60,11 @@ const UnWrapForm: FC = () => {
         openTxModal,
         setTxStage,
         setTxHash,
+        wstethBalance.update,
         inputValue,
       );
     },
-    [openTxModal, wstethContractWeb3],
+    [openTxModal, wstethContractWeb3, wstethBalance],
   );
 
   const {
@@ -88,7 +89,7 @@ const UnWrapForm: FC = () => {
     }
   }, [wstethBalanceAsStringOrNull, setMaxInputValue]);
 
-  // Needs for success tx modal
+  // Needs for tx modal
   const inputValueAsBigNumber = useMemo(() => {
     try {
       return parseEther(inputValue ? inputValue : '0');
