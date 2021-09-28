@@ -30,7 +30,7 @@ const StakeForm: FC = () => {
   const [txHash, setTxHash] = useState<string>();
 
   const { active } = useWeb3();
-  const eth = useEthereumBalance();
+  const ethBalance = useEthereumBalance();
   const stethBalance = useSTETHBalance();
   const stethContractWeb3 = useSTETHContractWeb3();
   const contractRpc = useSTETHContractRPC();
@@ -79,7 +79,7 @@ const StakeForm: FC = () => {
     setMaxInputValue,
   } = useCurrencyInput({
     submit,
-    limit: eth.data,
+    limit: ethBalance.data,
   });
 
   const willReceiveStEthValue = useMemo(() => {
