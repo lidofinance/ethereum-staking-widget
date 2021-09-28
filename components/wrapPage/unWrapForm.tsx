@@ -167,6 +167,7 @@ const UnWrapForm: FC = () => {
         willReceiveAmount={formatBalance(willReceiveStethAsBigNumber)}
         willReceiveAmountToken="stETH"
         balance={wstethBalance.data}
+        balanceToken="wstETH"
       />
     </Block>
   );
