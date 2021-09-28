@@ -1,5 +1,5 @@
-import { JsonRpcProvider } from '@ethersproject/providers';
 import { CHAINS } from '@lido-sdk/constants';
+import { getStaticRpcBatchProvider } from '@lido-sdk/providers';
 import {
   getAggregatorAddress,
   getAggregatorContractFactory,
@@ -10,10 +10,10 @@ export const getEthPrice = async (): Promise<number> => {
   const urls = getRpcJsonUrls(CHAINS.Mainnet);
 
   const address = getAggregatorAddress(CHAINS.Mainnet);
-  const library = new JsonRpcProvider(urls[0], CHAINS.Mainnet);
+  const staticProvider = getStaticRpcBatchProvider(CHAINS.Mainnet, urls[0]);
 
   const contractFactory = getAggregatorContractFactory();
-  const contract = contractFactory.connect(address, library);
+  const contract = contractFactory.connect(address, staticProvider);
 
   const [decimals, latestAnswer] = await Promise.all([
     contract.decimals(),

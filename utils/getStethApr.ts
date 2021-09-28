@@ -1,6 +1,6 @@
 import { BigNumber } from '@ethersproject/bignumber';
-import { JsonRpcProvider } from '@ethersproject/providers';
 import { CHAINS } from '@lido-sdk/constants';
+import { getStaticRpcBatchProvider } from '@lido-sdk/providers';
 import {
   getOracleAddress,
   getOracleContractFactory,
@@ -11,15 +11,21 @@ import {
 
 export const getStethApr = async (): Promise<string> => {
   const urls = getRpcJsonUrls(CHAINS.Mainnet);
-  const library = new JsonRpcProvider(urls[0], CHAINS.Mainnet);
+  const staticProvider = getStaticRpcBatchProvider(CHAINS.Mainnet, urls[0]);
 
   const oracleAddress = getOracleAddress(CHAINS.Mainnet);
   const oracleContractFactory = getOracleContractFactory();
-  const oracleContract = oracleContractFactory.connect(oracleAddress, library);
+  const oracleContract = oracleContractFactory.connect(
+    oracleAddress,
+    staticProvider,
+  );
 
   const stethAddress = getStethAddress(CHAINS.Mainnet);
   const stethContractFactory = getStethContractFactory();
-  const stethContract = stethContractFactory.connect(stethAddress, library);
+  const stethContract = stethContractFactory.connect(
+    stethAddress,
+    staticProvider,
+  );
 
   const [postTotalPooledEther, preTotalPooledEther, timeElapsed] =
     await oracleContract.getLastCompletedReportDelta();
