@@ -9,7 +9,7 @@ import { API } from 'types';
 
 const cache = new Cache<typeof CACHE_STETH_APR_KEY, string>();
 
-// returns steth annual percentage rate after lido fee is applied
+// Returns steth annual percentage rate after lido fee is applied
 const stethApr: API = async (req, res) => {
   try {
     const cachedStethApr = cache.get(CACHE_STETH_APR_KEY);

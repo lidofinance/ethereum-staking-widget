@@ -19,7 +19,7 @@ import {
 import FormatToken from 'components/formatToken';
 import FallbackWallet from 'components/fallbackWallet';
 import TokenToWallet from 'components/tokenToWallet';
-import { useLidoApr } from 'hooks/useLidoApr';
+import { useLidoApr, useEthApr } from 'hooks';
 import { WalletComponent } from './types';
 import { LidoAprStyled } from './styles';
 
@@ -30,6 +30,7 @@ const Wallet: WalletComponent = (props) => {
 
   const stethAddress = useTokenAddress(TOKENS.STETH);
   const lidoApr = useLidoApr();
+  const etrApr = useEthApr();
 
   return (
     <WalletCard
@@ -64,9 +65,17 @@ const Wallet: WalletComponent = (props) => {
           title={
             <>
               Lido APR{' '}
-              <Tooltip placement="bottom" title={LIDO_APR_TOOLTIP_TEXT}>
-                <Question />
-              </Tooltip>
+              {etrApr && etrApr.data && (
+                <Tooltip
+                  placement="bottom"
+                  title={LIDO_APR_TOOLTIP_TEXT.replaceAll(
+                    '${apr.eth}',
+                    etrApr.data as string,
+                  )}
+                >
+                  <Question />
+                </Tooltip>
+              )}
             </>
           }
           loading={lidoApr.initialLoading}
