@@ -26,6 +26,7 @@ import {
   useApprove,
   useEthereumBalance,
   useSTETHBalance,
+  useWSTETHBalance,
   useWSTETHContractWeb3,
 } from '@lido-sdk/react';
 import { parseEther } from '@ethersproject/units';
@@ -55,6 +56,7 @@ const WrapForm: FC = () => {
 
   const ethBalance = useEthereumBalance();
   const stethBalance = useSTETHBalance();
+  const wstethBalance = useWSTETHBalance();
   const wstethContractWeb3 = useWSTETHContractWeb3();
 
   const [selectedToken, setSelectedToken] = useState<keyof typeof iconsMap>(
@@ -66,6 +68,14 @@ const WrapForm: FC = () => {
   const [txStage, setTxStage] = useState(TX_STAGE.SUCCESS);
   const [txOperation, setTxOperation] = useState(TX_OPERATION.STAKING);
   const [txHash, setTxHash] = useState<string>();
+
+  const inputValueAsBigNumber = useMemo(() => {
+    try {
+      return parseEther(inputValue ? inputValue : '0');
+    } catch {
+      return parseEther('0');
+    }
+  }, [inputValue]);
 
   const stethTokenAddress = useMemo(
     () => getTokenAddress(chainId, TOKENS.STETH),
@@ -136,7 +146,7 @@ const WrapForm: FC = () => {
     allowance,
     loading: loadingUseApprove,
   } = useApprove(
-    parseEther(inputValue ? inputValue : '0'),
+    inputValueAsBigNumber,
     stethTokenAddress,
     wstethTokenAddress,
     account ? account : undefined,
@@ -152,9 +162,9 @@ const WrapForm: FC = () => {
       }
     } else {
       // It's ETH
-      return parseEther(inputValue ? inputValue : '0');
+      return inputValueAsBigNumber;
     }
-  }, [allowance, inputValue, needsApprove, selectedToken]);
+  }, [allowance, needsApprove, selectedToken, inputValueAsBigNumber]);
   const willReceiveWsteth = useWstethBySteth(forWillReceiveWsteth);
 
   const wrapProcessing = useCallback(
@@ -305,7 +315,11 @@ const WrapForm: FC = () => {
           <FormatToken amount={oneWstethConverted} symbol="wstETH" />
         </DataTableRow>
         <DataTableRow title="Allowance" loading={loadingUseApprove}>
-          <FormatToken amount={allowance} symbol="" />
+          {selectedToken === TOKENS.STETH ? (
+            <FormatToken amount={allowance} symbol="stETH" />
+          ) : (
+            <>0.0</>
+          )}
         </DataTableRow>
         <DataTableRow title="You will receive">
           <FormatToken amount={willReceiveWsteth} symbol="wstETH" />
@@ -322,8 +336,8 @@ const WrapForm: FC = () => {
         amountToken={selectedToken === ETH ? 'ETH' : 'stETH'}
         willReceiveAmount={formatBalance(willReceiveWsteth)}
         willReceiveAmountToken="wstETH"
-        balance={balanceBySelectedToken}
-        balanceToken={selectedToken === ETH ? 'ETH' : 'stETH'}
+        balance={wstethBalance.data}
+        balanceToken={'wstETH'}
       />
     </Block>
   );

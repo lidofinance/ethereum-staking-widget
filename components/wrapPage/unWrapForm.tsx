@@ -9,7 +9,11 @@ import {
 } from '@lidofinance/lido-ui';
 import { TOKENS } from '@lido-sdk/constants';
 import { useWeb3 } from '@lido-sdk/web3-react';
-import { useWSTETHBalance, useWSTETHContractWeb3 } from '@lido-sdk/react';
+import {
+  useSTETHBalance,
+  useWSTETHBalance,
+  useWSTETHContractWeb3,
+} from '@lido-sdk/react';
 import TxStageModal, { TX_STAGE, TX_OPERATION } from 'components/txStageModal';
 import FormatToken from 'components/formatToken';
 import WalletConnect from 'components/walletConnect/walletConnect';
@@ -25,6 +29,7 @@ import { unwrapProcessing } from './processings';
 
 const UnWrapForm: FC = () => {
   const { active } = useWeb3();
+  const stethBalance = useSTETHBalance();
   const wstethBalance = useWSTETHBalance();
   const wstethContractWeb3 = useWSTETHContractWeb3();
 
@@ -168,8 +173,8 @@ const UnWrapForm: FC = () => {
         amountToken="wstETH"
         willReceiveAmount={formatBalance(willReceiveStethAsBigNumber)}
         willReceiveAmountToken="stETH"
-        balance={wstethBalance.data}
-        balanceToken="wstETH"
+        balance={stethBalance.data}
+        balanceToken="stETH"
       />
     </Block>
   );
