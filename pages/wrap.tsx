@@ -25,10 +25,6 @@ const WrapPage: FC<WrapPageProps> = ({ faqList }) => {
     if (!isUnwrapMode) {
       queryParams.append('mode', 'unwrap');
     }
-    // TODO: router.push not working with empty query
-    if (isUnwrapMode) {
-      queryParams.append('mode', 'wrap');
-    }
     if (ref) {
       queryParams.append('ref', ref as string);
     }
@@ -36,10 +32,19 @@ const WrapPage: FC<WrapPageProps> = ({ faqList }) => {
       queryParams.append('embed', embed as string);
     }
 
-    await router.push({
-      href: '/wrap',
-      query: queryParams.toString(),
-    });
+    // This one not working!
+    // await router.push(
+    //   {
+    //     href: '/wrap',
+    //     query: queryParams.toString(),
+    //   },
+    // );
+    // It's working
+    const url =
+      queryParams.toString().length > 0
+        ? '/wrap?' + queryParams.toString()
+        : '/wrap';
+    await router.push(url);
 
     // TODO: what about analytics?
     // logAmplitudeEvent(
