@@ -33,10 +33,5 @@ yarn-error.log*
 
 #ide
 .vscode
-/.idea/.gitignore
-/.idea/codeStyles/codeStyleConfig.xml
-/.idea/modules.xml
-/.idea/codeStyles/Project.xml
-/.idea/inspectionProfiles/Project_Default.xml
-/.idea/vcs.xml
-/.idea/widget.iml
+/.idea/*
+
