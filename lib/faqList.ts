@@ -13,7 +13,7 @@ export const getFaqList = async (list: string[]): Promise<FAQItem[]> => {
   return Promise.all(
     list.map(async (id) => {
       const fileContents = await import(`faq/${id}.md`);
-      const matterResult = matter(fileContents);
+      const matterResult = matter(fileContents.default);
 
       const processedContent = await remark()
         .use(externalLinks, { target: '_blank', rel: ['nofollow', 'noopener'] })
