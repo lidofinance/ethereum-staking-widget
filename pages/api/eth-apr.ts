@@ -9,6 +9,7 @@ import { API } from 'types';
 
 const cache = new Cache<typeof CACHE_ETH_APR_KEY, string>();
 
+// Proxy for third-party API.
 // Returns eth annual percentage rate
 const ethApr: API = async (req, res) => {
   try {

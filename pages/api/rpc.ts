@@ -8,6 +8,7 @@ const { infuraApiKey, alchemyApiKey } = serverRuntimeConfig;
 
 type Rpc = (req: NextApiRequest, res: NextApiResponse) => Promise<void>;
 
+// Proxy for third-party API.
 const rpc: Rpc = async (req, res) => {
   try {
     const chainId = Number(req.query.chainId);

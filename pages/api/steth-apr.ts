@@ -9,6 +9,7 @@ import { API } from 'types';
 
 const cache = new Cache<typeof CACHE_STETH_APR_KEY, string>();
 
+// Proxy for third-party API.
 // Returns steth annual percentage rate after lido fee is applied
 const stethApr: API = async (req, res) => {
   try {

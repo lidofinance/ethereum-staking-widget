@@ -12,6 +12,7 @@ import { API } from 'types';
 const cacheEth = new Cache<typeof CACHE_ETH_APR_KEY, string>();
 const cacheSteth = new Cache<typeof CACHE_STETH_APR_KEY, string>();
 
+// Proxy for third-party API.
 // Returns Eth & StEth annual percentage rate.
 // This is a temporary duplicate of the two methods:
 // - /api/eth-apr
