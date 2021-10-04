@@ -10,7 +10,7 @@ const ConnectWalletConnect: FC<ConnectWalletProps> = (props) => {
 
   const handleConnect = useCallback(async () => {
     onConnect?.();
-    connect();
+    await connect();
   }, [onConnect, connect]);
 
   return (

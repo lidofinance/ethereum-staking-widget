@@ -1,6 +1,7 @@
 import { memo } from 'react';
 import NextApp, { AppProps, AppContext } from 'next/app';
 import { ToastContainer } from 'components/toasts';
+import CookiesTooltip from 'components/cookiesTooltip';
 import Providers, { EnvConfig } from 'providers';
 import getConfig from 'next/config';
 
@@ -19,6 +20,7 @@ const AppWrapper = (props: AppProps & { config: EnvConfig }): JSX.Element => {
     <Providers config={config || {}}>
       <ToastContainer />
       <MemoApp {...rest} />
+      <CookiesTooltip />
     </Providers>
   );
 };
