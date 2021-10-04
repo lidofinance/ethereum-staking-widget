@@ -29,8 +29,8 @@ export const Box = styled.div`
   align-items: center;
   padding: 16px 24px;
   border-radius: 20px;
-  background-color: #fff;
-  box-shadow: 0px 6px 32px rgba(0, 0, 0, 0.08);
+  background-color: ${({ theme }) => theme.colors.foreground};
+  box-shadow: 0 6px 32px rgba(0, 0, 0, 0.08);
 
   ${({ theme }) => theme.mediaQueries.lg} {
     flex-direction: column;
@@ -59,7 +59,8 @@ export const Text = styled.div`
   font-weight: 500;
   font-size: 14px;
   line-height: 22px;
-  color: #7a8aa0;
+  //color: #7a8aa0;
+  color: ${({ theme }) => theme.colors.textSecondary};
   width: 340px;
 
   ${({ theme }) => theme.mediaQueries.lg} {
