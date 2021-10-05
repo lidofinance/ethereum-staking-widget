@@ -19,11 +19,12 @@ const oneInchRate: API = async (req, res) => {
     if (cachedOneInchRate) {
       res.status(200).json(cachedOneInchRate);
     } else {
-      const oneInchRate = await getOneInchRate(
+      const rawData = await getOneInchRate(
         '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee',
         getTokenAddress(CHAINS.Mainnet, TOKENS.STETH),
         10 ** 18,
       );
+      const oneInchRate = rawData.toTokenAmount / 10 ** 18;
       cache.put(CACHE_ONE_INCH_RATE_KEY, oneInchRate, CACHE_ONE_INCH_RATE_TTL);
 
       res.status(200).json(oneInchRate);

@@ -13,3 +13,4 @@ export * from './useMaxAmount';
 export * from './useWstethBySteth';
 export * from './useStethByWsteth';
 export * from './txCost';
+export * from './useUniqueConnector';

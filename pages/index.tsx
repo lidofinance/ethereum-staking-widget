@@ -6,6 +6,8 @@ import { DATA_UNAVAILABLE } from 'config';
 import { IndexWallet, LidoStats, StakeForm } from 'components/indexPage';
 import Layout from 'components/layout';
 import Faq from 'components/faq';
+import { useUniqueConnector } from 'hooks';
+import { OneInchPopup } from 'components/popups';
 import { FAQItem, getFaqList } from 'lib/faqList';
 
 interface HomeProps {
@@ -20,27 +22,33 @@ const Home: FC<HomeProps> = ({ faqList }) => {
     method: 'getFee',
   });
 
+  const isUniqueConnector = useUniqueConnector();
+
   return (
-    <Layout
-      title="Stake Ether"
-      subtitle="Stake ETH and receive stETH while staking."
-    >
-      <Head>
-        <title>Stake with Lido | Lido</title>
-      </Head>
-      <IndexWallet />
-      <StakeForm />
-      <LidoStats />
-      <Faq
-        faqList={faqList}
-        replacements={{
-          '%LIDO-FEE%':
-            lidoFee.initialLoading || !lidoFee.data
-              ? DATA_UNAVAILABLE
-              : `${lidoFee.data / 100}%`,
-        }}
-      />
-    </Layout>
+    <>
+      <OneInchPopup isUniqueConnector={isUniqueConnector} />
+
+      <Layout
+        title="Stake Ether"
+        subtitle="Stake ETH and receive stETH while staking."
+      >
+        <Head>
+          <title>Stake with Lido | Lido</title>
+        </Head>
+        <IndexWallet />
+        <StakeForm />
+        <LidoStats />
+        <Faq
+          faqList={faqList}
+          replacements={{
+            '%LIDO-FEE%':
+              lidoFee.initialLoading || !lidoFee.data
+                ? DATA_UNAVAILABLE
+                : `${lidoFee.data / 100}%`,
+          }}
+        />
+      </Layout>
+    </>
   );
 };
 
