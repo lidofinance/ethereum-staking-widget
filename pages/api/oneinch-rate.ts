@@ -8,7 +8,7 @@ import {
 import { getOneInchRate } from 'utils';
 import { API } from 'types';
 
-const cache = new Cache<typeof CACHE_ONE_INCH_RATE_KEY, Response>();
+const cache = new Cache<typeof CACHE_ONE_INCH_RATE_KEY, number | null>();
 
 // Proxy for third-party API.
 // Returns 1inch rate
@@ -19,12 +19,12 @@ const oneInchRate: API = async (req, res) => {
     if (cachedOneInchRate) {
       res.status(200).json(cachedOneInchRate);
     } else {
-      const rawData = await getOneInchRate(
+      const amount = 10 ** 18;
+      const oneInchRate = await getOneInchRate(
         '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee',
         getTokenAddress(CHAINS.Mainnet, TOKENS.STETH),
-        10 ** 18,
+        amount,
       );
-      const oneInchRate = rawData.toTokenAmount / 10 ** 18;
       cache.put(CACHE_ONE_INCH_RATE_KEY, oneInchRate, CACHE_ONE_INCH_RATE_TTL);
 
       res.status(200).json(oneInchRate);

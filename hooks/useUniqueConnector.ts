@@ -10,7 +10,9 @@ export const useUniqueConnector = (): boolean => {
     const isLedger = isLedgerDappBrowserProvider();
     if (isLedger) return setState(true);
 
-    const hasInjected = typeof window !== 'undefined' && !!window.ethereum;
+    const hasInjected =
+      typeof window !== 'undefined' &&
+      Object.prototype.hasOwnProperty.call(window, 'ethereum');
     const isDappBrowser = isMobile && hasInjected;
     if (isDappBrowser) return setState(true);
 

@@ -59,10 +59,7 @@ export const useConnectors = (chainId: CHAINS): UseConnectorsReturnType => {
     [prcPath, supportedChainIds],
   );
 
-  const ledgerlive = useMemo(
-    () => new LedgerHQFrameConnector({ supportedChainIds }),
-    [supportedChainIds],
-  );
+  const ledgerlive = useMemo(() => new LedgerHQFrameConnector(), []);
 
   const ledger = useMemo(
     () => new LedgerHQConnector({ url: prcPath, chainId }),

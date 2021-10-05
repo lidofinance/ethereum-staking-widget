@@ -1,10 +1,14 @@
 import { standardFetcher } from './standardFetcher';
 
+type oneInchFetchResponse = {
+  toTokenAmount: string;
+};
+
 type GetOneInchRateStats = (
   fromTokenAddress: string,
   toTokenAddress: string,
   amount: number,
-) => Promise<Response>;
+) => Promise<number | null>;
 
 export const getOneInchRate: GetOneInchRateStats = async (
   fromTokenAddress,
@@ -19,5 +23,12 @@ export const getOneInchRate: GetOneInchRateStats = async (
   });
   const url = `${api}?${query.toString()}`;
 
-  return standardFetcher(url);
+  const data = (await standardFetcher(url)) as oneInchFetchResponse;
+
+  if (!data || !data.toTokenAmount) {
+    return null;
+  }
+
+  // TODO: may be BigNumber?
+  return parseFloat(data.toTokenAmount) / amount;
 };
