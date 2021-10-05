@@ -21,6 +21,7 @@ export type UseConnectorsReturnType = {
   ledgerlive: LedgerHQFrameConnector;
 };
 
+// TODO: may be use https://github.com/lidofinance/lido-js-sdk/blob/main/packages/web3-react/src/context/connectors.tsx#L68
 export const useConnectors = (chainId: CHAINS): UseConnectorsReturnType => {
   const prcPath = getBackendRPCPath(chainId);
 
