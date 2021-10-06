@@ -2,7 +2,6 @@ import {
   TransactionResponse,
   TransactionReceipt,
 } from '@ethersproject/abstract-provider';
-// import { toastError, toastPending, toastSuccess } from 'components/toasts';
 import {
   toast,
   ToastError,
@@ -10,7 +9,6 @@ import {
   ToastSuccess,
 } from '@lidofinance/lido-ui';
 import { CHAINS } from '@lido-sdk/constants';
-// import { toast } from 'react-toastify';
 import { runWithTransactionLogger } from 'utils';
 import {
   TransactionToast,
