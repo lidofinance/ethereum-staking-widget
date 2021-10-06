@@ -1,7 +1,8 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
+import getConfig from 'next/config';
 import { fetchRPC } from '@lido-sdk/fetch';
 import { CHAINS } from '@lido-sdk/constants';
-import getConfig from 'next/config';
+import { DEFAULT_API_ERROR_MESSAGE } from 'config';
 
 const { serverRuntimeConfig } = getConfig();
 const { infuraApiKey, alchemyApiKey } = serverRuntimeConfig;
@@ -26,7 +27,11 @@ const rpc: Rpc = async (req, res) => {
     const responded = await requested.json();
     res.status(requested.status).json(responded);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    if (error instanceof Error) {
+      res.status(500).json(error.message ?? DEFAULT_API_ERROR_MESSAGE);
+    } else {
+      res.status(500).json(DEFAULT_API_ERROR_MESSAGE);
+    }
   }
 };
 
