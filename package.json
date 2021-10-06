@@ -39,13 +39,11 @@
     "react-device-detect": "^1.17.0",
     "react-dom": "17.0.2",
     "react-is": "^17.0.2",
-    "react-toastify": "^7.0.4",
     "react-transition-group": "^4.4.2",
     "remark": "^13.0.0",
     "remark-external-links": "^8.0.0",
     "remark-html": "^13.0.1",
     "styled-components": "^5.3.0",
-    "swr": "^0.5.6",
     "tiny-invariant": "^1.1.0"
   },
   "devDependencies": {
