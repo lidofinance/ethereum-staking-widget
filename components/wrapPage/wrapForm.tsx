@@ -64,6 +64,8 @@ const WrapForm: FC = () => {
   );
 
   const [inputValue, setInputValue] = useState('');
+  // Needs for fix flashing balance in tx success modal
+  const [wrappingAmountValue, setWrappingAmountValue] = useState('');
   const [txModalOpen, setTxModalOpen] = useState(false);
   const [txStage, setTxStage] = useState(TX_STAGE.SUCCESS);
   const [txOperation, setTxOperation] = useState(TX_OPERATION.STAKING);
@@ -169,6 +171,9 @@ const WrapForm: FC = () => {
 
   const wrapProcessing = useCallback(
     async (inputValue) => {
+      // Needs for fix flashing balance in tx success modal
+      setWrappingAmountValue(inputValue);
+
       // Set operation type of transaction
       setTxOperation(
         needsApprove && selectedToken === TOKENS.STETH
@@ -190,6 +195,9 @@ const WrapForm: FC = () => {
         needsApprove,
         approve,
       );
+
+      // Needs for fix flashing balance in tx success modal
+      setWrappingAmountValue('');
     },
     [
       chainId,
@@ -200,6 +208,7 @@ const WrapForm: FC = () => {
       selectedToken,
       needsApprove,
       approve,
+      setWrappingAmountValue,
     ],
   );
 
@@ -332,7 +341,7 @@ const WrapForm: FC = () => {
         txStage={txStage}
         txOperation={txOperation}
         txHash={txHash}
-        amount={inputValue}
+        amount={wrappingAmountValue}
         amountToken={selectedToken === ETH ? 'ETH' : 'stETH'}
         willReceiveAmount={formatBalance(willReceiveWsteth)}
         willReceiveAmountToken="wstETH"
