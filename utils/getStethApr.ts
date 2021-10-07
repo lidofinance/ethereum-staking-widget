@@ -44,7 +44,5 @@ export const getStethApr = async (): Promise<string> => {
   const lidoFeeAsFraction = lidoFee / oneHundredPercentInBasisPoints;
 
   const stethAprAfterLidoFee = Number(stethApr) * (1 - lidoFeeAsFraction) * 0.1;
-  const aprInUserFriendlyFormat = stethAprAfterLidoFee.toFixed(1);
-
-  return aprInUserFriendlyFormat;
+  return stethAprAfterLidoFee.toFixed(1);
 };

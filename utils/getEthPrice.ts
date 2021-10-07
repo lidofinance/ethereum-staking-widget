@@ -20,7 +20,5 @@ export const getEthPrice = async (): Promise<number> => {
     contract.latestAnswer(),
   ]);
 
-  const price = latestAnswer.toNumber() / 10 ** decimals;
-
-  return price;
+  return latestAnswer.toNumber() / 10 ** decimals;
 };

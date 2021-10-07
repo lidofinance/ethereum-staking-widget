@@ -21,6 +21,5 @@ export const standardFetcher: StandardFetcher = async (url, params) => {
     throw error;
   }
 
-  const data = await response.json();
-  return data;
+  return await response.json();
 };

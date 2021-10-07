@@ -29,6 +29,5 @@ export const getOneInchRate: GetOneInchRateStats = async (
     return null;
   }
 
-  // TODO: may be BigNumber?
   return parseFloat(data.toTokenAmount) / amount;
 };
