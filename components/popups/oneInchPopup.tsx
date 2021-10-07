@@ -24,7 +24,8 @@ const OneInchPopup: FC<OneInchPopupProps> = ({ isUniqueConnector }) => {
       return;
     }
 
-    if (rate) {
+    // TODO: check type
+    if (rate && typeof rate === 'number' && rate > 1) {
       setPopupOpen(true);
     }
   }, [isUniqueConnector, rate, router.query.ref]);
