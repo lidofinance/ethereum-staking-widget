@@ -1,5 +1,5 @@
-// import { Referral, Stake, Wrap } from '@lidofinance/lido-ui';
-import { Stake, Wrap } from '@lidofinance/lido-ui';
+// import { Referral, History, Stake, Wrap } from '@lidofinance/lido-ui';
+import { History, Stake, Wrap } from '@lidofinance/lido-ui';
 import { useRouter } from 'next/router';
 import { FC, memo } from 'react';
 import { LocalLink } from './localLink';
@@ -16,6 +16,11 @@ const getRoutes = () => {
       name: 'Wrap',
       path: '/wrap',
       icon: <Wrap />,
+    },
+    {
+      name: 'History',
+      path: '/rewards',
+      icon: <History />,
     },
     // TODO: delete?
     // {
