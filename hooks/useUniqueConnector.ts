@@ -1,7 +1,10 @@
 import { useEffect, useState } from 'react';
 import { isMobile } from 'react-device-detect';
 import { isLedgerDappBrowserProvider } from 'web3-ledgerhq-frame-connector';
-import { safeMultisigConnector } from 'config/connectors';
+import { SafeAppConnector } from '@gnosis.pm/safe-apps-web3-react';
+
+const safeMultisigConnector =
+  typeof window === 'undefined' ? null : new SafeAppConnector();
 
 export const useUniqueConnector = (): boolean => {
   const [state, setState] = useState(false);
@@ -17,7 +20,7 @@ export const useUniqueConnector = (): boolean => {
     if (isDappBrowser) return setState(true);
 
     (async () => {
-      const isGnosis = !!(await safeMultisigConnector?.isSafeApp());
+      const isGnosis = await safeMultisigConnector?.isSafeApp();
       if (isGnosis) return setState(true);
     })();
   }, []);
