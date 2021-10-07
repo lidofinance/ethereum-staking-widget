@@ -2,6 +2,7 @@ export * from './assert';
 export * from './appCookies';
 export * from './etherToString';
 export * from './formatBalance';
+export * from './formatBalanceString';
 export * from './logger';
 export * from './stringToEther';
 export * from './getEthApr';

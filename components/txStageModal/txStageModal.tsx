@@ -1,5 +1,10 @@
 import { FC, memo, useCallback, useMemo } from 'react';
+import { css } from 'styled-components';
+import { BigNumber } from 'ethers';
+import { useSDK } from '@lido-sdk/react';
 import { Link, Modal, ModalProps } from '@lidofinance/lido-ui';
+import { getEtherscanTxLink } from '@lido-sdk/helpers';
+import { formatBalance, formatBalanceString } from 'utils';
 import {
   BoldText,
   FailIcon,
@@ -8,11 +13,6 @@ import {
   SuccessIcon,
   TxLoader,
 } from './txStageModalStyles';
-import { css } from 'styled-components';
-import { getEtherscanTxLink } from '@lido-sdk/helpers';
-import { useSDK } from '@lido-sdk/react';
-import { BigNumber } from 'ethers';
-import { formatEther } from '@ethersproject/units';
 
 export enum TX_OPERATION {
   STAKING,
@@ -55,8 +55,8 @@ const TxStageModal: FC<TxStageModalProps> = ({
 }) => {
   const { chainId } = useSDK();
 
-  const balanceString = useMemo(
-    () => (balance ? formatEther(balance) : ''),
+  const balanceAsString = useMemo(
+    () => (balance ? formatBalance(balance, 4) : ''),
     [balance],
   );
 
@@ -154,7 +154,8 @@ const TxStageModal: FC<TxStageModalProps> = ({
               >
                 {operationText}
               </span>{' '}
-              {withOptionaLineBreak(amount)} {amountToken}
+              {withOptionaLineBreak(formatBalanceString(amount, 4))}{' '}
+              {amountToken}
             </BoldText>
             <LightText
               size="xxs"
@@ -163,10 +164,11 @@ const TxStageModal: FC<TxStageModalProps> = ({
                 margin-top: 4px;
               `}
             >
-              {operationText} {amount} {amountToken}.
+              {operationText} {formatBalanceString(amount, 4)} {amountToken}.
               {txOperation !== TX_OPERATION.APPROVING && (
                 <>
-                  You will receive {willReceiveAmount} {willReceiveAmountToken}
+                  You will receive {formatBalanceString(willReceiveAmount, 4)}{' '}
+                  {willReceiveAmountToken}
                 </>
               )}
             </LightText>
@@ -194,7 +196,8 @@ const TxStageModal: FC<TxStageModalProps> = ({
               >
                 {operationText}
               </span>{' '}
-              {withOptionaLineBreak(amount)} {amountToken}
+              {withOptionaLineBreak(formatBalanceString(amount, 4))}{' '}
+              {amountToken}
             </BoldText>
             <LightText
               size="xxs"
@@ -217,7 +220,7 @@ const TxStageModal: FC<TxStageModalProps> = ({
             {txOperation !== TX_OPERATION.APPROVING && balance && (
               <BoldText>
                 Your new balance is <wbr />
-                {withOptionaLineBreak(balanceString)} {balanceToken}
+                {withOptionaLineBreak(balanceAsString)} {balanceToken}
               </BoldText>
             )}
             <LightText
@@ -241,7 +244,7 @@ const TxStageModal: FC<TxStageModalProps> = ({
             {balance && (
               <BoldText>
                 Your balance is <wbr />
-                {withOptionaLineBreak(balanceString)} {balanceToken}
+                {withOptionaLineBreak(balanceAsString)} {balanceToken}
               </BoldText>
             )}
             <LightText
@@ -269,7 +272,7 @@ const TxStageModal: FC<TxStageModalProps> = ({
     etherscanTxLinkBlock,
     txHash,
     balance,
-    balanceString,
+    balanceAsString,
     balanceToken,
     operationWasSuccessfulText,
     operationFailedText,
