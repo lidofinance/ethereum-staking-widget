@@ -44,8 +44,8 @@ const StakeForm: FC = () => {
   // const submitGasLimit = useStethSubmitGasLimit(AddressZero, {
   //   value: parseEther('1'),
   // });
-  // const submitGasLimit = 120000;
-  const txCostInUsd = useTxCostInUsd(120000);
+  const submitGasLimit = useMemo(() => 120000, []);
+  const txCostInUsd = useTxCostInUsd(submitGasLimit);
 
   const openTxModal = useCallback(() => {
     setTxModalOpen(true);
