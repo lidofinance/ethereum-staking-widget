@@ -155,19 +155,14 @@ const WrapForm: FC = () => {
     approveWrapper,
   );
 
-  const forWillReceiveWsteth = useMemo(() => {
-    if (selectedToken === TOKENS.STETH) {
-      if (needsApprove) {
-        return parseEther('0');
-      } else {
-        return allowance;
-      }
-    } else {
-      // It's ETH
-      return inputValueAsBigNumber;
+  const willWrapSteth = useMemo(() => {
+    if (selectedToken === TOKENS.STETH && needsApprove) {
+      return parseEther('0');
     }
-  }, [allowance, needsApprove, selectedToken, inputValueAsBigNumber]);
-  const willReceiveWsteth = useWstethBySteth(forWillReceiveWsteth);
+
+    return inputValueAsBigNumber;
+  }, [needsApprove, selectedToken, inputValueAsBigNumber]);
+  const willReceiveWsteth = useWstethBySteth(willWrapSteth);
 
   const wrapProcessing = useCallback(
     async (inputValue) => {
