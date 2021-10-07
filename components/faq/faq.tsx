@@ -6,10 +6,17 @@ import styled from 'styled-components';
 import { replaceAll } from 'utils/replaceAll';
 
 const FaqItem = styled.div`
-  li {
-    margin-bottom: 8px;
+  p {
+    margin: 0 0 1.6em;
   }
-  li p {
+
+  p + ul,
+  p + ol {
+    margin-top: -1em;
+  }
+
+  ul > li,
+  ol > li {
     margin-bottom: 0;
   }
 `;
