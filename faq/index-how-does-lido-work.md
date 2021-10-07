@@ -1,5 +1,5 @@
 ---
-title: 'How does Lido work?'
+title: How does Lido work?
 ---
 
 When staking with Lido, users receive stETH tokens on a 1:1 basis representing their staked ETH. stETH balances can be used like regular ETH to earn yields and lending rewards, and are updated on a daily basis to reflect your ETH staking rewards. Note that there are no lock-ups or minimum deposits when staking with Lido.

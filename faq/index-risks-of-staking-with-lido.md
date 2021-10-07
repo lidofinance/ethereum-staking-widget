@@ -3,8 +3,10 @@ title: What are the risks of staking with Lido?
 ---
 
 There exist a number of potential risks when staking ETH using liquid staking protocols.
-Smart contract security
-There is an inherent risk that Lido could contain a smart contract vulnerability or bug. The Lido code is open-sourced, audited and covered by an extensive bug bounty program to minimise this risk.
+
+- Smart contract security
+
+  There is an inherent risk that Lido could contain a smart contract vulnerability or bug. The Lido code is open-sourced, audited and covered by an extensive bug bounty program to minimise this risk.
 
 - ETH 2.0 - Technical risk
 

@@ -1,5 +1,5 @@
 ---
-title: 'What is Lido?'
+title: What is Lido?
 ---
 
 Lido is a liquid staking solution for ETH 2.0 backed by industry-leading staking providers. Lido lets users stake their ETH - without locking assets or maintaining infrastructure - whilst participating in on-chain activities, e.g. lending.

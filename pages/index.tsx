@@ -66,6 +66,9 @@ export const getServerSideProps: GetServerSideProps<HomeProps> = async () => {
     'index-self-staking-vs-liquid-staking',
     'index-risks-of-staking-with-lido',
     'index-lido-fee',
+    'index-steth-can-be-converted-to-eth',
+    'lido-referral-program',
+    'index-how-to-claim-referral-reward',
   ];
   const faqList = await getFaqList(fileList);
 
