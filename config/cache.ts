@@ -15,3 +15,6 @@ export const CACHE_ETH_PRICE_TTL = duration1Minute;
 
 export const CACHE_ONE_INCH_RATE_KEY = 'oneinch-rate';
 export const CACHE_ONE_INCH_RATE_TTL = duration1Hour;
+
+export const CACHE_TOTAL_SUPPLY_KEY = 'cache-total-supply';
+export const CACHE_TOTAL_SUPPLY_TTL = duration1Minute;

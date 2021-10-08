@@ -8,6 +8,7 @@ export * from './stringToEther';
 export * from './getEthApr';
 export * from './getOneInchRate';
 export * from './getStethApr';
+export * from './getTotalStaked';
 export * from './getLidoStats';
 export * from './getEthPrice';
 export * from './isClientSide';
