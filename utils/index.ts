@@ -9,6 +9,7 @@ export * from './getEthApr';
 export * from './getOneInchRate';
 export * from './getStethApr';
 export * from './getTotalStaked';
+export * from './getLdoStats';
 export * from './getLidoStats';
 export * from './getEthPrice';
 export * from './isClientSide';
