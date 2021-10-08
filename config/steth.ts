@@ -1,6 +1,7 @@
 import { CHAINS } from '@lido-sdk/constants';
 import { StethAbi__factory } from 'generated';
 
+// DELETE: use https://github.com/lidofinance/lido-js-sdk/blob/cd47110a0fa346d8ff699dc900694fdc588584a7/packages/constants/src/tokens.ts#L33
 export const STETH_BY_NETWORK: {
   [key in CHAINS]: string;
 } = {
@@ -11,6 +12,7 @@ export const STETH_BY_NETWORK: {
   [CHAINS.Kovan]: '0x0000000000000000000000000000000000000000',
 };
 
+// DELETE: use https://github.com/lidofinance/lido-js-sdk/blob/cd47110a0fa346d8ff699dc900694fdc588584a7/packages/constants/src/tokens.ts#L33
 export const getStethAddress = (chainId: CHAINS): string => {
   return STETH_BY_NETWORK[chainId];
 };
