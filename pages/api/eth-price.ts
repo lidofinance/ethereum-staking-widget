@@ -7,7 +7,7 @@ import {
 import { getEthPrice } from 'utils';
 import { API } from 'types';
 
-const cache = new Cache<typeof CACHE_ETH_PRICE_KEY, number>();
+const cache = new Cache<typeof CACHE_ETH_PRICE_KEY, unknown>();
 
 // Proxy for third-party API.
 const ethPrice: API = async (req, res) => {
@@ -18,9 +18,9 @@ const ethPrice: API = async (req, res) => {
       res.json(cachedEthPrice);
     } else {
       const ethPrice = await getEthPrice();
-      cache.put(CACHE_ETH_PRICE_KEY, ethPrice, CACHE_ETH_PRICE_TTL);
+      cache.put(CACHE_ETH_PRICE_KEY, { price: ethPrice }, CACHE_ETH_PRICE_TTL);
 
-      res.json(ethPrice);
+      res.json({ price: ethPrice });
     }
   } catch (error) {
     if (error instanceof Error) {

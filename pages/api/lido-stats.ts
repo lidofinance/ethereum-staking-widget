@@ -7,7 +7,7 @@ import {
 import { getLidoStats } from 'utils';
 import { API } from 'types';
 
-const cache = new Cache<typeof CACHE_LIDO_STATS_KEY, Response>();
+const cache = new Cache<typeof CACHE_LIDO_STATS_KEY, unknown>();
 
 // proxy for third-party API.
 // Returns steth token information
@@ -19,9 +19,13 @@ const lidoStats: API = async (req, res) => {
       res.status(200).json(cachedLidoStats);
     } else {
       const lidoStats = await getLidoStats();
-      cache.put(CACHE_LIDO_STATS_KEY, lidoStats, CACHE_LIDO_STATS_TTL);
+      cache.put(
+        CACHE_LIDO_STATS_KEY,
+        { data: lidoStats },
+        CACHE_LIDO_STATS_TTL,
+      );
 
-      res.status(200).json(lidoStats);
+      res.status(200).json({ data: lidoStats });
     }
   } catch (error) {
     if (error instanceof Error) {

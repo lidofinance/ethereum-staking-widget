@@ -7,7 +7,7 @@ import {
 import { getLdoStats } from 'utils';
 import { API } from 'types';
 
-const cache = new Cache<typeof CACHE_LDO_STATS_KEY, Response>();
+const cache = new Cache<typeof CACHE_LDO_STATS_KEY, unknown>();
 
 // Proxy for third-party API.
 // Returns LDO token information
@@ -18,10 +18,10 @@ const ldoStats: API = async (req, res) => {
     if (cachedLidoStats) {
       res.status(200).json(cachedLidoStats);
     } else {
-      const lidoStats = await getLdoStats();
-      cache.put(CACHE_LDO_STATS_KEY, lidoStats, CACHE_LDO_STATS_TTL);
+      const ldoStats = await getLdoStats();
+      cache.put(CACHE_LDO_STATS_KEY, { data: ldoStats }, CACHE_LDO_STATS_TTL);
 
-      res.status(200).json(lidoStats);
+      res.status(200).json({ data: ldoStats });
     }
   } catch (error) {
     if (error instanceof Error) {
