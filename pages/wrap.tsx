@@ -45,13 +45,6 @@ const WrapPage: FC<WrapPageProps> = ({ faqList }) => {
         ? '/wrap?' + queryParams.toString()
         : '/wrap';
     await router.push(url);
-
-    // TODO: what about analytics?
-    // logAmplitudeEvent(
-    //   isUnwrapMode
-    //     ? 'Ethereum Widget - Wrap Section - Click Switch Wrap'
-    //     : 'Etherium Widget - Wrap Section- Click Switch Unwrap',
-    // );
   }, [router, isUnwrapMode]);
 
   return (

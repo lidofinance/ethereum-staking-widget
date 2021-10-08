@@ -1,4 +1,3 @@
-// import { Referral, History, Stake, Wrap } from '@lidofinance/lido-ui';
 import { History, Stake, Wrap } from '@lidofinance/lido-ui';
 import { useRouter } from 'next/router';
 import { FC, memo } from 'react';
@@ -44,19 +43,11 @@ const getRoutes = () => {
 const Navigation: FC = () => {
   const router = useRouter();
 
-  const handleClick = (name: string) => {
-    // TODO: Amplitude
-    console.log(name);
-  };
-
   return (
     <Nav>
       {getRoutes().map(({ name, path, icon }) => (
         <LocalLink key={path} href={path}>
-          <NavLink
-            active={router.pathname === path}
-            onClick={() => handleClick(name)}
-          >
+          <NavLink active={router.pathname === path}>
             {icon}
             <span>{name}</span>
           </NavLink>
