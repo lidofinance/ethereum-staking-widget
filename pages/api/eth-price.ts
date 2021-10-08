@@ -1,0 +1,34 @@
+import { Cache } from 'memory-cache';
+import {
+  CACHE_ETH_PRICE_KEY,
+  CACHE_ETH_PRICE_TTL,
+  DEFAULT_API_ERROR_MESSAGE,
+} from 'config';
+import { getEthPrice } from 'utils';
+import { API } from 'types';
+
+const cache = new Cache<typeof CACHE_ETH_PRICE_KEY, number>();
+
+// Proxy for third-party API.
+const ethPrice: API = async (req, res) => {
+  try {
+    const cachedEthPrice = cache.get(CACHE_ETH_PRICE_KEY);
+
+    if (cachedEthPrice) {
+      res.json(cachedEthPrice);
+    } else {
+      const ethPrice = await getEthPrice();
+      cache.put(CACHE_ETH_PRICE_KEY, ethPrice, CACHE_ETH_PRICE_TTL);
+
+      res.json(ethPrice);
+    }
+  } catch (error) {
+    if (error instanceof Error) {
+      res.status(500).json(error.message ?? DEFAULT_API_ERROR_MESSAGE);
+    } else {
+      res.status(500).json(DEFAULT_API_ERROR_MESSAGE);
+    }
+  }
+};
+
+export default ethPrice;
