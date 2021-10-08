@@ -37,3 +37,7 @@ export type EthplorerResponse = {
   publicTags: string[];
   countOps: number;
 };
+
+export type EthplorerWrappedDataResponse = {
+  data: EthplorerResponse;
+};
