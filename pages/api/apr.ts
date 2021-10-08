@@ -17,7 +17,7 @@ const cacheSteth = new Cache<typeof CACHE_STETH_APR_KEY, string>();
 // This is a temporary duplicate of the two methods:
 // - /api/eth-apr
 // - /api/steth-apr
-// Attention: In future will be deprecated!!!
+// DEPRECATED: In future will be delete!!! Use /api/eth-apr and /api/steth-apr
 const apr: API = async (req, res) => {
   type resultDataType = {
     eth: string | null;
