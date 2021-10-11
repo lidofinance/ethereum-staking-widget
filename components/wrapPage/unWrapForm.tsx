@@ -67,10 +67,16 @@ const UnWrapForm: FC = () => {
         setTxStage,
         setTxHash,
         wstethBalance.update,
+        stethBalance.update,
         inputValue,
       );
     },
-    [openTxModal, wstethContractWeb3, wstethBalance.update],
+    [
+      openTxModal,
+      wstethContractWeb3,
+      wstethBalance.update,
+      stethBalance.update,
+    ],
   );
 
   const {

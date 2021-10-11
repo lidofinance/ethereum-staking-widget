@@ -12,6 +12,7 @@ type UnwrapProcessingProps = (
   setTxStage: (value: TX_STAGE) => void,
   setTxHash: (value: string | undefined) => void,
   wstethBalanceUpdate: () => void,
+  stethBalanceUpdate: () => void,
   inputValue: string,
 ) => Promise<void>;
 
@@ -21,6 +22,7 @@ export const unwrapProcessing: UnwrapProcessingProps = async (
   setTxStage,
   setTxHash,
   wstethBalanceUpdate,
+  stethBalanceUpdate,
   inputValue,
 ) => {
   if (!wstethContractWeb3) {
@@ -45,6 +47,7 @@ export const unwrapProcessing: UnwrapProcessingProps = async (
       transaction.wait(),
     );
 
+    await stethBalanceUpdate();
     await wstethBalanceUpdate();
 
     setTxStage(TX_STAGE.SUCCESS);
