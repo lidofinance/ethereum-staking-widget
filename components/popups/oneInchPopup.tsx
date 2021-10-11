@@ -13,10 +13,11 @@ const { basePath } = serverRuntimeConfig;
 const OneInchPopup: FC<OneInchPopupProps> = ({ isUniqueConnector }) => {
   const router = useRouter();
   const [isPopupOpen, setPopupOpen] = useState(false);
-  const { data: rate } = useLidoSWR(
+  const { data } = useLidoSWR<{ rate: number }>(
     `${basePath ?? ''}/api/oneinch-rate`,
     standardFetcher,
   );
+  const rate = (data && data.rate) || 0;
 
   useEffect(() => {
     if (isUniqueConnector || router.query.ref) {
@@ -24,8 +25,7 @@ const OneInchPopup: FC<OneInchPopupProps> = ({ isUniqueConnector }) => {
       return;
     }
 
-    // TODO: check type
-    if (rate && typeof rate === 'number' && rate > 1) {
+    if (rate && rate > 1) {
       setPopupOpen(true);
     }
   }, [isUniqueConnector, rate, router.query.ref]);
@@ -37,7 +37,7 @@ const OneInchPopup: FC<OneInchPopupProps> = ({ isUniqueConnector }) => {
       providerLink="https://app.1inch.io/#/1/swap/ETH/steth"
       icon={OneInchIcon}
       onClose={() => setPopupOpen(false)}
-      rate={parseFloat(rate as string).toFixed(4)}
+      rate={rate.toFixed(4)}
     />
   );
 };
