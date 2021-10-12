@@ -4,6 +4,11 @@ import { ToastContainer } from '@lidofinance/lido-ui';
 import CookiesTooltip from 'components/cookiesTooltip';
 import Providers, { EnvConfig } from 'providers';
 import getConfig from 'next/config';
+import { nprogress } from 'utils';
+import 'nprogress/nprogress.css';
+
+// Visualize route changes
+nprogress();
 
 const App = (props: AppProps): JSX.Element => {
   const { Component, pageProps } = props;

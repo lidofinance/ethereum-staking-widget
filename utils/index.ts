@@ -16,3 +16,4 @@ export * from './isClientSide';
 export * from './prependBasePath';
 export * from './sleep';
 export * from './weiToEth';
+export * from './nprogress';
