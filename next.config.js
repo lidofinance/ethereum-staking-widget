@@ -7,6 +7,10 @@ const supportedChains = process.env.SUPPORTED_CHAINS;
 
 const ethplorerApiKey = process.env.ETHPLORER_API_KEY;
 
+const cloudflareApiToken = process.env.CLOUDFLARE_API_TOKEN;
+const cloudflareAccountId = process.env.CLOUDFLARE_ACCOUNT_ID;
+const cloudflareKvNamespaceId = process.env.CLOUDFLARE_KV_NAMESPACE_ID;
+
 module.exports = {
   basePath,
   future: {
@@ -41,6 +45,9 @@ module.exports = {
     infuraApiKey,
     alchemyApiKey,
     ethplorerApiKey,
+    cloudflareApiToken,
+    cloudflareAccountId,
+    cloudflareKvNamespaceId,
   },
   publicRuntimeConfig: {
     defaultChain,
