@@ -1,11 +1,13 @@
-name: CI Dev
+name: CI Staging
 
 on:
   workflow_dispatch:
   push:
     branches:
-      - develop
+      - main
     paths-ignore:
+      - 'package.json'
+      - 'CHANGELOG.md'
       - '.github/**'
 
 jobs:
@@ -19,10 +21,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2.3.4
 
-      - name: Testnet deploying
+      - name: Staging deploying
         run: .github/dispatch_workflow.py
         env:
           APP_ID: ${{ secrets.APP_ID }}
           APP_PRIVATE_KEY: ${{ secrets.APP_PRIVATE_KEY }}
           TARGET_REPO: "${{ secrets.TARGET_REPO }}"
-          TARGET_WORKFLOW: "deploy_testnet_staking_widget_ts.yaml"
+          TARGET_WORKFLOW: "deploy_staging_mainnet_staking_widget_ts.yaml"
