@@ -92,13 +92,15 @@ def main():
     private_key = os.environ["APP_PRIVATE_KEY"]
     repo = os.environ["TARGET_REPO"]
     target_workflow = os.environ["TARGET_WORKFLOW"]
-    target = os.environ.get("TARGET")
+    git_ref = os.environ.get("GIT_REF")
+    tag = os.evniron.get("TAG")
     jwt_token = make_jwt_token(private_key)
     auth = prep_auth(jwt_token, get_installation_id(jwt_token))
     job_inputs = dict()
-    if target:
-        job_inputs["target"] = target
-
+    if git_ref:
+        job_inputs["git_ref"] = git_ref
+    if tag:
+        job_inputs["tag"] = tag
     print(f"Dispatching workflow {target_workflow} with inputs {job_inputs}")
     res = requests.post(
         f"https://api.github.com/repos/{repo}/actions/workflows/{target_workflow}/dispatches",
