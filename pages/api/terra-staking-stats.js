@@ -20,7 +20,9 @@ const cfStorage = new CloudFlareStorage(
 );
 
 const terraApi = new TerraRESTApi(TERRA_NODE_URL);
-const statsStorage = new TerraStakingAprStatsStorage(cfStorage, TAIL_LENGTH);
+const statsStorage = new TerraStakingAprStatsStorage(cfStorage, {
+  tailLength: TAIL_LENGTH,
+});
 const terraCron = new TerraCron(statsStorage, terraApi);
 
 if (HAS_CLOUDFLARE_CREDENTIALS && process.env.NODE_ENV === 'production') {
