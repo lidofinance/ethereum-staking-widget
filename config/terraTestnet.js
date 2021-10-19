@@ -2,6 +2,8 @@ export const CONCURRENCY_LIMIT = 5;
 export const TERRA_NODE_URL = 'https://bombay-fcd.terra.dev/';
 export const STAKERS_ADDRESS = 'terra1afl97jcp6qagtnjjql9pjrzrdrvja6k8803935';
 export const HUB_CONTRACT = 'terra1rsq5m44sw42gs8yzavmknq220cfxfmhhv06fg3';
+export const VALIDATORS_REGISTRY_CONTRACT =
+  'terra1wajz0cvwndqa7c3slneh2tmxv8deh5z9yn04th';
 export const CRON_JOB = '*/5 * * * *';
 export const MAX_REQUESTS_PER_RUN = 10;
 export const TAIL_LENGTH = 1 * 24 * 6;
@@ -54,3 +56,5 @@ export const DEFAULT_CLAIMS = {
 export const ST_LUNA_COUNT_DAYS = 7;
 export const ST_LUNA_APR_CACHE_MS = 5 * 60 * 1000;
 export const STORAGE_KEY_PREFIX = '_testnet_';
+export const VALIDATORS_CACHE_TIME_MS = 5 * 60 * 1000;
+export const VALIDATORS_CACHE_KEY = 'terraValidatorsTestnet';
