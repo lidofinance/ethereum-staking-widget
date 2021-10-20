@@ -1,5 +1,5 @@
 export const CONCURRENCY_LIMIT = 5;
-export const TERRA_NODE_URL = 'https://bombay-fcd.terra.dev/';
+export const TERRA_NODE_URL = process.env.TERRA_TESTNET_NODE_URL;
 export const STAKERS_ADDRESS = 'terra1afl97jcp6qagtnjjql9pjrzrdrvja6k8803935';
 export const HUB_CONTRACT = 'terra1rsq5m44sw42gs8yzavmknq220cfxfmhhv06fg3';
 export const VALIDATORS_REGISTRY_CONTRACT =

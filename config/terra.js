@@ -1,5 +1,5 @@
 export const CONCURRENCY_LIMIT = 5;
-export const TERRA_NODE_URL = 'https://lcd-2.terra.p2p.org/';
+export const TERRA_NODE_URL = process.env.TERRA_NODE_URL;
 export const STAKERS_ADDRESS = 'terra1kc87mu460fwkqte29rquh4hc20m54fxwtsx7gp';
 export const HUB_CONTRACT = 'terra1mtwph2juhj0rvjz7dy92gvl6xvukaxu8rfv8ts';
 export const CRON_JOB = '*/10 * * * *';
