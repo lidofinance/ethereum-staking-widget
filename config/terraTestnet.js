@@ -56,5 +56,5 @@ export const DEFAULT_CLAIMS = {
 export const ST_LUNA_COUNT_DAYS = 7;
 export const ST_LUNA_APR_CACHE_MS = 5 * 60 * 1000;
 export const STORAGE_KEY_PREFIX = '_testnet_';
-export const VALIDATORS_CACHE_TIME_MS = 5 * 60 * 1000;
+export const VALIDATORS_CACHE_TIME_TS = 5 * 60 * 1000;
 export const VALIDATORS_CACHE_KEY = 'terraValidatorsTestnet';
