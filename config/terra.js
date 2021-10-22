@@ -223,5 +223,5 @@ export const DEFAULT_CLAIMS = {
   ],
 };
 
-export const VALIDATORS_CACHE_TIME_TS = 5 * 60 * 1000;
+export const VALIDATORS_CACHE_TIME_MS = 5 * 60 * 1000;
 export const VALIDATORS_CACHE_KEY = 'terraValidators';

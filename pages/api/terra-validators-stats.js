@@ -5,7 +5,7 @@ import { TerraRESTApi } from '../../lib/terra/api';
 import {
   HUB_CONTRACT,
   TERRA_NODE_URL,
-  VALIDATORS_CACHE_TIME_TS,
+  VALIDATORS_CACHE_TIME_MS,
   VALIDATORS_CACHE_KEY,
 } from '../../config/terra';
 
@@ -29,7 +29,7 @@ export default nextConnect()
           hubContract: HUB_CONTRACT,
           validatorsContract: HUB_CONTRACT,
         });
-        cache.put(VALIDATORS_CACHE_KEY, validators, VALIDATORS_CACHE_TIME_TS);
+        cache.put(VALIDATORS_CACHE_KEY, validators, VALIDATORS_CACHE_TIME_MS);
       }
 
       res.status(200).send({ validators });
