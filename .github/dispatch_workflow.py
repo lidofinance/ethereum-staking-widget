@@ -93,7 +93,7 @@ def main():
     repo = os.environ["TARGET_REPO"]
     target_workflow = os.environ["TARGET_WORKFLOW"]
     git_ref = os.environ.get("GIT_REF")
-    tag = os.evniron.get("TAG")
+    tag = os.environ.get("TAG")
     jwt_token = make_jwt_token(private_key)
     auth = prep_auth(jwt_token, get_installation_id(jwt_token))
     job_inputs = dict()
