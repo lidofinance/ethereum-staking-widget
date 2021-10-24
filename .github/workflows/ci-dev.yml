@@ -22,7 +22,7 @@ jobs:
       - name: Testnet deploying
         run: .github/dispatch_workflow.py
         env:
-          APP_ID: ${{ secrets.APP_ID }}
-          APP_PRIVATE_KEY: ${{ secrets.APP_PRIVATE_KEY }}
-          TARGET_REPO: "${{ secrets.TARGET_REPO }}"
+          APP_ID: "${{ secrets.APP_ID }}"
+          APP_PRIVATE_KEY: "${{ secrets.APP_PRIVATE_KEY }}"
+          TARGET_REPO: "lidofinance/infra-mainnet"
           TARGET_WORKFLOW: "deploy_testnet_staking_widget_ts.yaml"
