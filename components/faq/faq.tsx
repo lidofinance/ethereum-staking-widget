@@ -13,7 +13,7 @@ const FaqItem = styled.div`
   p + ul,
   p + ol,
   ul + p,
-  pl + p {
+  ol + p {
     margin-top: -1.6em;
   }
 
