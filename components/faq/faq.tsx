@@ -18,6 +18,10 @@ const FaqItem = styled.div`
   ul > li,
   ol > li {
     margin-bottom: 0;
+
+    & > p {
+      margin-bottom: 0;
+    }
   }
 `;
 
