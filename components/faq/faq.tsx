@@ -23,6 +23,10 @@ const FaqItem = styled.div`
       margin-bottom: 0;
     }
   }
+
+  p + p {
+    margin-top: -1.6em;
+  }
 `;
 
 const Faq: FC<FaqProps> = (props) => {
