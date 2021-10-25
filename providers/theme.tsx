@@ -15,8 +15,8 @@ import {
   useSystemTheme,
 } from '@lidofinance/lido-ui';
 import { useLocalStorage } from '@lido-sdk/react';
-import BackgroundGradient from 'components/backgroundGradient';
 import { STORAGE_THEME_KEY } from 'config';
+import { BackgroundGradient } from 'shared/components';
 
 export type ThemeName = 'light' | 'dark';
 

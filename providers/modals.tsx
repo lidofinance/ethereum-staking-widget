@@ -1,6 +1,5 @@
 import { createContext, useMemo, useCallback, memo, useState, FC } from 'react';
-import WalletModal from 'components/walletModal';
-import WalletModalConnect from 'components/walletModalConnect';
+import { Modal, ModalConnect } from 'shared/wallet';
 
 export type ModalContextValue = {
   openModal: (modal: MODAL) => void;
@@ -40,8 +39,8 @@ const ModalProvider: FC = ({ children }) => {
   return (
     <ModalContext.Provider value={value}>
       {children}
-      <WalletModal open={active === MODAL.wallet} {...common} />
-      <WalletModalConnect open={active === MODAL.connect} {...common} />
+      <Modal open={active === MODAL.wallet} {...common} />
+      <ModalConnect open={active === MODAL.connect} {...common} />
     </ModalContext.Provider>
   );
 };
