@@ -5,7 +5,6 @@ export const ThemeTogglerStyle = styled(Button).attrs({
   variant: 'text',
   size: 'xs',
 })`
-  border-radius: 10px;
   min-width: 0;
   margin-left: ${({ theme }) => theme.spaceMap.sm}px;
   padding-left: 10px;
