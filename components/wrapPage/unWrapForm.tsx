@@ -87,6 +87,7 @@ const UnWrapForm: FC = () => {
     isValidating,
     isSubmitting,
     setMaxInputValue,
+    reset,
   } = useCurrencyInput({
     submit: unWrapProcessing,
     limit: wstethBalance.data,
@@ -111,6 +112,13 @@ const UnWrapForm: FC = () => {
     }
   }, [inputValue]);
   const willReceiveStethAsBigNumber = useWstethBySteth(inputValueAsBigNumber);
+
+  // Reset form amount after disconnect wallet
+  useEffect(() => {
+    if (!active) {
+      reset();
+    }
+  }, [active, reset]);
 
   return (
     <Block>

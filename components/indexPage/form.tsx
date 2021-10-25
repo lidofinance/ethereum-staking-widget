@@ -1,4 +1,4 @@
-import { FC, memo, useCallback, useState, useMemo } from 'react';
+import { FC, memo, useCallback, useState, useMemo, useEffect } from 'react';
 // import { AddressZero } from '@ethersproject/constants';
 // import { parseEther } from '@ethersproject/units';
 import {
@@ -78,6 +78,7 @@ const StakeForm: FC = () => {
     isValidating,
     isSubmitting,
     setMaxInputValue,
+    reset,
   } = useCurrencyInput({
     submit,
     limit: ethBalance.data,
@@ -94,6 +95,13 @@ const StakeForm: FC = () => {
 
     return inputValue;
   }, [inputValue]);
+
+  // Reset form amount after disconnect wallet
+  useEffect(() => {
+    if (!active) {
+      reset();
+    }
+  }, [active, reset]);
 
   return (
     <Block>
