@@ -11,21 +11,21 @@ const FaqItem = styled.div`
   }
 
   p + ul,
-  p + ol {
-    margin-top: -1em;
+  p + ol,
+  ul + p,
+  pl + p {
+    margin-top: -1.6em;
   }
 
   ul > li,
   ol > li {
+    margin-top: 0;
     margin-bottom: 0;
 
     & > p {
+      margin-top: 0;
       margin-bottom: 0;
     }
-  }
-
-  p + p {
-    margin-top: -1.6em;
   }
 `;
 
