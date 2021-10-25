@@ -88,6 +88,10 @@ const StakeForm: FC = () => {
       return 0;
     }
 
+    if (!Number(inputValue)) {
+      return 0;
+    }
+
     return inputValue;
   }, [inputValue]);
 
