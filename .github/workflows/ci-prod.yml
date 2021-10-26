@@ -27,8 +27,8 @@ jobs:
       - name: Build prod image
         run: .github/dispatch_workflow.py
         env:
-          APP_ID: ${{ secrets.APP_ID }}
-          APP_PRIVATE_KEY: ${{ secrets.APP_PRIVATE_KEY }}
-          TARGET_REPO: "${{ secrets.TARGET_REPO }}"
+          APP_ID: "${{ secrets.APP_ID }}"
+          APP_PRIVATE_KEY: "${{ secrets.APP_PRIVATE_KEY }}"
+          TARGET_REPO: "lidofinance/infra-mainnet"
           TAG: "${{ steps.branch_name.outputs.TAG }}"
           TARGET_WORKFLOW: "build_mainnet_staking_widget_ts.yaml"

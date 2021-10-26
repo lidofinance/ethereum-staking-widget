@@ -11,7 +11,7 @@ import {
 } from '@lidofinance/lido-ui';
 import Section from 'components/section/section';
 import { getStethAddress, LIDO_APR_TOOLTIP_TEXT } from 'config';
-import { useLidoApr, useLidoStats } from 'hooks';
+import { useLidoApr, useLidoStats, useEthApr } from 'hooks';
 import { FlexCenterVertical } from './styles';
 
 const LidoStats: FC = () => {
@@ -23,8 +23,8 @@ const LidoStats: FC = () => {
   );
 
   const lidoApr = useLidoApr();
-
   const lidoStats = useLidoStats();
+  const etrApr = useEthApr();
 
   return (
     <Section
@@ -37,7 +37,13 @@ const LidoStats: FC = () => {
             title={
               <FlexCenterVertical>
                 Annual percentage rate
-                <Tooltip title={LIDO_APR_TOOLTIP_TEXT}>
+                {/* TODO: why not work replaceAll here? */}
+                <Tooltip
+                  title={LIDO_APR_TOOLTIP_TEXT.replace(
+                    /\$\{apr.eth\}/g,
+                    etrApr.data as string,
+                  )}
+                >
                   <Question />
                 </Tooltip>
               </FlexCenterVertical>

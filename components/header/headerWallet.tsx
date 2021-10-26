@@ -3,6 +3,7 @@ import { useWeb3 } from '@lido-sdk/web3-react';
 import { useSDK } from '@lido-sdk/react';
 import WalletButton from 'components/walletButton';
 import WalletConnect from 'components/walletConnect';
+import ThemeToggler from 'components/themeToggler';
 import { HeaderWalletChainStyle, DotStyle } from './headerWalletStyles';
 import { CHAINS, getChainColor } from '@lido-sdk/constants';
 
@@ -25,6 +26,7 @@ const HeaderWallet: FC = () => {
         </>
       )}
       {active ? <WalletButton /> : <WalletConnect size="sm" />}
+      <ThemeToggler />
     </>
   );
 };

@@ -164,7 +164,7 @@ const TxStageModal: FC<TxStageModalProps> = ({
                 margin-top: 4px;
               `}
             >
-              {operationText} {formatBalanceString(amount, 4)} {amountToken}.
+              {operationText} {formatBalanceString(amount, 4)} {amountToken}.{' '}
               {txOperation !== TX_OPERATION.APPROVING && (
                 <>
                   You will receive {formatBalanceString(willReceiveAmount, 4)}{' '}

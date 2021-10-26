@@ -214,6 +214,7 @@ const WrapForm: FC = () => {
     isValidating,
     isSubmitting,
     setMaxInputValue,
+    reset,
   } = useCurrencyInput({
     submit: wrapProcessing,
     limit: balanceBySelectedToken,
@@ -234,6 +235,14 @@ const WrapForm: FC = () => {
       setMaxInputValue();
     }
   }, [balanceBySelectedToken, setMaxInputValue]);
+
+  // Reset form amount after disconnect wallet
+  useEffect(() => {
+    if (!active) {
+      setInputValue('');
+      reset();
+    }
+  }, [active, reset, setInputValue]);
 
   return (
     <Block>
