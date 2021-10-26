@@ -23,6 +23,7 @@ import { useCurrencyInput, useTxCostInUsd } from 'shared/hooks';
 // import { useStethSubmitGasLimit } from './hooks/use-steth-submit-gas-limit';
 import { FormStyled, InputStyled, MaxButton } from './styles';
 import { stakeProcessing } from './utils';
+import { parseEther } from '@ethersproject/units';
 
 export const StakeForm: FC = memo(() => {
   const [txModalOpen, setTxModalOpen] = useState(false);
@@ -90,6 +91,12 @@ export const StakeForm: FC = memo(() => {
     }
 
     if (!Number(inputValue)) {
+      return 0;
+    }
+
+    try {
+      parseEther(inputValue);
+    } catch {
       return 0;
     }
 
