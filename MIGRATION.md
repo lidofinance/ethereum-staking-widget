@@ -231,7 +231,7 @@ const Transaction = ({ hash }) => {
 Now we will re-write our helper into a hook,
 
 ```jsx
-import useChain from 'hooks/useChain';
+import useChain from 'shared/hooks/useChain';
 
 const ETHERSCAN_SUBDOMAINS_BY_NETWORK = {
   [1]: '',
@@ -251,7 +251,7 @@ const useEtherscanLink = (hash) => {
 And now use the hook like so,
 
 ```js
-import useEtherscanLink from 'hooks/useEtherscanLink';
+import useEtherscanLink from 'shared/hooks/useEtherscanLink';
 
 const Transaction = ({ hash }) => {
   const etherscanLink = useEtherscanLink(hash);

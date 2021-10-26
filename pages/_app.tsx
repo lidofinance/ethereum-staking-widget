@@ -1,10 +1,10 @@
 import { memo } from 'react';
 import NextApp, { AppProps, AppContext } from 'next/app';
 import { ToastContainer } from '@lidofinance/lido-ui';
-import CookiesTooltip from 'components/cookiesTooltip';
 import Providers, { EnvConfig } from 'providers';
 import getConfig from 'next/config';
 import { nprogress } from 'utils';
+import { CookiesTooltip } from 'shared/components';
 import 'nprogress/nprogress.css';
 
 // Visualize route changes
