@@ -1,5 +1,6 @@
 export const CONCURRENCY_LIMIT = 5;
 export const TERRA_NODE_URL = process.env.TERRA_NODE_URL;
+export const CONTRACT_VERSION = process.env.TERRA_CONTRACT_VERSION;
 export const STAKERS_ADDRESS = process.env.TERRA_STAKERS_ADDRESS;
 export const HUB_CONTRACT = process.env.TERRA_HUB_CONTRACT;
 export const CRON_JOB = '*/10 * * * *';

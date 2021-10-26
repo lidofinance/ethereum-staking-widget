@@ -17,6 +17,7 @@ import {
   DEFAULT_CLAIMS,
   DEFAULT_STAKERS,
   STORAGE_KEY_PREFIX,
+  CONTRACT_VERSION,
 } from '../../config/terraTestnet';
 
 const ONE_YEAR = 60 * 60 * 24 * 365 * 1000;
@@ -47,7 +48,11 @@ const terraCron = new TerraCron(statsStorage, terraApi, {
   cronString: CRON_JOB,
 });
 
-if (HAS_CLOUDFLARE_CREDENTIALS && process.env.NODE_ENV) {
+if (
+  HAS_CLOUDFLARE_CREDENTIALS &&
+  process.env.NODE_ENV === 'production' &&
+  CONTRACT_VERSION === '2'
+) {
   console.info('Terra Staking Stats: Cloudflare credentials was provided');
   terraCron.init();
 }
@@ -87,6 +92,8 @@ export default nextConnect()
     }),
   )
   .get(async (_req, res) => {
+    if (CONTRACT_VERSION !== '2')
+      return res.status(500).send('Wrong environment');
     if (!updated && HAS_CLOUDFLARE_CREDENTIALS) {
       await statsStorage.sync();
       updated = true;

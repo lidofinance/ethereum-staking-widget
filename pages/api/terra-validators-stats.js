@@ -7,6 +7,7 @@ import {
   TERRA_NODE_URL,
   VALIDATORS_CACHE_TIME_MS,
   VALIDATORS_CACHE_KEY,
+  CONTRACT_VERSION,
 } from '../../config/terra';
 
 const terraApi = new TerraRESTApi(TERRA_NODE_URL);
@@ -23,6 +24,8 @@ export default nextConnect()
   )
   .get(async (_req, res) => {
     try {
+      if (CONTRACT_VERSION !== '1')
+        return res.status(500).send('Wrong environment');
       let validators = cache.get(VALIDATORS_CACHE_KEY);
       if (!validators) {
         validators = await terraApi.getValidatorsWithBalances({
