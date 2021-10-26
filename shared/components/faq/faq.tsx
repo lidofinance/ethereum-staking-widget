@@ -36,6 +36,10 @@ const FaqItem = styled.div`
       margin-bottom: 0;
     }
   }
+
+  a {
+    text-decoration: none;
+  }
 `;
 
 export const Faq: FC<FaqProps> = memo(({ faqList }) => {
