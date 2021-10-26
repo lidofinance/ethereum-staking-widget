@@ -25,6 +25,11 @@ const GlobalStyle = createGlobalStyle`
     &:hover {
       color: ${({ theme }) => theme.colors.primaryHover};
     }
+
+    &:visited {
+      // TODO: use theme.colors.primaryVisited from UI lib
+      color: #4BBEFF;
+    }
   }
 `;
 
