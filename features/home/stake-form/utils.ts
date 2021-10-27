@@ -50,7 +50,7 @@ export const stakeProcessing: StakeProcessingProps = async (
 
     setTxStage(TX_STAGE.SUCCESS);
 
-    resetForm();
+    await resetForm();
   } catch (e) {
     setTxStage(TX_STAGE.FAIL);
     setTxHash(undefined);

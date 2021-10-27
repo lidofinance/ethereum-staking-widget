@@ -76,11 +76,11 @@ export const useCurrencyInput: UseCurrencyInput = ({
   }, []);
 
   const reset = useCallback(() => {
-    setInputValue(initialValue);
-    setError(initialError);
     setShouldValidate(validateOnMount);
     setIsValidating(false);
     setIsSubmitting(false);
+    setInputValue(initialValue);
+    setError(initialError);
   }, [initialError, initialValue, validateOnMount]);
 
   const validate: (value: string) => boolean = useCallback(
