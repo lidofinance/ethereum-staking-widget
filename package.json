@@ -33,6 +33,7 @@
     "cors": "^2.8.5",
     "ethers": "^5.4.2",
     "gray-matter": "^4.0.3",
+    "lodash": "^4.17.21",
     "memory-cache": "^0.2.0",
     "next": "^10.0.0",
     "next-connect": "^0.10.2",

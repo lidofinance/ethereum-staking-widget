@@ -1,7 +1,8 @@
 export const CONCURRENCY_LIMIT = 5;
-export const TERRA_NODE_URL = 'https://lcd-2.terra.p2p.org/';
-export const STAKERS_ADDRESS = 'terra1kc87mu460fwkqte29rquh4hc20m54fxwtsx7gp';
-export const HUB_CONTRACT = 'terra1mtwph2juhj0rvjz7dy92gvl6xvukaxu8rfv8ts';
+export const TERRA_NODE_URL = process.env.TERRA_NODE_URL;
+export const CONTRACT_VERSION = process.env.TERRA_CONTRACT_VERSION;
+export const STAKERS_ADDRESS = process.env.TERRA_STAKERS_ADDRESS;
+export const HUB_CONTRACT = process.env.TERRA_HUB_CONTRACT;
 export const CRON_JOB = '*/10 * * * *';
 export const MAX_REQUESTS_PER_RUN = 10;
 export const TAIL_LENGTH = 14 * 24 * 6; // 14 days and aprox 1 reward per 10 min
@@ -222,3 +223,6 @@ export const DEFAULT_CLAIMS = {
     },
   ],
 };
+
+export const VALIDATORS_CACHE_TIME_MS = 5 * 60 * 1000;
+export const VALIDATORS_CACHE_KEY = 'terraValidators';
