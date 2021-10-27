@@ -17,7 +17,7 @@ export const OneinchPopup: FC = () => {
       return;
     }
 
-    if (rate && rate > 1) {
+    if (rate && rate >= 1.0001) {
       setPopupOpen(true);
     }
   }, [isUniqueConnector, rate, router.query.ref]);
