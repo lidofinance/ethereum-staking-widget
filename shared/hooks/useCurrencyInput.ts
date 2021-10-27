@@ -182,7 +182,9 @@ export const useCurrencyInput: UseCurrencyInput = ({
     if (externalSetInputValue) {
       externalSetInputValue(maxAmount);
     }
-  }, [maxAmount, externalSetInputValue]);
+
+    validate(maxAmount);
+  }, [maxAmount, externalSetInputValue, validate]);
 
   return {
     inputValue,
