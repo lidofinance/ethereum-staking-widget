@@ -27,8 +27,7 @@ const GlobalStyle = createGlobalStyle`
     }
 
     &:visited {
-      // TODO: use theme.colors.primaryVisited from UI lib
-      color: #4BBEFF;
+      color: ${({ theme }) => theme.colors.primaryVisited};
     }
   }
 `;
