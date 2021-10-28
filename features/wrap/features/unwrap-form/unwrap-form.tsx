@@ -38,12 +38,12 @@ export const UnwrapForm: FC = memo(() => {
   const [txHash, setTxHash] = useState<string>();
 
   const wstethBalanceAsStringOrNull = useMemo(() => {
-    if (!wstethBalance || !wstethBalance.data) {
+    if (!wstethBalance?.data) {
       return null;
     }
 
     return formatBalance(wstethBalance.data);
-  }, [wstethBalance]);
+  }, [wstethBalance.data]);
   const unwrapGasLimit = useMemo(() => 140000, []);
   const oneWstethAsBigNumber = useMemo(() => parseEther('1'), []);
 
