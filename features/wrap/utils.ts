@@ -14,6 +14,7 @@ type UnwrapProcessingProps = (
   wstethBalanceUpdate: () => void,
   stethBalanceUpdate: () => void,
   inputValue: string,
+  resetForm: () => void,
 ) => Promise<void>;
 
 export const unwrapProcessing: UnwrapProcessingProps = async (
@@ -24,6 +25,7 @@ export const unwrapProcessing: UnwrapProcessingProps = async (
   wstethBalanceUpdate,
   stethBalanceUpdate,
   inputValue,
+  resetForm,
 ) => {
   if (!wstethContractWeb3) {
     return;
@@ -47,6 +49,7 @@ export const unwrapProcessing: UnwrapProcessingProps = async (
       transaction.wait(),
     );
 
+    await resetForm();
     await stethBalanceUpdate();
     await wstethBalanceUpdate();
 
@@ -70,6 +73,7 @@ type WrapProcessingWithApproveProps = (
   selectedToken: string,
   needsApprove: boolean,
   approve: () => void,
+  resetForm: () => void,
 ) => Promise<void>;
 
 export const wrapProcessingWithApprove: WrapProcessingWithApproveProps = async (
@@ -84,6 +88,7 @@ export const wrapProcessingWithApprove: WrapProcessingWithApproveProps = async (
   selectedToken,
   needsApprove,
   approve,
+  resetForm,
 ) => {
   if (!chainId || !wstethContractWeb3) {
     return;
@@ -114,6 +119,7 @@ export const wrapProcessingWithApprove: WrapProcessingWithApproveProps = async (
         transaction.wait(),
       );
 
+      await resetForm();
       await ethBalanceUpdate();
       await stethBalanceUpdate();
 
@@ -139,6 +145,7 @@ export const wrapProcessingWithApprove: WrapProcessingWithApproveProps = async (
           transaction.wait(),
         );
 
+        await resetForm();
         await ethBalanceUpdate();
         await stethBalanceUpdate();
 

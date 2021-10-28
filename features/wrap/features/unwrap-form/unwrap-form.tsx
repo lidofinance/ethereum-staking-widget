@@ -60,7 +60,7 @@ export const UnwrapForm: FC = memo(() => {
   }, []);
 
   const unWrapProcessing = useCallback(
-    async (inputValue) => {
+    async (inputValue, resetForm) => {
       await unwrapProcessing(
         wstethContractWeb3,
         openTxModal,
@@ -69,6 +69,7 @@ export const UnwrapForm: FC = memo(() => {
         wstethBalance.update,
         stethBalance.update,
         inputValue,
+        resetForm,
       );
     },
     [

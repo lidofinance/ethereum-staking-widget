@@ -103,7 +103,7 @@ export const WrapForm: FC = memo(() => {
 
   const balanceBySelectedToken = useMemo(
     () => (selectedToken === ETH ? ethBalance.data : stethBalance.data),
-    [selectedToken, ethBalance, stethBalance],
+    [selectedToken, ethBalance.data, stethBalance.data],
   );
 
   const approveTxCostInUsd = useTxCostInUsd(approveGasLimit);
@@ -169,7 +169,7 @@ export const WrapForm: FC = memo(() => {
   const willReceiveWsteth = useWstethBySteth(willWrapSteth);
 
   const wrapProcessing = useCallback(
-    async (inputValue) => {
+    async (inputValue, resetForm) => {
       // Needs for fix flashing balance in tx success modal
       setWrappingAmountValue(inputValue);
 
@@ -193,6 +193,7 @@ export const WrapForm: FC = memo(() => {
         selectedToken,
         needsApprove,
         approve,
+        resetForm,
       );
 
       // Needs for fix flashing balance in tx success modal
