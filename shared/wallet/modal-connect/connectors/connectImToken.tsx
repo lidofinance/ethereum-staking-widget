@@ -1,8 +1,8 @@
 import { FC, useCallback } from 'react';
+import { useConnectorImToken } from '@lido-sdk/web3-react';
+import { ImtokenCircle } from '@lidofinance/icons';
 import { ConnectWalletProps } from './types';
 import ConnectButton from './connectButton';
-import iconUrl from 'assets/icons/imtoken.svg';
-import { useConnectorImToken } from '@lido-sdk/web3-react';
 
 const ConnectImToken: FC<ConnectWalletProps> = (props) => {
   const { onConnect, disabled, ...rest } = props;
@@ -17,7 +17,7 @@ const ConnectImToken: FC<ConnectWalletProps> = (props) => {
     <ConnectButton
       {...rest}
       disabled={disabled || !connect}
-      iconSrc={iconUrl}
+      iconSrcOrReactElement={<ImtokenCircle />}
       onClick={handleConnect}
     >
       imToken
