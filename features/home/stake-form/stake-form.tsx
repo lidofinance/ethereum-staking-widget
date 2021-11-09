@@ -1,4 +1,12 @@
-import { FC, memo, useCallback, useState, useMemo, useEffect } from 'react';
+import {
+  FC,
+  memo,
+  useCallback,
+  useState,
+  useMemo,
+  useEffect,
+  useRef,
+} from 'react';
 // import { AddressZero } from '@ethersproject/constants';
 // import { parseEther } from '@ethersproject/units';
 import {
@@ -26,6 +34,8 @@ import { stakeProcessing } from './utils';
 import { parseEther } from '@ethersproject/units';
 
 export const StakeForm: FC = memo(() => {
+  const formRef = useRef<HTMLFormElement>(null);
+
   const [txModalOpen, setTxModalOpen] = useState(false);
   const [txStage, setTxStage] = useState(TX_STAGE.SUCCESS);
   const [txHash, setTxHash] = useState<string>();
@@ -114,7 +124,7 @@ export const StakeForm: FC = memo(() => {
 
   return (
     <Block>
-      <FormStyled action="" method="post" onSubmit={handleSubmit}>
+      <FormStyled action="" method="post" onSubmit={handleSubmit} ref={formRef}>
         <InputStyled
           fullwidth
           placeholder="0"
@@ -179,6 +189,7 @@ export const StakeForm: FC = memo(() => {
         balance={stethBalance.data}
         balanceToken="stETH"
         failedText={txModalFailedText}
+        formRef={formRef}
       />
     </Block>
   );

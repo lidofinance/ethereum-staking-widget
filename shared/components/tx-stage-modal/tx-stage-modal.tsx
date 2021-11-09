@@ -1,8 +1,8 @@
-import { FC, memo, useCallback, useMemo } from 'react';
+import { FC, memo, useCallback, useMemo, RefObject } from 'react';
 import { css } from 'styled-components';
 import { BigNumber } from 'ethers';
 import { useSDK } from '@lido-sdk/react';
-import { Link, Modal, ModalProps } from '@lidofinance/lido-ui';
+import { Link, Button, Modal, ModalProps } from '@lidofinance/lido-ui';
 import { getEtherscanTxLink } from '@lido-sdk/helpers';
 import { formatBalance, formatBalanceString } from 'utils';
 import {
@@ -40,6 +40,7 @@ interface TxStageModalProps extends ModalProps {
   balance?: BigNumber;
   balanceToken?: string;
   failedText?: string;
+  formRef?: RefObject<HTMLFormElement>;
 }
 
 export const TxStageModal: FC<TxStageModalProps> = memo(
@@ -54,6 +55,7 @@ export const TxStageModal: FC<TxStageModalProps> = memo(
     balance,
     balanceToken,
     failedText,
+    formRef,
     ...modalProps
   }) => {
     const { chainId } = useSDK();
@@ -239,6 +241,23 @@ export const TxStageModal: FC<TxStageModalProps> = memo(
               >
                 {failedText}
               </LightText>
+              {formRef && formRef.current && (
+                <LightText
+                  size="xxs"
+                  color="secondary"
+                  css={css`
+                    margin-top: 38px;
+                  `}
+                >
+                  <Button
+                    onClick={() => formRef.current?.requestSubmit()}
+                    variant="ghost"
+                    color="primary"
+                  >
+                    Retry
+                  </Button>
+                </LightText>
+              )}
             </>
           );
       }
@@ -258,6 +277,7 @@ export const TxStageModal: FC<TxStageModalProps> = memo(
       balanceToken,
       operationWasSuccessfulText,
       failedText,
+      formRef,
     ]);
 
     return <Modal {...modalProps}>{content}</Modal>;

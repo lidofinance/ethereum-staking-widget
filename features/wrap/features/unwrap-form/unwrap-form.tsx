@@ -1,4 +1,12 @@
-import { FC, memo, useCallback, useState, useMemo, useEffect } from 'react';
+import {
+  FC,
+  memo,
+  useCallback,
+  useState,
+  useMemo,
+  useEffect,
+  useRef,
+} from 'react';
 import { parseEther } from '@ethersproject/units';
 import {
   Block,
@@ -32,6 +40,8 @@ export const UnwrapForm: FC = memo(() => {
   const stethBalance = useSTETHBalance();
   const wstethBalance = useWSTETHBalance();
   const wstethContractWeb3 = useWSTETHContractWeb3();
+
+  const formRef = useRef<HTMLFormElement>(null);
 
   const [txModalOpen, setTxModalOpen] = useState(false);
   const [txStage, setTxStage] = useState(TX_STAGE.SUCCESS);
@@ -130,6 +140,7 @@ export const UnwrapForm: FC = memo(() => {
         method="post"
         autoComplete="off"
         onSubmit={handleSubmit}
+        ref={formRef}
       >
         <InputStyled
           fullwidth
@@ -193,6 +204,7 @@ export const UnwrapForm: FC = memo(() => {
         balance={stethBalance.data}
         balanceToken="stETH"
         failedText={txModalFailedText}
+        formRef={formRef}
       />
     </Block>
   );

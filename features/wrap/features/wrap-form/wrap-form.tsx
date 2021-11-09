@@ -5,6 +5,7 @@ import React, {
   useEffect,
   useMemo,
   useState,
+  useRef,
 } from 'react';
 import {
   Block,
@@ -62,6 +63,8 @@ export const WrapForm: FC = memo(() => {
   const stethBalance = useSTETHBalance();
   const wstethBalance = useWSTETHBalance();
   const wstethContractWeb3 = useWSTETHContractWeb3();
+
+  const formRef = useRef<HTMLFormElement>(null);
 
   const [selectedToken, setSelectedToken] = useState<keyof typeof iconsMap>(
     TOKENS.STETH,
@@ -264,6 +267,7 @@ export const WrapForm: FC = memo(() => {
         method="post"
         autoComplete="off"
         onSubmit={handleSubmit}
+        ref={formRef}
       >
         <InputGroupStyled fullwidth>
           <SelectIcon
@@ -365,6 +369,7 @@ export const WrapForm: FC = memo(() => {
         balance={wstethBalance.data}
         balanceToken={'wstETH'}
         failedText={txModalFailedText}
+        formRef={formRef}
       />
     </Block>
   );
