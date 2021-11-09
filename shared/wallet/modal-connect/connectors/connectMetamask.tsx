@@ -1,12 +1,14 @@
 import { FC, useCallback } from 'react';
 import { useConnectorMetamask, helpers } from '@lido-sdk/web3-react';
-import iconUrl from 'assets/icons/metamask.svg';
+import { MetaMaskCircle, MetaMaskCircleInversion } from '@lidofinance/icons';
+import { useThemeToggle } from 'shared/hooks';
 import { ConnectWalletProps } from './types';
 import ConnectButton from './connectButton';
 
 const ConnectMetamask: FC<ConnectWalletProps> = (props) => {
   const { onConnect, termsChecked, ...rest } = props;
   const { connect } = useConnectorMetamask();
+  const { themeName } = useThemeToggle();
 
   const handleConnect = useCallback(async () => {
     onConnect?.();
@@ -34,7 +36,9 @@ const ConnectMetamask: FC<ConnectWalletProps> = (props) => {
       disabled={disabled}
       isTooltipTriggerShown={termsChecked && disabled}
       tooltipMessage={disabledMessage}
-      iconSrc={iconUrl}
+      iconSrcOrReactElement={
+        themeName === 'dark' ? <MetaMaskCircleInversion /> : <MetaMaskCircle />
+      }
       onClick={handleConnect}
     >
       Metamask

@@ -1,8 +1,8 @@
 import { FC, useCallback } from 'react';
+import { useConnectorCoinbase } from '@lido-sdk/web3-react';
+import { Coinbase } from '@lidofinance/icons';
 import { ConnectWalletProps } from './types';
 import ConnectButton from './connectButton';
-import iconUrl from 'assets/icons/coinbase.svg';
-import { useConnectorCoinbase } from '@lido-sdk/web3-react';
 
 const ConnectCoinbase: FC<ConnectWalletProps> = (props) => {
   const { onConnect, ...rest } = props;
@@ -14,7 +14,11 @@ const ConnectCoinbase: FC<ConnectWalletProps> = (props) => {
   }, [onConnect, connect]);
 
   return (
-    <ConnectButton {...rest} iconSrc={iconUrl} onClick={handleConnect}>
+    <ConnectButton
+      {...rest}
+      iconSrcOrReactElement={<Coinbase />}
+      onClick={handleConnect}
+    >
       Coinbase Wallet
     </ConnectButton>
   );

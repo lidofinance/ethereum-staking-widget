@@ -1,6 +1,6 @@
 import { FC, useCallback } from 'react';
 import { helpers, useConnectorCoin98 } from '@lido-sdk/web3-react';
-import iconUrl from 'assets/icons/coin98.svg';
+import { Coin98Circle } from '@lidofinance/icons';
 import { ConnectWalletProps } from './types';
 import ConnectButton from './connectButton';
 
@@ -25,7 +25,7 @@ const ConnectCoin98: FC<ConnectWalletProps> = (props) => {
       disabled={disabled}
       isTooltipTriggerShown={termsChecked && disabled}
       tooltipMessage={disabledMessage}
-      iconSrc={iconUrl}
+      iconSrcOrReactElement={<Coin98Circle />}
       onClick={handleConnect}
     >
       Coin98

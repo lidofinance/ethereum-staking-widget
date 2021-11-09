@@ -9,6 +9,7 @@ type StakeProcessingProps = (
   openTxModal: () => void,
   setTxStage: (value: TX_STAGE) => void,
   setTxHash: (value: string | undefined) => void,
+  setTxModalFailedText: (value: string) => void,
   stethBalanceUpdate: () => void,
   inputValue: string,
   resetForm: () => void,
@@ -19,6 +20,7 @@ export const stakeProcessing: StakeProcessingProps = async (
   openTxModal,
   setTxStage,
   setTxHash,
+  setTxModalFailedText,
   stethBalanceUpdate,
   inputValue,
   resetForm,
@@ -51,9 +53,10 @@ export const stakeProcessing: StakeProcessingProps = async (
     setTxStage(TX_STAGE.SUCCESS);
 
     await resetForm();
-  } catch (e) {
+    /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+  } catch (error: any) {
+    setTxModalFailedText(error?.message);
     setTxStage(TX_STAGE.FAIL);
     setTxHash(undefined);
-    console.error(e);
   }
 };

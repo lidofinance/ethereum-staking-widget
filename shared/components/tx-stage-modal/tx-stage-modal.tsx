@@ -39,6 +39,7 @@ interface TxStageModalProps extends ModalProps {
   txHash?: string;
   balance?: BigNumber;
   balanceToken?: string;
+  failedText?: string;
 }
 
 export const TxStageModal: FC<TxStageModalProps> = memo(
@@ -52,6 +53,7 @@ export const TxStageModal: FC<TxStageModalProps> = memo(
     willReceiveAmountToken,
     balance,
     balanceToken,
+    failedText,
     ...modalProps
   }) => {
     const { chainId } = useSDK();
@@ -85,21 +87,6 @@ export const TxStageModal: FC<TxStageModalProps> = memo(
           return 'Unwrapping operation was successful';
         default:
           return 'Operation was successful';
-      }
-    }, [txOperation]);
-
-    const operationFailedText = useMemo(() => {
-      switch (txOperation) {
-        case TX_OPERATION.STAKING:
-          return 'Staking operation failed';
-        case TX_OPERATION.APPROVING:
-          return 'Approving operation failed';
-        case TX_OPERATION.WRAPPING:
-          return 'Wrapping operation failed';
-        case TX_OPERATION.UNWRAPPING:
-          return 'Unwrapping operation failed';
-        default:
-          return 'Operation failed';
       }
     }, [txOperation]);
 
@@ -242,12 +229,7 @@ export const TxStageModal: FC<TxStageModalProps> = memo(
               <IconWrapper>
                 <FailIcon />
               </IconWrapper>
-              {balance && (
-                <BoldText>
-                  Your balance is <wbr />
-                  {withOptionaLineBreak(balanceAsString)} {balanceToken}
-                </BoldText>
-              )}
+              <BoldText>Tx signature fail</BoldText>
               <LightText
                 size="xxs"
                 color="secondary"
@@ -255,9 +237,8 @@ export const TxStageModal: FC<TxStageModalProps> = memo(
                   margin-top: 4px;
                 `}
               >
-                {operationFailedText}
+                {failedText}
               </LightText>
-              {etherscanTxLinkBlock}
             </>
           );
       }
@@ -276,7 +257,7 @@ export const TxStageModal: FC<TxStageModalProps> = memo(
       balanceAsString,
       balanceToken,
       operationWasSuccessfulText,
-      operationFailedText,
+      failedText,
     ]);
 
     return <Modal {...modalProps}>{content}</Modal>;

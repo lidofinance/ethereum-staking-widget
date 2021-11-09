@@ -1,12 +1,14 @@
 import { FC, useCallback } from 'react';
+import { useConnectorLedger } from '@lido-sdk/web3-react';
+import { LedgerCircle, LedgerCircleInversion } from '@lidofinance/icons';
+import { useThemeToggle } from 'shared/hooks';
 import { ConnectWalletProps } from './types';
 import ConnectButton from './connectButton';
-import iconUrl from 'assets/icons/ledger.svg';
-import { useConnectorLedger } from '@lido-sdk/web3-react';
 
 const ConnectLedger: FC<ConnectWalletProps> = (props) => {
   const { onConnect, disabled, ...rest } = props;
   const { connect } = useConnectorLedger();
+  const { themeName } = useThemeToggle();
 
   const handleConnect = useCallback(async () => {
     onConnect?.();
@@ -17,7 +19,9 @@ const ConnectLedger: FC<ConnectWalletProps> = (props) => {
     <ConnectButton
       {...rest}
       disabled={disabled || !connect}
-      iconSrc={iconUrl}
+      iconSrcOrReactElement={
+        themeName === 'dark' ? <LedgerCircleInversion /> : <LedgerCircle />
+      }
       onClick={handleConnect}
     >
       Ledger

@@ -1,7 +1,8 @@
+import React from 'react';
 import { ButtonProps } from '@lidofinance/lido-ui';
 
 export type ConnectButtonProps = {
-  iconSrc: string;
+  iconSrcOrReactElement: string | React.ReactElement;
   isTooltipTriggerShown?: boolean;
   tooltipMessage?: string;
 } & ButtonProps;

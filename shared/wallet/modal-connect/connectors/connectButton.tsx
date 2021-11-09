@@ -1,4 +1,4 @@
-import { FC } from 'react';
+import React, { FC, isValidElement } from 'react';
 import { Tooltip } from '@lidofinance/lido-ui';
 import {
   ConnectButtonStyle,
@@ -10,8 +10,13 @@ import {
 import { ConnectButtonProps } from './types';
 
 const ConnectButton: FC<ConnectButtonProps> = (props) => {
-  const { iconSrc, children, isTooltipTriggerShown, tooltipMessage, ...rest } =
-    props;
+  const {
+    iconSrcOrReactElement,
+    children,
+    isTooltipTriggerShown,
+    tooltipMessage,
+    ...rest
+  } = props;
 
   return (
     <ConnectButtonStyle {...rest}>
@@ -25,7 +30,10 @@ const ConnectButton: FC<ConnectButtonProps> = (props) => {
           </Tooltip>
         )}
         <ConnectButtonIconStyle>
-          <img src={iconSrc} alt="" />
+          {typeof iconSrcOrReactElement === 'string' && (
+            <img src={iconSrcOrReactElement} alt="" />
+          )}
+          {isValidElement(iconSrcOrReactElement) && iconSrcOrReactElement}
         </ConnectButtonIconStyle>
       </ConnectButtonContentStyle>
     </ConnectButtonStyle>

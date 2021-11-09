@@ -37,6 +37,14 @@ export const ConnectButtonIconStyle = styled.span`
   display: flex;
   margin: -20px 0 -20px auto;
 
+  svg {
+    width: 40px;
+  }
+
+  img {
+    width: 40px;
+  }
+
   button:disabled & {
     opacity: 0.5;
   }
