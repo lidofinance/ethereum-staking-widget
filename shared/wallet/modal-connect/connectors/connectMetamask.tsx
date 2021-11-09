@@ -4,10 +4,6 @@ import iconUrl from 'assets/icons/metamask.svg';
 import { ConnectWalletProps } from './types';
 import ConnectButton from './connectButton';
 
-const disabledMessage =
-  'Your browser has a turned-on “Coin98 Wallet” or "MathWallet"' +
-  ' extension. Please, turn off this extensions to enable the MetaMask wallet.';
-
 const ConnectMetamask: FC<ConnectWalletProps> = (props) => {
   const { onConnect, termsChecked, ...rest } = props;
   const { connect } = useConnectorMetamask();
@@ -21,6 +17,16 @@ const ConnectMetamask: FC<ConnectWalletProps> = (props) => {
     props.disabled ||
     helpers.isCoin98Provider() ||
     helpers.isMathWalletProvider();
+
+  let conflictApp = '';
+  if (disabled) {
+    conflictApp = helpers.isCoin98Provider() ? 'Coin98 Wallet' : conflictApp;
+    conflictApp = helpers.isMathWalletProvider() ? 'MathWallet' : conflictApp;
+  }
+  const disabledMessage =
+    `Your browser has a turned-on “${conflictApp}” extension.` +
+    ' Please, turn off this extension and reload the page' +
+    ' to enable the MetaMask wallet.';
 
   return (
     <ConnectButton
