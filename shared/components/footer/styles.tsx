@@ -23,7 +23,6 @@ export const FooterDividerStyle = styled(Divider)`
 `;
 
 export const FooterLogoStyle = styled.div`
-  flex-grow: 25%;
   flex-grow: 1;
   margin-bottom: 40px;
   box-sizing: border-box;
@@ -49,7 +48,6 @@ export const FooterGroupStyle = styled.div`
 `;
 
 export const FooterTitleStyle = styled.h4`
-  margin: 0.6em 0;
   font-weight: 800;
   font-size: ${({ theme }) => theme.fontSizesMap.sm}px;
   line-height: 1.4em;
@@ -66,7 +64,8 @@ export const FooterItemStyle = styled.div`
     opacity: 0.7;
 
     &,
-    &:hover {
+    &:hover,
+    &:visited {
       color: ${({ theme }) => theme.colors.text};
     }
 
