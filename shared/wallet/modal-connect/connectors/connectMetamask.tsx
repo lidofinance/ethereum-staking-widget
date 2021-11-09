@@ -7,6 +7,7 @@ import ConnectButton from './connectButton';
 
 const ConnectMetamask: FC<ConnectWalletProps> = (props) => {
   const { onConnect, termsChecked, ...rest } = props;
+  const { isCoin98Provider, isMathWalletProvider } = helpers;
   const { connect } = useConnectorMetamask();
   const { themeName } = useThemeToggle();
 
@@ -16,14 +17,12 @@ const ConnectMetamask: FC<ConnectWalletProps> = (props) => {
   }, [onConnect, connect]);
 
   const disabled =
-    props.disabled ||
-    helpers.isCoin98Provider() ||
-    helpers.isMathWalletProvider();
+    props.disabled || isCoin98Provider() || isMathWalletProvider();
 
   let conflictApp = '';
   if (disabled) {
-    conflictApp = helpers.isCoin98Provider() ? 'Coin98 Wallet' : conflictApp;
-    conflictApp = helpers.isMathWalletProvider() ? 'MathWallet' : conflictApp;
+    conflictApp = isCoin98Provider() ? 'Coin98 Wallet' : conflictApp;
+    conflictApp = isMathWalletProvider() ? 'MathWallet' : conflictApp;
   }
   const disabledMessage =
     `Your browser has a turned-on “${conflictApp}” extension.` +

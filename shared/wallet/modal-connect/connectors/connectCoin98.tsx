@@ -10,6 +10,7 @@ const disabledMessage =
 
 const ConnectCoin98: FC<ConnectWalletProps> = (props) => {
   const { onConnect, termsChecked, ...rest } = props;
+  const { isMathWalletProvider } = helpers;
   const { connect } = useConnectorCoin98();
 
   const handleConnect = useCallback(async () => {
@@ -17,7 +18,7 @@ const ConnectCoin98: FC<ConnectWalletProps> = (props) => {
     connect();
   }, [onConnect, connect]);
 
-  const disabled = props.disabled || helpers.isMathWalletProvider();
+  const disabled = props.disabled || isMathWalletProvider();
 
   return (
     <ConnectButton
