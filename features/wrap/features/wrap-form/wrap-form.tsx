@@ -323,7 +323,8 @@ export const WrapForm: FC = memo(() => {
             <Button
               fullwidth
               type="submit"
-              disabled={isValidating || isSubmitting}
+              disabled={isValidating}
+              loading={isSubmitting}
             >
               Wrap
             </Button>
