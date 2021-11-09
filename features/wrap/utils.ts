@@ -11,6 +11,7 @@ type UnwrapProcessingProps = (
   openTxModal: () => void,
   setTxStage: (value: TX_STAGE) => void,
   setTxHash: (value: string | undefined) => void,
+  setTxModalFailedText: (value: string) => void,
   wstethBalanceUpdate: () => void,
   stethBalanceUpdate: () => void,
   inputValue: string,
@@ -22,6 +23,7 @@ export const unwrapProcessing: UnwrapProcessingProps = async (
   openTxModal,
   setTxStage,
   setTxHash,
+  setTxModalFailedText,
   wstethBalanceUpdate,
   stethBalanceUpdate,
   inputValue,
@@ -54,10 +56,11 @@ export const unwrapProcessing: UnwrapProcessingProps = async (
     await wstethBalanceUpdate();
 
     setTxStage(TX_STAGE.SUCCESS);
-  } catch (e) {
+    /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+  } catch (error: any) {
+    setTxModalFailedText(error?.message);
     setTxStage(TX_STAGE.FAIL);
     setTxHash(undefined);
-    console.error(e);
   }
 };
 
@@ -67,6 +70,7 @@ type WrapProcessingWithApproveProps = (
   openTxModal: () => void,
   setTxStage: (value: TX_STAGE) => void,
   setTxHash: (value: string | undefined) => void,
+  setTxModalFailedText: (value: string) => void,
   ethBalanceUpdate: () => void,
   stethBalanceUpdate: () => void,
   inputValue: string,
@@ -82,6 +86,7 @@ export const wrapProcessingWithApprove: WrapProcessingWithApproveProps = async (
   openTxModal,
   setTxStage,
   setTxHash,
+  setTxModalFailedText,
   ethBalanceUpdate,
   stethBalanceUpdate,
   inputValue,
@@ -152,9 +157,10 @@ export const wrapProcessingWithApprove: WrapProcessingWithApproveProps = async (
         setTxStage(TX_STAGE.SUCCESS);
       }
     }
-  } catch (e) {
+    /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+  } catch (error: any) {
+    setTxModalFailedText(error?.message);
     setTxStage(TX_STAGE.FAIL);
     setTxHash(undefined);
-    console.error(e);
   }
 };

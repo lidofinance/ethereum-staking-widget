@@ -36,6 +36,7 @@ export const UnwrapForm: FC = memo(() => {
   const [txModalOpen, setTxModalOpen] = useState(false);
   const [txStage, setTxStage] = useState(TX_STAGE.SUCCESS);
   const [txHash, setTxHash] = useState<string>();
+  const [txModalFailedText, setTxModalFailedText] = useState('');
 
   const wstethBalanceAsStringOrNull = useMemo(() => {
     if (!wstethBalance?.data) {
@@ -66,6 +67,7 @@ export const UnwrapForm: FC = memo(() => {
         openTxModal,
         setTxStage,
         setTxHash,
+        setTxModalFailedText,
         wstethBalance.update,
         stethBalance.update,
         inputValue,
@@ -190,6 +192,7 @@ export const UnwrapForm: FC = memo(() => {
         willReceiveAmountToken="stETH"
         balance={stethBalance.data}
         balanceToken="stETH"
+        failedText={txModalFailedText}
       />
     </Block>
   );

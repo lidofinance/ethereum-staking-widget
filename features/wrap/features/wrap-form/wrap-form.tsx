@@ -74,6 +74,7 @@ export const WrapForm: FC = memo(() => {
   const [txStage, setTxStage] = useState(TX_STAGE.SUCCESS);
   const [txOperation, setTxOperation] = useState(TX_OPERATION.STAKING);
   const [txHash, setTxHash] = useState<string>();
+  const [txModalFailedText, setTxModalFailedText] = useState('');
 
   const inputValueAsBigNumber = useMemo(() => {
     try {
@@ -122,26 +123,32 @@ export const WrapForm: FC = memo(() => {
   const approveWrapper = useCallback(
     async (
       callback: () => Promise<TransactionResponse>,
-    ): Promise<TransactionReceipt> => {
-      openTxModal();
-      setTxStage(TX_STAGE.SIGN);
+    ): Promise<TransactionReceipt | undefined> => {
+      try {
+        openTxModal();
+        setTxStage(TX_STAGE.SIGN);
 
-      const transaction = await runWithTransactionLogger(
-        'Approve signing',
-        callback,
-      );
+        const transaction = await runWithTransactionLogger(
+          'Approve signing',
+          callback,
+        );
 
-      setTxHash(transaction.hash);
-      setTxStage(TX_STAGE.BLOCK);
+        setTxHash(transaction.hash);
+        setTxStage(TX_STAGE.BLOCK);
 
-      const result = await runWithTransactionLogger(
-        'Approve block confirmation',
-        async () => transaction.wait(),
-      );
+        const result = await runWithTransactionLogger(
+          'Approve block confirmation',
+          async () => transaction.wait(),
+        );
 
-      setTxStage(TX_STAGE.SUCCESS);
+        setTxStage(TX_STAGE.SUCCESS);
 
-      return result;
+        return result;
+        /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+      } catch (error: any) {
+        setTxModalFailedText(error?.message);
+        setTxStage(TX_STAGE.FAIL);
+      }
     },
     [openTxModal],
   );
@@ -187,6 +194,7 @@ export const WrapForm: FC = memo(() => {
         openTxModal,
         setTxStage,
         setTxHash,
+        setTxModalFailedText,
         ethBalance.update,
         stethBalance.update,
         inputValue,
@@ -356,6 +364,7 @@ export const WrapForm: FC = memo(() => {
         willReceiveAmountToken="wstETH"
         balance={wstethBalance.data}
         balanceToken={'wstETH'}
+        failedText={txModalFailedText}
       />
     </Block>
   );

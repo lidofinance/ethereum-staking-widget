@@ -29,6 +29,7 @@ export const StakeForm: FC = memo(() => {
   const [txModalOpen, setTxModalOpen] = useState(false);
   const [txStage, setTxStage] = useState(TX_STAGE.SUCCESS);
   const [txHash, setTxHash] = useState<string>();
+  const [txModalFailedText, setTxModalFailedText] = useState('');
 
   const { active } = useWeb3();
   const ethBalance = useEthereumBalance();
@@ -63,6 +64,7 @@ export const StakeForm: FC = memo(() => {
         openTxModal,
         setTxStage,
         setTxHash,
+        setTxModalFailedText,
         stethBalance.update,
         inputValue,
         resetForm,
@@ -176,6 +178,7 @@ export const StakeForm: FC = memo(() => {
         willReceiveAmountToken="stETH"
         balance={stethBalance.data}
         balanceToken="stETH"
+        failedText={txModalFailedText}
       />
     </Block>
   );
