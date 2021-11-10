@@ -69,7 +69,7 @@ export const Footer: FC = () => (
         <Link href="mailto:info@lido.fi">info@lido.fi</Link>
       </FooterItemStyle>
       <FooterItemStyle>
-        <Link href="http://help.lido.fi/">Help Center</Link>
+        <Link href="https://help.lido.fi/">Help Center</Link>
       </FooterItemStyle>
     </FooterGroupStyle>
   </FooterStyle>

@@ -35,8 +35,8 @@ export const stakeProcessing: StakeProcessingProps = async (
         value: parseEther(inputValue),
       });
 
-    openTxModal();
     setTxStage(TX_STAGE.SIGN);
+    openTxModal();
     const transaction = await runWithTransactionLogger(
       'Stake signing',
       callback,
@@ -44,6 +44,7 @@ export const stakeProcessing: StakeProcessingProps = async (
 
     setTxHash(transaction.hash);
     setTxStage(TX_STAGE.BLOCK);
+    openTxModal();
     await runWithTransactionLogger('Stake block confirmation', async () =>
       transaction.wait(),
     );
@@ -51,6 +52,7 @@ export const stakeProcessing: StakeProcessingProps = async (
     await stethBalanceUpdate();
 
     setTxStage(TX_STAGE.SUCCESS);
+    openTxModal();
 
     await resetForm();
     /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
@@ -58,5 +60,6 @@ export const stakeProcessing: StakeProcessingProps = async (
     setTxModalFailedText(error?.message);
     setTxStage(TX_STAGE.FAIL);
     setTxHash(undefined);
+    openTxModal();
   }
 };

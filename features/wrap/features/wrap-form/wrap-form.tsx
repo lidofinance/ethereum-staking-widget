@@ -128,8 +128,8 @@ export const WrapForm: FC = memo(() => {
       callback: () => Promise<TransactionResponse>,
     ): Promise<TransactionReceipt | undefined> => {
       try {
-        openTxModal();
         setTxStage(TX_STAGE.SIGN);
+        openTxModal();
 
         const transaction = await runWithTransactionLogger(
           'Approve signing',
@@ -138,6 +138,7 @@ export const WrapForm: FC = memo(() => {
 
         setTxHash(transaction.hash);
         setTxStage(TX_STAGE.BLOCK);
+        openTxModal();
 
         const result = await runWithTransactionLogger(
           'Approve block confirmation',
@@ -145,12 +146,14 @@ export const WrapForm: FC = memo(() => {
         );
 
         setTxStage(TX_STAGE.SUCCESS);
+        openTxModal();
 
         return result;
         /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
       } catch (error: any) {
         setTxModalFailedText(error?.message);
         setTxStage(TX_STAGE.FAIL);
+        openTxModal();
       }
     },
     [openTxModal],
@@ -315,7 +318,8 @@ export const WrapForm: FC = memo(() => {
               icon={<Lock />}
               fullwidth
               type="submit"
-              disabled={isValidating || isSubmitting}
+              disabled={isValidating}
+              loading={isSubmitting}
             >
               Unlock token to wrap
             </ButtonIcon>

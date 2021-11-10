@@ -42,23 +42,24 @@ const FaqItem = styled.div`
   }
 `;
 
-export const Faq: FC<FaqProps> = memo(({ faqList }) => {
+export const Faq: FC<FaqProps> = memo(({ faqList, replacements }) => {
   const contractRpc = useSTETHContractRPC();
   const lidoFee = useContractSWR({
     contract: contractRpc,
     method: 'getFee',
   });
-  const replacements = {
+  const commonReplacements = {
     '%LIDO-FEE%':
       lidoFee.initialLoading || !lidoFee.data
         ? DATA_UNAVAILABLE
         : `${lidoFee.data / 100}%`,
   };
+  const mergedReplacements = { ...commonReplacements, ...replacements };
 
   return (
     <Section title="FAQ">
       {faqList.map(({ id, title, content }, index) => {
-        const html = replaceAll(content, replacements);
+        const html = replaceAll(content, mergedReplacements);
 
         return (
           <Accordion

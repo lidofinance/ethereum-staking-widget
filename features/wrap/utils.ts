@@ -36,8 +36,8 @@ export const unwrapProcessing: UnwrapProcessingProps = async (
   try {
     const callback = () => wstethContractWeb3.unwrap(parseEther(inputValue));
 
-    openTxModal();
     setTxStage(TX_STAGE.SIGN);
+    openTxModal();
 
     const transaction = await runWithTransactionLogger(
       'Unwrap signing',
@@ -46,6 +46,7 @@ export const unwrapProcessing: UnwrapProcessingProps = async (
 
     setTxHash(transaction.hash);
     setTxStage(TX_STAGE.BLOCK);
+    openTxModal();
 
     await runWithTransactionLogger('Unwrap block confirmation', async () =>
       transaction.wait(),
@@ -56,11 +57,13 @@ export const unwrapProcessing: UnwrapProcessingProps = async (
     await wstethBalanceUpdate();
 
     setTxStage(TX_STAGE.SUCCESS);
+    openTxModal();
     /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
   } catch (error: any) {
     setTxModalFailedText(error?.message);
     setTxStage(TX_STAGE.FAIL);
     setTxHash(undefined);
+    openTxModal();
   }
 };
 
@@ -109,8 +112,8 @@ export const wrapProcessingWithApprove: WrapProcessingWithApproveProps = async (
           value: parseEther(inputValue),
         });
 
-      openTxModal();
       setTxStage(TX_STAGE.SIGN);
+      openTxModal();
 
       const transaction = await runWithTransactionLogger(
         'Wrap signing',
@@ -119,6 +122,7 @@ export const wrapProcessingWithApprove: WrapProcessingWithApproveProps = async (
 
       setTxHash(transaction.hash);
       setTxStage(TX_STAGE.BLOCK);
+      openTxModal();
 
       await runWithTransactionLogger('Wrap block confirmation', async () =>
         transaction.wait(),
@@ -129,14 +133,15 @@ export const wrapProcessingWithApprove: WrapProcessingWithApproveProps = async (
       await stethBalanceUpdate();
 
       setTxStage(TX_STAGE.SUCCESS);
+      openTxModal();
     } else if (selectedToken === TOKENS.STETH) {
       if (needsApprove) {
         await approve();
       } else {
         const callback = () => wstethContractWeb3.wrap(parseEther(inputValue));
 
-        openTxModal();
         setTxStage(TX_STAGE.SIGN);
+        openTxModal();
 
         const transaction = await runWithTransactionLogger(
           'Wrap signing',
@@ -145,6 +150,7 @@ export const wrapProcessingWithApprove: WrapProcessingWithApproveProps = async (
 
         setTxHash(transaction.hash);
         setTxStage(TX_STAGE.BLOCK);
+        openTxModal();
 
         await runWithTransactionLogger('Wrap block confirmation', async () =>
           transaction.wait(),
@@ -155,6 +161,7 @@ export const wrapProcessingWithApprove: WrapProcessingWithApproveProps = async (
         await stethBalanceUpdate();
 
         setTxStage(TX_STAGE.SUCCESS);
+        openTxModal();
       }
     }
     /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
@@ -162,5 +169,6 @@ export const wrapProcessingWithApprove: WrapProcessingWithApproveProps = async (
     setTxModalFailedText(error?.message);
     setTxStage(TX_STAGE.FAIL);
     setTxHash(undefined);
+    openTxModal();
   }
 };
