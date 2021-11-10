@@ -2,7 +2,7 @@ import { FC, memo, useCallback, useMemo, RefObject } from 'react';
 import { css } from 'styled-components';
 import { BigNumber } from 'ethers';
 import { useSDK } from '@lido-sdk/react';
-import { Link, Button, Modal, ModalProps } from '@lidofinance/lido-ui';
+import { Link, Modal, ModalProps } from '@lidofinance/lido-ui';
 import { getEtherscanTxLink } from '@lido-sdk/helpers';
 import { formatBalance, formatBalanceString } from 'utils';
 import {
@@ -249,13 +249,9 @@ export const TxStageModal: FC<TxStageModalProps> = memo(
                     margin-top: 38px;
                   `}
                 >
-                  <Button
-                    onClick={() => formRef.current?.requestSubmit()}
-                    variant="ghost"
-                    color="primary"
-                  >
+                  <Link onClick={() => formRef.current?.requestSubmit()}>
                     Retry
-                  </Button>
+                  </Link>
                 </LightText>
               )}
             </>
