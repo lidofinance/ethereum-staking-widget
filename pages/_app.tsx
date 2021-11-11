@@ -1,9 +1,10 @@
 import { memo } from 'react';
 import NextApp, { AppProps, AppContext } from 'next/app';
 import { ToastContainer } from '@lidofinance/lido-ui';
+import { STORAGE_THEME_KEY } from 'config';
 import Providers, { EnvConfig } from 'providers';
 import getConfig from 'next/config';
-import { nprogress } from 'utils';
+import { nprogress, getFromRawCookies } from 'utils';
 import { CookiesTooltip } from 'shared/components';
 import 'nprogress/nprogress.css';
 
@@ -22,7 +23,10 @@ const AppWrapper = (props: AppProps & { config: EnvConfig }): JSX.Element => {
   const { config, ...rest } = props;
 
   return (
-    <Providers config={config || {}}>
+    <Providers
+      config={config || {}}
+      cookiesThemeScheme={props.pageProps.cookiesThemeScheme}
+    >
       <ToastContainer />
       <MemoApp {...rest} />
       <CookiesTooltip />
@@ -33,6 +37,12 @@ const AppWrapper = (props: AppProps & { config: EnvConfig }): JSX.Element => {
 AppWrapper.getInitialProps = async (appContext: AppContext) => {
   const appProps = await NextApp.getInitialProps(appContext);
   const { publicRuntimeConfig } = getConfig();
+
+  // Get current color theme from req headers cookies
+  appProps.pageProps.cookiesThemeScheme = getFromRawCookies(
+    appContext?.ctx?.req?.headers?.cookie,
+    STORAGE_THEME_KEY,
+  );
 
   return { ...appProps, config: publicRuntimeConfig };
 };
