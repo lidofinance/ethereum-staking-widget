@@ -10,6 +10,26 @@ import 'nprogress/nprogress.css';
 // Visualize route changes
 nprogress();
 
+const getCookie = (
+  cookies: string | undefined,
+  name: string,
+): string | undefined => {
+  if (!cookies) {
+    return undefined;
+  }
+
+  const matches = cookies.match(
+    /* eslint-disable */
+    new RegExp(
+      '(?:^|; )' +
+        name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') +
+        '=([^;]*)',
+    ),
+    /* eslint-enable */
+  );
+  return matches ? decodeURIComponent(matches[1]) : undefined;
+};
+
 const App = (props: AppProps): JSX.Element => {
   const { Component, pageProps } = props;
 
@@ -21,8 +41,13 @@ const MemoApp = memo(App);
 const AppWrapper = (props: AppProps & { config: EnvConfig }): JSX.Element => {
   const { config, ...rest } = props;
 
+  console.log('props ', props);
+
   return (
-    <Providers config={config || {}}>
+    <Providers
+      config={config || {}}
+      cookiesThemeScheme={props.pageProps.cookiesThemeScheme}
+    >
       <ToastContainer />
       <MemoApp {...rest} />
       <CookiesTooltip />
@@ -33,6 +58,15 @@ const AppWrapper = (props: AppProps & { config: EnvConfig }): JSX.Element => {
 AppWrapper.getInitialProps = async (appContext: AppContext) => {
   const appProps = await NextApp.getInitialProps(appContext);
   const { publicRuntimeConfig } = getConfig();
+
+  console.log(
+    'appContext?.ctx?.req?.headers?.cookie ',
+    appContext?.ctx?.req?.headers?.cookie,
+  );
+  appProps.pageProps.cookiesThemeScheme = getCookie(
+    appContext?.ctx?.req?.headers?.cookie,
+    'lido-theme',
+  );
 
   return { ...appProps, config: publicRuntimeConfig };
 };

@@ -1,11 +1,5 @@
-import {
-  FC,
-  createContext,
-  useCallback,
-  useState,
-  useMemo,
-  useEffect,
-} from 'react';
+import { FC, createContext, useCallback, useState, useMemo } from 'react';
+import Cookies from 'js-cookie';
 import { GlobalStyle } from 'styles';
 import {
   themeLight,
@@ -14,7 +8,6 @@ import {
   ThemeProvider as SourceProvider,
   useSystemTheme,
 } from '@lidofinance/lido-ui';
-import { useLocalStorage } from '@lido-sdk/react';
 import { STORAGE_THEME_KEY } from 'config';
 import { BackgroundGradient } from 'shared/components';
 
@@ -34,27 +27,30 @@ export const ThemeToggleContext = createContext({} as ThemeContext);
 
 const DEFAULT_THEME = 'light';
 
-const ThemeProvider: FC = ({ children }) => {
-  const [themeLS, setThemeLS] = useLocalStorage<ThemeName | null>(
-    STORAGE_THEME_KEY,
-    null,
-  );
+export type ThemeProviderProps = { cookiesThemeScheme: string };
+
+const ThemeProvider: FC<ThemeProviderProps> = ({
+  children,
+  cookiesThemeScheme,
+}) => {
+  const themeCk = cookiesThemeScheme as ThemeName;
+
   const systemTheme = useSystemTheme();
 
-  /*
-   * The first rendering is always with a light theme. After that useEffect will replace the theme with a custom one
-   * This is necessary for correct Next.js hydration
-   */
-  const [themeName, setThemeName] = useState<ThemeName>(DEFAULT_THEME);
-
-  useEffect(() => {
-    setThemeName(themeLS ?? systemTheme);
-  }, [themeLS, systemTheme]);
+  const [themeName, setThemeName] = useState<ThemeName>(
+    themeCk || systemTheme || DEFAULT_THEME,
+  );
+  console.log('themeCk ', themeCk);
+  console.log('systemTheme ', systemTheme);
+  console.log('DEFAULT_THEME ', DEFAULT_THEME);
+  console.log('themeName ', themeName);
 
   // remember the theme on manual toggle, ignore system theme changes
   const toggleTheme = useCallback(() => {
-    setThemeLS((current) => (current === 'light' ? 'dark' : 'light'));
-  }, [setThemeLS]);
+    const newThemeName = themeName === 'light' ? 'dark' : 'light';
+    setThemeName(newThemeName);
+    Cookies.set(STORAGE_THEME_KEY, newThemeName, { expires: 365 });
+  }, [themeName, setThemeName]);
 
   const value = useMemo(
     () => ({
