@@ -1,10 +1,13 @@
 import { FC } from 'react';
 
 import ModalProvider from './modals';
-import ThemeProvider from './theme';
+import ThemeProvider, { ThemeName } from './theme';
 import Web3Provider, { EnvConfig } from './web3';
 
-export type ProvidersProps = { cookiesThemeScheme: string; config: EnvConfig };
+export type ProvidersProps = {
+  cookiesThemeScheme: ThemeName;
+  config: EnvConfig;
+};
 
 const Providers: FC<ProvidersProps> = ({
   cookiesThemeScheme,
