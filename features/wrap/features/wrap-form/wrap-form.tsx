@@ -373,6 +373,7 @@ export const WrapForm: FC = memo(() => {
         willReceiveAmountToken="wstETH"
         balance={wstethBalance.data}
         balanceToken={'wstETH'}
+        allowanceAmount={allowance}
         failedText={txModalFailedText}
         formRef={formRef}
       />

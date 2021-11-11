@@ -39,6 +39,7 @@ interface TxStageModalProps extends ModalProps {
   txHash?: string;
   balance?: BigNumber;
   balanceToken?: string;
+  allowanceAmount?: BigNumber;
   failedText?: string;
   formRef?: RefObject<HTMLFormElement>;
 }
@@ -54,6 +55,7 @@ export const TxStageModal: FC<TxStageModalProps> = memo(
     willReceiveAmountToken,
     balance,
     balanceToken,
+    allowanceAmount,
     failedText,
     formRef,
     ...modalProps
@@ -207,21 +209,38 @@ export const TxStageModal: FC<TxStageModalProps> = memo(
               <IconWrapper>
                 <SuccessIcon />
               </IconWrapper>
-              {txOperation !== TX_OPERATION.APPROVING && balance && (
-                <BoldText>
-                  Your new balance is <wbr />
-                  {withOptionaLineBreak(balanceAsString)} {balanceToken}
-                </BoldText>
+              {txOperation !== TX_OPERATION.APPROVING && (
+                <>
+                  <BoldText>
+                    Your new balance is <wbr />
+                    {withOptionaLineBreak(balanceAsString)} {balanceToken}
+                  </BoldText>
+                  <LightText
+                    size="xxs"
+                    color="secondary"
+                    css={css`
+                      margin-top: 4px;
+                    `}
+                  >
+                    {operationWasSuccessfulText}
+                  </LightText>
+                </>
               )}
-              <LightText
-                size="xxs"
-                color="secondary"
-                css={css`
-                  margin-top: 4px;
-                `}
-              >
-                {operationWasSuccessfulText}
-              </LightText>
+              {txOperation === TX_OPERATION.APPROVING && allowanceAmount && (
+                <>
+                  <BoldText>{operationWasSuccessfulText}</BoldText>
+                  <LightText
+                    size="xxs"
+                    color="secondary"
+                    css={css`
+                      margin-top: 4px;
+                    `}
+                  >
+                    {formatBalance(allowanceAmount, 4)} stETH was unlocked to
+                    wrap.
+                  </LightText>
+                </>
+              )}
               {etherscanTxLinkBlock}
             </>
           ) : null;
@@ -276,6 +295,7 @@ export const TxStageModal: FC<TxStageModalProps> = memo(
       balance,
       balanceAsString,
       balanceToken,
+      allowanceAmount,
       operationWasSuccessfulText,
       failedText,
       formRef,
