@@ -82,7 +82,7 @@ export const TxStageModal: FC<TxStageModalProps> = memo(
         case TX_OPERATION.STAKING:
           return 'Staking operation was successful';
         case TX_OPERATION.APPROVING:
-          return 'Approving operation was successful';
+          return 'Unlock successful!';
         case TX_OPERATION.WRAPPING:
           return 'Wrapping operation was successful';
         case TX_OPERATION.UNWRAPPING:
@@ -249,7 +249,12 @@ export const TxStageModal: FC<TxStageModalProps> = memo(
                     margin-top: 38px;
                   `}
                 >
-                  <Link onClick={() => formRef.current?.requestSubmit()}>
+                  <Link
+                    onClick={() => formRef.current?.requestSubmit()}
+                    css={css`
+                      cursor: pointer;
+                    `}
+                  >
                     Retry
                   </Link>
                 </LightText>
