@@ -250,7 +250,7 @@ export const TxStageModal: FC<TxStageModalProps> = memo(
               <IconWrapper>
                 <FailIcon />
               </IconWrapper>
-              <BoldText>Tx signature fail</BoldText>
+              <BoldText>Tx Signature Fail</BoldText>
               <LightText
                 size="xxs"
                 color="secondary"
@@ -258,7 +258,7 @@ export const TxStageModal: FC<TxStageModalProps> = memo(
                   margin-top: 4px;
                 `}
               >
-                {failedText}
+                The transaction signature was denied.
               </LightText>
               {formRef && formRef.current && (
                 <LightText
@@ -297,7 +297,6 @@ export const TxStageModal: FC<TxStageModalProps> = memo(
       balanceToken,
       allowanceAmount,
       operationWasSuccessfulText,
-      failedText,
       formRef,
     ]);
 
