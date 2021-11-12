@@ -27,6 +27,10 @@ export const MaxButton = styled(Button)`
   letter-spacing: 0.4px;
 `;
 
-export const SelectIconWrapper = styled(SelectIcon)<{ error: boolean }>`
+export const SelectIconWrapper = styled(SelectIcon)`
+  position: static;
+`;
+
+export const InputWrapper = styled(Input)<{ error: boolean }>`
   ${({ error }) => (error ? errorCSS : '')}
 `;

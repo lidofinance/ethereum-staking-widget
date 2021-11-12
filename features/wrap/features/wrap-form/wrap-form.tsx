@@ -14,7 +14,6 @@ import {
   DataTable,
   DataTableRow,
   Eth,
-  Input,
   Lock,
   Option,
   Steth,
@@ -48,6 +47,7 @@ import {
   InputGroupStyled,
   MaxButton,
   SelectIconWrapper,
+  InputWrapper,
 } from 'features/wrap/styles';
 import { wrapProcessingWithApprove } from 'features/wrap/utils';
 import { InputLocked } from 'features/wrap/components';
@@ -281,7 +281,7 @@ export const WrapForm: FC = memo(() => {
             icon={iconsMap[selectedToken]}
             value={selectedToken}
             onChange={onChangeSelectToken}
-            error={!!error}
+            error={error}
           >
             <Option leftDecorator={iconsMap[TOKENS.STETH]} value={TOKENS.STETH}>
               Lido (STETH)
@@ -290,7 +290,7 @@ export const WrapForm: FC = memo(() => {
               Ethereum (ETH)
             </Option>
           </SelectIconWrapper>
-          <Input
+          <InputWrapper
             fullwidth
             placeholder="0"
             rightDecorator={
@@ -314,7 +314,7 @@ export const WrapForm: FC = memo(() => {
             label="Amount"
             value={inputValue}
             onChange={handleChange}
-            error={error}
+            error={!!error}
           />
         </InputGroupStyled>
         {active ? (
