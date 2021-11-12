@@ -1,5 +1,13 @@
-import styled from 'styled-components';
-import { Button, InputGroup, Input } from '@lidofinance/lido-ui';
+import styled, { css } from 'styled-components';
+import { Button, InputGroup, Input, SelectIcon } from '@lidofinance/lido-ui';
+
+const errorCSS = css`
+  &,
+  &:hover,
+  &:focus-within {
+    border-color: ${({ theme }) => theme.colors.error};
+  }
+`;
 
 export const FormStyled = styled.form`
   margin-bottom: 24px;
@@ -17,4 +25,8 @@ export const InputGroupStyled = styled(InputGroup)`
 
 export const MaxButton = styled(Button)`
   letter-spacing: 0.4px;
+`;
+
+export const SelectIconWrapper = styled(SelectIcon)<{ error: boolean }>`
+  ${({ error }) => (error ? errorCSS : '')}
 `;

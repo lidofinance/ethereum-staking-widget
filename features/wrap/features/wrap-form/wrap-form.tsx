@@ -17,7 +17,6 @@ import {
   Input,
   Lock,
   Option,
-  SelectIcon,
   Steth,
 } from '@lidofinance/lido-ui';
 import { CHAINS, getTokenAddress, TOKENS } from '@lido-sdk/constants';
@@ -44,7 +43,12 @@ import {
 import { formatBalance, runWithTransactionLogger } from 'utils';
 import { Connect } from 'shared/wallet';
 import { FormatToken } from 'shared/formatters';
-import { FormStyled, InputGroupStyled, MaxButton } from 'features/wrap/styles';
+import {
+  FormStyled,
+  InputGroupStyled,
+  MaxButton,
+  SelectIconWrapper,
+} from 'features/wrap/styles';
 import { wrapProcessingWithApprove } from 'features/wrap/utils';
 import { InputLocked } from 'features/wrap/components';
 
@@ -273,10 +277,11 @@ export const WrapForm: FC = memo(() => {
         ref={formRef}
       >
         <InputGroupStyled fullwidth>
-          <SelectIcon
+          <SelectIconWrapper
             icon={iconsMap[selectedToken]}
             value={selectedToken}
             onChange={onChangeSelectToken}
+            error={!!error}
           >
             <Option leftDecorator={iconsMap[TOKENS.STETH]} value={TOKENS.STETH}>
               Lido (STETH)
@@ -284,7 +289,7 @@ export const WrapForm: FC = memo(() => {
             <Option leftDecorator={iconsMap[ETH]} value={ETH}>
               Ethereum (ETH)
             </Option>
-          </SelectIcon>
+          </SelectIconWrapper>
           <Input
             fullwidth
             placeholder="0"
