@@ -9,9 +9,9 @@ import {
   ConnectCoinbase,
   ConnectTrust,
   ConnectImToken,
-  ConnectLedger,
+  // ConnectLedger,
   ConnectCoin98,
-  ConnectMathWallet,
+  // ConnectMathWallet,
 } from './connectors';
 import { Terms } from './terms';
 
@@ -33,7 +33,7 @@ export const ModalConnect: FC<ModalProps> = (props) => {
   const wallets = [
     <ConnectMetamask key="Metamask" {...common} />,
     <ConnectWalletConnect key="WalletConnect" {...common} />,
-    <ConnectLedger key="Ledger" {...common} />,
+    // <ConnectLedger key="Ledger" {...common} />,
     <ConnectCoinbase key="Coinbase" {...common} />,
     <ConnectTrust key="Trust" {...common} />,
     <ConnectImToken key="ImToken" {...common} />,
@@ -46,14 +46,14 @@ export const ModalConnect: FC<ModalProps> = (props) => {
     wallets.push(ConnectCoin98WithProps);
   }
 
-  const ConnectMathWalletWithProps = (
-    <ConnectMathWallet key="MathWallet" {...common} />
-  );
-  if (helpers.isMathWalletProvider()) {
-    wallets.unshift(ConnectMathWalletWithProps);
-  } else {
-    wallets.push(ConnectMathWalletWithProps);
-  }
+  // const ConnectMathWalletWithProps = (
+  //   <ConnectMathWallet key="MathWallet" {...common} />
+  // );
+  // if (helpers.isMathWalletProvider()) {
+  //   wallets.unshift(ConnectMathWalletWithProps);
+  // } else {
+  //   wallets.push(ConnectMathWalletWithProps);
+  // }
 
   return (
     <Modal title="Connect wallet" {...props}>
