@@ -1,13 +1,11 @@
 import { FC, useCallback } from 'react';
-import { css } from 'styled-components';
 import { GetServerSideProps } from 'next';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { FAQItem, getFaqList } from 'lib/faqList';
-import Layout from 'components/layout';
-import Faq from 'components/faq';
-import Switch from 'components/switch';
-import { WrapWallet, WrapForm, UnWrapForm } from 'components/wrapPage';
+import { Layout, Faq } from 'shared/components';
+import { WrapForm, UnwrapForm, Wallet } from 'features/wrap';
+import { Switch } from 'features/wrap/components';
 
 interface WrapPageProps {
   faqList: FAQItem[];
@@ -32,14 +30,6 @@ const WrapPage: FC<WrapPageProps> = ({ faqList }) => {
       queryParams.append('embed', embed as string);
     }
 
-    // This one not working!
-    // await router.push(
-    //   {
-    //     href: '/wrap',
-    //     query: queryParams.toString(),
-    //   },
-    // );
-    // It's working
     const url =
       queryParams.toString().length > 0
         ? '/wrap?' + queryParams.toString()
@@ -61,14 +51,11 @@ const WrapPage: FC<WrapPageProps> = ({ faqList }) => {
         onClick={toggleMode}
         checkedLabel="Wrap"
         uncheckedLabel="Unwrap"
-        css={css`
-          margin: 0 auto 24px auto;
-        `}
       />
 
-      <WrapWallet />
+      <Wallet />
 
-      {isUnwrapMode ? <UnWrapForm /> : <WrapForm />}
+      {isUnwrapMode ? <UnwrapForm /> : <WrapForm />}
 
       <Faq
         faqList={faqList}

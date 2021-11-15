@@ -1,6 +1,6 @@
 import { FC } from 'react';
 import Head from 'next/head';
-import Layout from 'components/layout';
+import { Layout } from 'shared/components';
 
 const ReferralPage: FC = () => {
   return (

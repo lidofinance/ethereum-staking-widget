@@ -4,7 +4,11 @@ import Cors from 'cors';
 import { CloudFlareStorage } from '../../lib/cloudFlareStorage';
 import { TerraRESTApi } from '../../lib/terra/api';
 import { TerraStakingAprStatsStorage } from '../../lib/terra/statsStorage';
-import { TAIL_LENGTH, TERRA_NODE_URL } from '../../config/terra';
+import {
+  TAIL_LENGTH,
+  TERRA_NODE_URL,
+  CONTRACT_VERSION,
+} from '../../config/terra';
 import { TerraCron } from '../../lib/terra/cron';
 
 const CLOUDFLARE_API_TOKEN = process.env.CLOUDFLARE_API_TOKEN;
@@ -20,10 +24,16 @@ const cfStorage = new CloudFlareStorage(
 );
 
 const terraApi = new TerraRESTApi(TERRA_NODE_URL);
-const statsStorage = new TerraStakingAprStatsStorage(cfStorage, TAIL_LENGTH);
+const statsStorage = new TerraStakingAprStatsStorage(cfStorage, {
+  tailLength: TAIL_LENGTH,
+});
 const terraCron = new TerraCron(statsStorage, terraApi);
 
-if (HAS_CLOUDFLARE_CREDENTIALS && process.env.NODE_ENV === 'production') {
+if (
+  HAS_CLOUDFLARE_CREDENTIALS &&
+  process.env.NODE_ENV === 'production' &&
+  CONTRACT_VERSION === '1'
+) {
   console.info('Terra Staking Stats: Cloudflare credentials was provided');
   terraCron.init();
 }
@@ -41,6 +51,8 @@ export default nextConnect()
     }),
   )
   .get(async (_req, res) => {
+    if (CONTRACT_VERSION !== '1')
+      return res.status(500).send('Wrong environment');
     if (!updated && HAS_CLOUDFLARE_CREDENTIALS) {
       await statsStorage.sync();
     }
