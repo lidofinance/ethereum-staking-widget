@@ -1,19 +1,11 @@
 <svg width="1080" height="1080" viewBox="0 0 1080 1080" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path d="M539.674 666.106L223.296 485.389L214.657 498.643C117.213 648.123 138.976 843.889 266.978 969.308C417.607 1116.9 661.823 1116.9 812.451 969.308C940.454 843.889 962.217 648.123 864.773 498.643L856.131 485.386L539.674 666.106Z" fill="url(#paint0_radial)"/>
-<path d="M540.079 0.205078L267.358 418.375L540.079 574.121V0.205078Z" fill="url(#paint1_linear)"/>
-<path d="M540.059 574.149L812.806 418.377L540.074 0L540.059 574.149Z" fill="url(#paint2_linear)"/>
-<defs>
-<radialGradient id="paint0_radial" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(539.371 1080.27) rotate(-90) scale(513.392 670.976)">
-<stop offset="0.203695" stop-color="#56F2FF"/>
-<stop offset="1" stop-color="#4A8CEA"/>
-</radialGradient>
-<linearGradient id="paint1_linear" x1="403.719" y1="0.205078" x2="403.719" y2="574.121" gradientUnits="userSpaceOnUse">
-<stop offset="0.377179" stop-color="#FFE336"/>
-<stop offset="1" stop-color="#13C0B6"/>
-</linearGradient>
-<linearGradient id="paint2_linear" x1="676.433" y1="0" x2="676.433" y2="574.149" gradientUnits="userSpaceOnUse">
-<stop offset="0.408817" stop-color="#FF7F72"/>
-<stop offset="1" stop-color="#2978EF"/>
-</linearGradient>
-</defs>
+<path d="M540 1080C838.234 1080 1080 838.234 1080 540C1080 241.766 838.234 0 540 0C241.766 0 0 241.766 0 540C0 838.234 241.766 1080 540 1080Z" fill="white"/>
+<path d="M318.491 501.636L312.445 510.91C244.258 615.511 259.486 752.502 349.059 840.266C401.754 891.898 470.817 917.717 539.882 917.724C539.882 917.724 539.882 917.724 318.491 501.636Z" fill="#00A3FF"/>
+<path opacity="0.6" d="M539.818 628.095L318.428 501.636C539.819 917.724 539.818 917.724 539.818 917.724C539.818 827.103 539.818 723.263 539.818 628.095Z" fill="#00A3FF"/>
+<path opacity="0.6" d="M761.509 501.636L767.555 510.91C835.742 615.511 820.514 752.502 730.941 840.266C678.246 891.898 609.183 917.717 540.118 917.724C540.118 917.724 540.118 917.724 761.509 501.636Z" fill="#00A3FF"/>
+<path opacity="0.2" d="M540.094 628.095L761.484 501.636C540.095 917.724 540.094 917.724 540.094 917.724C540.094 827.103 540.094 723.263 540.094 628.095Z" fill="#00A3FF"/>
+<path opacity="0.2" d="M540.176 345.586V563.694L730.879 454.711L540.176 345.586Z" fill="#00A3FF"/>
+<path opacity="0.6" d="M540.119 345.586L349.277 454.708L540.119 563.694V345.586Z" fill="#00A3FF"/>
+<path d="M540.119 162.158L349.277 454.78L540.119 345.35V162.158Z" fill="#00A3FF"/>
+<path opacity="0.6" d="M540.176 345.317L731.025 454.749L540.176 161.982V345.317Z" fill="#00A3FF"/>
 </svg>
