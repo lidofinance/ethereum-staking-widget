@@ -1,4 +1,4 @@
-import { FC, useCallback } from 'react';
+import { FC, useCallback, useState, useMemo } from 'react';
 import { GetServerSideProps } from 'next';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
@@ -11,31 +11,54 @@ interface WrapPageProps {
   faqList: FAQItem[];
 }
 
+const getQueryParams = (
+  isUnwrapMode: boolean,
+  ref: string,
+  embed: string,
+  exclude?: Array<string>,
+): string => {
+  const queryParams = new URLSearchParams();
+
+  if (!isUnwrapMode) {
+    queryParams.append('mode', 'unwrap');
+  }
+  if (ref) {
+    queryParams.append('ref', ref);
+  }
+  if (embed) {
+    queryParams.append('embed', embed);
+  }
+
+  if (exclude) {
+    exclude.forEach((item) => {
+      if (queryParams.has(item)) {
+        queryParams.delete(item);
+      }
+    });
+  }
+
+  return queryParams.toString();
+};
+
 const WrapPage: FC<WrapPageProps> = ({ faqList }) => {
   const router = useRouter();
-  const { ref } = router.query;
-  const isUnwrapMode = router.query.mode === 'unwrap';
+  const { ref, embed } = router.query;
+  const [isUnwrapMode] = useState<boolean>(router.query.mode === 'unwrap');
+
+  const queryParams = useMemo(() => {
+    return getQueryParams(isUnwrapMode, ref as string, embed as string);
+  }, [isUnwrapMode, ref, embed]);
+
+  const queryParamsWithoutMode = useMemo(() => {
+    return getQueryParams(isUnwrapMode, ref as string, embed as string, [
+      'mode',
+    ]);
+  }, [isUnwrapMode, ref, embed]);
 
   const toggleMode = useCallback(async () => {
-    const { ref, embed } = router.query;
-
-    const queryParams = new URLSearchParams();
-    if (!isUnwrapMode) {
-      queryParams.append('mode', 'unwrap');
-    }
-    if (ref) {
-      queryParams.append('ref', ref as string);
-    }
-    if (embed) {
-      queryParams.append('embed', embed as string);
-    }
-
-    const url =
-      queryParams.toString().length > 0
-        ? '/wrap?' + queryParams.toString()
-        : '/wrap';
+    const url = queryParams.length > 0 ? '/wrap?' + queryParams : '/wrap';
     await router.push(url);
-  }, [router, isUnwrapMode]);
+  }, [router, queryParams]);
 
   return (
     <Layout
@@ -60,8 +83,14 @@ const WrapPage: FC<WrapPageProps> = ({ faqList }) => {
       <Faq
         faqList={faqList}
         replacements={{
-          '--REF--': ref ? `?ref=${ref}` : '',
-          '--UNWRAP-REF--': ref ? `&ref=${ref}` : '',
+          '--QUERY-PARAMS--':
+            queryParamsWithoutMode.length > 0
+              ? `?${queryParamsWithoutMode}`
+              : '',
+          '--QUERY-PARAMS-WITHOUT-MODE--':
+            queryParamsWithoutMode.length > 0
+              ? `&${queryParamsWithoutMode}`
+              : '',
         }}
       />
     </Layout>
