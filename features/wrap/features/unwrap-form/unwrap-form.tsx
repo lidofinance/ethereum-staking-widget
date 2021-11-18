@@ -26,7 +26,6 @@ import { TxStageModal, TX_OPERATION, TX_STAGE } from 'shared/components';
 import {
   useTxCostInUsd,
   useCurrencyInput,
-  useWstethBySteth,
   useStethByWsteth,
 } from 'shared/hooks';
 import { formatBalance } from 'utils';
@@ -124,7 +123,7 @@ export const UnwrapForm: FC = memo(() => {
       return parseEther('0');
     }
   }, [inputValue]);
-  const willReceiveStethAsBigNumber = useWstethBySteth(inputValueAsBigNumber);
+  const willReceiveStethAsBigNumber = useStethByWsteth(inputValueAsBigNumber);
 
   // Reset form amount after disconnect wallet
   useEffect(() => {
