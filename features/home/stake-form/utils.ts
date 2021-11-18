@@ -1,8 +1,12 @@
 import { AddressZero } from '@ethersproject/constants';
 import { parseEther } from '@ethersproject/units';
+import { isAddress } from 'ethers/lib/utils';
 import { StethAbi } from '@lido-sdk/contracts';
-import { TX_STAGE } from 'shared/components';
+import { CHAINS } from '@lido-sdk/constants';
+import { getStaticRpcBatchProvider } from '@lido-sdk/providers';
 import { runWithTransactionLogger } from 'utils';
+import { getBackendRPCPath } from 'config';
+import { TX_STAGE } from 'shared/components';
 
 type StakeProcessingProps = (
   stethContractWeb3: StethAbi | null,
@@ -13,7 +17,31 @@ type StakeProcessingProps = (
   stethBalanceUpdate: () => void,
   inputValue: string,
   resetForm: () => void,
+  chainId: CHAINS | undefined,
+  refFromQuery: string | undefined,
 ) => Promise<void>;
+
+export const getAddress = async (
+  input: string | undefined,
+  chainId: CHAINS | undefined,
+): Promise<string> => {
+  if (!input || !chainId) return '';
+  if (isAddress(input)) return input;
+
+  try {
+    const provider = getStaticRpcBatchProvider(
+      chainId,
+      getBackendRPCPath(chainId),
+    );
+    const address = await provider.resolveName(input);
+
+    if (address) return address;
+  } catch (error) {
+    throw new Error('Failed to resolve referral address');
+  }
+
+  throw new Error('Invalid referral address');
+};
 
 export const stakeProcessing: StakeProcessingProps = async (
   stethContractWeb3,
@@ -24,14 +52,18 @@ export const stakeProcessing: StakeProcessingProps = async (
   stethBalanceUpdate,
   inputValue,
   resetForm,
+  chainId,
+  refFromQuery,
 ) => {
   if (!stethContractWeb3) {
     return;
   }
 
   try {
+    const referralAddress = await getAddress(refFromQuery, chainId);
+
     const callback = () =>
-      stethContractWeb3.submit(AddressZero, {
+      stethContractWeb3.submit(referralAddress || AddressZero, {
         value: parseEther(inputValue),
       });
 

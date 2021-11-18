@@ -7,8 +7,9 @@ import {
   useEffect,
   useRef,
 } from 'react';
+import { useRouter } from 'next/router';
 // import { AddressZero } from '@ethersproject/constants';
-// import { parseEther } from '@ethersproject/units';
+import { parseEther } from '@ethersproject/units';
 import {
   useContractSWR,
   useEthereumBalance,
@@ -31,9 +32,10 @@ import { useCurrencyInput, useTxCostInUsd } from 'shared/hooks';
 // import { useStethSubmitGasLimit } from './hooks/use-steth-submit-gas-limit';
 import { FormStyled, InputStyled, MaxButton } from './styles';
 import { stakeProcessing } from './utils';
-import { parseEther } from '@ethersproject/units';
 
 export const StakeForm: FC = memo(() => {
+  const router = useRouter();
+
   const formRef = useRef<HTMLFormElement>(null);
 
   const [txModalOpen, setTxModalOpen] = useState(false);
@@ -41,7 +43,7 @@ export const StakeForm: FC = memo(() => {
   const [txHash, setTxHash] = useState<string>();
   const [txModalFailedText, setTxModalFailedText] = useState('');
 
-  const { active } = useWeb3();
+  const { active, chainId } = useWeb3();
   const ethBalance = useEthereumBalance();
   const stethBalance = useSTETHBalance();
   const stethContractWeb3 = useSTETHContractWeb3();
@@ -78,9 +80,17 @@ export const StakeForm: FC = memo(() => {
         stethBalance.update,
         inputValue,
         resetForm,
+        chainId,
+        router?.query?.ref as string | undefined,
       );
     },
-    [openTxModal, stethContractWeb3, stethBalance.update],
+    [
+      openTxModal,
+      stethContractWeb3,
+      stethBalance.update,
+      chainId,
+      router?.query?.ref,
+    ],
   );
 
   const {
