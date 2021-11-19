@@ -1,4 +1,4 @@
-import { FC, useCallback, useState, useMemo } from 'react';
+import { FC, useCallback, useMemo } from 'react';
 import { GetServerSideProps } from 'next';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
@@ -43,7 +43,7 @@ const getQueryParams = (
 const WrapPage: FC<WrapPageProps> = ({ faqList }) => {
   const router = useRouter();
   const { ref, embed } = router.query;
-  const [isUnwrapMode] = useState<boolean>(router.query.mode === 'unwrap');
+  const isUnwrapMode = router.query.mode === 'unwrap';
 
   const queryParams = useMemo(() => {
     return getQueryParams(isUnwrapMode, ref as string, embed as string);
@@ -56,9 +56,16 @@ const WrapPage: FC<WrapPageProps> = ({ faqList }) => {
   }, [isUnwrapMode, ref, embed]);
 
   const toggleMode = useCallback(async () => {
-    const url = queryParams.length > 0 ? '/wrap?' + queryParams : '/wrap';
+    let qs = '';
+    if (isUnwrapMode) {
+      qs = queryParamsWithoutMode;
+    } else {
+      qs = queryParams;
+    }
+
+    const url = qs.length > 0 ? '/wrap?' + qs : '/wrap';
     await router.push(url);
-  }, [router, queryParams]);
+  }, [router, isUnwrapMode, queryParams, queryParamsWithoutMode]);
 
   return (
     <Layout
