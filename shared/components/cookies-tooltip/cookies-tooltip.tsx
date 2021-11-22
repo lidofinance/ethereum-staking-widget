@@ -1,14 +1,16 @@
 import { FC, useEffect, useState } from 'react';
 import { AppCookies, COOKIES_ALLOWED_KEY } from 'utils';
+import { ThemeToggleContext } from 'providers/theme';
 import CookieIconSrc from 'assets/icons/cookie.svg';
+import CookieIconInverseSrc from 'assets/icons/cookieInverse.svg';
 import {
   Wrap,
   Box,
   CookieWrap,
   Text,
   ButtonsWrap,
-  ButtonFilled,
-  ButtonGhost,
+  AllowButton,
+  DeclineButton,
   Link,
 } from './styles';
 
@@ -27,7 +29,18 @@ export const CookiesTooltip: FC = () => {
     <Wrap>
       <Box>
         <CookieWrap>
-          <img src={CookieIconSrc} alt="" />
+          <ThemeToggleContext.Consumer>
+            {(theme) => (
+              <>
+                {theme.themeName == 'light' && (
+                  <img src={CookieIconSrc} alt="Cookie" />
+                )}
+                {theme.themeName == 'dark' && (
+                  <img src={CookieIconInverseSrc} alt="Cookie" />
+                )}
+              </>
+            )}
+          </ThemeToggleContext.Consumer>
         </CookieWrap>
         <Text>
           We use cookies to collect anonymous site visitation data
@@ -36,22 +49,22 @@ export const CookiesTooltip: FC = () => {
           <Link href="https://lido.fi/privacy-notice">Privacy Notice</Link>
         </Text>
         <ButtonsWrap>
-          <ButtonFilled
+          <AllowButton
             onClick={() => {
               AppCookies.allowCookies();
               setVisibility(false);
             }}
           >
             Allow
-          </ButtonFilled>
-          <ButtonGhost
+          </AllowButton>
+          <DeclineButton
             onClick={() => {
               AppCookies.declineCookies();
               setVisibility(false);
             }}
           >
             Decline
-          </ButtonGhost>
+          </DeclineButton>
         </ButtonsWrap>
       </Box>
     </Wrap>
