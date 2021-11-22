@@ -1,20 +1,20 @@
-# Lido Frontend Template
+# Lido Ethereum Liquid Staking Widget
 
-Lido Frontend Template is a project template for developing Lido applications. It features the standard Lido frontend stack including Next.js, SWR, ethers, Lido UI and styled-components. The purpose of this template is to standardize Lido frontends and to enable developers to start working on the application as soon as possible with minimal setup required.
+A widget for submitting Ether to the pool based on [Lido Frontend Template](https://github.com/lidofinance/lido-frontend-template).
 
 ### Pre-requisites
 
 - Node.js v12+
 - Yarn package manager
 
-## Development
+This project requires an .env file which is distributed via private communication channels. A sample can be found in .env.
 
-Step 0. Read `DOCS.md` in the root of the project
+### Development
 
-Step 1. Copy the contents of `.env` to `.env.local`
+Step 1. Copy the contents of `sample.env` to `.env.local`
 
 ```bash
-cp .env .env.local
+cp sample.env .env.local
 ```
 
 Step 2. Fill out the `.env.local`. You may need to sign up for [Infura](https://infura.io/) or [Alchemy](https://www.alchemy.com/), if you haven't already, to be able to use Ethereum JSON RPC connection.
@@ -31,13 +31,20 @@ Step 4. Start the development server
 yarn dev
 ```
 
-Step 5. Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
 ### Environment variables
 
-This project uses publicRuntimeConfig in the [next.config.js](./next.config.js) and getServerSideProps on the pages (function may be empty, but it forces Next.js to switch to Server-Side Rendering mode). This is necessary to quickly start the docker container without rebuilding the application. More on that in `DOCS.md`.
+Note! Avoid using `NEXT_PUBLIC_` environment variables as it hinders our CI pipeline. Please use server-side environment variables and pass them to the client using `getInitialProps` in `_app.js`.
 
-Read more about [runtime configuration](https://nextjs.org/docs/api-reference/next.config.js/runtime-configuration) and [automatic static optimization](https://nextjs.org/docs/advanced-features/automatic-static-optimization)
+### Automatic versioning
+
+Note! This repo uses automatic versioning, please follow the [commit message conventions](https://www.conventionalcommits.org/en/v1.0.0/).
+
+e.g.
+
+```
+git commit -m "fix: a bug in calculation"
+git commit -m "feat: dark theme"
+```
 
 ## Production
 
