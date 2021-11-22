@@ -46,7 +46,6 @@ export const CookieWrap = styled.div`
   justify-content: center;
   width: 32px;
   height: 32px;
-  background: #f4f6f8;
   border-radius: 8px;
 
   ${({ theme }) => theme.mediaQueries.lg} {
@@ -104,19 +103,22 @@ const ButtonBasic = styled.button.attrs({ type: 'button' })`
   }
 `;
 
-export const ButtonFilled = styled(ButtonBasic)`
-  color: #ffffff;
-  background-color: #273852;
-`;
-
-export const ButtonGhost = styled(ButtonBasic)`
-  color: #273852;
-  background-color: #fff;
-  border: 1px solid #273852;
+export const AllowButton = styled(ButtonBasic)`
+  background-color: ${({ theme }) => theme.colors.text};
+  color: ${({ theme }) => theme.colors.foreground};
 
   &:hover {
-    color: #fff;
-    border-color: #0e1621;
+    background-color: ${({ theme }) => theme.colors.textSecondary};
+  }
+`;
+
+export const DeclineButton = styled(ButtonBasic)`
+  background-color: ${({ theme }) => theme.colors.foreground};
+  color: ${({ theme }) => theme.colors.text};
+  border: 1px solid ${({ theme }) => theme.colors.text};
+
+  &:hover {
+    background-color: ${({ theme }) => theme.colors.background};
   }
 `;
 
