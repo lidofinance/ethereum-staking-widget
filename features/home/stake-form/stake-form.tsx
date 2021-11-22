@@ -103,6 +103,7 @@ export const StakeForm: FC = memo(() => {
     setMaxInputValue,
     reset,
   } = useCurrencyInput({
+    initialValue: (router?.query?.amount as string) || undefined,
     submit,
     limit: ethBalance.data,
   });
