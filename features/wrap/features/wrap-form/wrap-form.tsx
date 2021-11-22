@@ -304,7 +304,7 @@ export const WrapForm: FC = memo(() => {
                 >
                   MAX
                 </MaxButton>
-                {needsApprove && selectedToken === TOKENS.STETH ? (
+                {account && needsApprove && selectedToken === TOKENS.STETH ? (
                   <InputLocked />
                 ) : (
                   ''

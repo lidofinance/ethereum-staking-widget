@@ -11,6 +11,10 @@ export const FooterStyle = styled(Container)`
   ${({ theme }) => theme.mediaQueries.lg} {
     padding-top: 40px;
   }
+
+  ${({ theme }) => theme.mediaQueries.md} {
+    padding-bottom: 40px;
+  }
 `;
 
 export const FooterDividerStyle = styled(Divider)`
