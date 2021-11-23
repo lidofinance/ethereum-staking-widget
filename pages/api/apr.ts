@@ -8,6 +8,7 @@ import {
 } from 'config';
 import { getEthApr, getStethApr } from 'utils';
 import { API } from 'types';
+import { serverLogger } from 'utils/serverLogger';
 
 const cacheEth = new Cache<typeof CACHE_ETH_APR_KEY, string>();
 const cacheSteth = new Cache<typeof CACHE_STETH_APR_KEY, string>();
@@ -59,6 +60,7 @@ const apr: API = async (req, res) => {
       data: resultData,
     });
   } catch (error) {
+    serverLogger.error(error);
     if (error instanceof Error) {
       res.status(500).json(error.message ?? DEFAULT_API_ERROR_MESSAGE);
     } else {

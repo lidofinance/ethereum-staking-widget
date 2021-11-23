@@ -7,6 +7,7 @@ import {
 } from 'config';
 import { getOneInchRate } from 'utils';
 import { API } from 'types';
+import { serverLogger } from 'utils/serverLogger';
 
 const cache = new Cache<typeof CACHE_ONE_INCH_RATE_KEY, unknown>();
 
@@ -34,6 +35,7 @@ const oneInchRate: API = async (req, res) => {
       res.status(200).json({ rate: oneInchRate });
     }
   } catch (error) {
+    serverLogger.error(error);
     if (error instanceof Error) {
       res.status(500).json(error.message ?? DEFAULT_API_ERROR_MESSAGE);
     } else {

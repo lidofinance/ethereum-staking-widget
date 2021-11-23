@@ -10,6 +10,7 @@ import {
   VALIDATORS_CACHE_KEY,
   CONTRACT_VERSION,
 } from '../../config/terraTestnet';
+import { serverLogger } from '../../utils/serverLogger';
 
 const terraApi = new TerraRESTApi(TERRA_NODE_URL);
 
@@ -42,7 +43,7 @@ export default nextConnect()
       const error = {
         message: 'Something went wrong!',
       };
-      console.error(e);
+      serverLogger.error(e);
       res.status(500).send({ error });
     }
   });

@@ -6,6 +6,7 @@ import {
 } from 'config';
 import { getLidoStats } from 'utils';
 import { API } from 'types';
+import { serverLogger } from 'utils/serverLogger';
 
 const cache = new Cache<typeof CACHE_LIDO_STATS_KEY, unknown>();
 
@@ -28,6 +29,7 @@ const lidoStats: API = async (req, res) => {
       res.status(200).json({ data: lidoStats });
     }
   } catch (error) {
+    serverLogger.error(error);
     if (error instanceof Error) {
       res.status(500).json(error.message ?? DEFAULT_API_ERROR_MESSAGE);
     } else {
