@@ -41,6 +41,7 @@
     "next-connect": "^0.10.2",
     "node-cron": "^3.0.0",
     "nprogress": "^0.2.0",
+    "prom-client": "^14.0.1",
     "raw-loader": "^4.0.2",
     "react": "17.0.2",
     "react-device-detect": "^1.17.0",
