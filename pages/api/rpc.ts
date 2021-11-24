@@ -5,14 +5,14 @@ import { CHAINS } from '@lido-sdk/constants';
 import { DEFAULT_API_ERROR_MESSAGE } from 'config';
 
 const { serverRuntimeConfig } = getConfig();
-const { infuraApiKey, alchemyApiKey } = serverRuntimeConfig;
+const { infuraApiKey, alchemyApiKey, defaultChain } = serverRuntimeConfig;
 
 type Rpc = (req: NextApiRequest, res: NextApiResponse) => Promise<void>;
 
 // Proxy for third-party API.
 const rpc: Rpc = async (req, res) => {
   try {
-    const chainId = Number(req.query.chainId);
+    const chainId = Number(req.query.chainId || defaultChain);
 
     if (!CHAINS[chainId]) {
       throw new Error(`Chain ${chainId} is not supported`);
