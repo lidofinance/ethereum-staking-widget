@@ -1,0 +1,26 @@
+name: Bump version
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - 'package.json'
+      - 'CHANGELOG.md'
+      - '.github/**'
+
+jobs:
+  bump:
+    name: Bump version
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2.3.4
+      with:
+        token: ${{ secrets.REPO_ADMIN_TOKEN }}
+    - name: Bump version and push tag
+      uses: TriPSs/conventional-changelog-action@v3.7.1
+      with:
+        github-token: ${{ secrets.REPO_ADMIN_TOKEN }}
+        git-message: 'chore(release): {version}'
+        tag-prefix: ''
+        output-file: 'CHANGELOG.md'
