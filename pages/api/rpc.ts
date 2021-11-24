@@ -4,8 +4,9 @@ import { fetchRPC } from '@lido-sdk/fetch';
 import { CHAINS } from '@lido-sdk/constants';
 import { DEFAULT_API_ERROR_MESSAGE } from 'config';
 
-const { serverRuntimeConfig } = getConfig();
-const { infuraApiKey, alchemyApiKey, defaultChain } = serverRuntimeConfig;
+const { serverRuntimeConfig, publicRuntimeConfig } = getConfig();
+const { infuraApiKey, alchemyApiKey } = serverRuntimeConfig;
+const { defaultChain } = publicRuntimeConfig;
 
 type Rpc = (req: NextApiRequest, res: NextApiResponse) => Promise<void>;
 
