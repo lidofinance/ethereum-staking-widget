@@ -7,7 +7,7 @@ export const ThemeToggler: FC = () => {
   const { toggleTheme, themeName } = useThemeToggle();
 
   return (
-    <ThemeTogglerStyle onClick={toggleTheme}>
+    <ThemeTogglerStyle color="secondary" onClick={toggleTheme}>
       {themeName === 'dark' ? <Light /> : <Dark />}
     </ThemeTogglerStyle>
   );

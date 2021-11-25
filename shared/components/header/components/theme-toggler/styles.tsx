@@ -11,5 +11,4 @@ export const ThemeTogglerStyle = styled(Button).attrs({
   padding-right: 10px;
   line-height: 0;
   font-size: 0;
-  color: ${({ theme }) => theme.colors.textSecondary};
 `;
