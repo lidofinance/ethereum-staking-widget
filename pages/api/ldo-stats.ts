@@ -6,6 +6,7 @@ import {
 } from 'config';
 import { getLdoStats } from 'utils';
 import { API } from 'types';
+import { serverLogger } from 'utils/serverLogger';
 
 const cache = new Cache<typeof CACHE_LDO_STATS_KEY, unknown>();
 
@@ -24,6 +25,7 @@ const ldoStats: API = async (req, res) => {
       res.status(200).json({ data: ldoStats });
     }
   } catch (error) {
+    serverLogger.error(error);
     if (error instanceof Error) {
       res.status(500).json(error.message ?? DEFAULT_API_ERROR_MESSAGE);
     } else {
