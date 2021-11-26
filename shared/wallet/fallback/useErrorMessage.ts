@@ -1,9 +1,9 @@
-import { useSupportedChains, useWeb3 } from '@lido-sdk/web3-react';
+import { useSupportedChains, useConnectorError } from '@lido-sdk/web3-react';
 import { CHAINS } from '@lido-sdk/constants';
 import { useMemo } from 'react';
 
 export const useErrorMessage = (): string | undefined => {
-  const { error } = useWeb3();
+  const error = useConnectorError();
   const { isUnsupported, supportedChains } = useSupportedChains();
 
   const chains = useMemo(() => {
