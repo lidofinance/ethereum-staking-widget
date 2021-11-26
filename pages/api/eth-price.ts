@@ -6,7 +6,6 @@ import {
 } from 'config';
 import { getEthPrice } from 'utils';
 import { API } from 'types';
-import { serverLogger } from 'utils/serverLogger';
 
 const cache = new Cache<typeof CACHE_ETH_PRICE_KEY, unknown>();
 
@@ -24,7 +23,7 @@ const ethPrice: API = async (req, res) => {
       res.json({ price: ethPrice });
     }
   } catch (error) {
-    serverLogger.error(error);
+    console.error(error);
     if (error instanceof Error) {
       res.status(500).json(error.message ?? DEFAULT_API_ERROR_MESSAGE);
     } else {

@@ -6,7 +6,6 @@ import {
 } from 'config';
 import { getEthApr } from 'utils';
 import { API } from 'types';
-import { serverLogger } from 'utils/serverLogger';
 
 const cache = new Cache<typeof CACHE_ETH_APR_KEY, string>();
 
@@ -25,7 +24,7 @@ const ethApr: API = async (req, res) => {
       res.json(ethApr);
     }
   } catch (error) {
-    serverLogger.error(error);
+    console.error(error);
     if (error instanceof Error) {
       res.status(500).json(error.message ?? DEFAULT_API_ERROR_MESSAGE);
     } else {

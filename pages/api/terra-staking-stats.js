@@ -10,7 +10,6 @@ import {
   CONTRACT_VERSION,
 } from '../../config/terra';
 import { TerraCron } from '../../lib/terra/cron';
-import { serverLogger } from '../../utils/serverLogger';
 
 const CLOUDFLARE_API_TOKEN = process.env.CLOUDFLARE_API_TOKEN;
 const CLOUDFLARE_ACCOUNT_ID = process.env.CLOUDFLARE_ACCOUNT_ID;
@@ -64,7 +63,7 @@ export default nextConnect()
       const error = {
         message: 'Something went wrong!',
       };
-      serverLogger.error(e);
+      console.error(e);
       res.status(500).send({ error });
     }
   });

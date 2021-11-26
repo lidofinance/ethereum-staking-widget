@@ -19,7 +19,6 @@ import {
   STORAGE_KEY_PREFIX,
   CONTRACT_VERSION,
 } from '../../config/terraTestnet';
-import { serverLogger } from '../../utils/serverLogger';
 
 const ONE_YEAR = 60 * 60 * 24 * 365 * 1000;
 const CACHE_KEY = 'st_luna_apr';
@@ -116,7 +115,7 @@ export default nextConnect()
       const error = {
         message: 'Something went wrong!',
       };
-      serverLogger.error(e);
+      console.error(e);
       res.status(500).send({ error });
     }
   });
