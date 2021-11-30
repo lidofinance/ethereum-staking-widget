@@ -11,7 +11,7 @@ import {
   ConnectImToken,
   // ConnectLedger,
   ConnectCoin98,
-  // ConnectMathWallet,
+  ConnectMathWallet,
 } from './connectors';
 import { Terms } from './terms';
 
@@ -46,14 +46,14 @@ export const ModalConnect: FC<ModalProps> = (props) => {
     wallets.push(ConnectCoin98WithProps);
   }
 
-  // const ConnectMathWalletWithProps = (
-  //   <ConnectMathWallet key="MathWallet" {...common} />
-  // );
-  // if (helpers.isMathWalletProvider()) {
-  //   wallets.unshift(ConnectMathWalletWithProps);
-  // } else {
-  //   wallets.push(ConnectMathWalletWithProps);
-  // }
+  const ConnectMathWalletWithProps = (
+    <ConnectMathWallet key="MathWallet" {...common} />
+  );
+  if (helpers.isMathWalletProvider()) {
+    wallets.unshift(ConnectMathWalletWithProps);
+  } else {
+    wallets.push(ConnectMathWalletWithProps);
+  }
 
   return (
     <Modal title="Connect wallet" {...props}>

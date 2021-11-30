@@ -34,6 +34,7 @@ const oneInchRate: API = async (req, res) => {
       res.status(200).json({ rate: oneInchRate });
     }
   } catch (error) {
+    console.error(error);
     if (error instanceof Error) {
       res.status(500).json(error.message ?? DEFAULT_API_ERROR_MESSAGE);
     } else {

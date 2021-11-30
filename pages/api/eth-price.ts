@@ -23,6 +23,7 @@ const ethPrice: API = async (req, res) => {
       res.json({ price: ethPrice });
     }
   } catch (error) {
+    console.error(error);
     if (error instanceof Error) {
       res.status(500).json(error.message ?? DEFAULT_API_ERROR_MESSAGE);
     } else {

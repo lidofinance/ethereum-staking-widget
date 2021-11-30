@@ -24,6 +24,7 @@ const ldoStats: API = async (req, res) => {
       res.status(200).json({ data: ldoStats });
     }
   } catch (error) {
+    console.error(error);
     if (error instanceof Error) {
       res.status(500).json(error.message ?? DEFAULT_API_ERROR_MESSAGE);
     } else {
