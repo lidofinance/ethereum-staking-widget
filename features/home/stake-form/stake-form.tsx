@@ -123,7 +123,7 @@ export const StakeForm: FC = memo(() => {
       return 0;
     }
 
-    return inputValue;
+    return inputValue.slice(0, 20);
   }, [inputValue]);
 
   // Reset form amount after disconnect wallet
