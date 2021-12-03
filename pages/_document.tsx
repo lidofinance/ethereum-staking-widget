@@ -9,12 +9,17 @@ import Document, {
 import { Fonts } from '@lidofinance/lido-ui';
 import { ServerStyleSheet } from 'styled-components';
 
+type DocumentInitialWrappedProps = DocumentInitialProps & {
+  host: string;
+};
+
 export default class MyDocument extends Document {
   static async getInitialProps(
     ctx: DocumentContext,
-  ): Promise<DocumentInitialProps> {
+  ): Promise<DocumentInitialWrappedProps> {
     const sheet = new ServerStyleSheet();
     const originalRenderPage = ctx.renderPage;
+    const host = ctx?.req?.headers?.host || '';
 
     try {
       ctx.renderPage = () =>
@@ -24,8 +29,10 @@ export default class MyDocument extends Document {
         });
 
       const initialProps = await Document.getInitialProps(ctx);
+
       return {
         ...initialProps,
+        host,
         styles: (
           <>
             {initialProps.styles}
@@ -36,6 +43,22 @@ export default class MyDocument extends Document {
     } finally {
       sheet.seal();
     }
+  }
+
+  get metaTitle(): string {
+    return 'Stake with Lido | Lido';
+  }
+
+  get metaDescription(): string {
+    return (
+      'Liquid staking with Lido. ' +
+      'Stake Ether with Lido to earn daily rewards while keeping full control of your staked tokens. ' +
+      'Start earning rewards in just a few clicks.'
+    );
+  }
+
+  get metaPreviewImgUrl(): string {
+    return `https://${this.props.host}/lido-preview.png`;
   }
 
   render(): JSX.Element {
@@ -67,6 +90,17 @@ export default class MyDocument extends Document {
             sizes="16x16"
             href="/favicon-16x16.png"
           />
+          <meta property="og:type" content="website" />
+          <meta property="og:title" content={this.metaTitle} />
+          <meta property="og:description" content={this.metaDescription} />
+          <meta property="og:image" content={this.metaPreviewImgUrl} />
+          <meta name="twitter:card" content="summary_large_image" />
+          <meta name="twitter:title" content={this.metaTitle} />
+          <meta name="twitter:description" content={this.metaDescription} />
+          <meta name="twitter:image:src" content={this.metaPreviewImgUrl} />
+          <meta name="twitter:site" content="@lidofinance" />
+          <meta name="twitter:creator" content="@lomashuk" />
+          <meta name="description" content={this.metaDescription} />
           <Fonts />
         </Head>
         <body>
