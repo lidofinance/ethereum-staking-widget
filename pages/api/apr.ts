@@ -1,3 +1,5 @@
+import nextConnect from 'next-connect';
+import Cors from 'cors';
 import { Cache } from 'memory-cache';
 import {
   CACHE_ETH_APR_KEY,
@@ -7,7 +9,6 @@ import {
   DEFAULT_API_ERROR_MESSAGE,
 } from 'config';
 import { getEthApr, getStethApr } from 'utils';
-import { API } from 'types';
 
 const cacheEth = new Cache<typeof CACHE_ETH_APR_KEY, string>();
 const cacheSteth = new Cache<typeof CACHE_STETH_APR_KEY, string>();
@@ -18,54 +19,59 @@ const cacheSteth = new Cache<typeof CACHE_STETH_APR_KEY, string>();
 // - /api/eth-apr
 // - /api/steth-apr
 // DEPRECATED: In future will be delete!!! Use /api/eth-apr and /api/steth-apr
-const apr: API = async (req, res) => {
-  type resultDataType = {
-    eth: string | null;
-    steth: string | null;
-  };
+export default nextConnect()
+  .use(
+    Cors({
+      methods: 'GET',
+      origin: '*',
+    }),
+  )
+  .get(async (req, res) => {
+    type resultDataType = {
+      eth: string | null;
+      steth: string | null;
+    };
 
-  const resultData: resultDataType = {
-    eth: null,
-    steth: null,
-  };
+    const resultData: resultDataType = {
+      eth: null,
+      steth: null,
+    };
 
-  try {
-    // Eth APR
-    const cachedEthApr = cacheEth.get(CACHE_ETH_APR_KEY);
+    try {
+      // Eth APR
+      const cachedEthApr = cacheEth.get(CACHE_ETH_APR_KEY);
 
-    if (cachedEthApr) {
-      resultData.eth = cachedEthApr;
-    } else {
-      const ethApr = await getEthApr();
-      cacheEth.put(CACHE_ETH_APR_KEY, ethApr, CACHE_ETH_APR_TTL);
+      if (cachedEthApr) {
+        resultData.eth = cachedEthApr;
+      } else {
+        const ethApr = await getEthApr();
+        cacheEth.put(CACHE_ETH_APR_KEY, ethApr, CACHE_ETH_APR_TTL);
 
-      resultData.eth = ethApr;
+        resultData.eth = ethApr;
+      }
+
+      // StEth APR
+      const cachedStethApr = cacheSteth.get(CACHE_STETH_APR_KEY);
+
+      if (cachedStethApr) {
+        resultData.steth = cachedStethApr;
+      } else {
+        const stethApr = await getStethApr();
+        cacheSteth.put(CACHE_STETH_APR_KEY, stethApr, CACHE_STETH_APR_TTL);
+
+        resultData.steth = stethApr;
+      }
+
+      // Return
+      res.json({
+        data: resultData,
+      });
+    } catch (error) {
+      console.error(error);
+      if (error instanceof Error) {
+        res.status(500).json(error.message ?? DEFAULT_API_ERROR_MESSAGE);
+      } else {
+        res.status(500).json(DEFAULT_API_ERROR_MESSAGE);
+      }
     }
-
-    // StEth APR
-    const cachedStethApr = cacheSteth.get(CACHE_STETH_APR_KEY);
-
-    if (cachedStethApr) {
-      resultData.steth = cachedStethApr;
-    } else {
-      const stethApr = await getStethApr();
-      cacheSteth.put(CACHE_STETH_APR_KEY, stethApr, CACHE_STETH_APR_TTL);
-
-      resultData.steth = stethApr;
-    }
-
-    // Return
-    res.json({
-      data: resultData,
-    });
-  } catch (error) {
-    console.error(error);
-    if (error instanceof Error) {
-      res.status(500).json(error.message ?? DEFAULT_API_ERROR_MESSAGE);
-    } else {
-      res.status(500).json(DEFAULT_API_ERROR_MESSAGE);
-    }
-  }
-};
-
-export default apr;
+  });
