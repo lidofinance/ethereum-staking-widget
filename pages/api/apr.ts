@@ -1,3 +1,4 @@
+import Cors from 'cors';
 import { Cache } from 'memory-cache';
 import {
   CACHE_ETH_APR_KEY,
@@ -6,11 +7,21 @@ import {
   CACHE_STETH_APR_TTL,
   DEFAULT_API_ERROR_MESSAGE,
 } from 'config';
+import initMiddleware from 'lib/init-middleware';
 import { getEthApr, getStethApr } from 'utils';
 import { API } from 'types';
 
 const cacheEth = new Cache<typeof CACHE_ETH_APR_KEY, string>();
 const cacheSteth = new Cache<typeof CACHE_STETH_APR_KEY, string>();
+
+// Initialize the cors middleware
+const cors = initMiddleware(
+  // You can read more about the available options here: https://github.com/expressjs/cors#configuration-options
+  Cors({
+    // Only allow requests with GET, POST and OPTIONS
+    methods: ['GET', 'POST', 'OPTIONS'],
+  }),
+);
 
 // Proxy for third-party API.
 // Returns Eth & StEth annual percentage rate.
@@ -19,6 +30,9 @@ const cacheSteth = new Cache<typeof CACHE_STETH_APR_KEY, string>();
 // - /api/steth-apr
 // DEPRECATED: In future will be delete!!! Use /api/eth-apr and /api/steth-apr
 const apr: API = async (req, res) => {
+  // Run cors
+  await cors(req, res);
+
   type resultDataType = {
     eth: string | null;
     steth: string | null;
