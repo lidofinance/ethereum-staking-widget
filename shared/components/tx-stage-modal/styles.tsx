@@ -16,6 +16,8 @@ export const LightText = styled(Text)`
 `;
 
 export const IconWrapper = styled.div`
+  height: 64px;
+  width: 100%;
   text-align: center;
 `;
 
