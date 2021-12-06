@@ -10,10 +10,6 @@ import getConfig from 'next/config';
 import { Fonts } from '@lidofinance/lido-ui';
 import { ServerStyleSheet } from 'styled-components';
 
-type DocumentInitialWrappedProps = DocumentInitialProps & {
-  host: string;
-};
-
 const chainId = getConfig().publicRuntimeConfig.defaultChain || '';
 
 let host = 'https://stake.lido.fi';
@@ -21,7 +17,7 @@ let host = 'https://stake.lido.fi';
 export default class MyDocument extends Document {
   static async getInitialProps(
     ctx: DocumentContext,
-  ): Promise<DocumentInitialWrappedProps> {
+  ): Promise<DocumentInitialProps> {
     const sheet = new ServerStyleSheet();
     const originalRenderPage = ctx.renderPage;
 
@@ -40,7 +36,6 @@ export default class MyDocument extends Document {
 
       return {
         ...initialProps,
-        host,
         styles: (
           <>
             {initialProps.styles}
