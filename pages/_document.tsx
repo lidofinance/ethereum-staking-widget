@@ -6,6 +6,7 @@ import Document, {
   DocumentContext,
   DocumentInitialProps,
 } from 'next/document';
+import getConfig from 'next/config';
 import { Fonts } from '@lidofinance/lido-ui';
 import { ServerStyleSheet } from 'styled-components';
 
@@ -13,13 +14,20 @@ type DocumentInitialWrappedProps = DocumentInitialProps & {
   host: string;
 };
 
+const chainId = getConfig().publicRuntimeConfig.defaultChain || '';
+
+let host = 'https://stake.lido.fi';
+
 export default class MyDocument extends Document {
   static async getInitialProps(
     ctx: DocumentContext,
   ): Promise<DocumentInitialWrappedProps> {
     const sheet = new ServerStyleSheet();
     const originalRenderPage = ctx.renderPage;
-    const host = ctx?.req?.headers?.host || '';
+
+    if (ctx?.req?.headers?.host) {
+      host = `https://${ctx?.req?.headers?.host}`;
+    }
 
     try {
       ctx.renderPage = () =>
@@ -58,7 +66,7 @@ export default class MyDocument extends Document {
   }
 
   get metaPreviewImgUrl(): string {
-    return `https://${this.props.host}/lido-preview.png`;
+    return `${host}/lido-preview.png`;
   }
 
   render(): JSX.Element {
@@ -66,7 +74,7 @@ export default class MyDocument extends Document {
       <Html lang="en">
         <Head>
           <link rel="manifest" href="/manifest.json" />
-          <link rel="icon" type="image/svg+xml" href="favicon-1080x1080.svg" />
+          <link rel="icon" type="image/svg+xml" href="/favicon-1080x1080.svg" />
           <link
             rel="apple-touch-icon"
             sizes="180x180"
@@ -101,6 +109,7 @@ export default class MyDocument extends Document {
           <meta name="twitter:site" content="@lidofinance" />
           <meta name="twitter:creator" content="@lomashuk" />
           <meta name="description" content={this.metaDescription} />
+          <meta name="currentChain" content={String(chainId)} />
           <Fonts />
         </Head>
         <body>
