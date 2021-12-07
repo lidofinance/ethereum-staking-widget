@@ -16,7 +16,7 @@ const routes = [
     icon: <Wrap />,
   },
   {
-    name: 'History',
+    name: 'Rewards',
     path: '/rewards',
     icon: <Wallet />,
   },
