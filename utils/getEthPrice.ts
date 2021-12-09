@@ -16,7 +16,8 @@ const getEthPriceWithFallbacks = async (
   urlIndex: number,
 ): Promise<number> => {
   // TODO: remove api-key from log
-  console.log('[getEthPrice] Try get via', urls[urlIndex]);
+  // console.log('[getEthPrice] Try get via', urls[urlIndex]);
+  console.log('[getEthPrice] Try get urlIndex: ', urlIndex);
 
   try {
     const address = getAggregatorAddress(CHAINS.Mainnet);

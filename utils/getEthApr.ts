@@ -20,7 +20,8 @@ const getEthAprWithFallbacks = async (
     '0x00000000219ab540356cBB839Cbe05303d7705Fa';
 
   // TODO: remove api-key from log
-  console.log('[getEthApr] Try get via', urls[urlIndex]);
+  // console.log('[getEthApr] Try get via', urls[urlIndex]);
+  console.log('[getEthApr] Try get urlIndex: ', urlIndex);
 
   try {
     const staticProvider = getStaticRpcBatchProvider(

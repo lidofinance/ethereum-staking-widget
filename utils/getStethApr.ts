@@ -19,7 +19,8 @@ const getStethAprWithFallbacks = async (
   urlIndex: number,
 ): Promise<string> => {
   // TODO: remove api-key from log
-  console.log('[getStethApr] Try get via', urls[urlIndex]);
+  // console.log('[getStethApr] Try get via', urls[urlIndex]);
+  console.log('[getStethApr] Try get urlIndex: ', urlIndex);
 
   try {
     const staticProvider = getStaticRpcBatchProvider(
