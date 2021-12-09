@@ -4,20 +4,40 @@ import { getRpcJsonUrls } from 'config';
 
 export const getEthApr = async (): Promise<string> => {
   const urls = getRpcJsonUrls(CHAINS.Mainnet);
-  const staticProvider = getStaticRpcBatchProvider(CHAINS.Mainnet, urls[0]);
-
-  const eth2DepositContractAddress =
-    '0x00000000219ab540356cBB839Cbe05303d7705Fa';
-
-  const currentlyDeposited = await staticProvider.getBalance(
-    eth2DepositContractAddress,
-  );
 
   const ethApr = calculateEth2Rewards({
-    totalAtStake: Number(currentlyDeposited),
+    totalAtStake: await getEthAprWithFallbacks(urls, 0),
   });
 
   return (ethApr * 1e11).toFixed(1);
+};
+
+const getEthAprWithFallbacks = async (
+  urls: Array<string>,
+  urlIndex: number,
+): Promise<number> => {
+  const eth2DepositContractAddress =
+    '0x00000000219ab540356cBB839Cbe05303d7705Fa';
+
+  // TODO: remove api-key from log
+  console.log('[getEthApr] Try get via', urls[urlIndex]);
+
+  try {
+    const staticProvider = getStaticRpcBatchProvider(
+      CHAINS.Mainnet,
+      urls[urlIndex],
+    );
+    const currentlyDeposited = await staticProvider.getBalance(
+      eth2DepositContractAddress,
+    );
+    return Number(currentlyDeposited);
+  } catch (error) {
+    if (urlIndex >= urls.length - 1) {
+      console.log('Healthy RPC services are over! Throw error');
+      throw error;
+    }
+    return await getEthAprWithFallbacks(urls, urlIndex + 1);
+  }
 };
 
 const calculateEth2Rewards = ({
