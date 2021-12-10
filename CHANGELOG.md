@@ -1,3 +1,24 @@
+# [1.3.0](https://github.com/lidofinance/staking-widget-ts/compare/1.2.0...1.3.0) (2021-12-10)
+
+
+### Bug Fixes
+
+* comments and no-useless-catch ([a2f8944](https://github.com/lidofinance/staking-widget-ts/commit/a2f89445a6a632825325b25862eacb5e9190024a))
+
+
+### Features
+
+* api/eth-price with fallbacks ([62bce8d](https://github.com/lidofinance/staking-widget-ts/commit/62bce8d1dacfff6c7cae88bdb052d7ea8afc95ff))
+* api/steth-apr with fallbacks ([4e968c0](https://github.com/lidofinance/staking-widget-ts/commit/4e968c0d8fe90a6c4e9314780ebd1ed277b1526e))
+* api/totalsupply with fallbacks ([6b7eec7](https://github.com/lidofinance/staking-widget-ts/commit/6b7eec722842ecbb2e783f400e9a7c1eb9741280))
+
+
+### Reverts
+
+* comment logs with secrets ([3fddb00](https://github.com/lidofinance/staking-widget-ts/commit/3fddb00a5e95e513cf5c7f59238bd6b894a4a0ff))
+
+
+
 # [1.2.0](https://github.com/lidofinance/staking-widget-ts/compare/1.1.0...1.2.0) (2021-12-08)
 
 
@@ -32,14 +53,7 @@
 * **logging:** use console logging ([0188f6e](https://github.com/lidofinance/staking-widget-ts/commit/0188f6ec2ae31017b689e1eac6df8d3070929d7e))
 * /api/rpc defaultChain ([9800fef](https://github.com/lidofinance/staking-widget-ts/commit/9800fefacb6300b44646272a628acb3f0baeb6b0))
 * /api/rpc defaultChain from publicRuntimeConfig ([4d1e6eb](https://github.com/lidofinance/staking-widget-ts/commit/4d1e6ebf91693e518aeec4594c4c9e39e9968208))
-* FAQ links replacements ([ff2ba3d](https://github.com/lidofinance/staking-widget-ts/commit/ff2ba3d16d2bec1f0c8bf1fe78e823f3a17785ce))
-* footer bottom padding for mobile ([28651f7](https://github.com/lidofinance/staking-widget-ts/commit/28651f7f8e1aefcb883bfa359f1f12cf0f84b9dd))
 * hover color of theme toggler button ([fda7410](https://github.com/lidofinance/staking-widget-ts/commit/fda7410df2cb8716cd3b57a6a5b5eb180b73b188))
-* shows InputLocked for account only ([7c48719](https://github.com/lidofinance/staking-widget-ts/commit/7c48719301eb9cb0d35ff0392f76bb2e6f3b5a90))
-* **CookiesTooltip:** button and cookie icon color by theme ([9469599](https://github.com/lidofinance/staking-widget-ts/commit/946959970b0225445e4194d24bac726d2f79b02e))
-* **meta:** description ([8dd550d](https://github.com/lidofinance/staking-widget-ts/commit/8dd550d03986a38f29694a9b15874c9fc77d6188))
-* wrap & unwrap toggle ([663e6ca](https://github.com/lidofinance/staking-widget-ts/commit/663e6ca023131d18d5a4128adc2f7ead74720db6))
-* you will receive amount on unwrap page ([978ba12](https://github.com/lidofinance/staking-widget-ts/commit/978ba12b1174b9e0ea8eecdc4d017277cd9e6266))
 
 
 ### Features
@@ -50,7 +64,6 @@
 * **monitoring:** add default metrics endpoint ([06a00d5](https://github.com/lidofinance/staking-widget-ts/commit/06a00d5528164ea7dc123a881b1c9c676e75a029))
 * **monitoring:** add health check endpoint ([b88b472](https://github.com/lidofinance/staking-widget-ts/commit/b88b472bee066fdadcfa356256063d4404408298))
 * **monitoring:** log errors in JSON ([346f9ed](https://github.com/lidofinance/staking-widget-ts/commit/346f9ed567160fef577702a29cc7a0db082feb0b))
-* set stake input from amount query param ([6e66d66](https://github.com/lidofinance/staking-widget-ts/commit/6e66d663d92ff0a705848db3d980ab12beacf2c0))
 * updated Dockerfile (no root, use healtcheck and multistage build) ([2efb77d](https://github.com/lidofinance/staking-widget-ts/commit/2efb77df8b7265db212eb8efa2e1003a6b88056a))
 
 
