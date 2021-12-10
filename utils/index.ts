@@ -9,6 +9,7 @@ export * from './stringToEther';
 export * from './getEthApr';
 export * from './getOneInchRate';
 export * from './getStethApr';
+export * from './getStEthPrice';
 export * from './getTotalStaked';
 export * from './getLdoStats';
 export * from './getLidoStats';
