@@ -12,6 +12,7 @@ export * from './getStethApr';
 export * from './getTotalStaked';
 export * from './getLdoStats';
 export * from './getLidoStats';
+export * from './getLidoHoldersViaSubgraphs';
 export * from './getEthPrice';
 export * from './isClientSide';
 export * from './prependBasePath';
