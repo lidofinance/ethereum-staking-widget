@@ -6,13 +6,13 @@ export const getEthApr = async (): Promise<string> => {
   const urls = getRpcJsonUrls(CHAINS.Mainnet);
 
   const ethApr = calculateEth2Rewards({
-    totalAtStake: await getEthAprWithFallbacks(urls, 0),
+    totalAtStake: await getTotalAtStakeWithFallbacks(urls, 0),
   });
 
   return (ethApr * 1e11).toFixed(1);
 };
 
-const getEthAprWithFallbacks = async (
+const getTotalAtStakeWithFallbacks = async (
   urls: Array<string>,
   urlIndex: number,
 ): Promise<number> => {
@@ -42,7 +42,7 @@ const getEthAprWithFallbacks = async (
       const error = `[getEthApr] ${HEALTHY_RPC_SERVICES_ARE_OVER}`;
       throw new Error(error);
     }
-    return await getEthAprWithFallbacks(urls, urlIndex + 1);
+    return await getTotalAtStakeWithFallbacks(urls, urlIndex + 1);
   }
 };
 
