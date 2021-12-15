@@ -45,7 +45,6 @@ const getEthPriceWithFallbacks = async (
       const error = `[getEthPrice] ${HEALTHY_RPC_SERVICES_ARE_OVER}`;
       throw new Error(error);
     }
+    return await getEthPriceWithFallbacks(urls, urlIndex + 1);
   }
-
-  return await getEthPriceWithFallbacks(urls, urlIndex + 1);
 };
