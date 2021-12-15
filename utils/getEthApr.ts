@@ -1,27 +1,23 @@
 import { CHAINS } from '@lido-sdk/constants';
 import { getStaticRpcBatchProvider } from '@lido-sdk/providers';
-import { getRpcJsonUrls } from 'config';
+import { getRpcJsonUrls, HEALTHY_RPC_SERVICES_ARE_OVER } from 'config';
 
 export const getEthApr = async (): Promise<string> => {
   const urls = getRpcJsonUrls(CHAINS.Mainnet);
 
   const ethApr = calculateEth2Rewards({
-    totalAtStake: await getEthAprWithFallbacks(urls, 0),
+    totalAtStake: await getTotalAtStakeWithFallbacks(urls, 0),
   });
 
   return (ethApr * 1e11).toFixed(1);
 };
 
-const getEthAprWithFallbacks = async (
+const getTotalAtStakeWithFallbacks = async (
   urls: Array<string>,
   urlIndex: number,
 ): Promise<number> => {
   const eth2DepositContractAddress =
     '0x00000000219ab540356cBB839Cbe05303d7705Fa';
-
-  // TODO: remove api-key from log
-  // console.log('[getEthApr] Try get via', urls[urlIndex]);
-  console.log('[getEthApr] Try get urlIndex: ', urlIndex);
 
   try {
     const staticProvider = getStaticRpcBatchProvider(
@@ -31,13 +27,22 @@ const getEthAprWithFallbacks = async (
     const currentlyDeposited = await staticProvider.getBalance(
       eth2DepositContractAddress,
     );
-    return Number(currentlyDeposited);
-  } catch (error) {
-    if (urlIndex >= urls.length - 1) {
-      console.log('Healthy RPC services are over! Throw error');
-      throw error;
+
+    // TODO: metrics
+    if (urls[urlIndex].indexOf('infura') > -1) {
+      console.log('[getEthApr] Get via infura');
     }
-    return await getEthAprWithFallbacks(urls, urlIndex + 1);
+    if (urls[urlIndex].indexOf('alchemy') > -1) {
+      console.log('[getEthApr] Get via alchemy');
+    }
+
+    return Number(currentlyDeposited);
+  } catch {
+    if (urlIndex >= urls.length - 1) {
+      const error = `[getEthApr] ${HEALTHY_RPC_SERVICES_ARE_OVER}`;
+      throw new Error(error);
+    }
+    return await getTotalAtStakeWithFallbacks(urls, urlIndex + 1);
   }
 };
 
