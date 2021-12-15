@@ -1,3 +1,27 @@
+# [1.4.0](https://github.com/lidofinance/staking-widget-ts/compare/1.3.0...1.4.0) (2021-12-15)
+
+
+### Bug Fixes
+
+* rename function in getEthApr ([67da263](https://github.com/lidofinance/staking-widget-ts/commit/67da263fd51b12aca6206885a5c33fe84b5fa777))
+* rpc fallback for /api/rpc ang logging ([2a3c590](https://github.com/lidofinance/staking-widget-ts/commit/2a3c59099c016282292d8661f62a0ba6769fabff))
+
+
+### Features
+
+* add ledger transaction icons ([785b983](https://github.com/lidofinance/staking-widget-ts/commit/785b983f7618f40583822084eb64b2fafda4650a))
+* **metrics:** base and response time of infura/alchemy ([cd36af9](https://github.com/lidofinance/staking-widget-ts/commit/cd36af922179486b76394b21e39c8b211813fd26))
+* add favicon ([9c2e268](https://github.com/lidofinance/staking-widget-ts/commit/9c2e2688d3bdd0ee130618b539f4ace34341bfdf))
+* build-info.json for DevOps ([b61ad2b](https://github.com/lidofinance/staking-widget-ts/commit/b61ad2b17c138147dfadbb84a3b17309f2d204f4))
+* return ledger wallet ([a9b03b8](https://github.com/lidofinance/staking-widget-ts/commit/a9b03b8f8795abd14de96fc024d1941bf377470f))
+
+
+### Reverts
+
+* ledger wallet ([ea52c5a](https://github.com/lidofinance/staking-widget-ts/commit/ea52c5ad41bbbda74e663092d22cadb00318f5d9))
+
+
+
 # [1.3.0](https://github.com/lidofinance/staking-widget-ts/compare/1.2.0...1.3.0) (2021-12-10)
 
 
@@ -51,7 +75,6 @@
 ### Bug Fixes
 
 * **logging:** use console logging ([0188f6e](https://github.com/lidofinance/staking-widget-ts/commit/0188f6ec2ae31017b689e1eac6df8d3070929d7e))
-* /api/rpc defaultChain ([9800fef](https://github.com/lidofinance/staking-widget-ts/commit/9800fefacb6300b44646272a628acb3f0baeb6b0))
 * /api/rpc defaultChain from publicRuntimeConfig ([4d1e6eb](https://github.com/lidofinance/staking-widget-ts/commit/4d1e6ebf91693e518aeec4594c4c9e39e9968208))
 * hover color of theme toggler button ([fda7410](https://github.com/lidofinance/staking-widget-ts/commit/fda7410df2cb8716cd3b57a6a5b5eb180b73b188))
 
