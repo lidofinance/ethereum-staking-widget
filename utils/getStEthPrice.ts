@@ -4,6 +4,7 @@ import {
   getAggregatorStEthUsdPriceFeedAddress,
   getAggregatorContractFactory,
   getRpcJsonUrls,
+  HEALTHY_RPC_SERVICES_ARE_OVER,
 } from 'config';
 
 export const getStEthPrice = async (): Promise<number> => {
@@ -15,10 +16,6 @@ const getStEthPriceWithFallbacks = async (
   urls: Array<string>,
   urlIndex: number,
 ): Promise<number> => {
-  // TODO: remove api-key from log
-  // console.log('[getStEthPrice] Try get via', urls[urlIndex]);
-  console.log('[getStEthPrice] Try get urlIndex: ', urlIndex);
-
   try {
     const address = getAggregatorStEthUsdPriceFeedAddress(CHAINS.Mainnet);
     const staticProvider = getStaticRpcBatchProvider(
@@ -34,13 +31,20 @@ const getStEthPriceWithFallbacks = async (
       contract.latestAnswer(),
     ]);
 
-    return latestAnswer.toNumber() / 10 ** decimals;
-  } catch (error) {
-    if (urlIndex >= urls.length - 1) {
-      console.log('Healthy RPC services are over! Throw error');
-      throw error;
+    // TODO: metrics
+    if (urls[urlIndex].indexOf('infura') > -1) {
+      console.log('[getStEthPrice] Get via infura');
     }
-  }
+    if (urls[urlIndex].indexOf('alchemy') > -1) {
+      console.log('[getStEthPrice] Get via alchemy');
+    }
 
-  return await getStEthPriceWithFallbacks(urls, urlIndex + 1);
+    return latestAnswer.toNumber() / 10 ** decimals;
+  } catch {
+    if (urlIndex >= urls.length - 1) {
+      const error = `[getStEthPrice] ${HEALTHY_RPC_SERVICES_ARE_OVER}`;
+      throw new Error(error);
+    }
+    return await getStEthPriceWithFallbacks(urls, urlIndex + 1);
+  }
 };
