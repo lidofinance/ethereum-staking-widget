@@ -7,6 +7,7 @@ import {
   getRpcJsonUrls,
   getStethAddress,
   getStethContractFactory,
+  HEALTHY_RPC_SERVICES_ARE_OVER,
 } from 'config';
 
 export const getStethApr = async (): Promise<string> => {
@@ -18,10 +19,6 @@ const getStethAprWithFallbacks = async (
   urls: Array<string>,
   urlIndex: number,
 ): Promise<string> => {
-  // TODO: remove api-key from log
-  // console.log('[getStethApr] Try get via', urls[urlIndex]);
-  console.log('[getStethApr] Try get urlIndex: ', urlIndex);
-
   try {
     const staticProvider = getStaticRpcBatchProvider(
       CHAINS.Mainnet,
@@ -60,11 +57,20 @@ const getStethAprWithFallbacks = async (
 
     const stethAprAfterLidoFee =
       Number(stethApr) * (1 - lidoFeeAsFraction) * 0.1;
+
+    // TODO: metrics
+    if (urls[urlIndex].indexOf('infura') > -1) {
+      console.log('[getStethApr] Get via infura');
+    }
+    if (urls[urlIndex].indexOf('alchemy') > -1) {
+      console.log('[getStethApr] Get via alchemy');
+    }
+
     return stethAprAfterLidoFee.toFixed(1);
   } catch (error) {
     if (urlIndex >= urls.length - 1) {
-      console.log('Healthy RPC services are over! Throw error');
-      throw error;
+      const error = `[getStethApr] ${HEALTHY_RPC_SERVICES_ARE_OVER}`;
+      throw new Error(error);
     }
     return await getStethAprWithFallbacks(urls, urlIndex + 1);
   }

@@ -5,6 +5,7 @@ import {
   getRpcJsonUrls,
   getStethAddress,
   getStethContractFactory,
+  HEALTHY_RPC_SERVICES_ARE_OVER,
 } from 'config';
 
 export const getTotalStaked = async (): Promise<string> => {
@@ -16,9 +17,6 @@ const getTotalStakedWithFallbacks = async (
   urls: Array<string>,
   urlIndex: number,
 ): Promise<string> => {
-  // TODO: remove api-key from log
-  console.log('[getTotalStaked] Try get via', urls[urlIndex]);
-
   try {
     const staticProvider = getStaticRpcBatchProvider(
       CHAINS.Mainnet,
@@ -33,12 +31,21 @@ const getTotalStakedWithFallbacks = async (
     );
 
     const totalSupplyStWei = await stethContract.totalSupply();
+
+    // TODO: metrics
+    if (urls[urlIndex].indexOf('infura') > -1) {
+      console.log('[getTotalStaked] Get via infura');
+    }
+    if (urls[urlIndex].indexOf('alchemy') > -1) {
+      console.log('[getTotalStaked] Get via alchemy');
+    }
+
     const totalSupplyStEth = formatEther(totalSupplyStWei);
     return Number(totalSupplyStEth).toFixed(8);
   } catch (error) {
     if (urlIndex >= urls.length - 1) {
-      console.log('Healthy RPC services are over! Throw error');
-      throw error;
+      const error = `[getTotalStaked] ${HEALTHY_RPC_SERVICES_ARE_OVER}`;
+      throw new Error(error);
     }
   }
 

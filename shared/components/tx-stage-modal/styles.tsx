@@ -21,6 +21,15 @@ export const IconWrapper = styled.div`
   text-align: center;
 `;
 
+export const LedgerIconWrapper = styled.div`
+  width: 100%;
+  text-align: center;
+
+  svg {
+    max-width: 100%;
+  }
+`;
+
 export const SuccessIcon = styled(CheckLarge)`
   padding: 20px;
   border: 2px solid ${({ theme }) => theme.colors.success};
