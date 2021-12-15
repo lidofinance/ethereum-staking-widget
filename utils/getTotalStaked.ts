@@ -47,7 +47,6 @@ const getTotalStakedWithFallbacks = async (
       const error = `[getTotalStaked] ${HEALTHY_RPC_SERVICES_ARE_OVER}`;
       throw new Error(error);
     }
+    return await getTotalStakedWithFallbacks(urls, urlIndex + 1);
   }
-
-  return await getTotalStakedWithFallbacks(urls, urlIndex + 1);
 };
