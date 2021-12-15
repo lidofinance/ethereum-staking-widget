@@ -348,6 +348,13 @@ export const TxStageModal: FC<TxStageModalProps> = memo(
       currentIconDict,
     ]);
 
-    return <Modal {...modalProps}>{content}</Modal>;
+    return (
+      <Modal
+        {...modalProps}
+        onClose={isLedger ? undefined : modalProps.onClose}
+      >
+        {content}
+      </Modal>
+    );
   },
 );
