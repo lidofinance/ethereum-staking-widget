@@ -9,7 +9,7 @@ import {
   ConnectCoinbase,
   ConnectTrust,
   ConnectImToken,
-  ConnectLedger,
+  // ConnectLedger,
   ConnectCoin98,
   // ConnectMathWallet,
 } from './connectors';
@@ -33,7 +33,7 @@ export const ModalConnect: FC<ModalProps> = (props) => {
   const wallets = [
     <ConnectMetamask key="Metamask" {...common} />,
     <ConnectWalletConnect key="WalletConnect" {...common} />,
-    <ConnectLedger key="Ledger" {...common} />,
+    // <ConnectLedger key="Ledger" {...common} />,
     <ConnectCoinbase key="Coinbase" {...common} />,
     <ConnectTrust key="Trust" {...common} />,
     <ConnectImToken key="ImToken" {...common} />,
