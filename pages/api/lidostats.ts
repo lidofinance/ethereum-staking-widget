@@ -11,7 +11,8 @@ const cache = new Cache<typeof CACHE_LIDO_STATS_KEY, unknown>();
 
 // Proxy for third-party API.
 // Returns steth token information
-// DEPRECATED: In future will be delete!!! Use /api/lido-stats
+// Mirror of /api/lido-stats
+// DEPRECATED: In future will be delete!!!
 const lidoStats: API = async (req, res) => {
   try {
     const cachedLidoStats = cache.get(CACHE_LIDO_STATS_KEY);

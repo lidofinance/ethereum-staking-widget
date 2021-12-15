@@ -6,9 +6,10 @@ import { standardFetcher } from './standardFetcher';
 const { serverRuntimeConfig } = getConfig();
 const { ethplorerApiKey } = serverRuntimeConfig;
 
-type GetLioStats = () => Promise<Response>;
+type GetLdoStats = () => Promise<Response>;
 
-export const getLdoStats: GetLioStats = async () => {
+// DEPRECATED: In future will be delete!!! Because we don't want to use https://api.ethplorer.io/
+export const getLdoStats: GetLdoStats = async () => {
   // IMPORTANT: ETHPLORER_TOKEN_ENDPOINT (api.ethplorer.io) works only with Mainnet chain!
   const api = `${ETHPLORER_TOKEN_ENDPOINT}${getTokenAddress(
     CHAINS.Mainnet,

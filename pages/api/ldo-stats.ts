@@ -11,6 +11,7 @@ const cache = new Cache<typeof CACHE_LDO_STATS_KEY, unknown>();
 
 // Proxy for third-party API.
 // Returns LDO token information
+// DEPRECATED: In future will be delete!!!
 const ldoStats: API = async (req, res) => {
   try {
     const cachedLidoStats = cache.get(CACHE_LDO_STATS_KEY);

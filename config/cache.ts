@@ -10,6 +10,10 @@ export const CACHE_ETH_APR_TTL = duration1Hour;
 export const CACHE_LIDO_STATS_KEY = 'cache-lido-stats';
 export const CACHE_LIDO_STATS_TTL = duration1Hour;
 
+export const CACHE_LIDO_HOLDERS_VIA_SUBGRAPHS_KEY =
+  'cache-lido-holders-via-subgraphs';
+export const CACHE_LIDO_HOLDERS_VIA_SUBGRAPHS_TTL = duration1Hour;
+
 export const CACHE_LDO_STATS_KEY = 'cache-ldo-stats';
 export const CACHE_LDO_STATS_TTL = duration1Hour;
 
