@@ -8,11 +8,6 @@ type Metrics = (req: NextApiRequest, res: NextApiResponse) => Promise<void>;
 collectDefaultMetrics({ prefix: METRICS_PREFIX });
 
 const metrics: Metrics = async (req, res) => {
-  if (process.env.NODE_ENV === 'development') {
-    // Clear the register to avoid errors on Hot Reload
-    register.clear();
-  }
-
   collectBuildInfo();
   collectChainConfig();
 

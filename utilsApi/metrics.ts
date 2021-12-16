@@ -1,10 +1,15 @@
-import { Gauge, Histogram } from 'prom-client';
+import { Gauge, Histogram, register } from 'prom-client';
 import getConfig from 'next/config';
 import { METRICS_PREFIX } from 'config';
 import buildInfoJson from 'build-info.json';
 
 const { publicRuntimeConfig } = getConfig();
 const { defaultChain, supportedChains } = publicRuntimeConfig;
+
+// Clear the register to avoid errors on Hot Reload
+if (process.env.NODE_ENV === 'development') {
+  register.clear();
+}
 
 // BUILD_INFO
 const buildInfo = new Gauge({
