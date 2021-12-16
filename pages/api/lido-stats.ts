@@ -4,7 +4,7 @@ import {
   CACHE_LIDO_STATS_TTL,
   DEFAULT_API_ERROR_MESSAGE,
 } from 'config';
-import { getLidoStats } from 'utils';
+import { getLidoStats } from 'utilsApi';
 import { API } from 'types';
 
 const cache = new Cache<typeof CACHE_LIDO_STATS_KEY, unknown>();

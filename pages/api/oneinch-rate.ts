@@ -5,7 +5,7 @@ import {
   CACHE_ONE_INCH_RATE_TTL,
   DEFAULT_API_ERROR_MESSAGE,
 } from 'config';
-import { getOneInchRate } from 'utils';
+import { getOneInchRate } from 'utilsApi';
 import { API } from 'types';
 
 const cache = new Cache<typeof CACHE_ONE_INCH_RATE_KEY, unknown>();

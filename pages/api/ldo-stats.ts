@@ -4,7 +4,7 @@ import {
   CACHE_LDO_STATS_TTL,
   DEFAULT_API_ERROR_MESSAGE,
 } from 'config';
-import { getLdoStats } from 'utils';
+import { getLdoStats } from 'utilsApi';
 import { API } from 'types';
 
 const cache = new Cache<typeof CACHE_LDO_STATS_KEY, unknown>();
