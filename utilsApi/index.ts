@@ -7,3 +7,4 @@ export * from './getLdoStats';
 export * from './getLidoStats';
 export * from './getOneInchRate';
 export * from './getEthPrice';
+export * from './serverLogger';
