@@ -43,3 +43,11 @@ export const rpcResponseTime = new Histogram({
   labelNames: ['provider'],
 });
 // /RPC RESPONSE
+
+// SUBGRAPHS RESPONSE
+export const subgraphsResponseTime = new Histogram({
+  name: METRICS_PREFIX + 'subgraphs_response',
+  help: 'Subgraphs response time seconds',
+  buckets: [0.1, 0.2, 0.3, 0.6, 1, 1.5, 2, 5],
+});
+// /SUBGRAPHS RESPONSE

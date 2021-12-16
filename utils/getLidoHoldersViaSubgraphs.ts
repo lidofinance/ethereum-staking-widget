@@ -1,4 +1,5 @@
 import { API_THEGRAPH_SUBGRAPHS_LIDO_ENDPOINT } from 'config';
+import { subgraphsResponseTime } from 'utils/metrics';
 import { standardFetcher } from './standardFetcher';
 
 interface LidoHolders extends Response {
@@ -28,8 +29,14 @@ export const getLidoHoldersViaSubgraphs: GetLidoHoldersViaSubgraphs =
       body: JSON.stringify({ query }),
     };
 
-    return standardFetcher<LidoHolders>(
+    const endMetric = subgraphsResponseTime.startTimer();
+
+    const responseJsoned = standardFetcher<LidoHolders>(
       API_THEGRAPH_SUBGRAPHS_LIDO_ENDPOINT,
       params,
     );
+
+    endMetric();
+
+    return responseJsoned;
   };
