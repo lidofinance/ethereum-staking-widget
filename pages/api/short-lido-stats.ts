@@ -8,7 +8,7 @@ import {
   getTotalStaked,
   getLidoHoldersViaSubgraphs,
   getStEthPrice,
-} from 'utils';
+} from 'utilsApi';
 import { API } from 'types';
 
 const cache = new Cache<typeof CACHE_LIDO_HOLDERS_VIA_SUBGRAPHS_KEY, unknown>();

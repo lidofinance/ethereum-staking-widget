@@ -6,7 +6,7 @@ import {
   DEFAULT_API_ERROR_MESSAGE,
   HEALTHY_RPC_SERVICES_ARE_OVER,
 } from 'config';
-import { rpcResponseTime, INFURA, ALCHEMY } from 'utils/metrics';
+import { rpcResponseTime, INFURA, ALCHEMY } from 'utilsApi/metrics';
 
 const { serverRuntimeConfig, publicRuntimeConfig } = getConfig();
 const { infuraApiKey, alchemyApiKey } = serverRuntimeConfig;

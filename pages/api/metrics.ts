@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { collectDefaultMetrics, register } from 'prom-client';
 import { METRICS_PREFIX } from 'config';
-import { collectBuildInfo, collectChainConfig } from 'utils/metrics';
+import { collectBuildInfo, collectChainConfig } from 'utilsApi/metrics';
 
 type Metrics = (req: NextApiRequest, res: NextApiResponse) => Promise<void>;
 

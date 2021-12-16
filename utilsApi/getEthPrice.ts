@@ -6,7 +6,7 @@ import {
   getRpcJsonUrls,
   HEALTHY_RPC_SERVICES_ARE_OVER,
 } from 'config';
-import { rpcResponseTime, INFURA, ALCHEMY } from 'utils/metrics';
+import { rpcResponseTime, INFURA, ALCHEMY } from 'utilsApi/metrics';
 
 export const getEthPrice = async (): Promise<number> => {
   const urls = getRpcJsonUrls(CHAINS.Mainnet);

@@ -1,7 +1,7 @@
 import { CHAINS } from '@lido-sdk/constants';
 import { getStaticRpcBatchProvider } from '@lido-sdk/providers';
 import { getRpcJsonUrls, HEALTHY_RPC_SERVICES_ARE_OVER } from 'config';
-import { rpcResponseTime, INFURA, ALCHEMY } from 'utils/metrics';
+import { rpcResponseTime, INFURA, ALCHEMY } from 'utilsApi/metrics';
 
 export const getEthApr = async (): Promise<string> => {
   const urls = getRpcJsonUrls(CHAINS.Mainnet);

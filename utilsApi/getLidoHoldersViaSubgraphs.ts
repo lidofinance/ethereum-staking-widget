@@ -1,6 +1,6 @@
 import { API_THEGRAPH_SUBGRAPHS_LIDO_ENDPOINT } from 'config';
-import { subgraphsResponseTime } from 'utils/metrics';
-import { standardFetcher } from './standardFetcher';
+import { subgraphsResponseTime } from 'utilsApi/metrics';
+import { standardFetcher } from 'utils/standardFetcher';
 
 interface LidoHolders extends Response {
   data: {

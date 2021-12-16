@@ -7,7 +7,7 @@ import {
   getStethContractFactory,
   HEALTHY_RPC_SERVICES_ARE_OVER,
 } from 'config';
-import { rpcResponseTime, INFURA, ALCHEMY } from 'utils/metrics';
+import { rpcResponseTime, INFURA, ALCHEMY } from 'utilsApi/metrics';
 
 export const getTotalStaked = async (): Promise<string> => {
   const urls = getRpcJsonUrls(CHAINS.Mainnet);

@@ -8,7 +8,7 @@ import {
   DEFAULT_API_ERROR_MESSAGE,
 } from 'config';
 import initMiddleware from 'lib/init-middleware';
-import { getEthApr, getStethApr } from 'utils';
+import { getEthApr, getStethApr } from 'utilsApi';
 import { API } from 'types';
 
 const cacheEth = new Cache<typeof CACHE_ETH_APR_KEY, string>();
