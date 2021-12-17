@@ -8,7 +8,7 @@ import {
   getTotalStaked,
   getLidoHoldersViaSubgraphs,
   getStEthPrice,
-} from 'utils';
+} from 'utilsApi';
 import { API } from 'types';
 
 const cache = new Cache<typeof CACHE_LIDO_HOLDERS_VIA_SUBGRAPHS_KEY, unknown>();
@@ -42,8 +42,8 @@ const shortLidoStats: API = async (req, res) => {
       res.status(200).json(shortLidoStats);
     }
   } catch (error) {
-    console.error(error);
     if (error instanceof Error) {
+      console.error(error.message ?? DEFAULT_API_ERROR_MESSAGE);
       res.status(500).json(error.message ?? DEFAULT_API_ERROR_MESSAGE);
     } else {
       res.status(500).json(DEFAULT_API_ERROR_MESSAGE);

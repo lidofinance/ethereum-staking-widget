@@ -8,7 +8,7 @@ import {
   DEFAULT_API_ERROR_MESSAGE,
 } from 'config';
 import initMiddleware from 'lib/init-middleware';
-import { getEthApr, getStethApr } from 'utils';
+import { getEthApr, getStethApr } from 'utilsApi';
 import { API } from 'types';
 
 const cacheEth = new Cache<typeof CACHE_ETH_APR_KEY, string>();
@@ -73,8 +73,8 @@ const apr: API = async (req, res) => {
       data: resultData,
     });
   } catch (error) {
-    console.error(error);
     if (error instanceof Error) {
+      console.error(error.message ?? DEFAULT_API_ERROR_MESSAGE);
       res.status(500).json(error.message ?? DEFAULT_API_ERROR_MESSAGE);
     } else {
       res.status(500).json(DEFAULT_API_ERROR_MESSAGE);

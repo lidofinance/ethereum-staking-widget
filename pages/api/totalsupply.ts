@@ -4,7 +4,7 @@ import {
   CACHE_TOTAL_SUPPLY_TTL,
   DEFAULT_API_ERROR_MESSAGE,
 } from 'config';
-import { getTotalStaked } from 'utils';
+import { getTotalStaked } from 'utilsApi';
 import { API } from 'types';
 
 const cache = new Cache<typeof CACHE_TOTAL_SUPPLY_KEY, string>();

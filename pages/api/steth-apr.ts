@@ -4,7 +4,7 @@ import {
   CACHE_STETH_APR_TTL,
   DEFAULT_API_ERROR_MESSAGE,
 } from 'config';
-import { getStethApr } from 'utils';
+import { getStethApr } from 'utilsApi';
 import { API } from 'types';
 
 const cache = new Cache<typeof CACHE_STETH_APR_KEY, string>();

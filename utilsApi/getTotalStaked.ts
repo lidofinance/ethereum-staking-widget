@@ -7,6 +7,7 @@ import {
   getStethContractFactory,
   HEALTHY_RPC_SERVICES_ARE_OVER,
 } from 'config';
+import { rpcResponseTime, INFURA, ALCHEMY } from 'utilsApi/metrics';
 
 export const getTotalStaked = async (): Promise<string> => {
   const urls = getRpcJsonUrls(CHAINS.Mainnet);
@@ -30,14 +31,17 @@ const getTotalStakedWithFallbacks = async (
       staticProvider,
     );
 
+    const endMetric = rpcResponseTime.startTimer();
+
     const totalSupplyStWei = await stethContract.totalSupply();
 
-    // TODO: metrics
-    if (urls[urlIndex].indexOf('infura') > -1) {
+    if (urls[urlIndex].indexOf(INFURA) > -1) {
       console.log('[getTotalStaked] Get via infura');
+      endMetric({ provider: INFURA });
     }
-    if (urls[urlIndex].indexOf('alchemy') > -1) {
+    if (urls[urlIndex].indexOf(ALCHEMY) > -1) {
       console.log('[getTotalStaked] Get via alchemy');
+      endMetric({ provider: ALCHEMY });
     }
 
     const totalSupplyStEth = formatEther(totalSupplyStWei);

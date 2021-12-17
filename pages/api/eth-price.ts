@@ -4,7 +4,7 @@ import {
   CACHE_ETH_PRICE_TTL,
   DEFAULT_API_ERROR_MESSAGE,
 } from 'config';
-import { getEthPrice } from 'utils';
+import { getEthPrice } from 'utilsApi';
 import { API } from 'types';
 
 const cache = new Cache<typeof CACHE_ETH_PRICE_KEY, unknown>();
