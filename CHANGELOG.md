@@ -1,3 +1,42 @@
+# [1.5.0](https://github.com/lidofinance/staking-widget-ts/compare/1.4.0...1.5.0) (2021-12-20)
+
+
+### Bug Fixes
+
+* buildInfo metric ([f49a92d](https://github.com/lidofinance/staking-widget-ts/commit/f49a92d9df37a4e43795ca83815521cc16919427))
+* export getStEthPrice ([b0ea668](https://github.com/lidofinance/staking-widget-ts/commit/b0ea6680d722f42cdfa44037a460fbd39d2fb784))
+* getEthPrice ([8b09dcc](https://github.com/lidofinance/staking-widget-ts/commit/8b09dcc11064406908461e523d1e558d475c7044))
+* getTotalStaked ([4167adb](https://github.com/lidofinance/staking-widget-ts/commit/4167adb5b88b12b025974456d195779eb9080dd9))
+* metrics ([abc0510](https://github.com/lidofinance/staking-widget-ts/commit/abc05109c0e66268fcf745cb4dda84fe574e3d2b))
+* rpcResponseTime another way to set label ([7176b79](https://github.com/lidofinance/staking-widget-ts/commit/7176b794d7909cb6c07fe37c35b3d4de43c590da))
+* **metrics:** call clear for HMR support ([431368f](https://github.com/lidofinance/staking-widget-ts/commit/431368f2bd5bd48efbd2517afc9b4072bce2960d))
+* small fixes and comments ([062c0e4](https://github.com/lidofinance/staking-widget-ts/commit/062c0e4033aca8ffde48052d45cdfd355fa57c07))
+
+
+### Features
+
+* api method /api/lido-stats ([41378c5](https://github.com/lidofinance/staking-widget-ts/commit/41378c58a85067e343f1f2c34b4cd9b2ed348fc5))
+* Chainlink STETH/USD Price Feed aggregator ([0c46e27](https://github.com/lidofinance/staking-widget-ts/commit/0c46e27ee7813de840b161948746f2add5511b0f))
+* delete console.log (paranoia about secrets) ([0568ed4](https://github.com/lidofinance/staking-widget-ts/commit/0568ed49679d7322e3256ccc41098ca6204549f1))
+* get lido holders via subgraphs ([8b52e0c](https://github.com/lidofinance/staking-widget-ts/commit/8b52e0c7944bd9a940c4a3db501c28a9a20f3ed2))
+* get stEth price ([57eb383](https://github.com/lidofinance/staking-widget-ts/commit/57eb383a68b1de70040601f03d06062ff7f7ffa6))
+* metric (response time) for subgraphs ([0a25fcf](https://github.com/lidofinance/staking-widget-ts/commit/0a25fcf448792e34f681eea7887b11834ff9fa86))
+* metrics for each rpc call ([03c403c](https://github.com/lidofinance/staking-widget-ts/commit/03c403ce630a5b2ab820b74118aad72b5932da2b))
+* move serverLogger to utilsApi directory ([7875052](https://github.com/lidofinance/staking-widget-ts/commit/7875052bb726c2041b3e7a327e3dfb59140e57d9))
+* move some server side utils to utilsApi directory ([e62891b](https://github.com/lidofinance/staking-widget-ts/commit/e62891b6b794f20ad6cb042cae5950cf42b31137))
+* remove close button on tx modal for ledger ([c318cf9](https://github.com/lidofinance/staking-widget-ts/commit/c318cf91a0883ee4b2f4e08fefbe02b042f4385d))
+* return leader ([5e6da6c](https://github.com/lidofinance/staking-widget-ts/commit/5e6da6cec141c6c9ada165f23c09754a31fb28ec))
+* update getStEthPrice ([5b8d3fd](https://github.com/lidofinance/staking-widget-ts/commit/5b8d3fd127f029d9cf8853cca421530932ece06d))
+* useLidoStats is using the /api/lido-stats ([dc4b989](https://github.com/lidofinance/staking-widget-ts/commit/dc4b98921b66e913050278241fbf892f9b7850db))
+* utilsApi directory for all server side utils ([d10e499](https://github.com/lidofinance/staking-widget-ts/commit/d10e4992863ef06001666465006a047463edea5d))
+
+
+### Reverts
+
+* **prom-client:** register.clear() ([c4ab647](https://github.com/lidofinance/staking-widget-ts/commit/c4ab647711a245fdf9429d682842feff606ab95d))
+
+
+
 # [1.4.0](https://github.com/lidofinance/staking-widget-ts/compare/1.3.0...1.4.0) (2021-12-15)
 
 
@@ -75,7 +114,6 @@
 ### Bug Fixes
 
 * **logging:** use console logging ([0188f6e](https://github.com/lidofinance/staking-widget-ts/commit/0188f6ec2ae31017b689e1eac6df8d3070929d7e))
-* /api/rpc defaultChain from publicRuntimeConfig ([4d1e6eb](https://github.com/lidofinance/staking-widget-ts/commit/4d1e6ebf91693e518aeec4594c4c9e39e9968208))
 * hover color of theme toggler button ([fda7410](https://github.com/lidofinance/staking-widget-ts/commit/fda7410df2cb8716cd3b57a6a5b5eb180b73b188))
 
 
