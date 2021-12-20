@@ -26,20 +26,26 @@ const getTotalAtStakeWithFallbacks = async (
       urls[urlIndex],
     );
 
-    const endMetric = rpcResponseTime.startTimer();
+    let provider = INFURA;
+    if (urls[urlIndex].indexOf(ALCHEMY) > -1) {
+      provider = ALCHEMY;
+    }
+    const endMetric = rpcResponseTime.labels(provider).startTimer();
 
     const currentlyDeposited = await staticProvider.getBalance(
       eth2DepositContractAddress,
     );
 
-    if (urls[urlIndex].indexOf(INFURA) > -1) {
-      console.log('[getEthApr] Get via infura');
-      endMetric({ provider: INFURA });
-    }
-    if (urls[urlIndex].indexOf(ALCHEMY) > -1) {
-      console.log('[getEthApr] Get via alchemy');
-      endMetric({ provider: ALCHEMY });
-    }
+    endMetric();
+
+    // if (urls[urlIndex].indexOf(INFURA) > -1) {
+    //   console.log('[getEthApr] Get via infura');
+    //   endMetric({ provider: INFURA });
+    // }
+    // if (urls[urlIndex].indexOf(ALCHEMY) > -1) {
+    //   console.log('[getEthApr] Get via alchemy');
+    //   endMetric({ provider: ALCHEMY });
+    // }
 
     return Number(currentlyDeposited);
   } catch {
