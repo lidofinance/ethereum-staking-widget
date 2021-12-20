@@ -6,6 +6,7 @@ import {
   DEFAULT_API_ERROR_MESSAGE,
   HEALTHY_RPC_SERVICES_ARE_OVER,
 } from 'config';
+import { rpcResponseTime, INFURA, ALCHEMY } from 'utilsApi/metrics';
 
 const { serverRuntimeConfig, publicRuntimeConfig } = getConfig();
 const { infuraApiKey, alchemyApiKey } = serverRuntimeConfig;
@@ -26,14 +27,18 @@ const rpc: Rpc = async (req, res) => {
       body: JSON.stringify(req.body),
       providers: { infura: infuraApiKey, alchemy: alchemyApiKey },
     };
+
+    const endMetric = rpcResponseTime.startTimer();
+
     const requested = await fetchRPC(chainId, options);
 
-    // TODO: metrics
-    if (requested.url.indexOf('infura') > -1) {
+    if (requested.url.indexOf(INFURA) > -1) {
       console.log('[rpc] Get via infura');
+      endMetric({ provider: INFURA });
     }
-    if (requested.url.indexOf('alchemy') > -1) {
+    if (requested.url.indexOf(ALCHEMY) > -1) {
       console.log('[rpc] Get via alchemy');
+      endMetric({ provider: ALCHEMY });
     }
 
     const responded = await requested.json();

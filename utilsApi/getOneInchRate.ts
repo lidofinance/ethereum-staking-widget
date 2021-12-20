@@ -1,4 +1,4 @@
-import { standardFetcher } from './standardFetcher';
+import { standardFetcher } from 'utils/standardFetcher';
 
 type oneInchFetchResponse = {
   toTokenAmount: string;

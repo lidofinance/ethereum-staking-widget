@@ -1,10 +1,15 @@
-import { formatEther } from '@ethersproject/units';
-import { useEthPrice, useLidoSWR } from '@lido-sdk/react';
+import { useLidoSWR } from '@lido-sdk/react';
 import { DATA_UNAVAILABLE } from 'config';
 import { useMemo } from 'react';
-import { EthplorerWrappedDataResponse } from 'types';
 import { prependBasePath } from 'utils';
 import { standardFetcher } from 'utils/standardFetcher';
+
+export type ResponseData = {
+  uniqueAnytimeHolders: string;
+  uniqueHolders: string;
+  totalStaked: string;
+  marketCap: number;
+};
 
 export const useLidoStats = (): {
   data: {
@@ -14,43 +19,32 @@ export const useLidoStats = (): {
   };
   initialLoading: boolean;
 } => {
-  const lidoStats = useLidoSWR<EthplorerWrappedDataResponse>(
-    prependBasePath('api/lido-stats'),
+  const lidoStats = useLidoSWR<ResponseData>(
+    prependBasePath('api/short-lido-stats'),
     standardFetcher,
   );
 
-  const ethPrice = useEthPrice();
-
   const data = useMemo(() => {
-    if (lidoStats.error || ethPrice.error) {
+    if (lidoStats.error || !lidoStats.data) {
       return {
         totalStaked: DATA_UNAVAILABLE,
         stakers: DATA_UNAVAILABLE,
         marketCap: DATA_UNAVAILABLE,
       };
     }
-
-    if (!lidoStats.data || !lidoStats.data.data || !ethPrice.data) {
-      return {
-        totalStaked: DATA_UNAVAILABLE,
-        stakers: DATA_UNAVAILABLE,
-        marketCap: DATA_UNAVAILABLE,
-      };
-    }
-
-    const totalStaked = parseFloat(
-      formatEther(lidoStats.data.data.totalSupply),
-    );
-    const marketCap = totalStaked * ethPrice.data;
 
     return {
-      totalStaked: `${totalStaked.toLocaleString('en-US')} ETH`,
-      stakers: String(lidoStats.data.data.holdersCount),
-      marketCap: `$${Math.round(marketCap).toLocaleString('en-US')}`,
+      totalStaked: `${Number(lidoStats.data.totalStaked).toLocaleString(
+        'en-US',
+      )} ETH`,
+      stakers: String(lidoStats.data.uniqueAnytimeHolders),
+      marketCap: `$${Math.round(lidoStats.data.marketCap).toLocaleString(
+        'en-US',
+      )}`,
     };
-  }, [lidoStats, ethPrice]);
+  }, [lidoStats]);
 
-  const initialLoading = !lidoStats.data || !ethPrice.data;
+  const initialLoading = !lidoStats.data;
 
   return {
     data,

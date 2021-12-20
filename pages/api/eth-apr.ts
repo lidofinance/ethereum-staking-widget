@@ -4,7 +4,7 @@ import {
   CACHE_ETH_APR_TTL,
   DEFAULT_API_ERROR_MESSAGE,
 } from 'config';
-import { getEthApr } from 'utils';
+import { getEthApr } from 'utilsApi';
 import { API } from 'types';
 
 const cache = new Cache<typeof CACHE_ETH_APR_KEY, string>();
