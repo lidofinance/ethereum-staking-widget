@@ -16,7 +16,7 @@ const buildInfo = new Gauge({
 
 const version = process.env.npm_package_version ?? 'unversioned';
 
-buildInfo.labels(version, buildInfoJson.branch, buildInfoJson.commit).set(1);
+buildInfo.labels(version, buildInfoJson.commit, buildInfoJson.branch).set(1);
 // /BUILD_INFO
 
 // CHAIN CONFIG
