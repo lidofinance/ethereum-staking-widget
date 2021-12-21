@@ -112,6 +112,8 @@ export const TxStageModal: FC<TxStageModalProps> = memo(
     const { chainId } = useSDK();
     const { isLedger } = useConnectorInfo();
     const currentIconDict = iconsDict[isLedger ? 'ledger' : 'default'];
+    const isCloseButtonHidden =
+      isLedger && ![TX_STAGE.SUCCESS, TX_STAGE.FAIL].includes(txStage);
 
     const balanceAsString = useMemo(
       () => (balance ? formatBalance(balance, 4) : ''),
@@ -351,7 +353,7 @@ export const TxStageModal: FC<TxStageModalProps> = memo(
     return (
       <Modal
         {...modalProps}
-        onClose={isLedger ? undefined : modalProps.onClose}
+        onClose={isCloseButtonHidden ? undefined : modalProps.onClose}
       >
         {content}
       </Modal>
