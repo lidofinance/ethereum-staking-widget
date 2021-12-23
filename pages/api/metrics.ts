@@ -1,13 +1,11 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { register, collectDefaultMetrics } from 'prom-client';
+import { registry } from 'utilsApi/metrics';
 
-collectDefaultMetrics();
+type Metrics = (req: NextApiRequest, res: NextApiResponse) => Promise<void>;
 
-export default async function metrics(
-  req: NextApiRequest,
-  res: NextApiResponse,
-): Promise<void> {
-  res.setHeader('Content-type', register.contentType);
-  const defaultMetrics = await register.metrics();
-  res.send(defaultMetrics);
-}
+const metrics: Metrics = async (req, res) => {
+  const collectedMetrics = await registry.metrics();
+  res.send(collectedMetrics);
+};
+
+export default metrics;

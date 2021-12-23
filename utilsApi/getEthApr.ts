@@ -1,23 +1,60 @@
 import { CHAINS } from '@lido-sdk/constants';
 import { getStaticRpcBatchProvider } from '@lido-sdk/providers';
-import { getRpcJsonUrls } from 'config';
+import { getRpcJsonUrls, HEALTHY_RPC_SERVICES_ARE_OVER } from 'config';
+import { rpcResponseTime, INFURA, ALCHEMY } from 'utilsApi/metrics';
 
 export const getEthApr = async (): Promise<string> => {
   const urls = getRpcJsonUrls(CHAINS.Mainnet);
-  const staticProvider = getStaticRpcBatchProvider(CHAINS.Mainnet, urls[0]);
-
-  const eth2DepositContractAddress =
-    '0x00000000219ab540356cBB839Cbe05303d7705Fa';
-
-  const currentlyDeposited = await staticProvider.getBalance(
-    eth2DepositContractAddress,
-  );
 
   const ethApr = calculateEth2Rewards({
-    totalAtStake: Number(currentlyDeposited),
+    totalAtStake: await getTotalAtStakeWithFallbacks(urls, 0),
   });
 
   return (ethApr * 1e11).toFixed(1);
+};
+
+const getTotalAtStakeWithFallbacks = async (
+  urls: Array<string>,
+  urlIndex: number,
+): Promise<number> => {
+  const eth2DepositContractAddress =
+    '0x00000000219ab540356cBB839Cbe05303d7705Fa';
+
+  try {
+    const staticProvider = getStaticRpcBatchProvider(
+      CHAINS.Mainnet,
+      urls[urlIndex],
+    );
+
+    let provider = INFURA;
+    if (urls[urlIndex].indexOf(ALCHEMY) > -1) {
+      provider = ALCHEMY;
+    }
+    const endMetric = rpcResponseTime.labels(provider).startTimer();
+
+    const currentlyDeposited = await staticProvider.getBalance(
+      eth2DepositContractAddress,
+    );
+
+    endMetric();
+
+    // if (urls[urlIndex].indexOf(INFURA) > -1) {
+    //   console.log('[getEthApr] Get via infura');
+    //   endMetric({ provider: INFURA });
+    // }
+    // if (urls[urlIndex].indexOf(ALCHEMY) > -1) {
+    //   console.log('[getEthApr] Get via alchemy');
+    //   endMetric({ provider: ALCHEMY });
+    // }
+
+    return Number(currentlyDeposited);
+  } catch {
+    if (urlIndex >= urls.length - 1) {
+      const error = `[getEthApr] ${HEALTHY_RPC_SERVICES_ARE_OVER}`;
+      throw new Error(error);
+    }
+    return await getTotalAtStakeWithFallbacks(urls, urlIndex + 1);
+  }
 };
 
 const calculateEth2Rewards = ({

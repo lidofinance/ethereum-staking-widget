@@ -4,7 +4,7 @@ import {
   CACHE_ETH_PRICE_TTL,
   DEFAULT_API_ERROR_MESSAGE,
 } from 'config';
-import { getEthPrice } from 'utils';
+import { getEthPrice } from 'utilsApi';
 import { API } from 'types';
 
 const cache = new Cache<typeof CACHE_ETH_PRICE_KEY, unknown>();
@@ -23,8 +23,8 @@ const ethPrice: API = async (req, res) => {
       res.json({ price: ethPrice });
     }
   } catch (error) {
-    console.error(error);
     if (error instanceof Error) {
+      console.error(error.message ?? DEFAULT_API_ERROR_MESSAGE);
       res.status(500).json(error.message ?? DEFAULT_API_ERROR_MESSAGE);
     } else {
       res.status(500).json(DEFAULT_API_ERROR_MESSAGE);

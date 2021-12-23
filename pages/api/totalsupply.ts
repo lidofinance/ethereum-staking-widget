@@ -4,7 +4,7 @@ import {
   CACHE_TOTAL_SUPPLY_TTL,
   DEFAULT_API_ERROR_MESSAGE,
 } from 'config';
-import { getTotalStaked } from 'utils';
+import { getTotalStaked } from 'utilsApi';
 import { API } from 'types';
 
 const cache = new Cache<typeof CACHE_TOTAL_SUPPLY_KEY, string>();
@@ -24,6 +24,7 @@ const totalSupply: API = async (req, res) => {
     }
   } catch (error) {
     if (error instanceof Error) {
+      console.error(error.message ?? DEFAULT_API_ERROR_MESSAGE);
       res.status(500).json(error.message ?? DEFAULT_API_ERROR_MESSAGE);
     } else {
       res.status(500).json(DEFAULT_API_ERROR_MESSAGE);

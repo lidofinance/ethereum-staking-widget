@@ -10,3 +10,4 @@ export * from './api';
 export * from './text';
 export * from './tx';
 export * from './units';
+export * from './metrics';

@@ -1,4 +1,4 @@
-import { History, Stake, Wrap } from '@lidofinance/lido-ui';
+import { Wallet, Stake, Wrap } from '@lidofinance/icons';
 import { useRouter } from 'next/router';
 import { FC, memo } from 'react';
 import { LocalLink } from './local-link';
@@ -16,9 +16,9 @@ const routes = [
     icon: <Wrap />,
   },
   {
-    name: 'History',
+    name: 'Rewards',
     path: '/rewards',
-    icon: <History />,
+    icon: <Wallet />,
   },
 ];
 export const Navigation: FC = memo(() => {

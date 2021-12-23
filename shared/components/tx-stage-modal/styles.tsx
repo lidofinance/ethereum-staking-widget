@@ -16,7 +16,18 @@ export const LightText = styled(Text)`
 `;
 
 export const IconWrapper = styled.div`
+  height: 64px;
+  width: 100%;
   text-align: center;
+`;
+
+export const LedgerIconWrapper = styled.div`
+  width: 100%;
+  text-align: center;
+
+  svg {
+    max-width: 100%;
+  }
 `;
 
 export const SuccessIcon = styled(CheckLarge)`

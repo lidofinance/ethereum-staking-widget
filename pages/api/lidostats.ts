@@ -4,14 +4,15 @@ import {
   CACHE_LIDO_STATS_TTL,
   DEFAULT_API_ERROR_MESSAGE,
 } from 'config';
-import { getLidoStats } from 'utils';
+import { getLidoStats } from 'utilsApi';
 import { API } from 'types';
 
 const cache = new Cache<typeof CACHE_LIDO_STATS_KEY, unknown>();
 
 // Proxy for third-party API.
 // Returns steth token information
-// DEPRECATED: In future will be delete!!! Use /api/lido-stats
+// Mirror of /api/lido-stats
+// DEPRECATED: In future will be delete!!!
 const lidoStats: API = async (req, res) => {
   try {
     const cachedLidoStats = cache.get(CACHE_LIDO_STATS_KEY);
@@ -29,8 +30,8 @@ const lidoStats: API = async (req, res) => {
       res.status(200).json({ data: lidoStats });
     }
   } catch (error) {
-    console.error(error);
     if (error instanceof Error) {
+      console.error(error.message ?? DEFAULT_API_ERROR_MESSAGE);
       res.status(500).json(error.message ?? DEFAULT_API_ERROR_MESSAGE);
     } else {
       res.status(500).json(DEFAULT_API_ERROR_MESSAGE);
