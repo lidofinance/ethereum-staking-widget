@@ -1,6 +1,7 @@
 import { API_THEGRAPH_SUBGRAPHS_LIDO_ENDPOINT } from 'config';
 import { subgraphsResponseTime } from 'utilsApi/metrics';
 import { standardFetcher } from 'utils/standardFetcher';
+import { serverLogger } from './serverLogger';
 
 interface LidoHolders extends Response {
   data: {
@@ -15,6 +16,7 @@ type GetLidoHoldersViaSubgraphs = () => Promise<LidoHolders>;
 
 export const getLidoHoldersViaSubgraphs: GetLidoHoldersViaSubgraphs =
   async () => {
+    serverLogger.debug('Fetching lido holders from subgraph...');
     const query = `
     query {
       stats (id: "") {
@@ -31,12 +33,14 @@ export const getLidoHoldersViaSubgraphs: GetLidoHoldersViaSubgraphs =
 
     const endMetric = subgraphsResponseTime.startTimer();
 
-    const responseJsoned = standardFetcher<LidoHolders>(
+    const responseJsoned = await standardFetcher<LidoHolders>(
       API_THEGRAPH_SUBGRAPHS_LIDO_ENDPOINT,
       params,
     );
 
     endMetric();
+
+    serverLogger.debug('Lido holders: ', responseJsoned);
 
     return responseJsoned;
   };

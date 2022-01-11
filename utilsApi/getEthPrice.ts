@@ -6,6 +6,7 @@ import {
   getRpcJsonUrls,
   HEALTHY_RPC_SERVICES_ARE_OVER,
 } from 'config';
+import { serverLogger } from 'utilsApi';
 import { rpcResponseTime, INFURA, ALCHEMY } from 'utilsApi/metrics';
 
 export const getEthPrice = async (): Promise<number> => {
@@ -36,11 +37,11 @@ const getEthPriceWithFallbacks = async (
     ]);
 
     if (urls[urlIndex].indexOf(INFURA) > -1) {
-      console.log('[getEthApr] Get via infura');
+      serverLogger.log('[getEthApr] Get via infura');
       endMetric({ provider: INFURA });
     }
     if (urls[urlIndex].indexOf(ALCHEMY) > -1) {
-      console.log('[getEthApr] Get via alchemy');
+      serverLogger.log('[getEthApr] Get via alchemy');
       endMetric({ provider: ALCHEMY });
     }
 

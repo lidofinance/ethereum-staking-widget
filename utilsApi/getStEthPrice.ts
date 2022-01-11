@@ -6,6 +6,7 @@ import {
   getRpcJsonUrls,
   HEALTHY_RPC_SERVICES_ARE_OVER,
 } from 'config';
+import { serverLogger } from 'utilsApi';
 
 export const getStEthPrice = async (): Promise<number> => {
   const urls = getRpcJsonUrls(CHAINS.Mainnet);
@@ -33,16 +34,17 @@ const getStEthPriceWithFallbacks = async (
 
     // TODO: metrics
     if (urls[urlIndex].indexOf('infura') > -1) {
-      console.log('[getStEthPrice] Get via infura');
+      serverLogger.log('[getStEthPrice] Get via infura');
     }
     if (urls[urlIndex].indexOf('alchemy') > -1) {
-      console.log('[getStEthPrice] Get via alchemy');
+      serverLogger.log('[getStEthPrice] Get via alchemy');
     }
 
     return latestAnswer.toNumber() / 10 ** decimals;
   } catch {
     if (urlIndex >= urls.length - 1) {
       const error = `[getStEthPrice] ${HEALTHY_RPC_SERVICES_ARE_OVER}`;
+      serverLogger.error(error);
       throw new Error(error);
     }
     return await getStEthPriceWithFallbacks(urls, urlIndex + 1);

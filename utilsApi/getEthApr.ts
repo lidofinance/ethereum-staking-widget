@@ -2,13 +2,17 @@ import { CHAINS } from '@lido-sdk/constants';
 import { getStaticRpcBatchProvider } from '@lido-sdk/providers';
 import { getRpcJsonUrls, HEALTHY_RPC_SERVICES_ARE_OVER } from 'config';
 import { rpcResponseTime, INFURA, ALCHEMY } from 'utilsApi/metrics';
+import { serverLogger } from './serverLogger';
 
 export const getEthApr = async (): Promise<string> => {
+  serverLogger.debug('Getting eth apr...');
   const urls = getRpcJsonUrls(CHAINS.Mainnet);
 
   const ethApr = calculateEth2Rewards({
     totalAtStake: await getTotalAtStakeWithFallbacks(urls, 0),
   });
+
+  serverLogger.debug('Eth apr: ' + ethApr);
 
   return (ethApr * 1e11).toFixed(1);
 };
@@ -17,6 +21,7 @@ const getTotalAtStakeWithFallbacks = async (
   urls: Array<string>,
   urlIndex: number,
 ): Promise<number> => {
+  serverLogger.debug('Fetching currently deposited eth2...');
   const eth2DepositContractAddress =
     '0x00000000219ab540356cBB839Cbe05303d7705Fa';
 
@@ -46,6 +51,7 @@ const getTotalAtStakeWithFallbacks = async (
     //   console.log('[getEthApr] Get via alchemy');
     //   endMetric({ provider: ALCHEMY });
     // }
+    serverLogger.debug('Currently deposited in eth2: ', +currentlyDeposited);
 
     return Number(currentlyDeposited);
   } catch {

@@ -20,8 +20,8 @@ export const contentSecurityPolicy = {
     scriptSrc: ["'self'", "'unsafe-eval'", "'unsafe-inline'", ...trustedHosts],
     connectSrc: [
       "'self'",
-      'wss://*.walletconnect.org',
-      'https://*.walletconnect.org',
+      // 'wss://*.walletconnect.org',
+      // 'https://*.walletconnect.org',
       'https://*.coinbase.com',
       'wss://*.walletlink.org/',
       ...trustedHosts,
