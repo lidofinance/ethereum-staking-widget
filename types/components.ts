@@ -1,3 +1,5 @@
+import { AppProps } from 'next/app';
+import { EnvConfig } from 'providers';
 import { FC, ReactNode } from 'react';
 
 export type ComponentProps<
@@ -16,3 +18,7 @@ export type Override<
 > = Omit<T, keyof P> & P;
 
 export type HandleChange = React.FormEventHandler<HTMLInputElement>;
+
+export type CustomApp = (
+  props: AppProps & { config: EnvConfig },
+) => JSX.Element;

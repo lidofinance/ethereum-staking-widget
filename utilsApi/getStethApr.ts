@@ -9,6 +9,7 @@ import {
   getStethContractFactory,
   HEALTHY_RPC_SERVICES_ARE_OVER,
 } from 'config';
+import { serverLogger } from 'utilsApi';
 import { rpcResponseTime, INFURA, ALCHEMY } from 'utilsApi/metrics';
 
 export const getStethApr = async (): Promise<string> => {
@@ -27,7 +28,7 @@ const getStethAprWithFallbacks = async (
   //   provider = INFURA;
   // }
   if (urls[urlIndex].indexOf(ALCHEMY) > -1) {
-    console.log('[getStethApr] Get via alchemy');
+    serverLogger.log('[getStethApr] Get via alchemy');
     provider = ALCHEMY;
   }
 
@@ -83,6 +84,7 @@ const getStethAprWithFallbacks = async (
   } catch (error) {
     if (urlIndex >= urls.length - 1) {
       const error = `[getStethApr] ${HEALTHY_RPC_SERVICES_ARE_OVER}`;
+      serverLogger.error(error);
       throw new Error(error);
     }
     return await getStethAprWithFallbacks(urls, urlIndex + 1);
