@@ -8,7 +8,7 @@
     "start": "NODE_OPTIONS='-r next-logger' next start",
     "lint": "eslint --ext ts,tsx .",
     "typechain": "typechain --target=ethers-v5 --out-dir ./generated ./abi/*.json",
-    "postinstall": "husky install && yarn typechain",
+    "postinstall": "husky install && yarn typechain || true",
     "test": "jest"
   },
   "dependencies": {
