@@ -6,9 +6,7 @@ import { CustomApp } from 'types';
 const { serverRuntimeConfig } = getConfig();
 const { cspTrustedHosts, cspReportOnly, cspReportUri } = serverRuntimeConfig;
 
-const trustedHosts = cspTrustedHosts
-  ? cspTrustedHosts.split(',')
-  : ['https://*.lido.fi'];
+const trustedHosts = cspTrustedHosts ? cspTrustedHosts.split(',') : [];
 
 const reportOnly = cspReportOnly === 'true';
 
