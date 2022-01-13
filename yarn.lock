@@ -1366,7 +1366,7 @@
     "@ethersproject/bytes" "^5.5.0"
     "@ethersproject/properties" "^5.5.0"
 
-"@ethersproject/bignumber@5.4.2", "@ethersproject/bignumber@^5.4.0", "@ethersproject/bignumber@^5.4.1":
+"@ethersproject/bignumber@5.4.2", "@ethersproject/bignumber@^5.4.0":
   version "5.4.2"
   resolved "https://registry.yarnpkg.com/@ethersproject/bignumber/-/bignumber-5.4.2.tgz#44232e015ae4ce82ac034de549eb3583c71283d8"
   integrity sha512-oIBDhsKy5bs7j36JlaTzFgNPaZjiNDOXsdSgSpXRucUl+UA6L/1YLlFeI3cPAoodcenzF4nxNPV13pcy7XbWjA==
@@ -1412,7 +1412,7 @@
   dependencies:
     "@ethersproject/bignumber" "^5.5.0"
 
-"@ethersproject/contracts@5.4.1", "@ethersproject/contracts@^5.4.0":
+"@ethersproject/contracts@5.4.1":
   version "5.4.1"
   resolved "https://registry.yarnpkg.com/@ethersproject/contracts/-/contracts-5.4.1.tgz#3eb4f35b7fe60a962a75804ada2746494df3e470"
   integrity sha512-m+z2ZgPy4pyR15Je//dUaymRUZq5MtDajF6GwFbGAVmKz/RF+DNIPwF0k5qEcL3wPGVqUjFg2/krlCRVTU4T5w==
@@ -1428,7 +1428,7 @@
     "@ethersproject/properties" "^5.4.0"
     "@ethersproject/transactions" "^5.4.0"
 
-"@ethersproject/contracts@5.5.0":
+"@ethersproject/contracts@5.5.0", "@ethersproject/contracts@^5.5.0":
   version "5.5.0"
   resolved "https://registry.yarnpkg.com/@ethersproject/contracts/-/contracts-5.5.0.tgz#b735260d4bd61283a670a82d5275e2a38892c197"
   integrity sha512-2viY7NzyvJkh+Ug17v7g3/IJC8HqZBDcOjYARZLdzRxrfGlRgmYgl6xPRKVbEzy1dWKw/iv7chDcS83pg6cLxg==
@@ -1616,7 +1616,7 @@
   dependencies:
     "@ethersproject/logger" "^5.5.0"
 
-"@ethersproject/providers@5.4.5", "@ethersproject/providers@^5.4.2":
+"@ethersproject/providers@5.4.5":
   version "5.4.5"
   resolved "https://registry.yarnpkg.com/@ethersproject/providers/-/providers-5.4.5.tgz#eb2ea2a743a8115f79604a8157233a3a2c832928"
   integrity sha512-1GkrvkiAw3Fj28cwi1Sqm8ED1RtERtpdXmRfwIBGmqBSN5MoeRUHuwHPppMtbPayPgpFcvD7/Gdc9doO5fGYgw==
@@ -1811,7 +1811,7 @@
     "@ethersproject/rlp" "^5.5.0"
     "@ethersproject/signing-key" "^5.5.0"
 
-"@ethersproject/units@5.4.0", "@ethersproject/units@^5.4.0":
+"@ethersproject/units@5.4.0":
   version "5.4.0"
   resolved "https://registry.yarnpkg.com/@ethersproject/units/-/units-5.4.0.tgz#d57477a4498b14b88b10396062c8cbbaf20c79fe"
   integrity sha512-Z88krX40KCp+JqPCP5oPv5p750g+uU6gopDYRTBGcDvOASh6qhiEYCRatuM/suC4S2XW9Zz90QI35MfSrTIaFg==
@@ -1820,7 +1820,7 @@
     "@ethersproject/constants" "^5.4.0"
     "@ethersproject/logger" "^5.4.0"
 
-"@ethersproject/units@5.5.0":
+"@ethersproject/units@5.5.0", "@ethersproject/units@^5.5.0":
   version "5.5.0"
   resolved "https://registry.yarnpkg.com/@ethersproject/units/-/units-5.5.0.tgz#104d02db5b5dc42cc672cc4587bafb87a95ee45e"
   integrity sha512-7+DpjiZk4v6wrikj+TCyWWa9dXLNU73tSTa7n0TSJDxkYbV3Yf1eRh9ToMLlZtuctNYu9RDNNy2USq3AdqSbag==
@@ -2235,29 +2235,14 @@
   resolved "https://registry.yarnpkg.com/@ledgerhq/logs/-/logs-6.10.0.tgz#c012c1ecc1a0e53d50e6af381618dca5268461c1"
   integrity sha512-lLseUPEhSFUXYTKj6q7s2O3s2vW2ebgA11vMAlKodXGf5AFw4zUoEbTz9CoFOC9jS6xY4Qr8BmRnxP/odT4Uuw==
 
-"@lido-sdk/constants@1.2.0", "@lido-sdk/constants@^1.2.0":
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/@lido-sdk/constants/-/constants-1.2.0.tgz#e9eb1830f762ff901dd4c27bad2ddfca1335931c"
-  integrity sha512-PAWXerRFn3/qnaEvPhN+69yCZT1b4KFtJWe1JN3+bLVThYyAkj6zK73HHCCm4idPHl+nustcSMnU15GNUjqZ9A==
-  dependencies:
-    tiny-invariant "1"
-
-"@lido-sdk/constants@1.3.0":
+"@lido-sdk/constants@1.3.0", "@lido-sdk/constants@^1.3.0":
   version "1.3.0"
   resolved "https://registry.yarnpkg.com/@lido-sdk/constants/-/constants-1.3.0.tgz#bd4aacfa3de80eca49ecf643a1dccdae3b61a05a"
   integrity sha512-K5hSGKiEq9A2nzk4vrDxy+tPdsYX1coRtYz7/7vnkrCLfHx4rSH4gEm9V/xNvFy2R6/AIen/FbPpIb2qj6dEvg==
   dependencies:
     tiny-invariant "^1.1.0"
 
-"@lido-sdk/contracts@1.5.2", "@lido-sdk/contracts@^1.5.2":
-  version "1.5.2"
-  resolved "https://registry.yarnpkg.com/@lido-sdk/contracts/-/contracts-1.5.2.tgz#27b183e3f3b3782051a00a12f5ce4e245c167a7c"
-  integrity sha512-KGYrVbmbiEFJo5dQNRC8/ZA0u813iSwskum9o4cN3hALo78akV1YM9TwnNlFrOcWvHxnlZ5Nzj68uY9kNwgD3Q==
-  dependencies:
-    "@lido-sdk/constants" "1.2.0"
-    tiny-invariant "^1.1.0"
-
-"@lido-sdk/contracts@1.5.3":
+"@lido-sdk/contracts@1.5.3", "@lido-sdk/contracts@^1.5.3":
   version "1.5.3"
   resolved "https://registry.yarnpkg.com/@lido-sdk/contracts/-/contracts-1.5.3.tgz#69ece8bd16831d10384986bcd008ba8b40f3b3b6"
   integrity sha512-cj/nlBLbkW2ZrXmQcneB71tzczA+d38inwb97oaZgzsD0zKk++emT6Z6hPLG4JMCnI8gTdWEne+m8qFT87m1hQ==
@@ -2265,24 +2250,16 @@
     "@lido-sdk/constants" "1.3.0"
     tiny-invariant "^1.1.0"
 
-"@lido-sdk/fetch@^2.0.0":
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/@lido-sdk/fetch/-/fetch-2.0.0.tgz#6014c67ff9a51c0dc17b8e19d2836f54f046d74b"
-  integrity sha512-VtQ6vyPgAt3o6MoBqjiCQOtCOxSqNFZR+YgDuc9a8WggRUVYTHz1OY+ofhyiBlwjmrwyxkfnpvk3PmRxF318rw==
+"@lido-sdk/fetch@^2.0.1":
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/@lido-sdk/fetch/-/fetch-2.0.1.tgz#7fad853c03231687ca4980050832e43754ae214f"
+  integrity sha512-l8bc7wL8gUwB+JtOw01d+LQxwT7TzZ6TyXvvDY1VRxx0IRVNxF6wQkv2kKb04JfdxoUBDmUUzLmkqrIsNVYZiA==
   dependencies:
-    "@lido-sdk/constants" "1.2.0"
+    "@lido-sdk/constants" "1.3.0"
     node-fetch "^2.6.4"
     tiny-invariant "^1.1.0"
 
-"@lido-sdk/helpers@1.3.1", "@lido-sdk/helpers@^1.3.1":
-  version "1.3.1"
-  resolved "https://registry.yarnpkg.com/@lido-sdk/helpers/-/helpers-1.3.1.tgz#2759b6b05348da4cbfdba082fd59702f5895655e"
-  integrity sha512-iJZ/Ka8bIgJDqwhmYgiBXvqKFgWK63qaVyU1SjnMAX7amWkPNYJwq7E1hQtE5Y68pBePsKtOQC6VJRDPCdM/Rw==
-  dependencies:
-    "@lido-sdk/constants" "1.2.0"
-    tiny-invariant "1"
-
-"@lido-sdk/helpers@1.4.0":
+"@lido-sdk/helpers@1.4.0", "@lido-sdk/helpers@^1.4.0":
   version "1.4.0"
   resolved "https://registry.yarnpkg.com/@lido-sdk/helpers/-/helpers-1.4.0.tgz#53255c247b75ed1c5c5750859c5e43f42a9318d8"
   integrity sha512-QHvOwQkz41Liy9S/tpQWwEX+pwxen3U6MzSNZ96nxjTwlwtPAxRVU3gX+P+VgICqAL/uqa2MMLq114mJ5pRNCg==
@@ -2290,14 +2267,14 @@
     "@lido-sdk/constants" "1.3.0"
     tiny-invariant "^1.1.0"
 
-"@lido-sdk/providers@1.4.1":
+"@lido-sdk/providers@1.4.1", "@lido-sdk/providers@^1.4.1":
   version "1.4.1"
   resolved "https://registry.yarnpkg.com/@lido-sdk/providers/-/providers-1.4.1.tgz#4130905e59210f2096a9015c2690ccd64e6a8f2a"
   integrity sha512-M4TLew/gBI3gU52aaIzUtOnQGM/mkXro9Me4UbixZBnrOyhB/TLLl8JlBu6RFIHGGmDG+cI8Brbj9NhJjR3dAw==
   dependencies:
     "@lido-sdk/constants" "1.3.0"
 
-"@lido-sdk/react@1.17.1":
+"@lido-sdk/react@1.17.1", "@lido-sdk/react@^1.17.1":
   version "1.17.1"
   resolved "https://registry.yarnpkg.com/@lido-sdk/react/-/react-1.17.1.tgz#895417eb93a068791b88d72972cbd392e36bee10"
   integrity sha512-FO6IQ8uRxwqkKC6ECtIyVZSdmRW9aPP6yBFFWKl1NtYEVhjU5FE/vZPmsdAd20NP4z7fwLdseS7Xp1Xi+51LXw==
@@ -2305,18 +2282,6 @@
     "@lido-sdk/constants" "1.3.0"
     "@lido-sdk/contracts" "1.5.3"
     "@lido-sdk/helpers" "1.4.0"
-    swr "^1.0.1"
-    tiny-invariant "^1.1.0"
-    tiny-warning "^1.0.3"
-
-"@lido-sdk/react@^1.17.0":
-  version "1.17.0"
-  resolved "https://registry.yarnpkg.com/@lido-sdk/react/-/react-1.17.0.tgz#8eee66051da9b4b49a57b2013d570cd1b365c084"
-  integrity sha512-CP8GE4WHUoKPd/6OJXuKmprFPCeg9y2mODrUMWIwh8yhuZ20Pi3wqpeE8PvZfz20T0eFIKHfSKWqW0Kq9ci1Dg==
-  dependencies:
-    "@lido-sdk/constants" "1.2.0"
-    "@lido-sdk/contracts" "1.5.2"
-    "@lido-sdk/helpers" "1.3.1"
     swr "^1.0.1"
     tiny-invariant "^1.1.0"
     tiny-warning "^1.0.3"
@@ -5858,7 +5823,7 @@ ethereumjs-vm@^2.3.4:
     rustbn.js "~0.2.0"
     safe-buffer "^5.1.1"
 
-ethers@^5.4.2, ethers@^5.4.5:
+ethers@^5.4.5:
   version "5.4.7"
   resolved "https://registry.yarnpkg.com/ethers/-/ethers-5.4.7.tgz#0fd491a5da7c9793de2d6058d76b41b1e7efba8f"
   integrity sha512-iZc5p2nqfWK1sj8RabwsPM28cr37Bpq7ehTQ5rWExBr2Y09Sn1lDKZOED26n+TsZMye7Y6mIgQ/1cwpSD8XZew==
@@ -5894,7 +5859,7 @@ ethers@^5.4.2, ethers@^5.4.5:
     "@ethersproject/web" "5.4.0"
     "@ethersproject/wordlists" "5.4.0"
 
-ethers@^5.5.2:
+ethers@^5.5.2, ethers@^5.5.3:
   version "5.5.3"
   resolved "https://registry.yarnpkg.com/ethers/-/ethers-5.5.3.tgz#1e361516711c0c3244b6210e7e3ecabf0c75fca0"
   integrity sha512-fTT4WT8/hTe/BLwRUtl7I5zlpF3XC3P/Xwqxc5AIP2HGlH15qpmjs0Ou78az93b1rLITzXLFxoNX63B8ZbUd7g==
