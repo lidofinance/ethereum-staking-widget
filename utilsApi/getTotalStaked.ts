@@ -8,6 +8,7 @@ import {
   HEALTHY_RPC_SERVICES_ARE_OVER,
 } from 'config';
 import { rpcResponseTime, INFURA, ALCHEMY } from 'utilsApi/metrics';
+import { serverLogger } from './serverLogger';
 
 export const getTotalStaked = async (): Promise<string> => {
   const urls = getRpcJsonUrls(CHAINS.Mainnet);
@@ -36,11 +37,11 @@ const getTotalStakedWithFallbacks = async (
     const totalSupplyStWei = await stethContract.totalSupply();
 
     if (urls[urlIndex].indexOf(INFURA) > -1) {
-      console.log('[getTotalStaked] Get via infura');
+      serverLogger.log('[getTotalStaked] Get via infura');
       endMetric({ provider: INFURA });
     }
     if (urls[urlIndex].indexOf(ALCHEMY) > -1) {
-      console.log('[getTotalStaked] Get via alchemy');
+      serverLogger.log('[getTotalStaked] Get via alchemy');
       endMetric({ provider: ALCHEMY });
     }
 
@@ -49,6 +50,7 @@ const getTotalStakedWithFallbacks = async (
   } catch (error) {
     if (urlIndex >= urls.length - 1) {
       const error = `[getTotalStaked] ${HEALTHY_RPC_SERVICES_ARE_OVER}`;
+      serverLogger.error(error);
       throw new Error(error);
     }
     return await getTotalStakedWithFallbacks(urls, urlIndex + 1);

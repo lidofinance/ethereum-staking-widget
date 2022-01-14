@@ -7,6 +7,7 @@ import getConfig from 'next/config';
 import { nprogress, getFromRawCookies } from 'utils';
 import { CookiesTooltip } from 'shared/components';
 import 'nprogress/nprogress.css';
+import { withCsp } from 'utilsApi/withCsp';
 
 // Visualize route changes
 nprogress();
@@ -47,4 +48,6 @@ AppWrapper.getInitialProps = async (appContext: AppContext) => {
   return { ...appProps, config: publicRuntimeConfig };
 };
 
-export default AppWrapper;
+export default process.env.NODE_ENV === 'development'
+  ? AppWrapper
+  : withCsp(AppWrapper);
