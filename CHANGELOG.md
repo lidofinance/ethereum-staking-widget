@@ -1,3 +1,23 @@
+# [1.6.0](https://github.com/lidofinance/staking-widget-ts/compare/1.5.1...1.6.0) (2022-01-14)
+
+
+### Bug Fixes
+
+* **logging:** fix CSP log ([4be711d](https://github.com/lidofinance/staking-widget-ts/commit/4be711df2b61986d7d1b2c9dc66fecf3ba8f2f1e))
+* **logging:** fix csp violation logs ([7499cb1](https://github.com/lidofinance/staking-widget-ts/commit/7499cb10e1eb0d510ebd8c5a5b292c1819f4d748))
+* add csp defaults ([d1b7172](https://github.com/lidofinance/staking-widget-ts/commit/d1b71728e3d51b91a8e257990d73e85e70c0df27))
+* ignore post-install typechain fail ([49c9712](https://github.com/lidofinance/staking-widget-ts/commit/49c971279d3743026411ec441c3944e6f9051e3b))
+* **monitoring:** add walletconnect to csp ([4e262e0](https://github.com/lidofinance/staking-widget-ts/commit/4e262e0cb5723006c3d35c10f26a6dd273745ca7))
+
+
+### Features
+
+* **logging:** cover backend requests with logs ([7d85e10](https://github.com/lidofinance/staking-widget-ts/commit/7d85e10dd5007c1af189d606e4e85935e8b37516))
+* **monitoring:** add csp app wrapper ([655a0ee](https://github.com/lidofinance/staking-widget-ts/commit/655a0ee079d55431d3e395964a338866ecd2dfb9))
+* **monitoring:** add csp config ([a75d0b8](https://github.com/lidofinance/staking-widget-ts/commit/a75d0b8db02284ad35074984a47f1c1dbb5a2915))
+
+
+
 ## [1.5.1](https://github.com/lidofinance/staking-widget-ts/compare/1.5.0...1.5.1) (2021-12-21)
 
 
@@ -88,32 +108,6 @@
 ### Reverts
 
 * comment logs with secrets ([3fddb00](https://github.com/lidofinance/staking-widget-ts/commit/3fddb00a5e95e513cf5c7f59238bd6b894a4a0ff))
-
-
-
-# [1.2.0](https://github.com/lidofinance/staking-widget-ts/compare/1.1.0...1.2.0) (2021-12-08)
-
-
-### Bug Fixes
-
-* all modals have same height ([9a39fd8](https://github.com/lidofinance/staking-widget-ts/commit/9a39fd87960cf1cca3c8fce9e434c2a7b07f3c9f))
-* host and chainId in meta ([8dfcdbc](https://github.com/lidofinance/staking-widget-ts/commit/8dfcdbcf7df5c15c36d3fcc49c91ac1e5987c887))
-* slice text in `You will receive` block ([df4ba78](https://github.com/lidofinance/staking-widget-ts/commit/df4ba782ffb9dfd8d75bea18185acb02482d638c))
-* slice You will receive after 31 symbol ([3e82182](https://github.com/lidofinance/staking-widget-ts/commit/3e82182662d658cbe89154d9277ae7e347f72d64))
-* use DocumentInitialProps for MyDocument ([f6b4ff2](https://github.com/lidofinance/staking-widget-ts/commit/f6b4ff21c5f3a324d043bca347e737c655a3f1ee))
-
-
-### Features
-
-* delete referral page ([220afc2](https://github.com/lidofinance/staking-widget-ts/commit/220afc2a25b85be414ebe7163a1c919377b5181e))
-* meta data and preview image ([d2c97ab](https://github.com/lidofinance/staking-widget-ts/commit/d2c97abdeec3786bc098bb20ccf074f16680a4ac))
-* new history icon in header ([1504fea](https://github.com/lidofinance/staking-widget-ts/commit/1504fea68a284a96ea94bdcba2bb39a5ed10cfb2))
-* rename history to rewards in header ([ad3ee35](https://github.com/lidofinance/staking-widget-ts/commit/ad3ee3561b47978f08016cad69ee853a2a36b054))
-
-
-### Reverts
-
-* disabled MathWallet ([1b16db2](https://github.com/lidofinance/staking-widget-ts/commit/1b16db2d9e93aec5835c50e1be5343885134be1f))
 
 
 
