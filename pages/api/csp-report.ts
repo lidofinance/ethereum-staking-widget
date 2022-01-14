@@ -6,8 +6,8 @@ export default function cspReport(
   res: NextApiResponse,
 ): void {
   serverLogger.warn({
-    message: 'CSP Violation',
-    report: JSON.parse(req.body),
+    ...req.body,
+    type: 'CSP',
   });
 
   res.status(200).send({ status: 'ok' });
