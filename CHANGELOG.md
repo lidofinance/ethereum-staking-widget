@@ -1,3 +1,12 @@
+## [1.6.1](https://github.com/lidofinance/staking-widget-ts/compare/1.6.0...1.6.1) (2022-01-17)
+
+
+### Bug Fixes
+
+* allow iframe embedding ([6cf6461](https://github.com/lidofinance/staking-widget-ts/commit/6cf64617e49bb5045cb4d735df2c7877f6e41c2d))
+
+
+
 # [1.6.0](https://github.com/lidofinance/staking-widget-ts/compare/1.5.1...1.6.0) (2022-01-14)
 
 
@@ -87,27 +96,6 @@
 ### Reverts
 
 * ledger wallet ([ea52c5a](https://github.com/lidofinance/staking-widget-ts/commit/ea52c5ad41bbbda74e663092d22cadb00318f5d9))
-
-
-
-# [1.3.0](https://github.com/lidofinance/staking-widget-ts/compare/1.2.0...1.3.0) (2021-12-10)
-
-
-### Bug Fixes
-
-* comments and no-useless-catch ([a2f8944](https://github.com/lidofinance/staking-widget-ts/commit/a2f89445a6a632825325b25862eacb5e9190024a))
-
-
-### Features
-
-* api/eth-price with fallbacks ([62bce8d](https://github.com/lidofinance/staking-widget-ts/commit/62bce8d1dacfff6c7cae88bdb052d7ea8afc95ff))
-* api/steth-apr with fallbacks ([4e968c0](https://github.com/lidofinance/staking-widget-ts/commit/4e968c0d8fe90a6c4e9314780ebd1ed277b1526e))
-* api/totalsupply with fallbacks ([6b7eec7](https://github.com/lidofinance/staking-widget-ts/commit/6b7eec722842ecbb2e783f400e9a7c1eb9741280))
-
-
-### Reverts
-
-* comment logs with secrets ([3fddb00](https://github.com/lidofinance/staking-widget-ts/commit/3fddb00a5e95e513cf5c7f59238bd6b894a4a0ff))
 
 
 
