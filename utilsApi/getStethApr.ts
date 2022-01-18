@@ -57,7 +57,7 @@ const getStethAprWithFallbacks = async (
     const [postTotalPooledEther, preTotalPooledEther, timeElapsed] =
       await oracleContract.getLastCompletedReportDelta();
 
-    endMetric1({ provider: provider });
+    endMetric1({ provider: provider, chainId: String(CHAINS.Mainnet) });
 
     const secondsInYear = BigNumber.from(1000 * 60 * 60 * 24 * 365.25);
 
@@ -72,7 +72,7 @@ const getStethAprWithFallbacks = async (
 
     const lidoFee = await stethContract.getFee();
 
-    endMetric2({ provider: provider });
+    endMetric2({ provider: provider, chainId: String(CHAINS.Mainnet) });
 
     const oneHundredPercentInBasisPoints = 100 * 100;
     const lidoFeeAsFraction = lidoFee / oneHundredPercentInBasisPoints;

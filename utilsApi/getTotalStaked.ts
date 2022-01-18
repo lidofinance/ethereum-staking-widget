@@ -38,11 +38,11 @@ const getTotalStakedWithFallbacks = async (
 
     if (urls[urlIndex].indexOf(INFURA) > -1) {
       serverLogger.log('[getTotalStaked] Get via infura');
-      endMetric({ provider: INFURA });
+      endMetric({ provider: INFURA, chainId: String(CHAINS.Mainnet) });
     }
     if (urls[urlIndex].indexOf(ALCHEMY) > -1) {
       serverLogger.log('[getTotalStaked] Get via alchemy');
-      endMetric({ provider: ALCHEMY });
+      endMetric({ provider: ALCHEMY, chainId: String(CHAINS.Mainnet) });
     }
 
     const totalSupplyStEth = formatEther(totalSupplyStWei);

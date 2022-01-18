@@ -38,7 +38,7 @@ export const rpcResponseTime = new Histogram({
   name: METRICS_PREFIX + 'rpc_service_response',
   help: 'RPC service response time seconds',
   buckets: [0.1, 0.2, 0.3, 0.6, 1, 1.5, 2, 5],
-  labelNames: ['provider'],
+  labelNames: ['provider', 'chainId'],
   registers: [],
 });
 // /RPC RESPONSE
