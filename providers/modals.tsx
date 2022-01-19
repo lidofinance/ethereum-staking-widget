@@ -1,5 +1,6 @@
 import { createContext, useMemo, useCallback, memo, useState, FC } from 'react';
-import { Modal, ModalConnect } from 'shared/wallet';
+import { Modal } from 'shared/wallet';
+import { WalletsModalForEth } from '@lidofinance/lido-ui-blocks';
 
 export type ModalContextValue = {
   openModal: (modal: MODAL) => void;
@@ -40,7 +41,7 @@ const ModalProvider: FC = ({ children }) => {
     <ModalContext.Provider value={value}>
       {children}
       <Modal open={active === MODAL.wallet} {...common} />
-      <ModalConnect open={active === MODAL.connect} {...common} />
+      <WalletsModalForEth open={active === MODAL.connect} {...common} />
     </ModalContext.Provider>
   );
 };
