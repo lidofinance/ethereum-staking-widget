@@ -1,7 +1,7 @@
 import { memo } from 'react';
 import NextApp, { AppProps, AppContext } from 'next/app';
 import { ToastContainer } from '@lidofinance/lido-ui';
-import { STORAGE_THEME_KEY } from 'config';
+import { STORAGE_THEME_AUTO_KEY, STORAGE_THEME_MANUAL_KEY } from 'config';
 import Providers, { EnvConfig } from 'providers';
 import getConfig from 'next/config';
 import { nprogress, getFromRawCookies } from 'utils';
@@ -26,7 +26,8 @@ const AppWrapper = (props: AppProps & { config: EnvConfig }): JSX.Element => {
   return (
     <Providers
       config={config || {}}
-      cookiesThemeScheme={props.pageProps.cookiesThemeScheme}
+      cookiesAutoThemeScheme={props.pageProps.cookiesAutoThemeScheme}
+      cookiesManualThemeScheme={props.pageProps.cookiesManualThemeScheme}
     >
       <ToastContainer />
       <MemoApp {...rest} />
@@ -39,10 +40,14 @@ AppWrapper.getInitialProps = async (appContext: AppContext) => {
   const appProps = await NextApp.getInitialProps(appContext);
   const { publicRuntimeConfig } = getConfig();
 
-  // Get current color theme from req headers cookies
-  appProps.pageProps.cookiesThemeScheme = getFromRawCookies(
+  // Get current color theme preferences from req headers cookies
+  appProps.pageProps.cookiesAutoThemeScheme = getFromRawCookies(
     appContext?.ctx?.req?.headers?.cookie,
-    STORAGE_THEME_KEY,
+    STORAGE_THEME_AUTO_KEY,
+  );
+  appProps.pageProps.cookiesManualThemeScheme = getFromRawCookies(
+    appContext?.ctx?.req?.headers?.cookie,
+    STORAGE_THEME_MANUAL_KEY,
   );
 
   return { ...appProps, config: publicRuntimeConfig };
