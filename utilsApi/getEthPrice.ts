@@ -20,10 +20,8 @@ const getEthPriceWithFallbacks = async (
 ): Promise<number> => {
   try {
     const address = getAggregatorAddress(CHAINS.Mainnet);
-    const staticProvider = getStaticRpcBatchProvider(
-      CHAINS.Mainnet,
-      urls[urlIndex],
-    );
+    const chainId = CHAINS.Mainnet;
+    const staticProvider = getStaticRpcBatchProvider(chainId, urls[urlIndex]);
 
     const contractFactory = getAggregatorContractFactory();
     const contract = contractFactory.connect(address, staticProvider);
@@ -38,11 +36,11 @@ const getEthPriceWithFallbacks = async (
 
     if (urls[urlIndex].indexOf(INFURA) > -1) {
       serverLogger.log('[getEthApr] Get via infura');
-      endMetric({ provider: INFURA });
+      endMetric({ provider: INFURA, chainId: String(chainId) });
     }
     if (urls[urlIndex].indexOf(ALCHEMY) > -1) {
       serverLogger.log('[getEthApr] Get via alchemy');
-      endMetric({ provider: ALCHEMY });
+      endMetric({ provider: ALCHEMY, chainId: String(chainId) });
     }
 
     return latestAnswer.toNumber() / 10 ** decimals;

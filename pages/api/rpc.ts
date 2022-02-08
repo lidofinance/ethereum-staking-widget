@@ -35,11 +35,11 @@ const rpc: Rpc = async (req, res) => {
 
     if (requested.url.indexOf(INFURA) > -1) {
       serverLogger.log('[rpc] Get via infura');
-      endMetric({ provider: INFURA });
+      endMetric({ provider: INFURA, chainId: String(chainId) });
     }
     if (requested.url.indexOf(ALCHEMY) > -1) {
       serverLogger.log('[rpc] Get via alchemy');
-      endMetric({ provider: ALCHEMY });
+      endMetric({ provider: ALCHEMY, chainId: String(chainId) });
     }
 
     const responded = await requested.json();
