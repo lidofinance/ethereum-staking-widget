@@ -27,7 +27,12 @@ const chainConfig = new Gauge({
   registers: [],
 });
 
-chainConfig.labels(defaultChain, supportedChains).set(1);
+chainConfig.labels({ default_chain: defaultChain }).set(1);
+if (typeof supportedChains === 'string') {
+  supportedChains.split(',').forEach((chain) => {
+    chainConfig.labels({ supported_chains: chain }).set(1);
+  });
+}
 // /CHAIN CONFIG
 
 // RPC RESPONSE
