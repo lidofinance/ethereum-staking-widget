@@ -1,3 +1,21 @@
+# [1.7.0](https://github.com/lidofinance/staking-widget-ts/compare/1.6.1...1.7.0) (2022-02-11)
+
+
+### Bug Fixes
+
+* lido-ui update to fix default system theme ([97034ae](https://github.com/lidofinance/staking-widget-ts/commit/97034aedcf738b3e5489ef31609390d98ac07c91))
+* pass shouldInvertWalletIcon to WalletsModalForEth ([d693c04](https://github.com/lidofinance/staking-widget-ts/commit/d693c04d0bdc7fd8eaf347c4e82bb40c612b4158))
+
+
+### Features
+
+* **metrics:** split supported chains into separate values ([28c605c](https://github.com/lidofinance/staking-widget-ts/commit/28c605ceabb7c4b36f175ec64462c1c21eba5c78))
+* auto colour theme logic ([e1cbbef](https://github.com/lidofinance/staking-widget-ts/commit/e1cbbef89b274c7e4c9f5108dd2d1383e68eac24))
+* integrate connect-wallet-modal UI block ([306de64](https://github.com/lidofinance/staking-widget-ts/commit/306de64b5ca1030f8444e8d82069795f214dc82e))
+* **metrics:** include chain label with request metric ([325f9b8](https://github.com/lidofinance/staking-widget-ts/commit/325f9b8d120588f0e82a194929b0a09eb3d8064d))
+
+
+
 ## [1.6.1](https://github.com/lidofinance/staking-widget-ts/compare/1.6.0...1.6.1) (2022-01-17)
 
 
@@ -72,30 +90,6 @@
 ### Reverts
 
 * **prom-client:** register.clear() ([c4ab647](https://github.com/lidofinance/staking-widget-ts/commit/c4ab647711a245fdf9429d682842feff606ab95d))
-
-
-
-# [1.4.0](https://github.com/lidofinance/staking-widget-ts/compare/1.3.0...1.4.0) (2021-12-15)
-
-
-### Bug Fixes
-
-* rename function in getEthApr ([67da263](https://github.com/lidofinance/staking-widget-ts/commit/67da263fd51b12aca6206885a5c33fe84b5fa777))
-* rpc fallback for /api/rpc ang logging ([2a3c590](https://github.com/lidofinance/staking-widget-ts/commit/2a3c59099c016282292d8661f62a0ba6769fabff))
-
-
-### Features
-
-* add ledger transaction icons ([785b983](https://github.com/lidofinance/staking-widget-ts/commit/785b983f7618f40583822084eb64b2fafda4650a))
-* **metrics:** base and response time of infura/alchemy ([cd36af9](https://github.com/lidofinance/staking-widget-ts/commit/cd36af922179486b76394b21e39c8b211813fd26))
-* add favicon ([9c2e268](https://github.com/lidofinance/staking-widget-ts/commit/9c2e2688d3bdd0ee130618b539f4ace34341bfdf))
-* build-info.json for DevOps ([b61ad2b](https://github.com/lidofinance/staking-widget-ts/commit/b61ad2b17c138147dfadbb84a3b17309f2d204f4))
-* return ledger wallet ([a9b03b8](https://github.com/lidofinance/staking-widget-ts/commit/a9b03b8f8795abd14de96fc024d1941bf377470f))
-
-
-### Reverts
-
-* ledger wallet ([ea52c5a](https://github.com/lidofinance/staking-widget-ts/commit/ea52c5ad41bbbda74e663092d22cadb00318f5d9))
 
 
 
