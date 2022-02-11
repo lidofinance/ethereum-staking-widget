@@ -27,7 +27,12 @@ const chainConfig = new Gauge({
   registers: [],
 });
 
-chainConfig.labels(defaultChain, supportedChains).set(1);
+chainConfig.labels({ default_chain: defaultChain }).set(1);
+if (typeof supportedChains === 'string') {
+  supportedChains.split(',').forEach((chain) => {
+    chainConfig.labels({ supported_chains: chain }).set(1);
+  });
+}
 // /CHAIN CONFIG
 
 // RPC RESPONSE
@@ -38,7 +43,7 @@ export const rpcResponseTime = new Histogram({
   name: METRICS_PREFIX + 'rpc_service_response',
   help: 'RPC service response time seconds',
   buckets: [0.1, 0.2, 0.3, 0.6, 1, 1.5, 2, 5],
-  labelNames: ['provider'],
+  labelNames: ['provider', 'chainId'],
   registers: [],
 });
 // /RPC RESPONSE

@@ -1,5 +1,7 @@
 import { createContext, useMemo, useCallback, memo, useState, FC } from 'react';
-import { Modal, ModalConnect } from 'shared/wallet';
+import { useThemeToggle } from 'shared/hooks';
+import { Modal } from 'shared/wallet';
+import { WalletsModalForEth } from '@lidofinance/lido-ui-blocks';
 
 export type ModalContextValue = {
   openModal: (modal: MODAL) => void;
@@ -15,6 +17,7 @@ export const ModalContext = createContext({} as ModalContextValue);
 
 const ModalProvider: FC = ({ children }) => {
   const [active, setActive] = useState<MODAL | null>(null);
+  const { themeName } = useThemeToggle();
 
   const openModal = useCallback((modal: MODAL) => {
     setActive(modal);
@@ -34,13 +37,14 @@ const ModalProvider: FC = ({ children }) => {
 
   const common = {
     onClose: closeModal,
+    shouldInvertWalletIcon: themeName === 'dark',
   };
 
   return (
     <ModalContext.Provider value={value}>
       {children}
       <Modal open={active === MODAL.wallet} {...common} />
-      <ModalConnect open={active === MODAL.connect} {...common} />
+      <WalletsModalForEth open={active === MODAL.connect} {...common} />
     </ModalContext.Provider>
   );
 };

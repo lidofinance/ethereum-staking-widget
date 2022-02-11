@@ -1,4 +1,11 @@
-import { FC, createContext, useCallback, useState, useMemo } from 'react';
+import {
+  FC,
+  createContext,
+  useCallback,
+  useState,
+  useMemo,
+  useEffect,
+} from 'react';
 import Cookies from 'js-cookie';
 import { GlobalStyle } from 'styles';
 import {
@@ -8,7 +15,7 @@ import {
   ThemeProvider as SourceProvider,
   useSystemTheme,
 } from '@lidofinance/lido-ui';
-import { STORAGE_THEME_KEY } from 'config';
+import { STORAGE_THEME_AUTO_KEY, STORAGE_THEME_MANUAL_KEY } from 'config';
 import { BackgroundGradient } from 'shared/components';
 
 export type ThemeName = 'light' | 'dark';
@@ -29,25 +36,40 @@ const COOKIES_THEME_EXPIRES_DAYS = 365;
 
 const DEFAULT_THEME = 'light';
 
-export type ThemeProviderProps = { cookiesThemeScheme: ThemeName };
+export type ThemeProviderProps = {
+  cookiesAutoThemeScheme?: ThemeName;
+  cookiesManualThemeScheme?: ThemeName;
+};
 
 const ThemeProvider: FC<ThemeProviderProps> = ({
   children,
-  cookiesThemeScheme,
+  cookiesAutoThemeScheme,
+  cookiesManualThemeScheme,
 }) => {
-  const themeFromCookies = cookiesThemeScheme as ThemeName;
-
   const systemTheme = useSystemTheme();
 
   const [themeName, setThemeName] = useState<ThemeName>(
-    themeFromCookies || systemTheme || DEFAULT_THEME,
+    cookiesManualThemeScheme || cookiesAutoThemeScheme || DEFAULT_THEME,
   );
+
+  // Noticing browser preferences on hydration
+  // Reacting to changing preferences
+  useEffect(() => {
+    if (process.browser && !cookiesManualThemeScheme && systemTheme) {
+      setThemeName(systemTheme);
+      Cookies.set(STORAGE_THEME_AUTO_KEY, systemTheme, {
+        expires: COOKIES_THEME_EXPIRES_DAYS,
+      });
+    }
+    // We only need to override logic when systemTheme changes
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [systemTheme]);
 
   // remember the theme on manual toggle, ignore system theme changes
   const toggleTheme = useCallback(() => {
     const toggledThemeName = themeName === 'light' ? 'dark' : 'light';
     setThemeName(toggledThemeName);
-    Cookies.set(STORAGE_THEME_KEY, toggledThemeName, {
+    Cookies.set(STORAGE_THEME_MANUAL_KEY, toggledThemeName, {
       expires: COOKIES_THEME_EXPIRES_DAYS,
     });
   }, [themeName, setThemeName]);

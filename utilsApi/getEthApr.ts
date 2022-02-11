@@ -26,16 +26,17 @@ const getTotalAtStakeWithFallbacks = async (
     '0x00000000219ab540356cBB839Cbe05303d7705Fa';
 
   try {
-    const staticProvider = getStaticRpcBatchProvider(
-      CHAINS.Mainnet,
-      urls[urlIndex],
-    );
+    const chainId = CHAINS.Mainnet;
+
+    const staticProvider = getStaticRpcBatchProvider(chainId, urls[urlIndex]);
 
     let provider = INFURA;
     if (urls[urlIndex].indexOf(ALCHEMY) > -1) {
       provider = ALCHEMY;
     }
-    const endMetric = rpcResponseTime.labels(provider).startTimer();
+    const endMetric = rpcResponseTime
+      .labels(provider, String(chainId))
+      .startTimer();
 
     const currentlyDeposited = await staticProvider.getBalance(
       eth2DepositContractAddress,

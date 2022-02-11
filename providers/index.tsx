@@ -5,16 +5,21 @@ import ThemeProvider, { ThemeName } from './theme';
 import Web3Provider, { EnvConfig } from './web3';
 
 export type ProvidersProps = {
-  cookiesThemeScheme: ThemeName;
+  cookiesAutoThemeScheme?: ThemeName;
+  cookiesManualThemeScheme?: ThemeName;
   config: EnvConfig;
 };
 
 const Providers: FC<ProvidersProps> = ({
-  cookiesThemeScheme,
+  cookiesAutoThemeScheme,
+  cookiesManualThemeScheme,
   config,
   children,
 }) => (
-  <ThemeProvider cookiesThemeScheme={cookiesThemeScheme}>
+  <ThemeProvider
+    cookiesAutoThemeScheme={cookiesAutoThemeScheme}
+    cookiesManualThemeScheme={cookiesManualThemeScheme}
+  >
     <Web3Provider config={config}>
       <ModalProvider>{children}</ModalProvider>
     </Web3Provider>
