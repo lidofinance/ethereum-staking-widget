@@ -57,7 +57,7 @@ if (
   terraCron.init();
 }
 
-async function getStLunaAPR() {
+const getStLunaAPR = async () => {
   const lastBlockHeight = await terraApi.getLastBlockHeight();
   const farBlock = await terraApi.getBlock(
     lastBlockHeight - ST_LUNA_COUNT_DAYS * 7 * 60 * 24,
@@ -77,7 +77,7 @@ async function getStLunaAPR() {
     (ONE_YEAR * exchangeDiff) / (Date.now() - new Date(farBlockTime).getTime());
 
   return (exchangeDiffPeYear * 100).toFixed(2); //%
-}
+};
 
 let updated = false;
 

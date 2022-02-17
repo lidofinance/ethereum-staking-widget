@@ -1,16 +1,15 @@
-import React, { FC } from 'react';
-import { css } from 'styled-components';
-import { CSSTransition } from 'react-transition-group';
 import { Link } from '@lidofinance/lido-ui';
-
+import React, { FC } from 'react';
+import { CSSTransition } from 'react-transition-group';
 import {
-  LayoutContainer,
-  Wrapper,
+  Action,
+  ActionsWrapper,
   Content,
   Data,
-  ActionsWrapper,
-  Action,
   DismissButton,
+  LayoutContainer,
+  PaddedAction,
+  Wrapper,
 } from './styles';
 
 interface PopupWrapperProps {
@@ -56,13 +55,9 @@ export const PopupWrapper: FC<PopupWrapperProps> = ({
                 Dismiss
               </DismissButton>
             </Action>
-            <Action
-              css={css`
-                padding: 8px 16px;
-              `}
-            >
+            <PaddedAction>
               <Link href={providerLink}>Go to {providerName}</Link>
-            </Action>
+            </PaddedAction>
           </ActionsWrapper>
         </Wrapper>
       </CSSTransition>

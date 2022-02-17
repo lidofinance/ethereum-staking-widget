@@ -1,7 +1,7 @@
 import { Container, Divider } from '@lidofinance/lido-ui';
 import styled from 'styled-components';
 
-export const FooterStyle = styled(Container)`
+export const FooterStyle = styled((props) => <Container {...props} />)`
   color: ${({ theme }) => theme.colors.text};
   display: flex;
   flex-wrap: wrap;
@@ -17,7 +17,7 @@ export const FooterStyle = styled(Container)`
   }
 `;
 
-export const FooterDividerStyle = styled(Divider)`
+export const FooterDividerStyle = styled((props) => <Divider {...props} />)`
   flex-basis: 100%;
   margin-bottom: 60px;
 

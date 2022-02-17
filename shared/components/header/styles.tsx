@@ -1,7 +1,7 @@
 import { Container } from '@lidofinance/lido-ui';
 import styled, { keyframes } from 'styled-components';
 
-export const HeaderStyle = styled(Container)`
+export const HeaderStyle = styled((props) => <Container {...props} />)`
   padding-top: 18px;
   padding-bottom: 18px;
   display: flex;

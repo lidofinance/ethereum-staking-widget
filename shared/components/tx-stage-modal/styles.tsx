@@ -1,18 +1,29 @@
 import styled from 'styled-components';
-import { CheckLarge, Close, Loader, Text } from '@lidofinance/lido-ui';
+import { CheckLarge, Close, Link, Loader, Text } from '@lidofinance/lido-ui';
 
-export const TxLoader = styled(Loader)`
+export const TxLoader = styled((props) => <Loader {...props} />)`
   margin: 0 auto;
 `;
 
-export const BoldText = styled(Text)`
+export const BoldText = styled((props) => <Text {...props} />)`
   text-align: center;
   margin-top: 24px;
   font-weight: 800;
 `;
 
-export const LightText = styled(Text)`
+export const LightText = styled((props) => <Text {...props} />)<{
+  marginTop: number;
+}>`
   text-align: center;
+  margin-top: ${(props) => props.marginTop}px;
+`;
+
+export const LowercaseSpan = styled.span`
+  text-transform: lowercase;
+`;
+
+export const StylableLink = styled((props) => <Link {...props} />)`
+  cursor: pointer;
 `;
 
 export const IconWrapper = styled.div`
@@ -30,14 +41,14 @@ export const LedgerIconWrapper = styled.div`
   }
 `;
 
-export const SuccessIcon = styled(CheckLarge)`
+export const SuccessIcon = styled((props) => <CheckLarge {...props} />)`
   padding: 20px;
   border: 2px solid ${({ theme }) => theme.colors.success};
   border-radius: 50%;
   color: ${({ theme }) => theme.colors.success};
 `;
 
-export const FailIcon = styled(Close)`
+export const FailIcon = styled((props) => <Close {...props} />)`
   padding: 20px;
   border: 2px solid ${({ theme }) => theme.colors.error};
   border-radius: 50%;
