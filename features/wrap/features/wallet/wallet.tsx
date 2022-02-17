@@ -1,4 +1,3 @@
-import { css } from 'styled-components';
 import { memo } from 'react';
 import { Divider, Text } from '@lidofinance/lido-ui';
 import { TOKENS } from '@lido-sdk/constants';
@@ -14,13 +13,8 @@ import { FormatToken } from 'shared/formatters';
 import { TokenToWallet } from 'shared/components';
 import { useWstethBySteth, useStethByWsteth } from 'shared/hooks';
 import type { WalletComponentType } from 'shared/wallet/types';
-import {
-  Card,
-  CardBalance,
-  CardRow,
-  CardAccount,
-  Fallback,
-} from 'shared/wallet';
+import { CardBalance, CardRow, CardAccount, Fallback } from 'shared/wallet';
+import { StyledCard } from './styles';
 
 const WalletComponent: WalletComponentType = (props) => {
   const { account } = useSDK();
@@ -35,12 +29,7 @@ const WalletComponent: WalletComponentType = (props) => {
   const stethByWstethBalance = useStethByWsteth(wstethBalance.data);
 
   return (
-    <Card
-      {...props}
-      css={css`
-        background: linear-gradient(52.01deg, #1b3349 0%, #25697e 100%);
-      `}
-    >
+    <StyledCard {...props}>
       <CardRow>
         <CardBalance
           title="ETH Balance"
@@ -80,7 +69,7 @@ const WalletComponent: WalletComponentType = (props) => {
           }
         />
       </CardRow>
-    </Card>
+    </StyledCard>
   );
 };
 

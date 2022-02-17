@@ -22,7 +22,9 @@ export const WalletModalConnectorStyle = styled.div`
   margin-right: auto;
 `;
 
-export const WalletModalDisconnectStyle = styled(Button)`
+export const WalletModalDisconnectStyle = styled((props) => (
+  <Button {...props} />
+))`
   flex-shrink: 0;
 `;
 

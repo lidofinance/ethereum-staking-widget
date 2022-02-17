@@ -1,6 +1,3 @@
-import { memo } from 'react';
-import { css } from 'styled-components';
-import { Divider, Question, Tooltip } from '@lidofinance/lido-ui';
 import { TOKENS } from '@lido-sdk/constants';
 import {
   useEthereumBalance,
@@ -9,19 +6,15 @@ import {
   useTokenAddress,
 } from '@lido-sdk/react';
 import { useWeb3 } from '@lido-sdk/web3-react';
+import { Divider, Question, Tooltip } from '@lidofinance/lido-ui';
 import { LIDO_APR_TOOLTIP_TEXT } from 'config';
-import { useLidoApr, useEthApr } from 'shared/hooks';
+import { memo } from 'react';
 import { TokenToWallet } from 'shared/components';
-import {
-  Card,
-  CardBalance,
-  CardRow,
-  CardAccount,
-  Fallback,
-} from 'shared/wallet';
-import type { WalletComponentType } from 'shared/wallet/types';
 import { FormatToken } from 'shared/formatters';
-import { LidoAprStyled } from './styles';
+import { useEthApr, useLidoApr } from 'shared/hooks';
+import { CardAccount, CardBalance, CardRow, Fallback } from 'shared/wallet';
+import type { WalletComponentType } from 'shared/wallet/types';
+import { LidoAprStyled, StyledCard } from './styles';
 
 const WalletComponent: WalletComponentType = (props) => {
   const { account } = useSDK();
@@ -33,12 +26,7 @@ const WalletComponent: WalletComponentType = (props) => {
   const etrApr = useEthApr();
 
   return (
-    <Card
-      {...props}
-      css={css`
-        background: linear-gradient(65.21deg, #37394a 19.1%, #3e4b4f 100%);
-      `}
-    >
+    <StyledCard {...props}>
       <CardRow>
         <CardBalance
           title="Available to stake"
@@ -82,7 +70,7 @@ const WalletComponent: WalletComponentType = (props) => {
           value={<LidoAprStyled>{lidoApr.data}%</LidoAprStyled>}
         />
       </CardRow>
-    </Card>
+    </StyledCard>
   );
 };
 

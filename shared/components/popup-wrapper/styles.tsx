@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 import { Button, Container } from '@lidofinance/lido-ui';
 
-export const LayoutContainer = styled(Container)`
+export const LayoutContainer = styled((props) => <Container {...props} />)`
   position: relative;
   justify-content: flex-end;
   align-items: flex-start;
@@ -60,6 +60,10 @@ export const Action = styled.div`
   }
 `;
 
+export const PaddedAction = styled((props) => <Action {...props} />)`
+  padding: 8px 16px;
+`;
+
 export const Content = styled.div`
   font-weight: 500;
   font-size: ${({ theme }) => theme.fontSizesMap.xxs}px;
@@ -85,7 +89,7 @@ export const Data = styled.div`
   }
 `;
 
-export const DismissButton = styled(Button)`
+export const DismissButton = styled((props) => <Button {...props} />)`
   padding: 13px 18px;
 
   font-weight: 400;

@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 import { Block } from '@lidofinance/lido-ui';
 
-export const WalletCardStyle = styled(Block)`
+export const WalletCardStyle = styled((props) => <Block {...props} />)`
   margin-bottom: ${({ theme }) => -theme.borderRadiusesMap.xl}px;
 
   border-bottom-left-radius: 0;

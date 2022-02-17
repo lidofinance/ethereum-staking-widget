@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 import { Button, InlineLoader } from '@lidofinance/lido-ui';
 
-export const WalledButtonStyle = styled(Button)`
+export const WalledButtonStyle = styled((props) => <Button {...props} />)`
   flex-shrink: 1;
   min-width: unset;
   overflow: hidden;
@@ -24,6 +24,8 @@ export const WalledButtonBalanceStyle = styled.span`
   }
 `;
 
-export const WalledButtonLoaderStyle = styled(InlineLoader)`
+export const WalledButtonLoaderStyle = styled((props) => (
+  <InlineLoader {...props} />
+))`
   width: 60px;
 `;
