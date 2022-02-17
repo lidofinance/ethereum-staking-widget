@@ -1,7 +1,7 @@
 import { FC } from 'react';
 import { Link } from '@lidofinance/lido-ui';
 import { AbuseWarningStyle, AbuseText } from './styles';
-import { ReactComponent as WarningIcon } from 'assets/icons/warning.svg';
+import WarningIcon from 'assets/icons/warning.svg';
 
 export const AbuseWarning: FC = (props) => (
   <AbuseWarningStyle {...props}>

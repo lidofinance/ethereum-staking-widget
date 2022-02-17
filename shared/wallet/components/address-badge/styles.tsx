@@ -1,7 +1,9 @@
 import { IdenticonBadge } from '@lidofinance/lido-ui';
 import styled from 'styled-components';
 
-export const AddressBadgeStyle = styled(IdenticonBadge)`
+export const AddressBadgeStyle = styled((props) => (
+  <IdenticonBadge {...props} />
+))`
   max-width: 100%;
   box-sizing: border-box;
   overflow: hidden;

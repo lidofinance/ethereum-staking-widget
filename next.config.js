@@ -18,6 +18,9 @@ const cspReportUri = process.env.CSP_REPORT_URI;
 module.exports = {
   basePath,
   webpack5: true,
+  experimental: {
+    styledComponents: true,
+  },
   webpack(config) {
     // Teach webpack to import svg files
     config.module.rules.push({

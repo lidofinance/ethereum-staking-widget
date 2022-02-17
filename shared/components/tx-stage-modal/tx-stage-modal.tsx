@@ -22,6 +22,8 @@ import {
   SuccessIcon,
   TxLoader,
   LedgerIconWrapper,
+  StylableSpan,
+  StylableLink,
 } from './styles';
 
 export enum TX_OPERATION {
@@ -192,13 +194,13 @@ export const TxStageModal: FC<TxStageModalProps> = memo(
               {currentIconDict[TX_STAGE.SIGN]}
               <BoldText>
                 You are now{' '}
-                <span
+                <StylableSpan
                   css={css`
                     text-transform: lowercase;
                   `}
                 >
                   {operationText}
-                </span>{' '}
+                </StylableSpan>{' '}
                 {withOptionaLineBreak(formatBalanceString(amount, 4))}{' '}
                 {amountToken}
               </BoldText>
@@ -234,13 +236,13 @@ export const TxStageModal: FC<TxStageModalProps> = memo(
               {currentIconDict[TX_STAGE.BLOCK]}
               <BoldText>
                 You are now{' '}
-                <span
+                <StylableSpan
                   css={css`
                     text-transform: lowercase;
                   `}
                 >
                   {operationText}
-                </span>{' '}
+                </StylableSpan>{' '}
                 {withOptionaLineBreak(formatBalanceString(amount, 4))}{' '}
                 {amountToken}
               </BoldText>
@@ -317,14 +319,14 @@ export const TxStageModal: FC<TxStageModalProps> = memo(
                     margin-top: 38px;
                   `}
                 >
-                  <Link
+                  <StylableLink
                     onClick={() => formRef.current?.requestSubmit()}
                     css={css`
                       cursor: pointer;
                     `}
                   >
                     Retry
-                  </Link>
+                  </StylableLink>
                 </LightText>
               )}
             </>

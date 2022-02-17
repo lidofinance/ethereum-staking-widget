@@ -103,7 +103,7 @@ const ButtonBasic = styled.button.attrs({ type: 'button' })`
   }
 `;
 
-export const AllowButton = styled(ButtonBasic)`
+export const AllowButton = styled((props) => <ButtonBasic {...props} />)`
   background-color: ${({ theme }) => theme.colors.text};
   color: ${({ theme }) => theme.colors.foreground};
 
@@ -112,7 +112,7 @@ export const AllowButton = styled(ButtonBasic)`
   }
 `;
 
-export const DeclineButton = styled(ButtonBasic)`
+export const DeclineButton = styled((props) => <ButtonBasic {...props} />)`
   background-color: ${({ theme }) => theme.colors.foreground};
   color: ${({ theme }) => theme.colors.text};
   border: 1px solid ${({ theme }) => theme.colors.text};
@@ -122,7 +122,7 @@ export const DeclineButton = styled(ButtonBasic)`
   }
 `;
 
-export const Link = styled(ExternalLink)`
+export const Link = styled((props) => <ExternalLink {...props} />)`
   color: inherit;
   text-decoration: underline !important;
 `;
