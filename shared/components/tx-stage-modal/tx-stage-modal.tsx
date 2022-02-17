@@ -1,5 +1,4 @@
 import { FC, memo, useCallback, useMemo, RefObject } from 'react';
-import { css } from 'styled-components';
 import { BigNumber } from 'ethers';
 import { useSDK } from '@lido-sdk/react';
 import { useConnectorInfo } from '@lido-sdk/web3-react';
@@ -22,8 +21,8 @@ import {
   SuccessIcon,
   TxLoader,
   LedgerIconWrapper,
-  StylableSpan,
   StylableLink,
+  LowercaseSpan,
 } from './styles';
 
 export enum TX_OPERATION {
@@ -168,13 +167,7 @@ export const TxStageModal: FC<TxStageModalProps> = memo(
       return (
         <>
           {txHash && (
-            <LightText
-              size="xxs"
-              color="secondary"
-              css={css`
-                margin-top: 38px;
-              `}
-            >
+            <LightText size="xxs" color="secondary" marginTop={38}>
               <Link href={getEtherscanTxLink(chainId, txHash)}>
                 View on Etherscan
               </Link>
@@ -193,24 +186,11 @@ export const TxStageModal: FC<TxStageModalProps> = memo(
             <>
               {currentIconDict[TX_STAGE.SIGN]}
               <BoldText>
-                You are now{' '}
-                <StylableSpan
-                  css={css`
-                    text-transform: lowercase;
-                  `}
-                >
-                  {operationText}
-                </StylableSpan>{' '}
+                You are now <LowercaseSpan>{operationText}</LowercaseSpan>{' '}
                 {withOptionaLineBreak(formatBalanceString(amount, 4))}{' '}
                 {amountToken}
               </BoldText>
-              <LightText
-                size="xxs"
-                color="secondary"
-                css={css`
-                  margin-top: 4px;
-                `}
-              >
+              <LightText size="xxs" color="secondary" marginTop={4}>
                 {operationText} {formatBalanceString(amount, 4)} {amountToken}.{' '}
                 {txOperation !== TX_OPERATION.APPROVING && (
                   <>
@@ -219,13 +199,7 @@ export const TxStageModal: FC<TxStageModalProps> = memo(
                   </>
                 )}
               </LightText>
-              <LightText
-                size="xxs"
-                color="secondary"
-                css={css`
-                  margin-top: 38px;
-                `}
-              >
+              <LightText size="xxs" color="secondary" marginTop={38}>
                 Confirm this transaction in your wallet
               </LightText>
             </>
@@ -235,24 +209,11 @@ export const TxStageModal: FC<TxStageModalProps> = memo(
             <>
               {currentIconDict[TX_STAGE.BLOCK]}
               <BoldText>
-                You are now{' '}
-                <StylableSpan
-                  css={css`
-                    text-transform: lowercase;
-                  `}
-                >
-                  {operationText}
-                </StylableSpan>{' '}
+                You are now <LowercaseSpan>{operationText}</LowercaseSpan>{' '}
                 {withOptionaLineBreak(formatBalanceString(amount, 4))}{' '}
                 {amountToken}
               </BoldText>
-              <LightText
-                size="xxs"
-                color="secondary"
-                css={css`
-                  margin-top: 4px;
-                `}
-              >
+              <LightText size="xxs" color="secondary" marginTop={4}>
                 Awaiting block confirmation
               </LightText>
               {etherscanTxLinkBlock}
@@ -268,13 +229,7 @@ export const TxStageModal: FC<TxStageModalProps> = memo(
                     Your new balance is <wbr />
                     {withOptionaLineBreak(balanceAsString)} {balanceToken}
                   </BoldText>
-                  <LightText
-                    size="xxs"
-                    color="secondary"
-                    css={css`
-                      margin-top: 4px;
-                    `}
-                  >
+                  <LightText size="xxs" color="secondary" marginTop={4}>
                     {operationWasSuccessfulText}
                   </LightText>
                 </>
@@ -282,13 +237,7 @@ export const TxStageModal: FC<TxStageModalProps> = memo(
               {txOperation === TX_OPERATION.APPROVING && allowanceAmount && (
                 <>
                   <BoldText>{operationWasSuccessfulText}</BoldText>
-                  <LightText
-                    size="xxs"
-                    color="secondary"
-                    css={css`
-                      margin-top: 4px;
-                    `}
-                  >
+                  <LightText size="xxs" color="secondary" marginTop={4}>
                     {formatBalance(allowanceAmount, 4)} stETH was unlocked to
                     wrap.
                   </LightText>
@@ -302,28 +251,13 @@ export const TxStageModal: FC<TxStageModalProps> = memo(
             <>
               {currentIconDict[TX_STAGE.FAIL]}
               <BoldText>Tx Signature Fail</BoldText>
-              <LightText
-                size="xxs"
-                color="secondary"
-                css={css`
-                  margin-top: 4px;
-                `}
-              >
+              <LightText size="xxs" color="secondary" marginTop={4}>
                 The transaction signature was denied.
               </LightText>
               {formRef && formRef.current && (
-                <LightText
-                  size="xxs"
-                  color="secondary"
-                  css={css`
-                    margin-top: 38px;
-                  `}
-                >
+                <LightText size="xxs" color="secondary" marginTop={38}>
                   <StylableLink
                     onClick={() => formRef.current?.requestSubmit()}
-                    css={css`
-                      cursor: pointer;
-                    `}
                   >
                     Retry
                   </StylableLink>

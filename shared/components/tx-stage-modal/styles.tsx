@@ -1,4 +1,4 @@
-import styled, { FlattenSimpleInterpolation } from 'styled-components';
+import styled from 'styled-components';
 import { CheckLarge, Close, Link, Loader, Text } from '@lidofinance/lido-ui';
 
 export const TxLoader = styled((props) => <Loader {...props} />)`
@@ -12,16 +12,19 @@ export const BoldText = styled((props) => <Text {...props} />)`
 `;
 
 export const LightText = styled((props) => <Text {...props} />)<{
-  css: FlattenSimpleInterpolation;
+  marginTop: number;
 }>`
   text-align: center;
+  margin-top: ${(props) => props.marginTop}px;
 `;
 
-export const StylableSpan = styled.span<{ css: FlattenSimpleInterpolation }>``;
+export const LowercaseSpan = styled.span`
+  text-transform: lowercase;
+`;
 
-export const StylableLink = styled((props) => <Link {...props} />)<{
-  css: FlattenSimpleInterpolation;
-}>``;
+export const StylableLink = styled((props) => <Link {...props} />)`
+  cursor: pointer;
+`;
 
 export const IconWrapper = styled.div`
   height: 64px;
