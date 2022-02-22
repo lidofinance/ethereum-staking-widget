@@ -1,3 +1,12 @@
+## [1.7.2](https://github.com/lidofinance/staking-widget-ts/compare/1.7.1...1.7.2) (2022-02-22)
+
+
+### Bug Fixes
+
+* **security:** use custom image loader ([fab6287](https://github.com/lidofinance/staking-widget-ts/commit/fab6287dc8e9ddb8dd05dc6b779d57dd9539070f))
+
+
+
 ## [1.7.1](https://github.com/lidofinance/staking-widget-ts/compare/1.7.0...1.7.1) (2022-02-17)
 
 
@@ -56,15 +65,6 @@
 * **logging:** cover backend requests with logs ([7d85e10](https://github.com/lidofinance/staking-widget-ts/commit/7d85e10dd5007c1af189d606e4e85935e8b37516))
 * **monitoring:** add csp app wrapper ([655a0ee](https://github.com/lidofinance/staking-widget-ts/commit/655a0ee079d55431d3e395964a338866ecd2dfb9))
 * **monitoring:** add csp config ([a75d0b8](https://github.com/lidofinance/staking-widget-ts/commit/a75d0b8db02284ad35074984a47f1c1dbb5a2915))
-
-
-
-## [1.5.1](https://github.com/lidofinance/staking-widget-ts/compare/1.5.0...1.5.1) (2021-12-21)
-
-
-### Bug Fixes
-
-* add close button to tx modal for ledger when fail/success ([68fa84e](https://github.com/lidofinance/staking-widget-ts/commit/68fa84e041652898494c89aed650346894ca8461))
 
 
 
