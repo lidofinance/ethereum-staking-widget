@@ -21,6 +21,10 @@ module.exports = {
   experimental: {
     styledComponents: true,
   },
+  // WARNING: Vulnerability fix, don't remove until default Next.js image loader is patched
+  images: {
+    loader: 'custom',
+  },
   webpack(config) {
     // Teach webpack to import svg files
     config.module.rules.push({
