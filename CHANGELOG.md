@@ -1,3 +1,12 @@
+# [1.8.0](https://github.com/lidofinance/staking-widget-ts/compare/1.7.2...1.8.0) (2022-03-22)
+
+
+### Features
+
+* bump ui-blocks to support Tally wallet ([81d97f3](https://github.com/lidofinance/staking-widget-ts/commit/81d97f3c3290e739f2b4c97b368602c57f882047))
+
+
+
 ## [1.7.2](https://github.com/lidofinance/staking-widget-ts/compare/1.7.1...1.7.2) (2022-02-22)
 
 
@@ -45,26 +54,6 @@
 ### Bug Fixes
 
 * allow iframe embedding ([6cf6461](https://github.com/lidofinance/staking-widget-ts/commit/6cf64617e49bb5045cb4d735df2c7877f6e41c2d))
-
-
-
-# [1.6.0](https://github.com/lidofinance/staking-widget-ts/compare/1.5.1...1.6.0) (2022-01-14)
-
-
-### Bug Fixes
-
-* **logging:** fix CSP log ([4be711d](https://github.com/lidofinance/staking-widget-ts/commit/4be711df2b61986d7d1b2c9dc66fecf3ba8f2f1e))
-* **logging:** fix csp violation logs ([7499cb1](https://github.com/lidofinance/staking-widget-ts/commit/7499cb10e1eb0d510ebd8c5a5b292c1819f4d748))
-* add csp defaults ([d1b7172](https://github.com/lidofinance/staking-widget-ts/commit/d1b71728e3d51b91a8e257990d73e85e70c0df27))
-* ignore post-install typechain fail ([49c9712](https://github.com/lidofinance/staking-widget-ts/commit/49c971279d3743026411ec441c3944e6f9051e3b))
-* **monitoring:** add walletconnect to csp ([4e262e0](https://github.com/lidofinance/staking-widget-ts/commit/4e262e0cb5723006c3d35c10f26a6dd273745ca7))
-
-
-### Features
-
-* **logging:** cover backend requests with logs ([7d85e10](https://github.com/lidofinance/staking-widget-ts/commit/7d85e10dd5007c1af189d606e4e85935e8b37516))
-* **monitoring:** add csp app wrapper ([655a0ee](https://github.com/lidofinance/staking-widget-ts/commit/655a0ee079d55431d3e395964a338866ecd2dfb9))
-* **monitoring:** add csp config ([a75d0b8](https://github.com/lidofinance/staking-widget-ts/commit/a75d0b8db02284ad35074984a47f1c1dbb5a2915))
 
 
 
