@@ -1,3 +1,12 @@
+## [1.8.1](https://github.com/lidofinance/staking-widget-ts/compare/1.8.0...1.8.1) (2022-03-24)
+
+
+### Bug Fixes
+
+* disable Tally wallet on mobiles ([7a652df](https://github.com/lidofinance/staking-widget-ts/commit/7a652dfefacb73e320cb100be477036ed4702ddb))
+
+
+
 # [1.8.0](https://github.com/lidofinance/staking-widget-ts/compare/1.7.2...1.8.0) (2022-03-22)
 
 
@@ -45,15 +54,6 @@
 * auto colour theme logic ([e1cbbef](https://github.com/lidofinance/staking-widget-ts/commit/e1cbbef89b274c7e4c9f5108dd2d1383e68eac24))
 * integrate connect-wallet-modal UI block ([306de64](https://github.com/lidofinance/staking-widget-ts/commit/306de64b5ca1030f8444e8d82069795f214dc82e))
 * **metrics:** include chain label with request metric ([325f9b8](https://github.com/lidofinance/staking-widget-ts/commit/325f9b8d120588f0e82a194929b0a09eb3d8064d))
-
-
-
-## [1.6.1](https://github.com/lidofinance/staking-widget-ts/compare/1.6.0...1.6.1) (2022-01-17)
-
-
-### Bug Fixes
-
-* allow iframe embedding ([6cf6461](https://github.com/lidofinance/staking-widget-ts/commit/6cf64617e49bb5045cb4d735df2c7877f6e41c2d))
 
 
 
