@@ -2452,10 +2452,10 @@
     tiny-invariant "^1.1.0"
     tiny-warning "^1.0.3"
 
-"@lido-sdk/web3-react@^1.17.0":
-  version "1.17.0"
-  resolved "https://registry.yarnpkg.com/@lido-sdk/web3-react/-/web3-react-1.17.0.tgz#d946a75f7a089c0166d4aac90362430e692f7ddf"
-  integrity sha512-AVlwAqJsq/8Pf3ptsJR3BCwm7QlI3cNQoK762HSJGxTYkvICtnRU1MorLVUh26Ccm5pLq0UVpdHmvokqZvAldw==
+"@lido-sdk/web3-react@^1.17.1":
+  version "1.17.1"
+  resolved "https://registry.yarnpkg.com/@lido-sdk/web3-react/-/web3-react-1.17.1.tgz#51c1dda3b2b3e553f09049d1108c7ea419b7d843"
+  integrity sha512-/EXJdXYQ0EkVwoM1uygBZfs80s6B5ZBrrhU++ajXKBYE5Ap+b2RFT+WU7GkCRUHUo6GNN7zto7Z2hGIFb16V4w==
   dependencies:
     "@gnosis.pm/safe-apps-web3-react" "0.6.3"
     "@ledgerhq/iframe-provider" "0.4.2"
@@ -2500,10 +2500,10 @@
     "@lidofinance/theme" "2.4.1"
     "@lidofinance/utils" "1.3.2"
 
-"@lidofinance/blocks-connect-wallet-modal@1.4.0":
-  version "1.4.0"
-  resolved "https://registry.yarnpkg.com/@lidofinance/blocks-connect-wallet-modal/-/blocks-connect-wallet-modal-1.4.0.tgz#cea92656330b6e61e5971fd9d42047f510d94ffd"
-  integrity sha512-3xrPLXPYlYPikoBYomabufQoxJ5MD7ms3JUWBSqWDb9gor2IyMrx0KVH5LgCqBfTpEHEw7VfZvTbOWnCQ1CSWA==
+"@lidofinance/blocks-connect-wallet-modal@1.4.1":
+  version "1.4.1"
+  resolved "https://registry.yarnpkg.com/@lidofinance/blocks-connect-wallet-modal/-/blocks-connect-wallet-modal-1.4.1.tgz#72bc4812da273471bbecc606aa38f06d5164dec4"
+  integrity sha512-7axMUspBD9P7hRb9RVe9n8qW78u2ZFy77rAn1HgE6hKR3M5jfW9189IUGQgkvE7GPhwWGQjySpQ8EMI0TkA7Pw==
 
 "@lidofinance/box@1.3.10":
   version "1.3.10"
@@ -2606,12 +2606,12 @@
     "@lidofinance/theme" "2.4.1"
     "@lidofinance/utils" "1.3.2"
 
-"@lidofinance/lido-ui-blocks@^1.0.4":
-  version "1.0.4"
-  resolved "https://registry.yarnpkg.com/@lidofinance/lido-ui-blocks/-/lido-ui-blocks-1.0.4.tgz#dbaac488c4a22489b4ef029eb61d1ee813831542"
-  integrity sha512-63RihcFx5fPFI5Swx1DTXNycKe3JQdeFyykz132dAEZm0HoVyfaoGLZ8W7yuWAlTqmgyUerQanIXfmngu37QoQ==
+"@lidofinance/lido-ui-blocks@^1.0.5":
+  version "1.0.5"
+  resolved "https://registry.yarnpkg.com/@lidofinance/lido-ui-blocks/-/lido-ui-blocks-1.0.5.tgz#9a34c713e7f45d46820d4601216aaf359fd3142d"
+  integrity sha512-1XDPHanyBbWUZE8t6XNrYECA+SWGcifg/7tYpWLtuZmM0TH+j2BeXNEajiSfWnjZmCVQ8+nCSOmlbxQ2h/iEgg==
   dependencies:
-    "@lidofinance/blocks-connect-wallet-modal" "1.4.0"
+    "@lidofinance/blocks-connect-wallet-modal" "1.4.1"
 
 "@lidofinance/lido-ui@^2.1.0":
   version "2.1.0"
