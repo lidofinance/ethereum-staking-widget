@@ -18,7 +18,7 @@ There exist a number of potential risks when staking ETH using liquid staking pr
 
 - DAO key management risk
 
-  Ether staked via the Lido DAO is held across multiple accounts backed by a multi-signature threshold scheme to minimise custody risk. If signatories across a certain threshold lose their key shares, get hacked or go rogue, we risk funds becoming locked.
+  On early stages of Lido, slightly more than 600k ETH became held across multiple accounts backed by a multi-signature threshold scheme to minimize custody risk. If signatories across a certain threshold lose their key shares, get hacked or go rogue, we risk these funds (<20% of total stake as of April 2022) becoming locked.
 
 - Slashing risk
 
