@@ -55,9 +55,7 @@ export const UnwrapForm: FC = memo(() => {
 
     return formatBalance(wstethBalance.data);
   }, [wstethBalance.data]);
-  // const unwrapGasLimit = useMemo(() => 140000, []);
   const unwrapGasLimit = useUnwrapGasLimit();
-  console.log(unwrapGasLimit);
   const oneWstethAsBigNumber = useMemo(() => parseEther('1'), []);
 
   const unwrapTxCostInUsd = useTxCostInUsd(unwrapGasLimit);
