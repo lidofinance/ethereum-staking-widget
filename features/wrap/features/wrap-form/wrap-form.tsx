@@ -105,7 +105,7 @@ export const WrapForm: FC = memo(() => {
   const approveGasLimit = useApproveGasLimit();
   const oneSteth = useMemo(() => parseEther('1'), []);
 
-  const wrapGasLimit = useWrapGasLimit();
+  const wrapGasLimit = useWrapGasLimit(selectedToken === ETH);
 
   const balanceBySelectedToken = useMemo(
     () => (selectedToken === ETH ? ethBalance.data : stethBalance.data),
