@@ -1,1 +1,3 @@
 export const STANDARD_GAS_LIMIT = 21000;
+
+export const WSTETH_APPROVE_GAS_LIMIT = 78000;

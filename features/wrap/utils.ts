@@ -3,6 +3,8 @@ import { WstethAbi } from '@lido-sdk/contracts';
 import { getTokenAddress, TOKENS } from '@lido-sdk/constants';
 import { TX_STAGE } from 'shared/components';
 import { runWithTransactionLogger } from 'utils';
+import { getStaticRpcBatchProvider } from '@lido-sdk/providers';
+import { getBackendRPCPath } from 'config';
 
 const ETH = 'ETH';
 
@@ -104,12 +106,22 @@ export const wrapProcessingWithApprove: WrapProcessingWithApproveProps = async (
 
   const wstethTokenAddress = getTokenAddress(chainId, TOKENS.WSTETH);
 
+  const provider = getStaticRpcBatchProvider(
+    chainId,
+    getBackendRPCPath(chainId),
+  );
+  const feeData = await provider.getFeeData();
+  const maxPriorityFeePerGas = feeData.maxPriorityFeePerGas ?? undefined;
+  const maxFeePerGas = feeData.maxFeePerGas ?? undefined;
+
   try {
     if (selectedToken === ETH) {
       const callback = () =>
         wstethContractWeb3.signer.sendTransaction({
           to: wstethTokenAddress,
           value: parseEther(inputValue),
+          maxPriorityFeePerGas,
+          maxFeePerGas,
         });
 
       setTxStage(TX_STAGE.SIGN);
@@ -138,7 +150,11 @@ export const wrapProcessingWithApprove: WrapProcessingWithApproveProps = async (
       if (needsApprove) {
         await approve();
       } else {
-        const callback = () => wstethContractWeb3.wrap(parseEther(inputValue));
+        const callback = () =>
+          wstethContractWeb3.wrap(parseEther(inputValue), {
+            maxPriorityFeePerGas,
+            maxFeePerGas,
+          });
 
         setTxStage(TX_STAGE.SIGN);
         openTxModal();

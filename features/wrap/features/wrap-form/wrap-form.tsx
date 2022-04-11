@@ -51,6 +51,7 @@ import {
 } from 'features/wrap/styles';
 import { wrapProcessingWithApprove } from 'features/wrap/utils';
 import { InputLocked } from 'features/wrap/components';
+import { useApproveGasLimit } from './hooks';
 
 const ETH = 'ETH';
 
@@ -101,7 +102,7 @@ export const WrapForm: FC = memo(() => {
     [chainId],
   );
 
-  const approveGasLimit = useMemo(() => 70000, []);
+  const approveGasLimit = useApproveGasLimit();
   const oneSteth = useMemo(() => parseEther('1'), []);
 
   const wrapGasLimit = useMemo(
