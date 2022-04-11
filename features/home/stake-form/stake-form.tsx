@@ -32,7 +32,7 @@ import { useCurrencyInput, useTxCostInUsd } from 'shared/hooks';
 // import { useStethSubmitGasLimit } from './hooks/use-steth-submit-gas-limit';
 import { FormStyled, InputStyled, MaxButton } from './styles';
 import { stakeProcessing } from './utils';
-import { useStethSubmitGasLimit } from './hooks/use-steth-submit-gas-limit';
+import { useStethSubmitGasLimit } from './hooks';
 
 export const StakeForm: FC = memo(() => {
   const router = useRouter();
