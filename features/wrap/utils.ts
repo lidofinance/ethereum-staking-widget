@@ -1,10 +1,10 @@
 import { parseEther } from '@ethersproject/units';
 import { WstethAbi } from '@lido-sdk/contracts';
-import { getTokenAddress, TOKENS } from '@lido-sdk/constants';
+import { CHAINS, getTokenAddress, TOKENS } from '@lido-sdk/constants';
 import { TX_STAGE } from 'shared/components';
 import { runWithTransactionLogger } from 'utils';
 import { getStaticRpcBatchProvider } from '@lido-sdk/providers';
-import { getBackendRPCPath } from 'config';
+import { ESTIMATE_ACCOUNT, getBackendRPCPath } from 'config';
 
 const ETH = 'ETH';
 
@@ -16,6 +16,7 @@ type UnwrapProcessingProps = (
   setTxModalFailedText: (value: string) => void,
   wstethBalanceUpdate: () => void,
   stethBalanceUpdate: () => void,
+  chainId: CHAINS | undefined,
   inputValue: string,
   resetForm: () => void,
 ) => Promise<void>;
@@ -28,15 +29,30 @@ export const unwrapProcessing: UnwrapProcessingProps = async (
   setTxModalFailedText,
   wstethBalanceUpdate,
   stethBalanceUpdate,
+  chainId,
   inputValue,
   resetForm,
 ) => {
-  if (!wstethContractWeb3) {
+  if (!wstethContractWeb3 || !chainId) {
     return;
   }
 
+  const provider = getStaticRpcBatchProvider(
+    chainId,
+    getBackendRPCPath(chainId),
+  );
+
   try {
-    const callback = () => wstethContractWeb3.unwrap(parseEther(inputValue));
+    const feeData = await provider.getFeeData();
+    const maxPriorityFeePerGas = feeData.maxPriorityFeePerGas ?? undefined;
+    const maxFeePerGas = feeData.maxFeePerGas ?? undefined;
+
+    const callback = () =>
+      wstethContractWeb3.unwrap(parseEther(inputValue), {
+        from: ESTIMATE_ACCOUNT,
+        maxPriorityFeePerGas,
+        maxFeePerGas,
+      });
 
     setTxStage(TX_STAGE.SIGN);
     openTxModal();
