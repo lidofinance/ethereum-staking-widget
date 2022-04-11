@@ -24,4 +24,4 @@ export const getStethContractFactory = (): ContractSteth => {
   return StethAbi__factory;
 };
 
-export const STETH_SUBMIT_GAS_LIMIT_DEFAULT = 90000;
+export const STETH_SUBMIT_GAS_LIMIT_DEFAULT = 110000;
