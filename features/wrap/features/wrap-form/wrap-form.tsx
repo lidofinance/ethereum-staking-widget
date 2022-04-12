@@ -18,7 +18,7 @@ import {
   Option,
   Steth,
 } from '@lidofinance/lido-ui';
-import { CHAINS, getTokenAddress, TOKENS } from '@lido-sdk/constants';
+import { getTokenAddress, TOKENS } from '@lido-sdk/constants';
 import { useWeb3 } from '@lido-sdk/web3-react';
 import {
   useSDK,
@@ -51,6 +51,7 @@ import {
 } from 'features/wrap/styles';
 import { wrapProcessingWithApprove } from 'features/wrap/utils';
 import { InputLocked } from 'features/wrap/components';
+import { useApproveGasLimit, useWrapGasLimit } from './hooks';
 
 const ETH = 'ETH';
 
@@ -101,13 +102,10 @@ export const WrapForm: FC = memo(() => {
     [chainId],
   );
 
-  const approveGasLimit = useMemo(() => 70000, []);
+  const approveGasLimit = useApproveGasLimit();
   const oneSteth = useMemo(() => parseEther('1'), []);
 
-  const wrapGasLimit = useMemo(
-    () => (chainId === CHAINS.Goerli ? 180000 : 140000),
-    [chainId],
-  );
+  const wrapGasLimit = useWrapGasLimit(selectedToken === ETH);
 
   const balanceBySelectedToken = useMemo(
     () => (selectedToken === ETH ? ethBalance.data : stethBalance.data),

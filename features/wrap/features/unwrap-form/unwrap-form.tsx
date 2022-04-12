@@ -33,9 +33,10 @@ import { Connect } from 'shared/wallet';
 import { FormatToken } from 'shared/formatters';
 import { FormStyled, InputStyled, MaxButton } from 'features/wrap/styles';
 import { unwrapProcessing } from 'features/wrap/utils';
+import { useUnwrapGasLimit } from './hooks';
 
 export const UnwrapForm: FC = memo(() => {
-  const { active } = useWeb3();
+  const { active, chainId } = useWeb3();
   const stethBalance = useSTETHBalance();
   const wstethBalance = useWSTETHBalance();
   const wstethContractWeb3 = useWSTETHContractWeb3();
@@ -54,7 +55,7 @@ export const UnwrapForm: FC = memo(() => {
 
     return formatBalance(wstethBalance.data);
   }, [wstethBalance.data]);
-  const unwrapGasLimit = useMemo(() => 140000, []);
+  const unwrapGasLimit = useUnwrapGasLimit();
   const oneWstethAsBigNumber = useMemo(() => parseEther('1'), []);
 
   const unwrapTxCostInUsd = useTxCostInUsd(unwrapGasLimit);
@@ -79,15 +80,17 @@ export const UnwrapForm: FC = memo(() => {
         setTxModalFailedText,
         wstethBalance.update,
         stethBalance.update,
+        chainId,
         inputValue,
         resetForm,
       );
     },
     [
-      openTxModal,
       wstethContractWeb3,
+      openTxModal,
       wstethBalance.update,
       stethBalance.update,
+      chainId,
     ],
   );
 

@@ -32,6 +32,7 @@ import { useCurrencyInput, useTxCostInUsd } from 'shared/hooks';
 // import { useStethSubmitGasLimit } from './hooks/use-steth-submit-gas-limit';
 import { FormStyled, InputStyled, MaxButton } from './styles';
 import { stakeProcessing } from './utils';
+import { useStethSubmitGasLimit } from './hooks';
 
 export const StakeForm: FC = memo(() => {
   const router = useRouter();
@@ -54,11 +55,7 @@ export const StakeForm: FC = memo(() => {
     method: 'getFee',
   });
 
-  // TODO: Failed to estimate gas limit
-  // const submitGasLimit = useStethSubmitGasLimit(AddressZero, {
-  //   value: parseEther('1'),
-  // });
-  const submitGasLimit = useMemo(() => 120000, []);
+  const submitGasLimit = useStethSubmitGasLimit();
   const txCostInUsd = useTxCostInUsd(submitGasLimit);
 
   const openTxModal = useCallback(() => {
