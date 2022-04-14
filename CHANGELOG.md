@@ -1,3 +1,20 @@
+# [1.10.0](https://github.com/lidofinance/staking-widget-ts/compare/1.9.0...1.10.0) (2022-04-14)
+
+
+### Bug Fixes
+
+* catch errors on wrap gas estimation ([621d8d9](https://github.com/lidofinance/staking-widget-ts/commit/621d8d9337084813b3dc83ac59d9044c81f2fb90))
+* catch stake gas estimation ([8c883c6](https://github.com/lidofinance/staking-widget-ts/commit/8c883c60789a12f0b97609cebc0f292b2b11a134))
+* remove logs ([d754db0](https://github.com/lidofinance/staking-widget-ts/commit/d754db0d760dbf6d09014d45da16b3fbd2498e4f))
+* remove unwrap from ([718bc6b](https://github.com/lidofinance/staking-widget-ts/commit/718bc6b5b20c6ec45548e2de1e4b53d97b88ac2a))
+
+
+### Features
+
+* **security:** added codeowners for lockfiles ([667b00f](https://github.com/lidofinance/staking-widget-ts/commit/667b00feb36f50ee530fd4e8227ebb664e499d89))
+
+
+
 # [1.9.0](https://github.com/lidofinance/staking-widget-ts/compare/1.8.1...1.9.0) (2022-04-14)
 
 
@@ -43,20 +60,6 @@
 ### Bug Fixes
 
 * **security:** use custom image loader ([fab6287](https://github.com/lidofinance/staking-widget-ts/commit/fab6287dc8e9ddb8dd05dc6b779d57dd9539070f))
-
-
-
-## [1.7.1](https://github.com/lidofinance/staking-widget-ts/compare/1.7.0...1.7.1) (2022-02-17)
-
-
-### Bug Fixes
-
-* :green_heart: upgrade next and fix build ([ae420c5](https://github.com/lidofinance/staking-widget-ts/commit/ae420c5ef7d3e251c39c41a542b2b1d6f598cbc8))
-* delete infura project id ([2ce5613](https://github.com/lidofinance/staking-widget-ts/commit/2ce561390e18cfab97f03b35c941e12df22aede7))
-* move future.webpack5 option ([fa4fec1](https://github.com/lidofinance/staking-widget-ts/commit/fa4fec1941d2b1ac0c24bed1e0381124b1b2a709))
-* replace css interpolation with props ([05b3270](https://github.com/lidofinance/staking-widget-ts/commit/05b3270417a4a158fd363b6e49244742301c4c59))
-* **deps:** update dependency next to v11 [security] ([61227da](https://github.com/lidofinance/staking-widget-ts/commit/61227daa4fc1f391c8871f4c1de78607ef214c7e))
-* **deps:** update dependency next to v12 ([e622875](https://github.com/lidofinance/staking-widget-ts/commit/e622875320a9cfdaf8bfa99ba30e364ddb89776c))
 
 
 
