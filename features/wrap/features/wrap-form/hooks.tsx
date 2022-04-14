@@ -23,8 +23,8 @@ export const useApproveGasLimit = () => {
   const { chainId } = useWeb3();
 
   const { data } = useLidoSWR(
-    `swr:approve-wrap-gas-limit:${chainId}`,
-    async () => {
+    ['swr:approve-wrap-gas-limit', chainId],
+    async (_key, chainId) => {
       if (!chainId) {
         return;
       }

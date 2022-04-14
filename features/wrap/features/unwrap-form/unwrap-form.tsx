@@ -59,7 +59,6 @@ export const UnwrapForm: FC = memo(() => {
   const oneWstethAsBigNumber = useMemo(() => parseEther('1'), []);
 
   const unwrapTxCostInUsd = useTxCostInUsd(unwrapGasLimit);
-  console.log({ unwrapGasLimit, unwrapTxCostInUsd });
   const oneWstethConvertedToStethAsBigNumber =
     useStethByWsteth(oneWstethAsBigNumber);
 
