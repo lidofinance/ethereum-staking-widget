@@ -55,16 +55,27 @@ export const stakeProcessing: StakeProcessingProps = async (
   chainId,
   refFromQuery,
 ) => {
-  if (!stethContractWeb3) {
+  if (!stethContractWeb3 || !chainId) {
     return;
   }
 
   try {
     const referralAddress = await getAddress(refFromQuery, chainId);
 
+    const provider = getStaticRpcBatchProvider(
+      chainId,
+      getBackendRPCPath(chainId),
+    );
+
+    const feeData = await provider.getFeeData();
+    const maxPriorityFeePerGas = feeData.maxPriorityFeePerGas ?? undefined;
+    const maxFeePerGas = feeData.maxFeePerGas ?? undefined;
+
     const callback = () =>
       stethContractWeb3.submit(referralAddress || AddressZero, {
         value: parseEther(inputValue),
+        maxPriorityFeePerGas,
+        maxFeePerGas,
       });
 
     setTxStage(TX_STAGE.SIGN);
