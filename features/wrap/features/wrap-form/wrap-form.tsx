@@ -114,8 +114,6 @@ export const WrapForm: FC = memo(() => {
 
   const approveTxCostInUsd = useTxCostInUsd(approveGasLimit);
   const wrapTxCostInUsd = useTxCostInUsd(wrapGasLimit);
-  console.log({ approveGasLimit, approveTxCostInUsd });
-  console.log({ wrapGasLimit, wrapTxCostInUsd });
 
   const oneWstethConverted = useWstethBySteth(oneSteth);
 
