@@ -4,7 +4,7 @@ import { CHAINS, getTokenAddress, TOKENS } from '@lido-sdk/constants';
 import { TX_STAGE } from 'shared/components';
 import { runWithTransactionLogger } from 'utils';
 import { getStaticRpcBatchProvider } from '@lido-sdk/providers';
-import { ESTIMATE_ACCOUNT, getBackendRPCPath } from 'config';
+import { getBackendRPCPath } from 'config';
 
 const ETH = 'ETH';
 
@@ -49,7 +49,6 @@ export const unwrapProcessing: UnwrapProcessingProps = async (
 
     const callback = () =>
       wstethContractWeb3.unwrap(parseEther(inputValue), {
-        from: ESTIMATE_ACCOUNT,
         maxPriorityFeePerGas,
         maxFeePerGas,
       });
