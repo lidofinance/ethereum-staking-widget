@@ -8,6 +8,7 @@ import {
 import { parseEther } from '@ethersproject/units';
 import { useWeb3 } from '@lido-sdk/web3-react';
 import { getStaticRpcBatchProvider } from '@lido-sdk/providers';
+import { BigNumber } from 'ethers';
 
 type UseStethSubmitGasLimit = () => number | undefined;
 
@@ -29,12 +30,17 @@ export const useStethSubmitGasLimit: UseStethSubmitGasLimit = () => {
     const maxPriorityFeePerGas = feeData.maxPriorityFeePerGas ?? undefined;
     const maxFeePerGas = feeData.maxFeePerGas ?? undefined;
 
-    const gasLimit = await stethContractRPC.estimateGas.submit(AddressZero, {
-      from: ESTIMATE_ACCOUNT,
-      value: parseEther('0.001'),
-      maxPriorityFeePerGas,
-      maxFeePerGas,
-    });
+    const gasLimit = await stethContractRPC.estimateGas
+      .submit(AddressZero, {
+        from: ESTIMATE_ACCOUNT,
+        value: parseEther('0.001'),
+        maxPriorityFeePerGas,
+        maxFeePerGas,
+      })
+      .catch((error) => {
+        console.warn(error);
+        return BigNumber.from(STETH_SUBMIT_GAS_LIMIT_DEFAULT);
+      });
 
     return +gasLimit;
   });
