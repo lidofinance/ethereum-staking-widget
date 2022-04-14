@@ -1,3 +1,24 @@
+# [1.9.0](https://github.com/lidofinance/staking-widget-ts/compare/1.8.1...1.9.0) (2022-04-14)
+
+
+### Bug Fixes
+
+* estimate gas for direct wrap ([c0515d0](https://github.com/lidofinance/staking-widget-ts/commit/c0515d0583c72b9c0aceb7b9f6abfa967339b49c))
+* update risks FAQ ([159e8a5](https://github.com/lidofinance/staking-widget-ts/commit/159e8a5910e4199c1bafdfc8f800eb5369f57390))
+* use estimate account for submit ([3940d33](https://github.com/lidofinance/staking-widget-ts/commit/3940d331328638bdebe9953601220072f943df17))
+
+
+### Features
+
+* estimate approve gas used ([c8bc65d](https://github.com/lidofinance/staking-widget-ts/commit/c8bc65d781d61b5ce10a0e30f69e99a8a6821a9d))
+* estimate unwrap gas ([dd29825](https://github.com/lidofinance/staking-widget-ts/commit/dd298257ee4c5649a1e66f9d37cf97e8b3967412))
+* estimate wrap gas limit ([64d9edf](https://github.com/lidofinance/staking-widget-ts/commit/64d9edf3f7ecc4b6a73cf6c12dee0065e8bce7e9))
+* suggest EIP-1559 gas values ([d4ad59a](https://github.com/lidofinance/staking-widget-ts/commit/d4ad59a24bb1b1615f5a0339c7627948ce6c2f34))
+* use simplified altair formula for eth apr ([e002531](https://github.com/lidofinance/staking-widget-ts/commit/e002531ffb8fc223fa4405059370bc5850b8bfa4))
+* **security:** added codeowners for lockfiles ([3a48312](https://github.com/lidofinance/staking-widget-ts/commit/3a48312bd88d6aa9963f4dc57d5db9bb96ff950e))
+
+
+
 ## [1.8.1](https://github.com/lidofinance/staking-widget-ts/compare/1.8.0...1.8.1) (2022-03-24)
 
 
@@ -36,24 +57,6 @@
 * replace css interpolation with props ([05b3270](https://github.com/lidofinance/staking-widget-ts/commit/05b3270417a4a158fd363b6e49244742301c4c59))
 * **deps:** update dependency next to v11 [security] ([61227da](https://github.com/lidofinance/staking-widget-ts/commit/61227daa4fc1f391c8871f4c1de78607ef214c7e))
 * **deps:** update dependency next to v12 ([e622875](https://github.com/lidofinance/staking-widget-ts/commit/e622875320a9cfdaf8bfa99ba30e364ddb89776c))
-
-
-
-# [1.7.0](https://github.com/lidofinance/staking-widget-ts/compare/1.6.1...1.7.0) (2022-02-11)
-
-
-### Bug Fixes
-
-* lido-ui update to fix default system theme ([97034ae](https://github.com/lidofinance/staking-widget-ts/commit/97034aedcf738b3e5489ef31609390d98ac07c91))
-* pass shouldInvertWalletIcon to WalletsModalForEth ([d693c04](https://github.com/lidofinance/staking-widget-ts/commit/d693c04d0bdc7fd8eaf347c4e82bb40c612b4158))
-
-
-### Features
-
-* **metrics:** split supported chains into separate values ([28c605c](https://github.com/lidofinance/staking-widget-ts/commit/28c605ceabb7c4b36f175ec64462c1c21eba5c78))
-* auto colour theme logic ([e1cbbef](https://github.com/lidofinance/staking-widget-ts/commit/e1cbbef89b274c7e4c9f5108dd2d1383e68eac24))
-* integrate connect-wallet-modal UI block ([306de64](https://github.com/lidofinance/staking-widget-ts/commit/306de64b5ca1030f8444e8d82069795f214dc82e))
-* **metrics:** include chain label with request metric ([325f9b8](https://github.com/lidofinance/staking-widget-ts/commit/325f9b8d120588f0e82a194929b0a09eb3d8064d))
 
 
 
