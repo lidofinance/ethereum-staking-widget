@@ -1,10 +1,18 @@
-export const getErrorMessage = (errorCode: number | undefined) => {
+export enum ErrorMessage {
+  NOT_ENOUGH_ETHER = 'Not enough ether for gas.',
+  DENIED_SIG = 'User denied transaction signature.',
+  SOMETHING_WRONG = 'Something went wrong.',
+}
+
+export const getErrorMessage = (
+  errorCode: number | undefined,
+): ErrorMessage => {
   switch (errorCode) {
     case -32000:
-      return 'Not enough ether for gas.';
+      return ErrorMessage.NOT_ENOUGH_ETHER;
     case 4001:
-      return 'User denied    transaction signature.';
+      return ErrorMessage.DENIED_SIG;
     default:
-      return 'Something went wrong.';
+      return ErrorMessage.SOMETHING_WRONG;
   }
 };
