@@ -69,9 +69,9 @@ export const unwrapProcessing: UnwrapProcessingProps = async (
       transaction.wait(),
     );
 
-    await resetForm();
-    await stethBalanceUpdate();
-    await wstethBalanceUpdate();
+    resetForm();
+    stethBalanceUpdate();
+    wstethBalanceUpdate();
 
     setTxStage(TX_STAGE.SUCCESS);
     openTxModal();
@@ -132,13 +132,15 @@ export const wrapProcessingWithApprove: WrapProcessingWithApproveProps = async (
 
   try {
     if (selectedToken === ETH) {
+      const overrides = {
+        to: wstethTokenAddress,
+        value: parseEther(inputValue),
+        maxPriorityFeePerGas,
+        maxFeePerGas,
+      };
+
       const callback = () =>
-        wstethContractWeb3.signer.sendTransaction({
-          to: wstethTokenAddress,
-          value: parseEther(inputValue),
-          maxPriorityFeePerGas,
-          maxFeePerGas,
-        });
+        wstethContractWeb3.signer.sendTransaction(overrides);
 
       setTxStage(TX_STAGE.SIGN);
       openTxModal();
@@ -156,21 +158,23 @@ export const wrapProcessingWithApprove: WrapProcessingWithApproveProps = async (
         transaction.wait(),
       );
 
-      await resetForm();
-      await ethBalanceUpdate();
-      await stethBalanceUpdate();
+      resetForm();
+      ethBalanceUpdate();
+      stethBalanceUpdate();
 
       setTxStage(TX_STAGE.SUCCESS);
       openTxModal();
     } else if (selectedToken === TOKENS.STETH) {
       if (needsApprove) {
-        await approve();
+        approve();
       } else {
+        const overrides = {
+          maxPriorityFeePerGas,
+          maxFeePerGas,
+        };
+
         const callback = () =>
-          wstethContractWeb3.wrap(parseEther(inputValue), {
-            maxPriorityFeePerGas,
-            maxFeePerGas,
-          });
+          wstethContractWeb3.wrap(parseEther(inputValue), overrides);
 
         setTxStage(TX_STAGE.SIGN);
         openTxModal();
@@ -188,9 +192,9 @@ export const wrapProcessingWithApprove: WrapProcessingWithApproveProps = async (
           transaction.wait(),
         );
 
-        await resetForm();
-        await ethBalanceUpdate();
-        await stethBalanceUpdate();
+        resetForm();
+        ethBalanceUpdate();
+        stethBalanceUpdate();
 
         setTxStage(TX_STAGE.SUCCESS);
         openTxModal();

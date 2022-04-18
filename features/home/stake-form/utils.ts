@@ -77,18 +77,8 @@ export const stakeProcessing: StakeProcessingProps = async (
       maxFeePerGas,
     };
 
-    // simulate before sending
-    await stethContractWeb3.estimateGas.submit(
-      referralAddress || AddressZero,
-      overrides,
-    );
-
     const callback = () =>
-      stethContractWeb3.submit(referralAddress || AddressZero, {
-        value: parseEther(inputValue),
-        maxPriorityFeePerGas,
-        maxFeePerGas,
-      });
+      stethContractWeb3.submit(referralAddress || AddressZero, overrides);
 
     setTxStage(TX_STAGE.SIGN);
     openTxModal();

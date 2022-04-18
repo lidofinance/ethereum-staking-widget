@@ -12,7 +12,7 @@ import {
   LedgerSuccess,
 } from '@lidofinance/lido-ui';
 import { getEtherscanTxLink } from '@lido-sdk/helpers';
-import { formatBalance, formatBalanceString } from 'utils';
+import { ErrorMessage, formatBalance, formatBalanceString } from 'utils';
 import {
   BoldText,
   FailIcon,
@@ -254,15 +254,17 @@ export const TxStageModal: FC<TxStageModalProps> = memo(
               <LightText size="xxs" color="secondary" marginTop={4}>
                 {failedText ?? 'Something went wrong'}
               </LightText>
-              {formRef && formRef.current && (
-                <LightText size="xxs" color="secondary" marginTop={38}>
-                  <StylableLink
-                    onClick={() => formRef.current?.requestSubmit()}
-                  >
-                    Retry
-                  </StylableLink>
-                </LightText>
-              )}
+              {formRef &&
+                formRef.current &&
+                failedText !== ErrorMessage.NOT_ENOUGH_ETHER && (
+                  <LightText size="xxs" color="secondary" marginTop={38}>
+                    <StylableLink
+                      onClick={() => formRef.current?.requestSubmit()}
+                    >
+                      Retry
+                    </StylableLink>
+                  </LightText>
+                )}
             </>
           );
       }
