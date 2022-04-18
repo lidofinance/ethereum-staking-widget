@@ -1,3 +1,12 @@
+## [1.10.1](https://github.com/lidofinance/staking-widget-ts/compare/1.10.0...1.10.1) (2022-04-18)
+
+
+### Bug Fixes
+
+* display appropriate error message ([38672b6](https://github.com/lidofinance/staking-widget-ts/commit/38672b6420765966d30f85b94abd0d8efe7ce45d))
+
+
+
 # [1.10.0](https://github.com/lidofinance/staking-widget-ts/compare/1.9.0...1.10.0) (2022-04-14)
 
 
@@ -51,15 +60,6 @@
 ### Features
 
 * bump ui-blocks to support Tally wallet ([81d97f3](https://github.com/lidofinance/staking-widget-ts/commit/81d97f3c3290e739f2b4c97b368602c57f882047))
-
-
-
-## [1.7.2](https://github.com/lidofinance/staking-widget-ts/compare/1.7.1...1.7.2) (2022-02-22)
-
-
-### Bug Fixes
-
-* **security:** use custom image loader ([fab6287](https://github.com/lidofinance/staking-widget-ts/commit/fab6287dc8e9ddb8dd05dc6b779d57dd9539070f))
 
 
 
