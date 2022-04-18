@@ -22,7 +22,6 @@ import { getTokenAddress, TOKENS } from '@lido-sdk/constants';
 import { useWeb3 } from '@lido-sdk/web3-react';
 import {
   useSDK,
-  useApprove,
   useEthereumBalance,
   useSTETHBalance,
   useWSTETHBalance,
@@ -39,7 +38,11 @@ import {
   useTxCostInUsd,
   useWstethBySteth,
 } from 'shared/hooks';
-import { formatBalance, runWithTransactionLogger } from 'utils';
+import {
+  formatBalance,
+  getErrorMessage,
+  runWithTransactionLogger,
+} from 'utils';
 import { Connect } from 'shared/wallet';
 import { FormatToken } from 'shared/formatters';
 import {
@@ -52,6 +55,7 @@ import {
 import { wrapProcessingWithApprove } from 'features/wrap/utils';
 import { InputLocked } from 'features/wrap/components';
 import { useApproveGasLimit, useWrapGasLimit } from './hooks';
+import { useApprove } from 'shared/hooks/useApprove';
 
 const ETH = 'ETH';
 
@@ -153,7 +157,11 @@ export const WrapForm: FC = memo(() => {
         return result;
         /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
       } catch (error: any) {
-        setTxModalFailedText(error?.message);
+        console.error(error);
+        // errors are sometimes nested :(
+        setTxModalFailedText(
+          getErrorMessage(error?.error?.code ?? error?.code),
+        );
         setTxStage(TX_STAGE.FAIL);
         openTxModal();
       }

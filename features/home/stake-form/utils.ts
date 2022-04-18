@@ -4,7 +4,7 @@ import { isAddress } from 'ethers/lib/utils';
 import { StethAbi } from '@lido-sdk/contracts';
 import { CHAINS } from '@lido-sdk/constants';
 import { getStaticRpcBatchProvider } from '@lido-sdk/providers';
-import { runWithTransactionLogger } from 'utils';
+import { getErrorMessage, runWithTransactionLogger } from 'utils';
 import { getBackendRPCPath } from 'config';
 import { TX_STAGE } from 'shared/components';
 
@@ -71,6 +71,18 @@ export const stakeProcessing: StakeProcessingProps = async (
     const maxPriorityFeePerGas = feeData.maxPriorityFeePerGas ?? undefined;
     const maxFeePerGas = feeData.maxFeePerGas ?? undefined;
 
+    const overrides = {
+      value: parseEther(inputValue),
+      maxPriorityFeePerGas,
+      maxFeePerGas,
+    };
+
+    // simulate before sending
+    await stethContractWeb3.estimateGas.submit(
+      referralAddress || AddressZero,
+      overrides,
+    );
+
     const callback = () =>
       stethContractWeb3.submit(referralAddress || AddressZero, {
         value: parseEther(inputValue),
@@ -100,7 +112,9 @@ export const stakeProcessing: StakeProcessingProps = async (
     await resetForm();
     /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
   } catch (error: any) {
-    setTxModalFailedText(error?.message);
+    console.error(error);
+    // errors are sometimes nested :(
+    setTxModalFailedText(getErrorMessage(error?.error?.code ?? error?.code));
     setTxStage(TX_STAGE.FAIL);
     setTxHash(undefined);
     openTxModal();
