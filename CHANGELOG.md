@@ -1,3 +1,13 @@
+## [1.10.2](https://github.com/lidofinance/staking-widget-ts/compare/1.10.1...1.10.2) (2022-04-18)
+
+
+### Bug Fixes
+
+* clean up ([aa3d1aa](https://github.com/lidofinance/staking-widget-ts/commit/aa3d1aacd4abbc4d3eeb8448d0d6f47690ee8f3d))
+* hide Retry button on insufficient ether ([007d512](https://github.com/lidofinance/staking-widget-ts/commit/007d512a8a5057d0b2c7dcdf718fcd67381d5381))
+
+
+
 ## [1.10.1](https://github.com/lidofinance/staking-widget-ts/compare/1.10.0...1.10.1) (2022-04-18)
 
 
@@ -51,15 +61,6 @@
 ### Bug Fixes
 
 * disable Tally wallet on mobiles ([7a652df](https://github.com/lidofinance/staking-widget-ts/commit/7a652dfefacb73e320cb100be477036ed4702ddb))
-
-
-
-# [1.8.0](https://github.com/lidofinance/staking-widget-ts/compare/1.7.2...1.8.0) (2022-03-22)
-
-
-### Features
-
-* bump ui-blocks to support Tally wallet ([81d97f3](https://github.com/lidofinance/staking-widget-ts/commit/81d97f3c3290e739f2b4c97b368602c57f882047))
 
 
 
