@@ -250,9 +250,9 @@ export const TxStageModal: FC<TxStageModalProps> = memo(
           return (
             <>
               {currentIconDict[TX_STAGE.FAIL]}
-              <BoldText>Tx Signature Fail</BoldText>
+              <BoldText>Transaction Failed</BoldText>
               <LightText size="xxs" color="secondary" marginTop={4}>
-                The transaction signature was denied.
+                {failedText ?? 'Something went wrong'}
               </LightText>
               {formRef && formRef.current && (
                 <LightText size="xxs" color="secondary" marginTop={38}>
@@ -268,11 +268,12 @@ export const TxStageModal: FC<TxStageModalProps> = memo(
       }
     }, [
       txStage,
-      txOperation,
+      currentIconDict,
       operationText,
       withOptionaLineBreak,
       amount,
       amountToken,
+      txOperation,
       willReceiveAmount,
       willReceiveAmountToken,
       etherscanTxLinkBlock,
@@ -280,10 +281,10 @@ export const TxStageModal: FC<TxStageModalProps> = memo(
       balance,
       balanceAsString,
       balanceToken,
-      allowanceAmount,
       operationWasSuccessfulText,
+      allowanceAmount,
+      failedText,
       formRef,
-      currentIconDict,
     ]);
 
     return (

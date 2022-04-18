@@ -2,7 +2,7 @@ import { parseEther } from '@ethersproject/units';
 import { WstethAbi } from '@lido-sdk/contracts';
 import { CHAINS, getTokenAddress, TOKENS } from '@lido-sdk/constants';
 import { TX_STAGE } from 'shared/components';
-import { runWithTransactionLogger } from 'utils';
+import { getErrorMessage, runWithTransactionLogger } from 'utils';
 import { getStaticRpcBatchProvider } from '@lido-sdk/providers';
 import { getBackendRPCPath } from 'config';
 
@@ -77,7 +77,8 @@ export const unwrapProcessing: UnwrapProcessingProps = async (
     openTxModal();
     /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
   } catch (error: any) {
-    setTxModalFailedText(error?.message);
+    // errors are sometimes nested :(
+    setTxModalFailedText(getErrorMessage(error?.error?.code ?? error?.code));
     setTxStage(TX_STAGE.FAIL);
     setTxHash(undefined);
     openTxModal();
@@ -197,7 +198,8 @@ export const wrapProcessingWithApprove: WrapProcessingWithApproveProps = async (
     }
     /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
   } catch (error: any) {
-    setTxModalFailedText(error?.message);
+    // errors are sometimes nested :(
+    setTxModalFailedText(getErrorMessage(error?.error?.code ?? error?.code));
     setTxStage(TX_STAGE.FAIL);
     setTxHash(undefined);
     openTxModal();
