@@ -10,6 +10,8 @@ export const getErrorMessage = (
   switch (errorCode) {
     case -32000:
       return ErrorMessage.NOT_ENOUGH_ETHER;
+    case 3:
+      return ErrorMessage.NOT_ENOUGH_ETHER;
     case 4001:
       return ErrorMessage.DENIED_SIG;
     default:
