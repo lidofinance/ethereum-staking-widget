@@ -2,7 +2,7 @@
   "name": "Lido Staking Widget",
   "short_name": "Lido",
   "description": "Lido is the liquid staking solution for Ethereum.",
-  "iconPath": "favion-1080x1080.svg",
+  "iconPath": "favicon-1080x1080.svg",
   "icons": [
     {
       "src": "/favicon-16x16.png",
@@ -20,7 +20,7 @@
       "type": "image/png"
     },
     {
-      "src": "/favion-1080x1080.svg",
+      "src": "/favicon-1080x1080.svg",
       "sizes": "1080x1080",
       "type": "image/svg+xml"
     }
