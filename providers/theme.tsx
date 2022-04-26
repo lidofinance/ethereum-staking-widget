@@ -59,6 +59,8 @@ const ThemeProvider: FC<ThemeProviderProps> = ({
       setThemeName(systemTheme);
       Cookies.set(STORAGE_THEME_AUTO_KEY, systemTheme, {
         expires: COOKIES_THEME_EXPIRES_DAYS,
+        sameSite: 'None',
+        secure: true,
       });
     }
     // We only need to override logic when systemTheme changes
@@ -71,6 +73,8 @@ const ThemeProvider: FC<ThemeProviderProps> = ({
     setThemeName(toggledThemeName);
     Cookies.set(STORAGE_THEME_MANUAL_KEY, toggledThemeName, {
       expires: COOKIES_THEME_EXPIRES_DAYS,
+      sameSite: 'None',
+      secure: true,
     });
   }, [themeName, setThemeName]);
 
