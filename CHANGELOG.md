@@ -1,3 +1,13 @@
+## [1.10.3](https://github.com/lidofinance/staking-widget-ts/compare/1.10.2...1.10.3) (2022-04-26)
+
+
+### Bug Fixes
+
+* allow cookies in iframe ([e5660e1](https://github.com/lidofinance/staking-widget-ts/commit/e5660e12644bd533bffaa5fc88d8036647a42f22))
+* disable frameguard ([ba304f5](https://github.com/lidofinance/staking-widget-ts/commit/ba304f5c863f82e77e047e5d86414375b12a40a2))
+
+
+
 ## [1.10.2](https://github.com/lidofinance/staking-widget-ts/compare/1.10.1...1.10.2) (2022-04-18)
 
 
@@ -52,15 +62,6 @@
 * suggest EIP-1559 gas values ([d4ad59a](https://github.com/lidofinance/staking-widget-ts/commit/d4ad59a24bb1b1615f5a0339c7627948ce6c2f34))
 * use simplified altair formula for eth apr ([e002531](https://github.com/lidofinance/staking-widget-ts/commit/e002531ffb8fc223fa4405059370bc5850b8bfa4))
 * **security:** added codeowners for lockfiles ([3a48312](https://github.com/lidofinance/staking-widget-ts/commit/3a48312bd88d6aa9963f4dc57d5db9bb96ff950e))
-
-
-
-## [1.8.1](https://github.com/lidofinance/staking-widget-ts/compare/1.8.0...1.8.1) (2022-03-24)
-
-
-### Bug Fixes
-
-* disable Tally wallet on mobiles ([7a652df](https://github.com/lidofinance/staking-widget-ts/commit/7a652dfefacb73e320cb100be477036ed4702ddb))
 
 
 
