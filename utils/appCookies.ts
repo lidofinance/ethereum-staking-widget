@@ -1,3 +1,5 @@
+import Cookies from 'js-cookie';
+
 const appId = 'LIDO_WIDGET__';
 
 export const COOKIES_ALLOWED_KEY = 'COOKIES_ALLOWED';
@@ -7,20 +9,7 @@ export const COOKIE_VALUE_NO = 'no';
 export const AppCookies = new (class {
   getCookie(name: string) {
     try {
-      const cookie = document.cookie;
-      if (cookie && cookie.indexOf(`${appId}${name}=`) !== -1) {
-        const cookieArr = cookie.split(';');
-        for (let i = 0; i < cookieArr.length; i++) {
-          const cookieStr = cookieArr[i];
-          const startIndex = cookieStr.indexOf(`${appId}${name}=`);
-          if (startIndex !== -1) {
-            return cookieStr.substring(
-              startIndex + appId.length + name.length + 1,
-            );
-          }
-        }
-      }
-      return null;
+      return Cookies.get(`${appId}${name}`) ?? null;
     } catch (e) {
       return null;
     }
@@ -32,11 +21,13 @@ export const AppCookies = new (class {
     expireTime: number = 90 * 24 * 60 * 60,
   ) {
     try {
-      const expirationDate = new Date(new Date().getTime() + expireTime * 1000);
-      const { host } = window.location;
-      const domain =
-        host.split('.').length === 1 ? '' : `domain=.${window.location.host};`;
-      document.cookie = `${appId}${name}=${value};${domain}expires=${expirationDate.toUTCString()};path=/;`;
+      const expires = new Date(new Date().getTime() + expireTime * 1000);
+
+      Cookies.set(`${appId}${name}`, value, {
+        sameSite: 'None',
+        secure: true,
+        expires,
+      });
 
       return true;
     } catch (err) {
