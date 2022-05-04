@@ -6,4 +6,6 @@ Lido is a liquid staking solution for ETH 2.0 backed by industry-leading staking
 
 Our goal is to solve the problems associated with initial ETH 2.0 staking - illiquidity, immovability and accessibility - making staked ETH liquid and allowing for participation with any amount of ETH to improve security of the Ethereum network.
 
+Lido is not perfect yet - [check out our scorecard](https://scorecard.lido.fi).
+
 Learn more [here](https://blog.lido.fi/introducing-lido/).
