@@ -11,7 +11,7 @@ interface HomeProps {
 
 const Home: FC<HomeProps> = ({ faqList }) => (
   <>
-    <OneinchPopup />
+    <OneinchPopup modalView={true} />
     <Layout
       title="Stake Ether"
       subtitle="Stake ETH and receive stETH while staking."
