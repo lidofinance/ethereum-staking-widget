@@ -1,3 +1,8 @@
+import getConfig from 'next/config';
+
+const { publicRuntimeConfig } = getConfig();
+const { subgraphEndpoint } = publicRuntimeConfig;
+
 export const DEFAULT_API_ERROR_MESSAGE =
   'Something went wrong. Sorry, try again later :(';
 
@@ -6,5 +11,4 @@ export const ETHPLORER_TOKEN_ENDPOINT =
 
 export const HEALTHY_RPC_SERVICES_ARE_OVER = 'Healthy RPC services are over!';
 
-export const API_THEGRAPH_SUBGRAPHS_LIDO_ENDPOINT =
-  'https://api.thegraph.com/subgraphs/name/lidofinance/lido';
+export const API_THEGRAPH_SUBGRAPHS_LIDO_ENDPOINT = subgraphEndpoint;
