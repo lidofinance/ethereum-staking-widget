@@ -8,3 +8,4 @@ export * from './getLidoStats';
 export * from './getOneInchRate';
 export * from './getEthPrice';
 export * from './serverLogger';
+export * from './getSubgraphUrl';
