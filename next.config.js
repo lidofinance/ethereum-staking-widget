@@ -15,7 +15,12 @@ const cspTrustedHosts = process.env.CSP_TRUSTED_HOSTS;
 const cspReportOnly = process.env.CSP_REPORT_ONLY;
 const cspReportUri = process.env.CSP_REPORT_URI;
 
-const subgraphEndpoint = process.env.API_THEGRAPH_SUBGRAPHS_LIDO_ENDPOINT;
+const subgraphMainnet = process.env.SUBGRAPH_MAINNET;
+const subgraphRopsten = process.env.SUBGRAPH_ROPSTEN;
+const subgraphRinkeby = process.env.SUBGRAPH_RINKEBY;
+const subgraphGoerli = process.env.SUBGRAPH_GOERLI;
+const subgraphKovan = process.env.SUBGRAPH_KOVAN;
+const subgraphKintsugi = process.env.SUBGRAPH_KINTSUGI;
 
 module.exports = {
   basePath,
@@ -84,10 +89,15 @@ module.exports = {
     cspTrustedHosts,
     cspReportOnly,
     cspReportUri,
+    subgraphMainnet,
+    subgraphRopsten,
+    subgraphRinkeby,
+    subgraphGoerli,
+    subgraphKovan,
+    subgraphKintsugi,
   },
   publicRuntimeConfig: {
     defaultChain,
     supportedChains,
-    subgraphEndpoint,
   },
 };
