@@ -1,0 +1,35 @@
+name: Create tag and trigger deploy
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  bump:
+    name: Create tag
+    runs-on: ubuntu-latest
+    if: "contains(github.event.head_commit.message, 'chore(release)')"
+    outputs:
+      tag: ${{ steps.tag.outputs.tag }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Get tag value
+        id: tag
+        run: |
+          TAG=$(sed 's/chore(release): //g' <<< '${{ github.event.head_commit.message }}')
+          echo $TAG
+          echo "::set-output name=tag::${TAG}"
+      - name: Create and push tag
+        run: |
+          git tag ${{ steps.tag.outputs.tag }}
+          git push origin --tags
+
+  deploy-trigger:
+    needs: bump
+    name: Trigger deploy
+    if: "contains(github.event.head_commit.message, 'chore(release)')"
+    uses: ./.github/workflows/ci-prod.yml
+    secrets: inherit
+    with:
+      tag: ${{ needs.bump.outputs.tag}}
