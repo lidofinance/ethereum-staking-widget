@@ -1,7 +1,7 @@
 import { subgraphsResponseTime } from 'utilsApi/metrics';
 import { standardFetcher } from 'utils/standardFetcher';
 import { serverLogger } from './serverLogger';
-import { CHAINS } from '@lido-sdk/constants';
+import { SubgraphChains } from 'types';
 import { getSubgraphUrl } from './getSubgraphUrl';
 
 interface LidoHolders extends Response {
@@ -13,10 +13,12 @@ interface LidoHolders extends Response {
   };
 }
 
-type GetLidoHoldersViaSubgraphs = (chainId: CHAINS) => Promise<LidoHolders>;
+type GetLidoHoldersViaSubgraphs = (
+  chainId: SubgraphChains,
+) => Promise<LidoHolders>;
 
 export const getLidoHoldersViaSubgraphs: GetLidoHoldersViaSubgraphs = async (
-  chainId: CHAINS,
+  chainId: SubgraphChains,
 ) => {
   serverLogger.debug('Fetching lido holders from subgraph...');
   const query = `
