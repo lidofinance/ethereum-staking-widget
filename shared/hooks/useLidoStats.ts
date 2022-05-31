@@ -1,4 +1,4 @@
-import { useLidoSWR } from '@lido-sdk/react';
+import { useSDK, useLidoSWR } from '@lido-sdk/react';
 import { DATA_UNAVAILABLE } from 'config';
 import { useMemo } from 'react';
 import { prependBasePath } from 'utils';
@@ -19,8 +19,9 @@ export const useLidoStats = (): {
   };
   initialLoading: boolean;
 } => {
+  const { chainId } = useSDK();
   const lidoStats = useLidoSWR<ResponseData>(
-    prependBasePath('api/short-lido-stats'),
+    prependBasePath(`api/short-lido-stats?chainId=${chainId}`),
     standardFetcher,
   );
 
