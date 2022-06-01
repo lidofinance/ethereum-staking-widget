@@ -2,16 +2,34 @@ import maskString from '@darkobits/mask-string';
 import getConfig from 'next/config';
 
 const { serverRuntimeConfig } = getConfig();
-const { infuraApiKey, alchemyApiKey } = serverRuntimeConfig;
+const {
+  infuraApiKey,
+  alchemyApiKey,
+  subgraphMainnet,
+  subgraphRopsten,
+  subgraphRinkeby,
+  subgraphGoerli,
+  subgraphKovan,
+  subgraphKintsugi,
+} = serverRuntimeConfig;
 
 const anyHex = new RegExp('0x[a-fA-F0-9]+', 'ig');
 const anyEnsAddress = new RegExp('[a-zA-Z.]+\\.eth', 'ig');
 
-const mask = (message: string): string =>
-  maskString(
-    [infuraApiKey, alchemyApiKey, anyHex, anyEnsAddress].filter(Boolean),
-    message,
-  );
+const secrets: (RegExp | string)[] = [
+  infuraApiKey,
+  alchemyApiKey,
+  anyHex,
+  anyEnsAddress,
+  subgraphMainnet,
+  subgraphRopsten,
+  subgraphRinkeby,
+  subgraphGoerli,
+  subgraphKovan,
+  subgraphKintsugi,
+].filter(Boolean);
+
+const mask = (message: string): string => maskString(secrets, message);
 
 enum LEVEL {
   error = 'error',
