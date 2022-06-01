@@ -1,5 +1,4 @@
 import { Cache } from 'memory-cache';
-import { CHAINS } from '@lido-sdk/constants';
 import {
   CACHE_LIDO_HOLDERS_VIA_SUBGRAPHS_KEY,
   CACHE_LIDO_HOLDERS_VIA_SUBGRAPHS_TTL,
@@ -10,7 +9,7 @@ import {
   getLidoHoldersViaSubgraphs,
   getStEthPrice,
 } from 'utilsApi';
-import { API } from 'types';
+import { API, SubgraphChains } from 'types';
 
 const cache = new Cache<typeof CACHE_LIDO_HOLDERS_VIA_SUBGRAPHS_KEY, unknown>();
 
@@ -23,7 +22,7 @@ const shortLidoStats: API = async (req, res) => {
     if (cachedLidoStats) {
       res.status(200).json(cachedLidoStats);
     } else {
-      const chainId = Number(req.query.chainId) as CHAINS;
+      const chainId = Number(req.query.chainId) as SubgraphChains;
       const lidoHolders = await getLidoHoldersViaSubgraphs(chainId);
       const totalStaked = await getTotalStaked();
       const stEthPrice = await getStEthPrice();
