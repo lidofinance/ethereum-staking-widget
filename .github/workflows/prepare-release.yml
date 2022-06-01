@@ -17,6 +17,7 @@ jobs:
           output-file: "CHANGELOG.md"
           version-file: "package.json"
           version-path: "version"
+          release-count: 10 # save all releases in the CHANGELOG.md
           git-push: false
       - name: Create Pull Request
         uses: lidofinance/create-pull-request@v4
