@@ -1,11 +1,21 @@
 name: CI Build prod image
 
 on:
+  workflow_dispatch:
+  workflow_call:
+    inputs:
+      tag:
+        description: 'tag to deploy from'
+        default: ''
+        required: false
+        type: string
   push:
     branches:
       - "!*"
     tags:
       - "*"
+    paths-ignore:
+      - '.github/**'
 
 jobs:
 # test:
@@ -17,18 +27,22 @@ jobs:
     name: Build and deploy
     steps:
       - name: Checkout
-        uses: actions/checkout@v2.3.4
-
-      - name: Branch name
-        id: branch_name
+        uses: actions/checkout@v3
+        
+      - name: Tag name
+        id: tag_name
         run: |
-          echo ::set-output name=TAG::${GITHUB_REF#refs/tags/}
+          if [ ${{ inputs.tag }} = '' ]; then
+            echo ::set-output name=TAG::${GITHUB_REF#refs/tags/}
+          else
+            echo ::set-output name=TAG::${{ inputs.tag }}
+          fi
       
       - name: Build prod image
         run: .github/dispatch_workflow.py
         env:
-          APP_ID: "${{ secrets.APP_ID }}"
-          APP_PRIVATE_KEY: "${{ secrets.APP_PRIVATE_KEY }}"
+          APP_ID: ${{ secrets.APP_ID }}
+          APP_PRIVATE_KEY: ${{ secrets.APP_PRIVATE_KEY }}
           TARGET_REPO: "lidofinance/infra-mainnet"
-          TAG: "${{ steps.branch_name.outputs.TAG }}"
+          TAG: "${{ steps.tag_name.outputs.TAG }}"
           TARGET_WORKFLOW: "build_mainnet_staking_widget_ts.yaml"
