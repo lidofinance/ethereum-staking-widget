@@ -1,4 +1,2 @@
-**/yarn.lock @Jabher @kozlovzxc
-**/package-lock.json @Jabher @kozlovzxc
-* @lidofinance/qa
+* @lidofinance/lido-qa
 .github @lidofinance/review-gh-workflows
