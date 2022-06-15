@@ -3,10 +3,16 @@ import { useLidoSWR } from 'shared/hooks';
 import OneInchIcon from 'assets/icons/oneinch.svg';
 import { PopupWrapper } from 'shared/components';
 import { Button, Link, Modal, Text } from '@lidofinance/lido-ui';
-import { openWindow } from '@lido-sdk/helpers';
-import { ButtonWithMargin, GreenSpan } from './styles';
+import { ButtonLink, GreenSpan } from './styles';
+import { useConnectorInfo } from '@lido-sdk/web3-react';
+import { isDesktop } from 'react-device-detect';
+
+const ONE_INCH_URL = 'https://app.1inch.io/#/1/swap/ETH/steth';
+const LEDGER_LIVE_ONE_INCH_DESKTOP_DEEPLINK = 'ledgerlive://discover/1inch-lld';
+const LEDGER_LIVE_ONE_INCH_MOBILE_DEEPLINK = 'ledgerlive://discover/1inch-llm';
 
 export const OneinchPopup: FC<{ modalView: boolean }> = ({ modalView }) => {
+  const { isLedgerLive } = useConnectorInfo();
   const [isPopupOpen, setPopupOpen] = useState(false);
   const { data } = useLidoSWR<{ rate: number }>('/api/oneinch-rate');
   const rate = (data && data.rate) || 1;
@@ -20,7 +26,20 @@ export const OneinchPopup: FC<{ modalView: boolean }> = ({ modalView }) => {
   const closePopup = () => setPopupOpen(false);
 
   const formatted1inchRate = rate.toFixed(4);
-  const url = 'https://app.1inch.io/#/1/swap/ETH/steth';
+
+  let link = ONE_INCH_URL;
+
+  // use deeplinks for Ledger Live Desktop and Mobile apps
+  if (isLedgerLive) {
+    if (isDesktop) {
+      link = LEDGER_LIVE_ONE_INCH_DESKTOP_DEEPLINK;
+    } else {
+      link = LEDGER_LIVE_ONE_INCH_MOBILE_DEEPLINK;
+    }
+  }
+
+  // open in the same window for Ledger Live because it blocks new tab opening
+  const linkTarget = isLedgerLive ? '_self' : '_blank';
 
   const discount = (100 - (1 / rate) * 100).toFixed(2);
 
@@ -28,17 +47,15 @@ export const OneinchPopup: FC<{ modalView: boolean }> = ({ modalView }) => {
     <Modal title="Better deal on 1inch!" open={isPopupOpen}>
       <Text size="xs" color="secondary">
         You can get a <GreenSpan>{discount}%</GreenSpan> discount by buying
-        stETH on <Link href={url}>1inch</Link> rather than staking directly with
-        Lido.
+        stETH on{' '}
+        <Link href={link} target={linkTarget}>
+          1inch
+        </Link>{' '}
+        rather than staking directly with Lido. {link}
       </Text>
-      <ButtonWithMargin
-        fullwidth
-        onClick={() => {
-          openWindow(url);
-        }}
-      >
-        Go to 1inch
-      </ButtonWithMargin>
+      <ButtonLink href={link} target={linkTarget}>
+        1inch
+      </ButtonLink>
       <Button fullwidth color="secondary" onClick={closePopup}>
         Close and proceed
       </Button>
@@ -47,10 +64,11 @@ export const OneinchPopup: FC<{ modalView: boolean }> = ({ modalView }) => {
     <PopupWrapper
       open={isPopupOpen}
       providerName="1inch"
-      providerLink={url}
+      providerLink={link}
       icon={OneInchIcon}
       onClose={closePopup}
       rate={formatted1inchRate}
+      linkTarget={linkTarget}
     />
   );
 };
