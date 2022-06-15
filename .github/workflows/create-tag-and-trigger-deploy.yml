@@ -17,7 +17,7 @@ jobs:
       - name: Get tag value
         id: tag
         run: |
-          TAG=$(sed 's/chore(release): //g' <<< '${{ github.event.head_commit.message }}')
+          TAG=$(grep -oP '\d+\.\d+\.\d+' <<< '${{ github.event.head_commit.message }}')
           echo $TAG
           echo "::set-output name=tag::${TAG}"
       - name: Create and push tag

@@ -5,8 +5,8 @@ on:
   workflow_call:
     inputs:
       tag:
-        description: 'tag to deploy from'
-        default: ''
+        description: "tag to deploy from"
+        default: ""
         required: false
         type: string
   push:
@@ -15,11 +15,11 @@ on:
     tags:
       - "*"
     paths-ignore:
-      - '.github/**'
+      - ".github/**"
 
 jobs:
-# test:
-#   ...
+  # test:
+  #   ...
 
   deploy:
     runs-on: ubuntu-latest
@@ -32,14 +32,14 @@ jobs:
       - name: Tag name
         id: tag_name
         run: |
-          if [ ${{ inputs.tag }} = '' ]; then
+          if [ '${{ inputs.tag }}' = '' ]; then
             echo ::set-output name=TAG::${GITHUB_REF#refs/tags/}
           else
             echo ::set-output name=TAG::${{ inputs.tag }}
           fi
       
       - name: Build prod image
-        run: .github/dispatch_workflow.py
+        uses: lidofinance/dispatch-workflow@v1
         env:
           APP_ID: ${{ secrets.APP_ID }}
           APP_PRIVATE_KEY: ${{ secrets.APP_PRIVATE_KEY }}
