@@ -1,3 +1,19 @@
+# [1.14.0](https://github.com/lidofinance/staking-widget-ts/compare/1.13.0...1.14.0) (2022-06-16)
+
+
+### Bug Fixes
+
+* set curl=7.83.1-r1 at Dockerfile ([725155b](https://github.com/lidofinance/staking-widget-ts/commit/725155b7acdf58b3399db33846a37bf203607d13))
+* set git=2.36.1-r0 at Dockerfile ([5634795](https://github.com/lidofinance/staking-widget-ts/commit/56347957928e7de63d3c8f80b2c19de3e280dcd4))
+
+
+### Features
+
+* revert lido-ui-blocks to v1 ([f0a5076](https://github.com/lidofinance/staking-widget-ts/commit/f0a507693761be9b987463f53353bdba6a405cf9))
+* update lido-ui-blocks to v2.0.2 (revert of revert) ([45b8354](https://github.com/lidofinance/staking-widget-ts/commit/45b8354e0e27b9e1798b585014ab5508faa5ef9b))
+
+
+
 # [1.13.0](https://github.com/lidofinance/staking-widget-ts/compare/1.12.1...1.13.0) (2022-06-09)
 
 
@@ -119,15 +135,6 @@
 * **security:** added codeowners for lockfiles ([3a48312](https://github.com/lidofinance/staking-widget-ts/commit/3a48312bd88d6aa9963f4dc57d5db9bb96ff950e))
 * suggest EIP-1559 gas values ([d4ad59a](https://github.com/lidofinance/staking-widget-ts/commit/d4ad59a24bb1b1615f5a0339c7627948ce6c2f34))
 * use simplified altair formula for eth apr ([e002531](https://github.com/lidofinance/staking-widget-ts/commit/e002531ffb8fc223fa4405059370bc5850b8bfa4))
-
-
-
-## [1.8.1](https://github.com/lidofinance/staking-widget-ts/compare/1.8.0...1.8.1) (2022-03-24)
-
-
-### Bug Fixes
-
-* disable Tally wallet on mobiles ([7a652df](https://github.com/lidofinance/staking-widget-ts/commit/7a652dfefacb73e320cb100be477036ed4702ddb))
 
 
 
