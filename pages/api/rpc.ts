@@ -42,8 +42,11 @@ const rpc: Rpc = async (req, res) => {
       endMetric({ provider: ALCHEMY, chainId: String(chainId) });
     }
 
-    const responded = await requested.json();
-    res.status(requested.status).json(responded);
+    res.setHeader(
+      'Content-Type',
+      requested.headers.get('Content-Type') ?? 'application/json',
+    );
+    res.status(requested.status).send(requested.body);
   } catch (error) {
     if (error instanceof Error) {
       serverLogger.error(error.message ?? DEFAULT_API_ERROR_MESSAGE);
