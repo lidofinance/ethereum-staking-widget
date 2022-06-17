@@ -1,3 +1,12 @@
+## [1.14.1](https://github.com/lidofinance/staking-widget-ts/compare/1.14.0...1.14.1) (2022-06-17)
+
+
+### Bug Fixes
+
+* **api:** save memory streaming response from external rpc ([3abab2c](https://github.com/lidofinance/staking-widget-ts/commit/3abab2ce461db74968749354b32560de39982f55))
+
+
+
 # [1.14.0](https://github.com/lidofinance/staking-widget-ts/compare/1.13.0...1.14.0) (2022-06-16)
 
 
@@ -114,27 +123,6 @@
 ### Features
 
 * **security:** added codeowners for lockfiles ([667b00f](https://github.com/lidofinance/staking-widget-ts/commit/667b00feb36f50ee530fd4e8227ebb664e499d89))
-
-
-
-# [1.9.0](https://github.com/lidofinance/staking-widget-ts/compare/1.8.1...1.9.0) (2022-04-14)
-
-
-### Bug Fixes
-
-* estimate gas for direct wrap ([c0515d0](https://github.com/lidofinance/staking-widget-ts/commit/c0515d0583c72b9c0aceb7b9f6abfa967339b49c))
-* update risks FAQ ([159e8a5](https://github.com/lidofinance/staking-widget-ts/commit/159e8a5910e4199c1bafdfc8f800eb5369f57390))
-* use estimate account for submit ([3940d33](https://github.com/lidofinance/staking-widget-ts/commit/3940d331328638bdebe9953601220072f943df17))
-
-
-### Features
-
-* estimate approve gas used ([c8bc65d](https://github.com/lidofinance/staking-widget-ts/commit/c8bc65d781d61b5ce10a0e30f69e99a8a6821a9d))
-* estimate unwrap gas ([dd29825](https://github.com/lidofinance/staking-widget-ts/commit/dd298257ee4c5649a1e66f9d37cf97e8b3967412))
-* estimate wrap gas limit ([64d9edf](https://github.com/lidofinance/staking-widget-ts/commit/64d9edf3f7ecc4b6a73cf6c12dee0065e8bce7e9))
-* **security:** added codeowners for lockfiles ([3a48312](https://github.com/lidofinance/staking-widget-ts/commit/3a48312bd88d6aa9963f4dc57d5db9bb96ff950e))
-* suggest EIP-1559 gas values ([d4ad59a](https://github.com/lidofinance/staking-widget-ts/commit/d4ad59a24bb1b1615f5a0339c7627948ce6c2f34))
-* use simplified altair formula for eth apr ([e002531](https://github.com/lidofinance/staking-widget-ts/commit/e002531ffb8fc223fa4405059370bc5850b8bfa4))
 
 
 
