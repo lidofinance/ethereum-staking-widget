@@ -29,7 +29,7 @@ const Home: FC<HomeProps> = ({ faqList }) => (
 
 export default Home;
 
-export const getServerSideProps: GetServerSideProps<HomeProps> = async () => {
+export const getStaticProps: GetServerSideProps<HomeProps> = async () => {
   // list of .md files from ./faq
   const fileList = [
     'index-what-is-lido',
