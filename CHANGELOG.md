@@ -1,3 +1,12 @@
+## [1.14.3](https://github.com/lidofinance/staking-widget-ts/compare/1.14.2...1.14.3) (2022-06-22)
+
+
+### Bug Fixes
+
+* **api:** back to server side props to get right env ([44a35b7](https://github.com/lidofinance/staking-widget-ts/commit/44a35b739f9342df97345168d6cd1233ac4c341f))
+
+
+
 ## [1.14.2](https://github.com/lidofinance/staking-widget-ts/compare/1.14.1...1.14.2) (2022-06-19)
 
 
@@ -106,15 +115,6 @@
 
 * clean up ([aa3d1aa](https://github.com/lidofinance/staking-widget-ts/commit/aa3d1aacd4abbc4d3eeb8448d0d6f47690ee8f3d))
 * hide Retry button on insufficient ether ([007d512](https://github.com/lidofinance/staking-widget-ts/commit/007d512a8a5057d0b2c7dcdf718fcd67381d5381))
-
-
-
-## [1.10.1](https://github.com/lidofinance/staking-widget-ts/compare/1.10.0...1.10.1) (2022-04-18)
-
-
-### Bug Fixes
-
-* display appropriate error message ([38672b6](https://github.com/lidofinance/staking-widget-ts/commit/38672b6420765966d30f85b94abd0d8efe7ce45d))
 
 
 
