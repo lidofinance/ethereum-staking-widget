@@ -51,7 +51,7 @@ export const OneinchPopup: FC<{ modalView: boolean }> = ({ modalView }) => {
         <Link href={link} target={linkTarget}>
           1inch
         </Link>{' '}
-        rather than staking directly with Lido. {link}
+        rather than staking directly with Lido.
       </Text>
       <ButtonLink href={link} target={linkTarget}>
         1inch

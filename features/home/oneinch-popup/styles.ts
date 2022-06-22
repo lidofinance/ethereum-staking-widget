@@ -19,11 +19,11 @@ export const ButtonLink = styled.a`
   min-width: 120px;
   color: ${({ theme }) => theme.colors.primaryContrast};
   background-color: ${({ theme }) => theme.colors.primary};
+  color: ${({ theme }) => theme.colors.primaryContrast} !important;
 
   :not(:disabled):hover,
   :focus-visible {
     background-color: ${({ theme }) => theme.colors.primaryHover};
-    color: ${({ theme }) => theme.colors.primaryContrast};
   }
 
   margin: ${({ theme }) => theme.spaceMap.md}px 0;
