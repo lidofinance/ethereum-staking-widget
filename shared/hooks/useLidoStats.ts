@@ -26,23 +26,33 @@ export const useLidoStats = (): {
   );
 
   const data = useMemo(() => {
+    const shortStats = {
+      totalStaked: DATA_UNAVAILABLE,
+      stakers: DATA_UNAVAILABLE,
+      marketCap: DATA_UNAVAILABLE,
+    };
+
     if (lidoStats.error || !lidoStats.data) {
-      return {
-        totalStaked: DATA_UNAVAILABLE,
-        stakers: DATA_UNAVAILABLE,
-        marketCap: DATA_UNAVAILABLE,
-      };
+      return shortStats;
     }
 
-    return {
-      totalStaked: `${Number(lidoStats.data.totalStaked).toLocaleString(
-        'en-US',
-      )} ETH`,
-      stakers: String(lidoStats.data.uniqueAnytimeHolders),
-      marketCap: `$${Math.round(lidoStats.data.marketCap).toLocaleString(
-        'en-US',
-      )}`,
-    };
+    if (lidoStats.data.totalStaked) {
+      shortStats.totalStaked = `${Number(
+        lidoStats.data.totalStaked,
+      ).toLocaleString('en-US')} ETH`;
+    }
+
+    if (lidoStats.data.uniqueAnytimeHolders) {
+      shortStats.stakers = String(lidoStats.data.uniqueAnytimeHolders);
+    }
+
+    if (lidoStats.data.marketCap) {
+      shortStats.marketCap = `$${Math.round(
+        lidoStats.data.marketCap,
+      ).toLocaleString('en-US')}`;
+    }
+
+    return shortStats;
   }, [lidoStats]);
 
   const initialLoading = !lidoStats.data;
