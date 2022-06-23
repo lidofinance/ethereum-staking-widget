@@ -23,6 +23,8 @@ const shortLidoStats: API = async (req, res) => {
       res.status(200).json(cachedLidoStats);
     } else {
       const chainId = Number(req.query.chainId) as SubgraphChains;
+
+      // TODO: send requests in parallel
       const lidoHolders = await getLidoHoldersViaSubgraphs(chainId);
       const totalStaked = await getTotalStaked();
       const stEthPrice = await getStEthPrice();
