@@ -63,9 +63,8 @@ export const getLidoHoldersViaSubgraphs: GetLidoHoldersViaSubgraphs = async (
   try {
     const responseJsoned = await standardFetcher<LidoHolders>(url, params);
 
-    clearTimeout(timeoutId);
-
     endMetric();
+    clearTimeout(timeoutId);
 
     serverLogger.debug('Lido holders: ', responseJsoned);
 
