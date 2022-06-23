@@ -36,7 +36,9 @@ const timeoutId = setTimeout(() => controller.abort(), TIMEOUT);
 export const getLidoHoldersViaSubgraphs: GetLidoHoldersViaSubgraphs = async (
   chainId: SubgraphChains,
 ) => {
-  serverLogger.debug('Fetching lido holders from subgraph...');
+  serverLogger.debug(
+    '[getLidoHoldersViaSubgraphs] Fetching lido holders from subgraph...',
+  );
   const query = `
     query {
       stats (id: "") {
@@ -66,7 +68,10 @@ export const getLidoHoldersViaSubgraphs: GetLidoHoldersViaSubgraphs = async (
     endMetric();
     clearTimeout(timeoutId);
 
-    serverLogger.debug('Lido holders: ', responseJsoned);
+    serverLogger.debug(
+      '[getLidoHoldersViaSubgraphs] Lido holders: ',
+      responseJsoned,
+    );
 
     cache.put(
       CACHE_LIDO_HOLDERS_VIA_SUBGRAPHS_KEY,
@@ -76,8 +81,9 @@ export const getLidoHoldersViaSubgraphs: GetLidoHoldersViaSubgraphs = async (
 
     return responseJsoned;
   } catch (error) {
-    serverLogger.error(error);
-    serverLogger.warn('Subgraph request failed. Using long-term cache...');
+    serverLogger.error(
+      '[getLidoHoldersViaSubgraphs] Subgraph request failed. Using long-term cache...',
+    );
     return cache.get(CACHE_LIDO_HOLDERS_VIA_SUBGRAPHS_KEY);
   }
 };
