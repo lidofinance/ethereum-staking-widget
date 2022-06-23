@@ -78,6 +78,7 @@ export const getLidoHoldersViaSubgraphs: GetLidoHoldersViaSubgraphs = async (
     return responseJsoned;
   } catch (error) {
     serverLogger.error(error);
+    serverLogger.warn('Subgraph request failed. Using long-term cache...');
     return cache.get(CACHE_LIDO_HOLDERS_VIA_SUBGRAPHS_KEY);
   }
 };
