@@ -9,7 +9,9 @@ import { isDesktop } from 'react-device-detect';
 
 const ONE_INCH_URL = 'https://app.1inch.io/#/1/swap/ETH/steth';
 const LEDGER_LIVE_ONE_INCH_DESKTOP_DEEPLINK = 'ledgerlive://discover/1inch-lld';
-const LEDGER_LIVE_ONE_INCH_MOBILE_DEEPLINK = 'ledgerlive://discover/1inch-llm';
+
+// doesn't work for now
+// const LEDGER_LIVE_ONE_INCH_MOBILE_DEEPLINK = 'ledgerlive://discover/1inch-llm';
 
 export const OneinchPopup: FC<{ modalView: boolean }> = ({ modalView }) => {
   const { isLedgerLive } = useConnectorInfo();
@@ -30,12 +32,8 @@ export const OneinchPopup: FC<{ modalView: boolean }> = ({ modalView }) => {
   let link = ONE_INCH_URL;
 
   // use deeplinks for Ledger Live Desktop and Mobile apps
-  if (isLedgerLive) {
-    if (isDesktop) {
-      link = LEDGER_LIVE_ONE_INCH_DESKTOP_DEEPLINK;
-    } else {
-      link = LEDGER_LIVE_ONE_INCH_MOBILE_DEEPLINK;
-    }
+  if (isLedgerLive && isDesktop) {
+    link = LEDGER_LIVE_ONE_INCH_DESKTOP_DEEPLINK;
   }
 
   // open in the same window for Ledger Live because it blocks new tab opening
@@ -54,7 +52,7 @@ export const OneinchPopup: FC<{ modalView: boolean }> = ({ modalView }) => {
         rather than staking directly with Lido.
       </Text>
       <ButtonLink href={link} target={linkTarget}>
-        1inch
+        Go to 1inch
       </ButtonLink>
       <Button fullwidth color="secondary" onClick={closePopup}>
         Close and proceed
