@@ -29,23 +29,21 @@ const Home: FC<HomeProps> = ({ faqList }) => (
 
 export default Home;
 
-export const getServerSideProps: GetServerSideProps<HomeProps> = async () => {
-  // list of .md files from ./faq
-  const fileList = [
-    'index-what-is-lido',
-    'index-how-does-lido-work',
-    'index-what-is-liquid-staking',
-    'index-what-is-steth',
-    'index-what-is-ldo',
-    'index-how-is-lido-secure',
-    'index-self-staking-vs-liquid-staking',
-    'index-risks-of-staking-with-lido',
-    'index-lido-fee',
-    'index-steth-can-be-converted-to-eth',
-    'lido-referral-program',
-    'index-how-to-claim-referral-reward',
-  ];
-  const faqList = await getFaqList(fileList);
+const faqList = getFaqList([
+  'index-what-is-lido',
+  'index-how-does-lido-work',
+  'index-what-is-liquid-staking',
+  'index-what-is-steth',
+  'index-what-is-ldo',
+  'index-how-is-lido-secure',
+  'index-self-staking-vs-liquid-staking',
+  'index-risks-of-staking-with-lido',
+  'index-lido-fee',
+  'index-steth-can-be-converted-to-eth',
+  'lido-referral-program',
+  'index-how-to-claim-referral-reward',
+]);
 
-  return { props: { faqList } };
+export const getServerSideProps: GetServerSideProps<HomeProps> = async () => {
+  return { props: { faqList: await faqList } };
 };
