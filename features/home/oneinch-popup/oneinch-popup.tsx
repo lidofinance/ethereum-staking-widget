@@ -30,14 +30,13 @@ export const OneinchPopup: FC<{ modalView: boolean }> = ({ modalView }) => {
   const formatted1inchRate = rate.toFixed(4);
 
   let link = ONE_INCH_URL;
+  let linkTarget = '_blank';
 
-  // use deeplinks for Ledger Live Desktop and Mobile apps
-  if (isLedgerLive && isDesktop) {
+  const openInLedgerLive = isLedgerLive && isDesktop;
+  if (openInLedgerLive) {
     link = LEDGER_LIVE_ONE_INCH_DESKTOP_DEEPLINK;
+    linkTarget = '_self';
   }
-
-  // open in the same window for Ledger Live because it blocks new tab opening
-  const linkTarget = isLedgerLive ? '_self' : '_blank';
 
   const discount = (100 - (1 / rate) * 100).toFixed(2);
 
