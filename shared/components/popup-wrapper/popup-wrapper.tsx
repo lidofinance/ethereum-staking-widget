@@ -19,6 +19,7 @@ interface PopupWrapperProps {
   onClose: () => void;
   providerLink: string;
   providerName: string;
+  linkTarget?: React.HTMLAttributeAnchorTarget;
 }
 
 export const PopupWrapper: FC<PopupWrapperProps> = ({
@@ -28,6 +29,7 @@ export const PopupWrapper: FC<PopupWrapperProps> = ({
   onClose,
   providerLink,
   providerName,
+  linkTarget = '_blank',
 }) => {
   return (
     <LayoutContainer>
@@ -44,7 +46,10 @@ export const PopupWrapper: FC<PopupWrapperProps> = ({
             <img src={icon} alt="" />
             <Data>
               <p className="label">
-                Rate at <Link href={providerLink}>{providerName}</Link>
+                Rate at{' '}
+                <Link href={providerLink} target={linkTarget}>
+                  {providerName}
+                </Link>
               </p>
               <p className="rate">1 ETH = {rate || 1} stETH</p>
             </Data>
@@ -56,7 +61,9 @@ export const PopupWrapper: FC<PopupWrapperProps> = ({
               </DismissButton>
             </Action>
             <PaddedAction>
-              <Link href={providerLink}>Go to {providerName}</Link>
+              <Link href={providerLink} target={linkTarget}>
+                Go to {providerName}
+              </Link>
             </PaddedAction>
           </ActionsWrapper>
         </Wrapper>
