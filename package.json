@@ -47,7 +47,6 @@
     "next-connect": "^0.10.2",
     "next-logger": "^3.0.0",
     "next-secure-headers": "^2.2.0",
-    "node-abort-controller": "^3.0.1",
     "node-cron": "^3.0.0",
     "nprogress": "^0.2.0",
     "prom-client": "^14.0.1",
