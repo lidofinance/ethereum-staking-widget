@@ -12,7 +12,7 @@ import { withCsp } from 'utilsApi/withCsp';
 // Visualize route changes
 nprogress();
 
-const App = (props: AppProps): JSX.Element => {
+const App = (props: AppProps) => {
   const { Component, pageProps } = props;
 
   return <Component {...pageProps} />;

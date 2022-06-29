@@ -96,5 +96,8 @@
     "./**/*.{ts,tsx,css,md,json}": [
       "prettier --write"
     ]
+  },
+  "resolutions": {
+    "@types/react": "17.0.43"
   }
 }
