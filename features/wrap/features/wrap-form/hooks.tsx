@@ -30,8 +30,8 @@ export const useApproveGasLimit = () => {
       }
 
       const provider = getStaticRpcBatchProvider(
-        chainId,
-        getBackendRPCPath(chainId),
+        chainId as CHAINS,
+        getBackendRPCPath(chainId as CHAINS),
       );
 
       const feeData = await provider.getFeeData();
@@ -68,8 +68,8 @@ export const useWrapGasLimit = (fromEther: boolean) => {
       }
 
       const provider = getStaticRpcBatchProvider(
-        chainId,
-        getBackendRPCPath(chainId),
+        chainId as CHAINS,
+        getBackendRPCPath(chainId as CHAINS),
       );
 
       const feeData = await provider.getFeeData();
