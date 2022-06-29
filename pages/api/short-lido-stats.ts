@@ -10,6 +10,7 @@ import {
   getStEthPrice,
 } from 'utilsApi';
 import { API, SubgraphChains } from 'types';
+import { parallelizePromises } from 'utils';
 
 const cache = new Cache<typeof CACHE_LIDO_SHORT_STATS_KEY, unknown>();
 
@@ -24,10 +25,11 @@ const shortLidoStats: API = async (req, res) => {
     } else {
       const chainId = Number(req.query.chainId) as SubgraphChains;
 
-      // TODO: send requests in parallel
-      const lidoHolders = await getLidoHoldersViaSubgraphs(chainId);
-      const totalStaked = await getTotalStaked();
-      const stEthPrice = await getStEthPrice();
+      const [lidoHolders, totalStaked, stEthPrice] = await parallelizePromises([
+        getLidoHoldersViaSubgraphs(chainId),
+        getTotalStaked(),
+        getStEthPrice(),
+      ]);
 
       const shortLidoStats = {
         uniqueAnytimeHolders: lidoHolders?.data?.stats?.uniqueAnytimeHolders,
