@@ -4,7 +4,6 @@ import { standardFetcher } from 'utils/standardFetcher';
 import { serverLogger } from './serverLogger';
 import { SubgraphChains } from 'types';
 import { getSubgraphUrl } from './getSubgraphUrl';
-import { AbortController } from 'node-abort-controller';
 import {
   CACHE_LIDO_HOLDERS_VIA_SUBGRAPHS_KEY,
   CACHE_LIDO_HOLDERS_VIA_SUBGRAPHS_TTL,
