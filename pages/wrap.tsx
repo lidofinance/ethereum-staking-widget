@@ -115,7 +115,8 @@ const faqList = getFaqList([
   'wrap-how-do-i-unwrap-wsteth-back-to-steth',
 ]);
 
-export const getServerSideProps: GetServerSideProps<WrapPageProps> =
-  async () => {
-    return { props: { faqList: await faqList } };
-  };
+export const getServerSideProps: GetServerSideProps<
+  WrapPageProps
+> = async () => {
+  return { props: { faqList: await faqList } };
+};
