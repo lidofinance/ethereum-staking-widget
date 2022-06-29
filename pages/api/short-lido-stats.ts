@@ -1,7 +1,7 @@
 import { Cache } from 'memory-cache';
 import {
-  CACHE_LIDO_HOLDERS_VIA_SUBGRAPHS_KEY,
-  CACHE_LIDO_HOLDERS_VIA_SUBGRAPHS_TTL,
+  CACHE_LIDO_SHORT_STATS_KEY,
+  CACHE_LIDO_SHORT_STATS_TTL,
   DEFAULT_API_ERROR_MESSAGE,
 } from 'config';
 import {
@@ -10,22 +10,26 @@ import {
   getStEthPrice,
 } from 'utilsApi';
 import { API, SubgraphChains } from 'types';
+import { parallelizePromises } from 'utils';
 
-const cache = new Cache<typeof CACHE_LIDO_HOLDERS_VIA_SUBGRAPHS_KEY, unknown>();
+const cache = new Cache<typeof CACHE_LIDO_SHORT_STATS_KEY, unknown>();
 
 // Proxy for third-party API.
 // Returns stETH token information
 const shortLidoStats: API = async (req, res) => {
   try {
-    const cachedLidoStats = cache.get(CACHE_LIDO_HOLDERS_VIA_SUBGRAPHS_KEY);
+    const cachedLidoStats = cache.get(CACHE_LIDO_SHORT_STATS_KEY);
 
     if (cachedLidoStats) {
       res.status(200).json(cachedLidoStats);
     } else {
       const chainId = Number(req.query.chainId) as SubgraphChains;
-      const lidoHolders = await getLidoHoldersViaSubgraphs(chainId);
-      const totalStaked = await getTotalStaked();
-      const stEthPrice = await getStEthPrice();
+
+      const [lidoHolders, totalStaked, stEthPrice] = await parallelizePromises([
+        getLidoHoldersViaSubgraphs(chainId),
+        getTotalStaked(),
+        getStEthPrice(),
+      ]);
 
       const shortLidoStats = {
         uniqueAnytimeHolders: lidoHolders?.data?.stats?.uniqueAnytimeHolders,
@@ -35,9 +39,9 @@ const shortLidoStats: API = async (req, res) => {
       };
 
       cache.put(
-        CACHE_LIDO_HOLDERS_VIA_SUBGRAPHS_KEY,
+        CACHE_LIDO_SHORT_STATS_KEY,
         shortLidoStats,
-        CACHE_LIDO_HOLDERS_VIA_SUBGRAPHS_TTL,
+        CACHE_LIDO_SHORT_STATS_TTL,
       );
 
       res.status(200).json(shortLidoStats);

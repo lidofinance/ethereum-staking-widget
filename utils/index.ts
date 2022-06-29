@@ -12,3 +12,4 @@ export * from './sleep';
 export * from './weiToEth';
 export * from './nprogress';
 export * from './getErrorMessage';
+export * from './parallelizePromises';
