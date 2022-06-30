@@ -8,6 +8,9 @@ import {
   CACHE_LIDO_HOLDERS_VIA_SUBGRAPHS_KEY,
   CACHE_LIDO_HOLDERS_VIA_SUBGRAPHS_TTL,
 } from 'config';
+import getConfig from 'next/config';
+import ms from 'ms';
+const { serverRuntimeConfig } = getConfig();
 
 interface LidoHolders extends Response {
   data: {
@@ -29,7 +32,7 @@ type GetLidoHoldersViaSubgraphs = (
 
 const controller = new AbortController();
 
-const TIMEOUT = 5000;
+const TIMEOUT = +serverRuntimeConfig.subgraphRequestTimeout || ms('5s');
 const timeoutId = setTimeout(() => controller.abort(), TIMEOUT);
 
 export const getLidoHoldersViaSubgraphs: GetLidoHoldersViaSubgraphs = async (
