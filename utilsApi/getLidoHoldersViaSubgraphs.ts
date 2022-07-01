@@ -30,11 +30,6 @@ type GetLidoHoldersViaSubgraphs = (
   chainId: SubgraphChains,
 ) => Promise<LidoHolders | null>;
 
-const controller = new AbortController();
-
-const TIMEOUT = +serverRuntimeConfig.subgraphRequestTimeout || ms('5s');
-const timeoutId = setTimeout(() => controller.abort(), TIMEOUT);
-
 export const getLidoHoldersViaSubgraphs: GetLidoHoldersViaSubgraphs = async (
   chainId: SubgraphChains,
 ) => {
@@ -49,6 +44,11 @@ export const getLidoHoldersViaSubgraphs: GetLidoHoldersViaSubgraphs = async (
       }
     }
   `;
+
+  const controller = new AbortController();
+
+  const TIMEOUT = +serverRuntimeConfig.subgraphRequestTimeout || ms('5s');
+  const timeoutId = setTimeout(() => controller.abort(), TIMEOUT);
 
   const params = {
     method: 'POST',
