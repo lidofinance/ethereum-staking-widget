@@ -19,7 +19,18 @@ const stringify = (data: unknown) =>
       })
     : JSON.stringify(data);
 
-export const serverLoggerFactory = (secrets: Array<RegExp | string>) => {
+export type Logger = (...messages: any[]) => void;
+export type ServerLogger = {
+  error: Logger;
+  warn: Logger;
+  info: Logger;
+  debug: Logger;
+  log: Logger;
+};
+
+export const serverLoggerFactory = (
+  secrets: Array<RegExp | string>,
+): ServerLogger => {
   const patterns = [...secrets, anyHex, anyEnsAddress].filter(Boolean);
   const mask = (message: string): string => maskString(patterns, message);
 

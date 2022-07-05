@@ -5,7 +5,12 @@ import {
   HEALTHY_RPC_SERVICES_ARE_OVER,
 } from 'config';
 import { serverLogger } from 'utilsApi';
-import { fetchRPCFactory } from 'backend-blocks/fetch';
+import {
+  ChainID,
+  fetchRPCFactory,
+  getProviderLabel,
+  getStatusLabel,
+} from 'backend-blocks/fetch';
 import {
   rpcRequestCount,
   rpcResponseCount,
@@ -33,10 +38,16 @@ const fetchRPC = fetchRPCFactory({
       `https://eth-goerli.alchemyapi.io/v2/${alchemyApiKey}`,
     ],
   },
-  metrics: {
-    rpcResponseCount,
-    rpcResponseTime,
-    rpcRequestCount,
+  logger: serverLogger,
+  onBeforeRequest: (chainId: ChainID, url: string) => {
+    const provider = getProviderLabel(url);
+    rpcRequestCount.labels({ chainId, provider }).inc();
+  },
+  onAfterRequest: (chainId: ChainID, url: string, response, time) => {
+    const provider = getProviderLabel(url);
+    const status = getStatusLabel(response.status);
+    rpcResponseCount.labels({ chainId, provider, status }).inc();
+    rpcResponseTime.observe({ chainId, provider }, time);
   },
 });
 
