@@ -9,7 +9,7 @@ export const getEthApr = async (): Promise<string> => {
   const urls = getRpcJsonUrls(CHAINS.Mainnet);
 
   const ethApr = calculateStakingRewards({
-    totalAtStake: await getTotalAtStakeWithFallbacks(urls, 0),
+    totalAtStake: await getTotalAtStakeWithFallbacks(urls),
   });
 
   serverLogger.debug('Eth apr: ' + ethApr);
@@ -19,7 +19,7 @@ export const getEthApr = async (): Promise<string> => {
 
 const getTotalAtStakeWithFallbacks = async (
   urls: Array<string>,
-  urlIndex: number,
+  urlIndex = 0,
 ): Promise<number> => {
   serverLogger.debug('Fetching currently deposited eth2...');
   const eth2DepositContractAddress =

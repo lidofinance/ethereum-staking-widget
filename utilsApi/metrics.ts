@@ -1,52 +1,49 @@
-import { Gauge, Histogram, Registry, collectDefaultMetrics } from 'prom-client';
+import {
+  Histogram,
+  Registry,
+  collectDefaultMetrics,
+  Counter,
+} from 'prom-client';
 import getConfig from 'next/config';
 import { METRICS_PREFIX } from 'config';
 import buildInfoJson from 'build-info.json';
+import {
+  trackBuildInfo,
+  trackChainConfig,
+  rpcRequestCountFactory,
+  rpcResponseTimeFactory,
+} from '../backend-blocks';
 
 const { publicRuntimeConfig } = getConfig();
 const { defaultChain, supportedChains } = publicRuntimeConfig;
 
-// BUILD_INFO
-const buildInfo = new Gauge({
-  name: METRICS_PREFIX + 'build_info',
-  help: 'Version, branch and commit of the current build',
-  labelNames: ['version', 'commit', 'branch'],
-  registers: [],
+// BUILD & CHAIN INFO
+const buildInfo = trackBuildInfo(METRICS_PREFIX, {
+  version: process.env.npm_package_version ?? 'unversioned',
+  commit: buildInfoJson.commit,
+  branch: buildInfoJson.branch,
+});
+const chainConfig = trackChainConfig(METRICS_PREFIX, {
+  defaultChain,
+  supportedChains,
 });
 
-const version = process.env.npm_package_version ?? 'unversioned';
+// RPC REQUEST COUNT
+export const rpcRequestCount = rpcRequestCountFactory(METRICS_PREFIX);
 
-buildInfo.labels(version, buildInfoJson.commit, buildInfoJson.branch).set(1);
-// /BUILD_INFO
-
-// CHAIN CONFIG
-const chainConfig = new Gauge({
-  name: METRICS_PREFIX + 'chain_config_info',
-  help: 'Default network and supported networks',
-  labelNames: ['default_chain', 'supported_chains'],
-  registers: [],
-});
-
-chainConfig.labels({ default_chain: defaultChain }).set(1);
-if (typeof supportedChains === 'string') {
-  supportedChains.split(',').forEach((chain) => {
-    chainConfig.labels({ supported_chains: chain }).set(1);
-  });
-}
-// /CHAIN CONFIG
-
-// RPC RESPONSE
+// RPC RESPONSE TIME
 export const INFURA = 'infura';
 export const ALCHEMY = 'alchemy';
 
-export const rpcResponseTime = new Histogram({
-  name: METRICS_PREFIX + 'rpc_service_response',
-  help: 'RPC service response time seconds',
-  buckets: [0.1, 0.2, 0.3, 0.6, 1, 1.5, 2, 5],
-  labelNames: ['provider', 'chainId'],
+export const rpcResponseTime = rpcResponseTimeFactory(METRICS_PREFIX);
+
+// RPC RESPONSE COUNT
+export const rpcResponseCount = new Counter({
+  name: METRICS_PREFIX + 'rpc_service_response_count',
+  help: 'RPC service response count',
+  labelNames: ['provider', 'chainId', 'status'],
   registers: [],
 });
-// /RPC RESPONSE
 
 // SUBGRAPHS RESPONSE
 export const subgraphsResponseTime = new Histogram({
@@ -55,14 +52,16 @@ export const subgraphsResponseTime = new Histogram({
   buckets: [0.1, 0.2, 0.3, 0.6, 1, 1.5, 2, 5],
   registers: [],
 });
-// /SUBGRAPHS RESPONSE
 
+// REGISTRY
 export const registry = new Registry();
 
-if (process.env.NODE_ENV === 'production') {
+if (1 == 1 || process.env.NODE_ENV === 'production') {
   registry.registerMetric(buildInfo);
   registry.registerMetric(chainConfig);
   registry.registerMetric(rpcResponseTime);
+  registry.registerMetric(rpcRequestCount);
+  registry.registerMetric(rpcResponseCount);
   registry.registerMetric(subgraphsResponseTime);
 
   collectDefaultMetrics({ prefix: METRICS_PREFIX, register: registry });

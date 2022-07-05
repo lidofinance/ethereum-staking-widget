@@ -6,14 +6,75 @@ import {
   DEFAULT_API_ERROR_MESSAGE,
   HEALTHY_RPC_SERVICES_ARE_OVER,
 } from 'config';
-import { rpcResponseTime, INFURA, ALCHEMY } from 'utilsApi/metrics';
+import {
+  ALCHEMY,
+  INFURA,
+  rpcRequestCount,
+  rpcResponseCount,
+  rpcResponseTime,
+} from 'utilsApi/metrics';
 import { serverLogger } from 'utilsApi';
+import { FetchRPC } from '@lido-sdk/fetch';
 
 const { serverRuntimeConfig, publicRuntimeConfig } = getConfig();
 const { infuraApiKey, alchemyApiKey } = serverRuntimeConfig;
 const { defaultChain } = publicRuntimeConfig;
 
 type Rpc = (req: NextApiRequest, res: NextApiResponse) => Promise<void>;
+
+const getProviderLabel = (
+  url: string,
+): typeof INFURA | typeof ALCHEMY | 'other' => {
+  switch (true) {
+    case url.indexOf(INFURA) > -1:
+      return INFURA;
+    case url.indexOf(ALCHEMY) > -1:
+      return ALCHEMY;
+    default:
+      return 'other';
+  }
+};
+
+// getStatusLabel(200) => '2xx'
+// getStatusLabel(404) => '4xx'
+// getStatusLabel(undefined) => 'xxx'
+const getStatusLabel = (status: number | undefined) => {
+  if (status == null || status < 100 || status > 600) {
+    return 'xxx';
+  }
+  const majorStatus = Math.trunc(status / 100);
+  return `${majorStatus}xx`;
+};
+
+const getRPCMethodLabel = (method: string) => {
+  switch (method) {
+    case 'eth_gasPrice':
+    case 'eth_call':
+      return method;
+    default:
+      return 'other';
+  }
+};
+
+const fetchRPCWithMetrics: FetchRPC = async (chainId, options) => {
+  // Metrics before
+  const rpcMethod = getRPCMethodLabel((options as any).body);
+  rpcRequestCount.labels({ chainId, rpcMethod }).inc();
+  const endMetric = rpcResponseTime.startTimer();
+
+  // Request
+  const requested = await fetchRPC(chainId, options);
+
+  // Metrics after
+  const provider = getProviderLabel(requested.url);
+  const status = getStatusLabel(requested.status);
+  endMetric({ provider, chainId });
+  rpcResponseCount.labels({ provider, chainId, status }).inc();
+
+  serverLogger.debug(`[rpc] Get via ${provider} with [${status}] status`);
+
+  return requested;
+};
 
 // Proxy for third-party API.
 const rpc: Rpc = async (req, res) => {
@@ -29,18 +90,7 @@ const rpc: Rpc = async (req, res) => {
       providers: { infura: infuraApiKey, alchemy: alchemyApiKey },
     };
 
-    const endMetric = rpcResponseTime.startTimer();
-
-    const requested = await fetchRPC(chainId, options);
-
-    if (requested.url.indexOf(INFURA) > -1) {
-      serverLogger.log('[rpc] Get via infura');
-      endMetric({ provider: INFURA, chainId: String(chainId) });
-    }
-    if (requested.url.indexOf(ALCHEMY) > -1) {
-      serverLogger.log('[rpc] Get via alchemy');
-      endMetric({ provider: ALCHEMY, chainId: String(chainId) });
-    }
+    const requested = await fetchRPCWithMetrics(chainId, options);
 
     res.setHeader(
       'Content-Type',
