@@ -1,9 +1,4 @@
-import {
-  Histogram,
-  Registry,
-  collectDefaultMetrics,
-  Counter,
-} from 'prom-client';
+import { Histogram, Registry, collectDefaultMetrics } from 'prom-client';
 import getConfig from 'next/config';
 import { METRICS_PREFIX } from 'config';
 import buildInfoJson from 'build-info.json';
@@ -12,12 +7,17 @@ import {
   trackChainConfig,
   rpcRequestCountFactory,
   rpcResponseTimeFactory,
-} from '../backend-blocks';
+  rpcResponseCountFactory,
+} from 'backend-blocks';
 
 const { publicRuntimeConfig } = getConfig();
 const { defaultChain, supportedChains } = publicRuntimeConfig;
 
-// BUILD & CHAIN INFO
+/** @deprecated use fetchRPCFactory **/
+export const INFURA = 'infura';
+/** @deprecated use fetchRPCFactory **/
+export const ALCHEMY = 'alchemy';
+
 const buildInfo = trackBuildInfo(METRICS_PREFIX, {
   version: process.env.npm_package_version ?? 'unversioned',
   commit: buildInfoJson.commit,
@@ -28,24 +28,10 @@ const chainConfig = trackChainConfig(METRICS_PREFIX, {
   supportedChains,
 });
 
-// RPC REQUEST COUNT
 export const rpcRequestCount = rpcRequestCountFactory(METRICS_PREFIX);
-
-// RPC RESPONSE TIME
-export const INFURA = 'infura';
-export const ALCHEMY = 'alchemy';
-
 export const rpcResponseTime = rpcResponseTimeFactory(METRICS_PREFIX);
+export const rpcResponseCount = rpcResponseCountFactory(METRICS_PREFIX);
 
-// RPC RESPONSE COUNT
-export const rpcResponseCount = new Counter({
-  name: METRICS_PREFIX + 'rpc_service_response_count',
-  help: 'RPC service response count',
-  labelNames: ['provider', 'chainId', 'status'],
-  registers: [],
-});
-
-// SUBGRAPHS RESPONSE
 export const subgraphsResponseTime = new Histogram({
   name: METRICS_PREFIX + 'subgraphs_response',
   help: 'Subgraphs response time seconds',
@@ -53,9 +39,9 @@ export const subgraphsResponseTime = new Histogram({
   registers: [],
 });
 
-// REGISTRY
 export const registry = new Registry();
 
+// TODO: remove 1==1
 if (1 == 1 || process.env.NODE_ENV === 'production') {
   registry.registerMetric(buildInfo);
   registry.registerMetric(chainConfig);

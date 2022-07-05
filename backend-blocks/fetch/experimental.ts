@@ -1,31 +1,7 @@
 import { fetch, RequestInit } from './fetch';
-import {
-  rpcRequestCount,
-  rpcResponseCount,
-  rpcResponseTime,
-} from '../../utilsApi/metrics';
 import invariant from 'tiny-invariant';
-
-export type FetchRPCInitBody = {
-  jsonrpc: '2.0'; // Do we support 1.0?
-  method: string;
-  params?: any;
-  id?: string | number | null;
-};
-
-export type FetchRPCInit = Omit<RequestInit, 'body'> & {
-  body: FetchRPCInitBody;
-};
-
-export type ChainID = string | number;
-export type ChainRPC = string | string[];
-
-export type FetchRPCFactoryParams = {
-  providers: Record<ChainID, ChainRPC>;
-  metrics: {
-    trackedMethods?: string[];
-  };
-};
+import { serverLogger } from '../../utilsApi';
+import { RpcResponseCount, RpcResponseTime } from '../commonMetrics';
 
 /*
  * We need to limit how many statuses reported to prometheus, because of cardinality
@@ -57,14 +33,34 @@ const getProviderLabel = (providerURL: string) => {
   return parsedUrl.hostname.split('.').slice(-2).join('.');
 };
 
+export type FetchRPCInitBody = {
+  jsonrpc: '2.0'; // Do we support 1.0?
+  method: string;
+  params?: any;
+  id?: string | number | null;
+};
+
+export type FetchRPCInit = Omit<RequestInit, 'body' | 'method'> & {
+  method?: 'POST';
+  body: FetchRPCInitBody;
+};
+
+export type ChainID = string | number;
+export type ChainRPC = string | string[];
+export type FetchRPCFactoryParams = {
+  providers: Record<ChainID, ChainRPC>;
+  metrics?: {
+    rpcRequestCount?: RpcResponseCount;
+    rpcResponseCount?: RpcResponseCount;
+    rpcResponseTime?: RpcResponseTime;
+  };
+};
+
 export const fetchRPCFactory = ({
   providers,
-  metrics: { trackedMethods = ['eth_gasPrice', 'eth_call'] },
+  metrics,
 }: FetchRPCFactoryParams) => {
-  const getRPCMethodLabel = (method: string) =>
-    trackedMethods?.includes(method) ? method : 'other';
-
-  return async (chainId: string, init: FetchRPCInit) => {
+  return async (chainId: ChainID, init: FetchRPCInit) => {
     const rawUrls = providers[chainId];
     invariant(rawUrls != null, `Chain ${chainId} is not supported`);
 
@@ -73,23 +69,28 @@ export const fetchRPCFactory = ({
 
     for (const url of urls) {
       const provider = getProviderLabel(url);
-      const rpcMethodLabel = getRPCMethodLabel(init.body.method);
-      const rpcResponseTimer = rpcResponseTime.startTimer();
-      rpcRequestCount.labels({ chainId, rpcMethod: rpcMethodLabel }).inc();
+      metrics?.rpcRequestCount?.labels?.({ chainId, provider }).inc();
+      const rpcResponseTimer = metrics?.rpcResponseTime?.startTimer?.();
 
       try {
         const fetchInit = {
           ...init,
+          method: 'POST',
           body: JSON.stringify(init.body),
         };
         const response = await fetch(url, fetchInit);
 
         const status = getStatusLabel(response.status);
-        rpcResponseCount.labels({ provider, chainId, status }).inc();
+        metrics?.rpcResponseCount
+          ?.labels?.({ chainId, provider, status })
+          ?.inc();
 
+        invariant(response.ok, `Request to ${url} failed with ${status} code`);
         return response;
+      } catch (error) {
+        serverLogger.error(error);
       } finally {
-        rpcResponseTimer({ provider, chainId });
+        rpcResponseTimer?.({ chainId, provider });
       }
     }
     throw new Error('There is some issue reaching out RPCs');

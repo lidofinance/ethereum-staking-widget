@@ -1,9 +1,6 @@
 import { Histogram } from 'prom-client';
 
-export const INFURA = 'infura';
-export const ALCHEMY = 'alchemy';
-
-type RpcResponseTime = Histogram<'provider' | 'chainId'>;
+export type RpcResponseTime = Histogram<'provider' | 'chainId'>;
 
 export const rpcResponseTimeFactory = (prefix: string): RpcResponseTime =>
   new Histogram({
