@@ -24,6 +24,7 @@ const { defaultChain } = publicRuntimeConfig;
 type Rpc = (req: NextApiRequest, res: NextApiResponse) => Promise<void>;
 
 const fetchRPC = fetchRPCFactory({
+  registry: undefined,
   providers: {
     1: [
       `https://example.co`,
@@ -39,10 +40,14 @@ const fetchRPC = fetchRPCFactory({
     ],
   },
   logger: serverLogger,
+  // TODO: move rpcRequestCount & others to fetchRPCFactory
+  // TODO: keep handlers for other activities
   onBeforeRequest: (chainId: ChainID, url: string) => {
     const provider = getProviderLabel(url);
     rpcRequestCount.labels({ chainId, provider }).inc();
   },
+  // TODO: consider freezing response or describing that response is mutable and it may
+  //  affect actual response
   onAfterRequest: (chainId: ChainID, url: string, response, time) => {
     const provider = getProviderLabel(url);
     const status = getStatusLabel(response.status);
@@ -51,6 +56,7 @@ const fetchRPC = fetchRPCFactory({
   },
 });
 
+// TODO: move rpc endpoint to backend-blocks
 // Proxy for third-party API.
 const rpc: Rpc = async (req, res) => {
   try {

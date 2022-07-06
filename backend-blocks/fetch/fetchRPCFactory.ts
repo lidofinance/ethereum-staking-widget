@@ -1,6 +1,7 @@
 import { fetch, RequestInit, Response } from './fetch';
 import invariant from 'tiny-invariant';
 import { ServerLogger } from '../serverLoggerFactory';
+import { Registry } from 'prom-client';
 
 /*
  * We need to limit how many statuses reported to prometheus, because of cardinality
@@ -28,9 +29,7 @@ export const getStatusLabel = (status: number | undefined) => {
  * getProviderLabel('https://goerli.infura.io/v3/...') => 'infura.io'
  */
 export const getProviderLabel = (providerURL: string) => {
-  console.log('before', providerURL);
   const parsedUrl = new URL(providerURL);
-  console.log('after', parsedUrl);
   return parsedUrl.hostname.split('.').slice(-2).join('.');
 };
 
@@ -61,6 +60,8 @@ export type FetchRPCInit = Omit<RequestInit, 'body' | 'method'> & {
 export type ChainID = string | number;
 export type ChainRPC = string | string[];
 export type FetchRPCFactoryParams = {
+  // TODO: Use registry
+  registry: Registry;
   providers: Record<ChainID, ChainRPC>;
   logger?: ServerLogger;
   onBeforeRequest?: (
@@ -76,6 +77,8 @@ export type FetchRPCFactoryParams = {
   ) => unknown;
 };
 
+// TODO: consider what do we do with the fetchRPC in liso-js-sdk
+// TODO: add cache for in-flight requests
 export const fetchRPCFactory = ({
   providers,
   logger,
