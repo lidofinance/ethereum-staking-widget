@@ -1,40 +1,8 @@
 import { fetch, RequestInit, Response } from './fetch';
-import invariant from 'tiny-invariant';
 import { ServerLogger } from '../serverLoggerFactory';
-import { Registry } from 'prom-client';
 
 /*
- * We need to limit how many statuses reported to prometheus, because of cardinality
- *
- * Examples:
- * getStatusLabel(200) => '2xx'
- * getStatusLabel(404) => '4xx'
- * getStatusLabel(undefined) => 'xxx'
- */
-export const getStatusLabel = (status: number | undefined) => {
-  if (status == null || status < 100 || status > 600) {
-    return 'xxx';
-  }
-  const majorStatus = Math.trunc(status / 100);
-  return `${majorStatus}xx`;
-};
-
-/*
- * We also need to limit cardinality of provider labels reported to prometheus, but here
- * we don't need to check if provider is included in the list of available providers,
- * because we get provider from this list itself, but not from user.
- *
- * Examples:
- * getProviderLabel('https://eth-mainnet.alchemyapi.io/v2/...') => 'alchemyapi.io'
- * getProviderLabel('https://goerli.infura.io/v3/...') => 'infura.io'
- */
-export const getProviderLabel = (providerURL: string) => {
-  const parsedUrl = new URL(providerURL);
-  return parsedUrl.hostname.split('.').slice(-2).join('.');
-};
-
-/*
- * Same as in prom-client
+ * Same as startTime in prom-client Histogram
  * https://github.com/siimon/prom-client/blob/d00dbd55736595887ae77f1431e4326296e3c5ec/lib/summary.js#L141
  */
 export const startTimer = () => {
@@ -45,8 +13,22 @@ export const startTimer = () => {
   };
 };
 
+export class UnknownChainIdError extends Error {}
+
+export class UnknownRPCMethodError extends Error {}
+
+export class EmptyProvidersError extends Error {}
+
+export class FailedRequestError extends Error {}
+
+export type InternalError =
+  | UnknownChainIdError
+  | UnknownRPCMethodError
+  | EmptyProvidersError
+  | FailedRequestError;
+
 export type FetchRPCInitBody = {
-  jsonrpc: '2.0'; // Do we support 1.0?
+  jsonrpc: '1.0' | '2.0' | string;
   method: string;
   params?: unknown;
   id?: string | number | null;
@@ -54,70 +36,106 @@ export type FetchRPCInitBody = {
 
 export type FetchRPCInit = Omit<RequestInit, 'body' | 'method'> & {
   method?: 'POST';
-  body: FetchRPCInitBody;
+  body: FetchRPCInitBody | FetchRPCInitBody[];
 };
 
 export type ChainID = string | number;
 export type ChainRPC = string | string[];
 export type FetchRPCFactoryParams = {
-  // TODO: Use registry
-  registry: Registry;
+  // List of allowed methods or null if we want to allow all
+  allowedRpcMethods: string[] | null;
   providers: Record<ChainID, ChainRPC>;
   logger?: ServerLogger;
-  onBeforeRequest?: (
+  onRequest?: (
     chainId: ChainID,
     url: string,
     init: FetchRPCInit,
-  ) => unknown;
-  onAfterRequest?: (
+  ) => Promise<unknown>;
+  onResponse?: (
     chainId: ChainID,
     url: string,
     response: Response,
-    timer: number,
-  ) => unknown;
+    elapsedTime: number,
+  ) => Promise<unknown>;
+  onError?: (error: InternalError | Error) => Promise<unknown>;
 };
 
-// TODO: consider what do we do with the fetchRPC in liso-js-sdk
-// TODO: add cache for in-flight requests
 export const fetchRPCFactory = ({
+  allowedRpcMethods,
   providers,
   logger,
-  onBeforeRequest,
-  onAfterRequest,
+  onRequest,
+  onResponse,
+  onError,
 }: FetchRPCFactoryParams) => {
-  logger?.debug('Creating fetchRPC with providers:', providers);
+  logger?.debug('Creating fetchRPC with providers', providers);
+
   return async (chainId: ChainID, init: FetchRPCInit) => {
-    const rawUrls = providers[chainId];
-    invariant(rawUrls != null, `Chain ${chainId} is not supported`);
-
-    const urls = Array.isArray(rawUrls) ? rawUrls : [rawUrls];
-    invariant(urls.length !== 0, 'There are no RPC providers specified');
-
-    for (const url of urls) {
-      logger?.debug('fetchRPC request to', url);
-      onBeforeRequest?.(chainId, url, init);
-      const timer = startTimer();
-
-      try {
-        const fetchInit = {
-          ...init,
-          method: 'POST',
-          body: JSON.stringify(init.body),
-        };
-        const response = await fetch(url, fetchInit);
-
-        const time = timer();
-        onAfterRequest?.(chainId, url, response, time);
-
-        invariant(
-          response.ok,
-          `Request to ${url} failed with ${response.status} code`,
-        );
-        return response;
-      } catch (error) {
-        logger?.error(error);
+    try {
+      // Check if there are providers
+      const rawUrls = providers[chainId];
+      if (rawUrls == null) {
+        throw new UnknownChainIdError(`Chain ${chainId} is not supported`);
       }
+
+      // Check if methods are allowed
+      const methods = Array.isArray(init?.body)
+        ? init.body.map((item) => item?.method)
+        : [init?.body?.method];
+      methods.forEach((method) => {
+        if (allowedRpcMethods != null && !allowedRpcMethods.includes(method)) {
+          throw new UnknownRPCMethodError(
+            `Method ${method} isn't part of allowed methods`,
+          );
+        }
+      });
+
+      // Double check if providers urls are valid
+      const urls = Array.isArray(rawUrls) ? rawUrls : [rawUrls];
+      if (urls.length === 0) {
+        throw new EmptyProvidersError('There are no RPC providers specified');
+      }
+
+      // Iterate providers
+      for (const url of urls) {
+        logger?.debug('Making fetchRPC request to', url);
+
+        try {
+          void onRequest?.(chainId, url, init);
+          const timer = startTimer();
+          const fetchInit = {
+            ...init,
+            method: 'POST',
+            body: JSON.stringify(init.body),
+          };
+          const response = await fetch(url, fetchInit);
+
+          const elapsedTime = timer();
+          void onResponse?.(chainId, url, response, elapsedTime);
+
+          if (!response.ok) {
+            throw new FailedRequestError(
+              `Request to ${url} failed with ${response.status} code`,
+            );
+          }
+          // Return first valid response
+          return response;
+          // Catch network error
+        } catch (error) {
+          logger?.error(error);
+          if (error instanceof Error) {
+            void onError?.(error);
+          }
+        }
+      }
+      throw new Error('There is some issue reaching out RPCs');
+      // Catch validation errors
+    } catch (error) {
+      logger?.error(error);
+      if (error instanceof Error) {
+        onError?.(error);
+      }
+      throw error;
     }
-    throw new Error('There is some issue reaching out RPCs');
   };
 };

@@ -1,3 +1,3 @@
 export * from './serverLoggerFactory';
-export * from './commonMetrics';
+export * from './metrics';
 export * from './fetch';

@@ -5,61 +5,18 @@ import {
   HEALTHY_RPC_SERVICES_ARE_OVER,
 } from 'config';
 import { serverLogger } from 'utilsApi';
-import {
-  ChainID,
-  fetchRPCFactory,
-  getProviderLabel,
-  getStatusLabel,
-} from 'backend-blocks/fetch';
-import {
-  rpcRequestCount,
-  rpcResponseCount,
-  rpcResponseTime,
-} from '../../utilsApi/metrics';
+import { fetchRPC } from 'utilsApi/fetchRPC';
 
-const { serverRuntimeConfig, publicRuntimeConfig } = getConfig();
-const { infuraApiKey, alchemyApiKey } = serverRuntimeConfig;
+const { publicRuntimeConfig } = getConfig();
 const { defaultChain } = publicRuntimeConfig;
 
 type Rpc = (req: NextApiRequest, res: NextApiResponse) => Promise<void>;
-
-const fetchRPC = fetchRPCFactory({
-  registry: undefined,
-  providers: {
-    1: [
-      `https://example.co`,
-      `https://mainnet.infura.io/v3/1111`,
-      `https://mainnet.infura.io/v3/${infuraApiKey}`,
-      `https://eth-mainnet.alchemyapi.io/v2/${alchemyApiKey}`,
-    ],
-    5: [
-      `https://example.co`,
-      `https://goerli.infura.io/v3/1111`,
-      `https://goerli.infura.io/v3/${infuraApiKey}`,
-      `https://eth-goerli.alchemyapi.io/v2/${alchemyApiKey}`,
-    ],
-  },
-  logger: serverLogger,
-  // TODO: move rpcRequestCount & others to fetchRPCFactory
-  // TODO: keep handlers for other activities
-  onBeforeRequest: (chainId: ChainID, url: string) => {
-    const provider = getProviderLabel(url);
-    rpcRequestCount.labels({ chainId, provider }).inc();
-  },
-  // TODO: consider freezing response or describing that response is mutable and it may
-  //  affect actual response
-  onAfterRequest: (chainId: ChainID, url: string, response, time) => {
-    const provider = getProviderLabel(url);
-    const status = getStatusLabel(response.status);
-    rpcResponseCount.labels({ chainId, provider, status }).inc();
-    rpcResponseTime.observe({ chainId, provider }, time);
-  },
-});
 
 // TODO: move rpc endpoint to backend-blocks
 // Proxy for third-party API.
 const rpc: Rpc = async (req, res) => {
   try {
+    // TODO: forbid GET, HEAD, ... request types
     const chainId = Number(req.query.chainId || defaultChain);
 
     const requested = await fetchRPC(chainId, { body: req.body });

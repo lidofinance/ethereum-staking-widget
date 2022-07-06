@@ -7,7 +7,7 @@ import {
   HEALTHY_RPC_SERVICES_ARE_OVER,
 } from 'config';
 import { serverLogger } from 'utilsApi';
-import { rpcResponseTime, INFURA, ALCHEMY } from 'utilsApi/metrics';
+// import { rpcResponseTime, INFURA, ALCHEMY } from 'utilsApi/metrics';
 
 export const getEthPrice = async (): Promise<number> => {
   const urls = getRpcJsonUrls(CHAINS.Mainnet);
@@ -26,7 +26,7 @@ const getEthPriceWithFallbacks = async (
     const contractFactory = getAggregatorContractFactory();
     const contract = contractFactory.connect(address, staticProvider);
 
-    const endMetric = rpcResponseTime.startTimer();
+    // const endMetric = rpcResponseTime.startTimer();
 
     // TODO: maybe without Promise.all
     const [decimals, latestAnswer] = await Promise.all([
@@ -34,14 +34,14 @@ const getEthPriceWithFallbacks = async (
       contract.latestAnswer(),
     ]);
 
-    if (urls[urlIndex].indexOf(INFURA) > -1) {
-      serverLogger.log('[getEthApr] Get via infura');
-      endMetric({ provider: INFURA, chainId: String(chainId) });
-    }
-    if (urls[urlIndex].indexOf(ALCHEMY) > -1) {
-      serverLogger.log('[getEthApr] Get via alchemy');
-      endMetric({ provider: ALCHEMY, chainId: String(chainId) });
-    }
+    // if (urls[urlIndex].indexOf(INFURA) > -1) {
+    //   serverLogger.log('[getEthApr] Get via infura');
+    //   endMetric({ provider: INFURA, chainId: String(chainId) });
+    // }
+    // if (urls[urlIndex].indexOf(ALCHEMY) > -1) {
+    //   serverLogger.log('[getEthApr] Get via alchemy');
+    //   endMetric({ provider: ALCHEMY, chainId: String(chainId) });
+    // }
 
     return latestAnswer.toNumber() / 10 ** decimals;
   } catch (error) {

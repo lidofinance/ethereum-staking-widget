@@ -2,21 +2,10 @@ import { Histogram, Registry, collectDefaultMetrics } from 'prom-client';
 import getConfig from 'next/config';
 import { METRICS_PREFIX } from 'config';
 import buildInfoJson from 'build-info.json';
-import {
-  trackBuildInfo,
-  trackChainConfig,
-  rpcRequestCountFactory,
-  rpcResponseTimeFactory,
-  rpcResponseCountFactory,
-} from 'backend-blocks';
+import { trackBuildInfo, trackChainConfig } from 'backend-blocks';
 
 const { publicRuntimeConfig } = getConfig();
 const { defaultChain, supportedChains } = publicRuntimeConfig;
-
-/** @deprecated use fetchRPCFactory **/
-export const INFURA = 'infura';
-/** @deprecated use fetchRPCFactory **/
-export const ALCHEMY = 'alchemy';
 
 const buildInfo = trackBuildInfo(METRICS_PREFIX, {
   version: process.env.npm_package_version ?? 'unversioned',
@@ -28,10 +17,6 @@ const chainConfig = trackChainConfig(METRICS_PREFIX, {
   supportedChains,
 });
 
-export const rpcRequestCount = rpcRequestCountFactory(METRICS_PREFIX);
-export const rpcResponseTime = rpcResponseTimeFactory(METRICS_PREFIX);
-export const rpcResponseCount = rpcResponseCountFactory(METRICS_PREFIX);
-
 export const subgraphsResponseTime = new Histogram({
   name: METRICS_PREFIX + 'subgraphs_response',
   help: 'Subgraphs response time seconds',
@@ -41,13 +26,10 @@ export const subgraphsResponseTime = new Histogram({
 
 export const registry = new Registry();
 
-// TODO: remove 1==1
+// TODO: remove 1==1, need for debug
 if (1 == 1 || process.env.NODE_ENV === 'production') {
   registry.registerMetric(buildInfo);
   registry.registerMetric(chainConfig);
-  registry.registerMetric(rpcResponseTime);
-  registry.registerMetric(rpcRequestCount);
-  registry.registerMetric(rpcResponseCount);
   registry.registerMetric(subgraphsResponseTime);
 
   collectDefaultMetrics({ prefix: METRICS_PREFIX, register: registry });

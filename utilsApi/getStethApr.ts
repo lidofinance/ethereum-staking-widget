@@ -10,7 +10,7 @@ import {
   HEALTHY_RPC_SERVICES_ARE_OVER,
 } from 'config';
 import { serverLogger } from 'utilsApi';
-import { rpcResponseTime, INFURA, ALCHEMY } from 'utilsApi/metrics';
+// import { rpcResponseTime, INFURA, ALCHEMY } from 'utilsApi/metrics';
 
 export const getStethApr = async (): Promise<string> => {
   const urls = getRpcJsonUrls(CHAINS.Mainnet);
@@ -22,15 +22,15 @@ const getStethAprWithFallbacks = async (
   urlIndex: number,
 ): Promise<string> => {
   // TODO: MAYBE DEFAULT PROVIDER?
-  let provider = INFURA;
+  // let provider = INFURA;
   // if (urls[urlIndex].indexOf(INFURA) > -1) {
   //   console.log('[getStethApr] Get via infura');
   //   provider = INFURA;
   // }
-  if (urls[urlIndex].indexOf(ALCHEMY) > -1) {
-    serverLogger.log('[getStethApr] Get via alchemy');
-    provider = ALCHEMY;
-  }
+  // if (urls[urlIndex].indexOf(ALCHEMY) > -1) {
+  //   serverLogger.log('[getStethApr] Get via alchemy');
+  //   provider = ALCHEMY;
+  // }
 
   try {
     const staticProvider = getStaticRpcBatchProvider(
@@ -52,12 +52,12 @@ const getStethAprWithFallbacks = async (
       staticProvider,
     );
 
-    const endMetric1 = rpcResponseTime.startTimer();
+    // const endMetric1 = rpcResponseTime.startTimer();
 
     const [postTotalPooledEther, preTotalPooledEther, timeElapsed] =
       await oracleContract.getLastCompletedReportDelta();
 
-    endMetric1({ provider: provider, chainId: String(CHAINS.Mainnet) });
+    // endMetric1({ provider: provider, chainId: String(CHAINS.Mainnet) });
 
     const secondsInYear = BigNumber.from(1000 * 60 * 60 * 24 * 365.25);
 
@@ -68,11 +68,11 @@ const getStethAprWithFallbacks = async (
       .mul(secondsInYear)
       .div(preTotalPooledEther.mul(timeElapsed));
 
-    const endMetric2 = rpcResponseTime.startTimer();
+    // const endMetric2 = rpcResponseTime.startTimer();
 
     const lidoFee = await stethContract.getFee();
 
-    endMetric2({ provider: provider, chainId: String(CHAINS.Mainnet) });
+    // endMetric2({ provider: provider, chainId: String(CHAINS.Mainnet) });
 
     const oneHundredPercentInBasisPoints = 100 * 100;
     const lidoFeeAsFraction = lidoFee / oneHundredPercentInBasisPoints;
