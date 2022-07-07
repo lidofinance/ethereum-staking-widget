@@ -1817,7 +1817,15 @@
   dependencies:
     tiny-invariant "^1.1.0"
 
-"@lido-sdk/contracts@1.5.6", "@lido-sdk/contracts@^1.5.6":
+"@lido-sdk/contracts@2.0.0":
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/@lido-sdk/contracts/-/contracts-2.0.0.tgz#3fd7de4c6e542e7bfd71ce07ccbaf72cb16df48b"
+  integrity sha512-tMmnLzlPXm2/e7q8W+KHli0BJpQjbGtIly4OEyx5XRFK5hBNEYYVtGWg1h576EcpD/gWAPOBbEn8aeOsqqJ2dQ==
+  dependencies:
+    "@lido-sdk/constants" "1.6.0"
+    tiny-invariant "^1.1.0"
+
+"@lido-sdk/contracts@^1.5.6":
   version "1.5.6"
   resolved "https://registry.yarnpkg.com/@lido-sdk/contracts/-/contracts-1.5.6.tgz#bcf25d0220bdf83d17aef80111a92e902342f160"
   integrity sha512-aEw+oaJyfKzxSmQCh8EQQ0kutDOkg+ZC9AXw82mrJv8czth2PFHv1CK6pmODM3hOd4Rupo/M7QXTxIdyF9kNTQ==
@@ -1849,29 +1857,29 @@
   dependencies:
     "@lido-sdk/constants" "1.6.0"
 
-"@lido-sdk/react@1.18.0", "@lido-sdk/react@^1.18.0":
-  version "1.18.0"
-  resolved "https://registry.yarnpkg.com/@lido-sdk/react/-/react-1.18.0.tgz#b6b34d35fc06db74d8780ccdc5fab8da2cdd0975"
-  integrity sha512-LQPRFCl/8VGxkyo6/QOtZL432FrPSugdKbvcY3QCZS3NZjm3PTucEsKRaM3zwBzf4naI+KBCPed/wuRrVc1aUw==
+"@lido-sdk/react@1.18.1", "@lido-sdk/react@^1.18.1":
+  version "1.18.1"
+  resolved "https://registry.yarnpkg.com/@lido-sdk/react/-/react-1.18.1.tgz#6d283f691f8526f9b9dae8e96c6038b43e127246"
+  integrity sha512-WHbam35vAmeOyUFAvK4itD1NOi5k0/We5M6koq/xCcp3jRkxijcYQbh3kfVplsDkJzBISwcckpDi5TiZxRXPdg==
   dependencies:
     "@lido-sdk/constants" "1.6.0"
-    "@lido-sdk/contracts" "1.5.6"
+    "@lido-sdk/contracts" "2.0.0"
     "@lido-sdk/helpers" "1.4.3"
     swr "^1.0.1"
     tiny-invariant "^1.1.0"
     tiny-warning "^1.0.3"
 
-"@lido-sdk/web3-react@^1.21.0":
-  version "1.21.0"
-  resolved "https://registry.yarnpkg.com/@lido-sdk/web3-react/-/web3-react-1.21.0.tgz#db050662f8f79b91fff2d5b04506e5b1683b3b73"
-  integrity sha512-BCp1DcX9rmdcxh+zYXjEaVVi231mLwrXZMOmSaAAF9ITc9ap0t5YJmiFEAdlR3S6P/dKvm75VPlW5Gcy2yVhIg==
+"@lido-sdk/web3-react@^1.21.2":
+  version "1.21.2"
+  resolved "https://registry.yarnpkg.com/@lido-sdk/web3-react/-/web3-react-1.21.2.tgz#2118445fe4b3896ade462f0dface57aad5011fcb"
+  integrity sha512-a0lBR1kmG9vk4pKMEoPzvR2lM8YGHlFt5Q+Do0t8myIFRNuNyvAWugfn1sWx/bHDT1291w4HDMlryYPPtRv+Og==
   dependencies:
     "@gnosis.pm/safe-apps-web3-react" "0.6.8"
     "@ledgerhq/iframe-provider" "0.4.2"
     "@lido-sdk/constants" "1.6.0"
     "@lido-sdk/helpers" "1.4.3"
     "@lido-sdk/providers" "1.4.4"
-    "@lido-sdk/react" "1.18.0"
+    "@lido-sdk/react" "1.18.1"
     "@web3-react/abstract-connector" "6.0.7"
     "@web3-react/core" "6.1.9"
     "@web3-react/injected-connector" "6.0.7"
@@ -1909,10 +1917,10 @@
     "@lidofinance/theme" "2.6.0"
     "@lidofinance/utils" "1.3.2"
 
-"@lidofinance/blocks-connect-wallet-modal@2.5.0":
-  version "2.5.0"
-  resolved "https://registry.yarnpkg.com/@lidofinance/blocks-connect-wallet-modal/-/blocks-connect-wallet-modal-2.5.0.tgz#8e904773eec102c5e25e6e8c5b7f47c9b9794a05"
-  integrity sha512-N1JgLEJAbjBzo1NCqN3RXcJvDwpd3iiopTyZlpKuyDB/Y1Cxvrxmq0pVsQ5wIeo/1djei+5I4SMdRHItNZo+HA==
+"@lidofinance/blocks-connect-wallet-modal@2.5.1":
+  version "2.5.1"
+  resolved "https://registry.yarnpkg.com/@lidofinance/blocks-connect-wallet-modal/-/blocks-connect-wallet-modal-2.5.1.tgz#31505543994da36ffba9b790a08fa625ff2d2991"
+  integrity sha512-rZDsdfUr9u1E8Pe8Ho2QEASsPK8LxtnU1ebstuaiKW1j6etblqzxVLTUKmX1W49oTbYJMNXi9SCN4yRalQYjGg==
 
 "@lidofinance/box@1.5.0":
   version "1.5.0"
@@ -2017,12 +2025,12 @@
     "@lidofinance/theme" "2.6.0"
     "@lidofinance/utils" "1.3.2"
 
-"@lidofinance/lido-ui-blocks@^2.4.0":
-  version "2.4.0"
-  resolved "https://registry.yarnpkg.com/@lidofinance/lido-ui-blocks/-/lido-ui-blocks-2.4.0.tgz#a09e190df7ab4115e4db0fbf50a203f2dbc83782"
-  integrity sha512-R/HhV4lm6o0tkQ3A2KmKZwjQICKZWaxUJFDg4MMqJ2D3FRBmh62oNzYq1PhUVDvfem9D0Shc0OY/KlCMooi0xw==
+"@lidofinance/lido-ui-blocks@^2.4.1":
+  version "2.4.1"
+  resolved "https://registry.yarnpkg.com/@lidofinance/lido-ui-blocks/-/lido-ui-blocks-2.4.1.tgz#669907b4c5777c0ddfc8cb24ceb97525f887d8bf"
+  integrity sha512-fnxGT8VV2MXjYY57VB7zKuxJN6y/BHtDEpe1HsWy2FPX7qHSPI/ChCA2nBfAZNOdv5ciu4zEYLFOP+4gC4MIKg==
   dependencies:
-    "@lidofinance/blocks-connect-wallet-modal" "2.5.0"
+    "@lidofinance/blocks-connect-wallet-modal" "2.5.1"
 
 "@lidofinance/lido-ui@^2.7.0":
   version "2.7.0"
