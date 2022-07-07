@@ -1,6 +1,6 @@
 import { BigNumber } from '@ethersproject/bignumber';
 import { CHAINS } from '@lido-sdk/constants';
-import { getStaticRpcBatchProvider } from '@lido-sdk/providers';
+import { getStaticRpcBatchProvider } from './RPCProviders';
 import {
   getOracleAddress,
   getOracleContractFactory,
@@ -21,17 +21,6 @@ const getStethAprWithFallbacks = async (
   urls: Array<string>,
   urlIndex: number,
 ): Promise<string> => {
-  // TODO: MAYBE DEFAULT PROVIDER?
-  // let provider = INFURA;
-  // if (urls[urlIndex].indexOf(INFURA) > -1) {
-  //   console.log('[getStethApr] Get via infura');
-  //   provider = INFURA;
-  // }
-  // if (urls[urlIndex].indexOf(ALCHEMY) > -1) {
-  //   serverLogger.log('[getStethApr] Get via alchemy');
-  //   provider = ALCHEMY;
-  // }
-
   try {
     const staticProvider = getStaticRpcBatchProvider(
       CHAINS.Mainnet,
@@ -52,12 +41,8 @@ const getStethAprWithFallbacks = async (
       staticProvider,
     );
 
-    // const endMetric1 = rpcResponseTime.startTimer();
-
     const [postTotalPooledEther, preTotalPooledEther, timeElapsed] =
       await oracleContract.getLastCompletedReportDelta();
-
-    // endMetric1({ provider: provider, chainId: String(CHAINS.Mainnet) });
 
     const secondsInYear = BigNumber.from(1000 * 60 * 60 * 24 * 365.25);
 
@@ -68,11 +53,7 @@ const getStethAprWithFallbacks = async (
       .mul(secondsInYear)
       .div(preTotalPooledEther.mul(timeElapsed));
 
-    // const endMetric2 = rpcResponseTime.startTimer();
-
     const lidoFee = await stethContract.getFee();
-
-    // endMetric2({ provider: provider, chainId: String(CHAINS.Mainnet) });
 
     const oneHundredPercentInBasisPoints = 100 * 100;
     const lidoFeeAsFraction = lidoFee / oneHundredPercentInBasisPoints;

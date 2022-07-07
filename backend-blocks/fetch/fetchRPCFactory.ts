@@ -1,31 +1,17 @@
 import { fetch, RequestInit, Response } from './fetch';
 import { ServerLogger } from '../serverLoggerFactory';
-
-/*
- * Same as startTime in prom-client Histogram
- * https://github.com/siimon/prom-client/blob/d00dbd55736595887ae77f1431e4326296e3c5ec/lib/summary.js#L141
- */
-export const startTimer = () => {
-  const start = process.hrtime();
-  return () => {
-    const delta = process.hrtime(start);
-    return delta[0] + delta[1] / 1e9;
-  };
-};
+import { startTimer } from '../metrics';
 
 export class UnknownChainIdError extends Error {}
 
-export class UnknownRPCMethodError extends Error {}
-
 export class EmptyProvidersError extends Error {}
 
-export class FailedRequestError extends Error {}
+export class NetworkError extends Error {}
 
 export type InternalError =
   | UnknownChainIdError
-  | UnknownRPCMethodError
   | EmptyProvidersError
-  | FailedRequestError;
+  | NetworkError;
 
 export type FetchRPCInitBody = {
   jsonrpc: '1.0' | '2.0' | string;
@@ -42,8 +28,6 @@ export type FetchRPCInit = Omit<RequestInit, 'body' | 'method'> & {
 export type ChainID = string | number;
 export type ChainRPC = string | string[];
 export type FetchRPCFactoryParams = {
-  // List of allowed methods or null if we want to allow all
-  allowedRpcMethods: string[] | null;
   providers: Record<ChainID, ChainRPC>;
   logger?: ServerLogger;
   onRequest?: (
@@ -60,8 +44,8 @@ export type FetchRPCFactoryParams = {
   onError?: (error: InternalError | Error) => Promise<unknown>;
 };
 
+// TODO: cover with tests
 export const fetchRPCFactory = ({
-  allowedRpcMethods,
   providers,
   logger,
   onRequest,
@@ -77,18 +61,6 @@ export const fetchRPCFactory = ({
       if (rawUrls == null) {
         throw new UnknownChainIdError(`Chain ${chainId} is not supported`);
       }
-
-      // Check if methods are allowed
-      const methods = Array.isArray(init?.body)
-        ? init.body.map((item) => item?.method)
-        : [init?.body?.method];
-      methods.forEach((method) => {
-        if (allowedRpcMethods != null && !allowedRpcMethods.includes(method)) {
-          throw new UnknownRPCMethodError(
-            `Method ${method} isn't part of allowed methods`,
-          );
-        }
-      });
 
       // Double check if providers urls are valid
       const urls = Array.isArray(rawUrls) ? rawUrls : [rawUrls];
@@ -114,7 +86,7 @@ export const fetchRPCFactory = ({
           void onResponse?.(chainId, url, response, elapsedTime);
 
           if (!response.ok) {
-            throw new FailedRequestError(
+            throw new NetworkError(
               `Request to ${url} failed with ${response.status} code`,
             );
           }

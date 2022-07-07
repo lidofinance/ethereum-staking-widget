@@ -8,6 +8,7 @@ const { basePath, infuraApiKey, alchemyApiKey } = serverRuntimeConfig;
 const NO_API_KEY_ERROR =
   'There are no API keys in env. Please, check your configuration';
 
+// TODO: revisit
 export const getRpcJsonUrls = (chainId: CHAINS): string[] => {
   const urls = getRPCUrls(chainId, {
     alchemy: alchemyApiKey,

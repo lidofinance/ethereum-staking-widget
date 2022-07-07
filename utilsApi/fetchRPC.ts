@@ -8,7 +8,6 @@ const { serverRuntimeConfig } = getConfig();
 const { infuraApiKey, alchemyApiKey } = serverRuntimeConfig;
 
 export const fetchRPC = fetchRPCWithMetricsFactory({
-  allowedRpcMethods: ['eth_call', 'eth_gasPrice'],
   metrics: {
     registry,
     prefix: METRICS_PREFIX,
