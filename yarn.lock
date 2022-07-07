@@ -1817,18 +1817,10 @@
   dependencies:
     tiny-invariant "^1.1.0"
 
-"@lido-sdk/contracts@2.0.0":
+"@lido-sdk/contracts@2.0.0", "@lido-sdk/contracts@^2.0.0":
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/@lido-sdk/contracts/-/contracts-2.0.0.tgz#3fd7de4c6e542e7bfd71ce07ccbaf72cb16df48b"
   integrity sha512-tMmnLzlPXm2/e7q8W+KHli0BJpQjbGtIly4OEyx5XRFK5hBNEYYVtGWg1h576EcpD/gWAPOBbEn8aeOsqqJ2dQ==
-  dependencies:
-    "@lido-sdk/constants" "1.6.0"
-    tiny-invariant "^1.1.0"
-
-"@lido-sdk/contracts@^1.5.6":
-  version "1.5.6"
-  resolved "https://registry.yarnpkg.com/@lido-sdk/contracts/-/contracts-1.5.6.tgz#bcf25d0220bdf83d17aef80111a92e902342f160"
-  integrity sha512-aEw+oaJyfKzxSmQCh8EQQ0kutDOkg+ZC9AXw82mrJv8czth2PFHv1CK6pmODM3hOd4Rupo/M7QXTxIdyF9kNTQ==
   dependencies:
     "@lido-sdk/constants" "1.6.0"
     tiny-invariant "^1.1.0"
