@@ -22,7 +22,7 @@
     "@ethersproject/providers": "^5.5.2",
     "@ethersproject/units": "^5.5.0",
     "@lido-sdk/constants": "^1.6.0",
-    "@lido-sdk/contracts": "^1.5.6",
+    "@lido-sdk/contracts": "^2.0.0",
     "@lido-sdk/fetch": "^2.1.0",
     "@lido-sdk/helpers": "^1.4.3",
     "@lido-sdk/providers": "^1.4.4",
