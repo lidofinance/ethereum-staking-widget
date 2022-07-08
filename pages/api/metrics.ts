@@ -1,11 +1,8 @@
-import { NextApiRequest, NextApiResponse } from 'next';
 import { registry } from 'utilsApi/metrics';
+import { metricsFactory } from 'backend-blocks/pages';
 
-type Metrics = (req: NextApiRequest, res: NextApiResponse) => Promise<void>;
-
-const metrics: Metrics = async (req, res) => {
-  const collectedMetrics = await registry.metrics();
-  res.send(collectedMetrics);
-};
+const metrics = metricsFactory({
+  metrics: { registry },
+});
 
 export default metrics;
