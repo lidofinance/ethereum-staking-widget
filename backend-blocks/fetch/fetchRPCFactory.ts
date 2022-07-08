@@ -2,16 +2,29 @@ import { fetch, RequestInit, Response } from './fetch';
 import { ServerLogger } from '../serverLoggerFactory';
 import { startTimer } from '../metrics';
 
-export class UnknownChainIdError extends Error {}
+export class UnknownChainIdError extends Error {
+  constructor(chainId: ChainID) {
+    super(`Chain ${chainId} is not supported`);
+  }
+}
 
-export class EmptyProvidersError extends Error {}
+export class ProviderResponseError extends Error {
+  constructor(url: string, status: number) {
+    super(`Request to ${url} failed with ${status} code`);
+  }
+}
 
-export class NetworkError extends Error {}
+export class ExhaustedProvidersError extends Error {
+  constructor() {
+    super(`There is no responding RPC`);
+  }
+}
 
-export type InternalError =
+export type RPCError =
   | UnknownChainIdError
-  | EmptyProvidersError
-  | NetworkError;
+  | ProviderResponseError
+  | ExhaustedProvidersError
+  | Error;
 
 export type FetchRPCInitBody = {
   jsonrpc: '1.0' | '2.0' | string;
@@ -26,23 +39,36 @@ export type FetchRPCInit = Omit<RequestInit, 'body' | 'method'> & {
 };
 
 export type ChainID = string | number;
-export type ChainRPC = string | string[];
+export type ChainRPC = [string, ...string[]];
 export type FetchRPCFactoryParams = {
   providers: Record<ChainID, ChainRPC>;
   logger?: ServerLogger;
-  onRequest?: (
-    chainId: ChainID,
-    url: string,
-    init: FetchRPCInit,
-  ) => Promise<unknown>;
+  onRequest?: (chainId: ChainID, url: string, init: FetchRPCInit) => unknown;
   onResponse?: (
     chainId: ChainID,
     url: string,
     response: Response,
     elapsedTime: number,
-  ) => Promise<unknown>;
-  onError?: (error: InternalError | Error) => Promise<unknown>;
+  ) => unknown;
+  onError?: (error: RPCError) => unknown;
 };
+
+export type FetchRPC = (
+  chain: ChainID,
+  init: FetchRPCInit,
+) => Promise<Response>;
+
+/*
+ * In simple examples it converts all functions to asynchronous
+ * const syncFn = () => {}
+ * const asyncFN = async () => {}
+ * toPromise(syncFn) == asyncFN
+ * toPromise(asyncFN) == asyncFN
+ */
+const toPromise =
+  <T extends (...args: any[]) => any>(fn: T | undefined) =>
+  async (...args: Parameters<T>) =>
+    fn == null ? null : await fn(...args);
 
 // TODO: cover with tests
 export const fetchRPCFactory = ({
@@ -51,63 +77,51 @@ export const fetchRPCFactory = ({
   onRequest,
   onResponse,
   onError,
-}: FetchRPCFactoryParams) => {
+}: FetchRPCFactoryParams): FetchRPC => {
   logger?.debug('Creating fetchRPC with providers', providers);
 
-  return async (chainId: ChainID, init: FetchRPCInit) => {
-    try {
-      // Check if there are providers
-      const rawUrls = providers[chainId];
-      if (rawUrls == null) {
-        throw new UnknownChainIdError(`Chain ${chainId} is not supported`);
-      }
-
-      // Double check if providers urls are valid
-      const urls = Array.isArray(rawUrls) ? rawUrls : [rawUrls];
-      if (urls.length === 0) {
-        throw new EmptyProvidersError('There are no RPC providers specified');
-      }
-
-      // Iterate providers
-      for (const url of urls) {
-        logger?.debug('Making fetchRPC request to', url);
-
-        try {
-          void onRequest?.(chainId, url, init);
-          const timer = startTimer();
-          const fetchInit = {
-            ...init,
-            method: 'POST',
-            body: JSON.stringify(init.body),
-          };
-          const response = await fetch(url, fetchInit);
-
-          const elapsedTime = timer();
-          void onResponse?.(chainId, url, response, elapsedTime);
-
-          if (!response.ok) {
-            throw new NetworkError(
-              `Request to ${url} failed with ${response.status} code`,
-            );
-          }
-          // Return first valid response
-          return response;
-          // Catch network error
-        } catch (error) {
-          logger?.error(error);
-          if (error instanceof Error) {
-            void onError?.(error);
-          }
-        }
-      }
-      throw new Error('There is some issue reaching out RPCs');
-      // Catch validation errors
-    } catch (error) {
-      logger?.error(error);
-      if (error instanceof Error) {
-        onError?.(error);
-      }
-      throw error;
+  const handledError = (error: RPCError | unknown) => {
+    logger?.error(error);
+    if (error instanceof Error) {
+      void toPromise(onError)(error);
     }
+    return error;
+  };
+
+  return async (chainId: ChainID, init: FetchRPCInit) => {
+    // Check if there are providers for given chainID
+    const urls = providers[chainId];
+    if (urls == null) {
+      throw handledError(new UnknownChainIdError(chainId));
+    }
+
+    // Iterate providers
+    for (const url of urls) {
+      logger?.debug('Making fetchRPC request to', url);
+
+      try {
+        void toPromise(onRequest)(chainId, url, init);
+        const timer = startTimer();
+        const fetchInit = {
+          ...init,
+          method: 'POST',
+          body: JSON.stringify(init.body),
+        };
+        const response = await fetch(url, fetchInit);
+
+        const elapsedTime = timer();
+        void toPromise(onResponse)(chainId, url, response, elapsedTime);
+
+        if (!response.ok) {
+          throw new ProviderResponseError(url, response.status);
+        }
+        // Return first valid response
+        return response;
+      } catch (error) {
+        // Catch network error
+        handledError(error);
+      }
+    }
+    throw handledError(new ExhaustedProvidersError());
   };
 };

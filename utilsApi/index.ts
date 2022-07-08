@@ -1,3 +1,4 @@
+export * from './fetchRPC';
 export * from './getEthApr';
 export * from './getStethApr';
 export * from './getStEthPrice';

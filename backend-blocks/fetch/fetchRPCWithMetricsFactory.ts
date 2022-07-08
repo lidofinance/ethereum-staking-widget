@@ -1,4 +1,8 @@
-import { fetchRPCFactory, FetchRPCFactoryParams } from './fetchRPCFactory';
+import {
+  FetchRPC,
+  fetchRPCFactory,
+  FetchRPCFactoryParams,
+} from './fetchRPCFactory';
 import { Registry } from 'prom-client';
 import {
   rpcMetricsFactory,
@@ -16,7 +20,7 @@ export type FetchRPCWithMetricsFactory = FetchRPCFactoryParams & {
 export const fetchRPCWithMetricsFactory = ({
   metrics: { prefix, registry },
   ...rest
-}: FetchRPCWithMetricsFactory) => {
+}: FetchRPCWithMetricsFactory): FetchRPC => {
   const {
     rpcRequestCount,
     rpcRequestMethods,
