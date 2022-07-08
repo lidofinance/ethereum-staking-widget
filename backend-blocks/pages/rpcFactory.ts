@@ -22,7 +22,10 @@ export type RPCFactoryParams = {
   fetchRPC: FetchRPC;
   serverLogger: ServerLogger;
   defaultChain: ChainID;
-  allowedRPCMethods: string[] | null;
+  // If we don't specify allowed RPC methods, then we can't use
+  //  fetchRPC with prometheus, otherwise it will blow up, if someone will send arbitrary
+  //  methods
+  allowedRPCMethods: string[];
 };
 
 export const rpcFactory = ({
@@ -48,15 +51,14 @@ export const rpcFactory = ({
 
       const chainId = Number(req.query.chainId || defaultChain);
 
-      (Array.isArray(req.body)
-        ? req.body.map((item) => item?.method)
-        : [req?.body?.method]
-      ).forEach((method) => {
-        if (allowedRPCMethods != null && !allowedRPCMethods.includes(method)) {
-          rpcRequestBlocked.inc();
+      // Check if provided methods are allowed
+      for (const { method } of Array.isArray(req.body)
+        ? req.body
+        : [req.body]) {
+        if (!allowedRPCMethods.includes(method)) {
           throw new Error(`RPC method ${method} isn't allowed`);
         }
-      });
+      }
 
       const requested = await fetchRPC(chainId, { body: req.body });
 

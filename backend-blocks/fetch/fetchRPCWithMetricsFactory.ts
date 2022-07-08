@@ -34,12 +34,11 @@ export const fetchRPCWithMetricsFactory = ({
       // Default metrics
       const provider = getProviderLabel(url);
       rpcRequestCount.labels({ chainId, provider }).inc();
-      const methods = Array.isArray(init?.body)
-        ? init?.body.map((item) => item?.method)
-        : [init?.body?.method];
-      methods.forEach((method) => {
+      for (const { method } of Array.isArray(init.body)
+        ? init.body
+        : [init.body]) {
         rpcRequestMethods.labels(method).inc();
-      });
+      }
 
       // Custom metrics
       rest?.onRequest?.(chainId, url, init);
