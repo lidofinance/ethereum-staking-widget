@@ -1,7 +1,7 @@
 import { CHAINS } from '@lido-sdk/constants';
 import { getRpcJsonUrls, HEALTHY_RPC_SERVICES_ARE_OVER } from 'config';
 import { serverLogger } from './serverLogger';
-import { getStaticRpcBatchProvider } from './RPCProviders';
+import { getStaticRpcBatchProvider } from './rpcProviders';
 
 export const getEthApr = async (): Promise<string> => {
   serverLogger.debug('Getting eth apr...');

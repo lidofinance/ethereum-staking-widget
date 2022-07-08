@@ -1,3 +1,3 @@
-export * from './providerFactoryWithMetrics';
+export * from './providerFactory';
 export * from './staticJsonRpcBatchProvider';
-export * from './withMetrics';
+export * from './patchRPCProviderWithMetrics';

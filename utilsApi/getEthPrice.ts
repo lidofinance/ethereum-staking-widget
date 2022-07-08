@@ -5,7 +5,7 @@ import {
   getRpcJsonUrls,
   HEALTHY_RPC_SERVICES_ARE_OVER,
 } from 'config';
-import { getStaticRpcBatchProvider } from './RPCProviders';
+import { getStaticRpcBatchProvider } from './rpcProviders';
 
 export const getEthPrice = async (): Promise<number> => {
   const urls = getRpcJsonUrls(CHAINS.Mainnet);

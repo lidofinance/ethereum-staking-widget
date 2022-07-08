@@ -1,11 +1,7 @@
 import { JsonRpcProvider } from '@ethersproject/providers';
-import { withMetrics } from './withMetrics';
-import { Registry } from 'prom-client';
 
-// TODO: provide regular providerFactory without metrics
-export const providerFactoryWithMetrics = <P extends typeof JsonRpcProvider>(
-  prefix: string,
-  registry: Registry,
+// ❗️ Same as in lido-js-sdk
+export const providerFactory = <P extends typeof JsonRpcProvider>(
   Provider: P,
 ) => {
   const cache = new Map<string, InstanceType<P>>();
@@ -20,13 +16,7 @@ export const providerFactoryWithMetrics = <P extends typeof JsonRpcProvider>(
     let provider = cache.get(cacheKey);
 
     if (!provider) {
-      const ProviderWithMetrics = withMetrics(Provider);
-      provider = new ProviderWithMetrics(
-        prefix,
-        registry,
-        url,
-        chainId,
-      ) as InstanceType<P>;
+      provider = new Provider(url, chainId) as InstanceType<P>;
       cache.set(cacheKey, provider);
     }
 

@@ -39,3 +39,15 @@ export const getProviderLabel = (providerURL: string) => {
   const parsedUrl = new URL(providerURL);
   return parsedUrl.hostname.split('.').slice(-2).join('.');
 };
+
+/*
+ * In simple examples it converts all functions to asynchronous
+ * const syncFn = () => {}
+ * const asyncFN = async () => {}
+ * toPromise(syncFn) == asyncFN
+ * toPromise(asyncFN) == asyncFN
+ */
+export const toPromise =
+  <T extends (...args: any[]) => any>(fn: T | undefined) =>
+  async (...args: Parameters<T>) =>
+    fn == null ? null : await fn(...args);

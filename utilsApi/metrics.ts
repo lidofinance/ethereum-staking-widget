@@ -2,20 +2,10 @@ import { Histogram, Registry, collectDefaultMetrics } from 'prom-client';
 import getConfig from 'next/config';
 import { METRICS_PREFIX } from 'config';
 import buildInfoJson from 'build-info.json';
-import { trackBuildInfo, trackChainConfig } from 'backend-blocks';
+import { collectStartupMetrics } from 'backend-blocks';
 
 const { publicRuntimeConfig } = getConfig();
 const { defaultChain, supportedChains } = publicRuntimeConfig;
-
-const buildInfo = trackBuildInfo(METRICS_PREFIX, {
-  version: process.env.npm_package_version ?? 'unversioned',
-  commit: buildInfoJson.commit,
-  branch: buildInfoJson.branch,
-});
-const chainConfig = trackChainConfig(METRICS_PREFIX, {
-  defaultChain,
-  supportedChains,
-});
 
 export const subgraphsResponseTime = new Histogram({
   name: METRICS_PREFIX + 'subgraphs_response',
@@ -26,10 +16,18 @@ export const subgraphsResponseTime = new Histogram({
 
 export const registry = new Registry();
 
+collectStartupMetrics({
+  prefix: METRICS_PREFIX,
+  registry,
+  defaultChain,
+  suppoertedChains: supportedChains.split(','),
+  version: process.env.npm_package_version ?? 'unversioned',
+  commit: buildInfoJson.commit,
+  branch: buildInfoJson.branch,
+});
+
 // TODO: remove 1==1, need for debug
 if (1 == 1 || process.env.NODE_ENV === 'production') {
-  registry.registerMetric(buildInfo);
-  registry.registerMetric(chainConfig);
   registry.registerMetric(subgraphsResponseTime);
 
   collectDefaultMetrics({ prefix: METRICS_PREFIX, register: registry });

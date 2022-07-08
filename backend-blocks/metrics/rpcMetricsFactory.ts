@@ -1,7 +1,6 @@
 import { Counter, Histogram, Registry } from 'prom-client';
 
-export type RpcRequestCount = Counter<'chainId' | 'provider'>;
-export const rpcRequestCountFactory = (prefix: string): RpcRequestCount =>
+export const rpcRequestCountFactory = (prefix: string) =>
   new Counter({
     name: prefix + 'rpc_service_request_count',
     help: 'RPC service request count',
@@ -9,8 +8,7 @@ export const rpcRequestCountFactory = (prefix: string): RpcRequestCount =>
     registers: [],
   });
 
-export type RpcResponseTime = Histogram<'provider' | 'chainId'>;
-export const rpcResponseTimeFactory = (prefix: string): RpcResponseTime =>
+export const rpcResponseTimeFactory = (prefix: string) =>
   new Histogram({
     name: prefix + 'rpc_service_response_time',
     help: 'RPC service response time seconds',
@@ -19,8 +17,7 @@ export const rpcResponseTimeFactory = (prefix: string): RpcResponseTime =>
     registers: [],
   });
 
-export type RpcResponseCount = Counter<'chainId' | 'provider' | 'status'>;
-export const rpcResponseCountFactory = (prefix: string): RpcResponseCount =>
+export const rpcResponseCountFactory = (prefix: string) =>
   new Counter({
     name: prefix + 'rpc_service_response_count',
     help: 'RPC service response count',
@@ -28,8 +25,7 @@ export const rpcResponseCountFactory = (prefix: string): RpcResponseCount =>
     registers: [],
   });
 
-export type RpcRequestMethods = Counter<'method'>;
-export const rpcRequestMethodsFactory = (prefix: string): RpcRequestMethods =>
+export const rpcRequestMethodsFactory = (prefix: string) =>
   new Counter({
     name: prefix + 'rpc_service_request_methods',
     help: 'RPC service request methods',
@@ -38,13 +34,12 @@ export const rpcRequestMethodsFactory = (prefix: string): RpcRequestMethods =>
   });
 
 let cache: {
-  rpcRequestCount: RpcRequestCount;
-  rpcRequestMethods: RpcRequestMethods;
-  rpcResponseTime: RpcResponseTime;
-  rpcResponseCount: RpcResponseCount;
+  rpcRequestCount: ReturnType<typeof rpcRequestCountFactory>;
+  rpcRequestMethods: ReturnType<typeof rpcRequestMethodsFactory>;
+  rpcResponseTime: ReturnType<typeof rpcResponseTimeFactory>;
+  rpcResponseCount: ReturnType<typeof rpcResponseCountFactory>;
 } | null = null;
 
-// TODO: check if we work with node.cluster correctly https://github.com/siimon/prom-client#usage-with-nodejss-cluster-module
 export const rpcMetricsFactory = (prefix: string, registry: Registry) => {
   if (cache == null) {
     const rpcRequestCount = rpcRequestCountFactory(prefix);

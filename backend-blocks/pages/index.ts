@@ -1,3 +1,3 @@
 export * from './health';
-export * from './metrics';
-export * from './rpc';
+export * from './metricsFactory';
+export * from './rpcFactory';

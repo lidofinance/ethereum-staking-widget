@@ -1,7 +1,7 @@
 import {
   FetchRPC,
   fetchRPCFactory,
-  FetchRPCFactoryParams,
+  FetchRPCFactoryParameters,
 } from './fetchRPCFactory';
 import { Registry } from 'prom-client';
 import {
@@ -10,7 +10,7 @@ import {
   getStatusLabel,
 } from '../metrics';
 
-export type FetchRPCWithMetricsFactory = FetchRPCFactoryParams & {
+export type FetchRPCWithMetricsFactoryParameters = FetchRPCFactoryParameters & {
   metrics: {
     prefix: string;
     registry: Registry;
@@ -20,7 +20,7 @@ export type FetchRPCWithMetricsFactory = FetchRPCFactoryParams & {
 export const fetchRPCWithMetricsFactory = ({
   metrics: { prefix, registry },
   ...rest
-}: FetchRPCWithMetricsFactory): FetchRPC => {
+}: FetchRPCWithMetricsFactoryParameters): FetchRPC => {
   const {
     rpcRequestCount,
     rpcRequestMethods,

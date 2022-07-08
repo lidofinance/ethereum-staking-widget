@@ -10,6 +10,7 @@ import { Logger } from '@ethersproject/logger';
 
 const logger = new Logger('StaticJsonRpcBatchProvider/1.0');
 
+// ❗️ Same as in lido-js-sdk
 export class StaticJsonRpcBatchProvider extends JsonRpcBatchProvider {
   async detectNetwork(): Promise<Network> {
     let network = this.network;

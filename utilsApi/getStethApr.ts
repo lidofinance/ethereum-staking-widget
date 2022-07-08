@@ -1,6 +1,6 @@
 import { BigNumber } from '@ethersproject/bignumber';
 import { CHAINS } from '@lido-sdk/constants';
-import { getStaticRpcBatchProvider } from './RPCProviders';
+import { getStaticRpcBatchProvider } from './rpcProviders';
 import {
   getOracleAddress,
   getOracleContractFactory,
