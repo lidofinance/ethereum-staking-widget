@@ -22,6 +22,8 @@ const subgraphGoerli = process.env.SUBGRAPH_GOERLI;
 const subgraphKovan = process.env.SUBGRAPH_KOVAN;
 const subgraphKintsugi = process.env.SUBGRAPH_KINTSUGI;
 
+const subgraphRequestTimeout = process.env.SUBGRAPH_REQUEST_TIMEOUT;
+
 module.exports = {
   basePath,
   webpack5: true,
@@ -95,6 +97,7 @@ module.exports = {
     subgraphGoerli,
     subgraphKovan,
     subgraphKintsugi,
+    subgraphRequestTimeout,
   },
   publicRuntimeConfig: {
     defaultChain,
