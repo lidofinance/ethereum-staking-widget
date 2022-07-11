@@ -21,12 +21,8 @@ export const fetchRPCWithMetricsFactory = ({
   metrics: { prefix, registry },
   ...rest
 }: FetchRPCWithMetricsFactoryParameters): FetchRPC => {
-  const {
-    rpcRequestCount,
-    rpcRequestMethods,
-    rpcResponseCount,
-    rpcResponseTime,
-  } = rpcMetricsFactory(prefix, registry);
+  const { rpcRequestCount, rpcRequestMethods, rpcResponseTime } =
+    rpcMetricsFactory(prefix, registry);
 
   return fetchRPCFactory({
     ...rest,
@@ -37,7 +33,7 @@ export const fetchRPCWithMetricsFactory = ({
       for (const { method } of Array.isArray(init.body)
         ? init.body
         : [init.body]) {
-        rpcRequestMethods.labels(method).inc();
+        rpcRequestMethods.labels({ method }).inc();
       }
 
       // Custom metrics
@@ -47,8 +43,7 @@ export const fetchRPCWithMetricsFactory = ({
       // Default metrics
       const provider = getProviderLabel(url);
       const status = getStatusLabel(response.status);
-      rpcResponseCount.labels({ chainId, provider, status }).inc();
-      rpcResponseTime.observe({ chainId, provider }, time);
+      rpcResponseTime.observe({ chainId, provider, status }, time);
 
       // Custom metrics
       rest?.onResponse?.(chainId, url, response, time);
