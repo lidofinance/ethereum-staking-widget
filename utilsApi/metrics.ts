@@ -20,7 +20,7 @@ collectStartupMetrics({
   prefix: METRICS_PREFIX,
   registry,
   defaultChain,
-  suppoertedChains: supportedChains.split(','),
+  supportedChains: supportedChains.split(','),
   version: process.env.npm_package_version ?? 'unversioned',
   commit: buildInfoJson.commit,
   branch: buildInfoJson.branch,

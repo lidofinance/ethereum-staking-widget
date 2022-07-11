@@ -20,7 +20,7 @@ export type TrackStartupMetricsParameters = {
   prefix: string;
   registry: Registry;
   defaultChain: string;
-  suppoertedChains: string[];
+  supportedChains: string[];
   version: string;
   commit: string;
   branch: string;
@@ -29,7 +29,7 @@ export const collectStartupMetrics = ({
   prefix,
   registry,
   defaultChain,
-  suppoertedChains,
+  supportedChains,
   version,
   commit,
   branch,
@@ -37,7 +37,7 @@ export const collectStartupMetrics = ({
   const chainConfig = chainConfigFactory(prefix);
   registry.registerMetric(chainConfig);
   chainConfig.labels({ default_chain: defaultChain }).set(1);
-  suppoertedChains.forEach((chain) => {
+  supportedChains.forEach((chain) => {
     chainConfig.labels({ supported_chains: chain }).set(1);
   });
 

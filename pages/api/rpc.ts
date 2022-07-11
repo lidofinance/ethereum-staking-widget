@@ -13,7 +13,12 @@ const rpc = rpcFactory({
     registry,
   },
   defaultChain,
-  allowedRPCMethods: ['eth_call', 'eth_gasPrice'],
+  allowedRPCMethods: [
+    'eth_call',
+    'eth_gasPrice',
+    'eth_estimateGas',
+    'eth_getBlockByNumber',
+  ],
   fetchRPC,
   serverLogger,
 });
