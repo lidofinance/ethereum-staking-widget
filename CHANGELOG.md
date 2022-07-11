@@ -1,3 +1,12 @@
+## [1.15.1](https://github.com/lidofinance/staking-widget-ts/compare/1.15.0...1.15.1) (2022-07-11)
+
+
+### Bug Fixes
+
+* disable blockchain.com and zengo wallets ([05ab6f2](https://github.com/lidofinance/staking-widget-ts/commit/05ab6f2fa01501293b9865fdc5902e5ed560ebfd))
+
+
+
 # [1.15.0](https://github.com/lidofinance/staking-widget-ts/compare/1.14.4...1.15.0) (2022-07-08)
 
 
@@ -130,21 +139,6 @@
 ### Features
 
 * display 1inch discount popup on mount ([66366d7](https://github.com/lidofinance/staking-widget-ts/commit/66366d710b7900a65b900a0741672785c77f8291))
-
-
-
-# [1.11.0](https://github.com/lidofinance/staking-widget-ts/compare/1.10.3...1.11.0) (2022-05-04)
-
-
-### Bug Fixes
-
-* bump curl version since previous one is inaccessible ([9366111](https://github.com/lidofinance/staking-widget-ts/commit/93661118725dddc5333453b5a672b24a8b4c022b))
-* change wording ([70ce0f4](https://github.com/lidofinance/staking-widget-ts/commit/70ce0f4241f3867a07ec6b33cbeee58b3e26101d))
-
-
-### Features
-
-* add a link to the scorecard to the faq section ([262ad27](https://github.com/lidofinance/staking-widget-ts/commit/262ad275ded586cc6096ecef67830503f3fa0d6e))
 
 
 
