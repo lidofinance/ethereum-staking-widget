@@ -1,14 +1,21 @@
 import { CHAINS } from '@lido-sdk/constants';
-import { getRpcJsonUrls, HEALTHY_RPC_SERVICES_ARE_OVER } from 'config';
 import { serverLogger } from './serverLogger';
 import { getStaticRpcBatchProvider } from './rpcProviders';
+import { providers } from './providers';
+import { iterateUrls } from '../backend-blocks/utils';
 
 export const getEthApr = async (): Promise<string> => {
   serverLogger.debug('Getting eth apr...');
-  const urls = getRpcJsonUrls(CHAINS.Mainnet);
+  const urls = providers[CHAINS.Mainnet];
+
+  const totalAtStake = await iterateUrls(
+    urls,
+    getTotalAtStakeWithFallbacks,
+    serverLogger.error,
+  );
 
   const ethApr = calculateStakingRewards({
-    totalAtStake: await getTotalAtStakeWithFallbacks(urls),
+    totalAtStake,
   });
 
   serverLogger.debug('Eth apr: ' + ethApr);
@@ -16,33 +23,22 @@ export const getEthApr = async (): Promise<string> => {
   return (ethApr * 1e11).toFixed(1);
 };
 
-const getTotalAtStakeWithFallbacks = async (
-  urls: Array<string>,
-  urlIndex = 0,
-): Promise<number> => {
+const getTotalAtStakeWithFallbacks = async (url: string): Promise<number> => {
   serverLogger.debug('Fetching currently deposited eth2...');
   const eth2DepositContractAddress =
     '0x00000000219ab540356cBB839Cbe05303d7705Fa';
 
-  try {
-    const chainId = CHAINS.Mainnet;
+  const chainId = CHAINS.Mainnet;
 
-    const staticProvider = getStaticRpcBatchProvider(chainId, urls[urlIndex]);
+  const staticProvider = getStaticRpcBatchProvider(chainId, url);
 
-    const currentlyDeposited = await staticProvider.getBalance(
-      eth2DepositContractAddress,
-    );
+  const currentlyDeposited = await staticProvider.getBalance(
+    eth2DepositContractAddress,
+  );
 
-    serverLogger.debug('Currently deposited in eth2: ', +currentlyDeposited);
+  serverLogger.debug('Currently deposited in eth2: ', +currentlyDeposited);
 
-    return Number(currentlyDeposited);
-  } catch {
-    if (urlIndex >= urls.length - 1) {
-      const error = `[getEthApr] ${HEALTHY_RPC_SERVICES_ARE_OVER}`;
-      throw new Error(error);
-    }
-    return await getTotalAtStakeWithFallbacks(urls, urlIndex + 1);
-  }
+  return Number(currentlyDeposited);
 };
 
 export interface CalculateStakingRewardsParams {

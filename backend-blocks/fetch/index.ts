@@ -1,3 +1,3 @@
-export * from './fetchRPCFactory';
-export * from './fetchRPCWithMetricsFactory';
+export * from './fetchRpc';
+export * from './trackedFetchRpcFactory';
 export * from 'node-fetch';

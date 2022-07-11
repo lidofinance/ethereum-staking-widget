@@ -1,6 +1,7 @@
 import { CHAINS } from '@lido-sdk/constants';
 import { StaticJsonRpcBatchProvider } from './staticJsonRpcBatchProvider';
 
+// ❗️ Same as in lido-js-sdk
 describe('StaticJsonRpcBatchProvider', () => {
   test('should return a provider instance', () => {
     const url = '/api/rpc';

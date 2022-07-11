@@ -1,12 +1,21 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { Counter, Registry } from 'prom-client';
-import { ChainID, FetchRPC } from '../fetch';
+import { FetchRpc } from '../fetch';
 import { ServerLogger } from '../serverLoggerFactory';
+import { ChainID } from '../types';
+import { iterateUrls } from '../utils';
+import { Providers } from '../types';
 
 export const DEFAULT_API_ERROR_MESSAGE =
   'Something went wrong. Sorry, try again later :(';
 
 export const HEALTHY_RPC_SERVICES_ARE_OVER = 'Healthy RPC services are over!';
+
+export class UnsupportedChainIdError extends Error {
+  constructor(message?: string) {
+    super(message || 'Unsupported chainId');
+  }
+}
 
 export class UnsupportedHTTPMethodError extends Error {
   constructor(message?: string) {
@@ -19,7 +28,8 @@ export type RPCFactoryParams = {
     prefix: string;
     registry: Registry;
   };
-  fetchRPC: FetchRPC;
+  providers: Providers;
+  fetchRPC: FetchRpc;
   serverLogger: ServerLogger;
   defaultChain: ChainID;
   // If we don't specify allowed RPC methods, then we can't use
@@ -30,6 +40,7 @@ export type RPCFactoryParams = {
 
 export const rpcFactory = ({
   metrics: { prefix, registry },
+  providers,
   fetchRPC,
   serverLogger,
   defaultChain,
@@ -45,11 +56,17 @@ export const rpcFactory = ({
 
   return async (req: NextApiRequest, res: NextApiResponse): Promise<void> => {
     try {
+      // Accept only POST requests
       if (req.method !== 'POST') {
         throw new UnsupportedHTTPMethodError();
       }
 
       const chainId = Number(req.query.chainId || defaultChain);
+
+      // Allow only chainId of specified chains
+      if (providers[chainId] == null) {
+        throw new UnsupportedChainIdError();
+      }
 
       // Check if provided methods are allowed
       for (const { method } of Array.isArray(req.body)
@@ -60,7 +77,11 @@ export const rpcFactory = ({
         }
       }
 
-      const requested = await fetchRPC(chainId, { body: req.body });
+      const requested = await iterateUrls(
+        providers[chainId],
+        (url) => fetchRPC(chainId, url, { body: req.body }),
+        (error: unknown) => serverLogger.error(error),
+      );
 
       res.setHeader(
         'Content-Type',

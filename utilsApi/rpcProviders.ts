@@ -1,19 +1,15 @@
 import {
   providerFactory,
-  patchRPCProviderWithMetrics,
-} from '../backend-blocks/providers';
+  StaticJsonRpcBatchProvider,
+  trackedJsonRpcProvider,
+} from 'backend-blocks/providers';
 import { registry } from './metrics';
-import { StaticJsonRpcBatchProvider } from '../backend-blocks/providers';
 import { METRICS_PREFIX } from '../config';
 
-const StaticJsonRpcBatchProviderWithMetrics = patchRPCProviderWithMetrics({
-  metrics: {
+export const getStaticRpcBatchProvider = providerFactory(
+  trackedJsonRpcProvider({
     prefix: METRICS_PREFIX,
     registry,
-  },
-  Provider: StaticJsonRpcBatchProvider,
-});
-
-export const getStaticRpcBatchProvider = providerFactory(
-  StaticJsonRpcBatchProviderWithMetrics,
+    Provider: StaticJsonRpcBatchProvider,
+  }),
 );
