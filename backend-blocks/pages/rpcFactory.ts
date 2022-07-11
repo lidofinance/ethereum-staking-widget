@@ -58,6 +58,7 @@ export const rpcFactory = ({
     try {
       // Accept only POST requests
       if (req.method !== 'POST') {
+        // We don't care about tracking blocked requests here
         throw new UnsupportedHTTPMethodError();
       }
 
@@ -65,6 +66,7 @@ export const rpcFactory = ({
 
       // Allow only chainId of specified chains
       if (providers[chainId] == null) {
+        // We don't care about tracking blocked requests here
         throw new UnsupportedChainIdError();
       }
 
@@ -73,6 +75,7 @@ export const rpcFactory = ({
         ? req.body
         : [req.body]) {
         if (!allowedRPCMethods.includes(method)) {
+          rpcRequestBlocked.inc();
           throw new Error(`RPC method ${method} isn't allowed`);
         }
       }
