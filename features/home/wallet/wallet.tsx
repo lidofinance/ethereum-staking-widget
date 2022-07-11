@@ -9,7 +9,7 @@ import { FormatToken } from 'shared/formatters';
 import { useEthApr, useLidoApr } from 'shared/hooks';
 import { CardAccount, CardBalance, CardRow, Fallback } from 'shared/wallet';
 import type { WalletComponentType } from 'shared/wallet/types';
-import { useStakeableEther } from './hooks';
+import { useStakeableEther } from '../hooks';
 import { LimitMeter } from './limit-meter';
 import { FlexCenter, LidoAprStyled, StyledCard } from './styles';
 
