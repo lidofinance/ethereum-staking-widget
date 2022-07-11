@@ -14,7 +14,8 @@ import { FormatToken } from 'shared/formatters';
 import { useEthApr, useLidoApr } from 'shared/hooks';
 import { CardAccount, CardBalance, CardRow, Fallback } from 'shared/wallet';
 import type { WalletComponentType } from 'shared/wallet/types';
-import { LidoAprStyled, StyledCard } from './styles';
+import { LimitMeter } from './limit-meter';
+import { FlexCenter, LidoAprStyled, StyledCard } from './styles';
 
 const WalletComponent: WalletComponentType = (props) => {
   const { account } = useSDK();
@@ -29,7 +30,12 @@ const WalletComponent: WalletComponentType = (props) => {
     <StyledCard {...props}>
       <CardRow>
         <CardBalance
-          title="Available to stake"
+          title={
+            <FlexCenter>
+              <span>Available to stake</span>
+              <LimitMeter />
+            </FlexCenter>
+          }
           loading={eth.initialLoading}
           value={<FormatToken amount={eth.data} symbol="ETH" />}
         />

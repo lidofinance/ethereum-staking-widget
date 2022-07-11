@@ -15,3 +15,4 @@ export * from './useStethByWsteth';
 export * from './txCost';
 export * from './useUniqueConnector';
 export * from './useLidoSwr';
+export * from './useStakingLimitInfo';
