@@ -13,3 +13,4 @@ export * from './weiToEth';
 export * from './nprogress';
 export * from './getErrorMessage';
 export * from './parallelizePromises';
+export * from './bigNumber';
