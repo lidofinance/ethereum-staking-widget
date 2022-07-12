@@ -28,7 +28,7 @@
     "@lido-sdk/providers": "^1.4.4",
     "@lido-sdk/react": "^1.18.1",
     "@lido-sdk/web3-react": "^1.21.2",
-    "@lidofinance/lido-ui": "^2.7.0",
+    "@lidofinance/lido-ui": "^2.9.0",
     "@lidofinance/lido-ui-blocks": "^2.4.1",
     "@types/cors": "^2.8.12",
     "@types/js-cookie": "^3.0.0",
