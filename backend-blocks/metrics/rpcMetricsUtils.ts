@@ -1,16 +1,4 @@
 /*
- * Same as startTime in prom-client Histogram
- * https://github.com/siimon/prom-client/blob/d00dbd55736595887ae77f1431e4326296e3c5ec/lib/summary.js#L141
- */
-export const startTimer = () => {
-  const start = process.hrtime();
-  return () => {
-    const delta = process.hrtime(start);
-    return delta[0] + delta[1] / 1e9;
-  };
-};
-
-/*
  * We need to limit how many statuses reported to prometheus, because of cardinality
  *
  * Examples:

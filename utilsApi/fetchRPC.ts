@@ -1,4 +1,4 @@
-import { trackedFetchRpcFactory } from 'backend-blocks';
+import { trackedFetchRpcFactory } from 'backend-blocks/fetch';
 import { registry } from './metrics';
 import { METRICS_PREFIX } from '../config';
 

@@ -1,5 +1,5 @@
 import getConfig from 'next/config';
-import { serverLoggerFactory } from 'backend-blocks';
+import { serverLoggerFactory } from 'backend-blocks/utils';
 
 const { serverRuntimeConfig } = getConfig();
 const {

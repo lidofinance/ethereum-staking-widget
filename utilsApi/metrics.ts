@@ -2,7 +2,7 @@ import { Histogram, Registry, collectDefaultMetrics } from 'prom-client';
 import getConfig from 'next/config';
 import { METRICS_PREFIX } from 'config';
 import buildInfoJson from 'build-info.json';
-import { collectStartupMetrics } from 'backend-blocks';
+import { collectStartupMetrics } from 'backend-blocks/metrics';
 
 const { publicRuntimeConfig } = getConfig();
 const { defaultChain, supportedChains } = publicRuntimeConfig;

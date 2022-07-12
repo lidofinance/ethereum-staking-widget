@@ -1,25 +1,27 @@
-import { FetchRpc, fetchRpc } from './fetchRpc';
 import { Registry } from 'prom-client';
+import { FetchRpc, fetchRpc } from './fetchRpc';
 import {
   rpcMetricsFactory,
   getProviderLabel,
   getStatusLabel,
-  startTimer,
 } from '../metrics';
+import { ChainID } from '../types';
 
-export type FetchRPCWithMetricsFactoryParameters = {
+export type TrackedFetchRpcFactoryParameters = {
   prefix: string;
   registry: Registry;
 };
 
+export type TrackedFetchRPC = FetchRpc<{ chainId: ChainID }>;
+
 export const trackedFetchRpcFactory = ({
   prefix,
   registry,
-}: FetchRPCWithMetricsFactoryParameters): FetchRpc => {
+}: TrackedFetchRpcFactoryParameters): TrackedFetchRPC => {
   const { rpcRequestCount, rpcRequestMethods, rpcResponseTime } =
     rpcMetricsFactory(prefix, registry);
 
-  return async (chainId, url, init) => {
+  return async ({ url, init, chainId }) => {
     const provider = getProviderLabel(url);
 
     rpcRequestCount.labels({ chainId, provider }).inc();
@@ -28,13 +30,12 @@ export const trackedFetchRpcFactory = ({
       : [init.body]) {
       rpcRequestMethods.labels({ method }).inc();
     }
-    const timer = startTimer();
+    const responseTime = rpcResponseTime.startTimer();
 
-    const response = await fetchRpc(chainId, url, init);
+    const response = await fetchRpc({ url, init });
 
-    const elapsedTime = timer();
     const status = getStatusLabel(response.status);
-    rpcResponseTime.observe({ chainId, provider, status }, elapsedTime);
+    responseTime({ chainId, provider, status });
 
     return response;
   };

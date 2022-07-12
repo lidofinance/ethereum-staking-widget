@@ -1,5 +1,4 @@
 import fetch, { RequestInit, Response } from 'node-fetch';
-import { ChainID } from '../types';
 
 export type FetchRpcInitBody = {
   jsonrpc: '1.0' | '2.0' | string;
@@ -13,17 +12,20 @@ export type FetchRpcInit = Omit<RequestInit, 'body' | 'method'> & {
   body: FetchRpcInitBody | FetchRpcInitBody[];
 };
 
-export type FetchRpc = (
-  /*
-   * Need chainId for trackedFetchRpc, but haven't found a nice way to hide this argument, so we
-   * don't break function signature in rpc endpoint and other places
-   */
-  chainId: ChainID,
-  url: string,
-  init: FetchRpcInit,
+export type DefaultExtension = Record<string | number, unknown>;
+
+export type FetchRpcParameters<
+  Extension extends DefaultExtension = DefaultExtension,
+> = {
+  url: string;
+  init: FetchRpcInit;
+} & Extension;
+
+export type FetchRpc<Extension extends DefaultExtension = DefaultExtension> = (
+  options: FetchRpcParameters<Extension>,
 ) => Promise<Response>;
 
-export const fetchRpc: FetchRpc = async (chainId, url, init) => {
+export const fetchRpc: FetchRpc = async ({ url, init }) => {
   const fetchInit = {
     ...init,
     method: 'POST',

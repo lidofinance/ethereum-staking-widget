@@ -19,7 +19,7 @@ const stringify = (data: unknown) =>
       })
     : JSON.stringify(data);
 
-export type Logger = (...messages: any[]) => void;
+export type Logger = (...messages: unknown[]) => void;
 export type ServerLogger = {
   error: Logger;
   warn: Logger;

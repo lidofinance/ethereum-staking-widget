@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { Counter, Registry } from 'prom-client';
-import { FetchRpc } from '../fetch';
-import { ServerLogger } from '../serverLoggerFactory';
+import { TrackedFetchRPC } from '../fetch';
+import { ServerLogger } from '../utils';
 import { ChainID } from '../types';
 import { iterateUrls } from '../utils';
 import { Providers } from '../types';
@@ -29,7 +29,7 @@ export type RPCFactoryParams = {
     registry: Registry;
   };
   providers: Providers;
-  fetchRPC: FetchRpc;
+  fetchRPC: TrackedFetchRPC;
   serverLogger: ServerLogger;
   defaultChain: ChainID;
   // If we don't specify allowed RPC methods, then we can't use
@@ -82,8 +82,8 @@ export const rpcFactory = ({
 
       const requested = await iterateUrls(
         providers[chainId],
-        (url) => fetchRPC(chainId, url, { body: req.body }),
-        (error: unknown) => serverLogger.error(error),
+        (url) => fetchRPC({ url, init: { body: req.body }, chainId }),
+        serverLogger.error,
       );
 
       res.setHeader(
