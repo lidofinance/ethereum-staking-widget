@@ -1,5 +1,5 @@
 import { BigNumber } from 'ethers';
-import { LIMIT_LEVEL } from './types';
+import { LIMIT_LEVEL } from 'types';
 
 // almost reached whenever current limit is ≤25% of max limit, i.e. 4 times lower
 const WARN_THRESHOLD_RATIO = BigNumber.from(4);

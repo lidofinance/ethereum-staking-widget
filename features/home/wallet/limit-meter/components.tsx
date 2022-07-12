@@ -1,4 +1,5 @@
 import { Tooltip } from '@lidofinance/lido-ui';
+import { LIMIT_LEVEL } from 'types';
 import { LimitReachedIcon, LimitSafeIcon, LimitWarnIcon } from './icons';
 import {
   Bars,
@@ -13,7 +14,7 @@ import {
   YellowBar,
   YellowSpan,
 } from './styles';
-import { LimitComponent, LIMIT_LEVEL } from './types';
+import { LimitComponent } from './types';
 
 const LevelSafe = () => (
   <LevelContainer>

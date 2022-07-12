@@ -1,13 +1,10 @@
-import { useStakingLimitInfo } from 'shared/hooks';
+import { useStakingLimitLevel } from 'shared/hooks/useStakingLimitLevel';
 import { LimitHelp } from './components';
-import { getLimitLevel } from './utils';
 
 export const LimitMeter = () => {
-  const { data, error } = useStakingLimitInfo();
+  const limitLevel = useStakingLimitLevel();
 
-  if (error || !data?.isStakingLimitSet) return null;
-
-  const limitLevel = getLimitLevel(data.maxStakeLimit, data.currentStakeLimit);
+  if (limitLevel === null) return null;
 
   return <LimitHelp limitLevel={limitLevel} />;
 };

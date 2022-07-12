@@ -1,9 +1,4 @@
 import { FC } from 'react';
-
-export enum LIMIT_LEVEL {
-  SAFE,
-  WARN,
-  REACHED,
-}
+import { LIMIT_LEVEL } from 'types';
 
 export type LimitComponent = FC<{ limitLevel: LIMIT_LEVEL }>;

@@ -99,10 +99,12 @@ export const StakeForm: FC = memo(() => {
     isSubmitting,
     setMaxInputValue,
     reset,
+    limitWarning,
   } = useCurrencyInput({
     initialValue: (router?.query?.amount as string) || undefined,
     submit,
     limit: stakeableEther.data,
+    checkStakingLimit: true,
   });
 
   const willReceiveStEthValue = useMemo(() => {
@@ -152,6 +154,7 @@ export const StakeForm: FC = memo(() => {
           value={inputValue}
           onChange={handleChange}
           error={error}
+          warning={limitWarning}
         />
         {active ? (
           <Button
