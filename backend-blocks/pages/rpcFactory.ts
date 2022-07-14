@@ -82,7 +82,7 @@ export const rpcFactory = ({
 
       const requested = await iterateUrls(
         providers[chainId],
-        (url) => fetchRPC({ url, init: { body: req.body }, chainId }),
+        (url) => fetchRPC(url, { body: req.body }, { chainId }),
         serverLogger.error,
       );
 

@@ -21,7 +21,7 @@ export const trackedFetchRpcFactory = ({
   const { rpcRequestCount, rpcRequestMethods, rpcResponseTime } =
     rpcMetricsFactory(prefix, registry);
 
-  return async ({ url, init, chainId }) => {
+  return async (url, init, { chainId }) => {
     const provider = getProviderLabel(url);
 
     rpcRequestCount.labels({ chainId, provider }).inc();
@@ -32,7 +32,7 @@ export const trackedFetchRpcFactory = ({
     }
     const responseTime = rpcResponseTime.startTimer();
 
-    const response = await fetchRpc({ url, init });
+    const response = await fetchRpc(url, init);
 
     const status = getStatusLabel(response.status);
     responseTime({ chainId, provider, status });

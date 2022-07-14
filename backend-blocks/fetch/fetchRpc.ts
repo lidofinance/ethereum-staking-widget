@@ -12,20 +12,16 @@ export type FetchRpcInit = Omit<RequestInit, 'body' | 'method'> & {
   body: FetchRpcInitBody | FetchRpcInitBody[];
 };
 
-export type DefaultExtension = Record<string | number, unknown>;
-
-export type FetchRpcParameters<
-  Extension extends DefaultExtension = DefaultExtension,
-> = {
-  url: string;
-  init: FetchRpcInit;
-} & Extension;
-
-export type FetchRpc<Extension extends DefaultExtension = DefaultExtension> = (
-  options: FetchRpcParameters<Extension>,
+// Need Extension type so we can extend fetchRPC with metrics tracking or caching
+export type FetchRpc<
+  Extension extends Record<string | number, unknown> | void = void,
+> = (
+  url: string,
+  init: FetchRpcInit,
+  extension: Extension,
 ) => Promise<Response>;
 
-export const fetchRpc: FetchRpc = async ({ url, init }) => {
+export const fetchRpc: FetchRpc = async (url, init) => {
   const fetchInit = {
     ...init,
     method: 'POST',
