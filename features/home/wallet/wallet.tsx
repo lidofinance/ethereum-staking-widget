@@ -58,10 +58,14 @@ const WalletComponent: WalletComponentType = (props) => {
               {etrApr && etrApr.data && (
                 <Tooltip
                   placement="bottom"
-                  title={LIDO_APR_TOOLTIP_TEXT.replaceAll(
-                    '${apr.eth}',
-                    etrApr.data as string,
-                  )}
+                  title={
+                    /* String.replaceAll presumably causes exceptions
+                    in dApp browsers of some mobile devices */
+                    LIDO_APR_TOOLTIP_TEXT.replace(
+                      /\$\{apr.eth}/g,
+                      etrApr.data as string,
+                    )
+                  }
                 >
                   <Question />
                 </Tooltip>
