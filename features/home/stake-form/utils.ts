@@ -4,7 +4,7 @@ import { isAddress } from 'ethers/lib/utils';
 import { StethAbi } from '@lido-sdk/contracts';
 import { CHAINS } from '@lido-sdk/constants';
 import { getStaticRpcBatchProvider } from '@lido-sdk/providers';
-import { getErrorMessage, runWithTransactionLogger } from 'utils';
+import { ErrorMessage, getErrorMessage, runWithTransactionLogger } from 'utils';
 import { getBackendRPCPath } from 'config';
 import { TX_STAGE } from 'shared/components';
 
@@ -82,6 +82,7 @@ export const stakeProcessing: StakeProcessingProps = async (
 
     setTxStage(TX_STAGE.SIGN);
     openTxModal();
+
     const transaction = await runWithTransactionLogger(
       'Stake signing',
       callback,
@@ -103,9 +104,14 @@ export const stakeProcessing: StakeProcessingProps = async (
     /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
   } catch (error: any) {
     console.error(error);
-    // errors are sometimes nested :(
-    setTxModalFailedText(getErrorMessage(error?.error?.code ?? error?.code));
-    setTxStage(TX_STAGE.FAIL);
+    const errorMessage = getErrorMessage(error);
+    setTxModalFailedText(errorMessage);
+    // Both LIMIT and FAIL are fail stages but limit reached has different UI
+    setTxStage(
+      errorMessage == ErrorMessage.LIMIT_REACHED
+        ? TX_STAGE.LIMIT
+        : TX_STAGE.FAIL,
+    );
     setTxHash(undefined);
     openTxModal();
   }

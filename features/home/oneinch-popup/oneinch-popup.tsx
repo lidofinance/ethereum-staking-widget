@@ -4,17 +4,9 @@ import OneInchIcon from 'assets/icons/oneinch.svg';
 import { PopupWrapper } from 'shared/components';
 import { Button, Link, Modal, Text } from '@lidofinance/lido-ui';
 import { ButtonLink, GreenSpan } from './styles';
-import { useConnectorInfo } from '@lido-sdk/web3-react';
-import { isDesktop } from 'react-device-detect';
-
-const ONE_INCH_URL = 'https://app.1inch.io/#/1/swap/ETH/steth';
-const LEDGER_LIVE_ONE_INCH_DESKTOP_DEEPLINK = 'ledgerlive://discover/1inch-lld';
-
-// doesn't work for now
-// const LEDGER_LIVE_ONE_INCH_MOBILE_DEEPLINK = 'ledgerlive://discover/1inch-llm';
+import { use1inchLink } from '../hooks';
 
 export const OneinchPopup: FC<{ modalView: boolean }> = ({ modalView }) => {
-  const { isLedgerLive } = useConnectorInfo();
   const [isPopupOpen, setPopupOpen] = useState(false);
   const { data } = useLidoSWR<{ rate: number }>('/api/oneinch-rate');
   const rate = (data && data.rate) || 1;
@@ -29,14 +21,7 @@ export const OneinchPopup: FC<{ modalView: boolean }> = ({ modalView }) => {
 
   const formatted1inchRate = rate.toFixed(4);
 
-  let link = ONE_INCH_URL;
-  let linkTarget = '_blank';
-
-  const openInLedgerLive = isLedgerLive && isDesktop;
-  if (openInLedgerLive) {
-    link = LEDGER_LIVE_ONE_INCH_DESKTOP_DEEPLINK;
-    linkTarget = '_self';
-  }
+  const { link, linkTarget } = use1inchLink();
 
   const discount = (100 - (1 / rate) * 100).toFixed(2);
 
