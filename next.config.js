@@ -24,6 +24,8 @@ const subgraphKintsugi = process.env.SUBGRAPH_KINTSUGI;
 
 const subgraphRequestTimeout = process.env.SUBGRAPH_REQUEST_TIMEOUT;
 
+const enableQaHelpers = process.env.ENABLE_QA_HELPERS;
+
 module.exports = {
   basePath,
   webpack5: true,
@@ -102,5 +104,6 @@ module.exports = {
   publicRuntimeConfig: {
     defaultChain,
     supportedChains,
+    enableQaHelpers,
   },
 };

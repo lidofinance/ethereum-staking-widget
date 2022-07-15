@@ -100,6 +100,7 @@ export const StakeForm: FC = memo(() => {
     setMaxInputValue,
     reset,
     limitWarning,
+    limitReached,
   } = useCurrencyInput({
     initialValue: (router?.query?.amount as string) || undefined,
     submit,
@@ -160,7 +161,7 @@ export const StakeForm: FC = memo(() => {
           <Button
             fullwidth
             type="submit"
-            disabled={isValidating}
+            disabled={limitReached || isValidating}
             loading={isSubmitting}
           >
             Submit
