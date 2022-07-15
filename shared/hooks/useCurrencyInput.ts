@@ -33,6 +33,7 @@ type UseCurrencyInputReturn = {
   reset: () => void;
   setMaxInputValue: () => void;
   limitWarning: string;
+  limitReached?: boolean;
 };
 
 type UseCurrencyInput = (args: UseCurrencyInputArgs) => UseCurrencyInputReturn;
@@ -224,5 +225,6 @@ export const useCurrencyInput: UseCurrencyInput = ({
     reset,
     setMaxInputValue,
     limitWarning,
+    limitReached: checkStakingLimit && limitLevel === LIMIT_LEVEL.REACHED,
   };
 };
