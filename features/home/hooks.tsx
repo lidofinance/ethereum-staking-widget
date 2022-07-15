@@ -16,9 +16,9 @@ export const useStakeableEther = (): Pick<
     initialLoading:
       ethereumBalance.initialLoading && stakingLimitInfo.initialLoading,
     data:
-      ethereumBalance.data && stakingLimitInfo.data
+      ethereumBalance.data && stakingLimitInfo.data?.isStakingLimitSet
         ? bnMin(ethereumBalance.data, stakingLimitInfo.data.currentStakeLimit)
-        : undefined,
+        : ethereumBalance.data,
   };
 };
 
