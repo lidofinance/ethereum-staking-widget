@@ -12,6 +12,7 @@ import { useRouter } from 'next/router';
 import { parseEther } from '@ethersproject/units';
 import {
   useContractSWR,
+  useEthereumBalance,
   useSTETHBalance,
   useSTETHContractRPC,
   useSTETHContractWeb3,
@@ -45,6 +46,7 @@ export const StakeForm: FC = memo(() => {
   const [txModalFailedText, setTxModalFailedText] = useState('');
 
   const { active, chainId } = useWeb3();
+  const etherBalance = useEthereumBalance();
   const stakeableEther = useStakeableEther();
   const stethBalance = useSTETHBalance();
   const stethContractWeb3 = useSTETHContractWeb3();
@@ -106,6 +108,10 @@ export const StakeForm: FC = memo(() => {
     submit,
     limit: stakeableEther.data,
     checkStakingLimit: true,
+    padMaxAmount:
+      etherBalance.data &&
+      stakeableEther.data &&
+      etherBalance.data.lt(stakeableEther.data),
   });
 
   const willReceiveStEthValue = useMemo(() => {

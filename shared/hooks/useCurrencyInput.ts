@@ -21,6 +21,7 @@ type UseCurrencyInputArgs = {
   externalSetInputValue?: (inputValue: string) => void;
   token?: string;
   checkStakingLimit?: boolean;
+  padMaxAmount?: boolean;
 };
 
 type UseCurrencyInputReturn = {
@@ -49,6 +50,7 @@ export const useCurrencyInput: UseCurrencyInput = ({
   externalSetInputValue,
   token = 'ETH',
   checkStakingLimit,
+  padMaxAmount,
 }) => {
   const [inputValue, setInputValue] = useState(initialValue);
   const [error, setError] = useState(initialError);
@@ -198,6 +200,7 @@ export const useCurrencyInput: UseCurrencyInput = ({
   const maxAmount = useMaxAmount({
     balance: limit ? limit : BigNumber.from(0),
     token,
+    padded: padMaxAmount,
   });
 
   const setMaxInputValue = useCallback(() => {
