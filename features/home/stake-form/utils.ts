@@ -4,7 +4,12 @@ import { isAddress } from 'ethers/lib/utils';
 import { StethAbi } from '@lido-sdk/contracts';
 import { CHAINS } from '@lido-sdk/constants';
 import { getStaticRpcBatchProvider } from '@lido-sdk/providers';
-import { ErrorMessage, getErrorMessage, runWithTransactionLogger } from 'utils';
+import {
+  enableQaHelpers,
+  ErrorMessage,
+  getErrorMessage,
+  runWithTransactionLogger,
+} from 'utils';
 import { getBackendRPCPath } from 'config';
 import { TX_STAGE } from 'shared/components';
 
@@ -42,6 +47,14 @@ export const getAddress = async (
 
   throw new Error('Invalid referral address');
 };
+
+class MockLimitReachedError extends Error {
+  reason: string;
+  constructor(message: string) {
+    super(message);
+    this.reason = 'execution reverted: STAKE_LIMIT';
+  }
+}
 
 export const stakeProcessing: StakeProcessingProps = async (
   stethContractWeb3,
@@ -82,6 +95,13 @@ export const stakeProcessing: StakeProcessingProps = async (
 
     setTxStage(TX_STAGE.SIGN);
     openTxModal();
+
+    if (
+      enableQaHelpers &&
+      window.localStorage.getItem('mockLimitReached') === 'true'
+    ) {
+      throw new MockLimitReachedError('Stake limit reached');
+    }
 
     const transaction = await runWithTransactionLogger(
       'Stake signing',
