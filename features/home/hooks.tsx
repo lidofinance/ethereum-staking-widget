@@ -24,7 +24,8 @@ export const useStakeableEther = (): Pick<
 
 const ONE_INCH_URL = 'https://app.1inch.io/#/1/swap/ETH/steth';
 const LEDGER_LIVE_ONE_INCH_DESKTOP_DEEPLINK = 'ledgerlive://discover/1inch-lld';
-const LEDGER_LIVE_ONE_INCH_MOBILE_DEEPLINK = 'ledgerlive://discover/1inch-llm';
+// doesn't work for now
+// const LEDGER_LIVE_ONE_INCH_MOBILE_DEEPLINK = 'ledgerlive://discover/1inch-llm';
 
 export const use1inchLink = () => {
   const { isLedgerLive } = useConnectorInfo();
@@ -32,11 +33,9 @@ export const use1inchLink = () => {
   let link = ONE_INCH_URL;
   let linkTarget = '_blank';
 
-  if (isLedgerLive) {
-    link = isDesktop
-      ? LEDGER_LIVE_ONE_INCH_DESKTOP_DEEPLINK
-      : LEDGER_LIVE_ONE_INCH_MOBILE_DEEPLINK;
-
+  const openInLedgerLive = isLedgerLive && isDesktop;
+  if (openInLedgerLive) {
+    link = LEDGER_LIVE_ONE_INCH_DESKTOP_DEEPLINK;
     linkTarget = '_self';
   }
 
