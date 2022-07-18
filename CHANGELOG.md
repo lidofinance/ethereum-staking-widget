@@ -1,3 +1,22 @@
+# [1.16.0](https://github.com/lidofinance/staking-widget-ts/compare/1.15.1...1.16.0) (2022-07-18)
+
+
+### Bug Fixes
+
+* brave wallet fixes ([a29489c](https://github.com/lidofinance/staking-widget-ts/commit/a29489c7aad67d12c0547064d3c9f89f0a1f03de))
+* improve checks for imtoken and trust wallet connect() ([6a87bca](https://github.com/lidofinance/staking-widget-ts/commit/6a87bca62cc22d69407c88005cc01451656fb264))
+* revert 1inch mobile deeplink ([59f8ef1](https://github.com/lidofinance/staking-widget-ts/commit/59f8ef1731b192d30e217be2e080262e4b19dc8f))
+* use correct provider name for brave wallet ([ffad6f2](https://github.com/lidofinance/staking-widget-ts/commit/ffad6f24d6aff3d2a3b8e7ce1563acd435ccc1c7))
+* use replace instead of replaceall ([59bc95e](https://github.com/lidofinance/staking-widget-ts/commit/59bc95e3aa6734b92fdb98030cefb5a12c1364cb))
+
+
+### Features
+
+* add brave wallet ([3aa2112](https://github.com/lidofinance/staking-widget-ts/commit/3aa211276764bd6984d8db4682ba2672efed075a))
+* open 1inch in ledger live mobile ([4bc71f5](https://github.com/lidofinance/staking-widget-ts/commit/4bc71f5325fd82bd70c020c9707811dc20ec9481))
+
+
+
 ## [1.15.1](https://github.com/lidofinance/staking-widget-ts/compare/1.15.0...1.15.1) (2022-07-11)
 
 
@@ -130,15 +149,6 @@
 ### Bug Fixes
 
 * separate Subgraph chains type ([7cd25df](https://github.com/lidofinance/staking-widget-ts/commit/7cd25dfda36860b71e3c782b80eca1e7d7564c38))
-
-
-
-# [1.12.0](https://github.com/lidofinance/staking-widget-ts/compare/1.11.0...1.12.0) (2022-05-13)
-
-
-### Features
-
-* display 1inch discount popup on mount ([66366d7](https://github.com/lidofinance/staking-widget-ts/commit/66366d710b7900a65b900a0741672785c77f8291))
 
 
 
