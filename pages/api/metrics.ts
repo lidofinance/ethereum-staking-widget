@@ -1,5 +1,5 @@
 import { registry } from 'utilsApi/metrics';
-import { metricsFactory } from 'backend-blocks/pages';
+import { metricsFactory } from '@lidofinance/widget-blocks';
 
 const metrics = metricsFactory({
   registry,

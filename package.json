@@ -30,6 +30,7 @@
     "@lido-sdk/web3-react": "^1.21.0",
     "@lidofinance/lido-ui": "^2.7.0",
     "@lidofinance/lido-ui-blocks": "^2.4.0",
+    "@lidofinance/widget-blocks": "file:.yalc/@lidofinance/widget-blocks",
     "@types/cors": "^2.8.12",
     "@types/js-cookie": "^3.0.0",
     "@types/ms": "^0.7.31",

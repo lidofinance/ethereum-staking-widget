@@ -1,4 +1,4 @@
-import { trackedFetchRpcFactory } from 'backend-blocks/fetch';
+import { trackedFetchRpcFactory } from '@lidofinance/widget-blocks';
 import { registry } from './metrics';
 import { METRICS_PREFIX } from '../config';
 

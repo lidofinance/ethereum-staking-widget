@@ -1,5 +1,5 @@
 import getConfig from 'next/config';
-import { Providers } from 'backend-blocks/types';
+import { Providers } from '@lidofinance/widget-blocks';
 
 const { serverRuntimeConfig } = getConfig();
 const { infuraApiKey, alchemyApiKey } = serverRuntimeConfig;

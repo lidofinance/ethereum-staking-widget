@@ -2,7 +2,7 @@ import {
   providerFactory,
   StaticJsonRpcBatchProvider,
   trackedJsonRpcProvider,
-} from 'backend-blocks/providers';
+} from '@lidofinance/widget-blocks';
 import { registry } from './metrics';
 import { METRICS_PREFIX } from '../config';
 

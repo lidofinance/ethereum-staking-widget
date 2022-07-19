@@ -2213,6 +2213,11 @@
   resolved "https://registry.yarnpkg.com/@lidofinance/utils/-/utils-1.3.2.tgz#63ba5be298bc415c20edcd9d930319e496199068"
   integrity sha512-sP1ZhAoWz9OpU1S5jzDzl0bnwKXZDBT1RLFFKDBW/+YkoxYAlFReyuA/w5R+I0iYjlBkdzkZZReNM/XzIO4YXg==
 
+"@lidofinance/widget-blocks@file:.yalc/@lidofinance/widget-blocks":
+  version "1.0.0"
+  dependencies:
+    "@darkobits/mask-string" "^2.0.1"
+
 "@metamask/safe-event-emitter@2.0.0", "@metamask/safe-event-emitter@^2.0.0":
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/@metamask/safe-event-emitter/-/safe-event-emitter-2.0.0.tgz#af577b477c683fad17c619a78208cede06f9605c"
