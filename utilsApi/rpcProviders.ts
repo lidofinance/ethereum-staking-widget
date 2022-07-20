@@ -1,8 +1,8 @@
 import {
   providerFactory,
   StaticJsonRpcBatchProvider,
-  trackedJsonRpcProvider,
-} from '@lidofinance/widget-blocks';
+} from '@lidofinance/eth-providers';
+import { trackedJsonRpcProvider } from '@lidofinance/eth-api-providers';
 import { registry } from './metrics';
 import { METRICS_PREFIX } from '../config';
 

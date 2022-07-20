@@ -1,5 +1,4 @@
 import { parseEther } from '@ethersproject/units';
-import { CHAINS } from '@lido-sdk/constants';
 import { getStaticRpcBatchProvider } from '@lido-sdk/providers';
 import { useLidoSWR, useWSTETHContractRPC } from '@lido-sdk/react';
 import { useWeb3 } from '@lido-sdk/web3-react';
@@ -18,8 +17,8 @@ export const useUnwrapGasLimit = () => {
       }
 
       const provider = getStaticRpcBatchProvider(
-        chainId as CHAINS,
-        getBackendRPCPath(chainId as CHAINS),
+        chainId as number,
+        getBackendRPCPath(chainId as number),
       );
 
       const feeData = await provider.getFeeData();

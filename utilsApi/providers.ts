@@ -1,11 +1,11 @@
 import getConfig from 'next/config';
-import { Providers } from '@lidofinance/widget-blocks';
+import { CHAINS } from './chains';
 
 const { serverRuntimeConfig } = getConfig();
 const { infuraApiKey, alchemyApiKey } = serverRuntimeConfig;
 
-export const providers: Providers = {
-  1: [
+export const providers: Record<CHAINS, [string, ...string[]]> = {
+  [CHAINS.Mainnet]: [
     // Will produce network error
     `https://example.co`,
     // Will produce RPC error
@@ -13,7 +13,7 @@ export const providers: Providers = {
     `https://mainnet.infura.io/v3/${infuraApiKey}`,
     `https://eth-mainnet.alchemyapi.io/v2/${alchemyApiKey}`,
   ],
-  5: [
+  [CHAINS.Goerli]: [
     // Will produce network error
     `https://example.co`,
     // Will produce RPC error

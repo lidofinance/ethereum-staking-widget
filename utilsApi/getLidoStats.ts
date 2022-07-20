@@ -1,4 +1,4 @@
-import { CHAINS } from '@lido-sdk/constants';
+import { CHAINS } from './chains';
 import { ETHPLORER_TOKEN_ENDPOINT, getStethAddress } from 'config';
 import getConfig from 'next/config';
 import { standardFetcher } from 'utils/standardFetcher';

@@ -1,5 +1,5 @@
 import getConfig from 'next/config';
-import { serverLoggerFactory } from '@lidofinance/widget-blocks';
+import { serverLoggerFactory } from '@lidofinance/api-logger';
 
 const { serverRuntimeConfig } = getConfig();
 const {

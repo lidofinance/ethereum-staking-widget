@@ -7,9 +7,9 @@ import {
 } from 'config';
 import { parseEther } from '@ethersproject/units';
 import { useWeb3 } from '@lido-sdk/web3-react';
-import { getStaticRpcBatchProvider } from '@lido-sdk/providers';
+import { getStaticRpcBatchProvider } from 'utils/rpcProviders';
 import { BigNumber } from 'ethers';
-import { CHAINS } from '@lido-sdk/constants';
+import { CHAINS } from 'utilsApi/chains';
 
 type UseStethSubmitGasLimit = () => number | undefined;
 
@@ -25,7 +25,7 @@ export const useStethSubmitGasLimit: UseStethSubmitGasLimit = () => {
       }
 
       const provider = getStaticRpcBatchProvider(
-        chainId as CHAINS,
+        chainId as string,
         getBackendRPCPath(chainId as CHAINS),
       );
 

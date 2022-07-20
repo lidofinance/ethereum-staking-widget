@@ -1,9 +1,9 @@
 import { parseEther } from '@ethersproject/units';
 import { WstethAbi } from '@lido-sdk/contracts';
-import { CHAINS, getTokenAddress, TOKENS } from '@lido-sdk/constants';
+import { getTokenAddress, TOKENS } from '@lido-sdk/constants';
 import { TX_STAGE } from 'shared/components';
 import { getErrorMessage, runWithTransactionLogger } from 'utils';
-import { getStaticRpcBatchProvider } from '@lido-sdk/providers';
+import { getStaticRpcBatchProvider } from 'utils/rpcProviders';
 import { getBackendRPCPath } from 'config';
 
 const ETH = 'ETH';
@@ -16,7 +16,7 @@ type UnwrapProcessingProps = (
   setTxModalFailedText: (value: string) => void,
   wstethBalanceUpdate: () => void,
   stethBalanceUpdate: () => void,
-  chainId: CHAINS | undefined,
+  chainId: string | number | undefined,
   inputValue: string,
   resetForm: () => void,
 ) => Promise<void>;

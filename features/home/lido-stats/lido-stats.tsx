@@ -17,7 +17,7 @@ import { FlexCenterVertical } from './styles';
 export const LidoStats: FC = memo(() => {
   const { chainId } = useSDK();
   const etherscanLink = useMemo(
-    () => getEtherscanTokenLink(chainId, getStethAddress(chainId)),
+    () => getEtherscanTokenLink(chainId, getStethAddress(chainId as number)),
     [chainId],
   );
   const lidoApr = useLidoApr();

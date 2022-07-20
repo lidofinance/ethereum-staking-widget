@@ -1,4 +1,5 @@
-import { CHAINS, getTokenAddress, TOKENS } from '@lido-sdk/constants';
+import { CHAINS } from './chains';
+import { getTokenAddress, TOKENS } from '@lido-sdk/constants';
 import { ETHPLORER_TOKEN_ENDPOINT } from 'config';
 import getConfig from 'next/config';
 import { standardFetcher } from 'utils/standardFetcher';
@@ -14,7 +15,7 @@ export const getLdoStats: GetLdoStats = async () => {
   serverLogger.debug('Fetching LDO stats...');
   // IMPORTANT: ETHPLORER_TOKEN_ENDPOINT (api.ethplorer.io) works only with Mainnet chain!
   const api = `${ETHPLORER_TOKEN_ENDPOINT}${getTokenAddress(
-    CHAINS.Mainnet,
+    CHAINS.Mainnet as number,
     TOKENS.LDO,
   )}`;
   const query = new URLSearchParams({ apiKey: ethplorerApiKey });

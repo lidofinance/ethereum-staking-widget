@@ -1,3 +1,3 @@
-import { health } from '@lidofinance/widget-blocks';
+import { health } from '@lidofinance/api-pages';
 
 export default health;

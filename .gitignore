@@ -6,6 +6,7 @@
 .pnp.js
 .yalc
 yalc.lock
+tsconfig.tsbuildinfo
 
 # testing
 /coverage
@@ -35,5 +36,5 @@ yarn-error.log*
 
 #ide
 .vscode
-/.idea/*
+.idea
 

@@ -17,7 +17,7 @@ type StakeProcessingProps = (
   stethBalanceUpdate: () => void,
   inputValue: string,
   resetForm: () => void,
-  chainId: CHAINS | undefined,
+  chainId: number | undefined,
   refFromQuery: string | undefined,
 ) => Promise<void>;
 
@@ -31,7 +31,7 @@ export const getAddress = async (
   try {
     const provider = getStaticRpcBatchProvider(
       chainId,
-      getBackendRPCPath(chainId),
+      getBackendRPCPath(chainId as number),
     );
     const address = await provider.resolveName(input);
 

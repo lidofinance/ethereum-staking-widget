@@ -1,8 +1,8 @@
-import { CHAINS } from '@lido-sdk/constants';
+import { CHAINS } from './chains';
 import { serverLogger } from './serverLogger';
 import { getStaticRpcBatchProvider } from './rpcProviders';
 import { providers } from './providers';
-import { iterateUrls } from '@lidofinance/widget-blocks';
+import { iterateUrls } from '@lidofinance/rpc';
 
 export const getEthApr = async (): Promise<string> => {
   serverLogger.debug('Getting eth apr...');
