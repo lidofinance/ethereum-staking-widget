@@ -1,3 +1,3 @@
-import { health } from '@lidofinance/api-pages';
+import { health } from '@lidofinance/next-pages';
 
 export default health;

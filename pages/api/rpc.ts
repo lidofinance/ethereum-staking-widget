@@ -1,6 +1,6 @@
 import getConfig from 'next/config';
 import { registry } from 'utilsApi/metrics';
-import { rpcFactory } from '@lidofinance/api-pages';
+import { rpcFactory } from '@lidofinance/next-pages';
 import { METRICS_PREFIX } from '../../config';
 import { fetchRPC, serverLogger } from 'utilsApi';
 import { providers } from '../../utilsApi/providers';
