@@ -1,3 +1,12 @@
+## [1.16.1](https://github.com/lidofinance/staking-widget-ts/compare/1.16.0...1.16.1) (2022-07-25)
+
+
+### Bug Fixes
+
+* revert of revert 1inch mobile deeplink ([65c7f2b](https://github.com/lidofinance/staking-widget-ts/commit/65c7f2b04087350df550de7a44b265dd6b5f3333))
+
+
+
 # [1.16.0](https://github.com/lidofinance/staking-widget-ts/compare/1.15.1...1.16.0) (2022-07-18)
 
 
@@ -140,15 +149,6 @@
 * update lido-sdk/web3-react, lido-ui, lido-ui-blocks ([08758ab](https://github.com/lidofinance/staking-widget-ts/commit/08758ab371ed15f4f71c3b4373bf44c4dc61528c))
 * update lido-ui to v2.5.0 ([18b6bd0](https://github.com/lidofinance/staking-widget-ts/commit/18b6bd0009639f49c735b4784d465fbd5657db31))
 * update lido-ui-blocks to v2.0.1 ([d365b25](https://github.com/lidofinance/staking-widget-ts/commit/d365b2519b6490575aa514e0756b37d313932368))
-
-
-
-## [1.12.1](https://github.com/lidofinance/staking-widget-ts/compare/1.12.0...1.12.1) (2022-06-01)
-
-
-### Bug Fixes
-
-* separate Subgraph chains type ([7cd25df](https://github.com/lidofinance/staking-widget-ts/commit/7cd25dfda36860b71e3c782b80eca1e7d7564c38))
 
 
 
