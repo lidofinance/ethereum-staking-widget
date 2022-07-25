@@ -1,11 +1,11 @@
-import { CHAINS } from './chains';
+import { CHAINS } from 'utils/chains';
 import { getAggregatorAddress, getAggregatorContractFactory } from 'config';
 import { getStaticRpcBatchProvider } from './rpcProviders';
-import { providers } from './providers';
+import { rpcUrls } from './rpcUrls';
 import { iterateUrls } from '@lidofinance/rpc';
 
 export const getEthPrice = async (): Promise<number> => {
-  const urls = providers[CHAINS.Mainnet];
+  const urls = rpcUrls[CHAINS.Mainnet];
   return iterateUrls(urls, (url) => getEthPriceWithFallbacks(url));
 };
 

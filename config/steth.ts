@@ -1,4 +1,4 @@
-import { CHAINS } from 'utilsApi/chains';
+import { CHAINS } from 'utils/chains';
 import { StethAbi__factory } from 'generated';
 
 // DELETE: use https://github.com/lidofinance/lido-js-sdk/blob/cd47110a0fa346d8ff699dc900694fdc588584a7/packages/constants/src/tokens.ts#L33

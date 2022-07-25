@@ -1,4 +1,4 @@
-import { CHAINS } from './chains';
+import { CHAINS } from 'utils/chains';
 import { getTokenAddress, TOKENS } from '@lido-sdk/constants';
 import { ETHPLORER_TOKEN_ENDPOINT } from 'config';
 import getConfig from 'next/config';

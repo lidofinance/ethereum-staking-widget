@@ -26,9 +26,5 @@ collectStartupMetrics({
   branch: buildInfoJson.branch,
 });
 
-// TODO: remove 1==1, need for debug
-if (1 == 1 || process.env.NODE_ENV === 'production') {
-  registry.registerMetric(subgraphsResponseTime);
-
-  collectDefaultMetrics({ prefix: METRICS_PREFIX, register: registry });
-}
+registry.registerMetric(subgraphsResponseTime);
+collectDefaultMetrics({ prefix: METRICS_PREFIX, register: registry });

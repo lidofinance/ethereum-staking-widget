@@ -17,6 +17,7 @@ export const useUnwrapGasLimit = () => {
       }
 
       const provider = getStaticRpcBatchProvider(
+        // TODO: add a way to type useWeb3 hook
         chainId as number,
         getBackendRPCPath(chainId as number),
       );

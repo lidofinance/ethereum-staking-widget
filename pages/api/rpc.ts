@@ -1,9 +1,9 @@
 import getConfig from 'next/config';
 import { registry } from 'utilsApi/metrics';
 import { rpcFactory } from '@lidofinance/next-pages';
-import { METRICS_PREFIX } from '../../config';
+import { METRICS_PREFIX } from 'config';
 import { fetchRPC, serverLogger } from 'utilsApi';
-import { providers } from '../../utilsApi/providers';
+import { rpcUrls } from 'utilsApi/rpcUrls';
 
 const { publicRuntimeConfig } = getConfig();
 const { defaultChain } = publicRuntimeConfig;
@@ -22,7 +22,7 @@ const rpc = rpcFactory({
     'eth_getBlockByNumber',
   ],
   defaultChain,
-  providers,
+  providers: rpcUrls,
 });
 
 export default rpc;

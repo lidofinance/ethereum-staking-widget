@@ -1,4 +1,5 @@
 export * from './assert';
+export * from './chains';
 export * from './appCookies';
 export * from './serverSideCookies';
 export * from './etherToString';

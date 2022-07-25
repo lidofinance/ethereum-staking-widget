@@ -1,5 +1,5 @@
 import { BigNumber } from '@ethersproject/bignumber';
-import { CHAINS } from './chains';
+import { CHAINS } from 'utils/chains';
 import { getStaticRpcBatchProvider } from './rpcProviders';
 import {
   getOracleAddress,
@@ -8,16 +8,12 @@ import {
   getStethContractFactory,
 } from 'config';
 import { serverLogger } from './serverLogger';
-import { providers } from './providers';
+import { rpcUrls } from './rpcUrls';
 import { iterateUrls } from '@lidofinance/rpc';
 
 export const getStethApr = async (): Promise<string> => {
-  const urls = providers[CHAINS.Mainnet];
-  return iterateUrls(
-    urls,
-    (url) => getStethAprWithFallbacks(url),
-    serverLogger.error,
-  );
+  const urls = rpcUrls[CHAINS.Mainnet];
+  return iterateUrls(urls, getStethAprWithFallbacks, serverLogger.error);
 };
 
 const getStethAprWithFallbacks = async (url: string): Promise<string> => {

@@ -21,6 +21,7 @@ export const TransactionToastEtherscan: TransactionToastEtherscanComponent = (
   props,
 ) => {
   const { chainId, hash, children, ...rest } = props;
+  // TODO: move from lido-js-sdk or better type getEtherscanTxLink
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const etherscanLink = getEtherscanTxLink(chainId as any, hash);
 

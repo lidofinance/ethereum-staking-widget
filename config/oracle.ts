@@ -1,4 +1,4 @@
-import { CHAINS } from 'utilsApi/chains';
+import { CHAINS } from 'utils/chains';
 import { OracleAbi__factory } from 'generated';
 
 export const ORACLE_BY_NETWORK: {

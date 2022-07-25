@@ -1,5 +1,5 @@
 import { formatEther } from '@ethersproject/units';
-import { CHAINS } from './chains';
+import { CHAINS } from 'utils';
 import { getStaticRpcBatchProvider } from './rpcProviders';
 import {
   getStethAddress,
@@ -7,10 +7,10 @@ import {
   HEALTHY_RPC_SERVICES_ARE_OVER,
 } from 'config';
 import { serverLogger } from './serverLogger';
-import { providers } from './providers';
+import { rpcUrls } from './rpcUrls';
 
 export const getTotalStaked = async (): Promise<string> => {
-  const urls = providers[CHAINS.Mainnet];
+  const urls = rpcUrls[CHAINS.Mainnet];
   return getTotalStakedWithFallbacks(urls, 0);
 };
 

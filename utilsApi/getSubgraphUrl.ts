@@ -1,5 +1,5 @@
 import getConfig from 'next/config';
-import { CHAINS } from './chains';
+import { CHAINS } from 'utils/chains';
 import { SubgraphChains } from 'types';
 
 const { serverRuntimeConfig } = getConfig();

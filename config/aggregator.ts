@@ -1,4 +1,4 @@
-import { CHAINS } from 'utilsApi/chains';
+import { CHAINS } from 'utils/chains';
 import { AggregatorAbi__factory } from 'generated';
 
 // Chainlink: ETH/USD Price Feed

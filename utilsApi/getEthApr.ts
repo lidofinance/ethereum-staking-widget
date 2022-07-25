@@ -1,12 +1,12 @@
-import { CHAINS } from './chains';
+import { CHAINS } from 'utils/chains';
 import { serverLogger } from './serverLogger';
 import { getStaticRpcBatchProvider } from './rpcProviders';
-import { providers } from './providers';
+import { rpcUrls } from './rpcUrls';
 import { iterateUrls } from '@lidofinance/rpc';
 
 export const getEthApr = async (): Promise<string> => {
   serverLogger.debug('Getting eth apr...');
-  const urls = providers[CHAINS.Mainnet];
+  const urls = rpcUrls[CHAINS.Mainnet];
 
   const totalAtStake = await iterateUrls(
     urls,

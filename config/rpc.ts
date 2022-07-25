@@ -1,5 +1,5 @@
 import getConfig from 'next/config';
-import { CHAINS } from 'utilsApi/chains';
+import { CHAINS } from 'utils/chains';
 
 const { serverRuntimeConfig } = getConfig();
 const { basePath } = serverRuntimeConfig;
