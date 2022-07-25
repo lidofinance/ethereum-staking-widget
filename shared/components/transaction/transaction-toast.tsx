@@ -21,7 +21,8 @@ export const TransactionToastEtherscan: TransactionToastEtherscanComponent = (
   props,
 ) => {
   const { chainId, hash, children, ...rest } = props;
-  const etherscanLink = getEtherscanTxLink(chainId, hash);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const etherscanLink = getEtherscanTxLink(chainId as any, hash);
 
   return (
     <TransactionToast {...rest}>

@@ -2,8 +2,7 @@ import { AddressZero } from '@ethersproject/constants';
 import { parseEther } from '@ethersproject/units';
 import { isAddress } from 'ethers/lib/utils';
 import { StethAbi } from '@lido-sdk/contracts';
-import { CHAINS } from '@lido-sdk/constants';
-import { getStaticRpcBatchProvider } from '@lido-sdk/providers';
+import { getStaticRpcBatchProvider } from 'utils/rpcProviders';
 import { getErrorMessage, runWithTransactionLogger } from 'utils';
 import { getBackendRPCPath } from 'config';
 import { TX_STAGE } from 'shared/components';
@@ -23,7 +22,7 @@ type StakeProcessingProps = (
 
 export const getAddress = async (
   input: string | undefined,
-  chainId: CHAINS | undefined,
+  chainId: string | number | undefined,
 ): Promise<string> => {
   if (!input || !chainId) return '';
   if (isAddress(input)) return input;
@@ -31,7 +30,7 @@ export const getAddress = async (
   try {
     const provider = getStaticRpcBatchProvider(
       chainId,
-      getBackendRPCPath(chainId as number),
+      getBackendRPCPath(chainId),
     );
     const address = await provider.resolveName(input);
 

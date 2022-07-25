@@ -1,4 +1,3 @@
-import { CHAINS } from '@lido-sdk/constants';
 import { FC } from 'react';
 
 export type TransactionToastComponent = FC<{
@@ -7,6 +6,6 @@ export type TransactionToastComponent = FC<{
 
 export type TransactionToastEtherscanComponent = FC<{
   title: React.ReactNode;
-  chainId: CHAINS;
+  chainId: string | number;
   hash: string;
 }>;
