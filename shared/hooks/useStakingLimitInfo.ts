@@ -64,10 +64,14 @@ export const useStakingLimitInfo = () => {
         ...stakeLimitFullInfo,
       };
     },
+    {
+      refreshInterval: 30000,
+    },
   );
 
   return {
     initialLoading: !result.data,
     data: result.data,
+    error: result.error,
   };
 };
