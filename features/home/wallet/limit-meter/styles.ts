@@ -54,6 +54,8 @@ export const LevelContainer = styled.div`
 `;
 
 export const IconWrapper = styled.div`
+  display: flex;
+  align-items: center;
   margin-left: 8px;
   line-height: 0;
   :hover {

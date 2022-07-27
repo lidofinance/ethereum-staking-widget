@@ -1,16 +1,19 @@
-import limitSafeIconSource from 'assets/icons/limit-safe.svg';
-import limitWarnIconSource from 'assets/icons/limit-warn.svg';
-import limitReachedIconSource from 'assets/icons/limit-reached.svg';
-import Image from 'next/image';
+import styled from 'styled-components';
 
-export const LimitSafeIcon = () => (
-  <Image src={limitSafeIconSource} width="16" height="16" />
-);
+const Icon = styled.div`
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+`;
 
-export const LimitWarnIcon = () => (
-  <Image src={limitWarnIconSource} width="16" height="16" />
-);
+export const LimitSafeIcon = styled(Icon)`
+  background-color: ${({ theme }) => theme.colors.success};
+`;
 
-export const LimitReachedIcon = () => (
-  <Image src={limitReachedIconSource} width="16" height="16" />
-);
+export const LimitWarnIcon = styled(Icon)`
+  background-color: ${({ theme }) => theme.colors.warning};
+`;
+
+export const LimitReachedIcon = styled(Icon)`
+  background-color: ${({ theme }) => theme.colors.error};
+`;
