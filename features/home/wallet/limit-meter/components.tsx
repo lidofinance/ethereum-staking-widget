@@ -1,6 +1,6 @@
-import { Tooltip } from '@lidofinance/lido-ui';
 import { LIMIT_LEVEL } from 'types';
 import { LimitReachedIcon, LimitSafeIcon, LimitWarnIcon } from './icons';
+import { TooltipHoverable } from 'shared/components';
 import {
   Bars,
   EmptyBar,
@@ -82,13 +82,20 @@ const LimitIcon: LimitComponent = ({ limitLevel }) => {
 
 export const LimitHelp: LimitComponent = ({ limitLevel }) => {
   return (
-    <Tooltip
+    <TooltipHoverable
       title={
         <div>
           <p>
             Represents how much ether you can stake at this moment. You cannot
             stake over the global staking limit. The global limit goes down with
-            each deposit but is passively restored on each block.
+            each deposit but is passively restored on each block.{' '}
+            <a
+              href="https://docs.lido.fi/guides/steth-integration-guide#staking-rate-limits"
+              target="_blank"
+              rel="noreferrer"
+            >
+              More info
+            </a>
           </p>
           <Level limitLevel={limitLevel} />
         </div>
@@ -97,6 +104,6 @@ export const LimitHelp: LimitComponent = ({ limitLevel }) => {
       <IconWrapper>
         <LimitIcon limitLevel={limitLevel} />
       </IconWrapper>
-    </Tooltip>
+    </TooltipHoverable>
   );
 };
