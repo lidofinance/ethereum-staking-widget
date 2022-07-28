@@ -107,6 +107,8 @@ export const useCurrencyInput: UseCurrencyInput = ({
           );
           stopValidating();
           return false;
+        } else {
+          setLimitWarning('');
         }
       }
 
