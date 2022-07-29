@@ -20,6 +20,9 @@
     "ecmaVersion": 12,
     "sourceType": "module"
   },
+  "ignorePatterns": [
+    "server.js"
+  ],
   "plugins": ["@typescript-eslint", "react"],
   "rules": {
     "prettier/prettier": ["error", {}, { "usePrettierrc": true }],
