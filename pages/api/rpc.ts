@@ -20,6 +20,7 @@ const rpc = rpcFactory({
     'eth_gasPrice',
     'eth_estimateGas',
     'eth_getBlockByNumber',
+    'eth_getBalance',
   ],
   defaultChain,
   providers: rpcUrls,
