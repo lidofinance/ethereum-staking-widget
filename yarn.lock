@@ -1914,10 +1914,10 @@
   resolved "https://registry.yarnpkg.com/@lidofinance/api-metrics/-/api-metrics-0.0.4.tgz#edf3b49430a07e5b65dc2bc747f102fa1164d18c"
   integrity sha512-833yA/GEYARp7+9lk8P+lwh+RK+ZS8QNOcjEw06tfLIsku08/FabKWFO45vXiG4oaVTKb2f9y20DNsfNLZPT7w==
 
-"@lidofinance/api-rpc@^0.0.5":
-  version "0.0.5"
-  resolved "https://registry.yarnpkg.com/@lidofinance/api-rpc/-/api-rpc-0.0.5.tgz#704d307735d67be3770a4da9e0f34611c199a3db"
-  integrity sha512-4HA+qYayG5NbMBZf2HUeX8MqTiznNLdeD69uSmXbK3E906KS/QZ+1hk089NaHf4+2JC7XV1sZHx5Htg24Y/P7Q==
+"@lidofinance/api-rpc@^0.0.6":
+  version "0.0.6"
+  resolved "https://registry.yarnpkg.com/@lidofinance/api-rpc/-/api-rpc-0.0.6.tgz#2fa5ef94f6fa4b54226e9cbf6a6d5ebf090b32ee"
+  integrity sha512-zNiuOwrhqLgE60zdNaH1S6RwrGV5oaY/jeM5edFCLVz+aHbt4Yds4ClFdjfB17VmInrG5pZMe67RWABNCt4ylg==
 
 "@lidofinance/block@2.3.0":
   version "2.3.0"
@@ -2118,10 +2118,10 @@
     "@lidofinance/transition" "2.2.0"
     "@lidofinance/utils" "1.3.2"
 
-"@lidofinance/next-pages@^0.0.6":
-  version "0.0.6"
-  resolved "https://registry.yarnpkg.com/@lidofinance/next-pages/-/next-pages-0.0.6.tgz#55b1ce6f467f4d1d98d8fe3f244402daec5e1edb"
-  integrity sha512-GRlkR63G6sbqNT/6qAD20fy7Q7CVR99TElq7PVmB84Dp7et/8HPddmW8OWAR/n3EUIi9L8EFr73nyiCnT8UFQw==
+"@lidofinance/next-pages@^0.0.7":
+  version "0.0.7"
+  resolved "https://registry.yarnpkg.com/@lidofinance/next-pages/-/next-pages-0.0.7.tgz#1c7d58a928c0c54583f6f20e5cbfa3d3205d1ddd"
+  integrity sha512-eOH0zGFpSHUMlO9s0kii1ZNwDhNG2QJOvndX3DEp15C97HpbDN+g+JihP0A8GYMhiQ9h0vZOf7RgjqBCuY487w==
 
 "@lidofinance/pagination@1.5.0":
   version "1.5.0"
@@ -2154,12 +2154,12 @@
     "@lidofinance/theme" "2.6.0"
     "@lidofinance/utils" "1.3.2"
 
-"@lidofinance/rpc@^0.0.4":
-  version "0.0.4"
-  resolved "https://registry.yarnpkg.com/@lidofinance/rpc/-/rpc-0.0.4.tgz#52317bdc20f1d849552be8965a830dff484b74d2"
-  integrity sha512-+Si6vYmfsXRZVAdfLjgskOAipCOEAkqsvsKxagWbA6o0bym5jUlJ+R0BvQdJP57Ax9NveQ4s6fvEtGMQl8EBPA==
+"@lidofinance/rpc@^0.0.5":
+  version "0.0.5"
+  resolved "https://registry.yarnpkg.com/@lidofinance/rpc/-/rpc-0.0.5.tgz#ede9f70bebc9800c682afc437c7aef00485b5b90"
+  integrity sha512-GWLdTDgU5f6LsZM0XJ3y3LNXb3VCDGHHv/oqFlHE8msZTNAB6t3/RxRI1hDSzYWfgL+1aJ8hOLYK3+V9IDUCBQ==
   dependencies:
-    unfetch "^4.2.0"
+    isomorphic-fetch "^3.0.0"
 
 "@lidofinance/select@3.9.0":
   version "3.9.0"
@@ -5683,6 +5683,14 @@ isexe@^2.0.0:
   resolved "https://registry.yarnpkg.com/isexe/-/isexe-2.0.0.tgz#e8fbf374dc556ff8947a10dcb0572d633f2cfa10"
   integrity sha512-RHxMLp9lnKHGHRng9QFhRCMbYAcVpn69smSGcq3f36xjgVVWThj4qqLbTLlq7Ssj8B+fIQ1EuCEGI2lKsyQeIw==
 
+isomorphic-fetch@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/isomorphic-fetch/-/isomorphic-fetch-3.0.0.tgz#0267b005049046d2421207215d45d6a262b8b8b4"
+  integrity sha512-qvUtwJ3j6qwsF3jLxkZ72qCgjMysPzDfeV240JHiGZsANBYd+EEuu35v7dfrJ9Up0Ak07D7GGSkGhCHTqg/5wA==
+  dependencies:
+    node-fetch "^2.6.1"
+    whatwg-fetch "^3.4.1"
+
 istanbul-lib-coverage@^3.0.0, istanbul-lib-coverage@^3.2.0:
   version "3.2.0"
   resolved "https://registry.yarnpkg.com/istanbul-lib-coverage/-/istanbul-lib-coverage-3.2.0.tgz#189e7909d0a39fa5a3dfad5b03f71947770191d3"
@@ -8389,11 +8397,6 @@ unbox-primitive@^1.0.2:
     has-symbols "^1.0.3"
     which-boxed-primitive "^1.0.2"
 
-unfetch@^4.2.0:
-  version "4.2.0"
-  resolved "https://registry.yarnpkg.com/unfetch/-/unfetch-4.2.0.tgz#7e21b0ef7d363d8d9af0fb929a5555f6ef97a3be"
-  integrity sha512-F9p7yYCn6cIW9El1zi0HI6vqpeIvBsr3dSuRO6Xuppb1u5rXpCPmMvLSyECLhybr9isec8Ohl0hPekMVrEinDA==
-
 unicode-canonical-property-names-ecmascript@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/unicode-canonical-property-names-ecmascript/-/unicode-canonical-property-names-ecmascript-2.0.0.tgz#301acdc525631670d39f6146e0e77ff6bbdebddc"
@@ -8652,6 +8655,11 @@ whatwg-encoding@^1.0.5:
   integrity sha512-b5lim54JOPN9HtzvK9HFXvBma/rnfFeqsic0hSpjtDbVxR3dJKLc+KB4V6GgiGOvl7CY/KNh8rxSo9DKQrnUEw==
   dependencies:
     iconv-lite "0.4.24"
+
+whatwg-fetch@^3.4.1:
+  version "3.6.2"
+  resolved "https://registry.yarnpkg.com/whatwg-fetch/-/whatwg-fetch-3.6.2.tgz#dced24f37f2624ed0281725d51d0e2e3fe677f8c"
+  integrity sha512-bJlen0FcuU/0EMLrdbJ7zOnW6ITZLrZMIarMUVmdKtsGvZna8vxKYaexICWPfZ8qwf9fzNq+UEIZrnSaApt6RA==
 
 whatwg-mimetype@^2.3.0:
   version "2.3.0"
