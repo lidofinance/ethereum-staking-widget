@@ -1,11 +1,3 @@
-import { CHAINS } from '@lido-sdk/constants';
+import { CHAINS } from 'utils/chains';
 
-export type SubgraphChains = Extract<
-  CHAINS,
-  | CHAINS.Mainnet
-  | CHAINS.Ropsten
-  | CHAINS.Rinkeby
-  | CHAINS.Goerli
-  | CHAINS.Kovan
-  | CHAINS.Kintsugi
->;
+export type SubgraphChains = Extract<CHAINS, CHAINS.Mainnet | CHAINS.Goerli>;
