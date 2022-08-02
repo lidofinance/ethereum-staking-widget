@@ -1,6 +1,6 @@
 {
   "name": "lido-staking-widget",
-  "version": "1.14.3",
+  "version": "1.16.1",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -33,7 +33,7 @@
     "@lidofinance/eth-api-providers": "^0.0.4",
     "@lidofinance/eth-providers": "^0.0.3",
     "@lidofinance/lido-ui": "^2.10.0",
-    "@lidofinance/lido-ui-blocks": "2.5.2",
+    "@lidofinance/lido-ui-blocks": "^2.5.3",
     "@lidofinance/next-pages": "^0.0.7",
     "@lidofinance/rpc": "^0.0.5",
     "@types/cors": "^2.8.12",
