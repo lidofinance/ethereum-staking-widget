@@ -1,3 +1,14 @@
+## [1.16.2](https://github.com/lidofinance/staking-widget-ts/compare/1.16.1...1.16.2) (2022-08-03)
+
+
+### Bug Fixes
+
+* ambire wallet autoconnect issue ([adef3d0](https://github.com/lidofinance/staking-widget-ts/commit/adef3d09353c346000b1c877a48a37a37e4bfb3d))
+* lido-sdk/web3-react 1.23, lido-ui-blocks 2.5.2 ([c071de8](https://github.com/lidofinance/staking-widget-ts/commit/c071de8a4e8410a6a193f3c93674ffe61629f1c1))
+* lido-ui-blocks 2.5.3 (ambire fix) ([533bf76](https://github.com/lidofinance/staking-widget-ts/commit/533bf76d989d8bb8f5daed2150d9e920ce8a765f))
+
+
+
 ## [1.16.1](https://github.com/lidofinance/staking-widget-ts/compare/1.16.0...1.16.1) (2022-07-25)
 
 
@@ -125,30 +136,6 @@
 
 * revert lido-ui-blocks to v1 ([f0a5076](https://github.com/lidofinance/staking-widget-ts/commit/f0a507693761be9b987463f53353bdba6a405cf9))
 * update lido-ui-blocks to v2.0.2 (revert of revert) ([45b8354](https://github.com/lidofinance/staking-widget-ts/commit/45b8354e0e27b9e1798b585014ab5508faa5ef9b))
-
-
-
-# [1.13.0](https://github.com/lidofinance/staking-widget-ts/compare/1.12.1...1.13.0) (2022-06-09)
-
-
-### Bug Fixes
-
-* Add release feature ([e494637](https://github.com/lidofinance/staking-widget-ts/commit/e4946379326a372e0fe057d84f8c65e725c400a2))
-* **common:** misspelled qa team ([ec75689](https://github.com/lidofinance/staking-widget-ts/commit/ec756895a38acd067fe2ead9818bc575d8fdfbc9))
-* separate Subgraph chains type ([e135c62](https://github.com/lidofinance/staking-widget-ts/commit/e135c62162e5427947049d9da534deb47612915e))
-* type error related to lido-sdk chains list update ([c58e085](https://github.com/lidofinance/staking-widget-ts/commit/c58e085d56131fd087384676acd284e5958a1af4))
-* update lido-ui-blocks to v2.0.2 ([341d2bc](https://github.com/lidofinance/staking-widget-ts/commit/341d2bcac968ad3dcf1cfa5f257e8947db0aa31f))
-
-
-### Features
-
-* **common:** fix misspell again ([e432dc7](https://github.com/lidofinance/staking-widget-ts/commit/e432dc7e9a18e5dbc3742964657e902c2075cdbf))
-* **common:** removed lockfile ovners due policy expiration ([fa1639a](https://github.com/lidofinance/staking-widget-ts/commit/fa1639af90cc159b5d0608c9f0af53c005117a36))
-* New release flow ([178d971](https://github.com/lidofinance/staking-widget-ts/commit/178d971cbd34c4e228c10434e685040c09c1b9e0))
-* update lido-js-sdk packages ([b89b6ad](https://github.com/lidofinance/staking-widget-ts/commit/b89b6ad49e9eaddc7208c58eaac16e3aa38a0fe1))
-* update lido-sdk/web3-react, lido-ui, lido-ui-blocks ([08758ab](https://github.com/lidofinance/staking-widget-ts/commit/08758ab371ed15f4f71c3b4373bf44c4dc61528c))
-* update lido-ui to v2.5.0 ([18b6bd0](https://github.com/lidofinance/staking-widget-ts/commit/18b6bd0009639f49c735b4784d465fbd5657db31))
-* update lido-ui-blocks to v2.0.1 ([d365b25](https://github.com/lidofinance/staking-widget-ts/commit/d365b2519b6490575aa514e0756b37d313932368))
 
 
 
