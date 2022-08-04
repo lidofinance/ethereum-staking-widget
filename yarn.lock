@@ -1857,7 +1857,7 @@
   dependencies:
     "@lido-sdk/constants" "1.6.0"
 
-"@lido-sdk/react@1.18.1", "@lido-sdk/react@^1.18.0":
+"@lido-sdk/react@1.18.1", "@lido-sdk/react@^1.18.1":
   version "1.18.1"
   resolved "https://registry.yarnpkg.com/@lido-sdk/react/-/react-1.18.1.tgz#6d283f691f8526f9b9dae8e96c6038b43e127246"
   integrity sha512-WHbam35vAmeOyUFAvK4itD1NOi5k0/We5M6koq/xCcp3jRkxijcYQbh3kfVplsDkJzBISwcckpDi5TiZxRXPdg==
