@@ -28,7 +28,7 @@ import {
   RetryButton,
   Grid,
 } from './styles';
-import { use1inchLink } from 'features/home/hooks';
+import { use1inchLinkProps } from 'features/home/hooks';
 
 export enum TX_OPERATION {
   STAKING,
@@ -193,7 +193,7 @@ export const TxStageModal: FC<TxStageModalProps> = memo(
       );
     }, [chainId, txHash]);
 
-    const oneInchLink = use1inchLink();
+    const oneInchLinkProps = use1inchLinkProps();
 
     const content = useMemo(() => {
       switch (txStage) {
@@ -304,10 +304,7 @@ export const TxStageModal: FC<TxStageModalProps> = memo(
                     >
                       Retry
                     </RetryButton>
-                    <ButtonLinkSmall
-                      href={oneInchLink.link}
-                      target={oneInchLink.linkTarget}
-                    >
+                    <ButtonLinkSmall {...oneInchLinkProps}>
                       Swap on 1inch
                     </ButtonLinkSmall>
                   </Grid>
@@ -334,8 +331,7 @@ export const TxStageModal: FC<TxStageModalProps> = memo(
       allowanceAmount,
       failedText,
       formRef,
-      oneInchLink.link,
-      oneInchLink.linkTarget,
+      oneInchLinkProps,
     ]);
 
     return (
