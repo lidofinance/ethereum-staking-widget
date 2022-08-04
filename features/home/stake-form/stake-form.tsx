@@ -24,6 +24,7 @@ import {
   DataTableRow,
   Eth,
 } from '@lidofinance/lido-ui';
+import { OneinchInfo } from 'features/home/oneinch-info/oneinch-info';
 import { DATA_UNAVAILABLE } from 'config';
 import { Connect } from 'shared/wallet';
 import { TxStageModal, TX_OPERATION, TX_STAGE } from 'shared/components';
@@ -163,6 +164,7 @@ export const StakeForm: FC = memo(() => {
         ) : (
           <Connect fullwidth />
         )}
+        <OneinchInfo />
       </FormStyled>
 
       <DataTable>
