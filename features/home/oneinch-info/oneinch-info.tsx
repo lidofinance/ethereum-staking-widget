@@ -1,4 +1,4 @@
-import React, { FC, useCallback } from 'react';
+import { FC, useMemo } from 'react';
 import { useLidoSWR } from 'shared/hooks';
 import { Button } from '@lidofinance/lido-ui';
 import {
@@ -21,16 +21,20 @@ export const OneinchInfo: FC = () => {
   const rate = (data && data.rate) || 1;
   const discount = (100 - (1 / rate) * 100).toFixed(2);
 
-  const toOneinch = useCallback(() => {
+  const linkProps = useMemo(() => {
     if (isLedgerLive) {
-      window.open(
-        isDesktop
+      return {
+        href: isDesktop
           ? LEDGER_LIVE_ONE_INCH_DESKTOP_DEEPLINK
           : LEDGER_LIVE_ONE_INCH_MOBILE_DEEPLINK,
-        '_self',
-      );
+        target: '_self',
+      };
     } else {
-      window.open(ONE_INCH_URL, '_blank');
+      return {
+        href: ONE_INCH_URL,
+        target: '_blank',
+        rel: 'noopener noreferrer',
+      };
     }
   }, [isLedgerLive]);
 
@@ -46,9 +50,9 @@ export const OneinchInfo: FC = () => {
         platform
       </TextWrap>
       <ButtonWrap>
-        <Button onClick={toOneinch} size="xs">
-          Get discount
-        </Button>
+        <a {...linkProps}>
+          <Button size="xs">Get discount</Button>
+        </a>
       </ButtonWrap>
     </Wrap>
   );
