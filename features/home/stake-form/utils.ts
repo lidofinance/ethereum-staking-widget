@@ -10,7 +10,6 @@ import {
   getErrorMessage,
   runWithTransactionLogger,
 } from 'utils';
-import { getErrorMessage, runWithTransactionLogger } from 'utils';
 import { getBackendRPCPath } from 'config';
 import { TX_STAGE } from 'shared/components';
 
