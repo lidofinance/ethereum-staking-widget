@@ -1,4 +1,4 @@
-const basePath = process.env.BASE_PATH || '';
+const basePath = process.env.BASE_PATH;
 const infuraApiKey = process.env.INFURA_API_KEY;
 const alchemyApiKey = process.env.ALCHEMY_API_KEY;
 
@@ -28,13 +28,8 @@ const enableQaHelpers = process.env.ENABLE_QA_HELPERS;
 
 module.exports = {
   basePath,
-  webpack5: true,
-  experimental: {
+  compiler: {
     styledComponents: true,
-  },
-  // WARNING: Vulnerability fix, don't remove until default Next.js image loader is patched
-  images: {
-    loader: 'custom',
   },
   webpack(config) {
     // Teach webpack to import svg files

@@ -8,7 +8,6 @@ import {
   ToastPending,
   ToastSuccess,
 } from '@lidofinance/lido-ui';
-import { CHAINS } from '@lido-sdk/constants';
 import { runWithTransactionLogger } from 'utils';
 import {
   TransactionToast,
@@ -17,7 +16,7 @@ import {
 
 export const transaction = async <T extends TransactionReceipt>(
   name: string,
-  chainId: CHAINS,
+  chainId: string | number,
   callback: () => Promise<TransactionResponse>,
 ): Promise<T | undefined> => {
   let pendingToastId = null;

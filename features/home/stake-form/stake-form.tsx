@@ -8,7 +8,6 @@ import {
   useRef,
 } from 'react';
 import { useRouter } from 'next/router';
-// import { AddressZero } from '@ethersproject/constants';
 import { parseEther } from '@ethersproject/units';
 import {
   useContractSWR,
@@ -25,11 +24,11 @@ import {
   DataTableRow,
   Eth,
 } from '@lidofinance/lido-ui';
+import { OneinchInfo } from 'features/home/oneinch-info/oneinch-info';
 import { DATA_UNAVAILABLE } from 'config';
 import { Connect } from 'shared/wallet';
 import { TxStageModal, TX_OPERATION, TX_STAGE } from 'shared/components';
 import { useCurrencyInput, useTxCostInUsd } from 'shared/hooks';
-// import { useStethSubmitGasLimit } from './hooks/use-steth-submit-gas-limit';
 import { FormStyled, InputStyled, MaxButton } from './styles';
 import { stakeProcessing } from './utils';
 import { useStethSubmitGasLimit } from './hooks';
@@ -175,6 +174,7 @@ export const StakeForm: FC = memo(() => {
         ) : (
           <Connect fullwidth />
         )}
+        <OneinchInfo />
       </FormStyled>
 
       <DataTable>

@@ -1,17 +1,16 @@
 import { formatEther } from '@ethersproject/units';
-import { CHAINS } from '@lido-sdk/constants';
-import { getStaticRpcBatchProvider } from '@lido-sdk/providers';
+import { CHAINS } from 'utils';
+import { getStaticRpcBatchProvider } from './rpcProviders';
 import {
-  getRpcJsonUrls,
   getStethAddress,
   getStethContractFactory,
   HEALTHY_RPC_SERVICES_ARE_OVER,
 } from 'config';
-import { rpcResponseTime, INFURA, ALCHEMY } from 'utilsApi/metrics';
 import { serverLogger } from './serverLogger';
+import { rpcUrls } from './rpcUrls';
 
 export const getTotalStaked = async (): Promise<string> => {
-  const urls = getRpcJsonUrls(CHAINS.Mainnet);
+  const urls = rpcUrls[CHAINS.Mainnet];
   return getTotalStakedWithFallbacks(urls, 0);
 };
 
@@ -32,18 +31,7 @@ const getTotalStakedWithFallbacks = async (
       staticProvider,
     );
 
-    const endMetric = rpcResponseTime.startTimer();
-
     const totalSupplyStWei = await stethContract.totalSupply();
-
-    if (urls[urlIndex].indexOf(INFURA) > -1) {
-      serverLogger.log('[getTotalStaked] Get via infura');
-      endMetric({ provider: INFURA, chainId: String(CHAINS.Mainnet) });
-    }
-    if (urls[urlIndex].indexOf(ALCHEMY) > -1) {
-      serverLogger.log('[getTotalStaked] Get via alchemy');
-      endMetric({ provider: ALCHEMY, chainId: String(CHAINS.Mainnet) });
-    }
 
     const totalSupplyStEth = formatEther(totalSupplyStWei);
     return Number(totalSupplyStEth).toFixed(8);

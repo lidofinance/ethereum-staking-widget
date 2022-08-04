@@ -1,6 +1,5 @@
 import { parseEther } from '@ethersproject/units';
-import { CHAINS } from '@lido-sdk/constants';
-import { getStaticRpcBatchProvider } from '@lido-sdk/providers';
+import { getStaticRpcBatchProvider } from 'utils/rpcProviders';
 import { useLidoSWR, useWSTETHContractRPC } from '@lido-sdk/react';
 import { useWeb3 } from '@lido-sdk/web3-react';
 import { ESTIMATE_ACCOUNT, getBackendRPCPath, UNWRAP_GAS_LIMIT } from 'config';
@@ -18,8 +17,9 @@ export const useUnwrapGasLimit = () => {
       }
 
       const provider = getStaticRpcBatchProvider(
-        chainId as CHAINS,
-        getBackendRPCPath(chainId as CHAINS),
+        // TODO: add a way to type useWeb3 hook
+        chainId as number,
+        getBackendRPCPath(chainId as number),
       );
 
       const feeData = await provider.getFeeData();

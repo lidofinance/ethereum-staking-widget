@@ -10,6 +10,7 @@ import {
   getErrorMessage,
   runWithTransactionLogger,
 } from 'utils';
+import { getErrorMessage, runWithTransactionLogger } from 'utils';
 import { getBackendRPCPath } from 'config';
 import { TX_STAGE } from 'shared/components';
 
@@ -22,7 +23,7 @@ type StakeProcessingProps = (
   stethBalanceUpdate: () => void,
   inputValue: string,
   resetForm: () => void,
-  chainId: CHAINS | undefined,
+  chainId: number | undefined,
   refFromQuery: string | undefined,
 ) => Promise<void>;
 

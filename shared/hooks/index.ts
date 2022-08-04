@@ -1,4 +1,3 @@
-export * from './contracts';
 export * from './useCopyToClipboard';
 export * from './useENSAddress';
 export * from './useModal';
