@@ -32,6 +32,7 @@ import { useCurrencyInput, useTxCostInUsd } from 'shared/hooks';
 import { FormStyled, InputStyled, MaxButton } from './styles';
 import { stakeProcessing } from './utils';
 import { useStethSubmitGasLimit } from './hooks';
+import { useStakeableEther } from '../hooks';
 
 export const StakeForm: FC = memo(() => {
   const router = useRouter();
@@ -44,7 +45,8 @@ export const StakeForm: FC = memo(() => {
   const [txModalFailedText, setTxModalFailedText] = useState('');
 
   const { active, chainId } = useWeb3();
-  const ethBalance = useEthereumBalance();
+  const etherBalance = useEthereumBalance();
+  const stakeableEther = useStakeableEther();
   const stethBalance = useSTETHBalance();
   const stethContractWeb3 = useSTETHContractWeb3();
   const contractRpc = useSTETHContractRPC();
@@ -98,10 +100,17 @@ export const StakeForm: FC = memo(() => {
     isSubmitting,
     setMaxInputValue,
     reset,
+    limitWarning,
+    limitReached,
   } = useCurrencyInput({
     initialValue: (router?.query?.amount as string) || undefined,
     submit,
-    limit: ethBalance.data,
+    limit: stakeableEther.data,
+    checkStakingLimit: true,
+    padMaxAmount:
+      etherBalance.data &&
+      stakeableEther.data &&
+      etherBalance.data.lt(stakeableEther.data),
   });
 
   const willReceiveStEthValue = useMemo(() => {
@@ -151,12 +160,13 @@ export const StakeForm: FC = memo(() => {
           value={inputValue}
           onChange={handleChange}
           error={error}
+          warning={limitWarning}
         />
         {active ? (
           <Button
             fullwidth
             type="submit"
-            disabled={isValidating}
+            disabled={limitReached || isValidating}
             loading={isSubmitting}
           >
             Submit

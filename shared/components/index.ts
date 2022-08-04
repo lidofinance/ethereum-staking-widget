@@ -16,3 +16,4 @@ export {
   TX_STAGE,
   TX_OPERATION,
 } from './tx-stage-modal/tx-stage-modal';
+export { TooltipHoverable } from './tooltip-hoverable/tooltip-hoverable';
