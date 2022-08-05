@@ -5,6 +5,7 @@ const logger = (defaultConfig) =>
   pino({
     ...defaultConfig,
     formatters: {
+      ...defaultConfig.formatters,
       level(label, number) {
         return { level: label };
       },
