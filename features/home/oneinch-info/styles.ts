@@ -20,6 +20,15 @@ export const Wrap = styled.div`
   & > * {
     position: relative;
   }
+
+  @media (max-width: 440px) {
+    padding-top: 20px;
+    padding-bottom: 20px;
+    flex-wrap: wrap;
+    height: auto;
+    background-size: cover;
+    background-position: -10px;
+  }
 `;
 
 export const OneInchIconWrap = styled.div`
@@ -51,8 +60,25 @@ export const TextWrap = styled.div`
   & > b {
     font-weight: 700;
   }
+
+  @media (max-width: 440px) {
+    /* Padding (20px * 2) + Gap (20px) + Logo (40px) = 100px */
+    width: calc(100% - 100px);
+  }
 `;
 
 export const ButtonWrap = styled.div`
   flex: 0 0 auto;
+
+  @media (max-width: 440px) {
+    width: 100%;
+  }
+`;
+
+export const ButtonLinkWrap = styled.a`
+  display: block;
+
+  @media (max-width: 440px) {
+    width: 100%;
+  }
 `;

@@ -7,6 +7,7 @@ import {
   OneInchIcon,
   TextWrap,
   ButtonWrap,
+  ButtonLinkWrap,
 } from './styles';
 import { use1inchLinkProps } from '../hooks';
 
@@ -29,9 +30,11 @@ export const OneinchInfo: FC = () => {
         platform
       </TextWrap>
       <ButtonWrap>
-        <a {...linkProps}>
-          <Button size="xs">Get discount</Button>
-        </a>
+        <ButtonLinkWrap {...linkProps}>
+          <Button fullwidth size="xs">
+            Get discount
+          </Button>
+        </ButtonLinkWrap>
       </ButtonWrap>
     </Wrap>
   );
