@@ -25,7 +25,7 @@ export const OneinchInfo: FC = () => {
         <OneInchIcon />
       </OneInchIconWrap>
       <TextWrap>
-        Get a <b>{discount}% discount</b> by buying stETH&nbsp;on the 1icnh
+        Get a <b>{discount}% discount</b> by buying stETH&nbsp;on the 1inch
         platform
       </TextWrap>
       <ButtonWrap>
