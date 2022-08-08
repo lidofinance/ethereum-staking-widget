@@ -1,3 +1,39 @@
+# [1.18.0](https://github.com/lidofinance/staking-widget-ts/compare/1.16.2...1.18.0) (2022-08-04)
+
+### Bug Fixes
+
+- added missing blocked requests tracker ([d767dc1](https://github.com/lidofinance/staking-widget-ts/commit/d767dc12f3b816c0e0b8bc2e4df59b3bde6c33f9))
+- rpcResponseCount was duplicating rpcResponseTime ([e80e504](https://github.com/lidofinance/staking-widget-ts/commit/e80e504e7a0f24739365602edfdae5264a8cd35f))
+- supportedChains mistype + added few missing rpc methods ([e626187](https://github.com/lidofinance/staking-widget-ts/commit/e6261875edf2d8879620594247d9c4ed63fe2def))
+- updated yarn.lock ([a7dfaa6](https://github.com/lidofinance/staking-widget-ts/commit/a7dfaa68879b252df296321e6c3f7a5b4419614b))
+
+### Features
+
+- added eth_getBalance to allowed methods ([ce722c1](https://github.com/lidofinance/staking-widget-ts/commit/ce722c16afcb3bfd2a380963e2ddf7dd1dabe9ab))
+- added fetchRPCWithMetrics ([3d62fcb](https://github.com/lidofinance/staking-widget-ts/commit/3d62fcbd660a07c3ff5fce3fa650e361f53ccc38))
+- added rpc provider with metrics ([0736aee](https://github.com/lidofinance/staking-widget-ts/commit/0736aee3fe5218af502be86f35d8ceb26d1f3c64))
+- api-pages -> next pages & updated lockfile deps ([267ddd7](https://github.com/lidofinance/staking-widget-ts/commit/267ddd753309b5810d88acfc385bab20eca3ec6f))
+- backend-blocks -> widget-blocks ([830dfa7](https://github.com/lidofinance/staking-widget-ts/commit/830dfa79024d222c13a1e865c123a0434445cc9c))
+- before review fixes ([66f36f0](https://github.com/lidofinance/staking-widget-ts/commit/66f36f0753cdf101bb7ea27d8f9a69a264533710))
+- better error handling for fetchRPC ([f489231](https://github.com/lidofinance/staking-widget-ts/commit/f48923128b7263ca7fb76825cdb4af47cfdba861))
+- fetchRPC with callbacks ([dfb4863](https://github.com/lidofinance/staking-widget-ts/commit/dfb4863d675f074532f98a2745460f7710bbcf7b))
+- get all packages from npm & updated packages ([cacf447](https://github.com/lidofinance/staking-widget-ts/commit/cacf447a7a7e9d7541560bad2fb18e8d925465f7))
+- moved chains to utils folder ([37fbead](https://github.com/lidofinance/staking-widget-ts/commit/37fbead9309e750745477728dd71dbdfbc64c78f))
+- moved metrics & health pages to backend-blocks ([0f51361](https://github.com/lidofinance/staking-widget-ts/commit/0f513618a16b1e1a7fc96a5c5568ce3cff3074fc))
+- moved to new packages structure ([1e140a8](https://github.com/lidofinance/staking-widget-ts/commit/1e140a8b9f438163a808c7189509038823b69f3c))
+- removed js-sdk fetch ([9398e53](https://github.com/lidofinance/staking-widget-ts/commit/9398e534e78f2be8e3c16be1c9f5124503410026))
+- removed lido-js-sdk providers ([9c8d32e](https://github.com/lidofinance/staking-widget-ts/commit/9c8d32e301eb28f10f9a56ae569824c76f55a4f9))
+- removed unused files ([31ea4d9](https://github.com/lidofinance/staking-widget-ts/commit/31ea4d9ad67c98d0589fafd52fefb5e6b7bc7539))
+- slightly different fetch API ([1fffaba](https://github.com/lidofinance/staking-widget-ts/commit/1fffaba38be967f2537457e81904d797c95a34a8))
+- somewhat working metrics ([0614bcc](https://github.com/lidofinance/staking-widget-ts/commit/0614bcc2ec297001754aa9955a3128635f9306d2))
+- split fetchRPC into fetchRPC & iterateUrls ([7b99c03](https://github.com/lidofinance/staking-widget-ts/commit/7b99c0363416657aef689d32f95a3fcf1e4439c6))
+- split patch metrics into patch callbacks and patch metrics ([59f2e4b](https://github.com/lidofinance/staking-widget-ts/commit/59f2e4b0138acdf0cdeb41ba4b8ded75e48c6c1c))
+- updated allowlist rules ([6754da2](https://github.com/lidofinance/staking-widget-ts/commit/6754da273310cfeaead5010452969a3dd03ffc93))
+- updated fetchRpc signature & added cachedFetchRPC ([f4a0d51](https://github.com/lidofinance/staking-widget-ts/commit/f4a0d51a8c2fef71a07d61ca7b7b571cb3fae62c))
+- updated lidofinance deps ([add8c96](https://github.com/lidofinance/staking-widget-ts/commit/add8c96485802b9fa1ddb21f5f719fe90bda7003))
+- updated lidofinance deps v2 ([174ffb7](https://github.com/lidofinance/staking-widget-ts/commit/174ffb7650a667025d667361c2634f0d70a9a05c))
+- working with experimental fetch ([f5e7017](https://github.com/lidofinance/staking-widget-ts/commit/f5e7017dfcc5b122791fde6b1178a2ed81217c86))
+
 ## [1.16.2](https://github.com/lidofinance/staking-widget-ts/compare/1.16.1...1.16.2) (2022-08-03)
 
 ### Bug Fixes
