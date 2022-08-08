@@ -88,7 +88,7 @@ export const LimitHelp: LimitComponent = ({ limitLevel }) => {
           <p>
             Represents how much ether you can stake at this moment. You cannot
             stake over the global staking limit. The global limit goes down with
-            each deposit but is passively restored on each block.{' '}
+            each deposit but it&apos;s passively restored on each block.{' '}
             <a
               href="https://docs.lido.fi/guides/steth-integration-guide#staking-rate-limits"
               target="_blank"
