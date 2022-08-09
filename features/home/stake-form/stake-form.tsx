@@ -105,12 +105,19 @@ export const StakeForm: FC = memo(() => {
   } = useCurrencyInput({
     initialValue: (router?.query?.amount as string) || undefined,
     submit,
-    limit: stakeableEther.data,
-    checkStakingLimit: true,
-    padMaxAmount:
+    limit:
       etherBalance.data &&
       stakeableEther.data &&
-      etherBalance.data.lt(stakeableEther.data),
+      (stakeableEther.data.lt(etherBalance.data)
+        ? stakeableEther.data
+        : etherBalance.data),
+    checkStakingLimit: true,
+    padMaxAmount: (padAmount) =>
+      Boolean(
+        etherBalance.data &&
+          stakeableEther.data &&
+          etherBalance.data.sub(padAmount).lte(stakeableEther.data),
+      ),
   });
 
   const willReceiveStEthValue = useMemo(() => {
