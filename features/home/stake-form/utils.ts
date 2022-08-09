@@ -2,8 +2,14 @@ import { AddressZero } from '@ethersproject/constants';
 import { parseEther } from '@ethersproject/units';
 import { isAddress } from 'ethers/lib/utils';
 import { StethAbi } from '@lido-sdk/contracts';
-import { getStaticRpcBatchProvider } from 'utils/rpcProviders';
-import { getErrorMessage, runWithTransactionLogger } from 'utils';
+import { CHAINS } from '@lido-sdk/constants';
+import { getStaticRpcBatchProvider } from '@lido-sdk/providers';
+import {
+  enableQaHelpers,
+  ErrorMessage,
+  getErrorMessage,
+  runWithTransactionLogger,
+} from 'utils';
 import { getBackendRPCPath } from 'config';
 import { TX_STAGE } from 'shared/components';
 
@@ -22,7 +28,7 @@ type StakeProcessingProps = (
 
 export const getAddress = async (
   input: string | undefined,
-  chainId: string | number | undefined,
+  chainId: CHAINS | undefined,
 ): Promise<string> => {
   if (!input || !chainId) return '';
   if (isAddress(input)) return input;
@@ -41,6 +47,14 @@ export const getAddress = async (
 
   throw new Error('Invalid referral address');
 };
+
+class MockLimitReachedError extends Error {
+  reason: string;
+  constructor(message: string) {
+    super(message);
+    this.reason = 'execution reverted: STAKE_LIMIT';
+  }
+}
 
 export const stakeProcessing: StakeProcessingProps = async (
   stethContractWeb3,
@@ -81,6 +95,14 @@ export const stakeProcessing: StakeProcessingProps = async (
 
     setTxStage(TX_STAGE.SIGN);
     openTxModal();
+
+    if (
+      enableQaHelpers &&
+      window.localStorage.getItem('mockLimitReached') === 'true'
+    ) {
+      throw new MockLimitReachedError('Stake limit reached');
+    }
+
     const transaction = await runWithTransactionLogger(
       'Stake signing',
       callback,
@@ -102,9 +124,14 @@ export const stakeProcessing: StakeProcessingProps = async (
     /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
   } catch (error: any) {
     console.error(error);
-    // errors are sometimes nested :(
-    setTxModalFailedText(getErrorMessage(error?.error?.code ?? error?.code));
-    setTxStage(TX_STAGE.FAIL);
+    const errorMessage = getErrorMessage(error);
+    setTxModalFailedText(errorMessage);
+    // Both LIMIT and FAIL are fail stages but limit reached has different UI
+    setTxStage(
+      errorMessage == ErrorMessage.LIMIT_REACHED
+        ? TX_STAGE.LIMIT
+        : TX_STAGE.FAIL,
+    );
     setTxHash(undefined);
     openTxModal();
   }
