@@ -1387,7 +1387,7 @@
     "@ethersproject/rlp" "^5.6.1"
     "@ethersproject/signing-key" "^5.6.2"
 
-"@ethersproject/units@5.6.1", "@ethersproject/units@^5.5.0":
+"@ethersproject/units@5.6.1", "@ethersproject/units@^5.6.1":
   version "5.6.1"
   resolved "https://registry.yarnpkg.com/@ethersproject/units/-/units-5.6.1.tgz#ecc590d16d37c8f9ef4e89e2005bda7ddc6a4e6f"
   integrity sha512-rEfSEvMQ7obcx3KWD5EWWx77gqv54K6BKiZzKxkQJqtpriVsICrktIQmKl8ReNToPeIYPnFHpXvKpi068YFZXw==
@@ -1857,7 +1857,7 @@
   dependencies:
     "@lido-sdk/constants" "1.6.0"
 
-"@lido-sdk/react@1.18.1", "@lido-sdk/react@^1.18.0":
+"@lido-sdk/react@1.18.1", "@lido-sdk/react@^1.18.1":
   version "1.18.1"
   resolved "https://registry.yarnpkg.com/@lido-sdk/react/-/react-1.18.1.tgz#6d283f691f8526f9b9dae8e96c6038b43e127246"
   integrity sha512-WHbam35vAmeOyUFAvK4itD1NOi5k0/We5M6koq/xCcp3jRkxijcYQbh3kfVplsDkJzBISwcckpDi5TiZxRXPdg==
@@ -2059,7 +2059,7 @@
   dependencies:
     "@lidofinance/blocks-connect-wallet-modal" "2.7.1"
 
-"@lidofinance/lido-ui@^2.10.1":
+"@lidofinance/lido-ui@^2.11.0":
   version "2.11.0"
   resolved "https://registry.yarnpkg.com/@lidofinance/lido-ui/-/lido-ui-2.11.0.tgz#466bc39763312ab1735f6ece02afa823b2d8253a"
   integrity sha512-5/tE3GGa1B0K7YtyUcguIaZpLz5cHhIBHIYUvMw58nZBhnSPHhiP4Z5Ns4QYGUBP4AhEWB0RqJvLJ2pt9GYj4g==
@@ -8159,7 +8159,7 @@ svgo@^1.2.2:
     unquote "~1.1.1"
     util.promisify "~1.0.0"
 
-swr@^1.0.1:
+swr@^1.0.1, swr@^1.3.0:
   version "1.3.0"
   resolved "https://registry.yarnpkg.com/swr/-/swr-1.3.0.tgz#c6531866a35b4db37b38b72c45a63171faf9f4e8"
   integrity sha512-dkghQrOl2ORX9HYrMDtPa7LTVHJjCTeZoB1dqTbnnEDlSvN8JEKpYIYurDfvbQFUUS8Cg8PceFVZNkW0KNNYPw==

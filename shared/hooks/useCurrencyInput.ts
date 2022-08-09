@@ -7,8 +7,8 @@ import React, {
   useEffect,
   useState,
 } from 'react';
-import { HandleChange } from 'types';
-import { useMaxAmount } from 'shared/hooks/index';
+import { HandleChange, LIMIT_LEVEL } from 'types';
+import { useMaxAmount, useStakingLimitLevel } from 'shared/hooks/index';
 
 type UseCurrencyInputArgs = {
   inputName?: string;
@@ -20,6 +20,8 @@ type UseCurrencyInputArgs = {
   submit: (inputValue: string, reset: () => void) => Promise<void>;
   externalSetInputValue?: (inputValue: string) => void;
   token?: string;
+  checkStakingLimit?: boolean;
+  padMaxAmount?: boolean;
 };
 
 type UseCurrencyInputReturn = {
@@ -31,6 +33,8 @@ type UseCurrencyInputReturn = {
   handleSubmit: FormEventHandler<HTMLFormElement> | undefined;
   reset: () => void;
   setMaxInputValue: () => void;
+  limitWarning: string;
+  limitReached?: boolean;
 };
 
 type UseCurrencyInput = (args: UseCurrencyInputArgs) => UseCurrencyInputReturn;
@@ -45,9 +49,12 @@ export const useCurrencyInput: UseCurrencyInput = ({
   submit,
   externalSetInputValue,
   token = 'ETH',
+  checkStakingLimit,
+  padMaxAmount,
 }) => {
   const [inputValue, setInputValue] = useState(initialValue);
   const [error, setError] = useState(initialError);
+  const [limitWarning, setLimitWarning] = useState('');
   const [shouldValidate, setShouldValidate] = useState(validateOnMount);
   const [isValidating, setIsValidating] = useState<boolean>(false);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
@@ -83,9 +90,27 @@ export const useCurrencyInput: UseCurrencyInput = ({
     setError(initialError);
   }, [initialError, initialValue, validateOnMount]);
 
+  const limitLevel = useStakingLimitLevel();
+
   const validate: (value: string) => boolean = useCallback(
     (value: string) => {
       startValidating();
+
+      if (checkStakingLimit) {
+        if (limitLevel === LIMIT_LEVEL.WARN) {
+          setLimitWarning(
+            'Stake limit is almost exhausted. Your transaction may not go through.',
+          );
+        } else if (limitLevel === LIMIT_LEVEL.REACHED) {
+          setError(
+            `Stake limit is exhausted. Please wait until the limit is restored.`,
+          );
+          stopValidating();
+          return false;
+        } else {
+          setLimitWarning('');
+        }
+      }
 
       const amount = Number(value);
 
@@ -144,7 +169,15 @@ export const useCurrencyInput: UseCurrencyInput = ({
       setError('');
       return true;
     },
-    [startValidating, zeroValid, limit, inputName, stopValidating],
+    [
+      startValidating,
+      zeroValid,
+      limit,
+      checkStakingLimit,
+      stopValidating,
+      inputName,
+      limitLevel,
+    ],
   );
 
   useEffect(() => {
@@ -169,6 +202,7 @@ export const useCurrencyInput: UseCurrencyInput = ({
   const maxAmount = useMaxAmount({
     balance: limit ? limit : BigNumber.from(0),
     token,
+    padded: padMaxAmount,
   });
 
   const setMaxInputValue = useCallback(() => {
@@ -195,5 +229,7 @@ export const useCurrencyInput: UseCurrencyInput = ({
     handleSubmit,
     reset,
     setMaxInputValue,
+    limitWarning,
+    limitReached: checkStakingLimit && limitLevel === LIMIT_LEVEL.REACHED,
   };
 };
