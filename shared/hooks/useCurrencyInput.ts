@@ -21,7 +21,7 @@ type UseCurrencyInputArgs = {
   externalSetInputValue?: (inputValue: string) => void;
   token?: string;
   checkStakingLimit?: boolean;
-  padMaxAmount?: boolean;
+  padMaxAmount?: boolean | ((padAmount: BigNumber) => boolean);
 };
 
 type UseCurrencyInputReturn = {
@@ -200,7 +200,7 @@ export const useCurrencyInput: UseCurrencyInput = ({
   );
 
   const maxAmount = useMaxAmount({
-    balance: limit ? limit : BigNumber.from(0),
+    limit: limit ? limit : BigNumber.from(0),
     token,
     padded: padMaxAmount,
   });
