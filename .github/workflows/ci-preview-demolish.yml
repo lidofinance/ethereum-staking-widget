@@ -6,7 +6,6 @@ on:
     types:
       [converted_to_draft, closed]
     branches-ignore:
-      - develop
       - main
 
 jobs:
