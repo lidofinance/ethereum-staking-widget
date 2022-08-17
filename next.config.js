@@ -26,8 +26,7 @@ const subgraphRequestTimeout = process.env.SUBGRAPH_REQUEST_TIMEOUT;
 
 module.exports = {
   basePath,
-  webpack5: true,
-  experimental: {
+  compiler: {
     styledComponents: true,
   },
   // WARNING: Vulnerability fix, don't remove until default Next.js image loader is patched
