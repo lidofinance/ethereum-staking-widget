@@ -1,4 +1,4 @@
-const basePath = process.env.BASE_PATH || '';
+const basePath = process.env.BASE_PATH;
 const infuraApiKey = process.env.INFURA_API_KEY;
 const alchemyApiKey = process.env.ALCHEMY_API_KEY;
 
