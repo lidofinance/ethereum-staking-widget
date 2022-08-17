@@ -1,15 +1,21 @@
-import { CHAINS } from '@lido-sdk/constants';
-import { getStaticRpcBatchProvider } from '@lido-sdk/providers';
-import { getRpcJsonUrls, HEALTHY_RPC_SERVICES_ARE_OVER } from 'config';
-import { rpcResponseTime, INFURA, ALCHEMY } from 'utilsApi/metrics';
+import { CHAINS } from 'utils/chains';
 import { serverLogger } from './serverLogger';
+import { getStaticRpcBatchProvider } from './rpcProviders';
+import { rpcUrls } from './rpcUrls';
+import { iterateUrls } from '@lidofinance/rpc';
 
 export const getEthApr = async (): Promise<string> => {
   serverLogger.debug('Getting eth apr...');
-  const urls = getRpcJsonUrls(CHAINS.Mainnet);
+  const urls = rpcUrls[CHAINS.Mainnet];
+
+  const totalAtStake = await iterateUrls(
+    urls,
+    getTotalAtStakeWithFallbacks,
+    serverLogger.error,
+  );
 
   const ethApr = calculateStakingRewards({
-    totalAtStake: await getTotalAtStakeWithFallbacks(urls, 0),
+    totalAtStake,
   });
 
   serverLogger.debug('Eth apr: ' + ethApr);
@@ -17,51 +23,22 @@ export const getEthApr = async (): Promise<string> => {
   return (ethApr * 1e11).toFixed(1);
 };
 
-const getTotalAtStakeWithFallbacks = async (
-  urls: Array<string>,
-  urlIndex: number,
-): Promise<number> => {
+const getTotalAtStakeWithFallbacks = async (url: string): Promise<number> => {
   serverLogger.debug('Fetching currently deposited eth2...');
   const eth2DepositContractAddress =
     '0x00000000219ab540356cBB839Cbe05303d7705Fa';
 
-  try {
-    const chainId = CHAINS.Mainnet;
+  const chainId = CHAINS.Mainnet;
 
-    const staticProvider = getStaticRpcBatchProvider(chainId, urls[urlIndex]);
+  const staticProvider = getStaticRpcBatchProvider(chainId, url);
 
-    let provider = INFURA;
-    if (urls[urlIndex].indexOf(ALCHEMY) > -1) {
-      provider = ALCHEMY;
-    }
-    const endMetric = rpcResponseTime
-      .labels(provider, String(chainId))
-      .startTimer();
+  const currentlyDeposited = await staticProvider.getBalance(
+    eth2DepositContractAddress,
+  );
 
-    const currentlyDeposited = await staticProvider.getBalance(
-      eth2DepositContractAddress,
-    );
+  serverLogger.debug('Currently deposited in eth2: ', +currentlyDeposited);
 
-    endMetric();
-
-    // if (urls[urlIndex].indexOf(INFURA) > -1) {
-    //   console.log('[getEthApr] Get via infura');
-    //   endMetric({ provider: INFURA });
-    // }
-    // if (urls[urlIndex].indexOf(ALCHEMY) > -1) {
-    //   console.log('[getEthApr] Get via alchemy');
-    //   endMetric({ provider: ALCHEMY });
-    // }
-    serverLogger.debug('Currently deposited in eth2: ', +currentlyDeposited);
-
-    return Number(currentlyDeposited);
-  } catch {
-    if (urlIndex >= urls.length - 1) {
-      const error = `[getEthApr] ${HEALTHY_RPC_SERVICES_ARE_OVER}`;
-      throw new Error(error);
-    }
-    return await getTotalAtStakeWithFallbacks(urls, urlIndex + 1);
-  }
+  return Number(currentlyDeposited);
 };
 
 export interface CalculateStakingRewardsParams {

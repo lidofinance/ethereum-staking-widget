@@ -1,52 +1,33 @@
-import { CHAINS } from '@lido-sdk/constants';
-import { getStaticRpcBatchProvider } from '@lido-sdk/providers';
+import { CHAINS } from 'utils/chains';
+import { getStaticRpcBatchProvider } from './rpcProviders';
 import {
   getAggregatorStEthUsdPriceFeedAddress,
   getAggregatorContractFactory,
-  getRpcJsonUrls,
-  HEALTHY_RPC_SERVICES_ARE_OVER,
 } from 'config';
-import { serverLogger } from 'utilsApi';
+import { serverLogger } from './serverLogger';
+import { rpcUrls } from './rpcUrls';
+import { iterateUrls } from '@lidofinance/rpc';
 
 export const getStEthPrice = async (): Promise<number> => {
-  const urls = getRpcJsonUrls(CHAINS.Mainnet);
-  return getStEthPriceWithFallbacks(urls, 0);
+  const urls = rpcUrls[CHAINS.Mainnet];
+  return iterateUrls(
+    urls,
+    (url) => getStEthPriceWithFallbacks(url),
+    serverLogger.error,
+  );
 };
 
-const getStEthPriceWithFallbacks = async (
-  urls: Array<string>,
-  urlIndex: number,
-): Promise<number> => {
-  try {
-    const address = getAggregatorStEthUsdPriceFeedAddress(CHAINS.Mainnet);
-    const staticProvider = getStaticRpcBatchProvider(
-      CHAINS.Mainnet,
-      urls[urlIndex],
-    );
+const getStEthPriceWithFallbacks = async (url: string): Promise<number> => {
+  const address = getAggregatorStEthUsdPriceFeedAddress(CHAINS.Mainnet);
+  const staticProvider = getStaticRpcBatchProvider(CHAINS.Mainnet, url);
 
-    const contractFactory = getAggregatorContractFactory();
-    const contract = contractFactory.connect(address, staticProvider);
+  const contractFactory = getAggregatorContractFactory();
+  const contract = contractFactory.connect(address, staticProvider);
 
-    const [decimals, latestAnswer] = await Promise.all([
-      contract.decimals(),
-      contract.latestAnswer(),
-    ]);
+  const [decimals, latestAnswer] = await Promise.all([
+    contract.decimals(),
+    contract.latestAnswer(),
+  ]);
 
-    // TODO: metrics
-    if (urls[urlIndex].indexOf('infura') > -1) {
-      serverLogger.log('[getStEthPrice] Get via infura');
-    }
-    if (urls[urlIndex].indexOf('alchemy') > -1) {
-      serverLogger.log('[getStEthPrice] Get via alchemy');
-    }
-
-    return latestAnswer.toNumber() / 10 ** decimals;
-  } catch {
-    if (urlIndex >= urls.length - 1) {
-      const error = `[getStEthPrice] ${HEALTHY_RPC_SERVICES_ARE_OVER}`;
-      serverLogger.error(error);
-      throw new Error(error);
-    }
-    return await getStEthPriceWithFallbacks(urls, urlIndex + 1);
-  }
+  return latestAnswer.toNumber() / 10 ** decimals;
 };

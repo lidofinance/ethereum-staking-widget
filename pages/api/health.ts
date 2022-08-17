@@ -1,8 +1,3 @@
-import { NextApiRequest, NextApiResponse } from 'next';
+import { health } from '@lidofinance/next-pages';
 
-export default function health(
-  req: NextApiRequest,
-  res: NextApiResponse,
-): void {
-  res.status(200).send({ status: 'ok' });
-}
+export default health;

@@ -24,14 +24,12 @@ const subgraphKintsugi = process.env.SUBGRAPH_KINTSUGI;
 
 const subgraphRequestTimeout = process.env.SUBGRAPH_REQUEST_TIMEOUT;
 
+const enableQaHelpers = process.env.ENABLE_QA_HELPERS;
+
 module.exports = {
   basePath,
   compiler: {
     styledComponents: true,
-  },
-  // WARNING: Vulnerability fix, don't remove until default Next.js image loader is patched
-  images: {
-    loader: 'custom',
   },
   webpack(config) {
     // Teach webpack to import svg files
@@ -101,5 +99,6 @@ module.exports = {
   publicRuntimeConfig: {
     defaultChain,
     supportedChains,
+    enableQaHelpers,
   },
 };

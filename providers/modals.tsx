@@ -47,7 +47,7 @@ const ModalProvider: FC = ({ children }) => {
       <WalletsModalForEth
         open={active === MODAL.connect}
         {...common}
-        hiddenWallets={['Ambire']}
+        hiddenWallets={['ZenGo']}
       />
     </ModalContext.Provider>
   );

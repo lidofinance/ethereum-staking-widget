@@ -1,0 +1,28 @@
+name: CI Preview stand demolish
+
+on:
+  workflow_dispatch:
+  pull_request:
+    types:
+      [converted_to_draft, closed]
+    branches-ignore:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    name: Build and deploy
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2.3.4
+
+      - name: Preview stand deploying
+        uses: lidofinance/dispatch-workflow@v1
+        env:
+          APP_ID: ${{ secrets.APP_ID }}
+          APP_PRIVATE_KEY: ${{ secrets.APP_PRIVATE_KEY }}
+          TARGET_REPO: "lidofinance/infra-mainnet"
+          TARGET: ${{ github.head_ref }}
+          TARGET_WORKFLOW: "preview_stand_demolish.yaml"
+          INPUTS_REPO_NAME: ${{ github.repository }}
+          INPUTS_PR_ID: ${{ github.event.pull_request.number }}

@@ -1,7 +1,7 @@
 import { FC } from 'react';
 import { GetServerSideProps } from 'next';
 import Head from 'next/head';
-import { Wallet, OneinchPopup, StakeForm, LidoStats } from 'features/home';
+import { Wallet, StakeForm, LidoStats } from 'features/home';
 import { Layout, Faq } from 'shared/components';
 import { FAQItem, getFaqList } from 'lib/faqList';
 
@@ -11,7 +11,6 @@ interface HomeProps {
 
 const Home: FC<HomeProps> = ({ faqList }) => (
   <>
-    <OneinchPopup modalView={true} />
     <Layout
       title="Stake Ether"
       subtitle="Stake ETH and receive stETH while staking."

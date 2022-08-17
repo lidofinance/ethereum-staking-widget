@@ -10,6 +10,7 @@ import {
   LedgerConfirm,
   LedgerLoading,
   LedgerSuccess,
+  Warning,
 } from '@lidofinance/lido-ui';
 import { getEtherscanTxLink } from '@lido-sdk/helpers';
 import { ErrorMessage, formatBalance, formatBalanceString } from 'utils';
@@ -23,7 +24,11 @@ import {
   LedgerIconWrapper,
   StylableLink,
   LowercaseSpan,
+  ButtonLinkSmall,
+  RetryButton,
+  Grid,
 } from './styles';
+import { use1inchLinkProps } from 'features/home/hooks';
 
 export enum TX_OPERATION {
   STAKING,
@@ -38,6 +43,7 @@ export enum TX_STAGE {
   BLOCK,
   SUCCESS,
   FAIL,
+  LIMIT,
 }
 
 interface TxStageModalProps extends ModalProps {
@@ -72,6 +78,11 @@ const iconsDict = {
         <LedgerFail fill="transparent" />
       </LedgerIconWrapper>
     ),
+    [TX_STAGE.LIMIT]: (
+      <LedgerIconWrapper>
+        <LedgerFail fill="transparent" />
+      </LedgerIconWrapper>
+    ),
     [TX_STAGE.BLOCK]: (
       <LedgerIconWrapper>
         <LedgerLoading fill="transparent" />
@@ -87,6 +98,11 @@ const iconsDict = {
     [TX_STAGE.FAIL]: (
       <IconWrapper>
         <FailIcon />
+      </IconWrapper>
+    ),
+    [TX_STAGE.LIMIT]: (
+      <IconWrapper>
+        <Warning />
       </IconWrapper>
     ),
     [TX_STAGE.SIGN]: <TxLoader size="large" />,
@@ -176,6 +192,8 @@ export const TxStageModal: FC<TxStageModalProps> = memo(
         </>
       );
     }, [chainId, txHash]);
+
+    const oneInchLinkProps = use1inchLinkProps();
 
     const content = useMemo(() => {
       switch (txStage) {
@@ -267,6 +285,32 @@ export const TxStageModal: FC<TxStageModalProps> = memo(
                 )}
             </>
           );
+        case TX_STAGE.LIMIT:
+          return (
+            <>
+              {currentIconDict[TX_STAGE.LIMIT]}
+              <BoldText>Stake limit exhausted</BoldText>
+              <LightText size="xxs" color="secondary" marginTop={4}>
+                {failedText ?? 'Something went wrong'}
+              </LightText>
+              {formRef &&
+                formRef.current &&
+                failedText !== ErrorMessage.NOT_ENOUGH_ETHER && (
+                  <Grid>
+                    <RetryButton
+                      color="secondary"
+                      onClick={() => formRef.current?.requestSubmit()}
+                      size="xs"
+                    >
+                      Retry
+                    </RetryButton>
+                    <ButtonLinkSmall {...oneInchLinkProps}>
+                      Swap on 1inch
+                    </ButtonLinkSmall>
+                  </Grid>
+                )}
+            </>
+          );
       }
     }, [
       txStage,
@@ -287,6 +331,7 @@ export const TxStageModal: FC<TxStageModalProps> = memo(
       allowanceAmount,
       failedText,
       formRef,
+      oneInchLinkProps,
     ]);
 
     return (

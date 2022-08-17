@@ -8,7 +8,6 @@ import {
   useRef,
 } from 'react';
 import { useRouter } from 'next/router';
-// import { AddressZero } from '@ethersproject/constants';
 import { parseEther } from '@ethersproject/units';
 import {
   useContractSWR,
@@ -25,14 +24,15 @@ import {
   DataTableRow,
   Eth,
 } from '@lidofinance/lido-ui';
+import { OneinchInfo } from 'features/home/oneinch-info/oneinch-info';
 import { DATA_UNAVAILABLE } from 'config';
 import { Connect } from 'shared/wallet';
 import { TxStageModal, TX_OPERATION, TX_STAGE } from 'shared/components';
 import { useCurrencyInput, useTxCostInUsd } from 'shared/hooks';
-// import { useStethSubmitGasLimit } from './hooks/use-steth-submit-gas-limit';
 import { FormStyled, InputStyled, MaxButton } from './styles';
 import { stakeProcessing } from './utils';
 import { useStethSubmitGasLimit } from './hooks';
+import { useStakeableEther } from '../hooks';
 
 export const StakeForm: FC = memo(() => {
   const router = useRouter();
@@ -45,7 +45,8 @@ export const StakeForm: FC = memo(() => {
   const [txModalFailedText, setTxModalFailedText] = useState('');
 
   const { active, chainId } = useWeb3();
-  const ethBalance = useEthereumBalance();
+  const etherBalance = useEthereumBalance();
+  const stakeableEther = useStakeableEther();
   const stethBalance = useSTETHBalance();
   const stethContractWeb3 = useSTETHContractWeb3();
   const contractRpc = useSTETHContractRPC();
@@ -99,10 +100,24 @@ export const StakeForm: FC = memo(() => {
     isSubmitting,
     setMaxInputValue,
     reset,
+    limitWarning,
+    limitReached,
   } = useCurrencyInput({
     initialValue: (router?.query?.amount as string) || undefined,
     submit,
-    limit: ethBalance.data,
+    limit:
+      etherBalance.data &&
+      stakeableEther.data &&
+      (stakeableEther.data.lt(etherBalance.data)
+        ? stakeableEther.data
+        : etherBalance.data),
+    checkStakingLimit: true,
+    padMaxAmount: (padAmount) =>
+      Boolean(
+        etherBalance.data &&
+          stakeableEther.data &&
+          etherBalance.data.sub(padAmount).lte(stakeableEther.data),
+      ),
   });
 
   const willReceiveStEthValue = useMemo(() => {
@@ -152,12 +167,13 @@ export const StakeForm: FC = memo(() => {
           value={inputValue}
           onChange={handleChange}
           error={error}
+          warning={limitWarning}
         />
         {active ? (
           <Button
             fullwidth
             type="submit"
-            disabled={isValidating}
+            disabled={limitReached || isValidating}
             loading={isSubmitting}
           >
             Submit
@@ -165,6 +181,7 @@ export const StakeForm: FC = memo(() => {
         ) : (
           <Connect fullwidth />
         )}
+        <OneinchInfo />
       </FormStyled>
 
       <DataTable>

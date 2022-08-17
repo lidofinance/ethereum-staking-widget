@@ -1,0 +1,49 @@
+name: CI Preview stand deploy
+
+on:
+  workflow_dispatch:
+    inputs:
+      inventory:
+        description: inventory to be used for preview stand deploying
+        default: testnet
+        required: false
+        type: choice
+        options:
+          - staging
+          - testnet
+
+  pull_request:
+    types:
+      [opened, synchronize, reopened, ready_for_review]
+    branches-ignore:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.pull_request.draft == false }}
+    name: Build and deploy
+    outputs:
+      stand_url: ${{ steps.stand.outputs.url }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2.3.4
+
+      - uses: lidofinance/gh-find-current-pr@v1
+        id: pr
+
+      - name: Set ref
+        id: ref
+        run: echo ::set-output name=short_ref::${GITHUB_REF#refs/*/}
+
+      - name: Preview stand deploying
+        uses: lidofinance/dispatch-workflow@v1
+        env:
+          APP_ID: ${{ secrets.APP_ID }}
+          APP_PRIVATE_KEY: ${{ secrets.APP_PRIVATE_KEY }}
+          TARGET_REPO: "lidofinance/infra-mainnet"
+          TARGET: ${{ github.head_ref || steps.ref.outputs.short_ref }}
+          TARGET_WORKFLOW: "preview_stand_deploy.yaml"
+          INPUTS_REPO_NAME: ${{ github.repository }}
+          INPUTS_PR_ID: ${{ steps.pr.outputs.number }}
+          INPUTS_INVENTORY: "${{ inputs.inventory || 'testnet' }}"
