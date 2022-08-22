@@ -26,6 +26,14 @@ const subgraphRequestTimeout = process.env.SUBGRAPH_REQUEST_TIMEOUT;
 
 const enableQaHelpers = process.env.ENABLE_QA_HELPERS;
 
+// Need to initialize AggregatorRegistry for each worker, because we need to setup listeners
+// https://github.com/siimon/prom-client/blob/721829cc593bb7da28ae009985caeeacb4b59e05/lib/cluster.js#L153
+// Otherwise requests for metrics will crash all forks at once
+const { AggregatorRegistry } = require('prom-client');
+new AggregatorRegistry();
+
+const cluster = require('cluster')
+
 module.exports = {
   basePath,
   compiler: {

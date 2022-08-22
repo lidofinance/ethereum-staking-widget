@@ -1,4 +1,4 @@
-import { Histogram, Registry, collectDefaultMetrics } from 'prom-client';
+import { Histogram, register, collectDefaultMetrics } from 'prom-client';
 import getConfig from 'next/config';
 import { METRICS_PREFIX } from 'config';
 import buildInfoJson from 'build-info.json';
@@ -14,7 +14,7 @@ export const subgraphsResponseTime = new Histogram({
   registers: [],
 });
 
-export const registry = new Registry();
+export const registry = register;
 
 collectStartupMetrics({
   prefix: METRICS_PREFIX,
