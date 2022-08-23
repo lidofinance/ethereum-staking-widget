@@ -27,3 +27,18 @@ export const CACHE_ONE_INCH_RATE_TTL = ms('1h');
 
 export const CACHE_TOTAL_SUPPLY_KEY = 'cache-total-supply';
 export const CACHE_TOTAL_SUPPLY_TTL = ms('1m');
+
+export const CACHE_DEFAULT_HEADERS =
+  'public, max-age=60, stale-if-error=1200, stale-while-revalidate=20';
+export const CACHE_WHITELIST_PATHS: { [path: string]: string } = {
+  '/api/lido-stats': CACHE_DEFAULT_HEADERS,
+  '/api/lidostats': CACHE_DEFAULT_HEADERS,
+  '/api/short-lido-stats': CACHE_DEFAULT_HEADERS,
+  '/api/steth-apr': CACHE_DEFAULT_HEADERS,
+  '/api/eth-apr': CACHE_DEFAULT_HEADERS,
+  '/api/apr': CACHE_DEFAULT_HEADERS,
+  '/api/oneinch-rate': CACHE_DEFAULT_HEADERS,
+  '/api/csp-report': CACHE_DEFAULT_HEADERS,
+  '/favicon-?[^@]*.(svg|ico)': CACHE_DEFAULT_HEADERS,
+  '/manifest.json': CACHE_DEFAULT_HEADERS,
+};
