@@ -29,7 +29,7 @@ export const CACHE_TOTAL_SUPPLY_KEY = 'cache-total-supply';
 export const CACHE_TOTAL_SUPPLY_TTL = ms('1m');
 
 export const CACHE_DEFAULT_HEADERS =
-  'public, max-age=60, stale-if-error=1200, stale-while-revalidate=20';
+  'public, max-age=180, stale-if-error=1200, stale-while-revalidate=60';
 export const CACHE_WHITELIST_PATHS: { [path: string]: string } = {
   '/api/lido-stats': CACHE_DEFAULT_HEADERS,
   '/api/lidostats': CACHE_DEFAULT_HEADERS,
