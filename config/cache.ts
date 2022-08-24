@@ -42,3 +42,12 @@ export const CACHE_WHITELIST_PATHS: { [path: string]: string } = {
   '/favicon-?[^@]*.(svg|ico)': CACHE_DEFAULT_HEADERS,
   '/manifest.json': CACHE_DEFAULT_HEADERS,
 };
+
+export const findCacheControlPath = (requestMethodName?: string) => {
+  if (!requestMethodName) return;
+  const whitelist = Object.keys(CACHE_WHITELIST_PATHS);
+
+  return whitelist.find((path) =>
+    new RegExp(`^${path}?$`).test(requestMethodName),
+  );
+};

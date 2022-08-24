@@ -1,10 +1,6 @@
 import { Cache } from 'memory-cache';
-import {
-  CACHE_ETH_PRICE_KEY,
-  CACHE_ETH_PRICE_TTL,
-  DEFAULT_API_ERROR_MESSAGE,
-} from 'config';
-import { getEthPrice } from 'utilsApi';
+import { CACHE_ETH_PRICE_KEY, CACHE_ETH_PRICE_TTL } from 'config';
+import { getEthPrice, serverErrorHandler } from 'utilsApi';
 import { API } from 'types';
 
 const cache = new Cache<typeof CACHE_ETH_PRICE_KEY, unknown>();
@@ -23,12 +19,7 @@ const ethPrice: API = async (req, res) => {
       res.json({ price: ethPrice });
     }
   } catch (error) {
-    if (error instanceof Error) {
-      console.error(error.message ?? DEFAULT_API_ERROR_MESSAGE);
-      res.status(500).json(error.message ?? DEFAULT_API_ERROR_MESSAGE);
-    } else {
-      res.status(500).json(DEFAULT_API_ERROR_MESSAGE);
-    }
+    serverErrorHandler(error, res);
   }
 };
 

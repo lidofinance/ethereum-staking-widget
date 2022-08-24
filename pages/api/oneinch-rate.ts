@@ -1,11 +1,7 @@
 import { Cache } from 'memory-cache';
 import { CHAINS, TOKENS, getTokenAddress } from '@lido-sdk/constants';
-import {
-  CACHE_ONE_INCH_RATE_KEY,
-  CACHE_ONE_INCH_RATE_TTL,
-  DEFAULT_API_ERROR_MESSAGE,
-} from 'config';
-import { getOneInchRate } from 'utilsApi';
+import { CACHE_ONE_INCH_RATE_KEY, CACHE_ONE_INCH_RATE_TTL } from 'config';
+import { getOneInchRate, serverErrorHandler } from 'utilsApi';
 import { API } from 'types';
 
 const cache = new Cache<typeof CACHE_ONE_INCH_RATE_KEY, unknown>();
@@ -34,12 +30,7 @@ const oneInchRate: API = async (req, res) => {
       res.status(200).json({ rate: oneInchRate });
     }
   } catch (error) {
-    if (error instanceof Error) {
-      console.error(error.message ?? DEFAULT_API_ERROR_MESSAGE);
-      res.status(500).json(error.message ?? DEFAULT_API_ERROR_MESSAGE);
-    } else {
-      res.status(500).json(DEFAULT_API_ERROR_MESSAGE);
-    }
+    serverErrorHandler(error, res);
   }
 };
 

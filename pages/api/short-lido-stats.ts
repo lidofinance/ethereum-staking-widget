@@ -1,13 +1,10 @@
 import { Cache } from 'memory-cache';
-import {
-  CACHE_LIDO_SHORT_STATS_KEY,
-  CACHE_LIDO_SHORT_STATS_TTL,
-  DEFAULT_API_ERROR_MESSAGE,
-} from 'config';
+import { CACHE_LIDO_SHORT_STATS_KEY, CACHE_LIDO_SHORT_STATS_TTL } from 'config';
 import {
   getTotalStaked,
   getLidoHoldersViaSubgraphs,
   getStEthPrice,
+  serverErrorHandler,
 } from 'utilsApi';
 import { API, SubgraphChains } from 'types';
 import { parallelizePromises } from 'utils';
@@ -47,12 +44,7 @@ const shortLidoStats: API = async (req, res) => {
       res.status(200).json(shortLidoStats);
     }
   } catch (error) {
-    if (error instanceof Error) {
-      console.error(error.message ?? DEFAULT_API_ERROR_MESSAGE);
-      res.status(500).json(error.message ?? DEFAULT_API_ERROR_MESSAGE);
-    } else {
-      res.status(500).json(DEFAULT_API_ERROR_MESSAGE);
-    }
+    serverErrorHandler(error, res);
   }
 };
 

@@ -1,10 +1,6 @@
 import { Cache } from 'memory-cache';
-import {
-  CACHE_ETH_APR_KEY,
-  CACHE_ETH_APR_TTL,
-  DEFAULT_API_ERROR_MESSAGE,
-} from 'config';
-import { getEthApr } from 'utilsApi';
+import { CACHE_ETH_APR_KEY, CACHE_ETH_APR_TTL } from 'config';
+import { getEthApr, serverErrorHandler } from 'utilsApi';
 import { API } from 'types';
 
 const cache = new Cache<typeof CACHE_ETH_APR_KEY, string>();
@@ -24,12 +20,7 @@ const ethApr: API = async (req, res) => {
       res.json(ethApr);
     }
   } catch (error) {
-    if (error instanceof Error) {
-      console.error(error.message ?? DEFAULT_API_ERROR_MESSAGE);
-      res.status(500).json(error.message ?? DEFAULT_API_ERROR_MESSAGE);
-    } else {
-      res.status(500).json(DEFAULT_API_ERROR_MESSAGE);
-    }
+    serverErrorHandler(error, res);
   }
 };
 

@@ -1,10 +1,6 @@
 import { Cache } from 'memory-cache';
-import {
-  CACHE_LIDO_STATS_KEY,
-  CACHE_LIDO_STATS_TTL,
-  DEFAULT_API_ERROR_MESSAGE,
-} from 'config';
-import { getLidoStats } from 'utilsApi';
+import { CACHE_LIDO_STATS_KEY, CACHE_LIDO_STATS_TTL } from 'config';
+import { getLidoStats, serverErrorHandler } from 'utilsApi';
 import { API } from 'types';
 
 const cache = new Cache<typeof CACHE_LIDO_STATS_KEY, unknown>();
@@ -29,12 +25,7 @@ const lidoStats: API = async (req, res) => {
       res.status(200).json({ data: lidoStats });
     }
   } catch (error) {
-    if (error instanceof Error) {
-      console.error(error.message ?? DEFAULT_API_ERROR_MESSAGE);
-      res.status(500).json(error.message ?? DEFAULT_API_ERROR_MESSAGE);
-    } else {
-      res.status(500).json(DEFAULT_API_ERROR_MESSAGE);
-    }
+    serverErrorHandler(error, res);
   }
 };
 

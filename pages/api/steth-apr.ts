@@ -1,10 +1,6 @@
 import { Cache } from 'memory-cache';
-import {
-  CACHE_STETH_APR_KEY,
-  CACHE_STETH_APR_TTL,
-  DEFAULT_API_ERROR_MESSAGE,
-} from 'config';
-import { getStethApr } from 'utilsApi';
+import { CACHE_STETH_APR_KEY, CACHE_STETH_APR_TTL } from 'config';
+import { getStethApr, serverErrorHandler } from 'utilsApi';
 import { API } from 'types';
 
 const cache = new Cache<typeof CACHE_STETH_APR_KEY, string>();
@@ -24,12 +20,7 @@ const stethApr: API = async (req, res) => {
       res.json(stethApr);
     }
   } catch (error) {
-    if (error instanceof Error) {
-      console.error(error.message ?? DEFAULT_API_ERROR_MESSAGE);
-      res.status(500).json(error.message ?? DEFAULT_API_ERROR_MESSAGE);
-    } else {
-      res.status(500).json(DEFAULT_API_ERROR_MESSAGE);
-    }
+    serverErrorHandler(error, res);
   }
 };
 
