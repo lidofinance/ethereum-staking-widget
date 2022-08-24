@@ -11,17 +11,13 @@ const middleware = (req: NextRequest) => {
 
   // Use whitelist
   const whitelist = Object.keys(CACHE_WHITELIST_PATHS);
-  const pathKey = whitelist.find((path) => new RegExp(path).test(methodName));
+  const pathKey = whitelist.find((path) =>
+    new RegExp(`^${path}?$`).test(methodName),
+  );
 
   if (!pathKey) return response;
 
   response.headers.append('Cache-Control', CACHE_WHITELIST_PATHS[pathKey]);
-
-  console.log(
-    'Added cache-control',
-    methodName,
-    CACHE_WHITELIST_PATHS[pathKey],
-  );
 
   return response;
 };
