@@ -1,3 +1,14 @@
+## [1.19.1](https://github.com/lidofinance/staking-widget-ts/compare/1.19.0...1.19.1) (2022-08-24)
+
+
+### Bug Fixes
+
+* allow eth_blockNumber rpc method ([6685053](https://github.com/lidofinance/staking-widget-ts/commit/6685053b95403253ff3d7501bbc244b59c01b735))
+* allow more rpc methods ([80e1bff](https://github.com/lidofinance/staking-widget-ts/commit/80e1bff1093db07f2b1b2f991d6490d19fef2d6d))
+* allow rpc methods for Ledger ([14eaa24](https://github.com/lidofinance/staking-widget-ts/commit/14eaa241dcadd7bacc63a20ec81fcb89ed41f79b))
+
+
+
 # [1.19.0](https://github.com/lidofinance/staking-widget-ts/compare/1.18.0...1.19.0) (2022-08-10)
 
 
@@ -184,15 +195,6 @@
 ### Bug Fixes
 
 * **api:** back to server side props to get right env ([44a35b7](https://github.com/lidofinance/staking-widget-ts/commit/44a35b739f9342df97345168d6cd1233ac4c341f))
-
-
-
-## [1.14.2](https://github.com/lidofinance/staking-widget-ts/compare/1.14.1...1.14.2) (2022-06-19)
-
-
-### Bug Fixes
-
-* resolve page load CPU over-consumption ([cc48c5d](https://github.com/lidofinance/staking-widget-ts/commit/cc48c5d0846c28ae21128e13d07a3661c9330070))
 
 
 
