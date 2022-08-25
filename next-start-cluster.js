@@ -1,9 +1,7 @@
-/* eslint-disable @typescript-eslint/no-var-requires */
 const cluster = require('node:cluster');
 const process = require('node:process');
 const { cpus } = require('node:os');
 const http = require('node:http');
-/* eslint-enable @typescript-eslint/no-var-requires */
 const { AggregatorRegistry } = require('prom-client');
 
 const forksCount = process.env.FORKS_COUNT ?? cpus().length;

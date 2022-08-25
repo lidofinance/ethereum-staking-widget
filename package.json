@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "NODE_OPTIONS='-r next-logger' node next-start-cluster.js",
     "start:legacy": "NODE_OPTIONS='-r next-logger' next start",
-    "lint": "eslint --ext ts,tsx .",
+    "lint": "eslint --ext ts,tsx,js .",
     "lint:fix": "yarn lint --fix",
     "types": "tsc --noEmit",
     "typechain": "typechain --target=ethers-v5 --out-dir ./generated ./abi/*.json",

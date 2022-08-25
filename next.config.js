@@ -34,8 +34,6 @@ const metricsPort = process.env.METRICS_PORT ?? 3001;
 const { AggregatorRegistry } = require('prom-client');
 new AggregatorRegistry();
 
-const cluster = require('cluster')
-
 module.exports = {
   basePath,
   compiler: {
