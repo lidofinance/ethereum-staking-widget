@@ -1,6 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { serverLogger } from 'utilsApi/serverLogger';
 import getConfig from 'next/config';
+import { register } from 'prom-client';
 const {
   serverRuntimeConfig: { metricsPort },
 } = getConfig();
@@ -10,13 +11,20 @@ export const DEFAULT_API_ERROR_MESSAGE =
 
 const metrics = async (_req: NextApiRequest, res: NextApiResponse) => {
   try {
-    const requested = await fetch(`http://localhost:${metricsPort}`);
+    if (process.env.NODE_ENV === 'production') {
+      // In production mode we are running cluster, so we need to get cluster metrics
+      const requested = await fetch(`http://localhost:${metricsPort}`);
 
-    res.setHeader(
-      'Content-Type',
-      requested.headers.get('Content-Type') ?? 'text/plain',
-    );
-    res.status(requested.status).send(requested.body);
+      res.setHeader(
+        'Content-Type',
+        requested.headers.get('Content-Type') ?? 'text/plain',
+      );
+      res.status(requested.status).send(requested.body);
+    } else {
+      // In development mode it's ok to get metrics from current instance
+      const metrics = await register.metrics();
+      res.send(metrics);
+    }
   } catch (error) {
     serverLogger.error(error);
     const errorMessage =
