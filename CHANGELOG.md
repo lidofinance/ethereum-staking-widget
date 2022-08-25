@@ -1,3 +1,12 @@
+# [1.20.0](https://github.com/lidofinance/staking-widget-ts/compare/1.19.1...1.20.0) (2022-08-25)
+
+
+### Features
+
+* unhide zengo wallet ([69caccf](https://github.com/lidofinance/staking-widget-ts/commit/69caccf8dcaf040f7f9124f0c6a0b44dcb32347a))
+
+
+
 ## [1.19.1](https://github.com/lidofinance/staking-widget-ts/compare/1.19.0...1.19.1) (2022-08-24)
 
 
@@ -186,15 +195,6 @@
 * hide Ambire wallet due to issues with it ([dba9418](https://github.com/lidofinance/staking-widget-ts/commit/dba941853bcd937f8cf4a826b1fd761eb7778fea))
 * unhide Ambire wallet ([0bf6569](https://github.com/lidofinance/staking-widget-ts/commit/0bf6569b6fa09c86160e7e47299271ad2d29eee3))
 * use 1inch deeplink for Ledger Live ([b61c0f8](https://github.com/lidofinance/staking-widget-ts/commit/b61c0f8b0fb4d83cc26d5ff30549c6eb18f7c88e))
-
-
-
-## [1.14.3](https://github.com/lidofinance/staking-widget-ts/compare/1.14.2...1.14.3) (2022-06-22)
-
-
-### Bug Fixes
-
-* **api:** back to server side props to get right env ([44a35b7](https://github.com/lidofinance/staking-widget-ts/commit/44a35b739f9342df97345168d6cd1233ac4c341f))
 
 
 
