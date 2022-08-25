@@ -6,11 +6,8 @@ const http = require('node:http');
 /* eslint-enable @typescript-eslint/no-var-requires */
 const { AggregatorRegistry } = require('prom-client');
 
-const forksCount = process.env.FORKS_COUNT || cpus().length;
-const port =
-  process.env.METRICS_PORT ||
-  (process.env.PORT && Number(process.env.PORT) + 1) ||
-  3001;
+const forksCount = process.env.FORKS_COUNT ?? cpus().length;
+const port = process.env.METRICS_PORT ?? 3001;
 
 if (cluster.isPrimary) {
   console.log(`Primary ${process.pid} is running`);
