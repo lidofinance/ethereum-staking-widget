@@ -1,7 +1,18 @@
 import { Cache } from 'memory-cache';
 import { CHAINS, TOKENS, getTokenAddress } from '@lido-sdk/constants';
-import { CACHE_ONE_INCH_RATE_KEY, CACHE_ONE_INCH_RATE_TTL } from 'config';
-import { getOneInchRate, serverErrorHandler } from 'utilsApi';
+import {
+  CACHE_ONE_INCH_RATE_KEY,
+  CACHE_ONE_INCH_RATE_TTL,
+  CACHE_DEFAULT_HEADERS,
+  CACHE_DEFAULT_ERROR_HEADERS,
+} from 'config';
+import {
+  getOneInchRate,
+  wrapRequest,
+  defaultErrorHandler,
+  cacheControl,
+  errorCacheControl,
+} from 'utilsApi';
 import { API } from 'types';
 
 const cache = new Cache<typeof CACHE_ONE_INCH_RATE_KEY, unknown>();
@@ -9,29 +20,29 @@ const cache = new Cache<typeof CACHE_ONE_INCH_RATE_KEY, unknown>();
 // Proxy for third-party API.
 // Returns 1inch rate
 const oneInchRate: API = async (req, res) => {
-  try {
-    const cachedOneInchRate = cache.get(CACHE_ONE_INCH_RATE_KEY);
+  const cachedOneInchRate = cache.get(CACHE_ONE_INCH_RATE_KEY);
 
-    if (cachedOneInchRate) {
-      res.status(200).json(cachedOneInchRate);
-    } else {
-      const amount = 10 ** 18;
-      const oneInchRate = await getOneInchRate(
-        '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee',
-        getTokenAddress(CHAINS.Mainnet, TOKENS.STETH),
-        amount,
-      );
-      cache.put(
-        CACHE_ONE_INCH_RATE_KEY,
-        { rate: oneInchRate },
-        CACHE_ONE_INCH_RATE_TTL,
-      );
+  if (cachedOneInchRate) {
+    res.status(200).json(cachedOneInchRate);
+  } else {
+    const amount = 10 ** 18;
+    const oneInchRate = await getOneInchRate(
+      '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee',
+      getTokenAddress(CHAINS.Mainnet, TOKENS.STETH),
+      amount,
+    );
+    cache.put(
+      CACHE_ONE_INCH_RATE_KEY,
+      { rate: oneInchRate },
+      CACHE_ONE_INCH_RATE_TTL,
+    );
 
-      res.status(200).json({ rate: oneInchRate });
-    }
-  } catch (error) {
-    serverErrorHandler(error, res);
+    res.status(200).json({ rate: oneInchRate });
   }
 };
 
-export default oneInchRate;
+export default wrapRequest(oneInchRate, [
+  cacheControl(CACHE_DEFAULT_HEADERS),
+  errorCacheControl(CACHE_DEFAULT_ERROR_HEADERS),
+  defaultErrorHandler,
+]);

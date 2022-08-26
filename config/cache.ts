@@ -21,6 +21,8 @@ export const CACHE_LDO_STATS_TTL = ms('1h');
 
 export const CACHE_ETH_PRICE_KEY = 'cache-eth-price';
 export const CACHE_ETH_PRICE_TTL = ms('1m');
+export const CACHE_ETH_PRICE_HEADERS =
+  'public, max-age=60, stale-if-error=1200, stale-while-revalidate=30';
 
 export const CACHE_ONE_INCH_RATE_KEY = 'oneinch-rate';
 export const CACHE_ONE_INCH_RATE_TTL = ms('1h');
@@ -30,24 +32,18 @@ export const CACHE_TOTAL_SUPPLY_TTL = ms('1m');
 
 export const CACHE_DEFAULT_HEADERS =
   'public, max-age=180, stale-if-error=1200, stale-while-revalidate=60';
-export const CACHE_WHITELIST_PATHS: { [path: string]: string } = {
-  '/api/lido-stats': CACHE_DEFAULT_HEADERS,
-  '/api/lidostats': CACHE_DEFAULT_HEADERS,
-  '/api/short-lido-stats': CACHE_DEFAULT_HEADERS,
-  '/api/steth-apr': CACHE_DEFAULT_HEADERS,
-  '/api/eth-apr': CACHE_DEFAULT_HEADERS,
-  '/api/apr': CACHE_DEFAULT_HEADERS,
-  '/api/oneinch-rate': CACHE_DEFAULT_HEADERS,
-  '/api/csp-report': CACHE_DEFAULT_HEADERS,
+export const CACHE_DEFAULT_ERROR_HEADERS = 'no-store, must-revalidate';
+
+export const CACHE_WHITELIST_FILES_PATHS: { [path: string]: string } = {
   '/favicon-?[^@]*.(svg|ico)': CACHE_DEFAULT_HEADERS,
   '/manifest.json': CACHE_DEFAULT_HEADERS,
 };
 
-export const findCacheControlPath = (requestMethodName?: string) => {
-  if (!requestMethodName) return;
-  const whitelist = Object.keys(CACHE_WHITELIST_PATHS);
+export const findCacheControlFilePath = (url?: string) => {
+  const requestPath = url?.split('?').shift();
 
-  return whitelist.find((path) =>
-    new RegExp(`^${path}?$`).test(requestMethodName),
-  );
+  if (!requestPath) return;
+  const whitelist = Object.keys(CACHE_WHITELIST_FILES_PATHS);
+
+  return whitelist.find((path) => new RegExp(`^${path}?$`).test(requestPath));
 };

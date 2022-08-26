@@ -5,9 +5,18 @@ import {
   CACHE_ETH_APR_TTL,
   CACHE_STETH_APR_KEY,
   CACHE_STETH_APR_TTL,
+  CACHE_DEFAULT_HEADERS,
+  CACHE_DEFAULT_ERROR_HEADERS,
 } from 'config';
 import initMiddleware from 'lib/init-middleware';
-import { getEthApr, getStethApr, serverErrorHandler } from 'utilsApi';
+import {
+  getEthApr,
+  getStethApr,
+  wrapRequest,
+  defaultErrorHandler,
+  cacheControl,
+  errorCacheControl,
+} from 'utilsApi';
 import { API } from 'types';
 
 const cacheEth = new Cache<typeof CACHE_ETH_APR_KEY, string>();
@@ -42,38 +51,38 @@ const apr: API = async (req, res) => {
     steth: null,
   };
 
-  try {
-    // Eth APR
-    const cachedEthApr = cacheEth.get(CACHE_ETH_APR_KEY);
+  // Eth APR
+  const cachedEthApr = cacheEth.get(CACHE_ETH_APR_KEY);
 
-    if (cachedEthApr) {
-      resultData.eth = cachedEthApr;
-    } else {
-      const ethApr = await getEthApr();
-      cacheEth.put(CACHE_ETH_APR_KEY, ethApr, CACHE_ETH_APR_TTL);
+  if (cachedEthApr) {
+    resultData.eth = cachedEthApr;
+  } else {
+    const ethApr = await getEthApr();
+    cacheEth.put(CACHE_ETH_APR_KEY, ethApr, CACHE_ETH_APR_TTL);
 
-      resultData.eth = ethApr;
-    }
-
-    // StEth APR
-    const cachedStethApr = cacheSteth.get(CACHE_STETH_APR_KEY);
-
-    if (cachedStethApr) {
-      resultData.steth = cachedStethApr;
-    } else {
-      const stethApr = await getStethApr();
-      cacheSteth.put(CACHE_STETH_APR_KEY, stethApr, CACHE_STETH_APR_TTL);
-
-      resultData.steth = stethApr;
-    }
-
-    // Return
-    res.json({
-      data: resultData,
-    });
-  } catch (error) {
-    serverErrorHandler(error, res);
+    resultData.eth = ethApr;
   }
+
+  // StEth APR
+  const cachedStethApr = cacheSteth.get(CACHE_STETH_APR_KEY);
+
+  if (cachedStethApr) {
+    resultData.steth = cachedStethApr;
+  } else {
+    const stethApr = await getStethApr();
+    cacheSteth.put(CACHE_STETH_APR_KEY, stethApr, CACHE_STETH_APR_TTL);
+
+    resultData.steth = stethApr;
+  }
+
+  // Return
+  res.json({
+    data: resultData,
+  });
 };
 
-export default apr;
+export default wrapRequest(apr, [
+  cacheControl(CACHE_DEFAULT_HEADERS),
+  errorCacheControl(CACHE_DEFAULT_ERROR_HEADERS),
+  defaultErrorHandler,
+]);
