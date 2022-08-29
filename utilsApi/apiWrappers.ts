@@ -36,8 +36,7 @@ export const cacheControl =
   (headers: string): RequestWrapper =>
   async (req, res, next) => {
     try {
-      const pathKey = req.url?.split('?').shift();
-      if (pathKey) res.setHeader('Cache-Control', headers);
+      res.setHeader('Cache-Control', headers);
 
       await next?.(req, res, next);
     } catch (error) {
