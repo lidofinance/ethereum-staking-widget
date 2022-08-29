@@ -1,15 +1,6 @@
 import { Cache } from 'memory-cache';
-import {
-  CACHE_LDO_STATS_KEY,
-  CACHE_LDO_STATS_TTL,
-  CACHE_DEFAULT_HEADERS,
-} from 'config';
-import {
-  getLdoStats,
-  wrapRequest,
-  defaultErrorHandler,
-  cacheControl,
-} from 'utilsApi';
+import { CACHE_LDO_STATS_KEY, CACHE_LDO_STATS_TTL } from 'config';
+import { getLdoStats, defaultErrorAndCacheWrapper } from 'utilsApi';
 import { API } from 'types';
 
 const cache = new Cache<typeof CACHE_LDO_STATS_KEY, unknown>();
@@ -30,7 +21,4 @@ const ldoStats: API = async (req, res) => {
   }
 };
 
-export default wrapRequest(ldoStats, [
-  cacheControl(CACHE_DEFAULT_HEADERS),
-  defaultErrorHandler,
-]);
+export default defaultErrorAndCacheWrapper(ldoStats);

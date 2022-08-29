@@ -1,15 +1,6 @@
 import { Cache } from 'memory-cache';
-import {
-  CACHE_STETH_APR_KEY,
-  CACHE_STETH_APR_TTL,
-  CACHE_DEFAULT_HEADERS,
-} from 'config';
-import {
-  getStethApr,
-  wrapRequest,
-  defaultErrorHandler,
-  cacheControl,
-} from 'utilsApi';
+import { CACHE_STETH_APR_KEY, CACHE_STETH_APR_TTL } from 'config';
+import { getStethApr, defaultErrorAndCacheWrapper } from 'utilsApi';
 import { API } from 'types';
 
 const cache = new Cache<typeof CACHE_STETH_APR_KEY, string>();
@@ -29,7 +20,4 @@ const stethApr: API = async (req, res) => {
   }
 };
 
-export default wrapRequest(stethApr, [
-  cacheControl(CACHE_DEFAULT_HEADERS),
-  defaultErrorHandler,
-]);
+export default defaultErrorAndCacheWrapper(stethApr);

@@ -1,16 +1,7 @@
 import { Cache } from 'memory-cache';
 import { CHAINS, TOKENS, getTokenAddress } from '@lido-sdk/constants';
-import {
-  CACHE_ONE_INCH_RATE_KEY,
-  CACHE_ONE_INCH_RATE_TTL,
-  CACHE_DEFAULT_HEADERS,
-} from 'config';
-import {
-  getOneInchRate,
-  wrapRequest,
-  defaultErrorHandler,
-  cacheControl,
-} from 'utilsApi';
+import { CACHE_ONE_INCH_RATE_KEY, CACHE_ONE_INCH_RATE_TTL } from 'config';
+import { getOneInchRate, defaultErrorAndCacheWrapper } from 'utilsApi';
 import { API } from 'types';
 
 const cache = new Cache<typeof CACHE_ONE_INCH_RATE_KEY, unknown>();
@@ -39,7 +30,4 @@ const oneInchRate: API = async (req, res) => {
   }
 };
 
-export default wrapRequest(oneInchRate, [
-  cacheControl(CACHE_DEFAULT_HEADERS),
-  defaultErrorHandler,
-]);
+export default defaultErrorAndCacheWrapper(oneInchRate);

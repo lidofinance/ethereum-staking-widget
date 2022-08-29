@@ -1,6 +1,10 @@
 import { NextApiResponse, NextApiRequest } from 'next';
 import { API } from 'types';
-import { DEFAULT_API_ERROR_MESSAGE, CACHE_DEFAULT_ERROR_HEADERS } from 'config';
+import {
+  DEFAULT_API_ERROR_MESSAGE,
+  CACHE_DEFAULT_ERROR_HEADERS,
+  CACHE_DEFAULT_HEADERS,
+} from 'config';
 
 type RequestWrapper = (
   req: NextApiRequest,
@@ -8,15 +12,13 @@ type RequestWrapper = (
   next?: API | RequestWrapper,
 ) => void;
 
-export const wrapRequest = (
-  requestHandler: API,
-  wrappers: RequestWrapper[],
-) => {
-  return wrappers.reduce(
-    (acc, cur) => (req, res) => cur(req, res, () => acc(req, res)),
-    requestHandler,
-  );
-};
+export const wrapRequest =
+  (wrappers: RequestWrapper[]) => (requestHandler: API) => {
+    return wrappers.reduce(
+      (acc, cur) => (req, res) => cur(req, res, () => acc(req, res)),
+      requestHandler,
+    );
+  };
 
 // must be last in the wrapper stack
 export const defaultErrorHandler: RequestWrapper = async (req, res, next) => {
@@ -48,3 +50,10 @@ export const cacheControl =
       throw error;
     }
   };
+
+// ready wrapper types
+
+export const defaultErrorAndCacheWrapper = wrapRequest([
+  cacheControl(CACHE_DEFAULT_HEADERS),
+  defaultErrorHandler,
+]);
