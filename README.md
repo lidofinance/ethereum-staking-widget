@@ -63,5 +63,5 @@ yarn build && yarn start
 ```ts
 const someRequest: API = async (req, res) => await fetch();
 
-export default wrapRequest(someRequest, [defaultErrorHandler]);
+export default wrapRequest([defaultErrorHandler])(someRequest);
 ```
