@@ -3,14 +3,12 @@ import {
   CACHE_LIDO_STATS_KEY,
   CACHE_LIDO_STATS_TTL,
   CACHE_DEFAULT_HEADERS,
-  CACHE_DEFAULT_ERROR_HEADERS,
 } from 'config';
 import {
   getLidoStats,
   wrapRequest,
   defaultErrorHandler,
   cacheControl,
-  errorCacheControl,
 } from 'utilsApi';
 import { API } from 'types';
 
@@ -34,6 +32,5 @@ const lidoStats: API = async (req, res) => {
 
 export default wrapRequest(lidoStats, [
   cacheControl(CACHE_DEFAULT_HEADERS),
-  errorCacheControl(CACHE_DEFAULT_ERROR_HEADERS),
   defaultErrorHandler,
 ]);

@@ -4,14 +4,12 @@ import {
   CACHE_ONE_INCH_RATE_KEY,
   CACHE_ONE_INCH_RATE_TTL,
   CACHE_DEFAULT_HEADERS,
-  CACHE_DEFAULT_ERROR_HEADERS,
 } from 'config';
 import {
   getOneInchRate,
   wrapRequest,
   defaultErrorHandler,
   cacheControl,
-  errorCacheControl,
 } from 'utilsApi';
 import { API } from 'types';
 
@@ -43,6 +41,5 @@ const oneInchRate: API = async (req, res) => {
 
 export default wrapRequest(oneInchRate, [
   cacheControl(CACHE_DEFAULT_HEADERS),
-  errorCacheControl(CACHE_DEFAULT_ERROR_HEADERS),
   defaultErrorHandler,
 ]);

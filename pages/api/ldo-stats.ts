@@ -3,14 +3,12 @@ import {
   CACHE_LDO_STATS_KEY,
   CACHE_LDO_STATS_TTL,
   CACHE_DEFAULT_HEADERS,
-  CACHE_DEFAULT_ERROR_HEADERS,
 } from 'config';
 import {
   getLdoStats,
   wrapRequest,
   defaultErrorHandler,
   cacheControl,
-  errorCacheControl,
 } from 'utilsApi';
 import { API } from 'types';
 
@@ -34,6 +32,5 @@ const ldoStats: API = async (req, res) => {
 
 export default wrapRequest(ldoStats, [
   cacheControl(CACHE_DEFAULT_HEADERS),
-  errorCacheControl(CACHE_DEFAULT_ERROR_HEADERS),
   defaultErrorHandler,
 ]);

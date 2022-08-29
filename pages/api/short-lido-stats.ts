@@ -3,7 +3,6 @@ import {
   CACHE_LIDO_SHORT_STATS_KEY,
   CACHE_LIDO_SHORT_STATS_TTL,
   CACHE_DEFAULT_HEADERS,
-  CACHE_DEFAULT_ERROR_HEADERS,
 } from 'config';
 import {
   getTotalStaked,
@@ -12,7 +11,6 @@ import {
   wrapRequest,
   defaultErrorHandler,
   cacheControl,
-  errorCacheControl,
 } from 'utilsApi';
 import { API, SubgraphChains } from 'types';
 import { parallelizePromises } from 'utils';
@@ -53,6 +51,5 @@ const shortLidoStats: API = async (req, res) => {
 
 export default wrapRequest(shortLidoStats, [
   cacheControl(CACHE_DEFAULT_HEADERS),
-  errorCacheControl(CACHE_DEFAULT_ERROR_HEADERS),
   defaultErrorHandler,
 ]);

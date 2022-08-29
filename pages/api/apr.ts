@@ -6,7 +6,6 @@ import {
   CACHE_STETH_APR_KEY,
   CACHE_STETH_APR_TTL,
   CACHE_DEFAULT_HEADERS,
-  CACHE_DEFAULT_ERROR_HEADERS,
 } from 'config';
 import initMiddleware from 'lib/init-middleware';
 import {
@@ -15,7 +14,6 @@ import {
   wrapRequest,
   defaultErrorHandler,
   cacheControl,
-  errorCacheControl,
 } from 'utilsApi';
 import { API } from 'types';
 
@@ -83,6 +81,5 @@ const apr: API = async (req, res) => {
 
 export default wrapRequest(apr, [
   cacheControl(CACHE_DEFAULT_HEADERS),
-  errorCacheControl(CACHE_DEFAULT_ERROR_HEADERS),
   defaultErrorHandler,
 ]);

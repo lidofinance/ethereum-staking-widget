@@ -3,14 +3,12 @@ import {
   CACHE_ETH_APR_KEY,
   CACHE_ETH_APR_TTL,
   CACHE_DEFAULT_HEADERS,
-  CACHE_DEFAULT_ERROR_HEADERS,
 } from 'config';
 import {
   getEthApr,
   wrapRequest,
   defaultErrorHandler,
   cacheControl,
-  errorCacheControl,
 } from 'utilsApi';
 import { API } from 'types';
 
@@ -33,6 +31,5 @@ const ethApr: API = async (req, res) => {
 
 export default wrapRequest(ethApr, [
   cacheControl(CACHE_DEFAULT_HEADERS),
-  errorCacheControl(CACHE_DEFAULT_ERROR_HEADERS),
   defaultErrorHandler,
 ]);

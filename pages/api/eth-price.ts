@@ -3,14 +3,12 @@ import {
   CACHE_ETH_PRICE_KEY,
   CACHE_ETH_PRICE_TTL,
   CACHE_ETH_PRICE_HEADERS,
-  CACHE_DEFAULT_ERROR_HEADERS,
 } from 'config';
 import {
   getEthPrice,
   wrapRequest,
   defaultErrorHandler,
   cacheControl,
-  errorCacheControl,
 } from 'utilsApi';
 import { API } from 'types';
 
@@ -32,6 +30,5 @@ const ethPrice: API = async (req, res) => {
 
 export default wrapRequest(ethPrice, [
   cacheControl(CACHE_ETH_PRICE_HEADERS),
-  errorCacheControl(CACHE_DEFAULT_ERROR_HEADERS),
   defaultErrorHandler,
 ]);

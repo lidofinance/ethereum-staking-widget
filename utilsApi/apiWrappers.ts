@@ -1,6 +1,6 @@
 import { NextApiResponse, NextApiRequest } from 'next';
 import { API } from 'types';
-import { DEFAULT_API_ERROR_MESSAGE } from 'config';
+import { DEFAULT_API_ERROR_MESSAGE, CACHE_DEFAULT_ERROR_HEADERS } from 'config';
 
 type RequestWrapper = (
   req: NextApiRequest,
@@ -35,21 +35,15 @@ export const defaultErrorHandler: RequestWrapper = async (req, res, next) => {
 export const cacheControl =
   (headers: string): RequestWrapper =>
   async (req, res, next) => {
-    const pathKey = req.url?.split('?').shift();
-    if (pathKey) res.setHeader('Cache-Control', headers);
-
-    await next?.(req, res, next);
-  };
-
-// for requests with cache-control headers
-// need set new headers otherwise error will be cached
-export const errorCacheControl =
-  (headers: string): RequestWrapper =>
-  async (req, res, next) => {
     try {
+      const pathKey = req.url?.split('?').shift();
+      if (pathKey) res.setHeader('Cache-Control', headers);
+
       await next?.(req, res, next);
     } catch (error) {
-      res.setHeader('Cache-Control', headers);
+      // for requests with cache-control headers
+      // need set new headers otherwise error will be cached
+      res.setHeader('Cache-Control', CACHE_DEFAULT_ERROR_HEADERS);
 
       // throw error up the stack
       throw error;
