@@ -27,3 +27,4 @@ jobs:
           APP_PRIVATE_KEY: ${{ secrets.APP_PRIVATE_KEY }}
           TARGET_REPO: "lidofinance/infra-mainnet"
           TARGET_WORKFLOW: "deploy_testnet_staking_widget_ts.yaml"
+          TARGET: "develop"
