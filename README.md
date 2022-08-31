@@ -52,6 +52,20 @@ git commit -m "feat: dark theme"
 yarn build && yarn start
 ```
 
+## Adding a new route API
+
+- create a new file in `pages/api/` folder
+- use `wrapRequest` function from `utilsApi/apiWrappers.ts`
+- use default wrappers from `utilsApi/apiWrappers.ts` if needed (e.g. `defaultErrorHandler` for handle errors)
+
+**Example:**
+
+```ts
+const someRequest: API = async (req, res) => await fetch();
+
+export default wrapRequest([defaultErrorHandler])(someRequest);
+```
+
 ## Release flow
 
 To create new release:
