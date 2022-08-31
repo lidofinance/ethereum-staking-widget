@@ -1,5 +1,5 @@
 import { Cache } from 'memory-cache';
-import { subgraphsResponseTime } from 'utilsApi/metrics';
+import Metrics from 'utilsApi/metrics';
 import { standardFetcher } from 'utils/standardFetcher';
 import { serverLogger } from './serverLogger';
 import { SubgraphChains } from 'types';
@@ -56,7 +56,7 @@ export const getLidoHoldersViaSubgraphs: GetLidoHoldersViaSubgraphs = async (
     signal: controller.signal as AbortSignal,
   };
 
-  const endMetric = subgraphsResponseTime.startTimer();
+  const endMetric = Metrics.subgraphsResponseTime.startTimer();
 
   const url = getSubgraphUrl(chainId);
 
