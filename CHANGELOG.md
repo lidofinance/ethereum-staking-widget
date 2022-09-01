@@ -1,3 +1,18 @@
+# [1.21.0](https://github.com/lidofinance/staking-widget-ts/compare/1.20.0...1.21.0) (2022-09-01)
+
+
+### Bug Fixes
+
+* handle gamestop wallet's default setting ([abed653](https://github.com/lidofinance/staking-widget-ts/commit/abed653532486ebc214ad95d56d4c2226c778132))
+
+
+### Features
+
+* add gamestop wallet ([04b2806](https://github.com/lidofinance/staking-widget-ts/commit/04b2806462ce63d2e62d5d307500e193b059641d))
+* hide opera wallet ([4d41efa](https://github.com/lidofinance/staking-widget-ts/commit/4d41efacd5b2763b589b764bdb8df5276689d05a))
+
+
+
 # [1.20.0](https://github.com/lidofinance/staking-widget-ts/compare/1.19.1...1.20.0) (2022-08-25)
 
 
@@ -174,27 +189,6 @@
 * update lido-sdk/contracts to 2.0.0 ([549bf57](https://github.com/lidofinance/staking-widget-ts/commit/549bf57a4e45c1015afdc14e52bdf75d69c90af8))
 * use ms for TTL readability ([ff8de4e](https://github.com/lidofinance/staking-widget-ts/commit/ff8de4e59cea7780b45d81fbe4a1dae3c225cec1))
 * use node16 for native abort controller ([3c50e7a](https://github.com/lidofinance/staking-widget-ts/commit/3c50e7ae6f425c6631f41ee38ccf17ad2103ad47))
-
-
-
-## [1.14.4](https://github.com/lidofinance/staking-widget-ts/compare/1.14.3...1.14.4) (2022-06-27)
-
-
-### Bug Fixes
-
-* **api:** save memory streaming response from external rpc ([80cd143](https://github.com/lidofinance/staking-widget-ts/commit/80cd143f21691a1a86aab5bfff406769a5873e7d))
-* fix link visited color ([eda6886](https://github.com/lidofinance/staking-widget-ts/commit/eda6886b63bb44eda49f3e8feccdf476014eab40))
-* open 1inch link in new tab ([235fabc](https://github.com/lidofinance/staking-widget-ts/commit/235fabcb86f7f709ced1a88c441639a4408dae55))
-* remove deeplink from visible text ([be66f32](https://github.com/lidofinance/staking-widget-ts/commit/be66f32b88896339ad72a6f51059cad5a7fd732a))
-* revert wrong release commit ([7099cdc](https://github.com/lidofinance/staking-widget-ts/commit/7099cdc0cb9e80825db2f9496bcad8573c034f9d))
-* use 1inch url for mobile for now ([752025b](https://github.com/lidofinance/staking-widget-ts/commit/752025beb9c406c465f3f13efc5e4d70ea01434a))
-
-
-### Features
-
-* hide Ambire wallet due to issues with it ([dba9418](https://github.com/lidofinance/staking-widget-ts/commit/dba941853bcd937f8cf4a826b1fd761eb7778fea))
-* unhide Ambire wallet ([0bf6569](https://github.com/lidofinance/staking-widget-ts/commit/0bf6569b6fa09c86160e7e47299271ad2d29eee3))
-* use 1inch deeplink for Ledger Live ([b61c0f8](https://github.com/lidofinance/staking-widget-ts/commit/b61c0f8b0fb4d83cc26d5ff30549c6eb18f7c88e))
 
 
 
