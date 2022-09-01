@@ -1,6 +1,10 @@
 import { Cache } from 'memory-cache';
 import { CACHE_LIDO_STATS_KEY, CACHE_LIDO_STATS_TTL } from 'config';
-import { getLidoStats, defaultErrorAndCacheWrapper } from 'utilsApi';
+import {
+  getLidoStats,
+  defaultErrorAndCacheWrapper,
+  responseTimeExternalMetricWrapper,
+} from 'utilsApi';
 import { API } from 'types';
 
 const cache = new Cache<typeof CACHE_LIDO_STATS_KEY, unknown>();
@@ -15,7 +19,10 @@ const lidoStats: API = async (req, res) => {
   if (cachedLidoStats) {
     res.status(200).json(cachedLidoStats);
   } else {
-    const lidoStats = await getLidoStats();
+    const lidoStats = await responseTimeExternalMetricWrapper(getLidoStats)(
+      req,
+      res,
+    );
     cache.put(CACHE_LIDO_STATS_KEY, { data: lidoStats }, CACHE_LIDO_STATS_TTL);
 
     res.status(200).json({ data: lidoStats });
