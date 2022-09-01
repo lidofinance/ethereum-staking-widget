@@ -17,7 +17,7 @@ const middleware = (req: NextRequest) => {
 
 export const config = {
   // paths where use middleware
-  matcher: ['/manifest.json', '/favicon:size*'],
+  matcher: ['/manifest.json', '/favicon:size*', '/', '/wrap'],
 };
 
 export default middleware;
