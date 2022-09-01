@@ -51,3 +51,29 @@ git commit -m "feat: dark theme"
 ```bash
 yarn build && yarn start
 ```
+
+## Adding a new route API
+
+- create a new file in `pages/api/` folder
+- use `wrapRequest` function from `utilsApi/apiWrappers.ts`
+- use default wrappers from `utilsApi/apiWrappers.ts` if needed (e.g. `defaultErrorHandler` for handle errors)
+
+**Example:**
+
+```ts
+const someRequest: API = async (req, res) => await fetch();
+
+export default wrapRequest([defaultErrorHandler])(someRequest);
+```
+
+## Release flow
+
+To create new release:
+
+1. Merge all changes to the `main` branch
+1. Navigate to Repo => Actions
+1. Run action "Prepare release" action against `main` branch
+1. When action execution is finished, navigate to Repo => Pull requests
+1. Find pull request named "chore(release): X.X.X" review and merge it with "Rebase and merge" (or "Squash and merge")
+1. After merge release action will be triggered automatically
+1. Navigate to Repo => Actions and see last actions logs for further details
