@@ -3,7 +3,7 @@ import styled from 'styled-components';
 export const SwitchWrapper = styled.div`
   width: 268px;
   height: 44px;
-  background-color: ${({ theme }) => theme.colors.backgroundDarken};
+  background-color: var(--lido-color-backgroundDarken);
   border-radius: 22px;
   position: relative;
   :hover {
@@ -19,7 +19,7 @@ export const SwitchWrapper = styled.div`
 export const Handle = styled.div<{ $checked: boolean }>`
   width: 132px;
   height: 40px;
-  background-color: ${({ theme }) => theme.colors.foreground};
+  background-color: var(--lido-color-foreground);
   border-radius: 20px;
   position: absolute;
   left: ${({ $checked }) => ($checked ? 'calc(100% - 134px)' : '2px')};

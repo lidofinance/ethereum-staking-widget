@@ -1,11 +1,7 @@
 import { Histogram, register, collectDefaultMetrics } from 'prom-client';
-import getConfig from 'next/config';
-import { METRICS_PREFIX } from 'config';
+import { METRICS_PREFIX, dynamics } from 'config';
 import buildInfoJson from 'build-info.json';
 import { collectStartupMetrics } from '@lidofinance/api-metrics';
-
-const { publicRuntimeConfig } = getConfig();
-const { defaultChain, supportedChains } = publicRuntimeConfig;
 
 export const subgraphsResponseTime = new Histogram({
   name: METRICS_PREFIX + 'subgraphs_response',
@@ -19,8 +15,8 @@ export const registry = register;
 collectStartupMetrics({
   prefix: METRICS_PREFIX,
   registry,
-  defaultChain,
-  supportedChains: supportedChains.split(','),
+  defaultChain: `${dynamics.defaultChain}`,
+  supportedChains: dynamics.supportedChains.map((chain) => `${chain}`),
   version: process.env.npm_package_version ?? 'unversioned',
   commit: buildInfoJson.commit,
   branch: buildInfoJson.branch,

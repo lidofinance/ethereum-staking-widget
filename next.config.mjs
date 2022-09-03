@@ -1,9 +1,23 @@
+import {writeFileSync} from 'node:fs';
+import {resolve} from 'node:path';
+import * as dynamics from './env-dynamics.mjs'
+
+/*
+We're using some Docker runtime-level env variables - not only Matomo,
+but e.g. NEXT_PUBLIC_ACTIVE_CHAIN_ID - will be moved here later.
+We cannot simply use `process.env` as they will be baked during Docker
+build phase, so this is bypassing build optimisation via Next.
+Right now these variables are only injected in client-side application.
+As injection is not isomorphic, access only works via `window` by design -
+this allows developer to keep in mind that only client-side has access there.
+*/
+
+writeFileSync(resolve('./public/window-env.js'), `window.__env__=${JSON.stringify(dynamics)}`);
+
+
 const basePath = process.env.BASE_PATH;
 const infuraApiKey = process.env.INFURA_API_KEY;
 const alchemyApiKey = process.env.ALCHEMY_API_KEY;
-
-const defaultChain = process.env.DEFAULT_CHAIN;
-const supportedChains = process.env.SUPPORTED_CHAINS;
 
 const ethplorerApiKey = process.env.ETHPLORER_API_KEY;
 
@@ -34,7 +48,7 @@ const metricsPort = process.env.METRICS_PORT ?? 3001;
 const { AggregatorRegistry } = require('prom-client');
 new AggregatorRegistry();
 
-module.exports = {
+export default {
   basePath,
   compiler: {
     styledComponents: true,
@@ -59,7 +73,7 @@ module.exports = {
       {
         // required for gnosis save apps
         source: '/manifest.json',
-        headers: [{ key: 'Access-Control-Allow-Origin', value: '*' }],
+        headers: [{key: 'Access-Control-Allow-Origin', value: '*'}],
       },
       {
         // Apply these headers to all routes in your application.
@@ -104,10 +118,5 @@ module.exports = {
     subgraphKintsugi,
     subgraphRequestTimeout,
     metricsPort,
-  },
-  publicRuntimeConfig: {
-    defaultChain,
-    supportedChains,
-    enableQaHelpers,
   },
 };

@@ -1,6 +1,6 @@
-import { FC, useEffect, useState } from 'react';
+import { FC, useContext, useEffect, useState } from 'react';
 import { AppCookies, COOKIES_ALLOWED_KEY } from 'utils';
-import { ThemeToggleContext } from 'providers/theme';
+import { ThemeToggleContext } from '@lidofinance/lido-ui';
 import CookieIconSrc from 'assets/icons/cookie.svg';
 import CookieIconInverseSrc from 'assets/icons/cookieInverse.svg';
 import {
@@ -23,24 +23,18 @@ export const CookiesTooltip: FC = () => {
     }
   }, []);
 
+  const {themeName} = useContext(ThemeToggleContext);
+
   if (!isVisible) return <></>;
 
   return (
     <Wrap>
       <Box>
         <CookieWrap>
-          <ThemeToggleContext.Consumer>
-            {(theme) => (
-              <>
-                {theme.themeName == 'light' && (
-                  <img src={CookieIconSrc} alt="Cookie" />
-                )}
-                {theme.themeName == 'dark' && (
-                  <img src={CookieIconInverseSrc} alt="Cookie" />
-                )}
-              </>
-            )}
-          </ThemeToggleContext.Consumer>
+          <img
+            src={themeName == 'light' ? CookieIconSrc : CookieIconInverseSrc}
+            alt="Cookie"
+          />
         </CookieWrap>
         <Text>
           We use cookies to collect anonymous site visitation data

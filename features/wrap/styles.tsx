@@ -5,7 +5,7 @@ const errorCSS = css`
   &,
   &:hover,
   &:focus-within {
-    border-color: ${({ theme }) => theme.colors.error};
+    border-color: var(--lido-color-error);
   }
 `;
 

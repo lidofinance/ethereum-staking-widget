@@ -6,15 +6,15 @@ export const LevelText = styled.div`
 `;
 
 export const GreenSpan = styled.span`
-  color: ${(props) => props.theme.colors.success};
+  color: var(--lido-color-success);
 `;
 
 export const YellowSpan = styled.span`
-  color: ${(props) => props.theme.colors.warning};
+  color: var(--lido-color-warning);
 `;
 
 export const RedSpan = styled.span`
-  color: ${(props) => props.theme.colors.error};
+  color: var(--lido-color-error);
 `;
 
 export const EmptyBar = styled.div`
@@ -27,17 +27,17 @@ export const EmptyBar = styled.div`
 `;
 
 export const GreenBar = styled(EmptyBar)`
-  background: ${(props) => props.theme.colors.success};
+  background: var(--lido-color-success);
   opacity: 1;
 `;
 
 export const YellowBar = styled(EmptyBar)`
-  background: ${(props) => props.theme.colors.warning};
+  background: var(--lido-color-warning);
   opacity: 1;
 `;
 
 export const RedBar = styled(EmptyBar)`
-  background: ${(props) => props.theme.colors.error};
+  background: var(--lido-color-error);
   opacity: 1;
 `;
 

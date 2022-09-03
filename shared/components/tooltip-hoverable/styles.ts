@@ -4,8 +4,8 @@ import { Popover } from '@lidofinance/lido-ui';
 export const TooltipPopoverStyle = styled(Popover)`
   && {
     padding: 12px;
-    background: ${({ theme }) => theme.colors.accent};
-    color: ${({ theme }) => theme.colors.accentContrast};
+    background: var(--lido-color-accent);
+    color: var(--lido-color-accentContrast);
     font-size: ${({ theme }) => theme.fontSizesMap.xxxs}px;
     line-height: 1.8em;
     font-weight: 400;
@@ -17,7 +17,7 @@ export const TooltipPopoverStyle = styled(Popover)`
 
     & a {
       text-decoration: none;
-      color: ${(props) => props.theme.colors.primary};
+      color: var(--lido-color-primary);
     }
   }
 `;

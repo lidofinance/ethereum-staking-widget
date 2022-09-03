@@ -6,11 +6,9 @@ import Document, {
   DocumentContext,
   DocumentInitialProps,
 } from 'next/document';
-import getConfig from 'next/config';
-import { Fonts } from '@lidofinance/lido-ui';
+import { Fonts, LidoUIHead } from '@lidofinance/lido-ui';
 import { ServerStyleSheet } from 'styled-components';
-
-const chainId = getConfig().publicRuntimeConfig.defaultChain || '';
+import { dynamics } from '../config';
 
 let host = 'https://stake.lido.fi';
 
@@ -105,8 +103,10 @@ export default class MyDocument extends Document {
           <meta name="twitter:site" content="@lidofinance" />
           <meta name="twitter:creator" content="@lomashuk" />
           <meta name="description" content={this.metaDescription} />
-          <meta name="currentChain" content={String(chainId)} />
+          <meta name="currentChain" content={String(dynamics.defaultChain)} />
           <Fonts />
+          <LidoUIHead />
+          <script src="/window-env.js" />
         </Head>
         <body>
           <Main />

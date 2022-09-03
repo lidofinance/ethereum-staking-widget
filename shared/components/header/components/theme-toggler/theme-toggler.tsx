@@ -1,7 +1,6 @@
 import { FC } from 'react';
 import { ThemeTogglerStyle } from './styles';
-import { Dark, Light } from '@lidofinance/lido-ui';
-import { useThemeToggle } from 'shared/hooks';
+import { Dark, Light, useThemeToggle } from '@lidofinance/lido-ui';
 
 export const ThemeToggler: FC = () => {
   const { toggleTheme, themeName } = useThemeToggle();
