@@ -5,7 +5,7 @@ import {
   Identicon,
   External,
   Copy,
-  Address
+  Address,
 } from '@lidofinance/lido-ui';
 import { useEtherscanOpen, useSDK } from '@lido-sdk/react';
 import { useConnectorInfo, useDisconnect } from '@lido-sdk/web3-react';
