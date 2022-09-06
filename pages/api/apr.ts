@@ -5,10 +5,9 @@ import {
   CACHE_ETH_APR_TTL,
   CACHE_STETH_APR_KEY,
   CACHE_STETH_APR_TTL,
-  DEFAULT_API_ERROR_MESSAGE,
 } from 'config';
 import initMiddleware from 'lib/init-middleware';
-import { getEthApr, getStethApr } from 'utilsApi';
+import { getEthApr, getStethApr, defaultErrorAndCacheWrapper } from 'utilsApi';
 import { API } from 'types';
 
 const cacheEth = new Cache<typeof CACHE_ETH_APR_KEY, string>();
@@ -43,43 +42,34 @@ const apr: API = async (req, res) => {
     steth: null,
   };
 
-  try {
-    // Eth APR
-    const cachedEthApr = cacheEth.get(CACHE_ETH_APR_KEY);
+  // Eth APR
+  const cachedEthApr = cacheEth.get(CACHE_ETH_APR_KEY);
 
-    if (cachedEthApr) {
-      resultData.eth = cachedEthApr;
-    } else {
-      const ethApr = await getEthApr();
-      cacheEth.put(CACHE_ETH_APR_KEY, ethApr, CACHE_ETH_APR_TTL);
+  if (cachedEthApr) {
+    resultData.eth = cachedEthApr;
+  } else {
+    const ethApr = await getEthApr();
+    cacheEth.put(CACHE_ETH_APR_KEY, ethApr, CACHE_ETH_APR_TTL);
 
-      resultData.eth = ethApr;
-    }
-
-    // StEth APR
-    const cachedStethApr = cacheSteth.get(CACHE_STETH_APR_KEY);
-
-    if (cachedStethApr) {
-      resultData.steth = cachedStethApr;
-    } else {
-      const stethApr = await getStethApr();
-      cacheSteth.put(CACHE_STETH_APR_KEY, stethApr, CACHE_STETH_APR_TTL);
-
-      resultData.steth = stethApr;
-    }
-
-    // Return
-    res.json({
-      data: resultData,
-    });
-  } catch (error) {
-    if (error instanceof Error) {
-      console.error(error.message ?? DEFAULT_API_ERROR_MESSAGE);
-      res.status(500).json(error.message ?? DEFAULT_API_ERROR_MESSAGE);
-    } else {
-      res.status(500).json(DEFAULT_API_ERROR_MESSAGE);
-    }
+    resultData.eth = ethApr;
   }
+
+  // StEth APR
+  const cachedStethApr = cacheSteth.get(CACHE_STETH_APR_KEY);
+
+  if (cachedStethApr) {
+    resultData.steth = cachedStethApr;
+  } else {
+    const stethApr = await getStethApr();
+    cacheSteth.put(CACHE_STETH_APR_KEY, stethApr, CACHE_STETH_APR_TTL);
+
+    resultData.steth = stethApr;
+  }
+
+  // Return
+  res.json({
+    data: resultData,
+  });
 };
 
-export default apr;
+export default defaultErrorAndCacheWrapper(apr);

@@ -1,3 +1,49 @@
+## [1.19.1](https://github.com/lidofinance/staking-widget-ts/compare/1.19.0...1.19.1) (2022-08-24)
+
+### Bug Fixes
+
+- allow eth_blockNumber rpc method ([6685053](https://github.com/lidofinance/staking-widget-ts/commit/6685053b95403253ff3d7501bbc244b59c01b735))
+- allow more rpc methods ([80e1bff](https://github.com/lidofinance/staking-widget-ts/commit/80e1bff1093db07f2b1b2f991d6490d19fef2d6d))
+- allow rpc methods for Ledger ([14eaa24](https://github.com/lidofinance/staking-widget-ts/commit/14eaa241dcadd7bacc63a20ec81fcb89ed41f79b))
+
+# [1.19.0](https://github.com/lidofinance/staking-widget-ts/compare/1.18.0...1.19.0) (2022-08-10)
+
+### Bug Fixes
+
+- 1inch banner adaptivity ([e0acc0d](https://github.com/lidofinance/staking-widget-ts/commit/e0acc0d9b9883e99cd33e155de68956b1df13bd3))
+- 1inch copy ([b3b4934](https://github.com/lidofinance/staking-widget-ts/commit/b3b4934c98f2c00df17cafd2eca85de59f6910e2))
+- allow full balance staking when limit unset ([9f98600](https://github.com/lidofinance/staking-widget-ts/commit/9f986005aff0ba77648a35fd7c465468224eccce))
+- change 'pegged' to 'issued' ([29b284f](https://github.com/lidofinance/staking-widget-ts/commit/29b284f57357fc11305a4494148850915d9028e7))
+- check if var true ([8ed0ddb](https://github.com/lidofinance/staking-widget-ts/commit/8ed0ddb3395e6315faf7941b5ece5657a013188a))
+- connecting to exodus on mobile ([cab573d](https://github.com/lidofinance/staking-widget-ts/commit/cab573d862b5f2914475283794fa81bc16fb12fa))
+- duplicated imports was removed ([5f72874](https://github.com/lidofinance/staking-widget-ts/commit/5f7287479eca761f33197ac0e62cd0b7ab1fd48e))
+- max button limits ([591ed0b](https://github.com/lidofinance/staking-widget-ts/commit/591ed0b01301e4b735014214989662aa49ffe630))
+- one inch link as anchor ([1e1515e](https://github.com/lidofinance/staking-widget-ts/commit/1e1515e4d5195481632ce83a49f3142a6c308459))
+- one inch link usage ([fff305a](https://github.com/lidofinance/staking-widget-ts/commit/fff305a03299776213743a3fdc9385eaee09aacb))
+- remove padding when current limit less than balance ([30d43a6](https://github.com/lidofinance/staking-widget-ts/commit/30d43a6c98b2ed7cd2211b323c26830340ccae72))
+- revert mobile deeplink ([43d7458](https://github.com/lidofinance/staking-widget-ts/commit/43d7458e5bef83b23e6f232f03f03087b2e9bce9))
+- staking limit warning update when data changed ([3d1d11d](https://github.com/lidofinance/staking-widget-ts/commit/3d1d11dd894891b710768c46ee5ed67c3118c3e3))
+- staking limits pop-up copy ([d7803f4](https://github.com/lidofinance/staking-widget-ts/commit/d7803f455ed2d53b9a17b15424a0fe684d5133b6))
+
+### Features
+
+- account for stake limit ([f8ac87e](https://github.com/lidofinance/staking-widget-ts/commit/f8ac87ec5e48594b663d74372a26f01e5e5e5b2b))
+- add a check for staking limit in stake input ([a596e07](https://github.com/lidofinance/staking-widget-ts/commit/a596e07424453acf1a063695fc46ad3b46d26b9a))
+- add exodus wallet ([823e4fc](https://github.com/lidofinance/staking-widget-ts/commit/823e4fc52910276b02812e7c845ac832a5728cc1))
+- add qa helpers for mocking limits ([e230c28](https://github.com/lidofinance/staking-widget-ts/commit/e230c28d52ea246b9fa602541b8ea4372b26135a))
+- add stake limit reached modal view ([ecb97ad](https://github.com/lidofinance/staking-widget-ts/commit/ecb97adb6d1a8613f1f6100685a35b4d3337e3bc))
+- added default formatters ([678208f](https://github.com/lidofinance/staking-widget-ts/commit/678208f3e8cd2287e980c90a5cff1badeac4e2b5))
+- disable submit when limit reached ([8ec406f](https://github.com/lidofinance/staking-widget-ts/commit/8ec406fb2938ddd62a7f98a556c8c3bff6a1413d))
+- display stakeable ether depending on limit ([c432129](https://github.com/lidofinance/staking-widget-ts/commit/c432129f6315e34777b842f1b7ae6733b5cbdc7d))
+- display staking limit tooltip ([11015d7](https://github.com/lidofinance/staking-widget-ts/commit/11015d7df4458310af6eadb2b7f1591bad30b63f))
+- enable blockchain.com wallet ([dcd1d55](https://github.com/lidofinance/staking-widget-ts/commit/dcd1d552322ecabe3f4e6152afaf1804396a5614))
+- limit tooltip link ([1ca8f9c](https://github.com/lidofinance/staking-widget-ts/commit/1ca8f9c1dba1c51eb9dbc9b825a218008adeecf8))
+- log level is text ([64c12d8](https://github.com/lidofinance/staking-widget-ts/commit/64c12d87650fc54aec6f3812332ff76519efbaf9))
+- mock limit reached revert ([8dded49](https://github.com/lidofinance/staking-widget-ts/commit/8dded4998595e2110b48afb6881c7ee6254e84f5))
+- one inch info box instead of modal ([7b8f042](https://github.com/lidofinance/staking-widget-ts/commit/7b8f0424a20c32072076e0de8a10c9ef229cb69a))
+- staking limit auto refresh ([31ce786](https://github.com/lidofinance/staking-widget-ts/commit/31ce7862f9fe4f75cf0b390b8bcdb838abdd4888))
+- staking limit icon update ([8b77dff](https://github.com/lidofinance/staking-widget-ts/commit/8b77dfffc8347b5db1692845a765faf6ffc01b6f))
+
 # [1.18.0](https://github.com/lidofinance/staking-widget-ts/compare/1.16.2...1.18.0) (2022-08-04)
 
 ### Bug Fixes
@@ -116,27 +162,3 @@
 ### Bug Fixes
 
 - **api:** back to server side props to get right env ([44a35b7](https://github.com/lidofinance/staking-widget-ts/commit/44a35b739f9342df97345168d6cd1233ac4c341f))
-
-## [1.14.2](https://github.com/lidofinance/staking-widget-ts/compare/1.14.1...1.14.2) (2022-06-19)
-
-### Bug Fixes
-
-- resolve page load CPU over-consumption ([cc48c5d](https://github.com/lidofinance/staking-widget-ts/commit/cc48c5d0846c28ae21128e13d07a3661c9330070))
-
-## [1.14.1](https://github.com/lidofinance/staking-widget-ts/compare/1.14.0...1.14.1) (2022-06-17)
-
-### Bug Fixes
-
-- **api:** save memory streaming response from external rpc ([3abab2c](https://github.com/lidofinance/staking-widget-ts/commit/3abab2ce461db74968749354b32560de39982f55))
-
-# [1.14.0](https://github.com/lidofinance/staking-widget-ts/compare/1.13.0...1.14.0) (2022-06-16)
-
-### Bug Fixes
-
-- set curl=7.83.1-r1 at Dockerfile ([725155b](https://github.com/lidofinance/staking-widget-ts/commit/725155b7acdf58b3399db33846a37bf203607d13))
-- set git=2.36.1-r0 at Dockerfile ([5634795](https://github.com/lidofinance/staking-widget-ts/commit/56347957928e7de63d3c8f80b2c19de3e280dcd4))
-
-### Features
-
-- revert lido-ui-blocks to v1 ([f0a5076](https://github.com/lidofinance/staking-widget-ts/commit/f0a507693761be9b987463f53353bdba6a405cf9))
-- update lido-ui-blocks to v2.0.2 (revert of revert) ([45b8354](https://github.com/lidofinance/staking-widget-ts/commit/45b8354e0e27b9e1798b585014ab5508faa5ef9b))
