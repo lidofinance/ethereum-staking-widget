@@ -38,4 +38,4 @@ yarn-error.log*
 .vscode
 .idea
 
-./public/window-env.js
+/public/window-env.js
