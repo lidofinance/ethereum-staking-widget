@@ -11,8 +11,8 @@ export const TooltipPopoverStyle = styled(Popover)`
     font-weight: 400;
     max-width: 256px;
     border-radius: ${({ theme }) => theme.borderRadiusesMap.md}px;
-    box-shadow: ${({ theme }) =>
-      `${theme.boxShadows.sm} var(--lido-color-shadowLight)`};
+    box-shadow: ${({ theme }) => theme.boxShadows.sm}
+      var(--lido-color-shadowLight);
     pointer-events: default !important;
 
     & a {

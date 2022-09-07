@@ -1,10 +1,9 @@
 import {writeFileSync} from 'node:fs';
 import {resolve} from 'node:path';
-import * as dynamics from './env-dynamics.mjs'
+import * as dynamics from './env-dynamics.mjs';
 
 /*
-We're using some Docker runtime-level env variables - not only Matomo,
-but e.g. NEXT_PUBLIC_ACTIVE_CHAIN_ID - will be moved here later.
+We're using some Docker runtime-level env variables.
 We cannot simply use `process.env` as they will be baked during Docker
 build phase, so this is bypassing build optimisation via Next.
 Right now these variables are only injected in client-side application.

@@ -1,6 +1,6 @@
 import { createContext, useMemo, useCallback, memo, useState, FC } from 'react';
-import { Modal } from 'shared/wallet';
 import { useThemeToggle } from '@lidofinance/lido-ui';
+import { Modal } from 'shared/wallet';
 import { WalletsModalForEth } from '@lidofinance/lido-ui-blocks';
 
 export type ModalContextValue = {
