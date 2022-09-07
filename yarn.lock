@@ -1930,10 +1930,10 @@
   dependencies:
     "@lidofinance/blocks-connect-wallet-modal" "2.9.1"
 
-"@lidofinance/lido-ui@3.0.0-next.8":
-  version "3.0.0-next.8"
-  resolved "https://registry.npmjs.org/@lidofinance/lido-ui/-/lido-ui-3.0.0-next.8.tgz#97d284ba086b6589becfa2c80499fa4c949d3f8b"
-  integrity sha512-/xa+0cDqpWjWalP4ISrZOFJcjEdFXVUnQsSKQxiNos1Eu0pKcSVL3i6NM3XWpdW9sCQhrzqJRhnMdygsqNDVvA==
+"@lidofinance/lido-ui@3.0.0-next.10":
+  version "3.0.0-next.10"
+  resolved "https://registry.yarnpkg.com/@lidofinance/lido-ui/-/lido-ui-3.0.0-next.10.tgz#b73cd6bf96114aba020b991843c466ea98f2f7b6"
+  integrity sha512-BN5RmS7rvO8HJJ9iSBNcOdN7abzEVVGbrPlcL4+pycO8KC5VvXV7fL29rLEBo97oc22loy3E9HxJmpfTbmVfGA==
   dependencies:
     "@styled-system/should-forward-prop" "5.1.5"
     "@swc/helpers" "^0.4.11"
