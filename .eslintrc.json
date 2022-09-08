@@ -29,7 +29,10 @@
     "@typescript-eslint/no-empty-interface": "off",
     "@typescript-eslint/no-unused-vars": [
       "warn",
-      { "ignoreRestSiblings": true }
+      {
+        "ignoreRestSiblings": true,
+        "argsIgnorePattern": "^_"
+      }
     ],
     "jsx-a11y/no-autofocus": "off",
     "jsx-a11y/anchor-is-valid": "off",
@@ -39,5 +42,13 @@
     "react": {
       "version": "detect"
     }
-  }
+  },
+  "overrides": [
+    {
+      "files": ["*.js"],
+      "rules": {
+        "@typescript-eslint/no-var-requires": "off"
+      }
+    }
+  ]
 }
