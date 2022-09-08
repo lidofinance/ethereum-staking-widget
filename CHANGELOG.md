@@ -1,3 +1,26 @@
+## [1.21.1](https://github.com/lidofinance/staking-widget-ts/compare/1.21.0...1.21.1) (2022-09-02)
+
+### Bug Fixes
+
+- fix dockerfile apk version ([c5cc96e](https://github.com/lidofinance/staking-widget-ts/commit/c5cc96e5affb2efcbc74da7b314229bbcde5e88d))
+
+# [1.21.0](https://github.com/lidofinance/staking-widget-ts/compare/1.20.0...1.21.0) (2022-09-01)
+
+### Bug Fixes
+
+- handle gamestop wallet's default setting ([abed653](https://github.com/lidofinance/staking-widget-ts/commit/abed653532486ebc214ad95d56d4c2226c778132))
+
+### Features
+
+- add gamestop wallet ([04b2806](https://github.com/lidofinance/staking-widget-ts/commit/04b2806462ce63d2e62d5d307500e193b059641d))
+- hide opera wallet ([4d41efa](https://github.com/lidofinance/staking-widget-ts/commit/4d41efacd5b2763b589b764bdb8df5276689d05a))
+
+# [1.20.0](https://github.com/lidofinance/staking-widget-ts/compare/1.19.1...1.20.0) (2022-08-25)
+
+### Features
+
+- unhide zengo wallet ([69caccf](https://github.com/lidofinance/staking-widget-ts/commit/69caccf8dcaf040f7f9124f0c6a0b44dcb32347a))
+
 ## [1.19.1](https://github.com/lidofinance/staking-widget-ts/compare/1.19.0...1.19.1) (2022-08-24)
 
 ### Bug Fixes

@@ -53,7 +53,7 @@ class Metrics {
       registry: this.registry,
       defaultChain,
       supportedChains: supportedChains.split(','),
-      version: process.env.npm_package_version ?? 'unversioned',
+      version: buildInfoJson.version,
       commit: buildInfoJson.commit,
       branch: buildInfoJson.branch,
     });
