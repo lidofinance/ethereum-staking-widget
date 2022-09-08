@@ -18,9 +18,9 @@ const ldoStats: API = async (req, res) => {
   if (cachedLidoStats) {
     res.status(200).json(cachedLidoStats);
   } else {
+    const route = req.url;
     const ldoStats = await responseTimeExternalMetricWrapper(getLdoStats)(
-      req,
-      res,
+      route,
     );
 
     cache.put(CACHE_LDO_STATS_KEY, { data: ldoStats }, CACHE_LDO_STATS_TTL);

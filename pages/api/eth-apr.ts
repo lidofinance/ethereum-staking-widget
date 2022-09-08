@@ -17,7 +17,8 @@ const ethApr: API = async (req, res) => {
   if (cachedEthApr) {
     res.json(cachedEthApr);
   } else {
-    const ethApr = await responseTimeExternalMetricWrapper(getEthApr)(req, res);
+    const route = req.url;
+    const ethApr = await responseTimeExternalMetricWrapper(getEthApr)(route);
     cache.put(CACHE_ETH_APR_KEY, ethApr, CACHE_ETH_APR_TTL);
 
     res.json(ethApr);

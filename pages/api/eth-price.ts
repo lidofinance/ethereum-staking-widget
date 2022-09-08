@@ -16,9 +16,9 @@ const ethPrice: API = async (req, res) => {
   if (cachedEthPrice) {
     res.json(cachedEthPrice);
   } else {
+    const route = req.url;
     const ethPrice = await responseTimeExternalMetricWrapper(getEthPrice)(
-      req,
-      res,
+      route,
     );
     cache.put(CACHE_ETH_PRICE_KEY, { price: ethPrice }, CACHE_ETH_PRICE_TTL);
 

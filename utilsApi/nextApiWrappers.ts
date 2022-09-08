@@ -15,7 +15,7 @@ type RequestWrapper<T = void> = (
   next?: API<T> | RequestWrapper<T>,
 ) => Promise<T>;
 
-export const wrapRequest =
+export const wrapNextRequest =
   <T = void>(wrappers: RequestWrapper<T>[]) =>
   (requestHandler: API<T>) =>
     wrappers.reduce(
@@ -64,28 +64,6 @@ export const responseTimeMetric =
     }
   };
 
-export const responseTimeExternalMetric =
-  <T = void>(): RequestWrapper<T> =>
-  async (req, res, next) => {
-    const route = req.url;
-    let status = 200;
-
-    const endMetric = Metrics.apiTimingsExternal.startTimer({ route });
-
-    try {
-      const result = await next?.(req, res, next);
-      endMetric({ status });
-
-      return result as T;
-    } catch (error) {
-      status = 500;
-      // throw error up the stack
-      throw error;
-    } finally {
-      endMetric({ status });
-    }
-  };
-
 export const cacheControl =
   <T = void>(headers: string = CACHE_DEFAULT_HEADERS): RequestWrapper<T> =>
   async (req, res, next) => {
@@ -107,12 +85,8 @@ export const cacheControl =
 
 // ready wrapper types
 
-export const defaultErrorAndCacheWrapper: MixedWrapper = wrapRequest([
+export const defaultErrorAndCacheWrapper: MixedWrapper = wrapNextRequest([
   responseTimeMetric(),
   cacheControl(CACHE_DEFAULT_HEADERS),
   defaultErrorHandler(),
-]);
-
-export const responseTimeExternalMetricWrapper: MixedWrapper = wrapRequest([
-  responseTimeExternalMetric(),
 ]);

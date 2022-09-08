@@ -53,7 +53,8 @@ const apr: API = async (req, res) => {
   if (cachedEthApr) {
     resultData.eth = cachedEthApr;
   } else {
-    const ethApr = await responseTimeExternalMetricWrapper(getEthApr)(req, res);
+    const route = req.url;
+    const ethApr = await responseTimeExternalMetricWrapper(getEthApr)(route);
 
     cacheEth.put(CACHE_ETH_APR_KEY, ethApr, CACHE_ETH_APR_TTL);
 

@@ -20,6 +20,7 @@ const shortLidoStats: API = async (req, res) => {
     res.status(200).json(cachedLidoStats);
   } else {
     const chainId = Number(req.query.chainId) as SubgraphChains;
+    const route = req.url;
 
     const [lidoHolders, totalStaked, stEthPrice] =
       await responseTimeExternalMetricWrapper(() =>
@@ -28,7 +29,7 @@ const shortLidoStats: API = async (req, res) => {
           getTotalStaked(),
           getStEthPrice(),
         ]),
-      )(req, res);
+      )(route);
 
     const shortLidoStats = {
       uniqueAnytimeHolders: lidoHolders?.data?.stats?.uniqueAnytimeHolders,

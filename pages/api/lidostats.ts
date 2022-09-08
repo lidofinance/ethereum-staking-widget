@@ -19,9 +19,9 @@ const lidoStats: API = async (req, res) => {
   if (cachedLidoStats) {
     res.status(200).json(cachedLidoStats);
   } else {
+    const route = req.url;
     const lidoStats = await responseTimeExternalMetricWrapper(getLidoStats)(
-      req,
-      res,
+      route,
     );
     cache.put(CACHE_LIDO_STATS_KEY, { data: lidoStats }, CACHE_LIDO_STATS_TTL);
 

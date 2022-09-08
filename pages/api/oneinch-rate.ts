@@ -18,6 +18,7 @@ const oneInchRate: API = async (req, res) => {
   if (cachedOneInchRate) {
     res.status(200).json(cachedOneInchRate);
   } else {
+    const route = req.url;
     const amount = 10 ** 18;
     const oneInchRate = await responseTimeExternalMetricWrapper(() =>
       getOneInchRate(
@@ -25,7 +26,7 @@ const oneInchRate: API = async (req, res) => {
         getTokenAddress(CHAINS.Mainnet, TOKENS.STETH),
         amount,
       ),
-    )(req, res);
+    )(route);
     cache.put(
       CACHE_ONE_INCH_RATE_KEY,
       { rate: oneInchRate },

@@ -17,9 +17,9 @@ const stethApr: API = async (req, res) => {
   if (cachedStethApr) {
     res.json(cachedStethApr);
   } else {
+    const route = req.url;
     const stethApr = await responseTimeExternalMetricWrapper(getStethApr)(
-      req,
-      res,
+      route,
     );
     cache.put(CACHE_STETH_APR_KEY, stethApr, CACHE_STETH_APR_TTL);
 
