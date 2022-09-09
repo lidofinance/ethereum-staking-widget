@@ -4,7 +4,10 @@ import {
   DEFAULT_API_ERROR_MESSAGE,
   CACHE_DEFAULT_ERROR_HEADERS,
   CACHE_DEFAULT_HEADERS,
+  RATE_LIMIT,
+  RATE_LIMIT_TIME_FRAME,
 } from 'config';
+import { setRateLimit } from 'utilsApi';
 
 type RequestWrapper = (
   req: NextApiRequest,
@@ -51,9 +54,18 @@ export const cacheControl =
     }
   };
 
+export const rateLimit =
+  (limit = RATE_LIMIT, timeFrame = RATE_LIMIT_TIME_FRAME): RequestWrapper =>
+  async (req, res, next) => {
+    setRateLimit({ req, res, limit, timeFrame });
+
+    await next?.(req, res, next);
+  };
+
 // ready wrapper types
 
 export const defaultErrorAndCacheWrapper = wrapRequest([
   cacheControl(CACHE_DEFAULT_HEADERS),
+  rateLimit(),
   defaultErrorHandler,
 ]);
