@@ -1,4 +1,18 @@
 import { NextApiResponse, NextApiRequest } from 'next';
+import { RATE_LIMIT_TIME_FRAME } from 'config';
+
+type MemoryStorageType = {
+  [key: string]: { value: number; timeoutId: NodeJS.Timeout };
+};
+
+type RateLimitedResponse = (data: { res: NextApiResponse; id: string }) => void;
+
+type SetRateLimit = (data: {
+  req: NextApiRequest;
+  res: NextApiResponse;
+  limit: number;
+  timeFrame: number;
+}) => NextApiResponse;
 
 const RATE_LIMIT_HEADERS = [
   `X-RateLimit-Limit`,
@@ -10,24 +24,41 @@ export class MemoryStorage {
   constructor() {
     this._storage = {};
   }
-  private _storage: { [key: string]: number };
+  private _durationMs = RATE_LIMIT_TIME_FRAME * 1000;
+  private _storage: MemoryStorageType;
 
   set(key: string, value: number) {
-    this._storage[key] = value;
+    this._storage[key].value = value;
+
+    if (this._storage[key].timeoutId) {
+      clearTimeout(this._storage[key].timeoutId);
+    }
+
+    this._storage[key].timeoutId = setTimeout(() => {
+      this.delete(key);
+    }, this._durationMs);
   }
 
   get(key: string) {
-    return this._storage[key];
+    return this._storage[key].value;
   }
 
   inc(key: string) {
     if (this._storage[key] !== undefined) {
-      this._storage[key] = this._storage[key] + 1;
+      this.set(key, this._storage[key].value + 1);
     } else {
-      this._storage[key] = 0;
+      this.set(key, 0);
     }
 
-    return this._storage[key];
+    return this.get(key);
+  }
+  delete(key: string) {
+    if (this._storage[key]) {
+      if (this._storage[key].timeoutId) {
+        clearTimeout(this._storage[key].timeoutId);
+      }
+      delete this._storage[key];
+    }
   }
 }
 const Memory = new MemoryStorage();
@@ -38,24 +69,13 @@ const getIP = (req: NextApiRequest) => {
   return xff ? (Array.isArray(xff) ? xff[0] : xff.split(',')[0]) : '127.0.0.1';
 };
 
-const rateLimitedResponse = ({
-  id,
-  res,
-}: {
-  id: string;
-  res: NextApiResponse;
-}) => {
+const rateLimitedResponse: RateLimitedResponse = ({ id, res }) => {
   res.status(429).json({
     error: { message: `API rate limit exceeded for ${id}` },
   });
 };
 
-export const setRateLimit = (data: {
-  req: NextApiRequest;
-  res: NextApiResponse;
-  limit: number;
-  timeFrame: number;
-}) => {
+export const setRateLimit: SetRateLimit = (data) => {
   const { res, req, limit, timeFrame } = data;
   const headers = RATE_LIMIT_HEADERS;
   const id = `ip:${getIP(req)}`;
