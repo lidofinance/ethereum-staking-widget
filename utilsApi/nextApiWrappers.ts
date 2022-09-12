@@ -42,10 +42,9 @@ export const responseTimeMetric: RequestWrapper = async (req, res, next) => {
   const endMetric = Metrics.apiTimings.startTimer({ route });
 
   try {
-    const result = await next?.(req, res, next);
-    endMetric({ status });
+    await next?.(req, res, next);
 
-    return result as T;
+    endMetric({ status });
   } catch (error) {
     status = 500;
     // throw error up the stack
