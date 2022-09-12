@@ -20,21 +20,16 @@ class Metrics {
   apiTimings = this.apiTimingsInit('internal');
   apiTimingsExternal = this.apiTimingsInit('external');
   requestCounter = this.requestsCounterInit();
-  subgraphsResponseTime = this.subgraphsResponseTimeInit();
-  memoryCacheMetrics = this.memoryCacheMetricsInit();
+  subgraphsResponseTime: Histogram<'subgraphs'> =
+    this.subgraphsResponseTimeInit();
+  private memoryCacheMetrics: Gauge<'size' | 'memsize'>[] =
+    this.memoryCacheMetricsInit();
 
   constructor() {
     AggregatorRegistry.setRegistries(this.registry);
     this.collectStartupMetricsInit();
     collectDefaultMetrics({ prefix: METRICS_PREFIX, register: this.registry });
   }
-
-  apiTimings: Histogram<'route' | 'entity' | 'status'>;
-  apiTimingsExternal: Histogram<'hostname' | 'route' | 'entity' | 'status'>;
-  requestCounter: Counter<'route' | 'entity'>;
-  subgraphsResponseTime: Histogram<'subgraphs'>;
-  registry: Registry;
-  private memoryCacheMetrics: Gauge<'size' | 'memsize'>[];
 
   apiTimingsInit(prefix: string) {
     const prefixWithDash = prefix ? `_${prefix}` : '';
