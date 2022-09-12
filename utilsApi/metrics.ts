@@ -24,7 +24,7 @@ class Metrics {
     this.subgraphsResponseTime = this.subgraphsResponseTimeInit();
     this.memoryCacheMetrics = this.memoryCacheMetricsInit();
 
-    AggregatorRegistry.setRegistries(registry);
+    AggregatorRegistry.setRegistries(this.registry);
     this.collectStartupMetricsInit();
     collectDefaultMetrics({ prefix: METRICS_PREFIX, register: this.registry });
   }
