@@ -47,3 +47,27 @@ jobs:
           INPUTS_REPO_NAME: ${{ github.repository }}
           INPUTS_PR_ID: ${{ steps.pr.outputs.number }}
           INPUTS_INVENTORY: "${{ inputs.inventory || 'testnet' }}"
+
+      - name: Find Comment
+        uses: peter-evans/find-comment@v2
+        if: always()
+        id: fc
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          body-includes: Preview stand status
+
+      - name: Extract stand url
+        if: always()
+        run: echo "##[set-output name=url;]$(echo '${{ steps.fc.outputs.comment-body }}' | grep -Eo 'https?://[^ >]+')"
+        id: stand
+
+
+  tests:
+    needs: deploy
+    if: ${{ github.event.pull_request.draft == false }}
+    uses: ./.github/workflows/tests.yml
+    secrets: inherit
+    with:
+      stand_url: ${{ needs.deploy.outputs.stand_url }}
+      stand_type: "${{ inputs.inventory }}"
+      on_preview_stand: true
