@@ -4,6 +4,7 @@ import {
   Gauge,
   Histogram,
   Registry,
+  AggregatorRegistry,
 } from 'prom-client';
 import getConfig from 'next/config';
 import { METRICS_PREFIX } from 'config';
@@ -23,6 +24,7 @@ class Metrics {
     this.subgraphsResponseTime = this.subgraphsResponseTimeInit();
     this.memoryCacheMetrics = this.memoryCacheMetricsInit();
 
+    AggregatorRegistry.setRegistries(registry);
     this.collectStartupMetricsInit();
     collectDefaultMetrics({ prefix: METRICS_PREFIX, register: this.registry });
   }

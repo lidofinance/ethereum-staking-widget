@@ -1,5 +1,5 @@
 import { trackedFetchRpcFactory } from '@lidofinance/api-rpc';
-import Metrics from './metrics';
+import Metrics from 'utilsApi/metrics';
 import { METRICS_PREFIX } from '../config';
 
 export const fetchRPC = trackedFetchRpcFactory({
