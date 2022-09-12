@@ -3,7 +3,7 @@ import {
   StaticJsonRpcBatchProvider,
 } from '@lidofinance/eth-providers';
 import { trackedJsonRpcProvider } from '@lidofinance/eth-api-providers';
-import { registry } from './metrics';
+import { registry } from 'utilsApi/metrics';
 import { METRICS_PREFIX } from '../config';
 
 export const getStaticRpcBatchProvider = providerFactory(
