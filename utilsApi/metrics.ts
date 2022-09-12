@@ -16,14 +16,14 @@ const { publicRuntimeConfig } = getConfig();
 const { defaultChain, supportedChains } = publicRuntimeConfig;
 
 class Metrics {
-  constructor() {
-    this.registry = new Registry();
-    this.apiTimings = this.apiTimingsInit('internal');
-    this.apiTimingsExternal = this.apiTimingsInit('external');
-    this.requestCounter = this.requestsCounterInit();
-    this.subgraphsResponseTime = this.subgraphsResponseTimeInit();
-    this.memoryCacheMetrics = this.memoryCacheMetricsInit();
+  registry = new Registry();
+  apiTimings = this.apiTimingsInit('internal');
+  apiTimingsExternal = this.apiTimingsInit('external');
+  requestCounter = this.requestsCounterInit();
+  subgraphsResponseTime = this.subgraphsResponseTimeInit();
+  memoryCacheMetrics = this.memoryCacheMetricsInit();
 
+  constructor() {
     AggregatorRegistry.setRegistries(this.registry);
     this.collectStartupMetricsInit();
     collectDefaultMetrics({ prefix: METRICS_PREFIX, register: this.registry });
