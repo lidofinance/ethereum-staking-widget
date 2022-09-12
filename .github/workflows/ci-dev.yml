@@ -9,12 +9,12 @@ on:
       - ".github/**"
 
 jobs:
-  # test:
+  # unit-test:
   #   ...
   
   deploy:
     runs-on: ubuntu-latest
-    # needs: test
+    # needs: unit-test
     name: Build and deploy
     steps:
       - name: Checkout
@@ -28,3 +28,11 @@ jobs:
           TARGET_REPO: "lidofinance/infra-mainnet"
           TARGET_WORKFLOW: "deploy_testnet_staking_widget_ts.yaml"
           TARGET: "develop"
+
+  tests:
+    needs: deploy
+    if: ${{ github.event.pull_request.draft == false }}
+    uses: ./.github/workflows/tests.yml
+    secrets: inherit
+    with:
+      stand_url: https://stake.testnet.fi
