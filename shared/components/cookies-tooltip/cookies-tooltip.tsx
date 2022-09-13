@@ -23,7 +23,7 @@ export const CookiesTooltip: FC = () => {
     }
   }, []);
 
-  const {themeName} = useContext(ThemeToggleContext);
+  const { themeName } = useContext(ThemeToggleContext);
 
   if (!isVisible) return <></>;
 

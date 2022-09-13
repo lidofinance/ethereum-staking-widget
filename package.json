@@ -30,7 +30,7 @@
     "@lido-sdk/providers": "^1.4.4",
     "@lido-sdk/react": "^1.18.1",
     "@lido-sdk/web3-react": "^1.26.2",
-    "@lidofinance/lido-ui": "3.0.0-next.10",
+    "@lidofinance/lido-ui": "3.0.0-next.12",
     "@lidofinance/lido-ui-blocks": "^2.8.1",
     "@lidofinance/api-logger": "^0.0.4",
     "@lidofinance/api-metrics": "^0.0.4",
