@@ -64,7 +64,10 @@ export class MemoryStorage {
 const Memory = new MemoryStorage();
 
 const getIP = (req: NextApiRequest) => {
+  const cfConnectionIp = req.headers['cf_connecting_ip'];
   const xff = req.headers['x-forwarded-for'];
+
+  if (cfConnectionIp) return cfConnectionIp;
 
   return xff ? (Array.isArray(xff) ? xff[0] : xff.split(',')[0]) : '127.0.0.1';
 };
