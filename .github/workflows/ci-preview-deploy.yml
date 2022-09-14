@@ -48,17 +48,17 @@ jobs:
           INPUTS_PR_ID: ${{ steps.pr.outputs.number }}
           INPUTS_INVENTORY: "${{ inputs.inventory || 'testnet' }}"
 
-      - name: Find Comment
-        uses: peter-evans/find-comment@v2
-        if: always()
-        id: fc
-        with:
-          issue-number: ${{ github.event.pull_request.number }}
-          body-includes: Preview stand status
+      - name: Define repo short name
+        run: echo "##[set-output name=short_name;]$(echo ${{ github.repository }} | cut -d "/" -f 2)"
+        id: repo
+
+      - name: Define branch hash
+        run: echo "##[set-output name=hash;]$(echo ${{ github.head_ref }} | shasum -a 256 | cut -c -10)"
+        id: branch
 
       - name: Extract stand url
         if: always()
-        run: echo "##[set-output name=url;]$(echo '${{ steps.fc.outputs.comment-body }}' | grep -Eo 'https?://[^ >]+')"
+        run: echo "##[set-output name=url;]$(echo 'https://${{ steps.repo.outputs.short_name }}-${{ steps.branch.outputs.hash }}.branch-preview.org')"
         id: stand
 
 

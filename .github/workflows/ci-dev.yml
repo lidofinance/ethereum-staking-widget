@@ -35,4 +35,4 @@ jobs:
     uses: ./.github/workflows/tests.yml
     secrets: inherit
     with:
-      stand_url: https://stake.testnet.if
+      stand_url: https://stake.testnet.fi
