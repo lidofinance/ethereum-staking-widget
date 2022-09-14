@@ -2,7 +2,7 @@ import { NextApiResponse, NextApiRequest } from 'next';
 import { RATE_LIMIT_TIME_FRAME } from 'config';
 
 type MemoryStorageType = {
-  [key: string]: { value: number; timeoutId: NodeJS.Timeout };
+  [key: string]: { value: number; timeoutId?: NodeJS.Timeout };
 };
 
 type RateLimitedResponse = (data: { res: NextApiResponse; id: string }) => void;
@@ -28,7 +28,7 @@ export class MemoryStorage {
   private _storage: MemoryStorageType;
 
   set(key: string, value: number) {
-    this._storage[key].value = value;
+    this._storage[key] = { value };
 
     if (this._storage[key].timeoutId) {
       clearTimeout(this._storage[key].timeoutId);

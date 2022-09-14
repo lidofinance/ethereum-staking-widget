@@ -59,6 +59,9 @@ export const rateLimit =
   async (req, res, next) => {
     setRateLimit({ req, res, limit, timeFrame });
 
+    // finish processing the request and return a 429 response
+    if (res.statusCode === 429) return;
+
     await next?.(req, res, next);
   };
 
