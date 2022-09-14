@@ -1,10 +1,6 @@
 import { Cache } from 'memory-cache';
 import { CACHE_ETH_PRICE_KEY, CACHE_ETH_PRICE_TTL } from 'config';
-import {
-  getEthPrice,
-  defaultErrorAndCacheWrapper,
-  responseTimeExternalMetricWrapper,
-} from 'utilsApi';
+import { getEthPrice, defaultErrorAndCacheWrapper } from 'utilsApi';
 import { API } from 'types';
 
 const cache = new Cache<typeof CACHE_ETH_PRICE_KEY, unknown>();
@@ -16,10 +12,7 @@ const ethPrice: API = async (req, res) => {
   if (cachedEthPrice) {
     res.json(cachedEthPrice);
   } else {
-    const route = req.url;
-    const ethPrice = await responseTimeExternalMetricWrapper(getEthPrice)(
-      route,
-    );
+    const ethPrice = await getEthPrice();
     cache.put(CACHE_ETH_PRICE_KEY, { price: ethPrice }, CACHE_ETH_PRICE_TTL);
 
     res.json({ price: ethPrice });

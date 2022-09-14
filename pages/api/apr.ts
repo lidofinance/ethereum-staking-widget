@@ -7,12 +7,7 @@ import {
   CACHE_STETH_APR_TTL,
 } from 'config';
 import initMiddleware from 'lib/init-middleware';
-import {
-  getEthApr,
-  getStethApr,
-  defaultErrorAndCacheWrapper,
-  responseTimeExternalMetricWrapper,
-} from 'utilsApi';
+import { getEthApr, getStethApr, defaultErrorAndCacheWrapper } from 'utilsApi';
 import { API } from 'types';
 
 const cacheEth = new Cache<typeof CACHE_ETH_APR_KEY, string>();
@@ -53,8 +48,7 @@ const apr: API = async (req, res) => {
   if (cachedEthApr) {
     resultData.eth = cachedEthApr;
   } else {
-    const route = req.url;
-    const ethApr = await responseTimeExternalMetricWrapper(getEthApr)(route);
+    const ethApr = await getEthApr();
 
     cacheEth.put(CACHE_ETH_APR_KEY, ethApr, CACHE_ETH_APR_TTL);
 

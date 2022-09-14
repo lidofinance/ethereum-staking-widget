@@ -5,7 +5,6 @@ import {
   getLidoHoldersViaSubgraphs,
   getStEthPrice,
   defaultErrorAndCacheWrapper,
-  responseTimeExternalMetricWrapper,
 } from 'utilsApi';
 import { API, SubgraphChains } from 'types';
 import { parallelizePromises } from 'utils';
@@ -20,17 +19,12 @@ const shortLidoStats: API = async (req, res) => {
     res.status(200).json(cachedLidoStats);
   } else {
     const chainId = Number(req.query.chainId) as SubgraphChains;
-    const route = req.url;
 
-    const [lidoHolders, totalStaked, stEthPrice] =
-      await responseTimeExternalMetricWrapper(() =>
-        parallelizePromises([
-          getLidoHoldersViaSubgraphs(chainId),
-          getTotalStaked(),
-          getStEthPrice(),
-        ]),
-      )(route);
-
+    const [lidoHolders, totalStaked, stEthPrice] = parallelizePromises([
+      getLidoHoldersViaSubgraphs(chainId),
+      getTotalStaked(),
+      getStEthPrice(),
+    ]);
     const shortLidoStats = {
       uniqueAnytimeHolders: lidoHolders?.data?.stats?.uniqueAnytimeHolders,
       uniqueHolders: lidoHolders?.data?.stats?.uniqueHolders,

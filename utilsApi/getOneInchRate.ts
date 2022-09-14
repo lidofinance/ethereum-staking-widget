@@ -1,4 +1,5 @@
 import { standardFetcher } from 'utils/standardFetcher';
+import { responseTimeExternalMetricWrapper } from 'utilsApi';
 import { serverLogger } from './serverLogger';
 
 type oneInchFetchResponse = {
@@ -25,7 +26,9 @@ export const getOneInchRate: GetOneInchRateStats = async (
   });
   const url = `${api}?${query.toString()}`;
 
-  const data = (await standardFetcher(url)) as oneInchFetchResponse;
+  const data = await responseTimeExternalMetricWrapper(() =>
+    standardFetcher<oneInchFetchResponse>(url),
+  )(url);
 
   if (!data || !data.toTokenAmount) {
     serverLogger.error('Request to 1inch failed');
