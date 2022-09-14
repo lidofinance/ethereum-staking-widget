@@ -1,4 +1,31 @@
-# [1.22.0](https://github.com/lidofinance/staking-widget-ts/compare/1.21.1...1.22.0) (2022-09-07)
+# [1.23.0](https://github.com/lidofinance/staking-widget-ts/compare/1.22.0...1.23.0) (2022-09-14)
+
+
+### Bug Fixes
+
+* allow rpc methods for Ledger ([37ac4f7](https://github.com/lidofinance/staking-widget-ts/commit/37ac4f7f773d69603436c667b38bb17b58cc0cdb))
+* collect metrics for first run ([890d306](https://github.com/lidofinance/staking-widget-ts/commit/890d306a73b16ab9e30671351d7a6fda465f93cf))
+* fixed registry creation in dev mode ([9cf8501](https://github.com/lidofinance/staking-widget-ts/commit/9cf8501ebb96b7ca1c047a8a13d43ac590ba61b2))
+
+
+### Features
+
+* adjusted linter to understand js files ([84af114](https://github.com/lidofinance/staking-widget-ts/commit/84af114c34c51a637af75cb079fa3f303ca23bed))
+* better port configuration ([2b70765](https://github.com/lidofinance/staking-widget-ts/commit/2b7076553493a8cb680c2bd0012c2452a94fe8fe))
+* bumped curl version ([599c001](https://github.com/lidofinance/staking-widget-ts/commit/599c0019cc9ba9e86d8665418d2d4538ada340c0))
+* fixed config & removed unused ignore in eslint ([1e9bd38](https://github.com/lidofinance/staking-widget-ts/commit/1e9bd38c9ab0a54a33e4e644d6b44499567d5ff1))
+* metrics works with cluster ([bfbd9a4](https://github.com/lidofinance/staking-widget-ts/commit/bfbd9a4bd7d2c694810b2f64626f8ab6dc0c4057))
+* moved unused vars eslint rule to general block ([3e15075](https://github.com/lidofinance/staking-widget-ts/commit/3e15075b62a07a4b7e90b31a6e1b1b736b8b5349))
+* node-cluster runner ([dca5e37](https://github.com/lidofinance/staking-widget-ts/commit/dca5e3772a962f9ce147b4e83ab9398f503e6ab7))
+* node-cluster runner ([35fc69c](https://github.com/lidofinance/staking-widget-ts/commit/35fc69cbb86e450ab17ba3d25af940faa12b0737))
+* proxy request to metrics server ([afbfabf](https://github.com/lidofinance/staking-widget-ts/commit/afbfabfb2fbcff931668757724b3bbbf1901186b))
+* show metrics in dev mode ([12e636c](https://github.com/lidofinance/staking-widget-ts/commit/12e636c9b4546725fb8f3eac649fa9600111be7b))
+* use buildInfo version, instead of npm version ([fc2b230](https://github.com/lidofinance/staking-widget-ts/commit/fc2b230f9b16240876eb4bcf9927cb8b2b602a25))
+* working cluster mode ([fbc0696](https://github.com/lidofinance/staking-widget-ts/commit/fbc06963796e642d83b61e7267142a23c8bf4c0b))
+
+
+
+# [1.22.0](https://github.com/lidofinance/staking-widget-ts/compare/1.21.1...1.22.0) (2022-09-08)
 
 
 ### Bug Fixes
@@ -166,25 +193,6 @@
 ### Bug Fixes
 
 * revert of revert 1inch mobile deeplink ([65c7f2b](https://github.com/lidofinance/staking-widget-ts/commit/65c7f2b04087350df550de7a44b265dd6b5f3333))
-
-
-
-# [1.16.0](https://github.com/lidofinance/staking-widget-ts/compare/1.15.1...1.16.0) (2022-07-18)
-
-
-### Bug Fixes
-
-* brave wallet fixes ([a29489c](https://github.com/lidofinance/staking-widget-ts/commit/a29489c7aad67d12c0547064d3c9f89f0a1f03de))
-* improve checks for imtoken and trust wallet connect() ([6a87bca](https://github.com/lidofinance/staking-widget-ts/commit/6a87bca62cc22d69407c88005cc01451656fb264))
-* revert 1inch mobile deeplink ([59f8ef1](https://github.com/lidofinance/staking-widget-ts/commit/59f8ef1731b192d30e217be2e080262e4b19dc8f))
-* use correct provider name for brave wallet ([ffad6f2](https://github.com/lidofinance/staking-widget-ts/commit/ffad6f24d6aff3d2a3b8e7ce1563acd435ccc1c7))
-* use replace instead of replaceall ([59bc95e](https://github.com/lidofinance/staking-widget-ts/commit/59bc95e3aa6734b92fdb98030cefb5a12c1364cb))
-
-
-### Features
-
-* add brave wallet ([3aa2112](https://github.com/lidofinance/staking-widget-ts/commit/3aa211276764bd6984d8db4682ba2672efed075a))
-* open 1inch in ledger live mobile ([4bc71f5](https://github.com/lidofinance/staking-widget-ts/commit/4bc71f5325fd82bd70c020c9707811dc20ec9481))
 
 
 
