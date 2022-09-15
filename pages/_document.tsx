@@ -106,7 +106,7 @@ export default class MyDocument extends Document {
           <meta name="currentChain" content={String(dynamics.defaultChain)} />
           <Fonts />
           <LidoUIHead />
-          <script src="/window-env.js" />
+          <script src="/runtime/window-env.js" />
         </Head>
         <body>
           <Main />
