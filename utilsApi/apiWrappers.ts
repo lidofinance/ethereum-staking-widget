@@ -54,16 +54,19 @@ export const cacheControl =
     }
   };
 
-export const rateLimit =
-  (limit = RATE_LIMIT, timeFrame = RATE_LIMIT_TIME_FRAME): RequestWrapper =>
-  async (req, res, next) => {
-    setRateLimit({ req, res, limit, timeFrame });
+export const rateLimit = (): RequestWrapper => async (req, res, next) => {
+  setRateLimit({
+    req,
+    res,
+    limit: RATE_LIMIT,
+    timeFrame: RATE_LIMIT_TIME_FRAME,
+  });
 
-    // finish processing the request and return a 429 response
-    if (res.statusCode === 429) return;
+  // finish processing the request and return a 429 response
+  if (res.statusCode === 429) return;
 
-    await next?.(req, res, next);
-  };
+  await next?.(req, res, next);
+};
 
 // ready wrapper types
 

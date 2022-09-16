@@ -1,7 +1,7 @@
 import { NextApiResponse, NextApiRequest } from 'next';
 import { RATE_LIMIT_TIME_FRAME } from 'config';
 
-type MemoryStorageType = {
+type RateLimitStorageType = {
   [key: string]: { value: number; timeoutId?: NodeJS.Timeout };
 };
 
@@ -14,18 +14,18 @@ type SetRateLimit = (data: {
   timeFrame: number;
 }) => NextApiResponse;
 
-const RATE_LIMIT_HEADERS = [
-  `X-RateLimit-Limit`,
-  `X-RateLimit-Remaining`,
-  `X-RateLimit-Reset`,
-];
+const RATE_LIMIT_HEADERS = {
+  limit: `X-RateLimit-Limit`,
+  remaining: `X-RateLimit-Remaining`,
+  reset: `X-RateLimit-Reset`,
+};
 
-export class MemoryStorage {
+export class RateLimitStorage {
   constructor() {
     this._storage = {};
   }
   private _durationMs = RATE_LIMIT_TIME_FRAME * 1000;
-  private _storage: MemoryStorageType;
+  private _storage: RateLimitStorageType;
 
   set(key: string, value: number) {
     this._storage[key] = { value };
@@ -61,8 +61,12 @@ export class MemoryStorage {
     }
   }
 }
-const Memory = new MemoryStorage();
+const rateLimitStorage = new RateLimitStorage();
 
+// now we use headers from "cloudflare" and rely on their validity.
+// If there are no "cloudflare" headers, we use the "x-forwarded-for" header,
+// but keep in mind that these headers can be changed by anyone
+// https://developers.cloudflare.com/fundamentals/get-started/reference/http-request-headers/
 const getIP = (req: NextApiRequest) => {
   const cfConnectionIp = req.headers['cf_connecting_ip'];
   const xff = req.headers['x-forwarded-for'];
@@ -86,17 +90,15 @@ export const setRateLimit: SetRateLimit = (data) => {
   const time = Math.floor(Date.now() / 1000 / timeFrame);
   const key = `${id}:${time}`;
 
-  const callCount = Memory.inc(key);
+  const callCount = rateLimitStorage.inc(key);
   const remaining = limit - callCount;
   const reset = (time + 1) * timeFrame;
 
-  if (headers[0]) res.setHeader(headers[0], `${limit}`);
-  if (headers[1]) res.setHeader(headers[1], `${remaining < 0 ? 0 : remaining}`);
-  if (headers[2]) res.setHeader(headers[2], `${reset}`);
+  res.setHeader(headers.limit, `${limit}`);
+  res.setHeader(headers.remaining, `${remaining < 0 ? 0 : remaining}`);
+  res.setHeader(headers.reset, `${reset}`);
 
-  if (remaining < 0) {
-    rateLimitedResponse({ id, res });
-  }
+  if (remaining < 0) rateLimitedResponse({ id, res });
 
   return res;
 };
