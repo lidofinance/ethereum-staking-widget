@@ -3,6 +3,7 @@ import { rpcFactory } from '@lidofinance/next-pages';
 import { dynamics, METRICS_PREFIX } from 'config';
 import { fetchRPC, serverLogger } from 'utilsApi';
 import { rpcUrls } from 'utilsApi/rpcUrls';
+import { wrapNextRequest, responseTimeMetric } from 'utilsApi';
 
 const rpc = rpcFactory({
   fetchRPC,
