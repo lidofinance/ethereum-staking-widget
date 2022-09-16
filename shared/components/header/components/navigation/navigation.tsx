@@ -1,4 +1,4 @@
-import { Wallet, Stake, Wrap } from '@lidofinance/icons';
+import { Wallet, Stake, Wrap } from '@lidofinance/lido-ui';
 import { useRouter } from 'next/router';
 import { FC, memo } from 'react';
 import { LocalLink } from './local-link';

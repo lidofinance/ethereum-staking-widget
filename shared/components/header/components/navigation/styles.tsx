@@ -16,11 +16,11 @@ const mobileCss = css`
   left: 0;
   right: 0;
   padding: 8px;
-  background-color: ${({ theme }) => theme.colors.foreground};
+  background-color: var(--lido-color-foreground);
   display: flex;
   justify-content: space-around;
   align-items: center;
-  border-top: 1px solid ${({ theme }) => theme.colors.border};
+  border-top: 1px solid var(--lido-color-border);
 
   svg {
     margin-right: 0px;
@@ -38,7 +38,7 @@ export const Nav = styled.div`
 
 export const NavLink = styled.a<{ active: boolean }>`
   cursor: pointer;
-  color: ${({ theme }) => theme.colors.secondary};
+  color: var(--lido-color-secondary);
   font-size: ${({ theme }) => theme.fontSizesMap.xxxs}px;
   line-height: 1.7em;
   font-weight: 800;
@@ -52,7 +52,7 @@ export const NavLink = styled.a<{ active: boolean }>`
 
   :hover {
     opacity: 1;
-    color: ${({ theme }) => theme.colors.secondary};
+    color: var(--lido-color-secondary);
   }
 
   :not(:last-of-type) {
@@ -60,8 +60,8 @@ export const NavLink = styled.a<{ active: boolean }>`
   }
 
   svg {
-    fill: ${({ active, theme }) =>
-      active ? theme.colors.primary : theme.colors.secondary};
+    fill: ${({ active }) =>
+      active ? `var(--lido-color-primary)` : `var(--lido-color-secondary)`};
   }
 
   ${({ theme }) => theme.mediaQueries.md} {
