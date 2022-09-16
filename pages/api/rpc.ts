@@ -1,13 +1,8 @@
-import getConfig from 'next/config';
 import Metrics from 'utilsApi/metrics';
 import { rpcFactory } from '@lidofinance/next-pages';
-import { METRICS_PREFIX } from 'config';
+import { dynamics, METRICS_PREFIX } from 'config';
 import { fetchRPC, serverLogger } from 'utilsApi';
 import { rpcUrls } from 'utilsApi/rpcUrls';
-import { wrapNextRequest, responseTimeMetric } from 'utilsApi';
-
-const { publicRuntimeConfig } = getConfig();
-const { defaultChain } = publicRuntimeConfig;
 
 const rpc = rpcFactory({
   fetchRPC,
@@ -32,7 +27,7 @@ const rpc = rpcFactory({
     'eth_chainId',
     'net_version',
   ],
-  defaultChain,
+  defaultChain: `${dynamics.defaultChain}`,
   providers: rpcUrls,
 });
 
