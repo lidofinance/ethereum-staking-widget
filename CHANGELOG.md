@@ -1,3 +1,21 @@
+# [1.24.0](https://github.com/lidofinance/staking-widget-ts/compare/1.23.0...1.24.0) (2022-09-19)
+
+
+### Bug Fixes
+
+* gitignore ([b233f89](https://github.com/lidofinance/staking-widget-ts/commit/b233f8926bddf8b38a750c5d42f339edf9350ba0))
+* minor types/linting fixes ([08d54c3](https://github.com/lidofinance/staking-widget-ts/commit/08d54c30e7f606ad4e19bcbdb191e3bc335a556c))
+* use shadowLight ([85c7fba](https://github.com/lidofinance/staking-widget-ts/commit/85c7fba5391f450eb3e95446558b7b31f35e0ebf))
+
+
+### Features
+
+* replaced standalone packages with lido-ui ([e71391c](https://github.com/lidofinance/staking-widget-ts/commit/e71391c81be9dde56640b9876cee68bd49d917b1))
+* using CSS variables for styling and relying on lido-ui CookieThemeProvider ([d54e3d0](https://github.com/lidofinance/staking-widget-ts/commit/d54e3d00b6e40312362f3aeb3a8eaf652d8035bd))
+* working import of lido-ui v3 ([c4f2c9c](https://github.com/lidofinance/staking-widget-ts/commit/c4f2c9c47a528c583dffc8473fd88c037ab240ca))
+
+
+
 # [1.23.0](https://github.com/lidofinance/staking-widget-ts/compare/1.22.0...1.23.0) (2022-09-14)
 
 
@@ -184,15 +202,6 @@
 * ambire wallet autoconnect issue ([adef3d0](https://github.com/lidofinance/staking-widget-ts/commit/adef3d09353c346000b1c877a48a37a37e4bfb3d))
 * lido-sdk/web3-react 1.23, lido-ui-blocks 2.5.2 ([c071de8](https://github.com/lidofinance/staking-widget-ts/commit/c071de8a4e8410a6a193f3c93674ffe61629f1c1))
 * lido-ui-blocks 2.5.3 (ambire fix) ([533bf76](https://github.com/lidofinance/staking-widget-ts/commit/533bf76d989d8bb8f5daed2150d9e920ce8a765f))
-
-
-
-## [1.16.1](https://github.com/lidofinance/staking-widget-ts/compare/1.16.0...1.16.1) (2022-07-25)
-
-
-### Bug Fixes
-
-* revert of revert 1inch mobile deeplink ([65c7f2b](https://github.com/lidofinance/staking-widget-ts/commit/65c7f2b04087350df550de7a44b265dd6b5f3333))
 
 
 
