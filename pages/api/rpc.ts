@@ -32,4 +32,6 @@ const rpc = rpcFactory({
   providers: rpcUrls,
 });
 
-export default wrapNextRequest([responseTimeMetric])(rpc);
+export default wrapNextRequest([
+  responseTimeMetric(Metrics.request.apiTimings),
+])(rpc);

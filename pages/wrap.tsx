@@ -108,7 +108,7 @@ const WrapPage: FC<WrapPageProps> = ({ faqList }) => {
 export default WrapPage;
 
 export const getStaticProps: GetStaticProps<WrapPageProps> = async () => {
-  Metrics.requestCounter.inc({ route: '/pages/wrap' });
+  Metrics.request.requestCounter.inc({ route: '/pages/wrap' });
 
   return {
     props: {

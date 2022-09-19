@@ -14,7 +14,7 @@ const ldoStats: API = async (req, res) => {
   if (cachedLidoStats) {
     res.status(200).json(cachedLidoStats);
   } else {
-    const ldoStats = getLdoStats();
+    const ldoStats = await getLdoStats();
 
     cache.put(CACHE_LDO_STATS_KEY, { data: ldoStats }, CACHE_LDO_STATS_TTL);
 

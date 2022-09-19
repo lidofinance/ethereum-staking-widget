@@ -1,4 +1,5 @@
 import { NextApiResponse, NextApiRequest } from 'next';
+import { Histogram } from 'prom-client';
 import Metrics from 'utilsApi/metrics';
 import { API } from 'types';
 import {
@@ -35,24 +36,26 @@ export const defaultErrorHandler: RequestWrapper = async (req, res, next) => {
   }
 };
 
-export const responseTimeMetric: RequestWrapper = async (req, res, next) => {
-  const route = req.url;
-  let status = 200;
+export const responseTimeMetric =
+  (metrics: Histogram<string>): RequestWrapper =>
+  async (req, res, next) => {
+    const route = req.url;
+    let status = 200;
 
-  const endMetric = Metrics.apiTimings.startTimer({ route });
+    const endMetric = metrics.startTimer({ route });
 
-  try {
-    await next?.(req, res, next);
+    try {
+      await next?.(req, res, next);
 
-    endMetric({ status });
-  } catch (error) {
-    status = 500;
-    // throw error up the stack
-    throw error;
-  } finally {
-    endMetric({ status });
-  }
-};
+      endMetric({ status });
+    } catch (error) {
+      status = 500;
+      // throw error up the stack
+      throw error;
+    } finally {
+      endMetric({ status });
+    }
+  };
 
 export const cacheControl =
   (headers: string): RequestWrapper =>
@@ -74,7 +77,7 @@ export const cacheControl =
 // ready wrapper types
 
 export const defaultErrorAndCacheWrapper = wrapNextRequest([
-  responseTimeMetric,
+  responseTimeMetric(Metrics.request.apiTimings),
   cacheControl(CACHE_DEFAULT_HEADERS),
   defaultErrorHandler,
 ]);

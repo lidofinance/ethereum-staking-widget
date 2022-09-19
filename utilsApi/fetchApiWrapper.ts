@@ -1,4 +1,5 @@
 import Metrics from 'utilsApi/metrics';
+import { Histogram } from 'prom-client';
 
 export type FetchAPI<T = void> = () => Promise<T> | T;
 export type MixedFetchWrapper = <T = void>(
@@ -19,10 +20,10 @@ export const wrapFetchRequest =
     );
 
 export const responseTimeExternalMetric =
-  <T = void>(): FetchRequestWrapper<T> =>
+  <T = void>(metrics: Histogram<string>): FetchRequestWrapper<T> =>
   async (params, next) => {
     let status = 200;
-    const endMetric = Metrics.apiTimingsExternal.startTimer({ route: params });
+    const endMetric = metrics.startTimer({ route: params });
 
     try {
       const result = await next?.(params, next);
@@ -41,4 +42,6 @@ export const responseTimeExternalMetric =
 // ready wrapper types
 
 export const responseTimeExternalMetricWrapper: MixedFetchWrapper =
-  wrapFetchRequest([responseTimeExternalMetric()]);
+  wrapFetchRequest([
+    responseTimeExternalMetric(Metrics.request.apiTimingsExternal),
+  ]);

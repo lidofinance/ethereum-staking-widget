@@ -1,10 +1,6 @@
 import { Cache } from 'memory-cache';
 import { CACHE_STETH_APR_KEY, CACHE_STETH_APR_TTL } from 'config';
-import {
-  getStethApr,
-  defaultErrorAndCacheWrapper,
-  responseTimeExternalMetricWrapper,
-} from 'utilsApi';
+import { getStethApr, defaultErrorAndCacheWrapper } from 'utilsApi';
 import { API } from 'types';
 
 const cache = new Cache<typeof CACHE_STETH_APR_KEY, string>();
@@ -17,10 +13,7 @@ const stethApr: API = async (req, res) => {
   if (cachedStethApr) {
     res.json(cachedStethApr);
   } else {
-    const route = req.url;
-    const stethApr = await responseTimeExternalMetricWrapper(getStethApr)(
-      route,
-    );
+    const stethApr = await getStethApr();
     cache.put(CACHE_STETH_APR_KEY, stethApr, CACHE_STETH_APR_TTL);
 
     res.json(stethApr);

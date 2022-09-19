@@ -24,7 +24,7 @@ export const getLdoStats: GetLdoStats = async () => {
 
   const ldoStats = await responseTimeExternalMetricWrapper(() =>
     standardFetcher<Response>(url),
-  )(url);
+  )(api);
   serverLogger.debug('LDO stats: ' + ldoStats);
 
   return ldoStats;

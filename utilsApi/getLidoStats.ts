@@ -20,7 +20,7 @@ export const getLidoStats: GetLidoStats = async () => {
 
   const lidoStats = await responseTimeExternalMetricWrapper(() =>
     standardFetcher<Response>(url),
-  )(url);
+  )(api);
   serverLogger.debug('Lido stats: ' + lidoStats);
   return lidoStats;
 };

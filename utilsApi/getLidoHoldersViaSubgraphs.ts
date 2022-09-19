@@ -56,7 +56,7 @@ export const getLidoHoldersViaSubgraphs: GetLidoHoldersViaSubgraphs = async (
     signal: controller.signal as AbortSignal,
   };
 
-  const endMetric = Metrics.subgraphsResponseTime.startTimer();
+  const endMetric = Metrics.subgraph.subgraphsResponseTime.startTimer();
 
   const url = getSubgraphUrl(chainId);
 

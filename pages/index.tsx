@@ -30,7 +30,7 @@ const Home: FC<HomeProps> = ({ faqList }) => (
 export default Home;
 
 export const getStaticProps: GetStaticProps<HomeProps> = async () => {
-  Metrics.requestCounter.inc({ route: '/pages/index' });
+  Metrics.request.requestCounter.inc({ route: '/pages/index' });
 
   return {
     props: {
