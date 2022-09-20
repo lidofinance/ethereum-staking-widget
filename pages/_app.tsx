@@ -6,8 +6,8 @@ import { nprogress } from 'utils';
 import { CookiesTooltip } from 'shared/components';
 import 'nprogress/nprogress.css';
 import { withCsp } from 'utilsApi/withCsp';
-import { ThemedBackgroundGradient } from '../shared/components/background-gradient/themed-background-gradient';
-import { removeOldCookiesClientSide } from '../utils/removeOldCookies';
+import { ThemedBackgroundGradient } from 'shared/components/background-gradient/themed-background-gradient';
+import { removeOldCookiesClientSide } from 'utils/removeOldCookies';
 
 // Fix: remove old cookies
 removeOldCookiesClientSide();
