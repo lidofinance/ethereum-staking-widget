@@ -7,6 +7,10 @@ import { CookiesTooltip } from 'shared/components';
 import 'nprogress/nprogress.css';
 import { withCsp } from 'utilsApi/withCsp';
 import { ThemedBackgroundGradient } from '../shared/components/background-gradient/themed-background-gradient';
+import { removeOldCookiesClientSide } from '../utils/removeOldCookies';
+
+// Fix: remove old cookies
+removeOldCookiesClientSide();
 
 // Visualize route changes
 nprogress();
