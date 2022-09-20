@@ -1,5 +1,12 @@
 import { cacheControlMiddlewareFactory } from '@lidofinance/next-cache-files-middleware';
-import { CACHE_ALLOWED_LIST_FILES_PATHS } from 'config';
+// import { CACHE_ALLOWED_LIST_FILES_PATHS } from 'config';
+
+export const CACHE_HEADERS_HTML_PAGE =
+  'public, max-age=30, stale-if-error=1200, stale-while-revalidate=30';
+export const CACHE_ALLOWED_LIST_FILES_PATHS = [
+  { path: '/', headers: CACHE_HEADERS_HTML_PAGE },
+  { path: '/wrap', headers: CACHE_HEADERS_HTML_PAGE },
+];
 
 // use only for cache files
 export const middleware = cacheControlMiddlewareFactory(
