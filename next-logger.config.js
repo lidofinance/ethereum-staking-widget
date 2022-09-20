@@ -6,7 +6,7 @@ const logger = (defaultConfig) =>
     ...defaultConfig,
     formatters: {
       ...defaultConfig.formatters,
-      level(label, number) {
+      level(label, _number) {
         return { level: label };
       },
     },
