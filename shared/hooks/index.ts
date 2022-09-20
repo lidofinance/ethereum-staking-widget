@@ -1,7 +1,6 @@
 export * from './useCopyToClipboard';
 export * from './useENSAddress';
 export * from './useModal';
-export * from './useThemeToggle';
 export * from './useEthApr';
 export * from './useLidoStats';
 export * from './useLidoApr';
