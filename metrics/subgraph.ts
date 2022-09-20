@@ -2,11 +2,9 @@ import { Histogram, Registry } from 'prom-client';
 import { METRICS_PREFIX } from 'config';
 
 export class SubgraphMetrics {
-  registry: Registry;
   subgraphsResponseTime: Histogram<'subgraphs'>;
 
-  constructor(registry: Registry) {
-    this.registry = registry;
+  constructor(public registry: Registry) {
     this.subgraphsResponseTime = this.subgraphsResponseTimeInit();
   }
 

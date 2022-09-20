@@ -3,17 +3,15 @@ import { METRICS_PREFIX } from 'config';
 import cache from 'memory-cache';
 
 export class MemoryMetrics {
-  registry: Registry;
   private memoryCacheMetrics: Gauge<'size' | 'memsize'>[];
 
-  constructor(registry: Registry) {
-    this.registry = registry;
+  constructor(public registry: Registry) {
     this.memoryCacheMetrics = this.memoryCacheMetricsInit();
   }
 
   memoryCacheMetricsInit() {
     return (['size', 'memsize'] as const).map((metricName) => {
-      const name = `${METRICS_PREFIX + 'memory_cache'}_${metricName}`;
+      const name = `${METRICS_PREFIX}memory_cache_${metricName}`;
       const metric = new Gauge({
         name,
         help: 'Memory cache info',
