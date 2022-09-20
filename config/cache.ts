@@ -37,18 +37,7 @@ export const CACHE_DEFAULT_HEADERS =
   'public, max-age=180, stale-if-error=1200, stale-while-revalidate=60';
 export const CACHE_DEFAULT_ERROR_HEADERS = 'no-store, must-revalidate';
 
-export const CACHE_WHITELIST_FILES_PATHS = [
-  { path: /^\/favicon-?[^@]*.(svg|ico)?$/, headers: CACHE_DEFAULT_HEADERS },
-  { path: /^\/manifest.json?$/, headers: CACHE_DEFAULT_HEADERS },
-  { path: /^\/?$/, headers: CACHE_HEADERS_HTML_PAGE },
-  { path: /^\/wrap?$/, headers: CACHE_HEADERS_HTML_PAGE },
+export const CACHE_ALLOWED_LIST_FILES_PATHS = [
+  { path: '/', headers: CACHE_HEADERS_HTML_PAGE },
+  { path: '/wrap', headers: CACHE_HEADERS_HTML_PAGE },
 ];
-
-export const findCacheControlFileHeaders = (url?: string) => {
-  const requestPath = url?.split('?').shift();
-
-  if (!requestPath) return;
-
-  return CACHE_WHITELIST_FILES_PATHS.find((item) => item.path.test(requestPath))
-    ?.headers;
-};

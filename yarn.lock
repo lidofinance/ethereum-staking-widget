@@ -1945,6 +1945,11 @@
     styled-system "5.1.5"
     use-callback-ref "1.2.5"
 
+"@lidofinance/next-cache-files-middleware@^0.3.0":
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/@lidofinance/next-cache-files-middleware/-/next-cache-files-middleware-0.3.0.tgz#b254e3cae4c47e7425ba0a3ad031ad95823ca1b8"
+  integrity sha512-7Jfg06tLRlQk8Dr16okDYRyQflHSSy5IVM9dMD0OGkteyrYR7EbBNre0WgwsbV4qTtZiZY82Xx6YVFEeHANKsw==
+
 "@lidofinance/next-pages@^0.0.7":
   version "0.0.7"
   resolved "https://registry.yarnpkg.com/@lidofinance/next-pages/-/next-pages-0.0.7.tgz#1c7d58a928c0c54583f6f20e5cbfa3d3205d1ddd"
@@ -4936,11 +4941,6 @@ globby@^11.1.0:
 graceful-fs@^4.1.2, graceful-fs@^4.1.6, graceful-fs@^4.2.0, graceful-fs@^4.2.9:
   version "4.2.10"
   resolved "https://registry.yarnpkg.com/graceful-fs/-/graceful-fs-4.2.10.tgz#147d3a006da4ca3ce14728c7aefc287c367d7a6c"
-  integrity sha512-9ByhssR2fPVsNZj478qUUbKfmL0+t5BDVyjShtyZZLiK7ZDAArFFfopyOTj0M05wE2tJPisA4iTnnXl2YoPvOA==
-
-graceful-fs@^4.2.10:
-  version "4.2.10"
-  resolved "https://registry.npmjs.org/graceful-fs/-/graceful-fs-4.2.10.tgz#147d3a006da4ca3ce14728c7aefc287c367d7a6c"
   integrity sha512-9ByhssR2fPVsNZj478qUUbKfmL0+t5BDVyjShtyZZLiK7ZDAArFFfopyOTj0M05wE2tJPisA4iTnnXl2YoPvOA==
 
 gray-matter@^4.0.3:
