@@ -6,6 +6,7 @@ export const CACHE_HEADERS_HTML_PAGE =
 export const CACHE_ALLOWED_LIST_FILES_PATHS = [
   { path: '/', headers: CACHE_HEADERS_HTML_PAGE },
   { path: '/wrap', headers: CACHE_HEADERS_HTML_PAGE },
+  { path: '/rewards', headers: CACHE_HEADERS_HTML_PAGE },
 ];
 
 // use only for cache files
@@ -15,7 +16,7 @@ export const middleware = cacheControlMiddlewareFactory(
 
 export const config = {
   // paths where use middleware
-  matcher: ['/manifest.json', '/favicon:size*', '/', '/wrap'],
+  matcher: ['/manifest.json', '/favicon:size*', '/', '/wrap', '/rewards'],
 };
 
 export default middleware;
