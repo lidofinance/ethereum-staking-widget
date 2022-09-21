@@ -9,12 +9,12 @@ on:
       - ".github/**"
 
 jobs:
-  # unit-test:
+  # test:
   #   ...
   
   deploy:
     runs-on: ubuntu-latest
-    # needs: unit-test
+    # needs: test
     name: Build and deploy
     steps:
       - name: Checkout
@@ -28,12 +28,3 @@ jobs:
           TARGET_REPO: "lidofinance/infra-mainnet"
           TARGET_WORKFLOW: "deploy_staging_mainnet_staking_widget_ts.yaml"
           TARGET: "main"
-
-  tests:
-    needs: deploy
-    if: ${{ github.event.pull_request.draft == false }}
-    uses: ./.github/workflows/tests.yml
-    secrets: inherit
-    with:
-      stand_url: https://stake.infra-staging.org
-      stand_type: staging

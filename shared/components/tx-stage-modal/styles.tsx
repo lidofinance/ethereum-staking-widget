@@ -50,16 +50,16 @@ export const LedgerIconWrapper = styled.div`
 
 export const SuccessIcon = styled((props) => <CheckLarge {...props} />)`
   padding: 20px;
-  border: 2px solid var(--lido-color-success);
+  border: 2px solid ${({ theme }) => theme.colors.success};
   border-radius: 50%;
-  color: var(--lido-color-success);
+  color: ${({ theme }) => theme.colors.success};
 `;
 
 export const FailIcon = styled((props) => <Close {...props} />)`
   padding: 20px;
-  border: 2px solid var(--lido-color-error);
+  border: 2px solid ${({ theme }) => theme.colors.error};
   border-radius: 50%;
-  color: var(--lido-color-error);
+  color: ${({ theme }) => theme.colors.error};
 `;
 
 export const Grid = styled.div`
@@ -95,11 +95,11 @@ export const ButtonLinkSmall = styled.a`
   font-size: ${({ theme }) => theme.fontSizesMap.xs}px;
   border-radius: ${({ theme }) => theme.borderRadiusesMap.md}px;
   padding: 12px;
-  color: var(--lido-color-primaryContrast);
-  background-color: var(--lido-color-primary);
-  color: var(--lido-color-primaryContrast) !important;
+  color: ${({ theme }) => theme.colors.primaryContrast};
+  background-color: ${({ theme }) => theme.colors.primary};
+  color: ${({ theme }) => theme.colors.primaryContrast} !important;
   :not(:disabled):hover,
   :focus-visible {
-    background-color: var(--lido-color-primaryHover);
+    background-color: ${({ theme }) => theme.colors.primaryHover};
   }
 `;

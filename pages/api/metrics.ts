@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { serverLogger } from 'utilsApi/serverLogger';
 import getConfig from 'next/config';
-import { registry } from 'utilsApi/metrics';
+import { register } from 'prom-client';
 const {
   serverRuntimeConfig: { metricsPort },
 } = getConfig();
@@ -22,7 +22,7 @@ const metrics = async (_req: NextApiRequest, res: NextApiResponse) => {
       res.status(requested.status).send(requested.body);
     } else {
       // In development mode it's ok to get metrics from current instance
-      const metrics = await registry.metrics();
+      const metrics = await register.metrics();
       res.send(metrics);
     }
   } catch (error) {

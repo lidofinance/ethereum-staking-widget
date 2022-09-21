@@ -10,8 +10,8 @@ const GlobalStyle = createGlobalStyle`
     width: 100%;
   }
   body {
-    background: var(--lido-color-background);
-    color: var(--lido-color-text);
+    background: ${({ theme }) => theme.colors.background};
+    color: ${({ theme }) => theme.colors.text};
     position: relative;
     box-sizing: border-box;
     font-size: ${({ theme }) => theme.fontSizesMap.xs}px;
@@ -20,14 +20,14 @@ const GlobalStyle = createGlobalStyle`
     text-size-adjust: none;
   }
   a {
-    color: var(--lido-color-primary);
+    color: ${({ theme }) => theme.colors.primary};
 
     &:hover {
-      color: var(--lido-color-primaryHover);
+      color: ${({ theme }) => theme.colors.primaryHover};
     }
 
     &:visited {
-      color: var(--lido-color-primaryVisited);
+      color: ${({ theme }) => theme.colors.primaryVisited};
     }
   }
 `;
