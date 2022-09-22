@@ -1,5 +1,5 @@
-import { PopoverProps } from '@lidofinance/lido-ui';
-export type { Theme } from '@lidofinance/lido-ui';
+import { PopoverProps } from '@lidofinance/popover';
+export type { Theme } from '@lidofinance/theme';
 
 export type TooltipProps = Omit<
   PopoverProps,
