@@ -8,4 +8,4 @@ jobs:
   docker:
     uses: lidofinance/linters/.github/workflows/docker.yml@master
   actions:
-    uses: lidofinance/linters/.github/workflows/actions.yml@actions-linter
+    uses: lidofinance/linters/.github/workflows/actions.yml@master
