@@ -18,7 +18,8 @@ export const Banner: FC = () => {
       </BannerMainTextStyle>
       <BannerTextStyle>
         All rewards earned before 13.09 can be claimed via
-        <Link href=""> DeversiFi </Link> from 20.09.
+        <Link href="https://app.rhino.fi/claim/lido-rewards"> DeversiFi </Link>
+        from 20.09.
       </BannerTextStyle>
       <p>Thank you for participating!</p>
     </Block>
