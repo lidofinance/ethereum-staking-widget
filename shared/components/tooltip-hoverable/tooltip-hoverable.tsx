@@ -8,7 +8,7 @@ import {
   useCallback,
 } from 'react';
 import { TooltipPopoverStyle } from './styles';
-import { useMergeRefs } from '@lidofinance/lido-ui';
+import { useMergeRefs } from '@lidofinance/hooks';
 import { TooltipProps } from './types';
 
 const TooltipHoverableRaw = (

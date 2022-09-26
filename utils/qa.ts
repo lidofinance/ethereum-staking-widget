@@ -1,3 +1,4 @@
-import dynamics from '../config/dynamics';
+import getConfig from 'next/config';
+const { publicRuntimeConfig } = getConfig();
 
-export const enableQaHelpers = dynamics.enableQaHelpers;
+export const enableQaHelpers = publicRuntimeConfig.enableQaHelpers === 'true';

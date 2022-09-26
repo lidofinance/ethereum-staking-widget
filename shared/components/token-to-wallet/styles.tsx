@@ -12,13 +12,13 @@ export const TokenToWalletStyle = styled.button`
   cursor: pointer;
   margin-top: -2px;
   margin-left: 4px;
-  background: var(--lido-color-accentDarken);
+  background: ${({ theme }) => theme.colors.accentDarken};
 
   &:before,
   &:after {
     content: '';
     position: absolute;
-    background: var(--lido-color-accentContrast);
+    background: ${({ theme }) => theme.colors.accentContrast};
     width: 7px;
     height: 1px;
     top: 7px;
