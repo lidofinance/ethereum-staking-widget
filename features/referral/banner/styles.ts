@@ -1,7 +1,6 @@
 import styled, { css } from 'styled-components';
 
 const textStyle = css`
-  margin-top: ${({ theme }) => theme.spaceMap.lg}px;
   line-height: 20px;
 `;
 

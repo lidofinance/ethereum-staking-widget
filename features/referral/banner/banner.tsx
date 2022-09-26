@@ -12,14 +12,17 @@ export const Banner: FC = () => {
         starting from 13.09 / 00:00 UTC. Only whitelisted referral partners
         approved by the Lido DAO are eligible for rewards.
       </p>
+      <br />
       <BannerMainTextStyle>
         All the other referral links don&apos;t earn rewards anymore.
       </BannerMainTextStyle>
+      <br />
       <BannerTextStyle>
         All rewards earned before 13.09 can be claimed via
         <Link href="https://app.rhino.fi/claim/lido-rewards"> DeversiFi </Link>
         from 20.09.
       </BannerTextStyle>
+      <br />
       <p>Thank you for participating!</p>
     </Block>
   );
