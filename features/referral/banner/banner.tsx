@@ -3,18 +3,17 @@ import { Block, Link } from '@lidofinance/lido-ui';
 
 import { BannerTextStyle, BannerHeader, BannerMainTextStyle } from './styles';
 
-// TODO: add link
 export const Banner: FC = () => {
   return (
     <Block>
-      <BannerHeader>Referral program whitelisting</BannerHeader>
+      <BannerHeader>Whitelist mode is on</BannerHeader>
       <p>
-        The Lido referral program will transition to &apos;whitelist mode&apos;
+        The Lido referral program transitioned to &apos;whitelist mode&apos;
         starting from 13.09 / 00:00 UTC. Only whitelisted referral partners
-        approved by the Lido DAO will be eligible for rewards.
+        approved by the Lido DAO are eligible for rewards.
       </p>
       <BannerMainTextStyle>
-        All the other referral links would not earn rewards anymore.
+        All the other referral links don&apos;t earn rewards anymore.
       </BannerMainTextStyle>
       <BannerTextStyle>
         All rewards earned before 13.09 can be claimed via
