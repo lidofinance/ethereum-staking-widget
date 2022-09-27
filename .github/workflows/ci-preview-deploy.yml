@@ -60,8 +60,11 @@ jobs:
 
       - name: Extract stand url
         if: always()
-        run: echo "##[set-output name=url;]https://${{ steps.repo.outputs.short_name }}-${{ steps.branch.outputs.hash }}.branch-preview.org"
+        run: echo "##[set-output name=url;]https://$SHORT_NAME-$BRANCH_HASH.branch-preview.org"
         id: stand
+        env:
+          SHORT_NAME: ${{ steps.repo.outputs.short_name }}
+          BRANCH_HASH: ${{ steps.branch.outputs.hash }}
 
 
   tests:

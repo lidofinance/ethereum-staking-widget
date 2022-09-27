@@ -27,9 +27,11 @@ jobs:
           if [ '${{ inputs.tag }}' = '' ]; then
             echo "::set-output name=TAG::${GITHUB_REF#refs/tags/}"
           else
-            echo "::set-output name=TAG::${{ inputs.tag }}"
+            echo "::set-output name=TAG::$TAG"
           fi
-      
+        env:
+          TAG: ${{ inputs.tag }}
+
       - name: Build prod image
         uses: lidofinance/dispatch-workflow@v1
         env:

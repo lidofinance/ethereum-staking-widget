@@ -38,4 +38,4 @@ jobs:
     uses: ./.github/workflows/ci-prod.yml
     secrets: inherit
     with:
-      tag: ${{ needs.bump.outputs.tag}}
+      tag: ${{ needs.bump.outputs.tag }}
