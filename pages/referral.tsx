@@ -4,10 +4,7 @@ import { Layout } from 'shared/components';
 
 const Referral: FC = () => {
   return (
-    <Layout
-      title="Referral"
-      subtitle="Earn rewards by spreading the benefits of staking with Lido."
-    >
+    <Layout title="Referral">
       <Banner />
     </Layout>
   );
