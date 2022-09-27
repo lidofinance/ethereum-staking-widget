@@ -1,5 +1,5 @@
 import { createContext, useMemo, useCallback, memo, useState, FC } from 'react';
-import { useThemeToggle } from '@lidofinance/lido-ui';
+import { useThemeToggle } from 'shared/hooks';
 import { Modal } from 'shared/wallet';
 import { WalletsModalForEth } from '@lidofinance/lido-ui-blocks';
 
