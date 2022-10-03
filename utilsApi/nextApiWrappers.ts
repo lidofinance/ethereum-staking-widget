@@ -47,10 +47,9 @@ export const responseTimeMetric =
 
     try {
       await next?.(req, res, next);
-
-      endMetric({ status });
+      status = res.statusCode;
     } catch (error) {
-      status = 500;
+      status = res.statusCode;
       // throw error up the stack
       throw error;
     } finally {
