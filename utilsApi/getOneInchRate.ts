@@ -26,9 +26,10 @@ export const getOneInchRate: GetOneInchRateStats = async (
   });
   const url = `${api}?${query.toString()}`;
 
-  const data = await responseTimeExternalMetricWrapper(() =>
-    standardFetcher<oneInchFetchResponse>(url),
-  )(api);
+  const data = await responseTimeExternalMetricWrapper({
+    payload: api,
+    request: () => standardFetcher<oneInchFetchResponse>(url),
+  });
 
   if (!data || !data.toTokenAmount) {
     serverLogger.error('Request to 1inch failed');

@@ -22,9 +22,10 @@ export const getLdoStats: GetLdoStats = async () => {
   const query = new URLSearchParams({ apiKey: ethplorerApiKey });
   const url = `${api}?${query.toString()}`;
 
-  const ldoStats = await responseTimeExternalMetricWrapper(() =>
-    standardFetcher<Response>(url),
-  )(api);
+  const ldoStats = await responseTimeExternalMetricWrapper({
+    payload: api,
+    request: () => standardFetcher<Response>(url),
+  });
   serverLogger.debug('LDO stats: ' + ldoStats);
 
   return ldoStats;

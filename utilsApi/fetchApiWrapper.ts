@@ -2,32 +2,32 @@ import Metrics from 'utilsApi/metrics';
 import { Histogram } from 'prom-client';
 
 export type FetchAPI<T = void> = () => Promise<T> | T;
-export type MixedFetchWrapper = <T = void>(
-  api: FetchAPI<T>,
-) => FetchRequestWrapper<T>;
+export type MixedFetchWrapper = <T = void, U = void>(data: {
+  payload?: U;
+  request: FetchAPI<T>;
+}) => Promise<T> | T;
 
-type FetchRequestWrapper<T = void> = <U extends string>(
+type FetchRequestWrapper<T = void> = <U = void>(
   params?: U,
   next?: FetchAPI<T> | FetchRequestWrapper<T>,
 ) => Promise<T> | T;
 
 export const wrapFetchRequest =
   <T = void>(wrappers: FetchRequestWrapper<T>[]) =>
-  (requestHandler: FetchAPI<T>) =>
+  <U = null>(data: { payload?: U; request: FetchAPI<T> }) =>
     wrappers.reduce(
-      (acc, cur) => (params) => cur(params, () => acc(params)),
-      requestHandler,
-    );
+      (acc, cur) => () => cur(data.payload, () => acc(data.payload)),
+      data.request,
+    )();
 
 export const responseTimeExternalMetric =
   <T = void>(metrics: Histogram<string>): FetchRequestWrapper<T> =>
   async (params, next) => {
     let status = 200;
-    const endMetric = metrics.startTimer({ route: params });
+    const endMetric = metrics.startTimer({ route: params as string });
 
     try {
       const result = await next?.(params, next);
-      endMetric({ status });
 
       return result as T;
     } catch (error) {

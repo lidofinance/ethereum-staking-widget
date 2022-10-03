@@ -1,4 +1,5 @@
 import { NextApiResponse, NextApiRequest } from 'next';
+import { getStatusLabel } from '@lidofinance/api-metrics';
 import { Histogram } from 'prom-client';
 import { API } from 'types';
 import { serverLogger } from 'utilsApi';
@@ -39,14 +40,14 @@ export const defaultErrorHandler: RequestWrapper = async (req, res, next) => {
 export const responseTimeMetric =
   (metrics: Histogram<string>, route: string): RequestWrapper =>
   async (req, res, next) => {
-    let status = 200;
+    let status = '2xx';
     const endMetric = metrics.startTimer({ route });
 
     try {
       await next?.(req, res, next);
-      status = res.statusCode;
+      status = getStatusLabel(res.statusCode);
     } catch (error) {
-      status = res.statusCode;
+      status = getStatusLabel(res.statusCode);
       // throw error up the stack
       throw error;
     } finally {

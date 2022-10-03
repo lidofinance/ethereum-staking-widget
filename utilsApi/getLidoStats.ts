@@ -18,9 +18,10 @@ export const getLidoStats: GetLidoStats = async () => {
   const query = new URLSearchParams({ apiKey: ethplorerApiKey });
   const url = `${api}?${query.toString()}`;
 
-  const lidoStats = await responseTimeExternalMetricWrapper(() =>
-    standardFetcher<Response>(url),
-  )(api);
+  const lidoStats = await responseTimeExternalMetricWrapper({
+    payload: api,
+    request: () => standardFetcher<Response>(url),
+  });
   serverLogger.debug('Lido stats: ' + lidoStats);
   return lidoStats;
 };
