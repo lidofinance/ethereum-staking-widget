@@ -5,5 +5,3 @@ export enum METRIC_NAMES {
   API_RESPONSE = 'api_response',
   SUBGRAPHS_RESPONSE = 'subgraphs_response',
 }
-
-export const MEMORY_CACHE_METRICS = ['size', 'memsize'] as const;
