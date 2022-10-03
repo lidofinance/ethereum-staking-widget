@@ -6,7 +6,7 @@ export const ETHPLORER_TOKEN_ENDPOINT =
 
 export const HEALTHY_RPC_SERVICES_ARE_OVER = 'Healthy RPC services are over!';
 
-export enum API_ROUTES {
+export const enum API_ROUTES {
   APR = 'api/apr',
   ETH_APR = 'api/eth-apr',
   ETH_PRICE = 'api/eth-price',
@@ -20,7 +20,7 @@ export enum API_ROUTES {
   RPC = 'api/rpc',
 }
 
-export enum PAGES {
+export const enum PAGES {
   INDEX = 'pages/index',
   REFERRAL = 'pages/referral',
   WRAP = 'pages/wrap',
