@@ -3,13 +3,16 @@ import {
   CACHE_TOTAL_SUPPLY_KEY,
   CACHE_TOTAL_SUPPLY_TTL,
   CACHE_TOTAL_SUPPLY_HEADERS,
+  API_ROUTES,
 } from 'config';
 import {
   getTotalStaked,
   wrapNextRequest,
   defaultErrorHandler,
   cacheControl,
+  responseTimeMetric,
 } from 'utilsApi';
+import Metrics from 'utilsApi/metrics';
 import { API } from 'types';
 
 const cache = new Cache<typeof CACHE_TOTAL_SUPPLY_KEY, string>();
@@ -29,6 +32,7 @@ const totalSupply: API = async (req, res) => {
 };
 
 export default wrapNextRequest([
+  responseTimeMetric(Metrics.request.apiTimings, API_ROUTES.TOTALSUPPLY),
   cacheControl(CACHE_TOTAL_SUPPLY_HEADERS),
   defaultErrorHandler,
 ])(totalSupply);

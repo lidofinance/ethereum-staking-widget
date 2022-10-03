@@ -5,9 +5,17 @@ import {
   CACHE_ETH_APR_TTL,
   CACHE_STETH_APR_KEY,
   CACHE_STETH_APR_TTL,
+  API_ROUTES,
 } from 'config';
 import initMiddleware from 'lib/init-middleware';
-import { getEthApr, getStethApr, defaultErrorAndCacheWrapper } from 'utilsApi';
+import {
+  getEthApr,
+  getStethApr,
+  errorAndCacheDefaultWrappers,
+  responseTimeMetric,
+  wrapNextRequest,
+} from 'utilsApi';
+import Metrics from 'utilsApi/metrics';
 import { API } from 'types';
 
 const cacheEth = new Cache<typeof CACHE_ETH_APR_KEY, string>();
@@ -73,4 +81,7 @@ const apr: API = async (req, res) => {
   });
 };
 
-export default defaultErrorAndCacheWrapper(apr);
+export default wrapNextRequest([
+  responseTimeMetric(Metrics.request.apiTimings, API_ROUTES.APR),
+  ...errorAndCacheDefaultWrappers,
+])(apr);

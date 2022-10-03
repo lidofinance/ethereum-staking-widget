@@ -7,7 +7,8 @@ import getConfig from 'next/config';
 import { METRICS_PREFIX } from 'config';
 import buildInfoJson from 'build-info.json';
 import { collectStartupMetrics } from '@lidofinance/api-metrics';
-import { SubgraphMetrics, RequestMetrics } from 'metrics';
+import { RequestMetrics } from './request';
+import { SubgraphMetrics } from './subgraph';
 
 const { publicRuntimeConfig } = getConfig();
 const { defaultChain, supportedChains } = publicRuntimeConfig;
