@@ -1,5 +1,5 @@
 import { FC, useCallback, useMemo } from 'react';
-import { GetStaticProps } from 'next';
+import { GetServerSideProps } from 'next';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { FAQItem, getFaqList } from 'lib/faqList';
@@ -107,19 +107,19 @@ const WrapPage: FC<WrapPageProps> = ({ faqList }) => {
 
 export default WrapPage;
 
-export const getStaticProps: GetStaticProps<WrapPageProps> = async () => {
+const faqList = getFaqList([
+  'wrap-what-is-wsteth',
+  'wrap-how-can-i-get-wsteth',
+  'wrap-how-can-i-use-wsteth',
+  'wrap-do-i-get-my-staking-rewards-if-i-wrap-steth-to-wsteth',
+  'wrap-do-i-need-to-claim-my-staking-rewards-f-i-wrap-steth-to-wsteth',
+  'wrap-how-do-i-unwrap-wsteth-back-to-steth',
+]);
+
+export const getServerSideProps: GetServerSideProps<
+  WrapPageProps
+> = async () => {
   Metrics.request.requestCounter.inc({ route: '/pages/wrap' });
 
-  return {
-    props: {
-      faqList: await getFaqList([
-        'wrap-what-is-wsteth',
-        'wrap-how-can-i-get-wsteth',
-        'wrap-how-can-i-use-wsteth',
-        'wrap-do-i-get-my-staking-rewards-if-i-wrap-steth-to-wsteth',
-        'wrap-do-i-need-to-claim-my-staking-rewards-f-i-wrap-steth-to-wsteth',
-        'wrap-how-do-i-unwrap-wsteth-back-to-steth',
-      ]),
-    },
-  };
+  return { props: { faqList: await faqList } };
 };

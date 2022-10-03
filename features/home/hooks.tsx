@@ -15,7 +15,7 @@ export const useStakeableEther = (): Pick<
 
   return {
     initialLoading:
-      ethereumBalance.initialLoading && stakingLimitInfo.initialLoading,
+      ethereumBalance.initialLoading || stakingLimitInfo.initialLoading,
     data:
       ethereumBalance.data && stakingLimitInfo.data?.isStakingLimitSet
         ? bnMin(ethereumBalance.data, stakingLimitInfo.data.currentStakeLimit)
@@ -25,25 +25,19 @@ export const useStakeableEther = (): Pick<
 
 const ONE_INCH_URL = 'https://app.1inch.io/#/1/swap/ETH/steth';
 const LEDGER_LIVE_ONE_INCH_DESKTOP_DEEPLINK = 'ledgerlive://discover/1inch-lld';
-// doesn't work for now
-// const LEDGER_LIVE_ONE_INCH_MOBILE_DEEPLINK = 'ledgerlive://discover/1inch-llm';
+const LEDGER_LIVE_ONE_INCH_MOBILE_DEEPLINK = 'ledgerlive://discover/1inch-llm';
 
 export const use1inchLinkProps = () => {
   const { isLedgerLive } = useConnectorInfo();
 
-  // let link = ONE_INCH_URL;
-  // let linkTarget = '_blank';
-
-  // const openInLedgerLive = isLedgerLive && isDesktop;
-  // if (openInLedgerLive) {
-  //   link = LEDGER_LIVE_ONE_INCH_DESKTOP_DEEPLINK;
-  //   linkTarget = '_self';
-  // }
-
   const linkProps = useMemo(() => {
-    if (isLedgerLive && isDesktop) {
+    if (isLedgerLive) {
+      const href = isDesktop
+        ? LEDGER_LIVE_ONE_INCH_DESKTOP_DEEPLINK
+        : LEDGER_LIVE_ONE_INCH_MOBILE_DEEPLINK;
+
       return {
-        href: LEDGER_LIVE_ONE_INCH_DESKTOP_DEEPLINK,
+        href,
         target: '_self',
       };
     } else {

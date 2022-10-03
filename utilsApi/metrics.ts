@@ -3,10 +3,14 @@ import {
   Registry,
   AggregatorRegistry,
 } from 'prom-client';
-import { METRICS_PREFIX, dynamics } from 'config';
+import getConfig from 'next/config';
+import { METRICS_PREFIX } from 'config';
 import buildInfoJson from 'build-info.json';
 import { collectStartupMetrics } from '@lidofinance/api-metrics';
 import { SubgraphMetrics, RequestMetrics, MemoryMetrics } from 'metrics';
+
+const { publicRuntimeConfig } = getConfig();
+const { defaultChain, supportedChains } = publicRuntimeConfig;
 
 class Metrics {
   registry = new Registry();
@@ -26,8 +30,8 @@ class Metrics {
     collectStartupMetrics({
       prefix: METRICS_PREFIX,
       registry: this.registry,
-      defaultChain: `${dynamics.defaultChain}`,
-      supportedChains: dynamics.supportedChains.map((chain) => `${chain}`),
+      defaultChain,
+      supportedChains: supportedChains.split(','),
       version: buildInfoJson.version,
       commit: buildInfoJson.commit,
       branch: buildInfoJson.branch,

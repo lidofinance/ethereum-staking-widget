@@ -15,7 +15,7 @@ export const LayoutContainer = styled((props) => <Container {...props} />)`
 export const Wrapper = styled.div`
   width: 280px;
   position: relative;
-  background-color: var(--lido-color-foreground);
+  background-color: ${({ theme }) => theme.colors.foreground};
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   border-radius: 8px;
   transition: transform 0.3s ease;
@@ -44,7 +44,7 @@ export const Wrapper = styled.div`
 `;
 
 export const ActionsWrapper = styled.div`
-  border-top: 1px solid var(--lido-color-border);
+  border-top: 1px solid ${({ theme }) => theme.colors.border};
   display: grid;
   grid-template-columns: 1fr 1fr;
   font-size: ${({ theme }) => theme.fontSizesMap.xxs}px;
@@ -53,10 +53,10 @@ export const ActionsWrapper = styled.div`
 
 export const Action = styled.div`
   text-align: center;
-  color: var(--lido-color-textSecondary);
+  color: ${({ theme }) => theme.colors.textSecondary};
 
   :first-of-type {
-    border-right: 1px solid var(--lido-color-border);
+    border-right: 1px solid ${({ theme }) => theme.colors.border};
   }
 `;
 
@@ -75,17 +75,17 @@ export const Content = styled.div`
 
 export const Data = styled.div`
   margin-left: 16px;
-  color: var(--lido-color-textSecondary);
+  color: ${({ theme }) => theme.colors.textSecondary};
 
   .label {
-    color: var(--lido-color-textSecondary);
+    color: ${({ theme }) => theme.colors.textSecondary};
   }
 
   .rate {
     font-size: ${({ theme }) => theme.fontSizesMap.xs}px;
     line-height: 1.6em;
     font-weight: 800;
-    color: var(--lido-color-text);
+    color: ${({ theme }) => theme.colors.text};
   }
 `;
 

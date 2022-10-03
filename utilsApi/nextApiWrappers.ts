@@ -2,6 +2,7 @@ import { NextApiResponse, NextApiRequest } from 'next';
 import { Histogram } from 'prom-client';
 import Metrics from 'utilsApi/metrics';
 import { API } from 'types';
+import { serverLogger } from 'utilsApi';
 import {
   DEFAULT_API_ERROR_MESSAGE,
   CACHE_DEFAULT_ERROR_HEADERS,
@@ -28,7 +29,7 @@ export const defaultErrorHandler: RequestWrapper = async (req, res, next) => {
     await next?.(req, res, next);
   } catch (error) {
     if (error instanceof Error) {
-      console.error(error.message ?? DEFAULT_API_ERROR_MESSAGE);
+      serverLogger.error(error.message ?? DEFAULT_API_ERROR_MESSAGE);
       res.status(500).json(error.message ?? DEFAULT_API_ERROR_MESSAGE);
     } else {
       res.status(500).json(DEFAULT_API_ERROR_MESSAGE);
