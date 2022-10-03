@@ -6,7 +6,7 @@ import {
 } from 'config';
 import {
   getEthPrice,
-  wrapRequest,
+  wrapNextRequest,
   cacheControl,
   defaultErrorHandler,
 } from 'utilsApi';
@@ -28,7 +28,7 @@ const ethPrice: API = async (req, res) => {
   }
 };
 
-export default wrapRequest([
+export default wrapNextRequest([
   cacheControl(CACHE_ETH_PRICE_HEADERS),
   defaultErrorHandler,
 ])(ethPrice);

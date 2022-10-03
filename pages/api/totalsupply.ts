@@ -6,7 +6,7 @@ import {
 } from 'config';
 import {
   getTotalStaked,
-  wrapRequest,
+  wrapNextRequest,
   defaultErrorHandler,
   cacheControl,
 } from 'utilsApi';
@@ -28,7 +28,7 @@ const totalSupply: API = async (req, res) => {
   }
 };
 
-export default wrapRequest([
+export default wrapNextRequest([
   cacheControl(CACHE_TOTAL_SUPPLY_HEADERS),
   defaultErrorHandler,
 ])(totalSupply);
