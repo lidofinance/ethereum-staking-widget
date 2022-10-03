@@ -4,7 +4,7 @@ import { METRICS_PREFIX, METRIC_NAMES } from 'config';
 export class RequestMetrics {
   apiTimings: Histogram<'hostname' | 'route' | 'entity' | 'status'>;
   apiTimingsExternal: Histogram<'hostname' | 'route' | 'entity' | 'status'>;
-  requestCounter: Counter<'route' | 'entity'>;
+  requestCounter: Counter<'route'>;
 
   constructor(public registry: Registry) {
     this.apiTimings = this.apiTimingsInit('internal');
