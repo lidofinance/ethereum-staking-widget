@@ -1,5 +1,5 @@
 import { Counter, Histogram, Registry } from 'prom-client';
-import { METRICS_PREFIX } from 'config';
+import { METRICS_PREFIX, METRIC_NAMES } from 'config';
 
 export class RequestMetrics {
   apiTimings: Histogram<'hostname' | 'route' | 'entity' | 'status'>;
@@ -12,9 +12,10 @@ export class RequestMetrics {
     this.requestCounter = this.requestsCounterInit();
   }
 
-  apiTimingsInit(prefix: string) {
-    const prefixWithDash = prefix ? `_${prefix}` : '';
-    const apiResponseName = METRICS_PREFIX + 'api_response' + prefixWithDash;
+  apiTimingsInit(postfix: string) {
+    const postfixWithDash = postfix ? `_${postfix}` : '';
+    const apiResponseName =
+      METRICS_PREFIX + METRIC_NAMES.API_RESPONSE + postfixWithDash;
 
     return new Histogram({
       name: apiResponseName,
@@ -26,7 +27,7 @@ export class RequestMetrics {
   }
 
   requestsCounterInit() {
-    const requestsCounterName = METRICS_PREFIX + 'requests_total';
+    const requestsCounterName = METRICS_PREFIX + METRIC_NAMES.REQUESTS_TOTAL;
 
     return new Counter({
       name: requestsCounterName,

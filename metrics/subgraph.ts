@@ -1,5 +1,5 @@
 import { Histogram, Registry } from 'prom-client';
-import { METRICS_PREFIX } from 'config';
+import { METRICS_PREFIX, METRIC_NAMES } from 'config';
 
 export class SubgraphMetrics {
   subgraphsResponseTime: Histogram<'subgraphs'>;
@@ -9,7 +9,8 @@ export class SubgraphMetrics {
   }
 
   subgraphsResponseTimeInit() {
-    const subgraphsResponseTimeName = METRICS_PREFIX + 'subgraphs_response';
+    const subgraphsResponseTimeName =
+      METRICS_PREFIX + METRIC_NAMES.SUBGRAPHS_RESPONSE;
 
     return new Histogram({
       name: subgraphsResponseTimeName,

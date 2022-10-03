@@ -1,17 +1,15 @@
 import { Gauge, Registry } from 'prom-client';
-import { METRICS_PREFIX } from 'config';
+import { METRICS_PREFIX, MEMORY_CACHE_METRICS, METRIC_NAMES } from 'config';
 import cache from 'memory-cache';
 
 export class MemoryMetrics {
-  private memoryCacheMetrics: Gauge<'size' | 'memsize'>[];
-
   constructor(public registry: Registry) {
-    this.memoryCacheMetrics = this.memoryCacheMetricsInit();
+    this.memoryCacheMetricsInit();
   }
 
   memoryCacheMetricsInit() {
-    return (['size', 'memsize'] as const).map((metricName) => {
-      const name = `${METRICS_PREFIX}memory_cache_${metricName}`;
+    MEMORY_CACHE_METRICS.map((metricName) => {
+      const name = `${METRICS_PREFIX}${METRIC_NAMES.MEMORY_CACHE}_${metricName}`;
       const metric = new Gauge({
         name,
         help: 'Memory cache info',
