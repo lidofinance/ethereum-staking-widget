@@ -7,7 +7,7 @@ import getConfig from 'next/config';
 import { METRICS_PREFIX } from 'config';
 import buildInfoJson from 'build-info.json';
 import { collectStartupMetrics } from '@lidofinance/api-metrics';
-import { SubgraphMetrics, RequestMetrics, MemoryMetrics } from 'metrics';
+import { SubgraphMetrics, RequestMetrics } from 'metrics';
 
 const { publicRuntimeConfig } = getConfig();
 const { defaultChain, supportedChains } = publicRuntimeConfig;
@@ -18,7 +18,6 @@ class Metrics {
   // compositions of metric types
   subgraph = new SubgraphMetrics(this.registry);
   request = new RequestMetrics(this.registry);
-  memory = new MemoryMetrics(this.registry);
 
   constructor() {
     AggregatorRegistry.setRegistries(this.registry);
