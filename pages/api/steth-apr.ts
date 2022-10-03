@@ -27,6 +27,6 @@ const stethApr: API = async (req, res) => {
 };
 
 export default wrapNextRequest([
-  responseTimeMetric(Metrics.request.apiTimings, API_ROUTES.SHORT_LIDO_STATS),
+  responseTimeMetric(Metrics.request.apiTimings, API_ROUTES.STETH_APR),
   ...errorAndCacheDefaultWrappers,
 ])(stethApr);
