@@ -1,9 +1,10 @@
 import getConfig from 'next/config';
-import { registry } from 'utilsApi/metrics';
 import { rpcFactory } from '@lidofinance/next-pages';
-import { METRICS_PREFIX } from 'config';
+import { METRICS_PREFIX, API_ROUTES } from 'config';
 import { fetchRPC, serverLogger } from 'utilsApi';
+import Metrics from 'utilsApi/metrics';
 import { rpcUrls } from 'utilsApi/rpcUrls';
+import { wrapNextRequest, responseTimeMetric } from 'utilsApi';
 
 const { publicRuntimeConfig } = getConfig();
 const { defaultChain } = publicRuntimeConfig;
@@ -13,7 +14,7 @@ const rpc = rpcFactory({
   serverLogger,
   metrics: {
     prefix: METRICS_PREFIX,
-    registry,
+    registry: Metrics.registry,
   },
   allowedRPCMethods: [
     'test',
@@ -35,4 +36,6 @@ const rpc = rpcFactory({
   providers: rpcUrls,
 });
 
-export default rpc;
+export default wrapNextRequest([
+  responseTimeMetric(Metrics.request.apiTimings, API_ROUTES.RPC),
+])(rpc);

@@ -3,6 +3,7 @@ import { getTokenAddress, TOKENS } from '@lido-sdk/constants';
 import { ETHPLORER_TOKEN_ENDPOINT } from 'config';
 import getConfig from 'next/config';
 import { standardFetcher } from 'utils/standardFetcher';
+import { responseTimeExternalMetricWrapper } from 'utilsApi';
 import { serverLogger } from './serverLogger';
 
 const { serverRuntimeConfig } = getConfig();
@@ -21,7 +22,10 @@ export const getLdoStats: GetLdoStats = async () => {
   const query = new URLSearchParams({ apiKey: ethplorerApiKey });
   const url = `${api}?${query.toString()}`;
 
-  const ldoStats = await standardFetcher<Response>(url);
+  const ldoStats = await responseTimeExternalMetricWrapper({
+    payload: api,
+    request: () => standardFetcher<Response>(url),
+  });
   serverLogger.debug('LDO stats: ' + ldoStats);
 
   return ldoStats;

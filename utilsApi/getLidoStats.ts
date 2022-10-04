@@ -2,6 +2,7 @@ import { CHAINS } from 'utils/chains';
 import { ETHPLORER_TOKEN_ENDPOINT, getStethAddress } from 'config';
 import getConfig from 'next/config';
 import { standardFetcher } from 'utils/standardFetcher';
+import { responseTimeExternalMetricWrapper } from 'utilsApi';
 import { serverLogger } from './serverLogger';
 
 const { serverRuntimeConfig } = getConfig();
@@ -17,7 +18,10 @@ export const getLidoStats: GetLidoStats = async () => {
   const query = new URLSearchParams({ apiKey: ethplorerApiKey });
   const url = `${api}?${query.toString()}`;
 
-  const lidoStats = await standardFetcher<Response>(url);
+  const lidoStats = await responseTimeExternalMetricWrapper({
+    payload: api,
+    request: () => standardFetcher<Response>(url),
+  });
   serverLogger.debug('Lido stats: ' + lidoStats);
   return lidoStats;
 };

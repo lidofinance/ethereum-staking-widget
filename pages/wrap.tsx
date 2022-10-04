@@ -6,6 +6,8 @@ import { FAQItem, getFaqList } from 'lib/faqList';
 import { Layout, Faq } from 'shared/components';
 import { WrapForm, UnwrapForm, Wallet } from 'features/wrap';
 import { Switch } from 'features/wrap/components';
+import Metrics from 'utilsApi/metrics';
+import { PAGES } from 'config';
 
 interface WrapPageProps {
   faqList: FAQItem[];
@@ -118,5 +120,7 @@ const faqList = getFaqList([
 export const getServerSideProps: GetServerSideProps<
   WrapPageProps
 > = async () => {
+  Metrics.request.requestCounter.inc({ route: PAGES.WRAP });
+
   return { props: { faqList: await faqList } };
 };

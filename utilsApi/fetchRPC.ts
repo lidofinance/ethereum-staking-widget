@@ -1,8 +1,8 @@
 import { trackedFetchRpcFactory } from '@lidofinance/api-rpc';
-import { registry } from 'utilsApi/metrics';
-import { METRICS_PREFIX } from '../config';
+import Metrics from 'utilsApi/metrics';
+import { METRICS_PREFIX } from 'config';
 
 export const fetchRPC = trackedFetchRpcFactory({
-  registry,
+  registry: Metrics.registry,
   prefix: METRICS_PREFIX,
 });

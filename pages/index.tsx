@@ -4,6 +4,8 @@ import Head from 'next/head';
 import { Wallet, StakeForm, LidoStats } from 'features/home';
 import { Layout, Faq } from 'shared/components';
 import { FAQItem, getFaqList } from 'lib/faqList';
+import Metrics from 'utilsApi/metrics';
+import { PAGES } from 'config';
 
 interface HomeProps {
   faqList: FAQItem[];
@@ -44,5 +46,7 @@ const faqList = getFaqList([
 ]);
 
 export const getServerSideProps: GetServerSideProps<HomeProps> = async () => {
+  Metrics.request.requestCounter.inc({ route: PAGES.INDEX });
+
   return { props: { faqList: await faqList } };
 };
