@@ -14,7 +14,7 @@ export const middleware = cacheControlMiddlewareFactory(
 );
 
 export const config = {
-  // paths where use middleware
+  // paths where use middleware for cache control headers
   matcher: ['/manifest.json', '/favicon:size*', '/', '/wrap', '/rewards'],
 };
 
