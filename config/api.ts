@@ -19,9 +19,3 @@ export const enum API_ROUTES {
   TOTALSUPPLY = 'api/totalsupply',
   RPC = 'api/rpc',
 }
-
-export const enum PAGES {
-  INDEX = 'pages/index',
-  REFERRAL = 'pages/referral',
-  WRAP = 'pages/wrap',
-}
