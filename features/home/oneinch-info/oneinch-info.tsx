@@ -11,6 +11,8 @@ import {
 } from './styles';
 import { use1inchLinkProps } from '../hooks';
 
+const ONE_INCH_RATE_LIMIT = 1.003;
+
 export const OneinchInfo: FC = () => {
   const { data } = useLidoSWR<{ rate: number }>('/api/oneinch-rate');
   const rate = (data && data.rate) || 1;
@@ -18,7 +20,7 @@ export const OneinchInfo: FC = () => {
 
   const linkProps = use1inchLinkProps();
 
-  if (!rate || rate < 1.0001) return null;
+  if (!rate || rate < ONE_INCH_RATE_LIMIT) return null;
 
   return (
     <Wrap>

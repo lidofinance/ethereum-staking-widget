@@ -29,7 +29,7 @@ export const Box = styled.div`
   align-items: center;
   padding: 16px 24px;
   border-radius: 20px;
-  background-color: var(--lido-color-foreground);
+  background-color: ${({ theme }) => theme.colors.foreground};
   box-shadow: 0 6px 32px rgba(0, 0, 0, 0.08);
 
   ${({ theme }) => theme.mediaQueries.lg} {
@@ -58,7 +58,7 @@ export const Text = styled.div`
   font-weight: 500;
   font-size: 14px;
   line-height: 22px;
-  color: var(--lido-color-textSecondary);
+  color: ${({ theme }) => theme.colors.textSecondary};
   width: 340px;
 
   ${({ theme }) => theme.mediaQueries.lg} {
@@ -104,21 +104,21 @@ const ButtonBasic = styled.button.attrs({ type: 'button' })`
 `;
 
 export const AllowButton = styled((props) => <ButtonBasic {...props} />)`
-  background-color: var(--lido-color-text);
-  color: var(--lido-color-foreground);
+  background-color: ${({ theme }) => theme.colors.text};
+  color: ${({ theme }) => theme.colors.foreground};
 
   &:hover {
-    background-color: var(--lido-color-textSecondary);
+    background-color: ${({ theme }) => theme.colors.textSecondary};
   }
 `;
 
 export const DeclineButton = styled((props) => <ButtonBasic {...props} />)`
-  background-color: var(--lido-color-foreground);
-  color: var(--lido-color-text);
-  border: 1px solid var(--lido-color-text);
+  background-color: ${({ theme }) => theme.colors.foreground};
+  color: ${({ theme }) => theme.colors.text};
+  border: 1px solid ${({ theme }) => theme.colors.text};
 
   &:hover {
-    background-color: var(--lido-color-background);
+    background-color: ${({ theme }) => theme.colors.background};
   }
 `;
 

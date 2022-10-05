@@ -1,6 +1,12 @@
 import { Cache } from 'memory-cache';
-import { CACHE_STETH_APR_KEY, CACHE_STETH_APR_TTL } from 'config';
-import { getStethApr, defaultErrorAndCacheWrapper } from 'utilsApi';
+import { CACHE_STETH_APR_KEY, CACHE_STETH_APR_TTL, API_ROUTES } from 'config';
+import {
+  getStethApr,
+  wrapNextRequest,
+  responseTimeMetric,
+  errorAndCacheDefaultWrappers,
+} from 'utilsApi';
+import Metrics from 'utilsApi/metrics';
 import { API } from 'types';
 
 const cache = new Cache<typeof CACHE_STETH_APR_KEY, string>();
@@ -20,4 +26,7 @@ const stethApr: API = async (req, res) => {
   }
 };
 
-export default defaultErrorAndCacheWrapper(stethApr);
+export default wrapNextRequest([
+  responseTimeMetric(Metrics.request.apiTimings, API_ROUTES.STETH_APR),
+  ...errorAndCacheDefaultWrappers,
+])(stethApr);
