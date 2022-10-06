@@ -13,5 +13,6 @@ export * from './getSubgraphUrl';
 export * from './rpcProviders';
 export * from './rpcUrls';
 export * from './serverLogger';
-export * from './apiWrappers';
+export * from './nextApiWrappers';
+export * from './fetchApiWrapper';
 export * from './rateLimit';

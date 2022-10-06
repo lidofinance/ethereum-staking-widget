@@ -1,5 +1,8 @@
 import { NextApiResponse, NextApiRequest } from 'next';
+import { getStatusLabel } from '@lidofinance/api-metrics';
+import { Histogram } from 'prom-client';
 import { API } from 'types';
+import { serverLogger } from 'utilsApi';
 import {
   DEFAULT_API_ERROR_MESSAGE,
   CACHE_DEFAULT_ERROR_HEADERS,
@@ -15,7 +18,7 @@ type RequestWrapper = (
   next?: API | RequestWrapper,
 ) => void;
 
-export const wrapRequest =
+export const wrapNextRequest =
   (wrappers: RequestWrapper[]) => (requestHandler: API) => {
     return wrappers.reduce(
       (acc, cur) => (req, res) => cur(req, res, () => acc(req, res)),
@@ -29,13 +32,31 @@ export const defaultErrorHandler: RequestWrapper = async (req, res, next) => {
     await next?.(req, res, next);
   } catch (error) {
     if (error instanceof Error) {
-      console.error(error.message ?? DEFAULT_API_ERROR_MESSAGE);
+      serverLogger.error(error.message ?? DEFAULT_API_ERROR_MESSAGE);
       res.status(500).json(error.message ?? DEFAULT_API_ERROR_MESSAGE);
     } else {
       res.status(500).json(DEFAULT_API_ERROR_MESSAGE);
     }
   }
 };
+
+export const responseTimeMetric =
+  (metrics: Histogram<string>, route: string): RequestWrapper =>
+  async (req, res, next) => {
+    let status = '2xx';
+    const endMetric = metrics.startTimer({ route });
+
+    try {
+      await next?.(req, res, next);
+      status = getStatusLabel(res.statusCode);
+    } catch (error) {
+      status = getStatusLabel(res.statusCode);
+      // throw error up the stack
+      throw error;
+    } finally {
+      endMetric({ status });
+    }
+  };
 
 export const cacheControl =
   (headers: string): RequestWrapper =>
@@ -70,8 +91,11 @@ export const rateLimit = (): RequestWrapper => async (req, res, next) => {
 
 // ready wrapper types
 
-export const defaultErrorAndCacheWrapper = wrapRequest([
+export const errorAndCacheDefaultWrappers = [
   cacheControl(CACHE_DEFAULT_HEADERS),
   rateLimit(),
   defaultErrorHandler,
+];
+export const defaultErrorAndCacheWrapper = wrapNextRequest([
+  ...errorAndCacheDefaultWrappers,
 ]);

@@ -1,6 +1,12 @@
 import { Cache } from 'memory-cache';
-import { CACHE_LIDO_STATS_KEY, CACHE_LIDO_STATS_TTL } from 'config';
-import { getLidoStats, defaultErrorAndCacheWrapper } from 'utilsApi';
+import { CACHE_LIDO_STATS_KEY, CACHE_LIDO_STATS_TTL, API_ROUTES } from 'config';
+import {
+  getLidoStats,
+  wrapNextRequest,
+  errorAndCacheDefaultWrappers,
+  responseTimeMetric,
+} from 'utilsApi';
+import Metrics from 'utilsApi/metrics';
 import { API } from 'types';
 
 const cache = new Cache<typeof CACHE_LIDO_STATS_KEY, unknown>();
@@ -21,4 +27,7 @@ const lidoStats: API = async (req, res) => {
   }
 };
 
-export default defaultErrorAndCacheWrapper(lidoStats);
+export default wrapNextRequest([
+  responseTimeMetric(Metrics.request.apiTimings, API_ROUTES.LIDO_STATS),
+  ...errorAndCacheDefaultWrappers,
+])(lidoStats);
