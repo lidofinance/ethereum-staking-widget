@@ -1,7 +1,7 @@
 import getConfig from 'next/config';
 import { rpcFactory } from '@lidofinance/next-pages';
 import { METRICS_PREFIX } from 'config';
-import { fetchRPC, serverLogger, wrapRequest, rateLimit } from 'utilsApi';
+import { fetchRPC, serverLogger, wrapNextRequest, rateLimit } from 'utilsApi';
 import Metrics from 'utilsApi/metrics';
 import { rpcUrls } from 'utilsApi/rpcUrls';
 
@@ -35,4 +35,4 @@ const rpc = rpcFactory({
   providers: rpcUrls,
 });
 
-export default wrapRequest([rateLimit()])(rpc);
+export default wrapNextRequest([rateLimit()])(rpc);
