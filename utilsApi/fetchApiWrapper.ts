@@ -27,7 +27,7 @@ export const responseTimeExternalMetric =
 
     // TODO: fix types
     const endMetric = metrics.startTimer({
-      route: params as unknown as string,
+      hostname: params as unknown as string,
     });
 
     try {

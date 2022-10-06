@@ -23,7 +23,7 @@ export const getLdoStats: GetLdoStats = async () => {
   const url = `${api}?${query.toString()}`;
 
   const ldoStats = await responseTimeExternalMetricWrapper({
-    payload: api,
+    payload: ETHPLORER_TOKEN_ENDPOINT,
     request: () => standardFetcher<Response>(url),
   });
   serverLogger.debug('LDO stats: ' + ldoStats);
