@@ -1,4 +1,6 @@
 import { NextApiResponse, NextApiRequest } from 'next';
+import { getStatusLabel } from '@lidofinance/api-metrics';
+import { Histogram } from 'prom-client';
 import { API } from 'types';
 import { serverLogger } from 'utilsApi';
 import {
@@ -13,7 +15,7 @@ type RequestWrapper = (
   next?: API | RequestWrapper,
 ) => void;
 
-export const wrapRequest =
+export const wrapNextRequest =
   (wrappers: RequestWrapper[]) => (requestHandler: API) => {
     return wrappers.reduce(
       (acc, cur) => (req, res) => cur(req, res, () => acc(req, res)),
@@ -35,6 +37,24 @@ export const defaultErrorHandler: RequestWrapper = async (req, res, next) => {
   }
 };
 
+export const responseTimeMetric =
+  (metrics: Histogram<string>, route: string): RequestWrapper =>
+  async (req, res, next) => {
+    let status = '2xx';
+    const endMetric = metrics.startTimer({ route });
+
+    try {
+      await next?.(req, res, next);
+      status = getStatusLabel(res.statusCode);
+    } catch (error) {
+      status = getStatusLabel(res.statusCode);
+      // throw error up the stack
+      throw error;
+    } finally {
+      endMetric({ status });
+    }
+  };
+
 export const cacheControl =
   (headers: string): RequestWrapper =>
   async (req, res, next) => {
@@ -54,7 +74,10 @@ export const cacheControl =
 
 // ready wrapper types
 
-export const defaultErrorAndCacheWrapper = wrapRequest([
+export const errorAndCacheDefaultWrappers = [
   cacheControl(CACHE_DEFAULT_HEADERS),
   defaultErrorHandler,
+];
+export const defaultErrorAndCacheWrapper = wrapNextRequest([
+  ...errorAndCacheDefaultWrappers,
 ]);
