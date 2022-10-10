@@ -1,9 +1,10 @@
 const cluster = require('node:cluster');
 const process = require('node:process');
+const { cpus } = require('node:os');
 const http = require('node:http');
 const { AggregatorRegistry } = require('prom-client');
 
-const forksCount = 1;
+const forksCount = process.env.FORKS_COUNT ?? cpus().length;
 const port = process.env.METRICS_PORT ?? 3001;
 
 if (cluster.isPrimary) {
