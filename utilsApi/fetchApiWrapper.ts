@@ -24,10 +24,11 @@ export const responseTimeExternalMetric =
   <T = void>(metrics: Histogram<string>): FetchRequestWrapper<T> =>
   async (params, next) => {
     let status = 200;
+    const { hostname } = new URL(params as unknown as string);
 
     // TODO: fix types
     const endMetric = metrics.startTimer({
-      route: params as unknown as string,
+      hostname,
     });
 
     try {

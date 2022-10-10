@@ -19,7 +19,7 @@ export const getLidoStats: GetLidoStats = async () => {
   const url = `${api}?${query.toString()}`;
 
   const lidoStats = await responseTimeExternalMetricWrapper({
-    payload: api,
+    payload: ETHPLORER_TOKEN_ENDPOINT,
     request: () => standardFetcher<Response>(url),
   });
   serverLogger.debug('Lido stats: ' + lidoStats);
