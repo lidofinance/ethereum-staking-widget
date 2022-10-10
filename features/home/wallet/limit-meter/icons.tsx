@@ -7,13 +7,13 @@ const Icon = styled.div`
 `;
 
 export const LimitSafeIcon = styled(Icon)`
-  background-color: ${({ theme }) => theme.colors.success};
+  background-color: var(--lido-color-success);
 `;
 
 export const LimitWarnIcon = styled(Icon)`
-  background-color: ${({ theme }) => theme.colors.warning};
+  background-color: var(--lido-color-warning);
 `;
 
 export const LimitReachedIcon = styled(Icon)`
-  background-color: ${({ theme }) => theme.colors.error};
+  background-color: var(--lido-color-error);
 `;

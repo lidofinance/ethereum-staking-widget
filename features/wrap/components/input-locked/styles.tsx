@@ -8,7 +8,7 @@ export const LockWrapper = styled.span`
   vertical-align: top;
   margin-left: 8px;
   cursor: default;
-  color: ${({ theme }) => theme.colors.warning};
+  color: var(--lido-color-warning);
   border-radius: ${({ theme }) => theme.borderRadiusesMap.sm}px;
 
   :first-child {

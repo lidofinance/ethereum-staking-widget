@@ -5,7 +5,7 @@ const textStyle = css`
 `;
 
 export const BannerHeader = styled.p`
-  color: ${({ theme }) => theme.colors.text};
+  color: var(--lido-color-text);
   margin-bottom: ${({ theme }) => theme.spaceMap.sm}px;
   font-size: ${({ theme }) => theme.fontSizes[3]}px;
   font-weight: bold;
@@ -19,6 +19,6 @@ export const BannerTextStyle = styled.p`
 export const BannerMainTextStyle = styled.p`
   ${textStyle}
 
-  color: ${({ theme }) => theme.colors.text};
+  color: var(--lido-color-text);
   font-weight: bold;
 `;

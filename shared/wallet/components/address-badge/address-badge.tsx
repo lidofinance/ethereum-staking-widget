@@ -1,6 +1,5 @@
-import { useBreakpoint } from '@lidofinance/lido-ui';
+import { useBreakpoint, IdenticonBadgeProps } from '@lidofinance/lido-ui';
 import { AddressBadgeStyle } from './styles';
-import { IdenticonBadgeProps } from '@lidofinance/lido-ui';
 import { Component } from 'types';
 
 export type AddressBadgeComponent = Component<

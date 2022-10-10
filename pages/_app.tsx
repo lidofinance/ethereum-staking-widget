@@ -1,13 +1,19 @@
 import { memo } from 'react';
 import NextApp, { AppProps, AppContext } from 'next/app';
-import { ToastContainer } from '@lidofinance/lido-ui';
-import { STORAGE_THEME_AUTO_KEY, STORAGE_THEME_MANUAL_KEY } from 'config';
+import {
+  ToastContainer,
+  migrationThemeCookiesToCrossDomainCookiesClientSide,
+} from '@lidofinance/lido-ui';
 import Providers, { EnvConfig } from 'providers';
 import getConfig from 'next/config';
-import { nprogress, getFromRawCookies } from 'utils';
+import { nprogress } from 'utils';
 import { CookiesTooltip } from 'shared/components';
 import 'nprogress/nprogress.css';
 import { withCsp } from 'utilsApi/withCsp';
+import { BackgroundGradient } from 'shared/components/background-gradient/background-gradient';
+
+// Migrations old cookies to new cross domain cookies
+migrationThemeCookiesToCrossDomainCookiesClientSide();
 
 // Visualize route changes
 nprogress();
@@ -24,11 +30,14 @@ const AppWrapper = (props: AppProps & { config: EnvConfig }): JSX.Element => {
   const { config, ...rest } = props;
 
   return (
-    <Providers
-      config={config || {}}
-      cookiesAutoThemeScheme={props.pageProps.cookiesAutoThemeScheme}
-      cookiesManualThemeScheme={props.pageProps.cookiesManualThemeScheme}
-    >
+    <Providers config={config || {}}>
+      <BackgroundGradient
+        width={1560}
+        height={784}
+        style={{
+          opacity: 'var(--lido-color-darkThemeOpacity)',
+        }}
+      />
       <ToastContainer />
       <MemoApp {...rest} />
       <CookiesTooltip />
@@ -39,16 +48,6 @@ const AppWrapper = (props: AppProps & { config: EnvConfig }): JSX.Element => {
 AppWrapper.getInitialProps = async (appContext: AppContext) => {
   const appProps = await NextApp.getInitialProps(appContext);
   const { publicRuntimeConfig } = getConfig();
-
-  // Get current color theme preferences from req headers cookies
-  appProps.pageProps.cookiesAutoThemeScheme = getFromRawCookies(
-    appContext?.ctx?.req?.headers?.cookie,
-    STORAGE_THEME_AUTO_KEY,
-  );
-  appProps.pageProps.cookiesManualThemeScheme = getFromRawCookies(
-    appContext?.ctx?.req?.headers?.cookie,
-    STORAGE_THEME_MANUAL_KEY,
-  );
 
   return { ...appProps, config: publicRuntimeConfig };
 };
