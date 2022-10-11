@@ -1,7 +1,9 @@
 import { FC } from 'react';
+import { CookieThemeProvider } from '@lidofinance/lido-ui';
+import { GlobalStyle } from 'styles';
 
 import ModalProvider from './modals';
-import ThemeProvider, { ThemeName } from './theme';
+import { ThemeName } from './theme';
 import Web3Provider, { EnvConfig } from './web3';
 
 export type ProvidersProps = {
@@ -10,20 +12,13 @@ export type ProvidersProps = {
   config: EnvConfig;
 };
 
-const Providers: FC<ProvidersProps> = ({
-  cookiesAutoThemeScheme,
-  cookiesManualThemeScheme,
-  config,
-  children,
-}) => (
-  <ThemeProvider
-    cookiesAutoThemeScheme={cookiesAutoThemeScheme}
-    cookiesManualThemeScheme={cookiesManualThemeScheme}
-  >
+const Providers: FC<ProvidersProps> = ({ config, children }) => (
+  <CookieThemeProvider>
+    <GlobalStyle />
     <Web3Provider config={config}>
       <ModalProvider>{children}</ModalProvider>
     </Web3Provider>
-  </ThemeProvider>
+  </CookieThemeProvider>
 );
 
 export default Providers;

@@ -1,23 +1,21 @@
-import { NextResponse } from 'next/server';
-import type { NextRequest } from 'next/server';
-import { findCacheControlFileHeaders } from 'config/cache';
+import { cacheControlMiddlewareFactory } from '@lidofinance/next-cache-files-middleware';
+
+export const CACHE_HEADERS_HTML_PAGE =
+  'public, max-age=30, stale-if-error=1200, stale-while-revalidate=30';
+export const CACHE_ALLOWED_LIST_FILES_PATHS = [
+  { path: '/', headers: CACHE_HEADERS_HTML_PAGE },
+  { path: '/wrap', headers: CACHE_HEADERS_HTML_PAGE },
+  { path: '/rewards', headers: CACHE_HEADERS_HTML_PAGE },
+];
 
 // use only for cache files
-const middleware = (req: NextRequest) => {
-  const response = NextResponse.next();
-  const methodName = req.nextUrl.pathname;
-  // Use whitelist
-  const headers = findCacheControlFileHeaders(methodName);
-  if (!headers) return response;
-
-  response.headers.append('Cache-Control', headers);
-
-  return response;
-};
+export const middleware = cacheControlMiddlewareFactory(
+  CACHE_ALLOWED_LIST_FILES_PATHS,
+);
 
 export const config = {
   // paths where use middleware
-  matcher: ['/manifest.json', '/favicon:size*'],
+  matcher: ['/manifest.json', '/favicon:size*', '/', '/wrap', '/rewards'],
 };
 
 export default middleware;
