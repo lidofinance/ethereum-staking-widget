@@ -1930,10 +1930,10 @@
   dependencies:
     "@lidofinance/blocks-connect-wallet-modal" "2.11.0"
 
-"@lidofinance/lido-ui@3.0.0-next.13":
-  version "3.0.0-next.13"
-  resolved "https://registry.yarnpkg.com/@lidofinance/lido-ui/-/lido-ui-3.0.0-next.13.tgz#34dad9df7743b06a4b4b3fd0977442973d015a24"
-  integrity sha512-XhQJVw1YXW0s9fl8w6Dj8/upjG+9Lmju/JeMvxQLTVq/6BQ7a2xsOd47Gz2HWULxDCBrzZ9RIvN3gNtZik7h2Q==
+"@lidofinance/lido-ui@3.0.0-next.14":
+  version "3.0.0-next.14"
+  resolved "https://registry.yarnpkg.com/@lidofinance/lido-ui/-/lido-ui-3.0.0-next.14.tgz#8ca032dca4fe68a2d215b702dfbd71c98a7cf841"
+  integrity sha512-VZB+6DRRfWo2vf3VGyOZ9iqvZ6HMD1BnhBosmHZLSfBlwCAiVszeI2uJNOKxB1A8XRbuSrSQgod/BKOSyPxDWg==
   dependencies:
     "@styled-system/should-forward-prop" "5.1.5"
     "@swc/helpers" "^0.4.11"
@@ -1943,6 +1943,7 @@
     react-toastify "7.0.4"
     react-transition-group "4"
     styled-system "5.1.5"
+    ua-parser-js "^1.0.2"
     use-callback-ref "1.2.5"
 
 "@lidofinance/next-cache-files-middleware@^0.3.0":
@@ -8085,7 +8086,7 @@ typical@^2.6.0, typical@^2.6.1:
   resolved "https://registry.yarnpkg.com/typical/-/typical-2.6.1.tgz#5c080e5d661cbbe38259d2e70a3c7253e873881d"
   integrity sha512-ofhi8kjIje6npGozTip9Fr8iecmYfEbS06i0JnIg+rh51KakryWF4+jX8lLKZVhy6N+ID45WYSFCxPOdTWCzNg==
 
-ua-parser-js@1.0.2:
+ua-parser-js@1.0.2, ua-parser-js@^1.0.2:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/ua-parser-js/-/ua-parser-js-1.0.2.tgz#e2976c34dbfb30b15d2c300b2a53eac87c57a775"
   integrity sha512-00y/AXhx0/SsnI51fTc0rLRmafiGOM4/O+ny10Ps7f+j/b8p/ZY11ytMgznXkOVo4GQ+KwQG5UQLkLGirsACRg==
