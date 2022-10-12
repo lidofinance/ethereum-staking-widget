@@ -7,7 +7,7 @@ import Document, {
   DocumentInitialProps,
 } from 'next/document';
 import getConfig from 'next/config';
-import { Fonts } from '@lidofinance/lido-ui';
+import { Fonts, LidoUIHead } from '@lidofinance/lido-ui';
 import { ServerStyleSheet } from 'styled-components';
 
 const chainId = getConfig().publicRuntimeConfig.defaultChain || '';
@@ -107,6 +107,7 @@ export default class MyDocument extends Document {
           <meta name="description" content={this.metaDescription} />
           <meta name="currentChain" content={String(chainId)} />
           <Fonts />
+          <LidoUIHead />
         </Head>
         <body>
           <Main />

@@ -16,14 +16,14 @@ const mobileCss = css`
   left: 0;
   right: 0;
   padding: 8px;
-  background-color: ${({ theme }) => theme.colors.foreground};
+  background-color: var(--lido-color-foreground);
   display: flex;
   justify-content: space-around;
   align-items: center;
-  border-top: 1px solid ${({ theme }) => theme.colors.border};
+  border-top: 1px solid var(--lido-color-border);
 
   svg {
-    margin-right: 0px;
+    margin-right: 0;
     margin-bottom: 7px;
   }
 `;
@@ -38,7 +38,7 @@ export const Nav = styled.div`
 
 export const NavLink = styled.a<{ active: boolean }>`
   cursor: pointer;
-  color: ${({ theme }) => theme.colors.secondary};
+  color: var(--lido-color-secondary);
   font-size: ${({ theme }) => theme.fontSizesMap.xxxs}px;
   line-height: 1.7em;
   font-weight: 800;
@@ -47,12 +47,17 @@ export const NavLink = styled.a<{ active: boolean }>`
   justify-content: center;
   align-items: center;
   text-transform: uppercase;
+  text-decoration: none !important;
   letter-spacing: 0.04em;
   opacity: ${(props) => (props.active ? 1 : 0.8)};
 
   :hover {
     opacity: 1;
-    color: ${({ theme }) => theme.colors.secondary};
+    color: var(--lido-color-secondary);
+  }
+
+  :visited {
+    color: var(--lido-color-secondary);
   }
 
   :not(:last-of-type) {
@@ -60,8 +65,8 @@ export const NavLink = styled.a<{ active: boolean }>`
   }
 
   svg {
-    fill: ${({ active, theme }) =>
-      active ? theme.colors.primary : theme.colors.secondary};
+    fill: ${({ active }) =>
+      active ? `var(--lido-color-primary)` : `var(--lido-color-secondary)`};
   }
 
   ${({ theme }) => theme.mediaQueries.md} {
@@ -70,6 +75,6 @@ export const NavLink = styled.a<{ active: boolean }>`
     font-weight: 500;
     font-size: ${({ theme }) => theme.fontSizesMap.xxxs}px;
     line-height: 1.2em;
-    letter-spacing: 0em;
+    letter-spacing: 0;
   }
 `;
