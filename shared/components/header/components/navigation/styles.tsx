@@ -56,6 +56,10 @@ export const NavLink = styled.a<{ active: boolean }>`
     color: var(--lido-color-secondary);
   }
 
+  :visited {
+    color: var(--lido-color-secondary);
+  }
+
   :not(:last-of-type) {
     margin-right: 32px;
   }
