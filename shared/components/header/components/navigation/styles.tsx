@@ -23,7 +23,7 @@ const mobileCss = css`
   border-top: 1px solid var(--lido-color-border);
 
   svg {
-    margin-right: 0px;
+    margin-right: 0;
     margin-bottom: 7px;
   }
 `;
@@ -47,6 +47,7 @@ export const NavLink = styled.a<{ active: boolean }>`
   justify-content: center;
   align-items: center;
   text-transform: uppercase;
+  text-decoration: none !important;
   letter-spacing: 0.04em;
   opacity: ${(props) => (props.active ? 1 : 0.8)};
 
@@ -70,6 +71,6 @@ export const NavLink = styled.a<{ active: boolean }>`
     font-weight: 500;
     font-size: ${({ theme }) => theme.fontSizesMap.xxxs}px;
     line-height: 1.2em;
-    letter-spacing: 0em;
+    letter-spacing: 0;
   }
 `;
