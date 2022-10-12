@@ -19,6 +19,7 @@ const routes = [
     name: 'Rewards',
     path: '/rewards',
     icon: <Wallet />,
+    external: true,
   },
 ];
 export const Navigation: FC = memo(() => {
@@ -26,14 +27,21 @@ export const Navigation: FC = memo(() => {
 
   return (
     <Nav>
-      {routes.map(({ name, path, icon }) => (
-        <LocalLink key={path} href={path}>
-          <NavLink active={router.pathname === path}>
+      {routes.map(({ name, path, icon, external }) => {
+        return external ? (
+          <NavLink key={path} href={path} active={router.pathname === path}>
             {icon}
             <span>{name}</span>
           </NavLink>
-        </LocalLink>
-      ))}
+        ) : (
+          <LocalLink key={path} href={path}>
+            <NavLink active={router.pathname === path}>
+              {icon}
+              <span>{name}</span>
+            </NavLink>
+          </LocalLink>
+        );
+      })}
     </Nav>
   );
 });
