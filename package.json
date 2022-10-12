@@ -36,7 +36,7 @@
     "@lidofinance/api-rpc": "^0.0.6",
     "@lidofinance/eth-api-providers": "^0.0.4",
     "@lidofinance/eth-providers": "^0.0.3",
-    "@lidofinance/lido-ui": "3.0.0-next.13",
+    "@lidofinance/lido-ui": "3.0.0-next.14",
     "@lidofinance/lido-ui-blocks": "^2.9.0",
     "@lidofinance/next-pages": "^0.0.7",
     "@lidofinance/rpc": "^0.0.5",
