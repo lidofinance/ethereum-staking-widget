@@ -1,3 +1,32 @@
+# [1.28.0](https://github.com/lidofinance/staking-widget-ts/compare/1.27.0...1.28.0) (2022-10-13)
+
+
+### Bug Fixes
+
+* add fix for theme cookies ([0bb9f64](https://github.com/lidofinance/staking-widget-ts/commit/0bb9f64c21a13cca9fa55b72169261b9b6b505e2))
+* add link to audits ([cae6c43](https://github.com/lidofinance/staking-widget-ts/commit/cae6c43976feb9469bfc9627a6cbc98aa93b9813))
+* add rewards page for cache ([002f998](https://github.com/lidofinance/staking-widget-ts/commit/002f998aa2e7f89e68f082e32daec2c78027dbc5))
+* change stale-if-error for html ([4920e87](https://github.com/lidofinance/staking-widget-ts/commit/4920e870ea0f4448829550b1cb34c6802ea54941))
+* css colors ([4545c9d](https://github.com/lidofinance/staking-widget-ts/commit/4545c9d97920b1865b4ca036342603043c6d4794))
+* **external links:** pass query string ([3189bf8](https://github.com/lidofinance/staking-widget-ts/commit/3189bf81ad8a5e9779619ccea575b05a69832db2))
+* fix comment ([605e56c](https://github.com/lidofinance/staking-widget-ts/commit/605e56c126ec0524cac3db0a78bedcd3a41d5c26))
+* fix text in faq ([10e960d](https://github.com/lidofinance/staking-widget-ts/commit/10e960d1e66e88221a761834171fa4fb8e92e423))
+* **NavLink:** visited link ([c5881ab](https://github.com/lidofinance/staking-widget-ts/commit/c5881ab0d744ada5078dd99b1b06b7e7191570f3))
+* remove comments ([10e7f9e](https://github.com/lidofinance/staking-widget-ts/commit/10e7f9e6c6da084f471919f33b49a2bac827be1a))
+* remove text ([41bdba3](https://github.com/lidofinance/staking-widget-ts/commit/41bdba36eae9bf333fb9f6cd2c5efc96e329e004))
+* update comment ([c55531f](https://github.com/lidofinance/staking-widget-ts/commit/c55531f794ee089cf0a3c395342773a234545541))
+
+
+### Features
+
+* add cache for html pages ([2d0f513](https://github.com/lidofinance/staking-widget-ts/commit/2d0f5139c1378ec01a2dfd76f37edf185599825a))
+* add package for cache files ([08f4e77](https://github.com/lidofinance/staking-widget-ts/commit/08f4e7731029ebf38b452f085b346908e6409f0c))
+* add ui3 for use theme from cookies ([365f60e](https://github.com/lidofinance/staking-widget-ts/commit/365f60e8fbf7f2325b7ebc3c3a1f15f8f33c1dcd))
+* external links ([3a42a39](https://github.com/lidofinance/staking-widget-ts/commit/3a42a3968365ff554909ccbb0c819be0011bd899))
+* update risks FAQ ([c0a5732](https://github.com/lidofinance/staking-widget-ts/commit/c0a5732e9bb16904af07af61f01bb9eb0aae3060))
+
+
+
 # [1.27.0](https://github.com/lidofinance/staking-widget-ts/compare/1.26.0...1.27.0) (2022-10-07)
 
 
@@ -186,17 +215,6 @@
 ### Features
 
 * unhide zengo wallet ([69caccf](https://github.com/lidofinance/staking-widget-ts/commit/69caccf8dcaf040f7f9124f0c6a0b44dcb32347a))
-
-
-
-## [1.19.1](https://github.com/lidofinance/staking-widget-ts/compare/1.19.0...1.19.1) (2022-08-24)
-
-
-### Bug Fixes
-
-* allow eth_blockNumber rpc method ([6685053](https://github.com/lidofinance/staking-widget-ts/commit/6685053b95403253ff3d7501bbc244b59c01b735))
-* allow more rpc methods ([80e1bff](https://github.com/lidofinance/staking-widget-ts/commit/80e1bff1093db07f2b1b2f991d6490d19fef2d6d))
-* allow rpc methods for Ledger ([14eaa24](https://github.com/lidofinance/staking-widget-ts/commit/14eaa241dcadd7bacc63a20ec81fcb89ed41f79b))
 
 
 
