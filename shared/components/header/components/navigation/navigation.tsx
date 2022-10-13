@@ -25,11 +25,19 @@ const routes = [
 export const Navigation: FC = memo(() => {
   const router = useRouter();
 
+  const queryString = new URLSearchParams(
+    router.query as Record<string, string>,
+  ).toString();
+
   return (
     <Nav>
       {routes.map(({ name, path, icon, external }) => {
         return external ? (
-          <NavLink key={path} href={path} active={router.pathname === path}>
+          <NavLink
+            key={path}
+            href={`${path}${queryString ? `?${queryString}` : ''}`}
+            active={router.pathname === path}
+          >
             {icon}
             <span>{name}</span>
           </NavLink>
