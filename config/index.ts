@@ -11,3 +11,6 @@ export * from './storage';
 export * from './text';
 export * from './tx';
 export * from './units';
+export * from './metrics';
+export * from './estimate';
+export * from './rateLimit';
