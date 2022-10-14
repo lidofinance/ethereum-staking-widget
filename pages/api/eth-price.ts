@@ -1,6 +1,18 @@
 import { Cache } from 'memory-cache';
-import { CACHE_ETH_PRICE_KEY, CACHE_ETH_PRICE_TTL } from 'config';
-import { getEthPrice, defaultErrorAndCacheWrapper } from 'utilsApi';
+import {
+  CACHE_ETH_PRICE_KEY,
+  CACHE_ETH_PRICE_TTL,
+  CACHE_ETH_PRICE_HEADERS,
+  API_ROUTES,
+} from 'config';
+import {
+  getEthPrice,
+  wrapNextRequest,
+  cacheControl,
+  defaultErrorHandler,
+  responseTimeMetric,
+} from 'utilsApi';
+import Metrics from 'utilsApi/metrics';
 import { API } from 'types';
 
 const cache = new Cache<typeof CACHE_ETH_PRICE_KEY, unknown>();
@@ -19,4 +31,8 @@ const ethPrice: API = async (req, res) => {
   }
 };
 
-export default defaultErrorAndCacheWrapper(ethPrice);
+export default wrapNextRequest([
+  responseTimeMetric(Metrics.request.apiTimings, API_ROUTES.ETH_PRICE),
+  cacheControl(CACHE_ETH_PRICE_HEADERS),
+  defaultErrorHandler,
+])(ethPrice);

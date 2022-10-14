@@ -1,6 +1,9 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 
-export type API = (req: NextApiRequest, res: NextApiResponse) => Promise<void>;
+export type API<T = void> = (
+  req: NextApiRequest,
+  res: NextApiResponse,
+) => Promise<T>;
 
 export type EthplorerResponse = {
   address: string;

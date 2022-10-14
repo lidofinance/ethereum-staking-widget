@@ -1,6 +1,12 @@
 import { Cache } from 'memory-cache';
-import { CACHE_ETH_APR_KEY, CACHE_ETH_APR_TTL } from 'config';
-import { getEthApr, defaultErrorAndCacheWrapper } from 'utilsApi';
+import { CACHE_ETH_APR_KEY, CACHE_ETH_APR_TTL, API_ROUTES } from 'config';
+import {
+  getEthApr,
+  errorAndCacheDefaultWrappers,
+  responseTimeMetric,
+  wrapNextRequest,
+} from 'utilsApi';
+import Metrics from 'utilsApi/metrics';
 import { API } from 'types';
 
 const cache = new Cache<typeof CACHE_ETH_APR_KEY, string>();
@@ -20,4 +26,7 @@ const ethApr: API = async (req, res) => {
   }
 };
 
-export default defaultErrorAndCacheWrapper(ethApr);
+export default wrapNextRequest([
+  responseTimeMetric(Metrics.request.apiTimings, API_ROUTES.ETH_APR),
+  ...errorAndCacheDefaultWrappers,
+])(ethApr);

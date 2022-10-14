@@ -1,4 +1,4 @@
-import { Wallet, Stake, Wrap } from '@lidofinance/icons';
+import { Wallet, Stake, Wrap } from '@lidofinance/lido-ui';
 import { useRouter } from 'next/router';
 import { FC, memo } from 'react';
 import { LocalLink } from './local-link';
@@ -19,21 +19,37 @@ const routes = [
     name: 'Rewards',
     path: '/rewards',
     icon: <Wallet />,
+    external: true,
   },
 ];
 export const Navigation: FC = memo(() => {
   const router = useRouter();
 
+  const queryString = new URLSearchParams(
+    router.query as Record<string, string>,
+  ).toString();
+
   return (
     <Nav>
-      {routes.map(({ name, path, icon }) => (
-        <LocalLink key={path} href={path}>
-          <NavLink active={router.pathname === path}>
+      {routes.map(({ name, path, icon, external }) => {
+        return external ? (
+          <NavLink
+            key={path}
+            href={`${path}${queryString ? `?${queryString}` : ''}`}
+            active={router.pathname === path}
+          >
             {icon}
             <span>{name}</span>
           </NavLink>
-        </LocalLink>
-      ))}
+        ) : (
+          <LocalLink key={path} href={path}>
+            <NavLink active={router.pathname === path}>
+              {icon}
+              <span>{name}</span>
+            </NavLink>
+          </LocalLink>
+        );
+      })}
     </Nav>
   );
 });

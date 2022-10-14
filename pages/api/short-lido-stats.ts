@@ -1,11 +1,18 @@
 import { Cache } from 'memory-cache';
-import { CACHE_LIDO_SHORT_STATS_KEY, CACHE_LIDO_SHORT_STATS_TTL } from 'config';
+import {
+  CACHE_LIDO_SHORT_STATS_KEY,
+  CACHE_LIDO_SHORT_STATS_TTL,
+  API_ROUTES,
+} from 'config';
 import {
   getTotalStaked,
   getLidoHoldersViaSubgraphs,
   getStEthPrice,
-  defaultErrorAndCacheWrapper,
+  wrapNextRequest,
+  errorAndCacheDefaultWrappers,
+  responseTimeMetric,
 } from 'utilsApi';
+import Metrics from 'utilsApi/metrics';
 import { API, SubgraphChains } from 'types';
 import { parallelizePromises } from 'utils';
 
@@ -25,7 +32,6 @@ const shortLidoStats: API = async (req, res) => {
       getTotalStaked(),
       getStEthPrice(),
     ]);
-
     const shortLidoStats = {
       uniqueAnytimeHolders: lidoHolders?.data?.stats?.uniqueAnytimeHolders,
       uniqueHolders: lidoHolders?.data?.stats?.uniqueHolders,
@@ -43,4 +49,7 @@ const shortLidoStats: API = async (req, res) => {
   }
 };
 
-export default defaultErrorAndCacheWrapper(shortLidoStats);
+export default wrapNextRequest([
+  responseTimeMetric(Metrics.request.apiTimings, API_ROUTES.SHORT_LIDO_STATS),
+  ...errorAndCacheDefaultWrappers,
+])(shortLidoStats);
