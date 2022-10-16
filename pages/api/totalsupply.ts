@@ -11,6 +11,7 @@ import {
   defaultErrorHandler,
   cacheControl,
   responseTimeMetric,
+  rateLimit,
 } from 'utilsApi';
 import Metrics from 'utilsApi/metrics';
 import { API } from 'types';
@@ -32,6 +33,7 @@ const totalSupply: API = async (req, res) => {
 };
 
 export default wrapNextRequest([
+  rateLimit(),
   responseTimeMetric(Metrics.request.apiTimings, API_ROUTES.TOTALSUPPLY),
   cacheControl(CACHE_TOTAL_SUPPLY_HEADERS),
   defaultErrorHandler,

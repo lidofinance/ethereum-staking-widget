@@ -11,6 +11,7 @@ import {
   cacheControl,
   defaultErrorHandler,
   responseTimeMetric,
+  rateLimit,
 } from 'utilsApi';
 import Metrics from 'utilsApi/metrics';
 import { API } from 'types';
@@ -32,6 +33,7 @@ const ethPrice: API = async (req, res) => {
 };
 
 export default wrapNextRequest([
+  rateLimit(),
   responseTimeMetric(Metrics.request.apiTimings, API_ROUTES.ETH_PRICE),
   cacheControl(CACHE_ETH_PRICE_HEADERS),
   defaultErrorHandler,

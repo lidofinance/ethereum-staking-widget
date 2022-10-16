@@ -93,7 +93,6 @@ export const rateLimit = (): RequestWrapper => async (req, res, next) => {
 
 export const errorAndCacheDefaultWrappers = [
   cacheControl(CACHE_DEFAULT_HEADERS),
-  rateLimit(),
   defaultErrorHandler,
 ];
 export const defaultErrorAndCacheWrapper = wrapNextRequest([
