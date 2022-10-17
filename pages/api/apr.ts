@@ -14,6 +14,7 @@ import {
   errorAndCacheDefaultWrappers,
   responseTimeMetric,
   wrapNextRequest,
+  rateLimit,
 } from 'utilsApi';
 import Metrics from 'utilsApi/metrics';
 import { API } from 'types';
@@ -82,6 +83,7 @@ const apr: API = async (req, res) => {
 };
 
 export default wrapNextRequest([
+  rateLimit(),
   responseTimeMetric(Metrics.request.apiTimings, API_ROUTES.APR),
   ...errorAndCacheDefaultWrappers,
 ])(apr);
