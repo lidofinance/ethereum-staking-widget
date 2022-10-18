@@ -1,6 +1,7 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useMemo, useEffect, useState } from 'react';
 import { useWSTETHContractRPC } from '@lido-sdk/react';
 import { BigNumber } from 'ethers';
+import debounce from 'lodash/debounce';
 
 export const useStethByWsteth = (
   wsteth: BigNumber | undefined,
@@ -9,18 +10,22 @@ export const useStethByWsteth = (
 
   const wstethContractRPC = useWSTETHContractRPC();
 
-  const getStethBalance = useCallback(async () => {
-    if (!wsteth) {
-      return;
-    }
+  const getStethBalance = useMemo(
+    () =>
+      debounce(async (wsteth: BigNumber | undefined) => {
+        if (!wsteth) {
+          return;
+        }
 
-    const steth = await wstethContractRPC.getStETHByWstETH(wsteth);
-    setStethBalance(steth);
-  }, [wstethContractRPC, wsteth]);
+        const steth = await wstethContractRPC.getStETHByWstETH(wsteth);
+        setStethBalance(steth);
+      }, 500),
+    [wstethContractRPC],
+  );
 
   useEffect(() => {
-    getStethBalance();
-  }, [getStethBalance]);
+    getStethBalance(wsteth);
+  }, [getStethBalance, wsteth]);
 
   return stethBalance;
 };

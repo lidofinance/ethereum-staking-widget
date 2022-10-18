@@ -5,6 +5,7 @@ import {
   wrapNextRequest,
   errorAndCacheDefaultWrappers,
   responseTimeMetric,
+  rateLimit,
 } from 'utilsApi';
 import Metrics from 'utilsApi/metrics';
 import { API } from 'types';
@@ -28,6 +29,7 @@ const lidoStats: API = async (req, res) => {
 };
 
 export default wrapNextRequest([
+  rateLimit(),
   responseTimeMetric(Metrics.request.apiTimings, API_ROUTES.LIDO_STATS),
   ...errorAndCacheDefaultWrappers,
 ])(lidoStats);
