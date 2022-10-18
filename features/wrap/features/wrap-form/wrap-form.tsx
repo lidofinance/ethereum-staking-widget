@@ -42,6 +42,7 @@ import {
   formatBalance,
   getErrorMessage,
   runWithTransactionLogger,
+  trackEvent,
 } from 'utils';
 import { Connect } from 'shared/wallet';
 import { FormatToken } from 'shared/formatters';
@@ -56,6 +57,7 @@ import { wrapProcessingWithApprove } from 'features/wrap/utils';
 import { InputLocked } from 'features/wrap/components';
 import { useApproveGasLimit, useWrapGasLimit } from './hooks';
 import { useApprove } from 'shared/hooks/useApprove';
+import { MATOMO_EVENTS } from 'config';
 
 const ETH = 'ETH';
 
@@ -193,6 +195,9 @@ export const WrapForm: FC = memo(() => {
 
   const wrapProcessing = useCallback(
     async (inputValue, resetForm) => {
+      // TODO: add different events for wrap and unlock
+      trackEvent(...MATOMO_EVENTS.submitWrap);
+
       // Needs for fix flashing balance in tx success modal
       setWrappingAmountValue(inputValue);
 

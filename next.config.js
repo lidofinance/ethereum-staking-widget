@@ -27,7 +27,7 @@ const subgraphRequestTimeout = process.env.SUBGRAPH_REQUEST_TIMEOUT;
 const enableQaHelpers = process.env.ENABLE_QA_HELPERS;
 
 const metricsPort = process.env.METRICS_PORT ?? 3001;
-const matomoUrl = process.env.NEXT_PUBLIC_MATOMO_URL;
+const matomoUrl = process.env.MATOMO_URL;
 
 // Need to initialize AggregatorRegistry for each worker, because we need to setup listeners
 // https://github.com/siimon/prom-client/blob/721829cc593bb7da28ae009985caeeacb4b59e05/lib/cluster.js#L153

@@ -28,11 +28,12 @@ import {
   useCurrencyInput,
   useStethByWsteth,
 } from 'shared/hooks';
-import { formatBalance } from 'utils';
+import { formatBalance, trackEvent } from 'utils';
 import { Connect } from 'shared/wallet';
 import { FormatToken } from 'shared/formatters';
 import { FormStyled, InputStyled, MaxButton } from 'features/wrap/styles';
 import { unwrapProcessing } from 'features/wrap/utils';
+import { MATOMO_EVENTS } from 'config';
 import { useUnwrapGasLimit } from './hooks';
 
 export const UnwrapForm: FC = memo(() => {
@@ -72,6 +73,8 @@ export const UnwrapForm: FC = memo(() => {
 
   const unWrapProcessing = useCallback(
     async (inputValue, resetForm) => {
+      trackEvent(...MATOMO_EVENTS.submitUnwrap);
+
       await unwrapProcessing(
         wstethContractWeb3,
         openTxModal,

@@ -6,8 +6,8 @@ if (typeof window !== 'undefined') {
   window._paq ??= [];
 }
 
-if (matomoUrl) {
-  window._paq?.push(
+if (typeof window !== 'undefined' && matomoUrl) {
+  window?._paq?.push(
     ['requireCookieConsent'],
     ['trackPageView'],
     ['enableLinkTracking'],
