@@ -7,7 +7,7 @@ const { basePath } = serverRuntimeConfig;
 
 export const useLidoApr = (): SWRResponse<unknown> => {
   return useLidoSWR(
-    `${basePath ?? ''}/api/steth-apr`,
+    `${basePath ?? ''}/api/sma-steth-apr`,
     standardFetcher,
   ) as SWRResponse<unknown>;
 };
