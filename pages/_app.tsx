@@ -11,12 +11,15 @@ import { CookiesTooltip } from 'shared/components';
 import 'nprogress/nprogress.css';
 import { withCsp } from 'utilsApi/withCsp';
 import { BackgroundGradient } from 'shared/components/background-gradient/background-gradient';
+import { initMatomo } from 'matoma';
 
 // Migrations old cookies to new cross domain cookies
 migrationThemeCookiesToCrossDomainCookiesClientSide();
 
 // Visualize route changes
 nprogress();
+
+initMatomo();
 
 const App = (props: AppProps) => {
   const { Component, pageProps } = props;
