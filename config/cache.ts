@@ -4,7 +4,7 @@ export const CACHE_STETH_APR_KEY = 'cache-steth-apr';
 export const CACHE_STETH_APR_TTL = ms('1h');
 
 export const CACHE_SMA_STETH_APR_KEY = 'cache-sma-steth-apr';
-export const CACHE_SMA_STETH_APR_TTL = ms('180s');
+export const CACHE_SMA_STETH_APR_TTL = ms('30m');
 
 export const CACHE_ETH_APR_KEY = 'cache-eth-apr';
 export const CACHE_ETH_APR_TTL = ms('1h');

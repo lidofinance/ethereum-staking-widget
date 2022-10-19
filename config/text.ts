@@ -1,2 +1,3 @@
-export const LIDO_APR_TOOLTIP_TEXT = 'Moving average of APR for 7 days period.';
+export const LIDO_APR_TOOLTIP_TEXT =
+  "APR is denominated in terms of stETH, not USD, and is not a guaranteed or promised return or profit. The current Ethereum's (Consensus layer) APR is ~${apr.eth}%. Lido's APR is higher due to the Execution layer (EL) rewards, that validators began to receive after the Merge. Lido contract withdraws all collected EL rewards from the vault, re-stakes it, and mints new stETH only for protocol fee (10%) as part of the consensus layer rewards distribution run. It helps to gain additional interest rate increases every day. With Lido, you receive staking rewards within 24 hours of your deposit being made, without waiting for validator activation.";
 export const DATA_UNAVAILABLE = 'N/A';
