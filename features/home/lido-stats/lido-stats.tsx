@@ -10,7 +10,11 @@ import {
   Tooltip,
 } from '@lidofinance/lido-ui';
 import { Section } from 'shared/components';
-import { getStethAddress, LIDO_APR_TOOLTIP_TEXT } from 'config';
+import {
+  getStethAddress,
+  LIDO_APR_TOOLTIP_TEXT,
+  DATA_UNAVAILABLE,
+} from 'config';
 import { useLidoApr, useLidoStats, useEthApr } from 'shared/hooks';
 import { FlexCenterVertical } from './styles';
 
@@ -53,7 +57,7 @@ export const LidoStats: FC = memo(() => {
             loading={lidoApr.initialLoading}
             highlight
           >
-            {lidoApr.data}%
+            {lidoApr.data ? `${lidoApr.data}%` : DATA_UNAVAILABLE}
           </DataTableRow>
           <DataTableRow
             title="Total staked with Lido"
