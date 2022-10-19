@@ -1,3 +1,23 @@
+# [1.30.0](https://github.com/lidofinance/staking-widget-ts/compare/1.29.0...1.30.0) (2022-10-19)
+
+
+### Bug Fixes
+
+* add text for error apr ([92f3e2c](https://github.com/lidofinance/staking-widget-ts/commit/92f3e2c043b9c60b76147bdddc5cdb9081922931))
+* fix import utils ([b9c2c67](https://github.com/lidofinance/staking-widget-ts/commit/b9c2c673a5b10a35b6116e02ccc298c275d95115))
+* fix url for metrics ([f80b501](https://github.com/lidofinance/staking-widget-ts/commit/f80b5013301b3e643f586e72bb62ed59fda4ab4e))
+* up docker git version ([d28baaf](https://github.com/lidofinance/staking-widget-ts/commit/d28baaf9ab32230a93432afcc5234edbda9d281c))
+* use one endpoint for apr ([809557c](https://github.com/lidofinance/staking-widget-ts/commit/809557caa0dd33ba496da93c5c4d17ec16914dd0))
+
+
+### Features
+
+* add new api with old data for landing ([3187b3a](https://github.com/lidofinance/staking-widget-ts/commit/3187b3a7d339470c04c5ca7a5212ca7e870ce57d))
+* add new sma steth apr api ([069a3bf](https://github.com/lidofinance/staking-widget-ts/commit/069a3bf7e938d82f9ed3580dd09791687c78e236))
+* change APR tooltip, fix for null env var ([13f7dca](https://github.com/lidofinance/staking-widget-ts/commit/13f7dcae1cea0eab06b02c1504a5509780ff82ff))
+
+
+
 # [1.29.0](https://github.com/lidofinance/staking-widget-ts/compare/1.28.0...1.29.0) (2022-10-18)
 
 
@@ -217,21 +237,6 @@
 ### Bug Fixes
 
 * fix dockerfile apk version ([c5cc96e](https://github.com/lidofinance/staking-widget-ts/commit/c5cc96e5affb2efcbc74da7b314229bbcde5e88d))
-
-
-
-# [1.21.0](https://github.com/lidofinance/staking-widget-ts/compare/1.20.0...1.21.0) (2022-09-01)
-
-
-### Bug Fixes
-
-* handle gamestop wallet's default setting ([abed653](https://github.com/lidofinance/staking-widget-ts/commit/abed653532486ebc214ad95d56d4c2226c778132))
-
-
-### Features
-
-* add gamestop wallet ([04b2806](https://github.com/lidofinance/staking-widget-ts/commit/04b2806462ce63d2e62d5d307500e193b059641d))
-* hide opera wallet ([4d41efa](https://github.com/lidofinance/staking-widget-ts/commit/4d41efacd5b2763b589b764bdb8df5276689d05a))
 
 
 
