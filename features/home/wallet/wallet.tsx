@@ -7,6 +7,7 @@ import { memo } from 'react';
 import { TokenToWallet } from 'shared/components';
 import { FormatToken } from 'shared/formatters';
 import { useEthApr, useLidoApr } from 'shared/hooks';
+import { DATA_UNAVAILABLE } from 'config';
 import { CardAccount, CardBalance, CardRow, Fallback } from 'shared/wallet';
 import type { WalletComponentType } from 'shared/wallet/types';
 import { useStakeableEther } from '../hooks';
@@ -73,7 +74,11 @@ const WalletComponent: WalletComponentType = (props) => {
             </>
           }
           loading={lidoApr.initialLoading}
-          value={<LidoAprStyled>{lidoApr.data}%</LidoAprStyled>}
+          value={
+            <LidoAprStyled>
+              {lidoApr.data ? `${lidoApr.data}%` : DATA_UNAVAILABLE}
+            </LidoAprStyled>
+          }
         />
       </CardRow>
     </StyledCard>
