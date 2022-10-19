@@ -52,10 +52,12 @@ type SMA_APR_RESPONSE = {
 };
 
 export const getSmaStethApr = async (): Promise<string> => {
-  const url = `${aprAPIBasePath}/v1/protocol/steth/apr/sma`;
+  // TODO: remove after deploy env variables
+  const basePath = aprAPIBasePath ? aprAPIBasePath : 'https://eth-api.lido.fi';
+  const url = `${basePath}/v1/protocol/steth/apr/sma`;
 
   const data = await responseTimeExternalMetricWrapper({
-    payload: aprAPIBasePath,
+    payload: basePath,
     request: () => standardFetcher<SMA_APR_RESPONSE>(url),
   });
 
