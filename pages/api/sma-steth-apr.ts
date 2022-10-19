@@ -10,7 +10,7 @@ import {
   responseTimeMetric,
   errorAndCacheDefaultWrappers,
   rateLimit,
-  getStethApr,
+  getSmaStethApr,
 } from 'utilsApi';
 import Metrics from 'utilsApi/metrics';
 
@@ -22,12 +22,10 @@ const smaStethApr: API = async (req, res) => {
   if (cachedStethApr) {
     res.json(cachedStethApr);
   } else {
-    // uncomment after changes on landing
-    // const stethApr = await getSmaStethApr();
-    const stethApr = await getStethApr();
-    cache.put(CACHE_SMA_STETH_APR_KEY, stethApr, CACHE_SMA_STETH_APR_TTL);
+    const smaStethApr = await getSmaStethApr();
+    cache.put(CACHE_SMA_STETH_APR_KEY, smaStethApr, CACHE_SMA_STETH_APR_TTL);
 
-    res.json(stethApr);
+    res.json(smaStethApr);
   }
 };
 
