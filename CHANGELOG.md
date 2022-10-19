@@ -1,3 +1,12 @@
+# [1.31.0](https://github.com/lidofinance/staking-widget-ts/compare/1.30.0...1.31.0) (2022-10-19)
+
+
+### Features
+
+* change stethApr to smaStethApr ([285b2bd](https://github.com/lidofinance/staking-widget-ts/commit/285b2bd7fc541f9c7796ff959949e0edf188d796))
+
+
+
 # [1.30.0](https://github.com/lidofinance/staking-widget-ts/compare/1.29.0...1.30.0) (2022-10-19)
 
 
@@ -228,15 +237,6 @@
 * add request wrapper for add functionality to requests, change middleware to use files only ([530475c](https://github.com/lidofinance/staking-widget-ts/commit/530475cee9b72291196af8fce570f8f6000708c9))
 * add server error handler, add cache-control headers if error ([e77eb8d](https://github.com/lidofinance/staking-widget-ts/commit/e77eb8dec59e0d585f56e80397dd031c296c4827))
 * wrap ldo-stats request ([08f4464](https://github.com/lidofinance/staking-widget-ts/commit/08f44648ee40ba9d5aeafd6725cdce667686feaa))
-
-
-
-## [1.21.1](https://github.com/lidofinance/staking-widget-ts/compare/1.21.0...1.21.1) (2022-09-02)
-
-
-### Bug Fixes
-
-* fix dockerfile apk version ([c5cc96e](https://github.com/lidofinance/staking-widget-ts/commit/c5cc96e5affb2efcbc74da7b314229bbcde5e88d))
 
 
 
