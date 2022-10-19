@@ -33,6 +33,6 @@ const smaStethApr: API = async (req, res) => {
 
 export default wrapNextRequest([
   rateLimit(),
-  responseTimeMetric(Metrics.request.apiTimings, API_ROUTES.STETH_APR),
+  responseTimeMetric(Metrics.request.apiTimings, API_ROUTES.SMA_STETH_APR),
   ...errorAndCacheDefaultWrappers,
 ])(smaStethApr);
