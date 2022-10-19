@@ -76,8 +76,6 @@ export const Form: FC<FromProps> = (props) => {
   const wstethContractWeb3 = useWSTETHContractWeb3();
 
   const balanceBySelectedToken = useMemo(() => {
-    console.log('CALL useMemo', stethBalance.data);
-
     return selectedToken === ETH ? ethBalance.data : stethBalance.data;
   }, [selectedToken, ethBalance.data, stethBalance.data]);
 
