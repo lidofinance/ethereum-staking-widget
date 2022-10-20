@@ -1,6 +1,7 @@
 const basePath = process.env.BASE_PATH;
 const infuraApiKey = process.env.INFURA_API_KEY;
 const alchemyApiKey = process.env.ALCHEMY_API_KEY;
+const aprAPIBasePath = process.env.APR_API_BASE_PATH;
 
 const defaultChain = process.env.DEFAULT_CHAIN;
 const supportedChains = process.env.SUPPORTED_CHAINS;
@@ -111,6 +112,7 @@ module.exports = {
     metricsPort,
     rateLimit,
     rateLimitTimeFrame,
+    aprAPIBasePath,
   },
   publicRuntimeConfig: {
     defaultChain,

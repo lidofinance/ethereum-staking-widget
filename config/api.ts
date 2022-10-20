@@ -16,6 +16,7 @@ export const enum API_ROUTES {
   ONEINCH_RATE = 'api/oneinch-rate',
   SHORT_LIDO_STATS = 'api/short-lido-stats',
   STETH_APR = 'api/steth-apr',
+  SMA_STETH_APR = 'api/sma-steth-apr',
   TOTALSUPPLY = 'api/totalsupply',
   RPC = 'api/rpc',
 }
