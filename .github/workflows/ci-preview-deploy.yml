@@ -18,6 +18,10 @@ on:
     branches-ignore:
       - main
 
+permissions:
+  contents: read
+  pull-requests: read
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -26,15 +30,12 @@ jobs:
     outputs:
       stand_url: ${{ steps.stand.outputs.url }}
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2.3.4
-
       - uses: lidofinance/gh-find-current-pr@v1
         id: pr
 
       - name: Set ref
         id: ref
-        run: echo "::set-output name=short_ref::${GITHUB_REF#refs/*/}"
+        run: echo "short_ref=${GITHUB_REF#refs/*/}" >> $GITHUB_OUTPUT
 
       - name: Preview stand deploying
         uses: lidofinance/dispatch-workflow@v1
@@ -49,18 +50,18 @@ jobs:
           INPUTS_INVENTORY: "${{ inputs.inventory || 'testnet' }}"
 
       - name: Define repo short name
-        run: echo "##[set-output name=short_name;]$(echo ${{ github.repository }} | cut -d "/" -f 2)"
+        run: echo "short_name=$(echo ${{ github.repository }} | cut -d "/" -f 2)" >> $GITHUB_OUTPUT
         id: repo
 
       - name: Define branch hash
-        run: echo "##[set-output name=hash;]$(echo "$HEAD_REF" | shasum -a 256 | cut -c -10)"
+        run: echo "hash=$(echo "$HEAD_REF" | shasum -a 256 | cut -c -10)" >> $GITHUB_OUTPUT
         id: branch
         env:
           HEAD_REF: ${{ github.head_ref }}
 
       - name: Extract stand url
         if: always()
-        run: echo "##[set-output name=url;]https://$SHORT_NAME-$BRANCH_HASH.branch-preview.org"
+        run: echo "url=https://$SHORT_NAME-$BRANCH_HASH.branch-preview.org" >> $GITHUB_OUTPUT
         id: stand
         env:
           SHORT_NAME: ${{ steps.repo.outputs.short_name }}
