@@ -43,6 +43,8 @@ export const UnwrapForm: FC = memo(() => {
 
   const formRef = useRef<HTMLFormElement>(null);
 
+  // Needs for fix flashing balance in tx success modal
+  const [wrappingAmountValue, setWrappingAmountValue] = useState('');
   const [txModalOpen, setTxModalOpen] = useState(false);
   const [txStage, setTxStage] = useState(TX_STAGE.SUCCESS);
   const [txHash, setTxHash] = useState<string>();
@@ -72,6 +74,9 @@ export const UnwrapForm: FC = memo(() => {
 
   const unWrapProcessing = useCallback(
     async (inputValue, resetForm) => {
+      // Needs for fix flashing balance in tx success modal
+      setWrappingAmountValue(inputValue);
+
       await unwrapProcessing(
         wstethContractWeb3,
         openTxModal,
@@ -84,6 +89,9 @@ export const UnwrapForm: FC = memo(() => {
         inputValue,
         resetForm,
       );
+
+      // Needs for fix flashing balance in tx success modal
+      setWrappingAmountValue('');
     },
     [
       wstethContractWeb3,
@@ -200,7 +208,7 @@ export const UnwrapForm: FC = memo(() => {
         txStage={txStage}
         txOperation={TX_OPERATION.UNWRAPPING}
         txHash={txHash}
-        amount={inputValue}
+        amount={wrappingAmountValue}
         amountToken="wstETH"
         willReceiveAmount={formatBalance(willReceiveStethAsBigNumber)}
         willReceiveAmountToken="stETH"
