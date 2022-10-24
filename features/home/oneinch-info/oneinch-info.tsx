@@ -13,7 +13,7 @@ import {
 } from './styles';
 import { use1inchLinkProps } from '../hooks';
 
-const ONE_INCH_RATE_LIMIT = 1.005;
+const ONE_INCH_RATE_LIMIT = 1.004;
 
 export const OneinchInfo: FC = () => {
   const { data } = useLidoSWR<{ rate: number }>('/api/oneinch-rate');
