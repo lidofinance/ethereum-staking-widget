@@ -18,6 +18,7 @@ import { useWeb3 } from '@lido-sdk/web3-react';
 import { useCurrencyInput } from 'shared/hooks';
 import { wrapProcessingWithApprove } from 'features/wrap/utils';
 import { TX_OPERATION, TX_STAGE } from 'shared/components';
+import { L2Banner } from 'shared/l2-banner';
 import { Connect } from 'shared/wallet';
 import { InputLocked } from 'features/wrap/components';
 import {
@@ -238,6 +239,7 @@ export const Form: FC<FromProps> = (props) => {
       ) : (
         <Connect fullwidth />
       )}
+      <L2Banner />
     </FormStyled>
   );
 };
