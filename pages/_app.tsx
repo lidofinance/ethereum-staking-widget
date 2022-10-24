@@ -11,7 +11,7 @@ import { CookiesTooltip } from 'shared/components';
 import 'nprogress/nprogress.css';
 import { withCsp } from 'utilsApi/withCsp';
 import { BackgroundGradient } from 'shared/components/background-gradient/background-gradient';
-import { initMatomo } from 'matoma';
+import { initMatomo, trackEvent } from 'matoma';
 
 // Migrations old cookies to new cross domain cookies
 migrationThemeCookiesToCrossDomainCookiesClientSide();
@@ -19,7 +19,7 @@ migrationThemeCookiesToCrossDomainCookiesClientSide();
 // Visualize route changes
 nprogress();
 
-initMatomo();
+initMatomo('https://matomo.testnet.fi/');
 
 const App = (props: AppProps) => {
   const { Component, pageProps } = props;
@@ -30,6 +30,8 @@ const App = (props: AppProps) => {
 const MemoApp = memo(App);
 
 const AppWrapper = (props: AppProps & { config: EnvConfig }): JSX.Element => {
+  trackEvent('Ethereum_Stacking_Widget', 'Open app test', 'open_app_test');
+
   const { config, ...rest } = props;
 
   return (

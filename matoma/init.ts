@@ -4,24 +4,20 @@ declare global {
   }
 }
 
-// TEMP
-const setTrackerUrl = 'https://matomo.testnet.fi/matomo.php';
-
 const getDomain = () => {
   return location.hostname.split('.').slice(-2).join('.');
 };
 
-const injectMatomaScript = () => {
+const injectMatomaScript = (matomoHost: string) => {
   document.documentElement.appendChild(
     Object.assign(document.createElement('script'), {
       async: true,
-      // src: new URL('/matomo.js', window.__env__.MATOMO_TRACKER_HOST).href,
-      src: new URL('/matomo.js', setTrackerUrl).href,
+      src: new URL('/matomo.js', matomoHost).href,
     }),
   );
 };
 
-export const initMatomo = (): void => {
+export const initMatomo = (matomoHost: string): void => {
   if (typeof window === 'undefined') {
     // SSR not supported!
     return;
@@ -38,12 +34,11 @@ export const initMatomo = (): void => {
     ['requireCookieConsent'],
     ['trackPageView'],
     ['enableLinkTracking'],
-    // ['setTrackerUrl', new URL('/matomo.php', window.__env__.MATOMO_TRACKER_HOST).href],
-    ['setTrackerUrl', new URL('/matomo.php', setTrackerUrl).href],
+    ['setTrackerUrl', new URL('/matomo.php', matomoHost).href],
     ['setSiteId', '1'],
     ['setDomains', [`*.${getDomain()}`]],
     ['enableCrossDomainLinking'],
   );
 
-  injectMatomaScript();
+  injectMatomaScript(matomoHost);
 };
