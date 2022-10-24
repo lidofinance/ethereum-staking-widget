@@ -1,6 +1,8 @@
 import { FC } from 'react';
 import { useLidoSWR } from 'shared/hooks';
 import { Button } from '@lidofinance/lido-ui';
+import { L2Banner } from 'shared/l2-banner';
+
 import {
   Wrap,
   OneInchIconWrap,
@@ -11,7 +13,7 @@ import {
 } from './styles';
 import { use1inchLinkProps } from '../hooks';
 
-const ONE_INCH_RATE_LIMIT = 1.003;
+const ONE_INCH_RATE_LIMIT = 1.005;
 
 export const OneinchInfo: FC = () => {
   const { data } = useLidoSWR<{ rate: number }>('/api/oneinch-rate');
@@ -20,7 +22,7 @@ export const OneinchInfo: FC = () => {
 
   const linkProps = use1inchLinkProps();
 
-  if (!rate || rate < ONE_INCH_RATE_LIMIT) return null;
+  if (!rate || rate < ONE_INCH_RATE_LIMIT) return <L2Banner />;
 
   return (
     <Wrap>

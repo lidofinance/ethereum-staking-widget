@@ -23,6 +23,7 @@ import {
   useWSTETHContractWeb3,
 } from '@lido-sdk/react';
 import { TxStageModal, TX_OPERATION, TX_STAGE } from 'shared/components';
+import { L2Banner } from 'shared/l2-banner';
 import {
   useTxCostInUsd,
   useCurrencyInput,
@@ -176,6 +177,7 @@ export const UnwrapForm: FC = memo(() => {
         ) : (
           <Connect fullwidth />
         )}
+        <L2Banner />
       </FormStyled>
 
       <DataTable>
