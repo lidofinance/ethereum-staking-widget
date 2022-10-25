@@ -1,3 +1,21 @@
+# [1.32.0](https://github.com/lidofinance/staking-widget-ts/compare/1.31.0...1.32.0) (2022-10-25)
+
+
+### Bug Fixes
+
+* fix flashing balance in tx success modal ([f4d0304](https://github.com/lidofinance/staking-widget-ts/commit/f4d0304df4f4858b4521ba42b9c6dbdb9d1d0fe5))
+* fix flashing l2 banner ([16171a7](https://github.com/lidofinance/staking-widget-ts/commit/16171a7bd29b95b674573138caddf9d365558d36))
+* return 1inch rate ([7f369ec](https://github.com/lidofinance/staking-widget-ts/commit/7f369ec1df3b4dc69acd94897d71f539093584fb))
+* temp fix api tests ([ad61311](https://github.com/lidofinance/staking-widget-ts/commit/ad61311af8340acd5d84f2f292c5efb3b4ab3ac4))
+* temp fix api tests ([ad45e17](https://github.com/lidofinance/staking-widget-ts/commit/ad45e1710d33200152a6021848d8d9229631d7b8))
+
+
+### Features
+
+* add l2 banner to stake/wrap/unwrap ([e555654](https://github.com/lidofinance/staking-widget-ts/commit/e5556546fd0b942b810c9dd0323883955d11cade))
+
+
+
 # [1.31.0](https://github.com/lidofinance/staking-widget-ts/compare/1.30.0...1.31.0) (2022-10-19)
 
 
@@ -212,31 +230,6 @@
 * show metrics in dev mode ([12e636c](https://github.com/lidofinance/staking-widget-ts/commit/12e636c9b4546725fb8f3eac649fa9600111be7b))
 * use buildInfo version, instead of npm version ([fc2b230](https://github.com/lidofinance/staking-widget-ts/commit/fc2b230f9b16240876eb4bcf9927cb8b2b602a25))
 * working cluster mode ([fbc0696](https://github.com/lidofinance/staking-widget-ts/commit/fbc06963796e642d83b61e7267142a23c8bf4c0b))
-
-
-
-# [1.22.0](https://github.com/lidofinance/staking-widget-ts/compare/1.21.1...1.22.0) (2022-09-08)
-
-
-### Bug Fixes
-
-* add info about API wrappers in readme ([5e3ebe7](https://github.com/lidofinance/staking-widget-ts/commit/5e3ebe7c04121c346ee313f616eda4221f5f7f6c))
-* add ready wrapper types, change wrapper args ([a85fdd6](https://github.com/lidofinance/staking-widget-ts/commit/a85fdd6c72754b5c55dd40779d1c5884340da50f))
-* add removing cache-control to wrapper ([7b5c7af](https://github.com/lidofinance/staking-widget-ts/commit/7b5c7af4af823f85ccb555898b19d85dc26947c6))
-* change dockerfile app curl version ([bc7be00](https://github.com/lidofinance/staking-widget-ts/commit/bc7be00211f90a08e3233566d1f249dd27ff5a94))
-* change find headers for files in midddleware ([56106f6](https://github.com/lidofinance/staking-widget-ts/commit/56106f6badec1bc09fbc11aeec31b844ea34c5a5))
-* fix readme ([d914ec1](https://github.com/lidofinance/staking-widget-ts/commit/d914ec1957d5b9a4b22bbf7bbc54a05dc96ce314))
-* remove checking path ([abbcf1b](https://github.com/lidofinance/staking-widget-ts/commit/abbcf1bf959932953e9fb6df1647c559d9e364a5))
-* update cache time ([730b405](https://github.com/lidofinance/staking-widget-ts/commit/730b405063391b2ec7b67b4f53d04e37f1efb3bc))
-* update regexp ([dbe03e1](https://github.com/lidofinance/staking-widget-ts/commit/dbe03e1d80ef34add0497d946066fbf91d099828))
-
-
-### Features
-
-* add middleware for set cache headers, add list of paths for cache ([56e32d0](https://github.com/lidofinance/staking-widget-ts/commit/56e32d037273ded4d7010d0cfb229b52f5aa4335))
-* add request wrapper for add functionality to requests, change middleware to use files only ([530475c](https://github.com/lidofinance/staking-widget-ts/commit/530475cee9b72291196af8fce570f8f6000708c9))
-* add server error handler, add cache-control headers if error ([e77eb8d](https://github.com/lidofinance/staking-widget-ts/commit/e77eb8dec59e0d585f56e80397dd031c296c4827))
-* wrap ldo-stats request ([08f4464](https://github.com/lidofinance/staking-widget-ts/commit/08f44648ee40ba9d5aeafd6725cdce667686feaa))
 
 
 
