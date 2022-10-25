@@ -3,26 +3,16 @@ import { CookieThemeProvider } from '@lidofinance/lido-ui';
 import { GlobalStyle } from 'styles';
 
 import ModalProvider from './modals';
-import { ThemeName } from './theme';
-import Web3Provider, { EnvConfig } from './web3';
+import Web3Provider from './web3';
+export { MODAL, ModalContext } from './modals';
 
-export type ProvidersProps = {
-  cookiesAutoThemeScheme?: ThemeName;
-  cookiesManualThemeScheme?: ThemeName;
-  config: EnvConfig;
-};
-
-const Providers: FC<ProvidersProps> = ({ config, children }) => (
+const Providers: FC = ({ children }) => (
   <CookieThemeProvider>
     <GlobalStyle />
-    <Web3Provider config={config}>
+    <Web3Provider>
       <ModalProvider>{children}</ModalProvider>
     </Web3Provider>
   </CookieThemeProvider>
 );
 
 export default Providers;
-
-export * from './modals';
-export * from './theme';
-export * from './web3';

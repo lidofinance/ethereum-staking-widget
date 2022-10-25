@@ -1,9 +1,11 @@
+import { AggregatorRegistry } from 'prom-client';
+import buildDynamics from './scripts/build-dynamics.mjs';
+
+buildDynamics();
+
 const basePath = process.env.BASE_PATH;
 const infuraApiKey = process.env.INFURA_API_KEY;
 const alchemyApiKey = process.env.ALCHEMY_API_KEY;
-
-const defaultChain = process.env.DEFAULT_CHAIN;
-const supportedChains = process.env.SUPPORTED_CHAINS;
 
 const ethplorerApiKey = process.env.ETHPLORER_API_KEY;
 
@@ -24,8 +26,6 @@ const subgraphKintsugi = process.env.SUBGRAPH_KINTSUGI;
 
 const subgraphRequestTimeout = process.env.SUBGRAPH_REQUEST_TIMEOUT;
 
-const enableQaHelpers = process.env.ENABLE_QA_HELPERS;
-
 const metricsPort = process.env.METRICS_PORT ?? 3001;
 
 // rate limit
@@ -35,11 +35,13 @@ const rateLimitTimeFrame = process.env.RATE_LIMIT_TIME_FRAME;
 // Need to initialize AggregatorRegistry for each worker, because we need to setup listeners
 // https://github.com/siimon/prom-client/blob/721829cc593bb7da28ae009985caeeacb4b59e05/lib/cluster.js#L153
 // Otherwise requests for metrics will crash all forks at once
-const { AggregatorRegistry } = require('prom-client');
 new AggregatorRegistry();
 
-module.exports = {
+export default {
   basePath,
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
   compiler: {
     styledComponents: true,
   },
@@ -110,10 +112,5 @@ module.exports = {
     metricsPort,
     rateLimit,
     rateLimitTimeFrame,
-  },
-  publicRuntimeConfig: {
-    defaultChain,
-    supportedChains,
-    enableQaHelpers,
-  },
+  }
 };
