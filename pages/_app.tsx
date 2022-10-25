@@ -4,8 +4,8 @@ import {
   ToastContainer,
   migrationThemeCookiesToCrossDomainCookiesClientSide,
 } from '@lidofinance/lido-ui';
-import Providers, { EnvConfig } from 'providers';
-import getConfig from 'next/config';
+import { trackEvent } from '@lidofinance/matomo';
+import Providers from 'providers';
 import { nprogress } from 'utils';
 import { CookiesTooltip } from 'shared/components';
 import 'nprogress/nprogress.css';
