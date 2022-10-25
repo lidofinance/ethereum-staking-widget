@@ -25,11 +25,10 @@ import {
   Eth,
 } from '@lidofinance/lido-ui';
 import { OneinchInfo } from 'features/home/oneinch-info/oneinch-info';
-import { DATA_UNAVAILABLE, MATOMO_EVENTS } from 'config';
+import { DATA_UNAVAILABLE } from 'config';
 import { Connect } from 'shared/wallet';
 import { TxStageModal, TX_OPERATION, TX_STAGE } from 'shared/components';
 import { useCurrencyInput, useTxCostInUsd } from 'shared/hooks';
-import { trackEvent } from 'utils';
 import { FormStyled, InputStyled, MaxButton } from './styles';
 import { stakeProcessing } from './utils';
 import { useStethSubmitGasLimit } from './hooks';
@@ -70,8 +69,6 @@ export const StakeForm: FC = memo(() => {
 
   const submit = useCallback(
     async (inputValue, resetForm) => {
-      trackEvent(...MATOMO_EVENTS.submitStake);
-
       await stakeProcessing(
         stethContractWeb3,
         openTxModal,

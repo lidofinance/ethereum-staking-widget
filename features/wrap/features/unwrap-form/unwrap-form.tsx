@@ -29,12 +29,11 @@ import {
   useCurrencyInput,
   useStethByWsteth,
 } from 'shared/hooks';
-import { formatBalance, trackEvent } from 'utils';
+import { formatBalance } from 'utils';
 import { Connect } from 'shared/wallet';
 import { FormatToken } from 'shared/formatters';
 import { FormStyled, InputStyled, MaxButton } from 'features/wrap/styles';
 import { unwrapProcessing } from 'features/wrap/utils';
-import { MATOMO_EVENTS } from 'config';
 import { useUnwrapGasLimit } from './hooks';
 
 export const UnwrapForm: FC = memo(() => {
@@ -76,7 +75,6 @@ export const UnwrapForm: FC = memo(() => {
 
   const unWrapProcessing = useCallback(
     async (inputValue, resetForm) => {
-      trackEvent(...MATOMO_EVENTS.submitUnwrap);
       // Needs for fix flashing balance in tx success modal
       setWrappingAmountValue(inputValue);
 

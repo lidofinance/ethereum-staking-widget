@@ -28,8 +28,6 @@ import {
   SelectIconWrapper,
   InputWrapper,
 } from 'features/wrap/styles';
-import { MATOMO_EVENTS } from 'config';
-import { trackEvent } from 'utils';
 
 const ETH = 'ETH';
 
@@ -84,9 +82,6 @@ export const Form: FC<FromProps> = (props) => {
 
   const wrapProcessing = useCallback(
     async (inputValue, resetForm) => {
-      // TODO: add different events for wrap and unlock
-      trackEvent(...MATOMO_EVENTS.submitWrap);
-
       // Needs for fix flashing balance in tx success modal
       setWrappingAmountValue(inputValue);
 
