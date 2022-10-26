@@ -1,6 +1,6 @@
 import { FC } from 'react';
 import { MATOMO_EVENTS } from 'config';
-import { trackEvent } from 'utils';
+import { trackEvent } from '@lidofinance/matomo';
 
 import {
   Wrapper,

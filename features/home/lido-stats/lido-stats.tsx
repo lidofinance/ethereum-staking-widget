@@ -9,15 +9,15 @@ import {
   Question,
   Tooltip,
 } from '@lidofinance/lido-ui';
+import { trackEvent } from '@lidofinance/matomo';
 import { Section } from 'shared/components';
+import { useLidoApr, useLidoStats, useEthApr } from 'shared/hooks';
 import {
   getStethAddress,
   LIDO_APR_TOOLTIP_TEXT,
   DATA_UNAVAILABLE,
   MATOMO_EVENTS,
 } from 'config';
-import { useLidoApr, useLidoStats, useEthApr } from 'shared/hooks';
-import { trackEvent } from 'utils';
 import { FlexCenterVertical } from './styles';
 
 export const LidoStats: FC = memo(() => {

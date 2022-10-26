@@ -1,9 +1,9 @@
 import { FC } from 'react';
-import { useLidoSWR } from 'shared/hooks';
 import { Button } from '@lidofinance/lido-ui';
-import { L2Banner } from 'shared/l2-banner';
+import { trackEvent } from '@lidofinance/matomo';
 import { MATOMO_EVENTS } from 'config';
-import { trackEvent } from 'utils';
+import { useLidoSWR } from 'shared/hooks';
+import { L2Banner } from 'shared/l2-banner';
 
 import {
   Wrap,
