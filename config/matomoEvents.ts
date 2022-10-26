@@ -1,4 +1,4 @@
-import { MatomoEvent } from 'utils';
+import { MatomoEvent } from '@lidofinance/matomo';
 
 const enum EVENTS {
   // Global
