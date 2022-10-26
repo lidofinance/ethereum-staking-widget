@@ -6,6 +6,7 @@ buildDynamics();
 const basePath = process.env.BASE_PATH;
 const infuraApiKey = process.env.INFURA_API_KEY;
 const alchemyApiKey = process.env.ALCHEMY_API_KEY;
+const aprAPIBasePath = process.env.APR_API_BASE_PATH;
 
 const ethplorerApiKey = process.env.ETHPLORER_API_KEY;
 
@@ -112,5 +113,6 @@ export default {
     metricsPort,
     rateLimit,
     rateLimitTimeFrame,
+    aprAPIBasePath,
   }
 };

@@ -1,6 +1,10 @@
 import { FC } from 'react';
 import { useLidoSWR } from 'shared/hooks';
 import { Button } from '@lidofinance/lido-ui';
+import { L2Banner } from 'shared/l2-banner';
+import { MATOMO_EVENTS } from 'config';
+import { trackEvent } from 'utils';
+
 import {
   Wrap,
   OneInchIconWrap,
@@ -11,16 +15,24 @@ import {
 } from './styles';
 import { use1inchLinkProps } from '../hooks';
 
-const ONE_INCH_RATE_LIMIT = 1.003;
+const ONE_INCH_RATE_LIMIT = 1.004;
 
 export const OneinchInfo: FC = () => {
-  const { data } = useLidoSWR<{ rate: number }>('/api/oneinch-rate');
+  const { data, initialLoading } = useLidoSWR<{ rate: number }>(
+    '/api/oneinch-rate',
+  );
   const rate = (data && data.rate) || 1;
   const discount = (100 - (1 / rate) * 100).toFixed(2);
 
   const linkProps = use1inchLinkProps();
 
-  if (!rate || rate < ONE_INCH_RATE_LIMIT) return null;
+  // for fix flashing banner
+  if (initialLoading) return null;
+
+  if (!rate || rate < ONE_INCH_RATE_LIMIT) return <L2Banner />;
+
+  const linkClickHandler = () =>
+    trackEvent(...MATOMO_EVENTS.clickOneInchDiscount);
 
   return (
     <Wrap>
@@ -32,7 +44,7 @@ export const OneinchInfo: FC = () => {
         platform
       </TextWrap>
       <ButtonWrap>
-        <ButtonLinkWrap {...linkProps}>
+        <ButtonLinkWrap {...linkProps} onClick={linkClickHandler}>
           <Button fullwidth size="xs">
             Get discount
           </Button>

@@ -10,8 +10,14 @@ import {
   Tooltip,
 } from '@lidofinance/lido-ui';
 import { Section } from 'shared/components';
-import { getStethAddress, LIDO_APR_TOOLTIP_TEXT } from 'config';
+import {
+  getStethAddress,
+  LIDO_APR_TOOLTIP_TEXT,
+  DATA_UNAVAILABLE,
+  MATOMO_EVENTS,
+} from 'config';
 import { useLidoApr, useLidoStats, useEthApr } from 'shared/hooks';
+import { trackEvent } from 'utils';
 import { FlexCenterVertical } from './styles';
 
 export const LidoStats: FC = memo(() => {
@@ -25,10 +31,17 @@ export const LidoStats: FC = memo(() => {
   const lidoStats = useLidoStats();
   const etrApr = useEthApr();
 
+  const linkClickHandler = () =>
+    trackEvent(...MATOMO_EVENTS.clickViewEtherscanOnStakePage);
+
   return (
     <Section
       title="Lido statistics"
-      headerDecorator={<Link href={etherscanLink}>View on Etherscan</Link>}
+      headerDecorator={
+        <Link href={etherscanLink} onClick={linkClickHandler}>
+          View on Etherscan
+        </Link>
+      }
     >
       <Block>
         <DataTable>
@@ -53,7 +66,7 @@ export const LidoStats: FC = memo(() => {
             loading={lidoApr.initialLoading}
             highlight
           >
-            {lidoApr.data}%
+            {lidoApr.data ? `${lidoApr.data}%` : DATA_UNAVAILABLE}
           </DataTableRow>
           <DataTableRow
             title="Total staked with Lido"

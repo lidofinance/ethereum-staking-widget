@@ -37,12 +37,8 @@ export const GET_REQUESTS: GetRequest[] = [
         totalStaked: { type: 'string' },
         marketCap: { type: 'number' },
       },
-      required: [
-        'uniqueAnytimeHolders',
-        'uniqueHolders',
-        'totalStaked',
-        'marketCap',
-      ],
+      // TODO: revert uniqueAnytimeHolders/uniqueHolders after fix subgraph
+      required: ['totalStaked', 'marketCap'],
       additionalProperties: false,
     },
   },
