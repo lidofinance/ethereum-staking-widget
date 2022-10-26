@@ -14,3 +14,4 @@ export * from './units';
 export * from './metrics';
 export * from './estimate';
 export * from './rateLimit';
+export * from './matomoEvents';
