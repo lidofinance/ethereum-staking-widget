@@ -14,6 +14,9 @@ import {
 } from '@lidofinance/lido-ui';
 import { getEtherscanTxLink } from '@lido-sdk/helpers';
 import { ErrorMessage, formatBalance, formatBalanceString } from 'utils';
+import { use1inchLinkProps } from 'features/home/hooks';
+import { ModalPoolBanners } from 'shared/banners';
+
 import {
   BoldText,
   FailIcon,
@@ -28,7 +31,6 @@ import {
   RetryButton,
   Grid,
 } from './styles';
-import { use1inchLinkProps } from 'features/home/hooks';
 
 export enum TX_OPERATION {
   STAKING,
@@ -149,20 +151,47 @@ export const TxStageModal: FC<TxStageModalProps> = memo(
       );
     }, []);
 
+    const getEtherscanTxLinkElem = useCallback(
+      (text = 'View on Etherscan') => {
+        if (!txHash) return text;
+        return <Link href={getEtherscanTxLink(chainId, txHash)}>{text}</Link>;
+      },
+      [chainId, txHash],
+    );
+
+    const etherscanTxLinkBlock = useMemo(() => {
+      if (!txHash) return null;
+      return (
+        <LightText size="xxs" color="secondary" marginTop={38}>
+          {getEtherscanTxLinkElem()}
+        </LightText>
+      );
+    }, [getEtherscanTxLinkElem, txHash]);
+
     const operationWasSuccessfulText = useMemo(() => {
       switch (txOperation) {
         case TX_OPERATION.STAKING:
-          return 'Staking operation was successful';
+          return (
+            <>
+              Staking operation was successful. Transaction can be viewed on
+              {getEtherscanTxLinkElem(' Etherscan')}
+            </>
+          );
         case TX_OPERATION.APPROVING:
           return 'Unlock successful!';
         case TX_OPERATION.WRAPPING:
-          return 'Wrapping operation was successful';
+          return (
+            <>
+              Wrapping operation was successful. Transaction can be viewed on
+              {getEtherscanTxLinkElem(' Etherscan')}
+            </>
+          );
         case TX_OPERATION.UNWRAPPING:
           return 'Unwrapping operation was successful';
         default:
           return 'Operation was successful';
       }
-    }, [txOperation]);
+    }, [getEtherscanTxLinkElem, txOperation]);
 
     const operationText = useMemo(() => {
       switch (txOperation) {
@@ -179,20 +208,6 @@ export const TxStageModal: FC<TxStageModalProps> = memo(
       }
     }, [txOperation]);
 
-    const etherscanTxLinkBlock = useMemo(() => {
-      return (
-        <>
-          {txHash && (
-            <LightText size="xxs" color="secondary" marginTop={38}>
-              <Link href={getEtherscanTxLink(chainId, txHash)}>
-                View on Etherscan
-              </Link>
-            </LightText>
-          )}
-        </>
-      );
-    }, [chainId, txHash]);
-
     const oneInchLinkProps = use1inchLinkProps();
 
     const content = useMemo(() => {
@@ -203,12 +218,12 @@ export const TxStageModal: FC<TxStageModalProps> = memo(
           return (
             <>
               {currentIconDict[TX_STAGE.SIGN]}
-              <BoldText>
+              <BoldText size="sm">
                 You are now <LowercaseSpan>{operationText}</LowercaseSpan>{' '}
                 {withOptionaLineBreak(formatBalanceString(amount, 4))}{' '}
                 {amountToken}
               </BoldText>
-              <LightText size="xxs" color="secondary" marginTop={4}>
+              <LightText size="xs" color="secondary" marginTop={4}>
                 {operationText} {formatBalanceString(amount, 4)} {amountToken}.{' '}
                 {txOperation !== TX_OPERATION.APPROVING && (
                   <>
@@ -226,12 +241,12 @@ export const TxStageModal: FC<TxStageModalProps> = memo(
           return (
             <>
               {currentIconDict[TX_STAGE.BLOCK]}
-              <BoldText>
+              <BoldText size="sm">
                 You are now <LowercaseSpan>{operationText}</LowercaseSpan>{' '}
                 {withOptionaLineBreak(formatBalanceString(amount, 4))}{' '}
                 {amountToken}
               </BoldText>
-              <LightText size="xxs" color="secondary" marginTop={4}>
+              <LightText size="xs" color="secondary" marginTop={4}>
                 Awaiting block confirmation
               </LightText>
               {etherscanTxLinkBlock}
@@ -243,33 +258,34 @@ export const TxStageModal: FC<TxStageModalProps> = memo(
               {currentIconDict[TX_STAGE.SUCCESS]}
               {txOperation !== TX_OPERATION.APPROVING && (
                 <>
-                  <BoldText>
+                  <BoldText size="sm">
                     Your new balance is <wbr />
                     {withOptionaLineBreak(balanceAsString)} {balanceToken}
                   </BoldText>
-                  <LightText size="xxs" color="secondary" marginTop={4}>
+                  <LightText size="xs" color="secondary" marginTop={4}>
                     {operationWasSuccessfulText}
                   </LightText>
+                  <ModalPoolBanners />
                 </>
               )}
               {txOperation === TX_OPERATION.APPROVING && allowanceAmount && (
                 <>
-                  <BoldText>{operationWasSuccessfulText}</BoldText>
-                  <LightText size="xxs" color="secondary" marginTop={4}>
+                  <BoldText size="sm">{operationWasSuccessfulText}</BoldText>
+                  <LightText size="xs" color="secondary" marginTop={4}>
                     {formatBalance(allowanceAmount, 4)} stETH was unlocked to
                     wrap.
                   </LightText>
+                  {etherscanTxLinkBlock}
                 </>
               )}
-              {etherscanTxLinkBlock}
             </>
           ) : null;
         case TX_STAGE.FAIL:
           return (
             <>
               {currentIconDict[TX_STAGE.FAIL]}
-              <BoldText>Transaction Failed</BoldText>
-              <LightText size="xxs" color="secondary" marginTop={4}>
+              <BoldText size="sm">Transaction Failed</BoldText>
+              <LightText size="xs" color="secondary" marginTop={4}>
                 {failedText ?? 'Something went wrong'}
               </LightText>
               {formRef &&
@@ -289,8 +305,8 @@ export const TxStageModal: FC<TxStageModalProps> = memo(
           return (
             <>
               {currentIconDict[TX_STAGE.LIMIT]}
-              <BoldText>Stake limit exhausted</BoldText>
-              <LightText size="xxs" color="secondary" marginTop={4}>
+              <BoldText size="sm">Stake limit exhausted</BoldText>
+              <LightText size="xs" color="secondary" marginTop={4}>
                 {failedText ?? 'Something went wrong'}
               </LightText>
               {formRef &&

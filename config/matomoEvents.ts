@@ -4,6 +4,8 @@ const enum EVENTS {
   // Global
   connectWallet = 'connectWallet',
   clickL2Banner = 'clickL2Banner',
+  clickCurvePool = 'clickCurvePool',
+  clickBalancerPool = 'clickBalancerPool',
   // / page
   submitStake = 'submitStake', // needs to be discussed
   clickOneInchDiscount = 'clickOneInchDiscount',
@@ -31,6 +33,16 @@ export const MATOMO_EVENTS: Record<EVENTS, MatomoEvent> = {
     'Ethereum_Stacking_Widget',
     'Push "Learn more" on l2 banner on widget',
     'eth_widget_l2_learn',
+  ],
+  clickCurvePool: [
+    'Ethereum_Stacking_Widget',
+    'Push "Explore" on curve banner on widget',
+    'eth_widget_curve_explore',
+  ],
+  clickBalancerPool: [
+    'Ethereum_Stacking_Widget',
+    'Push "Explore" on balancer banner on widget',
+    'eth_widget_balancer_explore',
   ],
   // / page
   submitStake: [
