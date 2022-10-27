@@ -15,7 +15,7 @@ import {
   LIDO_APR_TOOLTIP_TEXT,
   DATA_UNAVAILABLE,
 } from 'config';
-import { useLidoApr, useLidoStats, useEthApr } from 'shared/hooks';
+import { useLidoApr, useLidoStats } from 'shared/hooks';
 import { FlexCenterVertical } from './styles';
 
 export const LidoStats: FC = memo(() => {
@@ -27,7 +27,6 @@ export const LidoStats: FC = memo(() => {
   );
   const lidoApr = useLidoApr();
   const lidoStats = useLidoStats();
-  const etrApr = useEthApr();
 
   return (
     <Section
@@ -40,16 +39,7 @@ export const LidoStats: FC = memo(() => {
             title={
               <FlexCenterVertical>
                 Annual percentage rate
-                <Tooltip
-                  title={
-                    /* String.replaceAll presumably causes exceptions
-                    in dApp browsers of some mobile devices */
-                    LIDO_APR_TOOLTIP_TEXT.replace(
-                      /\$\{apr.eth}/g,
-                      etrApr.data as string,
-                    )
-                  }
-                >
+                <Tooltip title={LIDO_APR_TOOLTIP_TEXT}>
                   <Question />
                 </Tooltip>
               </FlexCenterVertical>
