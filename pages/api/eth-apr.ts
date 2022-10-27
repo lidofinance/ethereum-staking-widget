@@ -14,6 +14,7 @@ const cache = new Cache<typeof CACHE_ETH_APR_KEY, string>();
 
 // Proxy for third-party API.
 // Returns eth annual percentage rate
+// TODO: delete after viewing grafana
 const ethApr: API = async (req, res) => {
   const cachedEthApr = cache.get(CACHE_ETH_APR_KEY);
 
