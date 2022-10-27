@@ -28,7 +28,6 @@ const subgraphRequestTimeout = process.env.SUBGRAPH_REQUEST_TIMEOUT;
 const enableQaHelpers = process.env.ENABLE_QA_HELPERS;
 
 const metricsPort = process.env.METRICS_PORT ?? 3001;
-const matomoUrl = process.env.MATOMO_URL;
 
 // rate limit
 const rateLimit = process.env.RATE_LIMIT;
@@ -118,6 +117,5 @@ module.exports = {
     defaultChain,
     supportedChains,
     enableQaHelpers,
-    matomoUrl,
   },
 };
