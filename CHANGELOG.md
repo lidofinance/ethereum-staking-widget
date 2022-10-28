@@ -1,3 +1,17 @@
+# [1.35.0](https://github.com/lidofinance/staking-widget-ts/compare/1.34.0...1.35.0) (2022-10-28)
+
+
+### Bug Fixes
+
+* add comment for old api ([1eb65d3](https://github.com/lidofinance/staking-widget-ts/commit/1eb65d3775f69a2437f011b71c317c7c525e604b))
+
+
+### Features
+
+* add insurance fund FAQs ([b112ba8](https://github.com/lidofinance/staking-widget-ts/commit/b112ba83ca87c8f6b3ac3a14c6ddbad32b896a2c))
+
+
+
 # [1.34.0](https://github.com/lidofinance/staking-widget-ts/compare/1.32.0...1.34.0) (2022-10-27)
 
 
@@ -200,30 +214,6 @@
 ### Features
 
 * add xdefi wallet ([57437e2](https://github.com/lidofinance/staking-widget-ts/commit/57437e2e0475e8317abb111b859aaa241d041896))
-
-
-
-# [1.24.0](https://github.com/lidofinance/staking-widget-ts/compare/1.23.0...1.24.0) (2022-09-26)
-
-
-### Bug Fixes
-
-* change oneinch cache ttl time to 5m ([3359119](https://github.com/lidofinance/staking-widget-ts/commit/3359119fbe07147966d813e687f20a6fc9fba14b))
-* delete old cookies ([f0c158c](https://github.com/lidofinance/staking-widget-ts/commit/f0c158c914dd9385ea0fb8bdb731fd31e93d4d19))
-* gitignore ([b233f89](https://github.com/lidofinance/staking-widget-ts/commit/b233f8926bddf8b38a750c5d42f339edf9350ba0))
-* imports ([224d403](https://github.com/lidofinance/staking-widget-ts/commit/224d4039e754aa47b6b74089e219ed5f55c81d8f))
-* minor types/linting fixes ([08d54c3](https://github.com/lidofinance/staking-widget-ts/commit/08d54c30e7f606ad4e19bcbdb191e3bc335a556c))
-* naming ([495f08f](https://github.com/lidofinance/staking-widget-ts/commit/495f08f074ff36d38f06ba55e1eba7c4f376ecae))
-* use shadowLight ([85c7fba](https://github.com/lidofinance/staking-widget-ts/commit/85c7fba5391f450eb3e95446558b7b31f35e0ebf))
-
-
-### Features
-
-* migration from old to new cookies ([bf514bd](https://github.com/lidofinance/staking-widget-ts/commit/bf514bdeb7ff184173ba31a331f56c332d5b4112))
-* replaced standalone packages with lido-ui ([e71391c](https://github.com/lidofinance/staking-widget-ts/commit/e71391c81be9dde56640b9876cee68bd49d917b1))
-* reverted to 1.22.0 ([9b03191](https://github.com/lidofinance/staking-widget-ts/commit/9b03191970cea7e191545930a4b4c50f86801a8d))
-* using CSS variables for styling and relying on lido-ui CookieThemeProvider ([d54e3d0](https://github.com/lidofinance/staking-widget-ts/commit/d54e3d00b6e40312362f3aeb3a8eaf652d8035bd))
-* working import of lido-ui v3 ([c4f2c9c](https://github.com/lidofinance/staking-widget-ts/commit/c4f2c9c47a528c583dffc8473fd88c037ab240ca))
 
 
 
