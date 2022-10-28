@@ -35,6 +35,8 @@ const faqList = getFaqList([
   'index-what-is-steth',
   'index-what-is-ldo',
   'index-how-is-lido-secure',
+  'index-what-is-insurance-fund-for',
+  'index-where-can-i-cover-my-steth',
   'index-self-staking-vs-liquid-staking',
   'index-risks-of-staking-with-lido',
   'index-lido-fee',
