@@ -1,4 +1,6 @@
 import { FC } from 'react';
+import { MATOMO_EVENTS } from 'config';
+import { trackEvent } from 'utils';
 
 import {
   Wrapper,
@@ -18,6 +20,8 @@ export const L2Banner: FC = () => {
     rel: 'noopener noreferrer',
   };
 
+  const linkClickHandler = () => trackEvent(...MATOMO_EVENTS.clickL2Banner);
+
   return (
     <>
       <Wrapper>
@@ -28,7 +32,7 @@ export const L2Banner: FC = () => {
           <b> L2 DeFi opportunities</b>
         </TextWrap>
         <ButtonWrap>
-          <ButtonLinkWrap {...linkProps}>
+          <ButtonLinkWrap {...linkProps} onClick={linkClickHandler}>
             <ButtonStyle fullwidth size="xs">
               Learn more
             </ButtonStyle>
