@@ -5,7 +5,6 @@ import {
   ToastContainer,
   migrationThemeCookiesToCrossDomainCookiesClientSide,
 } from '@lidofinance/lido-ui';
-import { trackEvent } from '@lidofinance/matomo';
 import Providers from 'providers';
 import { nprogress } from 'utils';
 import { withCsp } from 'utilsApi/withCsp';
@@ -19,8 +18,6 @@ migrationThemeCookiesToCrossDomainCookiesClientSide();
 nprogress();
 
 const AppWrapper: FC<AppProps> = ({ Component, pageProps }) => {
-  trackEvent('Ethereum_Stacking_Widget', 'Open app test', 'open_app_test');
-
   return (
     <Providers>
       <BackgroundGradient
