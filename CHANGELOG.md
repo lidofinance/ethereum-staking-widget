@@ -1,4 +1,4 @@
-# [1.36.0](https://github.com/lidofinance/staking-widget-ts/compare/1.35.0...1.36.0) (2022-11-01)
+# [1.37.0](https://github.com/lidofinance/staking-widget-ts/compare/1.35.0...1.37.0) (2022-11-01)
 
 
 ### Bug Fixes
