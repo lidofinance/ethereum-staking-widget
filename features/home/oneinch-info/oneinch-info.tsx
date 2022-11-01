@@ -2,6 +2,8 @@ import { FC } from 'react';
 import { useLidoSWR } from 'shared/hooks';
 import { Button } from '@lidofinance/lido-ui';
 import { L2Banner } from 'shared/l2-banner';
+import { MATOMO_EVENTS } from 'config';
+import { trackEvent } from 'utils';
 
 import {
   Wrap,
@@ -27,7 +29,11 @@ export const OneinchInfo: FC = () => {
   // for fix flashing banner
   if (initialLoading) return null;
 
-  if (!rate || rate < ONE_INCH_RATE_LIMIT) return <L2Banner />;
+  if (!rate || rate < ONE_INCH_RATE_LIMIT)
+    return <L2Banner matomoEvent={MATOMO_EVENTS.clickL2BannerStake} />;
+
+  const linkClickHandler = () =>
+    trackEvent(...MATOMO_EVENTS.clickOneInchDiscount);
 
   return (
     <Wrap>
@@ -39,7 +45,7 @@ export const OneinchInfo: FC = () => {
         platform
       </TextWrap>
       <ButtonWrap>
-        <ButtonLinkWrap {...linkProps}>
+        <ButtonLinkWrap {...linkProps} onClick={linkClickHandler}>
           <Button fullwidth size="xs">
             Get discount
           </Button>

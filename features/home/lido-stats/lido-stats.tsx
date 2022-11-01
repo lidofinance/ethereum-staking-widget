@@ -14,8 +14,10 @@ import {
   getStethAddress,
   LIDO_APR_TOOLTIP_TEXT,
   DATA_UNAVAILABLE,
+  MATOMO_EVENTS,
 } from 'config';
 import { useLidoApr, useLidoStats } from 'shared/hooks';
+import { trackEvent } from 'utils';
 import { FlexCenterVertical } from './styles';
 
 export const LidoStats: FC = memo(() => {
@@ -28,10 +30,17 @@ export const LidoStats: FC = memo(() => {
   const lidoApr = useLidoApr();
   const lidoStats = useLidoStats();
 
+  const linkClickHandler = () =>
+    trackEvent(...MATOMO_EVENTS.clickViewEtherscanOnStakePage);
+
   return (
     <Section
       title="Lido statistics"
-      headerDecorator={<Link href={etherscanLink}>View on Etherscan</Link>}
+      headerDecorator={
+        <Link href={etherscanLink} onClick={linkClickHandler}>
+          View on Etherscan
+        </Link>
+      }
     >
       <Block>
         <DataTable>
