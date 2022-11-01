@@ -1,11 +1,15 @@
 import Cookies from 'js-cookie';
 
+// NOT Deprecated!!!
 const appId = 'LIDO_WIDGET__';
+export const COOKIES_ALLOWED_FULL_KEY = `${appId}COOKIES_ALLOWED`;
 
+// Deprecated. Delete in future
 export const COOKIES_ALLOWED_KEY = 'COOKIES_ALLOWED';
 export const COOKIE_VALUE_YES = 'yes';
 export const COOKIE_VALUE_NO = 'no';
 
+// Deprecated. Delete in future
 export const AppCookies = new (class {
   getCookie(name: string) {
     try {

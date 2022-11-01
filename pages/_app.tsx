@@ -1,19 +1,23 @@
 import { memo } from 'react';
 import NextApp, { AppProps, AppContext } from 'next/app';
+import getConfig from 'next/config';
 import {
   ToastContainer,
+  CookiesTooltip,
+  migrationAllowCookieToCrossDomainCookieClientSide,
   migrationThemeCookiesToCrossDomainCookiesClientSide,
 } from '@lidofinance/lido-ui';
 import Providers, { EnvConfig } from 'providers';
-import getConfig from 'next/config';
-import { nprogress } from 'utils';
-import { CookiesTooltip } from 'shared/components';
-import 'nprogress/nprogress.css';
+import { nprogress, COOKIES_ALLOWED_FULL_KEY } from 'utils';
 import { withCsp } from 'utilsApi/withCsp';
 import { BackgroundGradient } from 'shared/components/background-gradient/background-gradient';
+import 'nprogress/nprogress.css';
 
-// Migrations old cookies to new cross domain cookies
+// Migrations old theme cookies to new cross domain cookies
 migrationThemeCookiesToCrossDomainCookiesClientSide();
+
+// Migrations old allow cookies to new cross domain cookies
+migrationAllowCookieToCrossDomainCookieClientSide(COOKIES_ALLOWED_FULL_KEY);
 
 // Visualize route changes
 nprogress();
