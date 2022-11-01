@@ -29,7 +29,8 @@ export const OneinchInfo: FC = () => {
   // for fix flashing banner
   if (initialLoading) return null;
 
-  if (!rate || rate < ONE_INCH_RATE_LIMIT) return <L2Banner />;
+  if (!rate || rate < ONE_INCH_RATE_LIMIT)
+    return <L2Banner matomoEvent={MATOMO_EVENTS.clickL2BannerStake} />;
 
   const linkClickHandler = () =>
     trackEvent(...MATOMO_EVENTS.clickOneInchDiscount);

@@ -1,6 +1,5 @@
 import { FC } from 'react';
-import { MATOMO_EVENTS } from 'config';
-import { trackEvent } from 'utils';
+import { trackEvent, MatomoEvent } from 'utils';
 
 import {
   Wrapper,
@@ -13,14 +12,18 @@ import {
 
 const L2_LINK = 'https://help.lido.fi/en/collections/3641672-lido-on-l2';
 
-export const L2Banner: FC = () => {
+type L2BannerProps = {
+  matomoEvent: MatomoEvent;
+};
+
+export const L2Banner: FC<L2BannerProps> = ({ matomoEvent }) => {
   const linkProps = {
     href: L2_LINK,
     target: '_blank',
     rel: 'noopener noreferrer',
   };
 
-  const linkClickHandler = () => trackEvent(...MATOMO_EVENTS.clickL2Banner);
+  const linkClickHandler = () => trackEvent(...matomoEvent);
 
   return (
     <>
