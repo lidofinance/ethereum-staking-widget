@@ -1,3 +1,17 @@
+# [1.36.0](https://github.com/lidofinance/staking-widget-ts/compare/1.35.0...1.36.0) (2022-11-01)
+
+
+### Bug Fixes
+
+* update l2 banner matomo events ([#368](https://github.com/lidofinance/staking-widget-ts/issues/368)) ([555ed97](https://github.com/lidofinance/staking-widget-ts/commit/555ed97e3bb2181faf177876abd3efa40f0743d1))
+
+
+### Features
+
+* add matomo ([b777ad5](https://github.com/lidofinance/staking-widget-ts/commit/b777ad56a29b422e7a92e570a31d69d30b927a1e))
+
+
+
 # [1.35.0](https://github.com/lidofinance/staking-widget-ts/compare/1.34.0...1.35.0) (2022-10-28)
 
 
@@ -197,23 +211,6 @@
 * add mobile deeplink for 1inch in ledger live ([12a3892](https://github.com/lidofinance/staking-widget-ts/commit/12a3892716aacd49e348ab78fe3db3b96c3a8c01))
 * change apr text and headers for requests ([b7afe80](https://github.com/lidofinance/staking-widget-ts/commit/b7afe800bcaa145d9961534df322589be33bf180))
 * update 1inch rate limit ([c4569a1](https://github.com/lidofinance/staking-widget-ts/commit/c4569a1805a3d340ff587c841cea174a8c24db69))
-
-
-
-# [1.25.0](https://github.com/lidofinance/staking-widget-ts/compare/1.24.0...1.25.0) (2022-09-28)
-
-
-### Bug Fixes
-
-* change claim faq text ([00fdd06](https://github.com/lidofinance/staking-widget-ts/commit/00fdd06a96db5ff06b92856146bc6c520cc1637a))
-* detection of connected xdefi wallet ([1d69cf9](https://github.com/lidofinance/staking-widget-ts/commit/1d69cf97256d35c8f373843df8a4b1079f37839f))
-* fix show loading for eth balance ([7a785a0](https://github.com/lidofinance/staking-widget-ts/commit/7a785a0384574f4de82dc3013dd45e91adabccae))
-* pull develop, fix conflicts ([39dc9b4](https://github.com/lidofinance/staking-widget-ts/commit/39dc9b4da6a15253c38650be8e991bc4511fde03))
-
-
-### Features
-
-* add xdefi wallet ([57437e2](https://github.com/lidofinance/staking-widget-ts/commit/57437e2e0475e8317abb111b859aaa241d041896))
 
 
 
