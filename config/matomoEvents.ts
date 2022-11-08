@@ -12,6 +12,16 @@ const enum EVENTS {
   clickFaqWhatIsLidoScorecard = 'clickFaqWhatIsLidoScorecard',
   clickFaqWhatIsLidoLearnMore = 'clickFaqWhatIsLidoLearnMore',
   clickFaqHowDoesLidoWorkLearnMore = 'clickFaqHowDoesLidoWorkLearnMore',
+  clickFaqLidoInsuranceFund = 'clickFaqLidoInsuranceFund',
+  clickFaqLidoInsuranceFundRiskScenarios = 'clickFaqLidoInsuranceFundRiskScenarios',
+  clickFaqWhereCanICoverBridgeMutual = 'clickFaqWhereCanICoverBridgeMutual',
+  clickFaqWhereCanICoverIdleFinance = 'clickFaqWhereCanICoverIdleFinance',
+  clickFaqWhereCanICoverNexusMutual = 'clickFaqWhereCanICoverNexusMutual',
+  clickFaqWhereCanICoverRibbonFinance = 'clickFaqWhereCanICoverRibbonFinance',
+  clickFaqRisksOfStakingReports = 'clickFaqRisksOfStakingReports',
+  clickFaqRisksOfStakingImmunefiBugBounty = 'clickFaqRisksOfStakingImmunefiBugBounty',
+  clickFaqStethConvertedToEthCurve = 'clickFaqStethConvertedToEthCurve',
+  clickFaqStethConvertedToEthBalancer = 'clickFaqStethConvertedToEthBalancer',
   // /wrap page
   submitWrap = 'submitWrap', // needs to be discussed
   submitUnlock = 'submitUnlock', // needs to be discussed
@@ -67,6 +77,56 @@ export const MATOMO_EVENTS: Record<EVENTS, MatomoEvent> = {
     'Ethereum_Staking_Widget',
     'Push «here» in FAQ How does Lido work «Learn more here» on stake widget',
     'eth_widget_faq_howdoeslidowork_learnmore',
+  ],
+  [EVENTS.clickFaqLidoInsuranceFund]: [
+    'Ethereum_Staking_Widget',
+    'Push «Insurance fund» in FAQ What is the Lido Insurance Fund used for? on stake widget',
+    'eth_widget_faq_lidoInsuranceFund_insurancefund',
+  ],
+  [EVENTS.clickFaqLidoInsuranceFundRiskScenarios]: [
+    'Ethereum_Staking_Widget',
+    'Push «here» in FAQ What is the Lido Insurance Fund used for? "risk scenarios" on stake widget',
+    'eth_widget_faq_lidoInsuranceFund_insurancefund',
+  ],
+  [EVENTS.clickFaqWhereCanICoverBridgeMutual]: [
+    'Ethereum_Staking_Widget',
+    'Push «Bridge Mutual» in FAQ Where can I cover my stETH? on stake widget',
+    'eth_widget_faq_wherecanicover_bridgemutual',
+  ],
+  [EVENTS.clickFaqWhereCanICoverIdleFinance]: [
+    'Ethereum_Staking_Widget',
+    'Push «Idle Finance» in FAQ Where can I cover my stETH? on stake widget',
+    'eth_widget_faq_wherecanicover_idlefinance',
+  ],
+  [EVENTS.clickFaqWhereCanICoverNexusMutual]: [
+    'Ethereum_Staking_Widget',
+    'Push «Nexus Mutual» in FAQ Where can I cover my stETH? on stake widget',
+    'eth_widget_faq_wherecanicover_nexusmutual',
+  ],
+  [EVENTS.clickFaqWhereCanICoverRibbonFinance]: [
+    'Ethereum_Staking_Widget',
+    'Push «Ribbon Finance» in FAQ Where can I cover my stETH? on stake widget',
+    'eth_widget_faq_wherecanicover_ribbonfinance',
+  ],
+  [EVENTS.clickFaqRisksOfStakingReports]: [
+    'Ethereum_Staking_Widget',
+    'Push "here" in FAQ  What are the risks of staking with Lido? on stake widget',
+    'eth_widget_faq_risksofstaking_reports',
+  ],
+  [EVENTS.clickFaqRisksOfStakingImmunefiBugBounty]: [
+    'Ethereum_Staking_Widget',
+    'Push "Immunefi bug bounty program" in FAQ  What are the risks of staking with Lido? on stake widget',
+    'eth_widget_faq_risksofstaking_immunefibugbounty',
+  ],
+  [EVENTS.clickFaqStethConvertedToEthCurve]: [
+    'Ethereum_Staking_Widget',
+    'Push «Curve» in FAQ How stETH can be converted to ETH on stake widget',
+    'eth_widget_faq_stethconverttoeth_curve',
+  ],
+  [EVENTS.clickFaqStethConvertedToEthBalancer]: [
+    'Ethereum_Staking_Widget',
+    'Push «Balancer» in FAQ How stETH can be converted to ETH on stake widget',
+    'eth_widget_faq_stethconverttoeth_balancer',
   ],
   // /wrap page
   submitWrap: [
