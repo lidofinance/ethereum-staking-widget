@@ -11,14 +11,13 @@ import {
 } from '@lidofinance/lido-ui';
 import { trackEvent } from '@lidofinance/analytics-matomo';
 import { Section } from 'shared/components';
-import { useLidoApr, useLidoStats, useEthApr } from 'shared/hooks';
+import { useLidoApr, useLidoStats } from 'shared/hooks';
 import {
   getStethAddress,
   LIDO_APR_TOOLTIP_TEXT,
   DATA_UNAVAILABLE,
   MATOMO_EVENTS,
 } from 'config';
-import { useLidoApr, useLidoStats } from 'shared/hooks';
 import { FlexCenterVertical } from './styles';
 
 export const LidoStats: FC = memo(() => {
