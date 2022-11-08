@@ -1869,10 +1869,10 @@
     tiny-invariant "^1.1.0"
     tiny-warning "^1.0.3"
 
-"@lido-sdk/web3-react@^1.27.2":
-  version "1.27.2"
-  resolved "https://registry.yarnpkg.com/@lido-sdk/web3-react/-/web3-react-1.27.2.tgz#d955935b9b88e02e2ab17f0f89df2f4118e80a8a"
-  integrity sha512-v3T/jVyg0W3SI7MhQD9p4AZy/jZPHWuE/bXn5lJ7TUYGv/VGMfHtAordwNkKg5ANURoAn4Uartx0M+a2yMWC+A==
+"@lido-sdk/web3-react@1.27.3":
+  version "1.27.3"
+  resolved "https://registry.yarnpkg.com/@lido-sdk/web3-react/-/web3-react-1.27.3.tgz#332c2ae3b33e801b1c7d6bf13dfca1fef7047c23"
+  integrity sha512-zPGSvnYDivZ/KAqq3SdalT00EmayK7u7ciTSXTWQJ89HAc7LmAprp8v+KOSe96OHgy6t2kAaU7x0Cs20JZlysg==
   dependencies:
     "@gnosis.pm/safe-apps-web3-react" "0.6.8"
     "@ledgerhq/iframe-provider" "0.4.2"
@@ -1923,7 +1923,7 @@
   resolved "https://registry.yarnpkg.com/@lidofinance/eth-providers/-/eth-providers-0.0.3.tgz#4244085fd1accb8819d1e665df763a22a9478edc"
   integrity sha512-DSjFSxqIq59q576rBS8hWsSznNsusWvrp9Ge32EZwdx2AebRIAsC5RoyRMyNyj2asdr0qg8mXSg1Bhp68Z+oBA==
 
-"@lidofinance/lido-ui-blocks@^2.10.2":
+"@lidofinance/lido-ui-blocks@2.10.2":
   version "2.10.2"
   resolved "https://registry.yarnpkg.com/@lidofinance/lido-ui-blocks/-/lido-ui-blocks-2.10.2.tgz#f5075ea2a6524006ee0b145b61495472b4d678d0"
   integrity sha512-2UDI1N7FypwQuqspQb8HCts5qeWbFp9iwtxRJL1gHIpzlz5VqqRS4xTpFdkIDDYS3Z/nrNMhZ9DlNqK6rRxafw==
