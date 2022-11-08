@@ -1,3 +1,17 @@
+# [1.38.0](https://github.com/lidofinance/staking-widget-ts/compare/1.37.1...1.38.0) (2022-11-08)
+
+
+### Bug Fixes
+
+* fix faq text ([1c0e6a2](https://github.com/lidofinance/staking-widget-ts/commit/1c0e6a247062ceef1a84c81662b18f0b5348bfad))
+
+
+### Features
+
+* update faq text on stake page ([edb2cf9](https://github.com/lidofinance/staking-widget-ts/commit/edb2cf9a1b1b2756e23e483f0ae52d7696c6f510))
+
+
+
 ## [1.37.1](https://github.com/lidofinance/staking-widget-ts/compare/1.37.0...1.37.1) (2022-11-08)
 
 
@@ -155,48 +169,6 @@
 * add ui3 for use theme from cookies ([365f60e](https://github.com/lidofinance/staking-widget-ts/commit/365f60e8fbf7f2325b7ebc3c3a1f15f8f33c1dcd))
 * external links ([3a42a39](https://github.com/lidofinance/staking-widget-ts/commit/3a42a3968365ff554909ccbb0c819be0011bd899))
 * update risks FAQ ([c0a5732](https://github.com/lidofinance/staking-widget-ts/commit/c0a5732e9bb16904af07af61f01bb9eb0aae3060))
-
-
-
-# [1.27.0](https://github.com/lidofinance/staking-widget-ts/compare/1.26.0...1.27.0) (2022-10-07)
-
-
-### Bug Fixes
-
-* add get pathname from url for metrics ([a51ef10](https://github.com/lidofinance/staking-widget-ts/commit/a51ef106d8594cf673fb29b58dbfbbf453da5fb3))
-* add strings to constants ([7b5412c](https://github.com/lidofinance/staking-widget-ts/commit/7b5412c8ab68988901f048579e84a8c188d427cd))
-* change route ([9ecc938](https://github.com/lidofinance/staking-widget-ts/commit/9ecc938a1c50e4aabab91dae55c408ead2b99808))
-* change route to hostname for external requests ([86d99c1](https://github.com/lidofinance/staking-widget-ts/commit/86d99c1d2e8d0f3ecc332ab21ab8c26655435141))
-* fix code style ([65c3403](https://github.com/lidofinance/staking-widget-ts/commit/65c3403fbcc6b1b4d99749bd1d89dd03bb7731b7))
-* fix enums ([a7179af](https://github.com/lidofinance/staking-widget-ts/commit/a7179afdccc1cd21702af849d18fd59fbb0ee4de))
-* fix import func ([5c26c52](https://github.com/lidofinance/staking-widget-ts/commit/5c26c52ac86466160f4cdbfa25dd326ab5b40c20))
-* fix import names ([3160f6b](https://github.com/lidofinance/staking-widget-ts/commit/3160f6bd8fee9d37931a17c4ec9e84ab55acc689))
-* fix metric class ([1f86191](https://github.com/lidofinance/staking-widget-ts/commit/1f86191e540c7baae328da20bda807d2d0fdd83e))
-* fix metric wrapper ([b843e94](https://github.com/lidofinance/staking-widget-ts/commit/b843e944220763fe0cadcf91b75eb2b41a68cbac))
-* fix next api metrics ([080faca](https://github.com/lidofinance/staking-widget-ts/commit/080faca27bac0a050aa9f8745e773871a83f04a6))
-* fix registry for clusters ([e1b70c0](https://github.com/lidofinance/staking-widget-ts/commit/e1b70c02370b7c9ae33c177cc9641197b82e843d))
-* fix responseTimeMetric ([a3d7ba4](https://github.com/lidofinance/staking-widget-ts/commit/a3d7ba4bf00a3369811e86c84791207fb417c8db))
-* fix rpc wrapper ([00e55d1](https://github.com/lidofinance/staking-widget-ts/commit/00e55d136a494e84260409ae46868cf70134e8cd))
-* fix shortLidoStats ([7aaeab8](https://github.com/lidofinance/staking-widget-ts/commit/7aaeab8f39d659fd9e58308dd2f569d03b351d8d))
-* fix types ([6389a2f](https://github.com/lidofinance/staking-widget-ts/commit/6389a2f1e99d27ea2ae2fce131be493ed307cf55))
-* refactoring fetchApiWrapper ([5d426db](https://github.com/lidofinance/staking-widget-ts/commit/5d426db88fe8aab1276bf467ed0c82a95bacfcb8))
-* remove double metric from rpc api ([98b0601](https://github.com/lidofinance/staking-widget-ts/commit/98b0601d7e0413f608c38f7abc49816a6521e7ae))
-* remove ethTransfersCount field from required in test lidostats/ldo-stats api ([9499628](https://github.com/lidofinance/staking-widget-ts/commit/94996288cb2b6efba48fe25f2ac4ae6c119b7859))
-* remove memory cache metric ([5f61b1e](https://github.com/lidofinance/staking-widget-ts/commit/5f61b1efbe978cc641421012dd1dcc61fdbca5ec))
-* remove metrcis from pages files ([8df175d](https://github.com/lidofinance/staking-widget-ts/commit/8df175dc614750309d837056fbbc843564026bb0))
-* remove temp arg type ([9626f7e](https://github.com/lidofinance/staking-widget-ts/commit/9626f7eba22734425bcc5669dcacf2c14b079603))
-* remove temp const ([575ba0d](https://github.com/lidofinance/staking-widget-ts/commit/575ba0d32619290d0174583fc751a1ac009653a6))
-* replace external metric wrapper ([972eb02](https://github.com/lidofinance/staking-widget-ts/commit/972eb02b596522f6a6ef8f22712785c36246e31d))
-* replace file with metrics, update response metrics func ([d3e8ce6](https://github.com/lidofinance/staking-widget-ts/commit/d3e8ce682d55a456f8e4b2c5043bf9b8cd694bbd))
-* revert changelog ([4b42ee7](https://github.com/lidofinance/staking-widget-ts/commit/4b42ee7c3c919f9ff1d9dcc7e4696f22d412cd90))
-
-
-### Features
-
-* add call metrics for requests, add metrics wrappers ([bdb2fcf](https://github.com/lidofinance/staking-widget-ts/commit/bdb2fcffd1921f285ba953814cc6d04807f7e897))
-* add metrics class, update metrics types ([05ce801](https://github.com/lidofinance/staking-widget-ts/commit/05ce801938393d88f982ec56353612e6c9ff927e))
-* add rpc resp time metric, add fetch wrapper, add external resp time metric ([65ef1d0](https://github.com/lidofinance/staking-widget-ts/commit/65ef1d0594d91a39e5692b7fc83adb5020f81ceb))
-* split metrics into separate classes ([48a6b72](https://github.com/lidofinance/staking-widget-ts/commit/48a6b72dd421759629a0ff2eeba9fb270a33a2ec))
 
 
 
