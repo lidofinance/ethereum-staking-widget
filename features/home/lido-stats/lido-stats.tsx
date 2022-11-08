@@ -18,6 +18,7 @@ import {
   DATA_UNAVAILABLE,
   MATOMO_EVENTS,
 } from 'config';
+import { useLidoApr, useLidoStats } from 'shared/hooks';
 import { FlexCenterVertical } from './styles';
 
 export const LidoStats: FC = memo(() => {
@@ -29,7 +30,6 @@ export const LidoStats: FC = memo(() => {
   );
   const lidoApr = useLidoApr();
   const lidoStats = useLidoStats();
-  const etrApr = useEthApr();
 
   const linkClickHandler = () =>
     trackEvent(...MATOMO_EVENTS.clickViewEtherscanOnStakePage);
@@ -49,16 +49,7 @@ export const LidoStats: FC = memo(() => {
             title={
               <FlexCenterVertical>
                 Annual percentage rate
-                <Tooltip
-                  title={
-                    /* String.replaceAll presumably causes exceptions
-                    in dApp browsers of some mobile devices */
-                    LIDO_APR_TOOLTIP_TEXT.replace(
-                      /\$\{apr.eth}/g,
-                      etrApr.data as string,
-                    )
-                  }
-                >
+                <Tooltip title={LIDO_APR_TOOLTIP_TEXT}>
                   <Question />
                 </Tooltip>
               </FlexCenterVertical>

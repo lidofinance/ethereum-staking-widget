@@ -1869,10 +1869,10 @@
     tiny-invariant "^1.1.0"
     tiny-warning "^1.0.3"
 
-"@lido-sdk/web3-react@^1.27.2":
-  version "1.27.2"
-  resolved "https://registry.yarnpkg.com/@lido-sdk/web3-react/-/web3-react-1.27.2.tgz#d955935b9b88e02e2ab17f0f89df2f4118e80a8a"
-  integrity sha512-v3T/jVyg0W3SI7MhQD9p4AZy/jZPHWuE/bXn5lJ7TUYGv/VGMfHtAordwNkKg5ANURoAn4Uartx0M+a2yMWC+A==
+"@lido-sdk/web3-react@1.27.3":
+  version "1.27.3"
+  resolved "https://registry.yarnpkg.com/@lido-sdk/web3-react/-/web3-react-1.27.3.tgz#332c2ae3b33e801b1c7d6bf13dfca1fef7047c23"
+  integrity sha512-zPGSvnYDivZ/KAqq3SdalT00EmayK7u7ciTSXTWQJ89HAc7LmAprp8v+KOSe96OHgy6t2kAaU7x0Cs20JZlysg==
   dependencies:
     "@gnosis.pm/safe-apps-web3-react" "0.6.8"
     "@ledgerhq/iframe-provider" "0.4.2"
@@ -1913,10 +1913,10 @@
   resolved "https://registry.yarnpkg.com/@lidofinance/api-rpc/-/api-rpc-0.0.6.tgz#2fa5ef94f6fa4b54226e9cbf6a6d5ebf090b32ee"
   integrity sha512-zNiuOwrhqLgE60zdNaH1S6RwrGV5oaY/jeM5edFCLVz+aHbt4Yds4ClFdjfB17VmInrG5pZMe67RWABNCt4ylg==
 
-"@lidofinance/blocks-connect-wallet-modal@2.11.0":
-  version "2.11.0"
-  resolved "https://registry.yarnpkg.com/@lidofinance/blocks-connect-wallet-modal/-/blocks-connect-wallet-modal-2.11.0.tgz#45e649ed7825ec7a2b34258edd7397c15b64d330"
-  integrity sha512-x7rj3PUxjNWsua4JIwlp1Fi9DJbexkCwuqeeBnOXASEctiwFXxgU3zLKWHNvKPG3HIgsXqUxf+5tS4+zwCMNOg==
+"@lidofinance/blocks-connect-wallet-modal@2.11.2":
+  version "2.11.2"
+  resolved "https://registry.yarnpkg.com/@lidofinance/blocks-connect-wallet-modal/-/blocks-connect-wallet-modal-2.11.2.tgz#a8593384e92a1f5535a42f76ee8fcc22bd5c0318"
+  integrity sha512-En9QkhSuFrbtBMFonDAW+49ypvOrxxDmdRh2ly9YKogQ2Rag0caKdmT3QVXW+kh+qKYVegQklftGmSQX0Fnb0w==
 
 "@lidofinance/eth-api-providers@^0.0.4":
   version "0.0.4"
@@ -1928,12 +1928,12 @@
   resolved "https://registry.yarnpkg.com/@lidofinance/eth-providers/-/eth-providers-0.0.3.tgz#4244085fd1accb8819d1e665df763a22a9478edc"
   integrity sha512-DSjFSxqIq59q576rBS8hWsSznNsusWvrp9Ge32EZwdx2AebRIAsC5RoyRMyNyj2asdr0qg8mXSg1Bhp68Z+oBA==
 
-"@lidofinance/lido-ui-blocks@^2.9.0":
-  version "2.10.0"
-  resolved "https://registry.yarnpkg.com/@lidofinance/lido-ui-blocks/-/lido-ui-blocks-2.10.0.tgz#5c2677ce21dac2ba3791170f5ee7f0ef12d9f051"
-  integrity sha512-rYAgLRxtXkU0eEHpeftVqVGDV/19N/fAZ7JYiMYGzLkuI6NTJbrdOpdriasO7MbWE0QgpciwvK9c36kFmZHDzQ==
+"@lidofinance/lido-ui-blocks@2.10.2":
+  version "2.10.2"
+  resolved "https://registry.yarnpkg.com/@lidofinance/lido-ui-blocks/-/lido-ui-blocks-2.10.2.tgz#f5075ea2a6524006ee0b145b61495472b4d678d0"
+  integrity sha512-2UDI1N7FypwQuqspQb8HCts5qeWbFp9iwtxRJL1gHIpzlz5VqqRS4xTpFdkIDDYS3Z/nrNMhZ9DlNqK6rRxafw==
   dependencies:
-    "@lidofinance/blocks-connect-wallet-modal" "2.11.0"
+    "@lidofinance/blocks-connect-wallet-modal" "2.11.2"
 
 "@lidofinance/lido-ui@3.0.0-next.14":
   version "3.0.0-next.14"

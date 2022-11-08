@@ -6,7 +6,7 @@ import { LIDO_APR_TOOLTIP_TEXT } from 'config';
 import { memo } from 'react';
 import { TokenToWallet } from 'shared/components';
 import { FormatToken } from 'shared/formatters';
-import { useEthApr, useLidoApr } from 'shared/hooks';
+import { useLidoApr } from 'shared/hooks';
 import { DATA_UNAVAILABLE } from 'config';
 import { CardAccount, CardBalance, CardRow, Fallback } from 'shared/wallet';
 import type { WalletComponentType } from 'shared/wallet/types';
@@ -21,7 +21,6 @@ const WalletComponent: WalletComponentType = (props) => {
 
   const stethAddress = useTokenAddress(TOKENS.STETH);
   const lidoApr = useLidoApr();
-  const etrApr = useEthApr();
 
   return (
     <StyledCard {...props}>
@@ -56,18 +55,8 @@ const WalletComponent: WalletComponentType = (props) => {
           title={
             <>
               Lido APR{' '}
-              {etrApr && etrApr.data && (
-                <Tooltip
-                  placement="bottom"
-                  title={
-                    /* String.replaceAll presumably causes exceptions
-                    in dApp browsers of some mobile devices */
-                    LIDO_APR_TOOLTIP_TEXT.replace(
-                      /\$\{apr.eth}/g,
-                      etrApr.data as string,
-                    )
-                  }
-                >
+              {lidoApr && lidoApr.data && (
+                <Tooltip placement="bottom" title={LIDO_APR_TOOLTIP_TEXT}>
                   <Question />
                 </Tooltip>
               )}
