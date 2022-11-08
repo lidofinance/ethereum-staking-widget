@@ -1,4 +1,4 @@
-import { MatomoEvent } from '@lidofinance/matomo';
+import { MatomoEventType } from '@lidofinance/analytics-matomo';
 
 const enum EVENTS {
   // Global
@@ -20,7 +20,7 @@ const enum EVENTS {
   calculateRewards = 'calculateRewards',
 }
 
-export const MATOMO_EVENTS: Record<EVENTS, MatomoEvent> = {
+export const MATOMO_EVENTS: Record<EVENTS, MatomoEventType> = {
   // Global
   connectWallet: [
     'Ethereum_Stacking_Widget',

@@ -9,7 +9,7 @@ import {
   Question,
   Tooltip,
 } from '@lidofinance/lido-ui';
-import { trackEvent } from '@lidofinance/matomo';
+import { trackEvent } from '@lidofinance/analytics-matomo';
 import { Section } from 'shared/components';
 import { useLidoApr, useLidoStats, useEthApr } from 'shared/hooks';
 import {
