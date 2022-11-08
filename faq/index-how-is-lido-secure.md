@@ -1,8 +1,8 @@
 ---
-title: How is Lido secure?
+title: Is it safe to work with Lido?
 ---
 
-Lido is a secure liquid staking solution for a number of reasons:
+Lido is a liquid staking solution and fits the next points:
 
 - Open-sourcing & continuous review of all code.
 - Committee of elected, best-in-class validators to minimise staking risk.
