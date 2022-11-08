@@ -1,30 +1,48 @@
 import { FC } from 'react';
 import { GetServerSideProps } from 'next';
+import { useContractSWR, useSTETHContractRPC } from '@lido-sdk/react';
 import Head from 'next/head';
 import { Wallet, StakeForm, LidoStats } from 'features/home';
 import { Layout, Faq } from 'shared/components';
 import { FAQItem, getFaqList } from 'lib/faqList';
+import { DATA_UNAVAILABLE } from 'config';
 
 interface HomeProps {
   faqList: FAQItem[];
 }
 
-const Home: FC<HomeProps> = ({ faqList }) => (
-  <>
-    <Layout
-      title="Stake Ether"
-      subtitle="Stake ETH and receive stETH while staking."
-    >
-      <Head>
-        <title>Stake with Lido | Lido</title>
-      </Head>
-      <Wallet />
-      <StakeForm />
-      <LidoStats />
-      <Faq faqList={faqList} />
-    </Layout>
-  </>
-);
+const Home: FC<HomeProps> = ({ faqList }) => {
+  const contractRpc = useSTETHContractRPC();
+  const lidoFee = useContractSWR({
+    contract: contractRpc,
+    method: 'getFee',
+  });
+
+  return (
+    <>
+      <Layout
+        title="Stake Ether"
+        subtitle="Stake ETH and receive stETH while staking."
+      >
+        <Head>
+          <title>Stake with Lido | Lido</title>
+        </Head>
+        <Wallet />
+        <StakeForm />
+        <LidoStats />
+        <Faq
+          faqList={faqList}
+          replacements={{
+            '%LIDO-FEE%':
+              lidoFee.initialLoading || !lidoFee.data
+                ? DATA_UNAVAILABLE
+                : `${lidoFee.data / 100}%`,
+          }}
+        />
+      </Layout>
+    </>
+  );
+};
 
 export default Home;
 
