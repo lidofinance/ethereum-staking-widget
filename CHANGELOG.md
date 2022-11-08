@@ -1,3 +1,12 @@
+## [1.37.1](https://github.com/lidofinance/staking-widget-ts/compare/1.37.0...1.37.1) (2022-11-08)
+
+
+### Bug Fixes
+
+* trust wallet deeplink ([6870dfc](https://github.com/lidofinance/staking-widget-ts/commit/6870dfc84effce4aaf14c87daa93637f9b043e0a))
+
+
+
 # [1.37.0](https://github.com/lidofinance/staking-widget-ts/compare/1.35.0...1.37.0) (2022-11-01)
 
 
@@ -188,29 +197,6 @@
 * add metrics class, update metrics types ([05ce801](https://github.com/lidofinance/staking-widget-ts/commit/05ce801938393d88f982ec56353612e6c9ff927e))
 * add rpc resp time metric, add fetch wrapper, add external resp time metric ([65ef1d0](https://github.com/lidofinance/staking-widget-ts/commit/65ef1d0594d91a39e5692b7fc83adb5020f81ceb))
 * split metrics into separate classes ([48a6b72](https://github.com/lidofinance/staking-widget-ts/commit/48a6b72dd421759629a0ff2eeba9fb270a33a2ec))
-
-
-
-# [1.26.0](https://github.com/lidofinance/staking-widget-ts/compare/1.25.0...1.26.0) (2022-10-03)
-
-
-### Bug Fixes
-
-* add link url ([af3b4d3](https://github.com/lidofinance/staking-widget-ts/commit/af3b4d31a84f02d650f16d7e81a8163e5ee3e9e9))
-* change banner text ([4344e1b](https://github.com/lidofinance/staking-widget-ts/commit/4344e1b1c48326480c41dc5caafd34fc1df8dd6f))
-* change banner text ([f024ae3](https://github.com/lidofinance/staking-widget-ts/commit/f024ae3dc04128271470e89277fdd9cd388b2814))
-* change margins ([d371c82](https://github.com/lidofinance/staking-widget-ts/commit/d371c82b94c0d32028ca90c829ffa71cc3273530))
-* remove link ro referral from header ([898ecf0](https://github.com/lidofinance/staking-widget-ts/commit/898ecf033cca22a9d82feb32eb93b93c437dbf98))
-* update text and links ([30dcb18](https://github.com/lidofinance/staking-widget-ts/commit/30dcb1894ef19c26f0e0146653a27ac9a20a5996))
-
-
-### Features
-
-* add banner from design ([432a3f8](https://github.com/lidofinance/staking-widget-ts/commit/432a3f8a226942d444983267532c7d56f923a021))
-* add base components ([a556eb6](https://github.com/lidofinance/staking-widget-ts/commit/a556eb6ce36bb96957ab7c67e83680443b1a0474))
-* add mobile deeplink for 1inch in ledger live ([12a3892](https://github.com/lidofinance/staking-widget-ts/commit/12a3892716aacd49e348ab78fe3db3b96c3a8c01))
-* change apr text and headers for requests ([b7afe80](https://github.com/lidofinance/staking-widget-ts/commit/b7afe800bcaa145d9961534df322589be33bf180))
-* update 1inch rate limit ([c4569a1](https://github.com/lidofinance/staking-widget-ts/commit/c4569a1805a3d340ff587c841cea174a8c24db69))
 
 
 
