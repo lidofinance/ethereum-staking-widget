@@ -41,8 +41,6 @@ const faqList = getFaqList([
   'index-risks-of-staking-with-lido',
   'index-lido-fee',
   'index-steth-can-be-converted-to-eth',
-  'lido-referral-program',
-  'index-how-to-claim-referral-reward',
 ]);
 
 export const getServerSideProps: GetServerSideProps<HomeProps> = async () => {
