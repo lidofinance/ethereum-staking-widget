@@ -1,7 +1,6 @@
 import { FC } from 'react';
-import { Accordion } from '@lidofinance/lido-ui';
-import { MatomoLink } from 'shared/components';
-import { MATOMO_EVENTS } from 'config';
+import { Accordion, Link } from '@lidofinance/lido-ui';
+import { MATOMO_EVENTS_TYPES } from 'config';
 
 const TITLE = 'What is Lido?';
 
@@ -23,22 +22,22 @@ export const WhatIsLido: FC = () => {
       <p>
         As part of our continuing efforts to be a force for decentralization, we
         have published a{' '}
-        <MatomoLink
+        <Link
           href="https://lido.fi/scorecard"
-          matomoEvent={MATOMO_EVENTS.clickFaqWhatIsLidoScorecard}
+          data-matomo={MATOMO_EVENTS_TYPES.clickFaqWhatIsLidoScorecard}
         >
           scorecard
-        </MatomoLink>{' '}
+        </Link>{' '}
         for community input and accountability.
       </p>
       <p>
         Learn more{' '}
-        <MatomoLink
+        <Link
           href="https://blog.lido.fi/introducing-lido/"
-          matomoEvent={MATOMO_EVENTS.clickFaqWhatIsLidoLearnMore}
+          data-matomo={MATOMO_EVENTS_TYPES.clickFaqWhatIsLidoLearnMore}
         >
           here
-        </MatomoLink>
+        </Link>
       </p>
     </Accordion>
   );

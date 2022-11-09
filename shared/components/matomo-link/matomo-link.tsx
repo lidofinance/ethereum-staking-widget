@@ -1,16 +1,17 @@
 import { FC } from 'react';
 import { Link, LinkProps } from '@lidofinance/lido-ui';
-import { MatomoEvent, trackEvent } from 'utils';
+import { MATOMO_EVENTS_TYPES, MATOMO_EVENTS } from 'config';
+import { trackEvent } from 'utils';
 
 interface MatomoLinkProps extends LinkProps {
-  matomoEvent: MatomoEvent;
+  matomoEvent: MATOMO_EVENTS_TYPES;
 }
 
 export const MatomoLink: FC<MatomoLinkProps> = (props) => {
   const { matomoEvent, ...rest } = props;
 
   const onClickHandelr = () => {
-    trackEvent(...matomoEvent);
+    trackEvent(...MATOMO_EVENTS[matomoEvent]);
   };
 
   return <Link {...rest} onClick={onClickHandelr} />;

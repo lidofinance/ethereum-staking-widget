@@ -1,49 +1,50 @@
 import { FC } from 'react';
-import { Accordion } from '@lidofinance/lido-ui';
-import { MatomoLink } from 'shared/components';
-import { MATOMO_EVENTS } from 'config';
+import { Accordion, Link } from '@lidofinance/lido-ui';
+import { MATOMO_EVENTS_TYPES } from 'config';
 
 const TITLE = 'Where can I cover my stETH?';
 
 export const WhereCanICoveMySteth: FC = () => {
   return (
     <Accordion summary={TITLE}>
-      <p>
+      <span>
         There are multiple coverage providers with different products for stETH
         & derivatives:
-      </p>
+      </span>
       <ul>
         <li>
-          <MatomoLink
+          <Link
             href="https://bridgemutual.io/"
-            matomoEvent={MATOMO_EVENTS.clickFaqWhereCanICoverBridgeMutual}
+            data-matomo={MATOMO_EVENTS_TYPES.clickFaqWhereCanICoverBridgeMutual}
           >
             Bridge Mutual
-          </MatomoLink>
+          </Link>
         </li>
         <li>
-          <MatomoLink
+          <Link
             href="https://idle.finance/"
-            matomoEvent={MATOMO_EVENTS.clickFaqWhereCanICoverIdleFinance}
+            data-matomo={MATOMO_EVENTS_TYPES.clickFaqWhereCanICoverIdleFinance}
           >
             Idle Finance
-          </MatomoLink>
+          </Link>
         </li>
         <li>
-          <MatomoLink
+          <Link
             href="https://nexusmutual.io/"
-            matomoEvent={MATOMO_EVENTS.clickFaqWhereCanICoverNexusMutual}
+            data-matomo={MATOMO_EVENTS_TYPES.clickFaqWhereCanICoverNexusMutual}
           >
             Nexus Mutual
-          </MatomoLink>
+          </Link>
         </li>
         <li>
-          <MatomoLink
+          <Link
             href="https://app.ribbon.finance/"
-            matomoEvent={MATOMO_EVENTS.clickFaqWhereCanICoverRibbonFinance}
+            data-matomo={
+              MATOMO_EVENTS_TYPES.clickFaqWhereCanICoverRibbonFinance
+            }
           >
             Ribbon Finance
-          </MatomoLink>
+          </Link>
         </li>
       </ul>
       <p>Сheck with providers for coverage conditions.</p>

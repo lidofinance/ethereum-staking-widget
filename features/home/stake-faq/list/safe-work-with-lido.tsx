@@ -6,7 +6,7 @@ const TITLE = 'Is it safe to work with Lido?';
 export const SafeWorkWithLido: FC = () => {
   return (
     <Accordion summary={TITLE}>
-      <p>Lido is a liquid staking solution and fits the next points:</p>
+      <span> Lido is a liquid staking solution and fits the next points:</span>
       <ul>
         <li>Open-sourcing & continuous review of all code.</li>
         <li>

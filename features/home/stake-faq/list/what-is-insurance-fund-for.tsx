@@ -1,7 +1,6 @@
 import { FC } from 'react';
-import { Accordion } from '@lidofinance/lido-ui';
-import { MatomoLink } from 'shared/components';
-import { MATOMO_EVENTS } from 'config';
+import { Accordion, Link } from '@lidofinance/lido-ui';
+import { MATOMO_EVENTS_TYPES } from 'config';
 
 const TITLE = 'What is the Lido Insurance Fund used for?';
 
@@ -10,19 +9,21 @@ export const WhatIsInsuranceFundFor: FC = () => {
     <Accordion summary={TITLE}>
       <p>
         Lido{' '}
-        <MatomoLink
+        <Link
           href="https://etherscan.io/address/0x8B3f33234ABD88493c0Cd28De33D583B70beDe35"
-          matomoEvent={MATOMO_EVENTS.clickFaqLidoInsuranceFund}
+          data-matomo={MATOMO_EVENTS_TYPES.clickFaqLidoInsuranceFund}
         >
           Insurance fund
-        </MatomoLink>{' '}
+        </Link>{' '}
         can cover most of the slashing risks. Read more about risk scenarios{' '}
-        <MatomoLink
+        <Link
           href="https://research.lido.fi/t/redirecting-incoming-revenue-stream-from-insurance-fund-to-dao-treasury/2528/20?u=kadmil"
-          matomoEvent={MATOMO_EVENTS.clickFaqLidoInsuranceFundRiskScenarios}
+          data-matomo={
+            MATOMO_EVENTS_TYPES.clickFaqLidoInsuranceFundRiskScenarios
+          }
         >
           here
-        </MatomoLink>
+        </Link>
       </p>
       <p>
         In case of a widespread slashing incident (which is still possible, but

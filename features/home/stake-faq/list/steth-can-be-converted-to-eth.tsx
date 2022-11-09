@@ -1,7 +1,6 @@
 import { FC } from 'react';
-import { Accordion } from '@lidofinance/lido-ui';
-import { MatomoLink } from 'shared/components';
-import { MATOMO_EVENTS } from 'config';
+import { Accordion, Link } from '@lidofinance/lido-ui';
+import { MATOMO_EVENTS_TYPES } from 'config';
 
 const TITLE = 'How stETH can be converted to ETH?';
 
@@ -12,19 +11,19 @@ export const StethCanBeConvertedToEth: FC = () => {
         While there&apos;s no way to withdraw ETH from staking until withdrawals
         are enabled on the Beacon chain, stETH holders may exchange their stETH
         to ETH on liquidity pools such as{' '}
-        <MatomoLink
+        <Link
           href="https://curve.fi/steth"
-          matomoEvent={MATOMO_EVENTS.clickFaqStethConvertedToEthCurve}
+          data-matomo={MATOMO_EVENTS_TYPES.clickFaqStethConvertedToEthCurve}
         >
           Curve
-        </MatomoLink>{' '}
+        </Link>{' '}
         or{' '}
-        <MatomoLink
+        <Link
           href="https://app.balancer.fi/#/trade"
-          matomoEvent={MATOMO_EVENTS.clickFaqStethConvertedToEthBalancer}
+          data-matomo={MATOMO_EVENTS_TYPES.clickFaqStethConvertedToEthBalancer}
         >
           Balancer
-        </MatomoLink>{' '}
+        </Link>
         .
       </p>
     </Accordion>
