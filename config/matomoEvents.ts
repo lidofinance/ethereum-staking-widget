@@ -4,14 +4,12 @@ export const enum MATOMO_EVENTS_TYPES {
   // Global
   connectWallet = 'connectWallet',
   // / page
-  submitStake = 'submitStake', // needs to be discussed
   clickOneInchDiscount = 'clickOneInchDiscount',
   clickViewEtherscanOnStakePage = 'clickViewEtherscanOnStakePage',
   clickL2BannerStake = 'clickL2BannerStake',
   // FAQ
   clickFaqWhatIsLidoScorecard = 'clickFaqWhatIsLidoScorecard',
   clickFaqWhatIsLidoLearnMore = 'clickFaqWhatIsLidoLearnMore',
-  clickFaqHowDoesLidoWorkLearnMore = 'clickFaqHowDoesLidoWorkLearnMore',
   clickFaqLidoInsuranceFund = 'clickFaqLidoInsuranceFund',
   clickFaqLidoInsuranceFundRiskScenarios = 'clickFaqLidoInsuranceFundRiskScenarios',
   clickFaqWhereCanICoverBridgeMutual = 'clickFaqWhereCanICoverBridgeMutual',
@@ -23,9 +21,6 @@ export const enum MATOMO_EVENTS_TYPES {
   clickFaqStethConvertedToEthCurve = 'clickFaqStethConvertedToEthCurve',
   clickFaqStethConvertedToEthBalancer = 'clickFaqStethConvertedToEthBalancer',
   // /wrap page
-  submitWrap = 'submitWrap', // needs to be discussed
-  submitUnlock = 'submitUnlock', // needs to be discussed
-  submitUnwrap = 'submitUnwrap', // needs to be discussed
   clickL2BannerWrap = 'clickL2BannerWrap',
   // Unwrap tab
   clickL2BannerUnwrap = 'clickL2BannerUnwrap',
@@ -33,50 +28,40 @@ export const enum MATOMO_EVENTS_TYPES {
   calculateRewards = 'calculateRewards',
 }
 
-export const MATOMO_EVENTS: Record<EVENTS, MatomoEvent> = {
+export const MATOMO_EVENTS: Record<MATOMO_EVENTS_TYPES, MatomoEvent> = {
   // Global
-  connectWallet: [
+  [MATOMO_EVENTS_TYPES.connectWallet]: [
     'Ethereum_Staking_Widget',
     'Push "Connect wallet" button',
     'eth_widget_connect_wallet',
   ],
   // / page
-  submitStake: [
-    'Ethereum_Staking_Widget',
-    'Push submit button',
-    'eth_widget_stake_eth',
-  ],
-  clickOneInchDiscount: [
+  [MATOMO_EVENTS_TYPES.clickOneInchDiscount]: [
     'Ethereum_Staking_Widget',
     'Push "Get discount" on 1inch banner on widget',
     'eth_widget_oneinch_discount',
   ],
-  clickViewEtherscanOnStakePage: [
+  [MATOMO_EVENTS_TYPES.clickViewEtherscanOnStakePage]: [
     'Ethereum_Staking_Widget',
     'Push «View on Etherscan» on the right side of Lido Statistics',
     'eth_widget_etherscan_stakePage',
   ],
-  clickL2BannerStake: [
+  [MATOMO_EVENTS_TYPES.clickL2BannerStake]: [
     'Ethereum_Staking_Widget',
     'Push "Learn more" at the L2 banner on "Stake" tab',
     'eth_widget_banner_l2_stake',
   ],
   // FAQ
   // TODO: think - how to add event to md file
-  clickFaqWhatIsLidoScorecard: [
+  [MATOMO_EVENTS_TYPES.clickFaqWhatIsLidoScorecard]: [
     'Ethereum_Staking_Widget',
     'Push «Scorecard» in FAQ What is Lido on stake widget',
     'eth_widget_faq_whatislido_scorecard',
   ],
-  clickFaqWhatIsLidoLearnMore: [
+  [MATOMO_EVENTS_TYPES.clickFaqWhatIsLidoLearnMore]: [
     'Ethereum_Staking_Widget',
     'Push «here» in FAQ What is Lido «Learn more here» on stake widget',
     'eth_widget_faq_whatislido_learnmore',
-  ],
-  clickFaqHowDoesLidoWorkLearnMore: [
-    'Ethereum_Staking_Widget',
-    'Push «here» in FAQ How does Lido work «Learn more here» on stake widget',
-    'eth_widget_faq_howdoeslidowork_learnmore',
   ],
   [MATOMO_EVENTS_TYPES.clickFaqLidoInsuranceFund]: [
     'Ethereum_Staking_Widget',
@@ -129,34 +114,19 @@ export const MATOMO_EVENTS: Record<EVENTS, MatomoEvent> = {
     'eth_widget_faq_stethconverttoeth_balancer',
   ],
   // /wrap page
-  submitWrap: [
-    'Ethereum_Staking_Widget',
-    'Push "Wrap" button',
-    'eth_widget_wrap_eth',
-  ],
-  submitUnlock: [
-    'Ethereum_Staking_Widget',
-    'Push "Unlock" button',
-    'eth_widget_unlock_eth',
-  ],
-  submitUnwrap: [
-    'Ethereum_Staking_Widget',
-    'Push "Unwrap button"',
-    'eth_widget_unwrap_eth',
-  ],
-  clickL2BannerWrap: [
+  [MATOMO_EVENTS_TYPES.clickL2BannerWrap]: [
     'Ethereum_Staking_Widget',
     'Push "Learn more" at the L2 banner on "Wrap" tab',
     'eth_widget_banner_l2_wrap',
   ],
   // Unwrap tab
-  clickL2BannerUnwrap: [
+  [MATOMO_EVENTS_TYPES.clickL2BannerUnwrap]: [
     'Ethereum_Staking_Widget',
     'Push "Learn more" at the L2 banner on "Unwrap" tab',
     'eth_widget_banner_l2_unwrap',
   ],
   // /rewards page
-  calculateRewards: [
+  [MATOMO_EVENTS_TYPES.calculateRewards]: [
     'Ethereum_Staking_Widget',
     'Push calculate reward button" ',
     'eth_widget_calculate_reward',
