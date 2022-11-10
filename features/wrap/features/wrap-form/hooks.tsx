@@ -6,7 +6,7 @@ import {
   useSTETHContractRPC,
   useWSTETHContractRPC,
 } from '@lido-sdk/react';
-import { useWeb3 } from '@lido-sdk/web3-react';
+import { useWeb3 } from '@reef-knot/web3-react';
 import {
   ESTIMATE_ACCOUNT,
   getBackendRPCPath,
