@@ -1,4 +1,5 @@
 import { Cache } from 'memory-cache';
+import { wrapRequest as wrapNextRequest } from '@lidofinance/next-api-wrapper';
 import { API } from 'types';
 import {
   CACHE_SMA_STETH_APR_KEY,
@@ -6,7 +7,6 @@ import {
   API_ROUTES,
 } from 'config';
 import {
-  wrapNextRequest,
   responseTimeMetric,
   errorAndCacheDefaultWrappers,
   rateLimit,
