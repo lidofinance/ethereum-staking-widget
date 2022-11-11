@@ -20,6 +20,8 @@ export const enum MATOMO_CLICK_EVENTS_TYPES {
   faqRisksOfStakingImmunefiBugBounty = 'faqRisksOfStakingImmunefiBugBounty',
   faqStethConvertedToEthCurve = 'faqStethConvertedToEthCurve',
   faqStethConvertedToEthBalancer = 'faqStethConvertedToEthBalancer',
+  faqHowCanIGetWstethWrapLink = 'faqHowCanIGetWstethWrapLink',
+  faqHowDoIUnwrapWstethUnwrapLink = 'faqHowDoIUnwrapWstethUnwrapLink',
   // /wrap page
   l2BannerWrap = 'l2BannerWrap',
   // Unwrap tab
@@ -114,6 +116,16 @@ export const MATOMO_CLICK_EVENTS: Record<
     'Ethereum_Staking_Widget',
     'Push «Balancer» in FAQ How stETH can be converted to ETH on stake widget',
     'eth_widget_faq_stethconverttoeth_balancer',
+  ],
+  [MATOMO_CLICK_EVENTS_TYPES.faqHowCanIGetWstethWrapLink]: [
+    'Ethereum_Staking_Widget',
+    'Push «stake.lido.fi/wrap.» in FAQ How can I get wstETH',
+    'eth_widget_faq_howgetwsteth_wrap',
+  ],
+  [MATOMO_CLICK_EVENTS_TYPES.faqHowDoIUnwrapWstethUnwrapLink]: [
+    'Ethereum_Staking_Widget',
+    'Push «stake.lido.fi/wrap?mode=unwrap» How do I unwrap wstETH back to stETH?',
+    'eth_widget_faq_howunwrapwsteth_unwrap',
   ],
   // /wrap page
   [MATOMO_CLICK_EVENTS_TYPES.l2BannerWrap]: [

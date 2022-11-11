@@ -2,6 +2,7 @@ import { FC, useMemo } from 'react';
 import { useRouter } from 'next/router';
 import { Accordion, Link } from '@lidofinance/lido-ui';
 import { getQueryParams } from 'utils';
+import { MATOMO_CLICK_EVENTS_TYPES } from 'config';
 
 export const HowCanIGetWsteth: FC = () => {
   const router = useRouter();
@@ -22,7 +23,11 @@ export const HowCanIGetWsteth: FC = () => {
     <Accordion defaultExpanded summary="How can I get wstETH?">
       <p>
         You can wrap your stETH tokens using{' '}
-        <Link href={link} target="_self">
+        <Link
+          href={link}
+          data-matomo={MATOMO_CLICK_EVENTS_TYPES.faqHowCanIGetWstethWrapLink}
+          target="_self"
+        >
           stake.lido.fi/wrap
         </Link>
         . Simply connect your wallet, unlock your stETH tokens and press Wrap.

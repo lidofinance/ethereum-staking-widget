@@ -2,6 +2,7 @@ import { FC, useMemo } from 'react';
 import { useRouter } from 'next/router';
 import { Accordion, Link } from '@lidofinance/lido-ui';
 import { getQueryParams } from 'utils';
+import { MATOMO_CLICK_EVENTS_TYPES } from 'config';
 
 export const HowDoIUnwrapWstethToSteth: FC = () => {
   const router = useRouter();
@@ -22,7 +23,13 @@ export const HowDoIUnwrapWstethToSteth: FC = () => {
     <Accordion defaultExpanded summary="How do I unwrap wstETH back to stETH?">
       <p>
         You can unwrap your wstETH tokens using{' '}
-        <Link href={link} target="_self">
+        <Link
+          href={link}
+          data-matomo={
+            MATOMO_CLICK_EVENTS_TYPES.faqHowDoIUnwrapWstethUnwrapLink
+          }
+          target="_self"
+        >
           stake.lido.fi/wrap?mode=unwrap
         </Link>
         . Simply connect your wallet, specify the amount of wstETH tokens and
