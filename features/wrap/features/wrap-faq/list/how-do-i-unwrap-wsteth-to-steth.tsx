@@ -3,8 +3,6 @@ import { useRouter } from 'next/router';
 import { Accordion, Link } from '@lidofinance/lido-ui';
 import { getQueryParams } from 'utils';
 
-const TITLE = 'How do I unwrap wstETH back to stETH?';
-
 export const HowDoIUnwrapWstethToSteth: FC = () => {
   const router = useRouter();
   const { ref, embed } = router.query;
@@ -21,7 +19,7 @@ export const HowDoIUnwrapWstethToSteth: FC = () => {
   const link = `/wrap?mode=unwrap${query}`;
 
   return (
-    <Accordion defaultExpanded summary={TITLE}>
+    <Accordion defaultExpanded summary="How do I unwrap wstETH back to stETH?">
       <p>
         You can unwrap your wstETH tokens using{' '}
         <Link href={link} target="_self">

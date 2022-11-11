@@ -1,11 +1,9 @@
 import { FC } from 'react';
 import { Accordion } from '@lidofinance/lido-ui';
 
-const TITLE = 'Is it safe to work with Lido?';
-
 export const SafeWorkWithLido: FC = () => {
   return (
-    <Accordion summary={TITLE}>
+    <Accordion summary="Is it safe to work with Lido?">
       <span> Lido is a liquid staking solution and fits the next points:</span>
       <ul>
         <li>Open-sourcing & continuous review of all code.</li>

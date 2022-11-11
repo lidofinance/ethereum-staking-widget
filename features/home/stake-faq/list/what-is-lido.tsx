@@ -1,12 +1,10 @@
 import { FC } from 'react';
 import { Accordion, Link } from '@lidofinance/lido-ui';
-import { MATOMO_EVENTS_TYPES } from 'config';
-
-const TITLE = 'What is Lido?';
+import { MATOMO_CLICK_EVENTS_TYPES } from 'config';
 
 export const WhatIsLido: FC = () => {
   return (
-    <Accordion defaultExpanded summary={TITLE}>
+    <Accordion defaultExpanded summary="What is Lido?">
       <p>
         Lido is a liquid staking solution for Beacon chain backed by
         industry-leading staking providers. Lido lets users stake their ETH -
@@ -24,7 +22,7 @@ export const WhatIsLido: FC = () => {
         have published a{' '}
         <Link
           href="https://lido.fi/scorecard"
-          data-matomo={MATOMO_EVENTS_TYPES.clickFaqWhatIsLidoScorecard}
+          data-matomo={MATOMO_CLICK_EVENTS_TYPES.faqWhatIsLidoScorecard}
         >
           scorecard
         </Link>{' '}
@@ -34,7 +32,7 @@ export const WhatIsLido: FC = () => {
         Learn more{' '}
         <Link
           href="https://blog.lido.fi/introducing-lido/"
-          data-matomo={MATOMO_EVENTS_TYPES.clickFaqWhatIsLidoLearnMore}
+          data-matomo={MATOMO_CLICK_EVENTS_TYPES.faqWhatIsLidoLearnMore}
         >
           here
         </Link>

@@ -1,11 +1,12 @@
 import { FC } from 'react';
 import { Accordion } from '@lidofinance/lido-ui';
 
-const TITLE = 'Do I get my staking rewards if I wrap stETH to wstETH?';
-
 export const DoIGetMyStakingRewards: FC = () => {
   return (
-    <Accordion defaultExpanded summary={TITLE}>
+    <Accordion
+      defaultExpanded
+      summary="Do I get my staking rewards if I wrap stETH to wstETH?"
+    >
       <p>
         Yes, wrapped stETH earns staking rewards at the same rate as regular
         stETH. When you keep your stETH in a wrapper you cannot see your daily

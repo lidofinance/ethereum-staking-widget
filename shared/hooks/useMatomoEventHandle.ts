@@ -1,5 +1,5 @@
 import { trackEvent } from 'utils';
-import { MATOMO_EVENTS, MATOMO_EVENTS_TYPES } from 'config';
+import { MATOMO_CLICK_EVENTS, MATOMO_CLICK_EVENTS_TYPES } from 'config';
 
 export const useMatomoEventHandle = () => {
   const onClickHandler = (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
@@ -11,7 +11,9 @@ export const useMatomoEventHandle = () => {
 
     if (!matomoEvent) return;
 
-    trackEvent(...MATOMO_EVENTS[matomoEvent as MATOMO_EVENTS_TYPES]);
+    trackEvent(
+      ...MATOMO_CLICK_EVENTS[matomoEvent as MATOMO_CLICK_EVENTS_TYPES],
+    );
   };
 
   return onClickHandler;

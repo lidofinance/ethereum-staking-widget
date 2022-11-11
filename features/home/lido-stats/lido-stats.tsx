@@ -13,7 +13,7 @@ import {
   getStethAddress,
   LIDO_APR_TOOLTIP_TEXT,
   DATA_UNAVAILABLE,
-  MATOMO_EVENTS_TYPES,
+  MATOMO_CLICK_EVENTS_TYPES,
 } from 'config';
 import { useLidoApr, useLidoStats } from 'shared/hooks';
 import { FlexCenterVertical } from './styles';
@@ -34,7 +34,7 @@ export const LidoStats: FC = memo(() => {
       headerDecorator={
         <MatomoLink
           href={etherscanLink}
-          matomoEvent={MATOMO_EVENTS_TYPES.clickViewEtherscanOnStakePage}
+          matomoEvent={MATOMO_CLICK_EVENTS_TYPES.viewEtherscanOnStakePage}
         >
           View on Etherscan
         </MatomoLink>

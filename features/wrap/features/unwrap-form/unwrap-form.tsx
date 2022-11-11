@@ -24,7 +24,7 @@ import {
 } from '@lido-sdk/react';
 import { TxStageModal, TX_OPERATION, TX_STAGE } from 'shared/components';
 import { L2Banner } from 'shared/l2-banner';
-import { MATOMO_EVENTS } from 'config';
+import { MATOMO_CLICK_EVENTS } from 'config';
 import {
   useTxCostInUsd,
   useCurrencyInput,
@@ -186,7 +186,7 @@ export const UnwrapForm: FC = memo(() => {
         ) : (
           <Connect fullwidth />
         )}
-        <L2Banner matomoEvent={MATOMO_EVENTS.clickL2BannerUnwrap} />
+        <L2Banner matomoEvent={MATOMO_CLICK_EVENTS.l2BannerUnwrap} />
       </FormStyled>
 
       <DataTable>

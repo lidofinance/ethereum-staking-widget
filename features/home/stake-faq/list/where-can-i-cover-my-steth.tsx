@@ -1,12 +1,10 @@
 import { FC } from 'react';
 import { Accordion, Link } from '@lidofinance/lido-ui';
-import { MATOMO_EVENTS_TYPES } from 'config';
-
-const TITLE = 'Where can I cover my stETH?';
+import { MATOMO_CLICK_EVENTS_TYPES } from 'config';
 
 export const WhereCanICoveMySteth: FC = () => {
   return (
-    <Accordion summary={TITLE}>
+    <Accordion summary="Where can I cover my stETH?">
       <span>
         There are multiple coverage providers with different products for stETH
         & derivatives:
@@ -15,7 +13,9 @@ export const WhereCanICoveMySteth: FC = () => {
         <li>
           <Link
             href="https://bridgemutual.io/"
-            data-matomo={MATOMO_EVENTS_TYPES.clickFaqWhereCanICoverBridgeMutual}
+            data-matomo={
+              MATOMO_CLICK_EVENTS_TYPES.faqWhereCanICoverBridgeMutual
+            }
           >
             Bridge Mutual
           </Link>
@@ -23,7 +23,7 @@ export const WhereCanICoveMySteth: FC = () => {
         <li>
           <Link
             href="https://idle.finance/"
-            data-matomo={MATOMO_EVENTS_TYPES.clickFaqWhereCanICoverIdleFinance}
+            data-matomo={MATOMO_CLICK_EVENTS_TYPES.faqWhereCanICoverIdleFinance}
           >
             Idle Finance
           </Link>
@@ -31,7 +31,7 @@ export const WhereCanICoveMySteth: FC = () => {
         <li>
           <Link
             href="https://nexusmutual.io/"
-            data-matomo={MATOMO_EVENTS_TYPES.clickFaqWhereCanICoverNexusMutual}
+            data-matomo={MATOMO_CLICK_EVENTS_TYPES.faqWhereCanICoverNexusMutual}
           >
             Nexus Mutual
           </Link>
@@ -40,7 +40,7 @@ export const WhereCanICoveMySteth: FC = () => {
           <Link
             href="https://app.ribbon.finance/"
             data-matomo={
-              MATOMO_EVENTS_TYPES.clickFaqWhereCanICoverRibbonFinance
+              MATOMO_CLICK_EVENTS_TYPES.faqWhereCanICoverRibbonFinance
             }
           >
             Ribbon Finance

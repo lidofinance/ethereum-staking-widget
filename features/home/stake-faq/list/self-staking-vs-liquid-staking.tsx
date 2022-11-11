@@ -1,11 +1,9 @@
 import { FC } from 'react';
 import { Accordion } from '@lidofinance/lido-ui';
 
-const TITLE = 'What is the difference between self staking and liquid staking?';
-
 export const SelfStakingVsLiquidStaking: FC = () => {
   return (
-    <Accordion summary={TITLE}>
+    <Accordion summary="What is the difference between self staking and liquid staking?">
       <p>
         Ethereum is soon to be the biggest staking economy in the space.
         However, staking on Beacon chain requires expert knowledge and complex

@@ -1,11 +1,9 @@
 import { FC } from 'react';
 import { Accordion } from '@lidofinance/lido-ui';
 
-const TITLE = 'What is wstETH?';
-
 export const WhatIsWsteth: FC = () => {
   return (
-    <Accordion defaultExpanded summary={TITLE}>
+    <Accordion defaultExpanded summary="What is wstETH?">
       <p>
         wstETH is a wrapped version of stETH. Due to the nature of Lido, the
         amount of stETH on your balance is not constant - it changes daily as

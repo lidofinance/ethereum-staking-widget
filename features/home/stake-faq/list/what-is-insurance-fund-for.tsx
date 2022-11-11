@@ -1,17 +1,15 @@
 import { FC } from 'react';
 import { Accordion, Link } from '@lidofinance/lido-ui';
-import { MATOMO_EVENTS_TYPES } from 'config';
-
-const TITLE = 'What is the Lido Insurance Fund used for?';
+import { MATOMO_CLICK_EVENTS_TYPES } from 'config';
 
 export const WhatIsInsuranceFundFor: FC = () => {
   return (
-    <Accordion summary={TITLE}>
+    <Accordion summary="What is the Lido Insurance Fund used for?">
       <p>
         Lido{' '}
         <Link
           href="https://etherscan.io/address/0x8B3f33234ABD88493c0Cd28De33D583B70beDe35"
-          data-matomo={MATOMO_EVENTS_TYPES.clickFaqLidoInsuranceFund}
+          data-matomo={MATOMO_CLICK_EVENTS_TYPES.faqLidoInsuranceFund}
         >
           Insurance fund
         </Link>{' '}
@@ -19,7 +17,7 @@ export const WhatIsInsuranceFundFor: FC = () => {
         <Link
           href="https://research.lido.fi/t/redirecting-incoming-revenue-stream-from-insurance-fund-to-dao-treasury/2528/20?u=kadmil"
           data-matomo={
-            MATOMO_EVENTS_TYPES.clickFaqLidoInsuranceFundRiskScenarios
+            MATOMO_CLICK_EVENTS_TYPES.faqLidoInsuranceFundRiskScenarios
           }
         >
           here

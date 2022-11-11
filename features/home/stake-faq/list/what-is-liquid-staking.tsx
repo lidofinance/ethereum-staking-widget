@@ -1,11 +1,9 @@
 import { FC } from 'react';
 import { Accordion } from '@lidofinance/lido-ui';
 
-const TITLE = 'What is liquid staking?';
-
 export const WhatIsLiquidStaking: FC = () => {
   return (
-    <Accordion summary={TITLE}>
+    <Accordion summary="What is liquid staking?">
       <p>
         Liquid staking protocols allow users to earn staking rewards without
         locking assets or maintaining staking infrastructure. Users can deposit

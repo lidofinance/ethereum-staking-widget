@@ -1,11 +1,9 @@
 import { FC } from 'react';
 import { Accordion } from '@lidofinance/lido-ui';
 
-const TITLE = 'What is stETH?';
-
 export const WhatIsSteth: FC = () => {
   return (
-    <Accordion summary={TITLE}>
+    <Accordion summary="What is stETH?">
       <p>
         stETH is a token that represents staked ether in Lido, combining the
         value of initial deposit + staking rewards. stETH tokens are minted upon

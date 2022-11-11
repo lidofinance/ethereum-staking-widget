@@ -1,11 +1,9 @@
 import { FC } from 'react';
 import { Accordion } from '@lidofinance/lido-ui';
 
-const TITLE = 'What is LDO?';
-
 export const WhatIsLdo: FC = () => {
   return (
-    <Accordion summary={TITLE}>
+    <Accordion summary="What is LDO?">
       <p>
         LDO is an Ethereum token granting governance rights in the Lido DAO. The
         Lido DAO governs a set of liquid staking protocols, decides on key

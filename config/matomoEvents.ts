@@ -1,132 +1,134 @@
 import { MatomoEvent } from 'utils';
 
-export const enum MATOMO_EVENTS_TYPES {
+export const enum MATOMO_CLICK_EVENTS_TYPES {
   // Global
   connectWallet = 'connectWallet',
   // / page
-  clickOneInchDiscount = 'clickOneInchDiscount',
-  clickViewEtherscanOnStakePage = 'clickViewEtherscanOnStakePage',
-  clickL2BannerStake = 'clickL2BannerStake',
+  oneInchDiscount = 'oneInchDiscount',
+  viewEtherscanOnStakePage = 'viewEtherscanOnStakePage',
+  l2BannerStake = 'l2BannerStake',
   // FAQ
-  clickFaqWhatIsLidoScorecard = 'clickFaqWhatIsLidoScorecard',
-  clickFaqWhatIsLidoLearnMore = 'clickFaqWhatIsLidoLearnMore',
-  clickFaqLidoInsuranceFund = 'clickFaqLidoInsuranceFund',
-  clickFaqLidoInsuranceFundRiskScenarios = 'clickFaqLidoInsuranceFundRiskScenarios',
-  clickFaqWhereCanICoverBridgeMutual = 'clickFaqWhereCanICoverBridgeMutual',
-  clickFaqWhereCanICoverIdleFinance = 'clickFaqWhereCanICoverIdleFinance',
-  clickFaqWhereCanICoverNexusMutual = 'clickFaqWhereCanICoverNexusMutual',
-  clickFaqWhereCanICoverRibbonFinance = 'clickFaqWhereCanICoverRibbonFinance',
-  clickFaqRisksOfStakingReports = 'clickFaqRisksOfStakingReports',
-  clickFaqRisksOfStakingImmunefiBugBounty = 'clickFaqRisksOfStakingImmunefiBugBounty',
-  clickFaqStethConvertedToEthCurve = 'clickFaqStethConvertedToEthCurve',
-  clickFaqStethConvertedToEthBalancer = 'clickFaqStethConvertedToEthBalancer',
+  faqWhatIsLidoScorecard = 'faqWhatIsLidoScorecard',
+  faqWhatIsLidoLearnMore = 'faqWhatIsLidoLearnMore',
+  faqLidoInsuranceFund = 'faqLidoInsuranceFund',
+  faqLidoInsuranceFundRiskScenarios = 'faqLidoInsuranceFundRiskScenarios',
+  faqWhereCanICoverBridgeMutual = 'faqWhereCanICoverBridgeMutual',
+  faqWhereCanICoverIdleFinance = 'faqWhereCanICoverIdleFinance',
+  faqWhereCanICoverNexusMutual = 'faqWhereCanICoverNexusMutual',
+  faqWhereCanICoverRibbonFinance = 'faqWhereCanICoverRibbonFinance',
+  faqRisksOfStakingReports = 'faqRisksOfStakingReports',
+  faqRisksOfStakingImmunefiBugBounty = 'faqRisksOfStakingImmunefiBugBounty',
+  faqStethConvertedToEthCurve = 'faqStethConvertedToEthCurve',
+  faqStethConvertedToEthBalancer = 'faqStethConvertedToEthBalancer',
   // /wrap page
-  clickL2BannerWrap = 'clickL2BannerWrap',
+  l2BannerWrap = 'l2BannerWrap',
   // Unwrap tab
-  clickL2BannerUnwrap = 'clickL2BannerUnwrap',
+  l2BannerUnwrap = 'l2BannerUnwrap',
   // /rewards page
   calculateRewards = 'calculateRewards',
 }
 
-export const MATOMO_EVENTS: Record<MATOMO_EVENTS_TYPES, MatomoEvent> = {
+export const MATOMO_CLICK_EVENTS: Record<
+  MATOMO_CLICK_EVENTS_TYPES,
+  MatomoEvent
+> = {
   // Global
-  [MATOMO_EVENTS_TYPES.connectWallet]: [
+  [MATOMO_CLICK_EVENTS_TYPES.connectWallet]: [
     'Ethereum_Staking_Widget',
     'Push "Connect wallet" button',
     'eth_widget_connect_wallet',
   ],
   // / page
-  [MATOMO_EVENTS_TYPES.clickOneInchDiscount]: [
+  [MATOMO_CLICK_EVENTS_TYPES.oneInchDiscount]: [
     'Ethereum_Staking_Widget',
     'Push "Get discount" on 1inch banner on widget',
     'eth_widget_oneinch_discount',
   ],
-  [MATOMO_EVENTS_TYPES.clickViewEtherscanOnStakePage]: [
+  [MATOMO_CLICK_EVENTS_TYPES.viewEtherscanOnStakePage]: [
     'Ethereum_Staking_Widget',
     'Push «View on Etherscan» on the right side of Lido Statistics',
     'eth_widget_etherscan_stakePage',
   ],
-  [MATOMO_EVENTS_TYPES.clickL2BannerStake]: [
+  [MATOMO_CLICK_EVENTS_TYPES.l2BannerStake]: [
     'Ethereum_Staking_Widget',
     'Push "Learn more" at the L2 banner on "Stake" tab',
     'eth_widget_banner_l2_stake',
   ],
   // FAQ
-  // TODO: think - how to add event to md file
-  [MATOMO_EVENTS_TYPES.clickFaqWhatIsLidoScorecard]: [
+  [MATOMO_CLICK_EVENTS_TYPES.faqWhatIsLidoScorecard]: [
     'Ethereum_Staking_Widget',
     'Push «Scorecard» in FAQ What is Lido on stake widget',
     'eth_widget_faq_whatislido_scorecard',
   ],
-  [MATOMO_EVENTS_TYPES.clickFaqWhatIsLidoLearnMore]: [
+  [MATOMO_CLICK_EVENTS_TYPES.faqWhatIsLidoLearnMore]: [
     'Ethereum_Staking_Widget',
     'Push «here» in FAQ What is Lido «Learn more here» on stake widget',
     'eth_widget_faq_whatislido_learnmore',
   ],
-  [MATOMO_EVENTS_TYPES.clickFaqLidoInsuranceFund]: [
+  [MATOMO_CLICK_EVENTS_TYPES.faqLidoInsuranceFund]: [
     'Ethereum_Staking_Widget',
     'Push «Insurance fund» in FAQ What is the Lido Insurance Fund used for? on stake widget',
     'eth_widget_faq_lidoInsuranceFund_insurancefund',
   ],
-  [MATOMO_EVENTS_TYPES.clickFaqLidoInsuranceFundRiskScenarios]: [
+  [MATOMO_CLICK_EVENTS_TYPES.faqLidoInsuranceFundRiskScenarios]: [
     'Ethereum_Staking_Widget',
     'Push «here» in FAQ What is the Lido Insurance Fund used for? "risk scenarios" on stake widget',
     'eth_widget_faq_lidoInsuranceFund_insurancefund',
   ],
-  [MATOMO_EVENTS_TYPES.clickFaqWhereCanICoverBridgeMutual]: [
+  [MATOMO_CLICK_EVENTS_TYPES.faqWhereCanICoverBridgeMutual]: [
     'Ethereum_Staking_Widget',
     'Push «Bridge Mutual» in FAQ Where can I cover my stETH? on stake widget',
     'eth_widget_faq_wherecanicover_bridgemutual',
   ],
-  [MATOMO_EVENTS_TYPES.clickFaqWhereCanICoverIdleFinance]: [
+  [MATOMO_CLICK_EVENTS_TYPES.faqWhereCanICoverIdleFinance]: [
     'Ethereum_Staking_Widget',
     'Push «Idle Finance» in FAQ Where can I cover my stETH? on stake widget',
     'eth_widget_faq_wherecanicover_idlefinance',
   ],
-  [MATOMO_EVENTS_TYPES.clickFaqWhereCanICoverNexusMutual]: [
+  [MATOMO_CLICK_EVENTS_TYPES.faqWhereCanICoverNexusMutual]: [
     'Ethereum_Staking_Widget',
     'Push «Nexus Mutual» in FAQ Where can I cover my stETH? on stake widget',
     'eth_widget_faq_wherecanicover_nexusmutual',
   ],
-  [MATOMO_EVENTS_TYPES.clickFaqWhereCanICoverRibbonFinance]: [
+  [MATOMO_CLICK_EVENTS_TYPES.faqWhereCanICoverRibbonFinance]: [
     'Ethereum_Staking_Widget',
     'Push «Ribbon Finance» in FAQ Where can I cover my stETH? on stake widget',
     'eth_widget_faq_wherecanicover_ribbonfinance',
   ],
-  [MATOMO_EVENTS_TYPES.clickFaqRisksOfStakingReports]: [
+  [MATOMO_CLICK_EVENTS_TYPES.faqRisksOfStakingReports]: [
     'Ethereum_Staking_Widget',
     'Push "here" in FAQ  What are the risks of staking with Lido? on stake widget',
     'eth_widget_faq_risksofstaking_reports',
   ],
-  [MATOMO_EVENTS_TYPES.clickFaqRisksOfStakingImmunefiBugBounty]: [
+  [MATOMO_CLICK_EVENTS_TYPES.faqRisksOfStakingImmunefiBugBounty]: [
     'Ethereum_Staking_Widget',
     'Push "Immunefi bug bounty program" in FAQ  What are the risks of staking with Lido? on stake widget',
     'eth_widget_faq_risksofstaking_immunefibugbounty',
   ],
-  [MATOMO_EVENTS_TYPES.clickFaqStethConvertedToEthCurve]: [
+  [MATOMO_CLICK_EVENTS_TYPES.faqStethConvertedToEthCurve]: [
     'Ethereum_Staking_Widget',
     'Push «Curve» in FAQ How stETH can be converted to ETH on stake widget',
     'eth_widget_faq_stethconverttoeth_curve',
   ],
-  [MATOMO_EVENTS_TYPES.clickFaqStethConvertedToEthBalancer]: [
+  [MATOMO_CLICK_EVENTS_TYPES.faqStethConvertedToEthBalancer]: [
     'Ethereum_Staking_Widget',
     'Push «Balancer» in FAQ How stETH can be converted to ETH on stake widget',
     'eth_widget_faq_stethconverttoeth_balancer',
   ],
   // /wrap page
-  [MATOMO_EVENTS_TYPES.clickL2BannerWrap]: [
+  [MATOMO_CLICK_EVENTS_TYPES.l2BannerWrap]: [
     'Ethereum_Staking_Widget',
     'Push "Learn more" at the L2 banner on "Wrap" tab',
     'eth_widget_banner_l2_wrap',
   ],
   // Unwrap tab
-  [MATOMO_EVENTS_TYPES.clickL2BannerUnwrap]: [
+  [MATOMO_CLICK_EVENTS_TYPES.l2BannerUnwrap]: [
     'Ethereum_Staking_Widget',
     'Push "Learn more" at the L2 banner on "Unwrap" tab',
     'eth_widget_banner_l2_unwrap',
   ],
   // /rewards page
-  [MATOMO_EVENTS_TYPES.calculateRewards]: [
+  [MATOMO_CLICK_EVENTS_TYPES.calculateRewards]: [
     'Ethereum_Staking_Widget',
     'Push calculate reward button" ',
     'eth_widget_calculate_reward',

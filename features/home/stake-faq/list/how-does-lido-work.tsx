@@ -1,11 +1,9 @@
 import { FC } from 'react';
 import { Accordion } from '@lidofinance/lido-ui';
 
-const TITLE = 'How does Lido work?';
-
 export const HowDoesLidoWork: FC = () => {
   return (
-    <Accordion summary={TITLE}>
+    <Accordion summary="How does Lido work?">
       <p>
         When staking with Lido, users receive stETH tokens which are issued 1:1
         to their initial stake. stETH balances can be used like regular ETH to

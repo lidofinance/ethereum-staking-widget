@@ -1,12 +1,10 @@
 import { FC } from 'react';
 import { Accordion, Link } from '@lidofinance/lido-ui';
-import { MATOMO_EVENTS_TYPES } from 'config';
-
-const TITLE = 'What are the risks of staking with Lido?';
+import { MATOMO_CLICK_EVENTS_TYPES } from 'config';
 
 export const RisksOfStakingWithLido: FC = () => {
   return (
-    <Accordion summary={TITLE}>
+    <Accordion summary="What are the risks of staking with Lido?">
       <p>
         There exist a number of potential risks when staking ETH using liquid
         staking protocols.
@@ -22,7 +20,7 @@ export const RisksOfStakingWithLido: FC = () => {
             audited. Audit reports can be found{' '}
             <Link
               href="https://github.com/lidofinance/audits#lido-protocol-audits"
-              data-matomo={MATOMO_EVENTS_TYPES.clickFaqRisksOfStakingReports}
+              data-matomo={MATOMO_CLICK_EVENTS_TYPES.faqRisksOfStakingReports}
             >
               here
             </Link>
@@ -30,7 +28,7 @@ export const RisksOfStakingWithLido: FC = () => {
             <Link
               href="https://immunefi.com/bounty/lido/"
               data-matomo={
-                MATOMO_EVENTS_TYPES.clickFaqRisksOfStakingImmunefiBugBounty
+                MATOMO_CLICK_EVENTS_TYPES.faqRisksOfStakingImmunefiBugBounty
               }
             >
               Immunefi bug bounty program

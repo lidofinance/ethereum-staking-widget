@@ -3,8 +3,6 @@ import { useRouter } from 'next/router';
 import { Accordion, Link } from '@lidofinance/lido-ui';
 import { getQueryParams } from 'utils';
 
-const TITLE = 'How can I get wstETH?';
-
 export const HowCanIGetWsteth: FC = () => {
   const router = useRouter();
   const { ref, embed } = router.query;
@@ -21,7 +19,7 @@ export const HowCanIGetWsteth: FC = () => {
   const link = `/wrap${query}`;
 
   return (
-    <Accordion defaultExpanded summary={TITLE}>
+    <Accordion defaultExpanded summary="How can I get wstETH?">
       <p>
         You can wrap your stETH tokens using{' '}
         <Link href={link} target="_self">
