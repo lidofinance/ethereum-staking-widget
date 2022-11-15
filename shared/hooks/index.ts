@@ -15,3 +15,4 @@ export * from './useUniqueConnector';
 export * from './useLidoSwr';
 export * from './useStakingLimitInfo';
 export * from './useStakingLimitLevel';
+export * from './useMatomoEventHandle';

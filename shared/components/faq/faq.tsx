@@ -1,10 +1,8 @@
 import { FC, memo } from 'react';
 import { Accordion } from '@lidofinance/lido-ui';
-import { useContractSWR, useSTETHContractRPC } from '@lido-sdk/react';
 import styled from 'styled-components';
 import { Section } from 'shared/components';
 import { replaceAll } from 'utils/replaceAll';
-import { DATA_UNAVAILABLE } from 'config';
 import { FAQItem } from 'lib/faqList';
 
 export interface FaqProps {
@@ -43,23 +41,10 @@ const FaqItem = styled.div`
 `;
 
 export const Faq: FC<FaqProps> = memo(({ faqList, replacements }) => {
-  const contractRpc = useSTETHContractRPC();
-  const lidoFee = useContractSWR({
-    contract: contractRpc,
-    method: 'getFee',
-  });
-  const commonReplacements = {
-    '%LIDO-FEE%':
-      lidoFee.initialLoading || !lidoFee.data
-        ? DATA_UNAVAILABLE
-        : `${lidoFee.data / 100}%`,
-  };
-  const mergedReplacements = { ...commonReplacements, ...replacements };
-
   return (
     <Section title="FAQ">
       {faqList.map(({ id, title, content }, index) => {
-        const html = replaceAll(content, mergedReplacements);
+        const html = replaceAll(content, replacements);
 
         return (
           <Accordion

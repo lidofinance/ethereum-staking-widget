@@ -1,5 +1,9 @@
 import { Cache } from 'memory-cache';
 import {
+  wrapRequest as wrapNextRequest,
+  cacheControl,
+} from '@lidofinance/next-api-wrapper';
+import {
   CACHE_TOTAL_SUPPLY_KEY,
   CACHE_TOTAL_SUPPLY_TTL,
   CACHE_TOTAL_SUPPLY_HEADERS,
@@ -7,9 +11,7 @@ import {
 } from 'config';
 import {
   getTotalStaked,
-  wrapNextRequest,
   defaultErrorHandler,
-  cacheControl,
   responseTimeMetric,
   rateLimit,
 } from 'utilsApi';
@@ -35,6 +37,6 @@ const totalSupply: API = async (req, res) => {
 export default wrapNextRequest([
   rateLimit(),
   responseTimeMetric(Metrics.request.apiTimings, API_ROUTES.TOTALSUPPLY),
-  cacheControl(CACHE_TOTAL_SUPPLY_HEADERS),
+  cacheControl({ headers: CACHE_TOTAL_SUPPLY_HEADERS }),
   defaultErrorHandler,
 ])(totalSupply);
