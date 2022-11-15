@@ -1,24 +1,18 @@
-import { AppCookies, COOKIES_ALLOWED_KEY, COOKIE_VALUE_YES } from 'utils';
+import { AppCookies } from 'utils';
 import getConfig from 'next/config';
 const { publicRuntimeConfig } = getConfig();
 const { matomoUrl } = publicRuntimeConfig;
 
 const checkIsInitMatomo = () => {
   if (typeof window === 'undefined') return false;
-
-  const isAllowedCookie =
-    AppCookies.getCookie(COOKIES_ALLOWED_KEY) === COOKIE_VALUE_YES;
-
-  if (!isAllowedCookie) return false;
+  if (!AppCookies.isCookiesAllowed()) return false;
   if (window._paq) return true;
 };
 
 const initMatomo = () => {
   if (typeof window === 'undefined' || !matomoUrl) return;
 
-  const isAllowedCookie =
-    AppCookies.getCookie(COOKIES_ALLOWED_KEY) === COOKIE_VALUE_YES;
-  if (!isAllowedCookie) return;
+  if (!AppCookies.isCookiesAllowed()) return;
 
   window._paq ??= [];
 
