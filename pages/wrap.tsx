@@ -2,45 +2,12 @@ import { FC, useCallback, useMemo } from 'react';
 import { GetServerSideProps } from 'next';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
-import { FAQItem, getFaqList } from 'lib/faqList';
-import { Layout, Faq } from 'shared/components';
-import { WrapForm, UnwrapForm, Wallet } from 'features/wrap';
+import { Layout } from 'shared/components';
+import { WrapForm, UnwrapForm, Wallet, WrapFaq } from 'features/wrap';
 import { Switch } from 'features/wrap/components';
+import { getQueryParams } from 'utils';
 
-interface WrapPageProps {
-  faqList: FAQItem[];
-}
-
-const getQueryParams = (
-  isUnwrapMode: boolean,
-  ref: string,
-  embed: string,
-  exclude?: Array<string>,
-): string => {
-  const queryParams = new URLSearchParams();
-
-  if (!isUnwrapMode) {
-    queryParams.append('mode', 'unwrap');
-  }
-  if (ref) {
-    queryParams.append('ref', ref);
-  }
-  if (embed) {
-    queryParams.append('embed', embed);
-  }
-
-  if (exclude) {
-    exclude.forEach((item) => {
-      if (queryParams.has(item)) {
-        queryParams.delete(item);
-      }
-    });
-  }
-
-  return queryParams.toString();
-};
-
-const WrapPage: FC<WrapPageProps> = ({ faqList }) => {
+const WrapPage: FC = () => {
   const router = useRouter();
   const { ref, embed } = router.query;
   const isUnwrapMode = router.query.mode === 'unwrap';
@@ -87,36 +54,13 @@ const WrapPage: FC<WrapPageProps> = ({ faqList }) => {
 
       {isUnwrapMode ? <UnwrapForm /> : <WrapForm />}
 
-      <Faq
-        faqList={faqList}
-        replacements={{
-          '--QUERY-PARAMS--':
-            queryParamsWithoutMode.length > 0
-              ? `?${queryParamsWithoutMode}`
-              : '',
-          '--QUERY-PARAMS-WITHOUT-MODE--':
-            queryParamsWithoutMode.length > 0
-              ? `&${queryParamsWithoutMode}`
-              : '',
-        }}
-      />
+      <WrapFaq />
     </Layout>
   );
 };
 
 export default WrapPage;
 
-const faqList = getFaqList([
-  'wrap-what-is-wsteth',
-  'wrap-how-can-i-get-wsteth',
-  'wrap-how-can-i-use-wsteth',
-  'wrap-do-i-get-my-staking-rewards-if-i-wrap-steth-to-wsteth',
-  'wrap-do-i-need-to-claim-my-staking-rewards-f-i-wrap-steth-to-wsteth',
-  'wrap-how-do-i-unwrap-wsteth-back-to-steth',
-]);
-
-export const getServerSideProps: GetServerSideProps<
-  WrapPageProps
-> = async () => {
-  return { props: { faqList: await faqList } };
+export const getServerSideProps: GetServerSideProps = async () => {
+  return { props: {} };
 };

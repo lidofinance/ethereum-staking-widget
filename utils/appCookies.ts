@@ -1,15 +1,15 @@
 import Cookies from 'js-cookie';
 
 const appId = 'LIDO_WIDGET__';
-
-export const COOKIES_ALLOWED_KEY = 'COOKIES_ALLOWED';
+export const COOKIES_ALLOWED_FULL_KEY = `${appId}COOKIES_ALLOWED`;
+export const COOKIES_ALLOWED_KEY = 'cookie-allowed';
 export const COOKIE_VALUE_YES = 'yes';
 export const COOKIE_VALUE_NO = 'no';
 
 export const AppCookies = new (class {
   getCookie(name: string) {
     try {
-      return Cookies.get(`${appId}${name}`) ?? null;
+      return Cookies.get(name) ?? null;
     } catch (e) {
       return null;
     }
@@ -23,7 +23,7 @@ export const AppCookies = new (class {
     try {
       const expires = new Date(new Date().getTime() + expireTime * 1000);
 
-      Cookies.set(`${appId}${name}`, value, {
+      Cookies.set(name, value, {
         sameSite: 'None',
         secure: true,
         expires,

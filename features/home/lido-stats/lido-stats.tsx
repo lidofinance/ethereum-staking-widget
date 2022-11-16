@@ -5,19 +5,17 @@ import {
   Block,
   DataTable,
   DataTableRow,
-  Link,
   Question,
   Tooltip,
 } from '@lidofinance/lido-ui';
-import { Section } from 'shared/components';
+import { Section, MatomoLink } from 'shared/components';
 import {
   getStethAddress,
   LIDO_APR_TOOLTIP_TEXT,
   DATA_UNAVAILABLE,
-  MATOMO_EVENTS,
+  MATOMO_CLICK_EVENTS_TYPES,
 } from 'config';
 import { useLidoApr, useLidoStats } from 'shared/hooks';
-import { trackEvent } from 'utils';
 import { FlexCenterVertical } from './styles';
 
 export const LidoStats: FC = memo(() => {
@@ -30,16 +28,16 @@ export const LidoStats: FC = memo(() => {
   const lidoApr = useLidoApr();
   const lidoStats = useLidoStats();
 
-  const linkClickHandler = () =>
-    trackEvent(...MATOMO_EVENTS.clickViewEtherscanOnStakePage);
-
   return (
     <Section
       title="Lido statistics"
       headerDecorator={
-        <Link href={etherscanLink} onClick={linkClickHandler}>
+        <MatomoLink
+          href={etherscanLink}
+          matomoEvent={MATOMO_CLICK_EVENTS_TYPES.viewEtherscanOnStakePage}
+        >
           View on Etherscan
-        </Link>
+        </MatomoLink>
       }
     >
       <Block>
