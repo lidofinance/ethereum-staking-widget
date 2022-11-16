@@ -75,7 +75,7 @@ export const MATOMO_CLICK_EVENTS: Record<
   [MATOMO_CLICK_EVENTS_TYPES.faqLidoInsuranceFundRiskScenarios]: [
     'Ethereum_Staking_Widget',
     'Push «here» in FAQ What is the Lido Insurance Fund used for? "risk scenarios" on stake widget',
-    'eth_widget_faq_lidoInsuranceFund_insurancefund',
+    'eth_widget_faq_lidoInsuranceFund_here',
   ],
   [MATOMO_CLICK_EVENTS_TYPES.faqWhereCanICoverBridgeMutual]: [
     'Ethereum_Staking_Widget',
