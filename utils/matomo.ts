@@ -1,12 +1,21 @@
+import { AppCookies } from 'utils';
 import getConfig from 'next/config';
 const { publicRuntimeConfig } = getConfig();
 const { matomoUrl } = publicRuntimeConfig;
 
-if (typeof window !== 'undefined') {
-  window._paq ??= [];
-}
+const checkIsInitMatomo = () => {
+  if (typeof window === 'undefined') return false;
+  if (!AppCookies.isCookiesAllowed()) return false;
+  if (window._paq) return true;
+};
 
-if (typeof window !== 'undefined' && matomoUrl) {
+const initMatomo = () => {
+  if (typeof window === 'undefined' || !matomoUrl) return;
+
+  if (!AppCookies.isCookiesAllowed()) return;
+
+  window._paq ??= [];
+
   window?._paq?.push(
     ['requireCookieConsent'],
     ['trackPageView'],
@@ -22,9 +31,12 @@ if (typeof window !== 'undefined' && matomoUrl) {
       src: new URL('/matomo.js', matomoUrl).href,
     }),
   );
-}
+};
+
+initMatomo();
 
 export const callMatomo = (apiMethod: string, ...args: unknown[]) => {
+  if (!checkIsInitMatomo()) initMatomo();
   if (typeof window !== 'undefined') {
     window._paq?.push([apiMethod, ...args]);
   }
@@ -46,6 +58,3 @@ export const wrapWithEventTrack = <A extends unknown[], R>(
         return fn?.(...args);
       }
     : fn;
-
-export const matomoAvailable =
-  typeof window !== 'undefined' && window._paq !== undefined;
