@@ -1,3 +1,27 @@
+# [1.39.0](https://github.com/lidofinance/staking-widget-ts/compare/1.38.0...1.39.0) (2022-11-16)
+
+
+### Bug Fixes
+
+* fix checking allowed cookie ([#384](https://github.com/lidofinance/staking-widget-ts/issues/384)) ([61b18af](https://github.com/lidofinance/staking-widget-ts/commit/61b18afcad64e8fdd010d9ab5b86b14ff6306d12))
+* fix faq matomo event name ([#385](https://github.com/lidofinance/staking-widget-ts/issues/385)) ([6776280](https://github.com/lidofinance/staking-widget-ts/commit/67762800402ea9d358e3499c7fcd49b3a8c06acf))
+* fix types ([82e0a56](https://github.com/lidofinance/staking-widget-ts/commit/82e0a568eb69ce16bc2a4fbf4570dc663a735acb))
+* rename matomo events ([c63dfd7](https://github.com/lidofinance/staking-widget-ts/commit/c63dfd71ebd7ffce9e4df9970cc5e7f666476f76))
+
+
+### Features
+
+* add check policy for matomo events ([7b224dd](https://github.com/lidofinance/staking-widget-ts/commit/7b224ddf7c288f5b9b584614d9cbac09e14506c8))
+* add faq components, add matomo events ([2d913bc](https://github.com/lidofinance/staking-widget-ts/commit/2d913bcb6521d3a8c5e357b704a42fb6af2fcd2a))
+* add faq comps for wrap page ([bf12e56](https://github.com/lidofinance/staking-widget-ts/commit/bf12e565f242b26238f2492256bfb3a2653dbeac))
+* add matomo link, start adding new faq comps, fix get data for faq ([b8de196](https://github.com/lidofinance/staking-widget-ts/commit/b8de196f1965e6fa8b6b0abd45693d1b83ba8c87))
+* add new matomo events ([b829dbb](https://github.com/lidofinance/staking-widget-ts/commit/b829dbb44fa2a8282cfa73fa0cd85c178b12d849))
+* add next-api-wrapper package, add metrics for api/metrics ([5a1ff2e](https://github.com/lidofinance/staking-widget-ts/commit/5a1ff2e6181b82b5cc73ef6bc44e08506722a354))
+* clear matomo events ([5cdb154](https://github.com/lidofinance/staking-widget-ts/commit/5cdb15437e9d0d7a7a131ec3dacc50f3c5086ee1))
+* use cross domain allow cookie tooltip from UI lib v3 ([cc19a02](https://github.com/lidofinance/staking-widget-ts/commit/cc19a02604f9c8725a91b6feb98bcb6d2f35af1a))
+
+
+
 # [1.38.0](https://github.com/lidofinance/staking-widget-ts/compare/1.37.1...1.38.0) (2022-11-08)
 
 
@@ -140,35 +164,6 @@
 * add stop handle request if rate limit ([abf6de9](https://github.com/lidofinance/staking-widget-ts/commit/abf6de931a5c0913e080e1b82fc0adab048c46f4))
 * change ETH 2.0 to Beacon chain in FAQ, DeversiFi to Rhino.fi ([c32ecac](https://github.com/lidofinance/staking-widget-ts/commit/c32ecac7cef144de60fc1580ff9abf9964d56154))
 * update next request wrappers for rate limit metrics ([ddca9d0](https://github.com/lidofinance/staking-widget-ts/commit/ddca9d04d4bd633a8461b46bee96744d387fc3a0))
-
-
-
-# [1.28.0](https://github.com/lidofinance/staking-widget-ts/compare/1.27.0...1.28.0) (2022-10-13)
-
-
-### Bug Fixes
-
-* add fix for theme cookies ([0bb9f64](https://github.com/lidofinance/staking-widget-ts/commit/0bb9f64c21a13cca9fa55b72169261b9b6b505e2))
-* add link to audits ([cae6c43](https://github.com/lidofinance/staking-widget-ts/commit/cae6c43976feb9469bfc9627a6cbc98aa93b9813))
-* add rewards page for cache ([002f998](https://github.com/lidofinance/staking-widget-ts/commit/002f998aa2e7f89e68f082e32daec2c78027dbc5))
-* change stale-if-error for html ([4920e87](https://github.com/lidofinance/staking-widget-ts/commit/4920e870ea0f4448829550b1cb34c6802ea54941))
-* css colors ([4545c9d](https://github.com/lidofinance/staking-widget-ts/commit/4545c9d97920b1865b4ca036342603043c6d4794))
-* **external links:** pass query string ([3189bf8](https://github.com/lidofinance/staking-widget-ts/commit/3189bf81ad8a5e9779619ccea575b05a69832db2))
-* fix comment ([605e56c](https://github.com/lidofinance/staking-widget-ts/commit/605e56c126ec0524cac3db0a78bedcd3a41d5c26))
-* fix text in faq ([10e960d](https://github.com/lidofinance/staking-widget-ts/commit/10e960d1e66e88221a761834171fa4fb8e92e423))
-* **NavLink:** visited link ([c5881ab](https://github.com/lidofinance/staking-widget-ts/commit/c5881ab0d744ada5078dd99b1b06b7e7191570f3))
-* remove comments ([10e7f9e](https://github.com/lidofinance/staking-widget-ts/commit/10e7f9e6c6da084f471919f33b49a2bac827be1a))
-* remove text ([41bdba3](https://github.com/lidofinance/staking-widget-ts/commit/41bdba36eae9bf333fb9f6cd2c5efc96e329e004))
-* update comment ([c55531f](https://github.com/lidofinance/staking-widget-ts/commit/c55531f794ee089cf0a3c395342773a234545541))
-
-
-### Features
-
-* add cache for html pages ([2d0f513](https://github.com/lidofinance/staking-widget-ts/commit/2d0f5139c1378ec01a2dfd76f37edf185599825a))
-* add package for cache files ([08f4e77](https://github.com/lidofinance/staking-widget-ts/commit/08f4e7731029ebf38b452f085b346908e6409f0c))
-* add ui3 for use theme from cookies ([365f60e](https://github.com/lidofinance/staking-widget-ts/commit/365f60e8fbf7f2325b7ebc3c3a1f15f8f33c1dcd))
-* external links ([3a42a39](https://github.com/lidofinance/staking-widget-ts/commit/3a42a3968365ff554909ccbb0c819be0011bd899))
-* update risks FAQ ([c0a5732](https://github.com/lidofinance/staking-widget-ts/commit/c0a5732e9bb16904af07af61f01bb9eb0aae3060))
 
 
 
