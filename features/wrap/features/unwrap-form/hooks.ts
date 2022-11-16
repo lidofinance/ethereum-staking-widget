@@ -1,7 +1,7 @@
 import { parseEther } from '@ethersproject/units';
 import { getStaticRpcBatchProvider } from 'utils/rpcProviders';
 import { useLidoSWR, useWSTETHContractRPC } from '@lido-sdk/react';
-import { useWeb3 } from '@lido-sdk/web3-react';
+import { useWeb3 } from '@reef-knot/web3-react';
 import { ESTIMATE_ACCOUNT, getBackendRPCPath, UNWRAP_GAS_LIMIT } from 'config';
 import { BigNumber } from 'ethers';
 
