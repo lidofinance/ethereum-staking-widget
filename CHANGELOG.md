@@ -1,3 +1,12 @@
+# [1.40.0](https://github.com/lidofinance/staking-widget-ts/compare/1.39.0...1.40.0) (2022-11-17)
+
+
+### Features
+
+* replace lido-sdk/web3-react and ui-blocks with reef-knot ([deba537](https://github.com/lidofinance/staking-widget-ts/commit/deba537ac8399d5a1e6804b1589bf7fd8e6de1ad))
+
+
+
 # [1.39.0](https://github.com/lidofinance/staking-widget-ts/compare/1.38.0...1.39.0) (2022-11-16)
 
 
@@ -138,32 +147,6 @@
 * add new api with old data for landing ([3187b3a](https://github.com/lidofinance/staking-widget-ts/commit/3187b3a7d339470c04c5ca7a5212ca7e870ce57d))
 * add new sma steth apr api ([069a3bf](https://github.com/lidofinance/staking-widget-ts/commit/069a3bf7e938d82f9ed3580dd09791687c78e236))
 * change APR tooltip, fix for null env var ([13f7dca](https://github.com/lidofinance/staking-widget-ts/commit/13f7dcae1cea0eab06b02c1504a5509780ff82ff))
-
-
-
-# [1.29.0](https://github.com/lidofinance/staking-widget-ts/compare/1.28.0...1.29.0) (2022-10-18)
-
-
-### Bug Fixes
-
-* add comments, refactoring ([24c7b53](https://github.com/lidofinance/staking-widget-ts/commit/24c7b53a2638d00ad7c153dcea2394b5a6eb8374))
-* add get cf header ([d995930](https://github.com/lidofinance/staking-widget-ts/commit/d99593054078682b8c3ba3577e62b8b10b1468b0))
-* change rate limit const ([d67117b](https://github.com/lidofinance/staking-widget-ts/commit/d67117bd2d92956e6e2795bc11a101f1f757300c))
-* fix import ([d1875f7](https://github.com/lidofinance/staking-widget-ts/commit/d1875f781884e564012dc413f1dcc87b6837fe44))
-* fix multi call of rpc api, fix setting max value ([79ba615](https://github.com/lidofinance/staking-widget-ts/commit/79ba615e8b09b0f0a5ac0415a462dc286fbcbc38))
-* fix multi call on unwrap form ([3859410](https://github.com/lidofinance/staking-widget-ts/commit/3859410d6e9674ca0c600f35b15b14c91fbb18ce))
-* revert clusters ([a600a8b](https://github.com/lidofinance/staking-widget-ts/commit/a600a8b339671f8d20b9d8638a88256b1fb42223))
-* test 1 cluster ([b5b921c](https://github.com/lidofinance/staking-widget-ts/commit/b5b921c8e52dffdda47210765aa4a9587ea87903))
-
-
-### Features
-
-* add delete data from memory storage ([2c228ef](https://github.com/lidofinance/staking-widget-ts/commit/2c228efd599b70faff40e20f1d8fafcfa22b46f0))
-* add rate limits const in env ([92a23f4](https://github.com/lidofinance/staking-widget-ts/commit/92a23f4e5c0394be132310de9ad90d1fbd08c294))
-* add rateLimit wrapper for next requests ([8fb63f4](https://github.com/lidofinance/staking-widget-ts/commit/8fb63f4abf325fe0452b51cde0d90f7f0805769b))
-* add stop handle request if rate limit ([abf6de9](https://github.com/lidofinance/staking-widget-ts/commit/abf6de931a5c0913e080e1b82fc0adab048c46f4))
-* change ETH 2.0 to Beacon chain in FAQ, DeversiFi to Rhino.fi ([c32ecac](https://github.com/lidofinance/staking-widget-ts/commit/c32ecac7cef144de60fc1580ff9abf9964d56154))
-* update next request wrappers for rate limit metrics ([ddca9d0](https://github.com/lidofinance/staking-widget-ts/commit/ddca9d04d4bd633a8461b46bee96744d387fc3a0))
 
 
 
