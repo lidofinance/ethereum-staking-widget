@@ -80,7 +80,6 @@ export const StakeForm: FC = memo(() => {
         resetForm,
         chainId,
         router?.query?.ref as string | undefined,
-        submitGasLimit,
       );
     },
     [
@@ -89,7 +88,6 @@ export const StakeForm: FC = memo(() => {
       stethBalance.update,
       chainId,
       router?.query?.ref,
-      submitGasLimit,
     ],
   );
 

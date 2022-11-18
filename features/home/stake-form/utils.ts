@@ -71,7 +71,6 @@ export const stakeProcessing: StakeProcessingProps = async (
   resetForm,
   chainId,
   refFromQuery,
-  submitGasLimit,
 ) => {
   if (!stethContractWeb3 || !chainId) {
     return;
@@ -89,19 +88,27 @@ export const stakeProcessing: StakeProcessingProps = async (
     const maxPriorityFeePerGas = feeData.maxPriorityFeePerGas ?? undefined;
     const maxFeePerGas = feeData.maxFeePerGas ?? undefined;
 
-    const gasLimit = submitGasLimit
-      ? Math.ceil(submitGasLimit * SUBMIT_EXTRA_GAS_TRANSACTION_RATIO)
-      : null;
-
     const overrides = {
       value: parseEther(inputValue),
       maxPriorityFeePerGas,
       maxFeePerGas,
-      gasLimit: gasLimit ? BigNumber.from(gasLimit) : undefined,
     };
+    const originalGasLimit = await stethContractWeb3.estimateGas.submit(
+      referralAddress || AddressZero,
+      overrides,
+    );
+
+    const gasLimit = originalGasLimit
+      ? Math.ceil(
+          originalGasLimit.toNumber() * SUBMIT_EXTRA_GAS_TRANSACTION_RATIO,
+        )
+      : null;
 
     const callback = () =>
-      stethContractWeb3.submit(referralAddress || AddressZero, overrides);
+      stethContractWeb3.submit(referralAddress || AddressZero, {
+        ...overrides,
+        gasLimit: gasLimit ? BigNumber.from(gasLimit) : undefined,
+      });
 
     setTxStage(TX_STAGE.SIGN);
     openTxModal();
