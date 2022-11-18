@@ -12,6 +12,9 @@ import {
 } from 'utils';
 import { getBackendRPCPath } from 'config';
 import { TX_STAGE } from 'shared/components';
+import { BigNumber } from 'ethers';
+
+const SUBMIT_EXTRA_GAS_TRANSACTION_RATIO = 1.05;
 
 type StakeProcessingProps = (
   stethContractWeb3: StethAbi | null,
@@ -24,6 +27,7 @@ type StakeProcessingProps = (
   resetForm: () => void,
   chainId: number | undefined,
   refFromQuery: string | undefined,
+  submitGasLimit?: number,
 ) => Promise<void>;
 
 export const getAddress = async (
@@ -67,6 +71,7 @@ export const stakeProcessing: StakeProcessingProps = async (
   resetForm,
   chainId,
   refFromQuery,
+  submitGasLimit,
 ) => {
   if (!stethContractWeb3 || !chainId) {
     return;
@@ -84,10 +89,15 @@ export const stakeProcessing: StakeProcessingProps = async (
     const maxPriorityFeePerGas = feeData.maxPriorityFeePerGas ?? undefined;
     const maxFeePerGas = feeData.maxFeePerGas ?? undefined;
 
+    const gasLimit = submitGasLimit
+      ? Math.ceil(submitGasLimit * SUBMIT_EXTRA_GAS_TRANSACTION_RATIO)
+      : null;
+
     const overrides = {
       value: parseEther(inputValue),
       maxPriorityFeePerGas,
       maxFeePerGas,
+      gasLimit: gasLimit ? BigNumber.from(gasLimit) : undefined,
     };
 
     const callback = () =>

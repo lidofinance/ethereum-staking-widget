@@ -80,14 +80,16 @@ export const StakeForm: FC = memo(() => {
         resetForm,
         chainId,
         router?.query?.ref as string | undefined,
+        submitGasLimit,
       );
     },
     [
-      openTxModal,
       stethContractWeb3,
+      openTxModal,
       stethBalance.update,
       chainId,
       router?.query?.ref,
+      submitGasLimit,
     ],
   );
 
