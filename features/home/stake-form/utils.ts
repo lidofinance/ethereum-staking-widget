@@ -12,6 +12,9 @@ import {
 } from 'utils';
 import { getBackendRPCPath } from 'config';
 import { TX_STAGE } from 'shared/components';
+import { BigNumber } from 'ethers';
+
+const SUBMIT_EXTRA_GAS_TRANSACTION_RATIO = 1.05;
 
 type StakeProcessingProps = (
   stethContractWeb3: StethAbi | null,
@@ -24,6 +27,7 @@ type StakeProcessingProps = (
   resetForm: () => void,
   chainId: number | undefined,
   refFromQuery: string | undefined,
+  submitGasLimit?: number,
 ) => Promise<void>;
 
 export const getAddress = async (
@@ -89,9 +93,22 @@ export const stakeProcessing: StakeProcessingProps = async (
       maxPriorityFeePerGas,
       maxFeePerGas,
     };
+    const originalGasLimit = await stethContractWeb3.estimateGas.submit(
+      referralAddress || AddressZero,
+      overrides,
+    );
+
+    const gasLimit = originalGasLimit
+      ? Math.ceil(
+          originalGasLimit.toNumber() * SUBMIT_EXTRA_GAS_TRANSACTION_RATIO,
+        )
+      : null;
 
     const callback = () =>
-      stethContractWeb3.submit(referralAddress || AddressZero, overrides);
+      stethContractWeb3.submit(referralAddress || AddressZero, {
+        ...overrides,
+        gasLimit: gasLimit ? BigNumber.from(gasLimit) : undefined,
+      });
 
     setTxStage(TX_STAGE.SIGN);
     openTxModal();

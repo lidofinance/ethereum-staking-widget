@@ -83,8 +83,8 @@ export const StakeForm: FC = memo(() => {
       );
     },
     [
-      openTxModal,
       stethContractWeb3,
+      openTxModal,
       stethBalance.update,
       chainId,
       router?.query?.ref,
