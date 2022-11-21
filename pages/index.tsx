@@ -13,6 +13,7 @@ const Home: FC = () => (
       <Head>
         <title>Stake with Lido | Lido</title>
       </Head>
+
       <Wallet />
       <StakeForm />
       <LidoStats />

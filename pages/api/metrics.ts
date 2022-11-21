@@ -31,6 +31,6 @@ const metrics = async (_req: NextApiRequest, res: NextApiResponse) => {
 
 export default wrapNextRequest([
   rateLimit(),
-  responseTimeMetric(Metrics.request.apiTimings, API_ROUTES.metrics),
+  responseTimeMetric(Metrics.request.apiTimings, API_ROUTES.METRICS),
   ...errorAndCacheDefaultWrappers,
 ])(metrics);
