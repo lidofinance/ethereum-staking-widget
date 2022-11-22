@@ -23,7 +23,7 @@ export const RewardsListContent: FC = () => {
   const errorMessage = extractErrorMessage(error);
 
   if (!data && !initialLoading && !error) return <RewardsListsEmpty />;
-  if (!data && !error) {
+  if ((!data && !error) || initialLoading) {
     return (
       <>
         <Divider indents="lg" />
