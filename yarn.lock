@@ -1869,7 +1869,7 @@
     tiny-invariant "^1.1.0"
     tiny-warning "^1.0.3"
 
-"@lido-sdk/web3-react@1.27.3":
+"@lido-sdk/web3-react@^1.27.2":
   version "1.27.3"
   resolved "https://registry.yarnpkg.com/@lido-sdk/web3-react/-/web3-react-1.27.3.tgz#332c2ae3b33e801b1c7d6bf13dfca1fef7047c23"
   integrity sha512-zPGSvnYDivZ/KAqq3SdalT00EmayK7u7ciTSXTWQJ89HAc7LmAprp8v+KOSe96OHgy6t2kAaU7x0Cs20JZlysg==
@@ -1891,10 +1891,10 @@
     web3-ledgerhq-connector "^1.2.3"
     web3-ledgerhq-frame-connector "^1.0.1"
 
-"@lidofinance/analytics-matomo@^0.6.0":
-  version "0.6.0"
-  resolved "https://registry.yarnpkg.com/@lidofinance/analytics-matomo/-/analytics-matomo-0.6.0.tgz#b3c014d17cb7cc86db32180530b8bba6d80c49a8"
-  integrity sha512-v/PMJ3zXBRuhuWcF8Lgzj81jZWy5dUYc4X55cxE+n/rYrZPvA4HBdu97y30e6EmveeRZKcHlPUCWLrZs8QlYiA==
+"@lidofinance/analytics-matomo@^0.7.0":
+  version "0.7.0"
+  resolved "https://registry.yarnpkg.com/@lidofinance/analytics-matomo/-/analytics-matomo-0.7.0.tgz#65ce9f48d94a31ef8b7e5bf167151827c457eb2e"
+  integrity sha512-+Tzbl8y6U5ZgSamnzVOFGRU4ao+lGJ334SX5KLvHgQ+m/xeSC2WZPn6CFqlKCs1Tis/vD10ZZ+3Ezg+RwoUVGQ==
 
 "@lidofinance/api-logger@^0.0.4":
   version "0.0.4"
