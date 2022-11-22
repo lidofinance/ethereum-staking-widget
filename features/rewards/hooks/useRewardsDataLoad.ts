@@ -1,6 +1,7 @@
 import { Backend } from 'features/rewards/types';
 import { useEffect, useRef } from 'react';
 import { useLidoSWR } from 'shared/hooks';
+import { swrAbortableMiddleware } from 'utils';
 
 type UseRewardsDataLoad = (props: {
   address: string;
@@ -47,6 +48,7 @@ export const useRewardsDataLoad: UseRewardsDataLoad = (props) => {
     {
       shouldRetryOnError: false,
       revalidateOnFocus: false,
+      use: [swrAbortableMiddleware],
     },
   );
 
