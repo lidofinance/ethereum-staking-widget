@@ -19,5 +19,6 @@ export const enum API_ROUTES {
   SMA_STETH_APR = 'api/sma-steth-apr',
   TOTALSUPPLY = 'api/totalsupply',
   RPC = 'api/rpc',
-  metrics = 'api/metrics',
+  METRICS = 'api/metrics',
+  REWARDS = 'api/rewards',
 }
