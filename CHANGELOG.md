@@ -1,3 +1,12 @@
+# [1.42.0](https://github.com/lidofinance/staking-widget-ts/compare/1.41.0...1.42.0) (2022-11-23)
+
+
+### Features
+
+* add abortable middleware for swr, fix requests rewards ([ffe0209](https://github.com/lidofinance/staking-widget-ts/commit/ffe0209505c610b2b0468003bfa368f630b28f44))
+
+
+
 # [1.41.0](https://github.com/lidofinance/staking-widget-ts/compare/1.40.0...1.41.0) (2022-11-18)
 
 
@@ -133,15 +142,6 @@
 ### Features
 
 * add l2 banner to stake/wrap/unwrap ([e555654](https://github.com/lidofinance/staking-widget-ts/commit/e5556546fd0b942b810c9dd0323883955d11cade))
-
-
-
-# [1.31.0](https://github.com/lidofinance/staking-widget-ts/compare/1.30.0...1.31.0) (2022-10-19)
-
-
-### Features
-
-* change stethApr to smaStethApr ([285b2bd](https://github.com/lidofinance/staking-widget-ts/commit/285b2bd7fc541f9c7796ff959949e0edf188d796))
 
 
 
