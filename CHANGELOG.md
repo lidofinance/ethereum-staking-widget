@@ -1,3 +1,12 @@
+# [1.43.0](https://github.com/lidofinance/staking-widget-ts/compare/1.42.0...1.43.0) (2022-11-24)
+
+
+### Features
+
+* reef-knot 0.1.1 (Trust Wallet) ([e25c9d2](https://github.com/lidofinance/staking-widget-ts/commit/e25c9d2f9525ea818ebbd99066201543f4680b61))
+
+
+
 # [1.42.0](https://github.com/lidofinance/staking-widget-ts/compare/1.41.0...1.42.0) (2022-11-23)
 
 
@@ -124,24 +133,6 @@
 * add matomo events for buttons ([1a34617](https://github.com/lidofinance/staking-widget-ts/commit/1a346170867822e1b2bcff3dfb57e6078bf31f0c))
 * add more matomo events ([ec65657](https://github.com/lidofinance/staking-widget-ts/commit/ec6565728f938d7b1f8314b58a9a01425cfd07f9))
 * lido-ui-blocks 2.10.0 (zengo deeplinks) ([c1e8665](https://github.com/lidofinance/staking-widget-ts/commit/c1e8665dc5965bc4920c242c6255177be74223f4))
-
-
-
-# [1.32.0](https://github.com/lidofinance/staking-widget-ts/compare/1.31.0...1.32.0) (2022-10-25)
-
-
-### Bug Fixes
-
-* fix flashing balance in tx success modal ([f4d0304](https://github.com/lidofinance/staking-widget-ts/commit/f4d0304df4f4858b4521ba42b9c6dbdb9d1d0fe5))
-* fix flashing l2 banner ([16171a7](https://github.com/lidofinance/staking-widget-ts/commit/16171a7bd29b95b674573138caddf9d365558d36))
-* return 1inch rate ([7f369ec](https://github.com/lidofinance/staking-widget-ts/commit/7f369ec1df3b4dc69acd94897d71f539093584fb))
-* temp fix api tests ([ad61311](https://github.com/lidofinance/staking-widget-ts/commit/ad61311af8340acd5d84f2f292c5efb3b4ab3ac4))
-* temp fix api tests ([ad45e17](https://github.com/lidofinance/staking-widget-ts/commit/ad45e1710d33200152a6021848d8d9229631d7b8))
-
-
-### Features
-
-* add l2 banner to stake/wrap/unwrap ([e555654](https://github.com/lidofinance/staking-widget-ts/commit/e5556546fd0b942b810c9dd0323883955d11cade))
 
 
 
