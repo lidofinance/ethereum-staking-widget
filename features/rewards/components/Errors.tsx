@@ -1,4 +1,5 @@
 import { Box, Block, Text, Button } from '@lidofinance/lido-ui';
+import { LocalLink } from 'shared/components/header/components/navigation/local-link';
 
 // TODO: move to separate folders
 
@@ -29,11 +30,11 @@ export const NoStEthError = () => (
     <Box textAlign="center" pb="12px">
       You don’t have staked assets. Stake now and recieve daily rewards.
     </Box>
-    <a href="https://stake.lido.fi">
+    <LocalLink href="/">
       <Box width="150px">
         <Button>Stake now</Button>
       </Box>
-    </a>
+    </LocalLink>
   </Box>
 );
 
