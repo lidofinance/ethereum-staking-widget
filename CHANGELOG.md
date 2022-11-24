@@ -1,3 +1,17 @@
+# [1.44.0](https://github.com/lidofinance/staking-widget-ts/compare/1.43.0...1.44.0) (2022-11-24)
+
+
+### Bug Fixes
+
+* fix show loading in rewards table ([2e494a7](https://github.com/lidofinance/staking-widget-ts/commit/2e494a7fa155efc581706b8e941342fb77f17637))
+
+
+### Features
+
+* add ref to button on rewards page ([b02f897](https://github.com/lidofinance/staking-widget-ts/commit/b02f8971cc190dda5cc4a620a2bade32a7793fdf))
+
+
+
 # [1.43.0](https://github.com/lidofinance/staking-widget-ts/compare/1.42.0...1.43.0) (2022-11-24)
 
 
@@ -112,27 +126,6 @@
 ### Features
 
 * add insurance fund FAQs ([b112ba8](https://github.com/lidofinance/staking-widget-ts/commit/b112ba83ca87c8f6b3ac3a14c6ddbad32b896a2c))
-
-
-
-# [1.34.0](https://github.com/lidofinance/staking-widget-ts/compare/1.32.0...1.34.0) (2022-10-27)
-
-
-### Bug Fixes
-
-* add 1icnh event, fix mamoto events page name ([e57978e](https://github.com/lidofinance/staking-widget-ts/commit/e57978ec075dd16cb9de1961e6c07ac699e43609))
-* fix docker curl version ([eba5bf8](https://github.com/lidofinance/staking-widget-ts/commit/eba5bf8020413d7c1c5683c65120bf6aab3f65fe))
-* lido-ui-blocks 2.10.1 (popup blockers) ([05636d3](https://github.com/lidofinance/staking-widget-ts/commit/05636d30b8ae2e4d06c3acc63635f4d5fd02e719))
-* lido-ui-blocks 2.10.2 (fixes) ([55434c7](https://github.com/lidofinance/staking-widget-ts/commit/55434c7f8591a1d2eddf647e6900bc5517e7c77f))
-* remove old apr request from stake page ([54fabbe](https://github.com/lidofinance/staking-widget-ts/commit/54fabbe88d4ab805b8b1c1aaebb97a01a024d2f6))
-
-
-### Features
-
-* add matomo base logic ([b9e4d54](https://github.com/lidofinance/staking-widget-ts/commit/b9e4d54bb847afc60e16e66cf78c23ebd1bfbddb))
-* add matomo events for buttons ([1a34617](https://github.com/lidofinance/staking-widget-ts/commit/1a346170867822e1b2bcff3dfb57e6078bf31f0c))
-* add more matomo events ([ec65657](https://github.com/lidofinance/staking-widget-ts/commit/ec6565728f938d7b1f8314b58a9a01425cfd07f9))
-* lido-ui-blocks 2.10.0 (zengo deeplinks) ([c1e8665](https://github.com/lidofinance/staking-widget-ts/commit/c1e8665dc5965bc4920c242c6255177be74223f4))
 
 
 
