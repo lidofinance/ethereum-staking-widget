@@ -23,7 +23,8 @@ export const RewardsListContent: FC = () => {
   const errorMessage = extractErrorMessage(error);
 
   if (!data && !initialLoading && !error) return <RewardsListsEmpty />;
-  if ((!data && !error) || initialLoading) {
+  // showing loading when canceling requests and empty response
+  if ((!data && !error) || (initialLoading && !data?.events.length)) {
     return (
       <>
         <Divider indents="lg" />
