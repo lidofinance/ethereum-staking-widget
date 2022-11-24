@@ -1,3 +1,2 @@
-* @lidofinance/lido-qa
-* @lidofinance/lido-eth-ui
-.github @lidofinance/review-gh-workflows
+* @lidofinance/lido-eth-ui @lidofinance/lido-qa
+  .github @lidofinance/review-gh-workflows
