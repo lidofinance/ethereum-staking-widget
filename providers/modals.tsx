@@ -2,6 +2,7 @@ import { createContext, useMemo, useCallback, memo, useState, FC } from 'react';
 import { useThemeToggle } from '@lidofinance/lido-ui';
 import { Modal } from 'shared/wallet';
 import { WalletsModalForEth } from '@reef-knot/connect-wallet-modal';
+import { walletsMetrics } from 'config/matomoWalletsEvents';
 
 export type ModalContextValue = {
   openModal: (modal: MODAL) => void;
@@ -47,6 +48,7 @@ const ModalProvider: FC = ({ children }) => {
       <WalletsModalForEth
         open={active === MODAL.connect}
         {...common}
+        metrics={walletsMetrics}
         hiddenWallets={['Opera Wallet']}
       />
     </ModalContext.Provider>
