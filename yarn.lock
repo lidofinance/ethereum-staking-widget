@@ -1891,10 +1891,10 @@
     web3-ledgerhq-connector "^1.2.3"
     web3-ledgerhq-frame-connector "^1.0.1"
 
-"@lidofinance/analytics-matomo@^0.7.0":
-  version "0.7.0"
-  resolved "https://registry.yarnpkg.com/@lidofinance/analytics-matomo/-/analytics-matomo-0.7.0.tgz#65ce9f48d94a31ef8b7e5bf167151827c457eb2e"
-  integrity sha512-+Tzbl8y6U5ZgSamnzVOFGRU4ao+lGJ334SX5KLvHgQ+m/xeSC2WZPn6CFqlKCs1Tis/vD10ZZ+3Ezg+RwoUVGQ==
+"@lidofinance/analytics-matomo@^0.8.0":
+  version "0.8.0"
+  resolved "https://registry.yarnpkg.com/@lidofinance/analytics-matomo/-/analytics-matomo-0.8.0.tgz#8c5b37a481534eb5b0ce25222f14424a79295b4a"
+  integrity sha512-BlHclIujH85Oo99VZHxnfeNWKf0U4tBwAerTIFhh4mCjMAD79AgSWYoXDMCVSRsODaGpEJ1Wcx1/gtqrZcLtsQ==
 
 "@lidofinance/api-logger@^0.0.4":
   version "0.0.4"
