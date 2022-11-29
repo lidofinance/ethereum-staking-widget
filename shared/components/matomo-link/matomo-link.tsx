@@ -10,9 +10,9 @@ interface MatomoLinkProps extends LinkProps {
 export const MatomoLink: FC<MatomoLinkProps> = (props) => {
   const { matomoEvent, ...rest } = props;
 
-  const onClickHandelr = () => {
+  const onClickHandler = () => {
     trackEvent(...MATOMO_CLICK_EVENTS[matomoEvent]);
   };
 
-  return <Link {...rest} onClick={onClickHandelr} />;
+  return <Link {...rest} onClick={onClickHandler} />;
 };
