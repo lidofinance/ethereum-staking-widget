@@ -1,3 +1,19 @@
+# [1.45.0](https://github.com/lidofinance/staking-widget-ts/compare/1.44.0...1.45.0) (2022-11-29)
+
+
+### Bug Fixes
+
+* fix code style ([f9d5b43](https://github.com/lidofinance/staking-widget-ts/commit/f9d5b439f8e17827611a6ea6ea432ab3ca51c939))
+* fix codeowners ([9e23282](https://github.com/lidofinance/staking-widget-ts/commit/9e2328291abd8fa369021354b2f594996b10fa3a))
+
+
+### Features
+
+* add matomo wallets events ([3d94f75](https://github.com/lidofinance/staking-widget-ts/commit/3d94f7560dd4a00d248e746b4fd866f44cc0e2e8))
+* reef-knot 0.2.0 (wallets metrics) ([54f73b7](https://github.com/lidofinance/staking-widget-ts/commit/54f73b7b60f5de2dd602c2c6cd971a964a0f13b3))
+
+
+
 # [1.44.0](https://github.com/lidofinance/staking-widget-ts/compare/1.43.0...1.44.0) (2022-11-24)
 
 
@@ -112,20 +128,6 @@
 ### Features
 
 * add matomo ([b777ad5](https://github.com/lidofinance/staking-widget-ts/commit/b777ad56a29b422e7a92e570a31d69d30b927a1e))
-
-
-
-# [1.35.0](https://github.com/lidofinance/staking-widget-ts/compare/1.34.0...1.35.0) (2022-10-28)
-
-
-### Bug Fixes
-
-* add comment for old api ([1eb65d3](https://github.com/lidofinance/staking-widget-ts/commit/1eb65d3775f69a2437f011b71c317c7c525e604b))
-
-
-### Features
-
-* add insurance fund FAQs ([b112ba8](https://github.com/lidofinance/staking-widget-ts/commit/b112ba83ca87c8f6b3ac3a14c6ddbad32b896a2c))
 
 
 
