@@ -19,7 +19,7 @@ const routes = [
     name: 'Rewards',
     path: '/rewards',
     icon: <Wallet />,
-    external: true,
+    external: false,
   },
 ];
 export const Navigation: FC = memo(() => {

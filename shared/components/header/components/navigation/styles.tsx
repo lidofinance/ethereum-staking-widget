@@ -33,7 +33,7 @@ export const Nav = styled.div`
   ${({ theme }) => theme.mediaQueries.md} {
     ${mobileCss}
   }
-  z-index: 5;
+  z-index: 6;
 `;
 
 export const NavLink = styled.a<{ active: boolean }>`

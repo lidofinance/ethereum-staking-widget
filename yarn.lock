@@ -1935,10 +1935,10 @@
   dependencies:
     "@lidofinance/blocks-connect-wallet-modal" "2.11.2"
 
-"@lidofinance/lido-ui@3.0.0-next.14":
-  version "3.0.0-next.14"
-  resolved "https://registry.yarnpkg.com/@lidofinance/lido-ui/-/lido-ui-3.0.0-next.14.tgz#8ca032dca4fe68a2d215b702dfbd71c98a7cf841"
-  integrity sha512-VZB+6DRRfWo2vf3VGyOZ9iqvZ6HMD1BnhBosmHZLSfBlwCAiVszeI2uJNOKxB1A8XRbuSrSQgod/BKOSyPxDWg==
+"@lidofinance/lido-ui@3.0.0-next.17":
+  version "3.0.0-next.17"
+  resolved "https://registry.yarnpkg.com/@lidofinance/lido-ui/-/lido-ui-3.0.0-next.17.tgz#086ddfde1a5da3c55e420f524a51aeda82952ba0"
+  integrity sha512-HNmA2QxXMQo97yjShDz1LRssHvzBpLuTGaieCA5bkClA+3bNMhtzEF9OQOPJKq37jF4hvYYFbhlTRu9ahhoGQw==
   dependencies:
     "@styled-system/should-forward-prop" "5.1.5"
     "@swc/helpers" "^0.4.11"
@@ -1950,6 +1950,11 @@
     styled-system "5.1.5"
     ua-parser-js "^1.0.2"
     use-callback-ref "1.2.5"
+
+"@lidofinance/next-api-wrapper@^0.6.0":
+  version "0.6.0"
+  resolved "https://registry.yarnpkg.com/@lidofinance/next-api-wrapper/-/next-api-wrapper-0.6.0.tgz#2f76228071d5e1407fd20a0d32dfd8fa08dec4e5"
+  integrity sha512-+KZdaSZcA65qAf6wSMZtW1oNtnLG/XkDvtaisdqNHCrte2pPHI2LGD4LClaRO3SuQeCZojq5bosWvf6pzDW80Q==
 
 "@lidofinance/next-cache-files-middleware@^0.3.0":
   version "0.3.0"
@@ -2068,6 +2073,33 @@
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/@pedrouid/environment/-/environment-1.0.1.tgz#858f0f8a057340e0b250398b75ead77d6f4342ec"
   integrity sha512-HaW78NszGzRZd9SeoI3JD11JqY+lubnaOx7Pewj5pfjqWXOEATpeKIFb9Z4t2WBUK2iryiXX3lzWwmYWgUL0Ug==
+
+"@reef-knot/connect-wallet-modal@*", "@reef-knot/connect-wallet-modal@0.1.1":
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/@reef-knot/connect-wallet-modal/-/connect-wallet-modal-0.1.1.tgz#e508453f58b05a77641b89ca76637a8babc10288"
+  integrity sha512-DG5gjC+iqGwP3xf4AlDsIPvbq7v+2bjrrw1Ec76C7WktE9NmvwQmAMBukRwfKXnB6UA7RQmLkTgiPRjAs2F9VQ==
+
+"@reef-knot/web3-react@*", "@reef-knot/web3-react@0.1.0":
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/@reef-knot/web3-react/-/web3-react-0.1.0.tgz#a9b2b58a69daa4bd262f8749c3f830fd49401506"
+  integrity sha512-vT15TZYOKud819J2Up2o70P8kxC6BseLAdWC6oXfWd/J4hhUWUIBsV7o2RSRVHJi2e8lTPTtcs0OIYt00KWf9w==
+  dependencies:
+    "@gnosis.pm/safe-apps-web3-react" "0.6.8"
+    "@ledgerhq/iframe-provider" "0.4.2"
+    "@lido-sdk/constants" "^1.6.0"
+    "@lido-sdk/helpers" "^1.4.3"
+    "@lido-sdk/providers" "^1.4.4"
+    "@lido-sdk/react" "^1.18.1"
+    "@web3-react/abstract-connector" "6.0.7"
+    "@web3-react/core" "6.1.9"
+    "@web3-react/injected-connector" "6.0.7"
+    "@web3-react/walletconnect-connector" "6.2.13"
+    "@web3-react/walletlink-connector" "6.2.14"
+    tiny-invariant "^1.1.0"
+    tiny-warning "^1.0.3"
+    ua-parser-js "1.0.2"
+    web3-ledgerhq-connector "^1.2.3"
+    web3-ledgerhq-frame-connector "^1.0.1"
 
 "@sinclair/typebox@^0.24.1":
   version "0.24.26"
@@ -2537,6 +2569,13 @@
   dependencies:
     "@types/hoist-non-react-statics" "*"
     "@types/react" "*"
+    csstype "^3.0.2"
+
+"@types/styled-system@5.1.15":
+  version "5.1.15"
+  resolved "https://registry.yarnpkg.com/@types/styled-system/-/styled-system-5.1.15.tgz#075f969cc028a895dba916c07708e2fe828d7077"
+  integrity sha512-1uls4wipZn8FtYFZ7upRVFDoEeOXTQTs2zuyOZPn02T6rjIxtvj2P2lG5qsxXHhKuKsu3thveCZrtaeLE/ibLg==
+  dependencies:
     csstype "^3.0.2"
 
 "@types/unist@*", "@types/unist@^2.0.0", "@types/unist@^2.0.2":
@@ -3290,6 +3329,11 @@ big.js@^5.2.2:
   resolved "https://registry.yarnpkg.com/big.js/-/big.js-5.2.2.tgz#65f0af382f578bcdc742bd9c281e9cb2d7768328"
   integrity sha512-vyL2OymJxmarO8gxMr0mhChsO9QGwhynfuu4+MHTAW6czfq9humCB7rKpUjDd9YUiDPU4mzpyupFSvOClAwbmQ==
 
+bignumber.js@9.1.0:
+  version "9.1.0"
+  resolved "https://registry.yarnpkg.com/bignumber.js/-/bignumber.js-9.1.0.tgz#8d340146107fe3a6cb8d40699643c302e8773b62"
+  integrity sha512-4LwHK4nfDOraBCtst+wOWIHbu1vhvAPJK8g8nROd4iuc3PSEjWif/qwbkh8jwCJz6yDBvtU4KPynETgrfh7y3A==
+
 bignumber.js@^9.0.2:
   version "9.0.2"
   resolved "https://registry.yarnpkg.com/bignumber.js/-/bignumber.js-9.0.2.tgz#71c6c6bed38de64e24a65ebe16cfcf23ae693673"
@@ -3885,6 +3929,11 @@ data-urls@^2.0.0:
     abab "^2.0.3"
     whatwg-mimetype "^2.3.0"
     whatwg-url "^8.0.0"
+
+date-fns@2.29.2:
+  version "2.29.2"
+  resolved "https://registry.yarnpkg.com/date-fns/-/date-fns-2.29.2.tgz#0d4b3d0f3dff0f920820a070920f0d9662c51931"
+  integrity sha512-0VNbwmWJDS/G3ySwFSJA3ayhbURMTJLtwM2DTxf9CWondCnh6DTNlO9JgRSq6ibf4eD0lfMJNBxUdEAHHix+bA==
 
 debug@4, debug@^4.0.0, debug@^4.1.0, debug@^4.1.1, debug@^4.3.2, debug@^4.3.4:
   version "4.3.4"
@@ -7136,6 +7185,14 @@ real-require@^0.1.0:
   version "0.1.0"
   resolved "https://registry.yarnpkg.com/real-require/-/real-require-0.1.0.tgz#736ac214caa20632847b7ca8c1056a0767df9381"
   integrity sha512-r/H9MzAWtrv8aSVjPCMFpDMl5q66GqtmmRkRjpHTsp4zBAa+snZyiQNlMONiUmEJcsnaw0wCauJ2GWODr/aFkg==
+
+reef-knot@0.1.1:
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/reef-knot/-/reef-knot-0.1.1.tgz#19410d3ca0c12d7985a21d13a76f9fc45320a9c4"
+  integrity sha512-RZVpC9FAxxGuKtOXIjQ9bKcSd0ckRRSYV4j+/reQCYbEFY1yHzmYV5GP3caFxpGtbw+t4b5jTUI9pNiXch0cZQ==
+  dependencies:
+    "@reef-knot/connect-wallet-modal" "*"
+    "@reef-knot/web3-react" "*"
 
 regenerate-unicode-properties@^10.0.1:
   version "10.0.1"

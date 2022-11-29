@@ -36,8 +36,9 @@
     "@lidofinance/api-rpc": "^0.0.6",
     "@lidofinance/eth-api-providers": "^0.0.4",
     "@lidofinance/eth-providers": "^0.0.3",
-    "@lidofinance/lido-ui": "3.0.0-next.14",
+    "@lidofinance/lido-ui": "3.0.0-next.17",
     "@lidofinance/lido-ui-blocks": "2.10.2",
+    "@lidofinance/next-api-wrapper": "^0.6.0",
     "@lidofinance/next-cache-files-middleware": "^0.3.0",
     "@lidofinance/next-pages": "^0.0.7",
     "@lidofinance/rpc": "^0.0.5",
@@ -46,8 +47,10 @@
     "@types/ms": "^0.7.31",
     "@types/nprogress": "^0.2.0",
     "@types/react-transition-group": "^4.4.3",
+    "bignumber.js": "9.1.0",
     "copy-to-clipboard": "^3.3.1",
     "cors": "^2.8.5",
+    "date-fns": "2.29.2",
     "ethers": "^5.5.3",
     "fs-extra": "^10.1.0",
     "gray-matter": "^4.0.3",
@@ -68,6 +71,7 @@
     "react-dom": "17.0.2",
     "react-is": "^17.0.2",
     "react-transition-group": "^4.4.2",
+    "reef-knot": "0.1.1",
     "remark": "^13.0.0",
     "remark-external-links": "^8.0.0",
     "remark-html": "^13.0.1",
@@ -85,6 +89,7 @@
     "@types/node": "^18.6.1",
     "@types/react": "^17.0.15",
     "@types/styled-components": "^5.1.11",
+    "@types/styled-system": "5.1.15",
     "@types/winston": "^2.4.4",
     "@typescript-eslint/eslint-plugin": "^5.12.0",
     "@typescript-eslint/parser": "^5.12.0",
@@ -112,6 +117,8 @@
     ]
   },
   "resolutions": {
-    "@types/react": "17.0.43"
+    "@types/react": "17.0.43",
+    "@reef-knot/connect-wallet-modal": "0.1.1",
+    "@reef-knot/web3-react": "0.1.0"
   }
 }

@@ -7,7 +7,7 @@ import {
   Steth,
 } from '@lidofinance/lido-ui';
 import { getTokenAddress, TOKENS } from '@lido-sdk/constants';
-import { useWeb3 } from '@lido-sdk/web3-react';
+import { useWeb3 } from '@reef-knot/web3-react';
 import { useSDK, useWSTETHBalance } from '@lido-sdk/react';
 import { parseEther } from '@ethersproject/units';
 import {

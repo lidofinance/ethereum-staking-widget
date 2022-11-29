@@ -5,7 +5,6 @@ export { Header } from './header/header';
 export { Footer } from './footer/footer';
 export { AbuseWarning } from './abuse-warning/abuse-warning';
 export { BackgroundGradient } from './background-gradient/background-gradient';
-export { CookiesTooltip } from './cookies-tooltip/cookies-tooltip';
 export { Main } from './main/main';
 export { Section } from './section/section';
 export { TokenToWallet } from './token-to-wallet/token-to-wallet';
@@ -17,3 +16,4 @@ export {
   TX_OPERATION,
 } from './tx-stage-modal/tx-stage-modal';
 export { TooltipHoverable } from './tooltip-hoverable/tooltip-hoverable';
+export { MatomoLink } from './matomo-link/matomo-link';

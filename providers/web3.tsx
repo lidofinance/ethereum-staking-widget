@@ -1,5 +1,5 @@
 import { FC } from 'react';
-import { ProviderWeb3 } from '@lido-sdk/web3-react';
+import { ProviderWeb3 } from '@reef-knot/web3-react';
 import { backendRPC, dynamics } from 'config';
 
 const Web3Provider: FC = ({ children }) => (

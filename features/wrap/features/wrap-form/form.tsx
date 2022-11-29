@@ -14,12 +14,12 @@ import {
   useWSTETHContractWeb3,
   useSDK,
 } from '@lido-sdk/react';
-import { useWeb3 } from '@lido-sdk/web3-react';
+import { useWeb3 } from '@reef-knot/web3-react';
 import { useCurrencyInput } from 'shared/hooks';
 import { wrapProcessingWithApprove } from 'features/wrap/utils';
 import { TX_OPERATION, TX_STAGE } from 'shared/components';
 import { L2Banner } from 'shared/l2-banner';
-import { MATOMO_EVENTS } from 'config';
+import { MATOMO_CLICK_EVENTS } from 'config';
 import { Connect } from 'shared/wallet';
 import { InputLocked } from 'features/wrap/components';
 import {
@@ -240,7 +240,7 @@ export const Form: FC<FromProps> = (props) => {
       ) : (
         <Connect fullwidth />
       )}
-      <L2Banner matomoEvent={MATOMO_EVENTS.clickL2BannerWrap} />
+      <L2Banner matomoEvent={MATOMO_CLICK_EVENTS.l2BannerWrap} />
     </FormStyled>
   );
 };

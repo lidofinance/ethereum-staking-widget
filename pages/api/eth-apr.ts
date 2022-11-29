@@ -1,10 +1,10 @@
 import { Cache } from 'memory-cache';
+import { wrapRequest as wrapNextRequest } from '@lidofinance/next-api-wrapper';
 import { CACHE_ETH_APR_KEY, CACHE_ETH_APR_TTL, API_ROUTES } from 'config';
 import {
   getEthApr,
   errorAndCacheDefaultWrappers,
   responseTimeMetric,
-  wrapNextRequest,
   rateLimit,
 } from 'utilsApi';
 import Metrics from 'utilsApi/metrics';

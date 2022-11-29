@@ -1,4 +1,5 @@
 import { Cache } from 'memory-cache';
+import { wrapRequest as wrapNextRequest } from '@lidofinance/next-api-wrapper';
 import {
   CACHE_LIDO_SHORT_STATS_KEY,
   CACHE_LIDO_SHORT_STATS_TTL,
@@ -8,7 +9,6 @@ import {
   getTotalStaked,
   getLidoHoldersViaSubgraphs,
   getStEthPrice,
-  wrapNextRequest,
   errorAndCacheDefaultWrappers,
   responseTimeMetric,
   rateLimit,

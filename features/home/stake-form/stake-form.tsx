@@ -16,7 +16,7 @@ import {
   useSTETHContractRPC,
   useSTETHContractWeb3,
 } from '@lido-sdk/react';
-import { useWeb3 } from '@lido-sdk/web3-react';
+import { useWeb3 } from '@reef-knot/web3-react';
 import {
   Block,
   Button,
@@ -83,8 +83,8 @@ export const StakeForm: FC = memo(() => {
       );
     },
     [
-      openTxModal,
       stethContractWeb3,
+      openTxModal,
       stethBalance.update,
       chainId,
       router?.query?.ref,
