@@ -39,10 +39,8 @@ export const useLidoStats = (): {
     };
   }, [lidoStats]);
 
-  const initialLoading = !lidoStats.data;
-
   return {
     data,
-    initialLoading,
+    initialLoading: lidoStats.initialLoading,
   };
 };

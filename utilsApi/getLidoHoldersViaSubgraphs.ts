@@ -12,6 +12,9 @@ import getConfig from 'next/config';
 import ms from 'ms';
 const { serverRuntimeConfig } = getConfig();
 
+const SUBGRAPH_ERROR_MESSAGE =
+  '[getLidoHoldersViaSubgraphs] Subgraph request failed.';
+
 interface LidoHolders extends Response {
   data: {
     stats: {
@@ -61,7 +64,7 @@ export const getLidoHoldersViaSubgraphs: GetLidoHoldersViaSubgraphs = async (
   const url = getSubgraphUrl(chainId);
 
   if (!url) {
-    throw new Error('Error: subgraph chain is not supported');
+    throw new Error(`Error: subgraph chain is not supported ${chainId}`);
   }
 
   try {
@@ -83,9 +86,17 @@ export const getLidoHoldersViaSubgraphs: GetLidoHoldersViaSubgraphs = async (
 
     return responseJsoned;
   } catch (error) {
-    serverLogger.error(
-      '[getLidoHoldersViaSubgraphs] Subgraph request failed. Using long-term cache...',
-    );
-    return cache.get(CACHE_LIDO_HOLDERS_VIA_SUBGRAPHS_KEY);
+    const data = cache.get(CACHE_LIDO_HOLDERS_VIA_SUBGRAPHS_KEY);
+
+    if (data) {
+      serverLogger.error(`${SUBGRAPH_ERROR_MESSAGE} Using long-term cache...`);
+      return data;
+    }
+
+    if (error instanceof Error) {
+      throw new Error(error.message ?? SUBGRAPH_ERROR_MESSAGE);
+    } else {
+      throw new Error(SUBGRAPH_ERROR_MESSAGE);
+    }
   }
 };
