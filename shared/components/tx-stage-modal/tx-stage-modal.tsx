@@ -1,7 +1,7 @@
 import { FC, memo, useCallback, useMemo, RefObject } from 'react';
 import { BigNumber } from 'ethers';
 import { useSDK } from '@lido-sdk/react';
-import { useConnectorInfo } from '@lido-sdk/web3-react';
+import { useConnectorInfo } from '@reef-knot/web3-react';
 import {
   Link,
   Modal,

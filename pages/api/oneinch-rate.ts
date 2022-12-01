@@ -1,4 +1,5 @@
 import { Cache } from 'memory-cache';
+import { wrapRequest as wrapNextRequest } from '@lidofinance/next-api-wrapper';
 import { CHAINS, TOKENS, getTokenAddress } from '@lido-sdk/constants';
 import {
   CACHE_ONE_INCH_RATE_KEY,
@@ -7,7 +8,6 @@ import {
 } from 'config';
 import {
   getOneInchRate,
-  wrapNextRequest,
   responseTimeMetric,
   errorAndCacheDefaultWrappers,
   rateLimit,

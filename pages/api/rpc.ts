@@ -1,10 +1,10 @@
 import getConfig from 'next/config';
 import { rpcFactory } from '@lidofinance/next-pages';
+import { wrapRequest as wrapNextRequest } from '@lidofinance/next-api-wrapper';
 import { METRICS_PREFIX, API_ROUTES } from 'config';
 import {
   fetchRPC,
   serverLogger,
-  wrapNextRequest,
   rateLimit,
   responseTimeMetric,
 } from 'utilsApi';

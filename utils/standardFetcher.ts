@@ -1,8 +1,19 @@
+import { extractErrorMessage } from 'utils';
+
 const DEFAULT_PARAMS = {
   method: 'GET',
   headers: {
     'Content-type': 'application/json',
   },
+};
+
+const extractError = async (response: Response) => {
+  try {
+    const error = await response.json();
+    return extractErrorMessage(error);
+  } catch (error) {
+    return 'An error occurred while fetching the data';
+  }
 };
 
 type StandardFetcher = <T>(url: string, params?: RequestInit) => Promise<T>;
@@ -14,8 +25,7 @@ export const standardFetcher: StandardFetcher = async (url, params) => {
   });
 
   if (!response.ok) {
-    const error = new Error('An error occurred while fetching the data.');
-    throw error;
+    throw new Error(await extractError(response));
   }
 
   return await response.json();

@@ -1,5 +1,6 @@
 import Cors from 'cors';
 import { Cache } from 'memory-cache';
+import { wrapRequest as wrapNextRequest } from '@lidofinance/next-api-wrapper';
 import {
   CACHE_ETH_APR_KEY,
   CACHE_ETH_APR_TTL,
@@ -13,7 +14,6 @@ import {
   getStethApr,
   errorAndCacheDefaultWrappers,
   responseTimeMetric,
-  wrapNextRequest,
   rateLimit,
 } from 'utilsApi';
 import Metrics from 'utilsApi/metrics';

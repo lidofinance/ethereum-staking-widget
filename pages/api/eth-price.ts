@@ -1,5 +1,9 @@
 import { Cache } from 'memory-cache';
 import {
+  wrapRequest as wrapNextRequest,
+  cacheControl,
+} from '@lidofinance/next-api-wrapper';
+import {
   CACHE_ETH_PRICE_KEY,
   CACHE_ETH_PRICE_TTL,
   CACHE_ETH_PRICE_HEADERS,
@@ -7,8 +11,6 @@ import {
 } from 'config';
 import {
   getEthPrice,
-  wrapNextRequest,
-  cacheControl,
   defaultErrorHandler,
   responseTimeMetric,
   rateLimit,
@@ -35,6 +37,6 @@ const ethPrice: API = async (req, res) => {
 export default wrapNextRequest([
   rateLimit(),
   responseTimeMetric(Metrics.request.apiTimings, API_ROUTES.ETH_PRICE),
-  cacheControl(CACHE_ETH_PRICE_HEADERS),
+  cacheControl({ headers: CACHE_ETH_PRICE_HEADERS }),
   defaultErrorHandler,
 ])(ethPrice);
