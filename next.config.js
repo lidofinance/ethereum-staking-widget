@@ -36,12 +36,6 @@ const rateLimitTimeFrame = process.env.RATE_LIMIT_TIME_FRAME;
 
 const rewardsBackendAPI = process.env.REWARDS_BACKEND;
 
-// Need to initialize AggregatorRegistry for each worker, because we need to setup listeners
-// https://github.com/siimon/prom-client/blob/721829cc593bb7da28ae009985caeeacb4b59e05/lib/cluster.js#L153
-// Otherwise requests for metrics will crash all forks at once
-const { AggregatorRegistry } = require('prom-client');
-new AggregatorRegistry();
-
 module.exports = {
   basePath,
   compiler: {
