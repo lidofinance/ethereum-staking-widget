@@ -3,6 +3,8 @@ import { MatomoEvent } from 'utils';
 export const enum MATOMO_CLICK_EVENTS_TYPES {
   // Global
   connectWallet = 'connectWallet',
+  clickCurvePool = 'clickCurvePool',
+  clickBalancerPool = 'clickBalancerPool',
   // / page
   oneInchDiscount = 'oneInchDiscount',
   viewEtherscanOnStakePage = 'viewEtherscanOnStakePage',
@@ -39,6 +41,16 @@ export const MATOMO_CLICK_EVENTS: Record<
     'Ethereum_Staking_Widget',
     'Push "Connect wallet" button',
     'eth_widget_connect_wallet',
+  ],
+  [MATOMO_CLICK_EVENTS_TYPES.clickCurvePool]: [
+    'Ethereum_Stacking_Widget',
+    'Push "Explore" on curve banner on widget',
+    'eth_widget_banner_curve_explore',
+  ],
+  [MATOMO_CLICK_EVENTS_TYPES.clickBalancerPool]: [
+    'Ethereum_Stacking_Widget',
+    'Push "Explore" on balancer banner on widget',
+    'eth_widget_banner_balancer_explore',
   ],
   // / page
   [MATOMO_CLICK_EVENTS_TYPES.oneInchDiscount]: [
