@@ -1,19 +1,15 @@
-import { SWRResponse, useLidoSWR } from '@lido-sdk/react';
+import { useLidoSWR } from '@lido-sdk/react';
 import { standardFetcher } from 'utils/standardFetcher';
 import getConfig from 'next/config';
 
-import { CurveResponse } from './types';
+import { BalancerResponse } from './types';
 
-const { serverRuntimeConfig } = getConfig();
-const { ethAPIBasePath } = serverRuntimeConfig;
+const { publicRuntimeConfig } = getConfig();
+const { ethAPIBasePath } = publicRuntimeConfig;
 
 export const useBalancer = () => {
-  const { data } = useLidoSWR(
-    `${ethAPIBasePath ?? ''}/api/eth-ap1r`,
+  return useLidoSWR<BalancerResponse>(
+    `${ethAPIBasePath ?? ''}/v1/pool/balancer/wsteth-weth/apr/last`,
     standardFetcher,
-  ) as SWRResponse<CurveResponse>;
-
-  const apy = data?.data;
-
-  return apy;
+  );
 };

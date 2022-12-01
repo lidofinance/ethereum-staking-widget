@@ -44,12 +44,12 @@ export const MATOMO_CLICK_EVENTS: Record<
   ],
   [MATOMO_CLICK_EVENTS_TYPES.clickCurvePool]: [
     'Ethereum_Stacking_Widget',
-    'Push "Explore" on curve banner on widget',
+    'Push «Explore» in Curve section on Transaction success banner',
     'eth_widget_banner_curve_explore',
   ],
   [MATOMO_CLICK_EVENTS_TYPES.clickBalancerPool]: [
     'Ethereum_Stacking_Widget',
-    'Push "Explore" on balancer banner on widget',
+    'Push «Explore» in Balancer section on Transaction success banner',
     'eth_widget_banner_balancer_explore',
   ],
   // / page

@@ -1,19 +1,15 @@
-import { SWRResponse, useLidoSWR } from '@lido-sdk/react';
+import { useLidoSWR } from '@lido-sdk/react';
 import { standardFetcher } from 'utils/standardFetcher';
 import getConfig from 'next/config';
 
 import { CurveResponse } from './types';
 
-const { serverRuntimeConfig } = getConfig();
-const { ethAPIBasePath } = serverRuntimeConfig;
+const { publicRuntimeConfig } = getConfig();
+const { ethAPIBasePath } = publicRuntimeConfig;
 
 export const useCurve = () => {
-  const { data } = useLidoSWR(
-    `${ethAPIBasePath ?? ''}/api/eth-ap1r`,
+  return useLidoSWR<CurveResponse>(
+    `${ethAPIBasePath ?? ''}/v1/pool/curve/steth-eth/apr/last`,
     standardFetcher,
-  ) as SWRResponse<CurveResponse>;
-
-  const apy = data?.data.totalApy;
-
-  return apy;
+  );
 };

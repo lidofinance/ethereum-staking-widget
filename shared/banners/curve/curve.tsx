@@ -1,8 +1,9 @@
 import { FC } from 'react';
-import { Button } from '@lidofinance/lido-ui';
-import { MATOMO_EVENTS } from 'config';
+import { Button, InlineLoader } from '@lidofinance/lido-ui';
+import { MATOMO_CLICK_EVENTS, DATA_UNAVAILABLE } from 'config';
 import { trackEvent } from 'utils';
 
+import { useCurve } from './useCurve';
 import {
   Wrapper,
   CurveIcon,
@@ -21,7 +22,13 @@ export const Curve: FC = () => {
     rel: 'noopener noreferrer',
   };
 
-  const linkClickHandler = () => trackEvent(...MATOMO_EVENTS.clickCurvePool);
+  const { data, initialLoading } = useCurve();
+
+  const linkClickHandler = () =>
+    trackEvent(...MATOMO_CLICK_EVENTS.clickCurvePool);
+
+  const apr = data?.data.totalApr.toFixed(2) ?? DATA_UNAVAILABLE;
+  const value = initialLoading ? <InlineLoader /> : apr;
 
   return (
     <Wrapper>
@@ -29,7 +36,7 @@ export const Curve: FC = () => {
         <CurveIcon />
       </CurveIconWrapper>
       <TextWrap>
-        <b>3.36% APY</b>
+        <b>{value}% APR</b>
         <br />
         ETH + stETH
       </TextWrap>

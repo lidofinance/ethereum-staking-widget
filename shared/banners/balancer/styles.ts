@@ -44,6 +44,10 @@ export const TextWrap = styled.div`
   position: relative;
   white-space: nowrap;
   margin-right: 8px;
+
+  span {
+    max-width: 40px;
+  }
 `;
 
 export const ButtonWrap = styled.div`

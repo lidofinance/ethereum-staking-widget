@@ -1,8 +1,9 @@
 import { FC } from 'react';
-import { Button } from '@lidofinance/lido-ui';
-import { MATOMO_EVENTS } from 'config';
+import { Button, InlineLoader } from '@lidofinance/lido-ui';
+import { MATOMO_CLICK_EVENTS, DATA_UNAVAILABLE } from 'config';
 import { trackEvent } from 'utils';
 
+import { useBalancer } from './useBalancer';
 import {
   Wrapper,
   BalancerIcon,
@@ -21,13 +22,20 @@ export const Balancer: FC = () => {
     rel: 'noopener noreferrer',
   };
 
-  const linkClickHandler = () => trackEvent(...MATOMO_EVENTS.clickBalancerPool);
+  const { data, initialLoading } = useBalancer();
+
+  const linkClickHandler = () =>
+    trackEvent(...MATOMO_CLICK_EVENTS.clickBalancerPool);
+
+  const apr = data?.data.totalApr.toFixed(2) ?? DATA_UNAVAILABLE;
+  const value = initialLoading ? <InlineLoader /> : apr;
 
   return (
     <Wrapper>
       <BalancerIcon />
       <TextWrap>
-        <b>% APY</b> <br /> wstETH + WETH
+        <b>{value}% APR</b>
+        <br /> wstETH + WETH
       </TextWrap>
       <ButtonWrap>
         <ButtonLinkWrap {...linkProps} onClick={linkClickHandler}>

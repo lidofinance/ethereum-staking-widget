@@ -1,43 +1,40 @@
-export type CurveResponse = {
-  data: [
-    {
-      timeUnix: number;
-      totalApr: number;
-      totalApy: number;
-      incentives: [
-        {
-          id: number;
-          type: 'rewards' | 'fees' | 'steth';
-          active: boolean;
-          apr: number;
-        }[],
-      ];
-      totalValueLockedInUsd: number;
-      dayTradingVolumeInUsd: number;
-      dayTradingVolumeInEth: number;
-    },
-  ];
-  meta: {
-    pools: {
+type BalancerResponseMeta = {
+  pool: {
+    address: string;
+    lpToken: {
+      symbol: string;
       address: string;
-      lpToken: {
-        symbol: string;
+    };
+    tokens: {
+      symbol: 'WETH' | 'wstETH';
+      address: string;
+    }[];
+  };
+  incentives: Record<
+    string,
+    {
+      token: {
+        symbol: 'BAL' | 'LDO';
         address: string;
       };
-      tokens: [
-        {
-          symbol: 'ETH' | 'stETH';
-          address: string;
-        }[],
-      ];
-    };
+    }
+  >;
+};
+
+export type BalancerResponse = {
+  data: {
+    timeUnix: number;
+    totalApr: number;
+    totalApy: number;
     incentives: {
-      [key: string]: {
-        token: {
-          symbol: 'CRV' | 'LDO';
-          address: string;
-        };
-      };
-    };
+      id: number;
+      type: 'rewards' | 'fees' | 'steth';
+      active: boolean;
+      apr: number;
+    }[];
+    totalValueLockedInUsd: number;
+    dayTradingVolumeInUsd: number;
+    dayTradingVolumeInEth: number;
   };
+  meta: BalancerResponseMeta;
 };
