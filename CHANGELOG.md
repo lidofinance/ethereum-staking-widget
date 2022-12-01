@@ -1,3 +1,12 @@
+# [1.46.0](https://github.com/lidofinance/staking-widget-ts/compare/1.45.0...1.46.0) (2022-12-01)
+
+
+### Features
+
+* remove cluster mode ([decd171](https://github.com/lidofinance/staking-widget-ts/commit/decd171bd58cc2f521febd429a1af4d3b1d87727))
+
+
+
 # [1.45.0](https://github.com/lidofinance/staking-widget-ts/compare/1.44.0...1.45.0) (2022-11-29)
 
 
@@ -114,20 +123,6 @@
 ### Bug Fixes
 
 * trust wallet deeplink ([6870dfc](https://github.com/lidofinance/staking-widget-ts/commit/6870dfc84effce4aaf14c87daa93637f9b043e0a))
-
-
-
-# [1.37.0](https://github.com/lidofinance/staking-widget-ts/compare/1.35.0...1.37.0) (2022-11-01)
-
-
-### Bug Fixes
-
-* update l2 banner matomo events ([#368](https://github.com/lidofinance/staking-widget-ts/issues/368)) ([555ed97](https://github.com/lidofinance/staking-widget-ts/commit/555ed97e3bb2181faf177876abd3efa40f0743d1))
-
-
-### Features
-
-* add matomo ([b777ad5](https://github.com/lidofinance/staking-widget-ts/commit/b777ad56a29b422e7a92e570a31d69d30b927a1e))
 
 
 
