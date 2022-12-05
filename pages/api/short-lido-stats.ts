@@ -1,3 +1,4 @@
+import getConfig from 'next/config';
 import { Cache } from 'memory-cache';
 import { wrapRequest as wrapNextRequest } from '@lidofinance/next-api-wrapper';
 import {
@@ -17,12 +18,15 @@ import Metrics from 'utilsApi/metrics';
 import { API, SubgraphChains } from 'types';
 import { parallelizePromises } from 'utils';
 
+const { publicRuntimeConfig } = getConfig();
+const { defaultChain } = publicRuntimeConfig;
+
 const cache = new Cache<string, unknown>();
 
 // Proxy for third-party API.
 // Returns stETH token information
 const shortLidoStats: API = async (req, res) => {
-  const chainId = Number(req.query.chainId) as SubgraphChains;
+  const chainId = (Number(req.query.chainId) as SubgraphChains) || defaultChain;
   const cacheKey = `${CACHE_LIDO_SHORT_STATS_KEY}_${chainId}`;
 
   const cachedLidoStats = cache.get(cacheKey);

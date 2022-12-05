@@ -19,6 +19,9 @@ const GlobalStyle = createGlobalStyle`
     font-weight: 500;
     text-size-adjust: none;
   }
+  main {
+    min-height: calc(100vh - 150px);
+  }
   a {
     color: var(--lido-color-primary);
 
