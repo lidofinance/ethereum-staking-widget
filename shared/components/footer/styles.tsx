@@ -7,26 +7,10 @@ export const FooterStyle = styled((props) => <Container {...props} />)`
   flex-wrap: wrap;
   padding-top: 25px;
   padding-bottom: 25px;
+  height: 70px;
 
   ${({ theme }) => theme.mediaQueries.lg} {
-    padding-top: 40px;
-  }
-
-  ${({ theme }) => theme.mediaQueries.md} {
-    padding-bottom: 40px;
-  }
-`;
-
-export const FooterGroupStyle = styled.div`
-  flex-grow: 1;
-  padding-right: 20px;
-
-  &:last-child {
-    padding-right: 0;
-  }
-
-  ${({ theme }) => theme.mediaQueries.md} {
-    flex-basis: 100%;
+    margin-bottom: 60px;
   }
 `;
 
