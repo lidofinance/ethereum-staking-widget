@@ -9,7 +9,7 @@ export const Wrapper = styled.div`
   align-items: center;
   gap: 20px;
   padding: 0 ${({ theme }) => theme.spaceMap.lg}px;
-  border-radius: 10px;
+  border-radius: ${({ theme }) => theme.borderRadiusesMap.lg}px;
   height: 100px;
   overflow: hidden;
   background-color: #07080c;
