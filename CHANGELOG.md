@@ -1,3 +1,25 @@
+# [1.47.0](https://github.com/lidofinance/staking-widget-ts/compare/1.46.0...1.47.0) (2022-12-06)
+
+
+### Bug Fixes
+
+* add chain id to cache key for lido stats, add error log for subgraph ([41fc948](https://github.com/lidofinance/staking-widget-ts/commit/41fc948672237c6d92996f6a2e21c91956bc0621))
+* fix footer styles ([a48706b](https://github.com/lidofinance/staking-widget-ts/commit/a48706bce5f6ea25702eedd2471b0e539d2c8c88))
+* fix header/footer styles, add short-lido-stats default chainId ([c51277c](https://github.com/lidofinance/staking-widget-ts/commit/c51277c48b47a50e68cdbe07efa2e1ad58a44c73))
+* replace events ([3b51e7f](https://github.com/lidofinance/staking-widget-ts/commit/3b51e7f2ec964b3c7b413b3fc677a99a44863581))
+* revert required fields for /short-lido-stats ([b428c47](https://github.com/lidofinance/staking-widget-ts/commit/b428c4743a212d2d4c980d15e2b1b50c1cd33e6b))
+
+
+### Features
+
+* add curve and balancer pools banners ([3008ddd](https://github.com/lidofinance/staking-widget-ts/commit/3008ddd00419fb39ceb116f962fd6bb932cb1805))
+* add getting data from eth api ([cdf90d1](https://github.com/lidofinance/staking-widget-ts/commit/cdf90d1a354303bbdf06449de53c4c9111abaa61))
+* add matomo wallets events for clicks ([cca69c3](https://github.com/lidofinance/staking-widget-ts/commit/cca69c3eb17635efc393e624f651d5f12c749412))
+* change footer, add link to logo ([b23e80a](https://github.com/lidofinance/staking-widget-ts/commit/b23e80ab11fa2cd609f69e362d44d81ccf783ab3))
+* reef-knot 0.3.0 (wallets click metrics) ([14818f7](https://github.com/lidofinance/staking-widget-ts/commit/14818f77d6a356dcf346ae57d36584b215026449))
+
+
+
 # [1.46.0](https://github.com/lidofinance/staking-widget-ts/compare/1.45.0...1.46.0) (2022-12-01)
 
 
@@ -114,15 +136,6 @@
 ### Features
 
 * update faq text on stake page ([edb2cf9](https://github.com/lidofinance/staking-widget-ts/commit/edb2cf9a1b1b2756e23e483f0ae52d7696c6f510))
-
-
-
-## [1.37.1](https://github.com/lidofinance/staking-widget-ts/compare/1.37.0...1.37.1) (2022-11-08)
-
-
-### Bug Fixes
-
-* trust wallet deeplink ([6870dfc](https://github.com/lidofinance/staking-widget-ts/commit/6870dfc84effce4aaf14c87daa93637f9b043e0a))
 
 
 
