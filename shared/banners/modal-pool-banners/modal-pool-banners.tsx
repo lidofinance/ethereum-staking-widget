@@ -9,7 +9,7 @@ export const ModalPoolBanners = () => {
       <TextStyles>
         <b>Earn more</b>
         <DescStyles>
-          Explore DeFi options below to get even bigger rewadrs
+          Explore DeFi options below to get even bigger rewards
         </DescStyles>
       </TextStyles>
       <Curve />
