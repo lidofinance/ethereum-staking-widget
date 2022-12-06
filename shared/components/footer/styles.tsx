@@ -18,6 +18,7 @@ export const FooterItemStyle = styled.span`
   font-size: ${({ theme }) => theme.fontSizesMap.xxs}px;
   line-height: 20px;
   color: var(--lido-color-textSecondary);
+  font-weight: 400;
 
   a,
   a:visited {
@@ -31,7 +32,7 @@ export const FooterItemStyle = styled.span`
   }
 
   &:not(:last-of-type):after {
-    content: ' | ';
+    content: '|';
     padding: 0 2px;
   }
 `;
