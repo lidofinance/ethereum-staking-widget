@@ -1,3 +1,12 @@
+## [1.47.3](https://github.com/lidofinance/staking-widget-ts/compare/1.47.2...1.47.3) (2022-12-06)
+
+
+### Bug Fixes
+
+* change curve pool link ([aa61dda](https://github.com/lidofinance/staking-widget-ts/commit/aa61ddae4a3291453dc8bd96167079111485165f))
+
+
+
 ## [1.47.2](https://github.com/lidofinance/staking-widget-ts/compare/1.47.1...1.47.2) (2022-12-06)
 
 
@@ -107,15 +116,6 @@
 
 * add eth ui team to codeowners ([#325](https://github.com/lidofinance/staking-widget-ts/issues/325)) ([894eb5e](https://github.com/lidofinance/staking-widget-ts/commit/894eb5eb04a522a6445348f4da17a1d2d0b25498))
 * add extra gas to submit transaction ([9478332](https://github.com/lidofinance/staking-widget-ts/commit/9478332b2250aadc9231d0dcfe426c36885beae6))
-
-
-
-# [1.40.0](https://github.com/lidofinance/staking-widget-ts/compare/1.39.0...1.40.0) (2022-11-17)
-
-
-### Features
-
-* replace lido-sdk/web3-react and ui-blocks with reef-knot ([deba537](https://github.com/lidofinance/staking-widget-ts/commit/deba537ac8399d5a1e6804b1589bf7fd8e6de1ad))
 
 
 
