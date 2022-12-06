@@ -15,6 +15,7 @@ import {
 import { getEtherscanTxLink } from '@lido-sdk/helpers';
 import { ErrorMessage, formatBalance, formatBalanceString } from 'utils';
 import { use1inchLinkProps } from 'features/home/hooks';
+import { ModalPoolBanners } from 'shared/banners';
 
 import {
   BoldText,
@@ -264,7 +265,7 @@ export const TxStageModal: FC<TxStageModalProps> = memo(
                   <LightText size="xs" color="secondary" marginTop={4}>
                     {operationWasSuccessfulText}
                   </LightText>
-                  {/* <ModalPoolBanners /> */}
+                  <ModalPoolBanners />
                 </>
               )}
               {txOperation === TX_OPERATION.APPROVING && allowanceAmount && (
