@@ -1,3 +1,12 @@
+## [1.47.1](https://github.com/lidofinance/staking-widget-ts/compare/1.47.0...1.47.1) (2022-12-06)
+
+
+### Bug Fixes
+
+* hide banners ([fd9769a](https://github.com/lidofinance/staking-widget-ts/commit/fd9769a74fdfde05c7509c91f23564dfccb002ef))
+
+
+
 # [1.47.0](https://github.com/lidofinance/staking-widget-ts/compare/1.46.0...1.47.0) (2022-12-06)
 
 
@@ -122,20 +131,6 @@
 * add next-api-wrapper package, add metrics for api/metrics ([5a1ff2e](https://github.com/lidofinance/staking-widget-ts/commit/5a1ff2e6181b82b5cc73ef6bc44e08506722a354))
 * clear matomo events ([5cdb154](https://github.com/lidofinance/staking-widget-ts/commit/5cdb15437e9d0d7a7a131ec3dacc50f3c5086ee1))
 * use cross domain allow cookie tooltip from UI lib v3 ([cc19a02](https://github.com/lidofinance/staking-widget-ts/commit/cc19a02604f9c8725a91b6feb98bcb6d2f35af1a))
-
-
-
-# [1.38.0](https://github.com/lidofinance/staking-widget-ts/compare/1.37.1...1.38.0) (2022-11-08)
-
-
-### Bug Fixes
-
-* fix faq text ([1c0e6a2](https://github.com/lidofinance/staking-widget-ts/commit/1c0e6a247062ceef1a84c81662b18f0b5348bfad))
-
-
-### Features
-
-* update faq text on stake page ([edb2cf9](https://github.com/lidofinance/staking-widget-ts/commit/edb2cf9a1b1b2756e23e483f0ae52d7696c6f510))
 
 
 
