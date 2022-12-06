@@ -1,3 +1,12 @@
+## [1.47.2](https://github.com/lidofinance/staking-widget-ts/compare/1.47.1...1.47.2) (2022-12-06)
+
+
+### Bug Fixes
+
+* fix text in pools banners ([98e39e6](https://github.com/lidofinance/staking-widget-ts/commit/98e39e634bec35266cbd4abfc5273eedcdafb01a))
+
+
+
 ## [1.47.1](https://github.com/lidofinance/staking-widget-ts/compare/1.47.0...1.47.1) (2022-12-06)
 
 
@@ -107,30 +116,6 @@
 ### Features
 
 * replace lido-sdk/web3-react and ui-blocks with reef-knot ([deba537](https://github.com/lidofinance/staking-widget-ts/commit/deba537ac8399d5a1e6804b1589bf7fd8e6de1ad))
-
-
-
-# [1.39.0](https://github.com/lidofinance/staking-widget-ts/compare/1.38.0...1.39.0) (2022-11-16)
-
-
-### Bug Fixes
-
-* fix checking allowed cookie ([#384](https://github.com/lidofinance/staking-widget-ts/issues/384)) ([61b18af](https://github.com/lidofinance/staking-widget-ts/commit/61b18afcad64e8fdd010d9ab5b86b14ff6306d12))
-* fix faq matomo event name ([#385](https://github.com/lidofinance/staking-widget-ts/issues/385)) ([6776280](https://github.com/lidofinance/staking-widget-ts/commit/67762800402ea9d358e3499c7fcd49b3a8c06acf))
-* fix types ([82e0a56](https://github.com/lidofinance/staking-widget-ts/commit/82e0a568eb69ce16bc2a4fbf4570dc663a735acb))
-* rename matomo events ([c63dfd7](https://github.com/lidofinance/staking-widget-ts/commit/c63dfd71ebd7ffce9e4df9970cc5e7f666476f76))
-
-
-### Features
-
-* add check policy for matomo events ([7b224dd](https://github.com/lidofinance/staking-widget-ts/commit/7b224ddf7c288f5b9b584614d9cbac09e14506c8))
-* add faq components, add matomo events ([2d913bc](https://github.com/lidofinance/staking-widget-ts/commit/2d913bcb6521d3a8c5e357b704a42fb6af2fcd2a))
-* add faq comps for wrap page ([bf12e56](https://github.com/lidofinance/staking-widget-ts/commit/bf12e565f242b26238f2492256bfb3a2653dbeac))
-* add matomo link, start adding new faq comps, fix get data for faq ([b8de196](https://github.com/lidofinance/staking-widget-ts/commit/b8de196f1965e6fa8b6b0abd45693d1b83ba8c87))
-* add new matomo events ([b829dbb](https://github.com/lidofinance/staking-widget-ts/commit/b829dbb44fa2a8282cfa73fa0cd85c178b12d849))
-* add next-api-wrapper package, add metrics for api/metrics ([5a1ff2e](https://github.com/lidofinance/staking-widget-ts/commit/5a1ff2e6181b82b5cc73ef6bc44e08506722a354))
-* clear matomo events ([5cdb154](https://github.com/lidofinance/staking-widget-ts/commit/5cdb15437e9d0d7a7a131ec3dacc50f3c5086ee1))
-* use cross domain allow cookie tooltip from UI lib v3 ([cc19a02](https://github.com/lidofinance/staking-widget-ts/commit/cc19a02604f9c8725a91b6feb98bcb6d2f35af1a))
 
 
 
