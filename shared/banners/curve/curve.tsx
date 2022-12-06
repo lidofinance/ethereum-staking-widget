@@ -13,7 +13,7 @@ import {
   TextWrap,
 } from './styles';
 
-const CURVE_LINK = 'https://curve.fi/steth';
+const CURVE_LINK = 'https://curve.fi/#/ethereum/pools/steth/deposit';
 
 export const Curve: FC = () => {
   const linkProps = {
