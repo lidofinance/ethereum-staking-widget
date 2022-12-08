@@ -178,7 +178,7 @@ export const WrapForm: FC = memo(() => {
           ${wrapTxCostInUsd?.toFixed(2)}
         </DataTableRow>
         <DataTableRow title="Exchange rate" loading={!oneWstethConverted}>
-          1 stETH =
+          1 {selectedToken} ={' '}
           <FormatToken amount={oneWstethConverted} symbol="wstETH" />
         </DataTableRow>
         <DataTableRow title="Allowance" loading={loadingUseApprove}>
