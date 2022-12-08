@@ -76,6 +76,9 @@
     "tiny-invariant": "^1.1.0"
   },
   "devDependencies": {
+    "@commitlint/cli": "^17.3.0",
+    "@commitlint/config-conventional": "^17.3.0",
+    "@commitlint/prompt": "^17.3.0",
     "@svgr/webpack": "^5.5.0",
     "@typechain/ethers-v5": "^7.0.1",
     "@types/jest": "28.1.6",
