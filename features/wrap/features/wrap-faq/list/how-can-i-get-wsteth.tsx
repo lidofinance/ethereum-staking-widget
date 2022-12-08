@@ -20,7 +20,7 @@ export const HowCanIGetWsteth: FC = () => {
   const link = `/wrap${query}`;
 
   return (
-    <Accordion defaultExpanded summary="How can I get wstETH?">
+    <Accordion summary="How can I get wstETH?">
       <p>
         You can wrap your stETH tokens using{' '}
         <Link

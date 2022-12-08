@@ -20,7 +20,7 @@ export const HowDoIUnwrapWstethToSteth: FC = () => {
   const link = `/wrap?mode=unwrap${query}`;
 
   return (
-    <Accordion defaultExpanded summary="How do I unwrap wstETH back to stETH?">
+    <Accordion summary="How do I unwrap wstETH back to stETH?">
       <p>
         You can unwrap your wstETH tokens using{' '}
         <Link
