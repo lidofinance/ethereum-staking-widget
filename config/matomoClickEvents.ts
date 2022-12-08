@@ -43,12 +43,12 @@ export const MATOMO_CLICK_EVENTS: Record<
     'eth_widget_connect_wallet',
   ],
   [MATOMO_CLICK_EVENTS_TYPES.clickCurvePool]: [
-    'Ethereum_Stacking_Widget',
+    'Ethereum_Staking_Widget',
     'Push «Explore» in Curve section on Transaction success banner',
     'eth_widget_banner_curve_explore',
   ],
   [MATOMO_CLICK_EVENTS_TYPES.clickBalancerPool]: [
-    'Ethereum_Stacking_Widget',
+    'Ethereum_Staking_Widget',
     'Push «Explore» in Balancer section on Transaction success banner',
     'eth_widget_banner_balancer_explore',
   ],
