@@ -1,3 +1,19 @@
+# [1.48.0](https://github.com/lidofinance/staking-widget-ts/compare/1.47.3...1.48.0) (2022-12-08)
+
+
+### Bug Fixes
+
+* fix display token name on wrap page ([5455fbd](https://github.com/lidofinance/staking-widget-ts/commit/5455fbd059c46b3fc3187fc613d2f535f4d786d2))
+* fix matomo event name ([49b06d7](https://github.com/lidofinance/staking-widget-ts/commit/49b06d717e0bc18857635efc211d617b019eeb1e))
+* remove default expanded from faq on wrap page ([a363f45](https://github.com/lidofinance/staking-widget-ts/commit/a363f45e42b4118d34e83d5376d0e5f89e975405))
+
+
+### Features
+
+* add commitlint ([a9ac934](https://github.com/lidofinance/staking-widget-ts/commit/a9ac93448665902e1a891ceb24f156e474923350))
+
+
+
 ## [1.47.3](https://github.com/lidofinance/staking-widget-ts/compare/1.47.2...1.47.3) (2022-12-06)
 
 
@@ -101,21 +117,6 @@
 ### Features
 
 * add abortable middleware for swr, fix requests rewards ([ffe0209](https://github.com/lidofinance/staking-widget-ts/commit/ffe0209505c610b2b0468003bfa368f630b28f44))
-
-
-
-# [1.41.0](https://github.com/lidofinance/staking-widget-ts/compare/1.40.0...1.41.0) (2022-11-18)
-
-
-### Bug Fixes
-
-* add check gas limit before submit ([8afd0ea](https://github.com/lidofinance/staking-widget-ts/commit/8afd0ead0c42fcea3586d5f99595110781aabfca))
-
-
-### Features
-
-* add eth ui team to codeowners ([#325](https://github.com/lidofinance/staking-widget-ts/issues/325)) ([894eb5e](https://github.com/lidofinance/staking-widget-ts/commit/894eb5eb04a522a6445348f4da17a1d2d0b25498))
-* add extra gas to submit transaction ([9478332](https://github.com/lidofinance/staking-widget-ts/commit/9478332b2250aadc9231d0dcfe426c36885beae6))
 
 
 

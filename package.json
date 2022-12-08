@@ -1,6 +1,6 @@
 {
   "name": "lido-staking-widget",
-  "version": "1.47.3",
+  "version": "1.48.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
