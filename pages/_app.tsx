@@ -31,7 +31,9 @@ const App = (props: AppProps) => {
 
 const MemoApp = memo(App);
 
-const AppWrapper = (props: AppProps): JSX.Element => {
+const AppWrapper = (
+  props: AppProps & { pageProps: { cookiesCurrency?: string } },
+): JSX.Element => {
   const { ...rest } = props;
   return (
     <Providers cookiesCurrency={props.pageProps.cookiesCurrency}>
