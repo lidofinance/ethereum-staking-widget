@@ -30,7 +30,7 @@ const mobileCss = css`
 
 export const Nav = styled.div`
   ${desktopCss}
-  ${({ theme }) => theme.mediaQueries.md} {
+  ${({ theme }) => theme.mediaQueries.lg} {
     ${mobileCss}
   }
   z-index: 6;
@@ -69,7 +69,7 @@ export const NavLink = styled.a<{ active: boolean }>`
       active ? `var(--lido-color-primary)` : `var(--lido-color-secondary)`};
   }
 
-  ${({ theme }) => theme.mediaQueries.md} {
+  ${({ theme }) => theme.mediaQueries.lg} {
     flex-direction: column;
     text-transform: none;
     font-weight: 500;

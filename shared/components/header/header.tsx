@@ -8,7 +8,7 @@ import HeaderWallet from './components/header-wallet';
 export const Header: FC = () => (
   <HeaderStyle size="full" forwardedAs="header">
     <HeaderLogoStyle>
-      <Link href="/">
+      <Link href="https://lido.fi">
         <LidoLogo />
       </Link>
     </HeaderLogoStyle>

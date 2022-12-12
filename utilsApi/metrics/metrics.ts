@@ -1,8 +1,4 @@
-import {
-  collectDefaultMetrics,
-  Registry,
-  AggregatorRegistry,
-} from 'prom-client';
+import { collectDefaultMetrics, Registry } from 'prom-client';
 import { dynamics, METRICS_PREFIX } from 'config';
 import buildInfoJson from 'build-info.json';
 import { collectStartupMetrics } from '@lidofinance/api-metrics';
@@ -17,7 +13,6 @@ class Metrics {
   request = new RequestMetrics(this.registry);
 
   constructor() {
-    AggregatorRegistry.setRegistries(this.registry);
     this.collectStartupMetricsInit();
     collectDefaultMetrics({ prefix: METRICS_PREFIX, register: this.registry });
   }
