@@ -59,7 +59,7 @@ AppWrapper.getInitialProps = async (appContext: AppContext) => {
     STORAGE_CURRENCY_KEY,
   );
 
-  return { ...appProps };
+  return appProps;
 };
 
 export default process.env.NODE_ENV === 'development'
