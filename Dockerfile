@@ -3,7 +3,7 @@ FROM node:16-alpine as build
 
 WORKDIR /app
 
-RUN apk add --no-cache git=2.36.3-r0
+RUN apk add --no-cache git=~2
 COPY package.json yarn.lock ./
 
 RUN yarn install --frozen-lockfile --non-interactive --ignore-scripts && yarn cache clean
@@ -25,7 +25,7 @@ ENV NEXT_TELEMETRY_DISABLED=1 \
   DEFAULT_CHAIN=$DEFAULT_CHAIN
 
 WORKDIR /app
-RUN apk add --no-cache curl=7.83.1-r4
+RUN apk add --no-cache curl=~7
 COPY --from=build /app /app
 
 USER node
