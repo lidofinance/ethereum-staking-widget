@@ -2240,10 +2240,10 @@
   resolved "https://registry.yarnpkg.com/@reef-knot/wallets-icons/-/wallets-icons-0.2.0.tgz#0e2365ee9d625bf524704f79102f47190a83a0b8"
   integrity sha512-lXfcsZOq34yVgyvXD08JoszC0l37rDkzAJm/t2Q4vviEqp1PRSugKSanSm1txwmA2mrVb03cDGlQqowiwZKb/Q==
 
-"@reef-knot/web3-react@0.2.0":
-  version "0.2.0"
-  resolved "https://registry.yarnpkg.com/@reef-knot/web3-react/-/web3-react-0.2.0.tgz#1a86033f96dea4849799dcbbff8d54f1e4cb1ce4"
-  integrity sha512-fttyIvafxxt/frP9IKfz/9fgmod2LlyTY9B98ZbSvtaPWAT9qKhoUzBr6dzb6xQtcNwu4KXE8dkqRpDsmdC0Fg==
+"@reef-knot/web3-react@0.3.0":
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/@reef-knot/web3-react/-/web3-react-0.3.0.tgz#390e20b524bb9b5b598d20a2b8df173a15fd4926"
+  integrity sha512-oLbeb7LJHAIGfw0AhnwuhL+oFjRoljVwGzy31XtW3j3RgAJAoTsQxdej4HenzzkfVcYlmMtPRORePK/GKWBeWw==
   dependencies:
     "@gnosis.pm/safe-apps-web3-react" "0.6.8"
     "@ledgerhq/iframe-provider" "0.4.2"
@@ -7860,15 +7860,15 @@ redent@^3.0.0:
     indent-string "^4.0.0"
     strip-indent "^3.0.0"
 
-reef-knot@0.4.0:
-  version "0.4.0"
-  resolved "https://registry.yarnpkg.com/reef-knot/-/reef-knot-0.4.0.tgz#83f0951a449053c7d69317588923772fed0d12e6"
-  integrity sha512-OlDUHFzC9oMsnk4I86cEJ+TjjmpVfG3Ruggq9JLZqFmo9TDWAPG30jIOtt9T+DmJsLb9kgKnHABMYKse5pE9xw==
+reef-knot@0.4.1:
+  version "0.4.1"
+  resolved "https://registry.yarnpkg.com/reef-knot/-/reef-knot-0.4.1.tgz#8391c535aa5cd746c28c6138b9d27c644967c030"
+  integrity sha512-al9qBTGjsII09zSXULGT62gQpOH8u2q6koKkGHUgdfxBgZ21IaKMdb16OESfZI5LsrXCW4qH5ODYOe1vk5tvkA==
   dependencies:
     "@reef-knot/connect-wallet-modal" "0.4.0"
     "@reef-knot/ui-react" "0.1.0"
     "@reef-knot/wallets-icons" "0.2.0"
-    "@reef-knot/web3-react" "0.2.0"
+    "@reef-knot/web3-react" "0.3.0"
 
 regenerate-unicode-properties@^10.0.1:
   version "10.0.1"
