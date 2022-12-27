@@ -9,7 +9,7 @@ import Document, {
 import { Fonts, LidoUIHead } from '@lidofinance/lido-ui';
 import { ServerStyleSheet } from 'styled-components';
 
-import { dynamics } from '../config';
+import { dynamics } from 'config';
 
 let host = 'https://stake.lido.fi';
 
