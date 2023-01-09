@@ -73,5 +73,5 @@ jobs:
     secrets: inherit
     with:
       stand_url: ${{ needs.deploy.outputs.stand_url }}
-      stand_type: '${{ inputs.inventory }}'
+      stand_type: "${{ inputs.inventory || 'testnet' }}"
       on_preview_stand: true
