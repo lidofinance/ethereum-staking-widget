@@ -1,8 +1,8 @@
+<!--- If any section below doesn't make sense for your pull request, delete it please. -->
+
 ### Description
 
 <!--- Briefly note most valuable changes in what you did and why we need it, even if the task was described in detail in the task tracker. -->
-
-<!--- If any section below doesn't make sense for your pull request, delete it please. -->
 
 ### Demo
 
@@ -20,4 +20,4 @@
 
 - [ ]  Checked the changes locally.
 - [ ]  Created/updated the technical documentation (README.md / [docs](https://docs.lido.fi/) / etc.).
-- [ ]  Affects / requires changes in other services (Matomo / Sentry / CloudFlare / etc.)
+- [ ]  Affects / requires changes in other services (Matomo / Sentry / CloudFlare / etc.).
