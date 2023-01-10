@@ -1,3 +1,20 @@
+# [1.49.0](https://github.com/lidofinance/staking-widget-ts/compare/1.48.0...1.49.0) (2023-01-10)
+
+
+### Bug Fixes
+
+* fix docker packages version ([97370aa](https://github.com/lidofinance/staking-widget-ts/commit/97370aa1e2aed014d1fbf83ce0a664f5fee706c6))
+* reef-knot v0.4.1 ([2f3bf52](https://github.com/lidofinance/staking-widget-ts/commit/2f3bf5211a23a1f4c836efa589ec8219bff7bab9))
+* update decode-uri-component to 0.2.2 because of the snyk report ([7132b7f](https://github.com/lidofinance/staking-widget-ts/commit/7132b7f2ec20e98e2517fc338380b4b0c9504627))
+
+
+### Features
+
+* add zerion wallet, remove lido-ui dependency from reef-knot ([a6fa7cb](https://github.com/lidofinance/staking-widget-ts/commit/a6fa7cb4b7ac92641ec91939e8a869904e4ea3c1))
+* added starter pull request template ([e0230f1](https://github.com/lidofinance/staking-widget-ts/commit/e0230f139e188f587fd4a4c9d1bad85336a81770))
+
+
+
 # [1.48.0](https://github.com/lidofinance/staking-widget-ts/compare/1.47.3...1.48.0) (2022-12-08)
 
 
@@ -108,15 +125,6 @@
 ### Features
 
 * reef-knot 0.1.1 (Trust Wallet) ([e25c9d2](https://github.com/lidofinance/staking-widget-ts/commit/e25c9d2f9525ea818ebbd99066201543f4680b61))
-
-
-
-# [1.42.0](https://github.com/lidofinance/staking-widget-ts/compare/1.41.0...1.42.0) (2022-11-23)
-
-
-### Features
-
-* add abortable middleware for swr, fix requests rewards ([ffe0209](https://github.com/lidofinance/staking-widget-ts/commit/ffe0209505c610b2b0468003bfa368f630b28f44))
 
 
 
