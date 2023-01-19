@@ -35,7 +35,7 @@ const totalSupply: API = async (req, res) => {
 };
 
 export default wrapNextRequest([
-  rateLimit(),
+  rateLimit,
   responseTimeMetric(Metrics.request.apiTimings, API_ROUTES.TOTALSUPPLY),
   cacheControl({ headers: CACHE_TOTAL_SUPPLY_HEADERS }),
   defaultErrorHandler,

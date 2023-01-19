@@ -7,6 +7,7 @@ import {
   serverLogger,
   rateLimit,
   responseTimeMetric,
+  defaultErrorHandler,
 } from 'utilsApi';
 import Metrics from 'utilsApi/metrics';
 import { rpcUrls } from 'utilsApi/rpcUrls';
@@ -42,6 +43,7 @@ const rpc = rpcFactory({
 });
 
 export default wrapNextRequest([
-  rateLimit(),
+  rateLimit,
   responseTimeMetric(Metrics.request.apiTimings, API_ROUTES.RPC),
+  defaultErrorHandler,
 ])(rpc);

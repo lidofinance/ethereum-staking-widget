@@ -57,7 +57,7 @@ const shortLidoStats: API = async (req, res) => {
 };
 
 export default wrapNextRequest([
-  rateLimit(),
+  rateLimit,
   responseTimeMetric(Metrics.request.apiTimings, API_ROUTES.SHORT_LIDO_STATS),
   ...errorAndCacheDefaultWrappers,
 ])(shortLidoStats);

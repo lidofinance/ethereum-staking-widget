@@ -30,7 +30,7 @@ const lidoStats: API = async (req, res) => {
 };
 
 export default wrapNextRequest([
-  rateLimit(),
+  rateLimit,
   responseTimeMetric(Metrics.request.apiTimings, API_ROUTES.LIDOSTATS),
   ...errorAndCacheDefaultWrappers,
 ])(lidoStats);

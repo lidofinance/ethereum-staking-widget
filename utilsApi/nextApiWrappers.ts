@@ -5,6 +5,7 @@ import {
   defaultErrorHandler as nextDefaultErrorHandler,
   cacheControl,
 } from '@lidofinance/next-api-wrapper';
+import { rateLimitWrapper } from '@lidofinance/next-ip-rate-limit';
 import { Histogram } from 'prom-client';
 import { serverLogger } from 'utilsApi';
 import {
@@ -12,7 +13,6 @@ import {
   RATE_LIMIT,
   RATE_LIMIT_TIME_FRAME,
 } from 'config';
-import { setRateLimit } from 'utilsApi';
 
 export const responseTimeMetric =
   (metrics: Histogram<string>, route: string): RequestWrapper =>
@@ -32,19 +32,10 @@ export const responseTimeMetric =
     }
   };
 
-export const rateLimit = (): RequestWrapper => async (req, res, next) => {
-  setRateLimit({
-    req,
-    res,
-    limit: RATE_LIMIT,
-    timeFrame: RATE_LIMIT_TIME_FRAME,
-  });
-
-  // finish processing the request and return a 429 response
-  if (res.statusCode === 429) return;
-
-  await next?.(req, res, next);
-};
+export const rateLimit = rateLimitWrapper({
+  rateLimit: RATE_LIMIT,
+  rateLimitTimeFrame: RATE_LIMIT_TIME_FRAME,
+});
 
 export const defaultErrorHandler = nextDefaultErrorHandler({ serverLogger });
 

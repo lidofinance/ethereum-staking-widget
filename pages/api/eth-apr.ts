@@ -29,7 +29,7 @@ const ethApr: API = async (req, res) => {
 };
 
 export default wrapNextRequest([
-  rateLimit(),
+  rateLimit,
   responseTimeMetric(Metrics.request.apiTimings, API_ROUTES.ETH_APR),
   ...errorAndCacheDefaultWrappers,
 ])(ethApr);
