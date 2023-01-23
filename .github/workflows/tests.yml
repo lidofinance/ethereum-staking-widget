@@ -47,7 +47,7 @@ jobs:
       - name: Run tests on testnet/staging
         if: ${{ !inputs.on_preview_stand }}
         working-directory: test
-        run: yarn test:api
+        run: yarn test
         env:
           STAND_URL: ${{ inputs.stand_url }}
           STAND_TYPE: ${{ inputs.stand_type }}
