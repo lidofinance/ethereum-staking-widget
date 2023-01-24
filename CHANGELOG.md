@@ -1,3 +1,7 @@
+## [1.49.1](https://github.com/lidofinance/staking-widget-ts/compare/1.49.0...1.49.1) (2023-01-24)
+
+
+
 # [1.49.0](https://github.com/lidofinance/staking-widget-ts/compare/1.48.0...1.49.0) (2023-01-10)
 
 
@@ -116,15 +120,6 @@
 ### Features
 
 * add ref to button on rewards page ([b02f897](https://github.com/lidofinance/staking-widget-ts/commit/b02f8971cc190dda5cc4a620a2bade32a7793fdf))
-
-
-
-# [1.43.0](https://github.com/lidofinance/staking-widget-ts/compare/1.42.0...1.43.0) (2022-11-24)
-
-
-### Features
-
-* reef-knot 0.1.1 (Trust Wallet) ([e25c9d2](https://github.com/lidofinance/staking-widget-ts/commit/e25c9d2f9525ea818ebbd99066201543f4680b61))
 
 
 
