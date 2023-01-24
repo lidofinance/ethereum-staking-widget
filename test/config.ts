@@ -1,5 +1,3 @@
-import axios from 'axios';
-
 export interface StandConfig {
   chainId: number;
 }
@@ -45,17 +43,3 @@ const getConfig = (): Config => {
 };
 
 export const CONFIG = getConfig();
-
-const auth =
-  CONFIG.STAND_USER && CONFIG.STAND_PASSWORD
-    ? Buffer.from(
-        `${CONFIG.STAND_USER}:${CONFIG.STAND_PASSWORD}`,
-        'utf8',
-      ).toString('base64')
-    : undefined;
-
-axios.defaults.baseURL = CONFIG.STAND_URL;
-axios.defaults.validateStatus = () => true;
-if (auth) {
-  axios.defaults.headers.common['Authorization'] = `Basic ${auth}`;
-}

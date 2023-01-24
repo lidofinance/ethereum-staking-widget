@@ -30,11 +30,14 @@ jobs:
       - name: Install dependencies
         working-directory: test
         run: yarn install --immutable
+      - name: Install Playwright Browsers
+        working-directory: test
+        run: yarn playwright install --with-deps
 
       - name: Run tests on preview stand
         if: ${{ inputs.on_preview_stand }}
         working-directory: test
-        run: yarn test:api
+        run: yarn test
         env:
           STAND_URL: ${{ inputs.stand_url }}
           STAND_TYPE: ${{ inputs.stand_type }}
@@ -44,7 +47,14 @@ jobs:
       - name: Run tests on testnet/staging
         if: ${{ !inputs.on_preview_stand }}
         working-directory: test
-        run: yarn test:api
+        run: yarn test
         env:
           STAND_URL: ${{ inputs.stand_url }}
           STAND_TYPE: ${{ inputs.stand_type }}
+
+      - uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: playwright-report
+          path: test/playwright-report/
+          retention-days: 30
