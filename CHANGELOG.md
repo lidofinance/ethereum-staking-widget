@@ -1,3 +1,12 @@
+# [1.50.0](https://github.com/lidofinance/staking-widget-ts/compare/1.49.1...1.50.0) (2023-02-02)
+
+
+### Features
+
+* reef-knot v0.5.2 ([9078621](https://github.com/lidofinance/staking-widget-ts/commit/9078621816116e5ba3f3645b87d1fc8788bd96cc))
+
+
+
 ## [1.49.1](https://github.com/lidofinance/staking-widget-ts/compare/1.49.0...1.49.1) (2023-01-24)
 
 
@@ -106,20 +115,6 @@
 
 * add matomo wallets events ([3d94f75](https://github.com/lidofinance/staking-widget-ts/commit/3d94f7560dd4a00d248e746b4fd866f44cc0e2e8))
 * reef-knot 0.2.0 (wallets metrics) ([54f73b7](https://github.com/lidofinance/staking-widget-ts/commit/54f73b7b60f5de2dd602c2c6cd971a964a0f13b3))
-
-
-
-# [1.44.0](https://github.com/lidofinance/staking-widget-ts/compare/1.43.0...1.44.0) (2022-11-24)
-
-
-### Bug Fixes
-
-* fix show loading in rewards table ([2e494a7](https://github.com/lidofinance/staking-widget-ts/commit/2e494a7fa155efc581706b8e941342fb77f17637))
-
-
-### Features
-
-* add ref to button on rewards page ([b02f897](https://github.com/lidofinance/staking-widget-ts/commit/b02f8971cc190dda5cc4a620a2bade32a7793fdf))
 
 
 
