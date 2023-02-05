@@ -3,6 +3,7 @@ import { CONFIG } from './config';
 export interface GetRequest {
   uri: string;
   schema: object;
+  skipTestnet?: boolean;
 }
 
 export interface PostRequest {
@@ -389,6 +390,7 @@ export const GET_REQUESTS: GetRequest[] = [
   },
   {
     uri: '/api/rewards?address=0x87c0e047F4e4D3e289A56a36570D4CB957A37Ef1&currency=usd&onlyRewards=false&archiveRate=true&skip=0&limit=10',
+    skipTestnet: true, // api/rewards don't work on testnet
     schema: {
       type: 'object',
       properties: {
