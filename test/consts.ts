@@ -392,43 +392,44 @@ export const GET_REQUESTS: GetRequest[] = [
     schema: {
       type: 'object',
       properties: {
-        price: {
-          averageApr: 'string',
-          ethToStEthRatio: 'number',
-          events: {
-            type: 'array',
-            items: [
-              {
-                type: 'object',
-              },
-            ],
-          },
-          stETHCurrencyPrice: {
-            type: 'object',
-            properties: {
-              eth: { type: 'number' },
-              usd: { type: 'number' },
+        averageApr: { type: 'string' },
+        ethToStEthRatio: { type: 'number' },
+        events: {
+          type: 'array',
+          items: [
+            {
+              type: 'object',
+              additionalProperties: true,
             },
+          ],
+        },
+        stETHCurrencyPrice: {
+          type: 'object',
+          properties: {
+            eth: { type: 'number' },
+            usd: { type: 'number' },
           },
-          totalItems: 'number',
-          totals: {
-            type: 'object',
-            properties: {
-              currencyRewards: { type: 'string' },
-              ethRewards: { type: 'string' },
-            },
+          required: ['eth', 'usd'],
+          additionalProperties: false,
+        },
+        totalItems: { type: 'number' },
+        totals: {
+          type: 'object',
+          properties: {
+            currencyRewards: { type: 'string' },
+            ethRewards: { type: 'string' },
           },
         },
+        required: [
+          'averageApr',
+          'ethToStEthRatio',
+          'events',
+          'stETHCurrencyPrice',
+          'totalItems',
+          'totals',
+        ],
+        additionalProperties: false,
       },
-      required: [
-        'averageApr',
-        'ethToStEthRatio',
-        'events',
-        'stETHCurrencyPrice',
-        'totalItems',
-        'totals',
-      ],
-      additionalProperties: false,
     },
   },
 ];
