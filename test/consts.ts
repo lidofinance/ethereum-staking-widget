@@ -387,6 +387,50 @@ export const GET_REQUESTS: GetRequest[] = [
       additionalProperties: false,
     },
   },
+  {
+    uri: '/api/rewards?address=0x87c0e047F4e4D3e289A56a36570D4CB957A37Ef1&currency=usd&onlyRewards=false&archiveRate=true&skip=0&limit=10',
+    schema: {
+      type: 'object',
+      properties: {
+        price: {
+          averageApr: 'string',
+          ethToStEthRatio: 'number',
+          events: {
+            type: 'array',
+            items: [
+              {
+                type: 'object',
+              },
+            ],
+          },
+          stETHCurrencyPrice: {
+            type: 'object',
+            properties: {
+              eth: { type: 'number' },
+              usd: { type: 'number' },
+            },
+          },
+          totalItems: 'number',
+          totals: {
+            type: 'object',
+            properties: {
+              currencyRewards: { type: 'string' },
+              ethRewards: { type: 'string' },
+            },
+          },
+        },
+      },
+      required: [
+        'averageApr',
+        'ethToStEthRatio',
+        'events',
+        'stETHCurrencyPrice',
+        'totalItems',
+        'totals',
+      ],
+      additionalProperties: false,
+    },
+  },
 ];
 
 export const POST_REQUESTS: PostRequest[] = [
