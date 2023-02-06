@@ -100,6 +100,7 @@ export const StakeForm: FC = memo(() => {
     isSubmitting,
     setMaxInputValue,
     reset,
+
     limitWarning,
     limitReached,
   } = useCurrencyInput({
@@ -145,6 +146,8 @@ export const StakeForm: FC = memo(() => {
     }
   }, [active, reset]);
 
+  const isMaxDisabled = !!etherBalance.data && etherBalance.data.isZero();
+
   return (
     <Block>
       <FormStyled action="" method="post" onSubmit={handleSubmit} ref={formRef}>
@@ -159,6 +162,7 @@ export const StakeForm: FC = memo(() => {
               onClick={() => {
                 setMaxInputValue();
               }}
+              disabled={isMaxDisabled}
             >
               MAX
             </MaxButton>
