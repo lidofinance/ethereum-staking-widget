@@ -1,4 +1,4 @@
-import { trackEvent } from 'utils';
+import { trackEvent } from '@lidofinance/analytics-matomo';
 import { MATOMO_CLICK_EVENTS, MATOMO_CLICK_EVENTS_TYPES } from 'config';
 
 export const useMatomoEventHandle = () => {

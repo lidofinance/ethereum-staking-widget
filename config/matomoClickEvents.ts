@@ -1,4 +1,4 @@
-import { MatomoEvent } from 'utils';
+import { MatomoEventType } from '@lidofinance/analytics-matomo';
 
 export const enum MATOMO_CLICK_EVENTS_TYPES {
   // Global
@@ -34,7 +34,7 @@ export const enum MATOMO_CLICK_EVENTS_TYPES {
 
 export const MATOMO_CLICK_EVENTS: Record<
   MATOMO_CLICK_EVENTS_TYPES,
-  MatomoEvent
+  MatomoEventType
 > = {
   // Global
   [MATOMO_CLICK_EVENTS_TYPES.connectWallet]: [
