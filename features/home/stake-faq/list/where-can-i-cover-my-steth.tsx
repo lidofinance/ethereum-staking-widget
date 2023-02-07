@@ -6,8 +6,8 @@ export const WhereCanICoveMySteth: FC = () => {
   return (
     <Accordion summary="Where can I cover my stETH?">
       <span>
-        There are multiple coverage providers with different products for stETH
-        & derivatives:
+        There are multiple coverage and insurer providers with different
+        products for stETH:
       </span>
       <ul>
         <li>
@@ -46,8 +46,16 @@ export const WhereCanICoveMySteth: FC = () => {
             Ribbon Finance
           </Link>
         </li>
+        <li>
+          <Link
+            href="https://www.chainproof.co/"
+            data-matomo={MATOMO_CLICK_EVENTS_TYPES.faqWhereCanICoverChainproof}
+          >
+            Chainproof
+          </Link>
+        </li>
       </ul>
-      <p>Сheck with providers for coverage conditions.</p>
+      <p>Check with providers for coverage and insurer conditions.</p>
     </Accordion>
   );
 };
