@@ -3,6 +3,7 @@ import { CONFIG } from './config';
 export interface GetRequest {
   uri: string;
   schema: object;
+  skipTestnet?: boolean;
 }
 
 export interface PostRequest {
@@ -385,6 +386,52 @@ export const GET_REQUESTS: GetRequest[] = [
       },
       required: ['price'],
       additionalProperties: false,
+    },
+  },
+  {
+    uri: '/api/rewards?address=0x87c0e047F4e4D3e289A56a36570D4CB957A37Ef1&currency=usd&onlyRewards=false&archiveRate=true&skip=0&limit=10',
+    skipTestnet: true, // api/rewards don't work on testnet
+    schema: {
+      type: 'object',
+      properties: {
+        averageApr: { type: 'string' },
+        ethToStEthRatio: { type: 'number' },
+        events: {
+          type: 'array',
+          items: [
+            {
+              type: 'object',
+              additionalProperties: true,
+            },
+          ],
+        },
+        stETHCurrencyPrice: {
+          type: 'object',
+          properties: {
+            eth: { type: 'number' },
+            usd: { type: 'number' },
+          },
+          required: ['eth', 'usd'],
+          additionalProperties: false,
+        },
+        totalItems: { type: 'number' },
+        totals: {
+          type: 'object',
+          properties: {
+            currencyRewards: { type: 'string' },
+            ethRewards: { type: 'string' },
+          },
+        },
+        required: [
+          'averageApr',
+          'ethToStEthRatio',
+          'events',
+          'stETHCurrencyPrice',
+          'totalItems',
+          'totals',
+        ],
+        additionalProperties: false,
+      },
     },
   },
 ];
