@@ -2,12 +2,15 @@ import { expect, test } from '@playwright/test';
 import { fail } from 'assert';
 import { Validator } from 'jsonschema';
 import { GET_REQUESTS, POST_REQUESTS, PostRequest, GetRequest } from './consts';
+import { CONFIG } from './config';
 
 const validator = new Validator();
 
 test.describe('Smoke GET', () => {
   GET_REQUESTS.forEach((element: GetRequest) => {
     test(element.uri, async ({ request }) => {
+      if (CONFIG.STAND_TYPE === 'testnet' && element.skipTestnet) return;
+
       const resp = await request.get(element.uri);
       expect(resp.status()).toBe(200);
       const validationResult = validator.validate(
