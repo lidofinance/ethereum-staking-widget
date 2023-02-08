@@ -18,8 +18,8 @@ import Metrics from 'utilsApi/metrics';
 import { API, SubgraphChains } from 'types';
 import { parallelizePromises } from 'utils';
 
-const { publicRuntimeConfig } = getConfig();
-const { defaultChain } = publicRuntimeConfig;
+const { serverRuntimeConfig } = getConfig();
+const { defaultChain } = serverRuntimeConfig;
 
 const cache = new Cache<string, unknown>();
 

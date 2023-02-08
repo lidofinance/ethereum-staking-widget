@@ -1,14 +1,10 @@
-import getConfig from 'next/config';
 import { getStaticRpcBatchProvider } from '@lido-sdk/providers';
 
-import { getBackendRPCPath } from 'config';
+import { dynamics, getBackendRPCPath } from 'config';
 
-const { publicRuntimeConfig } = getConfig();
-const { defaultChain } = publicRuntimeConfig;
-
-const rpc = getBackendRPCPath(defaultChain);
+const rpc = getBackendRPCPath(dynamics.defaultChain);
 
 export const resolveEns = async (name: string | Promise<string>) => {
-  const provider = getStaticRpcBatchProvider(defaultChain, rpc);
+  const provider = getStaticRpcBatchProvider(dynamics.defaultChain, rpc);
   return await provider.resolveName(name);
 };
