@@ -1,8 +1,8 @@
+import getConfig from 'next/config';
 import {
   wrapRequest as wrapNextRequest,
   cacheControl,
 } from '@lidofinance/next-api-wrapper';
-import { dynamics } from 'config';
 import {
   defaultErrorHandler,
   responseTimeMetric,
@@ -13,6 +13,9 @@ import Metrics from 'utilsApi/metrics';
 import { CACHE_REWARDS_HEADERS, API_ROUTES } from 'config';
 import { API } from 'types';
 import { standardFetcher } from 'utils/standardFetcher';
+
+const { serverRuntimeConfig } = getConfig();
+const { rewardsBackendAPI } = serverRuntimeConfig;
 
 const TIMEOUT = 10_000;
 
@@ -34,9 +37,9 @@ const rewards: API = async (req, res) => {
   );
 
   const result = await responseTimeExternalMetricWrapper({
-    payload: dynamics.rewardsBackendAPI,
+    payload: rewardsBackendAPI,
     request: () =>
-      standardFetcher(`${dynamics.rewardsBackendAPI}/?${params.toString()}`, {
+      standardFetcher(`${rewardsBackendAPI}/?${params.toString()}`, {
         headers: {
           Accept: 'application/json',
           'Content-Type': 'application/json',

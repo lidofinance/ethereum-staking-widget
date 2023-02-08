@@ -5,6 +5,7 @@ buildDynamics();
 const basePath = process.env.BASE_PATH;
 const infuraApiKey = process.env.INFURA_API_KEY;
 const alchemyApiKey = process.env.ALCHEMY_API_KEY;
+const ethAPIBasePath = process.env.ETH_API_BASE_PATH;
 
 const ethplorerApiKey = process.env.ETHPLORER_API_KEY;
 
@@ -30,6 +31,8 @@ const metricsPort = process.env.METRICS_PORT ?? 3001;
 // rate limit
 const rateLimit = process.env.RATE_LIMIT;
 const rateLimitTimeFrame = process.env.RATE_LIMIT_TIME_FRAME;
+
+const rewardsBackendAPI = process.env.REWARDS_BACKEND;
 
 export default {
   basePath,
@@ -106,5 +109,7 @@ export default {
     metricsPort,
     rateLimit,
     rateLimitTimeFrame,
+    ethAPIBasePath,
+    rewardsBackendAPI,
   },
 };

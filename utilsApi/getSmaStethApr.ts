@@ -1,7 +1,11 @@
-import { dynamics } from 'config';
+import getConfig from 'next/config';
 import { CHAINS } from 'utils/chains';
+
 import { standardFetcher } from 'utils/standardFetcher';
 import { responseTimeExternalMetricWrapper } from 'utilsApi';
+
+const { serverRuntimeConfig } = getConfig();
+const { ethAPIBasePath } = serverRuntimeConfig;
 
 type SMA_APR_RESPONSE = {
   data: {
@@ -50,9 +54,7 @@ type SMA_APR_RESPONSE = {
 
 export const getSmaStethApr = async (): Promise<string> => {
   // TODO: remove after deploy env variables
-  const basePath = dynamics.ethAPIBasePath
-    ? dynamics.ethAPIBasePath
-    : 'https://eth-api.lido.fi';
+  const basePath = ethAPIBasePath ? ethAPIBasePath : 'https://eth-api.lido.fi';
   const url = `${basePath}/v1/protocol/steth/apr/sma`;
 
   const data = await responseTimeExternalMetricWrapper({
