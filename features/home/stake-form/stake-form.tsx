@@ -100,7 +100,6 @@ export const StakeForm: FC = memo(() => {
     isSubmitting,
     setMaxInputValue,
     reset,
-
     limitWarning,
     limitReached,
   } = useCurrencyInput({
