@@ -1,5 +1,6 @@
 import getConfig from 'next/config';
 import { CHAINS } from 'utils/chains';
+
 import { standardFetcher } from 'utils/standardFetcher';
 import { responseTimeExternalMetricWrapper } from 'utilsApi';
 

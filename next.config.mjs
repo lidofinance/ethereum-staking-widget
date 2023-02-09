@@ -34,6 +34,8 @@ const rateLimitTimeFrame = process.env.RATE_LIMIT_TIME_FRAME;
 
 const rewardsBackendAPI = process.env.REWARDS_BACKEND;
 
+const defaultChain = process.env.DEFAULT_CHAIN;
+
 export default {
   basePath,
   eslint: {
@@ -111,5 +113,6 @@ export default {
     rateLimitTimeFrame,
     ethAPIBasePath,
     rewardsBackendAPI,
+    defaultChain,
   },
 };

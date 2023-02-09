@@ -8,3 +8,5 @@ export const supportedChains = process.env?.SUPPORTED_CHAINS?.split(',').map(
 ) ?? [1, 4, 5];
 /** @type boolean */
 export const enableQaHelpers = !!process.env.ENABLE_QA_HELPERS;
+/** @type string */
+export const ethAPIBasePath = process.env.ETH_API_BASE_PATH;
