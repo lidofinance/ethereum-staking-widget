@@ -32,15 +32,12 @@ const getConfig = (): Config => {
     throw `No config available for '${standType}' stand type!`;
   }
   const config: Config = {
-    STAND_URL: process.env.STAND_URL,
+    STAND_URL: process.env.STAND_URL || 'http://localhost:3000',
     STAND_CONFIG: standConfig,
     STAND_USER: process.env.STAND_USER,
     STAND_PASSWORD: process.env.STAND_PASSWORD,
     STAND_TYPE: standType,
   };
-  if (!config.STAND_URL) {
-    throw 'ENV STAND_URL is required!';
-  }
   return config;
 };
 

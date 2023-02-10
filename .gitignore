@@ -8,6 +8,11 @@
 yalc.lock
 tsconfig.tsbuildinfo
 
+# playwright 
+/test-results/
+/playwright-report/
+/playwright/.cache/
+
 # testing
 /coverage
 
