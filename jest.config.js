@@ -3,5 +3,5 @@ module.exports = {
     '^.+\\.(tsx?)$': 'babel-jest',
   },
   moduleDirectories: ['node_modules', './'],
-  modulePathIgnorePatterns: ['test']
+  modulePathIgnorePatterns: ['test'],
 };
