@@ -1,3 +1,12 @@
+## [1.51.1](https://github.com/lidofinance/staking-widget-ts/compare/1.51.0...1.51.1) (2023-02-13)
+
+
+### Bug Fixes
+
+* convert a value to bool from process.env ([33bdba1](https://github.com/lidofinance/staking-widget-ts/commit/33bdba111cd97aefb2deee84ee792417ea2a5892))
+
+
+
 # [1.51.0](https://github.com/lidofinance/staking-widget-ts/compare/1.50.0...1.51.0) (2023-02-13)
 
 
@@ -140,15 +149,6 @@
 * add matomo wallets events for clicks ([cca69c3](https://github.com/lidofinance/staking-widget-ts/commit/cca69c3eb17635efc393e624f651d5f12c749412))
 * change footer, add link to logo ([b23e80a](https://github.com/lidofinance/staking-widget-ts/commit/b23e80ab11fa2cd609f69e362d44d81ccf783ab3))
 * reef-knot 0.3.0 (wallets click metrics) ([14818f7](https://github.com/lidofinance/staking-widget-ts/commit/14818f77d6a356dcf346ae57d36584b215026449))
-
-
-
-# [1.46.0](https://github.com/lidofinance/staking-widget-ts/compare/1.45.0...1.46.0) (2022-12-01)
-
-
-### Features
-
-* remove cluster mode ([decd171](https://github.com/lidofinance/staking-widget-ts/commit/decd171bd58cc2f521febd429a1af4d3b1d87727))
 
 
 
