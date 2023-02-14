@@ -54,7 +54,7 @@ const rewards: API = async (req, res) => {
 };
 
 export default wrapNextRequest([
-  rateLimit(),
+  rateLimit,
   responseTimeMetric(Metrics.request.apiTimings, API_ROUTES.REWARDS),
   cacheControl({ headers: CACHE_REWARDS_HEADERS }),
   defaultErrorHandler,

@@ -6,6 +6,7 @@ UI tests are run in a headless browser using Chrome, Firefox and Webkit.
 ## Run tests
 
 At first, install deps:
+
 ```
 cd test
 yarn install
@@ -19,6 +20,7 @@ The following env variables are used:
 - `STAND_PASSWORD` - password if basic auth is required
 
 Now, set needed env variables and run tests:
+
 ```
 cd test
 export STAND_URL=<deployed widget url> && yarn test

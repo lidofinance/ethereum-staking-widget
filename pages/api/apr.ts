@@ -83,7 +83,7 @@ const apr: API = async (req, res) => {
 };
 
 export default wrapNextRequest([
-  rateLimit(),
+  rateLimit,
   responseTimeMetric(Metrics.request.apiTimings, API_ROUTES.APR),
   ...errorAndCacheDefaultWrappers,
 ])(apr);

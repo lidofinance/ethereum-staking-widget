@@ -29,8 +29,8 @@ const subgraphRequestTimeout = process.env.SUBGRAPH_REQUEST_TIMEOUT;
 const metricsPort = process.env.METRICS_PORT ?? 3001;
 
 // rate limit
-const rateLimit = process.env.RATE_LIMIT;
-const rateLimitTimeFrame = process.env.RATE_LIMIT_TIME_FRAME;
+const rateLimit = process.env.RATE_LIMIT || 100;
+const rateLimitTimeFrame = process.env.RATE_LIMIT_TIME_FRAME || 60; // 1 minute;
 
 const rewardsBackendAPI = process.env.REWARDS_BACKEND;
 

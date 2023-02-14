@@ -18,7 +18,7 @@
 
 ### Checklist:
 
-- [ ]  Checked the changes locally.
-- [ ]  Created / updated analytics events.
-- [ ]  Created / updated the technical documentation (README.md / [docs](https://docs.lido.fi/) / etc.).
-- [ ]  Affects / requires changes in other services (Matomo / Sentry / CloudFlare / etc.).
+- [ ] Checked the changes locally.
+- [ ] Created / updated analytics events.
+- [ ] Created / updated the technical documentation (README.md / [docs](https://docs.lido.fi/) / etc.).
+- [ ] Affects / requires changes in other services (Matomo / Sentry / CloudFlare / etc.).
