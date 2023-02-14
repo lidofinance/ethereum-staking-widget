@@ -1,4 +1,4 @@
-import { MatomoEvent, trackEvent } from 'utils';
+import { MatomoEventType, trackEvent } from '@lidofinance/analytics-matomo';
 import { Metrics as WalletsMetrics } from 'reef-knot';
 
 export const enum MATOMO_WALLETS_EVENTS_TYPES {
@@ -40,7 +40,7 @@ export const enum MATOMO_WALLETS_EVENTS_TYPES {
 
 export const MATOMO_WALLETS_EVENTS: Record<
   MATOMO_WALLETS_EVENTS_TYPES,
-  MatomoEvent
+  MatomoEventType
 > = {
   [MATOMO_WALLETS_EVENTS_TYPES.onClickAmbire]: [
     'Ethereum_Staking_Widget',

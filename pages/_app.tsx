@@ -1,7 +1,5 @@
 import { memo } from 'react';
 import NextApp, { AppProps, AppContext } from 'next/app';
-import { STORAGE_CURRENCY_KEY } from 'config';
-import getConfig from 'next/config';
 import {
   ToastContainer,
   CookiesTooltip,
@@ -9,11 +7,12 @@ import {
   migrationThemeCookiesToCrossDomainCookiesClientSide,
 } from '@lidofinance/lido-ui';
 import 'nprogress/nprogress.css';
-import Providers, { EnvConfig } from 'providers';
+
+import { STORAGE_CURRENCY_KEY } from 'config';
+import Providers from 'providers';
 import { nprogress, COOKIES_ALLOWED_FULL_KEY, getFromRawCookies } from 'utils';
 import { withCsp } from 'utilsApi/withCsp';
 import { BackgroundGradient } from 'shared/components/background-gradient/background-gradient';
-import 'nprogress/nprogress.css';
 
 // Migrations old theme cookies to new cross domain cookies
 migrationThemeCookiesToCrossDomainCookiesClientSide();
@@ -32,14 +31,11 @@ const App = (props: AppProps) => {
 
 const MemoApp = memo(App);
 
-const AppWrapper = (props: AppProps & { config: EnvConfig }): JSX.Element => {
-  const { config, ...rest } = props;
-
+const AppWrapper = (
+  props: AppProps & { pageProps: { cookiesCurrency?: string } },
+): JSX.Element => {
   return (
-    <Providers
-      config={config || {}}
-      cookiesCurrency={props.pageProps.cookiesCurrency}
-    >
+    <Providers cookiesCurrency={props.pageProps.cookiesCurrency}>
       <BackgroundGradient
         width={1560}
         height={784}
@@ -48,7 +44,7 @@ const AppWrapper = (props: AppProps & { config: EnvConfig }): JSX.Element => {
         }}
       />
       <ToastContainer />
-      <MemoApp {...rest} />
+      <MemoApp {...props} />
       <CookiesTooltip />
     </Providers>
   );
@@ -56,14 +52,13 @@ const AppWrapper = (props: AppProps & { config: EnvConfig }): JSX.Element => {
 
 AppWrapper.getInitialProps = async (appContext: AppContext) => {
   const appProps = await NextApp.getInitialProps(appContext);
-  const { publicRuntimeConfig } = getConfig();
 
   appProps.pageProps.cookiesCurrency = getFromRawCookies(
     appContext?.ctx?.req?.headers?.cookie,
     STORAGE_CURRENCY_KEY,
   );
 
-  return { ...appProps, config: publicRuntimeConfig };
+  return appProps;
 };
 
 export default process.env.NODE_ENV === 'development'

@@ -1,10 +1,11 @@
+import buildDynamics from './scripts/build-dynamics.mjs';
+
+buildDynamics();
+
 const basePath = process.env.BASE_PATH;
 const infuraApiKey = process.env.INFURA_API_KEY;
 const alchemyApiKey = process.env.ALCHEMY_API_KEY;
 const ethAPIBasePath = process.env.ETH_API_BASE_PATH;
-
-const defaultChain = process.env.DEFAULT_CHAIN;
-const supportedChains = process.env.SUPPORTED_CHAINS;
 
 const ethplorerApiKey = process.env.ETHPLORER_API_KEY;
 
@@ -25,10 +26,7 @@ const subgraphKintsugi = process.env.SUBGRAPH_KINTSUGI;
 
 const subgraphRequestTimeout = process.env.SUBGRAPH_REQUEST_TIMEOUT;
 
-const enableQaHelpers = process.env.ENABLE_QA_HELPERS;
-
 const metricsPort = process.env.METRICS_PORT ?? 3001;
-const matomoUrl = process.env.MATOMO_URL;
 
 // rate limit
 const rateLimit = process.env.RATE_LIMIT || 100;
@@ -36,8 +34,13 @@ const rateLimitTimeFrame = process.env.RATE_LIMIT_TIME_FRAME || 60; // 1 minute;
 
 const rewardsBackendAPI = process.env.REWARDS_BACKEND;
 
-module.exports = {
+const defaultChain = process.env.DEFAULT_CHAIN;
+
+export default {
   basePath,
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
   compiler: {
     styledComponents: true,
   },
@@ -110,12 +113,6 @@ module.exports = {
     rateLimitTimeFrame,
     ethAPIBasePath,
     rewardsBackendAPI,
-  },
-  publicRuntimeConfig: {
     defaultChain,
-    supportedChains,
-    enableQaHelpers,
-    matomoUrl,
-    ethAPIBasePath,
   },
 };

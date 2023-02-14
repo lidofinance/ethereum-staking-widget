@@ -1,17 +1,22 @@
-import { describe, expect, test } from '@jest/globals';
+import { expect, test } from '@playwright/test';
 import { fail } from 'assert';
 import { Validator } from 'jsonschema';
-import axios from 'axios';
 import { GET_REQUESTS, POST_REQUESTS, PostRequest, GetRequest } from './consts';
+import { CONFIG } from './config';
 
 const validator = new Validator();
 
-describe('Smoke GET', () => {
+test.describe('Smoke GET', () => {
   GET_REQUESTS.forEach((element: GetRequest) => {
-    test(element.uri, async () => {
-      const resp = await axios.get(element.uri);
-      expect(resp.status).toBe(200);
-      const validationResult = validator.validate(resp.data, element.schema);
+    test(element.uri, async ({ request }) => {
+      if (CONFIG.STAND_TYPE === 'testnet' && element.skipTestnet) return;
+
+      const resp = await request.get(element.uri);
+      expect(resp.status()).toBe(200);
+      const validationResult = validator.validate(
+        await resp.json(),
+        element.schema,
+      );
       if (validationResult.errors.length > 0) {
         fail(validationResult.errors.join('\n'));
       }
@@ -19,12 +24,15 @@ describe('Smoke GET', () => {
   });
 });
 
-describe('Smoke POST', () => {
+test.describe('Smoke POST', () => {
   POST_REQUESTS.forEach((element: PostRequest) => {
-    test(element.uri, async () => {
-      const resp = await axios.post(element.uri, element.body);
-      expect(resp.status).toBe(200);
-      const validationResult = validator.validate(resp.data, element.schema);
+    test(element.uri, async ({ request }) => {
+      const resp = await request.post(element.uri, { data: element.body });
+      expect(resp.status()).toBe(200);
+      const validationResult = validator.validate(
+        await resp.json(),
+        element.schema,
+      );
       if (validationResult.errors.length > 0) {
         fail(validationResult.errors.join('\n'));
       }

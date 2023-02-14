@@ -1,5 +1,3 @@
-import axios from 'axios';
-
 export interface StandConfig {
   chainId: number;
 }
@@ -20,10 +18,11 @@ const STAND_CONFIGS = new Map<string, StandConfig>([
 ]);
 
 export interface Config {
-  STAND_URL: string | undefined;
+  STAND_URL?: string;
   STAND_CONFIG: StandConfig;
-  STAND_USER: string | undefined;
-  STAND_PASSWORD: string | undefined;
+  STAND_USER?: string;
+  STAND_PASSWORD?: string;
+  STAND_TYPE?: string;
 }
 
 const getConfig = (): Config => {
@@ -37,6 +36,7 @@ const getConfig = (): Config => {
     STAND_CONFIG: standConfig,
     STAND_USER: process.env.STAND_USER,
     STAND_PASSWORD: process.env.STAND_PASSWORD,
+    STAND_TYPE: standType,
   };
   if (!config.STAND_URL) {
     throw 'ENV STAND_URL is required!';
@@ -45,17 +45,3 @@ const getConfig = (): Config => {
 };
 
 export const CONFIG = getConfig();
-
-const auth =
-  CONFIG.STAND_USER && CONFIG.STAND_PASSWORD
-    ? Buffer.from(
-        `${CONFIG.STAND_USER}:${CONFIG.STAND_PASSWORD}`,
-        'utf8',
-      ).toString('base64')
-    : undefined;
-
-axios.defaults.baseURL = CONFIG.STAND_URL;
-axios.defaults.validateStatus = () => true;
-if (auth) {
-  axios.defaults.headers.common['Authorization'] = `Basic ${auth}`;
-}

@@ -1,8 +1,8 @@
 import { useMemo } from 'react';
-import { SWRResponse, useEthereumBalance } from '@lido-sdk/react';
-import { useConnectorInfo } from '@reef-knot/web3-react';
 import { BigNumber } from 'ethers';
 import { isDesktop } from 'react-device-detect';
+import { SWRResponse, useEthereumBalance } from '@lido-sdk/react';
+import { useConnectorInfo } from '@reef-knot/web3-react';
 import { useStakingLimitInfo } from 'shared/hooks';
 import { bnMin } from 'utils';
 

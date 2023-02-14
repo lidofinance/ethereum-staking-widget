@@ -1,4 +1,4 @@
-import { MatomoEvent } from 'utils';
+import { MatomoEventType } from '@lidofinance/analytics-matomo';
 
 export const enum MATOMO_CLICK_EVENTS_TYPES {
   // Global
@@ -18,6 +18,7 @@ export const enum MATOMO_CLICK_EVENTS_TYPES {
   faqWhereCanICoverIdleFinance = 'faqWhereCanICoverIdleFinance',
   faqWhereCanICoverNexusMutual = 'faqWhereCanICoverNexusMutual',
   faqWhereCanICoverRibbonFinance = 'faqWhereCanICoverRibbonFinance',
+  faqWhereCanICoverChainproof = 'faqWhereCanICoverChainproof',
   faqRisksOfStakingReports = 'faqRisksOfStakingReports',
   faqRisksOfStakingImmunefiBugBounty = 'faqRisksOfStakingImmunefiBugBounty',
   faqStethConvertedToEthCurve = 'faqStethConvertedToEthCurve',
@@ -34,7 +35,7 @@ export const enum MATOMO_CLICK_EVENTS_TYPES {
 
 export const MATOMO_CLICK_EVENTS: Record<
   MATOMO_CLICK_EVENTS_TYPES,
-  MatomoEvent
+  MatomoEventType
 > = {
   // Global
   [MATOMO_CLICK_EVENTS_TYPES.connectWallet]: [
@@ -108,6 +109,11 @@ export const MATOMO_CLICK_EVENTS: Record<
     'Ethereum_Staking_Widget',
     'Push «Ribbon Finance» in FAQ Where can I cover my stETH? on stake widget',
     'eth_widget_faq_wherecanicover_ribbonfinance',
+  ],
+  [MATOMO_CLICK_EVENTS_TYPES.faqWhereCanICoverChainproof]: [
+    'Ethereum_Staking_Widget',
+    'Push «Chainproof» in FAQ Where can I cover my stETH? on stake widget',
+    'eth_widget_faq_wherecanicover_сhainproof',
   ],
   [MATOMO_CLICK_EVENTS_TYPES.faqRisksOfStakingReports]: [
     'Ethereum_Staking_Widget',

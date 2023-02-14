@@ -4,7 +4,7 @@ import EthSymbol from 'features/rewards/components/EthSymbol';
 import NumberFormat from 'features/rewards/components/NumberFormat';
 import type { BigNumber as EthersBigNumber } from 'ethers';
 import { constants } from 'ethers';
-import getConfig from 'next/config';
+import { dynamics } from 'config';
 
 import { Big, BigDecimal } from 'features/rewards/helpers';
 import { ETHER } from 'features/rewards/constants';
@@ -17,9 +17,6 @@ import { Item } from './Item';
 import { Stat } from './Stat';
 import { Title } from './Title';
 import { StatsProps } from './types';
-
-const { publicRuntimeConfig } = getConfig();
-const { defaultChain } = publicRuntimeConfig;
 
 // TODO: refactoring to style files
 export const Stats: FC<StatsProps> = (props) => {
@@ -34,7 +31,7 @@ export const Stats: FC<StatsProps> = (props) => {
   );
 
   const getStEthEth = useCallback(async () => {
-    if (parseInt(defaultChain) !== 1) {
+    if (dynamics.defaultChain !== 1) {
       setStEthEth(constants.WeiPerEther);
     } else {
       const stEthEth = await stEthEthRequest();

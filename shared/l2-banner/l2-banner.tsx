@@ -1,5 +1,5 @@
 import { FC } from 'react';
-import { trackEvent, MatomoEvent } from 'utils';
+import { trackEvent, MatomoEventType } from '@lidofinance/analytics-matomo';
 
 import {
   Wrapper,
@@ -13,7 +13,7 @@ import {
 const L2_LINK = 'https://help.lido.fi/en/collections/3641672-lido-on-l2';
 
 type L2BannerProps = {
-  matomoEvent: MatomoEvent;
+  matomoEvent: MatomoEventType;
 };
 
 export const L2Banner: FC<L2BannerProps> = ({ matomoEvent }) => {
