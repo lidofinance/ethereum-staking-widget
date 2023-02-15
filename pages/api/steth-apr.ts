@@ -28,7 +28,7 @@ const stethApr: API = async (req, res) => {
 };
 
 export default wrapNextRequest([
-  rateLimit(),
+  rateLimit,
   responseTimeMetric(Metrics.request.apiTimings, API_ROUTES.STETH_APR),
   ...errorAndCacheDefaultWrappers,
 ])(stethApr);

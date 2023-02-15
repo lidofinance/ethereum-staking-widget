@@ -35,7 +35,7 @@ const ethPrice: API = async (req, res) => {
 };
 
 export default wrapNextRequest([
-  rateLimit(),
+  rateLimit,
   responseTimeMetric(Metrics.request.apiTimings, API_ROUTES.ETH_PRICE),
   cacheControl({ headers: CACHE_ETH_PRICE_HEADERS }),
   defaultErrorHandler,

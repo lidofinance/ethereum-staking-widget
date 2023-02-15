@@ -42,7 +42,7 @@ const oneInchRate: API = async (req, res) => {
 };
 
 export default wrapNextRequest([
-  rateLimit(),
+  rateLimit,
   responseTimeMetric(Metrics.request.apiTimings, API_ROUTES.ONEINCH_RATE),
   ...errorAndCacheDefaultWrappers,
 ])(oneInchRate);

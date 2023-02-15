@@ -14,7 +14,7 @@ const metrics = metricsFactory({
 });
 
 export default wrapNextRequest([
-  rateLimit(),
+  rateLimit,
   responseTimeMetric(Metrics.request.apiTimings, API_ROUTES.METRICS),
   ...errorAndCacheDefaultWrappers,
 ])(metrics);
