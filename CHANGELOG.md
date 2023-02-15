@@ -1,3 +1,17 @@
+# [1.52.0](https://github.com/lidofinance/staking-widget-ts/compare/1.51.1...1.52.0) (2023-02-15)
+
+
+### Bug Fixes
+
+* replace default value for rate limit ([d0d4bba](https://github.com/lidofinance/staking-widget-ts/commit/d0d4bbaf12cc1faa181e46c72af9062807a9d828))
+
+
+### Features
+
+* replace custom rate limit code with package ([e18ffe1](https://github.com/lidofinance/staking-widget-ts/commit/e18ffe1e99520e210dfa87378d37cfd84db765b3))
+
+
+
 ## [1.51.1](https://github.com/lidofinance/staking-widget-ts/compare/1.51.0...1.51.1) (2023-02-13)
 
 
@@ -127,28 +141,6 @@
 ### Bug Fixes
 
 * hide banners ([fd9769a](https://github.com/lidofinance/staking-widget-ts/commit/fd9769a74fdfde05c7509c91f23564dfccb002ef))
-
-
-
-# [1.47.0](https://github.com/lidofinance/staking-widget-ts/compare/1.46.0...1.47.0) (2022-12-06)
-
-
-### Bug Fixes
-
-* add chain id to cache key for lido stats, add error log for subgraph ([41fc948](https://github.com/lidofinance/staking-widget-ts/commit/41fc948672237c6d92996f6a2e21c91956bc0621))
-* fix footer styles ([a48706b](https://github.com/lidofinance/staking-widget-ts/commit/a48706bce5f6ea25702eedd2471b0e539d2c8c88))
-* fix header/footer styles, add short-lido-stats default chainId ([c51277c](https://github.com/lidofinance/staking-widget-ts/commit/c51277c48b47a50e68cdbe07efa2e1ad58a44c73))
-* replace events ([3b51e7f](https://github.com/lidofinance/staking-widget-ts/commit/3b51e7f2ec964b3c7b413b3fc677a99a44863581))
-* revert required fields for /short-lido-stats ([b428c47](https://github.com/lidofinance/staking-widget-ts/commit/b428c4743a212d2d4c980d15e2b1b50c1cd33e6b))
-
-
-### Features
-
-* add curve and balancer pools banners ([3008ddd](https://github.com/lidofinance/staking-widget-ts/commit/3008ddd00419fb39ceb116f962fd6bb932cb1805))
-* add getting data from eth api ([cdf90d1](https://github.com/lidofinance/staking-widget-ts/commit/cdf90d1a354303bbdf06449de53c4c9111abaa61))
-* add matomo wallets events for clicks ([cca69c3](https://github.com/lidofinance/staking-widget-ts/commit/cca69c3eb17635efc393e624f651d5f12c749412))
-* change footer, add link to logo ([b23e80a](https://github.com/lidofinance/staking-widget-ts/commit/b23e80ab11fa2cd609f69e362d44d81ccf783ab3))
-* reef-knot 0.3.0 (wallets click metrics) ([14818f7](https://github.com/lidofinance/staking-widget-ts/commit/14818f77d6a356dcf346ae57d36584b215026449))
 
 
 
