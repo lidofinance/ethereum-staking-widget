@@ -18,10 +18,11 @@ const STAND_CONFIGS = new Map<string, StandConfig>([
 ]);
 
 export interface Config {
-  STAND_URL: string | undefined;
+  STAND_URL?: string;
   STAND_CONFIG: StandConfig;
-  STAND_USER: string | undefined;
-  STAND_PASSWORD: string | undefined;
+  STAND_USER?: string;
+  STAND_PASSWORD?: string;
+  STAND_TYPE?: string;
 }
 
 const getConfig = (): Config => {
@@ -31,14 +32,12 @@ const getConfig = (): Config => {
     throw `No config available for '${standType}' stand type!`;
   }
   const config: Config = {
-    STAND_URL: process.env.STAND_URL,
+    STAND_URL: process.env.STAND_URL || 'http://localhost:3000',
     STAND_CONFIG: standConfig,
     STAND_USER: process.env.STAND_USER,
     STAND_PASSWORD: process.env.STAND_PASSWORD,
+    STAND_TYPE: standType,
   };
-  if (!config.STAND_URL) {
-    throw 'ENV STAND_URL is required!';
-  }
   return config;
 };
 

@@ -18,8 +18,8 @@ import Metrics from 'utilsApi/metrics';
 import { API, SubgraphChains } from 'types';
 import { parallelizePromises } from 'utils';
 
-const { publicRuntimeConfig } = getConfig();
-const { defaultChain } = publicRuntimeConfig;
+const { serverRuntimeConfig } = getConfig();
+const { defaultChain } = serverRuntimeConfig;
 
 const cache = new Cache<string, unknown>();
 
@@ -57,7 +57,7 @@ const shortLidoStats: API = async (req, res) => {
 };
 
 export default wrapNextRequest([
-  rateLimit(),
+  rateLimit,
   responseTimeMetric(Metrics.request.apiTimings, API_ROUTES.SHORT_LIDO_STATS),
   ...errorAndCacheDefaultWrappers,
 ])(shortLidoStats);
