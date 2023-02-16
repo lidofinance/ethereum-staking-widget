@@ -137,6 +137,7 @@ export const Form: FC<FromProps> = (props) => {
     isValidating,
     isSubmitting,
     setMaxInputValue,
+    isMaxDisabled,
     reset,
   } = useCurrencyInput({
     submit: wrapProcessing,
@@ -200,6 +201,7 @@ export const Form: FC<FromProps> = (props) => {
                 onClick={() => {
                   setMaxInputValue();
                 }}
+                disabled={isMaxDisabled}
               >
                 MAX
               </MaxButton>

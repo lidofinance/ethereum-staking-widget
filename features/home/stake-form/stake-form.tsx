@@ -102,6 +102,7 @@ export const StakeForm: FC = memo(() => {
     reset,
     limitWarning,
     limitReached,
+    isMaxDisabled,
   } = useCurrencyInput({
     initialValue: (router?.query?.amount as string) || undefined,
     submit,
@@ -144,8 +145,6 @@ export const StakeForm: FC = memo(() => {
       reset();
     }
   }, [active, reset]);
-
-  const isMaxDisabled = !!etherBalance.data && etherBalance.data.isZero();
 
   return (
     <Block>

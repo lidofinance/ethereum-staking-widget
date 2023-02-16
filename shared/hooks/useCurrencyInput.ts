@@ -33,6 +33,7 @@ type UseCurrencyInputReturn = {
   handleSubmit: FormEventHandler<HTMLFormElement> | undefined;
   reset: () => void;
   setMaxInputValue: () => void;
+  isMaxDisabled: boolean;
   limitWarning: string;
   limitReached?: boolean;
 };
@@ -218,6 +219,8 @@ export const useCurrencyInput: UseCurrencyInput = ({
     }
   }, [maxAmount, externalSetInputValue]);
 
+  const isMaxDisabled = maxAmount === '0.0';
+
   return {
     inputValue,
     handleChange,
@@ -227,6 +230,7 @@ export const useCurrencyInput: UseCurrencyInput = ({
     handleSubmit,
     reset,
     setMaxInputValue,
+    isMaxDisabled,
     limitWarning,
     limitReached: checkStakingLimit && limitLevel === LIMIT_LEVEL.REACHED,
   };

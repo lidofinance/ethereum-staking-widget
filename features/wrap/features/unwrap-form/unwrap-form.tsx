@@ -112,6 +112,7 @@ export const UnwrapForm: FC = memo(() => {
     isValidating,
     isSubmitting,
     setMaxInputValue,
+    isMaxDisabled,
     reset,
   } = useCurrencyInput({
     submit: unWrapProcessing,
@@ -165,6 +166,7 @@ export const UnwrapForm: FC = memo(() => {
               onClick={() => {
                 setMaxInputValue();
               }}
+              disabled={isMaxDisabled}
             >
               MAX
             </MaxButton>
