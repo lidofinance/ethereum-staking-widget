@@ -27,16 +27,15 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: '18'
+
       - name: Install dependencies
-        working-directory: test
         run: yarn install --immutable
+
       - name: Install Playwright Browsers
-        working-directory: test
         run: yarn playwright install --with-deps
 
       - name: Run tests on preview stand
         if: ${{ inputs.on_preview_stand }}
-        working-directory: test
         run: yarn test
         env:
           STAND_URL: ${{ inputs.stand_url }}
@@ -46,7 +45,6 @@ jobs:
       
       - name: Run tests on testnet/staging
         if: ${{ !inputs.on_preview_stand }}
-        working-directory: test
         run: yarn test
         env:
           STAND_URL: ${{ inputs.stand_url }}

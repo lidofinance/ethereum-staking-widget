@@ -35,7 +35,7 @@ const TOKENS = {
   LDO: 'LDO',
   LDO_REWARDS: 'LDO_Rewards',
 } as const;
-export type TOKENS = typeof TOKENS[keyof typeof TOKENS];
+export type TOKENS = (typeof TOKENS)[keyof typeof TOKENS];
 
 export const TOKENS_BY_CHAIN_ID = {
   [CHAINS.Mainnet]: [TOKENS.STETH, TOKENS.WSTETH, TOKENS.CURVE],
