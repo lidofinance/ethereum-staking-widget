@@ -195,8 +195,8 @@ export const StakeForm: FC = memo(() => {
         <DataTableRow
           title="Reward fee"
           loading={lidoFee.initialLoading}
-          help="Please note: this fee applies to staking rewards/earnings only,
-          and is NOT taken from your staked amount. It is a fee on earnings only."
+          help="Please note: this fee applies to staking rewards only,
+          and is NOT taken from your staked amount."
         >
           {!lidoFee.data ? DATA_UNAVAILABLE : `${lidoFee.data / 100}%`}
         </DataTableRow>
