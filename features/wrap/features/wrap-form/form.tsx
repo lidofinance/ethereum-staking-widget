@@ -150,7 +150,6 @@ export const Form: FC<FromProps> = (props) => {
     async (value) => {
       setSelectedToken(value as keyof typeof iconsMap);
       setMaxInputValue();
-      console.log(value);
       trackEvent(
         ...(value === 'ETH'
           ? MATOMO_CLICK_EVENTS.wrapTokenSelectEth
