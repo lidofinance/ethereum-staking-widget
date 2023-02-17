@@ -29,6 +29,7 @@ import {
   SelectIconWrapper,
   InputWrapper,
 } from 'features/wrap/styles';
+import { trackEvent } from '@lidofinance/analytics-matomo';
 
 const ETH = 'ETH';
 
@@ -149,6 +150,12 @@ export const Form: FC<FromProps> = (props) => {
     async (value) => {
       setSelectedToken(value as keyof typeof iconsMap);
       setMaxInputValue();
+      console.log(value);
+      trackEvent(
+        ...(value === 'ETH'
+          ? MATOMO_CLICK_EVENTS.wrapTokenSelectEth
+          : MATOMO_CLICK_EVENTS.wrapTokenSelectSteth),
+      );
     },
     [setMaxInputValue, setSelectedToken],
   );
