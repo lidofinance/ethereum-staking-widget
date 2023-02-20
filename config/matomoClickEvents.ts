@@ -27,6 +27,8 @@ export const enum MATOMO_CLICK_EVENTS_TYPES {
   faqHowDoIUnwrapWstethUnwrapLink = 'faqHowDoIUnwrapWstethUnwrapLink',
   // /wrap page
   l2BannerWrap = 'l2BannerWrap',
+  wrapTokenSelectSTETH = 'wrapTokenSelectSteth',
+  wrapTokenSelectETH = 'wrapTokenSelectEth',
   // Unwrap tab
   l2BannerUnwrap = 'l2BannerUnwrap',
   // /rewards page
@@ -150,6 +152,16 @@ export const MATOMO_CLICK_EVENTS: Record<
     'Ethereum_Staking_Widget',
     'Push "Learn more" at the L2 banner on "Wrap" tab',
     'eth_widget_banner_l2_wrap',
+  ],
+  [MATOMO_CLICK_EVENTS_TYPES.wrapTokenSelectETH]: [
+    'Ethereum_Staking_Widget',
+    'Select ETH to wrap to wsteth on wrap page',
+    'eth_widget_wrap_select_token_eth',
+  ],
+  [MATOMO_CLICK_EVENTS_TYPES.wrapTokenSelectSTETH]: [
+    'Ethereum_Staking_Widget',
+    'Select STETH to wrap to wsteth on wrap page',
+    'eth_widget_wrap_select_token_steth',
   ],
   // Unwrap tab
   [MATOMO_CLICK_EVENTS_TYPES.l2BannerUnwrap]: [
