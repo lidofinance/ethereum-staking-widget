@@ -102,6 +102,7 @@ export const StakeForm: FC = memo(() => {
     reset,
     limitWarning,
     limitReached,
+    isMaxDisabled,
   } = useCurrencyInput({
     initialValue: (router?.query?.amount as string) || undefined,
     submit,
@@ -159,6 +160,7 @@ export const StakeForm: FC = memo(() => {
               onClick={() => {
                 setMaxInputValue();
               }}
+              disabled={isMaxDisabled}
             >
               MAX
             </MaxButton>
