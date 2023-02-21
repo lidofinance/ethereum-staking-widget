@@ -17,8 +17,8 @@ export const LidoFee: FC = () => {
   return (
     <Accordion summary="What fee is applied by Lido? What is this used for?">
       <p>
-        Lido applies a {feeValue} fee on a user’s staking rewards. This fee is
-        split between node operators and the Lido DAO.
+        Lido applies a {feeValue} fee on a user&apos;s staking rewards. This fee
+        is split between node operators and the Lido DAO.
       </p>
     </Accordion>
   );
