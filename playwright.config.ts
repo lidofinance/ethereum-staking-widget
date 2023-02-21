@@ -1,6 +1,6 @@
 import type { PlaywrightTestConfig } from '@playwright/test';
 import { devices } from '@playwright/test';
-import { CONFIG } from './config';
+import { CONFIG } from './test/config';
 
 const httpCredentials =
   CONFIG.STAND_USER && CONFIG.STAND_PASSWORD
@@ -11,7 +11,7 @@ const httpCredentials =
  * See https://playwright.dev/docs/test-configuration.
  */
 const config: PlaywrightTestConfig = {
-  testDir: './.',
+  testDir: './test',
   /* Maximum time one test can run for. */
   timeout: 30 * 1000,
   expect: {
