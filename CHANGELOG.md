@@ -1,3 +1,24 @@
+# [1.53.0](https://github.com/lidofinance/staking-widget-ts/compare/1.52.0...1.53.0) (2023-02-21)
+
+
+### Bug Fixes
+
+* added missing folder ([2b49276](https://github.com/lidofinance/staking-widget-ts/commit/2b4927650a7ad2f35ff9fb8f7ec887d209ec5137))
+* fix bff for rewards ([ea2c005](https://github.com/lidofinance/staking-widget-ts/commit/ea2c005686b29d6c8fb55ea9db2bd36bd83618d1))
+* phrasing ([97ddde5](https://github.com/lidofinance/staking-widget-ts/commit/97ddde5696f7ba41fca5e2fcdd4329f07405b6f0))
+* remove console log ([1a83047](https://github.com/lidofinance/staking-widget-ts/commit/1a83047b54fa590bd5a21b5f8a56e45de774f3c4))
+* wording, spelling, escaped chars ([8a0682d](https://github.com/lidofinance/staking-widget-ts/commit/8a0682d56019840663fe4b4ba6dc6506d67f2d5b))
+
+
+### Features
+
+* add isMaxDisabled to all forms ([39fdfa5](https://github.com/lidofinance/staking-widget-ts/commit/39fdfa5c607f02f036966a2cf0cbd09dfd1c8c8a))
+* add matomo event to token select on wrap ([8538bbf](https://github.com/lidofinance/staking-widget-ts/commit/8538bbfaa69ed9baf32d108be6ae5b54c5e80b9d))
+* bump ts & moved playwright to the root ([d3f965f](https://github.com/lidofinance/staking-widget-ts/commit/d3f965f3caa071080ad70d20deb42cf1ba6f2360))
+* disable button on zero balance ([5435ead](https://github.com/lidofinance/staking-widget-ts/commit/5435ead3eb383bf7cb459af99f7a778e4171c0ae))
+
+
+
 # [1.52.0](https://github.com/lidofinance/staking-widget-ts/compare/1.51.1...1.52.0) (2023-02-15)
 
 
@@ -132,15 +153,6 @@
 ### Bug Fixes
 
 * fix text in pools banners ([98e39e6](https://github.com/lidofinance/staking-widget-ts/commit/98e39e634bec35266cbd4abfc5273eedcdafb01a))
-
-
-
-## [1.47.1](https://github.com/lidofinance/staking-widget-ts/compare/1.47.0...1.47.1) (2022-12-06)
-
-
-### Bug Fixes
-
-* hide banners ([fd9769a](https://github.com/lidofinance/staking-widget-ts/commit/fd9769a74fdfde05c7509c91f23564dfccb002ef))
 
 
 
