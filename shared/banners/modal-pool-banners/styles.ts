@@ -1,3 +1,4 @@
+import { Button } from '@lidofinance/lido-ui';
 import styled from 'styled-components';
 
 export const Wrapper = styled.div`
@@ -24,4 +25,11 @@ export const DescStyles = styled.span`
 export const ButtonLinkWrap = styled.a`
   margin-top: ${({ theme }) => theme.spaceMap.sm}px;
   display: block;
+`;
+
+export const ButtonStyled = styled(Button)`
+  &:not(:disabled):hover,
+  &:focus-visible {
+    background-color: #4ba886;
+  }
 `;

@@ -1,9 +1,14 @@
-import { Button } from '@lidofinance/lido-ui';
 import { trackEvent } from '@lidofinance/analytics-matomo';
 import { Curve, Balancer } from 'shared/banners';
 import { MATOMO_CLICK_EVENTS } from 'config';
 
-import { Wrapper, TextStyles, DescStyles, ButtonLinkWrap } from './styles';
+import {
+  Wrapper,
+  TextStyles,
+  DescStyles,
+  ButtonLinkWrap,
+  ButtonStyled,
+} from './styles';
 
 const ECOSYSTEM_LINK = 'https://lido.fi/lido-ecosystem';
 
@@ -28,9 +33,9 @@ export const ModalPoolBanners = () => {
       <Curve />
       <Balancer />
       <ButtonLinkWrap {...linkProps} onClick={linkClickHandler}>
-        <Button fullwidth color="success">
+        <ButtonStyled fullwidth color="success">
           Explore more DeFi options
-        </Button>
+        </ButtonStyled>
       </ButtonLinkWrap>
     </Wrapper>
   );
