@@ -5,6 +5,7 @@ export const enum MATOMO_CLICK_EVENTS_TYPES {
   connectWallet = 'connectWallet',
   clickCurvePool = 'clickCurvePool',
   clickBalancerPool = 'clickBalancerPool',
+  clickExploreDeFi = 'clickExploreDeFi',
   // / page
   oneInchDiscount = 'oneInchDiscount',
   viewEtherscanOnStakePage = 'viewEtherscanOnStakePage',
@@ -54,6 +55,11 @@ export const MATOMO_CLICK_EVENTS: Record<
     'Ethereum_Staking_Widget',
     'Push «Explore» in Balancer section on Transaction success banner',
     'eth_widget_banner_balancer_explore',
+  ],
+  [MATOMO_CLICK_EVENTS_TYPES.clickExploreDeFi]: [
+    'Ethereum_Staking_Widget',
+    'Push «Explore more DeFi options» on Transaction success banner',
+    'eth_widget_banner_defi_explore',
   ],
   // / page
   [MATOMO_CLICK_EVENTS_TYPES.oneInchDiscount]: [

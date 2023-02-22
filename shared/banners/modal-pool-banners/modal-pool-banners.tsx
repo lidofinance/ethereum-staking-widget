@@ -1,19 +1,37 @@
-import React from 'react';
+import { Button } from '@lidofinance/lido-ui';
+import { trackEvent } from '@lidofinance/analytics-matomo';
 import { Curve, Balancer } from 'shared/banners';
+import { MATOMO_CLICK_EVENTS } from 'config';
 
-import { Wrapper, TextStyles, DescStyles } from './styles';
+import { Wrapper, TextStyles, DescStyles, ButtonLinkWrap } from './styles';
+
+const ECOSYSTEM_LINK = 'https://lido.fi/lido-ecosystem';
 
 export const ModalPoolBanners = () => {
+  const linkProps = {
+    href: ECOSYSTEM_LINK,
+    target: '_blank',
+    rel: 'noopener noreferrer',
+  };
+
+  const linkClickHandler = () =>
+    trackEvent(...MATOMO_CLICK_EVENTS.clickExploreDeFi);
+
   return (
     <Wrapper>
       <TextStyles>
-        <b>Earn more</b>
+        <b>Explore DeFi</b>
         <DescStyles>
-          Explore DeFi options below to get even bigger rewards
+          Use your stETH/wstETH to get even bigger rewards
         </DescStyles>
       </TextStyles>
       <Curve />
       <Balancer />
+      <ButtonLinkWrap {...linkProps} onClick={linkClickHandler}>
+        <Button fullwidth color="success">
+          Explore more DeFi options
+        </Button>
+      </ButtonLinkWrap>
     </Wrapper>
   );
 };

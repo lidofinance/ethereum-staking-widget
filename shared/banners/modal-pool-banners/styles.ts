@@ -20,3 +20,8 @@ export const DescStyles = styled.span`
   margin-top: ${({ theme }) => theme.spaceMap.sm}px;
   margin-bottom: ${({ theme }) => theme.spaceMap.md}px;
 `;
+
+export const ButtonLinkWrap = styled.a`
+  margin-top: ${({ theme }) => theme.spaceMap.sm}px;
+  display: block;
+`;
