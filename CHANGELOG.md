@@ -1,3 +1,17 @@
+# [1.54.0](https://github.com/lidofinance/staking-widget-ts/compare/1.53.0...1.54.0) (2023-02-22)
+
+
+### Bug Fixes
+
+* fix button hover color ([0402fc1](https://github.com/lidofinance/staking-widget-ts/commit/0402fc1bd8387b0c211e9315150f8bf15ab4ec0d))
+
+
+### Features
+
+* add explore defi buuton in succes modal ([e29528d](https://github.com/lidofinance/staking-widget-ts/commit/e29528d346d146b6c4de52d40e14bd1108d1f2f2))
+
+
+
 # [1.53.0](https://github.com/lidofinance/staking-widget-ts/compare/1.52.0...1.53.0) (2023-02-21)
 
 
@@ -144,15 +158,6 @@
 ### Bug Fixes
 
 * change curve pool link ([aa61dda](https://github.com/lidofinance/staking-widget-ts/commit/aa61ddae4a3291453dc8bd96167079111485165f))
-
-
-
-## [1.47.2](https://github.com/lidofinance/staking-widget-ts/compare/1.47.1...1.47.2) (2022-12-06)
-
-
-### Bug Fixes
-
-* fix text in pools banners ([98e39e6](https://github.com/lidofinance/staking-widget-ts/commit/98e39e634bec35266cbd4abfc5273eedcdafb01a))
 
 
 
