@@ -8,7 +8,7 @@ export const WhatIsLido: FC = () => {
       <p>
         Lido is a liquid staking solution for Beacon chain backed by
         industry-leading staking providers. Lido lets users stake their ETH -
-        without locking assets or maintaining infrastructure - whilst
+        without locking tokens or maintaining infrastructure - whilst
         participating in on-chain activities, e.g. lending.
       </p>
       <p>

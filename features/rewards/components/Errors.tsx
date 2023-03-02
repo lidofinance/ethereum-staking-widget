@@ -28,7 +28,7 @@ export const NoStEthError = () => (
     pb="18px"
   >
     <Box textAlign="center" pb="12px">
-      You don’t have staked assets. Stake now and recieve daily rewards.
+      You don&apos;t have staked tokens. Stake now and receive daily rewards.
     </Box>
     <LocalLink href="/">
       <Box width="150px">
