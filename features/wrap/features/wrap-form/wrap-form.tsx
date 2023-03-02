@@ -166,6 +166,7 @@ export const WrapForm: FC = memo(() => {
         needsApprove={needsApprove}
         approve={approve}
         inputValue={inputValue}
+        wrapGasLimit={wrapGasLimit}
       />
 
       <DataTable>

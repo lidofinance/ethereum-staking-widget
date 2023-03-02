@@ -52,6 +52,7 @@ type FromProps = {
   needsApprove: boolean;
   approve: () => Promise<void>;
   inputValue: string;
+  wrapGasLimit?: number;
 };
 
 export const Form: FC<FromProps> = (props) => {
@@ -69,6 +70,7 @@ export const Form: FC<FromProps> = (props) => {
     approve,
     setInputValue,
     inputValue,
+    wrapGasLimit,
   } = props;
 
   const { active, account } = useWeb3();
@@ -145,6 +147,7 @@ export const Form: FC<FromProps> = (props) => {
     limit: balanceBySelectedToken,
     token: selectedToken,
     externalSetInputValue: setInputValue,
+    gasLimit: wrapGasLimit,
   });
 
   const onChangeSelectToken = useCallback(
