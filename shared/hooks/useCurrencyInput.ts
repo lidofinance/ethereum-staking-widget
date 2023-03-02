@@ -22,6 +22,7 @@ type UseCurrencyInputArgs = {
   token?: string;
   checkStakingLimit?: boolean;
   padMaxAmount?: boolean | ((padAmount: BigNumber) => boolean);
+  gasLimit?: number;
 };
 
 type UseCurrencyInputReturn = {
@@ -52,6 +53,7 @@ export const useCurrencyInput: UseCurrencyInput = ({
   token = 'ETH',
   checkStakingLimit,
   padMaxAmount,
+  gasLimit,
 }) => {
   const [inputValue, setInputValue] = useState(initialValue);
   const [error, setError] = useState(initialError);
@@ -204,6 +206,7 @@ export const useCurrencyInput: UseCurrencyInput = ({
     limit: limit ? limit : BigNumber.from(0),
     token,
     padded: padMaxAmount,
+    gasLimit,
   });
 
   const setMaxInputValue = useCallback(() => {

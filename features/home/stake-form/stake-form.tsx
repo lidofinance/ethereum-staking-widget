@@ -119,6 +119,7 @@ export const StakeForm: FC = memo(() => {
           stakeableEther.data &&
           etherBalance.data.sub(padAmount).lte(stakeableEther.data),
       ),
+    gasLimit: submitGasLimit,
   });
 
   const willReceiveStEthValue = useMemo(() => {
