@@ -120,9 +120,7 @@ export const WrapForm: FC = memo(() => {
       } catch (error: any) {
         console.error(error);
         // errors are sometimes nested :(
-        setTxModalFailedText(
-          getErrorMessage(error?.error?.code ?? error?.code),
-        );
+        setTxModalFailedText(getErrorMessage(error));
         setTxStage(TX_STAGE.FAIL);
         openTxModal();
       }
