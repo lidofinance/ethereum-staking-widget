@@ -3,6 +3,7 @@ import { ONE_GWEI } from 'config';
 import { BigNumber } from 'ethers';
 import { useCallback, useEffect, useState } from 'react';
 
+// https://github.com/ethereum/EIPs/blob/master/EIPS/eip-1559.md
 export const useMaxGasPrice = (): BigNumber | undefined => {
   const [gasPrice, setGasPrice] = useState<BigNumber>();
   const { providerRpc } = useSDK();

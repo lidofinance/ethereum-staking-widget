@@ -170,10 +170,10 @@ export const WrapForm: FC = memo(() => {
       />
 
       <DataTable>
-        <DataTableRow title="Unlock fee" loading={!approveTxCostInUsd}>
+        <DataTableRow title="Max unlock fee" loading={!approveTxCostInUsd}>
           ${approveTxCostInUsd?.toFixed(2)}
         </DataTableRow>
-        <DataTableRow title="Gas fee" loading={!wrapTxCostInUsd}>
+        <DataTableRow title="Max gas fee" loading={!wrapTxCostInUsd}>
           ${wrapTxCostInUsd?.toFixed(2)}
         </DataTableRow>
         <DataTableRow title="Exchange rate" loading={!oneWstethConverted}>
