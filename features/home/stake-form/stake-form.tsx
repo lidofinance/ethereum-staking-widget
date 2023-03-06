@@ -119,6 +119,7 @@ export const StakeForm: FC = memo(() => {
           stakeableEther.data &&
           etherBalance.data.sub(padAmount).lte(stakeableEther.data),
       ),
+    gasLimit: submitGasLimit,
   });
 
   const willReceiveStEthValue = useMemo(() => {
@@ -191,7 +192,7 @@ export const StakeForm: FC = memo(() => {
           {willReceiveStEthValue} stETH
         </DataTableRow>
         <DataTableRow title="Exchange rate">1 ETH = 1 stETH</DataTableRow>
-        <DataTableRow title="Transaction cost" loading={!txCostInUsd}>
+        <DataTableRow title="Max transaction cost" loading={!txCostInUsd}>
           ${txCostInUsd?.toFixed(2)}
         </DataTableRow>
         <DataTableRow

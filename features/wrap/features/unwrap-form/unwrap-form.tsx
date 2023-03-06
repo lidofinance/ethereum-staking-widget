@@ -192,7 +192,7 @@ export const UnwrapForm: FC = memo(() => {
       </FormStyled>
 
       <DataTable>
-        <DataTableRow title="Gas fee" loading={!unwrapTxCostInUsd}>
+        <DataTableRow title="Max gas fee" loading={!unwrapTxCostInUsd}>
           ${unwrapTxCostInUsd?.toFixed(2)}
         </DataTableRow>
         <DataTableRow

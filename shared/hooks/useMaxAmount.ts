@@ -1,6 +1,6 @@
 import { BigNumber } from 'ethers';
 import { formatEther, parseEther } from '@ethersproject/units';
-import { useGasPrice } from './useGasPrice';
+import { useMaxGasPrice } from './useMaxGasPrice';
 
 type UseMaxAmountArgs = {
   limit?: BigNumber;
@@ -17,14 +17,15 @@ export const useMaxAmount: useMaxAmountInput = ({
   token = 'ETH',
   padded = true,
 }) => {
-  const gasPrice = useGasPrice();
-  if (!gasPrice || !limit) return '0.0';
+  // use maxFeePerGas https://github.com/ethereum/EIPs/blob/master/EIPS/eip-1559.md
+  const maxGasPrice = useMaxGasPrice();
+  if (!maxGasPrice || !limit) return '0.0';
 
   if (token !== 'ETH') {
     return formatEther(limit);
   }
 
-  const padAmount = gasPrice
+  const padAmount = maxGasPrice
     .mul(BigNumber.from(gasLimit))
     .add(BigNumber.from(parseEther('0.01')));
 
