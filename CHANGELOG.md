@@ -1,3 +1,19 @@
+# [1.55.0](https://github.com/lidofinance/staking-widget-ts/compare/1.54.0...1.55.0) (2023-03-06)
+
+
+### Bug Fixes
+
+* add actual gas limit for calc max amount ([2cf394d](https://github.com/lidofinance/staking-widget-ts/commit/2cf394df58ca6e45b998c96e156e03f8dd276748))
+* error object nesting ([b3a20ed](https://github.com/lidofinance/staking-widget-ts/commit/b3a20ed30d5e132195eff7f42d5898e6f1cd9250))
+
+
+### Features
+
+* add calc maxFeePerGas for max amount ([fdb4f10](https://github.com/lidofinance/staking-widget-ts/commit/fdb4f10d4f2eef9d1be89b85321ec5f916185f49))
+* change tx const to max tx cost for all operations ([0eb5db1](https://github.com/lidofinance/staking-widget-ts/commit/0eb5db1259308e21e69a089f5103e186be927e44))
+
+
+
 # [1.54.0](https://github.com/lidofinance/staking-widget-ts/compare/1.53.0...1.54.0) (2023-02-22)
 
 
@@ -149,15 +165,6 @@
 ### Features
 
 * add commitlint ([a9ac934](https://github.com/lidofinance/staking-widget-ts/commit/a9ac93448665902e1a891ceb24f156e474923350))
-
-
-
-## [1.47.3](https://github.com/lidofinance/staking-widget-ts/compare/1.47.2...1.47.3) (2022-12-06)
-
-
-### Bug Fixes
-
-* change curve pool link ([aa61dda](https://github.com/lidofinance/staking-widget-ts/commit/aa61ddae4a3291453dc8bd96167079111485165f))
 
 
 
