@@ -167,6 +167,13 @@ export const Form: FC<FromProps> = (props) => {
     }
   }, [selectedToken, setMaxInputValue]);
 
+  const buttonProps: React.ComponentProps<typeof Button> = {
+    fullwidth: true,
+    type: 'submit',
+    disabled: isValidating || !!error,
+    loading: isSubmitting,
+  };
+
   return (
     <FormStyled
       action=""
@@ -218,24 +225,11 @@ export const Form: FC<FromProps> = (props) => {
       </InputGroupStyled>
       {active ? (
         needsApprove && selectedToken === TOKENS.STETH ? (
-          <ButtonIcon
-            icon={<Lock />}
-            fullwidth
-            type="submit"
-            disabled={isValidating}
-            loading={isSubmitting}
-          >
+          <ButtonIcon {...buttonProps} icon={<Lock />}>
             Unlock token to wrap
           </ButtonIcon>
         ) : (
-          <Button
-            fullwidth
-            type="submit"
-            disabled={isValidating}
-            loading={isSubmitting}
-          >
-            Wrap
-          </Button>
+          <Button {...buttonProps}>Wrap</Button>
         )
       ) : (
         <Connect fullwidth />

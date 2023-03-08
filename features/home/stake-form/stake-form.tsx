@@ -173,7 +173,7 @@ export const StakeForm: FC = memo(() => {
           <Button
             fullwidth
             type="submit"
-            disabled={limitReached || isValidating}
+            disabled={limitReached || isValidating || !!error}
             loading={isSubmitting}
           >
             Submit
