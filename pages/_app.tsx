@@ -1,5 +1,5 @@
 import { memo } from 'react';
-import NextApp, { AppProps, AppContext } from 'next/app';
+import { AppProps } from 'next/app';
 import {
   ToastContainer,
   CookiesTooltip,
@@ -8,9 +8,8 @@ import {
 } from '@lidofinance/lido-ui';
 import 'nprogress/nprogress.css';
 
-import { STORAGE_CURRENCY_KEY } from 'config';
 import Providers from 'providers';
-import { nprogress, COOKIES_ALLOWED_FULL_KEY, getFromRawCookies } from 'utils';
+import { nprogress, COOKIES_ALLOWED_FULL_KEY } from 'utils';
 import { withCsp } from 'utilsApi/withCsp';
 import { BackgroundGradient } from 'shared/components/background-gradient/background-gradient';
 
@@ -31,11 +30,9 @@ const App = (props: AppProps) => {
 
 const MemoApp = memo(App);
 
-const AppWrapper = (
-  props: AppProps & { pageProps: { cookiesCurrency?: string } },
-): JSX.Element => {
+const AppWrapper = (props: AppProps): JSX.Element => {
   return (
-    <Providers cookiesCurrency={props.pageProps.cookiesCurrency}>
+    <Providers>
       <BackgroundGradient
         width={1560}
         height={784}
@@ -48,17 +45,6 @@ const AppWrapper = (
       <CookiesTooltip />
     </Providers>
   );
-};
-
-AppWrapper.getInitialProps = async (appContext: AppContext) => {
-  const appProps = await NextApp.getInitialProps(appContext);
-
-  appProps.pageProps.cookiesCurrency = getFromRawCookies(
-    appContext?.ctx?.req?.headers?.cookie,
-    STORAGE_CURRENCY_KEY,
-  );
-
-  return appProps;
 };
 
 export default process.env.NODE_ENV === 'development'

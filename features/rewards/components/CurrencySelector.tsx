@@ -27,10 +27,12 @@ const StyledSelect = styled(Select)`
 
 const COOKIES_THEME_EXPIRES_DAYS = 365;
 
-const setCookie = (value: string) =>
+export const setCurrencyCookie = (value: string) =>
   Cookies.set(STORAGE_CURRENCY_KEY, value, {
     expires: COOKIES_THEME_EXPIRES_DAYS,
   });
+
+export const getCurrencyCookie = () => Cookies.get(STORAGE_CURRENCY_KEY);
 
 type Props = { currency: CurrencyType; onChange: (val: string) => void };
 
@@ -42,7 +44,7 @@ const CurrencySelector = ({ currency, onChange }: Props) => (
       onChange={(option: string | number) => {
         const optionString = option.toString();
         onChange(optionString);
-        setCookie(optionString);
+        setCurrencyCookie(optionString);
       }}
       value={currency.code}
       variant="small"
