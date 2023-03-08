@@ -1,10 +1,11 @@
-import { Box, Select, Option } from '@lidofinance/lido-ui';
+import Cookies from 'js-cookie';
 import styled from 'styled-components';
+
+import { Box, Select, Option } from '@lidofinance/lido-ui';
+
 import { CURRENCIES, type CurrencyType } from 'features/rewards/constants';
 import { STORAGE_CURRENCY_KEY } from 'config';
-import Cookies from 'js-cookie';
 
-// TODO: move to style file
 const StyledSelect = styled(Select)`
   height: 32px;
   width: 70px;
@@ -34,10 +35,12 @@ export const setCurrencyCookie = (value: string) =>
 
 export const getCurrencyCookie = () => Cookies.get(STORAGE_CURRENCY_KEY);
 
-type Props = { currency: CurrencyType; onChange: (val: string) => void };
+type CurrencySelectorProps = {
+  currency: CurrencyType;
+  onChange: (val: string) => void;
+};
 
-// TODO: move to separate folders
-const CurrencySelector = ({ currency, onChange }: Props) => (
+const CurrencySelector = ({ currency, onChange }: CurrencySelectorProps) => (
   <Box>
     <StyledSelect
       arrow="small"
