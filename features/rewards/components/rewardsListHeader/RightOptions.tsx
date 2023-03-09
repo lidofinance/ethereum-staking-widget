@@ -2,23 +2,26 @@ import { FC } from 'react';
 import CurrencySelector from 'features/rewards/components/CurrencySelector';
 import { Export } from 'features/rewards/components/export';
 
-import { RightOptionsWrapper, ExportWrapper } from './RightOptionsStyles';
-import { RightOptionsProps } from './types';
+import { RightOptionsWrapper } from './styles';
+import { useRewardsHistory } from 'features/rewards/hooks/useRewardsHistory';
 
-export const RightOptions: FC<RightOptionsProps> = (props) => {
-  const { currency, setCurrency, address, archiveRate, onlyRewards } = props;
-
+export const RightOptions: FC = () => {
+  const {
+    address,
+    currencyObject,
+    setCurrency,
+    isUseArchiveExchangeRate,
+    isOnlyRewards,
+  } = useRewardsHistory();
   return (
     <RightOptionsWrapper>
-      <CurrencySelector currency={currency} onChange={setCurrency} />
-      <ExportWrapper>
-        <Export
-          currency={currency}
-          address={address}
-          archiveRate={archiveRate}
-          onlyRewards={onlyRewards}
-        />
-      </ExportWrapper>
+      <CurrencySelector currency={currencyObject} onChange={setCurrency} />
+      <Export
+        currency={currencyObject}
+        address={address}
+        archiveRate={isUseArchiveExchangeRate}
+        onlyRewards={isOnlyRewards}
+      />
     </RightOptionsWrapper>
   );
 };

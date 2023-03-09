@@ -1,4 +1,4 @@
-import { Box, Select, Option } from '@lidofinance/lido-ui';
+import { Select, Option } from '@lidofinance/lido-ui';
 import styled from 'styled-components';
 import { CURRENCIES, type CurrencyType } from 'features/rewards/constants';
 import { STORAGE_CURRENCY_KEY } from 'config';
@@ -36,24 +36,22 @@ type Props = { currency: CurrencyType; onChange: (val: string) => void };
 
 // TODO: move to separate folders
 const CurrencySelector = ({ currency, onChange }: Props) => (
-  <Box>
-    <StyledSelect
-      arrow="small"
-      onChange={(option: string | number) => {
-        const optionString = option.toString();
-        onChange(optionString);
-        setCookie(optionString);
-      }}
-      value={currency.code}
-      variant="small"
-    >
-      {CURRENCIES.map((cur) => (
-        <Option key={cur.id} value={cur.id}>
-          {cur.code}
-        </Option>
-      ))}
-    </StyledSelect>
-  </Box>
+  <StyledSelect
+    arrow="small"
+    onChange={(option: string | number) => {
+      const optionString = option.toString();
+      onChange(optionString);
+      setCookie(optionString);
+    }}
+    value={currency.code}
+    variant="small"
+  >
+    {CURRENCIES.map((cur) => (
+      <Option key={cur.id} value={cur.id}>
+        {cur.code}
+      </Option>
+    ))}
+  </StyledSelect>
 );
 
 export default CurrencySelector;
