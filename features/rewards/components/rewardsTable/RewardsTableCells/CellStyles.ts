@@ -12,7 +12,7 @@ export const ChangeCellValueWrapper = styled.div<{ negative: boolean }>`
 
 export const OnlyMobileCellValueWrapper = styled.div`
   display: none;
-  ${({ theme }) => theme.mediaQueries.md} {
+  ${({ theme }) => theme.mediaQueries.lg} {
     display: block;
   }
 `;
