@@ -16,11 +16,18 @@ export const RewardsTableWrapperStyle = styled.div`
 
 export const RewardsTableStyle = styled(Table)`
   width: 100%;
+  border-collapse: collapse;
   ${({ theme }) => theme.mediaQueries.lg} {
     thead {
-      min-height: 4px;
+      height: 0px;
+      border-top: none;
+      tr::before,
+      tr::after {
+        border-top: none;
+      }
+      border-top: none;
     }
-    thead > * {
+    thead th {
       display: none;
     }
     td[data-mobile='false'],
