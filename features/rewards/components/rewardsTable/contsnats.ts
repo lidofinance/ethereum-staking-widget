@@ -38,7 +38,23 @@ export const REWARDS_TABLE_CONFIG: RewardsTableConfig = {
       name: REWARDS_TABLE_TEXT.headers.balance,
     },
   ],
-  columnsConfig: {},
+  columnsConfig: {
+    change: {
+      ['data-mobile-align']: 'right',
+    },
+    blockTime: {
+      ['data-mobile']: false,
+    },
+    currencyChange: {
+      ['data-mobile']: false,
+    },
+    apr: {
+      ['data-mobile']: false,
+    },
+    balance: {
+      ['data-mobile']: false,
+    },
+  },
   page: 1,
   take: 10,
 };

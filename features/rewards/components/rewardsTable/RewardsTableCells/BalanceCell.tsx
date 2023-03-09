@@ -6,10 +6,10 @@ import EthSymbol from 'features/rewards/components/EthSymbol';
 import { RewardsTableCellProps } from '../types';
 
 export const BalanceCell: FC<RewardsTableCellProps> = (props) => {
-  const { value } = props;
+  const { value, cellConfig } = props;
 
   return (
-    <Td numeric>
+    <Td {...cellConfig} numeric>
       <EthSymbol />
       <NumberFormat number={value} />
     </Td>

@@ -16,6 +16,21 @@ export const RewardsTableWrapperStyle = styled.div`
 
 export const RewardsTableStyle = styled(Table)`
   width: 100%;
+  ${({ theme }) => theme.mediaQueries.lg} {
+    thead {
+      min-height: 4px;
+    }
+    thead > * {
+      display: none;
+    }
+    td[data-mobile='false'],
+    th[data-mobile='false'] {
+      display: none;
+    }
+    td[data-mobile-align='right'] {
+      text-align: right;
+    }
+  }
 `;
 
 export const RewardsTablePaginationWrapperStyle = styled.div`
