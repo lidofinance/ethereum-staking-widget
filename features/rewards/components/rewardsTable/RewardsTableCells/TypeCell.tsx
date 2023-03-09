@@ -12,14 +12,14 @@ export const TypeCell: FC<RewardsTableCellProps> = (props) => {
 
   return (
     <Td {...cellConfig}>
+      <OnlyMobileCellValueWrapper>
+        <Date blockTime={data.blockTime} />
+      </OnlyMobileCellValueWrapper>
       <TypeCellValueWrapper>
         {capitalize(String(value))}{' '}
         {data.direction && capitalize(data.direction)}{' '}
         <IndexerLink transactionHash={data.transactionHash} />
       </TypeCellValueWrapper>
-      <OnlyMobileCellValueWrapper>
-        <Date blockTime={data.blockTime} />
-      </OnlyMobileCellValueWrapper>
     </Td>
   );
 };
