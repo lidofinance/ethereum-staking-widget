@@ -6,8 +6,8 @@ export const TypeCellValueWrapper = styled.div`
 `;
 
 export const ChangeCellValueWrapper = styled.div<{ negative: boolean }>`
-  color: ${({ negative, theme }) =>
-    negative ? theme.colors.error : theme.colors.success};
+  color: ${({ negative }) =>
+    negative ? 'var(--lido-color-error)' : 'var(--lido-color-success)'};
 `;
 
 export const OnlyMobileCellValueWrapper = styled.div`
@@ -21,8 +21,8 @@ export const OnlyMobileChangeCellValueWrapper = styled.div<{
   negative: boolean;
 }>`
   display: none;
-  color: ${({ negative, theme }) =>
-    negative ? theme.colors.error : theme.colors.success};
+  color: ${({ negative }) =>
+    negative ? 'var(--lido-color-error)' : 'var(--lido-color-success)'};
   ${({ theme }) => theme.mediaQueries.lg} {
     display: block;
   }
