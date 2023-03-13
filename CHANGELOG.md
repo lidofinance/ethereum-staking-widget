@@ -1,3 +1,18 @@
+# [1.56.0](https://github.com/lidofinance/staking-widget-ts/compare/1.55.0...1.56.0) (2023-03-13)
+
+
+### Bug Fixes
+
+* add etherscan link for unwrap ([84db2ec](https://github.com/lidofinance/staking-widget-ts/commit/84db2eca5fdbf426e3467f1f76be8d0dae6c7eb1))
+* unwrap disable on error ([9adf620](https://github.com/lidofinance/staking-widget-ts/commit/9adf6200c59a53c49fbf6106576fe0337b99bfb8))
+
+
+### Features
+
+* disable buttons on validation error ([929c405](https://github.com/lidofinance/staking-widget-ts/commit/929c4053f15f91d046b326e17c3d71b1a637f34e))
+
+
+
 # [1.55.0](https://github.com/lidofinance/staking-widget-ts/compare/1.54.0...1.55.0) (2023-03-06)
 
 
@@ -149,22 +164,6 @@
 
 * add zerion wallet, remove lido-ui dependency from reef-knot ([a6fa7cb](https://github.com/lidofinance/staking-widget-ts/commit/a6fa7cb4b7ac92641ec91939e8a869904e4ea3c1))
 * added starter pull request template ([e0230f1](https://github.com/lidofinance/staking-widget-ts/commit/e0230f139e188f587fd4a4c9d1bad85336a81770))
-
-
-
-# [1.48.0](https://github.com/lidofinance/staking-widget-ts/compare/1.47.3...1.48.0) (2022-12-08)
-
-
-### Bug Fixes
-
-* fix display token name on wrap page ([5455fbd](https://github.com/lidofinance/staking-widget-ts/commit/5455fbd059c46b3fc3187fc613d2f535f4d786d2))
-* fix matomo event name ([49b06d7](https://github.com/lidofinance/staking-widget-ts/commit/49b06d717e0bc18857635efc211d617b019eeb1e))
-* remove default expanded from faq on wrap page ([a363f45](https://github.com/lidofinance/staking-widget-ts/commit/a363f45e42b4118d34e83d5376d0e5f89e975405))
-
-
-### Features
-
-* add commitlint ([a9ac934](https://github.com/lidofinance/staking-widget-ts/commit/a9ac93448665902e1a891ceb24f156e474923350))
 
 
 
