@@ -1,59 +1,43 @@
 import { FC } from 'react';
 import { Tooltip, Checkbox } from '@lidofinance/lido-ui';
 
-import {
-  TitleStyle,
-  LeftOptionsWrapper,
-  ItemWrapperStyle,
-  CheckBoxesWrapper,
-} from './LeftOptionsStyle';
-import { LeftOptionsProps } from './types';
+import { LeftOptionsWrapper } from './styles';
+import { useRewardsHistory } from 'features/rewards/hooks/useRewardsHistory';
 
-export const LeftOptions: FC<LeftOptionsProps> = (props) => {
+export const LeftOptions: FC = () => {
   const {
-    onlyRewards,
-    useArchiveExchangeRate,
-    setUseArchiveExchangeRate,
-    setOnlyRewards,
-  } = props;
+    isUseArchiveExchangeRate,
+    isOnlyRewards,
+    setIsUseArchiveExchangeRate,
+    setIsOnlyRewards,
+  } = useRewardsHistory();
 
   return (
     <LeftOptionsWrapper>
-      <TitleStyle>Reward history</TitleStyle>
-      <CheckBoxesWrapper>
-        <ItemWrapperStyle>
-          <Tooltip
-            placement="bottom"
-            title="Calculate USD values using an exchange rate at the time of the
+      <Tooltip
+        placement="bottom"
+        title="Calculate USD values using an exchange rate at the time of the
         event. With this option disabled current exchange rate will always
         be used."
-          >
-            <div>
-              <Checkbox
-                checked={useArchiveExchangeRate}
-                onChange={() =>
-                  setUseArchiveExchangeRate(!useArchiveExchangeRate)
-                }
-                label="Historical stETH price"
-              />
-            </div>
-          </Tooltip>
-        </ItemWrapperStyle>
-        <ItemWrapperStyle>
-          <Tooltip
-            placement="bottom"
-            title="Display only transfers in the table. Other events will be hidden."
-          >
-            <div>
-              <Checkbox
-                checked={onlyRewards}
-                onChange={() => setOnlyRewards(!onlyRewards)}
-                label="Only Show Rewards"
-              />
-            </div>
-          </Tooltip>
-        </ItemWrapperStyle>
-      </CheckBoxesWrapper>
+      >
+        <Checkbox
+          checked={isUseArchiveExchangeRate}
+          onChange={() =>
+            setIsUseArchiveExchangeRate(!isUseArchiveExchangeRate)
+          }
+          label="Historical stETH price"
+        />
+      </Tooltip>
+      <Tooltip
+        placement="bottom"
+        title="Display only transfers in the table. Other events will be hidden."
+      >
+        <Checkbox
+          checked={isOnlyRewards}
+          onChange={() => setIsOnlyRewards(!isOnlyRewards)}
+          label="Only Show Rewards"
+        />
+      </Tooltip>
     </LeftOptionsWrapper>
   );
 };

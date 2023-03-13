@@ -5,7 +5,11 @@ import NumberFormat from 'features/rewards/components/NumberFormat';
 import { RewardsTableCellProps } from '../types';
 
 export const AprCell: FC<RewardsTableCellProps> = (props) => {
-  const { value } = props;
+  const { value, cellConfig } = props;
 
-  return <Td>{value ? <NumberFormat number={value} percent /> : '-'}</Td>;
+  return (
+    <Td {...cellConfig}>
+      {value ? <NumberFormat number={value} percent /> : '-'}
+    </Td>
+  );
 };

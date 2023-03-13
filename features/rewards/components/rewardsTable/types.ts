@@ -1,5 +1,7 @@
 import type { Event } from 'features/rewards/types';
+import { ComponentProps } from 'react';
 import { type CurrencyType } from 'features/rewards/constants';
+import { type Td } from '@lidofinance/lido-ui';
 
 export type RewardsTableConfig = {
   columnsOrder: Column<Event>[];
@@ -13,11 +15,10 @@ type Column<T> = {
   name?: string;
 };
 
-type RewardsColumnsConfigType = 'number';
-
-interface RewardsColumnsConfig {
-  type?: RewardsColumnsConfigType;
-}
+type RewardsColumnsConfig = {
+  ['data-mobile']?: boolean;
+  ['data-mobile-align']?: 'left' | 'right';
+} & ComponentProps<typeof Td>;
 
 type ColumnConfig<T extends symbol | string | number> =
   | Partial<Record<T, RewardsColumnsConfig>>
@@ -57,4 +58,5 @@ export interface RewardsTableHeaderCellProps {
   value: string;
   field: keyof Event;
   currency: CurrencyType;
+  cellConfig?: RewardsColumnsConfig;
 }

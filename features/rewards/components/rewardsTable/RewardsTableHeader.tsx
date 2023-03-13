@@ -6,7 +6,7 @@ import { RewardsTableHeaderProps } from './types';
 export const RewardsTableHeader = (
   props: RewardsTableHeaderProps,
 ): JSX.Element => {
-  const { columns, currency } = props;
+  const { columns, currency, config } = props;
 
   return (
     <Thead sticky>
@@ -18,6 +18,7 @@ export const RewardsTableHeader = (
               value={name || field}
               field={field}
               currency={currency}
+              cellConfig={config?.[field]}
             />
           );
         })}

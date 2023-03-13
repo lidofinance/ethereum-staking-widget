@@ -6,10 +6,10 @@ import { ChangeCellValueWrapper } from './CellStyles';
 import { RewardsTableCellProps } from '../types';
 
 export const CurrencyChangeCell: FC<RewardsTableCellProps> = (props) => {
-  const { value, currency, data } = props;
+  const { value, currency, data, cellConfig } = props;
 
   return (
-    <Td numeric>
+    <Td {...cellConfig} numeric>
       <ChangeCellValueWrapper negative={data?.direction === 'out'}>
         <span>{currency.symbol} </span>
         <NumberFormat number={value} currency />

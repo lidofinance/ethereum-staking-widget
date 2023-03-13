@@ -7,29 +7,16 @@ import { RewardsTableHeaderCellProps } from './types';
 export const RewardsTableHeaderCell: FC<RewardsTableHeaderCellProps> = (
   props,
 ) => {
-  const { value, field, currency } = props;
+  const { value, field, currency, cellConfig } = props;
 
-  const isChange = field === 'change';
-  const isCurrencyChange = field === 'currencyChange';
-  const isBalance = field === 'balance';
+  const showEthIcon = field === 'change' || field === 'balance';
+  const showFiatIcon = field === 'currencyChange';
 
-  if (isChange || isBalance) {
-    return (
-      <Th>
-        <EthSymbol />
-        {value}
-      </Th>
-    );
-  }
-
-  if (isCurrencyChange) {
-    return (
-      <Th>
-        <span>{currency.symbol} </span>
-        {value}
-      </Th>
-    );
-  }
-
-  return <Th>{value}</Th>;
+  return (
+    <Th {...cellConfig}>
+      {showEthIcon && <EthSymbol />}
+      {showFiatIcon && <span>{currency.symbol} </span>}
+      {value}
+    </Th>
+  );
 };
