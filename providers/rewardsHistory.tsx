@@ -11,6 +11,8 @@ import {
   useGetCurrentAddress,
 } from 'features/rewards/hooks';
 
+import { getCurrencyCookie } from 'features/rewards/components/CurrencySelector';
+
 export type RewardsHistoryValue = {
   currencyObject: CurrencyType;
   data?: Backend;
@@ -35,16 +37,16 @@ export type RewardsHistoryValue = {
 
 export const RewardsHistoryContext = createContext({} as RewardsHistoryValue);
 
-type Props = {
-  cookiesCurrency?: string;
-};
+const RewardsHistoryProvider: React.FC = (props) => {
+  const { children } = props;
 
-const RewardsHistoryProvider: FC<Props> = (props) => {
-  const { children, cookiesCurrency } = props;
+  const [currency, setCurrency] = useState(DEFAULT_CURRENCY.id);
 
-  const [currency, setCurrency] = useState(
-    cookiesCurrency ?? DEFAULT_CURRENCY.id,
-  );
+  useEffect(() => {
+    const currencyValue = getCurrencyCookie();
+    if (currencyValue) setCurrency(currencyValue);
+  }, []);
+
   const [isOnlyRewards, setIsOnlyRewards] = useState(false);
   const [isUseArchiveExchangeRate, setIsUseArchiveExchangeRate] =
     useState(true);
@@ -120,4 +122,4 @@ const RewardsHistoryProvider: FC<Props> = (props) => {
   );
 };
 
-export default memo<FC<Props>>(RewardsHistoryProvider);
+export default memo<FC>(RewardsHistoryProvider);

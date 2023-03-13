@@ -1,10 +1,11 @@
-import { Select, Option } from '@lidofinance/lido-ui';
+import Cookies from 'js-cookie';
 import styled from 'styled-components';
+
+import { Box, Select, Option } from '@lidofinance/lido-ui';
+
 import { CURRENCIES, type CurrencyType } from 'features/rewards/constants';
 import { STORAGE_CURRENCY_KEY } from 'config';
-import Cookies from 'js-cookie';
 
-// TODO: move to style file
 const StyledSelect = styled(Select)`
   height: 32px;
   width: 70px;
@@ -27,31 +28,37 @@ const StyledSelect = styled(Select)`
 
 const COOKIES_THEME_EXPIRES_DAYS = 365;
 
-const setCookie = (value: string) =>
+export const setCurrencyCookie = (value: string) =>
   Cookies.set(STORAGE_CURRENCY_KEY, value, {
     expires: COOKIES_THEME_EXPIRES_DAYS,
   });
 
-type Props = { currency: CurrencyType; onChange: (val: string) => void };
+export const getCurrencyCookie = () => Cookies.get(STORAGE_CURRENCY_KEY);
 
-// TODO: move to separate folders
-const CurrencySelector = ({ currency, onChange }: Props) => (
-  <StyledSelect
-    arrow="small"
-    onChange={(option: string | number) => {
-      const optionString = option.toString();
-      onChange(optionString);
-      setCookie(optionString);
-    }}
-    value={currency.code}
-    variant="small"
-  >
-    {CURRENCIES.map((cur) => (
-      <Option key={cur.id} value={cur.id}>
-        {cur.code}
-      </Option>
-    ))}
-  </StyledSelect>
+type CurrencySelectorProps = {
+  currency: CurrencyType;
+  onChange: (val: string) => void;
+};
+
+const CurrencySelector = ({ currency, onChange }: CurrencySelectorProps) => (
+  <Box>
+    <StyledSelect
+      arrow="small"
+      onChange={(option: string | number) => {
+        const optionString = option.toString();
+        onChange(optionString);
+        setCurrencyCookie(optionString);
+      }}
+      value={currency.code}
+      variant="small"
+    >
+      {CURRENCIES.map((cur) => (
+        <Option key={cur.id} value={cur.id}>
+          {cur.code}
+        </Option>
+      ))}
+    </StyledSelect>
+  </Box>
 );
 
 export default CurrencySelector;

@@ -120,9 +120,7 @@ export const WrapForm: FC = memo(() => {
       } catch (error: any) {
         console.error(error);
         // errors are sometimes nested :(
-        setTxModalFailedText(
-          getErrorMessage(error?.error?.code ?? error?.code),
-        );
+        setTxModalFailedText(getErrorMessage(error));
         setTxStage(TX_STAGE.FAIL);
         openTxModal();
       }
@@ -168,13 +166,14 @@ export const WrapForm: FC = memo(() => {
         needsApprove={needsApprove}
         approve={approve}
         inputValue={inputValue}
+        wrapGasLimit={wrapGasLimit}
       />
 
       <DataTable>
-        <DataTableRow title="Unlock fee" loading={!approveTxCostInUsd}>
+        <DataTableRow title="Max unlock fee" loading={!approveTxCostInUsd}>
           ${approveTxCostInUsd?.toFixed(2)}
         </DataTableRow>
-        <DataTableRow title="Gas fee" loading={!wrapTxCostInUsd}>
+        <DataTableRow title="Max gas fee" loading={!wrapTxCostInUsd}>
           ${wrapTxCostInUsd?.toFixed(2)}
         </DataTableRow>
         <DataTableRow title="Exchange rate" loading={!oneWstethConverted}>

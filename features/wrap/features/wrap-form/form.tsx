@@ -29,6 +29,7 @@ import {
   SelectIconWrapper,
   InputWrapper,
 } from 'features/wrap/styles';
+import { trackEvent } from '@lidofinance/analytics-matomo';
 
 const ETH = 'ETH';
 
@@ -51,6 +52,7 @@ type FromProps = {
   needsApprove: boolean;
   approve: () => Promise<void>;
   inputValue: string;
+  wrapGasLimit?: number;
 };
 
 export const Form: FC<FromProps> = (props) => {
@@ -68,6 +70,7 @@ export const Form: FC<FromProps> = (props) => {
     approve,
     setInputValue,
     inputValue,
+    wrapGasLimit,
   } = props;
 
   const { active, account } = useWeb3();
@@ -137,18 +140,25 @@ export const Form: FC<FromProps> = (props) => {
     isValidating,
     isSubmitting,
     setMaxInputValue,
+    isMaxDisabled,
     reset,
   } = useCurrencyInput({
     submit: wrapProcessing,
     limit: balanceBySelectedToken,
     token: selectedToken,
     externalSetInputValue: setInputValue,
+    gasLimit: wrapGasLimit,
   });
 
   const onChangeSelectToken = useCallback(
     async (value) => {
       setSelectedToken(value as keyof typeof iconsMap);
       setMaxInputValue();
+      trackEvent(
+        ...(value === 'ETH'
+          ? MATOMO_CLICK_EVENTS.wrapTokenSelectEth
+          : MATOMO_CLICK_EVENTS.wrapTokenSelectSteth),
+      );
     },
     [setMaxInputValue, setSelectedToken],
   );
@@ -166,6 +176,13 @@ export const Form: FC<FromProps> = (props) => {
       setMaxInputValue();
     }
   }, [selectedToken, setMaxInputValue]);
+
+  const buttonProps: React.ComponentProps<typeof Button> = {
+    fullwidth: true,
+    type: 'submit',
+    disabled: isValidating || !!error,
+    loading: isSubmitting,
+  };
 
   return (
     <FormStyled
@@ -200,6 +217,7 @@ export const Form: FC<FromProps> = (props) => {
                 onClick={() => {
                   setMaxInputValue();
                 }}
+                disabled={isMaxDisabled}
               >
                 MAX
               </MaxButton>
@@ -218,24 +236,11 @@ export const Form: FC<FromProps> = (props) => {
       </InputGroupStyled>
       {active ? (
         needsApprove && selectedToken === TOKENS.STETH ? (
-          <ButtonIcon
-            icon={<Lock />}
-            fullwidth
-            type="submit"
-            disabled={isValidating}
-            loading={isSubmitting}
-          >
+          <ButtonIcon {...buttonProps} icon={<Lock />}>
             Unlock token to wrap
           </ButtonIcon>
         ) : (
-          <Button
-            fullwidth
-            type="submit"
-            disabled={isValidating}
-            loading={isSubmitting}
-          >
-            Wrap
-          </Button>
+          <Button {...buttonProps}>Wrap</Button>
         )
       ) : (
         <Connect fullwidth />

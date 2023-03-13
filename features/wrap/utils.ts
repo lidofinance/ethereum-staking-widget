@@ -78,7 +78,7 @@ export const unwrapProcessing: UnwrapProcessingProps = async (
     /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
   } catch (error: any) {
     // errors are sometimes nested :(
-    setTxModalFailedText(getErrorMessage(error?.error?.code ?? error?.code));
+    setTxModalFailedText(getErrorMessage(error));
     setTxStage(TX_STAGE.FAIL);
     setTxHash(undefined);
     openTxModal();
@@ -203,7 +203,7 @@ export const wrapProcessingWithApprove: WrapProcessingWithApproveProps = async (
     /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
   } catch (error: any) {
     // errors are sometimes nested :(
-    setTxModalFailedText(getErrorMessage(error?.error?.code ?? error?.code));
+    setTxModalFailedText(getErrorMessage(error));
     setTxStage(TX_STAGE.FAIL);
     setTxHash(undefined);
     openTxModal();

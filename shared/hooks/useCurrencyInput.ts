@@ -22,6 +22,7 @@ type UseCurrencyInputArgs = {
   token?: string;
   checkStakingLimit?: boolean;
   padMaxAmount?: boolean | ((padAmount: BigNumber) => boolean);
+  gasLimit?: number;
 };
 
 type UseCurrencyInputReturn = {
@@ -33,6 +34,7 @@ type UseCurrencyInputReturn = {
   handleSubmit: FormEventHandler<HTMLFormElement> | undefined;
   reset: () => void;
   setMaxInputValue: () => void;
+  isMaxDisabled: boolean;
   limitWarning: string;
   limitReached?: boolean;
 };
@@ -51,6 +53,7 @@ export const useCurrencyInput: UseCurrencyInput = ({
   token = 'ETH',
   checkStakingLimit,
   padMaxAmount,
+  gasLimit,
 }) => {
   const [inputValue, setInputValue] = useState(initialValue);
   const [error, setError] = useState(initialError);
@@ -203,6 +206,7 @@ export const useCurrencyInput: UseCurrencyInput = ({
     limit: limit ? limit : BigNumber.from(0),
     token,
     padded: padMaxAmount,
+    gasLimit,
   });
 
   const setMaxInputValue = useCallback(() => {
@@ -218,6 +222,8 @@ export const useCurrencyInput: UseCurrencyInput = ({
     }
   }, [maxAmount, externalSetInputValue]);
 
+  const isMaxDisabled = maxAmount === '0.0';
+
   return {
     inputValue,
     handleChange,
@@ -227,6 +233,7 @@ export const useCurrencyInput: UseCurrencyInput = ({
     handleSubmit,
     reset,
     setMaxInputValue,
+    isMaxDisabled,
     limitWarning,
     limitReached: checkStakingLimit && limitLevel === LIMIT_LEVEL.REACHED,
   };

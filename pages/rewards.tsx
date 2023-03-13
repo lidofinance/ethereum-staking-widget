@@ -3,11 +3,9 @@ import Head from 'next/head';
 import { Layout } from 'shared/components';
 import { TopCard, RewardsList } from 'features/rewards/features';
 import RewardsHistoryProvider from 'providers/rewardsHistory';
-import { useCurrency } from 'shared/hooks';
 import { Fallback } from 'shared/wallet';
 
 const Rewards: FC = () => {
-  const { cookiesCurrency } = useCurrency();
   return (
     <Layout
       title="Reward History"
@@ -22,7 +20,7 @@ const Rewards: FC = () => {
         reward tracker. View stETH balances, historical rewards and transfers."
         />
       </Head>
-      <RewardsHistoryProvider cookiesCurrency={cookiesCurrency}>
+      <RewardsHistoryProvider>
         <Fallback />
         <TopCard />
         <RewardsList />

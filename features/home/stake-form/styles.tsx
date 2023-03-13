@@ -10,6 +10,6 @@ export const FormStyled = styled.form`
   margin-bottom: 24px;
 `;
 
-export const MaxButton = styled((props) => <Button {...props} />)`
+export const MaxButton = styled(Button)`
   letter-spacing: 0.4px;
 `;
