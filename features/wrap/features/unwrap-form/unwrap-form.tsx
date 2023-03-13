@@ -178,7 +178,7 @@ export const UnwrapForm: FC = memo(() => {
           <Button
             fullwidth
             type="submit"
-            disabled={isValidating}
+            disabled={isValidating || !!error}
             loading={isSubmitting}
           >
             Unwrap
