@@ -76,7 +76,7 @@ export const Stats: FC<StatsProps> = (props) => {
         </Title>
       </Item>
       <Item>
-        <Title mb="8px">stETH earned</Title>
+        <Title mb="8px">stETH rewarded</Title>
         <Stat mb="6px" color="#61B75F">
           <EthSymbol />
           <NumberFormat number={data?.totals.ethRewards} pending={pending} />

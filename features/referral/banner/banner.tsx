@@ -26,11 +26,11 @@ export const Banner: FC = () => {
       </p>
       <br />
       <BannerMainTextStyle>
-        All the other referral links don&apos;t earn rewards anymore.
+        All the other referral links don&apos;t get rewards anymore.
       </BannerMainTextStyle>
       <br />
       <BannerTextStyle>
-        All rewards earned before 13.09.2021 can be claimed via
+        All rewards got before 13.09.2021 can be claimed via
         <Link href="https://app.rhino.fi/claim/lido-rewards"> Rhino.fi </Link>
         from 20.09.2021
       </BannerTextStyle>

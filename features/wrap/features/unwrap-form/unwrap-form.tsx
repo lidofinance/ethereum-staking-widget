@@ -112,6 +112,7 @@ export const UnwrapForm: FC = memo(() => {
     isValidating,
     isSubmitting,
     setMaxInputValue,
+    isMaxDisabled,
     reset,
   } = useCurrencyInput({
     submit: unWrapProcessing,
@@ -165,6 +166,7 @@ export const UnwrapForm: FC = memo(() => {
               onClick={() => {
                 setMaxInputValue();
               }}
+              disabled={isMaxDisabled}
             >
               MAX
             </MaxButton>
@@ -190,7 +192,7 @@ export const UnwrapForm: FC = memo(() => {
       </FormStyled>
 
       <DataTable>
-        <DataTableRow title="Gas fee" loading={!unwrapTxCostInUsd}>
+        <DataTableRow title="Max gas fee" loading={!unwrapTxCostInUsd}>
           ${unwrapTxCostInUsd?.toFixed(2)}
         </DataTableRow>
         <DataTableRow

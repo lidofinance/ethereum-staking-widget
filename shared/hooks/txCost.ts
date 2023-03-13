@@ -2,12 +2,12 @@ import { useEthPrice } from '@lido-sdk/react';
 import { BigNumber } from 'ethers';
 import { useCallback, useEffect, useState } from 'react';
 import { weiToEth } from 'utils';
-import { useGasPrice } from './useGasPrice';
+import { useMaxGasPrice } from './useMaxGasPrice';
 
 type UseTxCostInWei = (gasLimit?: number) => BigNumber | undefined;
 
 export const useTxCostInWei: UseTxCostInWei = (gasLimit) => {
-  const gasPrice = useGasPrice();
+  const gasPrice = useMaxGasPrice();
 
   const [txCostInWei, seTxCostInWei] = useState<BigNumber>();
 

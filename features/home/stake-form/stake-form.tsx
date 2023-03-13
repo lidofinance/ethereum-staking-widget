@@ -102,6 +102,7 @@ export const StakeForm: FC = memo(() => {
     reset,
     limitWarning,
     limitReached,
+    isMaxDisabled,
   } = useCurrencyInput({
     initialValue: (router?.query?.amount as string) || undefined,
     submit,
@@ -118,6 +119,7 @@ export const StakeForm: FC = memo(() => {
           stakeableEther.data &&
           etherBalance.data.sub(padAmount).lte(stakeableEther.data),
       ),
+    gasLimit: submitGasLimit,
   });
 
   const willReceiveStEthValue = useMemo(() => {
@@ -159,6 +161,7 @@ export const StakeForm: FC = memo(() => {
               onClick={() => {
                 setMaxInputValue();
               }}
+              disabled={isMaxDisabled}
             >
               MAX
             </MaxButton>
@@ -189,14 +192,14 @@ export const StakeForm: FC = memo(() => {
           {willReceiveStEthValue} stETH
         </DataTableRow>
         <DataTableRow title="Exchange rate">1 ETH = 1 stETH</DataTableRow>
-        <DataTableRow title="Transaction cost" loading={!txCostInUsd}>
+        <DataTableRow title="Max transaction cost" loading={!txCostInUsd}>
           ${txCostInUsd?.toFixed(2)}
         </DataTableRow>
         <DataTableRow
           title="Reward fee"
           loading={lidoFee.initialLoading}
-          help="Please note: this fee applies to staking rewards/earnings only,
-          and is NOT taken from your staked amount. It is a fee on earnings only."
+          help="Please note: this fee applies to staking rewards only,
+          and is NOT taken from your staked amount."
         >
           {!lidoFee.data ? DATA_UNAVAILABLE : `${lidoFee.data / 100}%`}
         </DataTableRow>
