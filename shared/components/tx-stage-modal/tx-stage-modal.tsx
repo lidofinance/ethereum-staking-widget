@@ -187,7 +187,12 @@ export const TxStageModal: FC<TxStageModalProps> = memo(
             </>
           );
         case TX_OPERATION.UNWRAPPING:
-          return 'Unwrapping operation was successful';
+          return (
+            <>
+              Unwrapping operation was successful. Transaction can be viewed on
+              {getEtherscanTxLinkElem(' Etherscan')}
+            </>
+          );
         default:
           return 'Operation was successful';
       }
