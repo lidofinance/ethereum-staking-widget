@@ -5,10 +5,10 @@ import Date from 'features/rewards/components/Date';
 import { RewardsTableCellProps } from '../types';
 
 export const DateCell: FC<RewardsTableCellProps> = (props) => {
-  const { value } = props;
+  const { value, cellConfig } = props;
 
   return (
-    <Td numeric>
+    <Td {...cellConfig} numeric>
       <Date blockTime={String(value)} />
     </Td>
   );

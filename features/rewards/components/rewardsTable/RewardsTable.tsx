@@ -14,7 +14,6 @@ import { RewardsTableProps } from './types';
 
 export const RewardsTable: FC<RewardsTableProps> = (props) => {
   const { data, currency, totalItems, page, setPage, pending } = props;
-
   const pageCount = Math.ceil((totalItems ?? 0) / REWARDS_TABLE_CONFIG.take);
 
   return (
