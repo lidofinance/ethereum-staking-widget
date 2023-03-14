@@ -1,3 +1,20 @@
+# [1.57.0](https://github.com/lidofinance/staking-widget-ts/compare/1.56.0...1.57.0) (2023-03-14)
+
+
+### Bug Fixes
+
+* date order ([b95ad3f](https://github.com/lidofinance/staking-widget-ts/commit/b95ad3fb7c027209b593d9059ca8e38955adeef0))
+* date visibility ([45b9d4d](https://github.com/lidofinance/staking-widget-ts/commit/45b9d4dd028ac71658307be28953d4bbd5cbae67))
+* header border ([5e3b9eb](https://github.com/lidofinance/staking-widget-ts/commit/5e3b9eb2e3e0c8c30cce4841925d81624ee195f6))
+
+
+### Features
+
+* mobile reward list header ([ad94fa0](https://github.com/lidofinance/staking-widget-ts/commit/ad94fa0be85435763a539a30ef03dd3ea46cf1f9))
+* mobile rewards table ([c69fc21](https://github.com/lidofinance/staking-widget-ts/commit/c69fc21a8d4d3f820c81329927fa60843be09822))
+
+
+
 # [1.56.0](https://github.com/lidofinance/staking-widget-ts/compare/1.55.0...1.56.0) (2023-03-13)
 
 
@@ -147,23 +164,6 @@
 
 
 ## [1.49.1](https://github.com/lidofinance/staking-widget-ts/compare/1.49.0...1.49.1) (2023-01-24)
-
-
-
-# [1.49.0](https://github.com/lidofinance/staking-widget-ts/compare/1.48.0...1.49.0) (2023-01-10)
-
-
-### Bug Fixes
-
-* fix docker packages version ([97370aa](https://github.com/lidofinance/staking-widget-ts/commit/97370aa1e2aed014d1fbf83ce0a664f5fee706c6))
-* reef-knot v0.4.1 ([2f3bf52](https://github.com/lidofinance/staking-widget-ts/commit/2f3bf5211a23a1f4c836efa589ec8219bff7bab9))
-* update decode-uri-component to 0.2.2 because of the snyk report ([7132b7f](https://github.com/lidofinance/staking-widget-ts/commit/7132b7f2ec20e98e2517fc338380b4b0c9504627))
-
-
-### Features
-
-* add zerion wallet, remove lido-ui dependency from reef-knot ([a6fa7cb](https://github.com/lidofinance/staking-widget-ts/commit/a6fa7cb4b7ac92641ec91939e8a869904e4ea3c1))
-* added starter pull request template ([e0230f1](https://github.com/lidofinance/staking-widget-ts/commit/e0230f139e188f587fd4a4c9d1bad85336a81770))
 
 
 
