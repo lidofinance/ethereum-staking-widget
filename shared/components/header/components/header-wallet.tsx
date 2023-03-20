@@ -1,5 +1,5 @@
 import { FC } from 'react';
-import { useWeb3 } from '@reef-knot/web3-react';
+import { useWeb3 } from 'reef-knot/web3-react';
 import { useSDK } from '@lido-sdk/react';
 import { CHAINS } from '@lido-sdk/constants';
 import { Button, Connect } from 'shared/wallet';

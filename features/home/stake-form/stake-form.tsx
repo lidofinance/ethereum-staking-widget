@@ -16,7 +16,7 @@ import {
   useSTETHContractRPC,
   useSTETHContractWeb3,
 } from '@lido-sdk/react';
-import { useWeb3 } from '@reef-knot/web3-react';
+import { useWeb3 } from 'reef-knot/web3-react';
 import {
   Block,
   Button,

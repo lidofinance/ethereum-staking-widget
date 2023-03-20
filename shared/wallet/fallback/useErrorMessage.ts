@@ -1,4 +1,4 @@
-import { useSupportedChains, useConnectorError } from '@reef-knot/web3-react';
+import { useSupportedChains, useConnectorError } from 'reef-knot/web3-react';
 import { CHAINS } from '@lido-sdk/constants';
 import { useMemo } from 'react';
 
