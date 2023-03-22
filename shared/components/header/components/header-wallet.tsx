@@ -5,6 +5,7 @@ import { CHAINS } from '@lido-sdk/constants';
 import { Button, Connect } from 'shared/wallet';
 import { HeaderWalletChainStyle, DotStyle } from '../styles';
 import { ThemeToggler } from '@lidofinance/lido-ui';
+import NoSSRWrapper from '../../no-ssr-wrapper';
 
 import { getChainColor } from 'customSdk/chains';
 
@@ -17,7 +18,7 @@ const HeaderWallet: FC = () => {
   const showNet = testNet && active;
 
   return (
-    <>
+    <NoSSRWrapper>
       {showNet && (
         <>
           <DotStyle />
@@ -28,7 +29,7 @@ const HeaderWallet: FC = () => {
       )}
       {active ? <Button /> : <Connect size="sm" />}
       <ThemeToggler />
-    </>
+    </NoSSRWrapper>
   );
 };
 
