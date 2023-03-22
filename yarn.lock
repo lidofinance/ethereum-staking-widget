@@ -2403,10 +2403,10 @@
     "@types/node" "*"
     playwright-core "1.30.0"
 
-"@reef-knot/connect-wallet-modal@1.0.2":
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/@reef-knot/connect-wallet-modal/-/connect-wallet-modal-1.0.2.tgz#e872c2ad7ff84bc703b9ee89250c158d7f02d14d"
-  integrity sha512-gGfZhpebvrTtfmbNxYhUj8gvcdNLTbf8rmrUmLZgaToYFdzRvPqZ30ttxxFBAm4SgaL8P6vbcWaeI/2eVF4SLQ==
+"@reef-knot/connect-wallet-modal@1.0.4":
+  version "1.0.4"
+  resolved "https://registry.yarnpkg.com/@reef-knot/connect-wallet-modal/-/connect-wallet-modal-1.0.4.tgz#7f6b34565f3eecb9572bcf813dea5f8c9035eb9a"
+  integrity sha512-QdtJrLoGUX86n9sfdRxyqQR2bEb/DPI3H6/uVr166W0Zq5kHIreZb/PTO2ok5vrQQRJWxp7Sk8WxkRxX6AXIlQ==
 
 "@polka/url@^1.0.0-next.20":
   version "1.0.0-next.21"
@@ -2443,10 +2443,10 @@
   dependencies:
     "@reef-knot/wallet-adapter-exodus" "1.0.0"
 
-"@reef-knot/web3-react@1.0.2":
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/@reef-knot/web3-react/-/web3-react-1.0.2.tgz#a84a98bf09cad3aa28e9aa970b136115c5eb698a"
-  integrity sha512-ApFyBjXF8kn21HLjUWPS5MK1MPaaBNS0wYOJ9yPHWTyy9OgQoGt4kxVNRQjmF3LcbZS/aXjy//X9x+iLMlL0jg==
+"@reef-knot/web3-react@1.0.3":
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/@reef-knot/web3-react/-/web3-react-1.0.3.tgz#a58b9811799c63e93eec4ba282152f837f7243e1"
+  integrity sha512-V6Js1VR9x1+lME7eRtiAIATD/lEugUlTJ+EGrWzsgCNa2w03IvsHgrh6w/E4sKMZzuEckhJ0qyfZXXuWWCA1cw==
   dependencies:
     "@gnosis.pm/safe-apps-web3-react" "0.6.8"
     "@ledgerhq/iframe-provider" "0.4.2"
@@ -8992,17 +8992,17 @@ redent@^3.0.0:
     indent-string "^4.0.0"
     strip-indent "^3.0.0"
 
-reef-knot@^1.0.3:
-  version "1.0.3"
-  resolved "https://registry.yarnpkg.com/reef-knot/-/reef-knot-1.0.3.tgz#788cffb8c8d55f13e1f98657d65474fd672fe3d0"
-  integrity sha512-+Ogy4ZS1zUVpe9HSLXzbwztptaJxufGl5i4LG5QFUm5BP2crivwntRdmdgZnp2Z8PRGG69RGyH6dvdDCZdQVaQ==
+reef-knot@^1.0.5:
+  version "1.0.5"
+  resolved "https://registry.yarnpkg.com/reef-knot/-/reef-knot-1.0.5.tgz#7d3c75e5622e336d5858ae824ce2eef745b40a1a"
+  integrity sha512-OCnmybtErWYJLE/yoX7VlMdYQKzh+jGD6NATKFUP2Rq1L89vkURhqnr+aKV5J4UohlJdADGHtE/Ej6/zvQsRHA==
   dependencies:
-    "@reef-knot/connect-wallet-modal" "1.0.2"
+    "@reef-knot/connect-wallet-modal" "1.0.4"
     "@reef-knot/core-react" "1.0.0"
     "@reef-knot/ui-react" "1.0.1"
     "@reef-knot/wallets-icons" "1.0.0"
     "@reef-knot/wallets-list" "1.0.0"
-    "@reef-knot/web3-react" "1.0.2"
+    "@reef-knot/web3-react" "1.0.3"
 
 regenerate-unicode-properties@^10.1.0:
   version "10.1.0"
