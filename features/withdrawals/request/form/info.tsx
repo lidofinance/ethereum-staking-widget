@@ -10,13 +10,14 @@ export const Info = () => {
 
   return (
     <InfoBoxStyled>
-      Most often withdrawal period takes 1-5 days to process. After that you can
-      claim your rewards in{' '}
+      Most often withdrawal period takes from 1-5 days to process. Withdrawal
+      period depends on several reasons. After that you can claim ETH and
+      rewards in{' '}
       <LinkWrapperStyled>
         <Link href={claimPath}>Claim tab</Link>
       </LinkWrapperStyled>
-      . Please note, that tokens in the withdrawal request will not generate
-      rewards and if slashing will happen, the amount of rewards can be lower.
+      . Please note that stETH/wstETH while withdrawal period won’t generate
+      rewards.
     </InfoBoxStyled>
   );
 };
