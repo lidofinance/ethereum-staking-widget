@@ -14,6 +14,16 @@ export const getErrorMessage = (error: any): ErrorMessage => {
 
   // errors are sometimes nested :(
   const code = typeof error.code === 'number' ? error.code : error.error?.code;
+
+  if (!code && typeof error.code === 'string') {
+    switch (error.code) {
+      case 'ACTION_REJECTED':
+        return ErrorMessage.DENIED_SIG;
+      default:
+        return ErrorMessage.SOMETHING_WRONG;
+    }
+  }
+
   switch (code) {
     case -32000:
       return ErrorMessage.NOT_ENOUGH_ETHER;

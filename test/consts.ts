@@ -121,7 +121,7 @@ export const GET_REQUESTS: GetRequest[] = [
                   type: 'number',
                 },
                 availableSupply: {
-                  type: 'integer',
+                  type: 'number',
                 },
                 volume24h: {
                   type: 'number',

@@ -2,16 +2,10 @@ import { FC } from 'react';
 import { Button, InlineLoader } from '@lidofinance/lido-ui';
 import { trackEvent } from '@lidofinance/analytics-matomo';
 import { MATOMO_CLICK_EVENTS, DATA_UNAVAILABLE } from 'config';
+import { Banner } from 'shared/components';
 
 import { useCurve } from './useCurve';
-import {
-  Wrapper,
-  CurveIcon,
-  CurveIconWrapper,
-  ButtonLinkWrap,
-  ButtonWrap,
-  TextWrap,
-} from './styles';
+import { CurveIcon, CurveIconWrapper, ButtonLinkWrap } from './styles';
 
 const CURVE_LINK = 'https://curve.fi/#/ethereum/pools/steth/deposit';
 
@@ -31,22 +25,24 @@ export const Curve: FC = () => {
   const value = initialLoading ? <InlineLoader /> : apr;
 
   return (
-    <Wrapper>
-      <CurveIconWrapper>
-        <CurveIcon />
-      </CurveIconWrapper>
-      <TextWrap>
-        <b>{value}% APR</b>
-        <br />
-        ETH + stETH
-      </TextWrap>
-      <ButtonWrap>
+    <Banner
+      background="curve"
+      icon={
+        <CurveIconWrapper>
+          <CurveIcon />
+        </CurveIconWrapper>
+      }
+      button={
         <ButtonLinkWrap {...linkProps} onClick={linkClickHandler}>
           <Button fullwidth size="xs" variant="text" color="secondary">
             Explore
           </Button>
         </ButtonLinkWrap>
-      </ButtonWrap>
-    </Wrapper>
+      }
+    >
+      <b>{value}% APR</b>
+      <br />
+      ETH + stETH
+    </Banner>
   );
 };

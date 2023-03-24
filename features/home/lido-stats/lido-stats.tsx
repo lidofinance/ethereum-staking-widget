@@ -1,6 +1,7 @@
 import { FC, memo, useMemo } from 'react';
 import { getEtherscanTokenLink } from '@lido-sdk/helpers';
 import { useSDK } from '@lido-sdk/react';
+import { CHAINS } from '@lido-sdk/constants';
 import {
   Block,
   DataTable,
@@ -22,7 +23,10 @@ export const LidoStats: FC = memo(() => {
   const { chainId } = useSDK();
   const etherscanLink = useMemo(
     // TODO: add a way to type useSDK hook
-    () => getEtherscanTokenLink(chainId, getStethAddress(chainId as number)),
+    () => {
+      if (chainId === CHAINS.Zhejiang) return '';
+      return getEtherscanTokenLink(chainId, getStethAddress(chainId as number));
+    },
     [chainId],
   );
   const lidoApr = useLidoApr();

@@ -16,6 +16,7 @@ import { getEtherscanTxLink } from '@lido-sdk/helpers';
 import { ErrorMessage, formatBalance, formatBalanceString } from 'utils';
 import { use1inchLinkProps } from 'features/home/hooks';
 import { ModalPoolBanners } from 'shared/banners';
+import { CHAINS } from '@lido-sdk/constants';
 
 import {
   BoldText,
@@ -154,7 +155,17 @@ export const TxStageModal: FC<TxStageModalProps> = memo(
     const getEtherscanTxLinkElem = useCallback(
       (text = 'View on Etherscan') => {
         if (!txHash) return text;
-        return <Link href={getEtherscanTxLink(chainId, txHash)}>{text}</Link>;
+        return (
+          <Link
+            href={
+              chainId === CHAINS.Zhejiang
+                ? ''
+                : getEtherscanTxLink(chainId, txHash)
+            }
+          >
+            {text}
+          </Link>
+        );
       },
       [chainId, txHash],
     );
