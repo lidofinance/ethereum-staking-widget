@@ -56,6 +56,10 @@ export const Form = () => {
   const wstethContractWeb3 = useWSTETHContractWeb3();
   const stethContractWeb3 = useSTETHContractWeb3();
 
+  const tokenPlaceholder = useMemo(() => {
+    return selectedToken === TOKENS.WSTETH ? 'wstETH' : 'stETH';
+  }, [selectedToken]);
+
   const balanceBySelectedToken = useMemo(() => {
     return selectedToken === TOKENS.WSTETH
       ? wstethBalance.data
@@ -63,7 +67,7 @@ export const Form = () => {
   }, [selectedToken, stethBalance.data, wstethBalance.data]);
   const { error, value } = useInputValidate({
     value: inputValue,
-    inputName: `${selectedToken} Amount`,
+    inputName: `${tokenPlaceholder} amount`,
     limit: balanceBySelectedToken,
     minimum: minAmount,
   });
@@ -140,10 +144,6 @@ export const Form = () => {
     [isBunkerMode, openBunkerModal, request],
   );
 
-  const tokenPlaceholder = useMemo(() => {
-    return selectedToken === TOKENS.WSTETH ? 'wstETH' : 'stETH';
-  }, [selectedToken]);
-
   return (
     <form method="post" onSubmit={submit} ref={formRef}>
       <InputGroupStyled fullwidth error={error}>
@@ -154,17 +154,17 @@ export const Form = () => {
           error={!!error}
         >
           <Option leftDecorator={iconsMap[TOKENS.STETH]} value={TOKENS.STETH}>
-            Lido (STETH)
+            Lido (stETH)
           </Option>
           <Option leftDecorator={iconsMap[TOKENS.WSTETH]} value={TOKENS.WSTETH}>
-            Lido (WSTETH)
+            Lido (wstETH)
           </Option>
         </SelectIcon>
         <Input
           fullwidth
           placeholder="0"
           rightDecorator={maxButton}
-          label={`${tokenPlaceholder} Amount`}
+          label={`${tokenPlaceholder} amount`}
           value={inputValue}
           onChange={(event) => setInputValue(event?.currentTarget.value)}
           error={!!error}

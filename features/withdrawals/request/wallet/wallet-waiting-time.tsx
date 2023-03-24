@@ -3,7 +3,7 @@ import { Question, Tooltip } from '@lidofinance/lido-ui';
 import { CardBalance } from 'shared/wallet';
 import { Status } from 'features/withdrawals/shared';
 import { useWithdrawals, useRequestData } from 'features/withdrawals/hooks';
-import { formatEther } from '@ethersproject/units';
+import { FormatToken } from 'shared/formatters';
 
 export const WalletWaitingTime = () => {
   const { withdrawalsStatus, isBunkerMode } = useWithdrawals();
@@ -21,7 +21,8 @@ export const WalletWaitingTime = () => {
       {unfinalizedStETH.data && (
         <>
           <br />
-          Current amount of stETH: {formatEther(unfinalizedStETH.data)}
+          Current amount of stETH:{' '}
+          <FormatToken amount={unfinalizedStETH.data} symbol="" />
         </>
       )}
       {requestsCount !== undefined && (
