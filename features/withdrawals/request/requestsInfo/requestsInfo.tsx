@@ -3,15 +3,9 @@ import { BigNumber } from 'ethers';
 import { formatEther } from '@ethersproject/units';
 
 import { useWithdrawalsConstants } from 'features/withdrawals/hooks';
-import { FormatToken } from 'shared/formatters';
 import { MAX_REQUESTS_COUNT } from 'features/withdrawals/withdrawalsConstants';
 
-import { Request } from './request';
-import {
-  RequestsInfoStyled,
-  RequestsInfoDescStyled,
-  RequestsInfoItemsStyled,
-} from './styles';
+import { RequestsInfoStyled, RequestsInfoDescStyled } from './styles';
 
 type RequestsInfoProps = {
   requests?: BigNumber[];
@@ -43,13 +37,6 @@ export const RequestsInfo: FC<RequestsInfoProps> = (props) => {
         Although it will be {requests.length} requests, you will pay one
         transaction fee.
       </RequestsInfoDescStyled>
-      <RequestsInfoItemsStyled>
-        {requests.map((request, index) => (
-          <Request key={index} title={`Request #${index + 1}`}>
-            <FormatToken amount={request} symbol="ETH" />
-          </Request>
-        ))}
-      </RequestsInfoItemsStyled>
     </RequestsInfoStyled>
   );
 };
