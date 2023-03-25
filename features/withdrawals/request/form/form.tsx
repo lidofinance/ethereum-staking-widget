@@ -25,7 +25,7 @@ import {
   useSTETHContractWeb3,
 } from 'customSdk/contracts';
 import { TX_STAGE } from 'features/withdrawals/shared/tx-stage-modal';
-import { getErrorMessage } from 'utils';
+import { getErrorMessage, maxNumberValidation } from 'utils';
 
 import { Options } from '../options';
 import { RequestsInfo } from '../requestsInfo';
@@ -71,7 +71,7 @@ export const Form = () => {
     limit: balanceBySelectedToken,
     minimum: minAmount,
   });
-  const { requests } = useSplitRequest(value);
+  const { requests, requestsCount } = useSplitRequest(value);
 
   const { gatherPermitSignature: gatherPermilSignature } =
     useERC20PermitSignature({
@@ -166,11 +166,13 @@ export const Form = () => {
           rightDecorator={maxButton}
           label={`${tokenPlaceholder} amount`}
           value={inputValue}
-          onChange={(event) => setInputValue(event?.currentTarget.value)}
+          onChange={(event) =>
+            setInputValue(maxNumberValidation(event?.currentTarget.value))
+          }
           error={!!error}
         />
       </InputGroupStyled>
-      <RequestsInfo requests={requests} />
+      <RequestsInfo requests={requests} requestsCount={requestsCount} />
       <Options inputValue={value} />
       <FormButton pending={isPending} disabled={!!error || !inputValue} />
     </form>

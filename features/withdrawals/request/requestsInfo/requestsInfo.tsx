@@ -4,6 +4,7 @@ import { formatEther } from '@ethersproject/units';
 
 import { useWithdrawalsConstants } from 'features/withdrawals/hooks';
 import { FormatToken } from 'shared/formatters';
+import { MAX_REQUESTS_COUNT } from 'features/withdrawals/withdrawalsConstants';
 
 import { Request } from './request';
 import {
@@ -14,11 +15,22 @@ import {
 
 type RequestsInfoProps = {
   requests?: BigNumber[];
+  requestsCount?: number;
 };
 
 export const RequestsInfo: FC<RequestsInfoProps> = (props) => {
-  const { requests } = props;
+  const { requests, requestsCount } = props;
   const { maxAmount } = useWithdrawalsConstants();
+
+  if (requestsCount && requestsCount > MAX_REQUESTS_COUNT)
+    return (
+      <RequestsInfoStyled>
+        <RequestsInfoDescStyled>
+          You can send a maximum of 200 requests per transaction. Current
+          requests count is {requestsCount}.
+        </RequestsInfoDescStyled>
+      </RequestsInfoStyled>
+    );
 
   if (!requests || !requests.length || requests.length === 1 || !maxAmount)
     return null;

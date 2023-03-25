@@ -28,9 +28,8 @@ export const Lido: FC<LidoProps> = (props) => {
 
   const isValidValue = inputValue && isValidEtherValue(inputValue);
 
-  const isMoreThanMax = Number(inputValue) > 200000;
   const usdPrice =
-    isValidValue && data && !isNaN(Number(inputValue)) && !isMoreThanMax
+    isValidValue && data && !isNaN(Number(inputValue))
       ? data * weiToEth(parseEther(inputValue || '0'))
       : 0;
 
