@@ -34,6 +34,16 @@ export const BottomButtons = styled.div`
   button:first-of-type {
     margin-right: ${({ theme }) => theme.spaceMap.lg}px;
   }
+
+  ${({ theme }) => theme.mediaQueries.md} {
+    display: flex;
+    flex-direction: column;
+
+    button:first-of-type {
+      margin-right: 0;
+      margin-bottom: ${({ theme }) => theme.spaceMap.lg}px;
+    }
+  }
 `;
 
 export const RetryButtonStyled = styled.span`
