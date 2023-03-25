@@ -5,7 +5,10 @@ import { parseEther } from '@ethersproject/units';
 import { BigNumber } from 'ethers';
 
 import { weiToEth, isValidEtherValue } from 'utils';
-import { useCurrentStethEthPrice } from 'features/withdrawals/hooks';
+import {
+  useCurrentStethEthPrice,
+  useWithdrawals,
+} from 'features/withdrawals/hooks';
 
 import { Option, OptionProps } from '../option';
 import { TooltipWithdrawalAmount } from './lido-tooltip-withdrawal-amount';
@@ -19,6 +22,7 @@ type LidoProps = Pick<OptionProps, 'selected' | 'onClick'> & {
 
 export const Lido: FC<LidoProps> = (props) => {
   const { selected, inputValue, ...rest } = props;
+  const { isBunkerMode } = useWithdrawals();
   const { data } = useEthPrice();
   const stethEthPrice = useCurrentStethEthPrice();
 
@@ -35,6 +39,8 @@ export const Lido: FC<LidoProps> = (props) => {
       ? parseEther(inputValue || '0')
       : BigNumber.from(0),
   );
+
+  const timeRange = isBunkerMode ? 'From 18 days' : '1 - 5 day(s)';
 
   const amount = (
     <OptionAmountWrap>
@@ -53,7 +59,7 @@ export const Lido: FC<LidoProps> = (props) => {
     <Option
       type="lido"
       title="Lido"
-      timeRange="from 1 day"
+      timeRange={timeRange}
       selected={selected}
       {...rest}
     >

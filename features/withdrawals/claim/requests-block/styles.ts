@@ -28,9 +28,7 @@ export const RequestStyled = styled.div<{
   justify-content: space-between;
   width: 100%;
   box-sizing: border-box;
-  &:last-child {
-    border-bottom-width: 0;
-  }
+
   &:disabled {
     cursor: not-allowed;
   }
@@ -41,7 +39,7 @@ export const RequestStyled = styled.div<{
       case pending:
         return 'progress';
       default:
-        return 'pointer';
+        return 'default';
     }
   }};
 
