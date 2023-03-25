@@ -28,14 +28,14 @@ export const TxStageBunker: FC<TxStageFailProps> = (props) => {
       {currentIconDict[TX_STAGE.BUNKER]}
       <BoldText size="sm">Attention!</BoldText>
       <MiddleDescription size="xs" color="secondary">
-        Because of slashing, the unstaking period will last longer than usual,
+        Because of slashing, the withdrawal period will last longer than usual,
         still request withdrawal?
       </MiddleDescription>
       <BottomButtons>
-        <Button fullwidth onClick={onClose} color="secondary">
+        <Button fullwidth onClick={onClose} color="secondary" size="sm">
           Cancel
         </Button>
-        <Button fullwidth onClick={onClick}>
+        <Button fullwidth onClick={onClick} size="sm">
           Request withdrawal
         </Button>
       </BottomButtons>
