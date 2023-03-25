@@ -65,13 +65,13 @@ export const Form = () => {
       ? wstethBalance.data
       : stethBalance.data;
   }, [selectedToken, stethBalance.data, wstethBalance.data]);
-  const { error, value } = useInputValidate({
+  const { error } = useInputValidate({
     value: inputValue,
     inputName: `${tokenPlaceholder} amount`,
     limit: balanceBySelectedToken,
     minimum: minAmount,
   });
-  const { requests, requestsCount } = useSplitRequest(value);
+  const { requests, requestsCount } = useSplitRequest(inputValue);
 
   const { gatherPermitSignature: gatherPermilSignature } =
     useERC20PermitSignature({
@@ -173,7 +173,7 @@ export const Form = () => {
         />
       </InputGroupStyled>
       <RequestsInfo requests={requests} requestsCount={requestsCount} />
-      <Options inputValue={value} />
+      <Options inputValue={inputValue} />
       <FormButton pending={isPending} disabled={!!error || !inputValue} />
     </form>
   );
