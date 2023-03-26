@@ -9,10 +9,10 @@ type BannerProps = {
 };
 
 export const Banner: FC<BannerProps> = (props) => {
-  const { icon, button, children, background } = props;
+  const { icon, button, children, background, ...rest } = props;
 
   return (
-    <Wrapper $background={background}>
+    <Wrapper $background={background} {...rest}>
       {icon}
       <TextWrap>{children}</TextWrap>
       <ButtonWrap>{button}</ButtonWrap>
