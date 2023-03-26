@@ -1,9 +1,14 @@
 import { FC } from 'react';
 import { ProviderWeb3 } from 'reef-knot/web3-react';
+import { createConnectors } from 'reef-knot/core-react';
 import { backendRPC, getBackendRPCPath, dynamics } from 'config';
 import { WagmiConfig, createClient, configureChains } from 'wagmi';
 import { mainnet, goerli } from 'wagmi/chains';
 import { jsonRpcProvider } from 'wagmi/providers/jsonRpc';
+
+const connectors = createConnectors({
+  rpc: backendRPC,
+});
 
 const { provider, webSocketProvider } = configureChains(
   [mainnet, goerli],
@@ -17,6 +22,7 @@ const { provider, webSocketProvider } = configureChains(
 );
 
 const client = createClient({
+  connectors,
   autoConnect: true,
   provider,
   webSocketProvider,
