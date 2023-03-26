@@ -50,7 +50,7 @@ export const Form = () => {
     setCallback,
   } = useRequestTxModal();
 
-  const { chainId } = useWeb3();
+  const { chainId, active } = useWeb3();
   const stethBalance = useSTETHBalance();
   const wstethBalance = useWSTETHBalance();
   const wstethContractWeb3 = useWSTETHContractWeb3();
@@ -70,6 +70,7 @@ export const Form = () => {
     inputName: `${tokenPlaceholder} amount`,
     limit: balanceBySelectedToken,
     minimum: minAmount,
+    active,
   });
   const { requests, requestsCount } = useSplitRequest(inputValue);
 
@@ -148,14 +149,16 @@ export const Form = () => {
     </Button>
   );
 
+  const showError = active && !!error;
+
   return (
     <form method="post" onSubmit={submit} ref={formRef}>
-      <InputGroupStyled fullwidth error={error}>
+      <InputGroupStyled fullwidth error={showError && error}>
         <SelectIcon
           icon={iconsMap[selectedToken]}
           value={selectedToken}
           onChange={setSelectedToken}
-          error={!!error}
+          error={showError}
         >
           <Option leftDecorator={iconsMap[TOKENS.STETH]} value={TOKENS.STETH}>
             Lido (stETH)
@@ -173,7 +176,7 @@ export const Form = () => {
           onChange={(event) =>
             setInputValue(maxNumberValidation(event?.currentTarget.value))
           }
-          error={!!error}
+          error={showError}
         />
       </InputGroupStyled>
       <RequestsInfo requests={requests} requestsCount={requestsCount} />
