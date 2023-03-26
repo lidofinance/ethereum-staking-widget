@@ -1,6 +1,6 @@
 import { ComponentProps, FC, InputHTMLAttributes } from 'react';
 import { Checkbox, External } from '@lidofinance/lido-ui';
-import { useSDK } from '@lido-sdk/react';
+import { useWeb3 } from 'reef-knot';
 
 import { getNFTUrl } from 'utils';
 
@@ -27,7 +27,7 @@ export const Request: FC<RequestItemProps> = ({
   tokenId,
   ...rest
 }) => {
-  const { chainId } = useSDK();
+  const { chainId } = useWeb3();
   const isReady = status === 'ready';
   const isLoading = status === 'loading';
   const statusText = isReady ? 'Ready to claim' : 'Pending';
@@ -46,7 +46,7 @@ export const Request: FC<RequestItemProps> = ({
           <RequestsStatusStyled $variant={status}>
             {statusText}
           </RequestsStatusStyled>
-          <LinkStyled href={getNFTUrl(chainId, tokenId)}>
+          <LinkStyled href={getNFTUrl(tokenId, chainId)}>
             <External />
           </LinkStyled>
         </>

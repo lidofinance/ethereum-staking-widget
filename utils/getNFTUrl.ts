@@ -12,7 +12,8 @@ export const NFT_URL_PREFIX_BY_NETWORK: {
     `https://blockscout.com/eth/zhejiang-testnet/token/${contract}/instance/${nftId}/token-transfers`,
 };
 
-export const getNFTUrl = (chainId: CHAINS, tokenId: string) => {
+export const getNFTUrl = (tokenId: string, chainId?: CHAINS) => {
+  if (!chainId) return '';
   const contractAddress = getWithdrawalRequestNFTAddress(chainId);
 
   return NFT_URL_PREFIX_BY_NETWORK[chainId]?.(tokenId, contractAddress) || '';

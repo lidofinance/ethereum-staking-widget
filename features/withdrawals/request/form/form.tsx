@@ -1,11 +1,11 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Input, Button, SelectIcon, Option } from '@lidofinance/lido-ui';
+import { useWeb3 } from 'reef-knot';
 import { TOKENS, CHAINS } from '@lido-sdk/constants';
 import {
   useWSTETHContractWeb3,
   useSTETHBalance,
   useWSTETHBalance,
-  useSDK,
 } from '@lido-sdk/react';
 import { formatEther } from '@ethersproject/units';
 import { BigNumber } from 'ethers';
@@ -50,7 +50,7 @@ export const Form = () => {
     setCallback,
   } = useRequestTxModal();
 
-  const { chainId } = useSDK();
+  const { chainId } = useWeb3();
   const stethBalance = useSTETHBalance();
   const wstethBalance = useWSTETHBalance();
   const wstethContractWeb3 = useWSTETHContractWeb3();
@@ -83,18 +83,6 @@ export const Form = () => {
           : stethContractWeb3,
       spender: getWithdrawalRequestNFTAddress(chainId as CHAINS),
     });
-
-  const maxButton = (
-    <Button
-      size="xxs"
-      variant="translucent"
-      onClick={() =>
-        setInputValue(formatEther(balanceBySelectedToken || BigNumber.from(0)))
-      }
-    >
-      MAX
-    </Button>
-  );
 
   const request = useCallback(async () => {
     setIsPending(true);
@@ -142,6 +130,22 @@ export const Form = () => {
       else request();
     },
     [isBunkerMode, openBunkerModal, request],
+  );
+
+  useEffect(() => {
+    setInputValue('');
+  }, [selectedToken]);
+
+  const maxButton = (
+    <Button
+      size="xxs"
+      variant="translucent"
+      onClick={() =>
+        setInputValue(formatEther(balanceBySelectedToken || BigNumber.from(0)))
+      }
+    >
+      MAX
+    </Button>
   );
 
   return (
