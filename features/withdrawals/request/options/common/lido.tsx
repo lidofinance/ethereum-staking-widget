@@ -37,7 +37,6 @@ export const Lido: FC<LidoProps> = (props) => {
   const amount = (
     <OptionAmountWrap>
       <OptionAmountRow>
-        <div>~&nbsp;</div>
         <FormatTokenStyled amount={ethAmount} symbol="ETH" />{' '}
         <TooltipWithdrawalAmount />
       </OptionAmountRow>
