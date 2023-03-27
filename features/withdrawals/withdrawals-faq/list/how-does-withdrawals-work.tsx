@@ -1,6 +1,6 @@
 import { FC } from 'react';
 import { Accordion } from '@lidofinance/lido-ui';
-import { NoBr, WarnHl } from '../styles';
+import { NoBr } from '../styles';
 
 export const HowDoesWithdrawalsWork: FC = () => {
   return (
@@ -11,11 +11,7 @@ export const HowDoesWithdrawalsWork: FC = () => {
           <b>Request withdrawal</b>: Lock your stETH by issuing a withdrawal
           request. ETH is sourced to fulfil the request, locked, and the locked
           stETH is burned, which marks the withdrawal request as claimable. This
-          should take{' '}
-          <NoBr>
-            <WarnHl>1-5 days</WarnHl>
-          </NoBr>
-          .
+          should take <NoBr>1-5 days</NoBr>.
         </li>
         <li>
           <b>Claim</b>: Claim your ETH after the withdrawal request has been.

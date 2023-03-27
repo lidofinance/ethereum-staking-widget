@@ -8,9 +8,9 @@ export const ConvertSTETHtoETH: FC = () => {
   return (
     <Accordion summary="Can I convert my stETH to ETH?">
       <p>
-        Yes. Stakers can convert their stETH to ETH 1:1 using the ‘
-        <Link href={requestPath}>Request</Link>’ and ‘
-        <Link href={claimPath}>Claim</Link>’ tabs.
+        Yes. Stakers can convert their stETH to ETH 1:1 using the{' '}
+        <Link href={requestPath}>Request</Link> and{' '}
+        <Link href={claimPath}>Claim</Link> tabs.
       </p>
     </Accordion>
   );

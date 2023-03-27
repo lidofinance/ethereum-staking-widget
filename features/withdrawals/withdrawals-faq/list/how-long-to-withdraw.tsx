@@ -9,8 +9,8 @@ export const HowLongToWithdraw: FC = () => {
     <Accordion summary="How long does it take to withdraw?">
       <p>
         Most often, the stETH/wstETH withdrawal period will be from 1-5 days.
-        After that you can claim your ETH using the ‘
-        <Link href={claimPath}>Claim</Link>’ tab.
+        After that you can claim your ETH using the{' '}
+        <Link href={claimPath}>Claim</Link> tab.
       </p>
     </Accordion>
   );

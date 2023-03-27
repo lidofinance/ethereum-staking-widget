@@ -8,9 +8,9 @@ export const ConvertWSTETHtoETH: FC = () => {
   return (
     <Accordion summary="Can I convert my wstETH to ETH?">
       <p>
-        Yes. Convert your wstETH to ETH using the ‘
-        <Link href={requestPath}>Request</Link>’ and ‘
-        <Link href={claimPath}>Claim</Link>’ tabs.
+        Yes. Convert your wstETH to ETH using the{' '}
+        <Link href={requestPath}>Request</Link> and{' '}
+        <Link href={claimPath}>Claim</Link> tabs.
       </p>
     </Accordion>
   );
