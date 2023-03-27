@@ -5,6 +5,8 @@ import ClaimTxModalProvider from './providers/claim-tx-modal-provider';
 import { useWithdrawals } from './hooks';
 import { RequestForm, RequestWallet } from './request';
 import { ClaimForm, ClaimWallet } from './claim';
+import { RequestFaq } from 'features/withdrawals/withdrawals-faq/request-faq';
+import { ClaimFaq } from 'features/withdrawals/withdrawals-faq/claim-faq';
 
 export const WithdrawalsTabs = () => {
   const { isClaimTab } = useWithdrawals();
@@ -16,11 +18,13 @@ export const WithdrawalsTabs = () => {
           <ClaimTxModalProvider>
             <ClaimWallet />
             <ClaimForm />
+            <ClaimFaq />
           </ClaimTxModalProvider>
         ) : (
           <RequestTxModalProvider>
             <RequestWallet />
             <RequestForm />
+            <RequestFaq />
           </RequestTxModalProvider>
         )}
       </RequestDataProvider>

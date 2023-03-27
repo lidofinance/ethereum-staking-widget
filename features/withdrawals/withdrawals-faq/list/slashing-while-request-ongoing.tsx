@@ -1,6 +1,6 @@
 import { FC } from 'react';
 import { Accordion } from '@lidofinance/lido-ui';
-import { NoBr, WarnHl } from '../withdrawals-faq-styles';
+import { NoBr, WarnHl } from '../styles';
 
 export const SlashingWhileRequestOngoing: FC = () => {
   return (

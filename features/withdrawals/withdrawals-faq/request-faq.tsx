@@ -2,7 +2,7 @@ import { useMatomoEventHandle } from 'shared/hooks';
 
 import { Button } from '@lidofinance/lido-ui';
 import { Section } from 'shared/components';
-import { ButtonLinkWrap } from './withdrawals-faq-styles';
+import { ButtonLinkWrap } from './styles';
 
 import { WhatAreWithdrawals } from './list/what-are-withdrawals';
 import { HowDoesWithdrawalsWork } from './list/how-does-withdrawals-work';
@@ -23,7 +23,7 @@ import { UnstakeAmountBoundaries } from './list/unstake-amount-boundaries';
 const LEARN_MORE_LINK =
   'https://hackmd.io/@lido/SyaJQsZoj#Lido-on-Ethereum-Withdrawals-Landscape';
 
-export const WithdrawalsFaq: React.FC = () => {
+export const RequestFaq: React.FC = () => {
   const onClickHandler = useMatomoEventHandle();
 
   return (
@@ -49,16 +49,8 @@ export const WithdrawalsFaq: React.FC = () => {
         rel="noopener noreferrer"
         href={LEARN_MORE_LINK}
       >
-        <Button
-        // fullwidth
-        // type="submit"
-        // disabled={limitReached || isValidating || !!error}
-        // loading={isSubmitting}
-        >
-          Learn more
-        </Button>
+        <Button>Learn more</Button>
       </ButtonLinkWrap>
-      {/* BUTTON Learn more —  */}
     </Section>
   );
 };
