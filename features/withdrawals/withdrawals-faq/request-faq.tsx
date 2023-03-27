@@ -1,8 +1,8 @@
 import { useMatomoEventHandle } from 'shared/hooks';
 
-import { Button } from '@lidofinance/lido-ui';
+// import { Button } from '@lidofinance/lido-ui';
 import { Section } from 'shared/components';
-import { ButtonLinkWrap } from './styles';
+// import { ButtonLinkWrap } from './styles';
 
 import { WhatAreWithdrawals } from './list/what-are-withdrawals';
 import { HowDoesWithdrawalsWork } from './list/how-does-withdrawals-work';
@@ -20,8 +20,9 @@ import { RewardsAfterWithdraw } from './list/rwards-after-withdraw';
 import { SlashingWhileRequestOngoing } from './list/slashing-while-request-ongoing';
 import { UnstakeAmountBoundaries } from './list/unstake-amount-boundaries';
 
-const LEARN_MORE_LINK =
-  'https://hackmd.io/@lido/SyaJQsZoj#Lido-on-Ethereum-Withdrawals-Landscape';
+// TODO: Replace this link when it will be finalized
+// const LEARN_MORE_LINK =
+//   'https://hackmd.io/@lido/SyaJQsZoj#Lido-on-Ethereum-Withdrawals-Landscape';
 
 export const RequestFaq: React.FC = () => {
   const onClickHandler = useMatomoEventHandle();
@@ -44,13 +45,13 @@ export const RequestFaq: React.FC = () => {
       <SlashingWhileRequestOngoing />
       <UnstakeAmountBoundaries />
 
-      <ButtonLinkWrap
+      {/* <ButtonLinkWrap
         target="_blank"
         rel="noopener noreferrer"
         href={LEARN_MORE_LINK}
       >
         <Button>Learn more</Button>
-      </ButtonLinkWrap>
+      </ButtonLinkWrap> */}
     </Section>
   );
 };
