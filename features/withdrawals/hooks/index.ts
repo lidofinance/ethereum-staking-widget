@@ -5,4 +5,4 @@ export * from './useRequestTxModal';
 export * from './contract';
 export * from './useClaimData';
 export * from './useClaimTxModal';
-export * from './useEthAmountByInput';
+export * from './useEthAmountByStethWsteth';

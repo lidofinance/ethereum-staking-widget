@@ -3,9 +3,9 @@ import { Text } from '@lidofinance/lido-ui';
 import { useEthPrice } from '@lido-sdk/react';
 import { BigNumber } from 'ethers';
 
-import { weiToEth, isValidEtherValue } from 'utils';
+import { weiToEth } from 'utils';
 import {
-  useEthAmountByInput,
+  useEthAmountByStethWsteth,
   useWithdrawals,
 } from 'features/withdrawals/hooks';
 
@@ -23,14 +23,9 @@ export const Lido: FC<LidoProps> = (props) => {
   const { selected, inputValue, ...rest } = props;
   const { isBunkerMode, isSteth } = useWithdrawals();
   const { data } = useEthPrice();
-  const ethAmount = useEthAmountByInput({ isSteth, input: inputValue });
+  const ethAmount = useEthAmountByStethWsteth({ isSteth, input: inputValue });
 
-  const isValidValue = inputValue && isValidEtherValue(inputValue);
-
-  const usdPrice =
-    isValidValue && data && !isNaN(Number(inputValue))
-      ? data * weiToEth(ethAmount || BigNumber.from(0))
-      : 0;
+  const usdPrice = data ? data * weiToEth(ethAmount || BigNumber.from(0)) : 0;
 
   const timeRange = isBunkerMode ? 'From 18 days' : '1 - 5 day(s)';
 
