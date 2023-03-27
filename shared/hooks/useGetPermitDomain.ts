@@ -1,6 +1,6 @@
-import { useSDK } from '@lido-sdk/react';
 import { StethPermitAbi, Eip2612 } from 'generated';
 import { useCallback } from 'react';
+import { useWeb3 } from 'reef-knot';
 
 export enum PermitType {
   AMOUNT = 1,
@@ -26,7 +26,7 @@ export const useGetPermitDomain = <T extends PermitProvider>(
   props: UseGetPermitDomainProps<T>,
 ) => {
   const { tokenProvider } = props;
-  const { account, chainId } = useSDK();
+  const { account, chainId } = useWeb3();
 
   return useCallback(async () => {
     if (!chainId || !account || !tokenProvider) return;

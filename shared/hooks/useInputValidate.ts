@@ -11,6 +11,7 @@ type UseInputValidation = (data: {
   zeroValid?: boolean;
   limit?: BigNumber;
   minimum?: BigNumber;
+  active: boolean;
 }) => {
   ok: boolean;
   error: string | boolean;
@@ -23,6 +24,7 @@ export const useInputValidate: UseInputValidation = ({
   zeroValid = false,
   limit,
   minimum,
+  active,
 }) => {
   const amount = Number(value);
   const [inputTouched, setInputTouched] = useState(false);
@@ -32,10 +34,10 @@ export const useInputValidate: UseInputValidation = ({
     if (didMountRef.current) setInputTouched(true);
   }, [value]);
 
-  // skipping first render
+  // skipping first render if wallet connected
   useEffect(() => {
-    didMountRef.current = true;
-  }, []);
+    if (active) didMountRef.current = true;
+  }, [active]);
 
   if (!value) {
     return {

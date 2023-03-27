@@ -1,11 +1,11 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Input, Button, SelectIcon, Option } from '@lidofinance/lido-ui';
+import { useWeb3 } from 'reef-knot';
 import { TOKENS, CHAINS } from '@lido-sdk/constants';
 import {
   useWSTETHContractWeb3,
   useSTETHBalance,
   useWSTETHBalance,
-  useSDK,
 } from '@lido-sdk/react';
 import { formatEther } from '@ethersproject/units';
 import { BigNumber } from 'ethers';
@@ -25,7 +25,7 @@ import {
   useSTETHContractWeb3,
 } from 'customSdk/contracts';
 import { TX_STAGE } from 'features/withdrawals/shared/tx-stage-modal';
-import { getErrorMessage } from 'utils';
+import { getErrorMessage, maxNumberValidation } from 'utils';
 
 import { Options } from '../options';
 import { RequestsInfo } from '../requestsInfo';
@@ -50,7 +50,7 @@ export const Form = () => {
     setCallback,
   } = useRequestTxModal();
 
-  const { chainId } = useSDK();
+  const { chainId, active } = useWeb3();
   const stethBalance = useSTETHBalance();
   const wstethBalance = useWSTETHBalance();
   const wstethContractWeb3 = useWSTETHContractWeb3();
@@ -65,13 +65,14 @@ export const Form = () => {
       ? wstethBalance.data
       : stethBalance.data;
   }, [selectedToken, stethBalance.data, wstethBalance.data]);
-  const { error, value } = useInputValidate({
+  const { error } = useInputValidate({
     value: inputValue,
     inputName: `${tokenPlaceholder} amount`,
     limit: balanceBySelectedToken,
     minimum: minAmount,
+    active,
   });
-  const { requests } = useSplitRequest(value);
+  const { requests, requestsCount } = useSplitRequest(inputValue);
 
   const { gatherPermitSignature: gatherPermilSignature } =
     useERC20PermitSignature({
@@ -83,18 +84,6 @@ export const Form = () => {
           : stethContractWeb3,
       spender: getWithdrawalRequestNFTAddress(chainId as CHAINS),
     });
-
-  const maxButton = (
-    <Button
-      size="xxs"
-      variant="translucent"
-      onClick={() =>
-        setInputValue(formatEther(balanceBySelectedToken || BigNumber.from(0)))
-      }
-    >
-      MAX
-    </Button>
-  );
 
   const request = useCallback(async () => {
     setIsPending(true);
@@ -144,14 +133,32 @@ export const Form = () => {
     [isBunkerMode, openBunkerModal, request],
   );
 
+  useEffect(() => {
+    setInputValue('');
+  }, [selectedToken]);
+
+  const maxButton = (
+    <Button
+      size="xxs"
+      variant="translucent"
+      onClick={() =>
+        setInputValue(formatEther(balanceBySelectedToken || BigNumber.from(0)))
+      }
+    >
+      MAX
+    </Button>
+  );
+
+  const showError = active && !!error;
+
   return (
     <form method="post" onSubmit={submit} ref={formRef}>
-      <InputGroupStyled fullwidth error={error}>
+      <InputGroupStyled fullwidth error={showError && error}>
         <SelectIcon
           icon={iconsMap[selectedToken]}
           value={selectedToken}
           onChange={setSelectedToken}
-          error={!!error}
+          error={showError}
         >
           <Option leftDecorator={iconsMap[TOKENS.STETH]} value={TOKENS.STETH}>
             Lido (stETH)
@@ -166,12 +173,14 @@ export const Form = () => {
           rightDecorator={maxButton}
           label={`${tokenPlaceholder} amount`}
           value={inputValue}
-          onChange={(event) => setInputValue(event?.currentTarget.value)}
-          error={!!error}
+          onChange={(event) =>
+            setInputValue(maxNumberValidation(event?.currentTarget.value))
+          }
+          error={showError}
         />
       </InputGroupStyled>
-      <RequestsInfo requests={requests} />
-      <Options inputValue={value} />
+      <RequestsInfo requests={requests} requestsCount={requestsCount} />
+      <Options inputValue={inputValue} />
       <FormButton pending={isPending} disabled={!!error || !inputValue} />
     </form>
   );
