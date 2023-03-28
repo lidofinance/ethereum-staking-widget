@@ -11,8 +11,8 @@ export const Info = () => {
   return (
     <InfoBoxStyled>
       Most often withdrawal period takes from 1-5 days to process. Withdrawal
-      period depends on several reasons. After that, you can claim ETH and
-      rewards in{' '}
+      period depends on <Link href="#withdrawalsPeriod">several reasons</Link>.
+      After that, you can claim ETH and rewards in{' '}
       <LinkWrapperStyled>
         <Link href={claimPath}>Claim tab</Link>
       </LinkWrapperStyled>

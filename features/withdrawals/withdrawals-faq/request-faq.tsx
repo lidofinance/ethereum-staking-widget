@@ -18,7 +18,7 @@ import { BunkerMode } from './list/bunker-mode';
 import { BunkerModeReasons } from './list/bunker-mode-reasons';
 import { WhatIsSlashing } from './list/what-is-slashing';
 import { NegativeCLRebase } from './list/negative-cl-rebase';
-import { RewardsAfterWithdraw } from './list/rwards-after-withdraw';
+import { RewardsAfterWithdraw } from './list/rewards-after-withdraw';
 import { BunkerWhileRequestOngoing } from './list/bunker-while-request-ongoing';
 import { UnstakeAmountBoundaries } from './list/unstake-amount-boundaries';
 import { LidoNFT } from './list/lido-nft';
