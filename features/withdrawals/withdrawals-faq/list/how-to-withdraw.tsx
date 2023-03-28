@@ -9,9 +9,9 @@ export const HowToWithdraw: FC = () => {
     <Accordion summary="How do I withdraw?">
       <p>
         Press the <Link href={requestPath}>Request tab</Link>, choose the amount
-        of stETH to withdraw and press confirm. Confirm the transaction using
-        your wallet and press <Link href={claimPath}>Claim tab</Link> once
-        ready.
+        of stETH/wstETH to withdraw, and press ‘Request withdrawal’. Confirm the
+        transaction using your wallet and press{' '}
+        <Link href={claimPath}>Claim tab</Link> once it is ready.
       </p>
     </Accordion>
   );

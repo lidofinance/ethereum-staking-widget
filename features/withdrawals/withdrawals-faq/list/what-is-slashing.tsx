@@ -10,16 +10,16 @@ export const WhatIsSlashing: FC = () => {
     <Accordion summary="What is slashing?">
       <p>
         Slashing is a penalty on validators for intentional or accidental
-        misbehaviour.
+        misbehavior.
       </p>
       <p>
         Slashing penalties are spread across stakers and may lower your total
-        reward amount. For more information, check out What Are{' '}
+        reward amount. For more information, check out{' '}
         <Link
           href={PENALTIES_INFO_LINK}
           // data-matomo={MATOMO_CLICK_EVENTS_TYPES.}
         >
-          Staking/Validator Penalties
+          What Are Staking/Validator Penalties
         </Link>
         .
       </p>

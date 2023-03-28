@@ -5,9 +5,9 @@ export const BunkerMode: FC = () => {
   return (
     <Accordion summary="What is Bunker mode?">
       <p>
-        Bunker Mode delays withdrawals across all Lido stakers during
-        catastrophic scenarios to prevent sophisticated actors from gaining an
-        unfair advantage against other stakers.
+        Bunker Mode is when withdrawal requests are paused until the negative
+        events’ consequences are resolved. It pauses withdrawals across all Lido
+        stakers during catastrophic scenarios.
       </p>
     </Accordion>
   );

@@ -19,15 +19,15 @@ export const UnstakeAmountBoundaries: FC = () => {
   const maxAmountDisplay = formatAmount(maxAmount);
 
   return (
-    <Accordion summary="Is there any minimum or maximum amount of stETH I can unstake?">
+    <Accordion summary="Is there any minimum or maximum amount of stETH/wstETH I can withdraw?">
       <p>
         The minimum amount to withdraw is {minAmountDisplay} stETH, and the
         maximum amount is {maxAmountDisplay} stETH.
       </p>
       <p>
         If you want to withdraw more than {maxAmountDisplay} stETH, your request
-        withdrawal will be divided into several requests (you will still only
-        pay one transaction fee).
+        withdrawal will be divided into several requests, but you will still
+        only pay one transaction fee.
       </p>
     </Accordion>
   );
