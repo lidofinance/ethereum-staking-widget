@@ -27,7 +27,7 @@ export const Lido: FC<LidoProps> = (props) => {
 
   const usdPrice = data ? data * weiToEth(ethAmount || BigNumber.from(0)) : 0;
 
-  const timeRange = isBunkerMode ? 'From 18 days' : '1 - 5 day(s)';
+  const timeRange = isBunkerMode ? 'Not estimated' : '1 - 5 day(s)';
 
   const amount = (
     <OptionAmountWrap>

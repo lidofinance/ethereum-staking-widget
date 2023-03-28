@@ -5,7 +5,7 @@ export const BunkerInfo = () => {
     <InfoBoxStyled>
       Lido protocol is in &quot;Bunker mode&quot;. The withdrawal requests are
       delayed until the consequences of the incident that caused &quot;Bunker
-      mode&quot; are not resolved. For more details, link here.
+      mode&quot; are not resolved. For more details, see here.
     </InfoBoxStyled>
   );
 };
