@@ -4,7 +4,7 @@ import { Accordion } from '@lidofinance/lido-ui';
 export const WithdrawalPeriodCircumstances: FC = () => {
   return (
     <Accordion
-      summary="What does the withdrawals period duration depend on?"
+      summary="What does the withdrawal period duration depend on?"
       id="withdrawalsPeriod"
     >
       <ol>

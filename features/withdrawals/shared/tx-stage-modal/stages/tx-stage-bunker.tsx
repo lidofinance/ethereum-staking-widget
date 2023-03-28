@@ -29,7 +29,7 @@ export const TxStageBunker: FC<TxStageFailProps> = (props) => {
       <BoldText size="sm">Attention!</BoldText>
       <MiddleDescription size="xs" color="secondary">
         Lido protocol is in “Bunker mode”, the withdrawal requests are slowed
-        down, still request withdrawa!?
+        down, still request withdrawal?
       </MiddleDescription>
       <BottomButtons>
         <Button fullwidth onClick={onClose} color="secondary" size="sm">
