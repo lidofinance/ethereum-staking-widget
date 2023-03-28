@@ -15,10 +15,11 @@ type TxStageSuccessProps = {
   txHash?: string;
   description: React.ReactNode;
   title: string;
+  showEtherscan?: boolean;
 };
 
 export const TxStageSuccess: FC<TxStageSuccessProps> = (props) => {
-  const { txHash, description, title, children } = props;
+  const { txHash, description, title, children, showEtherscan = true } = props;
   const { isLedger } = useConnectorInfo();
 
   const currentIconDict = iconsDict[isLedger ? 'ledger' : 'default'];
@@ -30,9 +31,11 @@ export const TxStageSuccess: FC<TxStageSuccessProps> = (props) => {
       <MiddleDescription size="xs" color="secondary">
         {description}
       </MiddleDescription>
-      <BottomDescription size="xxs" color="secondary">
-        <EtherscanTxLink txHash={txHash} />
-      </BottomDescription>
+      {showEtherscan && (
+        <BottomDescription size="xxs" color="secondary">
+          <EtherscanTxLink txHash={txHash} />
+        </BottomDescription>
+      )}
       {children}
     </TextWrapper>
   );

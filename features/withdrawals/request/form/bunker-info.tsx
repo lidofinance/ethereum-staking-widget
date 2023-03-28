@@ -3,8 +3,9 @@ import { InfoBoxStyled } from 'features/withdrawals/shared';
 export const BunkerInfo = () => {
   return (
     <InfoBoxStyled>
-      Slashing have happened, timeline of unstake have slowed down! Note, that
-      stETH unstaking period is currently taking longer than usual.
+      Lido protocol is in &quot;Bunker mode&quot;. The withdrawal requests are
+      delayed until the consequences of the incident that caused &quot;Bunker
+      mode&quot; are not resolved. For more details, link here.
     </InfoBoxStyled>
   );
 };

@@ -11,7 +11,7 @@ export const WalletWaitingTime = () => {
   const { unfinalizedStETH } = useRequestData();
   const requestsCount = unfinalizedRequests.data?.toNumber();
 
-  const contentValue = isBunkerMode ? 'From 18 days' : '1 - 5 day(s)';
+  const contentValue = isBunkerMode ? 'Not estimated' : '1 - 5 day(s)';
   const content = <Status variant={withdrawalsStatus}>{contentValue}</Status>;
 
   const tooltipTitle = (
@@ -21,14 +21,14 @@ export const WalletWaitingTime = () => {
       {unfinalizedStETH.data && (
         <>
           <br />
-          Current amount of stETH:{' '}
+          The overall amount of stETH in queue:{' '}
           <FormatToken amount={unfinalizedStETH.data} symbol="" />
         </>
       )}
       {requestsCount !== undefined && (
         <>
           <br />
-          Current amount of requests: {requestsCount}
+          The overall amount of requests in queue: {requestsCount}
         </>
       )}
     </>

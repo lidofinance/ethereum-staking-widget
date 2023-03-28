@@ -1,10 +1,9 @@
-import { Button } from '@lidofinance/lido-ui';
+import { ButtonIcon, Plus } from '@lidofinance/lido-ui';
 
 import { useAddNFT } from 'features/withdrawals/hooks';
 
 import {
   NFTIcon,
-  PresentIconStyled,
   ButtonWrapperStyled,
   TextWrapper,
   NFTBunner,
@@ -18,27 +17,26 @@ export const NFTBanner = () => {
 
   return (
     <NFTBunner>
-      <NFTIcon />
       <ContentStyled>
+        <NFTIcon />
+
         <TextWrapper>
-          <TitleStyled>Your request is Lido NFT</TitleStyled>
-          <br />
-          <DescriptionStyled>
-            You can add NFT to the wallet to monitor status of your request
-          </DescriptionStyled>
+          <TitleStyled>
+            Add this NFT to your wallet to monitor status of your request.
+          </TitleStyled>
         </TextWrapper>
         <ButtonWrapperStyled>
-          <Button
+          <ButtonIcon
+            icon={<Plus />}
             fullwidth
-            size="xs"
+            size="sm"
             variant="filled"
-            color="secondary"
             onClick={addNft}
           >
-            Add to the wallet
-          </Button>
-          <PresentIconStyled />
+            Add NFT to wallet
+          </ButtonIcon>
         </ButtonWrapperStyled>
+        <DescriptionStyled>For withdrawals participate only</DescriptionStyled>
       </ContentStyled>
     </NFTBunner>
   );
