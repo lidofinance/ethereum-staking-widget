@@ -13,11 +13,7 @@ export const WalletQueueTooltip = () => {
     <QueuInfoStyled>
       <div>The overall amount of stETH in queue: </div>
       <DataWrapperStyled>
-        <FormatToken
-          amount={unfinalizedStETH.data}
-          symbol=""
-          style={{ marginLeft: 'auto' }}
-        />
+        <FormatToken amount={unfinalizedStETH.data} symbol="" />
       </DataWrapperStyled>
     </QueuInfoStyled>
   );
