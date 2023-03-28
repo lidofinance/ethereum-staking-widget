@@ -11,6 +11,7 @@ import {
   TxStageFail,
   TxStageBunker,
   TX_STAGE,
+  EtherscanTxLink,
 } from 'features/withdrawals/shared/tx-stage-modal';
 import { useRequestTxModal, useWithdrawals } from 'features/withdrawals/hooks';
 import { NFTBanner } from './nft-banner';
@@ -42,14 +43,16 @@ export const TxRequestModal = () => {
   const successDescription = useMemo(
     () => (
       <span>
-        Request withdrawal {amountAsString} {tokenName} has been send. Please
-        check {<Link href={claimPath}>Claim tab</Link>} to view your withdrawal
-        requests.
+        Request withdrawal for {amountAsString} {tokenName} has been sent.
+        {<br />}
+        Check {<Link href={claimPath}>Claim tab</Link>} to view your withdrawal
+        requests or view your transaction on{' '}
+        {<EtherscanTxLink txHash={txHash} text="Etherscan" />}
       </span>
     ),
-    [amountAsString, claimPath, tokenName],
+    [amountAsString, claimPath, tokenName, txHash],
   );
-  const successTitle = 'Withdrawal request has been send';
+  const successTitle = 'Withdrawal request has been sent';
 
   const pendingDescription = 'Awaiting block confirmation';
   const pendingTitle = `You are requesting withdrawal for ${amountAsString} ${tokenName}`;
@@ -77,6 +80,7 @@ export const TxRequestModal = () => {
             txHash={txHash}
             description={successDescription}
             title={successTitle}
+            showEtherscan={false}
           >
             <NFTBunnerWrapper>
               <NFTBanner />

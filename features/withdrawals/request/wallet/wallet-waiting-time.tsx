@@ -1,52 +1,20 @@
-import { Question, Tooltip } from '@lidofinance/lido-ui';
-
 import { CardBalance } from 'shared/wallet';
 import { Status } from 'features/withdrawals/shared';
 import { useWithdrawals, useRequestData } from 'features/withdrawals/hooks';
-import { FormatToken } from 'shared/formatters';
+
+import { WalletQueueTooltip } from './wallet-queue-tooltip';
 
 export const WalletWaitingTime = () => {
   const { withdrawalsStatus, isBunkerMode } = useWithdrawals();
-  const { unfinalizedRequests } = useRequestData();
-  const { unfinalizedStETH } = useRequestData();
-  const requestsCount = unfinalizedRequests.data?.toNumber();
+  const { unfinalizedStETH, unfinalizedRequests } = useRequestData();
 
-  const contentValue = isBunkerMode ? 'From 18 days' : '1 - 5 day(s)';
+  const contentValue = isBunkerMode ? 'Not estimated' : '1 - 5 day(s)';
   const content = <Status variant={withdrawalsStatus}>{contentValue}</Status>;
-
-  const tooltipTitle = (
-    <>
-      Waiting time depends on amount of stETH in withdraw and amount of
-      requests.
-      {unfinalizedStETH.data && (
-        <>
-          <br />
-          Current amount of stETH:{' '}
-          <FormatToken amount={unfinalizedStETH.data} symbol="" />
-        </>
-      )}
-      {requestsCount !== undefined && (
-        <>
-          <br />
-          Current amount of requests: {requestsCount}
-        </>
-      )}
-    </>
-  );
-
-  const timeTitle = (
-    <>
-      Waiting time{' '}
-      {
-        <Tooltip placement="bottom" title={tooltipTitle}>
-          <Question />
-        </Tooltip>
-      }
-    </>
-  );
 
   const isLoading =
     unfinalizedRequests.initialLoading || unfinalizedStETH.initialLoading;
+
+  const timeTitle = <>Waiting time {<WalletQueueTooltip />}</>;
 
   return (
     <CardBalance small title={timeTitle} loading={isLoading} value={content} />
