@@ -13,7 +13,7 @@ import {
 
 type RequestItemProps = InputHTMLAttributes<HTMLElement> & {
   status: 'pending' | 'ready' | 'loading';
-  label: string;
+  label?: string;
   outerStyle: ComponentProps<'div'>['style'];
   onSelectToken?: (tokenId: string, value: boolean) => void;
   tokenId: string;
