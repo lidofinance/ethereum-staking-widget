@@ -1,6 +1,6 @@
 export enum ErrorMessage {
   NOT_ENOUGH_ETHER = 'Not enough ether for gas.',
-  DENIED_SIG = 'User denied transaction signature.',
+  DENIED_SIG = 'User denied the transaction signature.',
   SOMETHING_WRONG = 'Something went wrong.',
   LIMIT_REACHED = 'Transaction could not be completed because stake limit is exhausted. Please wait until the stake limit restores and try again. Otherwise, you can swap your Ethereum on 1inch platform instantly.',
 }

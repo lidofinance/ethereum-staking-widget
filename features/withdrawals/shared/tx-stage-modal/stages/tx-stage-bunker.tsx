@@ -28,8 +28,8 @@ export const TxStageBunker: FC<TxStageFailProps> = (props) => {
       {currentIconDict[TX_STAGE.BUNKER]}
       <BoldText size="sm">Attention!</BoldText>
       <MiddleDescription size="xs" color="secondary">
-        Because of slashing, the withdrawal period will last longer than usual,
-        still request withdrawal?
+        Lido protocol is in “Bunker mode”, the withdrawal requests are slowed
+        down, still request withdrawa!?
       </MiddleDescription>
       <BottomButtons>
         <Button fullwidth onClick={onClose} color="secondary" size="sm">
