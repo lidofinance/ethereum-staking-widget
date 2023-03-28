@@ -43,7 +43,8 @@ export const TxRequestModal = () => {
   const successDescription = useMemo(
     () => (
       <span>
-        Request withdrawal {amountAsString} {tokenName} has been send. {<br />}
+        Request withdrawal for {amountAsString} {tokenName} has been send.
+        {<br />}
         Check {<Link href={claimPath}>Claim tab</Link>} to view your withdrawal
         requests or view your transaction on{' '}
         {<EtherscanTxLink txHash={txHash} text="Etherscan" />}
