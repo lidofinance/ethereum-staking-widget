@@ -23,6 +23,7 @@ const GlobalStyle = createGlobalStyle`
     min-height: calc(100vh - 150px);
   }
   a {
+    text-decoration: none;
     color: var(--lido-color-primary);
 
     &:hover {

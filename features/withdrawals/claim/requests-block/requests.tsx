@@ -14,13 +14,7 @@ type renderItemCallback = Props['renderItem'];
 
 const renderItemLoading: renderItemCallback = ({ index, style }) => {
   return (
-    <Request
-      tokenId={'0'}
-      outerStyle={style}
-      key={index}
-      label={''}
-      status={'loading'}
-    />
+    <Request tokenId={'0'} outerStyle={style} key={index} status={'loading'} />
   );
 };
 
