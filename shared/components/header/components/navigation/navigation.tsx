@@ -3,7 +3,6 @@ import { Wallet, Stake, Wrap, Withdraw } from '@lidofinance/lido-ui';
 import { useRouter } from 'next/router';
 import { dynamics } from 'config';
 
-import { LocalLink } from './local-link';
 import { Nav, NavLink } from './styles';
 
 const routes = [
@@ -30,7 +29,6 @@ const routes = [
     name: 'Rewards',
     path: '/rewards',
     icon: <Wallet />,
-    external: false,
   },
 ];
 export const Navigation: FC = memo(() => {
@@ -42,25 +40,16 @@ export const Navigation: FC = memo(() => {
 
   return (
     <Nav>
-      {routes.map(({ name, path, icon, external }) => {
-        return external ? (
-          <NavLink
-            key={path}
-            href={`${path}${queryString ? `?${queryString}` : ''}`}
-            active={router.pathname === path}
-          >
-            {icon}
-            <span>{name}</span>
-          </NavLink>
-        ) : (
-          <LocalLink key={path} href={path}>
-            <NavLink active={router.pathname === path}>
-              {icon}
-              <span>{name}</span>
-            </NavLink>
-          </LocalLink>
-        );
-      })}
+      {routes.map(({ name, path, icon }) => (
+        <NavLink
+          key={path}
+          href={`${path}${queryString ? `?${queryString}` : ''}`}
+          active={router.pathname === path}
+        >
+          {icon}
+          <span>{name}</span>
+        </NavLink>
+      ))}
     </Nav>
   );
 });

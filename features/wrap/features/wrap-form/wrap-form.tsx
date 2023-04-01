@@ -10,10 +10,6 @@ import { getTokenAddress, TOKENS } from '@lido-sdk/constants';
 import { useWeb3 } from '@reef-knot/web3-react';
 import { useSDK, useWSTETHBalance } from '@lido-sdk/react';
 import { parseEther } from '@ethersproject/units';
-import {
-  TransactionReceipt,
-  TransactionResponse,
-} from '@ethersproject/abstract-provider';
 import { TxStageModal, TX_OPERATION, TX_STAGE } from 'shared/components';
 import { useTxCostInUsd, useWstethBySteth } from 'shared/hooks';
 import {
@@ -32,6 +28,8 @@ const iconsMap = {
   [ETH]: <Eth />,
   [TOKENS.STETH]: <Steth />,
 };
+
+type ApproveWrapper = NonNullable<Parameters<typeof useApprove>['4']>;
 
 export const WrapForm: FC = memo(() => {
   const { account } = useWeb3();
@@ -72,12 +70,12 @@ export const WrapForm: FC = memo(() => {
     [chainId],
   );
 
-  const approveGasLimit = useApproveGasLimit();
   const oneSteth = useMemo(() => parseEther('1'), []);
 
-  const wrapGasLimit = useWrapGasLimit(selectedToken === ETH);
-
+  const approveGasLimit = useApproveGasLimit();
   const approveTxCostInUsd = useTxCostInUsd(approveGasLimit);
+
+  const wrapGasLimit = useWrapGasLimit(selectedToken === ETH);
   const wrapTxCostInUsd = useTxCostInUsd(wrapGasLimit);
 
   const oneWstethConverted = useWstethBySteth(oneSteth);
@@ -90,10 +88,8 @@ export const WrapForm: FC = memo(() => {
     setTxModalOpen(false);
   }, []);
 
-  const approveWrapper = useCallback(
-    async (
-      callback: () => Promise<TransactionResponse>,
-    ): Promise<TransactionReceipt | undefined> => {
+  const approveWrapper = useCallback<ApproveWrapper>(
+    async (callback) => {
       try {
         setTxStage(TX_STAGE.SIGN);
         openTxModal();
@@ -103,19 +99,18 @@ export const WrapForm: FC = memo(() => {
           callback,
         );
 
-        setTxHash(transaction.hash);
+        if (typeof transaction != 'string') setTxHash(transaction.hash);
         setTxStage(TX_STAGE.BLOCK);
         openTxModal();
 
-        const result = await runWithTransactionLogger(
+        await runWithTransactionLogger(
           'Approve block confirmation',
-          async () => transaction.wait(),
+          async () => typeof transaction != 'string' && transaction?.wait(),
         );
 
         setTxStage(TX_STAGE.SUCCESS);
         openTxModal();
 
-        return result;
         /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
       } catch (error: any) {
         console.error(error);

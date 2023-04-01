@@ -2,77 +2,85 @@ import { useCallback } from 'react';
 import { BigNumber } from 'ethers';
 
 import { TX_STAGE } from 'features/withdrawals/shared/tx-stage-modal';
-import { useClaimData, useClaimTxModal } from 'features/withdrawals/hooks';
+import { useClaimData } from 'features/withdrawals/contexts/claim-data-context';
 import { getErrorMessage, runWithTransactionLogger } from 'utils';
 
 import { useWithdrawalsContract } from './useWithdrawalsContract';
-import { ClaimableRequestStatus } from './useWithdrawalsData';
+import { RequestStatusClaimable } from 'features/withdrawals/types/request-status';
+import invariant from 'tiny-invariant';
+import { isContract } from 'utils/isContract';
+import { useWeb3 } from 'reef-knot';
+import { useSDK } from '@lido-sdk/react';
+import { useTransactionModal } from 'features/withdrawals/contexts/transaction-modal-context';
 
 export const useClaim = () => {
-  const { contractWeb3, contractRpc } = useWithdrawalsContract();
-  const { withdrawalRequestsData, ethToClaim } = useClaimData();
-  const {
-    setTxHash,
-    setTxStage,
-    openTxModal,
-    setRequestAmount,
-    setTxModalFailedText,
-  } = useClaimTxModal();
+  const { account } = useWeb3();
+  const { providerWeb3 } = useSDK();
+  const { contractWeb3 } = useWithdrawalsContract();
+  const { withdrawalRequestsData } = useClaimData();
+  const { dispatchModalState } = useTransactionModal();
 
   return useCallback(
-    async (requests: ClaimableRequestStatus[]) => {
-      if (!contractWeb3 || !contractRpc || !requests) return;
-      setRequestAmount(ethToClaim || BigNumber.from(0));
+    async (sortedRequests: RequestStatusClaimable[]) => {
+      try {
+        invariant(contractWeb3, 'must have contract');
+        invariant(sortedRequests, 'must have requests');
+        invariant(account, 'must have address');
+        invariant(providerWeb3, 'must have provider');
+        const isMultisig = await isContract(account, contractWeb3.provider);
 
-      const sortedRequests = [...requests].sort((aReq, bReq) =>
-        aReq.id.gt(bReq.id) ? 1 : -1,
-      );
-
-      const callback = () =>
-        contractWeb3.claimWithdrawals(
-          sortedRequests.map((r) => r.id),
-          sortedRequests.map((r) => r.hint),
+        const ethToClaim = sortedRequests.reduce(
+          (s, r) => s.add(r.claimableEth),
+          BigNumber.from(0),
         );
 
-      setTxStage(TX_STAGE.SIGN);
-      openTxModal();
+        dispatchModalState({
+          type: 'start',
+          flow: TX_STAGE.SIGN,
+          requestAmount: ethToClaim,
+          tokenName: null,
+        });
 
-      try {
+        const ids = sortedRequests.map((r) => r.id);
+        const hints = sortedRequests.map((r) => r.hint);
+        const callback = async () => {
+          if (isMultisig) {
+            const tx = await contractWeb3.populateTransaction.claimWithdrawals(
+              ids,
+              hints,
+            );
+            return providerWeb3.getSigner().sendUncheckedTransaction(tx);
+          } else return contractWeb3.claimWithdrawals(ids, hints);
+        };
+
         const transaction = await runWithTransactionLogger(
           'Claim signing',
           callback,
         );
 
-        setTxHash(transaction.hash);
-        setTxStage(TX_STAGE.BLOCK);
-        openTxModal();
+        const isTransaction = typeof transaction !== 'string';
 
-        await runWithTransactionLogger('Stake block confirmation', async () =>
-          transaction.wait(),
-        );
+        if (!isMultisig && isTransaction) {
+          dispatchModalState({ type: 'block', txHash: transaction.hash });
+          await runWithTransactionLogger('Claim block confirmation', async () =>
+            transaction.wait(),
+          );
+        }
         await withdrawalRequestsData.update();
-
-        setTxStage(TX_STAGE.SUCCESS);
-        openTxModal();
+        dispatchModalState({ type: 'success' });
       } catch (error) {
         console.error(error);
         const errorMessage = getErrorMessage(error);
-        setTxModalFailedText(errorMessage);
-        setTxStage(TX_STAGE.FAIL);
-        setTxHash(undefined);
-        openTxModal();
+        dispatchModalState({ type: 'error', errorText: errorMessage });
       }
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [
       contractWeb3,
-      contractRpc,
-      setRequestAmount,
-      ethToClaim,
-      setTxStage,
-      openTxModal,
-      setTxHash,
-      withdrawalRequestsData,
-      setTxModalFailedText,
+      account,
+      providerWeb3,
+      dispatchModalState,
+      withdrawalRequestsData.update,
     ],
   );
 };

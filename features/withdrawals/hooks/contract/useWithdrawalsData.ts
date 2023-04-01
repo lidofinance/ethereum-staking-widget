@@ -1,5 +1,6 @@
 import { BigNumber } from 'ethers';
 import { useLidoSWR } from '@lido-sdk/react';
+// import { useLidoShareRate } from 'features/withdrawals/hooks/contract/useLidoShareRate';
 
 import { useWithdrawalsContract } from './useWithdrawalsContract';
 import {
@@ -8,30 +9,28 @@ import {
   useMaxAmount,
   useMinAmount,
 } from './withdrawalsCalls';
-
-export type RequestStatus = {
-  amountOfStETH: BigNumber;
-  amountOfShares: BigNumber;
-  owner: string;
-  timestamp: BigNumber;
-  isFinalized: boolean;
-  isClaimed: boolean;
-  id: BigNumber;
-  stringId: string;
-};
-
-export type ClaimableRequestStatus = {
-  hint: BigNumber;
-  claimableEth: BigNumber;
-} & RequestStatus;
+import {
+  RequestStatus,
+  RequestStatusClaimable,
+  RequestStatusPending,
+} from 'features/withdrawals/types/request-status';
+import { MAX_SHOWN_REQUEST_PER_TYPE } from 'features/withdrawals/withdrawalsConstants';
+// import { calcExpectedRequestEth } from 'features/withdrawals/utils/calc-expected-request-eth';
 
 export const useWithdrawalRequests = () => {
   const { contractRpc, account, chainId } = useWithdrawalsContract();
+  // const { data: currentShareRate } = useLidoShareRate();
 
   return useLidoSWR(
+    // TODO: use this fragment for expected eth calculation
+    // currentShareRate
+    //   ? ['swr:withdrawals-requests', account, chainId, currentShareRate]
+    //   : false,
     ['swr:withdrawals-requests', account, chainId],
-    async (...args: string[]) => {
-      const account = args[1];
+    async (...args: unknown[]) => {
+      const account = args[1] as string;
+      // const currentShareRate = args[3] as BigNumber;
+
       const [requestIds, lastCheckpointIndex] = await Promise.all([
         contractRpc.getWithdrawalRequests(account),
         contractRpc.getLastCheckpointIndex(),
@@ -39,12 +38,10 @@ export const useWithdrawalRequests = () => {
       const requestStatuses = await contractRpc.getWithdrawalStatus(requestIds);
 
       const claimableRequests: RequestStatus[] = [];
-      const pendingRequests: RequestStatus[] = [];
-      const claimedRequests: RequestStatus[] = [];
+      const pendingRequests: RequestStatusPending[] = [];
 
       let pendingAmountOfStETH = BigNumber.from(0);
       let claimableAmountOfStETH = BigNumber.from(0);
-      let claimedAmountOfStETH = BigNumber.from(0);
 
       requestStatuses.forEach((request, index) => {
         const id = requestIds[index];
@@ -60,19 +57,22 @@ export const useWithdrawalRequests = () => {
             request.amountOfStETH,
           );
         } else if (!request.isFinalized) {
-          pendingRequests.push(req);
+          pendingRequests.push({
+            ...req,
+            expectedEth: req.amountOfStETH, // TODO: replace with calcExpectedRequestEth(req, currentShareRate),
+          });
           pendingAmountOfStETH = pendingAmountOfStETH.add(
-            request.amountOfStETH,
-          );
-        } else {
-          claimedRequests.push(req);
-          claimedAmountOfStETH = claimedAmountOfStETH.add(
             request.amountOfStETH,
           );
         }
 
         return req;
       });
+
+      let isClamped =
+        claimableRequests.splice(MAX_SHOWN_REQUEST_PER_TYPE).length > 0;
+      isClamped ||=
+        pendingRequests.splice(MAX_SHOWN_REQUEST_PER_TYPE).length > 0;
 
       /* Stress test
       let id = BigNumber.from(pendingRequests[pendingRequests.length - 1].id);
@@ -107,7 +107,7 @@ export const useWithdrawalRequests = () => {
       );
 
       let claimableAmountOfETH = BigNumber.from(0);
-      const sortedClaimableRequests: ClaimableRequestStatus[] =
+      const sortedClaimableRequests: RequestStatusClaimable[] =
         _sortedClaimableRequests.map((request, index) => {
           claimableAmountOfETH = claimableAmountOfETH.add(claimableEth[index]);
           return {
@@ -118,7 +118,6 @@ export const useWithdrawalRequests = () => {
         });
 
       return {
-        claimedRequests,
         pendingRequests,
         sortedClaimableRequests,
         pendingCount: pendingRequests.length,
@@ -126,8 +125,8 @@ export const useWithdrawalRequests = () => {
         claimedCount: claimableRequests.length,
         pendingAmountOfStETH,
         claimableAmountOfStETH,
-        claimedAmountOfStETH,
         claimableAmountOfETH,
+        isClamped,
       };
     },
   );

@@ -21,3 +21,5 @@ export * from './useERC20PermitSignature';
 export * from './useInputValidate';
 export * from './useAsyncMemo';
 export * from './useElementResize';
+export * from './useDebouncedValue';
+export * from './useIsContract';

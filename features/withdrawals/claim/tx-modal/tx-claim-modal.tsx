@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from 'react';
+import { useMemo } from 'react';
 import { formatBalance } from 'utils';
 
 import {
@@ -9,22 +9,18 @@ import {
   TxStageFail,
   TX_STAGE,
 } from 'features/withdrawals/shared/tx-stage-modal';
-import { useClaimTxModal } from 'features/withdrawals/hooks';
+import { useTransactionModal } from 'features/withdrawals/contexts/transaction-modal-context';
 
-export const TxRequestModal = () => {
+export const TxClaimModal = () => {
   const {
+    isModalOpen,
     txStage,
-    txHash,
-    txModalFailedText,
-    txModalOpen,
-    closeTxModal,
     requestAmount,
-    buttonRef,
-  } = useClaimTxModal();
-
-  const onRetry = useCallback(() => {
-    buttonRef?.current?.click();
-  }, [buttonRef]);
+    txHash,
+    errorText,
+    startTx,
+    dispatchModalState,
+  } = useTransactionModal();
 
   const amountAsString = useMemo(
     () => (requestAmount ? formatBalance(requestAmount, 4) : ''),
@@ -61,22 +57,33 @@ export const TxRequestModal = () => {
           />
         );
       case TX_STAGE.FAIL:
-        return <TxStageFail failedText={txModalFailedText} onClick={onRetry} />;
+        return (
+          <TxStageFail
+            failedText={errorText}
+            onClick={() => {
+              startTx && startTx();
+            }}
+          />
+        );
       default:
         return null;
     }
   }, [
-    onRetry,
+    errorText,
     pendingTitle,
     signTitle,
+    startTx,
     successTitle,
     txHash,
-    txModalFailedText,
     txStage,
   ]);
 
   return (
-    <TxStageModal open={txModalOpen} onClose={closeTxModal} txStage={txStage}>
+    <TxStageModal
+      open={isModalOpen}
+      onClose={() => dispatchModalState({ type: 'close_modal' })}
+      txStage={txStage}
+    >
       {content}
     </TxStageModal>
   );

@@ -12,7 +12,7 @@ import {
 import { TX_STAGE } from '../types';
 
 type TxStageSuccessProps = {
-  txHash?: string;
+  txHash: string | null;
   description: React.ReactNode;
   title: string;
   showEtherscan?: boolean;
@@ -31,7 +31,7 @@ export const TxStageSuccess: FC<TxStageSuccessProps> = (props) => {
       <MiddleDescription size="xs" color="secondary">
         {description}
       </MiddleDescription>
-      {showEtherscan && (
+      {showEtherscan && txHash && (
         <BottomDescription size="xxs" color="secondary">
           <EtherscanTxLink txHash={txHash} />
         </BottomDescription>

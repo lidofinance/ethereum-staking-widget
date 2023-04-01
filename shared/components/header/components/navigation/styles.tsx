@@ -1,5 +1,9 @@
 import styled, { css } from 'styled-components';
 
+export const NAV_MOBILE_MAX_WIDTH = 880;
+export const NAV_MOBILE_MEDIA = `@media screen and (max-width: ${NAV_MOBILE_MAX_WIDTH}px)`;
+export const NAV_MOBILE_HEIGHT = 60;
+
 export const desktopCss = css`
   margin: 0 46px;
   display: flex;
@@ -21,6 +25,7 @@ const mobileCss = css`
   justify-content: space-around;
   align-items: center;
   border-top: 1px solid var(--lido-color-border);
+  height: ${NAV_MOBILE_HEIGHT}px;
 
   svg {
     margin-right: 0;
@@ -30,7 +35,8 @@ const mobileCss = css`
 
 export const Nav = styled.div`
   ${desktopCss}
-  ${({ theme }) => theme.mediaQueries.lg} {
+  // mobile kicks in on a bit higher width for nav
+  ${NAV_MOBILE_MEDIA} {
     ${mobileCss}
   }
   z-index: 6;
@@ -69,7 +75,7 @@ export const NavLink = styled.a<{ active: boolean }>`
       active ? `var(--lido-color-primary)` : `var(--lido-color-secondary)`};
   }
 
-  ${({ theme }) => theme.mediaQueries.lg} {
+  ${NAV_MOBILE_MEDIA} {
     flex-direction: column;
     text-transform: none;
     font-weight: 500;

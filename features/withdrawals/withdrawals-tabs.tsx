@@ -1,32 +1,42 @@
-import { RequestDataProvider } from './providers/request-data-provider';
-import RequestTxModalProvider from './providers/request-tx-modal-provider';
-import { ClaimDataProvider } from './providers/claim-data-provider';
-import ClaimTxModalProvider from './providers/claim-tx-modal-provider';
-import { useWithdrawals } from './hooks';
-import { RequestForm, RequestWallet } from './request';
-import { ClaimForm, ClaimWallet } from './claim';
+import { Switch } from 'shared/components';
 import { RequestFaq } from 'features/withdrawals/withdrawals-faq/request-faq';
 import { ClaimFaq } from 'features/withdrawals/withdrawals-faq/claim-faq';
 
-export const WithdrawalsTabs = () => {
-  const { isClaimTab } = useWithdrawals();
+import { RequestDataProvider } from './providers/request-data-provider';
+import { TransactionModalProvider } from './contexts/transaction-modal-context';
+import { ClaimDataProvider } from './contexts/claim-data-context';
+import { useWithdrawals } from './hooks';
+import { RequestForm, RequestWallet } from './request';
+import { ClaimForm, ClaimWallet } from './claim';
+import { TxRequestModal } from './request/tx-modal/tx-request-modal';
+import { TxClaimModal } from './claim/tx-modal/tx-claim-modal';
 
+export const WithdrawalsTabs = () => {
+  const { navRoutes, isClaimTab } = useWithdrawals();
   return (
     <ClaimDataProvider>
+      <Switch checked={isClaimTab} routes={navRoutes} />
       <RequestDataProvider>
-        {isClaimTab ? (
-          <ClaimTxModalProvider>
-            <ClaimWallet />
-            <ClaimForm />
-            <ClaimFaq />
-          </ClaimTxModalProvider>
-        ) : (
-          <RequestTxModalProvider>
-            <RequestWallet />
-            <RequestForm />
-            <RequestFaq />
-          </RequestTxModalProvider>
-        )}
+        {/* We reuse provider but make sure these are different components for tabs */}
+        <TransactionModalProvider
+          key={isClaimTab ? 'CLAIM_PROVIDER' : 'REQeUST_PROVIDER'}
+        >
+          {isClaimTab ? (
+            <>
+              <ClaimWallet />
+              <ClaimForm />
+              <ClaimFaq />
+              <TxClaimModal />
+            </>
+          ) : (
+            <>
+              <RequestWallet />
+              <RequestForm />
+              <RequestFaq />
+              <TxRequestModal />
+            </>
+          )}
+        </TransactionModalProvider>
       </RequestDataProvider>
     </ClaimDataProvider>
   );

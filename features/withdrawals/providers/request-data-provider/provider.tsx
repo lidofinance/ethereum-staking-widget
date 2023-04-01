@@ -7,10 +7,10 @@ import {
 import { BigNumber } from 'ethers';
 
 import {
-  useClaimData,
   useUnfinalizedRequests,
   useUnfinalizedStETH,
 } from 'features/withdrawals/hooks';
+import { useClaimData } from 'features/withdrawals/contexts/claim-data-context';
 
 import {
   useRequestOptions,
