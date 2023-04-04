@@ -17,6 +17,10 @@ import {
   getErrorMessage,
   runWithTransactionLogger,
 } from 'utils';
+import {
+  TransactionReceipt,
+  TransactionResponse,
+} from '@ethersproject/abstract-provider';
 import { FormatToken } from 'shared/formatters';
 import { useApproveGasLimit, useWrapGasLimit } from './hooks';
 import { useApprove } from 'shared/hooks/useApprove';
@@ -28,8 +32,6 @@ const iconsMap = {
   [ETH]: <Eth />,
   [TOKENS.STETH]: <Steth />,
 };
-
-type ApproveWrapper = NonNullable<Parameters<typeof useApprove>['4']>;
 
 export const WrapForm: FC = memo(() => {
   const { account } = useWeb3();
@@ -88,8 +90,10 @@ export const WrapForm: FC = memo(() => {
     setTxModalOpen(false);
   }, []);
 
-  const approveWrapper = useCallback<ApproveWrapper>(
-    async (callback) => {
+  const approveWrapper = useCallback(
+    async (
+      callback: () => Promise<TransactionResponse>,
+    ): Promise<TransactionReceipt | undefined> => {
       try {
         setTxStage(TX_STAGE.SIGN);
         openTxModal();
@@ -99,17 +103,19 @@ export const WrapForm: FC = memo(() => {
           callback,
         );
 
-        if (typeof transaction != 'string') setTxHash(transaction.hash);
+        setTxHash(transaction.hash);
         setTxStage(TX_STAGE.BLOCK);
         openTxModal();
 
-        await runWithTransactionLogger(
+        const result = await runWithTransactionLogger(
           'Approve block confirmation',
-          async () => typeof transaction != 'string' && transaction?.wait(),
+          async () => transaction.wait(),
         );
 
         setTxStage(TX_STAGE.SUCCESS);
         openTxModal();
+
+        return result;
 
         /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
       } catch (error: any) {
