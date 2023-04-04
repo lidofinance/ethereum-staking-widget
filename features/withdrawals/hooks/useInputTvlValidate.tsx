@@ -15,8 +15,6 @@ export const useInputTvlValidate = (inputValue: string) => {
   const query = { ref: ref as string, embed: embed as string };
   const searchParam = new URLSearchParams(omitBy(query, isEmpty)).toString();
 
-  const stakePath = `/${searchParam ? `?${searchParam}` : ''}`;
-
   const diff =
     (stethTotalSupply.data &&
       parseEther(inputValue || '0').sub(stethTotalSupply.data)) ||
@@ -31,6 +29,12 @@ export const useInputTvlValidate = (inputValue: string) => {
         stake more?
       </>
     ) : undefined;
+
+  const stakePath = `/${
+    searchParam
+      ? `?${searchParam}&amount=${diff.toString()}`
+      : `?amount=${inputValue.toString()}`
+  }`;
 
   const stakeButton = (
     <Button
