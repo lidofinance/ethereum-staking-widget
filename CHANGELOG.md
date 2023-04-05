@@ -1,3 +1,47 @@
+# [1.58.0](https://github.com/lidofinance/staking-widget-ts/compare/1.57.0...1.58.0) (2023-04-05)
+
+
+### Bug Fixes
+
+* change useSDK to useWeb3 for chainId ([4ff65c2](https://github.com/lidofinance/staking-widget-ts/commit/4ff65c2bbaaeff7d65cb9824715bd8b6ddc0bf31))
+* delete inline style ([d6d04ed](https://github.com/lidofinance/staking-widget-ts/commit/d6d04ed8316878f30dc554a34120f392e8214ef3))
+* fix bunker modal mobile style ([83e530c](https://github.com/lidofinance/staking-widget-ts/commit/83e530c8b3f7ef7677b6238b21ba8d50eb06354c))
+* fix navigation links ([cb1877b](https://github.com/lidofinance/staking-widget-ts/commit/cb1877b12aa1b6957d15713c0c9274ca28c2c6c4))
+* fix not connected wallet in header ([f102c4e](https://github.com/lidofinance/staking-widget-ts/commit/f102c4ecc0e362bd1e289d7e260158ab2c96a072))
+* fix text ([32ff562](https://github.com/lidofinance/staking-widget-ts/commit/32ff562cfeecffb3bf2cdecbf6597659743c7a5b))
+* fix text ([69d8e69](https://github.com/lidofinance/staking-widget-ts/commit/69d8e694aa479e8706e7b43e23f341bb0e19d346))
+* fix text ([6dcf68a](https://github.com/lidofinance/staking-widget-ts/commit/6dcf68ae0e346d89f2cd9e1c29ddaf29971fe583))
+* fix tooltip amount, fix input token name ([e357c00](https://github.com/lidofinance/staking-widget-ts/commit/e357c00d8e69cb3e88c9f2435c675b6befe3ee20))
+* fixes after regression tests ([ff01e94](https://github.com/lidofinance/staking-widget-ts/commit/ff01e947bf5fa3ea426c57637ceae1eab7f500f7))
+* hide eth amount symbol ([31dc34f](https://github.com/lidofinance/staking-widget-ts/commit/31dc34f8889d58a46604f4bdae74a2e5ec3d6821))
+* refactoring wsteth calc hook ([6be5510](https://github.com/lidofinance/staking-widget-ts/commit/6be5510214c65761855e52459bd0b85bce38f437))
+* remove zhejiang fallback ([c16239c](https://github.com/lidofinance/staking-widget-ts/commit/c16239c78235f58da3e9242f563db744650a8c1d))
+* request prop type ([efebad9](https://github.com/lidofinance/staking-widget-ts/commit/efebad9b3c129f0c3628c1912224b9d2fe86da11))
+* update text, request style ([55a5aeb](https://github.com/lidofinance/staking-widget-ts/commit/55a5aeb59a6e715c86f37077eb4401ab655d6195))
+* withdrawals faq improvements ([3b904f0](https://github.com/lidofinance/staking-widget-ts/commit/3b904f0d474de338ba68325b799f9fd3f7ccf555))
+* withdrawals faq text ([9ebc785](https://github.com/lidofinance/staking-widget-ts/commit/9ebc78548777d7492d10dd09712740a288b817c6))
+
+
+### Features
+
+* add calc fiat price, validate max input number, info message for requests count ([906619e](https://github.com/lidofinance/staking-widget-ts/commit/906619e1a6bfe4f322f04e54a83ab652e6bf203a))
+* add calc wsteth ([5e5873a](https://github.com/lidofinance/staking-widget-ts/commit/5e5873af808033646d333e309f685ee0c29fd348))
+* add links to FAQ ([9a1700f](https://github.com/lidofinance/staking-widget-ts/commit/9a1700fe5cbc18431503d3915085adce3d37b597))
+* add show error if wallet connected ([3c50b74](https://github.com/lidofinance/staking-widget-ts/commit/3c50b74f8d51c957edefd2f17cdd42ea0f144d47))
+* change nft banner ([b1b4c0b](https://github.com/lidofinance/staking-widget-ts/commit/b1b4c0be49f8a520b0ea0d2fad5cc2dcc3977149))
+* change request tab info text ([4fbb2d8](https://github.com/lidofinance/staking-widget-ts/commit/4fbb2d8543c099085b81eff470251d190eb54fc1))
+* claim faq ([21a0991](https://github.com/lidofinance/staking-widget-ts/commit/21a099156cd5e7206b83f8d4699bf92054d338f6))
+* hide requests list on request tab ([da6dda8](https://github.com/lidofinance/staking-widget-ts/commit/da6dda8d7fb321e00ac3ac2483cae2dd5fbe1eaf))
+* show calc data for any input value ([d20e53d](https://github.com/lidofinance/staking-widget-ts/commit/d20e53d9583627e371ad77f582948e8c4477c646))
+* update bunker mode text ([2d0c50e](https://github.com/lidofinance/staking-widget-ts/commit/2d0c50e61321ee009c20c1493b25a6c43427696e))
+* update queu tooltip style ([4a52fc3](https://github.com/lidofinance/staking-widget-ts/commit/4a52fc3a744ebf4b67300b8f357be50839262e31))
+* update text, change nft banner ([7ba5e9e](https://github.com/lidofinance/staking-widget-ts/commit/7ba5e9e9dc2210482aeab164a260afce31984437))
+* withdrawals faq ([6b70369](https://github.com/lidofinance/staking-widget-ts/commit/6b703690ba53ca495f96df7ded40971a236759d6))
+* withdrawals faq links and dynamic data ([5acc97e](https://github.com/lidofinance/staking-widget-ts/commit/5acc97e928c7b1aebb4dd17cbd71a6b133857df9))
+* withdrawals faq texts update ([a5128e5](https://github.com/lidofinance/staking-widget-ts/commit/a5128e5dee56d50e04aeadae27a449f95ff5c1bc))
+
+
+
 # [1.57.0](https://github.com/lidofinance/staking-widget-ts/compare/1.56.0...1.57.0) (2023-03-14)
 
 
@@ -160,10 +204,6 @@
 ### Features
 
 * reef-knot v0.5.2 ([9078621](https://github.com/lidofinance/staking-widget-ts/commit/9078621816116e5ba3f3645b87d1fc8788bd96cc))
-
-
-
-## [1.49.1](https://github.com/lidofinance/staking-widget-ts/compare/1.49.0...1.49.1) (2023-01-24)
 
 
 
