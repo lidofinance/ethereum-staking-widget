@@ -13,5 +13,5 @@ export const rpcUrls: Record<CHAINS, [string, ...string[]]> = {
     `https://eth-goerli.alchemyapi.io/v2/${alchemyApiKey}`,
     `https://goerli.infura.io/v3/${infuraApiKey}`,
   ],
-  1337803: ['https://rpc.zhejiang.ethpandaops.io'],
+  [CHAINS.Zhejiang]: ['https://rpc.zhejiang.ethpandaops.io'],
 };
