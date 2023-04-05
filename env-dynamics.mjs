@@ -18,14 +18,12 @@ const toBoolean = (dataStr) => {
 /** @type string */
 export const matomoHost = process.env.MATOMO_URL;
 /** @type number */
-// TODO: remove this fallback
-export const defaultChain =
-  parseInt(`${process.env.DEFAULT_CHAIN},1337803`, 10) || 1;
+export const defaultChain = parseInt(process.env.DEFAULT_CHAIN, 10) || 1;
 /** @type number[] */
-// TODO: remove this fallback
-export const supportedChains = `${process.env?.SUPPORTED_CHAINS},1337803`
-  ?.split(',')
-  .map((chainId) => parseInt(chainId, 10)) ?? [1, 4, 5, 1337803];
+
+export const supportedChains = process.env?.SUPPORTED_CHAINS?.split(',').map(
+  (chainId) => parseInt(chainId, 10),
+) ?? [1, 4, 5];
 /** @type boolean */
 export const enableQaHelpers = toBoolean(process.env.ENABLE_QA_HELPERS);
 /** @type string */
