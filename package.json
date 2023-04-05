@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "build:analyze": "ANALYZE_BUNDLE=true next build",
     "start": "NODE_OPTIONS='-r next-logger' next start",
     "lint": "eslint --ext ts,tsx,js,mjs .",
     "lint:fix": "yarn lint --fix",
@@ -80,6 +81,7 @@
   },
   "devDependencies": {
     "@commitlint/cli": "^17.3.0",
+    "@next/bundle-analyzer": "^13.2.4",
     "@commitlint/config-conventional": "^17.3.0",
     "@commitlint/prompt": "^17.3.0",
     "@playwright/test": "^1.29.2",

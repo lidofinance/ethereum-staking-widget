@@ -1,3 +1,4 @@
+import NextBundleAnalyzer from '@next/bundle-analyzer';
 import buildDynamics from './scripts/build-dynamics.mjs';
 
 buildDynamics();
@@ -28,6 +29,8 @@ const subgraphRequestTimeout = process.env.SUBGRAPH_REQUEST_TIMEOUT;
 
 const metricsPort = process.env.METRICS_PORT ?? 3001;
 
+const analyzeBundle = process.env.ANALYZE_BUNDLE ?? false;
+
 // rate limit
 const rateLimit = process.env.RATE_LIMIT || 100;
 const rateLimitTimeFrame = process.env.RATE_LIMIT_TIME_FRAME || 60; // 1 minute;
@@ -37,7 +40,11 @@ const rewardsBackendAPI = process.env.REWARDS_BACKEND;
 // TODO
 const defaultChain = `${process.env.DEFAULT_CHAIN},1337803`;
 
-export default {
+const withBundleAnalyzer = NextBundleAnalyzer({
+  enabled: analyzeBundle,
+});
+
+export default withBundleAnalyzer({
   basePath,
   eslint: {
     ignoreDuringBuilds: true,
@@ -116,4 +123,4 @@ export default {
     rewardsBackendAPI,
     defaultChain,
   },
-};
+});
