@@ -17,3 +17,6 @@ export {
 } from './tx-stage-modal/tx-stage-modal';
 export { TooltipHoverable } from './tooltip-hoverable/tooltip-hoverable';
 export { MatomoLink } from './matomo-link/matomo-link';
+export { InfoBox } from './info-box/info-box';
+export { Switch } from './switch/switch';
+export { Banner } from './banner/banner';

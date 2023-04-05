@@ -34,7 +34,8 @@ const rateLimitTimeFrame = process.env.RATE_LIMIT_TIME_FRAME || 60; // 1 minute;
 
 const rewardsBackendAPI = process.env.REWARDS_BACKEND;
 
-const defaultChain = process.env.DEFAULT_CHAIN;
+// TODO
+const defaultChain = `${process.env.DEFAULT_CHAIN},1337803`;
 
 export default {
   basePath,

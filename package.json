@@ -16,25 +16,30 @@
     "test:e2e": "playwright test"
   },
   "dependencies": {
-    "@lido-sdk/constants": "^1.6.0",
-    "@lido-sdk/contracts": "^2.0.0",
-    "@lido-sdk/fetch": "^2.1.0",
-    "@lido-sdk/helpers": "^1.4.3",
-    "@lido-sdk/providers": "^1.4.4",
-    "@lido-sdk/react": "^1.18.1",
+    "@ethersproject/bignumber": "^5.7.0",
+    "@ethersproject/bytes": "^5.7.0",
+    "@ethersproject/constants": "^5.7.0",
+    "@ethersproject/contracts": "^5.7.0",
+    "@ethersproject/units": "^5.7.0",
+    "@lido-sdk/constants": "^1.9.0",
+    "@lido-sdk/contracts": "^2.0.4",
+    "@lido-sdk/fetch": "^2.1.5",
+    "@lido-sdk/helpers": "^1.4.7",
+    "@lido-sdk/providers": "^1.4.8",
+    "@lido-sdk/react": "1.18.5",
     "@lidofinance/analytics-matomo": "^0.8.0",
     "@lidofinance/api-logger": "^0.0.4",
     "@lidofinance/api-metrics": "^0.0.4",
-    "@lidofinance/api-rpc": "^0.0.6",
+    "@lidofinance/api-rpc": "^0.17.0",
     "@lidofinance/eth-api-providers": "^0.0.4",
     "@lidofinance/eth-providers": "^0.0.3",
-    "@lidofinance/lido-ui": "3.1.0",
+    "@lidofinance/lido-ui": "^3.3.1",
     "@lidofinance/lido-ui-blocks": "2.10.2",
     "@lidofinance/next-api-wrapper": "^0.16.0",
     "@lidofinance/next-cache-files-middleware": "^0.13.0",
     "@lidofinance/next-ip-rate-limit": "^0.13.0",
     "@lidofinance/next-pages": "^0.13.0",
-    "@lidofinance/rpc": "^0.0.5",
+    "@lidofinance/rpc": "^0.17.0",
     "@types/cors": "^2.8.12",
     "@types/js-cookie": "^3.0.0",
     "@types/ms": "^0.7.31",
@@ -64,7 +69,7 @@
     "react-dom": "17.0.2",
     "react-is": "^17.0.2",
     "react-transition-group": "^4.4.2",
-    "reef-knot": "0.5.2",
+    "reef-knot": "^0.5.2",
     "remark": "^13.0.0",
     "remark-external-links": "^8.0.0",
     "remark-html": "^13.0.1",
@@ -107,6 +112,9 @@
     "typescript": "^4.9.4",
     "url-loader": "^4.1.1"
   },
+  "resolutions": {
+    "@lido-sdk/constants": "^1.9.0"
+  },
   "lint-staged": {
     "./**/*.{ts,tsx}": [
       "eslint --ignore-path .gitignore --max-warnings=0"
@@ -114,8 +122,5 @@
     "./**/*.{ts,tsx,css,md,json}": [
       "prettier --write"
     ]
-  },
-  "resolutions": {
-    "@types/react": "17.0.43"
   }
 }

@@ -8,17 +8,24 @@
  * @returns {Boolean}
  */
 const toBoolean = (dataStr) => {
-  return !!(dataStr?.toLowerCase?.() === 'true' || dataStr === true || Number.parseInt(dataStr, 10) === 1);
+  return !!(
+    dataStr?.toLowerCase?.() === 'true' ||
+    dataStr === true ||
+    Number.parseInt(dataStr, 10) === 1
+  );
 };
 
 /** @type string */
 export const matomoHost = process.env.MATOMO_URL;
 /** @type number */
-export const defaultChain = parseInt(process.env.DEFAULT_CHAIN, 10) || 1;
+// TODO: remove this fallback
+export const defaultChain =
+  parseInt(`${process.env.DEFAULT_CHAIN},1337803`, 10) || 1;
 /** @type number[] */
-export const supportedChains = process.env?.SUPPORTED_CHAINS?.split(',').map(
-  (chainId) => parseInt(chainId, 10),
-) ?? [1, 4, 5];
+// TODO: remove this fallback
+export const supportedChains = `${process.env?.SUPPORTED_CHAINS},1337803`
+  ?.split(',')
+  .map((chainId) => parseInt(chainId, 10)) ?? [1, 4, 5, 1337803];
 /** @type boolean */
 export const enableQaHelpers = toBoolean(process.env.ENABLE_QA_HELPERS);
 /** @type string */

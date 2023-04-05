@@ -10,10 +10,6 @@ import { getTokenAddress, TOKENS } from '@lido-sdk/constants';
 import { useWeb3 } from '@reef-knot/web3-react';
 import { useSDK, useWSTETHBalance } from '@lido-sdk/react';
 import { parseEther } from '@ethersproject/units';
-import {
-  TransactionReceipt,
-  TransactionResponse,
-} from '@ethersproject/abstract-provider';
 import { TxStageModal, TX_OPERATION, TX_STAGE } from 'shared/components';
 import { useTxCostInUsd, useWstethBySteth } from 'shared/hooks';
 import {
@@ -21,6 +17,10 @@ import {
   getErrorMessage,
   runWithTransactionLogger,
 } from 'utils';
+import {
+  TransactionReceipt,
+  TransactionResponse,
+} from '@ethersproject/abstract-provider';
 import { FormatToken } from 'shared/formatters';
 import { useApproveGasLimit, useWrapGasLimit } from './hooks';
 import { useApprove } from 'shared/hooks/useApprove';
@@ -72,12 +72,12 @@ export const WrapForm: FC = memo(() => {
     [chainId],
   );
 
-  const approveGasLimit = useApproveGasLimit();
   const oneSteth = useMemo(() => parseEther('1'), []);
 
-  const wrapGasLimit = useWrapGasLimit(selectedToken === ETH);
-
+  const approveGasLimit = useApproveGasLimit();
   const approveTxCostInUsd = useTxCostInUsd(approveGasLimit);
+
+  const wrapGasLimit = useWrapGasLimit(selectedToken === ETH);
   const wrapTxCostInUsd = useTxCostInUsd(wrapGasLimit);
 
   const oneWstethConverted = useWstethBySteth(oneSteth);
@@ -116,6 +116,7 @@ export const WrapForm: FC = memo(() => {
         openTxModal();
 
         return result;
+
         /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
       } catch (error: any) {
         console.error(error);

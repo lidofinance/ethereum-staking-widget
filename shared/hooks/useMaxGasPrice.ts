@@ -1,31 +1,38 @@
-import { useSDK } from '@lido-sdk/react';
-import { ONE_GWEI } from 'config';
+import { CHAINS } from '@lido-sdk/constants';
+import { getStaticRpcBatchProvider } from '@lido-sdk/providers';
+import { useLidoSWR } from '@lido-sdk/react';
+import { useWeb3 } from '@reef-knot/web3-react';
+import { getBackendRPCPath, ONE_GWEI } from 'config';
+
 import { BigNumber } from 'ethers';
-import { useCallback, useEffect, useState } from 'react';
 
-// https://github.com/ethereum/EIPs/blob/master/EIPS/eip-1559.md
+// TODO: rewrite to use our own getFeeData
+// provider.getFeeData() has very cranky placeholder implementation in ethers.js
+// that has bad defaults and overprices txs
+// source:
+// https://github.com/ethers-io/ethers.js/blob/9373864742c179ba69c08c4f0c0661fdf78f8f63/src.ts/providers/abstract-provider.ts#L704
+//
 export const useMaxGasPrice = (): BigNumber | undefined => {
-  const [gasPrice, setGasPrice] = useState<BigNumber>();
-  const { providerRpc } = useSDK();
-
-  const getGasPrice = useCallback(async () => {
-    if (providerRpc) {
+  const { chainId } = useWeb3();
+  const { data: maxGasPrice } = useLidoSWR(
+    ['swr:max-gas-price', chainId],
+    async () => {
       try {
-        const feeData = await providerRpc.getFeeData();
-        const maxGasPrice = feeData.maxFeePerGas ?? undefined;
-
-        const gasPrice = await providerRpc.getGasPrice();
-        setGasPrice(maxGasPrice || gasPrice);
+        const provider = getStaticRpcBatchProvider(
+          chainId as CHAINS,
+          getBackendRPCPath(chainId as CHAINS),
+        );
+        const feeData = await provider.getFeeData();
+        const maxGasPrice = feeData.maxFeePerGas;
+        if (maxGasPrice) return maxGasPrice;
+        return await provider.getGasPrice();
       } catch (e) {
         console.error(e);
-        setGasPrice(ONE_GWEI);
       }
-    }
-  }, [providerRpc]);
+      return ONE_GWEI;
+    },
+    { isPaused: () => !chainId },
+  );
 
-  useEffect(() => {
-    getGasPrice();
-  }, [getGasPrice]);
-
-  return gasPrice;
+  return maxGasPrice;
 };

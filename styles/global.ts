@@ -5,6 +5,14 @@ const GlobalStyle = createGlobalStyle`
     margin: 0;
     padding: 0;
   }
+  *,
+  *:before,
+  *:after {
+    box-sizing: border-box;
+  }
+  svg {
+    box-sizing: content-box;
+  }
   html,
   body {
     width: 100%;
@@ -23,6 +31,7 @@ const GlobalStyle = createGlobalStyle`
     min-height: calc(100vh - 150px);
   }
   a {
+    text-decoration: none;
     color: var(--lido-color-primary);
 
     &:hover {

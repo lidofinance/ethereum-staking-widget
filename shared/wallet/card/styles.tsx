@@ -46,6 +46,7 @@ export const WalletCardTitleStyle = styled.div`
   flex-direction: row;
   justify-content: flex-start;
   align-items: center;
+  line-height: 24px;
 `;
 
 export const WalletCardValueStyle = styled.div<{ $small: boolean }>`
