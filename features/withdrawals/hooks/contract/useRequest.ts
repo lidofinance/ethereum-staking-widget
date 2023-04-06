@@ -8,7 +8,11 @@ import {
   useERC20PermitSignature,
   useIsContract,
 } from 'shared/hooks';
-import { useRequestData, useWithdrawals } from 'features/withdrawals/hooks';
+import {
+  useRequestData,
+  useWithdrawals,
+  useWithdrawalsApprove,
+} from 'features/withdrawals/hooks';
 import { getErrorMessage, runWithTransactionLogger } from 'utils';
 
 import { useWithdrawalsContract } from './useWithdrawalsContract';
@@ -17,7 +21,6 @@ import { isContract } from 'utils/isContract';
 import { useSDK } from '@lido-sdk/react';
 
 import { useTransactionModal } from 'features/withdrawals/contexts/transaction-modal-context';
-import { useApprove } from 'shared/hooks/useApprove';
 import { useWeb3 } from 'reef-knot';
 import { parseEther } from '@ethersproject/units';
 import { useToken } from 'features/withdrawals/request/form/useToken';
@@ -251,7 +254,7 @@ export const useWithdrawalRequest = ({
     needsApprove,
     allowance,
     loading: loadingUseApprove,
-  } = useApprove(
+  } = useWithdrawalsApprove(
     valueBN,
     tokenContract?.address ?? '',
     withdrawalContractWeb3?.address ?? '',
