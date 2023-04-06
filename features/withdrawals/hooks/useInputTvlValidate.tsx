@@ -1,3 +1,5 @@
+import { useMemo } from 'react';
+import { useWeb3 } from 'reef-knot';
 import { Button } from '@lidofinance/lido-ui';
 import { useSTETHTotalSupply } from '@lido-sdk/react';
 import { useRouter } from 'next/router';
@@ -7,7 +9,6 @@ import omitBy from 'lodash/omitBy';
 import isEmpty from 'lodash/isEmpty';
 
 import { shortenTokenValue } from 'utils';
-import { useMemo } from 'react';
 
 const texts: Record<string, (amount: string) => string> = {
   '1': (amount) =>
@@ -31,22 +32,23 @@ const getText = () => {
 };
 
 export const useInputTvlValidate = (inputValue: string) => {
+  const { active } = useWeb3();
   const stethTotalSupply = useSTETHTotalSupply();
   const router = useRouter();
   const { ref, embed } = router.query;
   const query = { ref: ref as string, embed: embed as string };
   const searchParam = new URLSearchParams(omitBy(query, isEmpty)).toString();
+  const canCalc = !!(active && stethTotalSupply.data);
 
   const diff =
-    (stethTotalSupply.data &&
-      parseEther(inputValue || '0').sub(stethTotalSupply.data)) ||
+    (canCalc &&
+      parseEther(inputValue || '0').sub(stethTotalSupply.data || '0')) ||
     BigNumber.from(0);
 
   // To render one text per page before refresh
   const text = useMemo(() => getText(), []);
   const tvlMessage =
-    stethTotalSupply.data &&
-    parseEther(inputValue || '0').gt(stethTotalSupply.data)
+    canCalc && parseEther(inputValue || '0').gt(stethTotalSupply.data || '0')
       ? text(shortenTokenValue(Number(Number(formatEther(diff)))))
       : undefined;
 

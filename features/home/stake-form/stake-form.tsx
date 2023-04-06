@@ -149,6 +149,8 @@ export const StakeForm: FC = memo(() => {
 
   // Delete amount from query params  after using in form
   useEffect(() => {
+    if (!router.isReady) return;
+
     const query = { ...router.query };
     delete query.amount;
     router.replace(
@@ -160,7 +162,7 @@ export const StakeForm: FC = memo(() => {
       { shallow: true },
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [router.isReady]);
 
   return (
     <Block>
