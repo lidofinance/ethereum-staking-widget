@@ -16,6 +16,7 @@ import {
   useSplitRequest,
   useWithdrawalsConstants,
   useWithdrawalRequest,
+  useInputTvlValidate,
 } from 'features/withdrawals/hooks';
 import { iconsMap } from 'features/withdrawals/providers/withdrawals-provider/provider';
 import { useRequestTxPrice } from 'features/withdrawals/hooks/useWithdrawTxPrice';
@@ -48,6 +49,8 @@ export const Form = () => {
   } = useWithdrawalRequest({ value: inputValue });
   const { minAmount } = useWithdrawalsConstants();
   const { active } = useWeb3();
+  const { tvlMessage, stakeButton } = useInputTvlValidate(inputValue);
+
   useEffect(() => {
     setInputValue('');
   }, [token]);
@@ -78,7 +81,9 @@ export const Form = () => {
     [request, requests],
   );
 
-  const rightDecorator = (
+  const rightDecorator = tvlMessage ? (
+    stakeButton
+  ) : (
     <>
       <Button
         size="xxs"
@@ -93,11 +98,15 @@ export const Form = () => {
     </>
   );
 
-  const showError = active && !!error;
+  const showError = active && !!error && !tvlMessage;
 
   return (
     <form method="post" onSubmit={onSubmit}>
-      <InputGroupStyled fullwidth error={showError && error}>
+      <InputGroupStyled
+        fullwidth
+        error={showError && error}
+        success={tvlMessage}
+      >
         <SelectIcon
           icon={iconsMap[token]}
           value={token}
