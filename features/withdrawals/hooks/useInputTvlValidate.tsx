@@ -42,8 +42,6 @@ export const useInputTvlValidate = (inputValue: string) => {
       parseEther(inputValue || '0').sub(stethTotalSupply.data)) ||
     BigNumber.from(0);
 
-  console.log('diff', diff.toString());
-
   // To render one text per page before refresh
   const text = useMemo(() => getText(), []);
   const tvlMessage =
