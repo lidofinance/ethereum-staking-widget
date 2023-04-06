@@ -10,7 +10,8 @@ import {
   ButtonStyle,
 } from './styles';
 
-const L2_LINK = 'https://help.lido.fi/en/collections/3641672-lido-on-l2';
+const L2_LINK =
+  'https://help.lido.fi/en/collections/3641672-lido-on-layer-2-l2';
 
 type L2BannerProps = {
   matomoEvent: MatomoEventType;
@@ -29,7 +30,7 @@ export const L2Banner: FC<L2BannerProps> = ({ matomoEvent }) => {
     <Wrapper>
       <L2Icons />
       <TextWrap>
-        Get your wstETH on Arbitrum and Optimism for
+        Get your wstETH on Arbitrum, Optimism and Polygon for
         <b> lower gas fees</b> and exciting
         <b> L2 DeFi opportunities</b>
       </TextWrap>
