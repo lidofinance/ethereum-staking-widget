@@ -21,7 +21,7 @@ import { isContract } from 'utils/isContract';
 import { useSDK } from '@lido-sdk/react';
 
 import { useTransactionModal } from 'features/withdrawals/contexts/transaction-modal-context';
-import { useWeb3 } from 'reef-knot';
+import { useWeb3 } from 'reef-knot/web3-react';
 import { parseEther } from '@ethersproject/units';
 import { useToken } from 'features/withdrawals/request/form/useToken';
 

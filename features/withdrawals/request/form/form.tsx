@@ -6,7 +6,7 @@ import {
   Option,
   DataTableRow,
 } from '@lidofinance/lido-ui';
-import { useWeb3 } from 'reef-knot';
+import { useWeb3 } from 'reef-knot/web3-react';
 import { TOKENS } from '@lido-sdk/constants';
 import { formatEther } from '@ethersproject/units';
 import { BigNumber } from 'ethers';
