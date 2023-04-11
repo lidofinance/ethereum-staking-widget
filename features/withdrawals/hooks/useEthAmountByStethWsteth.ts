@@ -1,5 +1,6 @@
 import { parseEther } from '@ethersproject/units';
 import { BigNumber } from 'ethers';
+import { useMemo } from 'react';
 
 import { useStethByWsteth } from 'shared/hooks';
 import { isValidEtherValue } from 'utils/isValidEtherValue';
@@ -15,7 +16,11 @@ export const useEthAmountByStethWsteth = ({
 }: useEthAmountByInputProps) => {
   const isValidValue =
     input && !isNaN(Number(input)) && isValidEtherValue(input);
-  const inputBN = isValidValue ? parseEther(input) : BigNumber.from(0);
+  const inputBN = useMemo(
+    () => (isValidValue ? parseEther(input) : BigNumber.from(0)),
+    [input, isValidValue],
+  );
+
   const stethByWstethBalance = useStethByWsteth(isSteth ? undefined : inputBN);
 
   if (!isValidValue) return BigNumber.from(0);
