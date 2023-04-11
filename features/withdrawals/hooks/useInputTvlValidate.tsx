@@ -8,7 +8,7 @@ import { BigNumber } from 'ethers';
 import omitBy from 'lodash/omitBy';
 import isEmpty from 'lodash/isEmpty';
 
-import { shortenTokenValue } from 'utils';
+import { shortenTokenValue, isValidEtherValue } from 'utils';
 
 const texts: Record<string, (amount: string) => string> = {
   '1': (amount) =>
@@ -38,7 +38,11 @@ export const useInputTvlValidate = (inputValue: string) => {
   const { ref, embed } = router.query;
   const query = { ref: ref as string, embed: embed as string };
   const searchParam = new URLSearchParams(omitBy(query, isEmpty)).toString();
-  const canCalc = !!(active && stethTotalSupply.data);
+  const canCalc = !!(
+    isValidEtherValue(inputValue) &&
+    active &&
+    stethTotalSupply.data
+  );
 
   const diff =
     (canCalc &&
