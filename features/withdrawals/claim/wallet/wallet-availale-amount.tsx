@@ -1,6 +1,6 @@
 import { CardBalance } from 'shared/wallet';
 import { FormatToken } from 'shared/formatters';
-import { useClaimData } from 'features/withdrawals/hooks';
+import { useClaimData } from 'features/withdrawals/contexts/claim-data-context';
 
 export const WalletAvailableAmount = () => {
   const { withdrawalRequestsData } = useClaimData();

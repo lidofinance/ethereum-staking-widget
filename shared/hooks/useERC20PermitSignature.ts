@@ -1,7 +1,6 @@
 import { useCallback } from 'react';
 import { splitSignature } from '@ethersproject/bytes';
 import { parseEther } from '@ethersproject/units';
-import { TOKENS } from '@lido-sdk/constants';
 import { useSDK } from '@lido-sdk/react';
 import { BigNumber } from 'ethers';
 
@@ -9,6 +8,7 @@ import { Eip2612 } from 'generated';
 
 import { PermitType } from './useGetPermitDomain';
 import { useGetPermitData } from './useGetPermitData';
+import invariant from 'tiny-invariant';
 
 export type GatherPermitSignatureResult = {
   v: number;
@@ -31,25 +31,22 @@ type UseERC20PermitSignatureProps<
   T extends Pick<Eip2612, 'nonces' | 'address'>,
 > = {
   value: string;
-  token: TOKENS;
   tokenProvider: T | null;
   spender: string;
-  tokenAddress?: string;
 };
 
 export const useERC20PermitSignature = <
   T extends Pick<Eip2612, 'nonces' | 'address'>,
->(
-  props: UseERC20PermitSignatureProps<T>,
-): UseERC20PermitSignatureResult => {
-  const { value, tokenProvider, spender } = props;
-
+>({
+  value,
+  tokenProvider,
+  spender,
+}: UseERC20PermitSignatureProps<T>): UseERC20PermitSignatureResult => {
   const { account, providerWeb3 } = useSDK();
   const getPermitData = useGetPermitData({ tokenProvider, spender, value });
 
   const gatherPermitSignature = useCallback(async () => {
-    if (!account) return;
-
+    invariant(account, 'account is needed');
     const { data, message, domain, signatureDeadline } = await getPermitData();
 
     return providerWeb3

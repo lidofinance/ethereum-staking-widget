@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from 'react';
+import { useMemo } from 'react';
 import { Link } from '@lidofinance/lido-ui';
 
 import { formatBalance } from 'utils';
@@ -13,27 +13,23 @@ import {
   TX_STAGE,
   EtherscanTxLink,
 } from 'features/withdrawals/shared/tx-stage-modal';
-import { useRequestTxModal, useWithdrawals } from 'features/withdrawals/hooks';
+import { useTransactionModal } from 'features/withdrawals/contexts/transaction-modal-context';
 import { NFTBanner } from './nft-banner';
 import { NFTBunnerWrapper } from './styles';
+import { useWithdrawals } from 'features/withdrawals/hooks/useWithdrawals';
 
 export const TxRequestModal = () => {
   const {
-    txStage,
-    txHash,
-    txModalFailedText,
-    txModalOpen,
-    closeTxModal,
+    dispatchModalState,
+    startTx,
     requestAmount,
-    formRef,
     tokenName,
-    callback,
-  } = useRequestTxModal();
+    txHash,
+    errorText,
+    isModalOpen,
+    txStage,
+  } = useTransactionModal();
   const { claimPath } = useWithdrawals();
-
-  const onRetry = useCallback(() => {
-    formRef?.current?.requestSubmit();
-  }, [formRef]);
 
   const amountAsString = useMemo(
     () => (requestAmount ? formatBalance(requestAmount, 4) : ''),
@@ -47,7 +43,7 @@ export const TxRequestModal = () => {
         {<br />}
         Check {<Link href={claimPath}>Claim tab</Link>} to view your withdrawal
         requests or view your transaction on{' '}
-        {<EtherscanTxLink txHash={txHash} text="Etherscan" />}
+        {<EtherscanTxLink txHash={txHash ?? undefined} text="Etherscan" />}
       </span>
     ),
     [amountAsString, claimPath, tokenName, txHash],
@@ -88,27 +84,43 @@ export const TxRequestModal = () => {
           </TxStageSuccess>
         );
       case TX_STAGE.FAIL:
-        return <TxStageFail failedText={txModalFailedText} onClick={onRetry} />;
+        return (
+          <TxStageFail
+            failedText={errorText}
+            onClick={() => {
+              dispatchModalState({ type: 'reset' });
+              startTx && startTx();
+            }}
+          />
+        );
       case TX_STAGE.BUNKER:
-        return <TxStageBunker onClick={callback} onClose={closeTxModal} />;
+        return (
+          <TxStageBunker
+            onClick={startTx ?? undefined}
+            onClose={() => dispatchModalState({ type: 'close_modal' })}
+          />
+        );
       default:
         return null;
     }
   }, [
-    callback,
-    closeTxModal,
-    onRetry,
+    dispatchModalState,
+    errorText,
     pendingTitle,
     signDescription,
     signTitle,
+    startTx,
     successDescription,
     txHash,
-    txModalFailedText,
     txStage,
   ]);
 
   return (
-    <TxStageModal open={txModalOpen} onClose={closeTxModal} txStage={txStage}>
+    <TxStageModal
+      open={isModalOpen}
+      onClose={() => dispatchModalState({ type: 'close_modal' })}
+      txStage={txStage}
+    >
       {content}
     </TxStageModal>
   );

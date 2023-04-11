@@ -2,7 +2,6 @@ import { FC, createContext, useMemo, useState } from 'react';
 import { Steth, Wsteth } from '@lidofinance/lido-ui';
 import { TOKENS } from '@lido-sdk/constants';
 
-import { Switch } from 'shared/components';
 import { StatusProps } from 'features/withdrawals/shared/status';
 
 import { useContractStatus } from './useContractStatus';
@@ -26,6 +25,7 @@ export type WithdrawalsValue = {
   requestPath: string;
   isPaused: boolean;
   isBunkerMode: boolean;
+  navRoutes: ReturnType<typeof useRoutes>['navRoutes'];
 };
 
 const WithdrawalsProvider: FC = ({ children }) => {
@@ -55,6 +55,7 @@ const WithdrawalsProvider: FC = ({ children }) => {
       isPaused,
       isBunkerMode,
       requestPath,
+      navRoutes,
     }),
     [
       selectedToken,
@@ -66,12 +67,12 @@ const WithdrawalsProvider: FC = ({ children }) => {
       isPaused,
       isBunkerMode,
       requestPath,
+      navRoutes,
     ],
   );
 
   return (
     <WithdrawalsContext.Provider value={value}>
-      <Switch checked={isClaimTab} routes={navRoutes} />
       {children}
     </WithdrawalsContext.Provider>
   );

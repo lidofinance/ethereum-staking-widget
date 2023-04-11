@@ -22,6 +22,7 @@ const rpc = rpcFactory({
     'test',
     'eth_call',
     'eth_gasPrice',
+    'eth_getCode',
     'eth_estimateGas',
     'eth_getBlockByNumber',
     'eth_getBalance',

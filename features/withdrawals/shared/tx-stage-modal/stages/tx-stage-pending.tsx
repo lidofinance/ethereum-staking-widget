@@ -14,7 +14,7 @@ import { TX_STAGE } from '../types';
 type TxStagePendingProps = {
   description: string;
   title: string;
-  txHash?: string;
+  txHash: string | null;
 };
 
 export const TxStagePending: FC<TxStagePendingProps> = (props) => {
@@ -31,7 +31,7 @@ export const TxStagePending: FC<TxStagePendingProps> = (props) => {
         {description}
       </MiddleDescription>
       <BottomDescription size="xxs" color="secondary">
-        <EtherscanTxLink txHash={txHash} />
+        {txHash && <EtherscanTxLink txHash={txHash} />}
       </BottomDescription>
     </TextWrapper>
   );

@@ -21,13 +21,17 @@ type LidoProps = Pick<OptionProps, 'selected' | 'onClick'> & {
 
 export const Lido: FC<LidoProps> = (props) => {
   const { selected, inputValue, ...rest } = props;
-  const { isBunkerMode, isSteth } = useWithdrawals();
+  const { isBunkerMode, isSteth, isPaused } = useWithdrawals();
   const { data } = useEthPrice();
   const ethAmount = useEthAmountByStethWsteth({ isSteth, input: inputValue });
 
   const usdPrice = data ? data * weiToEth(ethAmount || BigNumber.from(0)) : 0;
 
-  const timeRange = isBunkerMode ? 'Not estimated' : '1 - 5 day(s)';
+  const timeRange = isPaused
+    ? '—'
+    : isBunkerMode
+    ? 'Not estimated'
+    : '1 - 5 day(s)';
 
   const amount = (
     <OptionAmountWrap>

@@ -1,54 +1,20 @@
 import { useEthPrice } from '@lido-sdk/react';
 import { BigNumber } from 'ethers';
-import { useCallback, useEffect, useState } from 'react';
+import { useMemo } from 'react';
 import { weiToEth } from 'utils';
 import { useMaxGasPrice } from './useMaxGasPrice';
-
-type UseTxCostInWei = (gasLimit?: number) => BigNumber | undefined;
-
-export const useTxCostInWei: UseTxCostInWei = (gasLimit) => {
-  const gasPrice = useMaxGasPrice();
-
-  const [txCostInWei, seTxCostInWei] = useState<BigNumber>();
-
-  const calculateTxCostInWei = useCallback(() => {
-    if (!gasPrice || !gasLimit) return;
-
-    const gasLimitBN = BigNumber.from(gasLimit);
-    seTxCostInWei(gasLimitBN.mul(gasPrice));
-  }, [gasLimit, gasPrice]);
-
-  useEffect(() => {
-    calculateTxCostInWei();
-  }, [calculateTxCostInWei]);
-
-  return txCostInWei;
-};
 
 type UseTxCostInUsd = (gasLimit?: number) => number | undefined;
 
 export const useTxCostInUsd: UseTxCostInUsd = (gasLimit) => {
-  const txCostInWei = useTxCostInWei(gasLimit);
-
+  const gasPrice = useMaxGasPrice();
   // useEthPrice hook works via mainnet chain!
-  const { data: ethInUsd } = useEthPrice() as {
-    data?: number;
-    update: () => void;
-  };
+  const { data: ethInUsd } = useEthPrice();
 
-  const [txCostInUsd, setTxCostInUsd] = useState<number>();
-
-  const calculateTxCostInUsd = useCallback(() => {
-    if (!ethInUsd || !txCostInWei) return;
-
-    const txCostInEth = weiToEth(txCostInWei);
-    const txCostInUsd = txCostInEth * ethInUsd;
-    setTxCostInUsd(txCostInUsd);
-  }, [ethInUsd, txCostInWei]);
-
-  useEffect(() => {
-    calculateTxCostInUsd();
-  }, [calculateTxCostInUsd]);
-
-  return txCostInUsd;
+  return useMemo(() => {
+    if (!ethInUsd || !gasPrice) return undefined;
+    const gasLimitBN = BigNumber.from(gasLimit).mul(gasPrice);
+    const txCostInEth = weiToEth(gasLimitBN);
+    return txCostInEth * ethInUsd;
+  }, [ethInUsd, gasPrice, gasLimit]);
 };

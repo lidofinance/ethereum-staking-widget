@@ -147,6 +147,23 @@ export const StakeForm: FC = memo(() => {
     }
   }, [active, reset]);
 
+  // Delete amount from query params  after using in form
+  useEffect(() => {
+    if (!router.isReady) return;
+
+    const query = { ...router.query };
+    delete query.amount;
+    router.replace(
+      {
+        pathname: router.pathname,
+        query,
+      },
+      undefined,
+      { shallow: true },
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [router.isReady]);
+
   return (
     <Block>
       <FormStyled action="" method="post" onSubmit={handleSubmit} ref={formRef}>

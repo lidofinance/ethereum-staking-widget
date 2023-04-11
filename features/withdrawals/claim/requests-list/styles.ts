@@ -2,12 +2,16 @@ import styled from 'styled-components';
 import Download from 'assets/icons/download.svg';
 import { InlineLoader, Link } from '@lidofinance/lido-ui';
 
+export const REQUESTS_LIST_ITEM_SIZE = 57;
+export const REQUESTS_LIST_LOADERS_COUNT = 3;
+export const REQUESTS_LIST_MIN_HEIGHT = 3 * REQUESTS_LIST_ITEM_SIZE;
+
 export const Wrapper = styled.div`
-  border-radius: ${({ theme }) => theme.borderRadiusesMap.md}px;
-  border: 1px solid rgba(0, 10, 61, 0.12);
+  border-radius: ${({ theme }) => theme.borderRadiusesMap.md}px
+    ${({ theme }) => theme.borderRadiusesMap.md}px 0 0;
+  border: 1px solid var(--lido-color-accentBorder);
+  border-bottom: none;
   background-color: var(--lido-color-backgroundSecondary);
-  width: 100%;
-  margin-bottom: ${({ theme }) => theme.spaceMap.md}px;
   overflow: hidden;
 `;
 
@@ -18,30 +22,25 @@ export const EmptyText = styled.span`
 `;
 
 export const RequestStyled = styled.div<{
-  disabled?: boolean;
-  pending?: boolean;
+  $disabled?: boolean;
+  $loading?: boolean;
 }>`
-  padding: ${({ theme }) => theme.spaceMap.md}px;
+  padding: 0 ${({ theme }) => theme.spaceMap.md}px;
   background-color: var(--lido-color-backgroundSecondary);
-  border-bottom: 1px solid rgba(0, 10, 61, 0.12);
+  border-bottom: 1px solid var(--lido-color-accentBorder);
   display: flex;
+  align-items: center;
+  height: ${REQUESTS_LIST_ITEM_SIZE}px;
   justify-content: space-between;
   width: 100%;
   box-sizing: border-box;
-
-  &:disabled {
-    cursor: not-allowed;
+  &:last-child {
+    border-bottom-color: var(--lido-color-backgroundSecondary);
   }
-  cursor: ${({ disabled, pending }) => {
-    switch (true) {
-      case disabled:
-        return 'not-allowed';
-      case pending:
-        return 'progress';
-      default:
-        return 'default';
-    }
-  }};
+
+  ${({ $disabled }) => $disabled && `cursor: not-allowed;`}
+
+  ${({ $loading }) => $loading && `cursor: progress;`}
 
   a:visited {
     color: var(--lido-color-primary);
@@ -82,41 +81,11 @@ export const LinkStyled = styled(Link)`
   margin-right: -6px;
 `;
 
-export const ButtonStyled = styled.button`
-  background: none;
-  color: var(--lido-color-primary);
-  border: none;
-  font-weight: 400;
-  font-size: 12px;
-  line-height: 20px;
-  cursor: pointer;
-
-  &:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
-
-  &:focus {
-    outline: none;
-  }
-
-  &:first-of-type {
-    padding-right: 16px;
-    border-right: 1px solid var(--lido-color-textSecondary);
-    line-height: 8px;
-  }
-
-  &:nth-of-type(2) {
-    padding-left: 16px;
-  }
-`;
-
-export const SettingsWrapperStyled = styled.div`
-  padding: 10px 20px;
-  border-bottom: 1px solid rgba(0, 10, 61, 0.12);
-`;
-
-export const EmptyWrapperStyled = styled.div<{ $height: number }>`
+export const WrapperEmpty = styled(Wrapper)`
   display: flex;
-  height: ${({ $height }) => $height}px;
+  height: ${REQUESTS_LIST_MIN_HEIGHT}px;
+`;
+
+export const WrapperLoader = styled(Wrapper)`
+  height: ${REQUESTS_LIST_MIN_HEIGHT}px;
 `;

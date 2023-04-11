@@ -14,7 +14,7 @@ import {
 import { TX_STAGE } from '../types';
 
 type TxStageFailProps = {
-  failedText?: string;
+  failedText: string | null;
   onClick?: () => void;
 };
 
