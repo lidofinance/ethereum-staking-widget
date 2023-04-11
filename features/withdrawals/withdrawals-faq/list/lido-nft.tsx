@@ -1,8 +1,9 @@
-import { FC, useCallback } from 'react';
-import { Accordion, Link } from '@lidofinance/lido-ui';
+import { useCallback } from 'react';
 import { useAddNFT } from 'features/withdrawals/hooks';
 
-export const LidoNFT: FC = () => {
+import { Accordion, Link } from '@lidofinance/lido-ui';
+
+export const LidoNFT: React.FC = () => {
   const { addNft } = useAddNFT();
   const handleClickAdd = useCallback(
     (e: React.MouseEvent) => {
@@ -14,14 +15,14 @@ export const LidoNFT: FC = () => {
   return (
     <Accordion summary="What is Lido NFT?">
       <p>
-        Each withdrawal request is NFT, and NFT is automatically minted for the
-        user when sending the request. You need to add it to your wallet to
-        monitor the request status. When the request is ready for the claim, the
-        NFT will change.{' '}
+        Each withdrawal request is represented by an NFT: the NFT is
+        automatically minted for you when you send a request. You will need to
+        add it to your wallet to be able to monitor the request status. When the
+        request is ready for the claim, the NFT will change the view.{' '}
         {addNft && (
           <>
-            If you didn&amp;t add your NFT after requesting withdrawal, you
-            could{' '}
+            If you didn&apos;t add your NFT when you requested withdrawal, you
+            can{' '}
             <Link href="" onClick={handleClickAdd}>
               do it now
             </Link>

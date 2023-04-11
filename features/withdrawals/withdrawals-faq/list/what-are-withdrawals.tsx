@@ -1,11 +1,10 @@
-import { FC } from 'react';
 import { Accordion } from '@lidofinance/lido-ui';
 
-export const WhatAreWithdrawals: FC = () => {
+export const WhatAreWithdrawals: React.FC = () => {
   return (
     <Accordion defaultExpanded summary="What are withdrawals?">
       <p>
-        Withdrawals allow Lido users to unstake their stETH and, in return,
+        Withdrawals allow users to unstake their stETH/wstETH and, in return,
         receive ETH at a 1:1 ratio.
       </p>
     </Accordion>

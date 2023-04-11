@@ -1,7 +1,6 @@
-import { FC } from 'react';
 import { Accordion } from '@lidofinance/lido-ui';
 
-export const WithdrawalFee: FC = () => {
+export const WithdrawalFee: React.FC = () => {
   return (
     <Accordion summary="Is there a fee for withdrawal?">
       <p>
