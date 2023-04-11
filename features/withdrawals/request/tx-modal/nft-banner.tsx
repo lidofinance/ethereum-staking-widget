@@ -36,7 +36,7 @@ export const NFTBanner = () => {
             Add NFT to wallet
           </ButtonIcon>
         </ButtonWrapperStyled>
-        <DescriptionStyled>For withdrawals participate only</DescriptionStyled>
+        <DescriptionStyled>For withdrawals participants only</DescriptionStyled>
       </ContentStyled>
     </NFTBunner>
   );
