@@ -10,25 +10,21 @@ import isEmpty from 'lodash/isEmpty';
 
 import { shortenTokenValue } from 'utils';
 
-const texts: Record<string, (amount: string) => string> = {
-  '1': (amount) =>
-    `That's about ${amount} more than you've got, are you sure you're in the right wallet?`,
-  '2': (amount) =>
+const texts: ((amount: string) => string)[] = [
+  (amount) =>
     `That's about ${amount} more than you've got, would suggest you stake more first!`,
-  '3': () =>
+  () =>
     (
       <>
         Didn&apos;t realize you&apos;re a &#x1F40B;, did you leave your stETH in
         your other wallet? No worries, just stake some more!
       </> // TODO: fix this
     ) as unknown as string,
-  '4': () => 'Hey Justin Sun, the "stake" button is this way ^',
-};
+  () => 'Hey Justin Sun, the "stake" button is this way ^',
+];
 
 const getText = () => {
-  const keys = Object.keys(texts);
-  const randomKey = keys[Math.floor(Math.random() * keys.length)];
-  return texts[randomKey];
+  return texts[Math.floor(Math.random() * texts.length)];
 };
 
 export const useInputTvlValidate = (inputValue: string) => {
