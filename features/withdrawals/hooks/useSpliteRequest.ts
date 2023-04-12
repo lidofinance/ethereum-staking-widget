@@ -9,32 +9,30 @@ import { isValidEtherValue } from 'utils';
 export const useSplitRequest = (inputValue: string) => {
   const { maxAmount } = useWithdrawalsConstants();
 
-  const { requests, requestsCount } = useMemo(() => {
+  const { requests, requestCount } = useMemo(() => {
     if (
       !maxAmount ||
       !inputValue ||
       isNaN(Number(inputValue)) ||
       !isValidEtherValue(inputValue)
     )
-      return { requests: [], requestsCount: 0 };
+      return { requests: [], requestCount: 0 };
 
     const max = maxAmount.mul(MAX_REQUESTS_COUNT);
     const isMoreThanMax = parseEther(inputValue).gt(max);
 
-    let requestsCount = parseEther(inputValue).div(maxAmount).toNumber();
+    let requestCount = parseEther(inputValue).div(maxAmount).toNumber();
     const lastRequestAmountEther = parseEther(inputValue).mod(maxAmount);
     const hasRest = lastRequestAmountEther.gt(0);
-    if (hasRest) requestsCount++;
 
-    if (isMoreThanMax) return { requests: [], requestsCount };
+    if (hasRest) requestCount++;
+    if (isMoreThanMax) return { requests: [], requestCount };
 
-    const lastRequestAmount = lastRequestAmountEther;
-    const requests: BigNumber[] = Array(requestsCount).fill(maxAmount);
+    const requests: BigNumber[] = Array(requestCount).fill(maxAmount);
+    if (hasRest) requests.push(lastRequestAmountEther);
 
-    if (hasRest) requests.push(lastRequestAmount);
-
-    return { requests, requestsCount };
+    return { requests, requestCount };
   }, [inputValue, maxAmount]);
 
-  return { requests, requestsCount };
+  return { requests, requestCount };
 };
