@@ -1,4 +1,5 @@
 import { extractErrorMessage } from 'utils';
+import { FetcherError } from './fetcherError';
 
 const DEFAULT_PARAMS = {
   method: 'GET',
@@ -25,7 +26,7 @@ export const standardFetcher: StandardFetcher = async (url, params) => {
   });
 
   if (!response.ok) {
-    throw new Error(await extractError(response));
+    throw new FetcherError(await extractError(response), response.status);
   }
 
   return await response.json();
