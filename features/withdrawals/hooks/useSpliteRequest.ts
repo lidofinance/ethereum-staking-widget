@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { useWithdrawalsConstants } from 'features/withdrawals/hooks';
-import { parseEther, formatEther } from '@ethersproject/units';
+import { parseEther } from '@ethersproject/units';
 import { BigNumber } from 'ethers';
 
 import { MAX_REQUESTS_COUNT } from 'features/withdrawals/withdrawalsConstants';
@@ -21,18 +21,18 @@ export const useSplitRequest = (inputValue: string) => {
     const max = maxAmount.mul(MAX_REQUESTS_COUNT);
     const isMoreThanMax = parseEther(inputValue).gt(max);
 
-    const requestsCount = parseEther(inputValue).div(maxAmount).toNumber();
+    let requestsCount = parseEther(inputValue).div(maxAmount).toNumber();
+    const lastRequestAmountEther = parseEther(inputValue).mod(maxAmount);
+    const hasRest = lastRequestAmountEther.gt(0);
+    if (hasRest) requestsCount++;
 
     if (isMoreThanMax) return { requests: [], requestsCount };
 
-    const lastRequestAmountEther = parseEther(inputValue).mod(maxAmount);
     const lastRequestAmount = lastRequestAmountEther;
     const requests: BigNumber[] = Array(requestsCount).fill(maxAmount);
 
-    if (formatEther(lastRequestAmount) === '0.0')
-      return { requests, requestsCount };
+    if (hasRest) requests.push(lastRequestAmount);
 
-    requests.push(lastRequestAmount);
     return { requests, requestsCount };
   }, [inputValue, maxAmount]);
 

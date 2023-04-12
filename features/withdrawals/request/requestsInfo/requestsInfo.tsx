@@ -13,7 +13,7 @@ type RequestsInfoProps = {
 };
 
 export const RequestsInfo: FC<RequestsInfoProps> = (props) => {
-  const { requests, requestsCount } = props;
+  const { requestsCount } = props;
   const { maxAmount } = useWithdrawalsConstants();
 
   if (requestsCount && requestsCount > MAX_REQUESTS_COUNT)
@@ -26,15 +26,14 @@ export const RequestsInfo: FC<RequestsInfoProps> = (props) => {
       </RequestsInfoStyled>
     );
 
-  if (!requests || !requests.length || requests.length === 1 || !maxAmount)
-    return null;
+  if (!requestsCount || requestsCount === 1 || !maxAmount) return null;
 
   return (
     <RequestsInfoStyled>
       <RequestsInfoDescStyled>
-        Your transaction will be split in {requests.length} requests because{' '}
+        Your transaction will be split in {requestsCount} requests because{' '}
         {formatEther(maxAmount)} ETH is the maximum amount per one transaction.
-        Although it will be {requests.length} requests, you will pay one
+        Although it will be {requestsCount} requests, you will pay one
         transaction fee.
       </RequestsInfoDescStyled>
     </RequestsInfoStyled>
