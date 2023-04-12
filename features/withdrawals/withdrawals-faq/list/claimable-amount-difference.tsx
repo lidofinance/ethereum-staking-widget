@@ -9,7 +9,7 @@ export const ClaimableAmountDifference: React.FC = () => {
       <p>
         The amount you can claim may differ from your initial request due to a
         slashing occurrence and penalties. For these reasons, the total
-        claimable reward amount could reduce.
+        claimable reward amount could be reduced.
       </p>
     </Accordion>
   );
