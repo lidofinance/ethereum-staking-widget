@@ -13,7 +13,7 @@ import {
 } from './styles';
 
 export const NFTBanner = () => {
-  const { addNft } = useAddNFT();
+  const { canAddNft, addNft } = useAddNFT();
 
   return (
     <NFTBunner>
@@ -22,7 +22,7 @@ export const NFTBanner = () => {
 
         <TextWrapper>
           <TitleStyled>
-            {addNft ? (
+            {canAddNft ? (
               <>
                 Add this NFT to your wallet to monitor status
                 of&nbsp;your&nbsp;request
@@ -35,7 +35,7 @@ export const NFTBanner = () => {
             )}
           </TitleStyled>
         </TextWrapper>
-        {addNft && (
+        {canAddNft && (
           <ButtonWrapperStyled>
             <ButtonIcon
               icon={<Plus />}

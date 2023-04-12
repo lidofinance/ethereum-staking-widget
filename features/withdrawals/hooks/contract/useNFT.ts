@@ -41,5 +41,8 @@ export const useAddNFT = () => {
   const canAdd = !!providerWeb3?.provider.isMetaMask;
   const addNft = canAdd ? handleAdd : undefined;
 
-  return { addNft };
+  return {
+    addNft,
+    canAddNft: canAdd,
+  };
 };
