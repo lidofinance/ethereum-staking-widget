@@ -28,6 +28,7 @@ import { FormButton } from './form-button';
 import { InputGroupStyled } from './styles';
 import { maxNumberValidation } from 'utils/maxNumberValidation';
 import { FormatToken } from 'shared/formatters/format-token';
+import { DataTableRowStethByWsteth } from 'shared/components/data-table-row-steth-by-wsteth';
 
 // TODO move to shared
 import { useApproveGasLimit } from 'features/wrap/features/wrap-form/hooks';
@@ -157,6 +158,11 @@ export const Form = () => {
       <DataTableRow title="Allowance" loading={isApprovalFlowLoading}>
         <FormatToken amount={allowance} symbol={tokenLabel} />
       </DataTableRow>
+      {tokenLabel === 'stETH' ? (
+        <DataTableRow title="Exchange rate">1 stETH = 1 ETH</DataTableRow>
+      ) : (
+        <DataTableRowStethByWsteth />
+      )}
     </form>
   );
 };

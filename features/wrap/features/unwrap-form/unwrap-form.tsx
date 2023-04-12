@@ -32,8 +32,8 @@ import {
 } from 'shared/hooks';
 import { formatBalance } from 'utils';
 import { Connect } from 'shared/wallet';
-import { FormatToken } from 'shared/formatters';
 import { FormStyled, InputStyled, MaxButton } from 'features/wrap/styles';
+import { DataTableRowStethByWsteth } from 'shared/components/data-table-row-steth-by-wsteth';
 import { unwrapProcessing } from 'features/wrap/utils';
 import { useUnwrapGasLimit } from './hooks';
 
@@ -60,11 +60,8 @@ export const UnwrapForm: FC = memo(() => {
     return formatBalance(wstethBalance.data);
   }, [wstethBalance.data]);
   const unwrapGasLimit = useUnwrapGasLimit();
-  const oneWstethAsBigNumber = useMemo(() => parseEther('1'), []);
 
   const unwrapTxCostInUsd = useTxCostInUsd(unwrapGasLimit);
-  const oneWstethConvertedToStethAsBigNumber =
-    useStethByWsteth(oneWstethAsBigNumber);
 
   const openTxModal = useCallback(() => {
     setTxModalOpen(true);
@@ -195,16 +192,7 @@ export const UnwrapForm: FC = memo(() => {
         <DataTableRow title="Max gas fee" loading={!unwrapTxCostInUsd}>
           ${unwrapTxCostInUsd?.toFixed(2)}
         </DataTableRow>
-        <DataTableRow
-          title="Exchange rate"
-          loading={!oneWstethConvertedToStethAsBigNumber}
-        >
-          1 wstETH =
-          <FormatToken
-            amount={oneWstethConvertedToStethAsBigNumber}
-            symbol="stETH"
-          />
-        </DataTableRow>
+        <DataTableRowStethByWsteth />
       </DataTable>
 
       <TxStageModal
