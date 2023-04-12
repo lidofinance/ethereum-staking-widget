@@ -1,24 +1,19 @@
-import { FC } from 'react';
-import {
-  LimitsError,
-  NoStEthError,
-  NetworkError,
-} from 'features/rewards/components/Errors';
+import { ErrorBlockBase } from '../errorBlocks/ErrorBlockBase';
+import { ErrorBlockServer } from '../errorBlocks/ErrorBlockServer';
 
-import { RewardsListErrorMessageProps } from './types';
+import { extractErrorMessage } from 'utils';
+import { FetcherError } from 'utils/fetcherError';
 
-export const RewardsListErrorMessage: FC<RewardsListErrorMessageProps> = ({
-  errorMessage,
-}) => {
-  return (
-    <>
-      {errorMessage === 'Subgraph limits are hit.' ? (
-        <LimitsError />
-      ) : errorMessage === 'Address never had stETH.' ? (
-        <NoStEthError />
-      ) : (
-        <NetworkError />
-      )}
-    </>
-  );
+type Props = {
+  error: unknown;
+};
+
+export const RewardsListErrorMessage: React.FC<Props> = ({ error }) => {
+  const errorMessage = extractErrorMessage(error);
+
+  if (error instanceof FetcherError && error.status === 503) {
+    return <ErrorBlockServer />;
+  }
+
+  return <ErrorBlockBase text={errorMessage} />;
 };
