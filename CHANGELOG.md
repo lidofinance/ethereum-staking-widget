@@ -1,3 +1,30 @@
+# [1.59.0](https://github.com/lidofinance/staking-widget-ts/compare/1.58.0...1.59.0) (2023-04-12)
+
+
+### Bug Fixes
+
+* add temp error handler ([61d0a6d](https://github.com/lidofinance/staking-widget-ts/commit/61d0a6d62057fb522b1df6cb65f7e85d860cbebe))
+* change handle server error status ([755d1bb](https://github.com/lidofinance/staking-widget-ts/commit/755d1bb606781dda97961154a195a1ea8b9d8b32))
+* fix amount for stake ([dc72609](https://github.com/lidofinance/staking-widget-ts/commit/dc726092bbe55b943affb3f009c573a1084db36c))
+* refactoring ([108a6a5](https://github.com/lidofinance/staking-widget-ts/commit/108a6a54ccfca1a178146b18e8147f6a81e74bec))
+* remove hook ([d45aec0](https://github.com/lidofinance/staking-widget-ts/commit/d45aec061cb7475a5e306a0180a56a30ed035157))
+* update l2 text banner ([c052427](https://github.com/lidofinance/staking-widget-ts/commit/c0524278995ddb9497e156219c59bb6e004f7c84))
+
+
+### Features
+
+* add bundle analyzer ([28d9967](https://github.com/lidofinance/staking-widget-ts/commit/28d996701b447e943ff1ab1e940e99dd400d9a7e))
+* add random texts ([b3f4b44](https://github.com/lidofinance/staking-widget-ts/commit/b3f4b440a984ed7ea23f7a0a56b9f299e0701802))
+* add removing amount from query ([18ebd13](https://github.com/lidofinance/staking-widget-ts/commit/18ebd13fd84f3e62a7c7abd724dd35b0fa23bae2))
+* add server error ([b5ebdc8](https://github.com/lidofinance/staking-widget-ts/commit/b5ebdc8ad59beec0b667d1de5ae87e6321befecd))
+* add set diff amount to query url ([ade2d8c](https://github.com/lidofinance/staking-widget-ts/commit/ade2d8c48d791a9429509c4b4ac011d3682550e0))
+* add tvl message ([1bf5106](https://github.com/lidofinance/staking-widget-ts/commit/1bf51062d55e7a2fe6eb9baab14576aeac10badb))
+* change error handler for rewards page ([13889bc](https://github.com/lidofinance/staking-widget-ts/commit/13889bca1e6172fc2bac44d9f5735432f64db009))
+* more detailed subgraph errors ([57c328c](https://github.com/lidofinance/staking-widget-ts/commit/57c328ce62dc97c7d72823f51f42922675fd0b69))
+* update text on l2 banner ([1deef8b](https://github.com/lidofinance/staking-widget-ts/commit/1deef8bbabaff09a3a656814dc3d2af4b1e0872e))
+
+
+
 # [1.58.0](https://github.com/lidofinance/staking-widget-ts/compare/1.57.0...1.58.0) (2023-04-05)
 
 
@@ -195,15 +222,6 @@
 ### Reverts
 
 * MATOMO_HOST to MATOMO_URL ([0f7c9ae](https://github.com/lidofinance/staking-widget-ts/commit/0f7c9aed8d501a7ea816f95f695ccbe105269cf2))
-
-
-
-# [1.50.0](https://github.com/lidofinance/staking-widget-ts/compare/1.49.1...1.50.0) (2023-02-02)
-
-
-### Features
-
-* reef-knot v0.5.2 ([9078621](https://github.com/lidofinance/staking-widget-ts/commit/9078621816116e5ba3f3645b87d1fc8788bd96cc))
 
 
 
