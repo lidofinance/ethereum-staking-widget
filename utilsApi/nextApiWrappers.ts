@@ -14,7 +14,6 @@ import {
   RATE_LIMIT,
   RATE_LIMIT_TIME_FRAME,
 } from 'config';
-import { FetcherError } from 'utils/fetcherError';
 
 export const extractErrorMessage = (
   error: unknown,
@@ -59,10 +58,11 @@ export const nextDefaultErrorHandler =
       const isInnerError = res.statusCode === 200;
       const status = isInnerError ? 500 : res.statusCode || 500;
 
-      if (error instanceof FetcherError) {
+      if (error instanceof Error) {
+        const serverError = 'status' in error && (error.status as number);
         serverLogger?.error(extractErrorMessage(error, errorMessage));
         res
-          .status(error.status || status)
+          .status(serverError || status)
           .json({ message: extractErrorMessage(error, errorMessage) });
       } else {
         res.status(status).json({ message: errorMessage });
