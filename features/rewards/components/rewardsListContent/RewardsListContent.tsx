@@ -1,8 +1,7 @@
 import { FC } from 'react';
 import { Loader, Divider } from '@lidofinance/lido-ui';
 import { useRewardsHistory } from 'features/rewards/hooks';
-import { extractErrorMessage } from 'utils';
-import { NoStEthError } from 'features/rewards/components/Errors';
+import { ErrorBlockNoSteth } from 'features/rewards/components/errorBlocks/ErrorBlockNoSteth';
 
 import { RewardsListsEmpty } from './RewardsListsEmpty';
 import { RewardsListErrorMessage } from './RewardsListErrorMessage';
@@ -20,8 +19,6 @@ export const RewardsListContent: FC = () => {
     isLagging,
   } = useRewardsHistory();
 
-  const errorMessage = extractErrorMessage(error);
-
   if (!data && !initialLoading && !error) return <RewardsListsEmpty />;
   // showing loading when canceling requests and empty response
   if ((!data && !error) || (initialLoading && !data?.events.length)) {
@@ -34,8 +31,8 @@ export const RewardsListContent: FC = () => {
       </>
     );
   }
-  if (error) return <RewardsListErrorMessage errorMessage={errorMessage} />;
-  if (data && !data.events.length) return <NoStEthError />;
+  if (error) return <RewardsListErrorMessage error={error} />;
+  if (data && !data.events.length) return <ErrorBlockNoSteth />;
 
   return (
     <TableWrapperStyle>

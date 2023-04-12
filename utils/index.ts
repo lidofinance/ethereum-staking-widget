@@ -22,3 +22,4 @@ export * from './swrAbortableMiddleware';
 export * from './isValidEtherValue';
 export * from './getNFTUrl';
 export * from './maxNumberValidation';
+export * from './shortenTokenValue';
