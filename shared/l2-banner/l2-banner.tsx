@@ -31,7 +31,7 @@ export const L2Banner: FC<L2BannerProps> = ({ matomoEvent }) => {
       <L2Icons />
       <TextWrap>
         Get your wstETH on Arbitrum, Optimism and Polygon for
-        <b> lower gas fees</b> and exciting
+        <b> lower gas fees</b> and enjoy
         <b> L2 DeFi opportunities</b>
       </TextWrap>
       <ButtonWrap>
