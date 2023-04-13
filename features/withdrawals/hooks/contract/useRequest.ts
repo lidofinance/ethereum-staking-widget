@@ -221,12 +221,14 @@ const useWithdrawalRequestMethods = () => {
 
 type useWithdrawalRequestOptions = {
   value: string;
+  reset: () => void;
 };
 
 // provides form with a handler to call signing flow
 // and all needed indicators for ux
 export const useWithdrawalRequest = ({
   value,
+  reset,
 }: useWithdrawalRequestOptions) => {
   const [isTxPending, setIsTxPending] = useState(false);
   const { account } = useWeb3();
@@ -237,8 +239,7 @@ export const useWithdrawalRequest = ({
   const { isContract: isMultisig, loading: isMultisigLoading } = useIsContract(
     account ?? undefined,
   );
-  const { tokenBalance, tokenLabel, tokenContract, setToken, token } =
-    useToken();
+  const { tokenLabel, tokenContract, token } = useToken();
 
   const valueBN = useMemo(() => {
     try {
@@ -316,6 +317,7 @@ export const useWithdrawalRequest = ({
           }
           // end flow
           dispatchModalState({ type: 'success' });
+          reset();
         } catch (error) {
           const errorMessage = getErrorMessage(error);
           dispatchModalState({ type: 'error', errorText: errorMessage });
@@ -344,6 +346,7 @@ export const useWithdrawalRequest = ({
       setIsTxPending,
       token,
       tokenLabel,
+      reset,
     ],
   );
 
@@ -353,11 +356,6 @@ export const useWithdrawalRequest = ({
     allowance,
     isApprovalFlowLoading,
     request,
-    tokenBalance,
-    tokenLabel,
-    tokenContract,
-    setToken,
     isTxPending,
-    token,
   };
 };
