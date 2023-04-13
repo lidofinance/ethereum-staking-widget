@@ -151,6 +151,8 @@ export const WrapForm: FC = memo(() => {
   }, [needsApprove, selectedToken, inputValueAsBigNumber]);
   const willReceiveWsteth = useWstethBySteth(willWrapSteth);
 
+  const isSteth = selectedToken === TOKENS.STETH;
+
   return (
     <Block>
       <Form
@@ -178,11 +180,11 @@ export const WrapForm: FC = memo(() => {
           ${wrapTxCostInUsd?.toFixed(2)}
         </DataTableRow>
         <DataTableRow title="Exchange rate" loading={!oneWstethConverted}>
-          1 {selectedToken} ={' '}
+          1 {isSteth ? 'stETH' : 'ETH'} ={' '}
           <FormatToken amount={oneWstethConverted} symbol="wstETH" />
         </DataTableRow>
         <DataTableRow title="Allowance" loading={loadingUseApprove}>
-          {selectedToken === TOKENS.STETH ? (
+          {isSteth ? (
             <FormatToken amount={allowance} symbol="stETH" />
           ) : (
             <>0.0</>
