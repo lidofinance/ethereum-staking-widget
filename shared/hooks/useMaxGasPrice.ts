@@ -1,7 +1,6 @@
 import { CHAINS } from '@lido-sdk/constants';
 import { getStaticRpcBatchProvider } from '@lido-sdk/providers';
-import { useLidoSWR } from '@lido-sdk/react';
-import { useWeb3 } from '@reef-knot/web3-react';
+import { useLidoSWR, useSDK } from '@lido-sdk/react';
 import { getBackendRPCPath, ONE_GWEI } from 'config';
 
 import { BigNumber } from 'ethers';
@@ -13,7 +12,7 @@ import { BigNumber } from 'ethers';
 // https://github.com/ethers-io/ethers.js/blob/9373864742c179ba69c08c4f0c0661fdf78f8f63/src.ts/providers/abstract-provider.ts#L704
 //
 export const useMaxGasPrice = (): BigNumber | undefined => {
-  const { chainId } = useWeb3();
+  const { chainId } = useSDK();
   const { data: maxGasPrice } = useLidoSWR(
     ['swr:max-gas-price', chainId],
     async () => {
