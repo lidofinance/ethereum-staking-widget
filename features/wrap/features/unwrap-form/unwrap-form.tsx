@@ -52,13 +52,6 @@ export const UnwrapForm: FC = memo(() => {
   const [txHash, setTxHash] = useState<string>();
   const [txModalFailedText, setTxModalFailedText] = useState('');
 
-  const wstethBalanceAsStringOrNull = useMemo(() => {
-    if (!wstethBalance?.data) {
-      return null;
-    }
-
-    return formatBalance(wstethBalance.data);
-  }, [wstethBalance.data]);
   const unwrapGasLimit = useUnwrapGasLimit();
   const oneWstethAsBigNumber = useMemo(() => parseEther('1'), []);
 
@@ -119,15 +112,6 @@ export const UnwrapForm: FC = memo(() => {
     limit: wstethBalance.data,
     token: TOKENS.WSTETH,
   });
-
-  // Set max wsteth balance to input field after page loaded.
-  // We can't use this `wstethBalance` var, because `wstethBalance` is object,
-  // so we get a input field that can't be changed.
-  useEffect(() => {
-    if (wstethBalanceAsStringOrNull) {
-      setMaxInputValue();
-    }
-  }, [wstethBalanceAsStringOrNull, setMaxInputValue]);
 
   // Needs for tx modal
   const inputValueAsBigNumber = useMemo(() => {
