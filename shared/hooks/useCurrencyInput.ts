@@ -90,8 +90,9 @@ export const useCurrencyInput: UseCurrencyInput = ({
     setIsValidating(false);
     setIsSubmitting(false);
     setInputValue(initialValue);
+    externalSetInputValue?.(initialValue);
     setError(initialError);
-  }, [initialError, initialValue, validateOnMount]);
+  }, [initialError, initialValue, validateOnMount, externalSetInputValue]);
 
   const limitLevel = useStakingLimitLevel();
 

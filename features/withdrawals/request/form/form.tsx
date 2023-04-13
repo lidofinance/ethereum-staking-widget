@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import {
   Input,
   Button,
@@ -20,6 +20,8 @@ import {
 } from 'features/withdrawals/hooks';
 import { iconsMap } from 'features/withdrawals/providers/withdrawals-provider/provider';
 import { useRequestTxPrice } from 'features/withdrawals/hooks/useWithdrawTxPrice';
+import { useValidateUnstakeValue } from './useValidateUnstakeValue';
+import { useToken } from 'features/withdrawals/request/form/useToken';
 
 import { Options } from '../options';
 import { RequestsInfo } from '../requestsInfo';
@@ -35,32 +37,59 @@ import { InputLocked } from 'features/wrap/components';
 
 export const Form = () => {
   const [inputValue, setInputValue] = useState('');
+
+  const { active } = useWeb3();
+  const { minAmount } = useWithdrawalsConstants();
+  const { tokenBalance, tokenLabel, tokenContract, setToken, token } =
+    useToken();
+  const { tvlMessage, stakeButton } = useInputTvlValidate(inputValue);
+
+  const validateUnstakeValue = useValidateUnstakeValue({
+    inputName: `${tokenLabel} amount`,
+    limit: tokenBalance,
+    minimum: minAmount,
+  });
+
+  const { error, inputTouched, setInputTouched } = useInputValidate({
+    value: inputValue,
+    validationFn: validateUnstakeValue,
+    shouldValidate: active,
+  });
+
+  const handleInputChange = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      if (!inputTouched) setInputTouched(true);
+      setInputValue(maxNumberValidation(event?.currentTarget.value));
+    },
+    [inputTouched, setInputTouched],
+  );
+
+  const handleResetInput = useCallback(() => {
+    setInputValue('');
+    setInputTouched(false);
+  }, [setInputTouched]);
+
+  const handleChangeToken = useCallback(
+    (token: TOKENS.STETH | TOKENS.WSTETH) => {
+      setToken(token);
+      handleResetInput();
+    },
+    [setToken, handleResetInput],
+  );
+
   const {
     isApprovalFlowLoading,
     isApprovalFlow,
     isTokenLocked,
     request,
-    setToken,
-    token,
     isTxPending,
     allowance,
-    tokenBalance,
-    tokenLabel,
-  } = useWithdrawalRequest({ value: inputValue });
-  const { minAmount } = useWithdrawalsConstants();
-  const { active } = useWeb3();
-  const { tvlMessage, stakeButton } = useInputTvlValidate(inputValue);
-
-  useEffect(() => {
-    setInputValue('');
-  }, [token]);
-
-  const { error } = useInputValidate({
+  } = useWithdrawalRequest({
     value: inputValue,
-    inputName: `${tokenLabel} amount`,
-    limit: tokenBalance,
-    minimum: minAmount,
-    active,
+    reset: handleResetInput,
+    tokenLabel,
+    tokenContract,
+    token,
   });
 
   const { requests, requestsCount } = useSplitRequest(inputValue);
@@ -110,7 +139,7 @@ export const Form = () => {
         <SelectIcon
           icon={iconsMap[token]}
           value={token}
-          onChange={setToken}
+          onChange={handleChangeToken}
           error={showError}
         >
           <Option leftDecorator={iconsMap[TOKENS.STETH]} value={TOKENS.STETH}>
@@ -126,9 +155,7 @@ export const Form = () => {
           rightDecorator={rightDecorator}
           label={`${tokenLabel} amount`}
           value={inputValue}
-          onChange={(event) =>
-            setInputValue(maxNumberValidation(event?.currentTarget.value))
-          }
+          onChange={handleInputChange}
           error={showError}
         />
       </InputGroupStyled>
