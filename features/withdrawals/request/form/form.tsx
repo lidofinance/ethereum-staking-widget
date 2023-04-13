@@ -50,12 +50,11 @@ export const Form = () => {
     minimum: minAmount,
   });
 
-  const { error, isValidating, inputTouched, setInputTouched } =
-    useInputValidate({
-      value: inputValue,
-      validationFn: validateUnstakeValue,
-      shouldValidate: active,
-    });
+  const { error, inputTouched, setInputTouched } = useInputValidate({
+    value: inputValue,
+    validationFn: validateUnstakeValue,
+    shouldValidate: active,
+  });
 
   const handleInputChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -166,7 +165,7 @@ export const Form = () => {
       <FormButton
         isLocked={isTokenLocked}
         pending={isTxPending}
-        disabled={isValidating || !!error || !inputValue}
+        disabled={!!error || !inputValue}
       />
       <DataTableRow
         help={

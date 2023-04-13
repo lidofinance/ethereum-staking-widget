@@ -13,7 +13,6 @@ export const useInputValidate = ({
 }: UseInputValidationArgs) => {
   const [error, setError] = useState('');
   const [inputTouched, setInputTouched] = useState(false);
-  const [isValidating, setIsValidating] = useState<boolean>(false);
 
   const doValidate = useCallback(() => {
     if (!shouldValidate || !inputTouched) {
@@ -21,10 +20,8 @@ export const useInputValidate = ({
       return;
     }
 
-    setIsValidating(true);
     const validationResult = validationFn(inputValue);
     if (error !== validationResult) setError(validationResult);
-    setIsValidating(false);
   }, [shouldValidate, error, inputValue, validationFn, inputTouched]);
 
   useEffect(() => {
@@ -33,7 +30,6 @@ export const useInputValidate = ({
 
   return {
     error,
-    isValidating,
     inputTouched,
     setInputTouched,
   };
