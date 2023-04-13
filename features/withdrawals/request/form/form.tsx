@@ -40,7 +40,8 @@ export const Form = () => {
 
   const { active } = useWeb3();
   const { minAmount } = useWithdrawalsConstants();
-  const { tokenBalance, tokenLabel, setToken, token } = useToken();
+  const { tokenBalance, tokenLabel, tokenContract, setToken, token } =
+    useToken();
   const { tvlMessage, stakeButton } = useInputTvlValidate(inputValue);
 
   const validateUnstakeValue = useValidateUnstakeValue({
@@ -87,6 +88,9 @@ export const Form = () => {
   } = useWithdrawalRequest({
     value: inputValue,
     reset: handleResetInput,
+    tokenLabel,
+    tokenContract,
+    token,
   });
 
   const { requests, requestsCount } = useSplitRequest(inputValue);

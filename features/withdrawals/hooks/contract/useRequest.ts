@@ -23,7 +23,8 @@ import { useSDK } from '@lido-sdk/react';
 import { useTransactionModal } from 'features/withdrawals/contexts/transaction-modal-context';
 import { useWeb3 } from 'reef-knot';
 import { parseEther } from '@ethersproject/units';
-import { useToken } from 'features/withdrawals/request/form/useToken';
+import type { StethPermitAbi } from 'generated';
+import type { WstethAbi } from '@lido-sdk/contracts';
 
 // this encapsulates permit/approval & steth/wsteth flows
 const useWithdrawalRequestMethods = () => {
@@ -221,6 +222,9 @@ const useWithdrawalRequestMethods = () => {
 
 type useWithdrawalRequestOptions = {
   value: string;
+  tokenLabel: string;
+  tokenContract: StethPermitAbi | WstethAbi | null;
+  token: TOKENS.STETH | TOKENS.WSTETH;
   reset: () => void;
 };
 
@@ -228,6 +232,9 @@ type useWithdrawalRequestOptions = {
 // and all needed indicators for ux
 export const useWithdrawalRequest = ({
   value,
+  tokenLabel,
+  tokenContract,
+  token,
   reset,
 }: useWithdrawalRequestOptions) => {
   const [isTxPending, setIsTxPending] = useState(false);
@@ -239,7 +246,6 @@ export const useWithdrawalRequest = ({
   const { isContract: isMultisig, loading: isMultisigLoading } = useIsContract(
     account ?? undefined,
   );
-  const { tokenLabel, tokenContract, token } = useToken();
 
   const valueBN = useMemo(() => {
     try {
