@@ -18,20 +18,31 @@ export const useSplitRequest = (inputValue: string) => {
     )
       return { requests: [], requestCount: 0 };
 
+    const parsedInputValue = parseEther(inputValue);
     const max = maxAmount.mul(MAX_REQUESTS_COUNT);
-    const isMoreThanMax = parseEther(inputValue).gt(max);
+    const isMoreThanMax = parsedInputValue.gt(max);
 
-    let requestCount = parseEther(inputValue).div(maxAmount).toNumber();
-    const lastRequestAmountEther = parseEther(inputValue).mod(maxAmount);
+    const requestCount = parsedInputValue.div(maxAmount).toNumber();
+    const lastRequestAmountEther = parsedInputValue.mod(maxAmount);
     const hasRest = lastRequestAmountEther.gt(0);
+    const requests: BigNumber[] = [];
 
-    if (hasRest) requestCount++;
-    if (isMoreThanMax) return { requests: [], requestCount };
+    if (isMoreThanMax) {
+      return {
+        requests,
+        requestCount: requestCount + (hasRest ? 1 : 0),
+      };
+    }
 
-    const requests: BigNumber[] = Array(requestCount).fill(maxAmount);
+    for (let i = 0; i < requestCount; i++) {
+      requests.push(maxAmount);
+    }
     if (hasRest) requests.push(lastRequestAmountEther);
 
-    return { requests, requestCount };
+    return {
+      requests,
+      requestCount: requestCount + (hasRest ? 1 : 0),
+    };
   }, [inputValue, maxAmount]);
 
   return { requests, requestCount };
