@@ -20,6 +20,7 @@ export const OptionStyled = styled.div<{ $selected?: boolean }>`
   margin-bottom: ${({ theme }) => theme.spaceMap.sm}px;
   display: flex;
   position: relative;
+  align-items: center;
   // TODO uncomment after add integration
   /* cursor: pointer; */
 
@@ -97,11 +98,6 @@ export const PrimaryLableStyled = styled(Chip)`
   font-size: 12px;
   line-height: 20px;
   padding: 2px 12px;
-`;
-
-export const OptionAmountWrap = styled.div`
-  display: flex;
-  flex-direction: column;
 `;
 
 export const OptionAmountRow = styled.div`
