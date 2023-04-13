@@ -1,11 +1,5 @@
 import { useCallback, useState } from 'react';
-import {
-  Input,
-  Button,
-  SelectIcon,
-  Option,
-  DataTableRow,
-} from '@lidofinance/lido-ui';
+import { Button, SelectIcon, Option, DataTableRow } from '@lidofinance/lido-ui';
 import { useWeb3 } from 'reef-knot';
 import { TOKENS } from '@lido-sdk/constants';
 import { formatEther } from '@ethersproject/units';
@@ -25,6 +19,7 @@ import { useToken } from 'features/withdrawals/request/form/useToken';
 
 import { Options } from '../options';
 import { RequestsInfo } from '../requestsInfo';
+import { InputNumber } from 'shared/components/input-number';
 
 import { FormButton } from './form-button';
 import { InputGroupStyled } from './styles';
@@ -150,7 +145,7 @@ export const Form = () => {
             Lido (wstETH)
           </Option>
         </SelectIcon>
-        <Input
+        <InputNumber
           fullwidth
           placeholder="0"
           rightDecorator={rightDecorator}

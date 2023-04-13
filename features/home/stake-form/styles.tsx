@@ -1,7 +1,8 @@
 import styled from 'styled-components';
-import { Input, Button } from '@lidofinance/lido-ui';
+import { Button } from '@lidofinance/lido-ui';
+import { InputNumber } from 'shared/components/input-number';
 
-export const InputStyled = styled((props) => <Input {...props} />)`
+export const InputStyled = styled(InputNumber)`
   margin-bottom: ${({ theme }) => theme.spaceMap.md}px;
   z-index: 2;
 `;
