@@ -6,7 +6,7 @@ import { WalletQueueTooltip } from './wallet-queue-tooltip';
 
 export const WalletWaitingTime = () => {
   const { withdrawalsStatus, isBunkerMode, isPaused } = useWithdrawals();
-  const { unfinalizedStETH, unfinalizedRequests } = useRequestData();
+  const { unfinalizedStETH } = useRequestData();
 
   const contentValue = isPaused
     ? '—'
@@ -16,8 +16,7 @@ export const WalletWaitingTime = () => {
 
   const content = <Status variant={withdrawalsStatus}>{contentValue}</Status>;
 
-  const isLoading =
-    unfinalizedRequests.initialLoading || unfinalizedStETH.initialLoading;
+  const isLoading = unfinalizedStETH.initialLoading;
 
   const timeTitle = <>Waiting time {<WalletQueueTooltip />}</>;
 

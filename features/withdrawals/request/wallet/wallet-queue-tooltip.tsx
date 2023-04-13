@@ -6,8 +6,7 @@ import { useRequestData } from 'features/withdrawals/hooks';
 import { DataWrapperStyled, QueuInfoStyled } from './styles';
 
 export const WalletQueueTooltip = () => {
-  const { unfinalizedStETH, unfinalizedRequests } = useRequestData();
-  const requestsCount = unfinalizedRequests.data?.toNumber();
+  const { unfinalizedStETH } = useRequestData();
 
   const stethInQueue = unfinalizedStETH.data && (
     <QueuInfoStyled>
@@ -17,19 +16,12 @@ export const WalletQueueTooltip = () => {
       </DataWrapperStyled>
     </QueuInfoStyled>
   );
-  const requestsInQueue = requestsCount !== undefined && (
-    <QueuInfoStyled>
-      The overall amount of requests in queue:{' '}
-      <DataWrapperStyled>{requestsCount}</DataWrapperStyled>
-    </QueuInfoStyled>
-  );
 
   const tooltipTitle = (
     <>
       Waiting time depends on amount of stETH in withdraw and amount of
       requests.
       {stethInQueue}
-      {requestsInQueue}
     </>
   );
 
