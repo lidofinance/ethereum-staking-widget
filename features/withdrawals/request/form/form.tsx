@@ -93,14 +93,14 @@ export const Form = () => {
     token,
   });
 
-  const { requests, requestsCount } = useSplitRequest(inputValue);
+  const { requests, requestCount } = useSplitRequest(inputValue);
 
   const approveTxCostInUsd = useTxCostInUsd(useApproveGasLimit());
 
   const requestPriceInUsd = useRequestTxPrice({
     token,
     isApprovalFlow: isApprovalFlow,
-    requestCount: requests?.length,
+    requestCount,
   });
 
   const onSubmit = useCallback(
@@ -161,7 +161,7 @@ export const Form = () => {
         />
       </InputGroupStyled>
 
-      <RequestsInfo requests={requests} requestsCount={requestsCount} />
+      <RequestsInfo requestCount={requestCount} />
       <Options inputValue={inputValue} />
       <FormButton
         isLocked={isTokenLocked}
