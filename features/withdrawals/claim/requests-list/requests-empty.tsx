@@ -10,7 +10,7 @@ export const RequestsEmpty = () => {
       <WrapperEmpty>
         <EmptyText>
           <DownloadIcon />
-          Connect wallet to see your withdrawal request data{' '}
+          Connect wallet to see your withdrawal requests
         </EmptyText>
       </WrapperEmpty>
     );

@@ -13,7 +13,7 @@ import {
 } from './styles';
 
 export const NFTBanner = () => {
-  const { addNft } = useAddNFT();
+  const { canAddNft, addNft } = useAddNFT();
 
   return (
     <NFTBunner>
@@ -22,21 +22,33 @@ export const NFTBanner = () => {
 
         <TextWrapper>
           <TitleStyled>
-            Add this NFT to your wallet to monitor status of your request.
+            {canAddNft ? (
+              <>
+                Add this NFT to your wallet to monitor status
+                of&nbsp;your&nbsp;request
+              </>
+            ) : (
+              <>
+                Add NFT to your wallet to monitor status
+                of&nbsp;your&nbsp;request.
+              </>
+            )}
           </TitleStyled>
         </TextWrapper>
-        <ButtonWrapperStyled>
-          <ButtonIcon
-            icon={<Plus />}
-            fullwidth
-            size="sm"
-            variant="filled"
-            onClick={addNft}
-          >
-            Add NFT to wallet
-          </ButtonIcon>
-        </ButtonWrapperStyled>
-        <DescriptionStyled>For withdrawals participate only</DescriptionStyled>
+        {canAddNft && (
+          <ButtonWrapperStyled>
+            <ButtonIcon
+              icon={<Plus />}
+              fullwidth
+              size="sm"
+              variant="filled"
+              onClick={addNft}
+            >
+              Add NFT to wallet
+            </ButtonIcon>
+          </ButtonWrapperStyled>
+        )}
+        <DescriptionStyled>For withdrawals participants only</DescriptionStyled>
       </ContentStyled>
     </NFTBunner>
   );
