@@ -27,9 +27,10 @@ import {
 import { OneinchInfo } from 'features/home/oneinch-info/oneinch-info';
 import { DATA_UNAVAILABLE } from 'config';
 import { Connect } from 'shared/wallet';
+import { InputDecoratorMaxButton } from 'shared/components/input-decorator-max-button';
 import { TxStageModal, TX_OPERATION, TX_STAGE } from 'shared/components';
 import { useCurrencyInput, useTxCostInUsd } from 'shared/hooks';
-import { FormStyled, InputStyled, MaxButton } from './styles';
+import { FormStyled, InputStyled } from './styles';
 import { stakeProcessing } from './utils';
 import { useStethSubmitGasLimit } from './hooks';
 import { useStakeableEther } from '../hooks';
@@ -155,16 +156,10 @@ export const StakeForm: FC = memo(() => {
           placeholder="0"
           leftDecorator={<Eth />}
           rightDecorator={
-            <MaxButton
-              size="xxs"
-              variant="translucent"
-              onClick={() => {
-                setMaxInputValue();
-              }}
+            <InputDecoratorMaxButton
+              onClick={setMaxInputValue}
               disabled={isMaxDisabled}
-            >
-              MAX
-            </MaxButton>
+            />
           }
           label="Amount"
           value={inputValue}

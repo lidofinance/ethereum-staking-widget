@@ -32,7 +32,8 @@ import {
 } from 'shared/hooks';
 import { formatBalance } from 'utils';
 import { Connect } from 'shared/wallet';
-import { FormStyled, InputStyled, MaxButton } from 'features/wrap/styles';
+import { InputDecoratorMaxButton } from 'shared/components/input-decorator-max-button';
+import { FormStyled, InputStyled } from 'features/wrap/styles';
 import { DataTableRowStethByWsteth } from 'shared/components/data-table-row-steth-by-wsteth';
 import { unwrapProcessing } from 'features/wrap/utils';
 import { useUnwrapGasLimit } from './hooks';
@@ -141,16 +142,10 @@ export const UnwrapForm: FC = memo(() => {
           placeholder="0"
           leftDecorator={<Wsteth />}
           rightDecorator={
-            <MaxButton
-              size="xxs"
-              variant="translucent"
-              onClick={() => {
-                setMaxInputValue();
-              }}
+            <InputDecoratorMaxButton
+              onClick={setMaxInputValue}
               disabled={isMaxDisabled}
-            >
-              MAX
-            </MaxButton>
+            />
           }
           label="Amount"
           value={inputValue}

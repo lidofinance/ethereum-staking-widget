@@ -22,10 +22,10 @@ import { L2Banner } from 'shared/l2-banner';
 import { MATOMO_CLICK_EVENTS } from 'config';
 import { Connect } from 'shared/wallet';
 import { InputLocked } from 'features/wrap/components';
+import { InputDecoratorMaxButton } from 'shared/components/input-decorator-max-button';
 import {
   FormStyled,
   InputGroupStyled,
-  MaxButton,
   SelectIconWrapper,
   InputWrapper,
 } from 'features/wrap/styles';
@@ -207,16 +207,10 @@ export const Form: FC<FromProps> = (props) => {
           placeholder="0"
           rightDecorator={
             <>
-              <MaxButton
-                size="xxs"
-                variant="translucent"
-                onClick={() => {
-                  setMaxInputValue();
-                }}
+              <InputDecoratorMaxButton
+                onClick={setMaxInputValue}
                 disabled={isMaxDisabled}
-              >
-                MAX
-              </MaxButton>
+              />
               {account && needsApprove && selectedToken === TOKENS.STETH ? (
                 <InputLocked />
               ) : (

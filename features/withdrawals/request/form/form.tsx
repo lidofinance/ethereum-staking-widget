@@ -1,5 +1,5 @@
-import { useCallback, useState } from 'react';
-import { Button, SelectIcon, Option, DataTableRow } from '@lidofinance/lido-ui';
+import { useCallback, useMemo, useState } from 'react';
+import { SelectIcon, Option, DataTableRow } from '@lidofinance/lido-ui';
 import { useWeb3 } from 'reef-knot';
 import { TOKENS } from '@lido-sdk/constants';
 import { formatEther } from '@ethersproject/units';
@@ -20,6 +20,7 @@ import { useToken } from 'features/withdrawals/request/form/useToken';
 import { Options } from '../options';
 import { RequestsInfo } from '../requestsInfo';
 import { InputNumber } from 'shared/components/input-number';
+import { InputDecoratorMaxButton } from 'shared/components/input-decorator-max-button';
 
 import { FormButton } from './form-button';
 import { InputGroupStyled } from './styles';
@@ -106,22 +107,15 @@ export const Form = () => {
     [request, requests],
   );
 
-  const rightDecorator = tvlMessage ? (
-    stakeButton
-  ) : (
-    <>
-      <Button
-        size="xxs"
-        variant="translucent"
-        onClick={() =>
-          setInputValue(formatEther(tokenBalance || BigNumber.from(0)))
-        }
-      >
-        MAX
-      </Button>
-      {isTokenLocked ? <InputLocked /> : undefined}
-    </>
-  );
+  const maxAmount = useMemo(() => {
+    return formatEther(tokenBalance || BigNumber.from(0));
+  }, [tokenBalance]);
+
+  const isMaxDisabled = maxAmount === '0.0';
+
+  const setMaxInputValue = useCallback(() => {
+    setInputValue(maxAmount);
+  }, [maxAmount]);
 
   const showError = active && !!error && !tvlMessage;
 
@@ -148,7 +142,19 @@ export const Form = () => {
         <InputNumber
           fullwidth
           placeholder="0"
-          rightDecorator={rightDecorator}
+          rightDecorator={
+            tvlMessage ? (
+              stakeButton
+            ) : (
+              <>
+                <InputDecoratorMaxButton
+                  onClick={setMaxInputValue}
+                  disabled={isMaxDisabled}
+                />
+                {isTokenLocked ? <InputLocked /> : undefined}
+              </>
+            )
+          }
           label={`${tokenLabel} amount`}
           value={inputValue}
           onChange={handleInputChange}

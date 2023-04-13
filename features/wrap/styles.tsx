@@ -1,5 +1,5 @@
 import styled, { css } from 'styled-components';
-import { Button, InputGroup, SelectIcon } from '@lidofinance/lido-ui';
+import { InputGroup, SelectIcon } from '@lidofinance/lido-ui';
 import { InputNumber } from 'shared/components/input-number';
 
 const errorCSS = css`
@@ -22,10 +22,6 @@ export const InputStyled = styled(InputNumber)`
 export const InputGroupStyled = styled(InputGroup)`
   margin-bottom: ${({ theme }) => theme.spaceMap.md}px;
   z-index: 2;
-`;
-
-export const MaxButton = styled(Button)`
-  letter-spacing: 0.4px;
 `;
 
 export const SelectIconWrapper = styled(SelectIcon)`
