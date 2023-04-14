@@ -10,6 +10,7 @@ import { API } from 'types';
 
 import { TOKENS } from '@lido-sdk/constants';
 import { getRequestEstimate } from 'utilsApi/getRequestEstimate';
+import { MAX_REQUESTS_COUNT } from 'features/withdrawals/withdrawalsConstants';
 
 // Estimates gas for withdrawal request using secured permit
 // Returns { gasLimit:number }
@@ -34,7 +35,11 @@ const estimateWithdrawalGas: API = async (req, res) => {
       throw new Error('invalid token');
     }
     requestCount = parseInt(req.query.requestCount as string);
-    if (isNaN(requestCount) || requestCount < 1) {
+    if (
+      isNaN(requestCount) ||
+      requestCount < 1 ||
+      requestCount > MAX_REQUESTS_COUNT
+    ) {
       throw new Error('invalid requestCount');
     }
   } catch (e) {
