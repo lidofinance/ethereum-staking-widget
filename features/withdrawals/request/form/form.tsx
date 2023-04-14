@@ -100,7 +100,9 @@ export const Form = () => {
   const requestPriceInUsd = useRequestTxPrice({
     token,
     isApprovalFlow: isApprovalFlow,
-    requestCount,
+    // request.length is bounded by max value
+    // while useSplitRequest.requestCount is not
+    requestCount: requests.length,
   });
 
   const onSubmit = useCallback(
