@@ -32,8 +32,6 @@ export const useInputTvlValidate = (inputValue: string) => {
   // To render one text per page before refresh
   const textTemplate = useMemo(() => getText(), []);
 
-  console.log(formatEther(tvlDiff));
-
   const tvlMessage = useMemo(
     () =>
       tvlDiff.gt(BigNumber.from(0))
