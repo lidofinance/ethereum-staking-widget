@@ -1,8 +1,9 @@
 import { useCallback, useEffect, useState } from 'react';
+import type { ValidationFn } from 'shared/forms/types/validation-fn';
 
 type UseInputValidationArgs = {
   value: string;
-  validationFn: (value: string) => string;
+  validationFn: ValidationFn;
   shouldValidate: boolean;
 };
 
@@ -15,22 +16,27 @@ export const useInputValidate = ({
   const [inputTouched, setInputTouched] = useState(false);
 
   const doValidate = useCallback(() => {
-    if (!shouldValidate || !inputTouched) {
-      if (error) setError('');
-      return;
-    }
-
     const validationResult = validationFn(inputValue);
+    const isValid = validationResult === '';
+
+    if (!inputTouched) setInputTouched(true);
     if (error !== validationResult) setError(validationResult);
-  }, [shouldValidate, error, inputValue, validationFn, inputTouched]);
+
+    return isValid;
+  }, [error, validationFn, inputTouched, inputValue]);
 
   useEffect(() => {
-    doValidate();
-  }, [doValidate]);
+    if (shouldValidate && inputTouched) {
+      doValidate();
+    } else {
+      setError('');
+    }
+  }, [doValidate, inputTouched, shouldValidate]);
 
   return {
     error,
     inputTouched,
     setInputTouched,
+    doValidate,
   };
 };

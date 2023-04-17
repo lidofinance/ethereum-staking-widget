@@ -1,78 +1,41 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { useWeb3 } from 'reef-knot/web3-react';
-import { TOKENS } from '@lido-sdk/constants';
-import { formatEther } from '@ethersproject/units';
-import { BigNumber } from 'ethers';
-
-import { useInputValidate, useTxCostInUsd } from 'shared/hooks';
+import { useTxCostInUsd } from 'shared/hooks';
 import {
   useSplitRequest,
   useWithdrawalsConstants,
   useWithdrawalRequest,
   useInputTvlValidate,
 } from 'features/withdrawals/hooks';
-import { iconsMap } from 'features/withdrawals/providers/withdrawals-provider/provider';
 import { useRequestTxPrice } from 'features/withdrawals/hooks/useWithdrawTxPrice';
 import { useValidateUnstakeValue } from './useValidateUnstakeValue';
 import { useToken } from 'features/withdrawals/request/form/useToken';
+import { useCurrencyInput } from 'shared/forms/hooks/useCurrencyInput';
 
 import { Options } from '../options';
+import { FormatToken } from 'shared/formatters/format-token';
 import { RequestsInfo } from '../requestsInfo';
 import { InputNumber } from 'shared/components/input-number';
-import { InputDecoratorMaxButton } from 'shared/components/input-decorator-max-button';
-import { SelectIcon, Option, DataTableRow } from '@lidofinance/lido-ui';
-
+import { DataTableRowStethByWsteth } from 'shared/components/data-table-row-steth-by-wsteth';
+import { InputDecoratorLocked } from 'shared/forms/components/input-decorator-locked';
+import { InputDecoratorMaxButton } from 'shared/forms/components/input-decorator-max-button';
 import { FormButton } from './form-button';
 import { InputGroupStyled } from './styles';
-import { maxNumberValidation } from 'utils/maxNumberValidation';
-import { FormatToken } from 'shared/formatters/format-token';
-import { DataTableRowStethByWsteth } from 'shared/components/data-table-row-steth-by-wsteth';
+import { SelectIcon, Option, DataTableRow } from '@lidofinance/lido-ui';
+
+import { TOKENS } from '@lido-sdk/constants';
+import { iconsMap } from 'features/withdrawals/providers/withdrawals-provider/provider';
 
 // TODO move to shared
 import { useApproveGasLimit } from 'features/wrap/features/wrap-form/hooks';
-import { InputLocked } from 'features/wrap/components';
 
 export const Form = () => {
   const [inputValue, setInputValue] = useState('');
-
   const { active } = useWeb3();
   const { minAmount } = useWithdrawalsConstants();
   const { tokenBalance, tokenLabel, tokenContract, setToken, token } =
     useToken();
   const { tvlMessage, stakeButton } = useInputTvlValidate(inputValue);
-
-  const validateUnstakeValue = useValidateUnstakeValue({
-    inputName: `${tokenLabel} amount`,
-    limit: tokenBalance,
-    minimum: minAmount,
-  });
-
-  const { error, inputTouched, setInputTouched } = useInputValidate({
-    value: inputValue,
-    validationFn: validateUnstakeValue,
-    shouldValidate: active,
-  });
-
-  const handleInputChange = useCallback(
-    (event: React.ChangeEvent<HTMLInputElement>) => {
-      if (!inputTouched) setInputTouched(true);
-      setInputValue(maxNumberValidation(event?.currentTarget.value));
-    },
-    [inputTouched, setInputTouched],
-  );
-
-  const handleResetInput = useCallback(() => {
-    setInputValue('');
-    setInputTouched(false);
-  }, [setInputTouched]);
-
-  const handleChangeToken = useCallback(
-    (token: TOKENS.STETH | TOKENS.WSTETH) => {
-      setToken(token);
-      handleResetInput();
-    },
-    [setToken, handleResetInput],
-  );
 
   const {
     isApprovalFlowLoading,
@@ -83,8 +46,6 @@ export const Form = () => {
     allowance,
   } = useWithdrawalRequest({
     value: inputValue,
-    reset: handleResetInput,
-    tokenLabel,
     tokenContract,
     token,
   });
@@ -101,28 +62,46 @@ export const Form = () => {
     requestCount: requests.length,
   });
 
-  const onSubmit = useCallback(
-    (event: React.FormEvent) => {
-      event.preventDefault();
-      request(requests);
+  const submit = useCallback(
+    async (inputValue: string, resetForm: () => void) => {
+      await request(requests, resetForm);
     },
     [request, requests],
   );
 
-  const maxAmount = useMemo(() => {
-    return formatEther(tokenBalance || BigNumber.from(0));
-  }, [tokenBalance]);
+  const validateUnstakeValue = useValidateUnstakeValue({ minAmount });
 
-  const isMaxDisabled = maxAmount === '0.0';
+  const {
+    handleChange,
+    error,
+    isSubmitting,
+    handleSubmit,
+    reset,
+    setMaxInputValue,
+    isMaxDisabled,
+  } = useCurrencyInput({
+    inputValue,
+    setInputValue,
+    inputName: `${tokenLabel} amount`,
+    limit: tokenBalance,
+    submit,
+    token,
+    extraValidationFn: validateUnstakeValue,
+    shouldValidate: active,
+  });
 
-  const setMaxInputValue = useCallback(() => {
-    setInputValue(maxAmount);
-  }, [maxAmount]);
+  const handleChangeToken = useCallback(
+    (token: TOKENS.STETH | TOKENS.WSTETH) => {
+      setToken(token);
+      reset();
+    },
+    [setToken, reset],
+  );
 
   const showError = active && !!error && !tvlMessage;
 
   return (
-    <form method="post" onSubmit={onSubmit}>
+    <form method="post" onSubmit={handleSubmit}>
       <InputGroupStyled
         fullwidth
         error={showError && error}
@@ -153,13 +132,13 @@ export const Form = () => {
                   onClick={setMaxInputValue}
                   disabled={isMaxDisabled}
                 />
-                {isTokenLocked ? <InputLocked /> : undefined}
+                {isTokenLocked ? <InputDecoratorLocked /> : undefined}
               </>
             )
           }
           label={`${tokenLabel} amount`}
           value={inputValue}
-          onChange={handleInputChange}
+          onChange={handleChange}
           error={showError}
         />
       </InputGroupStyled>
@@ -168,8 +147,8 @@ export const Form = () => {
       <Options inputValue={inputValue} />
       <FormButton
         isLocked={isTokenLocked}
-        pending={isTxPending}
-        disabled={!!error || !inputValue}
+        pending={isTxPending || isSubmitting}
+        disabled={!!error}
       />
       <DataTableRow
         help={

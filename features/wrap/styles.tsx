@@ -1,6 +1,6 @@
 import styled, { css } from 'styled-components';
 import { InputGroup, SelectIcon } from '@lidofinance/lido-ui';
-import { InputNumber } from 'shared/components/input-number';
+import { InputNumber } from 'shared/forms/components/input-number';
 
 const errorCSS = css`
   &,

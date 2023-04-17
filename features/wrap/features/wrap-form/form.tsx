@@ -14,15 +14,15 @@ import {
   useWSTETHContractWeb3,
   useSDK,
 } from '@lido-sdk/react';
-import { useWeb3 } from 'reef-knot/web3-react';
-import { useCurrencyInput } from 'shared/hooks';
+import { useWeb3 } from '@reef-knot/web3-react';
+import { useCurrencyInput } from 'shared/forms/hooks/useCurrencyInput';
 import { wrapProcessingWithApprove } from 'features/wrap/utils';
 import { TX_OPERATION, TX_STAGE } from 'shared/components';
 import { L2Banner } from 'shared/l2-banner';
 import { MATOMO_CLICK_EVENTS } from 'config';
 import { Connect } from 'shared/wallet';
-import { InputLocked } from 'features/wrap/components';
-import { InputDecoratorMaxButton } from 'shared/components/input-decorator-max-button';
+import { InputDecoratorLocked } from 'shared/forms/components/input-decorator-locked';
+import { InputDecoratorMaxButton } from 'shared/forms/components/input-decorator-max-button';
 import {
   FormStyled,
   InputGroupStyled,
@@ -30,6 +30,7 @@ import {
   InputWrapper,
 } from 'features/wrap/styles';
 import { trackEvent } from '@lidofinance/analytics-matomo';
+import { getTokenDisplayName } from 'utils/getTokenDisplayName';
 
 const ETH = 'ETH';
 
@@ -133,20 +134,23 @@ export const Form: FC<FromProps> = (props) => {
     ],
   );
 
+  const inputName = `${getTokenDisplayName(selectedToken)} amount`;
+
   const {
     handleSubmit,
     handleChange,
     error,
-    isValidating,
     isSubmitting,
     setMaxInputValue,
     isMaxDisabled,
     reset,
   } = useCurrencyInput({
+    inputValue,
+    inputName,
+    setInputValue,
     submit: wrapProcessing,
     limit: balanceBySelectedToken,
     token: selectedToken,
-    externalSetInputValue: setInputValue,
     gasLimit: wrapGasLimit,
   });
 
@@ -176,7 +180,7 @@ export const Form: FC<FromProps> = (props) => {
   const buttonProps: React.ComponentProps<typeof Button> = {
     fullwidth: true,
     type: 'submit',
-    disabled: isValidating || !!error,
+    disabled: !!error,
     loading: isSubmitting,
   };
 
@@ -212,13 +216,13 @@ export const Form: FC<FromProps> = (props) => {
                 disabled={isMaxDisabled}
               />
               {account && needsApprove && selectedToken === TOKENS.STETH ? (
-                <InputLocked />
+                <InputDecoratorLocked />
               ) : (
                 ''
               )}
             </>
           }
-          label="Amount"
+          label={inputName}
           value={inputValue}
           onChange={handleChange}
           error={!!error}
