@@ -14,9 +14,8 @@ import { useTxCostInUsd } from 'shared/hooks';
 import {
   useSplitRequest,
   useWithdrawalRequest,
-  useRequestForm,
 } from 'features/withdrawals/hooks';
-import { iconsMap } from 'features/withdrawals/providers/withdrawals-provider/provider';
+import { iconsMap } from 'features/withdrawals/contexts/withdrawals-context';
 import { useRequestTxPrice } from 'features/withdrawals/hooks/useWithdrawTxPrice';
 
 import { Options } from '../options';
@@ -26,6 +25,7 @@ import { FormButton } from './form-button';
 import { InputGroupStyled } from './styles';
 import { FormatToken } from 'shared/formatters/format-token';
 import { DataTableRowStethByWsteth } from 'shared/components/data-table-row-steth-by-wsteth';
+import { useRequestForm } from 'features/withdrawals/contexts/request-form-context';
 
 // TODO move to shared
 import { useApproveGasLimit } from 'features/wrap/features/wrap-form/hooks';

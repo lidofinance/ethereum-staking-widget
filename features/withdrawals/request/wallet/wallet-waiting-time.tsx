@@ -1,11 +1,9 @@
 import { CardBalance } from 'shared/wallet';
 import { Status } from 'features/withdrawals/shared';
-import {
-  useWithdrawals,
-  useRequestData,
-  useWaitingTime,
-  useRequestForm,
-} from 'features/withdrawals/hooks';
+import { useWaitingTime } from 'features/withdrawals/hooks';
+import { useRequestForm } from 'features/withdrawals/contexts/request-form-context';
+import { useRequestData } from 'features/withdrawals/contexts/request-data-context';
+import { useWithdrawals } from 'features/withdrawals/contexts/withdrawals-context';
 
 import { WalletQueueTooltip } from './wallet-queue-tooltip';
 

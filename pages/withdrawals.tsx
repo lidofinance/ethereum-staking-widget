@@ -2,7 +2,7 @@ import { FC } from 'react';
 import { GetServerSideProps } from 'next';
 import Head from 'next/head';
 import { WithdrawalsTabs } from 'features/withdrawals';
-import { WithdrawalsProvider } from 'features/withdrawals/providers/withdrawals-provider';
+import { WithdrawalsProvider } from 'features/withdrawals/contexts/withdrawals-context';
 import { Layout } from 'shared/components';
 import Page404 from './404';
 import { dynamics } from 'config';

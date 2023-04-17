@@ -1,7 +1,6 @@
 import { parseEther } from '@ethersproject/units';
 import { BigNumber } from 'ethers';
-
-import { useRequestForm } from 'features/withdrawals/hooks';
+import { useRequestForm } from 'features/withdrawals/contexts/request-form-context';
 
 import { Option, OptionProps } from '../option';
 

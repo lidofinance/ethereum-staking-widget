@@ -14,9 +14,10 @@ import {
   EtherscanTxLink,
 } from 'features/withdrawals/shared/tx-stage-modal';
 import { useTransactionModal } from 'features/withdrawals/contexts/transaction-modal-context';
+import { useWithdrawals } from 'features/withdrawals/contexts/withdrawals-context';
+
 import { NFTBanner } from './nft-banner';
 import { NFTBunnerWrapper } from './styles';
-import { useWithdrawals } from 'features/withdrawals/hooks/useWithdrawals';
 
 export const TxRequestModal = () => {
   const {

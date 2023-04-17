@@ -2,11 +2,11 @@ import { Switch } from 'shared/components';
 import { RequestFaq } from 'features/withdrawals/withdrawals-faq/request-faq';
 import { ClaimFaq } from 'features/withdrawals/withdrawals-faq/claim-faq';
 
-import { RequestDataProvider } from './providers/request-data-provider';
-import { RequestFormProvider } from './providers/request-form-provider';
+import { RequestDataProvider } from './contexts/request-data-context';
+import { RequestFormProvider } from './contexts/request-form-context';
 import { TransactionModalProvider } from './contexts/transaction-modal-context';
 import { ClaimDataProvider } from './contexts/claim-data-context';
-import { useWithdrawals } from './hooks';
+import { useWithdrawals } from './contexts/withdrawals-context';
 import { RequestForm, RequestWallet } from './request';
 import { ClaimForm, ClaimWallet } from './claim';
 import { TxRequestModal } from './request/tx-modal/tx-request-modal';

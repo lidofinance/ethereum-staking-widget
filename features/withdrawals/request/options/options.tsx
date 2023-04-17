@@ -1,4 +1,4 @@
-import { useRequestData } from 'features/withdrawals/hooks';
+import { useRequestData } from 'features/withdrawals/contexts/request-data-context';
 
 import { Lido, Oneinch } from './common';
 import { OptionsBlockStyled } from './styles';

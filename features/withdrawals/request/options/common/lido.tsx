@@ -1,9 +1,9 @@
 import {
   useEthAmountByStethWsteth,
   useWaitingTime,
-  useWithdrawals,
-  useRequestForm,
 } from 'features/withdrawals/hooks';
+import { useRequestForm } from 'features/withdrawals/contexts/request-form-context';
+import { useWithdrawals } from 'features/withdrawals/contexts/withdrawals-context';
 
 import { Option, OptionProps } from '../option';
 import { TooltipWithdrawalAmount } from './lido-tooltip-withdrawal-amount';

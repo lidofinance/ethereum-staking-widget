@@ -1,7 +1,15 @@
-import { FC, createContext, useCallback, useMemo, useState } from 'react';
+import {
+  FC,
+  createContext,
+  useCallback,
+  useContext,
+  useMemo,
+  useState,
+} from 'react';
 import { BigNumber } from 'ethers';
 import { TOKENS } from '@lido-sdk/constants';
 import { WstethAbi } from '@lido-sdk/contracts';
+import invariant from 'tiny-invariant';
 
 import {
   useValidateUnstakeValue,
@@ -14,9 +22,7 @@ import { useWeb3 } from 'reef-knot/web3-react';
 import { StethPermitAbi } from 'generated';
 import { maxNumberValidation } from 'utils';
 
-export const RequestFormContext = createContext({} as RequestFormValue);
-
-export type RequestFormValue = {
+export type RequestFormContextValue = {
   inputValue: string;
   setInputValue: (value: string) => void;
   error: string;
@@ -32,8 +38,16 @@ export type RequestFormValue = {
   stakeButton: JSX.Element;
   tokenBalance?: BigNumber;
 };
+const RequestFormContext = createContext<RequestFormContextValue | null>(null);
+RequestFormContext.displayName = 'RequestFormContext';
 
-const RequestFormProvider: FC = ({ children }) => {
+export const useRequestForm = () => {
+  const value = useContext(RequestFormContext);
+  invariant(value, 'useRequestForm was used outside RequestFormContext');
+  return value;
+};
+
+export const RequestFormProvider: FC = ({ children }) => {
   const [inputValue, setInputValue] = useState('');
   const { active } = useWeb3();
   const { minAmount } = useWithdrawalsConstants();
@@ -113,5 +127,3 @@ const RequestFormProvider: FC = ({ children }) => {
     </RequestFormContext.Provider>
   );
 };
-
-export default RequestFormProvider;

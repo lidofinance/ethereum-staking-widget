@@ -1,6 +1,11 @@
 import { useCallback, useMemo, useState } from 'react';
 import { BigNumber } from 'ethers';
 import invariant from 'tiny-invariant';
+import { useWeb3 } from 'reef-knot/web3-react';
+import { parseEther } from '@ethersproject/units';
+import type { WstethAbi } from '@lido-sdk/contracts';
+import { useSDK } from '@lido-sdk/react';
+import { TOKENS } from '@lido-sdk/constants';
 
 import { TX_STAGE } from 'features/withdrawals/shared/tx-stage-modal';
 import {
@@ -8,23 +13,15 @@ import {
   useERC20PermitSignature,
   useIsContract,
 } from 'shared/hooks';
-import {
-  useRequestData,
-  useWithdrawals,
-  useWithdrawalsApprove,
-} from 'features/withdrawals/hooks';
+import { useWithdrawalsApprove } from 'features/withdrawals/hooks';
 import { getErrorMessage, runWithTransactionLogger } from 'utils';
+import { isContract } from 'utils/isContract';
+import type { StethPermitAbi } from 'generated';
+import { useTransactionModal } from 'features/withdrawals/contexts/transaction-modal-context';
+import { useRequestData } from 'features/withdrawals/contexts/request-data-context';
+import { useWithdrawals } from 'features/withdrawals/contexts/withdrawals-context';
 
 import { useWithdrawalsContract } from './useWithdrawalsContract';
-import { TOKENS } from '@lido-sdk/constants';
-import { isContract } from 'utils/isContract';
-import { useSDK } from '@lido-sdk/react';
-
-import { useTransactionModal } from 'features/withdrawals/contexts/transaction-modal-context';
-import { useWeb3 } from 'reef-knot/web3-react';
-import { parseEther } from '@ethersproject/units';
-import type { StethPermitAbi } from 'generated';
-import type { WstethAbi } from '@lido-sdk/contracts';
 
 // this encapsulates permit/approval & steth/wsteth flows
 const useWithdrawalRequestMethods = () => {

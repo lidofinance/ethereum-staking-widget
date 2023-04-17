@@ -4,7 +4,7 @@ import { useMemo } from 'react';
 import { useDebouncedValue } from 'shared/hooks';
 import { encodeURLQuery } from 'utils/encodeURLQuery';
 import { standardFetcher } from 'utils/standardFetcher';
-import { useWithdrawals } from './useWithdrawals';
+import { useWithdrawals } from 'features/withdrawals/contexts/withdrawals-context';
 
 const DEFAULT_DAYS_VALUE = 5;
 
