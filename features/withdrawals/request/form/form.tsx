@@ -65,7 +65,7 @@ export const Form = () => {
 
   const submit = useCallback(
     async (inputValue: string, resetForm: () => void) => {
-      await request(requests, resetForm);
+      request(requests, resetForm);
     },
     [request, requests],
   );

@@ -280,7 +280,7 @@ export const useWithdrawalRequest = ({
   const isTokenLocked = isApprovalFlow && needsApprove;
 
   const request = useCallback(
-    async (requests: BigNumber[], resetForm: () => void) => {
+    (requests: BigNumber[], resetForm: () => void) => {
       // define and set retry point
       const startCallback = async () => {
         try {
