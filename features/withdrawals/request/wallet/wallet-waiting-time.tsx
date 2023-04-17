@@ -1,22 +1,26 @@
 import { CardBalance } from 'shared/wallet';
 import { Status } from 'features/withdrawals/shared';
-import { useWithdrawals, useRequestData } from 'features/withdrawals/hooks';
+import {
+  useWithdrawals,
+  useRequestData,
+  useWaitingTime,
+  useRequestForm,
+} from 'features/withdrawals/hooks';
 
 import { WalletQueueTooltip } from './wallet-queue-tooltip';
 
 export const WalletWaitingTime = () => {
-  const { withdrawalsStatus, isBunkerMode, isPaused } = useWithdrawals();
+  const { withdrawalsStatus } = useWithdrawals();
   const { unfinalizedStETH } = useRequestData();
+  const { inputValue } = useRequestForm();
+  const waitingTime = useWaitingTime(inputValue);
 
-  const contentValue = isPaused
-    ? '—'
-    : isBunkerMode
-    ? 'Not estimated'
-    : '1 - 5 day(s)';
+  const content = (
+    <Status variant={withdrawalsStatus}>{waitingTime.value}</Status>
+  );
 
-  const content = <Status variant={withdrawalsStatus}>{contentValue}</Status>;
-
-  const isLoading = unfinalizedStETH.initialLoading;
+  const isLoading =
+    unfinalizedStETH.initialLoading || waitingTime.initialLoading;
 
   const timeTitle = <>Waiting time {<WalletQueueTooltip />}</>;
 

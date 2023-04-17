@@ -1,6 +1,8 @@
 import {
   useEthAmountByStethWsteth,
+  useWaitingTime,
   useWithdrawals,
+  useRequestForm,
 } from 'features/withdrawals/hooks';
 
 import { Option, OptionProps } from '../option';
@@ -9,28 +11,19 @@ import { OptionAmountRow } from '../styles';
 
 import { FormatTokenStyled } from './styles';
 
-type LidoProps = Pick<OptionProps, 'selected' | 'onClick'> & {
-  inputValue?: string;
-};
+type LidoProps = Pick<OptionProps, 'selected' | 'onClick'>;
 
-export const Lido: React.FC<LidoProps> = ({
-  selected,
-  inputValue,
-  ...rest
-}: LidoProps) => {
-  const { isBunkerMode, isSteth, isPaused } = useWithdrawals();
+export const Lido = ({ selected, ...rest }: LidoProps) => {
+  const { inputValue } = useRequestForm();
+  const { isSteth } = useWithdrawals();
+  const { value } = useWaitingTime(inputValue);
   const ethAmount = useEthAmountByStethWsteth({ isSteth, input: inputValue });
-  const timeRange = isPaused
-    ? '—'
-    : isBunkerMode
-    ? 'Not estimated'
-    : '1 - 5 day(s)';
 
   return (
     <Option
       type="lido"
       title="Lido"
-      timeRange={timeRange}
+      timeRange={value}
       selected={selected}
       {...rest}
     >

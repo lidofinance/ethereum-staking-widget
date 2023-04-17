@@ -3,6 +3,7 @@ import { RequestFaq } from 'features/withdrawals/withdrawals-faq/request-faq';
 import { ClaimFaq } from 'features/withdrawals/withdrawals-faq/claim-faq';
 
 import { RequestDataProvider } from './providers/request-data-provider';
+import { RequestFormProvider } from './providers/request-form-provider';
 import { TransactionModalProvider } from './contexts/transaction-modal-context';
 import { ClaimDataProvider } from './contexts/claim-data-context';
 import { useWithdrawals } from './hooks';
@@ -16,28 +17,28 @@ export const WithdrawalsTabs = () => {
   return (
     <ClaimDataProvider>
       <Switch checked={isClaimTab} routes={navRoutes} />
-      <RequestDataProvider>
-        {/* We reuse provider but make sure these are different components for tabs */}
-        <TransactionModalProvider
-          key={isClaimTab ? 'CLAIM_PROVIDER' : 'REQeUST_PROVIDER'}
-        >
-          {isClaimTab ? (
-            <>
-              <ClaimWallet />
-              <ClaimForm />
-              <ClaimFaq />
-              <TxClaimModal />
-            </>
-          ) : (
-            <>
+      {/* We reuse provider but make sure these are different components for tabs */}
+      <TransactionModalProvider
+        key={isClaimTab ? 'CLAIM_PROVIDER' : 'REQeUST_PROVIDER'}
+      >
+        {isClaimTab ? (
+          <>
+            <ClaimWallet />
+            <ClaimForm />
+            <ClaimFaq />
+            <TxClaimModal />
+          </>
+        ) : (
+          <RequestDataProvider>
+            <RequestFormProvider>
               <RequestWallet />
               <RequestForm />
-              <RequestFaq />
-              <TxRequestModal />
-            </>
-          )}
-        </TransactionModalProvider>
-      </RequestDataProvider>
+            </RequestFormProvider>
+            <RequestFaq />
+            <TxRequestModal />
+          </RequestDataProvider>
+        )}
+      </TransactionModalProvider>
     </ClaimDataProvider>
   );
 };
