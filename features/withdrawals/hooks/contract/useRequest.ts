@@ -25,6 +25,7 @@ import { useWeb3 } from 'reef-knot/web3-react';
 import { parseEther } from '@ethersproject/units';
 import type { StethPermitAbi } from 'generated';
 import type { WstethAbi } from '@lido-sdk/contracts';
+import type { TokensWithdrawable } from 'features/withdrawals/types/tokens-withdrawable';
 
 // this encapsulates permit/approval & steth/wsteth flows
 const useWithdrawalRequestMethods = () => {
@@ -222,16 +223,14 @@ const useWithdrawalRequestMethods = () => {
 
 type useWithdrawalRequestOptions = {
   value: string;
-  tokenLabel: string;
   tokenContract: StethPermitAbi | WstethAbi | null;
-  token: TOKENS.STETH | TOKENS.WSTETH;
+  token: TokensWithdrawable;
 };
 
 // provides form with a handler to call signing flow
 // and all needed indicators for ux
 export const useWithdrawalRequest = ({
   value,
-  tokenLabel,
   tokenContract,
   token,
 }: useWithdrawalRequestOptions) => {
@@ -301,7 +300,7 @@ export const useWithdrawalRequest = ({
                 : TX_STAGE.SIGN
               : TX_STAGE.PERMIT,
             requestAmount,
-            tokenName: tokenLabel,
+            token,
           });
 
           // each flow switches needed signing stages
@@ -349,7 +348,6 @@ export const useWithdrawalRequest = ({
       needsApprove,
       setIsTxPending,
       token,
-      tokenLabel,
     ],
   );
 

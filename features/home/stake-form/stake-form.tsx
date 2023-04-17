@@ -36,6 +36,7 @@ import { stakeProcessing } from './utils';
 import { useStethSubmitGasLimit } from './hooks';
 import { useStakeableEther } from '../hooks';
 import { useStakingLimitWarn } from './useStakingLimitWarn';
+import { getTokenDisplayName } from 'utils/getTokenDisplayName';
 
 export const StakeForm: FC = memo(() => {
   const router = useRouter();
@@ -96,6 +97,9 @@ export const StakeForm: FC = memo(() => {
     ],
   );
 
+  const token = 'ETH';
+  const inputName = `${getTokenDisplayName(token)} amount`;
+
   const {
     handleSubmit,
     handleChange,
@@ -107,6 +111,7 @@ export const StakeForm: FC = memo(() => {
   } = useCurrencyInput({
     inputValue,
     setInputValue,
+    inputName,
     initialValue,
     submit,
     limit:
@@ -164,7 +169,7 @@ export const StakeForm: FC = memo(() => {
               disabled={isMaxDisabled}
             />
           }
-          label="Amount"
+          label={inputName}
           value={inputValue}
           onChange={handleChange}
           error={error}

@@ -46,7 +46,6 @@ export const Form = () => {
     allowance,
   } = useWithdrawalRequest({
     value: inputValue,
-    tokenLabel,
     tokenContract,
     token,
   });
@@ -86,7 +85,7 @@ export const Form = () => {
     inputName: `${tokenLabel} amount`,
     limit: tokenBalance,
     submit,
-    token: tokenLabel,
+    token,
     extraValidationFn: validateUnstakeValue,
     shouldValidate: active,
   });

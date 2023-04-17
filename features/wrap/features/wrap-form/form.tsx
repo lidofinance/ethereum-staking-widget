@@ -30,6 +30,7 @@ import {
   InputWrapper,
 } from 'features/wrap/styles';
 import { trackEvent } from '@lidofinance/analytics-matomo';
+import { getTokenDisplayName } from 'utils/getTokenDisplayName';
 
 const ETH = 'ETH';
 
@@ -133,6 +134,8 @@ export const Form: FC<FromProps> = (props) => {
     ],
   );
 
+  const inputName = `${getTokenDisplayName(selectedToken)} amount`;
+
   const {
     handleSubmit,
     handleChange,
@@ -143,6 +146,7 @@ export const Form: FC<FromProps> = (props) => {
     reset,
   } = useCurrencyInput({
     inputValue,
+    inputName,
     setInputValue,
     submit: wrapProcessing,
     limit: balanceBySelectedToken,
@@ -218,7 +222,7 @@ export const Form: FC<FromProps> = (props) => {
               )}
             </>
           }
-          label="Amount"
+          label={inputName}
           value={inputValue}
           onChange={handleChange}
           error={!!error}

@@ -10,6 +10,7 @@ import { BigNumber } from 'ethers';
 
 import { TX_STAGE } from 'features/withdrawals/shared/tx-stage-modal';
 import invariant from 'tiny-invariant';
+import type { TokensWithdrawable } from '../types/tokens-withdrawable';
 
 type RequestTxModalContextValue = RequestTxModalState & {
   dispatchModalState: Dispatch<RequestTxModalAction>;
@@ -22,7 +23,7 @@ type RequestTxModalState = {
   errorText: string | null;
   txHash: string | null;
   requestAmount: BigNumber | null;
-  tokenName: string | null;
+  token: TokensWithdrawable | null;
 };
 
 type RequestTxModalAction =
@@ -42,7 +43,7 @@ type RequestTxModalAction =
   | {
       type: 'start';
       flow: TX_STAGE.APPROVE | TX_STAGE.PERMIT | TX_STAGE.SIGN;
-      tokenName: string | null;
+      token: TokensWithdrawable;
       requestAmount: BigNumber;
     }
   | {
@@ -76,7 +77,7 @@ const txModalReducer = (
         txStage: TX_STAGE.NONE,
         errorText: null,
         requestAmount: null,
-        tokenName: null,
+        token: null,
         txHash: null,
         // keep old (re)start callback if have one
         startTx: state.startTx,
@@ -104,7 +105,7 @@ const txModalReducer = (
         txStage: action.flow,
         isModalOpen: true,
         requestAmount: action.requestAmount,
-        tokenName: action.tokenName,
+        token: action.token,
         // keep (re)start callback
         startTx: state.startTx,
       };
@@ -146,7 +147,7 @@ const initTxModalState = (): RequestTxModalState => ({
   errorText: null,
   txHash: null,
   requestAmount: null,
-  tokenName: null,
+  token: null,
 });
 
 export const useTransactionModal = () => {

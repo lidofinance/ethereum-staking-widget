@@ -34,6 +34,7 @@ import { FormStyled, InputStyled } from 'features/wrap/styles';
 import { DataTableRowStethByWsteth } from 'shared/components/data-table-row-steth-by-wsteth';
 import { unwrapProcessing } from 'features/wrap/utils';
 import { useUnwrapGasLimit } from './hooks';
+import { getTokenDisplayName } from 'utils/getTokenDisplayName';
 
 export const UnwrapForm: FC = memo(() => {
   const { active, chainId } = useWeb3();
@@ -93,6 +94,9 @@ export const UnwrapForm: FC = memo(() => {
     ],
   );
 
+  const token = TOKENS.WSTETH;
+  const inputName = `${getTokenDisplayName(token)} amount`;
+
   const {
     handleSubmit,
     handleChange,
@@ -104,9 +108,10 @@ export const UnwrapForm: FC = memo(() => {
   } = useCurrencyInput({
     inputValue,
     setInputValue,
+    inputName,
     submit: unWrapProcessing,
     limit: wstethBalance.data,
-    token: TOKENS.WSTETH,
+    token,
   });
 
   // Needs for tx modal
@@ -145,7 +150,7 @@ export const UnwrapForm: FC = memo(() => {
               disabled={isMaxDisabled}
             />
           }
-          label="Amount"
+          label={inputName}
           value={inputValue}
           onChange={handleChange}
           error={error}
