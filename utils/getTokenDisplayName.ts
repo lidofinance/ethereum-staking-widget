@@ -2,7 +2,6 @@ import { TOKENS } from '@lido-sdk/constants';
 
 export const TOKEN_DISPLAY_NAMES = {
   ETH: 'ETH',
-  [TOKENS.LDO]: 'LDO',
   [TOKENS.STETH]: 'stETH',
   [TOKENS.WSTETH]: 'wstETH',
 };
