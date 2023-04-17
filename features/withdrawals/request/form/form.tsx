@@ -15,7 +15,7 @@ import { useCurrencyInput } from 'shared/forms/hooks/useCurrencyInput';
 import { Options } from '../options';
 import { FormatToken } from 'shared/formatters/format-token';
 import { RequestsInfo } from '../requestsInfo';
-import { InputNumber } from 'shared/components/input-number';
+import { InputNumber } from 'shared/forms/components/input-number';
 import { DataTableRowStethByWsteth } from 'shared/components/data-table-row-steth-by-wsteth';
 import { InputDecoratorLocked } from 'shared/forms/components/input-decorator-locked';
 import { InputDecoratorMaxButton } from 'shared/forms/components/input-decorator-max-button';
