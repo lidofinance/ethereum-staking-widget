@@ -6,6 +6,7 @@ import { Layout } from 'shared/components';
 import { WrapForm, UnwrapForm, Wallet, WrapFaq } from 'features/wrap';
 import { Switch } from 'features/wrap/components';
 import { getQueryParams } from 'utils';
+import NoSSRWrapper from '../shared/components/no-ssr-wrapper';
 
 const WrapPage: FC = () => {
   const router = useRouter();
@@ -50,9 +51,10 @@ const WrapPage: FC = () => {
         uncheckedLabel="Unwrap"
       />
 
-      <Wallet />
-
-      {isUnwrapMode ? <UnwrapForm /> : <WrapForm />}
+      <NoSSRWrapper>
+        <Wallet />
+        {isUnwrapMode ? <UnwrapForm /> : <WrapForm />}
+      </NoSSRWrapper>
 
       <WrapFaq />
     </Layout>
