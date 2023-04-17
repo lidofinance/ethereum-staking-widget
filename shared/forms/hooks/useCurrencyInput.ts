@@ -4,6 +4,7 @@ import { useInputValidate } from 'shared/forms/hooks/useInputValidate';
 import { useCurrencyAmountValidator } from 'shared/forms/hooks/useCurrencyAmountValidator';
 
 import { BigNumber } from 'ethers';
+import { maxNumberValidation } from 'utils/maxNumberValidation';
 import type { ValidationFn } from 'shared/forms/types/validation-fn';
 
 type UseCurrencyInputArgs = {
@@ -52,7 +53,7 @@ export const useCurrencyInput = ({
   const handleChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
       if (!inputTouched) setInputTouched(true);
-      setInputValue(event?.currentTarget.value);
+      setInputValue(maxNumberValidation(event?.currentTarget.value));
     },
     [inputTouched, setInputTouched, setInputValue],
   );

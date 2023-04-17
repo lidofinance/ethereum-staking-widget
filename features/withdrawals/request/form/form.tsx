@@ -24,14 +24,13 @@ import { FormButton } from './form-button';
 import { InputGroupStyled } from './styles';
 
 import { TOKENS } from '@lido-sdk/constants';
-import { maxNumberValidation } from 'utils/maxNumberValidation';
 import { iconsMap } from 'features/withdrawals/providers/withdrawals-provider/provider';
 
 // TODO move to shared
 import { useApproveGasLimit } from 'features/wrap/features/wrap-form/hooks';
 
 export const Form = () => {
-  const [inputValue, setInputValueState] = useState('');
+  const [inputValue, setInputValue] = useState('');
   const { active } = useWeb3();
   const { minAmount } = useWithdrawalsConstants();
   const { tokenBalance, tokenLabel, tokenContract, setToken, token } =
@@ -72,10 +71,6 @@ export const Form = () => {
   );
 
   const validateUnstakeValue = useValidateUnstakeValue({ minAmount });
-
-  const setInputValue = useCallback((value: string) => {
-    setInputValueState(maxNumberValidation(value));
-  }, []);
 
   const {
     handleChange,
