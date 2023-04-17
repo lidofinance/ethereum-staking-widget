@@ -1,6 +1,6 @@
 // example.spec.ts
 import { test, expect } from '@playwright/test';
-import { WidgetPage } from './pages/widget.page';
+import { WidgetPage } from './pages/widget.page.js';
 
 test('widget page should contain info', async ({ page }) => {
   const widgetPage = new WidgetPage(page);

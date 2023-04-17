@@ -10,7 +10,7 @@ import {
   useInputTvlValidate,
 } from 'features/withdrawals/hooks';
 import { useInputValidate } from 'shared/hooks';
-import { useWeb3 } from 'reef-knot';
+import { useWeb3 } from 'reef-knot/web3-react';
 import { StethPermitAbi } from 'generated';
 import { maxNumberValidation } from 'utils';
 

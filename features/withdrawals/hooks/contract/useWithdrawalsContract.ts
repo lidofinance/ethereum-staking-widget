@@ -1,4 +1,4 @@
-import { useWeb3 } from 'reef-knot';
+import { useWeb3 } from 'reef-knot/web3-react';
 
 import {
   useWithdrawalRequestNFTRPC,

@@ -16,7 +16,7 @@ import {
   Button,
 } from '@lidofinance/lido-ui';
 import { TOKENS } from '@lido-sdk/constants';
-import { useWeb3 } from '@reef-knot/web3-react';
+import { useWeb3 } from 'reef-knot/web3-react';
 import {
   useSTETHBalance,
   useWSTETHBalance,

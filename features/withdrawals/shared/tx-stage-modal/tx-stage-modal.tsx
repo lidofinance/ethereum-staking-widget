@@ -1,6 +1,6 @@
 import { FC, useMemo } from 'react';
 import { Modal, ModalProps } from '@lidofinance/lido-ui';
-import { useConnectorInfo } from 'reef-knot';
+import { useConnectorInfo } from 'reef-knot/web3-react';
 
 import { TX_STAGE } from './types';
 
