@@ -14,7 +14,7 @@ import {
   useWSTETHContractWeb3,
   useSDK,
 } from '@lido-sdk/react';
-import { useWeb3 } from '@reef-knot/web3-react';
+import { useWeb3 } from 'reef-knot/web3-react';
 import { useCurrencyInput } from 'shared/hooks';
 import { wrapProcessingWithApprove } from 'features/wrap/utils';
 import { TX_OPERATION, TX_STAGE } from 'shared/components';
@@ -152,15 +152,17 @@ export const Form: FC<FromProps> = (props) => {
 
   const onChangeSelectToken = useCallback(
     async (value) => {
+      if (value === selectedToken) return;
       setSelectedToken(value as keyof typeof iconsMap);
-      setMaxInputValue();
+      setInputValue('');
+      reset();
       trackEvent(
         ...(value === 'ETH'
           ? MATOMO_CLICK_EVENTS.wrapTokenSelectEth
           : MATOMO_CLICK_EVENTS.wrapTokenSelectSteth),
       );
     },
-    [setMaxInputValue, setSelectedToken],
+    [setSelectedToken, setInputValue, reset, selectedToken],
   );
 
   // Reset form amount after disconnect wallet
@@ -170,12 +172,6 @@ export const Form: FC<FromProps> = (props) => {
       reset();
     }
   }, [active, reset, setInputValue]);
-
-  useEffect(() => {
-    if (selectedToken) {
-      setMaxInputValue();
-    }
-  }, [selectedToken, setMaxInputValue]);
 
   const buttonProps: React.ComponentProps<typeof Button> = {
     fullwidth: true,

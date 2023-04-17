@@ -16,7 +16,7 @@ import {
   Button,
 } from '@lidofinance/lido-ui';
 import { TOKENS } from '@lido-sdk/constants';
-import { useWeb3 } from '@reef-knot/web3-react';
+import { useWeb3 } from 'reef-knot/web3-react';
 import {
   useSTETHBalance,
   useWSTETHBalance,
@@ -32,8 +32,8 @@ import {
 } from 'shared/hooks';
 import { formatBalance } from 'utils';
 import { Connect } from 'shared/wallet';
-import { FormatToken } from 'shared/formatters';
 import { FormStyled, InputStyled, MaxButton } from 'features/wrap/styles';
+import { DataTableRowStethByWsteth } from 'shared/components/data-table-row-steth-by-wsteth';
 import { unwrapProcessing } from 'features/wrap/utils';
 import { useUnwrapGasLimit } from './hooks';
 
@@ -52,19 +52,9 @@ export const UnwrapForm: FC = memo(() => {
   const [txHash, setTxHash] = useState<string>();
   const [txModalFailedText, setTxModalFailedText] = useState('');
 
-  const wstethBalanceAsStringOrNull = useMemo(() => {
-    if (!wstethBalance?.data) {
-      return null;
-    }
-
-    return formatBalance(wstethBalance.data);
-  }, [wstethBalance.data]);
   const unwrapGasLimit = useUnwrapGasLimit();
-  const oneWstethAsBigNumber = useMemo(() => parseEther('1'), []);
 
   const unwrapTxCostInUsd = useTxCostInUsd(unwrapGasLimit);
-  const oneWstethConvertedToStethAsBigNumber =
-    useStethByWsteth(oneWstethAsBigNumber);
 
   const openTxModal = useCallback(() => {
     setTxModalOpen(true);
@@ -119,15 +109,6 @@ export const UnwrapForm: FC = memo(() => {
     limit: wstethBalance.data,
     token: TOKENS.WSTETH,
   });
-
-  // Set max wsteth balance to input field after page loaded.
-  // We can't use this `wstethBalance` var, because `wstethBalance` is object,
-  // so we get a input field that can't be changed.
-  useEffect(() => {
-    if (wstethBalanceAsStringOrNull) {
-      setMaxInputValue();
-    }
-  }, [wstethBalanceAsStringOrNull, setMaxInputValue]);
 
   // Needs for tx modal
   const inputValueAsBigNumber = useMemo(() => {
@@ -195,16 +176,7 @@ export const UnwrapForm: FC = memo(() => {
         <DataTableRow title="Max gas fee" loading={!unwrapTxCostInUsd}>
           ${unwrapTxCostInUsd?.toFixed(2)}
         </DataTableRow>
-        <DataTableRow
-          title="Exchange rate"
-          loading={!oneWstethConvertedToStethAsBigNumber}
-        >
-          1 wstETH =
-          <FormatToken
-            amount={oneWstethConvertedToStethAsBigNumber}
-            symbol="stETH"
-          />
-        </DataTableRow>
+        <DataTableRowStethByWsteth />
       </DataTable>
 
       <TxStageModal

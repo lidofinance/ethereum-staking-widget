@@ -13,8 +13,12 @@ export const useTxCostInUsd: UseTxCostInUsd = (gasLimit) => {
 
   return useMemo(() => {
     if (!ethInUsd || !gasPrice) return undefined;
-    const gasLimitBN = BigNumber.from(gasLimit).mul(gasPrice);
-    const txCostInEth = weiToEth(gasLimitBN);
-    return txCostInEth * ethInUsd;
+    try {
+      const gasLimitBN = BigNumber.from(gasLimit).mul(gasPrice);
+      const txCostInEth = weiToEth(gasLimitBN);
+      return txCostInEth * ethInUsd;
+    } catch {
+      return undefined;
+    }
   }, [ethInUsd, gasPrice, gasLimit]);
 };

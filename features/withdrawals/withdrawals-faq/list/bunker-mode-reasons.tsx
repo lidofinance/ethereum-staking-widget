@@ -1,21 +1,25 @@
-import { FC } from 'react';
 import { Accordion } from '@lidofinance/lido-ui';
 
-export const BunkerModeReasons: FC = () => {
+export const BunkerModeReasons: React.FC = () => {
   return (
     <Accordion
       summary="What scenarios can cause Bunker mode?"
       id="bunkerModeScenarios"
     >
+      <p>
+        Bunker mode is triggered under three conditions when the penalties might
+        be big enough to have a significant impact on the protocol’s rewards:
+      </p>
       <ol>
+        <li>Mass slashing.</li>
         <li>
-          New or ongoing mass slashing that can cause a negative CL rebase
-          within any frame during the slashing resolution period.
+          Penalties exceeding rewards in the current period between two Oracle
+          reports.
         </li>
-        <li>Negative CL rebase in the current frame.</li>
         <li>
-          Lower than expected CL rebase in the current frame and a negative CL
-          rebase in the end of the frame.
+          Lower than expected Lido validators performance in the current period
+          between two Oracle reports and penalties exceeding rewards at the end
+          of&nbsp;it.
         </li>
       </ol>
     </Accordion>

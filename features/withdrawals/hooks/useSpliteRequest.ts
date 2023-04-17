@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { useWithdrawalsConstants } from 'features/withdrawals/hooks';
-import { parseEther, formatEther } from '@ethersproject/units';
+import { parseEther } from '@ethersproject/units';
 import { BigNumber } from 'ethers';
 
 import { MAX_REQUESTS_COUNT } from 'features/withdrawals/withdrawalsConstants';
@@ -9,32 +9,41 @@ import { isValidEtherValue } from 'utils';
 export const useSplitRequest = (inputValue: string) => {
   const { maxAmount } = useWithdrawalsConstants();
 
-  const { requests, requestsCount } = useMemo(() => {
+  const { requests, requestCount } = useMemo(() => {
     if (
       !maxAmount ||
       !inputValue ||
       isNaN(Number(inputValue)) ||
       !isValidEtherValue(inputValue)
     )
-      return { requests: [], requestsCount: 0 };
+      return { requests: [], requestCount: 0 };
 
+    const parsedInputValue = parseEther(inputValue);
     const max = maxAmount.mul(MAX_REQUESTS_COUNT);
-    const isMoreThanMax = parseEther(inputValue).gt(max);
+    const isMoreThanMax = parsedInputValue.gt(max);
 
-    const requestsCount = parseEther(inputValue).div(maxAmount).toNumber();
+    const requestCount = parsedInputValue.div(maxAmount).toNumber();
+    const lastRequestAmountEther = parsedInputValue.mod(maxAmount);
+    const hasRest = lastRequestAmountEther.gt(0);
+    const requests: BigNumber[] = [];
 
-    if (isMoreThanMax) return { requests: [], requestsCount };
+    if (isMoreThanMax) {
+      return {
+        requests,
+        requestCount: requestCount + (hasRest ? 1 : 0),
+      };
+    }
 
-    const lastRequestAmountEther = parseEther(inputValue).mod(maxAmount);
-    const lastRequestAmount = lastRequestAmountEther;
-    const requests: BigNumber[] = Array(requestsCount).fill(maxAmount);
+    for (let i = 0; i < requestCount; i++) {
+      requests.push(maxAmount);
+    }
+    if (hasRest) requests.push(lastRequestAmountEther);
 
-    if (formatEther(lastRequestAmount) === '0.0')
-      return { requests, requestsCount };
-
-    requests.push(lastRequestAmount);
-    return { requests, requestsCount };
+    return {
+      requests,
+      requestCount: requestCount + (hasRest ? 1 : 0),
+    };
   }, [inputValue, maxAmount]);
 
-  return { requests, requestsCount };
+  return { requests, requestCount };
 };

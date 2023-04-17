@@ -1,12 +1,12 @@
-import { FC } from 'react';
 import { Accordion } from '@lidofinance/lido-ui';
 
-export const RewardsAfterWithdraw: FC = () => {
+export const RewardsAfterWithdraw: React.FC = () => {
   return (
     <Accordion summary="Do I still get rewards after I withdraw?">
       <p>
-        No. During the withdrawal period, the stETH/wstETH submitted for
-        unstaking will not receive any staking rewards.
+        No. After you requested withdrawal, the stETH/wstETH submitted for
+        unstaking will not receive staking rewards on top of your submitted
+        balance.
       </p>
     </Accordion>
   );

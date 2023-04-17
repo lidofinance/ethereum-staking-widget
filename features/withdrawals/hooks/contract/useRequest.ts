@@ -21,9 +21,10 @@ import { isContract } from 'utils/isContract';
 import { useSDK } from '@lido-sdk/react';
 
 import { useTransactionModal } from 'features/withdrawals/contexts/transaction-modal-context';
-import { useWeb3 } from 'reef-knot';
+import { useWeb3 } from 'reef-knot/web3-react';
 import { parseEther } from '@ethersproject/units';
-import { useToken } from 'features/withdrawals/request/form/useToken';
+import type { StethPermitAbi } from 'generated';
+import type { WstethAbi } from '@lido-sdk/contracts';
 
 // this encapsulates permit/approval & steth/wsteth flows
 const useWithdrawalRequestMethods = () => {
@@ -221,12 +222,20 @@ const useWithdrawalRequestMethods = () => {
 
 type useWithdrawalRequestOptions = {
   value: string;
+  tokenLabel: string;
+  tokenContract: StethPermitAbi | WstethAbi | null;
+  token: TOKENS.STETH | TOKENS.WSTETH;
+  reset: () => void;
 };
 
 // provides form with a handler to call signing flow
 // and all needed indicators for ux
 export const useWithdrawalRequest = ({
   value,
+  tokenLabel,
+  tokenContract,
+  token,
+  reset,
 }: useWithdrawalRequestOptions) => {
   const [isTxPending, setIsTxPending] = useState(false);
   const { account } = useWeb3();
@@ -237,8 +246,6 @@ export const useWithdrawalRequest = ({
   const { isContract: isMultisig, loading: isMultisigLoading } = useIsContract(
     account ?? undefined,
   );
-  const { tokenBalance, tokenLabel, tokenContract, setToken, token } =
-    useToken();
 
   const valueBN = useMemo(() => {
     try {
@@ -316,6 +323,7 @@ export const useWithdrawalRequest = ({
           }
           // end flow
           dispatchModalState({ type: 'success' });
+          reset();
         } catch (error) {
           const errorMessage = getErrorMessage(error);
           dispatchModalState({ type: 'error', errorText: errorMessage });
@@ -344,6 +352,7 @@ export const useWithdrawalRequest = ({
       setIsTxPending,
       token,
       tokenLabel,
+      reset,
     ],
   );
 
@@ -353,11 +362,6 @@ export const useWithdrawalRequest = ({
     allowance,
     isApprovalFlowLoading,
     request,
-    tokenBalance,
-    tokenLabel,
-    tokenContract,
-    setToken,
     isTxPending,
-    token,
   };
 };

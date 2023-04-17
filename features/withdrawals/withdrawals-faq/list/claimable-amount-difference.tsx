@@ -1,7 +1,6 @@
-import { FC } from 'react';
 import { Accordion } from '@lidofinance/lido-ui';
 
-export const ClaimableAmountDifference: FC = () => {
+export const ClaimableAmountDifference: React.FC = () => {
   return (
     <Accordion
       summary="Why is the claimable amount different from my requested amount?"
@@ -9,8 +8,8 @@ export const ClaimableAmountDifference: FC = () => {
     >
       <p>
         The amount you can claim may differ from your initial request due to a
-        slashing occurrence. Slashings are validator penalties that can reduce
-        your total claimable reward amount.
+        slashing occurrence and penalties. For these reasons, the total
+        claimable reward amount could be reduced.
       </p>
     </Accordion>
   );

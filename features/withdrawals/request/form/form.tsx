@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import {
   Input,
   Button,
@@ -6,7 +6,7 @@ import {
   Option,
   DataTableRow,
 } from '@lidofinance/lido-ui';
-import { useWeb3 } from 'reef-knot';
+import { useWeb3 } from 'reef-knot/web3-react';
 import { TOKENS } from '@lido-sdk/constants';
 import { formatEther } from '@ethersproject/units';
 import { BigNumber } from 'ethers';
@@ -20,6 +20,8 @@ import {
 } from 'features/withdrawals/hooks';
 import { iconsMap } from 'features/withdrawals/providers/withdrawals-provider/provider';
 import { useRequestTxPrice } from 'features/withdrawals/hooks/useWithdrawTxPrice';
+import { useValidateUnstakeValue } from './useValidateUnstakeValue';
+import { useToken } from 'features/withdrawals/request/form/useToken';
 
 import { Options } from '../options';
 import { RequestsInfo } from '../requestsInfo';
@@ -28,6 +30,7 @@ import { FormButton } from './form-button';
 import { InputGroupStyled } from './styles';
 import { maxNumberValidation } from 'utils/maxNumberValidation';
 import { FormatToken } from 'shared/formatters/format-token';
+import { DataTableRowStethByWsteth } from 'shared/components/data-table-row-steth-by-wsteth';
 
 // TODO move to shared
 import { useApproveGasLimit } from 'features/wrap/features/wrap-form/hooks';
@@ -35,42 +38,71 @@ import { InputLocked } from 'features/wrap/components';
 
 export const Form = () => {
   const [inputValue, setInputValue] = useState('');
+
+  const { active } = useWeb3();
+  const { minAmount } = useWithdrawalsConstants();
+  const { tokenBalance, tokenLabel, tokenContract, setToken, token } =
+    useToken();
+  const { tvlMessage, stakeButton } = useInputTvlValidate(inputValue);
+
+  const validateUnstakeValue = useValidateUnstakeValue({
+    inputName: `${tokenLabel} amount`,
+    limit: tokenBalance,
+    minimum: minAmount,
+  });
+
+  const { error, inputTouched, setInputTouched } = useInputValidate({
+    value: inputValue,
+    validationFn: validateUnstakeValue,
+    shouldValidate: active,
+  });
+
+  const handleInputChange = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      if (!inputTouched) setInputTouched(true);
+      setInputValue(maxNumberValidation(event?.currentTarget.value));
+    },
+    [inputTouched, setInputTouched],
+  );
+
+  const handleResetInput = useCallback(() => {
+    setInputValue('');
+    setInputTouched(false);
+  }, [setInputTouched]);
+
+  const handleChangeToken = useCallback(
+    (token: TOKENS.STETH | TOKENS.WSTETH) => {
+      setToken(token);
+      handleResetInput();
+    },
+    [setToken, handleResetInput],
+  );
+
   const {
     isApprovalFlowLoading,
     isApprovalFlow,
     isTokenLocked,
     request,
-    setToken,
-    token,
     isTxPending,
     allowance,
-    tokenBalance,
-    tokenLabel,
-  } = useWithdrawalRequest({ value: inputValue });
-  const { minAmount } = useWithdrawalsConstants();
-  const { active } = useWeb3();
-  const { tvlMessage, stakeButton } = useInputTvlValidate(inputValue);
-
-  useEffect(() => {
-    setInputValue('');
-  }, [token]);
-
-  const { error } = useInputValidate({
+  } = useWithdrawalRequest({
     value: inputValue,
-    inputName: `${tokenLabel} amount`,
-    limit: tokenBalance,
-    minimum: minAmount,
-    active,
+    reset: handleResetInput,
+    tokenLabel,
+    tokenContract,
+    token,
   });
 
-  const { requests, requestsCount } = useSplitRequest(inputValue);
+  const { requests, requestCount } = useSplitRequest(inputValue);
 
   const approveTxCostInUsd = useTxCostInUsd(useApproveGasLimit());
 
   const requestPriceInUsd = useRequestTxPrice({
     token,
     isApprovalFlow: isApprovalFlow,
-    requestCount: requests?.length,
+    // request.length is bounded by max value
+    // while useSplitRequest.requestCount is not
+    requestCount: requests.length,
   });
 
   const onSubmit = useCallback(
@@ -110,7 +142,7 @@ export const Form = () => {
         <SelectIcon
           icon={iconsMap[token]}
           value={token}
-          onChange={setToken}
+          onChange={handleChangeToken}
           error={showError}
         >
           <Option leftDecorator={iconsMap[TOKENS.STETH]} value={TOKENS.STETH}>
@@ -126,14 +158,12 @@ export const Form = () => {
           rightDecorator={rightDecorator}
           label={`${tokenLabel} amount`}
           value={inputValue}
-          onChange={(event) =>
-            setInputValue(maxNumberValidation(event?.currentTarget.value))
-          }
+          onChange={handleInputChange}
           error={showError}
         />
       </InputGroupStyled>
 
-      <RequestsInfo requests={requests} requestsCount={requestsCount} />
+      <RequestsInfo requestCount={requestCount} />
       <Options inputValue={inputValue} />
       <FormButton
         isLocked={isTokenLocked}
@@ -157,6 +187,11 @@ export const Form = () => {
       <DataTableRow title="Allowance" loading={isApprovalFlowLoading}>
         <FormatToken amount={allowance} symbol={tokenLabel} />
       </DataTableRow>
+      {tokenLabel === 'stETH' ? (
+        <DataTableRow title="Exchange rate">1 stETH = 1 ETH</DataTableRow>
+      ) : (
+        <DataTableRowStethByWsteth />
+      )}
     </form>
   );
 };

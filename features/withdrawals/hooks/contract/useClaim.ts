@@ -9,7 +9,7 @@ import { useWithdrawalsContract } from './useWithdrawalsContract';
 import { RequestStatusClaimable } from 'features/withdrawals/types/request-status';
 import invariant from 'tiny-invariant';
 import { isContract } from 'utils/isContract';
-import { useWeb3 } from 'reef-knot';
+import { useWeb3 } from 'reef-knot/web3-react';
 import { useSDK } from '@lido-sdk/react';
 import { useTransactionModal } from 'features/withdrawals/contexts/transaction-modal-context';
 

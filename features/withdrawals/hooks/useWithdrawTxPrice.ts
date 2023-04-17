@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { useLidoSWR, useSDK } from '@lido-sdk/react';
 import getConfig from 'next/config';
 import { standardFetcher } from 'utils/standardFetcher';
@@ -7,6 +8,7 @@ import {
   WITHDRAWAL_QUEUE_REQUEST_STETH_PERMIT_GAS_LIMIT_DEFAULT,
   WITHDRAWAL_QUEUE_REQUEST_WSTETH_PERMIT_GAS_LIMIT_DEFAULT,
 } from 'config';
+import { MAX_REQUESTS_COUNT } from 'features/withdrawals/withdrawalsConstants';
 
 import { useWeb3 } from '@reef-knot/web3-react';
 import { TOKENS } from '@lido-sdk/constants';
@@ -15,6 +17,7 @@ import { useWithdrawalsContract } from './contract/useWithdrawalsContract';
 import { useTxCostInUsd } from 'shared/hooks/txCost';
 import { useClaimData } from 'features/withdrawals/contexts/claim-data-context';
 import { useDebouncedValue } from 'shared/hooks/useDebouncedValue';
+import { encodeURLQuery } from 'utils/encodeURLQuery';
 import { BigNumber } from 'ethers';
 
 type UseRequestTxPriceOptions = {
@@ -39,13 +42,23 @@ export const useRequestTxPrice = ({
       : WITHDRAWAL_QUEUE_REQUEST_WSTETH_PERMIT_GAS_LIMIT_DEFAULT;
 
   const { chainId } = useSDK();
-  const debouncedRequestCount = useDebouncedValue(requestCount || 1, 2000);
-  const { data: permitEstimateData } = useLidoSWR<{ gasLimit: string }>(
-    `${basePath ?? ''}/api/estimate-withdrawal-gas?chainId=${encodeURIComponent(
+  const debouncedRequestCount = useDebouncedValue(
+    Math.min(requestCount || 1, MAX_REQUESTS_COUNT),
+    2000,
+  );
+
+  const url = useMemo(() => {
+    const urlBase = basePath ?? '';
+    const params = encodeURLQuery({
       chainId,
-    )}&token=${encodeURIComponent(token)}&requestCount=${encodeURIComponent(
-      debouncedRequestCount,
-    )}`,
+      token,
+      requestCount: debouncedRequestCount,
+    });
+    return `${urlBase}/api/estimate-withdrawal-gas?${params}`;
+  }, [chainId, debouncedRequestCount, token]);
+
+  const { data: permitEstimateData } = useLidoSWR<{ gasLimit: string }>(
+    url,
     standardFetcher,
     {
       isPaused: () => !chainId || isApprovalFlow,

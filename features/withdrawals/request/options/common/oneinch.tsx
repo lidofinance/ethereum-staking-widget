@@ -1,6 +1,3 @@
-import { FC } from 'react';
-import { Text } from '@lidofinance/lido-ui';
-import { FormatToken } from 'shared/formatters';
 import { parseEther } from '@ethersproject/units';
 import { BigNumber } from 'ethers';
 
@@ -12,32 +9,14 @@ type OneinchProps = Pick<OptionProps, 'selected' | 'onClick'> & {
   inputValue?: string;
 };
 
-export const Oneinch: FC<OneinchProps> = (props) => {
-  const { selected, inputValue, ...rest } = props;
-
-  const amount = (
-    <>
-      <FormatTokenStyled
-        amount={
-          !isNaN(Number(inputValue))
-            ? parseEther(inputValue || '0')
-            : BigNumber.from(0)
-        }
-        symbol="ETH"
-      />
-      <Text size={'xxs'} color={'secondary'}>
-        ~ $
-        <FormatToken
-          amount={
-            !isNaN(Number(inputValue))
-              ? parseEther(inputValue || '0')
-              : BigNumber.from(0)
-          }
-          symbol=""
-        />
-      </Text>
-    </>
-  );
+export const Oneinch: React.FC<OneinchProps> = ({
+  selected,
+  inputValue,
+  ...rest
+}: OneinchProps) => {
+  const ethAmount = !isNaN(Number(inputValue))
+    ? parseEther(inputValue || '0')
+    : BigNumber.from(0);
 
   return (
     <Option
@@ -47,7 +26,7 @@ export const Oneinch: FC<OneinchProps> = (props) => {
       selected={selected}
       {...rest}
     >
-      {amount}
+      <FormatTokenStyled amount={ethAmount} symbol="ETH" />
     </Option>
   );
 };

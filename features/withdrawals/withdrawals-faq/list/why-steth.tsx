@@ -1,14 +1,13 @@
-import { FC } from 'react';
 import { Accordion } from '@lidofinance/lido-ui';
 
-export const WhySTETH: FC = () => {
+export const WhySTETH: React.FC = () => {
   return (
-    <Accordion summary="Why, while I requested to withdraw wstETH, I see stETH amount in my request?">
+    <Accordion summary="When I try to withdraw wstETH, why do I see the stETH amount in my request?">
       <p>
-        When you request to withdraw wstETH, first it’s automatically unwrapped
-        into stETH, then it takes time to convert stETH into ETH. The main
-        withdrawal period is when stETH converts into ETH. That&apos;s why you
-        see the amount of stETH on pending.
+        When you request to withdraw wstETH, it is automatically unwrapped into
+        stETH, which then gets transformed into ETH (this is the step that takes
+        time). The main withdrawal period is when stETH is transformed to ETH.
+        That&apos;s why you see the amount pending denominated in stETH.
       </p>
     </Accordion>
   );

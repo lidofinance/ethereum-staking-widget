@@ -6,10 +6,7 @@ import {
 } from '@lido-sdk/react';
 import { BigNumber } from 'ethers';
 
-import {
-  useUnfinalizedRequests,
-  useUnfinalizedStETH,
-} from 'features/withdrawals/hooks';
+import { useUnfinalizedStETH } from 'features/withdrawals/hooks';
 import { useClaimData } from 'features/withdrawals/contexts/claim-data-context';
 
 import {
@@ -21,7 +18,6 @@ import {
 export const RequestDataContext = createContext({} as RequestDataValue);
 
 export type RequestDataValue = {
-  unfinalizedRequests: SWRResponse<BigNumber, Error>;
   stethBalance: SWRResponse<BigNumber>;
   wstethBalance: SWRResponse<BigNumber>;
   updateData: () => void;
@@ -34,7 +30,6 @@ export type RequestDataValue = {
 
 const RequestDataProvider: FC = ({ children }) => {
   const { withdrawalRequestsData } = useClaimData();
-  const unfinalizedRequests = useUnfinalizedRequests();
   const stethBalance = useSTETHBalance();
   const wstethBalance = useWSTETHBalance();
   const unfinalizedStETH = useUnfinalizedStETH();
@@ -48,22 +43,14 @@ const RequestDataProvider: FC = ({ children }) => {
 
   const updateData = useCallback(() => {
     // TODO
-    unfinalizedRequests.update();
     stethBalance.update();
     wstethBalance.update();
     withdrawalRequestsData.update();
     unfinalizedStETH.update();
-  }, [
-    stethBalance,
-    unfinalizedRequests,
-    unfinalizedStETH,
-    withdrawalRequestsData,
-    wstethBalance,
-  ]);
+  }, [stethBalance, unfinalizedStETH, withdrawalRequestsData, wstethBalance]);
 
   const value = useMemo(
     () => ({
-      unfinalizedRequests,
       stethBalance,
       wstethBalance,
       updateData,
@@ -79,7 +66,6 @@ const RequestDataProvider: FC = ({ children }) => {
       onChangeRequestOptions,
       requestOptions,
       stethBalance,
-      unfinalizedRequests,
       updateData,
       wstethBalance,
       unfinalizedStETH,
