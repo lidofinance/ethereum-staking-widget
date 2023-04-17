@@ -8,7 +8,7 @@ import {
   useInputTvlValidate,
 } from 'features/withdrawals/hooks';
 import { useRequestTxPrice } from 'features/withdrawals/hooks/useWithdrawTxPrice';
-import { useValidateUnstakeValue } from './useValidateUnstakeValue';
+import { useValidateUnstakeValue } from 'features/withdrawals/hooks/useValidateUnstakeValue';
 import { useToken } from 'features/withdrawals/request/form/useToken';
 import { useCurrencyInput } from 'shared/forms/hooks/useCurrencyInput';
 
@@ -19,6 +19,7 @@ import { InputNumber } from 'shared/forms/components/input-number';
 import { DataTableRowStethByWsteth } from 'shared/components/data-table-row-steth-by-wsteth';
 import { InputDecoratorLocked } from 'shared/forms/components/input-decorator-locked';
 import { InputDecoratorMaxButton } from 'shared/forms/components/input-decorator-max-button';
+import { InputDecoratorTvlStake } from 'features/withdrawals/shared/input-decorator-tvl-stake';
 import { FormButton } from './form-button';
 import { InputGroupStyled } from './styles';
 import { SelectIcon, Option, DataTableRow } from '@lidofinance/lido-ui';
@@ -35,7 +36,7 @@ export const Form = () => {
   const { minAmount } = useWithdrawalsConstants();
   const { tokenBalance, tokenLabel, tokenContract, setToken, token } =
     useToken();
-  const { tvlMessage, stakeButton } = useInputTvlValidate(inputValue);
+  const { tvlDiff, tvlMessage } = useInputTvlValidate(inputValue);
 
   const {
     isApprovalFlowLoading,
@@ -125,7 +126,7 @@ export const Form = () => {
           placeholder="0"
           rightDecorator={
             tvlMessage ? (
-              stakeButton
+              <InputDecoratorTvlStake tvlDiff={tvlDiff} />
             ) : (
               <>
                 <InputDecoratorMaxButton

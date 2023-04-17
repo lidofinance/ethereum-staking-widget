@@ -1,7 +1,8 @@
 import { useCallback } from 'react';
 
+import { BigNumber } from 'ethers';
 import { formatEther, parseEther } from '@ethersproject/units';
-import type { BigNumber } from 'ethers';
+import type { ValidationFn } from 'shared/forms/types/validation-fn';
 
 type UseValidateUnstakeValueArgs = {
   minAmount?: BigNumber;
@@ -10,7 +11,7 @@ type UseValidateUnstakeValueArgs = {
 export const useValidateUnstakeValue = ({
   minAmount,
 }: UseValidateUnstakeValueArgs) => {
-  return useCallback(
+  return useCallback<ValidationFn>(
     (value: string) => {
       const amountBigNumber = parseEther(value);
 
