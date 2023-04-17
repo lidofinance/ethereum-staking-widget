@@ -28,14 +28,18 @@ import { OneinchInfo } from 'features/home/oneinch-info/oneinch-info';
 import { DATA_UNAVAILABLE } from 'config';
 import { Connect } from 'shared/wallet';
 import { TxStageModal, TX_OPERATION, TX_STAGE } from 'shared/components';
-import { useCurrencyInput, useTxCostInUsd } from 'shared/hooks';
-import { FormStyled, InputStyled, MaxButton } from './styles';
+import { useTxCostInUsd } from 'shared/hooks';
+import { InputDecoratorMaxButton } from 'shared/forms/components/input-decorator-max-button';
+import { useCurrencyInput } from 'shared/forms/hooks/useCurrencyInput';
+import { FormStyled, InputStyled } from './styles';
 import { stakeProcessing } from './utils';
 import { useStethSubmitGasLimit } from './hooks';
 import { useStakeableEther } from '../hooks';
+import { useStakingLimitWarn } from './useStakingLimitWarn';
 
 export const StakeForm: FC = memo(() => {
   const router = useRouter();
+  const initialValue = (router?.query?.amount as string) || '';
 
   const formRef = useRef<HTMLFormElement>(null);
 
@@ -43,6 +47,7 @@ export const StakeForm: FC = memo(() => {
   const [txStage, setTxStage] = useState(TX_STAGE.SUCCESS);
   const [txHash, setTxHash] = useState<string>();
   const [txModalFailedText, setTxModalFailedText] = useState('');
+  const [inputValue, setInputValue] = useState(initialValue);
 
   const { active, chainId } = useWeb3();
   const etherBalance = useEthereumBalance();
@@ -92,19 +97,17 @@ export const StakeForm: FC = memo(() => {
   );
 
   const {
-    inputValue,
     handleSubmit,
     handleChange,
     error,
-    isValidating,
     isSubmitting,
     setMaxInputValue,
     reset,
-    limitWarning,
-    limitReached,
     isMaxDisabled,
   } = useCurrencyInput({
-    initialValue: (router?.query?.amount as string) || undefined,
+    inputValue,
+    setInputValue,
+    initialValue,
     submit,
     limit:
       etherBalance.data &&
@@ -112,7 +115,6 @@ export const StakeForm: FC = memo(() => {
       (stakeableEther.data.lt(etherBalance.data)
         ? stakeableEther.data
         : etherBalance.data),
-    checkStakingLimit: true,
     padMaxAmount: (padAmount) =>
       Boolean(
         etherBalance.data &&
@@ -121,6 +123,8 @@ export const StakeForm: FC = memo(() => {
       ),
     gasLimit: submitGasLimit,
   });
+
+  const { limitWarning, limitReached } = useStakingLimitWarn();
 
   const willReceiveStEthValue = useMemo(() => {
     if (!inputValue) {
@@ -155,16 +159,10 @@ export const StakeForm: FC = memo(() => {
           placeholder="0"
           leftDecorator={<Eth />}
           rightDecorator={
-            <MaxButton
-              size="xxs"
-              variant="translucent"
-              onClick={() => {
-                setMaxInputValue();
-              }}
+            <InputDecoratorMaxButton
+              onClick={setMaxInputValue}
               disabled={isMaxDisabled}
-            >
-              MAX
-            </MaxButton>
+            />
           }
           label="Amount"
           value={inputValue}
@@ -176,7 +174,7 @@ export const StakeForm: FC = memo(() => {
           <Button
             fullwidth
             type="submit"
-            disabled={limitReached || isValidating || !!error}
+            disabled={limitReached || !!error}
             loading={isSubmitting}
           >
             Submit

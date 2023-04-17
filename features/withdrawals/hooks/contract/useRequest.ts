@@ -225,7 +225,6 @@ type useWithdrawalRequestOptions = {
   tokenLabel: string;
   tokenContract: StethPermitAbi | WstethAbi | null;
   token: TOKENS.STETH | TOKENS.WSTETH;
-  reset: () => void;
 };
 
 // provides form with a handler to call signing flow
@@ -235,7 +234,6 @@ export const useWithdrawalRequest = ({
   tokenLabel,
   tokenContract,
   token,
-  reset,
 }: useWithdrawalRequestOptions) => {
   const [isTxPending, setIsTxPending] = useState(false);
   const { account } = useWeb3();
@@ -283,7 +281,7 @@ export const useWithdrawalRequest = ({
   const isTokenLocked = isApprovalFlow && needsApprove;
 
   const request = useCallback(
-    (requests: BigNumber[]) => {
+    async (requests: BigNumber[], resetForm: () => void) => {
       // define and set retry point
       const startCallback = async () => {
         try {
@@ -323,7 +321,7 @@ export const useWithdrawalRequest = ({
           }
           // end flow
           dispatchModalState({ type: 'success' });
-          reset();
+          resetForm();
         } catch (error) {
           const errorMessage = getErrorMessage(error);
           dispatchModalState({ type: 'error', errorText: errorMessage });
@@ -352,7 +350,6 @@ export const useWithdrawalRequest = ({
       setIsTxPending,
       token,
       tokenLabel,
-      reset,
     ],
   );
 

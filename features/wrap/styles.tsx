@@ -1,5 +1,6 @@
 import styled, { css } from 'styled-components';
-import { Button, InputGroup, Input, SelectIcon } from '@lidofinance/lido-ui';
+import { InputGroup, SelectIcon } from '@lidofinance/lido-ui';
+import { InputNumber } from 'shared/forms/components/input-number';
 
 const errorCSS = css`
   &,
@@ -13,7 +14,7 @@ export const FormStyled = styled.form`
   margin-bottom: 24px;
 `;
 
-export const InputStyled = styled((props) => <Input {...props} />)`
+export const InputStyled = styled(InputNumber)`
   margin-bottom: ${({ theme }) => theme.spaceMap.md}px;
   z-index: 2;
 `;
@@ -23,15 +24,11 @@ export const InputGroupStyled = styled((props) => <InputGroup {...props} />)`
   z-index: 2;
 `;
 
-export const MaxButton = styled(Button)`
-  letter-spacing: 0.4px;
-`;
-
 export const SelectIconWrapper = styled((props) => <SelectIcon {...props} />)`
   position: static;
 `;
 
-export const InputWrapper = styled((props) => <Input {...props} />)<{
+export const InputWrapper = styled(InputNumber)<{
   error: boolean;
 }>`
   ${({ error }) => (error ? errorCSS : '')}

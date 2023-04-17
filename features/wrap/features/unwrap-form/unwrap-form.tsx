@@ -25,14 +25,12 @@ import {
 import { TxStageModal, TX_OPERATION, TX_STAGE } from 'shared/components';
 import { L2Banner } from 'shared/l2-banner';
 import { MATOMO_CLICK_EVENTS } from 'config';
-import {
-  useTxCostInUsd,
-  useCurrencyInput,
-  useStethByWsteth,
-} from 'shared/hooks';
+import { useTxCostInUsd, useStethByWsteth } from 'shared/hooks';
+import { useCurrencyInput } from 'shared/forms/hooks/useCurrencyInput';
 import { formatBalance } from 'utils';
 import { Connect } from 'shared/wallet';
-import { FormStyled, InputStyled, MaxButton } from 'features/wrap/styles';
+import { InputDecoratorMaxButton } from 'shared/forms/components/input-decorator-max-button';
+import { FormStyled, InputStyled } from 'features/wrap/styles';
 import { DataTableRowStethByWsteth } from 'shared/components/data-table-row-steth-by-wsteth';
 import { unwrapProcessing } from 'features/wrap/utils';
 import { useUnwrapGasLimit } from './hooks';
@@ -51,6 +49,7 @@ export const UnwrapForm: FC = memo(() => {
   const [txStage, setTxStage] = useState(TX_STAGE.SUCCESS);
   const [txHash, setTxHash] = useState<string>();
   const [txModalFailedText, setTxModalFailedText] = useState('');
+  const [inputValue, setInputValue] = useState('');
 
   const unwrapGasLimit = useUnwrapGasLimit();
 
@@ -95,16 +94,16 @@ export const UnwrapForm: FC = memo(() => {
   );
 
   const {
-    inputValue,
     handleSubmit,
     handleChange,
     error,
-    isValidating,
     isSubmitting,
     setMaxInputValue,
     isMaxDisabled,
     reset,
   } = useCurrencyInput({
+    inputValue,
+    setInputValue,
     submit: unWrapProcessing,
     limit: wstethBalance.data,
     token: TOKENS.WSTETH,
@@ -141,16 +140,10 @@ export const UnwrapForm: FC = memo(() => {
           placeholder="0"
           leftDecorator={<Wsteth />}
           rightDecorator={
-            <MaxButton
-              size="xxs"
-              variant="translucent"
-              onClick={() => {
-                setMaxInputValue();
-              }}
+            <InputDecoratorMaxButton
+              onClick={setMaxInputValue}
               disabled={isMaxDisabled}
-            >
-              MAX
-            </MaxButton>
+            />
           }
           label="Amount"
           value={inputValue}
@@ -161,7 +154,7 @@ export const UnwrapForm: FC = memo(() => {
           <Button
             fullwidth
             type="submit"
-            disabled={isValidating || !!error}
+            disabled={!!error}
             loading={isSubmitting}
           >
             Unwrap
