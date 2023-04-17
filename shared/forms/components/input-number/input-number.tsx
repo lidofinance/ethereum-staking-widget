@@ -6,6 +6,7 @@ type InputNumberProps = React.ComponentProps<typeof Input>;
 export const InputNumber = ({ onChange, ...props }: InputNumberProps) => {
   const handleChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
+      // Prepend zero when user types just a dot symbol for "0."
       if (e.currentTarget.value === '.') {
         e.currentTarget.value = '0.';
         onChange?.(e);
