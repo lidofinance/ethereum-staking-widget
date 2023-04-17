@@ -25,7 +25,7 @@ ENV NEXT_TELEMETRY_DISABLED=1 \
   DEFAULT_CHAIN=$DEFAULT_CHAIN
 
 WORKDIR /app
-RUN apk add --no-cache curl=~7
+RUN apk add --no-cache curl=~8
 COPY --from=build /app /app
 
 USER node

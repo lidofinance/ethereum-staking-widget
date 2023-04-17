@@ -1,6 +1,6 @@
 import { StethPermitAbi, Eip2612 } from 'generated';
 import { useCallback } from 'react';
-import { useWeb3 } from 'reef-knot';
+import { useWeb3 } from 'reef-knot/web3-react';
 
 export enum PermitType {
   AMOUNT = 1,

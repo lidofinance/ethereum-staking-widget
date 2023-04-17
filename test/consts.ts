@@ -1,4 +1,4 @@
-import { CONFIG } from './config';
+import { CONFIG } from './config.js';
 
 export interface GetRequest {
   uri: string;

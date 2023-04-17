@@ -18,8 +18,8 @@ export const RequestsInfo: FC<RequestsInfoProps> = (props) => {
     return (
       <RequestsInfoStyled>
         <RequestsInfoDescStyled>
-          You can send a maximum of 200 requests per transaction. Current
-          requests count is {requestCount}.
+          You can send a maximum of {MAX_REQUESTS_COUNT} requests per
+          transaction. Current requests count is {requestCount}.
         </RequestsInfoDescStyled>
       </RequestsInfoStyled>
     );

@@ -1,6 +1,5 @@
 import { useCallback, useMemo, useState } from 'react';
-import { SelectIcon, Option, DataTableRow } from '@lidofinance/lido-ui';
-import { useWeb3 } from 'reef-knot';
+import { useWeb3 } from 'reef-knot/web3-react';
 import { TOKENS } from '@lido-sdk/constants';
 import { formatEther } from '@ethersproject/units';
 import { BigNumber } from 'ethers';
@@ -21,6 +20,7 @@ import { Options } from '../options';
 import { RequestsInfo } from '../requestsInfo';
 import { InputNumber } from 'shared/components/input-number';
 import { InputDecoratorMaxButton } from 'shared/components/input-decorator-max-button';
+import { SelectIcon, Option, DataTableRow } from '@lidofinance/lido-ui';
 
 import { FormButton } from './form-button';
 import { InputGroupStyled } from './styles';
@@ -96,7 +96,9 @@ export const Form = () => {
   const requestPriceInUsd = useRequestTxPrice({
     token,
     isApprovalFlow: isApprovalFlow,
-    requestCount,
+    // request.length is bounded by max value
+    // while useSplitRequest.requestCount is not
+    requestCount: requests.length,
   });
 
   const onSubmit = useCallback(

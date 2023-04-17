@@ -1,5 +1,5 @@
 import { FC } from 'react';
-import { useConnectorInfo } from 'reef-knot';
+import { useConnectorInfo } from 'reef-knot/web3-react';
 import { Button } from '@lidofinance/lido-ui';
 
 import { iconsDict } from './icons';

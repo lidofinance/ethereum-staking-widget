@@ -1,8 +1,13 @@
 import { expect, test } from '@playwright/test';
 import { fail } from 'assert';
 import { Validator } from 'jsonschema';
-import { GET_REQUESTS, POST_REQUESTS, PostRequest, GetRequest } from './consts';
-import { CONFIG } from './config';
+import {
+  GET_REQUESTS,
+  POST_REQUESTS,
+  PostRequest,
+  GetRequest,
+} from './consts.js';
+import { CONFIG } from './config.js';
 
 const validator = new Validator();
 

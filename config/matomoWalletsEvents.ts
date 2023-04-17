@@ -1,5 +1,5 @@
 import { MatomoEventType, trackEvent } from '@lidofinance/analytics-matomo';
-import { Metrics as WalletsMetrics } from 'reef-knot';
+import { Metrics as WalletsMetrics } from 'reef-knot/connect-wallet-modal';
 
 export const enum MATOMO_WALLETS_EVENTS_TYPES {
   onClickAmbire = 'onClickAmbire',
