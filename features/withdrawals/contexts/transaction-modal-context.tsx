@@ -43,7 +43,7 @@ type RequestTxModalAction =
   | {
       type: 'start';
       flow: TX_STAGE.APPROVE | TX_STAGE.PERMIT | TX_STAGE.SIGN;
-      token: TokensWithdrawable;
+      token: TokensWithdrawable | null;
       requestAmount: BigNumber;
     }
   | {
