@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { useWeb3 } from 'reef-knot';
+import { useWeb3 } from 'reef-knot/web3-react';
 import { Button } from '@lidofinance/lido-ui';
 import { useSTETHTotalSupply } from '@lido-sdk/react';
 import { useRouter } from 'next/router';

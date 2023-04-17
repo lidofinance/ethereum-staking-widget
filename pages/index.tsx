@@ -3,6 +3,7 @@ import { GetServerSideProps } from 'next';
 import Head from 'next/head';
 import { Wallet, StakeForm, LidoStats, StakeFaq } from 'features/home';
 import { Layout } from 'shared/components';
+import NoSSRWrapper from '../shared/components/no-ssr-wrapper';
 
 const Home: FC = () => (
   <>
@@ -14,8 +15,10 @@ const Home: FC = () => (
         <title>Stake with Lido | Lido</title>
       </Head>
 
-      <Wallet />
-      <StakeForm />
+      <NoSSRWrapper>
+        <Wallet />
+        <StakeForm />
+      </NoSSRWrapper>
       <LidoStats />
       <StakeFaq />
     </Layout>

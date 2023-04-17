@@ -8,7 +8,7 @@ import {
   useWSTETHBalance,
   useTokenAddress,
 } from '@lido-sdk/react';
-import { useWeb3 } from '@reef-knot/web3-react';
+import { useWeb3 } from 'reef-knot/web3-react';
 import { FormatToken } from 'shared/formatters';
 import { TokenToWallet } from 'shared/components';
 import { useWstethBySteth, useStethByWsteth } from 'shared/hooks';

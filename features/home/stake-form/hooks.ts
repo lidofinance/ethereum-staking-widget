@@ -6,7 +6,7 @@ import {
   STETH_SUBMIT_GAS_LIMIT_DEFAULT,
 } from 'config';
 import { parseEther } from '@ethersproject/units';
-import { useWeb3 } from '@reef-knot/web3-react';
+import { useWeb3 } from 'reef-knot/web3-react';
 import { getStaticRpcBatchProvider } from 'utils/rpcProviders';
 import { BigNumber } from 'ethers';
 import { CHAINS } from 'utils/chains';

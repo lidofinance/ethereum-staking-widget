@@ -1,6 +1,6 @@
 import type { PlaywrightTestConfig } from '@playwright/test';
 import { devices } from '@playwright/test';
-import { CONFIG } from './test/config';
+import { CONFIG } from './test/config.js';
 
 const httpCredentials =
   CONFIG.STAND_USER && CONFIG.STAND_PASSWORD

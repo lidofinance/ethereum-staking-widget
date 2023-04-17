@@ -1,5 +1,5 @@
 import { memo, useCallback } from 'react';
-import { useWeb3 } from 'reef-knot';
+import { useWeb3 } from 'reef-knot/web3-react';
 import { useClaimData } from 'features/withdrawals/contexts/claim-data-context';
 
 import { Checkbox, External } from '@lidofinance/lido-ui';
