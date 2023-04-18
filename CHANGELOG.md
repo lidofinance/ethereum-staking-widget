@@ -1,3 +1,49 @@
+# [1.60.0](https://github.com/lidofinance/staking-widget-ts/compare/1.59.1...1.60.0) (2023-04-18)
+
+
+### Bug Fixes
+
+* change 'participant' to 'participants' in request modal ([ae9befc](https://github.com/lidofinance/staking-widget-ts/commit/ae9befc2802c22ba3909010686bd095c23dbf903))
+* clear code ([0acfde7](https://github.com/lidofinance/staking-widget-ts/commit/0acfde7e56f77f13d22ca20794d6d79b0879c5eb))
+* clear withdrawal input after request ([e6624cf](https://github.com/lidofinance/staking-widget-ts/commit/e6624cf73c11a702fec8dff4adf1d2ad7021527d))
+* createConnectors ([51966af](https://github.com/lidofinance/staking-widget-ts/commit/51966af60e423e043643eb1ea62640bad3a896de))
+* enable next-logger and rename config to .cjs ([40bedcc](https://github.com/lidofinance/staking-widget-ts/commit/40bedccfb9e52e71db652772488d6075b88f658e))
+* error when trying to enter very big number on withdrawal page ([9d315b0](https://github.com/lidofinance/staking-widget-ts/commit/9d315b0973d04f93dd6929927ea443530a185885))
+* faq typo ([53b8543](https://github.com/lidofinance/staking-widget-ts/commit/53b8543f11c51049edf1e94a2fe081f22e917c8b))
+* fix app error for small input value ([3f82e6a](https://github.com/lidofinance/staking-widget-ts/commit/3f82e6a6e4d083ea885d19dabe8625799c26ab40))
+* fix calc requests, fix showing message ([77cfd74](https://github.com/lidofinance/staking-widget-ts/commit/77cfd74a8b81ba47f279bb5ce4022fa8ce8b93a4))
+* fix request tx ([23e3cfb](https://github.com/lidofinance/staking-widget-ts/commit/23e3cfbf0a38165a069679ecafee2dda0960754a))
+* maximum requests notif text ([dd41da5](https://github.com/lidofinance/staking-widget-ts/commit/dd41da5aff68f38a10b2fa6ab0b03f3ffee817ac))
+* playwright in ESM mode ([602e473](https://github.com/lidofinance/staking-widget-ts/commit/602e4733f2737e6932b298560f63d5981ce37120))
+* remove nft button from faq ([c7fd770](https://github.com/lidofinance/staking-widget-ts/commit/c7fd77007f4c298e953c3923d1c72d5558c299c5))
+* remove one text ([fd9a20d](https://github.com/lidofinance/staking-widget-ts/commit/fd9a20d8c1e247b35a51b467f1a2b4a4c18262a9))
+* remove prefilled value on unwrap page ([7d1f0e5](https://github.com/lidofinance/staking-widget-ts/commit/7d1f0e59616e15061ce65d0eaecfc3c1abaa9662))
+* reset wrap amount on token change instead of max value, also no amount pre-fill on page load ([2c9f9ca](https://github.com/lidofinance/staking-widget-ts/commit/2c9f9caa3d7d0a3693e49dd7b8e48d5a693f80c4))
+* show add nft button only for wallets that supports this action ([f9157af](https://github.com/lidofinance/staking-widget-ts/commit/f9157afc6022087e45830bc29b39ac99db8e4da6))
+* temporary disable next-logger until fix ([89cc73c](https://github.com/lidofinance/staking-widget-ts/commit/89cc73c44a04cdf62c261d1209b08c387ffb7489))
+* temporary use NoSSRWrapper to fix ReefKnot SSR issue ([6b1d3f4](https://github.com/lidofinance/staking-widget-ts/commit/6b1d3f43314dd5d692f24ed9b2a707f783c84446))
+* use direct imports from reef-knot/web3-react ([01d2f5f](https://github.com/lidofinance/staking-widget-ts/commit/01d2f5fe4d589976b8db8686b1be0f4e28740689))
+* use reef-knot 1.0.8 ([6d8c535](https://github.com/lidofinance/staking-widget-ts/commit/6d8c5355022da682a1308929914c15b813753e57))
+* use reef-knot 1.0.9 ([724cf12](https://github.com/lidofinance/staking-widget-ts/commit/724cf12bb58d8c0ea65362099a190d61e9a18079))
+* withdrawal request hook params cleanup ([07f056d](https://github.com/lidofinance/staking-widget-ts/commit/07f056d9975e180e11a61557f356b042f8139ae4))
+
+
+### Features
+
+* config next.js to use ESM, update packages ([d8ea9af](https://github.com/lidofinance/staking-widget-ts/commit/d8ea9af5a8122550e96582b0db63ca96d9037a79))
+* config wagmi ([8655c75](https://github.com/lidofinance/staking-widget-ts/commit/8655c751b42514fe546847785add34cc951d51eb))
+* get supportedChains for wagmi from env ([39aa581](https://github.com/lidofinance/staking-widget-ts/commit/39aa581141674e0f659958b8fc7aa1922679eacd))
+* remove fiat amount from withdrawal option banner ([c2b9ed0](https://github.com/lidofinance/staking-widget-ts/commit/c2b9ed004328482adae22049823833d1a94f11cd))
+* remove requests count from the tooltip, fix infinity requests when choosing wsteth ([2609f76](https://github.com/lidofinance/staking-widget-ts/commit/2609f760be1af599249eb267c1fb155243dbf07f))
+* steth-wsteth/eth-steth exchange rates for request page ([5aa6d1f](https://github.com/lidofinance/staking-widget-ts/commit/5aa6d1fa758456e6c7257188ff6d6d22ce49dab0))
+* update faq texts ([e61fd44](https://github.com/lidofinance/staking-widget-ts/commit/e61fd440135c3baae3275a301369acd256cc5ca0))
+* use reef-knot 1.0.5 ([4fe7629](https://github.com/lidofinance/staking-widget-ts/commit/4fe7629cdc14a0d2ebe0667a954a42a1232fbe97))
+* use reef-knot 1.0.6 ([16d0a57](https://github.com/lidofinance/staking-widget-ts/commit/16d0a573776076aba5f84d74af7ec223c96bc9d2))
+* use reef-knot 1.0.7 ([eecd76f](https://github.com/lidofinance/staking-widget-ts/commit/eecd76f965d01da0f49eb086d02bdc329c199603))
+* useDisconnect wagmi ([4447fd0](https://github.com/lidofinance/staking-widget-ts/commit/4447fd051a210520864b4718201f6621b1e65560))
+
+
+
 ## [1.59.1](https://github.com/lidofinance/staking-widget-ts/compare/1.59.0...1.59.1) (2023-04-13)
 
 
@@ -173,15 +219,6 @@
 ### Features
 
 * replace custom rate limit code with package ([e18ffe1](https://github.com/lidofinance/staking-widget-ts/commit/e18ffe1e99520e210dfa87378d37cfd84db765b3))
-
-
-
-## [1.51.1](https://github.com/lidofinance/staking-widget-ts/compare/1.51.0...1.51.1) (2023-02-13)
-
-
-### Bug Fixes
-
-* convert a value to bool from process.env ([33bdba1](https://github.com/lidofinance/staking-widget-ts/commit/33bdba111cd97aefb2deee84ee792417ea2a5892))
 
 
 
