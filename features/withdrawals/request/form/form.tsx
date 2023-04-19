@@ -179,7 +179,9 @@ export const Form = () => {
         title="Max unlock cost"
         loading={isApprovalFlowLoading}
       >
-        {isApprovalFlow ? `$${approveTxCostInUsd?.toFixed(2)}` : 'FREE'}
+        {isApprovalFlow && isTokenLocked
+          ? `$${approveTxCostInUsd?.toFixed(2)}`
+          : 'FREE'}
       </DataTableRow>
       <DataTableRow title="Max transaction cost" loading={!requestPriceInUsd}>
         ${requestPriceInUsd?.toFixed(2)}
