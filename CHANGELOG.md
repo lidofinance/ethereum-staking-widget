@@ -1,3 +1,12 @@
+## [1.60.1](https://github.com/lidofinance/staking-widget-ts/compare/1.60.0...1.60.1) (2023-04-19)
+
+
+### Bug Fixes
+
+* info box removed from claim page ([3f593a0](https://github.com/lidofinance/staking-widget-ts/commit/3f593a038cea8f48bc8caa06c73477f5cf260c9e))
+
+
+
 # [1.60.0](https://github.com/lidofinance/staking-widget-ts/compare/1.59.1...1.60.0) (2023-04-18)
 
 
@@ -205,20 +214,6 @@
 * add matomo event to token select on wrap ([8538bbf](https://github.com/lidofinance/staking-widget-ts/commit/8538bbfaa69ed9baf32d108be6ae5b54c5e80b9d))
 * bump ts & moved playwright to the root ([d3f965f](https://github.com/lidofinance/staking-widget-ts/commit/d3f965f3caa071080ad70d20deb42cf1ba6f2360))
 * disable button on zero balance ([5435ead](https://github.com/lidofinance/staking-widget-ts/commit/5435ead3eb383bf7cb459af99f7a778e4171c0ae))
-
-
-
-# [1.52.0](https://github.com/lidofinance/staking-widget-ts/compare/1.51.1...1.52.0) (2023-02-15)
-
-
-### Bug Fixes
-
-* replace default value for rate limit ([d0d4bba](https://github.com/lidofinance/staking-widget-ts/commit/d0d4bbaf12cc1faa181e46c72af9062807a9d828))
-
-
-### Features
-
-* replace custom rate limit code with package ([e18ffe1](https://github.com/lidofinance/staking-widget-ts/commit/e18ffe1e99520e210dfa87378d37cfd84db765b3))
 
 
 
