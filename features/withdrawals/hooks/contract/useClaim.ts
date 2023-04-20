@@ -38,7 +38,7 @@ export const useClaim = () => {
           type: 'start',
           flow: TX_STAGE.SIGN,
           requestAmount: ethToClaim,
-          tokenName: null,
+          token: null,
         });
 
         const ids = sortedRequests.map((r) => r.id);
