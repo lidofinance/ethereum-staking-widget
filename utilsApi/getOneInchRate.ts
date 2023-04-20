@@ -26,7 +26,6 @@ export const getOneInchRate: GetOneInchRateStats = async (
     amount: amount.toString(),
   });
   const url = `${api}?${query.toString()}`;
-  console.log(url);
   const data = await responseTimeExternalMetricWrapper({
     payload: api,
     request: () => standardFetcher<oneInchFetchResponse>(url),
@@ -36,7 +35,12 @@ export const getOneInchRate: GetOneInchRateStats = async (
     serverLogger.error('Request to 1inch failed');
     return null;
   }
-  const rate = parseFloat(data.toTokenAmount) / amount;
+
+  const rate =
+    BigNumber.from(data.toTokenAmount)
+      .mul(BigNumber.from(100000))
+      .div(amount)
+      .toNumber() / 100000;
   serverLogger.debug('Rate on 1inch: ' + rate);
 
   return rate;

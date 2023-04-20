@@ -11,23 +11,24 @@ type getWithdrawalRatesParams = {
 type getWithdrawalRatesResult = { name: string; rate: number | null }[];
 
 const STETH_ADDRESS = getTokenAddress(CHAINS.Mainnet, TOKENS.STETH);
-const COW_SWAP_MIN_AMOUNT = BigNumber.from('10000000000000000000');
+const SWAP_MIN_AMOUNT = BigNumber.from('100000000000000000'); // amount lower error out price rates
 
 export const getWithdrawalRates = async ({
   amount,
 }: getWithdrawalRatesParams): Promise<getWithdrawalRatesResult> => {
+  const _amount = amount.lte(SWAP_MIN_AMOUNT) ? SWAP_MIN_AMOUNT : amount;
   return Promise.all([
     getOneInchRate(
       STETH_ADDRESS,
       '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee',
-      amount,
+      _amount,
     )
       .catch(() => null)
       .then((r) => ({ name: '1inch', rate: r })),
-    getParaSwapRate(amount)
+    getParaSwapRate(_amount)
       .catch(() => null)
       .then((r) => ({ name: 'paraswap', rate: r })),
-    getCowSwapRate(amount)
+    getCowSwapRate(_amount)
       .catch(() => {
         return null;
       })
@@ -112,9 +113,7 @@ const getCowSwapRate = async (amount: BigNumber) => {
     receiver: '0x0000000000000000000000000000000000000000',
     partiallyFillable: false,
     kind: 'sell',
-    sellAmountBeforeFee: amount.lte(COW_SWAP_MIN_AMOUNT)
-      ? COW_SWAP_MIN_AMOUNT.toString()
-      : amount.toString(),
+    sellAmountBeforeFee: amount.toString(),
   };
 
   const url = `https://api.cow.fi/mainnet/api/v1/quote`;
