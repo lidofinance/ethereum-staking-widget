@@ -22,4 +22,5 @@ export const enum API_ROUTES {
   METRICS = 'api/metrics',
   REWARDS = 'api/rewards',
   ESTIMATE_WITHDRAWAL_GAS = 'api/estimate-withdrawal-gas',
+  WITHDRAWAL_RATES = 'api/withdrawal-rates',
 }
