@@ -14,12 +14,17 @@ type getWithdrawalRatesResult = { name: string; rate: number | null }[];
 
 const STETH_ADDRESS = getTokenAddress(CHAINS.Mainnet, TOKENS.STETH);
 const SWAP_MIN_AMOUNT = BigNumber.from('100000000000000000'); // amount lower error out price rates
+const RATE_PRECISION = 100000;
+const RATE_PRECISION_BN = BigNumber.from(RATE_PRECISION);
+
+const calculateRate = (src: BigNumber, dest: BigNumber) =>
+  dest.mul(RATE_PRECISION_BN).div(src).toNumber() / RATE_PRECISION;
 
 type OneInchQuotePartial = {
   toTokenAmount: string;
 };
 
-export const getOneInchRate = async (amount: BigNumber) => {
+const getOneInchRate = async (amount: BigNumber) => {
   const api = `https://api.1inch.exchange/v3.0/1/quote`;
   const query = new URLSearchParams({
     fromTokenAddress: STETH_ADDRESS,
@@ -29,11 +34,7 @@ export const getOneInchRate = async (amount: BigNumber) => {
   const url = `${api}?${query.toString()}`;
   const data: OneInchQuotePartial = await fetch(url).then((res) => res.json());
 
-  const rate =
-    BigNumber.from(data.toTokenAmount)
-      .mul(BigNumber.from(100000))
-      .div(amount)
-      .toNumber() / 100000;
+  const rate = calculateRate(amount, BigNumber.from(data.toTokenAmount));
 
   return rate;
 };
@@ -64,11 +65,10 @@ const getParaSwapRate = async (amount: BigNumber) => {
     res.json(),
   );
 
-  const rate =
-    BigNumber.from(data.priceRoute.destAmount)
-      .mul(BigNumber.from(100000))
-      .div(BigNumber.from(data.priceRoute.srcAmount))
-      .toNumber() / 100000;
+  const rate = calculateRate(
+    BigNumber.from(data.priceRoute.destAmount),
+    BigNumber.from(data.priceRoute.srcAmount),
+  );
 
   return rate;
 };
@@ -102,11 +102,10 @@ const getCowSwapRate = async (amount: BigNumber) => {
     },
   ).then((res) => res.json());
 
-  const rate =
-    BigNumber.from(data.quote.buyAmount)
-      .mul(BigNumber.from(100000))
-      .div(BigNumber.from(data.quote.sellAmount))
-      .toNumber() / 100000;
+  const rate = calculateRate(
+    BigNumber.from(data.quote.buyAmount),
+    BigNumber.from(data.quote.sellAmount),
+  );
 
   return rate;
 };
