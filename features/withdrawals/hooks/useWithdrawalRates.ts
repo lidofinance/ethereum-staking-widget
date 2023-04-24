@@ -5,6 +5,7 @@ import { useDebouncedValue } from 'shared/hooks/useDebouncedValue';
 import { BigNumber } from 'ethers';
 import { CHAINS, TOKENS, getTokenAddress } from '@lido-sdk/constants';
 import { useEffect, useState } from 'react';
+import { standardFetcher } from 'utils/standardFetcher';
 
 type getWithdrawalRatesParams = {
   amount: BigNumber;
@@ -25,18 +26,26 @@ type OneInchQuotePartial = {
 };
 
 const getOneInchRate = async (amount: BigNumber) => {
-  const api = `https://api.1inch.exchange/v3.0/1/quote`;
-  const query = new URLSearchParams({
-    fromTokenAddress: STETH_ADDRESS,
-    toTokenAddress: '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee',
-    amount: amount.toString(),
-  });
-  const url = `${api}?${query.toString()}`;
-  const data: OneInchQuotePartial = await fetch(url).then((res) => res.json());
+  let rate;
+  try {
+    const api = `https://api.1inch.exchange/v3.0/1/quote`;
+    const query = new URLSearchParams({
+      fromTokenAddress: STETH_ADDRESS,
+      toTokenAddress: '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee',
+      amount: amount.toString(),
+    });
+    const url = `${api}?${query.toString()}`;
+    const data: OneInchQuotePartial =
+      await standardFetcher<OneInchQuotePartial>(url);
 
-  const rate = calculateRate(amount, BigNumber.from(data.toTokenAmount));
-
-  return rate;
+    rate = calculateRate(amount, BigNumber.from(data.toTokenAmount));
+  } catch {
+    rate = null;
+  }
+  return {
+    name: '1inch',
+    rate,
+  };
 };
 
 type ParaSwapPriceResponsePartial = {
@@ -47,30 +56,36 @@ type ParaSwapPriceResponsePartial = {
 };
 
 const getParaSwapRate = async (amount: BigNumber) => {
-  const api = `https://apiv5.paraswap.io/prices`;
-  const query = new URLSearchParams({
-    srcToken: STETH_ADDRESS,
-    srcDecimals: '18',
-    destToken: '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE',
-    destDecimals: '18',
-    side: 'SELL',
-    excludeDirectContractMethods: 'true',
-    userAddress: '0x0000000000000000000000000000000000000000',
-    amount: amount.toString(),
-    network: '1',
-  });
+  let rate;
+  try {
+    const api = `https://apiv5.paraswap.io/prices`;
+    const query = new URLSearchParams({
+      srcToken: STETH_ADDRESS,
+      srcDecimals: '18',
+      destToken: '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE',
+      destDecimals: '18',
+      side: 'SELL',
+      excludeDirectContractMethods: 'true',
+      userAddress: '0x0000000000000000000000000000000000000000',
+      amount: amount.toString(),
+      network: '1',
+    });
 
-  const url = `${api}?${query.toString()}`;
-  const data: ParaSwapPriceResponsePartial = await fetch(url).then((res) =>
-    res.json(),
-  );
+    const url = `${api}?${query.toString()}`;
+    const data: ParaSwapPriceResponsePartial =
+      await standardFetcher<ParaSwapPriceResponsePartial>(url);
 
-  const rate = calculateRate(
-    BigNumber.from(data.priceRoute.destAmount),
-    BigNumber.from(data.priceRoute.srcAmount),
-  );
-
-  return rate;
+    rate = calculateRate(
+      BigNumber.from(data.priceRoute.destAmount),
+      BigNumber.from(data.priceRoute.srcAmount),
+    );
+  } catch {
+    rate = null;
+  }
+  return {
+    name: 'paraswap',
+    rate,
+  };
 };
 
 type CowSwapQuoteResponsePartial = {
@@ -81,73 +96,69 @@ type CowSwapQuoteResponsePartial = {
 };
 
 const getCowSwapRate = async (amount: BigNumber) => {
-  const payload = {
-    sellToken: STETH_ADDRESS,
-    buyToken: '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE',
-    from: '0x0000000000000000000000000000000000000000',
-    receiver: '0x0000000000000000000000000000000000000000',
-    partiallyFillable: false,
-    kind: 'sell',
-    sellAmountBeforeFee: amount.toString(),
-  };
+  let rate;
+  try {
+    const payload = {
+      sellToken: STETH_ADDRESS,
+      buyToken: '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE',
+      from: '0x0000000000000000000000000000000000000000',
+      receiver: '0x0000000000000000000000000000000000000000',
+      partiallyFillable: false,
+      kind: 'sell',
+      sellAmountBeforeFee: amount.toString(),
+    };
 
-  const data: CowSwapQuoteResponsePartial = await fetch(
-    `https://api.cow.fi/mainnet/api/v1/quote`,
-    {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
+    const data: CowSwapQuoteResponsePartial = await standardFetcher(
+      `https://api.cow.fi/mainnet/api/v1/quote`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
       },
-      body: JSON.stringify(payload),
-    },
-  ).then((res) => res.json());
+    );
 
-  const rate = calculateRate(
-    BigNumber.from(data.quote.buyAmount),
-    BigNumber.from(data.quote.sellAmount),
-  );
-
-  return rate;
+    rate = calculateRate(
+      BigNumber.from(data.quote.buyAmount),
+      BigNumber.from(data.quote.sellAmount),
+    );
+  } catch {
+    rate = null;
+  }
+  return {
+    name: 'cowswap',
+    rate,
+  };
 };
 
 const getWithdrawalRates = async ({
   amount,
 }: getWithdrawalRatesParams): Promise<getWithdrawalRatesResult> => {
-  const _amount = amount.lte(SWAP_MIN_AMOUNT) ? SWAP_MIN_AMOUNT : amount;
-  return await Promise.all([
-    getOneInchRate(_amount)
-      .catch(() => null)
-      .then((r) => ({ name: '1inch', rate: r })),
-    getParaSwapRate(_amount)
-      .catch((e) => {
-        console.log(e);
-        return null;
-      })
-      .then((r) => ({ name: 'paraswap', rate: r })),
-    getCowSwapRate(_amount)
-      .catch(() => {
-        return null;
-      })
-      .then((r) => ({ name: 'cowswap', rate: r })),
-  ]).then((rates) => {
-    // sort by rate, then alphabetic
-    rates.sort((r1, r2) => {
-      const rate1 = r1.rate ?? 0;
-      const rate2 = r2.rate ?? 0;
-      if (rate1 == rate2) {
-        if (r1.name < r2.name) {
-          return -1;
-        }
-        if (r1.name > r2.name) {
-          return 1;
-        }
-        return 0;
-      }
-      return rate2 - rate1;
-    });
+  const capped_amount = amount.lte(SWAP_MIN_AMOUNT) ? SWAP_MIN_AMOUNT : amount;
+  const rates = await Promise.all([
+    getOneInchRate(capped_amount),
+    getParaSwapRate(capped_amount),
+    getCowSwapRate(capped_amount),
+  ]);
 
-    return rates;
+  // sort by rate, then alphabetic
+  rates.sort((r1, r2) => {
+    const rate1 = r1.rate ?? 0;
+    const rate2 = r2.rate ?? 0;
+    if (rate1 == rate2) {
+      if (r1.name < r2.name) {
+        return -1;
+      }
+      if (r1.name > r2.name) {
+        return 1;
+      }
+      return 0;
+    }
+    return rate2 - rate1;
   });
+
+  return rates;
 };
 
 type useWithdrawalRatesOptions = {
