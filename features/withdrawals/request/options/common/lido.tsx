@@ -16,7 +16,7 @@ type LidoProps = Pick<OptionProps, 'selected' | 'onClick'>;
 export const Lido = ({ selected, ...rest }: LidoProps) => {
   const { inputValue } = useRequestForm();
   const { isSteth } = useWithdrawals();
-  const { value } = useWaitingTime(inputValue);
+  const { value, initialLoading } = useWaitingTime(inputValue);
   const ethAmount = useEthAmountByStethWsteth({ isSteth, input: inputValue });
 
   return (
@@ -25,6 +25,7 @@ export const Lido = ({ selected, ...rest }: LidoProps) => {
       title="Lido"
       timeRange={value}
       selected={selected}
+      isTimeRangeLoading={initialLoading}
       {...rest}
     >
       <OptionAmountRow>
