@@ -5,7 +5,6 @@ import { BigNumber } from 'ethers';
 import { FormatToken } from 'shared/formatters';
 import { Connect } from 'shared/wallet';
 
-import { Info } from './info';
 import { BunkerInfo } from './bunker-info';
 import { useClaim, useWithdrawalsStatus } from 'features/withdrawals/hooks';
 import { useClaimTxPrice } from 'features/withdrawals/hooks/useWithdrawTxPrice';
@@ -60,7 +59,7 @@ export const ClaimForm = () => {
   return (
     <>
       <ClaimFormBody>
-        {isBunkerMode ? <BunkerInfo /> : <Info />}
+        {isBunkerMode && <BunkerInfo />}
         <div ref={refRequests}>
           <RequestsList
             isLoading={isLoading}

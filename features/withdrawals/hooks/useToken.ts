@@ -7,6 +7,7 @@ import {
 } from '@lido-sdk/react';
 import { useSTETHContractWeb3 } from 'customSdk/contracts';
 import { useWithdrawals } from 'features/withdrawals/contexts/withdrawals-context';
+import { getTokenDisplayName } from 'utils/getTokenDisplayName';
 
 export const useToken = () => {
   const { selectedToken, setSelectedToken } = useWithdrawals();
@@ -18,7 +19,7 @@ export const useToken = () => {
   const isSteth = selectedToken === TOKENS.STETH;
   const tokenContract = isSteth ? stethContractWeb3 : wstethContractWeb3;
   const tokenBalance = isSteth ? stethBalance.data : wstethBalance.data;
-  const tokenLabel = isSteth ? 'stETH' : 'wstETH';
+  const tokenLabel = getTokenDisplayName(selectedToken);
   // we recalculate only on data change relevant to current token
   return useMemo(() => {
     return {

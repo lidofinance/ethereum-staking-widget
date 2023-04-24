@@ -20,6 +20,7 @@ import type { StethPermitAbi } from 'generated';
 import { useTransactionModal } from 'features/withdrawals/contexts/transaction-modal-context';
 import { useRequestData } from 'features/withdrawals/contexts/request-data-context';
 import { useWithdrawals } from 'features/withdrawals/contexts/withdrawals-context';
+import type { TokensWithdrawable } from 'features/withdrawals/types/tokens-withdrawable';
 
 import { useWithdrawalsContract } from './useWithdrawalsContract';
 
@@ -219,20 +220,16 @@ const useWithdrawalRequestMethods = () => {
 
 type useWithdrawalRequestOptions = {
   value: string;
-  tokenLabel: string;
   tokenContract: StethPermitAbi | WstethAbi | null;
-  token: TOKENS.STETH | TOKENS.WSTETH;
-  reset: () => void;
+  token: TokensWithdrawable;
 };
 
 // provides form with a handler to call signing flow
 // and all needed indicators for ux
 export const useWithdrawalRequest = ({
   value,
-  tokenLabel,
   tokenContract,
   token,
-  reset,
 }: useWithdrawalRequestOptions) => {
   const [isTxPending, setIsTxPending] = useState(false);
   const { account } = useWeb3();
@@ -280,7 +277,7 @@ export const useWithdrawalRequest = ({
   const isTokenLocked = isApprovalFlow && needsApprove;
 
   const request = useCallback(
-    (requests: BigNumber[]) => {
+    (requests: BigNumber[], resetForm: () => void) => {
       // define and set retry point
       const startCallback = async () => {
         try {
@@ -300,7 +297,7 @@ export const useWithdrawalRequest = ({
                 : TX_STAGE.SIGN
               : TX_STAGE.PERMIT,
             requestAmount,
-            tokenName: tokenLabel,
+            token,
           });
 
           // each flow switches needed signing stages
@@ -320,7 +317,7 @@ export const useWithdrawalRequest = ({
           }
           // end flow
           dispatchModalState({ type: 'success' });
-          reset();
+          resetForm();
         } catch (error) {
           const errorMessage = getErrorMessage(error);
           dispatchModalState({ type: 'error', errorText: errorMessage });
@@ -348,8 +345,6 @@ export const useWithdrawalRequest = ({
       needsApprove,
       setIsTxPending,
       token,
-      tokenLabel,
-      reset,
     ],
   );
 

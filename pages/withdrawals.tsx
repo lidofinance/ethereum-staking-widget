@@ -4,6 +4,7 @@ import Head from 'next/head';
 import { WithdrawalsTabs } from 'features/withdrawals';
 import { WithdrawalsProvider } from 'features/withdrawals/contexts/withdrawals-context';
 import { Layout } from 'shared/components';
+import NoSSRWrapper from '../shared/components/no-ssr-wrapper';
 import Page404 from './404';
 import { dynamics } from 'config';
 
@@ -21,7 +22,9 @@ const Withdrawals: FC = () => {
         </Head>
 
         <WithdrawalsProvider>
-          <WithdrawalsTabs />
+          <NoSSRWrapper>
+            <WithdrawalsTabs />
+          </NoSSRWrapper>
         </WithdrawalsProvider>
       </Layout>
     </>
