@@ -12,7 +12,6 @@ import { useValidateUnstakeValue } from 'features/withdrawals/hooks/useValidateU
 import { useToken } from 'features/withdrawals/request/form/useToken';
 import { useCurrencyInput } from 'shared/forms/hooks/useCurrencyInput';
 
-import { Options } from '../options';
 import { FormatToken } from 'shared/formatters/format-token';
 import { RequestsInfo } from '../requestsInfo';
 import { InputNumber } from 'shared/forms/components/input-number';
@@ -29,8 +28,12 @@ import { iconsMap } from 'features/withdrawals/providers/withdrawals-provider/pr
 
 // TODO move to shared
 import { useApproveGasLimit } from 'features/wrap/features/wrap-form/hooks';
+import { OptionsPicker } from '../options/options-picker';
 
 export const Form = () => {
+  const [withdrawalMethod, setWithdrawalMethod] = useState<'lido' | 'dex'>(
+    'lido',
+  );
   const [inputValue, setInputValue] = useState('');
   const { active } = useWeb3();
   const { minAmount } = useWithdrawalsConstants();
@@ -145,7 +148,10 @@ export const Form = () => {
       </InputGroupStyled>
 
       <RequestsInfo requestCount={requestCount} />
-      <Options inputValue={inputValue} />
+      <OptionsPicker
+        selectedOption={withdrawalMethod}
+        onOptionSelect={setWithdrawalMethod}
+      />
       <FormButton
         isLocked={isTokenLocked}
         pending={isTxPending || isSubmitting}

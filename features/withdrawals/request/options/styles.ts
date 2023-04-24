@@ -104,3 +104,63 @@ export const OptionAmountRow = styled.div`
   display: flex;
   align-items: center;
 `;
+
+// OPTIONS PICKER
+
+export const OptionsPickerContainer = styled.div`
+  display: flex;
+  gap: 16px;
+  align-items: stretch;
+  justify-content: space-between;
+  margin-bottom: 16px;
+`;
+
+export const OptionsPickerButton = styled.button<{ $active?: boolean }>`
+  flex: 1 0;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--lido-color-backgroundSecondary);
+  border-radius: ${({ theme }) => theme.borderRadiusesMap.lg}px;
+  border: 1px solid var(--lido-color-border);
+  cursor: pointer;
+  outline: ${({ $active }) => ($active ? '1px solid #00A3FF' : 'none')};
+  border-color: ${({ $active }) =>
+    $active ? '#00A3FF' : 'var(--lido-color-border)'};
+  padding: 16px 20px;
+  font-size: 12px;
+  color: var(--lido-color-text);
+
+  & > :first-child {
+    margin-bottom: 12px;
+  }
+`;
+
+export const OptionsPickerRow = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+`;
+
+export const OptionsPickerLabel = styled.label`
+  color: var(--color-text);
+  font-weight: 700;
+`;
+export const OptionsPickerSubLabel = styled.label`
+  color: var(--lido-color-textSecondary);
+`;
+
+export const OptionsPickerIcons = styled.div`
+  display: flex;
+  justify-content: end;
+
+  & > * {
+    box-sizing: content-box;
+    width: 20px;
+    height: 20px;
+    border-radius: 100%;
+    border: 1px solid var(--lido-color-backgroundSecondary);
+    background-color: var(--lido-color-backgroundSecondary);
+    margin: -1px 0 -1px -8px;
+  }
+`;
