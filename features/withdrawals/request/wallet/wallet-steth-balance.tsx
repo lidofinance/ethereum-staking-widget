@@ -1,6 +1,6 @@
 import { CardBalance } from 'shared/wallet';
 import { FormatToken } from 'shared/formatters';
-import { useRequestData } from 'features/withdrawals/hooks';
+import { useRequestData } from 'features/withdrawals/contexts/request-data-context';
 
 export const WalletStethBalance = () => {
   const { stethBalance } = useRequestData();

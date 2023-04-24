@@ -1,5 +1,4 @@
-import { FC } from 'react';
-import { useRequestData } from 'features/withdrawals/hooks';
+import { useRequestData } from 'features/withdrawals/contexts/request-data-context';
 
 import { Lido, Oneinch } from './common';
 import { OptionsBlockStyled } from './styles';
@@ -9,11 +8,7 @@ const REQUEST_OPTIONS = {
   oneinch: Oneinch,
 };
 
-type OptionsProps = {
-  inputValue: string;
-};
-
-export const Options: FC<OptionsProps> = ({ inputValue }) => {
+export const Options = () => {
   const { requestOptions, onChangeRequestOptions } = useRequestData();
 
   return (
@@ -26,7 +21,6 @@ export const Options: FC<OptionsProps> = ({ inputValue }) => {
         return (
           <Component
             key={index}
-            inputValue={inputValue}
             selected={option.selected}
             onClick={onChangeRequestOptions}
           />

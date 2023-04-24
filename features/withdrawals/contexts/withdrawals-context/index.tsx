@@ -1,20 +1,19 @@
-import { FC, createContext, useMemo, useState } from 'react';
+import { FC, createContext, useContext, useMemo, useState } from 'react';
 import { Steth, Wsteth } from '@lidofinance/lido-ui';
 import { TOKENS } from '@lido-sdk/constants';
+import invariant from 'tiny-invariant';
 
 import { StatusProps } from 'features/withdrawals/shared/status';
 
 import { useContractStatus } from './useContractStatus';
 import { useRoutes } from './useRoutes';
 
-export const WithdrawalsContext = createContext({} as WithdrawalsValue);
-
 export const iconsMap = {
   [TOKENS.WSTETH]: <Wsteth />,
   [TOKENS.STETH]: <Steth />,
 };
 
-export type WithdrawalsValue = {
+export type WithdrawalsContextValue = {
   selectedToken: keyof typeof iconsMap;
   setSelectedToken: (token: keyof typeof iconsMap) => void;
   isSteth: boolean;
@@ -27,8 +26,16 @@ export type WithdrawalsValue = {
   isBunkerMode: boolean;
   navRoutes: ReturnType<typeof useRoutes>['navRoutes'];
 };
+const WithdrawalsContext = createContext<WithdrawalsContextValue | null>(null);
+WithdrawalsContext.displayName = 'WithdrawalsContext';
 
-const WithdrawalsProvider: FC = ({ children }) => {
+export const useWithdrawals = () => {
+  const value = useContext(WithdrawalsContext);
+  invariant(value, 'useWithdrawals was used outside WithdrawalContext');
+  return value;
+};
+
+export const WithdrawalsProvider: FC = ({ children }) => {
   const [selectedToken, setSelectedToken] = useState<
     TOKENS.WSTETH | TOKENS.STETH
   >(TOKENS.STETH);
@@ -77,5 +84,3 @@ const WithdrawalsProvider: FC = ({ children }) => {
     </WithdrawalsContext.Provider>
   );
 };
-
-export default WithdrawalsProvider;
