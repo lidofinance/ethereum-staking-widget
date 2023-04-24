@@ -1,6 +1,7 @@
 import { standardFetcher } from 'utils/standardFetcher';
 import { responseTimeExternalMetricWrapper } from 'utilsApi';
 import { serverLogger } from './serverLogger';
+import { BigNumber } from 'ethers';
 
 type oneInchFetchResponse = {
   toTokenAmount: string;
@@ -9,7 +10,7 @@ type oneInchFetchResponse = {
 type GetOneInchRateStats = (
   fromTokenAddress: string,
   toTokenAddress: string,
-  amount: number,
+  amount: BigNumber,
 ) => Promise<number | null>;
 
 export const getOneInchRate: GetOneInchRateStats = async (
@@ -25,7 +26,6 @@ export const getOneInchRate: GetOneInchRateStats = async (
     amount: amount.toString(),
   });
   const url = `${api}?${query.toString()}`;
-
   const data = await responseTimeExternalMetricWrapper({
     payload: api,
     request: () => standardFetcher<oneInchFetchResponse>(url),
@@ -35,7 +35,12 @@ export const getOneInchRate: GetOneInchRateStats = async (
     serverLogger.error('Request to 1inch failed');
     return null;
   }
-  const rate = parseFloat(data.toTokenAmount) / amount;
+
+  const rate =
+    BigNumber.from(data.toTokenAmount)
+      .mul(BigNumber.from(100000))
+      .div(amount)
+      .toNumber() / 100000;
   serverLogger.debug('Rate on 1inch: ' + rate);
 
   return rate;

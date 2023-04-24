@@ -1,7 +1,7 @@
 import Link from 'next/link';
 
 import { InfoBoxStyled } from 'features/withdrawals/shared';
-import { useWithdrawals } from 'features/withdrawals/hooks';
+import { useWithdrawals } from 'features/withdrawals/contexts/withdrawals-context';
 
 import { LinkWrapperStyled } from './styles';
 

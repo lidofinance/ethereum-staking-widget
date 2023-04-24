@@ -1,4 +1,5 @@
 import { FC } from 'react';
+import { InlineLoader } from '@lidofinance/lido-ui';
 
 import {
   OptionStyled,
@@ -10,6 +11,7 @@ import {
   LidoIcon,
   OneinchIcon,
   PrimaryLableStyled,
+  OptionDescRangeLoaderWraper,
 } from './styles';
 
 const Icons = {
@@ -20,6 +22,7 @@ const Icons = {
 export type OptionProps = {
   title: string;
   timeRange: string;
+  isTimeRangeLoading?: boolean;
   type: keyof typeof Icons;
   selected?: boolean;
   onClick: (type: keyof typeof Icons) => void;
@@ -27,8 +30,16 @@ export type OptionProps = {
 };
 
 export const Option: FC<OptionProps> = (props) => {
-  const { children, title, timeRange, type, selected, onClick, primary } =
-    props;
+  const {
+    children,
+    title,
+    timeRange,
+    type,
+    selected,
+    onClick,
+    primary,
+    isTimeRangeLoading,
+  } = props;
 
   const onOptionClick = () => {
     onClick?.(type);
@@ -42,7 +53,13 @@ export const Option: FC<OptionProps> = (props) => {
         <OptionTitleStyled>{title}</OptionTitleStyled>
         <OptionDescStyled>
           Waiting time:{' '}
-          <OptionDescRangeStyled>{timeRange}</OptionDescRangeStyled>
+          {isTimeRangeLoading ? (
+            <OptionDescRangeLoaderWraper>
+              <InlineLoader />
+            </OptionDescRangeLoaderWraper>
+          ) : (
+            <OptionDescRangeStyled>{timeRange}</OptionDescRangeStyled>
+          )}
         </OptionDescStyled>
       </OptionInfoStyled>
       <OptionAmountStyled>{children}</OptionAmountStyled>

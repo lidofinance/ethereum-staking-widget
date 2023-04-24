@@ -3,7 +3,7 @@ import { Text } from '@lidofinance/lido-ui';
 import { CardBalance } from 'shared/wallet';
 import { FormatToken } from 'shared/formatters';
 import { useStethByWsteth } from 'shared/hooks';
-import { useRequestData } from 'features/withdrawals/hooks';
+import { useRequestData } from 'features/withdrawals/contexts/request-data-context';
 
 export const WalletWstethBalance = () => {
   const { wstethBalance } = useRequestData();

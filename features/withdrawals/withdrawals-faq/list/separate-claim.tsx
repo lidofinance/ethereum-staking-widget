@@ -1,4 +1,4 @@
-import { useWithdrawals } from 'features/withdrawals/hooks';
+import { useWithdrawals } from 'features/withdrawals/contexts/withdrawals-context';
 
 import Link from 'next/link';
 import { Accordion } from '@lidofinance/lido-ui';

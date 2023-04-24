@@ -1,19 +1,18 @@
 import { parseEther } from '@ethersproject/units';
 import { BigNumber } from 'ethers';
+import { useRequestForm } from 'features/withdrawals/contexts/request-form-context';
 
 import { Option, OptionProps } from '../option';
 
 import { FormatTokenStyled } from './styles';
 
-type OneinchProps = Pick<OptionProps, 'selected' | 'onClick'> & {
-  inputValue?: string;
-};
+type OneinchProps = Pick<OptionProps, 'selected' | 'onClick'>;
 
 export const Oneinch: React.FC<OneinchProps> = ({
   selected,
-  inputValue,
   ...rest
 }: OneinchProps) => {
+  const { inputValue } = useRequestForm();
   const ethAmount = !isNaN(Number(inputValue))
     ? parseEther(inputValue || '0')
     : BigNumber.from(0);

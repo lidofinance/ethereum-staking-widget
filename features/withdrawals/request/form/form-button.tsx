@@ -4,7 +4,8 @@ import { useWeb3 } from '@reef-knot/web3-react';
 import { Button } from '@lidofinance/lido-ui';
 
 import { Connect } from 'shared/wallet';
-import { useRequestData, useWithdrawals } from 'features/withdrawals/hooks';
+import { useWithdrawals } from 'features/withdrawals/contexts/withdrawals-context';
+import { useRequestData } from 'features/withdrawals/contexts/request-data-context';
 
 import { ButtonLinkWrap } from './styles';
 

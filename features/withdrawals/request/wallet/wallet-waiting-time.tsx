@@ -1,28 +1,25 @@
 import { CardBalance } from 'shared/wallet';
 import { Status } from 'features/withdrawals/shared';
-import { useWithdrawals, useRequestData } from 'features/withdrawals/hooks';
+import { useWaitingTime } from 'features/withdrawals/hooks';
+import { useRequestForm } from 'features/withdrawals/contexts/request-form-context';
+import { useRequestData } from 'features/withdrawals/contexts/request-data-context';
+import { useWithdrawals } from 'features/withdrawals/contexts/withdrawals-context';
 
 import { WalletQueueTooltip } from './wallet-queue-tooltip';
 
-// this is used in other places
-// TODO move this hook when refactoring to better time estimation
-export const useWaitingTime = () => {
-  const { isBunkerMode, isPaused } = useWithdrawals();
-  const { unfinalizedStETH } = useRequestData();
-  const isLoading = unfinalizedStETH.initialLoading;
-  const contentValue = isPaused
-    ? '—'
-    : isBunkerMode
-    ? 'Not estimated'
-    : '1 - 5 day(s)';
-  return { value: contentValue, isLoading };
-};
-
 export const WalletWaitingTime = () => {
   const { withdrawalsStatus } = useWithdrawals();
-  const { value, isLoading } = useWaitingTime();
+  const { unfinalizedStETH } = useRequestData();
+  const { inputValue } = useRequestForm();
+  const waitingTime = useWaitingTime(inputValue);
 
-  const content = <Status variant={withdrawalsStatus}>{value}</Status>;
+  const content = (
+    <Status variant={withdrawalsStatus}>{waitingTime.value}</Status>
+  );
+
+  const isLoading =
+    unfinalizedStETH.initialLoading || waitingTime.initialLoading;
+
   const timeTitle = <>Waiting time {<WalletQueueTooltip />}</>;
 
   return (

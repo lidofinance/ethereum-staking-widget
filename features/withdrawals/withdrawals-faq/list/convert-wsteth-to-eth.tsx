@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { FC } from 'react';
 import { Accordion } from '@lidofinance/lido-ui';
-import { useWithdrawals } from 'features/withdrawals/hooks';
+import { useWithdrawals } from 'features/withdrawals/contexts/withdrawals-context';
 
 export const ConvertWSTETHtoETH: FC = () => {
   const { requestPath, claimPath } = useWithdrawals();

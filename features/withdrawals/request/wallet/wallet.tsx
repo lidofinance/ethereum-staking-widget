@@ -6,7 +6,7 @@ import { useSDK } from '@lido-sdk/react';
 import { CardAccount, CardRow, Fallback } from 'shared/wallet';
 import { WalletMyRequests } from 'features/withdrawals/shared';
 import type { WalletComponentType } from 'shared/wallet/types';
-import { useWithdrawals } from 'features/withdrawals/hooks';
+import { useWithdrawals } from 'features/withdrawals/contexts/withdrawals-context';
 import { WalletWrapperStyled } from 'features/withdrawals/shared';
 
 import { WalletStethBalance } from './wallet-steth-balance';
