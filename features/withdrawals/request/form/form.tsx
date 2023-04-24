@@ -32,6 +32,7 @@ import { InputGroupStyled } from './styles';
 // TODO move to shared
 import { useApproveGasLimit } from 'features/wrap/features/wrap-form/hooks';
 import { OptionsPicker } from '../options/options-picker';
+import { DexOptions } from '../options/dex-options';
 
 export const Form = () => {
   const [withdrawalMethod, setWithdrawalMethod] = useState<'lido' | 'dex'>(
@@ -148,39 +149,51 @@ export const Form = () => {
         />
       </InputGroupStyled>
 
-      <RequestsInfo requestCount={requestCount} />
+      {withdrawalMethod === 'lido' && (
+        <RequestsInfo requestCount={requestCount} />
+      )}
       <OptionsPicker
         selectedOption={withdrawalMethod}
         onOptionSelect={setWithdrawalMethod}
       />
-      <FormButton
-        isLocked={isTokenLocked}
-        pending={isTxPending || isSubmitting}
-        disabled={!!error}
-      />
-      <DataTableRow
-        help={
-          isApprovalFlow ? undefined : (
-            <>Lido leverages gasless token approvals via ERC-2612 permits</>
-          )
-        }
-        title="Max unlock cost"
-        loading={isApprovalFlowLoading}
-      >
-        {isApprovalFlow && isTokenLocked
-          ? `$${approveTxCostInUsd?.toFixed(2)}`
-          : 'FREE'}
-      </DataTableRow>
-      <DataTableRow title="Max transaction cost" loading={!requestPriceInUsd}>
-        ${requestPriceInUsd?.toFixed(2)}
-      </DataTableRow>
-      <DataTableRow title="Allowance" loading={isApprovalFlowLoading}>
-        <FormatToken amount={allowance} symbol={tokenLabel} />
-      </DataTableRow>
-      {tokenLabel === 'stETH' ? (
-        <DataTableRow title="Exchange rate">1 stETH = 1 ETH</DataTableRow>
+
+      {withdrawalMethod == 'lido' ? (
+        <>
+          <FormButton
+            isLocked={isTokenLocked}
+            pending={isTxPending || isSubmitting}
+            disabled={!!error}
+          />
+          <DataTableRow
+            help={
+              isApprovalFlow ? undefined : (
+                <>Lido leverages gasless token approvals via ERC-2612 permits</>
+              )
+            }
+            title="Max unlock cost"
+            loading={isApprovalFlowLoading}
+          >
+            {isApprovalFlow && isTokenLocked
+              ? `$${approveTxCostInUsd?.toFixed(2)}`
+              : 'FREE'}
+          </DataTableRow>
+          <DataTableRow
+            title="Max transaction cost"
+            loading={!requestPriceInUsd}
+          >
+            ${requestPriceInUsd?.toFixed(2)}
+          </DataTableRow>
+          <DataTableRow title="Allowance" loading={isApprovalFlowLoading}>
+            <FormatToken amount={allowance} symbol={tokenLabel} />
+          </DataTableRow>
+          {tokenLabel === 'stETH' ? (
+            <DataTableRow title="Exchange rate">1 stETH = 1 ETH</DataTableRow>
+          ) : (
+            <DataTableRowStethByWsteth />
+          )}
+        </>
       ) : (
-        <DataTableRowStethByWsteth />
+        <DexOptions />
       )}
     </form>
   );
