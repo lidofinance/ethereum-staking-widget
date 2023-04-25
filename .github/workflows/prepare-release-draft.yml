@@ -1,0 +1,14 @@
+name: Prepare release draft
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  prepare-release-draft:
+    uses: lidofinance/actions/.github/workflows/prepare-release-draft.yml@main
+    with:
+      target: main

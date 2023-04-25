@@ -68,12 +68,12 @@ export default wrapRequest([defaultErrorHandler])(someRequest);
 
 ## Release flow
 
-To create new release:
+To create a new release:
 
-1. Merge all changes to the `main` branch
-1. Navigate to Repo => Actions
-1. Run action "Prepare release" action against `main` branch
-1. When action execution is finished, navigate to Repo => Pull requests
-1. Find pull request named "chore(release): X.X.X" review and merge it with "Rebase and merge" (or "Squash and merge")
-1. After merge release action will be triggered automatically
-1. Navigate to Repo => Actions and see last actions logs for further details
+1. Merge all changes to the `main` branch.
+1. After the merge, the `Prepare release draft` action will run automatically. When the action is complete, a release draft is created.
+1. When you need to release, go to Repo → Releases.
+1. Publish the desired release draft manually by clicking the edit button - this release is now the `Latest Published`.
+1. After publication, the action to create a release bump will be triggered automatically.
+
+Learn more about [App Release Flow](https://www.notion.so/App-Release-Flow-f8a3484deecb40cb9d8da4d82c1afe96).
