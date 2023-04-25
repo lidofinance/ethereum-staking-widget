@@ -79,14 +79,14 @@ const DexOption: React.FC<DexOptionProps> = ({
       <DexOptionAmount>
         {loading ? (
           <InlineLoaderSmall />
+        ) : toReceive ? (
+          <FormatToken
+            approx
+            amount={toReceive ?? BigNumber.from(0)}
+            symbol="ETH"
+          />
         ) : (
-          <>
-            <FormatToken
-              approx
-              amount={toReceive ?? BigNumber.from(0)}
-              symbol="ETH"
-            />
-          </>
+          'N/A'
         )}
       </DexOptionAmount>
     </DexOptionStyled>

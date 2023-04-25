@@ -126,6 +126,7 @@ export const DexOptionStyled = styled.div<{ $loading?: boolean }>`
   & > img {
     grid-row: 1 / 3;
     grid-column: 1 / 1;
+    align-self: center;
     width: 44px;
   }
 `;
