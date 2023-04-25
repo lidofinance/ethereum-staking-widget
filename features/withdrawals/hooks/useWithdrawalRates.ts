@@ -196,7 +196,7 @@ const getWithdrawalRates = async ({
       }
       return 0;
     }
-    return rate1 - rate2;
+    return rate2 - rate1;
   });
 
   return rates;
@@ -239,6 +239,8 @@ export const useWithdrawalRates = () => {
   }, [swr.data]);
 
   return {
+    amount: inputValueBN,
+    selectedToken: selectedToken as TOKENS.WSTETH | TOKENS.STETH,
     data: stableSortedData,
     get initialLoading() {
       return !stableSortedData && swr.initialLoading;

@@ -1,9 +1,11 @@
 import styled from 'styled-components';
-import { Chip, InlineLoader } from '@lidofinance/lido-ui';
+import { InlineLoader } from '@lidofinance/lido-ui';
+
 import Lido from 'assets/icons/lido.svg';
 import Oneinch from 'assets/icons/oneinch-circle.svg';
 import Paraswao from 'assets/icons/paraswap-circle.svg';
 import Cowswap from 'assets/icons/cowswap-circle.svg';
+import ExternalLink from 'assets/icons/external-link-icon.svg';
 
 // ICONS
 
@@ -33,15 +35,6 @@ export const CowSwapIcon = styled.img.attrs({
   alt: 'cowswap',
 })`
   display: block;
-`;
-
-export const PrimaryLableStyled = styled(Chip)`
-  position: absolute;
-  left: 0;
-  top: -12px;
-  font-size: 12px;
-  line-height: 20px;
-  padding: 2px 12px;
 `;
 
 export const OptionAmountRow = styled.div`
@@ -123,35 +116,50 @@ export const DexOptionStyled = styled.div<{ $loading?: boolean }>`
   background-color: var(--lido-color-backgroundSecondary);
   border-radius: ${({ theme }) => theme.borderRadiusesMap.lg}px;
   padding: 16px 20px;
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-`;
 
-export const DexOptionBlock = styled.div`
+  width: 100%;
   display: grid;
-  gap: 4px 16px;
-  grid-template: 1fr 1fr / 44px 1fr;
+  gap: 5px 16px;
+  grid-template: 1fr 1fr / 44px max-content;
 
   & > svg,
   & > img {
     grid-row: 1 / 3;
     grid-column: 1 / 1;
+    width: 44px;
   }
 `;
 
 export const DexOptionBlockTitle = styled.span`
   grid-row: 1;
   grid-column: 2;
+  color: var(--lido-color-textDark);
+  font-weight: 400;
+  font-size: 14px;
 `;
 
 export const DexOptionBlockLink = styled.a`
   grid-row: 2;
   grid-column: 2;
+  &::after {
+    content: ' ';
+    display: inline-block;
+    background: url(${ExternalLink}) center / contain no-repeat;
+    width: 12px;
+    height: 12px;
+    margin-left: 8px;
+    margin-bottom: -1px;
+  }
 `;
 
 export const DexOptionAmount = styled.span`
+  grid-row: 1 / 3;
+  grid-column: 3;
+  width: 100%;
+  justify-self: end;
+  align-self: center;
+  text-align: end;
+
   color: var(--lido-color-text);
   font-weight: 700;
   font-size: 14px;

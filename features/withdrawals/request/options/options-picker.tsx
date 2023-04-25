@@ -1,3 +1,10 @@
+import { useWithdrawals } from 'features/withdrawals/contexts/withdrawals-context';
+import { useRequestForm } from 'features/withdrawals/contexts/request-form-context';
+import { useWaitingTime } from 'features/withdrawals/hooks/useWaitingTime';
+import { useWithdrawalRates } from 'features/withdrawals/hooks/useWithdrawalRates';
+import { useWstethToStethRatio } from 'shared/components/data-table-row-steth-by-wsteth';
+import { formatBalance } from 'utils/formatBalance';
+
 import {
   InlineLoaderSmall,
   LidoIcon,
@@ -11,9 +18,6 @@ import {
   OptionsPickerRow,
   OptionsPickerSubLabel,
 } from './styles';
-import { useRequestForm } from 'features/withdrawals/contexts/request-form-context';
-import { useWaitingTime } from 'features/withdrawals/hooks/useWaitingTime';
-import { useWithdrawalRates } from 'features/withdrawals/hooks/useWithdrawalRates';
 
 type OptionButtonProps = {
   onClick: React.ComponentProps<'button'>['onClick'];
@@ -22,7 +26,12 @@ type OptionButtonProps = {
 
 const LidoButton: React.FC<OptionButtonProps> = ({ isActive, onClick }) => {
   const { inputValue } = useRequestForm();
+  const { isSteth } = useWithdrawals();
   const { value, initialLoading } = useWaitingTime(inputValue);
+  const { wstethAsStethBN, loading } = useWstethToStethRatio();
+  const ratioLoading = !isSteth && loading;
+  const ratio = isSteth ? '1 : 1' : `1 : ${formatBalance(wstethAsStethBN)}`;
+
   return (
     <OptionsPickerButton $active={isActive} onClick={onClick}>
       <OptionsPickerRow>
@@ -32,7 +41,8 @@ const LidoButton: React.FC<OptionButtonProps> = ({ isActive, onClick }) => {
         </OptionsPickerIcons>
       </OptionsPickerRow>
       <OptionsPickerRow>
-        <OptionsPickerSubLabel>Rate:</OptionsPickerSubLabel>1 : 1
+        <OptionsPickerSubLabel>Rate:</OptionsPickerSubLabel>
+        {ratioLoading ? <InlineLoaderSmall /> : ratio}
       </OptionsPickerRow>
       <OptionsPickerRow>
         <OptionsPickerSubLabel>Waiting time</OptionsPickerSubLabel>
