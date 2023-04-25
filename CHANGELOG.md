@@ -1,3 +1,7 @@
+# This file is no longer used by semantic-release
+For the latest release notes, please see the [GitHub releases page](https://github.com/lidofinance/staking-widget-ts/releases).
+
+
 # [1.23.0](https://github.com/lidofinance/staking-widget-ts/compare/1.22.0...1.23.0) (2022-09-14)
 
 ### Bug Fixes

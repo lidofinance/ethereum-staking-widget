@@ -1,16 +1,10 @@
 name: CI Build prod image
 
 on:
-  workflow_call:
-    inputs:
-      tag:
-        description: "tag to deploy from"
-        default: ""
-        required: false
-        type: string
+  release:
+    types: [released]
 
-permissions:
-  contents: read
+permissions: {}
 
 jobs:
   # test:
@@ -21,27 +15,11 @@ jobs:
     # needs: test
     name: Build and deploy
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-        with:
-          persist-credentials: false
-
-      - name: Tag name
-        id: tag_name
-        run: |
-          if [ '${{ inputs.tag }}' = '' ]; then
-            echo "TAG=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
-          else
-            echo "TAG=$TAG" >> $GITHUB_OUTPUT
-          fi
-        env:
-          TAG: ${{ inputs.tag }}
-
       - name: Build prod image
         uses: lidofinance/dispatch-workflow@v1
         env:
           APP_ID: ${{ secrets.APP_ID }}
           APP_PRIVATE_KEY: ${{ secrets.APP_PRIVATE_KEY }}
           TARGET_REPO: "lidofinance/infra-mainnet"
-          TAG: "${{ steps.tag_name.outputs.TAG }}"
+          TAG: "${{ github.event.release.tag_name }}"
           TARGET_WORKFLOW: "build_mainnet_staking_widget_ts.yaml"
