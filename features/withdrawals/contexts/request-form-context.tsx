@@ -2,6 +2,7 @@ import { parseEther } from '@ethersproject/units';
 import { BigNumber } from 'ethers';
 import { FC, createContext, useContext, useMemo, useState } from 'react';
 import invariant from 'tiny-invariant';
+import { isValidEtherValue } from 'utils/isValidEtherValue';
 
 export type RequestFormContextValue = {
   inputValue: string;
@@ -20,12 +21,10 @@ export const useRequestForm = () => {
 export const RequestFormProvider: FC = ({ children }) => {
   const [inputValue, setInputValue] = useState('');
   const inputValueBN = useMemo(() => {
-    try {
-      return parseEther(inputValue ? inputValue : '0');
-    } catch {
-      return parseEther('0');
-    }
+    if (isValidEtherValue(inputValue)) return parseEther(inputValue);
+    return BigNumber.from(0);
   }, [inputValue]);
+
   const value = useMemo(
     () => ({
       inputValue,
