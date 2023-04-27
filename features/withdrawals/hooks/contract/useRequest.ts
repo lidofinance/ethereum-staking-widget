@@ -13,7 +13,6 @@ import {
   useERC20PermitSignature,
   useIsContract,
 } from 'shared/hooks';
-import { useWithdrawalsApprove } from 'features/withdrawals/hooks';
 import { getErrorMessage, runWithTransactionLogger } from 'utils';
 import { isContract } from 'utils/isContract';
 import type { StethPermitAbi } from 'generated';
@@ -23,6 +22,7 @@ import { useWithdrawals } from 'features/withdrawals/contexts/withdrawals-contex
 import type { TokensWithdrawable } from 'features/withdrawals/types/tokens-withdrawable';
 
 import { useWithdrawalsContract } from './useWithdrawalsContract';
+import { useApprove } from 'shared/hooks/useApprove';
 
 // this encapsulates permit/approval & steth/wsteth flows
 const useWithdrawalRequestMethods = () => {
@@ -255,7 +255,7 @@ export const useWithdrawalRequest = ({
     needsApprove,
     allowance,
     loading: loadingUseApprove,
-  } = useWithdrawalsApprove(
+  } = useApprove(
     valueBN,
     tokenContract?.address ?? '',
     withdrawalContractWeb3?.address ?? '',

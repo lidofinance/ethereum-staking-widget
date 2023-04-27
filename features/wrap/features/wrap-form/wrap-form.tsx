@@ -17,10 +17,7 @@ import {
   getErrorMessage,
   runWithTransactionLogger,
 } from 'utils';
-import {
-  TransactionReceipt,
-  TransactionResponse,
-} from '@ethersproject/abstract-provider';
+
 import { FormatToken } from 'shared/formatters';
 import { useApproveGasLimit, useWrapGasLimit } from './hooks';
 import { useApprove } from 'shared/hooks/useApprove';
@@ -90,10 +87,10 @@ export const WrapForm: FC = memo(() => {
     setTxModalOpen(false);
   }, []);
 
-  const approveWrapper = useCallback(
-    async (
-      callback: () => Promise<TransactionResponse>,
-    ): Promise<TransactionReceipt | undefined> => {
+  const approveWrapper = useCallback<
+    NonNullable<Parameters<typeof useApprove>[4]>
+  >(
+    async (callback) => {
       try {
         setTxStage(TX_STAGE.SIGN);
         openTxModal();
@@ -103,19 +100,19 @@ export const WrapForm: FC = memo(() => {
           callback,
         );
 
-        setTxHash(transaction.hash);
-        setTxStage(TX_STAGE.BLOCK);
-        openTxModal();
+        if (typeof transaction !== 'string') {
+          setTxHash(transaction.hash);
+          setTxStage(TX_STAGE.BLOCK);
+          openTxModal();
 
-        const result = await runWithTransactionLogger(
-          'Approve block confirmation',
-          async () => transaction.wait(),
-        );
+          await runWithTransactionLogger(
+            'Approve block confirmation',
+            async () => transaction.wait(),
+          );
+        }
 
         setTxStage(TX_STAGE.SUCCESS);
         openTxModal();
-
-        return result;
 
         /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
       } catch (error: any) {
