@@ -28,7 +28,6 @@ export const getOneInchRate: GetOneInchRateStats = async (
     fromAddress: fromTokenAddress,
   });
   const url = `${api}?${query.toString()}`;
-  console.log('url', url);
   const data = await responseTimeExternalMetricWrapper({
     payload: api,
     request: () => standardFetcher<oneInchFetchResponse>(url),
