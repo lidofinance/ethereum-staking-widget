@@ -15,8 +15,8 @@ export const getErrorMessage = (error: unknown): ErrorMessage => {
   const code = extractCodeFromError(error);
   switch (code) {
     case -32000:
-      return ErrorMessage.NOT_ENOUGH_ETHER;
     case 3:
+    case 'UNPREDICTABLE_GAS_LIMIT':
       return ErrorMessage.NOT_ENOUGH_ETHER;
     case 'ACTION_REJECTED':
     case 4001:
