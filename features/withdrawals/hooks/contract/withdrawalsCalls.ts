@@ -3,14 +3,6 @@ import { useContractSWR } from '@lido-sdk/react';
 
 import { useWithdrawalsContract } from './useWithdrawalsContract';
 
-const constantStrategy = {
-  refreshInterval: 60000,
-  revalidateOnFocus: false,
-  revalidateIfStale: false,
-  revalidateOnMount: false,
-  revalidateOnReconnect: false,
-};
-
 export const useRequestsStatusByIds = (requestIds?: BigNumber[]) => {
   const { contractRpc } = useWithdrawalsContract();
 
@@ -46,7 +38,6 @@ export const useIsBunkerMode = () => {
   return useContractSWR({
     contract: contractRpc,
     method: 'isBunkerModeActive',
-    config: constantStrategy,
   });
 };
 
@@ -56,7 +47,6 @@ export const useIsPaused = () => {
   return useContractSWR({
     contract: contractRpc,
     method: 'isPaused',
-    config: constantStrategy,
   });
 };
 
@@ -66,7 +56,6 @@ export const useMaxAmount = () => {
   return useContractSWR({
     contract: contractRpc,
     method: 'MAX_STETH_WITHDRAWAL_AMOUNT',
-    config: constantStrategy,
   });
 };
 
@@ -76,6 +65,5 @@ export const useMinAmount = () => {
   return useContractSWR({
     contract: contractRpc,
     method: 'MIN_STETH_WITHDRAWAL_AMOUNT',
-    config: constantStrategy,
   });
 };
