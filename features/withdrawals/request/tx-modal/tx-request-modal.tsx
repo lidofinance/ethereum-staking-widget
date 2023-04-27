@@ -111,7 +111,6 @@ export const TxRequestModal = () => {
           />
         );
       default:
-        console.error('invalid stage', txStage);
         return null;
     }
   }, [

@@ -59,24 +59,29 @@ export const useWithdrawalsApprove = (
       const contractWeb3 = getERC20Contract(token, providerWeb3.getSigner());
       const isMultisig = await isContract(account, providerWeb3);
 
-      const feeData = await providerWeb3
-        .getFeeData()
-        .catch((error) => console.warn(error));
-      const maxPriorityFeePerGas = feeData?.maxPriorityFeePerGas ?? undefined;
-      const maxFeePerGas = feeData?.maxFeePerGas ?? undefined;
-
       await wrapper(async () => {
         if (isMultisig) {
           const tx = await contractWeb3.populateTransaction.approve(
             spender,
             amount,
           );
-          return providerWeb3.getSigner().sendUncheckedTransaction(tx);
-        } else
-          return contractWeb3.approve(spender, amount, {
+          const hash = await providerWeb3
+            .getSigner()
+            .sendUncheckedTransaction(tx);
+          return hash;
+        } else {
+          const feeData = await providerWeb3
+            .getFeeData()
+            .catch((error) => console.warn(error));
+          const maxPriorityFeePerGas =
+            feeData?.maxPriorityFeePerGas ?? undefined;
+          const maxFeePerGas = feeData?.maxFeePerGas ?? undefined;
+          const tx = await contractWeb3.approve(spender, amount, {
             maxFeePerGas,
             maxPriorityFeePerGas,
           });
+          return tx;
+        }
       });
 
       await updateAllowance();

@@ -281,6 +281,7 @@ export const useWithdrawalRequest = ({
       // define and set retry point
       const startCallback = async () => {
         try {
+          let shouldSkipSuccess = false;
           setIsTxPending(true);
           const requestAmount = requests.reduce(
             (s, r) => s.add(r),
@@ -304,8 +305,11 @@ export const useWithdrawalRequest = ({
           if (isApprovalFlow) {
             if (needsApprove) {
               await approve();
-              // multisig exits the flow here
-              if (!isMultisig) {
+              if (isMultisig) {
+                // multisig exits the flow here
+                // skips success modal
+                shouldSkipSuccess = true;
+              } else {
                 await method({ requests });
               }
             } else {
@@ -316,7 +320,7 @@ export const useWithdrawalRequest = ({
             await method({ signature, requests });
           }
           // end flow
-          dispatchModalState({ type: 'success' });
+          dispatchModalState({ type: shouldSkipSuccess ? 'reset' : 'success' });
           resetForm();
         } catch (error) {
           const errorMessage = getErrorMessage(error);

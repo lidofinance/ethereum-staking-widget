@@ -95,7 +95,7 @@ export const stakeProcessing: StakeProcessingProps = async (
     };
     const originalGasLimit = await stethContractWeb3.estimateGas.submit(
       referralAddress || AddressZero,
-      { value: overrides.value },
+      overrides,
     );
 
     const gasLimit = originalGasLimit
