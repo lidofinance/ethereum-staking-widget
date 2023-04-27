@@ -28,7 +28,7 @@ type OneInchQuotePartial = {
 const getOneInchRate = async (amount: BigNumber) => {
   let rate;
   try {
-    const api = `https://api.1inch.exchange/v3.0/1/quote`;
+    const api = `https://api-lido.1inch.io/v5.0/1/swap`;
     const query = new URLSearchParams({
       fromTokenAddress: STETH_ADDRESS,
       toTokenAddress: '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee',
