@@ -19,13 +19,16 @@ export const getOneInchRate: GetOneInchRateStats = async (
   amount,
 ) => {
   serverLogger.debug('Getting exchange rate from 1inch');
-  const api = `https://api.1inch.exchange/v3.0/1/quote`;
+  const api = `https://api-lido.1inch.io/v5.0/1/swap`;
   const query = new URLSearchParams({
     fromTokenAddress: fromTokenAddress,
     toTokenAddress: toTokenAddress,
     amount: amount.toString(),
+    slippage: '1',
+    fromAddress: fromTokenAddress,
   });
   const url = `${api}?${query.toString()}`;
+  console.log('url', url);
   const data = await responseTimeExternalMetricWrapper({
     payload: api,
     request: () => standardFetcher<oneInchFetchResponse>(url),

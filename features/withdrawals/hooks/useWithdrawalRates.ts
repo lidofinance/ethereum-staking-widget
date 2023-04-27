@@ -33,6 +33,8 @@ const getOneInchRate = async (amount: BigNumber) => {
       fromTokenAddress: STETH_ADDRESS,
       toTokenAddress: '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee',
       amount: amount.toString(),
+      slippage: '1',
+      fromAddress: STETH_ADDRESS,
     });
     const url = `${api}?${query.toString()}`;
     const data: OneInchQuotePartial =
