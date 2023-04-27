@@ -56,13 +56,20 @@ export const TxRequestModal = () => {
   const pendingDescription = 'Awaiting block confirmation';
   const pendingTitle = `You are requesting withdrawal for ${amountAsString} ${tokenName}`;
 
-  const signDescription = `Requesting withdrawal for ${amountAsString} ${tokenName}`;
-  const signTitle = `You are requesting withdrawal for ${amountAsString} ${tokenName}`;
+  const signDescription =
+    txStage === TX_STAGE.APPROVE
+      ? `Approving for ${amountAsString} ${tokenName}`
+      : `Requesting withdrawal for ${amountAsString} ${tokenName}`;
+  const signTitle =
+    txStage === TX_STAGE.APPROVE
+      ? `You are now approving ${amountAsString} ${tokenName}`
+      : `You are requesting withdrawal for ${amountAsString} ${tokenName}`;
 
   const content = useMemo(() => {
     switch (txStage) {
       case TX_STAGE.PERMIT:
         return <TxStagePermit />;
+      case TX_STAGE.APPROVE:
       case TX_STAGE.SIGN:
         return <TxStageSign description={signDescription} title={signTitle} />;
       case TX_STAGE.BLOCK:
@@ -104,6 +111,7 @@ export const TxRequestModal = () => {
           />
         );
       default:
+        console.error('invalid stage', txStage);
         return null;
     }
   }, [
