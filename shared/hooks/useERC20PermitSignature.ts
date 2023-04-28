@@ -22,10 +22,10 @@ export type GatherPermitSignatureResult = {
   s: string;
   deadline: BigNumber;
   value: BigNumber;
-  chainId?: number;
-  nonce?: string;
+  chainId: number;
+  nonce: string;
   owner: string;
-  spender?: string;
+  spender: string;
   permitType?: PermitType;
 };
 
