@@ -25,7 +25,7 @@ export default nextConnect()
   .get(async (_req, res) => {
     try {
       if (CONTRACT_VERSION !== '1')
-        return res.status(500).send('Wrong environment');
+        return res.status(500).json('Wrong environment');
       let validators = cache.get(VALIDATORS_CACHE_KEY);
       if (!validators) {
         validators = await terraApi.getValidatorsWithBalances({
@@ -35,12 +35,12 @@ export default nextConnect()
         cache.put(VALIDATORS_CACHE_KEY, validators, VALIDATORS_CACHE_TIME_MS);
       }
 
-      res.status(200).send({ validators });
+      res.status(200).json({ validators });
     } catch (e) {
       const error = {
         message: 'Something went wrong!',
       };
       console.error(e);
-      res.status(500).send({ error });
+      res.status(500).json({ error });
     }
   });
