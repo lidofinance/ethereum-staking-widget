@@ -4,7 +4,7 @@ import { useDebouncedValue } from 'shared/hooks/useDebouncedValue';
 
 import { BigNumber } from 'ethers';
 import { CHAINS, TOKENS, getTokenAddress } from '@lido-sdk/constants';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { standardFetcher } from 'utils/standardFetcher';
 import { useRequestForm } from '../contexts/request-form-context';
 import { useWithdrawals } from '../contexts/withdrawals-context';
@@ -254,8 +254,13 @@ export const useWithdrawalRates = () => {
       });
   }, [swr.data]);
 
+  const bestRate = useMemo(() => {
+    return swr.data?.[0]?.rate ?? null;
+  }, [swr.data]);
+
   return {
     amount: inputValueBN,
+    bestRate,
     selectedToken: selectedToken as TOKENS.WSTETH | TOKENS.STETH,
     data: stableSortedData,
     get initialLoading() {
