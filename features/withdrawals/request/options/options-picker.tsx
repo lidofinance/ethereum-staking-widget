@@ -56,7 +56,7 @@ const LidoButton: React.FC<OptionButtonProps> = ({ isActive, onClick }) => {
 
 const DexButton: React.FC<OptionButtonProps> = ({ isActive, onClick }) => {
   const { loading, bestRate } = useWithdrawalRates();
-  const bestRateValue = bestRate ? `1 : ${bestRate}` : 'N/A';
+  const bestRateValue = bestRate ? `1 : ${bestRate}` : '-';
   return (
     <OptionsPickerButton $active={isActive} onClick={onClick}>
       <OptionsPickerRow>
