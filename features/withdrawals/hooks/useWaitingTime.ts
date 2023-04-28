@@ -16,7 +16,15 @@ type RequestTimeResponse = {
   requests: number;
 };
 
-export const useWaitingTime = (amount: string) => {
+type useWaitingTimeOptions = {
+  isApproximate?: boolean;
+};
+
+export const useWaitingTime = (
+  amount: string,
+  options?: useWaitingTimeOptions = {},
+) => {
+  const { isApproximate } = options;
   const debouncedAmount = useDebouncedValue(amount, 2000);
   const url = useMemo(() => {
     // TODO: remove fallback after deploy env variables
@@ -38,7 +46,10 @@ export const useWaitingTime = (amount: string) => {
     data?.stethLastUpdate && new Date(data?.stethLastUpdate * 1000);
   const days = data?.days ?? DEFAULT_DAYS_VALUE;
 
-  const waitingTime = days && days > 1 ? `1 - ${days} day(s)` : `${days} day`;
+  const waitingTime =
+    days && days > 1
+      ? `${isApproximate ? '~ ' : ''}1-${days} day(s)`
+      : `${isApproximate ? '~ ' : ''}${days} day`;
   const value = isPaused ? '—' : isBunkerMode ? 'Not estimated' : waitingTime;
 
   return {

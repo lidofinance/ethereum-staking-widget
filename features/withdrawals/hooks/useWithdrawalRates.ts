@@ -29,7 +29,6 @@ type rateCalculationResult = ReturnType<typeof calculateRateReceive>;
 
 type getWithdrawalRatesResult = RateResult[];
 
-const SWAP_MIN_AMOUNT = BigNumber.from('100000000000000000'); // amount lower error out price rates
 const RATE_PRECISION = 100000;
 const RATE_PRECISION_BN = BigNumber.from(RATE_PRECISION);
 
@@ -51,9 +50,14 @@ type OneInchQuotePartial = {
 const getOneInchRate: getRate = async (amount, token) => {
   let rateInfo: rateCalculationResult | null;
   try {
-    const capped_amount = amount.lte(SWAP_MIN_AMOUNT)
-      ? SWAP_MIN_AMOUNT
-      : amount;
+    if (amount.isZero() || amount.isNegative()) {
+      return {
+        name: '1inch',
+        rate: 0,
+        toReceive: BigNumber.from(0),
+      };
+    }
+    const capped_amount = amount;
     const api = `https://api.1inch.exchange/v3.0/1/quote`;
     const query = new URLSearchParams({
       fromTokenAddress: getTokenAddress(CHAINS.Mainnet, token),
@@ -89,9 +93,14 @@ type ParaSwapPriceResponsePartial = {
 const getParaSwapRate: getRate = async (amount, token) => {
   let rateInfo: rateCalculationResult | null;
   try {
-    const capped_amount = amount.lte(SWAP_MIN_AMOUNT)
-      ? SWAP_MIN_AMOUNT
-      : amount;
+    if (amount.isZero() || amount.isNegative()) {
+      return {
+        name: 'paraswap',
+        rate: 0,
+        toReceive: BigNumber.from(0),
+      };
+    }
+    const capped_amount = amount;
     const api = `https://apiv5.paraswap.io/prices`;
     const query = new URLSearchParams({
       srcToken: getTokenAddress(CHAINS.Mainnet, token),
@@ -134,9 +143,14 @@ type CowSwapQuoteResponsePartial = {
 const getCowSwapRate: getRate = async (amount, token) => {
   let rateInfo: rateCalculationResult | null;
   try {
-    const capped_amount = amount.lte(SWAP_MIN_AMOUNT)
-      ? SWAP_MIN_AMOUNT
-      : amount;
+    if (amount.isZero() || amount.isNegative()) {
+      return {
+        name: 'cowswap',
+        rate: 0,
+        toReceive: BigNumber.from(0),
+      };
+    }
+    const capped_amount = amount;
     const payload = {
       sellToken: getTokenAddress(CHAINS.Mainnet, token),
       buyToken: '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE',

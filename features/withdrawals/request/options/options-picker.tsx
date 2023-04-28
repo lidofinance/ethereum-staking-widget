@@ -27,7 +27,9 @@ type OptionButtonProps = {
 const LidoButton: React.FC<OptionButtonProps> = ({ isActive, onClick }) => {
   const { inputValue } = useRequestForm();
   const { isSteth } = useWithdrawals();
-  const { value, initialLoading } = useWaitingTime(inputValue);
+  const { value: waitingTime, initialLoading } = useWaitingTime(inputValue, {
+    isApproximate: true,
+  });
   const { wstethAsStethBN, loading } = useWstethToStethRatio();
   const ratioLoading = !isSteth && loading;
   const ratio = isSteth ? '1 : 1' : `1 : ${formatBalance(wstethAsStethBN)}`;
@@ -45,8 +47,8 @@ const LidoButton: React.FC<OptionButtonProps> = ({ isActive, onClick }) => {
         {ratioLoading ? <InlineLoaderSmall /> : ratio}
       </OptionsPickerRow>
       <OptionsPickerRow>
-        <OptionsPickerSubLabel>Waiting time</OptionsPickerSubLabel>
-        {initialLoading ? <InlineLoaderSmall /> : value}
+        <OptionsPickerSubLabel>Waiting time:</OptionsPickerSubLabel>
+        {initialLoading ? <InlineLoaderSmall /> : waitingTime}
       </OptionsPickerRow>
     </OptionsPickerButton>
   );
@@ -70,7 +72,8 @@ const DexButton: React.FC<OptionButtonProps> = ({ isActive, onClick }) => {
         {loading ? <InlineLoaderSmall /> : bestRate}
       </OptionsPickerRow>
       <OptionsPickerRow>
-        <OptionsPickerSubLabel>Waiting time</OptionsPickerSubLabel>~ 1-5 minutes
+        <OptionsPickerSubLabel>Waiting time:</OptionsPickerSubLabel>~&nbsp;1-5
+        minutes
       </OptionsPickerRow>
     </OptionsPickerButton>
   );

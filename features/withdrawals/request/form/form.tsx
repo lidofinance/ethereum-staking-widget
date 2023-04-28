@@ -33,6 +33,7 @@ import { InputGroupStyled } from './styles';
 import { useApproveGasLimit } from 'features/wrap/features/wrap-form/hooks';
 import { OptionsPicker } from '../options/options-picker';
 import { DexOptions } from '../options/dex-options';
+import { LidoOption } from '../options/lido-option';
 
 export const Form = () => {
   const [withdrawalMethod, setWithdrawalMethod] = useState<'lido' | 'dex'>(
@@ -159,6 +160,7 @@ export const Form = () => {
 
       {withdrawalMethod == 'lido' ? (
         <>
+          <LidoOption />
           <FormButton
             isLocked={isTokenLocked}
             pending={isTxPending || isSubmitting}
