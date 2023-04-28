@@ -52,18 +52,18 @@ export default nextConnect()
   )
   .get(async (_req, res) => {
     if (CONTRACT_VERSION !== '1')
-      return res.status(500).send('Wrong environment');
+      return res.status(500).json('Wrong environment');
     if (!updated && HAS_CLOUDFLARE_CREDENTIALS) {
       await statsStorage.sync();
     }
     updated = true;
     try {
-      res.status(200).send(statsStorage.currentValue);
+      res.status(200).json(statsStorage.currentValue);
     } catch (e) {
       const error = {
         message: 'Something went wrong!',
       };
       console.error(e);
-      res.status(500).send({ error });
+      res.status(500).json({ error });
     }
   });
