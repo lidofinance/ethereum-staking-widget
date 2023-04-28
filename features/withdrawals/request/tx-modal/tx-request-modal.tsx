@@ -42,7 +42,7 @@ export const TxRequestModal = () => {
   const successDescription = useMemo(
     () => (
       <span>
-        Request withdrawal for {amountAsString} {tokenName} has been sent.
+        Withdrawal request for {amountAsString} {tokenName} has been sent.
         {<br />}
         Check {<Link href={claimPath}>Claim tab</Link>} to view your withdrawal
         requests or view your transaction on{' '}

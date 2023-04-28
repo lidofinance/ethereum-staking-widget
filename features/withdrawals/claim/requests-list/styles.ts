@@ -38,8 +38,6 @@ export const RequestStyled = styled.div<{
     border-bottom-color: var(--lido-color-backgroundSecondary);
   }
 
-  ${({ $disabled }) => $disabled && `cursor: not-allowed;`}
-
   ${({ $loading }) => $loading && `cursor: progress;`}
 
   a:visited {
