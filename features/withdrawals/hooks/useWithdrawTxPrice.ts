@@ -21,6 +21,7 @@ import { useClaimData } from 'features/withdrawals/contexts/claim-data-context';
 import { useDebouncedValue } from 'shared/hooks/useDebouncedValue';
 import { encodeURLQuery } from 'utils/encodeURLQuery';
 import { BigNumber } from 'ethers';
+import invariant from 'tiny-invariant';
 
 type UseRequestTxPriceOptions = {
   requestCount?: number;
@@ -70,26 +71,23 @@ export const useRequestTxPrice = ({
     useLidoSWR(
       ['swr:request-gas-limit', debouncedRequestCount, chainId],
       async () => {
-        if (!chainId || !contractRpc || debouncedRequestCount === 0)
-          return undefined;
-
-        const gasLimit = await contractRpc?.estimateGas
-          .requestWithdrawals(
-            Array(debouncedRequestCount).fill(BigNumber.from(100)),
-            ESTIMATE_ACCOUNT,
-            { from: ESTIMATE_ACCOUNT },
-          )
-          .then((r) => r.toNumber())
-          .catch((error) => {
-            console.warn('Could not estimate gas for request', {
-              requestCount: debouncedRequestCount,
-              account: ESTIMATE_ACCOUNT,
-              error,
-            });
-            return undefined;
+        try {
+          invariant(chainId, 'chainId is required');
+          invariant(contractRpc, 'contractRpc is required');
+          const gasLimit = (
+            await contractRpc.estimateGas.requestWithdrawals(
+              Array(debouncedRequestCount).fill(BigNumber.from(100)),
+              ESTIMATE_ACCOUNT,
+              { from: ESTIMATE_ACCOUNT },
+            )
+          ).toNumber();
+          return gasLimit;
+        } catch (error) {
+          console.warn('Could not estimate gas for request', {
+            error,
           });
-
-        return gasLimit;
+          return undefined;
+        }
       },
       {
         isPaused: () => !chainId || !isApprovalFlow,
