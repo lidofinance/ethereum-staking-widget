@@ -70,7 +70,7 @@ export const RequestDataProvider: FC = ({ children }) => {
       onChangeRequestOptions,
       isLidoRequest,
       currentRequestType,
-      unfinalizedStETH: unfinalizedStETH,
+      unfinalizedStETH,
     }),
     [
       currentRequestType,
