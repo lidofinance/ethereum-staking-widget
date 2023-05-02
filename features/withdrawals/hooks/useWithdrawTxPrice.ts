@@ -33,7 +33,8 @@ export const useRequestTxPrice = ({
   token,
   isApprovalFlow,
   requestCount,
-}: UseRequestTxPriceOptions): number | undefined => {
+}: UseRequestTxPriceOptions) => {
+  const { chainId } = useSDK();
   const { contractRpc } = useWithdrawalsContract();
   // TODO add fallback for approval flow
   const fallback =
@@ -41,11 +42,8 @@ export const useRequestTxPrice = ({
       ? WITHDRAWAL_QUEUE_REQUEST_STETH_PERMIT_GAS_LIMIT_DEFAULT
       : WITHDRAWAL_QUEUE_REQUEST_WSTETH_PERMIT_GAS_LIMIT_DEFAULT;
 
-  const { chainId } = useSDK();
-  const debouncedRequestCount = useDebouncedValue(
-    Math.min(requestCount || 1, MAX_REQUESTS_COUNT),
-    2000,
-  );
+  const cappedRequestCount = Math.min(requestCount || 1, MAX_REQUESTS_COUNT);
+  const debouncedRequestCount = useDebouncedValue(cappedRequestCount, 2000);
 
   const url = useMemo(() => {
     const urlBase = basePath ?? '';
@@ -57,49 +55,65 @@ export const useRequestTxPrice = ({
     return `${urlBase}/api/estimate-withdrawal-gas?${params}`;
   }, [chainId, debouncedRequestCount, token]);
 
-  const { data: permitEstimateData } = useLidoSWR<{ gasLimit: string }>(
-    url,
-    standardFetcher,
-    {
+  const { data: permitEstimateData, initialLoading: permitLoading } =
+    useLidoSWR<{ gasLimit: string }>(url, standardFetcher, {
       isPaused: () => !chainId || isApprovalFlow,
       revalidateIfStale: false,
       revalidateOnFocus: false,
-    },
-  );
+    });
 
-  const { data: approvalFlowGasLimit } = useLidoSWR(
-    ['swr:request-gas-limit', debouncedRequestCount, chainId],
-    async () => {
-      if (!chainId || !contractRpc || debouncedRequestCount === 0)
-        return undefined;
-
-      const gasLimit = await contractRpc?.estimateGas
-        .requestWithdrawals(
-          Array(debouncedRequestCount).fill(BigNumber.from(1000)),
-          ESTIMATE_ACCOUNT,
-          { from: ESTIMATE_ACCOUNT },
-        )
-        .then((r) => r.toNumber())
-        .catch((error) => {
-          console.warn('Could not estimate gas for request', {
-            requestCount: debouncedRequestCount,
-            account: ESTIMATE_ACCOUNT,
-            error,
-          });
+  const { data: approvalFlowGasLimit, initialLoading: approvalLoading } =
+    useLidoSWR(
+      ['swr:request-gas-limit', debouncedRequestCount, chainId],
+      async () => {
+        if (!chainId || !contractRpc || debouncedRequestCount === 0)
           return undefined;
-        });
 
-      return gasLimit;
-    },
-  );
+        const gasLimit = await contractRpc?.estimateGas
+          .requestWithdrawals(
+            Array(debouncedRequestCount).fill(BigNumber.from(100)),
+            ESTIMATE_ACCOUNT,
+            { from: ESTIMATE_ACCOUNT },
+          )
+          .then((r) => r.toNumber())
+          .catch((error) => {
+            console.warn('Could not estimate gas for request', {
+              requestCount: debouncedRequestCount,
+              account: ESTIMATE_ACCOUNT,
+              error,
+            });
+            return undefined;
+          });
 
-  const gasLimit = isApprovalFlow
-    ? approvalFlowGasLimit
-    : permitEstimateData
-    ? parseInt(permitEstimateData.gasLimit)
-    : undefined;
+        return gasLimit;
+      },
+    );
 
-  return useTxCostInUsd(gasLimit ?? fallback * debouncedRequestCount);
+  const gasLimit =
+    (isApprovalFlow
+      ? approvalFlowGasLimit
+      : permitEstimateData && parseInt(permitEstimateData?.gasLimit)) ??
+    fallback * debouncedRequestCount;
+
+  const txPriceUsd = useTxCostInUsd(gasLimit);
+
+  const loading =
+    cappedRequestCount !== debouncedRequestCount ||
+    (isApprovalFlow ? approvalLoading : permitLoading);
+
+  console.log({
+    isApprovalFlow,
+    debouncedRequestCount,
+    permitEstimateData: permitEstimateData?.gasLimit,
+    approvalFlowGasLimit,
+    requestCount,
+  });
+
+  return {
+    loading,
+    txPriceUsd,
+    gasLimit,
+  };
 };
 
 export const useClaimTxPrice = (): number | undefined => {

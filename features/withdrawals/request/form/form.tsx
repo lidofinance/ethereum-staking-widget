@@ -58,13 +58,12 @@ export const Form = () => {
   const { requests, requestCount } = useSplitRequest(inputValue);
   const approveTxCostInUsd = useTxCostInUsd(useApproveGasLimit());
 
-  const requestPriceInUsd = useRequestTxPrice({
-    token,
-    isApprovalFlow: isApprovalFlow,
-    // request.length is bounded by max value
-    // while useSplitRequest.requestCount is not
-    requestCount: requests.length,
-  });
+  const { txPriceUsd: requestTxPriceInUsd, loading: requestTxPriceLoading } =
+    useRequestTxPrice({
+      token,
+      isApprovalFlow: isApprovalFlow,
+      requestCount,
+    });
 
   const submit = useCallback(
     async (inputValue: string, resetForm: () => void) => {
@@ -165,8 +164,11 @@ export const Form = () => {
           ? `$${approveTxCostInUsd?.toFixed(2)}`
           : 'FREE'}
       </DataTableRow>
-      <DataTableRow title="Max transaction cost" loading={!requestPriceInUsd}>
-        ${requestPriceInUsd?.toFixed(2)}
+      <DataTableRow
+        title="Max transaction cost"
+        loading={requestTxPriceLoading}
+      >
+        ${requestTxPriceInUsd?.toFixed(2)}
       </DataTableRow>
       <DataTableRow title="Allowance" loading={isApprovalFlowLoading}>
         <FormatToken amount={allowance} symbol={tokenLabel} />

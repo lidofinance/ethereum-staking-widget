@@ -1,4 +1,4 @@
-export * from './useSpliteRequest';
+export * from './useSplitRequest';
 export * from './contract';
 export * from './useEthAmountByStethWsteth';
 export * from './useInputTvlValidate';
