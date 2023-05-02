@@ -8,7 +8,7 @@ import {
   WITHDRAWAL_QUEUE_REQUEST_STETH_PERMIT_GAS_LIMIT_DEFAULT,
   WITHDRAWAL_QUEUE_REQUEST_WSTETH_PERMIT_GAS_LIMIT_DEFAULT,
 } from 'config';
-import { MAX_REQUESTS_COUNT } from 'features/withdrawals/withdrawalsConstants';
+import { MAX_REQUESTS_COUNT } from 'features/withdrawals/withdrawals-constants';
 
 import { useWeb3 } from '@reef-knot/web3-react';
 import { TOKENS } from '@lido-sdk/constants';

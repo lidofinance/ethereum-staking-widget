@@ -21,11 +21,14 @@ export const ClaimForm = () => {
 
   const { active } = useWeb3();
   const { dispatchModalState } = useTransactionModal();
-  const { ethToClaim, claimSelection } = useClaimData();
+  const {
+    ethToClaim,
+    claimSelection,
+    requests,
+    loading: isLoading,
+  } = useClaimData();
   const { isBunkerMode } = useWithdrawalsStatus();
-  const { requests, withdrawalRequestsData } = useClaimData();
-  const isLoading = withdrawalRequestsData.loading;
-  const isEmpty = !withdrawalRequestsData.loading && requests.length === 0;
+  const isEmpty = !isLoading && requests.length === 0;
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const txPriceInUsd = useClaimTxPrice();

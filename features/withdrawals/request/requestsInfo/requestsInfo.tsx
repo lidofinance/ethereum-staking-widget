@@ -2,7 +2,7 @@ import { FC } from 'react';
 import { formatEther } from '@ethersproject/units';
 
 import { useWithdrawalsConstants } from 'features/withdrawals/hooks';
-import { MAX_REQUESTS_COUNT } from 'features/withdrawals/withdrawalsConstants';
+import { MAX_REQUESTS_COUNT } from 'features/withdrawals/withdrawals-constants';
 
 import { RequestsInfoStyled, RequestsInfoDescStyled } from './styles';
 

@@ -10,7 +10,7 @@ import { API } from 'types';
 
 import { TOKENS } from '@lido-sdk/constants';
 import { getRequestEstimate } from 'utilsApi/getRequestEstimate';
-import { MAX_REQUESTS_COUNT } from 'features/withdrawals/withdrawalsConstants';
+import { MAX_REQUESTS_COUNT } from 'features/withdrawals/withdrawals-constants';
 import { ParamError } from 'utilsApi/apiHelpers';
 import { supportedChains } from 'env-dynamics.mjs';
 

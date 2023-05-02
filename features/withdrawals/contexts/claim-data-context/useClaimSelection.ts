@@ -1,25 +1,27 @@
 import { type RequestStatusClaimable } from 'features/withdrawals/types/request-status';
-import { MAX_REQUESTS_COUNT } from 'features/withdrawals/withdrawalsConstants';
+import { MAX_REQUESTS_COUNT } from 'features/withdrawals/withdrawals-constants';
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 export const useClaimSelection = (
-  claimableRequests: RequestStatusClaimable[],
+  claimableRequests: RequestStatusClaimable[] | null,
 ) => {
-  const [isInitialized, setIsInitialized] = useState(false);
   const [state, setSelectionState] = useState<{
     selection_set: Set<string>;
   }>({ selection_set: new Set() });
 
   const claimableIdToIndex = useMemo(() => {
-    return claimableRequests.reduce((map, cur, i) => {
-      map[cur.stringId] = i;
-      return map;
-    }, {} as { [key: string]: number });
+    return (
+      claimableRequests?.reduce((map, cur, i) => {
+        map[cur.stringId] = i;
+        return map;
+      }, {} as { [key: string]: number }) ?? {}
+    );
   }, [claimableRequests]);
 
   // it's ok to rebuild array because we cap selected at MAX_REQUEST_PER_TX
   const sortedSelectedRequests = useMemo(() => {
+    if (!claimableRequests) return [];
     return Array.from(state.selection_set.keys())
       .map((id) => claimableRequests[claimableIdToIndex[id]])
       .filter((r) => r)
@@ -69,13 +71,17 @@ export const useClaimSelection = (
   );
 
   // populate state on claimableRequests
+  const isEmptyData = !claimableRequests;
   useEffect(() => {
-    if (isInitialized || claimableRequests.length === 0) return;
-    setSelectedMany(
-      claimableRequests.slice(0, MAX_REQUESTS_COUNT).map((r) => r.stringId),
-    );
-    setIsInitialized(true);
-  }, [isInitialized, claimableRequests, setSelectedMany]);
+    if (isEmptyData) {
+      setSelectionState({ selection_set: new Set() });
+    } else {
+      setSelectedMany(
+        claimableRequests.slice(0, MAX_REQUESTS_COUNT).map((r) => r.stringId),
+      );
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isEmptyData]);
 
   return {
     isSelected,
