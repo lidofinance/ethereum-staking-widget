@@ -20,7 +20,7 @@ const Withdrawals: FC = () => {
       subtitle="Request stETH/wstETH withdrawal and claim ETH"
     >
       <Head>
-        <title>Stake with Lido | Lido</title>
+        <title>Withdrawals | Lido</title>
       </Head>
       <WithdrawalsProvider>
         <NoSSRWrapper>
