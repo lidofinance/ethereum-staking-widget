@@ -1,6 +1,5 @@
 import { iterateUrls } from '@lidofinance/rpc';
 import { TOKENS } from '@lido-sdk/constants';
-import { parseEther } from '@ethersproject/units';
 
 import { WithdrawalRequestNFTAbi__factory } from 'generated';
 import { getWithdrawalRequestNFTAddress } from 'customSdk/contracts';
@@ -9,7 +8,11 @@ import { getStaticRpcBatchProvider } from './rpcProviders';
 import { serverLogger } from './serverLogger';
 import { rpcUrls } from './rpcUrls';
 
-import { ESTIMATE_ACCOUNT } from 'config';
+import {
+  ESTIMATE_ACCOUNT,
+  WITHDRAWAL_QUEUE_REQUEST_STETH_PERMIT_GAS_LIMIT_DEFAULT,
+  WITHDRAWAL_QUEUE_REQUEST_WSTETH_PERMIT_GAS_LIMIT_DEFAULT,
+} from 'config';
 import { ESTIMATE_ACCOUNT_PERMITS } from 'config/estimatePermits';
 import { CHAINS } from 'utils/chains';
 
@@ -54,13 +57,23 @@ const getRequestEstimateWithFallbacks = async (
       ? wqContract.estimateGas.requestWithdrawalsWithPermit
       : wqContract.estimateGas.requestWithdrawalsWstETHWithPermit;
 
+  // This helps estimateGas binary search impl to run correctly
+  const helperGasLimit =
+    (token === 'STETH'
+      ? WITHDRAWAL_QUEUE_REQUEST_STETH_PERMIT_GAS_LIMIT_DEFAULT
+      : WITHDRAWAL_QUEUE_REQUEST_WSTETH_PERMIT_GAS_LIMIT_DEFAULT) *
+    requestCount *
+    10;
+
   const estimate = await method(
-    Array(requestCount).fill(parseEther('0.000000001')),
+    Array(requestCount).fill(100),
     ESTIMATE_ACCOUNT,
     permit,
     {
       from: ESTIMATE_ACCOUNT,
+      gasLimit: helperGasLimit,
     },
   ).then((r) => r.toNumber());
+
   return estimate;
 };

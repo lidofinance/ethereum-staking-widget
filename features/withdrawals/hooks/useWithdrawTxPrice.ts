@@ -87,6 +87,11 @@ export const useRequestTxPrice = ({
 
         return gasLimit;
       },
+      {
+        isPaused: () => !chainId || !isApprovalFlow,
+        revalidateIfStale: false,
+        revalidateOnFocus: false,
+      },
     );
 
   const gasLimit =
@@ -100,14 +105,6 @@ export const useRequestTxPrice = ({
   const loading =
     cappedRequestCount !== debouncedRequestCount ||
     (isApprovalFlow ? approvalLoading : permitLoading);
-
-  console.log({
-    isApprovalFlow,
-    debouncedRequestCount,
-    permitEstimateData: permitEstimateData?.gasLimit,
-    approvalFlowGasLimit,
-    requestCount,
-  });
 
   return {
     loading,

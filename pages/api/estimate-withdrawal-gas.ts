@@ -1,5 +1,10 @@
 import { wrapRequest as wrapNextRequest } from '@lidofinance/next-api-wrapper';
-import { API_ROUTES } from 'config';
+import { Cache } from 'memory-cache';
+import {
+  API_ROUTES,
+  CACHE_ESTIMATE_WITHDRAWAL_GAS,
+  CACHE_ESTIMATE_WITHDRAWAL_GAS_TTL,
+} from 'config';
 import {
   responseTimeMetric,
   errorAndCacheDefaultWrappers,
@@ -13,6 +18,8 @@ import { getRequestEstimate } from 'utilsApi/getRequestEstimate';
 import { MAX_REQUESTS_COUNT } from 'features/withdrawals/withdrawals-constants';
 import { ParamError } from 'utilsApi/apiHelpers';
 import { supportedChains } from 'env-dynamics.mjs';
+
+const cache = new Cache<string, number>();
 
 // Estimates gas for withdrawal request using secured permit
 // Returns { gasLimit:number }
@@ -51,6 +58,15 @@ const estimateWithdrawalGas: API = async (req, res) => {
     }
     return;
   }
+
+  const cacheKey = CACHE_ESTIMATE_WITHDRAWAL_GAS(chainId, requestCount, token);
+  const cachedGasLimit = cache.get(cacheKey);
+
+  if (cachedGasLimit) {
+    res.status(200).json({ gasLimit: cachedGasLimit });
+    return;
+  }
+
   const gasLimit = await getRequestEstimate({
     chainId,
     requestCount,
@@ -58,6 +74,9 @@ const estimateWithdrawalGas: API = async (req, res) => {
   }).catch(() => {
     throw new Error('Failed to estimate gas');
   });
+
+  cache.put(cacheKey, gasLimit, CACHE_ESTIMATE_WITHDRAWAL_GAS_TTL);
+
   res.status(200).json({ gasLimit });
 };
 
