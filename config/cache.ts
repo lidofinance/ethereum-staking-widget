@@ -35,14 +35,6 @@ export const CACHE_TOTAL_SUPPLY_TTL = ms('1m');
 export const CACHE_TOTAL_SUPPLY_HEADERS =
   'public, max-age=60, stale-if-error=1200, stale-while-revalidate=30';
 
-export const CACHE_ESTIMATE_WITHDRAWAL_GAS = (
-  chainId: number,
-  requestCount: number,
-  token: string,
-) =>
-  `estimate-withdrawal-gas?chainId=${chainId}&requestCount=${requestCount}&token=${token}`;
-export const CACHE_ESTIMATE_WITHDRAWAL_GAS_TTL = ms('1h');
-
 export const CACHE_DEFAULT_HEADERS =
   'public, max-age=180, stale-if-error=1200, stale-while-revalidate=60';
 export const CACHE_REWARDS_HEADERS =

@@ -1,12 +1,14 @@
 import { useMemo } from 'react';
 import { useLidoSWR, useSDK } from '@lido-sdk/react';
-import getConfig from 'next/config';
 import { standardFetcher } from 'utils/standardFetcher';
 import {
   ESTIMATE_ACCOUNT,
   WITHDRAWAL_QUEUE_CLAIM_GAS_LIMIT_DEFAULT,
+  WITHDRAWAL_QUEUE_REQUEST_STETH_APPROVED_GAS_LIMIT_DEFAULT,
   WITHDRAWAL_QUEUE_REQUEST_STETH_PERMIT_GAS_LIMIT_DEFAULT,
   WITHDRAWAL_QUEUE_REQUEST_WSTETH_PERMIT_GAS_LIMIT_DEFAULT,
+  WITHDRAWAL_QUEUE_REQUEST_WSTETH_APPROVED_GAS_LIMIT_DEFAULT,
+  dynamics,
 } from 'config';
 import { MAX_REQUESTS_COUNT } from 'features/withdrawals/withdrawals-constants';
 
@@ -26,9 +28,6 @@ type UseRequestTxPriceOptions = {
   isApprovalFlow: boolean;
 };
 
-const { serverRuntimeConfig } = getConfig();
-const { basePath } = serverRuntimeConfig;
-
 export const useRequestTxPrice = ({
   token,
   isApprovalFlow,
@@ -39,24 +38,29 @@ export const useRequestTxPrice = ({
   // TODO add fallback for approval flow
   const fallback =
     token === 'STETH'
-      ? WITHDRAWAL_QUEUE_REQUEST_STETH_PERMIT_GAS_LIMIT_DEFAULT
+      ? isApprovalFlow
+        ? WITHDRAWAL_QUEUE_REQUEST_STETH_APPROVED_GAS_LIMIT_DEFAULT
+        : WITHDRAWAL_QUEUE_REQUEST_STETH_PERMIT_GAS_LIMIT_DEFAULT
+      : isApprovalFlow
+      ? WITHDRAWAL_QUEUE_REQUEST_WSTETH_APPROVED_GAS_LIMIT_DEFAULT
       : WITHDRAWAL_QUEUE_REQUEST_WSTETH_PERMIT_GAS_LIMIT_DEFAULT;
 
   const cappedRequestCount = Math.min(requestCount || 1, MAX_REQUESTS_COUNT);
   const debouncedRequestCount = useDebouncedValue(cappedRequestCount, 2000);
 
   const url = useMemo(() => {
-    const urlBase = basePath ?? '';
+    const basePath = dynamics.wqAPIBasePath
+      ? dynamics.wqAPIBasePath
+      : 'https://wq-api.testnet.fi';
     const params = encodeURLQuery({
-      chainId,
       token,
       requestCount: debouncedRequestCount,
     });
-    return `${urlBase}/api/estimate-withdrawal-gas?${params}`;
-  }, [chainId, debouncedRequestCount, token]);
+    return `${basePath}/v1/estimate-gas?${params}`;
+  }, [debouncedRequestCount, token]);
 
   const { data: permitEstimateData, initialLoading: permitLoading } =
-    useLidoSWR<{ gasLimit: string }>(url, standardFetcher, {
+    useLidoSWR<{ gasLimit: number }>(url, standardFetcher, {
       isPaused: () => !chainId || isApprovalFlow,
       revalidateIfStale: false,
       revalidateOnFocus: false,
@@ -95,9 +99,7 @@ export const useRequestTxPrice = ({
     );
 
   const gasLimit =
-    (isApprovalFlow
-      ? approvalFlowGasLimit
-      : permitEstimateData && parseInt(permitEstimateData?.gasLimit)) ??
+    (isApprovalFlow ? approvalFlowGasLimit : permitEstimateData?.gasLimit) ??
     fallback * debouncedRequestCount;
 
   const txPriceUsd = useTxCostInUsd(gasLimit);
