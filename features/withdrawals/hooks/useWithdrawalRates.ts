@@ -228,7 +228,6 @@ export const useWithdrawalRates = ({
   const fallbackedAmount =
     fallbackValue && inputValueBN.lte(0) ? fallbackValue : inputValueBN;
   const debouncedAmount = useDebouncedValue(fallbackedAmount, 2000);
-  console.log(fallbackValue);
   const swr = useLidoSWR(
     ['swr:withdrawal-rates', debouncedAmount, selectedToken],
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
