@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import { SelectIcon, Option, DataTableRow } from '@lidofinance/lido-ui';
 import { TOKENS } from '@lido-sdk/constants';
 
@@ -24,7 +24,6 @@ import { InputDecoratorTvlStake } from 'features/withdrawals/shared/input-decora
 import { FormatToken } from 'shared/formatters/format-token';
 import { useCurrencyInput } from 'shared/forms/hooks/useCurrencyInput';
 
-import { Options } from '../options';
 import { RequestsInfo } from '../requestsInfo';
 
 import { FormButton } from './form-button';
@@ -32,8 +31,14 @@ import { InputGroupStyled } from './styles';
 
 // TODO move to shared
 import { useApproveGasLimit } from 'features/wrap/features/wrap-form/hooks';
+import { OptionsPicker } from '../options/options-picker';
+import { DexOptions } from '../options/dex-options';
+import { LidoOption } from '../options/lido-option';
 
 export const Form = () => {
+  const [withdrawalMethod, setWithdrawalMethod] = useState<'lido' | 'dex'>(
+    'lido',
+  );
   const { inputValue, setInputValue } = useRequestForm();
   const { tokenBalance, tokenLabel, tokenContract, setToken, token } =
     useToken();
@@ -145,36 +150,52 @@ export const Form = () => {
         />
       </InputGroupStyled>
 
-      <RequestsInfo requestCount={requestCount} />
-      <Options />
-      <FormButton
-        isLocked={isTokenLocked}
-        pending={isTxPending || isSubmitting}
-        disabled={!!error}
+      {withdrawalMethod === 'lido' && (
+        <RequestsInfo requestCount={requestCount} />
+      )}
+      <OptionsPicker
+        selectedOption={withdrawalMethod}
+        onOptionSelect={setWithdrawalMethod}
       />
-      <DataTableRow
-        help={
-          isApprovalFlow ? undefined : (
-            <>Lido leverages gasless token approvals via ERC-2612 permits</>
-          )
-        }
-        title="Max unlock cost"
-        loading={isApprovalFlowLoading}
-      >
-        {isApprovalFlow && isTokenLocked
-          ? `$${approveTxCostInUsd?.toFixed(2)}`
-          : 'FREE'}
-      </DataTableRow>
-      <DataTableRow title="Max transaction cost" loading={!requestPriceInUsd}>
-        ${requestPriceInUsd?.toFixed(2)}
-      </DataTableRow>
-      <DataTableRow title="Allowance" loading={isApprovalFlowLoading}>
-        <FormatToken amount={allowance} symbol={tokenLabel} />
-      </DataTableRow>
-      {tokenLabel === 'stETH' ? (
-        <DataTableRow title="Exchange rate">1 stETH = 1 ETH</DataTableRow>
+
+      {withdrawalMethod == 'lido' ? (
+        <>
+          <LidoOption />
+          <FormButton
+            isLocked={isTokenLocked}
+            pending={isTxPending || isSubmitting}
+            disabled={!!error}
+          />
+          <DataTableRow
+            help={
+              isApprovalFlow ? undefined : (
+                <>Lido leverages gasless token approvals via ERC-2612 permits</>
+              )
+            }
+            title="Max unlock cost"
+            loading={isApprovalFlowLoading}
+          >
+            {isApprovalFlow && isTokenLocked
+              ? `$${approveTxCostInUsd?.toFixed(2)}`
+              : 'FREE'}
+          </DataTableRow>
+          <DataTableRow
+            title="Max transaction cost"
+            loading={!requestPriceInUsd}
+          >
+            ${requestPriceInUsd?.toFixed(2)}
+          </DataTableRow>
+          <DataTableRow title="Allowance" loading={isApprovalFlowLoading}>
+            <FormatToken amount={allowance} symbol={tokenLabel} />
+          </DataTableRow>
+          {tokenLabel === 'stETH' ? (
+            <DataTableRow title="Exchange rate">1 stETH = 1 ETH</DataTableRow>
+          ) : (
+            <DataTableRowStethByWsteth />
+          )}
+        </>
       ) : (
-        <DataTableRowStethByWsteth />
+        <DexOptions />
       )}
     </form>
   );
