@@ -9,7 +9,7 @@ import {
   useSplitRequest,
   useToken,
   useWithdrawalRequest,
-  useWithdrawalsConstants,
+  useWithdrawalsBaseData,
 } from 'features/withdrawals/hooks';
 import { iconsMap } from 'features/withdrawals/contexts/withdrawals-context';
 import { useRequestForm } from 'features/withdrawals/contexts/request-form-context';
@@ -42,7 +42,8 @@ export const Form = () => {
   const { inputValue, setInputValue } = useRequestForm();
   const { tokenBalance, tokenLabel, tokenContract, setToken, token } =
     useToken();
-  const { minAmount } = useWithdrawalsConstants();
+  const wqBaseData = useWithdrawalsBaseData();
+  const { minAmount } = wqBaseData.data ?? {};
   const { active } = useWeb3();
   const { tvlMessage, tvlDiff } = useInputTvlValidate(inputValue);
 

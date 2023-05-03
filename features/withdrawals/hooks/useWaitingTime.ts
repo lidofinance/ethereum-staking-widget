@@ -25,7 +25,7 @@ export const useWaitingTime = (
   options: useWaitingTimeOptions = {},
 ) => {
   const { isApproximate } = options;
-  const debouncedAmount = useDebouncedValue(amount, 2000);
+  const debouncedAmount = useDebouncedValue(amount, 1000);
   const url = useMemo(() => {
     // TODO: remove fallback after deploy env variables
     const basePath = dynamics.wqAPIBasePath
@@ -40,7 +40,7 @@ export const useWaitingTime = (
     url,
     standardFetcher,
   ) as SWRResponse<RequestTimeResponse>;
-  const { isBunkerMode, isPaused } = useWithdrawals();
+  const { isBunker, isPaused } = useWithdrawals();
 
   const stethLastUpdate =
     data?.stethLastUpdate && new Date(data?.stethLastUpdate * 1000);
@@ -50,7 +50,7 @@ export const useWaitingTime = (
     days && days > 1
       ? `${isApproximate ? '~ ' : ''}1-${days} day(s)`
       : `${isApproximate ? '~ ' : ''}${days} day`;
-  const value = isPaused ? '—' : isBunkerMode ? 'Not estimated' : waitingTime;
+  const value = isPaused ? '—' : isBunker ? 'Not estimated' : waitingTime;
 
   return {
     ...data,

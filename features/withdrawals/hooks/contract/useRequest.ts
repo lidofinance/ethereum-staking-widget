@@ -233,7 +233,7 @@ export const useWithdrawalRequest = ({
 }: useWithdrawalRequestOptions) => {
   const [isTxPending, setIsTxPending] = useState(false);
   const { account } = useWeb3();
-  const { isBunkerMode } = useWithdrawals();
+  const { isBunker } = useWithdrawals();
   const { contractWeb3: withdrawalContractWeb3 } = useWithdrawalsContract();
   const { dispatchModalState } = useTransactionModal();
   const getRequestMethod = useWithdrawalRequestMethods();
@@ -329,7 +329,7 @@ export const useWithdrawalRequest = ({
         type: 'set_starTx_callback',
         callback: startCallback,
       });
-      if (isBunkerMode) {
+      if (isBunker) {
         // for bunker mode the warning is shown and start is deferred
         dispatchModalState({ type: 'bunker' });
       } else startCallback();
@@ -340,7 +340,7 @@ export const useWithdrawalRequest = ({
       gatherPermitSignature,
       getRequestMethod,
       isApprovalFlow,
-      isBunkerMode,
+      isBunker,
       isMultisig,
       needsApprove,
       setIsTxPending,

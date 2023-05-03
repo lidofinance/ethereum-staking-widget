@@ -1,23 +1,22 @@
-import { useWithdrawalsStatus } from 'features/withdrawals/hooks';
+import { useWithdrawalsBaseData } from 'features/withdrawals/hooks';
 import { StatusProps } from 'features/withdrawals/shared/status';
 
 export const useContractStatus = () => {
-  const {
-    isBunkerMode,
-    isPaused,
-    isLoading: isWithdrawalsStatusLoading,
-  } = useWithdrawalsStatus();
+  const wqBaseData = useWithdrawalsBaseData();
+
+  const { isBunker, isPaused, isTurbo } = wqBaseData.data ?? {};
 
   const withdrawalsStatus: StatusProps['variant'] = isPaused
     ? 'error'
-    : isBunkerMode
+    : isBunker
     ? 'warning'
     : 'success';
 
   return {
     withdrawalsStatus,
-    isWithdrawalsStatusLoading,
-    isBunkerMode,
+    isWithdrawalsStatusLoading: wqBaseData.initialLoading,
+    isBunker,
     isPaused,
+    isTurbo,
   };
 };

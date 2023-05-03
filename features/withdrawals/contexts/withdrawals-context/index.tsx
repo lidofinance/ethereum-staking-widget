@@ -22,8 +22,9 @@ export type WithdrawalsContextValue = {
   isWithdrawalsStatusLoading: boolean;
   claimPath: string;
   requestPath: string;
-  isPaused: boolean;
-  isBunkerMode: boolean;
+  isPaused?: boolean;
+  isTurbo?: boolean;
+  isBunker?: boolean;
   navRoutes: ReturnType<typeof useRoutes>['navRoutes'];
 };
 const WithdrawalsContext = createContext<WithdrawalsContextValue | null>(null);
@@ -44,7 +45,8 @@ export const WithdrawalsProvider: FC = ({ children }) => {
     withdrawalsStatus,
     isWithdrawalsStatusLoading,
     isPaused,
-    isBunkerMode,
+    isBunker,
+    isTurbo,
   } = useContractStatus();
   const { isClaimTab, navRoutes, claimPath, requestPath } = useRoutes();
 
@@ -60,7 +62,8 @@ export const WithdrawalsProvider: FC = ({ children }) => {
       isWithdrawalsStatusLoading,
       claimPath,
       isPaused,
-      isBunkerMode,
+      isTurbo,
+      isBunker,
       requestPath,
       navRoutes,
     }),
@@ -72,7 +75,8 @@ export const WithdrawalsProvider: FC = ({ children }) => {
       isWithdrawalsStatusLoading,
       claimPath,
       isPaused,
-      isBunkerMode,
+      isTurbo,
+      isBunker,
       requestPath,
       navRoutes,
     ],
