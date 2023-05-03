@@ -1,8 +1,11 @@
+import { parseEther } from '@ethersproject/units';
+
 import { useWithdrawals } from 'features/withdrawals/contexts/withdrawals-context';
 import { useRequestForm } from 'features/withdrawals/contexts/request-form-context';
 import { useWaitingTime } from 'features/withdrawals/hooks/useWaitingTime';
 import { useWithdrawalRates } from 'features/withdrawals/hooks/useWithdrawalRates';
 import { useWstethToStethRatio } from 'shared/components/data-table-row-steth-by-wsteth';
+
 import { formatBalance } from 'utils/formatBalance';
 
 import {
@@ -23,6 +26,8 @@ type OptionButtonProps = {
   onClick: React.ComponentProps<'button'>['onClick'];
   isActive?: boolean;
 };
+
+const DEFAULT_VALUE_FOR_RATE = parseEther('1');
 
 const LidoButton: React.FC<OptionButtonProps> = ({ isActive, onClick }) => {
   const { inputValue } = useRequestForm();
@@ -55,7 +60,9 @@ const LidoButton: React.FC<OptionButtonProps> = ({ isActive, onClick }) => {
 };
 
 const DexButton: React.FC<OptionButtonProps> = ({ isActive, onClick }) => {
-  const { loading, bestRate } = useWithdrawalRates();
+  const { loading, bestRate } = useWithdrawalRates({
+    fallbackValue: DEFAULT_VALUE_FOR_RATE,
+  });
   const bestRateValue = bestRate ? `1 : ${bestRate}` : '-';
   return (
     <OptionsPickerButton $active={isActive} onClick={onClick}>

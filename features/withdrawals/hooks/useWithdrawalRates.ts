@@ -58,13 +58,11 @@ const getOneInchRate: getRate = async (amount, token) => {
       };
     }
     const capped_amount = amount;
-    const api = `https://api-lido.1inch.io/v5.0/1/swap`;
+    const api = `https://api.1inch.exchange/v3.0/1/quote`;
     const query = new URLSearchParams({
       fromTokenAddress: getTokenAddress(CHAINS.Mainnet, token),
       toTokenAddress: '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee',
       amount: amount.toString(),
-      slippage: '1',
-      fromAddress: getTokenAddress(CHAINS.Mainnet, token),
     });
     const url = `${api}?${query.toString()}`;
     const data: OneInchQuotePartial =
@@ -218,10 +216,19 @@ const getWithdrawalRates = async ({
   return rates;
 };
 
-export const useWithdrawalRates = () => {
+type useWithdrawalRatesOptions = {
+  fallbackValue?: BigNumber;
+};
+
+export const useWithdrawalRates = ({
+  fallbackValue,
+}: useWithdrawalRatesOptions = {}) => {
   const { inputValueBN } = useRequestForm();
   const { selectedToken } = useWithdrawals();
-  const debouncedAmount = useDebouncedValue(inputValueBN, 2000);
+  const fallbackedAmount =
+    fallbackValue && inputValueBN.lte(0) ? fallbackValue : inputValueBN;
+  const debouncedAmount = useDebouncedValue(fallbackedAmount, 2000);
+  console.log(fallbackValue);
   const swr = useLidoSWR(
     ['swr:withdrawal-rates', debouncedAmount, selectedToken],
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -259,7 +266,7 @@ export const useWithdrawalRates = () => {
   }, [swr.data]);
 
   return {
-    amount: inputValueBN,
+    amount: fallbackedAmount,
     bestRate,
     selectedToken: selectedToken as TOKENS.WSTETH | TOKENS.STETH,
     data: stableSortedData,
@@ -267,7 +274,7 @@ export const useWithdrawalRates = () => {
       return !stableSortedData && swr.initialLoading;
     },
     get loading() {
-      return swr.loading || !debouncedAmount.eq(inputValueBN);
+      return swr.loading || !debouncedAmount.eq(fallbackedAmount);
     },
     get error() {
       return swr.error;
