@@ -5,7 +5,7 @@ export const useContractStatus = () => {
   const {
     isBunkerMode,
     isPaused,
-    isLoading: isWthdrawalsStatusLoading,
+    isLoading: isWithdrawalsStatusLoading,
   } = useWithdrawalsStatus();
 
   const withdrawalsStatus: StatusProps['variant'] = isPaused
@@ -16,7 +16,7 @@ export const useContractStatus = () => {
 
   return {
     withdrawalsStatus,
-    isWthdrawalsStatusLoading,
+    isWithdrawalsStatusLoading,
     isBunkerMode,
     isPaused,
   };

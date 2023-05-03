@@ -19,7 +19,7 @@ export type WithdrawalsContextValue = {
   isSteth: boolean;
   isClaimTab: boolean;
   withdrawalsStatus: StatusProps['variant'];
-  isWthdrawalsStatusLoading: boolean;
+  isWithdrawalsStatusLoading: boolean;
   claimPath: string;
   requestPath: string;
   isPaused: boolean;
@@ -42,7 +42,7 @@ export const WithdrawalsProvider: FC = ({ children }) => {
 
   const {
     withdrawalsStatus,
-    isWthdrawalsStatusLoading,
+    isWithdrawalsStatusLoading,
     isPaused,
     isBunkerMode,
   } = useContractStatus();
@@ -57,7 +57,7 @@ export const WithdrawalsProvider: FC = ({ children }) => {
       isSteth,
       isClaimTab,
       withdrawalsStatus,
-      isWthdrawalsStatusLoading,
+      isWithdrawalsStatusLoading,
       claimPath,
       isPaused,
       isBunkerMode,
@@ -69,7 +69,7 @@ export const WithdrawalsProvider: FC = ({ children }) => {
       isSteth,
       isClaimTab,
       withdrawalsStatus,
-      isWthdrawalsStatusLoading,
+      isWithdrawalsStatusLoading,
       claimPath,
       isPaused,
       isBunkerMode,

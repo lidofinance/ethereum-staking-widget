@@ -22,7 +22,7 @@ type useWaitingTimeOptions = {
 
 export const useWaitingTime = (
   amount: string,
-  options?: useWaitingTimeOptions = {},
+  options: useWaitingTimeOptions = {},
 ) => {
   const { isApproximate } = options;
   const debouncedAmount = useDebouncedValue(amount, 2000);
