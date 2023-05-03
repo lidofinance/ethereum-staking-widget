@@ -1,82 +1,45 @@
-import { useCallback, useState } from 'react';
-import {
-  Input,
-  Button,
-  SelectIcon,
-  Option,
-  DataTableRow,
-} from '@lidofinance/lido-ui';
-import { useWeb3 } from 'reef-knot/web3-react';
+import { useCallback } from 'react';
+import { SelectIcon, Option, DataTableRow } from '@lidofinance/lido-ui';
 import { TOKENS } from '@lido-sdk/constants';
-import { formatEther } from '@ethersproject/units';
-import { BigNumber } from 'ethers';
 
-import { useInputValidate, useTxCostInUsd } from 'shared/hooks';
+import { useWeb3 } from 'reef-knot/web3-react';
+import { useTxCostInUsd } from 'shared/hooks';
 import {
-  useSplitRequest,
-  useWithdrawalsConstants,
-  useWithdrawalRequest,
   useInputTvlValidate,
+  useSplitRequest,
+  useToken,
+  useWithdrawalRequest,
+  useWithdrawalsConstants,
 } from 'features/withdrawals/hooks';
-import { iconsMap } from 'features/withdrawals/providers/withdrawals-provider/provider';
+import { iconsMap } from 'features/withdrawals/contexts/withdrawals-context';
+import { useRequestForm } from 'features/withdrawals/contexts/request-form-context';
 import { useRequestTxPrice } from 'features/withdrawals/hooks/useWithdrawTxPrice';
-import { useValidateUnstakeValue } from './useValidateUnstakeValue';
-import { useToken } from 'features/withdrawals/request/form/useToken';
+import { useValidateUnstakeValue } from 'features/withdrawals/hooks/useValidateUnstakeValue';
+
+import { InputNumber } from 'shared/forms/components/input-number';
+import { DataTableRowStethByWsteth } from 'shared/components/data-table-row-steth-by-wsteth';
+import { InputDecoratorLocked } from 'shared/forms/components/input-decorator-locked';
+import { InputDecoratorMaxButton } from 'shared/forms/components/input-decorator-max-button';
+import { InputDecoratorTvlStake } from 'features/withdrawals/shared/input-decorator-tvl-stake';
+import { FormatToken } from 'shared/formatters/format-token';
+import { useCurrencyInput } from 'shared/forms/hooks/useCurrencyInput';
 
 import { Options } from '../options';
 import { RequestsInfo } from '../requestsInfo';
 
 import { FormButton } from './form-button';
 import { InputGroupStyled } from './styles';
-import { maxNumberValidation } from 'utils/maxNumberValidation';
-import { FormatToken } from 'shared/formatters/format-token';
-import { DataTableRowStethByWsteth } from 'shared/components/data-table-row-steth-by-wsteth';
 
 // TODO move to shared
 import { useApproveGasLimit } from 'features/wrap/features/wrap-form/hooks';
-import { InputLocked } from 'features/wrap/components';
 
 export const Form = () => {
-  const [inputValue, setInputValue] = useState('');
-
-  const { active } = useWeb3();
-  const { minAmount } = useWithdrawalsConstants();
+  const { inputValue, setInputValue } = useRequestForm();
   const { tokenBalance, tokenLabel, tokenContract, setToken, token } =
     useToken();
-  const { tvlMessage, stakeButton } = useInputTvlValidate(inputValue);
-
-  const validateUnstakeValue = useValidateUnstakeValue({
-    inputName: `${tokenLabel} amount`,
-    limit: tokenBalance,
-    minimum: minAmount,
-  });
-
-  const { error, inputTouched, setInputTouched } = useInputValidate({
-    value: inputValue,
-    validationFn: validateUnstakeValue,
-    shouldValidate: active,
-  });
-
-  const handleInputChange = useCallback(
-    (event: React.ChangeEvent<HTMLInputElement>) => {
-      if (!inputTouched) setInputTouched(true);
-      setInputValue(maxNumberValidation(event?.currentTarget.value));
-    },
-    [inputTouched, setInputTouched],
-  );
-
-  const handleResetInput = useCallback(() => {
-    setInputValue('');
-    setInputTouched(false);
-  }, [setInputTouched]);
-
-  const handleChangeToken = useCallback(
-    (token: TOKENS.STETH | TOKENS.WSTETH) => {
-      setToken(token);
-      handleResetInput();
-    },
-    [setToken, handleResetInput],
-  );
+  const { minAmount } = useWithdrawalsConstants();
+  const { active } = useWeb3();
+  const { tvlMessage, tvlDiff } = useInputTvlValidate(inputValue);
 
   const {
     isApprovalFlowLoading,
@@ -87,14 +50,12 @@ export const Form = () => {
     allowance,
   } = useWithdrawalRequest({
     value: inputValue,
-    reset: handleResetInput,
-    tokenLabel,
     tokenContract,
     token,
   });
 
+  const validateUnstakeValue = useValidateUnstakeValue({ minAmount });
   const { requests, requestCount } = useSplitRequest(inputValue);
-
   const approveTxCostInUsd = useTxCostInUsd(useApproveGasLimit());
 
   const requestPriceInUsd = useRequestTxPrice({
@@ -105,35 +66,44 @@ export const Form = () => {
     requestCount: requests.length,
   });
 
-  const onSubmit = useCallback(
-    (event: React.FormEvent) => {
-      event.preventDefault();
-      request(requests);
+  const submit = useCallback(
+    async (inputValue: string, resetForm: () => void) => {
+      request(requests, resetForm);
     },
     [request, requests],
   );
 
-  const rightDecorator = tvlMessage ? (
-    stakeButton
-  ) : (
-    <>
-      <Button
-        size="xxs"
-        variant="translucent"
-        onClick={() =>
-          setInputValue(formatEther(tokenBalance || BigNumber.from(0)))
-        }
-      >
-        MAX
-      </Button>
-      {isTokenLocked ? <InputLocked /> : undefined}
-    </>
+  const {
+    handleChange,
+    error,
+    isSubmitting,
+    handleSubmit,
+    reset,
+    setMaxInputValue,
+    isMaxDisabled,
+  } = useCurrencyInput({
+    inputValue,
+    setInputValue,
+    inputName: `${tokenLabel} amount`,
+    limit: tokenBalance,
+    submit,
+    token,
+    extraValidationFn: validateUnstakeValue,
+    shouldValidate: active,
+  });
+
+  const handleChangeToken = useCallback(
+    (token: TOKENS.STETH | TOKENS.WSTETH) => {
+      setToken(token);
+      reset();
+    },
+    [setToken, reset],
   );
 
   const showError = active && !!error && !tvlMessage;
 
   return (
-    <form method="post" onSubmit={onSubmit}>
+    <form method="post" onSubmit={handleSubmit}>
       <InputGroupStyled
         fullwidth
         error={showError && error}
@@ -152,23 +122,35 @@ export const Form = () => {
             Lido (wstETH)
           </Option>
         </SelectIcon>
-        <Input
+        <InputNumber
           fullwidth
           placeholder="0"
-          rightDecorator={rightDecorator}
+          rightDecorator={
+            tvlMessage ? (
+              <InputDecoratorTvlStake tvlDiff={tvlDiff} />
+            ) : (
+              <>
+                <InputDecoratorMaxButton
+                  onClick={setMaxInputValue}
+                  disabled={isMaxDisabled}
+                />
+                {isTokenLocked ? <InputDecoratorLocked /> : undefined}
+              </>
+            )
+          }
           label={`${tokenLabel} amount`}
           value={inputValue}
-          onChange={handleInputChange}
+          onChange={handleChange}
           error={showError}
         />
       </InputGroupStyled>
 
       <RequestsInfo requestCount={requestCount} />
-      <Options inputValue={inputValue} />
+      <Options />
       <FormButton
         isLocked={isTokenLocked}
-        pending={isTxPending}
-        disabled={!!error || !inputValue}
+        pending={isTxPending || isSubmitting}
+        disabled={!!error}
       />
       <DataTableRow
         help={
@@ -179,7 +161,9 @@ export const Form = () => {
         title="Max unlock cost"
         loading={isApprovalFlowLoading}
       >
-        {isApprovalFlow ? `$${approveTxCostInUsd?.toFixed(2)}` : 'FREE'}
+        {isApprovalFlow && isTokenLocked
+          ? `$${approveTxCostInUsd?.toFixed(2)}`
+          : 'FREE'}
       </DataTableRow>
       <DataTableRow title="Max transaction cost" loading={!requestPriceInUsd}>
         ${requestPriceInUsd?.toFixed(2)}

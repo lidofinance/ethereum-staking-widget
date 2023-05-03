@@ -1,6 +1,11 @@
 import { useCallback, useMemo, useState } from 'react';
 import { BigNumber } from 'ethers';
 import invariant from 'tiny-invariant';
+import { useWeb3 } from 'reef-knot/web3-react';
+import { parseEther } from '@ethersproject/units';
+import type { WstethAbi } from '@lido-sdk/contracts';
+import { useSDK } from '@lido-sdk/react';
+import { TOKENS } from '@lido-sdk/constants';
 
 import { TX_STAGE } from 'features/withdrawals/shared/tx-stage-modal';
 import {
@@ -8,23 +13,16 @@ import {
   useERC20PermitSignature,
   useIsContract,
 } from 'shared/hooks';
-import {
-  useRequestData,
-  useWithdrawals,
-  useWithdrawalsApprove,
-} from 'features/withdrawals/hooks';
+import { useWithdrawalsApprove } from 'features/withdrawals/hooks';
 import { getErrorMessage, runWithTransactionLogger } from 'utils';
+import { isContract } from 'utils/isContract';
+import type { StethPermitAbi } from 'generated';
+import { useTransactionModal } from 'features/withdrawals/contexts/transaction-modal-context';
+import { useRequestData } from 'features/withdrawals/contexts/request-data-context';
+import { useWithdrawals } from 'features/withdrawals/contexts/withdrawals-context';
+import type { TokensWithdrawable } from 'features/withdrawals/types/tokens-withdrawable';
 
 import { useWithdrawalsContract } from './useWithdrawalsContract';
-import { TOKENS } from '@lido-sdk/constants';
-import { isContract } from 'utils/isContract';
-import { useSDK } from '@lido-sdk/react';
-
-import { useTransactionModal } from 'features/withdrawals/contexts/transaction-modal-context';
-import { useWeb3 } from 'reef-knot/web3-react';
-import { parseEther } from '@ethersproject/units';
-import type { StethPermitAbi } from 'generated';
-import type { WstethAbi } from '@lido-sdk/contracts';
 
 // this encapsulates permit/approval & steth/wsteth flows
 const useWithdrawalRequestMethods = () => {
@@ -222,20 +220,16 @@ const useWithdrawalRequestMethods = () => {
 
 type useWithdrawalRequestOptions = {
   value: string;
-  tokenLabel: string;
   tokenContract: StethPermitAbi | WstethAbi | null;
-  token: TOKENS.STETH | TOKENS.WSTETH;
-  reset: () => void;
+  token: TokensWithdrawable;
 };
 
 // provides form with a handler to call signing flow
 // and all needed indicators for ux
 export const useWithdrawalRequest = ({
   value,
-  tokenLabel,
   tokenContract,
   token,
-  reset,
 }: useWithdrawalRequestOptions) => {
   const [isTxPending, setIsTxPending] = useState(false);
   const { account } = useWeb3();
@@ -283,7 +277,7 @@ export const useWithdrawalRequest = ({
   const isTokenLocked = isApprovalFlow && needsApprove;
 
   const request = useCallback(
-    (requests: BigNumber[]) => {
+    (requests: BigNumber[], resetForm: () => void) => {
       // define and set retry point
       const startCallback = async () => {
         try {
@@ -303,7 +297,7 @@ export const useWithdrawalRequest = ({
                 : TX_STAGE.SIGN
               : TX_STAGE.PERMIT,
             requestAmount,
-            tokenName: tokenLabel,
+            token,
           });
 
           // each flow switches needed signing stages
@@ -323,7 +317,7 @@ export const useWithdrawalRequest = ({
           }
           // end flow
           dispatchModalState({ type: 'success' });
-          reset();
+          resetForm();
         } catch (error) {
           const errorMessage = getErrorMessage(error);
           dispatchModalState({ type: 'error', errorText: errorMessage });
@@ -351,8 +345,6 @@ export const useWithdrawalRequest = ({
       needsApprove,
       setIsTxPending,
       token,
-      tokenLabel,
-      reset,
     ],
   );
 

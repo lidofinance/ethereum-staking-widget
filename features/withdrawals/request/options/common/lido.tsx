@@ -1,7 +1,9 @@
 import {
   useEthAmountByStethWsteth,
-  useWithdrawals,
+  useWaitingTime,
 } from 'features/withdrawals/hooks';
+import { useWithdrawals } from 'features/withdrawals/contexts/withdrawals-context';
+import { useRequestForm } from 'features/withdrawals/contexts/request-form-context';
 
 import { Option, OptionProps } from '../option';
 import { TooltipWithdrawalAmount } from './lido-tooltip-withdrawal-amount';
@@ -9,29 +11,21 @@ import { OptionAmountRow } from '../styles';
 
 import { FormatTokenStyled } from './styles';
 
-type LidoProps = Pick<OptionProps, 'selected' | 'onClick'> & {
-  inputValue?: string;
-};
+type LidoProps = Pick<OptionProps, 'selected' | 'onClick'>;
 
-export const Lido: React.FC<LidoProps> = ({
-  selected,
-  inputValue,
-  ...rest
-}: LidoProps) => {
-  const { isBunkerMode, isSteth, isPaused } = useWithdrawals();
+export const Lido = ({ selected, ...rest }: LidoProps) => {
+  const { isSteth } = useWithdrawals();
+  const { inputValue } = useRequestForm();
+  const { value, initialLoading } = useWaitingTime(inputValue);
   const ethAmount = useEthAmountByStethWsteth({ isSteth, input: inputValue });
-  const timeRange = isPaused
-    ? '—'
-    : isBunkerMode
-    ? 'Not estimated'
-    : '1 - 5 day(s)';
 
   return (
     <Option
       type="lido"
       title="Lido"
-      timeRange={timeRange}
+      timeRange={value}
       selected={selected}
+      isTimeRangeLoading={initialLoading}
       {...rest}
     >
       <OptionAmountRow>

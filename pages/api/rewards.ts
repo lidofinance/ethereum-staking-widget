@@ -48,7 +48,7 @@ const rewards: API = async (req, res) => {
       }),
   });
 
-  res.status(200).send(result);
+  res.status(200).json(result);
 
   clearTimeout(timeoutId);
 };

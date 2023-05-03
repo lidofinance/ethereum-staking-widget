@@ -14,22 +14,25 @@ import {
   EtherscanTxLink,
 } from 'features/withdrawals/shared/tx-stage-modal';
 import { useTransactionModal } from 'features/withdrawals/contexts/transaction-modal-context';
+import { useWithdrawals } from 'features/withdrawals/contexts/withdrawals-context';
+
 import { NFTBanner } from './nft-banner';
 import { NFTBunnerWrapper } from './styles';
-import { useWithdrawals } from 'features/withdrawals/hooks/useWithdrawals';
+import { getTokenDisplayName } from 'utils/getTokenDisplayName';
 
 export const TxRequestModal = () => {
   const {
     dispatchModalState,
     startTx,
     requestAmount,
-    tokenName,
+    token,
     txHash,
     errorText,
     isModalOpen,
     txStage,
   } = useTransactionModal();
   const { claimPath } = useWithdrawals();
+  const tokenName = token ? getTokenDisplayName(token) : '';
 
   const amountAsString = useMemo(
     () => (requestAmount ? formatBalance(requestAmount, 4) : ''),

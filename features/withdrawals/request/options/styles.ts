@@ -69,6 +69,11 @@ export const OptionDescRangeStyled = styled.span`
   color: var(--lido-color-text);
 `;
 
+export const OptionDescRangeLoaderWraper = styled.div`
+  display: inline-block;
+  width: 50px;
+`;
+
 export const OptionAmountStyled = styled.span`
   margin-left: auto;
 `;

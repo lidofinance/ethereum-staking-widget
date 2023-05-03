@@ -5,22 +5,21 @@ import { formatEther, parseEther } from '@ethersproject/units';
 import type { BigNumber } from 'ethers';
 
 import { isValidEtherValue } from 'utils';
+import type { ValidationFn } from 'shared/forms/types/validation-fn';
 
-type UseValidateUnstakeValueArgs = {
+export type UseCurrencyAmountValidatorArgs = {
   inputName: string;
-  zeroValid?: boolean;
   limit?: BigNumber;
-  minimum?: BigNumber;
+  extraValidationFn?: ValidationFn;
 };
 
-export const useValidateUnstakeValue = ({
+export const useCurrencyAmountValidator = ({
   inputName,
-  zeroValid = false,
   limit,
-  minimum,
-}: UseValidateUnstakeValueArgs) => {
-  return useCallback(
-    (value: string) => {
+  extraValidationFn,
+}: UseCurrencyAmountValidatorArgs) => {
+  return useCallback<ValidationFn>(
+    (value) => {
       if (!value) return `${inputName} is required`;
 
       if (!isValidEtherValue(value))
@@ -39,17 +38,16 @@ export const useValidateUnstakeValue = ({
       if (amountBigNumber.lt(Zero))
         return `${inputName} must not be a negative number`;
 
-      if (!zeroValid && amountBigNumber.eq(Zero))
+      if (amountBigNumber.eq(Zero))
         return `${inputName} must be greater than 0`;
 
       if (limit && amountBigNumber.gt(limit))
         return `${inputName} must not be greater than ${formatEther(limit)}`;
 
-      if (minimum && amountBigNumber.lt(minimum))
-        return `Minimum unstake amount is ${formatEther(minimum)} stETH`;
+      if (extraValidationFn) return extraValidationFn?.(value);
 
       return '';
     },
-    [inputName, limit, minimum, zeroValid],
+    [inputName, limit, extraValidationFn],
   );
 };

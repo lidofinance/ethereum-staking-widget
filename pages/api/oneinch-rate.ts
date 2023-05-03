@@ -14,8 +14,11 @@ import {
 } from 'utilsApi';
 import Metrics from 'utilsApi/metrics';
 import { API } from 'types';
+import { BigNumber } from 'ethers';
 
 const cache = new Cache<typeof CACHE_ONE_INCH_RATE_KEY, unknown>();
+
+const DEFAULT_AMOUNT = BigNumber.from(10).pow(18);
 
 // Proxy for third-party API.
 // Returns 1inch rate
@@ -25,11 +28,10 @@ const oneInchRate: API = async (req, res) => {
   if (cachedOneInchRate) {
     res.status(200).json(cachedOneInchRate);
   } else {
-    const amount = 10 ** 18;
     const oneInchRate = await getOneInchRate(
       '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee',
       getTokenAddress(CHAINS.Mainnet, TOKENS.STETH),
-      amount,
+      DEFAULT_AMOUNT,
     );
     cache.put(
       CACHE_ONE_INCH_RATE_KEY,

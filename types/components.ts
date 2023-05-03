@@ -16,6 +16,4 @@ export type Override<
   P extends Record<string, unknown>,
 > = Omit<T, keyof P> & P;
 
-export type HandleChange = React.FormEventHandler<HTMLInputElement>;
-
 export type CustomApp = FC<AppProps>;

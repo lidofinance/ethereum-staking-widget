@@ -1,7 +1,7 @@
 import { Question, Tooltip } from '@lidofinance/lido-ui';
 
 import { FormatToken } from 'shared/formatters';
-import { useRequestData } from 'features/withdrawals/hooks';
+import { useRequestData } from 'features/withdrawals/contexts/request-data-context';
 
 import { DataWrapperStyled, QueuInfoStyled } from './styles';
 
