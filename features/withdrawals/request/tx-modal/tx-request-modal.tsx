@@ -1,24 +1,19 @@
 import { useMemo } from 'react';
-import { Link } from '@lidofinance/lido-ui';
 
 import { formatBalance } from 'utils';
 import {
   TxStageModal,
   TxStagePending,
-  TxStageSuccess,
   TxStageSign,
   TxStagePermit,
   TxStageFail,
   TxStageBunker,
   TX_STAGE,
-  EtherscanTxLink,
 } from 'features/withdrawals/shared/tx-stage-modal';
 import { useTransactionModal } from 'features/withdrawals/contexts/transaction-modal-context';
-import { useWithdrawals } from 'features/withdrawals/contexts/withdrawals-context';
 
-import { NFTBanner } from './nft-banner';
-import { NFTBunnerWrapper } from './styles';
 import { getTokenDisplayName } from 'utils/getTokenDisplayName';
+import { TxRequestStageSuccess } from './tx-request-stage-success';
 
 export const TxRequestModal = () => {
   const {
@@ -31,35 +26,17 @@ export const TxRequestModal = () => {
     isModalOpen,
     txStage,
   } = useTransactionModal();
-  const { claimPath } = useWithdrawals();
-  const tokenName = token ? getTokenDisplayName(token) : '';
-
-  const amountAsString = useMemo(
-    () => (requestAmount ? formatBalance(requestAmount, 4) : ''),
-    [requestAmount],
-  );
-
-  const successDescription = useMemo(
-    () => (
-      <span>
-        Request withdrawal for {amountAsString} {tokenName} has been sent.
-        {<br />}
-        Check {<Link href={claimPath}>Claim tab</Link>} to view your withdrawal
-        requests or view your transaction on{' '}
-        {<EtherscanTxLink txHash={txHash ?? undefined} text="Etherscan" />}
-      </span>
-    ),
-    [amountAsString, claimPath, tokenName, txHash],
-  );
-  const successTitle = 'Withdrawal request has been sent';
-
-  const pendingDescription = 'Awaiting block confirmation';
-  const pendingTitle = `You are requesting withdrawal for ${amountAsString} ${tokenName}`;
-
-  const signDescription = `Requesting withdrawal for ${amountAsString} ${tokenName}`;
-  const signTitle = `You are requesting withdrawal for ${amountAsString} ${tokenName}`;
 
   const content = useMemo(() => {
+    const tokenName = token ? getTokenDisplayName(token) : '';
+    const amountAsString = requestAmount ? formatBalance(requestAmount, 4) : '';
+
+    const pendingDescription = 'Awaiting block confirmation';
+    const pendingTitle = `You are requesting withdrawal for ${amountAsString} ${tokenName}`;
+
+    const signDescription = `Requesting withdrawal for ${amountAsString} ${tokenName}`;
+    const signTitle = `You are requesting withdrawal for ${amountAsString} ${tokenName}`;
+
     switch (txStage) {
       case TX_STAGE.PERMIT:
         return <TxStagePermit />;
@@ -75,16 +52,11 @@ export const TxRequestModal = () => {
         );
       case TX_STAGE.SUCCESS:
         return (
-          <TxStageSuccess
+          <TxRequestStageSuccess
             txHash={txHash}
-            description={successDescription}
-            title={successTitle}
-            showEtherscan={false}
-          >
-            <NFTBunnerWrapper>
-              <NFTBanner />
-            </NFTBunnerWrapper>
-          </TxStageSuccess>
+            tokenName={tokenName}
+            amountAsString={amountAsString}
+          />
         );
       case TX_STAGE.FAIL:
         return (
@@ -109,11 +81,9 @@ export const TxRequestModal = () => {
   }, [
     dispatchModalState,
     errorText,
-    pendingTitle,
-    signDescription,
-    signTitle,
+    requestAmount,
     startTx,
-    successDescription,
+    token,
     txHash,
     txStage,
   ]);

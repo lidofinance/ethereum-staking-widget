@@ -1,0 +1,83 @@
+import { useSDK } from '@lido-sdk/react';
+import { useWithdrawals } from 'features/withdrawals/contexts/withdrawals-context';
+import { useNftDataByTxHash } from 'features/withdrawals/hooks/useNftDataByTxHash';
+
+import { Link, Loader } from '@lidofinance/lido-ui';
+import {
+  TxStageSuccess,
+  EtherscanTxLink,
+} from 'features/withdrawals/shared/tx-stage-modal';
+
+import {
+  Title,
+  NFTBanner,
+  NFTImageWrap,
+  NFTImage,
+  NFTImageExample,
+  AddNftWrapper,
+} from './styles';
+
+const LINK_ADD_NFT_GUIDE =
+  'https://help.lido.fi/en/articles/7858367-how-do-i-add-the-lido-nft-to-metamask';
+
+type TxRequestStageSuccessProps = {
+  txHash: string | null;
+  tokenName: string;
+  amountAsString: string;
+};
+
+export const TxRequestStageSuccess = ({
+  txHash,
+  tokenName,
+  amountAsString,
+}: TxRequestStageSuccessProps) => {
+  const { providerWeb3 } = useSDK();
+  const { claimPath } = useWithdrawals();
+  const { data: nftData, initialLoading: nftLoading } =
+    useNftDataByTxHash(txHash);
+  const showAddGuideLink = !!providerWeb3?.provider.isMetaMask;
+
+  const successTitle = 'Withdrawal request has been sent';
+
+  const successDescription = (
+    <span>
+      Request withdrawal for {amountAsString} {tokenName} has been sent.
+      <br />
+      Check <Link href={claimPath}>Claim tab</Link> to view your withdrawal
+      requests or view your transaction on{' '}
+      <EtherscanTxLink txHash={txHash ?? undefined} text="Etherscan" />
+    </span>
+  );
+
+  const showNftLoader = nftLoading;
+  const showNftRealImage = !showNftLoader && nftData && nftData.length === 1;
+  const showNftExample = !showNftLoader && (!nftData || nftData.length !== 1);
+
+  return (
+    <TxStageSuccess
+      txHash={txHash}
+      description={successDescription}
+      title={successTitle}
+      showEtherscan={false}
+    >
+      <NFTBanner>
+        <NFTImageWrap>
+          {showNftLoader && <Loader />}
+          {showNftRealImage && <NFTImage src={nftData[0].image} />}
+          {showNftExample && <NFTImageExample />}
+        </NFTImageWrap>
+        <Title>
+          Add NFT to your wallet to monitor the&nbsp;status
+          of&nbsp;your&nbsp;request.
+        </Title>
+        {showAddGuideLink && (
+          <AddNftWrapper>
+            <Link href={LINK_ADD_NFT_GUIDE}>
+              This guide will help you to do this.
+            </Link>
+          </AddNftWrapper>
+        )}
+      </NFTBanner>
+    </TxStageSuccess>
+  );
+};
