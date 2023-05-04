@@ -14,10 +14,10 @@ import { HowLongToWithdraw } from './list/how-long-to-withdraw';
 import { WithdrawalPeriodCircumstances } from './list/withdrawal-period-circumstances';
 import { ClaimableAmountDifference } from './list/claimable-amount-difference';
 import { WithdrawalFee } from './list/withdrawaal-fee';
+import { TurboMode } from './list/turbo-mode';
 import { BunkerMode } from './list/bunker-mode';
 import { BunkerModeReasons } from './list/bunker-mode-reasons';
 import { WhatIsSlashing } from './list/what-is-slashing';
-import { NegativeCLRebase } from './list/negative-cl-rebase';
 import { RewardsAfterWithdraw } from './list/rewards-after-withdraw';
 import { BunkerWhileRequestOngoing } from './list/bunker-while-request-ongoing';
 import { UnstakeAmountBoundaries } from './list/unstake-amount-boundaries';
@@ -42,10 +42,10 @@ export const RequestFaq: React.FC = () => {
       <WithdrawalPeriodCircumstances />
       <ClaimableAmountDifference />
       <WithdrawalFee />
+      <TurboMode />
       <BunkerMode />
       <BunkerModeReasons />
       <WhatIsSlashing />
-      <NegativeCLRebase />
       <RewardsAfterWithdraw />
       <BunkerWhileRequestOngoing />
       <UnstakeAmountBoundaries />
