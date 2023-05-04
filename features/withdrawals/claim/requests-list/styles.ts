@@ -1,5 +1,4 @@
 import styled from 'styled-components';
-import Download from 'assets/icons/download.svg';
 import { InlineLoader, Link } from '@lidofinance/lido-ui';
 
 export const REQUESTS_LIST_ITEM_SIZE = 57;
@@ -61,16 +60,6 @@ export const RequestsStatusStyled = styled.div<{
   font-size: 12px;
   margin-left: auto;
   margin-right: 8px;
-`;
-
-export const DownloadIcon = styled.img.attrs({
-  src: Download,
-  alt: '',
-})`
-  display: block;
-  width: 16px;
-  height: 16px;
-  margin: 0 auto;
 `;
 
 export const InlineLoaderStyled = styled(InlineLoader)`
