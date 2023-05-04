@@ -73,7 +73,7 @@ export const Form = () => {
   });
 
   const submit = useCallback(
-    async (inputValue: string, resetForm: () => void) => {
+    async (_: string, resetForm: () => void) => {
       request(requests, resetForm);
     },
     [request, requests],
@@ -192,7 +192,7 @@ export const Form = () => {
           {tokenLabel === 'stETH' ? (
             <DataTableRow title="Exchange rate">1 stETH = 1 ETH</DataTableRow>
           ) : (
-            <DataTableRowStethByWsteth />
+            <DataTableRowStethByWsteth toSymbol="ETH" />
           )}
         </>
       ) : (

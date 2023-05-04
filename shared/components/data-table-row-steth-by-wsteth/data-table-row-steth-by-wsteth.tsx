@@ -13,13 +13,19 @@ export const useWstethToStethRatio = () => {
   return { wstethAsStethBN, loading: !wstethAsStethBN };
 };
 
-export const DataTableRowStethByWsteth = () => {
+type DataTableRowStethByWstethProps = {
+  toSymbol?: string;
+};
+
+export const DataTableRowStethByWsteth = ({
+  toSymbol = 'stETH',
+}: DataTableRowStethByWstethProps) => {
   const { loading, wstethAsStethBN } = useWstethToStethRatio();
 
   return (
     <DataTableRow title="Exchange rate" loading={loading}>
       1 wstETH =
-      <FormatToken amount={wstethAsStethBN} symbol="stETH" />
+      <FormatToken amount={wstethAsStethBN} symbol={toSymbol} />
     </DataTableRow>
   );
 };
