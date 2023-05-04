@@ -37,11 +37,11 @@ export const TxRequestStageSuccess = ({
     useNftDataByTxHash(txHash);
   const showAddGuideLink = !!providerWeb3?.provider.isMetaMask;
 
-  const successTitle = 'Withdrawal request has been sent';
+  const successTitle = 'Withdrawal request successfully sent';
 
   const successDescription = (
     <span>
-      Request withdrawal for {amountAsString} {tokenName} has been sent.
+      Withdrawal request for {amountAsString} {tokenName} has been sent.
       <br />
       Check <Link href={claimPath}>Claim tab</Link> to view your withdrawal
       requests or view your transaction on{' '}
