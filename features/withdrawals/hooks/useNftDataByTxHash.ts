@@ -34,13 +34,15 @@ export const useNftDataByTxHash = (txHash: string | null) => {
         contractRpc.interface.decodeEventLog(EVENT_NAME, log.data, log.topics),
       );
 
-      const nftDataRequests = events.map((e) =>
-        (async () => {
+      const nftDataRequests = events.map((e) => {
+        const fetch = async () => {
           const tokenURI = await contractRpc.tokenURI(Number(e.requestId));
           const nftData = await standardFetcher<NFTApiData>(tokenURI);
           return nftData;
-        })(),
-      );
+        };
+
+        return fetch();
+      });
 
       const nftData = await Promise.all(nftDataRequests);
 
