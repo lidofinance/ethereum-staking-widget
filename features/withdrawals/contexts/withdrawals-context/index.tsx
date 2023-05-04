@@ -19,11 +19,12 @@ export type WithdrawalsContextValue = {
   isSteth: boolean;
   isClaimTab: boolean;
   withdrawalsStatus: StatusProps['variant'];
-  isWthdrawalsStatusLoading: boolean;
+  isWithdrawalsStatusLoading: boolean;
   claimPath: string;
   requestPath: string;
-  isPaused: boolean;
-  isBunkerMode: boolean;
+  isPaused?: boolean;
+  isTurbo?: boolean;
+  isBunker?: boolean;
   navRoutes: ReturnType<typeof useRoutes>['navRoutes'];
 };
 const WithdrawalsContext = createContext<WithdrawalsContextValue | null>(null);
@@ -42,9 +43,10 @@ export const WithdrawalsProvider: FC = ({ children }) => {
 
   const {
     withdrawalsStatus,
-    isWthdrawalsStatusLoading,
+    isWithdrawalsStatusLoading,
     isPaused,
-    isBunkerMode,
+    isBunker,
+    isTurbo,
   } = useContractStatus();
   const { isClaimTab, navRoutes, claimPath, requestPath } = useRoutes();
 
@@ -57,10 +59,11 @@ export const WithdrawalsProvider: FC = ({ children }) => {
       isSteth,
       isClaimTab,
       withdrawalsStatus,
-      isWthdrawalsStatusLoading,
+      isWithdrawalsStatusLoading,
       claimPath,
       isPaused,
-      isBunkerMode,
+      isTurbo,
+      isBunker,
       requestPath,
       navRoutes,
     }),
@@ -69,10 +72,11 @@ export const WithdrawalsProvider: FC = ({ children }) => {
       isSteth,
       isClaimTab,
       withdrawalsStatus,
-      isWthdrawalsStatusLoading,
+      isWithdrawalsStatusLoading,
       claimPath,
       isPaused,
-      isBunkerMode,
+      isTurbo,
+      isBunker,
       requestPath,
       navRoutes,
     ],

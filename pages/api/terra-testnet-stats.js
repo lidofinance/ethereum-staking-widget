@@ -93,7 +93,7 @@ export default nextConnect()
   )
   .get(async (_req, res) => {
     if (CONTRACT_VERSION !== '2')
-      return res.status(500).send('Wrong environment');
+      return res.status(500).json('Wrong environment');
     if (!updated && HAS_CLOUDFLARE_CREDENTIALS) {
       await statsStorage.sync();
       updated = true;
@@ -104,7 +104,7 @@ export default nextConnect()
       cache.put(CACHE_KEY, stLunaApr, ST_LUNA_APR_CACHE_MS);
     }
     try {
-      res.status(200).send({
+      res.status(200).json({
         stLunaApr,
         ...statsStorage.currentValue,
         ...(_.has(_req.query, 'debug') && {
@@ -116,6 +116,6 @@ export default nextConnect()
         message: 'Something went wrong!',
       };
       console.error(e);
-      res.status(500).send({ error });
+      res.status(500).json({ error });
     }
   });

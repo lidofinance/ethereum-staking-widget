@@ -42,7 +42,7 @@ export const TxRequestModal = () => {
   const successDescription = useMemo(
     () => (
       <span>
-        Request withdrawal for {amountAsString} {tokenName} has been sent.
+        Withdrawal request for {amountAsString} {tokenName} has been sent.
         {<br />}
         Check {<Link href={claimPath}>Claim tab</Link>} to view your withdrawal
         requests or view your transaction on{' '}
@@ -51,7 +51,7 @@ export const TxRequestModal = () => {
     ),
     [amountAsString, claimPath, tokenName, txHash],
   );
-  const successTitle = 'Withdrawal request has been sent';
+  const successTitle = 'Withdrawal request successfully sent';
 
   const pendingDescription = 'Awaiting block confirmation';
   const pendingTitle = `You are requesting withdrawal for ${amountAsString} ${tokenName}`;

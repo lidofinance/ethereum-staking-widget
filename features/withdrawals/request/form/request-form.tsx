@@ -5,16 +5,17 @@ import { Form } from './form';
 import { Info } from './info';
 import { BunkerInfo } from './bunker-info';
 import { PausedInfo } from './paused-info';
-import { useWithdrawalsStatus } from 'features/withdrawals/hooks';
+import { useWithdrawalsBaseData } from 'features/withdrawals/hooks';
 
 export const RequestForm = () => {
-  const { isBunkerMode, isPaused } = useWithdrawalsStatus();
+  const wqBaseData = useWithdrawalsBaseData();
+  const { isBunker, isPaused, isTurbo } = wqBaseData.data ?? {};
 
   return (
     <Block>
       {isPaused && <PausedInfo />}
-      {isBunkerMode && <BunkerInfo />}
-      {!isPaused && !isBunkerMode && <Info />}
+      {isBunker && <BunkerInfo />}
+      {isTurbo && <Info />}
       <Form />
     </Block>
   );

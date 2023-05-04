@@ -3,3 +3,4 @@ export * from './useRequest';
 export * from './useWithdrawalsData';
 export * from './withdrawalsCalls';
 export * from './useNFT';
+export * from './useWithdrawalsBaseData';
