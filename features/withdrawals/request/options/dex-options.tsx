@@ -73,7 +73,7 @@ const DexOption: React.FC<DexOptionProps> = ({
     <DexOptionStyled>
       {icon}
       <DexOptionBlockTitle>{title}</DexOptionBlockTitle>
-      <DexOptionBlockLink href={url} target="_blank">
+      <DexOptionBlockLink href={url} target="_blank" rel="noopener noreferrer">
         Go to {title}
       </DexOptionBlockLink>
       <DexOptionAmount>

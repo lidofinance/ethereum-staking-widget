@@ -109,7 +109,7 @@ export const Form = () => {
   const showError = active && !!error && !tvlMessage;
 
   return (
-    <form method="post" onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit}>
       <InputGroupStyled
         fullwidth
         error={showError && error}
@@ -167,6 +167,7 @@ export const Form = () => {
             pending={isTxPending || isSubmitting}
             disabled={!!error}
           />
+
           <DataTableRow
             help={
               isApprovalFlow ? undefined : (
