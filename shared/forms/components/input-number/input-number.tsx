@@ -21,13 +21,5 @@ export const InputNumber = ({ onChange, ...props }: InputNumberProps) => {
     },
     [onChange],
   );
-  return (
-    <Input
-      {...props}
-      onKeyDown={(e) => {
-        if (e.key === 'Enter') e.currentTarget.form?.requestSubmit();
-      }}
-      onChange={handleChange}
-    />
-  );
+  return <Input {...props} onChange={handleChange} />;
 };

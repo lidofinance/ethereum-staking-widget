@@ -74,9 +74,9 @@ export const Form = () => {
 
   const submit = useCallback(
     async (_: string, resetForm: () => void) => {
-      request(requests, resetForm);
+      if (withdrawalMethod == 'lido') request(requests, resetForm);
     },
-    [request, requests],
+    [request, requests, withdrawalMethod],
   );
 
   const {
