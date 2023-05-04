@@ -5,16 +5,6 @@ export const EditClaimButtonStyled = styled(Button)`
   margin-bottom: ${({ theme }) => theme.spaceMap.md}px;
 `;
 
-export const LinkWrapperStyled = styled.span`
-  a {
-    text-decoration: none;
-
-    &:visited {
-      color: var(--lido-color-primary);
-    }
-  }
-`;
-
 export const ClaimFormBody = styled(Block)`
   margin-bottom: 0;
   padding-bottom: 0;
