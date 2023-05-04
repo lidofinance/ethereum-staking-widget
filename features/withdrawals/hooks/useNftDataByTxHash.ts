@@ -2,8 +2,10 @@ import { useWeb3 } from 'reef-knot/web3-react';
 import { useLidoSWR } from '@lido-sdk/react';
 import { useWithdrawalsContract } from './contract/useWithdrawalsContract';
 
-import { getEventsWithdrawalRequested } from '../utils/get-events-withdrawal-requested';
 import { standardFetcher } from 'utils/standardFetcher';
+import type { TransactionReceipt } from '@ethersproject/abstract-provider';
+
+const EVENT_NAME = 'WithdrawalRequested';
 
 type NFTApiData = {
   description: string;
@@ -20,22 +22,24 @@ export const useNftDataByTxHash = (txHash: string | null) => {
     async () => {
       if (!txHash || !account) return null;
 
-      const { blockNumber } = await library.getTransactionReceipt(txHash);
-
-      const events = await getEventsWithdrawalRequested(
-        contractRpc,
-        account,
-        blockNumber,
+      const txReciept: TransactionReceipt = await library.getTransactionReceipt(
+        txHash,
       );
 
-      const tokenURIrequests = events.map((e) =>
-        contractRpc.tokenURI(Number(e.requestId)),
+      const eventTopic = contractRpc.interface.getEventTopic(EVENT_NAME);
+      const eventLogs = txReciept.logs.filter(
+        (log) => log.topics[0] === eventTopic,
+      );
+      const events = eventLogs.map((log) =>
+        contractRpc.interface.decodeEventLog(EVENT_NAME, log.data, log.topics),
       );
 
-      const tokenURIs = await Promise.all(tokenURIrequests);
-
-      const nftDataRequests = tokenURIs.map((tokenURI) =>
-        standardFetcher<NFTApiData>(tokenURI),
+      const nftDataRequests = events.map((e) =>
+        (async () => {
+          const tokenURI = await contractRpc.tokenURI(Number(e.requestId));
+          const nftData = await standardFetcher<NFTApiData>(tokenURI);
+          return nftData;
+        })(),
       );
 
       const nftData = await Promise.all(nftDataRequests);
