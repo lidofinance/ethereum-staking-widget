@@ -56,7 +56,7 @@ export const FormButton: FC<FormButtonProps> = ({
       fullwidth
       icon={isLocked ? <Lock /> : <></>}
       type="submit"
-      disabled={(isLidoRequest && disabled) || pending || isPaused}
+      disabled={(isLidoRequest && disabled) || isPaused}
       loading={pending}
     >
       {buttonTitle}

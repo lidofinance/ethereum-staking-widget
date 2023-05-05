@@ -38,6 +38,9 @@ type TransactionModalAction =
       type: 'close_modal';
     }
   | {
+      type: 'open_modal';
+    }
+  | {
       type: 'bunker';
     }
   | {
@@ -90,6 +93,13 @@ const TransactionModalReducer = (
       return {
         ...state,
         isModalOpen: false,
+      };
+    case 'open_modal':
+      // noop in NONE stage
+      if (state.txStage === TX_STAGE.NONE) return state;
+      return {
+        ...state,
+        isModalOpen: true,
       };
     case 'bunker':
       invariant(state.startTx, 'state must already have start tx callback');
