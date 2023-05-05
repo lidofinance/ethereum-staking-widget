@@ -1,14 +1,19 @@
 import styled from 'styled-components';
-
-export const DataWrapperStyled = styled.div`
-  margin-left: auto;
-`;
+import { DataTableRow } from '@lidofinance/lido-ui';
 
 export const QueuInfoStyled = styled.div`
-  display: flex;
-  margin-top: ${({ theme }) => theme.spaceMap.sm}px;
+  margin-top: ${({ theme }) => theme.spaceMap.md}px;
+  color: var(--lido-color-accentContrast);
+`;
 
-  &:first-of-type {
-    margin-top: ${({ theme }) => theme.spaceMap.md}px;
+export const DataTableRowStyled = styled(DataTableRow)`
+  margin: 0 0;
+  div {
+    color: var(--lido-color-accentContrast);
+    font-size: 10px;
+  }
+
+  span {
+    --loader-color: var(--lido-color-accentContrast);
   }
 `;

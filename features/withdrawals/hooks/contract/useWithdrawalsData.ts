@@ -139,10 +139,11 @@ export const useWithdrawalsStatus = () => {
 
   const isPaused = !!paused.data;
   const isBunkerMode = !!bunkerMode.data;
+  const isTurbo = !isPaused && !isBunkerMode;
 
   const isLoading = paused.initialLoading || bunkerMode.initialLoading;
 
-  return { isPaused, isBunkerMode, isLoading };
+  return { isPaused, isBunkerMode, isLoading, isTurbo };
 };
 
 export const useWithdrawalsConstants = () => {

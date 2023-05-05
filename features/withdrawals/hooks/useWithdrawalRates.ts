@@ -4,49 +4,82 @@ import { useDebouncedValue } from 'shared/hooks/useDebouncedValue';
 
 import { BigNumber } from 'ethers';
 import { CHAINS, TOKENS, getTokenAddress } from '@lido-sdk/constants';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { standardFetcher } from 'utils/standardFetcher';
+import { useRequestForm } from '../contexts/request-form-context';
+import { useWithdrawals } from '../contexts/withdrawals-context';
 
 type getWithdrawalRatesParams = {
   amount: BigNumber;
+  token: TOKENS.STETH | TOKENS.WSTETH;
 };
 
-type getWithdrawalRatesResult = { name: string; rate: number | null }[];
+type RateResult = {
+  name: string;
+  rate: number | null;
+  toReceive: BigNumber | null;
+};
 
-const STETH_ADDRESS = getTokenAddress(CHAINS.Mainnet, TOKENS.STETH);
-const SWAP_MIN_AMOUNT = BigNumber.from('100000000000000000'); // amount lower error out price rates
+type getRate = (
+  amount: BigNumber,
+  token: TOKENS.STETH | TOKENS.WSTETH,
+) => Promise<RateResult>;
+
+type rateCalculationResult = ReturnType<typeof calculateRateReceive>;
+
+type getWithdrawalRatesResult = RateResult[];
+
 const RATE_PRECISION = 100000;
 const RATE_PRECISION_BN = BigNumber.from(RATE_PRECISION);
 
-const calculateRate = (src: BigNumber, dest: BigNumber) =>
-  dest.mul(RATE_PRECISION_BN).div(src).toNumber() / RATE_PRECISION;
+const calculateRateReceive = (
+  amount: BigNumber,
+  src: BigNumber,
+  dest: BigNumber,
+) => {
+  const _rate = dest.mul(RATE_PRECISION_BN).div(src);
+  const toReceive = amount.mul(_rate).div(RATE_PRECISION_BN);
+  const rate = _rate.toNumber() / RATE_PRECISION;
+  return { rate, toReceive };
+};
 
 type OneInchQuotePartial = {
   toTokenAmount: string;
 };
 
-const getOneInchRate = async (amount: BigNumber) => {
-  let rate;
+const getOneInchRate: getRate = async (amount, token) => {
+  let rateInfo: rateCalculationResult | null;
   try {
-    const api = `https://api-lido.1inch.io/v5.0/1/swap`;
+    if (amount.isZero() || amount.isNegative()) {
+      return {
+        name: '1inch',
+        rate: 0,
+        toReceive: BigNumber.from(0),
+      };
+    }
+    const capped_amount = amount;
+    const api = `https://api.1inch.exchange/v3.0/1/quote`;
     const query = new URLSearchParams({
-      fromTokenAddress: STETH_ADDRESS,
+      fromTokenAddress: getTokenAddress(CHAINS.Mainnet, token),
       toTokenAddress: '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee',
       amount: amount.toString(),
-      slippage: '1',
-      fromAddress: STETH_ADDRESS,
     });
     const url = `${api}?${query.toString()}`;
     const data: OneInchQuotePartial =
       await standardFetcher<OneInchQuotePartial>(url);
 
-    rate = calculateRate(amount, BigNumber.from(data.toTokenAmount));
+    rateInfo = calculateRateReceive(
+      amount,
+      capped_amount,
+      BigNumber.from(data.toTokenAmount),
+    );
   } catch {
-    rate = null;
+    rateInfo = null;
   }
   return {
     name: '1inch',
-    rate,
+    rate: rateInfo?.rate ?? null,
+    toReceive: rateInfo?.toReceive ?? null,
   };
 };
 
@@ -57,19 +90,27 @@ type ParaSwapPriceResponsePartial = {
   };
 };
 
-const getParaSwapRate = async (amount: BigNumber) => {
-  let rate;
+const getParaSwapRate: getRate = async (amount, token) => {
+  let rateInfo: rateCalculationResult | null;
   try {
+    if (amount.isZero() || amount.isNegative()) {
+      return {
+        name: 'paraswap',
+        rate: 0,
+        toReceive: BigNumber.from(0),
+      };
+    }
+    const capped_amount = amount;
     const api = `https://apiv5.paraswap.io/prices`;
     const query = new URLSearchParams({
-      srcToken: STETH_ADDRESS,
+      srcToken: getTokenAddress(CHAINS.Mainnet, token),
       srcDecimals: '18',
       destToken: '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE',
       destDecimals: '18',
       side: 'SELL',
       excludeDirectContractMethods: 'true',
       userAddress: '0x0000000000000000000000000000000000000000',
-      amount: amount.toString(),
+      amount: capped_amount.toString(),
       network: '1',
     });
 
@@ -77,16 +118,18 @@ const getParaSwapRate = async (amount: BigNumber) => {
     const data: ParaSwapPriceResponsePartial =
       await standardFetcher<ParaSwapPriceResponsePartial>(url);
 
-    rate = calculateRate(
-      BigNumber.from(data.priceRoute.destAmount),
+    rateInfo = calculateRateReceive(
+      amount,
       BigNumber.from(data.priceRoute.srcAmount),
+      BigNumber.from(data.priceRoute.destAmount),
     );
   } catch {
-    rate = null;
+    rateInfo = null;
   }
   return {
     name: 'paraswap',
-    rate,
+    rate: rateInfo?.rate ?? null,
+    toReceive: rateInfo?.toReceive ?? null,
   };
 };
 
@@ -97,17 +140,25 @@ type CowSwapQuoteResponsePartial = {
   };
 };
 
-const getCowSwapRate = async (amount: BigNumber) => {
-  let rate;
+const getCowSwapRate: getRate = async (amount, token) => {
+  let rateInfo: rateCalculationResult | null;
   try {
+    if (amount.isZero() || amount.isNegative()) {
+      return {
+        name: 'cowswap',
+        rate: 0,
+        toReceive: BigNumber.from(0),
+      };
+    }
+    const capped_amount = amount;
     const payload = {
-      sellToken: STETH_ADDRESS,
+      sellToken: getTokenAddress(CHAINS.Mainnet, token),
       buyToken: '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE',
       from: '0x0000000000000000000000000000000000000000',
       receiver: '0x0000000000000000000000000000000000000000',
       partiallyFillable: false,
       kind: 'sell',
-      sellAmountBeforeFee: amount.toString(),
+      sellAmountBeforeFee: capped_amount.toString(),
     };
 
     const data: CowSwapQuoteResponsePartial = await standardFetcher(
@@ -121,27 +172,29 @@ const getCowSwapRate = async (amount: BigNumber) => {
       },
     );
 
-    rate = calculateRate(
-      BigNumber.from(data.quote.buyAmount),
+    rateInfo = calculateRateReceive(
+      amount,
       BigNumber.from(data.quote.sellAmount),
+      BigNumber.from(data.quote.buyAmount),
     );
   } catch {
-    rate = null;
+    rateInfo = null;
   }
   return {
     name: 'cowswap',
-    rate,
+    rate: rateInfo?.rate ?? null,
+    toReceive: rateInfo?.toReceive ?? null,
   };
 };
 
 const getWithdrawalRates = async ({
   amount,
+  token,
 }: getWithdrawalRatesParams): Promise<getWithdrawalRatesResult> => {
-  const capped_amount = amount.lte(SWAP_MIN_AMOUNT) ? SWAP_MIN_AMOUNT : amount;
   const rates = await Promise.all([
-    getOneInchRate(capped_amount),
-    getParaSwapRate(capped_amount),
-    getCowSwapRate(capped_amount),
+    getOneInchRate(amount, token),
+    getParaSwapRate(amount, token),
+    getCowSwapRate(amount, token),
   ]);
 
   // sort by rate, then alphabetic
@@ -164,17 +217,27 @@ const getWithdrawalRates = async ({
 };
 
 type useWithdrawalRatesOptions = {
-  amount: BigNumber;
+  fallbackValue?: BigNumber;
 };
 
-export const useWithdrawalRates = ({ amount }: useWithdrawalRatesOptions) => {
-  const debouncedRequestCount = useDebouncedValue(amount, 2000);
+export const useWithdrawalRates = ({
+  fallbackValue,
+}: useWithdrawalRatesOptions = {}) => {
+  const { inputValueBN } = useRequestForm();
+  const { selectedToken } = useWithdrawals();
+  const fallbackedAmount =
+    fallbackValue && inputValueBN.lte(0) ? fallbackValue : inputValueBN;
+  const debouncedAmount = useDebouncedValue(fallbackedAmount, 2000);
   const swr = useLidoSWR(
-    ['swr:withdrawal-rates', debouncedRequestCount],
+    ['swr:withdrawal-rates', debouncedAmount, selectedToken],
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (_, amount) => getWithdrawalRates({ amount: amount as BigNumber }),
+    (_, amount, selectedToken) =>
+      getWithdrawalRates({
+        amount: amount as BigNumber,
+        token: selectedToken as TOKENS.STETH | TOKENS.WSTETH,
+      }),
     {
-      isPaused: () => !amount || !amount._isBigNumber,
+      isPaused: () => !debouncedAmount || !debouncedAmount._isBigNumber,
       revalidateOnFocus: false,
     },
   );
@@ -185,21 +248,32 @@ export const useWithdrawalRates = ({ amount }: useWithdrawalRatesOptions) => {
     swr.data &&
       setStableSortedData((old) => {
         if (old && old !== swr.data) {
-          return old.map((old_rate) => ({
-            ...old_rate,
-            rate: swr.data?.find((r) => r.name === old_rate.name)?.rate ?? null,
-          }));
+          return old.map((oldData) => {
+            const newData = swr.data?.find((r) => r.name === oldData.name);
+            if (!newData) return oldData;
+            return {
+              ...oldData,
+              ...newData,
+            };
+          });
         } else return swr.data;
       });
   }, [swr.data]);
 
+  const bestRate = useMemo(() => {
+    return swr.data?.[0]?.rate ?? null;
+  }, [swr.data]);
+
   return {
+    amount: fallbackedAmount,
+    bestRate,
+    selectedToken: selectedToken as TOKENS.WSTETH | TOKENS.STETH,
     data: stableSortedData,
     get initialLoading() {
-      return swr.initialLoading || !stableSortedData;
+      return !stableSortedData && swr.initialLoading;
     },
     get loading() {
-      return swr.loading || debouncedRequestCount !== amount;
+      return swr.loading || !debouncedAmount.eq(fallbackedAmount);
     },
     get error() {
       return swr.error;

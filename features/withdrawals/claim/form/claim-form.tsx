@@ -6,7 +6,7 @@ import { FormatToken } from 'shared/formatters';
 import { Connect } from 'shared/wallet';
 
 import { BunkerInfo } from './bunker-info';
-import { useClaim, useWithdrawalsStatus } from 'features/withdrawals/hooks';
+import { useClaim, useWithdrawalsBaseData } from 'features/withdrawals/hooks';
 import { useClaimTxPrice } from 'features/withdrawals/hooks/useWithdrawTxPrice';
 import { useTransactionModal } from 'features/withdrawals/contexts/transaction-modal-context';
 import { useClaimData } from 'features/withdrawals/contexts/claim-data-context';
@@ -21,13 +21,9 @@ export const ClaimForm = () => {
 
   const { active } = useWeb3();
   const { dispatchModalState } = useTransactionModal();
-  const {
-    ethToClaim,
-    claimSelection,
-    requests,
-    loading: isLoading,
-  } = useClaimData();
-  const { isBunkerMode } = useWithdrawalsStatus();
+  const { ethToClaim, claimSelection } = useClaimData();
+  const wqBaseData = useWithdrawalsBaseData();
+  const { requests, loading: isLoading } = useClaimData();
   const isEmpty = !isLoading && requests.length === 0;
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -62,7 +58,7 @@ export const ClaimForm = () => {
   return (
     <>
       <ClaimFormBody>
-        {isBunkerMode && <BunkerInfo />}
+        {wqBaseData.data?.isBunker && <BunkerInfo />}
         <div ref={refRequests}>
           <RequestsList
             isLoading={isLoading}
