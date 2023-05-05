@@ -36,7 +36,7 @@ export const useRequestData = () => {
 };
 
 export const RequestDataProvider: FC = ({ children }) => {
-  const { withdrawalRequestsData } = useClaimData();
+  const { update: withdrawalRequestsDataUpdate } = useClaimData();
   const stethBalance = useSTETHBalance();
   const wstethBalance = useWSTETHBalance();
   const unfinalizedStETH = useUnfinalizedStETH();
@@ -52,9 +52,14 @@ export const RequestDataProvider: FC = ({ children }) => {
     // TODO
     stethBalance.update();
     wstethBalance.update();
-    withdrawalRequestsData.update();
+    withdrawalRequestsDataUpdate();
     unfinalizedStETH.update();
-  }, [stethBalance, unfinalizedStETH, withdrawalRequestsData, wstethBalance]);
+  }, [
+    stethBalance,
+    unfinalizedStETH,
+    withdrawalRequestsDataUpdate,
+    wstethBalance,
+  ]);
 
   const value = useMemo(
     () => ({

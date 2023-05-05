@@ -23,9 +23,8 @@ export const ClaimForm = () => {
   const { dispatchModalState } = useTransactionModal();
   const { ethToClaim, claimSelection } = useClaimData();
   const wqBaseData = useWithdrawalsBaseData();
-  const { requests, withdrawalRequestsData } = useClaimData();
-  const isLoading = withdrawalRequestsData.loading;
-  const isEmpty = !withdrawalRequestsData.loading && requests.length === 0;
+  const { requests, loading: isLoading } = useClaimData();
+  const isEmpty = !isLoading && requests.length === 0;
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const txPriceInUsd = useClaimTxPrice();

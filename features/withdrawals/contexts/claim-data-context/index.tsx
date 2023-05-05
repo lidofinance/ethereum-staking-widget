@@ -13,14 +13,17 @@ claimDataContext.displayName = 'ClaimDataContext';
 export type ClaimDataValue = {
   ethToClaim: BigNumber;
   requests: RequestStatusesUnion[];
-  withdrawalRequestsData: ReturnType<typeof useWithdrawalRequests>;
   claimSelection: ReturnType<typeof useClaimSelection>;
+  withdrawalRequestsData: ReturnType<typeof useWithdrawalRequests>['data'];
+  loading: ReturnType<typeof useWithdrawalRequests>['initialLoading'];
+  refetching: ReturnType<typeof useWithdrawalRequests>['loading'];
+  update: ReturnType<typeof useWithdrawalRequests>['update'];
 };
 
 export const ClaimDataProvider: FC = ({ children }) => {
   const withdrawRequests = useWithdrawalRequests();
   const claimSelection = useClaimSelection(
-    withdrawRequests.data?.sortedClaimableRequests ?? [],
+    withdrawRequests.data?.sortedClaimableRequests ?? null,
   );
 
   const ethToClaim = useMemo(() => {
@@ -37,17 +40,21 @@ export const ClaimDataProvider: FC = ({ children }) => {
     ];
   }, [withdrawRequests.data]);
 
-  const loading = withdrawRequests.initialLoading;
-
   const value: ClaimDataValue = useMemo(() => {
     return {
-      withdrawalRequestsData: withdrawRequests,
+      withdrawalRequestsData: withdrawRequests.data,
+      get loading() {
+        return withdrawRequests.initialLoading;
+      },
+      get refetching() {
+        return withdrawRequests.loading;
+      },
+      update: withdrawRequests.update,
       claimSelection,
       requests,
       ethToClaim,
-      loading,
     };
-  }, [claimSelection, withdrawRequests, ethToClaim, requests, loading]);
+  }, [claimSelection, withdrawRequests, ethToClaim, requests]);
 
   return (
     <claimDataContext.Provider value={value}>

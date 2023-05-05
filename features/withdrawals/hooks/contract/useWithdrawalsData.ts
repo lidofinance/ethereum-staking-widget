@@ -14,7 +14,7 @@ import {
   RequestStatusClaimable,
   RequestStatusPending,
 } from 'features/withdrawals/types/request-status';
-import { MAX_SHOWN_REQUEST_PER_TYPE } from 'features/withdrawals/withdrawalsConstants';
+import { MAX_SHOWN_REQUEST_PER_TYPE } from 'features/withdrawals/withdrawals-constants';
 // import { calcExpectedRequestEth } from 'features/withdrawals/utils/calc-expected-request-eth';
 
 export const useWithdrawalRequests = () => {
@@ -129,6 +129,7 @@ export const useWithdrawalRequests = () => {
         isClamped,
       };
     },
+    {},
   );
 };
 

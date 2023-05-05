@@ -8,10 +8,9 @@ import { DATA_UNAVAILABLE } from 'config';
 import { RequestCounterStyled } from './styles';
 
 export const WalletMyRequests: FC = ({ children }) => {
-  const { withdrawalRequestsData } = useClaimData();
-  const { readyCount, pendingCount } = withdrawalRequestsData.data || {};
-  const readyValue = readyCount ?? DATA_UNAVAILABLE;
-  const pendingValue = pendingCount ?? DATA_UNAVAILABLE;
+  const { withdrawalRequestsData, loading } = useClaimData();
+  const { readyCount = DATA_UNAVAILABLE, pendingCount = DATA_UNAVAILABLE } =
+    withdrawalRequestsData || {};
 
   const title = <>My requests {children}</>;
 
@@ -21,7 +20,7 @@ export const WalletMyRequests: FC = ({ children }) => {
         <Tooltip placement="bottom" title="Ready to claim">
           <span>
             <TickSquare />
-            <span>{readyValue}</span>
+            <span>{readyCount}</span>
           </span>
         </Tooltip>
       </RequestCounterStyled>
@@ -30,7 +29,7 @@ export const WalletMyRequests: FC = ({ children }) => {
         <Tooltip placement="bottom" title="On pending">
           <span>
             <TimeSquare />
-            <span>{pendingValue}</span>
+            <span>{pendingCount}</span>
           </span>
         </Tooltip>
       </RequestCounterStyled>
@@ -41,7 +40,7 @@ export const WalletMyRequests: FC = ({ children }) => {
     <CardBalance
       small
       title={title}
-      loading={withdrawalRequestsData.loading}
+      loading={loading}
       value={requestsContent}
     />
   );

@@ -19,7 +19,7 @@ export const WithdrawalsTabs = () => {
       <Switch checked={isClaimTab} routes={navRoutes} />
       {/* We reuse provider but make sure these are different components for tabs */}
       <TransactionModalProvider
-        key={isClaimTab ? 'CLAIM_PROVIDER' : 'REQeUST_PROVIDER'}
+        key={isClaimTab ? 'CLAIM_PROVIDER' : 'REQUEST_PROVIDER'}
       >
         {isClaimTab ? (
           <>
