@@ -27,7 +27,7 @@ export const TxStageFail: FC<TxStageFailProps> = (props) => {
   return (
     <TextWrapper>
       {currentIconDict[TX_STAGE.FAIL]}
-      <BoldText size="sm">Metamask tx signature</BoldText>
+      <BoldText size="sm">Transaction Error</BoldText>
       <MiddleDescription size="xs" color="secondary">
         {failedText ?? 'Something went wrong'}
       </MiddleDescription>

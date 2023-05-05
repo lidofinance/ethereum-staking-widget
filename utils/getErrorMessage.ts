@@ -15,8 +15,8 @@ export const getErrorMessage = (error: unknown): ErrorMessage => {
   const code = extractCodeFromError(error);
   switch (code) {
     case -32000:
-      return ErrorMessage.NOT_ENOUGH_ETHER;
     case 3:
+    case 'UNPREDICTABLE_GAS_LIMIT':
       return ErrorMessage.NOT_ENOUGH_ETHER;
     case 'ACTION_REJECTED':
     case 4001:
@@ -40,9 +40,12 @@ const extractCodeFromError = (error: unknown): number | string => {
 
   // sometimes we have error message but bad error code
   if ('message' in error && typeof error.message == 'string') {
-    if (error.message.toLowerCase().includes('denied message signature'))
+    const normalizedMessage = error.message.toLowerCase();
+    if (
+      normalizedMessage.includes('denied message signature') ||
+      normalizedMessage.includes('transaction was rejected')
+    )
       return 'ACTION_REJECTED';
-    //TODO: error.message more cases
   }
 
   if (

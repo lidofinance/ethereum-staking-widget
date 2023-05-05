@@ -3,13 +3,12 @@ import { FormatToken } from 'shared/formatters';
 import { useClaimData } from 'features/withdrawals/contexts/claim-data-context';
 
 export const WalletPendingAmount = () => {
-  const { withdrawalRequestsData } = useClaimData();
-  const { loading, data } = withdrawalRequestsData;
+  const { withdrawalRequestsData, loading } = useClaimData();
 
   const pendingAmount = (
     <FormatToken
       showAmountTip
-      amount={data?.pendingAmountOfStETH}
+      amount={withdrawalRequestsData?.pendingAmountOfStETH}
       symbol="stETH"
     />
   );

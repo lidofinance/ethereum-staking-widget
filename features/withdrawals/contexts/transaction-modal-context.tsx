@@ -12,11 +12,11 @@ import { TX_STAGE } from 'features/withdrawals/shared/tx-stage-modal';
 import invariant from 'tiny-invariant';
 import type { TokensWithdrawable } from '../types/tokens-withdrawable';
 
-type RequestTxModalContextValue = RequestTxModalState & {
-  dispatchModalState: Dispatch<RequestTxModalAction>;
+type TransactionModalContextValue = TransactionModalState & {
+  dispatchModalState: Dispatch<TransactionModalAction>;
 };
 
-type RequestTxModalState = {
+type TransactionModalState = {
   isModalOpen: boolean;
   txStage: TX_STAGE;
   startTx: (() => void) | null;
@@ -26,7 +26,7 @@ type RequestTxModalState = {
   token: TokensWithdrawable | null;
 };
 
-type RequestTxModalAction =
+type TransactionModalAction =
   | {
       type: 'reset';
     }
@@ -61,15 +61,14 @@ type RequestTxModalAction =
       type: 'success';
     };
 
-const RequestTxModalContext = createContext<RequestTxModalContextValue | null>(
-  null,
-);
-RequestTxModalContext.displayName = 'RequestTxModalContext';
+const TransactionModalContext =
+  createContext<TransactionModalContextValue | null>(null);
+TransactionModalContext.displayName = 'TransactionModalContext';
 
-const txModalReducer = (
-  state: RequestTxModalState,
-  action: RequestTxModalAction,
-): RequestTxModalState => {
+const TransactionModalReducer = (
+  state: TransactionModalState,
+  action: TransactionModalAction,
+): TransactionModalState => {
   switch (action.type) {
     case 'reset':
       return {
@@ -140,7 +139,7 @@ const txModalReducer = (
   }
 };
 
-const initTxModalState = (): RequestTxModalState => ({
+const initTxModalState = (): TransactionModalState => ({
   isModalOpen: false,
   txStage: TX_STAGE.NONE,
   startTx: null,
@@ -151,14 +150,14 @@ const initTxModalState = (): RequestTxModalState => ({
 });
 
 export const useTransactionModal = () => {
-  const r = useContext(RequestTxModalContext);
-  invariant(r, 'useRequestTxModal was used outside RequestTxModalContext');
+  const r = useContext(TransactionModalContext);
+  invariant(r, 'useTransactionModal was used outside TransactionModalContext');
   return r;
 };
 
 export const TransactionModalProvider: FC = ({ children }) => {
   const [state, dispatch] = useReducer(
-    txModalReducer,
+    TransactionModalReducer,
     undefined,
     initTxModalState,
   );
@@ -170,8 +169,8 @@ export const TransactionModalProvider: FC = ({ children }) => {
     [state],
   );
   return (
-    <RequestTxModalContext.Provider value={value}>
+    <TransactionModalContext.Provider value={value}>
       {children}
-    </RequestTxModalContext.Provider>
+    </TransactionModalContext.Provider>
   );
 };

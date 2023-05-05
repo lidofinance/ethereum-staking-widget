@@ -1,6 +1,6 @@
 import { useWeb3 } from 'reef-knot/web3-react';
 
-import { EmptyText, DownloadIcon, WrapperEmpty } from './styles';
+import { EmptyText, WrapperEmpty } from './styles';
 
 export const RequestsEmpty = () => {
   const { active } = useWeb3();
@@ -8,10 +8,7 @@ export const RequestsEmpty = () => {
   if (!active) {
     return (
       <WrapperEmpty>
-        <EmptyText>
-          <DownloadIcon />
-          Connect wallet to see your withdrawal requests
-        </EmptyText>
+        <EmptyText>Connect wallet to see your withdrawal requests</EmptyText>
       </WrapperEmpty>
     );
   }
