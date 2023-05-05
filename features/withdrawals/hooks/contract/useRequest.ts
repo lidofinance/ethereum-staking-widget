@@ -350,14 +350,17 @@ export const useWithdrawalRequest = ({
 
   const isApprovalFlowLoading =
     isMultisigLoading || (isApprovalFlow && loadingUseApprove);
-  const isTokenLocked = isApprovalFlow && needsApprove;
+
+  const isTokenLocked = isApprovalFlow && (needsApprove || valueBN.isZero());
 
   const request = useCallback(
     (requests: BigNumber[], resetForm: () => void) => {
       // define and set retry point
       const startCallback = async () => {
         try {
-          let shouldSkipSuccess = false;
+          // we can't know if tx was successful or even wait for it  with multisig
+          // so we exit flow gracefully and reset UI
+          const shouldSkipSuccess = isMultisig;
           setIsTxPending(true);
           const requestAmount = requests.reduce(
             (s, r) => s.add(r),
@@ -381,14 +384,9 @@ export const useWithdrawalRequest = ({
           if (isApprovalFlow) {
             if (needsApprove) {
               await approve();
-              if (isMultisig) {
-                // multisig exits the flow here
-                // skips success modal
-                shouldSkipSuccess = true;
-              } else {
-                await method({ requests });
-              }
-            } else {
+            }
+            // multisig exits here
+            if (!isMultisig) {
               await method({ requests });
             }
           } else {
