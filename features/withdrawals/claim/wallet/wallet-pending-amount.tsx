@@ -7,7 +7,11 @@ export const WalletPendingAmount = () => {
   const { loading, data } = withdrawalRequestsData;
 
   const pendingAmount = (
-    <FormatToken amount={data?.pendingAmountOfStETH} symbol="stETH" />
+    <FormatToken
+      showAmountTip
+      amount={data?.pendingAmountOfStETH}
+      symbol="stETH"
+    />
   );
 
   return (

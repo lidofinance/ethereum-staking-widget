@@ -33,7 +33,14 @@ const WalletComponent: WalletComponentType = (props) => {
             </FlexCenter>
           }
           loading={stakeableEther.initialLoading}
-          value={<FormatToken amount={stakeableEther.data} symbol="ETH" />}
+          value={
+            <FormatToken
+              showAmountTip
+              approx={false}
+              amount={stakeableEther.data}
+              symbol="ETH"
+            />
+          }
         />
         <CardAccount account={account} />
       </CardRow>
@@ -45,7 +52,12 @@ const WalletComponent: WalletComponentType = (props) => {
           loading={steth.initialLoading}
           value={
             <>
-              <FormatToken amount={steth.data} symbol="stETH" />
+              <FormatToken
+                approx={false}
+                showAmountTip
+                amount={steth.data}
+                symbol="stETH"
+              />
               <TokenToWallet address={stethAddress} />
             </>
           }

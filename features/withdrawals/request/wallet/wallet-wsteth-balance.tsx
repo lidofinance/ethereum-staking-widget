@@ -11,7 +11,7 @@ export const WalletWstethBalance = () => {
 
   const stethBalanceValue = (
     <>
-      <FormatToken amount={wstethBalance.data} symbol="wstETH" />
+      <FormatToken approx={false} amount={wstethBalance.data} symbol="wstETH" />
       <Text size={'xxs'} color={'secondary'}>
         ≈ <FormatToken amount={stethByWstethBalance} symbol="ETH" />
       </Text>

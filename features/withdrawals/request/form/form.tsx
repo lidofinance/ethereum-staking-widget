@@ -187,7 +187,7 @@ export const Form = () => {
             ${requestPriceInUsd?.toFixed(2)}
           </DataTableRow>
           <DataTableRow title="Allowance" loading={isApprovalFlowLoading}>
-            <FormatToken amount={allowance} symbol={tokenLabel} />
+            <FormatToken showAmountTip amount={allowance} symbol={tokenLabel} />
           </DataTableRow>
           {tokenLabel === 'stETH' ? (
             <DataTableRow title="Exchange rate">1 stETH = 1 ETH</DataTableRow>

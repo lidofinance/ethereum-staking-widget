@@ -7,7 +7,11 @@ export const WalletAvailableAmount = () => {
   const { data, loading } = withdrawalRequestsData;
 
   const availableAmount = (
-    <FormatToken amount={data?.claimableAmountOfETH} symbol="ETH" />
+    <FormatToken
+      showAmountTip
+      amount={data?.claimableAmountOfETH}
+      symbol="ETH"
+    />
   );
 
   return (
