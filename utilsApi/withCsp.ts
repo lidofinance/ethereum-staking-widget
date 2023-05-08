@@ -27,6 +27,7 @@ export const contentSecurityPolicy = {
       'https://swap.cow.fi/',
       'https://wq-api.testnet.fi',
       'https://wq-api.lido.fi',
+      'https://wq-api.infra-staging.org',
       ...trustedHosts,
     ],
     prefetchSrc: ["'self'", ...trustedHosts],
