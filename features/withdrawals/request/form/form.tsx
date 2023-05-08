@@ -105,11 +105,7 @@ export const Form = () => {
     [setToken, reset],
   );
 
-  const unlockCostTooltip = isApprovalFlow ? (
-    !isTokenLocked ? (
-      <>You already have enough allowance to withdrawal contract</>
-    ) : undefined
-  ) : (
+  const unlockCostTooltip = isApprovalFlow ? undefined : (
     <>Lido leverages gasless token approvals via ERC-2612 permits</>
   );
 
@@ -180,9 +176,7 @@ export const Form = () => {
             title="Max unlock cost"
             loading={isApprovalFlowLoading}
           >
-            {isApprovalFlow && isTokenLocked
-              ? `$${approveTxCostInUsd?.toFixed(2)}`
-              : 'FREE'}
+            {isApprovalFlow ? `$${approveTxCostInUsd?.toFixed(2)}` : 'FREE'}
           </DataTableRow>
           <DataTableRow
             title="Max transaction cost"
