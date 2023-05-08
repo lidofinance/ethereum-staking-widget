@@ -11,6 +11,9 @@ import { WhySTETH } from './list/why-steth';
 import { SeparateClaim } from './list/separate-claim';
 import { ClaimableAmountDifference } from './list/claimable-amount-difference';
 import { WhatIsSlashing } from './list/what-is-slashing';
+import { LidoNFT } from './list/lido-nft';
+import { HowToAddNFT } from './list/add-nft';
+import { NFTNotChange } from './list/nft-not-change';
 
 export const ClaimFaq: React.FC = () => {
   const onClickHandler = useMatomoEventHandle();
@@ -26,6 +29,9 @@ export const ClaimFaq: React.FC = () => {
       <SeparateClaim />
       <ClaimableAmountDifference />
       <WhatIsSlashing />
+      <LidoNFT />
+      <HowToAddNFT />
+      <NFTNotChange />
     </Section>
   );
 };
