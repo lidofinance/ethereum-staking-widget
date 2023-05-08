@@ -5,6 +5,7 @@ import { useDebouncedValue } from 'shared/hooks';
 import { encodeURLQuery } from 'utils/encodeURLQuery';
 import { standardFetcher } from 'utils/standardFetcher';
 import { useWithdrawals } from 'features/withdrawals/contexts/withdrawals-context';
+import { STRATEGY_CONSTANT } from 'utils/swrStrategies';
 
 const DEFAULT_DAYS_VALUE = 5;
 
@@ -39,6 +40,7 @@ export const useWaitingTime = (
   const { data, initialLoading, error } = useLidoSWR(
     url,
     standardFetcher,
+    STRATEGY_CONSTANT,
   ) as SWRResponse<RequestTimeResponse>;
   const { isBunker, isPaused } = useWithdrawals();
 

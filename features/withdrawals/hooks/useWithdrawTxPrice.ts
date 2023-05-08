@@ -22,6 +22,7 @@ import { useDebouncedValue } from 'shared/hooks/useDebouncedValue';
 import { encodeURLQuery } from 'utils/encodeURLQuery';
 import { BigNumber } from 'ethers';
 import invariant from 'tiny-invariant';
+import { STRATEGY_LAZY } from 'utils/swrStrategies';
 
 type UseRequestTxPriceOptions = {
   requestCount?: number;
@@ -62,9 +63,8 @@ export const useRequestTxPrice = ({
 
   const { data: permitEstimateData, initialLoading: permitLoading } =
     useLidoSWR<{ gasLimit: number }>(url, standardFetcher, {
+      ...STRATEGY_LAZY,
       isPaused: () => !chainId || isApprovalFlow,
-      revalidateIfStale: false,
-      revalidateOnFocus: false,
     });
 
   const { data: approvalFlowGasLimit, initialLoading: approvalLoading } =
@@ -90,9 +90,8 @@ export const useRequestTxPrice = ({
         }
       },
       {
+        ...STRATEGY_LAZY,
         isPaused: () => !chainId || !isApprovalFlow,
-        revalidateIfStale: false,
-        revalidateOnFocus: false,
       },
     );
 
@@ -157,6 +156,7 @@ export const useClaimTxPrice = (): number | undefined => {
 
       return gasLimit;
     },
+    STRATEGY_LAZY,
   );
 
   const price = useTxCostInUsd(

@@ -8,6 +8,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { standardFetcher } from 'utils/standardFetcher';
 import { useRequestForm } from '../contexts/request-form-context';
 import { useWithdrawals } from '../contexts/withdrawals-context';
+import { STRATEGY_LAZY } from 'utils/swrStrategies';
 
 type getWithdrawalRatesParams = {
   amount: BigNumber;
@@ -237,8 +238,8 @@ export const useWithdrawalRates = ({
         token: selectedToken as TOKENS.STETH | TOKENS.WSTETH,
       }),
     {
+      ...STRATEGY_LAZY,
       isPaused: () => !debouncedAmount || !debouncedAmount._isBigNumber,
-      revalidateOnFocus: false,
     },
   );
 
