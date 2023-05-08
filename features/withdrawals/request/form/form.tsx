@@ -67,7 +67,7 @@ export const Form = () => {
   const { txPriceUsd: requestTxPriceInUsd, loading: requestTxPriceLoading } =
     useRequestTxPrice({
       token,
-      isApprovalFlow: isApprovalFlow,
+      isApprovalFlow,
       requestCount,
     });
 
@@ -103,6 +103,10 @@ export const Form = () => {
       reset();
     },
     [setToken, reset],
+  );
+
+  const unlockCostTooltip = isApprovalFlow ? undefined : (
+    <>Lido leverages gasless token approvals via ERC-2612 permits</>
   );
 
   const showError = active && !!error && !tvlMessage;
@@ -168,17 +172,11 @@ export const Form = () => {
           />
 
           <DataTableRow
-            help={
-              isApprovalFlow ? undefined : (
-                <>Lido leverages gasless token approvals via ERC-2612 permits</>
-              )
-            }
+            help={unlockCostTooltip}
             title="Max unlock cost"
             loading={isApprovalFlowLoading}
           >
-            {isApprovalFlow && isTokenLocked
-              ? `$${approveTxCostInUsd?.toFixed(2)}`
-              : 'FREE'}
+            {isApprovalFlow ? `$${approveTxCostInUsd?.toFixed(2)}` : 'FREE'}
           </DataTableRow>
           <DataTableRow
             title="Max transaction cost"
