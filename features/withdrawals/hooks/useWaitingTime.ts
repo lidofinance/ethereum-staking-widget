@@ -5,6 +5,7 @@ import { useDebouncedValue } from 'shared/hooks';
 import { encodeURLQuery } from 'utils/encodeURLQuery';
 import { standardFetcher } from 'utils/standardFetcher';
 import { useWithdrawals } from 'features/withdrawals/contexts/withdrawals-context';
+import { FetcherError } from 'utils/fetcherError';
 
 const DEFAULT_DAYS_VALUE = 5;
 
@@ -41,6 +42,7 @@ export const useWaitingTime = (
     standardFetcher,
   ) as SWRResponse<RequestTimeResponse>;
   const { isBunker, isPaused } = useWithdrawals();
+  const isRequestError = error instanceof FetcherError && error.status < 500;
 
   const stethLastUpdate =
     data?.stethLastUpdate && new Date(data?.stethLastUpdate * 1000);
@@ -50,7 +52,8 @@ export const useWaitingTime = (
     days && days > 1
       ? `${isApproximate ? '~ ' : ''}1-${days} day(s)`
       : `${isApproximate ? '~ ' : ''}${days} day`;
-  const value = isPaused ? '—' : isBunker ? 'Not estimated' : waitingTime;
+  const value =
+    isPaused || isRequestError ? '—' : isBunker ? 'Not estimated' : waitingTime;
 
   return {
     ...data,
