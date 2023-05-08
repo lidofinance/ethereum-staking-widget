@@ -1,17 +1,15 @@
 import invariant from 'tiny-invariant';
 import { useCallback } from 'react';
-import { ContractTransaction, ContractReceipt } from '@ethersproject/contracts';
+import { ContractTransaction } from '@ethersproject/contracts';
 import { BigNumber } from '@ethersproject/bignumber';
 import { getERC20Contract } from '@lido-sdk/contracts';
 import { Zero } from '@ethersproject/constants';
 import { useAllowance, useMountedState, useSDK } from '@lido-sdk/react';
+import { isContract } from 'utils/isContract';
 
-type TransactionCallback = () => Promise<ContractTransaction>;
+type TransactionCallback = () => Promise<ContractTransaction | string>;
 
-const defaultWrapper = async (callback: TransactionCallback) => {
-  const transaction = await callback();
-  return await transaction.wait();
-};
+export type UseApproveWrapper = (callback: TransactionCallback) => void;
 
 export type UseApproveResponse = {
   approve: () => Promise<void>;
@@ -23,9 +21,11 @@ export type UseApproveResponse = {
   error: unknown;
 };
 
-export type UseApproveWrapper = (
+const defaultWrapper: UseApproveWrapper = async (
   callback: TransactionCallback,
-) => Promise<ContractReceipt | undefined>;
+) => {
+  return await callback();
+};
 
 export const useApprove = (
   amount: BigNumber,
@@ -34,7 +34,7 @@ export const useApprove = (
   owner?: string,
   wrapper: UseApproveWrapper = defaultWrapper,
 ): UseApproveResponse => {
-  const { providerWeb3, account, onError } = useSDK();
+  const { providerWeb3, account } = useSDK();
   const mergedOwner = owner ?? account;
 
   invariant(token != null, 'Token is required');
@@ -52,29 +52,37 @@ export const useApprove = (
     !initialLoading && !amount.isZero() && amount.gt(allowance);
 
   const approve = useCallback(async () => {
-    invariant(providerWeb3 != null, 'Web3 provider is required');
-    const contractWeb3 = getERC20Contract(token, providerWeb3.getSigner());
-
-    setApproving(true);
-
     try {
-      const feeData = await providerWeb3
-        .getFeeData()
-        .catch((error) => console.warn(error));
-
-      const maxPriorityFeePerGas = feeData?.maxPriorityFeePerGas ?? undefined;
-      const maxFeePerGas = feeData?.maxFeePerGas ?? undefined;
-
-      await wrapper(() =>
-        contractWeb3.approve(spender, amount, {
-          maxFeePerGas,
-          maxPriorityFeePerGas,
-        }),
-      );
-
+      setApproving(true);
+      invariant(providerWeb3 != null, 'Web3 provider is required');
+      invariant(account, 'account is required');
+      const contractWeb3 = getERC20Contract(token, providerWeb3.getSigner());
+      const isMultisig = await isContract(account, providerWeb3);
+      await wrapper(async () => {
+        if (isMultisig) {
+          const tx = await contractWeb3.populateTransaction.approve(
+            spender,
+            amount,
+          );
+          const hash = await providerWeb3
+            .getSigner()
+            .sendUncheckedTransaction(tx);
+          return hash;
+        } else {
+          const feeData = await providerWeb3
+            .getFeeData()
+            .catch((error) => console.warn(error));
+          const maxPriorityFeePerGas =
+            feeData?.maxPriorityFeePerGas ?? undefined;
+          const maxFeePerGas = feeData?.maxFeePerGas ?? undefined;
+          const tx = await contractWeb3.approve(spender, amount, {
+            maxFeePerGas,
+            maxPriorityFeePerGas,
+          });
+          return tx;
+        }
+      });
       await updateAllowance();
-    } catch (error) {
-      onError(error);
     } finally {
       setApproving(false);
     }
@@ -82,11 +90,11 @@ export const useApprove = (
     providerWeb3,
     token,
     setApproving,
+    account,
     wrapper,
     updateAllowance,
     spender,
     amount,
-    onError,
   ]);
 
   return {

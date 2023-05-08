@@ -5,9 +5,8 @@ import { CHAINS, getTokenAddress, TOKENS } from '@lido-sdk/constants';
 import { StethPermitAbi__factory } from 'generated';
 
 const WithdrawalRequestNFTContracts: { [key in CHAINS]?: string } = {
-  [CHAINS.Mainnet]: '0x00',
+  [CHAINS.Mainnet]: '0x889edC2eDab5f40e902b864aD4d7AdE8E412F9B1',
   [CHAINS.Goerli]: '0xCF117961421cA9e546cD7f50bC73abCdB3039533',
-  [CHAINS.Zhejiang]: '0x4c1F6cA213abdbc19b27f2562d7b1A645A019bD9',
 };
 
 export const getWithdrawalRequestNFTAddress = (chainId: CHAINS): string => {

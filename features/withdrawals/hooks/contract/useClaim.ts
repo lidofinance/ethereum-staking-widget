@@ -17,7 +17,7 @@ export const useClaim = () => {
   const { account } = useWeb3();
   const { providerWeb3 } = useSDK();
   const { contractWeb3 } = useWithdrawalsContract();
-  const { withdrawalRequestsData } = useClaimData();
+  const { update } = useClaimData();
   const { dispatchModalState } = useTransactionModal();
 
   return useCallback(
@@ -66,7 +66,7 @@ export const useClaim = () => {
             transaction.wait(),
           );
         }
-        await withdrawalRequestsData.update();
+        await update();
         dispatchModalState({ type: 'success' });
       } catch (error) {
         console.error(error);
@@ -75,12 +75,6 @@ export const useClaim = () => {
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [
-      contractWeb3,
-      account,
-      providerWeb3,
-      dispatchModalState,
-      withdrawalRequestsData.update,
-    ],
+    [contractWeb3, account, providerWeb3, dispatchModalState, update],
   );
 };

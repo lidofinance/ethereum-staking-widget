@@ -13,13 +13,3 @@ export const InputGroupStyled = styled(InputGroup)<{ success?: string }>`
 export const ButtonLinkWrap = styled.a`
   display: block;
 `;
-
-export const LinkWrapperStyled = styled.span`
-  a {
-    text-decoration: none;
-
-    &:visited {
-      color: var(--lido-color-primary);
-    }
-  }
-`;

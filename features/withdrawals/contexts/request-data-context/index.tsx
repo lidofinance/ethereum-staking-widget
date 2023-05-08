@@ -10,20 +10,10 @@ import invariant from 'tiny-invariant';
 import { useUnfinalizedStETH } from 'features/withdrawals/hooks';
 import { useClaimData } from 'features/withdrawals/contexts/claim-data-context';
 
-import {
-  useRequestOptions,
-  RequestOption,
-  RequestTypes,
-} from './useRequestOptions';
-
 export type RequestDataContextValue = {
   stethBalance: SWRResponse<BigNumber>;
   wstethBalance: SWRResponse<BigNumber>;
   updateData: () => void;
-  isLidoRequest?: boolean;
-  currentRequestType?: RequestOption;
-  onChangeRequestOptions: (claimType: RequestTypes) => void;
-  requestOptions: RequestOption[];
   unfinalizedStETH: SWRResponse<BigNumber, Error>;
 };
 const RequestDataContext = createContext<RequestDataContextValue | null>(null);
@@ -36,47 +26,33 @@ export const useRequestData = () => {
 };
 
 export const RequestDataProvider: FC = ({ children }) => {
-  const { withdrawalRequestsData } = useClaimData();
+  const { update: withdrawalRequestsDataUpdate } = useClaimData();
   const stethBalance = useSTETHBalance();
   const wstethBalance = useWSTETHBalance();
   const unfinalizedStETH = useUnfinalizedStETH();
-
-  const {
-    requestOptions,
-    onChangeRequestOptions,
-    isLidoRequest,
-    currentRequestType,
-  } = useRequestOptions();
 
   const updateData = useCallback(() => {
     // TODO
     stethBalance.update();
     wstethBalance.update();
-    withdrawalRequestsData.update();
+    withdrawalRequestsDataUpdate();
     unfinalizedStETH.update();
-  }, [stethBalance, unfinalizedStETH, withdrawalRequestsData, wstethBalance]);
+  }, [
+    stethBalance,
+    unfinalizedStETH,
+    withdrawalRequestsDataUpdate,
+    wstethBalance,
+  ]);
 
   const value = useMemo(
     () => ({
       stethBalance,
       wstethBalance,
       updateData,
-      requestOptions,
-      onChangeRequestOptions,
-      isLidoRequest,
-      currentRequestType,
+
       unfinalizedStETH,
     }),
-    [
-      currentRequestType,
-      isLidoRequest,
-      onChangeRequestOptions,
-      requestOptions,
-      stethBalance,
-      updateData,
-      wstethBalance,
-      unfinalizedStETH,
-    ],
+    [stethBalance, updateData, wstethBalance, unfinalizedStETH],
   );
 
   return (

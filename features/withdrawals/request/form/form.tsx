@@ -64,19 +64,18 @@ export const Form = () => {
   const { requests, requestCount } = useSplitRequest(inputValue);
   const approveTxCostInUsd = useTxCostInUsd(useApproveGasLimit());
 
-  const requestPriceInUsd = useRequestTxPrice({
-    token,
-    isApprovalFlow: isApprovalFlow,
-    // request.length is bounded by max value
-    // while useSplitRequest.requestCount is not
-    requestCount: requests.length,
-  });
+  const { txPriceUsd: requestTxPriceInUsd, loading: requestTxPriceLoading } =
+    useRequestTxPrice({
+      token,
+      isApprovalFlow: isApprovalFlow,
+      requestCount,
+    });
 
   const submit = useCallback(
     async (_: string, resetForm: () => void) => {
-      request(requests, resetForm);
+      if (withdrawalMethod == 'lido') request(requests, resetForm);
     },
-    [request, requests],
+    [request, requests, withdrawalMethod],
   );
 
   const {
@@ -109,7 +108,7 @@ export const Form = () => {
   const showError = active && !!error && !tvlMessage;
 
   return (
-    <form method="post" onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit}>
       <InputGroupStyled
         fullwidth
         error={showError && error}
@@ -167,6 +166,7 @@ export const Form = () => {
             pending={isTxPending || isSubmitting}
             disabled={!!error}
           />
+
           <DataTableRow
             help={
               isApprovalFlow ? undefined : (
@@ -182,9 +182,9 @@ export const Form = () => {
           </DataTableRow>
           <DataTableRow
             title="Max transaction cost"
-            loading={!requestPriceInUsd}
+            loading={requestTxPriceLoading}
           >
-            ${requestPriceInUsd?.toFixed(2)}
+            ${requestTxPriceInUsd?.toFixed(2)}
           </DataTableRow>
           <DataTableRow title="Allowance" loading={isApprovalFlowLoading}>
             <FormatToken amount={allowance} symbol={tokenLabel} />
