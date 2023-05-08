@@ -12,7 +12,6 @@ import { ConvertWSTETHtoETH } from './list/convert-wsteth-to-eth';
 import { WhySTETH } from './list/why-steth';
 import { HowLongToWithdraw } from './list/how-long-to-withdraw';
 import { WithdrawalPeriodCircumstances } from './list/withdrawal-period-circumstances';
-import { ClaimableAmountDifference } from './list/claimable-amount-difference';
 import { WithdrawalFee } from './list/withdrawaal-fee';
 import { TurboMode } from './list/turbo-mode';
 import { BunkerMode } from './list/bunker-mode';
@@ -22,6 +21,8 @@ import { RewardsAfterWithdraw } from './list/rewards-after-withdraw';
 import { BunkerWhileRequestOngoing } from './list/bunker-while-request-ongoing';
 import { UnstakeAmountBoundaries } from './list/unstake-amount-boundaries';
 import { LidoNFT } from './list/lido-nft';
+import { HowToAddNFT } from './list/add-nft';
+import { NFTNotChange } from './list/nft-not-change';
 
 // TODO: Replace this link when it will be finalized
 // const LEARN_MORE_LINK =
@@ -40,16 +41,17 @@ export const RequestFaq: React.FC = () => {
       <WhySTETH />
       <HowLongToWithdraw />
       <WithdrawalPeriodCircumstances />
-      <ClaimableAmountDifference />
+      <RewardsAfterWithdraw />
       <WithdrawalFee />
       <TurboMode />
       <BunkerMode />
       <BunkerModeReasons />
       <WhatIsSlashing />
-      <RewardsAfterWithdraw />
       <BunkerWhileRequestOngoing />
       <UnstakeAmountBoundaries />
       <LidoNFT />
+      <HowToAddNFT />
+      <NFTNotChange />
 
       {/* <ButtonLinkWrap
         target="_blank"
