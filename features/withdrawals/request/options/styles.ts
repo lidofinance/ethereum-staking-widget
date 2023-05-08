@@ -110,6 +110,10 @@ export const OptionsPickerButton = styled.button<{ $active?: boolean }>`
   font-family: inherit;
   color: var(--lido-color-text);
 
+  &:focus {
+    border-color: var(--lido-color-borderActive);
+  }
+
   & > :first-child {
     margin-bottom: 12px;
   }
