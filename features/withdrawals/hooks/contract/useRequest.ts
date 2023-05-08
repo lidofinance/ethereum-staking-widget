@@ -351,7 +351,7 @@ export const useWithdrawalRequest = ({
   const isApprovalFlowLoading =
     isMultisigLoading || (isApprovalFlow && loadingUseApprove);
 
-  const isTokenLocked = isApprovalFlow && (needsApprove || valueBN.isZero());
+  const isTokenLocked = isApprovalFlow && needsApprove;
 
   const request = useCallback(
     (requests: BigNumber[], resetForm: () => void) => {
