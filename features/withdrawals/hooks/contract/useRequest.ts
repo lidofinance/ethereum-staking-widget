@@ -384,9 +384,9 @@ export const useWithdrawalRequest = ({
           if (isApprovalFlow) {
             if (needsApprove) {
               await approve();
-            }
-            // multisig exits here
-            if (!isMultisig) {
+              // multisig does not move to next tx
+              if (!isMultisig) await method({ requests });
+            } else {
               await method({ requests });
             }
           } else {

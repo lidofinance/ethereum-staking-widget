@@ -26,6 +26,7 @@ export const contentSecurityPolicy = {
       'https://app.paraswap.io/',
       'https://swap.cow.fi/',
       'https://wq-api.testnet.fi',
+      'https://wq-api.lido.fi',
       ...trustedHosts,
     ],
     prefetchSrc: ["'self'", ...trustedHosts],

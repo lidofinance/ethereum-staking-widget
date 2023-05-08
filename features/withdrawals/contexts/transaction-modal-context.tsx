@@ -105,6 +105,7 @@ const TransactionModalReducer = (
       invariant(state.startTx, 'state must already have start tx callback');
       return {
         ...state,
+        isModalOpen: true,
         txStage: TX_STAGE.BUNKER,
       };
     case 'start':
@@ -135,6 +136,7 @@ const TransactionModalReducer = (
     case 'success':
       return {
         ...state,
+        isModalOpen: true,
         txStage: TX_STAGE.SUCCESS,
       };
     case 'error':
