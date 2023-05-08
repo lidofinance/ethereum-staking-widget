@@ -28,10 +28,7 @@ export const useWaitingTime = (
   const { isApproximate } = options;
   const debouncedAmount = useDebouncedValue(amount, 1000);
   const url = useMemo(() => {
-    // TODO: remove fallback after deploy env variables
-    const basePath = dynamics.wqAPIBasePath
-      ? dynamics.wqAPIBasePath
-      : 'https://wq-api.testnet.fi';
+    const basePath = dynamics.wqAPIBasePath;
     const params = encodeURLQuery({ amount: debouncedAmount });
 
     return `${basePath}/v1/request-time${params ? `?${params}` : ''}`;
