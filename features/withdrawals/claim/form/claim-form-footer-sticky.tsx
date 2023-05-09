@@ -74,18 +74,21 @@ export const ClaimFormFooterSticky: React.FC<ClaimFormFooterStickyProps> = ({
     // Sizes
     const { y: screenH, x: screenW } = getScreenSize();
     const rectRequests = elRequests.getBoundingClientRect();
+    const rectFooter = elFooter.getBoundingClientRect();
     const footerHeight = elFooter.clientHeight;
     const menuOffset = screenW < NAV_MOBILE_MAX_WIDTH ? NAV_MOBILE_HEIGHT : 0;
 
     // Calcs
-    const stickyCheckpoint = screenH - STICK_CHECKPOINT_OFFSET - menuOffset;
+    const checkpointStart = screenH - STICK_CHECKPOINT_OFFSET - menuOffset;
     const distanceFromElStart = -Math.min(
       0,
-      rectRequests.top - stickyCheckpoint,
+      rectRequests.top - checkpointStart,
     );
 
+    const checkpointEnd = rectFooter.bottom - screenH - menuOffset;
+
     // Apply
-    if (distanceFromElStart > 0) {
+    if (distanceFromElStart > 0 && Math.round(checkpointEnd) >= 0) {
       if (!scrollState.isSticked) {
         setStateAndUpdate('isSticked', true);
       }
