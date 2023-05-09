@@ -13,6 +13,7 @@ import { WhySTETH } from './list/why-steth';
 import { HowLongToWithdraw } from './list/how-long-to-withdraw';
 import { WithdrawalPeriodCircumstances } from './list/withdrawal-period-circumstances';
 import { WithdrawalFee } from './list/withdrawaal-fee';
+import { ClaimableAmountDifference } from './list/claimable-amount-difference';
 import { TurboMode } from './list/turbo-mode';
 import { BunkerMode } from './list/bunker-mode';
 import { BunkerModeReasons } from './list/bunker-mode-reasons';
@@ -43,6 +44,7 @@ export const RequestFaq: React.FC = () => {
       <WithdrawalPeriodCircumstances />
       <RewardsAfterWithdraw />
       <WithdrawalFee />
+      <ClaimableAmountDifference title="Why is the claimable amount may differ from my requested amount?" />
       <TurboMode />
       <BunkerMode />
       <BunkerModeReasons />

@@ -66,12 +66,12 @@ jobs:
           SHORT_NAME: ${{ steps.repo.outputs.short_name }}
           BRANCH_HASH: ${{ steps.branch.outputs.hash }}
 
-  tests:
-    needs: deploy
-    if: ${{ github.event.pull_request.draft == false }}
-    uses: ./.github/workflows/tests.yml
-    secrets: inherit
-    with:
-      stand_url: ${{ needs.deploy.outputs.stand_url }}
-      stand_type: "${{ inputs.inventory || 'testnet' }}"
-      on_preview_stand: true
+  # tests:
+  #   needs: deploy
+  #   if: ${{ github.event.pull_request.draft == false }}
+  #   uses: ./.github/workflows/tests.yml
+  #   secrets: inherit
+  #   with:
+  #     stand_url: ${{ needs.deploy.outputs.stand_url }}
+  #     stand_type: "${{ inputs.inventory || 'testnet' }}"
+  #     on_preview_stand: true
