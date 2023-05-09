@@ -6,6 +6,10 @@ import { useWithdrawalRates } from 'features/withdrawals/hooks/useWithdrawalRate
 import { FormatToken } from 'shared/formatters/format-token';
 
 import {
+  trackMatomoEvent,
+  MATOMO_CLICK_EVENTS_TYPES,
+} from 'config/trackMatomoEvent';
+import {
   DexOptionBlockLink,
   DexOptionBlockTitle,
   DexOptionStyled,
@@ -23,12 +27,16 @@ const dexInfo: {
   [key: string]: {
     title: string;
     icon: JSX.Element;
+    onClickGoTo: React.MouseEventHandler<HTMLAnchorElement>;
     link: (amount: BigNumber, token: TOKENS.STETH | TOKENS.WSTETH) => string;
   };
 } = {
   '1inch': {
     title: '1inch',
     icon: <OneInchIcon />,
+    onClickGoTo: () => {
+      trackMatomoEvent(MATOMO_CLICK_EVENTS_TYPES.withdrawalGoTo1inch);
+    },
     link: (amount, token) =>
       `https://app.1inch.io/#/1/simple/swap/${
         token == TOKENS.STETH ? 'stETH' : 'wstETH'
@@ -37,15 +45,21 @@ const dexInfo: {
   paraswap: {
     title: 'ParaSwap',
     icon: <ParaSwapIcon />,
+    onClickGoTo: () => {
+      trackMatomoEvent(MATOMO_CLICK_EVENTS_TYPES.withdrawalGoToParaswap);
+    },
     link: (amount, token) =>
       `https://app.paraswap.io/#/${getTokenAddress(
         CHAINS.Mainnet,
         token,
-      )}-ETH?network=ethereum`,
+      )}-ETH/${amount}?network=ethereum`,
   },
   cowswap: {
     title: 'CowSwap',
     icon: <CowSwapIcon />,
+    onClickGoTo: () => {
+      trackMatomoEvent(MATOMO_CLICK_EVENTS_TYPES.withdrawalGoToCowSwap);
+    },
     link: (amount, token) =>
       `https://swap.cow.fi/#/networkId/swap/${getTokenAddress(
         CHAINS.Mainnet,
@@ -60,6 +74,7 @@ type DexOptionProps = {
   url: string;
   loading?: boolean;
   toReceive: BigNumber | null;
+  onClickGoTo: React.MouseEventHandler<HTMLAnchorElement>;
 };
 
 const DexOption: React.FC<DexOptionProps> = ({
@@ -68,12 +83,18 @@ const DexOption: React.FC<DexOptionProps> = ({
   url,
   toReceive,
   loading,
+  onClickGoTo,
 }) => {
   return (
     <DexOptionStyled>
       {icon}
       <DexOptionBlockTitle>{title}</DexOptionBlockTitle>
-      <DexOptionBlockLink href={url} target="_blank" rel="noopener noreferrer">
+      <DexOptionBlockLink
+        href={url}
+        target="_blank"
+        rel="noopener noreferrer"
+        onClick={onClickGoTo}
+      >
         Go to {title}
       </DexOptionBlockLink>
       <DexOptionAmount>
@@ -86,7 +107,7 @@ const DexOption: React.FC<DexOptionProps> = ({
             symbol="ETH"
           />
         ) : (
-          'N/A'
+          '-'
         )}
       </DexOptionAmount>
     </DexOptionStyled>
@@ -105,17 +126,18 @@ export const DexOptions: React.FC = () => {
     <DexOptionsContainer>
       {initialLoading
         ? placeholder.map((_, i) => <DexOptionLoader key={i} />)
-        : data?.map(({ name, toReceive }) => {
+        : data?.map(({ name, toReceive, rate }) => {
             const dex = dexInfo[name];
             if (!dex) return null;
             return (
               <DexOption
                 title={dex.title}
                 icon={dex.icon}
+                onClickGoTo={dex.onClickGoTo}
                 url={dex.link(amount, selectedToken)}
                 key={name}
                 loading={loading}
-                toReceive={toReceive}
+                toReceive={!rate ? null : toReceive}
               />
             );
           })}

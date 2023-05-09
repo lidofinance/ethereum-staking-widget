@@ -17,9 +17,9 @@ export const BunkerModeReasons: React.FC = () => {
           reports.
         </li>
         <li>
-          Lower than expected Lido validators performance in the current period
-          between two Oracle reports and penalties exceeding rewards at the end
-          of&nbsp;it.
+          Lower than expected Lido validators&apos; performance in the current
+          period between two Oracle reports and penalties exceeding rewards at
+          the end of&nbsp;it.
         </li>
       </ol>
     </Accordion>
