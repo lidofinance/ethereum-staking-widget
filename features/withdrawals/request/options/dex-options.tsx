@@ -41,13 +41,13 @@ const dexInfo: {
       `https://app.paraswap.io/#/${getTokenAddress(
         CHAINS.Mainnet,
         token,
-      )}-ETH/${amount}?network=ethereum`,
+      )}-ETH/${formatEther(amount)}?network=ethereum`,
   },
   cowswap: {
     title: 'CowSwap',
     icon: <CowSwapIcon />,
     link: (amount, token) =>
-      `https://swap.cow.fi/#/networkId/swap/${getTokenAddress(
+      `https://swap.cow.fi/#/1/swap/${getTokenAddress(
         CHAINS.Mainnet,
         token,
       )}/ETH?&sellAmount=${formatEther(amount)}`,
