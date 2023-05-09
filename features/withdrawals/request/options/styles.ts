@@ -103,7 +103,7 @@ export const OptionsPickerButton = styled.button<{ $active?: boolean }>`
   border: 1px solid var(--lido-color-border);
   position: relative;
   cursor: pointer;
-  outline: ${({ $active }) => ($active ? '1px solid #00A3FF' : 'none')};
+
   border-color: ${({ $active }) =>
     $active ? '#00A3FF' : 'var(--lido-color-border)'};
   padding: 16px 20px;
@@ -112,16 +112,20 @@ export const OptionsPickerButton = styled.button<{ $active?: boolean }>`
   color: var(--lido-color-text);
 
   /* safari workaround */
-  &:focus::before {
-    content: '';
-    pointer-events: none;
-    position: absolute;
-    top: -3px;
-    right: -3px;
-    bottom: -3px;
-    left: -3px;
-    border: 2px solid var(--lido-color-borderActive);
-    border-radius: ${({ theme }) => theme.borderRadiusesMap.lg + 2}px;
+  &:focus {
+    outline: none;
+    ::before {
+      content: '';
+      pointer-events: none;
+      position: absolute;
+      top: -2px;
+      right: -2px;
+      bottom: -2px;
+      left: -2px;
+
+      border: 1px solid var(--lido-color-borderActive);
+      border-radius: ${({ theme }) => theme.borderRadiusesMap.lg + 1}px;
+    }
   }
 
   & > :first-child {
