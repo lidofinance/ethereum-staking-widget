@@ -15,6 +15,7 @@ import {
   RequestStatusPending,
 } from 'features/withdrawals/types/request-status';
 import { MAX_SHOWN_REQUEST_PER_TYPE } from 'features/withdrawals/withdrawals-constants';
+import { STRATEGY_LAZY } from 'utils/swrStrategies';
 // import { calcExpectedRequestEth } from 'features/withdrawals/utils/calc-expected-request-eth';
 
 export const useWithdrawalRequests = () => {
@@ -129,7 +130,7 @@ export const useWithdrawalRequests = () => {
         isClamped,
       };
     },
-    {},
+    STRATEGY_LAZY,
   );
 };
 

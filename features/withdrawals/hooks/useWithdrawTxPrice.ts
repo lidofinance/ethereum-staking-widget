@@ -22,6 +22,7 @@ import { useDebouncedValue } from 'shared/hooks/useDebouncedValue';
 import { encodeURLQuery } from 'utils/encodeURLQuery';
 import { BigNumber } from 'ethers';
 import invariant from 'tiny-invariant';
+import { STRATEGY_LAZY } from 'utils/swrStrategies';
 
 type UseRequestTxPriceOptions = {
   requestCount?: number;
@@ -60,9 +61,8 @@ export const useRequestTxPrice = ({
 
   const { data: permitEstimateData, initialLoading: permitLoading } =
     useLidoSWR<{ gasLimit: number }>(url, standardFetcher, {
+      ...STRATEGY_LAZY,
       isPaused: () => !chainId || isApprovalFlow,
-      revalidateIfStale: false,
-      revalidateOnFocus: false,
     });
 
   const { data: approvalFlowGasLimit, initialLoading: approvalLoading } =
@@ -88,9 +88,8 @@ export const useRequestTxPrice = ({
         }
       },
       {
+        ...STRATEGY_LAZY,
         isPaused: () => !chainId || !isApprovalFlow,
-        revalidateIfStale: false,
-        revalidateOnFocus: false,
       },
     );
 
@@ -111,7 +110,7 @@ export const useRequestTxPrice = ({
   };
 };
 
-export const useClaimTxPrice = (): number | undefined => {
+export const useClaimTxPrice = () => {
   const { contractRpc } = useWithdrawalsContract();
   const { claimSelection } = useClaimData();
   const { account, chainId } = useWeb3();
@@ -121,46 +120,57 @@ export const useClaimTxPrice = (): number | undefined => {
     claimSelection.sortedSelectedRequests,
     2000,
   );
-  const { data: gasLimit, loading } = useLidoSWR(
-    [
-      'swr:claim-request-gas-limit',
-      debouncedSortedSelectedRequests,
-      account,
-      chainId,
-    ],
-    async () => {
-      if (
-        !chainId ||
-        !account ||
-        !contractRpc ||
-        debouncedSortedSelectedRequests.length === 0
-      )
-        return undefined;
-      const sortedRequests = debouncedSortedSelectedRequests;
-
-      const gasLimit = await contractRpc?.estimateGas
-        .claimWithdrawals(
-          sortedRequests.map((r) => r.id),
-          sortedRequests.map((r) => r.hint),
-          { from: account },
+  const { data: gasLimitResult, initialLoading: isEstimateLoading } =
+    useLidoSWR(
+      [
+        'swr:claim-request-gas-limit',
+        debouncedSortedSelectedRequests,
+        account,
+        chainId,
+      ],
+      async () => {
+        if (
+          !chainId ||
+          !account ||
+          !contractRpc ||
+          debouncedSortedSelectedRequests.length === 0
         )
-        .catch((error) => {
-          console.warn('Could not estimate gas for claim', {
-            ids: sortedRequests.map((r) => r.id),
-            account,
-            error,
-          });
           return undefined;
-        });
+        const sortedRequests = debouncedSortedSelectedRequests;
 
-      return gasLimit;
-    },
-  );
+        const gasLimit = await contractRpc?.estimateGas
+          .claimWithdrawals(
+            sortedRequests.map((r) => r.id),
+            sortedRequests.map((r) => r.hint),
+            { from: account },
+          )
+          .catch((error) => {
+            console.warn('Could not estimate gas for claim', {
+              ids: sortedRequests.map((r) => r.id),
+              account,
+              error,
+            });
+            return undefined;
+          });
 
-  const price = useTxCostInUsd(
-    gasLimit?.toNumber() ??
-      WITHDRAWAL_QUEUE_CLAIM_GAS_LIMIT_DEFAULT * requestCount,
-  );
-  if (loading) return undefined;
-  return price;
+        return gasLimit;
+      },
+      STRATEGY_LAZY,
+    );
+
+  const gasLimit = isEstimateLoading
+    ? undefined
+    : gasLimitResult?.toNumber() ??
+      WITHDRAWAL_QUEUE_CLAIM_GAS_LIMIT_DEFAULT * requestCount;
+
+  const price = useTxCostInUsd(gasLimit);
+
+  return {
+    loading:
+      isEstimateLoading ||
+      !price ||
+      debouncedSortedSelectedRequests !== claimSelection.sortedSelectedRequests,
+    claimGasLimit: gasLimit,
+    claimTxPriceInUsd: price,
+  };
 };
