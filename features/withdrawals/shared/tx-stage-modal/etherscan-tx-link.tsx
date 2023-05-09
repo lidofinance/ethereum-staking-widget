@@ -7,16 +7,18 @@ import { getEtherscanTxLink } from '@lido-sdk/helpers';
 type EtherscanTxLink = {
   text?: string;
   txHash?: string;
+  onClick?: React.MouseEventHandler<HTMLAnchorElement>;
 };
 
 export const EtherscanTxLink: FC<EtherscanTxLink> = (props) => {
-  const { txHash, text = 'View on Etherscan' } = props;
+  const { txHash, text = 'View on Etherscan', onClick } = props;
   const { chainId } = useSDK();
 
   if (!txHash) return null;
 
   return (
     <Link
+      onClick={onClick}
       href={
         // TODO
         chainId === CHAINS.Zhejiang

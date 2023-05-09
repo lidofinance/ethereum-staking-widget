@@ -34,6 +34,25 @@ export const enum MATOMO_CLICK_EVENTS_TYPES {
   l2BannerUnwrap = 'l2BannerUnwrap',
   // /rewards page
   calculateRewards = 'calculateRewards',
+
+  // /withdrawal page
+  withdrawalUseLido = 'withdrawalUseLido',
+  withdrawalUseAggregators = 'withdrawalUseAggregators',
+  withdrawalMaxInput = 'withdrawalMaxInput',
+  withdrawalOtherReasonsTooltipMode = 'withdrawalOtherReasonsTooltipMode',
+  withdrawalFAQtooltipEthAmount = 'withdrawalFAQtooltipEthAmount',
+  withdrawalGoTo1inch = 'withdrawalGoTo1inch',
+  withdrawalGoToCowSwap = 'withdrawalGoToCowSwap',
+  withdrawalGoToParaswap = 'withdrawalGoToParaswap',
+  withdrawalEtherscanSuccessTemplate = 'withdrawalEtherscanSuccessTemplate',
+  withdrawalGuideSuccessTemplate = 'withdrawalGuideSuccessTemplate',
+
+  // /withdrawal?tab=claim page
+  claimViewOnEtherscanSuccessTemplate = 'claimViewOnEtherscanSuccessTemplate',
+
+  // /withdrawal and /withdrawal?tab=claim shared events
+  withdrawalWhatAreStakingPenaltiesFAQ = 'withdrawalWhatAreStakingPenaltiesFAQ',
+  withdrawalNFTGuideFAQ = 'withdrawalNFTGuideFAQ',
 }
 
 export const MATOMO_CLICK_EVENTS: Record<
@@ -180,5 +199,76 @@ export const MATOMO_CLICK_EVENTS: Record<
     'Ethereum_Staking_Widget',
     'Push calculate reward button" ',
     'eth_widget_calculate_reward',
+  ],
+
+  // /withdrawal page
+  [MATOMO_CLICK_EVENTS_TYPES.withdrawalUseLido]: [
+    'Ethereum_Withdrawals_Widget',
+    'Click on «Use Lido» on Request tab',
+    'eth_withdrawals_request_use_lido',
+  ],
+  [MATOMO_CLICK_EVENTS_TYPES.withdrawalUseAggregators]: [
+    'Ethereum_Withdrawals_Widget',
+    'Click on «Use aggregators» on Request tab',
+    'eth_withdrawals_request_use_aggregators',
+  ],
+  [MATOMO_CLICK_EVENTS_TYPES.withdrawalMaxInput]: [
+    'Ethereum_Withdrawals_Widget',
+    'Click on "Max" in input on Request tab',
+    'eth_withdrawals_request_max_input',
+  ],
+  [MATOMO_CLICK_EVENTS_TYPES.withdrawalOtherReasonsTooltipMode]: [
+    'Ethereum_Withdrawals_Widget',
+    'Push «other reasons» in tooltip near Withdrawals mode on Request tab',
+    'eth_withdrawals_request_other_reasons_tooltip_mode',
+  ],
+  [MATOMO_CLICK_EVENTS_TYPES.withdrawalFAQtooltipEthAmount]: [
+    'Ethereum_Withdrawals_Widget',
+    'Push «FAQ» in tooltip near ETH amount on Request tab',
+    'eth_withdrawals_request_FAQ_tooltip_eth_amount',
+  ],
+  [MATOMO_CLICK_EVENTS_TYPES.withdrawalGoTo1inch]: [
+    'Ethereum_Withdrawals_Widget',
+    'Click on «Go to 1inch» in aggregators list on Request tab',
+    'eth_withdrawals_request_go_to_1inch',
+  ],
+  [MATOMO_CLICK_EVENTS_TYPES.withdrawalGoToCowSwap]: [
+    'Ethereum_Withdrawals_Widget',
+    'Click on «Go to CowSwap» in aggregators list on Request tab',
+    'eth_withdrawals_request_go_to_CowSwap',
+  ],
+  [MATOMO_CLICK_EVENTS_TYPES.withdrawalGoToParaswap]: [
+    'Ethereum_Withdrawals_Widget',
+    'Click on «Go to Paraswap» in aggregators list on Request tab',
+    'eth_withdrawals_request_go_to_Paraswap',
+  ],
+  [MATOMO_CLICK_EVENTS_TYPES.withdrawalEtherscanSuccessTemplate]: [
+    'Ethereum_Withdrawals_Widget',
+    'Click on "Etherscan" on success template after withdrawal request',
+    'eth_withdrawals_request_etherscan_success_template',
+  ],
+  [MATOMO_CLICK_EVENTS_TYPES.withdrawalGuideSuccessTemplate]: [
+    'Ethereum_Withdrawals_Widget',
+    'Click on "This guide will help you to do this" on success template after withdrawal request',
+    'eth_withdrawals_request_guide_success_template',
+  ],
+
+  // /withdrawal?tab=claim page
+  [MATOMO_CLICK_EVENTS_TYPES.claimViewOnEtherscanSuccessTemplate]: [
+    'Ethereum_Withdrawals_Widget',
+    'Click on "View on Etherscan" on success template after claim',
+    'eth_withdrawals_claim_view_on_etherscan_success_template',
+  ],
+
+  // /withdrawal and /withdrawal?tab=claim shared events
+  [MATOMO_CLICK_EVENTS_TYPES.withdrawalWhatAreStakingPenaltiesFAQ]: [
+    'Ethereum_Withdrawals_Widget',
+    'Push on "What Are Staking/Validator Penalties" in FAQ',
+    'eth_withdrawals_what_are_staking_penalties_FAQ',
+  ],
+  [MATOMO_CLICK_EVENTS_TYPES.withdrawalNFTGuideFAQ]: [
+    'Ethereum_Withdrawals_Widget',
+    'Push on "How do I add the Lido NFT to my wallet" guide link in FAQ',
+    'eth_withdrawals_how_to_add_nft_guide_FAQ',
   ],
 };
