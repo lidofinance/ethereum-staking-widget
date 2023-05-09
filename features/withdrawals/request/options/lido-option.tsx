@@ -2,6 +2,10 @@ import { useEthAmountByStethWsteth } from 'features/withdrawals/hooks';
 import { useWithdrawals } from 'features/withdrawals/contexts/withdrawals-context';
 import { useRequestForm } from 'features/withdrawals/contexts/request-form-context';
 
+import {
+  trackMatomoEvent,
+  MATOMO_CLICK_EVENTS_TYPES,
+} from 'config/trackMatomoEvent';
 import { Tooltip, Question } from '@lidofinance/lido-ui';
 import Link from 'next/link';
 
@@ -20,7 +24,16 @@ const TooltipWithdrawalAmount = () => {
         <>
           The final amount of claimable ETH can differ
           <br /> For more info, please read{' '}
-          <Link href="#amountDifferentFromRequested">FAQ</Link>
+          <Link
+            href="#amountDifferentFromRequested"
+            onClick={() =>
+              trackMatomoEvent(
+                MATOMO_CLICK_EVENTS_TYPES.withdrawalFAQtooltipEthAmount,
+              )
+            }
+          >
+            FAQ
+          </Link>
         </>
       }
     >

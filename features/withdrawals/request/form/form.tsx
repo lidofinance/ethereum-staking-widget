@@ -26,6 +26,10 @@ import { useCurrencyInput } from 'shared/forms/hooks/useCurrencyInput';
 
 import { RequestsInfo } from '../requestsInfo';
 
+import {
+  trackMatomoEvent,
+  MATOMO_CLICK_EVENTS_TYPES,
+} from 'config/trackMatomoEvent';
 import { FormButton } from './form-button';
 import { InputGroupStyled } from './styles';
 
@@ -105,6 +109,11 @@ export const Form = () => {
     [setToken, reset],
   );
 
+  const handleClickMax = useCallback(() => {
+    trackMatomoEvent(MATOMO_CLICK_EVENTS_TYPES.withdrawalMaxInput);
+    setMaxInputValue();
+  }, [setMaxInputValue]);
+
   const showError = active && !!error && !tvlMessage;
 
   return (
@@ -136,7 +145,7 @@ export const Form = () => {
             ) : (
               <>
                 <InputDecoratorMaxButton
-                  onClick={setMaxInputValue}
+                  onClick={handleClickMax}
                   disabled={isMaxDisabled}
                 />
                 {isTokenLocked ? <InputDecoratorLocked /> : undefined}

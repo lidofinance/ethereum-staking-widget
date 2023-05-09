@@ -1,4 +1,5 @@
 import { Accordion, Link } from '@lidofinance/lido-ui';
+import { MATOMO_CLICK_EVENTS_TYPES } from 'config';
 import { LINK_ADD_NFT_GUIDE } from 'config/external-links';
 
 export const HowToAddNFT = () => {
@@ -13,7 +14,13 @@ export const HowToAddNFT = () => {
       </p>
       <p>
         If you are a MetaMask user, use{' '}
-        <Link href={LINK_ADD_NFT_GUIDE}>this guide</Link>.
+        <Link
+          href={LINK_ADD_NFT_GUIDE}
+          data-matomo={MATOMO_CLICK_EVENTS_TYPES.withdrawalNFTGuideFAQ}
+        >
+          this guide
+        </Link>
+        .
       </p>
     </Accordion>
   );
