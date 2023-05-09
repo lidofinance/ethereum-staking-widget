@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 import { Block, Button, ThemeName } from '@lidofinance/lido-ui';
 
 export const EditClaimButtonStyled = styled(Button)`
@@ -87,7 +87,11 @@ export const ClaimFooterBodyEnder = styled.div`
 export const ClaimFormFooterWrapper = styled.div<{ isSticked: boolean }>`
   position: ${({ isSticked }) => (isSticked ? 'sticky' : 'relative')};
   bottom: 0;
-  background-color: var(--lido-color-background);
+  ${({ isSticked }) =>
+    isSticked &&
+    css`
+      background-color: var(--lido-color-background);
+    `}
 `;
 
 export const ClaimFormFooter = styled(Block)`
