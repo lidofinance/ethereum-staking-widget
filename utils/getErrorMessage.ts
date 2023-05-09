@@ -57,6 +57,18 @@ const extractCodeFromError = (
       return 'ACTION_REJECTED';
   }
 
+  // Ledger live errors
+  if (
+    'data' in error &&
+    typeof error.data === 'object' &&
+    Array.isArray(error.data) &&
+    typeof error.data['0'] === 'object' &&
+    typeof error.data['0'].message === 'string'
+  ) {
+    if (error.data['0'].message.toLowerCase().includes('rejected'))
+      return 'ACTION_REJECTED';
+  }
+
   if ('name' in error && typeof error.name == 'string') {
     if (error.name.toLocaleLowerCase() === 'ethapppleaseenablecontractdata')
       return 'ENABLE_BLIND_SIGNING';
