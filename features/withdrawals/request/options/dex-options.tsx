@@ -52,7 +52,7 @@ const dexInfo: {
       `https://app.paraswap.io/#/${getTokenAddress(
         CHAINS.Mainnet,
         token,
-      )}-ETH?network=ethereum`,
+      )}-ETH/${amount}?network=ethereum`,
   },
   cowswap: {
     title: 'CowSwap',
@@ -107,7 +107,7 @@ const DexOption: React.FC<DexOptionProps> = ({
             symbol="ETH"
           />
         ) : (
-          'N/A'
+          '-'
         )}
       </DexOptionAmount>
     </DexOptionStyled>
@@ -126,7 +126,7 @@ export const DexOptions: React.FC = () => {
     <DexOptionsContainer>
       {initialLoading
         ? placeholder.map((_, i) => <DexOptionLoader key={i} />)
-        : data?.map(({ name, toReceive }) => {
+        : data?.map(({ name, toReceive, rate }) => {
             const dex = dexInfo[name];
             if (!dex) return null;
             return (
@@ -137,7 +137,7 @@ export const DexOptions: React.FC = () => {
                 url={dex.link(amount, selectedToken)}
                 key={name}
                 loading={loading}
-                toReceive={toReceive}
+                toReceive={!rate ? null : toReceive}
               />
             );
           })}

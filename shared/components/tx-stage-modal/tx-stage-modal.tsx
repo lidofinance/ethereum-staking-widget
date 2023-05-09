@@ -225,7 +225,6 @@ export const TxStageModal: FC<TxStageModalProps> = memo(
     }, [txOperation]);
 
     const oneInchLinkProps = use1inchLinkProps();
-
     const content = useMemo(() => {
       switch (txStage) {
         case TX_STAGE.IDLE:
@@ -269,7 +268,7 @@ export const TxStageModal: FC<TxStageModalProps> = memo(
             </>
           );
         case TX_STAGE.SUCCESS:
-          return txHash && balance ? (
+          return balance ? (
             <>
               {currentIconDict[TX_STAGE.SUCCESS]}
               {txOperation !== TX_OPERATION.APPROVING && (
@@ -355,7 +354,6 @@ export const TxStageModal: FC<TxStageModalProps> = memo(
       willReceiveAmount,
       willReceiveAmountToken,
       etherscanTxLinkBlock,
-      txHash,
       balance,
       balanceAsString,
       balanceToken,
