@@ -16,10 +16,18 @@ type TxStageSuccessProps = {
   description: React.ReactNode;
   title: string;
   showEtherscan?: boolean;
+  onClickEtherscan?: React.MouseEventHandler<HTMLAnchorElement>;
 };
 
 export const TxStageSuccess: FC<TxStageSuccessProps> = (props) => {
-  const { txHash, description, title, children, showEtherscan = true } = props;
+  const {
+    txHash,
+    description,
+    title,
+    children,
+    showEtherscan = true,
+    onClickEtherscan,
+  } = props;
   const { isLedger } = useConnectorInfo();
 
   const currentIconDict = iconsDict[isLedger ? 'ledger' : 'default'];
@@ -33,7 +41,7 @@ export const TxStageSuccess: FC<TxStageSuccessProps> = (props) => {
       </MiddleDescription>
       {showEtherscan && txHash && (
         <BottomDescription size="xxs" color="secondary">
-          <EtherscanTxLink txHash={txHash} />
+          <EtherscanTxLink txHash={txHash} onClick={onClickEtherscan} />
         </BottomDescription>
       )}
       {children}

@@ -10,6 +10,10 @@ import {
   TX_STAGE,
 } from 'features/withdrawals/shared/tx-stage-modal';
 import { useTransactionModal } from 'features/withdrawals/contexts/transaction-modal-context';
+import {
+  trackMatomoEvent,
+  MATOMO_CLICK_EVENTS_TYPES,
+} from 'config/trackMatomoEvent';
 
 export const TxClaimModal = () => {
   const {
@@ -54,6 +58,11 @@ export const TxClaimModal = () => {
             description={successDescription}
             title={successTitle}
             txHash={txHash}
+            onClickEtherscan={() =>
+              trackMatomoEvent(
+                MATOMO_CLICK_EVENTS_TYPES.claimViewOnEtherscanSuccessTemplate,
+              )
+            }
           />
         );
       case TX_STAGE.FAIL:

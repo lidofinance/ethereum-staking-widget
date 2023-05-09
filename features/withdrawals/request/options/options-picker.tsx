@@ -21,6 +21,10 @@ import {
   OptionsPickerRow,
   OptionsPickerSubLabel,
 } from './styles';
+import {
+  trackMatomoEvent,
+  MATOMO_CLICK_EVENTS_TYPES,
+} from 'config/trackMatomoEvent';
 
 type OptionButtonProps = {
   onClick: React.ComponentProps<'button'>['onClick'];
@@ -101,6 +105,7 @@ export const OptionsPicker: React.FC<OptionsPickerProps> = ({
         isActive={selectedOption === 'lido'}
         onClick={(e) => {
           e.preventDefault();
+          trackMatomoEvent(MATOMO_CLICK_EVENTS_TYPES.withdrawalUseLido);
           onOptionSelect?.('lido');
         }}
       />
@@ -108,6 +113,7 @@ export const OptionsPicker: React.FC<OptionsPickerProps> = ({
         isActive={selectedOption === 'dex'}
         onClick={(e) => {
           e.preventDefault();
+          trackMatomoEvent(MATOMO_CLICK_EVENTS_TYPES.withdrawalUseAggregators);
           onOptionSelect?.('dex');
         }}
       />

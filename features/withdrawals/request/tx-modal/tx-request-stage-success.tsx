@@ -9,6 +9,10 @@ import {
 } from 'features/withdrawals/shared/tx-stage-modal';
 
 import {
+  trackMatomoEvent,
+  MATOMO_CLICK_EVENTS_TYPES,
+} from 'config/trackMatomoEvent';
+import {
   Title,
   NFTBanner,
   NFTImageWrap,
@@ -45,7 +49,15 @@ export const TxRequestStageSuccess = ({
       <br />
       Check <Link href={claimPath}>Claim tab</Link> to view your withdrawal
       requests or view your transaction on{' '}
-      <EtherscanTxLink txHash={txHash ?? undefined} text="Etherscan" />
+      <EtherscanTxLink
+        txHash={txHash ?? undefined}
+        text="Etherscan"
+        onClick={() =>
+          trackMatomoEvent(
+            MATOMO_CLICK_EVENTS_TYPES.withdrawalEtherscanSuccessTemplate,
+          )
+        }
+      />
     </span>
   );
 
@@ -72,7 +84,14 @@ export const TxRequestStageSuccess = ({
         </Title>
         {showAddGuideLink && (
           <AddNftWrapper>
-            <Link href={LINK_ADD_NFT_GUIDE}>
+            <Link
+              href={LINK_ADD_NFT_GUIDE}
+              onClick={() =>
+                trackMatomoEvent(
+                  MATOMO_CLICK_EVENTS_TYPES.withdrawalGuideSuccessTemplate,
+                )
+              }
+            >
               This guide will help you to do this.
             </Link>
           </AddNftWrapper>
