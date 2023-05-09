@@ -27,7 +27,7 @@ export const ClaimFaq: React.FC = () => {
       <ConvertWSTETHtoETH />
       <WhySTETH />
       <SeparateClaim />
-      <ClaimableAmountDifference />
+      <ClaimableAmountDifference title="Why is the claimable amount different from my requested amount?" />
       <WhatIsSlashing />
       <LidoNFT />
       <HowToAddNFT />
