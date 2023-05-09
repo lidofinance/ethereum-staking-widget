@@ -34,11 +34,11 @@ export const ClaimForm = () => {
     // fix (re)start point
     const startTx = async () => {
       setIsSubmitting(true);
-      return claimMutation(claimSelection.sortedSelectedRequests).finally(
-        () => {
-          setIsSubmitting(false);
-        },
-      );
+      try {
+        claimMutation(claimSelection.sortedSelectedRequests);
+      } finally {
+        setIsSubmitting(false);
+      }
     };
     // send it to state
     dispatchModalState({ type: 'set_starTx_callback', callback: startTx });

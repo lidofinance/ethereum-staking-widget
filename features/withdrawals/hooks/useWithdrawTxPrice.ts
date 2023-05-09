@@ -51,9 +51,7 @@ export const useRequestTxPrice = ({
   const debouncedRequestCount = useDebouncedValue(cappedRequestCount, 2000);
 
   const url = useMemo(() => {
-    const basePath = dynamics.wqAPIBasePath
-      ? dynamics.wqAPIBasePath
-      : 'https://wq-api.testnet.fi';
+    const basePath = dynamics.wqAPIBasePath;
     const params = encodeURLQuery({
       token,
       requestCount: debouncedRequestCount,
