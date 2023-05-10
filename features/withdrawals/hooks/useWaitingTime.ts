@@ -5,7 +5,7 @@ import { dynamics } from 'config';
 import { useDebouncedValue } from 'shared/hooks';
 import { encodeURLQuery } from 'utils/encodeURLQuery';
 import { standardFetcher } from 'utils/standardFetcher';
-import { STRATEGY_CONSTANT } from 'utils/swrStrategies';
+import { STRATEGY_EAGER } from 'utils/swrStrategies';
 import { FetcherError } from 'utils/fetcherError';
 
 import { useWithdrawals } from 'features/withdrawals/contexts/withdrawals-context';
@@ -37,11 +37,15 @@ export const useWaitingTime = (
     return `${basePath}/v1/request-time${params ? `?${params}` : ''}`;
   }, [debouncedAmount]);
 
-  const { data, initialLoading, error } = useLidoSWR(
-    url,
-    standardFetcher,
-    STRATEGY_CONSTANT,
-  ) as SWRResponse<RequestTimeResponse>;
+  const { data, initialLoading, error } = useLidoSWR(url, standardFetcher, {
+    ...STRATEGY_EAGER,
+    shouldRetryOnError: (e: unknown) => {
+      // if api is not happy about our request - no retry
+      if (e && typeof e == 'object' && 'status' in e && e.status == 400)
+        return false;
+      return true;
+    },
+  }) as SWRResponse<RequestTimeResponse>;
   const { isBunker, isPaused } = useWithdrawals();
   const isRequestError = error instanceof FetcherError && error.status < 500;
 
