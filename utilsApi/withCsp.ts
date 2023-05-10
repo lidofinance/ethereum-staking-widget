@@ -23,6 +23,7 @@ export const contentSecurityPolicy = {
       'https://*.coinbase.com',
       'wss://*.walletlink.org/',
       'https://api.1inch.exchange',
+      'https://cdn.live.ledger.com/',
       'https://apiv5.paraswap.io/',
       'https://api.cow.fi/',
       'https://wq-api.testnet.fi',
