@@ -5,7 +5,7 @@ import { dynamics } from 'config';
 import { useDebouncedValue } from 'shared/hooks';
 import { encodeURLQuery } from 'utils/encodeURLQuery';
 import { standardFetcher } from 'utils/standardFetcher';
-import { STRATEGY_CONSTANT } from 'utils/swrStrategies';
+import { STRATEGY_EAGER } from 'utils/swrStrategies';
 import { FetcherError } from 'utils/fetcherError';
 
 import { useWithdrawals } from 'features/withdrawals/contexts/withdrawals-context';
@@ -38,7 +38,7 @@ export const useWaitingTime = (
   }, [debouncedAmount]);
 
   const { data, initialLoading, error } = useLidoSWR(url, standardFetcher, {
-    ...STRATEGY_CONSTANT,
+    ...STRATEGY_EAGER,
     shouldRetryOnError: (e: unknown) => {
       // if api is not happy about our request - no retry
       if (e && typeof e == 'object' && 'status' in e && e.status == 400)
