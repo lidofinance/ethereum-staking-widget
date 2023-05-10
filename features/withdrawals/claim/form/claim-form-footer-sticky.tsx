@@ -85,7 +85,7 @@ export const ClaimFormFooterSticky: React.FC<ClaimFormFooterStickyProps> = ({
       rectRequests.top - checkpointStart,
     );
 
-    const checkpointEnd = rectFooter.bottom - screenH - menuOffset;
+    const checkpointEnd = rectFooter.bottom - screenH + menuOffset;
 
     // Apply
     if (distanceFromElStart > 0 && Math.round(checkpointEnd) >= 0) {
