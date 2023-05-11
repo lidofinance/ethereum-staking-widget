@@ -39,7 +39,7 @@ const calculateRateReceive = (
   dest: BigNumber,
 ) => {
   const _rate = dest.mul(RATE_PRECISION_BN).div(src);
-  const toReceive = amount.mul(_rate).div(RATE_PRECISION_BN);
+  const toReceive = amount.mul(dest).div(src);
   const rate = _rate.toNumber() / RATE_PRECISION;
   return { rate, toReceive };
 };
