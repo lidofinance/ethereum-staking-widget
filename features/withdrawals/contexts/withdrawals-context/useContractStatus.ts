@@ -10,7 +10,9 @@ export const useContractStatus = () => {
     ? 'error'
     : isBunker
     ? 'warning'
-    : 'success';
+    : isTurbo
+    ? 'success'
+    : 'error';
 
   return {
     withdrawalsStatus,
