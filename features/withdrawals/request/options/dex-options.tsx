@@ -55,7 +55,7 @@ const dexInfo: {
       )}-ETH/${formatEther(amount)}?network=ethereum`,
   },
   cowswap: {
-    title: 'CowSwap',
+    title: 'CoW Swap',
     icon: <CowSwapIcon />,
     onClickGoTo: () => {
       trackMatomoEvent(MATOMO_CLICK_EVENTS_TYPES.withdrawalGoToCowSwap);
