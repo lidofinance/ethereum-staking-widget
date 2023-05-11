@@ -67,7 +67,7 @@ const DexButton: React.FC<OptionButtonProps> = ({ isActive, onClick }) => {
   const { loading, bestRate } = useWithdrawalRates({
     fallbackValue: DEFAULT_VALUE_FOR_RATE,
   });
-  const bestRateValue = bestRate ? `1 : ${bestRate}` : '-';
+  const bestRateValue = bestRate ? `1 : ${bestRate.toFixed(4)}` : '-';
   return (
     <OptionsPickerButton type="button" $active={isActive} onClick={onClick}>
       <OptionsPickerRow>
