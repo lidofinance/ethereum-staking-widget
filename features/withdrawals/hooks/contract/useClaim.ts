@@ -50,7 +50,25 @@ export const useClaim = () => {
               hints,
             );
             return providerWeb3.getSigner().sendUncheckedTransaction(tx);
-          } else return contractWeb3.claimWithdrawals(ids, hints);
+          } else {
+            const feeData = await contractWeb3.provider.getFeeData();
+            const maxFeePerGas = feeData.maxFeePerGas ?? undefined;
+            const maxPriorityFeePerGas =
+              feeData.maxPriorityFeePerGas ?? undefined;
+            const gasLimit = await contractWeb3.estimateGas.claimWithdrawals(
+              ids,
+              hints,
+              {
+                maxFeePerGas,
+                maxPriorityFeePerGas,
+              },
+            );
+            return contractWeb3.claimWithdrawals(ids, hints, {
+              maxFeePerGas,
+              maxPriorityFeePerGas,
+              gasLimit,
+            });
+          }
         };
 
         const transaction = await runWithTransactionLogger(
