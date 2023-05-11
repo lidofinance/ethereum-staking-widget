@@ -31,16 +31,19 @@ const GlobalStyle = createGlobalStyle`
     min-height: calc(100vh - 150px);
   }
   a {
+    cursor: pointer;
     text-decoration: none;
     color: var(--lido-color-primary);
+
+    &:visited {
+      color: var(--lido-color-primaryVisited);
+    }
 
     &:hover {
       color: var(--lido-color-primaryHover);
     }
 
-    &:visited {
-      color: var(--lido-color-primaryVisited);
-    }
+   
   }
 `;
 

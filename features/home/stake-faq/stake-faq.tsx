@@ -5,16 +5,15 @@ import { useMatomoEventHandle } from 'shared/hooks';
 import {
   WhatIsLido,
   HowDoesLidoWork,
-  WhatIsLiquidStaking,
+  LidoEthApr,
   WhatIsSteth,
-  WhatIsLdo,
+  HowCanIGetSteth,
   SafeWorkWithLido,
-  WhatIsInsuranceFundFor,
-  WhereCanICoveMySteth,
-  SelfStakingVsLiquidStaking,
+  HowCanIUseSteth,
+  WhereCanICoverMySteth,
   RisksOfStakingWithLido,
   LidoFee,
-  StethCanBeConvertedToEth,
+  HowCanIUnstakeSteth,
 } from './list';
 
 export const StakeFaq: FC = () => {
@@ -24,16 +23,15 @@ export const StakeFaq: FC = () => {
     <Section title="FAQ" onClick={onClickHandler}>
       <WhatIsLido />
       <HowDoesLidoWork />
-      <WhatIsLiquidStaking />
-      <WhatIsSteth />
-      <WhatIsLdo />
       <SafeWorkWithLido />
-      <WhatIsInsuranceFundFor />
-      <WhereCanICoveMySteth />
-      <SelfStakingVsLiquidStaking />
       <RisksOfStakingWithLido />
+      <LidoEthApr />
       <LidoFee />
-      <StethCanBeConvertedToEth />
+      <WhatIsSteth />
+      <HowCanIGetSteth />
+      <HowCanIUseSteth />
+      <WhereCanICoverMySteth />
+      <HowCanIUnstakeSteth />
     </Section>
   );
 };
