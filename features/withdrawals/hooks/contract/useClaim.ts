@@ -17,7 +17,7 @@ export const useClaim = () => {
   const { account } = useWeb3();
   const { providerWeb3 } = useSDK();
   const { contractWeb3 } = useWithdrawalsContract();
-  const { withdrawalRequestsData } = useClaimData();
+  const { update } = useClaimData();
   const { dispatchModalState } = useTransactionModal();
 
   return useCallback(
@@ -50,7 +50,25 @@ export const useClaim = () => {
               hints,
             );
             return providerWeb3.getSigner().sendUncheckedTransaction(tx);
-          } else return contractWeb3.claimWithdrawals(ids, hints);
+          } else {
+            const feeData = await contractWeb3.provider.getFeeData();
+            const maxFeePerGas = feeData.maxFeePerGas ?? undefined;
+            const maxPriorityFeePerGas =
+              feeData.maxPriorityFeePerGas ?? undefined;
+            const gasLimit = await contractWeb3.estimateGas.claimWithdrawals(
+              ids,
+              hints,
+              {
+                maxFeePerGas,
+                maxPriorityFeePerGas,
+              },
+            );
+            return contractWeb3.claimWithdrawals(ids, hints, {
+              maxFeePerGas,
+              maxPriorityFeePerGas,
+              gasLimit,
+            });
+          }
         };
 
         const transaction = await runWithTransactionLogger(
@@ -66,8 +84,8 @@ export const useClaim = () => {
             transaction.wait(),
           );
         }
-        await withdrawalRequestsData.update();
-        dispatchModalState({ type: 'success' });
+        await update();
+        dispatchModalState({ type: isMultisig ? 'reset' : 'success' });
       } catch (error) {
         console.error(error);
         const errorMessage = getErrorMessage(error);
@@ -75,12 +93,6 @@ export const useClaim = () => {
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [
-      contractWeb3,
-      account,
-      providerWeb3,
-      dispatchModalState,
-      withdrawalRequestsData.update,
-    ],
+    [contractWeb3, account, providerWeb3, dispatchModalState, update],
   );
 };

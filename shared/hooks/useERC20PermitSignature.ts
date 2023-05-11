@@ -1,14 +1,20 @@
 import { useCallback } from 'react';
-import { splitSignature } from '@ethersproject/bytes';
-import { parseEther } from '@ethersproject/units';
-import { useSDK } from '@lido-sdk/react';
-import { BigNumber } from 'ethers';
-
-import { Eip2612 } from 'generated';
-
-import { PermitType } from './useGetPermitDomain';
-import { useGetPermitData } from './useGetPermitData';
 import invariant from 'tiny-invariant';
+
+import { hexValue, splitSignature } from '@ethersproject/bytes';
+import { parseEther } from '@ethersproject/units';
+import { MaxUint256 } from '@ethersproject/constants';
+import { BigNumber, TypedDataDomain } from 'ethers';
+
+import { useSDK } from '@lido-sdk/react';
+import { useWeb3 } from 'reef-knot/web3-react';
+
+import { Eip2612, StethPermitAbi } from 'generated';
+
+export enum PermitType {
+  AMOUNT = 1,
+  ALLOWED = 2,
+}
 
 export type GatherPermitSignatureResult = {
   v: number;
@@ -16,10 +22,10 @@ export type GatherPermitSignatureResult = {
   s: string;
   deadline: BigNumber;
   value: BigNumber;
-  chainId?: number;
-  nonce?: string;
+  chainId: number;
+  nonce: string;
   owner: string;
-  spender?: string;
+  spender: string;
   permitType?: PermitType;
 };
 
@@ -35,6 +41,23 @@ type UseERC20PermitSignatureProps<
   spender: string;
 };
 
+const INFINITY_DEADLINE_VALUE = MaxUint256;
+
+const isStethPermit = (provider: unknown): provider is StethPermitAbi => {
+  if (typeof provider !== 'object' || provider === null) return false;
+  if ('eip712Domain' in provider) return true;
+
+  return false;
+};
+
+const EIP2612_TYPE = [
+  { name: 'owner', type: 'address' },
+  { name: 'spender', type: 'address' },
+  { name: 'value', type: 'uint256' },
+  { name: 'nonce', type: 'uint256' },
+  { name: 'deadline', type: 'uint256' },
+];
+
 export const useERC20PermitSignature = <
   T extends Pick<Eip2612, 'nonces' | 'address'>,
 >({
@@ -42,31 +65,67 @@ export const useERC20PermitSignature = <
   tokenProvider,
   spender,
 }: UseERC20PermitSignatureProps<T>): UseERC20PermitSignatureResult => {
-  const { account, providerWeb3 } = useSDK();
-  const getPermitData = useGetPermitData({ tokenProvider, spender, value });
+  const { chainId, account } = useWeb3();
+  const { providerWeb3 } = useSDK();
 
   const gatherPermitSignature = useCallback(async () => {
+    invariant(chainId, 'chainId is needed');
     invariant(account, 'account is needed');
-    const { data, message, domain, signatureDeadline } = await getPermitData();
+    invariant(providerWeb3, 'providerWeb3 is needed');
+    invariant(tokenProvider, 'tokenProvider is needed');
 
-    return providerWeb3
-      ?.send('eth_signTypedData_v4', [account, data])
+    const deadline = INFINITY_DEADLINE_VALUE;
+    const parsedValue = parseEther(value).toString();
+    let domain: TypedDataDomain;
+    if (isStethPermit(tokenProvider)) {
+      const eip712Domain = await tokenProvider.eip712Domain();
+      domain = {
+        name: eip712Domain.name,
+        version: eip712Domain.version,
+        chainId: eip712Domain.chainId.toNumber(),
+        verifyingContract: eip712Domain.verifyingContract,
+      };
+    } else {
+      domain = {
+        name: 'Wrapped liquid staked Ether 2.0',
+        version: '1',
+        chainId,
+        verifyingContract: tokenProvider.address,
+      };
+    }
+    const nonce = await tokenProvider.nonces(account);
+
+    const message = {
+      owner: account,
+      spender,
+      value: parsedValue,
+      nonce: hexValue(nonce),
+      deadline: hexValue(deadline),
+    };
+    const types = {
+      Permit: EIP2612_TYPE,
+    };
+
+    const signer = providerWeb3.getSigner();
+
+    return signer
+      ._signTypedData(domain, types, message)
       .then(splitSignature)
       .then((signature) => {
         return {
           v: signature.v,
           r: signature.r,
           s: signature.s,
-          deadline: signatureDeadline,
           value: parseEther(value),
-          chainId: domain?.chainId,
-          nonce: message?.nonce,
+          deadline,
+          chainId: chainId,
+          nonce: message.nonce,
           owner: account,
           spender,
-          permitType: domain?.type,
+          permitType: PermitType.AMOUNT,
         };
       });
-  }, [account, getPermitData, providerWeb3, spender, value]);
+  }, [chainId, account, providerWeb3, tokenProvider, value, spender]);
 
   return { gatherPermitSignature };
 };

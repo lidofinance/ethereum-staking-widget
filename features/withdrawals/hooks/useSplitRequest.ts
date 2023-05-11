@@ -1,13 +1,14 @@
 import { useMemo } from 'react';
-import { useWithdrawalsConstants } from 'features/withdrawals/hooks';
+import { useWithdrawalsBaseData } from 'features/withdrawals/hooks';
 import { parseEther } from '@ethersproject/units';
 import { BigNumber } from 'ethers';
 
-import { MAX_REQUESTS_COUNT } from 'features/withdrawals/withdrawalsConstants';
+import { MAX_REQUESTS_COUNT } from 'features/withdrawals/withdrawals-constants';
 import { isValidEtherValue } from 'utils';
 
 export const useSplitRequest = (inputValue: string) => {
-  const { maxAmount } = useWithdrawalsConstants();
+  const wqBaseData = useWithdrawalsBaseData();
+  const { maxAmount } = wqBaseData.data ?? {};
 
   const { requests, requestCount } = useMemo(() => {
     if (

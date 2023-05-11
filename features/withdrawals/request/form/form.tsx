@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import { SelectIcon, Option, DataTableRow } from '@lidofinance/lido-ui';
 import { TOKENS } from '@lido-sdk/constants';
 
@@ -9,7 +9,7 @@ import {
   useSplitRequest,
   useToken,
   useWithdrawalRequest,
-  useWithdrawalsConstants,
+  useWithdrawalsBaseData,
 } from 'features/withdrawals/hooks';
 import { iconsMap } from 'features/withdrawals/contexts/withdrawals-context';
 import { useRequestForm } from 'features/withdrawals/contexts/request-form-context';
@@ -24,20 +24,30 @@ import { InputDecoratorTvlStake } from 'features/withdrawals/shared/input-decora
 import { FormatToken } from 'shared/formatters/format-token';
 import { useCurrencyInput } from 'shared/forms/hooks/useCurrencyInput';
 
-import { Options } from '../options';
 import { RequestsInfo } from '../requestsInfo';
 
+import {
+  trackMatomoEvent,
+  MATOMO_CLICK_EVENTS_TYPES,
+} from 'config/trackMatomoEvent';
 import { FormButton } from './form-button';
 import { InputGroupStyled } from './styles';
 
 // TODO move to shared
 import { useApproveGasLimit } from 'features/wrap/features/wrap-form/hooks';
+import { OptionsPicker } from '../options/options-picker';
+import { DexOptions } from '../options/dex-options';
+import { LidoOption } from '../options/lido-option';
 
 export const Form = () => {
+  const [withdrawalMethod, setWithdrawalMethod] = useState<'lido' | 'dex'>(
+    'lido',
+  );
   const { inputValue, setInputValue } = useRequestForm();
   const { tokenBalance, tokenLabel, tokenContract, setToken, token } =
     useToken();
-  const { minAmount } = useWithdrawalsConstants();
+  const wqBaseData = useWithdrawalsBaseData();
+  const { minAmount } = wqBaseData.data ?? {};
   const { active } = useWeb3();
   const { tvlMessage, tvlDiff } = useInputTvlValidate(inputValue);
 
@@ -58,19 +68,18 @@ export const Form = () => {
   const { requests, requestCount } = useSplitRequest(inputValue);
   const approveTxCostInUsd = useTxCostInUsd(useApproveGasLimit());
 
-  const requestPriceInUsd = useRequestTxPrice({
-    token,
-    isApprovalFlow: isApprovalFlow,
-    // request.length is bounded by max value
-    // while useSplitRequest.requestCount is not
-    requestCount: requests.length,
-  });
+  const { txPriceUsd: requestTxPriceInUsd, loading: requestTxPriceLoading } =
+    useRequestTxPrice({
+      token,
+      isApprovalFlow,
+      requestCount,
+    });
 
   const submit = useCallback(
-    async (inputValue: string, resetForm: () => void) => {
-      request(requests, resetForm);
+    async (_: string, resetForm: () => void) => {
+      if (withdrawalMethod == 'lido') request(requests, resetForm);
     },
-    [request, requests],
+    [request, requests, withdrawalMethod],
   );
 
   const {
@@ -100,10 +109,19 @@ export const Form = () => {
     [setToken, reset],
   );
 
+  const handleClickMax = useCallback(() => {
+    trackMatomoEvent(MATOMO_CLICK_EVENTS_TYPES.withdrawalMaxInput);
+    setMaxInputValue();
+  }, [setMaxInputValue]);
+
+  const unlockCostTooltip = isApprovalFlow ? undefined : (
+    <>Lido leverages gasless token approvals via ERC-2612 permits</>
+  );
+
   const showError = active && !!error && !tvlMessage;
 
   return (
-    <form method="post" onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit}>
       <InputGroupStyled
         fullwidth
         error={showError && error}
@@ -131,7 +149,7 @@ export const Form = () => {
             ) : (
               <>
                 <InputDecoratorMaxButton
-                  onClick={setMaxInputValue}
+                  onClick={handleClickMax}
                   disabled={isMaxDisabled}
                 />
                 {isTokenLocked ? <InputDecoratorLocked /> : undefined}
@@ -145,36 +163,47 @@ export const Form = () => {
         />
       </InputGroupStyled>
 
-      <RequestsInfo requestCount={requestCount} />
-      <Options />
-      <FormButton
-        isLocked={isTokenLocked}
-        pending={isTxPending || isSubmitting}
-        disabled={!!error}
+      {withdrawalMethod === 'lido' && (
+        <RequestsInfo requestCount={requestCount} />
+      )}
+      <OptionsPicker
+        selectedOption={withdrawalMethod}
+        onOptionSelect={setWithdrawalMethod}
       />
-      <DataTableRow
-        help={
-          isApprovalFlow ? undefined : (
-            <>Lido leverages gasless token approvals via ERC-2612 permits</>
-          )
-        }
-        title="Max unlock cost"
-        loading={isApprovalFlowLoading}
-      >
-        {isApprovalFlow && isTokenLocked
-          ? `$${approveTxCostInUsd?.toFixed(2)}`
-          : 'FREE'}
-      </DataTableRow>
-      <DataTableRow title="Max transaction cost" loading={!requestPriceInUsd}>
-        ${requestPriceInUsd?.toFixed(2)}
-      </DataTableRow>
-      <DataTableRow title="Allowance" loading={isApprovalFlowLoading}>
-        <FormatToken amount={allowance} symbol={tokenLabel} />
-      </DataTableRow>
-      {tokenLabel === 'stETH' ? (
-        <DataTableRow title="Exchange rate">1 stETH = 1 ETH</DataTableRow>
+
+      {withdrawalMethod == 'lido' ? (
+        <>
+          <LidoOption />
+          <FormButton
+            isLocked={isTokenLocked}
+            pending={isTxPending || isSubmitting}
+            disabled={!!error}
+          />
+
+          <DataTableRow
+            help={unlockCostTooltip}
+            title="Max unlock cost"
+            loading={isApprovalFlowLoading}
+          >
+            {isApprovalFlow ? `$${approveTxCostInUsd?.toFixed(2)}` : 'FREE'}
+          </DataTableRow>
+          <DataTableRow
+            title="Max transaction cost"
+            loading={requestTxPriceLoading}
+          >
+            ${requestTxPriceInUsd?.toFixed(2)}
+          </DataTableRow>
+          <DataTableRow title="Allowance" loading={isApprovalFlowLoading}>
+            <FormatToken amount={allowance} symbol={tokenLabel} />
+          </DataTableRow>
+          {tokenLabel === 'stETH' ? (
+            <DataTableRow title="Exchange rate">1 stETH = 1 ETH</DataTableRow>
+          ) : (
+            <DataTableRowStethByWsteth toSymbol="ETH" />
+          )}
+        </>
       ) : (
-        <DataTableRowStethByWsteth />
+        <DexOptions />
       )}
     </form>
   );

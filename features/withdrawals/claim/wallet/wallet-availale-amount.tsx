@@ -3,11 +3,13 @@ import { FormatToken } from 'shared/formatters';
 import { useClaimData } from 'features/withdrawals/contexts/claim-data-context';
 
 export const WalletAvailableAmount = () => {
-  const { withdrawalRequestsData } = useClaimData();
-  const { data, loading } = withdrawalRequestsData;
+  const { withdrawalRequestsData, loading } = useClaimData();
 
   const availableAmount = (
-    <FormatToken amount={data?.claimableAmountOfETH} symbol="ETH" />
+    <FormatToken
+      amount={withdrawalRequestsData?.claimableAmountOfETH}
+      symbol="ETH"
+    />
   );
 
   return (

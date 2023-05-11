@@ -4,7 +4,7 @@ export const RewardsAfterWithdraw: React.FC = () => {
   return (
     <Accordion summary="Do I still get rewards after I withdraw?">
       <p>
-        No. After you requested withdrawal, the stETH/wstETH submitted for
+        No. After you request a withdrawal, the stETH/wstETH submitted for
         unstaking will not receive staking rewards on top of your submitted
         balance.
       </p>

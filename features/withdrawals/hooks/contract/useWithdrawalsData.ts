@@ -14,7 +14,8 @@ import {
   RequestStatusClaimable,
   RequestStatusPending,
 } from 'features/withdrawals/types/request-status';
-import { MAX_SHOWN_REQUEST_PER_TYPE } from 'features/withdrawals/withdrawalsConstants';
+import { MAX_SHOWN_REQUEST_PER_TYPE } from 'features/withdrawals/withdrawals-constants';
+import { STRATEGY_LAZY } from 'utils/swrStrategies';
 // import { calcExpectedRequestEth } from 'features/withdrawals/utils/calc-expected-request-eth';
 
 export const useWithdrawalRequests = () => {
@@ -129,6 +130,7 @@ export const useWithdrawalRequests = () => {
         isClamped,
       };
     },
+    STRATEGY_LAZY,
   );
 };
 
@@ -138,10 +140,11 @@ export const useWithdrawalsStatus = () => {
 
   const isPaused = !!paused.data;
   const isBunkerMode = !!bunkerMode.data;
+  const isTurbo = !isPaused && !isBunkerMode;
 
   const isLoading = paused.initialLoading || bunkerMode.initialLoading;
 
-  return { isPaused, isBunkerMode, isLoading };
+  return { isPaused, isBunkerMode, isLoading, isTurbo };
 };
 
 export const useWithdrawalsConstants = () => {

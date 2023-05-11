@@ -11,7 +11,7 @@ import { WalletWrapperStyled } from 'features/withdrawals/shared';
 
 import { WalletStethBalance } from './wallet-steth-balance';
 import { WalletWstethBalance } from './wallet-wsteth-balance';
-import { WalletWaitingTime } from './wallet-waiting-time';
+import { WalletMode } from './wallet-mode';
 
 export const WalletComponent = () => {
   const { account } = useSDK();
@@ -26,7 +26,7 @@ export const WalletComponent = () => {
       <Divider />
       <CardRow>
         <WalletMyRequests />
-        <WalletWaitingTime />
+        <WalletMode />
       </CardRow>
     </WalletWrapperStyled>
   );

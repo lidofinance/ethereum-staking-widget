@@ -1,8 +1,8 @@
 import { FC } from 'react';
 import { formatEther } from '@ethersproject/units';
 
-import { useWithdrawalsConstants } from 'features/withdrawals/hooks';
-import { MAX_REQUESTS_COUNT } from 'features/withdrawals/withdrawalsConstants';
+import { useWithdrawalsBaseData } from 'features/withdrawals/hooks';
+import { MAX_REQUESTS_COUNT } from 'features/withdrawals/withdrawals-constants';
 
 import { RequestsInfoStyled, RequestsInfoDescStyled } from './styles';
 
@@ -12,7 +12,8 @@ type RequestsInfoProps = {
 
 export const RequestsInfo: FC<RequestsInfoProps> = (props) => {
   const { requestCount } = props;
-  const { maxAmount } = useWithdrawalsConstants();
+  const wqBaseData = useWithdrawalsBaseData();
+  const { maxAmount } = wqBaseData.data ?? {};
 
   if (requestCount && requestCount > MAX_REQUESTS_COUNT)
     return (
