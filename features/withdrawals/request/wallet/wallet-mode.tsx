@@ -5,10 +5,21 @@ import { useWithdrawals } from 'features/withdrawals/contexts/withdrawals-contex
 import { WalletQueueTooltip } from './wallet-queue-tooltip';
 
 export const WalletMode = () => {
-  const { withdrawalsStatus, isBunker, isTurbo, isWithdrawalsStatusLoading } =
-    useWithdrawals();
+  const {
+    withdrawalsStatus,
+    isBunker,
+    isTurbo,
+    isWithdrawalsStatusLoading,
+    isPaused,
+  } = useWithdrawals();
 
-  const modeLabel = isBunker ? 'Bunker' : isTurbo ? 'Turbo' : 'Paused';
+  const modeLabel = isBunker
+    ? 'Bunker'
+    : isPaused
+    ? 'Paused'
+    : isTurbo
+    ? 'Turbo'
+    : '-';
 
   const content = <Status variant={withdrawalsStatus}>{modeLabel}</Status>;
   const timeTitle = <>Withdrawals mode {<WalletQueueTooltip />}</>;
