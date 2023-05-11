@@ -2,7 +2,7 @@ import { FC } from 'react';
 import { Accordion, Link } from '@lidofinance/lido-ui';
 import { MATOMO_CLICK_EVENTS_TYPES } from 'config';
 
-export const WhereCanICoveMySteth: FC = () => {
+export const WhereCanICoverMySteth: FC = () => {
   return (
     <Accordion summary="Where can I cover my stETH?">
       <span>

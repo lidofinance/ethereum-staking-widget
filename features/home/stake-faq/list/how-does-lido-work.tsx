@@ -5,16 +5,13 @@ export const HowDoesLidoWork: FC = () => {
   return (
     <Accordion summary="How does Lido work?">
       <p>
-        When staking with Lido, users receive stETH tokens which are issued 1:1
-        to their initial stake. stETH balances can be used like regular ETH to
-        get rewards, and are updated on a daily basis to reflect your ETH
-        staking rewards. Note that there are no lock-ups or minimum deposits
-        when staking with Lido.
-      </p>
-      <p>
-        When using Lido, users receive staking rewards in real-time, and they
-        also can use staked tokens across the DeFi ecosystem to compound
-        rewards.
+        While each network works differently, generally, the Lido protocols
+        batch user tokens to stake with validators and route the staking
+        packages to network staking contracts. Users mint amounts of stTokens
+        which correspond to the amount of tokens sent as stake and they receive
+        staking rewards. When they unstake, they burn the stToken to initiate
+        the network-specific withdrawal process to withdraw the balance of stake
+        and rewards.
       </p>
     </Accordion>
   );

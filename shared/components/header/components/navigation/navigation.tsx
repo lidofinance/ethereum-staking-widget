@@ -1,7 +1,6 @@
 import { FC, memo } from 'react';
 import { Wallet, Stake, Wrap, Withdraw } from '@lidofinance/lido-ui';
 import { useRouter } from 'next/router';
-import { dynamics } from 'config';
 
 import { Nav, NavLink } from './styles';
 import { LocalLink } from './local-link';
@@ -17,15 +16,11 @@ const routes = [
     path: '/wrap',
     icon: <Wrap />,
   },
-  ...(dynamics.defaultChain !== 1
-    ? [
-        {
-          name: 'Withdrawals',
-          path: '/withdrawals',
-          icon: <Withdraw />,
-        },
-      ]
-    : []),
+  {
+    name: 'Withdrawals',
+    path: '/withdrawals',
+    icon: <Withdraw />,
+  },
   {
     name: 'Rewards',
     path: '/rewards',

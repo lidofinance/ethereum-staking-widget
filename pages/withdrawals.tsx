@@ -5,15 +5,12 @@ import { useWeb3 } from 'reef-knot/web3-react';
 
 import { Layout } from 'shared/components';
 import NoSSRWrapper from 'shared/components/no-ssr-wrapper';
-import Page404 from 'pages/404';
-import { dynamics } from 'config';
 
 import { WithdrawalsTabs } from 'features/withdrawals';
 import { WithdrawalsProvider } from 'features/withdrawals/contexts/withdrawals-context';
 
 const Withdrawals: FC = () => {
   const { account } = useWeb3();
-  if (dynamics.defaultChain === 1) return <Page404 />;
   return (
     <Layout
       title="Withdrawals"

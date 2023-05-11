@@ -8,7 +8,8 @@ import {
   HowCanIUseWsteth,
   DoIGetMyStakingRewards,
   DoINeedToClaimMyStakingRewards,
-  HowDoIUnwrapWstethToSteth,
+  HowCouldIUnwrapWstethToSteth,
+  DoINeedToUnwrapMyWsteth,
 } from './list';
 
 export const WrapFaq: FC = () => {
@@ -21,7 +22,8 @@ export const WrapFaq: FC = () => {
       <HowCanIUseWsteth />
       <DoIGetMyStakingRewards />
       <DoINeedToClaimMyStakingRewards />
-      <HowDoIUnwrapWstethToSteth />
+      <HowCouldIUnwrapWstethToSteth />
+      <DoINeedToUnwrapMyWsteth />
     </Section>
   );
 };
