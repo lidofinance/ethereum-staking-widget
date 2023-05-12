@@ -44,7 +44,7 @@ export const useSplitRequest = (inputValue: string) => {
     return {
       requests,
       requestCount: requestCount + (hasRest ? 1 : 0),
-      areRequestsValid: true,
+      areRequestsValid: requests.length > 0,
     };
   }, [inputValue, maxAmount]);
 };
