@@ -42,7 +42,7 @@ const useWithdrawalRequestMethods = () => {
       invariant(chainId, 'must have chainId');
       invariant(account, 'must have account');
       invariant(signature, 'must have signature');
-      invariant(requests, 'must have requests');
+      invariant(requests && requests.length > 0, 'must have requests');
       invariant(contractWeb3, 'must have contractWeb3');
 
       dispatchModalState({ type: 'signing' });
@@ -102,7 +102,7 @@ const useWithdrawalRequestMethods = () => {
       invariant(chainId, 'must have chainId');
       invariant(account, 'must have account');
       invariant(signature, 'must have signature');
-      invariant(requests, 'must have requests');
+      invariant(requests && requests.length > 0, 'must have requests');
       invariant(contractWeb3, 'must have contractWeb3');
 
       const params = [
@@ -158,7 +158,7 @@ const useWithdrawalRequestMethods = () => {
     async ({ requests }: { requests?: BigNumber[] }) => {
       invariant(chainId, 'must have chainId');
       invariant(account, 'must have account');
-      invariant(requests, 'must have requests');
+      invariant(requests && requests.length > 0, 'must have requests');
       invariant(contractWeb3, 'must have contractWeb3');
       invariant(providerWeb3, 'must have providerWeb3');
 
@@ -221,7 +221,7 @@ const useWithdrawalRequestMethods = () => {
     async ({ requests }: { requests?: BigNumber[] }) => {
       invariant(chainId, 'must have chainId');
       invariant(account, 'must have account');
-      invariant(requests, 'must have requests');
+      invariant(requests && requests.length > 0, 'must have requests');
       invariant(contractWeb3, 'must have contractWeb3');
       invariant(providerWeb3, 'must have providerWeb3');
       const isMultisig = await isContract(account, contractWeb3.provider);
