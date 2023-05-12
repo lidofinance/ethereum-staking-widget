@@ -65,7 +65,8 @@ export const Form = () => {
   });
 
   const validateUnstakeValue = useValidateUnstakeValue({ minAmount });
-  const { requests, requestCount } = useSplitRequest(inputValue);
+  const { requests, requestCount, areRequestsValid } =
+    useSplitRequest(inputValue);
   const approveTxCostInUsd = useTxCostInUsd(useApproveGasLimit());
 
   const { txPriceUsd: requestTxPriceInUsd, loading: requestTxPriceLoading } =
@@ -177,7 +178,7 @@ export const Form = () => {
           <FormButton
             isLocked={isTokenLocked}
             pending={isTxPending || isSubmitting}
-            disabled={!!error}
+            disabled={!!error || !areRequestsValid}
           />
 
           <DataTableRow

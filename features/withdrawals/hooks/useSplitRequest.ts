@@ -10,14 +10,14 @@ export const useSplitRequest = (inputValue: string) => {
   const wqBaseData = useWithdrawalsBaseData();
   const { maxAmount } = wqBaseData.data ?? {};
 
-  const { requests, requestCount } = useMemo(() => {
+  return useMemo(() => {
     if (
       !maxAmount ||
       !inputValue ||
       isNaN(Number(inputValue)) ||
       !isValidEtherValue(inputValue)
     )
-      return { requests: [], requestCount: 0 };
+      return { requests: [], requestCount: 0, areRequestsValid: false };
 
     const parsedInputValue = parseEther(inputValue);
     const max = maxAmount.mul(MAX_REQUESTS_COUNT);
@@ -32,6 +32,7 @@ export const useSplitRequest = (inputValue: string) => {
       return {
         requests,
         requestCount: requestCount + (hasRest ? 1 : 0),
+        areRequestsValid: false,
       };
     }
 
@@ -43,8 +44,7 @@ export const useSplitRequest = (inputValue: string) => {
     return {
       requests,
       requestCount: requestCount + (hasRest ? 1 : 0),
+      areRequestsValid: requests.length > 0,
     };
   }, [inputValue, maxAmount]);
-
-  return { requests, requestCount };
 };
