@@ -49,7 +49,10 @@ export const Form = () => {
   const wqBaseData = useWithdrawalsBaseData();
   const { minAmount } = wqBaseData.data ?? {};
   const { active } = useWeb3();
-  const { tvlMessage, tvlDiff } = useInputTvlValidate(inputValue);
+  const { tvlMessage, balanceDiff } = useInputTvlValidate(
+    inputValue,
+    tokenBalance,
+  );
 
   const {
     isApprovalFlowLoading,
@@ -146,7 +149,7 @@ export const Form = () => {
           placeholder="0"
           rightDecorator={
             tvlMessage ? (
-              <InputDecoratorTvlStake tvlDiff={tvlDiff} />
+              <InputDecoratorTvlStake tvlDiff={balanceDiff} />
             ) : (
               <>
                 <InputDecoratorMaxButton
