@@ -64,7 +64,7 @@ const dexInfo: {
       `https://swap.cow.fi/#/1/swap/${getTokenAddress(
         CHAINS.Mainnet,
         token,
-      )}/ETH?&sellAmount=${formatEther(amount)}`,
+      )}/ETH?sellAmount=${formatEther(amount)}&utm_source=lido`,
   },
 };
 
