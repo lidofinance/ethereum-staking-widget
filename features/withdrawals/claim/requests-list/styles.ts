@@ -57,6 +57,9 @@ export const RequestsStatusStyled = styled.div<{
   line-height: 20px;
   font-size: 12px;
   margin-left: auto;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   margin-right: 8px;
 `;
 
@@ -66,6 +69,7 @@ export const InlineLoaderStyled = styled(InlineLoader)`
 
 export const LinkStyled = styled(Link)`
   margin-right: -6px;
+  display: flex;
 `;
 
 export const WrapperEmpty = styled(Wrapper)`
