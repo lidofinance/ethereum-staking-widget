@@ -23,6 +23,7 @@ import type { TokensWithdrawable } from 'features/withdrawals/types/tokens-withd
 
 import { useWithdrawalsContract } from './useWithdrawalsContract';
 import { useApprove } from 'shared/hooks/useApprove';
+import { MaxUint256 } from '@ethersproject/constants';
 
 // this encapsulates permit/approval & steth/wsteth flows
 const useWithdrawalRequestMethods = () => {
@@ -338,6 +339,10 @@ export const useWithdrawalRequest = ({
     account ?? undefined,
   );
 
+  const isInfiniteAllowance = useMemo(() => {
+    return allowance.eq(MaxUint256);
+  }, [allowance]);
+
   // TODO streamline from hook to async callback
   const { gatherPermitSignature } = useERC20PermitSignature({
     value,
@@ -429,6 +434,7 @@ export const useWithdrawalRequest = ({
   return {
     isTokenLocked,
     isApprovalFlow,
+    isInfiniteAllowance,
     allowance,
     isApprovalFlowLoading,
     request,
