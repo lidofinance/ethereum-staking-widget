@@ -4,8 +4,10 @@ export const WhatAreWithdrawals: React.FC = () => {
   return (
     <Accordion defaultExpanded summary="What are withdrawals?">
       <p>
-        Withdrawals allow users to unstake their stETH/wstETH and, in return,
-        receive ETH at a 1:1 ratio.
+        Users can unstake their stETH or wstETH through withdrawals. Upon
+        unstaking stETH, they will receive ETH at a 1:1 ratio. When unstaking
+        wstETH, the unwrapping process will take place seamlessly in the
+        background.
       </p>
     </Accordion>
   );
