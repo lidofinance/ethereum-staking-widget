@@ -26,7 +26,7 @@ export const WalletMyRequests: FC = ({ children }) => {
       </RequestCounterStyled>
 
       <RequestCounterStyled>
-        <Tooltip placement="bottom" title="On pending">
+        <Tooltip placement="bottom" title="Pending">
           <span>
             <TimeSquare />
             <span>{pendingCount}</span>
