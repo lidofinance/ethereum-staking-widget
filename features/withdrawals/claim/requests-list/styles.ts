@@ -66,6 +66,7 @@ export const InlineLoaderStyled = styled(InlineLoader)`
 
 export const LinkStyled = styled(Link)`
   margin-right: -6px;
+  display: flex;
 `;
 
 export const WrapperEmpty = styled(Wrapper)`
