@@ -36,6 +36,8 @@ export const enum MATOMO_WALLETS_EVENTS_TYPES {
   onConnectXdefi = 'onConnectXdefi',
   onClickZenGo = 'onClickZenGo',
   onConnectZenGo = 'onConnectZenGo',
+  onClickZerion = 'onClickZerion',
+  onConnectZerion = 'onConnectZerion',
 }
 
 export const MATOMO_WALLETS_EVENTS: Record<
@@ -212,6 +214,16 @@ export const MATOMO_WALLETS_EVENTS: Record<
     'Connect ZenGo wallet',
     'eth_widget_connect_zengo',
   ],
+  [MATOMO_WALLETS_EVENTS_TYPES.onClickZerion]: [
+    'Ethereum_Staking_Widget',
+    'Connect Zerion wallet',
+    'eth_widget_connect_zerion',
+  ],
+  [MATOMO_WALLETS_EVENTS_TYPES.onConnectZerion]: [
+    'Ethereum_Staking_Widget',
+    'Connect Zerion wallet',
+    'eth_widget_connect_zerion',
+  ],
 };
 
 export const walletsMetrics: WalletsMetrics = {
@@ -269,6 +281,9 @@ export const walletsMetrics: WalletsMetrics = {
         onClickZenGo: () => {
           trackEvent(...MATOMO_WALLETS_EVENTS.onClickZenGo);
         },
+        onClickZerion: () => {
+          trackEvent(...MATOMO_WALLETS_EVENTS.onClickZerion);
+        },
       },
     },
     connect: {
@@ -323,6 +338,9 @@ export const walletsMetrics: WalletsMetrics = {
         },
         onConnectZenGo: () => {
           trackEvent(...MATOMO_WALLETS_EVENTS.onConnectZenGo);
+        },
+        onConnectZerion: () => {
+          trackEvent(...MATOMO_WALLETS_EVENTS.onConnectZerion);
         },
       },
     },
