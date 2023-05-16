@@ -5,6 +5,7 @@ import { useRouter } from 'next/router';
 import { Nav, NavLink } from './styles';
 import { LocalLink } from './local-link';
 import { useConnectorInfo } from 'reef-knot/web3-react';
+import { useAppFlag } from 'shared/hooks/useAppFlag';
 
 const routes = [
   {
@@ -29,13 +30,16 @@ const routes = [
   },
 ];
 export const Navigation: FC = memo(() => {
-  const router = useRouter();
   // TODO: remove when ledger live fixes their issue
+  const appFlag = useAppFlag();
   const { isLedgerLive } = useConnectorInfo();
+  const shouldHideWithdrawals = appFlag === 'ledger-live' || isLedgerLive;
+  const router = useRouter();
   const _routes = useMemo(() => {
-    if (isLedgerLive) return routes.filter((r) => r.path !== '/withdrawals');
+    if (shouldHideWithdrawals)
+      return routes.filter((r) => r.path !== '/withdrawals');
     return routes;
-  }, [isLedgerLive]);
+  }, [shouldHideWithdrawals]);
   return (
     <Nav>
       {_routes.map(({ name, path, icon }) => (
