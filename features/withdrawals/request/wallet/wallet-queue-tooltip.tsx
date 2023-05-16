@@ -40,11 +40,11 @@ export const WalletQueueTooltip = () => {
         href="#withdrawalsPeriod"
         onClick={() =>
           trackMatomoEvent(
-            MATOMO_CLICK_EVENTS_TYPES.withdrawalOtherReasonsTooltipMode,
+            MATOMO_CLICK_EVENTS_TYPES.withdrawalOtherFactorsTooltipMode,
           )
         }
       >
-        other reasons
+        other factors
       </Link>
       .{queueInfo}
     </>
