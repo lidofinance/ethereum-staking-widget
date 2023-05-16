@@ -36,15 +36,17 @@ export const WalletQueueTooltip = () => {
     <>
       The withdrawal request time depends on the mode, overall amount of stETH
       in queue and{' '}
-      <Link
-        href="#withdrawalsPeriod"
-        onClick={() =>
-          trackMatomoEvent(
-            MATOMO_CLICK_EVENTS_TYPES.withdrawalOtherReasonsTooltipMode,
-          )
-        }
-      >
-        other reasons
+      <Link href="#withdrawalsPeriod">
+        <a
+          onClick={() =>
+            trackMatomoEvent(
+              MATOMO_CLICK_EVENTS_TYPES.withdrawalOtherReasonsTooltipMode,
+            )
+          }
+          aria-hidden="true"
+        >
+          other reasons
+        </a>
       </Link>
       .{queueInfo}
     </>
