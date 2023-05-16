@@ -8,6 +8,7 @@ export type FormatTokenProps = {
   amount?: BigNumber;
   approx?: boolean;
   maxDecimalDigits?: number;
+  maxTotalLength?: number;
   showAmountTip?: boolean;
 };
 export type FormatTokenComponent = Component<'span', FormatTokenProps>;
@@ -16,13 +17,15 @@ export const FormatToken: FormatTokenComponent = ({
   amount,
   symbol,
   approx,
-  maxDecimalDigits,
+  maxDecimalDigits = 4,
+  maxTotalLength = 15,
   showAmountTip = false,
   ...rest
 }) => {
   const { actual, isTrimmed, trimmed } = useFormattedBalance(
     amount,
     maxDecimalDigits,
+    maxTotalLength,
   );
   const showTooltip = showAmountTip && isTrimmed;
 
