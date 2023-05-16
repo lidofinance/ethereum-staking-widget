@@ -11,10 +11,12 @@ export const enum MATOMO_CLICK_EVENTS_TYPES {
   viewEtherscanOnStakePage = 'viewEtherscanOnStakePage',
   l2BannerStake = 'l2BannerStake',
   // FAQ
-  faqWhatIsLidoScorecard = 'faqWhatIsLidoScorecard',
-  faqWhatIsLidoLearnMore = 'faqWhatIsLidoLearnMore',
-  faqLidoInsuranceFund = 'faqLidoInsuranceFund',
-  faqLidoInsuranceFundRiskScenarios = 'faqLidoInsuranceFundRiskScenarios',
+  faqSafeWorkWithLidoAudits = 'faqSafeWorkWithLidoAudits',
+  faqLidoEthAprEthLandingPage = 'faqLidoEthAprEthLandingPage',
+  faqLidoEthAprDocs = 'faqLidoEthAprDocs',
+  faqHowCanIGetStEthWidget = 'faqHowCanIGetStEthWidget',
+  faqHowCanIGetStEthIntegrations = 'faqHowCanIGetStEthIntegrations',
+  faqHowCanIUseSteth = 'faqHowCanIUseSteth',
   faqWhereCanICoverBridgeMutual = 'faqWhereCanICoverBridgeMutual',
   faqWhereCanICoverIdleFinance = 'faqWhereCanICoverIdleFinance',
   faqWhereCanICoverNexusMutual = 'faqWhereCanICoverNexusMutual',
@@ -22,10 +24,14 @@ export const enum MATOMO_CLICK_EVENTS_TYPES {
   faqWhereCanICoverChainproof = 'faqWhereCanICoverChainproof',
   faqRisksOfStakingReports = 'faqRisksOfStakingReports',
   faqRisksOfStakingImmunefiBugBounty = 'faqRisksOfStakingImmunefiBugBounty',
-  faqStethConvertedToEthCurve = 'faqStethConvertedToEthCurve',
-  faqStethConvertedToEthBalancer = 'faqStethConvertedToEthBalancer',
+  faqHowCanIUnstakeStEthWithdrawals = 'faqHowCanIUnstakeStEthWithdrawals',
+  faqHowCanIUnstakeStEthIntegrations = 'faqHowCanIUnstakeStEthIntegrations',
   faqHowCanIGetWstethWrapLink = 'faqHowCanIGetWstethWrapLink',
+  faqHowCanIGetWstethIntegrationsLink = 'faqHowCanIGetWstethIntegrationsLink',
   faqHowDoIUnwrapWstethUnwrapLink = 'faqHowDoIUnwrapWstethUnwrapLink',
+  faqHowCanIUseWstethL2 = 'faqHowCanIUseWstethL2',
+  faqHowCanIUseWstethDefiProtocols = 'faqHowCanIUseWstethDefiProtocols',
+  faqDoINeedToUnwrapMyWstethWithdrawalsTabs = 'faqDoINeedToUnwrapMyWstethWithdrawalsTabs',
   // /wrap page
   l2BannerWrap = 'l2BannerWrap',
   wrapTokenSelectSTETH = 'wrapTokenSelectSteth',
@@ -34,6 +40,25 @@ export const enum MATOMO_CLICK_EVENTS_TYPES {
   l2BannerUnwrap = 'l2BannerUnwrap',
   // /rewards page
   calculateRewards = 'calculateRewards',
+
+  // /withdrawal page
+  withdrawalUseLido = 'withdrawalUseLido',
+  withdrawalUseAggregators = 'withdrawalUseAggregators',
+  withdrawalMaxInput = 'withdrawalMaxInput',
+  withdrawalOtherFactorsTooltipMode = 'withdrawalOtherFactorsTooltipMode',
+  withdrawalFAQtooltipEthAmount = 'withdrawalFAQtooltipEthAmount',
+  withdrawalGoTo1inch = 'withdrawalGoTo1inch',
+  withdrawalGoToCowSwap = 'withdrawalGoToCowSwap',
+  withdrawalGoToParaswap = 'withdrawalGoToParaswap',
+  withdrawalEtherscanSuccessTemplate = 'withdrawalEtherscanSuccessTemplate',
+  withdrawalGuideSuccessTemplate = 'withdrawalGuideSuccessTemplate',
+
+  // /withdrawal?tab=claim page
+  claimViewOnEtherscanSuccessTemplate = 'claimViewOnEtherscanSuccessTemplate',
+
+  // /withdrawal and /withdrawal?tab=claim shared events
+  withdrawalWhatAreStakingPenaltiesFAQ = 'withdrawalWhatAreStakingPenaltiesFAQ',
+  withdrawalNFTGuideFAQ = 'withdrawalNFTGuideFAQ',
 }
 
 export const MATOMO_CLICK_EVENTS: Record<
@@ -78,25 +103,35 @@ export const MATOMO_CLICK_EVENTS: Record<
     'eth_widget_banner_l2_stake',
   ],
   // FAQ
-  [MATOMO_CLICK_EVENTS_TYPES.faqWhatIsLidoScorecard]: [
+  [MATOMO_CLICK_EVENTS_TYPES.faqSafeWorkWithLidoAudits]: [
     'Ethereum_Staking_Widget',
-    'Push «Scorecard» in FAQ What is Lido on stake widget',
-    'eth_widget_faq_whatislido_scorecard',
+    'Push «here» in FAQ Is it safe to work with Lido',
+    'eth_widget_faq_safeWorkWithLido_here',
   ],
-  [MATOMO_CLICK_EVENTS_TYPES.faqWhatIsLidoLearnMore]: [
+  [MATOMO_CLICK_EVENTS_TYPES.faqLidoEthAprEthLandingPage]: [
     'Ethereum_Staking_Widget',
-    'Push «here» in FAQ What is Lido «Learn more here» on stake widget',
-    'eth_widget_faq_whatislido_learnmore',
+    'Push «Ethereum landing page» in FAQ What is Lido staking APR for Ethereum? on stake widget',
+    'eth_widget_faq_lidoEthApr_ethereumLandingPage',
   ],
-  [MATOMO_CLICK_EVENTS_TYPES.faqLidoInsuranceFund]: [
+  [MATOMO_CLICK_EVENTS_TYPES.faqLidoEthAprDocs]: [
     'Ethereum_Staking_Widget',
-    'Push «Insurance fund» in FAQ What is the Lido Insurance Fund used for? on stake widget',
-    'eth_widget_faq_lidoInsuranceFund_insurancefund',
+    'Push «Docs» in FAQ What is Lido staking APR for Ethereum? on stake widget',
+    'eth_widget_faq_lidoEthApr_docs',
   ],
-  [MATOMO_CLICK_EVENTS_TYPES.faqLidoInsuranceFundRiskScenarios]: [
+  [MATOMO_CLICK_EVENTS_TYPES.faqHowCanIGetStEthWidget]: [
     'Ethereum_Staking_Widget',
-    'Push «here» in FAQ What is the Lido Insurance Fund used for? "risk scenarios" on stake widget',
-    'eth_widget_faq_lidoInsuranceFund_here',
+    'Push «Lido Ethereum staking widget» in FAQ How can I get stETH? on stake widget',
+    'eth_widget_faq_howCanIGetStEth_lidoEthereumStakingWidget',
+  ],
+  [MATOMO_CLICK_EVENTS_TYPES.faqHowCanIGetStEthIntegrations]: [
+    'Ethereum_Staking_Widget',
+    'Push «DEX Lido integrations» in FAQ How can I get stETH? on stake widget',
+    'eth_widget_faq_howCanIGetStEth_dexLidoIntegrations',
+  ],
+  [MATOMO_CLICK_EVENTS_TYPES.faqHowCanIUseSteth]: [
+    'Ethereum_Staking_Widget',
+    'Push «more» in FAQ How can I use stETH? on stake widget',
+    'eth_widget_faq_howCanIUseSteth_more',
   ],
   [MATOMO_CLICK_EVENTS_TYPES.faqWhereCanICoverBridgeMutual]: [
     'Ethereum_Staking_Widget',
@@ -133,25 +168,45 @@ export const MATOMO_CLICK_EVENTS: Record<
     'Push "Immunefi bug bounty program" in FAQ  What are the risks of staking with Lido? on stake widget',
     'eth_widget_faq_risksofstaking_immunefibugbounty',
   ],
-  [MATOMO_CLICK_EVENTS_TYPES.faqStethConvertedToEthCurve]: [
+  [MATOMO_CLICK_EVENTS_TYPES.faqHowCanIUnstakeStEthWithdrawals]: [
     'Ethereum_Staking_Widget',
-    'Push «Curve» in FAQ How stETH can be converted to ETH on stake widget',
-    'eth_widget_faq_stethconverttoeth_curve',
+    'Push «Withdrawals Request and Claim tabs» in FAQ How can I unstake stETH? on stake widget',
+    'eth_widget_faq_howCanIUnstakeStEth_withdrawalsRequestAndClaimTabs',
   ],
-  [MATOMO_CLICK_EVENTS_TYPES.faqStethConvertedToEthBalancer]: [
+  [MATOMO_CLICK_EVENTS_TYPES.faqHowCanIUnstakeStEthIntegrations]: [
     'Ethereum_Staking_Widget',
-    'Push «Balancer» in FAQ How stETH can be converted to ETH on stake widget',
-    'eth_widget_faq_stethconverttoeth_balancer',
+    'Push «DEX Lido integrations» in FAQ How can I unstake stETH? on stake widget',
+    'eth_widget_faq_howCanIUnstakeStEth_dexLidoIntegrations',
   ],
   [MATOMO_CLICK_EVENTS_TYPES.faqHowCanIGetWstethWrapLink]: [
     'Ethereum_Staking_Widget',
-    'Push «stake.lido.fi/wrap.» in FAQ How can I get wstETH',
+    'Push «Wrap & Unwrap staking widget» in FAQ How can I get wstETH',
     'eth_widget_faq_howgetwsteth_wrap',
+  ],
+  [MATOMO_CLICK_EVENTS_TYPES.faqHowCanIGetWstethIntegrationsLink]: [
+    'Ethereum_Staking_Widget',
+    'Push «DEX Lido integrations» in FAQ How can I get wstETH',
+    'eth_widget_faq_howgetwsteth_dexLidoIntegrations',
   ],
   [MATOMO_CLICK_EVENTS_TYPES.faqHowDoIUnwrapWstethUnwrapLink]: [
     'Ethereum_Staking_Widget',
     'Push «stake.lido.fi/wrap?mode=unwrap» How do I unwrap wstETH back to stETH?',
     'eth_widget_faq_howunwrapwsteth_unwrap',
+  ],
+  [MATOMO_CLICK_EVENTS_TYPES.faqHowCanIUseWstethL2]: [
+    'Ethereum_Staking_Widget',
+    'Push «L2» How can I use wstETH?',
+    'eth_widget_faq_howCanIUseWstETH_l2',
+  ],
+  [MATOMO_CLICK_EVENTS_TYPES.faqHowCanIUseWstethDefiProtocols]: [
+    'Ethereum_Staking_Widget',
+    'Push «DeFi protocols» How can I use wstETH?',
+    'eth_widget_faq_howCanIUseWstETH_defiProtocols',
+  ],
+  [MATOMO_CLICK_EVENTS_TYPES.faqDoINeedToUnwrapMyWstethWithdrawalsTabs]: [
+    'Ethereum_Staking_Widget',
+    'Push «Withdrawals Request and Claim tabs» Do I need to unwrap my wstETH before requesting withdrawals?',
+    'eth_widget_faq_doINeedToUnwrapMyWsteth_withdrawalsRequestAndClaimTabs',
   ],
   // /wrap page
   [MATOMO_CLICK_EVENTS_TYPES.l2BannerWrap]: [
@@ -180,5 +235,76 @@ export const MATOMO_CLICK_EVENTS: Record<
     'Ethereum_Staking_Widget',
     'Push calculate reward button" ',
     'eth_widget_calculate_reward',
+  ],
+
+  // /withdrawal page
+  [MATOMO_CLICK_EVENTS_TYPES.withdrawalUseLido]: [
+    'Ethereum_Withdrawals_Widget',
+    'Click on «Use Lido» on Request tab',
+    'eth_withdrawals_request_use_lido',
+  ],
+  [MATOMO_CLICK_EVENTS_TYPES.withdrawalUseAggregators]: [
+    'Ethereum_Withdrawals_Widget',
+    'Click on «Use aggregators» on Request tab',
+    'eth_withdrawals_request_use_aggregators',
+  ],
+  [MATOMO_CLICK_EVENTS_TYPES.withdrawalMaxInput]: [
+    'Ethereum_Withdrawals_Widget',
+    'Click on "Max" in input on Request tab',
+    'eth_withdrawals_request_max_input',
+  ],
+  [MATOMO_CLICK_EVENTS_TYPES.withdrawalOtherFactorsTooltipMode]: [
+    'Ethereum_Withdrawals_Widget',
+    'Push «other factors in tooltip near Withdrawals mode on Request tab',
+    'eth_withdrawals_request_other_reasons_tooltip_mode',
+  ],
+  [MATOMO_CLICK_EVENTS_TYPES.withdrawalFAQtooltipEthAmount]: [
+    'Ethereum_Withdrawals_Widget',
+    'Push «FAQ» in tooltip near ETH amount on Request tab',
+    'eth_withdrawals_request_FAQ_tooltip_eth_amount',
+  ],
+  [MATOMO_CLICK_EVENTS_TYPES.withdrawalGoTo1inch]: [
+    'Ethereum_Withdrawals_Widget',
+    'Click on «Go to 1inch» in aggregators list on Request tab',
+    'eth_withdrawals_request_go_to_1inch',
+  ],
+  [MATOMO_CLICK_EVENTS_TYPES.withdrawalGoToCowSwap]: [
+    'Ethereum_Withdrawals_Widget',
+    'Click on «Go to CowSwap» in aggregators list on Request tab',
+    'eth_withdrawals_request_go_to_CowSwap',
+  ],
+  [MATOMO_CLICK_EVENTS_TYPES.withdrawalGoToParaswap]: [
+    'Ethereum_Withdrawals_Widget',
+    'Click on «Go to Paraswap» in aggregators list on Request tab',
+    'eth_withdrawals_request_go_to_Paraswap',
+  ],
+  [MATOMO_CLICK_EVENTS_TYPES.withdrawalEtherscanSuccessTemplate]: [
+    'Ethereum_Withdrawals_Widget',
+    'Click on "Etherscan" on success template after withdrawal request',
+    'eth_withdrawals_request_etherscan_success_template',
+  ],
+  [MATOMO_CLICK_EVENTS_TYPES.withdrawalGuideSuccessTemplate]: [
+    'Ethereum_Withdrawals_Widget',
+    'Click on "This guide will help you to do this" on success template after withdrawal request',
+    'eth_withdrawals_request_guide_success_template',
+  ],
+
+  // /withdrawal?tab=claim page
+  [MATOMO_CLICK_EVENTS_TYPES.claimViewOnEtherscanSuccessTemplate]: [
+    'Ethereum_Withdrawals_Widget',
+    'Click on "View on Etherscan" on success template after claim',
+    'eth_withdrawals_claim_view_on_etherscan_success_template',
+  ],
+
+  // /withdrawal and /withdrawal?tab=claim shared events
+  [MATOMO_CLICK_EVENTS_TYPES.withdrawalWhatAreStakingPenaltiesFAQ]: [
+    'Ethereum_Withdrawals_Widget',
+    'Push on "What Are Staking/Validator Penalties" in FAQ',
+    'eth_withdrawals_what_are_staking_penalties_FAQ',
+  ],
+  [MATOMO_CLICK_EVENTS_TYPES.withdrawalNFTGuideFAQ]: [
+    'Ethereum_Withdrawals_Widget',
+    'Push on "How do I add the Lido NFT to my wallet" guide link in FAQ',
+    'eth_withdrawals_how_to_add_nft_guide_FAQ',
   ],
 };

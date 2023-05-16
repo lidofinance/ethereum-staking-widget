@@ -23,6 +23,7 @@ import type { TokensWithdrawable } from 'features/withdrawals/types/tokens-withd
 
 import { useWithdrawalsContract } from './useWithdrawalsContract';
 import { useApprove } from 'shared/hooks/useApprove';
+import { MaxUint256 } from '@ethersproject/constants';
 
 // this encapsulates permit/approval & steth/wsteth flows
 const useWithdrawalRequestMethods = () => {
@@ -42,7 +43,7 @@ const useWithdrawalRequestMethods = () => {
       invariant(chainId, 'must have chainId');
       invariant(account, 'must have account');
       invariant(signature, 'must have signature');
-      invariant(requests, 'must have requests');
+      invariant(requests && requests.length > 0, 'must have requests');
       invariant(contractWeb3, 'must have contractWeb3');
 
       dispatchModalState({ type: 'signing' });
@@ -102,7 +103,7 @@ const useWithdrawalRequestMethods = () => {
       invariant(chainId, 'must have chainId');
       invariant(account, 'must have account');
       invariant(signature, 'must have signature');
-      invariant(requests, 'must have requests');
+      invariant(requests && requests.length > 0, 'must have requests');
       invariant(contractWeb3, 'must have contractWeb3');
 
       const params = [
@@ -158,7 +159,7 @@ const useWithdrawalRequestMethods = () => {
     async ({ requests }: { requests?: BigNumber[] }) => {
       invariant(chainId, 'must have chainId');
       invariant(account, 'must have account');
-      invariant(requests, 'must have requests');
+      invariant(requests && requests.length > 0, 'must have requests');
       invariant(contractWeb3, 'must have contractWeb3');
       invariant(providerWeb3, 'must have providerWeb3');
 
@@ -221,7 +222,7 @@ const useWithdrawalRequestMethods = () => {
     async ({ requests }: { requests?: BigNumber[] }) => {
       invariant(chainId, 'must have chainId');
       invariant(account, 'must have account');
-      invariant(requests, 'must have requests');
+      invariant(requests && requests.length > 0, 'must have requests');
       invariant(contractWeb3, 'must have contractWeb3');
       invariant(providerWeb3, 'must have providerWeb3');
       const isMultisig = await isContract(account, contractWeb3.provider);
@@ -338,6 +339,10 @@ export const useWithdrawalRequest = ({
     account ?? undefined,
   );
 
+  const isInfiniteAllowance = useMemo(() => {
+    return allowance.eq(MaxUint256);
+  }, [allowance]);
+
   // TODO streamline from hook to async callback
   const { gatherPermitSignature } = useERC20PermitSignature({
     value,
@@ -350,6 +355,7 @@ export const useWithdrawalRequest = ({
 
   const isApprovalFlowLoading =
     isMultisigLoading || (isApprovalFlow && loadingUseApprove);
+
   const isTokenLocked = isApprovalFlow && needsApprove;
 
   const request = useCallback(
@@ -357,7 +363,9 @@ export const useWithdrawalRequest = ({
       // define and set retry point
       const startCallback = async () => {
         try {
-          let shouldSkipSuccess = false;
+          // we can't know if tx was successful or even wait for it  with multisig
+          // so we exit flow gracefully and reset UI
+          const shouldSkipSuccess = isMultisig;
           setIsTxPending(true);
           const requestAmount = requests.reduce(
             (s, r) => s.add(r),
@@ -381,13 +389,8 @@ export const useWithdrawalRequest = ({
           if (isApprovalFlow) {
             if (needsApprove) {
               await approve();
-              if (isMultisig) {
-                // multisig exits the flow here
-                // skips success modal
-                shouldSkipSuccess = true;
-              } else {
-                await method({ requests });
-              }
+              // multisig does not move to next tx
+              if (!isMultisig) await method({ requests });
             } else {
               await method({ requests });
             }
@@ -431,6 +434,7 @@ export const useWithdrawalRequest = ({
   return {
     isTokenLocked,
     isApprovalFlow,
+    isInfiniteAllowance,
     allowance,
     isApprovalFlowLoading,
     request,

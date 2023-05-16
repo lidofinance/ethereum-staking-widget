@@ -8,6 +8,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { standardFetcher } from 'utils/standardFetcher';
 import { useRequestForm } from '../contexts/request-form-context';
 import { useWithdrawals } from '../contexts/withdrawals-context';
+import { STRATEGY_LAZY } from 'utils/swrStrategies';
 
 type getWithdrawalRatesParams = {
   amount: BigNumber;
@@ -38,7 +39,7 @@ const calculateRateReceive = (
   dest: BigNumber,
 ) => {
   const _rate = dest.mul(RATE_PRECISION_BN).div(src);
-  const toReceive = amount.mul(_rate).div(RATE_PRECISION_BN);
+  const toReceive = amount.mul(dest).div(src);
   const rate = _rate.toNumber() / RATE_PRECISION;
   return { rate, toReceive };
 };
@@ -237,8 +238,8 @@ export const useWithdrawalRates = ({
         token: selectedToken as TOKENS.STETH | TOKENS.WSTETH,
       }),
     {
+      ...STRATEGY_LAZY,
       isPaused: () => !debouncedAmount || !debouncedAmount._isBigNumber,
-      revalidateOnFocus: false,
     },
   );
 

@@ -15,6 +15,7 @@ import { iconsMap } from 'features/withdrawals/contexts/withdrawals-context';
 import { useRequestForm } from 'features/withdrawals/contexts/request-form-context';
 import { useRequestTxPrice } from 'features/withdrawals/hooks/useWithdrawTxPrice';
 import { useValidateUnstakeValue } from 'features/withdrawals/hooks/useValidateUnstakeValue';
+import { useCurrencyInput } from 'shared/forms/hooks/useCurrencyInput';
 
 import { InputNumber } from 'shared/forms/components/input-number';
 import { DataTableRowStethByWsteth } from 'shared/components/data-table-row-steth-by-wsteth';
@@ -22,12 +23,16 @@ import { InputDecoratorLocked } from 'shared/forms/components/input-decorator-lo
 import { InputDecoratorMaxButton } from 'shared/forms/components/input-decorator-max-button';
 import { InputDecoratorTvlStake } from 'features/withdrawals/shared/input-decorator-tvl-stake';
 import { FormatToken } from 'shared/formatters/format-token';
-import { useCurrencyInput } from 'shared/forms/hooks/useCurrencyInput';
+import { FormButton } from './form-button';
+import { InputGroupStyled } from './styles';
 
 import { RequestsInfo } from '../requestsInfo';
 
-import { FormButton } from './form-button';
-import { InputGroupStyled } from './styles';
+import {
+  trackMatomoEvent,
+  MATOMO_CLICK_EVENTS_TYPES,
+} from 'config/trackMatomoEvent';
+import { getTokenDisplayName } from 'utils/getTokenDisplayName';
 
 // TODO move to shared
 import { useApproveGasLimit } from 'features/wrap/features/wrap-form/hooks';
@@ -50,6 +55,7 @@ export const Form = () => {
   const {
     isApprovalFlowLoading,
     isApprovalFlow,
+    isInfiniteAllowance,
     isTokenLocked,
     request,
     isTxPending,
@@ -61,21 +67,22 @@ export const Form = () => {
   });
 
   const validateUnstakeValue = useValidateUnstakeValue({ minAmount });
-  const { requests, requestCount } = useSplitRequest(inputValue);
+  const { requests, requestCount, areRequestsValid } =
+    useSplitRequest(inputValue);
   const approveTxCostInUsd = useTxCostInUsd(useApproveGasLimit());
 
   const { txPriceUsd: requestTxPriceInUsd, loading: requestTxPriceLoading } =
     useRequestTxPrice({
       token,
-      isApprovalFlow: isApprovalFlow,
+      isApprovalFlow,
       requestCount,
     });
 
   const submit = useCallback(
     async (_: string, resetForm: () => void) => {
-      request(requests, resetForm);
+      if (withdrawalMethod == 'lido') request(requests, resetForm);
     },
-    [request, requests],
+    [request, requests, withdrawalMethod],
   );
 
   const {
@@ -105,10 +112,19 @@ export const Form = () => {
     [setToken, reset],
   );
 
+  const handleClickMax = useCallback(() => {
+    trackMatomoEvent(MATOMO_CLICK_EVENTS_TYPES.withdrawalMaxInput);
+    setMaxInputValue();
+  }, [setMaxInputValue]);
+
+  const unlockCostTooltip = isApprovalFlow ? undefined : (
+    <>Lido leverages gasless token approvals via ERC-2612 permits</>
+  );
+
   const showError = active && !!error && !tvlMessage;
 
   return (
-    <form method="post" onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit}>
       <InputGroupStyled
         fullwidth
         error={showError && error}
@@ -121,10 +137,10 @@ export const Form = () => {
           error={showError}
         >
           <Option leftDecorator={iconsMap[TOKENS.STETH]} value={TOKENS.STETH}>
-            Lido (stETH)
+            {getTokenDisplayName(TOKENS.STETH)}
           </Option>
           <Option leftDecorator={iconsMap[TOKENS.WSTETH]} value={TOKENS.WSTETH}>
-            Lido (wstETH)
+            {getTokenDisplayName(TOKENS.WSTETH)}
           </Option>
         </SelectIcon>
         <InputNumber
@@ -136,7 +152,7 @@ export const Form = () => {
             ) : (
               <>
                 <InputDecoratorMaxButton
-                  onClick={setMaxInputValue}
+                  onClick={handleClickMax}
                   disabled={isMaxDisabled}
                 />
                 {isTokenLocked ? <InputDecoratorLocked /> : undefined}
@@ -164,20 +180,15 @@ export const Form = () => {
           <FormButton
             isLocked={isTokenLocked}
             pending={isTxPending || isSubmitting}
-            disabled={!!error}
+            disabled={!!error || !areRequestsValid}
           />
+
           <DataTableRow
-            help={
-              isApprovalFlow ? undefined : (
-                <>Lido leverages gasless token approvals via ERC-2612 permits</>
-              )
-            }
+            help={unlockCostTooltip}
             title="Max unlock cost"
             loading={isApprovalFlowLoading}
           >
-            {isApprovalFlow && isTokenLocked
-              ? `$${approveTxCostInUsd?.toFixed(2)}`
-              : 'FREE'}
+            {isApprovalFlow ? `$${approveTxCostInUsd?.toFixed(2)}` : 'FREE'}
           </DataTableRow>
           <DataTableRow
             title="Max transaction cost"
@@ -186,7 +197,20 @@ export const Form = () => {
             ${requestTxPriceInUsd?.toFixed(2)}
           </DataTableRow>
           <DataTableRow title="Allowance" loading={isApprovalFlowLoading}>
-            <FormatToken showAmountTip amount={allowance} symbol={tokenLabel} />
+            {isInfiniteAllowance ? (
+              'Infinite'
+            ) : (
+              <FormatToken
+                style={{
+                  whiteSpace: 'nowrap',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  maxWidth: '50%',
+                }}
+                amount={allowance}
+                symbol={tokenLabel}
+              />
+            )}
           </DataTableRow>
           {tokenLabel === 'stETH' ? (
             <DataTableRow title="Exchange rate">1 stETH = 1 ETH</DataTableRow>

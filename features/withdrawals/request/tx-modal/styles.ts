@@ -1,13 +1,16 @@
 import styled from 'styled-components';
-import NFT from 'assets/icons/nft.svg';
+import NFTExample from 'assets/nft-example.png';
 
-export const NFTBunner = styled.div`
+export const NFTBanner = styled.div`
   position: relative;
   height: auto;
+  margin-top: 24px;
   padding: ${({ theme }) => theme.spaceMap.xxl}px;
   background-color: var(--lido-color-backgroundSecondary);
   display: flex;
   align-items: center;
+  flex-direction: column;
+  text-align: center;
   border-radius: ${({ theme }) => theme.borderRadiusesMap.lg}px;
   overflow: hidden;
 
@@ -16,55 +19,43 @@ export const NFTBunner = styled.div`
   }
 `;
 
-export const ContentStyled = styled.div`
+export const NFTImageWrap = styled.div`
   display: flex;
-  flex-direction: column;
   align-items: center;
-  text-align: center;
+  justify-content: center;
+  height: 180px;
 `;
 
-export const TitleStyled = styled.span`
-  line-height: 24px;
-  font-size: 14px;
-`;
-
-export const DescriptionStyled = styled.span`
-  margin-top: ${({ theme }) => theme.spaceMap.md}px;
-  line-height: 20px;
-  font-size: 12px;
-  color: var(--color-text-secondary);
-  opacity: 0.6;
-`;
-
-export const NFTBunnerWrapper = styled.div`
-  margin-top: 24px;
-`;
-
-export const NFTIcon = styled.img.attrs({
-  src: NFT,
+export const NFTImage = styled.img.attrs({
   alt: '',
 })`
   flex: 0 0 auto;
   display: block;
-  width: 160px;
-  height: 160px;
-  margin-right: 16px;
+  width: auto;
+  height: 100%;
+  border-radius: ${({ theme }) => theme.borderRadiusesMap.lg}px;
 
   ${({ theme }) => theme.mediaQueries.sm} {
     margin-right: 8px;
   }
 `;
 
-export const ButtonLinkWrap = styled.a`
-  display: block;
+export const NFTImageExample = styled(NFTImage).attrs({
+  src: NFTExample.src,
+})`
+  position: relative;
+  left: 20px;
+  height: 140%;
 `;
 
-export const ButtonWrapperStyled = styled.div`
+export const AddNftWrapper = styled.div`
   position: relative;
   margin-top: ${({ theme }) => theme.spaceMap.md}px;
   width: 100%;
 `;
 
-export const TextWrapper = styled.div`
+export const Title = styled.div`
   margin-top: ${({ theme }) => theme.spaceMap.xl}px;
+  line-height: 24px;
+  font-size: 14px;
 `;

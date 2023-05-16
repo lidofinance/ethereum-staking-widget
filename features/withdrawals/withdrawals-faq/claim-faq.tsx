@@ -11,6 +11,9 @@ import { WhySTETH } from './list/why-steth';
 import { SeparateClaim } from './list/separate-claim';
 import { ClaimableAmountDifference } from './list/claimable-amount-difference';
 import { WhatIsSlashing } from './list/what-is-slashing';
+import { LidoNFT } from './list/lido-nft';
+import { HowToAddNFT } from './list/add-nft';
+import { NFTNotChange } from './list/nft-not-change';
 
 export const ClaimFaq: React.FC = () => {
   const onClickHandler = useMatomoEventHandle();
@@ -24,8 +27,11 @@ export const ClaimFaq: React.FC = () => {
       <ConvertWSTETHtoETH />
       <WhySTETH />
       <SeparateClaim />
-      <ClaimableAmountDifference />
+      <ClaimableAmountDifference title="Why is the claimable amount different from my requested amount?" />
       <WhatIsSlashing />
+      <LidoNFT />
+      <HowToAddNFT />
+      <NFTNotChange />
     </Section>
   );
 };

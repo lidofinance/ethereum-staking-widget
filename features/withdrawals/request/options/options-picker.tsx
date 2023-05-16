@@ -21,6 +21,10 @@ import {
   OptionsPickerRow,
   OptionsPickerSubLabel,
 } from './styles';
+import {
+  trackMatomoEvent,
+  MATOMO_CLICK_EVENTS_TYPES,
+} from 'config/trackMatomoEvent';
 
 type OptionButtonProps = {
   onClick: React.ComponentProps<'button'>['onClick'];
@@ -40,7 +44,7 @@ const LidoButton: React.FC<OptionButtonProps> = ({ isActive, onClick }) => {
   const ratio = isSteth ? '1 : 1' : `1 : ${formatBalance(wstethAsStethBN)}`;
 
   return (
-    <OptionsPickerButton $active={isActive} onClick={onClick}>
+    <OptionsPickerButton type="button" $active={isActive} onClick={onClick}>
       <OptionsPickerRow>
         <OptionsPickerLabel>Use Lido</OptionsPickerLabel>
         <OptionsPickerIcons>
@@ -63,9 +67,9 @@ const DexButton: React.FC<OptionButtonProps> = ({ isActive, onClick }) => {
   const { loading, bestRate } = useWithdrawalRates({
     fallbackValue: DEFAULT_VALUE_FOR_RATE,
   });
-  const bestRateValue = bestRate ? `1 : ${bestRate}` : '-';
+  const bestRateValue = bestRate ? `1 : ${bestRate.toFixed(4)}` : '-';
   return (
-    <OptionsPickerButton $active={isActive} onClick={onClick}>
+    <OptionsPickerButton type="button" $active={isActive} onClick={onClick}>
       <OptionsPickerRow>
         <OptionsPickerLabel>Use aggregators</OptionsPickerLabel>
         <OptionsPickerIcons>
@@ -101,6 +105,7 @@ export const OptionsPicker: React.FC<OptionsPickerProps> = ({
         isActive={selectedOption === 'lido'}
         onClick={(e) => {
           e.preventDefault();
+          trackMatomoEvent(MATOMO_CLICK_EVENTS_TYPES.withdrawalUseLido);
           onOptionSelect?.('lido');
         }}
       />
@@ -108,6 +113,7 @@ export const OptionsPicker: React.FC<OptionsPickerProps> = ({
         isActive={selectedOption === 'dex'}
         onClick={(e) => {
           e.preventDefault();
+          trackMatomoEvent(MATOMO_CLICK_EVENTS_TYPES.withdrawalUseAggregators);
           onOptionSelect?.('dex');
         }}
       />

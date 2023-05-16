@@ -7,10 +7,11 @@ import { RewardsTableCellProps } from '../types';
 
 export const CurrencyChangeCell: FC<RewardsTableCellProps> = (props) => {
   const { value, currency, data, cellConfig } = props;
+  const isNegative = data?.direction === 'out' || data.type === 'withdrawal';
 
   return (
     <Td {...cellConfig} numeric>
-      <ChangeCellValueWrapper negative={data?.direction === 'out'}>
+      <ChangeCellValueWrapper negative={isNegative}>
         <span>{currency.symbol} </span>
         <NumberFormat number={value} currency />
       </ChangeCellValueWrapper>

@@ -16,6 +16,7 @@ import {
   WSTETH_APPROVE_GAS_LIMIT,
 } from 'config';
 import { BigNumber } from 'ethers';
+import { STRATEGY_LAZY } from 'utils/swrStrategies';
 
 export const useApproveGasLimit = () => {
   const steth = useSTETHContractRPC();
@@ -51,6 +52,7 @@ export const useApproveGasLimit = () => {
 
       return +gasLimit;
     },
+    STRATEGY_LAZY,
   );
 
   return data ?? WSTETH_APPROVE_GAS_LIMIT;

@@ -5,6 +5,10 @@ import { FormatToken } from 'shared/formatters';
 import { useRequestData } from 'features/withdrawals/contexts/request-data-context';
 import { useWaitingTime } from 'features/withdrawals/hooks';
 
+import {
+  trackMatomoEvent,
+  MATOMO_CLICK_EVENTS_TYPES,
+} from 'config/trackMatomoEvent';
 import { QueuInfoStyled, DataTableRowStyled } from './styles';
 
 export const WalletQueueTooltip = () => {
@@ -31,8 +35,20 @@ export const WalletQueueTooltip = () => {
   const tooltipTitle = (
     <>
       The withdrawal request time depends on the mode, overall amount of stETH
-      in queue and <Link href="#withdrawalsPeriod">other reasons</Link>.
-      {queueInfo}
+      in queue and{' '}
+      <Link href="#withdrawalsPeriod">
+        <a
+          aria-hidden="true"
+          onClick={() =>
+            trackMatomoEvent(
+              MATOMO_CLICK_EVENTS_TYPES.withdrawalOtherFactorsTooltipMode,
+            )
+          }
+        >
+          other factors
+        </a>
+      </Link>
+      .{queueInfo}
     </>
   );
 

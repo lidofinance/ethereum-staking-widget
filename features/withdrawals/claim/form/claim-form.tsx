@@ -27,18 +27,18 @@ export const ClaimForm = () => {
   const isEmpty = !isLoading && requests.length === 0;
 
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const txPriceInUsd = useClaimTxPrice();
+  const { claimTxPriceInUsd, loading: claimTxPriceLoading } = useClaimTxPrice();
   const claimMutation = useClaim();
 
   const claim = useCallback(() => {
     // fix (re)start point
     const startTx = async () => {
       setIsSubmitting(true);
-      return claimMutation(claimSelection.sortedSelectedRequests).finally(
-        () => {
-          setIsSubmitting(false);
-        },
-      );
+      try {
+        claimMutation(claimSelection.sortedSelectedRequests);
+      } finally {
+        setIsSubmitting(false);
+      }
     };
     // send it to state
     dispatchModalState({ type: 'set_starTx_callback', callback: startTx });
@@ -87,8 +87,11 @@ export const ClaimForm = () => {
         ) : (
           <Connect fullwidth />
         )}
-        <DataTableRow title="Max transaction cost" loading={!txPriceInUsd}>
-          ${txPriceInUsd?.toFixed(2)}
+        <DataTableRow
+          title="Max transaction cost"
+          loading={claimTxPriceLoading}
+        >
+          ${claimTxPriceInUsd?.toFixed(2)}
         </DataTableRow>
       </ClaimFormFooterSticky>
     </>

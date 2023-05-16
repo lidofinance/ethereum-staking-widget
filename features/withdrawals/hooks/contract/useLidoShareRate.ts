@@ -2,6 +2,7 @@ import { useSDK, useLidoSWR, SWRResponse } from '@lido-sdk/react';
 import { useSTETHContractRPC } from 'customSdk/contracts';
 import { BigNumber } from 'ethers';
 import { calcShareRate } from 'features/withdrawals/utils/calc-share-rate';
+import { STRATEGY_CONSTANT } from 'utils/swrStrategies';
 
 export const useLidoShareRate = (): SWRResponse<BigNumber> => {
   const { chainId } = useSDK();
@@ -15,5 +16,6 @@ export const useLidoShareRate = (): SWRResponse<BigNumber> => {
       ]);
       return calcShareRate(totalPooledEther, totalShares);
     },
+    STRATEGY_CONSTANT,
   );
 };

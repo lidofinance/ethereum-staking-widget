@@ -1,8 +1,10 @@
 import { FC, useMemo } from 'react';
+import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { Accordion, Link } from '@lidofinance/lido-ui';
+import { Accordion, Link as OuterLink } from '@lidofinance/lido-ui';
 import { getQueryParams } from 'utils';
 import { MATOMO_CLICK_EVENTS_TYPES } from 'config';
+import { trackMatomoEvent } from 'config/trackMatomoEvent';
 
 export const HowCanIGetWsteth: FC = () => {
   const router = useRouter();
@@ -22,20 +24,26 @@ export const HowCanIGetWsteth: FC = () => {
   return (
     <Accordion summary="How can I get wstETH?">
       <p>
-        You can wrap your stETH tokens using{' '}
-        <Link
-          href={link}
-          data-matomo={MATOMO_CLICK_EVENTS_TYPES.faqHowCanIGetWstethWrapLink}
-          target="_self"
+        You can wrap your stETH or ETH tokens using{' '}
+        <Link href={link}>
+          <a
+            onClick={() =>
+              trackMatomoEvent(
+                MATOMO_CLICK_EVENTS_TYPES.faqHowCanIGetWstethWrapLink,
+              )
+            }
+            aria-hidden="true"
+          >
+            Wrap &amp; Unwrap staking widget
+          </a>
+        </Link>{' '}
+        or{' '}
+        <OuterLink
+          href={'https://lido.fi/lido-ecosystem?tokens=wstETH&categories=Get'}
+          data-matomo={MATOMO_CLICK_EVENTS_TYPES.faqHowCanIGetStEthIntegrations}
         >
-          stake.lido.fi/wrap
-        </Link>
-        . Simply connect your wallet, unlock your stETH tokens and press Wrap.
-      </p>
-      <p>
-        You can also choose to convert your ETH to wstETH directly. To do this,
-        select ETH on the token drop down. This allows you to save on gas when
-        compared to swapping from ETH to stETH to wstETH.
+          DEX Lido integrations
+        </OuterLink>
       </p>
     </Accordion>
   );

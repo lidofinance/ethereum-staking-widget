@@ -5,16 +5,10 @@ export const WhatIsSteth: FC = () => {
   return (
     <Accordion summary="What is stETH?">
       <p>
-        stETH is a token that represents staked ether in Lido, combining the
-        value of initial deposit + staking rewards. stETH tokens are minted upon
-        deposit and burned when redeemed. stETH token balances are issued 1:1 to
-        the ethers that are staked by Lido. stETH token&apos;s balances are
-        updated when the oracle reports change in total stake every day.
-      </p>
-      <p>
-        stETH tokens can be used as one would use ether, allowing you to get
-        Beacon chain staking rewards whilst benefiting from e.g. rewards across
-        decentralized finance products.
+        stETH is a transferable rebasing utility token representing a share of
+        the total ETH staked through the protocol, which consists of user
+        deposits and staking rewards. Because stETH rebases daily, it
+        communicates the position of the share daily.
       </p>
     </Accordion>
   );

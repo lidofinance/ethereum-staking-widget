@@ -9,7 +9,7 @@ export const BunkerMode: React.FC = () => {
         protocol’s rewards).
       </p>
       <p>
-        Importantly, Bunker mode allows for orderly withdrawals to still be
+        Importantly, Bunker mode allows for orderly withdrawals to be still
         processed, albeit more slowly, during chaotic tail-risk scenarios (e.g.
         mass slashings or a significant portion of NO validators going offline).
       </p>
