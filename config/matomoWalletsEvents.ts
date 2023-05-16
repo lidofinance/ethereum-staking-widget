@@ -217,7 +217,7 @@ export const MATOMO_WALLETS_EVENTS: Record<
   [MATOMO_WALLETS_EVENTS_TYPES.onClickZerion]: [
     'Ethereum_Staking_Widget',
     'Connect Zerion wallet',
-    'eth_widget_connect_zerion',
+    'eth_widget_click_zerion',
   ],
   [MATOMO_WALLETS_EVENTS_TYPES.onConnectZerion]: [
     'Ethereum_Staking_Widget',
