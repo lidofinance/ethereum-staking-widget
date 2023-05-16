@@ -200,7 +200,7 @@ export const Form: FC<FromProps> = (props) => {
           error={error}
         >
           <Option leftDecorator={iconsMap[TOKENS.STETH]} value={TOKENS.STETH}>
-            Lido (STETH)
+            {`Lido (${getTokenDisplayName(TOKENS.STETH)})`}
           </Option>
           <Option leftDecorator={iconsMap[ETH]} value={ETH}>
             Ethereum (ETH)
