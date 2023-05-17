@@ -23,7 +23,7 @@ export const UnstakeAmountBoundaries: React.FC = () => {
       </p>
       <p>
         If you want to withdraw more than {maxAmountDisplay} stETH, your
-        withdrawals request will be split into several requests, but you will
+        withdrawal request will be split into several requests, but you will
         still only pay one transaction fee.
       </p>
     </Accordion>
