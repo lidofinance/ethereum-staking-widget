@@ -31,12 +31,7 @@ const RequestItemRaw: React.FC<RequestItemProps> = ({ request }) => {
     'claimableEth' in request ? request.claimableEth : request.amountOfStETH;
   const symbol = 'claimableEth' in request ? 'ETH' : 'stETH';
   const label = (
-    <FormatToken
-      showAmountTip
-      approx={false}
-      amount={amountValue}
-      symbol={symbol}
-    />
+    <FormatToken showAmountTip amount={amountValue} symbol={symbol} />
   );
   // const expectedEth = 'expectedEth' in request ? request.expectedEth : undefined
 

@@ -49,7 +49,6 @@ const WalletComponent: WalletComponentType = (props) => {
           value={
             <>
               <FormatToken
-                approx={false}
                 showAmountTip
                 amount={stethBalance.data}
                 symbol="stETH"
@@ -68,7 +67,6 @@ const WalletComponent: WalletComponentType = (props) => {
           value={
             <>
               <FormatToken
-                approx={false}
                 showAmountTip
                 amount={wstethBalance.data}
                 symbol="wstETH"

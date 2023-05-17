@@ -36,7 +36,6 @@ const WalletComponent: WalletComponentType = (props) => {
           value={
             <FormatToken
               showAmountTip
-              approx={false}
               amount={stakeableEther.data}
               symbol="ETH"
             />
@@ -52,12 +51,7 @@ const WalletComponent: WalletComponentType = (props) => {
           loading={steth.initialLoading}
           value={
             <>
-              <FormatToken
-                approx={false}
-                showAmountTip
-                amount={steth.data}
-                symbol="stETH"
-              />
+              <FormatToken showAmountTip amount={steth.data} symbol="stETH" />
               <TokenToWallet address={stethAddress} />
             </>
           }
