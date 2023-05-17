@@ -45,7 +45,7 @@ export const enum MATOMO_CLICK_EVENTS_TYPES {
   withdrawalUseLido = 'withdrawalUseLido',
   withdrawalUseAggregators = 'withdrawalUseAggregators',
   withdrawalMaxInput = 'withdrawalMaxInput',
-  withdrawalOtherReasonsTooltipMode = 'withdrawalOtherReasonsTooltipMode',
+  withdrawalOtherFactorsTooltipMode = 'withdrawalOtherFactorsTooltipMode',
   withdrawalFAQtooltipEthAmount = 'withdrawalFAQtooltipEthAmount',
   withdrawalGoTo1inch = 'withdrawalGoTo1inch',
   withdrawalGoToCowSwap = 'withdrawalGoToCowSwap',
@@ -253,9 +253,9 @@ export const MATOMO_CLICK_EVENTS: Record<
     'Click on "Max" in input on Request tab',
     'eth_withdrawals_request_max_input',
   ],
-  [MATOMO_CLICK_EVENTS_TYPES.withdrawalOtherReasonsTooltipMode]: [
+  [MATOMO_CLICK_EVENTS_TYPES.withdrawalOtherFactorsTooltipMode]: [
     'Ethereum_Withdrawals_Widget',
-    'Push «other reasons» in tooltip near Withdrawals mode on Request tab',
+    'Push «other factors in tooltip near Withdrawals mode on Request tab',
     'eth_withdrawals_request_other_reasons_tooltip_mode',
   ],
   [MATOMO_CLICK_EVENTS_TYPES.withdrawalFAQtooltipEthAmount]: [
