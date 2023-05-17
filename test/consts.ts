@@ -25,10 +25,6 @@ export const GET_REQUESTS: GetRequest[] = [
     },
   },
   {
-    uri: '/api/steth-apr',
-    schema: { type: 'string' },
-  },
-  {
     uri: `/api/short-lido-stats?chainId=${CONFIG.STAND_CONFIG.chainId}`,
     schema: {
       type: 'object',
@@ -345,29 +341,6 @@ export const GET_REQUESTS: GetRequest[] = [
             'owner',
             'countOps',
           ],
-          additionalProperties: false,
-        },
-      },
-      required: ['data'],
-      additionalProperties: false,
-    },
-  },
-  {
-    uri: '/api/apr',
-    schema: {
-      type: 'object',
-      properties: {
-        data: {
-          type: 'object',
-          properties: {
-            eth: {
-              type: 'string',
-            },
-            steth: {
-              type: 'string',
-            },
-          },
-          required: ['eth', 'steth'],
           additionalProperties: false,
         },
       },
