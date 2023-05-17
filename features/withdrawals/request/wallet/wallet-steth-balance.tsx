@@ -6,7 +6,7 @@ export const WalletStethBalance = () => {
   const { stethBalance } = useRequestData();
 
   const stethBalanceValue = (
-    <FormatToken amount={stethBalance.data} symbol="stETH" />
+    <FormatToken showAmountTip amount={stethBalance.data} symbol="stETH" />
   );
 
   return (

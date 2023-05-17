@@ -7,7 +7,6 @@ export const ETHPLORER_TOKEN_ENDPOINT =
 export const HEALTHY_RPC_SERVICES_ARE_OVER = 'Healthy RPC services are over!';
 
 export const enum API_ROUTES {
-  APR = 'api/apr',
   ETH_APR = 'api/eth-apr',
   ETH_PRICE = 'api/eth-price',
   LDO_STATS = 'api/ldo-stats',
@@ -15,7 +14,6 @@ export const enum API_ROUTES {
   LIDOSTATS = 'api/lidostats',
   ONEINCH_RATE = 'api/oneinch-rate',
   SHORT_LIDO_STATS = 'api/short-lido-stats',
-  STETH_APR = 'api/steth-apr',
   SMA_STETH_APR = 'api/sma-steth-apr',
   TOTALSUPPLY = 'api/totalsupply',
   RPC = 'api/rpc',

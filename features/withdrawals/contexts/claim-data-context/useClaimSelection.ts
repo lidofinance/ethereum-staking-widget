@@ -1,5 +1,8 @@
 import { type RequestStatusClaimable } from 'features/withdrawals/types/request-status';
-import { MAX_REQUESTS_COUNT } from 'features/withdrawals/withdrawals-constants';
+import {
+  MAX_REQUESTS_COUNT,
+  DEFAULT_CLAIM_REQUEST_SELECTED,
+} from 'features/withdrawals/withdrawals-constants';
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
@@ -77,7 +80,9 @@ export const useClaimSelection = (
       setSelectionState({ selection_set: new Set() });
     } else {
       setSelectedMany(
-        claimableRequests.slice(0, MAX_REQUESTS_COUNT).map((r) => r.stringId),
+        claimableRequests
+          .slice(0, DEFAULT_CLAIM_REQUEST_SELECTED)
+          .map((r) => r.stringId),
       );
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

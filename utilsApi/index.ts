@@ -1,6 +1,5 @@
 export * from './fetchRPC';
 export * from './getEthApr';
-export * from './getStethApr';
 export * from './getStEthPrice';
 export * from './getTotalStaked';
 export * from './getLidoHoldersViaSubgraphs';

@@ -54,7 +54,7 @@ export const LidoOption = () => {
       <LidoIcon />
       Lido
       <LidoOptionValue>
-        <FormatTokenStyled amount={ethAmount} symbol="ETH" />{' '}
+        <FormatTokenStyled showAmountTip amount={ethAmount} symbol="ETH" />{' '}
         <TooltipWithdrawalAmount />
       </LidoOptionValue>
     </LidoOptionContainer>

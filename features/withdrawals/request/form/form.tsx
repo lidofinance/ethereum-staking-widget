@@ -201,12 +201,7 @@ export const Form = () => {
               'Infinite'
             ) : (
               <FormatToken
-                style={{
-                  whiteSpace: 'nowrap',
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                  maxWidth: '50%',
-                }}
+                showAmountTip
                 amount={allowance}
                 symbol={tokenLabel}
               />
