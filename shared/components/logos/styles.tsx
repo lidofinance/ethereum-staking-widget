@@ -10,3 +10,13 @@ export const LogoLDOPLStyle = styled((props) => <Ldopl {...props} />)`
   width: 40px;
   height: 40px;
 `;
+
+export const LogoLidoStyle = styled.div`
+  overflow: hidden;
+  flex-shrink: 0;
+  cursor: pointer;
+
+  ${({ theme }) => theme.mediaQueries.md} {
+    width: 14px;
+  }
+`;

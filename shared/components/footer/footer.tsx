@@ -1,9 +1,11 @@
 import { FC } from 'react';
 import { Link } from '@lidofinance/lido-ui';
-import { FooterStyle, FooterItemStyle } from './styles';
+
+import { FooterStyle, FooterItemStyle, LogoLidoStyle } from './styles';
 
 export const Footer: FC = () => (
   <FooterStyle size="full" forwardedAs="footer">
+    <LogoLidoStyle />
     <FooterItemStyle>
       <Link href="https://lido.fi/privacy-notice">Privacy Notice</Link>
     </FooterItemStyle>
