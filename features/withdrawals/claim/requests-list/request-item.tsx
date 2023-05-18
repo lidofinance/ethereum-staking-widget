@@ -15,6 +15,7 @@ import {
 
 import { getNFTUrl } from 'utils';
 import type { RequestStatusesUnion } from 'features/withdrawals/types/request-status';
+import { useWaitingTime } from 'features/withdrawals/hooks/useWaitingTime';
 
 type RequestItemProps = {
   request: RequestStatusesUnion;
@@ -76,6 +77,7 @@ export const RequestItem: React.FC<RequestItemProps> = ({ request }) => {
 const RequestStatus: React.FC<{ status: 'ready' | 'pending' }> = ({
   status,
 }) => {
+  const waitingTime = useWaitingTime('');
   const statusText = status === 'ready' ? 'Ready to claim' : 'Pending';
   const body = (
     <RequestsStatusStyled $variant={status}>
@@ -86,11 +88,7 @@ const RequestStatus: React.FC<{ status: 'ready' | 'pending' }> = ({
   );
   if (status === 'pending')
     return (
-      <Tooltip
-        title={
-          'Under normal circumstances, the withdrawal period can take anywhere between 1-5 days.'
-        }
-      >
+      <Tooltip title={`Current withdrawal period is ${waitingTime.value}.`}>
         {body}
       </Tooltip>
     );
