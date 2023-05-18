@@ -1,10 +1,17 @@
-import { memo, useCallback } from 'react';
+import { useCallback } from 'react';
 import { useWeb3 } from 'reef-knot/web3-react';
 import { useClaimData } from 'features/withdrawals/contexts/claim-data-context';
 
-import { Checkbox, External } from '@lidofinance/lido-ui';
+import { Checkbox, External, Tooltip } from '@lidofinance/lido-ui';
 import { FormatToken } from 'shared/formatters';
-import { RequestStyled, RequestsStatusStyled, LinkStyled } from './styles';
+import {
+  RequestStyled,
+  RequestsStatusStyled,
+  LinkStyled,
+  DesktopStatus,
+  MobileStatusIcon,
+  RequestInfoIcon,
+} from './styles';
 
 import { getNFTUrl } from 'utils';
 import type { RequestStatusesUnion } from 'features/withdrawals/types/request-status';
@@ -13,7 +20,7 @@ type RequestItemProps = {
   request: RequestStatusesUnion;
 };
 
-const RequestItemRaw: React.FC<RequestItemProps> = ({ request }) => {
+export const RequestItem: React.FC<RequestItemProps> = ({ request }) => {
   const { chainId } = useWeb3();
   const { claimSelection } = useClaimData();
   const {
@@ -25,7 +32,6 @@ const RequestItemRaw: React.FC<RequestItemProps> = ({ request }) => {
 
   const isSelected = getIsSelected(request.stringId);
   const isDisabled = !isFinalized || (!isSelected && !canSelectMore);
-  const statusText = isFinalized ? 'Ready to claim' : 'Pending';
 
   const amountValue =
     'claimableEth' in request ? request.claimableEth : request.amountOfStETH;
@@ -59,9 +65,7 @@ const RequestItemRaw: React.FC<RequestItemProps> = ({ request }) => {
           <FormatToken prefix="~" amount={expectedEth} symbol="ETH" />)
         </>
       )} */}
-      <RequestsStatusStyled $variant={isFinalized ? 'ready' : 'pending'}>
-        {statusText}
-      </RequestsStatusStyled>
+      <RequestStatus status={isFinalized ? 'ready' : 'pending'} />
       <LinkStyled href={getNFTUrl(tokenId, chainId)}>
         <External />
       </LinkStyled>
@@ -69,4 +73,26 @@ const RequestItemRaw: React.FC<RequestItemProps> = ({ request }) => {
   );
 };
 
-export const RequestItem = memo(RequestItemRaw);
+const RequestStatus: React.FC<{ status: 'ready' | 'pending' }> = ({
+  status,
+}) => {
+  const statusText = status === 'ready' ? 'Ready to claim' : 'Pending';
+  const body = (
+    <RequestsStatusStyled $variant={status}>
+      <DesktopStatus>{statusText}</DesktopStatus>
+      <MobileStatusIcon $variant={status} />
+      {status === 'pending' && <RequestInfoIcon />}
+    </RequestsStatusStyled>
+  );
+  if (status === 'pending')
+    return (
+      <Tooltip
+        title={
+          'Under normal circumstances, the withdrawal period can take anywhere between 1-5 days.'
+        }
+      >
+        {body}
+      </Tooltip>
+    );
+  return body;
+};
