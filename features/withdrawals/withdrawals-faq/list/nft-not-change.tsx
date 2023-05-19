@@ -6,7 +6,7 @@ export const NFTNotChange: React.FC = () => {
       <p>
         Maybe your wallet doesn’t support the automatic changing of the NFT
         view. To renew the NFT, you can import the Address and Token ID of your
-        NFT, and it could change it&apos;s appearance to a new “ready to claim”
+        NFT, and it could change it&apos;s appearance to a new “Ready to claim”
         one.
       </p>
     </Accordion>
