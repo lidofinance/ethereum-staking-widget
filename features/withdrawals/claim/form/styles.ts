@@ -1,5 +1,5 @@
 import styled, { css } from 'styled-components';
-import { Block, Button, ThemeName } from '@lidofinance/lido-ui';
+import { Block, Button } from '@lidofinance/lido-ui';
 
 export const EditClaimButtonStyled = styled(Button)`
   margin-bottom: ${({ theme }) => theme.spaceMap.md}px;
@@ -17,8 +17,7 @@ export const ClaimFooterBodyEnder = styled.div`
   --r-1: ${({ theme }) => theme.borderRadiusesMap.md - 1}px;
   --g: #0000 98%, #000;
   /* It should be --lido-color-accentBorder, but it can't be used here because it has transparency */
-  --border-color: ${({ theme }) =>
-    theme.name === ThemeName.light ? '#d2d6e0' : '#414148'};
+  --border-color: var(--lido-color-foreground);
 
   position: absolute;
   display: block;
