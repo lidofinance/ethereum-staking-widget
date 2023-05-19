@@ -9,7 +9,7 @@ import NoSSRWrapper from 'shared/components/no-ssr-wrapper';
 
 import { WithdrawalsTabs } from 'features/withdrawals';
 import { WithdrawalsProvider } from 'features/withdrawals/contexts/withdrawals-context';
-import Page404 from './404';
+import { LedgerNoticeBlock } from 'features/withdrawals/shared/ledger-notice';
 
 const Withdrawals: FC = () => {
   const { account } = useWeb3();
@@ -17,7 +17,6 @@ const Withdrawals: FC = () => {
   const appFlag = useAppFlag();
   const { isLedgerLive } = useConnectorInfo();
   const shouldHideWithdrawals = appFlag === 'ledger-live' || isLedgerLive;
-  if (shouldHideWithdrawals) return <Page404 />;
 
   return (
     <Layout
@@ -27,12 +26,31 @@ const Withdrawals: FC = () => {
       <Head>
         <title>Withdrawals | Lido</title>
       </Head>
-      <WithdrawalsProvider>
-        <NoSSRWrapper>
-          {/* In order to simplify side effects of switching wallets we remount the whole widget, resetting all internal state */}
-          <WithdrawalsTabs key={account ?? 'NO_ACCOUNT'} />
-        </NoSSRWrapper>
-      </WithdrawalsProvider>
+      {shouldHideWithdrawals ? (
+        <LedgerNoticeBlock>
+          <p>
+            <b>Withdrawals are currently disabled for Ledger Live</b>
+          </p>
+          <p>
+            Please visit{' '}
+            <a
+              target="_blank"
+              rel="noreferrer"
+              href="https://stake.lido.fi/withdrawals"
+            >
+              stake.lido.fi
+            </a>{' '}
+            to access withdrawals with your Ledger
+          </p>
+        </LedgerNoticeBlock>
+      ) : (
+        <WithdrawalsProvider>
+          <NoSSRWrapper>
+            {/* In order to simplify side effects of switching wallets we remount the whole widget, resetting all internal state */}
+            <WithdrawalsTabs key={account ?? 'NO_ACCOUNT'} />
+          </NoSSRWrapper>
+        </WithdrawalsProvider>
+      )}
     </Layout>
   );
 };
