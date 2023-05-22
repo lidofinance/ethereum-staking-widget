@@ -24,15 +24,17 @@ const TooltipWithdrawalAmount = () => {
         <>
           The final amount of claimable ETH can differ
           <br /> For more info, please read{' '}
-          <Link
-            href="#amountDifferentFromRequested"
-            onClick={() =>
-              trackMatomoEvent(
-                MATOMO_CLICK_EVENTS_TYPES.withdrawalFAQtooltipEthAmount,
-              )
-            }
-          >
-            FAQ
+          <Link href="#amountDifferentFromRequested">
+            <a
+              aria-hidden="true"
+              onClick={() =>
+                trackMatomoEvent(
+                  MATOMO_CLICK_EVENTS_TYPES.withdrawalFAQtooltipEthAmount,
+                )
+              }
+            >
+              FAQ
+            </a>
           </Link>
         </>
       }
@@ -52,7 +54,7 @@ export const LidoOption = () => {
       <LidoIcon />
       Lido
       <LidoOptionValue>
-        <FormatTokenStyled amount={ethAmount} symbol="ETH" />{' '}
+        <FormatTokenStyled showAmountTip amount={ethAmount} symbol="ETH" />{' '}
         <TooltipWithdrawalAmount />
       </LidoOptionValue>
     </LidoOptionContainer>

@@ -29,7 +29,6 @@ const routes = [
 ];
 export const Navigation: FC = memo(() => {
   const router = useRouter();
-
   return (
     <Nav>
       {routes.map(({ name, path, icon }) => (
