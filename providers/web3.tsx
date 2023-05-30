@@ -5,6 +5,9 @@ import { backendRPC, getBackendRPCPath, dynamics } from 'config';
 import { WagmiConfig, createClient, configureChains } from 'wagmi';
 import * as wagmiChains from 'wagmi/chains';
 import { jsonRpcProvider } from 'wagmi/providers/jsonRpc';
+import getConfig from 'next/config';
+
+const { publicRuntimeConfig } = getConfig();
 
 const supportedChains = Object.values(wagmiChains).filter((chain) =>
   dynamics.supportedChains.includes(chain.id),
@@ -12,6 +15,7 @@ const supportedChains = Object.values(wagmiChains).filter((chain) =>
 
 const connectors = getConnectors({
   rpc: backendRPC,
+  walletconnectProjectId: publicRuntimeConfig.walletconnectProjectId,
 });
 
 const { provider, webSocketProvider } = configureChains(supportedChains, [
@@ -35,6 +39,7 @@ const Web3Provider: FC = ({ children }) => (
       defaultChainId={dynamics.defaultChain}
       supportedChainIds={dynamics.supportedChains}
       rpc={backendRPC}
+      walletconnectProjectId={publicRuntimeConfig.walletconnectProjectId}
     >
       {children}
     </ProviderWeb3>

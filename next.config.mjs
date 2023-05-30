@@ -27,8 +27,6 @@ const subgraphKintsugi = process.env.SUBGRAPH_KINTSUGI;
 
 const subgraphRequestTimeout = process.env.SUBGRAPH_REQUEST_TIMEOUT;
 
-const metricsPort = process.env.METRICS_PORT ?? 3001;
-
 const analyzeBundle = process.env.ANALYZE_BUNDLE ?? false;
 
 // rate limit
@@ -36,8 +34,8 @@ const rateLimit = process.env.RATE_LIMIT || 100;
 const rateLimitTimeFrame = process.env.RATE_LIMIT_TIME_FRAME || 60; // 1 minute;
 
 const rewardsBackendAPI = process.env.REWARDS_BACKEND;
-
 const defaultChain = process.env.DEFAULT_CHAIN;
+const walletconnectProjectId = process.env.WALLETCONNECT_PROJECT_ID;
 
 const withBundleAnalyzer = NextBundleAnalyzer({
   enabled: analyzeBundle,
@@ -124,11 +122,13 @@ export default withBundleAnalyzer({
     subgraphKovan,
     subgraphKintsugi,
     subgraphRequestTimeout,
-    metricsPort,
     rateLimit,
     rateLimitTimeFrame,
     ethAPIBasePath,
     rewardsBackendAPI,
     defaultChain,
+  },
+  publicRuntimeConfig: {
+    walletconnectProjectId,
   },
 });
