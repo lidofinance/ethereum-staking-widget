@@ -78,7 +78,6 @@ export const WrapForm: FC = memo(() => {
   const wrapTxCostInUsd = useTxCostInUsd(wrapGasLimit);
 
   const oneWstethConverted = useWstethBySteth(oneSteth);
-  const amountWstethConverted = useWstethBySteth(inputValueAsBigNumber);
 
   const openTxModal = useCallback(() => {
     setTxModalOpen(true);
@@ -169,9 +168,6 @@ export const WrapForm: FC = memo(() => {
       />
 
       <DataTable>
-        <DataTableRow title="You will receive" loading={!amountWstethConverted}>
-          <FormatToken amount={amountWstethConverted} symbol="wstETH" />
-        </DataTableRow>
         <DataTableRow title="Max unlock fee" loading={!approveTxCostInUsd}>
           ${approveTxCostInUsd?.toFixed(2)}
         </DataTableRow>
