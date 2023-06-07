@@ -367,6 +367,7 @@ export const TxStageModal: FC<TxStageModalProps> = memo(
     return (
       <Modal
         {...modalProps}
+        open={modalProps.open && !!content}
         onClose={isCloseButtonHidden ? undefined : modalProps.onClose}
       >
         {content}
