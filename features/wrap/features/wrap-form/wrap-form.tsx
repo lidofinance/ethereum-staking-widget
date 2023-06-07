@@ -116,8 +116,6 @@ export const WrapForm: FC = memo(() => {
 
         /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
       } catch (error: any) {
-        console.error(error);
-        // errors are sometimes nested :(
         setTxModalFailedText(getErrorMessage(error));
         setTxStage(TX_STAGE.FAIL);
         openTxModal();

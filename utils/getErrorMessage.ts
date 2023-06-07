@@ -40,8 +40,9 @@ const extractCodeFromError = (
   // early exit on non object error
   if (!error || typeof error != 'object') return 0;
 
-  if ('reason' in error && Array.isArray(error.reason)) {
-    if (error.reason.includes('STAKE_LIMIT')) return 'LIMIT_REACHED';
+  if ('reason' in error) {
+    if (typeof error.reason == 'string' && error.reason.includes('STAKE_LIMIT'))
+      return 'LIMIT_REACHED';
     // TODO: error.reason more cases
   }
 
