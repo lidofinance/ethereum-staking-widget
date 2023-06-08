@@ -200,7 +200,6 @@ export const DexOptionStyled = styled.div<{ $loading?: boolean }>`
   border-radius: ${({ theme }) => theme.borderRadiusesMap.lg}px;
   padding: 16px 20px;
 
-  width: 100%;
   display: grid;
   gap: 5px 16px;
   grid-template: 1fr 1fr / 44px max-content;
@@ -212,6 +211,13 @@ export const DexOptionStyled = styled.div<{ $loading?: boolean }>`
     align-self: center;
     width: 44px;
   }
+`;
+
+export const DexOptionLoader = styled(InlineLoader)`
+  display: block;
+  width: 100%;
+  min-height: 82px;
+  border-radius: ${({ theme }) => theme.borderRadiusesMap.lg}px;
 `;
 
 export const DexOptionBlockTitle = styled.span`
