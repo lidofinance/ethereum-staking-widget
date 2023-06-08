@@ -2141,10 +2141,10 @@
   dependencies:
     "@lidofinance/blocks-connect-wallet-modal" "2.11.2"
 
-"@lidofinance/lido-ui@^3.6.1":
-  version "3.6.1"
-  resolved "https://registry.yarnpkg.com/@lidofinance/lido-ui/-/lido-ui-3.6.1.tgz#ad64cbb9eb21873dd5a5b3090d9300903a90bd45"
-  integrity sha512-aowyhWdQdHDebFDWEIC3KWPXunDjqcmHNicy0waEdSMrTtBplaf6t+DaTNFMY9p0Drxy0KQ4P8YA3kSQVo5AdQ==
+"@lidofinance/lido-ui@^3.7.3":
+  version "3.7.3"
+  resolved "https://registry.yarnpkg.com/@lidofinance/lido-ui/-/lido-ui-3.7.3.tgz#3c7309313b6019db2246eb4d0273e7a99391a48f"
+  integrity sha512-824doxlbpn2ISS/5DPzUZTforcMaChxGboxNm19sJc82dbTea1K7E+KAcW3ms23MSGzC2PyStiE6tnF67y1BjQ==
   dependencies:
     "@styled-system/should-forward-prop" "5.1.5"
     "@swc/helpers" "^0.4.11"
@@ -2154,7 +2154,7 @@
     react-toastify "7.0.4"
     react-transition-group "4"
     styled-system "5.1.5"
-    ua-parser-js "^1.0.2"
+    ua-parser-js "^1.0.35"
     use-callback-ref "1.2.5"
 
 "@lidofinance/next-api-wrapper@^0.16.0":
@@ -10187,7 +10187,7 @@ ua-parser-js@^0.7.24:
   resolved "https://registry.yarnpkg.com/ua-parser-js/-/ua-parser-js-0.7.33.tgz#1d04acb4ccef9293df6f70f2c3d22f3030d8b532"
   integrity sha512-s8ax/CeZdK9R/56Sui0WM6y9OFREJarMRHqLB2EwkovemBxNQ+Bqu8GAsUnVcXKgphb++ghr/B2BZx4mahujPw==
 
-ua-parser-js@^1.0.2:
+ua-parser-js@^1.0.35:
   version "1.0.35"
   resolved "https://registry.yarnpkg.com/ua-parser-js/-/ua-parser-js-1.0.35.tgz#c4ef44343bc3db0a3cbefdf21822f1b1fc1ab011"
   integrity sha512-fKnGuqmTBnIE+/KXSzCn4db8RTigUzw1AN0DmdU6hJovUTbYJKyqj+8Mt1c4VfRDnOVJnENmfYkIPZ946UrSAA==
