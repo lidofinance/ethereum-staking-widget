@@ -35,7 +35,6 @@ const rateLimitTimeFrame = process.env.RATE_LIMIT_TIME_FRAME || 60; // 1 minute;
 
 const rewardsBackendAPI = process.env.REWARDS_BACKEND;
 const defaultChain = process.env.DEFAULT_CHAIN;
-const walletconnectProjectId = process.env.WALLETCONNECT_PROJECT_ID;
 
 const withBundleAnalyzer = NextBundleAnalyzer({
   enabled: analyzeBundle,
@@ -127,8 +126,5 @@ export default withBundleAnalyzer({
     ethAPIBasePath,
     rewardsBackendAPI,
     defaultChain,
-  },
-  publicRuntimeConfig: {
-    walletconnectProjectId,
   },
 });

@@ -30,3 +30,5 @@ export const enableQaHelpers = toBoolean(process.env.ENABLE_QA_HELPERS);
 export const ethAPIBasePath = process.env.ETH_API_BASE_PATH;
 /** @type string */
 export const wqAPIBasePath = process.env.WQ_API_BASE_PATH;
+/** @type string */
+export const walletconnectProjectId = process.env.WALLETCONNECT_PROJECT_ID;
