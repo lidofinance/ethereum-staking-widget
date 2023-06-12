@@ -7,9 +7,9 @@ import { MaxUint256 } from '@ethersproject/constants';
 import { BigNumber, TypedDataDomain } from 'ethers';
 
 import { useSDK } from '@lido-sdk/react';
-import { useWeb3 } from 'reef-knot/web3-react';
 
-import { Eip2612, StethPermitAbi } from 'generated';
+import { Erc20Abi, StethAbi } from '@lido-sdk/contracts';
+import { useWeb3 } from 'reef-knot/web3-react';
 
 export enum PermitType {
   AMOUNT = 1,
@@ -34,7 +34,7 @@ type UseERC20PermitSignatureResult = {
 };
 
 type UseERC20PermitSignatureProps<
-  T extends Pick<Eip2612, 'nonces' | 'address'>,
+  T extends Pick<Erc20Abi, 'nonces' | 'address'>,
 > = {
   value: string;
   tokenProvider: T | null;
@@ -43,7 +43,7 @@ type UseERC20PermitSignatureProps<
 
 const INFINITY_DEADLINE_VALUE = MaxUint256;
 
-const isStethPermit = (provider: unknown): provider is StethPermitAbi => {
+const isStethPermit = (provider: unknown): provider is StethAbi => {
   if (typeof provider !== 'object' || provider === null) return false;
   if ('eip712Domain' in provider) return true;
 
@@ -59,7 +59,7 @@ const EIP2612_TYPE = [
 ];
 
 export const useERC20PermitSignature = <
-  T extends Pick<Eip2612, 'nonces' | 'address'>,
+  T extends Pick<Erc20Abi, 'nonces' | 'address'>,
 >({
   value,
   tokenProvider,

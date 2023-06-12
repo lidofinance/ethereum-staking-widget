@@ -1,13 +1,12 @@
+import {
+  useWithdrawalQueueContractWeb3,
+  useWithdrawalQueueContractRPC,
+} from '@lido-sdk/react';
 import { useWeb3 } from 'reef-knot/web3-react';
 
-import {
-  useWithdrawalRequestNFTRPC,
-  useWithdrawalRequestNFTWeb3,
-} from 'customSdk/contracts';
-
 export const useWithdrawalsContract = () => {
-  const contractWeb3 = useWithdrawalRequestNFTWeb3();
-  const contractRpc = useWithdrawalRequestNFTRPC();
+  const contractWeb3 = useWithdrawalQueueContractWeb3();
+  const contractRpc = useWithdrawalQueueContractRPC();
 
   const { account, chainId } = useWeb3();
 

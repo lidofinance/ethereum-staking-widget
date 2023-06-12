@@ -18,7 +18,6 @@ export const getOneInchRate: GetOneInchRateStats = async (
   toTokenAddress,
   amount,
 ) => {
-  serverLogger.debug('Getting exchange rate from 1inch');
   const api = `https://api-lido.1inch.io/v5.0/1/swap`;
   const query = new URLSearchParams({
     fromTokenAddress: fromTokenAddress,
@@ -43,7 +42,6 @@ export const getOneInchRate: GetOneInchRateStats = async (
       .mul(BigNumber.from(100000))
       .div(amount)
       .toNumber() / 100000;
-  serverLogger.debug('Rate on 1inch: ' + rate);
 
   return rate;
 };

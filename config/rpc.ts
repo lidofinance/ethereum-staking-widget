@@ -11,5 +11,4 @@ export const getBackendRPCPath = (chainId: string | number): string => {
 export const backendRPC = {
   [CHAINS.Mainnet]: getBackendRPCPath(CHAINS.Mainnet),
   [CHAINS.Goerli]: getBackendRPCPath(CHAINS.Goerli),
-  [CHAINS.Zhejiang]: getBackendRPCPath(CHAINS.Zhejiang),
 };
