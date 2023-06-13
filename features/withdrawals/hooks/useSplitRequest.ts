@@ -1,14 +1,28 @@
 import { useMemo } from 'react';
-import { useWithdrawalsBaseData } from 'features/withdrawals/hooks';
+import { useToken, useWithdrawalsBaseData } from 'features/withdrawals/hooks';
 import { parseEther } from '@ethersproject/units';
 import { BigNumber } from 'ethers';
 
 import { MAX_REQUESTS_COUNT } from 'features/withdrawals/withdrawals-constants';
 import { isValidEtherValue } from 'utils';
+import { useContractSWR } from '@lido-sdk/react';
+import { WstethAbi } from '@lido-sdk/contracts';
+import { TOKENS } from '@lido-sdk/constants';
+import { STRATEGY_LAZY } from 'utils/swrStrategies';
 
 export const useSplitRequest = (inputValue: string) => {
-  const wqBaseData = useWithdrawalsBaseData();
-  const { maxAmount } = wqBaseData.data ?? {};
+  const { token, tokenContract } = useToken();
+  const isWSteth = token === TOKENS.WSTETH;
+  const maxAmountSteth = useWithdrawalsBaseData().data?.maxAmount;
+  const maxAmountWsteth = useContractSWR({
+    contract: tokenContract as WstethAbi,
+    method: 'getWstETHByStETH',
+    params: [maxAmountSteth],
+    shouldFetch: !!(isWSteth && tokenContract && maxAmountSteth),
+    config: STRATEGY_LAZY,
+  }).data;
+
+  const maxAmount = isWSteth ? maxAmountWsteth : maxAmountSteth;
 
   return useMemo(() => {
     if (
