@@ -12,6 +12,7 @@ type GetLidoStats = () => Promise<Response>;
 
 // DEPRECATED: In future will be delete!!! Because we don't want to use https://api.ethplorer.io/
 export const getLidoStats: GetLidoStats = async () => {
+  serverLogger.debug('[getLidoStats] Started fetching...');
   // IMPORTANT: ETHPLORER_TOKEN_ENDPOINT (api.ethplorer.io) works only with Mainnet chain!
   const api = `${ETHPLORER_TOKEN_ENDPOINT}${getTokenAddress(
     CHAINS.Mainnet,
@@ -24,6 +25,6 @@ export const getLidoStats: GetLidoStats = async () => {
     payload: ETHPLORER_TOKEN_ENDPOINT,
     request: () => standardFetcher<Response>(url),
   });
-  serverLogger.debug('Lido stats: ' + lidoStats);
+  serverLogger.debug('[getLidoStats] Lido stats: ', lidoStats);
   return lidoStats;
 };
