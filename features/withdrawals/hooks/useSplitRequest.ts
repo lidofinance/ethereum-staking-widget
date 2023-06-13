@@ -5,20 +5,20 @@ import { BigNumber } from 'ethers';
 
 import { MAX_REQUESTS_COUNT } from 'features/withdrawals/withdrawals-constants';
 import { isValidEtherValue } from 'utils';
-import { useContractSWR } from '@lido-sdk/react';
-import { WstethAbi } from '@lido-sdk/contracts';
+import { useContractSWR, useWSTETHContractRPC } from '@lido-sdk/react';
 import { TOKENS } from '@lido-sdk/constants';
 import { STRATEGY_LAZY } from 'utils/swrStrategies';
 
 export const useSplitRequest = (inputValue: string) => {
-  const { token, tokenContract } = useToken();
+  const { token } = useToken();
+  const wstethContract = useWSTETHContractRPC();
   const isWSteth = token === TOKENS.WSTETH;
   const maxAmountSteth = useWithdrawalsBaseData().data?.maxAmount;
   const maxAmountWsteth = useContractSWR({
-    contract: tokenContract as WstethAbi,
+    contract: wstethContract,
     method: 'getWstETHByStETH',
     params: [maxAmountSteth],
-    shouldFetch: !!(isWSteth && tokenContract && maxAmountSteth),
+    shouldFetch: !!(isWSteth && maxAmountSteth),
     config: STRATEGY_LAZY,
   }).data;
 
