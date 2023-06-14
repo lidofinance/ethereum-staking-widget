@@ -1,4 +1,4 @@
-import { Container } from '@lidofinance/lido-ui';
+import { Container, Link } from '@lidofinance/lido-ui';
 import styled from 'styled-components';
 import { LogoLido } from 'shared/components/logos/logos';
 import { NAV_MOBILE_MEDIA } from '../header/components/navigation/styles';
@@ -22,26 +22,24 @@ export const FooterStyle = styled((props) => <Container {...props} />)`
   }
 `;
 
-export const FooterItemStyle = styled.span`
+export const FooterLink = styled(Link)`
   font-size: ${({ theme }) => theme.fontSizesMap.xxs}px;
   line-height: 20px;
   color: var(--lido-color-textSecondary);
   font-weight: 400;
 
-  a,
-  a:visited {
-    text-decoration: none;
+  &:visited {
     color: var(--lido-color-textSecondary);
-
     &:hover {
       color: var(--lido-color-text);
       opacity: 1;
     }
   }
 
-  &:not(:last-of-type):after {
-    content: '|';
-    padding: 0 2px;
+  &:not(:last-of-type)::after {
+    content: '';
+    border-right: 1px solid var(--lido-color-textSecondary);
+    margin: 0 6px;
   }
 `;
 
