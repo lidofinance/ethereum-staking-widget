@@ -2514,10 +2514,10 @@
   resolved "https://registry.yarnpkg.com/@reef-knot/wallet-adapter-zerion/-/wallet-adapter-zerion-1.1.1.tgz#617050e08cd4ae89e63e848d0dd7b85fb0d2b5a4"
   integrity sha512-7SgTVXRjl+n9Vi72I1hdWfZby2YLjned1xATe15Gn8x9bQhE/OfgW7WUmMOGT94udKvEsx3rtJwStveRjBOKzw==
 
-"@reef-knot/wallets-helpers@1.0.1":
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/@reef-knot/wallets-helpers/-/wallets-helpers-1.0.1.tgz#a0e34d9298f3cce3133e6d93b9bd835c404fecd2"
-  integrity sha512-RG69woxqLFM+exOwojqF4UXYaBDmnR39ooOmHk8ZWZWhsxThFE6WS6DHLaly3JClqtD+gFTp0zKG9gs4k7+EqA==
+"@reef-knot/wallets-helpers@1.0.2":
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/@reef-knot/wallets-helpers/-/wallets-helpers-1.0.2.tgz#8c9d6ef2107c25b8dcc16785626b1b99c3463112"
+  integrity sha512-goNJemn2iBtk99hznYhmLFeWRnnhtxcsXbcjSzI0/TKH2BwgKTA8KWl2uZOY9jmiME4EpyLQ9y5KPZqPxiHMog==
 
 "@reef-knot/wallets-icons@1.0.0":
   version "1.0.0"
@@ -9040,16 +9040,16 @@ redent@^3.0.0:
     indent-string "^4.0.0"
     strip-indent "^3.0.0"
 
-reef-knot@^1.3.2:
-  version "1.3.2"
-  resolved "https://registry.yarnpkg.com/reef-knot/-/reef-knot-1.3.2.tgz#9ba2a27a9b5801442919dd06263ed71a32dc0689"
-  integrity sha512-P9lzXTqxBKw58joPyI+ANy7yYolj/5KGvokFyj6SPXMqO5ch03QmSBMwv6PYsRC2KvQFaJIGpel4CDJeOkwmFg==
+reef-knot@^1.3.3:
+  version "1.3.3"
+  resolved "https://registry.yarnpkg.com/reef-knot/-/reef-knot-1.3.3.tgz#20ac2bdbbb8a1325f33e94da24bb316d32141dbd"
+  integrity sha512-q1+KFFe6WKEbIugv/aHFea/WoNS30tAIMjhhvQLc5wg4rWpAGtggdo1xviJx/xgQuUtuadxpNdFKPkUeKQY5jg==
   dependencies:
     "@reef-knot/connect-wallet-modal" "1.3.1"
     "@reef-knot/core-react" "1.3.1"
     "@reef-knot/types" "1.1.1"
     "@reef-knot/ui-react" "1.0.3"
-    "@reef-knot/wallets-helpers" "1.0.1"
+    "@reef-knot/wallets-helpers" "1.0.2"
     "@reef-knot/wallets-icons" "1.0.0"
     "@reef-knot/wallets-list" "1.3.1"
     "@reef-knot/web3-react" "1.1.1"
