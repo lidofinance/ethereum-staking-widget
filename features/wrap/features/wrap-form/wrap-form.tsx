@@ -204,7 +204,7 @@ export const WrapForm: FC = memo(() => {
         balanceToken={'wstETH'}
         allowanceAmount={allowance}
         failedText={txModalFailedText}
-        formRef={formRef}
+        onRetry={() => formRef.current?.requestSubmit()}
       />
     </Block>
   );

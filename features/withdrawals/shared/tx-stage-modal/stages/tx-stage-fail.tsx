@@ -3,14 +3,9 @@ import { useConnectorInfo } from 'reef-knot/web3-react';
 
 import { ErrorMessage } from 'utils';
 
-import { iconsDict } from './icons';
-import {
-  BoldText,
-  TextWrapper,
-  MiddleDescription,
-  BottomDescription,
-  RetryButtonStyled,
-} from './styles';
+import { TxStageModalContent } from 'shared/components/tx-stage-modal-content';
+import { getStageIcon } from './icons';
+import { RetryButtonStyled } from './styles';
 import { TX_STAGE } from '../types';
 
 type TxStageFailProps = {
@@ -22,20 +17,16 @@ export const TxStageFail: FC<TxStageFailProps> = (props) => {
   const { failedText, onClick } = props;
   const { isLedger } = useConnectorInfo();
 
-  const currentIconDict = iconsDict[isLedger ? 'ledger' : 'default'];
-
   return (
-    <TextWrapper>
-      {currentIconDict[TX_STAGE.FAIL]}
-      <BoldText size="sm">Transaction Error</BoldText>
-      <MiddleDescription size="xs" color="secondary">
-        {failedText ?? 'Something went wrong'}
-      </MiddleDescription>
-      <BottomDescription size="xxs" color="secondary">
-        {failedText !== ErrorMessage.NOT_ENOUGH_ETHER && (
+    <TxStageModalContent
+      icon={getStageIcon(isLedger, TX_STAGE.FAIL)}
+      title="Transaction Error"
+      description={failedText ?? 'Something went wrong'}
+      footerHint={
+        failedText !== ErrorMessage.NOT_ENOUGH_ETHER && (
           <RetryButtonStyled onClick={onClick}>Retry</RetryButtonStyled>
-        )}
-      </BottomDescription>
-    </TextWrapper>
+        )
+      }
+    />
   );
 };

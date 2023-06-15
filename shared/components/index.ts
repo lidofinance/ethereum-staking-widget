@@ -10,11 +10,7 @@ export { Section } from './section/section';
 export { TokenToWallet } from './token-to-wallet/token-to-wallet';
 export { transaction } from './transaction/transaction';
 export { LogoLDO, LogoLDOPL } from './logos/logos';
-export {
-  TxStageModal,
-  TX_STAGE,
-  TX_OPERATION,
-} from './tx-stage-modal/tx-stage-modal';
+export { TxStageModal, TX_STAGE, TX_OPERATION } from './tx-stage-modal';
 export { TooltipHoverable } from './tooltip-hoverable/tooltip-hoverable';
 export { MatomoLink } from './matomo-link/matomo-link';
 export { InfoBox } from './info-box/info-box';

@@ -194,7 +194,7 @@ export const UnwrapForm: FC = memo(() => {
         balance={stethBalance.data}
         balanceToken="stETH"
         failedText={txModalFailedText}
-        formRef={formRef}
+        onRetry={() => formRef.current?.requestSubmit()}
       />
     </Block>
   );
