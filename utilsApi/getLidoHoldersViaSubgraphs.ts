@@ -36,9 +36,7 @@ type GetLidoHoldersViaSubgraphs = (
 export const getLidoHoldersViaSubgraphs: GetLidoHoldersViaSubgraphs = async (
   chainId: SubgraphChains,
 ) => {
-  serverLogger.debug(
-    '[getLidoHoldersViaSubgraphs] Fetching lido holders from subgraph...',
-  );
+  serverLogger.debug('[getLidoHoldersViaSubgraphs] Started fetching... ');
   const query = `
     query {
       stats (id: "") {

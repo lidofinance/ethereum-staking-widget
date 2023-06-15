@@ -1,7 +1,7 @@
 import { FC, memo, useMemo } from 'react';
 import { getEtherscanTokenLink } from '@lido-sdk/helpers';
 import { useSDK } from '@lido-sdk/react';
-import { CHAINS } from '@lido-sdk/constants';
+import { getTokenAddress, TOKENS } from '@lido-sdk/constants';
 import {
   Block,
   DataTable,
@@ -11,7 +11,6 @@ import {
 } from '@lidofinance/lido-ui';
 import { Section, MatomoLink } from 'shared/components';
 import {
-  getStethAddress,
   LIDO_APR_TOOLTIP_TEXT,
   DATA_UNAVAILABLE,
   MATOMO_CLICK_EVENTS_TYPES,
@@ -21,14 +20,12 @@ import { FlexCenterVertical } from './styles';
 
 export const LidoStats: FC = memo(() => {
   const { chainId } = useSDK();
-  const etherscanLink = useMemo(
-    // TODO: add a way to type useSDK hook
-    () => {
-      if (chainId === CHAINS.Zhejiang) return '';
-      return getEtherscanTokenLink(chainId, getStethAddress(chainId as number));
-    },
-    [chainId],
-  );
+  const etherscanLink = useMemo(() => {
+    return getEtherscanTokenLink(
+      chainId,
+      getTokenAddress(chainId, TOKENS.STETH),
+    );
+  }, [chainId]);
   const lidoApr = useLidoApr();
   const lidoStats = useLidoStats();
 

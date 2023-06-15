@@ -140,7 +140,6 @@ export const stakeProcessing: StakeProcessingProps = async (
     await resetForm();
     /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
   } catch (error: any) {
-    console.error(error);
     const errorMessage = getErrorMessage(error);
     setTxModalFailedText(errorMessage);
     // Both LIMIT and FAIL are fail stages but limit reached has different UI

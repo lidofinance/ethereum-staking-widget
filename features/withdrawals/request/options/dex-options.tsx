@@ -19,6 +19,7 @@ import {
   OneInchIcon,
   ParaSwapIcon,
   CowSwapIcon,
+  DexOptionLoader,
 } from './styles';
 
 const placeholder = Array(3).fill(null);
@@ -113,10 +114,6 @@ const DexOption: React.FC<DexOptionProps> = ({
       </DexOptionAmount>
     </DexOptionStyled>
   );
-};
-
-const DexOptionLoader = () => {
-  return <DexOptionStyled $loading={true} />;
 };
 
 export const DexOptions: React.FC = () => {

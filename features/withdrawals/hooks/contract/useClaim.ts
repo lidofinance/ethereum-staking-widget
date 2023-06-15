@@ -87,7 +87,6 @@ export const useClaim = () => {
         await update();
         dispatchModalState({ type: isMultisig ? 'reset' : 'success' });
       } catch (error) {
-        console.error(error);
         const errorMessage = getErrorMessage(error);
         dispatchModalState({ type: 'error', errorText: errorMessage });
       }
