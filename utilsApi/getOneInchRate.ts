@@ -18,7 +18,7 @@ export const getOneInchRate: GetOneInchRateStats = async (
   toTokenAddress,
   amount,
 ) => {
-  serverLogger.debug('Getting exchange rate from 1inch');
+  serverLogger.debug('[getOneInchRate] Started fetching...');
   const api = `https://api-lido.1inch.io/v5.0/1/swap`;
   const query = new URLSearchParams({
     fromTokenAddress: fromTokenAddress,
@@ -34,7 +34,7 @@ export const getOneInchRate: GetOneInchRateStats = async (
   });
 
   if (!data || !data.toTokenAmount) {
-    serverLogger.error('Request to 1inch failed');
+    serverLogger.error('[getOneInchRate] Request to 1inch failed');
     return null;
   }
 
@@ -43,7 +43,6 @@ export const getOneInchRate: GetOneInchRateStats = async (
       .mul(BigNumber.from(100000))
       .div(amount)
       .toNumber() / 100000;
-  serverLogger.debug('Rate on 1inch: ' + rate);
-
+  serverLogger.debug('[getOneInchRate] Rate on 1inch:', rate);
   return rate;
 };

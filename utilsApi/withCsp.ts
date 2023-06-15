@@ -31,7 +31,6 @@ export const contentSecurityPolicy = {
       'https://wq-api.infra-staging.org',
       ...trustedHosts,
     ],
-    prefetchSrc: ["'self'", ...trustedHosts],
     formAction: ["'self'", ...trustedHosts],
     frameAncestors: ['*'],
     manifestSrc: ["'self'", ...trustedHosts],

@@ -7,6 +7,7 @@ export const NAV_MOBILE_HEIGHT = 60;
 export const desktopCss = css`
   margin: 0 46px;
   display: flex;
+  gap: 32px;
 
   svg {
     margin-right: 10px;
@@ -22,6 +23,7 @@ const mobileCss = css`
   padding: 8px;
   background-color: var(--lido-color-foreground);
   display: flex;
+  gap: 32px;
   justify-content: space-around;
   align-items: center;
   border-top: 1px solid var(--lido-color-border);
@@ -64,10 +66,6 @@ export const NavLink = styled.a<{ active: boolean }>`
 
   :visited {
     color: var(--lido-color-secondary);
-  }
-
-  :not(:last-of-type) {
-    margin-right: 32px;
   }
 
   svg {

@@ -4,7 +4,7 @@ import { useDebouncedValue } from 'shared/hooks/useDebouncedValue';
 
 import { BigNumber } from 'ethers';
 import { CHAINS, TOKENS, getTokenAddress } from '@lido-sdk/constants';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { standardFetcher } from 'utils/standardFetcher';
 import { useRequestForm } from '../contexts/request-form-context';
 import { useWithdrawals } from '../contexts/withdrawals-context';
@@ -113,6 +113,7 @@ const getParaSwapRate: getRate = async (amount, token) => {
       userAddress: '0x0000000000000000000000000000000000000000',
       amount: capped_amount.toString(),
       network: '1',
+      partner: 'lido',
     });
 
     const url = `${api}?${query.toString()}`;
@@ -228,7 +229,7 @@ export const useWithdrawalRates = ({
   const { selectedToken } = useWithdrawals();
   const fallbackedAmount =
     fallbackValue && inputValueBN.lte(0) ? fallbackValue : inputValueBN;
-  const debouncedAmount = useDebouncedValue(fallbackedAmount, 2000);
+  const debouncedAmount = useDebouncedValue(fallbackedAmount, 1000);
   const swr = useLidoSWR(
     ['swr:withdrawal-rates', debouncedAmount, selectedToken],
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -243,24 +244,6 @@ export const useWithdrawalRates = ({
     },
   );
 
-  // this keeps order stable even for updates
-  const [stableSortedData, setStableSortedData] = useState(swr.data);
-  useEffect(() => {
-    swr.data &&
-      setStableSortedData((old) => {
-        if (old && old !== swr.data) {
-          return old.map((oldData) => {
-            const newData = swr.data?.find((r) => r.name === oldData.name);
-            if (!newData) return oldData;
-            return {
-              ...oldData,
-              ...newData,
-            };
-          });
-        } else return swr.data;
-      });
-  }, [swr.data]);
-
   const bestRate = useMemo(() => {
     return swr.data?.[0]?.rate ?? null;
   }, [swr.data]);
@@ -269,9 +252,9 @@ export const useWithdrawalRates = ({
     amount: fallbackedAmount,
     bestRate,
     selectedToken: selectedToken as TOKENS.WSTETH | TOKENS.STETH,
-    data: stableSortedData,
+    data: swr.data,
     get initialLoading() {
-      return !stableSortedData && swr.initialLoading;
+      return swr.initialLoading || !debouncedAmount.eq(fallbackedAmount);
     },
     get loading() {
       return swr.loading || !debouncedAmount.eq(fallbackedAmount);
