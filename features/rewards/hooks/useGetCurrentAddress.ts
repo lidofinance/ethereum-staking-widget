@@ -12,7 +12,10 @@ type UseGetCurrentAddress = () => {
 };
 
 export const useGetCurrentAddress: UseGetCurrentAddress = () => {
-  const [inputValue, setInputValue] = useState('');
+  const [inputValue, setInputValueState] = useState('');
+  const setInputValue = useCallback((value: string) => {
+    setInputValueState(value.trim());
+  }, []);
   const [isAddressResolving, setIsAddressResolving] = useState(false);
   const [address, setAddress] = useState('');
 
@@ -60,5 +63,12 @@ export const useGetCurrentAddress: UseGetCurrentAddress = () => {
     if (queryAddr) setInputValue(queryAddr);
   }, [account, queryAddr, setInputValue]);
 
-  return { address, inputValue, isAddressResolving, setInputValue };
+  console.log(address);
+
+  return {
+    address,
+    inputValue,
+    isAddressResolving,
+    setInputValue,
+  };
 };
