@@ -63,8 +63,6 @@ export const useGetCurrentAddress: UseGetCurrentAddress = () => {
     if (queryAddr) setInputValue(queryAddr);
   }, [account, queryAddr, setInputValue]);
 
-  console.log(address);
-
   return {
     address,
     inputValue,
