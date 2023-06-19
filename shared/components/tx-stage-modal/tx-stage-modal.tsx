@@ -13,6 +13,7 @@ import {
   ButtonLinkSmall,
   RetryButton,
   Grid,
+  SkeletonBalance,
 } from './styles';
 
 import { BigNumber } from 'ethers';
@@ -121,12 +122,7 @@ export const TxStageModal = memo((props: TxStageModalProps) => {
   }
 
   if (txStage === TX_STAGE.SUCCESS) {
-    if (!balance) return null;
-
     const successText = getSuccessText(txHash, txOperation);
-    const balanceFormatted = balance
-      ? withOptionaLineBreak(formatBalance(balance, 4))
-      : '';
 
     if (txOperation === TX_OPERATION.APPROVING && allowanceAmount) {
       return (
@@ -150,7 +146,13 @@ export const TxStageModal = memo((props: TxStageModalProps) => {
         title={
           <>
             Your new balance is <wbr />
-            {balanceFormatted} {balanceToken}
+            {balance ? (
+              <>
+                {withOptionaLineBreak(formatBalance(balance, 4))} {balanceToken}
+              </>
+            ) : (
+              <SkeletonBalance />
+            )}
           </>
         }
         description={successText}
