@@ -30,6 +30,7 @@ import {
   ButtonLinkSmall,
   RetryButton,
   Grid,
+  SkeletonBalance,
 } from './styles';
 
 export enum TX_OPERATION {
@@ -257,14 +258,20 @@ export const TxStageModal: FC<TxStageModalProps> = memo(
             </>
           );
         case TX_STAGE.SUCCESS:
-          return balance ? (
+          return (
             <>
               {currentIconDict[TX_STAGE.SUCCESS]}
               {txOperation !== TX_OPERATION.APPROVING && (
                 <>
                   <BoldText size="sm">
                     Your new balance is <wbr />
-                    {withOptionaLineBreak(balanceAsString)} {balanceToken}
+                    {balance ? (
+                      <>
+                        {withOptionaLineBreak(balanceAsString)} {balanceToken}
+                      </>
+                    ) : (
+                      <SkeletonBalance />
+                    )}
                   </BoldText>
                   <LightText size="xs" color="secondary" marginTop={4}>
                     {operationWasSuccessfulText}
@@ -283,7 +290,7 @@ export const TxStageModal: FC<TxStageModalProps> = memo(
                 </>
               )}
             </>
-          ) : null;
+          );
         case TX_STAGE.FAIL:
           return (
             <>
