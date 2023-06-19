@@ -1,4 +1,4 @@
-import { memo } from 'react';
+import { memo, useRef, useState } from 'react';
 import { useConnectorInfo } from 'reef-knot/web3-react';
 import { use1inchLinkProps } from 'features/home/hooks';
 
@@ -60,6 +60,7 @@ export const TxStageModal = memo((props: TxStageModalProps) => {
 
   const { isLedger } = useConnectorInfo();
   const oneInchLinkProps = use1inchLinkProps();
+
   const isCloseButtonHidden =
     isLedger && txStage !== TX_STAGE.SUCCESS && txStage !== TX_STAGE.FAIL;
 
@@ -74,6 +75,21 @@ export const TxStageModal = memo((props: TxStageModalProps) => {
   const operationText = getOperationProcessingDisplayText(txOperation);
   const amountString = formatBalanceString(amount, 4);
   const amountWithBreak = withOptionaLineBreak(amountString);
+
+  const [isRetryLoading, setRetryLoading] = useState(false);
+  const retryResetTimerRef = useRef<NodeJS.Timeout | 0>(0);
+  const onRetryClick: React.MouseEventHandler = (event) => {
+    if (!isRetryLoading) {
+      if (retryResetTimerRef.current) {
+        clearTimeout(retryResetTimerRef.current);
+      }
+      setRetryLoading(true);
+      onRetry(event);
+      retryResetTimerRef.current = setTimeout(() => {
+        setRetryLoading(false);
+      }, 5000);
+    }
+  };
 
   if (txStage === TX_STAGE.IDLE) {
     return null;
@@ -169,7 +185,9 @@ export const TxStageModal = memo((props: TxStageModalProps) => {
         description={failedText ?? 'Something went wrong'}
         footerHint={
           failedText !== ErrorMessage.NOT_ENOUGH_ETHER && (
-            <StylableLink onClick={onRetry}>Retry</StylableLink>
+            <StylableLink aria-disabled={isRetryLoading} onClick={onRetryClick}>
+              Retry
+            </StylableLink>
           )
         }
       />
@@ -185,7 +203,7 @@ export const TxStageModal = memo((props: TxStageModalProps) => {
         footer={
           failedText !== ErrorMessage.NOT_ENOUGH_ETHER && (
             <Grid>
-              <RetryButton color="secondary" onClick={onRetry} size="xs">
+              <RetryButton color="secondary" onClick={onRetryClick} size="xs">
                 Retry
               </RetryButton>
               <ButtonLinkSmall {...oneInchLinkProps}>

@@ -12,7 +12,10 @@ export const LowercaseSpan = styled.span`
 `;
 
 export const StylableLink = styled(Link)`
-  cursor: pointer;
+  &[aria-disabled='true'] {
+    cursor: not-allowed;
+    opacity: 0.5 !important;
+  }
 `;
 
 export const RetryButton = styled(Button)`
