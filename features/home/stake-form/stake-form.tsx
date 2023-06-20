@@ -37,6 +37,7 @@ import { useStethSubmitGasLimit } from './hooks';
 import { useStakeableEther } from '../hooks';
 import { useStakingLimitWarn } from './useStakingLimitWarn';
 import { getTokenDisplayName } from 'utils/getTokenDisplayName';
+import { useIsMultisig } from 'shared/hooks/useIsMultisig';
 
 export const StakeForm: FC = memo(() => {
   const router = useRouter();
@@ -69,6 +70,7 @@ export const StakeForm: FC = memo(() => {
   const stethBalance = useSTETHBalance();
   const stethContractWeb3 = useSTETHContractWeb3();
   const contractRpc = useSTETHContractRPC();
+  const [isMultisig] = useIsMultisig();
 
   const lidoFee = useContractSWR({
     contract: contractRpc,
@@ -135,7 +137,8 @@ export const StakeForm: FC = memo(() => {
         : etherBalance.data),
     padMaxAmount: (padAmount) =>
       Boolean(
-        etherBalance.data &&
+        !isMultisig &&
+          etherBalance.data &&
           stakeableEther.data &&
           etherBalance.data.sub(padAmount).lte(stakeableEther.data),
       ),
