@@ -53,10 +53,10 @@ export const enum MATOMO_CLICK_EVENTS_TYPES {
   withdrawalEtherscanSuccessTemplate = 'withdrawalEtherscanSuccessTemplate',
   withdrawalGuideSuccessTemplate = 'withdrawalGuideSuccessTemplate',
 
-  // /withdrawal?tab=claim page
+  // /withdrawal/claim page
   claimViewOnEtherscanSuccessTemplate = 'claimViewOnEtherscanSuccessTemplate',
 
-  // /withdrawal and /withdrawal?tab=claim shared events
+  // /withdrawal/request and /withdrawal/claim shared events
   withdrawalWhatAreStakingPenaltiesFAQ = 'withdrawalWhatAreStakingPenaltiesFAQ',
   withdrawalNFTGuideFAQ = 'withdrawalNFTGuideFAQ',
 }

@@ -1,23 +1,18 @@
-import { FC, useMemo } from 'react';
+import { FC } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/router';
 import { Accordion, Link as OuterLink } from '@lidofinance/lido-ui';
-import { getQueryParamsString } from 'utils';
 import { MATOMO_CLICK_EVENTS_TYPES } from 'config';
 import { trackMatomoEvent } from 'config/trackMatomoEvent';
+import { useSafeQueryString } from 'shared/hooks/useSafeQueryString';
 
 export const HowCanIGetWsteth: FC = () => {
-  const { query } = useRouter();
-  const { ref, embed } = query;
-  const link = useMemo(() => {
-    return `/wrap${getQueryParamsString(ref, embed)}`;
-  }, [ref, embed]);
+  const queryString = useSafeQueryString();
 
   return (
     <Accordion summary="How can I get wstETH?">
       <p>
         You can wrap your stETH or ETH tokens using{' '}
-        <Link href={link}>
+        <Link href={`/wrap${queryString}`}>
           <a
             onClick={() =>
               trackMatomoEvent(

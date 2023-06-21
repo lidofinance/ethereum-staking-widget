@@ -5,28 +5,23 @@ import { useRouter } from 'next/router';
 import { Layout } from 'shared/components';
 import { WrapForm, UnwrapForm, Wallet, WrapFaq } from 'features/wrap';
 import { Switch } from 'features/wrap/components';
-import { getQueryParamsString } from 'utils';
-import NoSSRWrapper from '../../shared/components/no-ssr-wrapper';
+import { useSafeQueryString } from 'shared/hooks/useSafeQueryString';
+import NoSsrWrapper from 'shared/components/no-ssr-wrapper';
 
 const WrapPage: FC<WrapModePageProps> = ({ mode }) => {
-  const { query, isReady, push, replace } = useRouter();
-  const { ref, embed } = query;
+  const { isReady, query, push, replace } = useRouter();
   const isUnwrapMode = mode === 'unwrap';
+  const queryString = useSafeQueryString();
   const toggleMode = useCallback(async () => {
-    await push(
-      `/wrap${isUnwrapMode ? '' : '/unwrap'}${getQueryParamsString(
-        ref,
-        embed,
-      )}`,
-    );
-  }, [push, isUnwrapMode, ref, embed]);
+    await push(`/wrap${isUnwrapMode ? '' : '/unwrap'}${queryString}`);
+  }, [push, isUnwrapMode, queryString]);
 
   // legacy routing support
   useEffect(() => {
     if (isReady && query.mode === 'unwrap') {
-      replace(`/wrap/unwrap${getQueryParamsString(query.ref, query.embed)}`);
+      replace(`/wrap/unwrap${queryString}`);
     }
-  }, [isReady, query, replace]);
+  }, [isReady, query.mode, queryString, replace]);
 
   return (
     <Layout
@@ -44,10 +39,10 @@ const WrapPage: FC<WrapModePageProps> = ({ mode }) => {
         uncheckedLabel="Unwrap"
       />
 
-      <NoSSRWrapper>
+      <NoSsrWrapper>
         <Wallet />
         {isUnwrapMode ? <UnwrapForm /> : <WrapForm />}
-      </NoSSRWrapper>
+      </NoSsrWrapper>
 
       <WrapFaq />
     </Layout>

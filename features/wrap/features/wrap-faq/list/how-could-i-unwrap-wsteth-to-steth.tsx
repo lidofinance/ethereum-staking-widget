@@ -1,23 +1,18 @@
-import { FC, useMemo } from 'react';
-import { useRouter } from 'next/router';
+import { FC } from 'react';
+
 import Link from 'next/link';
 import { Accordion } from '@lidofinance/lido-ui';
-import { getQueryParamsString } from 'utils';
 import { MATOMO_CLICK_EVENTS_TYPES } from 'config';
 import { trackMatomoEvent } from 'config/trackMatomoEvent';
+import { useSafeQueryString } from 'shared/hooks/useSafeQueryString';
 
 export const HowCouldIUnwrapWstethToSteth: FC = () => {
-  const { query } = useRouter();
-  const { ref, embed } = query;
-  const link = useMemo(() => {
-    return `/wrap/unwrap${getQueryParamsString(ref, embed)}`;
-  }, [ref, embed]);
-
+  const queryString = useSafeQueryString();
   return (
     <Accordion summary="How could I unwrap wstETH back to stETH?">
       <p>
         You can unwrap your wstETH tokens using{' '}
-        <Link href={link}>
+        <Link href={`/wrap/unwrap${queryString}`}>
           <a
             onClick={() =>
               trackMatomoEvent(

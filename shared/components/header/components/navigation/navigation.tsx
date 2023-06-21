@@ -20,6 +20,7 @@ const routes = [
   {
     name: 'Withdrawals',
     path: '/withdrawals',
+    full_path: '/withdrawals/request',
     icon: <Withdraw />,
   },
   {
@@ -32,8 +33,8 @@ export const Navigation: FC = memo(() => {
   const router = useRouter();
   return (
     <Nav>
-      {routes.map(({ name, path, icon, exact }) => (
-        <LocalLink key={path} href={path}>
+      {routes.map(({ name, path, icon, exact, full_path }) => (
+        <LocalLink key={path} href={full_path ?? path}>
           <NavLink
             active={
               exact

@@ -10,7 +10,7 @@ export const HowCanIUnstakeSteth: FC = () => {
     <Accordion summary="How can I unstake stETH?">
       <p>
         You can use our{' '}
-        <Link href="/withdrawals?tab=claim">
+        <Link href="/withdrawals/claim">
           <a
             onClick={() =>
               trackMatomoEvent(

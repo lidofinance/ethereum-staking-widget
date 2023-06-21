@@ -1,4 +1,4 @@
-import { FC } from 'react';
+import { FC, useEffect } from 'react';
 import { GetServerSideProps } from 'next';
 import Head from 'next/head';
 import { useConnectorInfo, useWeb3 } from 'reef-knot/web3-react';
@@ -10,15 +10,26 @@ import NoSSRWrapper from 'shared/components/no-ssr-wrapper';
 import { WithdrawalsTabs } from 'features/withdrawals';
 import { WithdrawalsProvider } from 'features/withdrawals/contexts/withdrawals-context';
 import { LedgerNoticeBlock } from 'features/withdrawals/shared/ledger-notice';
+import { useRouter } from 'next/router';
+import { useSafeQueryString } from 'shared/hooks/useSafeQueryString';
 
 const Withdrawals: FC<WithdrawalsModePageProps> = ({ mode }) => {
   const { account } = useWeb3();
+  const { isReady, query, replace } = useRouter();
   // TODO: remove when ledger live fixes their issue
   const appFlag = useAppFlag();
   const { isLedgerLive } = useConnectorInfo();
   const shouldHideWithdrawals =
     appFlag !== 'ledger-live-withdrawals' &&
     (appFlag === 'ledger-live' || isLedgerLive);
+
+  const queryString = useSafeQueryString();
+  // legacy routing support
+  useEffect(() => {
+    if (isReady && query.tab === 'claim') {
+      replace(`/withdrawals/claim${queryString}`);
+    }
+  }, [isReady, query.tab, queryString, replace]);
 
   return (
     <Layout
