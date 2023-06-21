@@ -36,7 +36,14 @@ export const useWithdrawals = () => {
   return value;
 };
 
-export const WithdrawalsProvider: FC = ({ children }) => {
+type WithdrawalsProviderProps = {
+  mode: 'request' | 'claim';
+};
+
+export const WithdrawalsProvider: FC<WithdrawalsProviderProps> = ({
+  children,
+  mode,
+}) => {
   const [selectedToken, setSelectedToken] = useState<
     TOKENS.WSTETH | TOKENS.STETH
   >(TOKENS.STETH);
@@ -48,8 +55,8 @@ export const WithdrawalsProvider: FC = ({ children }) => {
     isBunker,
     isTurbo,
   } = useContractStatus();
-  const { isClaimTab, navRoutes, claimPath, requestPath } = useRoutes();
-
+  const { navRoutes, claimPath, requestPath } = useRoutes();
+  const isClaimTab = mode === 'claim';
   const isSteth = selectedToken === TOKENS.STETH;
 
   const value = useMemo(

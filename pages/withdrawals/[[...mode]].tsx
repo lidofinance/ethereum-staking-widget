@@ -11,7 +11,7 @@ import { WithdrawalsTabs } from 'features/withdrawals';
 import { WithdrawalsProvider } from 'features/withdrawals/contexts/withdrawals-context';
 import { LedgerNoticeBlock } from 'features/withdrawals/shared/ledger-notice';
 
-const Withdrawals: FC = () => {
+const Withdrawals: FC<WithdrawalsModePageProps> = ({ mode }) => {
   const { account } = useWeb3();
   // TODO: remove when ledger live fixes their issue
   const appFlag = useAppFlag();
@@ -46,7 +46,7 @@ const Withdrawals: FC = () => {
           </p>
         </LedgerNoticeBlock>
       ) : (
-        <WithdrawalsProvider>
+        <WithdrawalsProvider key={account ?? 'NO_ACCOUNT'} mode={mode}>
           <NoSSRWrapper>
             {/* In order to simplify side effects of switching wallets we remount the whole widget, resetting all internal state */}
             <WithdrawalsTabs key={account ?? 'NO_ACCOUNT'} />
@@ -59,6 +59,24 @@ const Withdrawals: FC = () => {
 
 export default Withdrawals;
 
-export const getServerSideProps: GetServerSideProps = async () => {
-  return { props: {} };
+type WithdrawalsModePageProps = {
+  mode: 'request' | 'claim';
+};
+
+type WithdrawalsModePageParams = {
+  mode: string;
+};
+
+export const getServerSideProps: GetServerSideProps<
+  WithdrawalsModePageProps,
+  WithdrawalsModePageParams
+> = async ({ params }) => {
+  const mode = params?.mode;
+  if (!mode)
+    return {
+      redirect: { destination: '/withdrawals/request', permanent: true },
+    };
+  if (mode.length > 1 || (mode[0] !== 'request' && mode[0] !== 'claim'))
+    return { notFound: true };
+  return { props: { mode: mode[0] } };
 };

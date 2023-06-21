@@ -48,9 +48,16 @@ export const StakeForm: FC = memo(() => {
   const [txStage, setTxStage] = useState(TX_STAGE.SUCCESS);
   const [txHash, setTxHash] = useState<string>();
   const [txModalFailedText, setTxModalFailedText] = useState('');
-  const [inputValue, setInputValue] = useState(() => {
-    // consumes amount query param
-    if (router.query.amount && typeof router.query.amount === 'string') {
+  const [inputValue, setInputValue] = useState('');
+
+  // consumes amount query param
+  // SSG safe
+  useEffect(() => {
+    if (
+      router.isReady &&
+      router.query.amount &&
+      typeof router.query.amount === 'string'
+    ) {
       const initialValue = router.query.amount;
       delete router.query.amount;
       router.replace(
@@ -58,10 +65,9 @@ export const StakeForm: FC = memo(() => {
         undefined,
         { shallow: true },
       );
-      return initialValue;
+      setInputValue(initialValue);
     }
-    return '';
-  });
+  }, [router]);
 
   const { active, chainId } = useWeb3();
   const etherBalance = useEthereumBalance();

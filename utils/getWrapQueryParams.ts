@@ -1,28 +1,16 @@
-export const getQueryParams = (
-  isUnwrapMode: boolean,
-  ref: string,
-  embed: string,
-  exclude?: Array<string>,
+export const getQueryParamsString = (
+  ref: string | string[] | undefined,
+  embed: string | string[] | undefined,
 ): string => {
   const queryParams = new URLSearchParams();
 
-  if (!isUnwrapMode) {
-    queryParams.append('mode', 'unwrap');
-  }
-  if (ref) {
+  if (ref && typeof ref === 'string') {
     queryParams.append('ref', ref);
   }
-  if (embed) {
+  if (embed && typeof embed === 'string') {
     queryParams.append('embed', embed);
   }
 
-  if (exclude) {
-    exclude.forEach((item) => {
-      if (queryParams.has(item)) {
-        queryParams.delete(item);
-      }
-    });
-  }
-
-  return queryParams.toString();
+  const qs = queryParams.toString();
+  return qs ? '?' + qs : '';
 };

@@ -190,7 +190,7 @@ export const MATOMO_CLICK_EVENTS: Record<
   ],
   [MATOMO_CLICK_EVENTS_TYPES.faqHowDoIUnwrapWstethUnwrapLink]: [
     'Ethereum_Staking_Widget',
-    'Push «stake.lido.fi/wrap?mode=unwrap» How do I unwrap wstETH back to stETH?',
+    'Push «stake.lido.fi/wrap/unwrap» How do I unwrap wstETH back to stETH?',
     'eth_widget_faq_howunwrapwsteth_unwrap',
   ],
   [MATOMO_CLICK_EVENTS_TYPES.faqHowCanIUseWstethL2]: [

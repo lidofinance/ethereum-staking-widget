@@ -1,18 +1,12 @@
 import { useRouter } from 'next/router';
-import omitBy from 'lodash/omitBy';
-import isEmpty from 'lodash/isEmpty';
+import { getQueryParamsString } from 'utils';
 
 export const useRoutes = () => {
   const router = useRouter();
   const { ref, embed } = router.query;
-
-  const isClaimTab = router.query.tab === 'claim';
-  const query = { ref: ref as string, embed: embed as string };
-  const searchParam = new URLSearchParams(omitBy(query, isEmpty)).toString();
-  const claimPath = `/withdrawals?tab=claim${
-    searchParam ? `&${searchParam}` : ''
-  }`;
-  const requestPath = `/withdrawals${searchParam ? `?${searchParam}` : ''}`;
+  const qs = getQueryParamsString(ref, embed);
+  const claimPath = `/withdrawals/claim${qs}`;
+  const requestPath = `/withdrawals/request${qs}`;
 
   const navRoutes = [
     {
@@ -25,5 +19,5 @@ export const useRoutes = () => {
     },
   ];
 
-  return { isClaimTab, navRoutes, claimPath, requestPath };
+  return { navRoutes, claimPath, requestPath };
 };

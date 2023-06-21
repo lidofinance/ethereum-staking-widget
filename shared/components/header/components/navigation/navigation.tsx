@@ -10,6 +10,7 @@ const routes = [
     name: 'Stake',
     path: '/',
     icon: <Stake />,
+    exact: true,
   },
   {
     name: 'Wrap',
@@ -31,9 +32,15 @@ export const Navigation: FC = memo(() => {
   const router = useRouter();
   return (
     <Nav>
-      {routes.map(({ name, path, icon }) => (
+      {routes.map(({ name, path, icon, exact }) => (
         <LocalLink key={path} href={path}>
-          <NavLink active={router.pathname === path}>
+          <NavLink
+            active={
+              exact
+                ? router.pathname === path
+                : router.pathname.startsWith(path)
+            }
+          >
             {icon}
             <span>{name}</span>
           </NavLink>

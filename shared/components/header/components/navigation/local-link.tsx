@@ -15,7 +15,6 @@ export const LocalLink: FC<React.PropsWithChildren<LinkProps>> = (props) => {
     return <Link {...restProps} href={{ pathname: href, query: extraQuery }} />;
   }
 
-  // TODO: figure out types
   // if (typeof href === 'object') {
   //   const { query, ...restHref } = href;
 
