@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { useRouter } from 'next/router';
 
-export const useSafeQueryString = () => {
+export const useSafeQueryString = (extraParams?: Record<string, string>) => {
   const { ref, embed, app } = useRouter().query;
 
   return useMemo(() => {
@@ -16,7 +16,10 @@ export const useSafeQueryString = () => {
       queryParams.append('app', app);
     }
 
+    if (extraParams) {
+      Object.entries(extraParams).forEach(([k, v]) => queryParams.append(k, v));
+    }
     const qs = queryParams.toString();
     return qs ? '?' + qs : '';
-  }, [ref, embed, app]);
+  }, [ref, embed, app, extraParams]);
 };

@@ -40,7 +40,6 @@ import { getTokenDisplayName } from 'utils/getTokenDisplayName';
 
 export const StakeForm: FC = memo(() => {
   const router = useRouter();
-  const initialValue = (router?.query?.amount as string) || '';
 
   const formRef = useRef<HTMLFormElement>(null);
 
@@ -131,7 +130,6 @@ export const StakeForm: FC = memo(() => {
     inputValue,
     setInputValue,
     inputName,
-    initialValue,
     submit,
     limit:
       etherBalance.data &&
