@@ -5,6 +5,8 @@ export const RewardsListHeaderStyle = styled.div`
   flex-wrap: wrap;
   align-items: center;
   gap: 20px 32px;
+  height: 32px;
+  align-items: center;
 
   color: ${({ theme }) => theme.colors.secondary};
 
