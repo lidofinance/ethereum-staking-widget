@@ -129,6 +129,8 @@
     "web3-ledgerhq-connector": "^1.3.1",
     "**/@lido-sdk/providers": "1.4.12",
     "**/@lido-sdk/react": "2.0.0",
-    "**/@lido-sdk/constants": "^3.1.0"
+    "**/@lido-sdk/constants": "^3.1.0",
+    "@walletconnect/core": "^2.8.3",
+    "@walletconnect/ethereum-provider": "^2.8.3"
   }
 }
