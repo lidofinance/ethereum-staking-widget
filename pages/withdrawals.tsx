@@ -4,7 +4,7 @@ import Head from 'next/head';
 import { useConnectorInfo, useWeb3 } from 'reef-knot/web3-react';
 
 import { Layout } from 'shared/components';
-import { useAppFlag } from 'shared/hooks/useAppFlag';
+import { useAppFlag } from 'providers/app-flag';
 import NoSSRWrapper from 'shared/components/no-ssr-wrapper';
 
 import { WithdrawalsTabs } from 'features/withdrawals';
@@ -16,7 +16,9 @@ const Withdrawals: FC = () => {
   // TODO: remove when ledger live fixes their issue
   const appFlag = useAppFlag();
   const { isLedgerLive } = useConnectorInfo();
-  const shouldHideWithdrawals = appFlag === 'ledger-live' || isLedgerLive;
+  const shouldHideWithdrawals =
+    appFlag !== 'ledger-live-withdrawals' &&
+    (appFlag === 'ledger-live' || isLedgerLive);
 
   return (
     <Layout
