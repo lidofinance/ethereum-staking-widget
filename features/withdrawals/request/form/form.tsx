@@ -15,6 +15,7 @@ import { iconsMap } from 'features/withdrawals/contexts/withdrawals-context';
 import { useRequestForm } from 'features/withdrawals/contexts/request-form-context';
 import { useRequestTxPrice } from 'features/withdrawals/hooks/useWithdrawTxPrice';
 import { useValidateUnstakeValue } from 'features/withdrawals/hooks/useValidateUnstakeValue';
+import { useCurrencyInput } from 'shared/forms/hooks/useCurrencyInput';
 
 import { InputNumber } from 'shared/forms/components/input-number';
 import { DataTableRowStethByWsteth } from 'shared/components/data-table-row-steth-by-wsteth';
@@ -22,7 +23,8 @@ import { InputDecoratorLocked } from 'shared/forms/components/input-decorator-lo
 import { InputDecoratorMaxButton } from 'shared/forms/components/input-decorator-max-button';
 import { InputDecoratorTvlStake } from 'features/withdrawals/shared/input-decorator-tvl-stake';
 import { FormatToken } from 'shared/formatters/format-token';
-import { useCurrencyInput } from 'shared/forms/hooks/useCurrencyInput';
+import { FormButton } from './form-button';
+import { InputGroupStyled } from './styles';
 
 import { RequestsInfo } from '../requestsInfo';
 
@@ -30,8 +32,7 @@ import {
   trackMatomoEvent,
   MATOMO_CLICK_EVENTS_TYPES,
 } from 'config/trackMatomoEvent';
-import { FormButton } from './form-button';
-import { InputGroupStyled } from './styles';
+import { getTokenDisplayName } from 'utils/getTokenDisplayName';
 
 // TODO move to shared
 import { useApproveGasLimit } from 'features/wrap/features/wrap-form/hooks';
@@ -57,6 +58,7 @@ export const Form = () => {
   const {
     isApprovalFlowLoading,
     isApprovalFlow,
+    isInfiniteAllowance,
     isTokenLocked,
     request,
     isTxPending,
@@ -138,10 +140,10 @@ export const Form = () => {
           error={showError}
         >
           <Option leftDecorator={iconsMap[TOKENS.STETH]} value={TOKENS.STETH}>
-            Lido (stETH)
+            {getTokenDisplayName(TOKENS.STETH)}
           </Option>
           <Option leftDecorator={iconsMap[TOKENS.WSTETH]} value={TOKENS.WSTETH}>
-            Lido (wstETH)
+            {getTokenDisplayName(TOKENS.WSTETH)}
           </Option>
         </SelectIcon>
         <InputNumber
@@ -198,7 +200,15 @@ export const Form = () => {
             ${requestTxPriceInUsd?.toFixed(2)}
           </DataTableRow>
           <DataTableRow title="Allowance" loading={isApprovalFlowLoading}>
-            <FormatToken amount={allowance} symbol={tokenLabel} />
+            {isInfiniteAllowance ? (
+              'Infinite'
+            ) : (
+              <FormatToken
+                showAmountTip
+                amount={allowance}
+                symbol={tokenLabel}
+              />
+            )}
           </DataTableRow>
           {tokenLabel === 'stETH' ? (
             <DataTableRow title="Exchange rate">1 stETH = 1 ETH</DataTableRow>

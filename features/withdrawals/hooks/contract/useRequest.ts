@@ -3,7 +3,7 @@ import { BigNumber } from 'ethers';
 import invariant from 'tiny-invariant';
 import { useWeb3 } from 'reef-knot/web3-react';
 import { parseEther } from '@ethersproject/units';
-import type { WstethAbi } from '@lido-sdk/contracts';
+import type { WstethAbi, StethAbi } from '@lido-sdk/contracts';
 import { useSDK } from '@lido-sdk/react';
 import { TOKENS } from '@lido-sdk/constants';
 
@@ -15,7 +15,6 @@ import {
 } from 'shared/hooks';
 import { getErrorMessage, runWithTransactionLogger } from 'utils';
 import { isContract } from 'utils/isContract';
-import type { StethPermitAbi } from 'generated';
 import { useTransactionModal } from 'features/withdrawals/contexts/transaction-modal-context';
 import { useRequestData } from 'features/withdrawals/contexts/request-data-context';
 import { useWithdrawals } from 'features/withdrawals/contexts/withdrawals-context';
@@ -23,6 +22,7 @@ import type { TokensWithdrawable } from 'features/withdrawals/types/tokens-withd
 
 import { useWithdrawalsContract } from './useWithdrawalsContract';
 import { useApprove } from 'shared/hooks/useApprove';
+import { MaxUint256 } from '@ethersproject/constants';
 
 // this encapsulates permit/approval & steth/wsteth flows
 const useWithdrawalRequestMethods = () => {
@@ -296,7 +296,7 @@ const useWithdrawalRequestMethods = () => {
 
 type useWithdrawalRequestOptions = {
   value: string;
-  tokenContract: StethPermitAbi | WstethAbi | null;
+  tokenContract: StethAbi | WstethAbi | null;
   token: TokensWithdrawable;
 };
 
@@ -337,6 +337,10 @@ export const useWithdrawalRequest = ({
     withdrawalContractWeb3?.address ?? '',
     account ?? undefined,
   );
+
+  const isInfiniteAllowance = useMemo(() => {
+    return allowance.eq(MaxUint256);
+  }, [allowance]);
 
   // TODO streamline from hook to async callback
   const { gatherPermitSignature } = useERC20PermitSignature({
@@ -429,6 +433,7 @@ export const useWithdrawalRequest = ({
   return {
     isTokenLocked,
     isApprovalFlow,
+    isInfiniteAllowance,
     allowance,
     isApprovalFlowLoading,
     request,

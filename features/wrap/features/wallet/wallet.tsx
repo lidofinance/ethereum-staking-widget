@@ -34,7 +34,9 @@ const WalletComponent: WalletComponentType = (props) => {
         <CardBalance
           title="ETH Balance"
           loading={ethBalance.initialLoading}
-          value={<FormatToken amount={ethBalance.data} symbol="ETH" />}
+          value={
+            <FormatToken showAmountTip amount={ethBalance.data} symbol="ETH" />
+          }
         />
         <CardAccount account={account} />
       </CardRow>
@@ -46,7 +48,11 @@ const WalletComponent: WalletComponentType = (props) => {
           loading={stethBalance.initialLoading}
           value={
             <>
-              <FormatToken amount={stethBalance.data} symbol="stETH" />
+              <FormatToken
+                showAmountTip
+                amount={stethBalance.data}
+                symbol="stETH"
+              />
               <TokenToWallet address={stethAddress} />
               <Text size={'xxs'} color={'secondary'}>
                 ≈ <FormatToken amount={wstethByStethBalance} symbol="wstETH" />
@@ -60,7 +66,11 @@ const WalletComponent: WalletComponentType = (props) => {
           loading={wstethBalance.initialLoading}
           value={
             <>
-              <FormatToken amount={wstethBalance.data} symbol="wstETH" />
+              <FormatToken
+                showAmountTip
+                amount={wstethBalance.data}
+                symbol="wstETH"
+              />
               <TokenToWallet address={wstethAddress} />
               <Text size={'xxs'} color={'secondary'}>
                 ≈ <FormatToken amount={stethByWstethBalance} symbol="stETH" />

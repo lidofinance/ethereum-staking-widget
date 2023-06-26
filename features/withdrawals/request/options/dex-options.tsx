@@ -19,6 +19,7 @@ import {
   OneInchIcon,
   ParaSwapIcon,
   CowSwapIcon,
+  DexOptionLoader,
 } from './styles';
 
 const placeholder = Array(3).fill(null);
@@ -64,7 +65,7 @@ const dexInfo: {
       `https://swap.cow.fi/#/1/swap/${getTokenAddress(
         CHAINS.Mainnet,
         token,
-      )}/ETH?&sellAmount=${formatEther(amount)}`,
+      )}/ETH?sellAmount=${formatEther(amount)}&utm_source=lido`,
   },
 };
 
@@ -103,6 +104,7 @@ const DexOption: React.FC<DexOptionProps> = ({
         ) : toReceive ? (
           <FormatToken
             approx
+            showAmountTip
             amount={toReceive ?? BigNumber.from(0)}
             symbol="ETH"
           />
@@ -112,10 +114,6 @@ const DexOption: React.FC<DexOptionProps> = ({
       </DexOptionAmount>
     </DexOptionStyled>
   );
-};
-
-const DexOptionLoader = () => {
-  return <DexOptionStyled $loading={true} />;
 };
 
 export const DexOptions: React.FC = () => {

@@ -1,5 +1,9 @@
-import { useSDK, useLidoSWR, SWRResponse } from '@lido-sdk/react';
-import { useSTETHContractRPC } from 'customSdk/contracts';
+import {
+  useSDK,
+  useLidoSWR,
+  SWRResponse,
+  useSTETHContractRPC,
+} from '@lido-sdk/react';
 import { BigNumber } from 'ethers';
 import { calcShareRate } from 'features/withdrawals/utils/calc-share-rate';
 import { STRATEGY_CONSTANT } from 'utils/swrStrategies';

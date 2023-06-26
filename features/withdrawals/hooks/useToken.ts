@@ -4,8 +4,8 @@ import {
   useWSTETHContractWeb3,
   useSTETHBalance,
   useWSTETHBalance,
+  useSTETHContractWeb3,
 } from '@lido-sdk/react';
-import { useSTETHContractWeb3 } from 'customSdk/contracts';
 import { useWithdrawals } from 'features/withdrawals/contexts/withdrawals-context';
 import { getTokenDisplayName } from 'utils/getTokenDisplayName';
 

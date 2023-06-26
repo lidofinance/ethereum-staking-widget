@@ -1,5 +1,4 @@
-import { CHAINS } from '@lido-sdk/constants';
-import { getWithdrawalRequestNFTAddress } from 'customSdk/contracts';
+import { CHAINS, getWithdrawalQueueAddress } from '@lido-sdk/constants';
 
 export const NFT_URL_PREFIX_BY_NETWORK: {
   [key in CHAINS]?: (nftId: string, contract: string) => string;
@@ -8,13 +7,11 @@ export const NFT_URL_PREFIX_BY_NETWORK: {
     `https://etherscan.io/nft/${contract}/${nftId}`,
   [CHAINS.Goerli]: (nftId, contract) =>
     `https://goerli.etherscan.io/nft/${contract}/${nftId}`,
-  [CHAINS.Zhejiang]: (nftId, contract) =>
-    `https://blockscout.com/eth/zhejiang-testnet/token/${contract}/instance/${nftId}/token-transfers`,
 };
 
 export const getNFTUrl = (tokenId: string, chainId?: CHAINS) => {
   if (!chainId) return '';
-  const contractAddress = getWithdrawalRequestNFTAddress(chainId);
+  const contractAddress = getWithdrawalQueueAddress(chainId);
 
   return NFT_URL_PREFIX_BY_NETWORK[chainId]?.(tokenId, contractAddress) || '';
 };
