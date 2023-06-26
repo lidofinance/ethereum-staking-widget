@@ -66,7 +66,7 @@ const NumberFormat = (props: Props) => {
       </span>
     </Tooltip>
   ) : (
-    <>0</>
+    <>-</>
   );
 };
 

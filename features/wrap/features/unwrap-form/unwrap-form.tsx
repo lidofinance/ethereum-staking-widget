@@ -35,6 +35,7 @@ import { DataTableRowStethByWsteth } from 'shared/components/data-table-row-stet
 import { unwrapProcessing } from 'features/wrap/utils';
 import { useUnwrapGasLimit } from './hooks';
 import { getTokenDisplayName } from 'utils/getTokenDisplayName';
+import { FormatToken } from 'shared/formatters/format-token';
 
 export const UnwrapForm: FC = memo(() => {
   const { active, chainId } = useWeb3();
@@ -175,6 +176,9 @@ export const UnwrapForm: FC = memo(() => {
           ${unwrapTxCostInUsd?.toFixed(2)}
         </DataTableRow>
         <DataTableRowStethByWsteth />
+        <DataTableRow title="You will receive">
+          <FormatToken amount={willReceiveStethAsBigNumber} symbol="stETH" />
+        </DataTableRow>
       </DataTable>
 
       <TxStageModal

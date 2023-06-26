@@ -3,7 +3,7 @@ import { BigNumber } from 'ethers';
 import invariant from 'tiny-invariant';
 import { useWeb3 } from 'reef-knot/web3-react';
 import { parseEther } from '@ethersproject/units';
-import type { WstethAbi } from '@lido-sdk/contracts';
+import type { WstethAbi, StethAbi } from '@lido-sdk/contracts';
 import { useSDK } from '@lido-sdk/react';
 import { TOKENS } from '@lido-sdk/constants';
 
@@ -15,7 +15,6 @@ import {
 } from 'shared/hooks';
 import { getErrorMessage, runWithTransactionLogger } from 'utils';
 import { isContract } from 'utils/isContract';
-import type { StethPermitAbi } from 'generated';
 import { useTransactionModal } from 'features/withdrawals/contexts/transaction-modal-context';
 import { useRequestData } from 'features/withdrawals/contexts/request-data-context';
 import { useWithdrawals } from 'features/withdrawals/contexts/withdrawals-context';
@@ -297,7 +296,7 @@ const useWithdrawalRequestMethods = () => {
 
 type useWithdrawalRequestOptions = {
   value: string;
-  tokenContract: StethPermitAbi | WstethAbi | null;
+  tokenContract: StethAbi | WstethAbi | null;
   token: TokensWithdrawable;
 };
 

@@ -1,13 +1,11 @@
 import { FC } from 'react';
 import { useWeb3 } from 'reef-knot/web3-react';
 import { useSDK } from '@lido-sdk/react';
-import { CHAINS } from '@lido-sdk/constants';
+import { CHAINS, getChainColor } from '@lido-sdk/constants';
 import { Button, Connect } from 'shared/wallet';
 import { HeaderWalletChainStyle, DotStyle } from '../styles';
 import { ThemeToggler } from '@lidofinance/lido-ui';
 import NoSSRWrapper from '../../no-ssr-wrapper';
-
-import { getChainColor } from 'customSdk/chains';
 
 const HeaderWallet: FC = () => {
   const { active } = useWeb3();

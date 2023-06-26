@@ -48,7 +48,20 @@ export const StakeForm: FC = memo(() => {
   const [txStage, setTxStage] = useState(TX_STAGE.SUCCESS);
   const [txHash, setTxHash] = useState<string>();
   const [txModalFailedText, setTxModalFailedText] = useState('');
-  const [inputValue, setInputValue] = useState(initialValue);
+  const [inputValue, setInputValue] = useState(() => {
+    // consumes amount query param
+    if (router.query.amount && typeof router.query.amount === 'string') {
+      const initialValue = router.query.amount;
+      delete router.query.amount;
+      router.replace(
+        { pathname: router.pathname, query: router.query },
+        undefined,
+        { shallow: true },
+      );
+      return initialValue;
+    }
+    return '';
+  });
 
   const { active, chainId } = useWeb3();
   const etherBalance = useEthereumBalance();

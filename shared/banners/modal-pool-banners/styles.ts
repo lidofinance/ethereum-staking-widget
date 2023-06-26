@@ -20,6 +20,7 @@ export const DescStyles = styled.span`
   color: var(--lido-color-textSecondary);
   margin-top: ${({ theme }) => theme.spaceMap.sm}px;
   margin-bottom: ${({ theme }) => theme.spaceMap.md}px;
+  text-align: center;
 `;
 
 export const ButtonLinkWrap = styled.a`
