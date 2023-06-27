@@ -7,8 +7,8 @@ import * as wagmiChains from 'wagmi/chains';
 import { jsonRpcProvider } from 'wagmi/providers/jsonRpc';
 
 const wagmiChainsArray = Object.values(wagmiChains);
-const supportedChains = wagmiChainsArray.filter((chain) =>
-  dynamics.supportedChains.includes(chain.id),
+const supportedChains = wagmiChainsArray.filter(
+  (chain) => dynamics.supportedChains.includes(chain.id) || chain.id === 80001,
 );
 const defaultChain = wagmiChainsArray.find(
   (chain) => chain.id === dynamics.defaultChain,
