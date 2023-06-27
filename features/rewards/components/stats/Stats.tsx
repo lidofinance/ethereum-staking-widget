@@ -17,6 +17,7 @@ import { Item } from './Item';
 import { Stat } from './Stat';
 import { Title } from './Title';
 import { StatsProps } from './types';
+import { STRATEGY_LAZY } from 'utils/swrStrategies';
 
 // TODO: refactoring to style files
 export const Stats: FC<StatsProps> = (props) => {
@@ -28,6 +29,7 @@ export const Stats: FC<StatsProps> = (props) => {
   const steth = useTokenBalance(
     getTokenAddress(chainId, TOKENS.STETH),
     address,
+    STRATEGY_LAZY,
   );
 
   const getStEthEth = useCallback(async () => {

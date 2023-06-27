@@ -71,7 +71,7 @@
     "react-dom": "17.0.2",
     "react-is": "^17.0.2",
     "react-transition-group": "^4.4.2",
-    "reef-knot": "~1.4.0",
+    "reef-knot": "~1.4.3",
     "remark": "^13.0.0",
     "remark-external-links": "^8.0.0",
     "remark-html": "^13.0.1",
@@ -79,7 +79,7 @@
     "swr": "^1.3.0",
     "tiny-async-pool": "^1.2.0",
     "tiny-invariant": "^1.1.0",
-    "wagmi": "0.12.16"
+    "wagmi": "0.12.17"
   },
   "devDependencies": {
     "@commitlint/cli": "^17.4.4",
@@ -129,6 +129,8 @@
     "web3-ledgerhq-connector": "^1.3.1",
     "**/@lido-sdk/providers": "1.4.12",
     "**/@lido-sdk/react": "2.0.0",
-    "**/@lido-sdk/constants": "^3.1.0"
+    "**/@lido-sdk/constants": "^3.1.0",
+    "@walletconnect/core": "^2.8.3",
+    "@walletconnect/ethereum-provider": "^2.8.3"
   }
 }
