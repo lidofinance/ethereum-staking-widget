@@ -2417,10 +2417,10 @@
   resolved "https://registry.yarnpkg.com/@reef-knot/types/-/types-1.2.1.tgz#34987fa876538f4261c43a542363f71bead673e9"
   integrity sha512-RH0mzQVqYGL1DTPuv8IZHpgyE1pqlx4yQ1WU5YJ0jx8lX/C7H+SwgLas85Fkg9hix2+CFaz7CxwiNxke9bq+2g==
 
-"@reef-knot/ui-react@1.0.4":
-  version "1.0.4"
-  resolved "https://registry.npmjs.org/@reef-knot/ui-react/-/ui-react-1.0.4.tgz#8ee75b103025556491a5aa2aed1e132670e87b9f"
-  integrity sha512-pXLaQZsU7VznC2av89Rk2V35b4iTlk04VRNuo2b8jccxWbOIu1dXtFnFVhJXxoDFtNqFPgd/H/KAA8WJ8Ie4KA==
+"@reef-knot/ui-react@1.0.5":
+  version "1.0.5"
+  resolved "https://registry.npmjs.org/@reef-knot/ui-react/-/ui-react-1.0.5.tgz#f7d253ecec3a21a2a8e79bac76e4d34640c88209"
+  integrity sha512-3XOpjcqKrpekVI3vQDKo42si6cZEhl2DnyxqP5VAIh8D2x2Bc1jqlBf/xYkg/19o1NnoNjWjYDUdS5iIOj8v+g==
   dependencies:
     react-transition-group "4"
     use-callback-ref "1.2.5"
@@ -8699,15 +8699,15 @@ redent@^3.0.0:
     indent-string "^4.0.0"
     strip-indent "^3.0.0"
 
-reef-knot@^1.4.4:
-  version "1.4.4"
-  resolved "https://registry.npmjs.org/reef-knot/-/reef-knot-1.4.4.tgz#7672f105e0f31158bad2ddca624b50108677e029"
-  integrity sha512-iKpGIE/rvynaX+G9kcxPyyGFxcH3ovgWMbrFFAPmi9QK/5Sghwg/hOeqYaO5TF/X+CtcnSMiAWO2Xp+u2BGCFA==
+reef-knot@^1.4.5:
+  version "1.4.5"
+  resolved "https://registry.npmjs.org/reef-knot/-/reef-knot-1.4.5.tgz#edd20ea04e7a838fae8e678bc71414ece14cfc99"
+  integrity sha512-QZj7/iWcJ8YNaT4bP/6s/ma5eofYqMOdm8xk6eTN2E7n9JZFuMWlIIYvNHBaSKF1/ldF9UNLyfsyPTtnJEGDYQ==
   dependencies:
     "@reef-knot/connect-wallet-modal" "1.4.3"
     "@reef-knot/core-react" "1.4.2"
     "@reef-knot/types" "1.2.1"
-    "@reef-knot/ui-react" "1.0.4"
+    "@reef-knot/ui-react" "1.0.5"
     "@reef-knot/wallets-helpers" "1.1.2"
     "@reef-knot/wallets-icons" "1.0.0"
     "@reef-knot/wallets-list" "1.4.2"
