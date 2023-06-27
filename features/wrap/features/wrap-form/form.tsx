@@ -32,6 +32,7 @@ import {
 } from 'features/wrap/styles';
 import { trackEvent } from '@lidofinance/analytics-matomo';
 import { getTokenDisplayName } from 'utils/getTokenDisplayName';
+import { STRATEGY_LAZY } from 'utils/swrStrategies';
 
 const ETH = 'ETH';
 
@@ -80,7 +81,7 @@ export const Form: FC<FromProps> = (props) => {
   const { active, account } = useWeb3();
   const { chainId, providerWeb3 } = useSDK();
 
-  const ethBalance = useEthereumBalance();
+  const ethBalance = useEthereumBalance(undefined, STRATEGY_LAZY);
   const stethBalance = useSTETHBalance();
   const wstethContractWeb3 = useWSTETHContractWeb3();
   const [isMultisig] = useIsMultisig();

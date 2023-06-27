@@ -39,6 +39,7 @@ import { useStakeableEther } from '../hooks';
 import { useStakingLimitWarn } from './useStakingLimitWarn';
 import { getTokenDisplayName } from 'utils/getTokenDisplayName';
 import { useIsMultisig } from 'shared/hooks/useIsMultisig';
+import { STRATEGY_LAZY } from 'utils/swrStrategies';
 
 export const StakeForm: FC = memo(() => {
   const router = useRouter();
@@ -67,7 +68,7 @@ export const StakeForm: FC = memo(() => {
 
   const { active, chainId } = useWeb3();
   const { providerWeb3 } = useSDK();
-  const etherBalance = useEthereumBalance();
+  const etherBalance = useEthereumBalance(undefined, STRATEGY_LAZY);
   const stakeableEther = useStakeableEther();
   const stethBalance = useSTETHBalance();
   const stethContractWeb3 = useSTETHContractWeb3();

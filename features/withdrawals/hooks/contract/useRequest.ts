@@ -6,6 +6,7 @@ import { parseEther } from '@ethersproject/units';
 import type { WstethAbi, StethAbi } from '@lido-sdk/contracts';
 import { useSDK } from '@lido-sdk/react';
 import { TOKENS } from '@lido-sdk/constants';
+import { useAccount } from 'wagmi';
 
 import { TX_STAGE } from 'features/withdrawals/shared/tx-stage-modal';
 import {
@@ -308,6 +309,7 @@ export const useWithdrawalRequest = ({
   token,
 }: useWithdrawalRequestOptions) => {
   const [isTxPending, setIsTxPending] = useState(false);
+  const { connector } = useAccount();
   const { account } = useWeb3();
   const { isBunker } = useWithdrawals();
   const { contractWeb3: withdrawalContractWeb3 } = useWithdrawalsContract();
@@ -348,7 +350,9 @@ export const useWithdrawalRequest = ({
   });
 
   const isApprovalFlow =
-    isMultisig || (allowance.gt(BigNumber.from(0)) && !needsApprove);
+    connector?.id === 'walletConnect' ||
+    isMultisig ||
+    (allowance.gt(BigNumber.from(0)) && !needsApprove);
 
   const isApprovalFlowLoading =
     isMultisigLoading || (isApprovalFlow && loadingUseApprove);
