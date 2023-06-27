@@ -2399,25 +2399,28 @@
   resolved "https://registry.yarnpkg.com/@polka/url/-/url-1.0.0-next.21.tgz#5de5a2385a35309427f6011992b544514d559aa1"
   integrity sha512-a5Sab1C4/icpTZVzZc5Ghpz88yQtGOyNqYXcZgOssB2uuAr+wF/MvN6bgtW32q7HHrvBki+BsZ0OuNv6EV3K9g==
 
-"@reef-knot/connect-wallet-modal@1.4.2":
-  version "1.4.2"
-  resolved "https://registry.yarnpkg.com/@reef-knot/connect-wallet-modal/-/connect-wallet-modal-1.4.2.tgz#ea9a33fc81ef2807a23d00cbd25fe9f44e9f1c93"
-  integrity sha512-YiOEX/ueFIY/ZJqbmDSCB+MqMtYvKULElVruUvlfrRhLCWcenApbJaSLiF9XqhYReWpG2FZntOCaUHSUXECujw==
+"@reef-knot/connect-wallet-modal@1.4.3":
+  version "1.4.3"
+  resolved "https://registry.npmjs.org/@reef-knot/connect-wallet-modal/-/connect-wallet-modal-1.4.3.tgz#3537ed14e808fa6bb7dd80dc92c0762a79b68687"
+  integrity sha512-v7xi4iqOdix89feN/2gPGwwkeVh0sOs3UdLYkzAgLPJYM3uLGs9bKo5HDxbCYq1fAl4b/F4Xa+DKpNDBaeWcnQ==
+  dependencies:
+    "@types/react" "17.0.53"
+    "@types/react-dom" "17"
 
-"@reef-knot/core-react@1.4.1":
-  version "1.4.1"
-  resolved "https://registry.yarnpkg.com/@reef-knot/core-react/-/core-react-1.4.1.tgz#d04deab13a1e27215df6ad05adbce453d6bf3869"
-  integrity sha512-Stui//ovX5IUAHNq2SBfeQERVpDbqM0kdJ0hzBEa93Bs3dUbWK4pi0nl/AOOPOm7/MNZufm42BcEBwHcp0kzhA==
+"@reef-knot/core-react@1.4.2":
+  version "1.4.2"
+  resolved "https://registry.npmjs.org/@reef-knot/core-react/-/core-react-1.4.2.tgz#09bdeb1c1870efdb445eff22e1fabe5ae3de2ccd"
+  integrity sha512-L12f9QdgHE6jS2++NfoCQEZAgs6fI9bhfJzvFv/abgnEXTiGyCvybATzv8DUuIRmwRVa7g2YtY1sAD3uF4Vr9A==
 
 "@reef-knot/types@1.2.1":
   version "1.2.1"
   resolved "https://registry.yarnpkg.com/@reef-knot/types/-/types-1.2.1.tgz#34987fa876538f4261c43a542363f71bead673e9"
   integrity sha512-RH0mzQVqYGL1DTPuv8IZHpgyE1pqlx4yQ1WU5YJ0jx8lX/C7H+SwgLas85Fkg9hix2+CFaz7CxwiNxke9bq+2g==
 
-"@reef-knot/ui-react@1.0.3":
-  version "1.0.3"
-  resolved "https://registry.yarnpkg.com/@reef-knot/ui-react/-/ui-react-1.0.3.tgz#edc9f278825bd089eb0c741b8c97f8998f9f27af"
-  integrity sha512-q8+OMZhxaYqVzVkOr1rybKZuvB6C04vgA20EYLsGOgK/b9jSPGTar7HiNGN+zMto6gOiAv7/uublICOgUJ4Iwg==
+"@reef-knot/ui-react@1.0.5":
+  version "1.0.5"
+  resolved "https://registry.npmjs.org/@reef-knot/ui-react/-/ui-react-1.0.5.tgz#f7d253ecec3a21a2a8e79bac76e4d34640c88209"
+  integrity sha512-3XOpjcqKrpekVI3vQDKo42si6cZEhl2DnyxqP5VAIh8D2x2Bc1jqlBf/xYkg/19o1NnoNjWjYDUdS5iIOj8v+g==
   dependencies:
     react-transition-group "4"
     use-callback-ref "1.2.5"
@@ -3191,6 +3194,13 @@
   resolved "https://registry.yarnpkg.com/@types/q/-/q-1.5.5.tgz#75a2a8e7d8ab4b230414505d92335d1dcb53a6df"
   integrity sha512-L28j2FcJfSZOnL1WBjDYp2vUHCeIFlyYI/53EwD/rKUBQ7MtUUfbQWiyKJGpcnv4/WgrhWsFKrcPstcAt/J0tQ==
 
+"@types/react-dom@17":
+  version "17.0.20"
+  resolved "https://registry.npmjs.org/@types/react-dom/-/react-dom-17.0.20.tgz#e0c8901469d732b36d8473b40b679ad899da1b53"
+  integrity sha512-4pzIjSxDueZZ90F52mU3aPoogkHIoSIDG+oQ+wQK7Cy2B9S+MvOqY0uEA/qawKz381qrEDkvpwyt8Bm31I8sbA==
+  dependencies:
+    "@types/react" "^17"
+
 "@types/react-transition-group@^4.4.3":
   version "4.4.5"
   resolved "https://registry.yarnpkg.com/@types/react-transition-group/-/react-transition-group-4.4.5.tgz#aae20dcf773c5aa275d5b9f7cdbca638abc5e416"
@@ -3198,7 +3208,7 @@
   dependencies:
     "@types/react" "*"
 
-"@types/react@*", "@types/react@17.0.43":
+"@types/react@*", "@types/react@17.0.43", "@types/react@17.0.53", "@types/react@^17":
   version "17.0.43"
   resolved "https://registry.yarnpkg.com/@types/react/-/react-17.0.43.tgz#4adc142887dd4a2601ce730bc56c3436fdb07a55"
   integrity sha512-8Q+LNpdxf057brvPu1lMtC5Vn7J119xrP1aq4qiaefNioQUYANF/CYeK4NsKorSZyUGJ66g0IM+4bbjwx45o2A==
@@ -8689,15 +8699,15 @@ redent@^3.0.0:
     indent-string "^4.0.0"
     strip-indent "^3.0.0"
 
-reef-knot@~1.4.3:
-  version "1.4.3"
-  resolved "https://registry.yarnpkg.com/reef-knot/-/reef-knot-1.4.3.tgz#4884962858b44e5584b8588ef2f1f00ab401670e"
-  integrity sha512-9RDFJ+H96XkElwdc1To6LJEEVCQoJcByE7a3Tdb/DiRw+6E6SHbXLO0Zz3uP2nyRebQcFOYdh5NCR7qFuXEt5A==
+reef-knot@^1.4.5:
+  version "1.4.5"
+  resolved "https://registry.npmjs.org/reef-knot/-/reef-knot-1.4.5.tgz#edd20ea04e7a838fae8e678bc71414ece14cfc99"
+  integrity sha512-QZj7/iWcJ8YNaT4bP/6s/ma5eofYqMOdm8xk6eTN2E7n9JZFuMWlIIYvNHBaSKF1/ldF9UNLyfsyPTtnJEGDYQ==
   dependencies:
-    "@reef-knot/connect-wallet-modal" "1.4.2"
-    "@reef-knot/core-react" "1.4.1"
+    "@reef-knot/connect-wallet-modal" "1.4.3"
+    "@reef-knot/core-react" "1.4.2"
     "@reef-knot/types" "1.2.1"
-    "@reef-knot/ui-react" "1.0.3"
+    "@reef-knot/ui-react" "1.0.5"
     "@reef-knot/wallets-helpers" "1.1.2"
     "@reef-knot/wallets-icons" "1.0.0"
     "@reef-knot/wallets-list" "1.4.2"
