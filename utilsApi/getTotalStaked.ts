@@ -1,11 +1,8 @@
 import { formatEther } from '@ethersproject/units';
-import { CHAINS } from 'utils';
 import { getStaticRpcBatchProvider } from './rpcProviders';
-import {
-  getStethAddress,
-  getStethContractFactory,
-  HEALTHY_RPC_SERVICES_ARE_OVER,
-} from 'config';
+import { StethAbiFactory } from '@lido-sdk/contracts';
+import { getTokenAddress, TOKENS, CHAINS } from '@lido-sdk/constants';
+import { HEALTHY_RPC_SERVICES_ARE_OVER } from 'config';
 import { serverLogger } from './serverLogger';
 import { rpcUrls } from './rpcUrls';
 
@@ -24,12 +21,8 @@ const getTotalStakedWithFallbacks = async (
       urls[urlIndex],
     );
 
-    const stethAddress = getStethAddress(CHAINS.Mainnet);
-    const stethContractFactory = getStethContractFactory();
-    const stethContract = stethContractFactory.connect(
-      stethAddress,
-      staticProvider,
-    );
+    const stethAddress = getTokenAddress(CHAINS.Mainnet, TOKENS.STETH);
+    const stethContract = StethAbiFactory.connect(stethAddress, staticProvider);
 
     const totalSupplyStWei = await stethContract.totalSupply();
 

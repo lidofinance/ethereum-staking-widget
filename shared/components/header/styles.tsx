@@ -8,16 +8,6 @@ export const HeaderStyle = styled((props) => <Container {...props} />)`
   align-items: center;
 `;
 
-export const HeaderLogoStyle = styled.div`
-  overflow: hidden;
-  flex-shrink: 0;
-  cursor: pointer;
-
-  ${({ theme }) => theme.mediaQueries.md} {
-    width: 14px;
-  }
-`;
-
 export const HeaderActionsStyle = styled.div`
   margin-left: auto;
   display: flex;

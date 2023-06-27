@@ -6,6 +6,7 @@ import {
   Link,
   Loader,
   Text,
+  InlineLoader,
 } from '@lidofinance/lido-ui';
 
 export const TxLoader = styled((props) => <Loader {...props} />)`
@@ -102,4 +103,11 @@ export const ButtonLinkSmall = styled.a`
   :focus-visible {
     background-color: var(--lido-color-primaryHover);
   }
+`;
+
+export const SkeletonBalance = styled(InlineLoader).attrs({
+  color: 'text',
+})`
+  margin-left: ${({ theme }) => theme.spaceMap.xs}px;
+  width: 100px;
 `;

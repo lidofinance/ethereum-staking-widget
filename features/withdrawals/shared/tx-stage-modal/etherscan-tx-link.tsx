@@ -1,7 +1,6 @@
 import { FC } from 'react';
 import { Link } from '@lidofinance/lido-ui';
 import { useSDK } from '@lido-sdk/react';
-import { CHAINS } from '@lido-sdk/constants';
 import { getEtherscanTxLink } from '@lido-sdk/helpers';
 
 type EtherscanTxLink = {
@@ -17,15 +16,7 @@ export const EtherscanTxLink: FC<EtherscanTxLink> = (props) => {
   if (!txHash) return null;
 
   return (
-    <Link
-      onClick={onClick}
-      href={
-        // TODO
-        chainId === CHAINS.Zhejiang
-          ? `https://blockscout.com/eth/zhejiang-testnet/tx/${txHash}`
-          : getEtherscanTxLink(chainId, txHash)
-      }
-    >
+    <Link onClick={onClick} href={getEtherscanTxLink(chainId, txHash)}>
       {text}
     </Link>
   );

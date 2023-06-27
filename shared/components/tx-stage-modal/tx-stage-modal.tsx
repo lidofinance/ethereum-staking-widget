@@ -16,7 +16,6 @@ import { getEtherscanTxLink } from '@lido-sdk/helpers';
 import { ErrorMessage, formatBalance, formatBalanceString } from 'utils';
 import { use1inchLinkProps } from 'features/home/hooks';
 import { ModalPoolBanners } from 'shared/banners';
-import { CHAINS } from '@lido-sdk/constants';
 
 import {
   BoldText,
@@ -31,6 +30,7 @@ import {
   ButtonLinkSmall,
   RetryButton,
   Grid,
+  SkeletonBalance,
 } from './styles';
 
 export enum TX_OPERATION {
@@ -155,17 +155,7 @@ export const TxStageModal: FC<TxStageModalProps> = memo(
     const getEtherscanTxLinkElem = useCallback(
       (text = 'View on Etherscan') => {
         if (!txHash) return text;
-        return (
-          <Link
-            href={
-              chainId === CHAINS.Zhejiang
-                ? ''
-                : getEtherscanTxLink(chainId, txHash)
-            }
-          >
-            {text}
-          </Link>
-        );
+        return <Link href={getEtherscanTxLink(chainId, txHash)}>{text}</Link>;
       },
       [chainId, txHash],
     );
@@ -268,14 +258,20 @@ export const TxStageModal: FC<TxStageModalProps> = memo(
             </>
           );
         case TX_STAGE.SUCCESS:
-          return balance ? (
+          return (
             <>
               {currentIconDict[TX_STAGE.SUCCESS]}
               {txOperation !== TX_OPERATION.APPROVING && (
                 <>
                   <BoldText size="sm">
                     Your new balance is <wbr />
-                    {withOptionaLineBreak(balanceAsString)} {balanceToken}
+                    {balance ? (
+                      <>
+                        {withOptionaLineBreak(balanceAsString)} {balanceToken}
+                      </>
+                    ) : (
+                      <SkeletonBalance />
+                    )}
                   </BoldText>
                   <LightText size="xs" color="secondary" marginTop={4}>
                     {operationWasSuccessfulText}
@@ -294,7 +290,7 @@ export const TxStageModal: FC<TxStageModalProps> = memo(
                 </>
               )}
             </>
-          ) : null;
+          );
         case TX_STAGE.FAIL:
           return (
             <>
@@ -367,6 +363,7 @@ export const TxStageModal: FC<TxStageModalProps> = memo(
     return (
       <Modal
         {...modalProps}
+        open={modalProps.open && !!content}
         onClose={isCloseButtonHidden ? undefined : modalProps.onClose}
       >
         {content}
