@@ -16,6 +16,7 @@ import {
 } from '@lido-sdk/react';
 import { useWeb3 } from '@reef-knot/web3-react';
 import { useCurrencyInput } from 'shared/forms/hooks/useCurrencyInput';
+import { useIsMultisig } from 'shared/hooks/useIsMultisig';
 import { wrapProcessingWithApprove } from 'features/wrap/utils';
 import { TX_OPERATION, TX_STAGE } from 'shared/components';
 import { L2Banner } from 'shared/l2-banner';
@@ -48,6 +49,7 @@ type FromProps = {
   setTxOperation: (value: TX_OPERATION) => void;
   setInputValue: (value: string) => void;
   openTxModal: () => void;
+  closeTxModal: () => void;
   setTxStage: (value: TX_STAGE) => void;
   setTxHash: (value?: string) => void;
   setTxModalFailedText: (value: string) => void;
@@ -65,6 +67,7 @@ export const Form: FC<FromProps> = (props) => {
     setWrappingAmountValue,
     setTxOperation,
     openTxModal,
+    closeTxModal,
     setTxStage,
     setTxHash,
     setTxModalFailedText,
@@ -76,11 +79,12 @@ export const Form: FC<FromProps> = (props) => {
   } = props;
 
   const { active, account } = useWeb3();
-  const { chainId } = useSDK();
+  const { chainId, providerWeb3 } = useSDK();
 
   const ethBalance = useEthereumBalance(undefined, STRATEGY_LAZY);
   const stethBalance = useSTETHBalance();
   const wstethContractWeb3 = useWSTETHContractWeb3();
+  const [isMultisig] = useIsMultisig();
 
   const balanceBySelectedToken = useMemo(() => {
     return selectedToken === ETH ? ethBalance.data : stethBalance.data;
@@ -101,8 +105,10 @@ export const Form: FC<FromProps> = (props) => {
       // Run approving or wrapping
       await wrapProcessingWithApprove(
         chainId,
+        providerWeb3,
         wstethContractWeb3,
         openTxModal,
+        closeTxModal,
         setTxStage,
         setTxHash,
         setTxModalFailedText,
@@ -111,6 +117,7 @@ export const Form: FC<FromProps> = (props) => {
         inputValue,
         selectedToken,
         needsApprove,
+        isMultisig,
         approve,
         resetForm,
       );
@@ -119,6 +126,7 @@ export const Form: FC<FromProps> = (props) => {
       setWrappingAmountValue('');
     },
     [
+      providerWeb3,
       setWrappingAmountValue,
       setTxOperation,
       needsApprove,
@@ -126,12 +134,14 @@ export const Form: FC<FromProps> = (props) => {
       chainId,
       wstethContractWeb3,
       openTxModal,
+      closeTxModal,
       setTxStage,
       setTxHash,
       setTxModalFailedText,
       ethBalance.update,
       stethBalance.update,
       approve,
+      isMultisig,
     ],
   );
 
