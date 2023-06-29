@@ -158,6 +158,7 @@ export const WrapForm: FC = memo(() => {
         setTxOperation={setTxOperation}
         setInputValue={setInputValue}
         openTxModal={openTxModal}
+        closeTxModal={closeTxModal}
         setTxStage={setTxStage}
         setTxHash={setTxHash}
         setTxModalFailedText={setTxModalFailedText}

@@ -11,12 +11,16 @@ import {
   WalledButtonBalanceStyle,
   WalledButtonLoaderStyle,
 } from './styles';
+import { STRATEGY_LAZY } from 'utils/swrStrategies';
 
 export const Button: FC<ButtonProps> = (props) => {
   const { onClick, ...rest } = props;
   const { openModal } = useModal(MODAL.wallet);
   const { account } = useSDK();
-  const { data: balance, initialLoading } = useEthereumBalance();
+  const { data: balance, initialLoading } = useEthereumBalance(
+    undefined,
+    STRATEGY_LAZY,
+  );
 
   return (
     <WalledButtonStyle

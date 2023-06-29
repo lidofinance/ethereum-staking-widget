@@ -71,7 +71,7 @@ const WalletComponent: WalletComponentType = (props) => {
           loading={lidoApr.initialLoading}
           value={
             <LidoAprStyled>
-              {lidoApr.data ? `${lidoApr.data}%` : DATA_UNAVAILABLE}
+              {lidoApr.apr ? `${lidoApr.apr}%` : DATA_UNAVAILABLE}
             </LidoAprStyled>
           }
         />

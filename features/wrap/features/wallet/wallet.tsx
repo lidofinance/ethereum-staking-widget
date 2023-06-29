@@ -15,10 +15,11 @@ import { useWstethBySteth, useStethByWsteth } from 'shared/hooks';
 import type { WalletComponentType } from 'shared/wallet/types';
 import { CardBalance, CardRow, CardAccount, Fallback } from 'shared/wallet';
 import { StyledCard } from './styles';
+import { STRATEGY_LAZY } from 'utils/swrStrategies';
 
 const WalletComponent: WalletComponentType = (props) => {
   const { account } = useSDK();
-  const ethBalance = useEthereumBalance();
+  const ethBalance = useEthereumBalance(undefined, STRATEGY_LAZY);
   const stethBalance = useSTETHBalance();
   const wstethBalance = useWSTETHBalance();
 
