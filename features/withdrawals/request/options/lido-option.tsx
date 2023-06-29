@@ -7,7 +7,6 @@ import {
   MATOMO_CLICK_EVENTS_TYPES,
 } from 'config/trackMatomoEvent';
 import { Tooltip, Question } from '@lidofinance/lido-ui';
-import Link from 'next/link';
 
 import {
   FormatTokenStyled,
@@ -15,6 +14,7 @@ import {
   LidoOptionContainer,
   LidoOptionValue,
 } from './styles';
+import { LocalLink } from 'shared/components/header/components/navigation/local-link';
 
 const TooltipWithdrawalAmount = () => {
   return (
@@ -24,7 +24,7 @@ const TooltipWithdrawalAmount = () => {
         <>
           The final amount of claimable ETH can differ
           <br /> For more info, please read{' '}
-          <Link href="#amountDifferentFromRequested">
+          <LocalLink href="#amountDifferentFromRequested">
             <a
               aria-hidden="true"
               onClick={() =>
@@ -35,7 +35,7 @@ const TooltipWithdrawalAmount = () => {
             >
               FAQ
             </a>
-          </Link>
+          </LocalLink>
         </>
       }
     >

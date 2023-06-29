@@ -1,9 +1,6 @@
-import { useSafeQueryString } from 'shared/hooks/useSafeQueryString';
-
 export const useRoutes = () => {
-  const qs = useSafeQueryString();
-  const claimPath = `/withdrawals/claim${qs}`;
-  const requestPath = `/withdrawals/request${qs}`;
+  const claimPath = `/withdrawals/claim`;
+  const requestPath = `/withdrawals/request`;
 
   const navRoutes = [
     {

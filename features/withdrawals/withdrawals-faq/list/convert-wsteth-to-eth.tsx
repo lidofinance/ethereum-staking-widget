@@ -1,7 +1,7 @@
-import Link from 'next/link';
 import { FC } from 'react';
 import { Accordion } from '@lidofinance/lido-ui';
 import { useWithdrawals } from 'features/withdrawals/contexts/withdrawals-context';
+import { LocalLink } from 'shared/components/header/components/navigation/local-link';
 
 export const ConvertWSTETHtoETH: FC = () => {
   const { requestPath, claimPath } = useWithdrawals();
@@ -9,10 +9,10 @@ export const ConvertWSTETHtoETH: FC = () => {
     <Accordion summary="Can I transform my wstETH to ETH?">
       <p>
         Yes. You can transform your wstETH to ETH using the{' '}
-        <Link href={requestPath}>Request</Link> and{' '}
-        <Link href={claimPath}>Claim</Link> tabs. Note that, under the hood,
-        wstETH will unwrap to stETH first, so your request will be denominated
-        in stETH.
+        <LocalLink href={requestPath}>Request</LocalLink> and{' '}
+        <LocalLink href={claimPath}>Claim</LocalLink> tabs. Note that, under the
+        hood, wstETH will unwrap to stETH first, so your request will be
+        denominated in stETH.
       </p>
     </Accordion>
   );

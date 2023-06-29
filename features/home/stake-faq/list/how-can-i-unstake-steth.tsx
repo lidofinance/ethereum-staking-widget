@@ -1,7 +1,6 @@
-import Link from 'next/link';
 import { FC } from 'react';
 import { Accordion, Link as OuterLink } from '@lidofinance/lido-ui';
-
+import { LocalLink } from 'shared/components/header/components/navigation/local-link';
 import { MATOMO_CLICK_EVENTS_TYPES } from 'config';
 import { trackMatomoEvent } from 'config/trackMatomoEvent';
 
@@ -10,7 +9,7 @@ export const HowCanIUnstakeSteth: FC = () => {
     <Accordion summary="How can I unstake stETH?">
       <p>
         You can use our{' '}
-        <Link href="/withdrawals/claim">
+        <LocalLink href="/withdrawals/claim">
           <a
             onClick={() =>
               trackMatomoEvent(
@@ -21,7 +20,7 @@ export const HowCanIUnstakeSteth: FC = () => {
           >
             Withdrawals Request and Claim tabs
           </a>
-        </Link>{' '}
+        </LocalLink>{' '}
         to unstake stETH and receive ETH at a 1:1 ratio. Under normal
         circumstances, withdrawal period can take anywhere between 1-5 days.
         After that, you can claim your ETH using the Claim tab. Also, you can
