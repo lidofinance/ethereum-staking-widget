@@ -1,7 +1,7 @@
 module.exports = {
   transform: {
-    '^.+\\.(tsx?)$': 'babel-jest',
+    '^.+\\.(t|j)sx?$': 'ts-jest',
   },
-  moduleDirectories: ['node_modules', './'],
-  modulePathIgnorePatterns: ['test'],
+  moduleDirectories: ['node_modules', '<rootDir>'],
+  modulePathIgnorePatterns: ['./test'],
 };

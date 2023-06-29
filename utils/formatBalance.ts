@@ -20,33 +20,46 @@ export const formatBalance: FormatBalance = (
   return balanceString;
 };
 
+export const formatBalanceWithTrimmed = (
+  balance = Zero,
+  maxDecimalDigits = 4,
+  maxTotalLength = 30,
+) => {
+  const balanceString = formatEther(balance);
+  let trimmed = balanceString;
+  let isTrimmed = false;
+  if (balanceString.includes('.')) {
+    const parts = balanceString.split('.');
+    trimmed = parts[0];
+    if (maxDecimalDigits > 0) {
+      trimmed += `.${parts[1].slice(0, maxDecimalDigits)}`;
+      if (maxDecimalDigits < parts[1].length) isTrimmed = true;
+    }
+  }
+
+  if (trimmed.length > maxTotalLength - 3) {
+    if (trimmed[maxTotalLength - 4] === '.') {
+      trimmed = trimmed.slice(0, maxTotalLength - 4);
+    } else {
+      isTrimmed = true;
+      trimmed = trimmed.slice(0, maxTotalLength - 3) + '...';
+    }
+  }
+
+  return {
+    actual: balanceString,
+    trimmed,
+    isTrimmed,
+  };
+};
+
 export const useFormattedBalance = (
   balance = Zero,
   maxDecimalDigits = 4,
   maxTotalLength = 30,
 ) => {
-  return useMemo(() => {
-    const balanceString = formatEther(balance);
-    let trimmed = balanceString;
-    let isTrimmed = false;
-    if (balanceString.includes('.')) {
-      const parts = balanceString.split('.');
-      trimmed = parts[0];
-      if (maxDecimalDigits > 0) {
-        trimmed += `.${parts[1].slice(0, maxDecimalDigits)}`;
-        if (maxDecimalDigits < parts[1].length) isTrimmed = true;
-      }
-    }
-
-    if (trimmed.length > maxTotalLength - 3) {
-      isTrimmed = true;
-      trimmed = trimmed.slice(0, maxTotalLength - 3) + '...';
-    }
-
-    return {
-      actual: balanceString,
-      trimmed,
-      isTrimmed,
-    };
-  }, [balance, maxDecimalDigits, maxTotalLength]);
+  return useMemo(
+    () => formatBalanceWithTrimmed(balance, maxDecimalDigits, maxTotalLength),
+    [balance, maxDecimalDigits, maxTotalLength],
+  );
 };
