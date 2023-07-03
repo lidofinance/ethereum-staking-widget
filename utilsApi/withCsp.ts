@@ -39,6 +39,7 @@ export const contentSecurityPolicy = {
       'https://wq-api.testnet.fi',
       'https://wq-api.lido.fi',
       'https://wq-api.infra-staging.org',
+      'https://cloudflare-eth.com/',
       ...trustedHosts,
     ],
     formAction: ["'self'", ...trustedHosts],
