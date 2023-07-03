@@ -12,6 +12,7 @@ import { useSDK, useWSTETHBalance } from '@lido-sdk/react';
 import { parseEther } from '@ethersproject/units';
 import { TxStageModal, TX_OPERATION, TX_STAGE } from 'shared/components';
 import { useTxCostInUsd, useWstethBySteth } from 'shared/hooks';
+import { useIsMultisig } from 'shared/hooks/useIsMultisig';
 import {
   formatBalance,
   getErrorMessage,
@@ -87,6 +88,8 @@ export const WrapForm: FC = memo(() => {
     setTxModalOpen(false);
   }, []);
 
+  const [isMultisig] = useIsMultisig();
+
   const approveWrapper = useCallback<
     NonNullable<Parameters<typeof useApprove>[4]>
   >(
@@ -99,6 +102,12 @@ export const WrapForm: FC = memo(() => {
           'Approve signing',
           callback,
         );
+
+        if (isMultisig) {
+          setTxStage(TX_STAGE.IDLE);
+          closeTxModal();
+          return;
+        }
 
         if (typeof transaction !== 'string') {
           setTxHash(transaction.hash);
@@ -121,7 +130,7 @@ export const WrapForm: FC = memo(() => {
         openTxModal();
       }
     },
-    [openTxModal],
+    [openTxModal, closeTxModal, isMultisig],
   );
 
   const {
