@@ -12,8 +12,8 @@ import { TX_STAGE } from 'features/withdrawals/shared/tx-stage-modal';
 import {
   GatherPermitSignatureResult,
   useERC20PermitSignature,
-  useIsContract,
 } from 'shared/hooks';
+import { useIsMultisig } from 'shared/hooks/useIsMultisig';
 import { getErrorMessage, runWithTransactionLogger } from 'utils';
 import { isContract } from 'utils/isContract';
 import { useTransactionModal } from 'features/withdrawals/contexts/transaction-modal-context';
@@ -315,9 +315,7 @@ export const useWithdrawalRequest = ({
   const { contractWeb3: withdrawalContractWeb3 } = useWithdrawalsContract();
   const { dispatchModalState } = useTransactionModal();
   const getRequestMethod = useWithdrawalRequestMethods();
-  const { isContract: isMultisig, loading: isMultisigLoading } = useIsContract(
-    account ?? undefined,
-  );
+  const [isMultisig, isMultisigLoading] = useIsMultisig();
 
   const valueBN = useMemo(() => {
     try {

@@ -33,7 +33,7 @@ export const getErrorMessage = (error: unknown): ErrorMessage => {
 };
 
 // type safe error code extractor
-const extractCodeFromError = (
+export const extractCodeFromError = (
   error: unknown,
   shouldDig = true,
 ): number | string => {

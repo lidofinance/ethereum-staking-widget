@@ -10,6 +10,7 @@ import {
 import { useRouter } from 'next/router';
 import { parseEther } from '@ethersproject/units';
 import {
+  useSDK,
   useContractSWR,
   useEthereumBalance,
   useSTETHBalance,
@@ -37,6 +38,7 @@ import { useStethSubmitGasLimit } from './hooks';
 import { useStakeableEther } from '../hooks';
 import { useStakingLimitWarn } from './useStakingLimitWarn';
 import { getTokenDisplayName } from 'utils/getTokenDisplayName';
+import { useIsMultisig } from 'shared/hooks/useIsMultisig';
 import { STRATEGY_LAZY } from 'utils/swrStrategies';
 
 export const StakeForm: FC = memo(() => {
@@ -70,11 +72,13 @@ export const StakeForm: FC = memo(() => {
   }, [router]);
 
   const { active, chainId } = useWeb3();
+  const { providerWeb3 } = useSDK();
   const etherBalance = useEthereumBalance(undefined, STRATEGY_LAZY);
   const stakeableEther = useStakeableEther();
   const stethBalance = useSTETHBalance();
   const stethContractWeb3 = useSTETHContractWeb3();
   const contractRpc = useSTETHContractRPC();
+  const [isMultisig] = useIsMultisig();
 
   const lidoFee = useContractSWR({
     contract: contractRpc,
@@ -95,8 +99,10 @@ export const StakeForm: FC = memo(() => {
   const submit = useCallback(
     async (inputValue, resetForm) => {
       await stakeProcessing(
+        providerWeb3,
         stethContractWeb3,
         openTxModal,
+        closeTxModal,
         setTxStage,
         setTxHash,
         setTxModalFailedText,
@@ -105,14 +111,18 @@ export const StakeForm: FC = memo(() => {
         resetForm,
         chainId,
         router?.query?.ref as string | undefined,
+        isMultisig,
       );
     },
     [
+      providerWeb3,
       stethContractWeb3,
       openTxModal,
+      closeTxModal,
       stethBalance.update,
       chainId,
       router?.query?.ref,
+      isMultisig,
     ],
   );
 
