@@ -1,5 +1,4 @@
 import { useEthAmountByStethWsteth } from 'features/withdrawals/hooks';
-import { useWithdrawals } from 'features/withdrawals/contexts/withdrawals-context';
 import { useRequestForm } from 'features/withdrawals/contexts/request-form-context';
 
 import {
@@ -45,7 +44,7 @@ const TooltipWithdrawalAmount = () => {
 };
 
 export const LidoOption = () => {
-  const { isSteth } = useWithdrawals();
+  const { isSteth } = useRequestForm();
   const { inputValue } = useRequestForm();
   const ethAmount = useEthAmountByStethWsteth({ isSteth, input: inputValue });
 

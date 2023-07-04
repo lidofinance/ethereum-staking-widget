@@ -1,21 +1,11 @@
-import { FC, createContext, useContext, useMemo, useState } from 'react';
-import { Steth, Wsteth } from '@lidofinance/lido-ui';
-import { TOKENS } from '@lido-sdk/constants';
+import { FC, createContext, useContext, useMemo } from 'react';
 import invariant from 'tiny-invariant';
 
 import { StatusProps } from 'features/withdrawals/shared/status';
 
 import { useWithdrawalsBaseData } from 'features/withdrawals/hooks/contract/useWithdrawalsBaseData';
 
-export const iconsMap = {
-  [TOKENS.WSTETH]: <Wsteth />,
-  [TOKENS.STETH]: <Steth />,
-};
-
 export type WithdrawalsContextValue = {
-  selectedToken: keyof typeof iconsMap;
-  setSelectedToken: (token: keyof typeof iconsMap) => void;
-  isSteth: boolean;
   isClaimTab: boolean;
   withdrawalsStatus: StatusProps['variant'];
   isWithdrawalsStatusLoading: boolean;
@@ -40,12 +30,7 @@ export const WithdrawalsProvider: FC<WithdrawalsProviderProps> = ({
   children,
   mode,
 }) => {
-  const [selectedToken, setSelectedToken] = useState<
-    TOKENS.WSTETH | TOKENS.STETH
-  >(TOKENS.STETH);
-
   const isClaimTab = mode === 'claim';
-  const isSteth = selectedToken === TOKENS.STETH;
 
   const { data, initialLoading: isWithdrawalsStatusLoading } =
     useWithdrawalsBaseData();
@@ -61,9 +46,6 @@ export const WithdrawalsProvider: FC<WithdrawalsProviderProps> = ({
 
   const value = useMemo(
     () => ({
-      selectedToken,
-      setSelectedToken,
-      isSteth,
       isClaimTab,
       withdrawalsStatus,
       isWithdrawalsStatusLoading,
@@ -72,8 +54,6 @@ export const WithdrawalsProvider: FC<WithdrawalsProviderProps> = ({
       isBunker,
     }),
     [
-      selectedToken,
-      isSteth,
       isClaimTab,
       withdrawalsStatus,
       isWithdrawalsStatusLoading,
