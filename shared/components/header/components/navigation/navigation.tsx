@@ -3,7 +3,7 @@ import { Wallet, Stake, Wrap, Withdraw } from '@lidofinance/lido-ui';
 import { useRouter } from 'next/router';
 
 import { Nav, NavLink } from './styles';
-import { LocalLink } from './local-link';
+import { LocalLink } from '../../../local-link';
 
 const routes = [
   {

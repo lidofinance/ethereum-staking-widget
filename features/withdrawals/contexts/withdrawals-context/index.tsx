@@ -5,7 +5,7 @@ import invariant from 'tiny-invariant';
 
 import { StatusProps } from 'features/withdrawals/shared/status';
 
-import { useContractStatus } from './useContractStatus';
+import { useWithdrawalsBaseData } from 'features/withdrawals/hooks/contract/useWithdrawalsBaseData';
 
 export const iconsMap = {
   [TOKENS.WSTETH]: <Wsteth />,
@@ -44,16 +44,20 @@ export const WithdrawalsProvider: FC<WithdrawalsProviderProps> = ({
     TOKENS.WSTETH | TOKENS.STETH
   >(TOKENS.STETH);
 
-  const {
-    withdrawalsStatus,
-    isWithdrawalsStatusLoading,
-    isPaused,
-    isBunker,
-    isTurbo,
-  } = useContractStatus();
-
   const isClaimTab = mode === 'claim';
   const isSteth = selectedToken === TOKENS.STETH;
+
+  const { data, initialLoading: isWithdrawalsStatusLoading } =
+    useWithdrawalsBaseData();
+  const { isBunker, isPaused, isTurbo } = data ?? {};
+
+  const withdrawalsStatus: StatusProps['variant'] = isPaused
+    ? 'error'
+    : isBunker
+    ? 'warning'
+    : isTurbo
+    ? 'success'
+    : 'error';
 
   const value = useMemo(
     () => ({

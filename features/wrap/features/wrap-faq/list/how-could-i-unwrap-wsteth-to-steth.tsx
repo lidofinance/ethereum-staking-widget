@@ -2,7 +2,7 @@ import { FC } from 'react';
 
 import { Accordion } from '@lidofinance/lido-ui';
 
-import { LocalLink } from 'shared/components/header/components/navigation/local-link';
+import { LocalLink } from 'shared/components/local-link';
 import { MATOMO_CLICK_EVENTS_TYPES } from 'config';
 import { trackMatomoEvent } from 'config/trackMatomoEvent';
 import { useSafeQueryString } from 'shared/hooks/useSafeQueryString';

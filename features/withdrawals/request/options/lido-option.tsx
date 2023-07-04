@@ -14,7 +14,7 @@ import {
   LidoOptionContainer,
   LidoOptionValue,
 } from './styles';
-import { LocalLink } from 'shared/components/header/components/navigation/local-link';
+import { LocalLink } from 'shared/components/local-link';
 
 const TooltipWithdrawalAmount = () => {
   return (

@@ -4,7 +4,7 @@ import {
   WITHDRAWAL_REQUEST_PATH,
   WITHDRAWAL_CLAIM_PATH,
 } from 'features/withdrawals/withdrawals-constants';
-import { LocalLink } from 'shared/components/header/components/navigation/local-link';
+import { LocalLink } from 'shared/components/local-link';
 
 export const ConvertSTETHtoETH: React.FC = () => {
   return (

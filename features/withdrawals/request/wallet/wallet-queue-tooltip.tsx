@@ -9,7 +9,7 @@ import {
   MATOMO_CLICK_EVENTS_TYPES,
 } from 'config/trackMatomoEvent';
 import { QueuInfoStyled, DataTableRowStyled } from './styles';
-import { LocalLink } from 'shared/components/header/components/navigation/local-link';
+import { LocalLink } from 'shared/components/local-link';
 
 export const WalletQueueTooltip = () => {
   const waitingTime = useWaitingTime('');

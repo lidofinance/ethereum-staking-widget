@@ -1,6 +1,6 @@
 import { FC } from 'react';
 import { Accordion } from '@lidofinance/lido-ui';
-import { LocalLink } from 'shared/components/header/components/navigation/local-link';
+import { LocalLink } from 'shared/components/local-link';
 import {
   WITHDRAWAL_CLAIM_PATH,
   WITHDRAWAL_REQUEST_PATH,
