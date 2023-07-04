@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { isMobile } from 'react-device-detect';
-import { isLedgerDappBrowserProvider } from 'web3-ledgerhq-frame-connector';
+import { isLedgerDappBrowserProvider } from '@reef-knot/ledger-connector';
 import { SafeAppConnector } from '@gnosis.pm/safe-apps-web3-react';
 
 const safeMultisigConnector =
