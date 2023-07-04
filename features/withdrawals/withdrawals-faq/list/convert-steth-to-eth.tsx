@@ -1,16 +1,18 @@
 import { Accordion } from '@lidofinance/lido-ui';
 
-import { useWithdrawals } from 'features/withdrawals/contexts/withdrawals-context';
+import {
+  WITHDRAWAL_REQUEST_PATH,
+  WITHDRAWAL_CLAIM_PATH,
+} from 'features/withdrawals/withdrawals-constants';
 import { LocalLink } from 'shared/components/header/components/navigation/local-link';
 
 export const ConvertSTETHtoETH: React.FC = () => {
-  const { requestPath, claimPath } = useWithdrawals();
   return (
     <Accordion summary="Can I transform my stETH to ETH?">
       <p>
         Yes. Stakers can transform their stETH to ETH 1:1 using the{' '}
-        <LocalLink href={requestPath}>Request</LocalLink> and{' '}
-        <LocalLink href={claimPath}>Claim</LocalLink> tabs.
+        <LocalLink href={WITHDRAWAL_REQUEST_PATH}>Request</LocalLink> and{' '}
+        <LocalLink href={WITHDRAWAL_CLAIM_PATH}>Claim</LocalLink> tabs.
       </p>
     </Accordion>
   );

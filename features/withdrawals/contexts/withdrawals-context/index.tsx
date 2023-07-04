@@ -6,7 +6,6 @@ import invariant from 'tiny-invariant';
 import { StatusProps } from 'features/withdrawals/shared/status';
 
 import { useContractStatus } from './useContractStatus';
-import { useRoutes } from './useRoutes';
 
 export const iconsMap = {
   [TOKENS.WSTETH]: <Wsteth />,
@@ -20,12 +19,9 @@ export type WithdrawalsContextValue = {
   isClaimTab: boolean;
   withdrawalsStatus: StatusProps['variant'];
   isWithdrawalsStatusLoading: boolean;
-  claimPath: string;
-  requestPath: string;
   isPaused?: boolean;
   isTurbo?: boolean;
   isBunker?: boolean;
-  navRoutes: ReturnType<typeof useRoutes>['navRoutes'];
 };
 const WithdrawalsContext = createContext<WithdrawalsContextValue | null>(null);
 WithdrawalsContext.displayName = 'WithdrawalsContext';
@@ -55,7 +51,7 @@ export const WithdrawalsProvider: FC<WithdrawalsProviderProps> = ({
     isBunker,
     isTurbo,
   } = useContractStatus();
-  const { navRoutes, claimPath, requestPath } = useRoutes();
+
   const isClaimTab = mode === 'claim';
   const isSteth = selectedToken === TOKENS.STETH;
 
@@ -67,12 +63,9 @@ export const WithdrawalsProvider: FC<WithdrawalsProviderProps> = ({
       isClaimTab,
       withdrawalsStatus,
       isWithdrawalsStatusLoading,
-      claimPath,
       isPaused,
       isTurbo,
       isBunker,
-      requestPath,
-      navRoutes,
     }),
     [
       selectedToken,
@@ -80,12 +73,9 @@ export const WithdrawalsProvider: FC<WithdrawalsProviderProps> = ({
       isClaimTab,
       withdrawalsStatus,
       isWithdrawalsStatusLoading,
-      claimPath,
       isPaused,
       isTurbo,
       isBunker,
-      requestPath,
-      navRoutes,
     ],
   );
 
