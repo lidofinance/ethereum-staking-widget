@@ -5,15 +5,13 @@ import { Accordion } from '@lidofinance/lido-ui';
 import { LocalLink } from 'shared/components/local-link';
 import { MATOMO_CLICK_EVENTS_TYPES } from 'config';
 import { trackMatomoEvent } from 'config/trackMatomoEvent';
-import { useSafeQueryString } from 'shared/hooks/useSafeQueryString';
 
 export const HowCouldIUnwrapWstethToSteth: FC = () => {
-  const queryString = useSafeQueryString();
   return (
     <Accordion summary="How could I unwrap wstETH back to stETH?">
       <p>
         You can unwrap your wstETH tokens using{' '}
-        <LocalLink href={`/wrap/unwrap${queryString}`}>
+        <LocalLink href={`/wrap/unwrap`}>
           <a
             onClick={() =>
               trackMatomoEvent(
