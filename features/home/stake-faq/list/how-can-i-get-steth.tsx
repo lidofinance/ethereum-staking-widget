@@ -1,8 +1,8 @@
-import Link from 'next/link';
 import { FC } from 'react';
 import { Accordion, Link as OuterLink } from '@lidofinance/lido-ui';
 import { MATOMO_CLICK_EVENTS_TYPES } from 'config';
 import { trackMatomoEvent } from 'config/trackMatomoEvent';
+import { LocalLink } from 'shared/components/local-link';
 
 export const HowCanIGetSteth: FC = () => {
   return (
@@ -10,7 +10,7 @@ export const HowCanIGetSteth: FC = () => {
       <p>
         You can get stETH many ways, including interacting with the smart
         contract directly.Yet, it is much easier to use a{' '}
-        <Link href={'/'}>
+        <LocalLink href={'/'}>
           <a
             onClick={() =>
               trackMatomoEvent(
@@ -21,7 +21,7 @@ export const HowCanIGetSteth: FC = () => {
           >
             Lido Ethereum staking widget
           </a>
-        </Link>{' '}
+        </LocalLink>{' '}
         and in other{' '}
         <OuterLink
           href={'https://lido.fi/lido-ecosystem?tokens=stETH&categories=Get'}

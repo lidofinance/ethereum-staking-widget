@@ -6,13 +6,14 @@ import { parseEther } from '@ethersproject/units';
 import type { WstethAbi, StethAbi } from '@lido-sdk/contracts';
 import { useSDK } from '@lido-sdk/react';
 import { TOKENS } from '@lido-sdk/constants';
+import { useAccount } from 'wagmi';
 
 import { TX_STAGE } from 'features/withdrawals/shared/tx-stage-modal';
 import {
   GatherPermitSignatureResult,
   useERC20PermitSignature,
-  useIsContract,
 } from 'shared/hooks';
+import { useIsMultisig } from 'shared/hooks/useIsMultisig';
 import { getErrorMessage, runWithTransactionLogger } from 'utils';
 import { isContract } from 'utils/isContract';
 import { useTransactionModal } from 'features/withdrawals/contexts/transaction-modal-context';
@@ -308,14 +309,13 @@ export const useWithdrawalRequest = ({
   token,
 }: useWithdrawalRequestOptions) => {
   const [isTxPending, setIsTxPending] = useState(false);
+  const { connector } = useAccount();
   const { account } = useWeb3();
   const { isBunker } = useWithdrawals();
   const { contractWeb3: withdrawalContractWeb3 } = useWithdrawalsContract();
   const { dispatchModalState } = useTransactionModal();
   const getRequestMethod = useWithdrawalRequestMethods();
-  const { isContract: isMultisig, loading: isMultisigLoading } = useIsContract(
-    account ?? undefined,
-  );
+  const [isMultisig, isMultisigLoading] = useIsMultisig();
 
   const valueBN = useMemo(() => {
     try {
@@ -350,7 +350,9 @@ export const useWithdrawalRequest = ({
   });
 
   const isApprovalFlow =
-    isMultisig || (allowance.gt(BigNumber.from(0)) && !needsApprove);
+    connector?.id === 'walletConnect' ||
+    isMultisig ||
+    (allowance.gt(BigNumber.from(0)) && !needsApprove);
 
   const isApprovalFlowLoading =
     isMultisigLoading || (isApprovalFlow && loadingUseApprove);

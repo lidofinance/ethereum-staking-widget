@@ -1,5 +1,4 @@
 import { useSDK } from '@lido-sdk/react';
-import { useWithdrawals } from 'features/withdrawals/contexts/withdrawals-context';
 import { useNftDataByTxHash } from 'features/withdrawals/hooks/useNftDataByTxHash';
 
 import { Link, Loader } from '@lidofinance/lido-ui';
@@ -20,6 +19,7 @@ import {
   NFTImageExample,
   AddNftWrapper,
 } from './styles';
+import { WITHDRAWAL_CLAIM_PATH } from 'features/withdrawals/withdrawals-constants';
 
 const LINK_ADD_NFT_GUIDE =
   'https://help.lido.fi/en/articles/7858367-how-do-i-add-the-lido-nft-to-metamask';
@@ -36,7 +36,6 @@ export const TxRequestStageSuccess = ({
   amountAsString,
 }: TxRequestStageSuccessProps) => {
   const { providerWeb3 } = useSDK();
-  const { claimPath } = useWithdrawals();
   const { data: nftData, initialLoading: nftLoading } =
     useNftDataByTxHash(txHash);
   const showAddGuideLink = !!providerWeb3?.provider.isMetaMask;
@@ -47,8 +46,8 @@ export const TxRequestStageSuccess = ({
     <span>
       Withdrawal request for {amountAsString} {tokenName} has been sent.
       <br />
-      Check <Link href={claimPath}>Claim tab</Link> to view your withdrawal
-      requests or view your transaction on{' '}
+      Check <Link href={WITHDRAWAL_CLAIM_PATH}>Claim tab</Link> to view your
+      withdrawal requests or view your transaction on{' '}
       <EtherscanTxLink
         txHash={txHash ?? undefined}
         text="Etherscan"

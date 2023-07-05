@@ -33,7 +33,7 @@ export const getErrorMessage = (error: unknown): ErrorMessage => {
 };
 
 // type safe error code extractor
-const extractCodeFromError = (
+export const extractCodeFromError = (
   error: unknown,
   shouldDig = true,
 ): number | string => {
@@ -53,7 +53,8 @@ const extractCodeFromError = (
       normalizedMessage.includes('denied message signature') ||
       normalizedMessage.includes('transaction was rejected') ||
       normalizedMessage.includes('rejected the transaction') ||
-      normalizedMessage.includes('rejected the request')
+      normalizedMessage.includes('rejected the request') ||
+      normalizedMessage.includes('rejected methods')
     )
       return 'ACTION_REJECTED';
   }
