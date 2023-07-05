@@ -60,14 +60,9 @@ export const StakeForm: FC = memo(() => {
       router.query.amount &&
       typeof router.query.amount === 'string'
     ) {
-      const initialValue = router.query.amount;
-      delete router.query.amount;
-      router.replace(
-        { pathname: router.pathname, query: router.query },
-        undefined,
-        { shallow: true },
-      );
-      setInputValue(initialValue);
+      const { amount, ...rest } = router.query;
+      router.replace({ pathname: router.pathname, query: rest });
+      setInputValue(amount);
     }
   }, [router]);
 
@@ -179,10 +174,13 @@ export const StakeForm: FC = memo(() => {
 
   // Reset form amount after disconnect wallet
   useEffect(() => {
-    if (!active) {
-      reset();
-    }
-  }, [active, reset]);
+    return () => {
+      if (active) {
+        reset();
+      }
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [active]);
 
   return (
     <Block>
