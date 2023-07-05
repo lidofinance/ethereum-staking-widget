@@ -1,9 +1,11 @@
-import { FC } from 'react';
+import { FC, useEffect } from 'react';
 import { GetServerSideProps } from 'next';
 import Head from 'next/head';
+import { useRouter } from 'next/router';
 import { Layout } from 'shared/components';
 import { WrapForm, UnwrapForm, Wallet, WrapFaq } from 'features/wrap';
 import { Switch } from 'shared/components/switch';
+import { useSafeQueryString } from 'shared/hooks/useSafeQueryString';
 import NoSsrWrapper from 'shared/components/no-ssr-wrapper';
 
 const NAV_ROUTES = [
@@ -12,7 +14,16 @@ const NAV_ROUTES = [
 ];
 
 const WrapPage: FC<WrapModePageProps> = ({ mode }) => {
+  const { isReady, query, replace } = useRouter();
   const isUnwrapMode = mode === 'unwrap';
+  const queryString = useSafeQueryString();
+
+  // legacy routing support
+  useEffect(() => {
+    if (isReady && query.mode === 'unwrap') {
+      replace(`/wrap/unwrap${queryString}`);
+    }
+  }, [isReady, query.mode, queryString, replace]);
 
   return (
     <Layout
