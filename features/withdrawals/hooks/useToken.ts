@@ -6,11 +6,11 @@ import {
   useWSTETHBalance,
   useSTETHContractWeb3,
 } from '@lido-sdk/react';
-import { useWithdrawals } from 'features/withdrawals/contexts/withdrawals-context';
 import { getTokenDisplayName } from 'utils/getTokenDisplayName';
+import { useRequestForm } from 'features/withdrawals//contexts/request-form-context';
 
 export const useToken = () => {
-  const { selectedToken, setSelectedToken } = useWithdrawals();
+  const { selectedToken, setSelectedToken } = useRequestForm();
   const wstethContractWeb3 = useWSTETHContractWeb3();
   const stethContractWeb3 = useSTETHContractWeb3();
   // TODO conditional balance fetch
