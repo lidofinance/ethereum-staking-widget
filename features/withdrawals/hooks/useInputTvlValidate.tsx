@@ -16,7 +16,10 @@ const texts: ((amount: string) => string)[] = [
 
 const getText = () => texts[Math.floor(Math.random() * texts.length)];
 
-export const useInputTvlValidate = (inputValue: string) => {
+export const useInputTvlValidate = (
+  inputValue: string,
+  tokenBalance?: BigNumber,
+) => {
   const { active } = useWeb3();
   const { data: stethTotalSupply } = useSTETHTotalSupply();
 
@@ -29,19 +32,29 @@ export const useInputTvlValidate = (inputValue: string) => {
     return parseEther(inputValue || '0').sub(stethTotalSupply || '0');
   }, [active, inputValue, stethTotalSupply]);
 
+  const balanceDiff = useMemo(() => {
+    const canCalc =
+      active && isValidEtherValue(inputValue) && tokenBalance !== undefined;
+
+    if (!canCalc) return BigNumber.from(0);
+
+    return parseEther(inputValue || '0').sub(tokenBalance || '0');
+  }, [active, inputValue, tokenBalance]);
+
   // To render one text per page before refresh
   const textTemplate = useMemo(() => getText(), []);
 
   const tvlMessage = useMemo(
     () =>
       tvlDiff.gt(BigNumber.from(0))
-        ? textTemplate(shortenTokenValue(Number(formatEther(tvlDiff))))
+        ? textTemplate(shortenTokenValue(Number(formatEther(balanceDiff))))
         : undefined,
-    [textTemplate, tvlDiff],
+    [balanceDiff, textTemplate, tvlDiff],
   );
 
   return {
     tvlDiff,
+    balanceDiff,
     tvlMessage,
   };
 };

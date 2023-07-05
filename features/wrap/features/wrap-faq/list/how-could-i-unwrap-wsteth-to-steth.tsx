@@ -1,19 +1,17 @@
-import Link from 'next/link';
-import { useRouter } from 'next/router';
+import { FC } from 'react';
+
 import { Accordion } from '@lidofinance/lido-ui';
-import { getUnwrapUrl } from 'utils/getWrapUnwrapUrl';
+
+import { LocalLink } from 'shared/components/local-link';
 import { MATOMO_CLICK_EVENTS_TYPES } from 'config';
 import { trackMatomoEvent } from 'config/trackMatomoEvent';
 
-export const HowCouldIUnwrapWstethToSteth: React.FC = () => {
-  const router = useRouter();
-  const { query } = router;
-
+export const HowCouldIUnwrapWstethToSteth: FC = () => {
   return (
     <Accordion summary="How could I unwrap wstETH back to stETH?">
       <p>
         You can unwrap your wstETH tokens using{' '}
-        <Link href={getUnwrapUrl(query)}>
+        <LocalLink href={`/wrap/unwrap`}>
           <a
             onClick={() =>
               trackMatomoEvent(
@@ -24,7 +22,7 @@ export const HowCouldIUnwrapWstethToSteth: React.FC = () => {
           >
             Wrap &amp; Unwrap staking widget
           </a>
-        </Link>
+        </LocalLink>
         .
       </p>
     </Accordion>

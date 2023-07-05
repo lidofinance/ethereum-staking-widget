@@ -5,12 +5,16 @@ import { TX_STAGE } from 'shared/components';
 import { getErrorMessage, runWithTransactionLogger } from 'utils';
 import { getStaticRpcBatchProvider } from 'utils/rpcProviders';
 import { getBackendRPCPath } from 'config';
+import invariant from 'tiny-invariant';
+import type { Web3Provider } from '@ethersproject/providers';
 
 const ETH = 'ETH';
 
 type UnwrapProcessingProps = (
+  providerWeb3: Web3Provider | undefined,
   stethContractWeb3: WstethAbi | null,
   openTxModal: () => void,
+  closeTxModal: () => void,
   setTxStage: (value: TX_STAGE) => void,
   setTxHash: (value: string | undefined) => void,
   setTxModalFailedText: (value: string) => void,
@@ -19,11 +23,14 @@ type UnwrapProcessingProps = (
   chainId: string | number | undefined,
   inputValue: string,
   resetForm: () => void,
+  isMultisig: boolean,
 ) => Promise<void>;
 
 export const unwrapProcessing: UnwrapProcessingProps = async (
+  providerWeb3,
   wstethContractWeb3,
   openTxModal,
+  closeTxModal,
   setTxStage,
   setTxHash,
   setTxModalFailedText,
@@ -32,10 +39,13 @@ export const unwrapProcessing: UnwrapProcessingProps = async (
   chainId,
   inputValue,
   resetForm,
+  isMultisig,
 ) => {
   if (!wstethContractWeb3 || !chainId) {
     return;
   }
+
+  invariant(providerWeb3, 'must have providerWeb3');
 
   const provider = getStaticRpcBatchProvider(
     chainId,
@@ -47,11 +57,23 @@ export const unwrapProcessing: UnwrapProcessingProps = async (
     const maxPriorityFeePerGas = feeData.maxPriorityFeePerGas ?? undefined;
     const maxFeePerGas = feeData.maxFeePerGas ?? undefined;
 
-    const callback = () =>
-      wstethContractWeb3.unwrap(parseEther(inputValue), {
-        maxPriorityFeePerGas,
-        maxFeePerGas,
-      });
+    const callback = async () => {
+      if (isMultisig) {
+        const tx = await wstethContractWeb3.populateTransaction.unwrap(
+          parseEther(inputValue),
+          {
+            maxPriorityFeePerGas,
+            maxFeePerGas,
+          },
+        );
+        return providerWeb3.getSigner().sendUncheckedTransaction(tx);
+      } else {
+        return wstethContractWeb3.unwrap(parseEther(inputValue), {
+          maxPriorityFeePerGas,
+          maxFeePerGas,
+        });
+      }
+    };
 
     setTxStage(TX_STAGE.SIGN);
     openTxModal();
@@ -61,18 +83,28 @@ export const unwrapProcessing: UnwrapProcessingProps = async (
       callback,
     );
 
-    setTxHash(transaction.hash);
-    setTxStage(TX_STAGE.BLOCK);
-    openTxModal();
+    const handleEnding = () => {
+      resetForm();
+      stethBalanceUpdate();
+      wstethBalanceUpdate();
+    };
 
-    await runWithTransactionLogger('Unwrap block confirmation', async () =>
-      transaction.wait(),
-    );
+    if (isMultisig) {
+      handleEnding();
+      closeTxModal();
+      return;
+    }
 
-    resetForm();
-    stethBalanceUpdate();
-    wstethBalanceUpdate();
+    if (typeof transaction === 'object') {
+      setTxHash(transaction.hash);
+      setTxStage(TX_STAGE.BLOCK);
+      openTxModal();
+      await runWithTransactionLogger('Unwrap block confirmation', async () =>
+        transaction.wait(),
+      );
+    }
 
+    handleEnding();
     setTxStage(TX_STAGE.SUCCESS);
     openTxModal();
     /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
@@ -87,8 +119,10 @@ export const unwrapProcessing: UnwrapProcessingProps = async (
 
 type WrapProcessingWithApproveProps = (
   chainId: number | undefined,
+  providerWeb3: Web3Provider | undefined,
   stethContractWeb3: WstethAbi | null,
   openTxModal: () => void,
+  closeTxModal: () => void,
   setTxStage: (value: TX_STAGE) => void,
   setTxHash: (value: string | undefined) => void,
   setTxModalFailedText: (value: string) => void,
@@ -97,14 +131,17 @@ type WrapProcessingWithApproveProps = (
   inputValue: string,
   selectedToken: string,
   needsApprove: boolean,
+  isMultisig: boolean,
   approve: () => void,
   resetForm: () => void,
 ) => Promise<void>;
 
 export const wrapProcessingWithApprove: WrapProcessingWithApproveProps = async (
   chainId,
+  providerWeb3,
   wstethContractWeb3,
   openTxModal,
+  closeTxModal,
   setTxStage,
   setTxHash,
   setTxModalFailedText,
@@ -113,12 +150,15 @@ export const wrapProcessingWithApprove: WrapProcessingWithApproveProps = async (
   inputValue,
   selectedToken,
   needsApprove,
+  isMultisig,
   approve,
   resetForm,
 ) => {
   if (!chainId || !wstethContractWeb3) {
     return;
   }
+
+  invariant(providerWeb3, 'must have providerWeb3');
 
   const wstethTokenAddress = getTokenAddress(chainId, TOKENS.WSTETH);
 
@@ -130,6 +170,12 @@ export const wrapProcessingWithApprove: WrapProcessingWithApproveProps = async (
   const maxPriorityFeePerGas = feeData.maxPriorityFeePerGas ?? undefined;
   const maxFeePerGas = feeData.maxFeePerGas ?? undefined;
 
+  const handleEnding = () => {
+    resetForm();
+    ethBalanceUpdate();
+    stethBalanceUpdate();
+  };
+
   try {
     if (selectedToken === ETH) {
       const overrides = {
@@ -139,8 +185,13 @@ export const wrapProcessingWithApprove: WrapProcessingWithApproveProps = async (
         maxFeePerGas,
       };
 
-      const callback = () =>
-        wstethContractWeb3.signer.sendTransaction(overrides);
+      const callback = async () => {
+        if (isMultisig) {
+          return providerWeb3.getSigner().sendUncheckedTransaction(overrides);
+        } else {
+          return wstethContractWeb3.signer.sendTransaction(overrides);
+        }
+      };
 
       setTxStage(TX_STAGE.SIGN);
       openTxModal();
@@ -150,18 +201,22 @@ export const wrapProcessingWithApprove: WrapProcessingWithApproveProps = async (
         callback,
       );
 
-      setTxHash(transaction.hash);
-      setTxStage(TX_STAGE.BLOCK);
-      openTxModal();
+      if (isMultisig) {
+        closeTxModal();
+        handleEnding();
+        return;
+      }
 
-      await runWithTransactionLogger('Wrap block confirmation', async () =>
-        transaction.wait(),
-      );
+      if (typeof transaction === 'object') {
+        setTxHash(transaction.hash);
+        setTxStage(TX_STAGE.BLOCK);
+        openTxModal();
+        await runWithTransactionLogger('Wrap block confirmation', async () =>
+          transaction.wait(),
+        );
+      }
 
-      resetForm();
-      ethBalanceUpdate();
-      stethBalanceUpdate();
-
+      handleEnding();
       setTxStage(TX_STAGE.SUCCESS);
       openTxModal();
     } else if (selectedToken === TOKENS.STETH) {
@@ -173,8 +228,17 @@ export const wrapProcessingWithApprove: WrapProcessingWithApproveProps = async (
           maxFeePerGas,
         };
 
-        const callback = () =>
-          wstethContractWeb3.wrap(parseEther(inputValue), overrides);
+        const callback = async () => {
+          if (isMultisig) {
+            const tx = await wstethContractWeb3.populateTransaction.wrap(
+              parseEther(inputValue),
+              overrides,
+            );
+            return providerWeb3.getSigner().sendUncheckedTransaction(tx);
+          } else {
+            return wstethContractWeb3.wrap(parseEther(inputValue), overrides);
+          }
+        };
 
         setTxStage(TX_STAGE.SIGN);
         openTxModal();
@@ -184,18 +248,22 @@ export const wrapProcessingWithApprove: WrapProcessingWithApproveProps = async (
           callback,
         );
 
-        setTxHash(transaction.hash);
-        setTxStage(TX_STAGE.BLOCK);
-        openTxModal();
+        if (isMultisig) {
+          closeTxModal();
+          handleEnding();
+          return;
+        }
 
-        await runWithTransactionLogger('Wrap block confirmation', async () =>
-          transaction.wait(),
-        );
+        if (typeof transaction === 'object') {
+          setTxHash(transaction.hash);
+          setTxStage(TX_STAGE.BLOCK);
+          openTxModal();
+          await runWithTransactionLogger('Wrap block confirmation', async () =>
+            transaction.wait(),
+          );
+        }
 
-        resetForm();
-        ethBalanceUpdate();
-        stethBalanceUpdate();
-
+        handleEnding();
         setTxStage(TX_STAGE.SUCCESS);
         openTxModal();
       }

@@ -49,7 +49,6 @@ export const RequestDataProvider: FC = ({ children }) => {
       stethBalance,
       wstethBalance,
       updateData,
-
       unfinalizedStETH,
     }),
     [stethBalance, updateData, wstethBalance, unfinalizedStETH],

@@ -1,19 +1,16 @@
-import Link from 'next/link';
-import { useRouter } from 'next/router';
+import { FC } from 'react';
 import { Accordion, Link as OuterLink } from '@lidofinance/lido-ui';
-import { getWrapUrl } from 'utils/getWrapUnwrapUrl';
+
+import { LocalLink } from 'shared/components/local-link';
 import { MATOMO_CLICK_EVENTS_TYPES } from 'config';
 import { trackMatomoEvent } from 'config/trackMatomoEvent';
 
-export const HowCanIGetWsteth: React.FC = () => {
-  const router = useRouter();
-  const { query } = router;
-
+export const HowCanIGetWsteth: FC = () => {
   return (
     <Accordion summary="How can I get wstETH?">
       <p>
         You can wrap your stETH or ETH tokens using{' '}
-        <Link href={getWrapUrl(query)}>
+        <LocalLink href={`/wrap`}>
           <a
             onClick={() =>
               trackMatomoEvent(
@@ -24,7 +21,7 @@ export const HowCanIGetWsteth: React.FC = () => {
           >
             Wrap &amp; Unwrap staking widget
           </a>
-        </Link>{' '}
+        </LocalLink>{' '}
         or{' '}
         <OuterLink
           href={'https://lido.fi/lido-ecosystem?tokens=wstETH&categories=Get'}

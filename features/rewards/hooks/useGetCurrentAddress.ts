@@ -20,12 +20,7 @@ export const useGetCurrentAddress: UseGetCurrentAddress = () => {
   const [address, setAddress] = useState('');
 
   const { account } = useSDK();
-  const router = useRouter();
-
-  // We'll get crashes from hekers if don't handle multiple parameters with same key
-  const queryAddr = Array.isArray(router.query?.address)
-    ? router.query?.address[0]
-    : router.query?.address;
+  const { isReady, query } = useRouter();
 
   const getEnsAddress = useCallback(async (value: string) => {
     setAddress('');
@@ -56,12 +51,21 @@ export const useGetCurrentAddress: UseGetCurrentAddress = () => {
   }, [resolveInputValue, inputValue]);
 
   // Pick up an address
+
   useEffect(() => {
-    // From a connected wallet
-    if (account) setInputValue(account);
-    // From query parameters
-    if (queryAddr) setInputValue(queryAddr);
-  }, [account, queryAddr, setInputValue]);
+    if (isReady) {
+      const queryAddr = Array.isArray(query.address)
+        ? query.address[0]
+        : query.address;
+      // From query parameters, more important
+      if (queryAddr) {
+        setInputValue(queryAddr);
+        return;
+      }
+      // From a connected wallet
+      if (account) setInputValue(account);
+    }
+  }, [account, query.address, isReady, setInputValue]);
 
   return {
     address,
