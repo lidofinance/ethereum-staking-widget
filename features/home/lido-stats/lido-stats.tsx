@@ -55,7 +55,7 @@ export const LidoStats: FC = memo(() => {
             loading={lidoApr.initialLoading}
             highlight
           >
-            {lidoApr.data ? `${lidoApr.data}%` : DATA_UNAVAILABLE}
+            {lidoApr.apr ? `${lidoApr.apr}%` : DATA_UNAVAILABLE}
           </DataTableRow>
           <DataTableRow
             title="Total staked with Lido"

@@ -24,7 +24,10 @@ export type UseApproveResponse = {
 const defaultWrapper: UseApproveWrapper = async (
   callback: TransactionCallback,
 ) => {
-  return await callback();
+  const result = await callback();
+  if (typeof result === 'object') {
+    await result.wait();
+  }
 };
 
 export const useApprove = (

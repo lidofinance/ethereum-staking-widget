@@ -1,5 +1,11 @@
 import { useCallback, useState } from 'react';
-import { SelectIcon, Option, DataTableRow } from '@lidofinance/lido-ui';
+import {
+  SelectIcon,
+  Option,
+  DataTableRow,
+  Wsteth,
+  Steth,
+} from '@lidofinance/lido-ui';
 import { TOKENS } from '@lido-sdk/constants';
 
 import { useWeb3 } from 'reef-knot/web3-react';
@@ -11,7 +17,6 @@ import {
   useWithdrawalRequest,
   useWithdrawalsBaseData,
 } from 'features/withdrawals/hooks';
-import { iconsMap } from 'features/withdrawals/contexts/withdrawals-context';
 import { useRequestForm } from 'features/withdrawals/contexts/request-form-context';
 import { useRequestTxPrice } from 'features/withdrawals/hooks/useWithdrawTxPrice';
 import { useValidateUnstakeValue } from 'features/withdrawals/hooks/useValidateUnstakeValue';
@@ -26,6 +31,9 @@ import { FormatToken } from 'shared/formatters/format-token';
 import { FormButton } from './form-button';
 import { InputGroupStyled } from './styles';
 
+import { OptionsPicker } from '../options/options-picker';
+import { DexOptions } from '../options/dex-options';
+import { LidoOption } from '../options/lido-option';
 import { RequestsInfo } from '../requestsInfo';
 
 import {
@@ -36,9 +44,11 @@ import { getTokenDisplayName } from 'utils/getTokenDisplayName';
 
 // TODO move to shared
 import { useApproveGasLimit } from 'features/wrap/features/wrap-form/hooks';
-import { OptionsPicker } from '../options/options-picker';
-import { DexOptions } from '../options/dex-options';
-import { LidoOption } from '../options/lido-option';
+
+const iconsMap = {
+  [TOKENS.WSTETH]: <Wsteth />,
+  [TOKENS.STETH]: <Steth />,
+};
 
 export const Form = () => {
   const [withdrawalMethod, setWithdrawalMethod] = useState<'lido' | 'dex'>(
@@ -50,7 +60,10 @@ export const Form = () => {
   const wqBaseData = useWithdrawalsBaseData();
   const { minAmount } = wqBaseData.data ?? {};
   const { active } = useWeb3();
-  const { tvlMessage, tvlDiff } = useInputTvlValidate(inputValue);
+  const { tvlMessage, balanceDiff } = useInputTvlValidate(
+    inputValue,
+    tokenBalance,
+  );
 
   const {
     isApprovalFlowLoading,
@@ -148,7 +161,7 @@ export const Form = () => {
           placeholder="0"
           rightDecorator={
             tvlMessage ? (
-              <InputDecoratorTvlStake tvlDiff={tvlDiff} />
+              <InputDecoratorTvlStake tvlDiff={balanceDiff} />
             ) : (
               <>
                 <InputDecoratorMaxButton
