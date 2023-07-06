@@ -43,7 +43,6 @@ import { STRATEGY_LAZY } from 'utils/swrStrategies';
 
 export const StakeForm: FC = memo(() => {
   const router = useRouter();
-  const initialValue = (router?.query?.amount as string) || '';
 
   const formRef = useRef<HTMLFormElement>(null);
 
@@ -51,20 +50,21 @@ export const StakeForm: FC = memo(() => {
   const [txStage, setTxStage] = useState(TX_STAGE.SUCCESS);
   const [txHash, setTxHash] = useState<string>();
   const [txModalFailedText, setTxModalFailedText] = useState('');
-  const [inputValue, setInputValue] = useState(() => {
-    // consumes amount query param
-    if (router.query.amount && typeof router.query.amount === 'string') {
-      const initialValue = router.query.amount;
-      delete router.query.amount;
-      router.replace(
-        { pathname: router.pathname, query: router.query },
-        undefined,
-        { shallow: true },
-      );
-      return initialValue;
+  const [inputValue, setInputValue] = useState('');
+
+  // consumes amount query param
+  // SSG safe
+  useEffect(() => {
+    if (
+      router.isReady &&
+      router.query.amount &&
+      typeof router.query.amount === 'string'
+    ) {
+      const { amount, ...rest } = router.query;
+      router.replace({ pathname: router.pathname, query: rest });
+      setInputValue(amount);
     }
-    return '';
-  });
+  }, [router]);
 
   const { active, chainId } = useWeb3();
   const { providerWeb3 } = useSDK();
@@ -136,7 +136,6 @@ export const StakeForm: FC = memo(() => {
     inputValue,
     setInputValue,
     inputName,
-    initialValue,
     submit,
     limit:
       etherBalance.data &&
@@ -175,10 +174,13 @@ export const StakeForm: FC = memo(() => {
 
   // Reset form amount after disconnect wallet
   useEffect(() => {
-    if (!active) {
-      reset();
-    }
-  }, [active, reset]);
+    return () => {
+      if (active) {
+        reset();
+      }
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [active]);
 
   return (
     <Block>

@@ -11,7 +11,7 @@ type UseCurrencyInputArgs = {
   inputValue: string;
   setInputValue: (inputValue: string) => void;
   inputName?: string;
-  initialValue?: string;
+  resetValue?: string;
   limit?: BigNumber;
   submit: (inputValue: string, reset: () => void) => Promise<void>;
   token?: string;
@@ -25,7 +25,7 @@ export const useCurrencyInput = ({
   inputValue,
   setInputValue,
   inputName = 'Amount',
-  initialValue = '',
+  resetValue = '',
   limit,
   submit,
   token = 'ETH',
@@ -60,9 +60,9 @@ export const useCurrencyInput = ({
 
   const reset = useCallback(() => {
     setIsSubmitting(false);
-    setInputValue(initialValue);
+    setInputValue(resetValue);
     setInputTouched(false);
-  }, [initialValue, setInputTouched, setInputValue]);
+  }, [resetValue, setInputTouched, setInputValue]);
 
   const handleSubmit = useCallback(
     async (event: React.FormEvent) => {

@@ -10,9 +10,7 @@ AppFlagContext.displayName = 'AppFlagContext';
 // e.g.Ledger Live before wallet info is available
 export const AppFlagProvider: React.FC = ({ children }) => {
   const { query, isReady } = useRouter();
-  const [appFlag, setAppFlag] = useState<string | undefined>(() =>
-    query.app && typeof query.app === 'string' ? query.app : undefined,
-  );
+  const [appFlag, setAppFlag] = useState<string | undefined>(undefined);
   useEffect(() => {
     if (isReady && query.app && typeof query.app === 'string') {
       setAppFlag(query.app);

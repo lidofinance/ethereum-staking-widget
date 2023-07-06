@@ -1,5 +1,5 @@
 import { Box, Button } from '@lidofinance/lido-ui';
-import { LocalLink } from 'shared/components/header/components/navigation/local-link';
+import { LocalLink } from 'shared/components/local-link';
 
 export const ErrorBlockNoSteth = () => (
   <Box
