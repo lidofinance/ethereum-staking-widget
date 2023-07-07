@@ -24,6 +24,7 @@ export const config = {
     '/wrap',
     '/wrap/unwrap',
     '/rewards',
+    '/withdrawals',
     '/withdrawals/request',
     '/withdrawals/claim',
     '/runtime/window-env.js',
