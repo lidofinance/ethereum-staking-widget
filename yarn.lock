@@ -2606,10 +2606,10 @@
   resolved "https://registry.npmjs.org/@reef-knot/core-react/-/core-react-1.4.2.tgz#09bdeb1c1870efdb445eff22e1fabe5ae3de2ccd"
   integrity sha512-L12f9QdgHE6jS2++NfoCQEZAgs6fI9bhfJzvFv/abgnEXTiGyCvybATzv8DUuIRmwRVa7g2YtY1sAD3uF4Vr9A==
 
-"@reef-knot/ledger-connector@1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@reef-knot/ledger-connector/-/ledger-connector-1.0.0.tgz#604e24ac7fe92e898f6a945342dce7b40332ab8f"
-  integrity sha512-YS9MZzrvZdUIKtreNTUm+bTbDUxexxb10zLnBZFxvLnCsjDnTOvBN8pmDp1Nujlu9L0K1UYOzpRjoQsWXxVS1g==
+"@reef-knot/ledger-connector@1.0.1":
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/@reef-knot/ledger-connector/-/ledger-connector-1.0.1.tgz#981b047723edd4f30b24250820a1b806c348a9fe"
+  integrity sha512-LqExXVZFOJY476uTP5GzeqgaVm3cVsUz6AGo7tzsRN2Ymb8zQFPVVoQLRF6sQeqt+4Oq9IePfVg8+cX49/lGrA==
   dependencies:
     "@ethersproject/abstract-signer" "^5.5.0"
     "@ethersproject/bignumber" "^5.5.0"
@@ -8679,14 +8679,14 @@ redent@^3.0.0:
     indent-string "^4.0.0"
     strip-indent "^3.0.0"
 
-reef-knot@^1.5.1:
-  version "1.5.1"
-  resolved "https://registry.yarnpkg.com/reef-knot/-/reef-knot-1.5.1.tgz#c162c0ff1f501b6bb762f2ac7be4a80016d28fa1"
-  integrity sha512-eqhRpSvg5253ozuV+d7gVyyP070ZOirUgWqQQNWWpLjJ5vbViHjNtS28C05J4FhRB21sI+uDQQfw8lignQXDuQ==
+reef-knot@^1.5.2:
+  version "1.5.2"
+  resolved "https://registry.yarnpkg.com/reef-knot/-/reef-knot-1.5.2.tgz#c0f67a0e2178f2c20aacc9f2e61a537e5fb7fa1f"
+  integrity sha512-gdEjsw5eiaaP+buyA6g7KZfPojp1CD6kT+j5Sxv+LBlRfctuofQ/Omhj0EtCjPjE34RVgwIvQVLSkjXKZcG81Q==
   dependencies:
     "@reef-knot/connect-wallet-modal" "1.5.0"
     "@reef-knot/core-react" "1.4.2"
-    "@reef-knot/ledger-connector" "1.0.0"
+    "@reef-knot/ledger-connector" "1.0.1"
     "@reef-knot/types" "1.2.1"
     "@reef-knot/ui-react" "1.0.5"
     "@reef-knot/wallets-helpers" "1.1.2"
