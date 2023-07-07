@@ -22,8 +22,10 @@ export const config = {
     '/favicon:size*',
     '/',
     '/wrap',
+    '/wrap/unwrap',
     '/rewards',
-    '/withdrawals',
+    '/withdrawals/request',
+    '/withdrawals/claim',
     '/runtime/window-env.js',
   ],
 };
