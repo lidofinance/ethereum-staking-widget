@@ -2,25 +2,32 @@ import { FC } from 'react';
 import { formatEther } from '@ethersproject/units';
 
 import { useWithdrawalsBaseData } from 'features/withdrawals/hooks';
-import { MAX_REQUESTS_COUNT } from 'features/withdrawals/withdrawals-constants';
+import {
+  MAX_REQUESTS_COUNT,
+  MAX_REQUESTS_COUNT_LEDGER_LIMIT,
+} from 'features/withdrawals/withdrawals-constants';
 
 import { RequestsInfoStyled, RequestsInfoDescStyled } from './styles';
+import { useIsLedgerLive } from 'shared/hooks/useIsLedgerLive';
 
 type RequestsInfoProps = {
   requestCount?: number;
 };
 
-export const RequestsInfo: FC<RequestsInfoProps> = (props) => {
-  const { requestCount } = props;
+export const RequestsInfo: FC<RequestsInfoProps> = ({ requestCount }) => {
+  const isLedgerLive = useIsLedgerLive();
+  const maxRequestCount = isLedgerLive
+    ? MAX_REQUESTS_COUNT_LEDGER_LIMIT
+    : MAX_REQUESTS_COUNT;
   const wqBaseData = useWithdrawalsBaseData();
   const { maxAmount } = wqBaseData.data ?? {};
 
-  if (requestCount && requestCount > MAX_REQUESTS_COUNT)
+  if (requestCount && requestCount > maxRequestCount)
     return (
       <RequestsInfoStyled>
         <RequestsInfoDescStyled>
-          You can send a maximum of {MAX_REQUESTS_COUNT} requests per
-          transaction. Current requests count is {requestCount}.
+          You can send a maximum of {maxRequestCount} requests per transaction.
+          Current requests count is {requestCount}.
         </RequestsInfoDescStyled>
       </RequestsInfoStyled>
     );

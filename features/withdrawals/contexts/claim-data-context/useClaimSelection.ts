@@ -2,13 +2,19 @@ import { type RequestStatusClaimable } from 'features/withdrawals/types/request-
 import {
   MAX_REQUESTS_COUNT,
   DEFAULT_CLAIM_REQUEST_SELECTED,
+  MAX_REQUESTS_COUNT_LEDGER_LIMIT,
 } from 'features/withdrawals/withdrawals-constants';
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useIsLedgerLive } from 'shared/hooks/useIsLedgerLive';
 
 export const useClaimSelection = (
   claimableRequests: RequestStatusClaimable[] | null,
 ) => {
+  const isLedgerLive = useIsLedgerLive();
+  const maxRequestCount = isLedgerLive
+    ? MAX_REQUESTS_COUNT_LEDGER_LIMIT
+    : MAX_REQUESTS_COUNT;
   const [state, setSelectionState] = useState<{
     selection_set: Set<string>;
   }>({ selection_set: new Set() });
@@ -38,25 +44,25 @@ export const useClaimSelection = (
   const setSelected = useCallback(
     (key: string, value: boolean) => {
       setSelectionState((old) => {
-        if (value && selectedCount >= MAX_REQUESTS_COUNT) return old;
+        if (value && selectedCount >= maxRequestCount) return old;
         if (value) old.selection_set.add(key);
         else old.selection_set.delete(key);
         return { selection_set: old.selection_set };
       });
     },
-    [selectedCount],
+    [selectedCount, maxRequestCount],
   );
 
   const setSelectedMany = useCallback(
     (keys: string[]) => {
-      const freeSpace = MAX_REQUESTS_COUNT - selectedCount;
+      const freeSpace = maxRequestCount - selectedCount;
       if (freeSpace <= 0) return;
       setSelectionState((old) => {
         keys.slice(0, freeSpace).forEach((k) => old.selection_set.add(k));
         return { selection_set: old.selection_set };
       });
     },
-    [selectedCount],
+    [maxRequestCount, selectedCount],
   );
 
   const setUnselectedMany = useCallback((keys: string[]) => {
@@ -95,6 +101,6 @@ export const useClaimSelection = (
     setUnselectedMany,
     sortedSelectedRequests,
     selectedCount,
-    canSelectMore: selectedCount < MAX_REQUESTS_COUNT,
+    canSelectMore: selectedCount < maxRequestCount,
   };
 };
