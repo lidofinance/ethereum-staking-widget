@@ -12,6 +12,8 @@ export const RewardsListHeaderStyle = styled.div`
 
   ${({ theme }) => theme.mediaQueries.md} {
     flex-direction: column;
+    height: auto;
+    align-items: initial;
   }
 `;
 
