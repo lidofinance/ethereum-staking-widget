@@ -1,17 +1,14 @@
-import { useWithdrawalsBaseData } from 'features/withdrawals/hooks';
-
 import { Accordion } from '@lidofinance/lido-ui';
 
 import { weiToEth } from 'utils';
 import { LOCALE } from 'config';
+import { useWithdrawals } from 'features/withdrawals/contexts/withdrawals-context';
 
 const formatAmount = (value: number | undefined) =>
   value ? value.toLocaleString(LOCALE, { maximumFractionDigits: 18 }) : '...';
 
 export const UnstakeAmountBoundaries: React.FC = () => {
-  const wqBaseData = useWithdrawalsBaseData();
-  const { maxAmount, minAmount } = wqBaseData.data ?? {};
-
+  const { maxAmount, minAmount } = useWithdrawals();
   const minAmountDisplay = formatAmount(Number(minAmount));
   const maxAmountDisplay = formatAmount(maxAmount && weiToEth(maxAmount));
 

@@ -7,16 +7,18 @@ import { CardAccount, CardRow, Fallback } from 'shared/wallet';
 import { WalletMyRequests } from 'features/withdrawals/shared';
 import type { WalletComponentType } from 'shared/wallet/types';
 import { WalletWrapperStyled } from 'features/withdrawals/shared';
-import { useRequestForm } from 'features/withdrawals/contexts/request-form-context';
 
 import { WalletStethBalance } from './wallet-steth-balance';
 import { WalletWstethBalance } from './wallet-wsteth-balance';
 import { WalletMode } from './wallet-mode';
+import { RequestFormInputType } from '../request-form-context';
+import { useWatch } from 'react-hook-form';
+import { TOKENS } from '@lido-sdk/constants';
 
 export const WalletComponent = () => {
   const { account } = useSDK();
-  const { isSteth } = useRequestForm();
-
+  const token = useWatch<RequestFormInputType, 'token'>({ name: 'token' });
+  const isSteth = token === TOKENS.STETH;
   return (
     <WalletWrapperStyled>
       <CardRow>

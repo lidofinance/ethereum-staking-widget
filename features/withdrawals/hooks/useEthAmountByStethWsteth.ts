@@ -23,8 +23,7 @@ export const useEthAmountByStethWsteth = ({
 
   const stethByWstethBalance = useStethByWsteth(isSteth ? undefined : inputBN);
 
-  if (!isValidValue) return BigNumber.from(0);
-
-  if (isSteth) return BigNumber.from(1)?.mul(inputBN);
-  else return stethByWstethBalance;
+  if (!isValidValue) return undefined;
+  if (isSteth) return inputBN;
+  return stethByWstethBalance;
 };

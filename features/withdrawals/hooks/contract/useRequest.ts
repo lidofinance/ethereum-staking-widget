@@ -2,10 +2,12 @@ import { useCallback, useMemo, useState } from 'react';
 import { BigNumber } from 'ethers';
 import invariant from 'tiny-invariant';
 import { useWeb3 } from 'reef-knot/web3-react';
-import { parseEther } from '@ethersproject/units';
-import type { WstethAbi, StethAbi } from '@lido-sdk/contracts';
-import { useSDK } from '@lido-sdk/react';
-import { TOKENS } from '@lido-sdk/constants';
+import {
+  useSDK,
+  useSTETHContractRPC,
+  useWSTETHContractRPC,
+} from '@lido-sdk/react';
+import { TOKENS, getWithdrawalQueueAddress } from '@lido-sdk/constants';
 import { useAccount } from 'wagmi';
 
 import { TX_STAGE } from 'features/withdrawals/shared/tx-stage-modal';
@@ -17,9 +19,7 @@ import { useIsMultisig } from 'shared/hooks/useIsMultisig';
 import { getErrorMessage, runWithTransactionLogger } from 'utils';
 import { isContract } from 'utils/isContract';
 import { useTransactionModal } from 'features/withdrawals/contexts/transaction-modal-context';
-import { useRequestData } from 'features/withdrawals/contexts/request-data-context';
 import { useWithdrawals } from 'features/withdrawals/contexts/withdrawals-context';
-import type { TokensWithdrawable } from 'features/withdrawals/types/tokens-withdrawable';
 
 import { useWithdrawalsContract } from './useWithdrawalsContract';
 import { useApprove } from 'shared/hooks/useApprove';
@@ -29,9 +29,7 @@ import { MaxUint256 } from '@ethersproject/constants';
 const useWithdrawalRequestMethods = () => {
   const { providerWeb3 } = useSDK();
   const { account, chainId, contractWeb3 } = useWithdrawalsContract();
-  const { updateData } = useRequestData();
   const { dispatchModalState } = useTransactionModal();
-
   const permitSteth = useCallback(
     async ({
       signature,
@@ -87,9 +85,8 @@ const useWithdrawalRequestMethods = () => {
       await runWithTransactionLogger('Request block confirmation', async () =>
         transaction.wait(),
       );
-      await updateData();
     },
-    [account, chainId, contractWeb3, dispatchModalState, updateData],
+    [account, chainId, contractWeb3, dispatchModalState],
   );
 
   const permitWsteth = useCallback(
@@ -150,9 +147,8 @@ const useWithdrawalRequestMethods = () => {
       await runWithTransactionLogger('Stake block confirmation', async () =>
         transaction.wait(),
       );
-      await updateData();
     },
-    [account, chainId, contractWeb3, dispatchModalState, updateData],
+    [account, chainId, contractWeb3, dispatchModalState],
   );
 
   const steth = useCallback(
@@ -206,16 +202,8 @@ const useWithdrawalRequestMethods = () => {
           transaction.wait(),
         );
       }
-      await updateData();
     },
-    [
-      account,
-      chainId,
-      contractWeb3,
-      dispatchModalState,
-      providerWeb3,
-      updateData,
-    ],
+    [account, chainId, contractWeb3, dispatchModalState, providerWeb3],
   );
 
   const wstETH = useCallback(
@@ -269,16 +257,8 @@ const useWithdrawalRequestMethods = () => {
           transaction.wait(),
         );
       }
-      await updateData();
     },
-    [
-      account,
-      chainId,
-      contractWeb3,
-      dispatchModalState,
-      providerWeb3,
-      updateData,
-    ],
+    [account, chainId, contractWeb3, dispatchModalState, providerWeb3],
   );
 
   return useCallback(
@@ -295,35 +275,38 @@ const useWithdrawalRequestMethods = () => {
   );
 };
 
-type useWithdrawalRequestOptions = {
-  value: string;
-  tokenContract: StethAbi | WstethAbi | null;
-  token: TokensWithdrawable;
-};
-
 // provides form with a handler to call signing flow
 // and all needed indicators for ux
+
+type useWithdrawalRequestParams = {
+  amount: BigNumber | null;
+  token: TOKENS.STETH | TOKENS.WSTETH;
+  onSuccess?: () => void;
+};
+
+const ZERO = BigNumber.from(0);
+
 export const useWithdrawalRequest = ({
-  value,
-  tokenContract,
+  amount,
   token,
-}: useWithdrawalRequestOptions) => {
+  onSuccess,
+}: useWithdrawalRequestParams) => {
   const [isTxPending, setIsTxPending] = useState(false);
+  const { chainId } = useSDK();
+  const withdrawalQueueAddress = getWithdrawalQueueAddress(chainId);
+
   const { connector } = useAccount();
   const { account } = useWeb3();
   const { isBunker } = useWithdrawals();
-  const { contractWeb3: withdrawalContractWeb3 } = useWithdrawalsContract();
   const { dispatchModalState } = useTransactionModal();
   const getRequestMethod = useWithdrawalRequestMethods();
   const [isMultisig, isMultisigLoading] = useIsMultisig();
 
-  const valueBN = useMemo(() => {
-    try {
-      return parseEther(value ? value : '0');
-    } catch {
-      return BigNumber.from(0);
-    }
-  }, [value]);
+  const wstethContract = useWSTETHContractRPC();
+  const stethContract = useSTETHContractRPC();
+  const tokenContract = token === TOKENS.STETH ? stethContract : wstethContract;
+
+  const valueBN = amount ?? ZERO;
 
   // TODO  split into async callback and pauseable SWR
   const {
@@ -333,8 +316,8 @@ export const useWithdrawalRequest = ({
     loading: loadingUseApprove,
   } = useApprove(
     valueBN,
-    tokenContract?.address ?? '',
-    withdrawalContractWeb3?.address ?? '',
+    tokenContract.address,
+    withdrawalQueueAddress,
     account ?? undefined,
   );
 
@@ -344,9 +327,8 @@ export const useWithdrawalRequest = ({
 
   // TODO streamline from hook to async callback
   const { gatherPermitSignature } = useERC20PermitSignature({
-    value,
     tokenProvider: tokenContract,
-    spender: withdrawalContractWeb3?.address ?? '',
+    spender: withdrawalQueueAddress,
   });
 
   const isApprovalFlow =
@@ -360,7 +342,7 @@ export const useWithdrawalRequest = ({
   const isTokenLocked = isApprovalFlow && needsApprove;
 
   const request = useCallback(
-    (requests: BigNumber[], resetForm: () => void) => {
+    (requests: BigNumber[], amount: BigNumber) => {
       // define and set retry point
       const startCallback = async () => {
         try {
@@ -396,12 +378,12 @@ export const useWithdrawalRequest = ({
               await method({ requests });
             }
           } else {
-            const signature = await gatherPermitSignature();
+            const signature = await gatherPermitSignature(amount);
             await method({ signature, requests });
           }
           // end flow
           dispatchModalState({ type: shouldSkipSuccess ? 'reset' : 'success' });
-          resetForm();
+          onSuccess?.();
         } catch (error) {
           const errorMessage = getErrorMessage(error);
           dispatchModalState({ type: 'error', errorText: errorMessage });
@@ -427,7 +409,7 @@ export const useWithdrawalRequest = ({
       isBunker,
       isMultisig,
       needsApprove,
-      setIsTxPending,
+      onSuccess,
       token,
     ],
   );

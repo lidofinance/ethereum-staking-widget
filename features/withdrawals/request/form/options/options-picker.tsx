@@ -1,6 +1,5 @@
 import { parseEther } from '@ethersproject/units';
 
-import { useRequestForm } from 'features/withdrawals/contexts/request-form-context';
 import { useWaitingTime } from 'features/withdrawals/hooks/useWaitingTime';
 import { useWithdrawalRates } from 'features/withdrawals/hooks/useWithdrawalRates';
 import { useWstethToStethRatio } from 'shared/components/data-table-row-steth-by-wsteth';
@@ -24,6 +23,9 @@ import {
   trackMatomoEvent,
   MATOMO_CLICK_EVENTS_TYPES,
 } from 'config/trackMatomoEvent';
+import { useWatch } from 'react-hook-form';
+import { RequestFormInputType } from 'features/withdrawals/request/request-form-context';
+import { TOKENS } from '@lido-sdk/constants';
 
 type OptionButtonProps = {
   onClick: React.ComponentProps<'button'>['onClick'];
@@ -33,8 +35,11 @@ type OptionButtonProps = {
 const DEFAULT_VALUE_FOR_RATE = parseEther('1');
 
 const LidoButton: React.FC<OptionButtonProps> = ({ isActive, onClick }) => {
-  const { inputValue, isSteth } = useRequestForm();
-  const { value: waitingTime, initialLoading } = useWaitingTime(inputValue, {
+  const [value, token] = useWatch<RequestFormInputType, ['value', 'token']>({
+    name: ['value', 'token'],
+  });
+  const isSteth = token === TOKENS.STETH;
+  const { value: waitingTime, initialLoading } = useWaitingTime(value, {
     isApproximate: true,
   });
   const { wstethAsStethBN, loading } = useWstethToStethRatio();

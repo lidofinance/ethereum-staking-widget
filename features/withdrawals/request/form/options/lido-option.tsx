@@ -1,5 +1,4 @@
 import { useEthAmountByStethWsteth } from 'features/withdrawals/hooks';
-import { useRequestForm } from 'features/withdrawals/contexts/request-form-context';
 
 import {
   trackMatomoEvent,
@@ -14,6 +13,9 @@ import {
   LidoOptionValue,
 } from './styles';
 import { LocalLink } from 'shared/components/local-link';
+import { useWatch } from 'react-hook-form';
+import { RequestFormInputType } from 'features/withdrawals/request/request-form-context';
+import { TOKENS } from '@lido-sdk/constants';
 
 const TooltipWithdrawalAmount = () => {
   return (
@@ -44,9 +46,15 @@ const TooltipWithdrawalAmount = () => {
 };
 
 export const LidoOption = () => {
-  const { isSteth } = useRequestForm();
-  const { inputValue } = useRequestForm();
-  const ethAmount = useEthAmountByStethWsteth({ isSteth, input: inputValue });
+  const [token, value] = useWatch<RequestFormInputType, ['token', 'value']>({
+    name: ['token', 'value'],
+  });
+
+  // TODO: refactor to use intermediate validation values
+  const ethAmount = useEthAmountByStethWsteth({
+    isSteth: token === TOKENS.STETH,
+    input: value,
+  });
 
   return (
     <LidoOptionContainer>

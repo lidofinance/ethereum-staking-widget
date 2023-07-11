@@ -6,7 +6,7 @@ import { FormatToken } from 'shared/formatters';
 import { Connect } from 'shared/wallet';
 
 import { BunkerInfo } from './bunker-info';
-import { useClaim, useWithdrawalsBaseData } from 'features/withdrawals/hooks';
+import { useClaim } from 'features/withdrawals/hooks';
 import { useClaimTxPrice } from 'features/withdrawals/hooks/useWithdrawTxPrice';
 import { useTransactionModal } from 'features/withdrawals/contexts/transaction-modal-context';
 import { useClaimData } from 'features/withdrawals/contexts/claim-data-context';
@@ -15,6 +15,7 @@ import { Button, DataTableRow } from '@lidofinance/lido-ui';
 import { RequestsList } from '../requests-list/requests-list';
 import { ClaimFormBody } from './styles';
 import { ClaimFormFooterSticky } from './claim-form-footer-sticky';
+import { useWithdrawals } from 'features/withdrawals/contexts/withdrawals-context';
 
 export const ClaimForm = () => {
   const refRequests = useRef<HTMLDivElement>(null);
@@ -22,7 +23,7 @@ export const ClaimForm = () => {
   const { active } = useWeb3();
   const { dispatchModalState } = useTransactionModal();
   const { ethToClaim, claimSelection } = useClaimData();
-  const wqBaseData = useWithdrawalsBaseData();
+  const { isBunker } = useWithdrawals();
   const { requests, loading: isLoading } = useClaimData();
   const isEmpty = !isLoading && requests.length === 0;
 
@@ -58,7 +59,7 @@ export const ClaimForm = () => {
   return (
     <>
       <ClaimFormBody>
-        {wqBaseData.data?.isBunker && <BunkerInfo />}
+        {isBunker && <BunkerInfo />}
         <div ref={refRequests}>
           <RequestsList
             isLoading={isLoading}

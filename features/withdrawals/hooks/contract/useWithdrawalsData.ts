@@ -3,12 +3,7 @@ import { useLidoSWR } from '@lido-sdk/react';
 // import { useLidoShareRate } from 'features/withdrawals/hooks/contract/useLidoShareRate';
 
 import { useWithdrawalsContract } from './useWithdrawalsContract';
-import {
-  useIsBunkerMode,
-  useIsPaused,
-  useMaxAmount,
-  useMinAmount,
-} from './withdrawalsCalls';
+import { useIsBunkerMode, useIsPaused } from './withdrawalsCalls';
 import {
   RequestStatus,
   RequestStatusClaimable,
@@ -145,13 +140,4 @@ export const useWithdrawalsStatus = () => {
   const isLoading = paused.initialLoading || bunkerMode.initialLoading;
 
   return { isPaused, isBunkerMode, isLoading, isTurbo };
-};
-
-export const useWithdrawalsConstants = () => {
-  const maxAmount = useMaxAmount();
-  const minAmount = useMinAmount();
-
-  const isLoading = maxAmount.initialLoading || minAmount.initialLoading;
-
-  return { maxAmount: maxAmount.data, minAmount: minAmount.data, isLoading };
 };

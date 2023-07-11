@@ -3,15 +3,15 @@ import { Text } from '@lidofinance/lido-ui';
 import { CardBalance } from 'shared/wallet';
 import { FormatToken } from 'shared/formatters';
 import { useStethByWsteth } from 'shared/hooks';
-import { useRequestData } from 'features/withdrawals/contexts/request-data-context';
+import { useRequestFormData } from '../request-form-context';
 
 export const WalletWstethBalance = () => {
-  const { wstethBalance } = useRequestData();
-  const stethByWstethBalance = useStethByWsteth(wstethBalance.data);
+  const { balanceWSteth } = useRequestFormData();
+  const stethByWstethBalance = useStethByWsteth(balanceWSteth);
 
   const stethBalanceValue = (
     <>
-      <FormatToken amount={wstethBalance.data} symbol="wstETH" />
+      <FormatToken amount={balanceWSteth} symbol="wstETH" />
       <Text size={'xxs'} color={'secondary'}>
         ≈ <FormatToken amount={stethByWstethBalance} symbol="ETH" />
       </Text>
@@ -22,7 +22,7 @@ export const WalletWstethBalance = () => {
     <CardBalance
       small
       title="wstETH Balance"
-      loading={wstethBalance.initialLoading || !stethByWstethBalance}
+      loading={!balanceWSteth || !stethByWstethBalance}
       value={stethBalanceValue}
     />
   );
