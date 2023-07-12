@@ -4,7 +4,6 @@ import {
   getAggregatorStEthUsdPriceFeedAddress,
   getAggregatorContractFactory,
 } from 'config';
-import { serverLogger } from './serverLogger';
 import { rpcUrls } from './rpcUrls';
 import { iterateUrls } from '@lidofinance/rpc';
 
@@ -13,7 +12,7 @@ export const getStEthPrice = async (): Promise<number> => {
   return iterateUrls(
     urls,
     (url) => getStEthPriceWithFallbacks(url),
-    serverLogger.error,
+    console.error,
   );
 };
 
