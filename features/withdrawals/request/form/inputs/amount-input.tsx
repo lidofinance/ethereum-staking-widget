@@ -1,11 +1,8 @@
-import { formatUnits } from '@ethersproject/units';
 import { TOKENS } from '@lido-sdk/constants';
 import { BigNumber } from 'ethers';
 import { InputDecoratorTvlStake } from 'features/withdrawals/shared/input-decorator-tvl-stake';
-import { useFormContext, useController, useWatch } from 'react-hook-form';
-import { InputDecoratorLocked } from 'shared/forms/components/input-decorator-locked';
-import { InputDecoratorMaxButton } from 'shared/forms/components/input-decorator-max-button';
-import { InputNumber } from 'shared/forms/components/input-number';
+import { useController, useWatch } from 'react-hook-form';
+import { InputAmount } from 'shared/forms/components/input-amount';
 import { getTokenDisplayName } from 'utils/getTokenDisplayName';
 
 import {
@@ -13,14 +10,14 @@ import {
   useRequestFormData,
 } from 'features/withdrawals/request/request-form-context';
 export const AmountInput = () => {
-  const { setValue } = useFormContext();
   const { balanceSteth, balanceWSteth, isTokenLocked } = useRequestFormData();
   const token = useWatch<RequestFormInputType, 'token'>({ name: 'token' });
+
   const {
     field,
     fieldState: { error },
-  } = useController<RequestFormInputType, 'value'>({
-    name: 'value',
+  } = useController<RequestFormInputType, 'amount'>({
+    name: 'amount',
   });
 
   const balanceDiff =
@@ -30,36 +27,19 @@ export const AmountInput = () => {
 
   const balance = token === TOKENS.STETH ? balanceSteth : balanceWSteth;
 
-  const handleClickMax =
-    balance && balance.gt(0)
-      ? () => {
-          setValue('value', formatUnits(balance), {
-            shouldDirty: true,
-            shouldTouch: true,
-            shouldValidate: true,
-          });
-        }
-      : undefined;
-
   return (
-    <InputNumber
-      fullwidth
-      placeholder="0"
-      rightDecorator={
-        balanceDiff ? (
-          <InputDecoratorTvlStake tvlDiff={balanceDiff} />
-        ) : (
-          <>
-            <InputDecoratorMaxButton
-              onClick={handleClickMax}
-              disabled={!handleClickMax}
-            />
-            {isTokenLocked ? <InputDecoratorLocked /> : undefined}
-          </>
-        )
-      }
-      label={`${getTokenDisplayName(token)} amount`}
-      {...field}
-    />
+    <>
+      <InputAmount
+        fullwidth
+        placeholder="0"
+        isLocked={isTokenLocked}
+        maxValue={balance}
+        rightDecorator={
+          balanceDiff && <InputDecoratorTvlStake tvlDiff={balanceDiff} />
+        }
+        label={`${getTokenDisplayName(token)} amount`}
+        {...field}
+      />
+    </>
   );
 };

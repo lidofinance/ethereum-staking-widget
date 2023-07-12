@@ -6,8 +6,8 @@ import { InputGroupStyled } from '../styles';
 
 export const ErrorMessageInputGroup: React.FC = ({ children }) => {
   const {
-    errors: { value: valueError },
-  } = useFormState<RequestFormInputType>({ name: 'value' });
+    errors: { amount: valueError },
+  } = useFormState<RequestFormInputType>({ name: 'amount' });
   const balanceDiff =
     valueError?.type === 'validate_tvl_joke'
       ? (valueError as unknown as { balanceDiffSteth?: BigNumber })

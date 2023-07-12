@@ -16,10 +16,10 @@ export const RequestsInfo = () => {
   const { maxAmountPerRequestSteth, maxAmountPerRequestWSteth } =
     useRequestFormData();
 
-  if (errors.value?.type === 'validation_request_split')
+  if (errors.amount?.type === 'validation_request_split')
     return (
       <RequestsInfoStyled>
-        <RequestsInfoDescStyled>{errors.value.message}</RequestsInfoDescStyled>
+        <RequestsInfoDescStyled>{errors.amount.message}</RequestsInfoDescStyled>
       </RequestsInfoStyled>
     );
 

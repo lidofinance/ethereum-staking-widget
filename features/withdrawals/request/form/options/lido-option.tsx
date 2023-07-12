@@ -16,6 +16,7 @@ import { LocalLink } from 'shared/components/local-link';
 import { useWatch } from 'react-hook-form';
 import { RequestFormInputType } from 'features/withdrawals/request/request-form-context';
 import { TOKENS } from '@lido-sdk/constants';
+import { formatEther } from '@ethersproject/units';
 
 const TooltipWithdrawalAmount = () => {
   return (
@@ -46,14 +47,14 @@ const TooltipWithdrawalAmount = () => {
 };
 
 export const LidoOption = () => {
-  const [token, value] = useWatch<RequestFormInputType, ['token', 'value']>({
-    name: ['token', 'value'],
+  const [token, amount] = useWatch<RequestFormInputType, ['token', 'amount']>({
+    name: ['token', 'amount'],
   });
 
   // TODO: refactor to use intermediate validation values
   const ethAmount = useEthAmountByStethWsteth({
     isSteth: token === TOKENS.STETH,
-    input: value,
+    input: amount ? formatEther(amount) : undefined,
   });
 
   return (

@@ -31,11 +31,10 @@ import invariant from 'tiny-invariant';
 
 export type ValidationResults = {
   requests: null | BigNumber[];
-  amount: null | BigNumber;
 };
 
 export type RequestFormInputType = {
-  value: string;
+  amount: null | BigNumber;
   token: TOKENS.STETH | TOKENS.WSTETH;
   mode: 'lido' | 'dex';
 } & ValidationResults;
@@ -213,7 +212,7 @@ export const useValidationResults = () => {
 
 export const RequestFormProvider: React.FC = ({ children }) => {
   const [intermediateValidationResults, setIntermediateValidationResults] =
-    useState<ValidationResults>({ amount: null, requests: null });
+    useState<ValidationResults>({ requests: null });
 
   const requestFormData = useRequestFormDataContextValue();
 
@@ -222,11 +221,10 @@ export const RequestFormProvider: React.FC = ({ children }) => {
     RequestFormValidationContextType
   >({
     defaultValues: {
-      value: '',
+      amount: null,
       token: TOKENS.STETH,
       mode: 'lido',
       requests: null,
-      amount: null,
     },
     context: useValidationContext(
       requestFormData,
@@ -237,9 +235,9 @@ export const RequestFormProvider: React.FC = ({ children }) => {
     resolver: RequestFormValidationResolver,
   });
   const { control, handleSubmit } = formObject;
-  const [token] = useWatch({
+  const [token, amount] = useWatch({
     control: control,
-    name: ['token'],
+    name: ['token', 'amount'],
   });
   const {
     allowance,
@@ -250,7 +248,7 @@ export const RequestFormProvider: React.FC = ({ children }) => {
     isTokenLocked,
   } = useWithdrawalRequest({
     token,
-    amount: intermediateValidationResults.amount,
+    amount,
     onSuccess: () => {
       requestFormData.onSuccessRequest();
       formObject.reset;

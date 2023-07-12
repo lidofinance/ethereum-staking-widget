@@ -24,6 +24,7 @@ type useWaitingTimeOptions = {
   isApproximate?: boolean;
 };
 
+// TODO: accept big Number
 export const useWaitingTime = (
   amount: string,
   options: useWaitingTimeOptions = {},

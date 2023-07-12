@@ -1,5 +1,5 @@
 import { Zero } from '@ethersproject/constants';
-import { formatEther, parseEther } from '@ethersproject/units';
+import { formatEther } from '@ethersproject/units';
 import { TOKENS } from '@lido-sdk/constants';
 import { BigNumber } from 'ethers';
 import { Resolver } from 'react-hook-form';
@@ -26,24 +26,17 @@ export class ValidationError extends Error {
 
 type WITHDRAWAL_TOKENS = TOKENS.STETH | TOKENS.WSTETH;
 
-const validateEtherAmount = (field: string, _value: string): BigNumber => {
-  const value = _value?.trim();
-  if (!value) throw new ValidationError(field, `${field} is required`);
-  let amountBigNumber: BigNumber;
-  try {
-    amountBigNumber = parseEther(value);
-  } catch {
-    throw new ValidationError(
-      field,
-      `${field} must be a valid number with up to 18 decimal places`,
-    );
-  }
+// asserts only work with function declaration
+// eslint-disable-next-line func-style
+function validateEtherAmount(
+  field: string,
+  amount: BigNumber | null,
+): asserts amount is BigNumber {
+  if (!amount) throw new ValidationError(field, `${field} is required`);
 
-  if (amountBigNumber.lte(Zero))
+  if (amount.lte(Zero))
     throw new ValidationError(field, `${field}  must be greater than 0`);
-
-  return amountBigNumber;
-};
+}
 
 const validateMinUnstake = (
   field: string,
@@ -121,11 +114,10 @@ export const RequestFormValidationResolver: Resolver<
   RequestFormValidationContextType
 > = async (values, context) => {
   const validationResults: ValidationResults = {
-    amount: null,
     requests: null,
   };
   try {
-    const { value, mode, token } = values;
+    const { amount, mode, token } = values;
     if (!context) throw new ValidationError('root', 'empty context');
     const {
       minUnstakeSteth,
@@ -138,12 +130,11 @@ export const RequestFormValidationResolver: Resolver<
       stethTotalSupply,
     } = context;
 
-    const amount = validateEtherAmount('value', value);
-    validationResults.amount = amount;
+    validateEtherAmount('amount', amount);
     const isSteth = token === TOKENS.STETH;
 
     if (isSteth)
-      tvlJokeValidate('value', amount, stethTotalSupply, balanceSteth);
+      tvlJokeValidate('amount', amount, stethTotalSupply, balanceSteth);
 
     // early validation exit for dex option
     if (mode === 'dex') {
@@ -155,7 +146,7 @@ export const RequestFormValidationResolver: Resolver<
       : maxAmountPerRequestWSteth;
 
     const requests = validateSplitRequests(
-      'value',
+      'amount',
       amount,
       maxAmountPerRequest,
       maxRequestCount,
@@ -163,10 +154,10 @@ export const RequestFormValidationResolver: Resolver<
     validationResults.requests = requests;
 
     const minUnstakeAmount = isSteth ? minUnstakeSteth : minUnstakeWSteth;
-    validateMinUnstake('value', amount, minUnstakeAmount, token);
+    validateMinUnstake('amount', amount, minUnstakeAmount, token);
 
     const maxUnstakeAmount = isSteth ? balanceSteth : balanceWSteth;
-    validateMaxAmount('value', amount, maxUnstakeAmount);
+    validateMaxAmount('amount', amount, maxUnstakeAmount);
 
     return {
       values: { ...values, requests, amount },

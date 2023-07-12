@@ -8,10 +8,7 @@ import { useMemo } from 'react';
 import { standardFetcher } from 'utils/standardFetcher';
 import { STRATEGY_LAZY } from 'utils/swrStrategies';
 import { useWatch } from 'react-hook-form';
-import {
-  useValidationResults,
-  RequestFormInputType,
-} from '../request/request-form-context';
+import { RequestFormInputType } from '../request/request-form-context';
 
 type getWithdrawalRatesParams = {
   amount: BigNumber;
@@ -229,8 +226,9 @@ const ZERO = BigNumber.from(0);
 export const useWithdrawalRates = ({
   fallbackValue,
 }: useWithdrawalRatesOptions = {}) => {
-  const { amount } = useValidationResults();
-  const token = useWatch<RequestFormInputType, 'token'>({ name: 'token' });
+  const [token, amount] = useWatch<RequestFormInputType, ['token', 'amount']>({
+    name: ['token', 'amount'],
+  });
   const fallbackedAmount =
     fallbackValue && amount?.lte(0) ? fallbackValue : amount ?? ZERO;
   const debouncedAmount = useDebouncedValue(fallbackedAmount, 1000);
