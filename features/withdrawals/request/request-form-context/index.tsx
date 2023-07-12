@@ -65,6 +65,7 @@ type ExtraRequestFormDataType = {
 type RequestFormDataContextValueType = RequestFormDataType &
   ExtraRequestFormDataType;
 
+// Provides all data fetching for form to function
 const useRequestFormDataContextValue = () => {
   const { update: withdrawalRequestsDataUpdate } = useClaimData();
   const stethTotalSupply = useSTETHTotalSupply().data;
@@ -129,6 +130,7 @@ const useRequestFormDataContextValue = () => {
   );
 };
 
+// Prepares validation context object from request form data
 const useValidationContext = (
   requestData: RequestFormDataType,
   setIntermediateValidationResults: RequestFormValidationContextType['setIntermediateValidationResults'],
@@ -180,7 +182,6 @@ const useValidationContext = (
 //
 // data context
 //
-
 const RequestFormDataContext =
   createContext<RequestFormDataContextValueType | null>(null);
 RequestFormDataContext.displayName = 'RequestFormDataContext';
@@ -194,7 +195,6 @@ export const useRequestFormData = () => {
 //
 // intermediate values context
 //
-
 const IntermediateValidationResultsContext =
   createContext<ValidationResults | null>(null);
 IntermediateValidationResultsContext.displayName =
@@ -207,9 +207,8 @@ export const useValidationResults = () => {
 };
 
 //
-// Joint provider
+// Joint provider for form state, data, intermediate validation results
 //
-
 export const RequestFormProvider: React.FC = ({ children }) => {
   const [intermediateValidationResults, setIntermediateValidationResults] =
     useState<ValidationResults>({ requests: null });
@@ -235,6 +234,7 @@ export const RequestFormProvider: React.FC = ({ children }) => {
     resolver: RequestFormValidationResolver,
   });
 
+  // TODO refactor this part as part of TX flow
   const { control, handleSubmit } = formObject;
   const [token, amount] = useWatch({
     control: control,
