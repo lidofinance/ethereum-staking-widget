@@ -180,11 +180,7 @@ export const WrapForm: FC = memo(() => {
           <FormatToken amount={oneWstethConverted} symbol="wstETH" />
         </DataTableRow>
         <DataTableRow title="Allowance" loading={loadingUseApprove}>
-          {isSteth ? (
-            <FormatToken amount={allowance} symbol="stETH" />
-          ) : (
-            <>0.0</>
-          )}
+          {isSteth ? <FormatToken amount={allowance} symbol="stETH" /> : <>-</>}
         </DataTableRow>
         <DataTableRow title="You will receive">
           <FormatToken amount={willReceiveWsteth} symbol="wstETH" />

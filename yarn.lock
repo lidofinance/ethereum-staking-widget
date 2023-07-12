@@ -2593,10 +2593,10 @@
   resolved "https://registry.yarnpkg.com/@polka/url/-/url-1.0.0-next.21.tgz#5de5a2385a35309427f6011992b544514d559aa1"
   integrity sha512-a5Sab1C4/icpTZVzZc5Ghpz88yQtGOyNqYXcZgOssB2uuAr+wF/MvN6bgtW32q7HHrvBki+BsZ0OuNv6EV3K9g==
 
-"@reef-knot/connect-wallet-modal@1.4.3":
-  version "1.4.3"
-  resolved "https://registry.npmjs.org/@reef-knot/connect-wallet-modal/-/connect-wallet-modal-1.4.3.tgz#3537ed14e808fa6bb7dd80dc92c0762a79b68687"
-  integrity sha512-v7xi4iqOdix89feN/2gPGwwkeVh0sOs3UdLYkzAgLPJYM3uLGs9bKo5HDxbCYq1fAl4b/F4Xa+DKpNDBaeWcnQ==
+"@reef-knot/connect-wallet-modal@1.5.0":
+  version "1.5.0"
+  resolved "https://registry.yarnpkg.com/@reef-knot/connect-wallet-modal/-/connect-wallet-modal-1.5.0.tgz#f134bfd4eae1d0142e55184d4fec591a295d9db9"
+  integrity sha512-Rud4Sw8GIYVlilIcStWK2x/55sdw82b4fFJERcwzfi9G1QuPLaw4gx7JVO1OQogZ9+AGr3M/AxbaR0hiv57BpA==
   dependencies:
     "@types/react" "17.0.53"
     "@types/react-dom" "17"
@@ -2605,6 +2605,26 @@
   version "1.4.2"
   resolved "https://registry.npmjs.org/@reef-knot/core-react/-/core-react-1.4.2.tgz#09bdeb1c1870efdb445eff22e1fabe5ae3de2ccd"
   integrity sha512-L12f9QdgHE6jS2++NfoCQEZAgs6fI9bhfJzvFv/abgnEXTiGyCvybATzv8DUuIRmwRVa7g2YtY1sAD3uF4Vr9A==
+
+"@reef-knot/ledger-connector@1.0.1":
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/@reef-knot/ledger-connector/-/ledger-connector-1.0.1.tgz#981b047723edd4f30b24250820a1b806c348a9fe"
+  integrity sha512-LqExXVZFOJY476uTP5GzeqgaVm3cVsUz6AGo7tzsRN2Ymb8zQFPVVoQLRF6sQeqt+4Oq9IePfVg8+cX49/lGrA==
+  dependencies:
+    "@ethersproject/abstract-signer" "^5.5.0"
+    "@ethersproject/bignumber" "^5.5.0"
+    "@ethersproject/bytes" "^5.5.0"
+    "@ethersproject/properties" "^5.5.0"
+    "@ethersproject/providers" "^5.5.2"
+    "@ethersproject/strings" "^5.5.0"
+    "@ethersproject/transactions" "^5.5.0"
+    "@ledgerhq/hw-app-eth" "^6.33.1"
+    "@ledgerhq/hw-transport" "^6.28.2"
+    "@ledgerhq/hw-transport-webhid" "^6.27.13"
+    "@ledgerhq/iframe-provider" "0"
+    "@web3-react/abstract-connector" "^6.0.7"
+    "@web3-react/types" "^6.0.7"
+    tiny-invariant "^1.2.0"
 
 "@reef-knot/types@1.2.1":
   version "1.2.1"
@@ -2689,10 +2709,10 @@
     "@reef-knot/wallet-adapter-zengo" "1.2.2"
     "@reef-knot/wallet-adapter-zerion" "1.2.2"
 
-"@reef-knot/web3-react@1.2.2":
-  version "1.2.2"
-  resolved "https://registry.yarnpkg.com/@reef-knot/web3-react/-/web3-react-1.2.2.tgz#4acfa9f1ba307fb1af6273c4447e9c78d0a5a2f6"
-  integrity sha512-gLUrV2itDwm4j1Oku9AMRfTqiBo2PUblmzZLnyA1Qj6xgK4EG0fOVEGs85BZ7ih9QngYyTmI16FGhzN+MEC7Dg==
+"@reef-knot/web3-react@1.3.0":
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/@reef-knot/web3-react/-/web3-react-1.3.0.tgz#0cfd6d89117624e28c70d3705df2b947b317b520"
+  integrity sha512-0LLjdqqdTvRib3U2ZO1qchArtqQXGvhJuw96qCVPl/s2nhZH9VFPNnaeONI1DRCLvwwAC1wWEhVahzXVqtVNgQ==
   dependencies:
     "@gnosis.pm/safe-apps-web3-react" "0.6.8"
     "@ledgerhq/iframe-provider" "0.4.2"
@@ -2706,8 +2726,6 @@
     swr "1.3.0"
     tiny-invariant "^1.1.0"
     tiny-warning "^1.0.3"
-    web3-ledgerhq-connector "^1.2.3"
-    web3-ledgerhq-frame-connector "^1.0.1"
 
 "@safe-global/safe-apps-provider@^0.15.2":
   version "0.15.2"
@@ -3983,7 +4001,7 @@
     "@walletconnect/window-getters" "^1.0.1"
     tslib "1.14.1"
 
-"@web3-react/abstract-connector@6", "@web3-react/abstract-connector@6.0.7", "@web3-react/abstract-connector@^6.0.7":
+"@web3-react/abstract-connector@6.0.7", "@web3-react/abstract-connector@^6.0.7":
   version "6.0.7"
   resolved "https://registry.yarnpkg.com/@web3-react/abstract-connector/-/abstract-connector-6.0.7.tgz#401b3c045f1e0fab04256311be49d5144e9badc6"
   integrity sha512-RhQasA4Ox8CxUC0OENc1AJJm8UTybu/oOCM61Zjg6y0iF7Z0sqv1Ai1VdhC33hrQpA8qSBgoXN9PaP8jKmtdqg==
@@ -4010,7 +4028,7 @@
     "@web3-react/types" "^6.0.7"
     tiny-warning "^1.0.3"
 
-"@web3-react/types@6", "@web3-react/types@^6.0.7":
+"@web3-react/types@^6.0.7":
   version "6.0.7"
   resolved "https://registry.yarnpkg.com/@web3-react/types/-/types-6.0.7.tgz#34a6204224467eedc6123abaf55fbb6baeb2809f"
   integrity sha512-ofGmfDhxmNT1/P/MgVa8IKSkCStFiyvXe+U5tyZurKdrtTDFU+wJ/LxClPDtFerWpczNFPUSrKcuhfPX1sI6+A==
@@ -8666,19 +8684,20 @@ redent@^3.0.0:
     indent-string "^4.0.0"
     strip-indent "^3.0.0"
 
-reef-knot@^1.4.5:
-  version "1.4.5"
-  resolved "https://registry.npmjs.org/reef-knot/-/reef-knot-1.4.5.tgz#edd20ea04e7a838fae8e678bc71414ece14cfc99"
-  integrity sha512-QZj7/iWcJ8YNaT4bP/6s/ma5eofYqMOdm8xk6eTN2E7n9JZFuMWlIIYvNHBaSKF1/ldF9UNLyfsyPTtnJEGDYQ==
+reef-knot@^1.5.2:
+  version "1.5.2"
+  resolved "https://registry.yarnpkg.com/reef-knot/-/reef-knot-1.5.2.tgz#c0f67a0e2178f2c20aacc9f2e61a537e5fb7fa1f"
+  integrity sha512-gdEjsw5eiaaP+buyA6g7KZfPojp1CD6kT+j5Sxv+LBlRfctuofQ/Omhj0EtCjPjE34RVgwIvQVLSkjXKZcG81Q==
   dependencies:
-    "@reef-knot/connect-wallet-modal" "1.4.3"
+    "@reef-knot/connect-wallet-modal" "1.5.0"
     "@reef-knot/core-react" "1.4.2"
+    "@reef-knot/ledger-connector" "1.0.1"
     "@reef-knot/types" "1.2.1"
     "@reef-knot/ui-react" "1.0.5"
     "@reef-knot/wallets-helpers" "1.1.2"
     "@reef-knot/wallets-icons" "1.0.0"
     "@reef-knot/wallets-list" "1.4.2"
-    "@reef-knot/web3-react" "1.2.2"
+    "@reef-knot/web3-react" "1.3.0"
 
 regenerate-unicode-properties@^10.1.0:
   version "10.1.0"
@@ -9564,7 +9583,7 @@ tiny-async-pool@^1.2.0:
   dependencies:
     semver "^5.5.0"
 
-tiny-invariant@1, tiny-invariant@^1.0.6, tiny-invariant@^1.1.0, tiny-invariant@^1.2.0:
+tiny-invariant@^1.0.6, tiny-invariant@^1.1.0, tiny-invariant@^1.2.0:
   version "1.3.1"
   resolved "https://registry.yarnpkg.com/tiny-invariant/-/tiny-invariant-1.3.1.tgz#8560808c916ef02ecfd55e66090df23a4b7aa642"
   integrity sha512-AD5ih2NlSssTCwsMznbvwMZpJ1cbhkGd2uueNxzv2jDlEeZdU04JQfRnggJQ8DrcVBGjAsCKwFBbDlVNtEMlzw==
@@ -10048,35 +10067,6 @@ walker@^1.0.8:
   integrity sha512-ts/8E8l5b7kY0vlWLewOkDXMmPdLcVV4GmOQLyxuSswIJsweeFZtAsMF7k1Nszz+TYBQrlYRmzOnr398y1JemQ==
   dependencies:
     makeerror "1.0.12"
-
-web3-ledgerhq-connector@^1.2.3, web3-ledgerhq-connector@^1.3.1:
-  version "1.3.1"
-  resolved "https://registry.yarnpkg.com/web3-ledgerhq-connector/-/web3-ledgerhq-connector-1.3.1.tgz#cfc5802c1e08f73c81873ed524097d819c22ddad"
-  integrity sha512-YvZOnAFftXZYh5Fr9iWR/hYhOJhgooXS7QIH/ayOrAqChCrkpaBCwM2QoqlB5MUjhplx8JV/vbOeqTWMoCiuqA==
-  dependencies:
-    "@ethersproject/abstract-signer" "^5.5.0"
-    "@ethersproject/bignumber" "^5.5.0"
-    "@ethersproject/bytes" "^5.5.0"
-    "@ethersproject/properties" "^5.5.0"
-    "@ethersproject/providers" "^5.5.2"
-    "@ethersproject/strings" "^5.5.0"
-    "@ethersproject/transactions" "^5.5.0"
-    "@ledgerhq/hw-app-eth" "^6.33.1"
-    "@ledgerhq/hw-transport" "^6.28.2"
-    "@ledgerhq/hw-transport-webhid" "^6.27.13"
-    "@web3-react/abstract-connector" "^6.0.7"
-    "@web3-react/types" "^6.0.7"
-    tiny-invariant "^1.2.0"
-
-web3-ledgerhq-frame-connector@^1.0.1:
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/web3-ledgerhq-frame-connector/-/web3-ledgerhq-frame-connector-1.0.1.tgz#7554fb5e9d1da19e1ab24e434dbc4d0c012c0527"
-  integrity sha512-AnSISDK0csoi2V/dMAjcomK8ZbFAYk22KArSoG/chDKlvLgxBgXafWheQPgV7540Efd/wMbtcjo4NotY2M3nDA==
-  dependencies:
-    "@ledgerhq/iframe-provider" "0"
-    "@web3-react/abstract-connector" "6"
-    "@web3-react/types" "6"
-    tiny-invariant "1"
 
 webidl-conversions@^3.0.0:
   version "3.0.1"
