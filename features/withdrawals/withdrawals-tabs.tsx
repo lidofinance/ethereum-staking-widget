@@ -15,7 +15,7 @@ import {
   WITHDRAWAL_REQUEST_PATH,
 } from 'features/withdrawals//withdrawals-constants';
 
-export const withdrawalRoutes = [
+const withdrawalRoutes = [
   {
     path: WITHDRAWAL_REQUEST_PATH,
     name: 'Request',
@@ -31,21 +31,16 @@ export const WithdrawalsTabs = () => {
   return (
     <ClaimDataProvider>
       <Switch checked={isClaimTab} routes={withdrawalRoutes} />
-      {/* We reuse provider but make sure these are different components for tabs */}
-      <TransactionModalProvider
-        key={isClaimTab ? 'CLAIM_PROVIDER' : 'REQUEST_PROVIDER'}
-      >
-        {isClaimTab ? (
-          <>
-            <ClaimWallet />
-            <ClaimForm />
-            <ClaimFaq />
-            <TxClaimModal />
-          </>
-        ) : (
-          <Request />
-        )}
-      </TransactionModalProvider>
+      {isClaimTab ? (
+        <TransactionModalProvider>
+          <ClaimWallet />
+          <ClaimForm />
+          <ClaimFaq />
+          <TxClaimModal />
+        </TransactionModalProvider>
+      ) : (
+        <Request />
+      )}
     </ClaimDataProvider>
   );
 };
