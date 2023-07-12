@@ -129,9 +129,9 @@ export const RequestFormValidationResolver: Resolver<
       maxRequestCount,
       stethTotalSupply,
     } = context;
+    const isSteth = token === TOKENS.STETH;
 
     validateEtherAmount('amount', amount);
-    const isSteth = token === TOKENS.STETH;
 
     if (isSteth)
       tvlJokeValidate('amount', amount, stethTotalSupply, balanceSteth);

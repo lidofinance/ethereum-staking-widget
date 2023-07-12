@@ -20,6 +20,8 @@ type TransactionModalState = {
   isModalOpen: boolean;
   txStage: TX_STAGE;
   startTx: (() => void) | null;
+  onOkBunker: (() => void) | null;
+  onCloseBunker: (() => void) | null;
   errorText: string | null;
   txHash: string | null;
   requestAmount: BigNumber | null;
@@ -42,6 +44,8 @@ type TransactionModalAction =
     }
   | {
       type: 'bunker';
+      onCloseBunker: () => void;
+      onOkBunker: () => void;
     }
   | {
       type: 'start';
@@ -83,6 +87,8 @@ const TransactionModalReducer = (
         txHash: null,
         // keep old (re)start callback if have one
         startTx: state.startTx,
+        onCloseBunker: null,
+        onOkBunker: null,
       };
     case 'set_starTx_callback':
       return {
@@ -106,6 +112,8 @@ const TransactionModalReducer = (
       return {
         ...state,
         isModalOpen: true,
+        onCloseBunker: action.onCloseBunker,
+        onOkBunker: action.onOkBunker,
         txStage: TX_STAGE.BUNKER,
       };
     case 'start':
@@ -118,6 +126,8 @@ const TransactionModalReducer = (
         token: action.token,
         // keep (re)start callback
         startTx: state.startTx,
+        onCloseBunker: state.onCloseBunker,
+        onOkBunker: state.onOkBunker,
       };
     case 'signing':
       invariant(state.requestAmount, 'state must already have request amount');
@@ -159,6 +169,8 @@ const initTxModalState = (): TransactionModalState => ({
   txHash: null,
   requestAmount: null,
   token: null,
+  onCloseBunker: null,
+  onOkBunker: null,
 });
 
 export const useTransactionModal = () => {

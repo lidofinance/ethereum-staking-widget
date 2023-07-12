@@ -24,6 +24,8 @@ export const TxRequestModal = () => {
     txHash,
     errorText,
     isModalOpen,
+    onOkBunker,
+    onCloseBunker,
     txStage,
   } = useTransactionModal();
 
@@ -78,8 +80,11 @@ export const TxRequestModal = () => {
       case TX_STAGE.BUNKER:
         return (
           <TxStageBunker
-            onClick={startTx ?? undefined}
-            onClose={() => dispatchModalState({ type: 'close_modal' })}
+            onClick={() => onOkBunker?.()}
+            onClose={() => {
+              onCloseBunker?.();
+              dispatchModalState({ type: 'close_modal' });
+            }}
           />
         );
       default:
@@ -88,6 +93,8 @@ export const TxRequestModal = () => {
   }, [
     dispatchModalState,
     errorText,
+    onCloseBunker,
+    onOkBunker,
     requestAmount,
     startTx,
     token,

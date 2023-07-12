@@ -346,6 +346,16 @@ export const useWithdrawalRequest = ({
       // define and set retry point
       const startCallback = async () => {
         try {
+          if (isBunker) {
+            const bunkerDialogResult = await new Promise<boolean>((resolve) => {
+              dispatchModalState({
+                type: 'bunker',
+                onCloseBunker: () => resolve(false),
+                onOkBunker: () => resolve(true),
+              });
+            });
+            if (!bunkerDialogResult) return;
+          }
           // we can't know if tx was successful or even wait for it  with multisig
           // so we exit flow gracefully and reset UI
           const shouldSkipSuccess = isMultisig;
@@ -395,10 +405,7 @@ export const useWithdrawalRequest = ({
         type: 'set_starTx_callback',
         callback: startCallback,
       });
-      if (isBunker) {
-        // for bunker mode the warning is shown and start is deferred
-        dispatchModalState({ type: 'bunker' });
-      } else startCallback();
+      return startCallback();
     },
     [
       approve,

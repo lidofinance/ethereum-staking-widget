@@ -86,8 +86,8 @@ const useRequestFormDataContextValue = () => {
   const minUnstakeWSteth = useContractSWR({
     contract: wstethContract,
     method: 'getWstETHByStETH',
-    params: [maxAmountPerRequestSteth],
-    shouldFetch: !!maxAmountPerRequestSteth,
+    params: [minUnstakeSteth],
+    shouldFetch: !!minUnstakeSteth,
     config: STRATEGY_LAZY,
   }).data;
 
