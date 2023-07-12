@@ -2689,10 +2689,10 @@
   resolved "https://registry.yarnpkg.com/@reef-knot/wallet-adapter-zerion/-/wallet-adapter-zerion-1.2.3.tgz#b967991cb8bb701ebf4f6b188b33a5cb719686f1"
   integrity sha512-LjDgFxkwEzPkDJnuuG1X/pGw6z7KR7jLZtlFYKfQh0ewwXHMQZmPrbHg78pnTPZ3YxsPpzPt52U9LN1mRUPe1w==
 
-"@reef-knot/wallets-helpers@1.1.3":
-  version "1.1.3"
-  resolved "https://registry.yarnpkg.com/@reef-knot/wallets-helpers/-/wallets-helpers-1.1.3.tgz#bc7c6ffa8dc3a5a4763d8c7915302823291fd2f7"
-  integrity sha512-8JRt1pSuy4GqY5/1MLcEI5QhtqvC2FULX6GDeJNcQUrlMjynxZthllKMYtptU4x0ZWkxn+2PNYdKJYe14jRe7A==
+"@reef-knot/wallets-helpers@1.1.4":
+  version "1.1.4"
+  resolved "https://registry.yarnpkg.com/@reef-knot/wallets-helpers/-/wallets-helpers-1.1.4.tgz#8374b50339da16b6dc9d05122c97cd08dc3afa6f"
+  integrity sha512-RY3KUSebTKoeUd6HgDVT1d7m5hv/vbuyHMj+RgwLmqN4eQSF8H5zkdA0pdJkLlqfFbqUcQLNmLdJ7mVBzYsk7w==
 
 "@reef-knot/wallets-icons@1.0.0":
   version "1.0.0"
@@ -8685,17 +8685,17 @@ redent@^3.0.0:
     indent-string "^4.0.0"
     strip-indent "^3.0.0"
 
-reef-knot@^1.6.0:
-  version "1.6.0"
-  resolved "https://registry.yarnpkg.com/reef-knot/-/reef-knot-1.6.0.tgz#e6343cdc654cc3478c81f45a42a78aae1439c8a7"
-  integrity sha512-Id8gJfZsB8Oeq62TFN2efISt/SdSaVmDXtQa6PwMN/xy8F+1eOyCSMtdk3hvKgQnGRMpLI/llWCuds87GibW5g==
+reef-knot@^1.6.1:
+  version "1.6.1"
+  resolved "https://registry.yarnpkg.com/reef-knot/-/reef-knot-1.6.1.tgz#13b0cecf8287685265ef68ddf1e9f0da74fef3d3"
+  integrity sha512-nu8tZpW4n2SFgcMR4lVAjlsZuYLdGBLbaxOxVOXLL7ed0ytZBj90J3SQ5i3twYKlDlDuOTnY+nSahsn4SdkDlA==
   dependencies:
     "@reef-knot/connect-wallet-modal" "1.5.1"
     "@reef-knot/core-react" "1.4.3"
     "@reef-knot/ledger-connector" "1.0.1"
     "@reef-knot/types" "1.2.2"
     "@reef-knot/ui-react" "1.0.6"
-    "@reef-knot/wallets-helpers" "1.1.3"
+    "@reef-knot/wallets-helpers" "1.1.4"
     "@reef-knot/wallets-icons" "1.0.0"
     "@reef-knot/wallets-list" "1.4.3"
     "@reef-knot/web3-react" "1.3.1"
