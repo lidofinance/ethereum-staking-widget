@@ -26,8 +26,12 @@ import { STRATEGY_LAZY } from 'utils/swrStrategies';
 import { RequestFormValidationResolver } from './validators';
 import { useClaimData } from 'features/withdrawals/contexts/claim-data-context';
 import { useWithdrawals } from 'features/withdrawals/contexts/withdrawals-context';
-import { MAX_REQUESTS_COUNT } from 'features/withdrawals/withdrawals-constants';
+import {
+  MAX_REQUESTS_COUNT,
+  MAX_REQUESTS_COUNT_LEDGER_LIMIT,
+} from 'features/withdrawals/withdrawals-constants';
 import invariant from 'tiny-invariant';
+import { useIsLedgerLive } from 'shared/hooks/useIsLedgerLive';
 
 export type ValidationResults = {
   requests: null | BigNumber[];
@@ -135,6 +139,10 @@ const useValidationContext = (
   requestData: RequestFormDataType,
   setIntermediateValidationResults: RequestFormValidationContextType['setIntermediateValidationResults'],
 ) => {
+  const isLedgerLive = useIsLedgerLive();
+  const maxRequestCount = isLedgerLive
+    ? MAX_REQUESTS_COUNT_LEDGER_LIMIT
+    : MAX_REQUESTS_COUNT;
   const {
     balanceSteth,
     balanceWSteth,
@@ -161,7 +169,7 @@ const useValidationContext = (
             maxAmountPerRequestWSteth,
             minUnstakeSteth,
             minUnstakeWSteth,
-            maxRequestCount: MAX_REQUESTS_COUNT,
+            maxRequestCount,
             stethTotalSupply,
             setIntermediateValidationResults,
           }
@@ -172,6 +180,7 @@ const useValidationContext = (
     balanceWSteth,
     maxAmountPerRequestSteth,
     maxAmountPerRequestWSteth,
+    maxRequestCount,
     minUnstakeSteth,
     minUnstakeWSteth,
     setIntermediateValidationResults,
