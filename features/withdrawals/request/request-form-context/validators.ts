@@ -138,7 +138,7 @@ export const RequestFormValidationResolver: Resolver<
 
     // early validation exit for dex option
     if (mode === 'dex') {
-      return { values: { ...values, amount }, errors: {} };
+      return { values: { ...values }, errors: {} };
     }
 
     const maxAmountPerRequest = isSteth
@@ -160,7 +160,7 @@ export const RequestFormValidationResolver: Resolver<
     validateMaxAmount('amount', amount, maxUnstakeAmount);
 
     return {
-      values: { ...values, requests, amount },
+      values: { ...values, requests },
       errors: {},
     };
   } catch (error) {

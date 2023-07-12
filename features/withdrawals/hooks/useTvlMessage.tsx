@@ -14,15 +14,26 @@ const texts: ((amount: string) => string)[] = [
 
 const getText = () => texts[Math.floor(Math.random() * texts.length)];
 
-export const useTvlMessage = (balanceDiff?: BigNumber) => {
+export const useTvlMessage = (error?: unknown) => {
   // To render one text per page before refresh
   const textTemplate = useMemo(() => getText(), []);
 
-  return useMemo(
-    () =>
-      balanceDiff
-        ? textTemplate(shortenTokenValue(Number(formatEther(balanceDiff))))
-        : undefined,
-    [balanceDiff, textTemplate],
-  );
+  const balanceDiff =
+    error &&
+    typeof error === 'object' &&
+    'type' in error &&
+    error.type == 'validate_tvl_joke'
+      ? (error as { balanceDiffSteth?: BigNumber }).balanceDiffSteth
+      : undefined;
+
+  return {
+    balanceDiff,
+    tvlMessage: useMemo(
+      () =>
+        balanceDiff
+          ? textTemplate(shortenTokenValue(Number(formatEther(balanceDiff))))
+          : undefined,
+      [balanceDiff, textTemplate],
+    ),
+  };
 };

@@ -234,6 +234,7 @@ export const RequestFormProvider: React.FC = ({ children }) => {
     mode: 'all',
     resolver: RequestFormValidationResolver,
   });
+
   const { control, handleSubmit } = formObject;
   const [token, amount] = useWatch({
     control: control,

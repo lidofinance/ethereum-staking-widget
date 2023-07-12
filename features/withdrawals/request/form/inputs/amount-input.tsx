@@ -28,18 +28,16 @@ export const AmountInput = () => {
   const balance = token === TOKENS.STETH ? balanceSteth : balanceWSteth;
 
   return (
-    <>
-      <InputAmount
-        fullwidth
-        placeholder="0"
-        isLocked={isTokenLocked}
-        maxValue={balance}
-        rightDecorator={
-          balanceDiff && <InputDecoratorTvlStake tvlDiff={balanceDiff} />
-        }
-        label={`${getTokenDisplayName(token)} amount`}
-        {...field}
-      />
-    </>
+    <InputAmount
+      fullwidth
+      placeholder="0"
+      isLocked={isTokenLocked}
+      maxValue={balance}
+      rightDecorator={
+        balanceDiff && <InputDecoratorTvlStake tvlDiff={balanceDiff} />
+      }
+      label={`${getTokenDisplayName(token)} amount`}
+      {...field}
+    />
   );
 };
