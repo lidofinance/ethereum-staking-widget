@@ -3,7 +3,7 @@ import { useLidoSWR } from '@lido-sdk/react';
 // import { useLidoShareRate } from 'features/withdrawals/hooks/contract/useLidoShareRate';
 
 import { useWithdrawalsContract } from './useWithdrawalsContract';
-import { useIsBunkerMode, useIsPaused } from './withdrawalsCalls';
+
 import {
   RequestStatus,
   RequestStatusClaimable,
@@ -127,17 +127,4 @@ export const useWithdrawalRequests = () => {
     },
     STRATEGY_LAZY,
   );
-};
-
-export const useWithdrawalsStatus = () => {
-  const bunkerMode = useIsBunkerMode();
-  const paused = useIsPaused();
-
-  const isPaused = !!paused.data;
-  const isBunkerMode = !!bunkerMode.data;
-  const isTurbo = !isPaused && !isBunkerMode;
-
-  const isLoading = paused.initialLoading || bunkerMode.initialLoading;
-
-  return { isPaused, isBunkerMode, isLoading, isTurbo };
 };
