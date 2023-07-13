@@ -12,14 +12,12 @@ import {
   useRequestFormData,
   useValidationResults,
 } from '../request-form-context';
+import { MaxUint256 } from '@ethersproject/constants';
+import { useMemo } from 'react';
 
 export const TransactionInfo = () => {
-  const {
-    isApprovalFlow,
-    isApprovalFlowLoading,
-    isInfiniteAllowance,
-    allowance,
-  } = useRequestFormData();
+  const { isApprovalFlow, isApprovalFlowLoading, allowance } =
+    useRequestFormData();
   const token = useWatch<RequestFormInputType, 'token'>({ name: 'token' });
   const { requests } = useValidationResults();
   const unlockCostTooltip = isApprovalFlow ? undefined : (
@@ -32,6 +30,11 @@ export const TransactionInfo = () => {
       requestCount: requests?.length,
     });
   const approveTxCostInUsd = useTxCostInUsd(useApproveGasLimit());
+
+  const isInfiniteAllowance = useMemo(() => {
+    return allowance.eq(MaxUint256);
+  }, [allowance]);
+
   return (
     <>
       <DataTableRow

@@ -60,7 +60,6 @@ type RequestFormDataType = ReturnType<typeof useRequestFormDataContextValue>;
 type ExtraRequestFormDataType = {
   isApprovalFlow: boolean;
   isApprovalFlowLoading: boolean;
-  isInfiniteAllowance: boolean;
   isTokenLocked: boolean;
   allowance: BigNumber;
   onSubmit: NonNullable<React.ComponentProps<'form'>['onSubmit']>;
@@ -97,10 +96,12 @@ const useRequestFormDataContextValue = () => {
   }).data;
 
   const onSuccessRequest = useCallback(() => {
-    stethUpdate();
-    wstethUpdate();
-    withdrawalRequestsDataUpdate();
-    unfinalizedStETHUpdate();
+    return Promise.all([
+      stethUpdate(),
+      wstethUpdate(),
+      withdrawalRequestsDataUpdate(),
+      unfinalizedStETHUpdate(),
+    ]);
   }, [
     stethUpdate,
     unfinalizedStETHUpdate,
@@ -254,15 +255,10 @@ export const RequestFormProvider: React.FC = ({ children }) => {
     request,
     isApprovalFlow,
     isApprovalFlowLoading,
-    isInfiniteAllowance,
     isTokenLocked,
   } = useWithdrawalRequest({
     token,
     amount,
-    onSuccess: () => {
-      requestFormData.onSuccessRequest();
-      formObject.reset;
-    },
   });
 
   const value = useMemo(() => {
@@ -270,24 +266,27 @@ export const RequestFormProvider: React.FC = ({ children }) => {
       ...requestFormData,
       isApprovalFlow,
       isApprovalFlowLoading,
-      isInfiniteAllowance,
       isTokenLocked,
       allowance,
-      onSubmit: handleSubmit(async ({ requests, amount }) => {
+      onSubmit: handleSubmit(async ({ requests, amount, token }) => {
         invariant(requests, 'cannot submit empty requests');
         invariant(amount, 'cannot submit empty amount');
-        return request(requests, amount);
+        const { success } = await request(requests, amount, token);
+        if (success) {
+          await requestFormData.onSuccessRequest();
+          formObject.reset;
+        }
       }),
     };
   }, [
-    handleSubmit,
-    allowance,
+    requestFormData,
     isApprovalFlow,
     isApprovalFlowLoading,
-    isInfiniteAllowance,
     isTokenLocked,
+    allowance,
+    handleSubmit,
     request,
-    requestFormData,
+    formObject.reset,
   ]);
 
   return (

@@ -31,8 +31,13 @@ type WITHDRAWAL_TOKENS = TOKENS.STETH | TOKENS.WSTETH;
 function validateEtherAmount(
   field: string,
   amount: BigNumber | null,
+  token: WITHDRAWAL_TOKENS,
 ): asserts amount is BigNumber {
-  if (!amount) throw new ValidationError(field, `${field} is required`);
+  if (!amount)
+    throw new ValidationError(
+      field,
+      `${getTokenDisplayName(token)} ${field} is required`,
+    );
 
   if (amount.lte(Zero))
     throw new ValidationError(field, `${field}  must be greater than 0`);
@@ -109,6 +114,29 @@ const tvlJokeValidate = (
     );
 };
 
+// helper to get filter out context values
+const transformContext = (
+  context: RequestFormValidationContextType,
+  values: RequestFormInputType,
+) => {
+  const isSteth = values.token === TOKENS.STETH;
+  return {
+    isSteth,
+    balance: isSteth ? context.balanceSteth : context.balanceWSteth,
+    minAmountPerRequest: isSteth
+      ? context.minUnstakeSteth
+      : context.minUnstakeWSteth,
+    maxAmountPerRequest: isSteth
+      ? context.maxAmountPerRequestSteth
+      : context.maxAmountPerRequestWSteth,
+    maxRequestCount: context.maxRequestCount,
+    stethTotalSupply: context.stethTotalSupply,
+  };
+};
+
+// Validation pipeline resolver
+// receives values from form and context with helper data
+// returns values or errors
 export const RequestFormValidationResolver: Resolver<
   RequestFormInputType,
   RequestFormValidationContextType
@@ -120,30 +148,22 @@ export const RequestFormValidationResolver: Resolver<
     const { amount, mode, token } = values;
     if (!context) throw new ValidationError('root', 'empty context');
     const {
-      minUnstakeSteth,
-      minUnstakeWSteth,
-      balanceSteth,
-      balanceWSteth,
-      maxAmountPerRequestSteth,
-      maxAmountPerRequestWSteth,
+      isSteth,
+      balance,
+      maxAmountPerRequest,
+      minAmountPerRequest,
       maxRequestCount,
       stethTotalSupply,
-    } = context;
-    const isSteth = token === TOKENS.STETH;
+    } = transformContext(context, values);
 
-    validateEtherAmount('amount', amount);
+    validateEtherAmount('amount', amount, token);
 
-    if (isSteth)
-      tvlJokeValidate('amount', amount, stethTotalSupply, balanceSteth);
+    if (isSteth) tvlJokeValidate('amount', amount, stethTotalSupply, balance);
 
     // early validation exit for dex option
     if (mode === 'dex') {
       return { values: { ...values }, errors: {} };
     }
-
-    const maxAmountPerRequest = isSteth
-      ? maxAmountPerRequestSteth
-      : maxAmountPerRequestWSteth;
 
     const requests = validateSplitRequests(
       'amount',
@@ -153,11 +173,9 @@ export const RequestFormValidationResolver: Resolver<
     );
     validationResults.requests = requests;
 
-    const minUnstakeAmount = isSteth ? minUnstakeSteth : minUnstakeWSteth;
-    validateMinUnstake('amount', amount, minUnstakeAmount, token);
+    validateMinUnstake('amount', amount, minAmountPerRequest, token);
 
-    const maxUnstakeAmount = isSteth ? balanceSteth : balanceWSteth;
-    validateMaxAmount('amount', amount, maxUnstakeAmount);
+    validateMaxAmount('amount', amount, balance);
 
     return {
       values: { ...values, requests },

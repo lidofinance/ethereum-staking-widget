@@ -10,11 +10,6 @@ import { useSDK } from '@lido-sdk/react';
 import { Erc20Abi, StethAbi } from '@lido-sdk/contracts';
 import { useWeb3 } from 'reef-knot/web3-react';
 
-export enum PermitType {
-  AMOUNT = 1,
-  ALLOWED = 2,
-}
-
 export type GatherPermitSignatureResult = {
   v: number;
   r: string;
@@ -25,7 +20,6 @@ export type GatherPermitSignatureResult = {
   nonce: string;
   owner: string;
   spender: string;
-  permitType?: PermitType;
 };
 
 type UseERC20PermitSignatureResult = {
@@ -122,7 +116,6 @@ export const useERC20PermitSignature = <
             nonce: message.nonce,
             owner: account,
             spender,
-            permitType: PermitType.AMOUNT,
           };
         });
     },

@@ -16,7 +16,7 @@ import {
   WSTETH_APPROVE_GAS_LIMIT,
 } from 'config';
 import { BigNumber } from 'ethers';
-import { STRATEGY_LAZY } from 'utils/swrStrategies';
+import { STRATEGY_IMMUTABLE } from 'utils/swrStrategies';
 
 export const useApproveGasLimit = () => {
   const steth = useSTETHContractRPC();
@@ -30,29 +30,18 @@ export const useApproveGasLimit = () => {
         return;
       }
 
-      const provider = getStaticRpcBatchProvider(
-        chainId as CHAINS,
-        getBackendRPCPath(chainId as CHAINS),
-      );
-
-      const feeData = await provider.getFeeData();
-      const maxPriorityFeePerGas = feeData.maxPriorityFeePerGas ?? undefined;
-      const maxFeePerGas = feeData.maxFeePerGas ?? undefined;
-
       const gasLimit = await steth.estimateGas
         .approve(wsteth.address, parseEther('0.001'), {
           from: ESTIMATE_ACCOUNT,
-          maxPriorityFeePerGas,
-          maxFeePerGas,
         })
         .catch((error) => {
-          console.warn(error);
+          console.warn('[swr:approve-wrap-gas-limit]', error);
           return BigNumber.from(WSTETH_APPROVE_GAS_LIMIT);
         });
 
       return +gasLimit;
     },
-    STRATEGY_LAZY,
+    STRATEGY_IMMUTABLE,
   );
 
   return data ?? WSTETH_APPROVE_GAS_LIMIT;

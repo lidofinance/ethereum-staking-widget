@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback } from 'react';
 import { BigNumber } from 'ethers';
 import invariant from 'tiny-invariant';
 import { useWeb3 } from 'reef-knot/web3-react';
@@ -23,7 +23,8 @@ import { useWithdrawals } from 'features/withdrawals/contexts/withdrawals-contex
 
 import { useWithdrawalsContract } from './useWithdrawalsContract';
 import { useApprove } from 'shared/hooks/useApprove';
-import { MaxUint256 } from '@ethersproject/constants';
+import { Zero } from '@ethersproject/constants';
+import { TokensWithdrawable } from 'features/withdrawals/types/tokens-withdrawable';
 
 // this encapsulates permit/approval & steth/wsteth flows
 const useWithdrawalRequestMethods = () => {
@@ -281,17 +282,12 @@ const useWithdrawalRequestMethods = () => {
 type useWithdrawalRequestParams = {
   amount: BigNumber | null;
   token: TOKENS.STETH | TOKENS.WSTETH;
-  onSuccess?: () => void;
 };
-
-const ZERO = BigNumber.from(0);
 
 export const useWithdrawalRequest = ({
   amount,
   token,
-  onSuccess,
 }: useWithdrawalRequestParams) => {
-  const [isTxPending, setIsTxPending] = useState(false);
   const { chainId } = useSDK();
   const withdrawalQueueAddress = getWithdrawalQueueAddress(chainId);
 
@@ -306,7 +302,7 @@ export const useWithdrawalRequest = ({
   const stethContract = useSTETHContractRPC();
   const tokenContract = token === TOKENS.STETH ? stethContract : wstethContract;
 
-  const valueBN = amount ?? ZERO;
+  const valueBN = amount ?? Zero;
 
   // TODO  split into async callback and pauseable SWR
   const {
@@ -321,11 +317,6 @@ export const useWithdrawalRequest = ({
     account ?? undefined,
   );
 
-  const isInfiniteAllowance = useMemo(() => {
-    return allowance.eq(MaxUint256);
-  }, [allowance]);
-
-  // TODO streamline from hook to async callback
   const { gatherPermitSignature } = useERC20PermitSignature({
     tokenProvider: tokenContract,
     spender: withdrawalQueueAddress,
@@ -342,7 +333,7 @@ export const useWithdrawalRequest = ({
   const isTokenLocked = isApprovalFlow && needsApprove;
 
   const request = useCallback(
-    (requests: BigNumber[], amount: BigNumber) => {
+    (requests: BigNumber[], amount: BigNumber, token: TokensWithdrawable) => {
       // define and set retry point
       const startCallback = async () => {
         try {
@@ -354,16 +345,11 @@ export const useWithdrawalRequest = ({
                 onOkBunker: () => resolve(true),
               });
             });
-            if (!bunkerDialogResult) return;
+            if (!bunkerDialogResult) return { success: false };
           }
           // we can't know if tx was successful or even wait for it  with multisig
           // so we exit flow gracefully and reset UI
           const shouldSkipSuccess = isMultisig;
-          setIsTxPending(true);
-          const requestAmount = requests.reduce(
-            (s, r) => s.add(r),
-            BigNumber.from(0),
-          );
           // get right method
           const method = getRequestMethod(isApprovalFlow, token);
           // start flow
@@ -374,7 +360,7 @@ export const useWithdrawalRequest = ({
                 ? TX_STAGE.APPROVE
                 : TX_STAGE.SIGN
               : TX_STAGE.PERMIT,
-            requestAmount,
+            requestAmount: amount,
             token,
           });
 
@@ -393,12 +379,11 @@ export const useWithdrawalRequest = ({
           }
           // end flow
           dispatchModalState({ type: shouldSkipSuccess ? 'reset' : 'success' });
-          onSuccess?.();
+          return { success: true };
         } catch (error) {
           const errorMessage = getErrorMessage(error);
           dispatchModalState({ type: 'error', errorText: errorMessage });
-        } finally {
-          setIsTxPending(false);
+          return { success: false, error: error };
         }
       };
       dispatchModalState({
@@ -416,18 +401,14 @@ export const useWithdrawalRequest = ({
       isBunker,
       isMultisig,
       needsApprove,
-      onSuccess,
-      token,
     ],
   );
 
   return {
     isTokenLocked,
     isApprovalFlow,
-    isInfiniteAllowance,
     allowance,
     isApprovalFlowLoading,
     request,
-    isTxPending,
   };
 };

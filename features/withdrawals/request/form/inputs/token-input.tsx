@@ -19,13 +19,7 @@ export const TokenInput = () => {
     name: 'token',
   });
   return (
-    <SelectIcon
-      icon={iconsMap[field.value]}
-      value={field.value}
-      onChange={field.onChange}
-      ref={field.ref}
-      error={error}
-    >
+    <SelectIcon icon={iconsMap[field.value]} error={error} {...field}>
       <Option leftDecorator={iconsMap[TOKENS.STETH]} value={TOKENS.STETH}>
         {getTokenDisplayName(TOKENS.STETH)}
       </Option>
