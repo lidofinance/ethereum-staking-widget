@@ -1,8 +1,11 @@
 import { useMemo } from 'react';
-import { BigNumber } from 'ethers';
 import { formatEther } from '@ethersproject/units';
 
 import { shortenTokenValue } from 'utils';
+import {
+  TvlErrorPayload,
+  ValidationTvlJoke,
+} from '../request/request-form-context/validators';
 
 const texts: ((amount: string) => string)[] = [
   (amount) =>
@@ -22,8 +25,10 @@ export const useTvlMessage = (error?: unknown) => {
     error &&
     typeof error === 'object' &&
     'type' in error &&
-    error.type == 'validate_tvl_joke'
-      ? (error as { balanceDiffSteth?: BigNumber }).balanceDiffSteth
+    error.type == ValidationTvlJoke.type &&
+    'payload' in error &&
+    error.payload
+      ? (error.payload as TvlErrorPayload).balanceDiffSteth
       : undefined;
 
   return {

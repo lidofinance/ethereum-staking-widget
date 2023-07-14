@@ -8,6 +8,7 @@ import {
   useValidationResults,
 } from '../request-form-context';
 import { RequestsInfoStyled, RequestsInfoDescStyled } from './styles';
+import { ValidationSplitRequest } from '../request-form-context/validators';
 
 export const RequestsInfo = () => {
   const { errors } = useFormState<RequestFormInputType>();
@@ -16,7 +17,7 @@ export const RequestsInfo = () => {
   const { maxAmountPerRequestSteth, maxAmountPerRequestWSteth } =
     useRequestFormData();
 
-  if (errors.amount?.type === 'validation_request_split')
+  if (errors.amount?.type === ValidationSplitRequest.type)
     return (
       <RequestsInfoStyled>
         <RequestsInfoDescStyled>{errors.amount.message}</RequestsInfoDescStyled>

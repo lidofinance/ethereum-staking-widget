@@ -6,32 +6,56 @@ import { Resolver } from 'react-hook-form';
 import { getTokenDisplayName } from 'utils/getTokenDisplayName';
 import { RequestFormValidationContextType } from '.';
 import { RequestFormInputType, ValidationResults } from '.';
+import { TokensWithdrawable } from 'features/withdrawals/types/tokens-withdrawable';
 
 export class ValidationError extends Error {
   field: string;
   type: string;
-  data: Record<string, unknown>;
+  payload: Record<string, unknown>;
   constructor(
     field: string,
     msg: string,
     type?: string,
-    data?: Record<string, unknown>,
+    payload?: Record<string, unknown>,
   ) {
     super(msg);
     this.field = field;
     this.type = type ?? 'validate';
-    this.data = data ?? {};
+    this.payload = payload ?? {};
   }
 }
 
-type WITHDRAWAL_TOKENS = TOKENS.STETH | TOKENS.WSTETH;
+export type TvlErrorPayload = {
+  balanceDiffSteth: BigNumber;
+};
+export class ValidationTvlJoke extends ValidationError {
+  static type = 'validate_tvl_joke';
+  payload: TvlErrorPayload;
+  constructor(field: string, msg: string, payload: TvlErrorPayload) {
+    super(field, msg, ValidationTvlJoke.type);
+    this.payload = payload;
+  }
+}
+
+export type SplitRequestErrorPayload = {
+  requestCount: number;
+};
+
+export class ValidationSplitRequest extends ValidationError {
+  static type = 'validation_request_split';
+  payload: SplitRequestErrorPayload;
+  constructor(field: string, msg: string, payload: SplitRequestErrorPayload) {
+    super(field, msg, ValidationTvlJoke.type);
+    this.payload = payload;
+  }
+}
 
 // asserts only work with function declaration
 // eslint-disable-next-line func-style
 function validateEtherAmount(
   field: string,
   amount: BigNumber | null,
-  token: WITHDRAWAL_TOKENS,
+  token: TokensWithdrawable,
 ): asserts amount is BigNumber {
   if (!amount)
     throw new ValidationError(
@@ -47,7 +71,7 @@ const validateMinUnstake = (
   field: string,
   value: BigNumber,
   min: BigNumber,
-  token: WITHDRAWAL_TOKENS,
+  token: TokensWithdrawable,
 ) => {
   if (value.lt(min))
     throw new ValidationError(
@@ -106,12 +130,9 @@ const tvlJokeValidate = (
 ) => {
   const tvlDiff = valueSteth.sub(tvl);
   if (tvlDiff.gt(0))
-    throw new ValidationError(
-      field,
-      'amount bigger than tvl',
-      'validate_tvl_joke',
-      { tvlDiff, balanceDiffSteth: balanceSteth },
-    );
+    throw new ValidationTvlJoke(field, 'amount bigger than tvl', {
+      balanceDiffSteth: tvl.sub(balanceSteth),
+    });
 };
 
 // helper to get filter out context values
@@ -189,7 +210,7 @@ export const RequestFormValidationResolver: Resolver<
           [error.field]: {
             message: error.message,
             type: error.type,
-            ...error.data,
+            payload: error.payload,
           },
         },
       };
