@@ -2,7 +2,6 @@ import { ETHPLORER_TOKEN_ENDPOINT } from 'config';
 import getConfig from 'next/config';
 import { standardFetcher } from 'utils/standardFetcher';
 import { responseTimeExternalMetricWrapper } from 'utilsApi';
-import { serverLogger } from './serverLogger';
 import { TOKENS, getTokenAddress, CHAINS } from '@lido-sdk/constants';
 
 const { serverRuntimeConfig } = getConfig();
@@ -12,7 +11,7 @@ type GetLidoStats = () => Promise<Response>;
 
 // DEPRECATED: In future will be delete!!! Because we don't want to use https://api.ethplorer.io/
 export const getLidoStats: GetLidoStats = async () => {
-  serverLogger.debug('[getLidoStats] Started fetching...');
+  console.debug('[getLidoStats] Started fetching...');
   // IMPORTANT: ETHPLORER_TOKEN_ENDPOINT (api.ethplorer.io) works only with Mainnet chain!
   const api = `${ETHPLORER_TOKEN_ENDPOINT}${getTokenAddress(
     CHAINS.Mainnet,
@@ -25,6 +24,6 @@ export const getLidoStats: GetLidoStats = async () => {
     payload: ETHPLORER_TOKEN_ENDPOINT,
     request: () => standardFetcher<Response>(url),
   });
-  serverLogger.debug('[getLidoStats] Lido stats: ', lidoStats);
+  console.debug('[getLidoStats] Lido stats: ', lidoStats);
   return lidoStats;
 };
