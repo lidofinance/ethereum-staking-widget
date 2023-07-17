@@ -1,20 +1,22 @@
-import { FC, useCallback, useEffect } from 'react';
+import { FC, useEffect } from 'react';
 import { GetServerSideProps } from 'next';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { Layout } from 'shared/components';
 import { WrapForm, UnwrapForm, Wallet, WrapFaq } from 'features/wrap';
-import { Switch } from 'features/wrap/components';
+import { Switch } from 'shared/components/switch';
 import { useSafeQueryString } from 'shared/hooks/useSafeQueryString';
 import NoSsrWrapper from 'shared/components/no-ssr-wrapper';
 
+const NAV_ROUTES = [
+  { name: 'Wrap', path: '/wrap' },
+  { name: 'Unwrap', path: '/wrap/unwrap' },
+];
+
 const WrapPage: FC<WrapModePageProps> = ({ mode }) => {
-  const { isReady, query, push, replace } = useRouter();
+  const { isReady, query, replace } = useRouter();
   const isUnwrapMode = mode === 'unwrap';
   const queryString = useSafeQueryString();
-  const toggleMode = useCallback(async () => {
-    await push(`/wrap${isUnwrapMode ? '' : '/unwrap'}${queryString}`);
-  }, [push, isUnwrapMode, queryString]);
 
   // legacy routing support
   useEffect(() => {
@@ -32,12 +34,7 @@ const WrapPage: FC<WrapModePageProps> = ({ mode }) => {
         <title>Wrap | Lido</title>
       </Head>
 
-      <Switch
-        checked={isUnwrapMode}
-        onClick={toggleMode}
-        checkedLabel="Wrap"
-        uncheckedLabel="Unwrap"
-      />
+      <Switch checked={isUnwrapMode} routes={NAV_ROUTES} />
 
       <NoSsrWrapper>
         <Wallet />
