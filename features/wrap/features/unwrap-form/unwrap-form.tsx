@@ -18,6 +18,7 @@ import {
 import { TOKENS } from '@lido-sdk/constants';
 import { useWeb3 } from 'reef-knot/web3-react';
 import {
+  useSDK,
   useSTETHBalance,
   useWSTETHBalance,
   useWSTETHContractWeb3,
@@ -36,12 +37,15 @@ import { unwrapProcessing } from 'features/wrap/utils';
 import { useUnwrapGasLimit } from './hooks';
 import { getTokenDisplayName } from 'utils/getTokenDisplayName';
 import { FormatToken } from 'shared/formatters/format-token';
+import { useIsMultisig } from 'shared/hooks/useIsMultisig';
 
 export const UnwrapForm: FC = memo(() => {
   const { active, chainId } = useWeb3();
   const stethBalance = useSTETHBalance();
   const wstethBalance = useWSTETHBalance();
   const wstethContractWeb3 = useWSTETHContractWeb3();
+  const { providerWeb3 } = useSDK();
+  const [isMultisig] = useIsMultisig();
 
   const formRef = useRef<HTMLFormElement>(null);
 
@@ -71,8 +75,10 @@ export const UnwrapForm: FC = memo(() => {
       setWrappingAmountValue(inputValue);
 
       await unwrapProcessing(
+        providerWeb3,
         wstethContractWeb3,
         openTxModal,
+        closeTxModal,
         setTxStage,
         setTxHash,
         setTxModalFailedText,
@@ -81,17 +87,21 @@ export const UnwrapForm: FC = memo(() => {
         chainId,
         inputValue,
         resetForm,
+        isMultisig,
       );
 
       // Needs for fix flashing balance in tx success modal
       setWrappingAmountValue('');
     },
     [
+      providerWeb3,
       wstethContractWeb3,
       openTxModal,
+      closeTxModal,
       wstethBalance.update,
       stethBalance.update,
       chainId,
+      isMultisig,
     ],
   );
 

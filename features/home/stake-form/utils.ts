@@ -13,12 +13,16 @@ import {
 import { getBackendRPCPath } from 'config';
 import { TX_STAGE } from 'shared/components';
 import { BigNumber } from 'ethers';
+import invariant from 'tiny-invariant';
+import type { Web3Provider } from '@ethersproject/providers';
 
 const SUBMIT_EXTRA_GAS_TRANSACTION_RATIO = 1.05;
 
 type StakeProcessingProps = (
+  providerWeb3: Web3Provider | undefined,
   stethContractWeb3: StethAbi | null,
   openTxModal: () => void,
+  closeTxModal: () => void,
   setTxStage: (value: TX_STAGE) => void,
   setTxHash: (value: string | undefined) => void,
   setTxModalFailedText: (value: string) => void,
@@ -27,7 +31,7 @@ type StakeProcessingProps = (
   resetForm: () => void,
   chainId: number | undefined,
   refFromQuery: string | undefined,
-  submitGasLimit?: number,
+  isMultisig: boolean,
 ) => Promise<void>;
 
 export const getAddress = async (
@@ -61,8 +65,10 @@ class MockLimitReachedError extends Error {
 }
 
 export const stakeProcessing: StakeProcessingProps = async (
+  providerWeb3,
   stethContractWeb3,
   openTxModal,
+  closeTxModal,
   setTxStage,
   setTxHash,
   setTxModalFailedText,
@@ -71,10 +77,13 @@ export const stakeProcessing: StakeProcessingProps = async (
   resetForm,
   chainId,
   refFromQuery,
+  isMultisig,
 ) => {
   if (!stethContractWeb3 || !chainId) {
     return;
   }
+
+  invariant(providerWeb3, 'must have providerWeb3');
 
   try {
     const referralAddress = await getAddress(refFromQuery, chainId);
@@ -104,11 +113,23 @@ export const stakeProcessing: StakeProcessingProps = async (
         )
       : null;
 
-    const callback = () =>
-      stethContractWeb3.submit(referralAddress || AddressZero, {
-        ...overrides,
-        gasLimit: gasLimit ? BigNumber.from(gasLimit) : undefined,
-      });
+    const callback = async () => {
+      if (isMultisig) {
+        const tx = await stethContractWeb3.populateTransaction.submit(
+          referralAddress || AddressZero,
+          {
+            ...overrides,
+            gasLimit: gasLimit ? BigNumber.from(gasLimit) : undefined,
+          },
+        );
+        return providerWeb3.getSigner().sendUncheckedTransaction(tx);
+      } else {
+        return stethContractWeb3.submit(referralAddress || AddressZero, {
+          ...overrides,
+          gasLimit: gasLimit ? BigNumber.from(gasLimit) : undefined,
+        });
+      }
+    };
 
     setTxStage(TX_STAGE.SIGN);
     openTxModal();
@@ -125,19 +146,29 @@ export const stakeProcessing: StakeProcessingProps = async (
       callback,
     );
 
-    setTxHash(transaction.hash);
-    setTxStage(TX_STAGE.BLOCK);
-    openTxModal();
-    await runWithTransactionLogger('Stake block confirmation', async () =>
-      transaction.wait(),
-    );
+    const handleEnding = () => {
+      resetForm();
+      stethBalanceUpdate();
+    };
 
-    await stethBalanceUpdate();
+    if (isMultisig) {
+      closeTxModal();
+      handleEnding();
+      return;
+    }
+
+    if (typeof transaction === 'object') {
+      setTxHash(transaction.hash);
+      setTxStage(TX_STAGE.BLOCK);
+      openTxModal();
+      await runWithTransactionLogger('Stake block confirmation', async () =>
+        transaction.wait(),
+      );
+    }
 
     setTxStage(TX_STAGE.SUCCESS);
     openTxModal();
-
-    await resetForm();
+    handleEnding();
     /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
   } catch (error: any) {
     const errorMessage = getErrorMessage(error);

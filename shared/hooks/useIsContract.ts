@@ -1,4 +1,5 @@
 import { useEthereumSWR } from '@lido-sdk/react';
+import { STRATEGY_IMMUTABLE } from 'utils/swrStrategies';
 
 export const useIsContract = (
   account?: string | null,
@@ -10,19 +11,11 @@ export const useIsContract = (
     shouldFetch: !!account,
     method: 'getCode',
     params: [account, 'latest'],
-    config: {
-      // this is very stable request
-      refreshWhenHidden: false,
-      revalidateOnFocus: false,
-      revalidateIfStale: false,
-      revalidateOnMount: true,
-      revalidateOnReconnect: false,
-      refreshInterval: 0,
-    },
+    config: STRATEGY_IMMUTABLE,
   });
 
   return {
-    loading: result.loading,
+    loading: result.initialLoading,
     isContract: result.data ? result.data !== '0x' : false,
   };
 };

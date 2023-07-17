@@ -10,6 +10,7 @@ import {
 import { useRouter } from 'next/router';
 import { parseEther } from '@ethersproject/units';
 import {
+  useSDK,
   useContractSWR,
   useEthereumBalance,
   useSTETHBalance,
@@ -37,10 +38,11 @@ import { useStethSubmitGasLimit } from './hooks';
 import { useStakeableEther } from '../hooks';
 import { useStakingLimitWarn } from './useStakingLimitWarn';
 import { getTokenDisplayName } from 'utils/getTokenDisplayName';
+import { useIsMultisig } from 'shared/hooks/useIsMultisig';
+import { STRATEGY_LAZY } from 'utils/swrStrategies';
 
 export const StakeForm: FC = memo(() => {
   const router = useRouter();
-  const initialValue = (router?.query?.amount as string) || '';
 
   const formRef = useRef<HTMLFormElement>(null);
 
@@ -48,27 +50,30 @@ export const StakeForm: FC = memo(() => {
   const [txStage, setTxStage] = useState(TX_STAGE.SUCCESS);
   const [txHash, setTxHash] = useState<string>();
   const [txModalFailedText, setTxModalFailedText] = useState('');
-  const [inputValue, setInputValue] = useState(() => {
-    // consumes amount query param
-    if (router.query.amount && typeof router.query.amount === 'string') {
-      const initialValue = router.query.amount;
-      delete router.query.amount;
-      router.replace(
-        { pathname: router.pathname, query: router.query },
-        undefined,
-        { shallow: true },
-      );
-      return initialValue;
+  const [inputValue, setInputValue] = useState('');
+
+  // consumes amount query param
+  // SSG safe
+  useEffect(() => {
+    if (
+      router.isReady &&
+      router.query.amount &&
+      typeof router.query.amount === 'string'
+    ) {
+      const { amount, ...rest } = router.query;
+      router.replace({ pathname: router.pathname, query: rest });
+      setInputValue(amount);
     }
-    return '';
-  });
+  }, [router]);
 
   const { active, chainId } = useWeb3();
-  const etherBalance = useEthereumBalance();
+  const { providerWeb3 } = useSDK();
+  const etherBalance = useEthereumBalance(undefined, STRATEGY_LAZY);
   const stakeableEther = useStakeableEther();
   const stethBalance = useSTETHBalance();
   const stethContractWeb3 = useSTETHContractWeb3();
   const contractRpc = useSTETHContractRPC();
+  const [isMultisig] = useIsMultisig();
 
   const lidoFee = useContractSWR({
     contract: contractRpc,
@@ -89,8 +94,10 @@ export const StakeForm: FC = memo(() => {
   const submit = useCallback(
     async (inputValue, resetForm) => {
       await stakeProcessing(
+        providerWeb3,
         stethContractWeb3,
         openTxModal,
+        closeTxModal,
         setTxStage,
         setTxHash,
         setTxModalFailedText,
@@ -99,14 +106,18 @@ export const StakeForm: FC = memo(() => {
         resetForm,
         chainId,
         router?.query?.ref as string | undefined,
+        isMultisig,
       );
     },
     [
+      providerWeb3,
       stethContractWeb3,
       openTxModal,
+      closeTxModal,
       stethBalance.update,
       chainId,
       router?.query?.ref,
+      isMultisig,
     ],
   );
 
@@ -125,7 +136,6 @@ export const StakeForm: FC = memo(() => {
     inputValue,
     setInputValue,
     inputName,
-    initialValue,
     submit,
     limit:
       etherBalance.data &&
@@ -164,10 +174,13 @@ export const StakeForm: FC = memo(() => {
 
   // Reset form amount after disconnect wallet
   useEffect(() => {
-    if (!active) {
-      reset();
-    }
-  }, [active, reset]);
+    return () => {
+      if (active) {
+        reset();
+      }
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [active]);
 
   return (
     <Block>

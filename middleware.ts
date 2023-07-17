@@ -5,8 +5,11 @@ export const CACHE_HEADERS_HTML_PAGE =
 export const CACHE_ALLOWED_LIST_FILES_PATHS = [
   { path: '/', headers: CACHE_HEADERS_HTML_PAGE },
   { path: '/wrap', headers: CACHE_HEADERS_HTML_PAGE },
+  { path: '/wrap/unwrap', headers: CACHE_HEADERS_HTML_PAGE },
   { path: '/rewards', headers: CACHE_HEADERS_HTML_PAGE },
   { path: '/withdrawals', headers: CACHE_HEADERS_HTML_PAGE },
+  { path: '/withdrawals/request', headers: CACHE_HEADERS_HTML_PAGE },
+  { path: '/withdrawals/claim', headers: CACHE_HEADERS_HTML_PAGE },
   { path: '/runtime/window-env.js', headers: CACHE_HEADERS_HTML_PAGE },
 ];
 
@@ -22,8 +25,11 @@ export const config = {
     '/favicon:size*',
     '/',
     '/wrap',
+    '/wrap/unwrap',
     '/rewards',
     '/withdrawals',
+    '/withdrawals/request',
+    '/withdrawals/claim',
     '/runtime/window-env.js',
   ],
 };

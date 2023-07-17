@@ -1,7 +1,6 @@
 import { Cache } from 'memory-cache';
 import Metrics from 'utilsApi/metrics';
 import { standardFetcher } from 'utils/standardFetcher';
-import { serverLogger } from './serverLogger';
 import { SubgraphChains } from 'types';
 import { getSubgraphUrl } from './getSubgraphUrl';
 import {
@@ -36,7 +35,7 @@ type GetLidoHoldersViaSubgraphs = (
 export const getLidoHoldersViaSubgraphs: GetLidoHoldersViaSubgraphs = async (
   chainId: SubgraphChains,
 ) => {
-  serverLogger.debug('[getLidoHoldersViaSubgraphs] Started fetching... ');
+  console.debug('[getLidoHoldersViaSubgraphs] Started fetching... ');
   const query = `
     query {
       stats (id: "") {
@@ -71,7 +70,7 @@ export const getLidoHoldersViaSubgraphs: GetLidoHoldersViaSubgraphs = async (
     endMetric();
     clearTimeout(timeoutId);
 
-    serverLogger.debug(
+    console.debug(
       '[getLidoHoldersViaSubgraphs] Lido holders: ',
       responseJsoned,
     );
@@ -87,7 +86,7 @@ export const getLidoHoldersViaSubgraphs: GetLidoHoldersViaSubgraphs = async (
     const data = cache.get(CACHE_LIDO_HOLDERS_VIA_SUBGRAPHS_KEY);
 
     if (data) {
-      serverLogger.error(`${SUBGRAPH_ERROR_MESSAGE} Using long-term cache...`);
+      console.error(`${SUBGRAPH_ERROR_MESSAGE} Using long-term cache...`);
       return data;
     }
 
