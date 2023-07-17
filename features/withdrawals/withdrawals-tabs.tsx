@@ -12,11 +12,27 @@ import { ClaimForm, ClaimWallet } from './claim';
 import { TxRequestModal } from './request/tx-modal/tx-request-modal';
 import { TxClaimModal } from './claim/tx-modal/tx-claim-modal';
 
+import {
+  WITHDRAWAL_CLAIM_PATH,
+  WITHDRAWAL_REQUEST_PATH,
+} from 'features/withdrawals//withdrawals-constants';
+
+export const withdrawalRoutes = [
+  {
+    path: WITHDRAWAL_REQUEST_PATH,
+    name: 'Request',
+  },
+  {
+    path: WITHDRAWAL_CLAIM_PATH,
+    name: 'Claim',
+  },
+];
+
 export const WithdrawalsTabs = () => {
-  const { navRoutes, isClaimTab } = useWithdrawals();
+  const { isClaimTab } = useWithdrawals();
   return (
     <ClaimDataProvider>
-      <Switch checked={isClaimTab} routes={navRoutes} />
+      <Switch checked={isClaimTab} routes={withdrawalRoutes} />
       {/* We reuse provider but make sure these are different components for tabs */}
       <TransactionModalProvider
         key={isClaimTab ? 'CLAIM_PROVIDER' : 'REQUEST_PROVIDER'}

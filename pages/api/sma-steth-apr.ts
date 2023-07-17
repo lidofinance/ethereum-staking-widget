@@ -16,6 +16,7 @@ import Metrics from 'utilsApi/metrics';
 
 const cache = new Cache<typeof CACHE_SMA_STETH_APR_KEY, string>();
 
+// TODO: deprecated, will be delete after check grafana dashboards
 const smaStethApr: API = async (req, res) => {
   const cachedStethApr = cache.get(CACHE_SMA_STETH_APR_KEY);
 

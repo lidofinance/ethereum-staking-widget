@@ -3,7 +3,6 @@ import { wrapRequest as wrapNextRequest } from '@lidofinance/next-api-wrapper';
 import { dynamics, METRICS_PREFIX, API_ROUTES } from 'config';
 import {
   fetchRPC,
-  serverLogger,
   rateLimit,
   responseTimeMetric,
   defaultErrorHandler,
@@ -13,7 +12,7 @@ import { rpcUrls } from 'utilsApi/rpcUrls';
 
 const rpc = rpcFactory({
   fetchRPC,
-  serverLogger,
+  serverLogger: console,
   metrics: {
     prefix: METRICS_PREFIX,
     registry: Metrics.registry,

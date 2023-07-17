@@ -1,6 +1,5 @@
 import { parseEther } from '@ethersproject/units';
 
-import { useWithdrawals } from 'features/withdrawals/contexts/withdrawals-context';
 import { useRequestForm } from 'features/withdrawals/contexts/request-form-context';
 import { useWaitingTime } from 'features/withdrawals/hooks/useWaitingTime';
 import { useWithdrawalRates } from 'features/withdrawals/hooks/useWithdrawalRates';
@@ -34,8 +33,7 @@ type OptionButtonProps = {
 const DEFAULT_VALUE_FOR_RATE = parseEther('1');
 
 const LidoButton: React.FC<OptionButtonProps> = ({ isActive, onClick }) => {
-  const { inputValue } = useRequestForm();
-  const { isSteth } = useWithdrawals();
+  const { inputValue, isSteth } = useRequestForm();
   const { value: waitingTime, initialLoading } = useWaitingTime(inputValue, {
     isApproximate: true,
   });

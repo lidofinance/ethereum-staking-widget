@@ -29,19 +29,19 @@
     "@lido-sdk/helpers": "^1.4.11",
     "@lido-sdk/providers": "^1.4.12",
     "@lido-sdk/react": "^2.0.0",
-    "@lidofinance/analytics-matomo": "^0.8.0",
-    "@lidofinance/api-logger": "^0.0.4",
-    "@lidofinance/api-metrics": "^0.0.4",
-    "@lidofinance/api-rpc": "^0.17.0",
-    "@lidofinance/eth-api-providers": "^0.0.4",
-    "@lidofinance/eth-providers": "^0.0.3",
-    "@lidofinance/lido-ui": "^3.7.3",
+    "@lidofinance/analytics-matomo": "^0.28.0",
+    "@lidofinance/api-metrics": "^0.28.0",
+    "@lidofinance/api-rpc": "^0.28.0",
+    "@lidofinance/eth-api-providers": "^0.28.0",
+    "@lidofinance/eth-providers": "^0.28.0",
+    "@lidofinance/lido-ui": "^3.7.4",
     "@lidofinance/lido-ui-blocks": "2.10.2",
-    "@lidofinance/next-api-wrapper": "^0.16.0",
-    "@lidofinance/next-cache-files-middleware": "^0.13.0",
-    "@lidofinance/next-ip-rate-limit": "^0.13.0",
-    "@lidofinance/next-pages": "^0.13.0",
-    "@lidofinance/rpc": "^0.17.0",
+    "@lidofinance/next-api-wrapper": "^0.28.0",
+    "@lidofinance/next-cache-files-middleware": "^0.28.0",
+    "@lidofinance/next-ip-rate-limit": "^0.28.0",
+    "@lidofinance/next-pages": "^0.28.0",
+    "@lidofinance/rpc": "^0.28.0",
+    "@lidofinance/satanizer": "^0.32.0",
     "@types/cors": "^2.8.12",
     "@types/js-cookie": "^3.0.0",
     "@types/ms": "^0.7.31",
@@ -71,7 +71,7 @@
     "react-dom": "17.0.2",
     "react-is": "^17.0.2",
     "react-transition-group": "^4.4.2",
-    "reef-knot": "1.2.0",
+    "reef-knot": "^1.6.1",
     "remark": "^13.0.0",
     "remark-external-links": "^8.0.0",
     "remark-html": "^13.0.1",
@@ -79,7 +79,7 @@
     "swr": "^1.3.0",
     "tiny-async-pool": "^1.2.0",
     "tiny-invariant": "^1.1.0",
-    "wagmi": "0.11.7"
+    "wagmi": "0.12.18"
   },
   "devDependencies": {
     "@commitlint/cli": "^17.4.4",
@@ -107,11 +107,12 @@
     "eslint-plugin-react": "^7.24.0",
     "eslint-plugin-react-hooks": "^4.3.0",
     "husky": "^7.0.1",
-    "jest": "27.5.1",
+    "jest": "^29.5.0",
     "jsonschema": "^1.4.1",
     "lint-staged": "^13.2.0",
     "playwright": "^1.29.2",
     "prettier": "^2.3.2",
+    "ts-jest": "^29.1.0",
     "typechain": "^5.1.2",
     "typescript": "^4.9.4",
     "url-loader": "^4.1.1"
@@ -125,10 +126,6 @@
     ]
   },
   "resolutions": {
-    "@types/react": "17.0.43",
-    "web3-ledgerhq-connector": "^1.3.1",
-    "**/@lido-sdk/providers": "1.4.12",
-    "**/@lido-sdk/react": "2.0.0",
-    "**/@lido-sdk/constants": "^3.1.0"
+    "@types/react": "17.0.43"
   }
 }

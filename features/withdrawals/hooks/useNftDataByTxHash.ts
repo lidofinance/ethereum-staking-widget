@@ -1,4 +1,4 @@
-import { useWeb3 } from 'reef-knot/web3-react';
+import { useSDK } from '@lido-sdk/react';
 import { useLidoSWR } from '@lido-sdk/react';
 import { useWithdrawalsContract } from './contract/useWithdrawalsContract';
 
@@ -15,16 +15,17 @@ type NFTApiData = {
 
 export const useNftDataByTxHash = (txHash: string | null) => {
   const { contractRpc, account } = useWithdrawalsContract();
-  const { library } = useWeb3();
+  const { providerWeb3 } = useSDK();
 
   const swrNftApiData = useLidoSWR(
-    account && txHash ? ['swr:nft-data-by-tx-hash', txHash, account] : null,
+    account && txHash && providerWeb3
+      ? ['swr:nft-data-by-tx-hash', txHash, account]
+      : null,
     async () => {
-      if (!txHash || !account) return null;
+      if (!txHash || !account || !providerWeb3) return null;
 
-      const txReciept: TransactionReceipt = await library.getTransactionReceipt(
-        txHash,
-      );
+      const txReciept: TransactionReceipt =
+        await providerWeb3.getTransactionReceipt(txHash);
 
       const eventTopic = contractRpc.interface.getEventTopic(EVENT_NAME);
       const eventLogs = txReciept.logs.filter(

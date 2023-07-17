@@ -8,7 +8,6 @@ import {
 } from '@lidofinance/next-api-wrapper';
 import { rateLimitWrapper } from '@lidofinance/next-ip-rate-limit';
 import { Histogram } from 'prom-client';
-import { serverLogger } from 'utilsApi';
 import {
   CACHE_DEFAULT_HEADERS,
   RATE_LIMIT,
@@ -50,7 +49,7 @@ export const rateLimit = rateLimitWrapper({
 export const nextDefaultErrorHandler =
   (args?: DefaultErrorHandlerArgs): RequestWrapper =>
   async (req, res, next) => {
-    const { errorMessage = DEFAULT_API_ERROR_MESSAGE, serverLogger } =
+    const { errorMessage = DEFAULT_API_ERROR_MESSAGE, serverLogger: console } =
       args || {};
     try {
       await next?.(req, res, next);
@@ -60,7 +59,7 @@ export const nextDefaultErrorHandler =
 
       if (error instanceof Error) {
         const serverError = 'status' in error && (error.status as number);
-        serverLogger?.error(extractErrorMessage(error, errorMessage));
+        console?.error(extractErrorMessage(error, errorMessage));
         res
           .status(serverError || status)
           .json({ message: extractErrorMessage(error, errorMessage) });
@@ -70,7 +69,9 @@ export const nextDefaultErrorHandler =
     }
   };
 
-export const defaultErrorHandler = nextDefaultErrorHandler({ serverLogger });
+export const defaultErrorHandler = nextDefaultErrorHandler({
+  serverLogger: console,
+});
 
 // ready wrapper types
 

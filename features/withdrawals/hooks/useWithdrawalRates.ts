@@ -6,8 +6,7 @@ import { BigNumber } from 'ethers';
 import { CHAINS, TOKENS, getTokenAddress } from '@lido-sdk/constants';
 import { useMemo } from 'react';
 import { standardFetcher } from 'utils/standardFetcher';
-import { useRequestForm } from '../contexts/request-form-context';
-import { useWithdrawals } from '../contexts/withdrawals-context';
+import { useRequestForm } from 'features/withdrawals/contexts/request-form-context';
 import { STRATEGY_LAZY } from 'utils/swrStrategies';
 
 type getWithdrawalRatesParams = {
@@ -59,7 +58,7 @@ const getOneInchRate: getRate = async (amount, token) => {
       };
     }
     const capped_amount = amount;
-    const api = `https://api.1inch.exchange/v3.0/1/quote`;
+    const api = `https://api.1inch.io/v3.0/1/quote`;
     const query = new URLSearchParams({
       fromTokenAddress: getTokenAddress(CHAINS.Mainnet, token),
       toTokenAddress: '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee',
@@ -226,7 +225,7 @@ export const useWithdrawalRates = ({
   fallbackValue,
 }: useWithdrawalRatesOptions = {}) => {
   const { inputValueBN } = useRequestForm();
-  const { selectedToken } = useWithdrawals();
+  const { selectedToken } = useRequestForm();
   const fallbackedAmount =
     fallbackValue && inputValueBN.lte(0) ? fallbackValue : inputValueBN;
   const debouncedAmount = useDebouncedValue(fallbackedAmount, 1000);
