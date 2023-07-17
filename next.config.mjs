@@ -10,6 +10,7 @@ const ethAPIBasePath = process.env.ETH_API_BASE_PATH;
 
 const ethplorerApiKey = process.env.ETHPLORER_API_KEY;
 
+// TODO: Delete this ENV
 const cloudflareApiToken = process.env.CLOUDFLARE_API_TOKEN;
 const cloudflareAccountId = process.env.CLOUDFLARE_ACCOUNT_ID;
 const cloudflareKvNamespaceId = process.env.CLOUDFLARE_KV_NAMESPACE_ID;

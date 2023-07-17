@@ -1,30 +1,29 @@
 import { CHAINS } from 'utils/chains';
-import { serverLogger } from './serverLogger';
 import { getStaticRpcBatchProvider } from './rpcProviders';
 import { rpcUrls } from './rpcUrls';
 import { iterateUrls } from '@lidofinance/rpc';
 
 export const getEthApr = async (): Promise<string> => {
-  serverLogger.debug('Getting eth apr...');
+  console.debug('Getting eth apr...');
   const urls = rpcUrls[CHAINS.Mainnet];
 
   const totalAtStake = await iterateUrls(
     urls,
     getTotalAtStakeWithFallbacks,
-    serverLogger.error,
+    console.error,
   );
 
   const ethApr = calculateStakingRewards({
     totalAtStake,
   });
 
-  serverLogger.debug('Eth apr: ' + ethApr);
+  console.debug('Eth apr: ' + ethApr);
 
   return (ethApr * 1e11).toFixed(1);
 };
 
 const getTotalAtStakeWithFallbacks = async (url: string): Promise<number> => {
-  serverLogger.debug('Fetching currently deposited eth2...');
+  console.debug('Fetching currently deposited eth2...');
   const eth2DepositContractAddress =
     '0x00000000219ab540356cBB839Cbe05303d7705Fa';
 
@@ -36,7 +35,7 @@ const getTotalAtStakeWithFallbacks = async (url: string): Promise<number> => {
     eth2DepositContractAddress,
   );
 
-  serverLogger.debug('Currently deposited in eth2: ', +currentlyDeposited);
+  console.debug('Currently deposited in eth2: ', +currentlyDeposited);
 
   return Number(currentlyDeposited);
 };
