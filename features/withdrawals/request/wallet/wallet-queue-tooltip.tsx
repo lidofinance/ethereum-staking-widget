@@ -1,4 +1,5 @@
 import { Question, Tooltip } from '@lidofinance/lido-ui';
+import Link from 'next/link';
 
 import { FormatToken } from 'shared/formatters';
 import { useRequestData } from 'features/withdrawals/contexts/request-data-context';
@@ -9,7 +10,6 @@ import {
   MATOMO_CLICK_EVENTS_TYPES,
 } from 'config/trackMatomoEvent';
 import { QueuInfoStyled, DataTableRowStyled } from './styles';
-import { LocalLink } from 'shared/components/local-link';
 
 export const WalletQueueTooltip = () => {
   const waitingTime = useWaitingTime('');
@@ -36,7 +36,7 @@ export const WalletQueueTooltip = () => {
     <>
       The withdrawal request time depends on the mode, overall amount of stETH
       in queue and{' '}
-      <LocalLink href="#withdrawalsPeriod">
+      <Link href="#withdrawalsPeriod">
         <a
           aria-hidden="true"
           onClick={() =>
@@ -47,7 +47,7 @@ export const WalletQueueTooltip = () => {
         >
           other factors
         </a>
-      </LocalLink>
+      </Link>
       .{queueInfo}
     </>
   );
