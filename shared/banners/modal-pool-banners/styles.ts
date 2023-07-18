@@ -1,10 +1,6 @@
 import { Button } from '@lidofinance/lido-ui';
 import styled from 'styled-components';
 
-export const Wrapper = styled.div`
-  margin-top: ${({ theme }) => theme.spaceMap.xxl}px;
-`;
-
 export const TextStyles = styled.div`
   display: flex;
   align-items: center;
