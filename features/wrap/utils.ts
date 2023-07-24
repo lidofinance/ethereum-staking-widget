@@ -47,30 +47,22 @@ export const unwrapProcessing: UnwrapProcessingProps = async (
 
   invariant(providerWeb3, 'must have providerWeb3');
 
-  const provider = getStaticRpcBatchProvider(
-    chainId,
-    getBackendRPCPath(chainId),
-  );
-
   try {
-    const feeData = await provider.getFeeData();
-    const maxPriorityFeePerGas = feeData.maxPriorityFeePerGas ?? undefined;
-    const maxFeePerGas = feeData.maxFeePerGas ?? undefined;
-
     const callback = async () => {
       if (isMultisig) {
         const tx = await wstethContractWeb3.populateTransaction.unwrap(
           parseEther(inputValue),
-          {
-            maxPriorityFeePerGas,
-            maxFeePerGas,
-          },
         );
         return providerWeb3.getSigner().sendUncheckedTransaction(tx);
       } else {
+        const provider = getStaticRpcBatchProvider(
+          chainId,
+          getBackendRPCPath(chainId),
+        );
+        const feeData = await provider.getFeeData();
         return wstethContractWeb3.unwrap(parseEther(inputValue), {
-          maxPriorityFeePerGas,
-          maxFeePerGas,
+          maxPriorityFeePerGas: feeData.maxPriorityFeePerGas ?? undefined,
+          maxFeePerGas: feeData.maxFeePerGas ?? undefined,
         });
       }
     };
@@ -162,34 +154,38 @@ export const wrapProcessingWithApprove: WrapProcessingWithApproveProps = async (
 
   const wstethTokenAddress = getTokenAddress(chainId, TOKENS.WSTETH);
 
-  const provider = getStaticRpcBatchProvider(
-    chainId,
-    getBackendRPCPath(chainId),
-  );
-  const feeData = await provider.getFeeData();
-  const maxPriorityFeePerGas = feeData.maxPriorityFeePerGas ?? undefined;
-  const maxFeePerGas = feeData.maxFeePerGas ?? undefined;
-
   const handleEnding = () => {
     resetForm();
     ethBalanceUpdate();
     stethBalanceUpdate();
   };
 
+  const getGasParameters = async () => {
+    const provider = getStaticRpcBatchProvider(
+      chainId,
+      getBackendRPCPath(chainId),
+    );
+    const feeData = await provider.getFeeData();
+    return {
+      maxPriorityFeePerGas: feeData.maxPriorityFeePerGas ?? undefined,
+      maxFeePerGas: feeData.maxFeePerGas ?? undefined,
+    };
+  };
+
   try {
     if (selectedToken === ETH) {
-      const overrides = {
-        to: wstethTokenAddress,
-        value: parseEther(inputValue),
-        maxPriorityFeePerGas,
-        maxFeePerGas,
-      };
-
       const callback = async () => {
         if (isMultisig) {
-          return providerWeb3.getSigner().sendUncheckedTransaction(overrides);
+          return providerWeb3.getSigner().sendUncheckedTransaction({
+            to: wstethTokenAddress,
+            value: parseEther(inputValue),
+          });
         } else {
-          return wstethContractWeb3.signer.sendTransaction(overrides);
+          return wstethContractWeb3.signer.sendTransaction({
+            to: wstethTokenAddress,
+            value: parseEther(inputValue),
+            ...(await getGasParameters()),
+          });
         }
       };
 
@@ -223,20 +219,17 @@ export const wrapProcessingWithApprove: WrapProcessingWithApproveProps = async (
       if (needsApprove) {
         approve();
       } else {
-        const overrides = {
-          maxPriorityFeePerGas,
-          maxFeePerGas,
-        };
-
         const callback = async () => {
           if (isMultisig) {
             const tx = await wstethContractWeb3.populateTransaction.wrap(
               parseEther(inputValue),
-              overrides,
             );
             return providerWeb3.getSigner().sendUncheckedTransaction(tx);
           } else {
-            return wstethContractWeb3.wrap(parseEther(inputValue), overrides);
+            return wstethContractWeb3.wrap(
+              parseEther(inputValue),
+              await getGasParameters(),
+            );
           }
         };
 
