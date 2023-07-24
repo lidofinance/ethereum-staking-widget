@@ -330,8 +330,8 @@ export const useWithdrawalRequest = ({
 
   const request = useCallback(
     (
-      requests: BigNumber[] | undefined,
-      amount: BigNumber | undefined,
+      requests: BigNumber[] | null,
+      amount: BigNumber | null,
       token: TokensWithdrawable,
     ) => {
       // define and set retry point
