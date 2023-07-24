@@ -67,7 +67,7 @@ export const RequestFormProvider: React.FC = ({ children }) => {
       setIntermediateValidationResults,
     ),
     criteriaMode: 'firstError',
-    mode: 'all',
+    mode: 'onChange',
     resolver: RequestFormValidationResolver,
   });
 
@@ -91,8 +91,6 @@ export const RequestFormProvider: React.FC = ({ children }) => {
   const onSubmit = useMemo(
     () =>
       handleSubmit(async ({ requests, amount, token }) => {
-        invariant(requests, 'cannot submit empty requests');
-        invariant(amount, 'cannot submit empty amount');
         const { success } = await request(requests, amount, token);
         if (success) {
           await onSuccessRequest();

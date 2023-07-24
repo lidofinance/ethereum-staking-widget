@@ -37,12 +37,11 @@ const useWithdrawalRequestMethods = () => {
       requests,
     }: {
       signature?: GatherPermitSignatureResult;
-      requests?: BigNumber[];
+      requests: BigNumber[];
     }) => {
       invariant(chainId, 'must have chainId');
       invariant(account, 'must have account');
       invariant(signature, 'must have signature');
-      invariant(requests && requests.length > 0, 'must have requests');
       invariant(contractWeb3, 'must have contractWeb3');
 
       dispatchModalState({ type: 'signing' });
@@ -96,12 +95,11 @@ const useWithdrawalRequestMethods = () => {
       requests,
     }: {
       signature?: GatherPermitSignatureResult;
-      requests?: BigNumber[];
+      requests: BigNumber[];
     }) => {
       invariant(chainId, 'must have chainId');
       invariant(account, 'must have account');
       invariant(signature, 'must have signature');
-      invariant(requests && requests.length > 0, 'must have requests');
       invariant(contractWeb3, 'must have contractWeb3');
 
       const params = [
@@ -153,10 +151,9 @@ const useWithdrawalRequestMethods = () => {
   );
 
   const steth = useCallback(
-    async ({ requests }: { requests?: BigNumber[] }) => {
+    async ({ requests }: { requests: BigNumber[] }) => {
       invariant(chainId, 'must have chainId');
       invariant(account, 'must have account');
-      invariant(requests && requests.length > 0, 'must have requests');
       invariant(contractWeb3, 'must have contractWeb3');
       invariant(providerWeb3, 'must have providerWeb3');
 
@@ -208,10 +205,9 @@ const useWithdrawalRequestMethods = () => {
   );
 
   const wstETH = useCallback(
-    async ({ requests }: { requests?: BigNumber[] }) => {
+    async ({ requests }: { requests: BigNumber[] }) => {
       invariant(chainId, 'must have chainId');
       invariant(account, 'must have account');
-      invariant(requests && requests.length > 0, 'must have requests');
       invariant(contractWeb3, 'must have contractWeb3');
       invariant(providerWeb3, 'must have providerWeb3');
       const isMultisig = await isContract(account, contractWeb3.provider);
@@ -333,10 +329,19 @@ export const useWithdrawalRequest = ({
   const isTokenLocked = isApprovalFlow && needsApprove;
 
   const request = useCallback(
-    (requests: BigNumber[], amount: BigNumber, token: TokensWithdrawable) => {
+    (
+      requests: BigNumber[] | undefined,
+      amount: BigNumber | undefined,
+      token: TokensWithdrawable,
+    ) => {
       // define and set retry point
       const startCallback = async () => {
         try {
+          invariant(
+            requests && request.length > 0,
+            'cannot submit empty requests',
+          );
+          invariant(amount, 'cannot submit empty amount');
           if (isBunker) {
             const bunkerDialogResult = await new Promise<boolean>((resolve) => {
               dispatchModalState({
