@@ -1,4 +1,4 @@
-import { Zero } from '@ethersproject/constants';
+import { MaxUint256, Zero } from '@ethersproject/constants';
 import { formatEther } from '@ethersproject/units';
 import { TOKENS } from '@lido-sdk/constants';
 import { BigNumber } from 'ethers';
@@ -64,7 +64,16 @@ function validateEtherAmount(
     );
 
   if (amount.lte(Zero))
-    throw new ValidationError(field, `${field}  must be greater than 0`);
+    throw new ValidationError(
+      field,
+      `${getTokenDisplayName(token)} ${field} must be greater than 0`,
+    );
+
+  if (amount.gt(MaxUint256))
+    throw new ValidationError(
+      field,
+      `${getTokenDisplayName(token)} ${field} is not valid`,
+    );
 }
 
 const validateMinUnstake = (
@@ -83,11 +92,18 @@ const validateMinUnstake = (
   return value;
 };
 
-const validateMaxAmount = (field: string, value: BigNumber, max: BigNumber) => {
+const validateMaxAmount = (
+  field: string,
+  value: BigNumber,
+  max: BigNumber,
+  token: TokensWithdrawable,
+) => {
   if (value.gt(max))
     throw new ValidationError(
       field,
-      `${field} must not be greater than ${formatEther(max)}`,
+      `${getTokenDisplayName(
+        token,
+      )} ${field} must not be greater than ${formatEther(max)}`,
     );
 };
 
@@ -131,7 +147,7 @@ const tvlJokeValidate = (
   const tvlDiff = valueSteth.sub(tvl);
   if (tvlDiff.gt(0))
     throw new ValidationTvlJoke(field, 'amount bigger than tvl', {
-      balanceDiffSteth: tvl.sub(balanceSteth),
+      balanceDiffSteth: valueSteth.sub(balanceSteth),
     });
 };
 
@@ -196,7 +212,7 @@ export const RequestFormValidationResolver: Resolver<
 
     validateMinUnstake('amount', amount, minAmountPerRequest, token);
 
-    validateMaxAmount('amount', amount, balance);
+    validateMaxAmount('amount', amount, balance, token);
 
     return {
       values: { ...values, requests },

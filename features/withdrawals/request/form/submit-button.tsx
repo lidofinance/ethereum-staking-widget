@@ -12,8 +12,10 @@ import { useWithdrawals } from 'features/withdrawals/contexts/withdrawals-contex
 export const SubmitButton = () => {
   /// useFormState state subscription breaks on unmount
   const {
-    formState: { isValidating, isSubmitting, isValid, isDirty },
+    formState: { isValidating, isSubmitting, isValid, touchedFields },
   } = useFormContext<RequestFormInputType>();
+
+  const isTouched = touchedFields.amount || touchedFields.token;
   const { isTokenLocked } = useRequestFormData();
   const { active } = useWeb3();
   const { isPaused } = useWithdrawals();
@@ -29,7 +31,7 @@ export const SubmitButton = () => {
       fullwidth
       type="submit"
       icon={isTokenLocked ? <Lock /> : <></>}
-      disabled={(isDirty && !isValid) || isPaused}
+      disabled={(isTouched && !isValid) || isPaused}
       loading={isValidating || isSubmitting}
     >
       {buttonTitle}

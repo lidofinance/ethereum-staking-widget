@@ -9,6 +9,7 @@ import { standardFetcher } from 'utils/standardFetcher';
 import { STRATEGY_LAZY } from 'utils/swrStrategies';
 import { useWatch } from 'react-hook-form';
 import { RequestFormInputType } from '../request/request-form-context';
+import { Zero } from '@ethersproject/constants';
 
 type getWithdrawalRatesParams = {
   amount: BigNumber;
@@ -222,15 +223,13 @@ type useWithdrawalRatesOptions = {
   fallbackValue?: BigNumber;
 };
 
-const ZERO = BigNumber.from(0);
 export const useWithdrawalRates = ({
-  fallbackValue,
+  fallbackValue = Zero,
 }: useWithdrawalRatesOptions = {}) => {
   const [token, amount] = useWatch<RequestFormInputType, ['token', 'amount']>({
     name: ['token', 'amount'],
   });
-  const fallbackedAmount =
-    fallbackValue && amount?.lte(0) ? fallbackValue : amount ?? ZERO;
+  const fallbackedAmount = amount ?? fallbackValue;
   const debouncedAmount = useDebouncedValue(fallbackedAmount, 1000);
   const swr = useLidoSWR(
     ['swr:withdrawal-rates', debouncedAmount, token],

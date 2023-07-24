@@ -4,6 +4,8 @@ import { formatEther, parseEther } from '@ethersproject/units';
 import { InputNumber } from '../input-number';
 import { InputDecoratorMaxButton } from '../input-decorator-max-button';
 import { InputDecoratorLocked } from '../input-decorator-locked';
+import { MaxUint256 } from '@ethersproject/constants';
+import { Input } from '@lidofinance/lido-ui';
 
 type InputAmountProps = {
   onChange?: (value: BigNumber | null) => void;
@@ -20,7 +22,6 @@ const parseEtherSafe = (value: string) => {
   }
 };
 
-// TODO: refactor to native input
 export const InputAmount = forwardRef<HTMLInputElement, InputAmountProps>(
   ({ onChange, value, rightDecorator, isLocked, maxValue, ...props }, ref) => {
     const [stringValue, setStringValue] = useState(() =>
@@ -29,14 +30,29 @@ export const InputAmount = forwardRef<HTMLInputElement, InputAmountProps>(
 
     const handleChange = useCallback(
       (e: React.ChangeEvent<HTMLInputElement>) => {
-        setStringValue(e.currentTarget.value);
-        if (e.currentTarget.value.trim() === '') onChange?.(null);
-        try {
-          const value = parseEther(e.currentTarget.value);
-          onChange?.(value);
-        } catch {
+        // Prepend zero when user types just a dot symbol for "0."
+        if (e.currentTarget.value === '.') {
+          e.currentTarget.value = '0.';
+        }
+
+        // guards against not numbers (no matter overflow or whitespace)
+        // empty whitespace is cast to 0, so not NaN
+        if (isNaN(Number(e.currentTarget.value))) {
           return;
         }
+
+        if (e.currentTarget.value.trim() === '') {
+          onChange?.(null);
+        }
+
+        const value = parseEtherSafe(e.currentTarget.value);
+        if (value) {
+          const cappedValue = value.gt(MaxUint256) ? MaxUint256 : value;
+          onChange?.(cappedValue);
+        }
+
+        // we set string value anyway to allow intermediate input
+        setStringValue(e.currentTarget.value);
       },
       [onChange],
     );
@@ -45,6 +61,8 @@ export const InputAmount = forwardRef<HTMLInputElement, InputAmountProps>(
       if (!value) setStringValue('');
       else {
         const parsedValue = parseEtherSafe(stringValue);
+        // only change string state if casted values differ
+        // this allows user to enter 0.100 without immediate change to 0.1
         if (!parsedValue || !parsedValue.eq(value)) {
           setStringValue(formatEther(value));
         }
@@ -55,7 +73,7 @@ export const InputAmount = forwardRef<HTMLInputElement, InputAmountProps>(
       onChange && maxValue?.gt(0) ? () => onChange(maxValue) : undefined;
 
     return (
-      <InputNumber
+      <Input
         {...props}
         rightDecorator={
           rightDecorator ?? (
@@ -68,6 +86,7 @@ export const InputAmount = forwardRef<HTMLInputElement, InputAmountProps>(
             </>
           )
         }
+        inputMode="decimal"
         value={stringValue}
         onChange={handleChange}
         ref={ref}
