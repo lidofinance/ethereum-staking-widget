@@ -3,19 +3,20 @@ import {
   LedgerConfirm,
   LedgerLoading,
   LedgerSuccess,
+  Warning,
 } from '@lidofinance/lido-ui';
 
 import {
-  LedgerIconWrapper,
+  FailIcon,
   IconWrapper,
   SuccessIcon,
-  FailIcon,
   TxLoader,
-  WarningIcon,
-} from './iconsStyles';
-import { TX_STAGE } from '../types';
+  LedgerIconWrapper,
+} from './icons-styles';
 
-export const iconsDict = {
+import { TX_STAGE } from 'shared/components/tx-stage-modal/types';
+
+export const TX_STAGE_MODAL_ICONS = {
   ledger: {
     [TX_STAGE.SUCCESS]: (
       <LedgerIconWrapper>
@@ -32,19 +33,14 @@ export const iconsDict = {
         <LedgerFail fill="transparent" />
       </LedgerIconWrapper>
     ),
+    [TX_STAGE.LIMIT]: (
+      <LedgerIconWrapper>
+        <LedgerFail fill="transparent" />
+      </LedgerIconWrapper>
+    ),
     [TX_STAGE.BLOCK]: (
       <LedgerIconWrapper>
         <LedgerLoading fill="transparent" />
-      </LedgerIconWrapper>
-    ),
-    [TX_STAGE.PERMIT]: (
-      <LedgerIconWrapper>
-        <LedgerLoading fill="transparent" />
-      </LedgerIconWrapper>
-    ),
-    [TX_STAGE.BUNKER]: (
-      <LedgerIconWrapper>
-        <WarningIcon />
       </LedgerIconWrapper>
     ),
   },
@@ -59,18 +55,12 @@ export const iconsDict = {
         <FailIcon />
       </IconWrapper>
     ),
-    [TX_STAGE.SIGN]: <TxLoader size="large" />,
-    [TX_STAGE.BLOCK]: <TxLoader size="large" />,
-    [TX_STAGE.PERMIT]: <TxLoader size="large" />,
-    [TX_STAGE.BUNKER]: (
+    [TX_STAGE.LIMIT]: (
       <IconWrapper>
-        <WarningIcon />
+        <Warning />
       </IconWrapper>
     ),
+    [TX_STAGE.SIGN]: <TxLoader size="large" />,
+    [TX_STAGE.BLOCK]: <TxLoader size="large" />,
   },
 };
-
-export const getStageIcon = (isLedger: boolean, stage: TX_STAGE) =>
-  stage === TX_STAGE.NONE || stage === TX_STAGE.APPROVE
-    ? null
-    : iconsDict[isLedger ? 'ledger' : 'default'][stage];

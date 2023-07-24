@@ -1,15 +1,14 @@
-import { FC } from 'react';
 import { Link } from '@lidofinance/lido-ui';
 import { useSDK } from '@lido-sdk/react';
 import { getEtherscanTxLink } from '@lido-sdk/helpers';
 
-type EtherscanTxLink = {
+type TxLinkEtherscanProps = {
   text?: string;
   txHash?: string;
   onClick?: React.MouseEventHandler<HTMLAnchorElement>;
 };
 
-export const EtherscanTxLink: FC<EtherscanTxLink> = (props) => {
+export const TxLinkEtherscan = (props: TxLinkEtherscanProps) => {
   const { txHash, text = 'View on Etherscan', onClick } = props;
   const { chainId } = useSDK();
 

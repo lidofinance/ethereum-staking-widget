@@ -2,10 +2,8 @@ import { useSDK } from '@lido-sdk/react';
 import { useNftDataByTxHash } from 'features/withdrawals/hooks/useNftDataByTxHash';
 
 import { Link, Loader } from '@lidofinance/lido-ui';
-import {
-  TxStageSuccess,
-  EtherscanTxLink,
-} from 'features/withdrawals/shared/tx-stage-modal';
+import { TxStageSuccess } from 'features/withdrawals/shared/tx-stage-modal';
+import { TxLinkEtherscan } from 'shared/components/tx-link-etherscan';
 
 import {
   trackMatomoEvent,
@@ -48,7 +46,7 @@ export const TxRequestStageSuccess = ({
       <br />
       Check <Link href={WITHDRAWAL_CLAIM_PATH}>Claim tab</Link> to view your
       withdrawal requests or view your transaction on{' '}
-      <EtherscanTxLink
+      <TxLinkEtherscan
         txHash={txHash ?? undefined}
         text="Etherscan"
         onClick={() =>

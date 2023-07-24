@@ -1,10 +1,17 @@
+import Link from 'next/link';
+import { useWatch } from 'react-hook-form';
+import { formatEther } from '@ethersproject/units';
+
+import { Tooltip, Question } from '@lidofinance/lido-ui';
+import { TOKENS } from '@lido-sdk/constants';
+
 import { useEthAmountByStethWsteth } from 'features/withdrawals/hooks';
+import { RequestFormInputType } from 'features/withdrawals/request/request-form-context';
 
 import {
   trackMatomoEvent,
   MATOMO_CLICK_EVENTS_TYPES,
 } from 'config/trackMatomoEvent';
-import { Tooltip, Question } from '@lidofinance/lido-ui';
 
 import {
   FormatTokenStyled,
@@ -12,11 +19,6 @@ import {
   LidoOptionContainer,
   LidoOptionValue,
 } from './styles';
-import { LocalLink } from 'shared/components/local-link';
-import { useWatch } from 'react-hook-form';
-import { RequestFormInputType } from 'features/withdrawals/request/request-form-context';
-import { TOKENS } from '@lido-sdk/constants';
-import { formatEther } from '@ethersproject/units';
 
 const TooltipWithdrawalAmount = () => {
   return (
@@ -26,7 +28,7 @@ const TooltipWithdrawalAmount = () => {
         <>
           The final amount of claimable ETH can differ
           <br /> For more info, please read{' '}
-          <LocalLink href="#amountDifferentFromRequested">
+          <Link href="#amountDifferentFromRequested">
             <a
               aria-hidden="true"
               onClick={() =>
@@ -37,7 +39,7 @@ const TooltipWithdrawalAmount = () => {
             >
               FAQ
             </a>
-          </LocalLink>
+          </Link>
         </>
       }
     >

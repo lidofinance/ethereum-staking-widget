@@ -1,73 +1,21 @@
 import styled from 'styled-components';
-import {
-  Button,
-  CheckLarge,
-  Close,
-  Link,
-  Loader,
-  Text,
-  InlineLoader,
-} from '@lidofinance/lido-ui';
+import { Button, Link, InlineLoader } from '@lidofinance/lido-ui';
 
-export const TxLoader = styled((props) => <Loader {...props} />)`
-  margin: 0 auto;
-`;
-
-export const BoldText = styled((props) => <Text {...props} />)`
-  text-align: center;
-  margin-top: 24px;
-  font-weight: 800;
-`;
-
-export const LightText = styled((props) => <Text {...props} />)<{
-  marginTop: number;
-}>`
-  text-align: center;
-  margin-top: ${(props) => props.marginTop}px;
+export const Grid = styled.div`
+  display: grid;
+  grid-template-columns: auto auto;
+  column-gap: ${({ theme }) => theme.spaceMap.md}px;
 `;
 
 export const LowercaseSpan = styled.span`
   text-transform: lowercase;
 `;
 
-export const StylableLink = styled((props) => <Link {...props} />)`
-  cursor: pointer;
-`;
-
-export const IconWrapper = styled.div`
-  height: 64px;
-  width: 100%;
-  text-align: center;
-`;
-
-export const LedgerIconWrapper = styled.div`
-  width: 100%;
-  text-align: center;
-
-  svg {
-    max-width: 100%;
+export const StylableLink = styled(Link)`
+  &[aria-disabled='true'] {
+    cursor: not-allowed;
+    opacity: 0.5 !important;
   }
-`;
-
-export const SuccessIcon = styled((props) => <CheckLarge {...props} />)`
-  padding: 20px;
-  border: 2px solid var(--lido-color-success);
-  border-radius: 50%;
-  color: var(--lido-color-success);
-`;
-
-export const FailIcon = styled((props) => <Close {...props} />)`
-  padding: 20px;
-  border: 2px solid var(--lido-color-error);
-  border-radius: 50%;
-  color: var(--lido-color-error);
-`;
-
-export const Grid = styled.div`
-  display: grid;
-  grid-template-columns: auto auto;
-  column-gap: ${({ theme }) => theme.spaceMap.md}px;
-  margin-top: ${({ theme }) => theme.spaceMap.md}px;
 `;
 
 export const RetryButton = styled(Button)`
