@@ -17,8 +17,8 @@ export const AmountInput = () => {
   const token = useWatch<RequestFormInputType, 'token'>({ name: 'token' });
   useEffect(() => {
     setValue('amount', null, {
-      shouldDirty: true,
-      shouldTouch: true,
+      shouldDirty: false,
+      shouldTouch: false,
       shouldValidate: true,
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps

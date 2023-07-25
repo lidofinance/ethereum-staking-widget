@@ -10,14 +10,13 @@ import { Connect } from 'shared/wallet';
 import { useWithdrawals } from 'features/withdrawals/contexts/withdrawals-context';
 
 export const SubmitButton = () => {
-  /// useFormState state subscription breaks on unmount
-  const {
-    formState: { isValidating, isSubmitting, isValid, isDirty },
-  } = useFormContext<RequestFormInputType>();
-
   const { isTokenLocked } = useRequestFormData();
   const { active } = useWeb3();
   const { isPaused } = useWithdrawals();
+  /// useFormState state subscription breaks on unmount
+  const {
+    formState: { isValidating, isSubmitting, errors },
+  } = useFormContext<RequestFormInputType>();
 
   if (!active) return <Connect fullwidth />;
 
@@ -30,7 +29,7 @@ export const SubmitButton = () => {
       fullwidth
       type="submit"
       icon={isTokenLocked ? <Lock /> : <></>}
-      disabled={(isDirty && !isValid) || isPaused}
+      disabled={!!errors.amount || isPaused}
       loading={isValidating || isSubmitting}
     >
       {buttonTitle}
