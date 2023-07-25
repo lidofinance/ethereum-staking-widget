@@ -24,27 +24,6 @@ export const useValidationContext = (
     minUnstakeWSteth,
     stethTotalSupply,
   } = requestData;
-  if (
-    !(
-      balanceSteth &&
-      balanceWSteth &&
-      maxAmountPerRequestSteth &&
-      maxAmountPerRequestWSteth &&
-      minUnstakeSteth &&
-      minUnstakeWSteth &&
-      stethTotalSupply
-    )
-  )
-    console.log({
-      balanceSteth,
-      balanceWSteth,
-      maxAmountPerRequestSteth,
-      maxAmountPerRequestWSteth,
-      minUnstakeSteth,
-      minUnstakeWSteth,
-      maxRequestCount,
-      stethTotalSupply,
-    });
 
   return useMemo(() => {
     const validationContextObject =
