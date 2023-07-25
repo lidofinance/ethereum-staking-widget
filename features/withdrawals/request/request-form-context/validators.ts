@@ -183,7 +183,7 @@ export const RequestFormValidationResolver: Resolver<
   };
   try {
     const { amount, mode, token } = values;
-    if (!context) throw new ValidationError('root', 'empty context');
+    if (!context) throw new ValidationError('requests', 'empty context');
     const {
       isSteth,
       balance,

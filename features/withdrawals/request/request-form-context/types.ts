@@ -34,6 +34,7 @@ export type ExtraRequestFormDataType = {
   isTokenLocked: boolean;
   allowance: BigNumber;
   onSubmit: NonNullable<React.ComponentProps<'form'>['onSubmit']>;
+  isValidationContextReady: boolean;
 };
 
 export type RequestFormDataContextValueType = RequestFormDataType &

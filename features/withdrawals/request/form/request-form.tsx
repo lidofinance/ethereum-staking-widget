@@ -4,7 +4,7 @@ import { Block } from '@lidofinance/lido-ui';
 import { BunkerInfo } from './bunker-info';
 import { PausedInfo } from './paused-info';
 import { useWithdrawals } from 'features/withdrawals/contexts/withdrawals-context';
-import { useWatch } from 'react-hook-form';
+import { useFormState, useWatch } from 'react-hook-form';
 import {
   RequestFormInputType,
   useRequestFormData,
@@ -22,7 +22,10 @@ import { TransactionInfo } from './transaction-info';
 
 export const RequestForm = () => {
   const { isBunker, isPaused } = useWithdrawals();
-  const { onSubmit } = useRequestFormData();
+  const { onSubmit, isValidationContextReady } = useRequestFormData();
+  // conditional render breaks useFormState, so it can't be inside SubmitButton
+  const { isValidating, isSubmitting, errors } =
+    useFormState<RequestFormInputType>({ name: ['requests', 'amount'] });
   const mode = useWatch<RequestFormInputType, 'mode'>({ name: 'mode' });
 
   return (
@@ -39,7 +42,10 @@ export const RequestForm = () => {
         {mode === 'lido' && (
           <>
             <LidoOption />
-            <SubmitButton />
+            <SubmitButton
+              disabled={!!errors.amount || !isValidationContextReady}
+              loading={isValidating || isSubmitting}
+            />
             <TransactionInfo />
           </>
         )}

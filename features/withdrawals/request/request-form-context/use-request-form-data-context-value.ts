@@ -1,5 +1,5 @@
 import {
-  useSTETHTotalSupply,
+  useSTETHContractRPC,
   useWSTETHContractRPC,
   useSTETHBalance,
   useWSTETHBalance,
@@ -14,7 +14,12 @@ import { STRATEGY_LAZY } from 'utils/swrStrategies';
 // Provides all data fetching for form to function
 export const useRequestFormDataContextValue = () => {
   const { update: withdrawalRequestsDataUpdate } = useClaimData();
-  const stethTotalSupply = useSTETHTotalSupply().data;
+  // useTotalSupply is bugged and switches to undefined for 1 render
+  const stethTotalSupply = useContractSWR({
+    contract: useSTETHContractRPC(),
+    method: 'totalSupply',
+    config: STRATEGY_LAZY,
+  }).data;
   const { maxAmount: maxAmountPerRequestSteth, minAmount: minUnstakeSteth } =
     useWithdrawals();
   const wstethContract = useWSTETHContractRPC();
