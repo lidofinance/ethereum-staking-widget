@@ -163,6 +163,7 @@ export const Form: FC<FromProps> = (props) => {
     limit: balanceBySelectedToken,
     token: selectedToken,
     gasLimit: wrapGasLimit,
+    padMaxAmount: !isMultisig,
   });
 
   const onChangeSelectToken = useCallback(

@@ -145,7 +145,8 @@ export const StakeForm: FC = memo(() => {
         : etherBalance.data),
     padMaxAmount: (padAmount) =>
       Boolean(
-        etherBalance.data &&
+        !isMultisig &&
+          etherBalance.data &&
           stakeableEther.data &&
           etherBalance.data.sub(padAmount).lte(stakeableEther.data),
       ),
