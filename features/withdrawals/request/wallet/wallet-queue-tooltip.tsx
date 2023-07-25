@@ -2,26 +2,23 @@ import { Question, Tooltip } from '@lidofinance/lido-ui';
 import Link from 'next/link';
 
 import { FormatToken } from 'shared/formatters';
-import { useRequestData } from 'features/withdrawals/contexts/request-data-context';
 import { useWaitingTime } from 'features/withdrawals/hooks';
 
 import {
   trackMatomoEvent,
   MATOMO_CLICK_EVENTS_TYPES,
 } from 'config/trackMatomoEvent';
-import { QueuInfoStyled, DataTableRowStyled } from './styles';
+import { QueueInfoStyled, DataTableRowStyled } from './styles';
+import { useRequestFormData } from '../request-form-context';
 
 export const WalletQueueTooltip = () => {
   const waitingTime = useWaitingTime('');
-  const { unfinalizedStETH } = useRequestData();
+  const { unfinalizedStETH } = useRequestFormData();
 
-  const queueInfo = unfinalizedStETH.data && (
-    <QueuInfoStyled>
-      <DataTableRowStyled
-        title="Amount"
-        loading={unfinalizedStETH.initialLoading}
-      >
-        <FormatToken amount={unfinalizedStETH.data} symbol="stETH" />
+  const queueInfo = (
+    <QueueInfoStyled>
+      <DataTableRowStyled title="Amount" loading={!unfinalizedStETH}>
+        <FormatToken amount={unfinalizedStETH} symbol="stETH" />
       </DataTableRowStyled>
       <DataTableRowStyled
         title="Waiting time"
@@ -29,7 +26,7 @@ export const WalletQueueTooltip = () => {
       >
         {waitingTime.value}
       </DataTableRowStyled>
-    </QueuInfoStyled>
+    </QueueInfoStyled>
   );
 
   const tooltipTitle = (

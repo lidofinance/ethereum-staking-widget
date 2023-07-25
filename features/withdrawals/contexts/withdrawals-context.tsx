@@ -4,6 +4,7 @@ import invariant from 'tiny-invariant';
 import { StatusProps } from 'features/withdrawals/shared/status';
 
 import { useWithdrawalsBaseData } from 'features/withdrawals/hooks/contract/useWithdrawalsBaseData';
+import { BigNumber } from 'ethers';
 
 export type WithdrawalsContextValue = {
   isClaimTab: boolean;
@@ -12,6 +13,8 @@ export type WithdrawalsContextValue = {
   isPaused?: boolean;
   isTurbo?: boolean;
   isBunker?: boolean;
+  maxAmount?: BigNumber;
+  minAmount?: BigNumber;
 };
 const WithdrawalsContext = createContext<WithdrawalsContextValue | null>(null);
 WithdrawalsContext.displayName = 'WithdrawalsContext';
@@ -34,7 +37,7 @@ export const WithdrawalsProvider: FC<WithdrawalsProviderProps> = ({
 
   const { data, initialLoading: isWithdrawalsStatusLoading } =
     useWithdrawalsBaseData();
-  const { isBunker, isPaused, isTurbo } = data ?? {};
+  const { isBunker, isPaused, isTurbo, maxAmount, minAmount } = data ?? {};
 
   const withdrawalsStatus: StatusProps['variant'] = isPaused
     ? 'error'
@@ -52,6 +55,8 @@ export const WithdrawalsProvider: FC<WithdrawalsProviderProps> = ({
       isPaused,
       isTurbo,
       isBunker,
+      maxAmount,
+      minAmount,
     }),
     [
       isClaimTab,
@@ -60,6 +65,8 @@ export const WithdrawalsProvider: FC<WithdrawalsProviderProps> = ({
       isPaused,
       isTurbo,
       isBunker,
+      maxAmount,
+      minAmount,
     ],
   );
 

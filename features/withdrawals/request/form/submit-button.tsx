@@ -1,27 +1,23 @@
-import { FC } from 'react';
+import { useRequestFormData } from '../request-form-context';
 import { ButtonIcon, Lock } from '@lidofinance/lido-ui';
 import { useWeb3 } from '@reef-knot/web3-react';
 
 import { Connect } from 'shared/wallet';
 import { useWithdrawals } from 'features/withdrawals/contexts/withdrawals-context';
 
-type FormButtonProps = {
-  pending: boolean;
+type SubmitButtonProps = {
   disabled?: boolean;
-  isLocked?: boolean;
+  loading?: boolean;
 };
 
-export const FormButton: FC<FormButtonProps> = ({
-  pending,
-  disabled,
-  isLocked,
-}) => {
+export const SubmitButton = ({ disabled, loading }: SubmitButtonProps) => {
+  const { isTokenLocked } = useRequestFormData();
   const { active } = useWeb3();
   const { isPaused } = useWithdrawals();
 
   if (!active) return <Connect fullwidth />;
 
-  const buttonTitle = isLocked
+  const buttonTitle = isTokenLocked
     ? 'Unlock tokens for withdrawal'
     : 'Request withdrawal';
 
@@ -29,9 +25,9 @@ export const FormButton: FC<FormButtonProps> = ({
     <ButtonIcon
       fullwidth
       type="submit"
-      icon={isLocked ? <Lock /> : <></>}
-      disabled={disabled || pending || isPaused}
-      loading={pending}
+      icon={isTokenLocked ? <Lock /> : <></>}
+      disabled={disabled || isPaused}
+      loading={loading}
     >
       {buttonTitle}
     </ButtonIcon>

@@ -6,8 +6,10 @@ import { BigNumber } from 'ethers';
 import { CHAINS, TOKENS, getTokenAddress } from '@lido-sdk/constants';
 import { useMemo } from 'react';
 import { standardFetcher } from 'utils/standardFetcher';
-import { useRequestForm } from 'features/withdrawals/contexts/request-form-context';
 import { STRATEGY_LAZY } from 'utils/swrStrategies';
+import { useWatch } from 'react-hook-form';
+import { RequestFormInputType } from '../request/request-form-context';
+import { Zero } from '@ethersproject/constants';
 
 type getWithdrawalRatesParams = {
   amount: BigNumber;
@@ -222,20 +224,20 @@ type useWithdrawalRatesOptions = {
 };
 
 export const useWithdrawalRates = ({
-  fallbackValue,
+  fallbackValue = Zero,
 }: useWithdrawalRatesOptions = {}) => {
-  const { inputValueBN } = useRequestForm();
-  const { selectedToken } = useRequestForm();
-  const fallbackedAmount =
-    fallbackValue && inputValueBN.lte(0) ? fallbackValue : inputValueBN;
+  const [token, amount] = useWatch<RequestFormInputType, ['token', 'amount']>({
+    name: ['token', 'amount'],
+  });
+  const fallbackedAmount = amount ?? fallbackValue;
   const debouncedAmount = useDebouncedValue(fallbackedAmount, 1000);
   const swr = useLidoSWR(
-    ['swr:withdrawal-rates', debouncedAmount, selectedToken],
+    ['swr:withdrawal-rates', debouncedAmount, token],
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (_, amount, selectedToken) =>
+    (_, amount, token) =>
       getWithdrawalRates({
         amount: amount as BigNumber,
-        token: selectedToken as TOKENS.STETH | TOKENS.WSTETH,
+        token: token as TOKENS.STETH | TOKENS.WSTETH,
       }),
     {
       ...STRATEGY_LAZY,
@@ -250,7 +252,7 @@ export const useWithdrawalRates = ({
   return {
     amount: fallbackedAmount,
     bestRate,
-    selectedToken: selectedToken as TOKENS.WSTETH | TOKENS.STETH,
+    selectedToken: token,
     data: swr.data,
     get initialLoading() {
       return swr.initialLoading || !debouncedAmount.eq(fallbackedAmount);

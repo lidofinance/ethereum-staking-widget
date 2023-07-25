@@ -1,8 +1,12 @@
 import Link from 'next/link';
+import { useWatch } from 'react-hook-form';
+import { formatEther } from '@ethersproject/units';
+
 import { Tooltip, Question } from '@lidofinance/lido-ui';
+import { TOKENS } from '@lido-sdk/constants';
 
 import { useEthAmountByStethWsteth } from 'features/withdrawals/hooks';
-import { useRequestForm } from 'features/withdrawals/contexts/request-form-context';
+import { RequestFormInputType } from 'features/withdrawals/request/request-form-context';
 
 import {
   trackMatomoEvent,
@@ -45,9 +49,15 @@ const TooltipWithdrawalAmount = () => {
 };
 
 export const LidoOption = () => {
-  const { isSteth } = useRequestForm();
-  const { inputValue } = useRequestForm();
-  const ethAmount = useEthAmountByStethWsteth({ isSteth, input: inputValue });
+  const [token, amount] = useWatch<RequestFormInputType, ['token', 'amount']>({
+    name: ['token', 'amount'],
+  });
+
+  // TODO: refactor to use intermediate validation values
+  const ethAmount = useEthAmountByStethWsteth({
+    isSteth: token === TOKENS.STETH,
+    input: amount ? formatEther(amount) : undefined,
+  });
 
   return (
     <LidoOptionContainer>

@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 import { DataTableRow } from '@lidofinance/lido-ui';
 
-export const QueuInfoStyled = styled.div`
+export const QueueInfoStyled = styled.div`
   margin-top: ${({ theme }) => theme.spaceMap.md}px;
   color: var(--lido-color-accentContrast);
 `;
