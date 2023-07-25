@@ -2,11 +2,16 @@ import { MaxUint256, Zero } from '@ethersproject/constants';
 import { formatEther } from '@ethersproject/units';
 import { TOKENS } from '@lido-sdk/constants';
 import { BigNumber } from 'ethers';
+import invariant from 'tiny-invariant';
 import { Resolver } from 'react-hook-form';
+
 import { getTokenDisplayName } from 'utils/getTokenDisplayName';
-import { RequestFormValidationContextType } from '.';
-import { RequestFormInputType, ValidationResults } from '.';
 import { TokensWithdrawable } from 'features/withdrawals/types/tokens-withdrawable';
+import {
+  RequestFormValidationContextType,
+  RequestFormInputType,
+  ValidationResults,
+} from '.';
 
 export class ValidationError extends Error {
   field: string;
@@ -176,14 +181,17 @@ const transformContext = (
 // returns values or errors
 export const RequestFormValidationResolver: Resolver<
   RequestFormInputType,
-  RequestFormValidationContextType
-> = async (values, context) => {
+  Promise<RequestFormValidationContextType>
+> = async (values, contextPromise) => {
   const validationResults: ValidationResults = {
     requests: null,
   };
+  let setResults;
   try {
+    invariant(contextPromise, 'must have context promise');
     const { amount, mode, token } = values;
-    if (!context) throw new ValidationError('requests', 'empty context');
+    const context = await contextPromise;
+    setResults = context.setIntermediateValidationResults;
     const {
       isSteth,
       balance,
@@ -240,6 +248,6 @@ export const RequestFormValidationResolver: Resolver<
     };
   } finally {
     // no matter validation result save results for the UI to show
-    context?.setIntermediateValidationResults(validationResults);
+    setResults?.(validationResults);
   }
 };

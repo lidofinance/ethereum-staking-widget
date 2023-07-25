@@ -5,6 +5,7 @@ import {
 import { useMemo } from 'react';
 import { useIsLedgerLive } from 'shared/hooks/useIsLedgerLive';
 import { RequestFormDataType, RequestFormValidationContextType } from './types';
+import { useAwaiter } from './use-awaiter';
 
 // Prepares validation context object from request form data
 export const useValidationContext = (
@@ -25,7 +26,7 @@ export const useValidationContext = (
     stethTotalSupply,
   } = requestData;
 
-  return useMemo(() => {
+  const context = useMemo(() => {
     const validationContextObject =
       balanceSteth &&
       balanceWSteth &&
@@ -58,4 +59,6 @@ export const useValidationContext = (
     setIntermediateValidationResults,
     stethTotalSupply,
   ]);
+
+  return useAwaiter(context);
 };

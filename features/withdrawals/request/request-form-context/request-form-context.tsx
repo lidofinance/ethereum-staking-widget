@@ -57,7 +57,7 @@ export const RequestFormProvider: React.FC = ({ children }) => {
   );
   const formObject = useForm<
     RequestFormInputType,
-    RequestFormValidationContextType
+    Promise<RequestFormValidationContextType>
   >({
     defaultValues: {
       amount: null,
@@ -65,7 +65,7 @@ export const RequestFormProvider: React.FC = ({ children }) => {
       mode: 'lido',
       requests: null,
     },
-    context: validationContext,
+    context: validationContext.awaiter,
     criteriaMode: 'firstError',
     mode: 'onChange',
     resolver: RequestFormValidationResolver,
@@ -100,7 +100,6 @@ export const RequestFormProvider: React.FC = ({ children }) => {
     [reset, handleSubmit, request, onSuccessRequest],
   );
 
-  const isValidationContextReady = !!validationContext;
   const value = useMemo(() => {
     return {
       ...requestFormData,
@@ -109,7 +108,6 @@ export const RequestFormProvider: React.FC = ({ children }) => {
       isTokenLocked,
       allowance,
       onSubmit,
-      isValidationContextReady,
     };
   }, [
     requestFormData,
@@ -118,7 +116,6 @@ export const RequestFormProvider: React.FC = ({ children }) => {
     isTokenLocked,
     allowance,
     onSubmit,
-    isValidationContextReady,
   ]);
 
   return (

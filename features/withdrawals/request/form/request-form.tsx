@@ -22,7 +22,7 @@ import { TransactionInfo } from './transaction-info';
 
 export const RequestForm = () => {
   const { isBunker, isPaused } = useWithdrawals();
-  const { onSubmit, isValidationContextReady } = useRequestFormData();
+  const { onSubmit } = useRequestFormData();
   // conditional render breaks useFormState, so it can't be inside SubmitButton
   const { isValidating, isSubmitting, errors } =
     useFormState<RequestFormInputType>({ name: ['requests', 'amount'] });
@@ -43,7 +43,7 @@ export const RequestForm = () => {
           <>
             <LidoOption />
             <SubmitButton
-              disabled={!!errors.amount || !isValidationContextReady}
+              disabled={!!errors.amount}
               loading={isValidating || isSubmitting}
             />
             <TransactionInfo />
