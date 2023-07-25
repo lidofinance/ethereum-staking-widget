@@ -199,7 +199,7 @@ export const RequestFormValidationResolver: Resolver<
 
     // early validation exit for dex option
     if (mode === 'dex') {
-      return { values: { ...values }, errors: {} };
+      return { values, errors: {} };
     }
 
     const requests = validateSplitRequests(

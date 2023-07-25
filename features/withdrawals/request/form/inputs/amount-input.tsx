@@ -1,7 +1,6 @@
-import { useEffect } from 'react';
 import { TOKENS } from '@lido-sdk/constants';
 import { InputDecoratorTvlStake } from 'features/withdrawals/shared/input-decorator-tvl-stake';
-import { useController, useFormContext, useWatch } from 'react-hook-form';
+import { useController, useWatch } from 'react-hook-form';
 import { InputAmount } from 'shared/forms/components/input-amount';
 import { getTokenDisplayName } from 'utils/getTokenDisplayName';
 
@@ -12,17 +11,9 @@ import {
 import { useTvlMessage } from 'features/withdrawals/hooks/useTvlMessage';
 
 export const AmountInput = () => {
-  const { setValue } = useFormContext<RequestFormInputType>();
   const { balanceSteth, balanceWSteth, isTokenLocked } = useRequestFormData();
   const token = useWatch<RequestFormInputType, 'token'>({ name: 'token' });
-  useEffect(() => {
-    setValue('amount', null, {
-      shouldDirty: false,
-      shouldTouch: false,
-      shouldValidate: true,
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [token]);
+
   const {
     field,
     fieldState: { error },

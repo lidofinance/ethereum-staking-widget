@@ -1,7 +1,7 @@
 import { TOKENS } from '@lido-sdk/constants';
 import { SelectIcon, Steth, Wsteth, Option } from '@lidofinance/lido-ui';
 
-import { useController, useFormState } from 'react-hook-form';
+import { useController, useFormContext, useFormState } from 'react-hook-form';
 import { RequestFormInputType } from 'features/withdrawals/request/request-form-context';
 
 import { getTokenDisplayName } from 'utils/getTokenDisplayName';
@@ -13,21 +13,31 @@ const iconsMap = {
 };
 
 export const TokenInput = () => {
+  const { setValue, getFieldState } = useFormContext<RequestFormInputType>();
   const { field } = useController<RequestFormInputType, 'token'>({
     name: 'token',
   });
 
-  const {
-    errors: { amount },
-  } = useFormState<RequestFormInputType>({ name: 'amount' });
+  const { errors } = useFormState<RequestFormInputType>({ name: 'amount' });
 
   return (
     <SelectIcon
       {...field}
       icon={iconsMap[field.value]}
-      error={!!amount}
+      error={!!errors.amount}
       onChange={(value: TokensWithdrawable) => {
-        field.onChange(value);
+        // this softly changes token state, resets amount and only validates if it was touched
+        const { isTouched: isAmountTouched } = getFieldState('amount');
+        setValue('token', value, {
+          shouldDirty: false,
+          shouldTouch: false,
+          shouldValidate: false,
+        });
+        setValue('amount', null, {
+          shouldDirty: false,
+          shouldTouch: false,
+          shouldValidate: isAmountTouched,
+        });
       }}
     >
       <Option leftDecorator={iconsMap[TOKENS.STETH]} value={TOKENS.STETH}>
