@@ -88,45 +88,46 @@ export const stakeProcessing: StakeProcessingProps = async (
   try {
     const referralAddress = await getAddress(refFromQuery, chainId);
 
-    const provider = getStaticRpcBatchProvider(
-      chainId,
-      getBackendRPCPath(chainId),
-    );
-
-    const feeData = await provider.getFeeData();
-    const maxPriorityFeePerGas = feeData.maxPriorityFeePerGas ?? undefined;
-    const maxFeePerGas = feeData.maxFeePerGas ?? undefined;
-
-    const overrides = {
-      value: parseEther(inputValue),
-      maxPriorityFeePerGas,
-      maxFeePerGas,
-    };
-    const originalGasLimit = await stethContractWeb3.estimateGas.submit(
-      referralAddress || AddressZero,
-      overrides,
-    );
-
-    const gasLimit = originalGasLimit
-      ? Math.ceil(
-          originalGasLimit.toNumber() * SUBMIT_EXTRA_GAS_TRANSACTION_RATIO,
-        )
-      : null;
-
     const callback = async () => {
       if (isMultisig) {
         const tx = await stethContractWeb3.populateTransaction.submit(
           referralAddress || AddressZero,
           {
-            ...overrides,
-            gasLimit: gasLimit ? BigNumber.from(gasLimit) : undefined,
+            value: parseEther(inputValue),
           },
         );
         return providerWeb3.getSigner().sendUncheckedTransaction(tx);
       } else {
+        const provider = getStaticRpcBatchProvider(
+          chainId,
+          getBackendRPCPath(chainId),
+        );
+
+        const feeData = await provider.getFeeData();
+
+        const overrides = {
+          value: parseEther(inputValue),
+          maxPriorityFeePerGas: feeData.maxPriorityFeePerGas ?? undefined,
+          maxFeePerGas: feeData.maxFeePerGas ?? undefined,
+        };
+
+        const originalGasLimit = await stethContractWeb3.estimateGas.submit(
+          referralAddress || AddressZero,
+          overrides,
+        );
+
+        const gasLimit = originalGasLimit
+          ? BigNumber.from(
+              Math.ceil(
+                originalGasLimit.toNumber() *
+                  SUBMIT_EXTRA_GAS_TRANSACTION_RATIO,
+              ),
+            )
+          : undefined;
+
         return stethContractWeb3.submit(referralAddress || AddressZero, {
           ...overrides,
-          gasLimit: gasLimit ? BigNumber.from(gasLimit) : undefined,
+          gasLimit,
         });
       }
     };
