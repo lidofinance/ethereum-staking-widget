@@ -28,7 +28,7 @@ export const AmountInput = () => {
   return (
     <InputAmount
       fullwidth
-      error={!!error}
+      error={error?.type === 'validate'}
       placeholder="0"
       isLocked={isTokenLocked}
       maxValue={balance}

@@ -24,10 +24,10 @@ export const TokenInput = () => {
     <SelectIcon
       {...field}
       icon={iconsMap[field.value]}
-      error={!!errors.amount}
+      error={errors.amount?.type === 'validate'}
       onChange={(value: TokensWithdrawable) => {
         // this softly changes token state, resets amount and only validates if it was touched
-        const { isTouched: isAmountTouched } = getFieldState('amount');
+        const { isDirty } = getFieldState('amount');
         setValue('token', value, {
           shouldDirty: false,
           shouldTouch: false,
@@ -36,7 +36,7 @@ export const TokenInput = () => {
         setValue('amount', null, {
           shouldDirty: false,
           shouldTouch: false,
-          shouldValidate: isAmountTouched,
+          shouldValidate: isDirty,
         });
       }}
     >
