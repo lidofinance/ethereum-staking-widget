@@ -200,6 +200,7 @@ export const RequestFormValidationResolver: Resolver<
   let setResults;
   try {
     // this check does not require context and can be placed first
+    // also limits context missing edge cases on page start
     validateEtherAmount('amount', amount, token);
 
     // wait for context promise with timeout and extract relevant data
@@ -258,7 +259,7 @@ export const RequestFormValidationResolver: Resolver<
         // for general errors we use 'requests' field
         // cause non-fields get ignored and form is still considerate valid
         requests: {
-          type: 'root',
+          type: 'validate',
           message: 'unknown validation error',
         },
       },
