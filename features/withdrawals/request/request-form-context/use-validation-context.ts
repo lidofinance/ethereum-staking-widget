@@ -5,7 +5,7 @@ import {
 import { useMemo } from 'react';
 import { useIsLedgerLive } from 'shared/hooks/useIsLedgerLive';
 import { RequestFormDataType, RequestFormValidationContextType } from './types';
-import { useAwaiter } from './use-awaiter';
+import { useAwaiter } from '../../../../shared/hooks/use-awaiter';
 
 // Prepares validation context object from request form data
 export const useValidationContext = (

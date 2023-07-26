@@ -13,6 +13,16 @@ import {
   ValidationResults,
 } from '.';
 
+// helpers that should be shared when adding next hook-form
+
+export const withTimeout = <T>(toWait: Promise<T>, timeout: number) =>
+  Promise.race([
+    toWait,
+    new Promise<never>((_, reject) =>
+      setTimeout(() => reject(new Error('promise timeout')), timeout),
+    ),
+  ]);
+
 export class ValidationError extends Error {
   field: string;
   type: string;
@@ -183,14 +193,18 @@ export const RequestFormValidationResolver: Resolver<
   RequestFormInputType,
   Promise<RequestFormValidationContextType>
 > = async (values, contextPromise) => {
+  const { amount, mode, token } = values;
   const validationResults: ValidationResults = {
     requests: null,
   };
   let setResults;
   try {
+    // this check does not require context and can be placed first
+    validateEtherAmount('amount', amount, token);
+
+    // wait for context promise with timeout and extract relevant data
     invariant(contextPromise, 'must have context promise');
-    const { amount, mode, token } = values;
-    const context = await contextPromise;
+    const context = await withTimeout(contextPromise, 4000);
     setResults = context.setIntermediateValidationResults;
     const {
       isSteth,
@@ -200,8 +214,6 @@ export const RequestFormValidationResolver: Resolver<
       maxRequestCount,
       stethTotalSupply,
     } = transformContext(context, values);
-
-    validateEtherAmount('amount', amount, token);
 
     if (isSteth) tvlJokeValidate('amount', amount, stethTotalSupply, balance);
 
@@ -243,7 +255,12 @@ export const RequestFormValidationResolver: Resolver<
     return {
       values: {},
       errors: {
-        root: { value: { type: 'root', message: 'unknown validation error' } },
+        // for general errors we use 'requests' field
+        // cause non-fields get ignored and form is still considerate valid
+        requests: {
+          type: 'root',
+          message: 'unknown validation error',
+        },
       },
     };
   } finally {
