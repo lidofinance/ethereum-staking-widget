@@ -12,6 +12,7 @@ import {
   RequestFormInputType,
   ValidationResults,
 } from '.';
+import { VALIDATION_CONTEXT_TIMEOUT } from 'features/withdrawals/withdrawals-constants';
 
 // helpers that should be shared when adding next hook-form
 
@@ -204,8 +205,13 @@ export const RequestFormValidationResolver: Resolver<
     validateEtherAmount('amount', amount, token);
 
     // wait for context promise with timeout and extract relevant data
+    // validation function only waits limited time for data and fails validation otherwise
+    // most of the time data will already be available
     invariant(contextPromise, 'must have context promise');
-    const context = await withTimeout(contextPromise, 4000);
+    const context = await withTimeout(
+      contextPromise,
+      VALIDATION_CONTEXT_TIMEOUT,
+    );
     setResults = context.setIntermediateValidationResults;
     const {
       isSteth,
