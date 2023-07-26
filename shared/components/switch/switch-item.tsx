@@ -7,8 +7,7 @@ import { LocalLink } from '../local-link';
 export const SwitchItem: SwitchItemComponent = (props) => {
   const { children, href, ...rest } = props;
   const router = useRouter();
-  const active = router.asPath === href;
-
+  const active = router.asPath.split(/[?#]/)[0] === href;
   return (
     <LocalLink passHref href={href} {...rest}>
       <SwitchItemStyled active={active}>{children}</SwitchItemStyled>
