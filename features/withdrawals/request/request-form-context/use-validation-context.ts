@@ -4,6 +4,7 @@ import {
 } from 'features/withdrawals/withdrawals-constants';
 import { useMemo } from 'react';
 import { useIsLedgerLive } from 'shared/hooks/useIsLedgerLive';
+import { useAwaiter } from 'shared/hooks/use-awaiter';
 import { RequestFormDataType, RequestFormValidationContextType } from './types';
 
 // Prepares validation context object from request form data
@@ -25,7 +26,7 @@ export const useValidationContext = (
     stethTotalSupply,
   } = requestData;
 
-  return useMemo(() => {
+  const context = useMemo(() => {
     const validationContextObject =
       balanceSteth &&
       balanceWSteth &&
@@ -58,4 +59,6 @@ export const useValidationContext = (
     setIntermediateValidationResults,
     stethTotalSupply,
   ]);
+
+  return useAwaiter(context);
 };

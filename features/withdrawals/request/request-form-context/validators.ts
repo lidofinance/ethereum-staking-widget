@@ -2,11 +2,27 @@ import { MaxUint256, Zero } from '@ethersproject/constants';
 import { formatEther } from '@ethersproject/units';
 import { TOKENS } from '@lido-sdk/constants';
 import { BigNumber } from 'ethers';
+import invariant from 'tiny-invariant';
 import { Resolver } from 'react-hook-form';
+
 import { getTokenDisplayName } from 'utils/getTokenDisplayName';
-import { RequestFormValidationContextType } from '.';
-import { RequestFormInputType, ValidationResults } from '.';
 import { TokensWithdrawable } from 'features/withdrawals/types/tokens-withdrawable';
+import {
+  RequestFormValidationContextType,
+  RequestFormInputType,
+  ValidationResults,
+} from '.';
+import { VALIDATION_CONTEXT_TIMEOUT } from 'features/withdrawals/withdrawals-constants';
+
+// helpers that should be shared when adding next hook-form
+
+export const withTimeout = <T>(toWait: Promise<T>, timeout: number) =>
+  Promise.race([
+    toWait,
+    new Promise<never>((_, reject) =>
+      setTimeout(() => reject(new Error('promise timeout')), timeout),
+    ),
+  ]);
 
 export class ValidationError extends Error {
   field: string;
@@ -176,14 +192,27 @@ const transformContext = (
 // returns values or errors
 export const RequestFormValidationResolver: Resolver<
   RequestFormInputType,
-  RequestFormValidationContextType
-> = async (values, context) => {
+  Promise<RequestFormValidationContextType>
+> = async (values, contextPromise) => {
+  const { amount, mode, token } = values;
   const validationResults: ValidationResults = {
     requests: null,
   };
+  let setResults;
   try {
-    const { amount, mode, token } = values;
-    if (!context) throw new ValidationError('requests', 'empty context');
+    // this check does not require context and can be placed first
+    // also limits context missing edge cases on page start
+    validateEtherAmount('amount', amount, token);
+
+    // wait for context promise with timeout and extract relevant data
+    // validation function only waits limited time for data and fails validation otherwise
+    // most of the time data will already be available
+    invariant(contextPromise, 'must have context promise');
+    const context = await withTimeout(
+      contextPromise,
+      VALIDATION_CONTEXT_TIMEOUT,
+    );
+    setResults = context.setIntermediateValidationResults;
     const {
       isSteth,
       balance,
@@ -192,8 +221,6 @@ export const RequestFormValidationResolver: Resolver<
       maxRequestCount,
       stethTotalSupply,
     } = transformContext(context, values);
-
-    validateEtherAmount('amount', amount, token);
 
     if (isSteth) tvlJokeValidate('amount', amount, stethTotalSupply, balance);
 
@@ -235,11 +262,16 @@ export const RequestFormValidationResolver: Resolver<
     return {
       values: {},
       errors: {
-        root: { value: { type: 'root', message: 'unknown validation error' } },
+        // for general errors we use 'requests' field
+        // cause non-fields get ignored and form is still considerate valid
+        requests: {
+          type: 'validate',
+          message: 'unknown validation error',
+        },
       },
     };
   } finally {
     // no matter validation result save results for the UI to show
-    context?.setIntermediateValidationResults(validationResults);
+    setResults?.(validationResults);
   }
 };
