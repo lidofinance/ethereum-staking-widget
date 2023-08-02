@@ -1,0 +1,39 @@
+name: CI Dev
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - develop
+    paths-ignore:
+      - ".github/**"
+      - "test/**"
+
+permissions:
+  contents: read
+
+jobs:
+  # test:
+  #   ...
+
+  deploy:
+    runs-on: ubuntu-latest
+    # needs: test
+    name: Build and deploy
+    steps:
+      - name: Testnet deploy
+        uses: lidofinance/dispatch-workflow@v1
+        env:
+          APP_ID: ${{ secrets.APP_ID }}
+          APP_PRIVATE_KEY: ${{ secrets.APP_PRIVATE_KEY }}
+          TARGET_REPO: "lidofinance/infra-mainnet"
+          TARGET_WORKFLOW: "deploy_testnet_staking_widget_ts.yaml"
+          TARGET: "develop"
+
+  tests:
+    needs: deploy
+    if: ${{ github.event.pull_request.draft == false }}
+    uses: ./.github/workflows/tests.yml
+    secrets: inherit
+    with:
+      stand_url: https://stake.testnet.fi

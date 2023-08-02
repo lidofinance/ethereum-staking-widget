@@ -1,0 +1,77 @@
+name: CI Preview stand deploy
+
+on:
+  workflow_dispatch:
+    inputs:
+      inventory:
+        description: inventory to be used for preview stand deploying
+        default: testnet
+        required: false
+        type: choice
+        options:
+          - staging-critical
+          - testnet
+
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+    branches-ignore:
+      - main
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.pull_request.draft == false }}
+    name: Build and deploy
+    outputs:
+      stand_url: ${{ steps.stand.outputs.url }}
+    steps:
+      - uses: lidofinance/gh-find-current-pr@v1
+        id: pr
+
+      - name: Set ref
+        id: ref
+        run: echo "short_ref=${GITHUB_REF#refs/*/}" >> $GITHUB_OUTPUT
+
+      - name: Preview stand deploying
+        uses: lidofinance/dispatch-workflow@v1
+        env:
+          APP_ID: ${{ secrets.APP_ID }}
+          APP_PRIVATE_KEY: ${{ secrets.APP_PRIVATE_KEY }}
+          TARGET_REPO: 'lidofinance/infra-mainnet'
+          TARGET: ${{ github.head_ref || steps.ref.outputs.short_ref }}
+          TARGET_WORKFLOW: 'preview_stand_deploy.yaml'
+          INPUTS_REPO_NAME: ${{ github.repository }}
+          INPUTS_PR_ID: ${{ steps.pr.outputs.number }}
+          INPUTS_INVENTORY: "${{ inputs.inventory || 'testnet' }}"
+
+      - name: Define repo short name
+        run: echo "short_name=$(echo ${{ github.repository }} | cut -d "/" -f 2)" >> $GITHUB_OUTPUT
+        id: repo
+
+      - name: Define branch hash
+        run: echo "hash=$(echo "$HEAD_REF" | shasum -a 256 | cut -c -10)" >> $GITHUB_OUTPUT
+        id: branch
+        env:
+          HEAD_REF: ${{ github.head_ref || steps.ref.outputs.short_ref }}
+
+      - name: Extract stand url
+        if: always()
+        run: echo "url=https://$SHORT_NAME-$BRANCH_HASH.branch-preview.org" >> $GITHUB_OUTPUT
+        id: stand
+        env:
+          SHORT_NAME: ${{ steps.repo.outputs.short_name }}
+          BRANCH_HASH: ${{ steps.branch.outputs.hash }}
+
+  # tests:
+  #   needs: deploy
+  #   if: ${{ github.event.pull_request.draft == false }}
+  #   uses: ./.github/workflows/tests.yml
+  #   secrets: inherit
+  #   with:
+  #     stand_url: ${{ needs.deploy.outputs.stand_url }}
+  #     stand_type: "${{ inputs.inventory || 'testnet' }}"
+  #     on_preview_stand: true
