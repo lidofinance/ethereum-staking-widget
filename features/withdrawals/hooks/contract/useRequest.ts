@@ -23,6 +23,7 @@ import { useWithdrawals } from 'features/withdrawals/contexts/withdrawals-contex
 
 import { useWithdrawalsContract } from './useWithdrawalsContract';
 import { useApprove } from 'shared/hooks/useApprove';
+import { getFeeData } from 'utils/getFeeData';
 import { Zero } from '@ethersproject/constants';
 import { TokensWithdrawable } from 'features/withdrawals/types/tokens-withdrawable';
 
@@ -58,7 +59,7 @@ const useWithdrawalRequestMethods = () => {
         },
       ] as const;
 
-      const feeData = await contractWeb3.provider.getFeeData();
+      const feeData = await getFeeData(chainId);
       const maxFeePerGas = feeData.maxFeePerGas ?? undefined;
       const maxPriorityFeePerGas = feeData.maxPriorityFeePerGas ?? undefined;
       const gasLimit =
@@ -114,7 +115,7 @@ const useWithdrawalRequestMethods = () => {
         },
       ] as const;
 
-      const feeData = await contractWeb3.provider.getFeeData();
+      const feeData = await getFeeData(chainId);
       const maxFeePerGas = feeData.maxFeePerGas ?? undefined;
       const maxPriorityFeePerGas = feeData.maxPriorityFeePerGas ?? undefined;
       const gasLimit =
@@ -169,7 +170,7 @@ const useWithdrawalRequestMethods = () => {
           );
           return providerWeb3?.getSigner().sendUncheckedTransaction(tx);
         } else {
-          const feeData = await contractWeb3.provider.getFeeData();
+          const feeData = await getFeeData(chainId);
           const maxFeePerGas = feeData.maxFeePerGas ?? undefined;
           const maxPriorityFeePerGas =
             feeData.maxPriorityFeePerGas ?? undefined;
@@ -224,7 +225,7 @@ const useWithdrawalRequestMethods = () => {
             );
           return providerWeb3?.getSigner().sendUncheckedTransaction(tx);
         } else {
-          const feeData = await contractWeb3.provider.getFeeData();
+          const feeData = await getFeeData(chainId);
           const maxFeePerGas = feeData.maxFeePerGas ?? undefined;
           const maxPriorityFeePerGas =
             feeData.maxPriorityFeePerGas ?? undefined;
