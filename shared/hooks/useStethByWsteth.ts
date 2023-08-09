@@ -24,7 +24,7 @@ export const useStethByWsteth = (
   );
 
   useEffect(() => {
-    getStethBalance(wsteth);
+    void getStethBalance(wsteth);
   }, [getStethBalance, wsteth]);
 
   return stethBalance;

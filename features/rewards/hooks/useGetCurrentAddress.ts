@@ -47,7 +47,7 @@ export const useGetCurrentAddress: UseGetCurrentAddress = () => {
   );
 
   useEffect(() => {
-    resolveInputValue(inputValue);
+    void resolveInputValue(inputValue);
   }, [resolveInputValue, inputValue]);
 
   // Pick up an address

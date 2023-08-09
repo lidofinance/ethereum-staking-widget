@@ -61,7 +61,7 @@ export const StakeForm: FC = memo(() => {
       typeof router.query.amount === 'string'
     ) {
       const { amount, ...rest } = router.query;
-      router.replace({ pathname: router.pathname, query: rest });
+      void router.replace({ pathname: router.pathname, query: rest });
       setInputValue(amount);
     }
   }, [router]);

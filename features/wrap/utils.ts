@@ -18,8 +18,8 @@ type UnwrapProcessingProps = (
   setTxStage: (value: TX_STAGE) => void,
   setTxHash: (value: string | undefined) => void,
   setTxModalFailedText: (value: string) => void,
-  wstethBalanceUpdate: () => void,
-  stethBalanceUpdate: () => void,
+  wstethBalanceUpdate: () => Promise<unknown>,
+  stethBalanceUpdate: () => Promise<unknown>,
   chainId: string | number | undefined,
   inputValue: string,
   resetForm: () => void,
@@ -77,8 +77,8 @@ export const unwrapProcessing: UnwrapProcessingProps = async (
 
     const handleEnding = () => {
       resetForm();
-      stethBalanceUpdate();
-      wstethBalanceUpdate();
+      void stethBalanceUpdate();
+      void wstethBalanceUpdate();
     };
 
     if (isMultisig) {
@@ -118,13 +118,13 @@ type WrapProcessingWithApproveProps = (
   setTxStage: (value: TX_STAGE) => void,
   setTxHash: (value: string | undefined) => void,
   setTxModalFailedText: (value: string) => void,
-  ethBalanceUpdate: () => void,
-  stethBalanceUpdate: () => void,
+  ethBalanceUpdate: () => Promise<unknown>,
+  stethBalanceUpdate: () => Promise<unknown>,
   inputValue: string,
   selectedToken: string,
   needsApprove: boolean,
   isMultisig: boolean,
-  approve: () => void,
+  approve: () => Promise<void>,
   resetForm: () => void,
 ) => Promise<void>;
 
@@ -156,8 +156,8 @@ export const wrapProcessingWithApprove: WrapProcessingWithApproveProps = async (
 
   const handleEnding = () => {
     resetForm();
-    ethBalanceUpdate();
-    stethBalanceUpdate();
+    void ethBalanceUpdate();
+    void stethBalanceUpdate();
   };
 
   const getGasParameters = async () => {
@@ -217,7 +217,7 @@ export const wrapProcessingWithApprove: WrapProcessingWithApproveProps = async (
       openTxModal();
     } else if (selectedToken === TOKENS.STETH) {
       if (needsApprove) {
-        approve();
+        return approve();
       } else {
         const callback = async () => {
           if (isMultisig) {

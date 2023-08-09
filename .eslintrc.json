@@ -4,14 +4,7 @@
     "es2021": true,
     "node": true
   },
-  "extends": [
-    "eslint:recommended",
-    "plugin:@typescript-eslint/recommended",
-    "plugin:react/recommended",
-    "plugin:react-hooks/recommended",
-    "plugin:jsx-a11y/recommended",
-    "plugin:prettier/recommended"
-  ],
+  "extends": ["plugin:jsx-a11y/recommended", "@lidofinance", "prettier"],
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
     "ecmaFeatures": {
@@ -22,11 +15,13 @@
   },
   "plugins": ["@typescript-eslint", "react"],
   "rules": {
-    "prettier/prettier": ["error", {}, { "usePrettierrc": true }],
-    "react/react-in-jsx-scope": "off",
-    "react/prop-types": "off",
+    "@typescript-eslint/require-await": "off",
     "react/display-name": "off",
-    "@typescript-eslint/no-empty-interface": "off",
+    "@typescript-eslint/no-shadow": "off",
+    "jsx-a11y/no-autofocus": "off",
+    "jsx-a11y/anchor-is-valid": "off",
+    "@next/next/no-img-element": "off",
+    "no-console": ["warn", { "allow": ["warn", "error", "info", "debug"] }],
     "@typescript-eslint/no-unused-vars": [
       "warn",
       {
@@ -34,9 +29,20 @@
         "argsIgnorePattern": "^_"
       }
     ],
-    "jsx-a11y/no-autofocus": "off",
-    "jsx-a11y/anchor-is-valid": "off",
-    "func-style": ["error", "expression"]
+    "promise/param-names": [
+      "warn",
+      {
+        "resolvePattern": "^_?(resolve)$|^_$",
+        "rejectPattern": "^_?(reject)$|^_$"
+      }
+    ],
+    "func-style": ["error", "expression"],
+    "@typescript-eslint/no-misused-promises": [
+      "error",
+      {
+        "checksVoidReturn": false
+      }
+    ]
   },
   "settings": {
     "react": {

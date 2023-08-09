@@ -26,7 +26,7 @@ export const useENSAddress = (): string | undefined => {
   }, [providerRpc, account]);
 
   useEffect(() => {
-    getEnsAddress();
+    void getEnsAddress();
   }, [getEnsAddress, account]);
 
   return ensAddress;

@@ -9,7 +9,9 @@ import { isContract } from 'utils/isContract';
 
 type TransactionCallback = () => Promise<ContractTransaction | string>;
 
-export type UseApproveWrapper = (callback: TransactionCallback) => void;
+export type UseApproveWrapper = (
+  callback: TransactionCallback,
+) => Promise<void> | void;
 
 export type UseApproveResponse = {
   approve: () => Promise<void>;

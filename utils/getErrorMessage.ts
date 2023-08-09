@@ -40,9 +40,12 @@ export const extractCodeFromError = (
   // early exit on non object error
   if (!error || typeof error != 'object') return 0;
 
-  if ('reason' in error) {
-    if (typeof error.reason == 'string' && error.reason.includes('STAKE_LIMIT'))
-      return 'LIMIT_REACHED';
+  if (
+    'reason' in error &&
+    typeof error.reason == 'string' &&
+    error.reason.includes('STAKE_LIMIT')
+  ) {
+    return 'LIMIT_REACHED';
     // TODO: error.reason more cases
   }
 
@@ -66,15 +69,18 @@ export const extractCodeFromError = (
     typeof error.data === 'object' &&
     Array.isArray(error.data) &&
     typeof error.data['0'] === 'object' &&
-    typeof error.data['0'].message === 'string'
+    typeof error.data['0'].message === 'string' &&
+    error.data['0'].message.toLowerCase().includes('rejected')
   ) {
-    if (error.data['0'].message.toLowerCase().includes('rejected'))
-      return 'ACTION_REJECTED';
+    return 'ACTION_REJECTED';
   }
 
-  if ('name' in error && typeof error.name == 'string') {
-    if (error.name.toLocaleLowerCase() === 'ethapppleaseenablecontractdata')
-      return 'ENABLE_BLIND_SIGNING';
+  if (
+    'name' in error &&
+    typeof error.name == 'string' &&
+    error.name.toLocaleLowerCase() === 'ethapppleaseenablecontractdata'
+  ) {
+    return 'ENABLE_BLIND_SIGNING';
   }
   if ('code' in error) {
     if (typeof error.code === 'string') return error.code.toUpperCase();

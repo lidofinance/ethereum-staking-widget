@@ -10,7 +10,7 @@ class Logger {
 
   log(data: LoggerData) {
     if (isDev) {
-      console.log({ logger: this.name, ...data });
+      console.debug({ logger: this.name, ...data });
     }
   }
 

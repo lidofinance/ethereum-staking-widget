@@ -10,6 +10,9 @@ import { BalancerIcon, ButtonLinkWrap } from './styles';
 const BALANCER_LINK =
   'https://app.balancer.fi/#/pool/0x32296969ef14eb0c6d29669c550d4a0449130230000200000000000000000080';
 
+const linkClickHandler = () =>
+  trackEvent(...MATOMO_CLICK_EVENTS.clickBalancerPool);
+
 export const Balancer: FC = () => {
   const linkProps = {
     href: BALANCER_LINK,
@@ -18,9 +21,6 @@ export const Balancer: FC = () => {
   };
 
   const { data, initialLoading } = useBalancer();
-
-  const linkClickHandler = () =>
-    trackEvent(...MATOMO_CLICK_EVENTS.clickBalancerPool);
 
   const apr = data?.data.totalApr.toFixed(2) ?? DATA_UNAVAILABLE;
   const value = initialLoading ? <InlineLoader /> : apr;

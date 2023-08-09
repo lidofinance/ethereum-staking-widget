@@ -145,12 +145,10 @@ export const TxStageModal = memo((props: TxStageModalProps) => {
         <TxStageModalShape
           {...modalProps}
           title={successText}
-          description={
-            <>
-              {allowanceAmount && formatBalance(allowanceAmount, 4)} stETH was
-              unlocked to wrap.
-            </>
-          }
+          description={`${formatBalance(
+            allowanceAmount,
+            4,
+          )} stETH was unlocked to wrap.`}
           footerHint={<TxLinkEtherscan txHash={txHash} />}
         />
       );
