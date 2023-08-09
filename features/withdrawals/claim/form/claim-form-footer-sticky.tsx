@@ -15,7 +15,7 @@ import { getScreenSize } from 'utils/getScreenSize';
 import {
   REQUESTS_LIST_MIN_HEIGHT,
   REQUESTS_LIST_ITEM_SIZE,
-} from '../requests-list/styles';
+} from './requests-list/styles';
 
 // Adding 2/3 of item size to make next item slightly visible
 // so user can understand that there is scrollable list

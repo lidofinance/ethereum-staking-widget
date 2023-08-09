@@ -5,7 +5,6 @@ import { BigNumber } from 'ethers';
 import invariant from 'tiny-invariant';
 import { Resolver } from 'react-hook-form';
 
-import { getTokenDisplayName } from 'utils/getTokenDisplayName';
 import { TokensWithdrawable } from 'features/withdrawals/types/tokens-withdrawable';
 import {
   RequestFormValidationContextType,
@@ -13,6 +12,9 @@ import {
   ValidationResults,
 } from '.';
 import { VALIDATION_CONTEXT_TIMEOUT } from 'features/withdrawals/withdrawals-constants';
+
+import { ValidationError } from 'shared/hook-form/validation-error';
+import { getTokenDisplayName } from 'utils/getTokenDisplayName';
 
 // helpers that should be shared when adding next hook-form
 
@@ -23,23 +25,6 @@ export const withTimeout = <T>(toWait: Promise<T>, timeout: number) =>
       setTimeout(() => reject(new Error('promise timeout')), timeout),
     ),
   ]);
-
-export class ValidationError extends Error {
-  field: string;
-  type: string;
-  payload: Record<string, unknown>;
-  constructor(
-    field: string,
-    msg: string,
-    type?: string,
-    payload?: Record<string, unknown>,
-  ) {
-    super(msg);
-    this.field = field;
-    this.type = type ?? 'validate';
-    this.payload = payload ?? {};
-  }
-}
 
 export type TvlErrorPayload = {
   balanceDiffSteth: BigNumber;

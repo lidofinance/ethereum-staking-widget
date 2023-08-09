@@ -2568,10 +2568,10 @@
   dependencies:
     "@lidofinance/blocks-connect-wallet-modal" "2.11.2"
 
-"@lidofinance/lido-ui@^3.7.4":
-  version "3.7.4"
-  resolved "https://registry.yarnpkg.com/@lidofinance/lido-ui/-/lido-ui-3.7.4.tgz#d708ced17b6e520bb309fcf97960579c9acbd881"
-  integrity sha512-yiGX4hrZDYeXWtLHeXa5ukCDiuc4x6sXuEe9g91Ah0CZyzhehmXLJP/+ILCmQM4IS64Z21FgKtMCtGJRYtVqCg==
+"@lidofinance/lido-ui@^3.8.1":
+  version "3.8.1"
+  resolved "https://registry.yarnpkg.com/@lidofinance/lido-ui/-/lido-ui-3.8.1.tgz#21af8db3e27d12f08d032fcbedf00ea8904f9199"
+  integrity sha512-RalApHbilFGOePeRtRrcokMUQyH/YDcWu8njlZizNPxEDLJxMW8Y7i/rWtO05UESjEyvto2azTCDuPVuIhZHCw==
   dependencies:
     "@styled-system/should-forward-prop" "5.1.5"
     "@swc/helpers" "^0.4.11"
@@ -8900,10 +8900,10 @@ react-dom@17.0.2, react-dom@^17.0.2:
     object-assign "^4.1.1"
     scheduler "^0.20.2"
 
-react-hook-form@^7.45.1:
-  version "7.45.1"
-  resolved "https://registry.yarnpkg.com/react-hook-form/-/react-hook-form-7.45.1.tgz#e352c7f4dbc7540f0756abbb4dcfd1122fecc9bb"
-  integrity sha512-6dWoFJwycbuFfw/iKMcl+RdAOAOHDiF11KWYhNDRN/OkUt+Di5qsZHwA0OwsVnu9y135gkHpTw9DJA+WzCeR9w==
+react-hook-form@^7.45.2:
+  version "7.45.4"
+  resolved "https://registry.yarnpkg.com/react-hook-form/-/react-hook-form-7.45.4.tgz#73d228b704026ae95d7e5f7b207a681b173ec62a"
+  integrity sha512-HGDV1JOOBPZj10LB3+OZgfDBTn+IeEsNOKiq/cxbQAIbKaiJUe/KV8DBUzsx0Gx/7IG/orWqRRm736JwOfUSWQ==
 
 react-is@^16.13.1, react-is@^16.7.0:
   version "16.13.1"

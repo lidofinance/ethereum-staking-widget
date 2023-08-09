@@ -1,1 +1,1 @@
-export * from './claim-form';
+export { ClaimForm } from './form';

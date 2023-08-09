@@ -17,12 +17,12 @@ import { TOKENS } from '@lido-sdk/constants';
 
 import { useWithdrawalsContract } from './contract/useWithdrawalsContract';
 import { useTxCostInUsd } from 'shared/hooks/txCost';
-import { useClaimData } from 'features/withdrawals/contexts/claim-data-context';
 import { useDebouncedValue } from 'shared/hooks/useDebouncedValue';
 import { encodeURLQuery } from 'utils/encodeURLQuery';
 import { BigNumber } from 'ethers';
 import invariant from 'tiny-invariant';
 import { STRATEGY_LAZY } from 'utils/swrStrategies';
+import { RequestStatusClaimable } from '../types/request-status';
 
 type UseRequestTxPriceOptions = {
   requestCount?: number;
@@ -110,16 +110,12 @@ export const useRequestTxPrice = ({
   };
 };
 
-export const useClaimTxPrice = () => {
+export const useClaimTxPrice = (requests: RequestStatusClaimable[]) => {
   const { contractRpc } = useWithdrawalsContract();
-  const { claimSelection } = useClaimData();
   const { account, chainId } = useWeb3();
 
-  const requestCount = claimSelection.selectedCount || 1;
-  const debouncedSortedSelectedRequests = useDebouncedValue(
-    claimSelection.sortedSelectedRequests,
-    2000,
-  );
+  const requestCount = requests.length || 1;
+  const debouncedSortedSelectedRequests = useDebouncedValue(requests, 2000);
   const { data: gasLimitResult, initialLoading: isEstimateLoading } =
     useLidoSWR(
       [
@@ -169,7 +165,7 @@ export const useClaimTxPrice = () => {
     loading:
       isEstimateLoading ||
       !price ||
-      debouncedSortedSelectedRequests !== claimSelection.sortedSelectedRequests,
+      debouncedSortedSelectedRequests !== requests,
     claimGasLimit: gasLimit,
     claimTxPriceInUsd: price,
   };

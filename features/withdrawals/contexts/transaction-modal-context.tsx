@@ -19,7 +19,7 @@ type TransactionModalContextValue = TransactionModalState & {
 type TransactionModalState = {
   isModalOpen: boolean;
   txStage: TX_STAGE;
-  startTx: (() => void) | null;
+  onRetry: (() => void) | null;
   onOkBunker: (() => void) | null;
   onCloseBunker: (() => void) | null;
   errorText: string | null;
@@ -33,7 +33,7 @@ type TransactionModalAction =
       type: 'reset';
     }
   | {
-      type: 'set_starTx_callback';
+      type: 'set_on_retry';
       callback: () => void;
     }
   | {
@@ -85,15 +85,15 @@ const TransactionModalReducer = (
         requestAmount: null,
         token: null,
         txHash: null,
-        // keep old (re)start callback if have one
-        startTx: state.startTx,
+        // keep old restart callback if have one
+        onRetry: state.onRetry,
         onCloseBunker: null,
         onOkBunker: null,
       };
-    case 'set_starTx_callback':
+    case 'set_on_retry':
       return {
         ...state,
-        startTx: action.callback,
+        onRetry: action.callback,
       };
     case 'close_modal':
       return {
@@ -108,7 +108,6 @@ const TransactionModalReducer = (
         isModalOpen: true,
       };
     case 'bunker':
-      invariant(state.startTx, 'state must already have start tx callback');
       return {
         ...state,
         isModalOpen: true,
@@ -125,7 +124,7 @@ const TransactionModalReducer = (
         requestAmount: action.requestAmount,
         token: action.token,
         // keep (re)start callback
-        startTx: state.startTx,
+        onRetry: state.onRetry,
         onCloseBunker: state.onCloseBunker,
         onOkBunker: state.onOkBunker,
       };
@@ -164,7 +163,7 @@ const TransactionModalReducer = (
 const initTxModalState = (): TransactionModalState => ({
   isModalOpen: false,
   txStage: TX_STAGE.NONE,
-  startTx: null,
+  onRetry: null,
   errorText: null,
   txHash: null,
   requestAmount: null,

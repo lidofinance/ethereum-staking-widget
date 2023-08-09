@@ -22,7 +22,7 @@ export const TxClaimModal = () => {
     requestAmount,
     txHash,
     errorText,
-    startTx,
+    onRetry,
     dispatchModalState,
   } = useTransactionModal();
 
@@ -67,12 +67,7 @@ export const TxClaimModal = () => {
         );
       case TX_STAGE.FAIL:
         return (
-          <TxStageFail
-            failedText={errorText}
-            onClick={() => {
-              startTx && startTx();
-            }}
-          />
+          <TxStageFail failedText={errorText} onClick={onRetry ?? undefined} />
         );
       default:
         return null;
@@ -81,7 +76,7 @@ export const TxClaimModal = () => {
     errorText,
     pendingTitle,
     signTitle,
-    startTx,
+    onRetry,
     successTitle,
     txHash,
     txStage,
