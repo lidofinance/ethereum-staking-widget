@@ -20,6 +20,6 @@ jobs:
         env:
           APP_ID: ${{ secrets.APP_ID }}
           APP_PRIVATE_KEY: ${{ secrets.APP_PRIVATE_KEY }}
-          TARGET_REPO: "lidofinance/infra-mainnet"
-          TAG: "${{ github.event.release.tag_name }}"
-          TARGET_WORKFLOW: "build_critical_staking_widget_ts.yaml"
+          TARGET_REPO: 'lidofinance/infra-mainnet'
+          TAG: '${{ github.event.release.tag_name }}'
+          TARGET_WORKFLOW: 'build_critical_ethereum_staking_widget.yaml'

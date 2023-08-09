@@ -6,8 +6,8 @@ on:
     branches:
       - develop
     paths-ignore:
-      - ".github/**"
-      - "test/**"
+      - '.github/**'
+      - 'test/**'
 
 permissions:
   contents: read
@@ -26,9 +26,9 @@ jobs:
         env:
           APP_ID: ${{ secrets.APP_ID }}
           APP_PRIVATE_KEY: ${{ secrets.APP_PRIVATE_KEY }}
-          TARGET_REPO: "lidofinance/infra-mainnet"
-          TARGET_WORKFLOW: "deploy_testnet_staking_widget_ts.yaml"
-          TARGET: "develop"
+          TARGET_REPO: 'lidofinance/infra-mainnet'
+          TARGET_WORKFLOW: 'deploy_testnet_ethereum_staking_widget.yaml'
+          TARGET: 'develop'
 
   tests:
     needs: deploy
