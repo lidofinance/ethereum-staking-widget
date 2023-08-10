@@ -4,6 +4,7 @@ export enum ErrorMessage {
   SOMETHING_WRONG = 'Something went wrong.',
   ENABLE_BLIND_SIGNING = 'Please enable blind signing on your Ledger hardware wallet.',
   LIMIT_REACHED = 'Transaction could not be completed because stake limit is exhausted. Please wait until the stake limit restores and try again. Otherwise, you can swap your Ethereum on 1inch platform instantly.',
+  DEVICE_LOCKED = 'Please unlock your Ledger hardware wallet',
 }
 
 export const getErrorMessage = (error: unknown): ErrorMessage => {
@@ -27,6 +28,8 @@ export const getErrorMessage = (error: unknown): ErrorMessage => {
       return ErrorMessage.LIMIT_REACHED;
     case 'ENABLE_BLIND_SIGNING':
       return ErrorMessage.ENABLE_BLIND_SIGNING;
+    case 'DEVICE_LOCKED':
+      return ErrorMessage.DEVICE_LOCKED;
     default:
       return ErrorMessage.SOMETHING_WRONG;
   }
@@ -73,8 +76,12 @@ export const extractCodeFromError = (
   }
 
   if ('name' in error && typeof error.name == 'string') {
-    if (error.name.toLocaleLowerCase() === 'ethapppleaseenablecontractdata')
+    const error_name = error.name.toLowerCase();
+    if (error_name === 'EthAppPleaseEnableContractData'.toLowerCase())
       return 'ENABLE_BLIND_SIGNING';
+    if (error_name === 'LockedDeviceError'.toLowerCase()) {
+      return 'DEVICE_LOCKED';
+    }
   }
   if ('code' in error) {
     if (typeof error.code === 'string') return error.code.toUpperCase();
