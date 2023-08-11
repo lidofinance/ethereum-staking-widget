@@ -104,8 +104,8 @@ export const WrapForm: FC = memo(() => {
         );
 
         if (isMultisig) {
-          setTxStage(TX_STAGE.IDLE);
-          closeTxModal();
+          setTxStage(TX_STAGE.SUCCESS_MULTISIG);
+          openTxModal();
           return;
         }
 
@@ -130,7 +130,7 @@ export const WrapForm: FC = memo(() => {
         openTxModal();
       }
     },
-    [openTxModal, closeTxModal, isMultisig],
+    [openTxModal, isMultisig],
   );
 
   const {
@@ -167,7 +167,6 @@ export const WrapForm: FC = memo(() => {
         setTxOperation={setTxOperation}
         setInputValue={setInputValue}
         openTxModal={openTxModal}
-        closeTxModal={closeTxModal}
         setTxStage={setTxStage}
         setTxHash={setTxHash}
         setTxModalFailedText={setTxModalFailedText}

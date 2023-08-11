@@ -352,9 +352,6 @@ export const useWithdrawalRequest = ({
             });
             if (!bunkerDialogResult) return { success: false };
           }
-          // we can't know if tx was successful or even wait for it  with multisig
-          // so we exit flow gracefully and reset UI
-          const shouldSkipSuccess = isMultisig;
           // get right method
           const method = getRequestMethod(isApprovalFlow, token);
           // start flow
@@ -383,7 +380,9 @@ export const useWithdrawalRequest = ({
             await method({ signature, requests });
           }
           // end flow
-          dispatchModalState({ type: shouldSkipSuccess ? 'reset' : 'success' });
+          dispatchModalState({
+            type: isMultisig ? 'success_multisig' : 'success',
+          });
           return { success: true };
         } catch (error) {
           const errorMessage = getErrorMessage(error);
