@@ -1,5 +1,5 @@
 import { FC, useEffect } from 'react';
-import { GetServerSideProps } from 'next';
+import { GetStaticPaths, GetStaticProps } from 'next';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { Layout } from 'shared/components';
@@ -53,16 +53,25 @@ type WrapModePageProps = {
 };
 
 type WrapModePageParams = {
-  mode: string[] | undefined;
+  mode: [] | ['unwrap'];
 };
 
-export const getServerSideProps: GetServerSideProps<
+export const getStaticPaths: GetStaticPaths<WrapModePageParams> = async () => {
+  return {
+    paths: [{ params: { mode: [] } }, { params: { mode: ['unwrap'] } }],
+    fallback: false, // return 404 on non match
+  };
+};
+
+// we need [[...]] pattern for / and /unwrap
+export const getStaticProps: GetStaticProps<
   WrapModePageProps,
   WrapModePageParams
 > = async ({ params }) => {
   const mode = params?.mode;
-  if (!mode) return { props: { mode: 'wrap' } };
-  if (mode.length > 1) return { notFound: true };
-  if (mode[0] === 'unwrap') return { props: { mode: 'unwrap' } };
+  if (mode) {
+    if (mode.length === 0) return { props: { mode: 'wrap' } };
+    if (mode[0] === 'unwrap') return { props: { mode: 'unwrap' } };
+  }
   return { notFound: true };
 };

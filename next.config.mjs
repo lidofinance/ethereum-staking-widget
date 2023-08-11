@@ -41,6 +41,22 @@ const withBundleAnalyzer = NextBundleAnalyzer({
   enabled: analyzeBundle,
 });
 
+export const CACHE_CONTROL_HEADER = 'x-cache-control';
+const CACHE_CONTROL_PAGES = [
+  '/manifest.json',
+  '/favicon:size*',
+  '/',
+  '/wrap',
+  '/wrap/unwrap',
+  '/rewards',
+  '/withdrawals',
+  '/withdrawals/request',
+  '/withdrawals/claim',
+  '/runtime/window-env.js',
+];
+const CACHE_CONTROL_VALUE =
+  'public, s-max-age=30, stale-if-error=1200, stale-while-revalidate=30';
+
 export default withBundleAnalyzer({
   basePath,
   eslint: {
@@ -102,6 +118,10 @@ export default withBundleAnalyzer({
           },
         ],
       },
+      ...CACHE_CONTROL_PAGES.map((page) => ({
+        source: page,
+        headers: [{ key: CACHE_CONTROL_HEADER, value: CACHE_CONTROL_VALUE }],
+      })),
     ];
   },
   serverRuntimeConfig: {

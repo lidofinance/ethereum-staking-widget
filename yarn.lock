@@ -2589,11 +2589,6 @@
   resolved "https://registry.yarnpkg.com/@lidofinance/next-api-wrapper/-/next-api-wrapper-0.28.0.tgz#76fc32dafdbb1188d0a0ca5afd23bdf13e14d35d"
   integrity sha512-6wJiBH4tQkHlNT/1Gbq+YOUBjcln+MoBsLu1FLSXpXj1RKcL9mnspJvYlEIiq+efeFH7K1dKCygnE+dYtpFxaw==
 
-"@lidofinance/next-cache-files-middleware@^0.28.0":
-  version "0.28.0"
-  resolved "https://registry.yarnpkg.com/@lidofinance/next-cache-files-middleware/-/next-cache-files-middleware-0.28.0.tgz#1dcbde6be6be070b2806e914f2767647fd9abb4d"
-  integrity sha512-SGeuRYBVhDC797+rCcoQZR3BsE86Jo6XwTsvnpqhMig3Cg5D7+kUs7lWWXD+AiEddlLLFN0mGOc9Yys3szKVxw==
-
 "@lidofinance/next-ip-rate-limit@^0.28.0":
   version "0.28.0"
   resolved "https://registry.yarnpkg.com/@lidofinance/next-ip-rate-limit/-/next-ip-rate-limit-0.28.0.tgz#3f98f8c7be178c745524252379d418013d08058a"
