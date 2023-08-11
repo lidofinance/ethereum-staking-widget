@@ -1,4 +1,6 @@
 import NextBundleAnalyzer from '@next/bundle-analyzer';
+import { createSecureHeaders } from 'next-secure-headers';
+import createCSP from './scripts/create-csp.mjs';
 import buildDynamics from './scripts/build-dynamics.mjs';
 
 buildDynamics();
@@ -41,6 +43,7 @@ const withBundleAnalyzer = NextBundleAnalyzer({
   enabled: analyzeBundle,
 });
 
+// cache control
 export const CACHE_CONTROL_HEADER = 'x-cache-control';
 const CACHE_CONTROL_PAGES = [
   '/manifest.json',
@@ -55,7 +58,7 @@ const CACHE_CONTROL_PAGES = [
   '/runtime/window-env.js',
 ];
 const CACHE_CONTROL_VALUE =
-  'public, s-max-age=30, stale-if-error=1200, stale-while-revalidate=30';
+  'public, s-max-age=30, stale-if-error=604800, stale-while-revalidate=172800';
 
 export default withBundleAnalyzer({
   basePath,
@@ -100,6 +103,14 @@ export default withBundleAnalyzer({
         // Apply these headers to all routes in your application.
         source: '/(.*)',
         headers: [
+          ...createSecureHeaders({
+            contentSecurityPolicy: createCSP(
+              cspTrustedHosts,
+              cspReportUri,
+              cspReportOnly,
+            ),
+            referrerPolicy: 'same-origin',
+          }),
           {
             key: 'X-DNS-Prefetch-Control',
             value: 'on',
@@ -111,10 +122,6 @@ export default withBundleAnalyzer({
           {
             key: 'X-Content-Type-Options',
             value: 'nosniff',
-          },
-          {
-            key: 'Referrer-Policy',
-            value: 'same-origin',
           },
         ],
       },

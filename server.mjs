@@ -10,7 +10,8 @@ const port = 3000;
 const app = next({ dev, hostname, port });
 const handle = app.getRequestHandler();
 
-function overrideSetHeader(res) {
+// allows us to override cache-control header
+const overrideSetHeader = (res) => {
   const setHeader = res.setHeader;
   let cacheControlOverwritten = false;
   res.setHeader = function (header, value) {
@@ -25,7 +26,7 @@ function overrideSetHeader(res) {
 
     return setHeader.call(this, header, value);
   };
-}
+};
 
 app.prepare().then(() => {
   createServer(async (req, res) => {
