@@ -58,7 +58,7 @@ const CACHE_CONTROL_PAGES = [
   '/runtime/window-env.js',
 ];
 const CACHE_CONTROL_VALUE =
-  'public, s-max-age=30, stale-if-error=604800, stale-while-revalidate=172800';
+  'public,max-age=15, s-max-age=30, stale-if-error=604800, stale-while-revalidate=172800';
 
 export default withBundleAnalyzer({
   basePath,
@@ -118,10 +118,6 @@ export default withBundleAnalyzer({
           {
             key: 'Strict-Transport-Security',
             value: 'max-age=63072000; includeSubDomains; preload',
-          },
-          {
-            key: 'X-Content-Type-Options',
-            value: 'nosniff',
           },
         ],
       },

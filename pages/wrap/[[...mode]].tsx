@@ -53,12 +53,12 @@ type WrapModePageProps = {
 };
 
 type WrapModePageParams = {
-  mode: [] | ['unwrap'];
+  mode: ['unwrap'] | undefined;
 };
 
 export const getStaticPaths: GetStaticPaths<WrapModePageParams> = async () => {
   return {
-    paths: [{ params: { mode: [] } }, { params: { mode: ['unwrap'] } }],
+    paths: [{ params: { mode: undefined } }, { params: { mode: ['unwrap'] } }],
     fallback: false, // return 404 on non match
   };
 };
@@ -69,9 +69,8 @@ export const getStaticProps: GetStaticProps<
   WrapModePageParams
 > = async ({ params }) => {
   const mode = params?.mode;
-  if (mode) {
-    if (mode.length === 0) return { props: { mode: 'wrap' } };
-    if (mode[0] === 'unwrap') return { props: { mode: 'unwrap' } };
-  }
+  if (!mode) return { props: { mode: 'wrap' } };
+  if (mode[0] === 'unwrap') return { props: { mode: 'unwrap' } };
+
   return { notFound: true };
 };
