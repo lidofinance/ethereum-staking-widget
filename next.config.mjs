@@ -45,20 +45,20 @@ const withBundleAnalyzer = NextBundleAnalyzer({
 
 // cache control
 export const CACHE_CONTROL_HEADER = 'x-cache-control';
-const CACHE_CONTROL_PAGES = [
+export const CACHE_CONTROL_PAGES = [
   '/manifest.json',
   '/favicon:size*',
   '/',
   '/wrap',
   '/wrap/unwrap',
   '/rewards',
-  '/withdrawals',
+  '/referral',
   '/withdrawals/request',
   '/withdrawals/claim',
   '/runtime/window-env.js',
 ];
-const CACHE_CONTROL_VALUE =
-  'public,max-age=15, s-max-age=30, stale-if-error=604800, stale-while-revalidate=172800';
+export const CACHE_CONTROL_VALUE =
+  'public, max-age=15, s-max-age=30, stale-if-error=604800, stale-while-revalidate=172800';
 
 export default withBundleAnalyzer({
   basePath,
@@ -109,6 +109,7 @@ export default withBundleAnalyzer({
               cspReportUri,
               cspReportOnly,
             ),
+            frameGuard: false,
             referrerPolicy: 'same-origin',
           }),
           {
