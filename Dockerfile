@@ -1,5 +1,5 @@
 # build env
-FROM node:16-alpine as build
+FROM node:18-alpine as build
 
 WORKDIR /app
 
@@ -13,7 +13,7 @@ RUN NODE_NO_BUILD_DYNAMICS=true yarn typechain && yarn build
 RUN rm -rf /app/public/runtime && mkdir /app/public/runtime && chown node /app/public/runtime
 
 # final image
-FROM node:16-alpine as base
+FROM node:18-alpine as base
 
 ARG BASE_PATH=""
 ARG SUPPORTED_CHAINS="1"
