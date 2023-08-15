@@ -6,7 +6,9 @@ import {
   REQUESTS_LIST_LOADERS_COUNT,
 } from './styles';
 
-const LOADERS_SIZE_ARRAY = Array.from(Array(REQUESTS_LIST_LOADERS_COUNT));
+const LOADERS_SIZE_ARRAY = Array.from({
+  length: REQUESTS_LIST_LOADERS_COUNT,
+}).fill(null);
 
 export const RequestsLoader = () => {
   return (

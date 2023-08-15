@@ -38,10 +38,9 @@ type UseERC20PermitSignatureProps<
 const INFINITY_DEADLINE_VALUE = MaxUint256;
 
 const isStethPermit = (provider: unknown): provider is StethAbi => {
-  if (typeof provider !== 'object' || provider === null) return false;
-  if ('eip712Domain' in provider) return true;
-
-  return false;
+  return Boolean(
+    provider && typeof provider === 'object' && 'eip712Domain' in provider,
+  );
 };
 
 const EIP2612_TYPE = [

@@ -86,7 +86,10 @@ export const useClaim = () => {
           // we only update if we wait for tx
           await optimisticClaimRequests(sortedRequests);
         }
-        dispatchModalState({ type: isMultisig ? 'reset' : 'success' });
+
+        dispatchModalState({
+          type: isMultisig ? 'success_multisig' : 'success',
+        });
         return true;
       } catch (error) {
         const errorMessage = getErrorMessage(error);

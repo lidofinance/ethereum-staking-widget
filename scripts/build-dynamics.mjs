@@ -18,5 +18,5 @@ export default () => {
   const path = resolve('./public/runtime/window-env.js');
   ensureDirSync(dirname(path));
   writeFileSync(path, `window.__env__=${JSON.stringify(dynamics)}`);
-  console.log('created runtime files');
+  console.info('created runtime files');
 };

@@ -6,10 +6,13 @@ import { getERC20Contract } from '@lido-sdk/contracts';
 import { Zero } from '@ethersproject/constants';
 import { useAllowance, useMountedState, useSDK } from '@lido-sdk/react';
 import { isContract } from 'utils/isContract';
+import { getFeeData } from 'utils/getFeeData';
 
 type TransactionCallback = () => Promise<ContractTransaction | string>;
 
-export type UseApproveWrapper = (callback: TransactionCallback) => void;
+export type UseApproveWrapper = (
+  callback: TransactionCallback,
+) => Promise<void> | void;
 
 export type UseApproveResponse = {
   approve: () => Promise<void>;
@@ -37,7 +40,7 @@ export const useApprove = (
   owner?: string,
   wrapper: UseApproveWrapper = defaultWrapper,
 ): UseApproveResponse => {
-  const { providerWeb3, account } = useSDK();
+  const { providerWeb3, account, chainId } = useSDK();
   const mergedOwner = owner ?? account;
 
   invariant(token != null, 'Token is required');
@@ -58,6 +61,7 @@ export const useApprove = (
     try {
       setApproving(true);
       invariant(providerWeb3 != null, 'Web3 provider is required');
+      invariant(chainId, 'chain id is required');
       invariant(account, 'account is required');
       const contractWeb3 = getERC20Contract(token, providerWeb3.getSigner());
       const isMultisig = await isContract(account, providerWeb3);
@@ -72,9 +76,9 @@ export const useApprove = (
             .sendUncheckedTransaction(tx);
           return hash;
         } else {
-          const feeData = await providerWeb3
-            .getFeeData()
-            .catch((error) => console.warn(error));
+          const feeData = await getFeeData(chainId).catch((error) =>
+            console.warn(error),
+          );
           const maxPriorityFeePerGas =
             feeData?.maxPriorityFeePerGas ?? undefined;
           const maxFeePerGas = feeData?.maxFeePerGas ?? undefined;
@@ -90,10 +94,11 @@ export const useApprove = (
       setApproving(false);
     }
   }, [
-    providerWeb3,
-    token,
     setApproving,
+    providerWeb3,
+    chainId,
     account,
+    token,
     wrapper,
     updateAllowance,
     spender,

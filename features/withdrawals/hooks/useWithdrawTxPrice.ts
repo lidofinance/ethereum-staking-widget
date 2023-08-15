@@ -12,7 +12,7 @@ import {
 } from 'config';
 import { MAX_REQUESTS_COUNT } from 'features/withdrawals/withdrawals-constants';
 
-import { useWeb3 } from '@reef-knot/web3-react';
+import { useWeb3 } from 'reef-knot/web3-react';
 import { TOKENS } from '@lido-sdk/constants';
 
 import { useWithdrawalsContract } from './contract/useWithdrawalsContract';
@@ -74,7 +74,9 @@ export const useRequestTxPrice = ({
           invariant(contractRpc, 'contractRpc is required');
           const gasLimit = (
             await contractRpc.estimateGas.requestWithdrawals(
-              Array(debouncedRequestCount).fill(BigNumber.from(100)),
+              Array.from<BigNumber>({ length: debouncedRequestCount }).fill(
+                BigNumber.from(100),
+              ),
               ESTIMATE_ACCOUNT,
               { from: ESTIMATE_ACCOUNT },
             )

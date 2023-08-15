@@ -5,6 +5,5 @@ export const isContract = async (
   provider: Provider,
 ): Promise<boolean> => {
   const code = await provider.getCode(address);
-  if (code != '0x') return true;
-  return false;
+  return code != '0x';
 };

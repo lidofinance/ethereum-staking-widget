@@ -43,7 +43,7 @@ export const Stats: FC<StatsProps> = (props) => {
   }, []);
 
   useEffect(() => {
-    getStEthEth();
+    void getStEthEth();
   }, [getStEthEth]);
 
   const stEthBalanceParsed = steth.data && new Big(steth.data.toString());

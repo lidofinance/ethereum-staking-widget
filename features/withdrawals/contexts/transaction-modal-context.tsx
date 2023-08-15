@@ -66,6 +66,9 @@ type TransactionModalAction =
     }
   | {
       type: 'success';
+    }
+  | {
+      type: 'success_multisig';
     };
 
 const TransactionModalContext =
@@ -147,6 +150,12 @@ const TransactionModalReducer = (
         ...state,
         isModalOpen: true,
         txStage: TX_STAGE.SUCCESS,
+      };
+    case 'success_multisig':
+      return {
+        ...state,
+        isModalOpen: true,
+        txStage: TX_STAGE.SUCCESS_MULTISIG,
       };
     case 'error':
       return {
