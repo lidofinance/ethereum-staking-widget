@@ -1,9 +1,10 @@
 import { parseEther } from '@ethersproject/units';
-import { getStaticRpcBatchProvider } from 'utils/rpcProviders';
 import { useLidoSWR, useWSTETHContractRPC } from '@lido-sdk/react';
 import { useWeb3 } from 'reef-knot/web3-react';
-import { ESTIMATE_ACCOUNT, getBackendRPCPath, UNWRAP_GAS_LIMIT } from 'config';
+import { ESTIMATE_ACCOUNT, UNWRAP_GAS_LIMIT } from 'config';
 import { BigNumber } from 'ethers';
+import { getFeeData } from 'utils/getFeeData';
+import { CHAINS } from '@lido-sdk/constants';
 
 export const useUnwrapGasLimit = () => {
   const wsteth = useWSTETHContractRPC();
@@ -16,13 +17,7 @@ export const useUnwrapGasLimit = () => {
         return;
       }
 
-      const provider = getStaticRpcBatchProvider(
-        // TODO: add a way to type useWeb3 hook
-        chainId as number,
-        getBackendRPCPath(chainId as number),
-      );
-
-      const feeData = await provider.getFeeData();
+      const feeData = await getFeeData(chainId as CHAINS);
       const maxPriorityFeePerGas = feeData.maxPriorityFeePerGas ?? undefined;
       const maxFeePerGas = feeData.maxFeePerGas ?? undefined;
 
