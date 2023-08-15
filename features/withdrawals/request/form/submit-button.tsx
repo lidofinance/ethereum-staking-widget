@@ -1,6 +1,6 @@
 import { useRequestFormData } from '../request-form-context';
 import { ButtonIcon, Lock } from '@lidofinance/lido-ui';
-import { useWeb3 } from '@reef-knot/web3-react';
+import { useWeb3 } from 'reef-knot/web3-react';
 
 import { Connect } from 'shared/wallet';
 import { useWithdrawals } from 'features/withdrawals/contexts/withdrawals-context';

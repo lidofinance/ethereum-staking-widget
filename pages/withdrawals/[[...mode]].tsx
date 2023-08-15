@@ -18,7 +18,7 @@ const Withdrawals: FC<WithdrawalsModePageProps> = ({ mode }) => {
   const queryString = useSafeQueryString();
   useEffect(() => {
     if (isReady && query.tab === 'claim') {
-      replace(`/withdrawals/claim${queryString}`);
+      void replace(`/withdrawals/claim${queryString}`);
     }
   }, [isReady, query.tab, queryString, replace]);
 

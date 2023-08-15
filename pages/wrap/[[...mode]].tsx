@@ -21,7 +21,7 @@ const WrapPage: FC<WrapModePageProps> = ({ mode }) => {
   // legacy routing support
   useEffect(() => {
     if (isReady && query.mode === 'unwrap') {
-      replace(`/wrap/unwrap${queryString}`);
+      void replace(`/wrap/unwrap${queryString}`);
     }
   }, [isReady, query.mode, queryString, replace]);
 

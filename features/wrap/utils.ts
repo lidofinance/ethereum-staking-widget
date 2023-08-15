@@ -1,4 +1,5 @@
 import { parseEther } from '@ethersproject/units';
+import { BigNumber } from 'ethers';
 import { WstethAbi } from '@lido-sdk/contracts';
 import { CHAINS, getTokenAddress, TOKENS } from '@lido-sdk/constants';
 import { TX_STAGE } from 'shared/components';
@@ -16,8 +17,8 @@ type UnwrapProcessingProps = (
   setTxStage: (value: TX_STAGE) => void,
   setTxHash: (value: string | undefined) => void,
   setTxModalFailedText: (value: string) => void,
-  wstethBalanceUpdate: () => void,
-  stethBalanceUpdate: () => void,
+  wstethBalanceUpdate: () => Promise<BigNumber | undefined>,
+  stethBalanceUpdate: () => Promise<BigNumber | undefined>,
   chainId: string | number | undefined,
   inputValue: string,
   resetForm: () => void,
@@ -71,8 +72,8 @@ export const unwrapProcessing: UnwrapProcessingProps = async (
     const handleEnding = () => {
       openTxModal();
       resetForm();
-      stethBalanceUpdate();
-      wstethBalanceUpdate();
+      void stethBalanceUpdate();
+      void wstethBalanceUpdate();
     };
 
     if (isMultisig) {
@@ -110,13 +111,13 @@ type WrapProcessingWithApproveProps = (
   setTxStage: (value: TX_STAGE) => void,
   setTxHash: (value: string | undefined) => void,
   setTxModalFailedText: (value: string) => void,
-  ethBalanceUpdate: () => void,
-  stethBalanceUpdate: () => void,
+  ethBalanceUpdate: () => Promise<BigNumber | undefined>,
+  stethBalanceUpdate: () => Promise<BigNumber | undefined>,
   inputValue: string,
   selectedToken: string,
   needsApprove: boolean,
   isMultisig: boolean,
-  approve: () => void,
+  approve: () => Promise<void>,
   resetForm: () => void,
 ) => Promise<void>;
 
@@ -140,8 +141,8 @@ export const wrapProcessingWithApprove: WrapProcessingWithApproveProps = async (
   const handleEnding = () => {
     openTxModal();
     resetForm();
-    ethBalanceUpdate();
-    stethBalanceUpdate();
+    void ethBalanceUpdate();
+    void stethBalanceUpdate();
   };
 
   const getGasParameters = async () => {
@@ -202,7 +203,7 @@ export const wrapProcessingWithApprove: WrapProcessingWithApproveProps = async (
       handleEnding();
     } else if (selectedToken === TOKENS.STETH) {
       if (needsApprove) {
-        approve();
+        return approve();
       } else {
         const callback = async () => {
           if (isMultisig) {

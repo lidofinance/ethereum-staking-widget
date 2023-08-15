@@ -14,7 +14,7 @@ import {
   useWSTETHContractWeb3,
   useSDK,
 } from '@lido-sdk/react';
-import { useWeb3 } from '@reef-knot/web3-react';
+import { useWeb3 } from 'reef-knot/web3-react';
 import { useCurrencyInput } from 'shared/forms/hooks/useCurrencyInput';
 import { useIsMultisig } from 'shared/hooks/useIsMultisig';
 import { wrapProcessingWithApprove } from 'features/wrap/utils';

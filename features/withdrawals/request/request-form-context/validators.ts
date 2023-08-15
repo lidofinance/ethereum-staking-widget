@@ -146,7 +146,9 @@ const validateSplitRequests = (
     );
   }
 
-  const requests = Array(requestCount).fill(amountPerRequest);
+  const requests = Array.from<BigNumber>({ length: requestCount }).fill(
+    amountPerRequest,
+  );
   if (restCount) {
     requests[requestCount - 1] = lastRequestAmountEther;
   }

@@ -7,11 +7,12 @@ import { Zero } from '@ethersproject/constants';
 import { useAllowance, useMountedState, useSDK } from '@lido-sdk/react';
 import { isContract } from 'utils/isContract';
 import { getFeeData } from 'utils/getFeeData';
-import { CHAINS } from '@lido-sdk/constants';
 
 type TransactionCallback = () => Promise<ContractTransaction | string>;
 
-export type UseApproveWrapper = (callback: TransactionCallback) => void;
+export type UseApproveWrapper = (
+  callback: TransactionCallback,
+) => Promise<void> | void;
 
 export type UseApproveResponse = {
   approve: () => Promise<void>;
@@ -75,7 +76,7 @@ export const useApprove = (
             .sendUncheckedTransaction(tx);
           return hash;
         } else {
-          const feeData = await getFeeData(chainId as CHAINS).catch((error) =>
+          const feeData = await getFeeData(chainId).catch((error) =>
             console.warn(error),
           );
           const maxPriorityFeePerGas =

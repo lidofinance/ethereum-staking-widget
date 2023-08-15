@@ -34,17 +34,15 @@ export const useWaitingTime = (
   const url = useMemo(() => {
     const basePath = dynamics.wqAPIBasePath;
     const params = encodeURLQuery({ amount: debouncedAmount });
-
-    return `${basePath}/v1/request-time${params ? `?${params}` : ''}`;
+    const queryString = params ? `?${params}` : '';
+    return `${basePath}/v1/request-time${queryString}`;
   }, [debouncedAmount]);
 
   const { data, initialLoading, error } = useLidoSWR(url, standardFetcher, {
     ...STRATEGY_EAGER,
     shouldRetryOnError: (e: unknown) => {
       // if api is not happy about our request - no retry
-      if (e && typeof e == 'object' && 'status' in e && e.status == 400)
-        return false;
-      return true;
+      return !(e && typeof e == 'object' && 'status' in e && e.status == 400);
     },
   }) as SWRResponse<RequestTimeResponse>;
   const { isBunker, isPaused } = useWithdrawals();

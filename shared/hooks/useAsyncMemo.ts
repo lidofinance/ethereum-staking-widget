@@ -15,7 +15,7 @@ export const useAsyncMemo = <T>(
   const [result, setResult] = useState<T | undefined>(undefined);
   useEffect(() => {
     let shouldCancel = false;
-    callback().then((val) => {
+    void callback().then((val) => {
       if (!shouldCancel) {
         setResult(val);
       }

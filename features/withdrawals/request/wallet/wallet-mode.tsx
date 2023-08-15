@@ -13,13 +13,12 @@ export const WalletMode = () => {
     isPaused,
   } = useWithdrawals();
 
-  const modeLabel = isBunker
-    ? 'Bunker'
-    : isPaused
-    ? 'Paused'
-    : isTurbo
-    ? 'Turbo'
-    : '-';
+  const modeLabel = (() => {
+    if (isPaused) return 'Paused';
+    if (isBunker) return 'Bunker';
+    if (isTurbo) return 'Turbo';
+    return '-';
+  })();
 
   const content = <Status variant={withdrawalsStatus}>{modeLabel}</Status>;
   const timeTitle = <>Withdrawals mode {<WalletQueueTooltip />}</>;

@@ -12,7 +12,7 @@ const objToCSV = (objArray: SomeObj[]) => {
 };
 
 export const saveAsCSV = (data: SomeObj[], fileName = 'Lido Rewards') => {
-  if (!data.length) {
+  if (data.length === 0) {
     return;
   }
 

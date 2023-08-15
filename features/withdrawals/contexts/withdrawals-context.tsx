@@ -39,13 +39,12 @@ export const WithdrawalsProvider: FC<WithdrawalsProviderProps> = ({
     useWithdrawalsBaseData();
   const { isBunker, isPaused, isTurbo, maxAmount, minAmount } = data ?? {};
 
-  const withdrawalsStatus: StatusProps['variant'] = isPaused
-    ? 'error'
-    : isBunker
-    ? 'warning'
-    : isTurbo
-    ? 'success'
-    : 'error';
+  const withdrawalsStatus: StatusProps['variant'] = (() => {
+    if (isPaused) return 'error';
+    if (isBunker) return 'warning';
+    if (isTurbo) return 'success';
+    return 'error';
+  })();
 
   const value = useMemo(
     () => ({

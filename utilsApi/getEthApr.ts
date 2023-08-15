@@ -35,7 +35,7 @@ const getTotalAtStakeWithFallbacks = async (url: string): Promise<number> => {
     eth2DepositContractAddress,
   );
 
-  console.debug('Currently deposited in eth2: ', +currentlyDeposited);
+  console.debug('Currently deposited in eth2:', +currentlyDeposited);
 
   return Number(currentlyDeposited);
 };
