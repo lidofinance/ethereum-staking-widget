@@ -1,5 +1,6 @@
-import { Container, Link } from '@lidofinance/lido-ui';
 import styled from 'styled-components';
+
+import { Container, Link } from '@lidofinance/lido-ui';
 import { LogoLido } from 'shared/components/logos/logos';
 import { NAV_MOBILE_MEDIA } from '../header/components/navigation/styles';
 
@@ -35,12 +36,12 @@ export const FooterLink = styled(Link)`
       opacity: 1;
     }
   }
+`;
 
-  &:not(:last-of-type)::after {
-    content: '';
-    border-right: 1px solid var(--lido-color-textSecondary);
-    margin: 0 6px;
-  }
+export const LinkDivider = styled.div`
+  background: var(--lido-color-textSecondary);
+  width: 1px;
+  margin: 2px 6px;
 `;
 
 export const LogoLidoStyle = styled(LogoLido)`
@@ -63,4 +64,8 @@ export const FooterDivider = styled.div`
   ${NAV_MOBILE_MEDIA} {
     display: none;
   }
+`;
+
+export const Version = styled(FooterLink)`
+  margin-left: auto;
 `;
