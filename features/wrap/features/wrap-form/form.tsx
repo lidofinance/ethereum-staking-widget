@@ -49,7 +49,6 @@ type FromProps = {
   setTxOperation: (value: TX_OPERATION) => void;
   setInputValue: (value: string) => void;
   openTxModal: () => void;
-  closeTxModal: () => void;
   setTxStage: (value: TX_STAGE) => void;
   setTxHash: (value?: string) => void;
   setTxModalFailedText: (value: string) => void;
@@ -67,7 +66,6 @@ export const Form: FC<FromProps> = (props) => {
     setWrappingAmountValue,
     setTxOperation,
     openTxModal,
-    closeTxModal,
     setTxStage,
     setTxHash,
     setTxModalFailedText,
@@ -108,7 +106,6 @@ export const Form: FC<FromProps> = (props) => {
         providerWeb3,
         wstethContractWeb3,
         openTxModal,
-        closeTxModal,
         setTxStage,
         setTxHash,
         setTxModalFailedText,
@@ -134,7 +131,6 @@ export const Form: FC<FromProps> = (props) => {
       chainId,
       wstethContractWeb3,
       openTxModal,
-      closeTxModal,
       setTxStage,
       setTxHash,
       setTxModalFailedText,

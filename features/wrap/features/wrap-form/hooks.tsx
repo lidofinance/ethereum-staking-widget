@@ -1,5 +1,5 @@
 import { parseEther } from '@ethersproject/units';
-import { CHAINS } from '@lido-sdk/constants';
+
 import { getStaticRpcBatchProvider } from '@lido-sdk/providers';
 import {
   useLidoSWR,
@@ -17,6 +17,7 @@ import {
 } from 'config';
 import { BigNumber } from 'ethers';
 import { STRATEGY_IMMUTABLE } from 'utils/swrStrategies';
+import { CHAINS } from '@lido-sdk/constants';
 
 export const useApproveGasLimit = () => {
   const steth = useSTETHContractRPC();
@@ -63,18 +64,12 @@ export const useWrapGasLimit = (fromEther: boolean) => {
         getBackendRPCPath(chainId as CHAINS),
       );
 
-      const feeData = await provider.getFeeData();
-      const maxPriorityFeePerGas = feeData.maxPriorityFeePerGas ?? undefined;
-      const maxFeePerGas = feeData.maxFeePerGas ?? undefined;
-
       if (fromEther) {
         const gasLimit = await provider
           .estimateGas({
             from: ESTIMATE_ACCOUNT,
             to: wsteth.address,
             value: parseEther('0.001'),
-            maxPriorityFeePerGas,
-            maxFeePerGas,
           })
           .catch((error) => {
             console.warn(error);
@@ -86,8 +81,6 @@ export const useWrapGasLimit = (fromEther: boolean) => {
         const gasLimit = await wsteth.estimateGas
           .wrap(parseEther('0.0001'), {
             from: ESTIMATE_ACCOUNT,
-            maxPriorityFeePerGas,
-            maxFeePerGas,
           })
           .catch((error) => {
             console.warn(error);

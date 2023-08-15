@@ -62,7 +62,10 @@ export const TxStageModal = memo((props: TxStageModalProps) => {
   const oneInchLinkProps = use1inchLinkProps();
 
   const isCloseButtonHidden =
-    isLedger && txStage !== TX_STAGE.SUCCESS && txStage !== TX_STAGE.FAIL;
+    isLedger &&
+    txStage !== TX_STAGE.SUCCESS &&
+    txStage !== TX_STAGE.SUCCESS_MULTISIG &&
+    txStage !== TX_STAGE.FAIL;
 
   const modalProps = {
     ...modalPropsArgs,
@@ -133,6 +136,16 @@ export const TxStageModal = memo((props: TxStageModalProps) => {
         }
         description="Awaiting block confirmation"
         footerHint={<TxLinkEtherscan txHash={txHash} />}
+      />
+    );
+  }
+
+  if (txStage === TX_STAGE.SUCCESS_MULTISIG) {
+    return (
+      <TxStageModalShape
+        {...modalProps}
+        title="Success"
+        description="Your transaction has been successfully created in the multisig wallet and awaits approval from other participants"
       />
     );
   }

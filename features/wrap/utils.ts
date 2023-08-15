@@ -1,10 +1,9 @@
 import { parseEther } from '@ethersproject/units';
 import { WstethAbi } from '@lido-sdk/contracts';
-import { getTokenAddress, TOKENS } from '@lido-sdk/constants';
+import { CHAINS, getTokenAddress, TOKENS } from '@lido-sdk/constants';
 import { TX_STAGE } from 'shared/components';
 import { getErrorMessage, runWithTransactionLogger } from 'utils';
-import { getStaticRpcBatchProvider } from 'utils/rpcProviders';
-import { getBackendRPCPath } from 'config';
+import { getFeeData } from 'utils/getFeeData';
 import invariant from 'tiny-invariant';
 import type { Web3Provider } from '@ethersproject/providers';
 
@@ -14,7 +13,6 @@ type UnwrapProcessingProps = (
   providerWeb3: Web3Provider | undefined,
   stethContractWeb3: WstethAbi | null,
   openTxModal: () => void,
-  closeTxModal: () => void,
   setTxStage: (value: TX_STAGE) => void,
   setTxHash: (value: string | undefined) => void,
   setTxModalFailedText: (value: string) => void,
@@ -30,7 +28,6 @@ export const unwrapProcessing: UnwrapProcessingProps = async (
   providerWeb3,
   wstethContractWeb3,
   openTxModal,
-  closeTxModal,
   setTxStage,
   setTxHash,
   setTxModalFailedText,
@@ -41,10 +38,8 @@ export const unwrapProcessing: UnwrapProcessingProps = async (
   resetForm,
   isMultisig,
 ) => {
-  if (!wstethContractWeb3 || !chainId) {
-    return;
-  }
-
+  invariant(wstethContractWeb3, 'must have wstethContractWeb3');
+  invariant(chainId, 'must have chain id');
   invariant(providerWeb3, 'must have providerWeb3');
 
   try {
@@ -55,14 +50,12 @@ export const unwrapProcessing: UnwrapProcessingProps = async (
         );
         return providerWeb3.getSigner().sendUncheckedTransaction(tx);
       } else {
-        const provider = getStaticRpcBatchProvider(
-          chainId,
-          getBackendRPCPath(chainId),
+        const { maxFeePerGas, maxPriorityFeePerGas } = await getFeeData(
+          chainId as CHAINS,
         );
-        const feeData = await provider.getFeeData();
         return wstethContractWeb3.unwrap(parseEther(inputValue), {
-          maxPriorityFeePerGas: feeData.maxPriorityFeePerGas ?? undefined,
-          maxFeePerGas: feeData.maxFeePerGas ?? undefined,
+          maxPriorityFeePerGas: maxPriorityFeePerGas ?? undefined,
+          maxFeePerGas: maxFeePerGas ?? undefined,
         });
       }
     };
@@ -76,14 +69,15 @@ export const unwrapProcessing: UnwrapProcessingProps = async (
     );
 
     const handleEnding = () => {
+      openTxModal();
       resetForm();
       void stethBalanceUpdate();
       void wstethBalanceUpdate();
     };
 
     if (isMultisig) {
+      setTxStage(TX_STAGE.SUCCESS_MULTISIG);
       handleEnding();
-      closeTxModal();
       return;
     }
 
@@ -96,9 +90,8 @@ export const unwrapProcessing: UnwrapProcessingProps = async (
       );
     }
 
-    handleEnding();
     setTxStage(TX_STAGE.SUCCESS);
-    openTxModal();
+    handleEnding();
     /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
   } catch (error: any) {
     // errors are sometimes nested :(
@@ -114,7 +107,6 @@ type WrapProcessingWithApproveProps = (
   providerWeb3: Web3Provider | undefined,
   stethContractWeb3: WstethAbi | null,
   openTxModal: () => void,
-  closeTxModal: () => void,
   setTxStage: (value: TX_STAGE) => void,
   setTxHash: (value: string | undefined) => void,
   setTxModalFailedText: (value: string) => void,
@@ -133,7 +125,6 @@ export const wrapProcessingWithApprove: WrapProcessingWithApproveProps = async (
   providerWeb3,
   wstethContractWeb3,
   openTxModal,
-  closeTxModal,
   setTxStage,
   setTxHash,
   setTxModalFailedText,
@@ -146,26 +137,15 @@ export const wrapProcessingWithApprove: WrapProcessingWithApproveProps = async (
   approve,
   resetForm,
 ) => {
-  if (!chainId || !wstethContractWeb3) {
-    return;
-  }
-
-  invariant(providerWeb3, 'must have providerWeb3');
-
-  const wstethTokenAddress = getTokenAddress(chainId, TOKENS.WSTETH);
-
   const handleEnding = () => {
+    openTxModal();
     resetForm();
     void ethBalanceUpdate();
     void stethBalanceUpdate();
   };
 
   const getGasParameters = async () => {
-    const provider = getStaticRpcBatchProvider(
-      chainId,
-      getBackendRPCPath(chainId),
-    );
-    const feeData = await provider.getFeeData();
+    const feeData = await getFeeData(chainId as CHAINS);
     return {
       maxPriorityFeePerGas: feeData.maxPriorityFeePerGas ?? undefined,
       maxFeePerGas: feeData.maxFeePerGas ?? undefined,
@@ -173,6 +153,12 @@ export const wrapProcessingWithApprove: WrapProcessingWithApproveProps = async (
   };
 
   try {
+    invariant(providerWeb3, 'must have providerWeb3');
+    invariant(wstethContractWeb3, 'must have wstethContractWeb3');
+    invariant(chainId, 'must have chain id');
+
+    const wstethTokenAddress = getTokenAddress(chainId, TOKENS.WSTETH);
+
     if (selectedToken === ETH) {
       const callback = async () => {
         if (isMultisig) {
@@ -198,7 +184,7 @@ export const wrapProcessingWithApprove: WrapProcessingWithApproveProps = async (
       );
 
       if (isMultisig) {
-        closeTxModal();
+        setTxStage(TX_STAGE.SUCCESS_MULTISIG);
         handleEnding();
         return;
       }
@@ -212,9 +198,8 @@ export const wrapProcessingWithApprove: WrapProcessingWithApproveProps = async (
         );
       }
 
-      handleEnding();
       setTxStage(TX_STAGE.SUCCESS);
-      openTxModal();
+      handleEnding();
     } else if (selectedToken === TOKENS.STETH) {
       if (needsApprove) {
         return approve();
@@ -242,7 +227,7 @@ export const wrapProcessingWithApprove: WrapProcessingWithApproveProps = async (
         );
 
         if (isMultisig) {
-          closeTxModal();
+          setTxStage(TX_STAGE.SUCCESS_MULTISIG);
           handleEnding();
           return;
         }
@@ -256,9 +241,8 @@ export const wrapProcessingWithApprove: WrapProcessingWithApproveProps = async (
           );
         }
 
-        handleEnding();
         setTxStage(TX_STAGE.SUCCESS);
-        openTxModal();
+        handleEnding();
       }
     }
     /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
