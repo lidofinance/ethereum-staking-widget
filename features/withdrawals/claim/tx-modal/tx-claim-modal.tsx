@@ -5,6 +5,7 @@ import {
   TxStageModal,
   TxStagePending,
   TxStageSuccess,
+  TxStageSuccessMultisig,
   TxStageSign,
   TxStageFail,
   TX_STAGE,
@@ -65,6 +66,8 @@ export const TxClaimModal = () => {
             }
           />
         );
+      case TX_STAGE.SUCCESS_MULTISIG:
+        return <TxStageSuccessMultisig />;
       case TX_STAGE.FAIL:
         return (
           <TxStageFail

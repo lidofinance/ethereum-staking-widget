@@ -8,6 +8,7 @@ import {
   TxStagePermit,
   TxStageFail,
   TxStageBunker,
+  TxStageSuccessMultisig,
   TX_STAGE,
 } from 'features/withdrawals/shared/tx-stage-modal';
 import { useTransactionModal } from 'features/withdrawals/contexts/transaction-modal-context';
@@ -67,6 +68,8 @@ export const TxRequestModal = () => {
             amountAsString={amountAsString}
           />
         );
+      case TX_STAGE.SUCCESS_MULTISIG:
+        return <TxStageSuccessMultisig />;
       case TX_STAGE.FAIL:
         return (
           <TxStageFail

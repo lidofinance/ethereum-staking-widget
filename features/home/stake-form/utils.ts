@@ -23,7 +23,6 @@ type StakeProcessingProps = (
   providerWeb3: Web3Provider | undefined,
   stethContractWeb3: StethAbi | null,
   openTxModal: () => void,
-  closeTxModal: () => void,
   setTxStage: (value: TX_STAGE) => void,
   setTxHash: (value: string | undefined) => void,
   setTxModalFailedText: (value: string) => void,
@@ -69,7 +68,6 @@ export const stakeProcessing: StakeProcessingProps = async (
   providerWeb3,
   stethContractWeb3,
   openTxModal,
-  closeTxModal,
   setTxStage,
   setTxHash,
   setTxModalFailedText,
@@ -142,12 +140,13 @@ export const stakeProcessing: StakeProcessingProps = async (
     );
 
     const handleEnding = () => {
+      openTxModal();
       resetForm();
       stethBalanceUpdate();
     };
 
     if (isMultisig) {
-      closeTxModal();
+      setTxStage(TX_STAGE.SUCCESS_MULTISIG);
       handleEnding();
       return;
     }
@@ -162,7 +161,6 @@ export const stakeProcessing: StakeProcessingProps = async (
     }
 
     setTxStage(TX_STAGE.SUCCESS);
-    openTxModal();
     handleEnding();
     /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
   } catch (error: any) {

@@ -13,7 +13,6 @@ type UnwrapProcessingProps = (
   providerWeb3: Web3Provider | undefined,
   stethContractWeb3: WstethAbi | null,
   openTxModal: () => void,
-  closeTxModal: () => void,
   setTxStage: (value: TX_STAGE) => void,
   setTxHash: (value: string | undefined) => void,
   setTxModalFailedText: (value: string) => void,
@@ -29,7 +28,6 @@ export const unwrapProcessing: UnwrapProcessingProps = async (
   providerWeb3,
   wstethContractWeb3,
   openTxModal,
-  closeTxModal,
   setTxStage,
   setTxHash,
   setTxModalFailedText,
@@ -71,14 +69,15 @@ export const unwrapProcessing: UnwrapProcessingProps = async (
     );
 
     const handleEnding = () => {
+      openTxModal();
       resetForm();
       stethBalanceUpdate();
       wstethBalanceUpdate();
     };
 
     if (isMultisig) {
+      setTxStage(TX_STAGE.SUCCESS_MULTISIG);
       handleEnding();
-      closeTxModal();
       return;
     }
 
@@ -91,9 +90,8 @@ export const unwrapProcessing: UnwrapProcessingProps = async (
       );
     }
 
-    handleEnding();
     setTxStage(TX_STAGE.SUCCESS);
-    openTxModal();
+    handleEnding();
     /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
   } catch (error: any) {
     // errors are sometimes nested :(
@@ -109,7 +107,6 @@ type WrapProcessingWithApproveProps = (
   providerWeb3: Web3Provider | undefined,
   stethContractWeb3: WstethAbi | null,
   openTxModal: () => void,
-  closeTxModal: () => void,
   setTxStage: (value: TX_STAGE) => void,
   setTxHash: (value: string | undefined) => void,
   setTxModalFailedText: (value: string) => void,
@@ -128,7 +125,6 @@ export const wrapProcessingWithApprove: WrapProcessingWithApproveProps = async (
   providerWeb3,
   wstethContractWeb3,
   openTxModal,
-  closeTxModal,
   setTxStage,
   setTxHash,
   setTxModalFailedText,
@@ -142,6 +138,7 @@ export const wrapProcessingWithApprove: WrapProcessingWithApproveProps = async (
   resetForm,
 ) => {
   const handleEnding = () => {
+    openTxModal();
     resetForm();
     ethBalanceUpdate();
     stethBalanceUpdate();
@@ -187,7 +184,7 @@ export const wrapProcessingWithApprove: WrapProcessingWithApproveProps = async (
       );
 
       if (isMultisig) {
-        closeTxModal();
+        setTxStage(TX_STAGE.SUCCESS_MULTISIG);
         handleEnding();
         return;
       }
@@ -201,9 +198,8 @@ export const wrapProcessingWithApprove: WrapProcessingWithApproveProps = async (
         );
       }
 
-      handleEnding();
       setTxStage(TX_STAGE.SUCCESS);
-      openTxModal();
+      handleEnding();
     } else if (selectedToken === TOKENS.STETH) {
       if (needsApprove) {
         approve();
@@ -231,7 +227,7 @@ export const wrapProcessingWithApprove: WrapProcessingWithApproveProps = async (
         );
 
         if (isMultisig) {
-          closeTxModal();
+          setTxStage(TX_STAGE.SUCCESS_MULTISIG);
           handleEnding();
           return;
         }
@@ -245,9 +241,8 @@ export const wrapProcessingWithApprove: WrapProcessingWithApproveProps = async (
           );
         }
 
-        handleEnding();
         setTxStage(TX_STAGE.SUCCESS);
-        openTxModal();
+        handleEnding();
       }
     }
     /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
