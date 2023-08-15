@@ -1,4 +1,5 @@
 import { parseEther } from '@ethersproject/units';
+import { BigNumber } from 'ethers';
 import { WstethAbi } from '@lido-sdk/contracts';
 import { CHAINS, getTokenAddress, TOKENS } from '@lido-sdk/constants';
 import { TX_STAGE } from 'shared/components';
@@ -16,8 +17,8 @@ type UnwrapProcessingProps = (
   setTxStage: (value: TX_STAGE) => void,
   setTxHash: (value: string | undefined) => void,
   setTxModalFailedText: (value: string) => void,
-  wstethBalanceUpdate: () => Promise<unknown>,
-  stethBalanceUpdate: () => Promise<unknown>,
+  wstethBalanceUpdate: () => Promise<BigNumber | undefined>,
+  stethBalanceUpdate: () => Promise<BigNumber | undefined>,
   chainId: string | number | undefined,
   inputValue: string,
   resetForm: () => void,
@@ -110,8 +111,8 @@ type WrapProcessingWithApproveProps = (
   setTxStage: (value: TX_STAGE) => void,
   setTxHash: (value: string | undefined) => void,
   setTxModalFailedText: (value: string) => void,
-  ethBalanceUpdate: () => Promise<unknown>,
-  stethBalanceUpdate: () => Promise<unknown>,
+  ethBalanceUpdate: () => Promise<BigNumber | undefined>,
+  stethBalanceUpdate: () => Promise<BigNumber | undefined>,
   inputValue: string,
   selectedToken: string,
   needsApprove: boolean,
