@@ -63,7 +63,6 @@ export const getSuccessText = (
           )}
         </>
       );
-    case TX_OPERATION.APPROVING:
     default:
       return <>{operationDisplayText} was successful!</>;
   }

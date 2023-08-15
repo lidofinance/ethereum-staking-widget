@@ -24,6 +24,6 @@ export const getLidoStats: GetLidoStats = async () => {
     payload: ETHPLORER_TOKEN_ENDPOINT,
     request: () => standardFetcher<Response>(url),
   });
-  console.debug('[getLidoStats] Lido stats: ', lidoStats);
+  console.debug('[getLidoStats] Lido stats:', lidoStats);
   return lidoStats;
 };

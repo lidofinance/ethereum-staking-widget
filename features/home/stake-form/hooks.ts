@@ -1,15 +1,11 @@
 import { AddressZero } from '@ethersproject/constants';
 import { useLidoSWR, useSTETHContractRPC } from '@lido-sdk/react';
-import {
-  ESTIMATE_ACCOUNT,
-  getBackendRPCPath,
-  STETH_SUBMIT_GAS_LIMIT_DEFAULT,
-} from 'config';
+import { ESTIMATE_ACCOUNT, STETH_SUBMIT_GAS_LIMIT_DEFAULT } from 'config';
 import { parseEther } from '@ethersproject/units';
 import { useWeb3 } from 'reef-knot/web3-react';
-import { getStaticRpcBatchProvider } from 'utils/rpcProviders';
 import { BigNumber } from 'ethers';
-import { CHAINS } from 'utils/chains';
+import { getFeeData } from 'utils/getFeeData';
+import { CHAINS } from '@lido-sdk/constants';
 
 type UseStethSubmitGasLimit = () => number | undefined;
 
@@ -24,13 +20,7 @@ export const useStethSubmitGasLimit: UseStethSubmitGasLimit = () => {
         return;
       }
 
-      const provider = getStaticRpcBatchProvider(
-        chainId as string,
-        // TODO: add a way to type useWeb3 hook
-        getBackendRPCPath(chainId as CHAINS),
-      );
-
-      const feeData = await provider.getFeeData();
+      const feeData = await getFeeData(chainId as CHAINS);
       const maxPriorityFeePerGas = feeData.maxPriorityFeePerGas ?? undefined;
       const maxFeePerGas = feeData.maxFeePerGas ?? undefined;
 

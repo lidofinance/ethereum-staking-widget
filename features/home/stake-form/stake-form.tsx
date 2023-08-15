@@ -61,7 +61,7 @@ export const StakeForm: FC = memo(() => {
       typeof router.query.amount === 'string'
     ) {
       const { amount, ...rest } = router.query;
-      router.replace({ pathname: router.pathname, query: rest });
+      void router.replace({ pathname: router.pathname, query: rest });
       setInputValue(amount);
     }
   }, [router]);
@@ -97,7 +97,6 @@ export const StakeForm: FC = memo(() => {
         providerWeb3,
         stethContractWeb3,
         openTxModal,
-        closeTxModal,
         setTxStage,
         setTxHash,
         setTxModalFailedText,
@@ -113,7 +112,6 @@ export const StakeForm: FC = memo(() => {
       providerWeb3,
       stethContractWeb3,
       openTxModal,
-      closeTxModal,
       stethBalance.update,
       chainId,
       router?.query?.ref,

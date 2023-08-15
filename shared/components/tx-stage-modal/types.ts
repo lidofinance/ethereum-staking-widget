@@ -10,6 +10,7 @@ export enum TX_STAGE {
   SIGN,
   BLOCK,
   SUCCESS,
+  SUCCESS_MULTISIG,
   FAIL,
   LIMIT,
 }

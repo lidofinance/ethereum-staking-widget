@@ -14,6 +14,7 @@ import { getBackendRPCPath } from 'config';
 import { TX_STAGE } from 'shared/components';
 import { BigNumber } from 'ethers';
 import invariant from 'tiny-invariant';
+import { getFeeData } from 'utils/getFeeData';
 import type { Web3Provider } from '@ethersproject/providers';
 
 const SUBMIT_EXTRA_GAS_TRANSACTION_RATIO = 1.05;
@@ -22,7 +23,6 @@ type StakeProcessingProps = (
   providerWeb3: Web3Provider | undefined,
   stethContractWeb3: StethAbi | null,
   openTxModal: () => void,
-  closeTxModal: () => void,
   setTxStage: (value: TX_STAGE) => void,
   setTxHash: (value: string | undefined) => void,
   setTxModalFailedText: (value: string) => void,
@@ -68,7 +68,6 @@ export const stakeProcessing: StakeProcessingProps = async (
   providerWeb3,
   stethContractWeb3,
   openTxModal,
-  closeTxModal,
   setTxStage,
   setTxHash,
   setTxModalFailedText,
@@ -79,15 +78,12 @@ export const stakeProcessing: StakeProcessingProps = async (
   refFromQuery,
   isMultisig,
 ) => {
-  if (!stethContractWeb3 || !chainId) {
-    return;
-  }
-
-  invariant(providerWeb3, 'must have providerWeb3');
-
   try {
-    const referralAddress = await getAddress(refFromQuery, chainId);
+    invariant(stethContractWeb3);
+    invariant(chainId);
+    invariant(providerWeb3);
 
+    const referralAddress = await getAddress(refFromQuery, chainId);
     const callback = async () => {
       if (isMultisig) {
         const tx = await stethContractWeb3.populateTransaction.submit(
@@ -98,17 +94,13 @@ export const stakeProcessing: StakeProcessingProps = async (
         );
         return providerWeb3.getSigner().sendUncheckedTransaction(tx);
       } else {
-        const provider = getStaticRpcBatchProvider(
-          chainId,
-          getBackendRPCPath(chainId),
-        );
-
-        const feeData = await provider.getFeeData();
-
+        const feeData = await getFeeData(chainId);
+        const maxPriorityFeePerGas = feeData.maxPriorityFeePerGas ?? undefined;
+        const maxFeePerGas = feeData.maxFeePerGas ?? undefined;
         const overrides = {
           value: parseEther(inputValue),
-          maxPriorityFeePerGas: feeData.maxPriorityFeePerGas ?? undefined,
-          maxFeePerGas: feeData.maxFeePerGas ?? undefined,
+          maxPriorityFeePerGas,
+          maxFeePerGas,
         };
 
         const originalGasLimit = await stethContractWeb3.estimateGas.submit(
@@ -148,12 +140,13 @@ export const stakeProcessing: StakeProcessingProps = async (
     );
 
     const handleEnding = () => {
+      openTxModal();
       resetForm();
       stethBalanceUpdate();
     };
 
     if (isMultisig) {
-      closeTxModal();
+      setTxStage(TX_STAGE.SUCCESS_MULTISIG);
       handleEnding();
       return;
     }
@@ -168,7 +161,6 @@ export const stakeProcessing: StakeProcessingProps = async (
     }
 
     setTxStage(TX_STAGE.SUCCESS);
-    openTxModal();
     handleEnding();
     /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
   } catch (error: any) {

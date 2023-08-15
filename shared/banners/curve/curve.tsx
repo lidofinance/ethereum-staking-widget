@@ -9,6 +9,9 @@ import { CurveIcon, CurveIconWrapper, ButtonLinkWrap } from './styles';
 
 const CURVE_LINK = 'https://curve.fi/#/ethereum/pools/steth/deposit';
 
+const linkClickHandler = () =>
+  trackEvent(...MATOMO_CLICK_EVENTS.clickCurvePool);
+
 export const Curve: FC = () => {
   const linkProps = {
     href: CURVE_LINK,
@@ -17,9 +20,6 @@ export const Curve: FC = () => {
   };
 
   const { data, initialLoading } = useCurve();
-
-  const linkClickHandler = () =>
-    trackEvent(...MATOMO_CLICK_EVENTS.clickCurvePool);
 
   const apr = data?.data.totalApr.toFixed(2) ?? DATA_UNAVAILABLE;
   const value = initialLoading ? <InlineLoader /> : apr;

@@ -53,7 +53,7 @@ export const getLidoHoldersViaSubgraphs: GetLidoHoldersViaSubgraphs = async (
   const params = {
     method: 'POST',
     body: JSON.stringify({ query }),
-    signal: controller.signal as AbortSignal,
+    signal: controller.signal,
   };
 
   const endMetric = Metrics.subgraph.subgraphsResponseTime.startTimer();
@@ -70,10 +70,7 @@ export const getLidoHoldersViaSubgraphs: GetLidoHoldersViaSubgraphs = async (
     endMetric();
     clearTimeout(timeoutId);
 
-    console.debug(
-      '[getLidoHoldersViaSubgraphs] Lido holders: ',
-      responseJsoned,
-    );
+    console.debug('[getLidoHoldersViaSubgraphs] Lido holders:', responseJsoned);
 
     cache.put(
       CACHE_LIDO_HOLDERS_VIA_SUBGRAPHS_KEY,
