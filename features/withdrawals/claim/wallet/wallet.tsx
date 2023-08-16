@@ -1,6 +1,6 @@
 import { memo } from 'react';
 import { Divider } from '@lidofinance/lido-ui';
-import { useWeb3 } from '@reef-knot/web3-react';
+import { useWeb3 } from 'reef-knot/web3-react';
 import { useSDK } from '@lido-sdk/react';
 
 import { CardAccount, CardRow, Fallback } from 'shared/wallet';

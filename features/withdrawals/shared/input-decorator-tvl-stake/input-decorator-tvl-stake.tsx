@@ -18,7 +18,7 @@ export const InputDecoratorTvlStake = ({
       size="xxs"
       variant="translucent"
       data-testid="letsStakeBtn"
-      onClick={() => push(`/${queryString}`)}
+      onClick={() => void push(`/${queryString}`)}
     >
       Yes, let`s stake
     </Button>

@@ -24,6 +24,7 @@ const rpc = rpcFactory({
     'eth_getCode',
     'eth_estimateGas',
     'eth_getBlockByNumber',
+    'eth_feeHistory',
     'eth_getBalance',
     'eth_blockNumber',
     'eth_getTransactionByHash',

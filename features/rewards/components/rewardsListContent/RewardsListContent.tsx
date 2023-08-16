@@ -32,7 +32,7 @@ export const RewardsListContent: FC = () => {
     );
   }
   if (error) return <RewardsListErrorMessage error={error} />;
-  if (data && !data.events.length) return <ErrorBlockNoSteth />;
+  if (data && data.events.length === 0) return <ErrorBlockNoSteth />;
 
   return (
     <TableWrapperStyle>

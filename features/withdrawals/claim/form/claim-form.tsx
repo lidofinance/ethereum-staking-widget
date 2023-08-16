@@ -1,5 +1,5 @@
 import { useCallback, useRef, useState } from 'react';
-import { useWeb3 } from '@reef-knot/web3-react';
+import { useWeb3 } from 'reef-knot/web3-react';
 import { BigNumber } from 'ethers';
 
 import { FormatToken } from 'shared/formatters';
@@ -36,7 +36,7 @@ export const ClaimForm = () => {
     const startTx = async () => {
       setIsSubmitting(true);
       try {
-        claimMutation(claimSelection.sortedSelectedRequests);
+        await claimMutation(claimSelection.sortedSelectedRequests);
       } finally {
         setIsSubmitting(false);
       }
@@ -44,8 +44,7 @@ export const ClaimForm = () => {
     // send it to state
     dispatchModalState({ type: 'set_starTx_callback', callback: startTx });
     // start flow
-    startTx();
-    return;
+    return startTx();
   }, [
     dispatchModalState,
     claimMutation,

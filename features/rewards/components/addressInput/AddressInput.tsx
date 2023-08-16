@@ -23,7 +23,7 @@ export const AddressInput: FC<AddressInputProps> = (props) => {
       }
       rightDecorator={address ? <CopyAddressUrl address={inputValue} /> : null}
       spellCheck="false"
-      error={!!inputValue.length && !isValidAnyAddress(inputValue)}
+      error={inputValue.length > 0 && !isValidAnyAddress(inputValue)}
     />
   );
 };
