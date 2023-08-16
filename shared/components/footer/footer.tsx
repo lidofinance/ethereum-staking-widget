@@ -1,5 +1,5 @@
 import { FC } from 'react';
-import { version } from 'build-info.json';
+import { version, branch } from 'build-info.json';
 
 import {
   FooterStyle,
@@ -10,8 +10,25 @@ import {
   LinkDivider,
 } from './styles';
 
-const widgetVersion =
-  version === 'REPLACE_WITH_VERSION' ? 'dev' : `v${version}`;
+const getVersionInfo = () => {
+  const repoBaseUrl = 'https://github.com/lidofinance/ethereum-staking-widget';
+  if (version === 'REPLACE_WITH_VERSION')
+    return {
+      label: 'dev',
+      link: repoBaseUrl,
+    };
+  if (version === branch + ':-unknown')
+    return {
+      label: 'preview',
+      link: `${repoBaseUrl}/tree/${branch}`,
+    };
+  return {
+    label: `v${version}`,
+    link: `${repoBaseUrl}/releases/tag/${version}`,
+  };
+};
+
+const { label, link } = getVersionInfo();
 
 export const Footer: FC = () => (
   <FooterStyle size="full" forwardedAs="footer">
@@ -26,11 +43,7 @@ export const Footer: FC = () => (
     >
       Privacy Notice
     </FooterLink>
-    <Version
-      href={`https://github.com/lidofinance/ethereum-staking-widget/releases/${version}`}
-    >
-      {widgetVersion}
-    </Version>
+    <Version href={link}>{label}</Version>
     <FooterDivider />
   </FooterStyle>
 );

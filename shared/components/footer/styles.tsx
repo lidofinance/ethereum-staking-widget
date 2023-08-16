@@ -68,4 +68,8 @@ export const FooterDivider = styled.div`
 
 export const Version = styled(FooterLink)`
   margin-left: auto;
+  padding: 2px 5px;
+  border-radius: ${({ theme }) => theme.borderRadiusesMap.xs}px;
+  background: rgba(122, 138, 160, 0.1);
+  color: var(--lido-color-secondary);
 `;
