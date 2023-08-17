@@ -240,25 +240,25 @@ export const MATOMO_WALLETS_EVENTS: Record<
     'Connect OKX wallet',
     'eth_widget_connect_okx',
   ],
+  [MATOMO_WALLETS_EVENTS_TYPES.onClickPhantom]: [
+    'Ethereum_Staking_Widget',
+    'Click Phantom wallet',
+    'eth_widget_click_phantom',
+  ],
   [MATOMO_WALLETS_EVENTS_TYPES.onConnectPhantom]: [
     'Ethereum_Staking_Widget',
     'Connect Phantom wallet',
     'eth_widget_connect_phantom',
   ],
-  [MATOMO_WALLETS_EVENTS_TYPES.onClickPhantom]: [
+  [MATOMO_WALLETS_EVENTS_TYPES.onClickBitkeep]: [
     'Ethereum_Staking_Widget',
-    'Connect Phantom wallet',
-    'eth_widget_click_phantom',
+    'Click BitKeep wallet',
+    'eth_widget_click_bitkeep',
   ],
   [MATOMO_WALLETS_EVENTS_TYPES.onConnectBitkeep]: [
     'Ethereum_Staking_Widget',
     'Connect BitKeep wallet',
     'eth_widget_connect_bitkeep',
-  ],
-  [MATOMO_WALLETS_EVENTS_TYPES.onClickBitkeep]: [
-    'Ethereum_Staking_Widget',
-    'Connect BitKeep wallet',
-    'eth_widget_click_bitkeep',
   ],
 };
 
