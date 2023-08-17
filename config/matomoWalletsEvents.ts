@@ -40,6 +40,10 @@ export const enum MATOMO_WALLETS_EVENTS_TYPES {
   onConnectZerion = 'onConnectZerion',
   onClickOkx = 'onClickOkx',
   onConnectOkx = 'onConnectOkx',
+  onClickPhantom = 'onClickPhantom',
+  onConnectPhantom = 'onConnectPhantom',
+  onClickBitkeep = 'onClickBitkeep',
+  onConnectBitkeep = 'onConnectBitkeep',
 }
 
 export const MATOMO_WALLETS_EVENTS: Record<
@@ -236,6 +240,26 @@ export const MATOMO_WALLETS_EVENTS: Record<
     'Connect OKX wallet',
     'eth_widget_connect_okx',
   ],
+  [MATOMO_WALLETS_EVENTS_TYPES.onConnectPhantom]: [
+    'Ethereum_Staking_Widget',
+    'Connect Phantom wallet',
+    'eth_widget_connect_phantom',
+  ],
+  [MATOMO_WALLETS_EVENTS_TYPES.onClickPhantom]: [
+    'Ethereum_Staking_Widget',
+    'Connect Phantom wallet',
+    'eth_widget_click_phantom',
+  ],
+  [MATOMO_WALLETS_EVENTS_TYPES.onConnectBitkeep]: [
+    'Ethereum_Staking_Widget',
+    'Connect BitKeep wallet',
+    'eth_widget_connect_bitkeep',
+  ],
+  [MATOMO_WALLETS_EVENTS_TYPES.onClickBitkeep]: [
+    'Ethereum_Staking_Widget',
+    'Connect BitKeep wallet',
+    'eth_widget_click_bitkeep',
+  ],
 };
 
 export const walletsMetrics: WalletsMetrics = {
@@ -299,6 +323,12 @@ export const walletsMetrics: WalletsMetrics = {
         onClickOkx: () => {
           trackEvent(...MATOMO_WALLETS_EVENTS.onClickOkx);
         },
+        onClickPhantom: () => {
+          trackEvent(...MATOMO_WALLETS_EVENTS.onClickPhantom);
+        },
+        onClickBitkeep: () => {
+          trackEvent(...MATOMO_WALLETS_EVENTS.onClickBitkeep);
+        },
       },
     },
     connect: {
@@ -359,6 +389,12 @@ export const walletsMetrics: WalletsMetrics = {
         },
         onConnectOkx: () => {
           trackEvent(...MATOMO_WALLETS_EVENTS.onConnectOkx);
+        },
+        onConnectPhantom: () => {
+          trackEvent(...MATOMO_WALLETS_EVENTS.onConnectPhantom);
+        },
+        onConnectBitkeep: () => {
+          trackEvent(...MATOMO_WALLETS_EVENTS.onConnectBitkeep);
         },
       },
     },
