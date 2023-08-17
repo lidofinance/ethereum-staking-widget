@@ -1,13 +1,14 @@
-import { NextApiRequest, NextApiResponse } from 'next';
+import { wrapRequest as wrapNextRequest } from '@lidofinance/next-api-wrapper';
+import { defaultErrorHandler, rateLimit } from 'utilsApi';
+import { API } from 'types';
 
-export default function cspReport(
-  req: NextApiRequest,
-  res: NextApiResponse,
-): void {
+const cspReport: API = async (req, res) => {
   console.warn({
     type: 'CSP Violation',
-    ...JSON.parse(req.body),
+    ...req.body,
   });
 
   res.status(200).send({ status: 'ok' });
-}
+};
+
+export default wrapNextRequest([rateLimit, defaultErrorHandler])(cspReport);
