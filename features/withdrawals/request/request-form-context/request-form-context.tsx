@@ -1,4 +1,4 @@
-import { useMemo, useState, createContext, useContext } from 'react';
+import { useMemo, useState, createContext, useContext, useEffect } from 'react';
 import { FormProvider, useForm, useWatch } from 'react-hook-form';
 import invariant from 'tiny-invariant';
 import { TOKENS } from '@lido-sdk/constants';
@@ -14,6 +14,7 @@ import {
   RequestFormValidationContextType,
   ValidationResults,
 } from './types';
+import { useTransactionModal } from 'features/withdrawals/contexts/transaction-modal-context';
 
 //
 // data context
@@ -46,6 +47,7 @@ export const useValidationResults = () => {
 // Joint provider for form state, data, intermediate validation results
 //
 export const RequestFormProvider: React.FC = ({ children }) => {
+  const { dispatchModalState } = useTransactionModal();
   const [intermediateValidationResults, setIntermediateValidationResults] =
     useState<ValidationResults>({ requests: null });
 
@@ -99,6 +101,10 @@ export const RequestFormProvider: React.FC = ({ children }) => {
       }),
     [reset, handleSubmit, request, onSuccessRequest],
   );
+
+  useEffect(() => {
+    dispatchModalState({ type: 'set_on_retry', callback: onSubmit });
+  }, [dispatchModalState, onSubmit]);
 
   const value = useMemo(() => {
     return {

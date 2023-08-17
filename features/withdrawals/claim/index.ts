@@ -1,2 +1,1 @@
-export { ClaimWallet } from './wallet';
-export { ClaimForm } from './form';
+export { Claim } from './claim';

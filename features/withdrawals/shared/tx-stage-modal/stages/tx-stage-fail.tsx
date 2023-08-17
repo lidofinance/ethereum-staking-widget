@@ -23,7 +23,8 @@ export const TxStageFail: FC<TxStageFailProps> = (props) => {
       title="Transaction Error"
       description={failedText ?? 'Something went wrong'}
       footerHint={
-        failedText !== ErrorMessage.NOT_ENOUGH_ETHER && (
+        failedText !== ErrorMessage.NOT_ENOUGH_ETHER &&
+        onClick && (
           <RetryButtonStyled onClick={onClick}>Retry</RetryButtonStyled>
         )
       }

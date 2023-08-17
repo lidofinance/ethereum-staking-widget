@@ -19,7 +19,7 @@ import { TxRequestStageSuccess } from './tx-request-stage-success';
 export const TxRequestModal = () => {
   const {
     dispatchModalState,
-    startTx,
+    onRetry,
     requestAmount,
     token,
     txHash,
@@ -72,13 +72,7 @@ export const TxRequestModal = () => {
         return <TxStageSuccessMultisig />;
       case TX_STAGE.FAIL:
         return (
-          <TxStageFail
-            failedText={errorText}
-            onClick={() => {
-              dispatchModalState({ type: 'reset' });
-              startTx && startTx();
-            }}
-          />
+          <TxStageFail failedText={errorText} onClick={onRetry ?? undefined} />
         );
       case TX_STAGE.BUNKER:
         return (
@@ -99,7 +93,7 @@ export const TxRequestModal = () => {
     onCloseBunker,
     onOkBunker,
     requestAmount,
-    startTx,
+    onRetry,
     token,
     txHash,
     txStage,
