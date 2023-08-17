@@ -11,7 +11,7 @@ export const SubmitButton = () => {
   const { isSubmitting, isValidating, errors } =
     useFormState<ClaimFormInputType>();
   const { ethToClaim } = useClaimFormData();
-  const { requestsCount, selectedRequests } = useClaimFormData();
+  const { selectedRequests } = useClaimFormData();
 
   if (!active) return <Connect fullwidth />;
 
@@ -19,10 +19,7 @@ export const SubmitButton = () => {
     <FormatToken amount={ethToClaim} symbol="ETH" />
   );
 
-  const disabled =
-    Boolean(errors.requests) ||
-    requestsCount === 0 ||
-    selectedRequests.length === 0;
+  const disabled = Boolean(errors.requests) || selectedRequests.length === 0;
 
   return (
     <Button
