@@ -267,18 +267,6 @@ export const GET_REQUESTS: GetRequest[] = [
     },
   },
   {
-    uri: '/api/health',
-    schema: {
-      type: 'object',
-      properties: {
-        status: {
-          type: 'string',
-          const: 'ok',
-        },
-      },
-    },
-  },
-  {
     uri: '/api/sma-steth-apr',
     schema: {
       type: 'string',
