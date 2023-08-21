@@ -13,7 +13,7 @@ import { STRATEGY_LAZY } from 'utils/swrStrategies';
 
 // Provides all data fetching for form to function
 export const useRequestFormDataContextValue = () => {
-  const { update: withdrawalRequestsDataUpdate } = useClaimData();
+  const { revalidate: revalidateClaimData } = useClaimData();
   // useTotalSupply is bugged and switches to undefined for 1 render
   const stethTotalSupply = useContractSWR({
     contract: useSTETHContractRPC(),
@@ -47,15 +47,10 @@ export const useRequestFormDataContextValue = () => {
     return Promise.all([
       stethUpdate(),
       wstethUpdate(),
-      withdrawalRequestsDataUpdate(),
+      revalidateClaimData(),
       unfinalizedStETHUpdate(),
     ]);
-  }, [
-    stethUpdate,
-    unfinalizedStETHUpdate,
-    withdrawalRequestsDataUpdate,
-    wstethUpdate,
-  ]);
+  }, [stethUpdate, unfinalizedStETHUpdate, revalidateClaimData, wstethUpdate]);
 
   return useMemo(
     () => ({

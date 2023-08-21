@@ -18,7 +18,7 @@ const getFeeHistory = (
   percentile: number[],
 ) => {
   return provider.send('eth_feeHistory', [
-    blockCount.toString(16),
+    '0x' + blockCount.toString(16),
     latestBlock,
     percentile,
   ]) as Promise<{

@@ -330,72 +330,65 @@ export const useWithdrawalRequest = ({
   const isTokenLocked = isApprovalFlow && needsApprove;
 
   const request = useCallback(
-    (
+    async (
       requests: BigNumber[] | null,
       amount: BigNumber | null,
       token: TokensWithdrawable,
     ) => {
       // define and set retry point
-      const startCallback = async () => {
-        try {
-          invariant(
-            requests && request.length > 0,
-            'cannot submit empty requests',
-          );
-          invariant(amount, 'cannot submit empty amount');
-          if (isBunker) {
-            const bunkerDialogResult = await new Promise<boolean>((resolve) => {
-              dispatchModalState({
-                type: 'bunker',
-                onCloseBunker: () => resolve(false),
-                onOkBunker: () => resolve(true),
-              });
+      try {
+        invariant(
+          requests && request.length > 0,
+          'cannot submit empty requests',
+        );
+        invariant(amount, 'cannot submit empty amount');
+        if (isBunker) {
+          const bunkerDialogResult = await new Promise<boolean>((resolve) => {
+            dispatchModalState({
+              type: 'bunker',
+              onCloseBunker: () => resolve(false),
+              onOkBunker: () => resolve(true),
             });
-            if (!bunkerDialogResult) return { success: false };
-          }
-          // get right method
-          const method = getRequestMethod(isApprovalFlow, token);
-          // start flow
-          dispatchModalState({
-            type: 'start',
-            flow: isApprovalFlow
-              ? needsApprove
-                ? TX_STAGE.APPROVE
-                : TX_STAGE.SIGN
-              : TX_STAGE.PERMIT,
-            requestAmount: amount,
-            token,
           });
-
-          // each flow switches needed signing stages
-          if (isApprovalFlow) {
-            if (needsApprove) {
-              await approve();
-              // multisig does not move to next tx
-              if (!isMultisig) await method({ requests });
-            } else {
-              await method({ requests });
-            }
-          } else {
-            const signature = await gatherPermitSignature(amount);
-            await method({ signature, requests });
-          }
-          // end flow
-          dispatchModalState({
-            type: isMultisig ? 'success_multisig' : 'success',
-          });
-          return { success: true };
-        } catch (error) {
-          const errorMessage = getErrorMessage(error);
-          dispatchModalState({ type: 'error', errorText: errorMessage });
-          return { success: false, error: error };
+          if (!bunkerDialogResult) return { success: false };
         }
-      };
-      dispatchModalState({
-        type: 'set_starTx_callback',
-        callback: startCallback,
-      });
-      return startCallback();
+        // get right method
+        const method = getRequestMethod(isApprovalFlow, token);
+        // start flow
+        dispatchModalState({
+          type: 'start',
+          flow: isApprovalFlow
+            ? needsApprove
+              ? TX_STAGE.APPROVE
+              : TX_STAGE.SIGN
+            : TX_STAGE.PERMIT,
+          requestAmount: amount,
+          token,
+        });
+
+        // each flow switches needed signing stages
+        if (isApprovalFlow) {
+          if (needsApprove) {
+            await approve();
+            // multisig does not move to next tx
+            if (!isMultisig) await method({ requests });
+          } else {
+            await method({ requests });
+          }
+        } else {
+          const signature = await gatherPermitSignature(amount);
+          await method({ signature, requests });
+        }
+        // end flow
+        dispatchModalState({
+          type: isMultisig ? 'success_multisig' : 'success',
+        });
+        return { success: true };
+      } catch (error) {
+        const errorMessage = getErrorMessage(error);
+        dispatchModalState({ type: 'error', errorText: errorMessage });
+        return { success: false, error: error };
+      }
     },
     [
       approve,

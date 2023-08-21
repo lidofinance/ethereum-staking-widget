@@ -1,3 +1,5 @@
+import { useCallback } from 'react';
+import { Zero } from '@ethersproject/constants';
 import { BigNumber } from 'ethers';
 import { useLidoSWR } from '@lido-sdk/react';
 // import { useLidoShareRate } from 'features/withdrawals/hooks/contract/useLidoShareRate';
@@ -11,13 +13,18 @@ import {
 } from 'features/withdrawals/types/request-status';
 import { MAX_SHOWN_REQUEST_PER_TYPE } from 'features/withdrawals/withdrawals-constants';
 import { STRATEGY_LAZY } from 'utils/swrStrategies';
+
 // import { calcExpectedRequestEth } from 'features/withdrawals/utils/calc-expected-request-eth';
+
+export type WithdrawalRequests = NonNullable<
+  ReturnType<typeof useWithdrawalRequests>['data']
+>;
 
 export const useWithdrawalRequests = () => {
   const { contractRpc, account, chainId } = useWithdrawalsContract();
   // const { data: currentShareRate } = useLidoShareRate();
 
-  return useLidoSWR(
+  const swr = useLidoSWR(
     // TODO: use this fragment for expected eth calculation
     // currentShareRate
     //   ? ['swr:withdrawals-requests', account, chainId, currentShareRate]
@@ -61,7 +68,6 @@ export const useWithdrawalRequests = () => {
             request.amountOfStETH,
           );
         }
-
         return req;
       });
 
@@ -69,23 +75,6 @@ export const useWithdrawalRequests = () => {
         claimableRequests.splice(MAX_SHOWN_REQUEST_PER_TYPE).length > 0;
       isClamped ||=
         pendingRequests.splice(MAX_SHOWN_REQUEST_PER_TYPE).length > 0;
-
-      /* Stress test
-      let id = BigNumber.from(pendingRequests[pendingRequests.length - 1].id);
-      for (let index = pendingRequests.length; index < 100000; index++) {
-        id = id.add(1);
-        pendingRequests.push({
-          amountOfShares: BigNumber.from(10),
-          amountOfStETH: BigNumber.from('10000000000000000'),
-          id,
-          isClaimed: false,
-          isFinalized: false,
-          stringId: id.toString(),
-          owner: account,
-          timestamp: BigNumber.from('10000000000000000'),
-        });
-      }
-      */
 
       const _sortedClaimableRequests = claimableRequests.sort((aReq, bReq) =>
         aReq.id.gt(bReq.id) ? 1 : -1,
@@ -127,4 +116,39 @@ export const useWithdrawalRequests = () => {
     },
     STRATEGY_LAZY,
   );
+  const oldData = swr.data;
+  const mutate = swr.mutate;
+  const optimisticClaimRequests = useCallback(
+    async (requests: RequestStatusClaimable[]) => {
+      if (!oldData) return undefined;
+      const { steth, eth } = requests.reduce(
+        (acc, request) => {
+          return {
+            steth: acc.steth.add(request.amountOfStETH),
+            eth: acc.eth.add(request.claimableEth),
+          };
+        },
+        { steth: Zero, eth: Zero },
+      );
+      const optimisticData = {
+        ...oldData,
+        sortedClaimableRequests: oldData.sortedClaimableRequests.filter(
+          (r) => requests.includes(r), // this works because they are same object refs
+        ),
+        readyCount: oldData.readyCount - requests.length,
+        claimedCount: oldData.claimedCount + requests.length,
+        claimableAmountOfStETH: oldData.claimableAmountOfStETH.sub(steth),
+        claimableAmountOfETH: oldData.claimableAmountOfETH.sub(eth),
+      };
+      return mutate(optimisticData, true);
+    },
+    [oldData, mutate],
+  );
+
+  const revalidate = useCallback(
+    () => mutate(oldData, true),
+    [oldData, mutate],
+  );
+
+  return { ...swr, optimisticClaimRequests, revalidate };
 };

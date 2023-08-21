@@ -8,10 +8,9 @@ import { DATA_UNAVAILABLE } from 'config';
 import { RequestCounterStyled } from './styles';
 
 export const WalletMyRequests: FC = ({ children }) => {
-  const { withdrawalRequestsData, loading } = useClaimData();
+  const { data, initialLoading } = useClaimData();
   const { readyCount = DATA_UNAVAILABLE, pendingCount = DATA_UNAVAILABLE } =
-    withdrawalRequestsData || {};
-
+    data || {};
   const title = <>My requests {children}</>;
 
   const requestsContent = (
@@ -40,7 +39,7 @@ export const WalletMyRequests: FC = ({ children }) => {
     <CardBalance
       small
       title={title}
-      loading={loading}
+      loading={initialLoading}
       value={requestsContent}
     />
   );
