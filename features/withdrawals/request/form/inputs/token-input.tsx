@@ -10,10 +10,10 @@ import { TokensWithdrawable } from 'features/withdrawals/types/tokens-withdrawab
 const iconsMap = {
   [TOKENS.WSTETH]: <Wsteth />,
   [TOKENS.STETH]: <Steth />,
-};
+} as const;
 
 export const TokenInput = () => {
-  const { setValue, getFieldState } = useFormContext<RequestFormInputType>();
+  const { setValue } = useFormContext<RequestFormInputType>();
   const { field } = useController<RequestFormInputType, 'token'>({
     name: 'token',
   });
@@ -26,8 +26,6 @@ export const TokenInput = () => {
       icon={iconsMap[field.value]}
       error={errors.amount?.type === 'validate'}
       onChange={(value: TokensWithdrawable) => {
-        // this softly changes token state, resets amount and only validates if it was touched
-        const { isDirty } = getFieldState('amount');
         setValue('token', value, {
           shouldDirty: false,
           shouldTouch: false,
@@ -36,7 +34,7 @@ export const TokenInput = () => {
         setValue('amount', null, {
           shouldDirty: false,
           shouldTouch: false,
-          shouldValidate: isDirty,
+          shouldValidate: false,
         });
       }}
     >

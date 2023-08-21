@@ -3,7 +3,8 @@ import { GetServerSideProps } from 'next';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { Layout } from 'shared/components';
-import { WrapForm, UnwrapForm, Wallet, WrapFaq } from 'features/wrap';
+import { UnwrapForm, Wallet, WrapFaq } from 'features/wrap';
+import { WrapFormWithProviders } from 'features/wrap/features/wrap-form/wrap-form-with-providers';
 import { Switch } from 'shared/components/switch';
 import { useSafeQueryString } from 'shared/hooks/useSafeQueryString';
 import NoSsrWrapper from 'shared/components/no-ssr-wrapper';
@@ -38,7 +39,7 @@ const WrapPage: FC<WrapModePageProps> = ({ mode }) => {
 
       <NoSsrWrapper>
         <Wallet />
-        {isUnwrapMode ? <UnwrapForm /> : <WrapForm />}
+        {isUnwrapMode ? <UnwrapForm /> : <WrapFormWithProviders />}
       </NoSsrWrapper>
 
       <WrapFaq />

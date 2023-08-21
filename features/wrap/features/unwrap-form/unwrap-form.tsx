@@ -8,13 +8,7 @@ import {
   useRef,
 } from 'react';
 import { parseEther } from '@ethersproject/units';
-import {
-  Block,
-  DataTable,
-  DataTableRow,
-  Wsteth,
-  Button,
-} from '@lidofinance/lido-ui';
+import { Block, Wsteth, Button } from '@lidofinance/lido-ui';
 import { TOKENS } from '@lido-sdk/constants';
 import { useWeb3 } from 'reef-knot/web3-react';
 import {
@@ -23,21 +17,19 @@ import {
   useWSTETHBalance,
   useWSTETHContractWeb3,
 } from '@lido-sdk/react';
+import { useIsMultisig } from 'shared/hooks/useIsMultisig';
 import { TxStageModal, TX_OPERATION, TX_STAGE } from 'shared/components';
 import { L2Banner } from 'shared/l2-banner';
 import { MATOMO_CLICK_EVENTS } from 'config';
-import { useTxCostInUsd, useStethByWsteth } from 'shared/hooks';
+import { useStethByWsteth } from 'shared/hooks';
 import { useCurrencyInput } from 'shared/forms/hooks/useCurrencyInput';
 import { formatBalance } from 'utils';
 import { Connect } from 'shared/wallet';
 import { InputDecoratorMaxButton } from 'shared/forms/components/input-decorator-max-button';
 import { FormStyled, InputStyled } from 'features/wrap/styles';
-import { DataTableRowStethByWsteth } from 'shared/components/data-table-row-steth-by-wsteth';
-import { unwrapProcessing } from 'features/wrap/utils';
-import { useUnwrapGasLimit } from './hooks';
+import { unwrapProcessing } from './utils/unwrap-processing';
 import { getTokenDisplayName } from 'utils/getTokenDisplayName';
-import { FormatToken } from 'shared/formatters/format-token';
-import { useIsMultisig } from 'shared/hooks/useIsMultisig';
+import { UnwrapStats } from './unwrap-stats';
 
 export const UnwrapForm: FC = memo(() => {
   const { active, chainId } = useWeb3();
@@ -56,10 +48,6 @@ export const UnwrapForm: FC = memo(() => {
   const [txHash, setTxHash] = useState<string>();
   const [txModalFailedText, setTxModalFailedText] = useState('');
   const [inputValue, setInputValue] = useState('');
-
-  const unwrapGasLimit = useUnwrapGasLimit();
-
-  const unwrapTxCostInUsd = useTxCostInUsd(unwrapGasLimit);
 
   const openTxModal = useCallback(() => {
     setTxModalOpen(true);
@@ -181,23 +169,7 @@ export const UnwrapForm: FC = memo(() => {
         <L2Banner matomoEvent={MATOMO_CLICK_EVENTS.l2BannerUnwrap} />
       </FormStyled>
 
-      <DataTable>
-        <DataTableRow
-          title="Max gas fee"
-          data-testid="maxGasFee"
-          loading={!unwrapTxCostInUsd}
-        >
-          ${unwrapTxCostInUsd?.toFixed(2)}
-        </DataTableRow>
-        <DataTableRowStethByWsteth />
-        <DataTableRow title="You will receive">
-          <FormatToken
-            data-testid="youWillReceive"
-            amount={willReceiveStethAsBigNumber}
-            symbol="stETH"
-          />
-        </DataTableRow>
-      </DataTable>
+      <UnwrapStats willReceiveStethAsBigNumber={willReceiveStethAsBigNumber} />
 
       <TxStageModal
         open={txModalOpen}

@@ -7,12 +7,9 @@ import { Zero } from '@ethersproject/constants';
 import { useAllowance, useMountedState, useSDK } from '@lido-sdk/react';
 import { isContract } from 'utils/isContract';
 import { getFeeData } from 'utils/getFeeData';
+import { runWithTransactionLogger } from 'utils';
 
-type TransactionCallback = () => Promise<ContractTransaction | string>;
-
-export type UseApproveWrapper = (
-  callback: TransactionCallback,
-) => Promise<void> | void;
+export type TransactionCallback = () => Promise<ContractTransaction | string>;
 
 export type UseApproveResponse = {
   approve: () => Promise<void>;
@@ -24,21 +21,11 @@ export type UseApproveResponse = {
   error: unknown;
 };
 
-const defaultWrapper: UseApproveWrapper = async (
-  callback: TransactionCallback,
-) => {
-  const result = await callback();
-  if (typeof result === 'object') {
-    await result.wait();
-  }
-};
-
 export const useApprove = (
   amount: BigNumber,
   token: string,
   spender: string,
   owner?: string,
-  wrapper: UseApproveWrapper = defaultWrapper,
 ): UseApproveResponse => {
   const { providerWeb3, account, chainId } = useSDK();
   const mergedOwner = owner ?? account;
@@ -65,7 +52,8 @@ export const useApprove = (
       invariant(account, 'account is required');
       const contractWeb3 = getERC20Contract(token, providerWeb3.getSigner());
       const isMultisig = await isContract(account, providerWeb3);
-      await wrapper(async () => {
+
+      const processApproveTx = async () => {
         if (isMultisig) {
           const tx = await contractWeb3.populateTransaction.approve(
             spender,
@@ -88,10 +76,21 @@ export const useApprove = (
           });
           return tx;
         }
-      });
-      await updateAllowance();
+      };
+
+      const approveTx = await runWithTransactionLogger(
+        'Approve signing',
+        processApproveTx,
+      );
+
+      if (typeof approveTx === 'object') {
+        await runWithTransactionLogger('Approve block confirmation', () =>
+          approveTx.wait(),
+        );
+      }
     } finally {
       setApproving(false);
+      await updateAllowance();
     }
   }, [
     setApproving,
@@ -99,7 +98,6 @@ export const useApprove = (
     chainId,
     account,
     token,
-    wrapper,
     updateAllowance,
     spender,
     amount,

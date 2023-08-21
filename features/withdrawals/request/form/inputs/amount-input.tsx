@@ -1,4 +1,3 @@
-import { TOKENS } from '@lido-sdk/constants';
 import { InputDecoratorTvlStake } from 'features/withdrawals/shared/input-decorator-tvl-stake';
 import { useController, useWatch } from 'react-hook-form';
 import { InputAmount } from 'shared/forms/components/input-amount';
@@ -11,7 +10,7 @@ import {
 import { useTvlMessage } from 'features/withdrawals/hooks/useTvlMessage';
 
 export const AmountInput = () => {
-  const { balanceSteth, balanceWSteth, isTokenLocked } = useRequestFormData();
+  const { maxAmount, isTokenLocked } = useRequestFormData();
   const token = useWatch<RequestFormInputType, 'token'>({ name: 'token' });
 
   const {
@@ -23,15 +22,12 @@ export const AmountInput = () => {
 
   const { balanceDiff } = useTvlMessage(error);
 
-  const balance = token === TOKENS.STETH ? balanceSteth : balanceWSteth;
-
   return (
     <InputAmount
       fullwidth
       error={error?.type === 'validate'}
-      placeholder="0"
       isLocked={isTokenLocked}
-      maxValue={balance}
+      maxValue={maxAmount}
       rightDecorator={
         balanceDiff && <InputDecoratorTvlStake tvlDiff={balanceDiff} />
       }
