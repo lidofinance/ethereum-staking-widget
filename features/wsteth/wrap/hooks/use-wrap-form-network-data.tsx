@@ -5,12 +5,12 @@ import {
   useEthereumBalance,
 } from '@lido-sdk/react';
 
-import { useWrapGasLimit } from '../wrap-form/hooks/use-wrap-gas-limit';
+import { useWrapGasLimit } from './use-wrap-gas-limit';
 import { useIsMultisig } from 'shared/hooks/useIsMultisig';
 import { useCurrencyMaxAmount } from 'shared/forms/hooks/useCurrencyMaxAmount';
 
 import { STRATEGY_LAZY } from 'utils/swrStrategies';
-import { TOKENS_TO_WRAP } from 'features/wrap/types';
+import { TOKENS_TO_WRAP } from 'features/wsteth/shared/types';
 import { parseEther } from '@ethersproject/units';
 import { useAwaiter } from 'shared/hooks/use-awaiter';
 

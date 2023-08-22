@@ -1,8 +1,8 @@
 import type { BigNumber } from 'ethers';
-import type { TokensWrappable } from 'features/wrap/types';
-import type { useWrapFormNetworkData } from './use-wrap-form-network-data';
+import type { TokensWrappable } from 'features/wsteth/shared/types';
+import type { useWrapFormNetworkData } from '../hooks/use-wrap-form-network-data';
 import type { computeWrapFormContextValues } from './compute-wrap-form-context-values';
-import type { useWrapTxApprove } from '../wrap-form/hooks/use-wrap-tx-approve';
+import type { useWrapTxApprove } from '../hooks/use-wrap-tx-approve';
 
 export type WrapFormInputType = {
   amount: null | BigNumber;

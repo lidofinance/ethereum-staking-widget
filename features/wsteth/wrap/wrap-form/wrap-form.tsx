@@ -6,11 +6,11 @@ import { WrapFormStats } from './wrap-stats';
 import { WrapFormTxModal } from './wrap-form-tx-modal';
 import { WrapFormProvider } from '../wrap-form-context/wrap-form-context';
 import { TransactionModalProvider } from 'features/withdrawals/contexts/transaction-modal-context';
-import { FormControlled } from './controls/form-controlled';
-import { TokenInput } from './controls/token-input';
-import { AmountInput } from './controls/amount-input';
-import { SubmitButton } from './controls/submit-button';
-import { ErrorMessageInputGroup } from './controls/error-message-input-group';
+import { FormControlled } from '../wrap-form-controls/form-controlled';
+import { TokenInput } from '../wrap-form-controls/token-input';
+import { AmountInput } from '../wrap-form-controls/amount-input';
+import { SubmitButton } from '../wrap-form-controls/submit-button';
+import { ErrorMessageInputGroup } from '../wrap-form-controls/error-message-input-group';
 
 import { MATOMO_CLICK_EVENTS } from 'config';
 

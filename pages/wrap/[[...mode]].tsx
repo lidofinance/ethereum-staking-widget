@@ -1,22 +1,13 @@
-import { FC, useEffect } from 'react';
+import { useEffect } from 'react';
 import { GetServerSideProps } from 'next';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { Layout } from 'shared/components';
-import { UnwrapForm, Wallet, WrapFaq } from 'features/wrap';
-import { WrapForm } from 'features/wrap/features/wrap-form/wrap-form';
-import { Switch } from 'shared/components/switch';
 import { useSafeQueryString } from 'shared/hooks/useSafeQueryString';
-import NoSsrWrapper from 'shared/components/no-ssr-wrapper';
+import { WrapUnwrapTabs } from 'features/wsteth/wrap-unwrap-tabs';
 
-const NAV_ROUTES = [
-  { name: 'Wrap', path: '/wrap' },
-  { name: 'Unwrap', path: '/wrap/unwrap' },
-];
-
-const WrapPage: FC<WrapModePageProps> = ({ mode }) => {
+const WrapPage: React.FC<WrapModePageProps> = ({ mode }) => {
   const { isReady, query, replace } = useRouter();
-  const isUnwrapMode = mode === 'unwrap';
   const queryString = useSafeQueryString();
 
   // legacy routing support
@@ -35,14 +26,7 @@ const WrapPage: FC<WrapModePageProps> = ({ mode }) => {
         <title>Wrap | Lido</title>
       </Head>
 
-      <Switch checked={isUnwrapMode} routes={NAV_ROUTES} />
-
-      <NoSsrWrapper>
-        <Wallet />
-        {isUnwrapMode ? <UnwrapForm /> : <WrapForm />}
-      </NoSsrWrapper>
-
-      <WrapFaq />
+      <WrapUnwrapTabs mode={mode}></WrapUnwrapTabs>
     </Layout>
   );
 };

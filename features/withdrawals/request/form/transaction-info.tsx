@@ -1,7 +1,7 @@
 import { TOKENS } from '@lido-sdk/constants';
 import { DataTableRow } from '@lidofinance/lido-ui';
 import { useRequestTxPrice } from 'features/withdrawals/hooks/useWithdrawTxPrice';
-import { useApproveGasLimit } from 'features/wrap/features/wrap-form/hooks/use-approve-gas-limit';
+import { useApproveGasLimit } from 'features/wsteth/wrap/hooks/use-approve-gas-limit';
 import { useWatch } from 'react-hook-form';
 import { DataTableRowStethByWsteth } from 'shared/components/data-table-row-steth-by-wsteth';
 import { FormatToken } from 'shared/formatters';

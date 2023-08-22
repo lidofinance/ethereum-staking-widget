@@ -3,12 +3,12 @@ import { parseEther } from '@ethersproject/units';
 
 import { useFormContext } from 'react-hook-form';
 import { useTxCostInUsd, useWstethBySteth } from 'shared/hooks';
-import { useApproveGasLimit } from './hooks/use-approve-gas-limit';
+import { useApproveGasLimit } from '../hooks/use-approve-gas-limit';
 import { useWrapFormData, WrapFormInputType } from '../wrap-form-context';
 
 import { DataTable, DataTableRow } from '@lidofinance/lido-ui';
 import { FormatToken } from 'shared/formatters';
-import { TOKENS_TO_WRAP } from 'features/wrap/types';
+import { TOKENS_TO_WRAP } from 'features/wsteth/shared/types';
 
 export const WrapFormStats = () => {
   const { allowance, wrapGasLimit, willReceiveWsteth, isApprovalLoading } =

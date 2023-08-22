@@ -1,6 +1,6 @@
 import { useFormState } from 'react-hook-form';
-import { WrapFormInputType } from '../../wrap-form-context';
-import { InputGroupStyled } from 'features/wrap/styles';
+import { WrapFormInputType } from '../wrap-form-context';
+import { InputGroupStyled } from 'features/wsteth/shared/styles';
 import { isValidationErrorTypeDefault } from 'shared/hook-form/validation-error';
 
 export const ErrorMessageInputGroup: React.FC = ({ children }) => {

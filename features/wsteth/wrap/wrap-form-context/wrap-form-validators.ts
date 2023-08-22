@@ -9,7 +9,7 @@ import { VALIDATION_CONTEXT_TIMEOUT } from 'features/withdrawals/withdrawals-con
 import { validateBignumberMax } from 'shared/hook-form/validate-bignumber-max';
 import { getTokenDisplayName } from 'utils/getTokenDisplayName';
 import { BigNumber } from 'ethers';
-import { TokensWrappable } from 'features/wrap/types';
+import { TokensWrappable } from 'features/wsteth/shared/types';
 import { formatEther } from '@ethersproject/units';
 
 const messageMaxAmount = (max: BigNumber, token: TokensWrappable) =>

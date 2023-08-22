@@ -26,8 +26,8 @@ import { useCurrencyInput } from 'shared/forms/hooks/useCurrencyInput';
 import { formatBalance } from 'utils';
 import { Connect } from 'shared/wallet';
 import { InputDecoratorMaxButton } from 'shared/forms/components/input-decorator-max-button';
-import { FormStyled, InputStyled } from 'features/wrap/styles';
-import { unwrapProcessing } from './utils/unwrap-processing';
+import { FormStyled, InputStyled } from 'features/wsteth/shared/styles';
+import { unwrapProcessing } from '../utils/unwrap-processing';
 import { getTokenDisplayName } from 'utils/getTokenDisplayName';
 import { UnwrapStats } from './unwrap-stats';
 

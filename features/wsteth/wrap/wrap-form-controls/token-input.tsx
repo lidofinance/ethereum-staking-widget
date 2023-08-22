@@ -4,8 +4,8 @@ import { SelectIcon, Option, Eth, Steth } from '@lidofinance/lido-ui';
 
 import { trackEvent } from '@lidofinance/analytics-matomo';
 import { getTokenDisplayName } from 'utils/getTokenDisplayName';
-import { WrapFormInputType } from '../../wrap-form-context';
-import { TokensWrappable, TOKENS_TO_WRAP } from 'features/wrap/types';
+import { WrapFormInputType } from '../wrap-form-context';
+import { TokensWrappable, TOKENS_TO_WRAP } from 'features/wsteth/shared/types';
 import { MATOMO_CLICK_EVENTS } from 'config';
 import { isValidationErrorTypeDefault } from 'shared/hook-form/validation-error';
 

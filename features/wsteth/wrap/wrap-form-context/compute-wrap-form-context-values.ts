@@ -1,4 +1,4 @@
-import { TOKENS_TO_WRAP, TokensWrappable } from 'features/wrap/types';
+import { TOKENS_TO_WRAP, TokensWrappable } from 'features/wsteth/shared/types';
 import { WrapFormNetworkData } from './types';
 
 type WrapFormComputeValuesArgs = {

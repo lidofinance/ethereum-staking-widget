@@ -3,18 +3,18 @@ import { useMemo, createContext, useContext, useEffect } from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
 import { useWstethBySteth } from 'shared/hooks';
 import { useWeb3 } from 'reef-knot/web3-react';
-import { useWrapTxApprove } from '../wrap-form/hooks/use-wrap-tx-approve';
+import { useWrapTxApprove } from '../hooks/use-wrap-tx-approve';
 
 import {
   WrapFormDataContextValueType,
   WrapFormInputType,
   WrapFormNetworkData,
 } from './types';
-import { useWrapFormNetworkData } from './use-wrap-form-network-data';
+import { useWrapFormNetworkData } from '../hooks/use-wrap-form-network-data';
 import { useTransactionModal } from 'features/withdrawals/contexts/transaction-modal-context';
-import { useWrapFormProcessor } from '../wrap-form/hooks/use-wrap-form-processing';
+import { useWrapFormProcessor } from '../hooks/use-wrap-form-processing';
 import { WrapFormValidationResolver } from './wrap-form-validators';
-import { TOKENS_TO_WRAP } from 'features/wrap/types';
+import { TOKENS_TO_WRAP } from 'features/wsteth/shared/types';
 import { Zero } from '@ethersproject/constants';
 import { computeWrapFormContextValues } from './compute-wrap-form-context-values';
 

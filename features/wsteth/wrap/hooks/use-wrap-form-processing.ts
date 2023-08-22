@@ -10,8 +10,8 @@ import { BigNumber } from 'ethers';
 import { getErrorMessage, runWithTransactionLogger } from 'utils';
 import { isContract } from 'utils/isContract';
 import { TX_STAGE } from 'features/withdrawals/shared/tx-stage-modal';
-import { TokensWrappable } from 'features/wrap/types';
-import { WrapFormApprovalData } from '../../wrap-form-context';
+import { TokensWrappable } from 'features/wsteth/shared/types';
+import { WrapFormApprovalData } from '../wrap-form-context';
 
 type UseWrapFormProcessorArgs = {
   approvalData: WrapFormApprovalData;

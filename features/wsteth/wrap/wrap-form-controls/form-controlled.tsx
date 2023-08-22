@@ -1,5 +1,5 @@
-import { FormStyled } from 'features/wrap/styles';
-import { useWrapFormData } from '../../wrap-form-context';
+import { FormStyled } from 'features/wsteth/shared/styles';
+import { useWrapFormData } from '../wrap-form-context';
 
 export const FormControlled: React.FC = ({ children }) => {
   const { onSubmit } = useWrapFormData();

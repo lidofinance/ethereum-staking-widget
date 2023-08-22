@@ -5,7 +5,7 @@ import { useApprove } from 'shared/hooks/useApprove';
 
 import type { BigNumber } from 'ethers';
 import { getTokenAddress, TOKENS } from '@lido-sdk/constants';
-import { TokensWrappable, TOKENS_TO_WRAP } from 'features/wrap/types';
+import { TokensWrappable, TOKENS_TO_WRAP } from 'features/wsteth/shared/types';
 
 type UseWrapTxApproveArgs = {
   amount: BigNumber;

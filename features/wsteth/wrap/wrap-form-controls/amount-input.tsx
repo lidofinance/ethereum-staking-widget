@@ -1,5 +1,5 @@
 import { useController, useWatch } from 'react-hook-form';
-import { useWrapFormData, WrapFormInputType } from '../../wrap-form-context';
+import { useWrapFormData, WrapFormInputType } from '../wrap-form-context';
 
 import { InputAmount } from 'shared/forms/components/input-amount';
 
