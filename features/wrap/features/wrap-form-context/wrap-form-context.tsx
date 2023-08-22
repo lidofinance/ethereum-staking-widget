@@ -52,21 +52,21 @@ export const WrapFormProvider: React.FC = ({ children }) => {
 
   const { handleSubmit, reset, watch } = formObject;
   const [token, amount] = watch(['token', 'amount']);
+  const { revalidateWrapFormData } = networkData;
 
   const approvalData = useWrapTxApprove({ amount: amount ?? Zero, token });
-  const processWrapFormFlow = useWrapFormProcessor({ approvalData });
+  const processWrapFormFlow = useWrapFormProcessor({
+    approvalData,
+    onBeforeSuccess: revalidateWrapFormData,
+  });
 
-  const { revalidateWrapFormData } = networkData;
   const onSubmit = useMemo(
     () =>
       handleSubmit(async ({ token, amount }) => {
         const success = await processWrapFormFlow({ token, amount });
-        if (success) {
-          void revalidateWrapFormData();
-          reset();
-        }
+        if (success) reset();
       }),
-    [handleSubmit, revalidateWrapFormData, processWrapFormFlow, reset],
+    [handleSubmit, processWrapFormFlow, reset],
   );
 
   const { dispatchModalState } = useTransactionModal();

@@ -15,6 +15,7 @@ import { WrapFormApprovalData } from '../../wrap-form-context';
 
 type UseWrapFormProcessorArgs = {
   approvalData: WrapFormApprovalData;
+  onBeforeSuccess?: () => Promise<void>;
 };
 
 type WrapFormProcessorArgs = {
@@ -24,6 +25,7 @@ type WrapFormProcessorArgs = {
 
 export const useWrapFormProcessor = ({
   approvalData,
+  onBeforeSuccess,
 }: UseWrapFormProcessorArgs) => {
   const { account } = useWeb3();
   const { providerWeb3 } = useSDK();
@@ -71,6 +73,7 @@ export const useWrapFormProcessor = ({
           );
         }
 
+        await onBeforeSuccess?.();
         dispatchModalState({ type: 'success' });
         return true;
       } catch (error) {
@@ -89,6 +92,7 @@ export const useWrapFormProcessor = ({
       isApprovalNeededBeforeWrap,
       processApproveTx,
       processWrapTx,
+      onBeforeSuccess,
     ],
   );
 };

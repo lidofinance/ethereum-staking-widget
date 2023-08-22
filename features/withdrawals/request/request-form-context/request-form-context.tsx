@@ -52,7 +52,8 @@ export const RequestFormProvider: React.FC = ({ children }) => {
     useState<ValidationResults>({ requests: null });
 
   const requestFormData = useRequestFormDataContextValue();
-  const { balanceSteth, balanceWSteth, onSuccessRequest } = requestFormData;
+  const { balanceSteth, balanceWSteth, revalidateRequestFormData } =
+    requestFormData;
   const validationContext = useValidationContext(
     requestFormData,
     setIntermediateValidationResults,
@@ -85,18 +86,16 @@ export const RequestFormProvider: React.FC = ({ children }) => {
   } = useWithdrawalRequest({
     token,
     amount,
+    onBeforeSuccess: revalidateRequestFormData,
   });
 
   const onSubmit = useMemo(
     () =>
       handleSubmit(async ({ requests, amount, token }) => {
         const { success } = await request(requests, amount, token);
-        if (success) {
-          await onSuccessRequest();
-          reset();
-        }
+        if (success) reset();
       }),
-    [reset, handleSubmit, request, onSuccessRequest],
+    [reset, handleSubmit, request],
   );
 
   useEffect(() => {

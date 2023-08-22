@@ -43,8 +43,8 @@ export const useRequestFormDataContextValue = () => {
     config: STRATEGY_LAZY,
   }).data;
 
-  const onSuccessRequest = useCallback(() => {
-    return Promise.all([
+  const revalidateRequestFormData = useCallback(() => {
+    return Promise.allSettled([
       stethUpdate(),
       wstethUpdate(),
       revalidateClaimData(),
@@ -62,7 +62,7 @@ export const useRequestFormDataContextValue = () => {
       minUnstakeWSteth,
       stethTotalSupply,
       unfinalizedStETH,
-      onSuccessRequest,
+      revalidateRequestFormData,
     }),
     [
       balanceSteth,
@@ -73,7 +73,7 @@ export const useRequestFormDataContextValue = () => {
       minUnstakeWSteth,
       stethTotalSupply,
       unfinalizedStETH,
-      onSuccessRequest,
+      revalidateRequestFormData,
     ],
   );
 };

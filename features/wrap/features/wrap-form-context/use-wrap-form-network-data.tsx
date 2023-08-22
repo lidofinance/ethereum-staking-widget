@@ -35,9 +35,11 @@ export const useWrapFormNetworkData = () => {
   });
 
   const revalidateWrapFormData = useCallback(async () => {
-    void ethBalanceUpdate();
-    void stethBalanceUpdate();
-    void wstethBalanceUpdate();
+    await Promise.allSettled([
+      ethBalanceUpdate(),
+      stethBalanceUpdate(),
+      wstethBalanceUpdate(),
+    ]);
   }, [ethBalanceUpdate, stethBalanceUpdate, wstethBalanceUpdate]);
 
   const networkData = useMemo(
