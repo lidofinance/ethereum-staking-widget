@@ -4,7 +4,7 @@ import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { Layout } from 'shared/components';
 import { UnwrapForm, Wallet, WrapFaq } from 'features/wrap';
-import { WrapFormWithProviders } from 'features/wrap/features/wrap-form/wrap-form-with-providers';
+import { WrapForm } from 'features/wrap/features/wrap-form/wrap-form';
 import { Switch } from 'shared/components/switch';
 import { useSafeQueryString } from 'shared/hooks/useSafeQueryString';
 import NoSsrWrapper from 'shared/components/no-ssr-wrapper';
@@ -39,7 +39,7 @@ const WrapPage: FC<WrapModePageProps> = ({ mode }) => {
 
       <NoSsrWrapper>
         <Wallet />
-        {isUnwrapMode ? <UnwrapForm /> : <WrapFormWithProviders />}
+        {isUnwrapMode ? <UnwrapForm /> : <WrapForm />}
       </NoSsrWrapper>
 
       <WrapFaq />
