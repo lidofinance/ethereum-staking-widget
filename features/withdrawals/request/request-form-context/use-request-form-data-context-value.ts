@@ -43,8 +43,8 @@ export const useRequestFormDataContextValue = () => {
     config: STRATEGY_LAZY,
   }).data;
 
-  const revalidateRequestFormData = useCallback(() => {
-    return Promise.allSettled([
+  const revalidateRequestFormData = useCallback(async () => {
+    await Promise.allSettled([
       stethUpdate(),
       wstethUpdate(),
       revalidateClaimData(),
