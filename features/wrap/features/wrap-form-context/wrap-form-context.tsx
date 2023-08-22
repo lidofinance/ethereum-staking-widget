@@ -57,7 +57,7 @@ export const WrapFormProvider: React.FC = ({ children }) => {
   const approvalData = useWrapTxApprove({ amount: amount ?? Zero, token });
   const processWrapFormFlow = useWrapFormProcessor({
     approvalData,
-    onBeforeSuccess: revalidateWrapFormData,
+    onConfirm: revalidateWrapFormData,
   });
 
   const onSubmit = useMemo(

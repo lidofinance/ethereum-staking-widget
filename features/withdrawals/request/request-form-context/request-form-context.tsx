@@ -86,7 +86,7 @@ export const RequestFormProvider: React.FC = ({ children }) => {
   } = useWithdrawalRequest({
     token,
     amount,
-    onBeforeSuccess: revalidateRequestFormData,
+    onConfirm: revalidateRequestFormData,
   });
 
   const onSubmit = useMemo(
