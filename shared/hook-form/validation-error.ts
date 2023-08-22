@@ -1,3 +1,19 @@
+export enum DefaultValidationErrorTypes {
+  VALIDATE = 'VALIDATE',
+  UNHANDLED = 'UNHANDLED',
+}
+
+export const isValidationErrorTypeDefault = (type?: string) =>
+  (
+    [
+      DefaultValidationErrorTypes.VALIDATE,
+      DefaultValidationErrorTypes.UNHANDLED,
+    ] as (string | undefined)[]
+  ).includes(type);
+
+export const isValidationErrorTypeUnhandled = (type?: string) =>
+  type === DefaultValidationErrorTypes.UNHANDLED;
+
 export class ValidationError extends Error {
   field: string;
   type: string;
@@ -10,7 +26,7 @@ export class ValidationError extends Error {
   ) {
     super(msg);
     this.field = field;
-    this.type = type ?? 'validate';
+    this.type = type ?? DefaultValidationErrorTypes.VALIDATE;
     this.payload = payload ?? {};
   }
 }
@@ -39,7 +55,7 @@ export const handleResolverValidationError = (
       // for general errors we use 'requests' field
       // cause non-fields get ignored and form is still considerate valid
       [fallbackErrorField]: {
-        type: 'validate',
+        type: DefaultValidationErrorTypes.UNHANDLED,
         message: 'unknown validation error',
       },
     },

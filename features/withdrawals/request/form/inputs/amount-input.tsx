@@ -8,6 +8,7 @@ import {
   useRequestFormData,
 } from 'features/withdrawals/request/request-form-context';
 import { useTvlMessage } from 'features/withdrawals/hooks/useTvlMessage';
+import { isValidationErrorTypeDefault } from 'shared/hook-form/validation-error';
 
 export const AmountInput = () => {
   const { maxAmount, isTokenLocked } = useRequestFormData();
@@ -25,7 +26,7 @@ export const AmountInput = () => {
   return (
     <InputAmount
       fullwidth
-      error={error?.type === 'validate'}
+      error={isValidationErrorTypeDefault(error?.type)}
       isLocked={isTokenLocked}
       maxValue={maxAmount}
       rightDecorator={

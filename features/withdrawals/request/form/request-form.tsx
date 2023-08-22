@@ -19,6 +19,7 @@ import { DexOptions } from './options/dex-options';
 import { LidoOption } from './options/lido-option';
 import { SubmitButton } from './submit-button';
 import { TransactionInfo } from './transaction-info';
+import { isValidationErrorTypeUnhandled } from 'shared/hook-form/validation-error';
 
 export const RequestForm = () => {
   const { isBunker, isPaused } = useWithdrawals();
@@ -43,7 +44,10 @@ export const RequestForm = () => {
           <>
             <LidoOption />
             <SubmitButton
-              disabled={!!errors.amount}
+              disabled={
+                !!errors.amount &&
+                !isValidationErrorTypeUnhandled(errors.amount.type)
+              }
               loading={isValidating || isSubmitting}
             />
             <TransactionInfo />

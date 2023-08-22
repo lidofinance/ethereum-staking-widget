@@ -4,6 +4,7 @@ import { useWrapFormData, WrapFormInputType } from '../../wrap-form-context';
 import { InputAmount } from 'shared/forms/components/input-amount';
 
 import { getTokenDisplayName } from 'utils/getTokenDisplayName';
+import { isValidationErrorTypeDefault } from 'shared/hook-form/validation-error';
 
 export const AmountInput = () => {
   const { maxAmount, isApprovalNeededBeforeWrap } = useWrapFormData();
@@ -17,7 +18,7 @@ export const AmountInput = () => {
     <InputAmount
       fullwidth
       data-testid="wrapInput"
-      error={error?.type === 'validate'}
+      error={isValidationErrorTypeDefault(error?.type)}
       isLocked={isApprovalNeededBeforeWrap}
       maxValue={maxAmount}
       label={`${getTokenDisplayName(token)} amount`}

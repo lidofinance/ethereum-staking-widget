@@ -6,6 +6,7 @@ import { RequestFormInputType } from 'features/withdrawals/request/request-form-
 
 import { getTokenDisplayName } from 'utils/getTokenDisplayName';
 import { TokensWithdrawable } from 'features/withdrawals/types/tokens-withdrawable';
+import { isValidationErrorTypeDefault } from 'shared/hook-form/validation-error';
 
 const iconsMap = {
   [TOKENS.WSTETH]: <Wsteth />,
@@ -24,7 +25,7 @@ export const TokenInput = () => {
     <SelectIcon
       {...field}
       icon={iconsMap[field.value]}
-      error={errors.amount?.type === 'validate'}
+      error={isValidationErrorTypeDefault(errors.amount?.type)}
       onChange={(value: TokensWithdrawable) => {
         setValue('token', value, {
           shouldDirty: false,
