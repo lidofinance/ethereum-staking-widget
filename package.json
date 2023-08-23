@@ -133,5 +133,9 @@
   },
   "resolutions": {
     "@types/react": "17.0.43"
-  }
+  },
+  "browserslist": [
+    "> 1%, last 2 versions, not dead",
+    "last 1 ios_saf major versions"
+  ]
 }
