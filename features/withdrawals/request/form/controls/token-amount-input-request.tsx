@@ -1,21 +1,17 @@
 import { InputDecoratorTvlStake } from 'features/withdrawals/shared/input-decorator-tvl-stake';
-import { useController, useWatch } from 'react-hook-form';
-import { InputAmount } from 'shared/forms/components/input-amount';
-import { getTokenDisplayName } from 'utils/getTokenDisplayName';
+import { useController } from 'react-hook-form';
 
 import {
   RequestFormInputType,
   useRequestFormData,
 } from 'features/withdrawals/request/request-form-context';
 import { useTvlMessage } from 'features/withdrawals/hooks/useTvlMessage';
-import { isValidationErrorTypeDefault } from 'shared/hook-form/validation-error';
+import { TokenAmountInputHookForm } from 'shared/hook-form/controls/token-amount-input-hook-form';
 
-export const AmountInput = () => {
+export const TokenAmountInputRequest = () => {
   const { maxAmount, isTokenLocked } = useRequestFormData();
-  const token = useWatch<RequestFormInputType, 'token'>({ name: 'token' });
 
   const {
-    field,
     fieldState: { error },
   } = useController<RequestFormInputType, 'amount'>({
     name: 'amount',
@@ -24,16 +20,12 @@ export const AmountInput = () => {
   const { balanceDiff } = useTvlMessage(error);
 
   return (
-    <InputAmount
-      fullwidth
-      error={isValidationErrorTypeDefault(error?.type)}
+    <TokenAmountInputHookForm
       isLocked={isTokenLocked}
       maxValue={maxAmount}
       rightDecorator={
         balanceDiff && <InputDecoratorTvlStake tvlDiff={balanceDiff} />
       }
-      label={`${getTokenDisplayName(token)} amount`}
-      {...field}
     />
   );
 };

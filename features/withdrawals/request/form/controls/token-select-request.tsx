@@ -6,14 +6,14 @@ import { RequestFormInputType } from 'features/withdrawals/request/request-form-
 
 import { getTokenDisplayName } from 'utils/getTokenDisplayName';
 import { TokensWithdrawable } from 'features/withdrawals/types/tokens-withdrawable';
-import { isValidationErrorTypeDefault } from 'shared/hook-form/validation-error';
+import { isValidationErrorTypeDefault } from 'shared/hook-form/validation/validation-error';
 
 const iconsMap = {
   [TOKENS.WSTETH]: <Wsteth />,
   [TOKENS.STETH]: <Steth />,
 } as const;
 
-export const TokenInput = () => {
+export const TokenSelectRequest = () => {
   const { setValue } = useFormContext<RequestFormInputType>();
   const { field } = useController<RequestFormInputType, 'token'>({
     name: 'token',

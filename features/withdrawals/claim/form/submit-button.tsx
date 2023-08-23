@@ -5,7 +5,7 @@ import { FormatToken } from 'shared/formatters/format-token';
 import { ClaimFormInputType, useClaimFormData } from '../claim-form-context';
 import { Zero } from '@ethersproject/constants';
 import { useFormState } from 'react-hook-form';
-import { isValidationErrorTypeUnhandled } from 'shared/hook-form/validation-error';
+import { isValidationErrorTypeUnhandled } from 'shared/hook-form/validation/validation-error';
 
 export const SubmitButton = () => {
   const { active } = useWeb3();

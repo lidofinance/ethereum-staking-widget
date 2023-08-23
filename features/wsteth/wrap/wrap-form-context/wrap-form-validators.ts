@@ -1,16 +1,18 @@
 import invariant from 'tiny-invariant';
-import { Resolver } from 'react-hook-form';
-import { validateEtherAmount } from 'shared/hook-form/validate-ether-amount';
-import { handleResolverValidationError } from 'shared/hook-form/validation-error';
+import { formatEther } from '@ethersproject/units';
+import type { BigNumber } from 'ethers';
+import type { Resolver } from 'react-hook-form';
+
+import { validateEtherAmount } from 'shared/hook-form/validation/validate-ether-amount';
+import { validateBignumberMax } from 'shared/hook-form/validation/validate-bignumber-max';
+import { getTokenDisplayName } from 'utils/getTokenDisplayName';
 import { computeWrapFormContextValues } from './compute-wrap-form-context-values';
-import { WrapFormInputType, WrapFormNetworkData } from './types';
+import { handleResolverValidationError } from 'shared/hook-form/validation/validation-error';
+
 import { awaitWithTimeout } from 'utils/await-with-timeout';
 import { VALIDATION_CONTEXT_TIMEOUT } from 'features/withdrawals/withdrawals-constants';
-import { validateBignumberMax } from 'shared/hook-form/validate-bignumber-max';
-import { getTokenDisplayName } from 'utils/getTokenDisplayName';
-import { BigNumber } from 'ethers';
-import { TokensWrappable } from 'features/wsteth/shared/types';
-import { formatEther } from '@ethersproject/units';
+import type { WrapFormInputType, WrapFormNetworkData } from './types';
+import type { TokensWrappable } from 'features/wsteth/shared/types';
 
 const messageMaxAmount = (max: BigNumber, token: TokensWrappable) =>
   `${getTokenDisplayName(token)} amount must not be greater than ${formatEther(
