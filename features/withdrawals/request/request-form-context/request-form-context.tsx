@@ -6,12 +6,11 @@ import { TOKENS } from '@lido-sdk/constants';
 import { useWithdrawalRequest } from 'features/withdrawals/hooks';
 
 import { RequestFormValidationResolver } from './validators';
-import { useRequestFormDataContextValue } from './use-request-form-data-context-value';
-import { useValidationContext } from './use-validation-context';
+import { useRequestFormNetworkData } from './use-request-form-newtork-data';
 import {
   RequestFormDataContextValueType,
   RequestFormInputType,
-  RequestFormValidationContextType,
+  RequestFormNetworkData,
   ValidationResults,
 } from './types';
 import { useTransactionModal } from 'features/withdrawals/contexts/transaction-modal-context';
@@ -51,16 +50,14 @@ export const RequestFormProvider: React.FC = ({ children }) => {
   const [intermediateValidationResults, setIntermediateValidationResults] =
     useState<ValidationResults>({ requests: null });
 
-  const requestFormData = useRequestFormDataContextValue();
-  const { balanceSteth, balanceWSteth, revalidateRequestFormData } =
-    requestFormData;
-  const validationContext = useValidationContext(
-    requestFormData,
+  const { networkData, networkDataPromise } = useRequestFormNetworkData({
     setIntermediateValidationResults,
-  );
+  });
+  const { balanceSteth, balanceWSteth, revalidateRequestFormData } =
+    networkData;
   const formObject = useForm<
     RequestFormInputType,
-    Promise<RequestFormValidationContextType>
+    Promise<RequestFormNetworkData>
   >({
     defaultValues: {
       amount: null,
@@ -68,7 +65,7 @@ export const RequestFormProvider: React.FC = ({ children }) => {
       mode: 'lido',
       requests: null,
     },
-    context: validationContext.awaiter,
+    context: networkDataPromise,
     criteriaMode: 'firstError',
     mode: 'onChange',
     resolver: RequestFormValidationResolver,
@@ -106,7 +103,7 @@ export const RequestFormProvider: React.FC = ({ children }) => {
 
   const value = useMemo(
     (): RequestFormDataContextValueType => ({
-      ...requestFormData,
+      ...networkData,
       isApprovalFlow,
       isApprovalFlowLoading,
       isTokenLocked,
@@ -115,7 +112,7 @@ export const RequestFormProvider: React.FC = ({ children }) => {
       onSubmit,
     }),
     [
-      requestFormData,
+      networkData,
       isApprovalFlow,
       isApprovalFlowLoading,
       isTokenLocked,

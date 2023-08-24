@@ -6,7 +6,7 @@ import { Resolver } from 'react-hook-form';
 
 import { TokensWithdrawable } from 'features/withdrawals/types/tokens-withdrawable';
 import {
-  RequestFormValidationContextType,
+  RequestFormNetworkData,
   RequestFormInputType,
   ValidationResults,
 } from '.';
@@ -105,7 +105,7 @@ const tvlJokeValidate = (
 
 // helper to get filter out context values
 const transformContext = (
-  context: RequestFormValidationContextType,
+  context: RequestFormNetworkData,
   values: RequestFormInputType,
 ) => {
   const isSteth = values.token === TOKENS.STETH;
@@ -128,7 +128,7 @@ const transformContext = (
 // returns values or errors
 export const RequestFormValidationResolver: Resolver<
   RequestFormInputType,
-  Promise<RequestFormValidationContextType>
+  Promise<RequestFormNetworkData>
 > = async (values, contextPromise) => {
   const { amount, mode, token } = values;
   const validationResults: ValidationResults = {
@@ -157,6 +157,11 @@ export const RequestFormValidationResolver: Resolver<
       maxRequestCount,
       stethTotalSupply,
     } = transformContext(context, values);
+
+    invariant(balance, 'balance must be presented');
+    invariant(stethTotalSupply, 'stethTotalSupply must be presented');
+    invariant(minAmountPerRequest, 'minAmountPerRequest must be presented');
+    invariant(maxAmountPerRequest, 'maxAmountPerRequest must be presented');
 
     if (isSteth) {
       tvlJokeValidate('amount', amount, stethTotalSupply, balance);

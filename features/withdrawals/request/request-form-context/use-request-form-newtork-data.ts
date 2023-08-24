@@ -9,17 +9,31 @@ import { useClaimData } from 'features/withdrawals/contexts/claim-data-context';
 import { useWithdrawals } from 'features/withdrawals/contexts/withdrawals-context';
 import { useUnfinalizedStETH } from 'features/withdrawals/hooks';
 import { useCallback, useMemo } from 'react';
+import { useIsLedgerLive } from 'shared/hooks/useIsLedgerLive';
+import { useAwaiter } from 'shared/hooks/use-awaiter';
+
 import { STRATEGY_LAZY } from 'utils/swrStrategies';
+import {
+  MAX_REQUESTS_COUNT_LEDGER_LIMIT,
+  MAX_REQUESTS_COUNT,
+} from 'features/withdrawals/withdrawals-constants';
+import { SetIntermediateValidationResults } from './types';
+
+type UseRequestFormDataContextValue = {
+  setIntermediateValidationResults: SetIntermediateValidationResults;
+};
 
 // Provides all data fetching for form to function
-export const useRequestFormDataContextValue = () => {
+export const useRequestFormNetworkData = ({
+  setIntermediateValidationResults,
+}: UseRequestFormDataContextValue) => {
   const { revalidate: revalidateClaimData } = useClaimData();
   // useTotalSupply is bugged and switches to undefined for 1 render
-  const stethTotalSupply = useContractSWR({
+  const { data: stethTotalSupply } = useContractSWR({
     contract: useSTETHContractRPC(),
     method: 'totalSupply',
     config: STRATEGY_LAZY,
-  }).data;
+  });
   const { maxAmount: maxAmountPerRequestSteth, minAmount: minUnstakeSteth } =
     useWithdrawals();
   const wstethContract = useWSTETHContractRPC();
@@ -28,20 +42,25 @@ export const useRequestFormDataContextValue = () => {
   const { data: unfinalizedStETH, update: unfinalizedStETHUpdate } =
     useUnfinalizedStETH();
 
-  const maxAmountPerRequestWSteth = useContractSWR({
+  const isLedgerLive = useIsLedgerLive();
+  const maxRequestCount = isLedgerLive
+    ? MAX_REQUESTS_COUNT_LEDGER_LIMIT
+    : MAX_REQUESTS_COUNT;
+
+  const { data: maxAmountPerRequestWSteth } = useContractSWR({
     contract: wstethContract,
     method: 'getWstETHByStETH',
     params: [maxAmountPerRequestSteth],
     shouldFetch: !!maxAmountPerRequestSteth,
     config: STRATEGY_LAZY,
-  }).data;
-  const minUnstakeWSteth = useContractSWR({
+  });
+  const { data: minUnstakeWSteth } = useContractSWR({
     contract: wstethContract,
     method: 'getWstETHByStETH',
     params: [minUnstakeSteth],
     shouldFetch: !!minUnstakeSteth,
     config: STRATEGY_LAZY,
-  }).data;
+  });
 
   const revalidateRequestFormData = useCallback(async () => {
     await Promise.allSettled([
@@ -52,17 +71,19 @@ export const useRequestFormDataContextValue = () => {
     ]);
   }, [stethUpdate, unfinalizedStETHUpdate, revalidateClaimData, wstethUpdate]);
 
-  return useMemo(
+  const networkData = useMemo(
     () => ({
-      maxAmountPerRequestSteth,
-      minUnstakeSteth,
       balanceSteth,
       balanceWSteth,
+      maxAmountPerRequestSteth,
       maxAmountPerRequestWSteth,
+      minUnstakeSteth,
       minUnstakeWSteth,
       stethTotalSupply,
       unfinalizedStETH,
+      maxRequestCount,
       revalidateRequestFormData,
+      setIntermediateValidationResults,
     }),
     [
       balanceSteth,
@@ -73,7 +94,33 @@ export const useRequestFormDataContextValue = () => {
       minUnstakeWSteth,
       stethTotalSupply,
       unfinalizedStETH,
+      maxRequestCount,
       revalidateRequestFormData,
+      setIntermediateValidationResults,
     ],
   );
+
+  const networkDataAwaited = useMemo(() => {
+    if (
+      !networkData.balanceSteth ||
+      !networkData.balanceWSteth ||
+      !networkData.maxAmountPerRequestSteth ||
+      !networkData.maxAmountPerRequestWSteth ||
+      !networkData.minUnstakeSteth ||
+      !networkData.minUnstakeWSteth ||
+      !networkData.stethTotalSupply ||
+      !networkData.unfinalizedStETH ||
+      !networkData.maxRequestCount
+    ) {
+      return undefined;
+    }
+    return networkData;
+  }, [networkData]);
+
+  const networkDataAwaiter = useAwaiter(networkDataAwaited);
+
+  return {
+    networkData,
+    networkDataPromise: networkDataAwaiter.awaiter,
+  };
 };
