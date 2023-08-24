@@ -35,8 +35,9 @@ export const TokenSelectHookForm = <T extends TOKENS>({
   onChange,
 }: TokenSelectHookFormProps<T>) => {
   const { field } = useController({ name: fieldName });
-  const { setValue } = useFormContext();
-  const { errors } = useFormState<Record<string, unknown>>({
+  const { setValue, clearErrors } = useFormContext();
+
+  const { errors, defaultValues } = useFormState<Record<string, unknown>>({
     name: errorField,
   });
 
@@ -51,11 +52,12 @@ export const TokenSelectHookForm = <T extends TOKENS>({
           shouldTouch: false,
           shouldValidate: false,
         });
-        setValue(resetField, null, {
+        setValue(resetField, defaultValues?.[resetField], {
           shouldDirty: false,
           shouldTouch: false,
           shouldValidate: false,
         });
+        clearErrors(resetField);
         onChange?.(value);
       }}
     >

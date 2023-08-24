@@ -9,7 +9,7 @@ export const InputGroupRequest: React.FC = ({ children }) => {
   } = useFormState<RequestFormInputType>({ name: 'amount' });
   const { tvlMessage } = useTvlMessage(amountError);
   return (
-    <InputGroupHookForm fieldName="amount" success={tvlMessage}>
+    <InputGroupHookForm errorField="amount" success={tvlMessage}>
       {children}
     </InputGroupHookForm>
   );

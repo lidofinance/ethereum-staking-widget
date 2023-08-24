@@ -20,7 +20,7 @@ export const WrapForm: React.FC = memo(() => {
       <WrapFormProvider>
         <Block>
           <WrapFormController>
-            <InputGroupHookForm fieldName="amount">
+            <InputGroupHookForm errorField="amount">
               <TokenSelectWrap />
               <TokenAmountInputWrap />
             </InputGroupHookForm>

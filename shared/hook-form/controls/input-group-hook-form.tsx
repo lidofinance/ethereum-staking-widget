@@ -6,7 +6,7 @@ import { isValidationErrorTypeDefault } from 'shared/hook-form/validation/valida
 type InputGroupProps = React.ComponentProps<typeof InputGroup>;
 
 type InputGroupHookFormProps = InputGroupProps & {
-  fieldName: string;
+  errorField: string;
 };
 
 const InputGroupStyled = styled(InputGroup)<{
@@ -20,12 +20,14 @@ const InputGroupStyled = styled(InputGroup)<{
 `;
 
 export const InputGroupHookForm: React.FC<InputGroupHookFormProps> = ({
-  fieldName,
+  errorField,
   ...props
 }) => {
-  const { errors } = useFormState<Record<string, unknown>>({ name: fieldName });
+  const { errors } = useFormState<Record<string, unknown>>({
+    name: errorField,
+  });
   const errorMessage =
-    isValidationErrorTypeDefault(errors[fieldName]?.type) &&
-    errors[fieldName]?.message;
+    isValidationErrorTypeDefault(errors[errorField]?.type) &&
+    errors[errorField]?.message;
   return <InputGroupStyled fullwidth error={errorMessage} {...props} />;
 };
