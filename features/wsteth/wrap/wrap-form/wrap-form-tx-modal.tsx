@@ -8,7 +8,7 @@ import { TxStageModal } from 'shared/components';
 import { getTokenDisplayName } from 'utils/getTokenDisplayName';
 import {
   convertTxStageToLegacy,
-  convertTxStageToLegacyTxOperation,
+  convertTxStageToLegacyTxOperationWrap,
 } from 'features/wsteth/shared/utils/convertTxModalStageToLegacy';
 
 export const WrapFormTxModal = () => {
@@ -22,7 +22,7 @@ export const WrapFormTxModal = () => {
       open={modalState.isModalOpen}
       onClose={() => dispatchModalState({ type: 'close_modal' })}
       txStage={convertTxStageToLegacy(modalState.txStage)}
-      txOperation={convertTxStageToLegacyTxOperation(modalState.txStage)}
+      txOperation={convertTxStageToLegacyTxOperationWrap(modalState.txStage)}
       txHash={modalState.txHash}
       amount={
         modalState.requestAmount ? formatBalance(modalState.requestAmount) : ''

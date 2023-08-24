@@ -24,7 +24,7 @@ export const convertTxStageToLegacy = (txStage: TX_STAGE) => {
   }
 };
 
-export const convertTxStageToLegacyTxOperation = (txStage: TX_STAGE) => {
+export const convertTxStageToLegacyTxOperationWrap = (txStage: TX_STAGE) => {
   if (txStage === TX_STAGE.APPROVE) return TX_OPERATION_LEGACY.APPROVING;
   return TX_OPERATION_LEGACY.WRAPPING;
 };
