@@ -1,8 +1,7 @@
 import invariant from 'tiny-invariant';
-import { useMemo, createContext, useContext, useEffect } from 'react';
+import { useMemo, createContext, useContext } from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
 import { useWstethBySteth } from 'shared/hooks';
-import { useWeb3 } from 'reef-knot/web3-react';
 import { useWrapTxApprove } from '../hooks/use-wrap-tx-approve';
 
 import {
@@ -11,7 +10,6 @@ import {
   WrapFormNetworkData,
 } from './types';
 import { useWrapFormNetworkData } from '../hooks/use-wrap-form-network-data';
-import { useTransactionModal } from 'features/withdrawals/contexts/transaction-modal-context';
 import { useWrapFormProcessor } from '../hooks/use-wrap-form-processing';
 import { WrapFormValidationResolver } from './wrap-form-validators';
 import { TOKENS_TO_WRAP } from 'features/wsteth/shared/types';
@@ -36,7 +34,6 @@ export const useWrapFormData = () => {
 // Data provider
 //
 export const WrapFormProvider: React.FC = ({ children }) => {
-  const { active } = useWeb3();
   const { networkData, networkDataPromise } = useWrapFormNetworkData();
 
   const formObject = useForm<WrapFormInputType, Promise<WrapFormNetworkData>>({
@@ -50,35 +47,14 @@ export const WrapFormProvider: React.FC = ({ children }) => {
     resolver: WrapFormValidationResolver,
   });
 
-  const { handleSubmit, reset, watch } = formObject;
+  const { watch } = formObject;
   const [token, amount] = watch(['token', 'amount']);
-  const { revalidateWrapFormData } = networkData;
 
   const approvalData = useWrapTxApprove({ amount: amount ?? Zero, token });
   const processWrapFormFlow = useWrapFormProcessor({
     approvalData,
-    onConfirm: revalidateWrapFormData,
+    onConfirm: networkData.revalidateWrapFormData,
   });
-
-  const onSubmit = useMemo(
-    () =>
-      handleSubmit(async ({ token, amount }) => {
-        const success = await processWrapFormFlow({ token, amount });
-        if (success) reset();
-      }),
-    [handleSubmit, processWrapFormFlow, reset],
-  );
-
-  const { dispatchModalState } = useTransactionModal();
-
-  useEffect(() => {
-    dispatchModalState({ type: 'set_on_retry', callback: onSubmit });
-  }, [dispatchModalState, onSubmit]);
-
-  // Reset form amount after disconnect wallet
-  useEffect(() => {
-    if (!active) reset();
-  }, [active, reset]);
 
   const willReceiveWsteth = useWstethBySteth(
     token === TOKENS_TO_WRAP.STETH && approvalData.isApprovalNeededBeforeWrap
@@ -95,9 +71,9 @@ export const WrapFormProvider: React.FC = ({ children }) => {
         token,
       }),
       willReceiveWsteth,
-      onSubmit,
+      onSubmit: processWrapFormFlow,
     }),
-    [networkData, approvalData, token, willReceiveWsteth, onSubmit],
+    [networkData, approvalData, token, willReceiveWsteth, processWrapFormFlow],
   );
 
   return (

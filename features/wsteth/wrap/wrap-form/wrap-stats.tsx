@@ -6,7 +6,8 @@ import { useTxCostInUsd, useWstethBySteth } from 'shared/hooks';
 import { useApproveGasLimit } from '../hooks/use-approve-gas-limit';
 import { useWrapFormData, WrapFormInputType } from '../wrap-form-context';
 
-import { DataTable, DataTableRow } from '@lidofinance/lido-ui';
+import { DataTableRow } from '@lidofinance/lido-ui';
+import { StatsDataTable } from 'features/wsteth/shared/styles';
 import { FormatToken } from 'shared/formatters';
 import { TOKENS_TO_WRAP } from 'features/wsteth/shared/types';
 
@@ -27,7 +28,7 @@ export const WrapFormStats = () => {
   const wrapTxCostInUsd = useTxCostInUsd(wrapGasLimit && Number(wrapGasLimit));
 
   return (
-    <DataTable>
+    <StatsDataTable>
       <DataTableRow
         title="Max unlock fee"
         data-testid="maxUnlockFee"
@@ -64,6 +65,6 @@ export const WrapFormStats = () => {
           symbol="wstETH"
         />
       </DataTableRow>
-    </DataTable>
+    </StatsDataTable>
   );
 };

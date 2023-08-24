@@ -6,45 +6,43 @@ import type { Resolver } from 'react-hook-form';
 import { validateEtherAmount } from 'shared/hook-form/validation/validate-ether-amount';
 import { validateBignumberMax } from 'shared/hook-form/validation/validate-bignumber-max';
 import { getTokenDisplayName } from 'utils/getTokenDisplayName';
-import { computeWrapFormContextValues } from './compute-wrap-form-context-values';
 import { handleResolverValidationError } from 'shared/hook-form/validation/validation-error';
 
 import { awaitWithTimeout } from 'utils/await-with-timeout';
+import { TOKENS } from '@lido-sdk/constants';
 import { VALIDATION_CONTEXT_TIMEOUT } from 'features/withdrawals/withdrawals-constants';
-import type { WrapFormInputType, WrapFormNetworkData } from './types';
-import type { TokensWrappable } from 'features/wsteth/shared/types';
+import type { UnwrapFormInputType, UnwrapFormNetworkData } from './types';
 
-const messageMaxAmount = (max: BigNumber, token: TokensWrappable) =>
-  `${getTokenDisplayName(token)} amount must not be greater than ${formatEther(
-    max,
-  )}`;
+const messageMaxAmount = (max: BigNumber) =>
+  `${getTokenDisplayName(
+    TOKENS.WSTETH,
+  )} amount must not be greater than ${formatEther(max)}`;
 
-export const WrapFormValidationResolver: Resolver<
-  WrapFormInputType,
-  Promise<WrapFormNetworkData>
+export const UnwrapFormValidationResolver: Resolver<
+  UnwrapFormInputType,
+  Promise<UnwrapFormNetworkData>
 > = async (values, networkDataPromise) => {
-  const { amount, token } = values;
+  const { amount } = values;
   try {
     invariant(
       networkDataPromise,
       'network data must be presented as context promise',
     );
 
-    validateEtherAmount('amount', amount, token);
+    validateEtherAmount('amount', amount, TOKENS.WSTETH);
 
-    const networkData = await awaitWithTimeout(
+    const { maxAmount } = await awaitWithTimeout(
       networkDataPromise,
       VALIDATION_CONTEXT_TIMEOUT,
     );
-    const { maxAmount } = computeWrapFormContextValues({ token, networkData });
 
-    invariant(maxAmount, 'maxAmount must be computed');
+    invariant(maxAmount, 'maxAmount must be presented');
 
     validateBignumberMax(
       'amount',
       amount,
       maxAmount,
-      messageMaxAmount(maxAmount, token),
+      messageMaxAmount(maxAmount),
     );
 
     return {
@@ -52,6 +50,6 @@ export const WrapFormValidationResolver: Resolver<
       errors: {},
     };
   } catch (error) {
-    return handleResolverValidationError(error, 'WrapForm', 'amount');
+    return handleResolverValidationError(error, 'UnwrapForm', 'amount');
   }
 };

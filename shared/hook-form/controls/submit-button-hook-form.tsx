@@ -3,20 +3,27 @@ import { useFormState } from 'react-hook-form';
 
 import { ButtonIcon, Lock } from '@lidofinance/lido-ui';
 import { Connect } from 'shared/wallet';
+import { isValidationErrorTypeUnhandled } from '../validation/validation-error';
 
 type SubmitButtonHookFormProps = Partial<
   React.ComponentProps<typeof ButtonIcon>
 > & {
+  errorField: string;
   isLocked?: boolean;
 };
 
 export const SubmitButtonHookForm: React.FC<SubmitButtonHookFormProps> = ({
   isLocked,
+  errorField,
   icon,
   ...props
 }) => {
   const { active } = useWeb3();
   const { isValidating, isSubmitting } = useFormState();
+  const { errors } = useFormState<Record<string, unknown>>();
+  const disabled =
+    !!errors.amount &&
+    !isValidationErrorTypeUnhandled(errors?.[errorField]?.type);
 
   if (!active) return <Connect fullwidth />;
 
@@ -25,6 +32,7 @@ export const SubmitButtonHookForm: React.FC<SubmitButtonHookFormProps> = ({
       fullwidth
       type="submit"
       loading={isValidating || isSubmitting}
+      disabled={disabled}
       icon={icon || isLocked ? <Lock /> : <></>}
       {...props}
     />

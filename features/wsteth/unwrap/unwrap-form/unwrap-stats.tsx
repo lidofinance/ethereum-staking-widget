@@ -1,24 +1,19 @@
-import { BigNumber } from 'ethers';
-
 import { useTxCostInUsd } from 'shared/hooks';
-import { useUnwrapGasLimit } from './hooks';
+import { useUnwrapGasLimit } from '../hooks/use-unwrap-gas-limit';
+import { useUnwrapFormData } from '../unwrap-form-context';
 
-import { DataTable, DataTableRow } from '@lidofinance/lido-ui';
+import { DataTableRow } from '@lidofinance/lido-ui';
+import { StatsDataTable } from 'features/wsteth/shared/styles';
 import { FormatToken } from 'shared/formatters/format-token';
 import { DataTableRowStethByWsteth } from 'shared/components/data-table-row-steth-by-wsteth';
 
-type UnwrapStatsProps = {
-  willReceiveStethAsBigNumber?: BigNumber;
-};
-
-export const UnwrapStats = ({
-  willReceiveStethAsBigNumber,
-}: UnwrapStatsProps) => {
+export const UnwrapStats = () => {
   const unwrapGasLimit = useUnwrapGasLimit();
-  const unwrapTxCostInUsd = useTxCostInUsd(unwrapGasLimit);
+  const unwrapTxCostInUsd = useTxCostInUsd(Number(unwrapGasLimit));
+  const { willReceiveStETH } = useUnwrapFormData();
 
   return (
-    <DataTable>
+    <StatsDataTable>
       <DataTableRow
         title="Max gas fee"
         data-testid="maxGasFee"
@@ -30,10 +25,10 @@ export const UnwrapStats = ({
       <DataTableRow title="You will receive">
         <FormatToken
           data-testid="youWillReceive"
-          amount={willReceiveStethAsBigNumber}
+          amount={willReceiveStETH}
           symbol="stETH"
         />
       </DataTableRow>
-    </DataTable>
+    </StatsDataTable>
   );
 };

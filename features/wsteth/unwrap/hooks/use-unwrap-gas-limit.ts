@@ -13,26 +13,22 @@ export const useUnwrapGasLimit = () => {
   const { data } = useLidoSWR(
     ['swr:unwrap-gas-limit', chainId],
     async (_key, chainId) => {
-      if (!chainId) {
-        return;
-      }
+      if (!chainId) return;
+      try {
+        const feeData = await getFeeData(chainId as CHAINS);
+        const maxPriorityFeePerGas = feeData.maxPriorityFeePerGas ?? undefined;
+        const maxFeePerGas = feeData.maxFeePerGas ?? undefined;
 
-      const feeData = await getFeeData(chainId as CHAINS);
-      const maxPriorityFeePerGas = feeData.maxPriorityFeePerGas ?? undefined;
-      const maxFeePerGas = feeData.maxFeePerGas ?? undefined;
-
-      const gasLimit = await wsteth.estimateGas
-        .unwrap(parseEther('0.0001'), {
+        const gasLimit = await wsteth.estimateGas.unwrap(parseEther('0.0001'), {
           from: ESTIMATE_ACCOUNT,
           maxPriorityFeePerGas,
           maxFeePerGas,
-        })
-        .catch((error) => {
-          console.warn(error);
-          return BigNumber.from(UNWRAP_GAS_LIMIT);
         });
-
-      return +gasLimit;
+        return gasLimit;
+      } catch (error) {
+        console.warn(error);
+        return BigNumber.from(UNWRAP_GAS_LIMIT);
+      }
     },
   );
 

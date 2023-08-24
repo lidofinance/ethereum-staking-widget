@@ -38,6 +38,7 @@ export const SubmitButtonRequest = ({
 
   return (
     <SubmitButtonHookForm
+      errorField="amount"
       loading={loading}
       isLocked={isTokenLocked}
       disabled={disabled}

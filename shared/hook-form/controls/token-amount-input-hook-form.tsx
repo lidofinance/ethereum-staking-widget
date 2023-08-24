@@ -1,4 +1,4 @@
-import { useController, useWatch } from 'react-hook-form';
+import { useController } from 'react-hook-form';
 
 import { InputAmount } from 'shared/forms/components/input-amount';
 
@@ -11,28 +11,31 @@ type TokenAmountInputHookFormProps = Partial<
 > & {
   isLocked?: boolean;
   maxValue?: BigNumber;
-  tokenFieldName?: string;
-  valueFieldName?: string;
+  token: Parameters<typeof getTokenDisplayName>[0];
+  fieldName: string;
+  showErrorMessage?: boolean;
 };
 
 export const TokenAmountInputHookForm = ({
   isLocked,
   maxValue,
-  tokenFieldName = 'token',
-  valueFieldName = 'amount',
+  token,
+  fieldName,
+  showErrorMessage = true,
   ...props
 }: TokenAmountInputHookFormProps) => {
-  const token = useWatch({ name: tokenFieldName });
   const {
     field,
     fieldState: { error },
-  } = useController({ name: valueFieldName });
+  } = useController({ name: fieldName });
+  const hasErrorHighlight = isValidationErrorTypeDefault(error?.type);
+  const errorMessage = hasErrorHighlight && error?.message;
 
   return (
     <InputAmount
       {...props}
       fullwidth
-      error={isValidationErrorTypeDefault(error?.type)}
+      error={showErrorMessage ? errorMessage : hasErrorHighlight}
       isLocked={isLocked}
       maxValue={maxValue}
       label={`${getTokenDisplayName(token)} amount`}

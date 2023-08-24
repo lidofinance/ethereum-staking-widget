@@ -8,11 +8,11 @@ import {
 import { useWrapGasLimit } from './use-wrap-gas-limit';
 import { useIsMultisig } from 'shared/hooks/useIsMultisig';
 import { useCurrencyMaxAmount } from 'shared/forms/hooks/useCurrencyMaxAmount';
+import { useAwaiter } from 'shared/hooks/use-awaiter';
 
 import { STRATEGY_LAZY } from 'utils/swrStrategies';
 import { TOKENS_TO_WRAP } from 'features/wsteth/shared/types';
 import { parseEther } from '@ethersproject/units';
-import { useAwaiter } from 'shared/hooks/use-awaiter';
 
 // Provides all data fetching for form to function
 export const useWrapFormNetworkData = () => {

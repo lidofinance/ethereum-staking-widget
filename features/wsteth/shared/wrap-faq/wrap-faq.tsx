@@ -1,4 +1,3 @@
-import { FC } from 'react';
 import { Section } from 'shared/components';
 import { useMatomoEventHandle } from 'shared/hooks';
 
@@ -12,7 +11,7 @@ import {
   DoINeedToUnwrapMyWsteth,
 } from './list';
 
-export const WrapFaq: FC = () => {
+export const WrapFaq = () => {
   const onClickHandler = useMatomoEventHandle();
 
   return (
