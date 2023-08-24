@@ -3,14 +3,16 @@ import { useMemo, createContext, useContext } from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
 import { useWstethBySteth } from 'shared/hooks';
 import { useWrapTxApprove } from '../hooks/use-wrap-tx-approve';
+import { useWrapFormNetworkData } from '../hooks/use-wrap-form-network-data';
+import { useWrapFormProcessor } from '../hooks/use-wrap-form-processing';
+
+import { FormControllerContext } from 'features/wsteth/shared/form-controller/form-controller-context';
 
 import {
   WrapFormDataContextValueType,
   WrapFormInputType,
   WrapFormNetworkData,
 } from './types';
-import { useWrapFormNetworkData } from '../hooks/use-wrap-form-network-data';
-import { useWrapFormProcessor } from '../hooks/use-wrap-form-processing';
 import { WrapFormValidationResolver } from './wrap-form-validators';
 import { TOKENS_TO_WRAP } from 'features/wsteth/shared/types';
 import { Zero } from '@ethersproject/constants';
@@ -79,7 +81,9 @@ export const WrapFormProvider: React.FC = ({ children }) => {
   return (
     <FormProvider {...formObject}>
       <WrapFormDataContext.Provider value={value}>
-        {children}
+        <FormControllerContext.Provider value={value}>
+          {children}
+        </FormControllerContext.Provider>
       </WrapFormDataContext.Provider>
     </FormProvider>
   );

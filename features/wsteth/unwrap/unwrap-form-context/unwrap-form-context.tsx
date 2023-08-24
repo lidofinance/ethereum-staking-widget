@@ -2,14 +2,16 @@ import invariant from 'tiny-invariant';
 import { useMemo, createContext, useContext } from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
 import { useStethByWsteth } from 'shared/hooks';
+import { useUnwrapFormNetworkData } from '../hooks/use-unwrap-form-network-data';
+import { useUnwrapFormProcessor } from '../hooks/use-unwrap-form-processing';
+
+import { FormControllerContext } from 'features/wsteth/shared/form-controller/form-controller-context';
 
 import {
   UnwrapFormDataContextValueType,
   UnwrapFormInputType,
   UnwrapFormNetworkData,
 } from './types';
-import { useUnwrapFormNetworkData } from '../hooks/use-unwrap-form-network-data';
-import { useUnwrapFormProcessor } from '../hooks/use-unwrap-form-processing';
 import { UnwrapFormValidationResolver } from './unwrap-form-validators';
 import { Zero } from '@ethersproject/constants';
 
@@ -66,7 +68,9 @@ export const UnwrapFormProvider: React.FC = ({ children }) => {
   return (
     <FormProvider {...formObject}>
       <UnwrapFormDataContext.Provider value={value}>
-        {children}
+        <FormControllerContext.Provider value={value}>
+          {children}
+        </FormControllerContext.Provider>
       </UnwrapFormDataContext.Provider>
     </FormProvider>
   );
