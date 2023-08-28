@@ -3,7 +3,7 @@ import { useController } from 'react-hook-form';
 import { InputAmount } from 'shared/forms/components/input-amount';
 
 import { getTokenDisplayName } from 'utils/getTokenDisplayName';
-import { isValidationErrorTypeDefault } from 'shared/hook-form/validation/validation-error';
+import { isValidationErrorTypeValidate } from 'shared/hook-form/validation/validation-error';
 import type { BigNumber } from 'ethers';
 
 type TokenAmountInputHookFormProps = Partial<
@@ -28,7 +28,7 @@ export const TokenAmountInputHookForm = ({
     field,
     fieldState: { error },
   } = useController({ name: fieldName });
-  const hasErrorHighlight = isValidationErrorTypeDefault(error?.type);
+  const hasErrorHighlight = isValidationErrorTypeValidate(error?.type);
   const errorMessage = hasErrorHighlight && error?.message;
 
   return (

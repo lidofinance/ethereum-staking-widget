@@ -3,7 +3,7 @@ import { useController, useFormState, useFormContext } from 'react-hook-form';
 import { SelectIcon, Option, Eth, Steth, Wsteth } from '@lidofinance/lido-ui';
 
 import { getTokenDisplayName } from 'utils/getTokenDisplayName';
-import { isValidationErrorTypeDefault } from 'shared/hook-form/validation/validation-error';
+import { isValidationErrorTypeValidate } from 'shared/hook-form/validation/validation-error';
 import { TOKENS as TOKENS_SDK } from '@lido-sdk/constants';
 
 export const TOKENS = {
@@ -45,7 +45,7 @@ export const TokenSelectHookForm = <T extends TOKENS>({
     <SelectIcon
       {...field}
       icon={iconsMap[field.value]}
-      error={isValidationErrorTypeDefault(errors[errorField]?.type)}
+      error={isValidationErrorTypeValidate(errors[errorField]?.type)}
       onChange={(value: T) => {
         setValue(fieldName, value, {
           shouldDirty: false,

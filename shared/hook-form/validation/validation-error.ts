@@ -11,6 +11,9 @@ export const isValidationErrorTypeDefault = (type?: string) =>
     ] as (string | undefined)[]
   ).includes(type);
 
+export const isValidationErrorTypeValidate = (type?: string) =>
+  type === DefaultValidationErrorTypes.VALIDATE;
+
 export const isValidationErrorTypeUnhandled = (type?: string) =>
   type === DefaultValidationErrorTypes.UNHANDLED;
 
