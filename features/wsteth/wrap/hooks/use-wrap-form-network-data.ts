@@ -28,7 +28,7 @@ export const useWrapFormNetworkData = () => {
   const maxAmountETH = useCurrencyMaxAmount({
     limit: ethBalance,
     token: TOKENS_TO_WRAP.ETH,
-    padded: isMultisig,
+    padded: !isMultisig,
     gasLimit: gasLimitETH,
   });
 
