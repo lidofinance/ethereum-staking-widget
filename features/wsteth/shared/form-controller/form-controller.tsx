@@ -1,14 +1,29 @@
-import { useEffect, useMemo } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import { useWeb3 } from 'reef-knot/web3-react';
 import { useFormContext } from 'react-hook-form';
 import { useTransactionModal } from 'features/withdrawals/contexts/transaction-modal-context';
 import { useFormControllerContext } from './form-controller-context';
 
-export const FormController: React.FC = ({ children }) => {
+type FormControllerProps = {
+  reset?: () => void;
+};
+
+export const FormController: React.FC<FormControllerProps> = ({
+  reset: resetProp,
+  children,
+}) => {
   const { active } = useWeb3();
-  const { reset, handleSubmit } = useFormContext();
+  const { handleSubmit, reset: resetDefault } = useFormContext();
   const { onSubmit } = useFormControllerContext();
   const { dispatchModalState } = useTransactionModal();
+
+  const reset = useCallback(() => {
+    if (resetProp) {
+      resetProp();
+    } else {
+      resetDefault();
+    }
+  }, [resetDefault, resetProp]);
 
   // Bind submit action
   const doSubmit = useMemo(
