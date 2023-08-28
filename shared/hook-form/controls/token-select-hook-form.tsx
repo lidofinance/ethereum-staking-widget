@@ -10,8 +10,13 @@ export const TOKENS = {
   ETH: 'ETH',
   [TOKENS_SDK.STETH]: TOKENS_SDK.STETH,
   [TOKENS_SDK.WSTETH]: TOKENS_SDK.WSTETH,
-};
+} as const;
 export type TOKENS = keyof typeof TOKENS;
+
+export type TokenOption = {
+  label?: string;
+  token: TOKENS;
+};
 
 const iconsMap = {
   [TOKENS.ETH]: <Eth />,
@@ -19,22 +24,22 @@ const iconsMap = {
   [TOKENS.WSTETH]: <Wsteth />,
 } as const;
 
-type TokenSelectHookFormProps<T extends TOKENS> = {
-  options: T[];
+type TokenSelectHookFormProps = {
+  options: TokenOption[];
   fieldName?: string;
   resetField?: string;
   errorField?: string;
-  onChange?: (value: T) => void;
+  onChange?: (value: TOKENS) => void;
 };
 
-export const TokenSelectHookForm = <T extends TOKENS>({
+export const TokenSelectHookForm = ({
   options,
   fieldName = 'token',
   resetField = 'amount',
   errorField = 'amount',
   onChange,
-}: TokenSelectHookFormProps<T>) => {
-  const { field } = useController({ name: fieldName });
+}: TokenSelectHookFormProps) => {
+  const { field } = useController<Record<string, TOKENS>>({ name: fieldName });
   const { setValue, clearErrors } = useFormContext();
 
   const { errors, defaultValues } = useFormState<Record<string, unknown>>({
@@ -46,7 +51,7 @@ export const TokenSelectHookForm = <T extends TOKENS>({
       {...field}
       icon={iconsMap[field.value]}
       error={isValidationErrorTypeValidate(errors[errorField]?.type)}
-      onChange={(value: T) => {
+      onChange={(value: TOKENS) => {
         setValue(fieldName, value, {
           shouldDirty: false,
           shouldTouch: false,
@@ -61,9 +66,9 @@ export const TokenSelectHookForm = <T extends TOKENS>({
         onChange?.(value);
       }}
     >
-      {options.map((token) => (
+      {options.map(({ label, token }) => (
         <Option key={token} leftDecorator={iconsMap[token]} value={token}>
-          {getTokenDisplayName(token)}
+          {label || getTokenDisplayName(token)}
         </Option>
       ))}
     </SelectIcon>

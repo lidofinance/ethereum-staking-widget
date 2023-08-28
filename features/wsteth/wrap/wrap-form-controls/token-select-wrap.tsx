@@ -3,7 +3,16 @@ import { TOKENS_TO_WRAP } from 'features/wsteth/shared/types';
 import { MATOMO_CLICK_EVENTS } from 'config';
 import { TokenSelectHookForm } from 'shared/hook-form/controls/token-select-hook-form';
 
-const OPTIONS = [TOKENS_TO_WRAP.ETH, TOKENS_TO_WRAP.STETH];
+const OPTIONS = [
+  {
+    label: 'Lido (stETH)',
+    token: TOKENS_TO_WRAP.STETH,
+  },
+  {
+    label: 'Ethereum (ETH)',
+    token: TOKENS_TO_WRAP.ETH,
+  },
+];
 
 export const TokenSelectWrap = () => {
   return (
