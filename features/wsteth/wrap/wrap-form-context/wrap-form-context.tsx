@@ -66,9 +66,7 @@ export const WrapFormProvider: React.FC = ({ children }) => {
 
   const isSteth = token === TOKENS_TO_WRAP.STETH;
 
-  const willReceiveWsteth = useWstethBySteth(
-    isSteth && approvalData.isApprovalNeededBeforeWrap ? Zero : amount ?? Zero,
-  );
+  const willReceiveWsteth = useWstethBySteth(amount ?? Zero);
 
   const value = useMemo(
     (): WrapFormDataContextValueType => ({
