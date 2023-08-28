@@ -6,13 +6,12 @@ import type { Resolver } from 'react-hook-form';
 import { validateEtherAmount } from 'shared/hook-form/validation/validate-ether-amount';
 import { validateBignumberMax } from 'shared/hook-form/validation/validate-bignumber-max';
 import { getTokenDisplayName } from 'utils/getTokenDisplayName';
-import { computeWrapFormContextValues } from './compute-wrap-form-context-values';
 import { handleResolverValidationError } from 'shared/hook-form/validation/validation-error';
 
 import { awaitWithTimeout } from 'utils/await-with-timeout';
 import { VALIDATION_CONTEXT_TIMEOUT } from 'features/withdrawals/withdrawals-constants';
-import type { WrapFormInputType, WrapFormNetworkData } from './types';
-import type { TokensWrappable } from 'features/wsteth/shared/types';
+import type { WrapFormInputType, WrapFormValidationContext } from './types';
+import { TokensWrappable, TOKENS_TO_WRAP } from 'features/wsteth/shared/types';
 
 const messageMaxAmount = (max: BigNumber, token: TokensWrappable) =>
   `${getTokenDisplayName(token)} amount must not be greater than ${formatEther(
@@ -21,31 +20,35 @@ const messageMaxAmount = (max: BigNumber, token: TokensWrappable) =>
 
 export const WrapFormValidationResolver: Resolver<
   WrapFormInputType,
-  Promise<WrapFormNetworkData>
-> = async (values, networkDataPromise) => {
+  Promise<WrapFormValidationContext>
+> = async (values, validationContextPromise) => {
   const { amount, token } = values;
   try {
     invariant(
-      networkDataPromise,
-      'network data must be presented as context promise',
+      validationContextPromise,
+      'validation context must be presented as context promise',
     );
 
     validateEtherAmount('amount', amount, token);
 
-    const networkData = await awaitWithTimeout(
-      networkDataPromise,
+    const { active, maxAmountETH, maxAmountStETH } = await awaitWithTimeout(
+      validationContextPromise,
       VALIDATION_CONTEXT_TIMEOUT,
     );
-    const { maxAmount } = computeWrapFormContextValues({ token, networkData });
 
-    invariant(maxAmount, 'maxAmount must be computed');
+    if (active) {
+      const isSteth = token === TOKENS_TO_WRAP.STETH;
+      const maxAmount = isSteth ? maxAmountStETH : maxAmountETH;
 
-    validateBignumberMax(
-      'amount',
-      amount,
-      maxAmount,
-      messageMaxAmount(maxAmount, token),
-    );
+      invariant(maxAmount, 'maxAmount must be presented');
+
+      validateBignumberMax(
+        'amount',
+        amount,
+        maxAmount,
+        messageMaxAmount(maxAmount, token),
+      );
+    }
 
     return {
       values,

@@ -11,7 +11,7 @@ import { handleResolverValidationError } from 'shared/hook-form/validation/valid
 import { awaitWithTimeout } from 'utils/await-with-timeout';
 import { TOKENS } from '@lido-sdk/constants';
 import { VALIDATION_CONTEXT_TIMEOUT } from 'features/withdrawals/withdrawals-constants';
-import type { UnwrapFormInputType, UnwrapFormNetworkData } from './types';
+import type { UnwrapFormInputType, UnwrapFormValidationContext } from './types';
 
 const messageMaxAmount = (max: BigNumber) =>
   `${getTokenDisplayName(
@@ -20,30 +20,32 @@ const messageMaxAmount = (max: BigNumber) =>
 
 export const UnwrapFormValidationResolver: Resolver<
   UnwrapFormInputType,
-  Promise<UnwrapFormNetworkData>
-> = async (values, networkDataPromise) => {
+  Promise<UnwrapFormValidationContext>
+> = async (values, validationContextPromise) => {
   const { amount } = values;
   try {
     invariant(
-      networkDataPromise,
-      'network data must be presented as context promise',
+      validationContextPromise,
+      'validation context must be presented as context promise',
     );
 
     validateEtherAmount('amount', amount, TOKENS.WSTETH);
 
-    const { maxAmount } = await awaitWithTimeout(
-      networkDataPromise,
+    const { active, maxAmount } = await awaitWithTimeout(
+      validationContextPromise,
       VALIDATION_CONTEXT_TIMEOUT,
     );
 
-    invariant(maxAmount, 'maxAmount must be presented');
+    if (active) {
+      invariant(maxAmount, 'maxAmount must be presented');
 
-    validateBignumberMax(
-      'amount',
-      amount,
-      maxAmount,
-      messageMaxAmount(maxAmount),
-    );
+      validateBignumberMax(
+        'amount',
+        amount,
+        maxAmount,
+        messageMaxAmount(maxAmount),
+      );
+    }
 
     return {
       values,

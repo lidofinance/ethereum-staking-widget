@@ -4,13 +4,14 @@ import { useForm, FormProvider } from 'react-hook-form';
 import { useStethByWsteth } from 'shared/hooks';
 import { useUnwrapFormNetworkData } from '../hooks/use-unwrap-form-network-data';
 import { useUnwrapFormProcessor } from '../hooks/use-unwrap-form-processing';
+import { useUnwrapFormValidationContext } from '../hooks/use-unwra-form-validation-context';
 
 import { FormControllerContext } from 'features/wsteth/shared/form-controller/form-controller-context';
 
 import {
   UnwrapFormDataContextValueType,
   UnwrapFormInputType,
-  UnwrapFormNetworkData,
+  UnwrapFormValidationContext,
 } from './types';
 import { UnwrapFormValidationResolver } from './unwrap-form-validators';
 import { Zero } from '@ethersproject/constants';
@@ -32,16 +33,19 @@ export const useUnwrapFormData = () => {
 // Data provider
 //
 export const UnwrapFormProvider: React.FC = ({ children }) => {
-  const { networkData, networkDataPromise } = useUnwrapFormNetworkData();
+  const networkData = useUnwrapFormNetworkData();
+  const validationContextPromise = useUnwrapFormValidationContext({
+    networkData,
+  });
 
   const formObject = useForm<
     UnwrapFormInputType,
-    Promise<UnwrapFormNetworkData>
+    Promise<UnwrapFormValidationContext>
   >({
     defaultValues: {
       amount: null,
     },
-    context: networkDataPromise,
+    context: validationContextPromise,
     criteriaMode: 'firstError',
     mode: 'onChange',
     resolver: UnwrapFormValidationResolver,

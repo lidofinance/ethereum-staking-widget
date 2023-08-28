@@ -7,9 +7,12 @@ export type UnwrapFormInputType = {
   amount: null | BigNumber;
 };
 
-export type UnwrapFormNetworkData = ReturnType<
-  typeof useUnwrapFormNetworkData
->['networkData'];
+export type UnwrapFormNetworkData = ReturnType<typeof useUnwrapFormNetworkData>;
+
+export type UnwrapFormValidationContext = {
+  active: boolean;
+  maxAmount?: BigNumber;
+};
 
 export type UnwrapFormDataContextValueType = UnwrapFormNetworkData &
   FormControllerContextValueType<UnwrapFormInputType> & {

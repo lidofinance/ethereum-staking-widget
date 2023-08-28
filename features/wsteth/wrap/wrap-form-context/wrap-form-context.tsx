@@ -5,18 +5,18 @@ import { useWstethBySteth } from 'shared/hooks';
 import { useWrapTxApprove } from '../hooks/use-wrap-tx-approve';
 import { useWrapFormNetworkData } from '../hooks/use-wrap-form-network-data';
 import { useWrapFormProcessor } from '../hooks/use-wrap-form-processing';
+import { useWrapFormValidationContext } from '../hooks/use-wrap-form-validation-context';
 
 import { FormControllerContext } from 'features/wsteth/shared/form-controller/form-controller-context';
 
 import {
   WrapFormDataContextValueType,
   WrapFormInputType,
-  WrapFormNetworkData,
+  WrapFormValidationContext,
 } from './types';
 import { WrapFormValidationResolver } from './wrap-form-validators';
 import { TOKENS_TO_WRAP } from 'features/wsteth/shared/types';
 import { Zero } from '@ethersproject/constants';
-import { computeWrapFormContextValues } from './compute-wrap-form-context-values';
 
 //
 // Data context
@@ -36,14 +36,20 @@ export const useWrapFormData = () => {
 // Data provider
 //
 export const WrapFormProvider: React.FC = ({ children }) => {
-  const { networkData, networkDataPromise } = useWrapFormNetworkData();
+  const networkData = useWrapFormNetworkData();
+  const validationContextPromise = useWrapFormValidationContext({
+    networkData,
+  });
 
-  const formObject = useForm<WrapFormInputType, Promise<WrapFormNetworkData>>({
+  const formObject = useForm<
+    WrapFormInputType,
+    Promise<WrapFormValidationContext>
+  >({
     defaultValues: {
       amount: null,
       token: TOKENS_TO_WRAP.STETH,
     },
-    context: networkDataPromise,
+    context: validationContextPromise,
     criteriaMode: 'firstError',
     mode: 'onChange',
     resolver: WrapFormValidationResolver,
@@ -58,24 +64,33 @@ export const WrapFormProvider: React.FC = ({ children }) => {
     onConfirm: networkData.revalidateWrapFormData,
   });
 
+  const isSteth = token === TOKENS_TO_WRAP.STETH;
+
   const willReceiveWsteth = useWstethBySteth(
-    token === TOKENS_TO_WRAP.STETH && approvalData.isApprovalNeededBeforeWrap
-      ? Zero
-      : amount ?? Zero,
+    isSteth && approvalData.isApprovalNeededBeforeWrap ? Zero : amount ?? Zero,
   );
 
   const value = useMemo(
     (): WrapFormDataContextValueType => ({
       ...networkData,
       ...approvalData,
-      ...computeWrapFormContextValues({
-        networkData,
-        token,
-      }),
+      isSteth,
+      maxAmount: isSteth
+        ? networkData.maxAmountStETH
+        : networkData.maxAmountETH,
+      wrapGasLimit: isSteth
+        ? networkData.gasLimitStETH
+        : networkData.gasLimitETH,
       willReceiveWsteth,
       onSubmit: processWrapFormFlow,
     }),
-    [networkData, approvalData, token, willReceiveWsteth, processWrapFormFlow],
+    [
+      networkData,
+      approvalData,
+      isSteth,
+      willReceiveWsteth,
+      processWrapFormFlow,
+    ],
   );
 
   return (
