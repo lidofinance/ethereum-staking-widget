@@ -13,7 +13,7 @@ type UseWrapTxApproveArgs = {
 };
 
 export const useWrapTxApprove = ({ amount, token }: UseWrapTxApproveArgs) => {
-  const { account } = useWeb3();
+  const { active, account } = useWeb3();
   const { chainId } = useSDK();
 
   const [stethTokenAddress, wstethTokenAddress] = useMemo(
@@ -37,7 +37,7 @@ export const useWrapTxApprove = ({ amount, token }: UseWrapTxApproveArgs) => {
   );
 
   const isApprovalNeededBeforeWrap =
-    needsApprove && token === TOKENS_TO_WRAP.STETH;
+    active && needsApprove && token === TOKENS_TO_WRAP.STETH;
 
   return useMemo(
     () => ({
