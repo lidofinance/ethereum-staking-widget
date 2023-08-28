@@ -1,17 +1,10 @@
 import styled from 'styled-components';
-import { InputGroup } from '@lidofinance/lido-ui';
-import { InputNumber } from 'shared/forms/components/input-number';
+import { DataTable } from '@lidofinance/lido-ui';
 
-export const FormStyled = styled.form`
-  margin-bottom: 24px;
+export const StatsDataTable = styled(DataTable)`
+  margin-top: ${({ theme }) => theme.spaceMap.xl}px;
 `;
 
-export const InputStyled = styled(InputNumber)`
+export const InputWrap = styled.div`
   margin-bottom: ${({ theme }) => theme.spaceMap.md}px;
-  z-index: 2;
-`;
-
-export const InputGroupStyled = styled(InputGroup)`
-  margin-bottom: ${({ theme }) => theme.spaceMap.md}px;
-  z-index: 2;
 `;

@@ -24,11 +24,9 @@ export const useApproveGasLimit = () => {
         const gasLimit = await steth.estimateGas.approve(
           wsteth.address,
           parseEther('0.001'),
-          {
-            from: ESTIMATE_ACCOUNT,
-          },
+          { from: ESTIMATE_ACCOUNT },
         );
-        return +gasLimit;
+        return gasLimit;
       } catch (error) {
         console.warn(_key, error);
         return BigNumber.from(WSTETH_APPROVE_GAS_LIMIT);

@@ -2,7 +2,7 @@ import { useController } from 'react-hook-form';
 import { RequestFormInputType } from '../../request-form-context';
 import { OptionsPicker } from '../options/options-picker';
 
-export const ModeInput = () => {
+export const ModePickerRequest = () => {
   const { field } = useController<RequestFormInputType, 'mode'>({
     name: 'mode',
   });

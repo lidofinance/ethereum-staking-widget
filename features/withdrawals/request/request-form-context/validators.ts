@@ -15,12 +15,12 @@ import { VALIDATION_CONTEXT_TIMEOUT } from 'features/withdrawals/withdrawals-con
 import {
   ValidationError,
   handleResolverValidationError,
-} from 'shared/hook-form/validation-error';
+} from 'shared/hook-form/validation/validation-error';
 import { getTokenDisplayName } from 'utils/getTokenDisplayName';
 import { awaitWithTimeout } from 'utils/await-with-timeout';
-import { validateEtherAmount } from 'shared/hook-form/validate-ether-amount';
-import { validateBignumberMin } from 'shared/hook-form/validate-bignumber-min';
-import { validateBignumberMax } from 'shared/hook-form/validate-bignumber-max';
+import { validateEtherAmount } from 'shared/hook-form/validation/validate-ether-amount';
+import { validateBignumberMin } from 'shared/hook-form/validation/validate-bignumber-min';
+import { validateBignumberMax } from 'shared/hook-form/validation/validate-bignumber-max';
 
 // helpers that should be shared when adding next hook-form
 

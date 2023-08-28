@@ -3,10 +3,10 @@ import invariant from 'tiny-invariant';
 import { useCallback } from 'react';
 import { useSDK, useWSTETHContractWeb3 } from '@lido-sdk/react';
 
-import { CHAINS } from '@lido-sdk/constants';
 import { getFeeData } from 'utils/getFeeData';
 import { getTokenAddress, TOKENS } from '@lido-sdk/constants';
-import { BigNumber } from 'ethers';
+import type { CHAINS } from '@lido-sdk/constants';
+import type { WrapFormInputType } from '../wrap-form-context';
 
 export const getGasParameters = async (chainId: CHAINS) => {
   const feeData = await getFeeData(chainId);
@@ -16,10 +16,8 @@ export const getGasParameters = async (chainId: CHAINS) => {
   };
 };
 
-type WrapTxProcessorArgs = {
+type WrapTxProcessorArgs = WrapFormInputType & {
   isMultisig: boolean;
-  amount: BigNumber;
-  token: string;
 };
 
 export const useWrapTxProcessing = () => {
@@ -28,9 +26,10 @@ export const useWrapTxProcessing = () => {
 
   return useCallback(
     async ({ isMultisig, amount, token }: WrapTxProcessorArgs) => {
-      invariant(chainId, 'must have chain id');
-      invariant(providerWeb3, 'must have providerWeb3');
-      invariant(wstethContractWeb3, 'must have wstethContractWeb3');
+      invariant(amount, 'amount id must be presented');
+      invariant(chainId, 'chain id must be presented');
+      invariant(providerWeb3, 'providerWeb3 must be presented');
+      invariant(wstethContractWeb3, 'wstethContractWeb3 must be presented');
 
       if (token === TOKENS.STETH) {
         if (isMultisig) {

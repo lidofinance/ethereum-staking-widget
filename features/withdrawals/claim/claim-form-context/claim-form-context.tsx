@@ -15,7 +15,7 @@ import { useClaimData } from 'features/withdrawals/contexts/claim-data-context';
 import { useTransactionModal } from 'features/withdrawals/contexts/transaction-modal-context';
 
 type ClaimFormDataContextValueType = {
-  onSubmit: NonNullable<React.ComponentProps<'form'>['onSubmit']>;
+  onSubmit: React.FormEventHandler<HTMLFormElement>;
 } & ClaimFormHelperState;
 
 const claimFormDataContext =

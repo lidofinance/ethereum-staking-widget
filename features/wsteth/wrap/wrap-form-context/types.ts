@@ -1,8 +1,10 @@
+import type { useWrapFormNetworkData } from '../hooks/use-wrap-form-network-data';
+import type { useWrapTxApprove } from '../hooks/use-wrap-tx-approve';
+
 import type { BigNumber } from 'ethers';
 import type { TokensWrappable } from 'features/wsteth/shared/types';
-import type { useWrapFormNetworkData } from '../hooks/use-wrap-form-network-data';
 import type { computeWrapFormContextValues } from './compute-wrap-form-context-values';
-import type { useWrapTxApprove } from '../hooks/use-wrap-tx-approve';
+import type { FormControllerContextValueType } from 'features/wsteth/shared/form-controller/form-controller-context';
 
 export type WrapFormInputType = {
   amount: null | BigNumber;
@@ -21,7 +23,7 @@ export type WrapFormComputedContextValues = ReturnType<
 
 export type WrapFormDataContextValueType = WrapFormNetworkData &
   WrapFormApprovalData &
-  WrapFormComputedContextValues & {
+  WrapFormComputedContextValues &
+  FormControllerContextValueType<WrapFormInputType> & {
     willReceiveWsteth?: BigNumber;
-    onSubmit: NonNullable<React.ComponentProps<'form'>['onSubmit']>;
   };

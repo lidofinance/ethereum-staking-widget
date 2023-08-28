@@ -3,34 +3,29 @@ import invariant from 'tiny-invariant';
 import { useCallback } from 'react';
 import { useSDK } from '@lido-sdk/react';
 import { useWeb3 } from 'reef-knot/web3-react';
-import { useWrapTxProcessing } from './use-wrap-tx-processing';
+import { useUnwrapTxProcessing } from './use-unwrap-tx-processing';
 import { useTransactionModal } from 'features/withdrawals/contexts/transaction-modal-context';
 
-import { getErrorMessage, runWithTransactionLogger } from 'utils';
 import { isContract } from 'utils/isContract';
+import { getErrorMessage, runWithTransactionLogger } from 'utils';
+import { TOKENS } from 'shared/hook-form/controls/token-select-hook-form';
 import { TX_STAGE } from 'features/withdrawals/shared/tx-stage-modal';
-import type {
-  WrapFormApprovalData,
-  WrapFormInputType,
-} from '../wrap-form-context';
+import type { UnwrapFormInputType } from '../unwrap-form-context';
 
-type UseWrapFormProcessorArgs = {
-  approvalData: WrapFormApprovalData;
+type UseUnwrapFormProcessorArgs = {
   onConfirm?: () => Promise<void>;
 };
 
-export const useWrapFormProcessor = ({
-  approvalData,
+export const useUnwrapFormProcessor = ({
   onConfirm,
-}: UseWrapFormProcessorArgs) => {
+}: UseUnwrapFormProcessorArgs) => {
   const { account } = useWeb3();
   const { providerWeb3 } = useSDK();
   const { dispatchModalState } = useTransactionModal();
-  const processWrapTx = useWrapTxProcessing();
-  const { isApprovalNeededBeforeWrap, processApproveTx } = approvalData;
+  const processWrapTx = useUnwrapTxProcessing();
 
   return useCallback(
-    async ({ amount, token }: WrapFormInputType) => {
+    async ({ amount }: UnwrapFormInputType) => {
       invariant(amount, 'amount should be presented');
       invariant(account, 'address should be presented');
       invariant(providerWeb3, 'provider should be presented');
@@ -39,22 +34,14 @@ export const useWrapFormProcessor = ({
       try {
         dispatchModalState({
           type: 'start',
-          flow: isApprovalNeededBeforeWrap ? TX_STAGE.APPROVE : TX_STAGE.SIGN,
-          token: token as any, // TODO: refactor modal state to be reusable to remove any
+          flow: TX_STAGE.SIGN,
+          token: TOKENS.WSTETH as any, // TODO: refactor modal state to be reusable to remove any
           requestAmount: amount,
         });
 
-        if (isApprovalNeededBeforeWrap) {
-          await processApproveTx();
-          if (isMultisig) {
-            dispatchModalState({ type: 'success_multisig' });
-            return true;
-          }
-          dispatchModalState({ type: 'signing' });
-        }
-
-        const transaction = await runWithTransactionLogger('Wrap signing', () =>
-          processWrapTx({ amount, token, isMultisig }),
+        const transaction = await runWithTransactionLogger(
+          'Unwrap signing',
+          () => processWrapTx({ amount, isMultisig }),
         );
 
         if (isMultisig) {
@@ -64,15 +51,16 @@ export const useWrapFormProcessor = ({
 
         if (typeof transaction === 'object') {
           dispatchModalState({ type: 'block', txHash: transaction.hash });
-          await runWithTransactionLogger('Wrap block confirmation', () =>
-            transaction.wait(),
+          await runWithTransactionLogger(
+            'Unwrap block confirmation',
+            async () => transaction.wait(),
           );
         }
 
         await onConfirm?.();
         dispatchModalState({ type: 'success' });
         return true;
-      } catch (error) {
+      } catch (error: any) {
         console.warn(error);
         dispatchModalState({
           type: 'error',
@@ -81,14 +69,6 @@ export const useWrapFormProcessor = ({
         return false;
       }
     },
-    [
-      account,
-      providerWeb3,
-      dispatchModalState,
-      isApprovalNeededBeforeWrap,
-      processApproveTx,
-      processWrapTx,
-      onConfirm,
-    ],
+    [account, dispatchModalState, onConfirm, processWrapTx, providerWeb3],
   );
 };
