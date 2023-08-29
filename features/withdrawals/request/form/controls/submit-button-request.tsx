@@ -7,6 +7,7 @@ import {
 import { SubmitButtonHookForm } from 'shared/hook-form/controls/submit-button-hook-form';
 import { useFormState } from 'react-hook-form';
 import { isValidationErrorTypeUnhandled } from 'shared/hook-form/validation/validation-error';
+import { useIsMultisig } from 'shared/hooks/useIsMultisig';
 
 // conditional render breaks useFormState, so it can't be inside SubmitButton
 export const useRequestSubmitButtonProps = (): SubmitButtonRequestProps => {
@@ -31,9 +32,10 @@ export const SubmitButtonRequest = ({
   loading,
   disabled,
 }: SubmitButtonRequestProps) => {
+  const [isMultisig] = useIsMultisig();
   const { isTokenLocked } = useRequestFormData();
   const buttonTitle = isTokenLocked
-    ? 'Unlock tokens for withdrawal'
+    ? `Unlock tokens ${isMultisig ? 'for' : 'and'} withdrawal`
     : 'Request withdrawal';
 
   return (
