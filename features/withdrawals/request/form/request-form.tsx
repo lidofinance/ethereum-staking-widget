@@ -32,7 +32,7 @@ export const RequestForm = () => {
     <Block>
       {isPaused && <PausedInfo />}
       {isBunker && <BunkerInfo />}
-      <form onSubmit={onSubmit}>
+      <form autoComplete="off" onSubmit={onSubmit}>
         <ErrorMessageInputGroup>
           <TokenInput />
           <AmountInput />
