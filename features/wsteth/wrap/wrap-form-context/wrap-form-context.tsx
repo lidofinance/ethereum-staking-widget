@@ -1,7 +1,7 @@
 import invariant from 'tiny-invariant';
 import { useMemo, createContext, useContext } from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
-import { useWstethBySteth } from 'shared/hooks';
+import { useDebouncedValue, useWstethBySteth } from 'shared/hooks';
 import { useWrapTxApprove } from '../hooks/use-wrap-tx-approve';
 import { useWrapFormNetworkData } from '../hooks/use-wrap-form-network-data';
 import { useWrapFormProcessor } from '../hooks/use-wrap-form-processing';
@@ -66,7 +66,9 @@ export const WrapFormProvider: React.FC = ({ children }) => {
 
   const isSteth = token === TOKENS_TO_WRAP.STETH;
 
-  const willReceiveWsteth = useWstethBySteth(amount ?? Zero);
+  const amountDebounced = useDebouncedValue(amount, 500);
+
+  const willReceiveWsteth = useWstethBySteth(amountDebounced ?? Zero);
 
   const value = useMemo(
     (): WrapFormDataContextValueType => ({
