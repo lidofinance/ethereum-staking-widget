@@ -7,7 +7,7 @@ A widget for submitting Ether to the pool based on [Lido Frontend Template](http
 - Node.js v16+
 - Yarn package manager
 
-This project requires an .env file which is distributed via private communication channels. A sample can be found in .env.
+This project requires an .env file which is distributed via private communication channels. A sample can be found in .env.example
 
 ### Development
 
