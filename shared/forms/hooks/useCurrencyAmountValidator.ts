@@ -10,13 +10,11 @@ import type { ValidationFn } from 'shared/forms/types/validation-fn';
 export type UseCurrencyAmountValidatorArgs = {
   inputName: string;
   limit?: BigNumber;
-  extraValidationFn?: ValidationFn;
 };
 
 export const useCurrencyAmountValidator = ({
   inputName,
   limit,
-  extraValidationFn,
 }: UseCurrencyAmountValidatorArgs) => {
   return useCallback<ValidationFn>(
     (value) => {
@@ -44,10 +42,8 @@ export const useCurrencyAmountValidator = ({
       if (limit && amountBigNumber.gt(limit))
         return `${inputName} must not be greater than ${formatEther(limit)}`;
 
-      if (extraValidationFn) return extraValidationFn?.(value);
-
       return '';
     },
-    [inputName, limit, extraValidationFn],
+    [inputName, limit],
   );
 };
