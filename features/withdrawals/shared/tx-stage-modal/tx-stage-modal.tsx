@@ -17,7 +17,9 @@ export const TxStageModal: FC<TxStageModalProps> = (props) => {
     () =>
       isLedger &&
       txStage &&
-      ![TX_STAGE.SUCCESS, TX_STAGE.FAIL].includes(txStage),
+      ![TX_STAGE.SUCCESS, TX_STAGE.SUCCESS_MULTISIG, TX_STAGE.FAIL].includes(
+        txStage,
+      ),
     [isLedger, txStage],
   );
 

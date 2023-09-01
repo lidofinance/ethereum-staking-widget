@@ -6,7 +6,7 @@ export const useDebouncedValue = <T>(value: T, delay: number) => {
   const deb = useMemo(() => debounce((_v) => s(_v), delay), [delay]);
   deb(value);
   useEffect(() => {
-    () => {
+    return () => {
       deb.flush();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps

@@ -23,6 +23,11 @@ export const TX_STAGE_MODAL_ICONS = {
         <LedgerSuccess fill="transparent" />
       </LedgerIconWrapper>
     ),
+    [TX_STAGE.SUCCESS_MULTISIG]: (
+      <LedgerIconWrapper>
+        <LedgerSuccess fill="transparent" />
+      </LedgerIconWrapper>
+    ),
     [TX_STAGE.SIGN]: (
       <LedgerIconWrapper>
         <LedgerConfirm fill="transparent" />
@@ -46,6 +51,11 @@ export const TX_STAGE_MODAL_ICONS = {
   },
   default: {
     [TX_STAGE.SUCCESS]: (
+      <IconWrapper>
+        <SuccessIcon />
+      </IconWrapper>
+    ),
+    [TX_STAGE.SUCCESS_MULTISIG]: (
       <IconWrapper>
         <SuccessIcon />
       </IconWrapper>

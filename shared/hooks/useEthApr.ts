@@ -6,8 +6,5 @@ const { serverRuntimeConfig } = getConfig();
 const { basePath } = serverRuntimeConfig;
 
 export const useEthApr = (): SWRResponse<unknown> => {
-  return useLidoSWR(
-    `${basePath ?? ''}/api/eth-apr`,
-    standardFetcher,
-  ) as SWRResponse<unknown>;
+  return useLidoSWR(`${basePath ?? ''}/api/eth-apr`, standardFetcher);
 };

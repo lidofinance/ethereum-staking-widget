@@ -23,6 +23,7 @@ import { useWithdrawals } from 'features/withdrawals/contexts/withdrawals-contex
 
 import { useWithdrawalsContract } from './useWithdrawalsContract';
 import { useApprove } from 'shared/hooks/useApprove';
+import { getFeeData } from 'utils/getFeeData';
 import { Zero } from '@ethersproject/constants';
 import { TokensWithdrawable } from 'features/withdrawals/types/tokens-withdrawable';
 
@@ -58,7 +59,7 @@ const useWithdrawalRequestMethods = () => {
         },
       ] as const;
 
-      const feeData = await contractWeb3.provider.getFeeData();
+      const feeData = await getFeeData(chainId);
       const maxFeePerGas = feeData.maxFeePerGas ?? undefined;
       const maxPriorityFeePerGas = feeData.maxPriorityFeePerGas ?? undefined;
       const gasLimit =
@@ -114,7 +115,7 @@ const useWithdrawalRequestMethods = () => {
         },
       ] as const;
 
-      const feeData = await contractWeb3.provider.getFeeData();
+      const feeData = await getFeeData(chainId);
       const maxFeePerGas = feeData.maxFeePerGas ?? undefined;
       const maxPriorityFeePerGas = feeData.maxPriorityFeePerGas ?? undefined;
       const gasLimit =
@@ -169,7 +170,7 @@ const useWithdrawalRequestMethods = () => {
           );
           return providerWeb3?.getSigner().sendUncheckedTransaction(tx);
         } else {
-          const feeData = await contractWeb3.provider.getFeeData();
+          const feeData = await getFeeData(chainId);
           const maxFeePerGas = feeData.maxFeePerGas ?? undefined;
           const maxPriorityFeePerGas =
             feeData.maxPriorityFeePerGas ?? undefined;
@@ -224,7 +225,7 @@ const useWithdrawalRequestMethods = () => {
             );
           return providerWeb3?.getSigner().sendUncheckedTransaction(tx);
         } else {
-          const feeData = await contractWeb3.provider.getFeeData();
+          const feeData = await getFeeData(chainId);
           const maxFeePerGas = feeData.maxFeePerGas ?? undefined;
           const maxPriorityFeePerGas =
             feeData.maxPriorityFeePerGas ?? undefined;
@@ -278,11 +279,13 @@ const useWithdrawalRequestMethods = () => {
 type useWithdrawalRequestParams = {
   amount: BigNumber | null;
   token: TOKENS.STETH | TOKENS.WSTETH;
+  onConfirm?: () => Promise<void>;
 };
 
 export const useWithdrawalRequest = ({
   amount,
   token,
+  onConfirm,
 }: useWithdrawalRequestParams) => {
   const { chainId } = useSDK();
   const withdrawalQueueAddress = getWithdrawalQueueAddress(chainId);
@@ -329,73 +332,66 @@ export const useWithdrawalRequest = ({
   const isTokenLocked = isApprovalFlow && needsApprove;
 
   const request = useCallback(
-    (
+    async (
       requests: BigNumber[] | null,
       amount: BigNumber | null,
       token: TokensWithdrawable,
     ) => {
       // define and set retry point
-      const startCallback = async () => {
-        try {
-          invariant(
-            requests && request.length > 0,
-            'cannot submit empty requests',
-          );
-          invariant(amount, 'cannot submit empty amount');
-          if (isBunker) {
-            const bunkerDialogResult = await new Promise<boolean>((resolve) => {
-              dispatchModalState({
-                type: 'bunker',
-                onCloseBunker: () => resolve(false),
-                onOkBunker: () => resolve(true),
-              });
+      try {
+        invariant(
+          requests && request.length > 0,
+          'cannot submit empty requests',
+        );
+        invariant(amount, 'cannot submit empty amount');
+        if (isBunker) {
+          const bunkerDialogResult = await new Promise<boolean>((resolve) => {
+            dispatchModalState({
+              type: 'bunker',
+              onCloseBunker: () => resolve(false),
+              onOkBunker: () => resolve(true),
             });
-            if (!bunkerDialogResult) return { success: false };
-          }
-          // we can't know if tx was successful or even wait for it  with multisig
-          // so we exit flow gracefully and reset UI
-          const shouldSkipSuccess = isMultisig;
-          // get right method
-          const method = getRequestMethod(isApprovalFlow, token);
-          // start flow
-          dispatchModalState({
-            type: 'start',
-            flow: isApprovalFlow
-              ? needsApprove
-                ? TX_STAGE.APPROVE
-                : TX_STAGE.SIGN
-              : TX_STAGE.PERMIT,
-            requestAmount: amount,
-            token,
           });
-
-          // each flow switches needed signing stages
-          if (isApprovalFlow) {
-            if (needsApprove) {
-              await approve();
-              // multisig does not move to next tx
-              if (!isMultisig) await method({ requests });
-            } else {
-              await method({ requests });
-            }
-          } else {
-            const signature = await gatherPermitSignature(amount);
-            await method({ signature, requests });
-          }
-          // end flow
-          dispatchModalState({ type: shouldSkipSuccess ? 'reset' : 'success' });
-          return { success: true };
-        } catch (error) {
-          const errorMessage = getErrorMessage(error);
-          dispatchModalState({ type: 'error', errorText: errorMessage });
-          return { success: false, error: error };
+          if (!bunkerDialogResult) return { success: false };
         }
-      };
-      dispatchModalState({
-        type: 'set_starTx_callback',
-        callback: startCallback,
-      });
-      return startCallback();
+        // get right method
+        const method = getRequestMethod(isApprovalFlow, token);
+        // start flow
+        dispatchModalState({
+          type: 'start',
+          flow: isApprovalFlow
+            ? needsApprove
+              ? TX_STAGE.APPROVE
+              : TX_STAGE.SIGN
+            : TX_STAGE.PERMIT,
+          requestAmount: amount,
+          token,
+        });
+
+        // each flow switches needed signing stages
+        if (isApprovalFlow) {
+          if (needsApprove) {
+            await approve();
+            // multisig does not move to next tx
+            if (!isMultisig) await method({ requests });
+          } else {
+            await method({ requests });
+          }
+        } else {
+          const signature = await gatherPermitSignature(amount);
+          await method({ signature, requests });
+        }
+        // end flow
+        if (!isMultisig) await onConfirm?.();
+        dispatchModalState({
+          type: isMultisig ? 'success_multisig' : 'success',
+        });
+        return { success: true };
+      } catch (error) {
+        const errorMessage = getErrorMessage(error);
+        dispatchModalState({ type: 'error', errorText: errorMessage });
+        return { success: false, error: error };
+      }
     },
     [
       approve,
@@ -406,6 +402,7 @@ export const useWithdrawalRequest = ({
       isBunker,
       isMultisig,
       needsApprove,
+      onConfirm,
     ],
   );
 

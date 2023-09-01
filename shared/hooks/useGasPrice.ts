@@ -21,7 +21,7 @@ export const useGasPrice = (): BigNumber | undefined => {
   }, [providerRpc]);
 
   useEffect(() => {
-    getGasPrice();
+    void getGasPrice();
   }, [getGasPrice]);
 
   return gasPrice;

@@ -11,7 +11,6 @@ import { WithdrawalsProvider } from 'features/withdrawals/contexts/withdrawals-c
 
 const Withdrawals: FC<WithdrawalsModePageProps> = ({ mode }) => {
   const { account, chainId } = useWeb3();
-
   return (
     <Layout
       title="Withdrawals"

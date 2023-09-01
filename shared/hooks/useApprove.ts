@@ -6,10 +6,10 @@ import { getERC20Contract } from '@lido-sdk/contracts';
 import { Zero } from '@ethersproject/constants';
 import { useAllowance, useMountedState, useSDK } from '@lido-sdk/react';
 import { isContract } from 'utils/isContract';
+import { getFeeData } from 'utils/getFeeData';
+import { runWithTransactionLogger } from 'utils';
 
-type TransactionCallback = () => Promise<ContractTransaction | string>;
-
-export type UseApproveWrapper = (callback: TransactionCallback) => void;
+export type TransactionCallback = () => Promise<ContractTransaction | string>;
 
 export type UseApproveResponse = {
   approve: () => Promise<void>;
@@ -21,23 +21,13 @@ export type UseApproveResponse = {
   error: unknown;
 };
 
-const defaultWrapper: UseApproveWrapper = async (
-  callback: TransactionCallback,
-) => {
-  const result = await callback();
-  if (typeof result === 'object') {
-    await result.wait();
-  }
-};
-
 export const useApprove = (
   amount: BigNumber,
   token: string,
   spender: string,
   owner?: string,
-  wrapper: UseApproveWrapper = defaultWrapper,
 ): UseApproveResponse => {
-  const { providerWeb3, account } = useSDK();
+  const { providerWeb3, account, chainId } = useSDK();
   const mergedOwner = owner ?? account;
 
   invariant(token != null, 'Token is required');
@@ -58,10 +48,12 @@ export const useApprove = (
     try {
       setApproving(true);
       invariant(providerWeb3 != null, 'Web3 provider is required');
+      invariant(chainId, 'chain id is required');
       invariant(account, 'account is required');
       const contractWeb3 = getERC20Contract(token, providerWeb3.getSigner());
       const isMultisig = await isContract(account, providerWeb3);
-      await wrapper(async () => {
+
+      const processApproveTx = async () => {
         if (isMultisig) {
           const tx = await contractWeb3.populateTransaction.approve(
             spender,
@@ -72,9 +64,9 @@ export const useApprove = (
             .sendUncheckedTransaction(tx);
           return hash;
         } else {
-          const feeData = await providerWeb3
-            .getFeeData()
-            .catch((error) => console.warn(error));
+          const feeData = await getFeeData(chainId).catch((error) =>
+            console.warn(error),
+          );
           const maxPriorityFeePerGas =
             feeData?.maxPriorityFeePerGas ?? undefined;
           const maxFeePerGas = feeData?.maxFeePerGas ?? undefined;
@@ -84,17 +76,28 @@ export const useApprove = (
           });
           return tx;
         }
-      });
-      await updateAllowance();
+      };
+
+      const approveTx = await runWithTransactionLogger(
+        'Approve signing',
+        processApproveTx,
+      );
+
+      if (typeof approveTx === 'object') {
+        await runWithTransactionLogger('Approve block confirmation', () =>
+          approveTx.wait(),
+        );
+      }
     } finally {
       setApproving(false);
+      await updateAllowance();
     }
   }, [
-    providerWeb3,
-    token,
     setApproving,
+    providerWeb3,
+    chainId,
     account,
-    wrapper,
+    token,
     updateAllowance,
     spender,
     amount,

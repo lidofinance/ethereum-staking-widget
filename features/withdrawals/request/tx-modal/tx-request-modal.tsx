@@ -8,6 +8,7 @@ import {
   TxStagePermit,
   TxStageFail,
   TxStageBunker,
+  TxStageSuccessMultisig,
   TX_STAGE,
 } from 'features/withdrawals/shared/tx-stage-modal';
 import { useTransactionModal } from 'features/withdrawals/contexts/transaction-modal-context';
@@ -18,7 +19,7 @@ import { TxRequestStageSuccess } from './tx-request-stage-success';
 export const TxRequestModal = () => {
   const {
     dispatchModalState,
-    startTx,
+    onRetry,
     requestAmount,
     token,
     txHash,
@@ -67,15 +68,11 @@ export const TxRequestModal = () => {
             amountAsString={amountAsString}
           />
         );
+      case TX_STAGE.SUCCESS_MULTISIG:
+        return <TxStageSuccessMultisig />;
       case TX_STAGE.FAIL:
         return (
-          <TxStageFail
-            failedText={errorText}
-            onClick={() => {
-              dispatchModalState({ type: 'reset' });
-              startTx && startTx();
-            }}
-          />
+          <TxStageFail failedText={errorText} onClick={onRetry ?? undefined} />
         );
       case TX_STAGE.BUNKER:
         return (
@@ -96,7 +93,7 @@ export const TxRequestModal = () => {
     onCloseBunker,
     onOkBunker,
     requestAmount,
-    startTx,
+    onRetry,
     token,
     txHash,
     txStage,

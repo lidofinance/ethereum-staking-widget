@@ -14,6 +14,7 @@ export const Wrapper = styled.div<{ $background: BackgroundColorsType }>`
   position: relative;
   height: 80px;
   display: flex;
+  text-align: left;
   align-items: center;
   padding: 0 ${({ theme }) => theme.spaceMap.lg}px;
   border-radius: ${({ theme }) => theme.borderRadiusesMap.lg}px;

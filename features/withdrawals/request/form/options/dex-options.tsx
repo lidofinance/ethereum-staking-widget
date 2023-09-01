@@ -22,7 +22,7 @@ import {
   DexOptionLoader,
 } from './styles';
 
-const placeholder = Array(3).fill(null);
+const placeholder = Array.from<null>({ length: 3 }).fill(null);
 
 const dexInfo: {
   [key: string]: {
@@ -99,9 +99,8 @@ const DexOption: React.FC<DexOptionProps> = ({
         Go to {title}
       </DexOptionBlockLink>
       <DexOptionAmount>
-        {loading ? (
-          <InlineLoaderSmall />
-        ) : toReceive ? (
+        {loading && <InlineLoaderSmall />}
+        {toReceive ? (
           <FormatToken
             approx
             showAmountTip

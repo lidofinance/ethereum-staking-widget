@@ -7,7 +7,7 @@ export const useSafeQueryString = (extraParams?: Record<string, string>) => {
   return useMemo(() => {
     const queryParams = new URLSearchParams();
     // mix required and extra params
-    Object.entries({ ...{ ref, embed, app }, ...(extraParams ?? {}) }).forEach(
+    Object.entries({ ref, embed, app, ...(extraParams ?? {}) }).forEach(
       ([k, v]) => v && typeof v === 'string' && queryParams.append(k, v),
     );
     const qs = queryParams.toString();

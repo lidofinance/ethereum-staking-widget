@@ -78,17 +78,17 @@ export default withBundleAnalyzer({
     esmExternals: true,
   },
   webpack(config) {
-    // Teach webpack to import svg files
-    config.module.rules.push({
-      test: /\.svg$/,
-      use: ['@svgr/webpack', 'url-loader'],
-    });
-
-    // Teach webpack to import md files
-    config.module.rules.push({
-      test: /\.md$/,
-      use: 'raw-loader',
-    });
+    // Teach webpack to import svg and md files
+    config.module.rules.push(
+      {
+        test: /\.svg$/,
+        use: ['@svgr/webpack', 'url-loader'],
+      },
+      {
+        test: /\.md$/,
+        use: 'raw-loader',
+      },
+    );
 
     return config;
   },

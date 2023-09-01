@@ -17,7 +17,7 @@ export const useClaim = () => {
   const { account } = useWeb3();
   const { providerWeb3 } = useSDK();
   const { contractWeb3 } = useWithdrawalsContract();
-  const { update } = useClaimData();
+  const { optimisticClaimRequests } = useClaimData();
   const { dispatchModalState } = useTransactionModal();
 
   return useCallback(
@@ -83,15 +83,26 @@ export const useClaim = () => {
           await runWithTransactionLogger('Claim block confirmation', async () =>
             transaction.wait(),
           );
+          // we only update if we wait for tx
+          await optimisticClaimRequests(sortedRequests);
         }
-        await update();
-        dispatchModalState({ type: isMultisig ? 'reset' : 'success' });
+
+        dispatchModalState({
+          type: isMultisig ? 'success_multisig' : 'success',
+        });
+        return true;
       } catch (error) {
         const errorMessage = getErrorMessage(error);
         dispatchModalState({ type: 'error', errorText: errorMessage });
+        return false;
       }
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [contractWeb3, account, providerWeb3, dispatchModalState, update],
+    [
+      contractWeb3,
+      account,
+      providerWeb3,
+      dispatchModalState,
+      optimisticClaimRequests,
+    ],
   );
 };

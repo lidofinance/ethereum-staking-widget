@@ -1,6 +1,6 @@
 import { memo } from 'react';
 import { Divider } from '@lidofinance/lido-ui';
-import { useWeb3 } from '@reef-knot/web3-react';
+import { useWeb3 } from 'reef-knot/web3-react';
 import { useSDK } from '@lido-sdk/react';
 
 import { CardAccount, CardRow, Fallback } from 'shared/wallet';
@@ -17,19 +17,17 @@ export const WalletComponent = () => {
   const { account } = useSDK();
 
   return (
-    <>
-      <WalletWrapperStyled>
-        <CardRow>
-          <WalletAvailableAmount />
-          <CardAccount account={account} />
-        </CardRow>
-        <Divider />
-        <CardRow>
-          <WalletMyRequests />
-          <WalletPendingAmount />
-        </CardRow>
-      </WalletWrapperStyled>
-    </>
+    <WalletWrapperStyled>
+      <CardRow>
+        <WalletAvailableAmount />
+        <CardAccount account={account} />
+      </CardRow>
+      <Divider />
+      <CardRow>
+        <WalletMyRequests />
+        <WalletPendingAmount />
+      </CardRow>
+    </WalletWrapperStyled>
   );
 };
 

@@ -32,11 +32,11 @@ interface TxStageModalProps extends ModalProps {
   amountToken: string;
   willReceiveAmount?: string;
   willReceiveAmountToken?: string;
-  txHash?: string;
+  txHash?: string | null;
   balance?: BigNumber;
   balanceToken?: string;
   allowanceAmount?: BigNumber;
-  failedText?: string;
+  failedText?: string | null;
   onRetry: React.MouseEventHandler;
 }
 
@@ -62,7 +62,10 @@ export const TxStageModal = memo((props: TxStageModalProps) => {
   const oneInchLinkProps = use1inchLinkProps();
 
   const isCloseButtonHidden =
-    isLedger && txStage !== TX_STAGE.SUCCESS && txStage !== TX_STAGE.FAIL;
+    isLedger &&
+    txStage !== TX_STAGE.SUCCESS &&
+    txStage !== TX_STAGE.SUCCESS_MULTISIG &&
+    txStage !== TX_STAGE.FAIL;
 
   const modalProps = {
     ...modalPropsArgs,
@@ -137,6 +140,16 @@ export const TxStageModal = memo((props: TxStageModalProps) => {
     );
   }
 
+  if (txStage === TX_STAGE.SUCCESS_MULTISIG) {
+    return (
+      <TxStageModalShape
+        {...modalProps}
+        title="Success"
+        description="Your transaction has been successfully created in the multisig wallet and awaits approval from other participants"
+      />
+    );
+  }
+
   if (txStage === TX_STAGE.SUCCESS) {
     const successText = getSuccessText(txHash, txOperation);
 
@@ -145,12 +158,10 @@ export const TxStageModal = memo((props: TxStageModalProps) => {
         <TxStageModalShape
           {...modalProps}
           title={successText}
-          description={
-            <>
-              {allowanceAmount && formatBalance(allowanceAmount, 4)} stETH was
-              unlocked to wrap.
-            </>
-          }
+          description={`${formatBalance(
+            allowanceAmount,
+            4,
+          )} stETH was unlocked to wrap.`}
           footerHint={<TxLinkEtherscan txHash={txHash} />}
         />
       );
