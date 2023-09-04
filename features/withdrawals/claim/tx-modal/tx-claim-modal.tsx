@@ -8,9 +8,8 @@ import {
   TxStageSuccessMultisig,
   TxStageSign,
   TxStageFail,
-  TX_STAGE,
 } from 'features/withdrawals/shared/tx-stage-modal';
-import { useTransactionModal } from 'features/withdrawals/contexts/transaction-modal-context';
+import { useTransactionModal, TX_STAGE } from 'shared/transaction-modal';
 import {
   trackMatomoEvent,
   MATOMO_CLICK_EVENTS_TYPES,

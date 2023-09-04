@@ -10,7 +10,6 @@ import {
 import { TOKENS, getWithdrawalQueueAddress } from '@lido-sdk/constants';
 import { useAccount } from 'wagmi';
 
-import { TX_OPERATION } from 'features/withdrawals/shared/tx-stage-modal';
 import {
   GatherPermitSignatureResult,
   useERC20PermitSignature,
@@ -18,7 +17,7 @@ import {
 import { useIsMultisig } from 'shared/hooks/useIsMultisig';
 import { getErrorMessage, runWithTransactionLogger } from 'utils';
 import { isContract } from 'utils/isContract';
-import { useTransactionModal } from 'features/withdrawals/contexts/transaction-modal-context';
+import { useTransactionModal, TX_OPERATION } from 'shared/transaction-modal';
 import { useWithdrawals } from 'features/withdrawals/contexts/withdrawals-context';
 
 import { useWithdrawalsContract } from './useWithdrawalsContract';

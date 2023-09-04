@@ -1,4 +1,4 @@
-import { useTransactionModal } from 'features/withdrawals/contexts/transaction-modal-context';
+import { useTransactionModal } from 'shared/transaction-modal';
 import { convertTxStageToLegacy } from 'features/wsteth/shared/utils/convertTxModalStageToLegacy';
 import { TxStageModal } from 'shared/components';
 import { formatBalance } from 'utils';

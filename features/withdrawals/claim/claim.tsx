@@ -1,4 +1,4 @@
-import { TransactionModalProvider } from 'features/withdrawals/contexts/transaction-modal-context';
+import { TransactionModalProvider } from 'shared/transaction-modal/transaction-modal-context';
 import { ClaimFaq } from 'features/withdrawals/withdrawals-faq/claim-faq';
 
 import { ClaimForm } from './form';

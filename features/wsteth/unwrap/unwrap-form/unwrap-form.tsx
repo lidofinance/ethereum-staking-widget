@@ -4,7 +4,7 @@ import { L2Banner } from 'shared/l2-banner';
 import { MATOMO_CLICK_EVENTS } from 'config';
 import { UnwrapStats } from './unwrap-stats';
 import { UnwrapFormTxModal } from './unwrap-form-tx-modal';
-import { TransactionModalProvider } from 'features/withdrawals/contexts/transaction-modal-context';
+import { TransactionModalProvider } from 'shared/transaction-modal';
 import { UnwrapFormProvider } from '../unwrap-form-context';
 import { FormController } from 'features/wsteth/shared/form-controller/form-controller';
 import { TokenAmountInputUnwrap } from '../unwrap-form-controls/amount-input-unwrap';

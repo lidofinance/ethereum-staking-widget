@@ -8,11 +8,7 @@ import {
 } from 'react';
 import { BigNumber } from 'ethers';
 
-import {
-  TX_OPERATION,
-  TX_STAGE,
-  TX_TOKENS,
-} from 'features/withdrawals/shared/tx-stage-modal';
+import { TX_OPERATION, TX_STAGE, TX_TOKENS } from './types';
 import invariant from 'tiny-invariant';
 
 type TransactionModalDispatch = {

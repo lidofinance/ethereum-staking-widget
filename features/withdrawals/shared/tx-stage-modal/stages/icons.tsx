@@ -13,7 +13,7 @@ import {
   TxLoader,
   WarningIcon,
 } from './iconsStyles';
-import { TX_STAGE } from '../types';
+import { TX_STAGE } from 'shared/transaction-modal';
 
 export const iconsDict = {
   ledger: {

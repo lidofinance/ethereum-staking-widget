@@ -9,10 +9,12 @@ import {
   TxStageFail,
   TxStageBunker,
   TxStageSuccessMultisig,
+} from 'features/withdrawals/shared/tx-stage-modal';
+import {
+  useTransactionModal,
   TX_STAGE,
   TX_OPERATION,
-} from 'features/withdrawals/shared/tx-stage-modal';
-import { useTransactionModal } from 'features/withdrawals/contexts/transaction-modal-context';
+} from 'shared/transaction-modal';
 
 import { getTokenDisplayName } from 'utils/getTokenDisplayName';
 import { TxRequestStageSuccess } from './tx-request-stage-success';

@@ -5,7 +5,7 @@ import { Button } from '@lidofinance/lido-ui';
 import { TxStageModalContent } from 'shared/components/tx-stage-modal-content';
 import { getStageIcon } from './icons';
 import { BottomButtons } from './styles';
-import { TX_STAGE } from '../types';
+import { TX_STAGE } from 'shared/transaction-modal';
 
 type TxStageFailProps = {
   failedText?: string;

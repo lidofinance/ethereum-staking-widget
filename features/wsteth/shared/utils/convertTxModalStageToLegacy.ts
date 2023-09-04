@@ -1,7 +1,4 @@
-import {
-  TX_STAGE,
-  TX_OPERATION,
-} from 'features/withdrawals/shared/tx-stage-modal';
+import { TX_STAGE, TX_OPERATION } from 'shared/transaction-modal';
 import {
   TX_STAGE as TX_STAGE_LEGACY,
   TX_OPERATION as TX_OPERATION_LEGACY,

@@ -12,7 +12,7 @@ import {
 } from './use-default-values';
 import { ClaimFormHelperState, useHelperState } from './use-helper-state';
 import { useClaimData } from 'features/withdrawals/contexts/claim-data-context';
-import { useTransactionModal } from 'features/withdrawals/contexts/transaction-modal-context';
+import { useTransactionModal } from 'shared/transaction-modal';
 
 type ClaimFormDataContextValueType = {
   onSubmit: React.FormEventHandler<HTMLFormElement>;
