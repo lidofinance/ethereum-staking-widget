@@ -1,7 +1,7 @@
 import { useCallback } from 'react';
 import { BigNumber } from 'ethers';
 
-import { TX_STAGE } from 'features/withdrawals/shared/tx-stage-modal';
+import { TX_OPERATION } from 'features/withdrawals/shared/tx-stage-modal';
 import { useClaimData } from 'features/withdrawals/contexts/claim-data-context';
 import { getErrorMessage, runWithTransactionLogger } from 'utils';
 
@@ -36,9 +36,9 @@ export const useClaim = () => {
 
         dispatchModalState({
           type: 'start',
-          flow: TX_STAGE.SIGN,
-          requestAmount: ethToClaim,
-          token: null,
+          operation: TX_OPERATION.CONTRACT,
+          amount: ethToClaim,
+          token: 'ETH',
         });
 
         const ids = sortedRequests.map((r) => r.id);

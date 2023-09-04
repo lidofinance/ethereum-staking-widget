@@ -16,9 +16,7 @@ export const UnwrapFormTxModal = () => {
       txStage={convertTxStageToLegacy(modalState.txStage)}
       txOperation={TX_OPERATION_LEGACY.UNWRAPPING}
       txHash={modalState.txHash}
-      amount={
-        modalState.requestAmount ? formatBalance(modalState.requestAmount) : ''
-      }
+      amount={modalState.amount ? formatBalance(modalState.amount) : ''}
       amountToken="wstETH"
       willReceiveAmount={formatBalance(willReceiveStETH)}
       willReceiveAmountToken="stETH"

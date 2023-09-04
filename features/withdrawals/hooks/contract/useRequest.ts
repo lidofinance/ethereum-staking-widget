@@ -10,7 +10,7 @@ import {
 import { TOKENS, getWithdrawalQueueAddress } from '@lido-sdk/constants';
 import { useAccount } from 'wagmi';
 
-import { TX_STAGE } from 'features/withdrawals/shared/tx-stage-modal';
+import { TX_OPERATION } from 'features/withdrawals/shared/tx-stage-modal';
 import {
   GatherPermitSignatureResult,
   useERC20PermitSignature,
@@ -45,7 +45,7 @@ const useWithdrawalRequestMethods = () => {
       invariant(signature, 'must have signature');
       invariant(contractWeb3, 'must have contractWeb3');
 
-      dispatchModalState({ type: 'signing' });
+      dispatchModalState({ type: 'signing', operation: TX_OPERATION.CONTRACT });
 
       const params = [
         requests,
@@ -59,9 +59,7 @@ const useWithdrawalRequestMethods = () => {
         },
       ] as const;
 
-      const feeData = await getFeeData(chainId);
-      const maxFeePerGas = feeData.maxFeePerGas ?? undefined;
-      const maxPriorityFeePerGas = feeData.maxPriorityFeePerGas ?? undefined;
+      const { maxFeePerGas, maxPriorityFeePerGas } = await getFeeData(chainId);
       const gasLimit =
         await contractWeb3.estimateGas.requestWithdrawalsWithPermit(...params, {
           maxFeePerGas,
@@ -136,10 +134,10 @@ const useWithdrawalRequestMethods = () => {
       const callback = () =>
         contractWeb3.requestWithdrawalsWstETHWithPermit(...params, txOptions);
 
-      dispatchModalState({ type: 'signing' });
+      dispatchModalState({ type: 'signing', operation: TX_OPERATION.CONTRACT });
 
       const transaction = await runWithTransactionLogger(
-        'Stake signing',
+        'Request signing',
         callback,
       );
 
@@ -158,7 +156,7 @@ const useWithdrawalRequestMethods = () => {
       invariant(contractWeb3, 'must have contractWeb3');
       invariant(providerWeb3, 'must have providerWeb3');
 
-      dispatchModalState({ type: 'signing' });
+      dispatchModalState({ type: 'signing', operation: TX_OPERATION.CONTRACT });
       const isMultisig = await isContract(account, contractWeb3.provider);
 
       const params = [requests, account] as const;
@@ -170,10 +168,9 @@ const useWithdrawalRequestMethods = () => {
           );
           return providerWeb3?.getSigner().sendUncheckedTransaction(tx);
         } else {
-          const feeData = await getFeeData(chainId);
-          const maxFeePerGas = feeData.maxFeePerGas ?? undefined;
-          const maxPriorityFeePerGas =
-            feeData.maxPriorityFeePerGas ?? undefined;
+          const { maxFeePerGas, maxPriorityFeePerGas } = await getFeeData(
+            chainId,
+          );
           const gasLimit = await contractWeb3.estimateGas.requestWithdrawals(
             ...params,
             {
@@ -213,7 +210,7 @@ const useWithdrawalRequestMethods = () => {
       invariant(providerWeb3, 'must have providerWeb3');
       const isMultisig = await isContract(account, contractWeb3.provider);
 
-      dispatchModalState({ type: 'signing' });
+      dispatchModalState({ type: 'signing', operation: TX_OPERATION.CONTRACT });
 
       const params = [requests, account] as const;
       const callback = async () => {
@@ -225,10 +222,9 @@ const useWithdrawalRequestMethods = () => {
             );
           return providerWeb3?.getSigner().sendUncheckedTransaction(tx);
         } else {
-          const feeData = await getFeeData(chainId);
-          const maxFeePerGas = feeData.maxFeePerGas ?? undefined;
-          const maxPriorityFeePerGas =
-            feeData.maxPriorityFeePerGas ?? undefined;
+          const { maxFeePerGas, maxPriorityFeePerGas } = await getFeeData(
+            chainId,
+          );
           const gasLimit =
             await contractWeb3.estimateGas.requestWithdrawalsWstETH(...params, {
               maxFeePerGas,
@@ -243,7 +239,7 @@ const useWithdrawalRequestMethods = () => {
       };
 
       const transaction = await runWithTransactionLogger(
-        'Stake signing',
+        'Request signing',
         callback,
       );
 
@@ -293,7 +289,7 @@ export const useWithdrawalRequest = ({
   const { connector } = useAccount();
   const { account } = useWeb3();
   const { isBunker } = useWithdrawals();
-  const { dispatchModalState } = useTransactionModal();
+  const { dispatchModalState, dispatchAsyncDialog } = useTransactionModal();
   const getRequestMethod = useWithdrawalRequestMethods();
   const [isMultisig, isMultisigLoading] = useIsMultisig();
 
@@ -345,13 +341,9 @@ export const useWithdrawalRequest = ({
         );
         invariant(amount, 'cannot submit empty amount');
         if (isBunker) {
-          const bunkerDialogResult = await new Promise<boolean>((resolve) => {
-            dispatchModalState({
-              type: 'bunker',
-              onCloseBunker: () => resolve(false),
-              onOkBunker: () => resolve(true),
-            });
-          });
+          const { ok: bunkerDialogResult } = await dispatchAsyncDialog(
+            'bunker',
+          );
           if (!bunkerDialogResult) return { success: false };
         }
         // get right method
@@ -359,19 +351,28 @@ export const useWithdrawalRequest = ({
         // start flow
         dispatchModalState({
           type: 'start',
-          flow: isApprovalFlow
+          operation: isApprovalFlow
             ? needsApprove
-              ? TX_STAGE.APPROVE
-              : TX_STAGE.SIGN
-            : TX_STAGE.PERMIT,
-          requestAmount: amount,
+              ? TX_OPERATION.APPROVE
+              : TX_OPERATION.CONTRACT
+            : TX_OPERATION.PERMIT,
+          amount,
           token,
         });
 
         // each flow switches needed signing stages
         if (isApprovalFlow) {
           if (needsApprove) {
-            await approve();
+            await approve({
+              onTxSent: (tx) => {
+                if (!isMultisig)
+                  dispatchModalState({
+                    type: 'block',
+                    txHash: typeof tx === 'string' ? tx : tx.hash,
+                    operation: TX_OPERATION.APPROVE,
+                  });
+              },
+            });
             // multisig does not move to next tx
             if (!isMultisig) await method({ requests });
           } else {
@@ -395,6 +396,7 @@ export const useWithdrawalRequest = ({
     },
     [
       approve,
+      dispatchAsyncDialog,
       dispatchModalState,
       gatherPermitSignature,
       getRequestMethod,

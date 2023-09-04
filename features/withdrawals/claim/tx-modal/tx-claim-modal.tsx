@@ -20,7 +20,7 @@ export const TxClaimModal = () => {
   const {
     isModalOpen,
     txStage,
-    requestAmount,
+    amount,
     txHash,
     errorText,
     onRetry,
@@ -28,8 +28,8 @@ export const TxClaimModal = () => {
   } = useTransactionModal();
 
   const amountAsString = useMemo(
-    () => (requestAmount ? formatBalance(requestAmount, 4) : ''),
-    [requestAmount],
+    () => (amount ? formatBalance(amount, 4) : ''),
+    [amount],
   );
 
   const successDescription = 'Claiming operation was successful';

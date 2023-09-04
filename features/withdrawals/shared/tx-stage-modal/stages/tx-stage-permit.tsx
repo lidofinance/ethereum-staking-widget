@@ -10,7 +10,7 @@ export const TxStagePermit: FC = () => {
 
   return (
     <TxStageModalContent
-      icon={getStageIcon(isLedger, TX_STAGE.PERMIT)}
+      icon={getStageIcon(isLedger, TX_STAGE.SIGN)}
       title="Please sign the message"
       description="Processing your request"
       footerHint="Confirm request in your wallet"

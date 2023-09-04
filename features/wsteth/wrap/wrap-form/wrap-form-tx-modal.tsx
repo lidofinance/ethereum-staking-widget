@@ -22,11 +22,11 @@ export const WrapFormTxModal = () => {
       open={modalState.isModalOpen}
       onClose={() => dispatchModalState({ type: 'close_modal' })}
       txStage={convertTxStageToLegacy(modalState.txStage)}
-      txOperation={convertTxStageToLegacyTxOperationWrap(modalState.txStage)}
+      txOperation={convertTxStageToLegacyTxOperationWrap(
+        modalState.txOperation,
+      )}
       txHash={modalState.txHash}
-      amount={
-        modalState.requestAmount ? formatBalance(modalState.requestAmount) : ''
-      }
+      amount={modalState.amount ? formatBalance(modalState.amount) : ''}
       amountToken={getTokenDisplayName(token)}
       willReceiveAmount={formatBalance(willReceiveWsteth)}
       willReceiveAmountToken="wstETH"
