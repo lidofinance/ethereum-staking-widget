@@ -74,14 +74,7 @@ export const iconsDict = {
   },
 };
 
-export const getStageIcon = (
-  isLedger: boolean,
-  stage: TX_STAGE,
-  isDialog?: boolean,
-) => {
+export const getStageIcon = (isLedger: boolean, stage: TX_STAGE | 'DIALOG') => {
   if (stage === TX_STAGE.NONE) return null;
-  return (
-    iconsDict[isLedger ? 'ledger' : 'default'][isDialog ? 'DIALOG' : stage] ??
-    null
-  );
+  return iconsDict[isLedger ? 'ledger' : 'default'][stage] ?? null;
 };
