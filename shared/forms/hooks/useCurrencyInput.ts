@@ -5,7 +5,6 @@ import { useCurrencyAmountValidator } from 'shared/forms/hooks/useCurrencyAmount
 
 import { BigNumber } from 'ethers';
 import { maxNumberValidation } from 'utils/maxNumberValidation';
-import type { ValidationFn } from 'shared/forms/types/validation-fn';
 
 type UseCurrencyInputArgs = {
   inputValue: string;
@@ -17,7 +16,6 @@ type UseCurrencyInputArgs = {
   token?: string;
   padMaxAmount?: boolean | ((padAmount: BigNumber) => boolean);
   gasLimit?: number;
-  extraValidationFn?: ValidationFn;
   shouldValidate?: boolean;
 };
 
@@ -31,16 +29,11 @@ export const useCurrencyInput = ({
   token = 'ETH',
   padMaxAmount,
   gasLimit,
-  extraValidationFn,
   shouldValidate = true,
 }: UseCurrencyInputArgs) => {
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
-  const validationFn = useCurrencyAmountValidator({
-    inputName,
-    limit,
-    extraValidationFn,
-  });
+  const validationFn = useCurrencyAmountValidator({ inputName, limit });
 
   const { doValidate, error, inputTouched, setInputTouched } = useInputValidate(
     {
@@ -81,7 +74,8 @@ export const useCurrencyInput = ({
     limit: limit ? limit : BigNumber.from(0),
     token,
     padded: padMaxAmount,
-    gasLimit,
+    gasLimit:
+      typeof gasLimit === 'number' ? BigNumber.from(gasLimit) : undefined,
   });
 
   const isMaxDisabled = maxAmount === '0.0';

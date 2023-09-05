@@ -23,7 +23,18 @@ const parseEtherSafe = (value: string) => {
 };
 
 export const InputAmount = forwardRef<HTMLInputElement, InputAmountProps>(
-  ({ onChange, value, rightDecorator, isLocked, maxValue, ...props }, ref) => {
+  (
+    {
+      onChange,
+      value,
+      rightDecorator,
+      isLocked,
+      maxValue,
+      placeholder = '0',
+      ...props
+    },
+    ref,
+  ) => {
     const [stringValue, setStringValue] = useState(() =>
       value ? formatEther(value) : '',
     );
@@ -75,6 +86,7 @@ export const InputAmount = forwardRef<HTMLInputElement, InputAmountProps>(
     return (
       <Input
         {...props}
+        placeholder={placeholder}
         rightDecorator={
           rightDecorator ?? (
             <>

@@ -1,4 +1,3 @@
-import { MaxUint256, Zero } from '@ethersproject/constants';
 import { formatEther } from '@ethersproject/units';
 import { TOKENS } from '@lido-sdk/constants';
 import { BigNumber } from 'ethers';
@@ -13,18 +12,17 @@ import {
 } from '.';
 import { VALIDATION_CONTEXT_TIMEOUT } from 'features/withdrawals/withdrawals-constants';
 
-import { ValidationError } from 'shared/hook-form/validation-error';
+import {
+  ValidationError,
+  handleResolverValidationError,
+} from 'shared/hook-form/validation/validation-error';
 import { getTokenDisplayName } from 'utils/getTokenDisplayName';
+import { awaitWithTimeout } from 'utils/await-with-timeout';
+import { validateEtherAmount } from 'shared/hook-form/validation/validate-ether-amount';
+import { validateBignumberMin } from 'shared/hook-form/validation/validate-bignumber-min';
+import { validateBignumberMax } from 'shared/hook-form/validation/validate-bignumber-max';
 
 // helpers that should be shared when adding next hook-form
-
-export const withTimeout = <T>(toWait: Promise<T>, timeout: number) =>
-  Promise.race([
-    toWait,
-    new Promise<never>((_, reject) =>
-      setTimeout(() => reject(new Error('promise timeout')), timeout),
-    ),
-  ]);
 
 export type TvlErrorPayload = {
   balanceDiffSteth: BigNumber;
@@ -51,62 +49,13 @@ export class ValidationSplitRequest extends ValidationError {
   }
 }
 
-// asserts only work with function declaration
-// eslint-disable-next-line func-style
-function validateEtherAmount(
-  field: string,
-  amount: BigNumber | null,
-  token: TokensWithdrawable,
-): asserts amount is BigNumber {
-  if (!amount)
-    throw new ValidationError(
-      field,
-      `${getTokenDisplayName(token)} ${field} is required`,
-    );
+const messageMinUnstake = (min: BigNumber, token: TokensWithdrawable) =>
+  `Minimum unstake amount is ${formatEther(min)} ${getTokenDisplayName(token)}`;
 
-  if (amount.lte(Zero))
-    throw new ValidationError(
-      field,
-      `${getTokenDisplayName(token)} ${field} must be greater than 0`,
-    );
-
-  if (amount.gt(MaxUint256))
-    throw new ValidationError(
-      field,
-      `${getTokenDisplayName(token)} ${field} is not valid`,
-    );
-}
-
-const validateMinUnstake = (
-  field: string,
-  value: BigNumber,
-  min: BigNumber,
-  token: TokensWithdrawable,
-) => {
-  if (value.lt(min))
-    throw new ValidationError(
-      field,
-      `Minimum unstake amount is ${formatEther(min)} ${getTokenDisplayName(
-        token,
-      )}`,
-    );
-  return value;
-};
-
-const validateMaxAmount = (
-  field: string,
-  value: BigNumber,
-  max: BigNumber,
-  token: TokensWithdrawable,
-) => {
-  if (value.gt(max))
-    throw new ValidationError(
-      field,
-      `${getTokenDisplayName(
-        token,
-      )} ${field} must not be greater than ${formatEther(max)}`,
-    );
-};
+const messageMaxAmount = (max: BigNumber, token: TokensWithdrawable) =>
+  `${getTokenDisplayName(token)} amount must not be greater than ${formatEther(
+    max,
+  )}`;
 
 // TODO!: write tests for this validation function
 const validateSplitRequests = (
@@ -195,7 +144,7 @@ export const RequestFormValidationResolver: Resolver<
     // validation function only waits limited time for data and fails validation otherwise
     // most of the time data will already be available
     invariant(contextPromise, 'must have context promise');
-    const context = await withTimeout(
+    const context = await awaitWithTimeout(
       contextPromise,
       VALIDATION_CONTEXT_TIMEOUT,
     );
@@ -209,7 +158,9 @@ export const RequestFormValidationResolver: Resolver<
       stethTotalSupply,
     } = transformContext(context, values);
 
-    if (isSteth) tvlJokeValidate('amount', amount, stethTotalSupply, balance);
+    if (isSteth) {
+      tvlJokeValidate('amount', amount, stethTotalSupply, balance);
+    }
 
     // early validation exit for dex option
     if (mode === 'dex') {
@@ -224,39 +175,30 @@ export const RequestFormValidationResolver: Resolver<
     );
     validationResults.requests = requests;
 
-    validateMinUnstake('amount', amount, minAmountPerRequest, token);
+    validateBignumberMin(
+      'amount',
+      amount,
+      minAmountPerRequest,
+      messageMinUnstake(minAmountPerRequest, token),
+    );
 
-    validateMaxAmount('amount', amount, balance, token);
+    validateBignumberMax(
+      'amount',
+      amount,
+      balance,
+      messageMaxAmount(balance, token),
+    );
 
     return {
       values: { ...values, requests },
       errors: {},
     };
   } catch (error) {
-    if (error instanceof ValidationError) {
-      return {
-        values: {},
-        errors: {
-          [error.field]: {
-            message: error.message,
-            type: error.type,
-            payload: error.payload,
-          },
-        },
-      };
-    }
-    console.warn('[RequestForm] Unhandled validation error in resolver', error);
-    return {
-      values: {},
-      errors: {
-        // for general errors we use 'requests' field
-        // cause non-fields get ignored and form is still considerate valid
-        requests: {
-          type: 'validate',
-          message: 'unknown validation error',
-        },
-      },
-    };
+    return handleResolverValidationError(
+      error,
+      'WithdrawalRequestForm',
+      'amount',
+    );
   } finally {
     // no matter validation result save results for the UI to show
     setResults?.(validationResults);
