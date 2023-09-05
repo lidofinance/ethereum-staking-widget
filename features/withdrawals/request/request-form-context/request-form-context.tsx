@@ -75,7 +75,12 @@ export const RequestFormProvider: React.FC = ({ children }) => {
   });
 
   // TODO refactor this part as part of TX flow
-  const { handleSubmit, reset, watch } = formObject;
+  const {
+    handleSubmit,
+    reset,
+    watch,
+    formState: { defaultValues },
+  } = formObject;
   const [token, amount] = watch(['token', 'amount']);
   const {
     allowance,
@@ -95,14 +100,13 @@ export const RequestFormProvider: React.FC = ({ children }) => {
         const { success } = await request(requests, amount, token);
         if (success) {
           reset({
+            ...defaultValues,
             mode,
             token,
-            amount: null,
-            requests: null,
           });
         }
       }),
-    [handleSubmit, request, reset],
+    [handleSubmit, request, reset, defaultValues],
   );
 
   useEffect(() => {
