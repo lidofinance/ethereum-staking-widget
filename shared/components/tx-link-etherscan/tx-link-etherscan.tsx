@@ -4,7 +4,7 @@ import { getEtherscanTxLink } from '@lido-sdk/helpers';
 
 type TxLinkEtherscanProps = {
   text?: string;
-  txHash?: string;
+  txHash?: string | null;
   onClick?: React.MouseEventHandler<HTMLAnchorElement>;
 };
 

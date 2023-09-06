@@ -279,11 +279,13 @@ const useWithdrawalRequestMethods = () => {
 type useWithdrawalRequestParams = {
   amount: BigNumber | null;
   token: TOKENS.STETH | TOKENS.WSTETH;
+  onConfirm?: () => Promise<void>;
 };
 
 export const useWithdrawalRequest = ({
   amount,
   token,
+  onConfirm,
 }: useWithdrawalRequestParams) => {
   const { chainId } = useSDK();
   const withdrawalQueueAddress = getWithdrawalQueueAddress(chainId);
@@ -380,6 +382,7 @@ export const useWithdrawalRequest = ({
           await method({ signature, requests });
         }
         // end flow
+        if (!isMultisig) await onConfirm?.();
         dispatchModalState({
           type: isMultisig ? 'success_multisig' : 'success',
         });
@@ -399,6 +402,7 @@ export const useWithdrawalRequest = ({
       isBunker,
       isMultisig,
       needsApprove,
+      onConfirm,
     ],
   );
 

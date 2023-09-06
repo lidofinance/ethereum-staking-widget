@@ -1,5 +1,5 @@
 import { useMemo, useState, createContext, useContext, useEffect } from 'react';
-import { FormProvider, useForm, useWatch } from 'react-hook-form';
+import { FormProvider, useForm } from 'react-hook-form';
 import invariant from 'tiny-invariant';
 import { TOKENS } from '@lido-sdk/constants';
 
@@ -52,7 +52,8 @@ export const RequestFormProvider: React.FC = ({ children }) => {
     useState<ValidationResults>({ requests: null });
 
   const requestFormData = useRequestFormDataContextValue();
-  const { onSuccessRequest } = requestFormData;
+  const { balanceSteth, balanceWSteth, revalidateRequestFormData } =
+    requestFormData;
   const validationContext = useValidationContext(
     requestFormData,
     setIntermediateValidationResults,
@@ -74,11 +75,13 @@ export const RequestFormProvider: React.FC = ({ children }) => {
   });
 
   // TODO refactor this part as part of TX flow
-  const { control, handleSubmit, reset } = formObject;
-  const [token, amount] = useWatch({
-    control: control,
-    name: ['token', 'amount'],
-  });
+  const {
+    handleSubmit,
+    reset,
+    watch,
+    formState: { defaultValues },
+  } = formObject;
+  const [token, amount] = watch(['token', 'amount']);
   const {
     allowance,
     request,
@@ -88,41 +91,50 @@ export const RequestFormProvider: React.FC = ({ children }) => {
   } = useWithdrawalRequest({
     token,
     amount,
+    onConfirm: revalidateRequestFormData,
   });
 
   const onSubmit = useMemo(
     () =>
-      handleSubmit(async ({ requests, amount, token }) => {
+      handleSubmit(async ({ requests, mode, amount, token }) => {
         const { success } = await request(requests, amount, token);
         if (success) {
-          await onSuccessRequest();
-          reset();
+          reset({
+            ...defaultValues,
+            mode,
+            token,
+          });
         }
       }),
-    [reset, handleSubmit, request, onSuccessRequest],
+    [handleSubmit, request, reset, defaultValues],
   );
 
   useEffect(() => {
     dispatchModalState({ type: 'set_on_retry', callback: onSubmit });
   }, [dispatchModalState, onSubmit]);
 
-  const value = useMemo(() => {
-    return {
+  const maxAmount = token === TOKENS.STETH ? balanceSteth : balanceWSteth;
+
+  const value = useMemo(
+    (): RequestFormDataContextValueType => ({
       ...requestFormData,
       isApprovalFlow,
       isApprovalFlowLoading,
       isTokenLocked,
       allowance,
+      maxAmount,
       onSubmit,
-    };
-  }, [
-    requestFormData,
-    isApprovalFlow,
-    isApprovalFlowLoading,
-    isTokenLocked,
-    allowance,
-    onSubmit,
-  ]);
+    }),
+    [
+      requestFormData,
+      isApprovalFlow,
+      isApprovalFlowLoading,
+      isTokenLocked,
+      allowance,
+      maxAmount,
+      onSubmit,
+    ],
+  );
 
   return (
     <FormProvider {...formObject}>

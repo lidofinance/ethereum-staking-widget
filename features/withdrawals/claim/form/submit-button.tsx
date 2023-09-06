@@ -5,6 +5,7 @@ import { FormatToken } from 'shared/formatters/format-token';
 import { ClaimFormInputType, useClaimFormData } from '../claim-form-context';
 import { Zero } from '@ethersproject/constants';
 import { useFormState } from 'react-hook-form';
+import { isValidationErrorTypeUnhandled } from 'shared/hook-form/validation/validation-error';
 
 export const SubmitButton = () => {
   const { active } = useWeb3();
@@ -19,7 +20,10 @@ export const SubmitButton = () => {
     <FormatToken amount={ethToClaim} symbol="ETH" />
   );
 
-  const disabled = Boolean(errors.requests) || selectedRequests.length === 0;
+  const disabled =
+    (!!errors.requests &&
+      !isValidationErrorTypeUnhandled(errors.requests.type)) ||
+    selectedRequests.length === 0;
 
   return (
     <Button

@@ -5,14 +5,14 @@ import { useMemo } from 'react';
 
 type UseMaxAmountArgs = {
   limit?: BigNumber;
-  gasLimit?: number;
+  gasLimit?: BigNumber;
   token?: string;
   padded?: boolean | ((padAmount: BigNumber) => boolean);
 };
 
 export const useCurrencyMaxAmount = ({
   limit,
-  gasLimit = 21000,
+  gasLimit = BigNumber.from(21000),
   token = 'ETH',
   padded = true,
 }: UseMaxAmountArgs): string => {
@@ -27,7 +27,7 @@ export const useCurrencyMaxAmount = ({
     if (!maxGasPrice) return '0.0';
 
     const padAmount = maxGasPrice
-      .mul(BigNumber.from(gasLimit))
+      .mul(gasLimit)
       .add(BigNumber.from(parseEther('0.01')));
 
     if (typeof padded === 'function' ? padded(padAmount) : padded) {

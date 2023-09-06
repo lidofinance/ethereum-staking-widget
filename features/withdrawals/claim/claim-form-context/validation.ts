@@ -2,7 +2,7 @@ import { Resolver } from 'react-hook-form';
 import {
   ValidationError,
   handleResolverValidationError,
-} from 'shared/hook-form/validation-error';
+} from 'shared/hook-form/validation/validation-error';
 import invariant from 'tiny-invariant';
 import { ClaimFormValidationContext, ClaimFormInputType } from './types';
 import { RequestStatusClaimable } from 'features/withdrawals/types/request-status';
