@@ -5,7 +5,8 @@ export const ButtonStyle = styled(Button)`
   font-weight: 400;
   height: 32px;
 
-  width: 83px;
+  width: 80px;
   min-width: unset;
-  padding: unset;
+  padding: 9px;
+  font-size: 12px;
 `;
