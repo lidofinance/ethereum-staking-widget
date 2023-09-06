@@ -12,7 +12,7 @@ const StyledSelect = styled(Select)`
 
   border-radius: 6px;
 
-  & span {
+  & > span {
     padding: 9px;
     border-radius: ${({ theme }) => theme.borderRadiusesMap.sm}px;
   }
