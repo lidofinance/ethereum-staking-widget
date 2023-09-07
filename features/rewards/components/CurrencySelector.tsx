@@ -8,12 +8,12 @@ import { STORAGE_CURRENCY_KEY } from 'config';
 
 const StyledSelect = styled(Select)`
   height: 32px;
-  width: 70px;
+  width: 65px;
 
   border-radius: 6px;
 
   & > span {
-    padding: 9px;
+    padding: 0 10px;
     border-radius: ${({ theme }) => theme.borderRadiusesMap.sm}px;
   }
 
@@ -22,8 +22,17 @@ const StyledSelect = styled(Select)`
     font-weight: 400;
   }
 
-  & span:nth-of-type(2) {
-    padding-left: unset;
+  & span span {
+    padding-left: 0;
+  }
+`;
+
+const OptionStyled = styled(Option)`
+  padding-left: 10px;
+  padding-right: 10px;
+
+  span {
+    font-weight: 400;
   }
 `;
 
@@ -54,9 +63,9 @@ const CurrencySelector = ({ currency, onChange }: CurrencySelectorProps) => (
       variant="small"
     >
       {CURRENCIES.map((cur) => (
-        <Option key={cur.id} value={cur.id}>
+        <OptionStyled key={cur.id} value={cur.id}>
           {cur.code}
-        </Option>
+        </OptionStyled>
       ))}
     </StyledSelect>
   </Box>
