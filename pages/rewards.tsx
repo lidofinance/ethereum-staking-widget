@@ -30,7 +30,3 @@ const Rewards: FC = () => {
 };
 
 export default Rewards;
-
-export const getServerSideProps = async () => {
-  return { props: {} };
-};
