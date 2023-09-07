@@ -8,18 +8,19 @@ import { STORAGE_CURRENCY_KEY } from 'config';
 
 const StyledSelect = styled(Select)`
   height: 32px;
-  width: 65px;
+  width: 72px;
 
   border-radius: 6px;
 
   & > span {
-    padding: 0 10px;
     border-radius: ${({ theme }) => theme.borderRadiusesMap.sm}px;
   }
 
   & input {
+    display: block;
     font-size: 12px;
     font-weight: 400;
+    vertical-align: middle;
   }
 
   & span span {
@@ -28,9 +29,6 @@ const StyledSelect = styled(Select)`
 `;
 
 const OptionStyled = styled(Option)`
-  padding-left: 10px;
-  padding-right: 10px;
-
   span {
     font-weight: 400;
   }
