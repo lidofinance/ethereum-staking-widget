@@ -21,6 +21,7 @@ const StyledSelect = styled(Select)`
     font-size: 12px;
     font-weight: 400;
     vertical-align: middle;
+    line-height: 1em;
   }
 
   & span span {
