@@ -8,19 +8,17 @@ const basePath = process.env.BASE_PATH;
 const infuraKey = process.env.INFURA_API_KEY;
 const alchemyKey = process.env.ALCHEMY_API_KEY;
 
-const rpcUrls_1 =
-  (process.env.EL_RPC_URLS_1 && process.env.EL_RPC_URLS_1.split(',')) ||
-  [
-    infuraKey && `https://eth-mainnet.alchemyapi.io/v2/${infuraKey}`,
-    alchemyKey && `https://mainnet.infura.io/v3/${alchemyKey}`,
-  ].filter(Boolean);
+const rpcUrls_1 = [
+  ...(process.env.EL_RPC_URLS_1?.split(',') ?? []),
+  alchemyKey && `https://eth-mainnet.alchemyapi.io/v2/${alchemyKey}`,
+  infuraKey && `https://mainnet.infura.io/v3/${infuraKey}`,
+].filter(Boolean);
 
-const rpcUrls_5 =
-  (process.env.EL_RPC_URLS_5 && process.env.EL_RPC_URLS_5.split(',')) ||
-  [
-    infuraKey && `https://eth-goerli.alchemyapi.io/v2/${infuraKey}`,
-    alchemyKey && `https://goerli.infura.io/v3/${alchemyKey}`,
-  ].filter(Boolean);
+const rpcUrls_5 = [
+  ...(process.env.EL_RPC_URLS_5?.split(',') ?? []),
+  alchemyKey && `https://eth-goerli.alchemyapi.io/v2/${alchemyKey}`,
+  infuraKey && `https://goerli.infura.io/v3/${infuraKey}`,
+].filter(Boolean);
 
 const ethAPIBasePath = process.env.ETH_API_BASE_PATH;
 
