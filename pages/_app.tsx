@@ -10,6 +10,7 @@ import 'nprogress/nprogress.css';
 
 import Providers from 'providers';
 import { nprogress, COOKIES_ALLOWED_FULL_KEY } from 'utils';
+import { withCsp } from 'utilsApi/withCsp';
 import { BackgroundGradient } from 'shared/components/background-gradient/background-gradient';
 
 // Migrations old theme cookies to new cross domain cookies
@@ -46,4 +47,6 @@ const AppWrapper = (props: AppProps): JSX.Element => {
   );
 };
 
-export default AppWrapper;
+export default process.env.NODE_ENV === 'development'
+  ? AppWrapper
+  : withCsp(AppWrapper);
