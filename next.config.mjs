@@ -4,8 +4,22 @@ import buildDynamics from './scripts/build-dynamics.mjs';
 buildDynamics();
 
 const basePath = process.env.BASE_PATH;
-const infuraApiKey = process.env.INFURA_API_KEY;
-const alchemyApiKey = process.env.ALCHEMY_API_KEY;
+// TODO: deprecate old envs
+const infuraKey = process.env.INFURA_API_KEY;
+const alchemyKey = process.env.ALCHEMY_API_KEY;
+
+const rpcUrls_1 = [
+  ...(process.env.EL_RPC_URLS_1?.split(',') ?? []),
+  alchemyKey && `https://eth-mainnet.alchemyapi.io/v2/${alchemyKey}`,
+  infuraKey && `https://mainnet.infura.io/v3/${infuraKey}`,
+].filter(Boolean);
+
+const rpcUrls_5 = [
+  ...(process.env.EL_RPC_URLS_5?.split(',') ?? []),
+  alchemyKey && `https://eth-goerli.alchemyapi.io/v2/${alchemyKey}`,
+  infuraKey && `https://goerli.infura.io/v3/${infuraKey}`,
+].filter(Boolean);
+
 const ethAPIBasePath = process.env.ETH_API_BASE_PATH;
 
 const ethplorerApiKey = process.env.ETHPLORER_API_KEY;
@@ -20,11 +34,7 @@ const cspReportOnly = process.env.CSP_REPORT_ONLY;
 const cspReportUri = process.env.CSP_REPORT_URI;
 
 const subgraphMainnet = process.env.SUBGRAPH_MAINNET;
-const subgraphRopsten = process.env.SUBGRAPH_ROPSTEN;
-const subgraphRinkeby = process.env.SUBGRAPH_RINKEBY;
 const subgraphGoerli = process.env.SUBGRAPH_GOERLI;
-const subgraphKovan = process.env.SUBGRAPH_KOVAN;
-const subgraphKintsugi = process.env.SUBGRAPH_KINTSUGI;
 
 const subgraphRequestTimeout = process.env.SUBGRAPH_REQUEST_TIMEOUT;
 
@@ -106,8 +116,8 @@ export default withBundleAnalyzer({
   },
   serverRuntimeConfig: {
     basePath,
-    infuraApiKey,
-    alchemyApiKey,
+    rpcUrls_1,
+    rpcUrls_5,
     ethplorerApiKey,
     cloudflareApiToken,
     cloudflareAccountId,
@@ -116,11 +126,7 @@ export default withBundleAnalyzer({
     cspReportOnly,
     cspReportUri,
     subgraphMainnet,
-    subgraphRopsten,
-    subgraphRinkeby,
     subgraphGoerli,
-    subgraphKovan,
-    subgraphKintsugi,
     subgraphRequestTimeout,
     rateLimit,
     rateLimitTimeFrame,
