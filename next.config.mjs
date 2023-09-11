@@ -1,6 +1,4 @@
 import NextBundleAnalyzer from '@next/bundle-analyzer';
-import { createSecureHeaders } from 'next-secure-headers';
-import createCSP from './scripts/create-csp.mjs';
 import buildDynamics from './scripts/build-dynamics.mjs';
 
 buildDynamics();
@@ -108,15 +106,6 @@ export default withBundleAnalyzer({
         // Apply these headers to all routes in your application.
         source: '/(.*)',
         headers: [
-          ...createSecureHeaders({
-            contentSecurityPolicy: createCSP(
-              cspTrustedHosts,
-              cspReportUri,
-              cspReportOnly,
-            ),
-            frameGuard: false,
-            referrerPolicy: 'same-origin',
-          }),
           {
             key: 'X-DNS-Prefetch-Control',
             value: 'on',
