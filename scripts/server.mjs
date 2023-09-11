@@ -1,7 +1,6 @@
 import { createServer } from 'http';
 import { parse } from 'url';
 import next from 'next';
-import { CACHE_CONTROL_HEADER } from '../next.config.mjs';
 
 const dev = process.env.NODE_ENV !== 'production';
 const hostname = 'localhost';
@@ -9,6 +8,8 @@ const port = Number(process.env.PORT) || 3000;
 // when using middleware `hostname` and `port` must be provided below
 const app = next({ dev, hostname, port });
 const handle = app.getRequestHandler();
+// cannot import from next.config.mjs because this will break env load
+const CACHE_CONTROL_HEADER = 'x-cache-control';
 
 // allows us to override cache-control header
 const overrideSetHeader = (res) => {
