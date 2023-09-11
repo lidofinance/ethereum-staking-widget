@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "node server.mjs",
+    "dev": "node scripts/server.mjs",
     "build": "next build",
     "build:analyze": "ANALYZE_BUNDLE=true next build",
     "start": "NODE_OPTIONS='-r next-logger' NODE_ENV=production node scripts/server.mjs",

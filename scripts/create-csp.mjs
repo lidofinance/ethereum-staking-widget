@@ -1,6 +1,6 @@
 export default (cspTrustedHosts, cspReportUri, cspReportOnly) => {
   const trustedHosts = cspTrustedHosts ? cspTrustedHosts.split(',') : [];
-  const reportOnly = cspReportOnly === 'true';
+  const reportOnly = cspReportOnly == 'true';
   return {
     directives: {
       styleSrc: ["'self'", 'https://fonts.googleapis.com', "'unsafe-inline'"],
