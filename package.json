@@ -7,7 +7,7 @@
     "dev": "node server.mjs",
     "build": "next build",
     "build:analyze": "ANALYZE_BUNDLE=true next build",
-    "start": "NODE_OPTIONS='-r next-logger' NODE_ENV=production node scripts/server.mjs",
+    "start": "NODE_OPTIONS='-r next-logger' NODE_ENV=production node server.mjs",
     "lint": "eslint --ext ts,tsx,js,mjs .",
     "lint:fix": "yarn lint --fix",
     "types": "tsc --noEmit",
