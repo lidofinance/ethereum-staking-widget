@@ -1,4 +1,6 @@
 import NextBundleAnalyzer from '@next/bundle-analyzer';
+import { createSecureHeaders } from 'next-secure-headers';
+import createCSP from './scripts/create-csp.mjs';
 import buildDynamics from './scripts/build-dynamics.mjs';
 
 buildDynamics();
@@ -47,6 +49,23 @@ const rateLimitTimeFrame = process.env.RATE_LIMIT_TIME_FRAME || 60; // 1 minute;
 const rewardsBackendAPI = process.env.REWARDS_BACKEND;
 const defaultChain = process.env.DEFAULT_CHAIN;
 
+// cache control
+export const CACHE_CONTROL_HEADER = 'x-cache-control';
+export const CACHE_CONTROL_PAGES = [
+  '/manifest.json',
+  '/favicon:size*',
+  '/',
+  '/wrap',
+  '/wrap/unwrap',
+  '/rewards',
+  '/referral',
+  '/withdrawals/request',
+  '/withdrawals/claim',
+  '/runtime/window-env.js',
+];
+export const CACHE_CONTROL_VALUE =
+  'public, max-age=15, s-max-age=30, stale-if-error=604800, stale-while-revalidate=172800';
+
 const withBundleAnalyzer = NextBundleAnalyzer({
   enabled: analyzeBundle,
 });
@@ -86,14 +105,18 @@ export default withBundleAnalyzer({
   async headers() {
     return [
       {
-        // required for gnosis save apps
-        source: '/manifest.json',
-        headers: [{ key: 'Access-Control-Allow-Origin', value: '*' }],
-      },
-      {
         // Apply these headers to all routes in your application.
         source: '/(.*)',
         headers: [
+          ...createSecureHeaders({
+            contentSecurityPolicy: createCSP(
+              cspTrustedHosts,
+              cspReportUri,
+              cspReportOnly,
+            ),
+            frameGuard: false,
+            referrerPolicy: 'same-origin',
+          }),
           {
             key: 'X-DNS-Prefetch-Control',
             value: 'on',
@@ -102,16 +125,17 @@ export default withBundleAnalyzer({
             key: 'Strict-Transport-Security',
             value: 'max-age=63072000; includeSubDomains; preload',
           },
-          {
-            key: 'X-Content-Type-Options',
-            value: 'nosniff',
-          },
-          {
-            key: 'Referrer-Policy',
-            value: 'same-origin',
-          },
         ],
       },
+      {
+        // required for gnosis save apps
+        source: '/manifest.json',
+        headers: [{ key: 'Access-Control-Allow-Origin', value: '*' }],
+      },
+      ...CACHE_CONTROL_PAGES.map((page) => ({
+        source: page,
+        headers: [{ key: CACHE_CONTROL_HEADER, value: CACHE_CONTROL_VALUE }],
+      })),
     ];
   },
   serverRuntimeConfig: {
