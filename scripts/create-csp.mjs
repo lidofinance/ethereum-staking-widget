@@ -1,4 +1,4 @@
-export default (cspTrustedHosts, cspReportUri, cspReportOnly = 'true') => {
+export default (cspTrustedHosts, cspReportUri, cspReportOnly) => {
   const trustedHosts = cspTrustedHosts ? cspTrustedHosts.split(',') : [];
   const reportOnly = cspReportOnly == 'true';
   return {
