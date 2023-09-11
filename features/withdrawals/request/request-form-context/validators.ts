@@ -44,7 +44,7 @@ export class ValidationSplitRequest extends ValidationError {
   static type = 'validation_request_split';
   payload: SplitRequestErrorPayload;
   constructor(field: string, msg: string, payload: SplitRequestErrorPayload) {
-    super(field, msg, ValidationTvlJoke.type);
+    super(field, msg, ValidationSplitRequest.type);
     this.payload = payload;
   }
 }
@@ -57,7 +57,6 @@ const messageMaxAmount = (max: BigNumber, token: TokensWithdrawable) =>
     max,
   )}`;
 
-// TODO!: write tests for this validation function
 const validateSplitRequests = (
   field: string,
   amount: BigNumber,
@@ -72,10 +71,9 @@ const validateSplitRequests = (
 
   const isMoreThanMax = amount.gt(maxAmount);
   if (isMoreThanMax) {
-    throw new ValidationError(
+    throw new ValidationSplitRequest(
       field,
       `You can send a maximum of ${maxRequestCount} requests per transaction. Current requests count is ${requestCount}.`,
-      'validation_request_split',
       { requestCount },
     );
   }
@@ -203,4 +201,11 @@ export const RequestFormValidationResolver: Resolver<
     // no matter validation result save results for the UI to show
     setResults?.(validationResults);
   }
+};
+
+export const __test__export = {
+  validateSplitRequests,
+  tvlJokeValidate,
+  ValidationSplitRequest,
+  ValidationTvlJoke,
 };
