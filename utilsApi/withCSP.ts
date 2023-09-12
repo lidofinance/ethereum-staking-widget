@@ -60,5 +60,4 @@ export const withCsp = (app: CustomApp): FC =>
   withSecureHeaders({
     contentSecurityPolicy,
     frameGuard: false,
-    referrerPolicy: 'same-origin',
   })(app);
