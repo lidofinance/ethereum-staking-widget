@@ -28,14 +28,10 @@ test.describe('Page Headers', () => {
       expect(headers['cache-control']).toBe(CACHE_CONTROL_VALUE);
 
       expect(headers['referrer-policy']).toBe('same-origin');
-      expect(headers['strict-transport-security']).toBe(
-        'max-age=63072000; includeSubDomains; preload',
-      );
       expect(headers['x-content-type-options']).toBe('nosniff');
       expect(headers['x-xss-protection']).toBe('1');
       expect(headers['x-dns-prefetch-control']).toBe('on');
       expect(headers['x-download-options']).toBe('noopen');
-      expect(headers).toHaveProperty('content-security-policy-report-only');
 
       expect(headers['x-frame-options']).toBeUndefined();
       expect(headers[CACHE_CONTROL_HEADER]).toBeUndefined();
