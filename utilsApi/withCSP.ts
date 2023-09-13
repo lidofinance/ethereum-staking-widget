@@ -8,7 +8,7 @@ const { cspTrustedHosts, cspReportOnly, cspReportUri } = serverRuntimeConfig;
 
 const trustedHosts = cspTrustedHosts ? cspTrustedHosts.split(',') : [];
 
-const reportOnly = cspReportOnly === 'true';
+const reportOnly = cspReportOnly == 'true';
 
 export const contentSecurityPolicy = {
   directives: {
@@ -60,4 +60,5 @@ export const withCsp = (app: CustomApp): FC =>
   withSecureHeaders({
     contentSecurityPolicy,
     frameGuard: false,
+    referrerPolicy: 'same-origin',
   })(app);

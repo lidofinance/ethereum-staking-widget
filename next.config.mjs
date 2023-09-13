@@ -47,6 +47,23 @@ const rateLimitTimeFrame = process.env.RATE_LIMIT_TIME_FRAME || 60; // 1 minute;
 const rewardsBackendAPI = process.env.REWARDS_BACKEND;
 const defaultChain = process.env.DEFAULT_CHAIN;
 
+// cache control
+export const CACHE_CONTROL_HEADER = 'x-cache-control';
+export const CACHE_CONTROL_PAGES = [
+  '/manifest.json',
+  '/favicon:size*',
+  '/',
+  '/wrap',
+  '/wrap/unwrap',
+  '/rewards',
+  '/referral',
+  '/withdrawals/request',
+  '/withdrawals/claim',
+  '/runtime/window-env.js',
+];
+export const CACHE_CONTROL_VALUE =
+  'public, max-age=15, s-max-age=30, stale-if-error=604800, stale-while-revalidate=172800';
+
 const withBundleAnalyzer = NextBundleAnalyzer({
   enabled: analyzeBundle,
 });
@@ -86,11 +103,6 @@ export default withBundleAnalyzer({
   async headers() {
     return [
       {
-        // required for gnosis save apps
-        source: '/manifest.json',
-        headers: [{ key: 'Access-Control-Allow-Origin', value: '*' }],
-      },
-      {
         // Apply these headers to all routes in your application.
         source: '/(.*)',
         headers: [
@@ -103,15 +115,26 @@ export default withBundleAnalyzer({
             value: 'max-age=63072000; includeSubDomains; preload',
           },
           {
-            key: 'X-Content-Type-Options',
-            value: 'nosniff',
-          },
-          {
             key: 'Referrer-Policy',
             value: 'same-origin',
           },
+          {
+            key: 'x-content-type-options',
+            value: 'nosniff',
+          },
+          { key: 'x-xss-protection', value: '1' },
+          { key: 'x-download-options', value: 'noopen' },
         ],
       },
+      {
+        // required for gnosis save apps
+        source: '/manifest.json',
+        headers: [{ key: 'Access-Control-Allow-Origin', value: '*' }],
+      },
+      ...CACHE_CONTROL_PAGES.map((page) => ({
+        source: page,
+        headers: [{ key: CACHE_CONTROL_HEADER, value: CACHE_CONTROL_VALUE }],
+      })),
     ];
   },
   serverRuntimeConfig: {
