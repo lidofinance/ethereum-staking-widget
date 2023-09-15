@@ -3,6 +3,7 @@
   "version": "1.60.1",
   "private": true,
   "type": "module",
+  "license": "GPL-3.0-or-later",
   "scripts": {
     "dev": "node server.mjs",
     "build": "next build",
