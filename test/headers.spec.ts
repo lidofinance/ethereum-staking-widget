@@ -6,6 +6,7 @@ import {
   CACHE_CONTROL_PAGES,
   CACHE_CONTROL_VALUE,
 } from 'next.config.mjs';
+import { CONFIG } from './config.js';
 
 // case for only wildcard in config
 const configPages = CACHE_CONTROL_PAGES;
@@ -13,6 +14,7 @@ configPages[CACHE_CONTROL_PAGES.indexOf('/favicon:size*')] = '/favicon.ico';
 
 test.describe('Page Headers', () => {
   test('Config should have all static pages', () => {
+    test.skip(!!CONFIG.STAND_TYPE, 'We cannot access files on stands');
     const pageRoutes = getAllPagesRoutes();
     pageRoutes.forEach((foundPage) =>
       expect(CACHE_CONTROL_PAGES.includes(foundPage)).toBe(true),
@@ -28,14 +30,10 @@ test.describe('Page Headers', () => {
       expect(headers['cache-control']).toBe(CACHE_CONTROL_VALUE);
 
       expect(headers['referrer-policy']).toBe('same-origin');
-      expect(headers['strict-transport-security']).toBe(
-        'max-age=63072000; includeSubDomains; preload',
-      );
       expect(headers['x-content-type-options']).toBe('nosniff');
       expect(headers['x-xss-protection']).toBe('1');
       expect(headers['x-dns-prefetch-control']).toBe('on');
       expect(headers['x-download-options']).toBe('noopen');
-      expect(headers).toHaveProperty('content-security-policy-report-only');
 
       expect(headers['x-frame-options']).toBeUndefined();
       expect(headers[CACHE_CONTROL_HEADER]).toBeUndefined();

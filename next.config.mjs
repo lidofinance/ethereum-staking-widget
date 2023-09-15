@@ -114,6 +114,16 @@ export default withBundleAnalyzer({
             key: 'Strict-Transport-Security',
             value: 'max-age=63072000; includeSubDomains; preload',
           },
+          {
+            key: 'Referrer-Policy',
+            value: 'same-origin',
+          },
+          {
+            key: 'x-content-type-options',
+            value: 'nosniff',
+          },
+          { key: 'x-xss-protection', value: '1' },
+          { key: 'x-download-options', value: 'noopen' },
         ],
       },
       {
