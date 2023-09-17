@@ -1,37 +1,36 @@
-import { FC } from 'react';
+import { FC, useEffect, useState } from 'react';
+import { FaqAccordion, getFAQ, PageFAQ } from '@lidofinance/ui-faq';
+import { dynamics } from 'config';
 import { Section } from 'shared/components';
 import { useMatomoEventHandle } from 'shared/hooks';
 
-import {
-  WhatIsLido,
-  HowDoesLidoWork,
-  LidoEthApr,
-  WhatIsSteth,
-  HowCanIGetSteth,
-  SafeWorkWithLido,
-  HowCanIUseSteth,
-  WhereCanICoverMySteth,
-  RisksOfStakingWithLido,
-  LidoFee,
-  HowCanIUnstakeSteth,
-} from './list';
-
 export const StakeFaq: FC = () => {
+  const [foundPage, setFoundPage] = useState<PageFAQ | undefined>(undefined);
+
+  useEffect(() => {
+    void (async () => {
+      try {
+        const pageIdentification = 'stake';
+        const pages = await getFAQ(dynamics.faqContentUrl);
+
+        setFoundPage(
+          pages.find(
+            (page: PageFAQ) => page['identification'] === pageIdentification,
+          ),
+        );
+      } catch {
+        // noop
+      }
+    })();
+  }, []);
+
   const onClickHandler = useMatomoEventHandle();
 
   return (
     <Section title="FAQ" onClick={onClickHandler}>
-      <WhatIsLido />
-      <HowDoesLidoWork />
-      <SafeWorkWithLido />
-      <RisksOfStakingWithLido />
-      <LidoEthApr />
-      <LidoFee />
-      <WhatIsSteth />
-      <HowCanIGetSteth />
-      <HowCanIUseSteth />
-      <WhereCanICoverMySteth />
-      <HowCanIUnstakeSteth />
+      <FaqAccordion
+        faqList={foundPage && foundPage['faq'] ? foundPage['faq'] : []}
+      />
     </Section>
   );
 };
