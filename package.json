@@ -40,6 +40,7 @@
     "@lidofinance/next-api-wrapper": "^0.28.0",
     "@lidofinance/next-ip-rate-limit": "^0.28.0",
     "@lidofinance/next-pages": "^0.28.0",
+    "@lidofinance/next-ui-primitives": "^0.36.0",
     "@lidofinance/rpc": "^0.28.0",
     "@lidofinance/satanizer": "^0.32.0",
     "@lidofinance/ui-faq": "file:.yalc/@lidofinance/ui-faq",

@@ -2635,6 +2635,11 @@
   resolved "https://registry.yarnpkg.com/@lidofinance/next-pages/-/next-pages-0.28.0.tgz#87bfd8a4eefe9d446dfa5b8d9909ecc5e1fc7a34"
   integrity sha512-rtiRpEbzHlCGqnad3uXOGVdu6zq7pFlgoyWY/SCOvimzJdAYfNWEQs4rOP8quiOqMQxCqUAbpmoz2/WKkibLQA==
 
+"@lidofinance/next-ui-primitives@^0.36.0":
+  version "0.36.0"
+  resolved "https://registry.yarnpkg.com/@lidofinance/next-ui-primitives/-/next-ui-primitives-0.36.0.tgz#3e5d722a07ab7e29c50ff0a35eee1cf5fbe348c6"
+  integrity sha512-aNNT0bSJ2KGWRr0BEGri5cTVMOw0Zh+DJC5bBuOZyFlnpLjU3xiKYRNwOq8i4cZRb50K117KuZB8Azx3mqATVQ==
+
 "@lidofinance/rpc@^0.28.0":
   version "0.28.0"
   resolved "https://registry.yarnpkg.com/@lidofinance/rpc/-/rpc-0.28.0.tgz#f96590fef8bf418cd32a2835753df6a69a568cdc"
