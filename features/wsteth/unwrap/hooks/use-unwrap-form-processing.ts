@@ -4,12 +4,11 @@ import { useCallback } from 'react';
 import { useSDK } from '@lido-sdk/react';
 import { useWeb3 } from 'reef-knot/web3-react';
 import { useUnwrapTxProcessing } from './use-unwrap-tx-processing';
-import { useTransactionModal } from 'features/withdrawals/contexts/transaction-modal-context';
+import { useTransactionModal, TX_OPERATION } from 'shared/transaction-modal';
 
 import { isContract } from 'utils/isContract';
 import { getErrorMessage, runWithTransactionLogger } from 'utils';
 import { TOKENS } from 'shared/hook-form/controls/token-select-hook-form';
-import { TX_STAGE } from 'features/withdrawals/shared/tx-stage-modal';
 import type { UnwrapFormInputType } from '../unwrap-form-context';
 
 type UseUnwrapFormProcessorArgs = {
@@ -34,9 +33,9 @@ export const useUnwrapFormProcessor = ({
       try {
         dispatchModalState({
           type: 'start',
-          flow: TX_STAGE.SIGN,
-          token: TOKENS.WSTETH as any, // TODO: refactor modal state to be reusable to remove any
-          requestAmount: amount,
+          operation: TX_OPERATION.CONTRACT,
+          token: TOKENS.WSTETH,
+          amount,
         });
 
         const transaction = await runWithTransactionLogger(
