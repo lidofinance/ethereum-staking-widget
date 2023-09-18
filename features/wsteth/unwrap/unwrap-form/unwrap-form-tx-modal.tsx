@@ -1,4 +1,4 @@
-import { useTransactionModal } from 'features/withdrawals/contexts/transaction-modal-context';
+import { useTransactionModal } from 'shared/transaction-modal';
 import { convertTxStageToLegacy } from 'features/wsteth/shared/utils/convertTxModalStageToLegacy';
 import { TxStageModal } from 'shared/components';
 import { formatBalance } from 'utils';
@@ -16,9 +16,7 @@ export const UnwrapFormTxModal = () => {
       txStage={convertTxStageToLegacy(modalState.txStage)}
       txOperation={TX_OPERATION_LEGACY.UNWRAPPING}
       txHash={modalState.txHash}
-      amount={
-        modalState.requestAmount ? formatBalance(modalState.requestAmount) : ''
-      }
+      amount={modalState.amount ? formatBalance(modalState.amount) : ''}
       amountToken="wstETH"
       willReceiveAmount={formatBalance(willReceiveStETH)}
       willReceiveAmountToken="stETH"

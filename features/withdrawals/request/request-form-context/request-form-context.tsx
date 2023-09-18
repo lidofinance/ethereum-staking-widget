@@ -14,7 +14,7 @@ import {
   RequestFormValidationContextType,
   ValidationResults,
 } from './types';
-import { useTransactionModal } from 'features/withdrawals/contexts/transaction-modal-context';
+import { useTransactionModal } from 'shared/transaction-modal';
 
 //
 // data context

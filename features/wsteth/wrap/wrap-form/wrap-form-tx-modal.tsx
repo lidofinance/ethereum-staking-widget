@@ -1,4 +1,4 @@
-import { useTransactionModal } from 'features/withdrawals/contexts/transaction-modal-context';
+import { useTransactionModal } from 'shared/transaction-modal/transaction-modal-context';
 import { useFormContext } from 'react-hook-form';
 import { useWrapFormData, WrapFormInputType } from '../wrap-form-context';
 
@@ -14,26 +14,33 @@ import {
 export const WrapFormTxModal = () => {
   const { watch } = useFormContext<WrapFormInputType>();
   const { allowance, wstethBalance, willReceiveWsteth } = useWrapFormData();
-  const { dispatchModalState, onRetry, ...modalState } = useTransactionModal();
+  const {
+    dispatchModalState,
+    onRetry,
+    isModalOpen,
+    txHash,
+    amount,
+    errorText,
+    txStage,
+    txOperation,
+  } = useTransactionModal();
   const [token] = watch(['token']);
 
   return (
     <TxStageModal
-      open={modalState.isModalOpen}
+      open={isModalOpen}
       onClose={() => dispatchModalState({ type: 'close_modal' })}
-      txStage={convertTxStageToLegacy(modalState.txStage)}
-      txOperation={convertTxStageToLegacyTxOperationWrap(modalState.txStage)}
-      txHash={modalState.txHash}
-      amount={
-        modalState.requestAmount ? formatBalance(modalState.requestAmount) : ''
-      }
+      txStage={convertTxStageToLegacy(txStage)}
+      txOperation={convertTxStageToLegacyTxOperationWrap(txOperation)}
+      txHash={txHash}
+      amount={amount ? formatBalance(amount) : ''}
       amountToken={getTokenDisplayName(token)}
       willReceiveAmount={formatBalance(willReceiveWsteth)}
       willReceiveAmountToken="wstETH"
       balance={wstethBalance}
       balanceToken={'wstETH'}
       allowanceAmount={allowance}
-      failedText={modalState.errorText}
+      failedText={errorText}
       onRetry={() => onRetry?.()}
     />
   );

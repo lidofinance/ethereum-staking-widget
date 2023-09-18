@@ -13,7 +13,7 @@ import {
   TxLoader,
   WarningIcon,
 } from './iconsStyles';
-import { TX_STAGE } from '../types';
+import { TX_STAGE } from 'shared/transaction-modal';
 
 export const iconsDict = {
   ledger: {
@@ -42,12 +42,7 @@ export const iconsDict = {
         <LedgerLoading fill="transparent" />
       </LedgerIconWrapper>
     ),
-    [TX_STAGE.PERMIT]: (
-      <LedgerIconWrapper>
-        <LedgerLoading fill="transparent" />
-      </LedgerIconWrapper>
-    ),
-    [TX_STAGE.BUNKER]: (
+    ['DIALOG']: (
       <LedgerIconWrapper>
         <WarningIcon />
       </LedgerIconWrapper>
@@ -71,8 +66,7 @@ export const iconsDict = {
     ),
     [TX_STAGE.SIGN]: <TxLoader size="large" />,
     [TX_STAGE.BLOCK]: <TxLoader size="large" />,
-    [TX_STAGE.PERMIT]: <TxLoader size="large" />,
-    [TX_STAGE.BUNKER]: (
+    ['DIALOG']: (
       <IconWrapper>
         <WarningIcon />
       </IconWrapper>
@@ -80,7 +74,7 @@ export const iconsDict = {
   },
 };
 
-export const getStageIcon = (isLedger: boolean, stage: TX_STAGE) =>
-  stage === TX_STAGE.NONE || stage === TX_STAGE.APPROVE
-    ? null
-    : iconsDict[isLedger ? 'ledger' : 'default'][stage];
+export const getStageIcon = (isLedger: boolean, stage: TX_STAGE | 'DIALOG') => {
+  if (stage === TX_STAGE.NONE) return null;
+  return iconsDict[isLedger ? 'ledger' : 'default'][stage] ?? null;
+};

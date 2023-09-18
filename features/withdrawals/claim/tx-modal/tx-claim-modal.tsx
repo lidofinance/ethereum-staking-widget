@@ -8,9 +8,8 @@ import {
   TxStageSuccessMultisig,
   TxStageSign,
   TxStageFail,
-  TX_STAGE,
 } from 'features/withdrawals/shared/tx-stage-modal';
-import { useTransactionModal } from 'features/withdrawals/contexts/transaction-modal-context';
+import { useTransactionModal, TX_STAGE } from 'shared/transaction-modal';
 import {
   trackMatomoEvent,
   MATOMO_CLICK_EVENTS_TYPES,
@@ -20,7 +19,7 @@ export const TxClaimModal = () => {
   const {
     isModalOpen,
     txStage,
-    requestAmount,
+    amount,
     txHash,
     errorText,
     onRetry,
@@ -28,8 +27,8 @@ export const TxClaimModal = () => {
   } = useTransactionModal();
 
   const amountAsString = useMemo(
-    () => (requestAmount ? formatBalance(requestAmount, 4) : ''),
-    [requestAmount],
+    () => (amount ? formatBalance(amount, 4) : ''),
+    [amount],
   );
 
   const successDescription = 'Claiming operation was successful';

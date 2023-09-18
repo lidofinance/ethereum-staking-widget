@@ -5,7 +5,6 @@ import { Button } from '@lidofinance/lido-ui';
 import { TxStageModalContent } from 'shared/components/tx-stage-modal-content';
 import { getStageIcon } from './icons';
 import { BottomButtons } from './styles';
-import { TX_STAGE } from '../types';
 
 type TxStageFailProps = {
   failedText?: string;
@@ -19,7 +18,7 @@ export const TxStageBunker: FC<TxStageFailProps> = (props) => {
 
   return (
     <TxStageModalContent
-      icon={getStageIcon(isLedger, TX_STAGE.BUNKER)}
+      icon={getStageIcon(isLedger, 'DIALOG')}
       title="Attention!"
       description="Lido protocol is in “Bunker mode”, the withdrawal requests are slowed down, still request withdrawal?"
       footer={
