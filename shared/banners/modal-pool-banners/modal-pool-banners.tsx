@@ -1,5 +1,5 @@
 import { trackEvent } from '@lidofinance/analytics-matomo';
-import { Curve, Balancer } from 'shared/banners';
+import { Curve } from 'shared/banners';
 import { MATOMO_CLICK_EVENTS } from 'config';
 
 import { TextStyles, DescStyles, ButtonLinkWrap, ButtonStyled } from './styles';
@@ -25,7 +25,6 @@ export const ModalPoolBanners = () => {
         </DescStyles>
       </TextStyles>
       <Curve />
-      <Balancer />
       <ButtonLinkWrap {...linkProps} onClick={linkClickHandler}>
         <ButtonStyled fullwidth color="success">
           Explore more DeFi options
