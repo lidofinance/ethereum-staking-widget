@@ -50,6 +50,7 @@ export const TokenSelectHookForm = ({
     <SelectIcon
       {...field}
       icon={iconsMap[field.value]}
+      data-testid="drop-down"
       error={isValidationErrorTypeValidate(errors[errorField]?.type)}
       onChange={(value: TOKENS) => {
         setValue(fieldName, value, {
@@ -67,7 +68,12 @@ export const TokenSelectHookForm = ({
       }}
     >
       {options.map(({ label, token }) => (
-        <Option key={token} leftDecorator={iconsMap[token]} value={token}>
+        <Option
+          key={token}
+          leftDecorator={iconsMap[token]}
+          value={token}
+          data-testid={token}
+        >
           {label || getTokenDisplayName(token)}
         </Option>
       ))}
