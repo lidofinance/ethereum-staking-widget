@@ -32,7 +32,7 @@ export const StakeFaq: FC = () => {
         faqList={foundPage?.faq}
         onLinkClick={({ questionId, question, linkContent }) => {
           const actionEvent = `Push «${linkContent}» in FAQ ${question} on stake widget`;
-          // <project_name>_faq_<page_id>_<question_id>_<link_content>
+          // Make event like `<project_name>_faq_<page_id>_<question_id>_<link_content>`
           const nameEvent = `eth_widget_faq_stake_${questionId}_${linkContent}`;
           trackEvent('Ethereum_Staking_Widget', actionEvent, nameEvent);
         }}
