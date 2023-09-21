@@ -98,6 +98,14 @@ export default withBundleAnalyzer({
       },
     );
 
+    config.resolve.alias = {
+      ...config.resolve.alias,
+
+      // Remove after upgrade to React 18
+      "react/jsx-dev-runtime": "react/jsx-dev-runtime.js",
+      "react/jsx-runtime": "react/jsx-runtime.js"
+    }
+
     return config;
   },
   async headers() {
