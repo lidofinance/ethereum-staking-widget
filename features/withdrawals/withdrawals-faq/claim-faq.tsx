@@ -1,37 +1,42 @@
-import { useMatomoEventHandle } from 'shared/hooks';
-
+import React, { useEffect, useState } from 'react';
+import { trackEvent } from '@lidofinance/analytics-matomo';
+import { FaqAccordion, getFAQ, PageFAQ } from '@lidofinance/ui-faq';
+import { dynamics } from 'config';
 import { Section } from 'shared/components';
 
-import { WhatAreWithdrawals } from './list/what-are-withdrawals';
-import { HowDoesWithdrawalsWork } from './list/how-does-withdrawals-work';
-import { HowToWithdraw } from './list/how-to-withdraw';
-import { ConvertSTETHtoETH } from './list/convert-steth-to-eth';
-import { ConvertWSTETHtoETH } from './list/convert-wsteth-to-eth';
-import { WhySTETH } from './list/why-steth';
-import { SeparateClaim } from './list/separate-claim';
-import { ClaimableAmountDifference } from './list/claimable-amount-difference';
-import { WhatIsSlashing } from './list/what-is-slashing';
-import { LidoNFT } from './list/lido-nft';
-import { HowToAddNFT } from './list/add-nft';
-import { NFTNotChange } from './list/nft-not-change';
-
 export const ClaimFaq: React.FC = () => {
-  const onClickHandler = useMatomoEventHandle();
+  const [foundPage, setFoundPage] = useState<PageFAQ | undefined>(undefined);
+
+  useEffect(() => {
+    void (async () => {
+      try {
+        const pageIdentification = 'withdrawals-claim';
+        const pages = await getFAQ(dynamics.faqContentUrl);
+
+        setFoundPage(
+          pages.find(
+            (page: PageFAQ) => page['identification'] === pageIdentification,
+          ),
+        );
+
+        return () => {};
+      } catch {
+        // noop
+      }
+    })();
+  }, []);
 
   return (
-    <Section title="FAQ" onClick={onClickHandler}>
-      <WhatAreWithdrawals />
-      <HowDoesWithdrawalsWork />
-      <HowToWithdraw />
-      <ConvertSTETHtoETH />
-      <ConvertWSTETHtoETH />
-      <WhySTETH />
-      <SeparateClaim />
-      <ClaimableAmountDifference title="Why is the claimable amount different from my requested amount?" />
-      <WhatIsSlashing />
-      <LidoNFT />
-      <HowToAddNFT />
-      <NFTNotChange />
+    <Section title="FAQ">
+      <FaqAccordion
+        faqList={foundPage?.faq}
+        onLinkClick={({ questionId, question, linkContent }) => {
+          const actionEvent = `Push «${linkContent}» in FAQ ${question} on stake widget`;
+          // Make event like `<project_name>_faq_<page_id>_<question_id>_<link_content>`
+          const nameEvent = `eth_widget_faq_withdrawalsClaim_${questionId}_${linkContent}`;
+          trackEvent('Ethereum_Staking_Widget', actionEvent, nameEvent);
+        }}
+      />
     </Section>
   );
 };

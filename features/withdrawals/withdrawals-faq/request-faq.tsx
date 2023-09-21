@@ -1,59 +1,48 @@
-import { useMatomoEventHandle } from 'shared/hooks';
-
 // import { Button } from '@lidofinance/lido-ui';
+import React, { useEffect, useState } from 'react';
+import { FaqAccordion, getFAQ, PageFAQ } from '@lidofinance/ui-faq';
+import { trackEvent } from '@lidofinance/analytics-matomo';
+import { dynamics } from 'config';
 import { Section } from 'shared/components';
 // import { ButtonLinkWrap } from './styles';
-
-import { WhatAreWithdrawals } from './list/what-are-withdrawals';
-import { HowDoesWithdrawalsWork } from './list/how-does-withdrawals-work';
-import { HowToWithdraw } from './list/how-to-withdraw';
-import { ConvertSTETHtoETH } from './list/convert-steth-to-eth';
-import { ConvertWSTETHtoETH } from './list/convert-wsteth-to-eth';
-import { WhySTETH } from './list/why-steth';
-import { HowLongToWithdraw } from './list/how-long-to-withdraw';
-import { WithdrawalPeriodCircumstances } from './list/withdrawal-period-circumstances';
-import { WithdrawalFee } from './list/withdrawaal-fee';
-import { ClaimableAmountDifference } from './list/claimable-amount-difference';
-import { TurboMode } from './list/turbo-mode';
-import { BunkerMode } from './list/bunker-mode';
-import { BunkerModeReasons } from './list/bunker-mode-reasons';
-import { WhatIsSlashing } from './list/what-is-slashing';
-import { RewardsAfterWithdraw } from './list/rewards-after-withdraw';
-import { BunkerWhileRequestOngoing } from './list/bunker-while-request-ongoing';
-import { UnstakeAmountBoundaries } from './list/unstake-amount-boundaries';
-import { LidoNFT } from './list/lido-nft';
-import { HowToAddNFT } from './list/add-nft';
-import { NFTNotChange } from './list/nft-not-change';
 
 // TODO: Replace this link when it will be finalized
 // const LEARN_MORE_LINK =
 //   'https://hackmd.io/@lido/SyaJQsZoj#Lido-on-Ethereum-Withdrawals-Landscape';
 
 export const RequestFaq: React.FC = () => {
-  const onClickHandler = useMatomoEventHandle();
+  const [foundPage, setFoundPage] = useState<PageFAQ | undefined>(undefined);
+
+  useEffect(() => {
+    void (async () => {
+      try {
+        const pageIdentification = 'withdrawals-request';
+        const pages = await getFAQ(dynamics.faqContentUrl);
+
+        setFoundPage(
+          pages.find(
+            (page: PageFAQ) => page['identification'] === pageIdentification,
+          ),
+        );
+
+        return () => {};
+      } catch {
+        // noop
+      }
+    })();
+  }, []);
 
   return (
-    <Section title="FAQ" onClick={onClickHandler}>
-      <WhatAreWithdrawals />
-      <HowDoesWithdrawalsWork />
-      <HowToWithdraw />
-      <ConvertSTETHtoETH />
-      <ConvertWSTETHtoETH />
-      <WhySTETH />
-      <HowLongToWithdraw />
-      <WithdrawalPeriodCircumstances />
-      <RewardsAfterWithdraw />
-      <WithdrawalFee />
-      <ClaimableAmountDifference title="Why is the claimable amount may differ from my requested amount?" />
-      <TurboMode />
-      <BunkerMode />
-      <BunkerModeReasons />
-      <WhatIsSlashing />
-      <BunkerWhileRequestOngoing />
-      <UnstakeAmountBoundaries />
-      <LidoNFT />
-      <HowToAddNFT />
-      <NFTNotChange />
+    <Section title="FAQ">
+      <FaqAccordion
+        faqList={foundPage?.faq}
+        onLinkClick={({ questionId, question, linkContent }) => {
+          const actionEvent = `Push «${linkContent}» in FAQ ${question} on stake widget`;
+          // Make event like `<project_name>_faq_<page_id>_<question_id>_<link_content>`
+          const nameEvent = `eth_widget_faq_withdrawalsRequest_${questionId}_${linkContent}`;
+          trackEvent('Ethereum_Staking_Widget', actionEvent, nameEvent);
+        }}
+      />
 
       {/* <ButtonLinkWrap
         target="_blank"
