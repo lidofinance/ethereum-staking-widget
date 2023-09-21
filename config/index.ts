@@ -17,4 +17,3 @@ export * from './units';
 export * from './metrics';
 export * from './rateLimit';
 export * from './matomoClickEvents';
-export * from './matomoFaq';
