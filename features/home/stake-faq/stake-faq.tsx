@@ -1,8 +1,8 @@
-import { FC, useEffect, useState } from 'react';
+import React, { FC, useEffect, useState } from 'react';
+import { trackEvent } from '@lidofinance/analytics-matomo';
 import { FaqAccordion, getFAQ, PageFAQ } from '@lidofinance/ui-faq';
-import { dynamics, matomoEventMap } from 'config';
+import { dynamics } from 'config';
 import { Section } from 'shared/components';
-// import { useMatomoEventHandle } from 'shared/hooks';
 
 export const StakeFaq: FC = () => {
   const [foundPage, setFoundPage] = useState<PageFAQ | undefined>(undefined);
@@ -26,14 +26,16 @@ export const StakeFaq: FC = () => {
     })();
   }, []);
 
-  // const onClickHandler = useMatomoEventHandle();
-
   return (
-    // <Section title="FAQ" onClick={onClickHandler}>
     <Section title="FAQ">
       <FaqAccordion
-        faqList={foundPage && foundPage['faq'] ? foundPage['faq'] : []}
-        matomoEventMap={matomoEventMap}
+        faqList={foundPage?.faq}
+        onLinkClick={({ questionId, question, linkContent }) => {
+          const actionEvent = `Push «${linkContent}» in FAQ ${question} on stake widget`;
+          // <project_name>_faq_<page_id>_<question_id>_<link_content>
+          const nameEvent = `eth_widget_faq_stake_${questionId}_${linkContent}`;
+          trackEvent('Ethereum_Staking_Widget', actionEvent, nameEvent);
+        }}
       />
     </Section>
   );
