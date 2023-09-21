@@ -2,7 +2,6 @@
   "name": "lido-staking-widget",
   "version": "1.60.1",
   "private": true,
-  "type": "module",
   "license": "GPL-3.0-or-later",
   "scripts": {
     "dev": "node server.mjs",
@@ -17,6 +16,14 @@
     "test": "yarn test:e2e",
     "test:unit": "jest",
     "test:e2e": "playwright test"
+  },
+  "imports": {
+    "react/jsx-dev-runtime": "react/jsx-dev-runtime.js",
+    "react/jsx-runtime": "react/jsx-runtime.js"
+  },
+  "alias": {
+    "react/jsx-dev-runtime": "react/jsx-dev-runtime.js",
+    "react/jsx-runtime": "react/jsx-runtime.js"
   },
   "dependencies": {
     "@ethersproject/bignumber": "^5.7.0",
@@ -40,7 +47,7 @@
     "@lidofinance/next-api-wrapper": "^0.28.0",
     "@lidofinance/next-ip-rate-limit": "^0.28.0",
     "@lidofinance/next-pages": "^0.28.0",
-    "@lidofinance/next-ui-primitives": "^0.36.0",
+    "@lidofinance/next-ui-primitives": "file:.yalc/@lidofinance/next-ui-primitives",
     "@lidofinance/rpc": "^0.28.0",
     "@lidofinance/satanizer": "^0.32.0",
     "@lidofinance/ui-faq": "file:.yalc/@lidofinance/ui-faq",
