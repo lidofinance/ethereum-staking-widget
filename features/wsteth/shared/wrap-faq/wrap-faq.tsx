@@ -10,7 +10,7 @@ export const WrapFaq = () => {
   useEffect(() => {
     void (async () => {
       try {
-        const pageIdentification = 'wrapOrUnwrap';
+        const pageIdentification = 'wrap-and-unwrap';
         const pages = await getFAQ(dynamics.faqContentUrl);
 
         setFoundPage(
