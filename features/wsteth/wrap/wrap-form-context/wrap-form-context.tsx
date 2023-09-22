@@ -1,5 +1,11 @@
 import invariant from 'tiny-invariant';
-import { useMemo, createContext, useContext } from 'react';
+import {
+  FC,
+  PropsWithChildren,
+  useMemo,
+  createContext,
+  useContext,
+} from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
 import { useDebouncedValue, useWstethBySteth } from 'shared/hooks';
 import { useWrapTxApprove } from '../hooks/use-wrap-tx-approve';
@@ -35,7 +41,7 @@ export const useWrapFormData = () => {
 //
 // Data provider
 //
-export const WrapFormProvider: React.FC = ({ children }) => {
+export const WrapFormProvider: FC<PropsWithChildren> = ({ children }) => {
   const networkData = useWrapFormNetworkData();
   const validationContextPromise = useWrapFormValidationContext({
     networkData,

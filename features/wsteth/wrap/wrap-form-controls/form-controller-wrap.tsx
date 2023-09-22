@@ -1,9 +1,9 @@
-import { useCallback } from 'react';
+import { FC, PropsWithChildren, useCallback } from 'react';
 import { FormController } from 'features/wsteth/shared/form-controller/form-controller';
 import { useFormContext } from 'react-hook-form';
 import { WrapFormInputType } from '../wrap-form-context';
 
-export const FormControllerWrap: React.FC = ({ children }) => {
+export const FormControllerWrap: FC<PropsWithChildren> = ({ children }) => {
   const {
     reset,
     getValues,

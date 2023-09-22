@@ -1,5 +1,11 @@
 import invariant from 'tiny-invariant';
-import { useMemo, createContext, useContext } from 'react';
+import {
+  FC,
+  PropsWithChildren,
+  useMemo,
+  createContext,
+  useContext,
+} from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
 import { useStethByWsteth } from 'shared/hooks';
 import { useUnwrapFormNetworkData } from '../hooks/use-unwrap-form-network-data';
@@ -32,7 +38,7 @@ export const useUnwrapFormData = () => {
 //
 // Data provider
 //
-export const UnwrapFormProvider: React.FC = ({ children }) => {
+export const UnwrapFormProvider: FC<PropsWithChildren> = ({ children }) => {
   const networkData = useUnwrapFormNetworkData();
   const validationContextPromise = useUnwrapFormValidationContext({
     networkData,
