@@ -46,6 +46,8 @@ const client = createClient({
 
 const Web3Provider: FC<PropsWithChildren> = ({ children }) => (
   <WagmiConfig client={client}>
+    {/* TODO */}
+    {/* @ts-expect-error need to patch web3-react */}
     <ProviderWeb3
       pollingInterval={1200}
       defaultChainId={dynamics.defaultChain}
