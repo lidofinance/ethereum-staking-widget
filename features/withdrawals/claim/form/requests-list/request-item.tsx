@@ -2,7 +2,7 @@ import { forwardRef } from 'react';
 import { useWeb3 } from 'reef-knot/web3-react';
 import { useFormState, useWatch } from 'react-hook-form';
 
-import { Checkbox, External } from '@lidofinance/lido-ui';
+import { Checkbox, CheckboxProps, External } from '@lidofinance/lido-ui';
 import { FormatToken } from 'shared/formatters';
 
 import { RequestStatus } from './request-item-status';
@@ -15,7 +15,7 @@ type RequestItemProps = {
   token_id: string;
   name: `requests.${number}.checked`;
   index: number;
-} & React.ComponentProps<'input'>;
+} & CheckboxProps;
 
 export const RequestItem = forwardRef<HTMLInputElement, RequestItemProps>(
   ({ token_id, name, disabled, index, ...props }, ref) => {
