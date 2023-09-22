@@ -92,7 +92,7 @@ export const StakeForm: FC = memo(() => {
   }, []);
 
   const submit = useCallback(
-    async (inputValue, resetForm) => {
+    async (inputValue: string, resetForm: () => void) => {
       await stakeProcessing(
         providerWeb3,
         stethContractWeb3,
