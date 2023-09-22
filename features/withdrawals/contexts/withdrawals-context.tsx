@@ -1,4 +1,10 @@
-import { FC, createContext, useContext, useMemo } from 'react';
+import {
+  FC,
+  PropsWithChildren,
+  createContext,
+  useContext,
+  useMemo,
+} from 'react';
 import invariant from 'tiny-invariant';
 
 import { StatusProps } from 'features/withdrawals/shared/status';
@@ -29,10 +35,9 @@ type WithdrawalsProviderProps = {
   mode: 'request' | 'claim';
 };
 
-export const WithdrawalsProvider: FC<WithdrawalsProviderProps> = ({
-  children,
-  mode,
-}) => {
+export const WithdrawalsProvider: FC<
+  PropsWithChildren<WithdrawalsProviderProps>
+> = ({ children, mode }) => {
   const isClaimTab = mode === 'claim';
 
   const { data, initialLoading: isWithdrawalsStatusLoading } =

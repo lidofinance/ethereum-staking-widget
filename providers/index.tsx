@@ -1,4 +1,4 @@
-import { FC } from 'react';
+import { FC, PropsWithChildren } from 'react';
 import { CookieThemeProvider } from '@lidofinance/lido-ui';
 import { GlobalStyle } from 'styles';
 
@@ -8,7 +8,7 @@ import { AppFlagProvider } from './app-flag';
 
 export { MODAL, ModalContext } from './modals';
 
-const Providers: FC = ({ children }) => (
+const Providers: FC<PropsWithChildren> = ({ children }) => (
   <AppFlagProvider>
     <CookieThemeProvider>
       <GlobalStyle />
