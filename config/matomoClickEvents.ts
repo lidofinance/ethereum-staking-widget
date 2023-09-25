@@ -37,6 +37,7 @@ export const enum MATOMO_CLICK_EVENTS_TYPES {
   l2BannerWrap = 'l2BannerWrap',
   wrapTokenSelectSTETH = 'wrapTokenSelectSteth',
   wrapTokenSelectETH = 'wrapTokenSelectEth',
+  clickWrapButton = 'clickWrapButton',
   // Unwrap tab
   l2BannerUnwrap = 'l2BannerUnwrap',
   // /rewards page
@@ -230,6 +231,11 @@ export const MATOMO_CLICK_EVENTS: Record<
     'Ethereum_Staking_Widget',
     'Select STETH to wrap to wsteth on wrap page',
     'eth_widget_wrap_select_token_steth',
+  ],
+  [MATOMO_CLICK_EVENTS_TYPES.clickWrapButton]: [
+    'Ethereum_Staking_Widget',
+    'Push "Wrap"',
+    'eth_widget_wrap',
   ],
   // Unwrap tab
   [MATOMO_CLICK_EVENTS_TYPES.l2BannerUnwrap]: [

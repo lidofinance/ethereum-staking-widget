@@ -1,13 +1,16 @@
 import invariant from 'tiny-invariant';
-
 import { useCallback } from 'react';
-import { useSDK } from '@lido-sdk/react';
-import { useWeb3 } from 'reef-knot/web3-react';
-import { useWrapTxProcessing } from './use-wrap-tx-processing';
-import { useTransactionModal, TX_OPERATION } from 'shared/transaction-modal';
 
+import { useSDK } from '@lido-sdk/react';
+import { trackEvent } from '@lidofinance/analytics-matomo';
+import { useWeb3 } from 'reef-knot/web3-react';
+
+import { MATOMO_CLICK_EVENTS } from 'config';
+import { useTransactionModal, TX_OPERATION } from 'shared/transaction-modal';
 import { getErrorMessage, runWithTransactionLogger } from 'utils';
 import { isContract } from 'utils/isContract';
+
+import { useWrapTxProcessing } from './use-wrap-tx-processing';
 import type {
   WrapFormApprovalData,
   WrapFormInputType,
@@ -34,6 +37,8 @@ export const useWrapFormProcessor = ({
       invariant(account, 'address should be presented');
       invariant(providerWeb3, 'provider should be presented');
       const isMultisig = await isContract(account, providerWeb3);
+
+      trackEvent(...MATOMO_CLICK_EVENTS.clickWrapButton);
 
       try {
         dispatchModalState({
