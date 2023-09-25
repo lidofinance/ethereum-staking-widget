@@ -9,7 +9,7 @@ export const DoINeedToUnwrapMyWsteth: FC = () => {
     <Accordion summary="Do I need to unwrap my wstETH before requesting withdrawals?">
       <p>
         No, you can transform your wstETH to ETH using the{' '}
-        <LocalLink href={'/withdrawals'}>
+        <LocalLink href={'/withdrawals/request'}>
           <a
             onClick={() =>
               trackMatomoEvent(

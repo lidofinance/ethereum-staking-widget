@@ -137,6 +137,13 @@ export default withBundleAnalyzer({
       })),
     ];
   },
+  redirects: () => [
+    {
+      source: '/withdrawals',
+      destination: '/withdrawals/request',
+      permanent: false,
+    },
+  ],
   serverRuntimeConfig: {
     basePath,
     rpcUrls_1,
