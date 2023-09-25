@@ -10,6 +10,7 @@ export const enum MATOMO_CLICK_EVENTS_TYPES {
   oneInchDiscount = 'oneInchDiscount',
   viewEtherscanOnStakePage = 'viewEtherscanOnStakePage',
   l2BannerStake = 'l2BannerStake',
+  clickSubmitButton = 'clickSubmitButton',
   // FAQ
   faqSafeWorkWithLidoAudits = 'faqSafeWorkWithLidoAudits',
   faqLidoEthAprEthLandingPage = 'faqLidoEthAprEthLandingPage',
@@ -102,6 +103,12 @@ export const MATOMO_CLICK_EVENTS: Record<
     'Push "Learn more" at the L2 banner on "Stake" tab',
     'eth_widget_banner_l2_stake',
   ],
+  [MATOMO_CLICK_EVENTS_TYPES.clickSubmitButton]: [
+    'Ethereum_Staking_Widget',
+    'Push "Submit"',
+    'eth_widget_submit',
+  ],
+
   // FAQ
   [MATOMO_CLICK_EVENTS_TYPES.faqSafeWorkWithLidoAudits]: [
     'Ethereum_Staking_Widget',
