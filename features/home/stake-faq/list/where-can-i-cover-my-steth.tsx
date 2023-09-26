@@ -12,16 +12,6 @@ export const WhereCanICoverMySteth: FC = () => {
       <ul>
         <li>
           <Link
-            href="https://bridgemutual.io/"
-            data-matomo={
-              MATOMO_CLICK_EVENTS_TYPES.faqWhereCanICoverBridgeMutual
-            }
-          >
-            Bridge Mutual
-          </Link>
-        </li>
-        <li>
-          <Link
             href="https://idle.finance/"
             data-matomo={MATOMO_CLICK_EVENTS_TYPES.faqWhereCanICoverIdleFinance}
           >
