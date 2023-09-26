@@ -17,7 +17,6 @@ export const enum MATOMO_CLICK_EVENTS_TYPES {
   faqHowCanIGetStEthWidget = 'faqHowCanIGetStEthWidget',
   faqHowCanIGetStEthIntegrations = 'faqHowCanIGetStEthIntegrations',
   faqHowCanIUseSteth = 'faqHowCanIUseSteth',
-  faqWhereCanICoverBridgeMutual = 'faqWhereCanICoverBridgeMutual',
   faqWhereCanICoverIdleFinance = 'faqWhereCanICoverIdleFinance',
   faqWhereCanICoverNexusMutual = 'faqWhereCanICoverNexusMutual',
   faqWhereCanICoverRibbonFinance = 'faqWhereCanICoverRibbonFinance',
@@ -132,11 +131,6 @@ export const MATOMO_CLICK_EVENTS: Record<
     'Ethereum_Staking_Widget',
     'Push «more» in FAQ How can I use stETH? on stake widget',
     'eth_widget_faq_howCanIUseSteth_more',
-  ],
-  [MATOMO_CLICK_EVENTS_TYPES.faqWhereCanICoverBridgeMutual]: [
-    'Ethereum_Staking_Widget',
-    'Push «Bridge Mutual» in FAQ Where can I cover my stETH? on stake widget',
-    'eth_widget_faq_wherecanicover_bridgemutual',
   ],
   [MATOMO_CLICK_EVENTS_TYPES.faqWhereCanICoverIdleFinance]: [
     'Ethereum_Staking_Widget',
