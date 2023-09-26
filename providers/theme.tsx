@@ -1,5 +1,6 @@
 import {
   FC,
+  PropsWithChildren,
   createContext,
   useCallback,
   useState,
@@ -41,7 +42,7 @@ export type ThemeProviderProps = {
   cookiesManualThemeScheme?: ThemeName;
 };
 
-const ThemeProvider: FC<ThemeProviderProps> = ({
+const ThemeProvider: FC<PropsWithChildren<ThemeProviderProps>> = ({
   children,
   cookiesAutoThemeScheme,
   cookiesManualThemeScheme,

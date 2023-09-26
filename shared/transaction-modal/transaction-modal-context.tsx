@@ -1,5 +1,6 @@
 import {
   FC,
+  PropsWithChildren,
   createContext,
   useMemo,
   useContext,
@@ -205,7 +206,9 @@ export const useTransactionModal = () => {
   return r;
 };
 
-export const TransactionModalProvider: FC = ({ children }) => {
+export const TransactionModalProvider: FC<PropsWithChildren> = ({
+  children,
+}) => {
   const [state, dispatch] = useReducer(
     TransactionModalReducer,
     undefined,
