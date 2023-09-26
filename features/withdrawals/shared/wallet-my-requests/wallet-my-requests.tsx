@@ -1,5 +1,5 @@
+import { FC, PropsWithChildren } from 'react';
 import { Tooltip, TimeSquare, TickSquare } from '@lidofinance/lido-ui';
-import { FC } from 'react';
 
 import { CardBalance } from 'shared/wallet';
 import { useClaimData } from 'features/withdrawals/contexts/claim-data-context';
@@ -7,7 +7,7 @@ import { DATA_UNAVAILABLE } from 'config';
 
 import { RequestCounterStyled } from './styles';
 
-export const WalletMyRequests: FC = ({ children }) => {
+export const WalletMyRequests: FC<PropsWithChildren> = ({ children }) => {
   const { data, initialLoading } = useClaimData();
   const { readyCount = DATA_UNAVAILABLE, pendingCount = DATA_UNAVAILABLE } =
     data || {};

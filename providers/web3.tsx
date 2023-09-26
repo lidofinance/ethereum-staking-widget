@@ -1,4 +1,4 @@
-import { FC } from 'react';
+import { FC, PropsWithChildren } from 'react';
 import { ProviderWeb3 } from 'reef-knot/web3-react';
 import { getConnectors } from 'reef-knot/core-react';
 import { backendRPC, getBackendRPCPath, dynamics } from 'config';
@@ -44,8 +44,10 @@ const client = createClient({
   webSocketProvider,
 });
 
-const Web3Provider: FC = ({ children }) => (
+const Web3Provider: FC<PropsWithChildren> = ({ children }) => (
   <WagmiConfig client={client}>
+    {/* TODO */}
+    {/* @ts-expect-error need to patch web3-react */}
     <ProviderWeb3
       pollingInterval={1200}
       defaultChainId={dynamics.defaultChain}

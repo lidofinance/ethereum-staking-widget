@@ -1,4 +1,4 @@
-import { useCallback, useRef } from 'react';
+import { FC, RefObject, PropsWithChildren, useCallback, useRef } from 'react';
 import { useForceUpdate } from 'shared/hooks/useForceUpdate';
 
 import { LayoutEffectSsrDelayed } from 'shared/components/layout-effect-ssr-delayed';
@@ -37,16 +37,13 @@ type ScrollStateSetter = <
 
 type ClaimFormFooterStickyProps = {
   isEnabled: boolean;
-  refRequests: React.RefObject<HTMLDivElement>;
+  refRequests: RefObject<HTMLDivElement>;
   positionDeps: unknown[];
 };
 
-export const ClaimFormFooterSticky: React.FC<ClaimFormFooterStickyProps> = ({
-  isEnabled,
-  refRequests,
-  positionDeps,
-  children,
-}) => {
+export const ClaimFormFooterSticky: FC<
+  PropsWithChildren<ClaimFormFooterStickyProps>
+> = ({ isEnabled, refRequests, positionDeps, children }) => {
   const forceUpdate = useForceUpdate();
   const refFooter = useRef<HTMLDivElement>(null);
 

@@ -1,8 +1,8 @@
-import { FC } from 'react';
+import { FC, PropsWithChildren } from 'react';
 
 import { StatsWrapperStyle, StatsContentWrapper } from './StatsWrapperStyles';
 
-export const StatsWrapper: FC = ({ children }) => {
+export const StatsWrapper: FC<PropsWithChildren> = ({ children }) => {
   return (
     <StatsWrapperStyle>
       <StatsContentWrapper>{children}</StatsContentWrapper>
