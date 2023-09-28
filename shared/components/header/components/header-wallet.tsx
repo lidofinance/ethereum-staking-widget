@@ -2,10 +2,15 @@ import { FC } from 'react';
 import { useWeb3 } from 'reef-knot/web3-react';
 import { useSDK } from '@lido-sdk/react';
 import { CHAINS, getChainColor } from '@lido-sdk/constants';
-import { Button, Connect } from 'shared/wallet';
-import { HeaderWalletChainStyle, DotStyle } from '../styles';
 import { ThemeToggler } from '@lidofinance/lido-ui';
-import NoSSRWrapper from '../../no-ssr-wrapper';
+
+import { dynamics } from 'config';
+import { IPFSInfoBox } from 'features/ipfs/ipfs-info-box';
+import { Button, Connect } from 'shared/wallet';
+import NoSSRWrapper from 'shared/components/no-ssr-wrapper';
+
+import { HeaderSettingsButton } from './header-settings-button';
+import { HeaderWalletChainStyle, DotStyle, IPFSInfoBoxWrap } from '../styles';
 
 const HeaderWallet: FC = () => {
   const { active } = useWeb3();
@@ -26,11 +31,17 @@ const HeaderWallet: FC = () => {
         </>
       )}
       {active ? (
-        <Button data-testid="accountSectionHeader"></Button>
+        <Button data-testid="accountSectionHeader" />
       ) : (
         <Connect size="sm" />
       )}
+      <HeaderSettingsButton />
       <ThemeToggler />
+      {dynamics.ipfsMode && (
+        <IPFSInfoBoxWrap>
+          <IPFSInfoBox />
+        </IPFSInfoBoxWrap>
+      )}
     </NoSSRWrapper>
   );
 };

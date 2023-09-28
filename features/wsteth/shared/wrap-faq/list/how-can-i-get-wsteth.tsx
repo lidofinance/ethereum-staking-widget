@@ -10,17 +10,16 @@ export const HowCanIGetWsteth: FC = () => {
     <Accordion summary="How can I get wstETH?">
       <p>
         You can wrap your stETH or ETH tokens using{' '}
-        <LocalLink href={`/wrap`}>
-          <a
-            onClick={() =>
-              trackMatomoEvent(
-                MATOMO_CLICK_EVENTS_TYPES.faqHowCanIGetWstethWrapLink,
-              )
-            }
-            aria-hidden="true"
-          >
-            Wrap &amp; Unwrap staking widget
-          </a>
+        <LocalLink
+          href={`/wrap`}
+          onClick={() =>
+            trackMatomoEvent(
+              MATOMO_CLICK_EVENTS_TYPES.faqHowCanIGetWstethWrapLink,
+            )
+          }
+          aria-hidden="true"
+        >
+          Wrap &amp; Unwrap staking widget
         </LocalLink>{' '}
         or{' '}
         <OuterLink

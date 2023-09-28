@@ -11,17 +11,16 @@ export const HowCouldIUnwrapWstethToSteth: FC = () => {
     <Accordion summary="How could I unwrap wstETH back to stETH?">
       <p>
         You can unwrap your wstETH tokens using{' '}
-        <LocalLink href={`/wrap/unwrap`}>
-          <a
-            onClick={() =>
-              trackMatomoEvent(
-                MATOMO_CLICK_EVENTS_TYPES.faqHowDoIUnwrapWstethUnwrapLink,
-              )
-            }
-            aria-hidden="true"
-          >
-            Wrap &amp; Unwrap staking widget
-          </a>
+        <LocalLink
+          href={`/wrap/unwrap`}
+          onClick={() =>
+            trackMatomoEvent(
+              MATOMO_CLICK_EVENTS_TYPES.faqHowDoIUnwrapWstethUnwrapLink,
+            )
+          }
+          aria-hidden="true"
+        >
+          Wrap &amp; Unwrap staking widget
         </LocalLink>
         .
       </p>

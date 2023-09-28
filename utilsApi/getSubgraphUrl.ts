@@ -6,6 +6,7 @@ const { serverRuntimeConfig } = getConfig();
 export const SUBGRAPH_URL = {
   [CHAINS.Mainnet]: serverRuntimeConfig.subgraphMainnet,
   [CHAINS.Goerli]: serverRuntimeConfig.subgraphGoerli,
+  [CHAINS.Holesky]: serverRuntimeConfig.subgraphHolesky,
 } as const;
 
 export const getSubgraphUrl = (chainId: SubgraphChains): string | undefined => {

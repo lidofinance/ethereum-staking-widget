@@ -1,9 +1,11 @@
 import { FC } from 'react';
 import { Button } from '@lidofinance/lido-ui';
 import { trackEvent } from '@lidofinance/analytics-matomo';
+
+import { dynamics, MATOMO_CLICK_EVENTS } from 'config';
 import { useLidoSWR } from 'shared/hooks';
 import { L2Banner } from 'shared/l2-banner';
-import { MATOMO_CLICK_EVENTS } from 'config';
+import { prependBasePath } from 'utils';
 
 import {
   Wrap,
@@ -18,8 +20,11 @@ import { use1inchLinkProps } from '../hooks';
 const ONE_INCH_RATE_LIMIT = 1.004;
 
 export const OneinchInfo: FC = () => {
+  const apiOneInchRatePath = '/api/oneinch-rate';
   const { data, initialLoading } = useLidoSWR<{ rate: number }>(
-    '/api/oneinch-rate',
+    dynamics.ipfsMode
+      ? `${dynamics.ipfsWidgetEthApiBasePath}/${apiOneInchRatePath}`
+      : prependBasePath(apiOneInchRatePath),
   );
   const rate = (data && data.rate) || 1;
   const discount = (100 - (1 / rate) * 100).toFixed(2);
