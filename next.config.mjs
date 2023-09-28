@@ -98,8 +98,8 @@ export default withBundleAnalyzer({
     esmExternals: true,
   },
   webpack(config) {
-    // Teach webpack to import svg and md files
     config.module.rules.push(
+      // Teach webpack to import svg and md files
       {
         test: /\.svg$/,
         use: ['@svgr/webpack', 'url-loader'],
@@ -108,23 +108,23 @@ export default withBundleAnalyzer({
         test: /\.md$/,
         use: 'raw-loader',
       },
-    );
 
-    // Needs for `Conditional Compilation`, because we have differences
-    // in source code of IPFS widget and NOT IPFS widget
-    config.module.rules.push({
-      test: /\.(t|j)sx?$/,
-      use: [
-        {
-          loader: 'webpack-preprocessor-loader',
-          options: {
-            params: {
-              IPFS_MODE: String(ipfsMode === 'true'),
+      // Needs for `Conditional Compilation`,
+      // because we have differences in source code of IPFS widget and NOT IPFS widget
+      {
+        test: /\.(t|j)sx?$/,
+        use: [
+          {
+            loader: 'webpack-preprocessor-loader',
+            options: {
+              params: {
+                IPFS_MODE: String(ipfsMode === 'true'),
+              },
             },
           },
-        },
-      ],
-    });
+        ],
+      }
+    );
 
     return config;
   },
