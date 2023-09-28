@@ -9,6 +9,8 @@
     "build": "next build",
     "build:analyze": "ANALYZE_BUNDLE=true next build",
     "start": "NODE_OPTIONS='-r next-logger' NODE_ENV=production node server.mjs",
+    "dev-ipfs": "cross-env IPFS_MODE=true next dev",
+    "build-ipfs": "cross-env IPFS_MODE=true next build && cross-env IPFS_MODE=true next export",
     "lint": "eslint --ext ts,tsx,js,mjs .",
     "lint:fix": "yarn lint --fix",
     "types": "tsc --noEmit",
