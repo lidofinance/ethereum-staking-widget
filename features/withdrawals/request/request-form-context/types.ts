@@ -33,7 +33,8 @@ export type ExtraRequestFormDataType = {
   isApprovalFlowLoading: boolean;
   isTokenLocked: boolean;
   allowance: BigNumber;
-  onSubmit: NonNullable<React.ComponentProps<'form'>['onSubmit']>;
+  maxAmount?: BigNumber;
+  onSubmit: React.FormEventHandler<HTMLFormElement>;
 };
 
 export type RequestFormDataContextValueType = RequestFormDataType &

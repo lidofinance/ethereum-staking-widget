@@ -1,7 +1,6 @@
 import { useCallback } from 'react';
 import { BigNumber } from 'ethers';
 
-import { TX_STAGE } from 'features/withdrawals/shared/tx-stage-modal';
 import { useClaimData } from 'features/withdrawals/contexts/claim-data-context';
 import { getErrorMessage, runWithTransactionLogger } from 'utils';
 
@@ -11,13 +10,13 @@ import invariant from 'tiny-invariant';
 import { isContract } from 'utils/isContract';
 import { useWeb3 } from 'reef-knot/web3-react';
 import { useSDK } from '@lido-sdk/react';
-import { useTransactionModal } from 'features/withdrawals/contexts/transaction-modal-context';
+import { useTransactionModal, TX_OPERATION } from 'shared/transaction-modal';
 
 export const useClaim = () => {
   const { account } = useWeb3();
   const { providerWeb3 } = useSDK();
   const { contractWeb3 } = useWithdrawalsContract();
-  const { update } = useClaimData();
+  const { optimisticClaimRequests } = useClaimData();
   const { dispatchModalState } = useTransactionModal();
 
   return useCallback(
@@ -36,9 +35,9 @@ export const useClaim = () => {
 
         dispatchModalState({
           type: 'start',
-          flow: TX_STAGE.SIGN,
-          requestAmount: ethToClaim,
-          token: null,
+          operation: TX_OPERATION.CONTRACT,
+          amount: ethToClaim,
+          token: 'ETH',
         });
 
         const ids = sortedRequests.map((r) => r.id);
@@ -83,17 +82,26 @@ export const useClaim = () => {
           await runWithTransactionLogger('Claim block confirmation', async () =>
             transaction.wait(),
           );
+          // we only update if we wait for tx
+          await optimisticClaimRequests(sortedRequests);
         }
-        await update();
+
         dispatchModalState({
           type: isMultisig ? 'success_multisig' : 'success',
         });
+        return true;
       } catch (error) {
         const errorMessage = getErrorMessage(error);
         dispatchModalState({ type: 'error', errorText: errorMessage });
+        return false;
       }
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [contractWeb3, account, providerWeb3, dispatchModalState, update],
+    [
+      contractWeb3,
+      account,
+      providerWeb3,
+      dispatchModalState,
+      optimisticClaimRequests,
+    ],
   );
 };

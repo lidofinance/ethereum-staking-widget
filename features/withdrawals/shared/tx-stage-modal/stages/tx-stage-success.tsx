@@ -1,10 +1,10 @@
-import { FC } from 'react';
+import { FC, PropsWithChildren } from 'react';
 import { useConnectorInfo } from 'reef-knot/web3-react';
 
 import { TxLinkEtherscan } from 'shared/components/tx-link-etherscan';
 import { TxStageModalContent } from 'shared/components/tx-stage-modal-content';
 import { getStageIcon } from './icons';
-import { TX_STAGE } from '../types';
+import { TX_STAGE } from 'shared/transaction-modal';
 
 type TxStageSuccessProps = {
   txHash: string | null;
@@ -14,7 +14,9 @@ type TxStageSuccessProps = {
   onClickEtherscan?: React.MouseEventHandler<HTMLAnchorElement>;
 };
 
-export const TxStageSuccess: FC<TxStageSuccessProps> = (props) => {
+export const TxStageSuccess: FC<PropsWithChildren<TxStageSuccessProps>> = (
+  props,
+) => {
   const {
     txHash,
     description,

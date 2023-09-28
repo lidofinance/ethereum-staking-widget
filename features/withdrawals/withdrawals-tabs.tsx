@@ -1,12 +1,9 @@
 import { Switch } from 'shared/components';
-import { ClaimFaq } from 'features/withdrawals/withdrawals-faq/claim-faq';
 
-import { TransactionModalProvider } from './contexts/transaction-modal-context';
 import { ClaimDataProvider } from './contexts/claim-data-context';
 import { useWithdrawals } from './contexts/withdrawals-context';
 
-import { ClaimForm, ClaimWallet } from './claim';
-import { TxClaimModal } from './claim/tx-modal/tx-claim-modal';
+import { Claim } from './claim';
 
 import { Request } from './request';
 
@@ -31,16 +28,7 @@ export const WithdrawalsTabs = () => {
   return (
     <ClaimDataProvider>
       <Switch checked={isClaimTab} routes={withdrawalRoutes} />
-      {isClaimTab ? (
-        <TransactionModalProvider>
-          <ClaimWallet />
-          <ClaimForm />
-          <ClaimFaq />
-          <TxClaimModal />
-        </TransactionModalProvider>
-      ) : (
-        <Request />
-      )}
+      {isClaimTab ? <Claim /> : <Request />}
     </ClaimDataProvider>
   );
 };

@@ -1,4 +1,12 @@
-import { createContext, useMemo, useCallback, memo, useState, FC } from 'react';
+import {
+  PropsWithChildren,
+  createContext,
+  useMemo,
+  useCallback,
+  memo,
+  useState,
+  FC,
+} from 'react';
 import { useThemeToggle } from '@lidofinance/lido-ui';
 import { Modal } from 'shared/wallet';
 import { WalletsModalForEth } from 'reef-knot/connect-wallet-modal';
@@ -16,7 +24,7 @@ export enum MODAL {
 
 export const ModalContext = createContext({} as ModalContextValue);
 
-const ModalProvider: FC = ({ children }) => {
+const ModalProvider: FC<PropsWithChildren> = ({ children }) => {
   const [active, setActive] = useState<MODAL | null>(null);
   const { themeName } = useThemeToggle();
 
@@ -55,4 +63,4 @@ const ModalProvider: FC = ({ children }) => {
   );
 };
 
-export default memo<FC>(ModalProvider);
+export default memo<FC<PropsWithChildren>>(ModalProvider);

@@ -23,13 +23,29 @@ const parseEtherSafe = (value: string) => {
 };
 
 export const InputAmount = forwardRef<HTMLInputElement, InputAmountProps>(
-  ({ onChange, value, rightDecorator, isLocked, maxValue, ...props }, ref) => {
+  (
+    {
+      onChange,
+      value,
+      rightDecorator,
+      isLocked,
+      maxValue,
+      placeholder = '0',
+      ...props
+    },
+    ref,
+  ) => {
     const [stringValue, setStringValue] = useState(() =>
       value ? formatEther(value) : '',
     );
 
     const handleChange = useCallback(
       (e: React.ChangeEvent<HTMLInputElement>) => {
+        // Support for devices where inputMode="decimal" showing keyboard with comma as decimal delimiter
+        if (e.currentTarget.value.includes(',')) {
+          e.currentTarget.value = e.currentTarget.value.replaceAll(',', '.');
+        }
+
         // Prepend zero when user types just a dot symbol for "0."
         if (e.currentTarget.value === '.') {
           e.currentTarget.value = '0.';
@@ -75,6 +91,7 @@ export const InputAmount = forwardRef<HTMLInputElement, InputAmountProps>(
     return (
       <Input
         {...props}
+        placeholder={placeholder}
         rightDecorator={
           rightDecorator ?? (
             <>

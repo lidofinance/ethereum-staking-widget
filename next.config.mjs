@@ -4,8 +4,22 @@ import buildDynamics from './scripts/build-dynamics.mjs';
 buildDynamics();
 
 const basePath = process.env.BASE_PATH;
-const infuraApiKey = process.env.INFURA_API_KEY;
-const alchemyApiKey = process.env.ALCHEMY_API_KEY;
+// TODO: deprecate old envs
+const infuraKey = process.env.INFURA_API_KEY;
+const alchemyKey = process.env.ALCHEMY_API_KEY;
+
+const rpcUrls_1 = [
+  ...(process.env.EL_RPC_URLS_1?.split(',') ?? []),
+  alchemyKey && `https://eth-mainnet.alchemyapi.io/v2/${alchemyKey}`,
+  infuraKey && `https://mainnet.infura.io/v3/${infuraKey}`,
+].filter(Boolean);
+
+const rpcUrls_5 = [
+  ...(process.env.EL_RPC_URLS_5?.split(',') ?? []),
+  alchemyKey && `https://eth-goerli.alchemyapi.io/v2/${alchemyKey}`,
+  infuraKey && `https://goerli.infura.io/v3/${infuraKey}`,
+].filter(Boolean);
+
 const ethAPIBasePath = process.env.ETH_API_BASE_PATH;
 
 const ethplorerApiKey = process.env.ETHPLORER_API_KEY;
@@ -20,11 +34,7 @@ const cspReportOnly = process.env.CSP_REPORT_ONLY;
 const cspReportUri = process.env.CSP_REPORT_URI;
 
 const subgraphMainnet = process.env.SUBGRAPH_MAINNET;
-const subgraphRopsten = process.env.SUBGRAPH_ROPSTEN;
-const subgraphRinkeby = process.env.SUBGRAPH_RINKEBY;
 const subgraphGoerli = process.env.SUBGRAPH_GOERLI;
-const subgraphKovan = process.env.SUBGRAPH_KOVAN;
-const subgraphKintsugi = process.env.SUBGRAPH_KINTSUGI;
 
 const subgraphRequestTimeout = process.env.SUBGRAPH_REQUEST_TIMEOUT;
 
@@ -36,6 +46,23 @@ const rateLimitTimeFrame = process.env.RATE_LIMIT_TIME_FRAME || 60; // 1 minute;
 
 const rewardsBackendAPI = process.env.REWARDS_BACKEND;
 const defaultChain = process.env.DEFAULT_CHAIN;
+
+// cache control
+export const CACHE_CONTROL_HEADER = 'x-cache-control';
+export const CACHE_CONTROL_PAGES = [
+  '/manifest.json',
+  '/favicon:size*',
+  '/',
+  '/wrap',
+  '/wrap/unwrap',
+  '/rewards',
+  '/referral',
+  '/withdrawals/request',
+  '/withdrawals/claim',
+  '/runtime/window-env.js',
+];
+export const CACHE_CONTROL_VALUE =
+  'public, max-age=15, s-max-age=30, stale-if-error=604800, stale-while-revalidate=172800';
 
 const withBundleAnalyzer = NextBundleAnalyzer({
   enabled: analyzeBundle,
@@ -76,11 +103,6 @@ export default withBundleAnalyzer({
   async headers() {
     return [
       {
-        // required for gnosis save apps
-        source: '/manifest.json',
-        headers: [{ key: 'Access-Control-Allow-Origin', value: '*' }],
-      },
-      {
         // Apply these headers to all routes in your application.
         source: '/(.*)',
         headers: [
@@ -93,21 +115,39 @@ export default withBundleAnalyzer({
             value: 'max-age=63072000; includeSubDomains; preload',
           },
           {
-            key: 'X-Content-Type-Options',
-            value: 'nosniff',
-          },
-          {
             key: 'Referrer-Policy',
             value: 'same-origin',
           },
+          {
+            key: 'x-content-type-options',
+            value: 'nosniff',
+          },
+          { key: 'x-xss-protection', value: '1' },
+          { key: 'x-download-options', value: 'noopen' },
         ],
       },
+      {
+        // required for gnosis save apps
+        source: '/manifest.json',
+        headers: [{ key: 'Access-Control-Allow-Origin', value: '*' }],
+      },
+      ...CACHE_CONTROL_PAGES.map((page) => ({
+        source: page,
+        headers: [{ key: CACHE_CONTROL_HEADER, value: CACHE_CONTROL_VALUE }],
+      })),
     ];
   },
+  redirects: () => [
+    {
+      source: '/withdrawals',
+      destination: '/withdrawals/request',
+      permanent: false,
+    },
+  ],
   serverRuntimeConfig: {
     basePath,
-    infuraApiKey,
-    alchemyApiKey,
+    rpcUrls_1,
+    rpcUrls_5,
     ethplorerApiKey,
     cloudflareApiToken,
     cloudflareAccountId,
@@ -116,11 +156,7 @@ export default withBundleAnalyzer({
     cspReportOnly,
     cspReportUri,
     subgraphMainnet,
-    subgraphRopsten,
-    subgraphRinkeby,
     subgraphGoerli,
-    subgraphKovan,
-    subgraphKintsugi,
     subgraphRequestTimeout,
     rateLimit,
     rateLimitTimeFrame,

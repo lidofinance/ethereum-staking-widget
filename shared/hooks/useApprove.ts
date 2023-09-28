@@ -1,22 +1,24 @@
 import invariant from 'tiny-invariant';
 import { useCallback } from 'react';
-import { ContractTransaction } from '@ethersproject/contracts';
+import { ContractReceipt, ContractTransaction } from '@ethersproject/contracts';
 import { BigNumber } from '@ethersproject/bignumber';
 import { getERC20Contract } from '@lido-sdk/contracts';
 import { Zero } from '@ethersproject/constants';
-import { useAllowance, useMountedState, useSDK } from '@lido-sdk/react';
+import { useAllowance, useSDK } from '@lido-sdk/react';
 import { isContract } from 'utils/isContract';
 import { getFeeData } from 'utils/getFeeData';
+import { runWithTransactionLogger } from 'utils';
 
-type TransactionCallback = () => Promise<ContractTransaction | string>;
-
-export type UseApproveWrapper = (
-  callback: TransactionCallback,
-) => Promise<void> | void;
+type ApproveOptions =
+  | {
+      onTxStart?: () => void | Promise<void>;
+      onTxSent?: (tx: string | ContractTransaction) => void | Promise<void>;
+      onTxAwaited?: (tx: ContractReceipt) => void | Promise<void>;
+    }
+  | undefined;
 
 export type UseApproveResponse = {
-  approve: () => Promise<void>;
-  approving: boolean;
+  approve: (options?: ApproveOptions) => Promise<void>;
   needsApprove: boolean;
   initialLoading: boolean;
   allowance: BigNumber;
@@ -24,21 +26,11 @@ export type UseApproveResponse = {
   error: unknown;
 };
 
-const defaultWrapper: UseApproveWrapper = async (
-  callback: TransactionCallback,
-) => {
-  const result = await callback();
-  if (typeof result === 'object') {
-    await result.wait();
-  }
-};
-
 export const useApprove = (
   amount: BigNumber,
   token: string,
   spender: string,
   owner?: string,
-  wrapper: UseApproveWrapper = defaultWrapper,
 ): UseApproveResponse => {
   const { providerWeb3, account, chainId } = useSDK();
   const mergedOwner = owner ?? account;
@@ -46,7 +38,6 @@ export const useApprove = (
   invariant(token != null, 'Token is required');
   invariant(spender != null, 'Spender is required');
 
-  const [approving, setApproving] = useMountedState(false);
   const result = useAllowance(token, spender, mergedOwner);
   const {
     data: allowance = Zero,
@@ -57,15 +48,16 @@ export const useApprove = (
   const needsApprove =
     !initialLoading && !amount.isZero() && amount.gt(allowance);
 
-  const approve = useCallback(async () => {
-    try {
-      setApproving(true);
+  const approve = useCallback<UseApproveResponse['approve']>(
+    async ({ onTxStart, onTxSent, onTxAwaited } = {}) => {
       invariant(providerWeb3 != null, 'Web3 provider is required');
       invariant(chainId, 'chain id is required');
       invariant(account, 'account is required');
+      await onTxStart?.();
       const contractWeb3 = getERC20Contract(token, providerWeb3.getSigner());
       const isMultisig = await isContract(account, providerWeb3);
-      await wrapper(async () => {
+
+      const processApproveTx = async () => {
         if (isMultisig) {
           const tx = await contractWeb3.populateTransaction.approve(
             spender,
@@ -76,38 +68,38 @@ export const useApprove = (
             .sendUncheckedTransaction(tx);
           return hash;
         } else {
-          const feeData = await getFeeData(chainId).catch((error) =>
-            console.warn(error),
+          const { maxFeePerGas, maxPriorityFeePerGas } = await getFeeData(
+            chainId,
           );
-          const maxPriorityFeePerGas =
-            feeData?.maxPriorityFeePerGas ?? undefined;
-          const maxFeePerGas = feeData?.maxFeePerGas ?? undefined;
           const tx = await contractWeb3.approve(spender, amount, {
             maxFeePerGas,
             maxPriorityFeePerGas,
           });
           return tx;
         }
-      });
+      };
+
+      const approveTx = await runWithTransactionLogger(
+        'Approve signing',
+        processApproveTx,
+      );
+      await onTxSent?.(approveTx);
+
+      if (typeof approveTx === 'object') {
+        const receipt = await runWithTransactionLogger(
+          'Approve block confirmation',
+          () => approveTx.wait(),
+        );
+        await onTxAwaited?.(receipt);
+      }
+
       await updateAllowance();
-    } finally {
-      setApproving(false);
-    }
-  }, [
-    setApproving,
-    providerWeb3,
-    chainId,
-    account,
-    token,
-    wrapper,
-    updateAllowance,
-    spender,
-    amount,
-  ]);
+    },
+    [providerWeb3, chainId, account, token, updateAllowance, spender, amount],
+  );
 
   return {
     approve,
-    approving,
     needsApprove,
 
     allowance,

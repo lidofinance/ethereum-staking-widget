@@ -5,10 +5,10 @@ import { getBackendRPCPath } from 'config';
 import { StaticJsonRpcBatchProvider } from '@lidofinance/eth-providers';
 
 type FeeData = {
-  lastBaseFeePerGas: null | BigNumber;
-  maxFeePerGas: null | BigNumber;
-  maxPriorityFeePerGas: null | BigNumber;
-  gasPrice: null | BigNumber;
+  lastBaseFeePerGas: BigNumber;
+  maxFeePerGas: BigNumber;
+  maxPriorityFeePerGas: BigNumber;
+  gasPrice: BigNumber;
 };
 
 const getFeeHistory = (
@@ -18,7 +18,7 @@ const getFeeHistory = (
   percentile: number[],
 ) => {
   return provider.send('eth_feeHistory', [
-    blockCount.toString(16),
+    '0x' + blockCount.toString(16),
     latestBlock,
     percentile,
   ]) as Promise<{

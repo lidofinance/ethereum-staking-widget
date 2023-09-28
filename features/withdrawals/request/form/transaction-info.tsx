@@ -1,7 +1,7 @@
 import { TOKENS } from '@lido-sdk/constants';
 import { DataTableRow } from '@lidofinance/lido-ui';
 import { useRequestTxPrice } from 'features/withdrawals/hooks/useWithdrawTxPrice';
-import { useApproveGasLimit } from 'features/wrap/features/wrap-form/hooks';
+import { useApproveGasLimit } from 'features/wsteth/wrap/hooks/use-approve-gas-limit';
 import { useWatch } from 'react-hook-form';
 import { DataTableRowStethByWsteth } from 'shared/components/data-table-row-steth-by-wsteth';
 import { FormatToken } from 'shared/formatters';
@@ -29,7 +29,10 @@ export const TransactionInfo = () => {
       isApprovalFlow,
       requestCount: requests?.length,
     });
-  const approveTxCostInUsd = useTxCostInUsd(useApproveGasLimit());
+  const approveGasLimit = useApproveGasLimit();
+  const approveTxCostInUsd = useTxCostInUsd(
+    approveGasLimit && Number(approveGasLimit),
+  );
 
   const isInfiniteAllowance = useMemo(() => {
     return allowance.eq(MaxUint256);

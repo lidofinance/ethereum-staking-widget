@@ -32,11 +32,11 @@ interface TxStageModalProps extends ModalProps {
   amountToken: string;
   willReceiveAmount?: string;
   willReceiveAmountToken?: string;
-  txHash?: string;
+  txHash?: string | null;
   balance?: BigNumber;
   balanceToken?: string;
   allowanceAmount?: BigNumber;
-  failedText?: string;
+  failedText?: string | null;
   onRetry: React.MouseEventHandler;
 }
 

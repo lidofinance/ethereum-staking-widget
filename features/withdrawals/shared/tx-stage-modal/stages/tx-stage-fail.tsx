@@ -6,7 +6,7 @@ import { ErrorMessage } from 'utils';
 import { TxStageModalContent } from 'shared/components/tx-stage-modal-content';
 import { getStageIcon } from './icons';
 import { RetryButtonStyled } from './styles';
-import { TX_STAGE } from '../types';
+import { TX_STAGE } from 'shared/transaction-modal';
 
 type TxStageFailProps = {
   failedText: string | null;
@@ -23,7 +23,8 @@ export const TxStageFail: FC<TxStageFailProps> = (props) => {
       title="Transaction Error"
       description={failedText ?? 'Something went wrong'}
       footerHint={
-        failedText !== ErrorMessage.NOT_ENOUGH_ETHER && (
+        failedText !== ErrorMessage.NOT_ENOUGH_ETHER &&
+        onClick && (
           <RetryButtonStyled onClick={onClick}>Retry</RetryButtonStyled>
         )
       }

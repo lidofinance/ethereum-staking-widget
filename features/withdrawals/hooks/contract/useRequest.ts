@@ -10,7 +10,6 @@ import {
 import { TOKENS, getWithdrawalQueueAddress } from '@lido-sdk/constants';
 import { useAccount } from 'wagmi';
 
-import { TX_STAGE } from 'features/withdrawals/shared/tx-stage-modal';
 import {
   GatherPermitSignatureResult,
   useERC20PermitSignature,
@@ -18,7 +17,7 @@ import {
 import { useIsMultisig } from 'shared/hooks/useIsMultisig';
 import { getErrorMessage, runWithTransactionLogger } from 'utils';
 import { isContract } from 'utils/isContract';
-import { useTransactionModal } from 'features/withdrawals/contexts/transaction-modal-context';
+import { useTransactionModal, TX_OPERATION } from 'shared/transaction-modal';
 import { useWithdrawals } from 'features/withdrawals/contexts/withdrawals-context';
 
 import { useWithdrawalsContract } from './useWithdrawalsContract';
@@ -45,7 +44,7 @@ const useWithdrawalRequestMethods = () => {
       invariant(signature, 'must have signature');
       invariant(contractWeb3, 'must have contractWeb3');
 
-      dispatchModalState({ type: 'signing' });
+      dispatchModalState({ type: 'signing', operation: TX_OPERATION.CONTRACT });
 
       const params = [
         requests,
@@ -59,9 +58,7 @@ const useWithdrawalRequestMethods = () => {
         },
       ] as const;
 
-      const feeData = await getFeeData(chainId);
-      const maxFeePerGas = feeData.maxFeePerGas ?? undefined;
-      const maxPriorityFeePerGas = feeData.maxPriorityFeePerGas ?? undefined;
+      const { maxFeePerGas, maxPriorityFeePerGas } = await getFeeData(chainId);
       const gasLimit =
         await contractWeb3.estimateGas.requestWithdrawalsWithPermit(...params, {
           maxFeePerGas,
@@ -136,10 +133,10 @@ const useWithdrawalRequestMethods = () => {
       const callback = () =>
         contractWeb3.requestWithdrawalsWstETHWithPermit(...params, txOptions);
 
-      dispatchModalState({ type: 'signing' });
+      dispatchModalState({ type: 'signing', operation: TX_OPERATION.CONTRACT });
 
       const transaction = await runWithTransactionLogger(
-        'Stake signing',
+        'Request signing',
         callback,
       );
 
@@ -158,7 +155,7 @@ const useWithdrawalRequestMethods = () => {
       invariant(contractWeb3, 'must have contractWeb3');
       invariant(providerWeb3, 'must have providerWeb3');
 
-      dispatchModalState({ type: 'signing' });
+      dispatchModalState({ type: 'signing', operation: TX_OPERATION.CONTRACT });
       const isMultisig = await isContract(account, contractWeb3.provider);
 
       const params = [requests, account] as const;
@@ -170,10 +167,9 @@ const useWithdrawalRequestMethods = () => {
           );
           return providerWeb3?.getSigner().sendUncheckedTransaction(tx);
         } else {
-          const feeData = await getFeeData(chainId);
-          const maxFeePerGas = feeData.maxFeePerGas ?? undefined;
-          const maxPriorityFeePerGas =
-            feeData.maxPriorityFeePerGas ?? undefined;
+          const { maxFeePerGas, maxPriorityFeePerGas } = await getFeeData(
+            chainId,
+          );
           const gasLimit = await contractWeb3.estimateGas.requestWithdrawals(
             ...params,
             {
@@ -213,7 +209,7 @@ const useWithdrawalRequestMethods = () => {
       invariant(providerWeb3, 'must have providerWeb3');
       const isMultisig = await isContract(account, contractWeb3.provider);
 
-      dispatchModalState({ type: 'signing' });
+      dispatchModalState({ type: 'signing', operation: TX_OPERATION.CONTRACT });
 
       const params = [requests, account] as const;
       const callback = async () => {
@@ -225,10 +221,9 @@ const useWithdrawalRequestMethods = () => {
             );
           return providerWeb3?.getSigner().sendUncheckedTransaction(tx);
         } else {
-          const feeData = await getFeeData(chainId);
-          const maxFeePerGas = feeData.maxFeePerGas ?? undefined;
-          const maxPriorityFeePerGas =
-            feeData.maxPriorityFeePerGas ?? undefined;
+          const { maxFeePerGas, maxPriorityFeePerGas } = await getFeeData(
+            chainId,
+          );
           const gasLimit =
             await contractWeb3.estimateGas.requestWithdrawalsWstETH(...params, {
               maxFeePerGas,
@@ -243,7 +238,7 @@ const useWithdrawalRequestMethods = () => {
       };
 
       const transaction = await runWithTransactionLogger(
-        'Stake signing',
+        'Request signing',
         callback,
       );
 
@@ -279,11 +274,13 @@ const useWithdrawalRequestMethods = () => {
 type useWithdrawalRequestParams = {
   amount: BigNumber | null;
   token: TOKENS.STETH | TOKENS.WSTETH;
+  onConfirm?: () => Promise<void>;
 };
 
 export const useWithdrawalRequest = ({
   amount,
   token,
+  onConfirm,
 }: useWithdrawalRequestParams) => {
   const { chainId } = useSDK();
   const withdrawalQueueAddress = getWithdrawalQueueAddress(chainId);
@@ -291,7 +288,7 @@ export const useWithdrawalRequest = ({
   const { connector } = useAccount();
   const { account } = useWeb3();
   const { isBunker } = useWithdrawals();
-  const { dispatchModalState } = useTransactionModal();
+  const { dispatchModalState, dispatchAsyncDialog } = useTransactionModal();
   const getRequestMethod = useWithdrawalRequestMethods();
   const [isMultisig, isMultisigLoading] = useIsMultisig();
 
@@ -330,75 +327,75 @@ export const useWithdrawalRequest = ({
   const isTokenLocked = isApprovalFlow && needsApprove;
 
   const request = useCallback(
-    (
+    async (
       requests: BigNumber[] | null,
       amount: BigNumber | null,
       token: TokensWithdrawable,
     ) => {
       // define and set retry point
-      const startCallback = async () => {
-        try {
-          invariant(
-            requests && request.length > 0,
-            'cannot submit empty requests',
+      try {
+        invariant(
+          requests && request.length > 0,
+          'cannot submit empty requests',
+        );
+        invariant(amount, 'cannot submit empty amount');
+        if (isBunker) {
+          const { ok: bunkerDialogResult } = await dispatchAsyncDialog(
+            'bunker',
           );
-          invariant(amount, 'cannot submit empty amount');
-          if (isBunker) {
-            const bunkerDialogResult = await new Promise<boolean>((resolve) => {
-              dispatchModalState({
-                type: 'bunker',
-                onCloseBunker: () => resolve(false),
-                onOkBunker: () => resolve(true),
-              });
-            });
-            if (!bunkerDialogResult) return { success: false };
-          }
-          // get right method
-          const method = getRequestMethod(isApprovalFlow, token);
-          // start flow
-          dispatchModalState({
-            type: 'start',
-            flow: isApprovalFlow
-              ? needsApprove
-                ? TX_STAGE.APPROVE
-                : TX_STAGE.SIGN
-              : TX_STAGE.PERMIT,
-            requestAmount: amount,
-            token,
-          });
-
-          // each flow switches needed signing stages
-          if (isApprovalFlow) {
-            if (needsApprove) {
-              await approve();
-              // multisig does not move to next tx
-              if (!isMultisig) await method({ requests });
-            } else {
-              await method({ requests });
-            }
-          } else {
-            const signature = await gatherPermitSignature(amount);
-            await method({ signature, requests });
-          }
-          // end flow
-          dispatchModalState({
-            type: isMultisig ? 'success_multisig' : 'success',
-          });
-          return { success: true };
-        } catch (error) {
-          const errorMessage = getErrorMessage(error);
-          dispatchModalState({ type: 'error', errorText: errorMessage });
-          return { success: false, error: error };
+          if (!bunkerDialogResult) return { success: false };
         }
-      };
-      dispatchModalState({
-        type: 'set_starTx_callback',
-        callback: startCallback,
-      });
-      return startCallback();
+        // get right method
+        const method = getRequestMethod(isApprovalFlow, token);
+        // start flow
+        dispatchModalState({
+          type: 'start',
+          operation: isApprovalFlow
+            ? needsApprove
+              ? TX_OPERATION.APPROVE
+              : TX_OPERATION.CONTRACT
+            : TX_OPERATION.PERMIT,
+          amount,
+          token,
+        });
+
+        // each flow switches needed signing stages
+        if (isApprovalFlow) {
+          if (needsApprove) {
+            await approve({
+              onTxSent: (tx) => {
+                if (!isMultisig)
+                  dispatchModalState({
+                    type: 'block',
+                    txHash: typeof tx === 'string' ? tx : tx.hash,
+                    operation: TX_OPERATION.APPROVE,
+                  });
+              },
+            });
+            // multisig does not move to next tx
+            if (!isMultisig) await method({ requests });
+          } else {
+            await method({ requests });
+          }
+        } else {
+          const signature = await gatherPermitSignature(amount);
+          await method({ signature, requests });
+        }
+        // end flow
+        if (!isMultisig) await onConfirm?.();
+        dispatchModalState({
+          type: isMultisig ? 'success_multisig' : 'success',
+        });
+        return { success: true };
+      } catch (error) {
+        const errorMessage = getErrorMessage(error);
+        dispatchModalState({ type: 'error', errorText: errorMessage });
+        return { success: false, error: error };
+      }
     },
     [
       approve,
+      dispatchAsyncDialog,
       dispatchModalState,
       gatherPermitSignature,
       getRequestMethod,
@@ -406,6 +403,7 @@ export const useWithdrawalRequest = ({
       isBunker,
       isMultisig,
       needsApprove,
+      onConfirm,
     ],
   );
 

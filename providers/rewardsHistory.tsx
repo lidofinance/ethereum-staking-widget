@@ -1,4 +1,12 @@
-import { FC, createContext, memo, useMemo, useState, useEffect } from 'react';
+import {
+  FC,
+  PropsWithChildren,
+  createContext,
+  memo,
+  useMemo,
+  useState,
+  useEffect,
+} from 'react';
 import { Backend } from 'features/rewards/types';
 import {
   DEFAULT_CURRENCY,
@@ -37,7 +45,7 @@ export type RewardsHistoryValue = {
 
 export const RewardsHistoryContext = createContext({} as RewardsHistoryValue);
 
-const RewardsHistoryProvider: React.FC = (props) => {
+const RewardsHistoryProvider: FC<PropsWithChildren> = (props) => {
   const { children } = props;
 
   const [currency, setCurrency] = useState(DEFAULT_CURRENCY.id);
@@ -122,4 +130,4 @@ const RewardsHistoryProvider: React.FC = (props) => {
   );
 };
 
-export default memo<FC>(RewardsHistoryProvider);
+export default memo<FC<PropsWithChildren>>(RewardsHistoryProvider);

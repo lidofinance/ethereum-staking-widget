@@ -17,19 +17,17 @@ export const WalletComponent = () => {
   const { account } = useSDK();
 
   return (
-    <>
-      <WalletWrapperStyled>
-        <CardRow>
-          <WalletAvailableAmount />
-          <CardAccount account={account} />
-        </CardRow>
-        <Divider />
-        <CardRow>
-          <WalletMyRequests />
-          <WalletPendingAmount />
-        </CardRow>
-      </WalletWrapperStyled>
-    </>
+    <WalletWrapperStyled>
+      <CardRow>
+        <WalletAvailableAmount />
+        <CardAccount account={account} />
+      </CardRow>
+      <Divider />
+      <CardRow>
+        <WalletMyRequests />
+        <WalletPendingAmount />
+      </CardRow>
+    </WalletWrapperStyled>
   );
 };
 
