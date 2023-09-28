@@ -3,6 +3,8 @@ import buildDynamics from './scripts/build-dynamics.mjs';
 
 buildDynamics();
 
+const ipfsMode = process.env.IPFS_MODE;
+
 const basePath = process.env.BASE_PATH;
 // TODO: deprecate old envs
 const infuraKey = process.env.INFURA_API_KEY;
@@ -70,6 +72,16 @@ const withBundleAnalyzer = NextBundleAnalyzer({
 
 export default withBundleAnalyzer({
   basePath,
+
+  // IPFS next.js configuration reference:
+  // https://github.com/Velenir/nextjs-ipfs-example
+  trailingSlash: true,
+  assetPrefix: ipfsMode ? './' : undefined,
+
+  // IPFS version has hash-based routing,
+  // so we provide only index.html in ipfs version
+  exportPathMap: ipfsMode ? () => ({ '/': { page: '/' } }) : undefined,
+
   eslint: {
     ignoreDuringBuilds: true,
   },
@@ -97,6 +109,22 @@ export default withBundleAnalyzer({
         use: 'raw-loader',
       },
     );
+
+    // Needs for `Conditional Compilation`, because we have differences
+    // in source code of IPFS widget and NOT IPFS widget
+    config.module.rules.push({
+      test: /\.(t|j)sx?$/,
+      use: [
+        {
+          loader: 'webpack-preprocessor-loader',
+          options: {
+            params: {
+              IPFS_MODE: String(ipfsMode === 'true'),
+            },
+          },
+        },
+      ],
+    });
 
     return config;
   },
