@@ -6,10 +6,11 @@ import Document, {
   DocumentContext,
   DocumentInitialProps,
 } from 'next/document';
-import { Fonts, LidoUIHead } from '@lidofinance/lido-ui';
 import { ServerStyleSheet } from 'styled-components';
+import { Fonts, LidoUIHead } from '@lidofinance/lido-ui';
 
 import { dynamics } from 'config';
+import { InsertIpfsBaseScript } from 'features/ipfs/ipfs-base-script';
 
 let host = 'https://stake.lido.fi';
 
@@ -107,6 +108,7 @@ export default class MyDocument extends Document {
           <meta name="currentChain" content={String(dynamics.defaultChain)} />
           <Fonts />
           <LidoUIHead />
+          <InsertIpfsBaseScript />
           {/* eslint-disable-next-line @next/next/no-sync-scripts */}
           <script src="/runtime/window-env.js" />
         </Head>
