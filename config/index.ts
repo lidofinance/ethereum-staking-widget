@@ -6,6 +6,7 @@ export * from './api';
 export * from './cache';
 export * from './estimate';
 export * from './locale';
+export * from './ipfs';
 export * from './metrics';
 export * from './oracle';
 export * from './rpc';
