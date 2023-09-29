@@ -9,7 +9,7 @@ import Document, {
 import { ServerStyleSheet } from 'styled-components';
 import { Fonts, LidoUIHead } from '@lidofinance/lido-ui';
 
-import { dynamics } from 'config';
+import { dynamics, BASE_PATH_ASSET } from 'config';
 import { InsertIpfsBaseScript } from 'features/ipfs/ipfs-base-script';
 
 let host = 'https://stake.lido.fi';
@@ -68,31 +68,39 @@ export default class MyDocument extends Document {
     return (
       <Html lang="en">
         <Head>
-          <link rel="manifest" href="/manifest.json" />
-          <link rel="icon" href="/favicon.ico" sizes="any" />
-          <link rel="icon" type="image/svg+xml" href="/favicon-1080x1080.svg" />
+          <link rel="manifest" href={`${BASE_PATH_ASSET}/manifest.json`} />
+          <link
+            rel="icon"
+            href={`${BASE_PATH_ASSET}/favicon.ico`}
+            sizes="any"
+          />
+          <link
+            rel="icon"
+            type="image/svg+xml"
+            href={`${BASE_PATH_ASSET}/favicon-1080x1080.svg`}
+          />
           <link
             rel="apple-touch-icon"
             sizes="180x180"
-            href="/apple-touch-icon.png"
+            href={`${BASE_PATH_ASSET}/apple-touch-icon.png`}
           />
           <link
             rel="icon"
             type="image/png"
             sizes="192x192"
-            href="/favicon-192x192.png"
+            href={`${BASE_PATH_ASSET}/favicon-192x192.png`}
           />
           <link
             rel="icon"
             type="image/png"
             sizes="32x32"
-            href="/favicon-32x32.png"
+            href={`${BASE_PATH_ASSET}/favicon-32x32.png`}
           />
           <link
             rel="icon"
             type="image/png"
             sizes="16x16"
-            href="/favicon-16x16.png"
+            href={`${BASE_PATH_ASSET}/favicon-16x16.png`}
           />
           <meta property="og:type" content="website" />
           <meta property="og:title" content={this.metaTitle} />
@@ -110,7 +118,7 @@ export default class MyDocument extends Document {
           <LidoUIHead />
           <InsertIpfsBaseScript />
           {/* eslint-disable-next-line @next/next/no-sync-scripts */}
-          <script src="/runtime/window-env.js" />
+          <script src={`${BASE_PATH_ASSET}/runtime/window-env.js`} />
         </Head>
         <body>
           <Main />
