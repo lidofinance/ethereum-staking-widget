@@ -44,7 +44,10 @@ export const Nav = styled.div`
   z-index: 6;
 `;
 
-export const NavLink = styled.a<{ active: boolean }>`
+// Not wrapping <a> inside <a> in IPFS mode
+// Also avoid problems with migrate to Next v13
+// see: https://nextjs.org/docs/app/building-your-application/upgrading/app-router-migration#link-component
+export const NavLink = styled.span<{ active: boolean }>`
   cursor: pointer;
   color: var(--lido-color-secondary);
   font-size: ${({ theme }) => theme.fontSizesMap.xxxs}px;

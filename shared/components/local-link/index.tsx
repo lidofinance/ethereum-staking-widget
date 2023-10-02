@@ -21,7 +21,14 @@ export const LocalLink: FC<PropsWithChildren<LinkProps>> = (props) => {
       return <LinkIpfs {...restProps} href={href} />;
     }
 
-    return <Link {...restProps} href={{ pathname: href, query: extraQuery }} />;
+    return (
+      <Link {...restProps} href={{ pathname: href, query: extraQuery }}>
+        {/* TODO: fix when go to Next v13+ */}
+        {/* see: https://nextjs.org/docs/app/building-your-application/upgrading/app-router-migration#link-component */}
+        {/* eslint-disable-next-line jsx-a11y/anchor-has-content,jsx-a11y/click-events-have-key-events,jsx-a11y/no-static-element-interactions */}
+        <a {...restProps} />
+      </Link>
+    );
   }
 
   throw new Error('Prop href is not compatible');
