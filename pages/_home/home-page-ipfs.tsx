@@ -2,7 +2,6 @@ import { FC, useMemo, useEffect } from 'react';
 import { useRouter } from 'next/router';
 
 import { usePrefixedReplace } from 'shared/hooks/use-prefixed-history';
-import { prefixUrl } from 'utils/get-ipfs-base-path';
 
 import HomePageRegular from './home-page-regular';
 import WrapPage from '../wrap/[[...mode]]';
@@ -39,9 +38,12 @@ const HomePageIpfs: FC = () => {
   }, [asPath]);
 
   useEffect(() => {
+    if (parsedPath[0] === 'withdrawals' && !parsedPath[1]) {
+      void replace('/withdrawals/request');
+    }
+
     if (parsedPath[0] && !IPFS_ROUTABLE_PAGES.includes(parsedPath[0])) {
-      // TODO
-      void replace(prefixUrl('/'));
+      void replace('/');
     }
   }, [replace, parsedPath]);
 
