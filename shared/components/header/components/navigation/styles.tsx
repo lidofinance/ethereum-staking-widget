@@ -67,6 +67,7 @@ export const NavLink = styled.span<{ active: boolean }>`
     color: var(--lido-color-secondary);
   }
 
+  // TODO: Not actual - remove
   :visited {
     color: var(--lido-color-secondary);
   }

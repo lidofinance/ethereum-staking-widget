@@ -45,14 +45,9 @@ export const SwitchItemStyled = styled.span<{ active: boolean }>`
   justify-content: center;
   height: 100%;
 
-  &,
-  &:visited {
-    text-decoration: none;
-    color: var(--lido-color-text);
+  color: var(--lido-color-text);
 
-    &:hover {
-      color: var(--lido-color-text);
-      opacity: 1;
-    }
+  &:hover {
+    opacity: 1;
   }
 `;
