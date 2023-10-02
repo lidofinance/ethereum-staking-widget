@@ -57,14 +57,19 @@ const HomePageIpfs: FC = () => {
     }
 
     case 'wrap': {
-      if (parsedPath[1] === 'wrap') return <WrapPage mode={'wrap'} />;
-      else return <WrapPage mode={'unwrap'} />;
+      if (parsedPath[1] === 'unwrap') {
+        return <WrapPage mode={'unwrap'} />;
+      } else {
+        return <WrapPage mode={'wrap'} />;
+      }
     }
 
     case 'withdrawals': {
-      if (parsedPath[1] === 'request')
+      if (parsedPath[1] === 'claim') {
+        return <WithdrawalsPage mode={'claim'} />;
+      } else {
         return <WithdrawalsPage mode={'request'} />;
-      else return <WithdrawalsPage mode={'claim'} />;
+      }
     }
 
     case 'rewards': {
