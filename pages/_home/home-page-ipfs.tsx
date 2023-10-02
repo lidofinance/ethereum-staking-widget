@@ -1,6 +1,7 @@
 import { FC, useMemo, useEffect } from 'react';
 import { useRouter } from 'next/router';
 
+import NoSSRWrapper from 'shared/components/no-ssr-wrapper';
 import { usePrefixedReplace } from 'shared/hooks/use-prefixed-history';
 
 import HomePageRegular from './home-page-regular';
@@ -53,39 +54,48 @@ const HomePageIpfs: FC = () => {
    * and router config if we will need more functionality
    * Example: https://v5.reactrouter.com/web/api/match
    */
+  let spaPage;
   switch (parsedPath[0]) {
     case 'stake': {
-      return <HomePageRegular />;
+      spaPage = <HomePageRegular />;
+      break;
     }
 
     case 'wrap': {
       if (parsedPath[1] === 'unwrap') {
-        return <WrapPage mode={'unwrap'} />;
+        spaPage = <WrapPage mode={'unwrap'} />;
       } else {
-        return <WrapPage mode={'wrap'} />;
+        spaPage = <WrapPage mode={'wrap'} />;
       }
+      break;
     }
 
     case 'withdrawals': {
       if (parsedPath[1] === 'claim') {
-        return <WithdrawalsPage mode={'claim'} />;
+        spaPage = <WithdrawalsPage mode={'claim'} />;
       } else {
-        return <WithdrawalsPage mode={'request'} />;
+        spaPage = <WithdrawalsPage mode={'request'} />;
       }
+      break;
     }
 
     case 'rewards': {
-      return <RewardsPage />;
+      spaPage = <RewardsPage />;
+      break;
     }
 
     case 'referral': {
-      return <ReferralPage />;
+      spaPage = <ReferralPage />;
+      break;
     }
 
     default: {
-      return <HomePageRegular />;
+      spaPage = <HomePageRegular />;
     }
   }
+
+  // TODO: fix for runtime of `dev-ipfs` (see: package.json scripts)
+  return <NoSSRWrapper>{spaPage}</NoSSRWrapper>;
 };
 
 export default HomePageIpfs;
