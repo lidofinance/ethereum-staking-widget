@@ -17,7 +17,14 @@ import RewardsPage from '../rewards';
  * redirects to make dynamic routes workable.
  */
 
-const IPFS_ROUTABLE_PAGES = ['index', 'vote', 'settings'];
+const IPFS_ROUTABLE_PAGES = [
+  'index',
+  'wrap',
+  'withdrawals',
+  'rewards',
+  'referral',
+  'settings',
+];
 
 const HomePageIpfs: FC = () => {
   const router = useRouter();
@@ -33,6 +40,7 @@ const HomePageIpfs: FC = () => {
 
   useEffect(() => {
     if (parsedPath[0] && !IPFS_ROUTABLE_PAGES.includes(parsedPath[0])) {
+      // TODO
       void replace(prefixUrl('/'));
     }
   }, [replace, parsedPath]);
@@ -49,13 +57,14 @@ const HomePageIpfs: FC = () => {
     }
 
     case 'wrap': {
-      // TODO mode=unwrap
-      return <WrapPage mode={'wrap'} />;
+      if (parsedPath[1] === 'wrap') return <WrapPage mode={'wrap'} />;
+      else return <WrapPage mode={'unwrap'} />;
     }
 
     case 'withdrawals': {
-      // TODO: mode=claim
-      return <WithdrawalsPage mode={'request'} />;
+      if (parsedPath[1] === 'request')
+        return <WithdrawalsPage mode={'request'} />;
+      else return <WithdrawalsPage mode={'claim'} />;
     }
 
     case 'rewards': {
