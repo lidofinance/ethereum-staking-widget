@@ -9,6 +9,7 @@ import WrapPage from '../wrap/[[...mode]]';
 import WithdrawalsPage from '../withdrawals/[mode]';
 import ReferralPage from '../referral';
 import RewardsPage from '../rewards';
+import SettingsPage from '../settings';
 
 /**
  * We are using single index.html endpoint
@@ -56,11 +57,6 @@ const HomePageIpfs: FC = () => {
    */
   let spaPage;
   switch (parsedPath[0]) {
-    case 'stake': {
-      spaPage = <HomePageRegular />;
-      break;
-    }
-
     case 'wrap': {
       if (parsedPath[1] === 'unwrap') {
         spaPage = <WrapPage mode={'unwrap'} />;
@@ -89,12 +85,17 @@ const HomePageIpfs: FC = () => {
       break;
     }
 
+    case 'settings': {
+      spaPage = <SettingsPage />;
+      break;
+    }
+
     default: {
       spaPage = <HomePageRegular />;
     }
   }
 
-  // TODO: fix for runtime of `dev-ipfs` (see: package.json scripts)
+  // Fix for runtime of `dev-ipfs` (see: package.json scripts)
   return <NoSSRWrapper>{spaPage}</NoSSRWrapper>;
 };
 
