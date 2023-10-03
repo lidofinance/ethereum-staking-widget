@@ -1,5 +1,5 @@
 import { FC } from 'react';
-import { version, branch } from 'build-info.json';
+import buildInfo from 'build-info.json';
 
 import {
   FooterStyle,
@@ -11,6 +11,7 @@ import {
 } from './styles';
 
 const getVersionInfo = () => {
+  const { version, branch } = buildInfo;
   const repoBaseUrl = 'https://github.com/lidofinance/ethereum-staking-widget';
   if (version === 'REPLACE_WITH_VERSION')
     return {
