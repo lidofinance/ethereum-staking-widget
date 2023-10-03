@@ -22,6 +22,12 @@ const getVersionInfo = () => {
       label: 'preview',
       link: `${repoBaseUrl}/tree/${branch}`,
     };
+  if (version === 'staging' || version === 'dev') {
+    return {
+      label: version,
+      link: `${repoBaseUrl}/tree/${branch}`,
+    };
+  }
   return {
     label: `v${version}`,
     link: `${repoBaseUrl}/releases/tag/${version}`,
