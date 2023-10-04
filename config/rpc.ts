@@ -9,11 +9,6 @@ export const getBackendRPCPath = (chainId: string | number): string => {
   return `${BASE_URL}/api/rpc?chainId=${chainId}`;
 };
 
-export const backendRPC = {
-  [CHAINS.Mainnet]: getBackendRPCPath(CHAINS.Mainnet),
-  [CHAINS.Goerli]: getBackendRPCPath(CHAINS.Goerli),
-};
-
 export const useGetRpcUrl = () => {
   const customConfig = useCustomConfig();
   return useCallback(

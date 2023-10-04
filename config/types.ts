@@ -4,6 +4,7 @@ export type EnvConfigRaw = {
   isMaintenanceMode: string;
   settingsPrefillRpc: string;
   ipfsMode: string;
+  walletconnectProjectId: string;
 };
 
 export type EnvConfigParsed = {
@@ -12,4 +13,5 @@ export type EnvConfigParsed = {
   isMaintenanceMode: boolean;
   settingsPrefillRpc?: string;
   ipfsMode: boolean;
+  walletconnectProjectId: string;
 };
