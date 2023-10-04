@@ -1,4 +1,5 @@
 export default (cspTrustedHosts, cspReportUri, cspReportOnly) => {
+  const reportURI = cspReportUri || '/';
   const trustedHosts = cspTrustedHosts ? cspTrustedHosts.split(',') : [];
   const reportOnly = cspReportOnly == 'true';
 
@@ -48,7 +49,7 @@ export default (cspTrustedHosts, cspReportUri, cspReportOnly) => {
       objectSrc: ["'self'", ...trustedHosts],
       defaultSrc: ["'self'", ...trustedHosts],
       baseUri: ["'none'"],
-      reportURI: cspReportUri,
+      reportURI,
     },
     reportOnly,
   };

@@ -6,7 +6,7 @@ WORKDIR /app
 RUN apk add --no-cache git=~2
 COPY package.json yarn.lock ./
 
-ARG CSP_REPORT_ONLY=false
+ARG CSP_REPORT_ONLY
 ARG CSP_TRUSTED_HOSTS
 ARG CSP_REPORT_URI
 
@@ -24,12 +24,7 @@ RUN rm -rf /app/public/runtime && mkdir /app/public/runtime && chown node /app/p
 # final image
 FROM node:16-alpine as base
 
-
-ENV NEXT_TELEMETRY_DISABLED=1 \
-  BASE_PATH=$BASE_PATH \
-  SUPPORTED_CHAINS=$SUPPORTED_CHAINS \
- DEFAULT_CHAIN=$DEFAULT_CHAIN \
- CSP_REPORT_ONLY=$CSP_REPORT_ONLY
+ENV NEXT_TELEMETRY_DISABLED=1
 
 WORKDIR /app
 RUN apk add --no-cache curl=~8
