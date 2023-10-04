@@ -108,10 +108,9 @@ export default withBundleAnalyzer({
     // console.log('abaoba', config);
     // const { cspTrustedHosts, cspReportOnly, cspReportUri } =
     //   config?.serverRuntimeConfig ?? {};
-    const defaultChain = process.env.DEFAULT_CHAIN;
     const cspTrustedHosts = defaultChain
-      ? 'https://example.com'
-      : 'https://bad-example.com'; //process.env.CSP_TRUSTED_HOSTS;
+      ? `https://example.com/${defaultChain}`
+      : `https://bad-example.com/${defaultChain}`; //process.env.CSP_TRUSTED_HOSTS;
     const cspReportOnly = process.env.CSP_REPORT_ONLY;
     const cspReportUri = process.env.CSP_REPORT_URI;
     return [
