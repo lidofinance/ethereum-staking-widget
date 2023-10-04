@@ -1,5 +1,5 @@
 export default (cspTrustedHosts, cspReportUri, cspReportOnly) => {
-  const reportURI = cspReportUri || '/';
+  const reportURI = cspReportUri || undefined;
   const trustedHosts = cspTrustedHosts ? cspTrustedHosts.split(',') : [];
   const reportOnly = cspReportOnly == 'true';
 
