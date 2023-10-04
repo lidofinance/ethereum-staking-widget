@@ -35,3 +35,6 @@ export const walletconnectProjectId = process.env.WALLETCONNECT_PROJECT_ID;
 
 /** @type boolean */
 export const ipfsMode = toBoolean(process.env.IPFS_MODE);
+
+/** @type string */
+export const settingsPrefillRpc = process.env.PUBLIC_UNSAFE_SETTINGS_PREFILL_RPC;

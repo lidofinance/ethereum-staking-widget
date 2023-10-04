@@ -1,16 +1,14 @@
 export type EnvConfigRaw = {
-  defaultChain: string;
-  supportedChains: string;
-  isMaintenanceMode: string;
+  defaultChain: string | number;
+  supportedChains: number[];
   settingsPrefillRpc: string;
-  ipfsMode: string;
+  ipfsMode: boolean;
   walletconnectProjectId: string;
 };
 
 export type EnvConfigParsed = {
   defaultChain: number;
   supportedChainIds: number[];
-  isMaintenanceMode: boolean;
   settingsPrefillRpc?: string;
   ipfsMode: boolean;
   walletconnectProjectId: string;
