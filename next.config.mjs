@@ -1,5 +1,5 @@
 import NextBundleAnalyzer from '@next/bundle-analyzer';
-import createSecureHeaders from 'next-secure-headers';
+import { createSecureHeaders } from 'next-secure-headers';
 import buildDynamics from './scripts/build-dynamics.mjs';
 import configCSP from './scripts/config-csp.mjs';
 
