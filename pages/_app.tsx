@@ -9,9 +9,11 @@ import {
 import 'nprogress/nprogress.css';
 
 import Providers from 'providers';
-import { nprogress, COOKIES_ALLOWED_FULL_KEY } from 'utils';
+import { CustomConfigProvider } from 'providers/custom-config';
 import { BackgroundGradient } from 'shared/components/background-gradient/background-gradient';
+import { nprogress, COOKIES_ALLOWED_FULL_KEY } from 'utils';
 import { withCsp } from 'utilsApi/withCSP';
+import { AppWrapperProps } from 'types';
 
 // Migrations old theme cookies to new cross domain cookies
 migrationThemeCookiesToCrossDomainCookiesClientSide();
@@ -30,20 +32,24 @@ const App = (props: AppProps) => {
 
 const MemoApp = memo(App);
 
-const AppWrapper = (props: AppProps): JSX.Element => {
+const AppWrapper = (props: AppWrapperProps): JSX.Element => {
+  const { envConfig, ...rest } = props;
+
   return (
-    <Providers>
-      <BackgroundGradient
-        width={1560}
-        height={784}
-        style={{
-          opacity: 'var(--lido-color-darkThemeOpacity)',
-        }}
-      />
-      <ToastContainer />
-      <MemoApp {...props} />
-      <CookiesTooltip />
-    </Providers>
+    <CustomConfigProvider envConfig={envConfig}>
+      <Providers>
+        <BackgroundGradient
+          width={1560}
+          height={784}
+          style={{
+            opacity: 'var(--lido-color-darkThemeOpacity)',
+          }}
+        />
+        <ToastContainer />
+        <MemoApp {...rest} />
+        <CookiesTooltip />
+      </Providers>
+    </CustomConfigProvider>
   );
 };
 

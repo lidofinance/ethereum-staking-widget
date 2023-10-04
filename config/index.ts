@@ -14,6 +14,7 @@ export * from './steth';
 export * from './storage';
 export * from './text';
 export * from './tx';
+export * from './types';
 export * from './units';
 export * from './metrics';
 export * from './rateLimit';

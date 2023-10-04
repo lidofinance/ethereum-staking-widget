@@ -4,11 +4,13 @@ import { useSDK } from '@lido-sdk/react';
 import { CHAINS, getChainColor } from '@lido-sdk/constants';
 import { ThemeToggler } from '@lidofinance/lido-ui';
 
+import { dynamics } from 'config';
+import { IPFSInfoBox } from 'features/ipfs/ipfs-info-box';
 import { Button, Connect } from 'shared/wallet';
 import NoSSRWrapper from 'shared/components/no-ssr-wrapper';
 
 import { HeaderSettingsButton } from './header-settings-button';
-import { HeaderWalletChainStyle, DotStyle } from '../styles';
+import { HeaderWalletChainStyle, DotStyle, IPFSInfoBoxWrap } from '../styles';
 
 const HeaderWallet: FC = () => {
   const { active } = useWeb3();
@@ -35,6 +37,11 @@ const HeaderWallet: FC = () => {
       )}
       <HeaderSettingsButton />
       <ThemeToggler />
+      {dynamics.ipfsMode && (
+        <IPFSInfoBoxWrap>
+          <IPFSInfoBox />
+        </IPFSInfoBoxWrap>
+      )}
     </NoSSRWrapper>
   );
 };

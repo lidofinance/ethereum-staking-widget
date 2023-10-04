@@ -2,6 +2,7 @@ import { Container } from '@lidofinance/lido-ui';
 import styled, { keyframes } from 'styled-components';
 
 export const HeaderStyle = styled((props) => <Container {...props} />)`
+  position: relative;
   padding-top: 18px;
   padding-bottom: 18px;
   display: flex;
@@ -9,11 +10,11 @@ export const HeaderStyle = styled((props) => <Container {...props} />)`
 `;
 
 export const HeaderActionsStyle = styled.div`
+  position: relative;
   margin-left: auto;
   display: flex;
   align-items: center;
   flex-shrink: 1;
-  overflow: hidden;
 `;
 
 export const HeaderWalletChainStyle = styled.span<{ $color: string }>`
@@ -36,4 +37,12 @@ export const DotStyle = styled.p`
   border-radius: 50%;
   animation: ${glimmer} 2s ease-in-out infinite;
   margin-right: 6px;
+`;
+
+export const IPFSInfoBoxWrap = styled.div`
+  position: absolute;
+  right: 0;
+  top: calc(100% + 15px);
+  width: 255px;
+  z-index: 1;
 `;
