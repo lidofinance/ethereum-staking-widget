@@ -45,6 +45,10 @@ const rateLimitTimeFrame = process.env.RATE_LIMIT_TIME_FRAME || 60; // 1 minute;
 const rewardsBackendAPI = process.env.REWARDS_BACKEND;
 const defaultChain = process.env.DEFAULT_CHAIN;
 
+const cspTrustedHosts = process.env.CSP_TRUSTED_HOSTS;
+const cspReportOnly = process.env.CSP_REPORT_ONLY;
+const cspReportUri = process.env.CSP_REPORT_URI;
+
 // cache control
 export const CACHE_CONTROL_HEADER = 'x-cache-control';
 export const CACHE_CONTROL_PAGES = [
@@ -99,9 +103,11 @@ export default withBundleAnalyzer({
     return config;
   },
   async headers() {
-    const cspTrustedHosts = process.env.CSP_TRUSTED_HOSTS;
-    const cspReportOnly = process.env.CSP_REPORT_ONLY;
-    const cspReportUri = process.env.CSP_REPORT_URI;
+    const getConfig = await import('next/dist/shared/lib/runtime-config.js');
+    const { serverRuntimeConfig } = getConfig();
+    const { cspTrustedHosts, cspReportOnly, cspReportUri } =
+      serverRuntimeConfig;
+
     return [
       {
         // Apply these headers to all routes in your application.
@@ -150,5 +156,8 @@ export default withBundleAnalyzer({
     ethAPIBasePath,
     rewardsBackendAPI,
     defaultChain,
+    cspTrustedHosts,
+    cspReportOnly,
+    cspReportUri,
   },
 });
