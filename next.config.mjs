@@ -26,11 +26,6 @@ const ethAPIBasePath = process.env.ETH_API_BASE_PATH;
 
 const ethplorerApiKey = process.env.ETHPLORER_API_KEY;
 
-// TODO: Delete this ENV
-const cloudflareApiToken = process.env.CLOUDFLARE_API_TOKEN;
-const cloudflareAccountId = process.env.CLOUDFLARE_ACCOUNT_ID;
-const cloudflareKvNamespaceId = process.env.CLOUDFLARE_KV_NAMESPACE_ID;
-
 const subgraphMainnet = process.env.SUBGRAPH_MAINNET;
 const subgraphGoerli = process.env.SUBGRAPH_GOERLI;
 
@@ -44,10 +39,6 @@ const rateLimitTimeFrame = process.env.RATE_LIMIT_TIME_FRAME || 60; // 1 minute;
 
 const rewardsBackendAPI = process.env.REWARDS_BACKEND;
 const defaultChain = process.env.DEFAULT_CHAIN;
-
-const cspTrustedHosts = process.env.CSP_TRUSTED_HOSTS;
-const cspReportOnly = process.env.CSP_REPORT_ONLY;
-const cspReportUri = process.env.CSP_REPORT_URI;
 
 // cache control
 export const CACHE_CONTROL_HEADER = 'x-cache-control';
@@ -103,10 +94,7 @@ export default withBundleAnalyzer({
     return config;
   },
   async headers() {
-    console.log('abiabia');
-    const cspTrustedHosts = defaultChain
-      ? `https://example.com/${defaultChain}`
-      : `https://bad-example.com/${defaultChain}`; //process.env.CSP_TRUSTED_HOSTS;
+    const cspTrustedHosts = process.env.CSP_TRUSTED_HOSTS;
     const cspReportOnly = process.env.CSP_REPORT_ONLY;
     const cspReportUri = process.env.CSP_REPORT_URI;
     return [
@@ -146,9 +134,6 @@ export default withBundleAnalyzer({
     rpcUrls_1,
     rpcUrls_5,
     ethplorerApiKey,
-    cloudflareApiToken,
-    cloudflareAccountId,
-    cloudflareKvNamespaceId,
     subgraphMainnet,
     subgraphGoerli,
     subgraphRequestTimeout,
@@ -157,8 +142,5 @@ export default withBundleAnalyzer({
     ethAPIBasePath,
     rewardsBackendAPI,
     defaultChain,
-    cspTrustedHosts,
-    cspReportOnly,
-    cspReportUri,
   },
 });

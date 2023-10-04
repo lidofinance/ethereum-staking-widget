@@ -6,19 +6,24 @@ WORKDIR /app
 RUN apk add --no-cache git=~2
 COPY package.json yarn.lock ./
 
+ARG CSP_REPORT_ONLY=false
+ARG CSP_TRUSTED_HOSTS
+ARG CSP_REPORT_URI
+
 RUN yarn install --frozen-lockfile --non-interactive --ignore-scripts && yarn cache clean
 COPY . .
-RUN NODE_NO_BUILD_DYNAMICS=true yarn typechain && yarn build
+RUN yarn typechain
+RUN CSP_REPORT_ONLY=${CSP_REPORT_ONLY} \
+    CSP_TRUSTED_HOSTS=${CSP_TRUSTED_HOSTS} \
+    CSP_REPORT_URI=${CSP_REPORT_URI} \
+    NODE_NO_BUILD_DYNAMICS=true \
+     yarn build
 # public/runtime is used to inject runtime vars; it should exist and user node should have write access there for it
 RUN rm -rf /app/public/runtime && mkdir /app/public/runtime && chown node /app/public/runtime
 
 # final image
 FROM node:16-alpine as base
 
-ARG BASE_PATH=""
-ARG SUPPORTED_CHAINS="1"
-ARG DEFAULT_CHAIN="1"
-ARG CSP_REPORT_ONLY="true"
 
 ENV NEXT_TELEMETRY_DISABLED=1 \
   BASE_PATH=$BASE_PATH \
