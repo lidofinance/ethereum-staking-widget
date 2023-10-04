@@ -12,10 +12,10 @@ ARG CSP_REPORT_URI
 
 RUN yarn install --frozen-lockfile --non-interactive --ignore-scripts && yarn cache clean
 COPY . .
-RUN yarn typechain
-RUN CSP_REPORT_ONLY=${CSP_REPORT_ONLY} \
-    CSP_TRUSTED_HOSTS=${CSP_TRUSTED_HOSTS} \
-    CSP_REPORT_URI=${CSP_REPORT_URI} \
+RUN yarn typechain && \
+    CSP_REPORT_ONLY=$CSP_REPORT_ONLY \
+    CSP_TRUSTED_HOSTS=$CSP_TRUSTED_HOSTS \
+    CSP_REPORT_URI=$CSP_REPORT_URI \
     NODE_NO_BUILD_DYNAMICS=true \
      yarn build
 # public/runtime is used to inject runtime vars; it should exist and user node should have write access there for it
