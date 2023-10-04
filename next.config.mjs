@@ -103,6 +103,7 @@ export default withBundleAnalyzer({
     return config;
   },
   async headers() {
+    console.log('abiabia');
     const cspTrustedHosts = defaultChain
       ? `https://example.com/${defaultChain}`
       : `https://bad-example.com/${defaultChain}`; //process.env.CSP_TRUSTED_HOSTS;
