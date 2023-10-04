@@ -1,5 +1,4 @@
 import NextBundleAnalyzer from '@next/bundle-analyzer';
-import getConfig from 'next/config.js';
 import { createSecureHeaders } from 'next-secure-headers';
 import buildDynamics from './scripts/build-dynamics.mjs';
 import configCSP from './scripts/config-csp.mjs';
@@ -104,10 +103,6 @@ export default withBundleAnalyzer({
     return config;
   },
   async headers() {
-    // const config = getConfig();
-    // console.log('abaoba', config);
-    // const { cspTrustedHosts, cspReportOnly, cspReportUri } =
-    //   config?.serverRuntimeConfig ?? {};
     const cspTrustedHosts = defaultChain
       ? `https://example.com/${defaultChain}`
       : `https://bad-example.com/${defaultChain}`; //process.env.CSP_TRUSTED_HOSTS;
