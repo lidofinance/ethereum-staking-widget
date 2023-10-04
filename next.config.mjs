@@ -1,5 +1,7 @@
 import NextBundleAnalyzer from '@next/bundle-analyzer';
+import createSecureHeaders from 'next-secure-headers';
 import buildDynamics from './scripts/build-dynamics.mjs';
+import configCSP from './scripts/config-csp.mjs';
 
 buildDynamics();
 
@@ -28,10 +30,6 @@ const ethplorerApiKey = process.env.ETHPLORER_API_KEY;
 const cloudflareApiToken = process.env.CLOUDFLARE_API_TOKEN;
 const cloudflareAccountId = process.env.CLOUDFLARE_ACCOUNT_ID;
 const cloudflareKvNamespaceId = process.env.CLOUDFLARE_KV_NAMESPACE_ID;
-
-const cspTrustedHosts = process.env.CSP_TRUSTED_HOSTS;
-const cspReportOnly = process.env.CSP_REPORT_ONLY;
-const cspReportUri = process.env.CSP_REPORT_URI;
 
 const subgraphMainnet = process.env.SUBGRAPH_MAINNET;
 const subgraphGoerli = process.env.SUBGRAPH_GOERLI;
@@ -101,30 +99,22 @@ export default withBundleAnalyzer({
     return config;
   },
   async headers() {
+    const cspTrustedHosts = process.env.CSP_TRUSTED_HOSTS;
+    const cspReportOnly = process.env.CSP_REPORT_ONLY;
+    const cspReportUri = process.env.CSP_REPORT_URI;
     return [
       {
         // Apply these headers to all routes in your application.
         source: '/(.*)',
-        headers: [
-          {
-            key: 'X-DNS-Prefetch-Control',
-            value: 'on',
-          },
-          {
-            key: 'Strict-Transport-Security',
-            value: 'max-age=63072000; includeSubDomains; preload',
-          },
-          {
-            key: 'Referrer-Policy',
-            value: 'same-origin',
-          },
-          {
-            key: 'x-content-type-options',
-            value: 'nosniff',
-          },
-          { key: 'x-xss-protection', value: '1' },
-          { key: 'x-download-options', value: 'noopen' },
-        ],
+        headers: createSecureHeaders({
+          contentSecurityPolicy: configCSP(
+            cspTrustedHosts,
+            cspReportUri,
+            cspReportOnly,
+          ),
+          frameGuard: false,
+          referrerPolicy: 'same-origin',
+        }),
       },
       {
         // required for gnosis save apps
@@ -152,9 +142,6 @@ export default withBundleAnalyzer({
     cloudflareApiToken,
     cloudflareAccountId,
     cloudflareKvNamespaceId,
-    cspTrustedHosts,
-    cspReportOnly,
-    cspReportUri,
     subgraphMainnet,
     subgraphGoerli,
     subgraphRequestTimeout,
