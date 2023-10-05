@@ -38,3 +38,6 @@ export const ipfsMode = toBoolean(process.env.IPFS_MODE);
 
 /** @type string */
 export const settingsPrefillRpc = process.env.PUBLIC_UNSAFE_SETTINGS_PREFILL_RPC;
+
+/** @type string */
+export const ipfsWidgetEthApiBasePath = process.env.IPFS_WIDGET_ETH_API_BASE_PATH;
