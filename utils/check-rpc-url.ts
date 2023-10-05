@@ -1,5 +1,7 @@
 import { ethers } from 'ethers';
-import { CHAINS } from '@lido-sdk/constants';
+import { CHAINS, getTokenAddress, TOKENS } from '@lido-sdk/constants';
+import { StethAbiFactory } from '@lido-sdk/contracts';
+
 import { isUrl } from './is-url';
 
 export enum RPCErrorType {
@@ -18,8 +20,10 @@ export const checkRpcUrl = async (rpcUrl: string, chainId: CHAINS) => {
       return RPCErrorType.NETWORK_DOES_NOT_MATCH;
     }
 
-    // Doing a random request to check rpc url is fetchable
-    // TODO...
+    // Doing a request to check rpc url is fetchable
+    const stethAddress = getTokenAddress(CHAINS.Mainnet, TOKENS.STETH);
+    const stethContract = StethAbiFactory.connect(stethAddress, rpcProvider);
+    await stethContract.name();
 
     // All fine
     return true;
