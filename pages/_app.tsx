@@ -63,6 +63,6 @@ AppWrapper.getInitialProps = async (appContext: AppContext) => {
   };
 };
 
-export default process.env.NODE_ENV === 'development'
+export default dynamics.ipfsMode || process.env.NODE_ENV === 'development'
   ? AppWrapper
   : withCsp(AppWrapper);
