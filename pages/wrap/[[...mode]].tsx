@@ -3,8 +3,10 @@ import { GetStaticPaths, GetStaticProps } from 'next';
 import Head from 'next/head';
 import { Layout } from 'shared/components';
 import { WrapUnwrapTabs } from 'features/wsteth/wrap-unwrap-tabs';
+import { useWeb3Key } from 'shared/hooks/useWeb3Key';
 
 const WrapPage: FC<WrapModePageProps> = ({ mode }) => {
+  const key = useWeb3Key();
   return (
     <Layout
       title="Wrap & Unwrap"
@@ -13,8 +15,7 @@ const WrapPage: FC<WrapModePageProps> = ({ mode }) => {
       <Head>
         <title>Wrap | Lido</title>
       </Head>
-
-      <WrapUnwrapTabs mode={mode}></WrapUnwrapTabs>
+      <WrapUnwrapTabs mode={mode} key={key}></WrapUnwrapTabs>
     </Layout>
   );
 };
