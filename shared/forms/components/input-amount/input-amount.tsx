@@ -1,18 +1,32 @@
-import { forwardRef, useCallback, useEffect, useState } from 'react';
+import {
+  ChangeEvent,
+  ComponentProps,
+  forwardRef,
+  MouseEvent,
+  useCallback,
+  useEffect,
+  useState,
+} from 'react';
 import { BigNumber } from 'ethers';
+
 import { formatEther, parseEther } from '@ethersproject/units';
+import { MaxUint256 } from '@ethersproject/constants';
+import { Input } from '@lidofinance/lido-ui';
+
 import { InputNumber } from '../input-number';
 import { InputDecoratorMaxButton } from '../input-decorator-max-button';
 import { InputDecoratorLocked } from '../input-decorator-locked';
-import { MaxUint256 } from '@ethersproject/constants';
-import { Input } from '@lidofinance/lido-ui';
 
 type InputAmountProps = {
   onChange?: (value: BigNumber | null) => void;
   value?: BigNumber | null;
+  onMaxClick?: (
+    event: MouseEvent<HTMLButtonElement>,
+    maxValue: BigNumber,
+  ) => void;
   maxValue?: BigNumber;
   isLocked?: boolean;
-} & Omit<React.ComponentProps<typeof InputNumber>, 'onChange' | 'value'>;
+} & Omit<ComponentProps<typeof InputNumber>, 'onChange' | 'value'>;
 
 const parseEtherSafe = (value: string) => {
   try {
@@ -29,6 +43,7 @@ export const InputAmount = forwardRef<HTMLInputElement, InputAmountProps>(
       value,
       rightDecorator,
       isLocked,
+      onMaxClick,
       maxValue,
       placeholder = '0',
       ...props
@@ -40,7 +55,7 @@ export const InputAmount = forwardRef<HTMLInputElement, InputAmountProps>(
     );
 
     const handleChange = useCallback(
-      (e: React.ChangeEvent<HTMLInputElement>) => {
+      (e: ChangeEvent<HTMLInputElement>) => {
         // Support for devices where inputMode="decimal" showing keyboard with comma as decimal delimiter
         if (e.currentTarget.value.includes(',')) {
           e.currentTarget.value = e.currentTarget.value.replaceAll(',', '.');
@@ -86,7 +101,12 @@ export const InputAmount = forwardRef<HTMLInputElement, InputAmountProps>(
     }, [stringValue, value]);
 
     const handleClickMax =
-      onChange && maxValue?.gt(0) ? () => onChange(maxValue) : undefined;
+      onChange && maxValue?.gt(0)
+        ? (event: MouseEvent<HTMLButtonElement>) => {
+            onChange(maxValue);
+            onMaxClick?.(event, maxValue);
+          }
+        : undefined;
 
     return (
       <Input
