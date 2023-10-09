@@ -1,38 +1,19 @@
-import { CHAINS } from 'utils/chains';
-import { AggregatorAbi__factory } from 'generated';
+import { CHAINS } from '@lido-sdk/constants';
+import invariant from 'tiny-invariant';
 
-// Chainlink: ETH/USD Price Feed
-// https://data.chain.link/ethereum/mainnet/crypto-usd/eth-usd
-// https://etherscan.io/address/0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419
-export const AGGREGATOR_BY_NETWORK: {
-  [key in CHAINS]: string;
+// https://etherscan.io/address/0xcfe54b5cd566ab89272946f602d76ea879cab4a8
+export const AGGREGATOR_STETH_USD_PRICE_FEED_BY_NETWORK: {
+  [key in CHAINS]?: string;
 } = {
-  [CHAINS.Mainnet]: '0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419',
-  [CHAINS.Goerli]: '0x0000000000000000000000000000000000000000',
-};
-
-export const getAggregatorAddress = (chainId: CHAINS): string => {
-  return AGGREGATOR_BY_NETWORK[chainId];
+  [CHAINS.Mainnet]: '0xcfe54b5cd566ab89272946f602d76ea879cab4a8',
 };
 
 // Chainlink: STETH/USD Price Feed
 // https://data.chain.link/ethereum/mainnet/crypto-usd/steth-usd
-// https://etherscan.io/address/0xcfe54b5cd566ab89272946f602d76ea879cab4a8
-export const AGGREGATOR_STETH_USD_PRICE_FEED_BY_NETWORK: {
-  [key in CHAINS]: string;
-} = {
-  [CHAINS.Mainnet]: '0xcfe54b5cd566ab89272946f602d76ea879cab4a8',
-  [CHAINS.Goerli]: '0x0000000000000000000000000000000000000000',
-};
-
 export const getAggregatorStEthUsdPriceFeedAddress = (
   chainId: CHAINS,
 ): string => {
-  return AGGREGATOR_STETH_USD_PRICE_FEED_BY_NETWORK[chainId];
-};
-
-export type ContractAggregator = typeof AggregatorAbi__factory;
-
-export const getAggregatorContractFactory = (): ContractAggregator => {
-  return AggregatorAbi__factory;
+  const address = AGGREGATOR_STETH_USD_PRICE_FEED_BY_NETWORK[chainId];
+  invariant(address, 'chain is not supported');
+  return address;
 };
