@@ -1,4 +1,4 @@
-import { FC, createContext, useContext } from 'react';
+import { FC, PropsWithChildren, createContext, useContext } from 'react';
 
 import { useWithdrawalRequests } from 'features/withdrawals/hooks';
 
@@ -9,7 +9,7 @@ claimDataContext.displayName = 'ClaimDataContext';
 
 export type ClaimDataValue = ReturnType<typeof useWithdrawalRequests>;
 
-export const ClaimDataProvider: FC = ({ children }) => {
+export const ClaimDataProvider: FC<PropsWithChildren> = ({ children }) => {
   const withdrawRequests = useWithdrawalRequests();
 
   return (

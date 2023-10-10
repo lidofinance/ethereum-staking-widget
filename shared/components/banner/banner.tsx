@@ -1,4 +1,4 @@
-import { FC, ReactNode } from 'react';
+import { FC, PropsWithChildren, ReactNode } from 'react';
 
 import { BackgroundColorsType, Wrapper, TextWrap, ButtonWrap } from './styles';
 
@@ -8,7 +8,7 @@ type BannerProps = {
   background: BackgroundColorsType;
 };
 
-export const Banner: FC<BannerProps> = (props) => {
+export const Banner: FC<PropsWithChildren<BannerProps>> = (props) => {
   const { icon, button, children, background, ...rest } = props;
 
   return (

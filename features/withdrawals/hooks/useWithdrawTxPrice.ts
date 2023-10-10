@@ -37,7 +37,6 @@ export const useRequestTxPrice = ({
 }: UseRequestTxPriceOptions) => {
   const { chainId } = useSDK();
   const { contractRpc } = useWithdrawalsContract();
-  // TODO add fallback for approval flow
   const fallback =
     token === 'STETH'
       ? isApprovalFlow

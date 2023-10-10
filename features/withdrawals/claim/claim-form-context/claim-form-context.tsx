@@ -1,4 +1,13 @@
-import { createContext, useContext, useEffect, useMemo, useState } from 'react';
+import {
+  FormEventHandler,
+  FC,
+  PropsWithChildren,
+  createContext,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 
 import invariant from 'tiny-invariant';
@@ -12,10 +21,10 @@ import {
 } from './use-default-values';
 import { ClaimFormHelperState, useHelperState } from './use-helper-state';
 import { useClaimData } from 'features/withdrawals/contexts/claim-data-context';
-import { useTransactionModal } from 'features/withdrawals/contexts/transaction-modal-context';
+import { useTransactionModal } from 'shared/transaction-modal';
 
 type ClaimFormDataContextValueType = {
-  onSubmit: React.FormEventHandler<HTMLFormElement>;
+  onSubmit: FormEventHandler<HTMLFormElement>;
 } & ClaimFormHelperState;
 
 const claimFormDataContext =
@@ -28,7 +37,7 @@ export const useClaimFormData = () => {
   return contextData;
 };
 
-export const ClaimFormProvider: React.FC = ({ children }) => {
+export const ClaimFormProvider: FC<PropsWithChildren> = ({ children }) => {
   const { dispatchModalState } = useTransactionModal();
   const { data } = useClaimData();
 

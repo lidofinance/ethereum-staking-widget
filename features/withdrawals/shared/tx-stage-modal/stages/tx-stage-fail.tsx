@@ -6,7 +6,7 @@ import { ErrorMessage } from 'utils';
 import { TxStageModalContent } from 'shared/components/tx-stage-modal-content';
 import { getStageIcon } from './icons';
 import { RetryButtonStyled } from './styles';
-import { TX_STAGE } from '../types';
+import { TX_STAGE } from 'shared/transaction-modal';
 
 type TxStageFailProps = {
   failedText: string | null;

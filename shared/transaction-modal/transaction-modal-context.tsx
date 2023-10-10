@@ -1,5 +1,6 @@
 import {
   FC,
+  PropsWithChildren,
   createContext,
   useMemo,
   useContext,
@@ -8,24 +9,35 @@ import {
 } from 'react';
 import { BigNumber } from 'ethers';
 
-import { TX_STAGE } from 'features/withdrawals/shared/tx-stage-modal';
+import { TX_OPERATION, TX_STAGE, TX_TOKENS } from './types';
 import invariant from 'tiny-invariant';
-import type { TokensWithdrawable } from '../types/tokens-withdrawable';
 
-type TransactionModalContextValue = TransactionModalState & {
+type TransactionModalDispatch = {
   dispatchModalState: Dispatch<TransactionModalAction>;
+  dispatchAsyncDialog: (
+    type: ModalDialogState['dialog_type'],
+  ) => Promise<{ ok: boolean }>;
+};
+
+type TransactionModalContextValue = TransactionModalState &
+  TransactionModalDispatch;
+
+type ModalDialogState = {
+  dialog_type: 'bunker';
+  onOk: () => void;
+  onClose: (() => void) | null;
 };
 
 type TransactionModalState = {
   isModalOpen: boolean;
   txStage: TX_STAGE;
+  txOperation: TX_OPERATION;
+  dialog: ModalDialogState | null;
   onRetry: (() => void) | null;
-  onOkBunker: (() => void) | null;
-  onCloseBunker: (() => void) | null;
   errorText: string | null;
   txHash: string | null;
-  requestAmount: BigNumber | null;
-  token: TokensWithdrawable | null;
+  amount: BigNumber | null;
+  token: TX_TOKENS | null;
 };
 
 type TransactionModalAction =
@@ -42,22 +54,22 @@ type TransactionModalAction =
   | {
       type: 'open_modal';
     }
-  | {
-      type: 'bunker';
-      onCloseBunker: () => void;
-      onOkBunker: () => void;
-    }
+  | ({
+      type: 'dialog';
+    } & ModalDialogState)
   | {
       type: 'start';
-      flow: TX_STAGE.APPROVE | TX_STAGE.PERMIT | TX_STAGE.SIGN;
-      token: TokensWithdrawable | null;
-      requestAmount: BigNumber;
+      operation: TX_OPERATION;
+      token: TX_TOKENS;
+      amount: BigNumber;
     }
   | {
       type: 'signing';
+      operation: TX_OPERATION;
     }
   | {
       type: 'block';
+      operation?: TX_OPERATION;
       txHash?: string;
     }
   | {
@@ -66,9 +78,11 @@ type TransactionModalAction =
     }
   | {
       type: 'success';
+      operation?: TX_OPERATION;
     }
   | {
       type: 'success_multisig';
+      operation?: TX_OPERATION;
     };
 
 const TransactionModalContext =
@@ -84,14 +98,14 @@ const TransactionModalReducer = (
       return {
         isModalOpen: false,
         txStage: TX_STAGE.NONE,
+        txOperation: TX_OPERATION.NONE,
         errorText: null,
-        requestAmount: null,
+        amount: null,
         token: null,
         txHash: null,
         // keep old restart callback if have one
         onRetry: state.onRetry,
-        onCloseBunker: null,
-        onOkBunker: null,
+        dialog: null,
       };
     case 'set_on_retry':
       return {
@@ -110,37 +124,40 @@ const TransactionModalReducer = (
         ...state,
         isModalOpen: true,
       };
-    case 'bunker':
+    case 'dialog':
       return {
         ...state,
         isModalOpen: true,
-        onCloseBunker: action.onCloseBunker,
-        onOkBunker: action.onOkBunker,
-        txStage: TX_STAGE.BUNKER,
+        dialog: {
+          dialog_type: action.dialog_type,
+          onClose: action.onClose,
+          onOk: action.onOk,
+        },
       };
     case 'start':
       return {
         errorText: null,
         txHash: null,
-        txStage: action.flow,
+        dialog: null,
         isModalOpen: true,
-        requestAmount: action.requestAmount,
+        txStage: TX_STAGE.SIGN,
+        txOperation: action.operation,
+        amount: action.amount,
         token: action.token,
         // keep (re)start callback
         onRetry: state.onRetry,
-        onCloseBunker: state.onCloseBunker,
-        onOkBunker: state.onOkBunker,
       };
     case 'signing':
-      invariant(state.requestAmount, 'state must already have request amount');
       return {
         ...state,
         isModalOpen: true,
         txStage: TX_STAGE.SIGN,
+        txOperation: action.operation ?? state.txOperation,
       };
     case 'block':
       return {
         ...state,
+        txOperation: action.operation ?? state.txOperation,
         isModalOpen: true,
         txStage: TX_STAGE.BLOCK,
         txHash: action.txHash ?? null,
@@ -149,12 +166,14 @@ const TransactionModalReducer = (
       return {
         ...state,
         isModalOpen: true,
+        txOperation: action.operation ?? state.txOperation,
         txStage: TX_STAGE.SUCCESS,
       };
     case 'success_multisig':
       return {
         ...state,
         isModalOpen: true,
+        txOperation: action.operation ?? state.txOperation,
         txStage: TX_STAGE.SUCCESS_MULTISIG,
       };
     case 'error':
@@ -172,13 +191,13 @@ const TransactionModalReducer = (
 const initTxModalState = (): TransactionModalState => ({
   isModalOpen: false,
   txStage: TX_STAGE.NONE,
+  txOperation: TX_OPERATION.NONE,
   onRetry: null,
   errorText: null,
   txHash: null,
-  requestAmount: null,
+  amount: null,
   token: null,
-  onCloseBunker: null,
-  onOkBunker: null,
+  dialog: null,
 });
 
 export const useTransactionModal = () => {
@@ -187,18 +206,37 @@ export const useTransactionModal = () => {
   return r;
 };
 
-export const TransactionModalProvider: FC = ({ children }) => {
+export const TransactionModalProvider: FC<PropsWithChildren> = ({
+  children,
+}) => {
   const [state, dispatch] = useReducer(
     TransactionModalReducer,
     undefined,
     initTxModalState,
   );
-  const value = useMemo(
+
+  const dispatchValue = useMemo<TransactionModalDispatch>(
+    () => ({
+      dispatchModalState: dispatch,
+      dispatchAsyncDialog: (type) =>
+        new Promise((resolve, _) => {
+          dispatch({
+            type: 'dialog',
+            dialog_type: type,
+            onOk: () => resolve({ ok: true }),
+            onClose: () => resolve({ ok: false }),
+          });
+        }),
+    }),
+    [],
+  );
+
+  const value = useMemo<TransactionModalContextValue>(
     () => ({
       ...state,
-      dispatchModalState: dispatch,
+      ...dispatchValue,
     }),
-    [state],
+    [state, dispatchValue],
   );
   return (
     <TransactionModalContext.Provider value={value}>

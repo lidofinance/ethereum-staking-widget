@@ -4,11 +4,10 @@ import { useCallback } from 'react';
 import { useSDK } from '@lido-sdk/react';
 import { useWeb3 } from 'reef-knot/web3-react';
 import { useWrapTxProcessing } from './use-wrap-tx-processing';
-import { useTransactionModal } from 'features/withdrawals/contexts/transaction-modal-context';
+import { useTransactionModal, TX_OPERATION } from 'shared/transaction-modal';
 
 import { getErrorMessage, runWithTransactionLogger } from 'utils';
 import { isContract } from 'utils/isContract';
-import { TX_STAGE } from 'features/withdrawals/shared/tx-stage-modal';
 import type {
   WrapFormApprovalData,
   WrapFormInputType,
@@ -39,18 +38,32 @@ export const useWrapFormProcessor = ({
       try {
         dispatchModalState({
           type: 'start',
-          flow: isApprovalNeededBeforeWrap ? TX_STAGE.APPROVE : TX_STAGE.SIGN,
-          token: token as any, // TODO: refactor modal state to be reusable to remove any
-          requestAmount: amount,
+          operation: isApprovalNeededBeforeWrap
+            ? TX_OPERATION.APPROVE
+            : TX_OPERATION.CONTRACT,
+          token,
+          amount,
         });
 
         if (isApprovalNeededBeforeWrap) {
-          await processApproveTx();
+          await processApproveTx({
+            onTxSent: (tx) => {
+              if (!isMultisig)
+                dispatchModalState({
+                  type: 'block',
+                  txHash: typeof tx === 'string' ? tx : tx.hash,
+                  operation: TX_OPERATION.APPROVE,
+                });
+            },
+          });
           if (isMultisig) {
             dispatchModalState({ type: 'success_multisig' });
             return true;
           }
-          dispatchModalState({ type: 'signing' });
+          dispatchModalState({
+            type: 'signing',
+            operation: TX_OPERATION.CONTRACT,
+          });
         }
 
         const transaction = await runWithTransactionLogger('Wrap signing', () =>

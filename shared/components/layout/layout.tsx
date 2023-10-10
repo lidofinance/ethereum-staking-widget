@@ -1,15 +1,15 @@
-import React from 'react';
+import { ReactNode, FC, PropsWithChildren } from 'react';
 import { ContainerProps } from '@lidofinance/lido-ui';
 import { Header, Footer, Main } from 'shared/components';
 import { LayoutTitleStyle, LayoutSubTitleStyle } from './styles';
 
 type Props = {
-  title?: React.ReactNode;
-  subtitle?: React.ReactNode;
+  title?: ReactNode;
+  subtitle?: ReactNode;
   containerSize?: ContainerProps['size'];
 };
 
-export const Layout: React.FC<Props> = (props) => {
+export const Layout: FC<PropsWithChildren<Props>> = (props) => {
   const { title, subtitle, containerSize } = props;
   const { children } = props;
 

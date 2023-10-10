@@ -1,7 +1,6 @@
 import { useCallback } from 'react';
 import { BigNumber } from 'ethers';
 
-import { TX_STAGE } from 'features/withdrawals/shared/tx-stage-modal';
 import { useClaimData } from 'features/withdrawals/contexts/claim-data-context';
 import { getErrorMessage, runWithTransactionLogger } from 'utils';
 
@@ -11,7 +10,7 @@ import invariant from 'tiny-invariant';
 import { isContract } from 'utils/isContract';
 import { useWeb3 } from 'reef-knot/web3-react';
 import { useSDK } from '@lido-sdk/react';
-import { useTransactionModal } from 'features/withdrawals/contexts/transaction-modal-context';
+import { useTransactionModal, TX_OPERATION } from 'shared/transaction-modal';
 
 export const useClaim = () => {
   const { account } = useWeb3();
@@ -36,9 +35,9 @@ export const useClaim = () => {
 
         dispatchModalState({
           type: 'start',
-          flow: TX_STAGE.SIGN,
-          requestAmount: ethToClaim,
-          token: null,
+          operation: TX_OPERATION.CONTRACT,
+          amount: ethToClaim,
+          token: 'ETH',
         });
 
         const ids = sortedRequests.map((r) => r.id);

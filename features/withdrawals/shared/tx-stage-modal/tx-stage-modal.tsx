@@ -2,7 +2,7 @@ import { FC, useMemo } from 'react';
 import { Modal, ModalProps } from '@lidofinance/lido-ui';
 import { useConnectorInfo } from 'reef-knot/web3-react';
 
-import { TX_STAGE } from './types';
+import { TX_STAGE } from 'shared/transaction-modal';
 
 interface TxStageModalProps extends ModalProps {
   txStage?: TX_STAGE;

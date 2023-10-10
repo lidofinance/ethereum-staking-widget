@@ -43,7 +43,7 @@ export const RewardsTable: FC<RewardsTableProps> = (props) => {
         pagesCount={pageCount}
         onItemClick={(currentPage: number) => setPage(currentPage - 1)}
         activePage={page + 1}
-        siblingCount={4}
+        siblingCount={0}
       />
     </>
   );

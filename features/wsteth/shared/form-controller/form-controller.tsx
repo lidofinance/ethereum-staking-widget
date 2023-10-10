@@ -1,14 +1,14 @@
-import { useCallback, useEffect, useMemo } from 'react';
+import { FC, PropsWithChildren, useCallback, useEffect, useMemo } from 'react';
 import { useWeb3 } from 'reef-knot/web3-react';
 import { useFormContext } from 'react-hook-form';
-import { useTransactionModal } from 'features/withdrawals/contexts/transaction-modal-context';
+import { useTransactionModal } from 'shared/transaction-modal';
 import { useFormControllerContext } from './form-controller-context';
 
 type FormControllerProps = {
   reset?: () => void;
 };
 
-export const FormController: React.FC<FormControllerProps> = ({
+export const FormController: FC<PropsWithChildren<FormControllerProps>> = ({
   reset: resetProp,
   children,
 }) => {

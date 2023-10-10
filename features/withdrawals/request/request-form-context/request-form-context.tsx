@@ -1,4 +1,12 @@
-import { useMemo, useState, createContext, useContext, useEffect } from 'react';
+import {
+  FC,
+  PropsWithChildren,
+  useMemo,
+  useState,
+  createContext,
+  useContext,
+  useEffect,
+} from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import invariant from 'tiny-invariant';
 import { TOKENS } from '@lido-sdk/constants';
@@ -14,7 +22,7 @@ import {
   RequestFormValidationContextType,
   ValidationResults,
 } from './types';
-import { useTransactionModal } from 'features/withdrawals/contexts/transaction-modal-context';
+import { useTransactionModal } from 'shared/transaction-modal';
 
 //
 // data context
@@ -46,7 +54,7 @@ export const useValidationResults = () => {
 //
 // Joint provider for form state, data, intermediate validation results
 //
-export const RequestFormProvider: React.FC = ({ children }) => {
+export const RequestFormProvider: FC<PropsWithChildren> = ({ children }) => {
   const { dispatchModalState } = useTransactionModal();
   const [intermediateValidationResults, setIntermediateValidationResults] =
     useState<ValidationResults>({ requests: null });
