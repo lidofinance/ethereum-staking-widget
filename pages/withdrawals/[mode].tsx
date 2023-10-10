@@ -1,7 +1,6 @@
 import { FC } from 'react';
 import { GetStaticPaths, GetStaticProps } from 'next';
 import Head from 'next/head';
-import { useWeb3 } from 'reef-knot/web3-react';
 
 import { FAQItem, getFAQ, PageFAQ } from '@lidofinance/ui-faq';
 
@@ -10,13 +9,14 @@ import { WithdrawalsTabs } from 'features/withdrawals';
 import { WithdrawalsProvider } from 'features/withdrawals/contexts/withdrawals-context';
 import { Layout } from 'shared/components';
 import NoSSRWrapper from 'shared/components/no-ssr-wrapper';
+import { useWeb3Key } from 'shared/hooks/useWeb3Key';
 
 const Withdrawals: FC<WithdrawalsModePageProps> = ({
   mode,
   faqListRequest,
   faqListClaim,
 }) => {
-  const { account, chainId } = useWeb3();
+  const key = useWeb3Key();
 
   return (
     <Layout
@@ -28,9 +28,8 @@ const Withdrawals: FC<WithdrawalsModePageProps> = ({
       </Head>
       <WithdrawalsProvider mode={mode}>
         <NoSSRWrapper>
-          {/* In order to simplify side effects of switching wallets we remount the whole widget, resetting all internal state */}
           <WithdrawalsTabs
-            key={`${account ?? '_'}${chainId ?? '1'}`}
+            key={key}
             faqListRequest={faqListRequest}
             faqListClaim={faqListClaim}
           />

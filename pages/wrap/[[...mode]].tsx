@@ -4,10 +4,13 @@ import Head from 'next/head';
 import { FAQItem, getFAQ, PageFAQ } from '@lidofinance/ui-faq';
 
 import { serverRuntimeConfig, FAQ_REVALIDATE_SECS } from 'config';
-import { Layout } from 'shared/components';
 import { WrapUnwrapTabs } from 'features/wsteth/wrap-unwrap-tabs';
+import { Layout } from 'shared/components';
+import { useWeb3Key } from 'shared/hooks/useWeb3Key';
 
 const WrapPage: FC<WrapModePageProps> = ({ mode, faqList }) => {
+  const key = useWeb3Key();
+
   return (
     <Layout
       title="Wrap & Unwrap"
@@ -17,7 +20,7 @@ const WrapPage: FC<WrapModePageProps> = ({ mode, faqList }) => {
         <title>Wrap | Lido</title>
       </Head>
 
-      <WrapUnwrapTabs mode={mode} faqList={faqList} />
+      <WrapUnwrapTabs key={key} mode={mode} faqList={faqList} />
     </Layout>
   );
 };

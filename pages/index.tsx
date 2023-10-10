@@ -8,13 +8,15 @@ import { serverRuntimeConfig, FAQ_REVALIDATE_SECS } from 'config';
 import { Wallet, StakeForm, LidoStats, StakeFaq } from 'features/home';
 import { Layout } from 'shared/components';
 import NoSSRWrapper from 'shared/components/no-ssr-wrapper';
+import { useWeb3Key } from 'shared/hooks/useWeb3Key';
 
 interface HomeProps {
   faqList?: FAQItem[];
 }
 
-const Home: FC<HomeProps> = ({ faqList }) => (
-  <>
+const Home: FC<HomeProps> = ({ faqList }) => {
+  const key = useWeb3Key();
+  return (
     <Layout
       title="Stake Ether"
       subtitle="Stake ETH and receive stETH while staking."
@@ -24,14 +26,14 @@ const Home: FC<HomeProps> = ({ faqList }) => (
       </Head>
 
       <NoSSRWrapper>
-        <Wallet />
-        <StakeForm />
+        <Wallet key={'wallet' + key} />
+        <StakeForm key={'form' + key} />
       </NoSSRWrapper>
       <LidoStats />
       <StakeFaq faqList={faqList} />
     </Layout>
-  </>
-);
+  );
+};
 
 export default Home;
 

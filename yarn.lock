@@ -2574,53 +2574,60 @@
     bignumber.js "^9.1.0"
     rxjs "6"
 
-"@lido-sdk/constants@3.1.0", "@lido-sdk/constants@^3.1.0":
-  version "3.1.0"
-  resolved "https://registry.yarnpkg.com/@lido-sdk/constants/-/constants-3.1.0.tgz#04527c31ffce4b60b35b5d1cc10560ed96597a14"
-  integrity sha512-/UkhD2JtVb6yn6e8JT2spEG7AVgBdkkH7LUttu1+Ih5LlVmtdrCjuwdxUhTK+55lVPKaPb1lg8dNiJqMZ5XWVw==
+"@lido-sdk/constants@3.2.0":
+  version "3.2.0"
+  resolved "https://registry.yarnpkg.com/@lido-sdk/constants/-/constants-3.2.0.tgz#776bfb6f404cda951c3771e3e104349dc8c205d7"
+  integrity sha512-V/RgtHqve9klpHDSd6njnqhVPj64Hyqhs3jM8snlWPoIP6Lq3LQCEyiF1/0W9RtbqqdZRhyuGvg/qyOUVznw4Q==
   dependencies:
     tiny-invariant "^1.1.0"
 
-"@lido-sdk/contracts@3.0.1", "@lido-sdk/contracts@^3.0.1":
-  version "3.0.1"
-  resolved "https://registry.yarnpkg.com/@lido-sdk/contracts/-/contracts-3.0.1.tgz#739b8693e01f947b2ed237dea9e15896222e64f9"
-  integrity sha512-JflMV9suovwkWf1mBaCwtQ+puzs6F+U5VzgpCFtS1pVzBvwlsBuaj30Q2nsvow9YxTB67LRI/9hmHdK3lGEfJA==
+"@lido-sdk/constants@^3.2.1":
+  version "3.2.1"
+  resolved "https://registry.yarnpkg.com/@lido-sdk/constants/-/constants-3.2.1.tgz#0c4582d7e76e4f8bc42e8f3c0d14dc0fbe481d77"
+  integrity sha512-zes0Mw0r1nEQYBNHV5fxK2H9Byowejy4haFy9LYDh1nL72aNJzzdh5S5iM+pKlEuLHQJHV5lVO/k9tunNJIKqQ==
   dependencies:
-    "@lido-sdk/constants" "3.1.0"
     tiny-invariant "^1.1.0"
 
-"@lido-sdk/fetch@^2.1.9":
-  version "2.1.9"
-  resolved "https://registry.yarnpkg.com/@lido-sdk/fetch/-/fetch-2.1.9.tgz#6c2ea469ab171501a5760f5c75e750849c5d994f"
-  integrity sha512-hhyNBHCHPrGyNUqBXGwTlzo9gXQqd+8BVo/3hALqivj/dO4GVwW2GO169YuSi61HT+URvK3k6R5OdL6/ZfqNxw==
+"@lido-sdk/contracts@3.0.3", "@lido-sdk/contracts@^3.0.3":
+  version "3.0.3"
+  resolved "https://registry.yarnpkg.com/@lido-sdk/contracts/-/contracts-3.0.3.tgz#53245bfadf4592718090adf943754182c56a1f60"
+  integrity sha512-XQg2gA7Cd2dNv2QCwJHC6fIzpNDJ3o6glsItqNqQ3ChioqiCXSxqjruXln0tcamlp3MRfFKYMkt0HJLdhyW6mw==
   dependencies:
-    "@lido-sdk/constants" "3.1.0"
+    "@lido-sdk/constants" "3.2.0"
+    tiny-invariant "^1.1.0"
+
+"@lido-sdk/fetch@^2.1.11":
+  version "2.1.11"
+  resolved "https://registry.yarnpkg.com/@lido-sdk/fetch/-/fetch-2.1.11.tgz#0553e0560eb511d5aeb3aabb7178af34d165fac9"
+  integrity sha512-hEdrW8LeF5GS5ZWFx48Zxju2EeXCG46onEZE/Iy9iFwjjnrQB/ykEezPNHya1XRXHpQzQA/iyFq4Ap3dOM7XBg==
+  dependencies:
+    "@lido-sdk/constants" "3.2.0"
     node-fetch "^2.6.7"
     tiny-invariant "^1.1.0"
 
-"@lido-sdk/helpers@1.4.11", "@lido-sdk/helpers@^1.4.11":
-  version "1.4.11"
-  resolved "https://registry.yarnpkg.com/@lido-sdk/helpers/-/helpers-1.4.11.tgz#e6502ce8a5e1f60dd5a1cf946b8a57fe7169e565"
-  integrity sha512-lyswvegMmzOatJ6yB/PrBi/XCMAz+uN3/ljiPKM99l1surPnrkJ/qSKaD3wVxToML4QaaHkbFG/Je/UDVJyNcA==
+"@lido-sdk/helpers@1.5.0", "@lido-sdk/helpers@^1.5.0":
+  version "1.5.0"
+  resolved "https://registry.yarnpkg.com/@lido-sdk/helpers/-/helpers-1.5.0.tgz#4eedec11c99509b22f5cf550ad01190753d010c7"
+  integrity sha512-KxpdrItlUuBVn4GjdC5LU5VMftgrnr+ndV0MTLpWCm+p80VchsI+5XQImJUsIeDMu6PJMMz4xxIgUCu27en9HQ==
   dependencies:
-    "@lido-sdk/constants" "3.1.0"
+    "@lido-sdk/constants" "3.2.0"
     tiny-invariant "^1.1.0"
 
-"@lido-sdk/providers@^1.4.12":
-  version "1.4.12"
-  resolved "https://registry.yarnpkg.com/@lido-sdk/providers/-/providers-1.4.12.tgz#38d47870be8919c81ff24a3b263978d7ed265698"
-  integrity sha512-78DflF/ZL6/qdqAeKqDRcAJFiOAIg8Mel2+w8RYy/e1JSHmkeFttx9mIVVt0WcNEPWX93AfyiYAlb5HAug0a7g==
+"@lido-sdk/providers@^1.4.13":
+  version "1.4.13"
+  resolved "https://registry.yarnpkg.com/@lido-sdk/providers/-/providers-1.4.13.tgz#9670ce0bf4bf66541156a52aa0a5d81fa17d2e8f"
+  integrity sha512-ipz9/o8fD2GE5wpJFrzIIbp/X/6jeXSBCJJZXdwIpZEaHxVEdj7cdjtLJ4vBVaX16IS+I0qGSUhTYCHLnzWRrA==
   dependencies:
-    "@lido-sdk/constants" "3.1.0"
+    "@lido-sdk/constants" "3.2.0"
 
-"@lido-sdk/react@^2.0.0":
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/@lido-sdk/react/-/react-2.0.0.tgz#e56f8694e6b2c736f3ed8828abb9381b73309dca"
-  integrity sha512-QEfJMYejZxC73N5A2/j26D+YKqfIWG9PZ1Xw0vTI++dC04U1HU+sYU3DxwbKGgMq2mxGuXI1tyOiIhmj9cZBwA==
+"@lido-sdk/react@^2.0.2":
+  version "2.0.2"
+  resolved "https://registry.yarnpkg.com/@lido-sdk/react/-/react-2.0.2.tgz#03dc39c7f86b69314210ac17b47f9b02e14f3ae5"
+  integrity sha512-eMzozrYkDysxw84P+dcmrcTr1A6qKtbiu6sRs4k3wvU4DoQ41P4knoUqECNE1dixXHmIOdrMCVkzJewlhspKug==
   dependencies:
-    "@lido-sdk/constants" "3.1.0"
-    "@lido-sdk/contracts" "3.0.1"
-    "@lido-sdk/helpers" "1.4.11"
+    "@lido-sdk/constants" "3.2.0"
+    "@lido-sdk/contracts" "3.0.3"
+    "@lido-sdk/helpers" "1.5.0"
     swr "^1.0.1"
     tiny-invariant "^1.1.0"
     tiny-warning "^1.0.3"
@@ -3085,16 +3092,13 @@
     "@reef-knot/wallet-adapter-zengo" "1.2.4"
     "@reef-knot/wallet-adapter-zerion" "1.2.4"
 
-"@reef-knot/web3-react@1.4.2":
-  version "1.4.2"
-  resolved "https://registry.yarnpkg.com/@reef-knot/web3-react/-/web3-react-1.4.2.tgz#1baac5af69e1139011d9fc0b3411d9b288f46d5f"
-  integrity sha512-707D5K3GxCts44ThhbpEExp0CMMD6h6bL2IFj2JX9SoDTPBZA/ixzbRggqTpZlqGEPsoo/72xGKl8nVsBB3JQg==
+"@reef-knot/web3-react@1.5.0":
+  version "1.5.0"
+  resolved "https://registry.yarnpkg.com/@reef-knot/web3-react/-/web3-react-1.5.0.tgz#9b9cde9200f51faaad074a5bb0dc57d448bf680e"
+  integrity sha512-bZIcP8Uly8FNECGq5mqplqGhLoLoXYPPMub+2jZ7xX+QlIf74W4B5l6lIM/8TmIf9vS0NNd9/pbk53Y6M3Z3Sw==
   dependencies:
     "@gnosis.pm/safe-apps-web3-react" "0.6.8"
     "@ledgerhq/iframe-provider" "0.4.2"
-    "@lido-sdk/constants" "^3.1.0"
-    "@lido-sdk/providers" "^1.4.12"
-    "@lido-sdk/react" "^2.0.0"
     "@web3-react/abstract-connector" "6.0.7"
     "@web3-react/core" "6.1.9"
     "@web3-react/injected-connector" "6.0.7"
@@ -9036,10 +9040,10 @@ nan@^2.2.1:
   resolved "https://registry.yarnpkg.com/nan/-/nan-2.17.0.tgz#c0150a2368a182f033e9aa5195ec76ea41a199cb"
   integrity sha512-2ZTgtl0nJsO0KQCjEpxcIr5D+Yv90plTitZt9JBfQvVJDS5seMl3FOvsh3+9CoYWXf/1l5OaZzzF6nDm4cagaQ==
 
-nanoid@^3.3.4:
-  version "3.3.4"
-  resolved "https://registry.yarnpkg.com/nanoid/-/nanoid-3.3.4.tgz#730b67e3cd09e2deacf03c027c81c9d9dbc5e8ab"
-  integrity sha512-MqBkQh/OHTS2egovRtLk45wEyNXwF+cokD+1YPf9u5VfJiRdAiRwB2froX5Co9Rh20xs4siNPm8naNotSD6RBw==
+nanoid@^3.3.6:
+  version "3.3.6"
+  resolved "https://registry.yarnpkg.com/nanoid/-/nanoid-3.3.6.tgz#443380c856d6e9f9824267d960b4236ad583ea4c"
+  integrity sha512-BGcqMMJuToF7i1rt+2PWSNVnWIkGCU78jBG3RxO/bZlnZPK2Cmi2QaffxGO/2RvWi9sL+FAiRiXMgsyxQ1DIDA==
 
 natural-compare-lite@^1.4.0:
   version "1.4.0"
@@ -9064,7 +9068,7 @@ next-secure-headers@^2.2.0:
   resolved "https://registry.yarnpkg.com/next-secure-headers/-/next-secure-headers-2.2.0.tgz#d4eb1b00a424f811c1455d1288990a4aad3026af"
   integrity sha512-C7OfZ9JdSJyYMz2ZBMI/WwNbt0qNjlFWX9afUp8nEUzbz6ez3JbeopdyxSZJZJAzVLIAfyk6n73rFpd4e22jRg==
 
-next@^12.2.5:
+next@^12.3.4:
   version "12.3.4"
   resolved "https://registry.yarnpkg.com/next/-/next-12.3.4.tgz#f2780a6ebbf367e071ce67e24bd8a6e05de2fcb1"
   integrity sha512-VcyMJUtLZBGzLKo3oMxrEF0stxh8HwuW976pAzlHhI3t8qJ4SROjCrSh1T24bhrbjw55wfZXAbXPGwPt5FLRfQ==
@@ -9582,12 +9586,12 @@ postcss-value-parser@^4.0.2:
   resolved "https://registry.yarnpkg.com/postcss-value-parser/-/postcss-value-parser-4.2.0.tgz#723c09920836ba6d3e5af019f92bc0971c02e514"
   integrity sha512-1NNCs6uurfkVbeXG4S8JFT9t19m45ICnif8zWLd5oPSZ50QnwMfK+H3jv408d4jw/7Bttv5axS5IiHoLaVNHeQ==
 
-postcss@8.4.14:
-  version "8.4.14"
-  resolved "https://registry.yarnpkg.com/postcss/-/postcss-8.4.14.tgz#ee9274d5622b4858c1007a74d76e42e56fd21caf"
-  integrity sha512-E398TUmfAYFPBSdzgeieK2Y1+1cpdxJx8yXbK/m57nRhKSmk1GB2tO4lbLBtlkfPQTDKfe4Xqv1ASWPpayPEig==
+postcss@8.4.14, postcss@^8.4.31:
+  version "8.4.31"
+  resolved "https://registry.yarnpkg.com/postcss/-/postcss-8.4.31.tgz#92b451050a9f914da6755af352bdc0192508656d"
+  integrity sha512-PS08Iboia9mts/2ygV3eLpY5ghnUcfLV/EXTOW1E2qYxJKGGBUtNjN76FYHnMs36RmARn41bC0AZmn+rR0OVpQ==
   dependencies:
-    nanoid "^3.3.4"
+    nanoid "^3.3.6"
     picocolors "^1.0.0"
     source-map-js "^1.0.2"
 
@@ -9954,10 +9958,10 @@ redent@^3.0.0:
     indent-string "^4.0.0"
     strip-indent "^3.0.0"
 
-reef-knot@^1.7.4:
-  version "1.7.4"
-  resolved "https://registry.yarnpkg.com/reef-knot/-/reef-knot-1.7.4.tgz#94cad3e7e6c2a633df7a32f92e306dcca14b8834"
-  integrity sha512-tsmOtB3y04GzT/qNLQSvh/yXEQeEMyjQyfDLiMz1BvRJUYh3clBpo6kK64XS3ZSPOlT1I6aLpw3dGyp5dTtzaw==
+reef-knot@^1.8.0:
+  version "1.8.0"
+  resolved "https://registry.yarnpkg.com/reef-knot/-/reef-knot-1.8.0.tgz#1b559841d39c8554fec5941595c3b411654ae73a"
+  integrity sha512-5jR4liihZVhrcb84xjRImDRqb0d2t8EiHfrVO8yQRfIxF3hA/CNFAtLEjyoXSBeYuFCwe9dAHQdW0v6kmSmMuw==
   dependencies:
     "@reef-knot/connect-wallet-modal" "1.6.2"
     "@reef-knot/core-react" "1.6.0"
@@ -9967,7 +9971,7 @@ reef-knot@^1.7.4:
     "@reef-knot/wallets-helpers" "1.1.5"
     "@reef-knot/wallets-icons" "1.0.0"
     "@reef-knot/wallets-list" "1.4.5"
-    "@reef-knot/web3-react" "1.4.2"
+    "@reef-knot/web3-react" "1.5.0"
 
 regenerate-unicode-properties@^10.1.0:
   version "10.1.0"
