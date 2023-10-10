@@ -1,10 +1,10 @@
+import { FAQItem } from '@lidofinance/ui-faq';
+
 import { Switch } from 'shared/components';
 
 import { ClaimDataProvider } from './contexts/claim-data-context';
 import { useWithdrawals } from './contexts/withdrawals-context';
-
 import { Claim } from './claim';
-
 import { Request } from './request';
 
 import {
@@ -23,12 +23,24 @@ const withdrawalRoutes = [
   },
 ];
 
-export const WithdrawalsTabs = () => {
+type WithdrawalsTabsProps = {
+  faqListRequest?: FAQItem[];
+  faqListClaim?: FAQItem[];
+};
+
+export const WithdrawalsTabs = ({
+  faqListRequest,
+  faqListClaim,
+}: WithdrawalsTabsProps) => {
   const { isClaimTab } = useWithdrawals();
   return (
     <ClaimDataProvider>
       <Switch checked={isClaimTab} routes={withdrawalRoutes} />
-      {isClaimTab ? <Claim /> : <Request />}
+      {isClaimTab ? (
+        <Claim faqList={faqListClaim} />
+      ) : (
+        <Request faqList={faqListRequest} />
+      )}
     </ClaimDataProvider>
   );
 };

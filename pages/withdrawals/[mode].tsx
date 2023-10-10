@@ -3,13 +3,19 @@ import { GetStaticPaths, GetStaticProps } from 'next';
 import Head from 'next/head';
 import { useWeb3 } from 'reef-knot/web3-react';
 
+import { FAQItem, getFAQ, PageFAQ } from '@lidofinance/ui-faq';
+
+import { serverRuntimeConfig } from 'config';
+import { WithdrawalsTabs } from 'features/withdrawals';
+import { WithdrawalsProvider } from 'features/withdrawals/contexts/withdrawals-context';
 import { Layout } from 'shared/components';
 import NoSSRWrapper from 'shared/components/no-ssr-wrapper';
 
-import { WithdrawalsTabs } from 'features/withdrawals';
-import { WithdrawalsProvider } from 'features/withdrawals/contexts/withdrawals-context';
-
-const Withdrawals: FC<WithdrawalsModePageParams> = ({ mode }) => {
+const Withdrawals: FC<WithdrawalsModePageProps> = ({
+  mode,
+  faqListRequest,
+  faqListClaim,
+}) => {
   const { account, chainId } = useWeb3();
 
   return (
@@ -23,7 +29,11 @@ const Withdrawals: FC<WithdrawalsModePageParams> = ({ mode }) => {
       <WithdrawalsProvider mode={mode}>
         <NoSSRWrapper>
           {/* In order to simplify side effects of switching wallets we remount the whole widget, resetting all internal state */}
-          <WithdrawalsTabs key={`${account ?? '_'}${chainId ?? '1'}`} />
+          <WithdrawalsTabs
+            key={`${account ?? '_'}${chainId ?? '1'}`}
+            faqListRequest={faqListRequest}
+            faqListClaim={faqListClaim}
+          />
         </NoSSRWrapper>
       </WithdrawalsProvider>
     </Layout>
@@ -34,6 +44,11 @@ export default Withdrawals;
 
 type WithdrawalsModePageParams = {
   mode: 'request' | 'claim';
+};
+
+type WithdrawalsModePageProps = WithdrawalsModePageParams & {
+  faqListRequest?: FAQItem[];
+  faqListClaim?: FAQItem[];
 };
 
 export const getStaticPaths: GetStaticPaths<
@@ -49,6 +64,31 @@ export const getStaticProps: GetStaticProps<
   WithdrawalsModePageParams,
   WithdrawalsModePageParams
 > = async ({ params }) => {
+  // FAQ
+  const pageIdentificationRequest = 'withdrawals-request';
+  const pageIdentificationClaim = 'withdrawals-claim';
+  let foundPageRequest: PageFAQ | undefined = undefined;
+  let foundPageClaim: PageFAQ | undefined = undefined;
+
+  try {
+    const pages = await getFAQ(serverRuntimeConfig.faqContentUrl);
+
+    foundPageRequest = pages.find(
+      (page: PageFAQ) => page['identification'] === pageIdentificationRequest,
+    );
+    foundPageClaim = pages.find(
+      (page: PageFAQ) => page['identification'] === pageIdentificationClaim,
+    );
+  } catch {
+    // noop
+  }
+  const faqProps = {
+    faqListRequest: foundPageRequest?.faq,
+    faqListClaim: foundPageClaim?.faq,
+    revalidate: 900,
+  }; // TODO: config
+
+  // Mode
   if (!params?.mode) return { notFound: true };
-  return { props: { mode: params.mode } };
+  return { props: { mode: params.mode, ...faqProps } };
 };
