@@ -3,7 +3,7 @@ import { GetStaticPaths, GetStaticProps } from 'next';
 import Head from 'next/head';
 import { FAQItem, getFAQ, PageFAQ } from '@lidofinance/ui-faq';
 
-import { serverRuntimeConfig } from 'config';
+import { serverRuntimeConfig, FAQ_REVALIDATE_SECS } from 'config';
 import { Layout } from 'shared/components';
 import { WrapUnwrapTabs } from 'features/wsteth/wrap-unwrap-tabs';
 
@@ -58,7 +58,7 @@ export const getStaticProps: GetStaticProps<
   } catch {
     // noop
   }
-  const faqProps = { faqList: foundPage?.faq, revalidate: 900 }; // TODO: config
+  const faqProps = { faqList: foundPage?.faq, revalidate: FAQ_REVALIDATE_SECS };
 
   // Mode
   const mode = params?.mode;

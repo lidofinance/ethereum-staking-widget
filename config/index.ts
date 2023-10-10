@@ -5,6 +5,7 @@ export * from './aggregator';
 export * from './api';
 export * from './cache';
 export * from './estimate';
+export * from './faq';
 export * from './locale';
 export * from './metrics';
 export * from './oracle';

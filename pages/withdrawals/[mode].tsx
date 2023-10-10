@@ -5,7 +5,7 @@ import { useWeb3 } from 'reef-knot/web3-react';
 
 import { FAQItem, getFAQ, PageFAQ } from '@lidofinance/ui-faq';
 
-import { serverRuntimeConfig } from 'config';
+import { serverRuntimeConfig, FAQ_REVALIDATE_SECS } from 'config';
 import { WithdrawalsTabs } from 'features/withdrawals';
 import { WithdrawalsProvider } from 'features/withdrawals/contexts/withdrawals-context';
 import { Layout } from 'shared/components';
@@ -85,8 +85,8 @@ export const getStaticProps: GetStaticProps<
   const faqProps = {
     faqListRequest: foundPageRequest?.faq,
     faqListClaim: foundPageClaim?.faq,
-    revalidate: 900,
-  }; // TODO: config
+    revalidate: FAQ_REVALIDATE_SECS,
+  };
 
   // Mode
   if (!params?.mode) return { notFound: true };

@@ -4,7 +4,7 @@ import Head from 'next/head';
 
 import { getFAQ, FAQItem, PageFAQ } from '@lidofinance/ui-faq';
 
-import { serverRuntimeConfig } from 'config';
+import { serverRuntimeConfig, FAQ_REVALIDATE_SECS } from 'config';
 import { Wallet, StakeForm, LidoStats, StakeFaq } from 'features/home';
 import { Layout } from 'shared/components';
 import NoSSRWrapper from 'shared/components/no-ssr-wrapper';
@@ -53,8 +53,6 @@ export const getStaticProps: GetStaticProps<HomeProps> = async () => {
     props: {
       faqList: foundPage?.faq,
     },
-    // 15 minutes
-    // TODO: config
-    revalidate: 900,
+    revalidate: FAQ_REVALIDATE_SECS,
   };
 };
