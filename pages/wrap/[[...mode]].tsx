@@ -1,10 +1,13 @@
 import { FC } from 'react';
 import { GetStaticPaths, GetStaticProps } from 'next';
 import Head from 'next/head';
+import { FAQItem, getFAQ, PageFAQ } from '@lidofinance/ui-faq';
+
+import { serverRuntimeConfig } from 'config';
 import { Layout } from 'shared/components';
 import { WrapUnwrapTabs } from 'features/wsteth/wrap-unwrap-tabs';
 
-const WrapPage: FC<WrapModePageProps> = ({ mode }) => {
+const WrapPage: FC<WrapModePageProps> = ({ mode, faqList }) => {
   return (
     <Layout
       title="Wrap & Unwrap"
@@ -14,7 +17,7 @@ const WrapPage: FC<WrapModePageProps> = ({ mode }) => {
         <title>Wrap | Lido</title>
       </Head>
 
-      <WrapUnwrapTabs mode={mode}></WrapUnwrapTabs>
+      <WrapUnwrapTabs mode={mode} faqList={faqList}></WrapUnwrapTabs>
     </Layout>
   );
 };
@@ -23,6 +26,7 @@ export default WrapPage;
 
 type WrapModePageProps = {
   mode: 'wrap' | 'unwrap';
+  faqList?: FAQItem[];
 };
 
 type WrapModePageParams = {
@@ -41,9 +45,25 @@ export const getStaticProps: GetStaticProps<
   WrapModePageProps,
   WrapModePageParams
 > = async ({ params }) => {
+  // FAQ
+  const pageIdentification = 'wrap-and-unwrap';
+  let foundPage: PageFAQ | undefined = undefined;
+
+  try {
+    const pages = await getFAQ(serverRuntimeConfig.faqContentUrl);
+
+    foundPage = pages.find(
+      (page: PageFAQ) => page['identification'] === pageIdentification,
+    );
+  } catch {
+    // noop
+  }
+  const faqProps = { faqList: foundPage?.faq, revalidate: 900 }; // TODO: config
+
+  // Mode
   const mode = params?.mode;
-  if (!mode) return { props: { mode: 'wrap' } };
-  if (mode[0] === 'unwrap') return { props: { mode: 'unwrap' } };
+  if (!mode) return { props: { mode: 'wrap', ...faqProps } };
+  if (mode[0] === 'unwrap') return { props: { mode: 'unwrap', ...faqProps } };
 
   return { notFound: true };
 };
