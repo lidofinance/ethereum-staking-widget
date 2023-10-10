@@ -2702,8 +2702,10 @@
   resolved "https://registry.yarnpkg.com/@lidofinance/next-pages/-/next-pages-0.28.0.tgz#87bfd8a4eefe9d446dfa5b8d9909ecc5e1fc7a34"
   integrity sha512-rtiRpEbzHlCGqnad3uXOGVdu6zq7pFlgoyWY/SCOvimzJdAYfNWEQs4rOP8quiOqMQxCqUAbpmoz2/WKkibLQA==
 
-"@lidofinance/next-ui-primitives@file:.yalc/@lidofinance/next-ui-primitives":
-  version "0.0.0"
+"@lidofinance/next-ui-primitives@^0.39.0":
+  version "0.39.0"
+  resolved "https://registry.yarnpkg.com/@lidofinance/next-ui-primitives/-/next-ui-primitives-0.39.0.tgz#56844b2fab36fb5aadf21c43fe99aa48f1c1d4b9"
+  integrity sha512-4oXrWBxnti5hCc8UYdRO8sUE7ME1ciE00dGtkSIM3CdwT0c1VLktLHQZa9L1POJBK2OggJWVGg19tJwF4D+yPQ==
 
 "@lidofinance/rpc@^0.28.0":
   version "0.28.0"
@@ -2717,8 +2719,10 @@
   resolved "https://registry.yarnpkg.com/@lidofinance/satanizer/-/satanizer-0.32.0.tgz#3ea01a94b7b5c58751a9e3030f6134c83cecefaf"
   integrity sha512-gHoZM8l/AWWT1YyZf+4/IViAxGuALZNo29b4bWvmEGJw/Xv0ChRPP2/xLEugdk03T16r8vxww3j/tAYTTzGzQw==
 
-"@lidofinance/ui-faq@file:.yalc/@lidofinance/ui-faq":
-  version "0.0.0"
+"@lidofinance/ui-faq@^0.39.0":
+  version "0.39.0"
+  resolved "https://registry.yarnpkg.com/@lidofinance/ui-faq/-/ui-faq-0.39.0.tgz#6bc082b74a2c1e8f36ed0e3f17af289730b995b0"
+  integrity sha512-jjF4a3sUxEEJQVnRkgMh7i5+fYhBhceAokhOrY2xBz9RbcHbnkBCCSwcf6/kd9mEijnLFKzSLxaF+DHEEkUGyA==
   dependencies:
     js-yaml "^4.1.0"
     mdast "^3.0.0"
