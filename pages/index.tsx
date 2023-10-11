@@ -9,9 +9,10 @@ import { Wallet, StakeForm, LidoStats, StakeFaq } from 'features/home';
 import { Layout } from 'shared/components';
 import NoSSRWrapper from 'shared/components/no-ssr-wrapper';
 import { useWeb3Key } from 'shared/hooks/useWeb3Key';
+import { serverAxios } from 'utilsApi/serverAxios';
 
 interface HomeProps {
-  faqList?: FAQItem[];
+  faqList?: FAQItem[] | null;
 }
 
 const Home: FC<HomeProps> = ({ faqList }) => {
@@ -30,7 +31,7 @@ const Home: FC<HomeProps> = ({ faqList }) => {
         <StakeForm key={'form' + key} />
       </NoSSRWrapper>
       <LidoStats />
-      <StakeFaq faqList={faqList} />
+      <StakeFaq faqList={faqList ?? undefined} />
     </Layout>
   );
 };
@@ -42,7 +43,10 @@ export const getStaticProps: GetStaticProps<HomeProps> = async () => {
   let foundPage: PageFAQ | undefined = undefined;
 
   try {
-    const pages = await getFAQ(serverRuntimeConfig.faqContentUrl);
+    const pages = await getFAQ(serverRuntimeConfig.faqContentUrl, {
+      axiosInstance: serverAxios,
+      cache: false,
+    });
 
     foundPage = pages.find(
       (page: PageFAQ) => page['identification'] === pageIdentification,
@@ -53,7 +57,10 @@ export const getStaticProps: GetStaticProps<HomeProps> = async () => {
 
   return {
     props: {
-      faqList: foundPage?.faq,
+      // We can't use  `undefined` here.
+      // Reason: `undefined` cannot be serialized as JSON. Please use `null` or omit this value.
+      // Will be error: SerializableError: Error serializing `.faqListRequest` returned from `getStaticProps`.
+      faqList: foundPage?.faq || null,
     },
     revalidate: FAQ_REVALIDATE_SECS,
   };

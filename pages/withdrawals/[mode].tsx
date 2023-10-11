@@ -10,6 +10,7 @@ import { WithdrawalsProvider } from 'features/withdrawals/contexts/withdrawals-c
 import { Layout } from 'shared/components';
 import NoSSRWrapper from 'shared/components/no-ssr-wrapper';
 import { useWeb3Key } from 'shared/hooks/useWeb3Key';
+import { serverAxios } from 'utilsApi/serverAxios';
 
 const Withdrawals: FC<WithdrawalsModePageProps> = ({
   mode,
@@ -30,8 +31,8 @@ const Withdrawals: FC<WithdrawalsModePageProps> = ({
         <NoSSRWrapper>
           <WithdrawalsTabs
             key={key}
-            faqListRequest={faqListRequest}
-            faqListClaim={faqListClaim}
+            faqListRequest={faqListRequest ?? undefined}
+            faqListClaim={faqListClaim ?? undefined}
           />
         </NoSSRWrapper>
       </WithdrawalsProvider>
@@ -46,8 +47,8 @@ type WithdrawalsModePageParams = {
 };
 
 type WithdrawalsModePageProps = WithdrawalsModePageParams & {
-  faqListRequest?: FAQItem[];
-  faqListClaim?: FAQItem[];
+  faqListRequest?: FAQItem[] | null;
+  faqListClaim?: FAQItem[] | null;
 };
 
 export const getStaticPaths: GetStaticPaths<
@@ -70,7 +71,10 @@ export const getStaticProps: GetStaticProps<
   let foundPageClaim: PageFAQ | undefined = undefined;
 
   try {
-    const pages = await getFAQ(serverRuntimeConfig.faqContentUrl);
+    const pages = await getFAQ(serverRuntimeConfig.faqContentUrl, {
+      axiosInstance: serverAxios,
+      cache: false,
+    });
 
     foundPageRequest = pages.find(
       (page: PageFAQ) => page['identification'] === pageIdentificationRequest,
@@ -82,8 +86,11 @@ export const getStaticProps: GetStaticProps<
     // noop
   }
   const faqProps = {
-    faqListRequest: foundPageRequest?.faq,
-    faqListClaim: foundPageClaim?.faq,
+    // We can't use  `undefined` here.
+    // Reason: `undefined` cannot be serialized as JSON. Please use `null` or omit this value.
+    // Will be error: SerializableError: Error serializing `.faqListRequest` returned from `getStaticProps`.
+    faqListRequest: foundPageRequest?.faq || null,
+    faqListClaim: foundPageClaim?.faq || null,
     revalidate: FAQ_REVALIDATE_SECS,
   };
 

@@ -7,6 +7,7 @@ import { serverRuntimeConfig, FAQ_REVALIDATE_SECS } from 'config';
 import { WrapUnwrapTabs } from 'features/wsteth/wrap-unwrap-tabs';
 import { Layout } from 'shared/components';
 import { useWeb3Key } from 'shared/hooks/useWeb3Key';
+import { serverAxios } from 'utilsApi/serverAxios';
 
 const WrapPage: FC<WrapModePageProps> = ({ mode, faqList }) => {
   const key = useWeb3Key();
@@ -20,7 +21,7 @@ const WrapPage: FC<WrapModePageProps> = ({ mode, faqList }) => {
         <title>Wrap | Lido</title>
       </Head>
 
-      <WrapUnwrapTabs key={key} mode={mode} faqList={faqList} />
+      <WrapUnwrapTabs key={key} mode={mode} faqList={faqList ?? undefined} />
     </Layout>
   );
 };
@@ -29,7 +30,7 @@ export default WrapPage;
 
 type WrapModePageProps = {
   mode: 'wrap' | 'unwrap';
-  faqList?: FAQItem[];
+  faqList?: FAQItem[] | null;
 };
 
 type WrapModePageParams = {
@@ -53,7 +54,10 @@ export const getStaticProps: GetStaticProps<
   let foundPage: PageFAQ | undefined = undefined;
 
   try {
-    const pages = await getFAQ(serverRuntimeConfig.faqContentUrl);
+    const pages = await getFAQ(serverRuntimeConfig.faqContentUrl, {
+      axiosInstance: serverAxios,
+      cache: false,
+    });
 
     foundPage = pages.find(
       (page: PageFAQ) => page['identification'] === pageIdentification,
@@ -61,7 +65,13 @@ export const getStaticProps: GetStaticProps<
   } catch {
     // noop
   }
-  const faqProps = { faqList: foundPage?.faq, revalidate: FAQ_REVALIDATE_SECS };
+  // We can't use  `undefined` here.
+  // Reason: `undefined` cannot be serialized as JSON. Please use `null` or omit this value.
+  // Will be error: SerializableError: Error serializing `.faqListRequest` returned from `getStaticProps`.
+  const faqProps = {
+    faqList: foundPage?.faq || null,
+    revalidate: FAQ_REVALIDATE_SECS,
+  };
 
   // Mode
   const mode = params?.mode;
