@@ -1,8 +1,10 @@
-import { standardFetcher } from 'utils/standardFetcher';
-import { responseTimeExternalMetricWrapper } from 'utilsApi';
 import { BigNumber } from 'ethers';
 
-type oneInchFetchResponse = {
+import { getOneInchRateApiUrl } from 'config/one-inch';
+import { standardFetcher } from 'utils/standardFetcher';
+import { responseTimeExternalMetricWrapper } from 'utilsApi';
+
+export type OneInchFetchResponse = {
   toAmount: string;
 };
 
@@ -12,22 +14,22 @@ type GetOneInchRateStats = (
   amount: BigNumber,
 ) => Promise<number | null>;
 
+// DEPRECATED: In future will be delete!!!
 export const getOneInchRate: GetOneInchRateStats = async (
   fromTokenAddress,
   toTokenAddress,
   amount,
 ) => {
   console.debug('[getOneInchRate] Started fetching...');
-  const api = `https://api-lido.1inch.io/v5.2/1/quote`;
-  const query = new URLSearchParams({
-    src: fromTokenAddress,
-    dst: toTokenAddress,
-    amount: amount.toString(),
-  });
-  const url = `${api}?${query.toString()}`;
+  const { api, url } = getOneInchRateApiUrl(
+    fromTokenAddress,
+    toTokenAddress,
+    amount.toString(),
+  );
+
   const data = await responseTimeExternalMetricWrapper({
     payload: api,
-    request: () => standardFetcher<oneInchFetchResponse>(url),
+    request: () => standardFetcher<OneInchFetchResponse>(url),
   });
 
   if (!data || !data.toAmount) {
