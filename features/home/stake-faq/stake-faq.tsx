@@ -13,14 +13,16 @@ interface StakeFaqProps {
 export const StakeFaq: FC<StakeFaqProps> = ({ faqList }) => {
   return (
     <NoSSRWrapper>
-      <Section title="FAQ">
-        <FaqAccordion
-          faqList={faqList}
-          onLinkClick={(props) => {
-            faqAccordionOnLinkClick({ pageId: 'stake', ...props });
-          }}
-        />
-      </Section>
+      {faqList && (
+        <Section title="FAQ">
+          <FaqAccordion
+            faqList={faqList}
+            onLinkClick={(props) => {
+              faqAccordionOnLinkClick({ pageId: 'stake', ...props });
+            }}
+          />
+        </Section>
+      )}
     </NoSSRWrapper>
   );
 };

@@ -13,14 +13,16 @@ interface WrapFaqProps {
 export const WrapFaq: FC<WrapFaqProps> = ({ faqList }) => {
   return (
     <NoSSRWrapper>
-      <Section title="FAQ">
-        <FaqAccordion
-          faqList={faqList}
-          onLinkClick={(props) => {
-            faqAccordionOnLinkClick({ pageId: 'wrapOrUnwrap', ...props });
-          }}
-        />
-      </Section>
+      {faqList && (
+        <Section title="FAQ">
+          <FaqAccordion
+            faqList={faqList}
+            onLinkClick={(props) => {
+              faqAccordionOnLinkClick({ pageId: 'wrapOrUnwrap', ...props });
+            }}
+          />
+        </Section>
+      )}
     </NoSSRWrapper>
   );
 };

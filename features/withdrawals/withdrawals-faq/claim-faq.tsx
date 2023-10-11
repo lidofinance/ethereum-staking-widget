@@ -13,14 +13,16 @@ type ClaimFaqProps = {
 export const ClaimFaq: FC<ClaimFaqProps> = ({ faqList }) => {
   return (
     <NoSSRWrapper>
-      <Section title="FAQ">
-        <FaqAccordion
-          faqList={faqList}
-          onLinkClick={(props) => {
-            faqAccordionOnLinkClick({ pageId: 'withdrawalsClaim', ...props });
-          }}
-        />
-      </Section>
+      {faqList && (
+        <Section title="FAQ">
+          <FaqAccordion
+            faqList={faqList}
+            onLinkClick={(props) => {
+              faqAccordionOnLinkClick({ pageId: 'withdrawalsClaim', ...props });
+            }}
+          />
+        </Section>
+      )}
     </NoSSRWrapper>
   );
 };

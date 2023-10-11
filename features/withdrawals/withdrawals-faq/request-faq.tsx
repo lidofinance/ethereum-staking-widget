@@ -18,22 +18,27 @@ type RequestFaqProps = {
 export const RequestFaq: FC<RequestFaqProps> = ({ faqList }) => {
   return (
     <NoSSRWrapper>
-      <Section title="FAQ">
-        <FaqAccordion
-          faqList={faqList}
-          onLinkClick={(props) => {
-            faqAccordionOnLinkClick({ pageId: 'withdrawalsRequest', ...props });
-          }}
-        />
+      {faqList && (
+        <Section title="FAQ">
+          <FaqAccordion
+            faqList={faqList}
+            onLinkClick={(props) => {
+              faqAccordionOnLinkClick({
+                pageId: 'withdrawalsRequest',
+                ...props,
+              });
+            }}
+          />
 
-        {/* <ButtonLinkWrap
+          {/* <ButtonLinkWrap
           target="_blank"
           rel="noopener noreferrer"
           href={LEARN_MORE_LINK}
         >
           <Button>Learn more</Button>
         </ButtonLinkWrap> */}
-      </Section>
+        </Section>
+      )}
     </NoSSRWrapper>
   );
 };
