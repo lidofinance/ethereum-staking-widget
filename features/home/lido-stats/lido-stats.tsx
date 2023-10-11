@@ -59,42 +59,56 @@ export const LidoStats: FC = memo(() => {
     >
       <Block>
         <DataTable>
-          <DataTableRow
-            title={
-              <FlexCenterVertical data-testid="aprTooltip">
-                Annual percentage rate
-                <Tooltip title={LIDO_APR_TOOLTIP_TEXT}>
-                  <Question />
-                </Tooltip>
-              </FlexCenterVertical>
-            }
-            loading={lidoApr.initialLoading}
-            data-testid="lidoAPR"
-            highlight
-          >
-            {lidoApr.apr ? `${lidoApr.apr}%` : DATA_UNAVAILABLE}
-          </DataTableRow>
-          <DataTableRow
-            title="Total staked with Lido"
-            data-testid="totalStaked"
-            loading={lidoStats.initialLoading}
-          >
-            {lidoStats.data.totalStaked}
-          </DataTableRow>
-          <DataTableRow
-            title="Stakers"
-            data-testid="stakers"
-            loading={lidoStats.initialLoading}
-          >
-            {lidoStats.data.stakers}
-          </DataTableRow>
-          <DataTableRow
-            title="stETH market cap"
-            data-testid="stEthMarketCap"
-            loading={lidoStats.initialLoading}
-          >
-            {lidoStats.data.marketCap}
-          </DataTableRow>
+          {dynamics.ipfsMode && !isStatItemNotAvailable(lidoApr.apr) && (
+            <DataTableRow
+              title={
+                <FlexCenterVertical data-testid="aprTooltip">
+                  Annual percentage rate
+                  <Tooltip title={LIDO_APR_TOOLTIP_TEXT}>
+                    <Question />
+                  </Tooltip>
+                </FlexCenterVertical>
+              }
+              loading={lidoApr.initialLoading}
+              data-testid="lidoAPR"
+              highlight
+            >
+              {lidoApr.apr ? `${lidoApr.apr}%` : DATA_UNAVAILABLE}
+            </DataTableRow>
+          )}
+
+          {dynamics.ipfsMode &&
+            !isStatItemNotAvailable(lidoStats.data.totalStaked) && (
+              <DataTableRow
+                title="Total staked with Lido"
+                data-testid="totalStaked"
+                loading={lidoStats.initialLoading}
+              >
+                {lidoStats.data.totalStaked}
+              </DataTableRow>
+            )}
+
+          {dynamics.ipfsMode &&
+            !isStatItemNotAvailable(lidoStats.data.stakers) && (
+              <DataTableRow
+                title="Stakers"
+                data-testid="stakers"
+                loading={lidoStats.initialLoading}
+              >
+                {lidoStats.data.stakers}
+              </DataTableRow>
+            )}
+
+          {dynamics.ipfsMode &&
+            !isStatItemNotAvailable(lidoStats.data.marketCap) && (
+              <DataTableRow
+                title="stETH market cap"
+                data-testid="stEthMarketCap"
+                loading={lidoStats.initialLoading}
+              >
+                {lidoStats.data.marketCap}
+              </DataTableRow>
+            )}
         </DataTable>
       </Block>
     </Section>
