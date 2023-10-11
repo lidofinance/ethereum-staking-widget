@@ -28,4 +28,10 @@ export const useRpcUrl = () => {
   const getRpcUrl = useGetRpcUrl();
   // TODO: use `satisfies` when will be TS v5
   return getRpcUrl(chainId as unknown as CHAINS);
+}
+
+export const backendRPC = {
+  [CHAINS.Mainnet]: getBackendRPCPath(CHAINS.Mainnet),
+  [CHAINS.Goerli]: getBackendRPCPath(CHAINS.Goerli),
+  [CHAINS.Holesky]: getBackendRPCPath(CHAINS.Holesky),
 };
