@@ -63,7 +63,7 @@ export const getStaticProps: GetStaticProps<
       (page: PageFAQ) => page['identification'] === pageIdentification,
     );
   } catch {
-    // noop
+    console.warn('FAQ not available on wrap/unwrap page!');
   }
   // We can't use  `undefined` here.
   // Reason: `undefined` cannot be serialized as JSON. Please use `null` or omit this value.

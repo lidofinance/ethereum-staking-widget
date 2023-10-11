@@ -83,7 +83,7 @@ export const getStaticProps: GetStaticProps<
       (page: PageFAQ) => page['identification'] === pageIdentificationClaim,
     );
   } catch {
-    // noop
+    console.warn('FAQ not available on withdrawals page!');
   }
   const faqProps = {
     // We can't use  `undefined` here.

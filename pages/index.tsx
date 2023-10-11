@@ -52,7 +52,7 @@ export const getStaticProps: GetStaticProps<HomeProps> = async () => {
       (page: PageFAQ) => page['identification'] === pageIdentification,
     );
   } catch {
-    // noop
+    console.warn('FAQ not available on stake page!');
   }
 
   return {
