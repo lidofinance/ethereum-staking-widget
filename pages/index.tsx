@@ -11,9 +11,9 @@ import NoSSRWrapper from 'shared/components/no-ssr-wrapper';
 import { useWeb3Key } from 'shared/hooks/useWeb3Key';
 import { serverAxios } from 'utilsApi/serverAxios';
 
-interface HomeProps {
+type HomeProps = {
   faqList?: FAQItem[] | null;
-}
+};
 
 const Home: FC<HomeProps> = ({ faqList }) => {
   const key = useWeb3Key();
