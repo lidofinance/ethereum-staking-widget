@@ -9,7 +9,9 @@ import {
 import invariant from 'tiny-invariant';
 
 import { useLocalStorage } from '@lido-sdk/react';
-import { CHAINS } from '@lido-sdk/constants';
+// TODO
+// import { CHAINS } from '@lido-sdk/constants';
+import { CHAINS } from 'utils/chains';
 
 import { STORAGE_CUSTOM_CONFIG } from 'config/storage';
 import { EnvConfigParsed } from 'config/types';

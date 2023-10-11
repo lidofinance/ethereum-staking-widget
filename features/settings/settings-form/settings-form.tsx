@@ -6,6 +6,7 @@ import { Button, ToastSuccess, Block, Input } from '@lidofinance/lido-ui';
 
 import { useCustomConfig } from 'providers/custom-config';
 import { RPCErrorType, checkRpcUrl } from 'utils/check-rpc-url';
+import { CHAINS } from 'utils/chains';
 
 import { Actions, DescriptionText, DescriptionTitle } from './styles';
 
@@ -21,7 +22,8 @@ export const SettingsForm = () => {
     mode: 'onChange',
     reValidateMode: 'onChange',
     defaultValues: {
-      rpcUrl: savedCustomConfig.rpcUrls[chainId] || '',
+      // TODO
+      rpcUrl: savedCustomConfig.rpcUrls[chainId as unknown as CHAINS] || '',
     },
   });
 
