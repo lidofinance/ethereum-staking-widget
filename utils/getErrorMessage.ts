@@ -49,7 +49,6 @@ export const extractCodeFromError = (
     error.reason.includes('STAKE_LIMIT')
   ) {
     return 'LIMIT_REACHED';
-    // TODO: error.reason more cases
   }
 
   // sometimes we have error message but bad error code
@@ -61,7 +60,8 @@ export const extractCodeFromError = (
       normalizedMessage.includes('rejected the transaction') ||
       normalizedMessage.includes('rejected the request') ||
       normalizedMessage.includes('reject this request') ||
-      normalizedMessage.includes('rejected methods')
+      normalizedMessage.includes('rejected methods') ||
+      normalizedMessage.includes('transaction declined')
     )
       return 'ACTION_REJECTED';
   }

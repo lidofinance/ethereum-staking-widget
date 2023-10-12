@@ -7,7 +7,6 @@ export * from './cache';
 export * from './estimate';
 export * from './locale';
 export * from './metrics';
-export * from './oracle';
 export * from './rpc';
 export * from './steth';
 export * from './storage';

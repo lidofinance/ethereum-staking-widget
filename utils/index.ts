@@ -1,4 +1,3 @@
-export * from './assert';
 export * from './chains';
 export * from './appCookies';
 export * from './formatBalance';
