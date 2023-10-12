@@ -144,6 +144,14 @@ export default withBundleAnalyzer({
         source: '/manifest.json',
         headers: [{ key: 'Access-Control-Allow-Origin', value: '*' }],
       },
+      {
+        // oneinch-rate is public (firstly for IPFS version)
+        source: '/api/oneinch-rate',
+        headers: [
+          { key: 'Access-Control-Allow-Origin', value: '*' },
+          { key: 'Access-Control-Allow-Methods', value: 'GET' }
+        ],
+      },
       ...CACHE_CONTROL_PAGES.map((page) => ({
         source: page,
         headers: [{ key: CACHE_CONTROL_HEADER, value: CACHE_CONTROL_VALUE }],
