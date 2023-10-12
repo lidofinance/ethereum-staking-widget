@@ -31,16 +31,24 @@ export const LidoStats: FC = memo(() => {
       getTokenAddress(chainId, TOKENS.STETH),
     );
   }, [chainId]);
+
   const lidoApr = useLidoApr();
   const lidoStats = useLidoStats();
 
-  if (
-    dynamics.ipfsMode &&
-    isStatItemNotAvailable(lidoApr.apr) &&
-    isStatItemNotAvailable(lidoStats.data.totalStaked) &&
-    isStatItemNotAvailable(lidoStats.data.stakers) &&
-    isStatItemNotAvailable(lidoStats.data.marketCap)
-  ) {
+  const showApr =
+    !dynamics.ipfsMode ||
+    (dynamics.ipfsMode && !isStatItemNotAvailable(lidoApr.apr));
+  const showTotalStaked =
+    !dynamics.ipfsMode ||
+    (dynamics.ipfsMode && !isStatItemNotAvailable(lidoStats.data.totalStaked));
+  const showStakers =
+    !dynamics.ipfsMode ||
+    (dynamics.ipfsMode && !isStatItemNotAvailable(lidoStats.data.stakers));
+  const showMarketCap =
+    !dynamics.ipfsMode ||
+    (dynamics.ipfsMode && !isStatItemNotAvailable(lidoStats.data.marketCap));
+
+  if (!showApr && !showTotalStaked && !showStakers && !showMarketCap) {
     return null;
   }
 
@@ -59,7 +67,7 @@ export const LidoStats: FC = memo(() => {
     >
       <Block>
         <DataTable>
-          {dynamics.ipfsMode && !isStatItemNotAvailable(lidoApr.apr) && (
+          {showApr && (
             <DataTableRow
               title={
                 <FlexCenterVertical data-testid="aprTooltip">
@@ -77,38 +85,35 @@ export const LidoStats: FC = memo(() => {
             </DataTableRow>
           )}
 
-          {dynamics.ipfsMode &&
-            !isStatItemNotAvailable(lidoStats.data.totalStaked) && (
-              <DataTableRow
-                title="Total staked with Lido"
-                data-testid="totalStaked"
-                loading={lidoStats.initialLoading}
-              >
-                {lidoStats.data.totalStaked}
-              </DataTableRow>
-            )}
+          {showTotalStaked && (
+            <DataTableRow
+              title="Total staked with Lido"
+              data-testid="totalStaked"
+              loading={lidoStats.initialLoading}
+            >
+              {lidoStats.data.totalStaked}
+            </DataTableRow>
+          )}
 
-          {dynamics.ipfsMode &&
-            !isStatItemNotAvailable(lidoStats.data.stakers) && (
-              <DataTableRow
-                title="Stakers"
-                data-testid="stakers"
-                loading={lidoStats.initialLoading}
-              >
-                {lidoStats.data.stakers}
-              </DataTableRow>
-            )}
+          {showStakers && (
+            <DataTableRow
+              title="Stakers"
+              data-testid="stakers"
+              loading={lidoStats.initialLoading}
+            >
+              {lidoStats.data.stakers}
+            </DataTableRow>
+          )}
 
-          {dynamics.ipfsMode &&
-            !isStatItemNotAvailable(lidoStats.data.marketCap) && (
-              <DataTableRow
-                title="stETH market cap"
-                data-testid="stEthMarketCap"
-                loading={lidoStats.initialLoading}
-              >
-                {lidoStats.data.marketCap}
-              </DataTableRow>
-            )}
+          {showMarketCap && (
+            <DataTableRow
+              title="stETH market cap"
+              data-testid="stEthMarketCap"
+              loading={lidoStats.initialLoading}
+            >
+              {lidoStats.data.marketCap}
+            </DataTableRow>
+          )}
         </DataTable>
       </Block>
     </Section>
