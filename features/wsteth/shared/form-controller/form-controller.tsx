@@ -1,11 +1,11 @@
-import { FC, PropsWithChildren, useCallback, useEffect, useMemo } from 'react';
+import { FC, PropsWithChildren, useEffect, useMemo } from 'react';
 import { useWeb3 } from 'reef-knot/web3-react';
-import { useFormContext } from 'react-hook-form';
+import { UseFormReset, useFormContext } from 'react-hook-form';
 import { useTransactionModal } from 'shared/transaction-modal';
 import { useFormControllerContext } from './form-controller-context';
 
 type FormControllerProps = {
-  reset?: () => void;
+  reset?: UseFormReset<Record<string, any>>;
 };
 
 export const FormController: FC<PropsWithChildren<FormControllerProps>> = ({
@@ -17,13 +17,7 @@ export const FormController: FC<PropsWithChildren<FormControllerProps>> = ({
   const { onSubmit } = useFormControllerContext();
   const { dispatchModalState } = useTransactionModal();
 
-  const reset = useCallback(() => {
-    if (resetProp) {
-      resetProp();
-    } else {
-      resetDefault();
-    }
-  }, [resetDefault, resetProp]);
+  const reset = resetProp ?? resetDefault;
 
   // Bind submit action
   const doSubmit = useMemo(
@@ -43,7 +37,10 @@ export const FormController: FC<PropsWithChildren<FormControllerProps>> = ({
   // Reset form amount after disconnect wallet
   useEffect(() => {
     if (!active) reset();
-  }, [active, reset]);
+    // reset will be captured when active changes
+    // so we don't need it in deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [active]);
 
   return (
     <form autoComplete="off" onSubmit={doSubmit}>

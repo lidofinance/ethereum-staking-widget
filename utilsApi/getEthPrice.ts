@@ -1,8 +1,8 @@
-import { CHAINS } from 'utils/chains';
-import { getAggregatorAddress, getAggregatorContractFactory } from 'config';
 import { getStaticRpcBatchProvider } from './rpcProviders';
 import { rpcUrls } from './rpcUrls';
 import { iterateUrls } from '@lidofinance/rpc';
+import { getAggregatorContract } from '@lido-sdk/contracts';
+import { CHAINS, getAggregatorAddress } from '@lido-sdk/constants';
 
 export const getEthPrice = async (): Promise<number> => {
   const urls = rpcUrls[CHAINS.Mainnet];
@@ -14,8 +14,7 @@ const getEthPriceWithFallbacks = async (url: string): Promise<number> => {
   const chainId = CHAINS.Mainnet;
   const staticProvider = getStaticRpcBatchProvider(chainId, url);
 
-  const contractFactory = getAggregatorContractFactory();
-  const contract = contractFactory.connect(address, staticProvider);
+  const contract = getAggregatorContract(address, staticProvider);
 
   // TODO: maybe without Promise.all
   const [decimals, latestAnswer] = await Promise.all([
