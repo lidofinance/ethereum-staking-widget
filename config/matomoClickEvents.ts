@@ -12,6 +12,7 @@ export const enum MATOMO_CLICK_EVENTS_TYPES {
   l2BannerStake = 'l2BannerStake',
   l2LowFeeStake = 'l2LowFeeStake',
   l2LowFeeWrap = 'l2LowFeeWrap',
+  l2swap = 'l2swap',
   // FAQ
   faqSafeWorkWithLidoAudits = 'faqSafeWorkWithLidoAudits',
   faqLidoEthAprEthLandingPage = 'faqLidoEthAprEthLandingPage',
@@ -112,6 +113,11 @@ export const MATOMO_CLICK_EVENTS: Record<
     'Ethereum_Staking_Widget',
     'Push «Learn more» in Unlock Low-Fee transactions on L2 on Transaction success banner on "Wrap" tab',
     'eth_widget_banner_learn_more_L2_wrap',
+  ],
+  [MATOMO_CLICK_EVENTS_TYPES.l2swap]: [
+    'Ethereum_Staking_Widget',
+    'Push «Swap» in Swap ETH to wstETH on L2 banner on staking widget',
+    'eth_widget_banner_swap_ETH_on_L2',
   ],
   // FAQ
   [MATOMO_CLICK_EVENTS_TYPES.faqSafeWorkWithLidoAudits]: [
