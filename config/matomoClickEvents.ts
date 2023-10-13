@@ -40,8 +40,6 @@ export const enum MATOMO_CLICK_EVENTS_TYPES {
   wrapTokenSelectETH = 'wrapTokenSelectEth',
   // Unwrap tab
   l2BannerUnwrap = 'l2BannerUnwrap',
-  // /rewards page
-  calculateRewards = 'calculateRewards',
 
   // /withdrawal page
   withdrawalUseLido = 'withdrawalUseLido',
@@ -241,12 +239,6 @@ export const MATOMO_CLICK_EVENTS: Record<
     'Ethereum_Staking_Widget',
     'Push "Learn more" at the L2 banner on "Unwrap" tab',
     'eth_widget_banner_l2_unwrap',
-  ],
-  // /rewards page
-  [MATOMO_CLICK_EVENTS_TYPES.calculateRewards]: [
-    'Ethereum_Staking_Widget',
-    'Push calculate reward button" ',
-    'eth_widget_calculate_reward',
   ],
 
   // /withdrawal page
