@@ -1,4 +1,5 @@
 import { FC } from 'react';
+import { ThemeProvider, themeDark } from '@lidofinance/lido-ui';
 import { trackEvent } from '@lidofinance/analytics-matomo';
 import { MATOMO_CLICK_EVENTS } from 'config';
 
@@ -26,21 +27,23 @@ export const L2Swap: FC = () => {
 
   return (
     <Wrapper data-testid="l2SwapBanner">
-      <ContentWrap>
-        <TextWrap>
-          <TextHeader>Swap ETH to wstETH on L2</TextHeader>
-          Swap ETH to wstETH directly on L2 and use wstETH in DeFi enjoying low
-          gas fees opportunities
-        </TextWrap>
-        <ButtonWrap>
-          <ButtonLinkWrap {...linkProps} onClick={linkClickHandler}>
-            <ButtonStyle data-testid="l2Swap" size="sm" color="secondary">
-              Swap
-            </ButtonStyle>
-          </ButtonLinkWrap>
-        </ButtonWrap>
-      </ContentWrap>
-      <L2Icons />
+      <ThemeProvider theme={themeDark}>
+        <ContentWrap>
+          <TextWrap>
+            <TextHeader>Swap ETH to wstETH on L2</TextHeader>
+            Swap ETH to wstETH directly on L2 and use wstETH in DeFi enjoying
+            low gas fees opportunities
+          </TextWrap>
+          <ButtonWrap>
+            <ButtonLinkWrap {...linkProps} onClick={linkClickHandler}>
+              <ButtonStyle data-testid="l2Swap" size="sm" color="secondary">
+                Swap
+              </ButtonStyle>
+            </ButtonLinkWrap>
+          </ButtonWrap>
+        </ContentWrap>
+        <L2Icons />
+      </ThemeProvider>
     </Wrapper>
   );
 };

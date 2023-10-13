@@ -1,4 +1,5 @@
 import { FC, useCallback } from 'react';
+import { ThemeProvider, themeDark } from '@lidofinance/lido-ui';
 import { trackEvent } from '@lidofinance/analytics-matomo';
 import { MATOMO_CLICK_EVENTS } from 'config';
 
@@ -39,20 +40,22 @@ export const L2LowFee: FC<L2LowFeeProps> = ({ token }) => {
 
   return (
     <Wrapper data-testid="l2LowFeeBanner">
-      <ContentWrap>
-        <TextWrap>
-          <TextHeader>Unlock Low-Fee transactions on L2</TextHeader>
-          {text}
-        </TextWrap>
-        <ButtonWrap>
-          <ButtonLinkWrap {...linkProps} onClick={linkClickHandler}>
-            <ButtonStyle data-testid="l2LowFee" size="sm" color="secondary">
-              Learn more
-            </ButtonStyle>
-          </ButtonLinkWrap>
-        </ButtonWrap>
-      </ContentWrap>
-      <L2Icons />
+      <ThemeProvider theme={themeDark}>
+        <ContentWrap>
+          <TextWrap>
+            <TextHeader>Unlock Low-Fee transactions on L2</TextHeader>
+            {text}
+          </TextWrap>
+          <ButtonWrap>
+            <ButtonLinkWrap {...linkProps} onClick={linkClickHandler}>
+              <ButtonStyle data-testid="l2LowFee" size="sm" color="secondary">
+                Learn more
+              </ButtonStyle>
+            </ButtonLinkWrap>
+          </ButtonWrap>
+        </ContentWrap>
+        <L2Icons />
+      </ThemeProvider>
     </Wrapper>
   );
 };
