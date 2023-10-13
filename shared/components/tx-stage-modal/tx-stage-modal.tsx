@@ -3,7 +3,7 @@ import { useConnectorInfo } from 'reef-knot/web3-react';
 import { use1inchLinkProps } from 'features/home/hooks';
 
 import { TxLinkEtherscan } from 'shared/components/tx-link-etherscan';
-import { ModalPoolBanners } from 'shared/banners';
+import { L2LowFee } from 'shared/banners';
 import { TxStageModalShape } from './tx-stage-modal-shape';
 import { ErrorMessage, formatBalance, formatBalanceString } from 'utils';
 import { ModalProps } from '@lidofinance/lido-ui';
@@ -34,7 +34,7 @@ interface TxStageModalProps extends ModalProps {
   willReceiveAmountToken?: string;
   txHash?: string | null;
   balance?: BigNumber;
-  balanceToken?: string;
+  balanceToken?: 'stETH' | 'wstETH';
   allowanceAmount?: BigNumber;
   failedText?: string | null;
   onRetry: React.MouseEventHandler;
@@ -183,7 +183,7 @@ export const TxStageModal = memo((props: TxStageModalProps) => {
           </>
         }
         description={successText}
-        footer={<ModalPoolBanners />}
+        footer={<L2LowFee token={balanceToken || 'stETH'} />}
       />
     );
   }
