@@ -145,8 +145,8 @@ export default withBundleAnalyzer({
         headers: [{ key: 'Access-Control-Allow-Origin', value: '*' }],
       },
       {
-        // oneinch-rate is public (firstly for IPFS version)
-        source: '/api/oneinch-rate',
+        // is public (firstly for IPFS version)
+        source: '/api/short-lido-stats',
         headers: [
           { key: 'Access-Control-Allow-Origin', value: '*' },
           { key: 'Access-Control-Allow-Methods', value: 'GET' }
