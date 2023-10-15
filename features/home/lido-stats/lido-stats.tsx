@@ -31,16 +31,24 @@ export const LidoStats: FC = memo(() => {
       getTokenAddress(chainId, TOKENS.STETH),
     );
   }, [chainId]);
+
   const lidoApr = useLidoApr();
   const lidoStats = useLidoStats();
 
-  if (
-    dynamics.ipfsMode &&
-    isStatItemNotAvailable(lidoApr.apr) &&
-    isStatItemNotAvailable(lidoStats.data.totalStaked) &&
-    isStatItemNotAvailable(lidoStats.data.stakers) &&
-    isStatItemNotAvailable(lidoStats.data.marketCap)
-  ) {
+  const showApr =
+    !dynamics.ipfsMode ||
+    (dynamics.ipfsMode && !isStatItemNotAvailable(lidoApr.apr));
+  const showTotalStaked =
+    !dynamics.ipfsMode ||
+    (dynamics.ipfsMode && !isStatItemNotAvailable(lidoStats.data.totalStaked));
+  const showStakers =
+    !dynamics.ipfsMode ||
+    (dynamics.ipfsMode && !isStatItemNotAvailable(lidoStats.data.stakers));
+  const showMarketCap =
+    !dynamics.ipfsMode ||
+    (dynamics.ipfsMode && !isStatItemNotAvailable(lidoStats.data.marketCap));
+
+  if (!showApr && !showTotalStaked && !showStakers && !showMarketCap) {
     return null;
   }
 
@@ -59,42 +67,53 @@ export const LidoStats: FC = memo(() => {
     >
       <Block>
         <DataTable>
-          <DataTableRow
-            title={
-              <FlexCenterVertical data-testid="aprTooltip">
-                Annual percentage rate
-                <Tooltip title={LIDO_APR_TOOLTIP_TEXT}>
-                  <Question />
-                </Tooltip>
-              </FlexCenterVertical>
-            }
-            loading={lidoApr.initialLoading}
-            data-testid="lidoAPR"
-            highlight
-          >
-            {lidoApr.apr ? `${lidoApr.apr}%` : DATA_UNAVAILABLE}
-          </DataTableRow>
-          <DataTableRow
-            title="Total staked with Lido"
-            data-testid="totalStaked"
-            loading={lidoStats.initialLoading}
-          >
-            {lidoStats.data.totalStaked}
-          </DataTableRow>
-          <DataTableRow
-            title="Stakers"
-            data-testid="stakers"
-            loading={lidoStats.initialLoading}
-          >
-            {lidoStats.data.stakers}
-          </DataTableRow>
-          <DataTableRow
-            title="stETH market cap"
-            data-testid="stEthMarketCap"
-            loading={lidoStats.initialLoading}
-          >
-            {lidoStats.data.marketCap}
-          </DataTableRow>
+          {showApr && (
+            <DataTableRow
+              title={
+                <FlexCenterVertical data-testid="aprTooltip">
+                  Annual percentage rate
+                  <Tooltip title={LIDO_APR_TOOLTIP_TEXT}>
+                    <Question />
+                  </Tooltip>
+                </FlexCenterVertical>
+              }
+              loading={lidoApr.initialLoading}
+              data-testid="lidoAPR"
+              highlight
+            >
+              {lidoApr.apr ? `${lidoApr.apr}%` : DATA_UNAVAILABLE}
+            </DataTableRow>
+          )}
+
+          {showTotalStaked && (
+            <DataTableRow
+              title="Total staked with Lido"
+              data-testid="totalStaked"
+              loading={lidoStats.initialLoading}
+            >
+              {lidoStats.data.totalStaked}
+            </DataTableRow>
+          )}
+
+          {showStakers && (
+            <DataTableRow
+              title="Stakers"
+              data-testid="stakers"
+              loading={lidoStats.initialLoading}
+            >
+              {lidoStats.data.stakers}
+            </DataTableRow>
+          )}
+
+          {showMarketCap && (
+            <DataTableRow
+              title="stETH market cap"
+              data-testid="stEthMarketCap"
+              loading={lidoStats.initialLoading}
+            >
+              {lidoStats.data.marketCap}
+            </DataTableRow>
+          )}
         </DataTable>
       </Block>
     </Section>
