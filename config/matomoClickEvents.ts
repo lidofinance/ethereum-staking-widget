@@ -10,6 +10,9 @@ export const enum MATOMO_CLICK_EVENTS_TYPES {
   oneInchDiscount = 'oneInchDiscount',
   viewEtherscanOnStakePage = 'viewEtherscanOnStakePage',
   l2BannerStake = 'l2BannerStake',
+  l2LowFeeStake = 'l2LowFeeStake',
+  l2LowFeeWrap = 'l2LowFeeWrap',
+  l2swap = 'l2swap',
   // FAQ
   faqSafeWorkWithLidoAudits = 'faqSafeWorkWithLidoAudits',
   faqLidoEthAprEthLandingPage = 'faqLidoEthAprEthLandingPage',
@@ -37,8 +40,6 @@ export const enum MATOMO_CLICK_EVENTS_TYPES {
   wrapTokenSelectETH = 'wrapTokenSelectEth',
   // Unwrap tab
   l2BannerUnwrap = 'l2BannerUnwrap',
-  // /rewards page
-  calculateRewards = 'calculateRewards',
 
   // /withdrawal page
   withdrawalUseLido = 'withdrawalUseLido',
@@ -100,6 +101,21 @@ export const MATOMO_CLICK_EVENTS: Record<
     'Ethereum_Staking_Widget',
     'Push "Learn more" at the L2 banner on "Stake" tab',
     'eth_widget_banner_l2_stake',
+  ],
+  [MATOMO_CLICK_EVENTS_TYPES.l2LowFeeStake]: [
+    'Ethereum_Staking_Widget',
+    'Push «Learn more» in Unlock Low-Fee transactions on L2 on Transaction success banner on "Stake" tab',
+    'eth_widget_banner_learn_more_L2_stake',
+  ],
+  [MATOMO_CLICK_EVENTS_TYPES.l2LowFeeWrap]: [
+    'Ethereum_Staking_Widget',
+    'Push «Learn more» in Unlock Low-Fee transactions on L2 on Transaction success banner on "Wrap" tab',
+    'eth_widget_banner_learn_more_L2_wrap',
+  ],
+  [MATOMO_CLICK_EVENTS_TYPES.l2swap]: [
+    'Ethereum_Staking_Widget',
+    'Push «Swap» in Swap ETH to wstETH on L2 banner on staking widget',
+    'eth_widget_banner_swap_ETH_on_L2',
   ],
   // FAQ
   [MATOMO_CLICK_EVENTS_TYPES.faqSafeWorkWithLidoAudits]: [
@@ -223,12 +239,6 @@ export const MATOMO_CLICK_EVENTS: Record<
     'Ethereum_Staking_Widget',
     'Push "Learn more" at the L2 banner on "Unwrap" tab',
     'eth_widget_banner_l2_unwrap',
-  ],
-  // /rewards page
-  [MATOMO_CLICK_EVENTS_TYPES.calculateRewards]: [
-    'Ethereum_Staking_Widget',
-    'Push calculate reward button" ',
-    'eth_widget_calculate_reward',
   ],
 
   // /withdrawal page
