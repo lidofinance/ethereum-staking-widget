@@ -62,7 +62,7 @@ const shortLidoStats: API = async (req, res) => {
 
 export default wrapNextRequest([
   httpMethodGuard([HttpMethod.GET]),
-  cors({ origin: ['*'], methods: [HttpMethod.GET] }),
+  cors({ origin: ['*'], methods: [HttpMethod.GET], credentials: true }),
   rateLimit,
   responseTimeMetric(Metrics.request.apiTimings, API_ROUTES.SHORT_LIDO_STATS),
   ...errorAndCacheDefaultWrappers,
