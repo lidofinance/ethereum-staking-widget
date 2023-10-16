@@ -71,7 +71,7 @@ export const cors =
 
 export const httpMethodGuard =
   (methodWhitelist: HttpMethod[]): RequestWrapper =>
-  async (req, res) => {
+  async (req, res, next) => {
     if (
       !req ||
       !req.method ||
@@ -80,6 +80,8 @@ export const httpMethodGuard =
       res.status(405);
       throw new Error(`You can use only: ${methodWhitelist.toString()}`);
     }
+
+    await next?.(req, res, next);
   };
 
 export const responseTimeMetric =
