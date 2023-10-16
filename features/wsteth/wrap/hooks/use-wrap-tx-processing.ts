@@ -1,15 +1,19 @@
+import { useCallback } from 'react';
 import invariant from 'tiny-invariant';
 
-import { useCallback } from 'react';
+import type { Web3Provider } from '@ethersproject/providers';
 import { useSDK, useWSTETHContractWeb3 } from '@lido-sdk/react';
+import { getTokenAddress, TOKENS } from '@lido-sdk/constants';
+import { StaticJsonRpcBatchProvider } from '@lidofinance/eth-providers';
 
 import { getFeeData } from 'utils/getFeeData';
-import { getTokenAddress, TOKENS } from '@lido-sdk/constants';
-import type { CHAINS } from '@lido-sdk/constants';
+
 import type { WrapFormInputType } from '../wrap-form-context';
 
-export const getGasParameters = async (chainId: CHAINS) => {
-  const feeData = await getFeeData(chainId);
+export const getGasParameters = async (
+  provider: StaticJsonRpcBatchProvider | Web3Provider,
+) => {
+  const feeData = await getFeeData(provider);
   return {
     maxPriorityFeePerGas: feeData.maxPriorityFeePerGas ?? undefined,
     maxFeePerGas: feeData.maxFeePerGas ?? undefined,
@@ -38,7 +42,7 @@ export const useWrapTxProcessing = () => {
         } else {
           return wstethContractWeb3.wrap(
             amount,
-            await getGasParameters(chainId),
+            await getGasParameters(providerWeb3),
           );
         }
       } else {
@@ -52,7 +56,7 @@ export const useWrapTxProcessing = () => {
           return wstethContractWeb3.signer.sendTransaction({
             to: wstethTokenAddress,
             value: amount,
-            ...(await getGasParameters(chainId)),
+            ...(await getGasParameters(providerWeb3)),
           });
         }
       }

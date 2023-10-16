@@ -2,17 +2,17 @@ import { AddressZero } from '@ethersproject/constants';
 import { useLidoSWR, useSTETHContractRPC } from '@lido-sdk/react';
 import { ESTIMATE_ACCOUNT, STETH_SUBMIT_GAS_LIMIT_DEFAULT } from 'config';
 import { parseEther } from '@ethersproject/units';
-import { useWeb3 } from 'reef-knot/web3-react';
 import { BigNumber } from 'ethers';
 import { getFeeData } from 'utils/getFeeData';
-import { CHAINS } from '@lido-sdk/constants';
+import { useCurrentProvider } from 'shared/hooks/use-current-provider';
 
 type UseStethSubmitGasLimit = () => number | undefined;
 
 export const useStethSubmitGasLimit: UseStethSubmitGasLimit = () => {
   const stethContractRPC = useSTETHContractRPC();
 
-  const { chainId } = useWeb3();
+  const { chainId, provider } = useCurrentProvider();
+
   const { data } = useLidoSWR(
     ['swr:submit-gas-limit', chainId],
     async (_key, chainId) => {
@@ -20,7 +20,7 @@ export const useStethSubmitGasLimit: UseStethSubmitGasLimit = () => {
         return;
       }
 
-      const feeData = await getFeeData(chainId as CHAINS);
+      const feeData = await getFeeData(provider);
       const maxPriorityFeePerGas = feeData.maxPriorityFeePerGas ?? undefined;
       const maxFeePerGas = feeData.maxFeePerGas ?? undefined;
 

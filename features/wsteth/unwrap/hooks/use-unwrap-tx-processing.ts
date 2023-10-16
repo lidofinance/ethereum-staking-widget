@@ -1,9 +1,10 @@
+import { useCallback } from 'react';
 import invariant from 'tiny-invariant';
 
-import { useCallback } from 'react';
 import { useSDK, useWSTETHContractWeb3 } from '@lido-sdk/react';
 
 import { getFeeData } from 'utils/getFeeData';
+
 import type { UnwrapFormInputType } from '../unwrap-form-context';
 
 type UnwrapTxProcessorArgs = UnwrapFormInputType & {
@@ -26,7 +27,7 @@ export const useUnwrapTxProcessing = () => {
         return providerWeb3.getSigner().sendUncheckedTransaction(tx);
       } else {
         const { maxFeePerGas, maxPriorityFeePerGas } = await getFeeData(
-          chainId,
+          providerWeb3,
         );
         return wstethContractWeb3.unwrap(amount, {
           maxPriorityFeePerGas: maxPriorityFeePerGas ?? undefined,

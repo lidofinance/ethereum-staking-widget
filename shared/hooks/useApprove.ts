@@ -69,7 +69,7 @@ export const useApprove = (
           return hash;
         } else {
           const { maxFeePerGas, maxPriorityFeePerGas } = await getFeeData(
-            chainId,
+            providerWeb3,
           );
           const tx = await contractWeb3.approve(spender, amount, {
             maxFeePerGas,

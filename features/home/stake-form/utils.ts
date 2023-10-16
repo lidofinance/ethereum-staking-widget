@@ -94,7 +94,7 @@ export const stakeProcessing: StakeProcessingProps = async (
         );
         return providerWeb3.getSigner().sendUncheckedTransaction(tx);
       } else {
-        const feeData = await getFeeData(chainId);
+        const feeData = await getFeeData(providerWeb3);
         const maxPriorityFeePerGas = feeData.maxPriorityFeePerGas ?? undefined;
         const maxFeePerGas = feeData.maxFeePerGas ?? undefined;
         const overrides = {

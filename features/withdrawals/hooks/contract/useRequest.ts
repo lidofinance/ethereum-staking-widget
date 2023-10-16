@@ -2,29 +2,29 @@ import { useCallback } from 'react';
 import { BigNumber } from 'ethers';
 import invariant from 'tiny-invariant';
 import { useWeb3 } from 'reef-knot/web3-react';
+import { useAccount } from 'wagmi';
+import { Zero } from '@ethersproject/constants';
 import {
   useSDK,
   useSTETHContractRPC,
   useWSTETHContractRPC,
 } from '@lido-sdk/react';
 import { TOKENS, getWithdrawalQueueAddress } from '@lido-sdk/constants';
-import { useAccount } from 'wagmi';
 
+import { TokensWithdrawable } from 'features/withdrawals/types/tokens-withdrawable';
+import { useWithdrawals } from 'features/withdrawals/contexts/withdrawals-context';
 import {
   GatherPermitSignatureResult,
   useERC20PermitSignature,
 } from 'shared/hooks';
 import { useIsMultisig } from 'shared/hooks/useIsMultisig';
+import { useTransactionModal, TX_OPERATION } from 'shared/transaction-modal';
+import { useApprove } from 'shared/hooks/useApprove';
 import { getErrorMessage, runWithTransactionLogger } from 'utils';
 import { isContract } from 'utils/isContract';
-import { useTransactionModal, TX_OPERATION } from 'shared/transaction-modal';
-import { useWithdrawals } from 'features/withdrawals/contexts/withdrawals-context';
+import { getFeeData } from 'utils/getFeeData';
 
 import { useWithdrawalsContract } from './useWithdrawalsContract';
-import { useApprove } from 'shared/hooks/useApprove';
-import { getFeeData } from 'utils/getFeeData';
-import { Zero } from '@ethersproject/constants';
-import { TokensWithdrawable } from 'features/withdrawals/types/tokens-withdrawable';
 
 // this encapsulates permit/approval & steth/wsteth flows
 const useWithdrawalRequestMethods = () => {
@@ -43,6 +43,7 @@ const useWithdrawalRequestMethods = () => {
       invariant(account, 'must have account');
       invariant(signature, 'must have signature');
       invariant(contractWeb3, 'must have contractWeb3');
+      invariant(providerWeb3, 'must have providerWeb3');
 
       dispatchModalState({ type: 'signing', operation: TX_OPERATION.CONTRACT });
 
@@ -58,7 +59,9 @@ const useWithdrawalRequestMethods = () => {
         },
       ] as const;
 
-      const { maxFeePerGas, maxPriorityFeePerGas } = await getFeeData(chainId);
+      const { maxFeePerGas, maxPriorityFeePerGas } = await getFeeData(
+        providerWeb3,
+      );
       const gasLimit =
         await contractWeb3.estimateGas.requestWithdrawalsWithPermit(...params, {
           maxFeePerGas,
@@ -84,7 +87,7 @@ const useWithdrawalRequestMethods = () => {
         transaction.wait(),
       );
     },
-    [account, chainId, contractWeb3, dispatchModalState],
+    [account, chainId, contractWeb3, dispatchModalState, providerWeb3],
   );
 
   const permitWsteth = useCallback(
@@ -99,6 +102,7 @@ const useWithdrawalRequestMethods = () => {
       invariant(account, 'must have account');
       invariant(signature, 'must have signature');
       invariant(contractWeb3, 'must have contractWeb3');
+      invariant(providerWeb3, 'must have providerWeb3');
 
       const params = [
         requests,
@@ -112,7 +116,7 @@ const useWithdrawalRequestMethods = () => {
         },
       ] as const;
 
-      const feeData = await getFeeData(chainId);
+      const feeData = await getFeeData(providerWeb3);
       const maxFeePerGas = feeData.maxFeePerGas ?? undefined;
       const maxPriorityFeePerGas = feeData.maxPriorityFeePerGas ?? undefined;
       const gasLimit =
@@ -145,7 +149,7 @@ const useWithdrawalRequestMethods = () => {
         transaction.wait(),
       );
     },
-    [account, chainId, contractWeb3, dispatchModalState],
+    [account, chainId, contractWeb3, dispatchModalState, providerWeb3],
   );
 
   const steth = useCallback(
@@ -168,7 +172,7 @@ const useWithdrawalRequestMethods = () => {
           return providerWeb3?.getSigner().sendUncheckedTransaction(tx);
         } else {
           const { maxFeePerGas, maxPriorityFeePerGas } = await getFeeData(
-            chainId,
+            providerWeb3,
           );
           const gasLimit = await contractWeb3.estimateGas.requestWithdrawals(
             ...params,
@@ -222,7 +226,7 @@ const useWithdrawalRequestMethods = () => {
           return providerWeb3?.getSigner().sendUncheckedTransaction(tx);
         } else {
           const { maxFeePerGas, maxPriorityFeePerGas } = await getFeeData(
-            chainId,
+            providerWeb3,
           );
           const gasLimit =
             await contractWeb3.estimateGas.requestWithdrawalsWstETH(...params, {

@@ -1,7 +1,5 @@
 import { BigNumber } from 'ethers';
-import { CHAINS } from '@lido-sdk/constants';
-import { getStaticRpcBatchProvider } from '@lido-sdk/providers';
-import { getBackendRPCPath } from 'config';
+import type { Web3Provider } from '@ethersproject/providers';
 import { StaticJsonRpcBatchProvider } from '@lidofinance/eth-providers';
 
 type FeeData = {
@@ -12,7 +10,7 @@ type FeeData = {
 };
 
 const getFeeHistory = (
-  provider: StaticJsonRpcBatchProvider,
+  provider: StaticJsonRpcBatchProvider | Web3Provider,
   blockCount: number,
   latestBlock: string,
   percentile: number[],
@@ -29,12 +27,9 @@ const getFeeHistory = (
   }>;
 };
 
-export const getFeeData = async (chainId: CHAINS): Promise<FeeData> => {
-  const provider = getStaticRpcBatchProvider(
-    chainId,
-    getBackendRPCPath(chainId),
-  );
-
+export const getFeeData = async (
+  provider: StaticJsonRpcBatchProvider | Web3Provider,
+): Promise<FeeData> => {
   // we look back 5 blocks at fees of botton 25% txs
   // if you want to increase maxPriorityFee output increase percentile
   const feeHistory = await getFeeHistory(provider, 5, 'pending', [25]);
