@@ -1,21 +1,21 @@
+import { BigNumber } from 'ethers';
+import { isAddress } from 'ethers/lib/utils';
+import invariant from 'tiny-invariant';
+
 import { AddressZero } from '@ethersproject/constants';
 import { parseEther } from '@ethersproject/units';
-import { isAddress } from 'ethers/lib/utils';
+import type { Web3Provider } from '@ethersproject/providers';
+import { StaticJsonRpcBatchProvider } from '@lidofinance/eth-providers';
 import { StethAbi } from '@lido-sdk/contracts';
-import { CHAINS } from '@lido-sdk/constants';
-import { getStaticRpcBatchProvider } from '@lido-sdk/providers';
+
+import { TX_STAGE } from 'shared/components';
 import {
   enableQaHelpers,
   ErrorMessage,
   getErrorMessage,
   runWithTransactionLogger,
 } from 'utils';
-import { getBackendRPCPath } from 'config';
-import { TX_STAGE } from 'shared/components';
-import { BigNumber } from 'ethers';
-import invariant from 'tiny-invariant';
 import { getFeeData } from 'utils/getFeeData';
-import type { Web3Provider } from '@ethersproject/providers';
 
 const SUBMIT_EXTRA_GAS_TRANSACTION_RATIO = 1.05;
 
@@ -36,16 +36,12 @@ type StakeProcessingProps = (
 
 export const getAddress = async (
   input: string | undefined,
-  chainId: CHAINS | undefined,
+  provider: StaticJsonRpcBatchProvider | Web3Provider,
 ): Promise<string> => {
-  if (!input || !chainId) return '';
+  if (!input) return '';
   if (isAddress(input)) return input;
 
   try {
-    const provider = getStaticRpcBatchProvider(
-      chainId,
-      getBackendRPCPath(chainId),
-    );
     const address = await provider.resolveName(input);
 
     if (address) return address;
@@ -83,7 +79,7 @@ export const stakeProcessing: StakeProcessingProps = async (
     invariant(chainId);
     invariant(providerWeb3);
 
-    const referralAddress = await getAddress(refFromQuery, chainId);
+    const referralAddress = await getAddress(refFromQuery, providerWeb3);
     const callback = async () => {
       if (isMultisig) {
         const tx = await stethContractWeb3.populateTransaction.submit(
