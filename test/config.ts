@@ -10,7 +10,7 @@ const STAND_CONFIGS = new Map<string, StandConfig>([
     },
   ],
   [
-    'staging',
+    'staging-critical',
     {
       chainId: 1,
     },
