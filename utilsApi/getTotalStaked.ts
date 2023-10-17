@@ -6,8 +6,10 @@ import { CHAINS } from 'utils/chains';
 import { HEALTHY_RPC_SERVICES_ARE_OVER } from 'config';
 import { rpcUrls } from './rpcUrls';
 
-export const getTotalStaked = async (chainId?: CHAINS): Promise<string> => {
-  const urls = rpcUrls[chainId || CHAINS.Mainnet];
+export const getTotalStaked = async (
+  chainId = CHAINS.Mainnet,
+): Promise<string> => {
+  const urls = rpcUrls[chainId];
   return getTotalStakedWithFallbacks(urls, 0, chainId);
 };
 
@@ -32,6 +34,6 @@ const getTotalStakedWithFallbacks = async (
       console.error(error);
       throw new Error(error);
     }
-    return await getTotalStakedWithFallbacks(urls, urlIndex + 1);
+    return await getTotalStakedWithFallbacks(urls, urlIndex + 1, chainId);
   }
 };
