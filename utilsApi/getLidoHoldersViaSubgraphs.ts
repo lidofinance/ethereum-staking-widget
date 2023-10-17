@@ -23,10 +23,7 @@ interface LidoHolders extends Response {
   };
 }
 
-const cache = new Cache<
-  typeof CACHE_LIDO_HOLDERS_VIA_SUBGRAPHS_KEY,
-  LidoHolders
->();
+const cache = new Cache<string, LidoHolders>();
 
 type GetLidoHoldersViaSubgraphs = (
   chainId: SubgraphChains,
@@ -35,6 +32,8 @@ type GetLidoHoldersViaSubgraphs = (
 export const getLidoHoldersViaSubgraphs: GetLidoHoldersViaSubgraphs = async (
   chainId: SubgraphChains,
 ) => {
+  const cacheKey = `${CACHE_LIDO_HOLDERS_VIA_SUBGRAPHS_KEY}_${chainId}`;
+
   console.debug('[getLidoHoldersViaSubgraphs] Started fetching... ');
   const query = `
     query {
@@ -72,15 +71,11 @@ export const getLidoHoldersViaSubgraphs: GetLidoHoldersViaSubgraphs = async (
 
     console.debug('[getLidoHoldersViaSubgraphs] Lido holders:', responseJsoned);
 
-    cache.put(
-      CACHE_LIDO_HOLDERS_VIA_SUBGRAPHS_KEY,
-      responseJsoned,
-      CACHE_LIDO_HOLDERS_VIA_SUBGRAPHS_TTL,
-    );
+    cache.put(cacheKey, responseJsoned, CACHE_LIDO_HOLDERS_VIA_SUBGRAPHS_TTL);
 
     return responseJsoned;
   } catch (error) {
-    const data = cache.get(CACHE_LIDO_HOLDERS_VIA_SUBGRAPHS_KEY);
+    const data = cache.get(cacheKey);
 
     if (data) {
       console.error(`${SUBGRAPH_ERROR_MESSAGE} Using long-term cache...`);
