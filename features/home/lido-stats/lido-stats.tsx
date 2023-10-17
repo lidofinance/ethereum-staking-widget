@@ -35,18 +35,13 @@ export const LidoStats: FC = memo(() => {
   const lidoApr = useLidoApr();
   const lidoStats = useLidoStats();
 
-  const showApr =
-    !dynamics.ipfsMode ||
-    (dynamics.ipfsMode && !isStatItemNotAvailable(lidoApr.apr));
+  const showApr = !dynamics.ipfsMode || !isStatItemNotAvailable(lidoApr.apr);
   const showTotalStaked =
-    !dynamics.ipfsMode ||
-    (dynamics.ipfsMode && !isStatItemNotAvailable(lidoStats.data.totalStaked));
+    !dynamics.ipfsMode || !isStatItemNotAvailable(lidoStats.data.totalStaked);
   const showStakers =
-    !dynamics.ipfsMode ||
-    (dynamics.ipfsMode && !isStatItemNotAvailable(lidoStats.data.stakers));
+    !dynamics.ipfsMode || !isStatItemNotAvailable(lidoStats.data.stakers);
   const showMarketCap =
-    !dynamics.ipfsMode ||
-    (dynamics.ipfsMode && !isStatItemNotAvailable(lidoStats.data.marketCap));
+    !dynamics.ipfsMode || !isStatItemNotAvailable(lidoStats.data.marketCap);
 
   if (!showApr && !showTotalStaked && !showStakers && !showMarketCap) {
     return null;
