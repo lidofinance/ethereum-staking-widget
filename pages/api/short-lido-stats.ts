@@ -39,7 +39,7 @@ const shortLidoStats: API = async (req, res) => {
   } else {
     const [lidoHolders, totalStaked, stEthPrice] = await parallelizePromises([
       getLidoHoldersViaSubgraphs(chainId),
-      getTotalStaked(),
+      getTotalStaked(chainId),
       getStEthPrice(),
     ]);
 
