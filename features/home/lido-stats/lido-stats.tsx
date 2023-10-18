@@ -19,8 +19,8 @@ import {
 import { useLidoApr, useLidoStats } from 'shared/hooks';
 import { FlexCenterVertical } from './styles';
 
-const isStatItemNotAvailable = (val: unknown) => {
-  return !val || val === 'N/A';
+const isStatItemAvailable = (val: unknown) => {
+  return val && val !== 'N/A';
 };
 
 export const LidoStats: FC = memo(() => {
@@ -35,13 +35,13 @@ export const LidoStats: FC = memo(() => {
   const lidoApr = useLidoApr();
   const lidoStats = useLidoStats();
 
-  const showApr = !dynamics.ipfsMode || !isStatItemNotAvailable(lidoApr.apr);
+  const showApr = !dynamics.ipfsMode || isStatItemAvailable(lidoApr.apr);
   const showTotalStaked =
-    !dynamics.ipfsMode || !isStatItemNotAvailable(lidoStats.data.totalStaked);
+    !dynamics.ipfsMode || isStatItemAvailable(lidoStats.data.totalStaked);
   const showStakers =
-    !dynamics.ipfsMode || !isStatItemNotAvailable(lidoStats.data.stakers);
+    !dynamics.ipfsMode || isStatItemAvailable(lidoStats.data.stakers);
   const showMarketCap =
-    !dynamics.ipfsMode || !isStatItemNotAvailable(lidoStats.data.marketCap);
+    !dynamics.ipfsMode || isStatItemAvailable(lidoStats.data.marketCap);
 
   if (!showApr && !showTotalStaked && !showStakers && !showMarketCap) {
     return null;
