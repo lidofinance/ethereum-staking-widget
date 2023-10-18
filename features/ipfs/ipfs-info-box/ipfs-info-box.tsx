@@ -32,7 +32,8 @@ export const IPFSInfoBox = () => {
   const { data: rpcCheckResult, initialLoading: isLoading } = useLidoSWR(
     `rpc-url-check-${rpcUrl}-${chainId}`,
     async () => {
-      return await checkRpcUrl(rpcUrl, chainId);
+      // TODO
+      return await checkRpcUrl(rpcUrl ?? '', chainId);
     },
   );
 

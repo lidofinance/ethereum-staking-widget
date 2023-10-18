@@ -20,6 +20,7 @@ import { getFeeData } from 'utils/getFeeData';
 const SUBMIT_EXTRA_GAS_TRANSACTION_RATIO = 1.05;
 
 type StakeProcessingProps = (
+  staticRpcProvider: StaticJsonRpcBatchProvider,
   providerWeb3: Web3Provider | undefined,
   stethContractWeb3: StethAbi | null,
   openTxModal: () => void,
@@ -36,7 +37,7 @@ type StakeProcessingProps = (
 
 export const getAddress = async (
   input: string | undefined,
-  provider: StaticJsonRpcBatchProvider | Web3Provider,
+  provider: StaticJsonRpcBatchProvider,
 ): Promise<string> => {
   if (!input) return '';
   if (isAddress(input)) return input;
@@ -61,6 +62,7 @@ class MockLimitReachedError extends Error {
 }
 
 export const stakeProcessing: StakeProcessingProps = async (
+  staticRpcProvider,
   providerWeb3,
   stethContractWeb3,
   openTxModal,
@@ -79,7 +81,7 @@ export const stakeProcessing: StakeProcessingProps = async (
     invariant(chainId);
     invariant(providerWeb3);
 
-    const referralAddress = await getAddress(refFromQuery, providerWeb3);
+    const referralAddress = await getAddress(refFromQuery, staticRpcProvider);
     const callback = async () => {
       if (isMultisig) {
         const tx = await stethContractWeb3.populateTransaction.submit(
@@ -90,7 +92,7 @@ export const stakeProcessing: StakeProcessingProps = async (
         );
         return providerWeb3.getSigner().sendUncheckedTransaction(tx);
       } else {
-        const feeData = await getFeeData(providerWeb3);
+        const feeData = await getFeeData(staticRpcProvider);
         const maxPriorityFeePerGas = feeData.maxPriorityFeePerGas ?? undefined;
         const maxFeePerGas = feeData.maxFeePerGas ?? undefined;
         const overrides = {

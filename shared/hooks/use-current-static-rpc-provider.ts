@@ -5,17 +5,16 @@ import { StaticJsonRpcBatchProvider } from '@lidofinance/eth-providers';
 
 import { useRpcUrl } from 'config';
 
-export const useCurrentProvider = (): {
-  provider: StaticJsonRpcBatchProvider;
+export const useCurrentStaticRpcProvider = (): {
+  staticRpcProvider: StaticJsonRpcBatchProvider;
   chainId: CHAINS;
 } => {
   const { chainId } = useSDK();
   const rpcUrl = useRpcUrl();
 
-  const provider = getStaticRpcBatchProvider(chainId, rpcUrl);
-
   return {
-    provider,
+    // TODO
+    staticRpcProvider: getStaticRpcBatchProvider(chainId, rpcUrl ?? ''),
     chainId,
   };
 };

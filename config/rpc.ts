@@ -4,20 +4,32 @@ import { useSDK } from '@lido-sdk/react';
 import { useCustomConfig } from 'providers/custom-config';
 import { CHAINS } from 'utils/chains';
 
-export const getBackendRPCPath = (chainId: string | number): string => {
+import dynamics from './dynamics';
+
+// export const getRpcUrl = (): string => {
+//   const rpcUrls = getRestoredSettings();
+//   return rpcUrls[dynamics.defaultChain as CHAINS] || dynamics.settingsPrefillRpc;
+// };
+
+export const getBackendRPCPath = (
+  chainId: string | number,
+): string | undefined => {
   const BASE_URL = typeof window === 'undefined' ? '' : window.location.origin;
   return `${BASE_URL}/api/rpc?chainId=${chainId}`;
 };
 
-export const useGetRpcUrl = () => {
+export const useRpcUrlByChainIdGetter = () => {
   const customConfig = useCustomConfig();
   return useCallback(
     (chainId: CHAINS) => {
-      return (
-        customConfig.savedCustomConfig.rpcUrls[chainId] ||
-        customConfig.settingsPrefillRpc ||
-        getBackendRPCPath(chainId)
-      );
+      if (dynamics.ipfsMode) {
+        return (
+          customConfig.savedCustomConfig.rpcUrls[chainId] ||
+          customConfig.settingsPrefillRpc // fallback must be set
+        );
+      } else {
+        return getBackendRPCPath(chainId);
+      }
     },
     [customConfig],
   );
@@ -25,13 +37,7 @@ export const useGetRpcUrl = () => {
 
 export const useRpcUrl = () => {
   const { chainId } = useSDK();
-  const getRpcUrl = useGetRpcUrl();
+  const getRpcUrlByChainId = useRpcUrlByChainIdGetter();
   // TODO: use `satisfies` when will be TS v5
-  return getRpcUrl(chainId as unknown as CHAINS);
-}
-
-export const backendRPC = {
-  [CHAINS.Mainnet]: getBackendRPCPath(CHAINS.Mainnet),
-  [CHAINS.Goerli]: getBackendRPCPath(CHAINS.Goerli),
-  [CHAINS.Holesky]: getBackendRPCPath(CHAINS.Holesky),
+  return getRpcUrlByChainId(chainId as unknown as CHAINS);
 };

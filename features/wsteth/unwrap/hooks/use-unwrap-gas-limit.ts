@@ -4,18 +4,18 @@ import { useLidoSWR, useWSTETHContractRPC } from '@lido-sdk/react';
 
 import { ESTIMATE_ACCOUNT, UNWRAP_GAS_LIMIT } from 'config';
 import { getFeeData } from 'utils/getFeeData';
-import { useCurrentProvider } from 'shared/hooks/use-current-provider';
+import { useCurrentStaticRpcProvider } from 'shared/hooks/use-current-static-rpc-provider';
 
 export const useUnwrapGasLimit = () => {
   const wsteth = useWSTETHContractRPC();
-  const { chainId, provider } = useCurrentProvider();
+  const { chainId, staticRpcProvider } = useCurrentStaticRpcProvider();
 
   const { data } = useLidoSWR(
     ['swr:unwrap-gas-limit', chainId],
     async (_key, chainId) => {
       if (!chainId) return;
       try {
-        const feeData = await getFeeData(provider);
+        const feeData = await getFeeData(staticRpcProvider);
         const maxPriorityFeePerGas = feeData.maxPriorityFeePerGas ?? undefined;
         const maxFeePerGas = feeData.maxFeePerGas ?? undefined;
 

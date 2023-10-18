@@ -19,6 +19,7 @@ import {
 } from 'shared/hooks';
 import { useIsMultisig } from 'shared/hooks/useIsMultisig';
 import { useTransactionModal, TX_OPERATION } from 'shared/transaction-modal';
+import { useCurrentStaticRpcProvider } from 'shared/hooks/use-current-static-rpc-provider';
 import { useApprove } from 'shared/hooks/useApprove';
 import { getErrorMessage, runWithTransactionLogger } from 'utils';
 import { isContract } from 'utils/isContract';
@@ -29,6 +30,7 @@ import { useWithdrawalsContract } from './useWithdrawalsContract';
 // this encapsulates permit/approval & steth/wsteth flows
 const useWithdrawalRequestMethods = () => {
   const { providerWeb3 } = useSDK();
+  const { staticRpcProvider } = useCurrentStaticRpcProvider();
   const { account, chainId, contractWeb3 } = useWithdrawalsContract();
   const { dispatchModalState } = useTransactionModal();
   const permitSteth = useCallback(
@@ -60,7 +62,7 @@ const useWithdrawalRequestMethods = () => {
       ] as const;
 
       const { maxFeePerGas, maxPriorityFeePerGas } = await getFeeData(
-        providerWeb3,
+        staticRpcProvider,
       );
       const gasLimit =
         await contractWeb3.estimateGas.requestWithdrawalsWithPermit(...params, {
@@ -87,7 +89,14 @@ const useWithdrawalRequestMethods = () => {
         transaction.wait(),
       );
     },
-    [account, chainId, contractWeb3, dispatchModalState, providerWeb3],
+    [
+      account,
+      chainId,
+      contractWeb3,
+      dispatchModalState,
+      staticRpcProvider,
+      providerWeb3,
+    ],
   );
 
   const permitWsteth = useCallback(
@@ -116,7 +125,7 @@ const useWithdrawalRequestMethods = () => {
         },
       ] as const;
 
-      const feeData = await getFeeData(providerWeb3);
+      const feeData = await getFeeData(staticRpcProvider);
       const maxFeePerGas = feeData.maxFeePerGas ?? undefined;
       const maxPriorityFeePerGas = feeData.maxPriorityFeePerGas ?? undefined;
       const gasLimit =
@@ -149,7 +158,14 @@ const useWithdrawalRequestMethods = () => {
         transaction.wait(),
       );
     },
-    [account, chainId, contractWeb3, dispatchModalState, providerWeb3],
+    [
+      account,
+      chainId,
+      contractWeb3,
+      dispatchModalState,
+      staticRpcProvider,
+      providerWeb3,
+    ],
   );
 
   const steth = useCallback(
@@ -172,7 +188,7 @@ const useWithdrawalRequestMethods = () => {
           return providerWeb3?.getSigner().sendUncheckedTransaction(tx);
         } else {
           const { maxFeePerGas, maxPriorityFeePerGas } = await getFeeData(
-            providerWeb3,
+            staticRpcProvider,
           );
           const gasLimit = await contractWeb3.estimateGas.requestWithdrawals(
             ...params,
@@ -202,7 +218,14 @@ const useWithdrawalRequestMethods = () => {
         );
       }
     },
-    [account, chainId, contractWeb3, dispatchModalState, providerWeb3],
+    [
+      account,
+      chainId,
+      contractWeb3,
+      dispatchModalState,
+      staticRpcProvider,
+      providerWeb3,
+    ],
   );
 
   const wstETH = useCallback(
@@ -226,7 +249,7 @@ const useWithdrawalRequestMethods = () => {
           return providerWeb3?.getSigner().sendUncheckedTransaction(tx);
         } else {
           const { maxFeePerGas, maxPriorityFeePerGas } = await getFeeData(
-            providerWeb3,
+            staticRpcProvider,
           );
           const gasLimit =
             await contractWeb3.estimateGas.requestWithdrawalsWstETH(...params, {
@@ -255,7 +278,14 @@ const useWithdrawalRequestMethods = () => {
         );
       }
     },
-    [account, chainId, contractWeb3, dispatchModalState, providerWeb3],
+    [
+      account,
+      chainId,
+      contractWeb3,
+      dispatchModalState,
+      staticRpcProvider,
+      providerWeb3,
+    ],
   );
 
   return useCallback(

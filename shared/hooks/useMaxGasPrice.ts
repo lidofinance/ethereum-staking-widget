@@ -6,16 +6,16 @@ import { useLidoSWR } from '@lido-sdk/react';
 import { ONE_GWEI } from 'config';
 import { getFeeData } from 'utils/getFeeData';
 
-import { useCurrentProvider } from './use-current-provider';
+import { useCurrentStaticRpcProvider } from './use-current-static-rpc-provider';
 
 export const useMaxGasPrice = (): BigNumber | undefined => {
-  const { chainId, provider } = useCurrentProvider();
+  const { chainId, staticRpcProvider } = useCurrentStaticRpcProvider();
 
   const { data: maxGasPrice } = useLidoSWR(
     ['swr:max-gas-price', chainId],
     async () => {
       try {
-        const feeData = await getFeeData(provider);
+        const feeData = await getFeeData(staticRpcProvider);
 
         if (feeData.maxFeePerGas) {
           return feeData.maxFeePerGas;
