@@ -5,6 +5,7 @@ export type StakeFormDataContextValue = StakeFormNetworkData;
 
 export type StakeFormInput = {
   amount: BigNumber | null;
+  referral: string | null;
 };
 
 export type StakeFormNetworkData = {

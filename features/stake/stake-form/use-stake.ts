@@ -14,7 +14,7 @@ import { getFeeData } from 'utils/getFeeData';
 import { applyGasLimitRatio } from './hooks';
 
 type StakeArguments = {
-  amount: BigNumber;
+  amount: BigNumber | null;
   referral: string | null;
 };
 
@@ -30,6 +30,7 @@ export const useStake = ({ onConfirm }: StakeOptions) => {
   return useCallback(
     async ({ amount, referral }: StakeArguments): Promise<boolean> => {
       try {
+        invariant(amount, 'amount is null');
         invariant(chainId, 'chainId is not defined');
         invariant(account, 'account is not defined');
         invariant(providerWeb3, 'providerWeb3 not defined');

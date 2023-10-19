@@ -132,6 +132,7 @@ export const StakeFormProvider: FC<PropsWithChildren> = ({ children }) => {
   const formObject = useForm<StakeFormInput>({
     defaultValues: {
       amount: null,
+      referral: null,
     },
     context: validationContextPromise,
     resolver: stakeFormValidationResolver,
@@ -142,31 +143,27 @@ export const StakeFormProvider: FC<PropsWithChildren> = ({ children }) => {
   // consumes amount query param
   // SSG safe
   useEffect(() => {
-    if (
-      router.isReady &&
-      router.query.amount &&
-      typeof router.query.amount === 'string'
-    ) {
-      const { amount, ...rest } = router.query;
-      void router.replace({ pathname: router.pathname, query: rest });
-
-      try {
-        const amountBN = parseEther(amount);
-        setValue('amount', amountBN);
-      } catch {
-        //noop
+    if (router.isReady) {
+      const { amount, ref, ...rest } = router.query;
+      if (typeof ref === 'string') {
+        setValue('referral', ref);
+      }
+      if (typeof amount === 'string') {
+        void router.replace({ pathname: router.pathname, query: rest });
+        try {
+          const amountBN = parseEther(amount);
+          setValue('amount', amountBN);
+        } catch {
+          //noop
+        }
       }
     }
   }, [router, setValue]);
 
   const stake = useStake({ onConfirm: networkData.revalidate });
 
-  const formControllerValue: FormControllerContextValueType = useMemo(
-    () => ({
-      onSubmit: stake,
-    }),
-    [stake],
-  );
+  const formControllerValue: FormControllerContextValueType<StakeFormInput> =
+    useMemo(() => ({ onSubmit: stake }), [stake]);
 
   return (
     <FormProvider {...formObject}>
