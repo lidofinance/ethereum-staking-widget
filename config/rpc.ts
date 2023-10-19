@@ -1,4 +1,5 @@
 import { useCallback } from 'react';
+import invariant from 'tiny-invariant';
 import { useSDK } from '@lido-sdk/react';
 
 import { useCustomConfig } from 'providers/custom-config';
@@ -17,11 +18,13 @@ export const useGetRpcUrlByChainId = () => {
   return useCallback(
     (chainId: CHAINS) => {
       if (dynamics.ipfsMode) {
-        return (
+        const rpc =
           customConfig.savedCustomConfig.rpcUrls[chainId] ||
           customConfig.settingsPrefillRpc ||
-          '' // fallback must be set
-        );
+          ''; // fallback must be set
+
+        invariant(rpc, '[useGetRpcUrlByChainId] RPC is required!');
+        return rpc;
       } else {
         return getBackendRPCPath(chainId);
       }
