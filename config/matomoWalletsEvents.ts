@@ -308,7 +308,7 @@ export const walletsMetrics: WalletsMetrics = {
         onClickTrust: () => {
           trackEvent(...MATOMO_WALLETS_EVENTS.onClickTrust);
         },
-        onClickWC: () => {
+        onClickWalletconnect: () => {
           trackEvent(...MATOMO_WALLETS_EVENTS.onClickWC);
         },
         onClickXdefi: () => {
@@ -375,7 +375,7 @@ export const walletsMetrics: WalletsMetrics = {
         onConnectTrust: () => {
           trackEvent(...MATOMO_WALLETS_EVENTS.onConnectTrust);
         },
-        onConnectWC: () => {
+        onConnectWalletconnect: () => {
           trackEvent(...MATOMO_WALLETS_EVENTS.onConnectWC);
         },
         onConnectXdefi: () => {

@@ -1,8 +1,9 @@
+import { MouseEventHandler } from 'react';
 import { MaxButton } from './styled';
 
 type InputDecoratorMaxButtonProps = {
   disabled?: boolean;
-  onClick?: React.MouseEventHandler<HTMLButtonElement>;
+  onClick?: MouseEventHandler<HTMLButtonElement>;
 };
 
 export const InputDecoratorMaxButton = ({
