@@ -5,8 +5,9 @@ import { useSDK, useSTETHContractRPC } from '@lido-sdk/react';
 import { enableQaHelpers } from 'utils';
 import useSwr from 'swr';
 import { BigNumber } from 'ethers';
+import { STRATEGY_LAZY } from 'utils/swrStrategies';
 
-type StakeLimitFullInfo = {
+export type StakeLimitFullInfo = {
   isStakingPaused: boolean;
   isStakingLimitSet: boolean;
   currentStakeLimit: BigNumber;
@@ -30,7 +31,7 @@ export const useStakingLimitInfo = () => {
   const { chainId } = useSDK();
   const steth = useSTETHContractRPC();
 
-  const result = useSwr(
+  return useSwr<StakeLimitFullInfo>(
     ['swr:getStakeLimitFullInfo', chainId, steth, enableQaHelpers],
     async (
       _key: string,
@@ -65,13 +66,8 @@ export const useStakingLimitInfo = () => {
       };
     },
     {
+      ...STRATEGY_LAZY,
       refreshInterval: 30000,
     },
   );
-
-  return {
-    initialLoading: !result.data,
-    data: result.data,
-    error: result.error,
-  };
 };

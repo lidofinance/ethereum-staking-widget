@@ -32,7 +32,7 @@ export const SubmitButtonRequest = ({
   loading,
   disabled,
 }: SubmitButtonRequestProps) => {
-  const [isMultisig] = useIsMultisig();
+  const { isMultisig } = useIsMultisig();
   const { isTokenLocked } = useRequestFormData();
   const buttonTitle = isTokenLocked
     ? `Unlock tokens ${isMultisig ? 'for' : 'and'} withdrawal`

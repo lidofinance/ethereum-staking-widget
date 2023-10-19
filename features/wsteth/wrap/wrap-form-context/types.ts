@@ -3,7 +3,7 @@ import type { useWrapTxApprove } from '../hooks/use-wrap-tx-approve';
 
 import type { BigNumber } from 'ethers';
 import type { TokensWrappable } from 'features/wsteth/shared/types';
-import type { FormControllerContextValueType } from 'features/wsteth/shared/form-controller/form-controller-context';
+import type { FormControllerContextValueType } from 'shared/hook-form/form-controller/form-controller-context';
 
 export type WrapFormInputType = {
   amount: null | BigNumber;

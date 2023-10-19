@@ -3,7 +3,6 @@ import { Button } from '@lidofinance/lido-ui';
 import Icons from 'assets/icons/l2-swap.svg';
 
 export const Wrapper = styled.div`
-  margin-top: 16px;
   position: relative;
   display: flex;
   align-items: center;

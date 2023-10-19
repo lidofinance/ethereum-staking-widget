@@ -3,7 +3,6 @@ export { PopupWrapper } from './popup-wrapper/popup-wrapper';
 export { Faq } from './faq/faq';
 export { Header } from './header/header';
 export { Footer } from './footer/footer';
-export { AbuseWarning } from './abuse-warning/abuse-warning';
 export { BackgroundGradient } from './background-gradient/background-gradient';
 export { Main } from './main/main';
 export { Section } from './section/section';

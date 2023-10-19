@@ -3,6 +3,8 @@ import { useIsContract } from 'shared/hooks';
 
 export const useIsMultisig = () => {
   const { account } = useWeb3();
-  const { isContract, loading } = useIsContract(account ?? undefined);
-  return [isContract, loading];
+  const { isContract: isMultisig, loading: isLoading } = useIsContract(
+    account ?? undefined,
+  );
+  return { isMultisig, isLoading };
 };

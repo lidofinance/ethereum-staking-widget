@@ -22,8 +22,8 @@ export const SubmitButtonHookForm: React.FC<SubmitButtonHookFormProps> = ({
   const { isValidating, isSubmitting } = useFormState();
   const { errors } = useFormState<Record<string, unknown>>();
   const disabled =
-    !!errors.amount &&
-    !isValidationErrorTypeValidate(errors?.[errorField]?.type);
+    !!errors[errorField] &&
+    isValidationErrorTypeValidate(errors[errorField]?.type);
 
   if (!active) return <Connect fullwidth />;
 

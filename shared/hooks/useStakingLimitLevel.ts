@@ -1,13 +1,16 @@
 import { LIMIT_LEVEL } from 'types';
 import { getLimitLevel } from 'utils/stakingLimit';
-import { useStakingLimitInfo } from './useStakingLimitInfo';
+import { useStakeFormData } from 'features/stake/stake-form/stake-form-context';
 
 export const useStakingLimitLevel = (): LIMIT_LEVEL | null => {
-  const { data, error } = useStakingLimitInfo();
+  const { stakingLimitInfo } = useStakeFormData();
 
-  if (error || !data?.isStakingLimitSet || !data.maxStakeLimit) return null;
+  if (!stakingLimitInfo) return null;
 
-  const limitLevel = getLimitLevel(data.maxStakeLimit, data.currentStakeLimit);
+  const limitLevel = getLimitLevel(
+    stakingLimitInfo.maxStakeLimit,
+    stakingLimitInfo.currentStakeLimit,
+  );
 
   return limitLevel;
 };

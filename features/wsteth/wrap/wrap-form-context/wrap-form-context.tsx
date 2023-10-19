@@ -13,7 +13,7 @@ import { useWrapFormNetworkData } from '../hooks/use-wrap-form-network-data';
 import { useWrapFormProcessor } from '../hooks/use-wrap-form-processing';
 import { useWrapFormValidationContext } from '../hooks/use-wrap-form-validation-context';
 
-import { FormControllerContext } from 'features/wsteth/shared/form-controller/form-controller-context';
+import { FormControllerContext } from 'shared/hook-form/form-controller';
 
 import {
   WrapFormDataContextValueType,

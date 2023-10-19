@@ -1,6 +1,6 @@
 import { useController } from 'react-hook-form';
 
-import { InputAmount } from 'shared/forms/components/input-amount';
+import { InputAmount } from 'shared/components/input-amount';
 
 import { getTokenDisplayName } from 'utils/getTokenDisplayName';
 import { isValidationErrorTypeValidate } from 'shared/hook-form/validation/validation-error';
@@ -30,7 +30,6 @@ export const TokenAmountInputHookForm = ({
   } = useController({ name: fieldName });
   const hasErrorHighlight = isValidationErrorTypeValidate(error?.type);
   const errorMessage = hasErrorHighlight && error?.message;
-
   return (
     <InputAmount
       {...props}
