@@ -26,7 +26,7 @@ import {
   DataTableRow,
   Eth,
 } from '@lidofinance/lido-ui';
-
+import { L2Swap } from 'shared/banners';
 import { DATA_UNAVAILABLE } from 'config';
 import { OneinchInfo } from 'features/home/oneinch-info/oneinch-info';
 import { Connect } from 'shared/wallet';
@@ -221,7 +221,7 @@ export const StakeForm: FC = memo(() => {
         ) : (
           <Connect fullwidth />
         )}
-        <OneinchInfo />
+        <L2Swap />
       </FormStyled>
 
       <DataTable>
