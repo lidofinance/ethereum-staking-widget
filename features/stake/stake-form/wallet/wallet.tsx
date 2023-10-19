@@ -12,7 +12,7 @@ import { CardAccount, CardBalance, CardRow, Fallback } from 'shared/wallet';
 import type { WalletComponentType } from 'shared/wallet/types';
 import { LimitMeter } from './limit-meter';
 import { FlexCenter, LidoAprStyled, StyledCard } from './styles';
-import { useStakeFormData } from '../stake-form/stake-form-context';
+import { useStakeFormData } from '../stake-form-context';
 
 const WalletComponent: WalletComponentType = (props) => {
   const { account } = useSDK();

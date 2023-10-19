@@ -50,7 +50,7 @@ export const useStake = ({ onConfirm }: StakeOptions) => {
         }
 
         const [isMultisig, referralAddress = AddressZero] = await Promise.all([
-          isContract(account, providerWeb3),
+          isContract(account, providerRpc),
           getAddress(referral, providerRpc),
         ]);
 
