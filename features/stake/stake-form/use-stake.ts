@@ -49,9 +49,9 @@ export const useStake = ({ onConfirm }: StakeOptions) => {
           throw new MockLimitReachedError('Stake limit reached');
         }
 
-        const [isMultisig, referralAddress = AddressZero] = await Promise.all([
+        const [isMultisig, referralAddress] = await Promise.all([
           isContract(account, providerRpc),
-          getAddress(referral, providerRpc),
+          referral ? getAddress(referral, providerRpc) : AddressZero,
         ]);
 
         dispatchModalState({
