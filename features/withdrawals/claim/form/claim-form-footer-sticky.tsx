@@ -5,7 +5,7 @@ import { LayoutEffectSsrDelayed } from 'shared/components/layout-effect-ssr-dela
 import {
   NAV_MOBILE_HEIGHT,
   NAV_MOBILE_MAX_WIDTH,
-} from 'shared/components/header/components/navigation/styles';
+} from 'shared/components/layout/header/components/navigation/styles';
 import {
   ClaimFormFooter,
   ClaimFormFooterWrapper,

@@ -5,7 +5,7 @@ import { CHAINS, getChainColor } from '@lido-sdk/constants';
 import { Button, Connect } from 'shared/wallet';
 import { HeaderWalletChainStyle, DotStyle } from '../styles';
 import { ThemeToggler } from '@lidofinance/lido-ui';
-import NoSSRWrapper from '../../no-ssr-wrapper';
+import NoSSRWrapper from '../../../no-ssr-wrapper';
 
 const HeaderWallet: FC = () => {
   const { active } = useWeb3();

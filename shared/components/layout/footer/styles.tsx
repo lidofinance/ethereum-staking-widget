@@ -14,7 +14,7 @@ export const FooterStyle = styled((props) => <Container {...props} />)`
 
   width: 100%;
   max-width: 1424px;
-  padding: 24px 32px 32px;
+  padding: 24px 32px;
 
   ${NAV_MOBILE_MEDIA} {
     margin-bottom: 60px;
