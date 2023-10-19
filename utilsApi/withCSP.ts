@@ -1,7 +1,9 @@
-import { withSecureHeaders } from 'next-secure-headers';
-import getConfig from 'next/config';
 import { FC } from 'react';
-import { CustomApp } from 'types';
+import getConfig from 'next/config';
+import { withSecureHeaders } from 'next-secure-headers';
+
+import { dynamics } from 'config';
+import { AppWrapperType } from 'types';
 
 const { serverRuntimeConfig } = getConfig();
 const { cspTrustedHosts, cspReportOnly, cspReportUri } = serverRuntimeConfig;
@@ -22,24 +24,35 @@ export const contentSecurityPolicy = {
       ...trustedHosts,
     ],
     scriptSrc: ["'self'", "'unsafe-eval'", "'unsafe-inline'", ...trustedHosts],
-    connectSrc: [
-      "'self'",
-      'wss://*.walletconnect.org',
-      'https://*.walletconnect.org',
-      'wss://*.walletconnect.com',
-      'https://*.walletconnect.com',
-      'https://*.coinbase.com',
-      'wss://*.walletlink.org/',
-      'https://cloudflare-eth.com/',
-      'https://rpc.ankr.com',
-      'https://cdn.live.ledger.com/',
-      'https://api-lido.1inch.io',
-      'https://apiv5.paraswap.io/',
-      'https://api.cow.fi/',
-      ...trustedHosts,
-    ],
+
+    ...(dynamics.ipfsMode && {
+      // connectSrc must be another for IPFS because of custom RPC
+      connectSrc: ['https:', 'wss:'],
+      // CSP directive 'frame-ancestors' is ignored when delivered via a <meta> element.
+      // CSP directive 'report-uri' is ignored when delivered via a <meta> element.
+    }),
+    ...(!dynamics.ipfsMode && {
+      connectSrc: [
+        "'self'",
+        'wss://*.walletconnect.org',
+        'https://*.walletconnect.org',
+        'wss://*.walletconnect.com',
+        'https://*.walletconnect.com',
+        'https://*.coinbase.com',
+        'wss://*.walletlink.org/',
+        'https://cloudflare-eth.com/',
+        'https://rpc.ankr.com',
+        'https://cdn.live.ledger.com/',
+        'https://api-lido.1inch.io',
+        'https://apiv5.paraswap.io/',
+        'https://api.cow.fi/',
+        ...trustedHosts,
+      ],
+      frameAncestors: ['*'],
+      reportURI: cspReportUri,
+    }),
+
     formAction: ["'self'", ...trustedHosts],
-    frameAncestors: ['*'],
     manifestSrc: ["'self'", ...trustedHosts],
     mediaSrc: ["'self'", ...trustedHosts],
     childSrc: [
@@ -51,12 +64,11 @@ export const contentSecurityPolicy = {
     objectSrc: ["'self'", ...trustedHosts],
     defaultSrc: ["'self'", ...trustedHosts],
     baseUri: ["'none'"],
-    reportURI: cspReportUri,
   },
   reportOnly,
 };
 
-export const withCsp = (app: CustomApp): FC =>
+export const withCsp = (app: AppWrapperType): FC =>
   withSecureHeaders({
     contentSecurityPolicy,
     frameGuard: false,

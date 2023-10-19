@@ -14,9 +14,14 @@ import {
   LIDO_APR_TOOLTIP_TEXT,
   DATA_UNAVAILABLE,
   MATOMO_CLICK_EVENTS_TYPES,
+  dynamics,
 } from 'config';
 import { useLidoApr, useLidoStats } from 'shared/hooks';
 import { FlexCenterVertical } from './styles';
+
+const isStatItemNotAvailable = (val: unknown) => {
+  return !val || val === 'N/A';
+};
 
 export const LidoStats: FC = memo(() => {
   const { chainId } = useSDK();
@@ -28,6 +33,16 @@ export const LidoStats: FC = memo(() => {
   }, [chainId]);
   const lidoApr = useLidoApr();
   const lidoStats = useLidoStats();
+
+  if (
+    dynamics.ipfsMode &&
+    isStatItemNotAvailable(lidoApr.apr) &&
+    isStatItemNotAvailable(lidoStats.data.totalStaked) &&
+    isStatItemNotAvailable(lidoStats.data.stakers) &&
+    isStatItemNotAvailable(lidoStats.data.marketCap)
+  ) {
+    return null;
+  }
 
   return (
     <Section

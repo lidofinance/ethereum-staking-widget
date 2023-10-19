@@ -10,17 +10,14 @@ export const HowCanIGetSteth: FC = () => {
       <p>
         You can get stETH many ways, including interacting with the smart
         contract directly.Yet, it is much easier to use a{' '}
-        <LocalLink href={'/'}>
-          <a
-            onClick={() =>
-              trackMatomoEvent(
-                MATOMO_CLICK_EVENTS_TYPES.faqHowCanIGetStEthWidget,
-              )
-            }
-            aria-hidden="true"
-          >
-            Lido Ethereum staking widget
-          </a>
+        <LocalLink
+          href={'/'}
+          onClick={() =>
+            trackMatomoEvent(MATOMO_CLICK_EVENTS_TYPES.faqHowCanIGetStEthWidget)
+          }
+          aria-hidden="true"
+        >
+          Lido Ethereum staking widget
         </LocalLink>{' '}
         and in other{' '}
         <OuterLink

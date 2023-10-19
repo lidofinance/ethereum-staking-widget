@@ -1,9 +1,9 @@
 import { FC, memo } from 'react';
 import { Wallet, Stake, Wrap, Withdraw } from '@lidofinance/lido-ui';
-import { useRouter } from 'next/router';
 
 import { Nav, NavLink } from './styles';
 import { LocalLink } from 'shared/components/local-link';
+import { useRouterPath } from 'shared/hooks/use-router-path';
 
 const routes = [
   {
@@ -30,16 +30,16 @@ const routes = [
   },
 ];
 export const Navigation: FC = memo(() => {
-  const router = useRouter();
+  const pathname = useRouterPath();
+
   return (
     <Nav>
-      {routes.map(({ name, path, icon, exact, full_path }) => {
-        const href = full_path ?? path;
-        const isActive = exact
-          ? router.pathname === path
-          : router.pathname.startsWith(path);
+      {routes.map(({ name, path, icon }) => {
+        const isActive =
+          pathname === path || (path.length > 1 && pathname.startsWith(path));
+
         return (
-          <LocalLink key={path} href={href}>
+          <LocalLink key={path} href={path}>
             <NavLink active={isActive}>
               {icon}
               <span>{name}</span>

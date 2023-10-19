@@ -9,17 +9,16 @@ export const HowCanIUnstakeSteth: FC = () => {
     <Accordion summary="How can I unstake stETH?">
       <p>
         You can use our{' '}
-        <LocalLink href="/withdrawals/claim">
-          <a
-            onClick={() =>
-              trackMatomoEvent(
-                MATOMO_CLICK_EVENTS_TYPES.faqHowCanIUnstakeStEthWithdrawals,
-              )
-            }
-            aria-hidden="true"
-          >
-            Withdrawals Request and Claim tabs
-          </a>
+        <LocalLink
+          href="/withdrawals/claim"
+          onClick={() =>
+            trackMatomoEvent(
+              MATOMO_CLICK_EVENTS_TYPES.faqHowCanIUnstakeStEthWithdrawals,
+            )
+          }
+          aria-hidden="true"
+        >
+          Withdrawals Request and Claim tabs
         </LocalLink>{' '}
         to unstake stETH and receive ETH at a 1:1 ratio. Under normal
         circumstances, withdrawal period can take anywhere between 1-5 days.
