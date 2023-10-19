@@ -8,23 +8,21 @@ import { CHAINS } from 'utils/chains';
 import { getStaticRpcBatchProvider } from '@lido-sdk/providers';
 
 import { useCustomConfig } from 'providers/custom-config';
-import { dynamics, useRpcUrlByChainIdGetter } from 'config';
+import { dynamics, useGetRpcUrlByChainId } from 'config';
 
 const Web3Provider: FC<PropsWithChildren> = ({ children }) => {
   const { defaultChain, supportedChainIds, walletconnectProjectId } =
     useCustomConfig();
 
-  const getRpcUrlByChainId = useRpcUrlByChainIdGetter();
+  const getRpcUrlByChainId = useGetRpcUrlByChainId();
 
   const backendRPC = useMemo(
     () =>
       supportedChainIds.reduce<Record<number, string>>(
-        // TODO
-        (res, curr) => ({ ...res, [curr]: getRpcUrlByChainId(curr) ?? '' }),
+        (res, curr) => ({ ...res, [curr]: getRpcUrlByChainId(curr) }),
         {
-          // TODO
           // Required by reef-knot
-          [CHAINS.Mainnet]: getRpcUrlByChainId(CHAINS.Mainnet) ?? '',
+          [CHAINS.Mainnet]: getRpcUrlByChainId(CHAINS.Mainnet),
         },
       ),
     [supportedChainIds, getRpcUrlByChainId],
@@ -44,8 +42,7 @@ const Web3Provider: FC<PropsWithChildren> = ({ children }) => {
       provider: () =>
         getStaticRpcBatchProvider(
           chain.id,
-          // TODO
-          getRpcUrlByChainId(chain.id) ?? '',
+          getRpcUrlByChainId(chain.id),
           undefined,
           12000,
         ),

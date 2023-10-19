@@ -42,14 +42,6 @@ const DEFAULT_STATE: SavedCustomConfig = {
   rpcUrls: {},
 };
 
-// export const getRestoredSettings = () => {
-//   try {
-//     return (JSON.parse(window.localStorage.getItem(STORAGE_CUSTOM_CONFIG) || '') as SavedCustomConfig).rpcUrls;
-//   } catch {
-//     return DEFAULT_STATE.rpcUrls;
-//   }
-// };
-
 export const CustomConfigProvider = ({ children, envConfig }: Props) => {
   const [restoredSettings, setLocalStorage] = useLocalStorage(
     STORAGE_CUSTOM_CONFIG,

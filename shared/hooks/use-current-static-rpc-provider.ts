@@ -13,8 +13,7 @@ export const useCurrentStaticRpcProvider = (): {
   const rpcUrl = useRpcUrl();
 
   return {
-    // TODO
-    staticRpcProvider: getStaticRpcBatchProvider(chainId, rpcUrl ?? ''),
+    staticRpcProvider: getStaticRpcBatchProvider(chainId, rpcUrl),
     chainId,
   };
 };
