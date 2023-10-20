@@ -1,6 +1,9 @@
+import { BigNumber } from 'ethers';
 import { Cache } from 'memory-cache';
+
 import { wrapRequest as wrapNextRequest } from '@lidofinance/next-api-wrapper';
 import { CHAINS, TOKENS, getTokenAddress } from '@lido-sdk/constants';
+
 import {
   CACHE_ONE_INCH_RATE_KEY,
   CACHE_ONE_INCH_RATE_TTL,
@@ -14,7 +17,6 @@ import {
 } from 'utilsApi';
 import Metrics from 'utilsApi/metrics';
 import { API } from 'types';
-import { BigNumber } from 'ethers';
 
 const cache = new Cache<typeof CACHE_ONE_INCH_RATE_KEY, unknown>();
 
@@ -22,6 +24,7 @@ const DEFAULT_AMOUNT = BigNumber.from(10).pow(18);
 
 // Proxy for third-party API.
 // Returns 1inch rate
+// DEPRECATED: In future will be delete!!!
 const oneInchRate: API = async (req, res) => {
   const cachedOneInchRate = cache.get(CACHE_ONE_INCH_RATE_KEY);
 

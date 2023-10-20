@@ -1,11 +1,13 @@
 import { FC } from 'react';
+
 import { Button } from '@lidofinance/lido-ui';
 import { trackEvent } from '@lidofinance/analytics-matomo';
 
-import { dynamics, MATOMO_CLICK_EVENTS } from 'config';
-import { useLidoSWR } from 'shared/hooks';
+import { MATOMO_CLICK_EVENTS } from 'config';
+import { ONE_INCH_RATE_LIMIT } from 'config/one-inch';
 import { L2Banner } from 'shared/l2-banner';
-import { prependBasePath } from 'utils';
+
+import { use1inchLinkProps } from '../hooks';
 
 import {
   Wrap,
@@ -15,26 +17,20 @@ import {
   ButtonWrap,
   ButtonLinkWrap,
 } from './styles';
-import { use1inchLinkProps } from '../hooks';
+import { useOneInchRate } from './hooks';
 
-const ONE_INCH_RATE_LIMIT = 1.004;
-
-export const OneinchInfo: FC = () => {
-  const apiOneInchRatePath = '/api/oneinch-rate';
-  const { data, initialLoading } = useLidoSWR<{ rate: number }>(
-    dynamics.ipfsMode
-      ? `${dynamics.ipfsWidgetEthApiBasePath}/${apiOneInchRatePath}`
-      : prependBasePath(apiOneInchRatePath),
-  );
-  const rate = (data && data.rate) || 1;
-  const discount = (100 - (1 / rate) * 100).toFixed(2);
-
+export const OneInchInfo: FC = () => {
   const linkProps = use1inchLinkProps();
+  const { rate, swr } = useOneInchRate();
 
   // for fix flashing banner
-  if (initialLoading) return null;
+  if (swr.initialLoading) return null;
 
-  if (!rate || rate < ONE_INCH_RATE_LIMIT)
+  const showL2 = !rate || rate < ONE_INCH_RATE_LIMIT;
+
+  const discountText = (100 - (1 / (rate || 1)) * 100).toFixed(2);
+
+  if (showL2)
     return <L2Banner matomoEvent={MATOMO_CLICK_EVENTS.l2BannerStake} />;
 
   const linkClickHandler = () =>
@@ -46,7 +42,7 @@ export const OneinchInfo: FC = () => {
         <OneInchIcon />
       </OneInchIconWrap>
       <TextWrap>
-        Get a <b>{discount}% discount</b> by buying stETH&nbsp;on the 1inch
+        Get a <b>{discountText}% discount</b> by buying stETH&nbsp;on the 1inch
         platform
       </TextWrap>
       <ButtonWrap>
