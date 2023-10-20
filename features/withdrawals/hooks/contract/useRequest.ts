@@ -45,7 +45,6 @@ const useWithdrawalRequestMethods = () => {
       invariant(account, 'must have account');
       invariant(signature, 'must have signature');
       invariant(contractWeb3, 'must have contractWeb3');
-      invariant(providerWeb3, 'must have providerWeb3');
 
       dispatchModalState({ type: 'signing', operation: TX_OPERATION.CONTRACT });
 
@@ -89,14 +88,7 @@ const useWithdrawalRequestMethods = () => {
         transaction.wait(),
       );
     },
-    [
-      account,
-      chainId,
-      contractWeb3,
-      dispatchModalState,
-      staticRpcProvider,
-      providerWeb3,
-    ],
+    [account, chainId, contractWeb3, dispatchModalState, staticRpcProvider],
   );
 
   const permitWsteth = useCallback(
@@ -111,7 +103,6 @@ const useWithdrawalRequestMethods = () => {
       invariant(account, 'must have account');
       invariant(signature, 'must have signature');
       invariant(contractWeb3, 'must have contractWeb3');
-      invariant(providerWeb3, 'must have providerWeb3');
 
       const params = [
         requests,
@@ -158,14 +149,7 @@ const useWithdrawalRequestMethods = () => {
         transaction.wait(),
       );
     },
-    [
-      account,
-      chainId,
-      contractWeb3,
-      dispatchModalState,
-      staticRpcProvider,
-      providerWeb3,
-    ],
+    [account, chainId, contractWeb3, dispatchModalState, staticRpcProvider],
   );
 
   const steth = useCallback(
