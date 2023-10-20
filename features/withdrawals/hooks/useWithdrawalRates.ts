@@ -10,6 +10,7 @@ import { STRATEGY_LAZY } from 'utils/swrStrategies';
 import { useWatch } from 'react-hook-form';
 import { RequestFormInputType } from '../request/request-form-context';
 import { Zero } from '@ethersproject/constants';
+import { getOneInchRateApiUrl } from '../../../config/one-inch';
 
 type getWithdrawalRatesParams = {
   amount: BigNumber;
@@ -60,13 +61,11 @@ const getOneInchRate: getRate = async (amount, token) => {
       };
     }
     const capped_amount = amount;
-    const api = `https://api-lido.1inch.io/v5.2/1/quote`;
-    const query = new URLSearchParams({
-      src: getTokenAddress(CHAINS.Mainnet, token),
-      dst: '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee',
-      amount: amount.toString(),
-    });
-    const url = `${api}?${query.toString()}`;
+    const { url } = getOneInchRateApiUrl(
+      '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee',
+      getTokenAddress(CHAINS.Mainnet, token),
+      amount.toString(),
+    );
     const data: OneInchQuotePartial =
       await standardFetcher<OneInchQuotePartial>(url);
     rateInfo = calculateRateReceive(
