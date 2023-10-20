@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { useSDK } from '@lido-sdk/react';
 import { CHAINS } from '@lido-sdk/constants';
 import { getStaticRpcBatchProvider } from '@lido-sdk/providers';
@@ -12,8 +13,12 @@ export const useCurrentStaticRpcProvider = (): {
   const { chainId } = useSDK();
   const rpcUrl = useRpcUrl();
 
+  const staticRpcProvider = useMemo(() => {
+    return getStaticRpcBatchProvider(chainId, rpcUrl);
+  }, [chainId, rpcUrl]);
+
   return {
-    staticRpcProvider: getStaticRpcBatchProvider(chainId, rpcUrl),
+    staticRpcProvider,
     chainId,
   };
 };
