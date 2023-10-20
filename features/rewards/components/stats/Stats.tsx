@@ -1,23 +1,24 @@
 import { FC, useCallback, useEffect, useState } from 'react';
-import { Box, Link } from '@lidofinance/lido-ui';
-import EthSymbol from 'features/rewards/components/EthSymbol';
-import NumberFormat from 'features/rewards/components/NumberFormat';
 import type { BigNumber as EthersBigNumber } from 'ethers';
 import { constants } from 'ethers';
-import { dynamics } from 'config';
 
-import { Big, BigDecimal } from 'features/rewards/helpers';
-import { ETHER } from 'features/rewards/constants';
-
+import { Box, Link } from '@lidofinance/lido-ui';
 import { useSDK, useTokenBalance } from '@lido-sdk/react';
 import { TOKENS, getTokenAddress } from '@lido-sdk/constants';
+
+import { dynamics } from 'config';
 import { stEthEthRequest } from 'features/rewards/fetchers/requesters';
+import EthSymbol from 'features/rewards/components/EthSymbol';
+import NumberFormat from 'features/rewards/components/NumberFormat';
+import { Big, BigDecimal } from 'features/rewards/helpers';
+import { ETHER } from 'features/rewards/constants';
+import { STRATEGY_LAZY } from 'utils/swrStrategies';
+import { useMainnetStaticRpcProvider } from 'shared/hooks/use-mainnet-static-rpc-provider';
 
 import { Item } from './Item';
 import { Stat } from './Stat';
 import { Title } from './Title';
 import { StatsProps } from './types';
-import { STRATEGY_LAZY } from 'utils/swrStrategies';
 
 // TODO: refactoring to style files
 export const Stats: FC<StatsProps> = (props) => {
@@ -31,16 +32,17 @@ export const Stats: FC<StatsProps> = (props) => {
     address,
     STRATEGY_LAZY,
   );
+  const mainnetStaticRpcProvider = useMainnetStaticRpcProvider();
 
   const getStEthEth = useCallback(async () => {
     if (dynamics.defaultChain !== 1) {
       setStEthEth(constants.WeiPerEther);
     } else {
-      const stEthEth = await stEthEthRequest();
+      const stEthEth = await stEthEthRequest(mainnetStaticRpcProvider);
 
       setStEthEth(stEthEth);
     }
-  }, []);
+  }, [mainnetStaticRpcProvider]);
 
   useEffect(() => {
     void getStEthEth();

@@ -4,14 +4,29 @@ import { getConnectors, holesky } from 'reef-knot/core-react';
 import { WagmiConfig, createClient, configureChains, Chain } from 'wagmi';
 import * as wagmiChains from 'wagmi/chains';
 
+import { CHAINS } from 'utils/chains';
 import { getStaticRpcBatchProvider } from '@lido-sdk/providers';
 
 import { useCustomConfig } from 'providers/custom-config';
-import { backendRPC, getBackendRPCPath, dynamics } from 'config';
+import { dynamics, useGetRpcUrlByChainId } from 'config';
 
 const Web3Provider: FC<PropsWithChildren> = ({ children }) => {
   const { defaultChain, supportedChainIds, walletconnectProjectId } =
     useCustomConfig();
+
+  const getRpcUrlByChainId = useGetRpcUrlByChainId();
+
+  const backendRPC = useMemo(
+    () =>
+      supportedChainIds.reduce<Record<number, string>>(
+        (res, curr) => ({ ...res, [curr]: getRpcUrlByChainId(curr) }),
+        {
+          // Required by reef-knot
+          [CHAINS.Mainnet]: getRpcUrlByChainId(CHAINS.Mainnet),
+        },
+      ),
+    [supportedChainIds, getRpcUrlByChainId],
+  );
 
   const client = useMemo(() => {
     const wagmiChainsArray = Object.values({ ...wagmiChains, holesky });
@@ -27,7 +42,7 @@ const Web3Provider: FC<PropsWithChildren> = ({ children }) => {
       provider: () =>
         getStaticRpcBatchProvider(
           chain.id,
-          getBackendRPCPath(chain.id),
+          getRpcUrlByChainId(chain.id),
           undefined,
           12000,
         ),
@@ -52,7 +67,7 @@ const Web3Provider: FC<PropsWithChildren> = ({ children }) => {
       provider,
       webSocketProvider,
     });
-  }, [walletconnectProjectId]);
+  }, [backendRPC, getRpcUrlByChainId, walletconnectProjectId]);
 
   return (
     <WagmiConfig client={client}>
