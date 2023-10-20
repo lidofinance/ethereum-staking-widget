@@ -11,7 +11,7 @@ import { TX_OPERATION, useTransactionModal } from 'shared/transaction-modal';
 import { MockLimitReachedError, getAddress } from './utils';
 import { AddressZero } from '@ethersproject/constants';
 import { getFeeData } from 'utils/getFeeData';
-import { applyGasLimitRatio } from './hooks';
+import { applyGasLimitRatio } from './utils';
 
 type StakeArguments = {
   amount: BigNumber | null;
