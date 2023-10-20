@@ -62,53 +62,55 @@ export const LidoStats: FC = memo(() => {
     >
       <Block>
         <DataTable>
-          {showApr && (
-            <DataTableRow
-              title={
-                <FlexCenterVertical data-testid="aprTooltip">
-                  Annual percentage rate
-                  <Tooltip title={LIDO_APR_TOOLTIP_TEXT}>
-                    <Question />
-                  </Tooltip>
-                </FlexCenterVertical>
-              }
-              loading={lidoApr.initialLoading}
-              data-testid="lidoAPR"
-              highlight
-            >
-              {lidoApr.apr ? `${lidoApr.apr}%` : DATA_UNAVAILABLE}
-            </DataTableRow>
-          )}
+          <>
+            {showApr && (
+              <DataTableRow
+                title={
+                  <FlexCenterVertical data-testid="aprTooltip">
+                    Annual percentage rate
+                    <Tooltip title={LIDO_APR_TOOLTIP_TEXT}>
+                      <Question />
+                    </Tooltip>
+                  </FlexCenterVertical>
+                }
+                loading={lidoApr.initialLoading}
+                data-testid="lidoAPR"
+                highlight
+              >
+                {lidoApr.apr ? `${lidoApr.apr}%` : DATA_UNAVAILABLE}
+              </DataTableRow>
+            )}
 
-          {showTotalStaked && (
-            <DataTableRow
-              title="Total staked with Lido"
-              data-testid="totalStaked"
-              loading={lidoStats.initialLoading}
-            >
-              {lidoStats.data.totalStaked}
-            </DataTableRow>
-          )}
+            {showTotalStaked && (
+              <DataTableRow
+                title="Total staked with Lido"
+                data-testid="totalStaked"
+                loading={lidoStats.initialLoading}
+              >
+                {lidoStats.data.totalStaked}
+              </DataTableRow>
+            )}
 
-          {showStakers && (
-            <DataTableRow
-              title="Stakers"
-              data-testid="stakers"
-              loading={lidoStats.initialLoading}
-            >
-              {lidoStats.data.stakers}
-            </DataTableRow>
-          )}
+            {showStakers && (
+              <DataTableRow
+                title="Stakers"
+                data-testid="stakers"
+                loading={lidoStats.initialLoading}
+              >
+                {lidoStats.data.stakers}
+              </DataTableRow>
+            )}
 
-          {showMarketCap && (
-            <DataTableRow
-              title="stETH market cap"
-              data-testid="stEthMarketCap"
-              loading={lidoStats.initialLoading}
-            >
-              {lidoStats.data.marketCap}
-            </DataTableRow>
-          )}
+            {showMarketCap && (
+              <DataTableRow
+                title="stETH market cap"
+                data-testid="stEthMarketCap"
+                loading={lidoStats.initialLoading}
+              >
+                {lidoStats.data.marketCap}
+              </DataTableRow>
+            )}
+          </>
         </DataTable>
       </Block>
     </Section>
