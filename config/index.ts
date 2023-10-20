@@ -8,7 +8,6 @@ export * from './estimate';
 export * from './locale';
 export * from './metrics';
 export * from './rpc';
-export * from './steth';
 export * from './storage';
 export * from './text';
 export * from './tx';
