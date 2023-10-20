@@ -1,7 +1,4 @@
 import { BigNumber } from 'ethers';
-import { CHAINS } from '@lido-sdk/constants';
-import { getStaticRpcBatchProvider } from '@lido-sdk/providers';
-import { getBackendRPCPath } from 'config';
 import { StaticJsonRpcBatchProvider } from '@lidofinance/eth-providers';
 
 type FeeData = {
@@ -12,12 +9,12 @@ type FeeData = {
 };
 
 const getFeeHistory = (
-  provider: StaticJsonRpcBatchProvider,
+  staticRpcProvider: StaticJsonRpcBatchProvider,
   blockCount: number,
   latestBlock: string,
   percentile: number[],
 ) => {
-  return provider.send('eth_feeHistory', [
+  return staticRpcProvider.send('eth_feeHistory', [
     '0x' + blockCount.toString(16),
     latestBlock,
     percentile,
@@ -29,15 +26,12 @@ const getFeeHistory = (
   }>;
 };
 
-export const getFeeData = async (chainId: CHAINS): Promise<FeeData> => {
-  const provider = getStaticRpcBatchProvider(
-    chainId,
-    getBackendRPCPath(chainId),
-  );
-
+export const getFeeData = async (
+  staticRpcProvider: StaticJsonRpcBatchProvider,
+): Promise<FeeData> => {
   // we look back 5 blocks at fees of botton 25% txs
   // if you want to increase maxPriorityFee output increase percentile
-  const feeHistory = await getFeeHistory(provider, 5, 'pending', [25]);
+  const feeHistory = await getFeeHistory(staticRpcProvider, 5, 'pending', [25]);
 
   // get average priority fee
   const maxPriorityFeePerGas = feeHistory.reward

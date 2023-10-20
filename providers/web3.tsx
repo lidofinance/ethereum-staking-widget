@@ -1,57 +1,71 @@
 import { FC, PropsWithChildren, useMemo } from 'react';
 import { ProviderWeb3 } from 'reef-knot/web3-react';
-import { getConnectors } from 'reef-knot/core-react';
+import { getConnectors, holesky } from 'reef-knot/core-react';
 import { WagmiConfig, createClient, configureChains, Chain } from 'wagmi';
 import * as wagmiChains from 'wagmi/chains';
 
+import { CHAINS } from 'utils/chains';
 import { getStaticRpcBatchProvider } from '@lido-sdk/providers';
 
-import { useCustomConfig } from 'providers/custom-config';
-import { getBackendRPCPath, dynamics } from 'config';
-import { useGetRpcUrl } from 'config/rpc';
-import { CHAINS } from 'utils/chains';
+import { useClientConfig } from 'providers/client-config';
+import { dynamics, useGetRpcUrlByChainId } from 'config';
 
 const Web3Provider: FC<PropsWithChildren> = ({ children }) => {
   const { defaultChain, supportedChainIds, walletconnectProjectId } =
-    useCustomConfig();
-  const getRpcUrl = useGetRpcUrl();
+    useClientConfig();
+
+  const getRpcUrlByChainId = useGetRpcUrlByChainId();
 
   const backendRPC = useMemo(
     () =>
       supportedChainIds.reduce<Record<number, string>>(
-        (res, curr) => ({ ...res, [curr]: getRpcUrl(curr) }),
+        (res, curr) => ({ ...res, [curr]: getRpcUrlByChainId(curr) }),
         {
           // Required by reef-knot
-          [CHAINS.Mainnet]: getRpcUrl(CHAINS.Mainnet),
+          [CHAINS.Mainnet]: getRpcUrlByChainId(CHAINS.Mainnet),
         },
       ),
-    [supportedChainIds, getRpcUrl],
+    [supportedChainIds, getRpcUrlByChainId],
   );
 
   const client = useMemo(() => {
-    const wagmiChainsArray = Object.values(wagmiChains);
-    const supportedChains = wagmiChainsArray.filter(
-      (chain) =>
-        dynamics.supportedChains.includes(chain.id) || chain.id === 80001,
+    const wagmiChainsArray = Object.values({ ...wagmiChains, holesky });
+    const supportedChains = wagmiChainsArray.filter((chain) =>
+      dynamics.supportedChains.includes(chain.id),
     );
+
+    // Adding Mumbai as a temporary workaround
+    // for the wagmi and walletconnect bug, when some wallets are failing to connect
+    // when there are only one supported network, so we need at least 2 of them.
+    // Mumbai should be the last in the array, otherwise wagmi can send request to it.
+    // TODO: remove after updating wagmi to v1+
+    supportedChains.push(wagmiChains.polygonMumbai);
+
     const defaultChain = wagmiChainsArray.find(
       (chain) => chain.id === dynamics.defaultChain,
     );
 
-const jsonRcpBatchProvider = (chain: Chain) => ({
-  provider: () =>
-    getStaticRpcBatchProvider(
-      chain.id,
-      getBackendRPCPath(chain.id),
-      undefined,
-      12000,
-    ),
-  chain,
-});
+    const jsonRpcBatchProvider = (chain: Chain) => ({
+      provider: () =>
+        getStaticRpcBatchProvider(
+          chain.id,
+          getRpcUrlByChainId(chain.id),
+          undefined,
+          12000,
+        ),
+      chain: {
+        ...chain,
+        rpcUrls: {
+          ...chain.rpcUrls,
+          public: { http: [getRpcUrlByChainId(chain.id)] },
+          default: { http: [getRpcUrlByChainId(chain.id)] },
+        },
+      },
+    });
 
     const { chains, provider, webSocketProvider } = configureChains(
       supportedChains,
-      [jsonRcpBatchProvider],
+      [jsonRpcBatchProvider],
     );
 
     const connectors = getConnectors({
@@ -67,8 +81,7 @@ const jsonRcpBatchProvider = (chain: Chain) => ({
       provider,
       webSocketProvider,
     });
-    // TODO: check backendRPC here
-  }, [backendRPC, walletconnectProjectId]);
+  }, [backendRPC, getRpcUrlByChainId, walletconnectProjectId]);
 
   return (
     <WagmiConfig client={client}>

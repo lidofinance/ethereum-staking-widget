@@ -9,12 +9,10 @@ import {
 import invariant from 'tiny-invariant';
 
 import { useLocalStorage } from '@lido-sdk/react';
-// TODO
-// import { CHAINS } from '@lido-sdk/constants';
-import { CHAINS } from 'utils/chains';
 
 import { STORAGE_CUSTOM_CONFIG } from 'config/storage';
 import { EnvConfigParsed } from 'config/types';
+import { CHAINS } from 'utils/chains';
 
 type SavedCustomConfig = {
   rpcUrls: Partial<Record<CHAINS, string>>;

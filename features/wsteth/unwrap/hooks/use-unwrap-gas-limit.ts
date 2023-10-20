@@ -1,21 +1,21 @@
+import { BigNumber } from 'ethers';
 import { parseEther } from '@ethersproject/units';
 import { useLidoSWR, useWSTETHContractRPC } from '@lido-sdk/react';
-import { useWeb3 } from 'reef-knot/web3-react';
+
 import { ESTIMATE_ACCOUNT, UNWRAP_GAS_LIMIT } from 'config';
-import { BigNumber } from 'ethers';
 import { getFeeData } from 'utils/getFeeData';
-import { CHAINS } from '@lido-sdk/constants';
+import { useCurrentStaticRpcProvider } from 'shared/hooks/use-current-static-rpc-provider';
 
 export const useUnwrapGasLimit = () => {
   const wsteth = useWSTETHContractRPC();
-  const { chainId } = useWeb3();
+  const { chainId, staticRpcProvider } = useCurrentStaticRpcProvider();
 
   const { data } = useLidoSWR(
     ['swr:unwrap-gas-limit', chainId],
     async (_key, chainId) => {
       if (!chainId) return;
       try {
-        const feeData = await getFeeData(chainId as CHAINS);
+        const feeData = await getFeeData(staticRpcProvider);
         const maxPriorityFeePerGas = feeData.maxPriorityFeePerGas ?? undefined;
         const maxFeePerGas = feeData.maxFeePerGas ?? undefined;
 
