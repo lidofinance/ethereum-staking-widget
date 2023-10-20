@@ -28,7 +28,6 @@ import {
 } from '@lidofinance/lido-ui';
 import { L2Swap } from 'shared/banners';
 import { DATA_UNAVAILABLE } from 'config';
-import { OneinchInfo } from 'features/home/oneinch-info/oneinch-info';
 import { Connect } from 'shared/wallet';
 import { TxStageModal, TX_OPERATION, TX_STAGE } from 'shared/components';
 import { useTxCostInUsd } from 'shared/hooks';
