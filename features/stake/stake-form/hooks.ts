@@ -1,24 +1,14 @@
 import { AddressZero } from '@ethersproject/constants';
 import { useLidoSWR, useSDK, useSTETHContractRPC } from '@lido-sdk/react';
-import { ESTIMATE_ACCOUNT, STETH_SUBMIT_GAS_LIMIT_DEFAULT } from 'config';
-import { parseEther } from '@ethersproject/units';
+import { ESTIMATE_ACCOUNT, ESTIMATE_AMOUNT } from 'config';
+import { STAKE_GASLIMIT_FALLBACK } from './stake-config';
 import { BigNumber } from 'ethers';
 import { STRATEGY_CONSTANT } from 'utils/swrStrategies';
 import { useStakingLimitLevel } from 'shared/hooks/useStakingLimitLevel';
 import { LIMIT_LEVEL } from 'types';
-import { SUBMIT_EXTRA_GAS_TRANSACTION_RATIO } from './utils';
-
-const ESTIMATE_AMOUNT = parseEther('0.001');
-const PRECISION = 10 ** 6;
+import { applyGasLimitRatio } from './utils';
 
 type UseStethSubmitGasLimit = () => BigNumber;
-
-const fallback = BigNumber.from(
-  STETH_SUBMIT_GAS_LIMIT_DEFAULT * SUBMIT_EXTRA_GAS_TRANSACTION_RATIO,
-);
-
-export const applyGasLimitRatio = (gasLimit: BigNumber): BigNumber =>
-  gasLimit.mul(SUBMIT_EXTRA_GAS_TRANSACTION_RATIO * PRECISION).div(PRECISION);
 
 export const useStethSubmitGasLimit: UseStethSubmitGasLimit = () => {
   const stethContractRPC = useSTETHContractRPC();
@@ -36,7 +26,7 @@ export const useStethSubmitGasLimit: UseStethSubmitGasLimit = () => {
     STRATEGY_CONSTANT,
   );
 
-  return data ?? fallback;
+  return data ?? STAKE_GASLIMIT_FALLBACK;
 };
 
 export const useStakingLimitWarn = () => {

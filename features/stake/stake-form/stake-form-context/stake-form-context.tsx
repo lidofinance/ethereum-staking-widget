@@ -9,32 +9,31 @@ import {
   useCallback,
 } from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
+import { Zero } from '@ethersproject/constants';
+import { useEthereumBalance, useSTETHBalance } from '@lido-sdk/react';
+import { parseEther } from '@ethersproject/units';
+import { useRouter } from 'next/router';
 
 import {
   FormControllerContext,
   FormControllerContextValueType,
 } from 'shared/hook-form/form-controller';
-
-import { Zero } from '@ethersproject/constants';
-
-import {
-  StakeFormDataContextValue,
-  StakeFormInput,
-  StakeFormNetworkData,
-} from './types';
-import { useEthereumBalance, useSTETHBalance } from '@lido-sdk/react';
-import { STRATEGY_LAZY } from 'utils/swrStrategies';
-import { parseEther } from '@ethersproject/units';
-import { useRouter } from 'next/router';
 import { useStakingLimitInfo } from 'shared/hooks/useStakingLimitInfo';
-import { useStethSubmitGasLimit } from '../hooks';
 import { useMaxGasPrice } from 'shared/hooks';
+import { useIsMultisig } from 'shared/hooks/useIsMultisig';
+import { STRATEGY_LAZY } from 'utils/swrStrategies';
+
+import { useStethSubmitGasLimit } from '../hooks';
 import {
   stakeFormValidationResolver,
   useStakeFormValidationContext,
 } from './validation';
-import { useIsMultisig } from 'shared/hooks/useIsMultisig';
 import { useStake } from '../use-stake';
+import {
+  type StakeFormDataContextValue,
+  type StakeFormInput,
+  type StakeFormNetworkData,
+} from './types';
 
 //
 // Data context
@@ -42,7 +41,7 @@ import { useStake } from '../use-stake';
 const StakeFormDataContext = createContext<StakeFormDataContextValue | null>(
   null,
 );
-StakeFormDataContext.displayName = 'WrapFormDataContext';
+StakeFormDataContext.displayName = 'StakeFormDataContext';
 
 export const useStakeFormData = () => {
   const value = useContext(StakeFormDataContext);
@@ -71,10 +70,15 @@ export const useStakeFormNetworkData = (): StakeFormNetworkData => {
     useStakingLimitInfo();
 
   const stakeableEther = useMemo(() => {
-    if (etherBalance && stakingLimitInfo && stakingLimitInfo.isStakingLimitSet)
+    if (
+      etherBalance &&
+      stakingLimitInfo &&
+      stakingLimitInfo.isStakingLimitSet
+    ) {
       return etherBalance.lt(stakingLimitInfo.currentStakeLimit)
         ? etherBalance
         : stakingLimitInfo.currentStakeLimit;
+    }
     return etherBalance;
   }, [etherBalance, stakingLimitInfo]);
 

@@ -9,7 +9,7 @@ import { DATA_UNAVAILABLE } from 'config';
 
 import { StakeFormInput, useStakeFormData } from './stake-form-context';
 
-import { useEthUsd } from 'shared/hooks/useEthUsd';
+import { useEthUsd } from 'shared/hooks/use-eth-usd';
 
 export const StakeFormInfo = () => {
   const { gasCost } = useStakeFormData();

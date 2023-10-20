@@ -1,7 +1,6 @@
-import { parseEther } from '@ethersproject/units';
 import { useLidoSWR, useWSTETHContractRPC } from '@lido-sdk/react';
 import { useWeb3 } from 'reef-knot/web3-react';
-import { ESTIMATE_ACCOUNT, UNWRAP_GAS_LIMIT } from 'config';
+import { ESTIMATE_ACCOUNT, ESTIMATE_AMOUNT, UNWRAP_GAS_LIMIT } from 'config';
 import { BigNumber } from 'ethers';
 import { getFeeData } from 'utils/getFeeData';
 import { CHAINS } from '@lido-sdk/constants';
@@ -19,7 +18,7 @@ export const useUnwrapGasLimit = () => {
         const maxPriorityFeePerGas = feeData.maxPriorityFeePerGas ?? undefined;
         const maxFeePerGas = feeData.maxFeePerGas ?? undefined;
 
-        const gasLimit = await wsteth.estimateGas.unwrap(parseEther('0.0001'), {
+        const gasLimit = await wsteth.estimateGas.unwrap(ESTIMATE_AMOUNT, {
           from: ESTIMATE_ACCOUNT,
           maxPriorityFeePerGas,
           maxFeePerGas,

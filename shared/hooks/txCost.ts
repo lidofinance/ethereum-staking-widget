@@ -1,7 +1,7 @@
 import { BigNumberish } from 'ethers';
 import { useMemo } from 'react';
 import { useMaxGasPrice } from './useMaxGasPrice';
-import { useEthUsd } from './useEthUsd';
+import { useEthUsd } from './use-eth-usd';
 
 type UseTxCostInUsd = (gasLimit?: BigNumberish) => number | undefined;
 
