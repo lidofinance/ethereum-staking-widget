@@ -36,6 +36,5 @@ export const useGetRpcUrlByChainId = () => {
 export const useRpcUrl = () => {
   const { chainId } = useSDK();
   const getRpcUrlByChainId = useGetRpcUrlByChainId();
-  // TODO: use `satisfies` when will be TS v5
-  return getRpcUrlByChainId(chainId as unknown as CHAINS);
+  return getRpcUrlByChainId(chainId as number);
 };
