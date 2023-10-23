@@ -14,6 +14,9 @@ import {
   responseTimeMetric,
   errorAndCacheDefaultWrappers,
   rateLimit,
+  httpMethodGuard,
+  HttpMethod,
+  cors,
 } from 'utilsApi';
 import Metrics from 'utilsApi/metrics';
 import { API } from 'types';
@@ -24,7 +27,6 @@ const DEFAULT_AMOUNT = BigNumber.from(10).pow(18);
 
 // Proxy for third-party API.
 // Returns 1inch rate
-// DEPRECATED: In future will be delete!!!
 const oneInchRate: API = async (req, res) => {
   const cachedOneInchRate = cache.get(CACHE_ONE_INCH_RATE_KEY);
 
@@ -47,6 +49,8 @@ const oneInchRate: API = async (req, res) => {
 };
 
 export default wrapNextRequest([
+  httpMethodGuard([HttpMethod.GET]),
+  cors({ origin: ['*'], methods: [HttpMethod.GET] }),
   rateLimit,
   responseTimeMetric(Metrics.request.apiTimings, API_ROUTES.ONEINCH_RATE),
   ...errorAndCacheDefaultWrappers,
