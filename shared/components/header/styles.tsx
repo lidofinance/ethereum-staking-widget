@@ -44,5 +44,5 @@ export const IPFSInfoBoxWrap = styled.div`
   right: 0;
   top: calc(100% + 15px);
   width: 255px;
-  z-index: 1;
+  z-index: 3;
 `;
