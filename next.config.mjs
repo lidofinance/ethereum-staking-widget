@@ -34,6 +34,8 @@ const rateLimitTimeFrame = process.env.RATE_LIMIT_TIME_FRAME || 60; // 1 minute;
 const rewardsBackendAPI = process.env.REWARDS_BACKEND;
 const defaultChain = process.env.DEFAULT_CHAIN;
 
+const ipfsDevMode = process.env?.npm_lifecycle_event === 'dev-ipfs';
+
 // cache control
 export const CACHE_CONTROL_HEADER = 'x-cache-control';
 export const CACHE_CONTROL_PAGES = [
@@ -175,5 +177,6 @@ export default withBundleAnalyzer({
     ethAPIBasePath,
     rewardsBackendAPI,
     defaultChain,
+    ipfsDevMode,
   },
 });
