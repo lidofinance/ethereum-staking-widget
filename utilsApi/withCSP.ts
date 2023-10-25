@@ -6,7 +6,7 @@ import { dynamics } from 'config';
 import { AppWrapperType } from 'types';
 
 const { serverRuntimeConfig } = getConfig();
-const { cspTrustedHosts, cspReportOnly, cspReportUri, ipfsDevMode } =
+const { cspTrustedHosts, cspReportOnly, cspReportUri, developmentMode } =
   serverRuntimeConfig;
 
 const trustedHosts = cspTrustedHosts ? cspTrustedHosts.split(',') : [];
@@ -29,11 +29,12 @@ export const contentSecurityPolicy = {
     ...(dynamics.ipfsMode && {
       // connectSrc must be another for IPFS because of custom RPC
       connectSrc: [
+        "'self'",
         'https:',
         'wss:',
 
         // When we use `yarn dev-ipfs` we still use Next.js HMR, which works over `http` and `ws`
-        ...(ipfsDevMode ? ['http:', 'ws:'] : []),
+        ...(developmentMode ? ['ws:'] : []),
       ],
       // CSP directive 'frame-ancestors' is ignored when delivered via a <meta> element.
       // CSP directive 'report-uri' is ignored when delivered via a <meta> element.
