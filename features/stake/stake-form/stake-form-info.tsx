@@ -3,7 +3,7 @@ import { useWatch } from 'react-hook-form';
 import { useContractSWR, useSTETHContractRPC } from '@lido-sdk/react';
 import { Zero } from '@ethersproject/constants';
 
-import { FormatToken } from 'shared/formatters';
+import { FormatPrice, FormatToken } from 'shared/formatters';
 import { STRATEGY_CONSTANT } from 'utils/swrStrategies';
 import { DATA_UNAVAILABLE } from 'config';
 
@@ -35,7 +35,7 @@ export const StakeFormInfo = () => {
         data-testid="maxTxCost"
         loading={!txCostInUsd}
       >
-        ${txCostInUsd?.toFixed(2)}
+        <FormatPrice amount={txCostInUsd} />
       </DataTableRow>
       <DataTableRow
         title="Reward fee"

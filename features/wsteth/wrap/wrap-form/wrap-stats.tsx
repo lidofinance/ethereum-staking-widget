@@ -8,7 +8,7 @@ import { useWrapFormData, WrapFormInputType } from '../wrap-form-context';
 
 import { DataTableRow } from '@lidofinance/lido-ui';
 import { StatsDataTable } from 'features/wsteth/shared/styles';
-import { FormatToken } from 'shared/formatters';
+import { FormatPrice, FormatToken } from 'shared/formatters';
 import { TOKENS_TO_WRAP } from 'features/wsteth/shared/types';
 
 export const WrapFormStats = () => {
@@ -30,18 +30,18 @@ export const WrapFormStats = () => {
   return (
     <StatsDataTable>
       <DataTableRow
-        title="Max unlock fee"
+        title="Max unlock cost"
         data-testid="maxUnlockFee"
         loading={!approveTxCostInUsd}
       >
-        ${approveTxCostInUsd?.toFixed(2)}
+        <FormatPrice amount={approveTxCostInUsd} />
       </DataTableRow>
       <DataTableRow
-        title="Max gas fee"
+        title="Max transaction cost"
         data-testid="maxGasFee"
         loading={!wrapTxCostInUsd}
       >
-        ${wrapTxCostInUsd?.toFixed(2)}
+        <FormatPrice amount={wrapTxCostInUsd} />
       </DataTableRow>
       <DataTableRow
         title="Exchange rate"
