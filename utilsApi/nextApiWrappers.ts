@@ -1,4 +1,4 @@
-import { Histogram } from 'prom-client';
+import type { Histogram } from 'prom-client';
 import { getStatusLabel } from '@lidofinance/api-metrics';
 import {
   RequestWrapper,
