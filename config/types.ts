@@ -1,7 +1,7 @@
 export type EnvConfigRaw = {
   defaultChain: string | number;
   supportedChains: number[];
-  settingsPrefillRpc: string;
+  prefillUnsafeElRpcUrls: string[];
   ipfsMode: boolean;
   walletconnectProjectId: string;
 };
@@ -9,7 +9,7 @@ export type EnvConfigRaw = {
 export type EnvConfigParsed = {
   defaultChain: number;
   supportedChainIds: number[];
-  settingsPrefillRpc?: string;
+  prefillUnsafeElRpcUrls: string[];
   ipfsMode: boolean;
   walletconnectProjectId: string;
 };
