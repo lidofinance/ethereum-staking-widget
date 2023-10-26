@@ -20,8 +20,7 @@ export const useGetRpcUrlByChainId = () => {
       if (dynamics.ipfsMode) {
         const rpc =
           customConfig.savedCustomConfig.rpcUrls[chainId] ||
-          customConfig.settingsPrefillRpc ||
-          ''; // fallback must be set
+          customConfig.prefillUnsafeElRpcUrls?.[0];
 
         invariant(rpc, '[useGetRpcUrlByChainId] RPC is required!');
         return rpc;
