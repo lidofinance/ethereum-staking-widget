@@ -32,6 +32,7 @@ const Web3Provider: FC<PropsWithChildren> = ({ children }) => {
     const wagmiChainsArray = Object.values({ ...wagmiChains, holesky });
     const supportedChains = wagmiChainsArray.filter(
       (chain) =>
+        // TODO: remove the 80001 chain in the future
         dynamics.supportedChains.includes(chain.id) || chain.id === 80001,
     );
     const defaultChain = wagmiChainsArray.find(
