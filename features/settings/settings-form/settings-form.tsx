@@ -8,7 +8,12 @@ import { useCustomConfig } from 'providers/custom-config';
 import { RPCErrorType, checkRpcUrl } from 'utils/check-rpc-url';
 import { CHAINS } from 'utils/chains';
 
-import { Actions, DescriptionText, DescriptionTitle } from './styles';
+import {
+  Actions,
+  DescriptionText,
+  DescriptionTitle,
+  SettingsFormWrap,
+} from './styles';
 
 type FormValues = {
   rpcUrl: string;
@@ -77,7 +82,7 @@ export const SettingsForm = () => {
   }, [setValue, saveSettings, getValues]);
 
   return (
-    <>
+    <SettingsFormWrap>
       <Block>
         <form onSubmit={formMethods.handleSubmit(handleSubmit)}>
           <Input
@@ -132,6 +137,6 @@ export const SettingsForm = () => {
           </p>
         </DescriptionText>
       </Block>
-    </>
+    </SettingsFormWrap>
   );
 };
