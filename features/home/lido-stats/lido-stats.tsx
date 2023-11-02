@@ -19,7 +19,7 @@ import {
 import { useLidoApr, useLidoStats } from 'shared/hooks';
 import { FlexCenterVertical } from './styles';
 
-const isStatItemAvailable = (val: unknown) => {
+const isStatItemAvailable = (val: any): boolean => {
   return val && val !== 'N/A';
 };
 
