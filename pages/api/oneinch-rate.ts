@@ -34,8 +34,8 @@ const oneInchRate: API = async (req, res) => {
     res.status(200).json(cachedOneInchRate);
   } else {
     const oneInchRate = await getOneInchRate(
-      '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee',
       getTokenAddress(CHAINS.Mainnet, TOKENS.STETH),
+      '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee',
       DEFAULT_AMOUNT,
     );
     cache.put(
