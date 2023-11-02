@@ -2,7 +2,7 @@ import { useCallback } from 'react';
 import invariant from 'tiny-invariant';
 import { useSDK } from '@lido-sdk/react';
 
-import { useCustomConfig } from 'providers/custom-config';
+import { useClientConfig } from 'providers/client-config';
 import { CHAINS } from 'utils/chains';
 
 import dynamics from './dynamics';
@@ -12,15 +12,15 @@ export const getBackendRPCPath = (chainId: string | number): string => {
   return `${BASE_URL}/api/rpc?chainId=${chainId}`;
 };
 
-// TODO: naming
 export const useGetRpcUrlByChainId = () => {
-  const customConfig = useCustomConfig();
+  const clientConfig = useClientConfig();
+
   return useCallback(
     (chainId: CHAINS) => {
       if (dynamics.ipfsMode) {
         const rpc =
-          customConfig.savedCustomConfig.rpcUrls[chainId] ||
-          customConfig.prefillUnsafeElRpcUrls?.[0];
+          clientConfig.savedClientConfig.rpcUrls[chainId] ||
+          clientConfig.prefillUnsafeElRpcUrls?.[0];
 
         invariant(rpc, '[useGetRpcUrlByChainId] RPC is required!');
         return rpc;
@@ -28,7 +28,7 @@ export const useGetRpcUrlByChainId = () => {
         return getBackendRPCPath(chainId);
       }
     },
-    [customConfig],
+    [clientConfig],
   );
 };
 
