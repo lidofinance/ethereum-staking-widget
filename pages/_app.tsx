@@ -10,7 +10,7 @@ import 'nprogress/nprogress.css';
 
 import { dynamics } from 'config';
 import Providers from 'providers';
-import { CustomConfigProvider } from 'providers/custom-config';
+import { ClientConfigProvider } from 'providers/client-config';
 import { BackgroundGradient } from 'shared/components/background-gradient/background-gradient';
 import { nprogress, COOKIES_ALLOWED_FULL_KEY } from 'utils';
 import { parseEnvConfig } from 'utils/parse-env-config';
@@ -38,7 +38,7 @@ const AppWrapper = (props: AppWrapperProps): JSX.Element => {
   const { envConfig, ...rest } = props;
 
   return (
-    <CustomConfigProvider envConfig={envConfig}>
+    <ClientConfigProvider envConfig={envConfig}>
       <Providers>
         <BackgroundGradient
           width={1560}
@@ -51,7 +51,7 @@ const AppWrapper = (props: AppWrapperProps): JSX.Element => {
         <MemoApp {...rest} />
         <CookiesTooltip />
       </Providers>
-    </CustomConfigProvider>
+    </ClientConfigProvider>
   );
 };
 
