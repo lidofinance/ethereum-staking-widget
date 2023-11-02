@@ -5,7 +5,7 @@ import {
   SettingsFormWrap,
 } from 'features/settings/settings-form';
 
-const Referral: FC = () => {
+const Settings: FC = () => {
   return (
     <Layout title="Settings">
       <SettingsFormWrap>
@@ -15,4 +15,4 @@ const Referral: FC = () => {
   );
 };
 
-export default Referral;
+export default Settings;
