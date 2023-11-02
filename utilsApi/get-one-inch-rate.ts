@@ -14,7 +14,6 @@ type GetOneInchRateStats = (
   amount: BigNumber,
 ) => Promise<number | null>;
 
-// DEPRECATED: In future will be delete!!!
 export const getOneInchRate: GetOneInchRateStats = async (
   fromTokenAddress,
   toTokenAddress,
