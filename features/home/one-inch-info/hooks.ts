@@ -19,8 +19,8 @@ export const useOneInchRate = (): UseOneInchRateType => {
     ['swr:1inch-rate'],
     async () => {
       const { url } = getOneInchRateApiUrl(
-        '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee',
         getTokenAddress(CHAINS.Mainnet, TOKENS.STETH),
+        '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee',
         DEFAULT_AMOUNT.toString(),
       );
 

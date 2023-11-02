@@ -62,8 +62,8 @@ const getOneInchRate: getRate = async (amount, token) => {
     }
     const capped_amount = amount;
     const { url } = getOneInchRateApiUrl(
-      '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee',
       getTokenAddress(CHAINS.Mainnet, token),
+      '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee',
       amount.toString(),
     );
     const data: OneInchQuotePartial =
