@@ -22,8 +22,7 @@ export const SettingsForm = () => {
     mode: 'onChange',
     reValidateMode: 'onChange',
     defaultValues: {
-      // TODO
-      rpcUrl: savedCustomConfig.rpcUrls[chainId as unknown as CHAINS] || '',
+      rpcUrl: savedCustomConfig.rpcUrls[chainId as unknown as CHAINS],
     },
   });
 
