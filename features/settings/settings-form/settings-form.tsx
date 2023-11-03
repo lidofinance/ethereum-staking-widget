@@ -4,7 +4,6 @@ import { useForm } from 'react-hook-form';
 import { useSDK } from '@lido-sdk/react';
 import { Button, ToastSuccess, Block, Input } from '@lidofinance/lido-ui';
 
-import { dynamics } from 'config';
 import { useClientConfig } from 'providers/client-config';
 import { RPCErrorType, checkRpcUrl } from 'utils/check-rpc-url';
 import { CHAINS } from 'utils/chains';
@@ -90,7 +89,6 @@ export const SettingsForm = () => {
             fullwidth
             label="RPC URL"
             error={errors?.rpcUrl?.message}
-            disabled={!dynamics.ipfsMode}
             {...formMethods.register('rpcUrl', {
               required: true,
               validate: validateRpcUrl,
@@ -105,11 +103,7 @@ export const SettingsForm = () => {
               fullwidth
               color="primary"
               loading={formState.isValidating}
-              disabled={
-                !dynamics.ipfsMode ||
-                !formState.isValid ||
-                formState.isValidating
-              }
+              disabled={!formState.isValid || formState.isValidating}
             >
               Save
             </Button>
