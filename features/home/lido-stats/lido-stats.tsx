@@ -1,3 +1,4 @@
+// import { FC, memo, useMemo, PropsWithChildren } from 'react';
 import { FC, memo, useMemo } from 'react';
 import { getEtherscanTokenLink } from '@lido-sdk/helpers';
 import { useSDK } from '@lido-sdk/react';
@@ -22,6 +23,38 @@ import { FlexCenterVertical } from './styles';
 const isStatItemAvailable = (val: any): boolean => {
   return val && val !== 'N/A';
 };
+
+// type LidoStatsItemProps = {
+//   show: boolean;
+//   loading: boolean;
+//   dataTestId: string;
+// }
+
+// export const LidoStatsItem: FC<PropsWithChildren<LidoStatsItemProps>> = memo((props) => {
+//   const { show, loading, dataTestId, children } = props;
+//
+//   if (!show) {
+//     return null;
+//   }
+//
+//   return (
+//     <DataTableRow
+//       title={
+//         <FlexCenterVertical data-testid="aprTooltip">
+//           Annual percentage rate
+//           <Tooltip title={LIDO_APR_TOOLTIP_TEXT}>
+//             <Question />
+//           </Tooltip>
+//         </FlexCenterVertical>
+//       }
+//       loading={loading}
+//       data-testid={dataTestId}
+//       highlight
+//     >
+//       {children || DATA_UNAVAILABLE}
+//     </DataTableRow>
+//   );
+// });
 
 export const LidoStats: FC = memo(() => {
   const { chainId } = useSDK();
