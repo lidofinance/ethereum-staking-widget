@@ -1,16 +1,16 @@
+import { useMemo } from 'react';
+import { useWatch } from 'react-hook-form';
+import { BigNumber } from 'ethers';
+
+import { Zero } from '@ethersproject/constants';
+import { CHAINS, TOKENS, getTokenAddress } from '@lido-sdk/constants';
 import { useLidoSWR } from '@lido-sdk/react';
 
 import { useDebouncedValue } from 'shared/hooks/useDebouncedValue';
-
-import { BigNumber } from 'ethers';
-import { CHAINS, TOKENS, getTokenAddress } from '@lido-sdk/constants';
-import { useMemo } from 'react';
 import { standardFetcher } from 'utils/standardFetcher';
 import { STRATEGY_LAZY } from 'utils/swrStrategies';
-import { useWatch } from 'react-hook-form';
+
 import { RequestFormInputType } from '../request/request-form-context';
-import { Zero } from '@ethersproject/constants';
-import { getOneInchRateApiUrl } from '../../../config/one-inch';
 
 type getWithdrawalRatesParams = {
   amount: BigNumber;
@@ -23,7 +23,7 @@ type RateResult = {
   toReceive: BigNumber | null;
 };
 
-type getRate = (
+type GetRateType = (
   amount: BigNumber,
   token: TOKENS.STETH | TOKENS.WSTETH,
 ) => Promise<RateResult>;
@@ -46,12 +46,9 @@ const calculateRateReceive = (
   return { rate, toReceive };
 };
 
-type OneInchQuotePartial = {
-  toAmount: string;
-};
-
-const getOneInchRate: getRate = async (amount, token) => {
+const getOneInchRate = async (amount: BigNumber) => {
   let rateInfo: rateCalculationResult | null;
+
   try {
     if (amount.isZero() || amount.isNegative()) {
       return {
@@ -60,22 +57,20 @@ const getOneInchRate: getRate = async (amount, token) => {
         toReceive: BigNumber.from(0),
       };
     }
-    const capped_amount = amount;
-    const { url } = getOneInchRateApiUrl(
-      getTokenAddress(CHAINS.Mainnet, token),
-      '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee',
-      amount.toString(),
+
+    const respData = await standardFetcher<{ rate: string }>(
+      '/api/oneinch-rate',
     );
-    const data: OneInchQuotePartial =
-      await standardFetcher<OneInchQuotePartial>(url);
-    rateInfo = calculateRateReceive(
-      amount,
-      capped_amount,
-      BigNumber.from(data.toAmount),
-    );
+    rateInfo = {
+      rate: Number(respData.rate),
+      toReceive: BigNumber.from(Number(respData.rate) * RATE_PRECISION)
+        .mul(amount)
+        .div(RATE_PRECISION_BN),
+    };
   } catch {
     rateInfo = null;
   }
+
   return {
     name: '1inch',
     rate: rateInfo?.rate ?? null,
@@ -90,8 +85,9 @@ type ParaSwapPriceResponsePartial = {
   };
 };
 
-const getParaSwapRate: getRate = async (amount, token) => {
+const getParaSwapRate: GetRateType = async (amount, token) => {
   let rateInfo: rateCalculationResult | null;
+
   try {
     if (amount.isZero() || amount.isNegative()) {
       return {
@@ -127,6 +123,7 @@ const getParaSwapRate: getRate = async (amount, token) => {
   } catch {
     rateInfo = null;
   }
+
   return {
     name: 'paraswap',
     rate: rateInfo?.rate ?? null,
@@ -141,8 +138,9 @@ type CowSwapQuoteResponsePartial = {
   };
 };
 
-const getCowSwapRate: getRate = async (amount, token) => {
+const getCowSwapRate: GetRateType = async (amount, token) => {
   let rateInfo: rateCalculationResult | null;
+
   try {
     if (amount.isZero() || amount.isNegative()) {
       return {
@@ -181,6 +179,7 @@ const getCowSwapRate: getRate = async (amount, token) => {
   } catch {
     rateInfo = null;
   }
+
   return {
     name: 'cowswap',
     rate: rateInfo?.rate ?? null,
@@ -193,7 +192,7 @@ const getWithdrawalRates = async ({
   token,
 }: getWithdrawalRatesParams): Promise<getWithdrawalRatesResult> => {
   const rates = await Promise.all([
-    getOneInchRate(amount, token),
+    getOneInchRate(amount),
     getParaSwapRate(amount, token),
     getCowSwapRate(amount, token),
   ]);
