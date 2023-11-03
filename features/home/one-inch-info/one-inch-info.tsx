@@ -6,6 +6,7 @@ import { trackEvent } from '@lidofinance/analytics-matomo';
 import { MATOMO_CLICK_EVENTS } from 'config';
 import { useLidoSWR } from 'shared/hooks';
 import { L2Banner } from 'shared/l2-banner';
+import { STRATEGY_LAZY } from 'utils/swrStrategies';
 
 import { use1inchLinkProps } from '../hooks';
 
@@ -24,7 +25,8 @@ export const OneInchInfo: FC = () => {
   const linkProps = use1inchLinkProps();
 
   const { data, initialLoading } = useLidoSWR<{ rate: number }>(
-    '/api/oneinch-rate',
+    '/api/oneinch-rate?token=eth',
+    STRATEGY_LAZY,
   );
 
   // for fix flashing banner
@@ -32,7 +34,7 @@ export const OneInchInfo: FC = () => {
 
   const rate = (data && data.rate) || 1;
 
-  const showL2 = !rate || rate < ONE_INCH_RATE_LIMIT;
+  const showL2 = !rate || rate > ONE_INCH_RATE_LIMIT;
   if (showL2)
     return <L2Banner matomoEvent={MATOMO_CLICK_EVENTS.l2BannerStake} />;
 

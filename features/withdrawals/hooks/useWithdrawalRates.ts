@@ -46,7 +46,7 @@ const calculateRateReceive = (
   return { rate, toReceive };
 };
 
-const getOneInchRate = async (amount: BigNumber) => {
+const getOneInchRate: GetRateType = async (amount, token) => {
   let rateInfo: rateCalculationResult | null;
 
   try {
@@ -59,7 +59,7 @@ const getOneInchRate = async (amount: BigNumber) => {
     }
 
     const respData = await standardFetcher<{ rate: string }>(
-      '/api/oneinch-rate',
+      `/api/oneinch-rate?token=${token}`,
     );
     rateInfo = {
       rate: Number(respData.rate),
@@ -192,7 +192,7 @@ const getWithdrawalRates = async ({
   token,
 }: getWithdrawalRatesParams): Promise<getWithdrawalRatesResult> => {
   const rates = await Promise.all([
-    getOneInchRate(amount),
+    getOneInchRate(amount, token),
     getParaSwapRate(amount, token),
     getCowSwapRate(amount, token),
   ]);
