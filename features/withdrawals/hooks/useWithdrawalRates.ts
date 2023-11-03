@@ -6,7 +6,9 @@ import { Zero } from '@ethersproject/constants';
 import { CHAINS, TOKENS, getTokenAddress } from '@lido-sdk/constants';
 import { useLidoSWR } from '@lido-sdk/react';
 
+import { dynamics } from 'config';
 import { useDebouncedValue } from 'shared/hooks/useDebouncedValue';
+import { prependBasePath } from 'utils';
 import { standardFetcher } from 'utils/standardFetcher';
 import { STRATEGY_LAZY } from 'utils/swrStrategies';
 
@@ -58,8 +60,11 @@ const getOneInchRate: GetRateType = async (amount, token) => {
       };
     }
 
+    const apiOneInchRatePath = `api/oneinch-rate?token=${token}`;
     const respData = await standardFetcher<{ rate: string }>(
-      `/api/oneinch-rate?token=${token}`,
+      dynamics.ipfsMode
+        ? `${dynamics.widgetApiBasePathForIpfs}/${apiOneInchRatePath}`
+        : prependBasePath(apiOneInchRatePath),
     );
     rateInfo = {
       rate: Number(respData.rate),
