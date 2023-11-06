@@ -1,23 +1,20 @@
 import { FC, memo, useMemo } from 'react';
+
 import { getEtherscanTokenLink } from '@lido-sdk/helpers';
 import { useSDK } from '@lido-sdk/react';
 import { getTokenAddress, TOKENS } from '@lido-sdk/constants';
-import {
-  Block,
-  DataTable,
-  DataTableRow,
-  Question,
-  Tooltip,
-} from '@lidofinance/lido-ui';
+import { Block, DataTable, Question, Tooltip } from '@lidofinance/lido-ui';
+
 import { Section, MatomoLink } from 'shared/components';
+import { useLidoApr, useLidoStats } from 'shared/hooks';
 import {
   LIDO_APR_TOOLTIP_TEXT,
-  DATA_UNAVAILABLE,
   MATOMO_CLICK_EVENTS_TYPES,
   dynamics,
 } from 'config';
-import { useLidoApr, useLidoStats } from 'shared/hooks';
+
 import { FlexCenterVertical } from './styles';
+import { LidoStatsItem } from './lido-stats-item';
 
 const isStatItemAvailable = (val: any): boolean => {
   return val && val !== 'N/A';
@@ -63,53 +60,49 @@ export const LidoStats: FC = memo(() => {
       <Block>
         <DataTable>
           <>
-            {showApr && (
-              <DataTableRow
-                title={
-                  <FlexCenterVertical data-testid="aprTooltip">
-                    Annual percentage rate
-                    <Tooltip title={LIDO_APR_TOOLTIP_TEXT}>
-                      <Question />
-                    </Tooltip>
-                  </FlexCenterVertical>
-                }
-                loading={lidoApr.initialLoading}
-                data-testid="lidoAPR"
-                highlight
-              >
-                {lidoApr.apr ? `${lidoApr.apr}%` : DATA_UNAVAILABLE}
-              </DataTableRow>
-            )}
+            <LidoStatsItem
+              title={
+                <FlexCenterVertical data-testid="aprTooltip">
+                  Annual percentage rate
+                  <Tooltip title={LIDO_APR_TOOLTIP_TEXT}>
+                    <Question />
+                  </Tooltip>
+                </FlexCenterVertical>
+              }
+              show={showApr}
+              loading={lidoApr.initialLoading}
+              dataTestId="lidoAPR"
+              highlight
+            >
+              {lidoApr.apr ?? `${lidoApr.apr}%`}
+            </LidoStatsItem>
 
-            {showTotalStaked && (
-              <DataTableRow
-                title="Total staked with Lido"
-                data-testid="totalStaked"
-                loading={lidoStats.initialLoading}
-              >
-                {lidoStats.data.totalStaked}
-              </DataTableRow>
-            )}
+            <LidoStatsItem
+              title="Total staked with Lido"
+              show={showTotalStaked}
+              loading={lidoStats.initialLoading}
+              dataTestId="totalStaked"
+            >
+              {lidoStats.data.totalStaked}
+            </LidoStatsItem>
 
-            {showStakers && (
-              <DataTableRow
-                title="Stakers"
-                data-testid="stakers"
-                loading={lidoStats.initialLoading}
-              >
-                {lidoStats.data.stakers}
-              </DataTableRow>
-            )}
+            <LidoStatsItem
+              title="Stakers"
+              show={showStakers}
+              loading={lidoStats.initialLoading}
+              dataTestId="stakers"
+            >
+              {lidoStats.data.stakers}
+            </LidoStatsItem>
 
-            {showMarketCap && (
-              <DataTableRow
-                title="stETH market cap"
-                data-testid="stEthMarketCap"
-                loading={lidoStats.initialLoading}
-              >
-                {lidoStats.data.marketCap}
-              </DataTableRow>
-            )}
+            <LidoStatsItem
+              title="stETH market cap"
+              show={showMarketCap}
+              loading={lidoStats.initialLoading}
+              dataTestId="stEthMarketCap"
+            >
+              {lidoStats.data.marketCap}
+            </LidoStatsItem>
           </>
         </DataTable>
       </Block>
