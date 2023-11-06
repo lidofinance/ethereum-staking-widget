@@ -1,31 +1,39 @@
 import { FC, memo } from 'react';
 import { Wallet, Stake, Wrap, Withdraw } from '@lidofinance/lido-ui';
 
-import { Nav, NavLink } from './styles';
+import {
+  HOME_PATH,
+  WRAP_PATH,
+  WITHDRAWALS_PATH,
+  WITHDRAWALS_REQUEST_PATH,
+  REWARDS_PATH,
+} from 'config/urls';
 import { LocalLink } from 'shared/components/local-link';
 import { useRouterPath } from 'shared/hooks/use-router-path';
+
+import { Nav, NavLink } from './styles';
 
 const routes = [
   {
     name: 'Stake',
-    path: '/',
+    path: HOME_PATH,
     icon: <Stake data-testid="navStake" />,
     exact: true,
   },
   {
     name: 'Wrap',
-    path: '/wrap',
+    path: WRAP_PATH,
     icon: <Wrap data-testid="navWrap" />,
   },
   {
     name: 'Withdrawals',
-    path: '/withdrawals',
-    full_path: '/withdrawals/request',
+    path: WITHDRAWALS_PATH,
+    full_path: WITHDRAWALS_REQUEST_PATH,
     icon: <Withdraw data-testid="navWithdrawals" />,
   },
   {
     name: 'Rewards',
-    path: '/rewards',
+    path: REWARDS_PATH,
     icon: <Wallet data-testid="navRewards" />,
   },
 ];
