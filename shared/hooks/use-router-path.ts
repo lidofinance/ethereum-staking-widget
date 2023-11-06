@@ -1,13 +1,14 @@
 import { useRouter } from 'next/router';
 import { isClientSide } from 'utils/isClientSide';
 import { dynamics } from 'config';
+import { HOME_PATH } from 'config/urls';
 
 export const useRouterPath = () => {
   const router = useRouter();
 
   if (dynamics.ipfsMode) {
-    if (!isClientSide()) return '/';
-    return location.hash.replace('#', '') || '/';
+    if (!isClientSide()) return HOME_PATH;
+    return location.hash.replace('#', '') || HOME_PATH;
   }
 
   // We can't' use `router.pathname` and `router.route` 'cause it's a mapping with file structure
