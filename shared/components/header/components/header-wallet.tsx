@@ -35,7 +35,7 @@ const HeaderWallet: FC = () => {
       ) : (
         <Connect size="sm" />
       )}
-      <HeaderSettingsButton />
+      {dynamics.ipfsMode && <HeaderSettingsButton />}
       <ThemeToggler />
       {dynamics.ipfsMode && (
         <IPFSInfoBoxWrap>
