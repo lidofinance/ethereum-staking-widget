@@ -1,6 +1,16 @@
 import { FC, useMemo, useEffect } from 'react';
 import { useRouter } from 'next/router';
 
+import {
+  getPathWithoutFirstSlash,
+  HOME_PATH,
+  REWARDS_PATH,
+  SETTINGS_PATH,
+  WITHDRAWALS_PATH,
+  WITHDRAWALS_REQUEST_PATH,
+  WRAP_PATH,
+  REFERRAL_PATH,
+} from 'config/urls';
 import NoSSRWrapper from 'shared/components/no-ssr-wrapper';
 import { usePrefixedReplace } from 'shared/hooks/use-prefixed-history';
 
@@ -19,12 +29,12 @@ import SettingsPage from '../settings';
  */
 
 const IPFS_ROUTABLE_PAGES = [
-  'index',
-  'wrap',
-  'withdrawals',
-  'rewards',
-  'referral',
-  'settings',
+  // HOME_PATH not need here
+  getPathWithoutFirstSlash(WRAP_PATH),
+  getPathWithoutFirstSlash(WITHDRAWALS_PATH),
+  getPathWithoutFirstSlash(REWARDS_PATH),
+  getPathWithoutFirstSlash(REFERRAL_PATH),
+  getPathWithoutFirstSlash(SETTINGS_PATH),
 ];
 
 const HomePageIpfs: FC = () => {
@@ -40,12 +50,15 @@ const HomePageIpfs: FC = () => {
   }, [asPath]);
 
   useEffect(() => {
-    if (parsedPath[0] === 'withdrawals' && !parsedPath[1]) {
-      void replace('/withdrawals/request');
+    if (
+      parsedPath[0] === getPathWithoutFirstSlash(WITHDRAWALS_PATH) &&
+      !parsedPath[1]
+    ) {
+      void replace(WITHDRAWALS_REQUEST_PATH);
     }
 
     if (parsedPath[0] && !IPFS_ROUTABLE_PAGES.includes(parsedPath[0])) {
-      void replace('/');
+      void replace(HOME_PATH);
     }
   }, [replace, parsedPath]);
 
@@ -57,7 +70,7 @@ const HomePageIpfs: FC = () => {
    */
   let spaPage;
   switch (parsedPath[0]) {
-    case 'wrap': {
+    case getPathWithoutFirstSlash(WRAP_PATH): {
       if (parsedPath[1] === 'unwrap') {
         spaPage = <WrapPage mode={'unwrap'} />;
       } else {
@@ -66,7 +79,7 @@ const HomePageIpfs: FC = () => {
       break;
     }
 
-    case 'withdrawals': {
+    case getPathWithoutFirstSlash(WITHDRAWALS_PATH): {
       if (parsedPath[1] === 'claim') {
         spaPage = <WithdrawalsPage mode={'claim'} />;
       } else {
@@ -75,17 +88,17 @@ const HomePageIpfs: FC = () => {
       break;
     }
 
-    case 'rewards': {
+    case getPathWithoutFirstSlash(REWARDS_PATH): {
       spaPage = <RewardsPage />;
       break;
     }
 
-    case 'referral': {
+    case getPathWithoutFirstSlash(REFERRAL_PATH): {
       spaPage = <ReferralPage />;
       break;
     }
 
-    case 'settings': {
+    case getPathWithoutFirstSlash(SETTINGS_PATH): {
       spaPage = <SettingsPage />;
       break;
     }

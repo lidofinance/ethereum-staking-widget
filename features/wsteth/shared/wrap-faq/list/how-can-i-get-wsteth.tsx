@@ -1,9 +1,10 @@
 import { FC } from 'react';
 import { Accordion, Link as OuterLink } from '@lidofinance/lido-ui';
 
-import { LocalLink } from 'shared/components/local-link';
 import { MATOMO_CLICK_EVENTS_TYPES } from 'config';
+import { WRAP_PATH } from 'config/urls';
 import { trackMatomoEvent } from 'config/trackMatomoEvent';
+import { LocalLink } from 'shared/components/local-link';
 
 export const HowCanIGetWsteth: FC = () => {
   return (
@@ -11,7 +12,7 @@ export const HowCanIGetWsteth: FC = () => {
       <p>
         You can wrap your stETH or ETH tokens using{' '}
         <LocalLink
-          href={`/wrap`}
+          href={WRAP_PATH}
           onClick={() =>
             trackMatomoEvent(
               MATOMO_CLICK_EVENTS_TYPES.faqHowCanIGetWstethWrapLink,

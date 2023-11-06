@@ -1,7 +1,9 @@
 import { FC } from 'react';
 import { Accordion, Link as OuterLink } from '@lidofinance/lido-ui';
+
 import { MATOMO_CLICK_EVENTS_TYPES } from 'config';
 import { trackMatomoEvent } from 'config/trackMatomoEvent';
+import { HOME_PATH } from 'config/urls';
 import { LocalLink } from 'shared/components/local-link';
 
 export const HowCanIGetSteth: FC = () => {
@@ -11,7 +13,7 @@ export const HowCanIGetSteth: FC = () => {
         You can get stETH many ways, including interacting with the smart
         contract directly.Yet, it is much easier to use a{' '}
         <LocalLink
-          href={'/'}
+          href={HOME_PATH}
           onClick={() =>
             trackMatomoEvent(MATOMO_CLICK_EVENTS_TYPES.faqHowCanIGetStEthWidget)
           }

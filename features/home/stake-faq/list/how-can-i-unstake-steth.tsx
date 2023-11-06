@@ -1,8 +1,11 @@
 import { FC } from 'react';
+
 import { Accordion, Link as OuterLink } from '@lidofinance/lido-ui';
-import { LocalLink } from 'shared/components/local-link';
+
 import { MATOMO_CLICK_EVENTS_TYPES } from 'config';
+import { WITHDRAWALS_CLAIM_PATH } from 'config/urls';
 import { trackMatomoEvent } from 'config/trackMatomoEvent';
+import { LocalLink } from 'shared/components/local-link';
 
 export const HowCanIUnstakeSteth: FC = () => {
   return (
@@ -10,7 +13,7 @@ export const HowCanIUnstakeSteth: FC = () => {
       <p>
         You can use our{' '}
         <LocalLink
-          href="/withdrawals/claim"
+          href={WITHDRAWALS_CLAIM_PATH}
           onClick={() =>
             trackMatomoEvent(
               MATOMO_CLICK_EVENTS_TYPES.faqHowCanIUnstakeStEthWithdrawals,
