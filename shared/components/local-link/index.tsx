@@ -12,9 +12,9 @@ export const LocalLink: FC<PropsWithChildren<LinkProps>> = (props) => {
 
   const extraQuery = {} as Record<string, string>;
   // Not support case: ?ref=01234&ref=56789
-  if (ref) extraQuery.ref = String(ref);
-  if (embed) extraQuery.embed = String(embed);
-  if (app) extraQuery.app = String(app);
+  if (ref && typeof ref === 'string') extraQuery.ref = ref;
+  if (embed && typeof embed === 'string') extraQuery.embed = embed;
+  if (app && typeof app === 'string') extraQuery.app = app;
 
   if (typeof href === 'string') {
     if (dynamics.ipfsMode) {
