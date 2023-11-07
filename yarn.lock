@@ -2643,11 +2643,6 @@
   resolved "https://registry.yarnpkg.com/@lidofinance/api-rpc/-/api-rpc-0.28.0.tgz#68d5a061a2b06cf1c3bc9c211df48a4a54b2a721"
   integrity sha512-6ImH3J50XMhERM1QzoTNTpFBAP829pzHoHODegBErXmCf+bKrvWoFE9oYhhfXwfiZeQ/34W96NRk/D9DwDzivA==
 
-"@lidofinance/blocks-connect-wallet-modal@2.11.2":
-  version "2.11.2"
-  resolved "https://registry.yarnpkg.com/@lidofinance/blocks-connect-wallet-modal/-/blocks-connect-wallet-modal-2.11.2.tgz#a8593384e92a1f5535a42f76ee8fcc22bd5c0318"
-  integrity sha512-En9QkhSuFrbtBMFonDAW+49ypvOrxxDmdRh2ly9YKogQ2Rag0caKdmT3QVXW+kh+qKYVegQklftGmSQX0Fnb0w==
-
 "@lidofinance/eslint-config@^0.34.0":
   version "0.34.0"
   resolved "https://registry.yarnpkg.com/@lidofinance/eslint-config/-/eslint-config-0.34.0.tgz#5ee60bcf6c2da39bcb712a0169d7365dceb08cfb"
@@ -2665,33 +2660,10 @@
   resolved "https://registry.yarnpkg.com/@lidofinance/eth-providers/-/eth-providers-0.28.0.tgz#069dfcd66f97418298646abd2742e8e997c6fbbb"
   integrity sha512-oH2nU7jVPkn1mii56vp3gBFZNFR/LysxiKBUwV2freFoizQHNLeWWjU1b8a+l1I020LzbxHcatOkV6z9ur5YfA==
 
-"@lidofinance/lido-ui-blocks@2.10.2":
-  version "2.10.2"
-  resolved "https://registry.yarnpkg.com/@lidofinance/lido-ui-blocks/-/lido-ui-blocks-2.10.2.tgz#f5075ea2a6524006ee0b145b61495472b4d678d0"
-  integrity sha512-2UDI1N7FypwQuqspQb8HCts5qeWbFp9iwtxRJL1gHIpzlz5VqqRS4xTpFdkIDDYS3Z/nrNMhZ9DlNqK6rRxafw==
-  dependencies:
-    "@lidofinance/blocks-connect-wallet-modal" "2.11.2"
-
-"@lidofinance/lido-ui@^3.12.0":
-  version "3.12.0"
-  resolved "https://registry.yarnpkg.com/@lidofinance/lido-ui/-/lido-ui-3.12.0.tgz#b53fcfc752adecd5fb3cf89d42ed17da085080de"
-  integrity sha512-COCnfqKpj0hrnY3BxCaZRbS7cRaUuI0lotrMC6jS5QVlsxcp1dJzDWzPzrFnO+7s+y7TFikMA5JRfQTVJowJHg==
-  dependencies:
-    "@styled-system/should-forward-prop" "5.1.5"
-    "@swc/helpers" "^0.4.11"
-    "@swc/plugin-styled-components" "^1.2.10"
-    react-collapsed "3.0.2"
-    react-jazzicon "^1.0.4"
-    react-toastify "7.0.4"
-    react-transition-group "4"
-    styled-system "5.1.5"
-    ua-parser-js "^1.0.35"
-    use-callback-ref "1.2.5"
-
-"@lidofinance/lido-ui@^3.8.1":
-  version "3.13.0"
-  resolved "https://registry.yarnpkg.com/@lidofinance/lido-ui/-/lido-ui-3.13.0.tgz#a96523c5836663e2366b98782d18ec1fdc19e81c"
-  integrity sha512-qSqlebnTv741XfOGlt8lq/FgvREEBHzjuVKSHYSUG5ZIj9nLVcoMKcaFKF3C9TJfefGNKF8xmN9YsPkvMNWEZQ==
+"@lidofinance/lido-ui@^3.8.1", "@lidofinance/lido-ui@^3.14.0":
+  version "3.14.0"
+  resolved "https://registry.yarnpkg.com/@lidofinance/lido-ui/-/lido-ui-3.14.0.tgz#2e7355ff83d256403a29d9aa36743664a6b6614b"
+  integrity sha512-3+4Jxnp/TbUVArzIVh8PM/AJIqctQztelRYEuyarDjlBPqZ9UiV4xtN0yPOK01MwFabGvwFbG/9obpbYM8Hu8Q==
   dependencies:
     "@styled-system/should-forward-prop" "5.1.5"
     "@swc/helpers" "^0.4.11"
@@ -5515,10 +5487,10 @@ cross-spawn@^7.0.2, cross-spawn@^7.0.3:
     shebang-command "^2.0.0"
     which "^2.0.1"
 
-crypto-js@^4.1.1:
-  version "4.2.0"
-  resolved "https://registry.yarnpkg.com/crypto-js/-/crypto-js-4.2.0.tgz#4d931639ecdfd12ff80e8186dba6af2c2e856631"
-  integrity sha512-KALDyEYgpY+Rlob/iriUtjV6d5Eq+Y191A5g4UqLAi8CyGP9N1+FdVbkc1SxKc2r4YAYqG8JzO2KGL+AizD70Q==
+crypto-js@4.1.1:
+  version "4.1.1"
+  resolved "https://registry.yarnpkg.com/crypto-js/-/crypto-js-4.1.1.tgz#9e485bcf03521041bd85844786b83fb7619736cf"
+  integrity sha512-o2JlM7ydqd3Qk9CA0L4NL6mTzU2sdx96a+oOfPu8Mkl/PK51vSyoi8/rQ8NknZtk44vq15lmhAj9CIAGwgeWKw==
 
 css-color-keywords@^1.0.0:
   version "1.0.0"
