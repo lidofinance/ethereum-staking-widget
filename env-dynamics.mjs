@@ -40,4 +40,4 @@ export const ipfsMode = toBoolean(process.env.IPFS_MODE);
 export const prefillUnsafeElRpcUrls = process.env.PREFILL_UNSAFE_EL_RPC_URLS?.split(',') ?? [];
 
 /** @type string */
-export const ipfsWidgetEthApiBasePath = process.env.IPFS_WIDGET_ETH_API_BASE_PATH;
+export const widgetApiBasePathForIpfs = process.env.WIDGET_API_BASE_PATH_FOR_IPFS;

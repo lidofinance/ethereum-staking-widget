@@ -5,6 +5,7 @@ buildDynamics();
 
 const ipfsMode = process.env.IPFS_MODE;
 
+// https://nextjs.org/docs/pages/api-reference/next-config-js/basePath
 const basePath = process.env.BASE_PATH;
 
 const rpcUrls_1 = process.env.EL_RPC_URLS_1?.split(',') ?? [];
