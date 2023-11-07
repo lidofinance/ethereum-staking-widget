@@ -24,7 +24,7 @@ export const useLidoStats = (): {
   const apiShortLidoStatsPath = `api/short-lido-stats?chainId=${chainId}`;
   const lidoStats = useLidoSWR<ResponseData>(
     dynamics.ipfsMode
-      ? `${dynamics.ipfsWidgetEthApiBasePath}/${apiShortLidoStatsPath}`
+      ? `${dynamics.widgetApiBasePathForIpfs}/${apiShortLidoStatsPath}`
       : prependBasePath(apiShortLidoStatsPath),
     standardFetcher,
   );
