@@ -1,8 +1,9 @@
 import { BigNumber } from 'ethers';
 
-import { getOneInchRateApiUrl } from 'config/one-inch';
 import { standardFetcher } from 'utils/standardFetcher';
 import { responseTimeExternalMetricWrapper } from 'utilsApi';
+
+export const API_LIDO_1INCH = `https://api-lido.1inch.io/v5.2/1/quote`;
 
 export type OneInchFetchResponse = {
   toAmount: string;
@@ -20,24 +21,25 @@ export const getOneInchRate: GetOneInchRateStats = async (
   amount,
 ) => {
   console.debug('[getOneInchRate] Started fetching...');
-  const { api, url } = getOneInchRateApiUrl(
-    fromTokenAddress,
-    toTokenAddress,
-    amount.toString(),
-  );
+  const query = new URLSearchParams({
+    src: fromTokenAddress,
+    dst: toTokenAddress,
+    amount: amount.toString(),
+  });
+  const url = `${API_LIDO_1INCH}?${query.toString()}`;
 
-  const data = await responseTimeExternalMetricWrapper({
-    payload: api,
+  const respData = await responseTimeExternalMetricWrapper({
+    payload: API_LIDO_1INCH,
     request: () => standardFetcher<OneInchFetchResponse>(url),
   });
 
-  if (!data || !data.toAmount) {
+  if (!respData || !respData.toAmount) {
     console.error('[getOneInchRate] Request to 1inch failed');
     return null;
   }
 
   const rate =
-    BigNumber.from(data.toAmount)
+    BigNumber.from(respData.toAmount)
       .mul(BigNumber.from(100000))
       .div(amount)
       .toNumber() / 100000;
