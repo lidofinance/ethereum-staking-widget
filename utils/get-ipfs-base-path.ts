@@ -7,7 +7,12 @@ export const getIpfsBasePath = memoize(() => {
   return basePath;
 });
 
-export const prefixUrl = (url: string) => {
-  if (dynamics.ipfsMode) return `${getIpfsBasePath()}#${url}`;
+export const prefixUrl = (url: string, query?: Record<string, string>) => {
+  let queryString = '';
+  if (query && Object.keys(query).length > 0) {
+    queryString = `?${new URLSearchParams(query).toString()}`;
+  }
+
+  if (dynamics.ipfsMode) return `${getIpfsBasePath()}${queryString}#${url}`;
   return url;
 };

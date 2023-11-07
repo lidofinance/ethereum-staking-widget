@@ -10,15 +10,15 @@ export const LocalLink: FC<PropsWithChildren<LinkProps>> = (props) => {
   const { ref, embed, app } = router.query;
   const { href, ...restProps } = props;
 
-  const extraQuery = {} as { [key: string]: string | string[] };
-  if (ref) extraQuery.ref = ref;
-  if (embed) extraQuery.embed = embed;
-  if (app) extraQuery.app = app;
+  const extraQuery = {} as Record<string, string>;
+  // Not support case: ?ref=01234&ref=56789
+  if (ref) extraQuery.ref = String(ref);
+  if (embed) extraQuery.embed = String(embed);
+  if (app) extraQuery.app = String(app);
 
   if (typeof href === 'string') {
     if (dynamics.ipfsMode) {
-      // TODO: href + extraQuery?
-      return <LinkIpfs {...restProps} href={href} />;
+      return <LinkIpfs {...restProps} href={href} query={extraQuery} />;
     }
 
     return (
