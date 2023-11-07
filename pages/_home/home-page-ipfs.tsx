@@ -54,13 +54,16 @@ const HomePageIpfs: FC = () => {
       parsedPath[0] === getPathWithoutFirstSlash(WITHDRAWALS_PATH) &&
       !parsedPath[1]
     ) {
-      void replace(WITHDRAWALS_REQUEST_PATH);
+      void replace(
+        WITHDRAWALS_REQUEST_PATH,
+        router.query as Record<string, string>,
+      );
     }
 
     if (parsedPath[0] && !IPFS_ROUTABLE_PAGES.includes(parsedPath[0])) {
-      void replace(HOME_PATH);
+      void replace(HOME_PATH, router.query as Record<string, string>);
     }
-  }, [replace, parsedPath]);
+  }, [replace, parsedPath, router.query]);
 
   /**
    * TODO:

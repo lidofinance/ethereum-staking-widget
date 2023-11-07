@@ -4,21 +4,22 @@ import { usePrefixedPush } from 'shared/hooks/use-prefixed-history';
 
 type Props = {
   href: string;
+  query?: Record<string, string>;
   onClick?: MouseEventHandler<HTMLAnchorElement>;
   children?: ReactNode;
 };
 
-export const LinkIpfs = ({ onClick, ...props }: Props) => {
+export const LinkIpfs = ({ onClick, query, ...props }: Props) => {
   const push = usePrefixedPush();
   const { href } = props;
 
   const handleClick: MouseEventHandler<HTMLAnchorElement> = useCallback(
     (event) => {
       event.preventDefault();
-      void push(href);
+      void push(href, query);
       onClick?.(event);
     },
-    [onClick, push, href],
+    [onClick, push, href, query],
   );
 
   // TODO:
