@@ -2,6 +2,7 @@ import { useCallback } from 'react';
 import { useLidoSWR, useLocalStorage, useSDK } from '@lido-sdk/react';
 
 import { useRpcUrl } from 'config/rpc';
+import { SETTINGS_PATH } from 'config/urls';
 import { usePrefixedPush } from 'shared/hooks/use-prefixed-history';
 import { useRouterPath } from 'shared/hooks/use-router-path';
 
@@ -41,12 +42,12 @@ export const IPFSInfoBox = () => {
   }, [setDismissStorage]);
 
   const handleClickSettings = useCallback(() => {
-    void push('/settings');
+    void push(SETTINGS_PATH);
     setDismissStorage(true);
   }, [push, setDismissStorage]);
 
   const pathname = useRouterPath();
-  const isSettingsPage = pathname === '/settings';
+  const isSettingsPage = pathname === SETTINGS_PATH;
 
   if ((isDismissed && rpcCheckResult === true) || isLoading || isSettingsPage) {
     return null;

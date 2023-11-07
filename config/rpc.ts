@@ -25,7 +25,10 @@ export const useGetRpcUrlByChainId = () => {
         invariant(rpc, '[useGetRpcUrlByChainId] RPC is required!');
         return rpc;
       } else {
-        return getBackendRPCPath(chainId);
+        return (
+          clientConfig.savedClientConfig.rpcUrls[chainId] ||
+          getBackendRPCPath(chainId)
+        );
       }
     },
     [clientConfig],
