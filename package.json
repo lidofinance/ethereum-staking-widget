@@ -122,7 +122,8 @@
     "url-loader": "^4.1.1"
   },
   "resolutions": {
-    "postcss": "^8.4.31"
+    "postcss": "^8.4.31",
+    "crypto-js": "^4.2.0"
   },
   "lint-staged": {
     "./**/*.{ts,tsx}": [
