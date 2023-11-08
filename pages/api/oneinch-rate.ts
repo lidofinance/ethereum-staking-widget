@@ -26,7 +26,7 @@ const cache = new Cache<string, unknown>();
 
 const DEFAULT_AMOUNT = BigNumber.from(10).pow(18);
 const TOKEN_ETH = 'ETH';
-const TOKEN_WHITE_LIST = [TOKEN_ETH, TOKENS.STETH, TOKENS.WSTETH];
+const TOKEN_ALLOWED_LIST = [TOKEN_ETH, TOKENS.STETH, TOKENS.WSTETH];
 
 const validateAndGetQueryToken = async (
   req: NextApiRequest,
@@ -41,9 +41,9 @@ const validateAndGetQueryToken = async (
 
   token = token.toLocaleUpperCase();
 
-  if (!TOKEN_WHITE_LIST.includes(token)) {
+  if (!TOKEN_ALLOWED_LIST.includes(token)) {
     res.status(400);
-    throw new Error(`You can use only: ${TOKEN_WHITE_LIST.toString()}`);
+    throw new Error(`You can use only: ${TOKEN_ALLOWED_LIST.toString()}`);
   }
 
   return token;
@@ -51,7 +51,7 @@ const validateAndGetQueryToken = async (
 
 // Proxy for third-party API.
 // Query params:
-// * (optional) token: see TOKEN_WHITE_LIST above. Default see TOKEN_ETH above.
+// * (optional) token: see TOKEN_ALLOWED_LIST above. Default see TOKEN_ETH above.
 // Returns 1inch rate
 const oneInchRate: API = async (req, res) => {
   const token = await validateAndGetQueryToken(req, res);
