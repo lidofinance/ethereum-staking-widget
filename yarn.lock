@@ -2660,10 +2660,10 @@
   resolved "https://registry.yarnpkg.com/@lidofinance/eth-providers/-/eth-providers-0.28.0.tgz#069dfcd66f97418298646abd2742e8e997c6fbbb"
   integrity sha512-oH2nU7jVPkn1mii56vp3gBFZNFR/LysxiKBUwV2freFoizQHNLeWWjU1b8a+l1I020LzbxHcatOkV6z9ur5YfA==
 
-"@lidofinance/lido-ui@^3.14.1":
-  version "3.14.1"
-  resolved "https://registry.yarnpkg.com/@lidofinance/lido-ui/-/lido-ui-3.14.1.tgz#780d32c3321295a40d44c352a307029a2b574e43"
-  integrity sha512-8vqv1E9ldPAIAceANPrh1alLPFWbYzz8AO6RhNbtFms+yPd5P2nSh5OopBLB1G2HE4lGFF0c3OXbMgyEcq9pEQ==
+"@lidofinance/lido-ui@3.12.0":
+  version "3.12.0"
+  resolved "https://registry.yarnpkg.com/@lidofinance/lido-ui/-/lido-ui-3.12.0.tgz#b53fcfc752adecd5fb3cf89d42ed17da085080de"
+  integrity sha512-COCnfqKpj0hrnY3BxCaZRbS7cRaUuI0lotrMC6jS5QVlsxcp1dJzDWzPzrFnO+7s+y7TFikMA5JRfQTVJowJHg==
   dependencies:
     "@styled-system/should-forward-prop" "5.1.5"
     "@swc/helpers" "^0.4.11"
@@ -2677,9 +2677,9 @@
     use-callback-ref "1.2.5"
 
 "@lidofinance/lido-ui@^3.8.1":
-  version "3.14.0"
-  resolved "https://registry.yarnpkg.com/@lidofinance/lido-ui/-/lido-ui-3.14.0.tgz#2e7355ff83d256403a29d9aa36743664a6b6614b"
-  integrity sha512-3+4Jxnp/TbUVArzIVh8PM/AJIqctQztelRYEuyarDjlBPqZ9UiV4xtN0yPOK01MwFabGvwFbG/9obpbYM8Hu8Q==
+  version "3.14.1"
+  resolved "https://registry.yarnpkg.com/@lidofinance/lido-ui/-/lido-ui-3.14.1.tgz#780d32c3321295a40d44c352a307029a2b574e43"
+  integrity sha512-8vqv1E9ldPAIAceANPrh1alLPFWbYzz8AO6RhNbtFms+yPd5P2nSh5OopBLB1G2HE4lGFF0c3OXbMgyEcq9pEQ==
   dependencies:
     "@styled-system/should-forward-prop" "5.1.5"
     "@swc/helpers" "^0.4.11"
