@@ -3,26 +3,25 @@ import { Button } from '@lidofinance/lido-ui';
 import Icons from 'assets/icons/l2-swap.svg';
 
 export const Wrapper = styled.div`
-  text-align: left;
   margin-top: 16px;
   position: relative;
   display: flex;
+  text-align: left;
   align-items: center;
   padding: ${({ theme }) => theme.spaceMap.lg}px;
   border-radius: ${({ theme }) => theme.borderRadiusesMap.lg}px;
-  height: 174px;
   gap: 20px;
   overflow: hidden;
   background-color: #07080c;
-  background: linear-gradient(90deg, #3487e5 0%, #006ae3 46.27%);
+  background: radial-gradient(120% 180% at 100% 100%, #62c4fb 0%, #112dbf 100%);
   box-sizing: border-box;
 
   ${({ theme }) => theme.mediaQueries.md} {
-    gap: 2px;
+    gap: 6px;
     padding: ${({ theme }) => theme.spaceMap.md}px;
   }
 
-  @media (max-width: 396px) {
+  ${({ theme }) => theme.mediaQueries.sm} {
     cursor: pointer;
     padding: ${({ theme }) => theme.spaceMap.sm}px;
   }
@@ -45,11 +44,11 @@ export const ContentWrap = styled.div`
 `;
 
 export const TextHeader = styled.div`
+  margin-bottom: 4px;
   font-size: 14px;
   line-height: 24px;
   font-weight: 700;
   color: #fff;
-  margin-bottom: 4px;
 `;
 
 export const TextWrap = styled.div`
@@ -69,7 +68,7 @@ export const ButtonWrap = styled.div`
 export const ButtonLinkWrap = styled.a`
   display: block;
 
-  @media (max-width: 396px) {
+  ${({ theme }) => theme.mediaQueries.sm} {
     position: absolute;
     top: 0;
     bottom: 0;
@@ -79,10 +78,12 @@ export const ButtonLinkWrap = styled.a`
 `;
 
 export const ButtonStyle = styled(Button)`
-  @media (max-width: 396px) {
-    display: none;
-  }
+  background-color: #fff;
   padding: 7px 16px;
   font-size: 12px;
   line-height: 20px;
+
+  @media (max-width: 396px) {
+    display: none;
+  }
 `;
