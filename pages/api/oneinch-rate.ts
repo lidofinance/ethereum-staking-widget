@@ -1,6 +1,9 @@
+import { BigNumber } from 'ethers';
 import { Cache } from 'memory-cache';
+
 import { wrapRequest as wrapNextRequest } from '@lidofinance/next-api-wrapper';
 import { CHAINS, TOKENS, getTokenAddress } from '@lido-sdk/constants';
+
 import {
   CACHE_ONE_INCH_RATE_KEY,
   CACHE_ONE_INCH_RATE_TTL,
@@ -11,10 +14,12 @@ import {
   responseTimeMetric,
   errorAndCacheDefaultWrappers,
   rateLimit,
+  httpMethodGuard,
+  HttpMethod,
+  cors,
 } from 'utilsApi';
 import Metrics from 'utilsApi/metrics';
 import { API } from 'types';
-import { BigNumber } from 'ethers';
 
 const cache = new Cache<typeof CACHE_ONE_INCH_RATE_KEY, unknown>();
 
@@ -44,6 +49,8 @@ const oneInchRate: API = async (req, res) => {
 };
 
 export default wrapNextRequest([
+  httpMethodGuard([HttpMethod.GET]),
+  cors({ origin: ['*'], methods: [HttpMethod.GET] }),
   rateLimit,
   responseTimeMetric(Metrics.request.apiTimings, API_ROUTES.ONEINCH_RATE),
   ...errorAndCacheDefaultWrappers,
