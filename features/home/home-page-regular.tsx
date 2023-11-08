@@ -1,9 +1,14 @@
 import { FC } from 'react';
 import Head from 'next/head';
-import { Wallet, StakeForm, LidoStats, StakeFaq } from 'features/home';
+
 import { Layout } from 'shared/components';
 import NoSSRWrapper from 'shared/components/no-ssr-wrapper';
 import { useWeb3Key } from 'shared/hooks/useWeb3Key';
+
+import { Wallet } from './wallet/wallet';
+import { StakeForm } from './stake-form/stake-form';
+import { StakeFaq } from './stake-faq/stake-faq';
+import { LidoStats } from './lido-stats/lido-stats';
 
 const HomePageRegular: FC = () => {
   const key = useWeb3Key();

@@ -14,12 +14,12 @@ import {
 import NoSSRWrapper from 'shared/components/no-ssr-wrapper';
 import { usePrefixedReplace } from 'shared/hooks/use-prefixed-history';
 
-import HomePageRegular from './home-page-regular';
-import WrapPage from '../wrap/[[...mode]]';
-import WithdrawalsPage from '../withdrawals/[mode]';
-import ReferralPage from '../referral';
-import RewardsPage from '../rewards';
-import SettingsPage from '../settings';
+import HomePageRegular from 'features/home/home-page-regular';
+import WrapPage from 'pages/wrap/[[...mode]]';
+import WithdrawalsPage from 'pages/withdrawals/[mode]';
+import ReferralPage from 'pages/referral';
+import RewardsPage from 'pages/rewards';
+import SettingsPage from 'pages/settings';
 
 /**
  * We are using single index.html endpoint
