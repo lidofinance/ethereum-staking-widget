@@ -14,7 +14,10 @@ export const checkRpcUrl = async (rpcUrl: string, chainId: CHAINS) => {
   if (!isUrl(rpcUrl)) return RPCErrorType.URL_IS_NOT_VALID;
   try {
     // Check chain id
-    const rpcProvider = new ethers.providers.JsonRpcProvider(rpcUrl);
+    const rpcProvider = new ethers.providers.JsonRpcProvider({
+      url: rpcUrl,
+      throttleLimit: 1, // prevents retries for 429 status
+    });
     const network = await rpcProvider.getNetwork();
     if (network.chainId !== chainId) {
       return RPCErrorType.NETWORK_DOES_NOT_MATCH;
