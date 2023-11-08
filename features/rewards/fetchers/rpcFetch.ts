@@ -109,7 +109,7 @@ export const GAS_LIMITS_BY_TOKEN = {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const rpcFetcher = <Result>(
   mainnetProvider: StaticJsonRpcBatchProvider,
-  args: any[],
+  ...args: any[]
 ): Promise<Result> => {
   mainnetProvider.pollingInterval = 30000;
   const ABIs = new Map(getSwrTokenConfig(1));

@@ -14,11 +14,12 @@ For testnet simply provide 1-1 ratio for UI to work
 
 export const stEthEthRequest = (mainnetProvider: StaticJsonRpcBatchProvider) =>
   dynamics.defaultChain === 1
-    ? rpcFetch<EthersBigNumber>(mainnetProvider, [
+    ? rpcFetch<EthersBigNumber>(
+        mainnetProvider,
         MAINNET_CURVE,
         'get_dy',
         0,
         1,
         String(10 ** 18),
-      ])
+      )
     : constants.WeiPerEther;
