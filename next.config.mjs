@@ -1,5 +1,6 @@
 import NextBundleAnalyzer from '@next/bundle-analyzer';
 import buildDynamics from './scripts/build-dynamics.mjs';
+import generateBuildId from './scripts/generate-build-id.mjs';
 
 buildDynamics();
 
@@ -60,6 +61,7 @@ const withBundleAnalyzer = NextBundleAnalyzer({
 
 export default withBundleAnalyzer({
   basePath,
+  generateBuildId,
 
   // IPFS next.js configuration reference:
   // https://github.com/Velenir/nextjs-ipfs-example
