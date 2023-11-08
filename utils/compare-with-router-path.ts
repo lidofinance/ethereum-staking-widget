@@ -1,4 +1,4 @@
-export const checkActiveInInfra = (asPath: string, href: string) => {
+export const compareWithRouterPathInInfra = (asPath: string, href: string) => {
   // '/wrap/?ref=123#dsfdsf' ---> '/wrap/'
   const pathWithoutQueryString = asPath.split('?')[0];
 
@@ -11,7 +11,7 @@ export const checkActiveInInfra = (asPath: string, href: string) => {
   return pathWithoutLastSlash === href;
 };
 
-export const checkActiveInIPFS = (asPath: string, href: string) => {
+export const compareWithRouterPathInIPFS = (asPath: string, href: string) => {
   // '/?ref=123&embed=456&app=789#/wrap' ---> '/wrap'
   return asPath.split('#')[1] === href;
 };
