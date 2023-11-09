@@ -1,3 +1,4 @@
+import type { Histogram } from 'prom-client';
 import { getStatusLabel } from '@lidofinance/api-metrics';
 import {
   RequestWrapper,
@@ -7,12 +8,23 @@ import {
   DEFAULT_API_ERROR_MESSAGE,
 } from '@lidofinance/next-api-wrapper';
 import { rateLimitWrapper } from '@lidofinance/next-ip-rate-limit';
-import { Histogram } from 'prom-client';
 import {
   CACHE_DEFAULT_HEADERS,
   RATE_LIMIT,
   RATE_LIMIT_TIME_FRAME,
 } from 'config';
+
+export enum HttpMethod {
+  GET = 'GET',
+  HEAD = 'HEAD',
+  POST = 'POST',
+  PUT = 'PUT',
+  DELETE = 'DELETE',
+  CONNECT = 'CONNECT',
+  OPTIONS = 'OPTIONS',
+  TRACE = 'TRACE',
+  PATCH = 'PATCH',
+}
 
 export const extractErrorMessage = (
   error: unknown,
@@ -22,6 +34,55 @@ export const extractErrorMessage = (
   if (error instanceof Error) return error.message;
   return defaultMessage ?? DEFAULT_API_ERROR_MESSAGE;
 };
+
+export type CorsWrapperType = {
+  origin?: string[];
+  methods?: HttpMethod[];
+  allowedHeaders?: string[];
+  credentials?: boolean;
+};
+
+export const cors =
+  ({
+    origin = ['*'],
+    methods = [HttpMethod.GET],
+    allowedHeaders = ['*'],
+    credentials = false,
+  }: CorsWrapperType): RequestWrapper =>
+  async (req, res, next) => {
+    if (!req || !req.method) {
+      res.status(405);
+      throw new Error('Not HTTP method provided');
+    }
+
+    res.setHeader('Access-Control-Allow-Credentials', String(credentials));
+    res.setHeader('Access-Control-Allow-Origin', origin);
+    res.setHeader('Access-Control-Allow-Methods', methods.toString());
+    res.setHeader('Access-Control-Allow-Headers', allowedHeaders.toString());
+
+    if (req.method === HttpMethod.OPTIONS) {
+      // In preflight just need return a CORS headers
+      res.status(200).end();
+      return;
+    }
+
+    await next?.(req, res, next);
+  };
+
+export const httpMethodGuard =
+  (methodWhitelist: HttpMethod[]): RequestWrapper =>
+  async (req, res, next) => {
+    if (
+      !req ||
+      !req.method ||
+      !Object.values(methodWhitelist).includes(req.method as HttpMethod)
+    ) {
+      res.status(405);
+      throw new Error(`You can use only: ${methodWhitelist.toString()}`);
+    }
+
+    await next?.(req, res, next);
+  };
 
 export const responseTimeMetric =
   (metrics: Histogram<string>, route: string): RequestWrapper =>
