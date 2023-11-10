@@ -3,7 +3,6 @@ import React, { FC } from 'react';
 import { FaqAccordion, FAQItem } from '@lidofinance/ui-faq';
 
 import { Section } from 'shared/components';
-import NoSSRWrapper from 'shared/components/no-ssr-wrapper';
 import { faqAccordionOnLinkClick } from 'utils/faq-matomo';
 
 interface StakeFaqProps {
@@ -12,7 +11,7 @@ interface StakeFaqProps {
 
 export const StakeFaq: FC<StakeFaqProps> = ({ faqList }) => {
   return (
-    <NoSSRWrapper>
+    <>
       {faqList && (
         <Section title="FAQ">
           <FaqAccordion
@@ -23,6 +22,6 @@ export const StakeFaq: FC<StakeFaqProps> = ({ faqList }) => {
           />
         </Section>
       )}
-    </NoSSRWrapper>
+    </>
   );
 };

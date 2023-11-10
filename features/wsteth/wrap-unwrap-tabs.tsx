@@ -1,4 +1,4 @@
-import { FAQItem } from '@lidofinance/ui-faq';
+import { PageFAQ } from '@lidofinance/ui-faq';
 
 import { Wallet } from 'features/wsteth/shared/wallet';
 import { WrapForm } from 'features/wsteth/wrap/wrap-form/wrap-form';
@@ -15,10 +15,10 @@ const NAV_ROUTES = [
 
 type WrapUnwrapLayoutProps = {
   mode: 'wrap' | 'unwrap';
-  faqList?: FAQItem[];
+  pageFAQ?: PageFAQ;
 };
 
-export const WrapUnwrapTabs = ({ mode, faqList }: WrapUnwrapLayoutProps) => {
+export const WrapUnwrapTabs = ({ mode, pageFAQ }: WrapUnwrapLayoutProps) => {
   const isUnwrapMode = mode === 'unwrap';
   return (
     <>
@@ -26,8 +26,8 @@ export const WrapUnwrapTabs = ({ mode, faqList }: WrapUnwrapLayoutProps) => {
         <Switch checked={isUnwrapMode} routes={NAV_ROUTES} />
         <Wallet />
         {isUnwrapMode ? <UnwrapForm /> : <WrapForm />}
+        <WrapFaq pageFAQ={pageFAQ} />
       </NoSsrWrapper>
-      <WrapFaq faqList={faqList} />
     </>
   );
 };

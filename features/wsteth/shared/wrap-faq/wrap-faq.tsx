@@ -1,28 +1,30 @@
 import React, { FC } from 'react';
 
-import { FaqAccordion, FAQItem } from '@lidofinance/ui-faq';
+import { FaqAccordion, PageFAQ } from '@lidofinance/ui-faq';
 
 import { Section } from 'shared/components';
-import NoSSRWrapper from 'shared/components/no-ssr-wrapper';
 import { faqAccordionOnLinkClick } from 'utils/faq-matomo';
 
 interface WrapFaqProps {
-  faqList?: FAQItem[];
+  pageFAQ?: PageFAQ;
 }
 
-export const WrapFaq: FC<WrapFaqProps> = ({ faqList }) => {
+export const WrapFaq: FC<WrapFaqProps> = ({ pageFAQ }) => {
   return (
-    <NoSSRWrapper>
-      {faqList && (
+    <>
+      {pageFAQ && (
         <Section title="FAQ">
           <FaqAccordion
-            faqList={faqList}
+            faqList={pageFAQ.faq}
             onLinkClick={(props) => {
-              faqAccordionOnLinkClick({ pageId: 'wrapOrUnwrap', ...props });
+              faqAccordionOnLinkClick({
+                pageId: pageFAQ.pageIdentification,
+                ...props,
+              });
             }}
           />
         </Section>
       )}
-    </NoSSRWrapper>
+    </>
   );
 };
