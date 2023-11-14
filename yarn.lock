@@ -2660,10 +2660,10 @@
   resolved "https://registry.yarnpkg.com/@lidofinance/eth-providers/-/eth-providers-0.28.0.tgz#069dfcd66f97418298646abd2742e8e997c6fbbb"
   integrity sha512-oH2nU7jVPkn1mii56vp3gBFZNFR/LysxiKBUwV2freFoizQHNLeWWjU1b8a+l1I020LzbxHcatOkV6z9ur5YfA==
 
-"@lidofinance/lido-ui@3.12.0":
-  version "3.12.0"
-  resolved "https://registry.yarnpkg.com/@lidofinance/lido-ui/-/lido-ui-3.12.0.tgz#b53fcfc752adecd5fb3cf89d42ed17da085080de"
-  integrity sha512-COCnfqKpj0hrnY3BxCaZRbS7cRaUuI0lotrMC6jS5QVlsxcp1dJzDWzPzrFnO+7s+y7TFikMA5JRfQTVJowJHg==
+"@lidofinance/lido-ui@3.14.1":
+  version "3.14.1"
+  resolved "https://registry.yarnpkg.com/@lidofinance/lido-ui/-/lido-ui-3.14.1.tgz#780d32c3321295a40d44c352a307029a2b574e43"
+  integrity sha512-8vqv1E9ldPAIAceANPrh1alLPFWbYzz8AO6RhNbtFms+yPd5P2nSh5OopBLB1G2HE4lGFF0c3OXbMgyEcq9pEQ==
   dependencies:
     "@styled-system/should-forward-prop" "5.1.5"
     "@swc/helpers" "^0.4.11"
@@ -2676,10 +2676,10 @@
     ua-parser-js "^1.0.35"
     use-callback-ref "1.2.5"
 
-"@lidofinance/lido-ui@3.14.1":
-  version "3.14.1"
-  resolved "https://registry.yarnpkg.com/@lidofinance/lido-ui/-/lido-ui-3.14.1.tgz#780d32c3321295a40d44c352a307029a2b574e43"
-  integrity sha512-8vqv1E9ldPAIAceANPrh1alLPFWbYzz8AO6RhNbtFms+yPd5P2nSh5OopBLB1G2HE4lGFF0c3OXbMgyEcq9pEQ==
+"@lidofinance/lido-ui@3.15.1":
+  version "3.15.1"
+  resolved "https://registry.yarnpkg.com/@lidofinance/lido-ui/-/lido-ui-3.15.1.tgz#57cc24383950a0c0b550d207fb521132a6a75a89"
+  integrity sha512-easO2eKh+6noaB74aYcaEsaeCtuFRspDCxIEzBM9wsAJ64cwJ/ngcyS6QD567xkusdesTPSfJIvANvQSdQXvUg==
   dependencies:
     "@styled-system/should-forward-prop" "5.1.5"
     "@swc/helpers" "^0.4.11"
@@ -2950,10 +2950,10 @@
   resolved "https://registry.yarnpkg.com/@polka/url/-/url-1.0.0-next.21.tgz#5de5a2385a35309427f6011992b544514d559aa1"
   integrity sha512-a5Sab1C4/icpTZVzZc5Ghpz88yQtGOyNqYXcZgOssB2uuAr+wF/MvN6bgtW32q7HHrvBki+BsZ0OuNv6EV3K9g==
 
-"@reef-knot/connect-wallet-modal@1.8.1":
-  version "1.8.1"
-  resolved "https://registry.yarnpkg.com/@reef-knot/connect-wallet-modal/-/connect-wallet-modal-1.8.1.tgz#3c07cf7fe287c84073745d1ba458460553cff142"
-  integrity sha512-xGvYriPVUPq0zrg+6Xk7p+8SpdH95pYFOePLCxFg8AuZb/+6QsiVhlI+u0D7NoPe4brpVXczE/I/PKuaTMazXQ==
+"@reef-knot/connect-wallet-modal@1.8.2":
+  version "1.8.2"
+  resolved "https://registry.yarnpkg.com/@reef-knot/connect-wallet-modal/-/connect-wallet-modal-1.8.2.tgz#c31ee0bbb6ecaed22e7ff6e7144b146c8b804b8f"
+  integrity sha512-yecsgJaMXyOmDNYh8GZRhjdEoi1J+Gwdc54McJg4VToDqXeTpc/cdLgMeeosxD4X7Umb2Q+Jopo6DHVjB7YKiQ==
   dependencies:
     "@ledgerhq/hw-app-eth" "^6.34.3"
     "@ledgerhq/hw-transport" "^6.28.8"
@@ -9445,12 +9445,12 @@ redent@^3.0.0:
     indent-string "^4.0.0"
     strip-indent "^3.0.0"
 
-reef-knot@^1.10.2:
-  version "1.10.2"
-  resolved "https://registry.yarnpkg.com/reef-knot/-/reef-knot-1.10.2.tgz#ae0f1e8f6e6c7cc3f647cdc1dbac9fa04d0f8f29"
-  integrity sha512-K5xb5TQT3ya0DcFh6Yw7tfCE98FN5kqiJL6MyUMHOYl9nbhysjCsXYufpBflS+9rzk4o3OozbqQCag32fLAGVQ==
+reef-knot@^1.10.3:
+  version "1.10.3"
+  resolved "https://registry.yarnpkg.com/reef-knot/-/reef-knot-1.10.3.tgz#ae83a41847b6420721377bec9907ea8a0a92abd9"
+  integrity sha512-5kwkwQVI2UZ3zLP8DDHzrGH3osolPYXDfzGrvuV00zoZRpfmY9m+SO775EX/xPBW0TTaYm1J2rWkIDtUb9AZDQ==
   dependencies:
-    "@reef-knot/connect-wallet-modal" "1.8.1"
+    "@reef-knot/connect-wallet-modal" "1.8.2"
     "@reef-knot/core-react" "1.6.0"
     "@reef-knot/ledger-connector" "1.1.1"
     "@reef-knot/types" "1.3.0"
