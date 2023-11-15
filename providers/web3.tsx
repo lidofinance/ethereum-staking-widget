@@ -7,14 +7,22 @@ import * as wagmiChains from 'wagmi/chains';
 import { getStaticRpcBatchProvider } from '@lido-sdk/providers';
 
 const wagmiChainsArray = Object.values({ ...wagmiChains, holesky });
-const supportedChains = wagmiChainsArray.filter(
-  (chain) => dynamics.supportedChains.includes(chain.id) || chain.id === 80001,
+const supportedChains = wagmiChainsArray.filter((chain) =>
+  dynamics.supportedChains.includes(chain.id),
 );
+
+// Adding Mumbai as a temporary workaround
+// for the wagmi and walletconnect bug, when some wallets are failing to connect
+// when there are only one supported network, so we need at least 2 of them.
+// Mumbai should be the last in the array, otherwise wagmi can send request to it.
+// TODO: remove after updating wagmi to v1+
+supportedChains.push(wagmiChains.polygonMumbai);
+
 const defaultChain = wagmiChainsArray.find(
   (chain) => chain.id === dynamics.defaultChain,
 );
 
-const jsonRcpBatchProvider = (chain: Chain) => ({
+const jsonRpcBatchProvider = (chain: Chain) => ({
   provider: () =>
     getStaticRpcBatchProvider(
       chain.id,
@@ -27,7 +35,7 @@ const jsonRcpBatchProvider = (chain: Chain) => ({
 
 const { chains, provider, webSocketProvider } = configureChains(
   supportedChains,
-  [jsonRcpBatchProvider],
+  [jsonRpcBatchProvider],
 );
 
 const connectors = getConnectors({
