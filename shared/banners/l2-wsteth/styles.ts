@@ -3,6 +3,7 @@ import { Button } from '@lidofinance/lido-ui';
 import Icons from 'assets/icons/l2-wsteth.svg';
 
 export const Banner = styled.div`
+  height: 112px;
   position: relative;
   display: flex;
   text-align: left;
@@ -21,13 +22,7 @@ export const Banner = styled.div`
   box-sizing: border-box;
 
   ${({ theme }) => theme.mediaQueries.md} {
-    gap: 6px;
-    padding: ${({ theme }) => theme.spaceMap.md}px;
-  }
-
-  ${({ theme }) => theme.mediaQueries.sm} {
     cursor: pointer;
-    padding: ${({ theme }) => theme.spaceMap.sm}px;
   }
 `;
 
@@ -45,6 +40,22 @@ export const LinkButton = styled(Button)`
   padding: 7px 16px;
   font-size: 12px;
   line-height: 20px;
+
+  ${({ theme }) => theme.mediaQueries.md} {
+    display: none;
+  }
+`;
+
+export const OverlayLink = styled.a`
+  display: block;
+
+  ${({ theme }) => theme.mediaQueries.md} {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+  }
 `;
 
 export const TextContent = styled.p`
