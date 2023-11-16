@@ -2,9 +2,7 @@ import { useCallback } from 'react';
 import { trackEvent } from '@lidofinance/analytics-matomo';
 import { MATOMO_CLICK_EVENTS } from 'config';
 
-import { L2Banner } from '../l2-banner';
-
-const LINK = 'https://lido.fi/lido-on-l2';
+import { L2Banner, L2_DISCOVERY_LINK } from '../l2-banner';
 
 type L2LowFeeProps = {
   token: 'stETH' | 'wstETH';
@@ -29,7 +27,7 @@ export const L2LowFee: React.FC<L2LowFeeProps> = ({ token }) => {
       title="Unlock Low-Fee transactions on L2"
       text={text}
       buttonText="Learn more"
-      buttonHref={LINK}
+      buttonHref={L2_DISCOVERY_LINK}
       testidWrap="l2LowFeeBanner"
       testidButton="l2LowFee"
       onClickButton={linkClickHandler}
