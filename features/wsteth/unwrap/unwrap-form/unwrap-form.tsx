@@ -1,31 +1,31 @@
 import { memo, FC } from 'react';
-import { Block } from '@lidofinance/lido-ui';
-import { L2Banner } from 'shared/l2-banner';
-import { MATOMO_CLICK_EVENTS } from 'config';
+
+import { L2Wsteth } from 'shared/banners/l2-wsteth';
+import { FormController } from 'features/wsteth/shared/form-controller/form-controller';
+import { InputWrap, WrapBlock } from 'features/wsteth/shared/styles';
+
 import { UnwrapStats } from './unwrap-stats';
 import { UnwrapFormTxModal } from './unwrap-form-tx-modal';
 import { TransactionModalProvider } from 'shared/transaction-modal';
 import { UnwrapFormProvider } from '../unwrap-form-context';
-import { FormController } from 'features/wsteth/shared/form-controller/form-controller';
 import { TokenAmountInputUnwrap } from '../unwrap-form-controls/amount-input-unwrap';
 import { SubmitButtonUnwrap } from '../unwrap-form-controls/submit-button-unwrap';
-import { InputWrap } from 'features/wsteth/shared/styles';
 
 export const UnwrapForm: FC = memo(() => {
   return (
     <TransactionModalProvider>
       <UnwrapFormProvider>
-        <Block>
+        <WrapBlock>
           <FormController>
             <InputWrap>
               <TokenAmountInputUnwrap />
             </InputWrap>
             <SubmitButtonUnwrap />
-            <L2Banner matomoEvent={MATOMO_CLICK_EVENTS.l2BannerUnwrap} />
           </FormController>
+          <L2Wsteth />
           <UnwrapStats />
           <UnwrapFormTxModal />
-        </Block>
+        </WrapBlock>
       </UnwrapFormProvider>
     </TransactionModalProvider>
   );

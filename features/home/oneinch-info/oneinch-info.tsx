@@ -2,7 +2,7 @@ import { FC } from 'react';
 import { Button } from '@lidofinance/lido-ui';
 import { trackEvent } from '@lidofinance/analytics-matomo';
 import { useLidoSWR } from 'shared/hooks';
-import { L2Banner } from 'shared/l2-banner';
+import { L2OneInch } from 'shared/banners/l2-oneinch';
 import { MATOMO_CLICK_EVENTS } from 'config';
 
 import {
@@ -30,7 +30,7 @@ export const OneinchInfo: FC = () => {
   if (initialLoading) return null;
 
   if (!rate || rate < ONE_INCH_RATE_LIMIT)
-    return <L2Banner matomoEvent={MATOMO_CLICK_EVENTS.l2BannerStake} />;
+    return <L2OneInch matomoEvent={MATOMO_CLICK_EVENTS.l2BannerStake} />;
 
   const linkClickHandler = () =>
     trackEvent(...MATOMO_CLICK_EVENTS.oneInchDiscount);
