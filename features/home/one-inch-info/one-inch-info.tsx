@@ -5,11 +5,9 @@ import { trackEvent } from '@lidofinance/analytics-matomo';
 
 import { dynamics, MATOMO_CLICK_EVENTS } from 'config';
 import { useLidoSWR } from 'shared/hooks';
-import { L2Banner } from 'shared/l2-banner';
+import { L2OneInch } from 'shared/banners/l2-oneinch';
 import { STRATEGY_LAZY } from 'utils/swrStrategies';
 import { prependBasePath } from 'utils';
-
-import { use1inchLinkProps } from '../hooks';
 
 import {
   Wrap,
@@ -19,6 +17,7 @@ import {
   ButtonWrap,
   ButtonLinkWrap,
 } from './styles';
+import { use1inchLinkProps } from '../hooks';
 
 const ONE_INCH_RATE_LIMIT = 1.004;
 
@@ -40,7 +39,7 @@ export const OneInchInfo: FC = () => {
 
   const showL2 = !rate || rate > ONE_INCH_RATE_LIMIT;
   if (showL2)
-    return <L2Banner matomoEvent={MATOMO_CLICK_EVENTS.l2BannerStake} />;
+    return <L2OneInch matomoEvent={MATOMO_CLICK_EVENTS.l2BannerStake} />;
 
   const discountText = (100 - (1 / (rate || 1)) * 100).toFixed(2);
 
