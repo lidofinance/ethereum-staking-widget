@@ -6,7 +6,7 @@ export const InputWrap = styled.div`
 `;
 
 export const WrapBlock = styled(Block)`
-  gap: ${({ theme }) => theme.spaceMap.xxl}px;
+  gap: ${({ theme }) => theme.spaceMap.md}px;
   display: flex;
   flex-direction: column;
 `;
