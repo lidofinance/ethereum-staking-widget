@@ -15,7 +15,7 @@ yarn install
 The following env variables are used:
 
 - `STAND_URL` - deployed widget url (_required_)
-- `STAND_TYPE` - **testnet** or **staging** choice (**testnet** is default)
+- `STAND_TYPE` - **testnet** or **staging-critical** choice (**testnet** is default)
 - `STAND_USER` - username if basic auth is required
 - `STAND_PASSWORD` - password if basic auth is required
 
