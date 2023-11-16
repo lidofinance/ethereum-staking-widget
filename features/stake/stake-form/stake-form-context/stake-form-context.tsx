@@ -85,7 +85,7 @@ export const useStakeFormNetworkData = (): StakeFormNetworkData => {
   const maxAmount = useMemo(() => {
     if (stakingLimitInfo && etherBalance && !isMultisigLoading) {
       let maxEther = etherBalance;
-      // if not multisig we have have wait for gas and subtract it
+      // if not multisig we have to wait for gasCost and subtract it
       if (!isMultisig) {
         if (gasCost) maxEther = maxEther.sub(gasCost);
         else return undefined;
