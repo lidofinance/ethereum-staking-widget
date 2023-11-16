@@ -17,7 +17,7 @@ type L2BannerProps = {
   matomoEvent: MatomoEventType;
 };
 
-export const L2Banner: FC<L2BannerProps> = ({ matomoEvent }) => {
+export const L2OneInch: FC<L2BannerProps> = ({ matomoEvent }) => {
   const linkProps = {
     href: L2_LINK,
     target: '_blank',
