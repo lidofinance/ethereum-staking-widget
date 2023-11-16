@@ -37,4 +37,4 @@ jobs:
     secrets: inherit
     with:
       stand_url: https://stake.infra-staging.org
-      stand_type: staging
+      stand_type: staging-critical
