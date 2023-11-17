@@ -1,11 +1,7 @@
-import {
-  RequestsStatusStyled,
-  DesktopStatus,
-  StatusIcon,
-  MobileStatus,
-} from './styles';
+import { RequestsStatusStyled, StatusIcon, StatusText } from './styles';
 import { forwardRef } from 'react';
 import { formatTimestamp } from '../../../utils/format-timestamp';
+import { useBreakpoint } from '@lidofinance/lido-ui';
 
 type RequestItemStatusProps = {
   status: 'ready' | 'pending';
@@ -21,24 +17,20 @@ const RequestStatusBody = forwardRef<
   RequestItemStatusProps & React.ComponentProps<'div'>
 >(({ status, finalizationAt, ...props }, ref) => {
   let statusText;
-  let statusTextMobile;
+  const isMobile = useBreakpoint('md');
 
   if (status === 'ready') {
     statusText = 'Ready';
-    statusTextMobile = 'Ready';
   } else if (finalizationAt) {
-    statusText = formatTimestamp(finalizationAt);
-    statusTextMobile = formatTimestamp(finalizationAt, true);
+    statusText = formatTimestamp(finalizationAt, isMobile);
   } else {
     statusText = 'Pending';
-    statusTextMobile = 'Pending';
   }
 
   return (
     <RequestsStatusStyled {...props} ref={ref} $variant={status}>
       <StatusIcon $variant={status} />
-      <DesktopStatus>{statusText}</DesktopStatus>
-      <MobileStatus>{statusTextMobile}</MobileStatus>
+      <StatusText>{statusText}</StatusText>
     </RequestsStatusStyled>
   );
 });

@@ -3,7 +3,6 @@ import { InlineLoader, Link, ThemeName } from '@lidofinance/lido-ui';
 
 import RequestReady from 'assets/icons/request-ready.svg';
 import RequestPending from 'assets/icons/request-pending.svg';
-import RequestInfo from 'assets/icons/request-info.svg';
 
 export const REQUESTS_LIST_ITEM_SIZE = 57;
 export const REQUESTS_LIST_LOADERS_COUNT = 3;
@@ -85,21 +84,9 @@ export const RequestsStatusStyled = styled.div<RequestProps>`
   text-overflow: ellipsis;
 `;
 
-export const DesktopStatus = styled.span`
+export const StatusText = styled.span`
   font-size: 12px;
   font-weight: 600;
-  ${({ theme }) => theme.mediaQueries.sm} {
-    display: none;
-  }
-`;
-
-export const MobileStatus = styled.span`
-  font-size: 12px;
-  font-weight: 600;
-  display: none;
-  ${({ theme }) => theme.mediaQueries.sm} {
-    display: block;
-  }
 `;
 
 export const StatusIcon = styled.img.attrs<RequestProps>(({ $variant }) => ({
@@ -107,14 +94,6 @@ export const StatusIcon = styled.img.attrs<RequestProps>(({ $variant }) => ({
   src: $variant === 'ready' ? RequestReady : RequestPending,
 }))<RequestProps>`
   display: block;
-  width: 16px;
-  height: 16px;
-`;
-
-export const RequestInfoIcon = styled.img.attrs({
-  alt: 'info',
-  src: RequestInfo,
-})`
   width: 16px;
   height: 16px;
 `;
