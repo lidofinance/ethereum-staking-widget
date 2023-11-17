@@ -7,10 +7,15 @@ export const WithdrawalPeriodCircumstances: React.FC = () => {
       id="withdrawalsPeriod"
     >
       <ul>
-        <li>The amount of stETH in the queue.</li>
-        <li>Perfomance of the validator poolside.</li>
-        <li>Exit queue on the Beacon chain.</li>
         <li>Demand for staking and unstaking.</li>
+        <li>The amount of stETH in the queue.</li>
+        <li>Protocols rules of finalization of requests.</li>
+        <li>Exit queue on the Beacon chain.</li>
+        <li>Performance of the validator poolside.</li>
+        <li>
+          The protocol mode (Turbo mode [link to &quot;What is Turbo mode&quot;]
+          or Bunker mode [link to &quot;What is Bunker mode?&quot;)
+        </li>
       </ul>
     </Accordion>
   );

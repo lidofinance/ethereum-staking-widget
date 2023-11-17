@@ -50,15 +50,15 @@ export const RequestItem = forwardRef<HTMLInputElement, RequestItemProps>(
       <RequestStyled $disabled={isDisabled}>
         <Checkbox
           {...props}
-          // TODO: Update Checkbox props in lido-ui
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore
           label={label}
           disabled={isDisabled}
           name={name}
           ref={ref}
         />
-        <RequestStatus status={status.isFinalized ? 'ready' : 'pending'} />
+        <RequestStatus
+          status={status.isFinalized ? 'ready' : 'pending'}
+          finalizationAt={status.finalizationAt}
+        />
         <LinkStyled href={getNFTUrl(token_id, chainId)}>
           <External />
         </LinkStyled>

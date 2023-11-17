@@ -13,12 +13,51 @@ import {
 } from 'features/withdrawals/types/request-status';
 import { MAX_SHOWN_REQUEST_PER_TYPE } from 'features/withdrawals/withdrawals-constants';
 import { STRATEGY_LAZY } from 'utils/swrStrategies';
+import { standardFetcher } from 'utils/standardFetcher';
+import { dynamics } from 'config';
+import { encodeURLQuery } from 'utils/encodeURLQuery';
 
 // import { calcExpectedRequestEth } from 'features/withdrawals/utils/calc-expected-request-eth';
 
 export type WithdrawalRequests = NonNullable<
   ReturnType<typeof useWithdrawalRequests>['data']
 >;
+
+const getRequestTimeForWQRequestIds = async (ids: string[]) => {
+  const idsPages = [];
+  const pageSize = 20;
+
+  for (let i = 0; i < ids.length; i += pageSize) {
+    idsPages.push(ids.slice(i, i + pageSize));
+  }
+
+  const result = [];
+
+  for (const page of idsPages) {
+    const basePath = dynamics.wqAPIBasePath;
+    const params = encodeURLQuery({ ids: page.toString() });
+    const queryString = params ? `?${params}` : '';
+    const url = `${basePath}/v2/request-time${queryString}`;
+    const requests = (await standardFetcher(url)) as any;
+
+    for (const request of requests) {
+      if (!request || !request.requestInfo) continue;
+      const modifiedResult = {
+        id: request.requestInfo.requestId,
+        finalizationAt: request.requestInfo.finalizationAt,
+      };
+
+      result.push(modifiedResult);
+
+      if (idsPages.length > 1) {
+        // avoid backend spam
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+      }
+    }
+  }
+
+  return result;
+};
 
 export const useWithdrawalRequests = () => {
   const { contractRpc, account, chainId } = useWithdrawalsContract();
@@ -42,6 +81,17 @@ export const useWithdrawalRequests = () => {
 
       const claimableRequests: RequestStatus[] = [];
       const pendingRequests: RequestStatusPending[] = [];
+      const pendingRequestsIds: string[] = [];
+
+      requestStatuses.forEach((request, index) => {
+        if (!request.isFinalized) {
+          pendingRequestsIds.push(requestIds[index].toString());
+        }
+      });
+
+      const wqRequests = await getRequestTimeForWQRequestIds(
+        pendingRequestsIds,
+      );
 
       let pendingAmountOfStETH = BigNumber.from(0);
       let claimableAmountOfStETH = BigNumber.from(0);
@@ -52,6 +102,7 @@ export const useWithdrawalRequests = () => {
           ...request,
           id,
           stringId: id.toString(),
+          finalizationAt: null,
         };
 
         if (request.isFinalized && !request.isClaimed) {
@@ -60,8 +111,10 @@ export const useWithdrawalRequests = () => {
             request.amountOfStETH,
           );
         } else if (!request.isFinalized) {
+          const r = wqRequests.find((r) => r.id === id.toString());
           pendingRequests.push({
             ...req,
+            finalizationAt: r?.finalizationAt,
             expectedEth: req.amountOfStETH, // TODO: replace with calcExpectedRequestEth(req, currentShareRate),
           });
           pendingAmountOfStETH = pendingAmountOfStETH.add(

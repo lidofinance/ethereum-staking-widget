@@ -60,7 +60,6 @@ export const RequestsStatusStyled = styled.div<RequestProps>`
   margin-right: 8px;
   padding: 2px ${({ theme }) => theme.spaceMap.sm}px;
   ${({ theme }) => theme.mediaQueries.sm} {
-    padding: 4px;
     min-width: 24px;
     justify-content: center;
   }
@@ -94,18 +93,22 @@ export const DesktopStatus = styled.span`
   }
 `;
 
-export const MobileStatusIcon = styled.img.attrs<RequestProps>(
-  ({ $variant }) => ({
-    alt: $variant,
-    src: $variant === 'ready' ? RequestReady : RequestPending,
-  }),
-)<RequestProps>`
+export const MobileStatus = styled.span`
+  font-size: 12px;
+  font-weight: 600;
   display: none;
-  width: 16px;
-  height: 16px;
   ${({ theme }) => theme.mediaQueries.sm} {
     display: block;
   }
+`;
+
+export const StatusIcon = styled.img.attrs<RequestProps>(({ $variant }) => ({
+  alt: $variant,
+  src: $variant === 'ready' ? RequestReady : RequestPending,
+}))<RequestProps>`
+  display: block;
+  width: 16px;
+  height: 16px;
 `;
 
 export const RequestInfoIcon = styled.img.attrs({
