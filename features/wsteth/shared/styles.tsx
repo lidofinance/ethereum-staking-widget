@@ -1,10 +1,12 @@
 import styled from 'styled-components';
-import { DataTable } from '@lidofinance/lido-ui';
-
-export const StatsDataTable = styled(DataTable)`
-  margin-top: ${({ theme }) => theme.spaceMap.xl}px;
-`;
+import { Block } from '@lidofinance/lido-ui';
 
 export const InputWrap = styled.div`
   margin-bottom: ${({ theme }) => theme.spaceMap.md}px;
+`;
+
+export const WrapBlock = styled(Block)`
+  gap: ${({ theme }) => theme.spaceMap.md}px;
+  display: flex;
+  flex-direction: column;
 `;
