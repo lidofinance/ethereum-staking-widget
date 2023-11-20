@@ -2676,10 +2676,26 @@
   dependencies:
     "@lidofinance/blocks-connect-wallet-modal" "2.11.2"
 
-"@lidofinance/lido-ui@^3.12.0":
-  version "3.12.0"
-  resolved "https://registry.yarnpkg.com/@lidofinance/lido-ui/-/lido-ui-3.12.0.tgz#b53fcfc752adecd5fb3cf89d42ed17da085080de"
-  integrity sha512-COCnfqKpj0hrnY3BxCaZRbS7cRaUuI0lotrMC6jS5QVlsxcp1dJzDWzPzrFnO+7s+y7TFikMA5JRfQTVJowJHg==
+"@lidofinance/lido-ui@3.14.1":
+  version "3.14.1"
+  resolved "https://registry.yarnpkg.com/@lidofinance/lido-ui/-/lido-ui-3.14.1.tgz#780d32c3321295a40d44c352a307029a2b574e43"
+  integrity sha512-8vqv1E9ldPAIAceANPrh1alLPFWbYzz8AO6RhNbtFms+yPd5P2nSh5OopBLB1G2HE4lGFF0c3OXbMgyEcq9pEQ==
+  dependencies:
+    "@styled-system/should-forward-prop" "5.1.5"
+    "@swc/helpers" "^0.4.11"
+    "@swc/plugin-styled-components" "^1.2.10"
+    react-collapsed "3.0.2"
+    react-jazzicon "^1.0.4"
+    react-toastify "7.0.4"
+    react-transition-group "4"
+    styled-system "5.1.5"
+    ua-parser-js "^1.0.35"
+    use-callback-ref "1.2.5"
+
+"@lidofinance/lido-ui@3.16.0":
+  version "3.16.0"
+  resolved "https://registry.yarnpkg.com/@lidofinance/lido-ui/-/lido-ui-3.16.0.tgz#11a89db8f0ae0ed1a1be396f354fff59273ef4be"
+  integrity sha512-rT9bwoautHsqijBrH4Ow81Frx7nJQObMyqK5RWjdQHCXeh2MYyYGf3zqqf7kqKyRRdDEjyD31LQVRuS8QAqeDg==
   dependencies:
     "@styled-system/should-forward-prop" "5.1.5"
     "@swc/helpers" "^0.4.11"
@@ -2729,6 +2745,7 @@
 "@lidofinance/ui-faq@file:.yalc/@lidofinance/ui-faq":
   version "0.0.0"
   dependencies:
+    "@lidofinance/lido-ui" "3.14.1"
     js-yaml "^4.1.0"
     mdast "^3.0.0"
     react-markdown "^8.0.7"
