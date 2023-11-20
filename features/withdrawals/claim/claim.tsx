@@ -1,4 +1,4 @@
-import { FAQItem } from '@lidofinance/ui-faq';
+import { PageFAQ } from '@lidofinance/ui-faq';
 
 import { TransactionModalProvider } from 'shared/transaction-modal/transaction-modal-context';
 import { ClaimFaq } from 'features/withdrawals/withdrawals-faq/claim-faq';
@@ -9,16 +9,16 @@ import { ClaimWallet } from './wallet';
 import { ClaimFormProvider } from './claim-form-context';
 
 type ClaimProps = {
-  faqList?: FAQItem[];
+  pageFAQ?: PageFAQ;
 };
 
-export const Claim = ({ faqList }: ClaimProps) => {
+export const Claim = ({ pageFAQ }: ClaimProps) => {
   return (
     <TransactionModalProvider>
       <ClaimFormProvider>
         <ClaimWallet />
         <ClaimForm />
-        <ClaimFaq faqList={faqList} />
+        <ClaimFaq pageFAQ={pageFAQ} />
         <TxClaimModal />
       </ClaimFormProvider>
     </TransactionModalProvider>

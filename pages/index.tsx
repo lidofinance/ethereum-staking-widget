@@ -1,22 +1,21 @@
 import { FC } from 'react';
-// import { GetStaticProps } from 'next';
+import { GetStaticProps } from 'next';
 import Head from 'next/head';
 
-// import { getFAQ, FAQItem, PageFAQ } from '@lidofinance/ui-faq';
+import { parseFAQ, PageFAQ } from '@lidofinance/ui-faq';
 
-// import { serverRuntimeConfig, FAQ_REVALIDATE_SECS } from 'config';
+import { FAQ_REVALIDATE_SECS } from 'config';
 import { Wallet, StakeForm, LidoStats, StakeFaq } from 'features/home';
 import { Layout } from 'shared/components';
 import NoSSRWrapper from 'shared/components/no-ssr-wrapper';
 import { useWeb3Key } from 'shared/hooks/useWeb3Key';
-// import { serverAxios } from 'utilsApi/serverAxios';
+import { getFaq } from '../utilsApi/get-faq';
 
 type HomeProps = {
-  // faqList?: FAQItem[] | null;
-  faqList: null;
+  pageFAQ: PageFAQ | null;
 };
 
-const Home: FC<HomeProps> = ({ faqList }) => {
+const Home: FC<HomeProps> = ({ pageFAQ }) => {
   const key = useWeb3Key();
   return (
     <Layout
@@ -31,38 +30,36 @@ const Home: FC<HomeProps> = ({ faqList }) => {
         <Wallet key={'wallet' + key} />
         <StakeForm key={'form' + key} />
       </NoSSRWrapper>
+
       <LidoStats />
-      <StakeFaq faqList={faqList ?? undefined} />
+      <StakeFaq pageFAQ={pageFAQ ?? undefined} />
     </Layout>
   );
 };
 
 export default Home;
 
-// export const getStaticProps: GetStaticProps<HomeProps> = async () => {
-//   const pageIdentification = 'stake';
-//   let foundPage: PageFAQ | undefined = undefined;
-//
-//   try {
-//     const pages = await getFAQ(serverRuntimeConfig.faqContentUrl, {
-//       axiosInstance: serverAxios,
-//       cache: false,
-//     });
-//
-//     foundPage = pages.find(
-//       (page: PageFAQ) => page['identification'] === pageIdentification,
-//     );
-//   } catch {
-//     console.warn('FAQ not available on stake page!');
-//   }
-//
-//   return {
-//     props: {
-//       // We can't use  `undefined` here.
-//       // Reason: `undefined` cannot be serialized as JSON. Please use `null` or omit this value.
-//       // Will be error: SerializableError: Error serializing `.faqListRequest` returned from `getStaticProps`.
-//       faqList: foundPage?.faq || null,
-//     },
-//     revalidate: FAQ_REVALIDATE_SECS,
-//   };
-// };
+export const getStaticProps: GetStaticProps<HomeProps> = async () => {
+  // FAQ
+  let pageFAQ: PageFAQ | null = null;
+
+  try {
+    const rawFaqData = await getFaq(
+      'ethereum-staking-widget/faq-stake-page.md',
+    );
+    if (rawFaqData) {
+      pageFAQ = await parseFAQ(rawFaqData);
+    }
+  } catch {
+    console.warn('FAQ not available on stake page!');
+  }
+
+  return {
+    props: {
+      // We can't use `undefined` with `pageFAQ`.
+      // Reason: `undefined` cannot be serialized as JSON. Please use `null` or omit this value.
+      pageFAQ: pageFAQ || null,
+    },
+    revalidate: FAQ_REVALIDATE_SECS,
+  };
+};

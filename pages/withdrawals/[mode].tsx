@@ -1,22 +1,21 @@
 import { FC } from 'react';
-// import { GetStaticPaths, GetStaticProps } from 'next';
-import { GetStaticPaths } from 'next';
+import { GetStaticPaths, GetStaticProps } from 'next';
 import Head from 'next/head';
 
-// import { FAQItem, getFAQ, PageFAQ } from '@lidofinance/ui-faq';
+import { parseFAQ, PageFAQ } from '@lidofinance/ui-faq';
 
-// import { serverRuntimeConfig, FAQ_REVALIDATE_SECS } from 'config';
+import { FAQ_REVALIDATE_SECS } from 'config';
 import { WithdrawalsTabs } from 'features/withdrawals';
 import { WithdrawalsProvider } from 'features/withdrawals/contexts/withdrawals-context';
 import { Layout } from 'shared/components';
 import NoSSRWrapper from 'shared/components/no-ssr-wrapper';
 import { useWeb3Key } from 'shared/hooks/useWeb3Key';
-// import { serverAxios } from 'utilsApi/serverAxios';
+import { getFaq } from '../../utilsApi/get-faq';
 
 const Withdrawals: FC<WithdrawalsModePageProps> = ({
   mode,
-  faqListRequest,
-  faqListClaim,
+  pageRequestFAQ,
+  pageClaimFAQ,
 }) => {
   const key = useWeb3Key();
 
@@ -32,8 +31,8 @@ const Withdrawals: FC<WithdrawalsModePageProps> = ({
         <NoSSRWrapper>
           <WithdrawalsTabs
             key={key}
-            faqListRequest={faqListRequest ?? undefined}
-            faqListClaim={faqListClaim ?? undefined}
+            pageRequestFAQ={pageRequestFAQ ?? undefined}
+            pageClaimFAQ={pageClaimFAQ ?? undefined}
           />
         </NoSSRWrapper>
       </WithdrawalsProvider>
@@ -48,10 +47,8 @@ type WithdrawalsModePageParams = {
 };
 
 type WithdrawalsModePageProps = WithdrawalsModePageParams & {
-  // faqListRequest?: FAQItem[] | null;
-  // faqListClaim?: FAQItem[] | null;
-  faqListRequest?: null;
-  faqListClaim?: null;
+  pageRequestFAQ?: PageFAQ;
+  pageClaimFAQ?: PageFAQ;
 };
 
 export const getStaticPaths: GetStaticPaths<
@@ -63,41 +60,42 @@ export const getStaticPaths: GetStaticPaths<
   };
 };
 
-// export const getStaticProps: GetStaticProps<
-//   WithdrawalsModePageParams,
-//   WithdrawalsModePageParams
-// > = async ({ params }) => {
-//   // FAQ
-//   const pageIdentificationRequest = 'withdrawals-request';
-//   const pageIdentificationClaim = 'withdrawals-claim';
-//   let foundPageRequest: PageFAQ | undefined = undefined;
-//   let foundPageClaim: PageFAQ | undefined = undefined;
-//
-//   try {
-//     const pages = await getFAQ(serverRuntimeConfig.faqContentUrl, {
-//       axiosInstance: serverAxios,
-//       cache: false,
-//     });
-//
-//     foundPageRequest = pages.find(
-//       (page: PageFAQ) => page['identification'] === pageIdentificationRequest,
-//     );
-//     foundPageClaim = pages.find(
-//       (page: PageFAQ) => page['identification'] === pageIdentificationClaim,
-//     );
-//   } catch {
-//     console.warn('FAQ not available on withdrawals page!');
-//   }
-//   const faqProps = {
-//     // We can't use  `undefined` here.
-//     // Reason: `undefined` cannot be serialized as JSON. Please use `null` or omit this value.
-//     // Will be error: SerializableError: Error serializing `.faqListRequest` returned from `getStaticProps`.
-//     faqListRequest: foundPageRequest?.faq || null,
-//     faqListClaim: foundPageClaim?.faq || null,
-//     revalidate: FAQ_REVALIDATE_SECS,
-//   };
-//
-//   // Mode
-//   if (!params?.mode) return { notFound: true };
-//   return { props: { mode: params.mode, ...faqProps } };
-// };
+export const getStaticProps: GetStaticProps<
+  WithdrawalsModePageParams,
+  WithdrawalsModePageParams
+> = async ({ params }) => {
+  // FAQ
+  let pageRequestFAQ: PageFAQ | null = null;
+  let pageClaimFAQ: PageFAQ | null = null;
+
+  try {
+    // FAQ request
+    const rawRequestFaqData = await getFaq(
+      'ethereum-staking-widget/faq-withdrawals-page-request-tab.md',
+    );
+    if (rawRequestFaqData) {
+      pageRequestFAQ = await parseFAQ(rawRequestFaqData);
+    }
+
+    // FAQ claim
+    const rawClaimFaqData = await getFaq(
+      'ethereum-staking-widget/faq-withdrawals-page-claim-tab.md',
+    );
+    if (rawClaimFaqData) {
+      pageClaimFAQ = await parseFAQ(rawClaimFaqData);
+    }
+  } catch {
+    console.warn('FAQ not available on withdrawals page!');
+  }
+  const faqProps = {
+    // We can't use `undefined` with `pageRequestFAQ` and `pageClaimFAQ`.
+    // Reason: `undefined` cannot be serialized as JSON. Please use `null` or omit this value.
+    pageRequestFAQ: pageRequestFAQ || null,
+    pageClaimFAQ: pageClaimFAQ || null,
+    revalidate: FAQ_REVALIDATE_SECS,
+  };
+
+  // Mode
+  if (!params?.mode) return { notFound: true };
+  return { props: { mode: params.mode, ...faqProps } };
+};

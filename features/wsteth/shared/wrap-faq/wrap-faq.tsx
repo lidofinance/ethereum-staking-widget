@@ -12,7 +12,7 @@ interface WrapFaqProps {
 export const WrapFaq: FC<WrapFaqProps> = ({ pageFAQ }) => {
   return (
     <>
-      {pageFAQ && (
+      {pageFAQ && pageFAQ.faq && (
         <Section title="FAQ">
           <FaqAccordion
             faqList={pageFAQ.faq}

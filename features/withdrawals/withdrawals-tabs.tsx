@@ -1,4 +1,4 @@
-import { FAQItem } from '@lidofinance/ui-faq';
+import { PageFAQ } from '@lidofinance/ui-faq';
 
 import { Switch } from 'shared/components';
 
@@ -24,22 +24,22 @@ const withdrawalRoutes = [
 ];
 
 type WithdrawalsTabsProps = {
-  faqListRequest?: FAQItem[];
-  faqListClaim?: FAQItem[];
+  pageRequestFAQ?: PageFAQ;
+  pageClaimFAQ?: PageFAQ;
 };
 
 export const WithdrawalsTabs = ({
-  faqListRequest,
-  faqListClaim,
+  pageRequestFAQ,
+  pageClaimFAQ,
 }: WithdrawalsTabsProps) => {
   const { isClaimTab } = useWithdrawals();
   return (
     <ClaimDataProvider>
       <Switch checked={isClaimTab} routes={withdrawalRoutes} />
       {isClaimTab ? (
-        <Claim faqList={faqListClaim} />
+        <Claim pageFAQ={pageClaimFAQ} />
       ) : (
-        <Request faqList={faqListRequest} />
+        <Request pageFAQ={pageRequestFAQ} />
       )}
     </ClaimDataProvider>
   );

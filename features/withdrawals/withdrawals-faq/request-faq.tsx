@@ -1,6 +1,6 @@
 import React, { FC } from 'react';
 
-import { FaqAccordion, FAQItem } from '@lidofinance/ui-faq';
+import { FaqAccordion, PageFAQ } from '@lidofinance/ui-faq';
 
 import { Section } from 'shared/components';
 import { faqAccordionOnLinkClick } from 'utils/faq-matomo';
@@ -11,19 +11,19 @@ import { faqAccordionOnLinkClick } from 'utils/faq-matomo';
 //   'https://hackmd.io/@lido/SyaJQsZoj#Lido-on-Ethereum-Withdrawals-Landscape';
 
 type RequestFaqProps = {
-  faqList?: FAQItem[];
+  pageFAQ?: PageFAQ;
 };
 
-export const RequestFaq: FC<RequestFaqProps> = ({ faqList }) => {
+export const RequestFaq: FC<RequestFaqProps> = ({ pageFAQ }) => {
   return (
     <>
-      {faqList && (
+      {pageFAQ && pageFAQ.faq && (
         <Section title="FAQ">
           <FaqAccordion
-            faqList={faqList}
+            faqList={pageFAQ.faq}
             onLinkClick={(props) => {
               faqAccordionOnLinkClick({
-                pageId: 'withdrawalsRequest',
+                pageId: pageFAQ.pageIdentification,
                 ...props,
               });
             }}

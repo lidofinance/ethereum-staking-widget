@@ -26,8 +26,9 @@ export const WrapUnwrapTabs = ({ mode, pageFAQ }: WrapUnwrapLayoutProps) => {
         <Switch checked={isUnwrapMode} routes={NAV_ROUTES} />
         <Wallet />
         {isUnwrapMode ? <UnwrapForm /> : <WrapForm />}
-        <WrapFaq pageFAQ={pageFAQ} />
       </NoSsrWrapper>
+
+      <WrapFaq pageFAQ={pageFAQ} />
     </>
   );
 };

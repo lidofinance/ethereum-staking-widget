@@ -1,23 +1,26 @@
 import React, { FC } from 'react';
 
-import { FaqAccordion, FAQItem } from '@lidofinance/ui-faq';
+import { FaqAccordion, PageFAQ } from '@lidofinance/ui-faq';
 
 import { Section } from 'shared/components';
 import { faqAccordionOnLinkClick } from 'utils/faq-matomo';
 
 interface StakeFaqProps {
-  faqList?: FAQItem[];
+  pageFAQ?: PageFAQ;
 }
 
-export const StakeFaq: FC<StakeFaqProps> = ({ faqList }) => {
+export const StakeFaq: FC<StakeFaqProps> = ({ pageFAQ }) => {
   return (
     <>
-      {faqList && (
+      {pageFAQ && pageFAQ.faq && (
         <Section title="FAQ">
           <FaqAccordion
-            faqList={faqList}
+            faqList={pageFAQ.faq}
             onLinkClick={(props) => {
-              faqAccordionOnLinkClick({ pageId: 'stake', ...props });
+              faqAccordionOnLinkClick({
+                pageId: pageFAQ.pageIdentification,
+                ...props,
+              });
             }}
           />
         </Section>

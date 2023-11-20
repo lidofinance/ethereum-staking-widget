@@ -1,4 +1,4 @@
-import { FAQItem } from '@lidofinance/ui-faq';
+import { PageFAQ } from '@lidofinance/ui-faq';
 
 import { TransactionModalProvider } from 'shared/transaction-modal';
 
@@ -10,16 +10,16 @@ import { RequestWallet } from './wallet';
 import { RequestFaq } from '../withdrawals-faq/request-faq';
 
 type RequestProps = {
-  faqList?: FAQItem[];
+  pageFAQ?: PageFAQ;
 };
 
-export const Request = ({ faqList }: RequestProps) => {
+export const Request = ({ pageFAQ }: RequestProps) => {
   return (
     <TransactionModalProvider>
       <RequestFormProvider>
         <RequestWallet />
         <RequestForm />
-        <RequestFaq faqList={faqList} />
+        <RequestFaq pageFAQ={pageFAQ} />
         <TxRequestModal />
       </RequestFormProvider>
     </TransactionModalProvider>

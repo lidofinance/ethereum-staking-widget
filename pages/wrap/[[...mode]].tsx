@@ -1,6 +1,7 @@
 import { FC } from 'react';
 import { GetStaticPaths, GetStaticProps } from 'next';
 import Head from 'next/head';
+
 import { parseFAQ, PageFAQ } from '@lidofinance/ui-faq';
 
 import { FAQ_REVALIDATE_SECS } from 'config';
