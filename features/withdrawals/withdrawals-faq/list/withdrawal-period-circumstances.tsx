@@ -1,10 +1,22 @@
 import { Accordion } from '@lidofinance/lido-ui';
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/router';
 
 export const WithdrawalPeriodCircumstances: React.FC = () => {
+  const [opened, setOpened] = useState(false);
+  const router = useRouter();
+  const id = 'withdrawalsPeriod';
+  useEffect(() => {
+    if (window.location.hash === '#' + id) {
+      setOpened(true);
+    }
+  }, [router.asPath]);
+
   return (
     <Accordion
       summary="What are the factors affecting the withdrawal time?"
-      id="withdrawalsPeriod"
+      id={id}
+      defaultExpanded={opened}
     >
       <ul>
         <li>Demand for staking and unstaking.</li>

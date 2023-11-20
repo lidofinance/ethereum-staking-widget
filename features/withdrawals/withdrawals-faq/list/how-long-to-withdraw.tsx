@@ -1,5 +1,6 @@
 import { NoBr } from '../styles';
 import { Accordion } from '@lidofinance/lido-ui';
+import Link from 'next/link';
 import { LocalLink } from 'shared/components/local-link';
 import {
   WITHDRAWAL_CLAIM_PATH,
@@ -15,13 +16,11 @@ export const HowLongToWithdraw: React.FC = () => {
         anywhere between <NoBr>1-5 days</NoBr>. After that, you can claim your
         ETH using the&nbsp;
         <LocalLink href={WITHDRAWAL_CLAIM_PATH}>Claim&nbsp;tab</LocalLink>. On{' '}
-        <LocalLink href={WITHDRAWAL_REQUEST_PATH}>
-          Request&nbsp;tabtab
-        </LocalLink>{' '}
+        <LocalLink href={WITHDRAWAL_REQUEST_PATH}>Request&nbsp;tab</LocalLink>{' '}
         interface, you can see the current estimation of the withdrawal waiting
         time for new requests. The withdrawal request time depends on the
         requested amount, the overall amount of stETH in the queue, and{' '}
-        <LocalLink href={WITHDRAWAL_PERIOD_PATH}>other&nbsp;factors</LocalLink>.
+        <Link href={WITHDRAWAL_PERIOD_PATH}>other&nbsp;factors</Link>.
       </p>
     </Accordion>
   );
