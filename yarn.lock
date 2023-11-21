@@ -2749,7 +2749,6 @@
     js-yaml "^4.1.0"
     mdast "^3.0.0"
     react-markdown "^8.0.7"
-    react-to-text "^2.0.1"
     remark-directive "^2.0.1"
     remark-frontmatter "^4.0.1"
     remark-parse "^10.0.2"
@@ -9851,11 +9850,6 @@ react-markdown@^8.0.7:
     unified "^10.0.0"
     unist-util-visit "^4.0.0"
     vfile "^5.0.0"
-
-react-to-text@^2.0.1:
-  version "2.0.1"
-  resolved "https://registry.yarnpkg.com/react-to-text/-/react-to-text-2.0.1.tgz#6a6c1b6c9cf2de6a7e7117b6fff1d7b25d1b4cd3"
-  integrity sha512-4lGuxY+/PqASinxrv7/ydE8wGdnZCGsTNIFiO6DKykzy703jI5pc0/fyyB6BNrBWmtYJ7H9dGY80PJ3V1/8UIg==
 
 react-toastify@7.0.4:
   version "7.0.4"

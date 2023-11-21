@@ -66,8 +66,6 @@
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.45.2",
     "react-is": "^18.2.0",
-    "react-markdown": "^8.0.7",
-    "react-to-text": "^2.0.1",
     "react-transition-group": "^4.4.2",
     "reef-knot": "^1.8.0",
     "remark": "^13.0.0",
