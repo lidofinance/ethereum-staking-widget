@@ -12,6 +12,8 @@ export const faqAccordionOnLinkClick = ({
 }: FaqAccordionOnLinkClickFactoryProps) => {
   const actionEvent = `Push «${linkContent}» in FAQ ${question} on stake widget`;
   // Make event like `<project_name>_faq_<page_id>_<question_id>_<link_content>`
-  const nameEvent = `eth_widget_faq_${pageId}_${questionId}_${linkContent}`;
+  // The `link_content` may be with ' ' - space
+  const nameEvent =
+    `eth_widget_faq_${pageId}_${questionId}_${linkContent}`.replace(' ', '_');
   trackEvent('Ethereum_Staking_Widget', actionEvent, nameEvent);
 };
