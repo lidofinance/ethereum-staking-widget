@@ -7,7 +7,8 @@ export const WithdrawalPeriodCircumstances: React.FC = () => {
   const router = useRouter();
   const id = 'withdrawalsPeriod';
   useEffect(() => {
-    if (window.location.hash === '#' + id) {
+    const pathParts = router.asPath.split('#');
+    if (pathParts[pathParts.length - 1] === id) {
       setOpened(true);
     }
   }, [router.asPath]);
