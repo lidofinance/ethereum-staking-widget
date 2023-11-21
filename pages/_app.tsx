@@ -1,16 +1,16 @@
 import { memo } from 'react';
 import NextApp, { AppProps, AppContext } from 'next/app';
+import 'nprogress/nprogress.css';
+
 import {
   ToastContainer,
   CookiesTooltip,
   migrationAllowCookieToCrossDomainCookieClientSide,
   migrationThemeCookiesToCrossDomainCookiesClientSide,
 } from '@lidofinance/lido-ui';
-import 'nprogress/nprogress.css';
 
 import { dynamics } from 'config';
-import Providers from 'providers';
-import { ClientConfigProvider } from 'providers/client-config';
+import { Providers } from 'providers';
 import { BackgroundGradient } from 'shared/components/background-gradient/background-gradient';
 import { nprogress, COOKIES_ALLOWED_FULL_KEY } from 'utils';
 import { parseEnvConfig } from 'utils/parse-env-config';
@@ -38,20 +38,18 @@ const AppWrapper = (props: AppWrapperProps): JSX.Element => {
   const { envConfig, ...rest } = props;
 
   return (
-    <ClientConfigProvider envConfig={envConfig}>
-      <Providers>
-        <BackgroundGradient
-          width={1560}
-          height={784}
-          style={{
-            opacity: 'var(--lido-color-darkThemeOpacity)',
-          }}
-        />
-        <ToastContainer />
-        <MemoApp {...rest} />
-        <CookiesTooltip />
-      </Providers>
-    </ClientConfigProvider>
+    <Providers envConfig={envConfig}>
+      <BackgroundGradient
+        width={1560}
+        height={784}
+        style={{
+          opacity: 'var(--lido-color-darkThemeOpacity)',
+        }}
+      />
+      <ToastContainer />
+      <MemoApp {...rest} />
+      <CookiesTooltip />
+    </Providers>
   );
 };
 
