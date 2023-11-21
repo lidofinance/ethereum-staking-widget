@@ -1,6 +1,6 @@
 import React, { FC } from 'react';
 
-import { FaqAccordion, PageFAQ } from '@lidofinance/ui-faq';
+import { FaqAccordion, PageFAQ, isPageFAQ } from '@lidofinance/ui-faq';
 
 import { Section } from 'shared/components';
 import { faqAccordionOnLinkClick } from 'utils/faq-matomo';
@@ -15,29 +15,31 @@ type RequestFaqProps = {
 };
 
 export const RequestFaq: FC<RequestFaqProps> = ({ pageFAQ }) => {
+  if (!pageFAQ || !isPageFAQ(pageFAQ)) {
+    return null;
+  }
+
   return (
     <>
-      {pageFAQ && pageFAQ.faq && (
-        <Section title="FAQ">
-          <FaqAccordion
-            faqList={pageFAQ.faq}
-            onLinkClick={(props) => {
-              faqAccordionOnLinkClick({
-                pageId: pageFAQ.pageIdentification,
-                ...props,
-              });
-            }}
-          />
+      <Section title="FAQ">
+        <FaqAccordion
+          faqList={pageFAQ.faq}
+          onLinkClick={(props) => {
+            faqAccordionOnLinkClick({
+              pageId: pageFAQ.pageIdentification,
+              ...props,
+            });
+          }}
+        />
 
-          {/* <ButtonLinkWrap
-          target="_blank"
-          rel="noopener noreferrer"
-          href={LEARN_MORE_LINK}
-        >
-          <Button>Learn more</Button>
-        </ButtonLinkWrap> */}
-        </Section>
-      )}
+        {/* <ButtonLinkWrap
+        target="_blank"
+        rel="noopener noreferrer"
+        href={LEARN_MORE_LINK}
+      >
+        <Button>Learn more</Button>
+      </ButtonLinkWrap> */}
+      </Section>
     </>
   );
 };
