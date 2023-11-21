@@ -8,6 +8,7 @@ import NoSSRWrapper from 'shared/components/no-ssr-wrapper';
 import { WithdrawalsTabs } from 'features/withdrawals';
 import { WithdrawalsProvider } from 'features/withdrawals/contexts/withdrawals-context';
 import { useWeb3Key } from 'shared/hooks/useWeb3Key';
+import { Faq } from 'features/withdrawals/withdrawals-faq/faq';
 
 const Withdrawals: FC<WithdrawalsModePageParams> = ({ mode }) => {
   const key = useWeb3Key();
@@ -24,6 +25,7 @@ const Withdrawals: FC<WithdrawalsModePageParams> = ({ mode }) => {
         <NoSSRWrapper>
           <WithdrawalsTabs key={key} />
         </NoSSRWrapper>
+        <Faq />
       </WithdrawalsProvider>
     </Layout>
   );
