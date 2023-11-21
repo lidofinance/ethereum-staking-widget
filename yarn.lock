@@ -2647,11 +2647,6 @@
   resolved "https://registry.yarnpkg.com/@lidofinance/api-rpc/-/api-rpc-0.28.0.tgz#68d5a061a2b06cf1c3bc9c211df48a4a54b2a721"
   integrity sha512-6ImH3J50XMhERM1QzoTNTpFBAP829pzHoHODegBErXmCf+bKrvWoFE9oYhhfXwfiZeQ/34W96NRk/D9DwDzivA==
 
-"@lidofinance/blocks-connect-wallet-modal@2.11.2":
-  version "2.11.2"
-  resolved "https://registry.yarnpkg.com/@lidofinance/blocks-connect-wallet-modal/-/blocks-connect-wallet-modal-2.11.2.tgz#a8593384e92a1f5535a42f76ee8fcc22bd5c0318"
-  integrity sha512-En9QkhSuFrbtBMFonDAW+49ypvOrxxDmdRh2ly9YKogQ2Rag0caKdmT3QVXW+kh+qKYVegQklftGmSQX0Fnb0w==
-
 "@lidofinance/eslint-config@^0.34.0":
   version "0.34.0"
   resolved "https://registry.yarnpkg.com/@lidofinance/eslint-config/-/eslint-config-0.34.0.tgz#5ee60bcf6c2da39bcb712a0169d7365dceb08cfb"
@@ -2668,13 +2663,6 @@
   version "0.28.0"
   resolved "https://registry.yarnpkg.com/@lidofinance/eth-providers/-/eth-providers-0.28.0.tgz#069dfcd66f97418298646abd2742e8e997c6fbbb"
   integrity sha512-oH2nU7jVPkn1mii56vp3gBFZNFR/LysxiKBUwV2freFoizQHNLeWWjU1b8a+l1I020LzbxHcatOkV6z9ur5YfA==
-
-"@lidofinance/lido-ui-blocks@2.10.2":
-  version "2.10.2"
-  resolved "https://registry.yarnpkg.com/@lidofinance/lido-ui-blocks/-/lido-ui-blocks-2.10.2.tgz#f5075ea2a6524006ee0b145b61495472b4d678d0"
-  integrity sha512-2UDI1N7FypwQuqspQb8HCts5qeWbFp9iwtxRJL1gHIpzlz5VqqRS4xTpFdkIDDYS3Z/nrNMhZ9DlNqK6rRxafw==
-  dependencies:
-    "@lidofinance/blocks-connect-wallet-modal" "2.11.2"
 
 "@lidofinance/lido-ui@3.14.1":
   version "3.14.1"
