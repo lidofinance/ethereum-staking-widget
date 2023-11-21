@@ -1,21 +1,25 @@
 import getConfig from 'next/config';
 import { Cache } from 'memory-cache';
 import { wrapRequest as wrapNextRequest } from '@lidofinance/next-api-wrapper';
+
 import {
+  API_ROUTES,
   CACHE_LIDO_SHORT_STATS_KEY,
   CACHE_LIDO_SHORT_STATS_TTL,
-  API_ROUTES,
 } from 'config';
+import { API, SubgraphChains } from 'types';
 import {
-  getTotalStaked,
+  cors,
+  errorAndCacheDefaultWrappers,
   getLidoHoldersViaSubgraphs,
   getStEthPrice,
-  errorAndCacheDefaultWrappers,
-  responseTimeMetric,
+  getTotalStaked,
+  HttpMethod,
+  httpMethodGuard,
   rateLimit,
+  responseTimeMetric,
 } from 'utilsApi';
 import Metrics from 'utilsApi/metrics';
-import { API, SubgraphChains } from 'types';
 import { parallelizePromises } from 'utils';
 
 const { serverRuntimeConfig } = getConfig();
@@ -35,7 +39,7 @@ const shortLidoStats: API = async (req, res) => {
   } else {
     const [lidoHolders, totalStaked, stEthPrice] = await parallelizePromises([
       getLidoHoldersViaSubgraphs(chainId),
-      getTotalStaked(),
+      getTotalStaked(chainId),
       getStEthPrice(),
     ]);
 
@@ -57,6 +61,8 @@ const shortLidoStats: API = async (req, res) => {
 };
 
 export default wrapNextRequest([
+  httpMethodGuard([HttpMethod.GET]),
+  cors({ origin: ['*'], methods: [HttpMethod.GET] }),
   rateLimit,
   responseTimeMetric(Metrics.request.apiTimings, API_ROUTES.SHORT_LIDO_STATS),
   ...errorAndCacheDefaultWrappers,

@@ -1,10 +1,10 @@
-name: CI Staging
+name: CI Dev Goerli
 
 on:
   workflow_dispatch:
   push:
     branches:
-      - main
+      - goerli
     paths-ignore:
       - '.github/**'
       - 'test/**'
@@ -21,14 +21,14 @@ jobs:
     # needs: test
     name: Build and deploy
     steps:
-      - name: Staging deploy
+      - name: Testnet deploy
         uses: lidofinance/dispatch-workflow@v1
         env:
           APP_ID: ${{ secrets.APP_ID }}
           APP_PRIVATE_KEY: ${{ secrets.APP_PRIVATE_KEY }}
           TARGET_REPO: 'lidofinance/infra-mainnet'
-          TARGET_WORKFLOW: 'deploy_staging_critical_ethereum_staking_widget.yaml'
-          TARGET: 'main'
+          TARGET_WORKFLOW: 'deploy_testnet_ethereum_staking_widget.yaml'
+          TARGET: 'goerli'
 
   tests:
     needs: deploy
@@ -36,5 +36,4 @@ jobs:
     uses: ./.github/workflows/tests.yml
     secrets: inherit
     with:
-      stand_url: https://stake.infra-staging.org
-      stand_type: staging-critical
+      stand_url: https://stake.testnet.fi

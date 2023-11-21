@@ -1,4 +1,4 @@
-name: CI Dev
+name: CI Dev Holesky
 
 on:
   workflow_dispatch:
@@ -27,7 +27,7 @@ jobs:
           APP_ID: ${{ secrets.APP_ID }}
           APP_PRIVATE_KEY: ${{ secrets.APP_PRIVATE_KEY }}
           TARGET_REPO: 'lidofinance/infra-mainnet'
-          TARGET_WORKFLOW: 'deploy_testnet_ethereum_staking_widget.yaml'
+          TARGET_WORKFLOW: 'deploy_holesky_testnet_ethereum_staking_widget.yaml'
           TARGET: 'develop'
 
   tests:
@@ -36,4 +36,4 @@ jobs:
     uses: ./.github/workflows/tests.yml
     secrets: inherit
     with:
-      stand_url: https://stake.testnet.fi
+      stand_url: https://stake-holesky.testnet.fi
