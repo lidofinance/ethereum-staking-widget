@@ -1,13 +1,15 @@
-import { Switch } from 'shared/components/switch';
+import { WRAP_PATH, WRAP_UNWRAP_PATH } from 'config/urls';
 import { Wallet } from 'features/wsteth/shared/wallet';
 import { WrapForm } from 'features/wsteth/wrap/wrap-form/wrap-form';
-import { UnwrapForm } from './unwrap/unwrap-form';
-import { WrapFaq } from './shared/wrap-faq/wrap-faq';
+import { Switch } from 'shared/components/switch';
 import NoSsrWrapper from 'shared/components/no-ssr-wrapper';
 
+import { WrapFaq } from './shared/wrap-faq/wrap-faq';
+import { UnwrapForm } from './unwrap/unwrap-form';
+
 const NAV_ROUTES = [
-  { name: 'Wrap', path: '/wrap' },
-  { name: 'Unwrap', path: '/wrap/unwrap' },
+  { name: 'Wrap', path: WRAP_PATH },
+  { name: 'Unwrap', path: WRAP_UNWRAP_PATH },
 ];
 
 type WrapUnwrapLayoutProps = {

@@ -4,7 +4,7 @@ A widget for submitting Ether to the pool based on [Lido Frontend Template](http
 
 ### Pre-requisites
 
-- Node.js v16+
+- Node.js v16
 - Yarn package manager
 
 This project requires an .env file which is distributed via private communication channels. A sample can be found in .env.example
@@ -31,6 +31,12 @@ Step 4. Start the development server
 yarn dev
 ```
 
+for IPFS mode below:
+
+```bash
+yarn dev-ipfs # will start with HMR
+```
+
 ### Environment variables
 
 Note! Avoid using `NEXT_PUBLIC_` environment variables as it hinders our CI pipeline. Please use server-side environment variables and pass them to the client using `getInitialProps` in `_app.js`.
@@ -50,6 +56,12 @@ git commit -m "feat: dark theme"
 
 ```bash
 yarn build && yarn start
+```
+
+for IPFS mode below:
+
+```bash
+yarn build-ipfs
 ```
 
 ## Adding a new route API
