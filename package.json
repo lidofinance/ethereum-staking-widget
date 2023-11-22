@@ -129,6 +129,10 @@
     "postcss": "^8.4.31",
     "crypto-js": "^4.2.0"
   },
+  "resolutions": {
+    "postcss": "^8.4.31",
+    "crypto-js": "^4.2.0"
+  },
   "lint-staged": {
     "./**/*.{ts,tsx}": [
       "eslint --ignore-path .gitignore --max-warnings=0"
