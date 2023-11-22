@@ -5,7 +5,7 @@ export * from './getTotalStaked';
 export * from './getLidoHoldersViaSubgraphs';
 export * from './getLdoStats';
 export * from './getLidoStats';
-export * from './getOneInchRate';
+export * from './get-one-inch-rate';
 export * from './getEthPrice';
 export * from './getSubgraphUrl';
 export * from './rpcProviders';

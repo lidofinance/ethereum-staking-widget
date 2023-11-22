@@ -32,3 +32,12 @@ export const ethAPIBasePath = process.env.ETH_API_BASE_PATH;
 export const wqAPIBasePath = process.env.WQ_API_BASE_PATH;
 /** @type string */
 export const walletconnectProjectId = process.env.WALLETCONNECT_PROJECT_ID;
+
+/** @type boolean */
+export const ipfsMode = toBoolean(process.env.IPFS_MODE);
+
+/** @type string[] */
+export const prefillUnsafeElRpcUrls = process.env.PREFILL_UNSAFE_EL_RPC_URLS?.split(',') ?? [];
+
+/** @type string */
+export const widgetApiBasePathForIpfs = process.env.WIDGET_API_BASE_PATH_FOR_IPFS;
