@@ -25,7 +25,6 @@ import {
   DataTableRow,
   Eth,
 } from '@lidofinance/lido-ui';
-import { L2Swap } from 'shared/banners';
 import { DATA_UNAVAILABLE } from 'config';
 import { Connect } from 'shared/wallet';
 import { TxStageModal, TX_OPERATION, TX_STAGE } from 'shared/components';
@@ -214,7 +213,6 @@ export const StakeForm: FC = memo(() => {
         ) : (
           <Connect fullwidth />
         )}
-        <L2Swap />
       </FormStyled>
 
       <DataTable>
