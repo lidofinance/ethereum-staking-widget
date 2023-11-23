@@ -1,17 +1,10 @@
 import { Accordion } from '@lidofinance/lido-ui';
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/router';
+import { useScrollToId } from '../utils/useScrollToId';
+import { WHAT_IS_BUNKER, WHAT_IS_TURBO } from '../../withdrawals-constants';
+import Link from 'next/link';
 
 export const WithdrawalPeriodCircumstances: React.FC = () => {
-  const [opened, setOpened] = useState(false);
-  const router = useRouter();
-  const id = 'withdrawalsPeriod';
-  useEffect(() => {
-    const pathParts = router.asPath.split('#');
-    if (pathParts[pathParts.length - 1] === id) {
-      setOpened(true);
-    }
-  }, [router.asPath]);
+  const { id, opened } = useScrollToId('withdrawalsPeriod');
 
   return (
     <Accordion
@@ -26,8 +19,8 @@ export const WithdrawalPeriodCircumstances: React.FC = () => {
         <li>Exit queue on the Beacon chain.</li>
         <li>Performance of the validator poolside.</li>
         <li>
-          The protocol mode (Turbo mode [link to &quot;What is Turbo mode&quot;]
-          or Bunker mode [link to &quot;What is Bunker mode?&quot;)
+          The protocol mode (<Link href={WHAT_IS_TURBO}>Turbo&nbsp;mode</Link>{' '}
+          or <Link href={WHAT_IS_BUNKER}>Bunker&nbsp;mode</Link>)
         </li>
       </ul>
     </Accordion>
