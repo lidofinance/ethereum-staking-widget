@@ -5,8 +5,6 @@ export const MAX_REQUESTS_COUNT_LEDGER_LIMIT = 2;
 export const DEFAULT_CLAIM_REQUEST_SELECTED = 80;
 export const MAX_SHOWN_REQUEST_PER_TYPE = 1024;
 
-export const WITHDRAWAL_REQUEST_PATH = '/withdrawals/request';
-export const WITHDRAWAL_CLAIM_PATH = '/withdrawals/claim';
 export const WITHDRAWAL_PERIOD_PATH = '#withdrawalsPeriod';
 export const WHAT_IS_BUNKER = '#whatIsBunkerMode';
 export const WHAT_IS_TURBO = '#whatIsTurboMode';
