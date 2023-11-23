@@ -1,8 +1,11 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/router';
-import { useSDK } from '@lido-sdk/react';
 import debounce from 'lodash/debounce';
+
+import { useSDK } from '@lido-sdk/react';
+
 import { resolveEns, isValidEns, isValidAddress } from 'features/rewards/utils';
+import { useCurrentStaticRpcProvider } from 'shared/hooks/use-current-static-rpc-provider';
 
 type UseGetCurrentAddress = () => {
   address: string;
@@ -20,17 +23,21 @@ export const useGetCurrentAddress: UseGetCurrentAddress = () => {
   const [address, setAddress] = useState('');
 
   const { account } = useSDK();
+  const { staticRpcProvider } = useCurrentStaticRpcProvider();
   const { isReady, query } = useRouter();
 
-  const getEnsAddress = useCallback(async (value: string) => {
-    setAddress('');
+  const getEnsAddress = useCallback(
+    async (value: string) => {
+      setAddress('');
 
-    setIsAddressResolving(true);
-    const result = await resolveEns(value);
-    setIsAddressResolving(false);
+      setIsAddressResolving(true);
+      const result = await resolveEns(value, staticRpcProvider);
+      setIsAddressResolving(false);
 
-    if (result) setAddress(result);
-  }, []);
+      if (result) setAddress(result);
+    },
+    [staticRpcProvider],
+  );
 
   const resolveInputValue = useMemo(
     () =>

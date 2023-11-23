@@ -6,10 +6,10 @@ export const DEFAULT_CLAIM_REQUEST_SELECTED = 80;
 export const MAX_SHOWN_REQUEST_PER_TYPE = 1024;
 
 export const WITHDRAWAL_REQUEST_PATH = '/withdrawals/request';
+export const WITHDRAWAL_CLAIM_PATH = '/withdrawals/claim';
 export const WITHDRAWAL_PERIOD_PATH = '#withdrawalsPeriod';
 export const WHAT_IS_BUNKER = '#whatIsBunkerMode';
 export const WHAT_IS_TURBO = '#whatIsTurboMode';
-export const WITHDRAWAL_CLAIM_PATH = '/withdrawals/claim';
 
 // time that validation function waits for context data to resolve
 // should be enough to load token balances/tvl/max&min amounts and other contract data

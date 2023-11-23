@@ -21,6 +21,8 @@ type L2BannerProps = {
   onClickButton?: () => void;
 };
 
+export const L2_DISCOVERY_LINK = 'https://lido.fi/lido-on-l2';
+
 export const L2Banner = ({
   title,
   text,

@@ -1,4 +1,4 @@
-import { NoBr } from '../styles';
+import { FC } from 'react';
 import { Accordion } from '@lidofinance/lido-ui';
 import Link from 'next/link';
 import { LocalLink } from 'shared/components/local-link';
@@ -8,7 +8,9 @@ import {
   WITHDRAWAL_REQUEST_PATH,
 } from 'features/withdrawals/withdrawals-constants';
 
-export const HowLongToWithdraw: React.FC = () => {
+import { NoBr } from '../styles';
+
+export const HowLongToWithdraw: FC = () => {
   return (
     <Accordion summary="How long does it take to withdraw?">
       <p>

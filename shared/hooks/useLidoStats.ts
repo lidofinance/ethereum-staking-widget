@@ -1,6 +1,7 @@
-import { useSDK, useLidoSWR } from '@lido-sdk/react';
-import { DATA_UNAVAILABLE } from 'config';
 import { useMemo } from 'react';
+import { useSDK, useLidoSWR } from '@lido-sdk/react';
+
+import { DATA_UNAVAILABLE, dynamics } from 'config';
 import { prependBasePath } from 'utils';
 import { standardFetcher } from 'utils/standardFetcher';
 
@@ -20,8 +21,11 @@ export const useLidoStats = (): {
   initialLoading: boolean;
 } => {
   const { chainId } = useSDK();
+  const apiShortLidoStatsPath = `api/short-lido-stats?chainId=${chainId}`;
   const lidoStats = useLidoSWR<ResponseData>(
-    prependBasePath(`api/short-lido-stats?chainId=${chainId}`),
+    dynamics.ipfsMode
+      ? `${dynamics.widgetApiBasePathForIpfs}/${apiShortLidoStatsPath}`
+      : prependBasePath(apiShortLidoStatsPath),
     standardFetcher,
   );
 

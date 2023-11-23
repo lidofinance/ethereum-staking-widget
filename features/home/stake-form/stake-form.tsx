@@ -7,7 +7,9 @@ import {
   useEffect,
   useRef,
 } from 'react';
+import { useWeb3 } from 'reef-knot/web3-react';
 import { useRouter } from 'next/router';
+
 import { parseEther } from '@ethersproject/units';
 import {
   useSDK,
@@ -17,7 +19,6 @@ import {
   useSTETHContractRPC,
   useSTETHContractWeb3,
 } from '@lido-sdk/react';
-import { useWeb3 } from 'reef-knot/web3-react';
 import {
   Block,
   Button,
@@ -32,14 +33,16 @@ import { TxStageModal, TX_OPERATION, TX_STAGE } from 'shared/components';
 import { useTxCostInUsd } from 'shared/hooks';
 import { InputDecoratorMaxButton } from 'shared/forms/components/input-decorator-max-button';
 import { useCurrencyInput } from 'shared/forms/hooks/useCurrencyInput';
+import { useIsMultisig } from 'shared/hooks/useIsMultisig';
+import { useCurrentStaticRpcProvider } from 'shared/hooks/use-current-static-rpc-provider';
+import { STRATEGY_LAZY } from 'utils/swrStrategies';
+import { getTokenDisplayName } from 'utils/getTokenDisplayName';
+
 import { FormStyled, InputStyled } from './styles';
-import { stakeProcessing } from './utils';
 import { useStethSubmitGasLimit } from './hooks';
 import { useStakeableEther } from '../hooks';
+import { stakeProcessing } from './utils';
 import { useStakingLimitWarn } from './useStakingLimitWarn';
-import { getTokenDisplayName } from 'utils/getTokenDisplayName';
-import { useIsMultisig } from 'shared/hooks/useIsMultisig';
-import { STRATEGY_LAZY } from 'utils/swrStrategies';
 
 export const StakeForm: FC = memo(() => {
   const router = useRouter();
@@ -68,6 +71,7 @@ export const StakeForm: FC = memo(() => {
 
   const { active, chainId } = useWeb3();
   const { providerWeb3 } = useSDK();
+  const { staticRpcProvider } = useCurrentStaticRpcProvider();
   const etherBalance = useEthereumBalance(undefined, STRATEGY_LAZY);
   const stakeableEther = useStakeableEther();
   const stethBalance = useSTETHBalance();
@@ -94,6 +98,7 @@ export const StakeForm: FC = memo(() => {
   const submit = useCallback(
     async (inputValue: string, resetForm: () => void) => {
       await stakeProcessing(
+        staticRpcProvider,
         providerWeb3,
         stethContractWeb3,
         openTxModal,
@@ -109,6 +114,7 @@ export const StakeForm: FC = memo(() => {
       );
     },
     [
+      staticRpcProvider,
       providerWeb3,
       stethContractWeb3,
       openTxModal,
