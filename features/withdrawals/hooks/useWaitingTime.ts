@@ -48,7 +48,7 @@ export const useWaitingTime = (
   const { isBunker, isPaused } = useWithdrawals();
   const isRequestError = error instanceof FetcherError && error.status < 500;
 
-  const ms = data?.requestInfo.finalizationIn;
+  const ms = data?.requestInfo?.finalizationIn;
   const days = ms ? Math.ceil(ms / (24 * 60 * 60 * 1000)) : DEFAULT_DAYS_VALUE;
 
   const waitingTime =
