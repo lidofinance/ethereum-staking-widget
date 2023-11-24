@@ -10,7 +10,6 @@ import {
   InlineLoaderSmall,
   LidoIcon,
   CowSwapIcon,
-  OneInchIcon,
   ParaSwapIcon,
   OptionsPickerButton,
   OptionsPickerContainer,
@@ -79,7 +78,6 @@ const DexButton: React.FC<OptionButtonProps> = ({ isActive, onClick }) => {
       <OptionsPickerRow>
         <OptionsPickerLabel>Use aggregators</OptionsPickerLabel>
         <OptionsPickerIcons>
-          <OneInchIcon />
           <CowSwapIcon />
           <ParaSwapIcon />
         </OptionsPickerIcons>
