@@ -45,45 +45,6 @@ const calculateRateReceive = (
   return { rate, toReceive };
 };
 
-type OneInchQuotePartial = {
-  toAmount: string;
-};
-
-const getOneInchRate: getRate = async (amount, token) => {
-  let rateInfo: rateCalculationResult | null;
-  try {
-    if (amount.isZero() || amount.isNegative()) {
-      return {
-        name: '1inch',
-        rate: 0,
-        toReceive: BigNumber.from(0),
-      };
-    }
-    const capped_amount = amount;
-    const api = `https://api-lido.1inch.io/v5.2/1/quote`;
-    const query = new URLSearchParams({
-      src: getTokenAddress(CHAINS.Mainnet, token),
-      dst: '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee',
-      amount: amount.toString(),
-    });
-    const url = `${api}?${query.toString()}`;
-    const data: OneInchQuotePartial =
-      await standardFetcher<OneInchQuotePartial>(url);
-    rateInfo = calculateRateReceive(
-      amount,
-      capped_amount,
-      BigNumber.from(data.toAmount),
-    );
-  } catch {
-    rateInfo = null;
-  }
-  return {
-    name: '1inch',
-    rate: rateInfo?.rate ?? null,
-    toReceive: rateInfo?.toReceive ?? null,
-  };
-};
-
 type ParaSwapPriceResponsePartial = {
   priceRoute: {
     srcAmount: string;
@@ -194,7 +155,6 @@ const getWithdrawalRates = async ({
   token,
 }: getWithdrawalRatesParams): Promise<getWithdrawalRatesResult> => {
   const rates = await Promise.all([
-    getOneInchRate(amount, token),
     getParaSwapRate(amount, token),
     getCowSwapRate(amount, token),
   ]);

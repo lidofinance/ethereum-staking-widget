@@ -16,13 +16,12 @@ import {
   DexOptionsContainer,
   DexOptionAmount,
   InlineLoaderSmall,
-  OneInchIcon,
   ParaSwapIcon,
   CowSwapIcon,
   DexOptionLoader,
 } from './styles';
 
-const placeholder = Array.from<null>({ length: 3 }).fill(null);
+const placeholder = Array.from<null>({ length: 2 }).fill(null);
 
 const dexInfo: {
   [key: string]: {
@@ -32,17 +31,6 @@ const dexInfo: {
     link: (amount: BigNumber, token: TOKENS.STETH | TOKENS.WSTETH) => string;
   };
 } = {
-  '1inch': {
-    title: '1inch',
-    icon: <OneInchIcon />,
-    onClickGoTo: () => {
-      trackMatomoEvent(MATOMO_CLICK_EVENTS_TYPES.withdrawalGoTo1inch);
-    },
-    link: (amount, token) =>
-      `https://app.1inch.io/#/1/simple/swap/${
-        token == TOKENS.STETH ? 'stETH' : 'wstETH'
-      }/ETH?sourceTokenAmount=${formatEther(amount)}`,
-  },
   paraswap: {
     title: 'ParaSwap',
     icon: <ParaSwapIcon />,
