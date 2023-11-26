@@ -1,5 +1,5 @@
 import { memo } from 'react';
-import NextApp, { AppProps, AppContext } from 'next/app';
+import { AppProps } from 'next/app';
 import 'nprogress/nprogress.css';
 
 import {
@@ -35,11 +35,10 @@ const App = (props: AppProps) => {
 const MemoApp = memo(App);
 
 const AppWrapper = (props: AppWrapperProps): JSX.Element => {
-  const { envConfig, ...rest } = props;
+  const { ...rest } = props;
 
   return (
-    // In infra version `envConfig` is undefined always
-    <Providers envConfig={envConfig ?? parseEnvConfig(dynamics)}>
+    <Providers envConfig={parseEnvConfig(dynamics)}>
       <BackgroundGradient
         width={1560}
         height={784}
@@ -53,18 +52,6 @@ const AppWrapper = (props: AppWrapperProps): JSX.Element => {
     </Providers>
   );
 };
-
-// #!if IPFS_MODE === "true"
-// In IPFS mode we don't have server (IPFS version is SPA),
-// therefore we inject env-dynamics in build time
-AppWrapper.getInitialProps = async (appContext: AppContext) => {
-  const appProps = await NextApp.getInitialProps(appContext);
-  return {
-    ...appProps,
-    envConfig: parseEnvConfig(dynamics) ?? undefined,
-  };
-};
-// #!endif
 
 export default dynamics.ipfsMode || process.env.NODE_ENV === 'development'
   ? AppWrapper
