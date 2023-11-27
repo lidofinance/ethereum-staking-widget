@@ -37,6 +37,7 @@ export const SettingsForm = () => {
     setValue,
     getValues,
     formState: { errors },
+    clearErrors,
   } = formMethods;
 
   const saveSettings = useCallback(
@@ -79,8 +80,9 @@ export const SettingsForm = () => {
   const handleReset = useCallback(() => {
     setValue('rpcUrl', '');
     saveSettings(getValues());
+    clearErrors();
     ToastSuccess('Settings have been reset');
-  }, [setValue, saveSettings, getValues]);
+  }, [clearErrors, setValue, saveSettings, getValues]);
 
   return (
     <SettingsFormWrap>
