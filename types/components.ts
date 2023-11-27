@@ -1,5 +1,4 @@
 import { FC, ReactNode } from 'react';
-import { AppProps } from 'next/app';
 
 export type ComponentProps<
   T extends keyof JSX.IntrinsicElements,
@@ -15,8 +14,3 @@ export type Override<
   T extends Record<string, unknown>,
   P extends Record<string, unknown>,
 > = Omit<T, keyof P> & P;
-
-// Probably will come in handy later, id not - just delete and use `AppProps`
-export type AppWrapperProps = AppProps; // & {};
-
-export type AppWrapperType = FC<AppWrapperProps>;

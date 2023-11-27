@@ -1,9 +1,9 @@
 import { FC } from 'react';
+import { AppProps } from 'next/app';
 import getConfig from 'next/config';
 import { withSecureHeaders } from 'next-secure-headers';
 
 import { dynamics } from 'config';
-import { AppWrapperType } from 'types';
 
 const { serverRuntimeConfig } = getConfig();
 const { cspTrustedHosts, cspReportOnly, cspReportUri, developmentMode } =
@@ -76,7 +76,7 @@ export const contentSecurityPolicy = {
   reportOnly,
 };
 
-export const withCsp = (app: AppWrapperType): FC =>
+export const withCsp = (app: FC<AppProps>): FC =>
   withSecureHeaders({
     contentSecurityPolicy,
     frameGuard: false,

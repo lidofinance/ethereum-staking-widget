@@ -13,9 +13,7 @@ import { dynamics } from 'config';
 import { Providers } from 'providers';
 import { BackgroundGradient } from 'shared/components/background-gradient/background-gradient';
 import { nprogress, COOKIES_ALLOWED_FULL_KEY } from 'utils';
-import { parseEnvConfig } from 'utils/parse-env-config';
 import { withCsp } from 'utilsApi/withCSP';
-import { AppWrapperProps } from 'types';
 
 // Migrations old theme cookies to new cross domain cookies
 migrationThemeCookiesToCrossDomainCookiesClientSide();
@@ -34,11 +32,11 @@ const App = (props: AppProps) => {
 
 const MemoApp = memo(App);
 
-const AppWrapper = (props: AppWrapperProps): JSX.Element => {
+const AppWrapper = (props: AppProps): JSX.Element => {
   const { ...rest } = props;
 
   return (
-    <Providers envConfig={parseEnvConfig(dynamics)}>
+    <Providers>
       <BackgroundGradient
         width={1560}
         height={784}
