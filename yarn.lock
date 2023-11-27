@@ -2950,10 +2950,10 @@
   resolved "https://registry.yarnpkg.com/@polka/url/-/url-1.0.0-next.21.tgz#5de5a2385a35309427f6011992b544514d559aa1"
   integrity sha512-a5Sab1C4/icpTZVzZc5Ghpz88yQtGOyNqYXcZgOssB2uuAr+wF/MvN6bgtW32q7HHrvBki+BsZ0OuNv6EV3K9g==
 
-"@reef-knot/connect-wallet-modal@1.10.0":
-  version "1.10.0"
-  resolved "https://registry.yarnpkg.com/@reef-knot/connect-wallet-modal/-/connect-wallet-modal-1.10.0.tgz#f8948265716408296191c4ba51394c09478a6938"
-  integrity sha512-lfKvTz8OS41a+YvX9Xy9ky22LAvIkjz1o6PvAVRG6QJmxal7akhgdx9ZZJU9+gNDV4Aigfj12NYVQ2TQVY9vRQ==
+"@reef-knot/connect-wallet-modal@1.11.0":
+  version "1.11.0"
+  resolved "https://registry.yarnpkg.com/@reef-knot/connect-wallet-modal/-/connect-wallet-modal-1.11.0.tgz#8975c68277eedadc6ec9137f3cf20dff6f8011a3"
+  integrity sha512-Bhxhxz5Vu3oJDgmzeLo5QuIl3TrqO8AVV4qg+ise1epoB+F4GTH+a8t1zTUn3a8QlxTS6aWDGSPPimYF9BeaUA==
   dependencies:
     "@ledgerhq/hw-app-eth" "^6.34.3"
     "@ledgerhq/hw-transport" "^6.28.8"
@@ -3066,15 +3066,15 @@
   resolved "https://registry.yarnpkg.com/@reef-knot/wallets-helpers/-/wallets-helpers-1.1.5.tgz#bceb7d91a6f7748ec093fbdf7422772bd71708b6"
   integrity sha512-OFWR6zsUy04Waujl1VlNNs91P/kyHeGLC49QLWs3vrHvVipEk7ydUhKU/dHrbuhjQBS7quKg4vrodyCUUl4zyQ==
 
-"@reef-knot/wallets-icons@1.2.0":
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/@reef-knot/wallets-icons/-/wallets-icons-1.2.0.tgz#96d20b1805a926b47ce41238d945b10620bb49f6"
-  integrity sha512-UpZ4641R4roLwQw//AHEuz4OfElhqpNB2kRsR1p0kD4BOiPqkr8t3u4I+U0tBC4trhBu+j4MMgGNaXN5MUn4dg==
+"@reef-knot/wallets-icons@1.3.0":
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/@reef-knot/wallets-icons/-/wallets-icons-1.3.0.tgz#c2b3438f352080da1a9918e49b73d718b8f8dbd0"
+  integrity sha512-YudzhP/avx3jgbBdCw1QhInG1CGW08jweUw+eipLzHxPdfWpKSIQkeLw1GXOSflL6gI+dc7qmfi6wjfyB4Gpdg==
 
-"@reef-knot/wallets-list@1.6.0":
-  version "1.6.0"
-  resolved "https://registry.yarnpkg.com/@reef-knot/wallets-list/-/wallets-list-1.6.0.tgz#3cce895d2aee56b122784db5354b79a1734ab608"
-  integrity sha512-+mWn0Mr7hAqH3k1J8WO9WJfug5RaIYEmXLi8hv+Twc1atgUqwqcSxhKzklRhM+Yjbfgi42PiCJ/YQMIoARATvQ==
+"@reef-knot/wallets-list@1.7.0":
+  version "1.7.0"
+  resolved "https://registry.yarnpkg.com/@reef-knot/wallets-list/-/wallets-list-1.7.0.tgz#93fe0accaa86383961ef07b6bb2aa371174346dc"
+  integrity sha512-6f3I2Z9Nch4df55xiJZMAkCTXuy8coZBZoMZkmfFIVdV5Gvh5MOjQ82+p4kgngKk3gNXxeQ9MFM1Ldj2mxrR3Q==
   dependencies:
     "@reef-knot/wallet-adapter-ambire" "1.2.4"
     "@reef-knot/wallet-adapter-bitkeep" "1.1.0"
@@ -3089,10 +3089,10 @@
     "@reef-knot/wallet-adapter-zengo" "1.2.4"
     "@reef-knot/wallet-adapter-zerion" "1.2.4"
 
-"@reef-knot/web3-react@1.8.0":
-  version "1.8.0"
-  resolved "https://registry.yarnpkg.com/@reef-knot/web3-react/-/web3-react-1.8.0.tgz#4023eaab935c3b15efb6f441e3b6e413f5de24ae"
-  integrity sha512-2NPvqEP18rsd+xMvT8yJw6I3YG5rQgryeAA2MGrCoqV6Mt4WDiHuj7R/sMaqXbc3goSjcVWbFM+O+nos8o2lLA==
+"@reef-knot/web3-react@1.9.1":
+  version "1.9.1"
+  resolved "https://registry.yarnpkg.com/@reef-knot/web3-react/-/web3-react-1.9.1.tgz#bc5680029025fbaaa0cc28980c30e497441202e1"
+  integrity sha512-MMIZUCJL8HjOf8QSUl+tsFvF5eqctMyAzw+2VFwDvNegPiV+QoPXsEyBvjFEqJ0Kg6s/1Np3Hvfa9NY04WNEAw==
   dependencies:
     "@gnosis.pm/safe-apps-web3-react" "0.6.8"
     "@ledgerhq/iframe-provider" "0.4.2"
@@ -9451,20 +9451,20 @@ redent@^3.0.0:
     indent-string "^4.0.0"
     strip-indent "^3.0.0"
 
-reef-knot@^1.10.6:
-  version "1.10.6"
-  resolved "https://registry.yarnpkg.com/reef-knot/-/reef-knot-1.10.6.tgz#4bf2cd7c9595dcc48ab1692d2025f1cb8b7ff825"
-  integrity sha512-sSBmZhU/wOl/c9ovvjm+q6raUlTWDH2sUrckIQ629N6KO238K9v7F86eKHisqAcwWm8JbqhczUCOHUtuYrq6VQ==
+reef-knot@^1.11.1:
+  version "1.11.1"
+  resolved "https://registry.yarnpkg.com/reef-knot/-/reef-knot-1.11.1.tgz#0278760d657dc4b4fb2e251d7746e5a53b38b731"
+  integrity sha512-d1Mg7u2DDJXlYWtDo1guFo5X0abZ6pCUMVT14Q6czHQE4Y2Z2qyPG5jZo4Bto1ZzBZ8MKt8j9vbRr50bf3Xk0A==
   dependencies:
-    "@reef-knot/connect-wallet-modal" "1.10.0"
+    "@reef-knot/connect-wallet-modal" "1.11.0"
     "@reef-knot/core-react" "1.7.0"
     "@reef-knot/ledger-connector" "1.1.1"
     "@reef-knot/types" "1.3.0"
     "@reef-knot/ui-react" "1.0.7"
     "@reef-knot/wallets-helpers" "1.1.5"
-    "@reef-knot/wallets-icons" "1.2.0"
-    "@reef-knot/wallets-list" "1.6.0"
-    "@reef-knot/web3-react" "1.8.0"
+    "@reef-knot/wallets-icons" "1.3.0"
+    "@reef-knot/wallets-list" "1.7.0"
+    "@reef-knot/web3-react" "1.9.1"
 
 regenerate-unicode-properties@^10.1.0:
   version "10.1.0"
