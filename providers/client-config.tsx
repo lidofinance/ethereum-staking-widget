@@ -1,5 +1,5 @@
 import {
-  ReactNode,
+  PropsWithChildren,
   useMemo,
   useState,
   useContext,
@@ -10,9 +10,11 @@ import invariant from 'tiny-invariant';
 
 import { useLocalStorage } from '@lido-sdk/react';
 
+import { dynamics } from 'config';
 import { STORAGE_CLIENT_CONFIG } from 'config/storage';
 import { EnvConfigParsed } from 'config/types';
 import { CHAINS } from 'utils/chains';
+import { parseEnvConfig } from 'utils/parse-env-config';
 
 type SavedClientConfig = {
   rpcUrls: Partial<Record<CHAINS, string>>;
@@ -33,16 +35,11 @@ export const useClientConfig = () => {
   return context;
 };
 
-type Props = {
-  envConfig: EnvConfigParsed;
-  children?: ReactNode;
-};
-
 const DEFAULT_STATE: SavedClientConfig = {
   rpcUrls: {},
 };
 
-export const ClientConfigProvider = ({ children, envConfig }: Props) => {
+export const ClientConfigProvider = ({ children }: PropsWithChildren) => {
   const [restoredSettings, setLocalStorage] = useLocalStorage(
     STORAGE_CLIENT_CONFIG,
     DEFAULT_STATE,
@@ -60,12 +57,14 @@ export const ClientConfigProvider = ({ children, envConfig }: Props) => {
   );
 
   const contextValue = useMemo(() => {
+    const envConfig = parseEnvConfig(dynamics);
+
     return {
       ...envConfig,
       savedClientConfig,
       setSavedClientConfig: setSavedConfigAndRemember,
     };
-  }, [envConfig, savedClientConfig, setSavedConfigAndRemember]);
+  }, [savedClientConfig, setSavedConfigAndRemember]);
 
   return (
     <ClientConfigContext.Provider value={contextValue}>
