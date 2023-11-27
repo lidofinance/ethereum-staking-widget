@@ -40,8 +40,6 @@ const DEFAULT_STATE: SavedClientConfig = {
 };
 
 export const ClientConfigProvider = ({ children }: PropsWithChildren) => {
-  const envConfig = parseEnvConfig(dynamics);
-
   const [restoredSettings, setLocalStorage] = useLocalStorage(
     STORAGE_CLIENT_CONFIG,
     DEFAULT_STATE,
@@ -59,12 +57,14 @@ export const ClientConfigProvider = ({ children }: PropsWithChildren) => {
   );
 
   const contextValue = useMemo(() => {
+    const envConfig = parseEnvConfig(dynamics);
+
     return {
       ...envConfig,
       savedClientConfig,
       setSavedClientConfig: setSavedConfigAndRemember,
     };
-  }, [envConfig, savedClientConfig, setSavedConfigAndRemember]);
+  }, [savedClientConfig, setSavedConfigAndRemember]);
 
   return (
     <ClientConfigContext.Provider value={contextValue}>
