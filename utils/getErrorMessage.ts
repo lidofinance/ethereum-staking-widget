@@ -5,7 +5,7 @@ export enum ErrorMessage {
   ENABLE_BLIND_SIGNING = 'Please enable blind signing on your Ledger hardware wallet.',
   LIMIT_REACHED = 'Transaction could not be completed because stake limit is exhausted. Please wait until the stake limit restores and try again. Otherwise, you can swap your Ethereum on 1inch platform instantly.',
   DEVICE_LOCKED = 'Please unlock your Ledger hardware wallet',
-  INVALID_SIGNATURE = 'Invalid Permit signature. Perhaps it has expired. Try signing again.',
+  INVALID_SIGNATURE = 'Invalid Permit signature. Perhaps it has expired or already been used. Try submitting a withdrawal request again.',
 }
 
 export const getErrorMessage = (error: unknown): ErrorMessage => {
