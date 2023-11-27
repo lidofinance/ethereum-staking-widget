@@ -22,12 +22,13 @@ export const Actions = styled.div`
 `;
 
 export const DescriptionText = styled.div`
-  font-size: ${({ theme }) => theme.fontSizesMap.xs}px;
-  font-weight: 500;
-  line-height: 1.5;
+  font-size: ${({ theme }) => theme.fontSizesMap.xxs}px;
+  font-weight: 400;
+  line-height: 1.6em;
+  color: var(--lido-color-textSecondary);
 
   & p:not(:last-child) {
-    margin-bottom: ${({ theme }) => theme.spaceMap.sm}px;
+    margin-bottom: 10px;
   }
 
   & a {
@@ -37,10 +38,10 @@ export const DescriptionText = styled.div`
 `;
 
 export const DescriptionTitle = styled.div`
-  margin-bottom: ${({ theme }) => theme.spaceMap.sm}px;
-  font-size: ${({ theme }) => theme.fontSizesMap.sm}px;
+  margin-bottom: 30px;
+  font-size: ${({ theme }) => theme.fontSizesMap.xs}px;
   font-weight: 800;
-  line-height: 1.5;
+  line-height: 1.6em;
   color: var(--lido-color-text);
 
   &:not(:first-child) {

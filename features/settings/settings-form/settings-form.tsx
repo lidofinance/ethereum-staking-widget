@@ -5,6 +5,7 @@ import { useSDK } from '@lido-sdk/react';
 import { Button, ToastSuccess, Block, Input } from '@lidofinance/lido-ui';
 
 import { useClientConfig } from 'providers/client-config';
+import { LinkArrow } from 'shared/components/link-arrow/link-arrow';
 import { RPCErrorType, checkRpcUrl } from 'utils/check-rpc-url';
 import { CHAINS } from 'utils/chains';
 
@@ -122,14 +123,13 @@ export const SettingsForm = () => {
             visiting the link below.
           </p>
           <p>
-            Ethereum nodes:{' '}
-            <a
+            <LinkArrow
               target="_blank"
               href="https://ethereumnodes.com/"
               rel="noreferrer"
             >
               ethereumnodes.com
-            </a>
+            </LinkArrow>
           </p>
           <p>
             The settings are being saved in your browser&apos;s
