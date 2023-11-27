@@ -101,7 +101,7 @@ export const useWithdrawalRequests = () => {
       try {
         wqRequests = await getRequestTimeForWQRequestIds(pendingRequestsIds);
       } catch (e) {
-        console.warn(e);
+        console.warn('Failed to fetch request time for requests ids', e);
       }
 
       let pendingAmountOfStETH = BigNumber.from(0);
