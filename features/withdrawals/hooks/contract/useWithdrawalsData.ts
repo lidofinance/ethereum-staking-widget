@@ -23,7 +23,14 @@ export type WithdrawalRequests = NonNullable<
   ReturnType<typeof useWithdrawalRequests>['data']
 >;
 
-const getRequestTimeForWQRequestIds = async (ids: string[]) => {
+const getRequestTimeForWQRequestIds = async (
+  ids: string[],
+): Promise<
+  {
+    id: string;
+    finalizationAt: string;
+  }[]
+> => {
   const idsPages = [];
   const pageSize = 20;
 
@@ -89,9 +96,13 @@ export const useWithdrawalRequests = () => {
         }
       });
 
-      const wqRequests = await getRequestTimeForWQRequestIds(
-        pendingRequestsIds,
-      );
+      let wqRequests: { finalizationAt: string; id: string }[] = [];
+
+      try {
+        wqRequests = await getRequestTimeForWQRequestIds(pendingRequestsIds);
+      } catch (e) {
+        console.warn(e);
+      }
 
       let pendingAmountOfStETH = BigNumber.from(0);
       let claimableAmountOfStETH = BigNumber.from(0);
@@ -114,7 +125,7 @@ export const useWithdrawalRequests = () => {
           const r = wqRequests.find((r) => r.id === id.toString());
           pendingRequests.push({
             ...req,
-            finalizationAt: r?.finalizationAt,
+            finalizationAt: r?.finalizationAt ?? null,
             expectedEth: req.amountOfStETH, // TODO: replace with calcExpectedRequestEth(req, currentShareRate),
           });
           pendingAmountOfStETH = pendingAmountOfStETH.add(
