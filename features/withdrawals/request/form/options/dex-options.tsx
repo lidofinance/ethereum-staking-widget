@@ -22,7 +22,7 @@ import {
   DexOptionLoader,
 } from './styles';
 
-const placeholder = Array.from<null>({ length: 2 }).fill(null);
+const placeholder = Array.from<null>({ length: 3 }).fill(null);
 
 const dexInfo: {
   [key: string]: {
