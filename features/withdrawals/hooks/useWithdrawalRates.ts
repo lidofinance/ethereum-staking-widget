@@ -6,9 +6,7 @@ import { Zero } from '@ethersproject/constants';
 import { CHAINS, TOKENS, getTokenAddress } from '@lido-sdk/constants';
 import { useLidoSWR } from '@lido-sdk/react';
 
-import { dynamics } from 'config';
 import { useDebouncedValue } from 'shared/hooks/useDebouncedValue';
-import { prependBasePath } from 'utils';
 import { standardFetcher } from 'utils/standardFetcher';
 import { STRATEGY_LAZY } from 'utils/swrStrategies';
 
@@ -46,41 +44,6 @@ const calculateRateReceive = (
   const toReceive = amount.mul(dest).div(src);
   const rate = _rate.toNumber() / RATE_PRECISION;
   return { rate, toReceive };
-};
-
-const getOneInchRate: GetRateType = async (amount, token) => {
-  let rateInfo: rateCalculationResult | null;
-
-  try {
-    if (amount.isZero() || amount.isNegative()) {
-      return {
-        name: '1inch',
-        rate: 0,
-        toReceive: BigNumber.from(0),
-      };
-    }
-
-    const apiOneInchRatePath = `api/oneinch-rate?token=${token}`;
-    const respData = await standardFetcher<{ rate: string }>(
-      dynamics.ipfsMode
-        ? `${dynamics.widgetApiBasePathForIpfs}/${apiOneInchRatePath}`
-        : prependBasePath(apiOneInchRatePath),
-    );
-    rateInfo = {
-      rate: Number(respData.rate),
-      toReceive: BigNumber.from(Number(respData.rate) * RATE_PRECISION)
-        .mul(amount)
-        .div(RATE_PRECISION_BN),
-    };
-  } catch {
-    rateInfo = null;
-  }
-
-  return {
-    name: '1inch',
-    rate: rateInfo?.rate ?? null,
-    toReceive: rateInfo?.toReceive ?? null,
-  };
 };
 
 type ParaSwapPriceResponsePartial = {
@@ -197,7 +160,6 @@ const getWithdrawalRates = async ({
   token,
 }: getWithdrawalRatesParams): Promise<getWithdrawalRatesResult> => {
   const rates = await Promise.all([
-    getOneInchRate(amount, token),
     getParaSwapRate(amount, token),
     getCowSwapRate(amount, token),
   ]);
