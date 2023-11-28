@@ -19,7 +19,7 @@ const RequestStatusBody = forwardRef<
   let statusText;
   const isMobile = useBreakpoint('md');
 
-  if (status === 'ready') {
+  if (status.toLocaleLowerCase() === 'ready') {
     statusText = 'Ready';
   } else if (finalizationAt) {
     statusText = formatTimestamp(finalizationAt, isMobile);
