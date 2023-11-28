@@ -4,7 +4,6 @@ import { Wallet, Stake, Wrap, Withdraw } from '@lidofinance/lido-ui';
 import {
   HOME_PATH,
   WRAP_PATH,
-  WITHDRAWALS_PATH,
   WITHDRAWALS_REQUEST_PATH,
   REWARDS_PATH,
 } from 'config/urls';
@@ -27,7 +26,7 @@ const routes = [
   },
   {
     name: 'Withdrawals',
-    path: WITHDRAWALS_PATH,
+    path: WITHDRAWALS_REQUEST_PATH,
     full_path: WITHDRAWALS_REQUEST_PATH,
     icon: <Withdraw data-testid="navWithdrawals" />,
   },
