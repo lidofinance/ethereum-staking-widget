@@ -16,6 +16,7 @@ import {
   DexOptionsContainer,
   DexOptionAmount,
   InlineLoaderSmall,
+  OneInchIcon,
   ParaSwapIcon,
   CowSwapIcon,
   DexOptionLoader,
@@ -31,6 +32,17 @@ const dexInfo: {
     link: (amount: BigNumber, token: TOKENS.STETH | TOKENS.WSTETH) => string;
   };
 } = {
+  '1inch': {
+    title: '1inch',
+    icon: <OneInchIcon />,
+    onClickGoTo: () => {
+      trackMatomoEvent(MATOMO_CLICK_EVENTS_TYPES.withdrawalGoTo1inch);
+    },
+    link: (amount, token) =>
+      `https://app.1inch.io/#/1/simple/swap/${
+        token == TOKENS.STETH ? 'stETH' : 'wstETH'
+      }/ETH?sourceTokenAmount=${formatEther(amount)}`,
+  },
   paraswap: {
     title: 'ParaSwap',
     icon: <ParaSwapIcon />,
