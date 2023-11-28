@@ -1,9 +1,7 @@
 import { ComponentProps, FC } from 'react';
 import styled, { css } from 'styled-components';
 import {
-  ArrowBack,
   Button as ButtonOriginal,
-  Link,
   Text as TextOriginal,
   themeDefault,
 } from '@lidofinance/lido-ui';
@@ -86,25 +84,4 @@ export const Button = styled(ButtonOriginal)`
   &:focus-visible {
     background-color: rgba(225, 225, 225);
   }
-`;
-
-export const InfoLink = styled(Link)`
-  display: flex;
-  align-items: center;
-  font-weight: 700;
-  width: fit-content;
-
-  &:hover svg {
-    transform: rotate(180deg) translateX(-2px);
-  }
-`;
-
-export const LinkArrow = styled(ArrowBack)`
-  display: block;
-  margin-left: 3px;
-  width: 16px;
-  height: 16px;
-  transform: rotate(180deg);
-  transition: transform ${({ theme }) => theme.ease.outCubic}
-    ${({ theme }) => theme.duration.med};
 `;
