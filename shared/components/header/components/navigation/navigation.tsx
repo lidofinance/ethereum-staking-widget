@@ -38,12 +38,14 @@ const routes = [
 ];
 export const Navigation: FC = memo(() => {
   const pathname = useRouterPath();
+  const pathnameWithoutQuery = pathname.split('?')[0];
 
   return (
     <Nav>
       {routes.map(({ name, path, icon }) => {
         const isActive =
-          pathname === path || (path.length > 1 && pathname.startsWith(path));
+          pathnameWithoutQuery === path ||
+          (path.length > 1 && pathnameWithoutQuery.startsWith(path));
 
         return (
           <LocalLink key={path} href={path}>
