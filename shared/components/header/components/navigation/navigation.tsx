@@ -4,7 +4,6 @@ import { Wallet, Stake, Wrap, Withdraw } from '@lidofinance/lido-ui';
 import {
   HOME_PATH,
   WRAP_PATH,
-  WITHDRAWALS_PATH,
   WITHDRAWALS_REQUEST_PATH,
   REWARDS_PATH,
 } from 'config/urls';
@@ -27,7 +26,7 @@ const routes = [
   },
   {
     name: 'Withdrawals',
-    path: WITHDRAWALS_PATH,
+    path: WITHDRAWALS_REQUEST_PATH,
     full_path: WITHDRAWALS_REQUEST_PATH,
     icon: <Withdraw data-testid="navWithdrawals" />,
   },
@@ -39,12 +38,14 @@ const routes = [
 ];
 export const Navigation: FC = memo(() => {
   const pathname = useRouterPath();
+  const pathnameWithoutQuery = pathname.split('?')[0];
 
   return (
     <Nav>
       {routes.map(({ name, path, icon }) => {
         const isActive =
-          pathname === path || (path.length > 1 && pathname.startsWith(path));
+          pathnameWithoutQuery === path ||
+          (path.length > 1 && pathnameWithoutQuery.startsWith(path));
 
         return (
           <LocalLink key={path} href={path}>

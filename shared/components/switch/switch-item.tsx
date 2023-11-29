@@ -2,15 +2,10 @@ import { useCompareWithRouterPath } from 'shared/hooks/use-compare-with-router-p
 
 import { SwitchItemStyled } from './styles';
 import { SwitchItemComponent } from './types';
-import { LocalLink } from '../local-link';
 
 export const SwitchItem: SwitchItemComponent = (props) => {
-  const { children, href, ...rest } = props;
-  const active = useCompareWithRouterPath(href);
+  const { href, ...rest } = props;
+  const active = useCompareWithRouterPath(href ?? '');
 
-  return (
-    <LocalLink href={href} style={{ zIndex: 2 }} {...rest}>
-      <SwitchItemStyled active={active}>{children}</SwitchItemStyled>
-    </LocalLink>
-  );
+  return <SwitchItemStyled href={href ?? ''} active={active} {...rest} />;
 };
