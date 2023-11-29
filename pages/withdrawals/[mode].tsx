@@ -24,8 +24,8 @@ const Withdrawals: FC<WithdrawalsModePageParams> = ({ mode }) => {
       <WithdrawalsProvider mode={mode}>
         <NoSSRWrapper>
           <WithdrawalsTabs key={key} />
+          <Faq />
         </NoSSRWrapper>
-        <Faq />
       </WithdrawalsProvider>
     </Layout>
   );
