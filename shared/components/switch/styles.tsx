@@ -50,6 +50,7 @@ export const SwitchItemStyled = styled(LocalLink)<{ active: boolean }>`
   color: var(--lido-color-text);
 
   &:hover {
+    color: var(--lido-color-text);
     opacity: 1;
   }
 
