@@ -19,7 +19,11 @@ export const useGetRpcUrlByChainId = () => {
     (chainId: CHAINS) => {
       // Needs this condition 'cause in 'providers/web3.tsx' we add `wagmiChains.polygonMumbai` to supportedChains
       // so, here chainId = 80001 is arriving which to raises an invariant
-      if (!clientConfig.supportedChainIds.includes(chainId)) {
+      // chainId = 1 we need anytime!
+      if (
+        chainId !== CHAINS.Mainnet &&
+        !clientConfig.supportedChainIds.includes(chainId)
+      ) {
         // Has no effect on functionality. Just a fix.
         // Return empty string as stub
         // (see: 'providers/web3.tsx' --> jsonRpcBatchProvider --> getStaticRpcBatchProvider)
