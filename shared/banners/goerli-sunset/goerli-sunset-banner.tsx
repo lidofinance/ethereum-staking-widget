@@ -1,7 +1,10 @@
 import { CHAINS } from '@lido-sdk/constants';
 import { useSDK } from '@lido-sdk/react';
-import { Text } from '@lidofinance/lido-ui';
+import { Text, Link } from '@lidofinance/lido-ui';
 import { SunsetMessageStyle } from './styles';
+
+const URL_INFORMATION = 'https://docs.lido.fi/deployed-contracts/goerli/';
+const URL_HOLESKY = 'https://docs.lido.fi/deployed-contracts/goerli/';
 
 export const GoerliSunsetBanner = () => {
   const { chainId } = useSDK();
@@ -15,8 +18,9 @@ export const GoerliSunsetBanner = () => {
         of Q4 2023.
       </Text>
       <Text weight={400} size="xxs">
-        Additional information can be found here, and you can locate the Testnet
-        staking widget on Holesky.
+        Additional information can be found{' '}
+        <Link href={URL_INFORMATION}>here</Link>, and you can locate the Testnet
+        staking widget on <Link href={URL_HOLESKY}>Holesky</Link>.
       </Text>
     </SunsetMessageStyle>
   );
