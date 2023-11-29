@@ -4,6 +4,7 @@ import { Layout } from 'shared/components';
 import { TopCard, RewardsList } from 'features/rewards/features';
 import RewardsHistoryProvider from 'providers/rewardsHistory';
 import { Fallback } from 'shared/wallet';
+import { GoerliSunsetBanner } from 'shared/banners/goerli-sunset';
 
 const Rewards: FC = () => {
   return (
@@ -22,6 +23,7 @@ const Rewards: FC = () => {
       </Head>
       <RewardsHistoryProvider>
         <Fallback />
+        <GoerliSunsetBanner />
         <TopCard />
         <RewardsList />
       </RewardsHistoryProvider>
