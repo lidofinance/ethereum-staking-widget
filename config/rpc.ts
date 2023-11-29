@@ -17,10 +17,23 @@ export const useGetRpcUrlByChainId = () => {
 
   return useCallback(
     (chainId: CHAINS) => {
+      // Needs this condition 'cause in 'providers/web3.tsx' we add `wagmiChains.polygonMumbai` to supportedChains
+      // so, here chainId = 80001 is arriving which to raises an invariant
+      // chainId = 1 we need anytime!
+      if (
+        chainId !== CHAINS.Mainnet &&
+        !clientConfig.supportedChainIds.includes(chainId)
+      ) {
+        // Has no effect on functionality. Just a fix.
+        // Return empty string as stub
+        // (see: 'providers/web3.tsx' --> jsonRpcBatchProvider --> getStaticRpcBatchProvider)
+        return '';
+      }
+
       if (dynamics.ipfsMode) {
         const rpc =
           clientConfig.savedClientConfig.rpcUrls[chainId] ||
-          clientConfig.prefillUnsafeElRpcUrls?.[0];
+          clientConfig.prefillUnsafeElRpcUrls[chainId]?.[0];
 
         invariant(rpc, '[useGetRpcUrlByChainId] RPC is required!');
         return rpc;
