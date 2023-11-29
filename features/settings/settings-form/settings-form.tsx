@@ -5,6 +5,7 @@ import { useSDK } from '@lido-sdk/react';
 import { Button, ToastSuccess, Block, Input } from '@lidofinance/lido-ui';
 
 import { useClientConfig } from 'providers/client-config';
+import { LinkArrow } from 'shared/components/link-arrow/link-arrow';
 import { RPCErrorType, checkRpcUrl } from 'utils/check-rpc-url';
 import { CHAINS } from 'utils/chains';
 
@@ -36,6 +37,7 @@ export const SettingsForm = () => {
     setValue,
     getValues,
     formState: { errors },
+    clearErrors,
   } = formMethods;
 
   const saveSettings = useCallback(
@@ -78,8 +80,9 @@ export const SettingsForm = () => {
   const handleReset = useCallback(() => {
     setValue('rpcUrl', '');
     saveSettings(getValues());
+    clearErrors();
     ToastSuccess('Settings have been reset');
-  }, [setValue, saveSettings, getValues]);
+  }, [clearErrors, setValue, saveSettings, getValues]);
 
   return (
     <SettingsFormWrap>
@@ -122,14 +125,13 @@ export const SettingsForm = () => {
             visiting the link below.
           </p>
           <p>
-            Ethereum nodes:{' '}
-            <a
+            <LinkArrow
               target="_blank"
               href="https://ethereumnodes.com/"
               rel="noreferrer"
             >
               ethereumnodes.com
-            </a>
+            </LinkArrow>
           </p>
           <p>
             The settings are being saved in your browser&apos;s

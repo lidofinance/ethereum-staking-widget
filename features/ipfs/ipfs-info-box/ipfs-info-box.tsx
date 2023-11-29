@@ -5,16 +5,10 @@ import { useRpcUrl } from 'config/rpc';
 import { SETTINGS_PATH } from 'config/urls';
 import { usePrefixedPush } from 'shared/hooks/use-prefixed-history';
 import { useRouterPath } from 'shared/hooks/use-router-path';
+import { LinkArrow } from 'shared/components/link-arrow/link-arrow';
 
 import { Check, Close } from '@lidofinance/lido-ui';
-import {
-  Wrap,
-  RpcStatusBox,
-  Button,
-  InfoLink,
-  LinkArrow,
-  Text,
-} from './styles';
+import { Wrap, RpcStatusBox, Button, Text } from './styles';
 
 import { checkRpcUrl } from 'utils/check-rpc-url';
 import { STORAGE_IPFS_INFO_DISMISS } from 'config/storage';
@@ -58,9 +52,7 @@ export const IPFSInfoBox = () => {
       <Text weight={700} size="xs" color="accentContrast">
         You are currently using the IPFS widget&apos;s version.
       </Text>
-      <InfoLink href={IPFS_INFO_URL}>
-        IPFS <LinkArrow />
-      </InfoLink>
+      <LinkArrow href={IPFS_INFO_URL}>IPFS</LinkArrow>
       {rpcCheckResult === true && (
         <>
           <RpcStatusBox status="success">
