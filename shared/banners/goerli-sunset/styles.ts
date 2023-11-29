@@ -4,14 +4,18 @@ import { WalletCardStyle } from 'shared/wallet/card/styles';
 export const SunsetMessageStyle = styled(WalletCardStyle)`
   text-align: center;
   background: radial-gradient(
-      50% 110% at 50% 100%,
-      #ff984e 0%,
-      rgba(255, 67, 157, 0) 100%
+      90% 110% at 50% 100%,
+      #5f2144 0%,
+      rgb(247 38 138 / 0%) 100%
     ),
-    linear-gradient(0deg, #8f1e7d, #8f1e7d);
+    linear-gradient(0deg, #e54f64, #f89371);
 
   > * {
     color: var(--lido-color-accentContrast);
+  }
+
+  a {
+    color: var(--lido-color-primary);
   }
 
   > p:not(:last-child) {
