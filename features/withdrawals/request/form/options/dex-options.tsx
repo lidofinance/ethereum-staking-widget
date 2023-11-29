@@ -127,7 +127,7 @@ export const DexOptions: React.FC<
         ? placeholder.map((_, i) => <DexOptionLoader key={i} />)
         : data?.map(({ name, toReceive, rate }) => {
             const dex = dexInfo[name];
-            if (!dex || !rate) return null;
+            if (!dex || (amount.gt('0') && !rate)) return null;
             return (
               <DexOption
                 title={dex.title}
