@@ -4,6 +4,9 @@ import generateBuildId from './scripts/generate-build-id.mjs';
 
 buildDynamics();
 
+const ipfsMode = process.env.IPFS_MODE;
+
+// https://nextjs.org/docs/pages/api-reference/next-config-js/basePath
 const basePath = process.env.BASE_PATH;
 
 const rpcUrls_1 = process.env.EL_RPC_URLS_1?.split(',') ?? [];
@@ -33,6 +36,8 @@ const rateLimitTimeFrame = process.env.RATE_LIMIT_TIME_FRAME || 60; // 1 minute;
 const rewardsBackendAPI = process.env.REWARDS_BACKEND;
 const defaultChain = process.env.DEFAULT_CHAIN;
 
+const developmentMode = process.env.NODE_ENV === 'development';
+
 // cache control
 export const CACHE_CONTROL_HEADER = 'x-cache-control';
 export const CACHE_CONTROL_PAGES = [
@@ -57,6 +62,16 @@ const withBundleAnalyzer = NextBundleAnalyzer({
 export default withBundleAnalyzer({
   basePath,
   generateBuildId,
+
+  // IPFS next.js configuration reference:
+  // https://github.com/Velenir/nextjs-ipfs-example
+  trailingSlash: true,
+  assetPrefix: ipfsMode ? './' : undefined,
+
+  // IPFS version has hash-based routing,
+  // so we provide only index.html in ipfs version
+  exportPathMap: ipfsMode ? () => ({ '/': { page: '/' } }) : undefined,
+
   eslint: {
     ignoreDuringBuilds: true,
   },
@@ -73,8 +88,8 @@ export default withBundleAnalyzer({
     esmExternals: true,
   },
   webpack(config) {
-    // Teach webpack to import svg and md files
     config.module.rules.push(
+      // Teach webpack to import svg and md files
       {
         test: /\.svg$/,
         use: ['@svgr/webpack', 'url-loader'],
@@ -83,6 +98,22 @@ export default withBundleAnalyzer({
         test: /\.md$/,
         use: 'raw-loader',
       },
+
+      // Needs for `Conditional Compilation`,
+      // because we have differences in source code of IPFS widget and NOT IPFS widget
+      {
+        test: /\.(t|j)sx?$/,
+        use: [
+          {
+            loader: 'webpack-preprocessor-loader',
+            options: {
+              params: {
+                IPFS_MODE: String(ipfsMode === 'true'),
+              },
+            },
+          },
+        ],
+      }
     );
 
     return config;
@@ -149,5 +180,6 @@ export default withBundleAnalyzer({
     ethAPIBasePath,
     rewardsBackendAPI,
     defaultChain,
+    developmentMode,
   },
 });

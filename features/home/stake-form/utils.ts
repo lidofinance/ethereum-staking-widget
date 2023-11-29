@@ -1,25 +1,26 @@
+import { BigNumber } from 'ethers';
+import { isAddress } from 'ethers/lib/utils';
+import invariant from 'tiny-invariant';
+
 import { AddressZero } from '@ethersproject/constants';
 import { parseEther } from '@ethersproject/units';
-import { isAddress } from 'ethers/lib/utils';
+import type { Web3Provider } from '@ethersproject/providers';
+import { StaticJsonRpcBatchProvider } from '@lidofinance/eth-providers';
 import { StethAbi } from '@lido-sdk/contracts';
-import { CHAINS } from '@lido-sdk/constants';
-import { getStaticRpcBatchProvider } from '@lido-sdk/providers';
+
+import { TX_STAGE } from 'shared/components';
 import {
   enableQaHelpers,
   ErrorMessage,
   getErrorMessage,
   runWithTransactionLogger,
 } from 'utils';
-import { getBackendRPCPath } from 'config';
-import { TX_STAGE } from 'shared/components';
-import { BigNumber } from 'ethers';
-import invariant from 'tiny-invariant';
 import { getFeeData } from 'utils/getFeeData';
-import type { Web3Provider } from '@ethersproject/providers';
 
 const SUBMIT_EXTRA_GAS_TRANSACTION_RATIO = 1.05;
 
 type StakeProcessingProps = (
+  staticRpcProvider: StaticJsonRpcBatchProvider,
   providerWeb3: Web3Provider | undefined,
   stethContractWeb3: StethAbi | null,
   openTxModal: () => void,
@@ -36,16 +37,12 @@ type StakeProcessingProps = (
 
 export const getAddress = async (
   input: string | undefined,
-  chainId: CHAINS | undefined,
+  provider: StaticJsonRpcBatchProvider,
 ): Promise<string> => {
-  if (!input || !chainId) return '';
+  if (!input) return '';
   if (isAddress(input)) return input;
 
   try {
-    const provider = getStaticRpcBatchProvider(
-      chainId,
-      getBackendRPCPath(chainId),
-    );
     const address = await provider.resolveName(input);
 
     if (address) return address;
@@ -65,6 +62,7 @@ class MockLimitReachedError extends Error {
 }
 
 export const stakeProcessing: StakeProcessingProps = async (
+  staticRpcProvider,
   providerWeb3,
   stethContractWeb3,
   openTxModal,
@@ -83,7 +81,7 @@ export const stakeProcessing: StakeProcessingProps = async (
     invariant(chainId);
     invariant(providerWeb3);
 
-    const referralAddress = await getAddress(refFromQuery, chainId);
+    const referralAddress = await getAddress(refFromQuery, staticRpcProvider);
     const callback = async () => {
       if (isMultisig) {
         const tx = await stethContractWeb3.populateTransaction.submit(
@@ -94,7 +92,7 @@ export const stakeProcessing: StakeProcessingProps = async (
         );
         return providerWeb3.getSigner().sendUncheckedTransaction(tx);
       } else {
-        const feeData = await getFeeData(chainId);
+        const feeData = await getFeeData(staticRpcProvider);
         const maxPriorityFeePerGas = feeData.maxPriorityFeePerGas ?? undefined;
         const maxFeePerGas = feeData.maxFeePerGas ?? undefined;
         const overrides = {

@@ -1,10 +1,8 @@
-import { getStaticRpcBatchProvider } from '@lido-sdk/providers';
+import { StaticJsonRpcBatchProvider } from '@lidofinance/eth-providers';
 
-import { dynamics, getBackendRPCPath } from 'config';
-
-const rpc = getBackendRPCPath(dynamics.defaultChain);
-
-export const resolveEns = async (name: string | Promise<string>) => {
-  const provider = getStaticRpcBatchProvider(dynamics.defaultChain, rpc);
+export const resolveEns = async (
+  name: string | Promise<string>,
+  provider: StaticJsonRpcBatchProvider,
+) => {
   return await provider.resolveName(name);
 };

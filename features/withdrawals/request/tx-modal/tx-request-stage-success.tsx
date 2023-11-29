@@ -1,14 +1,15 @@
 import { useSDK } from '@lido-sdk/react';
-import { useNftDataByTxHash } from 'features/withdrawals/hooks/useNftDataByTxHash';
-
 import { Link, Loader } from '@lidofinance/lido-ui';
-import { TxStageSuccess } from 'features/withdrawals/shared/tx-stage-modal';
-import { TxLinkEtherscan } from 'shared/components/tx-link-etherscan';
 
 import {
   trackMatomoEvent,
   MATOMO_CLICK_EVENTS_TYPES,
 } from 'config/trackMatomoEvent';
+import { WITHDRAWALS_CLAIM_PATH } from 'config/urls';
+import { useNftDataByTxHash } from 'features/withdrawals/hooks/useNftDataByTxHash';
+import { TxStageSuccess } from 'features/withdrawals/shared/tx-stage-modal';
+import { TxLinkEtherscan } from 'shared/components/tx-link-etherscan';
+
 import {
   Title,
   NFTBanner,
@@ -17,7 +18,6 @@ import {
   NFTImageExample,
   AddNftWrapper,
 } from './styles';
-import { WITHDRAWAL_CLAIM_PATH } from 'features/withdrawals/withdrawals-constants';
 
 const LINK_ADD_NFT_GUIDE =
   'https://help.lido.fi/en/articles/7858367-how-do-i-add-the-lido-nft-to-metamask';
@@ -44,7 +44,7 @@ export const TxRequestStageSuccess = ({
     <span>
       Withdrawal request for {amountAsString} {tokenName} has been sent.
       <br />
-      Check <Link href={WITHDRAWAL_CLAIM_PATH}>Claim tab</Link> to view your
+      Check <Link href={WITHDRAWALS_CLAIM_PATH}>Claim tab</Link> to view your
       withdrawal requests or view your transaction on{' '}
       <TxLinkEtherscan
         txHash={txHash ?? undefined}
