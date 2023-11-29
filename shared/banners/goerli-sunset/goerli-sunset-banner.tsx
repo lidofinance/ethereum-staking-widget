@@ -4,7 +4,8 @@ import { Text, Link } from '@lidofinance/lido-ui';
 import { SunsetMessageStyle } from './styles';
 
 const URL_INFORMATION = 'https://docs.lido.fi/deployed-contracts/goerli/';
-const URL_HOLESKY = 'https://docs.lido.fi/deployed-contracts/goerli/';
+const URL_HOLESKY =
+  'https://docs.lido.fi/deployed-contracts/holesky/#hole%C5%A1ky-testnet';
 
 export const GoerliSunsetBanner = () => {
   const { chainId } = useSDK();
