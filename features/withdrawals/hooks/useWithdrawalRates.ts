@@ -60,7 +60,7 @@ const getOneInchRate: GetRateType = async (amount, token) => {
       };
     }
 
-    const apiOneInchRatePath = `api/oneinch-rate?token=${token}`;
+    const apiOneInchRatePath = `api/oneinch-rate/?token=${token}`;
     const respData = await standardFetcher<{ rate: string }>(
       dynamics.ipfsMode
         ? `${dynamics.widgetApiBasePathForIpfs}/${apiOneInchRatePath}`
