@@ -1,7 +1,7 @@
 import { isAddress } from 'ethers/lib/utils';
 import type { BaseProvider } from '@ethersproject/providers';
 import { BigNumber } from 'ethers';
-import { SUBMIT_EXTRA_GAS_TRANSACTION_RATIO, PRECISION } from './stake-config';
+import { SUBMIT_EXTRA_GAS_TRANSACTION_RATIO, PRECISION } from 'config';
 
 export const applyGasLimitRatio = (gasLimit: BigNumber): BigNumber =>
   gasLimit.mul(SUBMIT_EXTRA_GAS_TRANSACTION_RATIO * PRECISION).div(PRECISION);

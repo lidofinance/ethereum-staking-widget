@@ -15,7 +15,7 @@ const WrapPage: FC<WrapModePageProps> = ({ mode }) => {
       <Head>
         <title>Wrap | Lido</title>
       </Head>
-      <WrapUnwrapTabs mode={mode} key={key}></WrapUnwrapTabs>
+      <WrapUnwrapTabs mode={mode} key={key} />
     </Layout>
   );
 };

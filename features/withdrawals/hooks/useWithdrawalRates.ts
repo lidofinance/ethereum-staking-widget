@@ -1,15 +1,18 @@
+import { useMemo } from 'react';
+import { useWatch } from 'react-hook-form';
+import { BigNumber } from 'ethers';
+
+import { Zero } from '@ethersproject/constants';
+import { CHAINS, TOKENS, getTokenAddress } from '@lido-sdk/constants';
 import { useLidoSWR } from '@lido-sdk/react';
 
+import { dynamics } from 'config';
 import { useDebouncedValue } from 'shared/hooks/useDebouncedValue';
-
-import { BigNumber } from 'ethers';
-import { CHAINS, TOKENS, getTokenAddress } from '@lido-sdk/constants';
-import { useMemo } from 'react';
+import { prependBasePath } from 'utils';
 import { standardFetcher } from 'utils/standardFetcher';
 import { STRATEGY_LAZY } from 'utils/swrStrategies';
-import { useWatch } from 'react-hook-form';
+
 import { RequestFormInputType } from '../request/request-form-context';
-import { Zero } from '@ethersproject/constants';
 
 type getWithdrawalRatesParams = {
   amount: BigNumber;
@@ -22,7 +25,7 @@ type RateResult = {
   toReceive: BigNumber | null;
 };
 
-type getRate = (
+type GetRateType = (
   amount: BigNumber,
   token: TOKENS.STETH | TOKENS.WSTETH,
 ) => Promise<RateResult>;
@@ -45,12 +48,9 @@ const calculateRateReceive = (
   return { rate, toReceive };
 };
 
-type OneInchQuotePartial = {
-  toAmount: string;
-};
-
-const getOneInchRate: getRate = async (amount, token) => {
+const getOneInchRate: GetRateType = async (amount, token) => {
   let rateInfo: rateCalculationResult | null;
+
   try {
     if (amount.isZero() || amount.isNegative()) {
       return {
@@ -59,24 +59,23 @@ const getOneInchRate: getRate = async (amount, token) => {
         toReceive: BigNumber.from(0),
       };
     }
-    const capped_amount = amount;
-    const api = `https://api-lido.1inch.io/v5.2/1/quote`;
-    const query = new URLSearchParams({
-      src: getTokenAddress(CHAINS.Mainnet, token),
-      dst: '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee',
-      amount: amount.toString(),
-    });
-    const url = `${api}?${query.toString()}`;
-    const data: OneInchQuotePartial =
-      await standardFetcher<OneInchQuotePartial>(url);
-    rateInfo = calculateRateReceive(
-      amount,
-      capped_amount,
-      BigNumber.from(data.toAmount),
+
+    const apiOneInchRatePath = `api/oneinch-rate?token=${token}`;
+    const respData = await standardFetcher<{ rate: string }>(
+      dynamics.ipfsMode
+        ? `${dynamics.widgetApiBasePathForIpfs}/${apiOneInchRatePath}`
+        : prependBasePath(apiOneInchRatePath),
     );
+    rateInfo = {
+      rate: Number(respData.rate),
+      toReceive: BigNumber.from(Number(respData.rate) * RATE_PRECISION)
+        .mul(amount)
+        .div(RATE_PRECISION_BN),
+    };
   } catch {
     rateInfo = null;
   }
+
   return {
     name: '1inch',
     rate: rateInfo?.rate ?? null,
@@ -91,8 +90,9 @@ type ParaSwapPriceResponsePartial = {
   };
 };
 
-const getParaSwapRate: getRate = async (amount, token) => {
+const getParaSwapRate: GetRateType = async (amount, token) => {
   let rateInfo: rateCalculationResult | null;
+
   try {
     if (amount.isZero() || amount.isNegative()) {
       return {
@@ -128,6 +128,7 @@ const getParaSwapRate: getRate = async (amount, token) => {
   } catch {
     rateInfo = null;
   }
+
   return {
     name: 'paraswap',
     rate: rateInfo?.rate ?? null,
@@ -142,8 +143,9 @@ type CowSwapQuoteResponsePartial = {
   };
 };
 
-const getCowSwapRate: getRate = async (amount, token) => {
+const getCowSwapRate: GetRateType = async (amount, token) => {
   let rateInfo: rateCalculationResult | null;
+
   try {
     if (amount.isZero() || amount.isNegative()) {
       return {
@@ -182,6 +184,7 @@ const getCowSwapRate: getRate = async (amount, token) => {
   } catch {
     rateInfo = null;
   }
+
   return {
     name: 'cowswap',
     rate: rateInfo?.rate ?? null,

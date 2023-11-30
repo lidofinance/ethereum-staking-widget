@@ -1,5 +1,7 @@
 import styled from 'styled-components';
 
+import { LocalLink } from 'shared/components/local-link';
+
 export const SwitchWrapper = styled.div`
   width: 268px;
   height: 44px;
@@ -28,7 +30,10 @@ export const Handle = styled.div<{ $checked: boolean }>`
   z-index: 1;
 `;
 
-export const SwitchItemStyled = styled.a<{ active: boolean }>`
+// Not wrapping <a> inside <a> in IPFS mode
+// Also avoid problems with migrate to Next v13
+// see: https://nextjs.org/docs/app/building-your-application/upgrading/app-router-migration#link-component
+export const SwitchItemStyled = styled(LocalLink)<{ active: boolean }>`
   z-index: 2;
   margin: 0;
   opacity: ${({ active }) => (active ? 1 : 0.5)};
@@ -42,14 +47,14 @@ export const SwitchItemStyled = styled.a<{ active: boolean }>`
   justify-content: center;
   height: 100%;
 
-  &,
-  &:visited {
-    text-decoration: none;
-    color: var(--lido-color-text);
+  color: var(--lido-color-text);
 
-    &:hover {
-      color: var(--lido-color-text);
-      opacity: 1;
-    }
+  &:hover {
+    color: var(--lido-color-text);
+    opacity: 1;
+  }
+
+  &:visited {
+    color: var(--lido-color-text);
   }
 `;

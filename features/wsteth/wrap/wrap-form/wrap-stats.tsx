@@ -1,15 +1,15 @@
 import { useMemo } from 'react';
 import { parseEther } from '@ethersproject/units';
-
+import { DataTable, DataTableRow } from '@lidofinance/lido-ui';
 import { useFormContext } from 'react-hook-form';
+
+import { FormatPrice, FormatToken } from 'shared/formatters';
 import { useTxCostInUsd, useWstethBySteth } from 'shared/hooks';
+
+import { TOKENS_TO_WRAP } from 'features/wsteth/shared/types';
+
 import { useApproveGasLimit } from '../hooks/use-approve-gas-limit';
 import { useWrapFormData, WrapFormInputType } from '../wrap-form-context';
-
-import { DataTableRow } from '@lidofinance/lido-ui';
-import { StatsDataTable } from 'features/wsteth/shared/styles';
-import { FormatPrice, FormatToken } from 'shared/formatters';
-import { TOKENS_TO_WRAP } from 'features/wsteth/shared/types';
 
 export const WrapFormStats = () => {
   const { allowance, wrapGasLimit, willReceiveWsteth, isApprovalLoading } =
@@ -28,7 +28,7 @@ export const WrapFormStats = () => {
   const wrapTxCostInUsd = useTxCostInUsd(wrapGasLimit && Number(wrapGasLimit));
 
   return (
-    <StatsDataTable>
+    <DataTable>
       <DataTableRow
         title="Max unlock cost"
         data-testid="maxUnlockFee"
@@ -65,6 +65,6 @@ export const WrapFormStats = () => {
           symbol="wstETH"
         />
       </DataTableRow>
-    </StatsDataTable>
+    </DataTable>
   );
 };

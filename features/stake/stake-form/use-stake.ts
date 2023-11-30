@@ -12,6 +12,7 @@ import { MockLimitReachedError, getAddress } from './utils';
 import { AddressZero } from '@ethersproject/constants';
 import { getFeeData } from 'utils/getFeeData';
 import { applyGasLimitRatio } from './utils';
+import { useCurrentStaticRpcProvider } from 'shared/hooks/use-current-static-rpc-provider';
 
 type StakeArguments = {
   amount: BigNumber | null;
@@ -25,6 +26,7 @@ type StakeOptions = {
 export const useStake = ({ onConfirm }: StakeOptions) => {
   const stethContractWeb3 = useSTETHContractWeb3();
   const { account, chainId } = useWeb3();
+  const { staticRpcProvider } = useCurrentStaticRpcProvider();
   const { providerWeb3, providerRpc } = useSDK();
   const { dispatchModalState } = useTransactionModal();
   return useCallback(
@@ -70,9 +72,8 @@ export const useStake = ({ onConfirm }: StakeOptions) => {
             );
             return providerWeb3.getSigner().sendUncheckedTransaction(tx);
           } else {
-            const { maxFeePerGas, maxPriorityFeePerGas } = await getFeeData(
-              chainId,
-            );
+            const { maxFeePerGas, maxPriorityFeePerGas } =
+              await getFeeData(staticRpcProvider);
             const overrides = {
               value: amount,
               maxPriorityFeePerGas,
@@ -132,6 +133,7 @@ export const useStake = ({ onConfirm }: StakeOptions) => {
       providerRpc,
       providerWeb3,
       stethContractWeb3,
+      staticRpcProvider,
     ],
   );
 };

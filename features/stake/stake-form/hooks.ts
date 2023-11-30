@@ -1,7 +1,10 @@
 import { AddressZero } from '@ethersproject/constants';
 import { useLidoSWR, useSDK, useSTETHContractRPC } from '@lido-sdk/react';
-import { ESTIMATE_ACCOUNT, ESTIMATE_AMOUNT } from 'config';
-import { STAKE_GASLIMIT_FALLBACK } from './stake-config';
+import {
+  ESTIMATE_ACCOUNT,
+  ESTIMATE_AMOUNT,
+  STAKE_GASLIMIT_FALLBACK,
+} from 'config';
 import { BigNumber } from 'ethers';
 import { STRATEGY_CONSTANT } from 'utils/swrStrategies';
 import { useStakingLimitLevel } from 'shared/hooks/useStakingLimitLevel';

@@ -1,6 +1,5 @@
 import { FC, memo } from 'react';
 import { Block } from '@lidofinance/lido-ui';
-import { L2Swap } from 'shared/banners';
 
 import { StakeFormProvider } from './stake-form-context';
 import { TransactionModalProvider } from 'shared/transaction-modal';
@@ -21,7 +20,6 @@ export const StakeForm: FC = memo(() => {
           <FormControllerStyled>
             <StakeAmountInput />
             <StakeSubmitButton />
-            <L2Swap />
           </FormControllerStyled>
           <StakeFormInfo />
           <StakeFormModal />

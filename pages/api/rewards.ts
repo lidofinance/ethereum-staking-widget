@@ -8,6 +8,9 @@ import {
   responseTimeMetric,
   rateLimit,
   responseTimeExternalMetricWrapper,
+  httpMethodGuard,
+  HttpMethod,
+  cors,
 } from 'utilsApi';
 import Metrics from 'utilsApi/metrics';
 import { CACHE_REWARDS_HEADERS, API_ROUTES } from 'config';
@@ -54,6 +57,8 @@ const rewards: API = async (req, res) => {
 };
 
 export default wrapNextRequest([
+  httpMethodGuard([HttpMethod.GET]),
+  cors({ origin: ['*'], methods: [HttpMethod.GET] }),
   rateLimit,
   responseTimeMetric(Metrics.request.apiTimings, API_ROUTES.REWARDS),
   cacheControl({ headers: CACHE_REWARDS_HEADERS }),
