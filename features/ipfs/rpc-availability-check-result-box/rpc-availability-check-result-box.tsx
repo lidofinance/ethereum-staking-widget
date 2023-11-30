@@ -1,51 +1,24 @@
 import { useCallback } from 'react';
-import { useLidoSWR, useLocalStorage, useSDK } from '@lido-sdk/react';
+import { Check, Close } from '@lidofinance/lido-ui';
 
-import { useRpcUrl } from 'config/rpc';
 import { SETTINGS_PATH } from 'config/urls';
+import { useIPFSInfoBoxStatuses } from 'providers/ipfs-info-box-statuses';
 import { usePrefixedPush } from 'shared/hooks/use-prefixed-history';
-import { useRouterPath } from 'shared/hooks/use-router-path';
 import { LinkArrow } from 'shared/components/link-arrow/link-arrow';
 
-import { Check, Close } from '@lidofinance/lido-ui';
 import { Wrap, RpcStatusBox, Button, Text } from './styles';
-
-import { checkRpcUrl } from 'utils/check-rpc-url';
-import { STORAGE_IPFS_INFO_DISMISS } from 'config/storage';
 
 const IPFS_INFO_URL = 'https://docs.ipfs.tech/concepts/what-is-ipfs/';
 
 export const RPCAvailabilityCheckResultBox = () => {
-  const { chainId } = useSDK();
+  const { isRPCAvailable, handleClickDismiss } = useIPFSInfoBoxStatuses();
+
   const push = usePrefixedPush();
-  const [isDismissed, setDismissStorage] = useLocalStorage(
-    STORAGE_IPFS_INFO_DISMISS,
-    false,
-  );
-
-  const rpcUrl = useRpcUrl();
-  const { data: rpcCheckResult, initialLoading: isLoading } = useLidoSWR(
-    `rpc-url-check-${rpcUrl}-${chainId}`,
-    async () => {
-      return await checkRpcUrl(rpcUrl, chainId);
-    },
-  );
-
-  const handleClickDismiss = useCallback(() => {
-    setDismissStorage(true);
-  }, [setDismissStorage]);
 
   const handleClickSettings = useCallback(() => {
     void push(SETTINGS_PATH);
-    setDismissStorage(true);
-  }, [push, setDismissStorage]);
-
-  const pathname = useRouterPath();
-  const isSettingsPage = pathname === SETTINGS_PATH;
-
-  if ((isDismissed && rpcCheckResult === true) || isLoading || isSettingsPage) {
-    return null;
-  }
+    handleClickDismiss();
+  }, [push, handleClickDismiss]);
 
   return (
     <Wrap>
@@ -53,7 +26,7 @@ export const RPCAvailabilityCheckResultBox = () => {
         You are currently using the IPFS widget&apos;s version.
       </Text>
       <LinkArrow href={IPFS_INFO_URL}>IPFS</LinkArrow>
-      {rpcCheckResult === true && (
+      {isRPCAvailable && (
         <>
           <RpcStatusBox status="success">
             <Text
@@ -75,7 +48,7 @@ export const RPCAvailabilityCheckResultBox = () => {
           </Button>
         </>
       )}
-      {rpcCheckResult !== true && (
+      {!isRPCAvailable && (
         <>
           <RpcStatusBox status="error">
             <Text
