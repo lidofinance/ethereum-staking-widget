@@ -55,16 +55,17 @@ describe('validateSplitRequests', () => {
   });
 
   it('should split into 2 requests', () => {
+    const amount = maxAmountPerRequest.add(minAmountPerRequest.mul(5));
     const requests = validateSplitRequests(
       field,
-      bn(150),
+      amount,
       maxAmountPerRequest,
       minAmountPerRequest,
       maxRequestCount,
     );
     expect(requests).toHaveLength(2);
     expect(requests[0].eq(maxAmountPerRequest)).toBe(true);
-    expect(requests[1].eq(bn(150).sub(maxAmountPerRequest))).toBe(true);
+    expect(requests[1].eq(amount.sub(maxAmountPerRequest))).toBe(true);
   });
 
   it('should split into 2(max+min) requests', () => {
