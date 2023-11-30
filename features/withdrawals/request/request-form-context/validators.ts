@@ -177,6 +177,13 @@ export const RequestFormValidationResolver: Resolver<
       return { values, errors: {} };
     }
 
+    validateBignumberMin(
+      'amount',
+      amount,
+      minAmountPerRequest,
+      messageMinUnstake(minAmountPerRequest, token),
+    );
+
     const requests = validateSplitRequests(
       'amount',
       amount,
@@ -185,13 +192,6 @@ export const RequestFormValidationResolver: Resolver<
       maxRequestCount,
     );
     validationResults.requests = requests;
-
-    validateBignumberMin(
-      'amount',
-      amount,
-      minAmountPerRequest,
-      messageMinUnstake(minAmountPerRequest, token),
-    );
 
     validateBignumberMax(
       'amount',
