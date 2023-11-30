@@ -5,13 +5,14 @@ import { useStakingLimitWarn } from '../hooks';
 
 export const StakeAmountInput = () => {
   const { maxAmount } = useStakeFormData();
-  const { limitWarning } = useStakingLimitWarn();
+  const { limitWarning, limitError } = useStakingLimitWarn();
   return (
     <TokenAmountInputHookForm
       fieldName="amount"
       token={'ETH'}
       leftDecorator={<Eth />}
       maxValue={maxAmount}
+      error={limitError}
       warning={limitWarning}
     />
   );

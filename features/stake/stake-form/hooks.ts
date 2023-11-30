@@ -41,7 +41,7 @@ export const useStakingLimitWarn = () => {
       : '';
 
   const limitError =
-    limitLevel === LIMIT_LEVEL.WARN
+    limitLevel === LIMIT_LEVEL.REACHED
       ? 'Stake limit is exhausted. Please wait until the limit is restored.'
       : '';
 
