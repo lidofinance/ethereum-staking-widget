@@ -60,14 +60,15 @@ const messageMaxAmount = (max: BigNumber, token: TokensWithdrawable) =>
 const validateSplitRequests = (
   field: string,
   amount: BigNumber,
-  amountPerRequest: BigNumber,
+  maxAmountPerRequest: BigNumber,
+  minAmountPerRequest: BigNumber,
   maxRequestCount: number,
 ): BigNumber[] => {
-  const maxAmount = amountPerRequest.mul(maxRequestCount);
+  const maxAmount = maxAmountPerRequest.mul(maxRequestCount);
 
-  const lastRequestAmountEther = amount.mod(amountPerRequest);
+  const lastRequestAmountEther = amount.mod(maxAmountPerRequest);
   const restCount = lastRequestAmountEther.gt(0) ? 1 : 0;
-  const requestCount = amount.div(amountPerRequest).toNumber() + restCount;
+  const requestCount = amount.div(maxAmountPerRequest).toNumber() + restCount;
 
   const isMoreThanMax = amount.gt(maxAmount);
   if (isMoreThanMax) {
@@ -78,8 +79,19 @@ const validateSplitRequests = (
     );
   }
 
+  if (restCount && lastRequestAmountEther.lt(minAmountPerRequest)) {
+    const difference = minAmountPerRequest.sub(lastRequestAmountEther);
+    throw new ValidationSplitRequest(
+      field,
+      `Cannot split into valid requests as last request would be less than minimal withdrawal amount. Add ${formatEther(
+        difference,
+      )} to withdrawal amount.`,
+      { requestCount },
+    );
+  }
+
   const requests = Array.from<BigNumber>({ length: requestCount }).fill(
-    amountPerRequest,
+    maxAmountPerRequest,
   );
   if (restCount) {
     requests[requestCount - 1] = lastRequestAmountEther;
@@ -169,6 +181,7 @@ export const RequestFormValidationResolver: Resolver<
       'amount',
       amount,
       maxAmountPerRequest,
+      minAmountPerRequest,
       maxRequestCount,
     );
     validationResults.requests = requests;
