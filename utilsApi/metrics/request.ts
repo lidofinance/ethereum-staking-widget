@@ -5,11 +5,13 @@ export class RequestMetrics {
   apiTimings: Histogram<'hostname' | 'route' | 'entity' | 'status'>;
   apiTimingsExternal: Histogram<'hostname' | 'route' | 'entity' | 'status'>;
   requestCounter: Counter<'route'>;
+  ethCallToAddress: Counter<'address' | 'referrer'>;
 
   constructor(public registry: Registry) {
     this.apiTimings = this.apiTimingsInit('internal');
     this.apiTimingsExternal = this.apiTimingsInit('external');
     this.requestCounter = this.requestsCounterInit();
+    this.ethCallToAddress = this.ethCallToAddressInit();
   }
 
   apiTimingsInit(postfix: string) {
@@ -33,6 +35,15 @@ export class RequestMetrics {
       name: requestsCounterName,
       help: 'Total number of requests for each valid route',
       labelNames: ['route', 'entity'],
+      registers: [this.registry],
+    });
+  }
+
+  ethCallToAddressInit() {
+    return new Counter({
+      name: METRICS_PREFIX + METRIC_NAMES.ETH_CALL_ADDRESS_TO,
+      help: 'Addresses presented as "to" in eth_call requests',
+      labelNames: ['address', 'referrer'],
       registers: [this.registry],
     });
   }
