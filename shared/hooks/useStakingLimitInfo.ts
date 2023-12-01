@@ -6,6 +6,7 @@ import { enableQaHelpers } from 'utils';
 import useSwr from 'swr';
 import { BigNumber } from 'ethers';
 import { STRATEGY_LAZY } from 'utils/swrStrategies';
+import { LIMIT_LEVEL } from 'types';
 
 export type StakeLimitFullInfo = {
   isStakingPaused: boolean;
@@ -15,6 +16,7 @@ export type StakeLimitFullInfo = {
   maxStakeLimitGrowthBlocks: BigNumber;
   prevStakeLimit: BigNumber;
   prevStakeBlockNumber: BigNumber;
+  stakeLimitLevel: LIMIT_LEVEL;
 };
 
 const stakeLimitFullInfoTemplate: StakeLimitFullInfo = {
@@ -25,6 +27,19 @@ const stakeLimitFullInfoTemplate: StakeLimitFullInfo = {
   maxStakeLimitGrowthBlocks: BigNumber.from(6400),
   prevStakeLimit: parseEther('149000'),
   prevStakeBlockNumber: BigNumber.from(15145339),
+  stakeLimitLevel: LIMIT_LEVEL.REACHED,
+};
+
+// almost reached whenever current limit is ≤25% of max limit, i.e. 4 times lower
+const WARN_THRESHOLD_RATIO = BigNumber.from(4);
+
+const getLimitLevel = (maxLimit: BigNumber, currentLimit: BigNumber) => {
+  if (currentLimit.eq(0)) return LIMIT_LEVEL.REACHED;
+
+  if (maxLimit.div(currentLimit).gte(WARN_THRESHOLD_RATIO))
+    return LIMIT_LEVEL.WARN;
+
+  return LIMIT_LEVEL.SAFE;
 };
 
 export const useStakingLimitInfo = () => {
@@ -51,6 +66,10 @@ export const useStakingLimitInfo = () => {
             ...mockData,
             currentStakeLimit: parseEther(mockData.currentStakeLimit),
             maxStakeLimit: parseEther(mockData.maxStakeLimit),
+            stakeLimitLevel: getLimitLevel(
+              parseEther(mockData.maxStakeLimit),
+              parseEther(mockData.currentStakeLimit),
+            ),
           };
         } catch (e) {
           console.warn('Failed to load mock data');
@@ -63,6 +82,10 @@ export const useStakingLimitInfo = () => {
       // destructuring to make hybrid array into an object,
       return {
         ...stakeLimitFullInfo,
+        stakeLimitLevel: getLimitLevel(
+          stakeLimitFullInfo.maxStakeLimit,
+          stakeLimitFullInfo.currentStakeLimit,
+        ),
       };
     },
     {

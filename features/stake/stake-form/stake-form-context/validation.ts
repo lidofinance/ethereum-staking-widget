@@ -18,6 +18,7 @@ import type {
   StakeFormNetworkData,
   StakeFormValidationContext,
 } from './types';
+import { validateStakeLimit } from 'shared/hook-form/validation/validate-stake-limit';
 
 export const stakeFormValidationResolver: Resolver<
   StakeFormInput,
@@ -32,10 +33,12 @@ export const stakeFormValidationResolver: Resolver<
 
     validateEtherAmount('amount', amount, 'ETH');
 
-    const { maxAmount, active } = await awaitWithTimeout(
+    const { maxAmount, active, stakingLimitLevel } = await awaitWithTimeout(
       validationContextPromise,
       VALIDATION_CONTEXT_TIMEOUT,
     );
+
+    validateStakeLimit('amount', stakingLimitLevel);
 
     if (active) {
       validateBignumberMax(
@@ -53,7 +56,7 @@ export const stakeFormValidationResolver: Resolver<
       errors: {},
     };
   } catch (error) {
-    return handleResolverValidationError(error, 'WrapForm', 'amount');
+    return handleResolverValidationError(error, 'StakeForm', 'amount');
   }
 };
 
@@ -61,17 +64,17 @@ export const useStakeFormValidationContext = (
   networkData: StakeFormNetworkData,
 ): Promise<StakeFormValidationContext> => {
   const { active } = useWeb3();
-  const { maxAmount } = networkData;
-
+  const { maxAmount, stakingLimitInfo } = networkData;
   const validationContextAwaited = useMemo(() => {
-    if (active && maxAmount) {
+    if (active && maxAmount && stakingLimitInfo) {
       return {
         active,
         maxAmount,
+        stakingLimitLevel: stakingLimitInfo.stakeLimitLevel,
       };
     }
     return undefined;
-  }, [active, maxAmount]);
+  }, [active, maxAmount, stakingLimitInfo]);
 
   return useAwaiter(validationContextAwaited).awaiter;
 };

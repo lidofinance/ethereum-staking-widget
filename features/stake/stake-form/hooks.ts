@@ -7,7 +7,6 @@ import {
 } from 'config';
 import { BigNumber } from 'ethers';
 import { STRATEGY_CONSTANT } from 'utils/swrStrategies';
-import { useStakingLimitLevel } from 'shared/hooks/useStakingLimitLevel';
 import { LIMIT_LEVEL } from 'types';
 import { applyGasLimitRatio } from './utils';
 
@@ -32,22 +31,13 @@ export const useStethSubmitGasLimit: UseStethSubmitGasLimit = () => {
   return data ?? STAKE_GASLIMIT_FALLBACK;
 };
 
-export const useStakingLimitWarn = () => {
-  const limitLevel = useStakingLimitLevel();
-
+export const useStakingLimitWarn = (stakingLimitLevel?: LIMIT_LEVEL) => {
   const limitWarning =
-    limitLevel === LIMIT_LEVEL.WARN
+    stakingLimitLevel === LIMIT_LEVEL.WARN
       ? 'Stake limit is almost exhausted. Your transaction may not go through.'
-      : '';
-
-  const limitError =
-    limitLevel === LIMIT_LEVEL.REACHED
-      ? 'Stake limit is exhausted. Please wait until the limit is restored.'
-      : '';
+      : null;
 
   return {
-    limitError,
     limitWarning,
-    limitReached: limitLevel === LIMIT_LEVEL.REACHED,
   };
 };

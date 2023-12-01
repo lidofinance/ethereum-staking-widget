@@ -2,18 +2,21 @@ import { Eth } from '@lidofinance/lido-ui';
 import { TokenAmountInputHookForm } from 'shared/hook-form/controls/token-amount-input-hook-form';
 import { useStakeFormData } from '../stake-form-context';
 import { useStakingLimitWarn } from '../hooks';
+import { useWeb3 } from 'reef-knot/web3-react';
 
 export const StakeAmountInput = () => {
-  const { maxAmount } = useStakeFormData();
-  const { limitWarning, limitError } = useStakingLimitWarn();
+  const { active } = useWeb3();
+  const { maxAmount, stakingLimitInfo } = useStakeFormData();
+  const { limitWarning } = useStakingLimitWarn(
+    stakingLimitInfo?.stakeLimitLevel,
+  );
   return (
     <TokenAmountInputHookForm
       fieldName="amount"
       token={'ETH'}
       leftDecorator={<Eth />}
       maxValue={maxAmount}
-      error={limitError}
-      warning={limitWarning}
+      warning={active ? limitWarning : null}
     />
   );
 };

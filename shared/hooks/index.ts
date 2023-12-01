@@ -10,7 +10,6 @@ export * from './useStethByWsteth';
 export * from './txCost';
 export * from './useLidoSwr';
 export * from './useStakingLimitInfo';
-export * from './useStakingLimitLevel';
 export * from './useMatomoEventHandle';
 export * from './useERC20PermitSignature';
 export * from './useAsyncMemo';

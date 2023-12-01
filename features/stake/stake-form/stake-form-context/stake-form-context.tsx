@@ -52,7 +52,7 @@ export const useStakeFormData = () => {
   return value;
 };
 
-export const useStakeFormNetworkData = (): StakeFormNetworkData => {
+const useStakeFormNetworkData = (): StakeFormNetworkData => {
   const { update: updateStethBalance } = useSTETHBalance();
   const { isMultisig, isLoading: isMultisigLoading } = useIsMultisig();
   const gasLimit = useStethSubmitGasLimit();
