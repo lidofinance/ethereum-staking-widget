@@ -5,7 +5,7 @@ import HomePageRegular, {
   HomePageRegularProps,
 } from 'features/home/home-page-regular';
 import HomePageIpfs, { HomePageIpfsProps } from 'features/ipfs/home-page-ipfs';
-import { getFAQ } from 'utilsApi/get-faq';
+import { getFAQ } from 'utilsApi/faq';
 
 export default dynamics.ipfsMode ? HomePageIpfs : HomePageRegular;
 

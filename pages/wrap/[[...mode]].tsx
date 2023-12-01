@@ -8,7 +8,7 @@ import { FAQ_REVALIDATE_SECS } from 'config';
 import { WrapUnwrapTabs } from 'features/wsteth/wrap-unwrap-tabs';
 import { Layout } from 'shared/components';
 import { useWeb3Key } from 'shared/hooks/useWeb3Key';
-import { getFAQ } from 'utilsApi/get-faq';
+import { getFAQ } from 'utilsApi/faq';
 
 const WrapPage: FC<WrapModePageProps> = ({ mode, pageFAQ }) => {
   const key = useWeb3Key();

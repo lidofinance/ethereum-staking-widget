@@ -10,7 +10,7 @@ import { WithdrawalsProvider } from 'features/withdrawals/contexts/withdrawals-c
 import { Layout } from 'shared/components';
 import NoSSRWrapper from 'shared/components/no-ssr-wrapper';
 import { useWeb3Key } from 'shared/hooks/useWeb3Key';
-import { getFAQ } from 'utilsApi/get-faq';
+import { getFAQ } from 'utilsApi/faq';
 
 const Withdrawals: FC<WithdrawalsModePageProps> = ({
   mode,
