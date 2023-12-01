@@ -8,3 +8,7 @@ export const LoaderWrapper = styled.div`
 export const TableWrapperStyle = styled.div`
   margin-top: 20px;
 `;
+
+export const ErrorWrapper = styled.div`
+  word-wrap: break-word;
+`;
