@@ -2,7 +2,7 @@ import { FC } from 'react';
 import { GetStaticPaths, GetStaticProps } from 'next';
 import Head from 'next/head';
 
-import { parseFAQ, PageFAQ } from '@lidofinance/ui-faq';
+import { PageFAQ } from '@lidofinance/ui-faq';
 
 import { FAQ_REVALIDATE_SECS } from 'config';
 import { WithdrawalsTabs } from 'features/withdrawals';
@@ -10,7 +10,7 @@ import { WithdrawalsProvider } from 'features/withdrawals/contexts/withdrawals-c
 import { Layout } from 'shared/components';
 import NoSSRWrapper from 'shared/components/no-ssr-wrapper';
 import { useWeb3Key } from 'shared/hooks/useWeb3Key';
-import { getFaq } from '../../utilsApi/get-faq';
+import { getFAQ } from 'utilsApi/get-faq';
 
 const Withdrawals: FC<WithdrawalsModePageProps> = ({
   mode,
@@ -65,33 +65,13 @@ export const getStaticProps: GetStaticProps<
   WithdrawalsModePageParams
 > = async ({ params }) => {
   // FAQ
-  let pageRequestFAQ: PageFAQ | null = null;
-  let pageClaimFAQ: PageFAQ | null = null;
-
-  try {
-    // FAQ request
-    const rawRequestFaqData = await getFaq(
-      'ethereum-staking-widget/faq-withdrawals-page-request-tab.md',
-    );
-    if (rawRequestFaqData) {
-      pageRequestFAQ = await parseFAQ(rawRequestFaqData);
-    }
-
-    // FAQ claim
-    const rawClaimFaqData = await getFaq(
-      'ethereum-staking-widget/faq-withdrawals-page-claim-tab.md',
-    );
-    if (rawClaimFaqData) {
-      pageClaimFAQ = await parseFAQ(rawClaimFaqData);
-    }
-  } catch {
-    console.warn('FAQ not available on withdrawals page!');
-  }
   const faqProps = {
-    // We can't use `undefined` with `pageRequestFAQ` and `pageClaimFAQ`.
-    // Reason: `undefined` cannot be serialized as JSON. Please use `null` or omit this value.
-    pageRequestFAQ: pageRequestFAQ || null,
-    pageClaimFAQ: pageClaimFAQ || null,
+    pageRequestFAQ: await getFAQ(
+      'ethereum-staking-widget/faq-withdrawals-page-request-tab.md',
+    ),
+    pageClaimFAQ: await getFAQ(
+      'ethereum-staking-widget/faq-withdrawals-page-claim-tab.md',
+    ),
     revalidate: FAQ_REVALIDATE_SECS,
   };
 

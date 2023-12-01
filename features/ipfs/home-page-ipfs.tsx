@@ -1,6 +1,8 @@
 import { FC, useMemo, useEffect } from 'react';
 import { useRouter } from 'next/router';
 
+import { PageFAQ } from '@lidofinance/ui-faq';
+
 import {
   getPathWithoutFirstSlash,
   HOME_PATH,
@@ -37,7 +39,19 @@ const IPFS_ROUTABLE_PAGES = [
   getPathWithoutFirstSlash(SETTINGS_PATH),
 ];
 
-const HomePageIpfs: FC = () => {
+export type HomePageIpfsProps = {
+  stakePageFAQ?: PageFAQ | null;
+  wrapModePageFAQ?: PageFAQ | null;
+  withdrawalsPageRequestFAQ?: PageFAQ | null;
+  withdrawalsPageClaimFAQ?: PageFAQ | null;
+};
+
+const HomePageIpfs: FC<HomePageIpfsProps> = ({
+  stakePageFAQ,
+  wrapModePageFAQ,
+  withdrawalsPageRequestFAQ,
+  withdrawalsPageClaimFAQ,
+}) => {
   const router = useRouter();
   const { asPath } = router;
 
@@ -75,18 +89,28 @@ const HomePageIpfs: FC = () => {
   switch (parsedPath[0]) {
     case getPathWithoutFirstSlash(WRAP_PATH): {
       if (parsedPath[1] === 'unwrap') {
-        spaPage = <WrapPage mode={'unwrap'} />;
+        spaPage = <WrapPage mode={'unwrap'} pageFAQ={wrapModePageFAQ} />;
       } else {
-        spaPage = <WrapPage mode={'wrap'} />;
+        spaPage = <WrapPage mode={'wrap'} pageFAQ={wrapModePageFAQ} />;
       }
       break;
     }
 
     case getPathWithoutFirstSlash(WITHDRAWALS_PATH): {
       if (parsedPath[1] === 'claim') {
-        spaPage = <WithdrawalsPage mode={'claim'} />;
+        spaPage = (
+          <WithdrawalsPage
+            mode={'claim'}
+            pageClaimFAQ={withdrawalsPageClaimFAQ}
+          />
+        );
       } else {
-        spaPage = <WithdrawalsPage mode={'request'} />;
+        spaPage = (
+          <WithdrawalsPage
+            mode={'request'}
+            pageRequestFAQ={withdrawalsPageRequestFAQ}
+          />
+        );
       }
       break;
     }
@@ -107,7 +131,7 @@ const HomePageIpfs: FC = () => {
     }
 
     default: {
-      spaPage = <HomePageRegular />;
+      spaPage = <HomePageRegular pageFAQ={stakePageFAQ} />;
     }
   }
 
