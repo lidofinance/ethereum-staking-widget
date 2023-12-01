@@ -90,7 +90,7 @@ export const useStakingLimitInfo = () => {
     },
     {
       ...STRATEGY_LAZY,
-      refreshInterval: 30000,
+      refreshInterval: 60000,
     },
   );
 };

@@ -7,7 +7,6 @@ import {
 } from 'config';
 import { BigNumber } from 'ethers';
 import { STRATEGY_CONSTANT } from 'utils/swrStrategies';
-import { LIMIT_LEVEL } from 'types';
 import { applyGasLimitRatio } from './utils';
 
 type UseStethSubmitGasLimit = () => BigNumber;
@@ -29,15 +28,4 @@ export const useStethSubmitGasLimit: UseStethSubmitGasLimit = () => {
   );
 
   return data ?? STAKE_GASLIMIT_FALLBACK;
-};
-
-export const useStakingLimitWarn = (stakingLimitLevel?: LIMIT_LEVEL) => {
-  const limitWarning =
-    stakingLimitLevel === LIMIT_LEVEL.WARN
-      ? 'Stake limit is almost exhausted. Your transaction may not go through.'
-      : null;
-
-  return {
-    limitWarning,
-  };
 };

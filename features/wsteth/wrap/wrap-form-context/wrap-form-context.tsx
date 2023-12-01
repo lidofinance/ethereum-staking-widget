@@ -81,6 +81,7 @@ export const WrapFormProvider: FC<PropsWithChildren> = ({ children }) => {
       ...networkData,
       ...approvalData,
       isSteth,
+      stakeLimitInfo: networkData.stakeLimitInfo,
       maxAmount: isSteth
         ? networkData.maxAmountStETH
         : networkData.maxAmountETH,

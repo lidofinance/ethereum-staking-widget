@@ -9,7 +9,6 @@ import {
   useCallback,
 } from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
-import { Zero } from '@ethersproject/constants';
 import { useEthereumBalance, useSTETHBalance } from '@lido-sdk/react';
 import { parseEther } from '@ethersproject/units';
 import { useRouter } from 'next/router';
@@ -34,6 +33,7 @@ import {
   type StakeFormInput,
   type StakeFormNetworkData,
 } from './types';
+import { useTokenMaxAmount } from 'shared/hooks/use-token-max-amount';
 
 //
 // Data context
@@ -82,27 +82,16 @@ const useStakeFormNetworkData = (): StakeFormNetworkData => {
     return etherBalance;
   }, [etherBalance, stakingLimitInfo]);
 
-  const maxAmount = useMemo(() => {
-    if (stakingLimitInfo && etherBalance && !isMultisigLoading) {
-      let maxEther = etherBalance;
-      // if not multisig we have to wait for gasCost and subtract it
-      if (!isMultisig) {
-        if (gasCost) maxEther = maxEther.sub(gasCost);
-        else return undefined;
-      }
-
-      if (maxEther.lt(Zero)) {
-        maxEther = Zero;
-      }
-      return maxEther.lt(stakingLimitInfo.currentStakeLimit)
-        ? maxEther
-        : stakingLimitInfo.currentStakeLimit;
-    }
-    return undefined;
-  }, [stakingLimitInfo, etherBalance, isMultisigLoading, isMultisig, gasCost]);
+  const maxAmount = useTokenMaxAmount({
+    balance: etherBalance,
+    limit: stakingLimitInfo?.currentStakeLimit,
+    isPadded: !isMultisig,
+    gasLimit: gasLimit,
+    isLoading: !isMultisigLoading,
+  });
 
   const revalidate = useCallback(async () => {
-    await Promise.all([
+    await Promise.allSettled([
       updateStethBalance,
       updateEtherBalance,
       () => mutateStakeLimit(stakingLimitInfo),
