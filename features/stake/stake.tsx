@@ -4,11 +4,13 @@ import NoSSRWrapper from 'shared/components/no-ssr-wrapper';
 import { StakeFaq } from './stake-faq/stake-faq';
 import { LidoStats } from './lido-stats/lido-stats';
 import { StakeForm } from './stake-form';
+import { GoerliSunsetBanner } from 'shared/banners/goerli-sunset';
 
 export const Stake = () => {
   const key = useWeb3Key();
   return (
     <>
+      <GoerliSunsetBanner />
       <NoSSRWrapper>
         <StakeForm key={key} />
       </NoSSRWrapper>
