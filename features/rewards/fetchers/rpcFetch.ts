@@ -1,17 +1,11 @@
-import { Contract, providers } from 'ethers';
+import { BigNumber, ContractInterface, Contract } from 'ethers';
 import { isAddress } from 'ethers/lib/utils';
+import get from 'lodash/get';
 
-import { getBackendRPCPath } from 'config';
-
-const chainId = 1;
-const rpc = getBackendRPCPath(chainId);
-
+import { StaticJsonRpcBatchProvider } from '@lidofinance/eth-providers';
 import { CHAINS } from '@lido-sdk/constants';
-import { BigNumber, ContractInterface } from 'ethers';
 
 import STETH_ABI from 'abi/steth.abi.json';
-
-import get from 'lodash/get';
 
 const CURVE_ABI = [
   {
@@ -113,10 +107,12 @@ export const GAS_LIMITS_BY_TOKEN = {
 
 // TODO: Migrate to typechain for properly methods and arguments typings
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const rpcFetcher = <Result>(...args: any[]): Promise<Result> => {
-  const library = new providers.StaticJsonRpcProvider(rpc, chainId);
-  library.pollingInterval = 30000;
-  const ABIs = new Map(getSwrTokenConfig(chainId));
+const rpcFetcher = <Result>(
+  mainnetProvider: StaticJsonRpcBatchProvider,
+  ...args: any[]
+): Promise<Result> => {
+  mainnetProvider.pollingInterval = 30000;
+  const ABIs = new Map(getSwrTokenConfig(1));
 
   const [arg1, arg2, ...params] = args;
 
@@ -130,7 +126,7 @@ const rpcFetcher = <Result>(...args: any[]): Promise<Result> => {
     const abi = ABIs.get(address);
 
     if (!abi) throw new Error(`ABI not found for ${address}`);
-    const contract = new Contract(address, abi, library);
+    const contract = new Contract(address, abi, mainnetProvider);
     return contract[method](...params);
   }
 
@@ -139,7 +135,7 @@ const rpcFetcher = <Result>(...args: any[]): Promise<Result> => {
 
   // TODO: Migrate to typechain for properly methods and arguments typings
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return (library as any)[method](arg2, ...params);
+  return (mainnetProvider as any)[method](arg2, ...params);
 };
 
 export default rpcFetcher;

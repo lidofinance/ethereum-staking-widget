@@ -1,4 +1,3 @@
-import { AppProps } from 'next/app';
 import { FC, ReactNode } from 'react';
 
 export type ComponentProps<
@@ -15,5 +14,3 @@ export type Override<
   T extends Record<string, unknown>,
   P extends Record<string, unknown>,
 > = Omit<T, keyof P> & P;
-
-export type CustomApp = FC<AppProps>;

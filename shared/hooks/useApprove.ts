@@ -1,13 +1,17 @@
 import invariant from 'tiny-invariant';
 import { useCallback } from 'react';
+
 import { ContractReceipt, ContractTransaction } from '@ethersproject/contracts';
+import { Zero } from '@ethersproject/constants';
 import { BigNumber } from '@ethersproject/bignumber';
 import { getERC20Contract } from '@lido-sdk/contracts';
-import { Zero } from '@ethersproject/constants';
 import { useAllowance, useSDK } from '@lido-sdk/react';
+
 import { isContract } from 'utils/isContract';
 import { getFeeData } from 'utils/getFeeData';
 import { runWithTransactionLogger } from 'utils';
+
+import { useCurrentStaticRpcProvider } from './use-current-static-rpc-provider';
 
 type ApproveOptions =
   | {
@@ -33,6 +37,7 @@ export const useApprove = (
   owner?: string,
 ): UseApproveResponse => {
   const { providerWeb3, account, chainId } = useSDK();
+  const { staticRpcProvider } = useCurrentStaticRpcProvider();
   const mergedOwner = owner ?? account;
 
   invariant(token != null, 'Token is required');
@@ -68,9 +73,8 @@ export const useApprove = (
             .sendUncheckedTransaction(tx);
           return hash;
         } else {
-          const { maxFeePerGas, maxPriorityFeePerGas } = await getFeeData(
-            chainId,
-          );
+          const { maxFeePerGas, maxPriorityFeePerGas } =
+            await getFeeData(staticRpcProvider);
           const tx = await contractWeb3.approve(spender, amount, {
             maxFeePerGas,
             maxPriorityFeePerGas,
@@ -95,7 +99,16 @@ export const useApprove = (
 
       await updateAllowance();
     },
-    [providerWeb3, chainId, account, token, updateAllowance, spender, amount],
+    [
+      chainId,
+      account,
+      token,
+      updateAllowance,
+      spender,
+      amount,
+      staticRpcProvider,
+      providerWeb3,
+    ],
   );
 
   return {

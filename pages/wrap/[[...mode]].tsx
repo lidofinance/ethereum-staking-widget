@@ -22,7 +22,7 @@ const WrapPage: FC<WrapModePageProps> = ({ mode, pageFAQ }) => {
         <title>Wrap | Lido</title>
       </Head>
 
-      <WrapUnwrapTabs key={key} mode={mode} pageFAQ={pageFAQ ?? undefined} />
+      <WrapUnwrapTabs mode={mode} key={key} pageFAQ={pageFAQ ?? undefined} />
     </Layout>
   );
 };
@@ -31,7 +31,7 @@ export default WrapPage;
 
 type WrapModePageProps = {
   mode: 'wrap' | 'unwrap';
-  pageFAQ: PageFAQ | null;
+  pageFAQ?: PageFAQ | null;
 };
 
 type WrapModePageParams = {

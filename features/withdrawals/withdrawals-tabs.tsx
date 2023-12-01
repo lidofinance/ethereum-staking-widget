@@ -1,5 +1,7 @@
 import { PageFAQ } from '@lidofinance/ui-faq';
 
+import { WITHDRAWALS_CLAIM_PATH, WITHDRAWALS_REQUEST_PATH } from 'config/urls';
+import { GoerliSunsetBanner } from 'shared/banners/goerli-sunset';
 import { Switch } from 'shared/components';
 
 import { ClaimDataProvider } from './contexts/claim-data-context';
@@ -7,18 +9,13 @@ import { useWithdrawals } from './contexts/withdrawals-context';
 import { Claim } from './claim';
 import { Request } from './request';
 
-import {
-  WITHDRAWAL_CLAIM_PATH,
-  WITHDRAWAL_REQUEST_PATH,
-} from 'features/withdrawals//withdrawals-constants';
-
 const withdrawalRoutes = [
   {
-    path: WITHDRAWAL_REQUEST_PATH,
+    path: WITHDRAWALS_REQUEST_PATH,
     name: 'Request',
   },
   {
-    path: WITHDRAWAL_CLAIM_PATH,
+    path: WITHDRAWALS_CLAIM_PATH,
     name: 'Claim',
   },
 ];
@@ -36,6 +33,7 @@ export const WithdrawalsTabs = ({
   return (
     <ClaimDataProvider>
       <Switch checked={isClaimTab} routes={withdrawalRoutes} />
+      <GoerliSunsetBanner />
       {isClaimTab ? (
         <Claim pageFAQ={pageClaimFAQ} />
       ) : (

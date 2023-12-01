@@ -47,8 +47,8 @@ type WithdrawalsModePageParams = {
 };
 
 type WithdrawalsModePageProps = WithdrawalsModePageParams & {
-  pageRequestFAQ?: PageFAQ;
-  pageClaimFAQ?: PageFAQ;
+  pageRequestFAQ?: PageFAQ | null;
+  pageClaimFAQ?: PageFAQ | null;
 };
 
 export const getStaticPaths: GetStaticPaths<
