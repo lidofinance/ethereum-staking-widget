@@ -105,7 +105,7 @@ const HomePageIpfs: FC<HomePageIpfsProps> = ({
           <WrapPage
             mode={'unwrap'}
             pageFAQ={wrapPage?.faq}
-            eTag={wrapPage?.eTag}
+            faqETag={wrapPage?.eTag}
           />
         );
       } else {
@@ -113,7 +113,7 @@ const HomePageIpfs: FC<HomePageIpfsProps> = ({
           <WrapPage
             mode={'wrap'}
             pageFAQ={wrapPage?.faq}
-            eTag={wrapPage?.eTag}
+            faqETag={wrapPage?.eTag}
           />
         );
       }
@@ -126,7 +126,7 @@ const HomePageIpfs: FC<HomePageIpfsProps> = ({
           <WithdrawalsPage
             mode={'claim'}
             pageClaimFAQ={withdrawalsPageClaim?.faq}
-            eTag={withdrawalsPageClaim?.eTag}
+            faqETag={withdrawalsPageClaim?.eTag}
           />
         );
       } else {
@@ -134,7 +134,7 @@ const HomePageIpfs: FC<HomePageIpfsProps> = ({
           <WithdrawalsPage
             mode={'request'}
             pageRequestFAQ={withdrawalsPageRequest?.faq}
-            eTag={withdrawalsPageRequest?.eTag}
+            faqETag={withdrawalsPageRequest?.eTag}
           />
         );
       }
@@ -158,7 +158,7 @@ const HomePageIpfs: FC<HomePageIpfsProps> = ({
 
     default: {
       spaPage = (
-        <HomePageRegular pageFAQ={stakePage?.faq} eTag={stakePage?.eTag} />
+        <HomePageRegular pageFAQ={stakePage?.faq} faqETag={stakePage?.eTag} />
       );
     }
   }

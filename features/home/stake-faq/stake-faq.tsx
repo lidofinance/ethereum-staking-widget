@@ -8,7 +8,7 @@ import { faqAccordionOnLinkClick } from 'utils/faq-matomo';
 
 type StakeFaqProps = {
   pageFAQ?: PageFAQ;
-  eTag?: string;
+  eTag?: string | null;
 };
 
 export const StakeFaq: FC<StakeFaqProps> = ({ pageFAQ, eTag }) => {

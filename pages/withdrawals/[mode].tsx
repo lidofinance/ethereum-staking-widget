@@ -16,6 +16,7 @@ const Withdrawals: FC<WithdrawalsModePageProps> = ({
   mode,
   pageRequestFAQ,
   pageClaimFAQ,
+  faqETag,
 }) => {
   const key = useWeb3Key();
 
@@ -31,8 +32,11 @@ const Withdrawals: FC<WithdrawalsModePageProps> = ({
         <NoSSRWrapper>
           <WithdrawalsTabs
             key={key}
-            pageRequestFAQ={pageRequestFAQ ?? undefined}
-            pageClaimFAQ={pageClaimFAQ ?? undefined}
+            faq={{
+              pageRequestFAQ: pageRequestFAQ ?? undefined,
+              pageClaimFAQ: pageClaimFAQ ?? undefined,
+              eTag: faqETag,
+            }}
           />
         </NoSSRWrapper>
       </WithdrawalsProvider>
@@ -50,7 +54,7 @@ type WithdrawalsModePageProps = WithdrawalsModePageParams & {
   pageRequestFAQ?: PageFAQ | null;
   pageClaimFAQ?: PageFAQ | null;
   // IPFS actual only!
-  eTag?: string | null;
+  faqETag?: string | null;
 };
 
 export const getStaticPaths: GetStaticPaths<

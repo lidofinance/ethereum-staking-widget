@@ -10,7 +10,7 @@ import { Layout } from 'shared/components';
 import { useWeb3Key } from 'shared/hooks/useWeb3Key';
 import { getFaqSSR } from 'utilsApi/faq';
 
-const WrapPage: FC<WrapModePageProps> = ({ mode, pageFAQ }) => {
+const WrapPage: FC<WrapModePageProps> = ({ mode, pageFAQ, faqETag }) => {
   const key = useWeb3Key();
 
   return (
@@ -22,7 +22,14 @@ const WrapPage: FC<WrapModePageProps> = ({ mode, pageFAQ }) => {
         <title>Wrap | Lido</title>
       </Head>
 
-      <WrapUnwrapTabs mode={mode} key={key} pageFAQ={pageFAQ ?? undefined} />
+      <WrapUnwrapTabs
+        mode={mode}
+        key={key}
+        faq={{
+          pageFAQ: pageFAQ ?? undefined,
+          eTag: faqETag,
+        }}
+      />
     </Layout>
   );
 };
@@ -33,7 +40,7 @@ type WrapModePageProps = {
   mode: 'wrap' | 'unwrap';
   pageFAQ?: PageFAQ | null;
   // IPFS actual only!
-  eTag?: string | null;
+  faqETag?: string | null;
 };
 
 type WrapModePageParams = {

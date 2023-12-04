@@ -9,16 +9,19 @@ import { ClaimWallet } from './wallet';
 import { ClaimFormProvider } from './claim-form-context';
 
 type ClaimProps = {
-  pageFAQ?: PageFAQ;
+  faq?: {
+    pageFAQ?: PageFAQ;
+    eTag?: string | null;
+  };
 };
 
-export const Claim = ({ pageFAQ }: ClaimProps) => {
+export const Claim = ({ faq }: ClaimProps) => {
   return (
     <TransactionModalProvider>
       <ClaimFormProvider>
         <ClaimWallet />
         <ClaimForm />
-        <ClaimFaq pageFAQ={pageFAQ} />
+        <ClaimFaq pageFAQ={faq?.pageFAQ} eTag={faq?.eTag} />
         <TxClaimModal />
       </ClaimFormProvider>
     </TransactionModalProvider>

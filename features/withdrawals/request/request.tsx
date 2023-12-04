@@ -10,16 +10,19 @@ import { RequestWallet } from './wallet';
 import { RequestFaq } from '../withdrawals-faq/request-faq';
 
 type RequestProps = {
-  pageFAQ?: PageFAQ;
+  faq?: {
+    pageFAQ?: PageFAQ;
+    eTag?: string | null;
+  };
 };
 
-export const Request = ({ pageFAQ }: RequestProps) => {
+export const Request = ({ faq }: RequestProps) => {
   return (
     <TransactionModalProvider>
       <RequestFormProvider>
         <RequestWallet />
         <RequestForm />
-        <RequestFaq pageFAQ={pageFAQ} />
+        <RequestFaq pageFAQ={faq?.pageFAQ} eTag={faq?.eTag} />
         <TxRequestModal />
       </RequestFormProvider>
     </TransactionModalProvider>

@@ -21,23 +21,33 @@ const withdrawalRoutes = [
 ];
 
 type WithdrawalsTabsProps = {
-  pageRequestFAQ?: PageFAQ;
-  pageClaimFAQ?: PageFAQ;
+  faq?: {
+    pageRequestFAQ?: PageFAQ;
+    pageClaimFAQ?: PageFAQ;
+    eTag?: string | null;
+  };
 };
 
-export const WithdrawalsTabs = ({
-  pageRequestFAQ,
-  pageClaimFAQ,
-}: WithdrawalsTabsProps) => {
+export const WithdrawalsTabs = ({ faq }: WithdrawalsTabsProps) => {
   const { isClaimTab } = useWithdrawals();
   return (
     <ClaimDataProvider>
       <Switch checked={isClaimTab} routes={withdrawalRoutes} />
       <GoerliSunsetBanner />
       {isClaimTab ? (
-        <Claim pageFAQ={pageClaimFAQ} />
+        <Claim
+          faq={{
+            pageFAQ: faq?.pageClaimFAQ,
+            eTag: faq?.eTag,
+          }}
+        />
       ) : (
-        <Request pageFAQ={pageRequestFAQ} />
+        <Request
+          faq={{
+            pageFAQ: faq?.pageRequestFAQ,
+            eTag: faq?.eTag,
+          }}
+        />
       )}
     </ClaimDataProvider>
   );

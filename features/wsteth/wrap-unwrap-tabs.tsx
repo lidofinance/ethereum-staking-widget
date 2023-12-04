@@ -18,10 +18,13 @@ const NAV_ROUTES = [
 
 type WrapUnwrapLayoutProps = {
   mode: 'wrap' | 'unwrap';
-  pageFAQ?: PageFAQ;
+  faq: {
+    pageFAQ?: PageFAQ;
+    eTag?: string | null;
+  };
 };
 
-export const WrapUnwrapTabs = ({ mode, pageFAQ }: WrapUnwrapLayoutProps) => {
+export const WrapUnwrapTabs = ({ mode, faq }: WrapUnwrapLayoutProps) => {
   const isUnwrapMode = mode === 'unwrap';
   return (
     <>
@@ -32,7 +35,7 @@ export const WrapUnwrapTabs = ({ mode, pageFAQ }: WrapUnwrapLayoutProps) => {
         {isUnwrapMode ? <UnwrapForm /> : <WrapForm />}
       </NoSsrWrapper>
 
-      <WrapFaq pageFAQ={pageFAQ} />
+      <WrapFaq pageFAQ={faq?.pageFAQ} eTag={faq?.eTag} />
     </>
   );
 };

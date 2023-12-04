@@ -15,7 +15,7 @@ export const useFetchFaqOnClientIfETagWereChanged = (
         return undefined;
       }
 
-      const respFaq = await getFaqOnClient('/faq-stake-page.md');
+      const respFaq = await getFaqOnClient(faqPath);
 
       if (
         !respFaq ||
