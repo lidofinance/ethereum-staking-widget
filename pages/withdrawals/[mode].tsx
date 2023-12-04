@@ -10,7 +10,7 @@ import { WithdrawalsProvider } from 'features/withdrawals/contexts/withdrawals-c
 import { Layout } from 'shared/components';
 import NoSSRWrapper from 'shared/components/no-ssr-wrapper';
 import { useWeb3Key } from 'shared/hooks/useWeb3Key';
-import { getFAQ } from 'utilsApi/faq';
+import { getFaqSSR } from 'utilsApi/faq';
 
 const Withdrawals: FC<WithdrawalsModePageProps> = ({
   mode,
@@ -49,6 +49,8 @@ type WithdrawalsModePageParams = {
 type WithdrawalsModePageProps = WithdrawalsModePageParams & {
   pageRequestFAQ?: PageFAQ | null;
   pageClaimFAQ?: PageFAQ | null;
+  // IPFS actual only!
+  eTag?: string | null;
 };
 
 export const getStaticPaths: GetStaticPaths<
@@ -66,12 +68,9 @@ export const getStaticProps: GetStaticProps<
 > = async ({ params }) => {
   // FAQ
   const faqProps = {
-    pageRequestFAQ: await getFAQ(
-      'ethereum-staking-widget/faq-withdrawals-page-request-tab.md',
-    ),
-    pageClaimFAQ: await getFAQ(
-      'ethereum-staking-widget/faq-withdrawals-page-claim-tab.md',
-    ),
+    pageRequestFAQ: (await getFaqSSR('/faq-withdrawals-page-request-tab.md'))
+      ?.faq,
+    pageClaimFAQ: (await getFaqSSR('/faq-withdrawals-page-claim-tab.md'))?.faq,
     revalidate: FAQ_REVALIDATE_SECS,
   };
 

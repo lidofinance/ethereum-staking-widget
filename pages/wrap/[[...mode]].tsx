@@ -8,7 +8,7 @@ import { FAQ_REVALIDATE_SECS } from 'config';
 import { WrapUnwrapTabs } from 'features/wsteth/wrap-unwrap-tabs';
 import { Layout } from 'shared/components';
 import { useWeb3Key } from 'shared/hooks/useWeb3Key';
-import { getFAQ } from 'utilsApi/faq';
+import { getFaqSSR } from 'utilsApi/faq';
 
 const WrapPage: FC<WrapModePageProps> = ({ mode, pageFAQ }) => {
   const key = useWeb3Key();
@@ -32,6 +32,8 @@ export default WrapPage;
 type WrapModePageProps = {
   mode: 'wrap' | 'unwrap';
   pageFAQ?: PageFAQ | null;
+  // IPFS actual only!
+  eTag?: string | null;
 };
 
 type WrapModePageParams = {
@@ -52,9 +54,7 @@ export const getStaticProps: GetStaticProps<
 > = async ({ params }) => {
   // FAQ
   const faqProps = {
-    pageFAQ: await getFAQ(
-      'ethereum-staking-widget/faq-wrap-and-unwrap-page.md',
-    ),
+    pageFAQ: (await getFaqSSR('/faq-wrap-and-unwrap-page.md'))?.faq,
     revalidate: FAQ_REVALIDATE_SECS,
   };
 

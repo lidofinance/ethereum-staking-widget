@@ -1,16 +1,20 @@
 import { PageFAQ, parseFAQ } from '@lidofinance/ui-faq';
+
 import { serverRuntimeConfig } from 'config';
-import { standardFetcher } from 'utils/standardFetcher';
+import { fetcherWithServiceResponse } from 'utils/fetcher-with-service-response';
+
 import { responseTimeExternalMetricWrapper } from './fetchApiWrapper';
 
-export const fetchFAQ = async (path: string): Promise<string | null> => {
-  console.debug(`[getFaq] Started fetching the '${path}' from CMS...`);
-  const cmsHost = serverRuntimeConfig.faqContentHost;
+export const fetchFaqSSR = async (
+  path: string,
+): Promise<ReturnType<typeof fetcherWithServiceResponse<string>> | null> => {
+  console.debug(`[fetchFaqSSR] Started fetching the '${path}' from CMS...`);
+  const cmsPartOfUrl = serverRuntimeConfig.faqContentPartOfUrl;
 
-  const data = await responseTimeExternalMetricWrapper({
-    payload: cmsHost,
+  const resp = await responseTimeExternalMetricWrapper({
+    payload: cmsPartOfUrl,
     request: () =>
-      standardFetcher<string>(`${cmsHost}/${path}`, {
+      fetcherWithServiceResponse<string>(`${cmsPartOfUrl}/${path}`, {
         method: 'GET',
         headers: {
           'Content-type': 'text/html',
@@ -18,26 +22,33 @@ export const fetchFAQ = async (path: string): Promise<string | null> => {
       }),
   });
 
-  if (!data) {
-    console.error(`[getFaq] Request the '${path}' to CMS failed!`);
+  if (!resp || !resp.data) {
+    console.error(`[fetchFaqSSR] Request the '${path}' to CMS failed!`);
     return null;
   }
 
-  console.debug(`[getFaq] Fetched the '${path}' from CMS was successes!`);
-  return data;
+  console.debug(`[fetchFaqSSR] Fetched the '${path}' from CMS was successes!`);
+  return resp;
 };
 
-export const getFAQ = async (path: string): Promise<PageFAQ | null> => {
+export const getFaqSSR = async (
+  path: string,
+): Promise<{ faq?: PageFAQ | null; eTag?: string | null } | null> => {
   try {
-    const rawFaqData = await fetchFAQ(path);
+    const rawFaqResp = await fetchFaqSSR(path);
 
     // We can't use `undefined` with Next `getStaticProps`.
     // Reason: `undefined` cannot be serialized as JSON. Please use `null` or omit this value.
-    if (!rawFaqData) return null;
+    if (!rawFaqResp || !rawFaqResp.data) return null;
 
-    return await parseFAQ(rawFaqData);
+    return {
+      faq: await parseFAQ(rawFaqResp.data),
+      eTag: rawFaqResp?.headers?.get('ETag'),
+    };
   } catch (err) {
-    console.error(`Fetch or parse FAQ (${path}) raised exception: ${err}`);
+    console.error(
+      `[getFaqSSR] Fetch or parse FAQ (${path}) raised exception: ${err}`,
+    );
     return null;
   }
 };

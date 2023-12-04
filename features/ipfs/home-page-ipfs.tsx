@@ -40,17 +40,29 @@ const IPFS_ROUTABLE_PAGES = [
 ];
 
 export type HomePageIpfsProps = {
-  stakePageFAQ?: PageFAQ | null;
-  wrapModePageFAQ?: PageFAQ | null;
-  withdrawalsPageRequestFAQ?: PageFAQ | null;
-  withdrawalsPageClaimFAQ?: PageFAQ | null;
+  stakePage?: {
+    faq: PageFAQ | null;
+    eTag?: string | null;
+  };
+  wrapPage?: {
+    faq: PageFAQ | null;
+    eTag?: string | null;
+  };
+  withdrawalsPageRequest?: {
+    faq: PageFAQ | null;
+    eTag?: string | null;
+  };
+  withdrawalsPageClaim?: {
+    faq: PageFAQ | null;
+    eTag?: string | null;
+  };
 };
 
 const HomePageIpfs: FC<HomePageIpfsProps> = ({
-  stakePageFAQ,
-  wrapModePageFAQ,
-  withdrawalsPageRequestFAQ,
-  withdrawalsPageClaimFAQ,
+  stakePage,
+  wrapPage,
+  withdrawalsPageRequest,
+  withdrawalsPageClaim,
 }) => {
   const router = useRouter();
   const { asPath } = router;
@@ -89,9 +101,21 @@ const HomePageIpfs: FC<HomePageIpfsProps> = ({
   switch (parsedPath[0]) {
     case getPathWithoutFirstSlash(WRAP_PATH): {
       if (parsedPath[1] === 'unwrap') {
-        spaPage = <WrapPage mode={'unwrap'} pageFAQ={wrapModePageFAQ} />;
+        spaPage = (
+          <WrapPage
+            mode={'unwrap'}
+            pageFAQ={wrapPage?.faq}
+            eTag={wrapPage?.eTag}
+          />
+        );
       } else {
-        spaPage = <WrapPage mode={'wrap'} pageFAQ={wrapModePageFAQ} />;
+        spaPage = (
+          <WrapPage
+            mode={'wrap'}
+            pageFAQ={wrapPage?.faq}
+            eTag={wrapPage?.eTag}
+          />
+        );
       }
       break;
     }
@@ -101,14 +125,16 @@ const HomePageIpfs: FC<HomePageIpfsProps> = ({
         spaPage = (
           <WithdrawalsPage
             mode={'claim'}
-            pageClaimFAQ={withdrawalsPageClaimFAQ}
+            pageClaimFAQ={withdrawalsPageClaim?.faq}
+            eTag={withdrawalsPageClaim?.eTag}
           />
         );
       } else {
         spaPage = (
           <WithdrawalsPage
             mode={'request'}
-            pageRequestFAQ={withdrawalsPageRequestFAQ}
+            pageRequestFAQ={withdrawalsPageRequest?.faq}
+            eTag={withdrawalsPageRequest?.eTag}
           />
         );
       }
@@ -131,7 +157,9 @@ const HomePageIpfs: FC<HomePageIpfsProps> = ({
     }
 
     default: {
-      spaPage = <HomePageRegular pageFAQ={stakePageFAQ} />;
+      spaPage = (
+        <HomePageRegular pageFAQ={stakePage?.faq} eTag={stakePage?.eTag} />
+      );
     }
   }
 

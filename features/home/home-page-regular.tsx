@@ -15,9 +15,11 @@ import { LidoStats } from './lido-stats/lido-stats';
 
 export type HomePageRegularProps = {
   pageFAQ?: PageFAQ | null;
+  // IPFS actual only!
+  eTag?: string | null;
 };
 
-const HomePageRegular: FC<HomePageRegularProps> = ({ pageFAQ }) => {
+const HomePageRegular: FC<HomePageRegularProps> = ({ pageFAQ, eTag }) => {
   const key = useWeb3Key();
 
   return (
@@ -38,7 +40,7 @@ const HomePageRegular: FC<HomePageRegularProps> = ({ pageFAQ }) => {
           </Fragment>
         </NoSSRWrapper>
         <LidoStats />
-        <StakeFaq pageFAQ={pageFAQ ?? undefined} />
+        <StakeFaq pageFAQ={pageFAQ ?? undefined} eTag={eTag ?? undefined} />
       </Layout>
     </>
   );
