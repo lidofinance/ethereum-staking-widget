@@ -87,7 +87,7 @@ const useStakeFormNetworkData = (): StakeFormNetworkData => {
     limit: stakingLimitInfo?.currentStakeLimit,
     isPadded: !isMultisig,
     gasLimit: gasLimit,
-    isLoading: !isMultisigLoading,
+    isLoading: isMultisigLoading,
   });
 
   const revalidate = useCallback(async () => {

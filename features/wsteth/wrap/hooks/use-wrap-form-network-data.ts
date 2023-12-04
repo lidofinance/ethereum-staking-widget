@@ -32,7 +32,7 @@ export const useWrapFormNetworkData = () => {
     limit: stakeLimitInfo?.currentStakeLimit,
     isPadded: !isMultisig,
     gasLimit: gasLimitETH,
-    isLoading: !isMultisigLoading,
+    isLoading: isMultisigLoading,
   });
 
   const revalidateWrapFormData = useCallback(async () => {

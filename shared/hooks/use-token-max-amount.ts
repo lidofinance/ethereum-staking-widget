@@ -17,11 +17,11 @@ export const useTokenMaxAmount = ({
   gasLimit,
   isLoading = false,
   isPadded = false,
-}: UseTokenMaxAmountArgs): BigNumber => {
+}: UseTokenMaxAmountArgs): BigNumber | undefined => {
   const maxGasPrice = useMaxGasPrice();
 
   const maxAmount = useMemo(() => {
-    let maxAmount = Zero;
+    let maxAmount: BigNumber | undefined = undefined;
     if (!balance || isLoading) return maxAmount;
     maxAmount = balance;
 
@@ -30,11 +30,11 @@ export const useTokenMaxAmount = ({
     }
 
     if (isPadded) {
-      // we return zero if we should pad but don't have data
+      // we return undefined if we should pad but don't have data
       if (gasLimit && maxGasPrice) {
         maxAmount = maxAmount.sub(gasLimit.mul(maxGasPrice));
         if (maxAmount.lt(Zero)) maxAmount = Zero;
-      } else maxAmount = Zero;
+      } else maxAmount = undefined;
     }
 
     return maxAmount;
