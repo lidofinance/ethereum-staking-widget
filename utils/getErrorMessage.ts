@@ -5,6 +5,7 @@ export enum ErrorMessage {
   ENABLE_BLIND_SIGNING = 'Please enable blind signing on your Ledger hardware wallet.',
   LIMIT_REACHED = 'Transaction could not be completed because stake limit is exhausted. Please wait until the stake limit restores and try again. Otherwise, you can swap your Ethereum on 1inch platform instantly.',
   DEVICE_LOCKED = 'Please unlock your Ledger hardware wallet',
+  INVALID_SIGNATURE = 'Invalid Permit signature. Perhaps it has expired or already been used. Try submitting a withdrawal request again.',
 }
 
 export const getErrorMessage = (error: unknown): ErrorMessage => {
@@ -21,6 +22,8 @@ export const getErrorMessage = (error: unknown): ErrorMessage => {
     case 'UNPREDICTABLE_GAS_LIMIT':
     case 'INSUFFICIENT_FUNDS':
       return ErrorMessage.NOT_ENOUGH_ETHER;
+    case 'INVALID_SIGNATURE':
+      return ErrorMessage.INVALID_SIGNATURE;
     case 'ACTION_REJECTED':
     case 4001:
       return ErrorMessage.DENIED_SIG;
@@ -43,12 +46,9 @@ export const extractCodeFromError = (
   // early exit on non object error
   if (!error || typeof error != 'object') return 0;
 
-  if (
-    'reason' in error &&
-    typeof error.reason == 'string' &&
-    error.reason.includes('STAKE_LIMIT')
-  ) {
-    return 'LIMIT_REACHED';
+  if ('reason' in error && typeof error.reason == 'string') {
+    if (error.reason.includes('STAKE_LIMIT')) return 'LIMIT_REACHED';
+    if (error.reason.includes('INVALID_SIGNATURE')) return 'INVALID_SIGNATURE';
   }
 
   // sometimes we have error message but bad error code

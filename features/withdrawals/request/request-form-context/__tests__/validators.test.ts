@@ -38,14 +38,16 @@ describe('tvlJokeValidate', () => {
   });
 });
 
-const amountPerRequest = bn(100);
+const maxAmountPerRequest = bn(100);
+const minAmountPerRequest = bn(10);
 const maxRequestCount = 100;
 describe('validateSplitRequests', () => {
   it('should split into 1 request', () => {
     const requests = validateSplitRequests(
       field,
       bn(10),
-      amountPerRequest,
+      maxAmountPerRequest,
+      minAmountPerRequest,
       maxRequestCount,
     );
     expect(requests).toHaveLength(1);
@@ -53,27 +55,43 @@ describe('validateSplitRequests', () => {
   });
 
   it('should split into 2 requests', () => {
+    const amount = maxAmountPerRequest.add(minAmountPerRequest.mul(5));
     const requests = validateSplitRequests(
       field,
-      bn(150),
-      amountPerRequest,
+      amount,
+      maxAmountPerRequest,
+      minAmountPerRequest,
       maxRequestCount,
     );
     expect(requests).toHaveLength(2);
-    expect(requests[0].eq(amountPerRequest)).toBe(true);
-    expect(requests[1].eq(bn(150).sub(amountPerRequest))).toBe(true);
+    expect(requests[0].eq(maxAmountPerRequest)).toBe(true);
+    expect(requests[1].eq(amount.sub(maxAmountPerRequest))).toBe(true);
+  });
+
+  it('should split into 2(max+min) requests', () => {
+    const requests = validateSplitRequests(
+      field,
+      maxAmountPerRequest.add(minAmountPerRequest),
+      maxAmountPerRequest,
+      minAmountPerRequest,
+      maxRequestCount,
+    );
+    expect(requests).toHaveLength(2);
+    expect(requests[0].eq(maxAmountPerRequest)).toBe(true);
+    expect(requests[1].eq(minAmountPerRequest)).toBe(true);
   });
 
   it('should split into max requests', () => {
     const requests = validateSplitRequests(
       field,
-      amountPerRequest.mul(maxRequestCount),
-      amountPerRequest,
+      maxAmountPerRequest.mul(maxRequestCount),
+      maxAmountPerRequest,
+      minAmountPerRequest,
       maxRequestCount,
     );
     expect(requests).toHaveLength(maxRequestCount);
     requests.forEach((r) => {
-      expect(r.eq(amountPerRequest)).toBe(true);
+      expect(r.eq(maxAmountPerRequest)).toBe(true);
     });
   });
 
@@ -81,8 +99,9 @@ describe('validateSplitRequests', () => {
     const fn = () =>
       validateSplitRequests(
         field,
-        amountPerRequest.mul(maxRequestCount).add(1),
-        amountPerRequest,
+        maxAmountPerRequest.mul(maxRequestCount).add(1),
+        maxAmountPerRequest,
+        minAmountPerRequest,
         maxRequestCount,
       );
     expect(fn).toThrow();
@@ -95,6 +114,26 @@ describe('validateSplitRequests', () => {
       });
       expect(e).toHaveProperty('payload.requestCount');
       expect((e as any).payload.requestCount).toBe(maxRequestCount + 1);
+    }
+  });
+
+  it('should throw right error when cannot split because of left over', () => {
+    const fn = () =>
+      validateSplitRequests(
+        field,
+        maxAmountPerRequest.add(minAmountPerRequest).sub(1),
+        maxAmountPerRequest,
+        minAmountPerRequest,
+        maxRequestCount,
+      );
+    expect(fn).toThrow();
+    try {
+      fn();
+    } catch (e) {
+      expect(e).toMatchObject({
+        field,
+        type: ValidationSplitRequest.type,
+      });
     }
   });
 });

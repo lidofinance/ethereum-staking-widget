@@ -18,7 +18,7 @@ describe('getErrorMessage', () => {
   });
 
   it('should return LIMIT_REACHED error message when error reason includes STAKE_LIMIT', () => {
-    const error = { reason: ['STAKE_LIMIT'] };
+    const error = { reason: 'STAKE_LIMIT' };
     expect(getErrorMessage(error)).toBe(ErrorMessage.LIMIT_REACHED);
   });
 
@@ -47,7 +47,7 @@ describe('extractCodeFromError', () => {
   });
 
   test('extracts error code from reason array', () => {
-    const error = { reason: ['STAKE_LIMIT'] };
+    const error = { reason: 'STAKE_LIMIT' };
     expect(extractCodeFromError(error)).toBe('LIMIT_REACHED');
   });
 
