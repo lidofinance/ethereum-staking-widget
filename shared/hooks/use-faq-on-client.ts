@@ -21,7 +21,7 @@ export const useFetchFaqOnClientIfETagWereChanged = (
         !respFaq ||
         !respFaq.faq ||
         !isPageFAQ(respFaq.faq) ||
-        eTag !== respFaq?.eTag
+        eTag === respFaq?.eTag
       ) {
         return undefined;
       }
