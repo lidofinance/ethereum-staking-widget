@@ -20,7 +20,7 @@ permissions:
 
 jobs:
   ens-deploy:
-    uses: ./.github/workflows/ci-ens-base.yml
+    uses: lidofinance/actions/.github/workflows/ci-ens.yml@main
     with:
       ipfs_cid: ${{ inputs.IPFS_CID }}
       chain_name: ${{ inputs.CHAIN_NAME }}
