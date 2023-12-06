@@ -1,4 +1,4 @@
-import { FC } from 'react';
+import { FC, Fragment } from 'react';
 import Head from 'next/head';
 
 import { Layout } from 'shared/components';
@@ -9,6 +9,7 @@ import { Wallet } from './wallet/wallet';
 import { StakeForm } from './stake-form/stake-form';
 import { StakeFaq } from './stake-faq/stake-faq';
 import { LidoStats } from './lido-stats/lido-stats';
+import { GoerliSunsetBanner } from 'shared/banners/goerli-sunset';
 
 const HomePageRegular: FC = () => {
   const key = useWeb3Key();
@@ -24,8 +25,11 @@ const HomePageRegular: FC = () => {
         </Head>
 
         <NoSSRWrapper>
-          <Wallet key={'wallet' + key} />
-          <StakeForm key={'form' + key} />
+          <Fragment key={key}>
+            <GoerliSunsetBanner />
+            <Wallet />
+            <StakeForm />
+          </Fragment>
         </NoSSRWrapper>
         <LidoStats />
         <StakeFaq />
