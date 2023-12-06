@@ -5,7 +5,7 @@ export { MODAL, ModalContext } from './modals';
 
 export const ThemeProvider: FC<PropsWithChildren> = ({ children }) => {
   const router = useRouter();
-  const queryTheme = router.query.theme;
+  const queryTheme = (router?.query?.theme as string)?.toLowerCase();
 
   const overrideThemeName: ThemeName | undefined = useMemo(() => {
     if (queryTheme === 'light') return ThemeName.light;

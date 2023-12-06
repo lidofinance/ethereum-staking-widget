@@ -11,14 +11,17 @@ import NoSSRWrapper from 'shared/components/no-ssr-wrapper';
 
 import { HeaderSettingsButton } from './header-settings-button';
 import { HeaderWalletChainStyle, DotStyle, IPFSInfoBoxWrap } from '../styles';
+import { useRouter } from 'next/router';
 
 const HeaderWallet: FC = () => {
+  const router = useRouter();
   const { active } = useWeb3();
   const { chainId } = useSDK();
 
   const chainName = CHAINS[chainId];
   const testNet = chainId !== CHAINS.Mainnet;
   const showNet = testNet && active;
+  const queryTheme = router?.query?.theme;
 
   return (
     <NoSSRWrapper>
@@ -36,7 +39,7 @@ const HeaderWallet: FC = () => {
         <Connect size="sm" />
       )}
       {dynamics.ipfsMode && <HeaderSettingsButton />}
-      <ThemeToggler />
+      {!queryTheme && <ThemeToggler />}
       {dynamics.ipfsMode && (
         <IPFSInfoBoxWrap>
           <IPFSInfoBox />
