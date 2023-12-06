@@ -64,7 +64,7 @@ export const enum MATOMO_CLICK_EVENTS_TYPES {
 export const MATOMO_CLICK_EVENTS: Record<
   MATOMO_CLICK_EVENTS_TYPES,
   MatomoEventType
-  > = {
+> = {
   // Global
   [MATOMO_CLICK_EVENTS_TYPES.connectWallet]: [
     'Ethereum_Staking_Widget',

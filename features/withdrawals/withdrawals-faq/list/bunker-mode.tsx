@@ -1,8 +1,10 @@
 import { Accordion } from '@lidofinance/lido-ui';
+import { useScrollToId } from '../utils/useScrollToId';
 
 export const BunkerMode: React.FC = () => {
+  const { id, opened } = useScrollToId('whatIsBunkerMode');
   return (
-    <Accordion summary="What is Bunker mode?">
+    <Accordion id={id} defaultExpanded={opened} summary="What is Bunker mode?">
       <p>
         Bunker mode is an emergency mode that activates under three worst-case
         conditions (when penalties are large enough to significantly impact the

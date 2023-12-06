@@ -24,6 +24,7 @@ import { UnstakeAmountBoundaries } from './list/unstake-amount-boundaries';
 import { LidoNFT } from './list/lido-nft';
 import { HowToAddNFT } from './list/add-nft';
 import { NFTNotChange } from './list/nft-not-change';
+import { WhyWaitingTimeChanged } from './list/why-waiting-time-changed';
 
 // TODO: Replace this link when it will be finalized
 // const LEARN_MORE_LINK =
@@ -44,6 +45,7 @@ export const RequestFaq: React.FC = () => {
       <WithdrawalPeriodCircumstances />
       <RewardsAfterWithdraw />
       <WithdrawalFee />
+      <WhyWaitingTimeChanged />
       <ClaimableAmountDifference title="Why is the claimable amount may differ from my requested amount?" />
       <TurboMode />
       <BunkerMode />
