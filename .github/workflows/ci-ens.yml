@@ -1,0 +1,28 @@
+name: Deploy ENS
+
+on:
+  workflow_dispatch:
+    inputs:
+      IPFS_CID:
+        description: 'IPFS CID'
+        required: true
+        type: string
+      CHAIN_NAME:
+        description: 'Chain name'
+        required: true
+        type: choice
+        options:
+          - goerli
+          - mainnet
+
+permissions:
+  contents: write
+
+jobs:
+  ens-deploy:
+    uses: ./.github/workflows/ci-ens-base.yml
+    with:
+      ipfs_cid: ${{ inputs.IPFS_CID }}
+      chain_name: ${{ inputs.CHAIN_NAME }}
+    secrets:
+      DELEGATE_PRIVATE_KEY: ${{ secrets.DELEGATE_PRIVATE_KEY }}
