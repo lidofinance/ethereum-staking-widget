@@ -99,7 +99,7 @@ const DexOption: React.FC<DexOptionProps> = ({
         Go to {title}
       </DexOptionBlockLink>
       <DexOptionAmount>
-        {loading && <InlineLoaderSmall />}
+        {loading && !toReceive && <InlineLoaderSmall />}
         {toReceive ? (
           <FormatToken
             approx

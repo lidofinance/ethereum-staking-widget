@@ -21,7 +21,7 @@ export const useLidoStats = (): {
   initialLoading: boolean;
 } => {
   const { chainId } = useSDK();
-  const apiShortLidoStatsPath = `api/short-lido-stats?chainId=${chainId}`;
+  const apiShortLidoStatsPath = `api/short-lido-stats/?chainId=${chainId}`;
   const lidoStats = useLidoSWR<ResponseData>(
     dynamics.ipfsMode
       ? `${dynamics.widgetApiBasePathForIpfs}/${apiShortLidoStatsPath}`
