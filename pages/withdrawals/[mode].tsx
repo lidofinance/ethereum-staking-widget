@@ -72,9 +72,10 @@ export const getStaticProps: GetStaticProps<
 > = async ({ params }) => {
   // FAQ
   const faqProps = {
-    pageRequestFAQ: (await getFaqSSR('/faq-withdrawals-page-request-tab.md'))
-      ?.faq,
-    pageClaimFAQ: (await getFaqSSR('/faq-withdrawals-page-claim-tab.md'))?.faq,
+    pageRequestFAQ:
+      (await getFaqSSR('/faq-withdrawals-page-request-tab.md'))?.faq ?? null,
+    pageClaimFAQ:
+      (await getFaqSSR('/faq-withdrawals-page-claim-tab.md'))?.faq ?? null,
     revalidate: FAQ_REVALIDATE_SECS,
   };
 

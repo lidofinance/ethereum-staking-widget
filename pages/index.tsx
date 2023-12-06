@@ -18,14 +18,12 @@ export const getStaticProps: GetStaticProps<
   if (process.env.IPFS_MODE) {
     return {
       props: {
-        stakePage: (await getFaqSSR(stakePageFAQPath)) ?? undefined,
-        wrapPage:
-          (await getFaqSSR('/faq-wrap-and-unwrap-page.md')) ?? undefined,
+        stakePage: (await getFaqSSR(stakePageFAQPath)) ?? null,
+        wrapPage: (await getFaqSSR('/faq-wrap-and-unwrap-page.md')) ?? null,
         withdrawalsPageRequest:
-          (await getFaqSSR('/faq-withdrawals-page-request-tab.md')) ??
-          undefined,
+          (await getFaqSSR('/faq-withdrawals-page-request-tab.md')) ?? null,
         withdrawalsPageClaim:
-          (await getFaqSSR('/faq-withdrawals-page-claim-tab.md')) ?? undefined,
+          (await getFaqSSR('/faq-withdrawals-page-claim-tab.md')) ?? null,
       },
     };
   }
@@ -33,7 +31,7 @@ export const getStaticProps: GetStaticProps<
   // FAQ for home page regular
   return {
     props: {
-      pageFAQ: (await getFaqSSR(stakePageFAQPath))?.faq,
+      pageFAQ: (await getFaqSSR(stakePageFAQPath))?.faq ?? null,
     },
     revalidate: FAQ_REVALIDATE_SECS,
   };

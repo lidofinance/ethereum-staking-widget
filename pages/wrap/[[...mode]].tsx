@@ -61,7 +61,7 @@ export const getStaticProps: GetStaticProps<
 > = async ({ params }) => {
   // FAQ
   const faqProps = {
-    pageFAQ: (await getFaqSSR('/faq-wrap-and-unwrap-page.md'))?.faq,
+    pageFAQ: (await getFaqSSR('/faq-wrap-and-unwrap-page.md'))?.faq ?? null,
     revalidate: FAQ_REVALIDATE_SECS,
   };
 
