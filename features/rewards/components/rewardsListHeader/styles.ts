@@ -10,7 +10,7 @@ export const RewardsListHeaderStyle = styled.div`
 
   color: ${({ theme }) => theme.colors.secondary};
 
-  ${({ theme }) => theme.mediaQueries.md} {
+  ${({ theme }) => theme.mediaQueries.lg} {
     flex-direction: column;
     height: auto;
     align-items: initial;
@@ -28,6 +28,7 @@ export const LeftOptionsWrapper = styled.div`
   flex-wrap: wrap;
   margin-right: auto;
   gap: 16px;
+
   ${({ theme }) => theme.mediaQueries.lg} {
     order: 3;
     margin-right: 0;
@@ -35,6 +36,10 @@ export const LeftOptionsWrapper = styled.div`
     & > * {
       flex: 1 0;
     }
+  }
+
+  ${({ theme }) => theme.mediaQueries.md} {
+    flex-direction: column;
   }
 `;
 
