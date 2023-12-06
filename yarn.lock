@@ -2288,8 +2288,10 @@
   resolved "https://registry.yarnpkg.com/@lidofinance/satanizer/-/satanizer-0.32.0.tgz#3ea01a94b7b5c58751a9e3030f6134c83cecefaf"
   integrity sha512-gHoZM8l/AWWT1YyZf+4/IViAxGuALZNo29b4bWvmEGJw/Xv0ChRPP2/xLEugdk03T16r8vxww3j/tAYTTzGzQw==
 
-"@lidofinance/ui-faq@file:.yalc/@lidofinance/ui-faq":
-  version "0.0.0"
+"@lidofinance/ui-faq@0.39.1":
+  version "0.39.1"
+  resolved "https://registry.yarnpkg.com/@lidofinance/ui-faq/-/ui-faq-0.39.1.tgz#8a88fe1e5a8388f7aa1cff8b0a6347844bcfb480"
+  integrity sha512-1otkp7ryO0JixxsTwqJuAI786ec0qaz/UfFiAO8kb8U3q1htuZZpq5kRulwcTStp5XALCoN/jPSHKuxiZwn+8Q==
   dependencies:
     "@lidofinance/lido-ui" "3.14.1"
     js-yaml "^4.1.0"
