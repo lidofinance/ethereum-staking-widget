@@ -23,6 +23,11 @@ export const LinkIpfs = ({ onClick, query, ...props }: Props) => {
     (event) => {
       event.preventDefault();
       void push(href, query);
+
+      if (typeof window !== 'undefined') {
+        window.scrollTo({ top: 0 });
+      }
+
       onClick?.(event);
     },
     [onClick, push, href, query],
