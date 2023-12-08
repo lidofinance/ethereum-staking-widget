@@ -8,5 +8,10 @@ export const useStakingLimitWarning = (stakingLimitLevel?: LIMIT_LEVEL) => {
       ? 'Stake limit is almost exhausted. Your transaction may not go through.'
       : null;
 
-  return limitWarning;
+  const limitError =
+    stakingLimitLevel === LIMIT_LEVEL.REACHED && active
+      ? 'Stake limit is exhausted. Please wait until the limit is restored.'
+      : null;
+
+  return { limitWarning, limitError };
 };

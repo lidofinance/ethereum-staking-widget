@@ -22,6 +22,7 @@ export const TokenAmountInputHookForm = ({
   token,
   fieldName,
   showErrorMessage = true,
+  error: errorProp,
   ...props
 }: TokenAmountInputHookFormProps) => {
   const {
@@ -33,12 +34,12 @@ export const TokenAmountInputHookForm = ({
   return (
     <InputAmount
       {...props}
+      {...field}
       fullwidth
-      error={showErrorMessage ? errorMessage : hasErrorHighlight}
+      error={errorProp ?? (showErrorMessage ? errorMessage : hasErrorHighlight)}
       isLocked={isLocked}
       maxValue={maxValue}
       label={`${getTokenDisplayName(token)} amount`}
-      {...field}
     />
   );
 };

@@ -9,7 +9,9 @@ export const TokenAmountInputWrap = () => {
 
   const { maxAmount, isApprovalNeededBeforeWrap, stakeLimitInfo } =
     useWrapFormData();
-  const warning = useStakingLimitWarning(stakeLimitInfo?.stakeLimitLevel);
+  const { limitWarning } = useStakingLimitWarning(
+    stakeLimitInfo?.stakeLimitLevel,
+  );
 
   return (
     <TokenAmountInputHookForm
@@ -18,7 +20,7 @@ export const TokenAmountInputWrap = () => {
       data-testid="wrapInput"
       isLocked={isApprovalNeededBeforeWrap}
       maxValue={maxAmount}
-      warning={token === 'ETH' ? warning : null}
+      warning={token === 'ETH' ? limitWarning : null}
       showErrorMessage={false}
     />
   );
