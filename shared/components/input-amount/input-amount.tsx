@@ -72,7 +72,7 @@ export const InputAmount = forwardRef<HTMLInputElement, InputAmountProps>(
           e.currentTarget.value = '0.';
         }
 
-        // guards against not numbers (no matter overflow or whitespace)
+        // guards against non numbers (no matter overflow or whitespace)
         // empty whitespace is cast to 0, so not NaN
         if (isNaN(Number(e.currentTarget.value))) {
           return;
@@ -81,7 +81,7 @@ export const InputAmount = forwardRef<HTMLInputElement, InputAmountProps>(
         if (e.currentTarget.value === '') {
           onChange?.(null);
         }
-        (window as any)['parseEther'] = parseEther;
+
         const value = parseEtherSafe(e.currentTarget.value);
         if (value) {
           const cappedValue = value.gt(MaxUint256) ? MaxUint256 : value;

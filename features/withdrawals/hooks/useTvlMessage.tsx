@@ -15,7 +15,7 @@ const texts: ((amount: string) => string)[] = [
   () => 'Hey Justin Sun, the "stake" button is this way ^',
 ];
 
-const getText = () => texts[0]; //Math.floor(Math.random() * texts.length)];
+const getText = () => texts[Math.floor(Math.random() * texts.length)];
 
 export const useTvlMessage = (error?: unknown) => {
   // To render one text per page before refresh
