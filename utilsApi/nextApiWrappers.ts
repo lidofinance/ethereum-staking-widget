@@ -1,4 +1,5 @@
 import type { Histogram, Counter } from 'prom-client';
+import { utils } from 'ethers';
 import { getStatusLabel } from '@lidofinance/api-metrics';
 import {
   RequestWrapper,
@@ -13,6 +14,11 @@ import {
   RATE_LIMIT,
   RATE_LIMIT_TIME_FRAME,
 } from 'config';
+import {
+  getMetricContractInterface,
+  METRIC_CONTRACT_ADDRESSES,
+} from './contractAddressesMetricsMap';
+import { CHAINS } from '@lido-sdk/constants';
 
 export enum HttpMethod {
   GET = 'GET',
@@ -69,7 +75,7 @@ export const cors =
     await next?.(req, res, next);
   };
 
-export const httpMethodGuard =
+export const methodAllowList =
   (methodWhitelist: HttpMethod[]): RequestWrapper =>
   async (req, res, next) => {
     if (
@@ -105,25 +111,50 @@ export const responseTimeMetric =
 export const requestAddressMetric =
   (metrics: Counter<string>): RequestWrapper =>
   async (req, res, next) => {
-    const referrer = req.headers.referer as string;
+    const collectMetrics = async () => {
+      const referer = req.headers.referer as string;
+      const chainId = req.query.chainId as unknown as CHAINS;
+      const url = new URL(referer);
+      const urlWithoutQuery = `${url.origin}${url.pathname}`;
 
-    const checkCallObject = (call: any) => {
-      if (
-        typeof call === 'object' &&
-        call.method === 'eth_call' &&
-        call.params[0].to
-      ) {
-        metrics.labels({ address: call.params[0].to, referrer }).inc(1);
+      const checkCallObject = (call: any) => {
+        if (
+          typeof call === 'object' &&
+          call.method === 'eth_call' &&
+          call.params[0].to
+        ) {
+          const { to, data } = call.params[0];
+          const address = utils.getAddress(to);
+          const contractName = METRIC_CONTRACT_ADDRESSES[chainId][address];
+          const methodEncoded = data?.slice(0, 10); // `0x` and 8 next symbols
+          const methodDecoded = contractName
+            ? getMetricContractInterface(contractName)?.getFunction(
+                methodEncoded,
+              )?.name
+            : null;
+
+          metrics
+            .labels({
+              address,
+              referer: urlWithoutQuery,
+              contractName: contractName || 'N/A',
+              methodEncoded: methodEncoded || 'N/A',
+              methodDecoded: methodDecoded || 'N/A',
+            })
+            .inc(1);
+        }
+      };
+
+      if (req.body) {
+        if (Array.isArray(req.body)) {
+          req.body.forEach(checkCallObject);
+        } else {
+          checkCallObject(req.body);
+        }
       }
     };
 
-    if (req.body) {
-      if (Array.isArray(req.body)) {
-        req.body.forEach(checkCallObject);
-      } else {
-        checkCallObject(req.body);
-      }
-    }
+    void collectMetrics();
 
     await next?.(req, res, next);
   };

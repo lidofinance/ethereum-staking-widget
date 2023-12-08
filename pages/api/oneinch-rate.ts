@@ -15,7 +15,7 @@ import {
   responseTimeMetric,
   errorAndCacheDefaultWrappers,
   rateLimit,
-  httpMethodGuard,
+  methodAllowList,
   HttpMethod,
   cors,
 } from 'utilsApi';
@@ -85,7 +85,7 @@ const oneInchRate: API = async (req, res) => {
 };
 
 export default wrapNextRequest([
-  httpMethodGuard([HttpMethod.GET]),
+  methodAllowList([HttpMethod.GET]),
   cors({ origin: ['*'], methods: [HttpMethod.GET] }),
   rateLimit,
   responseTimeMetric(Metrics.request.apiTimings, API_ROUTES.ONEINCH_RATE),

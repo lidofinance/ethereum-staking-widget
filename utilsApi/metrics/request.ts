@@ -43,7 +43,13 @@ export class RequestMetrics {
     return new Counter({
       name: METRICS_PREFIX + METRIC_NAMES.ETH_CALL_ADDRESS_TO,
       help: 'Addresses presented as "to" in eth_call requests',
-      labelNames: ['address', 'referrer'],
+      labelNames: [
+        'address',
+        'referer',
+        'contractName',
+        'methodEncoded',
+        'methodDecoded',
+      ],
       registers: [this.registry],
     });
   }
