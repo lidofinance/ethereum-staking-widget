@@ -18,21 +18,21 @@ import {
 } from 'generated';
 import { invert, isNull, memoize, omitBy } from 'lodash';
 
-export const METRIC_CONTRACT_NAMES = {
+export const CONTRACT_NAMES = {
   stETH: 'stETH',
   wstETH: 'wstETH',
   WithdrawalQueue: 'WithdrawalQueue',
   Aggregator: 'Aggregator',
   AggregatorStEthUsdPriceFeed: 'AggregatorStEthUsdPriceFeed',
 } as const;
-export type CONTRACT_NAMES = keyof typeof METRIC_CONTRACT_NAMES;
+export type CONTRACT_NAMES = keyof typeof CONTRACT_NAMES;
 
 export const METRIC_CONTRACT_ABIS = {
-  [METRIC_CONTRACT_NAMES.stETH]: StethAbiFactory.abi,
-  [METRIC_CONTRACT_NAMES.wstETH]: WstethAbiFactory.abi,
-  [METRIC_CONTRACT_NAMES.WithdrawalQueue]: WithdrawalQueueAbiFactory.abi,
-  [METRIC_CONTRACT_NAMES.Aggregator]: AggregatorAbi__factory.abi,
-  [METRIC_CONTRACT_NAMES.AggregatorStEthUsdPriceFeed]:
+  [CONTRACT_NAMES.stETH]: StethAbiFactory.abi,
+  [CONTRACT_NAMES.wstETH]: WstethAbiFactory.abi,
+  [CONTRACT_NAMES.WithdrawalQueue]: WithdrawalQueueAbiFactory.abi,
+  [CONTRACT_NAMES.Aggregator]: AggregatorAbi__factory.abi,
+  [CONTRACT_NAMES.AggregatorStEthUsdPriceFeed]:
     AggregatorEthUsdPriceFeedAbi__factory.abi,
 } as const;
 
@@ -61,25 +61,25 @@ export const METRIC_CONTRACT_ADDRESSES = (
 ).reduce(
   (mapped, chainId) => {
     const map = {
-      [METRIC_CONTRACT_NAMES.stETH]: getAddressOrNull(
+      [CONTRACT_NAMES.stETH]: getAddressOrNull(
         getTokenAddress,
         chainId,
         TOKENS.STETH,
       ),
-      [METRIC_CONTRACT_NAMES.wstETH]: getAddressOrNull(
+      [CONTRACT_NAMES.wstETH]: getAddressOrNull(
         getTokenAddress,
         chainId,
         TOKENS.WSTETH,
       ),
-      [METRIC_CONTRACT_NAMES.WithdrawalQueue]: getAddressOrNull(
+      [CONTRACT_NAMES.WithdrawalQueue]: getAddressOrNull(
         getWithdrawalQueueAddress,
         chainId,
       ),
-      [METRIC_CONTRACT_NAMES.Aggregator]: getAddressOrNull(
+      [CONTRACT_NAMES.Aggregator]: getAddressOrNull(
         getAggregatorAddress,
         chainId,
       ),
-      [METRIC_CONTRACT_NAMES.AggregatorStEthUsdPriceFeed]: getAddressOrNull(
+      [CONTRACT_NAMES.AggregatorStEthUsdPriceFeed]: getAddressOrNull(
         getAggregatorStEthUsdPriceFeedAddress,
         chainId,
       ),
