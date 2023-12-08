@@ -45,7 +45,10 @@ export const Navigation: FC = memo(() => {
       {routes.map(({ name, path, icon }) => {
         const isActive =
           pathnameWithoutQuery === path ||
-          (path.length > 1 && pathnameWithoutQuery.startsWith(path));
+          (path.length > 1 && pathnameWithoutQuery.startsWith(path)) ||
+          // fix for withdrawals/claim
+          (pathname.indexOf('withdrawals') > -1 &&
+            path.indexOf('withdrawals') > -1);
 
         return (
           <LocalLink key={path} href={path}>
