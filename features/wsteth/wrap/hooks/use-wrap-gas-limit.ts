@@ -11,6 +11,7 @@ import {
   WRAP_GAS_LIMIT_GOERLI,
 } from 'config';
 import { useCurrentStaticRpcProvider } from 'shared/hooks/use-current-static-rpc-provider';
+import { applyGasLimitRatio } from 'features/stake/stake-form/utils';
 
 export const useWrapGasLimit = () => {
   const wsteth = useWSTETHContractRPC();
@@ -31,7 +32,7 @@ export const useWrapGasLimit = () => {
           });
         } catch (error) {
           console.warn(`${_key}::[eth]`, error);
-          return BigNumber.from(WRAP_FROM_ETH_GAS_LIMIT);
+          return applyGasLimitRatio(BigNumber.from(WRAP_FROM_ETH_GAS_LIMIT));
         }
       };
 
