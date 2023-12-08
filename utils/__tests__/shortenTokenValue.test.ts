@@ -15,5 +15,6 @@ describe('shortenTokenValue', () => {
     expect(shortenTokenValue(1000000000)).toBe('1B');
     expect(shortenTokenValue(1000000000000)).toBe('1T');
     expect(shortenTokenValue(1000000000000000)).toBe('1Q');
+    expect(shortenTokenValue(1000000000000000000000)).toBe('1000000Q');
   });
 });
