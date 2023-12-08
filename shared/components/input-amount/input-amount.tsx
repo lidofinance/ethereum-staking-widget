@@ -55,9 +55,16 @@ export const InputAmount = forwardRef<HTMLInputElement, InputAmountProps>(
 
     const handleChange = useCallback(
       (e: ChangeEvent<HTMLInputElement>) => {
+        e.currentTarget.value = e.currentTarget.value.trim();
+
         // Support for devices where inputMode="decimal" showing keyboard with comma as decimal delimiter
         if (e.currentTarget.value.includes(',')) {
           e.currentTarget.value = e.currentTarget.value.replaceAll(',', '.');
+        }
+
+        // delete negative sign
+        if (e.currentTarget.value.includes('-')) {
+          e.currentTarget.value = e.currentTarget.value.replaceAll('-', '');
         }
 
         // Prepend zero when user types just a dot symbol for "0."
@@ -71,10 +78,10 @@ export const InputAmount = forwardRef<HTMLInputElement, InputAmountProps>(
           return;
         }
 
-        if (e.currentTarget.value.trim() === '') {
+        if (e.currentTarget.value === '') {
           onChange?.(null);
         }
-
+        (window as any)['parseEther'] = parseEther;
         const value = parseEtherSafe(e.currentTarget.value);
         if (value) {
           const cappedValue = value.gt(MaxUint256) ? MaxUint256 : value;
