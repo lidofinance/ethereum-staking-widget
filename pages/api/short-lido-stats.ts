@@ -15,7 +15,7 @@ import {
   getStEthPrice,
   getTotalStaked,
   HttpMethod,
-  methodAllowList,
+  httpMethodGuard,
   rateLimit,
   responseTimeMetric,
 } from 'utilsApi';
@@ -61,7 +61,7 @@ const shortLidoStats: API = async (req, res) => {
 };
 
 export default wrapNextRequest([
-  methodAllowList([HttpMethod.GET]),
+  httpMethodGuard([HttpMethod.GET]),
   cors({ origin: ['*'], methods: [HttpMethod.GET] }),
   rateLimit,
   responseTimeMetric(Metrics.request.apiTimings, API_ROUTES.SHORT_LIDO_STATS),

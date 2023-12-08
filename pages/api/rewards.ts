@@ -8,7 +8,7 @@ import {
   responseTimeMetric,
   rateLimit,
   responseTimeExternalMetricWrapper,
-  methodAllowList,
+  httpMethodGuard,
   HttpMethod,
   cors,
 } from 'utilsApi';
@@ -57,7 +57,7 @@ const rewards: API = async (req, res) => {
 };
 
 export default wrapNextRequest([
-  methodAllowList([HttpMethod.GET]),
+  httpMethodGuard([HttpMethod.GET]),
   cors({ origin: ['*'], methods: [HttpMethod.GET] }),
   rateLimit,
   responseTimeMetric(Metrics.request.apiTimings, API_ROUTES.REWARDS),

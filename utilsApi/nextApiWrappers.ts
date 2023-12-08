@@ -75,16 +75,16 @@ export const cors =
     await next?.(req, res, next);
   };
 
-export const methodAllowList =
-  (methodWhitelist: HttpMethod[]): RequestWrapper =>
+export const httpMethodGuard =
+  (methodAllowList: HttpMethod[]): RequestWrapper =>
   async (req, res, next) => {
     if (
       !req ||
       !req.method ||
-      !Object.values(methodWhitelist).includes(req.method as HttpMethod)
+      !Object.values(methodAllowList).includes(req.method as HttpMethod)
     ) {
       res.status(405);
-      throw new Error(`You can use only: ${methodWhitelist.toString()}`);
+      throw new Error(`You can use only: ${methodAllowList.toString()}`);
     }
 
     await next?.(req, res, next);
@@ -108,53 +108,61 @@ export const responseTimeMetric =
     }
   };
 
+const collectRequestAddressMetric = async ({
+  calls,
+  referer,
+  chainId,
+  metrics,
+}: {
+  calls: any[];
+  referer: string;
+  chainId: CHAINS;
+  metrics: Counter<string>;
+}) => {
+  const url = new URL(referer);
+  const urlWithoutQuery = `${url.origin}${url.pathname}`;
+  calls.forEach((call: any) => {
+    if (
+      typeof call === 'object' &&
+      call.method === 'eth_call' &&
+      call.params[0].to
+    ) {
+      const { to, data } = call.params[0];
+      const address = utils.getAddress(to);
+      const contractName = METRIC_CONTRACT_ADDRESSES[chainId][address];
+      const methodEncoded = data?.slice(0, 10); // `0x` and 8 next symbols
+      const methodDecoded = contractName
+        ? getMetricContractInterface(contractName)?.getFunction(methodEncoded)
+            ?.name
+        : null;
+
+      metrics
+        .labels({
+          address,
+          referer: urlWithoutQuery,
+          contractName: contractName || 'N/A',
+          methodEncoded: methodEncoded || 'N/A',
+          methodDecoded: methodDecoded || 'N/A',
+        })
+        .inc(1);
+    }
+  });
+};
+
 export const requestAddressMetric =
   (metrics: Counter<string>): RequestWrapper =>
   async (req, res, next) => {
-    const collectMetrics = async () => {
-      const referer = req.headers.referer as string;
-      const chainId = req.query.chainId as unknown as CHAINS;
-      const url = new URL(referer);
-      const urlWithoutQuery = `${url.origin}${url.pathname}`;
+    const referer = req.headers.referer as string;
+    const chainId = req.query.chainId as unknown as CHAINS;
 
-      const checkCallObject = (call: any) => {
-        if (
-          typeof call === 'object' &&
-          call.method === 'eth_call' &&
-          call.params[0].to
-        ) {
-          const { to, data } = call.params[0];
-          const address = utils.getAddress(to);
-          const contractName = METRIC_CONTRACT_ADDRESSES[chainId][address];
-          const methodEncoded = data?.slice(0, 10); // `0x` and 8 next symbols
-          const methodDecoded = contractName
-            ? getMetricContractInterface(contractName)?.getFunction(
-                methodEncoded,
-              )?.name
-            : null;
-
-          metrics
-            .labels({
-              address,
-              referer: urlWithoutQuery,
-              contractName: contractName || 'N/A',
-              methodEncoded: methodEncoded || 'N/A',
-              methodDecoded: methodDecoded || 'N/A',
-            })
-            .inc(1);
-        }
-      };
-
-      if (req.body) {
-        if (Array.isArray(req.body)) {
-          req.body.forEach(checkCallObject);
-        } else {
-          checkCallObject(req.body);
-        }
-      }
-    };
-
-    void collectMetrics();
+    if (req.body) {
+      void collectRequestAddressMetric({
+        calls: Array.isArray(req.body) ? req.body : [req.body],
+        referer,
+        chainId,
+        metrics,
+      }).catch(console.error);
+    }
 
     await next?.(req, res, next);
   };
