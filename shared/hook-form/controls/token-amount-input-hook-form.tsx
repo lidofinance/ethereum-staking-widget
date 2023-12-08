@@ -35,11 +35,12 @@ export const TokenAmountInputHookForm = ({
     <InputAmount
       {...props}
       {...field}
-      fullwidth
+      disabled={props.disabled ?? field.disabled}
       error={errorProp ?? (showErrorMessage ? errorMessage : hasErrorHighlight)}
       isLocked={isLocked}
       maxValue={maxValue}
       label={`${getTokenDisplayName(token)} amount`}
+      fullwidth
     />
   );
 };
