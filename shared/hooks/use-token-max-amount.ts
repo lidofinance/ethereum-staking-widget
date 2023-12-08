@@ -4,9 +4,10 @@ import { useMaxGasPrice } from './useMaxGasPrice';
 import { Zero } from '@ethersproject/constants';
 
 type UseTokenMaxAmountArgs = {
-  balance?: BigNumber;
-  limit?: BigNumber;
-  gasLimit?: BigNumber;
+  balance?: BigNumber; // user balance
+  limit?: BigNumber; // upper limit
+  gasLimit?: BigNumber; // operation gas limit
+  padding?: BigNumber; // untouchable amount to leave to user
   isPadded?: boolean;
   isLoading?: boolean;
 };
@@ -14,6 +15,7 @@ type UseTokenMaxAmountArgs = {
 export const useTokenMaxAmount = ({
   limit,
   balance,
+  padding,
   gasLimit,
   isLoading = false,
   isPadded = false,
@@ -30,6 +32,9 @@ export const useTokenMaxAmount = ({
     }
 
     if (isPadded) {
+      if (padding) {
+        maxAmount = maxAmount.sub(padding);
+      }
       // we return undefined if we should pad but don't have data
       if (gasLimit && maxGasPrice) {
         maxAmount = maxAmount.sub(gasLimit.mul(maxGasPrice));
@@ -38,7 +43,7 @@ export const useTokenMaxAmount = ({
     }
 
     return maxAmount;
-  }, [balance, gasLimit, isLoading, isPadded, limit, maxGasPrice]);
+  }, [balance, gasLimit, padding, isLoading, isPadded, limit, maxGasPrice]);
 
   return maxAmount;
 };

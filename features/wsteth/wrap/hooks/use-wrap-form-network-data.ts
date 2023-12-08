@@ -10,6 +10,7 @@ import { useTokenMaxAmount } from 'shared/hooks/use-token-max-amount';
 
 import { STRATEGY_LAZY } from 'utils/swrStrategies';
 import { useStakingLimitInfo } from 'shared/hooks';
+import { BALANCE_PADDING } from 'config';
 
 // Provides all data fetching for form to function
 export const useWrapFormNetworkData = () => {
@@ -32,6 +33,7 @@ export const useWrapFormNetworkData = () => {
     limit: stakeLimitInfo?.currentStakeLimit,
     isPadded: !isMultisig,
     gasLimit: gasLimitETH,
+    padding: BALANCE_PADDING,
     isLoading: isMultisigLoading,
   });
 
