@@ -108,6 +108,16 @@ export const responseTimeMetric =
     }
   };
 
+const parseRefererUrl = (referer: string) => {
+  if (!referer) return null;
+  try {
+    const url = new URL(referer);
+    return `${url.origin}${url.pathname}`;
+  } catch (error) {
+    return null;
+  }
+};
+
 const collectRequestAddressMetric = async ({
   calls,
   referer,
@@ -119,8 +129,7 @@ const collectRequestAddressMetric = async ({
   chainId: CHAINS;
   metrics: Counter<string>;
 }) => {
-  const url = new URL(referer);
-  const urlWithoutQuery = `${url.origin}${url.pathname}`;
+  const refererUrlParsed = parseRefererUrl(referer);
   calls.forEach((call: any) => {
     if (
       typeof call === 'object' &&
@@ -139,7 +148,7 @@ const collectRequestAddressMetric = async ({
       metrics
         .labels({
           address,
-          referer: urlWithoutQuery,
+          referer: refererUrlParsed || 'N/A',
           contractName: contractName || 'N/A',
           methodEncoded: methodEncoded || 'N/A',
           methodDecoded: methodDecoded || 'N/A',
