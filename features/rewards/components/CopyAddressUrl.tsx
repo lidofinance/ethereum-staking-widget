@@ -11,7 +11,12 @@ const CopyAddressUrl = ({ address }: { address: string }) => {
     const { href } = location;
 
     if (dynamics.ipfsMode) {
-      const withoutHashAndQuery = href.split('?')[0].split('#')[0];
+      let withoutHashAndQuery = href.split('?')[0].split('#')[0];
+      if (withoutHashAndQuery[withoutHashAndQuery.length - 1] === '/') {
+        // Remove first '/'
+        withoutHashAndQuery = withoutHashAndQuery.slice(0, -1);
+      }
+
       const hash = href.split('#')[1].split('?')[0];
       return (
         withoutHashAndQuery +
