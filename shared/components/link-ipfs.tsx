@@ -15,7 +15,7 @@ type Props = {
   children?: ReactNode;
 };
 
-export const LinkIpfs = ({ onClick, query, ...props }: Props) => {
+export const LinkIpfs = ({ onClick, query, children, ...props }: Props) => {
   const push = usePrefixedPush();
   const { href } = props;
 
@@ -40,7 +40,9 @@ export const LinkIpfs = ({ onClick, query, ...props }: Props) => {
     [href, query],
   );
 
-  // TODO:
-  // eslint-disable-next-line jsx-a11y/anchor-has-content,jsx-a11y/click-events-have-key-events,jsx-a11y/no-static-element-interactions
-  return <a {...props} href={basedHashHref} onClick={handleClick} />;
+  return (
+    <a {...props} href={basedHashHref} onClick={handleClick}>
+      {children}
+    </a>
+  );
 };
