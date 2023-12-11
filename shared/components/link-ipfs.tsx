@@ -1,23 +1,21 @@
-import React, {
-  ReactNode,
-  MouseEventHandler,
-  useCallback,
-  useMemo,
-} from 'react';
+import React, { MouseEventHandler, useCallback, useMemo } from 'react';
 
 import { usePrefixedPush } from 'shared/hooks/use-prefixed-history';
 import { getBasedHashHref } from 'utils/get-based-hash-href';
 
-type Props = {
+type LinkIpfsProps = React.ComponentProps<'a'> & {
   href: string;
-  query?: Record<string, string>;
-  onClick?: MouseEventHandler<HTMLAnchorElement>;
-  children?: ReactNode;
+  query: Record<string, string>;
 };
 
-export const LinkIpfs = ({ onClick, query, children, ...props }: Props) => {
+export const LinkIpfs = ({
+  href,
+  query,
+  onClick,
+  children,
+  ...props
+}: LinkIpfsProps) => {
   const push = usePrefixedPush();
-  const { href } = props;
 
   // Actual for click (opening in same tab)
   const handleClick: MouseEventHandler<HTMLAnchorElement> = useCallback(
