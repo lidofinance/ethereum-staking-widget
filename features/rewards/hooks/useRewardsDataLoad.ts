@@ -1,5 +1,6 @@
-import { Backend } from 'features/rewards/types';
 import { useEffect, useRef } from 'react';
+import { Backend } from 'features/rewards/types';
+import { dynamics } from 'config';
 import { useLidoSWR } from 'shared/hooks';
 import { swrAbortableMiddleware } from 'utils';
 
@@ -43,8 +44,14 @@ export const useRewardsDataLoad: UseRewardsDataLoad = (props) => {
   Object.entries(requestOptions).forEach(([k, v]) =>
     params.append(k, v.toString()),
   );
+
+  const apiRewardsPath = `/api/rewards/?${params.toString()}`;
+  const apiRewardsUrl = dynamics.ipfsMode
+    ? `${dynamics.widgetApiBasePathForIpfs}${apiRewardsPath}`
+    : apiRewardsPath;
+
   const { data, ...rest } = useLidoSWR<Backend>(
-    address ? `/api/rewards?${params.toString()}` : null,
+    address ? apiRewardsUrl : null,
     {
       shouldRetryOnError: false,
       revalidateOnFocus: false,

@@ -24,7 +24,7 @@ const ONE_INCH_RATE_LIMIT = 1.004;
 export const OneInchInfo: FC = () => {
   const linkProps = use1inchLinkProps();
 
-  const apiOneInchRatePath = 'api/oneinch-rate?token=eth';
+  const apiOneInchRatePath = 'api/oneinch-rate/?token=eth';
   const { data, initialLoading } = useLidoSWR<{ rate: number }>(
     dynamics.ipfsMode
       ? `${dynamics.widgetApiBasePathForIpfs}/${apiOneInchRatePath}`

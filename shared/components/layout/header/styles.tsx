@@ -39,7 +39,7 @@ export const DotStyle = styled.p`
   margin-right: 6px;
 `;
 
-export const IPFSInfoBoxWrap = styled.div`
+export const IPFSInfoBoxWrapper = styled.div`
   position: absolute;
   right: 0;
   top: calc(100% + 15px);

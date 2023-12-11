@@ -10,7 +10,11 @@ import { IPFSInfoBox } from 'features/ipfs/ipfs-info-box';
 import { Button, Connect } from 'shared/wallet';
 
 import { HeaderSettingsButton } from './header-settings-button';
-import { HeaderWalletChainStyle, DotStyle, IPFSInfoBoxWrap } from '../styles';
+import {
+  HeaderWalletChainStyle,
+  DotStyle,
+  IPFSInfoBoxWrapper,
+} from '../styles';
 
 const HeaderWallet: FC = () => {
   const { active } = useWeb3();
@@ -38,9 +42,9 @@ const HeaderWallet: FC = () => {
       {dynamics.ipfsMode && <HeaderSettingsButton />}
       <ThemeToggler />
       {dynamics.ipfsMode && (
-        <IPFSInfoBoxWrap>
+        <IPFSInfoBoxWrapper>
           <IPFSInfoBox />
-        </IPFSInfoBoxWrap>
+        </IPFSInfoBoxWrapper>
       )}
     </NoSSRWrapper>
   );
