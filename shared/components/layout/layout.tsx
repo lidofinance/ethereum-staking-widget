@@ -1,6 +1,9 @@
 import { ReactNode, FC, PropsWithChildren } from 'react';
 import { ContainerProps } from '@lidofinance/lido-ui';
-import { Header, Footer, Main } from 'shared/components';
+
+import { Header } from './header/header';
+import { Footer } from './footer/footer';
+import { Main } from './main/main';
 import { LayoutTitleStyle, LayoutSubTitleStyle } from './styles';
 
 type Props = {

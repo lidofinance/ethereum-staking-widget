@@ -6,15 +6,15 @@ import {
 } from '@lido-sdk/react';
 import { useWrapGasLimit } from './use-wrap-gas-limit';
 import { useIsMultisig } from 'shared/hooks/useIsMultisig';
-import { useCurrencyMaxAmount } from 'shared/forms/hooks/useCurrencyMaxAmount';
+import { useTokenMaxAmount } from 'shared/hooks/use-token-max-amount';
 
 import { STRATEGY_LAZY } from 'utils/swrStrategies';
-import { TOKENS_TO_WRAP } from 'features/wsteth/shared/types';
-import { parseEther } from '@ethersproject/units';
+import { useStakingLimitInfo } from 'shared/hooks';
+import { BALANCE_PADDING } from 'config';
 
 // Provides all data fetching for form to function
 export const useWrapFormNetworkData = () => {
-  const [isMultisig] = useIsMultisig();
+  const { isMultisig, isLoading: isMultisigLoading } = useIsMultisig();
   const { data: ethBalance, update: ethBalanceUpdate } = useEthereumBalance(
     undefined,
     STRATEGY_LAZY,
@@ -23,13 +23,18 @@ export const useWrapFormNetworkData = () => {
   const { data: wstethBalance, update: wstethBalanceUpdate } =
     useWSTETHBalance();
 
+  const { data: stakeLimitInfo, mutate: stakeLimitInfoUpdate } =
+    useStakingLimitInfo();
+
   const { gasLimitETH, gasLimitStETH } = useWrapGasLimit();
 
-  const maxAmountETH = useCurrencyMaxAmount({
-    limit: ethBalance,
-    token: TOKENS_TO_WRAP.ETH,
-    padded: !isMultisig,
+  const maxAmountETH = useTokenMaxAmount({
+    balance: ethBalance,
+    limit: stakeLimitInfo?.currentStakeLimit,
+    isPadded: !isMultisig,
     gasLimit: gasLimitETH,
+    padding: BALANCE_PADDING,
+    isLoading: isMultisigLoading,
   });
 
   const revalidateWrapFormData = useCallback(async () => {
@@ -37,25 +42,33 @@ export const useWrapFormNetworkData = () => {
       ethBalanceUpdate(),
       stethBalanceUpdate(),
       wstethBalanceUpdate(),
+      stakeLimitInfoUpdate(),
     ]);
-  }, [ethBalanceUpdate, stethBalanceUpdate, wstethBalanceUpdate]);
+  }, [
+    ethBalanceUpdate,
+    stethBalanceUpdate,
+    wstethBalanceUpdate,
+    stakeLimitInfoUpdate,
+  ]);
 
   return useMemo(
     () => ({
       isMultisig,
       ethBalance,
       stethBalance,
+      stakeLimitInfo,
       wstethBalance,
       revalidateWrapFormData,
       gasLimitETH,
       gasLimitStETH,
-      maxAmountETH: parseEther(maxAmountETH),
+      maxAmountETH,
       maxAmountStETH: stethBalance,
     }),
     [
       isMultisig,
       ethBalance,
       stethBalance,
+      stakeLimitInfo,
       wstethBalance,
       revalidateWrapFormData,
       gasLimitETH,

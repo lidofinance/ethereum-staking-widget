@@ -60,9 +60,8 @@ const useWithdrawalRequestMethods = () => {
         },
       ] as const;
 
-      const { maxFeePerGas, maxPriorityFeePerGas } = await getFeeData(
-        staticRpcProvider,
-      );
+      const { maxFeePerGas, maxPriorityFeePerGas } =
+        await getFeeData(staticRpcProvider);
       const gasLimit =
         await contractWeb3.estimateGas.requestWithdrawalsWithPermit(...params, {
           maxFeePerGas,
@@ -171,9 +170,8 @@ const useWithdrawalRequestMethods = () => {
           );
           return providerWeb3?.getSigner().sendUncheckedTransaction(tx);
         } else {
-          const { maxFeePerGas, maxPriorityFeePerGas } = await getFeeData(
-            staticRpcProvider,
-          );
+          const { maxFeePerGas, maxPriorityFeePerGas } =
+            await getFeeData(staticRpcProvider);
           const gasLimit = await contractWeb3.estimateGas.requestWithdrawals(
             ...params,
             {
@@ -232,9 +230,8 @@ const useWithdrawalRequestMethods = () => {
             );
           return providerWeb3?.getSigner().sendUncheckedTransaction(tx);
         } else {
-          const { maxFeePerGas, maxPriorityFeePerGas } = await getFeeData(
-            staticRpcProvider,
-          );
+          const { maxFeePerGas, maxPriorityFeePerGas } =
+            await getFeeData(staticRpcProvider);
           const gasLimit =
             await contractWeb3.estimateGas.requestWithdrawalsWstETH(...params, {
               maxFeePerGas,
@@ -279,8 +276,8 @@ const useWithdrawalRequestMethods = () => {
           ? steth
           : permitSteth
         : isAllowance
-        ? wstETH
-        : permitWsteth;
+          ? wstETH
+          : permitWsteth;
     },
     [permitSteth, permitWsteth, steth, wstETH],
   );
@@ -308,7 +305,7 @@ export const useWithdrawalRequest = ({
   const { isBunker } = useWithdrawals();
   const { dispatchModalState, dispatchAsyncDialog } = useTransactionModal();
   const getRequestMethod = useWithdrawalRequestMethods();
-  const [isMultisig, isMultisigLoading] = useIsMultisig();
+  const { isMultisig, isLoading: isMultisigLoading } = useIsMultisig();
 
   const wstethContract = useWSTETHContractRPC();
   const stethContract = useSTETHContractRPC();
@@ -358,9 +355,8 @@ export const useWithdrawalRequest = ({
         );
         invariant(amount, 'cannot submit empty amount');
         if (isBunker) {
-          const { ok: bunkerDialogResult } = await dispatchAsyncDialog(
-            'bunker',
-          );
+          const { ok: bunkerDialogResult } =
+            await dispatchAsyncDialog('bunker');
           if (!bunkerDialogResult) return { success: false };
         }
         // get right method

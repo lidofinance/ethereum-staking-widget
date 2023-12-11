@@ -3,7 +3,7 @@ import { STRATEGY_IMMUTABLE } from 'utils/swrStrategies';
 
 export const useIsContract = (
   account?: string | null,
-): { loading: boolean; isContract: boolean } => {
+): { isLoading: boolean; isContract: boolean } => {
   // eth_getCode returns hex string of bytecode at address
   // for accounts it's "0x"
   // for contract it's potentially very long hex (can't be safely&quickly parsed)
@@ -15,7 +15,7 @@ export const useIsContract = (
   });
 
   return {
-    loading: result.initialLoading,
+    isLoading: result.initialLoading,
     isContract: result.data ? result.data !== '0x' : false,
   };
 };
