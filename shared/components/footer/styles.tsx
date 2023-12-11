@@ -2,7 +2,7 @@ import styled from 'styled-components';
 
 import { Container, Link } from '@lidofinance/lido-ui';
 import { LogoLido } from 'shared/components/logos/logos';
-import { NAV_MOBILE_MEDIA } from '../header/components/navigation/styles';
+import { NAV_MOBILE_MEDIA } from 'styles/constants';
 
 export const FooterStyle = styled((props) => <Container {...props} />)`
   position: relative;
