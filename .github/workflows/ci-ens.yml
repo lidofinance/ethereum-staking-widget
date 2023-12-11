@@ -15,9 +15,6 @@ on:
           - goerli
           - mainnet
 
-permissions:
-  contents: write
-
 jobs:
   ens-deploy:
     uses: lidofinance/actions/.github/workflows/ci-ens.yml@main
