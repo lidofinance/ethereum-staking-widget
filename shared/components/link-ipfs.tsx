@@ -23,9 +23,7 @@ export const LinkIpfs = ({
       event.preventDefault();
       void push(href, query);
 
-      if (typeof window !== 'undefined') {
-        window.scrollTo({ top: 0 });
-      }
+      window.scrollTo({ top: 0 });
 
       onClick?.(event);
     },
