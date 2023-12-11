@@ -16,6 +16,7 @@ import {
   runWithTransactionLogger,
 } from 'utils';
 import { getFeeData } from 'utils/getFeeData';
+import { dynamics, IPFS_REFERRAL_ADDRESS } from 'config';
 
 const SUBMIT_EXTRA_GAS_TRANSACTION_RATIO = 1.05;
 
@@ -39,7 +40,7 @@ export const getAddress = async (
   input: string | undefined,
   provider: StaticJsonRpcBatchProvider,
 ): Promise<string> => {
-  if (!input) return '';
+  if (!input) return dynamics.ipfsMode ? IPFS_REFERRAL_ADDRESS : '';
   if (isAddress(input)) return input;
 
   try {
