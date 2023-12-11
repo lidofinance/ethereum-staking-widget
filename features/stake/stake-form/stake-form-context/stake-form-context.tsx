@@ -138,20 +138,19 @@ export const StakeFormProvider: FC<PropsWithChildren> = ({ children }) => {
   // consumes amount query param
   // SSG safe
   useEffect(() => {
-    if (router.isReady) {
+    if (!router.isReady) return;
+    try {
       const { amount, ref, ...rest } = router.query;
       if (typeof ref === 'string') {
         setValue('referral', ref);
       }
       if (typeof amount === 'string') {
         void router.replace({ pathname: router.pathname, query: rest });
-        try {
-          const amountBN = parseEther(amount);
-          setValue('amount', amountBN);
-        } catch {
-          //noop
-        }
+        const amountBN = parseEther(amount);
+        setValue('amount', amountBN);
       }
+    } catch {
+      //noop
     }
   }, [router, setValue]);
 

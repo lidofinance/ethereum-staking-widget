@@ -38,7 +38,7 @@ export const WrapFormValidationResolver: Resolver<
         VALIDATION_CONTEXT_TIMEOUT,
       );
 
-    if (token === 'ETH') {
+    if (token === TOKENS_TO_WRAP.ETH) {
       validateStakeLimit('amount', stakeLimitLevel);
     }
 
