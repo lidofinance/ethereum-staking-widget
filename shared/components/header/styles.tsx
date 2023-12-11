@@ -1,6 +1,8 @@
 import { Container } from '@lidofinance/lido-ui';
 import styled, { keyframes } from 'styled-components';
 
+import { NAV_MOBILE_MEDIA } from 'styles/constants';
+
 export const HeaderStyle = styled((props) => <Container {...props} />)`
   position: relative;
   padding-top: 18px;
@@ -39,10 +41,14 @@ export const DotStyle = styled.p`
   margin-right: 6px;
 `;
 
-export const IPFSInfoBoxWrapper = styled.div`
+export const IPFSInfoBoxOnlyDesktopWrapper = styled.div`
   position: absolute;
   right: 0;
   top: calc(100% + 15px);
   width: 255px;
   z-index: 3;
+
+  ${NAV_MOBILE_MEDIA} {
+    display: none;
+  }
 `;
