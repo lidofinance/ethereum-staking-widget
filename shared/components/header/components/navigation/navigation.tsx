@@ -5,6 +5,7 @@ import {
   HOME_PATH,
   WRAP_PATH,
   WITHDRAWALS_REQUEST_PATH,
+  WITHDRAWALS_CLAIM_PATH,
   REWARDS_PATH,
 } from 'config/urls';
 import { LocalLink } from 'shared/components/local-link';
@@ -28,6 +29,7 @@ const routes = [
     name: 'Withdrawals',
     path: WITHDRAWALS_REQUEST_PATH,
     full_path: WITHDRAWALS_REQUEST_PATH,
+    subPaths: [WITHDRAWALS_CLAIM_PATH],
     icon: <Withdraw data-testid="navWithdrawals" />,
   },
   {
@@ -42,13 +44,12 @@ export const Navigation: FC = memo(() => {
 
   return (
     <Nav>
-      {routes.map(({ name, path, icon }) => {
+      {routes.map(({ name, path, subPaths, icon }) => {
         const isActive =
           pathnameWithoutQuery === path ||
           (path.length > 1 && pathnameWithoutQuery.startsWith(path)) ||
-          // fix for withdrawals/claim
-          (pathname.indexOf('withdrawals') > -1 &&
-            path.indexOf('withdrawals') > -1);
+          (Array.isArray(subPaths) &&
+            subPaths?.indexOf(pathnameWithoutQuery) > -1);
 
         return (
           <LocalLink key={path} href={path}>
