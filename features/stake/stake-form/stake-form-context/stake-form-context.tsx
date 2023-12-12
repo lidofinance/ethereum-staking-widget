@@ -54,7 +54,7 @@ export const useStakeFormData = () => {
 };
 
 const useStakeFormNetworkData = (): StakeFormNetworkData => {
-  const { update: updateStethBalance } = useSTETHBalance();
+  const { data: stethBalance, update: updateStethBalance } = useSTETHBalance();
   const { isMultisig, isLoading: isMultisigLoading } = useIsMultisig();
   const gasLimit = useStethSubmitGasLimit();
   const maxGasFee = useMaxGasPrice();
@@ -106,7 +106,7 @@ const useStakeFormNetworkData = (): StakeFormNetworkData => {
   ]);
 
   return {
-    etherBalance,
+    stethBalance,
     stakeableEther,
     stakingLimitInfo,
     gasCost,
