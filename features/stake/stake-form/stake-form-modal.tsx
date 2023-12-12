@@ -6,7 +6,7 @@ import { TX_OPERATION as TX_OPERATION_LEGACY } from 'shared/components/tx-stage-
 import { useStakeFormData } from './stake-form-context';
 
 export const StakeFormModal = () => {
-  const { etherBalance } = useStakeFormData();
+  const { stethBalance } = useStakeFormData();
   const {
     dispatchModalState,
     onRetry,
@@ -28,7 +28,7 @@ export const StakeFormModal = () => {
       amountToken="ETH"
       willReceiveAmount={amount ? formatBalance(amount) : undefined}
       willReceiveAmountToken="stETH"
-      balance={etherBalance}
+      balance={stethBalance}
       balanceToken="stETH"
       failedText={errorText}
       onRetry={() => onRetry?.()}

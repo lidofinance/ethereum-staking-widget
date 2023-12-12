@@ -10,7 +10,7 @@ export type StakeFormInput = {
 };
 
 export type StakeFormNetworkData = {
-  etherBalance?: BigNumber;
+  stethBalance?: BigNumber;
   stakeableEther?: BigNumber;
   stakingLimitInfo?: StakeLimitFullInfo;
   gasLimit?: BigNumber;
