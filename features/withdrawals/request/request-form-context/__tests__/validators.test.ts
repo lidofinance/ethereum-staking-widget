@@ -1,7 +1,7 @@
 /* eslint-disable jest/expect-expect */
 /* eslint-disable jest/no-conditional-expect */
 import { BigNumber } from 'ethers';
-import { __test__export } from '../validators';
+import { TvlErrorPayload, __test__export } from '../validators';
 const {
   ValidationSplitRequest,
   ValidationTvlJoke,
@@ -19,7 +19,9 @@ describe('tvlJokeValidate', () => {
   });
 
   it('should throw right error', () => {
-    const fn = () => tvlJokeValidate(field, bn(20), bn(10), balance);
+    const value = bn(20);
+    const tvl = bn(10);
+    const fn = () => tvlJokeValidate(field, value, tvl, balance);
     expect(fn).toThrow();
     try {
       fn();
@@ -30,10 +32,15 @@ describe('tvlJokeValidate', () => {
       });
       expect(e).toHaveProperty('payload.balanceDiffSteth');
       expect(
-        bn(20)
+        value
           .sub(balance)
-          .eq((e as any).payload.balanceDiffSteth),
-      ).toBeTruthy();
+          .eq((e as { payload: TvlErrorPayload }).payload.balanceDiffSteth),
+      ).toBe(true);
+
+      expect(e).toHaveProperty('payload.tvlDiff');
+      expect(
+        value.sub(tvl).eq((e as { payload: TvlErrorPayload }).payload.tvlDiff),
+      ).toBe(true);
     }
   });
 });

@@ -1,5 +1,5 @@
 import { FC, PropsWithChildren, useCallback } from 'react';
-import { FormController } from 'features/wsteth/shared/form-controller/form-controller';
+import { FormController } from 'shared/hook-form/form-controller/form-controller';
 import { useFormContext } from 'react-hook-form';
 import { WrapFormInputType } from '../wrap-form-context';
 
