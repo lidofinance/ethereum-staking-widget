@@ -8,11 +8,11 @@ import { enableQaHelpers, runWithTransactionLogger } from 'utils';
 import { getErrorMessage } from 'utils/getErrorMessage';
 import { isContract } from 'utils/isContract';
 import { TX_OPERATION, useTransactionModal } from 'shared/transaction-modal';
-import { MockLimitReachedError, getAddress } from './utils';
-import { AddressZero } from '@ethersproject/constants';
+import { MockLimitReachedError, getAddress, applyGasLimitRatio } from './utils';
 import { getFeeData } from 'utils/getFeeData';
-import { applyGasLimitRatio } from './utils';
+
 import { useCurrentStaticRpcProvider } from 'shared/hooks/use-current-static-rpc-provider';
+import { STAKE_FALLBACK_REFERRAL_ADDRESS } from 'config';
 
 type StakeArguments = {
   amount: BigNumber | null;
@@ -54,7 +54,9 @@ export const useStake = ({ onConfirm }: StakeOptions) => {
 
         const [isMultisig, referralAddress] = await Promise.all([
           isContract(account, providerRpc),
-          referral ? getAddress(referral, providerRpc) : AddressZero,
+          referral
+            ? getAddress(referral, providerRpc)
+            : STAKE_FALLBACK_REFERRAL_ADDRESS,
         ]);
 
         dispatchModalState({
@@ -87,7 +89,7 @@ export const useStake = ({ onConfirm }: StakeOptions) => {
 
             const gasLimit = applyGasLimitRatio(originalGasLimit);
 
-            return stethContractWeb3.submit(referralAddress || AddressZero, {
+            return stethContractWeb3.submit(referralAddress, {
               ...overrides,
               gasLimit,
             });
