@@ -33,6 +33,7 @@ export const IPFSInfoBoxOnlyMobileAndPortableWrapper = styled.div`
 
   ${NAV_MOBILE_MEDIA} {
     display: block;
+    margin-top: -6px;
     margin-bottom: 40px;
   }
 `;
