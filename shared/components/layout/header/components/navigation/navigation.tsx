@@ -40,7 +40,11 @@ const routes = [
 ];
 export const Navigation: FC = memo(() => {
   const pathname = useRouterPath();
-  const pathnameWithoutQuery = pathname.split('?')[0];
+  let pathnameWithoutQuery = pathname.split('?')[0];
+  if (pathnameWithoutQuery[pathnameWithoutQuery.length - 1] === '/') {
+    // Remove last '/'
+    pathnameWithoutQuery = pathnameWithoutQuery.slice(0, -1);
+  }
 
   return (
     <Nav>
