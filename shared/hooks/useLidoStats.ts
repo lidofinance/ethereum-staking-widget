@@ -4,6 +4,7 @@ import { useSDK, useLidoSWR } from '@lido-sdk/react';
 import { DATA_UNAVAILABLE, dynamics } from 'config';
 import { prependBasePath } from 'utils';
 import { standardFetcher } from 'utils/standardFetcher';
+import { STRATEGY_LAZY } from 'utils/swrStrategies';
 
 export type ResponseData = {
   uniqueAnytimeHolders: string;
@@ -27,6 +28,7 @@ export const useLidoStats = (): {
       ? `${dynamics.widgetApiBasePathForIpfs}/${apiShortLidoStatsPath}`
       : prependBasePath(apiShortLidoStatsPath),
     standardFetcher,
+    STRATEGY_LAZY,
   );
 
   const data = useMemo(() => {

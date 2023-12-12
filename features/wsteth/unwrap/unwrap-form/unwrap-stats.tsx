@@ -5,6 +5,7 @@ import { useUnwrapFormData } from '../unwrap-form-context';
 import { DataTableRow, DataTable } from '@lidofinance/lido-ui';
 import { FormatToken } from 'shared/formatters/format-token';
 import { DataTableRowStethByWsteth } from 'shared/components/data-table-row-steth-by-wsteth';
+import { FormatPrice } from 'shared/formatters';
 
 export const UnwrapStats = () => {
   const unwrapGasLimit = useUnwrapGasLimit();
@@ -14,11 +15,11 @@ export const UnwrapStats = () => {
   return (
     <DataTable>
       <DataTableRow
-        title="Max gas fee"
+        title="Max transaction cost"
         data-testid="maxGasFee"
         loading={!unwrapTxCostInUsd}
       >
-        ${unwrapTxCostInUsd?.toFixed(2)}
+        <FormatPrice amount={unwrapTxCostInUsd} />
       </DataTableRow>
       <DataTableRowStethByWsteth />
       <DataTableRow title="You will receive">
