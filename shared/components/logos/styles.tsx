@@ -21,5 +21,6 @@ export const LogoLidoStyle = styled.div`
 
   ${({ theme }) => theme.mediaQueries.md} {
     width: 14px;
+    justify-content: flex-start;
   }
 `;

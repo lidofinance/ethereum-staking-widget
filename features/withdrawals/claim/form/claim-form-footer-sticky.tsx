@@ -1,17 +1,15 @@
 import { FC, RefObject, PropsWithChildren, useCallback, useRef } from 'react';
-import { useForceUpdate } from 'shared/hooks/useForceUpdate';
 
+import { useForceUpdate } from 'shared/hooks/useForceUpdate';
 import { LayoutEffectSsrDelayed } from 'shared/components/layout-effect-ssr-delayed';
-import {
-  NAV_MOBILE_HEIGHT,
-  NAV_MOBILE_MAX_WIDTH,
-} from 'shared/components/layout/header/components/navigation/styles';
+import { NAV_MOBILE_HEIGHT, NAV_MOBILE_MAX_WIDTH } from 'styles/constants';
+import { getScreenSize } from 'utils/getScreenSize';
+
 import {
   ClaimFormFooter,
   ClaimFormFooterWrapper,
   ClaimFooterBodyEnder,
 } from './styles';
-import { getScreenSize } from 'utils/getScreenSize';
 import {
   REQUESTS_LIST_MIN_HEIGHT,
   REQUESTS_LIST_ITEM_SIZE,

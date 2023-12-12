@@ -13,7 +13,7 @@ import { HeaderSettingsButton } from './header-settings-button';
 import {
   HeaderWalletChainStyle,
   DotStyle,
-  IPFSInfoBoxWrapper,
+  IPFSInfoBoxOnlyDesktopWrapper,
 } from '../styles';
 
 const HeaderWallet: FC = () => {
@@ -42,9 +42,9 @@ const HeaderWallet: FC = () => {
       {dynamics.ipfsMode && <HeaderSettingsButton />}
       <ThemeToggler />
       {dynamics.ipfsMode && (
-        <IPFSInfoBoxWrapper>
+        <IPFSInfoBoxOnlyDesktopWrapper>
           <IPFSInfoBox />
-        </IPFSInfoBoxWrapper>
+        </IPFSInfoBoxOnlyDesktopWrapper>
       )}
     </NoSSRWrapper>
   );

@@ -1,6 +1,8 @@
 import { Container } from '@lidofinance/lido-ui';
 import styled, { keyframes } from 'styled-components';
 
+import { NAV_MOBILE_MEDIA } from 'styles/constants';
+
 export const HeaderStyle = styled((props) => <Container {...props} />)`
   position: relative;
   padding-top: 18px;
@@ -18,7 +20,7 @@ export const HeaderActionsStyle = styled.div`
 `;
 
 export const HeaderWalletChainStyle = styled.span<{ $color: string }>`
-  margin-right: ${({ theme }) => theme.spaceMap.md}px;
+  margin-right: ${({ theme }) => theme.spaceMap.sm}px;
   color: ${({ $color }) => $color};
   line-height: 1.2em;
 `;
@@ -36,13 +38,18 @@ export const DotStyle = styled.p`
   background-color: lightgreen;
   border-radius: 50%;
   animation: ${glimmer} 2s ease-in-out infinite;
-  margin-right: 6px;
+  margin-right: ${({ theme }) => theme.spaceMap.sm}px;
+  margin-left: ${({ theme }) => theme.spaceMap.sm}px;
 `;
 
-export const IPFSInfoBoxWrapper = styled.div`
+export const IPFSInfoBoxOnlyDesktopWrapper = styled.div`
   position: absolute;
   right: 0;
   top: calc(100% + 15px);
   width: 255px;
   z-index: 3;
+
+  ${NAV_MOBILE_MEDIA} {
+    display: none;
+  }
 `;
