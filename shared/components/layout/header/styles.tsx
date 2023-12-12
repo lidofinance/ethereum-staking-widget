@@ -20,7 +20,7 @@ export const HeaderActionsStyle = styled.div`
 `;
 
 export const HeaderWalletChainStyle = styled.span<{ $color: string }>`
-  margin-right: ${({ theme }) => theme.spaceMap.md}px;
+  margin-right: ${({ theme }) => theme.spaceMap.sm}px;
   color: ${({ $color }) => $color};
   line-height: 1.2em;
 `;
@@ -38,7 +38,8 @@ export const DotStyle = styled.p`
   background-color: lightgreen;
   border-radius: 50%;
   animation: ${glimmer} 2s ease-in-out infinite;
-  margin-right: 6px;
+  margin-right: ${({ theme }) => theme.spaceMap.sm}px;
+  margin-left: ${({ theme }) => theme.spaceMap.sm}px;
 `;
 
 export const IPFSInfoBoxOnlyDesktopWrapper = styled.div`
