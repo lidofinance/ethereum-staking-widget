@@ -1,6 +1,6 @@
 import { memo, useRef, useState } from 'react';
 import { useConnectorInfo } from 'reef-knot/web3-react';
-import { use1inchLinkProps } from 'features/home/hooks';
+import { use1inchLinkProps } from 'features/stake/hooks';
 
 import { TxLinkEtherscan } from 'shared/components/tx-link-etherscan';
 import { L2LowFee } from 'shared/banners';

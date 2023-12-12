@@ -26,6 +26,7 @@ import { validateBignumberMax } from 'shared/hook-form/validation/validate-bignu
 
 export type TvlErrorPayload = {
   balanceDiffSteth: BigNumber;
+  tvlDiff: BigNumber;
 };
 export class ValidationTvlJoke extends ValidationError {
   static type = 'validate_tvl_joke';
@@ -110,6 +111,7 @@ const tvlJokeValidate = (
   if (tvlDiff.gt(0))
     throw new ValidationTvlJoke(field, 'amount bigger than tvl', {
       balanceDiffSteth: valueSteth.sub(balanceSteth),
+      tvlDiff,
     });
 };
 

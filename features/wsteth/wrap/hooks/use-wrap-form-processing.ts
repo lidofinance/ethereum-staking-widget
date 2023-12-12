@@ -33,7 +33,6 @@ export const useWrapFormProcessor = ({
       invariant(amount, 'amount should be presented');
       invariant(account, 'address should be presented');
       invariant(providerWeb3, 'provider should be presented');
-      const isMultisig = await isContract(account, providerWeb3);
 
       try {
         dispatchModalState({
@@ -44,6 +43,8 @@ export const useWrapFormProcessor = ({
           token,
           amount,
         });
+
+        const isMultisig = await isContract(account, providerWeb3);
 
         if (isApprovalNeededBeforeWrap) {
           await processApproveTx({

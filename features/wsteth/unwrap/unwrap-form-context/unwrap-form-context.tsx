@@ -12,7 +12,7 @@ import { useUnwrapFormNetworkData } from '../hooks/use-unwrap-form-network-data'
 import { useUnwrapFormProcessor } from '../hooks/use-unwrap-form-processing';
 import { useUnwrapFormValidationContext } from '../hooks/use-unwra-form-validation-context';
 
-import { FormControllerContext } from 'features/wsteth/shared/form-controller/form-controller-context';
+import { FormControllerContext } from 'shared/hook-form/form-controller';
 
 import {
   UnwrapFormDataContextValueType,

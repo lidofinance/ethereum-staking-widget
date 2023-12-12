@@ -5,6 +5,7 @@ export enum ErrorMessage {
   ENABLE_BLIND_SIGNING = 'Please enable blind signing on your Ledger hardware wallet.',
   LIMIT_REACHED = 'Transaction could not be completed because stake limit is exhausted. Please wait until the stake limit restores and try again. Otherwise, you can swap your Ethereum on 1inch platform instantly.',
   DEVICE_LOCKED = 'Please unlock your Ledger hardware wallet',
+  INVALID_REFERRAL = 'Invalid referral address or ENS',
   INVALID_SIGNATURE = 'Invalid Permit signature. Perhaps it has expired or already been used. Try submitting a withdrawal request again.',
 }
 
@@ -29,6 +30,8 @@ export const getErrorMessage = (error: unknown): ErrorMessage => {
       return ErrorMessage.DENIED_SIG;
     case 'LIMIT_REACHED':
       return ErrorMessage.LIMIT_REACHED;
+    case 'INVALID_REFERRAL':
+      return ErrorMessage.INVALID_REFERRAL;
     case 'ENABLE_BLIND_SIGNING':
       return ErrorMessage.ENABLE_BLIND_SIGNING;
     case 'DEVICE_LOCKED':
@@ -48,6 +51,7 @@ export const extractCodeFromError = (
 
   if ('reason' in error && typeof error.reason == 'string') {
     if (error.reason.includes('STAKE_LIMIT')) return 'LIMIT_REACHED';
+    if (error.reason.includes('INVALID_REFERRAL')) return 'INVALID_REFERRAL';
     if (error.reason.includes('INVALID_SIGNATURE')) return 'INVALID_SIGNATURE';
   }
 

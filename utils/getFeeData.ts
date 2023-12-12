@@ -1,5 +1,5 @@
 import { BigNumber } from 'ethers';
-import { StaticJsonRpcBatchProvider } from '@lidofinance/eth-providers';
+import type { StaticJsonRpcBatchProvider } from '@lidofinance/eth-providers';
 
 type FeeData = {
   lastBaseFeePerGas: BigNumber;
