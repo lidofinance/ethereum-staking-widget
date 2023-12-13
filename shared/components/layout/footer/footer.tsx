@@ -50,7 +50,9 @@ export const Footer: FC = () => (
     >
       Privacy Notice
     </FooterLink>
-    <Version href={link}>{label}</Version>
+    <Version data-testid="appVersion" href={link}>
+      {label}
+    </Version>
     <FooterDivider />
   </FooterStyle>
 );

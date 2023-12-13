@@ -12,6 +12,7 @@ export const StakeAmountInput = () => {
     <TokenAmountInputHookForm
       fieldName="amount"
       token={'ETH'}
+      data-testid="stakeInput"
       leftDecorator={<Eth />}
       maxValue={maxAmount}
       error={limitError}
