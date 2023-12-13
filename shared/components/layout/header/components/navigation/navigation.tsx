@@ -7,6 +7,7 @@ import {
   WITHDRAWALS_REQUEST_PATH,
   WITHDRAWALS_CLAIM_PATH,
   REWARDS_PATH,
+  getPathWithoutFirstSlash,
 } from 'config/urls';
 import { LocalLink } from 'shared/components/local-link';
 import { useRouterPath } from 'shared/hooks/use-router-path';
@@ -50,7 +51,7 @@ export const Navigation: FC = memo(() => {
     <Nav>
       {routes.map(({ name, path, subPaths, icon }) => {
         const isActive =
-          pathnameWithoutQuery === path ||
+          pathnameWithoutQuery === getPathWithoutFirstSlash(path) ||
           (path.length > 1 && pathnameWithoutQuery.startsWith(path)) ||
           (Array.isArray(subPaths) &&
             subPaths?.indexOf(pathnameWithoutQuery) > -1);
