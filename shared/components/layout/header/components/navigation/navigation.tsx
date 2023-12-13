@@ -41,7 +41,10 @@ const routes = [
 export const Navigation: FC = memo(() => {
   const pathname = useRouterPath();
   let pathnameWithoutQuery = pathname.split('?')[0];
-  if (pathnameWithoutQuery[pathnameWithoutQuery.length - 1] === '/') {
+  if (
+    pathnameWithoutQuery.length > 1 &&
+    pathnameWithoutQuery[pathnameWithoutQuery.length - 1] === '/'
+  ) {
     // Remove last '/'
     pathnameWithoutQuery = pathnameWithoutQuery.slice(0, -1);
   }
