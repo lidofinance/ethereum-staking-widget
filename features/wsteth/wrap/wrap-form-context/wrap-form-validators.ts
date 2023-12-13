@@ -12,6 +12,7 @@ import { awaitWithTimeout } from 'utils/await-with-timeout';
 import { VALIDATION_CONTEXT_TIMEOUT } from 'features/withdrawals/withdrawals-constants';
 import type { WrapFormInputType, WrapFormValidationContext } from './types';
 import { TokensWrappable, TOKENS_TO_WRAP } from 'features/wsteth/shared/types';
+import { validateStakeLimit } from 'shared/hook-form/validation/validate-stake-limit';
 
 const messageMaxAmount = (max: BigNumber, token: TokensWrappable) =>
   `${getTokenDisplayName(token)} amount must not be greater than ${formatEther(
@@ -31,10 +32,15 @@ export const WrapFormValidationResolver: Resolver<
 
     validateEtherAmount('amount', amount, token);
 
-    const { active, maxAmountETH, maxAmountStETH } = await awaitWithTimeout(
-      validationContextPromise,
-      VALIDATION_CONTEXT_TIMEOUT,
-    );
+    const { active, maxAmountETH, maxAmountStETH, stakeLimitLevel } =
+      await awaitWithTimeout(
+        validationContextPromise,
+        VALIDATION_CONTEXT_TIMEOUT,
+      );
+
+    if (token === TOKENS_TO_WRAP.ETH) {
+      validateStakeLimit('amount', stakeLimitLevel);
+    }
 
     if (active) {
       const isSteth = token === TOKENS_TO_WRAP.STETH;

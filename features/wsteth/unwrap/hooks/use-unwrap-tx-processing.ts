@@ -28,9 +28,8 @@ export const useUnwrapTxProcessing = () => {
         const tx = await wstethContractWeb3.populateTransaction.unwrap(amount);
         return providerWeb3.getSigner().sendUncheckedTransaction(tx);
       } else {
-        const { maxFeePerGas, maxPriorityFeePerGas } = await getFeeData(
-          staticRpcProvider,
-        );
+        const { maxFeePerGas, maxPriorityFeePerGas } =
+          await getFeeData(staticRpcProvider);
         return wstethContractWeb3.unwrap(amount, {
           maxPriorityFeePerGas: maxPriorityFeePerGas ?? undefined,
           maxFeePerGas: maxFeePerGas ?? undefined,

@@ -9,7 +9,7 @@ export type AddressBadgeComponent = Component<
 
 export const AddressBadge: AddressBadgeComponent = (props) => {
   const { address, ...rest } = props;
-  const isMobile = useBreakpoint('md');
+  const isMobile = useBreakpoint('sm');
 
   return (
     <AddressBadgeStyle

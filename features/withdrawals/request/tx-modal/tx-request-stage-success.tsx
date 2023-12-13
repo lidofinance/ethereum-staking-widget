@@ -1,5 +1,6 @@
 import { useSDK } from '@lido-sdk/react';
 import { Link, Loader } from '@lidofinance/lido-ui';
+import { LocalLink } from 'shared/components/local-link';
 
 import {
   trackMatomoEvent,
@@ -44,8 +45,8 @@ export const TxRequestStageSuccess = ({
     <span>
       Withdrawal request for {amountAsString} {tokenName} has been sent.
       <br />
-      Check <Link href={WITHDRAWALS_CLAIM_PATH}>Claim tab</Link> to view your
-      withdrawal requests or view your transaction on{' '}
+      Check <LocalLink href={WITHDRAWALS_CLAIM_PATH}>Claim tab</LocalLink> to
+      view your withdrawal requests or view your transaction on{' '}
       <TxLinkEtherscan
         txHash={txHash ?? undefined}
         text="Etherscan"

@@ -3,8 +3,9 @@ import { parseEther } from '@ethersproject/units';
 import { DataTable, DataTableRow } from '@lidofinance/lido-ui';
 import { useFormContext } from 'react-hook-form';
 
+import { FormatPrice, FormatToken } from 'shared/formatters';
 import { useTxCostInUsd, useWstethBySteth } from 'shared/hooks';
-import { FormatToken } from 'shared/formatters';
+
 import { TOKENS_TO_WRAP } from 'features/wsteth/shared/types';
 
 import { useApproveGasLimit } from '../hooks/use-approve-gas-limit';
@@ -29,18 +30,18 @@ export const WrapFormStats = () => {
   return (
     <DataTable>
       <DataTableRow
-        title="Max unlock fee"
+        title="Max unlock cost"
         data-testid="maxUnlockFee"
         loading={!approveTxCostInUsd}
       >
-        ${approveTxCostInUsd?.toFixed(2)}
+        <FormatPrice amount={approveTxCostInUsd} />
       </DataTableRow>
       <DataTableRow
-        title="Max gas fee"
+        title="Max transaction cost"
         data-testid="maxGasFee"
         loading={!wrapTxCostInUsd}
       >
-        ${wrapTxCostInUsd?.toFixed(2)}
+        <FormatPrice amount={wrapTxCostInUsd} />
       </DataTableRow>
       <DataTableRow
         title="Exchange rate"
