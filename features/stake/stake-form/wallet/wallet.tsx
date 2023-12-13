@@ -13,11 +13,12 @@ import type { WalletComponentType } from 'shared/wallet/types';
 import { LimitMeter } from './limit-meter';
 import { FlexCenter, LidoAprStyled, StyledCard } from './styles';
 import { useStakeFormData } from '../stake-form-context';
+import { STRATEGY_LAZY } from 'utils/swrStrategies';
 
 const WalletComponent: WalletComponentType = (props) => {
   const { account } = useSDK();
   const { stakeableEther } = useStakeFormData();
-  const steth = useSTETHBalance();
+  const steth = useSTETHBalance(STRATEGY_LAZY);
 
   const stethAddress = useTokenAddress(TOKENS.STETH);
   const lidoApr = useLidoApr();
