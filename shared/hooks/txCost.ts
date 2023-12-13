@@ -1,24 +1,15 @@
-import { useEthPrice } from '@lido-sdk/react';
-import { BigNumber } from 'ethers';
+import { BigNumberish } from 'ethers';
 import { useMemo } from 'react';
-import { weiToEth } from 'utils';
 import { useMaxGasPrice } from './useMaxGasPrice';
+import { useEthUsd } from './use-eth-usd';
 
-type UseTxCostInUsd = (gasLimit?: number) => number | undefined;
+type UseTxCostInUsd = (gasLimit?: BigNumberish) => number | undefined;
 
 export const useTxCostInUsd: UseTxCostInUsd = (gasLimit) => {
   const gasPrice = useMaxGasPrice();
-  // useEthPrice hook works via mainnet chain!
-  const { data: ethInUsd } = useEthPrice();
-
-  return useMemo(() => {
-    if (!ethInUsd || !gasPrice) return undefined;
-    try {
-      const gasLimitBN = BigNumber.from(gasLimit).mul(gasPrice);
-      const txCostInEth = weiToEth(gasLimitBN);
-      return txCostInEth * ethInUsd;
-    } catch {
-      return undefined;
-    }
-  }, [ethInUsd, gasPrice, gasLimit]);
+  const amount = useMemo(
+    () => (gasPrice && gasLimit ? gasPrice.mul(gasLimit) : undefined),
+    [gasLimit, gasPrice],
+  );
+  return useEthUsd(amount);
 };

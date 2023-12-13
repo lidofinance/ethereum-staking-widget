@@ -16,14 +16,16 @@ export const SubmitButtonHookForm: React.FC<SubmitButtonHookFormProps> = ({
   isLocked,
   errorField,
   icon,
+  disabled: disabledProp,
   ...props
 }) => {
   const { active } = useWeb3();
   const { isValidating, isSubmitting } = useFormState();
   const { errors } = useFormState<Record<string, unknown>>();
   const disabled =
-    !!errors.amount &&
-    !isValidationErrorTypeValidate(errors?.[errorField]?.type);
+    (!!errors[errorField] &&
+      isValidationErrorTypeValidate(errors[errorField]?.type)) ||
+    disabledProp;
 
   if (!active) return <Connect fullwidth />;
 

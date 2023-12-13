@@ -1,17 +1,17 @@
+import { useLidoSWR, useWSTETHContractRPC } from '@lido-sdk/react';
 import { BigNumber } from 'ethers';
 import { useWeb3 } from 'reef-knot/web3-react';
-
-import { parseEther } from '@ethersproject/units';
 import { CHAINS } from '@lido-sdk/constants';
-import { useLidoSWR, useWSTETHContractRPC } from '@lido-sdk/react';
 
 import {
   ESTIMATE_ACCOUNT,
+  ESTIMATE_AMOUNT,
   WRAP_FROM_ETH_GAS_LIMIT,
   WRAP_GAS_LIMIT,
   WRAP_GAS_LIMIT_GOERLI,
 } from 'config';
 import { useCurrentStaticRpcProvider } from 'shared/hooks/use-current-static-rpc-provider';
+import { applyGasLimitRatio } from 'features/stake/stake-form/utils';
 
 export const useWrapGasLimit = () => {
   const wsteth = useWSTETHContractRPC();
@@ -28,17 +28,17 @@ export const useWrapGasLimit = () => {
           return await staticRpcProvider.estimateGas({
             from: ESTIMATE_ACCOUNT,
             to: wsteth.address,
-            value: parseEther('0.001'),
+            value: ESTIMATE_AMOUNT,
           });
         } catch (error) {
           console.warn(`${_key}::[eth]`, error);
-          return BigNumber.from(WRAP_FROM_ETH_GAS_LIMIT);
+          return applyGasLimitRatio(BigNumber.from(WRAP_FROM_ETH_GAS_LIMIT));
         }
       };
 
       const fetchGasLimitStETH = async () => {
         try {
-          return await wsteth.estimateGas.wrap(parseEther('0.0001'), {
+          return await wsteth.estimateGas.wrap(ESTIMATE_AMOUNT, {
             from: ESTIMATE_ACCOUNT,
           });
         } catch (error) {

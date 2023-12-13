@@ -73,9 +73,8 @@ export const useApprove = (
             .sendUncheckedTransaction(tx);
           return hash;
         } else {
-          const { maxFeePerGas, maxPriorityFeePerGas } = await getFeeData(
-            staticRpcProvider,
-          );
+          const { maxFeePerGas, maxPriorityFeePerGas } =
+            await getFeeData(staticRpcProvider);
           const tx = await contractWeb3.approve(spender, amount, {
             maxFeePerGas,
             maxPriorityFeePerGas,

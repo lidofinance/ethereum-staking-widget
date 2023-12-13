@@ -4,7 +4,7 @@ import { useRequestTxPrice } from 'features/withdrawals/hooks/useWithdrawTxPrice
 import { useApproveGasLimit } from 'features/wsteth/wrap/hooks/use-approve-gas-limit';
 import { useWatch } from 'react-hook-form';
 import { DataTableRowStethByWsteth } from 'shared/components/data-table-row-steth-by-wsteth';
-import { FormatToken } from 'shared/formatters';
+import { FormatPrice, FormatToken } from 'shared/formatters';
 import { useTxCostInUsd } from 'shared/hooks';
 import { getTokenDisplayName } from 'utils/getTokenDisplayName';
 import {
@@ -45,13 +45,13 @@ export const TransactionInfo = () => {
         title="Max unlock cost"
         loading={isApprovalFlowLoading}
       >
-        {isApprovalFlow ? `$${approveTxCostInUsd?.toFixed(2)}` : 'FREE'}
+        {isApprovalFlow ? <FormatPrice amount={approveTxCostInUsd} /> : 'FREE'}
       </DataTableRow>
       <DataTableRow
         title="Max transaction cost"
         loading={requestTxPriceLoading}
       >
-        ${requestTxPriceInUsd?.toFixed(2)}
+        <FormatPrice amount={requestTxPriceInUsd} />
       </DataTableRow>
       <DataTableRow title="Allowance" loading={isApprovalFlowLoading}>
         {isInfiniteAllowance ? (

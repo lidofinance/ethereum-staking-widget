@@ -14,7 +14,7 @@ import {
 import NoSSRWrapper from 'shared/components/no-ssr-wrapper';
 import { usePrefixedReplace } from 'shared/hooks/use-prefixed-history';
 
-import HomePageRegular from 'features/home/home-page-regular';
+import { StakePage } from 'features/stake';
 import WrapPage from 'pages/wrap/[[...mode]]';
 import WithdrawalsPage from 'pages/withdrawals/[mode]';
 import ReferralPage from 'pages/referral';
@@ -107,7 +107,7 @@ const HomePageIpfs: FC = () => {
     }
 
     default: {
-      spaPage = <HomePageRegular />;
+      spaPage = <StakePage />;
     }
   }
 
