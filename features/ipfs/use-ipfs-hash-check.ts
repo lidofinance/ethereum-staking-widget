@@ -8,21 +8,24 @@ type EnsHashCheckReturn = {
   cid: string | null;
 };
 
+// works with any type of IPFS hash
+const URL_CID_REGEX =
+  /[/.](?<cid>Qm[1-9A-HJ-NP-Za-km-z]{44,}|b[A-Za-z2-7]{58,}|B[A-Z2-7]{58,}|z[1-9A-HJ-NP-Za-km-z]{48,}|F[0-9A-F]{50,})([./#?]|$)/;
+
 const ENS_NAME = 'ethereum.staked.eth';
+
+// try to extract CID from url
+const extractCID = () => {
+  if (typeof window !== 'undefined') {
+    return URL_CID_REGEX.exec(window.location.href)?.groups?.cid ?? null;
+  }
+  return null;
+};
 
 export const useIpfsHashCheck = () => {
   const provider = useMainnetStaticRpcProvider();
 
-  const [currentCID, setCurrentCID] = useState<null | string>(() => {
-    // try to extract CID from url
-    if (typeof window !== 'undefined') {
-      const cidRegExp = new RegExp(
-        '(Qm[1-9A-HJ-NP-Za-km-z]{44,}|b[A-Za-z2-7]{58,}|B[A-Z2-7]{58,}|z[1-9A-HJ-NP-Za-km-z]{48,}|F[0-9A-F]{50,})',
-      );
-      return cidRegExp.exec(window.location.href)?.[0] ?? null;
-    }
-    return null;
-  });
+  const [currentCID, setCurrentCID] = useState<null | string>(extractCID);
   const swr = useLidoSWR<EnsHashCheckReturn>(
     ['swr:ipfs-hash-check', ENS_NAME, currentCID],
     async ([_, ensName]: [string, string, string | null]) => {
