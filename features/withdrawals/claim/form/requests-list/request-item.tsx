@@ -43,23 +43,29 @@ export const RequestItem = forwardRef<HTMLInputElement, RequestItemProps>(
     const symbol = isClaimable ? 'ETH' : 'stETH';
 
     const label = (
-      <FormatToken showAmountTip amount={amountValue} symbol={symbol} />
+      <FormatToken
+        data-testid="requestAmount"
+        showAmountTip
+        amount={amountValue}
+        symbol={symbol}
+      />
     );
 
     return (
-      <RequestStyled $disabled={isDisabled}>
+      <RequestStyled data-testid={'requestItem'} $disabled={isDisabled}>
         <Checkbox
           {...props}
-          // TODO: Update Checkbox props in lido-ui
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore
+          data-testid="requestCheckbox"
           label={label}
           disabled={isDisabled}
           name={name}
           ref={ref}
         />
         <RequestStatus status={status.isFinalized ? 'ready' : 'pending'} />
-        <LinkStyled href={getNFTUrl(token_id, chainId)}>
+        <LinkStyled
+          data-testid="requestNftLink"
+          href={getNFTUrl(token_id, chainId)}
+        >
           <External />
         </LinkStyled>
       </RequestStyled>

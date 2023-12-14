@@ -122,7 +122,7 @@ export const DexOptions: React.FC<
     useWithdrawalRates();
 
   return (
-    <DexOptionsContainer {...props}>
+    <DexOptionsContainer data-testid="dexOptionContainer" {...props}>
       {initialLoading
         ? placeholder.map((_, i) => <DexOptionLoader key={i} />)
         : data?.map(({ name, toReceive, rate }) => {

@@ -27,6 +27,7 @@ export const SubmitButton = () => {
 
   return (
     <Button
+      data-testid="claimButton"
       fullwidth
       disabled={disabled}
       loading={isSubmitting || isValidating}

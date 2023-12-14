@@ -41,6 +41,7 @@ export const TransactionInfo = () => {
   return (
     <>
       <DataTableRow
+        data-testid="maxUnlockCost"
         help={unlockCostTooltip}
         title="Max unlock cost"
         loading={isApprovalFlowLoading}
@@ -49,11 +50,16 @@ export const TransactionInfo = () => {
       </DataTableRow>
       <DataTableRow
         title="Max transaction cost"
+        data-testid="maxTxCost"
         loading={requestTxPriceLoading}
       >
         <FormatPrice amount={requestTxPriceInUsd} />
       </DataTableRow>
-      <DataTableRow title="Allowance" loading={isApprovalFlowLoading}>
+      <DataTableRow
+        data-testid="allowance"
+        title="Allowance"
+        loading={isApprovalFlowLoading}
+      >
         {isInfiniteAllowance ? (
           'Infinite'
         ) : (
@@ -65,7 +71,9 @@ export const TransactionInfo = () => {
         )}
       </DataTableRow>
       {token === TOKENS.STETH ? (
-        <DataTableRow title="Exchange rate">1 stETH = 1 ETH</DataTableRow>
+        <DataTableRow data-testid="exchangeRate" title="Exchange rate">
+          1 stETH = 1 ETH
+        </DataTableRow>
       ) : (
         <DataTableRowStethByWsteth toSymbol="ETH" />
       )}

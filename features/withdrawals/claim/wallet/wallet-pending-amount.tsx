@@ -24,6 +24,7 @@ export const WalletPendingAmount = () => {
   return (
     <CardBalance
       small
+      data-testid="myPendingAmount"
       title="My pending amount"
       loading={initialLoading}
       value={pendingAmount}
