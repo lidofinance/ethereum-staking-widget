@@ -16,7 +16,7 @@ export const StakeForm: FC = memo(() => {
     <TransactionModalProvider>
       <StakeFormProvider>
         <Wallet />
-        <Block>
+        <Block data-testid="stakeForm">
           <FormControllerStyled>
             <StakeAmountInput />
             <StakeSubmitButton />
