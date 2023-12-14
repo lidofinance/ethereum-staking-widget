@@ -50,7 +50,7 @@ export const WrapFormStats = () => {
       >
         1 {isSteth ? 'stETH' : 'ETH'} ={' '}
         <FormatToken
-          data-testid="rate "
+          data-testid="rate"
           amount={oneWstethConverted}
           symbol="wstETH"
         />
