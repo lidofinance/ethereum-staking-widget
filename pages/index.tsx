@@ -26,7 +26,7 @@ export const getStaticProps: GetStaticProps<
     };
   }
 
-  // FAQ for home page regular
+  // FAQ for stake page regular
   return {
     props: {
       pageFAQ: (await getFaqSSR(stakePageFAQPath))?.faq ?? null,

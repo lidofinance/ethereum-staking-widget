@@ -5,7 +5,7 @@ import { PageFAQ } from '@lidofinance/ui-faq';
 import { Layout } from 'shared/components';
 
 import { StakeFaq } from './stake-faq/stake-faq';
-export { Stake } from './stake';
+import { Stake } from './stake';
 
 export type StakePageProps = {
   pageFAQ?: PageFAQ | null;
@@ -22,6 +22,7 @@ export const StakePage: FC<StakePageProps> = ({ pageFAQ, faqETag }) => {
       <Head>
         <title>Stake with Lido | Lido</title>
       </Head>
+      <Stake />
       <StakeFaq pageFAQ={pageFAQ ?? undefined} eTag={faqETag ?? undefined} />
     </Layout>
   );
