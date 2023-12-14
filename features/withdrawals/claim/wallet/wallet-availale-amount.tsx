@@ -16,6 +16,7 @@ export const WalletAvailableAmount = () => {
   return (
     <CardBalance
       small
+      data-testid="avaialableToClaim"
       title="Available to claim"
       loading={initialLoading}
       value={availableAmount}
