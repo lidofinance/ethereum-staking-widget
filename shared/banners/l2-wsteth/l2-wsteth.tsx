@@ -13,7 +13,7 @@ const linkClickHandler = () => trackEvent(...MATOMO_CLICK_EVENTS.l2BannerWrap);
 
 export const L2Wsteth = () => {
   return (
-    <Banner>
+    <Banner data-tesid="L2wstETHbanner">
       <L2Icons />
       <TextContent>
         Enjoy <b>lower gas</b> fees and <b>DeFi opportunities</b> using wstETH
@@ -25,7 +25,7 @@ export const L2Wsteth = () => {
         target="_blank"
         rel="noopener noreferrer"
       >
-        <LinkButton>Learn More</LinkButton>
+        <LinkButton data-testid="l2WSstethlearnMore">Learn More</LinkButton>
       </OverlayLink>
     </Banner>
   );

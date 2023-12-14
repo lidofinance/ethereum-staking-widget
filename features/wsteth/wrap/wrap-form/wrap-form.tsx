@@ -17,7 +17,7 @@ export const WrapForm: React.FC = memo(() => {
   return (
     <TransactionModalProvider>
       <WrapFormProvider>
-        <WrapBlock>
+        <WrapBlock data-testid="wrapForm">
           <FormControllerWrap>
             <InputGroupHookForm errorField="amount">
               <TokenSelectWrap />

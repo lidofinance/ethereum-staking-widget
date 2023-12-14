@@ -28,7 +28,7 @@ export const WrapFormStats = () => {
   const wrapTxCostInUsd = useTxCostInUsd(wrapGasLimit && Number(wrapGasLimit));
 
   return (
-    <DataTable>
+    <DataTable data-testid="wrapStats">
       <DataTableRow
         title="Max unlock cost"
         data-testid="maxUnlockFee"
@@ -49,7 +49,11 @@ export const WrapFormStats = () => {
         loading={!oneWstethConverted}
       >
         1 {isSteth ? 'stETH' : 'ETH'} ={' '}
-        <FormatToken amount={oneWstethConverted} symbol="wstETH" />
+        <FormatToken
+          data-testid="rate "
+          amount={oneWstethConverted}
+          symbol="wstETH"
+        />
       </DataTableRow>
       <DataTableRow
         data-testid="allowance"

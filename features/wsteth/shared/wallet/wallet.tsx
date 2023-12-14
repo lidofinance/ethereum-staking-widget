@@ -30,7 +30,7 @@ const WalletComponent: WalletComponentType = (props) => {
   const stethByWstethBalance = useStethByWsteth(wstethBalance.data);
 
   return (
-    <StyledCard {...props}>
+    <StyledCard data-testid="wrapCardSection" {...props}>
       <CardRow>
         <CardBalance
           title="ETH Balance"
