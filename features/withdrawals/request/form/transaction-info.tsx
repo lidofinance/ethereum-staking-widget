@@ -4,7 +4,7 @@ import { useRequestTxPrice } from 'features/withdrawals/hooks/useWithdrawTxPrice
 import { useApproveGasLimit } from 'features/wsteth/wrap/hooks/use-approve-gas-limit';
 import { useWatch } from 'react-hook-form';
 import { DataTableRowStethByWsteth } from 'shared/components/data-table-row-steth-by-wsteth';
-import { FormatToken } from 'shared/formatters';
+import { FormatPrice, FormatToken } from 'shared/formatters';
 import { useTxCostInUsd } from 'shared/hooks';
 import { getTokenDisplayName } from 'utils/getTokenDisplayName';
 import {
@@ -41,19 +41,25 @@ export const TransactionInfo = () => {
   return (
     <>
       <DataTableRow
+        data-testid="maxUnlockCost"
         help={unlockCostTooltip}
         title="Max unlock cost"
         loading={isApprovalFlowLoading}
       >
-        {isApprovalFlow ? `$${approveTxCostInUsd?.toFixed(2)}` : 'FREE'}
+        {isApprovalFlow ? <FormatPrice amount={approveTxCostInUsd} /> : 'FREE'}
       </DataTableRow>
       <DataTableRow
         title="Max transaction cost"
+        data-testid="maxTxCost"
         loading={requestTxPriceLoading}
       >
-        ${requestTxPriceInUsd?.toFixed(2)}
+        <FormatPrice amount={requestTxPriceInUsd} />
       </DataTableRow>
-      <DataTableRow title="Allowance" loading={isApprovalFlowLoading}>
+      <DataTableRow
+        data-testid="allowance"
+        title="Allowance"
+        loading={isApprovalFlowLoading}
+      >
         {isInfiniteAllowance ? (
           'Infinite'
         ) : (
@@ -65,7 +71,9 @@ export const TransactionInfo = () => {
         )}
       </DataTableRow>
       {token === TOKENS.STETH ? (
-        <DataTableRow title="Exchange rate">1 stETH = 1 ETH</DataTableRow>
+        <DataTableRow data-testid="exchangeRate" title="Exchange rate">
+          1 stETH = 1 ETH
+        </DataTableRow>
       ) : (
         <DataTableRowStethByWsteth toSymbol="ETH" />
       )}

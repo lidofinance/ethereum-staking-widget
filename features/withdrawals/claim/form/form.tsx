@@ -21,7 +21,7 @@ export const ClaimForm = () => {
 
   return (
     <form onSubmit={onSubmit}>
-      <ClaimFormBody>
+      <ClaimFormBody data-testid="claimList">
         {isBunker && <BunkerInfo />}
         <div ref={refRequests}>
           <RequestsList />
