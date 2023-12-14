@@ -40,7 +40,7 @@ const HeaderWallet: FC = () => {
         <Connect size="sm" />
       )}
       {dynamics.ipfsMode && <HeaderSettingsButton />}
-      <ThemeToggler />
+      <ThemeToggler data-testid="themeToggler"></ThemeToggler>
       {dynamics.ipfsMode && (
         <IPFSInfoBoxOnlyDesktopWrapper>
           <IPFSInfoBox />

@@ -13,12 +13,14 @@ export const TxStageModalContent = memo((props: TxStageModalContentProps) => {
   const { icon, title, description, footerHint, footer } = props;
 
   return (
-    <Wrap>
+    <Wrap data-testid="txStage">
       {icon}
-      <Title>{title}</Title>
-      <Description>{description}</Description>
-      {footerHint && <FooterHint>{footerHint}</FooterHint>}
-      {footer && <Footer>{footer}</Footer>}
+      <Title data-testid="tittle">{title}</Title>
+      <Description data-testid="description">{description}</Description>
+      {footerHint && (
+        <FooterHint data-testid="footerHint">{footerHint}</FooterHint>
+      )}
+      {footer && <Footer data-testid="footer">{footer}</Footer>}
     </Wrap>
   );
 });
