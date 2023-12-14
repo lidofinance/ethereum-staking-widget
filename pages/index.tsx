@@ -1,16 +1,14 @@
 import { GetStaticProps } from 'next';
 
 import { FAQ_REVALIDATE_SECS, dynamics } from 'config';
-import HomePageRegular, {
-  HomePageRegularProps,
-} from 'features/home/home-page-regular';
+import { StakePage, StakePageProps } from 'features/stake';
 import HomePageIpfs, { HomePageIpfsProps } from 'features/ipfs/home-page-ipfs';
 import { getFaqSSR } from 'utilsApi/faq';
 
-export default dynamics.ipfsMode ? HomePageIpfs : HomePageRegular;
+export default dynamics.ipfsMode ? HomePageIpfs : StakePage;
 
 export const getStaticProps: GetStaticProps<
-  HomePageRegularProps | HomePageIpfsProps
+  StakePageProps | HomePageIpfsProps
 > = async () => {
   const stakePageFAQPath = '/faq-stake-page.md';
 

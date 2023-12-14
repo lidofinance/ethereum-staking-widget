@@ -31,7 +31,7 @@ export const RequestForm = () => {
   const mode = useWatch<RequestFormInputType, 'mode'>({ name: 'mode' });
 
   return (
-    <Block>
+    <Block data-testid="requestForm">
       {isPaused && <PausedInfo />}
       {isBunker && <BunkerInfo />}
       <form autoComplete="off" onSubmit={onSubmit}>

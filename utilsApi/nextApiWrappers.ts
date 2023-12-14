@@ -1,4 +1,5 @@
-import type { Histogram } from 'prom-client';
+import type { Histogram, Counter } from 'prom-client';
+import { utils } from 'ethers';
 import { getStatusLabel } from '@lidofinance/api-metrics';
 import {
   RequestWrapper,
@@ -13,6 +14,11 @@ import {
   RATE_LIMIT,
   RATE_LIMIT_TIME_FRAME,
 } from 'config';
+import {
+  getMetricContractInterface,
+  METRIC_CONTRACT_ADDRESSES,
+} from './contractAddressesMetricsMap';
+import { CHAINS } from '@lido-sdk/constants';
 
 export enum HttpMethod {
   GET = 'GET',
@@ -70,15 +76,15 @@ export const cors =
   };
 
 export const httpMethodGuard =
-  (methodWhitelist: HttpMethod[]): RequestWrapper =>
+  (methodAllowList: HttpMethod[]): RequestWrapper =>
   async (req, res, next) => {
     if (
       !req ||
       !req.method ||
-      !Object.values(methodWhitelist).includes(req.method as HttpMethod)
+      !Object.values(methodAllowList).includes(req.method as HttpMethod)
     ) {
       res.status(405);
-      throw new Error(`You can use only: ${methodWhitelist.toString()}`);
+      throw new Error(`You can use only: ${methodAllowList.toString()}`);
     }
 
     await next?.(req, res, next);
@@ -100,6 +106,74 @@ export const responseTimeMetric =
     } finally {
       endMetric({ status });
     }
+  };
+
+const parseRefererUrl = (referer: string) => {
+  if (!referer) return null;
+  try {
+    const url = new URL(referer);
+    return `${url.origin}${url.pathname}`;
+  } catch (error) {
+    return null;
+  }
+};
+
+const collectRequestAddressMetric = async ({
+  calls,
+  referer,
+  chainId,
+  metrics,
+}: {
+  calls: any[];
+  referer: string;
+  chainId: CHAINS;
+  metrics: Counter<string>;
+}) => {
+  const refererUrlParsed = parseRefererUrl(referer);
+  calls.forEach((call: any) => {
+    if (
+      typeof call === 'object' &&
+      call.method === 'eth_call' &&
+      call.params[0].to
+    ) {
+      const { to, data } = call.params[0];
+      const address = utils.getAddress(to);
+      const contractName = METRIC_CONTRACT_ADDRESSES[chainId][address];
+      const methodEncoded = data?.slice(0, 10); // `0x` and 8 next symbols
+      const methodDecoded = contractName
+        ? getMetricContractInterface(contractName)?.getFunction(methodEncoded)
+            ?.name
+        : null;
+
+      metrics
+        .labels({
+          address,
+          referer: refererUrlParsed || 'N/A',
+          contractName: contractName || 'N/A',
+          methodEncoded: methodEncoded || 'N/A',
+          methodDecoded: methodDecoded || 'N/A',
+        })
+        .inc(1);
+    }
+  });
+};
+
+export const requestAddressMetric =
+  (metrics: Counter<string>): RequestWrapper =>
+  async (req, res, next) => {
+    const referer = req.headers.referer as string;
+    const chainId = req.query.chainId as unknown as CHAINS;
+
+    if (req.body) {
+      void collectRequestAddressMetric({
+        calls: Array.isArray(req.body) ? req.body : [req.body],
+        referer,
+        chainId,
+        metrics,
+      }).catch(console.error);
+    }
+
+    await next?.(req, res, next);
   };
 
 export const rateLimit = rateLimitWrapper({

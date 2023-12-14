@@ -99,7 +99,7 @@ const DexOption: React.FC<DexOptionProps> = ({
         Go to {title}
       </DexOptionBlockLink>
       <DexOptionAmount>
-        {loading && <InlineLoaderSmall />}
+        {loading && !toReceive && <InlineLoaderSmall />}
         {toReceive ? (
           <FormatToken
             approx
@@ -122,12 +122,12 @@ export const DexOptions: React.FC<
     useWithdrawalRates();
 
   return (
-    <DexOptionsContainer {...props}>
+    <DexOptionsContainer data-testid="dexOptionContainer" {...props}>
       {initialLoading
         ? placeholder.map((_, i) => <DexOptionLoader key={i} />)
         : data?.map(({ name, toReceive, rate }) => {
             const dex = dexInfo[name];
-            if (!dex) return null;
+            if (!dex || (amount.gt('0') && !rate)) return null;
             return (
               <DexOption
                 title={dex.title}

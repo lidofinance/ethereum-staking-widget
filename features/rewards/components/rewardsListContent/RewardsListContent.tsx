@@ -5,7 +5,11 @@ import { ErrorBlockNoSteth } from 'features/rewards/components/errorBlocks/Error
 
 import { RewardsListsEmpty } from './RewardsListsEmpty';
 import { RewardsListErrorMessage } from './RewardsListErrorMessage';
-import { LoaderWrapper, TableWrapperStyle } from './RewardsListContentStyles';
+import {
+  LoaderWrapper,
+  TableWrapperStyle,
+  ErrorWrapper,
+} from './RewardsListContentStyles';
 import { RewardsTable } from 'features/rewards/components/rewardsTable';
 
 export const RewardsListContent: FC = () => {
@@ -31,7 +35,13 @@ export const RewardsListContent: FC = () => {
       </>
     );
   }
-  if (error) return <RewardsListErrorMessage error={error} />;
+  if (error) {
+    return (
+      <ErrorWrapper>
+        <RewardsListErrorMessage error={error} />
+      </ErrorWrapper>
+    );
+  }
   if (data && data.events.length === 0) return <ErrorBlockNoSteth />;
 
   return (

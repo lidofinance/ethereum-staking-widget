@@ -23,6 +23,7 @@ import {
 const TooltipWithdrawalAmount = () => {
   return (
     <Tooltip
+      data-testid="lidoOptionToolTip"
       placement="topRight"
       title={
         <>
@@ -30,6 +31,7 @@ const TooltipWithdrawalAmount = () => {
           <br /> For more info, please read{' '}
           <Link href="#amountDifferentFromRequested">
             <a
+              data-testid="lidoOptionToolTipFAQ"
               aria-hidden="true"
               onClick={() =>
                 trackMatomoEvent(
@@ -60,10 +62,10 @@ export const LidoOption = () => {
   });
 
   return (
-    <LidoOptionContainer>
+    <LidoOptionContainer data-testid="lidoOptionSection">
       <LidoIcon />
       Lido
-      <LidoOptionValue>
+      <LidoOptionValue data-testid="lidoOptionAmount">
         <FormatTokenStyled
           data-testid="lidoOptionAmount"
           showAmountTip

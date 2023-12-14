@@ -17,7 +17,7 @@ export const WalletComponent = () => {
   const { account } = useSDK();
 
   return (
-    <WalletWrapperStyled>
+    <WalletWrapperStyled data-testid="claimCardSection">
       <CardRow>
         <WalletAvailableAmount />
         <CardAccount account={account} />

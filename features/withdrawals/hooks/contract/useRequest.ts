@@ -305,7 +305,7 @@ export const useWithdrawalRequest = ({
   const { isBunker } = useWithdrawals();
   const { dispatchModalState, dispatchAsyncDialog } = useTransactionModal();
   const getRequestMethod = useWithdrawalRequestMethods();
-  const [isMultisig, isMultisigLoading] = useIsMultisig();
+  const { isMultisig, isLoading: isMultisigLoading } = useIsMultisig();
 
   const wstethContract = useWSTETHContractRPC();
   const stethContract = useSTETHContractRPC();

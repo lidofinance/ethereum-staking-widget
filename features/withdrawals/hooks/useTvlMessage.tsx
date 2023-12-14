@@ -21,24 +21,23 @@ export const useTvlMessage = (error?: unknown) => {
   // To render one text per page before refresh
   const textTemplate = useMemo(() => getText(), []);
 
-  const balanceDiff =
+  const { balanceDiffSteth, tvlDiff } =
     error &&
     typeof error === 'object' &&
     'type' in error &&
     error.type == ValidationTvlJoke.type &&
-    'payload' in error &&
-    error.payload
-      ? (error.payload as TvlErrorPayload).balanceDiffSteth
-      : undefined;
+    'payload' in error
+      ? (error.payload as TvlErrorPayload)
+      : { balanceDiffSteth: undefined, tvlDiff: undefined };
 
   return {
-    balanceDiff,
+    balanceDiff: balanceDiffSteth,
     tvlMessage: useMemo(
       () =>
-        balanceDiff
-          ? textTemplate(shortenTokenValue(Number(formatEther(balanceDiff))))
+        tvlDiff
+          ? textTemplate(shortenTokenValue(Number(formatEther(tvlDiff))))
           : undefined,
-      [balanceDiff, textTemplate],
+      [tvlDiff, textTemplate],
     ),
   };
 };
