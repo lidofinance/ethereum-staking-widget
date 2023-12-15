@@ -50,18 +50,23 @@ const LidoButton: React.FC<OptionButtonProps> = ({ isActive, onClick }) => {
   const ratio = isSteth ? '1 : 1' : `1 : ${formatBalance(wstethAsStethBN)}`;
 
   return (
-    <OptionsPickerButton type="button" $active={isActive} onClick={onClick}>
+    <OptionsPickerButton
+      data-testid="lidoOption"
+      type="button"
+      $active={isActive}
+      onClick={onClick}
+    >
       <OptionsPickerRow>
         <OptionsPickerLabel>Use Lido</OptionsPickerLabel>
         <OptionsPickerIcons>
           <LidoIcon />
         </OptionsPickerIcons>
       </OptionsPickerRow>
-      <OptionsPickerRow>
+      <OptionsPickerRow data-testid="lidoOptionRate">
         <OptionsPickerSubLabel>Rate:</OptionsPickerSubLabel>
         {ratioLoading ? <InlineLoaderSmall /> : ratio}
       </OptionsPickerRow>
-      <OptionsPickerRow>
+      <OptionsPickerRow data-testid="lidoOptionWaitingTime">
         <OptionsPickerSubLabel>Waiting time:</OptionsPickerSubLabel>
         {initialLoading ? <InlineLoaderSmall /> : waitingTime}
       </OptionsPickerRow>
@@ -75,20 +80,25 @@ const DexButton: React.FC<OptionButtonProps> = ({ isActive, onClick }) => {
   });
   const bestRateValue = bestRate ? `1 : ${bestRate.toFixed(4)}` : '-';
   return (
-    <OptionsPickerButton type="button" $active={isActive} onClick={onClick}>
+    <OptionsPickerButton
+      data-testid="dexOptions"
+      type="button"
+      $active={isActive}
+      onClick={onClick}
+    >
       <OptionsPickerRow>
         <OptionsPickerLabel>Use aggregators</OptionsPickerLabel>
         <OptionsPickerIcons>
-          <OneInchIcon />
-          <CowSwapIcon />
-          <ParaSwapIcon />
+          <OneInchIcon data-testid="DexOneInchIcon" />
+          <CowSwapIcon data-testid="DexCowSwapIcon" />
+          <ParaSwapIcon data-testid="DexParaSwapIcon" />
         </OptionsPickerIcons>
       </OptionsPickerRow>
-      <OptionsPickerRow>
+      <OptionsPickerRow data-testid="dexBestRate">
         <OptionsPickerSubLabel>Best Rate:</OptionsPickerSubLabel>
         {loading ? <InlineLoaderSmall /> : bestRateValue}
       </OptionsPickerRow>
-      <OptionsPickerRow>
+      <OptionsPickerRow data-testid="dexWaitingTime">
         <OptionsPickerSubLabel>Waiting time:</OptionsPickerSubLabel>~&nbsp;1-5
         minutes
       </OptionsPickerRow>

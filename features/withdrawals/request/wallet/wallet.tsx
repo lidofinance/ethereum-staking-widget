@@ -20,7 +20,7 @@ export const WalletComponent = () => {
   const token = useWatch<RequestFormInputType, 'token'>({ name: 'token' });
   const isSteth = token === TOKENS.STETH;
   return (
-    <WalletWrapperStyled>
+    <WalletWrapperStyled data-testid="requestCardSection">
       <CardRow>
         {isSteth ? <WalletStethBalance /> : <WalletWstethBalance />}
         <CardAccount account={account} />
