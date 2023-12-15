@@ -1,12 +1,9 @@
 import { useLidoSWR } from '@lido-sdk/react';
-import { dynamics } from 'config';
-import { useEffect, useState } from 'react';
+import { BASE_PATH_ASSET, dynamics } from 'config';
 import { useMainnetStaticRpcProvider } from 'shared/hooks/use-mainnet-static-rpc-provider';
-import { STRATEGY_LAZY } from 'utils/swrStrategies';
+import { STRATEGY_IMMUTABLE, STRATEGY_LAZY } from 'utils/swrStrategies';
 
-type EnsHashCheckReturn = {
-  cid: string | null;
-};
+type EnsHashCheckReturn = string | null;
 
 // works with any type of IPFS hash
 const URL_CID_REGEX =
@@ -14,60 +11,57 @@ const URL_CID_REGEX =
 
 const ENS_NAME = 'ethereum.staked.eth';
 
-// try to extract CID from url
-const extractCID = () => {
-  if (typeof window !== 'undefined') {
-    return URL_CID_REGEX.exec(window.location.href)?.groups?.cid ?? null;
-  }
-  return null;
-};
-
 export const useIpfsHashCheck = () => {
   const provider = useMainnetStaticRpcProvider();
 
-  const [currentCID, setCurrentCID] = useState<null | string>(extractCID);
-  const swr = useLidoSWR<EnsHashCheckReturn>(
-    ['swr:ipfs-hash-check', ENS_NAME, currentCID],
-    async ([_, ensName]: [string, string, string | null]) => {
+  // local cid extraction
+  const { data: currentCID } = useLidoSWR(
+    ['swr:ipfs-cid-extraction'],
+    async () => {
+      const urlCid =
+        URL_CID_REGEX.exec(window.location.href)?.groups?.cid ?? null;
+      if (urlCid) return urlCid;
+      const headers = await fetch(`${BASE_PATH_ASSET}/runtime/window-env.js`, {
+        method: 'HEAD',
+      });
+      return headers.headers.get('X-Ipfs-Roots');
+    },
+    { ...STRATEGY_IMMUTABLE, isPaused: () => !dynamics.ipfsMode },
+  );
+
+  // ens cid extraction
+  const ensLookupSWR = useLidoSWR<EnsHashCheckReturn>(
+    ['swr:ipfs-hash-check', ENS_NAME],
+    async ([_, ensName]: [string, string]) => {
       const resolver = await provider.getResolver(ensName);
       if (resolver) {
         const contentHash = await resolver.getContentHash();
         if (contentHash) {
-          return {
-            cid: contentHash,
-          };
+          return contentHash;
         }
       }
-      return {
-        cid: null,
-      };
+      return null;
     },
     { ...STRATEGY_LAZY, isPaused: () => !dynamics.ipfsMode },
   );
 
-  useEffect(() => {
-    if (swr.data?.cid && !currentCID) {
-      setCurrentCID(swr.data.cid);
-    }
-  }, [swr.data?.cid, currentCID]);
-
   const isUpdateAvailable = Boolean(
-    swr.data?.cid && currentCID && swr.data.cid !== currentCID,
+    ensLookupSWR.data && currentCID && ensLookupSWR.data !== currentCID,
   );
 
   return {
     isUpdateAvailable,
     get data() {
-      return swr.data;
+      return ensLookupSWR.data;
     },
     get initialLoading() {
-      return swr.initialLoading;
+      return ensLookupSWR.initialLoading;
     },
     get loading() {
-      return swr.loading;
+      return ensLookupSWR.loading;
     },
     get error() {
-      return swr.error;
+      return ensLookupSWR.error;
     },
   };
 };
