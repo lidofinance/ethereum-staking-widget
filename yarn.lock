@@ -2236,6 +2236,20 @@
     ua-parser-js "^1.0.35"
     use-callback-ref "1.2.5"
 
+"@lidofinance/lido-ui@^3.18.1":
+  version "3.18.1"
+  resolved "https://registry.yarnpkg.com/@lidofinance/lido-ui/-/lido-ui-3.18.1.tgz#79a19f0f2c1ae3605435965d2750eb15398b906e"
+  integrity sha512-O8l9xj1FBxA8lA7V6mgN08+i9p8OpP20oBkVwMAJTWQP4lbgTQLXXnm5oxPMmBfeP/L3aux7l+uChfch8JXBAQ==
+  dependencies:
+    "@styled-system/should-forward-prop" "5.1.5"
+    react-collapsed "3.0.2"
+    react-jazzicon "^1.0.4"
+    react-toastify "7.0.4"
+    react-transition-group "4"
+    styled-system "5.1.5"
+    ua-parser-js "^1.0.35"
+    use-callback-ref "1.2.5"
+
 "@lidofinance/next-api-wrapper@^0.28.0", "@lidofinance/next-api-wrapper@~0.28.0":
   version "0.28.0"
   resolved "https://registry.yarnpkg.com/@lidofinance/next-api-wrapper/-/next-api-wrapper-0.28.0.tgz#76fc32dafdbb1188d0a0ca5afd23bdf13e14d35d"
