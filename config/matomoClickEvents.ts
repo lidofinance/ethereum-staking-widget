@@ -50,6 +50,7 @@ export const enum MATOMO_CLICK_EVENTS_TYPES {
   withdrawalGoTo1inch = 'withdrawalGoTo1inch',
   withdrawalGoToCowSwap = 'withdrawalGoToCowSwap',
   withdrawalGoToParaswap = 'withdrawalGoToParaswap',
+  withdrawalGoToOpenOcean = 'withdrawalGoToOpenOcean',
   withdrawalEtherscanSuccessTemplate = 'withdrawalEtherscanSuccessTemplate',
   withdrawalGuideSuccessTemplate = 'withdrawalGuideSuccessTemplate',
 
