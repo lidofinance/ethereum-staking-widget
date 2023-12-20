@@ -49,7 +49,6 @@ const calculateRateReceive = (
   const toReceive = amount.eq(fromAmount)
     ? toAmount
     : amount.mul(toAmount).div(fromAmount);
-
   return { rate, toReceive };
 };
 

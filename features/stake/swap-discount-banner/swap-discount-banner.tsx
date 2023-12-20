@@ -13,7 +13,7 @@ import { enableQaHelpers } from 'utils';
 import { Wrap, TextWrap, OpenOceanIcon } from './styles';
 
 const SWAP_URL = `https://app.openocean.finance/classic?referrer=${OPEN_OCEAN_REFERRAL_ADDRESS}#/ETH/ETH/STETH`;
-const DISCOUNT_THRESHOLD = 0.996;
+const DISCOUNT_THRESHOLD = 1.004;
 const DEFAULT_AMOUNT = parseEther('1');
 const MOCK_LS_KEY = 'mock-qa-helpers-discount-rate';
 
@@ -23,12 +23,14 @@ type FetchRateResult = {
   discountPercent: number;
 };
 
+// we show banner if STETH is considerably cheaper to get on dex than staking
+// ETH -> stETH rate > THRESHOLD
 const fetchRate = async (): Promise<FetchRateResult> => {
   const { rate } = await getOpenOceanRate(DEFAULT_AMOUNT, 'ETH', TOKENS.STETH);
   return {
     rate,
-    shouldShowDiscount: rate <= DISCOUNT_THRESHOLD,
-    discountPercent: (1 - rate) * 100,
+    shouldShowDiscount: rate >= DISCOUNT_THRESHOLD,
+    discountPercent: (1 - (rate - 1)) * 100,
   };
 };
 
