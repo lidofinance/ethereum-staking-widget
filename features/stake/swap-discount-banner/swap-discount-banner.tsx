@@ -1,5 +1,3 @@
-import { FC } from 'react';
-
 import { Button } from '@lidofinance/lido-ui';
 import { trackEvent } from '@lidofinance/analytics-matomo';
 
@@ -29,7 +27,7 @@ const fetchRate = async (): Promise<FetchRateResult> => {
   const { rate } = await getOpenOceanRate(DEFAULT_AMOUNT, 'ETH', TOKENS.STETH);
   return {
     rate,
-    shouldShowDiscount: rate < DISCOUNT_THRESHOLD,
+    shouldShowDiscount: rate <= DISCOUNT_THRESHOLD,
     discountPercent: (1 - rate) * 100,
   };
 };
@@ -58,9 +56,7 @@ const getData = (data: FetchRateResult | undefined) => {
   return data;
 };
 
-export const SwapDiscountBanner: FC<React.PropsWithChildren> = ({
-  children,
-}) => {
+export const SwapDiscountBanner = ({ children }: React.PropsWithChildren) => {
   const swr = useLidoSWR<FetchRateResult>(
     ['swr:open-ocean-rate'],
     fetchRate,
