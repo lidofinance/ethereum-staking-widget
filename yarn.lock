@@ -2222,24 +2222,10 @@
   resolved "https://registry.yarnpkg.com/@lidofinance/eth-providers/-/eth-providers-0.28.0.tgz#069dfcd66f97418298646abd2742e8e997c6fbbb"
   integrity sha512-oH2nU7jVPkn1mii56vp3gBFZNFR/LysxiKBUwV2freFoizQHNLeWWjU1b8a+l1I020LzbxHcatOkV6z9ur5YfA==
 
-"@lidofinance/lido-ui@^3.18.0":
-  version "3.18.0"
-  resolved "https://registry.yarnpkg.com/@lidofinance/lido-ui/-/lido-ui-3.18.0.tgz#9e2cd65eff8ce2b1b1d7fb49cd9d0a0031670a15"
-  integrity sha512-XzkrkQ8d8GOs3PqfGLYVjoELSA/kmgc0r88UokmG0br2U9pFM+xHhMl/hlrP8j3m1CURWIt6ZHduU/T1nE7Q3w==
-  dependencies:
-    "@styled-system/should-forward-prop" "5.1.5"
-    react-collapsed "3.0.2"
-    react-jazzicon "^1.0.4"
-    react-toastify "7.0.4"
-    react-transition-group "4"
-    styled-system "5.1.5"
-    ua-parser-js "^1.0.35"
-    use-callback-ref "1.2.5"
-
-"@lidofinance/lido-ui@^3.18.1":
-  version "3.18.1"
-  resolved "https://registry.yarnpkg.com/@lidofinance/lido-ui/-/lido-ui-3.18.1.tgz#79a19f0f2c1ae3605435965d2750eb15398b906e"
-  integrity sha512-O8l9xj1FBxA8lA7V6mgN08+i9p8OpP20oBkVwMAJTWQP4lbgTQLXXnm5oxPMmBfeP/L3aux7l+uChfch8JXBAQ==
+"@lidofinance/lido-ui@^3.18.0", "@lidofinance/lido-ui@^3.18.2":
+  version "3.18.2"
+  resolved "https://registry.yarnpkg.com/@lidofinance/lido-ui/-/lido-ui-3.18.2.tgz#7eaa79270b9f23129d776ebe2a083f4329fe9ec6"
+  integrity sha512-/MXmkHmliyQ5S7/TQW87XMYLd7May8R+rZ7JHbiZzaLEzUwixlLyFvWpmtX2CKJ4JL13KKWke/06gbNG/8wC5A==
   dependencies:
     "@styled-system/should-forward-prop" "5.1.5"
     react-collapsed "3.0.2"
