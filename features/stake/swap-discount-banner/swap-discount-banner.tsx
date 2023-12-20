@@ -29,7 +29,7 @@ const fetchRate = async (): Promise<FetchRateResult> => {
   const { rate } = await getOpenOceanRate(DEFAULT_AMOUNT, 'ETH', TOKENS.STETH);
   return {
     rate,
-    shouldShowDiscount: rate < DISCOUNT_THRESHOLD,
+    shouldShowDiscount: rate <= DISCOUNT_THRESHOLD,
     discountPercent: (1 - rate) * 100,
   };
 };
