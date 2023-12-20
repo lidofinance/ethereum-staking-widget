@@ -9,17 +9,18 @@ export const fetchFaqSSR = async (
   path: string,
 ): Promise<ReturnType<typeof fetcherWithServiceResponse<string>> | null> => {
   console.debug(`[fetchFaqSSR] Started fetching the '${path}' from CMS...`);
-  const cmsPartOfUrl = serverRuntimeConfig.faqContentPartOfUrl;
-
   const resp = await responseTimeExternalMetricWrapper({
-    payload: cmsPartOfUrl,
+    payload: serverRuntimeConfig.faqContentBasePath,
     request: () =>
-      fetcherWithServiceResponse<string>(`${cmsPartOfUrl}/${path}`, {
-        method: 'GET',
-        headers: {
-          'Content-type': 'text/html',
+      fetcherWithServiceResponse<string>(
+        `${serverRuntimeConfig.faqContentBasePath}/${path}`,
+        {
+          method: 'GET',
+          headers: {
+            'Content-type': 'text/html',
+          },
         },
-      }),
+      ),
   });
 
   if (!resp || !resp.data) {
@@ -27,7 +28,7 @@ export const fetchFaqSSR = async (
     return null;
   }
 
-  console.debug(`[fetchFaqSSR] Fetched the '${path}' from CMS was successes!`);
+  console.debug(`[fetchFaqSSR] Successfully fetched the '${path}' from CMS!`);
   return resp;
 };
 

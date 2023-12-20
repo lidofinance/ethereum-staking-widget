@@ -2,8 +2,9 @@ import React, { FC } from 'react';
 
 import { FaqAccordion, PageFAQ, isPageFAQ } from '@lidofinance/ui-faq';
 
+import { FAQ_WITHDRAWALS_PAGE_REQUEST_TAB_PATH } from 'config';
 import { Section } from 'shared/components';
-import { useFetchFaqOnClientIfETagWereChanged } from 'shared/hooks/use-faq-on-client';
+import { useUpdatableFaq } from 'shared/hooks/use-faq-on-client';
 import { faqAccordionOnLinkClick } from 'utils/faq-matomo';
 // import { ButtonLinkWrap } from './styles';
 
@@ -18,8 +19,8 @@ type RequestFaqProps = {
 
 export const RequestFaq: FC<RequestFaqProps> = ({ pageFAQ, eTag }) => {
   // This hook actual on IPFS only (see: the `eTag` prop drilling)!
-  const { data: pageFaqIpfsMode } = useFetchFaqOnClientIfETagWereChanged(
-    '/faq-withdrawals-page-request-tab.md',
+  const { data: pageFaqIpfsMode } = useUpdatableFaq(
+    FAQ_WITHDRAWALS_PAGE_REQUEST_TAB_PATH,
     eTag,
   );
 

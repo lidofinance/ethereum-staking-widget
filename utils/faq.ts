@@ -11,7 +11,7 @@ export const fetchFaqOnClient = async (
   );
 
   const resp = await fetcherWithServiceResponse<any>(
-    `${dynamics.faqContentPartOfUrl}/${path}`,
+    `${dynamics.faqContentBasePath}/${path}`,
     {
       method: 'GET',
       headers: {

@@ -4,12 +4,12 @@ import { isPageFAQ, PageFAQ } from '@lidofinance/ui-faq';
 import { getFaqOnClient } from 'utils/faq';
 import { STRATEGY_CONSTANT } from 'utils/swrStrategies';
 
-export const useFetchFaqOnClientIfETagWereChanged = (
+export const useUpdatableFaq = (
   faqPath: string,
   eTag?: string | null,
 ): SWRResponse<PageFAQ | undefined> => {
   return useLidoSWR(
-    ['swr:useFetchFaqOnClientIfETagWereChanged', faqPath, eTag],
+    ['swr:useUpdatableFaq', faqPath, eTag],
     async () => {
       if (!eTag) {
         return undefined;

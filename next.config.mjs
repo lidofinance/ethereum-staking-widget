@@ -55,7 +55,7 @@ export const CACHE_CONTROL_PAGES = [
 export const CACHE_CONTROL_VALUE =
   'public, max-age=15, s-max-age=30, stale-if-error=604800, stale-while-revalidate=172800';
 
-export const faqContentPartOfUrl = process.env.FAQ_CONTENT_PART_OF_URL;
+export const faqContentBasePath = process.env.FAQ_CONTENT_BASE_PATH;
 
 const withBundleAnalyzer = NextBundleAnalyzer({
   enabled: analyzeBundle,
@@ -183,6 +183,6 @@ export default withBundleAnalyzer({
     rewardsBackendAPI,
     defaultChain,
     developmentMode,
-    faqContentPartOfUrl,
+    faqContentBasePath,
   },
 });
