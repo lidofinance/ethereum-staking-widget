@@ -23,15 +23,17 @@ type FetchRateResult = {
   discountPercent: number;
 };
 
+const calculateDiscountState = (rate: number): FetchRateResult => ({
+  rate,
+  shouldShowDiscount: rate > DISCOUNT_THRESHOLD,
+  discountPercent: (1 - 1 / rate) * 100,
+});
+
 // we show banner if STETH is considerably cheaper to get on dex than staking
 // ETH -> stETH rate > THRESHOLD
 const fetchRate = async (): Promise<FetchRateResult> => {
   const { rate } = await getOpenOceanRate(DEFAULT_AMOUNT, 'ETH', TOKENS.STETH);
-  return {
-    rate,
-    shouldShowDiscount: rate >= DISCOUNT_THRESHOLD,
-    discountPercent: (1 - 1 / rate) * 100,
-  };
+  return calculateDiscountState(rate);
 };
 
 const linkClickHandler = () =>
@@ -48,12 +50,7 @@ const getData = (data: FetchRateResult | undefined) => {
   if (!enableQaHelpers || typeof window == 'undefined') return data;
   const mock = localStorage.getItem(MOCK_LS_KEY);
   if (mock) {
-    const rate = parseFloat(mock);
-    return {
-      rate,
-      shouldShowDiscount: rate >= DISCOUNT_THRESHOLD,
-      discountPercent: (1 - 1 / rate) * 100,
-    };
+    return calculateDiscountState(parseFloat(mock));
   }
   return data;
 };
