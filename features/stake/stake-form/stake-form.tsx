@@ -9,6 +9,7 @@ import { StakeAmountInput } from './controls/stake-amount-input';
 import { StakeSubmitButton } from './controls/stake-submit-button';
 import { StakeFormInfo } from './stake-form-info';
 import { StakeFormModal } from './stake-form-modal';
+import { SwapDiscountBanner } from '../swap-discount-banner';
 import { FormControllerStyled } from './styles';
 
 export const StakeForm: FC = memo(() => {
@@ -20,6 +21,7 @@ export const StakeForm: FC = memo(() => {
           <FormControllerStyled>
             <StakeAmountInput />
             <StakeSubmitButton />
+            <SwapDiscountBanner />
           </FormControllerStyled>
           <StakeFormInfo />
           <StakeFormModal />
