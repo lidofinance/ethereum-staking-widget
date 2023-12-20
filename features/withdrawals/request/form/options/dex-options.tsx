@@ -18,6 +18,8 @@ import {
   DexOptionLoader,
   OpenOceanIcon,
 } from './styles';
+import { formatEther } from '@ethersproject/units';
+import { OPEN_OCEAN_REFERRAL_ADDRESS } from 'config/external-links';
 
 const placeholder = Array.from<null>({ length: 1 }).fill(null);
 
@@ -35,8 +37,10 @@ const dexInfo: {
     onClickGoTo: () => {
       trackMatomoEvent(MATOMO_CLICK_EVENTS_TYPES.withdrawalGoToOpenOcean);
     },
-    link: (_, token) =>
-      `https://app.openocean.finance/CLASSIC#/ETH/${token}/ETH`,
+    link: (amount, token) =>
+      `https://app.openocean.finance/classic?referrer=${OPEN_OCEAN_REFERRAL_ADDRESS}&amount=${formatEther(
+        amount,
+      )}#/ETH/${token}/ETH`,
   },
 };
 

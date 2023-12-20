@@ -17,7 +17,7 @@ export const LidoIcon = styled.img.attrs({
 
 export const OpenOceanIcon = styled.img.attrs({
   src: OpenOcean,
-  alt: 'cowswap',
+  alt: 'openOcean',
 })`
   display: block;
 `;

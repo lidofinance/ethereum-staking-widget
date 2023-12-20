@@ -3,128 +3,54 @@ import { useWatch } from 'react-hook-form';
 import { BigNumber } from 'ethers';
 
 import { Zero } from '@ethersproject/constants';
-import { CHAINS, TOKENS, getTokenAddress } from '@lido-sdk/constants';
+import { TOKENS } from '@lido-sdk/constants';
 import { useLidoSWR } from '@lido-sdk/react';
 
 import { useDebouncedValue } from 'shared/hooks/useDebouncedValue';
-import { standardFetcher } from 'utils/standardFetcher';
 import { STRATEGY_LAZY } from 'utils/swrStrategies';
 
 import { RequestFormInputType } from '../request/request-form-context';
-import { formatEther } from '@ethersproject/units';
+import { getOpenOceanRate } from 'utils/get-open-ocean-rate';
 
-type getWithdrawalRatesParams = {
+type GetWithdrawalRateParams = {
   amount: BigNumber;
   token: TOKENS.STETH | TOKENS.WSTETH;
 };
 
-type RateResult = {
+type SingleWithdrawalRateResult = {
   name: string;
   rate: number | null;
   toReceive: BigNumber | null;
 };
 
 type GetRateType = (
-  amount: BigNumber,
-  token: TOKENS.STETH | TOKENS.WSTETH,
-) => Promise<RateResult>;
+  params: GetWithdrawalRateParams,
+) => Promise<SingleWithdrawalRateResult>;
 
-type rateCalculationResult = ReturnType<typeof calculateRateReceive>;
+type GetWithdrawalRateResult = SingleWithdrawalRateResult[];
 
-type getWithdrawalRatesResult = RateResult[];
-
-const RATE_PRECISION = 100000;
-const RATE_PRECISION_BN = BigNumber.from(RATE_PRECISION);
-
-const calculateRateReceive = (
-  amount: BigNumber,
-  src: BigNumber,
-  dest: BigNumber,
-) => {
-  const _rate = dest.mul(RATE_PRECISION_BN).div(src);
-  const toReceive = amount.mul(dest).div(src);
-  const rate = _rate.toNumber() / RATE_PRECISION;
-  return { rate, toReceive };
-};
-
-type OpenOceanGetGasPartial = {
-  without_decimals: {
-    standard: {
-      legacyGasPrice: string;
-    };
-  };
-};
-
-type OpenOceanGetQuotePartial = {
-  data: {
-    inToken: {
-      symbol: string;
-      name: string;
-      address: string;
-      decimals: number;
-    };
-    outToken: {
-      symbol: string;
-      name: string;
-      address: string;
-      decimals: number;
-    };
-    inAmount: string;
-    outAmount: string;
-  };
-};
-
-const getOpenOceanRate: GetRateType = async (amount, token) => {
-  let rateInfo: rateCalculationResult | null = null;
-
+const getOpenOceanWithdrawalRate: GetRateType = async ({ amount, token }) => {
   try {
-    if (amount.isZero() || amount.isNegative()) {
-      return {
-        name: 'openOcean',
-        rate: 0,
-        toReceive: BigNumber.from(0),
-      };
-    }
-
-    const basePath = 'https://open-api.openocean.finance/v3/1';
-    const gasData = await standardFetcher<OpenOceanGetGasPartial>(
-      `${basePath}/gasPrice`,
-    );
-
-    const params = new URLSearchParams({
-      inTokenSymbol: token,
-      inTokenAddress: getTokenAddress(CHAINS.Mainnet, token),
-      outTokenSymbol: 'ETH',
-      outTokenAddress: '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE',
-      gasPrice: gasData.without_decimals.standard.legacyGasPrice,
-      amount: formatEther(amount),
-    });
-
-    const quote = await standardFetcher<OpenOceanGetQuotePartial>(
-      `${basePath}/quote?${params.toString()}`,
-    );
-
-    rateInfo = calculateRateReceive(
-      amount,
-      BigNumber.from(quote.data.inAmount),
-      BigNumber.from(quote.data.outAmount),
-    );
+    const rate = await getOpenOceanRate(amount, token, 'ETH');
+    return {
+      name: 'openOcean',
+      ...rate,
+    };
   } catch (e) {
     console.warn('[getOpenOceanRate] Failed to receive withdraw rate', e);
   }
 
   return {
     name: 'openOcean',
-    rate: rateInfo?.rate ?? null,
-    toReceive: rateInfo?.toReceive ?? null,
+    rate: null,
+    toReceive: null,
   };
 };
 
-const getWithdrawalRates = async ({
-  amount,
-  token,
-}: getWithdrawalRatesParams): Promise<getWithdrawalRatesResult> => {
-  const rates = await Promise.all([getOpenOceanRate(amount, token)]);
+const getWithdrawalRates = async (
+  params: GetWithdrawalRateParams,
+): Promise<GetWithdrawalRateResult> => {
+  const rates = await Promise.all([getOpenOceanWithdrawalRate(params)]);
 
   if (rates.length > 1) {
     // sort by rate, then alphabetic
