@@ -30,7 +30,7 @@ const fetchRate = async (): Promise<FetchRateResult> => {
   return {
     rate,
     shouldShowDiscount: rate >= DISCOUNT_THRESHOLD,
-    discountPercent: (1 - (rate - 1)) * 100,
+    discountPercent: (1 - 1 / rate) * 100,
   };
 };
 
@@ -48,11 +48,11 @@ const getData = (data: FetchRateResult | undefined) => {
   if (!enableQaHelpers || typeof window == 'undefined') return data;
   const mock = localStorage.getItem(MOCK_LS_KEY);
   if (mock) {
-    const mockRate = parseFloat(mock);
+    const rate = parseFloat(mock);
     return {
-      rate: mockRate,
-      shouldShowDiscount: mockRate < DISCOUNT_THRESHOLD,
-      discountPercent: (1 - mockRate) * 100,
+      rate,
+      shouldShowDiscount: rate >= DISCOUNT_THRESHOLD,
+      discountPercent: (1 - 1 / rate) * 100,
     };
   }
   return data;
@@ -69,7 +69,7 @@ export const SwapDiscountBanner = ({ children }: React.PropsWithChildren) => {
 
   if (swr.initialLoading) return null;
 
-  if (!data?.shouldShowDiscount) return children;
+  if (!data?.shouldShowDiscount) return <>{children}</>;
 
   return (
     <Wrap>
