@@ -10,7 +10,7 @@ import { TOKENS } from '@lido-sdk/constants';
 import { useLidoSWR } from '@lido-sdk/react';
 import { enableQaHelpers } from 'utils';
 
-import { Wrap, TextWrap, OpenOceanIcon } from './styles';
+import { Wrap, TextWrap, OpenOceanIcon, OverlayLink } from './styles';
 
 const SWAP_URL = `https://app.openocean.finance/classic?referrer=${OPEN_OCEAN_REFERRAL_ADDRESS}#/ETH/ETH/STETH`;
 const DISCOUNT_THRESHOLD = 1.004;
@@ -75,7 +75,7 @@ export const SwapDiscountBanner = ({ children }: React.PropsWithChildren) => {
         Get a <b>{data?.discountPercent.toFixed(2)}% discount</b> by swapping to
         stETH&nbsp;on the OpenOcean platform
       </TextWrap>
-      <a
+      <OverlayLink
         target="_blank"
         rel="noreferrer"
         href={SWAP_URL}
@@ -84,7 +84,7 @@ export const SwapDiscountBanner = ({ children }: React.PropsWithChildren) => {
         <Button fullwidth size="xs">
           Get discount
         </Button>
-      </a>
+      </OverlayLink>
     </Wrap>
   );
 };

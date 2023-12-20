@@ -12,21 +12,31 @@ export const Wrap = styled.div`
   height: 80px;
   overflow: hidden;
   background-image: url('${BgSrc}');
-  background-size: contain;
+  background-size: auto;
   background-repeat: no-repeat;
   background-color: #07080c;
 
   & > * {
     position: relative;
   }
+  ${({ theme }) => theme.mediaQueries.md} {
+    cursor: pointer;
+  }
+`;
 
-  @media (max-width: 545px) {
-    padding-top: 20px;
-    padding-bottom: 20px;
-    flex-wrap: wrap;
-    height: auto;
-    background-size: cover;
-    background-position: -10px;
+export const OverlayLink = styled.a`
+  display: block;
+
+  ${({ theme }) => theme.mediaQueries.md} {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+
+    & > button {
+      display: none;
+    }
   }
 `;
 
