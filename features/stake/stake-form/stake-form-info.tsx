@@ -23,7 +23,7 @@ export const StakeFormInfo = () => {
   const txCostInUsd = useEthUsd(gasCost);
 
   return (
-    <DataTable>
+    <DataTable data-testid="stakeFormInfo">
       <DataTableRow title="You will receive" data-testid="youWillReceive">
         <FormatToken amount={amount ?? Zero} symbol="stETH" />
       </DataTableRow>

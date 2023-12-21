@@ -23,7 +23,7 @@ const WalletComponent: WalletComponentType = (props) => {
   const lidoApr = useLidoApr();
 
   return (
-    <StyledCard {...props}>
+    <StyledCard data-testid="stakeCardSection" {...props}>
       <CardRow>
         <CardBalance
           title={

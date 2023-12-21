@@ -26,6 +26,7 @@ export const WalletMode = () => {
   return (
     <CardBalance
       small
+      data-testid="withdrawalsMode"
       title={timeTitle}
       loading={isWithdrawalsStatusLoading}
       value={content}

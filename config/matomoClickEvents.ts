@@ -7,7 +7,7 @@ export const enum MATOMO_CLICK_EVENTS_TYPES {
   clickBalancerPool = 'clickBalancerPool',
   clickExploreDeFi = 'clickExploreDeFi',
   // / page
-  oneInchDiscount = 'oneInchDiscount',
+  openOceanDiscount = 'openOceanDiscount',
   viewEtherscanOnStakePage = 'viewEtherscanOnStakePage',
   l2BannerStake = 'l2BannerStake',
   l2LowFeeStake = 'l2LowFeeStake',
@@ -50,6 +50,7 @@ export const enum MATOMO_CLICK_EVENTS_TYPES {
   withdrawalGoTo1inch = 'withdrawalGoTo1inch',
   withdrawalGoToCowSwap = 'withdrawalGoToCowSwap',
   withdrawalGoToParaswap = 'withdrawalGoToParaswap',
+  withdrawalGoToOpenOcean = 'withdrawalGoToOpenOcean',
   withdrawalEtherscanSuccessTemplate = 'withdrawalEtherscanSuccessTemplate',
   withdrawalGuideSuccessTemplate = 'withdrawalGuideSuccessTemplate',
 
@@ -87,10 +88,10 @@ export const MATOMO_CLICK_EVENTS: Record<
     'eth_widget_banner_defi_explore',
   ],
   // / page
-  [MATOMO_CLICK_EVENTS_TYPES.oneInchDiscount]: [
+  [MATOMO_CLICK_EVENTS_TYPES.openOceanDiscount]: [
     'Ethereum_Staking_Widget',
-    'Push "Get discount" on 1inch banner on widget',
-    'eth_widget_oneinch_discount',
+    'Push "Get discount" on OpenOcean banner on widget',
+    'eth_widget_openocean_discount',
   ],
   [MATOMO_CLICK_EVENTS_TYPES.viewEtherscanOnStakePage]: [
     'Ethereum_Staking_Widget',
@@ -281,6 +282,11 @@ export const MATOMO_CLICK_EVENTS: Record<
     'Ethereum_Withdrawals_Widget',
     'Click on «Go to Paraswap» in aggregators list on Request tab',
     'eth_withdrawals_request_go_to_Paraswap',
+  ],
+  [MATOMO_CLICK_EVENTS_TYPES.withdrawalGoToOpenOcean]: [
+    'Ethereum_Withdrawals_Widget',
+    'Click on «Go to OpenOcean in aggregators list on Request tab',
+    'eth_withdrawals_request_go_to_OpenOcean',
   ],
   [MATOMO_CLICK_EVENTS_TYPES.withdrawalEtherscanSuccessTemplate]: [
     'Ethereum_Withdrawals_Widget',
