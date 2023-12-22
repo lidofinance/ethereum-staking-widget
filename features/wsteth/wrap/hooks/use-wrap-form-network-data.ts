@@ -19,9 +19,10 @@ export const useWrapFormNetworkData = () => {
     undefined,
     STRATEGY_LAZY,
   );
-  const { data: stethBalance, update: stethBalanceUpdate } = useSTETHBalance();
+  const { data: stethBalance, update: stethBalanceUpdate } =
+    useSTETHBalance(STRATEGY_LAZY);
   const { data: wstethBalance, update: wstethBalanceUpdate } =
-    useWSTETHBalance();
+    useWSTETHBalance(STRATEGY_LAZY);
 
   const { data: stakeLimitInfo, mutate: stakeLimitInfoUpdate } =
     useStakingLimitInfo();

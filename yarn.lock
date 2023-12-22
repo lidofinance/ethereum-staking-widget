@@ -2146,7 +2146,7 @@
   dependencies:
     tiny-invariant "^1.1.0"
 
-"@lido-sdk/contracts@3.0.4", "@lido-sdk/contracts@^3.0.3":
+"@lido-sdk/contracts@3.0.4", "@lido-sdk/contracts@^3.0.4":
   version "3.0.4"
   resolved "https://registry.yarnpkg.com/@lido-sdk/contracts/-/contracts-3.0.4.tgz#85e3b203aa0a38841ecf22d7ac4e5f8d70848920"
   integrity sha512-oW7gyHKcrss77sEPMmYm38M0CQ5+3GGlNewu9D+UJhtxRpLa+Jh3nWEd5tq/hMdMSN9cGoerVKFfBAhw6zKajg==
@@ -2154,7 +2154,7 @@
     "@lido-sdk/constants" "3.2.1"
     tiny-invariant "^1.1.0"
 
-"@lido-sdk/fetch@^2.1.11":
+"@lido-sdk/fetch@^2.1.12":
   version "2.1.12"
   resolved "https://registry.yarnpkg.com/@lido-sdk/fetch/-/fetch-2.1.12.tgz#aa0ef16212f4bad7ffed68928143e7cbdab94973"
   integrity sha512-kFBrzCVxYnD3Q68cM4KY9E7w/4TAJk1BW2wAcPpJyWm1yQSRL1urhEZ6NGbwkp23QvayVStbNrQiezVOdDnzYw==
@@ -2163,7 +2163,7 @@
     node-fetch "^2.6.7"
     tiny-invariant "^1.1.0"
 
-"@lido-sdk/helpers@1.5.1", "@lido-sdk/helpers@^1.5.0":
+"@lido-sdk/helpers@1.5.1", "@lido-sdk/helpers@^1.5.1":
   version "1.5.1"
   resolved "https://registry.yarnpkg.com/@lido-sdk/helpers/-/helpers-1.5.1.tgz#ced13f1df6e34a1d4ad551fde299524dc237b694"
   integrity sha512-n8sTliverpxOy7PeTCUyG+bQPIJdg57AOON+6X2tZ19JxU3r6ZhHzo33x/9022aKu0A/Ya7edREDB6MadymdRg==
@@ -2171,17 +2171,17 @@
     "@lido-sdk/constants" "3.2.1"
     tiny-invariant "^1.1.0"
 
-"@lido-sdk/providers@^1.4.13":
+"@lido-sdk/providers@^1.4.14":
   version "1.4.14"
   resolved "https://registry.yarnpkg.com/@lido-sdk/providers/-/providers-1.4.14.tgz#b7c714aa753d662c0d51f71ee4990b3cb78ce790"
   integrity sha512-m422uXuaGoXoUlF8oyFTIQsj8ljVet/x7nK0xF8UoURm/iuaAhTbEXpcxhmkx8JSSDli1928apJRAwxG0McgnQ==
   dependencies:
     "@lido-sdk/constants" "3.2.1"
 
-"@lido-sdk/react@^2.0.2":
-  version "2.0.3"
-  resolved "https://registry.yarnpkg.com/@lido-sdk/react/-/react-2.0.3.tgz#dee817762f4fc7f0e7fdeac240b4b41902c48fcb"
-  integrity sha512-28EcbqFz2FNtop4YXyk7bcy7WtwWMBmYnkoEeotXkH6TWQcBmfepwqF9qfZGIezV4hgNgmRe8fOhi1kf7SdG/Q==
+"@lido-sdk/react@^2.0.5":
+  version "2.0.5"
+  resolved "https://registry.yarnpkg.com/@lido-sdk/react/-/react-2.0.5.tgz#13496354863bcd98f78cf223ac65254e9620419a"
+  integrity sha512-XRrO1Zg13IJO0TKhqT/TBJYTWuZg+2+8T+FPmegxwe7mfJSrg025lhtRPW8cjLHvPvVsW6RVgV/vW9iIeHvYpA==
   dependencies:
     "@lido-sdk/constants" "3.2.1"
     "@lido-sdk/contracts" "3.0.4"

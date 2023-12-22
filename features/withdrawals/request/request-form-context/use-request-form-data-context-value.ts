@@ -23,8 +23,10 @@ export const useRequestFormDataContextValue = () => {
   const { maxAmount: maxAmountPerRequestSteth, minAmount: minUnstakeSteth } =
     useWithdrawals();
   const wstethContract = useWSTETHContractRPC();
-  const { data: balanceSteth, update: stethUpdate } = useSTETHBalance();
-  const { data: balanceWSteth, update: wstethUpdate } = useWSTETHBalance();
+  const { data: balanceSteth, update: stethUpdate } =
+    useSTETHBalance(STRATEGY_LAZY);
+  const { data: balanceWSteth, update: wstethUpdate } =
+    useWSTETHBalance(STRATEGY_LAZY);
   const { data: unfinalizedStETH, update: unfinalizedStETHUpdate } =
     useUnfinalizedStETH();
 

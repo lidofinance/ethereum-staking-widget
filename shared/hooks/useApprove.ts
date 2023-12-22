@@ -12,6 +12,7 @@ import { getFeeData } from 'utils/getFeeData';
 import { runWithTransactionLogger } from 'utils';
 
 import { useCurrentStaticRpcProvider } from './use-current-static-rpc-provider';
+import { STRATEGY_LAZY } from 'utils/swrStrategies';
 
 type ApproveOptions =
   | {
@@ -43,7 +44,7 @@ export const useApprove = (
   invariant(token != null, 'Token is required');
   invariant(spender != null, 'Spender is required');
 
-  const result = useAllowance(token, spender, mergedOwner);
+  const result = useAllowance(token, spender, mergedOwner, STRATEGY_LAZY);
   const {
     data: allowance = Zero,
     initialLoading,
