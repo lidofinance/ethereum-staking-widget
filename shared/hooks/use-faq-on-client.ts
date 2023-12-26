@@ -1,32 +1,26 @@
 import { useLidoSWR, SWRResponse } from '@lido-sdk/react';
 import { isPageFAQ, PageFAQ } from '@lidofinance/ui-faq';
 
-import { getFaqOnClient } from 'utils/faq';
+import { getFaqOnClient, FaqWithMeta } from 'utils/faq';
 import { STRATEGY_CONSTANT } from 'utils/swrStrategies';
 
-export const useUpdatableFaq = (
-  faqPath: string,
-  eTag?: string | null,
-): SWRResponse<PageFAQ | undefined> => {
+export type UseUpdatableFaq = (props: FaqWithMeta) => SWRResponse<PageFAQ>;
+
+export const useUpdatableFaq: UseUpdatableFaq = ({ pageFAQ, path, eTag }) => {
   return useLidoSWR(
-    ['swr:useUpdatableFaq', faqPath, eTag],
+    ['swr:useUpdatableFaq', path, eTag],
     async () => {
       if (!eTag) {
-        return undefined;
+        return pageFAQ;
       }
 
-      const respFaq = await getFaqOnClient(faqPath);
-
-      if (
-        !respFaq ||
-        !respFaq.faq ||
-        !isPageFAQ(respFaq.faq) ||
-        eTag === respFaq?.eTag
-      ) {
-        return undefined;
+      const respFaq = await getFaqOnClient(path);
+      if (!respFaq || !isPageFAQ(respFaq.pageFAQ) || eTag === respFaq?.eTag) {
+        return pageFAQ;
       }
 
-      return respFaq.faq;
+      // Updated PageFAQ
+      return respFaq.pageFAQ;
     },
     STRATEGY_CONSTANT,
   );

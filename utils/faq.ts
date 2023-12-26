@@ -1,6 +1,7 @@
 import { PageFAQ, parseFAQ } from '@lidofinance/ui-faq';
 
 import { dynamics } from 'config';
+import { getPathWithoutFirstSlash } from 'config/urls';
 import { fetcherWithServiceResponse } from 'utils/fetcher-with-service-response';
 
 export const fetchFaqOnClient = async (
@@ -11,7 +12,7 @@ export const fetchFaqOnClient = async (
   );
 
   const resp = await fetcherWithServiceResponse<any>(
-    `${dynamics.faqContentBasePath}/${path}`,
+    `${dynamics.faqContentBasePath}/${getPathWithoutFirstSlash(path)}`,
     {
       method: 'GET',
       headers: {
@@ -31,9 +32,15 @@ export const fetchFaqOnClient = async (
   return resp;
 };
 
+export type FaqWithMeta = {
+  pageFAQ: PageFAQ;
+  path: string;
+  eTag?: string | null;
+};
+
 export const getFaqOnClient = async (
   path: string,
-): Promise<{ faq?: PageFAQ | null; eTag?: string | null } | null> => {
+): Promise<FaqWithMeta | null> => {
   try {
     const rawFaqResp = await fetchFaqOnClient(path);
 
@@ -41,8 +48,12 @@ export const getFaqOnClient = async (
     // Reason: `undefined` cannot be serialized as JSON. Please use `null` or omit this value.
     if (!rawFaqResp || !rawFaqResp.data) return null;
 
+    const parsedFaq = await parseFAQ(rawFaqResp.data);
+    if (!parsedFaq) return null;
+
     return {
-      faq: await parseFAQ(rawFaqResp.data),
+      pageFAQ: parsedFaq,
+      path,
       eTag: rawFaqResp?.headers?.get('ETag'),
     };
   } catch (err) {

@@ -1,5 +1,3 @@
-import { PageFAQ } from '@lidofinance/ui-faq';
-
 import { WRAP_PATH, WRAP_UNWRAP_PATH } from 'config/urls';
 
 import { Wallet } from 'features/wsteth/shared/wallet';
@@ -7,6 +5,7 @@ import { WrapForm } from 'features/wsteth/wrap/wrap-form/wrap-form';
 import { GoerliSunsetBanner } from 'shared/banners/goerli-sunset';
 import { Switch } from 'shared/components/switch';
 import NoSsrWrapper from 'shared/components/no-ssr-wrapper';
+import { FaqWithMeta } from 'utils/faq';
 
 import { WrapFaq } from './shared/wrap-faq/wrap-faq';
 import { UnwrapForm } from './unwrap/unwrap-form';
@@ -18,13 +17,13 @@ const NAV_ROUTES = [
 
 type WrapUnwrapLayoutProps = {
   mode: 'wrap' | 'unwrap';
-  faq: {
-    pageFAQ?: PageFAQ;
-    eTag?: string | null;
-  };
+  faqWithMeta: FaqWithMeta | null;
 };
 
-export const WrapUnwrapTabs = ({ mode, faq }: WrapUnwrapLayoutProps) => {
+export const WrapUnwrapTabs = ({
+  mode,
+  faqWithMeta,
+}: WrapUnwrapLayoutProps) => {
   const isUnwrapMode = mode === 'unwrap';
   return (
     <>
@@ -35,7 +34,7 @@ export const WrapUnwrapTabs = ({ mode, faq }: WrapUnwrapLayoutProps) => {
         {isUnwrapMode ? <UnwrapForm /> : <WrapForm />}
       </NoSsrWrapper>
 
-      <WrapFaq pageFAQ={faq?.pageFAQ} eTag={faq?.eTag} />
+      {faqWithMeta && <WrapFaq faqWithMeta={faqWithMeta} />}
     </>
   );
 };

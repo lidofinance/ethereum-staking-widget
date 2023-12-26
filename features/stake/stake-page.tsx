@@ -1,19 +1,17 @@
 import { FC } from 'react';
 import Head from 'next/head';
-import { PageFAQ } from '@lidofinance/ui-faq';
 
 import { Layout } from 'shared/components';
+import { FaqWithMeta } from 'utils/faq';
 
 import { StakeFaq } from './stake-faq/stake-faq';
 import { Stake } from './stake';
 
 export type StakePageProps = {
-  pageFAQ?: PageFAQ | null;
-  // IPFS actual only!
-  faqETag?: string | null;
+  faqWithMeta: FaqWithMeta | null;
 };
 
-export const StakePage: FC<StakePageProps> = ({ pageFAQ, faqETag }) => {
+export const StakePage: FC<StakePageProps> = ({ faqWithMeta }) => {
   return (
     <Layout
       title="Stake Ether"
@@ -23,7 +21,7 @@ export const StakePage: FC<StakePageProps> = ({ pageFAQ, faqETag }) => {
         <title>Stake with Lido | Lido</title>
       </Head>
       <Stake />
-      <StakeFaq pageFAQ={pageFAQ ?? undefined} eTag={faqETag ?? undefined} />
+      {faqWithMeta && <StakeFaq faqWithMeta={faqWithMeta} />}
     </Layout>
   );
 };

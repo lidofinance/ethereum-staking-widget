@@ -1,7 +1,8 @@
-import { PageFAQ, parseFAQ } from '@lidofinance/ui-faq';
+import { parseFAQ } from '@lidofinance/ui-faq';
 
 import { serverRuntimeConfig } from 'config';
 import { fetcherWithServiceResponse } from 'utils/fetcher-with-service-response';
+import { FaqWithMeta } from 'utils/faq';
 
 import { responseTimeExternalMetricWrapper } from './fetchApiWrapper';
 
@@ -32,9 +33,7 @@ export const fetchFaqSSR = async (
   return resp;
 };
 
-export const getFaqSSR = async (
-  path: string,
-): Promise<{ faq?: PageFAQ | null; eTag?: string | null } | null> => {
+export const getFaqSSR = async (path: string): Promise<FaqWithMeta | null> => {
   try {
     const rawFaqResp = await fetchFaqSSR(path);
 
@@ -42,8 +41,12 @@ export const getFaqSSR = async (
     // Reason: `undefined` cannot be serialized as JSON. Please use `null` or omit this value.
     if (!rawFaqResp || !rawFaqResp.data) return null;
 
+    const parsedFaq = await parseFAQ(rawFaqResp.data);
+    if (!parsedFaq) return null;
+
     return {
-      faq: await parseFAQ(rawFaqResp.data),
+      pageFAQ: parsedFaq,
+      path,
       eTag: rawFaqResp?.headers?.get('ETag'),
     };
   } catch (err) {

@@ -1,8 +1,7 @@
-import { PageFAQ } from '@lidofinance/ui-faq';
-
 import { WITHDRAWALS_CLAIM_PATH, WITHDRAWALS_REQUEST_PATH } from 'config/urls';
 import { GoerliSunsetBanner } from 'shared/banners/goerli-sunset';
 import { Switch } from 'shared/components';
+import { FaqWithMeta } from 'utils/faq';
 
 import { ClaimDataProvider } from './contexts/claim-data-context';
 import { useWithdrawals } from './contexts/withdrawals-context';
@@ -21,33 +20,23 @@ const withdrawalRoutes = [
 ];
 
 type WithdrawalsTabsProps = {
-  faq?: {
-    pageRequestFAQ?: PageFAQ;
-    pageClaimFAQ?: PageFAQ;
-    eTag?: string | null;
-  };
+  faqWithMetaWithdrawalsPageClaim: FaqWithMeta | null;
+  faqWithMetaWithdrawalsPageRequest: FaqWithMeta | null;
 };
 
-export const WithdrawalsTabs = ({ faq }: WithdrawalsTabsProps) => {
+export const WithdrawalsTabs = ({
+  faqWithMetaWithdrawalsPageClaim,
+  faqWithMetaWithdrawalsPageRequest,
+}: WithdrawalsTabsProps) => {
   const { isClaimTab } = useWithdrawals();
   return (
     <ClaimDataProvider>
       <Switch checked={isClaimTab} routes={withdrawalRoutes} />
       <GoerliSunsetBanner />
       {isClaimTab ? (
-        <Claim
-          faq={{
-            pageFAQ: faq?.pageClaimFAQ,
-            eTag: faq?.eTag,
-          }}
-        />
+        <Claim faqWithMeta={faqWithMetaWithdrawalsPageClaim} />
       ) : (
-        <Request
-          faq={{
-            pageFAQ: faq?.pageRequestFAQ,
-            eTag: faq?.eTag,
-          }}
-        />
+        <Request faqWithMeta={faqWithMetaWithdrawalsPageRequest} />
       )}
     </ClaimDataProvider>
   );

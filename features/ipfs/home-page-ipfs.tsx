@@ -1,8 +1,6 @@
 import { FC, useMemo, useEffect } from 'react';
 import { useRouter } from 'next/router';
 
-import { PageFAQ } from '@lidofinance/ui-faq';
-
 import {
   getPathWithoutFirstSlash,
   HOME_PATH,
@@ -15,13 +13,13 @@ import {
 } from 'config/urls';
 import NoSSRWrapper from 'shared/components/no-ssr-wrapper';
 import { usePrefixedReplace } from 'shared/hooks/use-prefixed-history';
-
 import { StakePage } from 'features/stake';
 import WrapPage from 'pages/wrap/[[...mode]]';
 import WithdrawalsPage from 'pages/withdrawals/[mode]';
 import ReferralPage from 'pages/referral';
 import RewardsPage from 'pages/rewards';
 import SettingsPage from 'pages/settings';
+import { FaqWithMeta } from 'utils/faq';
 
 /**
  * We are using single index.html endpoint
@@ -40,29 +38,17 @@ const IPFS_ROUTABLE_PAGES = [
 ];
 
 export type HomePageIpfsProps = {
-  stakePage?: {
-    faq: PageFAQ | null;
-    eTag?: string | null;
-  };
-  wrapPage?: {
-    faq: PageFAQ | null;
-    eTag?: string | null;
-  };
-  withdrawalsPageRequest?: {
-    faq: PageFAQ | null;
-    eTag?: string | null;
-  };
-  withdrawalsPageClaim?: {
-    faq: PageFAQ | null;
-    eTag?: string | null;
-  };
+  faqWithMetaStakePage: FaqWithMeta | null;
+  faqWithMetaWrapPage: FaqWithMeta | null;
+  faqWithMetaWithdrawalsPageRequest: FaqWithMeta | null;
+  faqWithMetaWithdrawalsPageClaim: FaqWithMeta | null;
 };
 
 const HomePageIpfs: FC<HomePageIpfsProps> = ({
-  stakePage,
-  wrapPage,
-  withdrawalsPageRequest,
-  withdrawalsPageClaim,
+  faqWithMetaStakePage,
+  faqWithMetaWrapPage,
+  faqWithMetaWithdrawalsPageRequest,
+  faqWithMetaWithdrawalsPageClaim,
 }) => {
   const router = useRouter();
   const { asPath } = router;
@@ -102,20 +88,10 @@ const HomePageIpfs: FC<HomePageIpfsProps> = ({
     case getPathWithoutFirstSlash(WRAP_PATH): {
       if (parsedPath[1] === 'unwrap') {
         spaPage = (
-          <WrapPage
-            mode={'unwrap'}
-            pageFAQ={wrapPage?.faq}
-            faqETag={wrapPage?.eTag}
-          />
+          <WrapPage mode={'unwrap'} faqWithMeta={faqWithMetaWrapPage} />
         );
       } else {
-        spaPage = (
-          <WrapPage
-            mode={'wrap'}
-            pageFAQ={wrapPage?.faq}
-            faqETag={wrapPage?.eTag}
-          />
-        );
+        spaPage = <WrapPage mode={'wrap'} faqWithMeta={faqWithMetaWrapPage} />;
       }
       break;
     }
@@ -125,16 +101,20 @@ const HomePageIpfs: FC<HomePageIpfsProps> = ({
         spaPage = (
           <WithdrawalsPage
             mode={'claim'}
-            pageClaimFAQ={withdrawalsPageClaim?.faq}
-            faqETag={withdrawalsPageClaim?.eTag}
+            faqWithMetaWithdrawalsPageClaim={faqWithMetaWithdrawalsPageClaim}
+            faqWithMetaWithdrawalsPageRequest={
+              faqWithMetaWithdrawalsPageRequest
+            }
           />
         );
       } else {
         spaPage = (
           <WithdrawalsPage
             mode={'request'}
-            pageRequestFAQ={withdrawalsPageRequest?.faq}
-            faqETag={withdrawalsPageRequest?.eTag}
+            faqWithMetaWithdrawalsPageClaim={faqWithMetaWithdrawalsPageClaim}
+            faqWithMetaWithdrawalsPageRequest={
+              faqWithMetaWithdrawalsPageRequest
+            }
           />
         );
       }
@@ -157,9 +137,7 @@ const HomePageIpfs: FC<HomePageIpfsProps> = ({
     }
 
     default: {
-      spaPage = (
-        <StakePage pageFAQ={stakePage?.faq} faqETag={stakePage?.eTag} />
-      );
+      spaPage = <StakePage faqWithMeta={faqWithMetaStakePage} />;
     }
   }
 

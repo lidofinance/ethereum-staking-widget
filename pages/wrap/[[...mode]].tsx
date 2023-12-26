@@ -2,15 +2,14 @@ import { FC } from 'react';
 import { GetStaticPaths, GetStaticProps } from 'next';
 import Head from 'next/head';
 
-import { PageFAQ } from '@lidofinance/ui-faq';
-
-import { FAQ_REVALIDATE_SECS } from 'config';
+import { FAQ_REVALIDATE_SECS, FAQ_WRAP_AND_UNWRAP_PAGE_PATH } from 'config';
 import { WrapUnwrapTabs } from 'features/wsteth/wrap-unwrap-tabs';
 import { Layout } from 'shared/components';
 import { useWeb3Key } from 'shared/hooks/useWeb3Key';
 import { getFaqSSR } from 'utilsApi/faq';
+import { FaqWithMeta } from 'utils/faq';
 
-const WrapPage: FC<WrapModePageProps> = ({ mode, pageFAQ, faqETag }) => {
+const WrapPage: FC<WrapModePageProps> = ({ mode, faqWithMeta }) => {
   const key = useWeb3Key();
 
   return (
@@ -22,14 +21,7 @@ const WrapPage: FC<WrapModePageProps> = ({ mode, pageFAQ, faqETag }) => {
         <title>Wrap | Lido</title>
       </Head>
 
-      <WrapUnwrapTabs
-        mode={mode}
-        key={key}
-        faq={{
-          pageFAQ: pageFAQ ?? undefined,
-          eTag: faqETag,
-        }}
-      />
+      <WrapUnwrapTabs mode={mode} key={key} faqWithMeta={faqWithMeta} />
     </Layout>
   );
 };
@@ -38,9 +30,7 @@ export default WrapPage;
 
 type WrapModePageProps = {
   mode: 'wrap' | 'unwrap';
-  pageFAQ?: PageFAQ | null;
-  // IPFS actual only!
-  faqETag?: string | null;
+  faqWithMeta: FaqWithMeta | null;
 };
 
 type WrapModePageParams = {
@@ -61,7 +51,7 @@ export const getStaticProps: GetStaticProps<
 > = async ({ params }) => {
   // FAQ
   const faqProps = {
-    pageFAQ: (await getFaqSSR('/faq-wrap-and-unwrap-page.md'))?.faq ?? null,
+    faqWithMeta: await getFaqSSR(FAQ_WRAP_AND_UNWRAP_PAGE_PATH),
     revalidate: FAQ_REVALIDATE_SECS,
   };
 

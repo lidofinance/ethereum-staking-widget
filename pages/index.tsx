@@ -21,12 +21,14 @@ export const getStaticProps: GetStaticProps<
   if (process.env.IPFS_MODE) {
     return {
       props: {
-        stakePage: (await getFaqSSR(FAQ_STAKE_PAGE_PATH)) ?? null,
-        wrapPage: (await getFaqSSR(FAQ_WRAP_AND_UNWRAP_PAGE_PATH)) ?? null,
-        withdrawalsPageRequest:
-          (await getFaqSSR(FAQ_WITHDRAWALS_PAGE_REQUEST_TAB_PATH)) ?? null,
-        withdrawalsPageClaim:
-          (await getFaqSSR(FAQ_WITHDRAWALS_PAGE_CLAIM_TAB_PATH)) ?? null,
+        faqWithMetaStakePage: await getFaqSSR(FAQ_STAKE_PAGE_PATH),
+        faqWithMetaWrapPage: await getFaqSSR(FAQ_WRAP_AND_UNWRAP_PAGE_PATH),
+        faqWithMetaWithdrawalsPageRequest: await getFaqSSR(
+          FAQ_WITHDRAWALS_PAGE_REQUEST_TAB_PATH,
+        ),
+        faqWithMetaWithdrawalsPageClaim: await getFaqSSR(
+          FAQ_WITHDRAWALS_PAGE_CLAIM_TAB_PATH,
+        ),
       },
     };
   }
@@ -34,7 +36,7 @@ export const getStaticProps: GetStaticProps<
   // FAQ for stake page regular
   return {
     props: {
-      pageFAQ: (await getFaqSSR(FAQ_STAKE_PAGE_PATH))?.faq ?? null,
+      faqWithMeta: await getFaqSSR(FAQ_STAKE_PAGE_PATH),
     },
     revalidate: FAQ_REVALIDATE_SECS,
   };

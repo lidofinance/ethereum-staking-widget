@@ -2,21 +2,23 @@ import { FC } from 'react';
 import { GetStaticPaths, GetStaticProps } from 'next';
 import Head from 'next/head';
 
-import { PageFAQ } from '@lidofinance/ui-faq';
-
-import { FAQ_REVALIDATE_SECS } from 'config';
+import {
+  FAQ_REVALIDATE_SECS,
+  FAQ_WITHDRAWALS_PAGE_CLAIM_TAB_PATH,
+  FAQ_WITHDRAWALS_PAGE_REQUEST_TAB_PATH,
+} from 'config';
 import { WithdrawalsTabs } from 'features/withdrawals';
 import { WithdrawalsProvider } from 'features/withdrawals/contexts/withdrawals-context';
 import { Layout } from 'shared/components';
 import NoSSRWrapper from 'shared/components/no-ssr-wrapper';
 import { useWeb3Key } from 'shared/hooks/useWeb3Key';
 import { getFaqSSR } from 'utilsApi/faq';
+import { FaqWithMeta } from 'utils/faq';
 
 const Withdrawals: FC<WithdrawalsModePageProps> = ({
   mode,
-  pageRequestFAQ,
-  pageClaimFAQ,
-  faqETag,
+  faqWithMetaWithdrawalsPageClaim,
+  faqWithMetaWithdrawalsPageRequest,
 }) => {
   const key = useWeb3Key();
 
@@ -32,11 +34,10 @@ const Withdrawals: FC<WithdrawalsModePageProps> = ({
         <NoSSRWrapper>
           <WithdrawalsTabs
             key={key}
-            faq={{
-              pageRequestFAQ: pageRequestFAQ ?? undefined,
-              pageClaimFAQ: pageClaimFAQ ?? undefined,
-              eTag: faqETag,
-            }}
+            faqWithMetaWithdrawalsPageClaim={faqWithMetaWithdrawalsPageClaim}
+            faqWithMetaWithdrawalsPageRequest={
+              faqWithMetaWithdrawalsPageRequest
+            }
           />
         </NoSSRWrapper>
       </WithdrawalsProvider>
@@ -51,10 +52,8 @@ type WithdrawalsModePageParams = {
 };
 
 type WithdrawalsModePageProps = WithdrawalsModePageParams & {
-  pageRequestFAQ?: PageFAQ | null;
-  pageClaimFAQ?: PageFAQ | null;
-  // IPFS actual only!
-  faqETag?: string | null;
+  faqWithMetaWithdrawalsPageClaim: FaqWithMeta | null;
+  faqWithMetaWithdrawalsPageRequest: FaqWithMeta | null;
 };
 
 export const getStaticPaths: GetStaticPaths<
@@ -67,15 +66,17 @@ export const getStaticPaths: GetStaticPaths<
 };
 
 export const getStaticProps: GetStaticProps<
-  WithdrawalsModePageParams,
+  WithdrawalsModePageProps,
   WithdrawalsModePageParams
 > = async ({ params }) => {
   // FAQ
   const faqProps = {
-    pageRequestFAQ:
-      (await getFaqSSR('/faq-withdrawals-page-request-tab.md'))?.faq ?? null,
-    pageClaimFAQ:
-      (await getFaqSSR('/faq-withdrawals-page-claim-tab.md'))?.faq ?? null,
+    faqWithMetaWithdrawalsPageRequest: await getFaqSSR(
+      FAQ_WITHDRAWALS_PAGE_REQUEST_TAB_PATH,
+    ),
+    faqWithMetaWithdrawalsPageClaim: await getFaqSSR(
+      FAQ_WITHDRAWALS_PAGE_CLAIM_TAB_PATH,
+    ),
     revalidate: FAQ_REVALIDATE_SECS,
   };
 
