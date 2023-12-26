@@ -1,1 +1,1 @@
-export { StakePage } from './stake-page';
+export { StakePage, type StakePageProps } from './stake-page';

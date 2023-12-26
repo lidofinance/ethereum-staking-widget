@@ -1,28 +1,33 @@
+import React, { FC } from 'react';
+
+import { FaqAccordion } from '@lidofinance/ui-faq';
+
 import { Section } from 'shared/components';
-import { useMatomoEventHandle } from 'shared/hooks';
+import { useUpdatableFaq } from 'shared/hooks/use-faq-on-client';
+import { faqAccordionOnLinkClick } from 'utils/faq-matomo';
+import { FaqWithMeta } from 'utils/faq';
 
-import {
-  WhatIsWsteth,
-  HowCanIGetWsteth,
-  HowCanIUseWsteth,
-  DoIGetMyStakingRewards,
-  DoINeedToClaimMyStakingRewards,
-  HowCouldIUnwrapWstethToSteth,
-  DoINeedToUnwrapMyWsteth,
-} from './list';
+type WrapFaqProps = {
+  faqWithMeta: FaqWithMeta;
+};
 
-export const WrapFaq = () => {
-  const onClickHandler = useMatomoEventHandle();
+export const WrapFaq: FC<WrapFaqProps> = ({ faqWithMeta }) => {
+  const { data: pageFAQ } = useUpdatableFaq(faqWithMeta);
+  if (!pageFAQ) return null;
 
   return (
-    <Section title="FAQ" onClick={onClickHandler}>
-      <WhatIsWsteth />
-      <HowCanIGetWsteth />
-      <HowCanIUseWsteth />
-      <DoIGetMyStakingRewards />
-      <DoINeedToClaimMyStakingRewards />
-      <HowCouldIUnwrapWstethToSteth />
-      <DoINeedToUnwrapMyWsteth />
-    </Section>
+    <>
+      <Section title="FAQ">
+        <FaqAccordion
+          faqList={pageFAQ.faq}
+          onLinkClick={(props) => {
+            faqAccordionOnLinkClick({
+              pageId: pageFAQ.pageIdentification,
+              ...props,
+            });
+          }}
+        />
+      </Section>
+    </>
   );
 };

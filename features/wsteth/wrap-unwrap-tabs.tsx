@@ -1,12 +1,14 @@
 import { WRAP_PATH, WRAP_UNWRAP_PATH } from 'config/urls';
+
 import { Wallet } from 'features/wsteth/shared/wallet';
 import { WrapForm } from 'features/wsteth/wrap/wrap-form/wrap-form';
+import { GoerliSunsetBanner } from 'shared/banners/goerli-sunset';
 import { Switch } from 'shared/components/switch';
 import NoSsrWrapper from 'shared/components/no-ssr-wrapper';
+import { FaqWithMeta } from 'utils/faq';
 
 import { WrapFaq } from './shared/wrap-faq/wrap-faq';
 import { UnwrapForm } from './unwrap/unwrap-form';
-import { GoerliSunsetBanner } from 'shared/banners/goerli-sunset';
 
 const NAV_ROUTES = [
   { name: 'Wrap', path: WRAP_PATH },
@@ -15,9 +17,13 @@ const NAV_ROUTES = [
 
 type WrapUnwrapLayoutProps = {
   mode: 'wrap' | 'unwrap';
+  faqWithMeta: FaqWithMeta | null;
 };
 
-export const WrapUnwrapTabs = ({ mode }: WrapUnwrapLayoutProps) => {
+export const WrapUnwrapTabs = ({
+  mode,
+  faqWithMeta,
+}: WrapUnwrapLayoutProps) => {
   const isUnwrapMode = mode === 'unwrap';
   return (
     <>
@@ -27,7 +33,8 @@ export const WrapUnwrapTabs = ({ mode }: WrapUnwrapLayoutProps) => {
         <Wallet />
         {isUnwrapMode ? <UnwrapForm /> : <WrapForm />}
       </NoSsrWrapper>
-      <WrapFaq />
+
+      {faqWithMeta && <WrapFaq faqWithMeta={faqWithMeta} />}
     </>
   );
 };

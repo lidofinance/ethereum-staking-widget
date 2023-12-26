@@ -13,27 +13,6 @@ export const enum MATOMO_CLICK_EVENTS_TYPES {
   l2LowFeeStake = 'l2LowFeeStake',
   l2LowFeeWrap = 'l2LowFeeWrap',
   l2swap = 'l2swap',
-  // FAQ
-  faqSafeWorkWithLidoAudits = 'faqSafeWorkWithLidoAudits',
-  faqLidoEthAprEthLandingPage = 'faqLidoEthAprEthLandingPage',
-  faqLidoEthAprDocs = 'faqLidoEthAprDocs',
-  faqHowCanIGetStEthWidget = 'faqHowCanIGetStEthWidget',
-  faqHowCanIGetStEthIntegrations = 'faqHowCanIGetStEthIntegrations',
-  faqHowCanIUseSteth = 'faqHowCanIUseSteth',
-  faqWhereCanICoverIdleFinance = 'faqWhereCanICoverIdleFinance',
-  faqWhereCanICoverNexusMutual = 'faqWhereCanICoverNexusMutual',
-  faqWhereCanICoverRibbonFinance = 'faqWhereCanICoverRibbonFinance',
-  faqWhereCanICoverChainproof = 'faqWhereCanICoverChainproof',
-  faqRisksOfStakingReports = 'faqRisksOfStakingReports',
-  faqRisksOfStakingImmunefiBugBounty = 'faqRisksOfStakingImmunefiBugBounty',
-  faqHowCanIUnstakeStEthWithdrawals = 'faqHowCanIUnstakeStEthWithdrawals',
-  faqHowCanIUnstakeStEthIntegrations = 'faqHowCanIUnstakeStEthIntegrations',
-  faqHowCanIGetWstethWrapLink = 'faqHowCanIGetWstethWrapLink',
-  faqHowCanIGetWstethIntegrationsLink = 'faqHowCanIGetWstethIntegrationsLink',
-  faqHowDoIUnwrapWstethUnwrapLink = 'faqHowDoIUnwrapWstethUnwrapLink',
-  faqHowCanIUseWstethL2 = 'faqHowCanIUseWstethL2',
-  faqHowCanIUseWstethDefiProtocols = 'faqHowCanIUseWstethDefiProtocols',
-  faqDoINeedToUnwrapMyWstethWithdrawalsTabs = 'faqDoINeedToUnwrapMyWstethWithdrawalsTabs',
   // /wrap page
   l2BannerWrap = 'l2BannerWrap',
   wrapTokenSelectSTETH = 'wrapTokenSelectSteth',
@@ -117,107 +96,6 @@ export const MATOMO_CLICK_EVENTS: Record<
     'Ethereum_Staking_Widget',
     'Push «Swap» in Swap ETH to wstETH on L2 banner on staking widget',
     'eth_widget_banner_swap_ETH_on_L2',
-  ],
-  // FAQ
-  [MATOMO_CLICK_EVENTS_TYPES.faqSafeWorkWithLidoAudits]: [
-    'Ethereum_Staking_Widget',
-    'Push «here» in FAQ Is it safe to work with Lido',
-    'eth_widget_faq_safeWorkWithLido_here',
-  ],
-  [MATOMO_CLICK_EVENTS_TYPES.faqLidoEthAprEthLandingPage]: [
-    'Ethereum_Staking_Widget',
-    'Push «Ethereum landing page» in FAQ What is Lido staking APR for Ethereum? on stake widget',
-    'eth_widget_faq_lidoEthApr_ethereumLandingPage',
-  ],
-  [MATOMO_CLICK_EVENTS_TYPES.faqLidoEthAprDocs]: [
-    'Ethereum_Staking_Widget',
-    'Push «Docs» in FAQ What is Lido staking APR for Ethereum? on stake widget',
-    'eth_widget_faq_lidoEthApr_docs',
-  ],
-  [MATOMO_CLICK_EVENTS_TYPES.faqHowCanIGetStEthWidget]: [
-    'Ethereum_Staking_Widget',
-    'Push «Lido Ethereum staking widget» in FAQ How can I get stETH? on stake widget',
-    'eth_widget_faq_howCanIGetStEth_lidoEthereumStakingWidget',
-  ],
-  [MATOMO_CLICK_EVENTS_TYPES.faqHowCanIGetStEthIntegrations]: [
-    'Ethereum_Staking_Widget',
-    'Push «DEX Lido integrations» in FAQ How can I get stETH? on stake widget',
-    'eth_widget_faq_howCanIGetStEth_dexLidoIntegrations',
-  ],
-  [MATOMO_CLICK_EVENTS_TYPES.faqHowCanIUseSteth]: [
-    'Ethereum_Staking_Widget',
-    'Push «more» in FAQ How can I use stETH? on stake widget',
-    'eth_widget_faq_howCanIUseSteth_more',
-  ],
-  [MATOMO_CLICK_EVENTS_TYPES.faqWhereCanICoverIdleFinance]: [
-    'Ethereum_Staking_Widget',
-    'Push «Idle Finance» in FAQ Where can I cover my stETH? on stake widget',
-    'eth_widget_faq_wherecanicover_idlefinance',
-  ],
-  [MATOMO_CLICK_EVENTS_TYPES.faqWhereCanICoverNexusMutual]: [
-    'Ethereum_Staking_Widget',
-    'Push «Nexus Mutual» in FAQ Where can I cover my stETH? on stake widget',
-    'eth_widget_faq_wherecanicover_nexusmutual',
-  ],
-  [MATOMO_CLICK_EVENTS_TYPES.faqWhereCanICoverRibbonFinance]: [
-    'Ethereum_Staking_Widget',
-    'Push «Ribbon Finance» in FAQ Where can I cover my stETH? on stake widget',
-    'eth_widget_faq_wherecanicover_ribbonfinance',
-  ],
-  [MATOMO_CLICK_EVENTS_TYPES.faqWhereCanICoverChainproof]: [
-    'Ethereum_Staking_Widget',
-    'Push «Chainproof» in FAQ Where can I cover my stETH? on stake widget',
-    'eth_widget_faq_wherecanicover_сhainproof',
-  ],
-  [MATOMO_CLICK_EVENTS_TYPES.faqRisksOfStakingReports]: [
-    'Ethereum_Staking_Widget',
-    'Push "here" in FAQ  What are the risks of staking with Lido? on stake widget',
-    'eth_widget_faq_risksofstaking_reports',
-  ],
-  [MATOMO_CLICK_EVENTS_TYPES.faqRisksOfStakingImmunefiBugBounty]: [
-    'Ethereum_Staking_Widget',
-    'Push "Immunefi bug bounty program" in FAQ  What are the risks of staking with Lido? on stake widget',
-    'eth_widget_faq_risksofstaking_immunefibugbounty',
-  ],
-  [MATOMO_CLICK_EVENTS_TYPES.faqHowCanIUnstakeStEthWithdrawals]: [
-    'Ethereum_Staking_Widget',
-    'Push «Withdrawals Request and Claim tabs» in FAQ How can I unstake stETH? on stake widget',
-    'eth_widget_faq_howCanIUnstakeStEth_withdrawalsRequestAndClaimTabs',
-  ],
-  [MATOMO_CLICK_EVENTS_TYPES.faqHowCanIUnstakeStEthIntegrations]: [
-    'Ethereum_Staking_Widget',
-    'Push «DEX Lido integrations» in FAQ How can I unstake stETH? on stake widget',
-    'eth_widget_faq_howCanIUnstakeStEth_dexLidoIntegrations',
-  ],
-  [MATOMO_CLICK_EVENTS_TYPES.faqHowCanIGetWstethWrapLink]: [
-    'Ethereum_Staking_Widget',
-    'Push «Wrap & Unwrap staking widget» in FAQ How can I get wstETH',
-    'eth_widget_faq_howgetwsteth_wrap',
-  ],
-  [MATOMO_CLICK_EVENTS_TYPES.faqHowCanIGetWstethIntegrationsLink]: [
-    'Ethereum_Staking_Widget',
-    'Push «DEX Lido integrations» in FAQ How can I get wstETH',
-    'eth_widget_faq_howgetwsteth_dexLidoIntegrations',
-  ],
-  [MATOMO_CLICK_EVENTS_TYPES.faqHowDoIUnwrapWstethUnwrapLink]: [
-    'Ethereum_Staking_Widget',
-    'Push «stake.lido.fi/wrap/unwrap» How do I unwrap wstETH back to stETH?',
-    'eth_widget_faq_howunwrapwsteth_unwrap',
-  ],
-  [MATOMO_CLICK_EVENTS_TYPES.faqHowCanIUseWstethL2]: [
-    'Ethereum_Staking_Widget',
-    'Push «L2» How can I use wstETH?',
-    'eth_widget_faq_howCanIUseWstETH_l2',
-  ],
-  [MATOMO_CLICK_EVENTS_TYPES.faqHowCanIUseWstethDefiProtocols]: [
-    'Ethereum_Staking_Widget',
-    'Push «DeFi protocols» How can I use wstETH?',
-    'eth_widget_faq_howCanIUseWstETH_defiProtocols',
-  ],
-  [MATOMO_CLICK_EVENTS_TYPES.faqDoINeedToUnwrapMyWstethWithdrawalsTabs]: [
-    'Ethereum_Staking_Widget',
-    'Push «Withdrawals Request and Claim tabs» Do I need to unwrap my wstETH before requesting withdrawals?',
-    'eth_widget_faq_doINeedToUnwrapMyWsteth_withdrawalsRequestAndClaimTabs',
   ],
   // /wrap page
   [MATOMO_CLICK_EVENTS_TYPES.l2BannerWrap]: [
