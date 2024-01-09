@@ -30,14 +30,16 @@ type GetRateType = (
 type GetWithdrawalRateResult = SingleWithdrawalRateResult[];
 
 const getOpenOceanWithdrawalRate: GetRateType = async ({ amount, token }) => {
-  try {
-    const rate = await getOpenOceanRate(amount, token, 'ETH');
-    return {
-      name: 'openOcean',
-      ...rate,
-    };
-  } catch (e) {
-    console.warn('[getOpenOceanRate] Failed to receive withdraw rate', e);
+  if (amount && amount.gt(Zero)) {
+    try {
+      const rate = await getOpenOceanRate(amount, token, 'ETH');
+      return {
+        name: 'openOcean',
+        ...rate,
+      };
+    } catch (e) {
+      console.warn('[getOpenOceanRate] Failed to receive withdraw rate', e);
+    }
   }
 
   return {
