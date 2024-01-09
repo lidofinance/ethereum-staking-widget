@@ -9,15 +9,13 @@ import { formatBalance } from 'utils/formatBalance';
 import {
   InlineLoaderSmall,
   LidoIcon,
-  CowSwapIcon,
-  OneInchIcon,
-  ParaSwapIcon,
   OptionsPickerButton,
   OptionsPickerContainer,
   OptionsPickerIcons,
   OptionsPickerLabel,
   OptionsPickerRow,
   OptionsPickerSubLabel,
+  OpenOceanIcon,
 } from './styles';
 import {
   trackMatomoEvent,
@@ -89,9 +87,7 @@ const DexButton: React.FC<OptionButtonProps> = ({ isActive, onClick }) => {
       <OptionsPickerRow>
         <OptionsPickerLabel>Use aggregators</OptionsPickerLabel>
         <OptionsPickerIcons>
-          <OneInchIcon data-testid="DexOneInchIcon" />
-          <CowSwapIcon data-testid="DexCowSwapIcon" />
-          <ParaSwapIcon data-testid="DexParaSwapIcon" />
+          <OpenOceanIcon />
         </OptionsPickerIcons>
       </OptionsPickerRow>
       <OptionsPickerRow data-testid="dexBestRate">

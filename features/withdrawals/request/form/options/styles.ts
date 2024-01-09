@@ -3,9 +3,7 @@ import { InlineLoader, ThemeName } from '@lidofinance/lido-ui';
 import { FormatToken } from 'shared/formatters';
 
 import Lido from 'assets/icons/lido.svg';
-import Oneinch from 'assets/icons/oneinch-circle.svg';
-import Paraswao from 'assets/icons/paraswap-circle.svg';
-import Cowswap from 'assets/icons/cowswap-circle.svg';
+import OpenOcean from 'assets/icons/open-ocean.svg';
 import ExternalLink from 'assets/icons/external-link-icon.svg';
 
 // ICONS
@@ -17,23 +15,9 @@ export const LidoIcon = styled.img.attrs({
   display: block;
 `;
 
-export const OneInchIcon = styled.img.attrs({
-  src: Oneinch,
-  alt: '1inch',
-})`
-  display: block;
-`;
-
-export const ParaSwapIcon = styled.img.attrs({
-  src: Paraswao,
-  alt: 'paraswap',
-})`
-  display: block;
-`;
-
-export const CowSwapIcon = styled.img.attrs({
-  src: Cowswap,
-  alt: 'cowswap',
+export const OpenOceanIcon = styled.img.attrs({
+  src: OpenOcean,
+  alt: 'openOcean',
 })`
   display: block;
 `;
@@ -180,6 +164,10 @@ export const OptionsPickerIcons = styled.div`
     &:first-child {
       margin-left: 0px;
     }
+    filter: ${({ theme }) =>
+      theme.name === ThemeName.light
+        ? 'drop-shadow(0px 0px 1px rgba(246, 248, 250, 255))'
+        : 'unset'};
   }
 `;
 
@@ -210,6 +198,10 @@ export const DexOptionStyled = styled.div<{ $loading?: boolean }>`
     grid-column: 1 / 1;
     align-self: center;
     width: 44px;
+    filter: ${({ theme }) =>
+      theme.name === ThemeName.light
+        ? 'drop-shadow(0px 0px 1px rgba(246, 248, 250, 255))'
+        : 'unset'};
   }
 `;
 
