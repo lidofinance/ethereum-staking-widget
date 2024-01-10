@@ -7,6 +7,7 @@ import { useWithdrawals } from './contexts/withdrawals-context';
 import { Claim } from './claim';
 import { Request } from './request';
 import { GoerliSunsetBanner } from 'shared/banners/goerli-sunset';
+import { OutdatedHashBanner } from 'features/ipfs/outdated-hash-banner';
 
 const withdrawalRoutes = [
   {
@@ -24,6 +25,7 @@ export const WithdrawalsTabs = () => {
   return (
     <ClaimDataProvider>
       <Switch checked={isClaimTab} routes={withdrawalRoutes} />
+      <OutdatedHashBanner />
       <GoerliSunsetBanner />
       {isClaimTab ? <Claim /> : <Request />}
     </ClaimDataProvider>
