@@ -45,7 +45,7 @@ export const useRewardsDataLoad: UseRewardsDataLoad = (props) => {
     params.append(k, v.toString()),
   );
 
-  const apiRewardsPath = `/api/rewards/?${params.toString()}`;
+  const apiRewardsPath = `/api/rewards?${params.toString()}`;
   const apiRewardsUrl = dynamics.ipfsMode
     ? `${dynamics.widgetApiBasePathForIpfs}${apiRewardsPath}`
     : apiRewardsPath;
