@@ -9,7 +9,7 @@ type EnsHashCheckReturn = string | null;
 const URL_CID_REGEX =
   /[/.](?<cid>Qm[1-9A-HJ-NP-Za-km-z]{44,}|b[A-Za-z2-7]{58,}|B[A-Z2-7]{58,}|z[1-9A-HJ-NP-Za-km-z]{48,}|F[0-9A-F]{50,})([./#?]|$)/;
 
-const ENS_NAME = 'ethereum.staked.eth';
+const ENS_NAME = dynamics.ipfsEns;
 
 export const useIpfsHashCheck = () => {
   const provider = useMainnetStaticRpcProvider();
@@ -42,7 +42,7 @@ export const useIpfsHashCheck = () => {
       }
       return null;
     },
-    { ...STRATEGY_LAZY, isPaused: () => !dynamics.ipfsMode },
+    { ...STRATEGY_LAZY, isPaused: () => !dynamics.ipfsMode && !!ENS_NAME },
   );
 
   const isUpdateAvailable = Boolean(

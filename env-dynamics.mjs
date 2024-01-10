@@ -37,13 +37,16 @@ export const walletconnectProjectId = process.env.WALLETCONNECT_PROJECT_ID;
 export const ipfsMode = toBoolean(process.env.IPFS_MODE);
 
 /** @type string[] */
-export const prefillUnsafeElRpcUrls1 = process.env.PREFILL_UNSAFE_EL_RPC_URLS_1?.split(',') ?? [];
+export const prefillUnsafeElRpcUrls1 =
+  process.env.PREFILL_UNSAFE_EL_RPC_URLS_1?.split(',') ?? [];
 
 /** @type string[] */
-export const prefillUnsafeElRpcUrls5 = process.env.PREFILL_UNSAFE_EL_RPC_URLS_5?.split(',') ?? [];
+export const prefillUnsafeElRpcUrls5 =
+  process.env.PREFILL_UNSAFE_EL_RPC_URLS_5?.split(',') ?? [];
 
 /** @type string[] */
-export const prefillUnsafeElRpcUrls17000 = process.env.PREFILL_UNSAFE_EL_RPC_URLS_17000?.split(',') ?? [];
+export const prefillUnsafeElRpcUrls17000 =
+  process.env.PREFILL_UNSAFE_EL_RPC_URLS_17000?.split(',') ?? [];
 
 /** @type string */
-export const widgetApiBasePathForIpfs = process.env.WIDGET_API_BASE_PATH_FOR_IPFS;
+export const ipfsEns = process.env.IPFS_ENS;
