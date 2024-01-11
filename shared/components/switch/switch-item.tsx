@@ -7,5 +7,5 @@ export const SwitchItem: SwitchItemComponent = (props) => {
   const { href, ...rest } = props;
   const active = useCompareWithRouterPath(href ?? '');
 
-  return <SwitchItemStyled href={href ?? ''} active={active} {...rest} />;
+  return <SwitchItemStyled href={href ?? ''} $active={active} {...rest} />;
 };

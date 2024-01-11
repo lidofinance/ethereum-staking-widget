@@ -14,7 +14,7 @@ export const backendRequest = async (query: BackendQuery) => {
 
   Object.entries(query).forEach(([k, v]) => params.append(k, v.toString()));
 
-  const apiRewardsPath = `/api/rewards/?${params.toString()}`;
+  const apiRewardsPath = `/api/rewards?${params.toString()}`;
   const apiRewardsUrl = dynamics.ipfsMode
     ? `${dynamics.widgetApiBasePathForIpfs}${apiRewardsPath}`
     : apiRewardsPath;
