@@ -2864,10 +2864,10 @@
     "@reef-knot/wallet-adapter-walletconnect" "1.2.4"
     "@reef-knot/wallet-adapter-xdefi" "1.0.0"
 
-"@reef-knot/web3-react@1.13.0":
-  version "1.13.0"
-  resolved "https://registry.yarnpkg.com/@reef-knot/web3-react/-/web3-react-1.13.0.tgz#f0bed3f81370bd1ce3d10ccb30e5cf058571dff6"
-  integrity sha512-CAvA3TULHoXvHyn0UQ0NRJW5EKi1zI++nAmZzMzk7srJUIlPb55xFax7YeROyDQLusYaAQJLKJxIPYkBywubpA==
+"@reef-knot/web3-react@1.13.1":
+  version "1.13.1"
+  resolved "https://registry.yarnpkg.com/@reef-knot/web3-react/-/web3-react-1.13.1.tgz#d9d2b6db3f40eca874b7d31b7f0e1e05c03fa6d2"
+  integrity sha512-4txVsSN4mYpmgLgIyiKrpc3mnyIICwD3JI63YkjNk89vpPzdtuTlJk6y2RM3lprbFmQBl6aJaLyOqA7lNz/Liw==
   dependencies:
     "@gnosis.pm/safe-apps-web3-react" "0.6.8"
     "@ledgerhq/iframe-provider" "0.4.2"
@@ -9341,10 +9341,10 @@ redis-parser@^3.0.0:
   dependencies:
     redis-errors "^1.0.0"
 
-reef-knot@^1.15.1:
-  version "1.15.1"
-  resolved "https://registry.yarnpkg.com/reef-knot/-/reef-knot-1.15.1.tgz#3b1debccaa9ee6feb3bfe9535dd335b5fb50e852"
-  integrity sha512-2wiCx8eRcbT4gZ/WbExv2p9Vdm8Pt8ID/DzHNoyE0oCcDdFBPV/rjNoBj50a9CAZ5yDMWA5MMNllYPSyz8AsCw==
+reef-knot@^1.15.2:
+  version "1.15.2"
+  resolved "https://registry.yarnpkg.com/reef-knot/-/reef-knot-1.15.2.tgz#737c096bf61b052c3fe32369c0efb74b612f3711"
+  integrity sha512-Dh3C2LxgWbOGXUgdm5fUsfS0bcHc5Y+g7KGRJgqCqV7wn5lLsIzT85C8WPu9clrMsmelw4kP9flNP8EXyjrdrg==
   dependencies:
     "@reef-knot/connect-wallet-modal" "1.17.0"
     "@reef-knot/core-react" "1.8.1"
@@ -9353,7 +9353,7 @@ reef-knot@^1.15.1:
     "@reef-knot/ui-react" "1.0.8"
     "@reef-knot/wallets-helpers" "1.1.5"
     "@reef-knot/wallets-list" "1.11.1"
-    "@reef-knot/web3-react" "1.13.0"
+    "@reef-knot/web3-react" "1.13.1"
 
 reflect.getprototypeof@^1.0.4:
   version "1.0.4"
