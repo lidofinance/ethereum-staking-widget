@@ -5,6 +5,7 @@ import {
   LinkButton,
   TextContent,
   OverlayLink,
+  FooterWrapper,
 } from './styles';
 import { L2_DISCOVERY_LINK } from '../l2-banner';
 import { MATOMO_CLICK_EVENTS } from 'config';
@@ -23,19 +24,21 @@ export const L2Wsteth = ({ matomoEventLink }: L2WstethProps) => {
   );
   return (
     <Banner data-testid="L2wstETHbanner">
-      <L2Icons />
       <TextContent>
         Enjoy <b>lower gas</b> fees and <b>DeFi opportunities</b> using wstETH
-        across Arbitrum, Optimism and Base.
+        across Arbitrum, Optimism, Base and zkSync.
       </TextContent>
-      <OverlayLink
-        href={L2_DISCOVERY_LINK}
-        onClick={linkClickHandler}
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        <LinkButton>Learn More</LinkButton>
-      </OverlayLink>
+      <FooterWrapper>
+        <L2Icons />
+        <OverlayLink
+          href={L2_DISCOVERY_LINK}
+          onClick={linkClickHandler}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <LinkButton data-testid="l2WSstethlearnMore">Learn More</LinkButton>
+        </OverlayLink>
+      </FooterWrapper>
     </Banner>
   );
 };
