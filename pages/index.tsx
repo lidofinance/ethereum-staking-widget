@@ -21,13 +21,18 @@ export const getStaticProps: GetStaticProps<
   if (process.env.IPFS_MODE) {
     return {
       props: {
-        faqWithMetaStakePage: await getFaqSSR(FAQ_STAKE_PAGE_PATH),
-        faqWithMetaWrapPage: await getFaqSSR(FAQ_WRAP_AND_UNWRAP_PAGE_PATH),
+        faqWithMetaStakePage: await getFaqSSR(FAQ_STAKE_PAGE_PATH, false),
+        faqWithMetaWrapPage: await getFaqSSR(
+          FAQ_WRAP_AND_UNWRAP_PAGE_PATH,
+          false,
+        ),
         faqWithMetaWithdrawalsPageRequest: await getFaqSSR(
           FAQ_WITHDRAWALS_PAGE_REQUEST_TAB_PATH,
+          false,
         ),
         faqWithMetaWithdrawalsPageClaim: await getFaqSSR(
           FAQ_WITHDRAWALS_PAGE_CLAIM_TAB_PATH,
+          false,
         ),
       },
     };

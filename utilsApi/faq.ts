@@ -33,7 +33,10 @@ export const fetchFaqSSR = async (
   return resp;
 };
 
-export const getFaqSSR = async (path: string): Promise<FaqWithMeta | null> => {
+export const getFaqSSR = async (
+  path: string,
+  excludeETag = true,
+): Promise<FaqWithMeta | null> => {
   try {
     const rawFaqResp = await fetchFaqSSR(path);
 
@@ -47,7 +50,7 @@ export const getFaqSSR = async (path: string): Promise<FaqWithMeta | null> => {
     return {
       pageFAQ: parsedFaq,
       path,
-      eTag: rawFaqResp?.headers?.get('ETag'),
+      eTag: !excludeETag ? rawFaqResp?.headers?.get('ETag') : null,
     };
   } catch (err) {
     console.error(
