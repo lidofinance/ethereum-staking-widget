@@ -55,6 +55,10 @@ jobs:
       ipfs_folder: ${{ needs.prepare-for-ipfs.outputs.ipfs_folder }}
       current_branch: ${{ github.ref_name }}
       IS_CREATE_RELEASE: false
+      FILEBASE_BUCKET_NAME: ${{ vars.FILEBASE_BUCKET_NAME }}
     secrets:
       W3S_TOKEN: ${{ secrets.W3S_TOKEN }}
-      GW3_TOKEN: ''
+      W3S_PROOF: ${{ secrets.W3S_PROOF }}
+      GW3_TOKEN: ${{ secrets.GW3_TOKEN }}
+      GW3_ACCESS_KEY: ${{ secrets.GW3_ACCESS_KEY }}
+      FILEBASE_TOKEN: ${{ secrets.FILEBASE_TOKEN }}
