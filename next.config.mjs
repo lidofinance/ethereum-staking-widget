@@ -67,7 +67,7 @@ export default withBundleAnalyzer({
 
   // IPFS next.js configuration reference:
   // https://github.com/Velenir/nextjs-ipfs-example
-  trailingSlash: true,
+  trailingSlash: !!ipfsMode,
   assetPrefix: ipfsMode ? './' : undefined,
 
   // IPFS version has hash-based routing,
