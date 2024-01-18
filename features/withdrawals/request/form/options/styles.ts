@@ -5,6 +5,7 @@ import { FormatToken } from 'shared/formatters';
 import Lido from 'assets/icons/lido.svg';
 import OpenOcean from 'assets/icons/open-ocean.svg';
 import ExternalLink from 'assets/icons/external-link-icon.svg';
+import Paraswap from 'assets/icons/paraswap-circle.svg';
 
 // ICONS
 
@@ -18,6 +19,13 @@ export const LidoIcon = styled.img.attrs({
 export const OpenOceanIcon = styled.img.attrs({
   src: OpenOcean,
   alt: 'openOcean',
+})`
+  display: block;
+`;
+
+export const ParaSwapIcon = styled.img.attrs({
+  src: Paraswap,
+  alt: 'paraswap',
 })`
   display: block;
 `;

@@ -1,5 +1,5 @@
 import { BigNumber } from 'ethers';
-import { TOKENS } from '@lido-sdk/constants';
+import { CHAINS, getTokenAddress, TOKENS } from '@lido-sdk/constants';
 
 import { useWithdrawalRates } from 'features/withdrawals/hooks/useWithdrawalRates';
 import { FormatToken } from 'shared/formatters/format-token';
@@ -17,6 +17,7 @@ import {
   InlineLoaderSmall,
   DexOptionLoader,
   OpenOceanIcon,
+  ParaSwapIcon,
 } from './styles';
 import { formatEther } from '@ethersproject/units';
 import { OPEN_OCEAN_REFERRAL_ADDRESS } from 'config/external-links';
@@ -41,6 +42,18 @@ const dexInfo: {
       `https://app.openocean.finance/classic?referrer=${OPEN_OCEAN_REFERRAL_ADDRESS}&amount=${formatEther(
         amount,
       )}#/ETH/${token}/ETH`,
+  },
+  paraswap: {
+    title: 'ParaSwap',
+    icon: <ParaSwapIcon />,
+    onClickGoTo: () => {
+      trackMatomoEvent(MATOMO_CLICK_EVENTS_TYPES.withdrawalGoToParaswap);
+    },
+    link: (amount, token) =>
+      `https://app.paraswap.io/#/${getTokenAddress(
+        CHAINS.Mainnet,
+        token,
+      )}-ETH/${formatEther(amount)}?network=ethereum`,
   },
 };
 
