@@ -117,8 +117,6 @@ export const DexOptions: React.FC<
         </DexWarning>
       )}
       {!initialLoading &&
-        dexesFiltered &&
-        dexesFiltered.length > 0 &&
         dexesFiltered?.map(({ name, toReceive, rate }) => {
           const dex = dexInfo[name];
           return (
