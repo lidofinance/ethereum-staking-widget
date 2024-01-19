@@ -50,10 +50,12 @@ const dexInfo: {
       trackMatomoEvent(MATOMO_CLICK_EVENTS_TYPES.withdrawalGoToParaswap);
     },
     link: (amount, token) =>
-      `https://app.paraswap.io/#/${getTokenAddress(
+      `https://app.paraswap.io/referrer=Lido&takeSurplus=true#/${getTokenAddress(
         CHAINS.Mainnet,
         token,
-      )}-ETH/${formatEther(amount)}?network=ethereum`,
+      )}-0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE/${formatEther(
+        amount,
+      )}/SELL?network=ethereum`,
   },
 };
 
