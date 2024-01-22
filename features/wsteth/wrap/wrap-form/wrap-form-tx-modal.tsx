@@ -33,9 +33,9 @@ export const WrapFormTxModal = () => {
       txStage={convertTxStageToLegacy(txStage)}
       txOperation={convertTxStageToLegacyTxOperationWrap(txOperation)}
       txHash={txHash}
-      amount={amount ? formatBalance(amount) : ''}
+      amount={amount ? formatBalance(amount, 18) : ''}
       amountToken={getTokenDisplayName(token)}
-      willReceiveAmount={formatBalance(willReceiveWsteth)}
+      willReceiveAmount={formatBalance(willReceiveWsteth, 18)}
       willReceiveAmountToken="wstETH"
       balance={wstethBalance}
       balanceToken={'wstETH'}

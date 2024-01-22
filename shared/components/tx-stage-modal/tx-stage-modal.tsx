@@ -5,7 +5,7 @@ import { use1inchLinkProps } from 'features/stake/hooks';
 import { TxLinkEtherscan } from 'shared/components/tx-link-etherscan';
 import { L2LowFee } from 'shared/banners';
 import { TxStageModalShape } from './tx-stage-modal-shape';
-import { ErrorMessage, formatBalance, formatBalanceString } from 'utils';
+import { ErrorMessage, formatBalance } from 'utils';
 import { ModalProps } from '@lidofinance/lido-ui';
 import {
   StylableLink,
@@ -76,8 +76,7 @@ export const TxStageModal = memo((props: TxStageModalProps) => {
   };
 
   const operationText = getOperationProcessingDisplayText(txOperation);
-  const amountString = formatBalanceString(amount, 4);
-  const amountWithBreak = withOptionaLineBreak(amountString);
+  const amountWithBreak = withOptionaLineBreak(amount);
 
   const [isRetryLoading, setRetryLoading] = useState(false);
   const retryResetTimerRef = useRef<NodeJS.Timeout | 0>(0);
@@ -110,11 +109,10 @@ export const TxStageModal = memo((props: TxStageModalProps) => {
         }
         description={
           <>
-            {operationText} {amountString} {amountToken}.{' '}
+            {operationText} {amount} {amountToken}.{' '}
             {txOperation !== TX_OPERATION.APPROVING && (
               <>
-                You will receive {formatBalanceString(willReceiveAmount, 4)}{' '}
-                {willReceiveAmountToken}
+                You will receive {willReceiveAmount} {willReceiveAmountToken}
               </>
             )}
           </>

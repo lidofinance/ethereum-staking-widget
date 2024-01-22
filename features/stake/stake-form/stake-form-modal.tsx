@@ -24,9 +24,9 @@ export const StakeFormModal = () => {
       txStage={convertTxStageToLegacy(txStage)}
       txOperation={TX_OPERATION_LEGACY.STAKING}
       txHash={txHash}
-      amount={amount ? formatBalance(amount) : ''}
+      amount={amount ? formatBalance(amount, 18) : ''}
       amountToken="ETH"
-      willReceiveAmount={amount ? formatBalance(amount) : undefined}
+      willReceiveAmount={amount ? formatBalance(amount, 18) : undefined}
       willReceiveAmountToken="stETH"
       balance={stethBalance}
       balanceToken="stETH"
