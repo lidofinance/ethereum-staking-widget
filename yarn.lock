@@ -1991,13 +1991,6 @@
   resolved "https://registry.yarnpkg.com/@ledgerhq/connect-kit-loader/-/connect-kit-loader-1.1.2.tgz#d550e3c1f046e4c796f32a75324b03606b7e226a"
   integrity sha512-mscwGroSJQrCTjtNGBu+18FQbZYA4+q6Tyx6K7CXHl6AwgZKbWfZYdgP2F+fyZcRUdGRsMX8QtvU61VcGGtO1A==
 
-"@ledgerhq/cryptoassets@^11.1.0":
-  version "11.1.0"
-  resolved "https://registry.yarnpkg.com/@ledgerhq/cryptoassets/-/cryptoassets-11.1.0.tgz#d8cb334e1ab3cf3debd3964c0ba1931841a95e84"
-  integrity sha512-Ky8ZaXQHd8YcLsjPRpU1QeMolZTVhjV4oDy31sdToKFbYSDmrpIVNSNlCXzkIERR7wUVV5h5XrAPnHH+c8HxGw==
-  dependencies:
-    invariant "2"
-
 "@ledgerhq/cryptoassets@^11.3.1":
   version "11.3.1"
   resolved "https://registry.yarnpkg.com/@ledgerhq/cryptoassets/-/cryptoassets-11.3.1.tgz#4db44a13a91e884c5a26526cd664f84c06b23eae"
@@ -2006,16 +1999,6 @@
     axios "^1.6.0"
     bs58check "^2.1.2"
     invariant "2"
-
-"@ledgerhq/devices@^8.0.8":
-  version "8.0.8"
-  resolved "https://registry.yarnpkg.com/@ledgerhq/devices/-/devices-8.0.8.tgz#cd233eb54a044913160c9183be9fb22adae4e071"
-  integrity sha512-0j7E8DY2jeSSATc8IJk+tXDZ9u+Z7tXxB8I4TzXrfV/8A5exMh/K1IwX6Jt1zlw1wre4CT9MV4mzUs3M/TE7lg==
-  dependencies:
-    "@ledgerhq/errors" "^6.15.0"
-    "@ledgerhq/logs" "^6.11.0"
-    rxjs "^7.8.1"
-    semver "^7.3.5"
 
 "@ledgerhq/devices@^8.2.0":
   version "8.2.0"
@@ -2026,19 +2009,6 @@
     "@ledgerhq/logs" "^6.12.0"
     rxjs "^7.8.1"
     semver "^7.3.5"
-
-"@ledgerhq/domain-service@^1.1.14":
-  version "1.1.14"
-  resolved "https://registry.yarnpkg.com/@ledgerhq/domain-service/-/domain-service-1.1.14.tgz#dbb2b297ab560d36e62ce9def59f892b7de24970"
-  integrity sha512-Hi0OUSRrngpj0HhZoP9m/E1sDstiKxxaxxBuRAP/NlfLOJjAasxDRQA/Pyh4Gs4YHnhLZNWp4heXTJ8F1KMedA==
-  dependencies:
-    "@ledgerhq/errors" "^6.15.0"
-    "@ledgerhq/logs" "^6.11.0"
-    "@ledgerhq/types-live" "^6.42.0"
-    axios "^1.3.4"
-    eip55 "^2.1.1"
-    react "^18.2.0"
-    react-dom "^18.2.0"
 
 "@ledgerhq/domain-service@^1.1.16":
   version "1.1.16"
@@ -2053,26 +2023,10 @@
     react "^18.2.0"
     react-dom "^18.2.0"
 
-"@ledgerhq/errors@^6.15.0":
-  version "6.15.0"
-  resolved "https://registry.yarnpkg.com/@ledgerhq/errors/-/errors-6.15.0.tgz#45cda73915f695cc072cb8a99650830bc5dc6668"
-  integrity sha512-6xaw5/mgoht62TnL3rXsaQYEFwpnXyNDk1AOSJksIjFHx9bHUnkyVmrnGQDj0JLzi+E7bHEgTrpCs8wpeDh9jA==
-
 "@ledgerhq/errors@^6.16.1":
   version "6.16.1"
   resolved "https://registry.yarnpkg.com/@ledgerhq/errors/-/errors-6.16.1.tgz#df650a9ba105397dee2e8c0ceddf6931c5b25ede"
   integrity sha512-4D4wKecGzQpIu7sx03Sg4uE1e8g1oZUndWgw9gw776H8h9ov9c5TxPaldTn2j6orPECAERViLf7LTO4L5pE2Cw==
-
-"@ledgerhq/evm-tools@^1.0.10":
-  version "1.0.10"
-  resolved "https://registry.yarnpkg.com/@ledgerhq/evm-tools/-/evm-tools-1.0.10.tgz#97317238bfc1184fa3328f194c9a746a2f6fc259"
-  integrity sha512-CyViTYzYgLrtxkl203JAZpqlVYCXN8N03cDLdm9EL8GhEzxkyAYIv4hS2SwhWATGXdGAnEoPmju91XrudQ1OxA==
-  dependencies:
-    "@ledgerhq/cryptoassets" "^11.1.0"
-    "@ledgerhq/live-env" "^0.6.1"
-    "@ledgerhq/live-network" "^1.1.8"
-    crypto-js "4.2.0"
-    ethers "5.7.2"
 
 "@ledgerhq/evm-tools@^1.0.13":
   version "1.0.13"
@@ -2085,25 +2039,7 @@
     crypto-js "4.2.0"
     ethers "5.7.2"
 
-"@ledgerhq/hw-app-eth@^6.34.3":
-  version "6.34.9"
-  resolved "https://registry.yarnpkg.com/@ledgerhq/hw-app-eth/-/hw-app-eth-6.34.9.tgz#29dbaefa8793f65589cdcdb8764e594433b24e3f"
-  integrity sha512-L9NaJjFuGwnICF55D8vZ8yRNAFy5k5LwweuyZOXFgSvu72uj1ygQKFWSJbr77CY0e6p/omFvqeqiw3J6RmSMWw==
-  dependencies:
-    "@ethersproject/abi" "^5.5.0"
-    "@ethersproject/rlp" "^5.5.0"
-    "@ledgerhq/cryptoassets" "^11.1.0"
-    "@ledgerhq/domain-service" "^1.1.14"
-    "@ledgerhq/errors" "^6.15.0"
-    "@ledgerhq/evm-tools" "^1.0.10"
-    "@ledgerhq/hw-transport" "^6.29.0"
-    "@ledgerhq/hw-transport-mocker" "^6.27.20"
-    "@ledgerhq/logs" "^6.11.0"
-    "@ledgerhq/types-live" "^6.42.0"
-    axios "^1.3.4"
-    bignumber.js "^9.1.2"
-
-"@ledgerhq/hw-app-eth@^6.35.0":
+"@ledgerhq/hw-app-eth@^6.35.2":
   version "6.35.2"
   resolved "https://registry.yarnpkg.com/@ledgerhq/hw-app-eth/-/hw-app-eth-6.35.2.tgz#20bdb6edddb1f355f47cdb9280de11027dc67491"
   integrity sha512-ZHZFfi1k6L43pmjdXEMch0jR9pglGNHmfZBQctdZZYCCckDfuYz4Ne68LABC6uoH+M8xjBiByHQA+Rc2HPptqQ==
@@ -2121,15 +2057,6 @@
     axios "^1.3.4"
     bignumber.js "^9.1.2"
 
-"@ledgerhq/hw-transport-mocker@^6.27.20":
-  version "6.27.20"
-  resolved "https://registry.yarnpkg.com/@ledgerhq/hw-transport-mocker/-/hw-transport-mocker-6.27.20.tgz#d2b5f82797fad20544995220bb080a527f125198"
-  integrity sha512-o5nGuMLs/akXUvgD1f2u1DqhiC7Ii8x3fCmdE5KExCMo3dVWYkeeV3LTUzx+bp+daJFeYNKOa9+Z7XpqIuEJtA==
-  dependencies:
-    "@ledgerhq/hw-transport" "^6.29.0"
-    "@ledgerhq/logs" "^6.11.0"
-    rxjs "^7.8.1"
-
 "@ledgerhq/hw-transport-mocker@^6.28.1":
   version "6.28.1"
   resolved "https://registry.yarnpkg.com/@ledgerhq/hw-transport-mocker/-/hw-transport-mocker-6.28.1.tgz#7bc020b2d9b43288dcfbb1aa43e62220a94bd506"
@@ -2139,17 +2066,7 @@
     "@ledgerhq/logs" "^6.12.0"
     rxjs "^7.8.1"
 
-"@ledgerhq/hw-transport-webhid@^6.27.19":
-  version "6.27.20"
-  resolved "https://registry.yarnpkg.com/@ledgerhq/hw-transport-webhid/-/hw-transport-webhid-6.27.20.tgz#87f83e42ea0e4cb5c6e87dbfc6e5e45d125eb68f"
-  integrity sha512-zNZgTTpbPFBHgzQRqVl3+Y0ySOFkEIGxxHT1y+AgSxRmoLgfzsBQgYy6z3jZZyJQ92B8Tl95hAvMm9vo7IqxWA==
-  dependencies:
-    "@ledgerhq/devices" "^8.0.8"
-    "@ledgerhq/errors" "^6.15.0"
-    "@ledgerhq/hw-transport" "^6.29.0"
-    "@ledgerhq/logs" "^6.11.0"
-
-"@ledgerhq/hw-transport-webhid@^6.28.0":
+"@ledgerhq/hw-transport-webhid@6.28.1", "@ledgerhq/hw-transport-webhid@^6.28.1":
   version "6.28.1"
   resolved "https://registry.yarnpkg.com/@ledgerhq/hw-transport-webhid/-/hw-transport-webhid-6.28.1.tgz#af13c517514451bf60ee83d8e2b402028504af5c"
   integrity sha512-m1FzUaaRdMm+KWz+sm4RGjG1axAIYEnIC3PqwFGMtXDjyPVohdWxRJD9B2L/etR4EY67b7AH/MoQ02rpUqCCEA==
@@ -2159,17 +2076,7 @@
     "@ledgerhq/hw-transport" "^6.30.1"
     "@ledgerhq/logs" "^6.12.0"
 
-"@ledgerhq/hw-transport@^6.28.8", "@ledgerhq/hw-transport@^6.29.0":
-  version "6.29.0"
-  resolved "https://registry.yarnpkg.com/@ledgerhq/hw-transport/-/hw-transport-6.29.0.tgz#2b85f39d90b093930f0c7bfc513b29eb47ba97fa"
-  integrity sha512-WQfzxt3EnnbOmzZVYiCgSmNsqafBOFQn40awvUPY2IZviJRs23/1ANPHAo76bzPV88+Qk0+1wZlcnIanGN6fFA==
-  dependencies:
-    "@ledgerhq/devices" "^8.0.8"
-    "@ledgerhq/errors" "^6.15.0"
-    "@ledgerhq/logs" "^6.11.0"
-    events "^3.3.0"
-
-"@ledgerhq/hw-transport@^6.30.0", "@ledgerhq/hw-transport@^6.30.1":
+"@ledgerhq/hw-transport@6.30.1", "@ledgerhq/hw-transport@^6.30.1":
   version "6.30.1"
   resolved "https://registry.yarnpkg.com/@ledgerhq/hw-transport/-/hw-transport-6.30.1.tgz#fd3c825f41197aeaf705e3c066f82843eaf48cae"
   integrity sha512-Xeeo4nt33g5Fsp3CdsPvcc2Uk7dwYeKRSlSFLWcYAAKprf/PmxgNekhke1eaNU/wLoeLOWhY2Cki8F8w9nLMdQ==
@@ -2193,14 +2100,6 @@
   dependencies:
     eventemitter3 "^4.0.0"
 
-"@ledgerhq/live-env@^0.6.1":
-  version "0.6.1"
-  resolved "https://registry.yarnpkg.com/@ledgerhq/live-env/-/live-env-0.6.1.tgz#5ccfc966752507f05a2de8384e7d6d90574071dd"
-  integrity sha512-DZoFlj35qnjUoOtqPih1ZtjMpJTD8z76JcyHPi/PXD/vGw9ZkitaYP9K2Ihnm3TWul5YzbtF0Q6lvcRswklpPw==
-  dependencies:
-    rxjs "^7.8.1"
-    utility-types "^3.10.0"
-
 "@ledgerhq/live-env@^0.8.0":
   version "0.8.0"
   resolved "https://registry.yarnpkg.com/@ledgerhq/live-env/-/live-env-0.8.0.tgz#c250e355a53aa24e810e6480464cc522801c3ac9"
@@ -2222,26 +2121,6 @@
     invariant "^2.2.2"
     lru-cache "^7.14.1"
 
-"@ledgerhq/live-network@^1.1.8":
-  version "1.1.8"
-  resolved "https://registry.yarnpkg.com/@ledgerhq/live-network/-/live-network-1.1.8.tgz#c1405e070e2bc3373c59f590812393c046e46fa4"
-  integrity sha512-3cyEMKI6yqJGTfruFyxfnki5OkyrTATwR5CRYUL1keRsVjaB3OdYWqlXesFv23ra1myF1Y7OZemzmwHR2gqTqw==
-  dependencies:
-    "@ledgerhq/errors" "^6.15.0"
-    "@ledgerhq/live-env" "^0.6.1"
-    "@ledgerhq/live-promise" "^0.0.2"
-    "@ledgerhq/logs" "^6.11.0"
-    axios "0.26.1"
-    invariant "^2.2.2"
-    lru-cache "^7.14.1"
-
-"@ledgerhq/live-promise@^0.0.2":
-  version "0.0.2"
-  resolved "https://registry.yarnpkg.com/@ledgerhq/live-promise/-/live-promise-0.0.2.tgz#3b0d5d3098e62fd8c1a9d364daeed91be5d3089b"
-  integrity sha512-UT3UL7r/67ADw8Ykxg/GrslBr+GqjWCjklIAnlXWTS8zsH58SUp8wJRJN9Ie28RCt0im9UitrQ5o41D8KPszag==
-  dependencies:
-    "@ledgerhq/logs" "^6.11.0"
-
 "@ledgerhq/live-promise@^0.0.3":
   version "0.0.3"
   resolved "https://registry.yarnpkg.com/@ledgerhq/live-promise/-/live-promise-0.0.3.tgz#432693468ddd48f94a24437c01791d59d393adbc"
@@ -2249,23 +2128,10 @@
   dependencies:
     "@ledgerhq/logs" "^6.12.0"
 
-"@ledgerhq/logs@^6.11.0":
-  version "6.11.0"
-  resolved "https://registry.yarnpkg.com/@ledgerhq/logs/-/logs-6.11.0.tgz#0d28e7edcf71548506f4304686cba480ba91bbcf"
-  integrity sha512-HHK9y4GGe4X7CXbRUCh7z8Mp+WggpJn1dmUjmuk1rNugESF6o8nAOnXA+BxwtRRNV3CgNJR3Wxdos4J9qV0Zsg==
-
 "@ledgerhq/logs@^6.12.0":
   version "6.12.0"
   resolved "https://registry.yarnpkg.com/@ledgerhq/logs/-/logs-6.12.0.tgz#ad903528bf3687a44da435d7b2479d724d374f5d"
   integrity sha512-ExDoj1QV5eC6TEbMdLUMMk9cfvNKhhv5gXol4SmULRVCx/3iyCPhJ74nsb3S0Vb+/f+XujBEj3vQn5+cwS0fNA==
-
-"@ledgerhq/types-live@^6.42.0":
-  version "6.42.0"
-  resolved "https://registry.yarnpkg.com/@ledgerhq/types-live/-/types-live-6.42.0.tgz#d143834b3dfd3acfbaad95e491bb5adbffc7fe63"
-  integrity sha512-YI1WD8CLEXibVQsp0wR7NqyLgJQlgYiXdqhj1vQZLUSR5/Mnq1TxbaTvFUveMy4V+4sj8e5rRJCyEyz1/sgzCw==
-  dependencies:
-    bignumber.js "^9.1.2"
-    rxjs "^7.8.1"
 
 "@ledgerhq/types-live@^6.43.1":
   version "6.43.1"
@@ -2718,14 +2584,14 @@
   resolved "https://registry.yarnpkg.com/@polka/url/-/url-1.0.0-next.23.tgz#498e41218ab3b6a1419c735e5c6ae2c5ed609b6c"
   integrity sha512-C16M+IYz0rgRhWZdCmK+h58JMv8vijAA61gmz2rspCSwKwzBebpdcsiUmwrtJRdphuY30i6BSLEOP8ppbNLyLg==
 
-"@reef-knot/connect-wallet-modal@1.17.0":
-  version "1.17.0"
-  resolved "https://registry.yarnpkg.com/@reef-knot/connect-wallet-modal/-/connect-wallet-modal-1.17.0.tgz#60f6666ba3e5de207b4e21691d579e8f204ab70c"
-  integrity sha512-YlAVBRR1kV4m7bZBhFQG0LlduBXuDsXiucOez3+W5dj05LZNCv+j3eLAnzRxZgG39jwY3gQN6KiP1fA1+1g+PQ==
+"@reef-knot/connect-wallet-modal@1.17.1":
+  version "1.17.1"
+  resolved "https://registry.yarnpkg.com/@reef-knot/connect-wallet-modal/-/connect-wallet-modal-1.17.1.tgz#5702596ef2f41d777fa7557193427e8323a7da9f"
+  integrity sha512-Jn5noE11Y9b8vp8RfzWJm0dUWTEfI7yXLCSThig6RbpgYHcDHO4t1k8cLY/G5jVvEgnklO2K6LvlZatMUihS2w==
   dependencies:
-    "@ledgerhq/hw-app-eth" "^6.34.3"
-    "@ledgerhq/hw-transport" "^6.28.8"
-    "@ledgerhq/hw-transport-webhid" "^6.27.19"
+    "@ledgerhq/hw-app-eth" "^6.35.2"
+    "@ledgerhq/hw-transport" "^6.30.1"
+    "@ledgerhq/hw-transport-webhid" "^6.28.1"
     "@lidofinance/lido-ui" "^3.18.0"
     "@types/react" "18.2.45"
     "@types/react-dom" "18.2.17"
@@ -2735,10 +2601,10 @@
   resolved "https://registry.yarnpkg.com/@reef-knot/core-react/-/core-react-1.8.1.tgz#fd3cb58344cbecea724f5fef5ae728a0cf1b141a"
   integrity sha512-4fzLBAohvNapsTsb4WY3jgNliQNXat3hvnKzcmmTya4xv4t627Hdx1ZZWRx7mI3dcrhu6RWaGJOFsm4xVlGU/Q==
 
-"@reef-knot/ledger-connector@2.0.0":
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/@reef-knot/ledger-connector/-/ledger-connector-2.0.0.tgz#e7bc6382cbf46dcaccda595d1475806e069e713c"
-  integrity sha512-NguSsVn1a9Fc33d9/jTQfceTsC9qO0JnMXUmFXzMXDV759kiFh/18KCB6SbK/g1COUxQmFH4PuohgOD8hAEVag==
+"@reef-knot/ledger-connector@2.0.1":
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/@reef-knot/ledger-connector/-/ledger-connector-2.0.1.tgz#d3916db675c9b5c40eb85edd8f92a62eed3dec1f"
+  integrity sha512-SWaZBIeToaGTTz48qK5kWxhSECYcIq5HKrw4gsbBoQ5saLWIKDkhUXnCQpWuZcbW08L4N5Ob+Sykc/QP0VV0Kw==
   dependencies:
     "@ethersproject/abstract-signer" "^5.5.0"
     "@ethersproject/bignumber" "^5.5.0"
@@ -2748,9 +2614,9 @@
     "@ethersproject/providers" "^5.5.2"
     "@ethersproject/strings" "^5.5.0"
     "@ethersproject/transactions" "^5.5.0"
-    "@ledgerhq/hw-app-eth" "^6.35.0"
-    "@ledgerhq/hw-transport" "^6.30.0"
-    "@ledgerhq/hw-transport-webhid" "^6.28.0"
+    "@ledgerhq/hw-app-eth" "^6.35.2"
+    "@ledgerhq/hw-transport" "^6.30.1"
+    "@ledgerhq/hw-transport-webhid" "^6.28.1"
     "@ledgerhq/iframe-provider" "^0.4.3"
     "@web3-react/abstract-connector" "^6.0.7"
     "@web3-react/types" "^6.0.7"
@@ -9341,14 +9207,14 @@ redis-parser@^3.0.0:
   dependencies:
     redis-errors "^1.0.0"
 
-reef-knot@^1.15.2:
-  version "1.15.2"
-  resolved "https://registry.yarnpkg.com/reef-knot/-/reef-knot-1.15.2.tgz#737c096bf61b052c3fe32369c0efb74b612f3711"
-  integrity sha512-Dh3C2LxgWbOGXUgdm5fUsfS0bcHc5Y+g7KGRJgqCqV7wn5lLsIzT85C8WPu9clrMsmelw4kP9flNP8EXyjrdrg==
+reef-knot@^1.15.3:
+  version "1.15.3"
+  resolved "https://registry.yarnpkg.com/reef-knot/-/reef-knot-1.15.3.tgz#b333818552cd0418e9c12f85eb3506763fdfe614"
+  integrity sha512-2uEQOYZwZKcmzyCc3ExIaJdS3wjam8pXHOABoTMp6iFUBjbxlPiaPaEuqsS6laJWshzdwRkHyxLgY64jtdwA2g==
   dependencies:
-    "@reef-knot/connect-wallet-modal" "1.17.0"
+    "@reef-knot/connect-wallet-modal" "1.17.1"
     "@reef-knot/core-react" "1.8.1"
-    "@reef-knot/ledger-connector" "2.0.0"
+    "@reef-knot/ledger-connector" "2.0.1"
     "@reef-knot/types" "1.4.0"
     "@reef-knot/ui-react" "1.0.8"
     "@reef-knot/wallets-helpers" "1.1.5"
