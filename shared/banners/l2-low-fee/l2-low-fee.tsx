@@ -19,8 +19,8 @@ export const L2LowFee: React.FC<L2LowFeeProps> = ({ token }) => {
   }, [isStETH]);
 
   const text = isStETH
-    ? 'Learn about Lido on L2 opportunities on Arbitrum, Optimism, Base and zkSync to enjoy reduced gas fees in DeFi'
-    : 'Bridge wstETH to Arbitrum, Optimism, Base and zkSync to enjoy low gas fees and enhanced opportunities in DeFi';
+    ? 'Learn about Lido on L2 opportunities on Arbitrum, Optimism, Base, zkSync and Mantle to enjoy reduced gas fees in DeFi'
+    : 'Bridge wstETH to Arbitrum, Optimism, Base, zkSync and Mantle to enjoy low gas fees and enhanced opportunities in DeFi';
 
   return (
     <L2Banner

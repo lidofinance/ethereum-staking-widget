@@ -26,7 +26,7 @@ export const L2Wsteth = ({ matomoEventLink }: L2WstethProps) => {
     <Banner data-testid="L2wstETHbanner">
       <TextContent>
         Enjoy <b>lower gas</b> fees and <b>DeFi opportunities</b> using wstETH
-        across Arbitrum, Optimism, Base and zkSync.
+        across Arbitrum, Optimism, Base, zkSync and Mantle.
       </TextContent>
       <FooterWrapper>
         <L2Icons />
