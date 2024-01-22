@@ -31,7 +31,7 @@ export const L2Icons = styled.img.attrs({
   alt: '',
 })`
   display: block;
-  width: 110px;
+  width: 136px;
   height: 32px;
 `;
 
