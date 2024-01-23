@@ -1,4 +1,5 @@
 import { FC } from 'react';
+import { useRouter } from 'next/router';
 import { useWeb3 } from 'reef-knot/web3-react';
 import { useSDK } from '@lido-sdk/react';
 import { CHAINS, getChainColor } from '@lido-sdk/constants';
@@ -17,12 +18,14 @@ import {
 } from '../styles';
 
 const HeaderWallet: FC = () => {
+  const router = useRouter();
   const { active } = useWeb3();
   const { chainId } = useSDK();
 
   const chainName = CHAINS[chainId];
   const testNet = chainId !== CHAINS.Mainnet;
   const showNet = testNet && active;
+  const queryTheme = router?.query?.theme;
 
   return (
     <NoSSRWrapper>
@@ -40,7 +43,7 @@ const HeaderWallet: FC = () => {
         <Connect size="sm" />
       )}
       {dynamics.ipfsMode && <HeaderSettingsButton />}
-      <ThemeToggler />
+      {!queryTheme && <ThemeToggler data-testid="themeToggler" />}
       {dynamics.ipfsMode && (
         <IPFSInfoBoxOnlyDesktopWrapper>
           <IPFSInfoBox />

@@ -1,7 +1,7 @@
 import { BigNumber } from 'ethers';
-import { CHAINS, TOKENS, getTokenAddress } from '@lido-sdk/constants';
-import { formatEther } from '@ethersproject/units';
+import { CHAINS, getTokenAddress, TOKENS } from '@lido-sdk/constants';
 
+import { useMemo } from 'react';
 import { useWithdrawalRates } from 'features/withdrawals/hooks/useWithdrawalRates';
 import { FormatToken } from 'shared/formatters/format-token';
 
@@ -16,13 +16,17 @@ import {
   DexOptionsContainer,
   DexOptionAmount,
   InlineLoaderSmall,
-  OneInchIcon,
-  ParaSwapIcon,
-  CowSwapIcon,
   DexOptionLoader,
+  OpenOceanIcon,
+  ParaSwapIcon,
+  DexWarning,
 } from './styles';
+import { formatEther } from '@ethersproject/units';
+import { OPEN_OCEAN_REFERRAL_ADDRESS } from 'config/external-links';
+// @ts-expect-error https://www.npmjs.com/package/@svgr/webpack
+import { ReactComponent as AttentionTriangle } from 'assets/icons/attention-triangle.svg';
 
-const placeholder = Array.from<null>({ length: 3 }).fill(null);
+const placeholder = Array.from<null>({ length: 1 }).fill(null);
 
 const dexInfo: {
   [key: string]: {
@@ -32,16 +36,16 @@ const dexInfo: {
     link: (amount: BigNumber, token: TOKENS.STETH | TOKENS.WSTETH) => string;
   };
 } = {
-  '1inch': {
-    title: '1inch',
-    icon: <OneInchIcon />,
+  openOcean: {
+    title: 'OpenOcean',
+    icon: <OpenOceanIcon />,
     onClickGoTo: () => {
-      trackMatomoEvent(MATOMO_CLICK_EVENTS_TYPES.withdrawalGoTo1inch);
+      trackMatomoEvent(MATOMO_CLICK_EVENTS_TYPES.withdrawalGoToOpenOcean);
     },
     link: (amount, token) =>
-      `https://app.1inch.io/#/1/simple/swap/${
-        token == TOKENS.STETH ? 'stETH' : 'wstETH'
-      }/ETH?sourceTokenAmount=${formatEther(amount)}`,
+      `https://app.openocean.finance/classic?referrer=${OPEN_OCEAN_REFERRAL_ADDRESS}&amount=${formatEther(
+        amount,
+      )}#/ETH/${token}/ETH`,
   },
   paraswap: {
     title: 'ParaSwap',
@@ -50,22 +54,12 @@ const dexInfo: {
       trackMatomoEvent(MATOMO_CLICK_EVENTS_TYPES.withdrawalGoToParaswap);
     },
     link: (amount, token) =>
-      `https://app.paraswap.io/#/${getTokenAddress(
+      `https://app.paraswap.io/?referrer=Lido&takeSurplus=true#/${getTokenAddress(
         CHAINS.Mainnet,
         token,
-      )}-ETH/${formatEther(amount)}?network=ethereum`,
-  },
-  cowswap: {
-    title: 'CoW Swap',
-    icon: <CowSwapIcon />,
-    onClickGoTo: () => {
-      trackMatomoEvent(MATOMO_CLICK_EVENTS_TYPES.withdrawalGoToCowSwap);
-    },
-    link: (amount, token) =>
-      `https://swap.cow.fi/#/1/swap/${getTokenAddress(
-        CHAINS.Mainnet,
-        token,
-      )}/ETH?sellAmount=${formatEther(amount)}&utm_source=lido`,
+      )}-0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE/${formatEther(
+        amount,
+      )}/SELL?network=ethereum`,
   },
 };
 
@@ -121,25 +115,37 @@ export const DexOptions: React.FC<
   const { data, initialLoading, loading, amount, selectedToken } =
     useWithdrawalRates();
 
+  const dexesFiltered = useMemo(() => {
+    return data?.filter(({ rate, name }) => {
+      const dex = dexInfo[name];
+      return dex && (amount.eq('0') || rate !== null);
+    });
+  }, [amount, data]);
+
   return (
-    <DexOptionsContainer {...props}>
-      {initialLoading
-        ? placeholder.map((_, i) => <DexOptionLoader key={i} />)
-        : data?.map(({ name, toReceive, rate }) => {
-            const dex = dexInfo[name];
-            if (!dex || (amount.gt('0') && !rate)) return null;
-            return (
-              <DexOption
-                title={dex.title}
-                icon={dex.icon}
-                onClickGoTo={dex.onClickGoTo}
-                url={dex.link(amount, selectedToken)}
-                key={name}
-                loading={loading}
-                toReceive={!rate ? null : toReceive}
-              />
-            );
-          })}
+    <DexOptionsContainer data-testid="dexOptionContainer" {...props}>
+      {initialLoading && placeholder.map((_, i) => <DexOptionLoader key={i} />)}
+      {!initialLoading && (!dexesFiltered || dexesFiltered.length === 0) && (
+        <DexWarning>
+          <AttentionTriangle />
+          <div>Aggregator&apos;s prices are not available now</div>
+        </DexWarning>
+      )}
+      {!initialLoading &&
+        dexesFiltered?.map(({ name, toReceive, rate }) => {
+          const dex = dexInfo[name];
+          return (
+            <DexOption
+              title={dex.title}
+              icon={dex.icon}
+              onClickGoTo={dex.onClickGoTo}
+              url={dex.link(amount, selectedToken)}
+              key={name}
+              loading={loading}
+              toReceive={rate ? toReceive : null}
+            />
+          );
+        })}
     </DexOptionsContainer>
   );
 };

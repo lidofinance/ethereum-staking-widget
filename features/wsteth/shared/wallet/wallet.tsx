@@ -20,8 +20,8 @@ import { STRATEGY_LAZY } from 'utils/swrStrategies';
 const WalletComponent: WalletComponentType = (props) => {
   const { account } = useSDK();
   const ethBalance = useEthereumBalance(undefined, STRATEGY_LAZY);
-  const stethBalance = useSTETHBalance();
-  const wstethBalance = useWSTETHBalance();
+  const stethBalance = useSTETHBalance(STRATEGY_LAZY);
+  const wstethBalance = useWSTETHBalance(STRATEGY_LAZY);
 
   const stethAddress = useTokenAddress(TOKENS.STETH);
   const wstethAddress = useTokenAddress(TOKENS.WSTETH);
@@ -30,7 +30,7 @@ const WalletComponent: WalletComponentType = (props) => {
   const stethByWstethBalance = useStethByWsteth(wstethBalance.data);
 
   return (
-    <StyledCard {...props}>
+    <StyledCard data-testid="wrapCardSection" {...props}>
       <CardRow>
         <CardBalance
           title="ETH Balance"

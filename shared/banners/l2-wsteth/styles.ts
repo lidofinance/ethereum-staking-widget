@@ -1,16 +1,16 @@
 import styled from 'styled-components';
 import { Button } from '@lidofinance/lido-ui';
-import Icons from 'assets/icons/l2-wsteth.svg';
+import Icons from 'assets/icons/l2-swap.svg';
 
 export const Banner = styled.div`
-  height: 112px;
   position: relative;
   display: flex;
+  flex-direction: column;
   text-align: left;
   align-items: center;
   padding: ${({ theme }) => theme.spaceMap.lg}px;
   border-radius: ${({ theme }) => theme.borderRadiusesMap.lg}px;
-  gap: 20px;
+  gap: 10px;
   overflow: hidden;
   background-color: #07080c;
   background: radial-gradient(
@@ -30,10 +30,9 @@ export const L2Icons = styled.img.attrs({
   src: Icons,
   alt: '',
 })`
-  position: relative;
   display: block;
-  width: 28px;
-  height: 72px;
+  width: 136px;
+  height: 32px;
 `;
 
 export const LinkButton = styled(Button)`
@@ -60,4 +59,11 @@ export const OverlayLink = styled.a`
 
 export const TextContent = styled.p`
   color: var(--lido-color-primaryContrast);
+`;
+
+export const FooterWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
 `;

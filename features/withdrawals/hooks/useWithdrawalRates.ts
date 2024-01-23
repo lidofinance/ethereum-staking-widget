@@ -3,36 +3,37 @@ import { useWatch } from 'react-hook-form';
 import { BigNumber } from 'ethers';
 
 import { Zero } from '@ethersproject/constants';
-import { CHAINS, TOKENS, getTokenAddress } from '@lido-sdk/constants';
+import { CHAINS, getTokenAddress, TOKENS } from '@lido-sdk/constants';
 import { useLidoSWR } from '@lido-sdk/react';
 
-import { dynamics } from 'config';
 import { useDebouncedValue } from 'shared/hooks/useDebouncedValue';
-import { prependBasePath } from 'utils';
-import { standardFetcher } from 'utils/standardFetcher';
 import { STRATEGY_LAZY } from 'utils/swrStrategies';
 
 import { RequestFormInputType } from '../request/request-form-context';
+import { getOpenOceanRate } from 'utils/get-open-ocean-rate';
+import { standardFetcher } from 'utils/standardFetcher';
 
-type getWithdrawalRatesParams = {
+type GetWithdrawalRateParams = {
   amount: BigNumber;
   token: TOKENS.STETH | TOKENS.WSTETH;
 };
 
-type RateResult = {
+type RateCalculationResult = {
+  rate: number;
+  toReceive: BigNumber;
+};
+
+type SingleWithdrawalRateResult = {
   name: string;
   rate: number | null;
   toReceive: BigNumber | null;
 };
 
 type GetRateType = (
-  amount: BigNumber,
-  token: TOKENS.STETH | TOKENS.WSTETH,
-) => Promise<RateResult>;
+  params: GetWithdrawalRateParams,
+) => Promise<SingleWithdrawalRateResult>;
 
-type rateCalculationResult = ReturnType<typeof calculateRateReceive>;
-
-type getWithdrawalRatesResult = RateResult[];
+type GetWithdrawalRateResult = SingleWithdrawalRateResult[];
 
 const RATE_PRECISION = 100000;
 const RATE_PRECISION_BN = BigNumber.from(RATE_PRECISION);
@@ -41,45 +42,30 @@ const calculateRateReceive = (
   amount: BigNumber,
   src: BigNumber,
   dest: BigNumber,
-) => {
+): RateCalculationResult => {
   const _rate = dest.mul(RATE_PRECISION_BN).div(src);
   const toReceive = amount.mul(dest).div(src);
   const rate = _rate.toNumber() / RATE_PRECISION;
   return { rate, toReceive };
 };
 
-const getOneInchRate: GetRateType = async (amount, token) => {
-  let rateInfo: rateCalculationResult | null;
-
-  try {
-    if (amount.isZero() || amount.isNegative()) {
+const getOpenOceanWithdrawalRate: GetRateType = async ({ amount, token }) => {
+  if (amount && amount.gt(Zero)) {
+    try {
+      const rate = await getOpenOceanRate(amount, token, 'ETH');
       return {
-        name: '1inch',
-        rate: 0,
-        toReceive: BigNumber.from(0),
+        name: 'openOcean',
+        ...rate,
       };
+    } catch (e) {
+      console.warn('[getOpenOceanRate] Failed to receive withdraw rate', e);
     }
-
-    const apiOneInchRatePath = `api/oneinch-rate/?token=${token}`;
-    const respData = await standardFetcher<{ rate: string }>(
-      dynamics.ipfsMode
-        ? `${dynamics.widgetApiBasePathForIpfs}/${apiOneInchRatePath}`
-        : prependBasePath(apiOneInchRatePath),
-    );
-    rateInfo = {
-      rate: Number(respData.rate),
-      toReceive: BigNumber.from(Number(respData.rate) * RATE_PRECISION)
-        .mul(amount)
-        .div(RATE_PRECISION_BN),
-    };
-  } catch {
-    rateInfo = null;
   }
 
   return {
-    name: '1inch',
-    rate: rateInfo?.rate ?? null,
-    toReceive: rateInfo?.toReceive ?? null,
+    name: 'openOcean',
+    rate: null,
+    toReceive: null,
   };
 };
 
@@ -90,8 +76,8 @@ type ParaSwapPriceResponsePartial = {
   };
 };
 
-const getParaSwapRate: GetRateType = async (amount, token) => {
-  let rateInfo: rateCalculationResult | null;
+const getParaSwapRate: GetRateType = async ({ amount, token }) => {
+  let rateInfo: RateCalculationResult | null;
 
   try {
     if (amount.isZero() || amount.isNegative()) {
@@ -136,87 +122,31 @@ const getParaSwapRate: GetRateType = async (amount, token) => {
   };
 };
 
-type CowSwapQuoteResponsePartial = {
-  quote: {
-    sellAmount: string;
-    buyAmount: string;
-  };
-};
-
-const getCowSwapRate: GetRateType = async (amount, token) => {
-  let rateInfo: rateCalculationResult | null;
-
-  try {
-    if (amount.isZero() || amount.isNegative()) {
-      return {
-        name: 'cowswap',
-        rate: 0,
-        toReceive: BigNumber.from(0),
-      };
-    }
-    const capped_amount = amount;
-    const payload = {
-      sellToken: getTokenAddress(CHAINS.Mainnet, token),
-      buyToken: '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE',
-      from: '0x0000000000000000000000000000000000000000',
-      receiver: '0x0000000000000000000000000000000000000000',
-      partiallyFillable: false,
-      kind: 'sell',
-      sellAmountBeforeFee: capped_amount.toString(),
-    };
-
-    const data: CowSwapQuoteResponsePartial = await standardFetcher(
-      `https://api.cow.fi/mainnet/api/v1/quote`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(payload),
-      },
-    );
-
-    rateInfo = calculateRateReceive(
-      amount,
-      BigNumber.from(data.quote.sellAmount),
-      BigNumber.from(data.quote.buyAmount),
-    );
-  } catch {
-    rateInfo = null;
-  }
-
-  return {
-    name: 'cowswap',
-    rate: rateInfo?.rate ?? null,
-    toReceive: rateInfo?.toReceive ?? null,
-  };
-};
-
-const getWithdrawalRates = async ({
-  amount,
-  token,
-}: getWithdrawalRatesParams): Promise<getWithdrawalRatesResult> => {
+const getWithdrawalRates = async (
+  params: GetWithdrawalRateParams,
+): Promise<GetWithdrawalRateResult> => {
   const rates = await Promise.all([
-    getOneInchRate(amount, token),
-    getParaSwapRate(amount, token),
-    getCowSwapRate(amount, token),
+    getOpenOceanWithdrawalRate(params),
+    getParaSwapRate(params),
   ]);
 
-  // sort by rate, then alphabetic
-  rates.sort((r1, r2) => {
-    const rate1 = r1.rate ?? 0;
-    const rate2 = r2.rate ?? 0;
-    if (rate1 == rate2) {
-      if (r1.name < r2.name) {
-        return -1;
+  if (rates.length > 1) {
+    // sort by rate, then alphabetic
+    rates.sort((r1, r2) => {
+      const rate1 = r1.rate ?? 0;
+      const rate2 = r2.rate ?? 0;
+      if (rate1 == rate2) {
+        if (r1.name < r2.name) {
+          return -1;
+        }
+        if (r1.name > r2.name) {
+          return 1;
+        }
+        return 0;
       }
-      if (r1.name > r2.name) {
-        return 1;
-      }
-      return 0;
-    }
-    return rate2 - rate1;
-  });
+      return rate2 - rate1;
+    });
+  }
 
   return rates;
 };

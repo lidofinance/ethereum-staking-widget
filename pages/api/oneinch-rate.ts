@@ -34,7 +34,7 @@ const validateAndGetQueryToken = async (
 ): Promise<string> => {
   let token = req.query?.token || TOKEN_ETH;
 
-  // Token can be array - /api/oneinch-rate/?token=eth&token=eth&token=eth
+  // Token can be array - /api/oneinch-rate?token=eth&token=eth&token=eth
   if (Array.isArray(token)) {
     token = token[0];
   }
