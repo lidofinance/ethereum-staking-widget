@@ -15,6 +15,8 @@ import { useRouter } from 'next/router';
 export type InpageNavigationContextValue = {
   hashNav: string;
   navigateInpageAnchor: (e: React.MouseEvent<HTMLAnchorElement>) => void;
+  resetInpageAnchor: () => void;
+  resetSpecificAnchor: (hash: string) => void;
 };
 
 const InpageNavigationContext =
@@ -58,12 +60,30 @@ export const InpageNavigationProvider: FC<PropsWithChildren> = ({
     [],
   );
 
+  const resetInpageAnchor = useCallback(() => {
+    setHash('');
+    if (!dynamics.ipfsMode) {
+      const hashTrimmed = asPath.split('#')[0];
+      history.pushState({}, '', hashTrimmed);
+    }
+  }, [asPath]);
+
+  const resetSpecificAnchor = useCallback(
+    (hash: string) => {
+      if (hash !== hashNav) return;
+      resetInpageAnchor();
+    },
+    [resetInpageAnchor, hashNav],
+  );
+
   const value = useMemo(
     () => ({
       hashNav,
       navigateInpageAnchor,
+      resetInpageAnchor,
+      resetSpecificAnchor,
     }),
-    [hashNav, navigateInpageAnchor],
+    [hashNav, navigateInpageAnchor, resetInpageAnchor, resetSpecificAnchor],
   );
 
   return (
