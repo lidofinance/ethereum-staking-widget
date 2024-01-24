@@ -41,7 +41,7 @@ jobs:
           ETH_API_BASE_PATH: ${{ vars.ETH_API_BASE_PATH }}
           PREFILL_UNSAFE_EL_RPC_URLS_1: ${{ secrets.PREFILL_UNSAFE_EL_RPC_URLS_1 }}
           WALLETCONNECT_PROJECT_ID: ${{ secrets.WALLETCONNECT_PROJECT_ID }}
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: ${{ env.ipfs_folder }}
           path: ${{ env.ipfs_folder }}
