@@ -21,6 +21,7 @@ import {
   withOptionaLineBreak,
   getOperationProcessingDisplayText,
   getSuccessText,
+  withOptionaTooltip,
 } from './text-utils';
 import { TX_STAGE, TX_OPERATION } from './types';
 import { TX_STAGE_MODAL_ICONS } from '../tx-stage-modal-content/icons';
@@ -28,9 +29,9 @@ import { TX_STAGE_MODAL_ICONS } from '../tx-stage-modal-content/icons';
 interface TxStageModalProps extends ModalProps {
   txStage: TX_STAGE;
   txOperation: TX_OPERATION;
-  amount: string;
+  amount: BigNumber | null;
   amountToken: string;
-  willReceiveAmount?: string;
+  willReceiveAmount?: BigNumber | null;
   willReceiveAmountToken?: string;
   txHash?: string | null;
   balance?: BigNumber;
@@ -47,7 +48,7 @@ export const TxStageModal = memo((props: TxStageModalProps) => {
     txHash,
     amount,
     amountToken,
-    willReceiveAmount,
+    willReceiveAmount = '',
     willReceiveAmountToken,
     balance,
     balanceToken,
@@ -75,8 +76,25 @@ export const TxStageModal = memo((props: TxStageModalProps) => {
     onClose: isCloseButtonHidden ? undefined : onClose,
   };
 
+  const amountDisplay = amount
+    ? formatBalance(amount, 4, { adaptive: true, elipsis: true })
+    : '';
+  const amountFull = amount ? formatBalance(amount, 18) : '';
+  const amountEl = withOptionaTooltip(amountDisplay, amountFull);
+
+  const willReceiveDisplay = willReceiveAmount
+    ? formatBalance(willReceiveAmount, 4, { adaptive: true, elipsis: true })
+    : '';
+  const willReceiveFull = willReceiveAmount
+    ? formatBalance(willReceiveAmount, 18)
+    : '';
+  const willReceiveAmountEl = withOptionaTooltip(
+    willReceiveDisplay,
+    willReceiveFull,
+  );
+
   const operationText = getOperationProcessingDisplayText(txOperation);
-  const amountWithBreak = withOptionaLineBreak(amount);
+  const amountWithBreak = withOptionaLineBreak(amountDisplay, amountEl);
 
   const [isRetryLoading, setRetryLoading] = useState(false);
   const retryResetTimerRef = useRef<NodeJS.Timeout | 0>(0);
@@ -109,10 +127,10 @@ export const TxStageModal = memo((props: TxStageModalProps) => {
         }
         description={
           <>
-            {operationText} {amount} {amountToken}.{' '}
+            {operationText} {amountEl} {amountToken}.{' '}
             {txOperation !== TX_OPERATION.APPROVING && (
               <>
-                You will receive {willReceiveAmount} {willReceiveAmountToken}
+                You will receive {willReceiveAmountEl} {willReceiveAmountToken}
               </>
             )}
           </>

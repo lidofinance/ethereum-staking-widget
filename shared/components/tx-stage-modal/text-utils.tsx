@@ -1,15 +1,27 @@
 import { TX_OPERATION } from './types';
 import { TxLinkEtherscan } from '../tx-link-etherscan';
+import { Tooltip } from '@lidofinance/lido-ui';
 
 // Inserts new lines in front of long numbers so that the currency symbol remains on the same line
-export const withOptionaLineBreak = (text: string) => {
+export const withOptionaLineBreak = (text: string, el?: React.ReactNode) => {
   return text.length < 8 ? (
-    text
+    el || text
   ) : (
     <>
       <br />
-      {text}
+      {el || text}
     </>
+  );
+};
+
+// Wraps element with tooltip if it differs
+export const withOptionaTooltip = (text: string, tooltip?: string) => {
+  return text === tooltip ? (
+    <>{text}</>
+  ) : (
+    <Tooltip placement="top" title={tooltip}>
+      <span>{text}</span>
+    </Tooltip>
   );
 };
 

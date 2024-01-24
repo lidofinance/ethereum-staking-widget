@@ -2,7 +2,6 @@ import { useTransactionModal } from 'shared/transaction-modal/transaction-modal-
 import { useFormContext } from 'react-hook-form';
 import { useWrapFormData, WrapFormInputType } from '../wrap-form-context';
 
-import { formatBalance } from 'utils';
 import { TxStageModal } from 'shared/components';
 
 import { getTokenDisplayName } from 'utils/getTokenDisplayName';
@@ -33,9 +32,9 @@ export const WrapFormTxModal = () => {
       txStage={convertTxStageToLegacy(txStage)}
       txOperation={convertTxStageToLegacyTxOperationWrap(txOperation)}
       txHash={txHash}
-      amount={amount ? formatBalance(amount, 18) : ''}
+      amount={amount}
       amountToken={getTokenDisplayName(token)}
-      willReceiveAmount={formatBalance(willReceiveWsteth, 18)}
+      willReceiveAmount={willReceiveWsteth}
       willReceiveAmountToken="wstETH"
       balance={wstethBalance}
       balanceToken={'wstETH'}
