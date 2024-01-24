@@ -1,11 +1,17 @@
-import { Stake } from './stake';
-import Head from 'next/head';
 import { FC } from 'react';
+import Head from 'next/head';
+
 import { Layout } from 'shared/components';
+import { FaqWithMeta } from 'utils/faq';
 
-export { Stake } from './stake';
+import { StakeFaq } from './stake-faq/stake-faq';
+import { Stake } from './stake';
 
-export const StakePage: FC = () => {
+export type StakePageProps = {
+  faqWithMeta: FaqWithMeta | null;
+};
+
+export const StakePage: FC<StakePageProps> = ({ faqWithMeta }) => {
   return (
     <Layout
       title="Stake Ether"
@@ -15,6 +21,7 @@ export const StakePage: FC = () => {
         <title>Stake with Lido | Lido</title>
       </Head>
       <Stake />
+      {faqWithMeta && <StakeFaq faqWithMeta={faqWithMeta} />}
     </Layout>
   );
 };
