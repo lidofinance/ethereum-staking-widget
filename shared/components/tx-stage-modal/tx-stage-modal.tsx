@@ -80,7 +80,11 @@ export const TxStageModal = memo((props: TxStageModalProps) => {
     ? formatBalance(amount, 4, { adaptive: true, elipsis: true })
     : '';
   const amountFull = amount ? formatBalance(amount, 18) : '';
-  const amountEl = withOptionaTooltip(amountDisplay, amountFull);
+  const amountEl = withOptionaTooltip(
+    amountDisplay,
+    amountFull,
+    <span data-testid="sendAmount">{amountDisplay}</span>,
+  );
 
   const willReceiveDisplay = willReceiveAmount
     ? formatBalance(willReceiveAmount, 4, { adaptive: true, elipsis: true })
@@ -91,6 +95,7 @@ export const TxStageModal = memo((props: TxStageModalProps) => {
   const willReceiveAmountEl = withOptionaTooltip(
     willReceiveDisplay,
     willReceiveFull,
+    <span data-testid="receiveAmount">{willReceiveDisplay}</span>,
   );
 
   const operationText = getOperationProcessingDisplayText(txOperation);

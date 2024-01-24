@@ -15,12 +15,16 @@ export const withOptionaLineBreak = (text: string, el?: React.ReactNode) => {
 };
 
 // Wraps element with tooltip if it differs
-export const withOptionaTooltip = (text: string, tooltip?: string) => {
+export const withOptionaTooltip = (
+  text: string,
+  tooltip?: string,
+  el?: React.ReactNode,
+) => {
   return text === tooltip ? (
-    <>{text}</>
+    <>{el || text}</>
   ) : (
     <Tooltip placement="top" title={tooltip}>
-      <span>{text}</span>
+      <span>{el || text}</span>
     </Tooltip>
   );
 };
