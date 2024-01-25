@@ -51,25 +51,39 @@ export const stakeFormValidationResolver: Resolver<
         'amount',
         amount,
         etherBalance,
-        `ETH amount must be less than your balance`,
+        `Entered ETH amount exceeds your available balance of ${formatEther(
+          etherBalance,
+        )}`,
       );
 
       validateBignumberMax(
         'amount',
         amount,
         currentStakeLimit,
-        `ETH amount must be less than current staking limit of ${formatEther(
+        `Entered ETH amount exceeds current staking limit of ${formatEther(
           etherBalance,
-        )} ETH`,
+        )}`,
       );
 
       if (!isMultisig) {
         const gasPaddedBalance = etherBalance.sub(gasCost);
+
+        validateBignumberMax(
+          'amount',
+          Zero,
+          gasPaddedBalance,
+          `Ensure you have sufficient ETH to cover the gas cost of ${formatEther(
+            gasCost,
+          )}`,
+        );
+
         validateBignumberMax(
           'amount',
           amount,
           gasPaddedBalance,
-          `You must leave enough for gas cost of ${formatEther(gasCost)} ETH`,
+          `Enter ETH amount less than ${formatEther(
+            gasPaddedBalance,
+          )} to ensure you leave enough ETH for gas fees`,
         );
       }
     }

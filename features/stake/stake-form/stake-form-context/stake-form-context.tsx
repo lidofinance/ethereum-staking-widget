@@ -134,7 +134,7 @@ export const StakeFormProvider: FC<PropsWithChildren> = ({ children }) => {
     },
     context: validationContextPromise,
     resolver: stakeFormValidationResolver,
-    mode: 'onChange',
+    mode: 'onSubmit',
   });
   const { setValue } = formObject;
 
