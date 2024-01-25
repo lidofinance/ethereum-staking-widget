@@ -16,6 +16,7 @@ import {
   OptionsPickerRow,
   OptionsPickerSubLabel,
   OpenOceanIcon,
+  ParaSwapIcon,
 } from './styles';
 import {
   trackMatomoEvent,
@@ -88,6 +89,7 @@ const DexButton: React.FC<OptionButtonProps> = ({ isActive, onClick }) => {
         <OptionsPickerLabel>Use aggregators</OptionsPickerLabel>
         <OptionsPickerIcons>
           <OpenOceanIcon />
+          <ParaSwapIcon />
         </OptionsPickerIcons>
       </OptionsPickerRow>
       <OptionsPickerRow data-testid="dexBestRate">
