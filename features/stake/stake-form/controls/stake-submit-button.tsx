@@ -8,6 +8,7 @@ export const StakeSubmitButton = () => {
     <SubmitButtonHookForm
       disabled={stakingLimitInfo?.stakeLimitLevel === LIMIT_LEVEL.REACHED}
       data-testid="stakeSubmitBtn"
+      errorField="amount"
     >
       Stake
     </SubmitButtonHookForm>
