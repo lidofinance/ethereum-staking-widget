@@ -1,12 +1,12 @@
-import { Switch } from 'shared/components';
-
 import { WITHDRAWALS_CLAIM_PATH, WITHDRAWALS_REQUEST_PATH } from 'config/urls';
+import { GoerliSunsetBanner } from 'shared/banners/goerli-sunset';
+import { Switch } from 'shared/components';
+import { FaqWithMeta } from 'utils/faq';
 
 import { ClaimDataProvider } from './contexts/claim-data-context';
 import { useWithdrawals } from './contexts/withdrawals-context';
 import { Claim } from './claim';
 import { Request } from './request';
-import { GoerliSunsetBanner } from 'shared/banners/goerli-sunset';
 
 const withdrawalRoutes = [
   {
@@ -19,13 +19,25 @@ const withdrawalRoutes = [
   },
 ];
 
-export const WithdrawalsTabs = () => {
+type WithdrawalsTabsProps = {
+  faqWithMetaWithdrawalsPageClaim: FaqWithMeta | null;
+  faqWithMetaWithdrawalsPageRequest: FaqWithMeta | null;
+};
+
+export const WithdrawalsTabs = ({
+  faqWithMetaWithdrawalsPageClaim,
+  faqWithMetaWithdrawalsPageRequest,
+}: WithdrawalsTabsProps) => {
   const { isClaimTab } = useWithdrawals();
   return (
     <ClaimDataProvider>
       <Switch checked={isClaimTab} routes={withdrawalRoutes} />
       <GoerliSunsetBanner />
-      {isClaimTab ? <Claim /> : <Request />}
+      {isClaimTab ? (
+        <Claim faqWithMeta={faqWithMetaWithdrawalsPageClaim} />
+      ) : (
+        <Request faqWithMeta={faqWithMetaWithdrawalsPageRequest} />
+      )}
     </ClaimDataProvider>
   );
 };

@@ -1,18 +1,24 @@
 import { TransactionModalProvider } from 'shared/transaction-modal/transaction-modal-context';
-import { ClaimFaq } from 'features/withdrawals/withdrawals-faq/claim-faq';
+import { FaqWithMeta } from 'utils/faq';
 
 import { ClaimForm } from './form';
 import { TxClaimModal } from './tx-modal';
 import { ClaimWallet } from './wallet';
 import { ClaimFormProvider } from './claim-form-context';
 
-export const Claim = () => {
+import { ClaimFaq } from '../withdrawals-faq/claim-faq';
+
+type ClaimProps = {
+  faqWithMeta: FaqWithMeta | null;
+};
+
+export const Claim = ({ faqWithMeta }: ClaimProps) => {
   return (
     <TransactionModalProvider>
       <ClaimFormProvider>
         <ClaimWallet />
         <ClaimForm />
-        <ClaimFaq />
+        {faqWithMeta && <ClaimFaq faqWithMeta={faqWithMeta} />}
         <TxClaimModal />
       </ClaimFormProvider>
     </TransactionModalProvider>

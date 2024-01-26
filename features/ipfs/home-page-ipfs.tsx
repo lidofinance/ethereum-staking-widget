@@ -13,13 +13,13 @@ import {
 } from 'config/urls';
 import NoSSRWrapper from 'shared/components/no-ssr-wrapper';
 import { usePrefixedReplace } from 'shared/hooks/use-prefixed-history';
-
 import { StakePage } from 'features/stake';
 import WrapPage from 'pages/wrap/[[...mode]]';
 import WithdrawalsPage from 'pages/withdrawals/[mode]';
 import ReferralPage from 'pages/referral';
 import RewardsPage from 'pages/rewards';
 import SettingsPage from 'pages/settings';
+import { FaqWithMeta } from 'utils/faq';
 
 /**
  * We are using single index.html endpoint
@@ -37,7 +37,19 @@ const IPFS_ROUTABLE_PAGES = [
   getPathWithoutFirstSlash(SETTINGS_PATH),
 ];
 
-const HomePageIpfs: FC = () => {
+export type HomePageIpfsProps = {
+  faqWithMetaStakePage: FaqWithMeta | null;
+  faqWithMetaWrapPage: FaqWithMeta | null;
+  faqWithMetaWithdrawalsPageRequest: FaqWithMeta | null;
+  faqWithMetaWithdrawalsPageClaim: FaqWithMeta | null;
+};
+
+const HomePageIpfs: FC<HomePageIpfsProps> = ({
+  faqWithMetaStakePage,
+  faqWithMetaWrapPage,
+  faqWithMetaWithdrawalsPageRequest,
+  faqWithMetaWithdrawalsPageClaim,
+}) => {
   const router = useRouter();
   const { asPath } = router;
 
@@ -75,18 +87,36 @@ const HomePageIpfs: FC = () => {
   switch (parsedPath[0]) {
     case getPathWithoutFirstSlash(WRAP_PATH): {
       if (parsedPath[1] === 'unwrap') {
-        spaPage = <WrapPage mode={'unwrap'} />;
+        spaPage = (
+          <WrapPage mode={'unwrap'} faqWithMeta={faqWithMetaWrapPage} />
+        );
       } else {
-        spaPage = <WrapPage mode={'wrap'} />;
+        spaPage = <WrapPage mode={'wrap'} faqWithMeta={faqWithMetaWrapPage} />;
       }
       break;
     }
 
     case getPathWithoutFirstSlash(WITHDRAWALS_PATH): {
       if (parsedPath[1] === 'claim') {
-        spaPage = <WithdrawalsPage mode={'claim'} />;
+        spaPage = (
+          <WithdrawalsPage
+            mode={'claim'}
+            faqWithMetaWithdrawalsPageClaim={faqWithMetaWithdrawalsPageClaim}
+            faqWithMetaWithdrawalsPageRequest={
+              faqWithMetaWithdrawalsPageRequest
+            }
+          />
+        );
       } else {
-        spaPage = <WithdrawalsPage mode={'request'} />;
+        spaPage = (
+          <WithdrawalsPage
+            mode={'request'}
+            faqWithMetaWithdrawalsPageClaim={faqWithMetaWithdrawalsPageClaim}
+            faqWithMetaWithdrawalsPageRequest={
+              faqWithMetaWithdrawalsPageRequest
+            }
+          />
+        );
       }
       break;
     }
@@ -107,7 +137,7 @@ const HomePageIpfs: FC = () => {
     }
 
     default: {
-      spaPage = <StakePage />;
+      spaPage = <StakePage faqWithMeta={faqWithMetaStakePage} />;
     }
   }
 

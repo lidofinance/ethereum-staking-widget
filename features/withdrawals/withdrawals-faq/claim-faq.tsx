@@ -1,37 +1,33 @@
-import { useMatomoEventHandle } from 'shared/hooks';
+import React, { FC } from 'react';
+
+import { FaqAccordion } from '@lidofinance/ui-faq';
 
 import { Section } from 'shared/components';
+import { useUpdatableFaq } from 'shared/hooks/use-faq-on-client';
+import { faqAccordionOnLinkClick } from 'utils/faq-matomo';
+import { FaqWithMeta } from 'utils/faq';
 
-import { WhatAreWithdrawals } from './list/what-are-withdrawals';
-import { HowDoesWithdrawalsWork } from './list/how-does-withdrawals-work';
-import { HowToWithdraw } from './list/how-to-withdraw';
-import { ConvertSTETHtoETH } from './list/convert-steth-to-eth';
-import { ConvertWSTETHtoETH } from './list/convert-wsteth-to-eth';
-import { WhySTETH } from './list/why-steth';
-import { SeparateClaim } from './list/separate-claim';
-import { ClaimableAmountDifference } from './list/claimable-amount-difference';
-import { WhatIsSlashing } from './list/what-is-slashing';
-import { LidoNFT } from './list/lido-nft';
-import { HowToAddNFT } from './list/add-nft';
-import { NFTNotChange } from './list/nft-not-change';
+type ClaimFaqProps = {
+  faqWithMeta: FaqWithMeta;
+};
 
-export const ClaimFaq: React.FC = () => {
-  const onClickHandler = useMatomoEventHandle();
+export const ClaimFaq: FC<ClaimFaqProps> = ({ faqWithMeta }) => {
+  const { data: pageFAQ } = useUpdatableFaq(faqWithMeta);
+  if (!pageFAQ) return null;
 
   return (
-    <Section title="FAQ" onClick={onClickHandler}>
-      <WhatAreWithdrawals />
-      <HowDoesWithdrawalsWork />
-      <HowToWithdraw />
-      <ConvertSTETHtoETH />
-      <ConvertWSTETHtoETH />
-      <WhySTETH />
-      <SeparateClaim />
-      <ClaimableAmountDifference title="Why is the claimable amount different from my requested amount?" />
-      <WhatIsSlashing />
-      <LidoNFT />
-      <HowToAddNFT />
-      <NFTNotChange />
-    </Section>
+    <>
+      <Section title="FAQ">
+        <FaqAccordion
+          faqList={pageFAQ.faq}
+          onLinkClick={(props) => {
+            faqAccordionOnLinkClick({
+              pageId: pageFAQ.pageIdentification,
+              ...props,
+            });
+          }}
+        />
+      </Section>
+    </>
   );
 };

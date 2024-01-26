@@ -1,5 +1,4 @@
 export { Layout } from './layout/layout';
-export { Faq } from './faq/faq';
 export { BackgroundGradient } from './background-gradient/background-gradient';
 export { Section } from './section/section';
 export { TokenToWallet } from './token-to-wallet/token-to-wallet';
