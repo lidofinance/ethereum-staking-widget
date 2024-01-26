@@ -66,7 +66,7 @@ export const TextWrap = styled.div`
 export const ButtonLinkWrap = styled.a`
   display: block;
 
-  ${({ theme }) => theme.mediaQueries.sm} {
+  ${({ theme }) => theme.mediaQueries.md} {
     position: absolute;
     top: 0;
     bottom: 0;
@@ -80,7 +80,7 @@ export const ButtonStyle = styled(Button)`
   font-size: 12px;
   line-height: 20px;
 
-  ${({ theme }) => theme.mediaQueries.sm} {
+  ${({ theme }) => theme.mediaQueries.md} {
     display: none;
   }
 `;
