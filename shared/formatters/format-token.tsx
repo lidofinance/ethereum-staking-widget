@@ -26,6 +26,7 @@ export const FormatToken: FormatTokenComponent = ({
     amount,
     maxDecimalDigits,
     maxTotalLength,
+    true,
   );
   const showTooltip = showAmountTip && isTrimmed;
 
