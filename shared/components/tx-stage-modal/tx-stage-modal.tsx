@@ -3,7 +3,7 @@ import { useConnectorInfo } from 'reef-knot/web3-react';
 import { use1inchLinkProps } from 'features/stake/hooks';
 
 import { TxLinkEtherscan } from 'shared/components/tx-link-etherscan';
-import { L2LowFee } from 'shared/banners';
+import { L2LowFee } from 'shared/banners/l2-low-fee';
 import { TxStageModalShape } from './tx-stage-modal-shape';
 import { ErrorMessage, formatBalance, formatBalanceString } from 'utils';
 import { ModalProps } from '@lidofinance/lido-ui';
