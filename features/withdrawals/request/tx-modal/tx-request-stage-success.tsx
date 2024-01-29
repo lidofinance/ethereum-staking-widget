@@ -26,13 +26,13 @@ const LINK_ADD_NFT_GUIDE =
 type TxRequestStageSuccessProps = {
   txHash: string | null;
   tokenName: string;
-  amountAsString: string;
+  amount: React.ReactNode;
 };
 
 export const TxRequestStageSuccess = ({
   txHash,
   tokenName,
-  amountAsString,
+  amount,
 }: TxRequestStageSuccessProps) => {
   const { providerWeb3 } = useSDK();
   const { data: nftData, initialLoading: nftLoading } =
@@ -43,7 +43,7 @@ export const TxRequestStageSuccess = ({
 
   const successDescription = (
     <span>
-      Withdrawal request for {amountAsString} {tokenName} has been sent.
+      Withdrawal request for {amount} {tokenName} has been sent.
       <br />
       Check <LocalLink href={WITHDRAWALS_CLAIM_PATH}>Claim tab</LocalLink> to
       view your withdrawal requests or view your transaction on{' '}
