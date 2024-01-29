@@ -5,7 +5,7 @@ import { use1inchLinkProps } from 'features/stake/hooks';
 import { TxLinkEtherscan } from 'shared/components/tx-link-etherscan';
 import { L2LowFee } from 'shared/banners/l2-low-fee';
 import { TxStageModalShape } from './tx-stage-modal-shape';
-import { ErrorMessage, formatBalance, formatBalanceString } from 'utils';
+import { ErrorMessage, formatBalance } from 'utils';
 import { ModalProps } from '@lidofinance/lido-ui';
 import {
   StylableLink,
@@ -21,6 +21,7 @@ import {
   withOptionaLineBreak,
   getOperationProcessingDisplayText,
   getSuccessText,
+  withOptionaTooltip,
 } from './text-utils';
 import { TX_STAGE, TX_OPERATION } from './types';
 import { TX_STAGE_MODAL_ICONS } from '../tx-stage-modal-content/icons';
@@ -28,9 +29,9 @@ import { TX_STAGE_MODAL_ICONS } from '../tx-stage-modal-content/icons';
 interface TxStageModalProps extends ModalProps {
   txStage: TX_STAGE;
   txOperation: TX_OPERATION;
-  amount: string;
+  amount: BigNumber | null;
   amountToken: string;
-  willReceiveAmount?: string;
+  willReceiveAmount?: BigNumber | null;
   willReceiveAmountToken?: string;
   txHash?: string | null;
   balance?: BigNumber;
@@ -47,7 +48,7 @@ export const TxStageModal = memo((props: TxStageModalProps) => {
     txHash,
     amount,
     amountToken,
-    willReceiveAmount,
+    willReceiveAmount = '',
     willReceiveAmountToken,
     balance,
     balanceToken,
@@ -75,9 +76,30 @@ export const TxStageModal = memo((props: TxStageModalProps) => {
     onClose: isCloseButtonHidden ? undefined : onClose,
   };
 
+  const amountDisplay = amount
+    ? formatBalance(amount, 4, { adaptive: true, elipsis: true })
+    : '';
+  const amountFull = amount ? formatBalance(amount, 18) : '';
+  const amountEl = withOptionaTooltip(
+    amountDisplay,
+    amountFull,
+    <span data-testid="sendAmount">{amountDisplay}</span>,
+  );
+
+  const willReceiveDisplay = willReceiveAmount
+    ? formatBalance(willReceiveAmount, 4, { adaptive: true, elipsis: true })
+    : '';
+  const willReceiveFull = willReceiveAmount
+    ? formatBalance(willReceiveAmount, 18)
+    : '';
+  const willReceiveAmountEl = withOptionaTooltip(
+    willReceiveDisplay,
+    willReceiveFull,
+    <span data-testid="receiveAmount">{willReceiveDisplay}</span>,
+  );
+
   const operationText = getOperationProcessingDisplayText(txOperation);
-  const amountString = formatBalanceString(amount, 4);
-  const amountWithBreak = withOptionaLineBreak(amountString);
+  const amountWithBreak = withOptionaLineBreak(amountDisplay, amountEl);
 
   const [isRetryLoading, setRetryLoading] = useState(false);
   const retryResetTimerRef = useRef<NodeJS.Timeout | 0>(0);
@@ -110,11 +132,10 @@ export const TxStageModal = memo((props: TxStageModalProps) => {
         }
         description={
           <>
-            {operationText} {amountString} {amountToken}.{' '}
+            {operationText} {amountEl} {amountToken}.{' '}
             {txOperation !== TX_OPERATION.APPROVING && (
               <>
-                You will receive {formatBalanceString(willReceiveAmount, 4)}{' '}
-                {willReceiveAmountToken}
+                You will receive {willReceiveAmountEl} {willReceiveAmountToken}
               </>
             )}
           </>
