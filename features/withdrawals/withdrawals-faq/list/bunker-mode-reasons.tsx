@@ -1,8 +1,8 @@
-import { Accordion } from '@lidofinance/lido-ui';
+import { AccordionNavigatable } from 'shared/components/accordion-navigatable';
 
 export const BunkerModeReasons: React.FC = () => {
   return (
-    <Accordion
+    <AccordionNavigatable
       summary="What scenarios can cause Bunker mode?"
       id="bunkerModeScenarios"
     >
@@ -22,6 +22,6 @@ export const BunkerModeReasons: React.FC = () => {
           the end of&nbsp;it.
         </li>
       </ol>
-    </Accordion>
+    </AccordionNavigatable>
   );
 };

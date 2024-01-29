@@ -1,8 +1,8 @@
-import { Accordion } from '@lidofinance/lido-ui';
+import { AccordionNavigatable } from 'shared/components/accordion-navigatable';
 
 export const WithdrawalPeriodCircumstances: React.FC = () => {
   return (
-    <Accordion
+    <AccordionNavigatable
       summary="What are the factors affecting the withdrawal time?"
       id="withdrawalsPeriod"
     >
@@ -12,6 +12,6 @@ export const WithdrawalPeriodCircumstances: React.FC = () => {
         <li>Exit queue on the Beacon chain.</li>
         <li>Demand for staking and unstaking.</li>
       </ul>
-    </Accordion>
+    </AccordionNavigatable>
   );
 };
