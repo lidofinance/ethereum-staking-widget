@@ -28,6 +28,7 @@ export const UnwrapStats = () => {
           amount={willReceiveStETH}
           symbol="stETH"
           showAmountTip
+          trimEllipsis
         />
       </DataTableRow>
     </DataTable>
