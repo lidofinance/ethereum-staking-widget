@@ -1,6 +1,8 @@
 # build env
 FROM node:16-alpine as build
 
+ARG FAQ_CONTENT_BASE_PATH
+
 WORKDIR /app
 
 RUN apk add --no-cache git=~2
