@@ -51,7 +51,9 @@ export class ValidationSplitRequest extends ValidationError {
 }
 
 const messageMinUnstake = (min: BigNumber, token: TokensWithdrawable) =>
-  `Minimum unstake amount is ${formatEther(min)} ${getTokenDisplayName(token)}`;
+  `Minimum withdraw amount is ${formatEther(min)} ${getTokenDisplayName(
+    token,
+  )}`;
 
 const messageMaxAmount = (max: BigNumber, token: TokensWithdrawable) =>
   `${getTokenDisplayName(token)} amount must not be greater than ${formatEther(

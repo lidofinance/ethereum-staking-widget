@@ -139,6 +139,8 @@ export const InputAmount = forwardRef<HTMLInputElement, InputAmountProps>(
         // this allows user to enter 0.100 without immediate change to 0.1
         if (!parsedValue || !parsedValue.eq(value)) {
           input.value = formatEther(value);
+          // prevents rollback to incorrect value in onChange
+          lastInputValue.current = input.value;
         }
       }
     }, [value]);
