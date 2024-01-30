@@ -74,7 +74,7 @@ const LidoButton: React.FC<OptionButtonProps> = ({ isActive, onClick }) => {
 };
 
 const toFloor = (num: number): string =>
-  (Math.floor(num * 10000) / 1000).toString();
+  (Math.floor(num * 10000) / 10000).toString();
 
 const DexButton: React.FC<OptionButtonProps> = ({ isActive, onClick }) => {
   const { loading, bestRate } = useWithdrawalRates({
