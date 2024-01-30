@@ -7,8 +7,8 @@ import { getStageIcon } from './icons';
 import { TX_STAGE } from 'shared/transaction-modal';
 
 type TxStagePendingProps = {
-  description: string;
-  title: string;
+  description: React.ReactNode;
+  title: React.ReactNode;
   txHash: string | null;
 };
 

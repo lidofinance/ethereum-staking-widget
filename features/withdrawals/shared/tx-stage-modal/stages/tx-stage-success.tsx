@@ -9,7 +9,7 @@ import { TX_STAGE } from 'shared/transaction-modal';
 type TxStageSuccessProps = {
   txHash: string | null;
   description: React.ReactNode;
-  title: string;
+  title: React.ReactNode;
   showEtherscan?: boolean;
   onClickEtherscan?: React.MouseEventHandler<HTMLAnchorElement>;
 };
