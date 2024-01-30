@@ -160,17 +160,17 @@ const LIDO_STATS_SCHEMA = {
 };
 
 export const GET_REQUESTS: GetRequest[] = [
-  {
-    uri: '/api/oneinch-rate',
-    schema: {
-      type: 'object',
-      properties: {
-        rate: { type: 'number', min: 0 },
-      },
-      required: ['rate'],
-      additionalProperties: false,
-    },
-  },
+  // {
+  //   uri: '/api/oneinch-rate',
+  //   schema: {
+  //     type: 'object',
+  //     properties: {
+  //       rate: { type: 'number', min: 0 },
+  //     },
+  //     required: ['rate'],
+  //     additionalProperties: false,
+  //   },
+  // },
   {
     uri: `/api/short-lido-stats?chainId=${CONFIG.STAND_CONFIG.chainId}`,
     schema: {

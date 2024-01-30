@@ -54,6 +54,9 @@ const validateAndGetQueryToken = async (
 // * (optional) token: see TOKEN_ALLOWED_LIST above. Default see TOKEN_ETH above.
 // Returns 1inch rate
 const oneInchRate: API = async (req, res) => {
+  res.status(403);
+  return;
+
   const token = await validateAndGetQueryToken(req, res);
   const cacheKey = `${CACHE_ONE_INCH_RATE_KEY}-${token}`;
   const cachedOneInchRate = cache.get(cacheKey);
