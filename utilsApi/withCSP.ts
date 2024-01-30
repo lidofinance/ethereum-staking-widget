@@ -17,8 +17,8 @@ const reportOnly = cspReportOnly == 'true';
 export const contentSecurityPolicy: ContentSecurityPolicyOption = {
   directives: {
     'default-src': ["'self'"],
-    styleSrc: ["'self'", 'https://fonts.googleapis.com', "'unsafe-inline'"],
-    fontSrc: ["'self'", 'https://fonts.gstatic.com'],
+    styleSrc: ["'self'", "'unsafe-inline'"],
+    fontSrc: ["'self'", 'data:'],
     imgSrc: [
       "'self'",
       'data:',
