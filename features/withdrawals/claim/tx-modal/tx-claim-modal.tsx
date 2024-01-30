@@ -14,6 +14,7 @@ import {
   trackMatomoEvent,
   MATOMO_CLICK_EVENTS_TYPES,
 } from 'config/trackMatomoEvent';
+import { withOptionaTooltip } from 'shared/components/tx-stage-modal/text-utils';
 
 export const TxClaimModal = () => {
   const {
@@ -26,21 +27,26 @@ export const TxClaimModal = () => {
     dispatchModalState,
   } = useTransactionModal();
 
-  const amountAsString = useMemo(
-    () => (amount ? formatBalance(amount, 4) : ''),
-    [amount],
-  );
-
-  const successDescription = 'Claiming operation was successful';
-  const successTitle = `${amountAsString} ETH has been claimed`;
-
-  const pendingDescription = 'Awaiting block confirmation';
-  const pendingTitle = `You are now claiming ${amountAsString} ETH`;
-
-  const signDescription = 'Processing your request';
-  const signTitle = `You are now claiming ${amountAsString} ETH`;
-
   const content = useMemo(() => {
+    const amountDisplay = amount
+      ? formatBalance(amount, 4, { adaptive: true, elipsis: true })
+      : '';
+    const amountFull = amount ? formatBalance(amount, 18) : '';
+    const amountEl = withOptionaTooltip(
+      amountDisplay,
+      amountFull,
+      <span data-testid="sendAmount">{amountDisplay}</span>,
+    );
+
+    const successDescription = 'Claiming operation was successful';
+    const successTitle = <>{amountEl} ETH has been claimed</>;
+
+    const pendingDescription = 'Awaiting block confirmation';
+    const pendingTitle = <>You are now claiming {amountEl} ETH</>;
+
+    const signDescription = 'Processing your request';
+    const signTitle = <>You are now claiming {amountEl} ETH</>;
+
     switch (txStage) {
       case TX_STAGE.SIGN:
         return <TxStageSign description={signDescription} title={signTitle} />;
@@ -74,15 +80,7 @@ export const TxClaimModal = () => {
       default:
         return null;
     }
-  }, [
-    errorText,
-    pendingTitle,
-    signTitle,
-    onRetry,
-    successTitle,
-    txHash,
-    txStage,
-  ]);
+  }, [amount, txStage, txHash, errorText, onRetry]);
 
   return (
     <TxStageModal

@@ -18,6 +18,7 @@ import {
 
 import { getTokenDisplayName } from 'utils/getTokenDisplayName';
 import { TxRequestStageSuccess } from './tx-request-stage-success';
+import { withOptionaTooltip } from 'shared/components/tx-stage-modal/text-utils';
 
 export const TxRequestModal = () => {
   const modalState = useTransactionModal();
@@ -35,7 +36,16 @@ export const TxRequestModal = () => {
     } = modalState;
 
     const tokenName = token ? getTokenDisplayName(token) : '';
-    const amountAsString = requestAmount ? formatBalance(requestAmount, 4) : '';
+
+    const amountDisplay = requestAmount
+      ? formatBalance(requestAmount, 4, { adaptive: true, elipsis: true })
+      : '';
+    const amountFull = requestAmount ? formatBalance(requestAmount, 18) : '';
+    const amountEl = withOptionaTooltip(
+      amountDisplay,
+      amountFull,
+      <span data-testid="sendAmount">{amountDisplay}</span>,
+    );
 
     // if more dialogs are added convert to switch on dialog type
     if (dialog)
@@ -53,11 +63,27 @@ export const TxRequestModal = () => {
         />
       );
 
-    const approvingTitle = `You are now approving ${amountAsString} ${tokenName}`;
-    const approvingSingDescription = `Approving for ${amountAsString} ${tokenName}`;
+    const approvingTitle = (
+      <>
+        You are now approving {amountEl} {tokenName}
+      </>
+    );
+    const approvingSingDescription = (
+      <>
+        Approving for {amountEl} {tokenName}
+      </>
+    );
 
-    const withdrawalTitle = `You are requesting withdrawal for ${amountAsString} ${tokenName}`;
-    const withdrawalSingDescription = `Requesting withdrawal for ${amountAsString} ${tokenName}`;
+    const withdrawalTitle = (
+      <>
+        You are requesting withdrawal for {amountEl} {tokenName}
+      </>
+    );
+    const withdrawalSingDescription = (
+      <>
+        Requesting withdrawal for {amountEl} {tokenName}
+      </>
+    );
 
     const renderSign = () => {
       switch (txOperation) {
@@ -116,7 +142,7 @@ export const TxRequestModal = () => {
           <TxRequestStageSuccess
             txHash={txHash}
             tokenName={tokenName}
-            amountAsString={amountAsString}
+            amount={amountEl}
           />
         );
       case TX_STAGE.SUCCESS_MULTISIG:

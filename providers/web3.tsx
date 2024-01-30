@@ -41,9 +41,9 @@ const Web3Provider: FC<PropsWithChildren> = ({ children }) => {
     // TODO: remove after updating wagmi to v1+
     supportedChains.push(wagmiChains.polygonMumbai);
 
-    const defaultChain = wagmiChainsArray.find(
-      (chain) => chain.id === dynamics.defaultChain,
-    );
+    const defaultChain =
+      wagmiChainsArray.find((chain) => chain.id === dynamics.defaultChain) ||
+      supportedChains[0]; // first supported chain as fallback
 
     const jsonRpcBatchProvider = (chain: Chain) => ({
       provider: () =>
@@ -85,8 +85,6 @@ const Web3Provider: FC<PropsWithChildren> = ({ children }) => {
 
   return (
     <WagmiConfig client={client}>
-      {/* TODO */}
-      {/* @ts-expect-error need to patch web3-react */}
       <ProviderWeb3
         pollingInterval={1200}
         defaultChainId={defaultChain}
