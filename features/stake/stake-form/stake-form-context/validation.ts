@@ -86,6 +86,11 @@ export const stakeFormValidationResolver: Resolver<
           )} to ensure you leave enough ETH for gas fees`,
         );
       }
+    } else {
+      return {
+        values,
+        errors: { referral: 'wallet not connected' },
+      };
     }
 
     return {

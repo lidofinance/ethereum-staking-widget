@@ -5,7 +5,9 @@ import {
   MouseEvent,
   useCallback,
   useEffect,
-  useState,
+  useImperativeHandle,
+  useMemo,
+  useRef,
 } from 'react';
 import { BigNumber } from 'ethers';
 
@@ -49,62 +51,99 @@ export const InputAmount = forwardRef<HTMLInputElement, InputAmountProps>(
     },
     ref,
   ) => {
-    const [stringValue, setStringValue] = useState(() =>
-      value ? formatEther(value) : '',
-    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    const defaultValue = useMemo(() => (value ? formatEther(value) : ''), []);
+
+    const lastInputValue = useRef(defaultValue);
+    const inputRef = useRef<HTMLInputElement>(null);
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    useImperativeHandle(ref, () => inputRef.current!, []);
 
     const handleChange = useCallback(
       (e: ChangeEvent<HTMLInputElement>) => {
-        e.currentTarget.value = e.currentTarget.value.trim();
+        // will accumulate changes without committing to dom
+        let currentValue = e.currentTarget.value;
+        const immutableValue = e.currentTarget.value;
+        const caretPosition = e.currentTarget.selectionStart ?? 0;
+
+        currentValue = currentValue.trim();
 
         // Support for devices where inputMode="decimal" showing keyboard with comma as decimal delimiter
-        if (e.currentTarget.value.includes(',')) {
-          e.currentTarget.value = e.currentTarget.value.replaceAll(',', '.');
+        if (currentValue.includes(',')) {
+          currentValue = currentValue.replaceAll(',', '.');
         }
 
         // delete negative sign
-        if (e.currentTarget.value.includes('-')) {
-          e.currentTarget.value = e.currentTarget.value.replaceAll('-', '');
+        if (currentValue.includes('-')) {
+          currentValue = currentValue.replaceAll('-', '');
         }
 
         // Prepend zero when user types just a dot symbol for "0."
-        if (e.currentTarget.value === '.') {
-          e.currentTarget.value = '0.';
+        if (currentValue === '.') {
+          currentValue = '0.';
         }
 
-        // guards against non numbers (no matter overflow or whitespace)
-        // empty whitespace is cast to 0, so not NaN
-        if (isNaN(Number(e.currentTarget.value))) {
-          return;
-        }
-
-        if (e.currentTarget.value === '') {
+        if (currentValue === '') {
           onChange?.(null);
-        }
+        } else {
+          const value = parseEtherSafe(currentValue);
+          // invalid value, so we rollback to last valid value
+          if (!value) {
+            const rollbackCaretPosition =
+              caretPosition -
+              Math.min(
+                e.currentTarget.value.length - lastInputValue.current.length,
+              );
+            // rollback value (caret moves to end)
+            e.currentTarget.value = lastInputValue.current;
+            // rollback caret
+            e.currentTarget.setSelectionRange(
+              rollbackCaretPosition,
+              rollbackCaretPosition,
+            );
+            return;
+          }
 
-        const value = parseEtherSafe(e.currentTarget.value);
-        if (value) {
           const cappedValue = value.gt(MaxUint256) ? MaxUint256 : value;
+          if (value.gt(MaxUint256)) {
+            currentValue = formatEther(MaxUint256);
+          }
           onChange?.(cappedValue);
         }
 
-        // we set string value anyway to allow intermediate input
-        setStringValue(e.currentTarget.value);
+        // commit change to dom
+        e.currentTarget.value = currentValue;
+        // if there is a diff due to soft change, adjust caret to remain in same place
+        if (currentValue != immutableValue) {
+          const rollbackCaretPosition =
+            caretPosition -
+            Math.min(immutableValue.length - currentValue.length);
+          e.currentTarget.setSelectionRange(
+            rollbackCaretPosition,
+            rollbackCaretPosition,
+          );
+        }
+        lastInputValue.current = currentValue;
       },
       [onChange],
     );
 
     useEffect(() => {
-      if (!value) setStringValue('');
-      else {
-        const parsedValue = parseEtherSafe(stringValue);
+      const input = inputRef.current;
+      if (!input) return;
+      if (!value) {
+        input.value = '';
+      } else {
+        const parsedValue = parseEtherSafe(input.value);
         // only change string state if casted values differ
         // this allows user to enter 0.100 without immediate change to 0.1
         if (!parsedValue || !parsedValue.eq(value)) {
-          setStringValue(formatEther(value));
+          input.value = formatEther(value);
+          // prevents rollback to incorrect value in onChange
+          lastInputValue.current = input.value;
         }
       }
-    }, [stringValue, value]);
+    }, [value]);
 
     const handleClickMax =
       onChange && maxValue?.gt(0)
@@ -130,9 +169,9 @@ export const InputAmount = forwardRef<HTMLInputElement, InputAmountProps>(
           )
         }
         inputMode="decimal"
-        value={stringValue}
+        defaultValue={defaultValue}
         onChange={handleChange}
-        ref={ref}
+        ref={inputRef}
       />
     );
   },
