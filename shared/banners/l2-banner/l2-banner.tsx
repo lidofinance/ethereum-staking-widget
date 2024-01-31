@@ -11,10 +11,10 @@ import {
 } from './styles';
 
 type L2BannerProps = {
-  title: React.ReactNode;
+  title?: React.ReactNode;
   text: React.ReactNode;
   buttonText: React.ReactNode;
-  buttonHref: string;
+  buttonHref?: string;
   testidWrap: string;
   testidButton: string;
   onClickButton?: () => void;
@@ -26,7 +26,7 @@ export const L2Banner = ({
   title,
   text,
   buttonText,
-  buttonHref,
+  buttonHref = L2_DISCOVERY_LINK,
   testidWrap,
   testidButton,
   onClickButton,
@@ -34,7 +34,7 @@ export const L2Banner = ({
   return (
     <Wrapper data-testid={testidWrap}>
       <ThemeProvider theme={themeDark}>
-        <TextHeader>{title}</TextHeader>
+        {title && <TextHeader>{title}</TextHeader>}
         <TextWrap>{text}</TextWrap>
         <FooterWrap>
           <L2Icons />
