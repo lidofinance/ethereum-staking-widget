@@ -6,9 +6,10 @@ import { Resolver } from 'react-hook-form';
 
 import { TokensWithdrawable } from 'features/withdrawals/types/tokens-withdrawable';
 import {
-  RequestFormValidationContextType,
+  RequestFormValidationAsyncContextType,
   RequestFormInputType,
   ValidationResults,
+  RequestFormValidationContextType,
 } from '.';
 import { VALIDATION_CONTEXT_TIMEOUT } from 'features/withdrawals/withdrawals-constants';
 
@@ -119,7 +120,7 @@ const tvlJokeValidate = (
 
 // helper to get filter out context values
 const transformContext = (
-  context: RequestFormValidationContextType & { active: true },
+  context: RequestFormValidationAsyncContextType,
   values: RequestFormInputType,
 ) => {
   const isSteth = values.token === TOKENS.STETH;
@@ -142,29 +143,32 @@ const transformContext = (
 // returns values or errors
 export const RequestFormValidationResolver: Resolver<
   RequestFormInputType,
-  Promise<RequestFormValidationContextType>
-> = async (values, contextPromise) => {
+  RequestFormValidationContextType
+> = async (values, context) => {
   const { amount, mode, token } = values;
   const validationResults: ValidationResults = {
     requests: null,
   };
   let setResults;
   try {
+    invariant(context, 'must have context promise');
+    setResults = context.setIntermediateValidationResults;
+
     // this check does not require context and can be placed first
     // also limits context missing edge cases on page start
     validateEtherAmount('amount', amount, token);
 
+    // early return
+    if (!context.active) return { values, errors: {} };
+
     // wait for context promise with timeout and extract relevant data
     // validation function only waits limited time for data and fails validation otherwise
     // most of the time data will already be available
-    invariant(contextPromise, 'must have context promise');
-    const context = await awaitWithTimeout(
-      contextPromise,
+    const awaitedContext = await awaitWithTimeout(
+      context.asyncContext,
       VALIDATION_CONTEXT_TIMEOUT,
     );
-    // early return
-    if (!context.active) return { values, errors: {} };
-    setResults = context.setIntermediateValidationResults;
+
     const {
       isSteth,
       balance,
@@ -172,7 +176,7 @@ export const RequestFormValidationResolver: Resolver<
       minAmountPerRequest,
       maxRequestCount,
       stethTotalSupply,
-    } = transformContext(context, values);
+    } = transformContext(awaitedContext, values);
 
     if (isSteth) {
       tvlJokeValidate('amount', amount, stethTotalSupply, balance);
