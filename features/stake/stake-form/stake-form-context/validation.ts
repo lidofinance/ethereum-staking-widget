@@ -61,7 +61,7 @@ export const stakeFormValidationResolver: Resolver<
         amount,
         currentStakeLimit,
         `Entered ETH amount exceeds current staking limit of ${formatEther(
-          etherBalance,
+          currentStakeLimit,
         )}`,
       );
 
