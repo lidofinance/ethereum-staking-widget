@@ -8,6 +8,6 @@ export const validateStakeLimit = (
   if (stakeLimitLevel === LIMIT_LEVEL.REACHED)
     throw new ValidationError(
       field,
-      'Stake limit is exhausted. Please wait until the limit is restored.',
+      "Staking limit reached. Please wait until it's restored",
     );
 };
