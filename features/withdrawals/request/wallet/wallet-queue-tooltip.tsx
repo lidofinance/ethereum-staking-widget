@@ -1,5 +1,4 @@
 import { Question, Tooltip } from '@lidofinance/lido-ui';
-import Link from 'next/link';
 
 import { FormatToken } from 'shared/formatters';
 import { useWaitingTime } from 'features/withdrawals/hooks';
@@ -10,10 +9,12 @@ import {
 } from 'config/trackMatomoEvent';
 import { QueueInfoStyled, DataTableRowStyled } from './styles';
 import { useRequestFormData } from '../request-form-context';
+import { useInpageNavigation } from 'providers/inpage-navigation';
 
 export const WalletQueueTooltip = () => {
   const waitingTime = useWaitingTime('');
   const { unfinalizedStETH } = useRequestFormData();
+  const { navigateInpageAnchor } = useInpageNavigation();
 
   const queueInfo = (
     <QueueInfoStyled>
@@ -38,19 +39,18 @@ export const WalletQueueTooltip = () => {
     <>
       The withdrawal request time depends on the mode, overall amount of stETH
       in queue and{' '}
-      <Link href="#withdrawalsPeriod">
-        <a
-          aria-hidden="true"
-          data-testid="otherFactorsLink"
-          onClick={() =>
-            trackMatomoEvent(
-              MATOMO_CLICK_EVENTS_TYPES.withdrawalOtherFactorsTooltipMode,
-            )
-          }
-        >
-          other factors
-        </a>
-      </Link>
+      <a
+        href="#withdrawalsPeriod"
+        data-testid="otherFactorsLink"
+        onClick={(e) => {
+          trackMatomoEvent(
+            MATOMO_CLICK_EVENTS_TYPES.withdrawalOtherFactorsTooltipMode,
+          );
+          navigateInpageAnchor(e);
+        }}
+      >
+        other factors
+      </a>
       .{queueInfo}
     </>
   );

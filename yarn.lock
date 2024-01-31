@@ -2224,10 +2224,24 @@
   resolved "https://registry.yarnpkg.com/@lidofinance/eth-providers/-/eth-providers-0.28.0.tgz#069dfcd66f97418298646abd2742e8e997c6fbbb"
   integrity sha512-oH2nU7jVPkn1mii56vp3gBFZNFR/LysxiKBUwV2freFoizQHNLeWWjU1b8a+l1I020LzbxHcatOkV6z9ur5YfA==
 
-"@lidofinance/lido-ui@^3.18.0", "@lidofinance/lido-ui@^3.18.2":
+"@lidofinance/lido-ui@^3.18.0":
   version "3.18.2"
   resolved "https://registry.yarnpkg.com/@lidofinance/lido-ui/-/lido-ui-3.18.2.tgz#7eaa79270b9f23129d776ebe2a083f4329fe9ec6"
   integrity sha512-/MXmkHmliyQ5S7/TQW87XMYLd7May8R+rZ7JHbiZzaLEzUwixlLyFvWpmtX2CKJ4JL13KKWke/06gbNG/8wC5A==
+  dependencies:
+    "@styled-system/should-forward-prop" "5.1.5"
+    react-collapsed "3.0.2"
+    react-jazzicon "^1.0.4"
+    react-toastify "7.0.4"
+    react-transition-group "4"
+    styled-system "5.1.5"
+    ua-parser-js "^1.0.35"
+    use-callback-ref "1.2.5"
+
+"@lidofinance/lido-ui@^3.20.1":
+  version "3.20.1"
+  resolved "https://registry.yarnpkg.com/@lidofinance/lido-ui/-/lido-ui-3.20.1.tgz#43034832a0eb1c1efd7e7f526300908516c3df11"
+  integrity sha512-ZSv3JBWbX28/IZTXuu9Na1sTtNymXE6izEVAmSBK/LShQny1YbkXJAfkkFYcHAhm+bY04kHWGfXrjNNXPgI9hA==
   dependencies:
     "@styled-system/should-forward-prop" "5.1.5"
     react-collapsed "3.0.2"
@@ -6233,12 +6247,7 @@ fn.name@1.x.x:
   resolved "https://registry.yarnpkg.com/fn.name/-/fn.name-1.1.0.tgz#26cad8017967aea8731bc42961d04a3d5988accc"
   integrity sha512-GRnmB5gPyJpAhTQdSZTSp9uaPSvl09KoYcMQtsB9rQoOmzs9dH6ffeccH+Z+cv6P68Hu5bC6JjRh4Ah/mHSNRw==
 
-follow-redirects@^1.14.8, follow-redirects@^1.15.0:
-  version "1.15.3"
-  resolved "https://registry.yarnpkg.com/follow-redirects/-/follow-redirects-1.15.3.tgz#fe2f3ef2690afce7e82ed0b44db08165b207123a"
-  integrity sha512-1VzOtuEM8pC9SFU1E+8KfTjZyMztRsgEfwQl44z8A25uy13jSzTj6dyK2Df52iV0vgHCfBwLhDWevLn95w5v6Q==
-
-follow-redirects@^1.15.4:
+follow-redirects@^1.14.8, follow-redirects@^1.15.0, follow-redirects@^1.15.4:
   version "1.15.5"
   resolved "https://registry.yarnpkg.com/follow-redirects/-/follow-redirects-1.15.5.tgz#54d4d6d062c0fa7d9d17feb008461550e3ba8020"
   integrity sha512-vSFWUON1B+yAw1VN4xMfxgn5fTUiaOzAJCKBwIIgT/+7CuGy9+r+5gITvP62j3RmaD5Ph65UaERdOSRGUzZtgw==
