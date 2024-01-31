@@ -119,7 +119,7 @@ const tvlJokeValidate = (
 
 // helper to get filter out context values
 const transformContext = (
-  context: RequestFormValidationContextType,
+  context: RequestFormValidationContextType & { active: true },
   values: RequestFormInputType,
 ) => {
   const isSteth = values.token === TOKENS.STETH;
@@ -162,6 +162,8 @@ export const RequestFormValidationResolver: Resolver<
       contextPromise,
       VALIDATION_CONTEXT_TIMEOUT,
     );
+    // early return
+    if (!context.active) return { values, errors: {} };
     setResults = context.setIntermediateValidationResults;
     const {
       isSteth,
@@ -178,7 +180,7 @@ export const RequestFormValidationResolver: Resolver<
 
     // early validation exit for dex option
     if (mode === 'dex') {
-      return { values, errors: {} };
+      return { values, errors: { requests: 'wallet not connected' } };
     }
 
     validateBignumberMin(
@@ -212,7 +214,7 @@ export const RequestFormValidationResolver: Resolver<
     return handleResolverValidationError(
       error,
       'WithdrawalRequestForm',
-      'amount',
+      'requests',
     );
   } finally {
     // no matter validation result save results for the UI to show

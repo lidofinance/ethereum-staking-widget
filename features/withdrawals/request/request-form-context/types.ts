@@ -13,17 +13,35 @@ export type RequestFormInputType = {
   mode: 'lido' | 'dex';
 } & ValidationResults;
 
-export type RequestFormValidationContextType = {
-  setIntermediateValidationResults: Dispatch<SetStateAction<ValidationResults>>;
-  minUnstakeSteth: BigNumber;
-  minUnstakeWSteth: BigNumber;
-  balanceSteth: BigNumber;
-  balanceWSteth: BigNumber;
-  maxAmountPerRequestSteth: BigNumber;
-  maxAmountPerRequestWSteth: BigNumber;
-  stethTotalSupply: BigNumber;
-  maxRequestCount: number;
-};
+export type RequestFormValidationContextType =
+  | {
+      setIntermediateValidationResults: Dispatch<
+        SetStateAction<ValidationResults>
+      >;
+      minUnstakeSteth: BigNumber;
+      minUnstakeWSteth: BigNumber;
+      balanceSteth: BigNumber;
+      balanceWSteth: BigNumber;
+      maxAmountPerRequestSteth: BigNumber;
+      maxAmountPerRequestWSteth: BigNumber;
+      stethTotalSupply: BigNumber;
+      maxRequestCount: number;
+      active: true;
+    }
+  | {
+      active: false;
+      setIntermediateValidationResults: Dispatch<
+        SetStateAction<ValidationResults>
+      >;
+      minUnstakeSteth?: undefined;
+      minUnstakeWSteth?: undefined;
+      balanceSteth?: undefined;
+      balanceWSteth?: undefined;
+      maxAmountPerRequestSteth?: undefined;
+      maxAmountPerRequestWSteth?: undefined;
+      stethTotalSupply?: undefined;
+      maxRequestCount?: undefined;
+    };
 export type RequestFormDataType = ReturnType<
   typeof useRequestFormDataContextValue
 >;
