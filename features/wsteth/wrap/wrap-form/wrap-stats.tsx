@@ -25,7 +25,7 @@ export const WrapFormStats = () => {
   const approveGasLimit = useApproveGasLimit();
   const approveTxCostInUsd = useTxCostInUsd(Number(approveGasLimit));
 
-  const wrapTxCostInUsd = useTxCostInUsd(wrapGasLimit && Number(wrapGasLimit));
+  const wrapTxCostInUsd = useTxCostInUsd(wrapGasLimit);
 
   return (
     <DataTable data-testid="wrapStats">

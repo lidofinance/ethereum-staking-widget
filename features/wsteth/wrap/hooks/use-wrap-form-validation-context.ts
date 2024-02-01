@@ -4,6 +4,7 @@ import { useAwaiter } from 'shared/hooks/use-awaiter';
 
 import type {
   WrapFormNetworkData,
+  WrapFormAsyncValidationContext,
   WrapFormValidationContext,
 } from '../wrap-form-context';
 
@@ -13,22 +14,39 @@ type UseWrapFormValidationContextArgs = {
 
 export const useWrapFormValidationContext = ({
   networkData,
-}: UseWrapFormValidationContextArgs) => {
+}: UseWrapFormValidationContextArgs): WrapFormValidationContext => {
   const { active } = useWeb3();
-  const { maxAmountETH, maxAmountStETH, stakeLimitInfo } = networkData;
+  const {
+    stakeLimitInfo,
+    ethBalance,
+    stethBalance,
+    isMultisig,
+    wrapEthGasCost,
+  } = networkData;
 
-  const validationContextAwaited: WrapFormValidationContext | undefined =
+  const asyncContextValue: WrapFormAsyncValidationContext | undefined =
     useMemo(() => {
-      if ((active && !(maxAmountETH && maxAmountStETH)) || !stakeLimitInfo) {
-        return undefined;
-      }
-      return {
-        active,
-        maxAmountETH,
-        maxAmountStETH,
-        stakeLimitLevel: stakeLimitInfo.stakeLimitLevel,
-      };
-    }, [active, maxAmountETH, maxAmountStETH, stakeLimitInfo]);
+      if (
+        stethBalance &&
+        ethBalance &&
+        isMultisig !== undefined &&
+        wrapEthGasCost &&
+        stakeLimitInfo
+      )
+        return {
+          stethBalance,
+          etherBalance: ethBalance,
+          isMultisig,
+          gasCost: wrapEthGasCost,
+          stakingLimitLevel: stakeLimitInfo.stakeLimitLevel,
+          currentStakeLimit: stakeLimitInfo.currentStakeLimit,
+        };
+      else return undefined;
+    }, [ethBalance, isMultisig, stakeLimitInfo, stethBalance, wrapEthGasCost]);
 
-  return useAwaiter(validationContextAwaited).awaiter;
+  const asyncContext = useAwaiter(asyncContextValue).awaiter;
+  return {
+    active,
+    asyncContext,
+  };
 };
