@@ -42,6 +42,7 @@ export const formatBalanceWithTrimmed = (
   balance = Zero,
   maxDecimalDigits = 4,
   maxTotalLength = 30,
+  trimEllipsis?: boolean,
 ) => {
   const balanceString = formatEther(balance);
   let trimmed = balanceString;
@@ -64,6 +65,10 @@ export const formatBalanceWithTrimmed = (
     }
   }
 
+  if (isTrimmed && trimEllipsis && !trimmed.includes('...')) {
+    trimmed += '...';
+  }
+
   return {
     actual: balanceString,
     trimmed,
@@ -75,9 +80,16 @@ export const useFormattedBalance = (
   balance = Zero,
   maxDecimalDigits = 4,
   maxTotalLength = 30,
+  trimEllipsis?: boolean,
 ) => {
   return useMemo(
-    () => formatBalanceWithTrimmed(balance, maxDecimalDigits, maxTotalLength),
-    [balance, maxDecimalDigits, maxTotalLength],
+    () =>
+      formatBalanceWithTrimmed(
+        balance,
+        maxDecimalDigits,
+        maxTotalLength,
+        trimEllipsis,
+      ),
+    [balance, maxDecimalDigits, maxTotalLength, trimEllipsis],
   );
 };
