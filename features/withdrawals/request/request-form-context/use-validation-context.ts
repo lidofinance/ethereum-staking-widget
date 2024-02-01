@@ -5,13 +5,19 @@ import {
 import { useMemo } from 'react';
 import { useIsLedgerLive } from 'shared/hooks/useIsLedgerLive';
 import { useAwaiter } from 'shared/hooks/use-awaiter';
-import { RequestFormDataType, RequestFormValidationContextType } from './types';
+import type {
+  RequestFormDataType,
+  RequestFormValidationAsyncContextType,
+  RequestFormValidationContextType,
+} from './types';
+import { useWeb3 } from 'reef-knot/web3-react';
 
 // Prepares validation context object from request form data
 export const useValidationContext = (
   requestData: RequestFormDataType,
   setIntermediateValidationResults: RequestFormValidationContextType['setIntermediateValidationResults'],
-) => {
+): RequestFormValidationContextType => {
+  const { active } = useWeb3();
   const isLedgerLive = useIsLedgerLive();
   const maxRequestCount = isLedgerLive
     ? MAX_REQUESTS_COUNT_LEDGER_LIMIT
@@ -44,7 +50,6 @@ export const useValidationContext = (
             minUnstakeWSteth,
             maxRequestCount,
             stethTotalSupply,
-            setIntermediateValidationResults,
           }
         : undefined;
     return validationContextObject;
@@ -56,9 +61,11 @@ export const useValidationContext = (
     maxRequestCount,
     minUnstakeSteth,
     minUnstakeWSteth,
-    setIntermediateValidationResults,
     stethTotalSupply,
   ]);
 
-  return useAwaiter(context);
+  const asyncContext =
+    useAwaiter<RequestFormValidationAsyncContextType>(context).awaiter;
+
+  return { active, asyncContext, setIntermediateValidationResults };
 };

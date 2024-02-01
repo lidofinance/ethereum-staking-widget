@@ -13,16 +13,12 @@ export function validateEtherAmount(
   amount: BigNumber | null,
   token: keyof typeof TOKEN_DISPLAY_NAMES,
 ): asserts amount is BigNumber {
-  if (!amount)
-    throw new ValidationError(
-      field,
-      `${getTokenDisplayName(token)} ${field} is required`,
-    );
+  if (!amount) throw new ValidationError(field, '');
 
   if (amount.lte(Zero))
     throw new ValidationError(
       field,
-      `${getTokenDisplayName(token)} ${field} must be greater than 0`,
+      `Enter ${getTokenDisplayName(token)} ${field} greater than 0`,
     );
 
   if (amount.gt(MaxUint256))
