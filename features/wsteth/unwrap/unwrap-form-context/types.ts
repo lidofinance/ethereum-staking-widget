@@ -5,6 +5,7 @@ import type { FormControllerContextValueType } from 'shared/hook-form/form-contr
 
 export type UnwrapFormInputType = {
   amount: null | BigNumber;
+  dummyErrorField: null;
 };
 
 export type UnwrapFormNetworkData = ReturnType<typeof useUnwrapFormNetworkData>;

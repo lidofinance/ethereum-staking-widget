@@ -15,9 +15,9 @@ import { TokensWrappable, TOKENS_TO_WRAP } from 'features/wsteth/shared/types';
 import { validateStakeEth } from 'shared/hook-form/validation/validate-stake-eth';
 
 const messageMaxAmount = (max: BigNumber, token: TokensWrappable) =>
-  `${getTokenDisplayName(token)} amount must not be greater than ${formatEther(
-    max,
-  )}`;
+  `Entered ${getTokenDisplayName(
+    token,
+  )} amount exceeds your available balance of ${formatEther(max)}`;
 
 export const WrapFormValidationResolver: Resolver<
   WrapFormInputType,
