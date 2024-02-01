@@ -12,6 +12,7 @@ type UseTokenMaxAmountArgs = {
   isLoading?: boolean;
 };
 
+// returns max amount that can be used for Max Button
 export const useTokenMaxAmount = ({
   limit,
   balance,
@@ -23,9 +24,9 @@ export const useTokenMaxAmount = ({
   const maxGasPrice = useMaxGasPrice();
 
   const maxAmount = useMemo(() => {
-    let maxAmount: BigNumber | undefined = undefined;
-    if (!balance || isLoading) return maxAmount;
-    maxAmount = balance;
+    if (!balance || isLoading) return undefined;
+
+    let maxAmount: BigNumber | undefined = balance;
 
     if (limit && balance.gt(limit)) {
       maxAmount = limit;
