@@ -8,7 +8,7 @@ import { getFeeData } from 'utils/getFeeData';
 
 import type { UnwrapFormInputType } from '../unwrap-form-context';
 
-type UnwrapTxProcessorArgs = UnwrapFormInputType & {
+type UnwrapTxProcessorArgs = Omit<UnwrapFormInputType, 'dummyErrorField'> & {
   isMultisig: boolean;
 };
 
