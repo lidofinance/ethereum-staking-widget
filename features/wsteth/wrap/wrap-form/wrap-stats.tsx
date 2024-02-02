@@ -1,4 +1,3 @@
-import { useMemo } from 'react';
 import { parseEther } from '@ethersproject/units';
 import { DataTable, DataTableRow } from '@lidofinance/lido-ui';
 import { useFormContext } from 'react-hook-form';
@@ -10,20 +9,26 @@ import { TOKENS_TO_WRAP } from 'features/wsteth/shared/types';
 
 import { useApproveGasLimit } from '../hooks/use-approve-gas-limit';
 import { useWrapFormData, WrapFormInputType } from '../wrap-form-context';
+import { useWeb3 } from 'reef-knot/web3-react';
+import { AllowanceDataTableRow } from 'shared/components/allowance-data-table-row';
+import { TOKENS } from '@lido-sdk/constants';
+
+const oneSteth = parseEther('1');
 
 export const WrapFormStats = () => {
+  const { active } = useWeb3();
   const { allowance, wrapGasLimit, willReceiveWsteth, isApprovalLoading } =
     useWrapFormData();
 
   const { watch } = useFormContext<WrapFormInputType>();
   const [token] = watch(['token']);
+
   const isSteth = token === TOKENS_TO_WRAP.STETH;
 
-  const oneSteth = useMemo(() => parseEther('1'), []);
   const oneWstethConverted = useWstethBySteth(oneSteth);
 
   const approveGasLimit = useApproveGasLimit();
-  const approveTxCostInUsd = useTxCostInUsd(Number(approveGasLimit));
+  const approveTxCostInUsd = useTxCostInUsd(approveGasLimit);
 
   const wrapTxCostInUsd = useTxCostInUsd(wrapGasLimit);
 
@@ -55,13 +60,14 @@ export const WrapFormStats = () => {
           symbol="wstETH"
         />
       </DataTableRow>
-      <DataTableRow
+      <AllowanceDataTableRow
         data-testid="allowance"
-        title="Allowance"
+        allowance={allowance}
+        isBlank={!(isSteth && active)}
         loading={isApprovalLoading}
-      >
-        {isSteth ? <FormatToken amount={allowance} symbol="stETH" /> : <>-</>}
-      </DataTableRow>
+        token={TOKENS.STETH}
+      />
+
       <DataTableRow title="You will receive">
         <FormatToken
           amount={willReceiveWsteth}
