@@ -2,7 +2,7 @@ import { memo } from 'react';
 
 import { WrapFormStats } from './wrap-stats';
 import { WrapBlock } from '../../shared/styles';
-import { WrapFormTxModal } from './wrap-form-tx-modal';
+import { TransactionModalWrap } from './transaction-modal-wrap';
 import { WrapFormProvider } from '../wrap-form-context/wrap-form-context';
 import { FormControllerWrap } from '../wrap-form-controls/form-controller-wrap';
 import { TokenSelectWrap } from '../wrap-form-controls/token-select-wrap';
@@ -28,7 +28,7 @@ export const WrapForm: React.FC = memo(() => {
           </FormControllerWrap>
           <L2Wsteth matomoEventLink={MATOMO_CLICK_EVENTS.l2BannerWrap} />
           <WrapFormStats />
-          <WrapFormTxModal />
+          <TransactionModalWrap />
         </WrapBlock>
       </WrapFormProvider>
     </TransactionModalProvider>

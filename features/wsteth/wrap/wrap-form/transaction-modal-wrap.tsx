@@ -6,7 +6,7 @@ import { TransactionModalStagesRouted } from 'shared/transaction-modal/transacti
 
 import { getTokenDisplayName } from 'utils/getTokenDisplayName';
 
-export const WrapFormTxModal = () => {
+export const TransactionModalWrap = () => {
   const { watch } = useFormContext<WrapFormInputType>();
   const { allowance, wstethBalance, willReceiveWsteth } = useWrapFormData();
   const {

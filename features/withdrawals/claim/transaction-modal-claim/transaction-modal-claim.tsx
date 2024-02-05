@@ -7,7 +7,7 @@ import {
   TxStageSuccessMultisig,
   TxStageSign,
   TxStageFail,
-} from 'shared/transaction-modal/stages';
+} from 'shared/transaction-modal/tx-stages';
 import { useTransactionModal, TX_STAGE } from 'shared/transaction-modal';
 import {
   trackMatomoEvent,

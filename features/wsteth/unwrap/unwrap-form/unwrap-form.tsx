@@ -4,7 +4,7 @@ import { L2Wsteth } from 'shared/banners/l2-wsteth';
 import { InputWrap, WrapBlock } from 'features/wsteth/shared/styles';
 
 import { UnwrapStats } from './unwrap-stats';
-import { UnwrapFormTxModal } from './unwrap-form-tx-modal';
+import { TransactionModalUnwrap } from './transaction-modal-unwrap';
 import { TransactionModalProvider } from 'shared/transaction-modal';
 import { UnwrapFormProvider } from '../unwrap-form-context';
 import { FormController } from 'shared/hook-form/form-controller/form-controller';
@@ -25,7 +25,7 @@ export const UnwrapForm: FC = memo(() => {
           </FormController>
           <L2Wsteth matomoEventLink={MATOMO_CLICK_EVENTS.l2BannerUnwrap} />
           <UnwrapStats />
-          <UnwrapFormTxModal />
+          <TransactionModalUnwrap />
         </WrapBlock>
       </UnwrapFormProvider>
     </TransactionModalProvider>

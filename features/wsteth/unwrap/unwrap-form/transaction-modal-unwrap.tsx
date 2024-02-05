@@ -2,7 +2,7 @@ import { useTransactionModal } from 'shared/transaction-modal';
 import { TransactionModalStagesRouted } from 'shared/transaction-modal/transaction-modal-stages-routed';
 import { useUnwrapFormData } from '../unwrap-form-context';
 
-export const UnwrapFormTxModal = () => {
+export const TransactionModalUnwrap = () => {
   const { stethBalance, willReceiveStETH } = useUnwrapFormData();
   const { dispatchModalState, onRetry, ...modalState } = useTransactionModal();
 

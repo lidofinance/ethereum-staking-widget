@@ -8,7 +8,7 @@ import {
   TxStageFail,
   TxStageBunker,
   TxStageSuccessMultisig,
-} from 'shared/transaction-modal/stages';
+} from 'shared/transaction-modal/tx-stages';
 import {
   useTransactionModal,
   TX_STAGE,

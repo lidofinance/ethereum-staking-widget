@@ -13,8 +13,8 @@ import {
   TxStageSign,
   TxStageSuccess,
   TxStageSuccessMultisig,
-} from '../stages';
-import { TxStageLimit } from 'shared/transaction-modal/stages/tx-stage-limit';
+} from '../tx-stages';
+import { TxStageLimit } from 'shared/transaction-modal/tx-stages/tx-stage-limit';
 import { FormatToken } from 'shared/formatters';
 import { TxLinkEtherscan } from '../../components/tx-link-etherscan';
 import { TransactionModalWrap } from '../transaction-modal-wrap';
