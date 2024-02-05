@@ -1,14 +1,10 @@
-import { useConnectorInfo } from 'reef-knot/web3-react';
-
 import { TxStageModalContent } from 'shared/components/tx-stage-modal-content';
-import { getStageIcon } from './icons';
-import { TX_STAGE } from 'shared/transaction-modal';
+import { StageIconSuccess } from './icons';
 
 export const TxStageSuccessMultisig = () => {
-  const { isLedger } = useConnectorInfo();
   return (
     <TxStageModalContent
-      icon={getStageIcon(isLedger, TX_STAGE.SUCCESS_MULTISIG)}
+      icon={<StageIconSuccess />}
       title="Success"
       description="Your transaction has been successfully created in the multisig wallet and awaits approval from other participants"
     />

@@ -9,6 +9,13 @@ import { ErrorMessage } from 'utils';
 import { ModalProps } from '@lidofinance/lido-ui';
 import { FormatToken } from 'shared/formatters';
 import {
+  StageIconSuccess,
+  StageIconFail,
+  StageIconSign,
+  StageIconBlock,
+  StageIconLimit,
+} from 'features/withdrawals/shared/tx-stage-modal/stages/icons';
+import {
   StylableLink,
   LowercaseSpan,
   ButtonLinkSmall,
@@ -23,7 +30,6 @@ import {
   getSuccessText,
 } from './text-utils';
 import { TX_STAGE, TX_OPERATION } from './types';
-import { TX_STAGE_MODAL_ICONS } from '../tx-stage-modal-content/icons';
 
 interface TxStageModalProps extends ModalProps {
   txStage: TX_STAGE;
@@ -69,9 +75,6 @@ export const TxStageModal = memo((props: TxStageModalProps) => {
 
   const modalProps = {
     ...modalPropsArgs,
-    icon:
-      txStage !== TX_STAGE.IDLE &&
-      TX_STAGE_MODAL_ICONS[isLedger ? 'ledger' : 'default'][txStage],
     onClose: isCloseButtonHidden ? undefined : onClose,
   };
 
@@ -118,6 +121,7 @@ export const TxStageModal = memo((props: TxStageModalProps) => {
     return (
       <TxStageModalShape
         {...modalProps}
+        icon={<StageIconSign />}
         title={
           <>
             You are now <LowercaseSpan>{operationText}</LowercaseSpan>{' '}
@@ -143,6 +147,7 @@ export const TxStageModal = memo((props: TxStageModalProps) => {
     return (
       <TxStageModalShape
         {...modalProps}
+        icon={<StageIconBlock />}
         title={
           <>
             You are now <LowercaseSpan>{operationText}</LowercaseSpan>{' '}
@@ -159,6 +164,7 @@ export const TxStageModal = memo((props: TxStageModalProps) => {
     return (
       <TxStageModalShape
         {...modalProps}
+        icon={<StageIconSuccess />}
         title="Success"
         description="Your transaction has been successfully created in the multisig wallet and awaits approval from other participants"
       />
@@ -172,6 +178,7 @@ export const TxStageModal = memo((props: TxStageModalProps) => {
       return (
         <TxStageModalShape
           {...modalProps}
+          icon={<StageIconSuccess />}
           title={successText}
           description={
             <>
@@ -187,6 +194,7 @@ export const TxStageModal = memo((props: TxStageModalProps) => {
     return (
       <TxStageModalShape
         {...modalProps}
+        icon={<StageIconSuccess />}
         title={
           <>
             Your new balance is <wbr />
@@ -207,6 +215,7 @@ export const TxStageModal = memo((props: TxStageModalProps) => {
     return (
       <TxStageModalShape
         {...modalProps}
+        icon={<StageIconFail />}
         title="Transaction Failed"
         description={failedText ?? 'Something went wrong'}
         footerHint={
@@ -224,6 +233,7 @@ export const TxStageModal = memo((props: TxStageModalProps) => {
     return (
       <TxStageModalShape
         {...modalProps}
+        icon={<StageIconLimit />}
         title="Stake limit exhausted"
         description={failedText ?? 'Something went wrong'}
         footer={

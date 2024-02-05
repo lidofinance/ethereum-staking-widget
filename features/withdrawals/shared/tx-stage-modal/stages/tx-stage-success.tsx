@@ -1,13 +1,11 @@
 import { FC, PropsWithChildren } from 'react';
-import { useConnectorInfo } from 'reef-knot/web3-react';
 
 import { TxLinkEtherscan } from 'shared/components/tx-link-etherscan';
 import { TxStageModalContent } from 'shared/components/tx-stage-modal-content';
-import { getStageIcon } from './icons';
-import { TX_STAGE } from 'shared/transaction-modal';
+import { StageIconSuccess } from './icons';
 
 type TxStageSuccessProps = {
-  txHash: string | null;
+  txHash?: string | null;
   description: React.ReactNode;
   title: React.ReactNode;
   showEtherscan?: boolean;
@@ -25,11 +23,10 @@ export const TxStageSuccess: FC<PropsWithChildren<TxStageSuccessProps>> = (
     showEtherscan = true,
     onClickEtherscan,
   } = props;
-  const { isLedger } = useConnectorInfo();
 
   return (
     <TxStageModalContent
-      icon={getStageIcon(isLedger, TX_STAGE.SUCCESS)}
+      icon={<StageIconSuccess />}
       title={title}
       description={description}
       footerHint={

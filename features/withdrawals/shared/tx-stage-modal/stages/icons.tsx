@@ -1,8 +1,11 @@
+import { useConnectorInfo } from 'reef-knot/web3-react';
+
 import {
   LedgerFail,
   LedgerConfirm,
   LedgerLoading,
   LedgerSuccess,
+  Warning,
 } from '@lidofinance/lido-ui';
 
 import {
@@ -13,68 +16,46 @@ import {
   TxLoader,
   WarningIcon,
 } from './iconsStyles';
-import { TX_STAGE } from 'shared/transaction-modal';
 
-export const iconsDict = {
-  ledger: {
-    [TX_STAGE.SUCCESS]: (
-      <LedgerIconWrapper>
-        <LedgerSuccess fill="transparent" />
-      </LedgerIconWrapper>
-    ),
-    [TX_STAGE.SUCCESS_MULTISIG]: (
-      <LedgerIconWrapper>
-        <LedgerSuccess fill="transparent" />
-      </LedgerIconWrapper>
-    ),
-    [TX_STAGE.SIGN]: (
-      <LedgerIconWrapper>
-        <LedgerConfirm fill="transparent" />
-      </LedgerIconWrapper>
-    ),
-    [TX_STAGE.FAIL]: (
-      <LedgerIconWrapper>
-        <LedgerFail fill="transparent" />
-      </LedgerIconWrapper>
-    ),
-    [TX_STAGE.BLOCK]: (
-      <LedgerIconWrapper>
-        <LedgerLoading fill="transparent" />
-      </LedgerIconWrapper>
-    ),
-    ['DIALOG']: (
-      <LedgerIconWrapper>
-        <WarningIcon />
-      </LedgerIconWrapper>
-    ),
-  },
-  default: {
-    [TX_STAGE.SUCCESS]: (
-      <IconWrapper>
-        <SuccessIcon />
-      </IconWrapper>
-    ),
-    [TX_STAGE.SUCCESS_MULTISIG]: (
-      <IconWrapper>
-        <SuccessIcon />
-      </IconWrapper>
-    ),
-    [TX_STAGE.FAIL]: (
-      <IconWrapper>
-        <FailIcon />
-      </IconWrapper>
-    ),
-    [TX_STAGE.SIGN]: <TxLoader size="large" />,
-    [TX_STAGE.BLOCK]: <TxLoader size="large" />,
-    ['DIALOG']: (
-      <IconWrapper>
-        <WarningIcon />
-      </IconWrapper>
-    ),
-  },
+const createStageIcon = (
+  iconEl: React.ReactNode,
+  ledgerEl: React.ReactNode,
+) => {
+  return () => {
+    const { isLedger } = useConnectorInfo();
+    if (isLedger) {
+      return <LedgerIconWrapper>{ledgerEl}</LedgerIconWrapper>;
+    }
+    return <IconWrapper>{iconEl}</IconWrapper>;
+  };
 };
 
-export const getStageIcon = (isLedger: boolean, stage: TX_STAGE | 'DIALOG') => {
-  if (stage === TX_STAGE.NONE) return null;
-  return iconsDict[isLedger ? 'ledger' : 'default'][stage] ?? null;
-};
+export const StageIconSuccess = createStageIcon(
+  <SuccessIcon />,
+  <LedgerSuccess fill="transparent" />,
+);
+
+export const StageIconFail = createStageIcon(
+  <FailIcon />,
+  <LedgerFail fill="transparent" />,
+);
+
+export const StageIconSign = createStageIcon(
+  <TxLoader size="large" />, // maybe no wrapper
+  <LedgerConfirm fill="transparent" />,
+);
+
+export const StageIconBlock = createStageIcon(
+  <TxLoader size="large" />, // maybe no wrapper
+  <LedgerLoading fill="transparent" />,
+);
+
+export const StageIconLimit = createStageIcon(
+  <Warning />,
+  <LedgerFail fill="transparent" />,
+);
+
+export const StageIconDialog = createStageIcon(
+  <WarningIcon />,
+  <WarningIcon />,
+);

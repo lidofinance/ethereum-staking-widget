@@ -1,9 +1,8 @@
 import { FC } from 'react';
-import { useConnectorInfo } from 'reef-knot/web3-react';
 import { Button } from '@lidofinance/lido-ui';
 
 import { TxStageModalContent } from 'shared/components/tx-stage-modal-content';
-import { getStageIcon } from './icons';
+import { StageIconDialog } from './icons';
 import { BottomButtons } from './styles';
 
 type TxStageFailProps = {
@@ -14,11 +13,10 @@ type TxStageFailProps = {
 
 export const TxStageBunker: FC<TxStageFailProps> = (props) => {
   const { onClick, onClose } = props;
-  const { isLedger } = useConnectorInfo();
 
   return (
     <TxStageModalContent
-      icon={getStageIcon(isLedger, 'DIALOG')}
+      icon={<StageIconDialog />}
       title="Attention!"
       description="Lido protocol is in “Bunker mode”, the withdrawal requests are slowed down, still request withdrawal?"
       footer={
