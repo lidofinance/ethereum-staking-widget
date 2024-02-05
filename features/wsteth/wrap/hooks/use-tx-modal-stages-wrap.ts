@@ -6,7 +6,6 @@ import { TxStageSignOperationAmount } from 'shared/transaction-modal/tx-stages-c
 import { TxStageOperationSucceedBalanceShown } from 'shared/transaction-modal/tx-stages-composed/tx-stage-operation-succeed-balance-shown';
 
 import { getTokenDisplayName } from 'utils/getTokenDisplayName';
-import { TX_STAGE } from 'shared/transaction-modal/types';
 import type { BigNumber } from 'ethers';
 import type { TokensWrappable } from 'features/wsteth/shared/types';
 
@@ -29,7 +28,7 @@ export const useTxModalStagesWrap = () => {
       ...generalStages,
 
       signApproval: (amount: BigNumber, token: TokensWrappable) =>
-        openTxModalStage(TX_STAGE.SIGN, TxStageSignOperationAmount, {
+        openTxModalStage(TxStageSignOperationAmount, {
           ...STAGE_APPROVE_ARGS,
           amount,
           token: getTokenDisplayName(token),
@@ -40,7 +39,7 @@ export const useTxModalStagesWrap = () => {
         token: TokensWrappable,
         txHash?: string,
       ) =>
-        openTxModalStage(TX_STAGE.BLOCK, TxStageSignOperationAmount, {
+        openTxModalStage(TxStageSignOperationAmount, {
           ...STAGE_APPROVE_ARGS,
           amount,
           token: getTokenDisplayName(token),
@@ -53,7 +52,7 @@ export const useTxModalStagesWrap = () => {
         token: TokensWrappable,
         willReceive: BigNumber,
       ) =>
-        openTxModalStage(TX_STAGE.SIGN, TxStageSignOperationAmount, {
+        openTxModalStage(TxStageSignOperationAmount, {
           ...STAGE_OPERATION_ARGS,
           amount,
           token: getTokenDisplayName(token),
@@ -66,7 +65,7 @@ export const useTxModalStagesWrap = () => {
         willReceive: BigNumber,
         txHash?: string,
       ) =>
-        openTxModalStage(TX_STAGE.BLOCK, TxStageSignOperationAmount, {
+        openTxModalStage(TxStageSignOperationAmount, {
           ...STAGE_OPERATION_ARGS,
           amount,
           token: getTokenDisplayName(token),
@@ -77,13 +76,15 @@ export const useTxModalStagesWrap = () => {
 
       success: (balance: BigNumber, txHash?: string) =>
         openTxModalStage(
-          TX_STAGE.SUCCESS,
           TxStageOperationSucceedBalanceShown,
           {
             txHash,
             balance,
             balanceToken: 'wstETH',
             operationText: 'Wrap',
+          },
+          {
+            isClosableOnLedger: true,
           },
         ),
     }),

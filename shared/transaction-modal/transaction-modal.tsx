@@ -1,29 +1,23 @@
 import { Modal } from '@lidofinance/lido-ui';
 import { useConnectorInfo } from 'reef-knot/web3-react';
-
-import { TX_STAGE } from 'shared/transaction-modal/types';
 import { getUseModal, ModalComponentType } from 'providers/modal-provider';
 
 type TransactionModalProps = {
-  txStage?: TX_STAGE;
+  isClosableOnLedger?: boolean;
   children?: React.ReactNode;
 };
 
-export const TransactionModal: ModalComponentType<TransactionModalProps> = (
-  props,
-) => {
-  const { onClose, txStage, children } = props;
-
+export const TransactionModal: ModalComponentType<TransactionModalProps> = ({
+  isClosableOnLedger,
+  onClose,
+  children,
+  ...props
+}) => {
   const { isLedger } = useConnectorInfo();
-
-  const isCloseButtonHidden =
-    isLedger &&
-    txStage !== TX_STAGE.SUCCESS &&
-    txStage !== TX_STAGE.SUCCESS_MULTISIG &&
-    txStage !== TX_STAGE.FAIL;
+  const isClosable = !isLedger || isClosableOnLedger;
 
   return (
-    <Modal {...props} onClose={isCloseButtonHidden ? undefined : onClose}>
+    <Modal {...props} onClose={isClosable ? onClose : undefined}>
       {children}
     </Modal>
   );

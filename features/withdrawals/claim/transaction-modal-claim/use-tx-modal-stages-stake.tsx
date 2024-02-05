@@ -6,7 +6,6 @@ import { TxStageSignOperationAmount } from 'shared/transaction-modal/tx-stages-c
 import { TxStageSuccess } from 'shared/transaction-modal/tx-stages-basic';
 import { TxAmount } from 'shared/transaction-modal/tx-stages-parts/tx-amount';
 
-import { TX_STAGE } from 'shared/transaction-modal/types';
 import type { BigNumber } from 'ethers';
 import {
   trackMatomoEvent,
@@ -27,13 +26,13 @@ export const useTxModalStagesClaim = () => {
       ...generalStages,
 
       sign: (amount: BigNumber) =>
-        openTxModalStage(TX_STAGE.SIGN, TxStageSignOperationAmount, {
+        openTxModalStage(TxStageSignOperationAmount, {
           ...STAGE_OPERATION_ARGS,
           amount,
         }),
 
       pending: (amount: BigNumber, txHash?: string) =>
-        openTxModalStage(TX_STAGE.BLOCK, TxStageSignOperationAmount, {
+        openTxModalStage(TxStageSignOperationAmount, {
           ...STAGE_OPERATION_ARGS,
           amount,
           isPending: true,
@@ -41,19 +40,25 @@ export const useTxModalStagesClaim = () => {
         }),
 
       success: (amount: BigNumber, txHash?: string) =>
-        openTxModalStage(TX_STAGE.SUCCESS, TxStageSuccess, {
-          txHash,
-          title: (
-            <>
-              <TxAmount amount={amount} symbol="ETH" /> has been claimed
-            </>
-          ),
-          description: 'Claiming operation was successful',
-          onClickEtherscan: () =>
-            trackMatomoEvent(
-              MATOMO_CLICK_EVENTS_TYPES.claimViewOnEtherscanSuccessTemplate,
+        openTxModalStage(
+          TxStageSuccess,
+          {
+            txHash,
+            title: (
+              <>
+                <TxAmount amount={amount} symbol="ETH" /> has been claimed
+              </>
             ),
-        }),
+            description: 'Claiming operation was successful',
+            onClickEtherscan: () =>
+              trackMatomoEvent(
+                MATOMO_CLICK_EVENTS_TYPES.claimViewOnEtherscanSuccessTemplate,
+              ),
+          },
+          {
+            isClosableOnLedger: true,
+          },
+        ),
     }),
     [openTxModalStage, generalStages],
   );

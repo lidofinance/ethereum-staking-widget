@@ -5,7 +5,6 @@ import { useGeneralTransactionModalStages } from 'shared/transaction-modal/hooks
 import { TxStageSignOperationAmount } from 'shared/transaction-modal/tx-stages-composed/tx-stage-amount-operation';
 import { TxStageOperationSucceedBalanceShown } from 'shared/transaction-modal/tx-stages-composed/tx-stage-operation-succeed-balance-shown';
 
-import { TX_STAGE } from 'shared/transaction-modal/types';
 import type { BigNumber } from 'ethers';
 
 const STAGE_OPERATION_ARGS = {
@@ -23,14 +22,14 @@ export const useTxModalStagesStake = () => {
       ...generalStages,
 
       sign: (amount: BigNumber) =>
-        openTxModalStage(TX_STAGE.SIGN, TxStageSignOperationAmount, {
+        openTxModalStage(TxStageSignOperationAmount, {
           ...STAGE_OPERATION_ARGS,
           amount,
           willReceive: amount,
         }),
 
       pending: (amount: BigNumber, txHash?: string) =>
-        openTxModalStage(TX_STAGE.BLOCK, TxStageSignOperationAmount, {
+        openTxModalStage(TxStageSignOperationAmount, {
           ...STAGE_OPERATION_ARGS,
           amount,
           willReceive: amount,
@@ -40,13 +39,15 @@ export const useTxModalStagesStake = () => {
 
       success: (balance: BigNumber, txHash?: string) =>
         openTxModalStage(
-          TX_STAGE.SUCCESS,
           TxStageOperationSucceedBalanceShown,
           {
             txHash,
             balance,
             balanceToken: 'stETH',
             operationText: 'Stake',
+          },
+          {
+            isClosableOnLedger: true,
           },
         ),
     }),

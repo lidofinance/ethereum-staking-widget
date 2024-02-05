@@ -10,7 +10,6 @@ import { TxStageSignOperationAmount } from 'shared/transaction-modal/tx-stages-c
 import { TxRequestStageSuccess } from './tx-stage-request-success';
 
 import { getTokenDisplayName } from 'utils/getTokenDisplayName';
-import { TX_STAGE } from 'shared/transaction-modal/types';
 import type { BigNumber } from 'ethers';
 import type { TokensWithdrawable } from 'features/withdrawals/types/tokens-withdrawable';
 
@@ -34,16 +33,22 @@ export const useTxModalStagesRequest = () => {
 
       dialogBunker: (): Promise<boolean> =>
         new Promise((resolve, _) => {
-          openTxModalStage(TX_STAGE.SIGN, TxStageBunker, {
-            onClick: () => resolve(true),
-            onClose: () => resolve(false),
-          });
+          openTxModalStage(
+            TxStageBunker,
+            {
+              onClick: () => resolve(true),
+              onClose: () => resolve(false),
+            },
+            {
+              isClosableOnLedger: true,
+            },
+          );
         }),
 
-      signPermit: () => openTxModalStage(TX_STAGE.SIGN, TxStagePermit, {}),
+      signPermit: () => openTxModalStage(TxStagePermit, {}),
 
       signApproval: (amount: BigNumber, token: TokensWithdrawable) =>
-        openTxModalStage(TX_STAGE.SIGN, TxStageSignOperationAmount, {
+        openTxModalStage(TxStageSignOperationAmount, {
           ...STAGE_APPROVE_ARGS,
           amount,
           token: getTokenDisplayName(token),
@@ -54,7 +59,7 @@ export const useTxModalStagesRequest = () => {
         token: TokensWithdrawable,
         txHash?: string,
       ) =>
-        openTxModalStage(TX_STAGE.BLOCK, TxStageSignOperationAmount, {
+        openTxModalStage(TxStageSignOperationAmount, {
           ...STAGE_APPROVE_ARGS,
           amount,
           token: getTokenDisplayName(token),
@@ -63,7 +68,7 @@ export const useTxModalStagesRequest = () => {
         }),
 
       sign: (amount: BigNumber, token: TokensWithdrawable) =>
-        openTxModalStage(TX_STAGE.SIGN, TxStageSignOperationAmount, {
+        openTxModalStage(TxStageSignOperationAmount, {
           ...STAGE_OPERATION_ARGS,
           amount,
           token: getTokenDisplayName(token),
@@ -74,7 +79,7 @@ export const useTxModalStagesRequest = () => {
         token: TokensWithdrawable,
         txHash?: string,
       ) =>
-        openTxModalStage(TX_STAGE.BLOCK, TxStageSignOperationAmount, {
+        openTxModalStage(TxStageSignOperationAmount, {
           ...STAGE_OPERATION_ARGS,
           amount,
           token: getTokenDisplayName(token),
@@ -83,11 +88,17 @@ export const useTxModalStagesRequest = () => {
         }),
 
       success: (amount: BigNumber, token: TokensWithdrawable, txHash: string) =>
-        openTxModalStage(TX_STAGE.SUCCESS, TxRequestStageSuccess, {
-          amount,
-          tokenName: getTokenDisplayName(token),
-          txHash,
-        }),
+        openTxModalStage(
+          TxRequestStageSuccess,
+          {
+            amount,
+            tokenName: getTokenDisplayName(token),
+            txHash,
+          },
+          {
+            isClosableOnLedger: true,
+          },
+        ),
     }),
     [openTxModalStage, generalStages],
   );

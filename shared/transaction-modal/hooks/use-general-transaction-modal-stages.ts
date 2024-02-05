@@ -7,7 +7,6 @@ import {
 } from 'shared/transaction-modal/tx-stages-basic';
 
 import { getErrorMessage } from 'utils';
-import { TX_STAGE } from 'shared/transaction-modal/types';
 
 export const useGeneralTransactionModalStages = () => {
   const { openTxModalStage } = useTransactionModalStage();
@@ -15,13 +14,25 @@ export const useGeneralTransactionModalStages = () => {
   const txModalStages = useMemo(
     () => ({
       successMultisig: () =>
-        openTxModalStage(TX_STAGE.SUCCESS_MULTISIG, TxStageSuccessMultisig, {}),
+        openTxModalStage(
+          TxStageSuccessMultisig,
+          {},
+          {
+            isClosableOnLedger: true,
+          },
+        ),
 
       failed: (error: unknown, onRetry?: () => void) =>
-        openTxModalStage(TX_STAGE.FAIL, TxStageFail, {
-          failedText: getErrorMessage(error),
-          onRetry,
-        }),
+        openTxModalStage(
+          TxStageFail,
+          {
+            failedText: getErrorMessage(error),
+            onRetry,
+          },
+          {
+            isClosableOnLedger: true,
+          },
+        ),
     }),
     [openTxModalStage],
   );
