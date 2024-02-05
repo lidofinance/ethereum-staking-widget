@@ -69,7 +69,6 @@ export const LidoOption = () => {
       <LidoOptionValue data-testid="lidoOptionAmount">
         <FormatTokenStyled
           data-testid="lidoOptionAmount"
-          showAmountTip
           amount={ethAmount}
           symbol="ETH"
         />{' '}

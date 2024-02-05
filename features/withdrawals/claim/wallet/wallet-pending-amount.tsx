@@ -12,11 +12,7 @@ export const WalletPendingAmount = () => {
 
   const pendingAmount = (
     <>
-      <FormatToken
-        showAmountTip
-        amount={data?.pendingAmountOfStETH}
-        symbol="stETH"
-      />
+      <FormatToken amount={data?.pendingAmountOfStETH} symbol="stETH" />
       <TokenToWallet data-testid="addStethToWalletBtn" address={stethAddress} />
     </>
   );

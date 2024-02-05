@@ -5,8 +5,9 @@ import { use1inchLinkProps } from 'features/stake/hooks';
 import { TxLinkEtherscan } from 'shared/components/tx-link-etherscan';
 import { L2LowFee } from 'shared/banners/l2-low-fee';
 import { TxStageModalShape } from './tx-stage-modal-shape';
-import { ErrorMessage, formatBalance } from 'utils';
+import { ErrorMessage } from 'utils';
 import { ModalProps } from '@lidofinance/lido-ui';
+import { FormatToken } from 'shared/formatters';
 import {
   StylableLink,
   LowercaseSpan,
@@ -18,10 +19,8 @@ import {
 
 import { BigNumber } from 'ethers';
 import {
-  withOptionaLineBreak,
   getOperationProcessingDisplayText,
   getSuccessText,
-  withOptionaTooltip,
 } from './text-utils';
 import { TX_STAGE, TX_OPERATION } from './types';
 import { TX_STAGE_MODAL_ICONS } from '../tx-stage-modal-content/icons';
@@ -76,30 +75,25 @@ export const TxStageModal = memo((props: TxStageModalProps) => {
     onClose: isCloseButtonHidden ? undefined : onClose,
   };
 
-  const amountDisplay = amount
-    ? formatBalance(amount, 4, { adaptive: true, elipsis: true })
-    : '';
-  const amountFull = amount ? formatBalance(amount, 18) : '';
-  const amountEl = withOptionaTooltip(
-    amountDisplay,
-    amountFull,
-    <span data-testid="sendAmount">{amountDisplay}</span>,
+  const amountEl = amount && (
+    <FormatToken
+      amount={amount}
+      symbol={amountToken}
+      adaptiveDecimals
+      trimEllipsis
+    />
   );
 
-  const willReceiveDisplay = willReceiveAmount
-    ? formatBalance(willReceiveAmount, 4, { adaptive: true, elipsis: true })
-    : '';
-  const willReceiveFull = willReceiveAmount
-    ? formatBalance(willReceiveAmount, 18)
-    : '';
-  const willReceiveAmountEl = withOptionaTooltip(
-    willReceiveDisplay,
-    willReceiveFull,
-    <span data-testid="receiveAmount">{willReceiveDisplay}</span>,
+  const willReceiveAmountEl = willReceiveAmount && (
+    <FormatToken
+      amount={willReceiveAmount}
+      symbol={willReceiveAmountToken || ''}
+      adaptiveDecimals
+      trimEllipsis
+    />
   );
 
   const operationText = getOperationProcessingDisplayText(txOperation);
-  const amountWithBreak = withOptionaLineBreak(amountDisplay, amountEl);
 
   const [isRetryLoading, setRetryLoading] = useState(false);
   const retryResetTimerRef = useRef<NodeJS.Timeout | 0>(0);
@@ -127,7 +121,7 @@ export const TxStageModal = memo((props: TxStageModalProps) => {
         title={
           <>
             You are now <LowercaseSpan>{operationText}</LowercaseSpan>{' '}
-            {amountWithBreak} {amountToken}
+            {amountEl} {amountToken}
           </>
         }
         description={
@@ -152,7 +146,7 @@ export const TxStageModal = memo((props: TxStageModalProps) => {
         title={
           <>
             You are now <LowercaseSpan>{operationText}</LowercaseSpan>{' '}
-            {amountWithBreak} {amountToken}
+            {amountEl} {amountToken}
           </>
         }
         description="Awaiting block confirmation"
@@ -179,10 +173,12 @@ export const TxStageModal = memo((props: TxStageModalProps) => {
         <TxStageModalShape
           {...modalProps}
           title={successText}
-          description={`${formatBalance(
-            allowanceAmount,
-            4,
-          )} stETH was unlocked to wrap.`}
+          description={
+            <>
+              <FormatToken amount={allowanceAmount} symbol={'stETH'} /> was
+              unlocked to wrap.
+            </>
+          }
           footerHint={<TxLinkEtherscan txHash={txHash} />}
         />
       );
@@ -194,10 +190,8 @@ export const TxStageModal = memo((props: TxStageModalProps) => {
         title={
           <>
             Your new balance is <wbr />
-            {balance ? (
-              <>
-                {withOptionaLineBreak(formatBalance(balance, 4))} {balanceToken}
-              </>
+            {balance && balanceToken ? (
+              <FormatToken amount={balance} symbol={balanceToken} />
             ) : (
               <SkeletonBalance />
             )}

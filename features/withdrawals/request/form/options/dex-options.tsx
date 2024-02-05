@@ -97,7 +97,6 @@ const DexOption: React.FC<DexOptionProps> = ({
         {toReceive ? (
           <FormatToken
             approx
-            showAmountTip
             amount={toReceive ?? BigNumber.from(0)}
             symbol="ETH"
           />

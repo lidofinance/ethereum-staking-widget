@@ -1,6 +1,5 @@
 import { useMemo } from 'react';
 
-import { formatBalance } from 'utils';
 import {
   TxStageModal,
   TxStagePending,
@@ -18,7 +17,7 @@ import {
 
 import { getTokenDisplayName } from 'utils/getTokenDisplayName';
 import { TxRequestStageSuccess } from './tx-request-stage-success';
-import { withOptionaTooltip } from 'shared/components/tx-stage-modal/text-utils';
+import { FormatToken } from 'shared/formatters';
 
 export const TxRequestModal = () => {
   const modalState = useTransactionModal();
@@ -37,14 +36,8 @@ export const TxRequestModal = () => {
 
     const tokenName = token ? getTokenDisplayName(token) : '';
 
-    const amountDisplay = requestAmount
-      ? formatBalance(requestAmount, 4, { adaptive: true, elipsis: true })
-      : '';
-    const amountFull = requestAmount ? formatBalance(requestAmount, 18) : '';
-    const amountEl = withOptionaTooltip(
-      amountDisplay,
-      amountFull,
-      <span data-testid="sendAmount">{amountDisplay}</span>,
+    const amountEl = requestAmount && (
+      <FormatToken amount={requestAmount} symbol={tokenName} trimEllipsis />
     );
 
     // if more dialogs are added convert to switch on dialog type

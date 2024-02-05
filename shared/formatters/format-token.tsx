@@ -11,6 +11,7 @@ export type FormatTokenProps = {
   maxTotalLength?: number;
   showAmountTip?: boolean;
   trimEllipsis?: boolean;
+  adaptiveDecimals?: boolean;
 };
 export type FormatTokenComponent = Component<'span', FormatTokenProps>;
 
@@ -20,16 +21,17 @@ export const FormatToken: FormatTokenComponent = ({
   approx,
   maxDecimalDigits = 4,
   maxTotalLength = 15,
-  showAmountTip = false,
+  showAmountTip = true,
   trimEllipsis,
+  adaptiveDecimals,
   ...rest
 }) => {
-  const { actual, isTrimmed, trimmed } = useFormattedBalance(
-    amount,
+  const { actual, isTrimmed, trimmed } = useFormattedBalance(amount, {
     maxDecimalDigits,
     maxTotalLength,
     trimEllipsis,
-  );
+    adaptiveDecimals,
+  });
   const showTooltip = showAmountTip && isTrimmed;
 
   // we show prefix for non zero amount and if we need to show Tooltip Amount

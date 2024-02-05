@@ -1,5 +1,4 @@
 import { useMemo } from 'react';
-import { formatBalance } from 'utils';
 
 import {
   TxStageModal,
@@ -14,7 +13,7 @@ import {
   trackMatomoEvent,
   MATOMO_CLICK_EVENTS_TYPES,
 } from 'config/trackMatomoEvent';
-import { withOptionaTooltip } from 'shared/components/tx-stage-modal/text-utils';
+import { FormatToken } from 'shared/formatters';
 
 export const TxClaimModal = () => {
   const {
@@ -28,14 +27,13 @@ export const TxClaimModal = () => {
   } = useTransactionModal();
 
   const content = useMemo(() => {
-    const amountDisplay = amount
-      ? formatBalance(amount, 4, { adaptive: true, elipsis: true })
-      : '';
-    const amountFull = amount ? formatBalance(amount, 18) : '';
-    const amountEl = withOptionaTooltip(
-      amountDisplay,
-      amountFull,
-      <span data-testid="sendAmount">{amountDisplay}</span>,
+    const amountEl = amount && (
+      <FormatToken
+        amount={amount}
+        symbol={'ETH'}
+        adaptiveDecimals
+        trimEllipsis
+      />
     );
 
     const successDescription = 'Claiming operation was successful';

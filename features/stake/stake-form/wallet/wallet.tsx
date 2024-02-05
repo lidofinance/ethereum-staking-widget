@@ -37,7 +37,6 @@ const WalletComponent: WalletComponentType = (props) => {
           value={
             <FormatToken
               data-testid="ethAvailableToStake"
-              showAmountTip
               amount={stakeableEther}
               symbol="ETH"
             />
@@ -55,7 +54,6 @@ const WalletComponent: WalletComponentType = (props) => {
             <>
               <FormatToken
                 data-testid="stEthStaked"
-                showAmountTip
                 amount={steth.data}
                 symbol="stETH"
               />
