@@ -36,31 +36,26 @@ export const TxClaimModal = () => {
       />
     );
 
-    const successDescription = 'Claiming operation was successful';
-    const successTitle = <>{amountEl} ETH has been claimed</>;
-
-    const pendingDescription = 'Awaiting block confirmation';
-    const pendingTitle = <>You are now claiming {amountEl} ETH</>;
-
-    const signDescription = 'Processing your request';
-    const signTitle = <>You are now claiming {amountEl} ETH</>;
-
     switch (txStage) {
       case TX_STAGE.SIGN:
-        return <TxStageSign description={signDescription} title={signTitle} />;
+        return (
+          <TxStageSign
+            description={'Processing your request'}
+            title={<>You are now claiming {amountEl}</>}
+          />
+        );
       case TX_STAGE.BLOCK:
         return (
           <TxStagePending
-            description={pendingDescription}
-            title={pendingTitle}
+            title={<>You are now claiming {amountEl}</>}
             txHash={txHash}
           />
         );
       case TX_STAGE.SUCCESS:
         return (
           <TxStageSuccess
-            description={successDescription}
-            title={successTitle}
+            description={'Claiming operation was successful'}
+            title={<>{amountEl} has been claimed</>}
             txHash={txHash}
             onClickEtherscan={() =>
               trackMatomoEvent(
@@ -73,7 +68,10 @@ export const TxClaimModal = () => {
         return <TxStageSuccessMultisig />;
       case TX_STAGE.FAIL:
         return (
-          <TxStageFail failedText={errorText} onClick={onRetry ?? undefined} />
+          <TxStageFail
+            failedText={errorText}
+            onClickRetry={onRetry ?? undefined}
+          />
         );
       default:
         return null;

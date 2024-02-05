@@ -5,9 +5,9 @@ import { TxStageModalContent } from 'shared/components/tx-stage-modal-content';
 import { StageIconBlock } from './icons';
 
 type TxStagePendingProps = {
-  description: React.ReactNode;
+  description?: React.ReactNode;
   title: React.ReactNode;
-  txHash: string | null;
+  txHash?: string | null;
 };
 
 export const TxStagePending: FC<TxStagePendingProps> = (props) => {
@@ -17,7 +17,7 @@ export const TxStagePending: FC<TxStagePendingProps> = (props) => {
     <TxStageModalContent
       icon={<StageIconBlock />}
       title={title}
-      description={description}
+      description={description || 'Awaiting block confirmation'}
       footerHint={txHash && <TxLinkEtherscan txHash={txHash} />}
     />
   );

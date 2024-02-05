@@ -56,27 +56,11 @@ export const TxRequestModal = () => {
         />
       );
 
-    const approvingTitle = (
-      <>
-        You are now approving {amountEl} {tokenName}
-      </>
-    );
-    const approvingSingDescription = (
-      <>
-        Approving for {amountEl} {tokenName}
-      </>
-    );
+    const approvingTitle = <>You are now approving {amountEl}</>;
+    const approvingSingDescription = <>Approving for {amountEl}</>;
 
-    const withdrawalTitle = (
-      <>
-        You are requesting withdrawal for {amountEl} {tokenName}
-      </>
-    );
-    const withdrawalSingDescription = (
-      <>
-        Requesting withdrawal for {amountEl} {tokenName}
-      </>
-    );
+    const withdrawalTitle = <>You are requesting withdrawal for {amountEl}</>;
+    const withdrawalSingDescription = <>Requesting withdrawal for {amountEl}</>;
 
     const renderSign = () => {
       switch (txOperation) {
@@ -102,24 +86,11 @@ export const TxRequestModal = () => {
     };
 
     const renderBlock = () => {
-      const pendingDescription = 'Awaiting block confirmation';
       switch (txOperation) {
         case TX_OPERATION.APPROVE:
-          return (
-            <TxStagePending
-              txHash={txHash}
-              title={approvingTitle}
-              description={pendingDescription}
-            />
-          );
+          return <TxStagePending txHash={txHash} title={approvingTitle} />;
         case TX_OPERATION.CONTRACT:
-          return (
-            <TxStagePending
-              txHash={txHash}
-              title={withdrawalTitle}
-              description={pendingDescription}
-            />
-          );
+          return <TxStagePending txHash={txHash} title={withdrawalTitle} />;
         default:
           return null;
       }
@@ -142,7 +113,10 @@ export const TxRequestModal = () => {
         return <TxStageSuccessMultisig />;
       case TX_STAGE.FAIL:
         return (
-          <TxStageFail failedText={errorText} onClick={onRetry ?? undefined} />
+          <TxStageFail
+            failedText={errorText}
+            onClickRetry={onRetry ?? undefined}
+          />
         );
       default:
         return null;

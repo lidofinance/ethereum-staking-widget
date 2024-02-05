@@ -7,22 +7,22 @@ import { StageIconFail } from './icons';
 import { RetryButtonStyled } from './styles';
 
 type TxStageFailProps = {
-  failedText: string | null;
-  onClick?: () => void;
+  failedText?: string | null;
+  onClickRetry?: React.MouseEventHandler<HTMLSpanElement>;
 };
 
 export const TxStageFail: FC<TxStageFailProps> = (props) => {
-  const { failedText, onClick } = props;
+  const { failedText, onClickRetry } = props;
 
   return (
     <TxStageModalContent
-      title="Transaction Error"
+      title="Transaction Failed"
       icon={<StageIconFail />}
       description={failedText ?? 'Something went wrong'}
       footerHint={
         failedText !== ErrorMessage.NOT_ENOUGH_ETHER &&
-        onClick && (
-          <RetryButtonStyled onClick={onClick}>Retry</RetryButtonStyled>
+        onClickRetry && (
+          <RetryButtonStyled onClick={onClickRetry}>Retry</RetryButtonStyled>
         )
       }
     />

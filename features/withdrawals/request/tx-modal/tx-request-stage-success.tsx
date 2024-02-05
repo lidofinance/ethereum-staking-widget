@@ -39,8 +39,6 @@ export const TxRequestStageSuccess = ({
     useNftDataByTxHash(txHash);
   const showAddGuideLink = !!providerWeb3?.provider.isMetaMask;
 
-  const successTitle = 'Withdrawal request successfully sent';
-
   const successDescription = (
     <span>
       Withdrawal request for {amount} {tokenName} has been sent.
@@ -66,8 +64,8 @@ export const TxRequestStageSuccess = ({
   return (
     <TxStageSuccess
       txHash={txHash}
+      title={'Withdrawal request successfully sent'}
       description={successDescription}
-      title={successTitle}
       showEtherscan={false}
     >
       <NFTBanner>
