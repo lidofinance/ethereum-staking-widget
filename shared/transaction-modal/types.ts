@@ -1,9 +1,0 @@
-export enum TX_STAGE {
-  NONE,
-  SIGN,
-  BLOCK,
-  SUCCESS,
-  SUCCESS_MULTISIG,
-  FAIL,
-  LIMIT,
-}
