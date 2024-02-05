@@ -31,6 +31,7 @@ const TooltipWithdrawalAmount = () => {
           The final amount of claimable ETH can differ
           <br /> For more info, please read{' '}
           <a
+            data-testid="lidoOptionToolTipFAQ"
             href="#amountDifferentFromRequested"
             onClick={(e) => {
               trackMatomoEvent(
