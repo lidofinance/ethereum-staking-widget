@@ -1,19 +1,15 @@
-import { FC } from 'react';
 import { Button } from '@lidofinance/lido-ui';
 
 import { TransactionModalContent } from 'shared/transaction-modal/transaction-modal-content';
 import { StageIconDialog } from './icons';
 import { BottomButtons } from './styles';
 
-type TxStageFailProps = {
-  failedText?: string;
+type TxStageBunkerProps = {
   onClick?: () => void;
   onClose?: () => void;
 };
 
-export const TxStageBunker: FC<TxStageFailProps> = (props) => {
-  const { onClick, onClose } = props;
-
+export const TxStageBunker = ({ onClick, onClose }: TxStageBunkerProps) => {
   return (
     <TransactionModalContent
       icon={<StageIconDialog />}

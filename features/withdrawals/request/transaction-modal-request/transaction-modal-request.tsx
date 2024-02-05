@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 
-import { TransactionModalWrap } from 'shared/transaction-modal/transaction-modal-wrap';
+import { TransactionModal } from 'shared/transaction-modal/transaction-modal';
 import {
   TxStagePending,
   TxStageSign,
@@ -8,7 +8,7 @@ import {
   TxStageFail,
   TxStageBunker,
   TxStageSuccessMultisig,
-} from 'shared/transaction-modal/tx-stages';
+} from 'shared/transaction-modal/tx-stages-basic';
 import {
   useTransactionModal,
   TX_STAGE,
@@ -124,12 +124,12 @@ export const TransactionModalRequest = () => {
   }, [modalState]);
 
   return (
-    <TransactionModalWrap
+    <TransactionModal
       open={modalState.isModalOpen}
       onClose={() => modalState.dispatchModalState({ type: 'close_modal' })}
       txStage={modalState.txStage}
     >
       {content}
-    </TransactionModalWrap>
+    </TransactionModal>
   );
 };

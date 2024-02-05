@@ -1,5 +1,3 @@
-import { FC, PropsWithChildren } from 'react';
-
 import { TxLinkEtherscan } from 'shared/components/tx-link-etherscan';
 import { TransactionModalContent } from 'shared/transaction-modal/transaction-modal-content';
 import { StageIconSuccess } from './icons';
@@ -8,22 +6,19 @@ type TxStageSuccessProps = {
   txHash?: string | null;
   description: React.ReactNode;
   title: React.ReactNode;
+  footer?: React.ReactNode;
   showEtherscan?: boolean;
   onClickEtherscan?: React.MouseEventHandler<HTMLAnchorElement>;
 };
 
-export const TxStageSuccess: FC<PropsWithChildren<TxStageSuccessProps>> = (
-  props,
-) => {
-  const {
-    txHash,
-    description,
-    title,
-    children,
-    showEtherscan = true,
-    onClickEtherscan,
-  } = props;
-
+export const TxStageSuccess = ({
+  txHash,
+  description,
+  title,
+  footer,
+  showEtherscan = true,
+  onClickEtherscan,
+}: TxStageSuccessProps) => {
   return (
     <TransactionModalContent
       icon={<StageIconSuccess />}
@@ -33,7 +28,7 @@ export const TxStageSuccess: FC<PropsWithChildren<TxStageSuccessProps>> = (
         showEtherscan &&
         txHash && <TxLinkEtherscan txHash={txHash} onClick={onClickEtherscan} />
       }
-      footer={children}
+      footer={footer}
     />
   );
 };

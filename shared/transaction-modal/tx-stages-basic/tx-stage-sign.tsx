@@ -1,5 +1,3 @@
-import { FC } from 'react';
-
 import { TransactionModalContent } from 'shared/transaction-modal/transaction-modal-content';
 import { StageIconSign } from './icons';
 
@@ -8,9 +6,7 @@ type TxStageSignProps = {
   title: React.ReactNode;
 };
 
-export const TxStageSign: FC<TxStageSignProps> = (props) => {
-  const { title, description } = props;
-
+export const TxStageSign = ({ title, description }: TxStageSignProps) => {
   return (
     <TransactionModalContent
       icon={<StageIconSign />}

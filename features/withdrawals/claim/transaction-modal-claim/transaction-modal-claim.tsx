@@ -1,13 +1,13 @@
 import { useMemo } from 'react';
 
-import { TransactionModalWrap } from 'shared/transaction-modal/transaction-modal-wrap';
+import { TransactionModal } from 'shared/transaction-modal/transaction-modal';
 import {
   TxStagePending,
   TxStageSuccess,
   TxStageSuccessMultisig,
   TxStageSign,
   TxStageFail,
-} from 'shared/transaction-modal/tx-stages';
+} from 'shared/transaction-modal/tx-stages-basic';
 import { useTransactionModal, TX_STAGE } from 'shared/transaction-modal';
 import {
   trackMatomoEvent,
@@ -79,12 +79,12 @@ export const TransactionModalClaim = () => {
   }, [amount, txStage, txHash, errorText, onRetry]);
 
   return (
-    <TransactionModalWrap
+    <TransactionModal
       open={isModalOpen}
       onClose={() => dispatchModalState({ type: 'close_modal' })}
       txStage={txStage}
     >
       {content}
-    </TransactionModalWrap>
+    </TransactionModal>
   );
 };

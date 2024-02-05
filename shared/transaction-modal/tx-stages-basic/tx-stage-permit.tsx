@@ -1,9 +1,7 @@
-import { FC } from 'react';
-
 import { TransactionModalContent } from 'shared/transaction-modal/transaction-modal-content';
 import { StageIconSign } from './icons';
 
-export const TxStagePermit: FC = () => {
+export const TxStagePermit = () => {
   return (
     <TransactionModalContent
       icon={<StageIconSign />}

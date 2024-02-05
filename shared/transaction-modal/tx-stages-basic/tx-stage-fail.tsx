@@ -1,5 +1,3 @@
-import { FC } from 'react';
-
 import { ErrorMessage } from 'utils';
 
 import { TransactionModalContent } from 'shared/transaction-modal/transaction-modal-content';
@@ -8,12 +6,10 @@ import { RetryButtonStyled } from './styles';
 
 type TxStageFailProps = {
   failedText?: string | null;
-  onClickRetry?: React.MouseEventHandler<HTMLSpanElement>;
+  onRetry?: React.MouseEventHandler<HTMLSpanElement>;
 };
 
-export const TxStageFail: FC<TxStageFailProps> = (props) => {
-  const { failedText, onClickRetry } = props;
-
+export const TxStageFail = ({ failedText, onRetry }: TxStageFailProps) => {
   return (
     <TransactionModalContent
       title="Transaction Failed"
@@ -21,8 +17,8 @@ export const TxStageFail: FC<TxStageFailProps> = (props) => {
       description={failedText ?? 'Something went wrong'}
       footerHint={
         failedText !== ErrorMessage.NOT_ENOUGH_ETHER &&
-        onClickRetry && (
-          <RetryButtonStyled onClick={onClickRetry}>Retry</RetryButtonStyled>
+        onRetry && (
+          <RetryButtonStyled onClick={onRetry}>Retry</RetryButtonStyled>
         )
       }
     />

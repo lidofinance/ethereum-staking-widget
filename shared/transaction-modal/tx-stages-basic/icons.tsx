@@ -41,12 +41,12 @@ export const StageIconFail = createStageIcon(
 );
 
 export const StageIconSign = createStageIcon(
-  <TxLoader size="large" />, // maybe no wrapper
+  <TxLoader size="large" />,
   <LedgerConfirm fill="transparent" />,
 );
 
-export const StageIconBlock = createStageIcon(
-  <TxLoader size="large" />, // maybe no wrapper
+export const StageIconLoader = createStageIcon(
+  <TxLoader size="large" />,
   <LedgerLoading fill="transparent" />,
 );
 

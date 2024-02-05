@@ -8,13 +8,10 @@ import { ErrorMessage } from 'utils';
 
 type TxStageLimitProps = {
   failedText?: string | null;
-  onClickRetry: React.MouseEventHandler<HTMLButtonElement>;
+  onRetry: React.MouseEventHandler<HTMLButtonElement>;
 };
 
-export const TxStageLimit = ({
-  failedText,
-  onClickRetry,
-}: TxStageLimitProps) => {
+export const TxStageLimit = ({ failedText, onRetry }: TxStageLimitProps) => {
   const oneInchLinkProps = use1inchLinkProps();
 
   return (
@@ -25,7 +22,7 @@ export const TxStageLimit = ({
       footer={
         failedText !== ErrorMessage.NOT_ENOUGH_ETHER && (
           <Grid>
-            <RetryButton color="secondary" onClick={onClickRetry} size="xs">
+            <RetryButton color="secondary" onClick={onRetry} size="xs">
               Retry
             </RetryButton>
             <ButtonLinkSmall {...oneInchLinkProps}>

@@ -13,11 +13,11 @@ import {
   TxStageSign,
   TxStageSuccess,
   TxStageSuccessMultisig,
-} from '../tx-stages';
-import { TxStageLimit } from 'shared/transaction-modal/tx-stages/tx-stage-limit';
+} from '../tx-stages-basic';
+import { TxStageLimit } from 'shared/transaction-modal/tx-stages-basic/tx-stage-limit';
 import { FormatToken } from 'shared/formatters';
 import { TxLinkEtherscan } from '../../components/tx-link-etherscan';
-import { TransactionModalWrap } from '../transaction-modal-wrap';
+import { TransactionModal } from '../transaction-modal';
 
 interface TxStageModalProps extends ModalProps {
   txStage: TX_STAGE;
@@ -134,12 +134,11 @@ export const TransactionModalStagesRouted = memo((props: TxStageModalProps) => {
       case TX_STAGE.SUCCESS_MULTISIG:
         return <TxStageSuccessMultisig />;
       case TX_STAGE.SUCCESS: {
-        const successText =
+        const successOperationText =
           txOperation === TX_OPERATION.APPROVE ? 'Unlock' : operationText;
-
-        const successTitle = (
+        const successText = (
           <>
-            {successText} operation was successful.{' '}
+            {successOperationText} operation was successful.{' '}
             {txHash && (
               <>
                 Transaction can be viewed on{' '}
@@ -153,13 +152,13 @@ export const TransactionModalStagesRouted = memo((props: TxStageModalProps) => {
           return (
             <TxStageSuccess
               txHash={txHash}
-              title={successTitle}
-              description={
+              title={
                 <>
                   <FormatToken amount={allowanceAmount} symbol={'stETH'} /> was
                   unlocked to wrap.
                 </>
               }
+              description={successText}
             />
           );
         }
@@ -179,23 +178,20 @@ export const TransactionModalStagesRouted = memo((props: TxStageModalProps) => {
             }
             description={successText}
             showEtherscan={false}
-          >
-            <L2LowFee token={balanceToken || 'stETH'} />
-          </TxStageSuccess>
+            footer={<L2LowFee token={balanceToken || 'stETH'} />}
+          />
         );
       }
       case TX_STAGE.FAIL:
-        return <TxStageFail failedText={failedText} onClickRetry={onRetry} />;
+        return <TxStageFail failedText={failedText} onRetry={onRetry} />;
       case TX_STAGE.LIMIT:
-        return <TxStageLimit failedText={failedText} onClickRetry={onRetry} />;
+        return <TxStageLimit failedText={failedText} onRetry={onRetry} />;
       default:
         return null;
     }
   };
 
   return (
-    <TransactionModalWrap {...modalPropsArgs}>
-      {renderContent()}
-    </TransactionModalWrap>
+    <TransactionModal {...modalPropsArgs}>{renderContent()}</TransactionModal>
   );
 });

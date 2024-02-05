@@ -1,14 +1,17 @@
-import { FC } from 'react';
-import { Modal, ModalProps } from '@lidofinance/lido-ui';
+import { Modal } from '@lidofinance/lido-ui';
 import { useConnectorInfo } from 'reef-knot/web3-react';
 
 import { TX_STAGE } from 'shared/transaction-modal';
+import { getUseModal, ModalComponentType } from 'providers/modal-provider';
 
-interface TransactionModalWrapProps extends ModalProps {
+type TransactionModalProps = {
   txStage?: TX_STAGE;
-}
+  children?: React.ReactNode;
+};
 
-export const TransactionModalWrap: FC<TransactionModalWrapProps> = (props) => {
+export const TransactionModal: ModalComponentType<TransactionModalProps> = (
+  props,
+) => {
   const { onClose, txStage, children } = props;
 
   const { isLedger } = useConnectorInfo();
@@ -25,3 +28,5 @@ export const TransactionModalWrap: FC<TransactionModalWrapProps> = (props) => {
     </Modal>
   );
 };
+
+export const useTransactionModal = getUseModal(TransactionModal);
