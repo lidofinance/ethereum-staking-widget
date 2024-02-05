@@ -68,10 +68,7 @@ export const TransactionModalClaim = () => {
         return <TxStageSuccessMultisig />;
       case TX_STAGE.FAIL:
         return (
-          <TxStageFail
-            failedText={errorText}
-            onClickRetry={onRetry ?? undefined}
-          />
+          <TxStageFail failedText={errorText} onRetry={onRetry ?? undefined} />
         );
       default:
         return null;

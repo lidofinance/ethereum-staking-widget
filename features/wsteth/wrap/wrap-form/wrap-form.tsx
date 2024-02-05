@@ -4,7 +4,7 @@ import { WrapFormStats } from './wrap-stats';
 import { WrapBlock } from '../../shared/styles';
 import { TransactionModalWrap } from './transaction-modal-wrap';
 import { WrapFormProvider } from '../wrap-form-context/wrap-form-context';
-import { FormControllerWrap } from '../wrap-form-controls/form-controller-wrap';
+import { FormController } from 'shared/hook-form/form-controller';
 import { TokenSelectWrap } from '../wrap-form-controls/token-select-wrap';
 import { TokenAmountInputWrap } from '../wrap-form-controls/token-amount-input-wrap';
 import { SubmitButtonWrap } from '../wrap-form-controls/submit-button-wrap';
@@ -19,13 +19,13 @@ export const WrapForm: React.FC = memo(() => {
     <TransactionModalProvider>
       <WrapFormProvider>
         <WrapBlock data-testid="wrapForm">
-          <FormControllerWrap>
+          <FormController>
             <InputGroupHookForm errorField="amount">
               <TokenSelectWrap />
               <TokenAmountInputWrap />
             </InputGroupHookForm>
             <SubmitButtonWrap />
-          </FormControllerWrap>
+          </FormController>
           <L2Wsteth matomoEventLink={MATOMO_CLICK_EVENTS.l2BannerWrap} />
           <WrapFormStats />
           <TransactionModalWrap />

@@ -290,6 +290,7 @@ type useWithdrawalRequestParams = {
   amount: BigNumber | null;
   token: TOKENS.STETH | TOKENS.WSTETH;
   onConfirm?: () => Promise<void>;
+  onRetry?: () => void;
 };
 
 export const useWithdrawalRequest = ({
@@ -342,11 +343,15 @@ export const useWithdrawalRequest = ({
   const isTokenLocked = isApprovalFlow && needsApprove;
 
   const request = useCallback(
-    async (
-      requests: BigNumber[] | null,
-      amount: BigNumber | null,
-      token: TokensWithdrawable,
-    ) => {
+    async ({
+      requests,
+      amount,
+      token,
+    }: {
+      requests: BigNumber[] | null;
+      amount: BigNumber | null;
+      token: TokensWithdrawable;
+    }) => {
       // define and set retry point
       try {
         invariant(
@@ -357,7 +362,7 @@ export const useWithdrawalRequest = ({
         if (isBunker) {
           const { ok: bunkerDialogResult } =
             await dispatchAsyncDialog('bunker');
-          if (!bunkerDialogResult) return { success: false };
+          if (!bunkerDialogResult) return false;
         }
         // get right method
         const method = getRequestMethod(isApprovalFlow, token);
@@ -400,11 +405,11 @@ export const useWithdrawalRequest = ({
         dispatchModalState({
           type: isMultisig ? 'success_multisig' : 'success',
         });
-        return { success: true };
+        return true;
       } catch (error) {
         const errorMessage = getErrorMessage(error);
         dispatchModalState({ type: 'error', errorText: errorMessage });
-        return { success: false, error: error };
+        return false;
       }
     },
     [

@@ -14,7 +14,10 @@ import { useWrapFormProcessor } from '../hooks/use-wrap-form-processing';
 import { useWrapFormValidationContext } from '../hooks/use-wrap-form-validation-context';
 import { useFormControllerRetry } from 'shared/hook-form/form-controller/use-form-controller-retry-delegate';
 
-import { FormControllerContext } from 'shared/hook-form/form-controller';
+import {
+  FormControllerContext,
+  FormControllerContextValueType,
+} from 'shared/hook-form/form-controller';
 
 import {
   WrapFormDataContextValueType,
@@ -62,7 +65,11 @@ export const WrapFormProvider: FC<PropsWithChildren> = ({ children }) => {
     resolver: WrapFormValidationResolver,
   });
 
-  const { watch } = formObject;
+  const {
+    watch,
+    reset,
+    formState: { defaultValues },
+  } = formObject;
   const [token, amount] = watch(['token', 'amount']);
   const { retryDelegate, retryFire } = useFormControllerRetry();
 
@@ -92,23 +99,28 @@ export const WrapFormProvider: FC<PropsWithChildren> = ({ children }) => {
         ? networkData.gasLimitStETH
         : networkData.gasLimitETH,
       willReceiveWsteth,
+    }),
+    [networkData, approvalData, isSteth, willReceiveWsteth],
+  );
+
+  const formControllerValue = useMemo(
+    (): FormControllerContextValueType<WrapFormInputType> => ({
       onSubmit: processWrapFormFlow,
+      onReset: ({ token }: WrapFormInputType) => {
+        reset({
+          ...defaultValues,
+          token,
+        });
+      },
       retryDelegate,
     }),
-    [
-      networkData,
-      approvalData,
-      isSteth,
-      willReceiveWsteth,
-      processWrapFormFlow,
-      retryDelegate,
-    ],
+    [processWrapFormFlow, retryDelegate, reset, defaultValues],
   );
 
   return (
     <FormProvider {...formObject}>
       <WrapFormDataContext.Provider value={value}>
-        <FormControllerContext.Provider value={value}>
+        <FormControllerContext.Provider value={formControllerValue}>
           {children}
         </FormControllerContext.Provider>
       </WrapFormDataContext.Provider>

@@ -13,7 +13,10 @@ import { useUnwrapFormProcessor } from '../hooks/use-unwrap-form-processing';
 import { useUnwrapFormValidationContext } from '../hooks/use-unwra-form-validation-context';
 import { useFormControllerRetry } from 'shared/hook-form/form-controller/use-form-controller-retry-delegate';
 
-import { FormControllerContext } from 'shared/hook-form/form-controller';
+import {
+  FormControllerContext,
+  FormControllerContextValueType,
+} from 'shared/hook-form/form-controller';
 
 import {
   UnwrapFormDataContextValueType,
@@ -73,16 +76,22 @@ export const UnwrapFormProvider: FC<PropsWithChildren> = ({ children }) => {
     (): UnwrapFormDataContextValueType => ({
       ...networkData,
       willReceiveStETH,
+    }),
+    [networkData, willReceiveStETH],
+  );
+
+  const formControllerValue = useMemo(
+    (): FormControllerContextValueType<UnwrapFormInputType> => ({
       onSubmit: processUnwrapFormFlow,
       retryDelegate,
     }),
-    [networkData, processUnwrapFormFlow, willReceiveStETH, retryDelegate],
+    [processUnwrapFormFlow, retryDelegate],
   );
 
   return (
     <FormProvider {...formObject}>
       <UnwrapFormDataContext.Provider value={value}>
-        <FormControllerContext.Provider value={value}>
+        <FormControllerContext.Provider value={formControllerValue}>
           {children}
         </FormControllerContext.Provider>
       </UnwrapFormDataContext.Provider>
