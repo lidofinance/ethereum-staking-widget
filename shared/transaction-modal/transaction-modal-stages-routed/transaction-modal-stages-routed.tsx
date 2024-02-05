@@ -192,6 +192,8 @@ export const TransactionModalStagesRouted = memo((props: TxStageModalProps) => {
   };
 
   return (
-    <TransactionModal {...modalPropsArgs}>{renderContent()}</TransactionModal>
+    <TransactionModal {...modalPropsArgs} txStage={txStage} onClose={onClose}>
+      {renderContent()}
+    </TransactionModal>
   );
 });
