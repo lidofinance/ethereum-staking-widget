@@ -1,8 +1,6 @@
 import { useTransactionModal } from 'shared/transaction-modal';
-import { convertTxStageToLegacy } from 'features/wsteth/shared/utils/convertTxModalStageToLegacy';
-import { TxStageModal } from 'shared/components';
+import { TxStageModal } from 'shared/components/tx-stage-modal';
 import { useUnwrapFormData } from '../unwrap-form-context';
-import { TX_OPERATION as TX_OPERATION_LEGACY } from 'shared/components/tx-stage-modal';
 
 export const UnwrapFormTxModal = () => {
   const { stethBalance, willReceiveStETH } = useUnwrapFormData();
@@ -12,8 +10,9 @@ export const UnwrapFormTxModal = () => {
     <TxStageModal
       open={modalState.isModalOpen}
       onClose={() => dispatchModalState({ type: 'close_modal' })}
-      txStage={convertTxStageToLegacy(modalState.txStage)}
-      txOperation={TX_OPERATION_LEGACY.UNWRAPPING}
+      txStage={modalState.txStage}
+      txOperation={modalState.txOperation}
+      operationText="Unwrapping"
       txHash={modalState.txHash}
       amount={modalState.amount}
       amountToken="wstETH"

@@ -2,13 +2,9 @@ import { useTransactionModal } from 'shared/transaction-modal/transaction-modal-
 import { useFormContext } from 'react-hook-form';
 import { useWrapFormData, WrapFormInputType } from '../wrap-form-context';
 
-import { TxStageModal } from 'shared/components';
+import { TxStageModal } from 'shared/components/tx-stage-modal';
 
 import { getTokenDisplayName } from 'utils/getTokenDisplayName';
-import {
-  convertTxStageToLegacy,
-  convertTxStageToLegacyTxOperationWrap,
-} from 'features/wsteth/shared/utils/convertTxModalStageToLegacy';
 
 export const WrapFormTxModal = () => {
   const { watch } = useFormContext<WrapFormInputType>();
@@ -29,8 +25,9 @@ export const WrapFormTxModal = () => {
     <TxStageModal
       open={isModalOpen}
       onClose={() => dispatchModalState({ type: 'close_modal' })}
-      txStage={convertTxStageToLegacy(txStage)}
-      txOperation={convertTxStageToLegacyTxOperationWrap(txOperation)}
+      txStage={txStage}
+      txOperation={txOperation}
+      operationText="Wrapping"
       txHash={txHash}
       amount={amount}
       amountToken={getTokenDisplayName(token)}

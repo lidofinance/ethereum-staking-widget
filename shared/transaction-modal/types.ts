@@ -7,6 +7,7 @@ export enum TX_STAGE {
   SUCCESS,
   SUCCESS_MULTISIG,
   FAIL,
+  LIMIT,
 }
 
 export enum TX_OPERATION {

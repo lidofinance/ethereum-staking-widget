@@ -1,35 +1,23 @@
-import { memo, useRef, useState } from 'react';
+import { memo } from 'react';
 import { useConnectorInfo } from 'reef-knot/web3-react';
-import { use1inchLinkProps } from 'features/stake/hooks';
 
-import { TxLinkEtherscan } from 'shared/components/tx-link-etherscan';
 import { L2LowFee } from 'shared/banners/l2-low-fee';
-import { TxStageModalShape } from './tx-stage-modal-shape';
-import { ErrorMessage } from 'utils';
-import { ModalProps } from '@lidofinance/lido-ui';
-import { FormatToken } from 'shared/formatters';
-import {
-  StageIconSuccess,
-  StageIconFail,
-  StageIconSign,
-  StageIconBlock,
-  StageIconLimit,
-} from 'features/withdrawals/shared/tx-stage-modal/stages/icons';
-import {
-  StylableLink,
-  LowercaseSpan,
-  ButtonLinkSmall,
-  RetryButton,
-  Grid,
-  SkeletonBalance,
-} from './styles';
+import { Modal, ModalProps } from '@lidofinance/lido-ui';
+import { SkeletonBalance } from './styles';
 
 import { BigNumber } from 'ethers';
+import { TX_STAGE, TX_OPERATION } from 'shared/transaction-modal';
 import {
-  getOperationProcessingDisplayText,
-  getSuccessText,
-} from './text-utils';
-import { TX_STAGE, TX_OPERATION } from './types';
+  TxStageFail,
+  TxStagePending,
+  TxStagePermit,
+  TxStageSign,
+  TxStageSuccess,
+  TxStageSuccessMultisig,
+} from 'features/withdrawals/shared/tx-stage-modal';
+import { TxStageLimit } from 'features/withdrawals/shared/tx-stage-modal/stages/tx-stage-limit';
+import { FormatToken } from 'shared/formatters';
+import { TxLinkEtherscan } from '../tx-link-etherscan';
 
 interface TxStageModalProps extends ModalProps {
   txStage: TX_STAGE;
@@ -38,6 +26,7 @@ interface TxStageModalProps extends ModalProps {
   amountToken: string;
   willReceiveAmount?: BigNumber | null;
   willReceiveAmountToken?: string;
+  operationText: string;
   txHash?: string | null;
   balance?: BigNumber;
   balanceToken?: 'stETH' | 'wstETH';
@@ -55,6 +44,7 @@ export const TxStageModal = memo((props: TxStageModalProps) => {
     amountToken,
     willReceiveAmount = '',
     willReceiveAmountToken,
+    operationText,
     balance,
     balanceToken,
     allowanceAmount,
@@ -65,18 +55,12 @@ export const TxStageModal = memo((props: TxStageModalProps) => {
   } = props;
 
   const { isLedger } = useConnectorInfo();
-  const oneInchLinkProps = use1inchLinkProps();
 
   const isCloseButtonHidden =
     isLedger &&
     txStage !== TX_STAGE.SUCCESS &&
     txStage !== TX_STAGE.SUCCESS_MULTISIG &&
     txStage !== TX_STAGE.FAIL;
-
-  const modalProps = {
-    ...modalPropsArgs,
-    onClose: isCloseButtonHidden ? undefined : onClose,
-  };
 
   const amountEl = amount && (
     <FormatToken
@@ -87,170 +71,142 @@ export const TxStageModal = memo((props: TxStageModalProps) => {
     />
   );
 
-  const willReceiveAmountEl = willReceiveAmount && (
-    <FormatToken
-      amount={willReceiveAmount}
-      symbol={willReceiveAmountToken || ''}
-      adaptiveDecimals
-      trimEllipsis
-    />
+  const approvingTitle = <>You are now approving {amountEl}</>;
+  const approvingDescription = <>Approving for {amountEl}</>;
+
+  const operationTitle = (
+    <>
+      You are now {operationText.toLowerCase()} {amountEl}
+    </>
+  );
+  const operationDescription = (
+    <>
+      {operationText} {amountEl}.{' '}
+      {txOperation !== TX_OPERATION.APPROVE && (
+        <>
+          You will receive{' '}
+          {willReceiveAmount && (
+            <FormatToken
+              amount={willReceiveAmount}
+              symbol={willReceiveAmountToken || ''}
+              adaptiveDecimals
+              trimEllipsis
+            />
+          )}{' '}
+          {willReceiveAmountToken}
+        </>
+      )}
+    </>
   );
 
-  const operationText = getOperationProcessingDisplayText(txOperation);
-
-  const [isRetryLoading, setRetryLoading] = useState(false);
-  const retryResetTimerRef = useRef<NodeJS.Timeout | 0>(0);
-  const onRetryClick: React.MouseEventHandler = (event) => {
-    if (!isRetryLoading) {
-      if (retryResetTimerRef.current) {
-        clearTimeout(retryResetTimerRef.current);
-      }
-      setRetryLoading(true);
-      onRetry(event);
-      retryResetTimerRef.current = setTimeout(() => {
-        setRetryLoading(false);
-      }, 5000);
+  const renderSign = () => {
+    switch (txOperation) {
+      case TX_OPERATION.APPROVE:
+        return (
+          <TxStageSign
+            title={approvingTitle}
+            description={approvingDescription}
+          />
+        );
+      case TX_OPERATION.CONTRACT:
+        return (
+          <TxStageSign
+            title={operationTitle}
+            description={operationDescription}
+          />
+        );
+      case TX_OPERATION.PERMIT:
+        return <TxStagePermit />;
+      default:
+        return null;
     }
   };
 
-  if (txStage === TX_STAGE.IDLE) {
-    return null;
-  }
+  const renderBlock = () => {
+    switch (txOperation) {
+      case TX_OPERATION.APPROVE:
+        return <TxStagePending txHash={txHash} title={approvingTitle} />;
+      case TX_OPERATION.CONTRACT:
+        return <TxStagePending txHash={txHash} title={operationTitle} />;
+      default:
+        return null;
+    }
+  };
 
-  if (txStage === TX_STAGE.SIGN) {
-    return (
-      <TxStageModalShape
-        {...modalProps}
-        icon={<StageIconSign />}
-        title={
+  const renderContent = () => {
+    switch (txStage) {
+      case TX_STAGE.SIGN:
+        return renderSign();
+      case TX_STAGE.BLOCK:
+        return renderBlock();
+      case TX_STAGE.SUCCESS_MULTISIG:
+        return <TxStageSuccessMultisig />;
+      case TX_STAGE.SUCCESS: {
+        const successText =
+          txOperation === TX_OPERATION.APPROVE ? 'Unlock' : operationText;
+
+        const successTitle = (
           <>
-            You are now <LowercaseSpan>{operationText}</LowercaseSpan>{' '}
-            {amountEl} {amountToken}
-          </>
-        }
-        description={
-          <>
-            {operationText} {amountEl} {amountToken}.{' '}
-            {txOperation !== TX_OPERATION.APPROVING && (
+            {successText} operation was successful.{' '}
+            {txHash && (
               <>
-                You will receive {willReceiveAmountEl} {willReceiveAmountToken}
+                Transaction can be viewed on{' '}
+                <TxLinkEtherscan txHash={txHash} text="Etherscan" />
               </>
             )}
           </>
+        );
+
+        if (txOperation === TX_OPERATION.APPROVE && allowanceAmount) {
+          return (
+            <TxStageSuccess
+              txHash={txHash}
+              title={successTitle}
+              description={
+                <>
+                  <FormatToken amount={allowanceAmount} symbol={'stETH'} /> was
+                  unlocked to wrap.
+                </>
+              }
+            />
+          );
         }
-        footerHint="Confirm this transaction in your wallet"
-      />
-    );
-  }
 
-  if (txStage === TX_STAGE.BLOCK) {
-    return (
-      <TxStageModalShape
-        {...modalProps}
-        icon={<StageIconBlock />}
-        title={
-          <>
-            You are now <LowercaseSpan>{operationText}</LowercaseSpan>{' '}
-            {amountEl} {amountToken}
-          </>
-        }
-        description="Awaiting block confirmation"
-        footerHint={<TxLinkEtherscan txHash={txHash} />}
-      />
-    );
-  }
-
-  if (txStage === TX_STAGE.SUCCESS_MULTISIG) {
-    return (
-      <TxStageModalShape
-        {...modalProps}
-        icon={<StageIconSuccess />}
-        title="Success"
-        description="Your transaction has been successfully created in the multisig wallet and awaits approval from other participants"
-      />
-    );
-  }
-
-  if (txStage === TX_STAGE.SUCCESS) {
-    const successText = getSuccessText(txHash, txOperation);
-
-    if (txOperation === TX_OPERATION.APPROVING && allowanceAmount) {
-      return (
-        <TxStageModalShape
-          {...modalProps}
-          icon={<StageIconSuccess />}
-          title={successText}
-          description={
-            <>
-              <FormatToken amount={allowanceAmount} symbol={'stETH'} /> was
-              unlocked to wrap.
-            </>
-          }
-          footerHint={<TxLinkEtherscan txHash={txHash} />}
-        />
-      );
+        return (
+          <TxStageSuccess
+            txHash={txHash}
+            title={
+              <>
+                Your new balance is <wbr />
+                {balance && balanceToken ? (
+                  <FormatToken amount={balance} symbol={balanceToken} />
+                ) : (
+                  <SkeletonBalance />
+                )}
+              </>
+            }
+            description={successText}
+            showEtherscan={false}
+          >
+            <L2LowFee token={balanceToken || 'stETH'} />
+          </TxStageSuccess>
+        );
+      }
+      case TX_STAGE.FAIL:
+        return <TxStageFail failedText={failedText} onClickRetry={onRetry} />;
+      case TX_STAGE.LIMIT:
+        return <TxStageLimit failedText={failedText} onClickRetry={onRetry} />;
+      default:
+        return null;
     }
+  };
 
-    return (
-      <TxStageModalShape
-        {...modalProps}
-        icon={<StageIconSuccess />}
-        title={
-          <>
-            Your new balance is <wbr />
-            {balance && balanceToken ? (
-              <FormatToken amount={balance} symbol={balanceToken} />
-            ) : (
-              <SkeletonBalance />
-            )}
-          </>
-        }
-        description={successText}
-        footer={<L2LowFee token={balanceToken || 'stETH'} />}
-      />
-    );
-  }
-
-  if (txStage === TX_STAGE.FAIL) {
-    return (
-      <TxStageModalShape
-        {...modalProps}
-        icon={<StageIconFail />}
-        title="Transaction Failed"
-        description={failedText ?? 'Something went wrong'}
-        footerHint={
-          failedText !== ErrorMessage.NOT_ENOUGH_ETHER && (
-            <StylableLink aria-disabled={isRetryLoading} onClick={onRetryClick}>
-              Retry
-            </StylableLink>
-          )
-        }
-      />
-    );
-  }
-
-  if (txStage === TX_STAGE.LIMIT) {
-    return (
-      <TxStageModalShape
-        {...modalProps}
-        icon={<StageIconLimit />}
-        title="Stake limit exhausted"
-        description={failedText ?? 'Something went wrong'}
-        footer={
-          failedText !== ErrorMessage.NOT_ENOUGH_ETHER && (
-            <Grid>
-              <RetryButton color="secondary" onClick={onRetryClick} size="xs">
-                Retry
-              </RetryButton>
-              <ButtonLinkSmall {...oneInchLinkProps}>
-                Swap on 1inch
-              </ButtonLinkSmall>
-            </Grid>
-          )
-        }
-      />
-    );
-  }
-
-  return null;
+  return (
+    <Modal
+      {...modalPropsArgs}
+      onClose={isCloseButtonHidden ? undefined : onClose}
+    >
+      {renderContent()}
+    </Modal>
+  );
 });
