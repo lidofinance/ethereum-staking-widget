@@ -13,6 +13,7 @@ import type { UnwrapFormInputType } from '../unwrap-form-context';
 
 type UseUnwrapFormProcessorArgs = {
   onConfirm?: () => Promise<void>;
+  onRetry?: () => void;
 };
 
 export const useUnwrapFormProcessor = ({

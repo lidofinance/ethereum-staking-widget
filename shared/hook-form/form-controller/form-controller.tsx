@@ -1,7 +1,7 @@
 import { FC, PropsWithChildren, useEffect, useMemo } from 'react';
 import { useWeb3 } from 'reef-knot/web3-react';
 import { UseFormReset, useFormContext } from 'react-hook-form';
-import { useTransactionModal } from 'shared/transaction-modal';
+import { useTransactionModalNullable } from 'shared/transaction-modal';
 import { useFormControllerContext } from './form-controller-context';
 
 type FormControllerProps = {
@@ -15,8 +15,8 @@ export const FormController: FC<PropsWithChildren<FormControllerProps>> = ({
 }) => {
   const { active } = useWeb3();
   const { handleSubmit, reset: resetDefault } = useFormContext();
-  const { onSubmit } = useFormControllerContext();
-  const { dispatchModalState } = useTransactionModal();
+  const { onSubmit, retryDelegate } = useFormControllerContext();
+  const dispatchModalState = useTransactionModalNullable()?.dispatchModalState;
 
   const reset = resetProp ?? resetDefault;
 
@@ -32,7 +32,12 @@ export const FormController: FC<PropsWithChildren<FormControllerProps>> = ({
 
   // Bind retry callback
   useEffect(() => {
-    dispatchModalState({ type: 'set_on_retry', callback: doSubmit });
+    retryDelegate.subscribe(doSubmit);
+  }, [retryDelegate, doSubmit]);
+
+  // LEGACY bind retry callback
+  useEffect(() => {
+    dispatchModalState?.({ type: 'set_on_retry', callback: doSubmit });
   }, [dispatchModalState, doSubmit]);
 
   // Reset form amount after disconnect wallet

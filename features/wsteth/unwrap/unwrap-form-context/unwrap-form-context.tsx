@@ -11,6 +11,7 @@ import { useStethByWsteth } from 'shared/hooks';
 import { useUnwrapFormNetworkData } from '../hooks/use-unwrap-form-network-data';
 import { useUnwrapFormProcessor } from '../hooks/use-unwrap-form-processing';
 import { useUnwrapFormValidationContext } from '../hooks/use-unwra-form-validation-context';
+import { useFormControllerRetry } from 'shared/hook-form/form-controller/use-form-controller-retry-delegate';
 
 import { FormControllerContext } from 'shared/hook-form/form-controller';
 
@@ -59,9 +60,11 @@ export const UnwrapFormProvider: FC<PropsWithChildren> = ({ children }) => {
 
   const { watch } = formObject;
   const [amount] = watch(['amount']);
+  const { retryDelegate, retryFire } = useFormControllerRetry();
 
   const processUnwrapFormFlow = useUnwrapFormProcessor({
     onConfirm: networkData.revalidateUnwrapFormData,
+    onRetry: retryFire,
   });
 
   const willReceiveStETH = useStethByWsteth(amount ?? Zero);
@@ -71,8 +74,9 @@ export const UnwrapFormProvider: FC<PropsWithChildren> = ({ children }) => {
       ...networkData,
       willReceiveStETH,
       onSubmit: processUnwrapFormFlow,
+      retryDelegate,
     }),
-    [networkData, processUnwrapFormFlow, willReceiveStETH],
+    [networkData, processUnwrapFormFlow, willReceiveStETH, retryDelegate],
   );
 
   return (

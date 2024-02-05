@@ -12,6 +12,7 @@ import { useWrapTxApprove } from '../hooks/use-wrap-tx-approve';
 import { useWrapFormNetworkData } from '../hooks/use-wrap-form-network-data';
 import { useWrapFormProcessor } from '../hooks/use-wrap-form-processing';
 import { useWrapFormValidationContext } from '../hooks/use-wrap-form-validation-context';
+import { useFormControllerRetry } from 'shared/hook-form/form-controller/use-form-controller-retry-delegate';
 
 import { FormControllerContext } from 'shared/hook-form/form-controller';
 
@@ -63,11 +64,13 @@ export const WrapFormProvider: FC<PropsWithChildren> = ({ children }) => {
 
   const { watch } = formObject;
   const [token, amount] = watch(['token', 'amount']);
+  const { retryDelegate, retryFire } = useFormControllerRetry();
 
   const approvalData = useWrapTxApprove({ amount: amount ?? Zero, token });
   const processWrapFormFlow = useWrapFormProcessor({
     approvalData,
     onConfirm: networkData.revalidateWrapFormData,
+    onRetry: retryFire,
   });
 
   const isSteth = token === TOKENS_TO_WRAP.STETH;
@@ -90,6 +93,7 @@ export const WrapFormProvider: FC<PropsWithChildren> = ({ children }) => {
         : networkData.gasLimitETH,
       willReceiveWsteth,
       onSubmit: processWrapFormFlow,
+      retryDelegate,
     }),
     [
       networkData,
@@ -97,6 +101,7 @@ export const WrapFormProvider: FC<PropsWithChildren> = ({ children }) => {
       isSteth,
       willReceiveWsteth,
       processWrapFormFlow,
+      retryDelegate,
     ],
   );
 

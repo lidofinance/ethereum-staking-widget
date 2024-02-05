@@ -16,6 +16,7 @@ import type {
 type UseWrapFormProcessorArgs = {
   approvalData: WrapFormApprovalData;
   onConfirm?: () => Promise<void>;
+  onRetry?: () => void;
 };
 
 export const useWrapFormProcessor = ({

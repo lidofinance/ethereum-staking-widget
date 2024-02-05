@@ -200,6 +200,10 @@ const initTxModalState = (): TransactionModalState => ({
   dialog: null,
 });
 
+export const useTransactionModalNullable = () => {
+  return useContext(TransactionModalContext);
+};
+
 export const useTransactionModal = () => {
   const r = useContext(TransactionModalContext);
   invariant(r, 'useTransactionModal was used outside TransactionModalContext');
