@@ -1,14 +1,14 @@
 import { useMemo } from 'react';
 
+import { TransactionModalWrap } from 'shared/transaction-modal/transaction-modal-wrap';
 import {
-  TxStageModal,
   TxStagePending,
   TxStageSign,
   TxStagePermit,
   TxStageFail,
   TxStageBunker,
   TxStageSuccessMultisig,
-} from 'features/withdrawals/shared/tx-stage-modal';
+} from 'shared/transaction-modal/stages';
 import {
   useTransactionModal,
   TX_STAGE,
@@ -16,10 +16,10 @@ import {
 } from 'shared/transaction-modal';
 
 import { getTokenDisplayName } from 'utils/getTokenDisplayName';
-import { TxRequestStageSuccess } from './tx-request-stage-success';
+import { TxRequestStageSuccess } from './tx-stage-request-success';
 import { FormatToken } from 'shared/formatters';
 
-export const TxRequestModal = () => {
+export const TransactionModalRequest = () => {
   const modalState = useTransactionModal();
   const content = useMemo(() => {
     const {
@@ -124,12 +124,12 @@ export const TxRequestModal = () => {
   }, [modalState]);
 
   return (
-    <TxStageModal
+    <TransactionModalWrap
       open={modalState.isModalOpen}
       onClose={() => modalState.dispatchModalState({ type: 'close_modal' })}
       txStage={modalState.txStage}
     >
       {content}
-    </TxStageModal>
+    </TransactionModalWrap>
   );
 };

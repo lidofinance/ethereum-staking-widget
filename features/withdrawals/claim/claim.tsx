@@ -2,7 +2,7 @@ import { TransactionModalProvider } from 'shared/transaction-modal/transaction-m
 import { ClaimFaq } from 'features/withdrawals/withdrawals-faq/claim-faq';
 
 import { ClaimForm } from './form';
-import { TxClaimModal } from './tx-modal';
+import { TransactionModalClaim } from './transaction-modal-claim';
 import { ClaimWallet } from './wallet';
 import { ClaimFormProvider } from './claim-form-context';
 
@@ -13,7 +13,7 @@ export const Claim = () => {
         <ClaimWallet />
         <ClaimForm />
         <ClaimFaq />
-        <TxClaimModal />
+        <TransactionModalClaim />
       </ClaimFormProvider>
     </TransactionModalProvider>
   );

@@ -1,5 +1,5 @@
 import { useTransactionModal } from 'shared/transaction-modal';
-import { TxStageModal } from 'shared/components/tx-stage-modal';
+import { TransactionModalStagesRouted } from 'shared/transaction-modal/transaction-modal-stages-routed';
 import { useStakeFormData } from './stake-form-context';
 
 export const StakeFormModal = () => {
@@ -16,7 +16,7 @@ export const StakeFormModal = () => {
   } = useTransactionModal();
 
   return (
-    <TxStageModal
+    <TransactionModalStagesRouted
       open={isModalOpen}
       onClose={() => dispatchModalState({ type: 'close_modal' })}
       txStage={txStage}

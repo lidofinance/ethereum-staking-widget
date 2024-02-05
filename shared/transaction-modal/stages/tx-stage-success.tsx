@@ -1,7 +1,7 @@
 import { FC, PropsWithChildren } from 'react';
 
 import { TxLinkEtherscan } from 'shared/components/tx-link-etherscan';
-import { TxStageModalContent } from 'shared/components/tx-stage-modal-content';
+import { TransactionModalContent } from 'shared/transaction-modal/transaction-modal-content';
 import { StageIconSuccess } from './icons';
 
 type TxStageSuccessProps = {
@@ -25,7 +25,7 @@ export const TxStageSuccess: FC<PropsWithChildren<TxStageSuccessProps>> = (
   } = props;
 
   return (
-    <TxStageModalContent
+    <TransactionModalContent
       icon={<StageIconSuccess />}
       title={title}
       description={description}

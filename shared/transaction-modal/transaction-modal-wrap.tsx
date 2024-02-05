@@ -1,27 +1,23 @@
-import { FC, useMemo } from 'react';
+import { FC } from 'react';
 import { Modal, ModalProps } from '@lidofinance/lido-ui';
 import { useConnectorInfo } from 'reef-knot/web3-react';
 
 import { TX_STAGE } from 'shared/transaction-modal';
 
-interface TxStageModalProps extends ModalProps {
+interface TransactionModalWrapProps extends ModalProps {
   txStage?: TX_STAGE;
 }
 
-export const TxStageModal: FC<TxStageModalProps> = (props) => {
+export const TransactionModalWrap: FC<TransactionModalWrapProps> = (props) => {
   const { onClose, txStage, children } = props;
 
   const { isLedger } = useConnectorInfo();
 
-  const isCloseButtonHidden = useMemo(
-    () =>
-      isLedger &&
-      txStage &&
-      ![TX_STAGE.SUCCESS, TX_STAGE.SUCCESS_MULTISIG, TX_STAGE.FAIL].includes(
-        txStage,
-      ),
-    [isLedger, txStage],
-  );
+  const isCloseButtonHidden =
+    isLedger &&
+    txStage !== TX_STAGE.SUCCESS &&
+    txStage !== TX_STAGE.SUCCESS_MULTISIG &&
+    txStage !== TX_STAGE.FAIL;
 
   return (
     <Modal {...props} onClose={isCloseButtonHidden ? undefined : onClose}>

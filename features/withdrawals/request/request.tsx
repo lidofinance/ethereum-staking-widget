@@ -1,7 +1,7 @@
 import { RequestFormProvider } from './request-form-context';
 import { RequestFaq } from '../withdrawals-faq/request-faq';
 import { RequestForm } from './form';
-import { TxRequestModal } from './tx-modal';
+import { TransactionModalRequest } from './transaction-modal-request';
 import { RequestWallet } from './wallet';
 import { TransactionModalProvider } from 'shared/transaction-modal';
 
@@ -12,7 +12,7 @@ export const Request = () => {
         <RequestWallet />
         <RequestForm />
         <RequestFaq />
-        <TxRequestModal />
+        <TransactionModalRequest />
       </RequestFormProvider>
     </TransactionModalProvider>
   );

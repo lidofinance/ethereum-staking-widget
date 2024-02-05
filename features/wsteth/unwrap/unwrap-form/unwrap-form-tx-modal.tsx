@@ -1,5 +1,5 @@
 import { useTransactionModal } from 'shared/transaction-modal';
-import { TxStageModal } from 'shared/components/tx-stage-modal';
+import { TransactionModalStagesRouted } from 'shared/transaction-modal/transaction-modal-stages-routed';
 import { useUnwrapFormData } from '../unwrap-form-context';
 
 export const UnwrapFormTxModal = () => {
@@ -7,7 +7,7 @@ export const UnwrapFormTxModal = () => {
   const { dispatchModalState, onRetry, ...modalState } = useTransactionModal();
 
   return (
-    <TxStageModal
+    <TransactionModalStagesRouted
       open={modalState.isModalOpen}
       onClose={() => dispatchModalState({ type: 'close_modal' })}
       txStage={modalState.txStage}

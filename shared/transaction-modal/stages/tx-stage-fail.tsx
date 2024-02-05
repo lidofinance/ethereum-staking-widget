@@ -2,7 +2,7 @@ import { FC } from 'react';
 
 import { ErrorMessage } from 'utils';
 
-import { TxStageModalContent } from 'shared/components/tx-stage-modal-content';
+import { TransactionModalContent } from 'shared/transaction-modal/transaction-modal-content';
 import { StageIconFail } from './icons';
 import { RetryButtonStyled } from './styles';
 
@@ -15,7 +15,7 @@ export const TxStageFail: FC<TxStageFailProps> = (props) => {
   const { failedText, onClickRetry } = props;
 
   return (
-    <TxStageModalContent
+    <TransactionModalContent
       title="Transaction Failed"
       icon={<StageIconFail />}
       description={failedText ?? 'Something went wrong'}

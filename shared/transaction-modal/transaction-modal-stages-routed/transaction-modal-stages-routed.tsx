@@ -1,8 +1,7 @@
 import { memo } from 'react';
-import { useConnectorInfo } from 'reef-knot/web3-react';
 
 import { L2LowFee } from 'shared/banners/l2-low-fee';
-import { Modal, ModalProps } from '@lidofinance/lido-ui';
+import { ModalProps } from '@lidofinance/lido-ui';
 import { SkeletonBalance } from './styles';
 
 import { BigNumber } from 'ethers';
@@ -14,10 +13,11 @@ import {
   TxStageSign,
   TxStageSuccess,
   TxStageSuccessMultisig,
-} from 'features/withdrawals/shared/tx-stage-modal';
-import { TxStageLimit } from 'features/withdrawals/shared/tx-stage-modal/stages/tx-stage-limit';
+} from '../stages';
+import { TxStageLimit } from 'shared/transaction-modal/stages/tx-stage-limit';
 import { FormatToken } from 'shared/formatters';
-import { TxLinkEtherscan } from '../tx-link-etherscan';
+import { TxLinkEtherscan } from '../../components/tx-link-etherscan';
+import { TransactionModalWrap } from '../transaction-modal-wrap';
 
 interface TxStageModalProps extends ModalProps {
   txStage: TX_STAGE;
@@ -35,7 +35,7 @@ interface TxStageModalProps extends ModalProps {
   onRetry: React.MouseEventHandler;
 }
 
-export const TxStageModal = memo((props: TxStageModalProps) => {
+export const TransactionModalStagesRouted = memo((props: TxStageModalProps) => {
   const {
     txStage,
     txOperation,
@@ -53,14 +53,6 @@ export const TxStageModal = memo((props: TxStageModalProps) => {
     onClose,
     ...modalPropsArgs
   } = props;
-
-  const { isLedger } = useConnectorInfo();
-
-  const isCloseButtonHidden =
-    isLedger &&
-    txStage !== TX_STAGE.SUCCESS &&
-    txStage !== TX_STAGE.SUCCESS_MULTISIG &&
-    txStage !== TX_STAGE.FAIL;
 
   const amountEl = amount && (
     <FormatToken
@@ -202,11 +194,8 @@ export const TxStageModal = memo((props: TxStageModalProps) => {
   };
 
   return (
-    <Modal
-      {...modalPropsArgs}
-      onClose={isCloseButtonHidden ? undefined : onClose}
-    >
+    <TransactionModalWrap {...modalPropsArgs}>
       {renderContent()}
-    </Modal>
+    </TransactionModalWrap>
   );
 });

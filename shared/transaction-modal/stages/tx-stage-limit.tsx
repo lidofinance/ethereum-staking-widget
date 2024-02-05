@@ -1,6 +1,6 @@
 import { use1inchLinkProps } from 'features/stake/hooks';
 
-import { TxStageModalContent } from 'shared/components/tx-stage-modal-content';
+import { TransactionModalContent } from 'shared/transaction-modal/transaction-modal-content';
 import { ButtonLinkSmall, RetryButton, Grid } from './styles';
 
 import { StageIconLimit } from './icons';
@@ -18,7 +18,7 @@ export const TxStageLimit = ({
   const oneInchLinkProps = use1inchLinkProps();
 
   return (
-    <TxStageModalContent
+    <TransactionModalContent
       icon={<StageIconLimit />}
       title="Stake limit exhausted"
       description={failedText ?? 'Something went wrong'}

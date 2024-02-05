@@ -1,7 +1,7 @@
 import { FC } from 'react';
 import { Button } from '@lidofinance/lido-ui';
 
-import { TxStageModalContent } from 'shared/components/tx-stage-modal-content';
+import { TransactionModalContent } from 'shared/transaction-modal/transaction-modal-content';
 import { StageIconDialog } from './icons';
 import { BottomButtons } from './styles';
 
@@ -15,7 +15,7 @@ export const TxStageBunker: FC<TxStageFailProps> = (props) => {
   const { onClick, onClose } = props;
 
   return (
-    <TxStageModalContent
+    <TransactionModalContent
       icon={<StageIconDialog />}
       title="Attention!"
       description="Lido protocol is in “Bunker mode”, the withdrawal requests are slowed down, still request withdrawal?"

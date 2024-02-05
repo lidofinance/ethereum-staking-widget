@@ -8,7 +8,7 @@ import {
 } from 'config/trackMatomoEvent';
 import { WITHDRAWALS_CLAIM_PATH } from 'config/urls';
 import { useNftDataByTxHash } from 'features/withdrawals/hooks/useNftDataByTxHash';
-import { TxStageSuccess } from 'features/withdrawals/shared/tx-stage-modal';
+import { TxStageSuccess } from 'shared/transaction-modal/stages/tx-stage-success';
 import { TxLinkEtherscan } from 'shared/components/tx-link-etherscan';
 
 import {

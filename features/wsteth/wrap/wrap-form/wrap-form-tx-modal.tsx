@@ -2,7 +2,7 @@ import { useTransactionModal } from 'shared/transaction-modal/transaction-modal-
 import { useFormContext } from 'react-hook-form';
 import { useWrapFormData, WrapFormInputType } from '../wrap-form-context';
 
-import { TxStageModal } from 'shared/components/tx-stage-modal';
+import { TransactionModalStagesRouted } from 'shared/transaction-modal/transaction-modal-stages-routed';
 
 import { getTokenDisplayName } from 'utils/getTokenDisplayName';
 
@@ -22,7 +22,7 @@ export const WrapFormTxModal = () => {
   const [token] = watch(['token']);
 
   return (
-    <TxStageModal
+    <TransactionModalStagesRouted
       open={isModalOpen}
       onClose={() => dispatchModalState({ type: 'close_modal' })}
       txStage={txStage}
