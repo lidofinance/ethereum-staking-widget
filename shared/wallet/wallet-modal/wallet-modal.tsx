@@ -1,16 +1,16 @@
 import {
   ButtonIcon,
-  Modal as DefaultModal,
-  ModalProps,
+  Modal,
   Identicon,
   External,
   Copy,
   Address,
 } from '@lidofinance/lido-ui';
+import type { ModalComponentType } from 'providers/modal-provider';
 import { useEtherscanOpen, useSDK } from '@lido-sdk/react';
 import { useConnectorInfo, useDisconnect } from 'reef-knot/web3-react';
 import { useCopyToClipboard } from 'shared/hooks';
-import { FC, useCallback } from 'react';
+import { useCallback } from 'react';
 import { useDisconnect as useDisconnectWagmi } from 'wagmi';
 import {
   WalletModalContentStyle,
@@ -22,7 +22,7 @@ import {
   WalletModalActionsStyle,
 } from './styles';
 
-export const Modal: FC<ModalProps> = (props) => {
+export const WalletModal: ModalComponentType = (props) => {
   const { onClose } = props;
   const { account } = useSDK();
   const { providerName } = useConnectorInfo();
@@ -41,7 +41,7 @@ export const Modal: FC<ModalProps> = (props) => {
   const handleEtherscan = useEtherscanOpen(account ?? '', 'address');
 
   return (
-    <DefaultModal title="Account" {...props}>
+    <Modal title="Account" {...props}>
       <WalletModalContentStyle>
         <WalletModalConnectedStyle>
           {providerName && (
@@ -94,6 +94,6 @@ export const Modal: FC<ModalProps> = (props) => {
           </ButtonIcon>
         </WalletModalActionsStyle>
       </WalletModalContentStyle>
-    </DefaultModal>
+    </Modal>
   );
 };

@@ -1,7 +1,6 @@
 import { FC } from 'react';
 import { ButtonProps } from '@lidofinance/lido-ui';
-import { MODAL } from 'providers';
-import { useModal } from 'shared/hooks';
+import { useWalletModal } from '../wallet-modal/use-wallet-modal';
 import { useEthereumBalance, useSDK } from '@lido-sdk/react';
 import { FormatToken } from 'shared/formatters';
 import { AddressBadge } from '../components/address-badge/address-badge';
@@ -15,7 +14,7 @@ import { STRATEGY_LAZY } from 'utils/swrStrategies';
 
 export const Button: FC<ButtonProps> = (props) => {
   const { onClick, ...rest } = props;
-  const { openModal } = useModal(MODAL.wallet);
+  const { openModal } = useWalletModal();
   const { account } = useSDK();
   const { data: balance, initialLoading } = useEthereumBalance(
     undefined,
@@ -27,7 +26,7 @@ export const Button: FC<ButtonProps> = (props) => {
       size="sm"
       variant="text"
       color="secondary"
-      onClick={openModal}
+      onClick={() => openModal({})}
       {...rest}
     >
       <WalledButtonWrapperStyle>
