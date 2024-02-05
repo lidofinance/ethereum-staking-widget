@@ -53,6 +53,7 @@ const CurrencySelector = ({ currency, onChange }: CurrencySelectorProps) => (
   <Box>
     <StyledSelect
       arrow="small"
+      data-testid="currencyPicker"
       onChange={(option: string | number) => {
         const optionString = option.toString();
         onChange(optionString);

@@ -45,7 +45,7 @@ export const RewardsListContent: FC = () => {
   if (data && data.events.length === 0) return <ErrorBlockNoSteth />;
 
   return (
-    <TableWrapperStyle>
+    <TableWrapperStyle data-testid="rewardsContent">
       {data?.events.length && !error && (
         <RewardsTable
           data={data.events}

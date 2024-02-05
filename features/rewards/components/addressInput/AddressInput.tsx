@@ -18,7 +18,7 @@ export const AddressInput: FC<AddressInputProps> = (props) => {
         isAddressResolving ? (
           <Loader size="small" />
         ) : address ? (
-          <Identicon address={address} />
+          <Identicon data-testid="addressIcon" address={address} />
         ) : null
       }
       rightDecorator={address ? <CopyAddressUrl address={inputValue} /> : null}

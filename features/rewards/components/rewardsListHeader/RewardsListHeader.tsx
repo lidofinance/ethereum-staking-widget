@@ -9,7 +9,7 @@ import { TitleStyle } from './styles';
 export const RewardsListHeader: FC = () => {
   const { error, data } = useRewardsHistory();
   return (
-    <RewardsListHeaderStyle>
+    <RewardsListHeaderStyle data-testid="rewardsHeader">
       <TitleStyle>Reward history</TitleStyle>
       <LeftOptions />
       {!error && data && data?.events.length > 0 && <RightOptions />}

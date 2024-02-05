@@ -58,17 +58,13 @@ export const Stats: FC<StatsProps> = (props) => {
 
   return (
     <>
-      <Item>
+      <Item data-testid="stEthBalanceBlock">
         <Title mb="8px">stETH balance</Title>
-        <Stat mb="6px">
+        <Stat data-testid="stEthBalance" mb="6px">
           <EthSymbol />
-          <NumberFormat
-            id="stEthBalance"
-            number={stEthBalanceParsed}
-            pending={pending}
-          />
+          <NumberFormat number={stEthBalanceParsed} pending={pending} />
         </Stat>
-        <Title hideMobile>
+        <Title data-testid="stEthBalanceIn$" hideMobile>
           <Box display="inline-block" pr="3px">
             {currency.symbol}
           </Box>
@@ -79,13 +75,13 @@ export const Stats: FC<StatsProps> = (props) => {
           />
         </Title>
       </Item>
-      <Item>
+      <Item data-testid="stEthRewardedBlock">
         <Title mb="8px">stETH rewarded</Title>
-        <Stat mb="6px" color="#61B75F">
+        <Stat data-testid="stEthRewarded" mb="6px" color="#61B75F">
           <EthSymbol />
           <NumberFormat number={data?.totals.ethRewards} pending={pending} />
         </Stat>
-        <Title hideMobile>
+        <Title data-testid="stEthRewardedIn$" hideMobile>
           <Box display="inline-block" pr="3px">
             {currency.symbol}
           </Box>
@@ -96,31 +92,30 @@ export const Stats: FC<StatsProps> = (props) => {
           />
         </Title>
       </Item>
-      <Item>
+      <Item data-testid="averageAprBlock">
         <Title mb="8px">Average APR</Title>
-        <Stat mb="6px">
+        <Stat data-testid="averageApr" mb="6px">
           {parseFloat(data?.averageApr || '0') ? (
-            <NumberFormat
-              id="averageApr"
-              number={data?.averageApr}
-              percent
-              pending={pending}
-            />
+            <NumberFormat number={data?.averageApr} percent pending={pending} />
           ) : (
             '-'
           )}
         </Stat>
         <Title hideMobile>
           <Link href="https://lido.fi/faq">
-            <Box color="secondary" style={{ textDecoration: 'underline' }}>
+            <Box
+              data-testid="moreInfo"
+              color="secondary"
+              style={{ textDecoration: 'underline' }}
+            >
               More info
             </Box>
           </Link>
         </Title>
       </Item>
-      <Item>
+      <Item data-testid="stEthPriceBlock">
         <Title mb="8px">stETH price</Title>
-        <Stat mb="6px">
+        <Stat data-testid="stEthPrice" mb="6px">
           <Box display="inline-block" pr="3px">
             {currency.symbol}
           </Box>
@@ -130,7 +125,7 @@ export const Stats: FC<StatsProps> = (props) => {
             pending={pending}
           />
         </Stat>
-        <Title hideMobile>
+        <Title data-testid="ethRate" hideMobile>
           <EthSymbol />
           <NumberFormat
             number={stEthEth?.toString()}
