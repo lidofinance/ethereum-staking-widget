@@ -42,6 +42,7 @@ export const Export = ({
       color="primary"
       size="sm"
       variant="outlined"
+      data-testid="exportBtn"
     >
       Export CSV
     </ButtonStyle>

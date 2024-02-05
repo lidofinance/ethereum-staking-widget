@@ -38,6 +38,7 @@ const CopyAddressUrl = ({ address }: { address: string }) => {
       size="xs"
       variant="translucent"
       onClick={handleCopy}
+      data-testid="copyAddressButton"
     />
   );
 };

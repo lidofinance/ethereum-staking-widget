@@ -25,7 +25,6 @@ const TooltipWithdrawalAmount = () => {
 
   return (
     <Tooltip
-      data-testid="lidoOptionToolTip"
       placement="topRight"
       title={
         <>
