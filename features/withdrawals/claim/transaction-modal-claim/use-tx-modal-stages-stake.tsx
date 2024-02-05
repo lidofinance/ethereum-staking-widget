@@ -1,0 +1,62 @@
+import { useMemo } from 'react';
+import { useTransactionModalStage } from 'shared/transaction-modal/hooks/use-transaction-modal-stage';
+import { useGeneralTransactionModalStages } from 'shared/transaction-modal/hooks/use-general-transaction-modal-stages';
+
+import { TxStageSignOperationAmount } from 'shared/transaction-modal/tx-stages-composed/tx-stage-amount-operation';
+import { TxStageSuccess } from 'shared/transaction-modal/tx-stages-basic';
+import { TxAmount } from 'shared/transaction-modal/tx-stages-parts/tx-amount';
+
+import { TX_STAGE } from 'shared/transaction-modal/types';
+import type { BigNumber } from 'ethers';
+import {
+  trackMatomoEvent,
+  MATOMO_CLICK_EVENTS_TYPES,
+} from 'config/trackMatomoEvent';
+
+const STAGE_OPERATION_ARGS = {
+  token: 'ETH',
+  operationText: 'Claiming',
+};
+
+export const useTxModalStagesClaim = () => {
+  const { openTxModalStage } = useTransactionModalStage();
+  const { txModalStages: generalStages } = useGeneralTransactionModalStages();
+
+  const txModalStages = useMemo(
+    () => ({
+      ...generalStages,
+
+      sign: (amount: BigNumber) =>
+        openTxModalStage(TX_STAGE.SIGN, TxStageSignOperationAmount, {
+          ...STAGE_OPERATION_ARGS,
+          amount,
+        }),
+
+      pending: (amount: BigNumber, txHash?: string) =>
+        openTxModalStage(TX_STAGE.BLOCK, TxStageSignOperationAmount, {
+          ...STAGE_OPERATION_ARGS,
+          amount,
+          isPending: true,
+          txHash,
+        }),
+
+      success: (amount: BigNumber, txHash?: string) =>
+        openTxModalStage(TX_STAGE.SUCCESS, TxStageSuccess, {
+          txHash,
+          title: (
+            <>
+              <TxAmount amount={amount} symbol="ETH" /> has been claimed
+            </>
+          ),
+          description: 'Claiming operation was successful',
+          onClickEtherscan: () =>
+            trackMatomoEvent(
+              MATOMO_CLICK_EVENTS_TYPES.claimViewOnEtherscanSuccessTemplate,
+            ),
+        }),
+    }),
+    [openTxModalStage, generalStages],
+  );
+
+  return { txModalStages };
+};

@@ -56,12 +56,9 @@ export const ClaimFormProvider: FC<PropsWithChildren> = ({ children }) => {
     watch,
     maxSelectedRequestCount,
   );
-  const {
-    retryDelegate,
-    // retryFire
-  } = useFormControllerRetry();
+  const { retryDelegate, retryFire } = useFormControllerRetry();
 
-  const claim = useClaim();
+  const claim = useClaim({ onRetry: retryFire });
 
   const { isSubmitting } = formState;
 

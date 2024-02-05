@@ -1,10 +1,19 @@
+import styled from 'styled-components';
+
+import { InlineLoader } from '@lidofinance/lido-ui';
+import { L2LowFee } from 'shared/banners/l2-low-fee';
+import { TxAmount } from '../tx-stages-parts/tx-amount';
+import { SuccessText } from '../tx-stages-parts/success-text';
 import { TxStageSuccess } from '../tx-stages-basic';
 
-import { TxAmount } from '../tx-stages-parts/tx-amount';
 import type { BigNumber } from 'ethers';
-import { L2LowFee } from 'shared/banners/l2-low-fee';
-import { SkeletonBalance } from '../transaction-modal-stages-routed/styles';
-import { SuccessText } from '../tx-stages-parts/success-text';
+
+export const SkeletonBalance = styled(InlineLoader).attrs({
+  color: 'text',
+})`
+  margin-left: ${({ theme }) => theme.spaceMap.xs}px;
+  width: 100px;
+`;
 
 type TxStageOperationSucceedBalanceShownProps = {
   balance?: BigNumber;

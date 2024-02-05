@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
-import { useTransactionModal, TransactionModal } from './transaction-modal';
-import { TX_STAGE } from './types';
+import { useTransactionModal, TransactionModal } from '../transaction-modal';
+import { TX_STAGE } from '../types';
 
 export const useTransactionModalStage = () => {
   const { openModal } = useTransactionModal();

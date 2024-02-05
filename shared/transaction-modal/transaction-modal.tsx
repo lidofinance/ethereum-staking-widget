@@ -1,7 +1,7 @@
 import { Modal } from '@lidofinance/lido-ui';
 import { useConnectorInfo } from 'reef-knot/web3-react';
 
-import { TX_STAGE } from 'shared/transaction-modal';
+import { TX_STAGE } from 'shared/transaction-modal/types';
 import { getUseModal, ModalComponentType } from 'providers/modal-provider';
 
 type TransactionModalProps = {

@@ -1,5 +1,3 @@
-import { TOKENS } from '@lido-sdk/constants';
-
 export enum TX_STAGE {
   NONE,
   SIGN,
@@ -9,12 +7,3 @@ export enum TX_STAGE {
   FAIL,
   LIMIT,
 }
-
-export enum TX_OPERATION {
-  APPROVE,
-  CONTRACT,
-  PERMIT,
-  NONE,
-}
-
-export type TX_TOKENS = 'ETH' | TOKENS.STETH | TOKENS.WSTETH;

@@ -74,17 +74,15 @@ export const WrapFormProvider: FC<PropsWithChildren> = ({ children }) => {
   const { retryDelegate, retryFire } = useFormControllerRetry();
 
   const approvalData = useWrapTxApprove({ amount: amount ?? Zero, token });
+  const isSteth = token === TOKENS_TO_WRAP.STETH;
+  const amountDebounced = useDebouncedValue(amount, 500);
+  const willReceiveWsteth = useWstethBySteth(amountDebounced ?? Zero);
+
   const processWrapFormFlow = useWrapFormProcessor({
     approvalData,
     onConfirm: networkData.revalidateWrapFormData,
     onRetry: retryFire,
   });
-
-  const isSteth = token === TOKENS_TO_WRAP.STETH;
-
-  const amountDebounced = useDebouncedValue(amount, 500);
-
-  const willReceiveWsteth = useWstethBySteth(amountDebounced ?? Zero);
 
   const value = useMemo(
     (): WrapFormDataContextValueType => ({
