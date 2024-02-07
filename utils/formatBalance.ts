@@ -3,6 +3,13 @@ import { formatEther } from '@ethersproject/units';
 import { Zero } from '@ethersproject/constants';
 import { useMemo } from 'react';
 
+export type FormatBalanceArgs = {
+  maxDecimalDigits?: number;
+  adaptiveDecimals?: boolean;
+  maxTotalLength?: number;
+  trimEllipsis?: boolean;
+};
+
 export const formatBalance = (
   balance: BigNumber = Zero,
   {
@@ -10,12 +17,7 @@ export const formatBalance = (
     maxTotalLength,
     adaptiveDecimals,
     trimEllipsis,
-  }: {
-    maxDecimalDigits?: number;
-    adaptiveDecimals?: boolean;
-    maxTotalLength?: number;
-    trimEllipsis?: boolean;
-  } = {},
+  }: FormatBalanceArgs = {},
 ) => {
   const actual = formatEther(balance);
   let trimmed = actual;

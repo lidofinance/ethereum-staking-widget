@@ -1,17 +1,13 @@
-import { useFormattedBalance } from 'utils';
+import { FormatBalanceArgs, useFormattedBalance } from 'utils';
 import { BigNumber } from '@ethersproject/bignumber';
 import { Component } from 'types';
 import { Tooltip } from '@lidofinance/lido-ui';
 
-export type FormatTokenProps = {
+export type FormatTokenProps = FormatBalanceArgs & {
   symbol: string;
   amount?: BigNumber;
   approx?: boolean;
-  maxDecimalDigits?: number;
-  maxTotalLength?: number;
   showAmountTip?: boolean;
-  trimEllipsis?: boolean;
-  adaptiveDecimals?: boolean;
 };
 export type FormatTokenComponent = Component<'span', FormatTokenProps>;
 
