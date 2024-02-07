@@ -1,13 +1,13 @@
 import invariant from 'tiny-invariant';
 import { createContext, useContext } from 'react';
 import type { FieldValues } from 'react-hook-form';
-import type { Delegate } from 'utils/delegate';
+import type { EventSubsciption } from 'utils/event-subsciption';
 
 export type FormControllerContextValueType<F extends FieldValues = any> = {
   isLocked?: boolean;
   onSubmit: (args: F) => Promise<boolean>;
   onReset?: (args: F) => void;
-  retryDelegate: Delegate;
+  retryEvent: EventSubsciption;
 };
 
 export const FormControllerContext =

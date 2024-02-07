@@ -1,15 +1,15 @@
-import { Delegate } from 'utils/delegate';
+import { EventSubsciption } from 'utils/event-subsciption';
 import { useCallback, useMemo } from 'react';
 
 export const useFormControllerRetry = () => {
-  const retryDelegate = useMemo(() => new Delegate(), []);
+  const retryEvent = useMemo(() => new EventSubsciption(), []);
 
   const retryFire = useCallback(() => {
-    retryDelegate.fire();
-  }, [retryDelegate]);
+    retryEvent.fire();
+  }, [retryEvent]);
 
   return {
     retryFire,
-    retryDelegate,
+    retryEvent,
   };
 };

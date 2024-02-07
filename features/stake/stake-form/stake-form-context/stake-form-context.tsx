@@ -158,7 +158,7 @@ export const StakeFormProvider: FC<PropsWithChildren> = ({ children }) => {
     }
   }, [router, setValue]);
 
-  const { retryDelegate, retryFire } = useFormControllerRetry();
+  const { retryEvent, retryFire } = useFormControllerRetry();
 
   const stake = useStake({
     onConfirm: networkData.revalidate,
@@ -169,9 +169,9 @@ export const StakeFormProvider: FC<PropsWithChildren> = ({ children }) => {
     useMemo(
       () => ({
         onSubmit: stake,
-        retryDelegate,
+        retryEvent,
       }),
-      [stake, retryDelegate],
+      [stake, retryEvent],
     );
 
   return (

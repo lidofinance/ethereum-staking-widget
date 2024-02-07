@@ -92,7 +92,7 @@ export const RequestFormProvider: FC<PropsWithChildren> = ({ children }) => {
     formState: { defaultValues },
   } = formObject;
   const [token, amount] = watch(['token', 'amount']);
-  const { retryDelegate, retryFire } = useFormControllerRetry();
+  const { retryEvent, retryFire } = useFormControllerRetry();
 
   const {
     allowance,
@@ -139,9 +139,9 @@ export const RequestFormProvider: FC<PropsWithChildren> = ({ children }) => {
             token,
           });
         },
-        retryDelegate,
+        retryEvent,
       }),
-      [request, retryDelegate, reset, defaultValues],
+      [request, retryEvent, reset, defaultValues],
     );
 
   return (

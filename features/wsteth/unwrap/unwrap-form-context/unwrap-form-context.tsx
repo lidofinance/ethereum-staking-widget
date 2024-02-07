@@ -63,7 +63,7 @@ export const UnwrapFormProvider: FC<PropsWithChildren> = ({ children }) => {
 
   const { watch } = formObject;
   const [amount] = watch(['amount']);
-  const { retryDelegate, retryFire } = useFormControllerRetry();
+  const { retryEvent, retryFire } = useFormControllerRetry();
 
   const processUnwrapFormFlow = useUnwrapFormProcessor({
     onConfirm: networkData.revalidateUnwrapFormData,
@@ -83,9 +83,9 @@ export const UnwrapFormProvider: FC<PropsWithChildren> = ({ children }) => {
   const formControllerValue = useMemo(
     (): FormControllerContextValueType<UnwrapFormInputType> => ({
       onSubmit: processUnwrapFormFlow,
-      retryDelegate,
+      retryEvent,
     }),
-    [processUnwrapFormFlow, retryDelegate],
+    [processUnwrapFormFlow, retryEvent],
   );
 
   return (

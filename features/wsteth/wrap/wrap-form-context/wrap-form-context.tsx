@@ -71,7 +71,7 @@ export const WrapFormProvider: FC<PropsWithChildren> = ({ children }) => {
     formState: { defaultValues },
   } = formObject;
   const [token, amount] = watch(['token', 'amount']);
-  const { retryDelegate, retryFire } = useFormControllerRetry();
+  const { retryEvent, retryFire } = useFormControllerRetry();
 
   const approvalData = useWrapTxApprove({ amount: amount ?? Zero, token });
   const isSteth = token === TOKENS_TO_WRAP.STETH;
@@ -110,9 +110,9 @@ export const WrapFormProvider: FC<PropsWithChildren> = ({ children }) => {
           token,
         });
       },
-      retryDelegate,
+      retryEvent,
     }),
-    [processWrapFormFlow, retryDelegate, reset, defaultValues],
+    [processWrapFormFlow, retryEvent, reset, defaultValues],
   );
 
   return (

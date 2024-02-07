@@ -56,7 +56,7 @@ export const ClaimFormProvider: FC<PropsWithChildren> = ({ children }) => {
     watch,
     maxSelectedRequestCount,
   );
-  const { retryDelegate, retryFire } = useFormControllerRetry();
+  const { retryEvent, retryFire } = useFormControllerRetry();
 
   const claim = useClaim({ onRetry: retryFire });
 
@@ -101,9 +101,9 @@ export const ClaimFormProvider: FC<PropsWithChildren> = ({ children }) => {
           if (!data) return;
           reset(generateDefaultValues(data, defaultSelectedRequestCount));
         },
-        retryDelegate,
+        retryEvent,
       }),
-      [claim, data, defaultSelectedRequestCount, reset, retryDelegate],
+      [claim, data, defaultSelectedRequestCount, reset, retryEvent],
     );
 
   return (

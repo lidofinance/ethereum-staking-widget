@@ -1,4 +1,4 @@
-export class Delegate {
+export class EventSubsciption {
   private subscribers: (() => void)[] = [];
 
   fire = () => {
