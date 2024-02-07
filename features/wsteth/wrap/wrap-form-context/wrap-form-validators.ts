@@ -26,7 +26,7 @@ export const WrapFormValidationResolver: Resolver<
   const { amount, token } = values;
   try {
     invariant(validationContext, 'validation context must be present');
-    const { active, asyncContext } = validationContext;
+    const { isWalletActive, asyncContext } = validationContext;
 
     validateEtherAmount('amount', amount, token);
 
@@ -39,11 +39,11 @@ export const WrapFormValidationResolver: Resolver<
       // checks active internally after other wallet-less check
       validateStakeEth({
         formField: 'amount',
-        active,
+        isWalletActive,
         amount,
         ...awaitedContext,
       });
-    } else if (active) {
+    } else if (isWalletActive) {
       validateBignumberMax(
         'amount',
         amount,

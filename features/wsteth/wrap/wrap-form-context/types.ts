@@ -17,7 +17,7 @@ export type WrapFormNetworkData = ReturnType<typeof useWrapFormNetworkData>;
 export type WrapFormApprovalData = ReturnType<typeof useWrapTxApprove>;
 
 export type WrapFormValidationContext = {
-  active: boolean;
+  isWalletActive: boolean;
   asyncContext: Promise<WrapFormAsyncValidationContext>;
 };
 

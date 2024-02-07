@@ -31,7 +31,7 @@ export const stakeFormValidationResolver: Resolver<
     validateEtherAmount('amount', amount, 'ETH');
 
     const {
-      active,
+      isWalletActive,
       stakingLimitLevel,
       currentStakeLimit,
       etherBalance,
@@ -45,7 +45,7 @@ export const stakeFormValidationResolver: Resolver<
     validateStakeEth({
       formField: 'amount',
       amount,
-      active,
+      isWalletActive,
       stakingLimitLevel,
       currentStakeLimit,
       etherBalance,
@@ -53,7 +53,7 @@ export const stakeFormValidationResolver: Resolver<
       isMultisig,
     });
 
-    if (!active) {
+    if (!isWalletActive) {
       return {
         values,
         errors: { referral: 'wallet not connected' },
@@ -81,7 +81,7 @@ export const useStakeFormValidationContext = (
       (!active || (etherBalance && gasCost && isMultisig !== undefined))
     ) {
       return {
-        active,
+        isWalletActive: active,
         stakingLimitLevel: stakingLimitInfo.stakeLimitLevel,
         currentStakeLimit: stakingLimitInfo.currentStakeLimit,
         // condition above guaranties stubs will only be passed when active = false

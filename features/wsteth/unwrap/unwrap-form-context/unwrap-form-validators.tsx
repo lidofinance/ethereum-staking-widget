@@ -31,7 +31,7 @@ export const UnwrapFormValidationResolver: Resolver<
 
     validateEtherAmount('amount', amount, TOKENS.WSTETH);
 
-    const { active, maxAmount } = await awaitWithTimeout(
+    const { isWalletActive: active, maxAmount } = await awaitWithTimeout(
       validationContextPromise,
       VALIDATION_CONTEXT_TIMEOUT,
     );

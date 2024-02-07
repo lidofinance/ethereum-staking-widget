@@ -19,7 +19,7 @@ export const useUnwrapFormValidationContext = ({
       return undefined;
     }
     return {
-      active,
+      isWalletActive: active,
       maxAmount,
     };
   }, [active, maxAmount]);

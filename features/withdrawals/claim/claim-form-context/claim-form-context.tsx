@@ -51,7 +51,7 @@ export const ClaimFormProvider: FC<PropsWithChildren> = ({ children }) => {
   const formObject = useForm<ClaimFormInputType, ClaimFormValidationContext>({
     defaultValues: getDefaultValues,
     resolver: claimFormValidationResolver,
-    context: { maxSelectedRequestCount, active },
+    context: { maxSelectedRequestCount, isWalletActive: active },
     mode: 'onChange',
     reValidateMode: 'onChange',
   });

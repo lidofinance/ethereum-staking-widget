@@ -159,7 +159,7 @@ export const RequestFormValidationResolver: Resolver<
     validateEtherAmount('amount', amount, token);
 
     // early return
-    if (!context.active) return { values, errors: {} };
+    if (!context.isWalletActive) return { values, errors: {} };
 
     // wait for context promise with timeout and extract relevant data
     // validation function only waits limited time for data and fails validation otherwise

@@ -13,7 +13,7 @@ export const claimFormValidationResolver: Resolver<
 > = async ({ requests }, context) => {
   invariant(context);
   try {
-    const { maxSelectedRequestCount, active } = context;
+    const { maxSelectedRequestCount, isWalletActive } = context;
     const selectedTokens = requests
       .filter((r) => r.checked)
       .map((r) => r.status as RequestStatusClaimable);
@@ -27,7 +27,7 @@ export const claimFormValidationResolver: Resolver<
         `Cannot claim more than ${maxSelectedRequestCount} requests at once`,
       );
 
-    if (!active) {
+    if (!isWalletActive) {
       return {
         values: {
           requests,

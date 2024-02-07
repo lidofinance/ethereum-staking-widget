@@ -46,7 +46,7 @@ export const useWrapFormValidationContext = ({
 
   const asyncContext = useAwaiter(asyncContextValue).awaiter;
   return {
-    active,
+    isWalletActive: active,
     asyncContext,
   };
 };

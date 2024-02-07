@@ -11,7 +11,7 @@ export type UnwrapFormInputType = {
 export type UnwrapFormNetworkData = ReturnType<typeof useUnwrapFormNetworkData>;
 
 export type UnwrapFormValidationContext = {
-  active: boolean;
+  isWalletActive: boolean;
   maxAmount?: BigNumber;
 };
 

@@ -5,7 +5,7 @@ import {
 
 export type ClaimFormValidationContext = {
   maxSelectedRequestCount: number;
-  active: boolean;
+  isWalletActive: boolean;
 };
 
 export type ClaimFormInputType = {
