@@ -39,20 +39,15 @@ export const useModalActions = () => {
 };
 
 export const useModal = <P extends object>(modal: ModalComponentType<P>) => {
-  const { openModal: _openModal, closeModal: _closeModal } =
-    useContext(modalContext);
+  const { openModal, closeModal } = useContext(modalContext);
 
-  const openModal = useCallback(
-    (props: P) => _openModal(modal, props),
-    [_openModal, modal],
+  return useMemo(
+    () => ({
+      openModal: (props: P) => openModal(modal, props),
+      closeModal: () => closeModal(modal),
+    }),
+    [modal, openModal, closeModal],
   );
-
-  const closeModal = useCallback(
-    () => _closeModal(modal),
-    [_closeModal, modal],
-  );
-
-  return useMemo(() => ({ openModal, closeModal }), [openModal, closeModal]);
 };
 
 export const getUseModal = <P extends object>(modal: ModalComponentType<P>) => {
