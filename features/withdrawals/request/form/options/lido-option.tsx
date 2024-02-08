@@ -18,6 +18,7 @@ import {
   LidoIcon,
   LidoOptionContainer,
   LidoOptionValue,
+  LidoOptionInlineLoader,
 } from './styles';
 
 const TooltipWithdrawalAmount = () => {
@@ -56,23 +57,29 @@ export const LidoOption = () => {
   });
 
   // TODO: refactor to use intermediate validation values
-  const ethAmount = useEthAmountByStethWsteth({
-    isSteth: token === TOKENS.STETH,
-    input: amount ? formatEther(amount) : undefined,
-  });
+  const { amount: ethAmount, loading: amountLoading } =
+    useEthAmountByStethWsteth({
+      isSteth: token === TOKENS.STETH,
+      input: amount ? formatEther(amount) : undefined,
+    });
 
   return (
     <LidoOptionContainer data-testid="lidoOptionSection">
       <LidoIcon />
       Lido
       <LidoOptionValue data-testid="lidoOptionAmount">
-        <FormatTokenStyled
-          data-testid="lidoOptionAmount"
-          showAmountTip
-          amount={ethAmount}
-          symbol="ETH"
-        />{' '}
-        <TooltipWithdrawalAmount />
+        {amountLoading && <LidoOptionInlineLoader />}
+        {!amountLoading && (
+          <>
+            <FormatTokenStyled
+              data-testid="lidoOptionAmount"
+              showAmountTip
+              amount={ethAmount}
+              symbol="ETH"
+            />{' '}
+            <TooltipWithdrawalAmount />
+          </>
+        )}
       </LidoOptionValue>
     </LidoOptionContainer>
   );

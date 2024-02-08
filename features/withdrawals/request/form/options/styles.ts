@@ -65,6 +65,11 @@ export const LidoOptionValue = styled.div`
   margin-left: auto;
 `;
 
+export const LidoOptionInlineLoader = styled(InlineLoader)`
+  display: block;
+  width: 100px;
+`;
+
 export const FormatTokenStyled = styled(FormatToken)`
   font-size: 14px;
   line-height: 24px;
