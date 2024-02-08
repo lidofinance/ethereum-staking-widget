@@ -24,25 +24,33 @@ export const useWrapFormValidationContext = ({
     wrapEthGasCost,
   } = networkData;
 
+  const isDataReady =
+    stethBalance &&
+    ethBalance &&
+    isMultisig !== undefined &&
+    wrapEthGasCost &&
+    stakeLimitInfo;
+
   const asyncContextValue: WrapFormAsyncValidationContext | undefined =
     useMemo(() => {
-      if (
-        stethBalance &&
-        ethBalance &&
-        isMultisig !== undefined &&
-        wrapEthGasCost &&
-        stakeLimitInfo
-      )
-        return {
-          stethBalance,
-          etherBalance: ethBalance,
-          isMultisig,
-          gasCost: wrapEthGasCost,
-          stakingLimitLevel: stakeLimitInfo.stakeLimitLevel,
-          currentStakeLimit: stakeLimitInfo.currentStakeLimit,
-        };
-      else return undefined;
-    }, [ethBalance, isMultisig, stakeLimitInfo, stethBalance, wrapEthGasCost]);
+      return isDataReady
+        ? {
+            stethBalance,
+            etherBalance: ethBalance,
+            isMultisig,
+            gasCost: wrapEthGasCost,
+            stakingLimitLevel: stakeLimitInfo.stakeLimitLevel,
+            currentStakeLimit: stakeLimitInfo.currentStakeLimit,
+          }
+        : undefined;
+    }, [
+      isDataReady,
+      ethBalance,
+      isMultisig,
+      stakeLimitInfo,
+      stethBalance,
+      wrapEthGasCost,
+    ]);
 
   const asyncContext = useAwaiter(asyncContextValue).awaiter;
   return {
