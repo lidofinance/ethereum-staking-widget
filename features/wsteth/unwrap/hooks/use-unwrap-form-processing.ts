@@ -28,7 +28,7 @@ export const useUnwrapFormProcessor = ({
   const processWrapTx = useUnwrapTxProcessing();
   const stETHContractRPC = useSTETHContractRPC();
   const wstETHContractRPC = useWSTETHContractRPC();
-  const { txModalStages } = useTxModalStagesUnwrap();
+  const { createTxModalSession } = useTxModalStagesUnwrap();
 
   return useCallback(
     async ({ amount }: UnwrapFormInputType) => {
@@ -36,6 +36,8 @@ export const useUnwrapFormProcessor = ({
       invariant(account, 'address should be presented');
       invariant(providerWeb3, 'provider should be presented');
       const isMultisig = await isContract(account, providerWeb3);
+
+      const txModalStages = createTxModalSession();
 
       try {
         const willReceive = await wstETHContractRPC.getStETHByWstETH(amount);
@@ -78,7 +80,7 @@ export const useUnwrapFormProcessor = ({
       onRetry,
       processWrapTx,
       providerWeb3,
-      txModalStages,
+      createTxModalSession,
       stETHContractRPC,
       wstETHContractRPC,
     ],

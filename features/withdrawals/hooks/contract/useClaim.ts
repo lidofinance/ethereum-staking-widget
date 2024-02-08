@@ -10,7 +10,7 @@ import invariant from 'tiny-invariant';
 import { isContract } from 'utils/isContract';
 import { useWeb3 } from 'reef-knot/web3-react';
 import { useSDK } from '@lido-sdk/react';
-import { useTxModalStagesClaim } from 'features/withdrawals/claim/transaction-modal-claim/use-tx-modal-stages-stake';
+import { useTxModalStagesClaim } from 'features/withdrawals/claim/transaction-modal-claim/use-tx-modal-stages-claim';
 
 type Args = {
   onRetry?: () => void;
@@ -21,10 +21,12 @@ export const useClaim = ({ onRetry }: Args) => {
   const { providerWeb3 } = useSDK();
   const { contractWeb3 } = useWithdrawalsContract();
   const { optimisticClaimRequests } = useClaimData();
-  const { txModalStages } = useTxModalStagesClaim();
+  const { createTxModalSession } = useTxModalStagesClaim();
 
   return useCallback(
     async (sortedRequests: RequestStatusClaimable[]) => {
+      const txModalStages = createTxModalSession();
+
       try {
         invariant(contractWeb3, 'must have contract');
         invariant(sortedRequests, 'must have requests');
@@ -100,7 +102,7 @@ export const useClaim = ({ onRetry }: Args) => {
       account,
       providerWeb3,
       optimisticClaimRequests,
-      txModalStages,
+      createTxModalSession,
       onRetry,
     ],
   );

@@ -23,8 +23,15 @@ export type ModalComponentType<P extends object = EmptyObj> = React.FC<
 /**
  * Context definition
  */
-type ModalContextValue = {
-  openModal: <P extends object>(modal: ModalComponentType<P>, props: P) => void;
+export type ModalContextValue = {
+  openModal: <P extends object>(
+    modal: ModalComponentType<P>,
+    props: P,
+  ) => {
+    modalSession: number;
+    updateProps: (nextProps: P) => void;
+    closeModal: () => void;
+  };
   closeModal: <P extends object>(modal?: ModalComponentType<P>) => void;
 };
 
@@ -62,7 +69,8 @@ type ModalProviderRaw = {
 };
 
 const ModalProviderRaw = ({ children }: ModalProviderRaw) => {
-  const update = useForceUpdate();
+  const forceUpdate = useForceUpdate();
+  const modalSessionRef = useRef(0);
 
   const stateRef = useRef<{
     modal: React.ComponentType<any>;
@@ -71,10 +79,36 @@ const ModalProviderRaw = ({ children }: ModalProviderRaw) => {
 
   const openModal: ModalContextValue['openModal'] = useCallback(
     (modal, props) => {
+      const modalSession = Math.random();
+      modalSessionRef.current = modalSession;
       stateRef.current = { modal, props };
-      update();
+      forceUpdate();
+
+      /**
+       * Sessin-based handlers
+       */
+      const updateProps = (nextProps: typeof props) => {
+        if (stateRef.current && modalSessionRef.current === modalSession) {
+          stateRef.current.props = nextProps;
+          forceUpdate();
+        }
+      };
+      const closeModal = () => {
+        setTimeout(() => {
+          if (stateRef.current && modalSessionRef.current === modalSession) {
+            stateRef.current = null;
+            forceUpdate();
+          }
+        }, 0);
+      };
+
+      return {
+        modalSession,
+        updateProps,
+        closeModal,
+      };
     },
-    [update],
+    [forceUpdate],
   );
 
   const closeModal: ModalContextValue['closeModal'] = useCallback(
@@ -85,10 +119,10 @@ const ModalProviderRaw = ({ children }: ModalProviderRaw) => {
       setTimeout(() => {
         if (modal && modal !== stateRef.current?.modal) return;
         stateRef.current = null;
-        update();
+        forceUpdate();
       }, 0);
     },
-    [update],
+    [forceUpdate],
   );
 
   const context = useMemo(

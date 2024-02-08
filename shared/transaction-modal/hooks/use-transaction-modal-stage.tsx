@@ -1,25 +1,34 @@
 import { useCallback } from 'react';
 import { useTransactionModal, TransactionModal } from '../transaction-modal';
 
-export const useTransactionModalStage = () => {
+export type TransactionModalTransitStage = (
+  TxStageEl: React.ReactNode,
+  modalProps?: Omit<React.ComponentProps<typeof TransactionModal>, 'children'>,
+) => void;
+
+// eslint-disable-next-line @typescript-eslint/ban-types
+export const useTransactionModalStage = <S extends Record<string, Function>>(
+  getStages: (transitStage: TransactionModalTransitStage) => S,
+) => {
   const { openModal } = useTransactionModal();
 
-  const openTxModalStage = useCallback(
-    <P extends object>(
-      TxStageComponent: React.ComponentType<P>,
-      stageProps: P,
-      modalProps: Omit<
-        React.ComponentProps<typeof TransactionModal>,
-        'children'
-      > = {},
+  const createTxModalSession = useCallback(() => {
+    const modal = openModal({});
+
+    const transitStage: TransactionModalTransitStage = (
+      TxStageEl,
+      modalProps = {},
     ) => {
-      const children = <TxStageComponent {...stageProps} />;
-      openModal({ children, ...modalProps });
-    },
-    [openModal],
-  );
+      modal.updateProps({
+        children: TxStageEl,
+        ...modalProps,
+      });
+    };
+
+    return getStages(transitStage);
+  }, [getStages, openModal]);
 
   return {
-    openTxModalStage,
+    createTxModalSession,
   };
 };

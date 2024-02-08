@@ -4,7 +4,7 @@ import { useCallback } from 'react';
 import { useSDK } from '@lido-sdk/react';
 import { useWeb3 } from 'reef-knot/web3-react';
 import { useWrapTxProcessing } from './use-wrap-tx-processing';
-import { useTxModalStagesWrap } from './use-tx-modal-stages-wrap';
+import { useTxModalWrap } from './use-tx-modal-stages-wrap';
 import { useWSTETHContractRPC } from '@lido-sdk/react';
 
 import { runWithTransactionLogger } from 'utils';
@@ -29,7 +29,7 @@ export const useWrapFormProcessor = ({
   const { providerWeb3 } = useSDK();
   const processWrapTx = useWrapTxProcessing();
   const { isApprovalNeededBeforeWrap, processApproveTx } = approvalData;
-  const { txModalStages } = useTxModalStagesWrap();
+  const { createTxModalSession } = useTxModalWrap();
   const wstETHContractRPC = useWSTETHContractRPC();
 
   return useCallback(
@@ -37,6 +37,8 @@ export const useWrapFormProcessor = ({
       invariant(amount, 'amount should be presented');
       invariant(account, 'address should be presented');
       invariant(providerWeb3, 'provider should be presented');
+
+      const txModalStages = createTxModalSession();
 
       try {
         const isMultisig = await isContract(account, providerWeb3);
@@ -96,7 +98,7 @@ export const useWrapFormProcessor = ({
       providerWeb3,
       wstETHContractRPC,
       isApprovalNeededBeforeWrap,
-      txModalStages,
+      createTxModalSession,
       onConfirm,
       processApproveTx,
       processWrapTx,

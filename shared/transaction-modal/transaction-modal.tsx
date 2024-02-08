@@ -8,6 +8,7 @@ type TransactionModalProps = {
 };
 
 export const TransactionModal: ModalComponentType<TransactionModalProps> = ({
+  open,
   isClosableOnLedger,
   onClose,
   children,
@@ -17,7 +18,11 @@ export const TransactionModal: ModalComponentType<TransactionModalProps> = ({
   const isClosable = !isLedger || isClosableOnLedger;
 
   return (
-    <Modal {...props} onClose={isClosable ? onClose : undefined}>
+    <Modal
+      {...props}
+      open={open && Boolean(children)}
+      onClose={isClosable ? onClose : undefined}
+    >
       {children}
     </Modal>
   );
