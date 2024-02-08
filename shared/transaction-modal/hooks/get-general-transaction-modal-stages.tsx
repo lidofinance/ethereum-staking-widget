@@ -9,20 +9,12 @@ export const getGeneralTransactionModalStages = (
   transitStage: TransactionModalTransitStage,
 ) => ({
   successMultisig: () =>
-    transitStage(
-      TxStageSuccessMultisig,
-      {},
-      {
-        isClosableOnLedger: true,
-      },
-    ),
+    transitStage(<TxStageSuccessMultisig />, {
+      isClosableOnLedger: true,
+    }),
   failed: (error: unknown, onRetry?: () => void) =>
     transitStage(
-      TxStageFail,
-      {
-        failedText: getErrorMessage(error),
-        onRetry,
-      },
+      <TxStageFail failedText={getErrorMessage(error)} onRetry={onRetry} />,
       {
         isClosableOnLedger: true,
       },
