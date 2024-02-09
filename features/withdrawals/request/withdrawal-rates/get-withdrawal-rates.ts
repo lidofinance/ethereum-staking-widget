@@ -1,5 +1,5 @@
 import { Zero } from '@ethersproject/constants';
-import { getTokenAddress, CHAINS } from '@lido-sdk/constants';
+import { getTokenAddress, CHAINS, TOKENS } from '@lido-sdk/constants';
 import { BigNumber } from 'ethers';
 
 import { getOpenOceanRate } from 'utils/get-open-ocean-rate';
@@ -16,11 +16,14 @@ import type {
 import { OPEN_OCEAN_REFERRAL_ADDRESS } from 'config/external-links';
 import { formatEther } from '@ethersproject/units';
 import { MATOMO_CLICK_EVENTS_TYPES } from 'config/matomoClickEvents';
-import { OpenOceanIcon, ParaSwapIcon } from './icons';
+import { OneInchIcon, OpenOceanIcon, ParaSwapIcon } from './icons';
+import dynamics from 'config/dynamics';
+import { prependBasePath } from 'utils/prependBasePath';
 
 const RATE_PRECISION = 100000;
 const RATE_PRECISION_BN = BigNumber.from(RATE_PRECISION);
 
+// Helper function to calculate rate for SRC->DEST swap
 const calculateRateReceive = (
   amount: BigNumber,
   src: BigNumber,
@@ -32,10 +35,7 @@ const calculateRateReceive = (
   return { rate, toReceive };
 };
 
-export const getOpenOceanWithdrawalRate: GetRateType = async ({
-  amount,
-  token,
-}) => {
+const getOpenOceanWithdrawalRate: GetRateType = async ({ amount, token }) => {
   if (amount && amount.gt(Zero)) {
     try {
       return await getOpenOceanRate(amount, token, 'ETH');
@@ -57,7 +57,7 @@ type ParaSwapPriceResponsePartial = {
   };
 };
 
-export const getParaSwapRate: GetRateType = async ({ amount, token }) => {
+const getParaSwapRate: GetRateType = async ({ amount, token }) => {
   let rateInfo: RateCalculationResult | null = null;
 
   try {
@@ -99,8 +99,37 @@ export const getParaSwapRate: GetRateType = async ({ amount, token }) => {
   };
 };
 
-export const dexWithdrawalMap: DexWithdrawalIntegrationMap = {
-  ['open-ocean']: {
+const getOneInchRate: GetRateType = async ({ amount, token }) => {
+  let rateInfo: RateCalculationResult | null = null;
+
+  try {
+    if (amount.gt(Zero)) {
+      const apiOneInchRatePath = `api/oneinch-rate?token=${token}&amount=${amount.toString()}`;
+      const data = await standardFetcher<{
+        rate: number;
+        toReceive: string;
+      }>(
+        dynamics.ipfsMode
+          ? `${dynamics.widgetApiBasePathForIpfs}/${apiOneInchRatePath}`
+          : prependBasePath(apiOneInchRatePath),
+      );
+      rateInfo = {
+        rate: data.rate,
+        toReceive: BigNumber.from(data.toReceive),
+      };
+    }
+  } catch {
+    rateInfo = null;
+  }
+
+  return {
+    rate: rateInfo?.rate ?? null,
+    toReceive: rateInfo?.toReceive ?? null,
+  };
+};
+
+const dexWithdrawalMap: DexWithdrawalIntegrationMap = {
+  'open-ocean': {
     title: 'OpenOcean',
     fetcher: getOpenOceanWithdrawalRate,
     icon: OpenOceanIcon,
@@ -122,6 +151,16 @@ export const dexWithdrawalMap: DexWithdrawalIntegrationMap = {
       )}-0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE/${formatEther(
         amount,
       )}/SELL?network=ethereum`,
+  },
+  'one-inch': {
+    title: '1inch',
+    fetcher: getOneInchRate,
+    icon: OneInchIcon,
+    matomoEvent: MATOMO_CLICK_EVENTS_TYPES.withdrawalGoTo1inch,
+    link: (amount, token) =>
+      `https://app.1inch.io/#/1/simple/swap/${
+        token == TOKENS.STETH ? 'stETH' : 'wstETH'
+      }/ETH?sourceTokenAmount=${formatEther(amount)}`,
   },
 } as const;
 

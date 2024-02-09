@@ -55,6 +55,7 @@ export const getOneInchRate: GetOneInchRateStats = async (
   const rate =
     toAmount.mul(BigNumber.from(RATE_PRECISION)).div(amount).toNumber() /
     RATE_PRECISION;
+
   console.debug('[getOneInchRate] Rate on 1inch:', rate);
   return { rate, toAmount };
 };

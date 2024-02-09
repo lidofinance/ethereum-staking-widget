@@ -17,14 +17,19 @@ import {
   httpMethodGuard,
   HttpMethod,
   cors,
-  GetOneInchRateResult,
 } from 'utilsApi';
 import Metrics from 'utilsApi/metrics';
 import { API } from 'types';
 import { parseEther } from '@ethersproject/units';
 import { Zero } from '@ethersproject/constants';
+import { BigNumber } from 'ethers';
 
-const cache = new Cache<string, GetOneInchRateResult>();
+type OneInchRateResponse = {
+  rate: number;
+  toReceive: string;
+};
+
+const cache = new Cache<string, OneInchRateResponse>();
 
 const DEFAULT_AMOUNT = parseEther('1');
 const TOKEN_ETH = 'ETH';
@@ -52,7 +57,11 @@ const validateAndParseParams = (req: NextApiRequest, res: NextApiResponse) => {
       if (Array.isArray(req.query.amount)) {
         throw new Error(`Amount must be a string`);
       }
-      amount = parseEther(req.query.amount);
+      try {
+        amount = BigNumber.from(req.query.amount);
+      } catch {
+        throw new Error(`Amount must be a valid BigNumber string`);
+      }
       if (amount.lte(Zero)) throw new Error(`Amount must be positive`);
     }
   } catch (e) {
@@ -94,8 +103,13 @@ const oneInchRate: API = async (req, res) => {
     res.status(500);
     throw new Error('Could not fetch 1inch rate');
   }
-  cache.put(cacheKey, oneInchRate, CACHE_ONE_INCH_RATE_TTL);
-  res.status(200).json({ oneInchRate });
+  const result = {
+    rate: oneInchRate.rate,
+    toReceive: oneInchRate.toAmount.toString(),
+  };
+
+  cache.put(cacheKey, result, CACHE_ONE_INCH_RATE_TTL);
+  res.status(200).json(result);
 };
 
 export default wrapNextRequest([

@@ -14,4 +14,5 @@ export const VALIDATION_CONTEXT_TIMEOUT = 4000;
 export const ENABLED_WITHDRAWAL_DEXES: DexWithdrawalApi[] = [
   'open-ocean',
   'paraswap',
+  'one-inch',
 ];
