@@ -16,6 +16,7 @@ const rpcUrls_17000 = process.env.EL_RPC_URLS_17000?.split(',') ?? [];
 const ethAPIBasePath = process.env.ETH_API_BASE_PATH;
 
 const ethplorerApiKey = process.env.ETHPLORER_API_KEY;
+const oneInchApiKey = process.env.ONE_INCH_API_KEY;
 
 const cspTrustedHosts = process.env.CSP_TRUSTED_HOSTS;
 const cspReportOnly = process.env.CSP_REPORT_ONLY;
@@ -113,7 +114,7 @@ export default withBundleAnalyzer({
             },
           },
         ],
-      }
+      },
     );
 
     return config;
@@ -168,6 +169,7 @@ export default withBundleAnalyzer({
     rpcUrls_5,
     rpcUrls_17000,
     ethplorerApiKey,
+    oneInchApiKey,
     cspTrustedHosts,
     cspReportOnly,
     cspReportUri,
