@@ -1,9 +1,15 @@
 import { Zero } from '@ethersproject/constants';
 import { getTokenAddress, CHAINS, TOKENS } from '@lido-sdk/constants';
 import { BigNumber } from 'ethers';
+import { formatEther } from '@ethersproject/units';
 
+import { getOneInchRate } from 'utils/get-one-inch-rate';
 import { getOpenOceanRate } from 'utils/get-open-ocean-rate';
 import { standardFetcher } from 'utils/standardFetcher';
+import { OPEN_OCEAN_REFERRAL_ADDRESS } from 'config/external-links';
+import { MATOMO_CLICK_EVENTS_TYPES } from 'config/matomoClickEvents';
+
+import { OneInchIcon, OpenOceanIcon, ParaSwapIcon } from './icons';
 
 import type {
   DexWithdrawalApi,
@@ -13,17 +19,12 @@ import type {
   GetWithdrawalRateResult,
   RateCalculationResult,
 } from './types';
-import { OPEN_OCEAN_REFERRAL_ADDRESS } from 'config/external-links';
-import { formatEther } from '@ethersproject/units';
-import { MATOMO_CLICK_EVENTS_TYPES } from 'config/matomoClickEvents';
-import { OneInchIcon, OpenOceanIcon, ParaSwapIcon } from './icons';
-import dynamics from 'config/dynamics';
-import { prependBasePath } from 'utils/prependBasePath';
 
 const RATE_PRECISION = 100000;
 const RATE_PRECISION_BN = BigNumber.from(RATE_PRECISION);
 
 // Helper function to calculate rate for SRC->DEST swap
+// accepts amount, so toReceive can be calculated when src!=amount
 const calculateRateReceive = (
   amount: BigNumber,
   src: BigNumber,
@@ -99,32 +100,17 @@ const getParaSwapRate: GetRateType = async ({ amount, token }) => {
   };
 };
 
-const getOneInchRate: GetRateType = async ({ amount, token }) => {
-  let rateInfo: RateCalculationResult | null = null;
-
+const getOneInchWithdrawalRate: GetRateType = async (params) => {
   try {
-    if (amount.gt(Zero)) {
-      const apiOneInchRatePath = `api/oneinch-rate?token=${token}&amount=${amount.toString()}`;
-      const data = await standardFetcher<{
-        rate: number;
-        toReceive: string;
-      }>(
-        dynamics.ipfsMode
-          ? `${dynamics.widgetApiBasePathForIpfs}/${apiOneInchRatePath}`
-          : prependBasePath(apiOneInchRatePath),
-      );
-      rateInfo = {
-        rate: data.rate,
-        toReceive: BigNumber.from(data.toReceive),
-      };
+    if (params.amount.gt(Zero)) {
+      return await getOneInchRate(params);
     }
   } catch {
-    rateInfo = null;
+    // NOOP
   }
-
   return {
-    rate: rateInfo?.rate ?? null,
-    toReceive: rateInfo?.toReceive ?? null,
+    rate: null,
+    toReceive: null,
   };
 };
 
@@ -154,7 +140,7 @@ const dexWithdrawalMap: DexWithdrawalIntegrationMap = {
   },
   'one-inch': {
     title: '1inch',
-    fetcher: getOneInchRate,
+    fetcher: getOneInchWithdrawalRate,
     icon: OneInchIcon,
     matomoEvent: MATOMO_CLICK_EVENTS_TYPES.withdrawalGoTo1inch,
     link: (amount, token) =>
