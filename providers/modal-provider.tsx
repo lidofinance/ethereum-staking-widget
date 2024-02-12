@@ -6,8 +6,8 @@ import {
   useContext,
   createContext,
   useRef,
+  useState,
 } from 'react';
-import { useForceUpdate } from 'shared/hooks/useForceUpdate';
 import type { ModalProps as LidoModalProps } from '@lidofinance/lido-ui';
 
 /**
@@ -70,10 +70,8 @@ type ModalProviderRaw = {
 };
 
 const ModalProviderRaw = ({ children }: ModalProviderRaw) => {
-  const forceUpdate = useForceUpdate();
   const modalSessionRef = useRef('');
-
-  const stateRef = useRef<{
+  const [modalState, setModalState] = useState<{
     modal: React.ComponentType<any>;
     props: any;
   } | null>(null);
@@ -82,24 +80,23 @@ const ModalProviderRaw = ({ children }: ModalProviderRaw) => {
     (modal, props) => {
       const modalSession = uuid();
       modalSessionRef.current = modalSession;
-      stateRef.current = { modal, props };
-      forceUpdate();
+      setModalState({ modal, props });
 
       /**
        * Sessin-based handlers
        */
       const updateProps = (nextProps: typeof props) => {
-        if (stateRef.current && modalSessionRef.current === modalSession) {
-          stateRef.current.props = nextProps;
-          forceUpdate();
+        if (modalSessionRef.current === modalSession) {
+          setModalState(
+            (prevState) =>
+              prevState && { modal: prevState.modal, props: nextProps },
+          );
         }
       };
+
       const closeModal = () => {
         setTimeout(() => {
-          if (stateRef.current && modalSessionRef.current === modalSession) {
-            stateRef.current = null;
-            forceUpdate();
-          }
+          if (modalSessionRef.current === modalSession) setModalState(null);
         }, 0);
       };
 
@@ -109,22 +106,20 @@ const ModalProviderRaw = ({ children }: ModalProviderRaw) => {
         closeModal,
       };
     },
-    [forceUpdate],
+    [],
   );
 
-  const closeModal: ModalContextValue['closeModal'] = useCallback(
-    (modal) => {
-      // setTimeout helps to get rid of this error:
-      // "Can't perform a react state update on an unmounted component"
-      // after WalletConnect connection
-      setTimeout(() => {
-        if (modal && modal !== stateRef.current?.modal) return;
-        stateRef.current = null;
-        forceUpdate();
-      }, 0);
-    },
-    [forceUpdate],
-  );
+  const closeModal: ModalContextValue['closeModal'] = useCallback((modal) => {
+    // setTimeout helps to get rid of this error:
+    // "Can't perform a react state update on an unmounted component"
+    // after WalletConnect connection
+    setTimeout(() => {
+      setModalState((prevState) => {
+        if (modal && modal !== prevState?.modal) return prevState;
+        return null;
+      });
+    }, 0);
+  }, []);
 
   const context = useMemo(
     () => ({
@@ -139,12 +134,8 @@ const ModalProviderRaw = ({ children }: ModalProviderRaw) => {
   return (
     <modalContext.Provider value={context}>
       {children}
-      {stateRef.current && (
-        <stateRef.current.modal
-          open
-          onClose={handleClose}
-          {...stateRef.current.props}
-        />
+      {modalState && (
+        <modalState.modal open onClose={handleClose} {...modalState.props} />
       )}
     </modalContext.Provider>
   );
