@@ -4,7 +4,7 @@ import { Container, Link } from '@lidofinance/lido-ui';
 import { LogoLido } from 'shared/components/logos/logos';
 import { NAV_MOBILE_MEDIA } from 'styles/constants';
 
-export const FooterStyle = styled((props) => <Container {...props} />)`
+export const FooterStyle = styled(Container)`
   position: relative;
   box-sizing: border-box;
   color: var(--lido-color-text);
@@ -24,9 +24,12 @@ export const FooterStyle = styled((props) => <Container {...props} />)`
 `;
 
 export const FooterLink = styled(Link)`
-  font-size: ${({ theme }) => theme.fontSizesMap.xxs}px;
+  display: flex;
+  align-items: center;
   line-height: 20px;
+  vertical-align: middle;
   color: var(--lido-color-textSecondary);
+  font-size: ${({ theme }) => theme.fontSizesMap.xxs}px;
   font-weight: 400;
 
   &:visited {
@@ -39,17 +42,13 @@ export const FooterLink = styled(Link)`
 `;
 
 export const LinkDivider = styled.div`
-  background: var(--lido-color-textSecondary);
+  background: var(--lido-color-border);
   width: 1px;
-  margin: 2px 6px;
+  margin: 2px 16px;
 `;
 
 export const LogoLidoStyle = styled(LogoLido)`
-  margin-right: 44px;
-
-  ${NAV_MOBILE_MEDIA} {
-    display: none;
-  }
+  margin-right: 32px;
 `;
 
 export const FooterDivider = styled.div`

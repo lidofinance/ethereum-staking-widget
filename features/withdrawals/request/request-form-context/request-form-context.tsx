@@ -68,7 +68,7 @@ export const RequestFormProvider: FC<PropsWithChildren> = ({ children }) => {
   );
   const formObject = useForm<
     RequestFormInputType,
-    Promise<RequestFormValidationContextType>
+    RequestFormValidationContextType
   >({
     defaultValues: {
       amount: null,
@@ -76,7 +76,7 @@ export const RequestFormProvider: FC<PropsWithChildren> = ({ children }) => {
       mode: 'lido',
       requests: null,
     },
-    context: validationContext.awaiter,
+    context: validationContext,
     criteriaMode: 'firstError',
     mode: 'onChange',
     resolver: RequestFormValidationResolver,
