@@ -1,3 +1,4 @@
+import { v4 as uuid } from 'uuid';
 import {
   memo,
   useMemo,
@@ -28,7 +29,7 @@ export type ModalContextValue = {
     modal: ModalComponentType<P>,
     props: P,
   ) => {
-    modalSession: number;
+    modalSession: string;
     updateProps: (nextProps: P) => void;
     closeModal: () => void;
   };
@@ -70,7 +71,7 @@ type ModalProviderRaw = {
 
 const ModalProviderRaw = ({ children }: ModalProviderRaw) => {
   const forceUpdate = useForceUpdate();
-  const modalSessionRef = useRef(0);
+  const modalSessionRef = useRef('');
 
   const stateRef = useRef<{
     modal: React.ComponentType<any>;
@@ -79,7 +80,7 @@ const ModalProviderRaw = ({ children }: ModalProviderRaw) => {
 
   const openModal: ModalContextValue['openModal'] = useCallback(
     (modal, props) => {
-      const modalSession = Math.random();
+      const modalSession = uuid();
       modalSessionRef.current = modalSession;
       stateRef.current = { modal, props };
       forceUpdate();
