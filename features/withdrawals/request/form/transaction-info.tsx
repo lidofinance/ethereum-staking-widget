@@ -72,8 +72,7 @@ export const TransactionInfo = () => {
       </DataTableRow>
       {token === TOKENS.STETH ? (
         <DataTableRow data-testid="exchangeRate" title="Exchange rate">
-          <span data-testid="selectedToken">1 stETH</span> ={' '}
-          <span data-testid="destinationToken">1 ETH</span>
+          1 stETH = 1 ETH
         </DataTableRow>
       ) : (
         <DataTableRowStethByWsteth toSymbol="ETH" />
