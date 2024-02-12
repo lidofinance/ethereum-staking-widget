@@ -15,8 +15,6 @@ import type {
   DexWithdrawalApi,
   DexWithdrawalIntegrationMap,
   GetRateType,
-  GetWithdrawalRateParams,
-  GetWithdrawalRateResult,
   RateCalculationResult,
 } from './types';
 
@@ -152,31 +150,3 @@ const dexWithdrawalMap: DexWithdrawalIntegrationMap = {
 
 export const getDexConfig = (dexKey: DexWithdrawalApi) =>
   dexWithdrawalMap[dexKey];
-
-export const getWithdrawalRates = async (
-  params: GetWithdrawalRateParams,
-): Promise<GetWithdrawalRateResult> => {
-  const rates = await Promise.all(
-    params.dexes.map((dexKey) => {
-      const dex = getDexConfig(dexKey);
-      return dex.fetcher(params).then((result) => ({
-        ...dex,
-        ...result,
-      }));
-    }),
-  );
-
-  if (rates.length > 1) {
-    // sort by rate, then alphabetic
-    rates.sort((r1, r2) => {
-      const rate1 = r1.rate ?? 0;
-      const rate2 = r2.rate ?? 0;
-      if (rate1 == rate2) {
-        return r1.title.toLowerCase() > r2.title.toLowerCase() ? 1 : -1;
-      }
-      return rate2 - rate1;
-    });
-  }
-
-  return rates;
-};
