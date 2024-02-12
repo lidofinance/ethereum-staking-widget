@@ -23,10 +23,14 @@ export const DataTableRowStethByWsteth = ({
   const { loading, wstethAsStethBN } = useWstethToStethRatio();
 
   return (
-    <DataTableRow title="Exchange rate" loading={loading}>
-      1 wstETH =
+    <DataTableRow
+      data-testid="exchangeRate"
+      title="Exchange rate"
+      loading={loading}
+    >
+      <span data-testid="selectedToken">1 wstETH </span>={' '}
       <FormatToken
-        data-testid="exchangeRate"
+        data-testid="destinationToken"
         amount={wstethAsStethBN}
         symbol={toSymbol}
       />
