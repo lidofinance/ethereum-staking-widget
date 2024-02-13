@@ -16,6 +16,7 @@ import {
   OptionsPickerRow,
   OptionsPickerSubLabel,
   OpenOceanIcon,
+  ParaSwapIcon,
 } from './styles';
 import {
   trackMatomoEvent,
@@ -72,11 +73,14 @@ const LidoButton: React.FC<OptionButtonProps> = ({ isActive, onClick }) => {
   );
 };
 
+const toFloor = (num: number): string =>
+  (Math.floor(num * 10000) / 10000).toString();
+
 const DexButton: React.FC<OptionButtonProps> = ({ isActive, onClick }) => {
   const { loading, bestRate } = useWithdrawalRates({
     fallbackValue: DEFAULT_VALUE_FOR_RATE,
   });
-  const bestRateValue = bestRate ? `1 : ${bestRate.toFixed(4)}` : '-';
+  const bestRateValue = bestRate ? `1 : ${toFloor(bestRate)}` : '-';
   return (
     <OptionsPickerButton
       data-testid="dexOptions"
@@ -88,6 +92,7 @@ const DexButton: React.FC<OptionButtonProps> = ({ isActive, onClick }) => {
         <OptionsPickerLabel>Use aggregators</OptionsPickerLabel>
         <OptionsPickerIcons>
           <OpenOceanIcon />
+          <ParaSwapIcon />
         </OptionsPickerIcons>
       </OptionsPickerRow>
       <OptionsPickerRow data-testid="dexBestRate">

@@ -1,5 +1,5 @@
 import { trackEvent } from '@lidofinance/analytics-matomo';
-import { Curve } from 'shared/banners';
+import { Curve } from 'shared/banners/curve';
 import { MATOMO_CLICK_EVENTS } from 'config';
 
 import { TextStyles, DescStyles, ButtonLinkWrap, ButtonStyled } from './styles';

@@ -1,32 +1,31 @@
-import {
-  Banner,
-  L2Icons,
-  LinkButton,
-  TextContent,
-  OverlayLink,
-} from './styles';
-import { L2_DISCOVERY_LINK } from '../l2-banner';
+import { useCallback } from 'react';
+import { L2Banner } from '../l2-banner';
 import { MATOMO_CLICK_EVENTS } from 'config';
 import { trackEvent } from '@lidofinance/analytics-matomo';
 
-const linkClickHandler = () => trackEvent(...MATOMO_CLICK_EVENTS.l2BannerWrap);
+type L2WstethProps = {
+  matomoEventLink:
+    | typeof MATOMO_CLICK_EVENTS.l2BannerWrap
+    | typeof MATOMO_CLICK_EVENTS.l2BannerUnwrap;
+};
 
-export const L2Wsteth = () => {
+export const L2Wsteth = ({ matomoEventLink }: L2WstethProps) => {
+  const linkClickHandler = useCallback(
+    () => trackEvent(...matomoEventLink),
+    [matomoEventLink],
+  );
   return (
-    <Banner data-testid="L2wstETHbanner">
-      <L2Icons />
-      <TextContent>
-        Enjoy <b>lower gas</b> fees and <b>DeFi opportunities</b> using wstETH
-        across Arbitrum, Optimism and Base.
-      </TextContent>
-      <OverlayLink
-        href={L2_DISCOVERY_LINK}
-        onClick={linkClickHandler}
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        <LinkButton>Learn More</LinkButton>
-      </OverlayLink>
-    </Banner>
+    <L2Banner
+      testidWrap="L2wstETHbanner"
+      testidButton="l2WSstethlearnMore"
+      buttonText="Learn More"
+      onClickButton={linkClickHandler}
+      text={
+        <>
+          Enjoy <b>lower gas</b> fees and <b>DeFi opportunities</b> using wstETH
+          across Arbitrum, Optimism, Base, zkSync, Mantle and Linea.
+        </>
+      }
+    />
   );
 };

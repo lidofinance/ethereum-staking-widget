@@ -27,6 +27,8 @@ export const UnwrapStats = () => {
           data-testid="youWillReceive"
           amount={willReceiveStETH}
           symbol="stETH"
+          showAmountTip
+          trimEllipsis
         />
       </DataTableRow>
     </DataTable>

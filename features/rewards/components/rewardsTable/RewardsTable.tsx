@@ -44,6 +44,7 @@ export const RewardsTable: FC<RewardsTableProps> = (props) => {
         onItemClick={(currentPage: number) => setPage(currentPage - 1)}
         activePage={page + 1}
         siblingCount={0}
+        data-testid="pagination"
       />
     </>
   );

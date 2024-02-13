@@ -23,7 +23,7 @@ export const TopCard: FC = () => {
 
   return (
     <Block color="accent" style={{ padding: 0 }}>
-      <InputWrapper color="accent">
+      <InputWrapper data-testid="inputSection" color="accent">
         <ThemeProvider theme={themeDark}>
           <AddressInput
             address={address}
