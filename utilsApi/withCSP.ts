@@ -48,7 +48,7 @@ export const contentSecurityPolicy: ContentSecurityPolicyOption = {
       'https://*.walletconnect.com',
     ],
     workerSrc: ["'none'"],
-    'base-uri': ["'none'"],
+    'base-uri': dynamics.ipfsMode ? undefined : ["'none'"],
   },
   reportOnly,
 };

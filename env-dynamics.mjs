@@ -47,6 +47,3 @@ export const prefillUnsafeElRpcUrls5 =
 /** @type string[] */
 export const prefillUnsafeElRpcUrls17000 =
   process.env.PREFILL_UNSAFE_EL_RPC_URLS_17000?.split(',') ?? [];
-
-/** @type string */
-export const ipfsEns = process.env.IPFS_ENS;

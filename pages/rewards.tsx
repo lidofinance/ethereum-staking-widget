@@ -5,7 +5,6 @@ import { TopCard, RewardsList } from 'features/rewards/features';
 import RewardsHistoryProvider from 'providers/rewardsHistory';
 import { Fallback } from 'shared/wallet';
 import { GoerliSunsetBanner } from 'shared/banners/goerli-sunset';
-import { OutdatedHashBanner } from 'features/ipfs/outdated-hash-banner';
 
 const Rewards: FC = () => {
   return (
@@ -24,7 +23,6 @@ const Rewards: FC = () => {
       </Head>
       <RewardsHistoryProvider>
         <Fallback />
-        <OutdatedHashBanner />
         <GoerliSunsetBanner />
         <TopCard />
         <RewardsList />
