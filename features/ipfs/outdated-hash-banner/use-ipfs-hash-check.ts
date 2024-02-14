@@ -66,7 +66,7 @@ export const useIpfsHashCheck = () => {
       if (releaseInfo.cid) {
         return {
           cid: releaseInfo.cid,
-          link: `https://${remoteCidSWR.data.cid}.ipfs.cf-ipfs.com`,
+          link: `https://${releaseInfo.cid}.ipfs.cf-ipfs.com`,
         };
       }
       return null;
