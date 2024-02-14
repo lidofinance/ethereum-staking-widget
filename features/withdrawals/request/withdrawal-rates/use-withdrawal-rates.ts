@@ -56,11 +56,11 @@ export const useWithdrawalRates = ({
   const fallbackedAmount = amount ?? fallbackValue;
   const debouncedAmount = useDebouncedValue(fallbackedAmount, 1000);
   const swr = useLidoSWR(
-    ['swr:withdrawal-rates', debouncedAmount, token],
+    ['swr:withdrawal-rates', debouncedAmount.toString(), token],
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (_, amount, token) =>
       getWithdrawalRates({
-        amount: amount as BigNumber,
+        amount: BigNumber.from(amount),
         token: token as TOKENS.STETH | TOKENS.WSTETH,
         dexes: ENABLED_WITHDRAWAL_DEXES,
       }),
@@ -77,6 +77,7 @@ export const useWithdrawalRates = ({
   return {
     amount: fallbackedAmount,
     bestRate,
+    enabledDexes: ENABLED_WITHDRAWAL_DEXES,
     selectedToken: token,
     data: swr.data,
     get initialLoading() {

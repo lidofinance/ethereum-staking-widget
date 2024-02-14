@@ -17,6 +17,7 @@ import type {
   GetRateType,
   RateCalculationResult,
 } from './types';
+import { FetcherError } from 'utils/fetcherError';
 
 const RATE_PRECISION = 100000;
 const RATE_PRECISION_BN = BigNumber.from(RATE_PRECISION);
@@ -34,18 +35,29 @@ const calculateRateReceive = (
   return { rate, toReceive };
 };
 
+const checkError = (e: unknown) => e instanceof FetcherError && e.status <= 500;
+
 const getOpenOceanWithdrawalRate: GetRateType = async ({ amount, token }) => {
+  let isServiceAvailable = true;
   if (amount && amount.gt(Zero)) {
     try {
-      return await getOpenOceanRate(amount, token, 'ETH');
+      return {
+        ...(await getOpenOceanRate(amount, token, 'ETH')),
+        isServiceAvailable,
+      };
     } catch (e) {
-      console.warn('[getOpenOceanRate] Failed to receive withdraw rate', e);
+      console.warn(
+        '[getOpenOceanWithdrawalRate] Failed to receive withdraw rate',
+        e,
+      );
+      isServiceAvailable = checkError(e);
     }
   }
 
   return {
     rate: null,
     toReceive: null,
+    isServiceAvailable,
   };
 };
 
@@ -56,9 +68,8 @@ type ParaSwapPriceResponsePartial = {
   };
 };
 
-const getParaSwapRate: GetRateType = async ({ amount, token }) => {
-  let rateInfo: RateCalculationResult | null = null;
-
+const getParaSwapWithdrawalRate: GetRateType = async ({ amount, token }) => {
+  let isServiceAvailable = true;
   try {
     if (amount.gt(Zero)) {
       const api = `https://apiv5.paraswap.io/prices`;
@@ -78,37 +89,52 @@ const getParaSwapRate: GetRateType = async ({ amount, token }) => {
       const url = `${api}?${query.toString()}`;
       const data: ParaSwapPriceResponsePartial =
         await standardFetcher<ParaSwapPriceResponsePartial>(url);
+      const toReceive = BigNumber.from(data.priceRoute.destAmount);
 
-      rateInfo = {
-        rate: calculateRateReceive(
-          amount,
-          BigNumber.from(data.priceRoute.srcAmount),
-          BigNumber.from(data.priceRoute.destAmount),
-        ).rate,
+      const rate = calculateRateReceive(
+        amount,
+        BigNumber.from(data.priceRoute.srcAmount),
+        toReceive,
+      ).rate;
+
+      return {
+        rate,
         toReceive: BigNumber.from(data.priceRoute.destAmount),
+        isServiceAvailable,
       };
     }
-  } catch {
-    rateInfo = null;
+  } catch (e) {
+    console.warn(
+      '[getParaSwapWithdrawalRate] Failed to receive withdraw rate',
+      e,
+    );
+    isServiceAvailable = checkError(e);
   }
 
   return {
-    rate: rateInfo?.rate ?? null,
-    toReceive: rateInfo?.toReceive ?? null,
+    rate: null,
+    toReceive: null,
+    isServiceAvailable,
   };
 };
 
 const getOneInchWithdrawalRate: GetRateType = async (params) => {
+  let isServiceAvailable = true;
   try {
     if (params.amount.gt(Zero)) {
-      return await getOneInchRate(params);
+      return { ...(await getOneInchRate(params)), isServiceAvailable };
     }
-  } catch {
-    // NOOP
+  } catch (e) {
+    console.warn(
+      '[getOneInchWithdrawalRate] Failed to receive withdraw rate',
+      e,
+    );
+    isServiceAvailable = checkError(e);
   }
   return {
     rate: null,
     toReceive: null,
+    isServiceAvailable,
   };
 };
 
@@ -126,7 +152,7 @@ const dexWithdrawalMap: DexWithdrawalIntegrationMap = {
   paraswap: {
     title: 'ParaSwap',
     icon: ParaSwapIcon,
-    fetcher: getParaSwapRate,
+    fetcher: getParaSwapWithdrawalRate,
     matomoEvent: MATOMO_CLICK_EVENTS_TYPES.withdrawalGoToParaswap,
     link: (amount, token) =>
       `https://app.paraswap.io/?referrer=Lido&takeSurplus=true#/${getTokenAddress(

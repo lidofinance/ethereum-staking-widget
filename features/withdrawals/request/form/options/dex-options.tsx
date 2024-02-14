@@ -19,8 +19,6 @@ import {
 import { ReactComponent as AttentionTriangle } from 'assets/icons/attention-triangle.svg';
 import { Zero } from '@ethersproject/constants';
 
-const placeholder = Array.from<null>({ length: 1 }).fill(null);
-
 type DexOptionProps = {
   title: string;
   icon: React.FC;
@@ -70,17 +68,22 @@ const DexOption: React.FC<DexOptionProps> = ({
 export const DexOptions: React.FC<
   React.ComponentProps<typeof DexOptionsContainer>
 > = (props) => {
-  const { data, initialLoading, loading, amount, selectedToken } =
+  const { data, initialLoading, loading, amount, selectedToken, enabledDexes } =
     useWithdrawalRates();
 
   const dexesFiltered = useMemo(
-    () => data?.filter(({ rate }) => amount.eq(Zero) || rate != null) ?? [],
+    () =>
+      data?.filter(
+        ({ rate, isServiceAvailable }) =>
+          isServiceAvailable || amount.eq(Zero) || rate != null,
+      ) ?? [],
     [amount, data],
   );
 
   return (
     <DexOptionsContainer data-testid="dexOptionContainer" {...props}>
-      {initialLoading && placeholder.map((_, i) => <DexOptionLoader key={i} />)}
+      {initialLoading &&
+        enabledDexes.map((_, i) => <DexOptionLoader key={i} />)}
       {!initialLoading && dexesFiltered.length === 0 && (
         <DexWarning>
           <AttentionTriangle />

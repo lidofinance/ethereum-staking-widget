@@ -4,7 +4,7 @@ import generateBuildId from './scripts/generate-build-id.mjs';
 
 buildDynamics();
 
-const ipfsMode = process.env.IPFS_MODE;
+const ipfsMode = process.env.IPFS_MODE == 'true';
 
 // https://nextjs.org/docs/pages/api-reference/next-config-js/basePath
 const basePath = process.env.BASE_PATH;
@@ -109,7 +109,7 @@ export default withBundleAnalyzer({
             loader: 'webpack-preprocessor-loader',
             options: {
               params: {
-                IPFS_MODE: String(ipfsMode === 'true'),
+                IPFS_MODE: ipfsMode,
               },
             },
           },
