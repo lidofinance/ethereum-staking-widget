@@ -4,18 +4,18 @@ import { useRequestTxPrice } from 'features/withdrawals/hooks/useWithdrawTxPrice
 import { useApproveGasLimit } from 'features/wsteth/wrap/hooks/use-approve-gas-limit';
 import { useWatch } from 'react-hook-form';
 import { DataTableRowStethByWsteth } from 'shared/components/data-table-row-steth-by-wsteth';
-import { FormatPrice, FormatToken } from 'shared/formatters';
+import { FormatPrice } from 'shared/formatters';
 import { useTxCostInUsd } from 'shared/hooks';
-import { getTokenDisplayName } from 'utils/getTokenDisplayName';
 import {
   RequestFormInputType,
   useRequestFormData,
   useValidationResults,
 } from '../request-form-context';
-import { MaxUint256 } from '@ethersproject/constants';
-import { useMemo } from 'react';
+import { useWeb3 } from 'reef-knot/web3-react';
+import { AllowanceDataTableRow } from 'shared/components/allowance-data-table-row';
 
 export const TransactionInfo = () => {
+  const { active } = useWeb3();
   const { isApprovalFlow, isApprovalFlowLoading, allowance } =
     useRequestFormData();
   const token = useWatch<RequestFormInputType, 'token'>({ name: 'token' });
@@ -34,10 +34,6 @@ export const TransactionInfo = () => {
     approveGasLimit && Number(approveGasLimit),
   );
 
-  const isInfiniteAllowance = useMemo(() => {
-    return allowance.eq(MaxUint256);
-  }, [allowance]);
-
   return (
     <>
       <DataTableRow
@@ -55,21 +51,13 @@ export const TransactionInfo = () => {
       >
         <FormatPrice amount={requestTxPriceInUsd} />
       </DataTableRow>
-      <DataTableRow
+      <AllowanceDataTableRow
         data-testid="allowance"
-        title="Allowance"
+        token={token}
+        allowance={allowance}
+        isBlank={!active}
         loading={isApprovalFlowLoading}
-      >
-        {isInfiniteAllowance ? (
-          'Infinite'
-        ) : (
-          <FormatToken
-            showAmountTip
-            amount={allowance}
-            symbol={getTokenDisplayName(token)}
-          />
-        )}
-      </DataTableRow>
+      />
       {token === TOKENS.STETH ? (
         <DataTableRow data-testid="exchangeRate" title="Exchange rate">
           1 stETH = 1 ETH

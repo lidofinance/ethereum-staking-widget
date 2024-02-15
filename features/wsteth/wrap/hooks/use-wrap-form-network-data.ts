@@ -9,7 +9,7 @@ import { useIsMultisig } from 'shared/hooks/useIsMultisig';
 import { useTokenMaxAmount } from 'shared/hooks/use-token-max-amount';
 
 import { STRATEGY_LAZY } from 'utils/swrStrategies';
-import { useStakingLimitInfo } from 'shared/hooks';
+import { useMaxGasPrice, useStakingLimitInfo } from 'shared/hooks';
 import { BALANCE_PADDING } from 'config';
 
 // Provides all data fetching for form to function
@@ -28,6 +28,7 @@ export const useWrapFormNetworkData = () => {
     useStakingLimitInfo();
 
   const { gasLimitETH, gasLimitStETH } = useWrapGasLimit();
+  const maxGasPrice = useMaxGasPrice();
 
   const maxAmountETH = useTokenMaxAmount({
     balance: ethBalance,
@@ -37,6 +38,10 @@ export const useWrapFormNetworkData = () => {
     padding: BALANCE_PADDING,
     isLoading: isMultisigLoading,
   });
+
+  const wrapEthGasCost = maxGasPrice
+    ? maxGasPrice.mul(gasLimitStETH)
+    : undefined;
 
   const revalidateWrapFormData = useCallback(async () => {
     await Promise.allSettled([
@@ -57,16 +62,17 @@ export const useWrapFormNetworkData = () => {
       isMultisig,
       ethBalance,
       stethBalance,
+      wrapEthGasCost,
       stakeLimitInfo,
       wstethBalance,
       revalidateWrapFormData,
       gasLimitETH,
       gasLimitStETH,
       maxAmountETH,
-      maxAmountStETH: stethBalance,
     }),
     [
       isMultisig,
+      wrapEthGasCost,
       ethBalance,
       stethBalance,
       stakeLimitInfo,
