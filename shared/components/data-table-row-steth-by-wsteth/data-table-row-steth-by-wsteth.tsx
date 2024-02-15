@@ -8,7 +8,7 @@ import { parseEther } from '@ethersproject/units';
 
 export const useWstethToStethRatio = () => {
   const oneWstethAsBigNumber = useMemo(() => parseEther('1'), []);
-  const wstethAsStethBN = useStethByWsteth(oneWstethAsBigNumber);
+  const { data: wstethAsStethBN } = useStethByWsteth(oneWstethAsBigNumber);
 
   return { wstethAsStethBN, loading: !wstethAsStethBN };
 };

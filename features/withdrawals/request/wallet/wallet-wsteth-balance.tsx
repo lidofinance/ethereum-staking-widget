@@ -7,7 +7,7 @@ import { useRequestFormData } from '../request-form-context';
 
 export const WalletWstethBalance = () => {
   const { balanceWSteth } = useRequestFormData();
-  const stethByWstethBalance = useStethByWsteth(balanceWSteth);
+  const { data: stethByWstethBalance } = useStethByWsteth(balanceWSteth);
 
   const stethBalanceValue = (
     <>

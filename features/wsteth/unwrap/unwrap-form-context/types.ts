@@ -16,6 +16,4 @@ export type UnwrapFormValidationContext = {
 };
 
 export type UnwrapFormDataContextValueType = UnwrapFormNetworkData &
-  FormControllerContextValueType<UnwrapFormInputType> & {
-    willReceiveStETH?: BigNumber;
-  };
+  FormControllerContextValueType<UnwrapFormInputType>;

@@ -1,6 +1,6 @@
 import { parseEther } from '@ethersproject/units';
 import { DataTable, DataTableRow } from '@lidofinance/lido-ui';
-import { useFormContext } from 'react-hook-form';
+import { useWatch } from 'react-hook-form';
 
 import { FormatPrice, FormatToken } from 'shared/formatters';
 import { useTxCostInUsd, useWstethBySteth } from 'shared/hooks';
@@ -12,20 +12,25 @@ import { useWrapFormData, WrapFormInputType } from '../wrap-form-context';
 import { useWeb3 } from 'reef-knot/web3-react';
 import { AllowanceDataTableRow } from 'shared/components/allowance-data-table-row';
 import { TOKENS } from '@lido-sdk/constants';
+import { Zero } from '@ethersproject/constants';
 
 const oneSteth = parseEther('1');
 
 export const WrapFormStats = () => {
   const { active } = useWeb3();
-  const { allowance, wrapGasLimit, willReceiveWsteth, isApprovalLoading } =
-    useWrapFormData();
+  const { allowance, wrapGasLimit, isApprovalLoading } = useWrapFormData();
 
-  const { watch } = useFormContext<WrapFormInputType>();
-  const [token] = watch(['token']);
+  const [amount, token] = useWatch<WrapFormInputType, ['amount', 'token']>({
+    name: ['amount', 'token'],
+  });
+
+  const { data: willReceiveWsteth, initialLoading } = useWstethBySteth(
+    amount ?? Zero,
+  );
 
   const isSteth = token === TOKENS_TO_WRAP.STETH;
 
-  const oneWstethConverted = useWstethBySteth(oneSteth);
+  const { data: oneWstethConverted } = useWstethBySteth(oneSteth);
 
   const approveGasLimit = useApproveGasLimit();
   const approveTxCostInUsd = useTxCostInUsd(approveGasLimit);
@@ -68,14 +73,17 @@ export const WrapFormStats = () => {
         token={TOKENS.STETH}
       />
 
-      <DataTableRow title="You will receive" loading={!willReceiveWsteth}>
-        <FormatToken
-          amount={willReceiveWsteth}
-          data-testid="youWillReceive"
-          symbol="wstETH"
-          showAmountTip
-          trimEllipsis
-        />
+      <DataTableRow title="You will receive" loading={initialLoading}>
+        {!willReceiveWsteth && 'N/A'}
+        {willReceiveWsteth && (
+          <FormatToken
+            amount={willReceiveWsteth}
+            data-testid="youWillReceive"
+            symbol="wstETH"
+            showAmountTip
+            trimEllipsis
+          />
+        )}
       </DataTableRow>
     </DataTable>
   );

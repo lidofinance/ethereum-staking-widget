@@ -1,12 +1,21 @@
+import { useWatch } from 'react-hook-form';
 import { useTransactionModal } from 'shared/transaction-modal';
+import { useStethByWsteth } from 'shared/hooks';
+import { useUnwrapFormData } from '../unwrap-form-context';
 import { convertTxStageToLegacy } from 'features/wsteth/shared/utils/convertTxModalStageToLegacy';
 import { TxStageModal } from 'shared/components';
-import { useUnwrapFormData } from '../unwrap-form-context';
 import { TX_OPERATION as TX_OPERATION_LEGACY } from 'shared/components/tx-stage-modal';
+import type { RequestFormInputType } from 'features/withdrawals/request/request-form-context';
+import { Zero } from '@ethersproject/constants';
 
 export const UnwrapFormTxModal = () => {
-  const { stethBalance, willReceiveStETH } = useUnwrapFormData();
+  const { stethBalance } = useUnwrapFormData();
   const { dispatchModalState, onRetry, ...modalState } = useTransactionModal();
+
+  const [amount] = useWatch<RequestFormInputType, ['amount']>({
+    name: ['amount'],
+  });
+  const { data: willReceiveStETH } = useStethByWsteth(amount ?? Zero);
 
   return (
     <TxStageModal

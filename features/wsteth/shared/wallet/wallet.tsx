@@ -26,8 +26,8 @@ const WalletComponent: WalletComponentType = (props) => {
   const stethAddress = useTokenAddress(TOKENS.STETH);
   const wstethAddress = useTokenAddress(TOKENS.WSTETH);
 
-  const wstethByStethBalance = useWstethBySteth(stethBalance.data);
-  const stethByWstethBalance = useStethByWsteth(wstethBalance.data);
+  const { data: wstethByStethBalance } = useWstethBySteth(stethBalance.data);
+  const { data: stethByWstethBalance } = useStethByWsteth(wstethBalance.data);
 
   return (
     <StyledCard data-testid="wrapCardSection" {...props}>
