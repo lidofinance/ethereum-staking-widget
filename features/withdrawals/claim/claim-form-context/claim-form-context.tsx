@@ -22,6 +22,7 @@ import {
 import { ClaimFormHelperState, useHelperState } from './use-helper-state';
 import { useClaimData } from 'features/withdrawals/contexts/claim-data-context';
 import { useTransactionModal } from 'shared/transaction-modal';
+import { useWeb3 } from 'reef-knot/web3-react';
 
 type ClaimFormDataContextValueType = {
   onSubmit: FormEventHandler<HTMLFormElement>;
@@ -39,6 +40,7 @@ export const useClaimFormData = () => {
 
 export const ClaimFormProvider: FC<PropsWithChildren> = ({ children }) => {
   const { dispatchModalState } = useTransactionModal();
+  const { active } = useWeb3();
   const { data } = useClaimData();
 
   const [shouldReset, setShouldReset] = useState<boolean>(false);
@@ -49,7 +51,7 @@ export const ClaimFormProvider: FC<PropsWithChildren> = ({ children }) => {
   const formObject = useForm<ClaimFormInputType, ClaimFormValidationContext>({
     defaultValues: getDefaultValues,
     resolver: claimFormValidationResolver,
-    context: { maxSelectedRequestCount },
+    context: { maxSelectedRequestCount, isWalletActive: active },
     mode: 'onChange',
     reValidateMode: 'onChange',
   });
