@@ -54,6 +54,7 @@ export const UnwrapFormProvider: FC<PropsWithChildren> = ({ children }) => {
   >({
     defaultValues: {
       amount: null,
+      dummyErrorField: null,
     },
     context: validationContextPromise,
     criteriaMode: 'firstError',

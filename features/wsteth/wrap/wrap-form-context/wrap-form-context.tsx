@@ -51,10 +51,7 @@ export const WrapFormProvider: FC<PropsWithChildren> = ({ children }) => {
     networkData,
   });
 
-  const formObject = useForm<
-    WrapFormInputType,
-    Promise<WrapFormValidationContext>
-  >({
+  const formObject = useForm<WrapFormInputType, WrapFormValidationContext>({
     defaultValues: {
       amount: null,
       token: TOKENS_TO_WRAP.STETH,
@@ -90,9 +87,7 @@ export const WrapFormProvider: FC<PropsWithChildren> = ({ children }) => {
       ...approvalData,
       isSteth,
       stakeLimitInfo: networkData.stakeLimitInfo,
-      maxAmount: isSteth
-        ? networkData.maxAmountStETH
-        : networkData.maxAmountETH,
+      maxAmount: isSteth ? networkData.stethBalance : networkData.maxAmountETH,
       wrapGasLimit: isSteth
         ? networkData.gasLimitStETH
         : networkData.gasLimitETH,

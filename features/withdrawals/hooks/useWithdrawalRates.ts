@@ -12,6 +12,7 @@ import { STRATEGY_LAZY } from 'utils/swrStrategies';
 import { RequestFormInputType } from '../request/request-form-context';
 import { getOpenOceanRate } from 'utils/get-open-ocean-rate';
 import { standardFetcher } from 'utils/standardFetcher';
+import { FetcherError } from 'utils/fetcherError';
 
 type GetWithdrawalRateParams = {
   amount: BigNumber;
@@ -27,6 +28,7 @@ type SingleWithdrawalRateResult = {
   name: string;
   rate: number | null;
   toReceive: BigNumber | null;
+  displayEmpty?: boolean;
 };
 
 type GetRateType = (
@@ -50,6 +52,8 @@ const calculateRateReceive = (
 };
 
 const getOpenOceanWithdrawalRate: GetRateType = async ({ amount, token }) => {
+  let displayEmpty = false;
+
   if (amount && amount.gt(Zero)) {
     try {
       const rate = await getOpenOceanRate(amount, token, 'ETH');
@@ -58,6 +62,7 @@ const getOpenOceanWithdrawalRate: GetRateType = async ({ amount, token }) => {
         ...rate,
       };
     } catch (e) {
+      displayEmpty = e instanceof FetcherError && e.status < 500;
       console.warn('[getOpenOceanRate] Failed to receive withdraw rate', e);
     }
   }
@@ -66,6 +71,7 @@ const getOpenOceanWithdrawalRate: GetRateType = async ({ amount, token }) => {
     name: 'openOcean',
     rate: null,
     toReceive: null,
+    displayEmpty,
   };
 };
 
@@ -78,6 +84,7 @@ type ParaSwapPriceResponsePartial = {
 
 const getParaSwapRate: GetRateType = async ({ amount, token }) => {
   let rateInfo: RateCalculationResult | null;
+  let displayEmpty = false;
 
   try {
     if (amount.isZero() || amount.isNegative()) {
@@ -111,14 +118,16 @@ const getParaSwapRate: GetRateType = async ({ amount, token }) => {
       BigNumber.from(data.priceRoute.srcAmount),
       BigNumber.from(data.priceRoute.destAmount),
     );
-  } catch {
+  } catch (e) {
     rateInfo = null;
+    displayEmpty = e instanceof FetcherError && e.status < 500;
   }
 
   return {
     name: 'paraswap',
     rate: rateInfo?.rate ?? null,
     toReceive: rateInfo?.toReceive ?? null,
+    displayEmpty,
   };
 };
 

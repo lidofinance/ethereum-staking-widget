@@ -24,6 +24,7 @@ import {
   FormControllerContextValueType,
 } from 'shared/hook-form/form-controller';
 import { useClaimData } from 'features/withdrawals/contexts/claim-data-context';
+import { useWeb3 } from 'reef-knot/web3-react';
 
 type ClaimFormDataContextValueType = ClaimFormHelperState;
 
@@ -38,6 +39,7 @@ export const useClaimFormData = () => {
 };
 
 export const ClaimFormProvider: FC<PropsWithChildren> = ({ children }) => {
+  const { active } = useWeb3();
   const { data } = useClaimData();
 
   const { maxSelectedRequestCount, defaultSelectedRequestCount } =
@@ -47,7 +49,7 @@ export const ClaimFormProvider: FC<PropsWithChildren> = ({ children }) => {
   const formObject = useForm<ClaimFormInputType, ClaimFormValidationContext>({
     defaultValues: getDefaultValues,
     resolver: claimFormValidationResolver,
-    context: { maxSelectedRequestCount },
+    context: { maxSelectedRequestCount, isWalletActive: active },
     mode: 'onChange',
     reValidateMode: 'onChange',
   });
