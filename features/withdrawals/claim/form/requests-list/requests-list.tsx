@@ -4,8 +4,10 @@ import { Wrapper } from './styles';
 import { RequestsLoader } from './requests-loader';
 import { useFieldArray, useFormContext, useFormState } from 'react-hook-form';
 import { ClaimFormInputType } from '../../claim-form-context';
+import { useWeb3 } from 'reef-knot/web3-react';
 
 export const RequestsList: React.FC = () => {
+  const { active } = useWeb3();
   const { isLoading } = useFormState<ClaimFormInputType>();
   const { register } = useFormContext<ClaimFormInputType>();
   const { fields } = useFieldArray<ClaimFormInputType, 'requests'>({
@@ -16,8 +18,8 @@ export const RequestsList: React.FC = () => {
     return <RequestsLoader />;
   }
 
-  if (fields.length === 0) {
-    return <RequestsEmpty />;
+  if (!active || fields.length === 0) {
+    return <RequestsEmpty isWalletConnected={active} />;
   }
 
   return (

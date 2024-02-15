@@ -22,7 +22,7 @@ export type StakeFormNetworkData = {
 };
 
 export type StakeFormValidationContext = {
-  active: boolean;
+  isWalletActive: boolean;
   stakingLimitLevel: LIMIT_LEVEL;
   currentStakeLimit: BigNumber;
   gasCost: BigNumber;

@@ -17,10 +17,17 @@ export type WrapFormNetworkData = ReturnType<typeof useWrapFormNetworkData>;
 export type WrapFormApprovalData = ReturnType<typeof useWrapTxApprove>;
 
 export type WrapFormValidationContext = {
-  active: boolean;
-  maxAmountETH?: BigNumber;
-  maxAmountStETH?: BigNumber;
-  stakeLimitLevel: LIMIT_LEVEL;
+  isWalletActive: boolean;
+  asyncContext: Promise<WrapFormAsyncValidationContext>;
+};
+
+export type WrapFormAsyncValidationContext = {
+  stethBalance: BigNumber;
+  etherBalance: BigNumber;
+  stakingLimitLevel: LIMIT_LEVEL;
+  currentStakeLimit: BigNumber;
+  gasCost: BigNumber;
+  isMultisig: boolean;
 };
 
 export type WrapFormDataContextValueType = WrapFormNetworkData &
@@ -28,7 +35,7 @@ export type WrapFormDataContextValueType = WrapFormNetworkData &
   FormControllerContextValueType<WrapFormInputType> & {
     isSteth: boolean;
     maxAmount?: BigNumber;
-    wrapGasLimit?: BigNumber;
+    wrapGasLimit: BigNumber;
     willReceiveWsteth?: BigNumber;
     stakeLimitInfo?: StakeLimitFullInfo;
   };
