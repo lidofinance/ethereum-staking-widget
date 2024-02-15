@@ -1,5 +1,4 @@
 import { useWatch } from 'react-hook-form';
-import { formatEther } from '@ethersproject/units';
 
 import { Tooltip, Question } from '@lidofinance/lido-ui';
 import { TOKENS } from '@lido-sdk/constants';
@@ -56,11 +55,10 @@ export const LidoOption = () => {
     name: ['token', 'amount'],
   });
 
-  // TODO: refactor to use intermediate validation values
   const { amount: ethAmount, loading: amountLoading } =
     useEthAmountByStethWsteth({
       isSteth: token === TOKENS.STETH,
-      input: amount ? formatEther(amount) : undefined,
+      amount,
     });
 
   return (
