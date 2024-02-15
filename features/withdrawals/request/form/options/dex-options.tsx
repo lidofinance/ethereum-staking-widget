@@ -116,9 +116,9 @@ export const DexOptions: React.FC<
     useWithdrawalRates();
 
   const dexesFiltered = useMemo(() => {
-    return data?.filter(({ rate, name }) => {
+    return data?.filter(({ rate, name, displayEmpty }) => {
       const dex = dexInfo[name];
-      return dex && (amount.eq('0') || rate !== null);
+      return dex && (amount.eq('0') || rate !== null || displayEmpty);
     });
   }, [amount, data]);
 
