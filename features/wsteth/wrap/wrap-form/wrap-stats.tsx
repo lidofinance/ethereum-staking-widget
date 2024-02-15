@@ -68,7 +68,7 @@ export const WrapFormStats = () => {
         token={TOKENS.STETH}
       />
 
-      <DataTableRow title="You will receive">
+      <DataTableRow title="You will receive" loading={!willReceiveWsteth}>
         <FormatToken
           amount={willReceiveWsteth}
           data-testid="youWillReceive"
