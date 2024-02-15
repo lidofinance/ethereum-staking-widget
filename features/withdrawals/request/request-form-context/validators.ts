@@ -57,9 +57,9 @@ const messageMinUnstake = (min: BigNumber, token: TokensWithdrawable) =>
   )}`;
 
 const messageMaxAmount = (max: BigNumber, token: TokensWithdrawable) =>
-  `${getTokenDisplayName(token)} amount must not be greater than ${formatEther(
-    max,
-  )}`;
+  `Entered ${getTokenDisplayName(
+    token,
+  )} amount exceeds your available balance of ${formatEther(max)}`;
 
 const validateSplitRequests = (
   field: string,
@@ -154,12 +154,12 @@ export const RequestFormValidationResolver: Resolver<
     invariant(context, 'must have context promise');
     setResults = context.setIntermediateValidationResults;
 
-    // this check does not require context and can be placed first
-    // also limits context missing edge cases on page start
+    // this check does not require async context and can be placed first
+    // also limits async context missing edge cases on page start
     validateEtherAmount('amount', amount, token);
 
     // early return
-    if (!context.active) return { values, errors: {} };
+    if (!context.isWalletActive) return { values, errors: {} };
 
     // wait for context promise with timeout and extract relevant data
     // validation function only waits limited time for data and fails validation otherwise

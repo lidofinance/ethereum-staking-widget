@@ -14,7 +14,7 @@ export type RequestFormInputType = {
 } & ValidationResults;
 
 export type RequestFormValidationContextType = {
-  active: boolean;
+  isWalletActive: boolean;
   asyncContext: Promise<RequestFormValidationAsyncContextType>;
   setIntermediateValidationResults: Dispatch<SetStateAction<ValidationResults>>;
 };

@@ -1,14 +1,11 @@
 import { useMemo } from 'react';
 import invariant from 'tiny-invariant';
-import { formatEther } from '@ethersproject/units';
 import { useWeb3 } from 'reef-knot/web3-react';
 import { Zero } from '@ethersproject/constants';
 
 import { validateEtherAmount } from 'shared/hook-form/validation/validate-ether-amount';
 import { VALIDATION_CONTEXT_TIMEOUT } from 'features/withdrawals/withdrawals-constants';
 import { handleResolverValidationError } from 'shared/hook-form/validation/validation-error';
-import { validateBignumberMax } from 'shared/hook-form/validation/validate-bignumber-max';
-import { validateStakeLimit } from 'shared/hook-form/validation/validate-stake-limit';
 import { awaitWithTimeout } from 'utils/await-with-timeout';
 import { useAwaiter } from 'shared/hooks/use-awaiter';
 
@@ -18,6 +15,7 @@ import type {
   StakeFormNetworkData,
   StakeFormValidationContext,
 } from './types';
+import { validateStakeEth } from 'shared/hook-form/validation/validate-stake-eth';
 
 export const stakeFormValidationResolver: Resolver<
   StakeFormInput,
@@ -33,7 +31,7 @@ export const stakeFormValidationResolver: Resolver<
     validateEtherAmount('amount', amount, 'ETH');
 
     const {
-      active,
+      isWalletActive,
       stakingLimitLevel,
       currentStakeLimit,
       etherBalance,
@@ -44,49 +42,18 @@ export const stakeFormValidationResolver: Resolver<
       VALIDATION_CONTEXT_TIMEOUT,
     );
 
-    validateStakeLimit('amount', stakingLimitLevel);
+    validateStakeEth({
+      formField: 'amount',
+      amount,
+      isWalletActive,
+      stakingLimitLevel,
+      currentStakeLimit,
+      etherBalance,
+      gasCost,
+      isMultisig,
+    });
 
-    if (active) {
-      validateBignumberMax(
-        'amount',
-        amount,
-        etherBalance,
-        `Entered ETH amount exceeds your available balance of ${formatEther(
-          etherBalance,
-        )}`,
-      );
-
-      validateBignumberMax(
-        'amount',
-        amount,
-        currentStakeLimit,
-        `Entered ETH amount exceeds current staking limit of ${formatEther(
-          currentStakeLimit,
-        )}`,
-      );
-
-      if (!isMultisig) {
-        const gasPaddedBalance = etherBalance.sub(gasCost);
-
-        validateBignumberMax(
-          'amount',
-          Zero,
-          gasPaddedBalance,
-          `Ensure you have sufficient ETH to cover the gas cost of ${formatEther(
-            gasCost,
-          )}`,
-        );
-
-        validateBignumberMax(
-          'amount',
-          amount,
-          gasPaddedBalance,
-          `Enter ETH amount less than ${formatEther(
-            gasPaddedBalance,
-          )} to ensure you leave enough ETH for gas fees`,
-        );
-      }
-    } else {
+    if (!isWalletActive) {
       return {
         values,
         errors: { referral: 'wallet not connected' },
@@ -114,7 +81,7 @@ export const useStakeFormValidationContext = (
       (!active || (etherBalance && gasCost && isMultisig !== undefined))
     ) {
       return {
-        active,
+        isWalletActive: active,
         stakingLimitLevel: stakingLimitInfo.stakeLimitLevel,
         currentStakeLimit: stakingLimitInfo.currentStakeLimit,
         // condition above guaranties stubs will only be passed when active = false
