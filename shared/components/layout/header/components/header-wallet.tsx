@@ -8,7 +8,7 @@ import NoSSRWrapper from '../../../no-ssr-wrapper';
 
 import { dynamics } from 'config';
 import { IPFSInfoBox } from 'features/ipfs/ipfs-info-box';
-import { Button, Connect } from 'shared/wallet';
+import { Connect } from 'shared/wallet';
 
 import { HeaderSettingsButton } from './header-settings-button';
 import {
@@ -16,6 +16,8 @@ import {
   DotStyle,
   IPFSInfoBoxOnlyDesktopWrapper,
 } from '../styles';
+
+import { ConnectedWallet } from '@orbykit/react';
 
 const HeaderWallet: FC = () => {
   const router = useRouter();
@@ -37,11 +39,7 @@ const HeaderWallet: FC = () => {
           </HeaderWalletChainStyle>
         </>
       )}
-      {active ? (
-        <Button data-testid="accountSectionHeader" />
-      ) : (
-        <Connect size="sm" />
-      )}
+      {active ? <ConnectedWallet /> : <Connect size="sm" />}
       {dynamics.ipfsMode && <HeaderSettingsButton />}
       {!queryTheme && <ThemeToggler data-testid="themeToggler" />}
       {dynamics.ipfsMode && (

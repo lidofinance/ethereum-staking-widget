@@ -1,6 +1,7 @@
 import { memo } from 'react';
 import { AppProps } from 'next/app';
 import 'nprogress/nprogress.css';
+import '@orbykit/react/styles.css';
 
 import {
   ToastContainer,
