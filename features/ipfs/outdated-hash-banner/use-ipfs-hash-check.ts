@@ -32,8 +32,7 @@ export const useIpfsHashCheck = () => {
   const currentCidSWR = useLidoSWR(
     ['swr:ipfs-cid-extraction'],
     async () => {
-      const urlCid =
-        URL_CID_REGEX.exec(window.location.href)?.groups?.cid ?? null;
+      const urlCid = URL_CID_REGEX.exec(window.location.href)?.groups?.cid;
       if (urlCid) return urlCid;
       const headers = await fetch(`${BASE_PATH_ASSET}/runtime/window-env.js`, {
         method: 'HEAD',
