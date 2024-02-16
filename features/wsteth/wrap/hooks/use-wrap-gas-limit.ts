@@ -1,5 +1,4 @@
 import { useLidoSWR, useWSTETHContractRPC } from '@lido-sdk/react';
-import { BigNumber } from 'ethers';
 import { useWeb3 } from 'reef-knot/web3-react';
 import { CHAINS } from '@lido-sdk/constants';
 
@@ -32,7 +31,7 @@ export const useWrapGasLimit = () => {
           });
         } catch (error) {
           console.warn(`${_key}::[eth]`, error);
-          return applyGasLimitRatio(BigNumber.from(WRAP_FROM_ETH_GAS_LIMIT));
+          return applyGasLimitRatio(WRAP_FROM_ETH_GAS_LIMIT);
         }
       };
 
@@ -43,9 +42,9 @@ export const useWrapGasLimit = () => {
           });
         } catch (error) {
           console.warn(`${_key}::[steth]`, error);
-          return BigNumber.from(
-            chainId === CHAINS.Goerli ? WRAP_GAS_LIMIT_GOERLI : WRAP_GAS_LIMIT,
-          );
+          return chainId === CHAINS.Goerli
+            ? WRAP_GAS_LIMIT_GOERLI
+            : WRAP_GAS_LIMIT;
         }
       };
 
@@ -62,10 +61,10 @@ export const useWrapGasLimit = () => {
   );
 
   return {
-    gasLimitETH: data?.gasLimitETH || BigNumber.from(WRAP_FROM_ETH_GAS_LIMIT),
+    gasLimitETH: data?.gasLimitETH || WRAP_FROM_ETH_GAS_LIMIT,
     gasLimitStETH:
       data?.gasLimitStETH || chainId === CHAINS.Goerli
-        ? BigNumber.from(WRAP_GAS_LIMIT_GOERLI)
-        : BigNumber.from(WRAP_GAS_LIMIT),
+        ? WRAP_GAS_LIMIT_GOERLI
+        : WRAP_GAS_LIMIT,
   };
 };

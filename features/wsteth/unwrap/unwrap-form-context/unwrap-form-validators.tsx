@@ -14,9 +14,9 @@ import { VALIDATION_CONTEXT_TIMEOUT } from 'features/withdrawals/withdrawals-con
 import type { UnwrapFormInputType, UnwrapFormValidationContext } from './types';
 
 const messageMaxAmount = (max: BigNumber) =>
-  `${getTokenDisplayName(
+  `Entered ${getTokenDisplayName(
     TOKENS.WSTETH,
-  )} amount must not be greater than ${formatEther(max)}`;
+  )} amount exceeds your available balance of ${formatEther(max)}`;
 
 export const UnwrapFormValidationResolver: Resolver<
   UnwrapFormInputType,
@@ -31,7 +31,7 @@ export const UnwrapFormValidationResolver: Resolver<
 
     validateEtherAmount('amount', amount, TOKENS.WSTETH);
 
-    const { active, maxAmount } = await awaitWithTimeout(
+    const { isWalletActive: active, maxAmount } = await awaitWithTimeout(
       validationContextPromise,
       VALIDATION_CONTEXT_TIMEOUT,
     );
@@ -45,13 +45,21 @@ export const UnwrapFormValidationResolver: Resolver<
         maxAmount,
         messageMaxAmount(maxAmount),
       );
+    } else {
+      return {
+        values,
+        errors: { dummyErrorField: 'wallet is not connected' },
+      };
     }
-
     return {
       values,
       errors: {},
     };
   } catch (error) {
-    return handleResolverValidationError(error, 'UnwrapForm', 'amount');
+    return handleResolverValidationError(
+      error,
+      'UnwrapForm',
+      'dummyErrorField',
+    );
   }
 };

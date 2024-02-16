@@ -11,7 +11,6 @@ export * from './parallelizePromises';
 export * from './qa';
 export * from './extractErrorMessage';
 export * from './swrAbortableMiddleware';
-export * from './isValidEtherValue';
 export * from './getNFTUrl';
 export * from './maxNumberValidation';
 export * from './shortenTokenValue';

@@ -67,5 +67,9 @@ export const useValidationContext = (
   const asyncContext =
     useAwaiter<RequestFormValidationAsyncContextType>(context).awaiter;
 
-  return { active, asyncContext, setIntermediateValidationResults };
+  return {
+    isWalletActive: active,
+    asyncContext,
+    setIntermediateValidationResults,
+  };
 };

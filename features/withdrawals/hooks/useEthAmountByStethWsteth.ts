@@ -1,29 +1,30 @@
-import { parseEther } from '@ethersproject/units';
 import { BigNumber } from 'ethers';
-import { useMemo } from 'react';
+import { useContractSWR, useWSTETHContractRPC } from '@lido-sdk/react';
 
-import { useStethByWsteth } from 'shared/hooks';
-import { isValidEtherValue } from 'utils/isValidEtherValue';
+import { STRATEGY_LAZY } from 'utils/swrStrategies';
 
 type useEthAmountByInputProps = {
   isSteth: boolean;
-  input?: string;
+  amount: BigNumber | null;
 };
 
 export const useEthAmountByStethWsteth = ({
   isSteth,
-  input,
+  amount,
 }: useEthAmountByInputProps) => {
-  const isValidValue =
-    input && !isNaN(Number(input)) && isValidEtherValue(input);
-  const inputBN = useMemo(
-    () => (isValidValue ? parseEther(input) : BigNumber.from(0)),
-    [input, isValidValue],
-  );
+  const wsteth = isSteth ? null : amount;
+  const { data: stethByWstethBalance, loading } = useContractSWR({
+    contract: useWSTETHContractRPC(),
+    method: 'getStETHByWstETH',
+    params: [wsteth],
+    shouldFetch: !!wsteth,
+    config: STRATEGY_LAZY,
+  });
 
-  const stethByWstethBalance = useStethByWsteth(isSteth ? undefined : inputBN);
-
-  if (!isValidValue) return undefined;
-  if (isSteth) return inputBN;
-  return stethByWstethBalance;
+  if (isSteth)
+    return {
+      amount: amount ?? undefined,
+      loading: false,
+    };
+  else return { amount: stethByWstethBalance, loading };
 };
