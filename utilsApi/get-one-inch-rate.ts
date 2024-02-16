@@ -27,8 +27,7 @@ export const getOneInchRate: GetOneInchRateStats = async (
   amount,
 ) => {
   console.debug('[getOneInchRate] Started fetching...');
-  if (!ONE_INCH_API_KEY)
-    console.warn('[getOneInchRate] missing One Inch Api Key');
+  if (!ONE_INCH_API_KEY) console.warn('[getOneInchRate] missing 1inch Api Key');
 
   const query = new URLSearchParams({
     src: fromTokenAddress,
@@ -44,11 +43,6 @@ export const getOneInchRate: GetOneInchRateStats = async (
         headers: { Authorization: `Bearer ${ONE_INCH_API_KEY}` },
       }),
   });
-
-  if (!respData || !respData.toAmount) {
-    console.error('[getOneInchRate] Request to 1inch failed');
-    return null;
-  }
 
   const toAmount = BigNumber.from(respData.toAmount);
 

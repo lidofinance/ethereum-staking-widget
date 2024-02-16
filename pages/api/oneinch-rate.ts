@@ -1,5 +1,9 @@
 import { Cache } from 'memory-cache';
 import { NextApiRequest, NextApiResponse } from 'next';
+import { parseEther } from '@ethersproject/units';
+import { Zero } from '@ethersproject/constants';
+import { BigNumber } from 'ethers';
+import invariant from 'tiny-invariant';
 
 import { wrapRequest as wrapNextRequest } from '@lidofinance/next-api-wrapper';
 import { CHAINS, TOKENS, getTokenAddress } from '@lido-sdk/constants';
@@ -19,10 +23,8 @@ import {
   cors,
 } from 'utilsApi';
 import Metrics from 'utilsApi/metrics';
+import { FetcherError } from 'utils/fetcherError';
 import { API } from 'types';
-import { parseEther } from '@ethersproject/units';
-import { Zero } from '@ethersproject/constants';
-import { BigNumber } from 'ethers';
 
 type OneInchRateResponse = {
   rate: number;
@@ -33,8 +35,13 @@ const cache = new Cache<string, OneInchRateResponse>();
 
 const DEFAULT_AMOUNT = parseEther('1');
 const TOKEN_ETH = 'ETH';
+// Amounts larger make 1inch API return 500
+const MAX_BIGINT = BigNumber.from(
+  '10000000000000000000000000000000000000000000000000000000000000000000',
+);
 const TOKEN_ALLOWED_LIST = [TOKEN_ETH, TOKENS.STETH, TOKENS.WSTETH];
 const ETH_DUMMY_ADDRESS = '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee';
+const PASSTHROUGH_CODES = [400, 422, 429];
 
 const validateAndParseParams = (req: NextApiRequest, res: NextApiResponse) => {
   let token = req.query?.token || TOKEN_ETH;
@@ -47,7 +54,7 @@ const validateAndParseParams = (req: NextApiRequest, res: NextApiResponse) => {
 
     token = token.toLocaleUpperCase();
     if (!TOKEN_ALLOWED_LIST.includes(token)) {
-      throw new Error(`You can use only: ${TOKEN_ALLOWED_LIST.toString()}`);
+      throw new Error(`You can only use ${TOKEN_ALLOWED_LIST.toString()}`);
     }
 
     if (req.query.amount) {
@@ -63,9 +70,11 @@ const validateAndParseParams = (req: NextApiRequest, res: NextApiResponse) => {
         throw new Error(`Amount must be a valid BigNumber string`);
       }
       if (amount.lte(Zero)) throw new Error(`Amount must be positive`);
+      if (amount.gt(MAX_BIGINT)) throw new Error('Amount too large');
     }
   } catch (e) {
-    res.status(422);
+    const message = e instanceof Error ? e.message : 'invalid request';
+    res.status(422).json({ error: message });
     throw e;
   }
 
@@ -97,19 +106,24 @@ const oneInchRate: API = async (req, res) => {
     token === TOKEN_ETH
       ? getTokenAddress(CHAINS.Mainnet, TOKENS.STETH)
       : ETH_DUMMY_ADDRESS;
-  const oneInchRate = await getOneInchRate(fromToken, toToken, amount);
 
-  if (!oneInchRate) {
-    res.status(500);
-    throw new Error('Could not fetch 1inch rate');
+  try {
+    const oneInchRate = await getOneInchRate(fromToken, toToken, amount);
+    invariant(oneInchRate);
+    const result = {
+      rate: oneInchRate.rate,
+      toReceive: oneInchRate.toAmount.toString(),
+    };
+    cache.put(cacheKey, result, CACHE_ONE_INCH_RATE_TTL);
+    res.status(200).json(result);
+  } catch (e) {
+    if (e instanceof FetcherError && PASSTHROUGH_CODES.includes(e.status)) {
+      res.status(e.status).json({ message: e.message });
+      return;
+    }
+    console.error('[oneInchRate] Request to 1inch failed', e);
+    throw e;
   }
-  const result = {
-    rate: oneInchRate.rate,
-    toReceive: oneInchRate.toAmount.toString(),
-  };
-
-  cache.put(cacheKey, result, CACHE_ONE_INCH_RATE_TTL);
-  res.status(200).json(result);
 };
 
 export default wrapNextRequest([
