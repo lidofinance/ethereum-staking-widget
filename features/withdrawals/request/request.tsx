@@ -12,7 +12,6 @@ export const Request = () => {
       <RequestFormProvider>
         <RequestWallet />
         <RequestForm />
-        <RequestFaq />
         {!dynamics.ipfsMode && <RequestFaq />}
         <TxRequestModal />
       </RequestFormProvider>
