@@ -8,6 +8,7 @@ export const enum MATOMO_CLICK_EVENTS_TYPES {
   clickExploreDeFi = 'clickExploreDeFi',
   // / page
   openOceanDiscount = 'openOceanDiscount',
+  oneInchDiscount = 'oneInchDiscount',
   viewEtherscanOnStakePage = 'viewEtherscanOnStakePage',
   l2BannerStake = 'l2BannerStake',
   l2LowFeeStake = 'l2LowFeeStake',
@@ -92,6 +93,11 @@ export const MATOMO_CLICK_EVENTS: Record<
     'Ethereum_Staking_Widget',
     'Push "Get discount" on OpenOcean banner on widget',
     'eth_widget_openocean_discount',
+  ],
+  [MATOMO_CLICK_EVENTS_TYPES.oneInchDiscount]: [
+    'Ethereum_Staking_Widget',
+    'Push "Get discount" on 1inch banner on widget',
+    'eth_widget_oneinch_discount',
   ],
   [MATOMO_CLICK_EVENTS_TYPES.viewEtherscanOnStakePage]: [
     'Ethereum_Staking_Widget',

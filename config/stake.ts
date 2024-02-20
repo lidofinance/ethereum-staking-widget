@@ -3,6 +3,7 @@ import { BigNumber } from 'ethers';
 import dynamics from './dynamics';
 import { IPFS_REFERRAL_ADDRESS } from './ipfs';
 import { AddressZero } from '@ethersproject/constants';
+import { StakeSwapDiscountIntegrationKey } from 'features/stake/swap-discount-banner';
 
 export const PRECISION = 10 ** 6;
 
@@ -22,3 +23,6 @@ export const STAKE_GASLIMIT_FALLBACK = BigNumber.from(
 export const STAKE_FALLBACK_REFERRAL_ADDRESS = dynamics.ipfsMode
   ? IPFS_REFERRAL_ADDRESS
   : AddressZero;
+
+export const STAKE_SWAP_INTEGRATION: StakeSwapDiscountIntegrationKey =
+  'one-inch';

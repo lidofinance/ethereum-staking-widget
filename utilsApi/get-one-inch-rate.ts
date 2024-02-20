@@ -1,19 +1,25 @@
 import { BigNumber } from 'ethers';
+import getConfig from 'next/config';
 
 import { standardFetcher } from 'utils/standardFetcher';
 import { responseTimeExternalMetricWrapper } from 'utilsApi';
 
-export const API_LIDO_1INCH = `https://api-lido.1inch.io/v5.2/1/quote`;
+const { serverRuntimeConfig } = getConfig();
+const ONE_INCH_API_KEY = serverRuntimeConfig.oneInchApiKey as string;
+const ONE_INCH_API_ENDPOINT = 'https://api.1inch.dev/swap/v5.2/1/quote';
+const RATE_PRECISION = 1000000;
 
 export type OneInchFetchResponse = {
   toAmount: string;
 };
 
-type GetOneInchRateStats = (
+export type GetOneInchRateResult = { rate: number; toAmount: BigNumber };
+
+export type GetOneInchRateStats = (
   fromTokenAddress: string,
   toTokenAddress: string,
   amount: BigNumber,
-) => Promise<number | null>;
+) => Promise<GetOneInchRateResult | null>;
 
 export const getOneInchRate: GetOneInchRateStats = async (
   fromTokenAddress,
@@ -21,28 +27,29 @@ export const getOneInchRate: GetOneInchRateStats = async (
   amount,
 ) => {
   console.debug('[getOneInchRate] Started fetching...');
+  if (!ONE_INCH_API_KEY) console.warn('[getOneInchRate] missing 1inch Api Key');
+
   const query = new URLSearchParams({
     src: fromTokenAddress,
     dst: toTokenAddress,
     amount: amount.toString(),
   });
-  const url = `${API_LIDO_1INCH}?${query.toString()}`;
+  const url = `${ONE_INCH_API_ENDPOINT}?${query.toString()}`;
 
   const respData = await responseTimeExternalMetricWrapper({
-    payload: API_LIDO_1INCH,
-    request: () => standardFetcher<OneInchFetchResponse>(url),
+    payload: ONE_INCH_API_ENDPOINT,
+    request: () =>
+      standardFetcher<OneInchFetchResponse>(url, {
+        headers: { Authorization: `Bearer ${ONE_INCH_API_KEY}` },
+      }),
   });
 
-  if (!respData || !respData.toAmount) {
-    console.error('[getOneInchRate] Request to 1inch failed');
-    return null;
-  }
+  const toAmount = BigNumber.from(respData.toAmount);
 
   const rate =
-    BigNumber.from(respData.toAmount)
-      .mul(BigNumber.from(100000))
-      .div(amount)
-      .toNumber() / 100000;
+    toAmount.mul(BigNumber.from(RATE_PRECISION)).div(amount).toNumber() /
+    RATE_PRECISION;
+
   console.debug('[getOneInchRate] Rate on 1inch:', rate);
-  return rate;
+  return { rate, toAmount };
 };
