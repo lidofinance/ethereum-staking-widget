@@ -15,10 +15,11 @@ export const GoerliSunsetBanner = () => {
   return (
     <SunsetMessageStyle>
       <Text weight={700} size="sm">
-        Görli Testnet is sunsetting, this process is scheduled till&nbsp;the end
-        of Q4 2023.
+        The Lido testnet on Görli will no longer be supported after February
+        29th, 2024.
       </Text>
       <Text weight={400} size="xxs">
+        If you have (w)stETH to withdraw, please do so before this date.
         Additional information can be found{' '}
         <Link href={URL_INFORMATION}>here</Link>, and you can locate the Testnet
         staking widget on <Link href={URL_HOLESKY}>Holesky</Link>.
