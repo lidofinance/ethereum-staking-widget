@@ -25,15 +25,19 @@ export const contentSecurityPolicy: ContentSecurityPolicyOption = {
       'https://*.walletconnect.org',
       'https://*.walletconnect.com',
     ],
-    scriptSrc: ["'self'", "'unsafe-inline'", ...trustedHosts],
+    scriptSrc: [
+      "'self'",
+      "'unsafe-inline'",
+      ...(developmentMode ? ["'unsafe-eval'"] : []), // for HMR
+      ...trustedHosts,
+    ],
 
     // Allow fetch connections to any secure host
     connectSrc: [
       "'self'",
       'https:',
       'wss:',
-      // for HMR
-      ...(developmentMode ? ['ws:'] : []),
+      ...(developmentMode ? ['ws:'] : []), // for HMR
     ],
 
     ...(!dynamics.ipfsMode && {
@@ -48,7 +52,7 @@ export const contentSecurityPolicy: ContentSecurityPolicyOption = {
       'https://*.walletconnect.com',
     ],
     workerSrc: ["'none'"],
-    'base-uri': ["'none'"],
+    'base-uri': dynamics.ipfsMode ? undefined : ["'none'"],
   },
   reportOnly,
 };

@@ -1,6 +1,7 @@
 import { memo } from 'react';
 import { AppProps } from 'next/app';
 import 'nprogress/nprogress.css';
+import Head from 'next/head';
 
 import {
   ToastContainer,
@@ -14,7 +15,7 @@ import { Providers } from 'providers';
 import { BackgroundGradient } from 'shared/components/background-gradient/background-gradient';
 import { nprogress, COOKIES_ALLOWED_FULL_KEY } from 'utils';
 import { withCsp } from 'utilsApi/withCSP';
-import Head from 'next/head';
+import { OutdatedHashBanner } from 'features/ipfs/outdated-hash-banner';
 
 // Migrations old theme cookies to new cross domain cookies
 migrationThemeCookiesToCrossDomainCookiesClientSide();
@@ -55,6 +56,7 @@ const AppWrapper = (props: AppProps): JSX.Element => {
       <ToastContainer />
       <MemoApp {...rest} />
       <CookiesTooltip />
+      <OutdatedHashBanner />
     </Providers>
   );
 };

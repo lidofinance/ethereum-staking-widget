@@ -1,3 +1,4 @@
+import { dynamics } from 'config';
 import { WRAP_PATH, WRAP_UNWRAP_PATH } from 'config/urls';
 import { Wallet } from 'features/wsteth/shared/wallet';
 import { WrapForm } from 'features/wsteth/wrap/wrap-form/wrap-form';
@@ -27,7 +28,7 @@ export const WrapUnwrapTabs = ({ mode }: WrapUnwrapLayoutProps) => {
         <Wallet />
         {isUnwrapMode ? <UnwrapForm /> : <WrapForm />}
       </NoSsrWrapper>
-      <WrapFaq />
+      {!dynamics.ipfsMode && <WrapFaq />}
     </>
   );
 };
