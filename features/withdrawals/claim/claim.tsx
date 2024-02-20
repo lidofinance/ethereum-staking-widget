@@ -1,3 +1,4 @@
+import { dynamics } from 'config';
 import { TransactionModalProvider } from 'shared/transaction-modal/transaction-modal-context';
 import { ClaimFaq } from 'features/withdrawals/withdrawals-faq/claim-faq';
 
@@ -12,7 +13,7 @@ export const Claim = () => {
       <ClaimFormProvider>
         <ClaimWallet />
         <ClaimForm />
-        <ClaimFaq />
+        {!dynamics.ipfsMode && <ClaimFaq />}
         <TxClaimModal />
       </ClaimFormProvider>
     </TransactionModalProvider>

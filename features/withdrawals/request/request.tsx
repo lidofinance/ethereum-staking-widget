@@ -1,3 +1,4 @@
+import { dynamics } from 'config';
 import { RequestFormProvider } from './request-form-context';
 import { RequestFaq } from '../withdrawals-faq/request-faq';
 import { RequestForm } from './form';
@@ -11,7 +12,7 @@ export const Request = () => {
       <RequestFormProvider>
         <RequestWallet />
         <RequestForm />
-        <RequestFaq />
+        {!dynamics.ipfsMode && <RequestFaq />}
         <TxRequestModal />
       </RequestFormProvider>
     </TransactionModalProvider>
