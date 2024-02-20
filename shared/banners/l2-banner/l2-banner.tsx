@@ -4,18 +4,17 @@ import {
   Wrapper,
   L2Icons,
   TextWrap,
-  ButtonWrap,
   ButtonLinkWrap,
   ButtonStyle,
-  ContentWrap,
   TextHeader,
+  FooterWrap,
 } from './styles';
 
 type L2BannerProps = {
-  title: React.ReactNode;
+  title?: React.ReactNode;
   text: React.ReactNode;
   buttonText: React.ReactNode;
-  buttonHref: string;
+  buttonHref?: string;
   testidWrap: string;
   testidButton: string;
   onClickButton?: () => void;
@@ -27,7 +26,7 @@ export const L2Banner = ({
   title,
   text,
   buttonText,
-  buttonHref,
+  buttonHref = L2_DISCOVERY_LINK,
   testidWrap,
   testidButton,
   onClickButton,
@@ -35,27 +34,21 @@ export const L2Banner = ({
   return (
     <Wrapper data-testid={testidWrap}>
       <ThemeProvider theme={themeDark}>
-        <ContentWrap>
-          <TextHeader>{title}</TextHeader>
-          <TextWrap>{text}</TextWrap>
-          <ButtonWrap>
-            <ButtonLinkWrap
-              href={buttonHref}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={onClickButton}
-            >
-              <ButtonStyle
-                data-testid={testidButton}
-                size="sm"
-                color="secondary"
-              >
-                {buttonText}
-              </ButtonStyle>
-            </ButtonLinkWrap>
-          </ButtonWrap>
-        </ContentWrap>
-        <L2Icons />
+        {title && <TextHeader>{title}</TextHeader>}
+        <TextWrap>{text}</TextWrap>
+        <FooterWrap>
+          <L2Icons />
+          <ButtonLinkWrap
+            href={buttonHref}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={onClickButton}
+          >
+            <ButtonStyle data-testid={testidButton} size="sm" color="primary">
+              {buttonText}
+            </ButtonStyle>
+          </ButtonLinkWrap>
+        </FooterWrap>
       </ThemeProvider>
     </Wrapper>
   );

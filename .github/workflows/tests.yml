@@ -26,7 +26,7 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: 20
 
       - name: Install dependencies
         run: yarn install --immutable
@@ -42,7 +42,7 @@ jobs:
           STAND_TYPE: ${{ inputs.stand_type }}
           STAND_USER: ${{ secrets.PREVIEW_STAND_HTTP_AUTH_USER }}
           STAND_PASSWORD: ${{ secrets.PREVIEW_STAND_HTTP_AUTH_PASSWORD }}
-      
+
       - name: Run tests on testnet/staging
         if: ${{ !inputs.on_preview_stand }}
         run: yarn test
@@ -50,7 +50,7 @@ jobs:
           STAND_URL: ${{ inputs.stand_url }}
           STAND_TYPE: ${{ inputs.stand_type }}
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: playwright-report

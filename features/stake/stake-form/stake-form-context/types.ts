@@ -10,6 +10,8 @@ export type StakeFormInput = {
 };
 
 export type StakeFormNetworkData = {
+  etherBalance?: BigNumber;
+  isMultisig?: boolean;
   stethBalance?: BigNumber;
   stakeableEther?: BigNumber;
   stakingLimitInfo?: StakeLimitFullInfo;
@@ -20,7 +22,10 @@ export type StakeFormNetworkData = {
 };
 
 export type StakeFormValidationContext = {
-  active: boolean;
-  maxAmount: BigNumber;
+  isWalletActive: boolean;
   stakingLimitLevel: LIMIT_LEVEL;
+  currentStakeLimit: BigNumber;
+  gasCost: BigNumber;
+  etherBalance: BigNumber;
+  isMultisig: boolean;
 };

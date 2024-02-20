@@ -14,7 +14,12 @@ export type RequestFormInputType = {
 } & ValidationResults;
 
 export type RequestFormValidationContextType = {
+  isWalletActive: boolean;
+  asyncContext: Promise<RequestFormValidationAsyncContextType>;
   setIntermediateValidationResults: Dispatch<SetStateAction<ValidationResults>>;
+};
+
+export type RequestFormValidationAsyncContextType = {
   minUnstakeSteth: BigNumber;
   minUnstakeWSteth: BigNumber;
   balanceSteth: BigNumber;

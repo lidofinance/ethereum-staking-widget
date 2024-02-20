@@ -6,8 +6,8 @@ import { getStageIcon } from './icons';
 import { TX_STAGE } from 'shared/transaction-modal';
 
 type TxStageSignProps = {
-  description: string;
-  title: string;
+  description: React.ReactNode;
+  title: React.ReactNode;
 };
 
 export const TxStageSign: FC<TxStageSignProps> = (props) => {

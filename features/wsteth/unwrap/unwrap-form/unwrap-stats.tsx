@@ -22,11 +22,13 @@ export const UnwrapStats = () => {
         <FormatPrice amount={unwrapTxCostInUsd} />
       </DataTableRow>
       <DataTableRowStethByWsteth />
-      <DataTableRow title="You will receive">
+      <DataTableRow title="You will receive" loading={!willReceiveStETH}>
         <FormatToken
           data-testid="youWillReceive"
           amount={willReceiveStETH}
           symbol="stETH"
+          showAmountTip
+          trimEllipsis
         />
       </DataTableRow>
     </DataTable>

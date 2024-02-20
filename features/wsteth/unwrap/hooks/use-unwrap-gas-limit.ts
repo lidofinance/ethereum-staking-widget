@@ -1,6 +1,5 @@
 import { useLidoSWR, useWSTETHContractRPC } from '@lido-sdk/react';
 import { ESTIMATE_ACCOUNT, ESTIMATE_AMOUNT, UNWRAP_GAS_LIMIT } from 'config';
-import { BigNumber } from 'ethers';
 
 import { useCurrentStaticRpcProvider } from 'shared/hooks/use-current-static-rpc-provider';
 import { STRATEGY_LAZY } from 'utils/swrStrategies';
@@ -20,7 +19,7 @@ export const useUnwrapGasLimit = () => {
         return gasLimit;
       } catch (error) {
         console.warn(error);
-        return BigNumber.from(UNWRAP_GAS_LIMIT);
+        return UNWRAP_GAS_LIMIT;
       }
     },
     STRATEGY_LAZY,

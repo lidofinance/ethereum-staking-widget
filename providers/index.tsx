@@ -6,6 +6,7 @@ import { AppFlagProvider } from './app-flag';
 import { OneConfigProvider } from './one-config';
 import { ClientConfigProvider } from './client-config';
 import { IPFSInfoBoxStatusesProvider } from './ipfs-info-box-statuses';
+import { InpageNavigationProvider } from './inpage-navigation';
 import ModalProvider from './modals';
 import Web3Provider from './web3';
 
@@ -19,7 +20,9 @@ export const Providers: FC<PropsWithChildren> = ({ children }) => (
           <GlobalStyle />
           <Web3Provider>
             <IPFSInfoBoxStatusesProvider>
-              <ModalProvider>{children}</ModalProvider>
+              <InpageNavigationProvider>
+                <ModalProvider>{children}</ModalProvider>
+              </InpageNavigationProvider>
             </IPFSInfoBoxStatusesProvider>
           </Web3Provider>
         </CookieThemeProvider>
