@@ -2,11 +2,8 @@ import getConfig from 'next/config';
 import { Cache } from 'memory-cache';
 import { wrapRequest as wrapNextRequest } from '@lidofinance/next-api-wrapper';
 
-import {
-  API_ROUTES,
-  CACHE_LIDO_SHORT_STATS_KEY,
-  CACHE_LIDO_SHORT_STATS_TTL,
-} from 'config';
+import { CACHE_LIDO_SHORT_STATS_KEY, CACHE_LIDO_SHORT_STATS_TTL } from 'config';
+import { API_ROUTES } from 'consts/api';
 import { API, SubgraphChains } from 'types';
 import {
   cors,

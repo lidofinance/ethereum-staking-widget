@@ -12,7 +12,7 @@ import { SubmitButtonWrap } from '../wrap-form-controls/submit-button-wrap';
 import { TransactionModalProvider } from 'shared/transaction-modal/transaction-modal-context';
 import { InputGroupHookForm } from 'shared/hook-form/controls/input-group-hook-form';
 import { L2Wsteth } from 'shared/banners/l2-wsteth';
-import { MATOMO_CLICK_EVENTS } from 'config';
+import { MATOMO_CLICK_EVENTS } from 'consts/matomo-click-events';
 
 export const WrapForm: React.FC = memo(() => {
   return (

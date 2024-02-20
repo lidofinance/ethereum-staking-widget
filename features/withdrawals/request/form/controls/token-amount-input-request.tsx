@@ -1,9 +1,7 @@
 import { useController, useWatch } from 'react-hook-form';
 
-import {
-  MATOMO_CLICK_EVENTS_TYPES,
-  trackMatomoEvent,
-} from 'config/trackMatomoEvent';
+import { MATOMO_CLICK_EVENTS_TYPES } from 'consts/matomo-click-events';
+import { trackMatomoEvent } from 'utils/track-matomo-event';
 import { TokenAmountInputHookForm } from 'shared/hook-form/controls/token-amount-input-hook-form';
 import { InputDecoratorTvlStake } from 'features/withdrawals/shared/input-decorator-tvl-stake';
 import {

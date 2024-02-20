@@ -1,15 +1,13 @@
 import { useSDK } from '@lido-sdk/react';
 import { Link, Loader } from '@lidofinance/lido-ui';
-import { LocalLink } from 'shared/components/local-link';
 
-import {
-  trackMatomoEvent,
-  MATOMO_CLICK_EVENTS_TYPES,
-} from 'config/trackMatomoEvent';
-import { WITHDRAWALS_CLAIM_PATH } from 'config/urls';
+import { WITHDRAWALS_CLAIM_PATH } from 'consts/urls';
+import { MATOMO_CLICK_EVENTS_TYPES } from 'consts/matomo-click-events';
+import { trackMatomoEvent } from 'utils/track-matomo-event';
 import { useNftDataByTxHash } from 'features/withdrawals/hooks/useNftDataByTxHash';
 import { TxStageSuccess } from 'features/withdrawals/shared/tx-stage-modal';
 import { TxLinkEtherscan } from 'shared/components/tx-link-etherscan';
+import { LocalLink } from 'shared/components/local-link';
 
 import {
   Title,

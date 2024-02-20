@@ -9,10 +9,16 @@ import { dynamics } from 'config';
 export const OneConfigContext = createContext<any>(null);
 
 export const getOneConfig = () => {
+  const isClientSide = typeof window !== 'undefined';
+  const isServerSide = typeof window === 'undefined';
+
   return {
-    ...dynamics,
-    ...serverRuntimeConfig,
-    isClientSide: typeof window !== 'undefined',
+    isClientSide,
+    isServerSide,
+    // ...dynamics,
+    ...(isClientSide && dynamics),
+    // ...serverRuntimeConfig,
+    ...(isServerSide && serverRuntimeConfig && { env: process.env }),
   };
 };
 

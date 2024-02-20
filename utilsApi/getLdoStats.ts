@@ -1,6 +1,6 @@
 import { CHAINS } from 'utils/chains';
 import { getTokenAddress, TOKENS } from '@lido-sdk/constants';
-import { ETHPLORER_TOKEN_ENDPOINT } from 'config';
+import { ETHPLORER_TOKEN_ENDPOINT } from 'consts/api';
 import getConfig from 'next/config';
 import { standardFetcher } from 'utils/standardFetcher';
 import { responseTimeExternalMetricWrapper } from 'utilsApi';

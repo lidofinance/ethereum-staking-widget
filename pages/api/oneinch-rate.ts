@@ -5,11 +5,8 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import { wrapRequest as wrapNextRequest } from '@lidofinance/next-api-wrapper';
 import { CHAINS, TOKENS, getTokenAddress } from '@lido-sdk/constants';
 
-import {
-  CACHE_ONE_INCH_RATE_KEY,
-  CACHE_ONE_INCH_RATE_TTL,
-  API_ROUTES,
-} from 'config';
+import { CACHE_ONE_INCH_RATE_KEY, CACHE_ONE_INCH_RATE_TTL } from 'config';
+import { API_ROUTES } from 'consts/api';
 import {
   getOneInchRate,
   responseTimeMetric,

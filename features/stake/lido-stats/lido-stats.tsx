@@ -7,11 +7,9 @@ import { Block, DataTable, Question, Tooltip } from '@lidofinance/lido-ui';
 
 import { Section, MatomoLink } from 'shared/components';
 import { useLidoApr, useLidoStats } from 'shared/hooks';
-import {
-  LIDO_APR_TOOLTIP_TEXT,
-  MATOMO_CLICK_EVENTS_TYPES,
-  dynamics,
-} from 'config';
+import { dynamics } from 'config';
+import { LIDO_APR_TOOLTIP_TEXT } from 'consts/text';
+import { MATOMO_CLICK_EVENTS_TYPES } from 'consts/matomo-click-events';
 
 import { FlexCenterVertical } from './styles';
 import { LidoStatsItem } from './lido-stats-item';

@@ -1,15 +1,15 @@
-import { DataTable, DataTableRow } from '@lidofinance/lido-ui';
 import { useWatch } from 'react-hook-form';
+
+import { DataTable, DataTableRow } from '@lidofinance/lido-ui';
 import { useContractSWR, useSTETHContractRPC } from '@lido-sdk/react';
 import { Zero } from '@ethersproject/constants';
 
+import { DATA_UNAVAILABLE } from 'consts/text';
 import { FormatPrice, FormatToken } from 'shared/formatters';
+import { useEthUsd } from 'shared/hooks/use-eth-usd';
 import { STRATEGY_CONSTANT } from 'utils/swrStrategies';
-import { DATA_UNAVAILABLE } from 'config';
 
 import { StakeFormInput, useStakeFormData } from './stake-form-context';
-
-import { useEthUsd } from 'shared/hooks/use-eth-usd';
 
 export const StakeFormInfo = () => {
   const { gasCost } = useStakeFormData();

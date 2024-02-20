@@ -1,14 +1,17 @@
 import { BigNumber } from 'ethers';
+import { useMemo } from 'react';
+
+import { formatEther } from '@ethersproject/units';
 import { CHAINS, getTokenAddress, TOKENS } from '@lido-sdk/constants';
 
-import { useMemo } from 'react';
+// @ts-expect-error https://www.npmjs.com/package/@svgr/webpack
+import { ReactComponent as AttentionTriangle } from 'assets/icons/attention-triangle.svg';
+import { OPEN_OCEAN_REFERRAL_ADDRESS } from 'consts/external-links';
+import { MATOMO_CLICK_EVENTS_TYPES } from 'consts/matomo-click-events';
 import { useWithdrawalRates } from 'features/withdrawals/hooks/useWithdrawalRates';
 import { FormatToken } from 'shared/formatters/format-token';
+import { trackMatomoEvent } from 'utils/track-matomo-event';
 
-import {
-  trackMatomoEvent,
-  MATOMO_CLICK_EVENTS_TYPES,
-} from 'config/trackMatomoEvent';
 import {
   DexOptionBlockLink,
   DexOptionBlockTitle,
@@ -21,10 +24,6 @@ import {
   ParaSwapIcon,
   DexWarning,
 } from './styles';
-import { formatEther } from '@ethersproject/units';
-import { OPEN_OCEAN_REFERRAL_ADDRESS } from 'config/external-links';
-// @ts-expect-error https://www.npmjs.com/package/@svgr/webpack
-import { ReactComponent as AttentionTriangle } from 'assets/icons/attention-triangle.svg';
 
 const placeholder = Array.from<null>({ length: 1 }).fill(null);
 

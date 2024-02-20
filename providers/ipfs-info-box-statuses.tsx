@@ -9,13 +9,12 @@ import {
 import { useLidoSWR, useLocalStorage, useSDK } from '@lido-sdk/react';
 import invariant from 'tiny-invariant';
 
-import { useCSPViolation } from 'features/ipfs/csp-violation-box/use-csp-violation';
 import { useRpcUrl } from 'config/rpc';
-import { STORAGE_IPFS_INFO_DISMISS } from 'config/storage';
-import { SETTINGS_PATH } from 'config/urls';
+import { STORAGE_IPFS_INFO_DISMISS } from 'consts/storage';
+import { SETTINGS_PATH } from 'consts/urls';
 
+import { useCSPViolation } from 'features/ipfs/csp-violation-box/use-csp-violation';
 import { useRouterPath } from 'shared/hooks/use-router-path';
-
 import { STRATEGY_LAZY } from 'utils/swrStrategies';
 import { checkRpcUrl } from 'utils/check-rpc-url';
 

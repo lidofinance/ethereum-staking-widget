@@ -1,13 +1,13 @@
-import { Button } from '@lidofinance/lido-ui';
-import { trackEvent } from '@lidofinance/analytics-matomo';
-
-import { MATOMO_CLICK_EVENTS } from 'config';
-import { OPEN_OCEAN_REFERRAL_ADDRESS } from 'config/external-links';
-import { STRATEGY_LAZY } from 'utils/swrStrategies';
-import { getOpenOceanRate } from 'utils/get-open-ocean-rate';
 import { parseEther } from '@ethersproject/units';
 import { TOKENS } from '@lido-sdk/constants';
 import { useLidoSWR } from '@lido-sdk/react';
+import { Button } from '@lidofinance/lido-ui';
+import { trackEvent } from '@lidofinance/analytics-matomo';
+
+import { MATOMO_CLICK_EVENTS } from 'consts/matomo-click-events';
+import { OPEN_OCEAN_REFERRAL_ADDRESS } from 'consts/external-links';
+import { STRATEGY_LAZY } from 'utils/swrStrategies';
+import { getOpenOceanRate } from 'utils/get-open-ocean-rate';
 import { enableQaHelpers } from 'utils';
 
 import { Wrap, TextWrap, OpenOceanIcon, OverlayLink } from './styles';

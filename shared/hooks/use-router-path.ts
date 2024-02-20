@@ -1,7 +1,7 @@
 import { useRouter } from 'next/router';
 import { isClientSide } from 'utils/isClientSide';
 import { dynamics } from 'config';
-import { HOME_PATH } from 'config/urls';
+import { HOME_PATH } from 'consts/urls';
 
 export const useRouterPath = () => {
   const router = useRouter();

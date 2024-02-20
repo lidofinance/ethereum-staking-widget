@@ -1,9 +1,15 @@
+import { useWatch } from 'react-hook-form';
 import { formatEther, parseEther } from '@ethersproject/units';
+import { TOKENS } from '@lido-sdk/constants';
 
+import { MATOMO_CLICK_EVENTS_TYPES } from 'consts/matomo-click-events';
+
+import { RequestFormInputType } from 'features/withdrawals/request/request-form-context';
 import { useWaitingTime } from 'features/withdrawals/hooks/useWaitingTime';
 import { useWithdrawalRates } from 'features/withdrawals/hooks/useWithdrawalRates';
 import { useWstethToStethRatio } from 'shared/components/data-table-row-steth-by-wsteth';
 
+import { trackMatomoEvent } from 'utils/track-matomo-event';
 import { formatBalance } from 'utils/formatBalance';
 
 import {
@@ -18,13 +24,6 @@ import {
   OpenOceanIcon,
   ParaSwapIcon,
 } from './styles';
-import {
-  trackMatomoEvent,
-  MATOMO_CLICK_EVENTS_TYPES,
-} from 'config/trackMatomoEvent';
-import { useWatch } from 'react-hook-form';
-import { RequestFormInputType } from 'features/withdrawals/request/request-form-context';
-import { TOKENS } from '@lido-sdk/constants';
 
 type OptionButtonProps = {
   onClick: React.ComponentProps<'button'>['onClick'];

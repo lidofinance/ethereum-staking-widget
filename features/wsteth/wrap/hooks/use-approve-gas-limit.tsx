@@ -1,15 +1,13 @@
+import { BigNumber } from 'ethers';
+import { useWeb3 } from 'reef-knot/web3-react';
 import {
   useLidoSWR,
   useSTETHContractRPC,
   useWSTETHContractRPC,
 } from '@lido-sdk/react';
-import { useWeb3 } from 'reef-knot/web3-react';
-import {
-  ESTIMATE_ACCOUNT,
-  ESTIMATE_AMOUNT,
-  WSTETH_APPROVE_GAS_LIMIT,
-} from 'config';
-import { BigNumber } from 'ethers';
+
+import { ESTIMATE_ACCOUNT, ESTIMATE_AMOUNT } from 'config/estimate';
+import { WSTETH_APPROVE_GAS_LIMIT } from 'consts/tx';
 import { STRATEGY_IMMUTABLE } from 'utils/swrStrategies';
 
 export const useApproveGasLimit = () => {

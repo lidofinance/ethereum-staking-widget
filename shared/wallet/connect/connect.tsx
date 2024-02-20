@@ -1,9 +1,10 @@
 import { FC } from 'react';
 import { Button, ButtonProps } from '@lidofinance/lido-ui';
 import { wrapWithEventTrack } from '@lidofinance/analytics-matomo';
+
+import { MATOMO_CLICK_EVENTS } from 'consts/matomo-click-events';
 import { useModal } from 'shared/hooks';
 import { MODAL } from 'providers';
-import { MATOMO_CLICK_EVENTS } from 'config';
 
 export const Connect: FC<ButtonProps> = (props) => {
   const { onClick, ...rest } = props;

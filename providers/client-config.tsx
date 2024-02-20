@@ -11,8 +11,8 @@ import invariant from 'tiny-invariant';
 import { useLocalStorage } from '@lido-sdk/react';
 
 import { dynamics } from 'config';
-import { STORAGE_CLIENT_CONFIG } from 'config/storage';
 import { EnvConfigParsed } from 'config/types';
+import { STORAGE_CLIENT_CONFIG } from 'consts/storage';
 import { CHAINS } from 'utils/chains';
 import { parseEnvConfig } from 'utils/parse-env-config';
 

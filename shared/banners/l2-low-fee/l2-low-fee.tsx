@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
 import { trackEvent } from '@lidofinance/analytics-matomo';
-import { MATOMO_CLICK_EVENTS } from 'config';
+import { MATOMO_CLICK_EVENTS } from 'consts/matomo-click-events';
 
 import { L2Banner, L2_DISCOVERY_LINK } from '../l2-banner';
 

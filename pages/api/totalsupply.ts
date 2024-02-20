@@ -7,8 +7,8 @@ import {
   CACHE_TOTAL_SUPPLY_KEY,
   CACHE_TOTAL_SUPPLY_TTL,
   CACHE_TOTAL_SUPPLY_HEADERS,
-  API_ROUTES,
 } from 'config';
+import { API_ROUTES } from 'consts/api';
 import {
   getTotalStaked,
   defaultErrorHandler,

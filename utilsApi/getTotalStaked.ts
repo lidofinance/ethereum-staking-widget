@@ -1,9 +1,11 @@
 import { formatEther } from '@ethersproject/units';
-import { getStaticRpcBatchProvider } from './rpcProviders';
 import { StethAbiFactory } from '@lido-sdk/contracts';
 import { getTokenAddress, TOKENS } from '@lido-sdk/constants';
+
+import { HEALTHY_RPC_SERVICES_ARE_OVER } from 'consts/api';
 import { CHAINS } from 'utils/chains';
-import { HEALTHY_RPC_SERVICES_ARE_OVER } from 'config';
+
+import { getStaticRpcBatchProvider } from './rpcProviders';
 import { rpcUrls } from './rpcUrls';
 
 export const getTotalStaked = async (

@@ -1,7 +1,10 @@
 import { collectDefaultMetrics, Registry } from 'prom-client';
-import { dynamics, METRICS_PREFIX } from 'config';
-import buildInfoJson from 'build-info.json';
 import { collectStartupMetrics } from '@lidofinance/api-metrics';
+
+import { dynamics } from 'config';
+import { METRICS_PREFIX } from 'consts/metrics';
+import buildInfoJson from 'build-info.json';
+
 import { RequestMetrics } from './request';
 import { SubgraphMetrics } from './subgraph';
 

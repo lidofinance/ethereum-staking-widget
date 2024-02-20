@@ -1,6 +1,8 @@
 import { useMemo } from 'react';
 import { formatBalance } from 'utils';
 
+import { MATOMO_CLICK_EVENTS_TYPES } from 'consts/matomo-click-events';
+import { trackMatomoEvent } from 'utils/track-matomo-event';
 import {
   TxStageModal,
   TxStagePending,
@@ -10,10 +12,6 @@ import {
   TxStageFail,
 } from 'features/withdrawals/shared/tx-stage-modal';
 import { useTransactionModal, TX_STAGE } from 'shared/transaction-modal';
-import {
-  trackMatomoEvent,
-  MATOMO_CLICK_EVENTS_TYPES,
-} from 'config/trackMatomoEvent';
 import { withOptionaTooltip } from 'shared/components/tx-stage-modal/text-utils';
 
 export const TxClaimModal = () => {

@@ -2,7 +2,7 @@ import { useCallback } from 'react';
 
 // @ts-expect-error https://www.npmjs.com/package/@svgr/webpack
 import { ReactComponent as GearIcon } from 'assets/icons/gear.svg';
-import { SETTINGS_PATH } from 'config/urls';
+import { SETTINGS_PATH } from 'consts/urls';
 import { useRouterPath } from 'shared/hooks/use-router-path';
 import { usePrefixedPush } from 'shared/hooks/use-prefixed-history';
 

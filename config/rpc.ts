@@ -7,6 +7,7 @@ import { CHAINS } from 'utils/chains';
 
 import dynamics from './dynamics';
 
+// TODO: one config
 export const getBackendRPCPath = (chainId: string | number): string => {
   const BASE_URL = typeof window === 'undefined' ? '' : window.location.origin;
   return `${BASE_URL}/api/rpc?chainId=${chainId}`;

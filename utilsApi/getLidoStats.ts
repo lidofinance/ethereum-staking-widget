@@ -1,8 +1,9 @@
-import { ETHPLORER_TOKEN_ENDPOINT } from 'config';
 import getConfig from 'next/config';
+import { TOKENS, getTokenAddress, CHAINS } from '@lido-sdk/constants';
+
+import { ETHPLORER_TOKEN_ENDPOINT } from 'consts/api';
 import { standardFetcher } from 'utils/standardFetcher';
 import { responseTimeExternalMetricWrapper } from 'utilsApi';
-import { TOKENS, getTokenAddress, CHAINS } from '@lido-sdk/constants';
 
 const { serverRuntimeConfig } = getConfig();
 const { ethplorerApiKey } = serverRuntimeConfig;

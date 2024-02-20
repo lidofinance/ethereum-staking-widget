@@ -3,12 +3,13 @@ import {
   wrapRequest as wrapNextRequest,
   cacheControl,
 } from '@lidofinance/next-api-wrapper';
+
 import {
   CACHE_ETH_PRICE_KEY,
   CACHE_ETH_PRICE_TTL,
   CACHE_ETH_PRICE_HEADERS,
-  API_ROUTES,
-} from 'config';
+} from 'config/cache';
+import { API_ROUTES } from 'consts/api';
 import {
   getEthPrice,
   defaultErrorHandler,

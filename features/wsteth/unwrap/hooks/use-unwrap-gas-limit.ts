@@ -1,5 +1,6 @@
 import { useLidoSWR, useWSTETHContractRPC } from '@lido-sdk/react';
-import { ESTIMATE_ACCOUNT, ESTIMATE_AMOUNT, UNWRAP_GAS_LIMIT } from 'config';
+import { ESTIMATE_ACCOUNT, ESTIMATE_AMOUNT } from 'config/estimate';
+import { UNWRAP_GAS_LIMIT } from 'consts/tx';
 
 import { useCurrentStaticRpcProvider } from 'shared/hooks/use-current-static-rpc-provider';
 import { STRATEGY_LAZY } from 'utils/swrStrategies';

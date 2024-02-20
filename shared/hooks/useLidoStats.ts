@@ -1,7 +1,8 @@
 import { useMemo } from 'react';
 import { useSDK, useLidoSWR } from '@lido-sdk/react';
 
-import { DATA_UNAVAILABLE, dynamics } from 'config';
+import { dynamics } from 'config';
+import { DATA_UNAVAILABLE } from 'consts/text';
 import { prependBasePath } from 'utils';
 import { standardFetcher } from 'utils/standardFetcher';
 import { STRATEGY_LAZY } from 'utils/swrStrategies';

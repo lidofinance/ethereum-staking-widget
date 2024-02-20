@@ -13,7 +13,8 @@ import {
   cors,
 } from 'utilsApi';
 import Metrics from 'utilsApi/metrics';
-import { CACHE_REWARDS_HEADERS, API_ROUTES } from 'config';
+import { CACHE_REWARDS_HEADERS } from 'config/cache';
+import { API_ROUTES } from 'consts/api';
 import { API } from 'types';
 import { standardFetcher } from 'utils/standardFetcher';
 

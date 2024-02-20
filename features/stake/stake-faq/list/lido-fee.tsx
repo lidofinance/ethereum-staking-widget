@@ -1,7 +1,8 @@
 import { FC } from 'react';
 import { Accordion } from '@lidofinance/lido-ui';
 import { useContractSWR, useSTETHContractRPC } from '@lido-sdk/react';
-import { DATA_UNAVAILABLE } from 'config';
+
+import { DATA_UNAVAILABLE } from 'consts/text';
 
 export const LidoFee: FC = () => {
   const contractRpc = useSTETHContractRPC();

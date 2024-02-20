@@ -1,5 +1,5 @@
 import { Histogram, Registry } from 'prom-client';
-import { METRICS_PREFIX, METRIC_NAMES } from 'config';
+import { METRICS_PREFIX, METRIC_NAMES } from 'consts/metrics';
 
 export class SubgraphMetrics {
   subgraphsResponseTime: Histogram<'subgraphs'>;

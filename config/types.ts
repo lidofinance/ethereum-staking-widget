@@ -1,5 +1,6 @@
 import { CHAINS } from 'utils/chains';
 
+// TODO: config/features/client-config/*
 export type EnvConfigRaw = {
   defaultChain: string | number;
   supportedChains: number[];
