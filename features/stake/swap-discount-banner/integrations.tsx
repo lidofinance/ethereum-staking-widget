@@ -37,7 +37,7 @@ const STAKE_SWAP_INTEGRATION_CONFIG: StakeSwapDiscountIntegrationMap = {
     matomoEvent: MATOMO_CLICK_EVENTS.openOceanDiscount,
   },
   'one-inch': {
-    title: 'OpenOcean',
+    title: '1inch',
     async getRate() {
       const { rate } = await getOneInchRate({ token: 'ETH' });
       return rate;

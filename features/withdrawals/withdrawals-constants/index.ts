@@ -12,7 +12,7 @@ export const MAX_SHOWN_REQUEST_PER_TYPE = 1024;
 export const VALIDATION_CONTEXT_TIMEOUT = 4000;
 
 export const ENABLED_WITHDRAWAL_DEXES: DexWithdrawalApi[] = [
+  'one-inch',
   'open-ocean',
   'paraswap',
-  'one-inch',
 ];
