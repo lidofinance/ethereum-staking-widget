@@ -18,12 +18,14 @@ const toBoolean = (dataStr) => {
 /** @type string */
 export const matomoHost = process.env.MATOMO_URL;
 /** @type number */
-export const defaultChain = parseInt(process.env.DEFAULT_CHAIN, 10) || 17000;
+export const defaultChain = 1; //parseInt(process.env.DEFAULT_CHAIN, 10) || 17000;
 /** @type number[] */
 
-export const supportedChains = process.env?.SUPPORTED_CHAINS?.split(',').map(
-  (chainId) => parseInt(chainId, 10),
-) ?? [17000];
+export const supportedChains = [1];
+//  process.env?.SUPPORTED_CHAINS?.split(',').map(
+//   (chainId) => parseInt(chainId, 10),
+// ) ?? [17000];
+
 /** @type boolean */
 export const enableQaHelpers = toBoolean(process.env.ENABLE_QA_HELPERS);
 /** @type string */

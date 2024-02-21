@@ -19,7 +19,7 @@ const ethplorerApiKey = process.env.ETHPLORER_API_KEY;
 const oneInchApiKey = process.env.ONE_INCH_API_KEY;
 
 const cspTrustedHosts = process.env.CSP_TRUSTED_HOSTS;
-const cspReportOnly = process.env.CSP_REPORT_ONLY;
+const cspReportOnly = false; // process.env.CSP_REPORT_ONLY;
 const cspReportUri = process.env.CSP_REPORT_URI;
 
 const subgraphMainnet = process.env.SUBGRAPH_MAINNET;
@@ -35,7 +35,7 @@ const rateLimit = process.env.RATE_LIMIT || 100;
 const rateLimitTimeFrame = process.env.RATE_LIMIT_TIME_FRAME || 60; // 1 minute;
 
 const rewardsBackendAPI = process.env.REWARDS_BACKEND;
-const defaultChain = process.env.DEFAULT_CHAIN;
+const defaultChain = 1; // process.env.DEFAULT_CHAIN;
 
 const developmentMode = process.env.NODE_ENV === 'development';
 
