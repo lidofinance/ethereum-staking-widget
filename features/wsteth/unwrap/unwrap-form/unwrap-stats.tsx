@@ -32,7 +32,7 @@ export const UnwrapStats = () => {
       </DataTableRow>
       <DataTableRowStethByWsteth />
       <DataTableRow title="You will receive" loading={initialLoading}>
-        {!willReceiveStETH && 'N/A'}
+        {!willReceiveStETH && '-'}
         {willReceiveStETH && (
           <FormatToken
             data-testid="youWillReceive"

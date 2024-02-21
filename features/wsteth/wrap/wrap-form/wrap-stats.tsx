@@ -74,7 +74,7 @@ export const WrapFormStats = () => {
       />
 
       <DataTableRow title="You will receive" loading={initialLoading}>
-        {!willReceiveWsteth && 'N/A'}
+        {!willReceiveWsteth && '-'}
         {willReceiveWsteth && (
           <FormatToken
             amount={willReceiveWsteth}
