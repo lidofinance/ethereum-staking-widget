@@ -160,18 +160,18 @@ const LIDO_STATS_SCHEMA = {
 };
 
 export const GET_REQUESTS: GetRequest[] = [
-  // TODO: enabled when bringing back 1inch endpoint
-  // {
-  //   uri: '/api/oneinch-rate',
-  //   schema: {
-  //     type: 'object',
-  //     properties: {
-  //       rate: { type: 'number', min: 0 },
-  //     },
-  //     required: ['rate'],
-  //     additionalProperties: false,
-  //   },
-  // },
+  {
+    uri: '/api/oneinch-rate',
+    schema: {
+      type: 'object',
+      properties: {
+        rate: { type: 'number', min: 0 },
+        toReceive: { type: 'string' },
+      },
+      required: ['rate', 'toReceive'],
+      additionalProperties: false,
+    },
+  },
   {
     uri: `/api/short-lido-stats?chainId=${CONFIG.STAND_CONFIG.chainId}`,
     schema: {

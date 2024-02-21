@@ -1,6 +1,7 @@
 import { memo } from 'react';
 import { AppProps } from 'next/app';
 import 'nprogress/nprogress.css';
+import Head from 'next/head';
 
 import {
   ToastContainer,
@@ -38,6 +39,13 @@ const AppWrapper = (props: AppProps): JSX.Element => {
 
   return (
     <Providers>
+      {/* see https://nextjs.org/docs/messages/no-document-viewport-meta */}
+      <Head>
+        <meta
+          name="viewport"
+          content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"
+        />
+      </Head>
       <BackgroundGradient
         width={1560}
         height={784}

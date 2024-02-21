@@ -1,6 +1,7 @@
 import styled from 'styled-components';
 import BgSrc from 'assets/icons/swap-banner-bg.svg';
 import OpenOcean from 'assets/icons/open-ocean.svg';
+import OneInch from 'assets/icons/oneinch-circle.svg';
 
 export const Wrap = styled.div`
   position: relative;
@@ -42,11 +43,20 @@ export const OverlayLink = styled.a`
 
 export const OpenOceanIcon = styled.img.attrs({
   src: OpenOcean,
-  alt: 'openOcean',
+  alt: 'OpenOcean',
 })`
   width: 40px;
   height: 40px;
   display: block;
+`;
+
+export const OneInchIcon = styled.img.attrs({
+  src: OneInch,
+  alt: '1inch',
+})`
+  display: block;
+  width: 40px;
+  height: 40px;
 `;
 
 export const TextWrap = styled.p`

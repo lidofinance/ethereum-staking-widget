@@ -1,6 +1,6 @@
 import { memo, useRef, useState } from 'react';
 import { useConnectorInfo } from 'reef-knot/web3-react';
-import { use1inchLinkProps } from 'features/stake/hooks';
+import { use1inchDeepLinkProps } from 'features/stake/hooks';
 
 import { TxLinkEtherscan } from 'shared/components/tx-link-etherscan';
 import { L2LowFee } from 'shared/banners/l2-low-fee';
@@ -60,7 +60,7 @@ export const TxStageModal = memo((props: TxStageModalProps) => {
   } = props;
 
   const { isLedger } = useConnectorInfo();
-  const oneInchLinkProps = use1inchLinkProps();
+  const oneInchLinkProps = use1inchDeepLinkProps();
 
   const isCloseButtonHidden =
     isLedger &&

@@ -28,10 +28,6 @@ export const useTokenMaxAmount = ({
 
     let maxAmount: BigNumber | undefined = balance;
 
-    if (limit && balance.gt(limit)) {
-      maxAmount = limit;
-    }
-
     if (isPadded) {
       if (padding) {
         maxAmount = maxAmount.sub(padding);
@@ -41,6 +37,10 @@ export const useTokenMaxAmount = ({
         maxAmount = maxAmount.sub(gasLimit.mul(maxGasPrice));
         if (maxAmount.lt(Zero)) maxAmount = Zero;
       } else maxAmount = undefined;
+    }
+
+    if (limit && maxAmount && maxAmount.gt(limit)) {
+      maxAmount = limit;
     }
 
     return maxAmount;

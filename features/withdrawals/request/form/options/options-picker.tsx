@@ -1,7 +1,10 @@
 import { formatEther, parseEther } from '@ethersproject/units';
 
 import { useWaitingTime } from 'features/withdrawals/hooks/useWaitingTime';
-import { useWithdrawalRates } from 'features/withdrawals/hooks/useWithdrawalRates';
+import {
+  getDexConfig,
+  useWithdrawalRates,
+} from 'features/withdrawals/request/withdrawal-rates';
 import { useWstethToStethRatio } from 'shared/components/data-table-row-steth-by-wsteth';
 
 import { formatBalance } from 'utils/formatBalance';
@@ -15,8 +18,6 @@ import {
   OptionsPickerLabel,
   OptionsPickerRow,
   OptionsPickerSubLabel,
-  OpenOceanIcon,
-  ParaSwapIcon,
 } from './styles';
 import {
   trackMatomoEvent,
@@ -25,6 +26,7 @@ import {
 import { useWatch } from 'react-hook-form';
 import { RequestFormInputType } from 'features/withdrawals/request/request-form-context';
 import { TOKENS } from '@lido-sdk/constants';
+import { ENABLED_WITHDRAWAL_DEXES } from 'features/withdrawals/withdrawals-constants';
 
 type OptionButtonProps = {
   onClick: React.ComponentProps<'button'>['onClick'];
@@ -91,8 +93,10 @@ const DexButton: React.FC<OptionButtonProps> = ({ isActive, onClick }) => {
       <OptionsPickerRow>
         <OptionsPickerLabel>Use aggregators</OptionsPickerLabel>
         <OptionsPickerIcons>
-          <OpenOceanIcon />
-          <ParaSwapIcon />
+          {ENABLED_WITHDRAWAL_DEXES.map((dexKey) => {
+            const Icon = getDexConfig(dexKey).icon;
+            return <Icon key={dexKey}></Icon>;
+          })}
         </OptionsPickerIcons>
       </OptionsPickerRow>
       <OptionsPickerRow data-testid="dexBestRate">
