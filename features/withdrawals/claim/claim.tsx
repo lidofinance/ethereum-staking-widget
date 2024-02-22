@@ -1,3 +1,4 @@
+import { dynamics } from 'config';
 import { ClaimFaq } from 'features/withdrawals/withdrawals-faq/claim-faq';
 import { ClaimForm } from './form';
 import { ClaimWallet } from './wallet';
@@ -8,7 +9,7 @@ export const Claim = () => {
     <ClaimFormProvider>
       <ClaimWallet />
       <ClaimForm />
-      <ClaimFaq />
+      {!dynamics.ipfsMode && <ClaimFaq />}
     </ClaimFormProvider>
   );
 };

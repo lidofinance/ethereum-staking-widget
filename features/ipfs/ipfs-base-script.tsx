@@ -6,9 +6,9 @@ let ipfsBaseScript = '';
 // #!if IPFS_MODE === "true"
 ipfsBaseScript = `
 (function () {
-  const base = document.createElement('base')
-  base.href = window.location.pathname
-  document.head.append(base)
+  const base = document.createElement('base');
+  base.href = window.location.pathname;
+  document.head.append(base);
 })();
 `;
 // #!endif

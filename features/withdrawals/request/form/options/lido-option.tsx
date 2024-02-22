@@ -19,6 +19,7 @@ import {
   LidoOptionValue,
   LidoOptionInlineLoader,
 } from './styles';
+import { OnlyInfraRender } from 'shared/components/only-infra-render';
 
 const TooltipWithdrawalAmount = () => {
   const { navigateInpageAnchor } = useInpageNavigation();
@@ -29,19 +30,21 @@ const TooltipWithdrawalAmount = () => {
       title={
         <>
           The final amount of claimable ETH can differ
-          <br /> For more info, please read{' '}
-          <a
-            data-testid="lidoOptionToolTipFAQ"
-            href="#amountDifferentFromRequested"
-            onClick={(e) => {
-              trackMatomoEvent(
-                MATOMO_CLICK_EVENTS_TYPES.withdrawalFAQtooltipEthAmount,
-              );
-              navigateInpageAnchor(e);
-            }}
-          >
-            FAQ
-          </a>
+          <OnlyInfraRender>
+            <br /> For more info, please read{' '}
+            <a
+              data-testid="lidoOptionToolTipFAQ"
+              href="#amountDifferentFromRequested"
+              onClick={(e) => {
+                trackMatomoEvent(
+                  MATOMO_CLICK_EVENTS_TYPES.withdrawalFAQtooltipEthAmount,
+                );
+                navigateInpageAnchor(e);
+              }}
+            >
+              FAQ
+            </a>
+          </OnlyInfraRender>
         </>
       }
     >

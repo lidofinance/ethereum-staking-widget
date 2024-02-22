@@ -1,4 +1,4 @@
-import { use1inchLinkProps } from 'features/stake/hooks';
+import { use1inchDeepLinkProps } from 'features/stake/hooks';
 
 import { TransactionModalContent } from 'shared/transaction-modal/transaction-modal-content';
 import { ButtonLinkSmall, RetryButton, Grid } from './styles';
@@ -12,7 +12,7 @@ type TxStageLimitProps = {
 };
 
 export const TxStageLimit = ({ failedText, onRetry }: TxStageLimitProps) => {
-  const oneInchLinkProps = use1inchLinkProps();
+  const oneInchLinkProps = use1inchDeepLinkProps();
 
   return (
     <TransactionModalContent

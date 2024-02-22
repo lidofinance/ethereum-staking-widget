@@ -18,7 +18,6 @@ export const getAllPagesRoutes = () => {
       !item.endsWith('404.html') &&
       !item.endsWith('500.html')
     ) {
-      //console.log(item, path.basename(item));
       const routePath = path.join('/', item.replace(/(index)?\.html/, ''));
       routes.push(routePath);
     } else if (stats.isDirectory()) {

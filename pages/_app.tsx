@@ -1,6 +1,7 @@
 import { memo } from 'react';
 import { AppProps } from 'next/app';
 import 'nprogress/nprogress.css';
+import Head from 'next/head';
 
 import {
   ToastContainer,
@@ -14,6 +15,7 @@ import { Providers } from 'providers';
 import { BackgroundGradient } from 'shared/components/background-gradient/background-gradient';
 import { nprogress, COOKIES_ALLOWED_FULL_KEY } from 'utils';
 import { withCsp } from 'utilsApi/withCSP';
+import { OutdatedHashBanner } from 'features/ipfs/outdated-hash-banner';
 
 // Migrations old theme cookies to new cross domain cookies
 migrationThemeCookiesToCrossDomainCookiesClientSide();
@@ -37,6 +39,13 @@ const AppWrapper = (props: AppProps): JSX.Element => {
 
   return (
     <Providers>
+      {/* see https://nextjs.org/docs/messages/no-document-viewport-meta */}
+      <Head>
+        <meta
+          name="viewport"
+          content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"
+        />
+      </Head>
       <BackgroundGradient
         width={1560}
         height={784}
@@ -47,6 +56,7 @@ const AppWrapper = (props: AppProps): JSX.Element => {
       <ToastContainer />
       <MemoApp {...rest} />
       <CookiesTooltip />
+      <OutdatedHashBanner />
     </Providers>
   );
 };
