@@ -7,23 +7,23 @@ import { WrapFormProvider } from '../wrap-form-context/wrap-form-context';
 import { FormControllerWrap } from '../wrap-form-controls/form-controller-wrap';
 import { TokenSelectWrap } from '../wrap-form-controls/token-select-wrap';
 import { TokenAmountInputWrap } from '../wrap-form-controls/token-amount-input-wrap';
+import { InputGroupWrap } from '../wrap-form-controls/input-group-wrap';
 import { SubmitButtonWrap } from '../wrap-form-controls/submit-button-wrap';
 
 import { TransactionModalProvider } from 'shared/transaction-modal/transaction-modal-context';
-import { InputGroupHookForm } from 'shared/hook-form/controls/input-group-hook-form';
+
 import { L2Wsteth } from 'shared/banners/l2-wsteth';
 import { MATOMO_CLICK_EVENTS } from 'config';
-
 export const WrapForm: React.FC = memo(() => {
   return (
     <TransactionModalProvider>
       <WrapFormProvider>
         <WrapBlock data-testid="wrapForm">
           <FormControllerWrap>
-            <InputGroupHookForm errorField="amount">
+            <InputGroupWrap>
               <TokenSelectWrap />
               <TokenAmountInputWrap />
-            </InputGroupHookForm>
+            </InputGroupWrap>
             <SubmitButtonWrap />
           </FormControllerWrap>
           <L2Wsteth matomoEventLink={MATOMO_CLICK_EVENTS.l2BannerWrap} />
