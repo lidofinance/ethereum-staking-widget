@@ -2,7 +2,7 @@ import { useCallback } from 'react';
 import invariant from 'tiny-invariant';
 import { useSDK } from '@lido-sdk/react';
 
-import { useClientConfig } from 'providers/client-config';
+import { useClientConfig } from './client-config/hooks';
 import { CHAINS } from 'utils/chains';
 
 import dynamics from './dynamics';
@@ -51,6 +51,5 @@ export const useGetRpcUrlByChainId = () => {
 
 export const useRpcUrl = () => {
   const { chainId } = useSDK();
-  const getRpcUrlByChainId = useGetRpcUrlByChainId();
-  return getRpcUrlByChainId(chainId as number);
+  return useGetRpcUrlByChainId()(chainId as number);
 };

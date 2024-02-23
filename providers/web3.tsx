@@ -7,7 +7,7 @@ import * as wagmiChains from 'wagmi/chains';
 import { CHAINS } from 'utils/chains';
 import { getStaticRpcBatchProvider } from '@lido-sdk/providers';
 
-import { useClientConfig } from 'providers/client-config';
+import { useClientConfig } from 'config/client-config/hooks';
 import { dynamics, useGetRpcUrlByChainId } from 'config';
 
 const Web3Provider: FC<PropsWithChildren> = ({ children }) => {

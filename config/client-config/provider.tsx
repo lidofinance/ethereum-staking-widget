@@ -2,19 +2,20 @@ import {
   PropsWithChildren,
   useMemo,
   useState,
-  useContext,
   useCallback,
   createContext,
 } from 'react';
-import invariant from 'tiny-invariant';
 
 import { useLocalStorage } from '@lido-sdk/react';
 
 import { dynamics } from 'config';
-import { EnvConfigParsed } from 'config/types';
 import { STORAGE_CLIENT_CONFIG } from 'consts/storage';
 import { CHAINS } from 'utils/chains';
-import { parseEnvConfig } from 'utils/parse-env-config';
+
+import { parseEnvConfig } from './utils';
+import { EnvConfigParsed } from './types';
+
+// TODO whole file: '*Сlient*' --> '*User*', 'client' --> 'user'
 
 type SavedClientConfig = {
   rpcUrls: Partial<Record<CHAINS, string>>;
@@ -29,16 +30,11 @@ export const ClientConfigContext = createContext<ClientConfigContext | null>(
   null,
 );
 
-export const useClientConfig = () => {
-  const context = useContext(ClientConfigContext);
-  invariant(context, 'Attempt to use `client config` outside of provider');
-  return context;
-};
-
 const DEFAULT_STATE: SavedClientConfig = {
   rpcUrls: {},
 };
 
+// TODO: 'ClientConfigProvider' --> 'UserConfigProvider'
 export const ClientConfigProvider = ({ children }: PropsWithChildren) => {
   const [restoredSettings, setLocalStorage] = useLocalStorage(
     STORAGE_CLIENT_CONFIG,

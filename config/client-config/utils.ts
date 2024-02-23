@@ -1,4 +1,4 @@
-import { EnvConfigRaw, EnvConfigParsed } from 'config/types';
+import { EnvConfigRaw, EnvConfigParsed } from 'config/client-config/types';
 import { CHAINS } from 'utils/chains';
 
 export const parseEnvConfig = (envConfig: EnvConfigRaw): EnvConfigParsed => {
