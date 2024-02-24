@@ -1,17 +1,6 @@
 import { CHAINS } from 'utils/chains';
 
-// TODO: config/features/client-config/*
-export type EnvConfigRaw = {
-  defaultChain: string | number;
-  supportedChains: number[];
-  prefillUnsafeElRpcUrls1: string[];
-  prefillUnsafeElRpcUrls5: string[];
-  prefillUnsafeElRpcUrls17000: string[];
-  ipfsMode: boolean;
-  walletconnectProjectId: string;
-};
-
-export type EnvConfigParsed = {
+export type UserConfigDefaultType = {
   defaultChain: number;
   supportedChainIds: number[];
   prefillUnsafeElRpcUrls: {
@@ -19,6 +8,5 @@ export type EnvConfigParsed = {
     [CHAINS.Goerli]: string[];
     [CHAINS.Holesky]: string[];
   };
-  ipfsMode: boolean;
   walletconnectProjectId: string;
 };

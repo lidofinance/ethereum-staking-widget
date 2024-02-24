@@ -1,16 +1,25 @@
-import { EnvConfigRaw, EnvConfigParsed } from 'config/client-config/types';
+import { UserConfigDefaultType } from 'config/client-config/types';
 import { CHAINS } from 'utils/chains';
 
-export const parseEnvConfig = (envConfig: EnvConfigRaw): EnvConfigParsed => {
+import { getOneConfig } from 'config/one-config/utils';
+const {
+  defaultChain,
+  supportedChains,
+  prefillUnsafeElRpcUrls1,
+  prefillUnsafeElRpcUrls5,
+  prefillUnsafeElRpcUrls17000,
+  walletconnectProjectId,
+} = getOneConfig();
+
+export const getUserConfigDefault = (): UserConfigDefaultType => {
   return {
-    defaultChain: Number(envConfig.defaultChain),
-    supportedChainIds: envConfig.supportedChains,
+    defaultChain: Number(defaultChain),
+    supportedChainIds: supportedChains,
     prefillUnsafeElRpcUrls: {
-      [CHAINS.Mainnet]: envConfig.prefillUnsafeElRpcUrls1,
-      [CHAINS.Goerli]: envConfig.prefillUnsafeElRpcUrls5,
-      [CHAINS.Holesky]: envConfig.prefillUnsafeElRpcUrls17000,
+      [CHAINS.Mainnet]: prefillUnsafeElRpcUrls1,
+      [CHAINS.Goerli]: prefillUnsafeElRpcUrls5,
+      [CHAINS.Holesky]: prefillUnsafeElRpcUrls17000,
     },
-    ipfsMode: envConfig.ipfsMode,
-    walletconnectProjectId: envConfig.walletconnectProjectId,
+    walletconnectProjectId: walletconnectProjectId,
   };
 };

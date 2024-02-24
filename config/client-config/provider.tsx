@@ -9,11 +9,10 @@ import {
 import { useLocalStorage } from '@lido-sdk/react';
 
 import { STORAGE_CLIENT_CONFIG } from 'consts/storage';
-import * as dynamicsOnBackend from 'env-dynamics.mjs';
 import { CHAINS } from 'utils/chains';
 
-import { parseEnvConfig } from './utils';
-import { EnvConfigParsed } from './types';
+import { getUserConfigDefault } from './utils';
+import { UserConfigDefaultType } from './types';
 
 // TODO whole file: '*Сlient*' --> '*User*', 'client' --> 'user'
 
@@ -21,7 +20,7 @@ type SavedClientConfig = {
   rpcUrls: Partial<Record<CHAINS, string>>;
 };
 
-type ClientConfigContext = EnvConfigParsed & {
+type ClientConfigContext = UserConfigDefaultType & {
   savedClientConfig: SavedClientConfig;
   setSavedClientConfig: (config: SavedClientConfig) => void;
 };
@@ -53,12 +52,10 @@ export const ClientConfigProvider = ({ children }: PropsWithChildren) => {
   );
 
   const contextValue = useMemo(() => {
-    const envConfig = parseEnvConfig(
-      typeof window !== 'undefined' ? window.__env__ : dynamicsOnBackend,
-    );
+    const userConfigDefault = getUserConfigDefault();
 
     return {
-      ...envConfig,
+      ...userConfigDefault,
       savedClientConfig,
       setSavedClientConfig: setSavedConfigAndRemember,
     };

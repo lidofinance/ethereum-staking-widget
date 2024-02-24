@@ -11,9 +11,7 @@ export const getOneConfig = () => {
   return {
     isClientSide,
     isServerSide,
-    // ...dynamics,
     ...(typeof window !== 'undefined' ? window.__env__ : dynamics),
-    // ...serverRuntimeConfig,
-    ...(isServerSide && serverRuntimeConfig && { env: process.env }),
+    ...serverRuntimeConfig,
   };
 };
