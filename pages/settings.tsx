@@ -3,7 +3,7 @@ import { GetStaticProps } from 'next';
 
 import { Layout } from 'shared/components';
 import { SettingsForm } from 'features/settings/settings-form';
-import { getOneConfig } from 'providers/one-config';
+import { getOneConfig } from 'config/one-config/utils';
 
 const Settings: FC = () => {
   return (

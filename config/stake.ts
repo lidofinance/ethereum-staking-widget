@@ -1,8 +1,11 @@
-import { parseEther } from '@ethersproject/units';
 import { BigNumber } from 'ethers';
-import dynamics from './dynamics';
-import { IPFS_REFERRAL_ADDRESS } from './ipfs';
+import { parseEther } from '@ethersproject/units';
 import { AddressZero } from '@ethersproject/constants';
+
+import { getOneConfig } from './one-config/utils';
+const { ipfsMode } = getOneConfig();
+
+import { IPFS_REFERRAL_ADDRESS } from './ipfs';
 
 // TODO: const
 export const PRECISION = 10 ** 6;
@@ -25,6 +28,6 @@ export const STAKE_GASLIMIT_FALLBACK = BigNumber.from(
 );
 
 // TODO: move to OneConfig
-export const STAKE_FALLBACK_REFERRAL_ADDRESS = dynamics.ipfsMode
+export const STAKE_FALLBACK_REFERRAL_ADDRESS = ipfsMode
   ? IPFS_REFERRAL_ADDRESS
   : AddressZero;

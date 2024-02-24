@@ -2,7 +2,9 @@ import { ReactNode, FC, PropsWithChildren } from 'react';
 
 import { ContainerProps } from '@lidofinance/lido-ui';
 
-import { dynamics } from 'config';
+import { getOneConfig } from 'config/one-config/utils';
+const { ipfsMode } = getOneConfig();
+
 import { IPFSInfoBox } from 'features/ipfs/ipfs-info-box';
 
 import { Header } from './header/header';
@@ -28,7 +30,7 @@ export const Layout: FC<PropsWithChildren<Props>> = (props) => {
     <>
       <Header />
       <Main size={containerSize}>
-        {dynamics.ipfsMode && (
+        {ipfsMode && (
           <IPFSInfoBoxOnlyMobileAndPortableWrapper>
             <IPFSInfoBox />
           </IPFSInfoBoxOnlyMobileAndPortableWrapper>

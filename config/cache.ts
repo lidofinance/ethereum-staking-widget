@@ -1,5 +1,7 @@
 import ms from 'ms';
 
+// TODO: move to './config/values/cache.ts'
+
 export const CACHE_STETH_APR_KEY = 'cache-steth-apr';
 export const CACHE_STETH_APR_TTL = ms('1h');
 

@@ -1,12 +1,14 @@
 import { FC } from 'react';
 import { AppProps } from 'next/app';
-import getConfig from 'next/config';
 import { withSecureHeaders } from 'next-secure-headers';
-
-import { dynamics } from 'config';
 import type { ContentSecurityPolicyOption } from 'next-secure-headers/lib/rules';
 
+import { getOneConfig } from 'config/one-config/utils';
+const { ipfsMode } = getOneConfig();
+
+import getConfig from 'next/config';
 const { serverRuntimeConfig } = getConfig();
+
 const { cspTrustedHosts, cspReportOnly, cspReportUri, developmentMode } =
   serverRuntimeConfig;
 
@@ -36,7 +38,7 @@ export const contentSecurityPolicy: ContentSecurityPolicyOption = {
       ...(developmentMode ? ['ws:'] : []),
     ],
 
-    ...(!dynamics.ipfsMode && {
+    ...(!ipfsMode && {
       // CSP directive 'frame-ancestors' is ignored when delivered via a <meta> element.
       // CSP directive 'report-uri' is ignored when delivered via a <meta> element.
       frameAncestors: ['*'],

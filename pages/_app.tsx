@@ -9,7 +9,9 @@ import {
   migrationThemeCookiesToCrossDomainCookiesClientSide,
 } from '@lidofinance/lido-ui';
 
-import { dynamics } from 'config';
+import { getOneConfig } from 'config/one-config/utils';
+const { ipfsMode } = getOneConfig();
+
 import { Providers } from 'providers';
 import { BackgroundGradient } from 'shared/components/background-gradient/background-gradient';
 import { nprogress, COOKIES_ALLOWED_FULL_KEY } from 'utils';
@@ -51,6 +53,6 @@ const AppWrapper = (props: AppProps): JSX.Element => {
   );
 };
 
-export default dynamics.ipfsMode || process.env.NODE_ENV === 'development'
+export default ipfsMode || process.env.NODE_ENV === 'development'
   ? AppWrapper
   : withCsp(AppWrapper);

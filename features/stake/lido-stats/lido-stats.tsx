@@ -7,7 +7,10 @@ import { Block, DataTable, Question, Tooltip } from '@lidofinance/lido-ui';
 
 import { Section, MatomoLink } from 'shared/components';
 import { useLidoApr, useLidoStats } from 'shared/hooks';
-import { dynamics } from 'config';
+
+import { getOneConfig } from 'config/one-config/utils';
+const { ipfsMode } = getOneConfig();
+
 import { LIDO_APR_TOOLTIP_TEXT } from 'consts/text';
 import { MATOMO_CLICK_EVENTS_TYPES } from 'consts/matomo-click-events';
 
@@ -30,13 +33,12 @@ export const LidoStats: FC = memo(() => {
   const lidoApr = useLidoApr();
   const lidoStats = useLidoStats();
 
-  const showApr = !dynamics.ipfsMode || isStatItemAvailable(lidoApr.apr);
+  const showApr = !ipfsMode || isStatItemAvailable(lidoApr.apr);
   const showTotalStaked =
-    !dynamics.ipfsMode || isStatItemAvailable(lidoStats.data.totalStaked);
-  const showStakers =
-    !dynamics.ipfsMode || isStatItemAvailable(lidoStats.data.stakers);
+    !ipfsMode || isStatItemAvailable(lidoStats.data.totalStaked);
+  const showStakers = !ipfsMode || isStatItemAvailable(lidoStats.data.stakers);
   const showMarketCap =
-    !dynamics.ipfsMode || isStatItemAvailable(lidoStats.data.marketCap);
+    !ipfsMode || isStatItemAvailable(lidoStats.data.marketCap);
 
   if (!showApr && !showTotalStaked && !showStakers && !showMarketCap) {
     return null;

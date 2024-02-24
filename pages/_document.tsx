@@ -10,7 +10,11 @@ import { createHeadersObject } from 'next-secure-headers';
 import { ServerStyleSheet } from 'styled-components';
 import { Fonts, LidoUIHead } from '@lidofinance/lido-ui';
 
-import { dynamics, BASE_PATH_ASSET } from 'config';
+import { BASE_PATH_ASSET } from 'config';
+
+import { getOneConfig } from 'config/one-config/utils';
+const { defaultChain, ipfsMode } = getOneConfig();
+
 import { InsertIpfsBaseScript } from 'features/ipfs/ipfs-base-script';
 import { contentSecurityPolicy } from 'utilsApi/withCSP';
 
@@ -79,7 +83,7 @@ export default class MyDocument extends Document {
             name="viewport"
             content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"
           />
-          {dynamics.ipfsMode && (
+          {ipfsMode && (
             <meta
               httpEquiv="Content-Security-Policy"
               content={cspMetaTagContent}
@@ -130,7 +134,7 @@ export default class MyDocument extends Document {
           <meta name="twitter:site" content="@lidofinance" />
           <meta name="twitter:creator" content="@lomashuk" />
           <meta name="description" content={this.metaDescription} />
-          <meta name="currentChain" content={String(dynamics.defaultChain)} />
+          <meta name="currentChain" content={String(defaultChain)} />
           <Fonts />
           <LidoUIHead />
           <InsertIpfsBaseScript />

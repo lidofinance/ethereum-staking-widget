@@ -14,7 +14,9 @@ import {
   WstethAbiFactory,
 } from '@lido-sdk/contracts';
 
-import { dynamics } from 'config';
+import { getOneConfig } from 'config/one-config/utils';
+const { supportedChains } = getOneConfig();
+
 import { getAggregatorStEthUsdPriceFeedAddress } from 'consts/aggregator';
 import {
   AggregatorAbi__factory,
@@ -59,9 +61,7 @@ const getAddressOrNull = <
   }
 };
 
-export const METRIC_CONTRACT_ADDRESSES = (
-  dynamics.supportedChains as CHAINS[]
-).reduce(
+export const METRIC_CONTRACT_ADDRESSES = (supportedChains as CHAINS[]).reduce(
   (mapped, chainId) => {
     const map = {
       [CONTRACT_NAMES.stETH]: getAddressOrNull(

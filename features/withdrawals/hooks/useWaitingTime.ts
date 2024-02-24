@@ -1,6 +1,8 @@
 import { useMemo } from 'react';
 import { SWRResponse, useLidoSWR } from '@lido-sdk/react';
-import { dynamics } from 'config';
+
+import { getOneConfig } from 'config/one-config/utils';
+const { wqAPIBasePath } = getOneConfig();
 
 import { useDebouncedValue } from 'shared/hooks';
 import { encodeURLQuery } from 'utils/encodeURLQuery';
@@ -32,7 +34,7 @@ export const useWaitingTime = (
   const { isApproximate } = options;
   const debouncedAmount = useDebouncedValue(amount, 1000);
   const url = useMemo(() => {
-    const basePath = dynamics.wqAPIBasePath;
+    const basePath = wqAPIBasePath;
     const params = encodeURLQuery({ amount: debouncedAmount });
     const queryString = params ? `?${params}` : '';
     return `${basePath}/v1/request-time${queryString}`;

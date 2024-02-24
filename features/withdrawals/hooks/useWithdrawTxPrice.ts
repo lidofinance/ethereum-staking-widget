@@ -8,8 +8,11 @@ import {
   WITHDRAWAL_QUEUE_REQUEST_STETH_PERMIT_GAS_LIMIT_DEFAULT,
   WITHDRAWAL_QUEUE_REQUEST_WSTETH_PERMIT_GAS_LIMIT_DEFAULT,
   WITHDRAWAL_QUEUE_REQUEST_WSTETH_APPROVED_GAS_LIMIT_DEFAULT,
-  dynamics,
 } from 'config';
+
+import { getOneConfig } from 'config/one-config/utils';
+const { wqAPIBasePath } = getOneConfig();
+
 import { MAX_REQUESTS_COUNT } from 'features/withdrawals/withdrawals-constants';
 
 import { useWeb3 } from 'reef-knot/web3-react';
@@ -43,14 +46,14 @@ export const useRequestTxPrice = ({
         ? WITHDRAWAL_QUEUE_REQUEST_STETH_APPROVED_GAS_LIMIT_DEFAULT
         : WITHDRAWAL_QUEUE_REQUEST_STETH_PERMIT_GAS_LIMIT_DEFAULT
       : isApprovalFlow
-      ? WITHDRAWAL_QUEUE_REQUEST_WSTETH_APPROVED_GAS_LIMIT_DEFAULT
-      : WITHDRAWAL_QUEUE_REQUEST_WSTETH_PERMIT_GAS_LIMIT_DEFAULT;
+        ? WITHDRAWAL_QUEUE_REQUEST_WSTETH_APPROVED_GAS_LIMIT_DEFAULT
+        : WITHDRAWAL_QUEUE_REQUEST_WSTETH_PERMIT_GAS_LIMIT_DEFAULT;
 
   const cappedRequestCount = Math.min(requestCount || 1, MAX_REQUESTS_COUNT);
   const debouncedRequestCount = useDebouncedValue(cappedRequestCount, 2000);
 
   const url = useMemo(() => {
-    const basePath = dynamics.wqAPIBasePath;
+    const basePath = wqAPIBasePath;
     const params = encodeURLQuery({
       token,
       requestCount: debouncedRequestCount,

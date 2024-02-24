@@ -8,8 +8,8 @@ import {
 
 import { useLocalStorage } from '@lido-sdk/react';
 
-import { dynamics } from 'config';
 import { STORAGE_CLIENT_CONFIG } from 'consts/storage';
+import * as dynamicsOnBackend from 'env-dynamics.mjs';
 import { CHAINS } from 'utils/chains';
 
 import { parseEnvConfig } from './utils';
@@ -53,7 +53,9 @@ export const ClientConfigProvider = ({ children }: PropsWithChildren) => {
   );
 
   const contextValue = useMemo(() => {
-    const envConfig = parseEnvConfig(dynamics);
+    const envConfig = parseEnvConfig(
+      typeof window !== 'undefined' ? window.__env__ : dynamicsOnBackend,
+    );
 
     return {
       ...envConfig,

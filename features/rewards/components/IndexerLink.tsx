@@ -1,6 +1,8 @@
 import { Box, External as ExternalLinkIcon } from '@lidofinance/lido-ui';
 import { getEtherscanTxLink } from '@lido-sdk/helpers';
-import { dynamics } from 'config';
+
+import { getOneConfig } from 'config/one-config/utils';
+const { defaultChain } = getOneConfig();
 
 // TODO: move to separate folders
 type Props = {
@@ -10,7 +12,7 @@ type Props = {
 const IndexerLink = ({ transactionHash }: Props) => {
   if (!transactionHash) return null;
 
-  const link = getEtherscanTxLink(dynamics.defaultChain, transactionHash);
+  const link = getEtherscanTxLink(defaultChain, transactionHash);
   return (
     <a href={link} target="_blank" rel="noreferrer">
       <Box ml="1px" mt="-2px" height="12px" width="12px">

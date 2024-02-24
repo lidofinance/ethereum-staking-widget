@@ -1,3 +1,4 @@
-import { dynamics } from 'config';
+import { getOneConfig } from 'config/one-config/utils';
+export const { enableQaHelpers } = getOneConfig();
 
-export const enableQaHelpers = dynamics.enableQaHelpers;
+// TODO

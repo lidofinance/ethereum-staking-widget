@@ -8,7 +8,13 @@ import { CHAINS } from 'utils/chains';
 import { getStaticRpcBatchProvider } from '@lido-sdk/providers';
 
 import { useClientConfig } from 'config/client-config/hooks';
-import { dynamics, useGetRpcUrlByChainId } from 'config';
+import { useGetRpcUrlByChainId } from 'config';
+
+import { getOneConfig } from 'config/one-config/utils';
+const {
+  defaultChain: defaultChainFromConfig,
+  supportedChains: supportedChainsFromConfig,
+} = getOneConfig();
 
 const Web3Provider: FC<PropsWithChildren> = ({ children }) => {
   const { defaultChain, supportedChainIds, walletconnectProjectId } =
@@ -31,7 +37,7 @@ const Web3Provider: FC<PropsWithChildren> = ({ children }) => {
   const client = useMemo(() => {
     const wagmiChainsArray = Object.values({ ...wagmiChains, holesky });
     const supportedChains = wagmiChainsArray.filter((chain) =>
-      dynamics.supportedChains.includes(chain.id),
+      supportedChainsFromConfig.includes(chain.id),
     );
 
     // Adding Mumbai as a temporary workaround
@@ -42,7 +48,7 @@ const Web3Provider: FC<PropsWithChildren> = ({ children }) => {
     supportedChains.push(wagmiChains.polygonMumbai);
 
     const defaultChain =
-      wagmiChainsArray.find((chain) => chain.id === dynamics.defaultChain) ||
+      wagmiChainsArray.find((chain) => chain.id === defaultChainFromConfig) ||
       supportedChains[0]; // first supported chain as fallback
 
     const jsonRpcBatchProvider = (chain: Chain) => ({

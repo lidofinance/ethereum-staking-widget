@@ -1,4 +1,4 @@
-import * as dynamics from '../env-dynamics.mjs';
+import * as dynamics from 'env-dynamics.mjs';
 // We're making dynamic env variables
 // so we can inject selected envs from Docker runtime too,
 // not only during build-time for static pages

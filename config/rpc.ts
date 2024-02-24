@@ -5,7 +5,8 @@ import { useSDK } from '@lido-sdk/react';
 import { useClientConfig } from './client-config/hooks';
 import { CHAINS } from 'utils/chains';
 
-import dynamics from './dynamics';
+import { getOneConfig } from './one-config/utils';
+const { ipfsMode } = getOneConfig();
 
 // TODO: one config
 export const getBackendRPCPath = (chainId: string | number): string => {
@@ -31,7 +32,7 @@ export const useGetRpcUrlByChainId = () => {
         return '';
       }
 
-      if (dynamics.ipfsMode) {
+      if (ipfsMode) {
         const rpc =
           clientConfig.savedClientConfig.rpcUrls[chainId] ||
           clientConfig.prefillUnsafeElRpcUrls[chainId]?.[0];

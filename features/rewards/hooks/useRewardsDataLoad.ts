@@ -1,6 +1,9 @@
 import { useEffect, useRef } from 'react';
+
+import { getOneConfig } from 'config/one-config/utils';
+const { ipfsMode, widgetApiBasePathForIpfs } = getOneConfig();
+
 import { Backend } from 'features/rewards/types';
-import { dynamics } from 'config';
 import { useLidoSWR } from 'shared/hooks';
 import { swrAbortableMiddleware } from 'utils';
 
@@ -46,8 +49,8 @@ export const useRewardsDataLoad: UseRewardsDataLoad = (props) => {
   );
 
   const apiRewardsPath = `/api/rewards?${params.toString()}`;
-  const apiRewardsUrl = dynamics.ipfsMode
-    ? `${dynamics.widgetApiBasePathForIpfs}${apiRewardsPath}`
+  const apiRewardsUrl = ipfsMode
+    ? `${widgetApiBasePathForIpfs}${apiRewardsPath}`
     : apiRewardsPath;
 
   const { data, ...rest } = useLidoSWR<Backend>(

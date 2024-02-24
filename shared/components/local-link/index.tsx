@@ -2,7 +2,9 @@ import React, { FC, PropsWithChildren } from 'react';
 import { useRouter } from 'next/router';
 import Link, { LinkProps } from 'next/link';
 
-import { dynamics } from 'config';
+import { getOneConfig } from 'config/one-config/utils';
+const { ipfsMode } = getOneConfig();
+
 import { LinkIpfs } from 'shared/components/link-ipfs';
 
 export const LocalLink: FC<PropsWithChildren<LinkProps>> = (props) => {
@@ -18,7 +20,7 @@ export const LocalLink: FC<PropsWithChildren<LinkProps>> = (props) => {
   if (theme && typeof theme === 'string') extraQuery.theme = theme;
 
   if (typeof href === 'string') {
-    if (dynamics.ipfsMode) {
+    if (ipfsMode) {
       return <LinkIpfs {...restProps} href={href} query={extraQuery} />;
     }
 

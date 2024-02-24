@@ -1,5 +1,8 @@
 import memoize from 'lodash/memoize';
-import { dynamics } from 'config';
+
+import { getOneConfig } from 'config/one-config/utils';
+const { ipfsMode } = getOneConfig();
+
 import { encodeURLQuery } from './encodeURLQuery';
 
 export const getIpfsBasePath = memoize(() => {
@@ -12,6 +15,6 @@ export const prefixUrl = (url: string, query?: Record<string, string>) => {
   const queryString =
     query && Object.keys(query).length > 0 ? `?${encodeURLQuery(query)}` : '';
 
-  if (dynamics.ipfsMode) return `${getIpfsBasePath()}${queryString}#${url}`;
+  if (ipfsMode) return `${getIpfsBasePath()}${queryString}#${url}`;
   return url;
 };
