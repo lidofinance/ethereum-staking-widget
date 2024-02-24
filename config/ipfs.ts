@@ -1,10 +1,5 @@
-import getConfig from 'next/config';
-
 import { getOneConfig } from './one-config/utils';
-const { ipfsMode } = getOneConfig();
-
-const { serverRuntimeConfig } = getConfig();
-const { basePath = '' } = serverRuntimeConfig;
+const { ipfsMode, basePath = '' } = getOneConfig();
 
 // TODO: move to OneConfig
 export const BASE_PATH_ASSET = ipfsMode ? '.' : basePath;

@@ -4,13 +4,13 @@ import { withSecureHeaders } from 'next-secure-headers';
 import type { ContentSecurityPolicyOption } from 'next-secure-headers/lib/rules';
 
 import { getOneConfig } from 'config/one-config/utils';
-const { ipfsMode } = getOneConfig();
-
-import getConfig from 'next/config';
-const { serverRuntimeConfig } = getConfig();
-
-const { cspTrustedHosts, cspReportOnly, cspReportUri, developmentMode } =
-  serverRuntimeConfig;
+const {
+  cspTrustedHosts,
+  cspReportOnly,
+  cspReportUri,
+  developmentMode,
+  ipfsMode,
+} = getOneConfig();
 
 const trustedHosts = cspTrustedHosts ? cspTrustedHosts.split(',') : [];
 

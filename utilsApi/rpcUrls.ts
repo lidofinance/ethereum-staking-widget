@@ -1,8 +1,7 @@
-import getConfig from 'next/config';
 import { CHAINS } from 'utils/chains';
 
-const { serverRuntimeConfig } = getConfig();
-const { rpcUrls_1, rpcUrls_5, rpcUrls_17000 } = serverRuntimeConfig;
+import { getOneConfig } from 'config/one-config/utils';
+const { rpcUrls_1, rpcUrls_5, rpcUrls_17000 } = getOneConfig();
 
 export const rpcUrls: Record<CHAINS, [string, ...string[]]> = {
   [CHAINS.Mainnet]: rpcUrls_1,

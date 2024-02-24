@@ -1,3 +1,4 @@
+import ms from 'ms';
 import { Cache } from 'memory-cache';
 import Metrics from 'utilsApi/metrics';
 import { standardFetcher } from 'utils/standardFetcher';
@@ -7,9 +8,8 @@ import {
   CACHE_LIDO_HOLDERS_VIA_SUBGRAPHS_KEY,
   CACHE_LIDO_HOLDERS_VIA_SUBGRAPHS_TTL,
 } from 'config';
-import getConfig from 'next/config';
-import ms from 'ms';
-const { serverRuntimeConfig } = getConfig();
+import { getOneConfig } from 'config/one-config/utils';
+const { subgraphRequestTimeout } = getOneConfig();
 
 const SUBGRAPH_ERROR_MESSAGE =
   '[getLidoHoldersViaSubgraphs] Subgraph request failed.';
@@ -46,7 +46,7 @@ export const getLidoHoldersViaSubgraphs: GetLidoHoldersViaSubgraphs = async (
 
   const controller = new AbortController();
 
-  const TIMEOUT = +serverRuntimeConfig.subgraphRequestTimeout || ms('5s');
+  const TIMEOUT = +subgraphRequestTimeout || ms('5s');
   const timeoutId = setTimeout(() => controller.abort(), TIMEOUT);
 
   const params = {

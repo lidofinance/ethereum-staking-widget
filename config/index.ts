@@ -1,6 +1,3 @@
-// import getConfig from 'next/config';
-// export const { serverRuntimeConfig } = getConfig();
-
 export * from './cache';
 export * from './estimate';
 export * from './locale';

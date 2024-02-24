@@ -1,6 +1,5 @@
-import getConfig from 'next/config';
-const { serverRuntimeConfig } = getConfig();
-const { rateLimit, rateLimitTimeFrame } = serverRuntimeConfig;
+import { getOneConfig } from './one-config/utils';
+const { rateLimit, rateLimitTimeFrame = '' } = getOneConfig();
 
 // TODO: move to OneConfig
 // requests per RATE_LIMIT_TIME_FRAME

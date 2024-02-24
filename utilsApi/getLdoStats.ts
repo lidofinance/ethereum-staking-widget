@@ -1,12 +1,11 @@
 import { CHAINS } from 'utils/chains';
 import { getTokenAddress, TOKENS } from '@lido-sdk/constants';
 import { ETHPLORER_TOKEN_ENDPOINT } from 'consts/api';
-import getConfig from 'next/config';
 import { standardFetcher } from 'utils/standardFetcher';
 import { responseTimeExternalMetricWrapper } from 'utilsApi';
 
-const { serverRuntimeConfig } = getConfig();
-const { ethplorerApiKey } = serverRuntimeConfig;
+import { getOneConfig } from 'config/one-config/utils';
+const { ethplorerApiKey } = getOneConfig();
 
 type GetLdoStats = () => Promise<Response>;
 

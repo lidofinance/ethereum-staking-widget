@@ -1,4 +1,3 @@
-import getConfig from 'next/config';
 import {
   wrapRequest as wrapNextRequest,
   cacheControl,
@@ -18,8 +17,8 @@ import { API_ROUTES } from 'consts/api';
 import { API } from 'types';
 import { standardFetcher } from 'utils/standardFetcher';
 
-const { serverRuntimeConfig } = getConfig();
-const { rewardsBackendAPI } = serverRuntimeConfig;
+import { getOneConfig } from 'config/one-config/utils';
+const { rewardsBackendAPI } = getOneConfig();
 
 const TIMEOUT = 10_000;
 

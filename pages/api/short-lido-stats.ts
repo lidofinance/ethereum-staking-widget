@@ -1,4 +1,3 @@
-import getConfig from 'next/config';
 import { Cache } from 'memory-cache';
 import { wrapRequest as wrapNextRequest } from '@lidofinance/next-api-wrapper';
 
@@ -19,8 +18,8 @@ import {
 import Metrics from 'utilsApi/metrics';
 import { parallelizePromises } from 'utils';
 
-const { serverRuntimeConfig } = getConfig();
-const { defaultChain } = serverRuntimeConfig;
+import { getOneConfig } from 'config/one-config/utils';
+const { defaultChain } = getOneConfig();
 
 const cache = new Cache<string, unknown>();
 

@@ -1,11 +1,9 @@
-import getConfig from 'next/config';
 import { CHAINS } from 'utils/chains';
-
 import { standardFetcher } from 'utils/standardFetcher';
 import { responseTimeExternalMetricWrapper } from 'utilsApi';
 
-const { serverRuntimeConfig } = getConfig();
-const { ethAPIBasePath } = serverRuntimeConfig;
+import { getOneConfig } from 'config/one-config/utils';
+const { ethAPIBasePath } = getOneConfig();
 
 type SMA_APR_RESPONSE = {
   data: {
