@@ -4,7 +4,12 @@ import { useCallback } from 'react';
 import { useWeb3 } from 'reef-knot/web3-react';
 import invariant from 'tiny-invariant';
 
-import { enableQaHelpers, runWithTransactionLogger } from 'utils';
+import { runWithTransactionLogger } from 'utils';
+
+import { STAKE_FALLBACK_REFERRAL_ADDRESS } from 'config';
+import { getOneConfig } from 'config/one-config/utils';
+export const { enableQaHelpers } = getOneConfig();
+
 import { getErrorMessage } from 'utils/getErrorMessage';
 import { isContract } from 'utils/isContract';
 import { TX_OPERATION, useTransactionModal } from 'shared/transaction-modal';
@@ -12,7 +17,6 @@ import { MockLimitReachedError, getAddress, applyGasLimitRatio } from './utils';
 import { getFeeData } from 'utils/getFeeData';
 
 import { useCurrentStaticRpcProvider } from 'shared/hooks/use-current-static-rpc-provider';
-import { STAKE_FALLBACK_REFERRAL_ADDRESS } from 'config';
 
 type StakeArguments = {
   amount: BigNumber | null;

@@ -1,10 +1,14 @@
+import { BigNumber } from 'ethers';
+import useSwr from 'swr';
+
 import { parseEther } from '@ethersproject/units';
 import { CHAINS } from '@lido-sdk/constants';
 import { StethAbi } from '@lido-sdk/contracts';
 import { useSDK, useSTETHContractRPC } from '@lido-sdk/react';
-import { enableQaHelpers } from 'utils';
-import useSwr from 'swr';
-import { BigNumber } from 'ethers';
+
+import { getOneConfig } from 'config/one-config/utils';
+export const { enableQaHelpers } = getOneConfig();
+
 import { STRATEGY_LAZY } from 'utils/swrStrategies';
 import { LIMIT_LEVEL } from 'types';
 

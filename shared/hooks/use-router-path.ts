@@ -1,10 +1,7 @@
 import { useRouter } from 'next/router';
 
 import { getOneConfig } from 'config/one-config/utils';
-const { ipfsMode } = getOneConfig();
-
-// TODO
-import { isClientSide } from 'utils/isClientSide';
+const { ipfsMode, isClientSide } = getOneConfig();
 
 import { HOME_PATH } from 'consts/urls';
 
