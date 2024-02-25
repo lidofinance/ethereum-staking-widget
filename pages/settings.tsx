@@ -1,9 +1,9 @@
 import { FC } from 'react';
 import { GetStaticProps } from 'next';
 
+import { getConfig } from 'config';
 import { Layout } from 'shared/components';
 import { SettingsForm } from 'features/settings/settings-form';
-import { getOneConfig } from 'config/one-config/utils';
 
 const Settings: FC = () => {
   return (
@@ -16,7 +16,7 @@ const Settings: FC = () => {
 export default Settings;
 
 export const getStaticProps: GetStaticProps = async () => {
-  const { ipfsMode } = getOneConfig();
+  const { ipfsMode } = getConfig();
   if (!ipfsMode) return { notFound: true };
 
   return { props: {} };

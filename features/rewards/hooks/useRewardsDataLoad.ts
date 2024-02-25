@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 
-import { getOneConfig } from 'config/one-config/utils';
-const { ipfsMode, widgetApiBasePathForIpfs } = getOneConfig();
+import { getConfig } from 'config';
+const { ipfsMode, widgetApiBasePathForIpfs } = getConfig();
 
 import { Backend } from 'features/rewards/types';
 import { useLidoSWR } from 'shared/hooks';

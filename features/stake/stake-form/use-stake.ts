@@ -6,9 +6,8 @@ import invariant from 'tiny-invariant';
 
 import { runWithTransactionLogger } from 'utils';
 
-import { STAKE_FALLBACK_REFERRAL_ADDRESS } from 'config';
-import { getOneConfig } from 'config/one-config/utils';
-export const { enableQaHelpers } = getOneConfig();
+import { getConfig } from 'config';
+const { enableQaHelpers, STAKE_FALLBACK_REFERRAL_ADDRESS } = getConfig();
 
 import { getErrorMessage } from 'utils/getErrorMessage';
 import { isContract } from 'utils/isContract';

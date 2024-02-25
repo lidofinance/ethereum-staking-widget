@@ -1,7 +1,6 @@
 import { Cache } from 'memory-cache';
 import { wrapRequest as wrapNextRequest } from '@lidofinance/next-api-wrapper';
 
-import { CACHE_LIDO_SHORT_STATS_KEY, CACHE_LIDO_SHORT_STATS_TTL } from 'config';
 import { API_ROUTES } from 'consts/api';
 import { API, SubgraphChains } from 'types';
 import {
@@ -18,8 +17,9 @@ import {
 import Metrics from 'utilsApi/metrics';
 import { parallelizePromises } from 'utils';
 
-import { getOneConfig } from 'config/one-config/utils';
-const { defaultChain } = getOneConfig();
+import { getConfig } from 'config';
+const { defaultChain, CACHE_LIDO_SHORT_STATS_KEY, CACHE_LIDO_SHORT_STATS_TTL } =
+  getConfig();
 
 const cache = new Cache<string, unknown>();
 

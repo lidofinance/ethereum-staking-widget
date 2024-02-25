@@ -1,6 +1,8 @@
-import { LOCALE } from 'config';
 import { memo } from 'react';
 import { Component } from 'types';
+
+import { getConfig } from 'config';
+const { LOCALE } = getConfig();
 
 export type FormatDateComponent = Component<'time', { timeStamp: number }>;
 export const FormatDate: FormatDateComponent = memo((props) => {

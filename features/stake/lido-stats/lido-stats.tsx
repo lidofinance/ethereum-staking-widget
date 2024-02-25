@@ -8,8 +8,8 @@ import { Block, DataTable, Question, Tooltip } from '@lidofinance/lido-ui';
 import { Section, MatomoLink } from 'shared/components';
 import { useLidoApr, useLidoStats } from 'shared/hooks';
 
-import { getOneConfig } from 'config/one-config/utils';
-const { ipfsMode } = getOneConfig();
+import { getConfig } from 'config';
+const { ipfsMode } = getConfig();
 
 import { LIDO_APR_TOOLTIP_TEXT } from 'consts/text';
 import { MATOMO_CLICK_EVENTS_TYPES } from 'consts/matomo-click-events';

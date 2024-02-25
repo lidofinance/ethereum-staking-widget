@@ -1,7 +1,7 @@
 import { useWeb3 } from 'reef-knot/web3-react';
 
-import { getOneConfig } from 'config/one-config/utils';
-const { defaultChain } = getOneConfig();
+import { getConfig } from 'config';
+const { defaultChain } = getConfig();
 
 // In order to simplify side effects of switching wallets/chains
 // we can remount by this key, resetting all internal states

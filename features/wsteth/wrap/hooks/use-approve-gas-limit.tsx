@@ -6,9 +6,11 @@ import {
   useWSTETHContractRPC,
 } from '@lido-sdk/react';
 
-import { ESTIMATE_ACCOUNT, ESTIMATE_AMOUNT } from 'config/estimate';
 import { WSTETH_APPROVE_GAS_LIMIT } from 'consts/tx';
 import { STRATEGY_IMMUTABLE } from 'utils/swrStrategies';
+
+import { getConfig } from 'config';
+const { ESTIMATE_ACCOUNT, ESTIMATE_AMOUNT } = getConfig();
 
 export const useApproveGasLimit = () => {
   const steth = useSTETHContractRPC();

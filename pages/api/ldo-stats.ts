@@ -1,7 +1,9 @@
 import { Cache } from 'memory-cache';
 import { wrapRequest as wrapNextRequest } from '@lidofinance/next-api-wrapper';
 
-import { CACHE_LDO_STATS_KEY, CACHE_LDO_STATS_TTL } from 'config/cache';
+import { getConfig } from 'config';
+const { CACHE_LDO_STATS_KEY, CACHE_LDO_STATS_TTL } = getConfig();
+
 import { API_ROUTES } from 'consts/api';
 import {
   getLdoStats,

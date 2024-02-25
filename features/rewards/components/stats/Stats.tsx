@@ -6,8 +6,8 @@ import { Box, Link } from '@lidofinance/lido-ui';
 import { useSDK, useTokenBalance } from '@lido-sdk/react';
 import { TOKENS, getTokenAddress } from '@lido-sdk/constants';
 
-import { getOneConfig } from 'config/one-config/utils';
-const { defaultChain } = getOneConfig();
+import { getConfig } from 'config';
+const { defaultChain } = getConfig();
 
 import { stEthEthRequest } from 'features/rewards/fetchers/requesters';
 import EthSymbol from 'features/rewards/components/EthSymbol';

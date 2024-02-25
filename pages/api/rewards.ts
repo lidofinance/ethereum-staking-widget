@@ -12,13 +12,12 @@ import {
   cors,
 } from 'utilsApi';
 import Metrics from 'utilsApi/metrics';
-import { CACHE_REWARDS_HEADERS } from 'config/cache';
 import { API_ROUTES } from 'consts/api';
 import { API } from 'types';
 import { standardFetcher } from 'utils/standardFetcher';
 
-import { getOneConfig } from 'config/one-config/utils';
-const { rewardsBackendAPI } = getOneConfig();
+import { getConfig } from 'config';
+const { rewardsBackendAPI, CACHE_REWARDS_HEADERS } = getConfig();
 
 const TIMEOUT = 10_000;
 

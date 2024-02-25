@@ -1,7 +1,7 @@
 import { CHAINS } from 'utils/chains';
 
-import { getOneConfig } from 'config/one-config/utils';
-const { rpcUrls_1, rpcUrls_5, rpcUrls_17000 } = getOneConfig();
+import { getConfig } from 'config';
+const { rpcUrls_1, rpcUrls_5, rpcUrls_17000 } = getConfig();
 
 export const rpcUrls: Record<CHAINS, [string, ...string[]]> = {
   [CHAINS.Mainnet]: rpcUrls_1,

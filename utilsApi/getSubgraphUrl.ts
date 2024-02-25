@@ -1,8 +1,8 @@
 import { CHAINS } from 'utils/chains';
 import { SubgraphChains } from 'types';
 
-import { getOneConfig } from 'config/one-config/utils';
-const { subgraphMainnet, subgraphGoerli, subgraphHolesky } = getOneConfig();
+import { getConfig } from 'config';
+const { subgraphMainnet, subgraphGoerli, subgraphHolesky } = getConfig();
 
 export const SUBGRAPH_URL = {
   [CHAINS.Mainnet]: subgraphMainnet,

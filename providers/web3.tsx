@@ -8,13 +8,15 @@ import { CHAINS } from 'utils/chains';
 import { getStaticRpcBatchProvider } from '@lido-sdk/providers';
 
 import { useClientConfig } from 'config/client-config/hooks';
-import { useGetRpcUrlByChainId } from 'config';
 
-import { getOneConfig } from 'config/one-config/utils';
+// TODO
+import { useGetRpcUrlByChainId } from 'config/rpc';
+
+import { getConfig } from 'config';
 const {
   defaultChain: defaultChainFromConfig,
   supportedChains: supportedChainsFromConfig,
-} = getOneConfig();
+} = getConfig();
 
 const Web3Provider: FC<PropsWithChildren> = ({ children }) => {
   const { defaultChain, supportedChainIds, walletconnectProjectId } =

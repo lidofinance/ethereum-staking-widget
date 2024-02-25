@@ -1,8 +1,8 @@
 import { SWRResponse, useLidoSWR } from '@lido-sdk/react';
 import { CHAINS } from '@lido-sdk/constants';
 
-import { getOneConfig } from 'config/one-config/utils';
-const { ethAPIBasePath } = getOneConfig();
+import { getConfig } from 'config';
+const { ethAPIBasePath } = getConfig();
 
 import { standardFetcher } from 'utils/standardFetcher';
 import { STRATEGY_LAZY } from 'utils/swrStrategies';

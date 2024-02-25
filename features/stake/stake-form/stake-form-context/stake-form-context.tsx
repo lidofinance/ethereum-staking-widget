@@ -34,7 +34,9 @@ import {
   type StakeFormNetworkData,
 } from './types';
 import { useTokenMaxAmount } from 'shared/hooks/use-token-max-amount';
-import { BALANCE_PADDING } from 'config';
+
+import { getConfig } from 'config';
+const { BALANCE_PADDING } = getConfig();
 
 //
 // Data context

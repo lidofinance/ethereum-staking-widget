@@ -9,8 +9,8 @@ import {
   migrationThemeCookiesToCrossDomainCookiesClientSide,
 } from '@lidofinance/lido-ui';
 
-import { getOneConfig } from 'config/one-config/utils';
-const { ipfsMode } = getOneConfig();
+import { getConfig } from 'config';
+const { ipfsMode } = getConfig();
 
 import { Providers } from 'providers';
 import { BackgroundGradient } from 'shared/components/background-gradient/background-gradient';

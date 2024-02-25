@@ -10,10 +10,8 @@ import { createHeadersObject } from 'next-secure-headers';
 import { ServerStyleSheet } from 'styled-components';
 import { Fonts, LidoUIHead } from '@lidofinance/lido-ui';
 
-import { BASE_PATH_ASSET } from 'config';
-
-import { getOneConfig } from 'config/one-config/utils';
-const { defaultChain, ipfsMode } = getOneConfig();
+import { getConfig } from 'config';
+const { BASE_PATH_ASSET, defaultChain, ipfsMode } = getConfig();
 
 import { InsertIpfsBaseScript } from 'features/ipfs/ipfs-base-script';
 import { contentSecurityPolicy } from 'utilsApi/withCSP';

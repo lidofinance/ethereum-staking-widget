@@ -2,8 +2,8 @@ import { ReactNode, FC, PropsWithChildren } from 'react';
 
 import { ContainerProps } from '@lidofinance/lido-ui';
 
-import { getOneConfig } from 'config/one-config/utils';
-const { ipfsMode } = getOneConfig();
+import { getConfig } from 'config';
+const { ipfsMode } = getConfig();
 
 import { IPFSInfoBox } from 'features/ipfs/ipfs-info-box';
 

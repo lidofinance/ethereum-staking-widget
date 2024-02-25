@@ -1,5 +1,5 @@
-import { getOneConfig } from 'config/one-config/utils';
-const { ipfsMode, widgetApiBasePathForIpfs } = getOneConfig();
+import { getConfig } from 'config';
+const { ipfsMode, widgetApiBasePathForIpfs } = getConfig();
 
 export type BackendQuery = {
   address: string;

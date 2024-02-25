@@ -3,18 +3,20 @@ import { AppProps } from 'next/app';
 import { withSecureHeaders } from 'next-secure-headers';
 import type { ContentSecurityPolicyOption } from 'next-secure-headers/lib/rules';
 
-import { getOneConfig } from 'config/one-config/utils';
+import { getConfig } from 'config';
 const {
   cspTrustedHosts,
   cspReportOnly,
   cspReportUri,
   developmentMode,
   ipfsMode,
-} = getOneConfig();
+} = getConfig();
 
 const trustedHosts = cspTrustedHosts ? cspTrustedHosts.split(',') : [];
 
 const reportOnly = cspReportOnly == 'true';
+
+// TODO: move to config/csp
 
 export const contentSecurityPolicy: ContentSecurityPolicyOption = {
   directives: {

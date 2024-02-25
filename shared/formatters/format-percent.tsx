@@ -1,5 +1,7 @@
-import { LOCALE } from 'config';
 import { Component } from 'types';
+
+import { getConfig } from 'config';
+const { LOCALE } = getConfig();
 
 export type FormatPercentComponent = Component<
   'span',

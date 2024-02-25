@@ -1,7 +1,7 @@
 import { UserConfigDefaultType } from 'config/client-config/types';
 import { CHAINS } from 'utils/chains';
 
-import { getOneConfig } from 'config/one-config/utils';
+import { getConfig } from 'config';
 const {
   defaultChain,
   supportedChains,
@@ -9,7 +9,7 @@ const {
   prefillUnsafeElRpcUrls5,
   prefillUnsafeElRpcUrls17000,
   walletconnectProjectId,
-} = getOneConfig();
+} = getConfig();
 
 export const getUserConfigDefault = (): UserConfigDefaultType => {
   return {

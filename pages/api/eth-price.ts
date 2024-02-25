@@ -4,11 +4,10 @@ import {
   cacheControl,
 } from '@lidofinance/next-api-wrapper';
 
-import {
-  CACHE_ETH_PRICE_KEY,
-  CACHE_ETH_PRICE_TTL,
-  CACHE_ETH_PRICE_HEADERS,
-} from 'config/cache';
+import { getConfig } from 'config';
+const { CACHE_ETH_PRICE_KEY, CACHE_ETH_PRICE_TTL, CACHE_ETH_PRICE_HEADERS } =
+  getConfig();
+
 import { API_ROUTES } from 'consts/api';
 import {
   getEthPrice,

@@ -2,12 +2,14 @@ import { useLidoSWR, useWSTETHContractRPC } from '@lido-sdk/react';
 import { useWeb3 } from 'reef-knot/web3-react';
 import { CHAINS } from '@lido-sdk/constants';
 
-import { ESTIMATE_ACCOUNT, ESTIMATE_AMOUNT } from 'config/estimate';
 import {
   WRAP_FROM_ETH_GAS_LIMIT,
   WRAP_GAS_LIMIT,
   WRAP_GAS_LIMIT_GOERLI,
 } from 'consts/tx';
+
+import { getConfig } from 'config';
+const { ESTIMATE_ACCOUNT, ESTIMATE_AMOUNT } = getConfig();
 
 import { useCurrentStaticRpcProvider } from 'shared/hooks/use-current-static-rpc-provider';
 import { applyGasLimitRatio } from 'features/stake/stake-form/utils';

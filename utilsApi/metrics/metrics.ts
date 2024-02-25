@@ -1,8 +1,8 @@
 import { collectDefaultMetrics, Registry } from 'prom-client';
 import { collectStartupMetrics } from '@lidofinance/api-metrics';
 
-import { getOneConfig } from 'config/one-config/utils';
-const { defaultChain, supportedChains } = getOneConfig();
+import { getConfig } from 'config';
+const { defaultChain, supportedChains } = getConfig();
 
 import { METRICS_PREFIX } from 'consts/metrics';
 import buildInfoJson from 'build-info.json';

@@ -2,8 +2,8 @@ import React, { FC, PropsWithChildren } from 'react';
 import { useRouter } from 'next/router';
 import Link, { LinkProps } from 'next/link';
 
-import { getOneConfig } from 'config/one-config/utils';
-const { ipfsMode } = getOneConfig();
+import { getConfig } from 'config';
+const { ipfsMode } = getConfig();
 
 import { LinkIpfs } from 'shared/components/link-ipfs';
 

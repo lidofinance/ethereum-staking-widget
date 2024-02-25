@@ -1,9 +1,9 @@
 import { useContext } from 'react';
 import invariant from 'tiny-invariant';
-import { OneConfigContext } from './provider';
+import { ConfigContext } from './provider';
 
-export const useOneConfig = () => {
-  const context = useContext(OneConfigContext);
+export const useConfig = () => {
+  const context = useContext(ConfigContext);
   invariant(context, 'Attempt to use `one config` outside of provider');
   return context;
 };

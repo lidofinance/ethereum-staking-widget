@@ -1,15 +1,18 @@
 import ms from 'ms';
 import { Cache } from 'memory-cache';
-import Metrics from 'utilsApi/metrics';
-import { standardFetcher } from 'utils/standardFetcher';
+
 import { SubgraphChains } from 'types';
-import { getSubgraphUrl } from './getSubgraphUrl';
-import {
+import { getConfig } from 'config';
+const {
+  subgraphRequestTimeout,
   CACHE_LIDO_HOLDERS_VIA_SUBGRAPHS_KEY,
   CACHE_LIDO_HOLDERS_VIA_SUBGRAPHS_TTL,
-} from 'config';
-import { getOneConfig } from 'config/one-config/utils';
-const { subgraphRequestTimeout } = getOneConfig();
+} = getConfig();
+
+import Metrics from 'utilsApi/metrics';
+import { standardFetcher } from 'utils/standardFetcher';
+
+import { getSubgraphUrl } from './getSubgraphUrl';
 
 const SUBGRAPH_ERROR_MESSAGE =
   '[getLidoHoldersViaSubgraphs] Subgraph request failed.';

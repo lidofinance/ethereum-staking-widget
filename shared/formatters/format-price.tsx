@@ -1,6 +1,9 @@
 import { Tooltip } from '@lidofinance/lido-ui';
-import { LOCALE } from 'config';
 import { DATA_UNAVAILABLE } from 'consts/text';
+
+import { getConfig } from 'config';
+const { LOCALE } = getConfig();
+
 import { Component } from 'types';
 
 export type FormatPriceComponent = Component<

@@ -1,8 +1,8 @@
 import { useMemo } from 'react';
 import { SWRResponse, useLidoSWR } from '@lido-sdk/react';
 
-import { getOneConfig } from 'config/one-config/utils';
-const { wqAPIBasePath } = getOneConfig();
+import { getConfig } from 'config';
+const { wqAPIBasePath } = getConfig();
 
 import { useDebouncedValue } from 'shared/hooks';
 import { encodeURLQuery } from 'utils/encodeURLQuery';

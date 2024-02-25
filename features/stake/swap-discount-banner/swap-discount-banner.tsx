@@ -7,8 +7,8 @@ import { trackEvent } from '@lidofinance/analytics-matomo';
 import { MATOMO_CLICK_EVENTS } from 'consts/matomo-click-events';
 import { OPEN_OCEAN_REFERRAL_ADDRESS } from 'consts/external-links';
 
-import { getOneConfig } from 'config/one-config/utils';
-export const { enableQaHelpers } = getOneConfig();
+import { getConfig } from 'config';
+const { enableQaHelpers } = getConfig();
 
 import { STRATEGY_LAZY } from 'utils/swrStrategies';
 import { getOpenOceanRate } from 'utils/get-open-ocean-rate';

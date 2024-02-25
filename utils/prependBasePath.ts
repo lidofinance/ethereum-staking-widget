@@ -1,5 +1,5 @@
-import { getOneConfig } from 'config/one-config/utils';
-const { basePath } = getOneConfig();
+import { getConfig } from 'config';
+const { basePath } = getConfig();
 
 export const prependBasePath = (route: string): string => {
   return `${basePath ?? ''}/${route}`;

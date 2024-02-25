@@ -1,30 +1,29 @@
 import { useMemo } from 'react';
+import { BigNumber } from 'ethers';
+import invariant from 'tiny-invariant';
+import { useWeb3 } from 'reef-knot/web3-react';
+import { TOKENS } from '@lido-sdk/constants';
 import { useLidoSWR, useSDK } from '@lido-sdk/react';
-import { standardFetcher } from 'utils/standardFetcher';
-import {
+
+import { getConfig } from 'config';
+const {
   ESTIMATE_ACCOUNT,
   WITHDRAWAL_QUEUE_CLAIM_GAS_LIMIT_DEFAULT,
   WITHDRAWAL_QUEUE_REQUEST_STETH_APPROVED_GAS_LIMIT_DEFAULT,
   WITHDRAWAL_QUEUE_REQUEST_STETH_PERMIT_GAS_LIMIT_DEFAULT,
   WITHDRAWAL_QUEUE_REQUEST_WSTETH_PERMIT_GAS_LIMIT_DEFAULT,
   WITHDRAWAL_QUEUE_REQUEST_WSTETH_APPROVED_GAS_LIMIT_DEFAULT,
-} from 'config';
-
-import { getOneConfig } from 'config/one-config/utils';
-const { wqAPIBasePath } = getOneConfig();
+  wqAPIBasePath,
+} = getConfig();
 
 import { MAX_REQUESTS_COUNT } from 'features/withdrawals/withdrawals-constants';
-
-import { useWeb3 } from 'reef-knot/web3-react';
-import { TOKENS } from '@lido-sdk/constants';
-
-import { useWithdrawalsContract } from './contract/useWithdrawalsContract';
 import { useTxCostInUsd } from 'shared/hooks/txCost';
 import { useDebouncedValue } from 'shared/hooks/useDebouncedValue';
 import { encodeURLQuery } from 'utils/encodeURLQuery';
-import { BigNumber } from 'ethers';
-import invariant from 'tiny-invariant';
 import { STRATEGY_LAZY } from 'utils/swrStrategies';
+import { standardFetcher } from 'utils/standardFetcher';
+
+import { useWithdrawalsContract } from './contract/useWithdrawalsContract';
 import { RequestStatusClaimable } from '../types/request-status';
 
 type UseRequestTxPriceOptions = {

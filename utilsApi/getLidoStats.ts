@@ -4,8 +4,8 @@ import { ETHPLORER_TOKEN_ENDPOINT } from 'consts/api';
 import { standardFetcher } from 'utils/standardFetcher';
 import { responseTimeExternalMetricWrapper } from 'utilsApi';
 
-import { getOneConfig } from 'config/one-config/utils';
-const { ethplorerApiKey } = getOneConfig();
+import { getConfig } from 'config';
+const { ethplorerApiKey } = getConfig();
 
 type GetLidoStats = () => Promise<Response>;
 

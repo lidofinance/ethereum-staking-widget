@@ -14,8 +14,8 @@ import {
   WstethAbiFactory,
 } from '@lido-sdk/contracts';
 
-import { getOneConfig } from 'config/one-config/utils';
-const { supportedChains } = getOneConfig();
+import { getConfig } from 'config';
+const { supportedChains } = getConfig();
 
 import { getAggregatorStEthUsdPriceFeedAddress } from 'consts/aggregator';
 import {

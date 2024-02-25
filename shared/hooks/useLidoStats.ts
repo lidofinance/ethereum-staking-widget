@@ -1,8 +1,8 @@
 import { useMemo } from 'react';
 import { useSDK, useLidoSWR } from '@lido-sdk/react';
 
-import { getOneConfig } from 'config/one-config/utils';
-const { ipfsMode, widgetApiBasePathForIpfs } = getOneConfig();
+import { getConfig } from 'config';
+const { ipfsMode, widgetApiBasePathForIpfs } = getConfig();
 
 import { DATA_UNAVAILABLE } from 'consts/text';
 import { prependBasePath } from 'utils';

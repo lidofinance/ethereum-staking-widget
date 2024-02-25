@@ -7,7 +7,7 @@ buildDynamics();
 const ipfsMode = process.env.IPFS_MODE;
 
 // https://nextjs.org/docs/pages/api-reference/next-config-js/basePath
-const basePath = process.env.BASE_PATH;
+const basePath = process.env.BASE_PATH ?? '';
 
 const rpcUrls_1 = process.env.EL_RPC_URLS_1?.split(',') ?? [];
 const rpcUrls_5 = process.env.EL_RPC_URLS_5?.split(',') ?? [];
@@ -181,5 +181,8 @@ export default withBundleAnalyzer({
     rewardsBackendAPI,
     defaultChain,
     developmentMode,
+  },
+  publicRuntimeConfig: {
+    basePath,
   },
 });

@@ -9,11 +9,10 @@ import {
   useEffect,
 } from 'react';
 import invariant from 'tiny-invariant';
-
-import { getOneConfig } from 'config/one-config/utils';
-const { ipfsMode } = getOneConfig();
-
 import { useRouter } from 'next/router';
+
+import { getConfig } from 'config';
+const { ipfsMode } = getConfig();
 
 export type InpageNavigationContextValue = {
   hashNav: string;

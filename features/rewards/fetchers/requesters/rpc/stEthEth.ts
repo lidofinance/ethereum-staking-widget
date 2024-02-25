@@ -2,8 +2,8 @@ import { constants } from 'ethers';
 import type { BigNumber as EthersBigNumber } from 'ethers';
 import { StaticJsonRpcBatchProvider } from '@lidofinance/eth-providers';
 
-import { getOneConfig } from 'config/one-config/utils';
-const { defaultChain } = getOneConfig();
+import { getConfig } from 'config';
+const { defaultChain } = getConfig();
 
 import rpcFetch from 'features/rewards/fetchers/rpcFetch';
 

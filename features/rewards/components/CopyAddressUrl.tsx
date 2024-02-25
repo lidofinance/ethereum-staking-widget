@@ -1,8 +1,8 @@
 import { useMemo } from 'react';
 import { ButtonIcon, Copy } from '@lidofinance/lido-ui';
 
-import { getOneConfig } from 'config/one-config/utils';
-const { ipfsMode } = getOneConfig();
+import { getConfig } from 'config';
+const { ipfsMode } = getConfig();
 
 import { useCopyToClipboard } from 'shared/hooks';
 import { getBasedHashHref } from 'utils/get-based-hash-href';

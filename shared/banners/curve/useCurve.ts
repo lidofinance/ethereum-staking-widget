@@ -1,7 +1,7 @@
 import { useLidoSWR } from '@lido-sdk/react';
 
-import { getOneConfig } from 'config/one-config/utils';
-const { ethAPIBasePath } = getOneConfig();
+import { getConfig } from 'config';
+const { ethAPIBasePath } = getConfig();
 
 import { standardFetcher } from 'utils/standardFetcher';
 

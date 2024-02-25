@@ -6,8 +6,8 @@ import { CHAINS } from '@lido-sdk/constants';
 import { StethAbi } from '@lido-sdk/contracts';
 import { useSDK, useSTETHContractRPC } from '@lido-sdk/react';
 
-import { getOneConfig } from 'config/one-config/utils';
-export const { enableQaHelpers } = getOneConfig();
+import { getConfig } from 'config';
+const { enableQaHelpers } = getConfig();
 
 import { STRATEGY_LAZY } from 'utils/swrStrategies';
 import { LIMIT_LEVEL } from 'types';

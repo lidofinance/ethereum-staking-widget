@@ -1,8 +1,8 @@
 import { Box, External as ExternalLinkIcon } from '@lidofinance/lido-ui';
 import { getEtherscanTxLink } from '@lido-sdk/helpers';
 
-import { getOneConfig } from 'config/one-config/utils';
-const { defaultChain } = getOneConfig();
+import { getConfig } from 'config';
+const { defaultChain } = getConfig();
 
 // TODO: move to separate folders
 type Props = {

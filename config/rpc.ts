@@ -5,10 +5,9 @@ import { useSDK } from '@lido-sdk/react';
 import { useClientConfig } from './client-config/hooks';
 import { CHAINS } from 'utils/chains';
 
-import { getOneConfig } from './one-config/utils';
-const { ipfsMode } = getOneConfig();
+import { getConfig } from './get-config';
+const { ipfsMode } = getConfig();
 
-// TODO: one config
 export const getBackendRPCPath = (chainId: string | number): string => {
   const BASE_URL = typeof window === 'undefined' ? '' : window.location.origin;
   return `${BASE_URL}/api/rpc?chainId=${chainId}`;

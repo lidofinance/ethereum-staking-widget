@@ -1,8 +1,8 @@
 import { useMemo } from 'react';
 import { useRouter } from 'next/router';
 
-import { getOneConfig } from 'config/one-config/utils';
-const { ipfsMode } = getOneConfig();
+import { getConfig } from 'config';
+const { ipfsMode } = getConfig();
 
 import {
   compareWithRouterPathInIPFS,

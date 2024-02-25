@@ -1,11 +1,11 @@
+import { BigNumber } from 'ethers';
 import { AddressZero } from '@ethersproject/constants';
 import { useLidoSWR, useSDK, useSTETHContractRPC } from '@lido-sdk/react';
-import {
-  ESTIMATE_ACCOUNT,
-  ESTIMATE_AMOUNT,
-  STAKE_GASLIMIT_FALLBACK,
-} from 'config';
-import { BigNumber } from 'ethers';
+
+import { getConfig } from 'config';
+const { ESTIMATE_ACCOUNT, ESTIMATE_AMOUNT, STAKE_GASLIMIT_FALLBACK } =
+  getConfig();
+
 import { STRATEGY_CONSTANT } from 'utils/swrStrategies';
 import { applyGasLimitRatio } from './utils';
 

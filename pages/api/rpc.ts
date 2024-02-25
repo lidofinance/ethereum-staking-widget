@@ -1,8 +1,8 @@
 import { rpcFactory } from '@lidofinance/next-pages';
 import { wrapRequest as wrapNextRequest } from '@lidofinance/next-api-wrapper';
 
-import { getOneConfig } from 'config/one-config/utils';
-const { defaultChain } = getOneConfig();
+import { getConfig } from 'config';
+const { defaultChain } = getConfig();
 
 import { API_ROUTES } from 'consts/api';
 import { METRICS_PREFIX } from 'consts/metrics';

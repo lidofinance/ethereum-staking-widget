@@ -6,8 +6,8 @@ import { CHAINS, getChainColor } from '@lido-sdk/constants';
 import { ThemeToggler } from '@lidofinance/lido-ui';
 import NoSSRWrapper from '../../../no-ssr-wrapper';
 
-import { getOneConfig } from 'config/one-config/utils';
-const { ipfsMode } = getOneConfig();
+import { getConfig } from 'config';
+const { ipfsMode } = getConfig();
 
 import { IPFSInfoBox } from 'features/ipfs/ipfs-info-box';
 import { Button, Connect } from 'shared/wallet';
