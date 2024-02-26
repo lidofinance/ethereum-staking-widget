@@ -58,3 +58,5 @@ export const getConfig = (): any => {
     ...serverRuntimeConfig,
   };
 };
+
+// TODO getServerConfig for secret envs?
