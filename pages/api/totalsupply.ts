@@ -3,11 +3,14 @@ import {
   wrapRequest as wrapNextRequest,
   cacheControl,
 } from '@lidofinance/next-api-wrapper';
-import {
+
+import { getConfig } from 'config';
+const {
   CACHE_TOTAL_SUPPLY_KEY,
   CACHE_TOTAL_SUPPLY_TTL,
   CACHE_TOTAL_SUPPLY_HEADERS,
-} from 'config';
+} = getConfig();
+
 import { API_ROUTES } from 'consts/api';
 import {
   getTotalStaked,
