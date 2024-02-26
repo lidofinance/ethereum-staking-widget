@@ -27,9 +27,12 @@ export const getConfig = (): any => {
   const isClientSide = typeof window !== 'undefined';
   const isServerSide = typeof window === 'undefined';
 
+  // TODO: another place
   const STAKE_FALLBACK_REFERRAL_ADDRESS = dynamics.ipfsMode
     ? ipfs.IPFS_REFERRAL_ADDRESS
     : AddressZero;
+
+  // TODO: another place
   const BASE_PATH_ASSET = dynamics.ipfsMode
     ? '.'
     : serverRuntimeConfig.basePath || publicRuntimeConfig.basePath;

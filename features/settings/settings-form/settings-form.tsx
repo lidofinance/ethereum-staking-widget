@@ -4,6 +4,7 @@ import { useForm } from 'react-hook-form';
 import { useSDK } from '@lido-sdk/react';
 import { Button, ToastSuccess, Block, Input } from '@lidofinance/lido-ui';
 
+// TODO
 import { useClientConfig } from 'config/client-config/hooks';
 import { LinkArrow } from 'shared/components/link-arrow/link-arrow';
 import { RPCErrorType, checkRpcUrl } from 'utils/check-rpc-url';
