@@ -12,9 +12,9 @@ import { Fonts, LidoUIHead } from '@lidofinance/lido-ui';
 
 import { getConfig } from 'config';
 const { BASE_PATH_ASSET, defaultChain, ipfsMode } = getConfig();
+import { contentSecurityPolicy } from 'config/csp';
 
 import { InsertIpfsBaseScript } from 'features/ipfs/ipfs-base-script';
-import { contentSecurityPolicy } from 'utilsApi/withCSP';
 
 let host = 'https://stake.lido.fi';
 

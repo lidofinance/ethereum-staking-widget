@@ -16,8 +16,6 @@ const trustedHosts = cspTrustedHosts ? cspTrustedHosts.split(',') : [];
 
 const reportOnly = cspReportOnly == 'true';
 
-// TODO: move to config/csp
-
 export const contentSecurityPolicy: ContentSecurityPolicyOption = {
   directives: {
     'default-src': ["'self'"],

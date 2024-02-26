@@ -11,11 +11,11 @@ import {
 
 import { getConfig } from 'config';
 const { ipfsMode } = getConfig();
+import { withCsp } from 'config/csp';
 
 import { Providers } from 'providers';
 import { BackgroundGradient } from 'shared/components/background-gradient/background-gradient';
 import { nprogress, COOKIES_ALLOWED_FULL_KEY } from 'utils';
-import { withCsp } from 'utilsApi/withCSP';
 
 // Migrations old theme cookies to new cross domain cookies
 migrationThemeCookiesToCrossDomainCookiesClientSide();
