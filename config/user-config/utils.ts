@@ -9,7 +9,7 @@ const {
   walletconnectProjectId,
 } = getConfig();
 
-import { CHAINS } from 'utils/chains';
+import { CHAINS } from 'consts/chains';
 
 export const getUserConfigDefault = (): UserConfigDefaultType => {
   return {

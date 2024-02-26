@@ -8,8 +8,8 @@ import {
 
 import { useLocalStorage } from '@lido-sdk/react';
 
+import { CHAINS } from 'consts/chains';
 import { STORAGE_USER_CONFIG } from 'consts/storage';
-import { CHAINS } from 'utils/chains';
 
 import { getUserConfigDefault } from './utils';
 import { UserConfigDefaultType } from './types';

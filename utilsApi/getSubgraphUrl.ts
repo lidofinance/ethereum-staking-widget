@@ -1,6 +1,5 @@
-import { CHAINS } from 'utils/chains';
 import { SubgraphChains } from 'types';
-
+import { CHAINS } from 'consts/chains';
 import { getConfig } from 'config';
 const { subgraphMainnet, subgraphGoerli, subgraphHolesky } = getConfig();
 

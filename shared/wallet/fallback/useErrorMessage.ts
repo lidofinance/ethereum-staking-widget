@@ -1,6 +1,6 @@
+import { useMemo } from 'react';
 import { useSupportedChains, useConnectorError } from 'reef-knot/web3-react';
 import { CHAINS } from '@lido-sdk/constants';
-import { useMemo } from 'react';
 
 export const useErrorMessage = (): string | undefined => {
   const error = useConnectorError();

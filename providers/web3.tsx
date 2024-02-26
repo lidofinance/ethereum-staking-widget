@@ -3,9 +3,9 @@ import { ProviderWeb3 } from 'reef-knot/web3-react';
 import { getConnectors, holesky } from 'reef-knot/core-react';
 import { WagmiConfig, createClient, configureChains, Chain } from 'wagmi';
 import * as wagmiChains from 'wagmi/chains';
-
-import { CHAINS } from 'utils/chains';
 import { getStaticRpcBatchProvider } from '@lido-sdk/providers';
+
+import { CHAINS } from 'consts/chains';
 
 // import { useUserConfig } from 'config/user-config/hooks'; // TODO: or better use 'config/user-config/hooks'?
 // import { useGetRpcUrlByChainId } from 'config/rpc'; // TODO: or better 'config/rpc'

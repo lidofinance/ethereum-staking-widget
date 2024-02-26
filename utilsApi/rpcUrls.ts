@@ -1,5 +1,4 @@
-import { CHAINS } from 'utils/chains';
-
+import { CHAINS } from 'consts/chains';
 import { getConfig } from 'config';
 const { rpcUrls_1, rpcUrls_5, rpcUrls_17000 } = getConfig();
 

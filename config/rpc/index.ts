@@ -2,7 +2,7 @@ import { useCallback } from 'react';
 import invariant from 'tiny-invariant';
 import { useSDK } from '@lido-sdk/react';
 
-import { CHAINS } from 'utils/chains';
+import { CHAINS } from 'consts/chains';
 
 import { getConfig } from '../get-config';
 const { ipfsMode } = getConfig();

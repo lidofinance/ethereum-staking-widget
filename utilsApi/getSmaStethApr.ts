@@ -1,9 +1,9 @@
-import { CHAINS } from 'utils/chains';
-import { standardFetcher } from 'utils/standardFetcher';
-import { responseTimeExternalMetricWrapper } from 'utilsApi';
-
 import { getConfig } from 'config';
 const { ethAPIBasePath } = getConfig();
+import { CHAINS } from 'consts/chains';
+
+import { standardFetcher } from 'utils/standardFetcher';
+import { responseTimeExternalMetricWrapper } from 'utilsApi';
 
 type SMA_APR_RESPONSE = {
   data: {

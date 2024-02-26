@@ -1,4 +1,3 @@
-export * from './chains';
 export * from './appCookies';
 export * from './formatBalance';
 export * from './formatBalanceString';

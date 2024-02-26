@@ -3,7 +3,7 @@ import { StethAbiFactory } from '@lido-sdk/contracts';
 import { getTokenAddress, TOKENS } from '@lido-sdk/constants';
 
 import { HEALTHY_RPC_SERVICES_ARE_OVER } from 'consts/api';
-import { CHAINS } from 'utils/chains';
+import { CHAINS } from 'consts/chains';
 
 import { getStaticRpcBatchProvider } from './rpcProviders';
 import { rpcUrls } from './rpcUrls';

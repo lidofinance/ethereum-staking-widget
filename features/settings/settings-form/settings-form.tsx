@@ -6,9 +6,9 @@ import { Button, ToastSuccess, Block, Input } from '@lidofinance/lido-ui';
 
 // import { useUserConfig } from 'config/user-config/hooks'; // TODO: or better use 'config/user-config/hooks'?
 import { useUserConfig } from 'config';
+import { CHAINS } from 'consts/chains';
 import { LinkArrow } from 'shared/components/link-arrow/link-arrow';
 import { RPCErrorType, checkRpcUrl } from 'utils/check-rpc-url';
-import { CHAINS } from 'utils/chains';
 
 import {
   Actions,
