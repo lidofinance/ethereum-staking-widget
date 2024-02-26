@@ -5,8 +5,8 @@ import { useLidoSWR, useSDK, useSTETHContractRPC } from '@lido-sdk/react';
 import { getConfig } from 'config';
 const { ESTIMATE_ACCOUNT, ESTIMATE_AMOUNT, STAKE_GASLIMIT_FALLBACK } =
   getConfig();
+import { STRATEGY_CONSTANT } from 'consts/swr-strategies';
 
-import { STRATEGY_CONSTANT } from 'utils/swrStrategies';
 import { applyGasLimitRatio } from './utils';
 
 type UseStethSubmitGasLimit = () => BigNumber;

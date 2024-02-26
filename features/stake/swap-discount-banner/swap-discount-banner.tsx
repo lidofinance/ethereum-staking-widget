@@ -10,7 +10,7 @@ import { OPEN_OCEAN_REFERRAL_ADDRESS } from 'consts/external-links';
 import { getConfig } from 'config';
 const { enableQaHelpers } = getConfig();
 
-import { STRATEGY_LAZY } from 'utils/swrStrategies';
+import { STRATEGY_LAZY } from 'consts/swr-strategies';
 import { getOpenOceanRate } from 'utils/get-open-ocean-rate';
 
 import { Wrap, TextWrap, OpenOceanIcon, OverlayLink } from './styles';

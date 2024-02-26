@@ -8,8 +8,7 @@ import { useSDK, useSTETHContractRPC } from '@lido-sdk/react';
 
 import { getConfig } from 'config';
 const { enableQaHelpers } = getConfig();
-
-import { STRATEGY_LAZY } from 'utils/swrStrategies';
+import { STRATEGY_LAZY } from 'consts/swr-strategies';
 import { LIMIT_LEVEL } from 'types';
 
 export type StakeLimitFullInfo = {

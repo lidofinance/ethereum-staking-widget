@@ -1,7 +1,5 @@
 import type { SWRConfiguration } from 'swr';
 
-// TODO: move to consts
-
 const MINUTE_MS = 1000 * 60;
 
 type StrategyConfig<DataT = unknown> = Pick<

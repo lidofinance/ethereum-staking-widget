@@ -4,6 +4,8 @@ import { MODAL } from 'providers';
 import { useModal } from 'shared/hooks';
 import { useEthereumBalance, useSDK } from '@lido-sdk/react';
 import { FormatToken } from 'shared/formatters';
+import { STRATEGY_LAZY } from 'consts/swr-strategies';
+
 import { AddressBadge } from '../components/address-badge/address-badge';
 import {
   WalledButtonStyle,
@@ -11,7 +13,6 @@ import {
   WalledButtonBalanceStyle,
   WalledButtonLoaderStyle,
 } from './styles';
-import { STRATEGY_LAZY } from 'utils/swrStrategies';
 
 export const Button: FC<ButtonProps> = (props) => {
   const { onClick, ...rest } = props;

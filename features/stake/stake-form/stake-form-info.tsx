@@ -5,9 +5,9 @@ import { useContractSWR, useSTETHContractRPC } from '@lido-sdk/react';
 import { Zero } from '@ethersproject/constants';
 
 import { DATA_UNAVAILABLE } from 'consts/text';
+import { STRATEGY_CONSTANT } from 'consts/swr-strategies';
 import { FormatPrice, FormatToken } from 'shared/formatters';
 import { useEthUsd } from 'shared/hooks/use-eth-usd';
-import { STRATEGY_CONSTANT } from 'utils/swrStrategies';
 
 import { StakeFormInput, useStakeFormData } from './stake-form-context';
 

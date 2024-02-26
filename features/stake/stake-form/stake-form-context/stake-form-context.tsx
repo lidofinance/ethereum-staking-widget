@@ -20,7 +20,7 @@ import {
 import { useStakingLimitInfo } from 'shared/hooks/useStakingLimitInfo';
 import { useMaxGasPrice } from 'shared/hooks';
 import { useIsMultisig } from 'shared/hooks/useIsMultisig';
-import { STRATEGY_LAZY } from 'utils/swrStrategies';
+import { STRATEGY_LAZY } from 'consts/swr-strategies';
 
 import { useStethSubmitGasLimit } from '../hooks';
 import {

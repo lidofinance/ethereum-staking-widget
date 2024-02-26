@@ -14,7 +14,7 @@ import EthSymbol from 'features/rewards/components/EthSymbol';
 import NumberFormat from 'features/rewards/components/NumberFormat';
 import { Big, BigDecimal } from 'features/rewards/helpers';
 import { ETHER } from 'features/rewards/constants';
-import { STRATEGY_LAZY } from 'utils/swrStrategies';
+import { STRATEGY_LAZY } from 'consts/swr-strategies';
 import { useMainnetStaticRpcProvider } from 'shared/hooks/use-mainnet-static-rpc-provider';
 
 import { Item } from './Item';

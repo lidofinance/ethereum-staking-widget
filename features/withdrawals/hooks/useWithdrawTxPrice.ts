@@ -15,12 +15,12 @@ const {
   WITHDRAWAL_QUEUE_REQUEST_WSTETH_APPROVED_GAS_LIMIT_DEFAULT,
   wqAPIBasePath,
 } = getConfig();
+import { STRATEGY_LAZY } from 'consts/swr-strategies';
 
 import { MAX_REQUESTS_COUNT } from 'features/withdrawals/withdrawals-constants';
 import { useTxCostInUsd } from 'shared/hooks/txCost';
 import { useDebouncedValue } from 'shared/hooks/useDebouncedValue';
 import { encodeURLQuery } from 'utils/encodeURLQuery';
-import { STRATEGY_LAZY } from 'utils/swrStrategies';
 import { standardFetcher } from 'utils/standardFetcher';
 
 import { useWithdrawalsContract } from './contract/useWithdrawalsContract';

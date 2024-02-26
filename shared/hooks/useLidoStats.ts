@@ -7,7 +7,7 @@ const { ipfsMode, widgetApiBasePathForIpfs } = getConfig();
 import { DATA_UNAVAILABLE } from 'consts/text';
 import { prependBasePath } from 'utils';
 import { standardFetcher } from 'utils/standardFetcher';
-import { STRATEGY_LAZY } from 'utils/swrStrategies';
+import { STRATEGY_LAZY } from 'consts/swr-strategies';
 
 export type ResponseData = {
   uniqueAnytimeHolders: string;

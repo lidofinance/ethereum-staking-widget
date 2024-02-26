@@ -3,9 +3,9 @@ import { CHAINS } from '@lido-sdk/constants';
 
 import { getConfig } from 'config';
 const { ethAPIBasePath } = getConfig();
+import { STRATEGY_LAZY } from 'consts/swr-strategies';
 
 import { standardFetcher } from 'utils/standardFetcher';
-import { STRATEGY_LAZY } from 'utils/swrStrategies';
 
 type SMA_APR_RESPONSE = {
   data: {

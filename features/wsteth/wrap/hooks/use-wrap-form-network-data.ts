@@ -12,7 +12,7 @@ import { useIsMultisig } from 'shared/hooks/useIsMultisig';
 import { useTokenMaxAmount } from 'shared/hooks/use-token-max-amount';
 import { useMaxGasPrice, useStakingLimitInfo } from 'shared/hooks';
 
-import { STRATEGY_LAZY } from 'utils/swrStrategies';
+import { STRATEGY_LAZY } from 'consts/swr-strategies';
 
 import { useWrapGasLimit } from './use-wrap-gas-limit';
 

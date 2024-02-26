@@ -7,7 +7,7 @@ import { CHAINS, getTokenAddress, TOKENS } from '@lido-sdk/constants';
 import { useLidoSWR } from '@lido-sdk/react';
 
 import { useDebouncedValue } from 'shared/hooks/useDebouncedValue';
-import { STRATEGY_LAZY } from 'utils/swrStrategies';
+import { STRATEGY_LAZY } from 'consts/swr-strategies';
 
 import { RequestFormInputType } from '../request/request-form-context';
 import { getOpenOceanRate } from 'utils/get-open-ocean-rate';

@@ -3,11 +3,11 @@ import { SWRResponse, useLidoSWR } from '@lido-sdk/react';
 
 import { getConfig } from 'config';
 const { wqAPIBasePath } = getConfig();
+import { STRATEGY_EAGER } from 'consts/swr-strategies';
 
 import { useDebouncedValue } from 'shared/hooks';
 import { encodeURLQuery } from 'utils/encodeURLQuery';
 import { standardFetcher } from 'utils/standardFetcher';
-import { STRATEGY_EAGER } from 'utils/swrStrategies';
 import { FetcherError } from 'utils/fetcherError';
 
 import { useWithdrawals } from 'features/withdrawals/contexts/withdrawals-context';

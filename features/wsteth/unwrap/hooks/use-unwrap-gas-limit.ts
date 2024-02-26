@@ -6,7 +6,7 @@ const { ESTIMATE_ACCOUNT, ESTIMATE_AMOUNT } = getConfig();
 import { UNWRAP_GAS_LIMIT } from 'consts/tx';
 
 import { useCurrentStaticRpcProvider } from 'shared/hooks/use-current-static-rpc-provider';
-import { STRATEGY_LAZY } from 'utils/swrStrategies';
+import { STRATEGY_LAZY } from 'consts/swr-strategies';
 
 export const useUnwrapGasLimit = () => {
   const wsteth = useWSTETHContractRPC();
