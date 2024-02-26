@@ -9,7 +9,8 @@ import {
 import { useLidoSWR, useLocalStorage, useSDK } from '@lido-sdk/react';
 import invariant from 'tiny-invariant';
 
-import { useRpcUrl } from 'config/rpc';
+// import { useRpcUrl } from 'config/rpc'; // TODO: or better use 'config/rpc'?
+import { useRpcUrl } from 'config';
 import { STORAGE_IPFS_INFO_DISMISS } from 'consts/storage';
 import { SETTINGS_PATH } from 'consts/urls';
 

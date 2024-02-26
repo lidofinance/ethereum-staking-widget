@@ -7,12 +7,9 @@ import * as wagmiChains from 'wagmi/chains';
 import { CHAINS } from 'utils/chains';
 import { getStaticRpcBatchProvider } from '@lido-sdk/providers';
 
-import { useClientConfig } from 'config/client-config/hooks';
-
-// TODO
-import { useGetRpcUrlByChainId } from 'config/rpc';
-
-import { getConfig } from 'config';
+// import { useUserConfig } from 'config/user-config/hooks'; // TODO: or better use 'config/user-config/hooks'?
+// import { useGetRpcUrlByChainId } from 'config/rpc'; // TODO: or better 'config/rpc'
+import { getConfig, useGetRpcUrlByChainId, useUserConfig } from 'config';
 const {
   defaultChain: defaultChainFromConfig,
   supportedChains: supportedChainsFromConfig,
@@ -20,7 +17,7 @@ const {
 
 const Web3Provider: FC<PropsWithChildren> = ({ children }) => {
   const { defaultChain, supportedChainIds, walletconnectProjectId } =
-    useClientConfig();
+    useUserConfig();
 
   const getRpcUrlByChainId = useGetRpcUrlByChainId();
 
