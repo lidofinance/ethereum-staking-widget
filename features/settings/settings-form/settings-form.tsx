@@ -4,8 +4,8 @@ import { useForm } from 'react-hook-form';
 import { useSDK } from '@lido-sdk/react';
 import { Button, ToastSuccess, Block, Input } from '@lidofinance/lido-ui';
 
-// TODO
-import { useClientConfig } from 'config/client-config/hooks';
+// import { useUserConfig } from 'config/user-config/hooks'; // TODO: or better use 'config/user-config/hooks'?
+import { useUserConfig } from 'config';
 import { LinkArrow } from 'shared/components/link-arrow/link-arrow';
 import { RPCErrorType, checkRpcUrl } from 'utils/check-rpc-url';
 import { CHAINS } from 'utils/chains';
@@ -22,14 +22,14 @@ type FormValues = {
 };
 
 export const SettingsForm = () => {
-  const { savedClientConfig, setSavedClientConfig } = useClientConfig();
+  const { savedUserConfig, setSavedUserConfig } = useUserConfig();
   const { chainId } = useSDK();
 
   const formMethods = useForm<FormValues>({
     mode: 'onChange',
     reValidateMode: 'onChange',
     defaultValues: {
-      rpcUrl: savedClientConfig.rpcUrls[chainId as unknown as CHAINS],
+      rpcUrl: savedUserConfig.rpcUrls[chainId as unknown as CHAINS],
     },
   });
 
@@ -43,13 +43,13 @@ export const SettingsForm = () => {
 
   const saveSettings = useCallback(
     (formValues: FormValues) => {
-      setSavedClientConfig({
+      setSavedUserConfig({
         rpcUrls: {
           [chainId]: formValues.rpcUrl,
         },
       });
     },
-    [chainId, setSavedClientConfig],
+    [chainId, setSavedUserConfig],
   );
 
   const handleSubmit = useCallback(

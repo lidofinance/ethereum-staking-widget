@@ -1,7 +1,5 @@
-import { UserConfigDefaultType } from 'config/client-config/types';
-import { CHAINS } from 'utils/chains';
-
-import { getConfig } from 'config';
+// import { UserConfigDefaultType } from 'config/user-config/types'; // TODO: or better use 'config/user-config/types'?
+import { getConfig, UserConfigDefaultType } from 'config';
 const {
   defaultChain,
   supportedChains,
@@ -10,6 +8,8 @@ const {
   prefillUnsafeElRpcUrls17000,
   walletconnectProjectId,
 } = getConfig();
+
+import { CHAINS } from 'utils/chains';
 
 export const getUserConfigDefault = (): UserConfigDefaultType => {
   return {

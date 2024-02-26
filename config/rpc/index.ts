@@ -2,11 +2,12 @@ import { useCallback } from 'react';
 import invariant from 'tiny-invariant';
 import { useSDK } from '@lido-sdk/react';
 
-import { useClientConfig } from './client-config/hooks';
 import { CHAINS } from 'utils/chains';
 
-import { getConfig } from './get-config';
+import { getConfig } from '../get-config';
 const { ipfsMode } = getConfig();
+
+import { useUserConfig } from '../user-config';
 
 export const getBackendRPCPath = (chainId: string | number): string => {
   const BASE_URL = typeof window === 'undefined' ? '' : window.location.origin;
@@ -14,7 +15,7 @@ export const getBackendRPCPath = (chainId: string | number): string => {
 };
 
 export const useGetRpcUrlByChainId = () => {
-  const clientConfig = useClientConfig();
+  const userConfig = useUserConfig();
 
   return useCallback(
     (chainId: CHAINS) => {
@@ -23,7 +24,7 @@ export const useGetRpcUrlByChainId = () => {
       // chainId = 1 we need anytime!
       if (
         chainId !== CHAINS.Mainnet &&
-        !clientConfig.supportedChainIds.includes(chainId)
+        !userConfig.supportedChainIds.includes(chainId)
       ) {
         // Has no effect on functionality. Just a fix.
         // Return empty string as stub
@@ -33,19 +34,19 @@ export const useGetRpcUrlByChainId = () => {
 
       if (ipfsMode) {
         const rpc =
-          clientConfig.savedClientConfig.rpcUrls[chainId] ||
-          clientConfig.prefillUnsafeElRpcUrls[chainId]?.[0];
+          userConfig.savedUserConfig.rpcUrls[chainId] ||
+          userConfig.prefillUnsafeElRpcUrls[chainId]?.[0];
 
         invariant(rpc, '[useGetRpcUrlByChainId] RPC is required!');
         return rpc;
       } else {
         return (
-          clientConfig.savedClientConfig.rpcUrls[chainId] ||
+          userConfig.savedUserConfig.rpcUrls[chainId] ||
           getBackendRPCPath(chainId)
         );
       }
     },
-    [clientConfig],
+    [userConfig],
   );
 };
 
