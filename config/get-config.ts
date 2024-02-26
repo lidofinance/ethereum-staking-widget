@@ -53,6 +53,7 @@ export const getConfig = (): any => {
     BASE_PATH_ASSET,
 
     // highest priority
+    ...publicRuntimeConfig,
     ...(typeof window !== 'undefined' ? window.__env__ : dynamics),
     ...serverRuntimeConfig,
   };
