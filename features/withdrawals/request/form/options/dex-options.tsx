@@ -1,6 +1,5 @@
 import { BigNumber } from 'ethers';
 
-import { useMemo } from 'react';
 import { useWithdrawalRates } from 'features/withdrawals/request/withdrawal-rates/use-withdrawal-rates';
 import { FormatToken } from 'shared/formatters/format-token';
 
@@ -17,7 +16,6 @@ import {
 } from './styles';
 // @ts-expect-error https://www.npmjs.com/package/@svgr/webpack
 import { ReactComponent as AttentionTriangle } from 'assets/icons/attention-triangle.svg';
-import { Zero } from '@ethersproject/constants';
 
 type DexOptionProps = {
   title: string;
@@ -71,41 +69,30 @@ export const DexOptions: React.FC<
   const { data, initialLoading, loading, amount, selectedToken, enabledDexes } =
     useWithdrawalRates();
 
-  const dexesFiltered = useMemo(
-    () =>
-      data?.filter(
-        ({ rate, isServiceAvailable }) =>
-          isServiceAvailable || amount.eq(Zero) || rate != null,
-      ) ?? [],
-    [amount, data],
-  );
-
   return (
     <DexOptionsContainer data-testid="dexOptionContainer" {...props}>
       {initialLoading &&
         enabledDexes.map((_, i) => <DexOptionLoader key={i} />)}
-      {!initialLoading && dexesFiltered.length === 0 && (
+      {!initialLoading && data?.length === 0 && (
         <DexWarning>
           <AttentionTriangle />
           <div>Aggregator&apos;s prices are not available now</div>
         </DexWarning>
       )}
       {!initialLoading &&
-        dexesFiltered.map(
-          ({ title, toReceive, link, rate, matomoEvent, icon }) => {
-            return (
-              <DexOption
-                title={title}
-                icon={icon}
-                onClickGoTo={() => trackMatomoEvent(matomoEvent)}
-                url={link(amount, selectedToken)}
-                key={title}
-                loading={loading}
-                toReceive={rate ? toReceive : null}
-              />
-            );
-          },
-        )}
+        data?.map(({ title, toReceive, link, rate, matomoEvent, icon }) => {
+          return (
+            <DexOption
+              title={title}
+              icon={icon}
+              onClickGoTo={() => trackMatomoEvent(matomoEvent)}
+              url={link(amount, selectedToken)}
+              key={title}
+              loading={loading}
+              toReceive={rate ? toReceive : null}
+            />
+          );
+        })}
     </DexOptionsContainer>
   );
 };
