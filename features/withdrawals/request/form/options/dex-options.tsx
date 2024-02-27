@@ -12,10 +12,7 @@ import {
   DexOptionAmount,
   InlineLoaderSmall,
   DexOptionLoader,
-  DexWarning,
 } from './styles';
-// @ts-expect-error https://www.npmjs.com/package/@svgr/webpack
-import { ReactComponent as AttentionTriangle } from 'assets/icons/attention-triangle.svg';
 
 type DexOptionProps = {
   title: string;
@@ -73,12 +70,6 @@ export const DexOptions: React.FC<
     <DexOptionsContainer data-testid="dexOptionContainer" {...props}>
       {initialLoading &&
         enabledDexes.map((_, i) => <DexOptionLoader key={i} />)}
-      {!initialLoading && data?.length === 0 && (
-        <DexWarning>
-          <AttentionTriangle />
-          <div>Aggregator&apos;s prices are not available now</div>
-        </DexWarning>
-      )}
       {!initialLoading &&
         data?.map(({ title, toReceive, link, rate, matomoEvent, icon }) => {
           return (

@@ -247,21 +247,3 @@ export const DexOptionAmount = styled.span`
 export const InlineLoaderSmall = styled(InlineLoader)`
   max-width: 74px;
 `;
-
-export const DexWarning = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: ${({ theme }) => theme.spaceMap.md}px;
-  font-weight: 400;
-  font-size: ${({ theme }) => theme.fontSizesMap.xs}px;
-  // we need to update lido ui
-  background-color: ${({ theme }) =>
-    theme.name === ThemeName.light ? '#F6F8FA' : '#2D2D35'};
-  border-radius: ${({ theme }) => theme.borderRadiusesMap.lg}px;
-
-  svg {
-    display: block;
-    margin-right: ${({ theme }) => theme.spaceMap.xs}px;
-  }
-`;
