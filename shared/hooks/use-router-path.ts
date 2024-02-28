@@ -9,7 +9,7 @@ export const useRouterPath = () => {
   const router = useRouter();
 
   if (ipfsMode) {
-    if (!isClientSide()) return HOME_PATH;
+    if (!isClientSide) return HOME_PATH;
     return location.hash.replace('#', '') || HOME_PATH;
   }
 

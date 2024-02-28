@@ -14,7 +14,8 @@ import { getConfig } from 'config';
 const {
   CACHE_DEFAULT_HEADERS,
   rateLimit: RATE_LIMIT,
-  rateLimitTimeFrame = '',
+  // TODO: check that 0 is valid
+  rateLimitTimeFrame = 0,
 } = getConfig();
 
 import {

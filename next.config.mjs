@@ -163,6 +163,7 @@ export default withBundleAnalyzer({
     },
   ],
   serverRuntimeConfig: {
+    // ATTENTION: If you will add a new variable you should to declare it in `global.d.ts`
     basePath,
     rpcUrls_1,
     rpcUrls_5,
@@ -183,6 +184,7 @@ export default withBundleAnalyzer({
     developmentMode,
   },
   publicRuntimeConfig: {
+    // ATTENTION: If you will add a new variable you should to declare it in `global.d.ts`
     basePath,
   },
 });
