@@ -3,7 +3,11 @@ import { AppProps } from 'next/app';
 import { withSecureHeaders } from 'next-secure-headers';
 import type { ContentSecurityPolicyOption } from 'next-secure-headers/lib/rules';
 
-import { getConfig } from 'config';
+// Not use absolute import here!
+// code'''
+//    import { getConfig } from 'config';
+// '''
+import { getConfig } from '../get-config';
 const {
   cspTrustedHosts,
   cspReportOnly,

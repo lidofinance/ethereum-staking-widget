@@ -4,6 +4,10 @@ import { useSDK } from '@lido-sdk/react';
 
 import { CHAINS } from 'consts/chains';
 
+// Not use absolute import here!
+// code'''
+//    import { getConfig } from 'config';
+// '''
 import { getConfig } from '../get-config';
 const { ipfsMode } = getConfig();
 

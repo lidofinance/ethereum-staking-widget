@@ -1,5 +1,10 @@
-// import { UserConfigDefaultType } from 'config/user-config/types'; // TODO: or better use 'config/user-config/types'?
-import { getConfig, UserConfigDefaultType } from 'config';
+// Not use absolute import here!
+// code'''
+//    import { getConfig } from 'config';
+// '''
+import { getConfig } from '../get-config';
+import { UserConfigDefaultType } from './types';
+
 const {
   defaultChain,
   supportedChains,
