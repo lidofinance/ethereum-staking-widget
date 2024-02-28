@@ -27,6 +27,7 @@ declare module 'next/config' {
     };
     publicRuntimeConfig: {
       basePath: string;
+      developmentMode: boolean;
     };
   };
 

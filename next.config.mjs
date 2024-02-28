@@ -186,5 +186,6 @@ export default withBundleAnalyzer({
   publicRuntimeConfig: {
     // ATTENTION: If you will add a new variable you should to declare it in `global.d.ts`
     basePath,
+    developmentMode,
   },
 });
