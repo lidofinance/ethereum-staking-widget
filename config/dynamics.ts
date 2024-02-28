@@ -13,6 +13,7 @@ declare global {
 // Only through:
 // code```
 //    import { getConfig } from 'config';
+//    or import { getConfig } from './get-config';
 //    const { ... } = getConfig();
 // ```
 export default typeof window !== 'undefined' ? window.__env__ : dynamics;
