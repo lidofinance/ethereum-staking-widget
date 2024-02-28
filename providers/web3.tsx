@@ -5,11 +5,11 @@ import { WagmiConfig, createClient, configureChains, Chain } from 'wagmi';
 import * as wagmiChains from 'wagmi/chains';
 import { getStaticRpcBatchProvider } from '@lido-sdk/providers';
 
+import { getConfig } from 'config';
+import { useUserConfig } from 'config/user-config';
+import { useGetRpcUrlByChainId } from 'config/rpc';
 import { CHAINS } from 'consts/chains';
 
-// import { useUserConfig } from 'config/user-config/hooks'; // TODO: or better use 'config/user-config/hooks'?
-// import { useGetRpcUrlByChainId } from 'config/rpc'; // TODO: or better 'config/rpc'
-import { getConfig, useGetRpcUrlByChainId, useUserConfig } from 'config';
 const {
   defaultChain: defaultChainFromConfig,
   supportedChains: supportedChainsFromConfig,
