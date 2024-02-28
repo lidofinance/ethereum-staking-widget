@@ -1,9 +1,8 @@
 import { CHAINS } from 'consts/chains';
-import { getConfig } from 'config';
-const { rpcUrls_1, rpcUrls_5, rpcUrls_17000 } = getConfig();
+import { secretConfig } from 'config';
 
 export const rpcUrls: Record<CHAINS, [string, ...string[]]> = {
-  [CHAINS.Mainnet]: rpcUrls_1,
-  [CHAINS.Goerli]: rpcUrls_5,
-  [CHAINS.Holesky]: rpcUrls_17000,
+  [CHAINS.Mainnet]: secretConfig.rpcUrls_1,
+  [CHAINS.Goerli]: secretConfig.rpcUrls_5,
+  [CHAINS.Holesky]: secretConfig.rpcUrls_17000,
 };

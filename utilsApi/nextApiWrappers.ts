@@ -10,13 +10,8 @@ import {
 } from '@lidofinance/next-api-wrapper';
 import { rateLimitWrapper } from '@lidofinance/next-ip-rate-limit';
 
-import { getConfig } from 'config';
-const {
-  CACHE_DEFAULT_HEADERS,
-  rateLimit: RATE_LIMIT,
-  // TODO: check that 0 is valid
-  rateLimitTimeFrame = 0,
-} = getConfig();
+import { secretConfig, getConfig } from 'config';
+const { CACHE_DEFAULT_HEADERS } = getConfig();
 
 import {
   getMetricContractInterface,
@@ -181,8 +176,8 @@ export const requestAddressMetric =
   };
 
 export const rateLimit = rateLimitWrapper({
-  rateLimit: RATE_LIMIT,
-  rateLimitTimeFrame,
+  rateLimit: secretConfig.rateLimit,
+  rateLimitTimeFrame: secretConfig.rateLimitTimeFrame,
 });
 
 export const nextDefaultErrorHandler =

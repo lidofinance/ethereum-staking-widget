@@ -33,3 +33,5 @@ export const getConfig = (): ConfigType => {
     ...getPreConfig(),
   };
 };
+
+export const config = getConfig();

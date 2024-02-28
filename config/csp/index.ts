@@ -6,19 +6,19 @@ import type { ContentSecurityPolicyOption } from 'next-secure-headers/lib/rules'
 // Not use absolute import here!
 // code'''
 //    import { getConfig } from 'config';
+//    import { getSecretConfig } from 'config';
+//    or
+//    import { config } from 'config';
+//    import { secretConfig } from 'config';
 // '''
-import { getConfig } from '../get-config';
-const {
-  cspTrustedHosts,
-  cspReportOnly,
-  cspReportUri,
-  developmentMode,
-  ipfsMode,
-} = getConfig();
+import { config } from '../get-config';
+import { secretConfig } from '../get-secret-config';
 
-const trustedHosts = cspTrustedHosts ? cspTrustedHosts.split(',') : [];
+const trustedHosts = secretConfig.cspTrustedHosts
+  ? secretConfig.cspTrustedHosts.split(',')
+  : [];
 
-const reportOnly = cspReportOnly == 'true';
+const reportOnly = secretConfig.cspReportOnly == 'true';
 
 export const contentSecurityPolicy: ContentSecurityPolicyOption = {
   directives: {
@@ -39,14 +39,14 @@ export const contentSecurityPolicy: ContentSecurityPolicyOption = {
       'https:',
       'wss:',
       // for HMR
-      ...(developmentMode ? ['ws:'] : []),
+      ...(secretConfig.developmentMode ? ['ws:'] : []),
     ],
 
-    ...(!ipfsMode && {
+    ...(!config.ipfsMode && {
       // CSP directive 'frame-ancestors' is ignored when delivered via a <meta> element.
       // CSP directive 'report-uri' is ignored when delivered via a <meta> element.
       frameAncestors: ['*'],
-      reportURI: cspReportUri,
+      reportURI: secretConfig.cspReportUri,
     }),
     childSrc: [
       "'self'",

@@ -1,11 +1,9 @@
 import { TOKENS, getTokenAddress, CHAINS } from '@lido-sdk/constants';
 
+import { secretConfig } from 'config';
 import { ETHPLORER_TOKEN_ENDPOINT } from 'consts/api';
 import { standardFetcher } from 'utils/standardFetcher';
 import { responseTimeExternalMetricWrapper } from 'utilsApi';
-
-import { getConfig } from 'config';
-const { ethplorerApiKey } = getConfig();
 
 type GetLidoStats = () => Promise<Response>;
 
@@ -17,7 +15,7 @@ export const getLidoStats: GetLidoStats = async () => {
     CHAINS.Mainnet,
     TOKENS.STETH,
   )}`;
-  const query = new URLSearchParams({ apiKey: ethplorerApiKey });
+  const query = new URLSearchParams({ apiKey: secretConfig.ethplorerApiKey });
   const url = `${api}?${query.toString()}`;
 
   const lidoStats = await responseTimeExternalMetricWrapper({

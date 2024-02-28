@@ -1,13 +1,12 @@
 import getConfigNext from 'next/config';
 import { default as dynamics } from './dynamics';
 
-const { serverRuntimeConfig, publicRuntimeConfig } = getConfigNext();
+const { publicRuntimeConfig, serverRuntimeConfig } = getConfigNext();
 
 export type PreConfigType = {
   BASE_PATH_ASSET: string;
 } & typeof publicRuntimeConfig &
-  typeof dynamics &
-  typeof serverRuntimeConfig;
+  typeof dynamics;
 
 // getPreConfig() needs for external internal in 'config/groups/*'
 // Not use getPreConfig() outside of 'config/groups/*'
@@ -22,8 +21,7 @@ export const getPreConfig = (): PreConfigType => {
     ...publicRuntimeConfig,
 
     ...(typeof window !== 'undefined' ? window.__env__ : dynamics),
-
-    // TODO getServerConfig for secret envs?
-    ...serverRuntimeConfig,
   };
 };
+
+export const preConfig = getPreConfig();
