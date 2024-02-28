@@ -4,6 +4,6 @@ import { ConfigContext } from './provider';
 
 export const useConfig = () => {
   const context = useContext(ConfigContext);
-  invariant(context, 'Attempt to use `one config` outside of provider');
+  invariant(context, 'Attempt to use `useConfig` outside of provider');
   return context;
 };
