@@ -26,6 +26,7 @@ import { useWatch } from 'react-hook-form';
 import { RequestFormInputType } from 'features/withdrawals/request/request-form-context';
 import { TOKENS } from '@lido-sdk/constants';
 import { ENABLED_WITHDRAWAL_DEXES } from 'features/withdrawals/withdrawals-constants';
+import { DATA_UNAVAILABLE } from 'config';
 
 type OptionButtonProps = {
   onClick: React.ComponentProps<'button'>['onClick'];
@@ -48,7 +49,11 @@ const LidoButton: React.FC<OptionButtonProps> = ({ isActive, onClick }) => {
   const { data: wstethAsSteth, initialLoading: isWstethAsStethLoading } =
     useStethByWsteth(DEFAULT_VALUE_FOR_RATE);
   const ratioLoading = !isSteth && isWstethAsStethLoading;
-  const ratio = isSteth ? '1 : 1' : `1 : ${formatBalance(wstethAsSteth)}`;
+  const ratio = isSteth
+    ? '1 : 1'
+    : wstethAsSteth
+      ? `1 : ${formatBalance(wstethAsSteth)}`
+      : DATA_UNAVAILABLE;
 
   return (
     <OptionsPickerButton

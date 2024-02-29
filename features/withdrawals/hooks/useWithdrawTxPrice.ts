@@ -169,7 +169,7 @@ export const useClaimTxPrice = (requests: RequestStatusClaimable[]) => {
   return {
     loading:
       isEstimateLoading ||
-      !isTxCostLoading ||
+      isTxCostLoading ||
       debouncedSortedSelectedRequests !== requests,
     claimGasLimit: gasLimit,
     claimTxPriceInUsd: price,
