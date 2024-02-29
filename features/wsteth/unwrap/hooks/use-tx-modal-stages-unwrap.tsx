@@ -35,7 +35,7 @@ const getTxModalStagesUnwrap = (
         {...STAGE_OPERATION_ARGS}
         amount={amount}
         willReceive={willReceive}
-        isPending={true}
+        isPending
         txHash={txHash}
       />,
     ),
@@ -46,7 +46,7 @@ const getTxModalStagesUnwrap = (
         txHash={txHash}
         balance={balance}
         balanceToken={'wstETH'}
-        operationText={'Unwrap'}
+        operationText={'Unwrapping'}
       />,
       {
         isClosableOnLedger: true,

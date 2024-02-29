@@ -81,7 +81,7 @@ const getTxModalStagesWrap = (transitStage: TransactionModalTransitStage) => ({
         txHash={txHash}
         balance={balance}
         balanceToken={'wstETH'}
-        operationText={'Wrap'}
+        operationText={'Wrapping'}
       />,
       {
         isClosableOnLedger: true,

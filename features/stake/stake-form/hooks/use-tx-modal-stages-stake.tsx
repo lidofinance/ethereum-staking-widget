@@ -11,7 +11,7 @@ import type { BigNumber } from 'ethers';
 
 const STAGE_OPERATION_ARGS = {
   token: 'ETH',
-  willReceiveToken: 'ETH',
+  willReceiveToken: 'stETH',
   operationText: 'Staking',
 };
 
@@ -44,7 +44,7 @@ const getTxModalStagesStake = (transitStage: TransactionModalTransitStage) => ({
         txHash={txHash}
         balance={balance}
         balanceToken={'stETH'}
-        operationText={'Stake'}
+        operationText={'Staking'}
       />,
       {
         isClosableOnLedger: true,
