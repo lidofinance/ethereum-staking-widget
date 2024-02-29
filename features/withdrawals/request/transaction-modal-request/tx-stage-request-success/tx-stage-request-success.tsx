@@ -46,7 +46,7 @@ export const TxRequestStageSuccess = ({
 
   const successDescription = (
     <span>
-      Withdrawal request for {amountEl} {tokenName} has been sent.
+      Withdrawal request for {amountEl} has been sent.
       <br />
       Check{' '}
       <LocalLink href={WITHDRAWALS_CLAIM_PATH} onClick={closeModal}>

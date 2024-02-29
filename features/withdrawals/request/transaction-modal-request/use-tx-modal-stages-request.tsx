@@ -64,7 +64,7 @@ const getTxModalStagesRequest = (
         {...STAGE_APPROVE_ARGS}
         amount={amount}
         token={getTokenDisplayName(token)}
-        isPending={true}
+        isPending
         txHash={txHash}
       />,
     ),
@@ -84,7 +84,7 @@ const getTxModalStagesRequest = (
         {...STAGE_OPERATION_ARGS}
         amount={amount}
         token={getTokenDisplayName(token)}
-        isPending={true}
+        isPending
         txHash={txHash}
       />,
     ),
