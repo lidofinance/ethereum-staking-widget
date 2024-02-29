@@ -19,7 +19,6 @@ import {
   UnwrapFormValidationContext,
 } from './types';
 import { UnwrapFormValidationResolver } from './unwrap-form-validators';
-import { useDebouncedStethByWsteth } from 'features/wsteth/shared/hooks/use-debounced-wsteth-steth';
 
 //
 // Data context
@@ -57,29 +56,16 @@ export const UnwrapFormProvider: FC<PropsWithChildren> = ({ children }) => {
     resolver: UnwrapFormValidationResolver,
   });
 
-  const { watch } = formObject;
-  const [amount] = watch(['amount']);
-
   const processUnwrapFormFlow = useUnwrapFormProcessor({
     onConfirm: networkData.revalidateUnwrapFormData,
   });
 
-  const { data: willReceiveStETH, initialLoading: isWillReceiveStETHLoading } =
-    useDebouncedStethByWsteth(amount);
-
   const value = useMemo(
     (): UnwrapFormDataContextValueType => ({
       ...networkData,
-      willReceiveStETH,
-      isWillReceiveStETHLoading,
       onSubmit: processUnwrapFormFlow,
     }),
-    [
-      networkData,
-      processUnwrapFormFlow,
-      willReceiveStETH,
-      isWillReceiveStETHLoading,
-    ],
+    [networkData, processUnwrapFormFlow],
   );
 
   return (

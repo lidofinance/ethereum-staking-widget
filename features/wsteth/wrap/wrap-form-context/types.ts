@@ -36,7 +36,5 @@ export type WrapFormDataContextValueType = WrapFormNetworkData &
     isSteth: boolean;
     maxAmount?: BigNumber;
     wrapGasLimit: BigNumber;
-    willReceiveWsteth?: BigNumber;
-    isWillReceiveWstethLoading: boolean;
     stakeLimitInfo?: StakeLimitFullInfo;
   };

@@ -13,23 +13,23 @@ import { useWeb3 } from 'reef-knot/web3-react';
 import { AllowanceDataTableRow } from 'shared/components/allowance-data-table-row';
 import { TOKENS } from '@lido-sdk/constants';
 import { DATA_UNAVAILABLE } from 'config';
+import { useDebouncedWstethBySteth } from 'features/wsteth/shared/hooks/use-debounced-wsteth-steth';
 
 const oneSteth = parseEther('1');
 
 export const WrapFormStats = () => {
   const { active } = useWeb3();
-  const {
-    allowance,
-    wrapGasLimit,
-    willReceiveWsteth,
-    isWillReceiveWstethLoading,
-    isApprovalLoading,
-  } = useWrapFormData();
+  const { allowance, wrapGasLimit, isApprovalLoading } = useWrapFormData();
 
   const { watch } = useFormContext<WrapFormInputType>();
-  const [token] = watch(['token']);
+  const [token, amount] = watch(['token', 'amount']);
 
   const isSteth = token === TOKENS_TO_WRAP.STETH;
+
+  const {
+    data: willReceiveWsteth,
+    initialLoading: isWillReceiveWstethLoading,
+  } = useDebouncedWstethBySteth(amount);
 
   const {
     data: oneWstethConverted,

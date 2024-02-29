@@ -1,19 +1,25 @@
-import { useTxCostInUsd } from 'shared/hooks';
-import { useUnwrapGasLimit } from '../hooks/use-unwrap-gas-limit';
-import { useUnwrapFormData } from '../unwrap-form-context';
-
+import { useWatch } from 'react-hook-form';
 import { DataTableRow, DataTable } from '@lidofinance/lido-ui';
+
+import { useTxCostInUsd } from 'shared/hooks';
 import { FormatToken } from 'shared/formatters/format-token';
 import { DataTableRowStethByWsteth } from 'shared/components/data-table-row-steth-by-wsteth';
 import { FormatPrice } from 'shared/formatters';
 
+import { useDebouncedStethByWsteth } from 'features/wsteth/shared/hooks/use-debounced-wsteth-steth';
+import { useUnwrapGasLimit } from '../hooks/use-unwrap-gas-limit';
+import type { UnwrapFormInputType } from '../unwrap-form-context';
+
 export const UnwrapStats = () => {
+  const amount = useWatch<UnwrapFormInputType, 'amount'>({ name: 'amount' });
   const unwrapGasLimit = useUnwrapGasLimit();
   const {
     txCostUsd: unwrapTxCostInUsd,
     initialLoading: isUnwrapTxCostLoading,
   } = useTxCostInUsd(unwrapGasLimit);
-  const { willReceiveStETH, isWillReceiveStETHLoading } = useUnwrapFormData();
+
+  const { data: willReceiveStETH, initialLoading: isWillReceiveStETHLoading } =
+    useDebouncedStethByWsteth(amount);
 
   return (
     <DataTable>

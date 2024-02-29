@@ -9,10 +9,11 @@ import {
   convertTxStageToLegacy,
   convertTxStageToLegacyTxOperationWrap,
 } from 'features/wsteth/shared/utils/convertTxModalStageToLegacy';
+import { useDebouncedWstethBySteth } from 'features/wsteth/shared/hooks/use-debounced-wsteth-steth';
 
 export const WrapFormTxModal = () => {
   const { watch } = useFormContext<WrapFormInputType>();
-  const { allowance, wstethBalance, willReceiveWsteth } = useWrapFormData();
+  const { allowance, wstethBalance } = useWrapFormData();
   const {
     dispatchModalState,
     onRetry,
@@ -24,6 +25,8 @@ export const WrapFormTxModal = () => {
     txOperation,
   } = useTransactionModal();
   const [token] = watch(['token']);
+
+  const { data: willReceiveWsteth } = useDebouncedWstethBySteth(amount);
 
   return (
     <TxStageModal

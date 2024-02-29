@@ -22,7 +22,6 @@ import {
 import { WrapFormValidationResolver } from './wrap-form-validators';
 import { TOKENS_TO_WRAP } from 'features/wsteth/shared/types';
 import { Zero } from '@ethersproject/constants';
-import { useDebouncedWstethBySteth } from '../../shared/hooks/use-debounced-wsteth-steth';
 
 //
 // Data context
@@ -69,11 +68,6 @@ export const WrapFormProvider: FC<PropsWithChildren> = ({ children }) => {
 
   const isSteth = token === TOKENS_TO_WRAP.STETH;
 
-  const {
-    data: willReceiveWsteth,
-    initialLoading: isWillReceiveWstethLoading,
-  } = useDebouncedWstethBySteth(amount);
-
   const value = useMemo(
     (): WrapFormDataContextValueType => ({
       ...networkData,
@@ -84,18 +78,9 @@ export const WrapFormProvider: FC<PropsWithChildren> = ({ children }) => {
       wrapGasLimit: isSteth
         ? networkData.gasLimitStETH
         : networkData.gasLimitETH,
-      willReceiveWsteth,
-      isWillReceiveWstethLoading,
       onSubmit: processWrapFormFlow,
     }),
-    [
-      networkData,
-      approvalData,
-      isSteth,
-      willReceiveWsteth,
-      isWillReceiveWstethLoading,
-      processWrapFormFlow,
-    ],
+    [networkData, approvalData, isSteth, processWrapFormFlow],
   );
 
   return (
