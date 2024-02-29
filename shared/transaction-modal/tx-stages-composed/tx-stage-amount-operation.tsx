@@ -38,10 +38,12 @@ export const TxStageSignOperationAmount = ({
         </>
       }
       description={
-        <>
-          {operationText} {amountEl}.{' '}
-          {willReceiveEl && <>You will receive {willReceiveEl}</>}
-        </>
+        !isPending && (
+          <>
+            {operationText} {amountEl}.{' '}
+            {willReceiveEl && <>You will receive {willReceiveEl}</>}
+          </>
+        )
       }
     />
   );
