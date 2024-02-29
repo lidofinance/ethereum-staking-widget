@@ -7,7 +7,6 @@ import {
   useContext,
 } from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
-import { useDebouncedValue, useWstethBySteth } from 'shared/hooks';
 import { useWrapTxApprove } from '../hooks/use-wrap-tx-approve';
 import { useWrapFormNetworkData } from '../hooks/use-wrap-form-network-data';
 import { useWrapFormProcessor } from '../hooks/use-wrap-form-processing';
@@ -23,6 +22,7 @@ import {
 import { WrapFormValidationResolver } from './wrap-form-validators';
 import { TOKENS_TO_WRAP } from 'features/wsteth/shared/types';
 import { Zero } from '@ethersproject/constants';
+import { useDebouncedWstethBySteth } from '../../shared/hooks/use-debounced-wsteth-steth';
 
 //
 // Data context
@@ -69,9 +69,10 @@ export const WrapFormProvider: FC<PropsWithChildren> = ({ children }) => {
 
   const isSteth = token === TOKENS_TO_WRAP.STETH;
 
-  const amountDebounced = useDebouncedValue(amount, 500);
-
-  const willReceiveWsteth = useWstethBySteth(amountDebounced ?? Zero);
+  const {
+    data: willReceiveWsteth,
+    initialLoading: isWillReceiveWstethLoading,
+  } = useDebouncedWstethBySteth(amount);
 
   const value = useMemo(
     (): WrapFormDataContextValueType => ({
@@ -84,6 +85,7 @@ export const WrapFormProvider: FC<PropsWithChildren> = ({ children }) => {
         ? networkData.gasLimitStETH
         : networkData.gasLimitETH,
       willReceiveWsteth,
+      isWillReceiveWstethLoading,
       onSubmit: processWrapFormFlow,
     }),
     [
@@ -91,6 +93,7 @@ export const WrapFormProvider: FC<PropsWithChildren> = ({ children }) => {
       approvalData,
       isSteth,
       willReceiveWsteth,
+      isWillReceiveWstethLoading,
       processWrapFormFlow,
     ],
   );

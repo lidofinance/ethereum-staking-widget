@@ -9,20 +9,26 @@ import { FormatPrice } from 'shared/formatters';
 
 export const UnwrapStats = () => {
   const unwrapGasLimit = useUnwrapGasLimit();
-  const unwrapTxCostInUsd = useTxCostInUsd(Number(unwrapGasLimit));
-  const { willReceiveStETH } = useUnwrapFormData();
+  const {
+    txCostUsd: unwrapTxCostInUsd,
+    initialLoading: isUnwrapTxCostLoading,
+  } = useTxCostInUsd(unwrapGasLimit);
+  const { willReceiveStETH, isWillReceiveStETHLoading } = useUnwrapFormData();
 
   return (
     <DataTable>
       <DataTableRow
         title="Max transaction cost"
         data-testid="maxGasFee"
-        loading={!unwrapTxCostInUsd}
+        loading={isUnwrapTxCostLoading}
       >
         <FormatPrice amount={unwrapTxCostInUsd} />
       </DataTableRow>
       <DataTableRowStethByWsteth />
-      <DataTableRow title="You will receive" loading={!willReceiveStETH}>
+      <DataTableRow
+        title="You will receive"
+        loading={isWillReceiveStETHLoading}
+      >
         <FormatToken
           data-testid="youWillReceive"
           amount={willReceiveStETH}

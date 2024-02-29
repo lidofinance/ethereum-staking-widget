@@ -6,17 +6,19 @@ import { weiToEth } from 'utils/weiToEth';
 import { STRATEGY_LAZY } from 'utils/swrStrategies';
 
 export const useEthUsd = (amount?: BigNumber) => {
-  const swr = useEthPrice(STRATEGY_LAZY);
+  const { data: price, ...swr } = useEthPrice({
+    ...STRATEGY_LAZY,
+  });
   const usdAmount = useMemo(() => {
-    if (swr.data && amount) {
+    if (price && amount) {
       const txCostInEth = weiToEth(amount);
-      return txCostInEth * swr.data;
+      return txCostInEth * price;
     }
     return undefined;
-  }, [amount, swr.data]);
+  }, [amount, price]);
   return {
     usdAmount,
-    price: swr.data,
+    price,
     get initialLoading() {
       return swr.initialLoading;
     },
@@ -26,8 +28,8 @@ export const useEthUsd = (amount?: BigNumber) => {
     get loading() {
       return swr.loading;
     },
-    get update() {
-      return swr.update;
+    update() {
+      return swr.update();
     },
   };
 };

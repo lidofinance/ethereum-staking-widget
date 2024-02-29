@@ -5,8 +5,7 @@ import {
   getDexConfig,
   useWithdrawalRates,
 } from 'features/withdrawals/request/withdrawal-rates';
-import { useWstethToStethRatio } from 'shared/components/data-table-row-steth-by-wsteth';
-
+import { useStethByWsteth } from 'shared/hooks';
 import { formatBalance } from 'utils/formatBalance';
 
 import {
@@ -46,9 +45,10 @@ const LidoButton: React.FC<OptionButtonProps> = ({ isActive, onClick }) => {
       isApproximate: true,
     },
   );
-  const { wstethAsStethBN, loading } = useWstethToStethRatio();
-  const ratioLoading = !isSteth && loading;
-  const ratio = isSteth ? '1 : 1' : `1 : ${formatBalance(wstethAsStethBN)}`;
+  const { data: wstethAsSteth, initialLoading: isWstethAsStethLoading } =
+    useStethByWsteth(DEFAULT_VALUE_FOR_RATE);
+  const ratioLoading = !isSteth && isWstethAsStethLoading;
+  const ratio = isSteth ? '1 : 1' : `1 : ${formatBalance(wstethAsSteth)}`;
 
   return (
     <OptionsPickerButton

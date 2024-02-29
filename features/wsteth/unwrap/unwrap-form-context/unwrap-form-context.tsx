@@ -7,7 +7,6 @@ import {
   useContext,
 } from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
-import { useStethByWsteth } from 'shared/hooks';
 import { useUnwrapFormNetworkData } from '../hooks/use-unwrap-form-network-data';
 import { useUnwrapFormProcessor } from '../hooks/use-unwrap-form-processing';
 import { useUnwrapFormValidationContext } from '../hooks/use-unwra-form-validation-context';
@@ -20,7 +19,7 @@ import {
   UnwrapFormValidationContext,
 } from './types';
 import { UnwrapFormValidationResolver } from './unwrap-form-validators';
-import { Zero } from '@ethersproject/constants';
+import { useDebouncedStethByWsteth } from 'features/wsteth/shared/hooks/use-debounced-wsteth-steth';
 
 //
 // Data context
@@ -65,15 +64,22 @@ export const UnwrapFormProvider: FC<PropsWithChildren> = ({ children }) => {
     onConfirm: networkData.revalidateUnwrapFormData,
   });
 
-  const willReceiveStETH = useStethByWsteth(amount ?? Zero);
+  const { data: willReceiveStETH, initialLoading: isWillReceiveStETHLoading } =
+    useDebouncedStethByWsteth(amount);
 
   const value = useMemo(
     (): UnwrapFormDataContextValueType => ({
       ...networkData,
       willReceiveStETH,
+      isWillReceiveStETHLoading,
       onSubmit: processUnwrapFormFlow,
     }),
-    [networkData, processUnwrapFormFlow, willReceiveStETH],
+    [
+      networkData,
+      processUnwrapFormFlow,
+      willReceiveStETH,
+      isWillReceiveStETHLoading,
+    ],
   );
 
   return (

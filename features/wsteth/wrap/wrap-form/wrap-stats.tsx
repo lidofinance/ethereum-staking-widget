@@ -12,53 +12,72 @@ import { useWrapFormData, WrapFormInputType } from '../wrap-form-context';
 import { useWeb3 } from 'reef-knot/web3-react';
 import { AllowanceDataTableRow } from 'shared/components/allowance-data-table-row';
 import { TOKENS } from '@lido-sdk/constants';
+import { DATA_UNAVAILABLE } from 'config';
 
 const oneSteth = parseEther('1');
 
 export const WrapFormStats = () => {
   const { active } = useWeb3();
-  const { allowance, wrapGasLimit, willReceiveWsteth, isApprovalLoading } =
-    useWrapFormData();
+  const {
+    allowance,
+    wrapGasLimit,
+    willReceiveWsteth,
+    isWillReceiveWstethLoading,
+    isApprovalLoading,
+  } = useWrapFormData();
 
   const { watch } = useFormContext<WrapFormInputType>();
   const [token] = watch(['token']);
 
   const isSteth = token === TOKENS_TO_WRAP.STETH;
 
-  const oneWstethConverted = useWstethBySteth(oneSteth);
+  const {
+    data: oneWstethConverted,
+    initialLoading: isOneWstethConvertedLoading,
+  } = useWstethBySteth(oneSteth);
 
   const approveGasLimit = useApproveGasLimit();
-  const approveTxCostInUsd = useTxCostInUsd(approveGasLimit);
+  const {
+    txCostUsd: approveTxCostInUsd,
+    initialLoading: isApproveCostLoading,
+  } = useTxCostInUsd(approveGasLimit);
 
-  const wrapTxCostInUsd = useTxCostInUsd(wrapGasLimit);
+  const { txCostUsd: wrapTxCostInUsd, initialLoading: isWrapCostLoading } =
+    useTxCostInUsd(wrapGasLimit);
 
   return (
     <DataTable data-testid="wrapStats">
       <DataTableRow
         title="Max unlock cost"
         data-testid="maxUnlockFee"
-        loading={!approveTxCostInUsd}
+        loading={isApproveCostLoading}
       >
         <FormatPrice amount={approveTxCostInUsd} />
       </DataTableRow>
       <DataTableRow
         title="Max transaction cost"
         data-testid="maxGasFee"
-        loading={!wrapTxCostInUsd}
+        loading={isWrapCostLoading}
       >
         <FormatPrice amount={wrapTxCostInUsd} />
       </DataTableRow>
       <DataTableRow
         title="Exchange rate"
         data-testid="exchangeRate"
-        loading={!oneWstethConverted}
+        loading={isOneWstethConvertedLoading}
       >
-        1 {isSteth ? 'stETH' : 'ETH'} ={' '}
-        <FormatToken
-          data-testid="rate"
-          amount={oneWstethConverted}
-          symbol="wstETH"
-        />
+        {oneWstethConverted ? (
+          <>
+            1 {isSteth ? 'stETH' : 'ETH'} ={' '}
+            <FormatToken
+              data-testid="rate"
+              amount={oneWstethConverted}
+              symbol="wstETH"
+            />{' '}
+          </>
+        ) : (
+          DATA_UNAVAILABLE
+        )}
       </DataTableRow>
       <AllowanceDataTableRow
         data-testid="allowance"
@@ -68,7 +87,10 @@ export const WrapFormStats = () => {
         token={TOKENS.STETH}
       />
 
-      <DataTableRow title="You will receive" loading={!willReceiveWsteth}>
+      <DataTableRow
+        title="You will receive"
+        loading={isWillReceiveWstethLoading}
+      >
         <FormatToken
           amount={willReceiveWsteth}
           data-testid="youWillReceive"

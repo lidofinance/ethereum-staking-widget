@@ -30,7 +30,7 @@ export const useMaxGasPrice = () => {
     get loading() {
       return swr.loading;
     },
-    get update() {
+    update() {
       return swr.update;
     },
   };
