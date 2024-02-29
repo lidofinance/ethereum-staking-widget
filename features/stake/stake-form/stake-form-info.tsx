@@ -6,13 +6,12 @@ import { Zero } from '@ethersproject/constants';
 import { FormatPrice, FormatToken } from 'shared/formatters';
 import { STRATEGY_CONSTANT } from 'utils/swrStrategies';
 import { DATA_UNAVAILABLE } from 'config';
+import { useEthUsd } from 'shared/hooks/use-eth-usd';
 
 import { StakeFormInput, useStakeFormData } from './stake-form-context';
 
-import { useEthUsd } from 'shared/hooks/use-eth-usd';
-
 export const StakeFormInfo = () => {
-  const { gasCost } = useStakeFormData();
+  const { gasCost, loading } = useStakeFormData();
   const amount = useWatch<StakeFormInput, 'amount'>({ name: 'amount' });
   const contractRpc = useSTETHContractRPC();
   const lidoFee = useContractSWR({
@@ -20,7 +19,7 @@ export const StakeFormInfo = () => {
     method: 'getFee',
     config: STRATEGY_CONSTANT,
   });
-  const txCostInUsd = useEthUsd(gasCost);
+  const { usdAmount, initialLoading: isEthUsdLoading } = useEthUsd(gasCost);
 
   return (
     <DataTable data-testid="stakeFormInfo">
@@ -38,9 +37,9 @@ export const StakeFormInfo = () => {
       <DataTableRow
         title="Max transaction cost"
         data-testid="maxTxCost"
-        loading={!txCostInUsd}
+        loading={loading.isMaxGasPriceLoading || isEthUsdLoading}
       >
-        <FormatPrice amount={txCostInUsd} />
+        <FormatPrice amount={usdAmount} />
       </DataTableRow>
       <DataTableRow
         title="Reward fee"

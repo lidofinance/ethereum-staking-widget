@@ -1,16 +1,14 @@
 import { useLidoSWR } from '@lido-sdk/react';
 
-import { BigNumber } from 'ethers';
-
 import { getFeeData } from 'utils/getFeeData';
 import { STRATEGY_LAZY } from 'utils/swrStrategies';
 
 import { useCurrentStaticRpcProvider } from './use-current-static-rpc-provider';
 
-export const useMaxGasPrice = (): BigNumber | undefined => {
+export const useMaxGasPrice = () => {
   const { chainId, staticRpcProvider } = useCurrentStaticRpcProvider();
 
-  const { data: maxGasPrice } = useLidoSWR(
+  const swr = useLidoSWR(
     ['swr:max-gas-price', chainId],
     async () => {
       const { maxFeePerGas } = await getFeeData(staticRpcProvider);
@@ -19,5 +17,21 @@ export const useMaxGasPrice = (): BigNumber | undefined => {
     STRATEGY_LAZY,
   );
 
-  return maxGasPrice;
+  return {
+    get maxGasPrice() {
+      return swr.data;
+    },
+    get initialLoading() {
+      return swr.initialLoading;
+    },
+    get error() {
+      return swr.error;
+    },
+    get loading() {
+      return swr.loading;
+    },
+    get update() {
+      return swr.update;
+    },
+  };
 };

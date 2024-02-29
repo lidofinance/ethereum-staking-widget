@@ -1,15 +1,15 @@
-import { BigNumberish } from 'ethers';
+import type { BigNumber } from 'ethers';
 import { useMemo } from 'react';
 import { useMaxGasPrice } from './useMaxGasPrice';
 import { useEthUsd } from './use-eth-usd';
 
-type UseTxCostInUsd = (gasLimit?: BigNumberish) => number | undefined;
+type UseTxCostInUsd = (gasLimit?: BigNumber) => number | undefined;
 
 export const useTxCostInUsd: UseTxCostInUsd = (gasLimit) => {
-  const gasPrice = useMaxGasPrice();
+  const { maxGasPrice } = useMaxGasPrice();
   const amount = useMemo(
-    () => (gasPrice && gasLimit ? gasPrice.mul(gasLimit) : undefined),
-    [gasLimit, gasPrice],
+    () => (maxGasPrice && gasLimit ? maxGasPrice.mul(gasLimit) : undefined),
+    [gasLimit, maxGasPrice],
   );
-  return useEthUsd(amount);
+  return useEthUsd(amount).usdAmount;
 };

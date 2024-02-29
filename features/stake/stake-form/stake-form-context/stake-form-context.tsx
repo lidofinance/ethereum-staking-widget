@@ -54,22 +54,31 @@ export const useStakeFormData = () => {
 };
 
 const useStakeFormNetworkData = (): StakeFormNetworkData => {
-  const { data: stethBalance, update: updateStethBalance } =
-    useSTETHBalance(STRATEGY_LAZY);
+  const {
+    data: stethBalance,
+    update: updateStethBalance,
+    initialLoading: isStethBalanceLoading,
+  } = useSTETHBalance(STRATEGY_LAZY);
   const { isMultisig, isLoading: isMultisigLoading } = useIsMultisig();
   const gasLimit = useStethSubmitGasLimit();
-  const maxGasFee = useMaxGasPrice();
+  const { maxGasPrice, initialLoading: isMaxGasPriceLoading } =
+    useMaxGasPrice();
+
   const gasCost = useMemo(
-    () => (gasLimit && maxGasFee ? gasLimit.mul(maxGasFee) : undefined),
-    [gasLimit, maxGasFee],
+    () => (gasLimit && maxGasPrice ? gasLimit.mul(maxGasPrice) : undefined),
+    [gasLimit, maxGasPrice],
   );
 
-  const { data: etherBalance, update: updateEtherBalance } = useEthereumBalance(
-    undefined,
-    STRATEGY_LAZY,
-  );
-  const { data: stakingLimitInfo, mutate: mutateStakeLimit } =
-    useStakingLimitInfo();
+  const {
+    data: etherBalance,
+    update: updateEtherBalance,
+    initialLoading: isEtherBalanceLoading,
+  } = useEthereumBalance(undefined, STRATEGY_LAZY);
+  const {
+    data: stakingLimitInfo,
+    mutate: mutateStakeLimit,
+    initialLoading: isStakeableEtherLoading,
+  } = useStakingLimitInfo();
 
   const stakeableEther = useMemo(() => {
     if (
@@ -106,6 +115,23 @@ const useStakeFormNetworkData = (): StakeFormNetworkData => {
     stakingLimitInfo,
   ]);
 
+  const loading = useMemo(
+    () => ({
+      isStethBalanceLoading,
+      isMultisigLoading,
+      isMaxGasPriceLoading,
+      isEtherBalanceLoading,
+      isStakeableEtherLoading,
+    }),
+    [
+      isEtherBalanceLoading,
+      isMaxGasPriceLoading,
+      isMultisigLoading,
+      isStethBalanceLoading,
+      isStakeableEtherLoading,
+    ],
+  );
+
   return {
     stethBalance,
     etherBalance,
@@ -115,6 +141,7 @@ const useStakeFormNetworkData = (): StakeFormNetworkData => {
     gasCost,
     gasLimit,
     maxAmount,
+    loading,
     revalidate,
   };
 };
