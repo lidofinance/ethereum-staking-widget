@@ -36,11 +36,11 @@ export const useUnwrapFormProcessor = ({
       invariant(account, 'address should be presented');
       invariant(providerWeb3, 'provider should be presented');
       const isMultisig = await isContract(account, providerWeb3);
+      const willReceive = await wstETHContractRPC.getStETHByWstETH(amount);
 
       const txModalStages = createTxModalSession();
 
       try {
-        const willReceive = await wstETHContractRPC.getStETHByWstETH(amount);
         txModalStages.sign(amount, willReceive);
 
         const tx = await runWithTransactionLogger('Unwrap signing', () =>

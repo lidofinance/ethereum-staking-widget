@@ -67,3 +67,9 @@ export const ButtonLinkSmall = styled.a`
     background-color: var(--lido-color-primaryHover);
   }
 `;
+
+export const LoaderWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;

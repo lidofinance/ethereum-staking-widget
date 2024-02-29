@@ -37,12 +37,12 @@ export const useWrapFormProcessor = ({
       invariant(amount, 'amount should be presented');
       invariant(account, 'address should be presented');
       invariant(providerWeb3, 'provider should be presented');
+      const isMultisig = await isContract(account, providerWeb3);
+      const willReceive = await wstETHContractRPC.getWstETHByStETH(amount);
 
       const txModalStages = createTxModalSession();
 
       try {
-        const isMultisig = await isContract(account, providerWeb3);
-
         if (isApprovalNeededBeforeWrap) {
           txModalStages.signApproval(amount, token);
 
@@ -59,8 +59,6 @@ export const useWrapFormProcessor = ({
             return true;
           }
         }
-
-        const willReceive = await wstETHContractRPC.getWstETHByStETH(amount);
 
         txModalStages.sign(amount, token, willReceive);
 

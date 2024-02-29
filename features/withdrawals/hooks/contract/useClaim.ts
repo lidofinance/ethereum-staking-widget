@@ -25,15 +25,15 @@ export const useClaim = ({ onRetry }: Args) => {
 
   return useCallback(
     async (sortedRequests: RequestStatusClaimable[]) => {
+      invariant(contractWeb3, 'must have contract');
+      invariant(sortedRequests, 'must have requests');
+      invariant(account, 'must have address');
+      invariant(providerWeb3, 'must have provider');
+
+      const isMultisig = await isContract(account, contractWeb3.provider);
       const txModalStages = createTxModalSession();
 
       try {
-        invariant(contractWeb3, 'must have contract');
-        invariant(sortedRequests, 'must have requests');
-        invariant(account, 'must have address');
-        invariant(providerWeb3, 'must have provider');
-        const isMultisig = await isContract(account, contractWeb3.provider);
-
         const amount = sortedRequests.reduce(
           (s, r) => s.add(r.claimableEth),
           BigNumber.from(0),

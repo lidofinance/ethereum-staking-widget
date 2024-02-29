@@ -48,14 +48,14 @@ export const useStake = ({ onConfirm, onRetry }: StakeOptions) => {
           throw new MockLimitReachedError('Stake limit reached');
         }
 
+        txModalStages.sign(amount);
+
         const [isMultisig, referralAddress] = await Promise.all([
           isContract(account, providerRpc),
           referral
             ? getAddress(referral, providerRpc)
             : STAKE_FALLBACK_REFERRAL_ADDRESS,
         ]);
-
-        txModalStages.sign(amount);
 
         const callback = async () => {
           if (isMultisig) {
