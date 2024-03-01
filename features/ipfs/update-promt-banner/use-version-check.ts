@@ -118,7 +118,8 @@ export const useVersionCheck = () => {
     !areConditionsAccepted &&
       remoteCidSWR.data &&
       currentCidSWR.data &&
-      remoteCidSWR.data.cid !== currentCidSWR.data,
+      remoteCidSWR.data.cid !== currentCidSWR.data &&
+      remoteCidSWR.data.leastSafeVersion !== 'none',
   );
 
   const isVersionUnsafe = Boolean(

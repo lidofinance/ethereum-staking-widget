@@ -9,7 +9,7 @@ const warningTextContent = (
   isVersionUnsafe: boolean,
 ) => {
   switch (true) {
-    case dynamics.ipfsMode && isUpdateAvailable && isVersionUnsafe:
+    case dynamics.ipfsMode && isVersionUnsafe:
       return 'This version of IPFS Widget is deemed not safe to use';
     case dynamics.ipfsMode && isUpdateAvailable:
       return 'This is not the most recent version of IPFS Widget';
