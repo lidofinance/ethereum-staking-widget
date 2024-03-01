@@ -1,21 +1,28 @@
+import { useEffect, useState } from 'react';
 import { useLidoSWR } from '@lido-sdk/react';
+import { useDisconnect } from 'reef-knot/web3-react';
+import { useDisconnect as useDisconnectWagmi } from 'wagmi';
+
 import { BASE_PATH_ASSET, dynamics } from 'config';
-import { useState } from 'react';
 import { useMainnetStaticRpcProvider } from 'shared/hooks/use-mainnet-static-rpc-provider';
 import { standardFetcher } from 'utils/standardFetcher';
 import { STRATEGY_IMMUTABLE, STRATEGY_LAZY } from 'utils/swrStrategies';
 
+import buildInfo from 'build-info.json';
+
 type EnsHashCheckReturn = {
   cid: string;
   ens?: string;
+  leastSafeVersion?: string;
   link: string;
 } | null;
 
-type ReleaseInfoData = ReleaseInfo & Record<string, ReleaseInfo | undefined>;
+type ReleaseInfoData = Record<string, ReleaseInfo>;
 
 type ReleaseInfo = {
   cid?: string;
   ens?: string;
+  leastSafeVersion?: string;
 };
 
 // works with any type of IPFS hash
@@ -26,7 +33,32 @@ const URL_CID_REGEX =
 const IPFS_RELEASE_URL =
   'https://raw.githubusercontent.com/lidofinance/ethereum-staking-widget/main/IPFS.json';
 
-export const useIpfsHashCheck = () => {
+const isVersionLess = (versionA: string, versionB: string): boolean => {
+  const verA = versionA
+    .trim()
+    .split('.')
+    .map((v) => parseInt(v));
+  const verB = versionB
+    .trim()
+    .split('.')
+    .map((v) => parseInt(v));
+
+  // eslint-disable-next-line unicorn/no-for-loop
+  for (let index = 0; index < verA.length; index++) {
+    const a = verA[index];
+    const b = verB[index];
+    // validation
+    if (b === undefined || isNaN(a) || isNaN(b)) return false;
+    if (a > b) return false;
+    if (a < b) return true;
+  }
+  // versions are  equal
+  return false;
+};
+
+export const useVersionCheck = () => {
+  const { disconnect } = useDisconnect();
+  const { disconnect: wagmiDisconnect } = useDisconnectWagmi();
   const [areConditionsAccepted, setConditionsAccepted] = useState(false);
   const provider = useMainnetStaticRpcProvider();
 
@@ -55,11 +87,7 @@ export const useIpfsHashCheck = () => {
         },
       );
 
-      // look up for subpath
-      const releaseInfo = dynamics.ipfsManifestSubpath
-        ? releaseInfoData[dynamics.ipfsManifestSubpath]
-        : releaseInfoData;
-
+      const releaseInfo = releaseInfoData[dynamics.defaultChain.toString()];
       if (releaseInfo?.ens) {
         const resolver = await provider.getResolver(releaseInfo.ens);
         if (resolver) {
@@ -69,6 +97,7 @@ export const useIpfsHashCheck = () => {
               cid: contentHash,
               ens: releaseInfo.ens,
               link: `https://${releaseInfo.ens}.limo`,
+              leastSafeVersion: releaseInfo.leastSafeVersion,
             };
           }
         }
@@ -77,11 +106,12 @@ export const useIpfsHashCheck = () => {
         return {
           cid: releaseInfo.cid,
           link: `https://${releaseInfo.cid}.ipfs.cf-ipfs.com`,
+          leastSafeVersion: releaseInfo.leastSafeVersion,
         };
       }
       return null;
     },
-    { ...STRATEGY_LAZY, isPaused: () => !dynamics.ipfsMode },
+    { ...STRATEGY_LAZY },
   );
 
   const isUpdateAvailable = Boolean(
@@ -91,9 +121,25 @@ export const useIpfsHashCheck = () => {
       remoteCidSWR.data.cid !== currentCidSWR.data,
   );
 
+  const isVersionUnsafe = Boolean(
+    !areConditionsAccepted &&
+      remoteCidSWR.data?.leastSafeVersion &&
+      (remoteCidSWR.data.leastSafeVersion === 'none' ||
+        isVersionLess(buildInfo.version, remoteCidSWR.data.leastSafeVersion)),
+  );
+
+  // disconnect wallet
+  useEffect(() => {
+    if (isVersionUnsafe) {
+      disconnect?.();
+      wagmiDisconnect();
+    }
+  }, [disconnect, isVersionUnsafe, wagmiDisconnect]);
+
   return {
     isUpdateAvailable,
     setConditionsAccepted,
+    isVersionUnsafe,
     get data() {
       return {
         remoteCid: remoteCidSWR.data?.cid,

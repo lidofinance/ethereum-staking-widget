@@ -5,7 +5,6 @@ import generateBuildId from './scripts/generate-build-id.mjs';
 buildDynamics();
 
 const ipfsMode = process.env.IPFS_MODE == 'true';
-const ipfsManifestSubpath = process.env.IPFS_MANIFEST_SUBPATH;
 
 // https://nextjs.org/docs/pages/api-reference/next-config-js/basePath
 const basePath = process.env.BASE_PATH;
@@ -184,6 +183,5 @@ export default withBundleAnalyzer({
     rewardsBackendAPI,
     defaultChain,
     developmentMode,
-    ipfsManifestSubpath,
   },
 });
