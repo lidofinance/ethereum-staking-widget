@@ -11,6 +11,8 @@ type EnsHashCheckReturn = {
   link: string;
 } | null;
 
+type ReleaseInfoData = ReleaseInfo & Record<string, ReleaseInfo | undefined>;
+
 type ReleaseInfo = {
   cid?: string;
   ens?: string;
@@ -46,10 +48,19 @@ export const useIpfsHashCheck = () => {
   const remoteCidSWR = useLidoSWR<EnsHashCheckReturn>(
     ['swr:ipfs-hash-check'],
     async (): Promise<EnsHashCheckReturn> => {
-      const releaseInfo = await standardFetcher<ReleaseInfo>(IPFS_RELEASE_URL, {
-        headers: { Accept: 'application/json' },
-      });
-      if (releaseInfo.ens) {
+      const releaseInfoData = await standardFetcher<ReleaseInfoData>(
+        IPFS_RELEASE_URL,
+        {
+          headers: { Accept: 'application/json' },
+        },
+      );
+
+      // look up for subpath
+      const releaseInfo = dynamics.ipfsManifestSubpath
+        ? releaseInfoData[dynamics.ipfsManifestSubpath]
+        : releaseInfoData;
+
+      if (releaseInfo?.ens) {
         const resolver = await provider.getResolver(releaseInfo.ens);
         if (resolver) {
           const contentHash = await resolver.getContentHash();
@@ -62,7 +73,7 @@ export const useIpfsHashCheck = () => {
           }
         }
       }
-      if (releaseInfo.cid) {
+      if (releaseInfo?.cid) {
         return {
           cid: releaseInfo.cid,
           link: `https://${releaseInfo.cid}.ipfs.cf-ipfs.com`,
