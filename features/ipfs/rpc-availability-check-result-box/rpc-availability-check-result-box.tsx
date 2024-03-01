@@ -8,7 +8,7 @@ import { LinkArrow } from 'shared/components/link-arrow/link-arrow';
 
 import { Wrap, RpcStatusBox, Button, Text } from './styles';
 
-const IPFS_INFO_URL = 'https://docs.lido.fi/guides/ipfs/';
+const IPFS_INFO_URL = 'https://docs.lido.fi/ipfs/ipfs-guide';
 
 export const RPCAvailabilityCheckResultBox = () => {
   const { isRPCAvailable, handleClickDismiss } = useIPFSInfoBoxStatuses();
