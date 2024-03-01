@@ -1,1 +1,1 @@
-export { UpgradePromtBanner as OutdatedHashBanner } from './update-promt-banner';
+export { UpgradePromtBanner } from './update-promt-banner';
