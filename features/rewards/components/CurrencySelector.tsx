@@ -3,8 +3,9 @@ import styled from 'styled-components';
 
 import { Box, Select, Option } from '@lidofinance/lido-ui';
 
-import { STORAGE_CURRENCY_KEY } from 'consts/storage';
 import { CURRENCIES, type CurrencyType } from 'features/rewards/constants';
+
+const STORAGE_CURRENCY_KEY = 'lido-currency';
 
 const StyledSelect = styled(Select)`
   height: 32px;

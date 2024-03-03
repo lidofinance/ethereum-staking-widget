@@ -9,10 +9,11 @@ import {
 import { useLocalStorage } from '@lido-sdk/react';
 
 import { CHAINS } from 'consts/chains';
-import { STORAGE_USER_CONFIG } from 'consts/storage';
 
 import { getUserConfigDefault } from './utils';
 import { UserConfigDefaultType } from './types';
+
+const STORAGE_USER_CONFIG = 'lido-user-config';
 
 type SavedUserConfig = {
   rpcUrls: Partial<Record<CHAINS, string>>;
