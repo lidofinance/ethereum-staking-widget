@@ -47,3 +47,6 @@ export const prefillUnsafeElRpcUrls17000 = process.env.PREFILL_UNSAFE_EL_RPC_URL
 
 /** @type string */
 export const widgetApiBasePathForIpfs = process.env.WIDGET_API_BASE_PATH_FOR_IPFS;
+
+/** @type boolean */
+export const featureFlagsPageIsEnabled = toBoolean(process.env.FEATURE_FLAGS_PAGE_IS_ENABLED);

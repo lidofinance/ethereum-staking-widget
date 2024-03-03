@@ -7,6 +7,10 @@ import { ThemeToggler } from '@lidofinance/lido-ui';
 import NoSSRWrapper from '../../../no-ssr-wrapper';
 
 import { getConfig } from 'config';
+import {
+  RPC_SETTINGS_PAGE_ON_INFRA_IS_ENABLED,
+  useFeatureFlag,
+} from 'config/feature-flags';
 const { ipfsMode } = getConfig();
 
 import { IPFSInfoBox } from 'features/ipfs/ipfs-info-box';
@@ -23,6 +27,9 @@ const HeaderWallet: FC = () => {
   const router = useRouter();
   const { active } = useWeb3();
   const { chainId } = useSDK();
+  const { rpcSettingsPageOnInfraIsEnabled } = useFeatureFlag(
+    RPC_SETTINGS_PAGE_ON_INFRA_IS_ENABLED,
+  );
 
   const chainName = CHAINS[chainId];
   const testNet = chainId !== CHAINS.Mainnet;
@@ -44,7 +51,9 @@ const HeaderWallet: FC = () => {
       ) : (
         <Connect size="sm" />
       )}
-      {ipfsMode && <HeaderSettingsButton />}
+      {(ipfsMode || rpcSettingsPageOnInfraIsEnabled) && (
+        <HeaderSettingsButton />
+      )}
       {!queryTheme && <ThemeToggler data-testid="themeToggler" />}
       {ipfsMode && (
         <IPFSInfoBoxOnlyDesktopWrapper>
