@@ -57,7 +57,7 @@ export const useIpfsHashCheck = () => {
             return {
               cid: contentHash,
               ens: releaseInfo.ens,
-              link: `https://${releaseInfo.ens}.link`,
+              link: `https://${releaseInfo.ens}.limo`,
             };
           }
         }
