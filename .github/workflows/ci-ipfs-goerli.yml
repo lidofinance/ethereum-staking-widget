@@ -1,0 +1,63 @@
+name: IPFS Goerli
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+env:
+  ipfs_folder: 'out'
+jobs:
+  prepare-for-ipfs:
+    runs-on: ubuntu-latest
+    environment: IPFS Goerli
+    outputs:
+      ipfs_folder: ${{ env.ipfs_folder }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+          fetch-tags: true
+      - name: Install node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'yarn'
+      - name: Install dependencies
+        run: |
+          yarn install --frozen-lockfile
+      - name: Build
+        run: |
+          yarn build-ipfs
+        env:
+          DEFAULT_CHAIN: ${{ vars.DEFAULT_CHAIN }}
+          SUPPORTED_CHAINS: ${{ vars.SUPPORTED_CHAINS }}
+          WIDGET_API_BASE_PATH_FOR_IPFS: ${{ vars.WIDGET_API_BASE_PATH_FOR_IPFS }}
+          REWARDS_BACKEND_BASE_PATH: ${{ vars.REWARDS_BACKEND_BASE_PATH }}
+          WQ_API_BASE_PATH: ${{ vars.WQ_API_BASE_PATH }}
+          ETH_API_BASE_PATH: ${{ vars.ETH_API_BASE_PATH }}
+          PREFILL_UNSAFE_EL_RPC_URLS_1: ${{ secrets.PREFILL_UNSAFE_EL_RPC_URLS_1 }}
+          PREFILL_UNSAFE_EL_RPC_URLS_5: ${{ secrets.PREFILL_UNSAFE_EL_RPC_URLS_5 }}
+          WALLETCONNECT_PROJECT_ID: ${{ secrets.WALLETCONNECT_PROJECT_ID }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.ipfs_folder }}
+          path: ${{ env.ipfs_folder }}
+          retention-days: 1
+  ipfs-pinning:
+    needs: prepare-for-ipfs
+    uses: lidofinance/actions/.github/workflows/ci-ipfs.yml@main
+    with:
+      ipfs_folder: ${{ needs.prepare-for-ipfs.outputs.ipfs_folder }}
+      current_branch: ${{ github.ref_name }}
+      IS_CREATE_RELEASE: false
+      FILEBASE_BUCKET_NAME: ${{ vars.FILEBASE_BUCKET_NAME }}
+    secrets:
+      W3S_TOKEN: ${{ secrets.W3S_TOKEN }}
+      W3S_PROOF: ${{ secrets.W3S_PROOF }}
+      GW3_TOKEN: ${{ secrets.GW3_TOKEN }}
+      GW3_ACCESS_KEY: ${{ secrets.GW3_ACCESS_KEY }}
+      FILEBASE_TOKEN: ${{ secrets.FILEBASE_TOKEN }}
