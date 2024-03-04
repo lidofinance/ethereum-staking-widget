@@ -28,12 +28,10 @@ export const useStake = ({ onConfirm, onRetry }: StakeOptions) => {
   const { account, chainId } = useWeb3();
   const { staticRpcProvider } = useCurrentStaticRpcProvider();
   const { providerWeb3, providerRpc } = useSDK();
-  const { createTxModalSession } = useTxModalStagesStake();
+  const { txModalStages } = useTxModalStagesStake();
 
   return useCallback(
     async ({ amount, referral }: StakeArguments): Promise<boolean> => {
-      const txModalStages = createTxModalSession();
-
       try {
         invariant(amount, 'amount is null');
         invariant(chainId, 'chainId is not defined');
@@ -124,7 +122,7 @@ export const useStake = ({ onConfirm, onRetry }: StakeOptions) => {
       providerWeb3,
       stethContractWeb3,
       providerRpc,
-      createTxModalSession,
+      txModalStages,
       onConfirm,
       staticRpcProvider,
       onRetry,

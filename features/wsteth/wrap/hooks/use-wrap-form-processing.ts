@@ -29,20 +29,18 @@ export const useWrapFormProcessor = ({
   const { providerWeb3 } = useSDK();
   const processWrapTx = useWrapTxProcessing();
   const { isApprovalNeededBeforeWrap, processApproveTx } = approvalData;
-  const { createTxModalSession } = useTxModalWrap();
+  const { txModalStages } = useTxModalWrap();
   const wstETHContractRPC = useWSTETHContractRPC();
 
   return useCallback(
     async ({ amount, token }: WrapFormInputType) => {
-      invariant(amount, 'amount should be presented');
-      invariant(account, 'address should be presented');
-      invariant(providerWeb3, 'provider should be presented');
-      const isMultisig = await isContract(account, providerWeb3);
-      const willReceive = await wstETHContractRPC.getWstETHByStETH(amount);
-
-      const txModalStages = createTxModalSession();
-
       try {
+        invariant(amount, 'amount should be presented');
+        invariant(account, 'address should be presented');
+        invariant(providerWeb3, 'provider should be presented');
+        const isMultisig = await isContract(account, providerWeb3);
+        const willReceive = await wstETHContractRPC.getWstETHByStETH(amount);
+
         if (isApprovalNeededBeforeWrap) {
           txModalStages.signApproval(amount, token);
 
@@ -96,7 +94,7 @@ export const useWrapFormProcessor = ({
       providerWeb3,
       wstETHContractRPC,
       isApprovalNeededBeforeWrap,
-      createTxModalSession,
+      txModalStages,
       onConfirm,
       processApproveTx,
       processWrapTx,

@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { useWeb3 } from 'reef-knot/web3-react';
 import { useModalActions } from 'providers/modal-provider';
 import { useTransactionModal, TransactionModal } from '../transaction-modal';
@@ -15,15 +15,15 @@ export const useTransactionModalStage = <S extends Record<string, Function>>(
   const { active } = useWeb3();
   const { openModal } = useTransactionModal();
   const { closeModal } = useModalActions();
+  const isMountedRef = useRef(true);
 
-  const createTxModalSession = useCallback(() => {
-    const modal = openModal({});
-
+  const txModalStages = useMemo(() => {
     const transitStage: TransactionModalTransitStage = (
       TxStageEl,
       modalProps = {},
     ) => {
-      modal.updateProps({
+      if (!isMountedRef.current) return;
+      openModal({
         children: TxStageEl,
         ...modalProps,
       });
@@ -33,12 +33,18 @@ export const useTransactionModalStage = <S extends Record<string, Function>>(
   }, [getStages, openModal]);
 
   useEffect(() => {
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
+
+  useEffect(() => {
     if (!active) {
       closeModal(TransactionModal);
     }
   }, [active, closeModal]);
 
   return {
-    createTxModalSession,
+    txModalStages,
   };
 };

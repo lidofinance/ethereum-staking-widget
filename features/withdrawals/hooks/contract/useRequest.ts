@@ -246,7 +246,7 @@ export const useWithdrawalRequest = ({
   const { connector } = useAccount();
   const { account } = useWeb3();
   const { isBunker } = useWithdrawals();
-  const { createTxModalSession } = useTxModalStagesRequest();
+  const { txModalStages } = useTxModalStagesRequest();
   const getRequestMethod = useWithdrawalRequestMethods();
   const { isMultisig, isLoading: isMultisigLoading } = useIsMultisig();
 
@@ -296,8 +296,6 @@ export const useWithdrawalRequest = ({
       amount: BigNumber | null;
       token: TokensWithdrawable;
     }) => {
-      const txModalStages = createTxModalSession();
-
       // define and set retry point
       try {
         invariant(
@@ -382,7 +380,7 @@ export const useWithdrawalRequest = ({
       needsApprove,
       onConfirm,
       onRetry,
-      createTxModalSession,
+      txModalStages,
     ],
   );
 

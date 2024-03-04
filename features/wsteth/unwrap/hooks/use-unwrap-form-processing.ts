@@ -28,19 +28,17 @@ export const useUnwrapFormProcessor = ({
   const processWrapTx = useUnwrapTxProcessing();
   const stETHContractRPC = useSTETHContractRPC();
   const wstETHContractRPC = useWSTETHContractRPC();
-  const { createTxModalSession } = useTxModalStagesUnwrap();
+  const { txModalStages } = useTxModalStagesUnwrap();
 
   return useCallback(
     async ({ amount }: UnwrapFormInputType) => {
-      invariant(amount, 'amount should be presented');
-      invariant(account, 'address should be presented');
-      invariant(providerWeb3, 'provider should be presented');
-      const isMultisig = await isContract(account, providerWeb3);
-      const willReceive = await wstETHContractRPC.getStETHByWstETH(amount);
-
-      const txModalStages = createTxModalSession();
-
       try {
+        invariant(amount, 'amount should be presented');
+        invariant(account, 'address should be presented');
+        invariant(providerWeb3, 'provider should be presented');
+        const isMultisig = await isContract(account, providerWeb3);
+        const willReceive = await wstETHContractRPC.getStETHByWstETH(amount);
+
         txModalStages.sign(amount, willReceive);
 
         const tx = await runWithTransactionLogger('Unwrap signing', () =>
@@ -80,7 +78,7 @@ export const useUnwrapFormProcessor = ({
       onRetry,
       processWrapTx,
       providerWeb3,
-      createTxModalSession,
+      txModalStages,
       stETHContractRPC,
       wstETHContractRPC,
     ],
