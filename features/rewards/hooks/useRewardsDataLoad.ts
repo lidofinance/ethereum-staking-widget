@@ -47,7 +47,7 @@ export const useRewardsDataLoad: UseRewardsDataLoad = (props) => {
 
   const apiRewardsPath = `/api/rewards?${params.toString()}`;
   const apiRewardsUrl = dynamics.ipfsMode
-    ? `${dynamics.widgetApiBasePathForIpfs}${apiRewardsPath}`
+    ? `${dynamics.rewardsBackendBasePath}${apiRewardsPath}`
     : apiRewardsPath;
 
   const { data, ...rest } = useLidoSWR<Backend>(
