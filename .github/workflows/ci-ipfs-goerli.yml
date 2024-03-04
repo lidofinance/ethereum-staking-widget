@@ -46,7 +46,7 @@ jobs:
         with:
           name: ${{ env.ipfs_folder }}
           path: ${{ env.ipfs_folder }}
-          retention-days: 1
+          retention-days: 30
   ipfs-pinning:
     needs: prepare-for-ipfs
     uses: lidofinance/actions/.github/workflows/ci-ipfs.yml@main
