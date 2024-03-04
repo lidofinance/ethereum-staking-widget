@@ -1,6 +1,7 @@
-import styled from 'styled-components';
-import { Button } from '@lidofinance/lido-ui';
+import styled, { css } from 'styled-components';
+import { Button, Link } from '@lidofinance/lido-ui';
 import Icons from 'assets/icons/l2-swap.svg';
+import { LocalLink } from 'shared/components/local-link';
 
 export const Wrapper = styled.div`
   position: relative;
@@ -11,13 +12,13 @@ export const Wrapper = styled.div`
   border-radius: ${({ theme }) => theme.borderRadiusesMap.lg}px;
   gap: 10px;
   overflow: hidden;
-  background-color: #07080c;
   background: radial-gradient(
-    93.45% 103.1% at 6.55% 17.29%,
-    #3c64b6 0%,
-    #2e1d7b 55.75%,
-    #142698 100%
-  );
+      100% 1200% at 120% 110%,
+      rgba(255, 255, 255, 0.95) 2%,
+      rgba(219, 255, 255, 0.95) 35%,
+      rgba(255, 255, 255, 0) 100%
+    ),
+    linear-gradient(130deg, #a6a5ff 7%, rgba(181, 180, 255, 0) 55%);
   box-sizing: border-box;
 
   ${({ theme }) => theme.mediaQueries.md} {
@@ -36,7 +37,7 @@ export const L2Icons = styled.img.attrs({
   alt: '',
 })`
   display: block;
-  width: 162px;
+  width: 188px;
   height: 32px;
 `;
 
@@ -51,19 +52,19 @@ export const TextHeader = styled.div`
   font-size: 14px;
   line-height: 16px;
   font-weight: 700;
-  color: #fff;
+  color: var(--lido-color-textDark);
 `;
 
 export const TextWrap = styled.div`
   flex: 1 1 auto;
-  color: #fff;
+  color: var(--lido-color-textDark);
   line-height: 20px;
   font-size: 12px;
   font-weight: 400;
   position: relative;
 `;
 
-export const ButtonLinkWrap = styled.a`
+const buttonLinkWrapCss = css`
   display: block;
 
   ${({ theme }) => theme.mediaQueries.md} {
@@ -73,6 +74,14 @@ export const ButtonLinkWrap = styled.a`
     left: 0;
     right: 0;
   }
+`;
+
+export const ButtonLinkWrap = styled(Link)`
+  ${buttonLinkWrapCss};
+`;
+
+export const ButtonLinkWrapLocal = styled(LocalLink)`
+  ${buttonLinkWrapCss};
 `;
 
 export const ButtonStyle = styled(Button)`

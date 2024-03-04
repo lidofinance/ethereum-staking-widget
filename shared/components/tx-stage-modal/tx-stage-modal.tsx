@@ -3,7 +3,8 @@ import { useConnectorInfo } from 'reef-knot/web3-react';
 import { use1inchDeepLinkProps } from 'features/stake/hooks';
 
 import { TxLinkEtherscan } from 'shared/components/tx-link-etherscan';
-import { L2LowFee } from 'shared/banners/l2-low-fee';
+import { L2AfterStake } from 'shared/banners/l2-banners/l2-after-stake';
+import { L2AfterWrap } from 'shared/banners/l2-banners/l2-after-wrap';
 import { TxStageModalShape } from './tx-stage-modal-shape';
 import { ErrorMessage, formatBalance } from 'utils';
 import { ModalProps } from '@lidofinance/lido-ui';
@@ -204,7 +205,7 @@ export const TxStageModal = memo((props: TxStageModalProps) => {
           </>
         }
         description={successText}
-        footer={<L2LowFee token={balanceToken || 'stETH'} />}
+        footer={balanceToken === 'stETH' ? <L2AfterStake /> : <L2AfterWrap />}
       />
     );
   }

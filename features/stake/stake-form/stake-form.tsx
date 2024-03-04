@@ -1,5 +1,4 @@
 import { FC, memo } from 'react';
-import { Block } from '@lidofinance/lido-ui';
 
 import { StakeFormProvider } from './stake-form-context';
 import { TransactionModalProvider } from 'shared/transaction-modal';
@@ -10,22 +9,24 @@ import { StakeSubmitButton } from './controls/stake-submit-button';
 import { StakeFormInfo } from './stake-form-info';
 import { StakeFormModal } from './stake-form-modal';
 import { SwapDiscountBanner } from '../swap-discount-banner';
-import { FormControllerStyled } from './styles';
+import { StakeBlock, FormControllerStyled } from './styles';
+import { L2FromStakeToWrap } from 'shared/banners/l2-banners/l2-from-stake-to-wrap';
 
 export const StakeForm: FC = memo(() => {
   return (
     <TransactionModalProvider>
       <StakeFormProvider>
         <Wallet />
-        <Block data-testid="stakeForm">
+        <StakeBlock data-testid="stakeForm">
           <FormControllerStyled>
             <StakeAmountInput />
             <StakeSubmitButton />
             <SwapDiscountBanner />
           </FormControllerStyled>
+          <L2FromStakeToWrap />
           <StakeFormInfo />
           <StakeFormModal />
-        </Block>
+        </StakeBlock>
       </StakeFormProvider>
     </TransactionModalProvider>
   );
