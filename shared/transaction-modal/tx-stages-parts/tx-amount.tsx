@@ -7,5 +7,11 @@ type TxAmountProps = {
 };
 
 export const TxAmount = ({ amount, symbol }: TxAmountProps) => (
-  <FormatToken amount={amount} symbol={symbol} adaptiveDecimals trimEllipsis />
+  <FormatToken
+    amount={amount}
+    symbol={symbol}
+    maxTotalLength={Infinity}
+    adaptiveDecimals
+    trimEllipsis
+  />
 );
