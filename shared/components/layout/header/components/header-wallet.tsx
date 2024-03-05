@@ -6,12 +6,7 @@ import { CHAINS, getChainColor } from '@lido-sdk/constants';
 import { ThemeToggler } from '@lidofinance/lido-ui';
 import NoSSRWrapper from '../../../no-ssr-wrapper';
 
-import { getConfig } from 'config';
-import {
-  RPC_SETTINGS_PAGE_ON_INFRA_IS_ENABLED,
-  useFeatureFlag,
-} from 'config/feature-flags';
-const { ipfsMode } = getConfig();
+import { config } from 'config';
 
 import { IPFSInfoBox } from 'features/ipfs/ipfs-info-box';
 import { Button, Connect } from 'shared/wallet';
@@ -27,9 +22,6 @@ const HeaderWallet: FC = () => {
   const router = useRouter();
   const { active } = useWeb3();
   const { chainId } = useSDK();
-  const { rpcSettingsPageOnInfraIsEnabled } = useFeatureFlag(
-    RPC_SETTINGS_PAGE_ON_INFRA_IS_ENABLED,
-  );
 
   const chainName = CHAINS[chainId];
   const testNet = chainId !== CHAINS.Mainnet;
@@ -51,11 +43,9 @@ const HeaderWallet: FC = () => {
       ) : (
         <Connect size="sm" />
       )}
-      {(ipfsMode || rpcSettingsPageOnInfraIsEnabled) && (
-        <HeaderSettingsButton />
-      )}
+      {config.ipfsMode && <HeaderSettingsButton />}
       {!queryTheme && <ThemeToggler data-testid="themeToggler" />}
-      {ipfsMode && (
+      {config.ipfsMode && (
         <IPFSInfoBoxOnlyDesktopWrapper>
           <IPFSInfoBox />
         </IPFSInfoBoxOnlyDesktopWrapper>
