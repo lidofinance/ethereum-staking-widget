@@ -104,6 +104,7 @@ const Web3Provider: FC<PropsWithChildren> = ({ children }) => {
           defaultChainId={defaultChain.id}
           supportedChains={supportedChains}
           rpc={backendRPC}
+          pollingInterval={1200}
         >
           {children}
         </SDKLegacyProvider>

@@ -13,8 +13,15 @@ export const SDKLegacyProvider = (props: {
   defaultChainId: number;
   supportedChains: Chain[];
   rpc: Record<number, string>;
+  pollingInterval?: number;
 }) => {
-  const { children, defaultChainId, rpc, supportedChains } = props;
+  const {
+    children,
+    defaultChainId,
+    rpc,
+    supportedChains,
+    pollingInterval = POLLING_INTERVAL,
+  } = props;
   const { chainId = defaultChainId, account } = useWeb3();
   const { connector, isConnected } = useAccount();
 
@@ -32,11 +39,11 @@ export const SDKLegacyProvider = (props: {
       if (!providerWeb3 && connector && isConnected) {
         const provider = await connector.getProvider();
         const wrappedProvider = new Web3Provider(provider);
-        wrappedProvider.pollingInterval = POLLING_INTERVAL;
+        wrappedProvider.pollingInterval = pollingInterval;
         setProviderWeb3(wrappedProvider);
       }
     })();
-  }, [connector, isConnected, providerWeb3]);
+  }, [connector, isConnected, pollingInterval, providerWeb3]);
 
   const supportedChainIds = supportedChains.map((chain) => chain.id);
 
@@ -44,14 +51,14 @@ export const SDKLegacyProvider = (props: {
     chainId,
     rpc[chainId],
     0,
-    POLLING_INTERVAL,
+    pollingInterval,
   );
 
   const providerMainnetRpc = getStaticRpcBatchProvider(
     mainnet.id,
     rpc[mainnet.id],
     0,
-    POLLING_INTERVAL,
+    pollingInterval,
   );
 
   return (
