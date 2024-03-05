@@ -5,11 +5,7 @@ import type { ContentSecurityPolicyOption } from 'next-secure-headers/lib/rules'
 
 // Not use absolute import here!
 // code'''
-//    import { getConfig } from 'config';
-//    import { getSecretConfig } from 'config';
-//    or
-//    import { config } from 'config';
-//    import { secretConfig } from 'config';
+//    import { config, secretConfig } from 'config';
 // '''
 import { config } from '../get-config';
 import { secretConfig } from '../get-secret-config';

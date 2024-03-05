@@ -1,10 +1,8 @@
 import { Cache } from 'memory-cache';
 import { wrapRequest as wrapNextRequest } from '@lidofinance/next-api-wrapper';
+
 import { API } from 'types';
-
-import { getConfig } from 'config';
-const { CACHE_SMA_STETH_APR_KEY, CACHE_SMA_STETH_APR_TTL } = getConfig();
-
+import { config } from 'config';
 import { API_ROUTES } from 'consts/api';
 import {
   responseTimeMetric,
@@ -14,17 +12,21 @@ import {
 } from 'utilsApi';
 import Metrics from 'utilsApi/metrics';
 
-const cache = new Cache<typeof CACHE_SMA_STETH_APR_KEY, string>();
+const cache = new Cache<typeof config.CACHE_SMA_STETH_APR_KEY, string>();
 
 // TODO: deprecated, will be delete after check grafana dashboards
 const smaStethApr: API = async (_, res) => {
-  const cachedStethApr = cache.get(CACHE_SMA_STETH_APR_KEY);
+  const cachedStethApr = cache.get(config.CACHE_SMA_STETH_APR_KEY);
 
   if (cachedStethApr) {
     res.json(cachedStethApr);
   } else {
     const smaStethApr = await getSmaStethApr();
-    cache.put(CACHE_SMA_STETH_APR_KEY, smaStethApr, CACHE_SMA_STETH_APR_TTL);
+    cache.put(
+      config.CACHE_SMA_STETH_APR_KEY,
+      smaStethApr,
+      config.CACHE_SMA_STETH_APR_TTL,
+    );
 
     res.json(smaStethApr);
   }

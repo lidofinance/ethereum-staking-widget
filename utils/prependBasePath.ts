@@ -1,6 +1,5 @@
-import { getConfig } from 'config';
-const { basePath } = getConfig();
+import { config } from 'config';
 
 export const prependBasePath = (route: string): string => {
-  return `${basePath ?? ''}/${route}`;
+  return `${config.basePath ?? ''}/${route}`;
 };

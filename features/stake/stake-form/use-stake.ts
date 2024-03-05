@@ -1,21 +1,19 @@
-import { useSDK, useSTETHContractWeb3 } from '@lido-sdk/react';
 import { BigNumber } from 'ethers';
 import { useCallback } from 'react';
 import { useWeb3 } from 'reef-knot/web3-react';
 import invariant from 'tiny-invariant';
+import { useSDK, useSTETHContractWeb3 } from '@lido-sdk/react';
+
+import { config } from 'config';
+import { useCurrentStaticRpcProvider } from 'shared/hooks/use-current-static-rpc-provider';
+import { TX_OPERATION, useTransactionModal } from 'shared/transaction-modal';
 
 import { runWithTransactionLogger } from 'utils';
-
-import { getConfig } from 'config';
-const { enableQaHelpers, STAKE_FALLBACK_REFERRAL_ADDRESS } = getConfig();
-
 import { getErrorMessage } from 'utils/getErrorMessage';
 import { isContract } from 'utils/isContract';
-import { TX_OPERATION, useTransactionModal } from 'shared/transaction-modal';
-import { MockLimitReachedError, getAddress, applyGasLimitRatio } from './utils';
 import { getFeeData } from 'utils/getFeeData';
 
-import { useCurrentStaticRpcProvider } from 'shared/hooks/use-current-static-rpc-provider';
+import { MockLimitReachedError, getAddress, applyGasLimitRatio } from './utils';
 
 type StakeArguments = {
   amount: BigNumber | null;
@@ -49,7 +47,7 @@ export const useStake = ({ onConfirm }: StakeOptions) => {
         });
 
         if (
-          enableQaHelpers &&
+          config.enableQaHelpers &&
           window.localStorage.getItem('mockLimitReached') === 'true'
         ) {
           throw new MockLimitReachedError('Stake limit reached');
@@ -59,7 +57,7 @@ export const useStake = ({ onConfirm }: StakeOptions) => {
           isContract(account, providerRpc),
           referral
             ? getAddress(referral, providerRpc)
-            : STAKE_FALLBACK_REFERRAL_ADDRESS,
+            : config.STAKE_FALLBACK_REFERRAL_ADDRESS,
         ]);
 
         dispatchModalState({

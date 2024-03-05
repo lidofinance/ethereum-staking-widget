@@ -1,7 +1,9 @@
 import { Cache } from 'memory-cache';
 import { wrapRequest as wrapNextRequest } from '@lidofinance/next-api-wrapper';
 
+import { config } from 'config';
 import { API_ROUTES } from 'consts/api';
+
 import { API, SubgraphChains } from 'types';
 import {
   cors,
@@ -17,17 +19,14 @@ import {
 import Metrics from 'utilsApi/metrics';
 import { parallelizePromises } from 'utils';
 
-import { getConfig } from 'config';
-const { defaultChain, CACHE_LIDO_SHORT_STATS_KEY, CACHE_LIDO_SHORT_STATS_TTL } =
-  getConfig();
-
 const cache = new Cache<string, unknown>();
 
 // Proxy for third-party API.
 // Returns stETH token information
 const shortLidoStats: API = async (req, res) => {
-  const chainId = (Number(req.query.chainId) as SubgraphChains) || defaultChain;
-  const cacheKey = `${CACHE_LIDO_SHORT_STATS_KEY}_${chainId}`;
+  const chainId =
+    (Number(req.query.chainId) as SubgraphChains) || config.defaultChain;
+  const cacheKey = `${config.CACHE_LIDO_SHORT_STATS_KEY}_${chainId}`;
 
   const cachedLidoStats = cache.get(cacheKey);
   if (cachedLidoStats) {
@@ -49,7 +48,7 @@ const shortLidoStats: API = async (req, res) => {
     // set the cache if there is all the data
     // because right now there is no request error handling in parallelizePromises
     if (lidoHolders && totalStaked && stEthPrice) {
-      cache.put(cacheKey, shortLidoStats, CACHE_LIDO_SHORT_STATS_TTL);
+      cache.put(cacheKey, shortLidoStats, config.CACHE_LIDO_SHORT_STATS_TTL);
     }
 
     res.status(200).json(shortLidoStats);

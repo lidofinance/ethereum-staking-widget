@@ -1,5 +1,4 @@
-import { getConfig } from 'config';
-const { ipfsMode, widgetApiBasePathForIpfs } = getConfig();
+import { config } from 'config';
 
 export type BackendQuery = {
   address: string;
@@ -16,8 +15,8 @@ export const backendRequest = async (query: BackendQuery) => {
   Object.entries(query).forEach(([k, v]) => params.append(k, v.toString()));
 
   const apiRewardsPath = `/api/rewards?${params.toString()}`;
-  const apiRewardsUrl = ipfsMode
-    ? `${widgetApiBasePathForIpfs}${apiRewardsPath}`
+  const apiRewardsUrl = config.ipfsMode
+    ? `${config.widgetApiBasePathForIpfs}${apiRewardsPath}`
     : apiRewardsPath;
   const requested = await fetch(apiRewardsUrl);
 

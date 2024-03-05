@@ -1,7 +1,6 @@
 import memoize from 'lodash/memoize';
 
-import { getConfig } from 'config';
-const { ipfsMode } = getConfig();
+import { config } from 'config';
 
 import { encodeURLQuery } from './encodeURLQuery';
 
@@ -15,6 +14,6 @@ export const prefixUrl = (url: string, query?: Record<string, string>) => {
   const queryString =
     query && Object.keys(query).length > 0 ? `?${encodeURLQuery(query)}` : '';
 
-  if (ipfsMode) return `${getIpfsBasePath()}${queryString}#${url}`;
+  if (config.ipfsMode) return `${getIpfsBasePath()}${queryString}#${url}`;
   return url;
 };

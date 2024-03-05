@@ -1,8 +1,6 @@
 import { useEffect, useRef } from 'react';
 
-import { getConfig } from 'config';
-const { ipfsMode, widgetApiBasePathForIpfs } = getConfig();
-
+import { config } from 'config';
 import { Backend } from 'features/rewards/types';
 import { useLidoSWR } from 'shared/hooks';
 import { swrAbortableMiddleware } from 'utils';
@@ -49,8 +47,8 @@ export const useRewardsDataLoad: UseRewardsDataLoad = (props) => {
   );
 
   const apiRewardsPath = `/api/rewards?${params.toString()}`;
-  const apiRewardsUrl = ipfsMode
-    ? `${widgetApiBasePathForIpfs}${apiRewardsPath}`
+  const apiRewardsUrl = config.ipfsMode
+    ? `${config.widgetApiBasePathForIpfs}${apiRewardsPath}`
     : apiRewardsPath;
 
   const { data, ...rest } = useLidoSWR<Backend>(

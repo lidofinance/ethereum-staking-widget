@@ -1,9 +1,7 @@
 import { collectDefaultMetrics, Registry } from 'prom-client';
 import { collectStartupMetrics } from '@lidofinance/api-metrics';
 
-import { getConfig } from 'config';
-const { defaultChain, supportedChains } = getConfig();
-
+import { config } from 'config';
 import { METRICS_PREFIX } from 'consts/metrics';
 import buildInfoJson from 'build-info.json';
 
@@ -26,8 +24,10 @@ class Metrics {
     collectStartupMetrics({
       prefix: METRICS_PREFIX,
       registry: this.registry,
-      defaultChain: `${defaultChain}`,
-      supportedChains: supportedChains.map((chain: number) => `${chain}`),
+      defaultChain: `${config.defaultChain}`,
+      supportedChains: config.supportedChains.map(
+        (chain: number) => `${chain}`,
+      ),
       version: buildInfoJson.version,
       commit: buildInfoJson.commit,
       branch: buildInfoJson.branch,

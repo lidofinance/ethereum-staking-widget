@@ -5,9 +5,7 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import { wrapRequest as wrapNextRequest } from '@lidofinance/next-api-wrapper';
 import { CHAINS, TOKENS, getTokenAddress } from '@lido-sdk/constants';
 
-import { getConfig } from 'config';
-const { CACHE_ONE_INCH_RATE_KEY, CACHE_ONE_INCH_RATE_TTL } = getConfig();
-
+import { config } from 'config';
 import { API_ROUTES } from 'consts/api';
 import {
   getOneInchRate,
@@ -57,7 +55,7 @@ const oneInchRate: API = async (req, res) => {
   return;
   // TODO: enable test in test/consts.ts
   const token = await validateAndGetQueryToken(req, res);
-  const cacheKey = `${CACHE_ONE_INCH_RATE_KEY}-${token}`;
+  const cacheKey = `${config.CACHE_ONE_INCH_RATE_KEY}-${token}`;
   const cachedOneInchRate = cache.get(cacheKey);
 
   if (cachedOneInchRate) {
@@ -81,7 +79,7 @@ const oneInchRate: API = async (req, res) => {
       DEFAULT_AMOUNT,
     );
   }
-  cache.put(cacheKey, { rate: oneInchRate }, CACHE_ONE_INCH_RATE_TTL);
+  cache.put(cacheKey, { rate: oneInchRate }, config.CACHE_ONE_INCH_RATE_TTL);
 
   res.status(200).json({ rate: oneInchRate });
 };

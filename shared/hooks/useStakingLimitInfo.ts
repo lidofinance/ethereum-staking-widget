@@ -6,8 +6,7 @@ import { CHAINS } from '@lido-sdk/constants';
 import { StethAbi } from '@lido-sdk/contracts';
 import { useSDK, useSTETHContractRPC } from '@lido-sdk/react';
 
-import { getConfig } from 'config';
-const { enableQaHelpers } = getConfig();
+import { config } from 'config';
 import { STRATEGY_LAZY } from 'consts/swr-strategies';
 import { LIMIT_LEVEL } from 'types';
 
@@ -50,7 +49,7 @@ export const useStakingLimitInfo = () => {
   const steth = useSTETHContractRPC();
 
   return useSwr<StakeLimitFullInfo>(
-    ['swr:getStakeLimitFullInfo', chainId, steth, enableQaHelpers],
+    ['swr:getStakeLimitFullInfo', chainId, steth, config.enableQaHelpers],
     async (
       _key: string,
       _chainId: CHAINS,

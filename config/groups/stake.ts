@@ -4,10 +4,9 @@ import { parseEther } from '@ethersproject/units';
 
 import { IPFS_REFERRAL_ADDRESS } from './ipfs';
 
-// Not use getConfig() here!!!
-// Use getPreConfig() only here!!!
-import { getPreConfig } from '../get-preconfig';
-const { ipfsMode } = getPreConfig();
+// Not use here:
+// import { config } from '../get-config';
+import { preConfig } from '../get-preconfig';
 
 export const PRECISION = 10 ** 6;
 
@@ -24,6 +23,6 @@ export const STAKE_GASLIMIT_FALLBACK = BigNumber.from(
   ),
 );
 
-export const STAKE_FALLBACK_REFERRAL_ADDRESS = ipfsMode
+export const STAKE_FALLBACK_REFERRAL_ADDRESS = preConfig.ipfsMode
   ? IPFS_REFERRAL_ADDRESS
   : AddressZero;

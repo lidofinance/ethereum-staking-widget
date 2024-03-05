@@ -6,10 +6,9 @@ import { CHAINS } from 'consts/chains';
 
 // Not use absolute import here!
 // code'''
-//    import { getConfig } from 'config';
+//    import { config } from 'config';
 // '''
-import { getConfig } from '../get-config';
-const { ipfsMode } = getConfig();
+import { config } from '../get-config';
 
 import { useUserConfig } from '../user-config';
 
@@ -36,7 +35,7 @@ export const useGetRpcUrlByChainId = () => {
         return '';
       }
 
-      if (ipfsMode) {
+      if (config.ipfsMode) {
         const rpc =
           userConfig.savedUserConfig.rpcUrls[chainId] ||
           userConfig.prefillUnsafeElRpcUrls[chainId]?.[0];

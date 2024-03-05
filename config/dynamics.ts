@@ -9,11 +9,10 @@ declare global {
   }
 }
 
-// Not use dynamics directly!
+// Not use dynamics directly in project!
 // Only through:
 // code```
-//    import { getConfig } from 'config';
-//    or import { getConfig } from './get-config';
-//    const { ... } = getConfig();
+//    import { config } from 'config'; // or
+//    import { config } from './get-config'; // in config "namespace"
 // ```
 export default typeof window !== 'undefined' ? window.__env__ : dynamics;

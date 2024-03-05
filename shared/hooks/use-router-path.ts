@@ -1,15 +1,13 @@
 import { useRouter } from 'next/router';
 
-import { getConfig } from 'config';
-const { ipfsMode, isClientSide } = getConfig();
-
+import { config } from 'config';
 import { HOME_PATH } from 'consts/urls';
 
 export const useRouterPath = () => {
   const router = useRouter();
 
-  if (ipfsMode) {
-    if (!isClientSide) return HOME_PATH;
+  if (config.ipfsMode) {
+    if (!config.isClientSide) return HOME_PATH;
     return location.hash.replace('#', '') || HOME_PATH;
   }
 

@@ -5,14 +5,11 @@ import {
   useEthereumBalance,
 } from '@lido-sdk/react';
 
-import { getConfig } from 'config';
-const { BALANCE_PADDING } = getConfig();
-
+import { config } from 'config';
+import { STRATEGY_LAZY } from 'consts/swr-strategies';
 import { useIsMultisig } from 'shared/hooks/useIsMultisig';
 import { useTokenMaxAmount } from 'shared/hooks/use-token-max-amount';
 import { useMaxGasPrice, useStakingLimitInfo } from 'shared/hooks';
-
-import { STRATEGY_LAZY } from 'consts/swr-strategies';
 
 import { useWrapGasLimit } from './use-wrap-gas-limit';
 
@@ -39,7 +36,7 @@ export const useWrapFormNetworkData = () => {
     limit: stakeLimitInfo?.currentStakeLimit,
     isPadded: !isMultisig,
     gasLimit: gasLimitETH,
-    padding: BALANCE_PADDING,
+    padding: config.BALANCE_PADDING,
     isLoading: isMultisigLoading,
   });
 

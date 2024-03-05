@@ -1,16 +1,13 @@
-import { useLidoSWR, useWSTETHContractRPC } from '@lido-sdk/react';
 import { useWeb3 } from 'reef-knot/web3-react';
+import { useLidoSWR, useWSTETHContractRPC } from '@lido-sdk/react';
 import { CHAINS } from '@lido-sdk/constants';
 
+import { config } from 'config';
 import {
   WRAP_FROM_ETH_GAS_LIMIT,
   WRAP_GAS_LIMIT,
   WRAP_GAS_LIMIT_GOERLI,
 } from 'consts/tx';
-
-import { getConfig } from 'config';
-const { ESTIMATE_ACCOUNT, ESTIMATE_AMOUNT } = getConfig();
-
 import { useCurrentStaticRpcProvider } from 'shared/hooks/use-current-static-rpc-provider';
 import { applyGasLimitRatio } from 'features/stake/stake-form/utils';
 
@@ -27,9 +24,9 @@ export const useWrapGasLimit = () => {
       const fetchGasLimitETH = async () => {
         try {
           return await staticRpcProvider.estimateGas({
-            from: ESTIMATE_ACCOUNT,
+            from: config.ESTIMATE_ACCOUNT,
             to: wsteth.address,
-            value: ESTIMATE_AMOUNT,
+            value: config.ESTIMATE_AMOUNT,
           });
         } catch (error) {
           console.warn(`${_key}::[eth]`, error);
@@ -39,8 +36,8 @@ export const useWrapGasLimit = () => {
 
       const fetchGasLimitStETH = async () => {
         try {
-          return await wsteth.estimateGas.wrap(ESTIMATE_AMOUNT, {
-            from: ESTIMATE_ACCOUNT,
+          return await wsteth.estimateGas.wrap(config.ESTIMATE_AMOUNT, {
+            from: config.ESTIMATE_ACCOUNT,
           });
         } catch (error) {
           console.warn(`${_key}::[steth]`, error);

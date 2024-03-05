@@ -1,30 +1,21 @@
 // Not use absolute import here!
 // code'''
-//    import { getConfig } from 'config';
+//    import { config } from 'config';
 // '''
-import { getConfig } from '../get-config';
+import { config } from '../get-config';
 import { UserConfigDefaultType } from './types';
-
-const {
-  defaultChain,
-  supportedChains,
-  prefillUnsafeElRpcUrls1,
-  prefillUnsafeElRpcUrls5,
-  prefillUnsafeElRpcUrls17000,
-  walletconnectProjectId,
-} = getConfig();
 
 import { CHAINS } from 'consts/chains';
 
 export const getUserConfigDefault = (): UserConfigDefaultType => {
   return {
-    defaultChain: Number(defaultChain),
-    supportedChainIds: supportedChains,
+    defaultChain: Number(config.defaultChain),
+    supportedChainIds: config.supportedChains,
     prefillUnsafeElRpcUrls: {
-      [CHAINS.Mainnet]: prefillUnsafeElRpcUrls1,
-      [CHAINS.Goerli]: prefillUnsafeElRpcUrls5,
-      [CHAINS.Holesky]: prefillUnsafeElRpcUrls17000,
+      [CHAINS.Mainnet]: config.prefillUnsafeElRpcUrls1,
+      [CHAINS.Goerli]: config.prefillUnsafeElRpcUrls5,
+      [CHAINS.Holesky]: config.prefillUnsafeElRpcUrls17000,
     },
-    walletconnectProjectId: walletconnectProjectId,
+    walletconnectProjectId: config.walletconnectProjectId,
   };
 };

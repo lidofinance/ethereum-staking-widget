@@ -1,12 +1,9 @@
 import { useLidoSWR, useWSTETHContractRPC } from '@lido-sdk/react';
 
-import { getConfig } from 'config';
-const { ESTIMATE_ACCOUNT, ESTIMATE_AMOUNT } = getConfig();
-
+import { config } from 'config';
 import { UNWRAP_GAS_LIMIT } from 'consts/tx';
-
-import { useCurrentStaticRpcProvider } from 'shared/hooks/use-current-static-rpc-provider';
 import { STRATEGY_LAZY } from 'consts/swr-strategies';
+import { useCurrentStaticRpcProvider } from 'shared/hooks/use-current-static-rpc-provider';
 
 export const useUnwrapGasLimit = () => {
   const wsteth = useWSTETHContractRPC();
@@ -17,9 +14,12 @@ export const useUnwrapGasLimit = () => {
     async (_key, chainId) => {
       if (!chainId) return;
       try {
-        const gasLimit = await wsteth.estimateGas.unwrap(ESTIMATE_AMOUNT, {
-          from: ESTIMATE_ACCOUNT,
-        });
+        const gasLimit = await wsteth.estimateGas.unwrap(
+          config.ESTIMATE_AMOUNT,
+          {
+            from: config.ESTIMATE_ACCOUNT,
+          },
+        );
         return gasLimit;
       } catch (error) {
         console.warn(error);

@@ -1,16 +1,13 @@
 import { useMemo } from 'react';
 import { SWRResponse, useLidoSWR } from '@lido-sdk/react';
 
-import { getConfig } from 'config';
-const { wqAPIBasePath } = getConfig();
+import { config } from 'config';
 import { STRATEGY_EAGER } from 'consts/swr-strategies';
-
+import { useWithdrawals } from 'features/withdrawals/contexts/withdrawals-context';
 import { useDebouncedValue } from 'shared/hooks';
 import { encodeURLQuery } from 'utils/encodeURLQuery';
 import { standardFetcher } from 'utils/standardFetcher';
 import { FetcherError } from 'utils/fetcherError';
-
-import { useWithdrawals } from 'features/withdrawals/contexts/withdrawals-context';
 
 const DEFAULT_DAYS_VALUE = 5;
 
@@ -34,7 +31,7 @@ export const useWaitingTime = (
   const { isApproximate } = options;
   const debouncedAmount = useDebouncedValue(amount, 1000);
   const url = useMemo(() => {
-    const basePath = wqAPIBasePath;
+    const basePath = config.wqAPIBasePath;
     const params = encodeURLQuery({ amount: debouncedAmount });
     const queryString = params ? `?${params}` : '';
     return `${basePath}/v1/request-time${queryString}`;
