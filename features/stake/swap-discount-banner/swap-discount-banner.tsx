@@ -4,12 +4,9 @@ import { useLidoSWR } from '@lido-sdk/react';
 import { Button } from '@lidofinance/lido-ui';
 import { trackEvent } from '@lidofinance/analytics-matomo';
 
+import { config } from 'config';
 import { MATOMO_CLICK_EVENTS } from 'consts/matomo-click-events';
 import { OPEN_OCEAN_REFERRAL_ADDRESS } from 'consts/external-links';
-
-import { getConfig } from 'config';
-const { enableQaHelpers } = getConfig();
-
 import { STRATEGY_LAZY } from 'consts/swr-strategies';
 import { getOpenOceanRate } from 'utils/get-open-ocean-rate';
 
@@ -42,7 +39,7 @@ const fetchRate = async (): Promise<FetchRateResult> => {
 const linkClickHandler = () =>
   trackEvent(...MATOMO_CLICK_EVENTS.openOceanDiscount);
 
-if (enableQaHelpers && typeof window !== 'undefined') {
+if (config.enableQaHelpers && typeof window !== 'undefined') {
   (window as any).setMockDiscountRate = (rate?: number) =>
     rate === undefined
       ? localStorage.removeItem(MOCK_LS_KEY)
@@ -50,7 +47,7 @@ if (enableQaHelpers && typeof window !== 'undefined') {
 }
 
 const getData = (data: FetchRateResult | undefined) => {
-  if (!enableQaHelpers || typeof window == 'undefined') return data;
+  if (!config.enableQaHelpers || typeof window == 'undefined') return data;
   const mock = localStorage.getItem(MOCK_LS_KEY);
   if (mock) {
     return calculateDiscountState(parseFloat(mock));

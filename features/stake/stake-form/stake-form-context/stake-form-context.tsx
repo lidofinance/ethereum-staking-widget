@@ -35,8 +35,7 @@ import {
 } from './types';
 import { useTokenMaxAmount } from 'shared/hooks/use-token-max-amount';
 
-import { getConfig } from 'config';
-const { BALANCE_PADDING } = getConfig();
+import { config } from 'config';
 
 //
 // Data context
@@ -91,7 +90,7 @@ const useStakeFormNetworkData = (): StakeFormNetworkData => {
     limit: stakingLimitInfo?.currentStakeLimit,
     isPadded: !isMultisig,
     gasLimit: gasLimit,
-    padding: BALANCE_PADDING,
+    padding: config.BALANCE_PADDING,
     isLoading: isMultisigLoading,
   });
 

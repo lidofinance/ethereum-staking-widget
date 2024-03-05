@@ -2,9 +2,7 @@ import React, { FC, PropsWithChildren } from 'react';
 import { useRouter } from 'next/router';
 import Link, { LinkProps } from 'next/link';
 
-import { getConfig } from 'config';
-const { ipfsMode } = getConfig();
-
+import { config } from 'config';
 import { LinkIpfs } from 'shared/components/link-ipfs';
 
 export const LocalLink: FC<PropsWithChildren<LinkProps>> = (props) => {
@@ -20,7 +18,7 @@ export const LocalLink: FC<PropsWithChildren<LinkProps>> = (props) => {
   if (theme && typeof theme === 'string') extraQuery.theme = theme;
 
   if (typeof href === 'string') {
-    if (ipfsMode) {
+    if (config.ipfsMode) {
       return <LinkIpfs {...restProps} href={href} query={extraQuery} />;
     }
 

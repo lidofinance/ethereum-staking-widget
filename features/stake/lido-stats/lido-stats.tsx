@@ -8,8 +8,7 @@ import { Block, DataTable, Question, Tooltip } from '@lidofinance/lido-ui';
 import { Section, MatomoLink } from 'shared/components';
 import { useLidoApr, useLidoStats } from 'shared/hooks';
 
-import { getConfig } from 'config';
-const { ipfsMode } = getConfig();
+import { config } from 'config';
 
 import { LIDO_APR_TOOLTIP_TEXT } from 'consts/text';
 import { MATOMO_CLICK_EVENTS_TYPES } from 'consts/matomo-click-events';
@@ -33,12 +32,13 @@ export const LidoStats: FC = memo(() => {
   const lidoApr = useLidoApr();
   const lidoStats = useLidoStats();
 
-  const showApr = !ipfsMode || isStatItemAvailable(lidoApr.apr);
+  const showApr = !config.ipfsMode || isStatItemAvailable(lidoApr.apr);
   const showTotalStaked =
-    !ipfsMode || isStatItemAvailable(lidoStats.data.totalStaked);
-  const showStakers = !ipfsMode || isStatItemAvailable(lidoStats.data.stakers);
+    !config.ipfsMode || isStatItemAvailable(lidoStats.data.totalStaked);
+  const showStakers =
+    !config.ipfsMode || isStatItemAvailable(lidoStats.data.stakers);
   const showMarketCap =
-    !ipfsMode || isStatItemAvailable(lidoStats.data.marketCap);
+    !config.ipfsMode || isStatItemAvailable(lidoStats.data.marketCap);
 
   if (!showApr && !showTotalStaked && !showStakers && !showMarketCap) {
     return null;

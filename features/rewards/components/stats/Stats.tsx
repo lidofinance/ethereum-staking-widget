@@ -6,9 +6,7 @@ import { Box, Link } from '@lidofinance/lido-ui';
 import { useSDK, useTokenBalance } from '@lido-sdk/react';
 import { TOKENS, getTokenAddress } from '@lido-sdk/constants';
 
-import { getConfig } from 'config';
-const { defaultChain } = getConfig();
-
+import { config } from 'config';
 import { stEthEthRequest } from 'features/rewards/fetchers/requesters';
 import EthSymbol from 'features/rewards/components/EthSymbol';
 import NumberFormat from 'features/rewards/components/NumberFormat';
@@ -37,7 +35,7 @@ export const Stats: FC<StatsProps> = (props) => {
   const mainnetStaticRpcProvider = useMainnetStaticRpcProvider();
 
   const getStEthEth = useCallback(async () => {
-    if (defaultChain !== 1) {
+    if (config.defaultChain !== 1) {
       setStEthEth(constants.WeiPerEther);
     } else {
       const stEthEth = await stEthEthRequest(mainnetStaticRpcProvider);

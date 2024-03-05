@@ -1,7 +1,6 @@
 import { Component } from 'types';
 
-import { getConfig } from 'config';
-const { LOCALE } = getConfig();
+import { config } from 'config';
 
 export type FormatPercentComponent = Component<
   'span',
@@ -13,7 +12,7 @@ export const FormatPercent: FormatPercentComponent = (props) => {
   const value =
     amount == null
       ? 'Unavailable'
-      : amount.toLocaleString(LOCALE, {
+      : amount.toLocaleString(config.LOCALE, {
           style: 'percent',
           maximumFractionDigits: 3,
         });

@@ -1,7 +1,6 @@
-import { getConfig } from 'config';
-const { ipfsMode } = getConfig();
+import { config } from 'config';
 
 import { StakePage } from 'features/stake';
 import HomePageIpfs from 'features/ipfs/home-page-ipfs';
 
-export default ipfsMode ? HomePageIpfs : StakePage;
+export default config.ipfsMode ? HomePageIpfs : StakePage;

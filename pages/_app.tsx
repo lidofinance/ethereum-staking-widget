@@ -9,8 +9,7 @@ import {
   migrationThemeCookiesToCrossDomainCookiesClientSide,
 } from '@lidofinance/lido-ui';
 
-import { getConfig } from 'config';
-const { ipfsMode } = getConfig();
+import { config } from 'config';
 import { withCsp } from 'config/csp';
 
 import { Providers } from 'providers';
@@ -53,6 +52,6 @@ const AppWrapper = (props: AppProps): JSX.Element => {
   );
 };
 
-export default ipfsMode || process.env.NODE_ENV === 'development'
+export default config.ipfsMode || process.env.NODE_ENV === 'development'
   ? AppWrapper
   : withCsp(AppWrapper);
