@@ -34,7 +34,7 @@ export const TxStageSignOperationAmount = ({
       txHash={txHash}
       title={
         <>
-          You are now {operationText.toLowerCase()} {amountEl}
+          You are {operationText.toLowerCase()} {amountEl}
         </>
       }
       description={

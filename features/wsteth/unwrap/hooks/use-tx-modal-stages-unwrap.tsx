@@ -45,7 +45,7 @@ const getTxModalStagesUnwrap = (
       <TxStageOperationSucceedBalanceShown
         txHash={txHash}
         balance={balance}
-        balanceToken={'wstETH'}
+        balanceToken={STAGE_OPERATION_ARGS.willReceiveToken}
         operationText={'Unwrapping'}
       />,
       {

@@ -22,7 +22,7 @@ const STAGE_APPROVE_ARGS = {
 
 const STAGE_OPERATION_ARGS = {
   willReceiveToken: 'wstETH',
-  operationText: 'Requesting withdrawal',
+  operationText: 'Requesting withdrawal for',
 };
 
 const getTxModalStagesRequest = (
