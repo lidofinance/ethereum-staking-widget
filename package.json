@@ -25,6 +25,7 @@
     "@ethersproject/bytes": "^5.7.0",
     "@ethersproject/constants": "^5.7.0",
     "@ethersproject/contracts": "^5.7.0",
+    "@ethersproject/providers": "^5.7.0",
     "@ethersproject/units": "^5.7.0",
     "@lido-sdk/constants": "^3.2.1",
     "@lido-sdk/contracts": "^3.0.4",
