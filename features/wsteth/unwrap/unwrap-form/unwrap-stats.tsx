@@ -37,6 +37,7 @@ export const UnwrapStats = () => {
       >
         <FormatToken
           data-testid="youWillReceive"
+          fallback="-"
           amount={willReceiveStETH}
           symbol="stETH"
           showAmountTip

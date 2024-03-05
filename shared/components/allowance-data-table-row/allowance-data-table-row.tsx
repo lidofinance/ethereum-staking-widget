@@ -13,6 +13,7 @@ export type AllowanceDataTableRowProps = Omit<
   title?: ReactNode;
   token: TOKENS.WSTETH | TOKENS.STETH | 'ETH';
   allowance?: BigNumber;
+  loading?: boolean;
   isBlank?: boolean;
 };
 

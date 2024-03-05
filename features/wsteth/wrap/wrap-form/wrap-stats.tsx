@@ -94,6 +94,7 @@ export const WrapFormStats = () => {
         <FormatToken
           amount={willReceiveWsteth}
           data-testid="youWillReceive"
+          fallback="-"
           symbol="wstETH"
           showAmountTip
           trimEllipsis
