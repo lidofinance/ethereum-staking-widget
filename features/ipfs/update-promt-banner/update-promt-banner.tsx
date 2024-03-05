@@ -1,37 +1,110 @@
 import { Button, Modal } from '@lidofinance/lido-ui';
+
 import { dynamics } from 'config';
-import { WarningIcon, Wrapper, WarningText } from './styles';
+
+import { WarningIcon, Wrapper, WarningText, WarningSubText } from './styles';
 import { useVersionCheck } from './use-version-check';
 import NoSsrWrapper from 'shared/components/no-ssr-wrapper';
 
-const warningTextContent = (
-  isUpdateAvailable: boolean,
-  isVersionUnsafe: boolean,
-) => {
+const LIDO_TWITTER_LINK = 'https://twitter.com/LidoFinance';
+
+type WarningContentOptions = {
+  isUpdateAvailable: boolean;
+  isVersionUnsafe: boolean;
+  isNotVerifiable: boolean;
+  isIpfs: boolean;
+};
+
+const warningContent = ({
+  isUpdateAvailable,
+  isVersionUnsafe,
+  isNotVerifiable,
+  isIpfs,
+}: WarningContentOptions) => {
   switch (true) {
-    case dynamics.ipfsMode && isVersionUnsafe:
-      return 'This version of IPFS Widget is deemed not safe to use';
-    case dynamics.ipfsMode && isUpdateAvailable:
-      return 'This is not the most recent version of IPFS Widget';
-    case isVersionUnsafe:
-      return 'Staking Widget is not safe to use right now';
+    case isIpfs && isNotVerifiable:
+      return {
+        content: (
+          <WarningText>
+            We could not verify security of this IPFS version
+          </WarningText>
+        ),
+        canClose: true,
+      };
+    case isIpfs && isVersionUnsafe && isUpdateAvailable:
+      return {
+        content: (
+          <WarningText>
+            This IPFS version has issues that could impact your experience
+          </WarningText>
+        ),
+        canClose: false,
+      };
+    case isVersionUnsafe && !isUpdateAvailable:
+      return {
+        content: (
+          <WarningText>
+            The staking widget is currently down. Resolving is in progress
+          </WarningText>
+        ),
+        canClose: false,
+        showTwitterLink: true,
+      };
+    case isIpfs && isUpdateAvailable:
+      return {
+        content: (
+          <WarningText>
+            This is not the most recent version of IPFS Widget
+            <br />
+            <WarningSubText>
+              Note that you may not find new features or functionality in this
+              version
+            </WarningSubText>
+          </WarningText>
+        ),
+        canClose: true,
+      };
     default:
-      return '';
+      return { content: null };
   }
 };
 
 export const UpgradePromtBanner = () => {
-  const { isUpdateAvailable, data, setConditionsAccepted, isVersionUnsafe } =
-    useVersionCheck();
+  const {
+    areConditionsAccepted,
+    setConditionsAccepted,
+    isUpdateAvailable,
+    isVersionUnsafe,
+    isNotVerifiable,
+    data,
+  } = useVersionCheck();
+
+  const { content, canClose, showTwitterLink } = warningContent({
+    isUpdateAvailable,
+    isVersionUnsafe,
+    isNotVerifiable,
+    isIpfs: dynamics.ipfsMode,
+  });
+
+  const showModal = !!content && !(canClose && areConditionsAccepted);
 
   return (
     <NoSsrWrapper>
-      <Modal open={isUpdateAvailable || isVersionUnsafe}>
+      <Modal open={showModal}>
         <Wrapper>
           <WarningIcon />
-          <WarningText>
-            {warningTextContent(isUpdateAvailable, isVersionUnsafe)}
-          </WarningText>
+          {content}
+          {showTwitterLink && (
+            <a
+              href={LIDO_TWITTER_LINK}
+              target="_self"
+              rel="noopener noreferrer"
+            >
+              <Button size="sm" fullwidth variant="filled">
+                Follow X for more info
+              </Button>
+            </a>
+          )}
           {isUpdateAvailable && (
             <a
               href={data.remoteCidLink}
@@ -43,15 +116,17 @@ export const UpgradePromtBanner = () => {
               </Button>
             </a>
           )}
-          <Button
-            size="sm"
-            fullwidth
-            color="error"
-            variant="outlined"
-            onClick={() => setConditionsAccepted(true)}
-          >
-            Accept risks and use the current version
-          </Button>
+          {canClose && (
+            <Button
+              size="sm"
+              fullwidth
+              color="warning"
+              variant="outlined"
+              onClick={() => setConditionsAccepted(true)}
+            >
+              Accept possible issues and proceed
+            </Button>
+          )}
         </Wrapper>
       </Modal>
     </NoSsrWrapper>

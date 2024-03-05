@@ -1,10 +1,12 @@
-import { dynamics } from 'config';
+import { TransactionModalProvider } from 'shared/transaction-modal';
+import { FaqPlaceholder } from 'features/ipfs';
+import { OnlyInfraRender } from 'shared/components/only-infra-render';
+
 import { RequestFormProvider } from './request-form-context';
 import { RequestFaq } from '../withdrawals-faq/request-faq';
 import { RequestForm } from './form';
 import { TxRequestModal } from './tx-modal';
 import { RequestWallet } from './wallet';
-import { TransactionModalProvider } from 'shared/transaction-modal';
 
 export const Request = () => {
   return (
@@ -12,7 +14,9 @@ export const Request = () => {
       <RequestFormProvider>
         <RequestWallet />
         <RequestForm />
-        {!dynamics.ipfsMode && <RequestFaq />}
+        <OnlyInfraRender placeholder={<FaqPlaceholder />}>
+          <RequestFaq />
+        </OnlyInfraRender>
         <TxRequestModal />
       </RequestFormProvider>
     </TransactionModalProvider>

@@ -1,5 +1,12 @@
 import { dynamics } from 'config';
 
-export const OnlyInfraRender = ({ children }: React.PropsWithChildren) => {
-  return !dynamics.ipfsMode ? <>{children}</> : null;
+type OnlyInfraRenderProps = {
+  placeholder?: React.ReactNode;
+};
+
+export const OnlyInfraRender = ({
+  children,
+  placeholder = null,
+}: React.PropsWithChildren<OnlyInfraRenderProps>) => {
+  return !dynamics.ipfsMode ? <>{children}</> : placeholder;
 };

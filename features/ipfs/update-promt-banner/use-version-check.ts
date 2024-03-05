@@ -77,7 +77,7 @@ export const useVersionCheck = () => {
   );
 
   // ens cid extraction
-  const remoteCidSWR = useLidoSWR<EnsHashCheckReturn>(
+  const remoteVersionSWR = useLidoSWR<EnsHashCheckReturn>(
     ['swr:ipfs-hash-check'],
     async (): Promise<EnsHashCheckReturn> => {
       const releaseInfoData = await standardFetcher<ReleaseInfoData>(
@@ -115,19 +115,22 @@ export const useVersionCheck = () => {
   );
 
   const isUpdateAvailable = Boolean(
-    !areConditionsAccepted &&
-      remoteCidSWR.data &&
+    remoteVersionSWR.data &&
       currentCidSWR.data &&
-      remoteCidSWR.data.cid !== currentCidSWR.data &&
-      remoteCidSWR.data.leastSafeVersion !== 'none',
+      remoteVersionSWR.data.cid !== currentCidSWR.data &&
+      remoteVersionSWR.data.leastSafeVersion !== 'none',
   );
 
   const isVersionUnsafe = Boolean(
-    !areConditionsAccepted &&
-      remoteCidSWR.data?.leastSafeVersion &&
-      (remoteCidSWR.data.leastSafeVersion === 'none' ||
-        isVersionLess(buildInfo.version, remoteCidSWR.data.leastSafeVersion)),
+    remoteVersionSWR.data?.leastSafeVersion &&
+      (remoteVersionSWR.data.leastSafeVersion === 'none' ||
+        isVersionLess(
+          buildInfo.version,
+          remoteVersionSWR.data.leastSafeVersion,
+        )),
   );
+
+  const isNotVerifiable = !!remoteVersionSWR.error;
 
   // disconnect wallet
   useEffect(() => {
@@ -138,24 +141,27 @@ export const useVersionCheck = () => {
   }, [disconnect, isVersionUnsafe, wagmiDisconnect]);
 
   return {
-    isUpdateAvailable,
     setConditionsAccepted,
+    areConditionsAccepted,
+    isNotVerifiable,
     isVersionUnsafe,
+    isUpdateAvailable,
+
     get data() {
       return {
-        remoteCid: remoteCidSWR.data?.cid,
+        remoteCid: remoteVersionSWR.data?.cid,
         currentCid: currentCidSWR.data,
-        remoteCidLink: remoteCidSWR.data?.link,
+        remoteCidLink: remoteVersionSWR.data?.link,
       };
     },
     get initialLoading() {
-      return remoteCidSWR.initialLoading || currentCidSWR.initialLoading;
+      return remoteVersionSWR.initialLoading || currentCidSWR.initialLoading;
     },
     get loading() {
-      return remoteCidSWR.loading || currentCidSWR.loading;
+      return remoteVersionSWR.loading || currentCidSWR.loading;
     },
     get error() {
-      return remoteCidSWR.error || currentCidSWR.error;
+      return remoteVersionSWR.error || currentCidSWR.error;
     },
   };
 };
