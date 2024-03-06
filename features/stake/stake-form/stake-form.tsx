@@ -21,9 +21,10 @@ export const StakeForm: FC = memo(() => {
           <FormControllerStyled>
             <StakeAmountInput />
             <StakeSubmitButton />
-            <SwapDiscountBanner />
+            <SwapDiscountBanner>
+              <L2FromStakeToWrap />
+            </SwapDiscountBanner>
           </FormControllerStyled>
-          <L2FromStakeToWrap />
           <StakeFormInfo />
           <StakeFormModal />
         </StakeBlock>
