@@ -40,7 +40,7 @@ const Web3Provider: FC<PropsWithChildren> = ({ children }) => {
       supportedChainIds.reduce(
         (res, curr) => ({ ...res, [curr]: getRpcUrlByChainId(curr) }),
         {
-          // TODO: check why we always want to have RPC for Mainnet, it seems reef-knot itself doesn't require it, maybe lido-sdk does
+          // Mainnet RPC is always required for some requests, e.g. ETH to USD price, ENS lookup
           [CHAINS.Mainnet]: getRpcUrlByChainId(CHAINS.Mainnet),
         },
       ),
