@@ -1,5 +1,3 @@
-import { ThemeProvider, themeDark } from '@lidofinance/lido-ui';
-
 import {
   Wrapper,
   L2Icons,
@@ -54,14 +52,12 @@ export const L2Banner = ({
 
   return (
     <Wrapper data-testid={testidWrap}>
-      <ThemeProvider theme={themeDark}>
-        {title && <TextHeader>{title}</TextHeader>}
-        <TextWrap>{text}</TextWrap>
-        <FooterWrap>
-          <L2Icons />
-          {linkEl}
-        </FooterWrap>
-      </ThemeProvider>
+      {title && <TextHeader>{title}</TextHeader>}
+      <TextWrap>{text}</TextWrap>
+      <FooterWrap>
+        <L2Icons />
+        {linkEl}
+      </FooterWrap>
     </Wrapper>
   );
 };

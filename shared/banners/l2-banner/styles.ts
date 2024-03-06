@@ -12,14 +12,27 @@ export const Wrapper = styled.div`
   border-radius: ${({ theme }) => theme.borderRadiusesMap.lg}px;
   gap: 10px;
   overflow: hidden;
-  background: radial-gradient(
-      100% 1200% at 120% 110%,
-      rgba(255, 255, 255, 0.95) 2%,
-      rgba(219, 255, 255, 0.95) 35%,
-      rgba(255, 255, 255, 0) 100%
-    ),
-    linear-gradient(130deg, #a6a5ff 7%, rgba(181, 180, 255, 0) 55%);
   box-sizing: border-box;
+
+  ${({ theme }) =>
+    theme.name === 'dark'
+      ? css`
+          background: linear-gradient(
+            275.17deg,
+            #0a5dff 8.63%,
+            #4d5dff 46.27%,
+            #905cff 81.73%
+          );
+        `
+      : css`
+          background: radial-gradient(
+              100% 1200% at 120% 110%,
+              rgba(255, 255, 255, 0.95) 2%,
+              rgba(219, 255, 255, 0.95) 35%,
+              rgba(255, 255, 255, 0) 100%
+            ),
+            linear-gradient(130deg, #a6a5ff 7%, rgba(181, 180, 255, 0) 55%);
+        `}
 
   ${({ theme }) => theme.mediaQueries.md} {
     gap: 6px;
@@ -52,12 +65,12 @@ export const TextHeader = styled.div`
   font-size: 14px;
   line-height: 16px;
   font-weight: 700;
-  color: var(--lido-color-textDark);
+  color: var(--lido-color-text);
 `;
 
 export const TextWrap = styled.div`
   flex: 1 1 auto;
-  color: var(--lido-color-textDark);
+  color: var(--lido-color-text);
   line-height: 20px;
   font-size: 12px;
   font-weight: 400;
