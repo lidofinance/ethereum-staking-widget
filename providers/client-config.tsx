@@ -23,6 +23,8 @@ type SavedClientConfig = {
 type ClientConfigContext = EnvConfigParsed & {
   savedClientConfig: SavedClientConfig;
   setSavedClientConfig: (config: SavedClientConfig) => void;
+  isWalletConnectionAllowed: boolean;
+  setIsWalletConnectionAllowed: (isAllowed: boolean) => void;
 };
 
 export const ClientConfigContext = createContext<ClientConfigContext | null>(
@@ -44,6 +46,8 @@ export const ClientConfigProvider = ({ children }: PropsWithChildren) => {
     STORAGE_CLIENT_CONFIG,
     DEFAULT_STATE,
   );
+  const [isWalletConnectionAllowed, setIsWalletConnectionAllowed] =
+    useState(true);
 
   const [savedClientConfig, setSavedClientConfig] =
     useState<SavedClientConfig>(restoredSettings);
@@ -63,8 +67,10 @@ export const ClientConfigProvider = ({ children }: PropsWithChildren) => {
       ...envConfig,
       savedClientConfig,
       setSavedClientConfig: setSavedConfigAndRemember,
+      isWalletConnectionAllowed,
+      setIsWalletConnectionAllowed,
     };
-  }, [savedClientConfig, setSavedConfigAndRemember]);
+  }, [isWalletConnectionAllowed, savedClientConfig, setSavedConfigAndRemember]);
 
   return (
     <ClientConfigContext.Provider value={contextValue}>

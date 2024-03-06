@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useLidoSWR } from '@lido-sdk/react';
-import { useDisconnect } from 'reef-knot/web3-react';
-import { useDisconnect as useDisconnectWagmi } from 'wagmi';
+import { useForceDisconnect } from 'reef-knot/web3-react';
 
 import { BASE_PATH_ASSET, dynamics } from 'config';
 import { useMainnetStaticRpcProvider } from 'shared/hooks/use-mainnet-static-rpc-provider';
@@ -9,6 +8,7 @@ import { standardFetcher } from 'utils/standardFetcher';
 import { STRATEGY_IMMUTABLE, STRATEGY_LAZY } from 'utils/swrStrategies';
 
 import buildInfo from 'build-info.json';
+import { useClientConfig } from 'providers/client-config';
 
 type EnsHashCheckReturn = {
   cid: string;
@@ -57,8 +57,8 @@ const isVersionLess = (versionA: string, versionB: string): boolean => {
 };
 
 export const useVersionCheck = () => {
-  const { disconnect } = useDisconnect();
-  const { disconnect: wagmiDisconnect } = useDisconnectWagmi();
+  const { setIsWalletConnectionAllowed } = useClientConfig();
+  const { disconnect } = useForceDisconnect();
   const [areConditionsAccepted, setConditionsAccepted] = useState(false);
   const provider = useMainnetStaticRpcProvider();
 
@@ -132,13 +132,20 @@ export const useVersionCheck = () => {
 
   const isNotVerifiable = !!remoteVersionSWR.error;
 
-  // disconnect wallet
+  // disconnect wallet and disallow connection for unsafe versions
   useEffect(() => {
     if (isVersionUnsafe) {
-      disconnect?.();
-      wagmiDisconnect();
+      setIsWalletConnectionAllowed(false);
     }
-  }, [disconnect, isVersionUnsafe, wagmiDisconnect]);
+    if (isVersionUnsafe || (dynamics.ipfsMode && isNotVerifiable)) {
+      disconnect();
+    }
+  }, [
+    disconnect,
+    isNotVerifiable,
+    isVersionUnsafe,
+    setIsWalletConnectionAllowed,
+  ]);
 
   return {
     setConditionsAccepted,

@@ -4,8 +4,10 @@ import { wrapWithEventTrack } from '@lidofinance/analytics-matomo';
 import { useModal } from 'shared/hooks';
 import { MODAL } from 'providers';
 import { MATOMO_CLICK_EVENTS } from 'config';
+import { useClientConfig } from 'providers/client-config';
 
 export const Connect: FC<ButtonProps> = (props) => {
+  const { isWalletConnectionAllowed } = useClientConfig();
   const { onClick, ...rest } = props;
   const { openModal } = useModal(MODAL.connect);
 
@@ -15,7 +17,12 @@ export const Connect: FC<ButtonProps> = (props) => {
   );
 
   return (
-    <Button onClick={handleClick} data-testid="connectBtn" {...rest}>
+    <Button
+      disabled={!isWalletConnectionAllowed}
+      onClick={handleClick}
+      data-testid="connectBtn"
+      {...rest}
+    >
       Connect wallet
     </Button>
   );
