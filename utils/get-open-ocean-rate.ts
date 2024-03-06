@@ -6,6 +6,7 @@ import { formatEther } from '@ethersproject/units';
 type OpenOceanGetGasPartial = {
   without_decimals: {
     standard: {
+      maxFeePerGas: string;
       legacyGasPrice: string;
     };
   };
@@ -70,7 +71,7 @@ export const getOpenOceanRate = async (
   const params = new URLSearchParams({
     inTokenAddress: getRateTokenAddress(fromToken),
     outTokenAddress: getRateTokenAddress(toToken),
-    gasPrice: gasData.without_decimals.standard.legacyGasPrice,
+    gasPrice: gasData.without_decimals.standard.maxFeePerGas,
     amount: formatEther(amount),
   });
 
