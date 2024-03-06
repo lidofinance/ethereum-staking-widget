@@ -20,6 +20,7 @@ import {
 import { useStakingLimitInfo } from 'shared/hooks/useStakingLimitInfo';
 import { useMaxGasPrice } from 'shared/hooks';
 import { useIsMultisig } from 'shared/hooks/useIsMultisig';
+import { useFormControllerRetry } from 'shared/hook-form/form-controller/use-form-controller-retry-delegate';
 import { STRATEGY_LAZY } from 'utils/swrStrategies';
 
 import { useStethSubmitGasLimit } from '../hooks';
@@ -157,10 +158,21 @@ export const StakeFormProvider: FC<PropsWithChildren> = ({ children }) => {
     }
   }, [router, setValue]);
 
-  const stake = useStake({ onConfirm: networkData.revalidate });
+  const { retryEvent, retryFire } = useFormControllerRetry();
+
+  const stake = useStake({
+    onConfirm: networkData.revalidate,
+    onRetry: retryFire,
+  });
 
   const formControllerValue: FormControllerContextValueType<StakeFormInput> =
-    useMemo(() => ({ onSubmit: stake }), [stake]);
+    useMemo(
+      () => ({
+        onSubmit: stake,
+        retryEvent,
+      }),
+      [stake, retryEvent],
+    );
 
   return (
     <FormProvider {...formObject}>

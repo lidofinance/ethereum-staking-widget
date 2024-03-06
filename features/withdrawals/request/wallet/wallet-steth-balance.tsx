@@ -7,7 +7,6 @@ export const WalletStethBalance = () => {
 
   const stethBalanceValue = (
     <FormatToken
-      showAmountTip
       amount={balanceSteth}
       symbol="stETH"
       data-testid="stEthBalance"
