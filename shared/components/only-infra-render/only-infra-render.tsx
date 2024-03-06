@@ -8,5 +8,5 @@ export const OnlyInfraRender = ({
   children,
   placeholder = null,
 }: React.PropsWithChildren<OnlyInfraRenderProps>) => {
-  return !dynamics.ipfsMode ? <>{children}</> : placeholder;
+  return <>{dynamics.ipfsMode ? placeholder : children}</>;
 };
