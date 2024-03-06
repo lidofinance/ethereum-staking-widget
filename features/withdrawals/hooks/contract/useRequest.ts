@@ -18,21 +18,22 @@ import {
   useERC20PermitSignature,
 } from 'shared/hooks';
 import { useIsMultisig } from 'shared/hooks/useIsMultisig';
-import { useTransactionModal, TX_OPERATION } from 'shared/transaction-modal';
 import { useCurrentStaticRpcProvider } from 'shared/hooks/use-current-static-rpc-provider';
 import { useApprove } from 'shared/hooks/useApprove';
-import { getErrorMessage, runWithTransactionLogger } from 'utils';
+import { runWithTransactionLogger } from 'utils';
 import { isContract } from 'utils/isContract';
 import { getFeeData } from 'utils/getFeeData';
 
 import { useWithdrawalsContract } from './useWithdrawalsContract';
+import { useTxModalStagesRequest } from 'features/withdrawals/request/transaction-modal-request/use-tx-modal-stages-request';
+import { useTransactionModal } from 'shared/transaction-modal/transaction-modal';
 
 // this encapsulates permit/approval & steth/wsteth flows
 const useWithdrawalRequestMethods = () => {
   const { providerWeb3 } = useSDK();
   const { staticRpcProvider } = useCurrentStaticRpcProvider();
   const { account, chainId, contractWeb3 } = useWithdrawalsContract();
-  const { dispatchModalState } = useTransactionModal();
+
   const permitSteth = useCallback(
     async ({
       signature,
@@ -45,8 +46,6 @@ const useWithdrawalRequestMethods = () => {
       invariant(account, 'must have account');
       invariant(signature, 'must have signature');
       invariant(contractWeb3, 'must have contractWeb3');
-
-      dispatchModalState({ type: 'signing', operation: TX_OPERATION.CONTRACT });
 
       const params = [
         requests,
@@ -77,17 +76,9 @@ const useWithdrawalRequestMethods = () => {
       const callback = () =>
         contractWeb3.requestWithdrawalsWithPermit(...params, txOptions);
 
-      const transaction = await runWithTransactionLogger(
-        'Request signing',
-        callback,
-      );
-
-      dispatchModalState({ type: 'block', txHash: transaction.hash });
-      await runWithTransactionLogger('Request block confirmation', async () =>
-        transaction.wait(),
-      );
+      return callback;
     },
-    [account, chainId, contractWeb3, dispatchModalState, staticRpcProvider],
+    [account, chainId, contractWeb3, staticRpcProvider],
   );
 
   const permitWsteth = useCallback(
@@ -136,19 +127,9 @@ const useWithdrawalRequestMethods = () => {
       const callback = () =>
         contractWeb3.requestWithdrawalsWstETHWithPermit(...params, txOptions);
 
-      dispatchModalState({ type: 'signing', operation: TX_OPERATION.CONTRACT });
-
-      const transaction = await runWithTransactionLogger(
-        'Request signing',
-        callback,
-      );
-
-      dispatchModalState({ type: 'block', txHash: transaction.hash });
-      await runWithTransactionLogger('Stake block confirmation', async () =>
-        transaction.wait(),
-      );
+      return callback;
     },
-    [account, chainId, contractWeb3, dispatchModalState, staticRpcProvider],
+    [account, chainId, contractWeb3, staticRpcProvider],
   );
 
   const steth = useCallback(
@@ -158,7 +139,6 @@ const useWithdrawalRequestMethods = () => {
       invariant(contractWeb3, 'must have contractWeb3');
       invariant(providerWeb3, 'must have providerWeb3');
 
-      dispatchModalState({ type: 'signing', operation: TX_OPERATION.CONTRACT });
       const isMultisig = await isContract(account, contractWeb3.provider);
 
       const params = [requests, account] as const;
@@ -187,27 +167,9 @@ const useWithdrawalRequestMethods = () => {
         }
       };
 
-      const transaction = await runWithTransactionLogger(
-        'Request signing',
-        callback,
-      );
-      const isTransaction = typeof transaction !== 'string';
-
-      if (!isMultisig && isTransaction) {
-        dispatchModalState({ type: 'block', txHash: transaction.hash });
-        await runWithTransactionLogger('Request block confirmation', async () =>
-          transaction.wait(),
-        );
-      }
+      return callback;
     },
-    [
-      account,
-      chainId,
-      contractWeb3,
-      dispatchModalState,
-      staticRpcProvider,
-      providerWeb3,
-    ],
+    [account, chainId, contractWeb3, staticRpcProvider, providerWeb3],
   );
 
   const wstETH = useCallback(
@@ -217,8 +179,6 @@ const useWithdrawalRequestMethods = () => {
       invariant(contractWeb3, 'must have contractWeb3');
       invariant(providerWeb3, 'must have providerWeb3');
       const isMultisig = await isContract(account, contractWeb3.provider);
-
-      dispatchModalState({ type: 'signing', operation: TX_OPERATION.CONTRACT });
 
       const params = [requests, account] as const;
       const callback = async () => {
@@ -245,28 +205,9 @@ const useWithdrawalRequestMethods = () => {
         }
       };
 
-      const transaction = await runWithTransactionLogger(
-        'Request signing',
-        callback,
-      );
-
-      const isTransaction = typeof transaction !== 'string';
-
-      if (!isMultisig && isTransaction) {
-        dispatchModalState({ type: 'block', txHash: transaction.hash });
-        await runWithTransactionLogger('Request block confirmation', async () =>
-          transaction.wait(),
-        );
-      }
+      return callback;
     },
-    [
-      account,
-      chainId,
-      contractWeb3,
-      dispatchModalState,
-      staticRpcProvider,
-      providerWeb3,
-    ],
+    [account, chainId, contractWeb3, staticRpcProvider, providerWeb3],
   );
 
   return useCallback(
@@ -290,12 +231,14 @@ type useWithdrawalRequestParams = {
   amount: BigNumber | null;
   token: TOKENS.STETH | TOKENS.WSTETH;
   onConfirm?: () => Promise<void>;
+  onRetry?: () => void;
 };
 
 export const useWithdrawalRequest = ({
   amount,
   token,
   onConfirm,
+  onRetry,
 }: useWithdrawalRequestParams) => {
   const { chainId } = useSDK();
   const withdrawalQueueAddress = getWithdrawalQueueAddress(chainId);
@@ -303,13 +246,15 @@ export const useWithdrawalRequest = ({
   const { connector } = useAccount();
   const { account } = useWeb3();
   const { isBunker } = useWithdrawals();
-  const { dispatchModalState, dispatchAsyncDialog } = useTransactionModal();
+  const { txModalStages } = useTxModalStagesRequest();
   const getRequestMethod = useWithdrawalRequestMethods();
   const { isMultisig, isLoading: isMultisigLoading } = useIsMultisig();
 
   const wstethContract = useWSTETHContractRPC();
   const stethContract = useSTETHContractRPC();
   const tokenContract = token === TOKENS.STETH ? stethContract : wstethContract;
+
+  const { closeModal } = useTransactionModal();
 
   const valueBN = amount ?? Zero;
 
@@ -342,11 +287,15 @@ export const useWithdrawalRequest = ({
   const isTokenLocked = isApprovalFlow && needsApprove;
 
   const request = useCallback(
-    async (
-      requests: BigNumber[] | null,
-      amount: BigNumber | null,
-      token: TokensWithdrawable,
-    ) => {
+    async ({
+      requests,
+      amount,
+      token,
+    }: {
+      requests: BigNumber[] | null;
+      amount: BigNumber | null;
+      token: TokensWithdrawable;
+    }) => {
       // define and set retry point
       try {
         invariant(
@@ -354,63 +303,75 @@ export const useWithdrawalRequest = ({
           'cannot submit empty requests',
         );
         invariant(amount, 'cannot submit empty amount');
+
         if (isBunker) {
-          const { ok: bunkerDialogResult } =
-            await dispatchAsyncDialog('bunker');
-          if (!bunkerDialogResult) return { success: false };
+          const bunkerDialogResult = await txModalStages.dialogBunker();
+          if (!bunkerDialogResult) {
+            closeModal();
+            return false;
+          }
         }
+
         // get right method
         const method = getRequestMethod(isApprovalFlow, token);
-        // start flow
-        dispatchModalState({
-          type: 'start',
-          operation: isApprovalFlow
-            ? needsApprove
-              ? TX_OPERATION.APPROVE
-              : TX_OPERATION.CONTRACT
-            : TX_OPERATION.PERMIT,
-          amount,
-          token,
-        });
+
+        let signature: GatherPermitSignatureResult | undefined;
 
         // each flow switches needed signing stages
         if (isApprovalFlow) {
           if (needsApprove) {
+            txModalStages.signApproval(amount, token);
+
             await approve({
               onTxSent: (tx) => {
-                if (!isMultisig)
-                  dispatchModalState({
-                    type: 'block',
-                    txHash: typeof tx === 'string' ? tx : tx.hash,
-                    operation: TX_OPERATION.APPROVE,
-                  });
+                if (!isMultisig) {
+                  const txHash = typeof tx === 'string' ? tx : tx.hash;
+                  txModalStages.pendingApproval(amount, token, txHash);
+                }
               },
             });
-            // multisig does not move to next tx
-            if (!isMultisig) await method({ requests });
-          } else {
-            await method({ requests });
+            if (isMultisig) {
+              txModalStages.successMultisig();
+              return true;
+            }
           }
         } else {
-          const signature = await gatherPermitSignature(amount);
-          await method({ signature, requests });
+          txModalStages.signPermit();
+          signature = await gatherPermitSignature(amount);
         }
-        // end flow
-        if (!isMultisig) await onConfirm?.();
-        dispatchModalState({
-          type: isMultisig ? 'success_multisig' : 'success',
-        });
-        return { success: true };
+
+        txModalStages.sign(amount, token);
+
+        const callback = await method({ signature, requests });
+        const tx = await runWithTransactionLogger('Request signing', callback);
+        const txHash = typeof tx === 'string' ? tx : tx.hash;
+
+        if (isMultisig) {
+          txModalStages.successMultisig();
+          return true;
+        }
+
+        txModalStages.pending(amount, token, txHash);
+
+        if (typeof tx === 'object') {
+          await runWithTransactionLogger(
+            'Request block confirmation',
+            async () => tx.wait(),
+          );
+        }
+
+        await onConfirm?.();
+        txModalStages.success(amount, token, txHash);
+        return true;
       } catch (error) {
-        const errorMessage = getErrorMessage(error);
-        dispatchModalState({ type: 'error', errorText: errorMessage });
-        return { success: false, error: error };
+        console.error(error);
+        txModalStages.failed(error, onRetry);
+        return false;
       }
     },
     [
       approve,
-      dispatchAsyncDialog,
-      dispatchModalState,
+      closeModal,
       gatherPermitSignature,
       getRequestMethod,
       isApprovalFlow,
@@ -418,6 +379,8 @@ export const useWithdrawalRequest = ({
       isMultisig,
       needsApprove,
       onConfirm,
+      onRetry,
+      txModalStages,
     ],
   );
 
