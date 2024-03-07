@@ -16,7 +16,9 @@ export const getLdoStats: GetLdoStats = async () => {
     CHAINS.Mainnet as number,
     TOKENS.LDO,
   )}`;
-  const query = new URLSearchParams({ apiKey: secretConfig.ethplorerApiKey });
+  const query = new URLSearchParams({
+    apiKey: secretConfig.ethplorerApiKey ?? '',
+  });
   const url = `${api}?${query.toString()}`;
 
   const ldoStats = await responseTimeExternalMetricWrapper({

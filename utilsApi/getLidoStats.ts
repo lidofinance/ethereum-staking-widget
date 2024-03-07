@@ -15,7 +15,9 @@ export const getLidoStats: GetLidoStats = async () => {
     CHAINS.Mainnet,
     TOKENS.STETH,
   )}`;
-  const query = new URLSearchParams({ apiKey: secretConfig.ethplorerApiKey });
+  const query = new URLSearchParams({
+    apiKey: secretConfig.ethplorerApiKey ?? '',
+  });
   const url = `${api}?${query.toString()}`;
 
   const lidoStats = await responseTimeExternalMetricWrapper({

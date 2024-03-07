@@ -14,8 +14,6 @@ const trustedHosts = secretConfig.cspTrustedHosts
   ? secretConfig.cspTrustedHosts.split(',')
   : [];
 
-const reportOnly = secretConfig.cspReportOnly == 'true';
-
 export const contentSecurityPolicy: ContentSecurityPolicyOption = {
   directives: {
     'default-src': ["'self'"],
@@ -52,7 +50,7 @@ export const contentSecurityPolicy: ContentSecurityPolicyOption = {
     workerSrc: ["'none'"],
     'base-uri': ["'none'"],
   },
-  reportOnly,
+  reportOnly: secretConfig.cspReportOnly,
 };
 
 export const withCsp = (app: FC<AppProps>): FC =>

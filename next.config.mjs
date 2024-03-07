@@ -4,39 +4,43 @@ import generateBuildId from './scripts/generate-build-id.mjs';
 
 buildDynamics();
 
+const toBoolean = (val) => {
+  return !!(
+    val?.toLowerCase?.() === 'true' ||
+    val === true ||
+    Number.parseInt(val, 10) === 1
+  );
+};
+
 const ipfsMode = process.env.IPFS_MODE;
+const analyzeBundle = process.env.ANALYZE_BUNDLE ?? false;
 
 // https://nextjs.org/docs/pages/api-reference/next-config-js/basePath
 const basePath = process.env.BASE_PATH;
 
+const developmentMode = process.env.NODE_ENV === 'development';
+
+const defaultChain = Number(process.env.DEFAULT_CHAIN);
 const rpcUrls_1 = process.env.EL_RPC_URLS_1?.split(',') ?? [];
 const rpcUrls_5 = process.env.EL_RPC_URLS_5?.split(',') ?? [];
 const rpcUrls_17000 = process.env.EL_RPC_URLS_17000?.split(',') ?? [];
-
-const ethAPIBasePath = process.env.ETH_API_BASE_PATH;
-
 const ethplorerApiKey = process.env.ETHPLORER_API_KEY;
 
+
 const cspTrustedHosts = process.env.CSP_TRUSTED_HOSTS;
-const cspReportOnly = process.env.CSP_REPORT_ONLY;
 const cspReportUri = process.env.CSP_REPORT_URI;
+const cspReportOnly = toBoolean(process.env.CSP_REPORT_ONLY);
 
 const subgraphMainnet = process.env.SUBGRAPH_MAINNET;
 const subgraphGoerli = process.env.SUBGRAPH_GOERLI;
 const subgraphHolesky = process.env.SUBGRAPH_HOLESKY;
+const subgraphRequestTimeout = Number(process.env.SUBGRAPH_REQUEST_TIMEOUT) ?? 5000;
 
-const subgraphRequestTimeout = process.env.SUBGRAPH_REQUEST_TIMEOUT;
+const rateLimit = Number(process.env.RATE_LIMIT) || 100;
+const rateLimitTimeFrame = Number(process.env.RATE_LIMIT_TIME_FRAME) || 60; // 1 minute;
 
-const analyzeBundle = process.env.ANALYZE_BUNDLE ?? false;
-
-// rate limit
-const rateLimit = process.env.RATE_LIMIT || 100;
-const rateLimitTimeFrame = process.env.RATE_LIMIT_TIME_FRAME || 60; // 1 minute;
-
+const ethAPIBasePath = process.env.ETH_API_BASE_PATH;
 const rewardsBackendAPI = process.env.REWARDS_BACKEND;
-const defaultChain = process.env.DEFAULT_CHAIN;
-
-const developmentMode = process.env.NODE_ENV === 'development';
 
 // cache control
 export const CACHE_CONTROL_HEADER = 'x-cache-control';
@@ -165,23 +169,28 @@ export default withBundleAnalyzer({
   serverRuntimeConfig: {
     // ATTENTION: If you will add a new variable you should to declare it in `global.d.ts`
     basePath,
+    developmentMode,
+
+    defaultChain,
     rpcUrls_1,
     rpcUrls_5,
     rpcUrls_17000,
     ethplorerApiKey,
+
     cspTrustedHosts,
-    cspReportOnly,
     cspReportUri,
+    cspReportOnly,
+
     subgraphMainnet,
     subgraphGoerli,
     subgraphHolesky,
     subgraphRequestTimeout,
+
     rateLimit,
     rateLimitTimeFrame,
+
     ethAPIBasePath,
     rewardsBackendAPI,
-    defaultChain,
-    developmentMode,
   },
   publicRuntimeConfig: {
     // ATTENTION: If you will add a new variable you should to declare it in `global.d.ts`
