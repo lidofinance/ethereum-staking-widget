@@ -13,7 +13,8 @@ export type PreConfigType = {
 export const getPreConfig = (): PreConfigType => {
   const BASE_PATH_ASSET = dynamics.ipfsMode
     ? '.'
-    : serverRuntimeConfig.basePath || publicRuntimeConfig.basePath;
+    : (serverRuntimeConfig.basePath ?? '') ||
+      (publicRuntimeConfig.basePath ?? '');
 
   return {
     BASE_PATH_ASSET,

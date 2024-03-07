@@ -6,7 +6,7 @@ interface Window {
 declare module 'next/config' {
   type ConfigTypes = () => {
     serverRuntimeConfig: {
-      basePath: string;
+      basePath: string | undefined;
       rpcUrls_1: [string, ...string[]];
       rpcUrls_5: [string, ...string[]];
       rpcUrls_17000: [string, ...string[]];
@@ -26,7 +26,7 @@ declare module 'next/config' {
       developmentMode: boolean;
     };
     publicRuntimeConfig: {
-      basePath: string;
+      basePath: string | undefined;
       developmentMode: boolean;
     };
   };
