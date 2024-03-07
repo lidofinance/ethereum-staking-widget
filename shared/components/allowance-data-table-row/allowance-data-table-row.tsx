@@ -34,11 +34,7 @@ export const AllowanceDataTableRow = ({
       ) : isInfiniteAllowance ? (
         'Infinite'
       ) : (
-        <FormatToken
-          showAmountTip
-          amount={allowance}
-          symbol={getTokenDisplayName(token)}
-        />
+        <FormatToken amount={allowance} symbol={getTokenDisplayName(token)} />
       )}
     </DataTableRow>
   );

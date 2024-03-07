@@ -10,8 +10,12 @@ import { useForm, FormProvider } from 'react-hook-form';
 import { useUnwrapFormNetworkData } from '../hooks/use-unwrap-form-network-data';
 import { useUnwrapFormProcessor } from '../hooks/use-unwrap-form-processing';
 import { useUnwrapFormValidationContext } from '../hooks/use-unwra-form-validation-context';
+import { useFormControllerRetry } from 'shared/hook-form/form-controller/use-form-controller-retry-delegate';
 
-import { FormControllerContext } from 'shared/hook-form/form-controller';
+import {
+  FormControllerContext,
+  FormControllerContextValueType,
+} from 'shared/hook-form/form-controller';
 
 import {
   UnwrapFormDataContextValueType,
@@ -56,22 +60,25 @@ export const UnwrapFormProvider: FC<PropsWithChildren> = ({ children }) => {
     resolver: UnwrapFormValidationResolver,
   });
 
+  const { retryEvent, retryFire } = useFormControllerRetry();
+
   const processUnwrapFormFlow = useUnwrapFormProcessor({
     onConfirm: networkData.revalidateUnwrapFormData,
+    onRetry: retryFire,
   });
 
-  const value = useMemo(
-    (): UnwrapFormDataContextValueType => ({
-      ...networkData,
+  const formControllerValue = useMemo(
+    (): FormControllerContextValueType<UnwrapFormInputType> => ({
       onSubmit: processUnwrapFormFlow,
+      retryEvent,
     }),
-    [networkData, processUnwrapFormFlow],
+    [processUnwrapFormFlow, retryEvent],
   );
 
   return (
     <FormProvider {...formObject}>
-      <UnwrapFormDataContext.Provider value={value}>
-        <FormControllerContext.Provider value={value}>
+      <UnwrapFormDataContext.Provider value={networkData}>
+        <FormControllerContext.Provider value={formControllerValue}>
           {children}
         </FormControllerContext.Provider>
       </UnwrapFormDataContext.Provider>

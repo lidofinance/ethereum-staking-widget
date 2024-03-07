@@ -40,7 +40,6 @@ export const UnwrapStats = () => {
           fallback="-"
           amount={willReceiveStETH}
           symbol="stETH"
-          showAmountTip
           trimEllipsis
         />
       </DataTableRow>

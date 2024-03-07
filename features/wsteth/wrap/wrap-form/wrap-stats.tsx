@@ -96,7 +96,6 @@ export const WrapFormStats = () => {
           data-testid="youWillReceive"
           fallback="-"
           symbol="wstETH"
-          showAmountTip
           trimEllipsis
         />
       </DataTableRow>

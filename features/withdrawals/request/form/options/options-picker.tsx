@@ -52,7 +52,7 @@ const LidoButton: React.FC<OptionButtonProps> = ({ isActive, onClick }) => {
   const ratio = isSteth
     ? '1 : 1'
     : wstethAsSteth
-      ? `1 : ${formatBalance(wstethAsSteth)}`
+      ? `1 : ${formatBalance(wstethAsSteth).trimmed}`
       : DATA_UNAVAILABLE;
 
   return (
