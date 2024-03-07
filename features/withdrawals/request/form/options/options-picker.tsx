@@ -48,7 +48,9 @@ const LidoButton: React.FC<OptionButtonProps> = ({ isActive, onClick }) => {
   );
   const { wstethAsStethBN, loading } = useWstethToStethRatio();
   const ratioLoading = !isSteth && loading;
-  const ratio = isSteth ? '1 : 1' : `1 : ${formatBalance(wstethAsStethBN)}`;
+  const ratio = isSteth
+    ? '1 : 1'
+    : `1 : ${formatBalance(wstethAsStethBN).trimmed}`;
 
   return (
     <OptionsPickerButton

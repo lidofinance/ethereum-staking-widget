@@ -2,7 +2,7 @@ import { useCallback } from 'react';
 import { BigNumber } from 'ethers';
 
 import { useClaimData } from 'features/withdrawals/contexts/claim-data-context';
-import { getErrorMessage, runWithTransactionLogger } from 'utils';
+import { runWithTransactionLogger } from 'utils';
 
 import { useWithdrawalsContract } from './useWithdrawalsContract';
 import { RequestStatusClaimable } from 'features/withdrawals/types/request-status';
@@ -10,14 +10,18 @@ import invariant from 'tiny-invariant';
 import { isContract } from 'utils/isContract';
 import { useWeb3 } from 'reef-knot/web3-react';
 import { useSDK } from '@lido-sdk/react';
-import { useTransactionModal, TX_OPERATION } from 'shared/transaction-modal';
+import { useTxModalStagesClaim } from 'features/withdrawals/claim/transaction-modal-claim/use-tx-modal-stages-claim';
 
-export const useClaim = () => {
+type Args = {
+  onRetry?: () => void;
+};
+
+export const useClaim = ({ onRetry }: Args) => {
   const { account } = useWeb3();
   const { providerWeb3 } = useSDK();
   const { contractWeb3 } = useWithdrawalsContract();
   const { optimisticClaimRequests } = useClaimData();
-  const { dispatchModalState } = useTransactionModal();
+  const { txModalStages } = useTxModalStagesClaim();
 
   return useCallback(
     async (sortedRequests: RequestStatusClaimable[]) => {
@@ -26,19 +30,15 @@ export const useClaim = () => {
         invariant(sortedRequests, 'must have requests');
         invariant(account, 'must have address');
         invariant(providerWeb3, 'must have provider');
+
         const isMultisig = await isContract(account, contractWeb3.provider);
 
-        const ethToClaim = sortedRequests.reduce(
+        const amount = sortedRequests.reduce(
           (s, r) => s.add(r.claimableEth),
           BigNumber.from(0),
         );
 
-        dispatchModalState({
-          type: 'start',
-          operation: TX_OPERATION.CONTRACT,
-          amount: ethToClaim,
-          token: 'ETH',
-        });
+        txModalStages.sign(amount);
 
         const ids = sortedRequests.map((r) => r.id);
         const hints = sortedRequests.map((r) => r.hint);
@@ -70,29 +70,29 @@ export const useClaim = () => {
           }
         };
 
-        const transaction = await runWithTransactionLogger(
-          'Claim signing',
-          callback,
-        );
+        const tx = await runWithTransactionLogger('Claim signing', callback);
+        const txHash = typeof tx === 'string' ? tx : tx.hash;
 
-        const isTransaction = typeof transaction !== 'string';
+        if (isMultisig) {
+          txModalStages.successMultisig();
+          return true;
+        }
 
-        if (!isMultisig && isTransaction) {
-          dispatchModalState({ type: 'block', txHash: transaction.hash });
+        txModalStages.pending(amount, txHash);
+
+        if (typeof tx === 'object') {
           await runWithTransactionLogger('Claim block confirmation', async () =>
-            transaction.wait(),
+            tx.wait(),
           );
           // we only update if we wait for tx
           await optimisticClaimRequests(sortedRequests);
         }
 
-        dispatchModalState({
-          type: isMultisig ? 'success_multisig' : 'success',
-        });
+        txModalStages.success(amount, txHash);
         return true;
       } catch (error) {
-        const errorMessage = getErrorMessage(error);
-        dispatchModalState({ type: 'error', errorText: errorMessage });
+        console.error(error);
+        txModalStages.failed(error, onRetry);
         return false;
       }
     },
@@ -100,8 +100,9 @@ export const useClaim = () => {
       contractWeb3,
       account,
       providerWeb3,
-      dispatchModalState,
       optimisticClaimRequests,
+      txModalStages,
+      onRetry,
     ],
   );
 };

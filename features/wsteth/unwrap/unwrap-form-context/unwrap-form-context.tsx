@@ -11,8 +11,12 @@ import { useStethByWsteth } from 'shared/hooks';
 import { useUnwrapFormNetworkData } from '../hooks/use-unwrap-form-network-data';
 import { useUnwrapFormProcessor } from '../hooks/use-unwrap-form-processing';
 import { useUnwrapFormValidationContext } from '../hooks/use-unwra-form-validation-context';
+import { useFormControllerRetry } from 'shared/hook-form/form-controller/use-form-controller-retry-delegate';
 
-import { FormControllerContext } from 'shared/hook-form/form-controller';
+import {
+  FormControllerContext,
+  FormControllerContextValueType,
+} from 'shared/hook-form/form-controller';
 
 import {
   UnwrapFormDataContextValueType,
@@ -60,9 +64,11 @@ export const UnwrapFormProvider: FC<PropsWithChildren> = ({ children }) => {
 
   const { watch } = formObject;
   const [amount] = watch(['amount']);
+  const { retryEvent, retryFire } = useFormControllerRetry();
 
   const processUnwrapFormFlow = useUnwrapFormProcessor({
     onConfirm: networkData.revalidateUnwrapFormData,
+    onRetry: retryFire,
   });
 
   const willReceiveStETH = useStethByWsteth(amount ?? Zero);
@@ -71,15 +77,22 @@ export const UnwrapFormProvider: FC<PropsWithChildren> = ({ children }) => {
     (): UnwrapFormDataContextValueType => ({
       ...networkData,
       willReceiveStETH,
-      onSubmit: processUnwrapFormFlow,
     }),
-    [networkData, processUnwrapFormFlow, willReceiveStETH],
+    [networkData, willReceiveStETH],
+  );
+
+  const formControllerValue = useMemo(
+    (): FormControllerContextValueType<UnwrapFormInputType> => ({
+      onSubmit: processUnwrapFormFlow,
+      retryEvent,
+    }),
+    [processUnwrapFormFlow, retryEvent],
   );
 
   return (
     <FormProvider {...formObject}>
       <UnwrapFormDataContext.Provider value={value}>
-        <FormControllerContext.Provider value={value}>
+        <FormControllerContext.Provider value={formControllerValue}>
           {children}
         </FormControllerContext.Provider>
       </UnwrapFormDataContext.Provider>

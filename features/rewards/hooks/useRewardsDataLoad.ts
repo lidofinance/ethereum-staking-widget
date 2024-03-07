@@ -45,10 +45,12 @@ export const useRewardsDataLoad: UseRewardsDataLoad = (props) => {
     params.append(k, v.toString()),
   );
 
-  const apiRewardsPath = `/api/rewards?${params.toString()}`;
-  const apiRewardsUrl = dynamics.ipfsMode
-    ? `${dynamics.widgetApiBasePathForIpfs}${apiRewardsPath}`
-    : apiRewardsPath;
+  let apiRewardsUrl;
+  if (dynamics.ipfsMode) {
+    apiRewardsUrl = `${dynamics.rewardsBackendBasePath}?${params.toString()}`;
+  } else {
+    apiRewardsUrl = `/api/rewards?${params.toString()}`;
+  }
 
   const { data, ...rest } = useLidoSWR<Backend>(
     address ? apiRewardsUrl : null,

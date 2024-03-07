@@ -2,30 +2,24 @@ import { memo } from 'react';
 
 import { WrapFormStats } from './wrap-stats';
 import { WrapBlock } from '../../shared/styles';
-import { WrapFormTxModal } from './wrap-form-tx-modal';
 import { WrapFormProvider } from '../wrap-form-context/wrap-form-context';
-import { FormControllerWrap } from '../wrap-form-controls/form-controller-wrap';
+import { FormController } from 'shared/hook-form/form-controller';
 import { InputGroupWrap } from '../wrap-form-controls/input-group-wrap';
 import { SubmitButtonWrap } from '../wrap-form-controls/submit-button-wrap';
-
-import { TransactionModalProvider } from 'shared/transaction-modal/transaction-modal-context';
 
 import { L2Wsteth } from 'shared/banners/l2-wsteth';
 import { MATOMO_CLICK_EVENTS } from 'config';
 export const WrapForm: React.FC = memo(() => {
   return (
-    <TransactionModalProvider>
-      <WrapFormProvider>
-        <WrapBlock data-testid="wrapForm">
-          <FormControllerWrap>
-            <InputGroupWrap />
-            <SubmitButtonWrap />
-          </FormControllerWrap>
-          <L2Wsteth matomoEventLink={MATOMO_CLICK_EVENTS.l2BannerWrap} />
-          <WrapFormStats />
-          <WrapFormTxModal />
-        </WrapBlock>
-      </WrapFormProvider>
-    </TransactionModalProvider>
+    <WrapFormProvider>
+      <WrapBlock data-testid="wrapForm">
+        <FormController>
+          <InputGroupWrap />
+          <SubmitButtonWrap />
+        </FormController>
+        <L2Wsteth matomoEventLink={MATOMO_CLICK_EVENTS.l2BannerWrap} />
+        <WrapFormStats />
+      </WrapBlock>
+    </WrapFormProvider>
   );
 });
