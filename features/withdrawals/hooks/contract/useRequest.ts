@@ -263,7 +263,7 @@ export const useWithdrawalRequest = ({
     approve,
     needsApprove,
     allowance,
-    loading: loadingUseApprove,
+    initialLoading: loadingUseApprove,
   } = useApprove(
     valueBN,
     tokenContract.address,
@@ -276,10 +276,11 @@ export const useWithdrawalRequest = ({
     spender: withdrawalQueueAddress,
   });
 
-  const isApprovalFlow =
+  const isApprovalFlow = Boolean(
     connector?.id === 'walletConnect' ||
-    isMultisig ||
-    (allowance.gt(BigNumber.from(0)) && !needsApprove);
+      isMultisig ||
+      (allowance && allowance.gt(Zero) && !needsApprove),
+  );
 
   const isApprovalFlowLoading =
     isMultisigLoading || (isApprovalFlow && loadingUseApprove);

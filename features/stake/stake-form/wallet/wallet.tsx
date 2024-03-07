@@ -16,7 +16,7 @@ import { useStakeFormData } from '../stake-form-context';
 
 const WalletComponent: WalletComponentType = (props) => {
   const { account } = useSDK();
-  const { stethBalance, stakeableEther } = useStakeFormData();
+  const { stakeableEther, stethBalance, loading } = useStakeFormData();
 
   const stethAddress = useTokenAddress(TOKENS.STETH);
   const lidoApr = useLidoApr();
@@ -31,7 +31,7 @@ const WalletComponent: WalletComponentType = (props) => {
               <LimitMeter />
             </FlexCenter>
           }
-          loading={!stakeableEther}
+          loading={loading.isStakeableEtherLoading}
           value={
             <FormatToken
               data-testid="ethAvailableToStake"
@@ -47,7 +47,7 @@ const WalletComponent: WalletComponentType = (props) => {
         <CardBalance
           small
           title="Staked amount"
-          loading={!stethBalance}
+          loading={loading.isStethBalanceLoading}
           value={
             <>
               <FormatToken
@@ -67,7 +67,7 @@ const WalletComponent: WalletComponentType = (props) => {
           title={
             <>
               Lido APR{' '}
-              {lidoApr && lidoApr.data && (
+              {lidoApr.data && (
                 <Tooltip placement="bottom" title={LIDO_APR_TOOLTIP_TEXT}>
                   <Question />
                 </Tooltip>

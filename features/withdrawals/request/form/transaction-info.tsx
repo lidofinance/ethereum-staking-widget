@@ -29,10 +29,10 @@ export const TransactionInfo = () => {
       isApprovalFlow,
       requestCount: requests?.length,
     });
-  const approveGasLimit = useApproveGasLimit();
-  const approveTxCostInUsd = useTxCostInUsd(
-    approveGasLimit && Number(approveGasLimit),
-  );
+  const {
+    txCostUsd: approveTxCostInUsd,
+    initialLoading: isApproveTxCostLoading,
+  } = useTxCostInUsd(useApproveGasLimit());
 
   return (
     <>
@@ -40,7 +40,7 @@ export const TransactionInfo = () => {
         data-testid="maxUnlockCost"
         help={unlockCostTooltip}
         title="Max unlock cost"
-        loading={isApprovalFlowLoading}
+        loading={isApprovalFlowLoading || isApproveTxCostLoading}
       >
         {isApprovalFlow ? <FormatPrice amount={approveTxCostInUsd} /> : 'FREE'}
       </DataTableRow>
