@@ -17,7 +17,6 @@ import type {
   GetRateType,
   RateCalculationResult,
 } from './types';
-import { FetcherError } from 'utils/fetcherError';
 
 const RATE_PRECISION = 100000;
 const RATE_PRECISION_BN = BigNumber.from(RATE_PRECISION);
@@ -35,29 +34,22 @@ const calculateRateReceive = (
   return { rate, toReceive };
 };
 
-const checkError = (e: unknown) => e instanceof FetcherError && e.status <= 500;
-
 const getOpenOceanWithdrawalRate: GetRateType = async ({ amount, token }) => {
-  let isServiceAvailable = true;
   if (amount && amount.gt(Zero)) {
     try {
-      return {
-        ...(await getOpenOceanRate(amount, token, 'ETH')),
-        isServiceAvailable,
-      };
+      const result = await getOpenOceanRate(amount, token, 'ETH');
+      return result;
     } catch (e) {
       console.warn(
         '[getOpenOceanWithdrawalRate] Failed to receive withdraw rate',
         e,
       );
-      isServiceAvailable = checkError(e);
     }
   }
 
   return {
     rate: null,
     toReceive: null,
-    isServiceAvailable,
   };
 };
 
@@ -69,7 +61,6 @@ type ParaSwapPriceResponsePartial = {
 };
 
 const getParaSwapWithdrawalRate: GetRateType = async ({ amount, token }) => {
-  let isServiceAvailable = true;
   try {
     if (amount.gt(Zero)) {
       const api = `https://apiv5.paraswap.io/prices`;
@@ -100,7 +91,6 @@ const getParaSwapWithdrawalRate: GetRateType = async ({ amount, token }) => {
       return {
         rate,
         toReceive: BigNumber.from(data.priceRoute.destAmount),
-        isServiceAvailable,
       };
     }
   } catch (e) {
@@ -108,33 +98,29 @@ const getParaSwapWithdrawalRate: GetRateType = async ({ amount, token }) => {
       '[getParaSwapWithdrawalRate] Failed to receive withdraw rate',
       e,
     );
-    isServiceAvailable = checkError(e);
   }
 
   return {
     rate: null,
     toReceive: null,
-    isServiceAvailable,
   };
 };
 
 const getOneInchWithdrawalRate: GetRateType = async (params) => {
-  let isServiceAvailable = true;
   try {
     if (params.amount.gt(Zero)) {
-      return { ...(await getOneInchRate(params)), isServiceAvailable };
+      const result = await getOneInchRate(params);
+      return result;
     }
   } catch (e) {
     console.warn(
       '[getOneInchWithdrawalRate] Failed to receive withdraw rate',
       e,
     );
-    isServiceAvailable = checkError(e);
   }
   return {
     rate: null,
     toReceive: null,
-    isServiceAvailable,
   };
 };
 
