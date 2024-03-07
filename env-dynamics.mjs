@@ -7,11 +7,11 @@
  * - another values to false
  * @returns {Boolean}
  */
-const toBoolean = (dataStr) => {
+const toBoolean = (val) => {
   return !!(
-    dataStr?.toLowerCase?.() === 'true' ||
-    dataStr === true ||
-    Number.parseInt(dataStr, 10) === 1
+    val?.toLowerCase?.() === 'true' ||
+    val === true ||
+    Number.parseInt(val, 10) === 1
   );
 };
 
