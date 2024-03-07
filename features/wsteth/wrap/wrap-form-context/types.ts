@@ -3,7 +3,6 @@ import type { useWrapTxApprove } from '../hooks/use-wrap-tx-approve';
 
 import type { BigNumber } from 'ethers';
 import type { TokensWrappable } from 'features/wsteth/shared/types';
-import type { FormControllerContextValueType } from 'shared/hook-form/form-controller/form-controller-context';
 import { StakeLimitFullInfo } from 'shared/hooks';
 import { LIMIT_LEVEL } from 'types';
 
@@ -31,11 +30,9 @@ export type WrapFormAsyncValidationContext = {
 };
 
 export type WrapFormDataContextValueType = WrapFormNetworkData &
-  WrapFormApprovalData &
-  FormControllerContextValueType<WrapFormInputType> & {
+  WrapFormApprovalData & {
     isSteth: boolean;
     maxAmount?: BigNumber;
     wrapGasLimit: BigNumber;
-    willReceiveWsteth?: BigNumber;
     stakeLimitInfo?: StakeLimitFullInfo;
   };

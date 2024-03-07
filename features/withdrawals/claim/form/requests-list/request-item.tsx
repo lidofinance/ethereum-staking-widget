@@ -45,7 +45,6 @@ export const RequestItem = forwardRef<HTMLInputElement, RequestItemProps>(
     const label = (
       <FormatToken
         data-testid="requestAmount"
-        showAmountTip
         amount={amountValue}
         symbol={symbol}
       />

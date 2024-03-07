@@ -1,0 +1,107 @@
+import { useSDK } from '@lido-sdk/react';
+import { Link, Loader } from '@lidofinance/lido-ui';
+import { LocalLink } from 'shared/components/local-link';
+
+import {
+  trackMatomoEvent,
+  MATOMO_CLICK_EVENTS_TYPES,
+} from 'config/trackMatomoEvent';
+import { WITHDRAWALS_CLAIM_PATH } from 'config/urls';
+import { useNftDataByTxHash } from 'features/withdrawals/hooks/useNftDataByTxHash';
+import { useTransactionModal } from 'shared/transaction-modal/transaction-modal';
+import { TxStageSuccess } from 'shared/transaction-modal/tx-stages-basic/tx-stage-success';
+import { TxLinkEtherscan } from 'shared/components/tx-link-etherscan';
+import { TxAmount } from 'shared/transaction-modal/tx-stages-parts/tx-amount';
+
+import {
+  Title,
+  NFTBanner,
+  NFTImageWrap,
+  NFTImage,
+  NFTImageExample,
+  AddNftWrapper,
+} from './styles';
+import type { BigNumber } from 'ethers';
+
+const LINK_ADD_NFT_GUIDE =
+  'https://help.lido.fi/en/articles/7858367-how-do-i-add-the-lido-nft-to-metamask';
+
+type TxRequestStageSuccessProps = {
+  txHash: string | null;
+  tokenName: string;
+  amount: BigNumber;
+};
+
+export const TxRequestStageSuccess = ({
+  txHash,
+  tokenName,
+  amount,
+}: TxRequestStageSuccessProps) => {
+  const amountEl = <TxAmount amount={amount} symbol={tokenName} />;
+  const { providerWeb3 } = useSDK();
+  const { data: nftData, initialLoading: nftLoading } =
+    useNftDataByTxHash(txHash);
+  const showAddGuideLink = !!providerWeb3?.provider.isMetaMask;
+  const { closeModal } = useTransactionModal();
+
+  const successDescription = (
+    <span>
+      Withdrawal request for {amountEl} has been sent.
+      <br />
+      Check{' '}
+      <LocalLink href={WITHDRAWALS_CLAIM_PATH} onClick={closeModal}>
+        Claim tab
+      </LocalLink>{' '}
+      to view your withdrawal requests or view your transaction on{' '}
+      <TxLinkEtherscan
+        txHash={txHash ?? undefined}
+        text="Etherscan"
+        onClick={() =>
+          trackMatomoEvent(
+            MATOMO_CLICK_EVENTS_TYPES.withdrawalEtherscanSuccessTemplate,
+          )
+        }
+      />
+    </span>
+  );
+
+  const showNftLoader = nftLoading;
+  const showNftRealImage = !showNftLoader && nftData && nftData.length === 1;
+  const showNftExample = !showNftLoader && (!nftData || nftData.length !== 1);
+
+  return (
+    <TxStageSuccess
+      txHash={txHash}
+      title={'Withdrawal request successfully sent'}
+      description={successDescription}
+      showEtherscan={false}
+      footer={
+        <NFTBanner>
+          <NFTImageWrap>
+            {showNftLoader && <Loader />}
+            {showNftRealImage && <NFTImage src={nftData[0].image} />}
+            {showNftExample && <NFTImageExample />}
+          </NFTImageWrap>
+          <Title>
+            Add NFT to your wallet to monitor the&nbsp;status
+            of&nbsp;your&nbsp;request.
+          </Title>
+          {showAddGuideLink && (
+            <AddNftWrapper>
+              <Link
+                href={LINK_ADD_NFT_GUIDE}
+                onClick={() =>
+                  trackMatomoEvent(
+                    MATOMO_CLICK_EVENTS_TYPES.withdrawalGuideSuccessTemplate,
+                  )
+                }
+              >
+                This guide will help you to do this.
+              </Link>
+            </AddNftWrapper>
+          )}
+        </NFTBanner>
+      }
+    />
+  );
+};

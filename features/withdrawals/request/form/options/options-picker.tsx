@@ -5,8 +5,7 @@ import {
   getDexConfig,
   useWithdrawalRates,
 } from 'features/withdrawals/request/withdrawal-rates';
-import { useWstethToStethRatio } from 'shared/components/data-table-row-steth-by-wsteth';
-
+import { useStethByWsteth } from 'shared/hooks';
 import { formatBalance } from 'utils/formatBalance';
 
 import {
@@ -27,6 +26,7 @@ import { useWatch } from 'react-hook-form';
 import { RequestFormInputType } from 'features/withdrawals/request/request-form-context';
 import { TOKENS } from '@lido-sdk/constants';
 import { ENABLED_WITHDRAWAL_DEXES } from 'features/withdrawals/withdrawals-constants';
+import { DATA_UNAVAILABLE } from 'config';
 
 type OptionButtonProps = {
   onClick: React.ComponentProps<'button'>['onClick'];
@@ -46,9 +46,14 @@ const LidoButton: React.FC<OptionButtonProps> = ({ isActive, onClick }) => {
       isApproximate: true,
     },
   );
-  const { wstethAsStethBN, loading } = useWstethToStethRatio();
-  const ratioLoading = !isSteth && loading;
-  const ratio = isSteth ? '1 : 1' : `1 : ${formatBalance(wstethAsStethBN)}`;
+  const { data: wstethAsSteth, initialLoading: isWstethAsStethLoading } =
+    useStethByWsteth(DEFAULT_VALUE_FOR_RATE);
+  const ratioLoading = !isSteth && isWstethAsStethLoading;
+  const ratio = isSteth
+    ? '1 : 1'
+    : wstethAsSteth
+      ? `1 : ${formatBalance(wstethAsSteth).trimmed}`
+      : DATA_UNAVAILABLE;
 
   return (
     <OptionsPickerButton
@@ -79,10 +84,12 @@ const toFloor = (num: number): string =>
   (Math.floor(num * 10000) / 10000).toString();
 
 const DexButton: React.FC<OptionButtonProps> = ({ isActive, onClick }) => {
-  const { loading, bestRate } = useWithdrawalRates({
+  const { loading, bestRate, enabledDexes } = useWithdrawalRates({
     fallbackValue: DEFAULT_VALUE_FOR_RATE,
   });
-  const bestRateValue = bestRate ? `1 : ${toFloor(bestRate)}` : '-';
+  const isAnyDexEnabled = enabledDexes.length > 0;
+  const bestRateValue =
+    bestRate && isAnyDexEnabled ? `1 : ${toFloor(bestRate)}` : '—';
   return (
     <OptionsPickerButton
       data-testid="dexOptions"
@@ -104,8 +111,8 @@ const DexButton: React.FC<OptionButtonProps> = ({ isActive, onClick }) => {
         {loading ? <InlineLoaderSmall /> : bestRateValue}
       </OptionsPickerRow>
       <OptionsPickerRow data-testid="dexWaitingTime">
-        <OptionsPickerSubLabel>Waiting time:</OptionsPickerSubLabel>~&nbsp;1-5
-        minutes
+        <OptionsPickerSubLabel>Waiting time:</OptionsPickerSubLabel>{' '}
+        {isAnyDexEnabled ? <>~&nbsp;1-5 minutes</> : '—'}
       </OptionsPickerRow>
     </OptionsPickerButton>
   );

@@ -1,7 +1,66 @@
+import { parseEther } from '@ethersproject/units';
 import { BigNumber } from 'ethers';
-import { formatBalanceWithTrimmed, formatBalance } from '../formatBalance';
+import { formatBalance } from '../formatBalance';
 
-describe('formatBalanceWithTrimmed', () => {
+describe('formatBalance', () => {
+  it('should format balance with default maxDecimalDigits', () => {
+    const balance = BigNumber.from('1000000000000000000');
+    const expected = {
+      actual: '1.0',
+      trimmed: '1.0',
+      isTrimmed: false,
+    };
+    const formattedBalance = formatBalance(balance);
+    expect(formattedBalance).toEqual(expected);
+  });
+
+  it('should format balance with custom maxDecimalDigits', () => {
+    const balance = BigNumber.from('1000000000000000000');
+    const expected = {
+      actual: '1.0',
+      trimmed: '1.0',
+      isTrimmed: false,
+    };
+    const formattedBalance = formatBalance(balance, { maxDecimalDigits: 2 });
+    expect(formattedBalance).toEqual(expected);
+  });
+
+  it('should format balance with zero maxDecimalDigits', () => {
+    const balance = BigNumber.from('1000000000000000000');
+    const expected = {
+      actual: '1.0',
+      trimmed: '1',
+      isTrimmed: false,
+    };
+    const formattedBalance = formatBalance(balance, { maxDecimalDigits: 0 });
+    expect(formattedBalance).toEqual(expected);
+  });
+
+  it('should format balance with adaptiveDecimals', () => {
+    const balance = BigNumber.from(parseEther('0.000000111111'));
+    const expected = {
+      actual: '0.000000111111',
+      trimmed: '0.0000001',
+      isTrimmed: true,
+    };
+    const formattedBalance = formatBalance(balance, { adaptiveDecimals: true });
+    expect(formattedBalance).toEqual(expected);
+  });
+
+  it('should format balance with adaptiveDecimals and trimEllipsis', () => {
+    const balance = BigNumber.from(parseEther('0.000000111111'));
+    const expected = {
+      actual: '0.000000111111',
+      trimmed: '0.0000001...',
+      isTrimmed: true,
+    };
+    const formattedBalance = formatBalance(balance, {
+      adaptiveDecimals: true,
+      trimEllipsis: true,
+    });
+    expect(formattedBalance).toEqual(expected);
+  });
+
   it('should format balance with max decimal digits and max total length', () => {
     const balance = BigNumber.from(
       '1000000000000000000000000010000000000000000000000000',
@@ -13,11 +72,7 @@ describe('formatBalanceWithTrimmed', () => {
       trimmed: '100000000000000000000000001...',
       isTrimmed: true,
     };
-    const result = formatBalanceWithTrimmed(
-      balance,
-      maxDecimalDigits,
-      maxTotalLength,
-    );
+    const result = formatBalance(balance, { maxDecimalDigits, maxTotalLength });
     expect(result).toEqual(expected);
   });
 
@@ -32,11 +87,7 @@ describe('formatBalanceWithTrimmed', () => {
       trimmed: '1000000000000000000000000010000000.0',
       isTrimmed: false,
     };
-    const result = formatBalanceWithTrimmed(
-      balance,
-      maxDecimalDigits,
-      maxTotalLength,
-    );
+    const result = formatBalance(balance, { maxDecimalDigits, maxTotalLength });
     expect(result).toEqual(expected);
   });
 
@@ -49,11 +100,7 @@ describe('formatBalanceWithTrimmed', () => {
       trimmed: '1',
       isTrimmed: false,
     };
-    const result = formatBalanceWithTrimmed(
-      balance,
-      maxDecimalDigits,
-      maxTotalLength,
-    );
+    const result = formatBalance(balance, { maxDecimalDigits, maxTotalLength });
     expect(result).toEqual(expected);
   });
 
@@ -66,11 +113,7 @@ describe('formatBalanceWithTrimmed', () => {
       trimmed: '1234567...',
       isTrimmed: true,
     };
-    const result = formatBalanceWithTrimmed(
-      balance,
-      maxDecimalDigits,
-      maxTotalLength,
-    );
+    const result = formatBalance(balance, { maxDecimalDigits, maxTotalLength });
     expect(result).toEqual(expected);
   });
 
@@ -81,7 +124,7 @@ describe('formatBalanceWithTrimmed', () => {
       trimmed: '1.0',
       isTrimmed: false,
     };
-    const result = formatBalanceWithTrimmed(balance);
+    const result = formatBalance(balance);
     expect(result).toEqual(expected);
   });
 
@@ -94,11 +137,7 @@ describe('formatBalanceWithTrimmed', () => {
       trimmed: '1',
       isTrimmed: false,
     };
-    const result = formatBalanceWithTrimmed(
-      balance,
-      maxDecimalDigits,
-      maxTotalLength,
-    );
+    const result = formatBalance(balance, { maxDecimalDigits, maxTotalLength });
     expect(result).toEqual(expected);
   });
 
@@ -111,11 +150,7 @@ describe('formatBalanceWithTrimmed', () => {
       trimmed: '...',
       isTrimmed: true,
     };
-    const result = formatBalanceWithTrimmed(
-      balance,
-      maxDecimalDigits,
-      maxTotalLength,
-    );
+    const result = formatBalance(balance, { maxDecimalDigits, maxTotalLength });
     expect(result).toEqual(expected);
   });
 
@@ -123,11 +158,7 @@ describe('formatBalanceWithTrimmed', () => {
     const balance = BigNumber.from('100000000000000000000000');
     const maxDecimalDigits = 2;
     const maxTotalLength = 3;
-    const result = formatBalanceWithTrimmed(
-      balance,
-      maxDecimalDigits,
-      maxTotalLength,
-    );
+    const result = formatBalance(balance, { maxDecimalDigits, maxTotalLength });
     const expected = {
       actual: '100000.0',
       trimmed: '...',
@@ -138,37 +169,11 @@ describe('formatBalanceWithTrimmed', () => {
 
   it('should format zero balance', () => {
     const balance = BigNumber.from('0');
-    const formattedBalance = formatBalanceWithTrimmed(balance);
+    const formattedBalance = formatBalance(balance);
     expect(formattedBalance).toEqual({
       actual: '0.0',
       trimmed: '0.0',
       isTrimmed: false,
     });
-  });
-});
-
-describe('formatBalance', () => {
-  it('should format balance with default maxDecimalDigits', () => {
-    const balance = BigNumber.from('1000000000000000000');
-    const formattedBalance = formatBalance(balance);
-    expect(formattedBalance).toEqual('1.0');
-  });
-
-  it('should format balance with custom maxDecimalDigits', () => {
-    const balance = BigNumber.from('1000000000000000000');
-    const formattedBalance = formatBalance(balance, 2);
-    expect(formattedBalance).toEqual('1.0');
-  });
-
-  it('should format balance with zero maxDecimalDigits', () => {
-    const balance = BigNumber.from('1000000000000000000');
-    const formattedBalance = formatBalance(balance, 0);
-    expect(formattedBalance).toEqual('1');
-  });
-
-  it('should format zero balance', () => {
-    const balance = BigNumber.from('0');
-    const formattedBalance = formatBalance(balance);
-    expect(formattedBalance).toEqual('0.0');
   });
 });

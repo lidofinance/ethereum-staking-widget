@@ -7,13 +7,16 @@ import {
   useContext,
 } from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
-import { useDebouncedValue, useWstethBySteth } from 'shared/hooks';
 import { useWrapTxApprove } from '../hooks/use-wrap-tx-approve';
 import { useWrapFormNetworkData } from '../hooks/use-wrap-form-network-data';
 import { useWrapFormProcessor } from '../hooks/use-wrap-form-processing';
 import { useWrapFormValidationContext } from '../hooks/use-wrap-form-validation-context';
+import { useFormControllerRetry } from 'shared/hook-form/form-controller/use-form-controller-retry-delegate';
 
-import { FormControllerContext } from 'shared/hook-form/form-controller';
+import {
+  FormControllerContext,
+  FormControllerContextValueType,
+} from 'shared/hook-form/form-controller';
 
 import {
   WrapFormDataContextValueType,
@@ -58,20 +61,22 @@ export const WrapFormProvider: FC<PropsWithChildren> = ({ children }) => {
     resolver: WrapFormValidationResolver,
   });
 
-  const { watch } = formObject;
+  const {
+    watch,
+    reset,
+    formState: { defaultValues },
+  } = formObject;
   const [token, amount] = watch(['token', 'amount']);
+  const { retryEvent, retryFire } = useFormControllerRetry();
 
   const approvalData = useWrapTxApprove({ amount: amount ?? Zero, token });
+  const isSteth = token === TOKENS_TO_WRAP.STETH;
+
   const processWrapFormFlow = useWrapFormProcessor({
     approvalData,
     onConfirm: networkData.revalidateWrapFormData,
+    onRetry: retryFire,
   });
-
-  const isSteth = token === TOKENS_TO_WRAP.STETH;
-
-  const amountDebounced = useDebouncedValue(amount, 500);
-
-  const willReceiveWsteth = useWstethBySteth(amountDebounced ?? Zero);
 
   const value = useMemo(
     (): WrapFormDataContextValueType => ({
@@ -83,22 +88,28 @@ export const WrapFormProvider: FC<PropsWithChildren> = ({ children }) => {
       wrapGasLimit: isSteth
         ? networkData.gasLimitStETH
         : networkData.gasLimitETH,
-      willReceiveWsteth,
-      onSubmit: processWrapFormFlow,
     }),
-    [
-      networkData,
-      approvalData,
-      isSteth,
-      willReceiveWsteth,
-      processWrapFormFlow,
-    ],
+    [networkData, approvalData, isSteth],
+  );
+
+  const formControllerValue = useMemo(
+    (): FormControllerContextValueType<WrapFormInputType> => ({
+      onSubmit: processWrapFormFlow,
+      onReset: ({ token }: WrapFormInputType) => {
+        reset({
+          ...defaultValues,
+          token,
+        });
+      },
+      retryEvent,
+    }),
+    [processWrapFormFlow, retryEvent, reset, defaultValues],
   );
 
   return (
     <FormProvider {...formObject}>
       <WrapFormDataContext.Provider value={value}>
-        <FormControllerContext.Provider value={value}>
+        <FormControllerContext.Provider value={formControllerValue}>
           {children}
         </FormControllerContext.Provider>
       </WrapFormDataContext.Provider>
