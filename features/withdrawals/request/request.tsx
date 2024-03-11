@@ -11,7 +11,7 @@ export const Request = () => {
     <RequestFormProvider>
       <RequestWallet />
       <RequestForm />
-      <OnlyInfraRender placeholder={<FaqPlaceholder />}>
+      <OnlyInfraRender renderIPFS={<FaqPlaceholder />}>
         <RequestFaq />
       </OnlyInfraRender>
     </RequestFormProvider>

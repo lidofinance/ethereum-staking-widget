@@ -17,7 +17,7 @@ export const Stake = () => {
         <StakeForm key={key} />
       </NoSSRWrapper>
       <LidoStats />
-      <OnlyInfraRender placeholder={<FaqPlaceholder />}>
+      <OnlyInfraRender renderIPFS={<FaqPlaceholder />}>
         <StakeFaq />
       </OnlyInfraRender>
     </>

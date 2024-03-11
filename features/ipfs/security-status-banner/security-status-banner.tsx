@@ -2,7 +2,14 @@ import { Button, Modal } from '@lidofinance/lido-ui';
 
 import { dynamics } from 'config';
 
-import { WarningIcon, Wrapper, WarningText, WarningSubText } from './styles';
+import {
+  WarningIcon,
+  Wrapper,
+  WarningText,
+  WarningSubText,
+  WarningBlock,
+  WarningTitle,
+} from './styles';
 import { useVersionCheck } from './use-version-check';
 import NoSsrWrapper from 'shared/components/no-ssr-wrapper';
 
@@ -26,11 +33,10 @@ const warningContent = ({
     case isIpfs && isNotVerifiable:
       return {
         content: (
-          <WarningText>
-            This IPFS version can’t be verified
-            <br />
+          <WarningBlock>
+            <WarningTitle>This IPFS version can’t be verified</WarningTitle>
             <WarningSubText>Please try again later</WarningSubText>
-          </WarningText>
+          </WarningBlock>
         ),
         canClose: false,
       };
@@ -59,13 +65,14 @@ const warningContent = ({
     case isIpfs && isUpdateAvailable:
       return {
         content: (
-          <WarningText>
-            This is not the most up to date version of the IPFS widget
-            <br />
+          <WarningBlock>
+            <WarningTitle>
+              This is not the most up to date version of the IPFS widget
+            </WarningTitle>
             <WarningSubText>
               Please note that the functionality of this version may be lacking
             </WarningSubText>
-          </WarningText>
+          </WarningBlock>
         ),
         canClose: true,
       };
@@ -74,7 +81,7 @@ const warningContent = ({
   }
 };
 
-export const UpgradePromtBanner = () => {
+export const SecurityStatusBanner = () => {
   const {
     areConditionsAccepted,
     setConditionsAccepted,

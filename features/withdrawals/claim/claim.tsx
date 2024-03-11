@@ -11,7 +11,7 @@ export const Claim = () => {
     <ClaimFormProvider>
       <ClaimWallet />
       <ClaimForm />
-      <OnlyInfraRender placeholder={<FaqPlaceholder />}>
+      <OnlyInfraRender renderIPFS={<FaqPlaceholder />}>
         <ClaimFaq />
       </OnlyInfraRender>
     </ClaimFormProvider>

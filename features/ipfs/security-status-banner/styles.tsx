@@ -37,10 +37,22 @@ export const WarningText = styled(Text).attrs({
   text-wrap: balance;
 `;
 
+export const WarningBlock = styled.p`
+  text-align: center;
+  margin: 12px 0 28px;
+`;
+
+export const WarningTitle = styled(Text).attrs({
+  weight: 700,
+})`
+  font-size: 26px;
+  text-align: center;
+  text-wrap: balance;
+`;
+
 export const WarningSubText = styled(Text).attrs({
   weight: 400,
   size: 'xs',
-  as: 'span',
   color: 'secondary',
 })`
   text-align: center;

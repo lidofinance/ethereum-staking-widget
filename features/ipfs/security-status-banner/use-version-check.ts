@@ -1,15 +1,17 @@
 import { useEffect, useState } from 'react';
 import { useLidoSWR } from '@lido-sdk/react';
+import { useWeb3 } from 'reef-knot/web3-react';
 import { useForceDisconnect } from 'reef-knot/core-react';
 
 import { BASE_PATH_ASSET, dynamics } from 'config';
 import { useMainnetStaticRpcProvider } from 'shared/hooks/use-mainnet-static-rpc-provider';
 import { standardFetcher } from 'utils/standardFetcher';
 import { STRATEGY_IMMUTABLE, STRATEGY_LAZY } from 'utils/swrStrategies';
+import { useClientConfig } from 'providers/client-config';
+
+import { isVersionLess } from './utils';
 
 import buildInfo from 'build-info.json';
-import { useClientConfig } from 'providers/client-config';
-import { useWeb3 } from 'reef-knot/web3-react';
 
 export const NO_SAFE_VERSION = 'NONE_AVAILABLE';
 
@@ -35,29 +37,6 @@ const URL_CID_REGEX =
 // for dev and local testing you can set to '/runtime/IPFS.json' and have file at /public/runtime/
 const IPFS_RELEASE_URL =
   'https://raw.githubusercontent.com/lidofinance/ethereum-staking-widget/main/IPFS.json';
-
-const isVersionLess = (versionA: string, versionB: string): boolean => {
-  const verA = versionA
-    .trim()
-    .split('.')
-    .map((v) => parseInt(v));
-  const verB = versionB
-    .trim()
-    .split('.')
-    .map((v) => parseInt(v));
-
-  // eslint-disable-next-line unicorn/no-for-loop
-  for (let index = 0; index < verA.length; index++) {
-    const a = verA[index];
-    const b = verB[index];
-    // validation
-    if (b === undefined || isNaN(a) || isNaN(b)) return false;
-    if (a > b) return false;
-    if (a < b) return true;
-  }
-  // versions are  equal
-  return false;
-};
 
 export const useVersionCheck = () => {
   const { active } = useWeb3();

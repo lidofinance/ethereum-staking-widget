@@ -29,7 +29,7 @@ export const WrapUnwrapTabs = ({ mode }: WrapUnwrapLayoutProps) => {
         <Wallet />
         {isUnwrapMode ? <UnwrapForm /> : <WrapForm />}
       </NoSsrWrapper>
-      <OnlyInfraRender placeholder={<FaqPlaceholder />}>
+      <OnlyInfraRender renderIPFS={<FaqPlaceholder />}>
         <WrapFaq />
       </OnlyInfraRender>
     </>
