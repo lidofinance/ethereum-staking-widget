@@ -23,7 +23,7 @@ export const L2Wsteth = ({ matomoEventLink }: L2WstethProps) => {
       text={
         <>
           Enjoy <b>lower gas</b> fees and <b>DeFi opportunities</b> using wstETH
-          across multiple L2 networks.
+          across multiple L2 networks
         </>
       }
     />

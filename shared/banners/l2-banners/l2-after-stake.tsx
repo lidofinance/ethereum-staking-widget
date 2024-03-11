@@ -11,7 +11,7 @@ export const L2AfterStake: React.FC = () => {
       text={
         <>
           Learn about <b>Lido on L2 opportunities</b> and enjoy various
-          opportunities in DeFi.
+          opportunities in DeFi
         </>
       }
       buttonText="Learn more"

@@ -1,6 +1,7 @@
 import styled, { css } from 'styled-components';
 import { Button, Link } from '@lidofinance/lido-ui';
-import Icons from 'assets/icons/l2-swap.svg';
+import IconsLight from 'assets/icons/l2-swap-light.svg';
+import IconsDark from 'assets/icons/l2-swap-dark.svg';
 import { LocalLink } from 'shared/components/local-link';
 
 export const Wrapper = styled.div`
@@ -45,13 +46,12 @@ export const Wrapper = styled.div`
   }
 `;
 
-export const L2Icons = styled.img.attrs({
-  src: Icons,
-  alt: '',
-})`
+export const L2Icons = styled.div`
   display: block;
   width: 188px;
   height: 32px;
+  background-image: url(${({ theme }) =>
+    theme.name === 'dark' ? IconsDark : IconsLight});
 `;
 
 export const FooterWrap = styled.div`

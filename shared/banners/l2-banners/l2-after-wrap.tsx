@@ -13,7 +13,7 @@ export const L2AfterWrap = () => {
       text={
         <>
           Learn about <b>DeFi opportunities</b> using wstETH across multiple L2
-          networks.
+          networks
         </>
       }
       buttonText="Learn more"
