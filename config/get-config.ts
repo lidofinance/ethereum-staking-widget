@@ -6,7 +6,7 @@ import * as locale from './groups/locale';
 import * as stake from './groups/stake';
 import * as withdrawalQueueEstimate from './groups/withdrawal-queue-estimate';
 
-type ConfigType = {
+export type ConfigType = {
   isClientSide: boolean;
   isServerSide: boolean;
 } & typeof cache &

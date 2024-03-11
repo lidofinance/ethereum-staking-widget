@@ -3,8 +3,6 @@ import { CookieThemeProvider } from '@lidofinance/lido-ui';
 
 import { GlobalStyle } from 'styles';
 import { ConfigProvider } from 'config';
-import { UserConfigProvider } from 'config/user-config';
-import { FeatureFlagsProvider } from 'config/feature-flags';
 
 import { AppFlagProvider } from './app-flag';
 import { IPFSInfoBoxStatusesProvider } from './ipfs-info-box-statuses';
@@ -16,21 +14,17 @@ export { MODAL, ModalContext } from './modals';
 
 export const Providers: FC<PropsWithChildren> = ({ children }) => (
   <ConfigProvider>
-    <UserConfigProvider>
-      <FeatureFlagsProvider>
-        <AppFlagProvider>
-          <CookieThemeProvider>
-            <GlobalStyle />
-            <Web3Provider>
-              <IPFSInfoBoxStatusesProvider>
-                <InpageNavigationProvider>
-                  <ModalProvider>{children}</ModalProvider>
-                </InpageNavigationProvider>
-              </IPFSInfoBoxStatusesProvider>
-            </Web3Provider>
-          </CookieThemeProvider>
-        </AppFlagProvider>
-      </FeatureFlagsProvider>
-    </UserConfigProvider>
+    <AppFlagProvider>
+      <CookieThemeProvider>
+        <GlobalStyle />
+        <Web3Provider>
+          <IPFSInfoBoxStatusesProvider>
+            <InpageNavigationProvider>
+              <ModalProvider>{children}</ModalProvider>
+            </InpageNavigationProvider>
+          </IPFSInfoBoxStatusesProvider>
+        </Web3Provider>
+      </CookieThemeProvider>
+    </AppFlagProvider>
   </ConfigProvider>
 );

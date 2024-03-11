@@ -1,7 +1,8 @@
-import { useContext } from 'react';
+import { useContext, useMemo } from 'react';
 import invariant from 'tiny-invariant';
 
-import { FeatureFlagsContext, FeatureFlagsContextType } from './provider';
+import { ConfigContext } from '../provider';
+import { FeatureFlagsContextType } from './provider';
 import { FeatureFlagsType } from './types';
 
 type UseFeatureFlagReturnType = {
@@ -12,17 +13,19 @@ type UseFeatureFlagReturnType = {
 
 export const useFeatureFlag = (
   flag: keyof FeatureFlagsType,
-): UseFeatureFlagReturnType => {
-  const context = useContext(FeatureFlagsContext);
+): UseFeatureFlagReturnType | null => {
+  const context = useContext(ConfigContext);
   invariant(context, 'Attempt to use `feature flag` outside of provider');
-  return {
-    [flag]: context[flag],
-    setFeatureFlag: context.setFeatureFlag,
-  };
+  return useMemo(() => {
+    return {
+      [flag]: context.featureFlags[flag],
+      setFeatureFlag: context.featureFlags?.setFeatureFlag,
+    };
+  }, [context.featureFlags, flag]);
 };
 
-export const useFeatureFlags = (): FeatureFlagsContextType => {
-  const context = useContext(FeatureFlagsContext);
+export const useFeatureFlags = (): FeatureFlagsContextType | null => {
+  const context = useContext(ConfigContext);
   invariant(context, 'Attempt to use `feature flag` outside of provider');
-  return context;
+  return useMemo(() => context.featureFlags, [context.featureFlags]);
 };

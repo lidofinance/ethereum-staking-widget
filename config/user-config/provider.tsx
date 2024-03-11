@@ -1,10 +1,4 @@
-import {
-  PropsWithChildren,
-  useMemo,
-  useState,
-  useCallback,
-  createContext,
-} from 'react';
+import { useMemo, useState, useCallback } from 'react';
 
 import { useLocalStorage } from '@lido-sdk/react';
 
@@ -19,18 +13,16 @@ type SavedUserConfig = {
   rpcUrls: Partial<Record<CHAINS, string>>;
 };
 
-type UserConfigContext = UserConfigDefaultType & {
+export type UserConfigContextType = UserConfigDefaultType & {
   savedUserConfig: SavedUserConfig;
   setSavedUserConfig: (config: SavedUserConfig) => void;
 };
-
-export const UserConfigContext = createContext<UserConfigContext | null>(null);
 
 const DEFAULT_STATE: SavedUserConfig = {
   rpcUrls: {},
 };
 
-export const UserConfigProvider = ({ children }: PropsWithChildren) => {
+export const useUserConfigContext = () => {
   const [restoredSettings, setLocalStorage] = useLocalStorage(
     STORAGE_USER_CONFIG,
     DEFAULT_STATE,
@@ -47,7 +39,7 @@ export const UserConfigProvider = ({ children }: PropsWithChildren) => {
     [setLocalStorage],
   );
 
-  const contextValue = useMemo(() => {
+  return useMemo(() => {
     const userConfigDefault = getUserConfigDefault();
 
     return {
@@ -56,10 +48,4 @@ export const UserConfigProvider = ({ children }: PropsWithChildren) => {
       setSavedUserConfig: setSavedConfigAndRemember,
     };
   }, [savedUserConfig, setSavedConfigAndRemember]);
-
-  return (
-    <UserConfigContext.Provider value={contextValue}>
-      {children}
-    </UserConfigContext.Provider>
-  );
 };
