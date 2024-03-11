@@ -10,6 +10,8 @@ import { STRATEGY_IMMUTABLE, STRATEGY_LAZY } from 'utils/swrStrategies';
 import buildInfo from 'build-info.json';
 import { useClientConfig } from 'providers/client-config';
 
+export const NO_SAFE_VERSION = 'NONE_AVAILABLE';
+
 type EnsHashCheckReturn = {
   cid: string;
   ens?: string;
@@ -118,12 +120,12 @@ export const useVersionCheck = () => {
     remoteVersionSWR.data &&
       currentCidSWR.data &&
       remoteVersionSWR.data.cid !== currentCidSWR.data &&
-      remoteVersionSWR.data.leastSafeVersion !== 'none',
+      remoteVersionSWR.data.leastSafeVersion !== NO_SAFE_VERSION,
   );
 
   const isVersionUnsafe = Boolean(
     remoteVersionSWR.data?.leastSafeVersion &&
-      (remoteVersionSWR.data.leastSafeVersion === 'none' ||
+      (remoteVersionSWR.data.leastSafeVersion === NO_SAFE_VERSION ||
         isVersionLess(
           buildInfo.version,
           remoteVersionSWR.data.leastSafeVersion,
