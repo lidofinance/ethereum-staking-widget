@@ -2,7 +2,7 @@ import { useContext, useMemo } from 'react';
 import invariant from 'tiny-invariant';
 
 import { ConfigContext } from '../provider';
-import { FeatureFlagsContextType } from './provider';
+import { FeatureFlagsContextType } from './context-hook';
 import { FeatureFlagsType } from './types';
 
 type UseFeatureFlagReturnType = {
