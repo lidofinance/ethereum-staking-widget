@@ -9,6 +9,7 @@ import { STRATEGY_IMMUTABLE, STRATEGY_LAZY } from 'utils/swrStrategies';
 
 import buildInfo from 'build-info.json';
 import { useClientConfig } from 'providers/client-config';
+import { useWeb3 } from 'reef-knot/web3-react';
 
 export const NO_SAFE_VERSION = 'NONE_AVAILABLE';
 
@@ -59,6 +60,7 @@ const isVersionLess = (versionA: string, versionB: string): boolean => {
 };
 
 export const useVersionCheck = () => {
+  const { active } = useWeb3();
   const { setIsWalletConnectionAllowed } = useClientConfig();
   const { forceDisconnect } = useForceDisconnect();
   const [areConditionsAccepted, setConditionsAccepted] = useState(false);
@@ -143,6 +145,7 @@ export const useVersionCheck = () => {
       forceDisconnect();
     }
   }, [
+    active,
     forceDisconnect,
     isNotVerifiable,
     isVersionUnsafe,

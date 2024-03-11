@@ -81,11 +81,12 @@ const Web3Provider: FC<PropsWithChildren> = ({ children }) => {
 
     return createClient({
       connectors,
-      autoConnect: true,
+      autoConnect: isWalletConnectionAllowed,
       provider,
       webSocketProvider,
     });
   }, [
+    isWalletConnectionAllowed,
     supportedChains,
     defaultChain,
     backendRPC,
