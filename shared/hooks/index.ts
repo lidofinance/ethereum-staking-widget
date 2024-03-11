@@ -1,6 +1,5 @@
 export * from './useCopyToClipboard';
 export * from './useENSAddress';
-export * from './useModal';
 export * from './useLidoStats';
 export * from './useLidoApr';
 export * from './usePrevious';

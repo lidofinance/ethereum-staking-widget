@@ -20,6 +20,7 @@ import {
 import { useStakingLimitInfo } from 'shared/hooks/useStakingLimitInfo';
 import { useMaxGasPrice } from 'shared/hooks';
 import { useIsMultisig } from 'shared/hooks/useIsMultisig';
+import { useFormControllerRetry } from 'shared/hook-form/form-controller/use-form-controller-retry-delegate';
 import { STRATEGY_LAZY } from 'utils/swrStrategies';
 
 import { useStethSubmitGasLimit } from '../hooks';
@@ -54,29 +55,35 @@ export const useStakeFormData = () => {
 };
 
 const useStakeFormNetworkData = (): StakeFormNetworkData => {
-  const { data: stethBalance, update: updateStethBalance } =
-    useSTETHBalance(STRATEGY_LAZY);
+  const {
+    data: stethBalance,
+    update: updateStethBalance,
+    initialLoading: isStethBalanceLoading,
+  } = useSTETHBalance(STRATEGY_LAZY);
   const { isMultisig, isLoading: isMultisigLoading } = useIsMultisig();
   const gasLimit = useStethSubmitGasLimit();
-  const maxGasFee = useMaxGasPrice();
+  const { maxGasPrice, initialLoading: isMaxGasPriceLoading } =
+    useMaxGasPrice();
+
   const gasCost = useMemo(
-    () => (gasLimit && maxGasFee ? gasLimit.mul(maxGasFee) : undefined),
-    [gasLimit, maxGasFee],
+    () => (gasLimit && maxGasPrice ? gasLimit.mul(maxGasPrice) : undefined),
+    [gasLimit, maxGasPrice],
   );
 
-  const { data: etherBalance, update: updateEtherBalance } = useEthereumBalance(
-    undefined,
-    STRATEGY_LAZY,
-  );
-  const { data: stakingLimitInfo, mutate: mutateStakeLimit } =
-    useStakingLimitInfo();
+  const {
+    data: etherBalance,
+    update: updateEtherBalance,
+    initialLoading: isEtherBalanceLoading,
+  } = useEthereumBalance(undefined, STRATEGY_LAZY);
+  const {
+    data: stakingLimitInfo,
+    mutate: mutateStakeLimit,
+    initialLoading: isStakingLimitLoading,
+  } = useStakingLimitInfo();
 
   const stakeableEther = useMemo(() => {
-    if (
-      etherBalance &&
-      stakingLimitInfo &&
-      stakingLimitInfo.isStakingLimitSet
-    ) {
+    if (!etherBalance || !stakingLimitInfo) return undefined;
+    if (etherBalance && stakingLimitInfo.isStakingLimitSet) {
       return etherBalance.lt(stakingLimitInfo.currentStakeLimit)
         ? etherBalance
         : stakingLimitInfo.currentStakeLimit;
@@ -106,6 +113,23 @@ const useStakeFormNetworkData = (): StakeFormNetworkData => {
     stakingLimitInfo,
   ]);
 
+  const loading = useMemo(
+    () => ({
+      isStethBalanceLoading,
+      isMultisigLoading,
+      isMaxGasPriceLoading,
+      isEtherBalanceLoading,
+      isStakeableEtherLoading: isStakingLimitLoading || isEtherBalanceLoading,
+    }),
+    [
+      isEtherBalanceLoading,
+      isMaxGasPriceLoading,
+      isMultisigLoading,
+      isStethBalanceLoading,
+      isStakingLimitLoading,
+    ],
+  );
+
   return {
     stethBalance,
     etherBalance,
@@ -115,6 +139,7 @@ const useStakeFormNetworkData = (): StakeFormNetworkData => {
     gasCost,
     gasLimit,
     maxAmount,
+    loading,
     revalidate,
   };
 };
@@ -157,10 +182,21 @@ export const StakeFormProvider: FC<PropsWithChildren> = ({ children }) => {
     }
   }, [router, setValue]);
 
-  const stake = useStake({ onConfirm: networkData.revalidate });
+  const { retryEvent, retryFire } = useFormControllerRetry();
+
+  const stake = useStake({
+    onConfirm: networkData.revalidate,
+    onRetry: retryFire,
+  });
 
   const formControllerValue: FormControllerContextValueType<StakeFormInput> =
-    useMemo(() => ({ onSubmit: stake }), [stake]);
+    useMemo(
+      () => ({
+        onSubmit: stake,
+        retryEvent,
+      }),
+      [stake, retryEvent],
+    );
 
   return (
     <FormProvider {...formObject}>

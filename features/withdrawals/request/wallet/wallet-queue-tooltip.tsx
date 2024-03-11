@@ -25,7 +25,11 @@ export const WalletQueueTooltip = () => {
         title="Amount"
         loading={!unfinalizedStETH}
       >
-        <FormatToken amount={unfinalizedStETH} symbol="stETH" />
+        <FormatToken
+          amount={unfinalizedStETH}
+          symbol="stETH"
+          showAmountTip={false}
+        />
       </DataTableRowStyled>
       <DataTableRowStyled
         title="Waiting time"

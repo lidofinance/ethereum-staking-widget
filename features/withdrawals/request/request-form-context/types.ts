@@ -1,5 +1,5 @@
-import { TOKENS } from '@lido-sdk/constants';
 import { BigNumber } from 'ethers';
+import { TokensWithdrawable } from 'features/withdrawals/types/tokens-withdrawable';
 import { Dispatch, SetStateAction } from 'react';
 import { useRequestFormDataContextValue } from './use-request-form-data-context-value';
 
@@ -9,7 +9,7 @@ export type ValidationResults = {
 
 export type RequestFormInputType = {
   amount: null | BigNumber;
-  token: TOKENS.STETH | TOKENS.WSTETH;
+  token: TokensWithdrawable;
   mode: 'lido' | 'dex';
 } & ValidationResults;
 
@@ -37,9 +37,8 @@ export type ExtraRequestFormDataType = {
   isApprovalFlow: boolean;
   isApprovalFlowLoading: boolean;
   isTokenLocked: boolean;
-  allowance: BigNumber;
+  allowance: BigNumber | undefined;
   maxAmount?: BigNumber;
-  onSubmit: React.FormEventHandler<HTMLFormElement>;
 };
 
 export type RequestFormDataContextValueType = RequestFormDataType &

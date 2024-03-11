@@ -2,7 +2,6 @@ import invariant from 'tiny-invariant';
 import { useCallback } from 'react';
 
 import { ContractReceipt, ContractTransaction } from '@ethersproject/contracts';
-import { Zero } from '@ethersproject/constants';
 import { BigNumber } from '@ethersproject/bignumber';
 import { getERC20Contract } from '@lido-sdk/contracts';
 import { useAllowance, useSDK } from '@lido-sdk/react';
@@ -26,7 +25,7 @@ export type UseApproveResponse = {
   approve: (options?: ApproveOptions) => Promise<void>;
   needsApprove: boolean;
   initialLoading: boolean;
-  allowance: BigNumber;
+  allowance: BigNumber | undefined;
   loading: boolean;
   error: unknown;
 };
@@ -45,14 +44,11 @@ export const useApprove = (
   invariant(spender != null, 'Spender is required');
 
   const result = useAllowance(token, spender, mergedOwner, STRATEGY_LAZY);
-  const {
-    data: allowance = Zero,
-    initialLoading,
-    update: updateAllowance,
-  } = result;
+  const { data: allowance, initialLoading, update: updateAllowance } = result;
 
-  const needsApprove =
-    !initialLoading && !amount.isZero() && amount.gt(allowance);
+  const needsApprove = Boolean(
+    !initialLoading && allowance && !amount.isZero() && amount.gt(allowance),
+  );
 
   const approve = useCallback<UseApproveResponse['approve']>(
     async ({ onTxStart, onTxSent, onTxAwaited } = {}) => {
