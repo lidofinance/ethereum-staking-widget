@@ -66,7 +66,10 @@ export const useWithdrawalRates = ({
       }),
     {
       ...STRATEGY_LAZY,
-      isPaused: () => !debouncedAmount || !debouncedAmount._isBigNumber,
+      isPaused: () =>
+        !debouncedAmount ||
+        !debouncedAmount._isBigNumber ||
+        ENABLED_WITHDRAWAL_DEXES.length === 0,
     },
   );
 

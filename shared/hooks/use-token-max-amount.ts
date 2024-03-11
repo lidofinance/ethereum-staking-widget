@@ -21,7 +21,7 @@ export const useTokenMaxAmount = ({
   isLoading = false,
   isPadded = false,
 }: UseTokenMaxAmountArgs): BigNumber | undefined => {
-  const maxGasPrice = useMaxGasPrice();
+  const { maxGasPrice } = useMaxGasPrice();
 
   const maxAmount = useMemo(() => {
     if (!balance || isLoading) return undefined;

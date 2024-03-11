@@ -9,6 +9,14 @@ export type StakeFormInput = {
   referral: string | null;
 };
 
+export type StakeFormLoading = {
+  isStethBalanceLoading: boolean;
+  isMultisigLoading: boolean;
+  isMaxGasPriceLoading: boolean;
+  isEtherBalanceLoading: boolean;
+  isStakeableEtherLoading: boolean;
+};
+
 export type StakeFormNetworkData = {
   etherBalance?: BigNumber;
   isMultisig?: boolean;
@@ -18,6 +26,7 @@ export type StakeFormNetworkData = {
   gasLimit?: BigNumber;
   gasCost?: BigNumber;
   maxAmount?: BigNumber;
+  loading: StakeFormLoading;
   revalidate: () => Promise<void>;
 };
 

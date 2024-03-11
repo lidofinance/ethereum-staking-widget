@@ -28,7 +28,7 @@ export const useWrapFormNetworkData = () => {
     useStakingLimitInfo();
 
   const { gasLimitETH, gasLimitStETH } = useWrapGasLimit();
-  const maxGasPrice = useMaxGasPrice();
+  const { maxGasPrice } = useMaxGasPrice();
 
   const maxAmountETH = useTokenMaxAmount({
     balance: ethBalance,

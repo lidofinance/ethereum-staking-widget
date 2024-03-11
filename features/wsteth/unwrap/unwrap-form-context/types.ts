@@ -14,6 +14,4 @@ export type UnwrapFormValidationContext = {
   maxAmount?: BigNumber;
 };
 
-export type UnwrapFormDataContextValueType = UnwrapFormNetworkData & {
-  willReceiveStETH?: BigNumber;
-};
+export type UnwrapFormDataContextValueType = UnwrapFormNetworkData;

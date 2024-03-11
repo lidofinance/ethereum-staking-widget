@@ -26,8 +26,8 @@ const WalletComponent: WalletComponentType = (props) => {
   const stethAddress = useTokenAddress(TOKENS.STETH);
   const wstethAddress = useTokenAddress(TOKENS.WSTETH);
 
-  const wstethByStethBalance = useWstethBySteth(stethBalance.data);
-  const stethByWstethBalance = useStethByWsteth(wstethBalance.data);
+  const wstethBySteth = useWstethBySteth(stethBalance.data);
+  const stethByWsteth = useStethByWsteth(wstethBalance.data);
 
   return (
     <StyledCard data-testid="wrapCardSection" {...props}>
@@ -50,7 +50,7 @@ const WalletComponent: WalletComponentType = (props) => {
         <CardBalance
           small
           title="stETH Balance"
-          loading={stethBalance.initialLoading}
+          loading={stethBalance.initialLoading || wstethBySteth.initialLoading}
           value={
             <>
               <FormatToken
@@ -63,11 +63,11 @@ const WalletComponent: WalletComponentType = (props) => {
                 address={stethAddress}
               />
               <Text size={'xxs'} color={'secondary'}>
-                ≈{' '}
                 <FormatToken
                   data-testid="wstEthBalanceOption"
-                  amount={wstethByStethBalance}
+                  amount={wstethBySteth.data}
                   symbol="wstETH"
+                  approx={true}
                 />
               </Text>
             </>
@@ -76,7 +76,7 @@ const WalletComponent: WalletComponentType = (props) => {
         <CardBalance
           small
           title="wstETH Balance"
-          loading={wstethBalance.initialLoading}
+          loading={wstethBalance.initialLoading || stethByWsteth.initialLoading}
           value={
             <>
               <FormatToken
@@ -89,11 +89,11 @@ const WalletComponent: WalletComponentType = (props) => {
                 address={wstethAddress}
               />
               <Text size={'xxs'} color={'secondary'}>
-                ≈{' '}
                 <FormatToken
                   data-testid="stethBalanceOption"
-                  amount={stethByWstethBalance}
+                  amount={stethByWsteth.data}
                   symbol="stETH"
+                  approx={true}
                 />
               </Text>
             </>

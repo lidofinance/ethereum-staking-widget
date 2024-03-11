@@ -7,7 +7,6 @@ import {
   useContext,
 } from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
-import { useStethByWsteth } from 'shared/hooks';
 import { useUnwrapFormNetworkData } from '../hooks/use-unwrap-form-network-data';
 import { useUnwrapFormProcessor } from '../hooks/use-unwrap-form-processing';
 import { useUnwrapFormValidationContext } from '../hooks/use-unwra-form-validation-context';
@@ -24,7 +23,6 @@ import {
   UnwrapFormValidationContext,
 } from './types';
 import { UnwrapFormValidationResolver } from './unwrap-form-validators';
-import { Zero } from '@ethersproject/constants';
 
 //
 // Data context
@@ -62,24 +60,12 @@ export const UnwrapFormProvider: FC<PropsWithChildren> = ({ children }) => {
     resolver: UnwrapFormValidationResolver,
   });
 
-  const { watch } = formObject;
-  const [amount] = watch(['amount']);
   const { retryEvent, retryFire } = useFormControllerRetry();
 
   const processUnwrapFormFlow = useUnwrapFormProcessor({
     onConfirm: networkData.revalidateUnwrapFormData,
     onRetry: retryFire,
   });
-
-  const willReceiveStETH = useStethByWsteth(amount ?? Zero);
-
-  const value = useMemo(
-    (): UnwrapFormDataContextValueType => ({
-      ...networkData,
-      willReceiveStETH,
-    }),
-    [networkData, willReceiveStETH],
-  );
 
   const formControllerValue = useMemo(
     (): FormControllerContextValueType<UnwrapFormInputType> => ({
@@ -91,7 +77,7 @@ export const UnwrapFormProvider: FC<PropsWithChildren> = ({ children }) => {
 
   return (
     <FormProvider {...formObject}>
-      <UnwrapFormDataContext.Provider value={value}>
+      <UnwrapFormDataContext.Provider value={networkData}>
         <FormControllerContext.Provider value={formControllerValue}>
           {children}
         </FormControllerContext.Provider>

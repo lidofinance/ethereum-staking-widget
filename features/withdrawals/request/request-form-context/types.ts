@@ -37,7 +37,7 @@ export type ExtraRequestFormDataType = {
   isApprovalFlow: boolean;
   isApprovalFlowLoading: boolean;
   isTokenLocked: boolean;
-  allowance: BigNumber;
+  allowance: BigNumber | undefined;
   maxAmount?: BigNumber;
 };
 
