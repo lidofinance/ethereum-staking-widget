@@ -17,15 +17,15 @@ export const useGetRpcUrlByChainId = () => {
 
   return useCallback(
     (chainId: CHAINS) => {
-      // Needs this condition 'cause in 'providers/web3.tsx' we add `wagmiChains.polygonMumbai` to supportedChains
-      // so, here chainId = 80001 is arriving which to raises an invariant
-      // chainId = 1 we need anytime!
+      // This condition is needed because in 'providers/web3.tsx' we add `wagmiChains.polygonMumbai` to supportedChains as a workaround.
+      // polygonMumbai (80001) may cause an invariant throwing.
+      // And we always need Mainnet RPC for some requests, e.g. ETH to USD price, ENS lookup.
       if (
         chainId !== CHAINS.Mainnet &&
         !clientConfig.supportedChainIds.includes(chainId)
       ) {
         // Has no effect on functionality. Just a fix.
-        // Return empty string as stub
+        // Return empty string as a stub
         // (see: 'providers/web3.tsx' --> jsonRpcBatchProvider --> getStaticRpcBatchProvider)
         return '';
       }
