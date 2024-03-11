@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useLidoSWR } from '@lido-sdk/react';
-import { useForceDisconnect } from 'reef-knot/web3-react';
+import { useForceDisconnect } from 'reef-knot/core-react';
 
 import { BASE_PATH_ASSET, dynamics } from 'config';
 import { useMainnetStaticRpcProvider } from 'shared/hooks/use-mainnet-static-rpc-provider';
@@ -60,7 +60,7 @@ const isVersionLess = (versionA: string, versionB: string): boolean => {
 
 export const useVersionCheck = () => {
   const { setIsWalletConnectionAllowed } = useClientConfig();
-  const { disconnect } = useForceDisconnect();
+  const { forceDisconnect } = useForceDisconnect();
   const [areConditionsAccepted, setConditionsAccepted] = useState(false);
   const provider = useMainnetStaticRpcProvider();
 
@@ -140,10 +140,10 @@ export const useVersionCheck = () => {
       setIsWalletConnectionAllowed(false);
     }
     if (isVersionUnsafe || (dynamics.ipfsMode && isNotVerifiable)) {
-      disconnect();
+      forceDisconnect();
     }
   }, [
-    disconnect,
+    forceDisconnect,
     isNotVerifiable,
     isVersionUnsafe,
     setIsWalletConnectionAllowed,

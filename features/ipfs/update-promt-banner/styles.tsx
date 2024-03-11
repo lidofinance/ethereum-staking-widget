@@ -40,6 +40,7 @@ export const WarningText = styled(Text).attrs({
 export const WarningSubText = styled(Text).attrs({
   weight: 400,
   size: 'xs',
+  as: 'span',
   color: 'secondary',
 })`
   text-align: center;

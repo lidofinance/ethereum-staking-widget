@@ -11,6 +11,7 @@ import { useGetRpcUrlByChainId } from 'config';
 import { SDKLegacyProvider } from './sdk-legacy';
 
 const Web3Provider: FC<PropsWithChildren> = ({ children }) => {
+  const { isWalletConnectionAllowed } = useClientConfig();
   const {
     defaultChain: defaultChainId,
     supportedChainIds,
@@ -95,6 +96,7 @@ const Web3Provider: FC<PropsWithChildren> = ({ children }) => {
   return (
     <WagmiConfig client={client}>
       <ReefKnot
+        autoConnect={isWalletConnectionAllowed}
         defaultChain={defaultChain}
         chains={supportedChains}
         rpc={backendRPC}
