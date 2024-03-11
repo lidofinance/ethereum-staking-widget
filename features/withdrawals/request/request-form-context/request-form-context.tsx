@@ -5,7 +5,6 @@ import {
   useState,
   createContext,
   useContext,
-  useEffect,
 } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import invariant from 'tiny-invariant';
@@ -13,16 +12,21 @@ import { TOKENS } from '@lido-sdk/constants';
 
 import { useWithdrawalRequest } from 'features/withdrawals/hooks';
 
-import { RequestFormValidationResolver } from './validators';
 import { useRequestFormDataContextValue } from './use-request-form-data-context-value';
 import { useValidationContext } from './use-validation-context';
+import { useFormControllerRetry } from 'shared/hook-form/form-controller/use-form-controller-retry-delegate';
+
+import {
+  FormControllerContext,
+  FormControllerContextValueType,
+} from 'shared/hook-form/form-controller';
+import { RequestFormValidationResolver } from './validators';
 import {
   RequestFormDataContextValueType,
   RequestFormInputType,
   RequestFormValidationContextType,
   ValidationResults,
 } from './types';
-import { useTransactionModal } from 'shared/transaction-modal';
 
 //
 // data context
@@ -55,7 +59,6 @@ export const useValidationResults = () => {
 // Joint provider for form state, data, intermediate validation results
 //
 export const RequestFormProvider: FC<PropsWithChildren> = ({ children }) => {
-  const { dispatchModalState } = useTransactionModal();
   const [intermediateValidationResults, setIntermediateValidationResults] =
     useState<ValidationResults>({ requests: null });
 
@@ -84,12 +87,13 @@ export const RequestFormProvider: FC<PropsWithChildren> = ({ children }) => {
 
   // TODO refactor this part as part of TX flow
   const {
-    handleSubmit,
     reset,
     watch,
     formState: { defaultValues },
   } = formObject;
   const [token, amount] = watch(['token', 'amount']);
+  const { retryEvent, retryFire } = useFormControllerRetry();
+
   const {
     allowance,
     request,
@@ -100,26 +104,8 @@ export const RequestFormProvider: FC<PropsWithChildren> = ({ children }) => {
     token,
     amount,
     onConfirm: revalidateRequestFormData,
+    onRetry: retryFire,
   });
-
-  const onSubmit = useMemo(
-    () =>
-      handleSubmit(async ({ requests, mode, amount, token }) => {
-        const { success } = await request(requests, amount, token);
-        if (success) {
-          reset({
-            ...defaultValues,
-            mode,
-            token,
-          });
-        }
-      }),
-    [handleSubmit, request, reset, defaultValues],
-  );
-
-  useEffect(() => {
-    dispatchModalState({ type: 'set_on_retry', callback: onSubmit });
-  }, [dispatchModalState, onSubmit]);
 
   const maxAmount = token === TOKENS.STETH ? balanceSteth : balanceWSteth;
 
@@ -131,7 +117,6 @@ export const RequestFormProvider: FC<PropsWithChildren> = ({ children }) => {
       isTokenLocked,
       allowance,
       maxAmount,
-      onSubmit,
     }),
     [
       requestFormData,
@@ -140,18 +125,35 @@ export const RequestFormProvider: FC<PropsWithChildren> = ({ children }) => {
       isTokenLocked,
       allowance,
       maxAmount,
-      onSubmit,
     ],
   );
+
+  const formControllerValue: FormControllerContextValueType<RequestFormInputType> =
+    useMemo(
+      () => ({
+        onSubmit: request,
+        onReset: ({ mode, token }: RequestFormInputType) => {
+          reset({
+            ...defaultValues,
+            mode,
+            token,
+          });
+        },
+        retryEvent,
+      }),
+      [request, retryEvent, reset, defaultValues],
+    );
 
   return (
     <FormProvider {...formObject}>
       <RequestFormDataContext.Provider value={value}>
-        <IntermediateValidationResultsContext.Provider
-          value={intermediateValidationResults}
-        >
-          {children}
-        </IntermediateValidationResultsContext.Provider>
+        <FormControllerContext.Provider value={formControllerValue}>
+          <IntermediateValidationResultsContext.Provider
+            value={intermediateValidationResults}
+          >
+            {children}
+          </IntermediateValidationResultsContext.Provider>
+        </FormControllerContext.Provider>
       </RequestFormDataContext.Provider>
     </FormProvider>
   );

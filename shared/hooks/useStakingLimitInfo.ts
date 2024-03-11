@@ -1,9 +1,8 @@
 import { parseEther } from '@ethersproject/units';
 import { CHAINS } from '@lido-sdk/constants';
 import { StethAbi } from '@lido-sdk/contracts';
-import { useSDK, useSTETHContractRPC } from '@lido-sdk/react';
+import { useLidoSWR, useSDK, useSTETHContractRPC } from '@lido-sdk/react';
 import { enableQaHelpers } from 'utils';
-import useSwr from 'swr';
 import { BigNumber } from 'ethers';
 import { STRATEGY_LAZY } from 'utils/swrStrategies';
 import { LIMIT_LEVEL } from 'types';
@@ -46,8 +45,9 @@ export const useStakingLimitInfo = () => {
   const { chainId } = useSDK();
   const steth = useSTETHContractRPC();
 
-  return useSwr<StakeLimitFullInfo>(
+  return useLidoSWR<StakeLimitFullInfo>(
     ['swr:getStakeLimitFullInfo', chainId, steth, enableQaHelpers],
+    // @ts-expect-error broken lidoSWR typings
     async (
       _key: string,
       _chainId: CHAINS,

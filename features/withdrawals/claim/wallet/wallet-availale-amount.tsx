@@ -6,11 +6,7 @@ export const WalletAvailableAmount = () => {
   const { data, initialLoading } = useClaimData();
 
   const availableAmount = (
-    <FormatToken
-      showAmountTip
-      amount={data?.claimableAmountOfETH}
-      symbol="ETH"
-    />
+    <FormatToken amount={data?.claimableAmountOfETH} symbol="ETH" />
   );
 
   return (

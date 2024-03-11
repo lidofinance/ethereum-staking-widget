@@ -1,7 +1,6 @@
 import { InlineLoader } from '@lidofinance/lido-ui';
 import { Component } from 'types';
-import { useModal } from 'shared/hooks';
-import { MODAL } from 'providers';
+import { useWalletModal } from '../wallet-modal/use-wallet-modal';
 import { AddressBadge } from '../components/address-badge/address-badge';
 import {
   WalletCardStyle,
@@ -65,14 +64,14 @@ export const CardAccount: Component<'div', { account?: string | null }> = (
   props,
 ) => {
   const { account, ...rest } = props;
-  const { openModal } = useModal(MODAL.wallet);
+  const { openModal } = useWalletModal();
 
   return (
     <WalletCardAccountStyle {...rest}>
       <AddressBadge
         data-testid="accountSectionCard"
         address={account}
-        onClick={openModal}
+        onClick={() => openModal({})}
         color="accent"
       />
     </WalletCardAccountStyle>

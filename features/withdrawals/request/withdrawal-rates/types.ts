@@ -17,7 +17,6 @@ export type RateCalculationResult = {
 export type SingleWithdrawalRateResult = {
   rate: number | null;
   toReceive: BigNumber | null;
-  isServiceAvailable: boolean;
 };
 
 export type DexWithdrawalApi = 'paraswap' | 'open-ocean' | 'one-inch';

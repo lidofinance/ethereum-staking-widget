@@ -13,6 +13,7 @@ export type AllowanceDataTableRowProps = Omit<
   title?: ReactNode;
   token: TOKENS.WSTETH | TOKENS.STETH | 'ETH';
   allowance?: BigNumber;
+  loading?: boolean;
   isBlank?: boolean;
 };
 
@@ -33,11 +34,7 @@ export const AllowanceDataTableRow = ({
       ) : isInfiniteAllowance ? (
         'Infinite'
       ) : (
-        <FormatToken
-          showAmountTip
-          amount={allowance}
-          symbol={getTokenDisplayName(token)}
-        />
+        <FormatToken amount={allowance} symbol={getTokenDisplayName(token)} />
       )}
     </DataTableRow>
   );
