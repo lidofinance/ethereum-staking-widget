@@ -10,6 +10,8 @@ import { useClientConfig } from 'providers/client-config';
 import { useGetRpcUrlByChainId } from 'config';
 import { SDKLegacyProvider } from './sdk-legacy';
 
+const wagmiChainsArray = Object.values({ ...wagmiChains, holesky });
+
 const Web3Provider: FC<PropsWithChildren> = ({ children }) => {
   const {
     defaultChain: defaultChainId,
@@ -17,21 +19,23 @@ const Web3Provider: FC<PropsWithChildren> = ({ children }) => {
     walletconnectProjectId,
   } = useClientConfig();
 
-  const wagmiChainsArray = Object.values({ ...wagmiChains, holesky });
-  const supportedChains = wagmiChainsArray.filter((chain) =>
-    supportedChainIds.includes(chain.id),
-  );
+  const { supportedChains, defaultChain } = useMemo(() => {
+    const supportedChains = wagmiChainsArray.filter((chain) =>
+      supportedChainIds.includes(chain.id),
+    );
 
-  // Adding Mumbai as a temporary workaround
-  // for the wagmi and walletconnect bug, when some wallets are failing to connect
-  // when there are only one supported network, so we need at least 2 of them.
-  // Mumbai should be the last in the array, otherwise wagmi can send request to it.
-  // TODO: remove after updating wagmi to v1+
-  supportedChains.push(wagmiChains.polygonMumbai);
+    // Adding Mumbai as a temporary workaround
+    // for the wagmi and walletconnect bug, when some wallets are failing to connect
+    // when there are only one supported network, so we need at least 2 of them.
+    // Mumbai should be the last in the array, otherwise wagmi can send request to it.
+    // TODO: remove after updating wagmi to v1+
+    supportedChains.push(wagmiChains.polygonMumbai);
 
-  const defaultChain =
-    supportedChains.find((chain) => chain.id === defaultChainId) ||
-    supportedChains[0]; // first supported chain as fallback
+    const defaultChain =
+      supportedChains.find((chain) => chain.id === defaultChainId) ||
+      supportedChains[0]; // first supported chain as fallback
+    return { supportedChains, defaultChain };
+  }, [defaultChainId, supportedChainIds]);
 
   const getRpcUrlByChainId = useGetRpcUrlByChainId();
 
