@@ -32,7 +32,7 @@ jobs:
       - name: Set tag, commit and branch name
         if: env.is_create_release == 'true'
         id: build-info
-        uses: 'idofinance/actions/.github/actions/build-info/action.yml@main'
+        uses: lidofinance/actions/.github/actions/build-info@main
         with:
           BRANCH_NAME: ${{ github.ref_name }}
       - name: Install dependencies

@@ -28,7 +28,7 @@ jobs:
           cache: 'yarn'
       - name: Set tag, commit and branch name
         id: build-info
-        uses: lidofinance/actions/.github/actions/build-info/action.yml@main
+        uses: lidofinance/actions/.github/actions/build-info@main
         with:
           BRANCH_NAME: ${{ github.ref_name }}
       - name: Install dependencies
