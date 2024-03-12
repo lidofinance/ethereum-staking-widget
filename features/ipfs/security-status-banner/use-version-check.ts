@@ -8,6 +8,7 @@ import { useMainnetStaticRpcProvider } from 'shared/hooks/use-mainnet-static-rpc
 import { standardFetcher } from 'utils/standardFetcher';
 import { STRATEGY_IMMUTABLE, STRATEGY_LAZY } from 'utils/swrStrategies';
 import { useClientConfig } from 'providers/client-config';
+import { overrideWithQAMockBoolean } from 'utils/qa';
 
 import { isVersionLess } from './utils';
 
@@ -97,23 +98,32 @@ export const useVersionCheck = () => {
     { ...STRATEGY_LAZY },
   );
 
-  const isUpdateAvailable = Boolean(
-    remoteVersionSWR.data &&
-      currentCidSWR.data &&
-      remoteVersionSWR.data.cid !== currentCidSWR.data &&
-      remoteVersionSWR.data.leastSafeVersion !== NO_SAFE_VERSION,
+  const isUpdateAvailable = overrideWithQAMockBoolean(
+    Boolean(
+      remoteVersionSWR.data &&
+        currentCidSWR.data &&
+        remoteVersionSWR.data.cid !== currentCidSWR.data &&
+        remoteVersionSWR.data.leastSafeVersion !== NO_SAFE_VERSION,
+    ),
+    'mock-qa-helpers-security-banner-is-update-available',
   );
 
-  const isVersionUnsafe = Boolean(
-    remoteVersionSWR.data?.leastSafeVersion &&
-      (remoteVersionSWR.data.leastSafeVersion === NO_SAFE_VERSION ||
-        isVersionLess(
-          buildInfo.version,
-          remoteVersionSWR.data.leastSafeVersion,
-        )),
+  const isVersionUnsafe = overrideWithQAMockBoolean(
+    Boolean(
+      remoteVersionSWR.data?.leastSafeVersion &&
+        (remoteVersionSWR.data.leastSafeVersion === NO_SAFE_VERSION ||
+          isVersionLess(
+            buildInfo.version,
+            remoteVersionSWR.data.leastSafeVersion,
+          )),
+    ),
+    'mock-qa-helpers-security-banner-is-version-unsafe',
   );
 
-  const isNotVerifiable = !!remoteVersionSWR.error;
+  const isNotVerifiable = overrideWithQAMockBoolean(
+    !!remoteVersionSWR.error,
+    'mock-qa-helpers-security-banner-is-not-verifiable',
+  );
 
   // disconnect wallet and disallow connection for unsafe versions
   useEffect(() => {
