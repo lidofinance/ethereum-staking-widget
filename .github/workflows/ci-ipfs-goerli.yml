@@ -27,16 +27,9 @@ jobs:
           node-version: 20
           cache: 'yarn'
       - name: Set tag, commit and branch name
-        id: tag
-        run: |
-          export TAG=`echo $(git describe --abbrev=0 --tags)`
-          export TAG_COMMIT_SHA=$(git rev-parse --short $(git rev-list -n 1 $TAG))
-          echo "TAG=$TAG" >> $GITHUB_OUTPUT
-          echo "TAG_COMMIT_SHA=$TAG_COMMIT_SHA" >> "$GITHUB_OUTPUT"
-          echo '{ "branch": "'$BRANCH_NAME'", "commit": "'$TAG_COMMIT_SHA'", "version": "'$TAG'" }' > ./build-info.json
-          export BUILD_INFO=$(cat ./build-info.json)
-          echo "$BUILD_INFO" >> $GITHUB_STEP_SUMMARY
-        env:
+        id: build-info
+        uses: lidofinance/actions/.github/actions/build-info/action.yml@main
+        with:
           BRANCH_NAME: ${{ github.ref_name }}
       - name: Install dependencies
         run: |
