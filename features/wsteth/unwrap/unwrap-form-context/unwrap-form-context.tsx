@@ -1,4 +1,4 @@
-import invariant from 'tiny-invariant';
+import reaction from 'tiny-reaction';
 import {
   FC,
   PropsWithChildren,
