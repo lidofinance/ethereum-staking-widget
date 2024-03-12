@@ -17,6 +17,7 @@ export const Connect: FC<ButtonProps> = (props) => {
     MATOMO_CLICK_EVENTS.connectWallet,
     useCallback(() => {
       if (!isWalletConnectionAllowed) return;
+      // for auto-connect skip modal and try reconnect
       if (isAutoConnectionSuitable) {
         void eagerConnect();
       } else {
