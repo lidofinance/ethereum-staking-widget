@@ -85,12 +85,11 @@ const Web3Provider: FC<PropsWithChildren> = ({ children }) => {
 
     return createClient({
       connectors,
-      autoConnect: isWalletConnectionAllowed,
+      autoConnect: false, // default wagmi autoConnect, MUST be false in our case, because we use custom autoConnect from Reef Knot
       provider,
       webSocketProvider,
     });
   }, [
-    isWalletConnectionAllowed,
     supportedChains,
     defaultChain,
     backendRPC,
