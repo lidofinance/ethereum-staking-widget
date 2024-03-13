@@ -11,7 +11,7 @@ import { ServerStyleSheet } from 'styled-components';
 import { Fonts, LidoUIHead } from '@lidofinance/lido-ui';
 
 import { dynamics, BASE_PATH_ASSET } from 'config';
-import { InsertIpfsBaseScript } from 'features/ipfs/ipfs-base-script';
+import { InsertIpfsBaseScript } from 'features/ipfs';
 import { contentSecurityPolicy } from 'utilsApi/withCSP';
 
 let host = 'https://stake.lido.fi';

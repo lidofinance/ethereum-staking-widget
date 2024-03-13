@@ -30,9 +30,33 @@ export const Wrapper = styled.div`
 
 export const WarningText = styled(Text).attrs({
   weight: 700,
-  size: 'lg',
 })`
+  font-size: 26px;
   text-align: center;
   margin: 12px 0 28px;
   text-wrap: balance;
+`;
+
+export const WarningBlock = styled.p`
+  text-align: center;
+  margin: 12px 0 28px;
+`;
+
+export const WarningTitle = styled(Text).attrs({
+  weight: 700,
+})`
+  font-size: 26px;
+  text-align: center;
+  text-wrap: balance;
+`;
+
+export const WarningSubText = styled(Text).attrs({
+  weight: 400,
+  size: 'xs',
+  color: 'secondary',
+})`
+  text-align: center;
+  margin: 0;
+  margin-top: 12px;
+  text-wrap: wrap;
 `;

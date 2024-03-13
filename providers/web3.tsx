@@ -13,6 +13,7 @@ import { SDKLegacyProvider } from './sdk-legacy';
 const wagmiChainsArray = Object.values({ ...wagmiChains, holesky });
 
 const Web3Provider: FC<PropsWithChildren> = ({ children }) => {
+  const { isWalletConnectionAllowed } = useClientConfig();
   const {
     defaultChain: defaultChainId,
     supportedChainIds,
@@ -84,11 +85,12 @@ const Web3Provider: FC<PropsWithChildren> = ({ children }) => {
 
     return createClient({
       connectors,
-      autoConnect: true,
+      autoConnect: isWalletConnectionAllowed,
       provider,
       webSocketProvider,
     });
   }, [
+    isWalletConnectionAllowed,
     supportedChains,
     defaultChain,
     backendRPC,
@@ -99,6 +101,7 @@ const Web3Provider: FC<PropsWithChildren> = ({ children }) => {
   return (
     <WagmiConfig client={client}>
       <ReefKnot
+        autoConnect={isWalletConnectionAllowed}
         defaultChain={defaultChain}
         chains={supportedChains}
         rpc={backendRPC}
