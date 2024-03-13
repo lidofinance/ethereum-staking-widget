@@ -6,9 +6,10 @@ import { WrapFormProvider } from '../wrap-form-context/wrap-form-context';
 import { FormController } from 'shared/hook-form/form-controller';
 import { InputGroupWrap } from '../wrap-form-controls/input-group-wrap';
 import { SubmitButtonWrap } from '../wrap-form-controls/submit-button-wrap';
+import { L2Wsteth } from 'shared/banners/l2-banners/l2-wsteth';
 
-import { L2Wsteth } from 'shared/banners/l2-wsteth';
 import { MATOMO_CLICK_EVENTS } from 'config';
+
 export const WrapForm: React.FC = memo(() => {
   return (
     <WrapFormProvider>
