@@ -1,4 +1,6 @@
-import { dynamics } from 'config';
+import { FaqPlaceholder } from 'features/ipfs';
+import { OnlyInfraRender } from 'shared/components/only-infra-render';
+
 import { RequestFormProvider } from './request-form-context';
 import { RequestFaq } from '../withdrawals-faq/request-faq';
 import { RequestForm } from './form';
@@ -9,7 +11,9 @@ export const Request = () => {
     <RequestFormProvider>
       <RequestWallet />
       <RequestForm />
-      {!dynamics.ipfsMode && <RequestFaq />}
+      <OnlyInfraRender renderIPFS={<FaqPlaceholder />}>
+        <RequestFaq />
+      </OnlyInfraRender>
     </RequestFormProvider>
   );
 };
