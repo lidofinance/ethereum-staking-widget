@@ -8,8 +8,8 @@ export type PreConfigType = {
 } & typeof publicRuntimeConfig &
   typeof dynamics;
 
-// `getPreConfig()` needs for external internal in 'config/groups/*'
-// Not use `getPreConfig()` outside of 'config/groups/*'
+// `getPreConfig()` needs for internal in 'config/groups/*'
+// Do not use `getPreConfig()` outside of 'config/groups/*'
 export const getPreConfig = (): PreConfigType => {
   const BASE_PATH_ASSET = dynamics.ipfsMode
     ? '.'
