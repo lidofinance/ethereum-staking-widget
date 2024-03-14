@@ -15,35 +15,38 @@ const toBoolean = (val) => {
   );
 };
 
-/** @type string */
-export const matomoHost = process.env.MATOMO_URL;
-/** @type number */
-export const defaultChain = parseInt(process.env.DEFAULT_CHAIN, 10) || 17000;
-/** @type number[] */
-
-export const supportedChains = process.env?.SUPPORTED_CHAINS?.split(',').map(
-  (chainId) => parseInt(chainId, 10),
-) ?? [17000];
-/** @type boolean */
-export const enableQaHelpers = toBoolean(process.env.ENABLE_QA_HELPERS);
-/** @type string */
-export const ethAPIBasePath = process.env.ETH_API_BASE_PATH;
-/** @type string */
-export const wqAPIBasePath = process.env.WQ_API_BASE_PATH;
-/** @type string */
-export const walletconnectProjectId = process.env.WALLETCONNECT_PROJECT_ID;
-
 /** @type boolean */
 export const ipfsMode = toBoolean(process.env.IPFS_MODE);
 
+// Keep fallback as in 'config/get-secret-config.ts'
+/** @type number */
+export const defaultChain = parseInt(process.env.DEFAULT_CHAIN, 10) || 17000;
+/** @type number[] */
+export const supportedChains = process.env?.SUPPORTED_CHAINS?.split(',').map(
+  (chainId) => parseInt(chainId, 10),
+) ?? [17000];
+
 /** @type string[] */
 export const prefillUnsafeElRpcUrls1 = process.env.PREFILL_UNSAFE_EL_RPC_URLS_1?.split(',') ?? [];
-
 /** @type string[] */
 export const prefillUnsafeElRpcUrls5 = process.env.PREFILL_UNSAFE_EL_RPC_URLS_5?.split(',') ?? [];
-
 /** @type string[] */
 export const prefillUnsafeElRpcUrls17000 = process.env.PREFILL_UNSAFE_EL_RPC_URLS_17000?.split(',') ?? [];
+
+/** @type boolean */
+export const enableQaHelpers = toBoolean(process.env.ENABLE_QA_HELPERS);
+
+export const walletconnectProjectId = process.env.WALLETCONNECT_PROJECT_ID;
+
+/** @type string */
+export const matomoHost = process.env.MATOMO_URL;
+
+/** @type string */
+export const ethAPIBasePath = process.env.ETH_API_BASE_PATH;
+
+/** @type string */
+export const wqAPIBasePath = process.env.WQ_API_BASE_PATH;
+/** @type string */
 
 /** @type string */
 export const widgetApiBasePathForIpfs = process.env.WIDGET_API_BASE_PATH_FOR_IPFS;
