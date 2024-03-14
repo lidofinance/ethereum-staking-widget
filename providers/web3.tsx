@@ -9,6 +9,7 @@ import { getStaticRpcBatchProvider } from '@lido-sdk/providers';
 import { useClientConfig } from 'providers/client-config';
 import { useGetRpcUrlByChainId } from 'config';
 import { SDKLegacyProvider } from './sdk-legacy';
+import { ConnectWalletModal } from 'shared/wallet/connect-wallet-modal';
 
 const wagmiChainsArray = Object.values({ ...wagmiChains, holesky });
 
@@ -112,6 +113,7 @@ const Web3Provider: FC<PropsWithChildren> = ({ children }) => {
           rpc={backendRPC}
         >
           {children}
+          <ConnectWalletModal />
         </SDKLegacyProvider>
       </ReefKnot>
     </WagmiConfig>
