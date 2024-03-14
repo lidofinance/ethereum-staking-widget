@@ -56,7 +56,7 @@ export const getBebopRate = async (
     `${basePath}/?${params.toString()}`,
   );
 
-  const bestRoute = data.routes.toSorted(
+  const bestRoute = data.routes.sort(
     (r1, r2) =>
       r2.quote.sellTokens[sell_tokens].priceBeforeFee -
       r1.quote.sellTokens[sell_tokens].priceBeforeFee,
