@@ -1,3 +1,4 @@
+import { useCallback } from 'react';
 import {
   ButtonIcon,
   Modal,
@@ -6,12 +7,12 @@ import {
   Copy,
   Address,
 } from '@lidofinance/lido-ui';
+import { useEtherscanOpen } from '@lido-sdk/react';
+import { useConnectorInfo, useDisconnect } from 'reef-knot/core-react';
+import { useWeb3 } from 'reef-knot/web3-react';
+
 import type { ModalComponentType } from 'providers/modal-provider';
-import { useEtherscanOpen, useSDK } from '@lido-sdk/react';
-import { useConnectorInfo, useDisconnect } from 'reef-knot/web3-react';
 import { useCopyToClipboard } from 'shared/hooks';
-import { useCallback } from 'react';
-import { useDisconnect as useDisconnectWagmi } from 'wagmi';
 import {
   WalletModalContentStyle,
   WalletModalConnectedStyle,
@@ -22,31 +23,26 @@ import {
   WalletModalActionsStyle,
 } from './styles';
 
-export const WalletModal: ModalComponentType = (props) => {
-  const { onClose } = props;
-  const { account } = useSDK();
-  const { providerName } = useConnectorInfo();
+export const WalletModal: ModalComponentType = ({ onClose, ...props }) => {
+  const { account } = useWeb3();
+  const { connectorName } = useConnectorInfo();
   const { disconnect } = useDisconnect();
-  const { disconnect: wagmiDisconnect } = useDisconnectWagmi();
 
   const handleDisconnect = useCallback(() => {
-    // disconnect wallets connected through web3-react connectors
     disconnect?.();
-    // disconnect wallets connected through wagmi connectors
-    wagmiDisconnect();
     onClose?.();
-  }, [disconnect, onClose, wagmiDisconnect]);
+  }, [disconnect, onClose]);
 
   const handleCopy = useCopyToClipboard(account ?? '');
   const handleEtherscan = useEtherscanOpen(account ?? '', 'address');
 
   return (
-    <Modal title="Account" {...props}>
+    <Modal title="Account" onClose={onClose} {...props}>
       <WalletModalContentStyle>
         <WalletModalConnectedStyle>
-          {providerName && (
+          {connectorName && (
             <WalletModalConnectorStyle data-testid="providerName">
-              Connected with {providerName}
+              Connected with {connectorName}
             </WalletModalConnectorStyle>
           )}
 

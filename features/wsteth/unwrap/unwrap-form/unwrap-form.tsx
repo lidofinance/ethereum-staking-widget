@@ -1,6 +1,6 @@
 import { memo, FC } from 'react';
 
-import { L2Wsteth } from 'shared/banners/l2-wsteth';
+import { L2Wsteth } from 'shared/banners/l2-banners/l2-wsteth';
 import { InputWrap, WrapBlock } from 'features/wsteth/shared/styles';
 
 import { UnwrapStats } from './unwrap-stats';

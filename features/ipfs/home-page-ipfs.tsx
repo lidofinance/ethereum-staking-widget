@@ -37,7 +37,7 @@ const IPFS_ROUTABLE_PAGES = [
   getPathWithoutFirstSlash(SETTINGS_PATH),
 ];
 
-const HomePageIpfs: FC = () => {
+export const HomePageIpfs: FC = () => {
   const router = useRouter();
   const { asPath } = router;
 
@@ -114,5 +114,3 @@ const HomePageIpfs: FC = () => {
   // Fix for runtime of `dev-ipfs` (see: package.json scripts)
   return <NoSSRWrapper>{spaPage}</NoSSRWrapper>;
 };
-
-export default HomePageIpfs;

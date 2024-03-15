@@ -1,7 +1,8 @@
 import styled from 'styled-components';
 
 import { InlineLoader } from '@lidofinance/lido-ui';
-import { L2LowFee } from 'shared/banners/l2-low-fee';
+import { L2AfterStake } from 'shared/banners/l2-banners/l2-after-stake';
+import { L2AfterWrap } from 'shared/banners/l2-banners/l2-after-wrap';
 import { TxAmount } from '../tx-stages-parts/tx-amount';
 import { SuccessText } from '../tx-stages-parts/success-text';
 import { TxStageSuccess } from '../tx-stages-basic';
@@ -46,8 +47,10 @@ export const TxStageOperationSucceedBalanceShown = ({
       }
       showEtherscan={false}
       footer={
-        balanceToken === 'stETH' || balanceToken === 'wstETH' ? (
-          <L2LowFee token={balanceToken} />
+        balanceToken === 'stETH' ? (
+          <L2AfterStake />
+        ) : balanceToken === 'wstETH' ? (
+          <L2AfterWrap />
         ) : undefined
       }
     />
