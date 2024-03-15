@@ -11,10 +11,10 @@ This project requires an .env file which is distributed via private communicatio
 
 ### Development
 
-Step 1. Copy the contents of `sample.env` to `.env.local`
+Step 1. Copy the contents of `.env.example` to `.env.local`
 
 ```bash
-cp sample.env .env.local
+cp .env.example .env.local
 ```
 
 Step 2. Fill out the `.env.local`. You will need to provide RPC provider urls with keys included.
