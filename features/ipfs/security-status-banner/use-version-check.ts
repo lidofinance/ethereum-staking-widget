@@ -121,7 +121,8 @@ export const useVersionCheck = () => {
   );
 
   const isNotVerifiable = overrideWithQAMockBoolean(
-    !!remoteVersionSWR.error || !remoteVersionSWR.data,
+    !!remoteVersionSWR.error ||
+      (!remoteVersionSWR.loading && !remoteVersionSWR.data),
     'mock-qa-helpers-security-banner-is-not-verifiable',
   );
 
