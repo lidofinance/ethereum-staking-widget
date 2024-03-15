@@ -2,10 +2,10 @@
 
 A widget for submitting Ether to the pool based on [Lido Frontend Template](https://github.com/lidofinance/lido-frontend-template).
 
-### Pre-requisites
+### Prerequisites
 
-- Node.js v16
-- Yarn package manager
+- Node.js v20+
+- Yarn package manager v1
 
 This project requires an .env file which is distributed via private communication channels. A sample can be found in .env.example
 
