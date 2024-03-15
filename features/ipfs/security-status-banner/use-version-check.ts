@@ -96,7 +96,8 @@ export const useVersionCheck = () => {
           leastSafeVersion: releaseInfo.leastSafeVersion,
         };
       }
-      return null;
+
+      throw new Error('invalid IPFS manifest content');
     },
     { ...STRATEGY_LAZY },
   );
@@ -124,7 +125,7 @@ export const useVersionCheck = () => {
   );
 
   const isNotVerifiable = overrideWithQAMockBoolean(
-    !!remoteVersionSWR.error || !remoteVersionSWR.data,
+    !!remoteVersionSWR.error,
     'mock-qa-helpers-security-banner-is-not-verifiable',
   );
 
