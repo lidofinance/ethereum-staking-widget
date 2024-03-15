@@ -7,6 +7,8 @@ import NoSsrWrapper from 'shared/components/no-ssr-wrapper';
 import { WrapFaq } from './shared/wrap-faq/wrap-faq';
 import { UnwrapForm } from './unwrap/unwrap-form';
 import { GoerliSunsetBanner } from 'shared/banners/goerli-sunset';
+import { OnlyInfraRender } from 'shared/components/only-infra-render';
+import { FaqPlaceholder } from 'features/ipfs';
 
 const NAV_ROUTES = [
   { name: 'Wrap', path: WRAP_PATH },
@@ -27,7 +29,9 @@ export const WrapUnwrapTabs = ({ mode }: WrapUnwrapLayoutProps) => {
         <Wallet />
         {isUnwrapMode ? <UnwrapForm /> : <WrapForm />}
       </NoSsrWrapper>
-      <WrapFaq />
+      <OnlyInfraRender renderIPFS={<FaqPlaceholder />}>
+        <WrapFaq />
+      </OnlyInfraRender>
     </>
   );
 };

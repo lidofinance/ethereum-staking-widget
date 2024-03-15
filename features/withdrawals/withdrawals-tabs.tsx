@@ -24,6 +24,7 @@ export const WithdrawalsTabs = () => {
   return (
     <ClaimDataProvider>
       <Switch checked={isClaimTab} routes={withdrawalRoutes} />
+
       <GoerliSunsetBanner />
       {isClaimTab ? <Claim /> : <Request />}
     </ClaimDataProvider>

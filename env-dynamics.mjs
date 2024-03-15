@@ -49,4 +49,10 @@ export const wqAPIBasePath = process.env.WQ_API_BASE_PATH;
 /** @type string */
 
 /** @type string */
-export const widgetApiBasePathForIpfs = process.env.WIDGET_API_BASE_PATH_FOR_IPFS;
+export const widgetApiBasePathForIpfs =
+  process.env.WIDGET_API_BASE_PATH_FOR_IPFS;
+
+/** @type string */
+export const rewardsBackendBasePath =
+  process.env.REWARDS_BACKEND_BASE_PATH;
+

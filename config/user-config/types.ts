@@ -8,5 +8,5 @@ export type UserConfigDefaultType = {
     [CHAINS.Goerli]: string[];
     [CHAINS.Holesky]: string[];
   };
-  walletconnectProjectId: string;
+  walletconnectProjectId: string | undefined;
 };

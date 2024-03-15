@@ -1,16 +1,20 @@
 import { useWatch } from 'react-hook-form';
+
 import { formatEther, parseEther } from '@ethersproject/units';
 import { TOKENS } from '@lido-sdk/constants';
 
 import { MATOMO_CLICK_EVENTS_TYPES } from 'consts/matomo-click-events';
-
-import { RequestFormInputType } from 'features/withdrawals/request/request-form-context';
+import { DATA_UNAVAILABLE } from 'consts/text';
 import { useWaitingTime } from 'features/withdrawals/hooks/useWaitingTime';
-import { useWithdrawalRates } from 'features/withdrawals/hooks/useWithdrawalRates';
-import { useWstethToStethRatio } from 'shared/components/data-table-row-steth-by-wsteth';
-
-import { trackMatomoEvent } from 'utils/track-matomo-event';
+import { RequestFormInputType } from 'features/withdrawals/request/request-form-context';
+import { ENABLED_WITHDRAWAL_DEXES } from 'features/withdrawals/withdrawals-constants';
+import {
+  getDexConfig,
+  useWithdrawalRates,
+} from 'features/withdrawals/request/withdrawal-rates';
+import { useStethByWsteth } from 'shared/hooks';
 import { formatBalance } from 'utils/formatBalance';
+import { trackMatomoEvent } from 'utils/track-matomo-event';
 
 import {
   InlineLoaderSmall,
@@ -21,8 +25,6 @@ import {
   OptionsPickerLabel,
   OptionsPickerRow,
   OptionsPickerSubLabel,
-  OpenOceanIcon,
-  ParaSwapIcon,
 } from './styles';
 
 type OptionButtonProps = {
@@ -43,9 +45,14 @@ const LidoButton: React.FC<OptionButtonProps> = ({ isActive, onClick }) => {
       isApproximate: true,
     },
   );
-  const { wstethAsStethBN, loading } = useWstethToStethRatio();
-  const ratioLoading = !isSteth && loading;
-  const ratio = isSteth ? '1 : 1' : `1 : ${formatBalance(wstethAsStethBN)}`;
+  const { data: wstethAsSteth, initialLoading: isWstethAsStethLoading } =
+    useStethByWsteth(DEFAULT_VALUE_FOR_RATE);
+  const ratioLoading = !isSteth && isWstethAsStethLoading;
+  const ratio = isSteth
+    ? '1 : 1'
+    : wstethAsSteth
+      ? `1 : ${formatBalance(wstethAsSteth).trimmed}`
+      : DATA_UNAVAILABLE;
 
   return (
     <OptionsPickerButton
@@ -76,10 +83,12 @@ const toFloor = (num: number): string =>
   (Math.floor(num * 10000) / 10000).toString();
 
 const DexButton: React.FC<OptionButtonProps> = ({ isActive, onClick }) => {
-  const { loading, bestRate } = useWithdrawalRates({
+  const { loading, bestRate, enabledDexes } = useWithdrawalRates({
     fallbackValue: DEFAULT_VALUE_FOR_RATE,
   });
-  const bestRateValue = bestRate ? `1 : ${toFloor(bestRate)}` : '-';
+  const isAnyDexEnabled = enabledDexes.length > 0;
+  const bestRateValue =
+    bestRate && isAnyDexEnabled ? `1 : ${toFloor(bestRate)}` : '—';
   return (
     <OptionsPickerButton
       data-testid="dexOptions"
@@ -90,8 +99,10 @@ const DexButton: React.FC<OptionButtonProps> = ({ isActive, onClick }) => {
       <OptionsPickerRow>
         <OptionsPickerLabel>Use aggregators</OptionsPickerLabel>
         <OptionsPickerIcons>
-          <OpenOceanIcon />
-          <ParaSwapIcon />
+          {ENABLED_WITHDRAWAL_DEXES.map((dexKey) => {
+            const Icon = getDexConfig(dexKey).icon;
+            return <Icon key={dexKey}></Icon>;
+          })}
         </OptionsPickerIcons>
       </OptionsPickerRow>
       <OptionsPickerRow data-testid="dexBestRate">
@@ -99,8 +110,8 @@ const DexButton: React.FC<OptionButtonProps> = ({ isActive, onClick }) => {
         {loading ? <InlineLoaderSmall /> : bestRateValue}
       </OptionsPickerRow>
       <OptionsPickerRow data-testid="dexWaitingTime">
-        <OptionsPickerSubLabel>Waiting time:</OptionsPickerSubLabel>~&nbsp;1-5
-        minutes
+        <OptionsPickerSubLabel>Waiting time:</OptionsPickerSubLabel>{' '}
+        {isAnyDexEnabled ? <>~&nbsp;1-5 minutes</> : '—'}
       </OptionsPickerRow>
     </OptionsPickerButton>
   );

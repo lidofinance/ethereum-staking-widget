@@ -16,6 +16,8 @@ type SavedUserConfig = {
 export type UserConfigContextType = UserConfigDefaultType & {
   savedUserConfig: SavedUserConfig;
   setSavedUserConfig: (config: SavedUserConfig) => void;
+  isWalletConnectionAllowed: boolean;
+  setIsWalletConnectionAllowed: (isAllowed: boolean) => void;
 };
 
 const DEFAULT_STATE: SavedUserConfig = {
@@ -27,6 +29,9 @@ export const useUserConfigContext = () => {
     STORAGE_USER_CONFIG,
     DEFAULT_STATE,
   );
+
+  const [isWalletConnectionAllowed, setIsWalletConnectionAllowed] =
+    useState(true);
 
   const [savedUserConfig, setSavedUserConfig] =
     useState<SavedUserConfig>(restoredSettings);
@@ -46,6 +51,8 @@ export const useUserConfigContext = () => {
       ...userConfigDefault,
       savedUserConfig,
       setSavedUserConfig: setSavedConfigAndRemember,
+      isWalletConnectionAllowed,
+      setIsWalletConnectionAllowed,
     };
-  }, [savedUserConfig, setSavedConfigAndRemember]);
+  }, [isWalletConnectionAllowed, savedUserConfig, setSavedConfigAndRemember]);
 };

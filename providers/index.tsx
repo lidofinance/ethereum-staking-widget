@@ -7,10 +7,8 @@ import { ConfigProvider } from 'config';
 import { AppFlagProvider } from './app-flag';
 import { IPFSInfoBoxStatusesProvider } from './ipfs-info-box-statuses';
 import { InpageNavigationProvider } from './inpage-navigation';
-import ModalProvider from './modals';
+import { ModalProvider } from './modal-provider';
 import Web3Provider from './web3';
-
-export { MODAL, ModalContext } from './modals';
 
 export const Providers: FC<PropsWithChildren> = ({ children }) => (
   <ConfigProvider>

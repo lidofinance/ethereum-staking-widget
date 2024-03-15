@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import { BigNumber } from 'ethers';
 import invariant from 'tiny-invariant';
 import { useWeb3 } from 'reef-knot/web3-react';
+
 import { TOKENS } from '@lido-sdk/constants';
 import { useLidoSWR, useSDK } from '@lido-sdk/react';
 
@@ -55,6 +56,9 @@ export const useRequestTxPrice = ({
       ...STRATEGY_LAZY,
       isPaused: () => !chainId || isApprovalFlow,
     });
+  const permitGasLimit = permitEstimateData
+    ? BigNumber.from(permitEstimateData?.gasLimit)
+    : undefined;
 
   const { data: approvalFlowGasLimit, initialLoading: approvalLoading } =
     useLidoSWR(
@@ -63,15 +67,13 @@ export const useRequestTxPrice = ({
         try {
           invariant(chainId, 'chainId is required');
           invariant(contractRpc, 'contractRpc is required');
-          const gasLimit = (
-            await contractRpc.estimateGas.requestWithdrawals(
-              Array.from<BigNumber>({ length: debouncedRequestCount }).fill(
-                BigNumber.from(100),
-              ),
-              config.ESTIMATE_ACCOUNT,
-              { from: config.ESTIMATE_ACCOUNT },
-            )
-          ).toNumber();
+          const gasLimit = await contractRpc.estimateGas.requestWithdrawals(
+            Array.from<BigNumber>({ length: debouncedRequestCount }).fill(
+              BigNumber.from(100),
+            ),
+            config.ESTIMATE_ACCOUNT,
+            { from: config.ESTIMATE_ACCOUNT },
+          );
           return gasLimit;
         } catch (error) {
           console.warn('Could not estimate gas for request', {
@@ -87,14 +89,16 @@ export const useRequestTxPrice = ({
     );
 
   const gasLimit =
-    (isApprovalFlow ? approvalFlowGasLimit : permitEstimateData?.gasLimit) ??
-    fallback * debouncedRequestCount;
+    (isApprovalFlow ? approvalFlowGasLimit : permitGasLimit) ??
+    fallback.mul(debouncedRequestCount);
 
-  const txPriceUsd = useTxCostInUsd(gasLimit);
+  const { txCostUsd: txPriceUsd, initialLoading: isTxCostLoading } =
+    useTxCostInUsd(gasLimit);
 
   const loading =
     cappedRequestCount !== debouncedRequestCount ||
-    (isApprovalFlow ? approvalLoading : permitLoading);
+    (isApprovalFlow ? approvalLoading : permitLoading) ||
+    isTxCostLoading;
 
   return {
     loading,
@@ -149,15 +153,16 @@ export const useClaimTxPrice = (requests: RequestStatusClaimable[]) => {
 
   const gasLimit = isEstimateLoading
     ? undefined
-    : gasLimitResult?.toNumber() ??
-      config.WITHDRAWAL_QUEUE_CLAIM_GAS_LIMIT_DEFAULT * requestCount;
+    : gasLimitResult ??
+      config.WITHDRAWAL_QUEUE_CLAIM_GAS_LIMIT_DEFAULT.mul(requestCount);
 
-  const price = useTxCostInUsd(gasLimit);
+  const { txCostUsd: price, initialLoading: isTxCostLoading } =
+    useTxCostInUsd(gasLimit);
 
   return {
     loading:
       isEstimateLoading ||
-      !price ||
+      isTxCostLoading ||
       debouncedSortedSelectedRequests !== requests,
     claimGasLimit: gasLimit,
     claimTxPriceInUsd: price,

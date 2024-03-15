@@ -1,16 +1,16 @@
-import { useFormattedBalance } from 'utils';
 import { BigNumber } from '@ethersproject/bignumber';
-import { Component } from 'types';
 import { Tooltip } from '@lidofinance/lido-ui';
 
-export type FormatTokenProps = {
+import { DATA_UNAVAILABLE } from 'consts/text';
+import { Component } from 'types';
+import { FormatBalanceArgs, useFormattedBalance } from 'utils';
+
+export type FormatTokenProps = FormatBalanceArgs & {
   symbol: string;
   amount?: BigNumber;
   approx?: boolean;
-  maxDecimalDigits?: number;
-  maxTotalLength?: number;
   showAmountTip?: boolean;
-  trimEllipsis?: boolean;
+  fallback?: string;
 };
 export type FormatTokenComponent = Component<'span', FormatTokenProps>;
 
@@ -20,16 +20,21 @@ export const FormatToken: FormatTokenComponent = ({
   approx,
   maxDecimalDigits = 4,
   maxTotalLength = 15,
-  showAmountTip = false,
+  showAmountTip = true,
   trimEllipsis,
+  fallback = DATA_UNAVAILABLE,
+  adaptiveDecimals,
   ...rest
 }) => {
-  const { actual, isTrimmed, trimmed } = useFormattedBalance(
-    amount,
+  const { actual, isTrimmed, trimmed } = useFormattedBalance(amount, {
     maxDecimalDigits,
     maxTotalLength,
     trimEllipsis,
-  );
+    adaptiveDecimals,
+  });
+
+  if (!amount) return <span {...rest}>{fallback}</span>;
+
   const showTooltip = showAmountTip && isTrimmed;
 
   // we show prefix for non zero amount and if we need to show Tooltip Amount

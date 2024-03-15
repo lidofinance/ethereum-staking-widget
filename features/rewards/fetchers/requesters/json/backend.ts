@@ -14,10 +14,13 @@ export const backendRequest = async (query: BackendQuery) => {
 
   Object.entries(query).forEach(([k, v]) => params.append(k, v.toString()));
 
-  const apiRewardsPath = `/api/rewards?${params.toString()}`;
-  const apiRewardsUrl = config.ipfsMode
-    ? `${config.widgetApiBasePathForIpfs}${apiRewardsPath}`
-    : apiRewardsPath;
+  let apiRewardsUrl;
+  if (config.ipfsMode) {
+    apiRewardsUrl = `${config.rewardsBackendBasePath}?${params.toString()}`;
+  } else {
+    apiRewardsUrl = `/api/rewards?${params.toString()}`;
+  }
+
   const requested = await fetch(apiRewardsUrl);
 
   if (!requested.ok) {

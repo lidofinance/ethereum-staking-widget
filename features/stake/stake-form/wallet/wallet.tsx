@@ -1,8 +1,7 @@
 import { memo } from 'react';
 import { useWeb3 } from 'reef-knot/web3-react';
-
 import { TOKENS } from '@lido-sdk/constants';
-import { useSDK, useSTETHBalance, useTokenAddress } from '@lido-sdk/react';
+import { useSDK, useTokenAddress } from '@lido-sdk/react';
 import { Divider, Question, Tooltip } from '@lidofinance/lido-ui';
 
 import { LIDO_APR_TOOLTIP_TEXT, DATA_UNAVAILABLE } from 'consts/text';
@@ -11,7 +10,6 @@ import { FormatToken } from 'shared/formatters';
 import { useLidoApr } from 'shared/hooks';
 import { CardAccount, CardBalance, CardRow, Fallback } from 'shared/wallet';
 import type { WalletComponentType } from 'shared/wallet/types';
-import { STRATEGY_LAZY } from 'consts/swr-strategies';
 
 import { LimitMeter } from './limit-meter';
 import { FlexCenter, LidoAprStyled, StyledCard } from './styles';
@@ -19,8 +17,7 @@ import { useStakeFormData } from '../stake-form-context';
 
 const WalletComponent: WalletComponentType = (props) => {
   const { account } = useSDK();
-  const { stakeableEther } = useStakeFormData();
-  const steth = useSTETHBalance(STRATEGY_LAZY);
+  const { stakeableEther, stethBalance, loading } = useStakeFormData();
 
   const stethAddress = useTokenAddress(TOKENS.STETH);
   const lidoApr = useLidoApr();
@@ -35,11 +32,10 @@ const WalletComponent: WalletComponentType = (props) => {
               <LimitMeter />
             </FlexCenter>
           }
-          loading={!stakeableEther}
+          loading={loading.isStakeableEtherLoading}
           value={
             <FormatToken
               data-testid="ethAvailableToStake"
-              showAmountTip
               amount={stakeableEther}
               symbol="ETH"
             />
@@ -52,13 +48,12 @@ const WalletComponent: WalletComponentType = (props) => {
         <CardBalance
           small
           title="Staked amount"
-          loading={steth.initialLoading}
+          loading={loading.isStethBalanceLoading}
           value={
             <>
               <FormatToken
                 data-testid="stEthStaked"
-                showAmountTip
-                amount={steth.data}
+                amount={stethBalance}
                 symbol="stETH"
               />
               <TokenToWallet
@@ -73,7 +68,7 @@ const WalletComponent: WalletComponentType = (props) => {
           title={
             <>
               Lido APR{' '}
-              {lidoApr && lidoApr.data && (
+              {lidoApr.data && (
                 <Tooltip placement="bottom" title={LIDO_APR_TOOLTIP_TEXT}>
                   <Question />
                 </Tooltip>

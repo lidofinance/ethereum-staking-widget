@@ -2,6 +2,9 @@ import { BigNumber } from 'ethers';
 import { AddressZero } from '@ethersproject/constants';
 import { parseEther } from '@ethersproject/units';
 
+// TODO
+import { StakeSwapDiscountIntegrationKey } from 'features/stake/swap-discount-banner';
+
 import { IPFS_REFERRAL_ADDRESS } from './ipfs';
 
 // Not use here:
@@ -26,3 +29,6 @@ export const STAKE_GASLIMIT_FALLBACK = BigNumber.from(
 export const STAKE_FALLBACK_REFERRAL_ADDRESS = preConfig.ipfsMode
   ? IPFS_REFERRAL_ADDRESS
   : AddressZero;
+
+export const STAKE_SWAP_INTEGRATION: StakeSwapDiscountIntegrationKey =
+  'one-inch';

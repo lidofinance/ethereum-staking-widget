@@ -1,5 +1,6 @@
 import { BigNumber } from 'ethers';
 import { useContractSWR, useWSTETHContractRPC } from '@lido-sdk/react';
+import { Zero } from '@ethersproject/constants';
 
 import { STRATEGY_LAZY } from 'consts/swr-strategies';
 
@@ -12,7 +13,8 @@ export const useEthAmountByStethWsteth = ({
   isSteth,
   amount,
 }: useEthAmountByInputProps) => {
-  const wsteth = isSteth ? null : amount;
+  const fallbackedAmount = amount ?? Zero;
+  const wsteth = isSteth ? null : fallbackedAmount;
   const { data: stethByWstethBalance, loading } = useContractSWR({
     contract: useWSTETHContractRPC(),
     method: 'getStETHByWstETH',
@@ -23,7 +25,7 @@ export const useEthAmountByStethWsteth = ({
 
   if (isSteth)
     return {
-      amount: amount ?? undefined,
+      amount: fallbackedAmount ?? Zero,
       loading: false,
     };
   else return { amount: stethByWstethBalance, loading };

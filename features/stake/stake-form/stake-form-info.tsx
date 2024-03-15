@@ -1,8 +1,8 @@
 import { useWatch } from 'react-hook-form';
 
+import { Zero } from '@ethersproject/constants';
 import { DataTable, DataTableRow } from '@lidofinance/lido-ui';
 import { useContractSWR, useSTETHContractRPC } from '@lido-sdk/react';
-import { Zero } from '@ethersproject/constants';
 
 import { DATA_UNAVAILABLE } from 'consts/text';
 import { STRATEGY_CONSTANT } from 'consts/swr-strategies';
@@ -12,7 +12,7 @@ import { useEthUsd } from 'shared/hooks/use-eth-usd';
 import { StakeFormInput, useStakeFormData } from './stake-form-context';
 
 export const StakeFormInfo = () => {
-  const { gasCost } = useStakeFormData();
+  const { gasCost, loading } = useStakeFormData();
   const amount = useWatch<StakeFormInput, 'amount'>({ name: 'amount' });
   const contractRpc = useSTETHContractRPC();
   const lidoFee = useContractSWR({
@@ -20,17 +20,12 @@ export const StakeFormInfo = () => {
     method: 'getFee',
     config: STRATEGY_CONSTANT,
   });
-  const txCostInUsd = useEthUsd(gasCost);
+  const { usdAmount, initialLoading: isEthUsdLoading } = useEthUsd(gasCost);
 
   return (
     <DataTable data-testid="stakeFormInfo">
       <DataTableRow title="You will receive" data-testid="youWillReceive">
-        <FormatToken
-          amount={amount ?? Zero}
-          symbol="stETH"
-          showAmountTip
-          trimEllipsis
-        />
+        <FormatToken amount={amount ?? Zero} symbol="stETH" trimEllipsis />
       </DataTableRow>
       <DataTableRow title="Exchange rate" data-testid="exchangeRate">
         1 ETH = 1 stETH
@@ -38,9 +33,9 @@ export const StakeFormInfo = () => {
       <DataTableRow
         title="Max transaction cost"
         data-testid="maxTxCost"
-        loading={!txCostInUsd}
+        loading={loading.isMaxGasPriceLoading || isEthUsdLoading}
       >
-        <FormatPrice amount={txCostInUsd} />
+        <FormatPrice amount={usdAmount} />
       </DataTableRow>
       <DataTableRow
         title="Reward fee"

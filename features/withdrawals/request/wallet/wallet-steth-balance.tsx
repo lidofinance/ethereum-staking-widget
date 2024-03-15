@@ -3,11 +3,10 @@ import { FormatToken } from 'shared/formatters';
 import { useRequestFormData } from '../request-form-context';
 
 export const WalletStethBalance = () => {
-  const { balanceSteth } = useRequestFormData();
+  const { balanceSteth, loading } = useRequestFormData();
 
   const stethBalanceValue = (
     <FormatToken
-      showAmountTip
       amount={balanceSteth}
       symbol="stETH"
       data-testid="stEthBalance"
@@ -18,7 +17,7 @@ export const WalletStethBalance = () => {
     <CardBalance
       small
       title="stETH Balance"
-      loading={!balanceSteth}
+      loading={loading.isStethBalanceLoading}
       value={stethBalanceValue}
     />
   );

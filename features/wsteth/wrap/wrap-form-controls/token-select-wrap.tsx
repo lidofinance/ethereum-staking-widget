@@ -14,7 +14,12 @@ const OPTIONS = [
   },
 ];
 
-export const TokenSelectWrap = () => {
+type TokenSelectWrapProps = Pick<
+  React.ComponentProps<typeof TokenSelectHookForm>,
+  'warning'
+>;
+
+export const TokenSelectWrap = (props: TokenSelectWrapProps) => {
   return (
     <TokenSelectHookForm
       options={OPTIONS}
@@ -25,6 +30,7 @@ export const TokenSelectWrap = () => {
             : MATOMO_CLICK_EVENTS.wrapTokenSelectSteth),
         );
       }}
+      {...props}
     />
   );
 };

@@ -80,12 +80,12 @@ export default withBundleAnalyzer({
             loader: 'webpack-preprocessor-loader',
             options: {
               params: {
-                IPFS_MODE: String(isIPFSMode === 'true'),
+                IPFS_MODE: isIPFSMode,
               },
             },
           },
         ],
-      }
+      },
     );
 
     return config;
@@ -146,6 +146,8 @@ export default withBundleAnalyzer({
     rpcUrls_5: process.env.EL_RPC_URLS_5,
     rpcUrls_17000: process.env.EL_RPC_URLS_17000,
     ethplorerApiKey: process.env.ETHPLORER_API_KEY,
+
+    oneInchApiKey: process.env.ONE_INCH_API_KEY,
 
     cspTrustedHosts: process.env.CSP_TRUSTED_HOSTS,
     cspReportUri: process.env.CSP_REPORT_URI,
