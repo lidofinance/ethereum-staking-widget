@@ -2,19 +2,19 @@
 
 A widget for submitting Ether to the pool based on [Lido Frontend Template](https://github.com/lidofinance/lido-frontend-template).
 
-### Pre-requisites
+### Prerequisites
 
-- Node.js v16
-- Yarn package manager
+- Node.js v20+
+- Yarn package manager v1
 
 This project requires an .env file which is distributed via private communication channels. A sample can be found in .env.example
 
 ### Development
 
-Step 1. Copy the contents of `sample.env` to `.env.local`
+Step 1. Copy the contents of `.env.example` to `.env.local`
 
 ```bash
-cp sample.env .env.local
+cp .env.example .env.local
 ```
 
 Step 2. Fill out the `.env.local`. You will need to provide RPC provider urls with keys included.
