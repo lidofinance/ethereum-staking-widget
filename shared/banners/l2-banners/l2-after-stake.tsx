@@ -15,7 +15,7 @@ export const L2AfterStake: React.FC = () => {
       }
       buttonText="Learn more"
       buttonHref={L2_DISCOVERY_LINK}
-      testidWrap="l2LowFeeBanner"
+      testId="l2LowFeeBanner"
       testidButton="l2LowFee"
       onClickButton={linkClickHandler}
     />

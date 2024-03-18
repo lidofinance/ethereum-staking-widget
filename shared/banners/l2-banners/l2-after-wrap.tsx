@@ -18,7 +18,7 @@ export const L2AfterWrap = () => {
       }
       buttonText="Learn more"
       buttonHref={L2_LEARN_MORE_AFTER_WRAP_LINK}
-      testidWrap="l2LowFeeBanner"
+      testId="l2LowFeeBanner"
       testidButton="l2LowFee"
       onClickButton={linkClickHandler}
     />
