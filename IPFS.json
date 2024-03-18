@@ -1,6 +1,13 @@
 {
+  "1": {
+    "cid": "bafybeiavz4nrlwxmqkt7g545b5rht4b2oygapge2p4ba4hd56vxc67gpxq"
+  },
+  "5": {
+    "__warning__": "For testing purposes only",
+    "cid": "bafybeig6ki66gopco3gegotbyh7kfxp3i7tagw37erh6ekhbtpecnobz4q"
+  },
   "17000": {
     "__warning__": "For testing purposes only",
-    "ens": "app.jeday.eth"
+    "cid": "bafybeihbihzqt66tke2oxtsttu7sgekzosbxjiezyet4j6a64z2byudl2m"
   }
 }
