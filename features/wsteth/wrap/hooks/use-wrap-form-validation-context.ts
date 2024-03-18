@@ -2,7 +2,11 @@ import { useMemo } from 'react';
 import { useWeb3 } from 'reef-knot/web3-react';
 import { useAwaiter } from 'shared/hooks/use-awaiter';
 
-import type { WrapFormNetworkData } from '../wrap-form-context';
+import type {
+  WrapFormNetworkData,
+  WrapFormAsyncValidationContext,
+  WrapFormValidationContext,
+} from '../wrap-form-context';
 
 type UseWrapFormValidationContextArgs = {
   networkData: WrapFormNetworkData;
@@ -10,20 +14,47 @@ type UseWrapFormValidationContextArgs = {
 
 export const useWrapFormValidationContext = ({
   networkData,
-}: UseWrapFormValidationContextArgs) => {
+}: UseWrapFormValidationContextArgs): WrapFormValidationContext => {
   const { active } = useWeb3();
-  const { maxAmountETH, maxAmountStETH } = networkData;
+  const {
+    stakeLimitInfo,
+    ethBalance,
+    stethBalance,
+    isMultisig,
+    wrapEthGasCost,
+  } = networkData;
 
-  const validationContextAwaited = useMemo(() => {
-    if (active && (!maxAmountETH || !maxAmountStETH)) {
-      return undefined;
-    }
-    return {
-      active,
-      maxAmountETH,
-      maxAmountStETH,
-    };
-  }, [active, maxAmountETH, maxAmountStETH]);
+  const isDataReady =
+    stethBalance &&
+    ethBalance &&
+    isMultisig !== undefined &&
+    wrapEthGasCost &&
+    stakeLimitInfo;
 
-  return useAwaiter(validationContextAwaited).awaiter;
+  const asyncContextValue: WrapFormAsyncValidationContext | undefined =
+    useMemo(() => {
+      return isDataReady
+        ? {
+            stethBalance,
+            etherBalance: ethBalance,
+            isMultisig,
+            gasCost: wrapEthGasCost,
+            stakingLimitLevel: stakeLimitInfo.stakeLimitLevel,
+            currentStakeLimit: stakeLimitInfo.currentStakeLimit,
+          }
+        : undefined;
+    }, [
+      isDataReady,
+      ethBalance,
+      isMultisig,
+      stakeLimitInfo,
+      stethBalance,
+      wrapEthGasCost,
+    ]);
+
+  const asyncContext = useAwaiter(asyncContextValue).awaiter;
+  return {
+    isWalletActive: active,
+    asyncContext,
+  };
 };

@@ -1,17 +1,16 @@
 import { formatEther, parseEther } from '@ethersproject/units';
 
 import { useWaitingTime } from 'features/withdrawals/hooks/useWaitingTime';
-import { useWithdrawalRates } from 'features/withdrawals/hooks/useWithdrawalRates';
-import { useWstethToStethRatio } from 'shared/components/data-table-row-steth-by-wsteth';
-
+import {
+  getDexConfig,
+  useWithdrawalRates,
+} from 'features/withdrawals/request/withdrawal-rates';
+import { useStethByWsteth } from 'shared/hooks';
 import { formatBalance } from 'utils/formatBalance';
 
 import {
   InlineLoaderSmall,
   LidoIcon,
-  CowSwapIcon,
-  OneInchIcon,
-  ParaSwapIcon,
   OptionsPickerButton,
   OptionsPickerContainer,
   OptionsPickerIcons,
@@ -26,6 +25,8 @@ import {
 import { useWatch } from 'react-hook-form';
 import { RequestFormInputType } from 'features/withdrawals/request/request-form-context';
 import { TOKENS } from '@lido-sdk/constants';
+import { ENABLED_WITHDRAWAL_DEXES } from 'features/withdrawals/withdrawals-constants';
+import { DATA_UNAVAILABLE } from 'config';
 
 type OptionButtonProps = {
   onClick: React.ComponentProps<'button'>['onClick'];
@@ -45,23 +46,33 @@ const LidoButton: React.FC<OptionButtonProps> = ({ isActive, onClick }) => {
       isApproximate: true,
     },
   );
-  const { wstethAsStethBN, loading } = useWstethToStethRatio();
-  const ratioLoading = !isSteth && loading;
-  const ratio = isSteth ? '1 : 1' : `1 : ${formatBalance(wstethAsStethBN)}`;
+  const { data: wstethAsSteth, initialLoading: isWstethAsStethLoading } =
+    useStethByWsteth(DEFAULT_VALUE_FOR_RATE);
+  const ratioLoading = !isSteth && isWstethAsStethLoading;
+  const ratio = isSteth
+    ? '1 : 1'
+    : wstethAsSteth
+      ? `1 : ${formatBalance(wstethAsSteth).trimmed}`
+      : DATA_UNAVAILABLE;
 
   return (
-    <OptionsPickerButton type="button" $active={isActive} onClick={onClick}>
+    <OptionsPickerButton
+      data-testid="lidoOption"
+      type="button"
+      $active={isActive}
+      onClick={onClick}
+    >
       <OptionsPickerRow>
         <OptionsPickerLabel>Use Lido</OptionsPickerLabel>
         <OptionsPickerIcons>
           <LidoIcon />
         </OptionsPickerIcons>
       </OptionsPickerRow>
-      <OptionsPickerRow>
+      <OptionsPickerRow data-testid="lidoOptionRate">
         <OptionsPickerSubLabel>Rate:</OptionsPickerSubLabel>
         {ratioLoading ? <InlineLoaderSmall /> : ratio}
       </OptionsPickerRow>
-      <OptionsPickerRow>
+      <OptionsPickerRow data-testid="lidoOptionWaitingTime">
         <OptionsPickerSubLabel>Waiting time:</OptionsPickerSubLabel>
         {initialLoading ? <InlineLoaderSmall /> : waitingTime}
       </OptionsPickerRow>
@@ -69,28 +80,39 @@ const LidoButton: React.FC<OptionButtonProps> = ({ isActive, onClick }) => {
   );
 };
 
+const toFloor = (num: number): string =>
+  (Math.floor(num * 10000) / 10000).toString();
+
 const DexButton: React.FC<OptionButtonProps> = ({ isActive, onClick }) => {
-  const { loading, bestRate } = useWithdrawalRates({
+  const { loading, bestRate, enabledDexes } = useWithdrawalRates({
     fallbackValue: DEFAULT_VALUE_FOR_RATE,
   });
-  const bestRateValue = bestRate ? `1 : ${bestRate.toFixed(4)}` : '-';
+  const isAnyDexEnabled = enabledDexes.length > 0;
+  const bestRateValue =
+    bestRate && isAnyDexEnabled ? `1 : ${toFloor(bestRate)}` : '—';
   return (
-    <OptionsPickerButton type="button" $active={isActive} onClick={onClick}>
+    <OptionsPickerButton
+      data-testid="dexOptions"
+      type="button"
+      $active={isActive}
+      onClick={onClick}
+    >
       <OptionsPickerRow>
         <OptionsPickerLabel>Use aggregators</OptionsPickerLabel>
         <OptionsPickerIcons>
-          <OneInchIcon />
-          <CowSwapIcon />
-          <ParaSwapIcon />
+          {ENABLED_WITHDRAWAL_DEXES.map((dexKey) => {
+            const Icon = getDexConfig(dexKey).icon;
+            return <Icon key={dexKey}></Icon>;
+          })}
         </OptionsPickerIcons>
       </OptionsPickerRow>
-      <OptionsPickerRow>
+      <OptionsPickerRow data-testid="dexBestRate">
         <OptionsPickerSubLabel>Best Rate:</OptionsPickerSubLabel>
         {loading ? <InlineLoaderSmall /> : bestRateValue}
       </OptionsPickerRow>
-      <OptionsPickerRow>
-        <OptionsPickerSubLabel>Waiting time:</OptionsPickerSubLabel>~&nbsp;1-5
-        minutes
+      <OptionsPickerRow data-testid="dexWaitingTime">
+        <OptionsPickerSubLabel>Waiting time:</OptionsPickerSubLabel>{' '}
+        {isAnyDexEnabled ? <>~&nbsp;1-5 minutes</> : '—'}
       </OptionsPickerRow>
     </OptionsPickerButton>
   );

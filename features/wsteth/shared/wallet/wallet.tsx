@@ -20,17 +20,17 @@ import { STRATEGY_LAZY } from 'utils/swrStrategies';
 const WalletComponent: WalletComponentType = (props) => {
   const { account } = useSDK();
   const ethBalance = useEthereumBalance(undefined, STRATEGY_LAZY);
-  const stethBalance = useSTETHBalance();
-  const wstethBalance = useWSTETHBalance();
+  const stethBalance = useSTETHBalance(STRATEGY_LAZY);
+  const wstethBalance = useWSTETHBalance(STRATEGY_LAZY);
 
   const stethAddress = useTokenAddress(TOKENS.STETH);
   const wstethAddress = useTokenAddress(TOKENS.WSTETH);
 
-  const wstethByStethBalance = useWstethBySteth(stethBalance.data);
-  const stethByWstethBalance = useStethByWsteth(wstethBalance.data);
+  const wstethBySteth = useWstethBySteth(stethBalance.data);
+  const stethByWsteth = useStethByWsteth(wstethBalance.data);
 
   return (
-    <StyledCard {...props}>
+    <StyledCard data-testid="wrapCardSection" {...props}>
       <CardRow>
         <CardBalance
           title="ETH Balance"
@@ -38,7 +38,6 @@ const WalletComponent: WalletComponentType = (props) => {
           value={
             <FormatToken
               data-testid="ethBalance"
-              showAmountTip
               amount={ethBalance.data}
               symbol="ETH"
             />
@@ -51,12 +50,11 @@ const WalletComponent: WalletComponentType = (props) => {
         <CardBalance
           small
           title="stETH Balance"
-          loading={stethBalance.initialLoading}
+          loading={stethBalance.initialLoading || wstethBySteth.initialLoading}
           value={
             <>
               <FormatToken
                 data-testid="stEthBalance"
-                showAmountTip
                 amount={stethBalance.data}
                 symbol="stETH"
               />
@@ -65,11 +63,11 @@ const WalletComponent: WalletComponentType = (props) => {
                 address={stethAddress}
               />
               <Text size={'xxs'} color={'secondary'}>
-                ≈{' '}
                 <FormatToken
                   data-testid="wstEthBalanceOption"
-                  amount={wstethByStethBalance}
+                  amount={wstethBySteth.data}
                   symbol="wstETH"
+                  approx={true}
                 />
               </Text>
             </>
@@ -78,12 +76,11 @@ const WalletComponent: WalletComponentType = (props) => {
         <CardBalance
           small
           title="wstETH Balance"
-          loading={wstethBalance.initialLoading}
+          loading={wstethBalance.initialLoading || stethByWsteth.initialLoading}
           value={
             <>
               <FormatToken
                 data-testid="wstEthBalance"
-                showAmountTip
                 amount={wstethBalance.data}
                 symbol="wstETH"
               />
@@ -92,11 +89,11 @@ const WalletComponent: WalletComponentType = (props) => {
                 address={wstethAddress}
               />
               <Text size={'xxs'} color={'secondary'}>
-                ≈{' '}
                 <FormatToken
                   data-testid="stethBalanceOption"
-                  amount={stethByWstethBalance}
+                  amount={stethByWsteth.data}
                   symbol="stETH"
+                  approx={true}
                 />
               </Text>
             </>

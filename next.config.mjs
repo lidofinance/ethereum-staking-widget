@@ -4,7 +4,7 @@ import generateBuildId from './scripts/generate-build-id.mjs';
 
 buildDynamics();
 
-const ipfsMode = process.env.IPFS_MODE;
+const ipfsMode = process.env.IPFS_MODE == 'true';
 
 // https://nextjs.org/docs/pages/api-reference/next-config-js/basePath
 const basePath = process.env.BASE_PATH;
@@ -16,6 +16,7 @@ const rpcUrls_17000 = process.env.EL_RPC_URLS_17000?.split(',') ?? [];
 const ethAPIBasePath = process.env.ETH_API_BASE_PATH;
 
 const ethplorerApiKey = process.env.ETHPLORER_API_KEY;
+const oneInchApiKey = process.env.ONE_INCH_API_KEY;
 
 const cspTrustedHosts = process.env.CSP_TRUSTED_HOSTS;
 const cspReportOnly = process.env.CSP_REPORT_ONLY;
@@ -65,7 +66,7 @@ export default withBundleAnalyzer({
 
   // IPFS next.js configuration reference:
   // https://github.com/Velenir/nextjs-ipfs-example
-  trailingSlash: true,
+  trailingSlash: !!ipfsMode,
   assetPrefix: ipfsMode ? './' : undefined,
 
   // IPFS version has hash-based routing,
@@ -108,12 +109,12 @@ export default withBundleAnalyzer({
             loader: 'webpack-preprocessor-loader',
             options: {
               params: {
-                IPFS_MODE: String(ipfsMode === 'true'),
+                IPFS_MODE: ipfsMode,
               },
             },
           },
         ],
-      }
+      },
     );
 
     return config;
@@ -168,6 +169,7 @@ export default withBundleAnalyzer({
     rpcUrls_5,
     rpcUrls_17000,
     ethplorerApiKey,
+    oneInchApiKey,
     cspTrustedHosts,
     cspReportOnly,
     cspReportUri,

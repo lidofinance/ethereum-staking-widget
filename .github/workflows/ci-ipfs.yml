@@ -16,7 +16,7 @@ jobs:
     outputs:
       ipfs_folder: ${{ env.ipfs_folder }}
       is_create_release: ${{ env.is_create_release }}
-      tag: ${{ steps.tag.outputs.TAG }}
+      tag: ${{ steps.build-info.outputs.tag }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -27,20 +27,13 @@ jobs:
       - name: Install node
         uses: actions/setup-node@v4
         with:
-          node-version: 16
+          node-version: 20
           cache: 'yarn'
       - name: Set tag, commit and branch name
         if: env.is_create_release == 'true'
-        id: tag
-        run: |
-          export TAG=`echo $(git describe --abbrev=0 --tags)`
-          export TAG_COMMIT_SHA=$(git rev-parse --short $(git rev-list -n 1 $TAG))
-          echo "TAG=$TAG" >> $GITHUB_OUTPUT
-          echo "TAG_COMMIT_SHA=$TAG_COMMIT_SHA" >> "$GITHUB_OUTPUT"
-          echo '{ "branch": "'$BRANCH_NAME'", "commit": "'$TAG_COMMIT_SHA'", "version": "'$TAG'" }' > ./build-info.json
-          export BUILD_INFO=$(cat ./build-info.json)
-          echo "$BUILD_INFO" >> $GITHUB_STEP_SUMMARY
-        env:
+        id: build-info
+        uses: lidofinance/actions/.github/actions/build-info@main
+        with:
           BRANCH_NAME: ${{ github.ref_name }}
       - name: Install dependencies
         run: |
@@ -55,9 +48,9 @@ jobs:
           REWARDS_BACKEND_BASE_PATH: ${{ vars.REWARDS_BACKEND_BASE_PATH }}
           WQ_API_BASE_PATH: ${{ vars.WQ_API_BASE_PATH }}
           ETH_API_BASE_PATH: ${{ vars.ETH_API_BASE_PATH }}
-          PREFILL_UNSAFE_EL_RPC_URLS: ${{ secrets.PREFILL_UNSAFE_EL_RPC_URLS }}
+          PREFILL_UNSAFE_EL_RPC_URLS_1: ${{ secrets.PREFILL_UNSAFE_EL_RPC_URLS_1 }}
           WALLETCONNECT_PROJECT_ID: ${{ secrets.WALLETCONNECT_PROJECT_ID }}
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: ${{ env.ipfs_folder }}
           path: ${{ env.ipfs_folder }}
@@ -70,5 +63,10 @@ jobs:
       current_branch: ${{ github.ref_name }}
       IS_CREATE_RELEASE: ${{ needs.prepare-for-ipfs.outputs.is_create_release == 'true' }}
       tag: ${{ needs.prepare-for-ipfs.outputs.tag }}
+      FILEBASE_BUCKET_NAME: ${{ vars.FILEBASE_BUCKET_NAME_PROD }}
     secrets:
-      W3S_TOKEN: ${{ secrets.W3S_TOKEN }}
+      W3S_TOKEN: ${{ secrets.W3S_TOKEN_PROD }}
+      W3S_PROOF: ${{ secrets.W3S_PROOF_PROD }}
+      GW3_TOKEN: ${{ secrets.GW3_TOKEN_PROD }}
+      GW3_ACCESS_KEY: ${{ secrets.GW3_ACCESS_KEY_PROD }}
+      FILEBASE_TOKEN: ${{ secrets.FILEBASE_TOKEN_PROD }}

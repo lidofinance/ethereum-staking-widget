@@ -1,12 +1,13 @@
 import { parseEther } from '@ethersproject/units';
 import { CHAINS } from '@lido-sdk/constants';
 import { StethAbi } from '@lido-sdk/contracts';
-import { useSDK, useSTETHContractRPC } from '@lido-sdk/react';
+import { useLidoSWR, useSDK, useSTETHContractRPC } from '@lido-sdk/react';
 import { enableQaHelpers } from 'utils';
-import useSwr from 'swr';
 import { BigNumber } from 'ethers';
+import { STRATEGY_LAZY } from 'utils/swrStrategies';
+import { LIMIT_LEVEL } from 'types';
 
-type StakeLimitFullInfo = {
+export type StakeLimitFullInfo = {
   isStakingPaused: boolean;
   isStakingLimitSet: boolean;
   currentStakeLimit: BigNumber;
@@ -14,6 +15,7 @@ type StakeLimitFullInfo = {
   maxStakeLimitGrowthBlocks: BigNumber;
   prevStakeLimit: BigNumber;
   prevStakeBlockNumber: BigNumber;
+  stakeLimitLevel: LIMIT_LEVEL;
 };
 
 const stakeLimitFullInfoTemplate: StakeLimitFullInfo = {
@@ -24,14 +26,28 @@ const stakeLimitFullInfoTemplate: StakeLimitFullInfo = {
   maxStakeLimitGrowthBlocks: BigNumber.from(6400),
   prevStakeLimit: parseEther('149000'),
   prevStakeBlockNumber: BigNumber.from(15145339),
+  stakeLimitLevel: LIMIT_LEVEL.REACHED,
+};
+
+// almost reached whenever current limit is ≤25% of max limit, i.e. 4 times lower
+const WARN_THRESHOLD_RATIO = BigNumber.from(4);
+
+const getLimitLevel = (maxLimit: BigNumber, currentLimit: BigNumber) => {
+  if (currentLimit.eq(0)) return LIMIT_LEVEL.REACHED;
+
+  if (maxLimit.div(currentLimit).gte(WARN_THRESHOLD_RATIO))
+    return LIMIT_LEVEL.WARN;
+
+  return LIMIT_LEVEL.SAFE;
 };
 
 export const useStakingLimitInfo = () => {
   const { chainId } = useSDK();
   const steth = useSTETHContractRPC();
 
-  const result = useSwr(
+  return useLidoSWR<StakeLimitFullInfo>(
     ['swr:getStakeLimitFullInfo', chainId, steth, enableQaHelpers],
+    // @ts-expect-error broken lidoSWR typings
     async (
       _key: string,
       _chainId: CHAINS,
@@ -50,6 +66,10 @@ export const useStakingLimitInfo = () => {
             ...mockData,
             currentStakeLimit: parseEther(mockData.currentStakeLimit),
             maxStakeLimit: parseEther(mockData.maxStakeLimit),
+            stakeLimitLevel: getLimitLevel(
+              parseEther(mockData.maxStakeLimit),
+              parseEther(mockData.currentStakeLimit),
+            ),
           };
         } catch (e) {
           console.warn('Failed to load mock data');
@@ -62,16 +82,15 @@ export const useStakingLimitInfo = () => {
       // destructuring to make hybrid array into an object,
       return {
         ...stakeLimitFullInfo,
+        stakeLimitLevel: getLimitLevel(
+          stakeLimitFullInfo.maxStakeLimit,
+          stakeLimitFullInfo.currentStakeLimit,
+        ),
       };
     },
     {
-      refreshInterval: 30000,
+      ...STRATEGY_LAZY,
+      refreshInterval: 60000,
     },
   );
-
-  return {
-    initialLoading: !result.data,
-    data: result.data,
-    error: result.error,
-  };
 };

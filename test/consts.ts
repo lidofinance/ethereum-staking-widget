@@ -166,8 +166,9 @@ export const GET_REQUESTS: GetRequest[] = [
       type: 'object',
       properties: {
         rate: { type: 'number', min: 0 },
+        toReceive: { type: 'string' },
       },
-      required: ['rate'],
+      required: ['rate', 'toReceive'],
       additionalProperties: false,
     },
   },

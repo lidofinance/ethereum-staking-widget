@@ -9,14 +9,15 @@ import { useCurrentStaticRpcProvider } from 'shared/hooks/use-current-static-rpc
 import { getFeeData } from 'utils/getFeeData';
 
 import type { WrapFormInputType } from '../wrap-form-context';
+import { applyGasLimitRatio } from 'features/stake/stake-form/utils';
 
 export const getGasParameters = async (
   provider: StaticJsonRpcBatchProvider,
 ) => {
-  const feeData = await getFeeData(provider);
+  const { maxFeePerGas, maxPriorityFeePerGas } = await getFeeData(provider);
   return {
-    maxPriorityFeePerGas: feeData.maxPriorityFeePerGas ?? undefined,
-    maxFeePerGas: feeData.maxFeePerGas ?? undefined,
+    maxPriorityFeePerGas,
+    maxFeePerGas,
   };
 };
 
@@ -54,9 +55,16 @@ export const useWrapTxProcessing = () => {
             value: amount,
           });
         } else {
+          const originalGasLimit = await wstethContractWeb3.signer.estimateGas({
+            to: wstethTokenAddress,
+            value: amount,
+          });
+
+          const gasLimit = applyGasLimitRatio(originalGasLimit);
           return wstethContractWeb3.signer.sendTransaction({
             to: wstethTokenAddress,
             value: amount,
+            gasLimit,
             ...(await getGasParameters(staticRpcProvider)),
           });
         }

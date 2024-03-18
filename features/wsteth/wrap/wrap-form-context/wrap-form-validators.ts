@@ -12,42 +12,49 @@ import { awaitWithTimeout } from 'utils/await-with-timeout';
 import { VALIDATION_CONTEXT_TIMEOUT } from 'features/withdrawals/withdrawals-constants';
 import type { WrapFormInputType, WrapFormValidationContext } from './types';
 import { TokensWrappable, TOKENS_TO_WRAP } from 'features/wsteth/shared/types';
+import { validateStakeEth } from 'shared/hook-form/validation/validate-stake-eth';
 
 const messageMaxAmount = (max: BigNumber, token: TokensWrappable) =>
-  `${getTokenDisplayName(token)} amount must not be greater than ${formatEther(
-    max,
-  )}`;
+  `Entered ${getTokenDisplayName(
+    token,
+  )} amount exceeds your available balance of ${formatEther(max)}`;
 
 export const WrapFormValidationResolver: Resolver<
   WrapFormInputType,
-  Promise<WrapFormValidationContext>
-> = async (values, validationContextPromise) => {
+  WrapFormValidationContext
+> = async (values, validationContext) => {
   const { amount, token } = values;
   try {
-    invariant(
-      validationContextPromise,
-      'validation context must be presented as context promise',
-    );
+    invariant(validationContext, 'validation context must be present');
+    const { isWalletActive, asyncContext } = validationContext;
 
     validateEtherAmount('amount', amount, token);
 
-    const { active, maxAmountETH, maxAmountStETH } = await awaitWithTimeout(
-      validationContextPromise,
+    const awaitedContext = await awaitWithTimeout(
+      asyncContext,
       VALIDATION_CONTEXT_TIMEOUT,
     );
 
-    if (active) {
-      const isSteth = token === TOKENS_TO_WRAP.STETH;
-      const maxAmount = isSteth ? maxAmountStETH : maxAmountETH;
-
-      invariant(maxAmount, 'maxAmount must be presented');
-
+    if (token === TOKENS_TO_WRAP.ETH) {
+      // checks active internally after other wallet-less check
+      validateStakeEth({
+        formField: 'amount',
+        isWalletActive,
+        amount,
+        ...awaitedContext,
+      });
+    } else if (isWalletActive) {
       validateBignumberMax(
         'amount',
         amount,
-        maxAmount,
-        messageMaxAmount(maxAmount, token),
+        awaitedContext.stethBalance,
+        messageMaxAmount(awaitedContext.stethBalance, token),
       );
+    } else {
+      return {
+        values,
+        errors: { token: 'wallet is not connected' },
+      };
     }
 
     return {
@@ -55,6 +62,6 @@ export const WrapFormValidationResolver: Resolver<
       errors: {},
     };
   } catch (error) {
-    return handleResolverValidationError(error, 'WrapForm', 'amount');
+    return handleResolverValidationError(error, 'WrapForm', 'token');
   }
 };

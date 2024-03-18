@@ -1,20 +1,39 @@
-import styled from 'styled-components';
-import { Button } from '@lidofinance/lido-ui';
-import Icons from 'assets/icons/l2-swap.svg';
+import styled, { css } from 'styled-components';
+import { Button, Link } from '@lidofinance/lido-ui';
+import IconsLight from 'assets/icons/l2-swap-light.svg';
+import IconsDark from 'assets/icons/l2-swap-dark.svg';
+import { LocalLink } from 'shared/components/local-link';
 
 export const Wrapper = styled.div`
-  margin-top: 16px;
   position: relative;
   display: flex;
+  flex-direction: column;
   text-align: left;
-  align-items: center;
   padding: ${({ theme }) => theme.spaceMap.lg}px;
   border-radius: ${({ theme }) => theme.borderRadiusesMap.lg}px;
-  gap: 20px;
+  gap: 10px;
   overflow: hidden;
-  background-color: #07080c;
-  background: radial-gradient(120% 180% at 100% 100%, #62c4fb 0%, #112dbf 100%);
   box-sizing: border-box;
+
+  ${({ theme }) =>
+    theme.name === 'dark'
+      ? css`
+          background: linear-gradient(
+            275.17deg,
+            #0a5dff 8.63%,
+            #4d5dff 46.27%,
+            #905cff 81.73%
+          );
+        `
+      : css`
+          background: radial-gradient(
+              100% 1200% at 120% 110%,
+              rgba(255, 255, 255, 0.95) 2%,
+              rgba(219, 255, 255, 0.95) 35%,
+              rgba(255, 255, 255, 0) 100%
+            ),
+            linear-gradient(130deg, #a6a5ff 7%, rgba(181, 180, 255, 0) 55%);
+        `}
 
   ${({ theme }) => theme.mediaQueries.md} {
     gap: 6px;
@@ -27,48 +46,41 @@ export const Wrapper = styled.div`
   }
 `;
 
-export const L2Icons = styled.img.attrs({
-  src: Icons,
-  alt: '',
-})`
-  position: relative;
+export const L2Icons = styled.div`
   display: block;
-  width: 44px;
-  height: 120px;
+  width: 188px;
+  height: 32px;
+  background-image: url(${({ theme }) =>
+    theme.name === 'dark' ? IconsDark : IconsLight});
 `;
 
-export const ContentWrap = styled.div`
-  width: 100%;
-  height: 100%;
-  box-sizing: border-box;
+export const FooterWrap = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 `;
 
 export const TextHeader = styled.div`
   margin-bottom: 4px;
   font-size: 14px;
-  line-height: 24px;
+  line-height: 16px;
   font-weight: 700;
-  color: #fff;
+  color: var(--lido-color-text);
 `;
 
 export const TextWrap = styled.div`
   flex: 1 1 auto;
-  color: #fff;
+  color: var(--lido-color-text);
   line-height: 20px;
   font-size: 12px;
   font-weight: 400;
   position: relative;
 `;
 
-export const ButtonWrap = styled.div`
-  display: flex;
-  margin-top: 12px;
-`;
-
-export const ButtonLinkWrap = styled.a`
+const buttonLinkWrapCss = css`
   display: block;
 
-  ${({ theme }) => theme.mediaQueries.sm} {
+  ${({ theme }) => theme.mediaQueries.md} {
     position: absolute;
     top: 0;
     bottom: 0;
@@ -77,13 +89,20 @@ export const ButtonLinkWrap = styled.a`
   }
 `;
 
+export const ButtonLinkWrap = styled(Link)`
+  ${buttonLinkWrapCss};
+`;
+
+export const ButtonLinkWrapLocal = styled(LocalLink)`
+  ${buttonLinkWrapCss};
+`;
+
 export const ButtonStyle = styled(Button)`
-  background-color: #fff;
   padding: 7px 16px;
   font-size: 12px;
   line-height: 20px;
 
-  @media (max-width: 396px) {
+  ${({ theme }) => theme.mediaQueries.md} {
     display: none;
   }
 `;

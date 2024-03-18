@@ -24,7 +24,7 @@ jobs:
       - name: Install node
         uses: actions/setup-node@v4
         with:
-          node-version: 16
+          node-version: 20
           cache: 'yarn'
       - name: Install dependencies
         run: |
@@ -39,9 +39,11 @@ jobs:
           REWARDS_BACKEND_BASE_PATH: ${{ vars.REWARDS_BACKEND_BASE_PATH }}
           WQ_API_BASE_PATH: ${{ vars.WQ_API_BASE_PATH }}
           ETH_API_BASE_PATH: ${{ vars.ETH_API_BASE_PATH }}
-          PREFILL_UNSAFE_EL_RPC_URLS: ${{ secrets.PREFILL_UNSAFE_EL_RPC_URLS }}
+          PREFILL_UNSAFE_EL_RPC_URLS_1: ${{ secrets.PREFILL_UNSAFE_EL_RPC_URLS_1 }}
+          PREFILL_UNSAFE_EL_RPC_URLS_5: ${{ secrets.PREFILL_UNSAFE_EL_RPC_URLS_5 }}
+          PREFILL_UNSAFE_EL_RPC_URLS_17000: ${{ secrets.PREFILL_UNSAFE_EL_RPC_URLS_17000 }}
           WALLETCONNECT_PROJECT_ID: ${{ secrets.WALLETCONNECT_PROJECT_ID }}
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: ${{ env.ipfs_folder }}
           path: ${{ env.ipfs_folder }}
@@ -53,6 +55,10 @@ jobs:
       ipfs_folder: ${{ needs.prepare-for-ipfs.outputs.ipfs_folder }}
       current_branch: ${{ github.ref_name }}
       IS_CREATE_RELEASE: false
+      FILEBASE_BUCKET_NAME: ${{ vars.FILEBASE_BUCKET_NAME }}
     secrets:
       W3S_TOKEN: ${{ secrets.W3S_TOKEN }}
-      GW3_TOKEN: ''
+      W3S_PROOF: ${{ secrets.W3S_PROOF }}
+      GW3_TOKEN: ${{ secrets.GW3_TOKEN }}
+      GW3_ACCESS_KEY: ${{ secrets.GW3_ACCESS_KEY }}
+      FILEBASE_TOKEN: ${{ secrets.FILEBASE_TOKEN }}

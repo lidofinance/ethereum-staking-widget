@@ -1,5 +1,4 @@
 import { Question, Tooltip } from '@lidofinance/lido-ui';
-import Link from 'next/link';
 
 import { FormatToken } from 'shared/formatters';
 import { useWaitingTime } from 'features/withdrawals/hooks';
@@ -10,10 +9,14 @@ import {
 } from 'config/trackMatomoEvent';
 import { QueueInfoStyled, DataTableRowStyled } from './styles';
 import { useRequestFormData } from '../request-form-context';
+import { useInpageNavigation } from 'providers/inpage-navigation';
+import { OnlyIpfsRender } from 'shared/components/only-ipfs-render';
+import { OnlyInfraRender } from 'shared/components/only-infra-render';
 
 export const WalletQueueTooltip = () => {
   const waitingTime = useWaitingTime('');
   const { unfinalizedStETH } = useRequestFormData();
+  const { navigateInpageAnchor } = useInpageNavigation();
 
   const queueInfo = (
     <QueueInfoStyled>
@@ -22,7 +25,11 @@ export const WalletQueueTooltip = () => {
         title="Amount"
         loading={!unfinalizedStETH}
       >
-        <FormatToken amount={unfinalizedStETH} symbol="stETH" />
+        <FormatToken
+          amount={unfinalizedStETH}
+          symbol="stETH"
+          showAmountTip={false}
+        />
       </DataTableRowStyled>
       <DataTableRowStyled
         title="Waiting time"
@@ -37,19 +44,21 @@ export const WalletQueueTooltip = () => {
   const tooltipTitle = (
     <>
       The withdrawal request time depends on the mode, overall amount of stETH
-      in queue and{' '}
-      <Link href="#withdrawalsPeriod">
+      in queue and <OnlyIpfsRender>other factors</OnlyIpfsRender>
+      <OnlyInfraRender>
         <a
-          aria-hidden="true"
-          onClick={() =>
+          href="#withdrawalsPeriod"
+          data-testid="otherFactorsLink"
+          onClick={(e) => {
             trackMatomoEvent(
               MATOMO_CLICK_EVENTS_TYPES.withdrawalOtherFactorsTooltipMode,
-            )
-          }
+            );
+            navigateInpageAnchor(e);
+          }}
         >
           other factors
         </a>
-      </Link>
+      </OnlyInfraRender>
       .{queueInfo}
     </>
   );

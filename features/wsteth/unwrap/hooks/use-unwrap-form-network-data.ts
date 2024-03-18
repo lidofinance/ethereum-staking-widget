@@ -1,12 +1,14 @@
 import { useCallback, useMemo } from 'react';
 import { useIsMultisig } from 'shared/hooks/useIsMultisig';
 import { useSTETHBalance, useWSTETHBalance } from '@lido-sdk/react';
+import { STRATEGY_LAZY } from 'utils/swrStrategies';
 
 export const useUnwrapFormNetworkData = () => {
-  const [isMultisig] = useIsMultisig();
-  const { data: stethBalance, update: stethBalanceUpdate } = useSTETHBalance();
+  const { isMultisig } = useIsMultisig();
+  const { data: stethBalance, update: stethBalanceUpdate } =
+    useSTETHBalance(STRATEGY_LAZY);
   const { data: wstethBalance, update: wstethBalanceUpdate } =
-    useWSTETHBalance();
+    useWSTETHBalance(STRATEGY_LAZY);
 
   const revalidateUnwrapFormData = useCallback(async () => {
     await Promise.allSettled([stethBalanceUpdate(), wstethBalanceUpdate()]);

@@ -1,21 +1,30 @@
-import { FC } from 'react';
+import { FC, useCallback } from 'react';
 import { Button, ButtonProps } from '@lidofinance/lido-ui';
 import { wrapWithEventTrack } from '@lidofinance/analytics-matomo';
-import { useModal } from 'shared/hooks';
-import { MODAL } from 'providers';
 import { MATOMO_CLICK_EVENTS } from 'config';
+import { useClientConfig } from 'providers/client-config';
+import { useConnect } from 'reef-knot/core-react';
 
 export const Connect: FC<ButtonProps> = (props) => {
+  const { isWalletConnectionAllowed } = useClientConfig();
   const { onClick, ...rest } = props;
-  const { openModal } = useModal(MODAL.connect);
+  const { connect } = useConnect();
 
   const handleClick = wrapWithEventTrack(
     MATOMO_CLICK_EVENTS.connectWallet,
-    openModal,
+    useCallback(() => {
+      if (!isWalletConnectionAllowed) return;
+      void connect();
+    }, [isWalletConnectionAllowed, connect]),
   );
 
   return (
-    <Button onClick={handleClick} data-testid="connectBtn" {...rest}>
+    <Button
+      disabled={!isWalletConnectionAllowed}
+      onClick={handleClick}
+      data-testid="connectBtn"
+      {...rest}
+    >
       Connect wallet
     </Button>
   );

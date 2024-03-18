@@ -1,12 +1,10 @@
 import {
-  FormEventHandler,
   FC,
   PropsWithChildren,
   createContext,
   useContext,
   useEffect,
   useMemo,
-  useState,
 } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 
@@ -15,17 +13,20 @@ import { ClaimFormInputType, ClaimFormValidationContext } from './types';
 import { claimFormValidationResolver } from './validation';
 import { useClaim } from 'features/withdrawals/hooks';
 import { useMaxSelectedCount } from './use-max-selected-count';
+import { useFormControllerRetry } from 'shared/hook-form/form-controller/use-form-controller-retry-delegate';
 import {
   generateDefaultValues,
   useGetDefaultValues,
 } from './use-default-values';
 import { ClaimFormHelperState, useHelperState } from './use-helper-state';
+import {
+  FormControllerContext,
+  FormControllerContextValueType,
+} from 'shared/hook-form/form-controller';
 import { useClaimData } from 'features/withdrawals/contexts/claim-data-context';
-import { useTransactionModal } from 'shared/transaction-modal';
+import { useWeb3 } from 'reef-knot/web3-react';
 
-type ClaimFormDataContextValueType = {
-  onSubmit: FormEventHandler<HTMLFormElement>;
-} & ClaimFormHelperState;
+type ClaimFormDataContextValueType = ClaimFormHelperState;
 
 const claimFormDataContext =
   createContext<ClaimFormDataContextValueType | null>(null);
@@ -38,10 +39,9 @@ export const useClaimFormData = () => {
 };
 
 export const ClaimFormProvider: FC<PropsWithChildren> = ({ children }) => {
-  const { dispatchModalState } = useTransactionModal();
+  const { active } = useWeb3();
   const { data } = useClaimData();
 
-  const [shouldReset, setShouldReset] = useState<boolean>(false);
   const { maxSelectedRequestCount, defaultSelectedRequestCount } =
     useMaxSelectedCount();
   const { getDefaultValues } = useGetDefaultValues(defaultSelectedRequestCount);
@@ -49,27 +49,18 @@ export const ClaimFormProvider: FC<PropsWithChildren> = ({ children }) => {
   const formObject = useForm<ClaimFormInputType, ClaimFormValidationContext>({
     defaultValues: getDefaultValues,
     resolver: claimFormValidationResolver,
-    context: { maxSelectedRequestCount },
+    context: { maxSelectedRequestCount, isWalletActive: active },
     mode: 'onChange',
     reValidateMode: 'onChange',
   });
-  const { watch, reset, handleSubmit, setValue, getValues, formState } =
-    formObject;
-  const helperState = useHelperState(watch, maxSelectedRequestCount);
-
-  const claim = useClaim();
-  const onSubmit = useMemo(
-    () =>
-      handleSubmit(async ({ selectedTokens }) => {
-        const success = await claim(selectedTokens);
-        if (success) setShouldReset(true);
-      }),
-    [handleSubmit, claim],
+  const { watch, reset, setValue, getValues, formState } = formObject;
+  const claimFormDataContextValue = useHelperState(
+    watch,
+    maxSelectedRequestCount,
   );
+  const { retryEvent, retryFire } = useFormControllerRetry();
 
-  useEffect(() => {
-    dispatchModalState({ type: 'set_on_retry', callback: onSubmit });
-  }, [dispatchModalState, onSubmit]);
+  const claim = useClaim({ onRetry: retryFire });
 
   const { isSubmitting } = formState;
 
@@ -77,13 +68,6 @@ export const ClaimFormProvider: FC<PropsWithChildren> = ({ children }) => {
   useEffect(() => {
     // no updates while submitting
     if (!data || isSubmitting) return;
-
-    // reset state after submit
-    if (shouldReset) {
-      reset(generateDefaultValues(data, defaultSelectedRequestCount));
-      setShouldReset(false);
-      return;
-    }
 
     // for regular updates generate new list but keep user input
     const oldValues = getValues('requests');
@@ -106,23 +90,30 @@ export const ClaimFormProvider: FC<PropsWithChildren> = ({ children }) => {
     data,
     getValues,
     setValue,
-    shouldReset,
     reset,
     isSubmitting,
     defaultSelectedRequestCount,
   ]);
 
-  const claimFormDataContextValue = useMemo(() => {
-    return {
-      onSubmit,
-      ...helperState,
-    };
-  }, [helperState, onSubmit]);
+  const formControllerValue: FormControllerContextValueType<ClaimFormInputType> =
+    useMemo(
+      () => ({
+        onSubmit: ({ selectedTokens }) => claim(selectedTokens),
+        onReset: () => {
+          if (!data) return;
+          reset(generateDefaultValues(data, defaultSelectedRequestCount));
+        },
+        retryEvent,
+      }),
+      [claim, data, defaultSelectedRequestCount, reset, retryEvent],
+    );
 
   return (
     <FormProvider {...formObject}>
       <claimFormDataContext.Provider value={claimFormDataContextValue}>
-        {useMemo(() => children, [children])}
+        <FormControllerContext.Provider value={formControllerValue}>
+          {children}
+        </FormControllerContext.Provider>
       </claimFormDataContext.Provider>
     </FormProvider>
   );

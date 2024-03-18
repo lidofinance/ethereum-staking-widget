@@ -1,16 +1,12 @@
-import { Accordion } from '@lidofinance/lido-ui';
-import { useScrollToId } from '../utils/useScrollToId';
+import { AccordionNavigatable } from 'shared/components/accordion-navigatable';
 import { WHAT_IS_BUNKER, WHAT_IS_TURBO } from '../../withdrawals-constants';
 import Link from 'next/link';
 
 export const WithdrawalPeriodCircumstances: React.FC = () => {
-  const { id, opened } = useScrollToId('withdrawalsPeriod');
-
   return (
-    <Accordion
+    <AccordionNavigatable
       summary="What are the factors affecting the withdrawal time?"
-      id={id}
-      defaultExpanded={opened}
+      id="withdrawalsPeriod"
     >
       <ul>
         <li>Demand for staking and unstaking.</li>
@@ -23,6 +19,6 @@ export const WithdrawalPeriodCircumstances: React.FC = () => {
           or <Link href={WHAT_IS_BUNKER}>Bunker&nbsp;mode</Link>)
         </li>
       </ul>
-    </Accordion>
+    </AccordionNavigatable>
   );
 };

@@ -14,7 +14,7 @@ import {
 import NoSSRWrapper from 'shared/components/no-ssr-wrapper';
 import { usePrefixedReplace } from 'shared/hooks/use-prefixed-history';
 
-import HomePageRegular from 'features/home/home-page-regular';
+import { StakePage } from 'features/stake';
 import WrapPage from 'pages/wrap/[[...mode]]';
 import WithdrawalsPage from 'pages/withdrawals/[mode]';
 import ReferralPage from 'pages/referral';
@@ -37,7 +37,7 @@ const IPFS_ROUTABLE_PAGES = [
   getPathWithoutFirstSlash(SETTINGS_PATH),
 ];
 
-const HomePageIpfs: FC = () => {
+export const HomePageIpfs: FC = () => {
   const router = useRouter();
   const { asPath } = router;
 
@@ -107,12 +107,10 @@ const HomePageIpfs: FC = () => {
     }
 
     default: {
-      spaPage = <HomePageRegular />;
+      spaPage = <StakePage />;
     }
   }
 
   // Fix for runtime of `dev-ipfs` (see: package.json scripts)
   return <NoSSRWrapper>{spaPage}</NoSSRWrapper>;
 };
-
-export default HomePageIpfs;

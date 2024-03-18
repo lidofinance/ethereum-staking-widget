@@ -1,36 +1,37 @@
-import { BigNumber } from 'ethers';
-import invariant from 'tiny-invariant';
-
 import { useLidoSWR } from '@lido-sdk/react';
 
-import { ONE_GWEI } from 'config';
 import { getFeeData } from 'utils/getFeeData';
+import { STRATEGY_LAZY } from 'utils/swrStrategies';
 
 import { useCurrentStaticRpcProvider } from './use-current-static-rpc-provider';
 
-export const useMaxGasPrice = (): BigNumber | undefined => {
+export const useMaxGasPrice = () => {
   const { chainId, staticRpcProvider } = useCurrentStaticRpcProvider();
 
-  const { data: maxGasPrice } = useLidoSWR(
+  const swr = useLidoSWR(
     ['swr:max-gas-price', chainId],
     async () => {
-      try {
-        const feeData = await getFeeData(staticRpcProvider);
-
-        if (feeData.maxFeePerGas) {
-          return feeData.maxFeePerGas;
-        }
-        if (feeData.gasPrice) {
-          return feeData.gasPrice;
-        }
-        invariant(false, 'must have some gas data');
-      } catch (error) {
-        console.error(error);
-      }
-      return ONE_GWEI;
+      const { maxFeePerGas } = await getFeeData(staticRpcProvider);
+      return maxFeePerGas;
     },
-    { isPaused: () => !chainId },
+    STRATEGY_LAZY,
   );
 
-  return maxGasPrice;
+  return {
+    get maxGasPrice() {
+      return swr.data;
+    },
+    get initialLoading() {
+      return swr.initialLoading;
+    },
+    get error() {
+      return swr.error;
+    },
+    get loading() {
+      return swr.loading;
+    },
+    update() {
+      return swr.update;
+    },
+  };
 };

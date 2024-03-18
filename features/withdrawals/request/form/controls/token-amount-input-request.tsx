@@ -27,6 +27,7 @@ export const TokenAmountInputRequest = () => {
   return (
     <TokenAmountInputHookForm
       fieldName="amount"
+      data-testid="requestInput"
       token={token}
       isLocked={isTokenLocked}
       maxValue={maxAmount}

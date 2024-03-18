@@ -1,11 +1,10 @@
-import Link from 'next/link';
 import { useWatch } from 'react-hook-form';
-import { formatEther } from '@ethersproject/units';
 
 import { Tooltip, Question } from '@lidofinance/lido-ui';
 import { TOKENS } from '@lido-sdk/constants';
 
 import { useEthAmountByStethWsteth } from 'features/withdrawals/hooks';
+import { useInpageNavigation } from 'providers/inpage-navigation';
 import { RequestFormInputType } from 'features/withdrawals/request/request-form-context';
 
 import {
@@ -18,28 +17,34 @@ import {
   LidoIcon,
   LidoOptionContainer,
   LidoOptionValue,
+  LidoOptionInlineLoader,
 } from './styles';
+import { OnlyInfraRender } from 'shared/components/only-infra-render';
 
 const TooltipWithdrawalAmount = () => {
+  const { navigateInpageAnchor } = useInpageNavigation();
+
   return (
     <Tooltip
       placement="topRight"
       title={
         <>
           The final amount of claimable ETH can differ
-          <br /> For more info, please read{' '}
-          <Link href="#amountDifferentFromRequested">
+          <OnlyInfraRender>
+            <br /> For more info, please read{' '}
             <a
-              aria-hidden="true"
-              onClick={() =>
+              data-testid="lidoOptionToolTipFAQ"
+              href="#amountDifferentFromRequested"
+              onClick={(e) => {
                 trackMatomoEvent(
                   MATOMO_CLICK_EVENTS_TYPES.withdrawalFAQtooltipEthAmount,
-                )
-              }
+                );
+                navigateInpageAnchor(e);
+              }}
             >
               FAQ
             </a>
-          </Link>
+          </OnlyInfraRender>
         </>
       }
     >
@@ -53,24 +58,28 @@ export const LidoOption = () => {
     name: ['token', 'amount'],
   });
 
-  // TODO: refactor to use intermediate validation values
-  const ethAmount = useEthAmountByStethWsteth({
-    isSteth: token === TOKENS.STETH,
-    input: amount ? formatEther(amount) : undefined,
-  });
+  const { amount: ethAmount, loading: amountLoading } =
+    useEthAmountByStethWsteth({
+      isSteth: token === TOKENS.STETH,
+      amount,
+    });
 
   return (
-    <LidoOptionContainer>
+    <LidoOptionContainer data-testid="lidoOptionSection">
       <LidoIcon />
       Lido
-      <LidoOptionValue>
-        <FormatTokenStyled
-          data-testid="lidoOptionAmount"
-          showAmountTip
-          amount={ethAmount}
-          symbol="ETH"
-        />{' '}
-        <TooltipWithdrawalAmount />
+      <LidoOptionValue data-testid="lidoOptionAmount">
+        {amountLoading && <LidoOptionInlineLoader />}
+        {!amountLoading && (
+          <>
+            <FormatTokenStyled
+              data-testid="lidoOptionAmount"
+              amount={ethAmount}
+              symbol="ETH"
+            />{' '}
+            <TooltipWithdrawalAmount />
+          </>
+        )}
       </LidoOptionValue>
     </LidoOptionContainer>
   );

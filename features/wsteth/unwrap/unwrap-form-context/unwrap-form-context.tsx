@@ -7,12 +7,15 @@ import {
   useContext,
 } from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
-import { useStethByWsteth } from 'shared/hooks';
 import { useUnwrapFormNetworkData } from '../hooks/use-unwrap-form-network-data';
 import { useUnwrapFormProcessor } from '../hooks/use-unwrap-form-processing';
 import { useUnwrapFormValidationContext } from '../hooks/use-unwra-form-validation-context';
+import { useFormControllerRetry } from 'shared/hook-form/form-controller/use-form-controller-retry-delegate';
 
-import { FormControllerContext } from 'features/wsteth/shared/form-controller/form-controller-context';
+import {
+  FormControllerContext,
+  FormControllerContextValueType,
+} from 'shared/hook-form/form-controller';
 
 import {
   UnwrapFormDataContextValueType,
@@ -20,7 +23,6 @@ import {
   UnwrapFormValidationContext,
 } from './types';
 import { UnwrapFormValidationResolver } from './unwrap-form-validators';
-import { Zero } from '@ethersproject/constants';
 
 //
 // Data context
@@ -50,6 +52,7 @@ export const UnwrapFormProvider: FC<PropsWithChildren> = ({ children }) => {
   >({
     defaultValues: {
       amount: null,
+      dummyErrorField: null,
     },
     context: validationContextPromise,
     criteriaMode: 'firstError',
@@ -57,28 +60,25 @@ export const UnwrapFormProvider: FC<PropsWithChildren> = ({ children }) => {
     resolver: UnwrapFormValidationResolver,
   });
 
-  const { watch } = formObject;
-  const [amount] = watch(['amount']);
+  const { retryEvent, retryFire } = useFormControllerRetry();
 
   const processUnwrapFormFlow = useUnwrapFormProcessor({
     onConfirm: networkData.revalidateUnwrapFormData,
+    onRetry: retryFire,
   });
 
-  const willReceiveStETH = useStethByWsteth(amount ?? Zero);
-
-  const value = useMemo(
-    (): UnwrapFormDataContextValueType => ({
-      ...networkData,
-      willReceiveStETH,
+  const formControllerValue = useMemo(
+    (): FormControllerContextValueType<UnwrapFormInputType> => ({
       onSubmit: processUnwrapFormFlow,
+      retryEvent,
     }),
-    [networkData, processUnwrapFormFlow, willReceiveStETH],
+    [processUnwrapFormFlow, retryEvent],
   );
 
   return (
     <FormProvider {...formObject}>
-      <UnwrapFormDataContext.Provider value={value}>
-        <FormControllerContext.Provider value={value}>
+      <UnwrapFormDataContext.Provider value={networkData}>
+        <FormControllerContext.Provider value={formControllerValue}>
           {children}
         </FormControllerContext.Provider>
       </UnwrapFormDataContext.Provider>

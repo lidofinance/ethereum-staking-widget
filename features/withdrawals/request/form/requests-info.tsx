@@ -35,9 +35,13 @@ export const RequestsInfo = () => {
     <RequestsInfoStyled>
       <RequestsInfoDescStyled>
         Your amount will be split into {requestCount} requests because{' '}
-        <FormatToken amount={maxPerTx} symbol={getTokenDisplayName(token)} /> is
-        the maximum amount per one request. Although it will be {requestCount}{' '}
-        requests, you will pay one transaction fee.
+        <FormatToken
+          showAmountTip={false}
+          amount={maxPerTx}
+          symbol={getTokenDisplayName(token)}
+        />{' '}
+        is the maximum amount per one request. Although it will be{' '}
+        {requestCount} requests, you will pay one transaction fee.
       </RequestsInfoDescStyled>
     </RequestsInfoStyled>
   );

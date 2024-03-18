@@ -2,7 +2,6 @@ import invariant from 'tiny-invariant';
 import { useCallback } from 'react';
 
 import { ContractReceipt, ContractTransaction } from '@ethersproject/contracts';
-import { Zero } from '@ethersproject/constants';
 import { BigNumber } from '@ethersproject/bignumber';
 import { getERC20Contract } from '@lido-sdk/contracts';
 import { useAllowance, useSDK } from '@lido-sdk/react';
@@ -12,6 +11,7 @@ import { getFeeData } from 'utils/getFeeData';
 import { runWithTransactionLogger } from 'utils';
 
 import { useCurrentStaticRpcProvider } from './use-current-static-rpc-provider';
+import { STRATEGY_LAZY } from 'utils/swrStrategies';
 
 type ApproveOptions =
   | {
@@ -25,7 +25,7 @@ export type UseApproveResponse = {
   approve: (options?: ApproveOptions) => Promise<void>;
   needsApprove: boolean;
   initialLoading: boolean;
-  allowance: BigNumber;
+  allowance: BigNumber | undefined;
   loading: boolean;
   error: unknown;
 };
@@ -43,15 +43,12 @@ export const useApprove = (
   invariant(token != null, 'Token is required');
   invariant(spender != null, 'Spender is required');
 
-  const result = useAllowance(token, spender, mergedOwner);
-  const {
-    data: allowance = Zero,
-    initialLoading,
-    update: updateAllowance,
-  } = result;
+  const result = useAllowance(token, spender, mergedOwner, STRATEGY_LAZY);
+  const { data: allowance, initialLoading, update: updateAllowance } = result;
 
-  const needsApprove =
-    !initialLoading && !amount.isZero() && amount.gt(allowance);
+  const needsApprove = Boolean(
+    !initialLoading && allowance && !amount.isZero() && amount.gt(allowance),
+  );
 
   const approve = useCallback<UseApproveResponse['approve']>(
     async ({ onTxStart, onTxSent, onTxAwaited } = {}) => {
@@ -73,9 +70,8 @@ export const useApprove = (
             .sendUncheckedTransaction(tx);
           return hash;
         } else {
-          const { maxFeePerGas, maxPriorityFeePerGas } = await getFeeData(
-            staticRpcProvider,
-          );
+          const { maxFeePerGas, maxPriorityFeePerGas } =
+            await getFeeData(staticRpcProvider);
           const tx = await contractWeb3.approve(spender, amount, {
             maxFeePerGas,
             maxPriorityFeePerGas,

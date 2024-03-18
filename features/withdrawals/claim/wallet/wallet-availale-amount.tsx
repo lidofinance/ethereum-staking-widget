@@ -6,16 +6,13 @@ export const WalletAvailableAmount = () => {
   const { data, initialLoading } = useClaimData();
 
   const availableAmount = (
-    <FormatToken
-      showAmountTip
-      amount={data?.claimableAmountOfETH}
-      symbol="ETH"
-    />
+    <FormatToken amount={data?.claimableAmountOfETH} symbol="ETH" />
   );
 
   return (
     <CardBalance
       small
+      data-testid="availableToClaim"
       title="Available to claim"
       loading={initialLoading}
       value={availableAmount}

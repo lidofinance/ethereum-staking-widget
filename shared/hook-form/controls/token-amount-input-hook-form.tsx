@@ -1,6 +1,6 @@
 import { useController } from 'react-hook-form';
 
-import { InputAmount } from 'shared/forms/components/input-amount';
+import { InputAmount } from 'shared/components/input-amount';
 
 import { getTokenDisplayName } from 'utils/getTokenDisplayName';
 import { isValidationErrorTypeValidate } from 'shared/hook-form/validation/validation-error';
@@ -22,6 +22,7 @@ export const TokenAmountInputHookForm = ({
   token,
   fieldName,
   showErrorMessage = true,
+  error: errorProp,
   ...props
 }: TokenAmountInputHookFormProps) => {
   const {
@@ -29,17 +30,18 @@ export const TokenAmountInputHookForm = ({
     fieldState: { error },
   } = useController({ name: fieldName });
   const hasErrorHighlight = isValidationErrorTypeValidate(error?.type);
-  const errorMessage = hasErrorHighlight && error?.message;
-
+  // allows to show error state without message
+  const errorMessage = hasErrorHighlight && (error?.message || true);
   return (
     <InputAmount
       {...props}
-      fullwidth
-      error={showErrorMessage ? errorMessage : hasErrorHighlight}
+      {...field}
+      disabled={props.disabled ?? field.disabled}
+      error={errorProp ?? (showErrorMessage ? errorMessage : hasErrorHighlight)}
       isLocked={isLocked}
       maxValue={maxValue}
       label={`${getTokenDisplayName(token)} amount`}
-      {...field}
+      fullwidth
     />
   );
 };

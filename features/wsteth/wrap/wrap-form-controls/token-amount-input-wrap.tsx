@@ -3,7 +3,12 @@ import { useWrapFormData, WrapFormInputType } from '../wrap-form-context';
 
 import { TokenAmountInputHookForm } from 'shared/hook-form/controls/token-amount-input-hook-form';
 
-export const TokenAmountInputWrap = () => {
+type TokenAmountInputWrapProps = Pick<
+  React.ComponentProps<typeof TokenAmountInputHookForm>,
+  'warning'
+>;
+
+export const TokenAmountInputWrap = (props: TokenAmountInputWrapProps) => {
   const token = useWatch<WrapFormInputType, 'token'>({ name: 'token' });
   const { maxAmount, isApprovalNeededBeforeWrap } = useWrapFormData();
 
@@ -15,6 +20,7 @@ export const TokenAmountInputWrap = () => {
       isLocked={isApprovalNeededBeforeWrap}
       maxValue={maxAmount}
       showErrorMessage={false}
+      {...props}
     />
   );
 };

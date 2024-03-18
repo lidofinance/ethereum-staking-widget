@@ -3,9 +3,6 @@ import { InlineLoader, ThemeName } from '@lidofinance/lido-ui';
 import { FormatToken } from 'shared/formatters';
 
 import Lido from 'assets/icons/lido.svg';
-import Oneinch from 'assets/icons/oneinch-circle.svg';
-import Paraswao from 'assets/icons/paraswap-circle.svg';
-import Cowswap from 'assets/icons/cowswap-circle.svg';
 import ExternalLink from 'assets/icons/external-link-icon.svg';
 
 // ICONS
@@ -13,27 +10,6 @@ import ExternalLink from 'assets/icons/external-link-icon.svg';
 export const LidoIcon = styled.img.attrs({
   src: Lido,
   alt: '',
-})`
-  display: block;
-`;
-
-export const OneInchIcon = styled.img.attrs({
-  src: Oneinch,
-  alt: '1inch',
-})`
-  display: block;
-`;
-
-export const ParaSwapIcon = styled.img.attrs({
-  src: Paraswao,
-  alt: 'paraswap',
-})`
-  display: block;
-`;
-
-export const CowSwapIcon = styled.img.attrs({
-  src: Cowswap,
-  alt: 'cowswap',
 })`
   display: block;
 `;
@@ -71,6 +47,11 @@ export const LidoOptionValue = styled.div`
   flex-direction: row;
   align-items: center;
   margin-left: auto;
+`;
+
+export const LidoOptionInlineLoader = styled(InlineLoader)`
+  display: block;
+  width: 100px;
 `;
 
 export const FormatTokenStyled = styled(FormatToken)`
@@ -180,6 +161,10 @@ export const OptionsPickerIcons = styled.div`
     &:first-child {
       margin-left: 0px;
     }
+    filter: ${({ theme }) =>
+      theme.name === ThemeName.light
+        ? 'drop-shadow(0px 0px 1px rgba(246, 248, 250, 255))'
+        : 'unset'};
   }
 `;
 
@@ -210,6 +195,10 @@ export const DexOptionStyled = styled.div<{ $loading?: boolean }>`
     grid-column: 1 / 1;
     align-self: center;
     width: 44px;
+    filter: ${({ theme }) =>
+      theme.name === ThemeName.light
+        ? 'drop-shadow(0px 0px 1px rgba(246, 248, 250, 255))'
+        : 'unset'};
   }
 `;
 
@@ -257,4 +246,22 @@ export const DexOptionAmount = styled.span`
 
 export const InlineLoaderSmall = styled(InlineLoader)`
   max-width: 74px;
+`;
+
+export const DexWarning = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: ${({ theme }) => theme.spaceMap.md}px;
+  font-weight: 400;
+  font-size: ${({ theme }) => theme.fontSizesMap.xs}px;
+  // we need to update lido ui
+  background-color: ${({ theme }) =>
+    theme.name === ThemeName.light ? '#F6F8FA' : '#2D2D35'};
+  border-radius: ${({ theme }) => theme.borderRadiusesMap.lg}px;
+
+  svg {
+    display: block;
+    margin-right: ${({ theme }) => theme.spaceMap.xs}px;
+  }
 `;

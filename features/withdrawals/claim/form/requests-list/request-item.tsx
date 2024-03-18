@@ -43,13 +43,18 @@ export const RequestItem = forwardRef<HTMLInputElement, RequestItemProps>(
     const symbol = isClaimable ? 'ETH' : 'stETH';
 
     const label = (
-      <FormatToken showAmountTip amount={amountValue} symbol={symbol} />
+      <FormatToken
+        data-testid="requestAmount"
+        amount={amountValue}
+        symbol={symbol}
+      />
     );
 
     return (
-      <RequestStyled $disabled={isDisabled}>
+      <RequestStyled data-testid={'requestItem'} $disabled={isDisabled}>
         <Checkbox
           {...props}
+          data-testid="requestCheckbox"
           label={label}
           disabled={isDisabled}
           name={name}
@@ -59,7 +64,10 @@ export const RequestItem = forwardRef<HTMLInputElement, RequestItemProps>(
           status={status.isFinalized ? 'ready' : 'pending'}
           finalizationAt={status.finalizationAt}
         />
-        <LinkStyled href={getNFTUrl(token_id, chainId)}>
+        <LinkStyled
+          data-testid="requestNftLink"
+          href={getNFTUrl(token_id, chainId)}
+        >
           <External />
         </LinkStyled>
       </RequestStyled>
