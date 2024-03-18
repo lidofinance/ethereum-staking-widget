@@ -2,7 +2,6 @@ import { useMemo } from 'react';
 import { getStaticRpcBatchProvider } from '@lido-sdk/providers';
 import { StaticJsonRpcBatchProvider } from '@lidofinance/eth-providers';
 
-// TODO
 import { useGetRpcUrlByChainId } from 'config/rpc';
 import { CHAINS } from 'consts/chains';
 
