@@ -53,7 +53,7 @@ export const getBebopRate = async (
   });
 
   const data = await standardFetcher<BebopGetQuotePartial>(
-    `${basePath}/?${params.toString()}`,
+    `${basePath}?${params.toString()}`,
   );
 
   const bestRoute = data.routes.sort(
