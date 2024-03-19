@@ -93,7 +93,8 @@ export const useVersionCheck = () => {
           leastSafeVersion: releaseInfo.leastSafeVersion,
         };
       }
-      return null;
+
+      throw new Error('invalid IPFS manifest content');
     },
     { ...STRATEGY_LAZY },
   );
