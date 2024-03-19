@@ -56,5 +56,5 @@ export const getSmaStethApr = async (): Promise<string> => {
     request: () => standardFetcher<SMA_APR_RESPONSE>(url),
   });
 
-  return data.data.smaApr.toFixed(1);
+  return data?.data.smaApr.toFixed(1);
 };

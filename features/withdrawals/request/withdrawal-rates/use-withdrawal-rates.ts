@@ -13,7 +13,11 @@ import { getDexConfig } from './integrations';
 
 import { ENABLED_WITHDRAWAL_DEXES } from 'features/withdrawals/withdrawals-constants';
 
-import type { GetWithdrawalRateParams, GetWithdrawalRateResult } from './types';
+import type {
+  DexWithdrawalApi,
+  GetWithdrawalRateParams,
+  GetWithdrawalRateResult,
+} from './types';
 
 export type useWithdrawalRatesOptions = {
   fallbackValue?: BigNumber;
@@ -56,13 +60,18 @@ export const useWithdrawalRates = ({
   const fallbackedAmount = amount ?? fallbackValue;
   const debouncedAmount = useDebouncedValue(fallbackedAmount, 1000);
   const swr = useLidoSWR(
-    ['swr:withdrawal-rates', debouncedAmount.toString(), token],
+    [
+      'swr:withdrawal-rates',
+      debouncedAmount.toString(),
+      token,
+      ENABLED_WITHDRAWAL_DEXES,
+    ],
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (_, amount, token) =>
+    (_, amount, token, enabledDexes) =>
       getWithdrawalRates({
         amount: BigNumber.from(amount),
         token: token as TOKENS.STETH | TOKENS.WSTETH,
-        dexes: ENABLED_WITHDRAWAL_DEXES,
+        dexes: enabledDexes as DexWithdrawalApi[],
       }),
     {
       ...STRATEGY_LAZY,

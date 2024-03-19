@@ -1,9 +1,8 @@
-import { useEffect, useRef } from 'react';
-
 import { config } from 'config';
 import { Backend } from 'features/rewards/types';
 import { useLidoSWR } from 'shared/hooks';
 import { swrAbortableMiddleware } from 'utils';
+import { useLaggyDataWrapper } from './use-laggy-data-wrapper';
 
 type UseRewardsDataLoad = (props: {
   address: string;
@@ -29,8 +28,6 @@ export const useRewardsDataLoad: UseRewardsDataLoad = (props) => {
     skip,
     limit,
   } = props;
-
-  const laggyDataRef = useRef<Backend | undefined>();
 
   const requestOptions = {
     address,
@@ -62,18 +59,7 @@ export const useRewardsDataLoad: UseRewardsDataLoad = (props) => {
     },
   );
 
-  useEffect(() => {
-    if (data !== undefined) {
-      laggyDataRef.current = data;
-    }
-  }, [data]);
+  const { isLagging, dataOrLaggyData } = useLaggyDataWrapper(data);
 
-  // Return to previous data if current data is not defined.
-  const dataOrLaggyData = data === undefined ? laggyDataRef.current : data;
-
-  // Shows previous data.
-  const isLagging =
-    !!address && data === undefined && laggyDataRef.current !== undefined;
-
-  return { ...rest, isLagging, data: dataOrLaggyData };
+  return { ...rest, isLagging: !!address && isLagging, data: dataOrLaggyData };
 };

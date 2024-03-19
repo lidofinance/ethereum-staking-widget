@@ -1,60 +1,24 @@
-import { FC, useCallback, useEffect, useState } from 'react';
-import type { BigNumber as EthersBigNumber } from 'ethers';
-import { constants } from 'ethers';
-
 import { Box, Link } from '@lidofinance/lido-ui';
-import { useSDK, useTokenBalance } from '@lido-sdk/react';
-import { TOKENS, getTokenAddress } from '@lido-sdk/constants';
 
-import { config } from 'config';
-import { stEthEthRequest } from 'features/rewards/fetchers/requesters';
+import { useRewardsHistory } from 'features/rewards/hooks';
 import EthSymbol from 'features/rewards/components/EthSymbol';
 import NumberFormat from 'features/rewards/components/NumberFormat';
-import { Big, BigDecimal } from 'features/rewards/helpers';
-import { ETHER } from 'features/rewards/constants';
-import { STRATEGY_LAZY } from 'consts/swr-strategies';
-import { useMainnetStaticRpcProvider } from 'shared/hooks/use-mainnet-static-rpc-provider';
+import { useStethEthRate } from 'features/rewards/hooks/use-steth-eth-rate';
+import { useRewardsBalanceData } from 'features/rewards/hooks/use-rewards-balance-data';
 
 import { Item } from './Item';
 import { Stat } from './Stat';
 import { Title } from './Title';
-import { StatsProps } from './types';
 
 // TODO: refactoring to style files
-export const Stats: FC<StatsProps> = (props) => {
-  const { address, data, currency, pending } = props;
-
-  const [stEthEth, setStEthEth] = useState<EthersBigNumber>();
-  const { chainId } = useSDK();
-
-  const steth = useTokenBalance(
-    getTokenAddress(chainId, TOKENS.STETH),
-    address,
-    STRATEGY_LAZY,
-  );
-  const mainnetStaticRpcProvider = useMainnetStaticRpcProvider();
-
-  const getStEthEth = useCallback(async () => {
-    if (config.defaultChain !== 1) {
-      setStEthEth(constants.WeiPerEther);
-    } else {
-      const stEthEth = await stEthEthRequest(mainnetStaticRpcProvider);
-
-      setStEthEth(stEthEth);
-    }
-  }, [mainnetStaticRpcProvider]);
-
-  useEffect(() => {
-    void getStEthEth();
-  }, [getStEthEth]);
-
-  const stEthBalanceParsed = steth.data && new Big(steth.data.toString());
-  const stEthCurrencyBalance =
-    steth.data &&
-    data &&
-    new BigDecimal(steth.data.toString()) // Convert to right BN
-      .div(ETHER)
-      .times(data.stETHCurrencyPrice[currency.id]);
+export const Stats: React.FC = () => {
+  const {
+    currencyObject: currency,
+    data,
+    initialLoading: pending,
+  } = useRewardsHistory();
+  const { data: stEthEth } = useStethEthRate();
+  const { data: balanceData } = useRewardsBalanceData();
 
   return (
     <>
@@ -62,14 +26,17 @@ export const Stats: FC<StatsProps> = (props) => {
         <Title mb="8px">stETH balance</Title>
         <Stat data-testid="stEthBalance" mb="6px">
           <EthSymbol />
-          <NumberFormat number={stEthBalanceParsed} pending={pending} />
+          <NumberFormat
+            number={balanceData?.stEthBalanceParsed}
+            pending={pending}
+          />
         </Stat>
         <Title data-testid="stEthBalanceIn$" hideMobile>
           <Box display="inline-block" pr="3px">
             {currency.symbol}
           </Box>
           <NumberFormat
-            number={stEthCurrencyBalance}
+            number={balanceData?.stEthCurrencyBalance}
             currency
             pending={pending}
           />

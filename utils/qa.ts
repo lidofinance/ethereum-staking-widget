@@ -20,3 +20,17 @@ export const overrideWithQAMockNumber = (value: number, key: string) => {
   }
   return value;
 };
+
+export const overrideWithQAMockArray = <TArrayElement>(
+  value: TArrayElement[],
+  key: string,
+): TArrayElement[] => {
+  if (config.enableQaHelpers && typeof window !== 'undefined') {
+    const mock = localStorage.getItem(key);
+    if (mock) {
+      const array = JSON.parse(mock);
+      if (Array.isArray(array)) return array;
+    }
+  }
+  return value;
+};

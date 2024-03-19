@@ -8,7 +8,7 @@ import { LinkArrow } from 'shared/components/link-arrow/link-arrow';
 
 import { Wrap, RpcStatusBox, Button, Text } from './styles';
 
-const IPFS_INFO_URL = 'https://docs.ipfs.tech/concepts/what-is-ipfs/';
+const IPFS_INFO_URL = 'https://docs.lido.fi/ipfs/about';
 
 export const RPCAvailabilityCheckResultBox = () => {
   const { isRPCAvailable, handleClickDismiss } = useIPFSInfoBoxStatuses();
@@ -25,7 +25,7 @@ export const RPCAvailabilityCheckResultBox = () => {
       <Text weight={700} size="xs" color="accentContrast">
         You are currently using the IPFS widget&apos;s version.
       </Text>
-      <LinkArrow href={IPFS_INFO_URL}>IPFS</LinkArrow>
+      <LinkArrow href={IPFS_INFO_URL}>What is IPFS</LinkArrow>
       {isRPCAvailable && (
         <>
           <RpcStatusBox status="success">
