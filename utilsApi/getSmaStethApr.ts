@@ -50,14 +50,9 @@ type SMA_APR_RESPONSE = {
 };
 
 export const getSmaStethApr = async (): Promise<string> => {
-  // TODO: remove after deploy env variables
-  const basePath = secretConfig.ethAPIBasePath
-    ? secretConfig.ethAPIBasePath
-    : 'https://eth-api.lido.fi';
-  const url = `${basePath}/v1/protocol/steth/apr/sma`;
-
+  const url = `${secretConfig.ethAPIBasePath}/v1/protocol/steth/apr/sma`;
   const data = await responseTimeExternalMetricWrapper({
-    payload: basePath,
+    payload: secretConfig.ethAPIBasePath,
     request: () => standardFetcher<SMA_APR_RESPONSE>(url),
   });
 
