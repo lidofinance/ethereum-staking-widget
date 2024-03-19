@@ -72,7 +72,7 @@ export const ClaimFormProvider: FC<PropsWithChildren> = ({ children }) => {
     // for regular updates generate new list but keep user input
     const oldValues = getValues('requests');
     const checkedIds = new Set(
-      oldValues.filter((req) => req.checked).map((req) => req.token_id),
+      oldValues?.filter((req) => req.checked).map((req) => req.token_id),
     );
     const newRequests = generateDefaultValues(
       data,
