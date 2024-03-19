@@ -1,5 +1,4 @@
 import { config } from 'config';
-// TODO: check config.enableQaHelpers
 
 export const overrideWithQAMockBoolean = (value: boolean, key: string) => {
   if (config.enableQaHelpers && typeof window !== 'undefined') {
