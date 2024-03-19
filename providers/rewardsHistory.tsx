@@ -83,7 +83,7 @@ const RewardsHistoryProvider: FC<PropsWithChildren> = (props) => {
   const currencyObject = getCurrency(currency);
 
   const value = useMemo(
-    () => ({
+    (): RewardsHistoryValue => ({
       data,
       error,
       loading,

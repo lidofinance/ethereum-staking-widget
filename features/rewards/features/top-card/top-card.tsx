@@ -11,15 +11,8 @@ const INPUT_DESC_TEXT =
   'Current balance may differ from last balance in the table due to rounding.';
 
 export const TopCard: FC = () => {
-  const {
-    address,
-    isAddressResolving,
-    currencyObject,
-    data,
-    inputValue,
-    setInputValue,
-    initialLoading,
-  } = useRewardsHistory();
+  const { address, isAddressResolving, inputValue, setInputValue } =
+    useRewardsHistory();
 
   return (
     <Block color="accent" style={{ padding: 0 }}>
@@ -35,12 +28,7 @@ export const TopCard: FC = () => {
         </ThemeProvider>
       </InputWrapper>
       <StatsWrapper>
-        <Stats
-          address={address}
-          currency={currencyObject}
-          data={data}
-          pending={initialLoading}
-        />
+        <Stats />
       </StatsWrapper>
     </Block>
   );

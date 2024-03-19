@@ -49,6 +49,7 @@ export const enum MATOMO_CLICK_EVENTS_TYPES {
   withdrawalOtherFactorsTooltipMode = 'withdrawalOtherFactorsTooltipMode',
   withdrawalFAQtooltipEthAmount = 'withdrawalFAQtooltipEthAmount',
   withdrawalGoTo1inch = 'withdrawalGoTo1inch',
+  withdrawalGoToBebop = 'withdrawalGoToBebop',
   withdrawalGoToCowSwap = 'withdrawalGoToCowSwap',
   withdrawalGoToParaswap = 'withdrawalGoToParaswap',
   withdrawalGoToOpenOcean = 'withdrawalGoToOpenOcean',
@@ -277,6 +278,11 @@ export const MATOMO_CLICK_EVENTS: Record<
   [MATOMO_CLICK_EVENTS_TYPES.withdrawalGoTo1inch]: [
     'Ethereum_Withdrawals_Widget',
     'Click on «Go to 1inch» in aggregators list on Request tab',
+    'eth_withdrawals_request_go_to_1inch',
+  ],
+  [MATOMO_CLICK_EVENTS_TYPES.withdrawalGoToBebop]: [
+    'Ethereum_Withdrawals_Widget',
+    'Click on «Go to Bebop» in aggregators list on Request tab',
     'eth_withdrawals_request_go_to_1inch',
   ],
   [MATOMO_CLICK_EVENTS_TYPES.withdrawalGoToCowSwap]: [
