@@ -1,50 +1,28 @@
 import { useEffect, useState } from 'react';
+import { useLidoSWR } from '@lido-sdk/react';
 import { useWeb3 } from 'reef-knot/web3-react';
 import { useForceDisconnect } from 'reef-knot/core-react';
-import { useLidoSWR } from '@lido-sdk/react';
 
+import buildInfo from 'build-info.json';
 import { config } from 'config';
 import { useUserConfig } from 'config/user-config';
-import { useMainnetStaticRpcProvider } from 'shared/hooks/use-mainnet-static-rpc-provider';
-import { standardFetcher } from 'utils/standardFetcher';
-import { STRATEGY_IMMUTABLE, STRATEGY_LAZY } from 'consts/swr-strategies';
+import { STRATEGY_IMMUTABLE } from 'consts/swr-strategies';
 import { overrideWithQAMockBoolean } from 'utils/qa';
 
 import { isVersionLess } from './utils';
-
-import buildInfo from 'build-info.json';
+import { useRemoteVersion } from './use-remote-version';
 
 export const NO_SAFE_VERSION = 'NONE_AVAILABLE';
-
-type EnsHashCheckReturn = {
-  cid: string;
-  ens?: string;
-  leastSafeVersion?: string;
-  link: string;
-} | null;
-
-type ReleaseInfoData = Record<string, ReleaseInfo>;
-
-type ReleaseInfo = {
-  cid?: string;
-  ens?: string;
-  leastSafeVersion?: string;
-};
 
 // works with any type of IPFS hash
 const URL_CID_REGEX =
   /[/.](?<cid>Qm[1-9A-HJ-NP-Za-km-z]{44,}|b[A-Za-z2-7]{58,}|B[A-Z2-7]{58,}|z[1-9A-HJ-NP-Za-km-z]{48,}|F[0-9A-F]{50,})([./#?]|$)/;
-
-// for dev and local testing you can set to '/runtime/IPFS.json' and have file at /public/runtime/
-const IPFS_RELEASE_URL =
-  'https://raw.githubusercontent.com/lidofinance/ethereum-staking-widget/main/IPFS.json';
 
 export const useVersionCheck = () => {
   const { active } = useWeb3();
   const { setIsWalletConnectionAllowed } = useUserConfig();
   const { forceDisconnect } = useForceDisconnect();
   const [areConditionsAccepted, setConditionsAccepted] = useState(false);
-  const provider = useMainnetStaticRpcProvider();
 
   // local cid extraction
   const currentCidSWR = useLidoSWR(
@@ -64,43 +42,7 @@ export const useVersionCheck = () => {
   );
 
   // ens cid extraction
-  const remoteVersionSWR = useLidoSWR<EnsHashCheckReturn>(
-    ['swr:ipfs-hash-check'],
-    async (): Promise<EnsHashCheckReturn> => {
-      const releaseInfoData = await standardFetcher<ReleaseInfoData>(
-        IPFS_RELEASE_URL,
-        {
-          headers: { Accept: 'application/json' },
-        },
-      );
-
-      const releaseInfo = releaseInfoData[config.defaultChain.toString()];
-      if (releaseInfo?.ens) {
-        const resolver = await provider.getResolver(releaseInfo.ens);
-        if (resolver) {
-          const contentHash = await resolver.getContentHash();
-          if (contentHash) {
-            return {
-              cid: contentHash,
-              ens: releaseInfo.ens,
-              link: `https://${releaseInfo.ens}.limo`,
-              leastSafeVersion: releaseInfo.leastSafeVersion,
-            };
-          }
-        }
-      }
-      if (releaseInfo?.cid) {
-        return {
-          cid: releaseInfo.cid,
-          link: `https://${releaseInfo.cid}.ipfs.cf-ipfs.com`,
-          leastSafeVersion: releaseInfo.leastSafeVersion,
-        };
-      }
-
-      throw new Error('invalid IPFS manifest content');
-    },
-    { ...STRATEGY_LAZY },
-  );
+  const remoteVersionSWR = useRemoteVersion();
 
   const isUpdateAvailable = overrideWithQAMockBoolean(
     Boolean(

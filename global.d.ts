@@ -3,6 +3,19 @@ interface Window {
   _paq: undefined | [string, ...unknown[]][];
 }
 
+declare module '*.svg' {
+  /**
+   * Use `any` to avoid conflicts with
+   * `@svgr/webpack` plugin or
+   * `babel-plugin-inline-react-svg` plugin.
+   */
+  const content: any;
+  export const ReactComponent: React.FunctionComponent<
+    React.ComponentProps<'svg'>
+  >;
+  export default content;
+}
+
 declare module 'next/config' {
   type ConfigTypes = () => {
     // some properties may be confusing, but that's okay - "serverRuntimeConfig" accepts "process.env" without modification and/or validation.

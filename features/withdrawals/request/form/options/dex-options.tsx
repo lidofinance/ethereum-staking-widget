@@ -14,8 +14,6 @@ import {
   DexOptionLoader,
   DexWarning,
 } from './styles';
-
-// @ts-expect-error https://www.npmjs.com/package/@svgr/webpack
 import { ReactComponent as AttentionTriangle } from 'assets/icons/attention-triangle.svg';
 
 type DexOptionProps = {
