@@ -15,7 +15,7 @@ type L2BannerProps = {
   buttonText: React.ReactNode;
   buttonHref?: string;
   isLocalLink?: boolean;
-  testidWrap?: string;
+  testId?: string;
   testidButton?: string;
   onClickButton?: () => void;
 };
@@ -28,7 +28,7 @@ export const L2Banner = ({
   buttonText,
   buttonHref = L2_DISCOVERY_LINK,
   isLocalLink,
-  testidWrap,
+  testId,
   testidButton,
   onClickButton,
 }: L2BannerProps) => {
@@ -51,7 +51,7 @@ export const L2Banner = ({
   );
 
   return (
-    <Wrapper data-testid={testidWrap}>
+    <Wrapper data-testid={testId}>
       {title && <TextHeader>{title}</TextHeader>}
       <TextWrap>{text}</TextWrap>
       <FooterWrap>
