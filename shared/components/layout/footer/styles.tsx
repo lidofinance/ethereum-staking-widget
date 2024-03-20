@@ -46,13 +46,18 @@ export const FooterLink = styled(Link)<FooterLinkProps>`
     &:hover {
       color: var(--lido-color-text);
       opacity: 1;
+      svg {
+        path {
+          fill: var(--lido-color-text);
+        }
+      }
     }
   }
 
-  :hover {
+  &:hover {
     svg {
       path {
-        fill: var(--lido-color-text);
+        color: var(--lido-color-primaryHover);
       }
     }
   }
