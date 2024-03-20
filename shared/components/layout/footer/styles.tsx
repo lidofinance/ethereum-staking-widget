@@ -1,8 +1,11 @@
 import styled from 'styled-components';
-
 import { Container, Link } from '@lidofinance/lido-ui';
+
 import { LogoLido } from 'shared/components/logos/logos';
 import { NAV_MOBILE_MEDIA } from 'styles/constants';
+
+import { ReactComponent as ExternalLinkIcon } from 'assets/icons/external-link-icon.svg';
+import React from 'react';
 
 export const FooterStyle = styled(Container)`
   position: relative;
@@ -23,7 +26,11 @@ export const FooterStyle = styled(Container)`
   }
 `;
 
-export const FooterLink = styled(Link)`
+type FooterLinkProps = {
+  $marginRight?: string;
+};
+
+export const FooterLink = styled(Link)<FooterLinkProps>`
   display: flex;
   align-items: center;
   line-height: 20px;
@@ -32,11 +39,21 @@ export const FooterLink = styled(Link)`
   font-size: ${({ theme }) => theme.fontSizesMap.xxs}px;
   font-weight: 400;
 
+  ${({ $marginRight }) => ($marginRight ? `margin-right:${$marginRight}` : '')};
+
   &:visited {
     color: var(--lido-color-textSecondary);
     &:hover {
       color: var(--lido-color-text);
       opacity: 1;
+    }
+  }
+
+  :hover {
+    svg {
+      path {
+        fill: var(--lido-color-text);
+      }
     }
   }
 `;
@@ -66,8 +83,32 @@ export const FooterDivider = styled.div`
 `;
 
 export const Version = styled(FooterLink)`
-  margin-left: auto;
+  margin-left: 20px;
   padding: 2px 5px;
   border-radius: ${({ theme }) => theme.borderRadiusesMap.xs}px;
   background: rgba(122, 138, 160, 0.1);
 `;
+
+export const ExternalLinkIconFooter = styled(ExternalLinkIcon).attrs({
+  width: 10,
+  height: 10,
+  viewBox: '0 0 12 12',
+})`
+  padding: 5px;
+  width: 20px;
+  height: 20px;
+  box-sizing: border-box;
+  path {
+    fill: var(--lido-color-textSecondary);
+  }
+`;
+
+export const ExternalLink = ({
+  children,
+  ...props
+}: React.ComponentProps<typeof FooterLink>) => (
+  <FooterLink target="_blank" rel="noopener noreferrer" {...props}>
+    {children}
+    <ExternalLinkIconFooter />
+  </FooterLink>
+);
