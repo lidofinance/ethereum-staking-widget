@@ -1,4 +1,4 @@
-import { WRAP_PATH, WRAP_UNWRAP_PATH } from 'config/urls';
+import { WRAP_PATH, WRAP_UNWRAP_PATH } from 'consts/urls';
 import { Wallet } from 'features/wsteth/shared/wallet';
 import { WrapForm } from 'features/wsteth/wrap/wrap-form/wrap-form';
 import { Switch } from 'shared/components/switch';

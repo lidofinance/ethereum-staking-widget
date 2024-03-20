@@ -1,6 +1,6 @@
 import { FC, memo, PropsWithChildren, ReactNode } from 'react';
 import { DataTableRow } from '@lidofinance/lido-ui';
-import { DATA_UNAVAILABLE } from 'config';
+import { DATA_UNAVAILABLE } from 'consts/text';
 
 type LidoStatsItemProps = {
   show: boolean;

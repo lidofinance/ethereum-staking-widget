@@ -1,10 +1,11 @@
 import { useMemo } from 'react';
 import { useSDK, useLidoSWR } from '@lido-sdk/react';
 
-import { DATA_UNAVAILABLE, dynamics } from 'config';
+import { config } from 'config';
+import { DATA_UNAVAILABLE } from 'consts/text';
+import { STRATEGY_LAZY } from 'consts/swr-strategies';
 import { prependBasePath } from 'utils';
 import { standardFetcher } from 'utils/standardFetcher';
-import { STRATEGY_LAZY } from 'utils/swrStrategies';
 
 export type ResponseData = {
   uniqueAnytimeHolders: string;
@@ -24,8 +25,8 @@ export const useLidoStats = (): {
   const { chainId } = useSDK();
   const apiShortLidoStatsPath = `api/short-lido-stats?chainId=${chainId}`;
   const lidoStats = useLidoSWR<ResponseData>(
-    dynamics.ipfsMode
-      ? `${dynamics.widgetApiBasePathForIpfs}/${apiShortLidoStatsPath}`
+    config.ipfsMode
+      ? `${config.widgetApiBasePathForIpfs}/${apiShortLidoStatsPath}`
       : prependBasePath(apiShortLidoStatsPath),
     standardFetcher,
     STRATEGY_LAZY,

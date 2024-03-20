@@ -1,5 +1,5 @@
 import { expect, Locator, Page } from '@playwright/test';
-import { HOME_PATH } from 'config/urls';
+import { HOME_PATH } from 'consts/urls';
 
 export class WidgetPage {
   readonly page: Page;

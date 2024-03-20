@@ -1,5 +1,5 @@
 import { useEthereumSWR } from '@lido-sdk/react';
-import { STRATEGY_IMMUTABLE } from 'utils/swrStrategies';
+import { STRATEGY_IMMUTABLE } from 'consts/swr-strategies';
 
 export const useIsContract = (
   account?: string | null,

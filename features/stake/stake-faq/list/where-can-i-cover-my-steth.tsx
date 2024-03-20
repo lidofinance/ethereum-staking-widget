@@ -1,6 +1,6 @@
 import { FC } from 'react';
 import { Accordion, Link } from '@lidofinance/lido-ui';
-import { MATOMO_CLICK_EVENTS_TYPES } from 'config';
+import { MATOMO_CLICK_EVENTS_TYPES } from 'consts/matomo-click-events';
 
 export const WhereCanICoverMySteth: FC = () => {
   return (

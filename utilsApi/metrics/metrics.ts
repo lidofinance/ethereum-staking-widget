@@ -1,7 +1,10 @@
 import { collectDefaultMetrics, Registry } from 'prom-client';
-import { dynamics, METRICS_PREFIX } from 'config';
-import buildInfoJson from 'build-info.json';
 import { collectStartupMetrics } from '@lidofinance/api-metrics';
+
+import { config } from 'config';
+import { METRICS_PREFIX } from 'consts/metrics';
+import buildInfoJson from 'build-info.json';
+
 import { RequestMetrics } from './request';
 import { SubgraphMetrics } from './subgraph';
 
@@ -21,8 +24,10 @@ class Metrics {
     collectStartupMetrics({
       prefix: METRICS_PREFIX,
       registry: this.registry,
-      defaultChain: `${dynamics.defaultChain}`,
-      supportedChains: dynamics.supportedChains.map((chain) => `${chain}`),
+      defaultChain: `${config.defaultChain}`,
+      supportedChains: config.supportedChains.map(
+        (chain: number) => `${chain}`,
+      ),
       version: buildInfoJson.version,
       commit: buildInfoJson.commit,
       branch: buildInfoJson.branch,

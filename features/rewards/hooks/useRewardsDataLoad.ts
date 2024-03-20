@@ -1,5 +1,5 @@
+import { config } from 'config';
 import { Backend } from 'features/rewards/types';
-import { dynamics } from 'config';
 import { useLidoSWR } from 'shared/hooks';
 import { swrAbortableMiddleware } from 'utils';
 import { useLaggyDataWrapper } from './use-laggy-data-wrapper';
@@ -44,8 +44,8 @@ export const useRewardsDataLoad: UseRewardsDataLoad = (props) => {
   );
 
   let apiRewardsUrl;
-  if (dynamics.ipfsMode) {
-    apiRewardsUrl = `${dynamics.rewardsBackendBasePath}?${params.toString()}`;
+  if (config.ipfsMode) {
+    apiRewardsUrl = `${config.rewardsBackendBasePath}?${params.toString()}`;
   } else {
     apiRewardsUrl = `/api/rewards?${params.toString()}`;
   }

@@ -1,11 +1,12 @@
 import { useMemo } from 'react';
 import { useSDK, useTokenBalance } from '@lido-sdk/react';
+import { TOKENS, getTokenAddress } from '@lido-sdk/constants';
+
+import { STRATEGY_LAZY } from 'consts/swr-strategies';
+import { ETHER } from 'features/rewards/constants';
+
 import { useRewardsHistory } from './useRewardsHistory';
 import { useLaggyDataWrapper } from './use-laggy-data-wrapper';
-
-import { ETHER } from 'features/rewards/constants';
-import { TOKENS, getTokenAddress } from '@lido-sdk/constants';
-import { STRATEGY_LAZY } from 'utils/swrStrategies';
 import { Big, BigDecimal } from '../helpers';
 
 export const useRewardsBalanceData = () => {

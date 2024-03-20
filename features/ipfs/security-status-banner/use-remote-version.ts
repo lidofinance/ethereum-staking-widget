@@ -1,8 +1,8 @@
 import { useLidoSWR } from '@lido-sdk/react';
-import { dynamics } from 'config';
+import { config } from 'config';
+import { STRATEGY_LAZY } from 'consts/swr-strategies';
 import { useMainnetStaticRpcProvider } from 'shared/hooks/use-mainnet-static-rpc-provider';
 import { standardFetcher } from 'utils/standardFetcher';
-import { STRATEGY_LAZY } from 'utils/swrStrategies';
 
 type EnsHashCheckReturn = {
   cid: string;
@@ -36,7 +36,7 @@ export const useRemoteVersion = () => {
         },
       );
 
-      const releaseInfo = releaseInfoData[dynamics.defaultChain.toString()];
+      const releaseInfo = releaseInfoData[config.defaultChain.toString()];
       if (releaseInfo?.ens) {
         const resolver = await provider.getResolver(releaseInfo.ens);
         if (resolver) {

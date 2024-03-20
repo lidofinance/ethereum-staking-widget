@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { useRouter } from 'next/router';
-import { dynamics } from 'config';
+
+import { config } from 'config';
 import {
   compareWithRouterPathInIPFS,
   compareWithRouterPathInInfra,
@@ -11,7 +12,7 @@ export const useCompareWithRouterPath = (href: string) => {
 
   return useMemo(
     () =>
-      dynamics.ipfsMode
+      config.ipfsMode
         ? compareWithRouterPathInIPFS(router.asPath, href)
         : compareWithRouterPathInInfra(router.asPath, href),
     [router.asPath, href],

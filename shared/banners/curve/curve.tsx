@@ -1,7 +1,9 @@
 import { FC } from 'react';
 import { Button, InlineLoader } from '@lidofinance/lido-ui';
 import { trackEvent } from '@lidofinance/analytics-matomo';
-import { MATOMO_CLICK_EVENTS, DATA_UNAVAILABLE } from 'config';
+
+import { DATA_UNAVAILABLE } from 'consts/text';
+import { MATOMO_CLICK_EVENTS } from 'consts/matomo-click-events';
 import { Banner } from 'shared/components';
 
 import { useCurve } from './useCurve';

@@ -1,9 +1,7 @@
-import { dynamics } from 'config';
-
-export const enableQaHelpers = dynamics.enableQaHelpers;
+import { config } from 'config';
 
 export const overrideWithQAMockBoolean = (value: boolean, key: string) => {
-  if (enableQaHelpers && typeof window !== 'undefined') {
+  if (config.enableQaHelpers && typeof window !== 'undefined') {
     const mock = localStorage.getItem(key);
     if (mock) {
       return mock === 'true';
@@ -13,7 +11,7 @@ export const overrideWithQAMockBoolean = (value: boolean, key: string) => {
 };
 
 export const overrideWithQAMockNumber = (value: number, key: string) => {
-  if (enableQaHelpers && typeof window !== 'undefined') {
+  if (config.enableQaHelpers && typeof window !== 'undefined') {
     const mock = localStorage.getItem(key);
     if (mock && !isNaN(Number(mock))) {
       return Number(mock);
@@ -26,7 +24,7 @@ export const overrideWithQAMockArray = <TArrayElement>(
   value: TArrayElement[],
   key: string,
 ): TArrayElement[] => {
-  if (enableQaHelpers && typeof window !== 'undefined') {
+  if (config.enableQaHelpers && typeof window !== 'undefined') {
     const mock = localStorage.getItem(key);
     if (mock) {
       const array = JSON.parse(mock);

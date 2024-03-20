@@ -1,15 +1,12 @@
+import ms from 'ms';
 import { Cache } from 'memory-cache';
+
+import { config, secretConfig } from 'config';
+import { SubgraphChains } from 'types';
 import Metrics from 'utilsApi/metrics';
 import { standardFetcher } from 'utils/standardFetcher';
-import { SubgraphChains } from 'types';
+
 import { getSubgraphUrl } from './getSubgraphUrl';
-import {
-  CACHE_LIDO_HOLDERS_VIA_SUBGRAPHS_KEY,
-  CACHE_LIDO_HOLDERS_VIA_SUBGRAPHS_TTL,
-} from 'config';
-import getConfig from 'next/config';
-import ms from 'ms';
-const { serverRuntimeConfig } = getConfig();
 
 const SUBGRAPH_ERROR_MESSAGE =
   '[getLidoHoldersViaSubgraphs] Subgraph request failed.';
@@ -32,7 +29,7 @@ type GetLidoHoldersViaSubgraphs = (
 export const getLidoHoldersViaSubgraphs: GetLidoHoldersViaSubgraphs = async (
   chainId: SubgraphChains,
 ) => {
-  const cacheKey = `${CACHE_LIDO_HOLDERS_VIA_SUBGRAPHS_KEY}_${chainId}`;
+  const cacheKey = `${config.CACHE_LIDO_HOLDERS_VIA_SUBGRAPHS_KEY}_${chainId}`;
 
   console.debug('[getLidoHoldersViaSubgraphs] Started fetching... ');
   const query = `
@@ -46,7 +43,7 @@ export const getLidoHoldersViaSubgraphs: GetLidoHoldersViaSubgraphs = async (
 
   const controller = new AbortController();
 
-  const TIMEOUT = +serverRuntimeConfig.subgraphRequestTimeout || ms('5s');
+  const TIMEOUT = +secretConfig.subgraphRequestTimeout || ms('5s');
   const timeoutId = setTimeout(() => controller.abort(), TIMEOUT);
 
   const params = {
@@ -71,7 +68,11 @@ export const getLidoHoldersViaSubgraphs: GetLidoHoldersViaSubgraphs = async (
 
     console.debug('[getLidoHoldersViaSubgraphs] Lido holders:', responseJsoned);
 
-    cache.put(cacheKey, responseJsoned, CACHE_LIDO_HOLDERS_VIA_SUBGRAPHS_TTL);
+    cache.put(
+      cacheKey,
+      responseJsoned,
+      config.CACHE_LIDO_HOLDERS_VIA_SUBGRAPHS_TTL,
+    );
 
     return responseJsoned;
   } catch (error) {

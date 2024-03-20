@@ -1,3 +1,6 @@
+import { utils } from 'ethers';
+import { invert, isNull, memoize, omitBy } from 'lodash';
+
 import {
   CHAINS,
   TOKENS,
@@ -10,13 +13,13 @@ import {
   WithdrawalQueueAbiFactory,
   WstethAbiFactory,
 } from '@lido-sdk/contracts';
-import { dynamics, getAggregatorStEthUsdPriceFeedAddress } from 'config';
-import { utils } from 'ethers';
+
+import { config } from 'config';
+import { getAggregatorStEthUsdPriceFeedAddress } from 'consts/aggregator';
 import {
   AggregatorAbi__factory,
   AggregatorEthUsdPriceFeedAbi__factory,
 } from 'generated';
-import { invert, isNull, memoize, omitBy } from 'lodash';
 
 export const CONTRACT_NAMES = {
   stETH: 'stETH',
@@ -57,7 +60,7 @@ const getAddressOrNull = <
 };
 
 export const METRIC_CONTRACT_ADDRESSES = (
-  dynamics.supportedChains as CHAINS[]
+  config.supportedChains as CHAINS[]
 ).reduce(
   (mapped, chainId) => {
     const map = {

@@ -4,40 +4,11 @@ import generateBuildId from './scripts/generate-build-id.mjs';
 
 buildDynamics();
 
-const ipfsMode = process.env.IPFS_MODE == 'true';
-
 // https://nextjs.org/docs/pages/api-reference/next-config-js/basePath
 const basePath = process.env.BASE_PATH;
 
-const rpcUrls_1 = process.env.EL_RPC_URLS_1?.split(',') ?? [];
-const rpcUrls_5 = process.env.EL_RPC_URLS_5?.split(',') ?? [];
-const rpcUrls_17000 = process.env.EL_RPC_URLS_17000?.split(',') ?? [];
-
-const ethAPIBasePath = process.env.ETH_API_BASE_PATH;
-
-const ethplorerApiKey = process.env.ETHPLORER_API_KEY;
-const oneInchApiKey = process.env.ONE_INCH_API_KEY;
-
-const cspTrustedHosts = process.env.CSP_TRUSTED_HOSTS;
-const cspReportOnly = process.env.CSP_REPORT_ONLY;
-const cspReportUri = process.env.CSP_REPORT_URI;
-
-const subgraphMainnet = process.env.SUBGRAPH_MAINNET;
-const subgraphGoerli = process.env.SUBGRAPH_GOERLI;
-const subgraphHolesky = process.env.SUBGRAPH_HOLESKY;
-
-const subgraphRequestTimeout = process.env.SUBGRAPH_REQUEST_TIMEOUT;
-
-const analyzeBundle = process.env.ANALYZE_BUNDLE ?? false;
-
-// rate limit
-const rateLimit = process.env.RATE_LIMIT || 100;
-const rateLimitTimeFrame = process.env.RATE_LIMIT_TIME_FRAME || 60; // 1 minute;
-
-const rewardsBackendAPI = process.env.REWARDS_BACKEND;
-const defaultChain = process.env.DEFAULT_CHAIN;
-
 const developmentMode = process.env.NODE_ENV === 'development';
+const isIPFSMode = process.env.IPFS_MODE;
 
 // cache control
 export const CACHE_CONTROL_HEADER = 'x-cache-control';
@@ -57,7 +28,7 @@ export const CACHE_CONTROL_VALUE =
   'public, max-age=15, s-max-age=30, stale-if-error=604800, stale-while-revalidate=172800';
 
 const withBundleAnalyzer = NextBundleAnalyzer({
-  enabled: analyzeBundle,
+  enabled: process.env.ANALYZE_BUNDLE ?? false,
 });
 
 export default withBundleAnalyzer({
@@ -66,12 +37,12 @@ export default withBundleAnalyzer({
 
   // IPFS next.js configuration reference:
   // https://github.com/Velenir/nextjs-ipfs-example
-  trailingSlash: !!ipfsMode,
-  assetPrefix: ipfsMode ? './' : undefined,
+  trailingSlash: !!isIPFSMode,
+  assetPrefix: isIPFSMode ? './' : undefined,
 
   // IPFS version has hash-based routing,
   // so we provide only index.html in ipfs version
-  exportPathMap: ipfsMode ? () => ({ '/': { page: '/' } }) : undefined,
+  exportPathMap: isIPFSMode ? () => ({ '/': { page: '/' } }) : undefined,
 
   eslint: {
     ignoreDuringBuilds: true,
@@ -109,7 +80,7 @@ export default withBundleAnalyzer({
             loader: 'webpack-preprocessor-loader',
             options: {
               params: {
-                IPFS_MODE: ipfsMode,
+                IPFS_MODE: isIPFSMode,
               },
             },
           },
@@ -163,25 +134,40 @@ export default withBundleAnalyzer({
       permanent: false,
     },
   ],
+
+  // ATTENTION: If you add a new variable you should declare it in `global.d.ts`
   serverRuntimeConfig: {
+    // https://nextjs.org/docs/pages/api-reference/next-config-js/basePath
     basePath,
-    rpcUrls_1,
-    rpcUrls_5,
-    rpcUrls_17000,
-    ethplorerApiKey,
-    oneInchApiKey,
-    cspTrustedHosts,
-    cspReportOnly,
-    cspReportUri,
-    subgraphMainnet,
-    subgraphGoerli,
-    subgraphHolesky,
-    subgraphRequestTimeout,
-    rateLimit,
-    rateLimitTimeFrame,
-    ethAPIBasePath,
-    rewardsBackendAPI,
-    defaultChain,
+    developmentMode,
+
+    defaultChain: process.env.DEFAULT_CHAIN,
+    rpcUrls_1: process.env.EL_RPC_URLS_1,
+    rpcUrls_5: process.env.EL_RPC_URLS_5,
+    rpcUrls_17000: process.env.EL_RPC_URLS_17000,
+    ethplorerApiKey: process.env.ETHPLORER_API_KEY,
+
+    oneInchApiKey: process.env.ONE_INCH_API_KEY,
+
+    cspTrustedHosts: process.env.CSP_TRUSTED_HOSTS,
+    cspReportUri: process.env.CSP_REPORT_URI,
+    cspReportOnly: process.env.CSP_REPORT_ONLY,
+
+    subgraphMainnet: process.env.SUBGRAPH_MAINNET,
+    subgraphGoerli: process.env.SUBGRAPH_GOERLI,
+    subgraphHolesky: process.env.SUBGRAPH_HOLESKY,
+    subgraphRequestTimeout: process.env.SUBGRAPH_REQUEST_TIMEOUT,
+
+    rateLimit: process.env.RATE_LIMIT,
+    rateLimitTimeFrame: process.env.RATE_LIMIT_TIME_FRAME,
+
+    ethAPIBasePath: process.env.ETH_API_BASE_PATH,
+    rewardsBackendAPI: process.env.REWARDS_BACKEND,
+  },
+
+  // ATTENTION: If you add a new variable you should declare it in `global.d.ts`
+  publicRuntimeConfig: {
+    basePath,
     developmentMode,
   },
 });

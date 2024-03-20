@@ -1,14 +1,14 @@
 import { memo, FC } from 'react';
 
-import { L2Wsteth } from 'shared/banners/l2-banners/l2-wsteth';
+import { MATOMO_CLICK_EVENTS } from 'consts/matomo-click-events';
 import { InputWrap, WrapBlock } from 'features/wsteth/shared/styles';
+import { L2Wsteth } from 'shared/banners/l2-banners/l2-wsteth';
+import { FormController } from 'shared/hook-form/form-controller/form-controller';
 
 import { UnwrapStats } from './unwrap-stats';
 import { UnwrapFormProvider } from '../unwrap-form-context';
-import { FormController } from 'shared/hook-form/form-controller/form-controller';
 import { TokenAmountInputUnwrap } from '../unwrap-form-controls/amount-input-unwrap';
 import { SubmitButtonUnwrap } from '../unwrap-form-controls/submit-button-unwrap';
-import { MATOMO_CLICK_EVENTS } from 'config';
 
 export const UnwrapForm: FC = memo(() => {
   return (

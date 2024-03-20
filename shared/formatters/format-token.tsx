@@ -1,8 +1,9 @@
-import { FormatBalanceArgs, useFormattedBalance } from 'utils';
 import { BigNumber } from '@ethersproject/bignumber';
-import { Component } from 'types';
 import { Tooltip } from '@lidofinance/lido-ui';
-import { DATA_UNAVAILABLE } from 'config';
+
+import { DATA_UNAVAILABLE } from 'consts/text';
+import { Component } from 'types';
+import { FormatBalanceArgs, useFormattedBalance } from 'utils';
 
 export type FormatTokenProps = FormatBalanceArgs & {
   symbol: string;

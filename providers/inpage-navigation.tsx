@@ -9,8 +9,9 @@ import {
   useEffect,
 } from 'react';
 import invariant from 'tiny-invariant';
-import { dynamics } from 'config';
 import { useRouter } from 'next/router';
+
+import { config } from 'config';
 
 export type InpageNavigationContextValue = {
   hashNav: string;
@@ -31,7 +32,7 @@ export const InpageNavigationProvider: FC<PropsWithChildren> = ({
   const [hashNav, setHash] = useState('');
 
   useEffect(() => {
-    if (dynamics.ipfsMode) return; // Hash is reserved in ipfs mode, ignored here
+    if (config.ipfsMode) return; // Hash is reserved in ipfs mode, ignored here
     const hash = asPath.split('#')[1];
     setHash(hash);
   }, [asPath]);
@@ -53,7 +54,7 @@ export const InpageNavigationProvider: FC<PropsWithChildren> = ({
 
       // Change the hash for non-ipfs ui, without scrolling the page
       // We have done animated scroll already on next step
-      if (!dynamics.ipfsMode) {
+      if (!config.ipfsMode) {
         history.pushState({}, '', `#${hash}`);
       }
     },
@@ -62,7 +63,7 @@ export const InpageNavigationProvider: FC<PropsWithChildren> = ({
 
   const resetInpageAnchor = useCallback(() => {
     setHash('');
-    if (!dynamics.ipfsMode) {
+    if (!config.ipfsMode) {
       const hashTrimmed = asPath.split('#')[0];
       history.pushState({}, '', hashTrimmed);
     }

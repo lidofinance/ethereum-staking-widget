@@ -1,7 +1,7 @@
-import { TOKENS } from '@lido-sdk/constants';
 import { BigNumber } from 'ethers';
+import { TOKENS } from '@lido-sdk/constants';
+import { config } from 'config';
 import { standardFetcher } from './standardFetcher';
-import { dynamics } from 'config';
 import { prependBasePath } from './prependBasePath';
 
 type GetOneInchRateParams = {
@@ -20,8 +20,8 @@ export const getOneInchRate = async ({
     rate: number;
     toReceive: string;
   }>(
-    dynamics.ipfsMode
-      ? `${dynamics.widgetApiBasePathForIpfs}/${apiOneInchRatePath}`
+    config.ipfsMode
+      ? `${config.widgetApiBasePathForIpfs}/${apiOneInchRatePath}`
       : prependBasePath(apiOneInchRatePath),
   );
   return {

@@ -1,6 +1,9 @@
 import { Cache } from 'memory-cache';
 import { wrapRequest as wrapNextRequest } from '@lidofinance/next-api-wrapper';
-import { CACHE_ETH_APR_KEY, CACHE_ETH_APR_TTL, API_ROUTES } from 'config';
+
+import { API } from 'types';
+import { config } from 'config';
+import { API_ROUTES } from 'consts/api';
 import {
   getEthApr,
   errorAndCacheDefaultWrappers,
@@ -8,21 +11,20 @@ import {
   rateLimit,
 } from 'utilsApi';
 import Metrics from 'utilsApi/metrics';
-import { API } from 'types';
 
-const cache = new Cache<typeof CACHE_ETH_APR_KEY, string>();
+const cache = new Cache<typeof config.CACHE_ETH_APR_KEY, string>();
 
 // Proxy for third-party API.
 // Returns eth annual percentage rate
 // TODO: delete after viewing grafana
 const ethApr: API = async (_, res) => {
-  const cachedEthApr = cache.get(CACHE_ETH_APR_KEY);
+  const cachedEthApr = cache.get(config.CACHE_ETH_APR_KEY);
 
   if (cachedEthApr) {
     res.json(cachedEthApr);
   } else {
     const ethApr = await getEthApr();
-    cache.put(CACHE_ETH_APR_KEY, ethApr, CACHE_ETH_APR_TTL);
+    cache.put(config.CACHE_ETH_APR_KEY, ethApr, config.CACHE_ETH_APR_TTL);
 
     res.json(ethApr);
   }

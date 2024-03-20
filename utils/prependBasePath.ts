@@ -1,8 +1,5 @@
-import getConfig from 'next/config';
-
-const { serverRuntimeConfig } = getConfig();
-const { basePath } = serverRuntimeConfig;
+import { config } from 'config';
 
 export const prependBasePath = (route: string): string => {
-  return `${basePath ?? ''}/${route}`;
+  return `${config.basePath ?? ''}/${route}`;
 };

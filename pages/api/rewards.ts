@@ -1,8 +1,11 @@
-import getConfig from 'next/config';
 import {
   wrapRequest as wrapNextRequest,
   cacheControl,
 } from '@lidofinance/next-api-wrapper';
+
+import { config, secretConfig } from 'config';
+import { API_ROUTES } from 'consts/api';
+import { API } from 'types';
 import {
   defaultErrorHandler,
   responseTimeMetric,
@@ -13,12 +16,7 @@ import {
   cors,
 } from 'utilsApi';
 import Metrics from 'utilsApi/metrics';
-import { CACHE_REWARDS_HEADERS, API_ROUTES } from 'config';
-import { API } from 'types';
 import { standardFetcher } from 'utils/standardFetcher';
-
-const { serverRuntimeConfig } = getConfig();
-const { rewardsBackendAPI } = serverRuntimeConfig;
 
 const TIMEOUT = 10_000;
 
@@ -40,15 +38,18 @@ const rewards: API = async (req, res) => {
   );
 
   const result = await responseTimeExternalMetricWrapper({
-    payload: rewardsBackendAPI,
+    payload: secretConfig.rewardsBackendAPI,
     request: () =>
-      standardFetcher(`${rewardsBackendAPI}/?${params.toString()}`, {
-        headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json',
+      standardFetcher(
+        `${secretConfig.rewardsBackendAPI}/?${params.toString()}`,
+        {
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+          },
+          signal: controller.signal,
         },
-        signal: controller.signal,
-      }),
+      ),
   });
 
   res.status(200).json(result);
@@ -61,6 +62,6 @@ export default wrapNextRequest([
   cors({ origin: ['*'], methods: [HttpMethod.GET] }),
   rateLimit,
   responseTimeMetric(Metrics.request.apiTimings, API_ROUTES.REWARDS),
-  cacheControl({ headers: CACHE_REWARDS_HEADERS }),
+  cacheControl({ headers: config.CACHE_REWARDS_HEADERS }),
   defaultErrorHandler,
 ])(rewards);

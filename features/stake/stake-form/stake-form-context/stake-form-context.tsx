@@ -9,33 +9,36 @@ import {
   useCallback,
 } from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
+import { useRouter } from 'next/router';
+
 import { useEthereumBalance, useSTETHBalance } from '@lido-sdk/react';
 import { parseEther } from '@ethersproject/units';
-import { useRouter } from 'next/router';
 
 import {
   FormControllerContext,
   FormControllerContextValueType,
 } from 'shared/hook-form/form-controller';
+import { useTokenMaxAmount } from 'shared/hooks/use-token-max-amount';
 import { useStakingLimitInfo } from 'shared/hooks/useStakingLimitInfo';
 import { useMaxGasPrice } from 'shared/hooks';
 import { useIsMultisig } from 'shared/hooks/useIsMultisig';
 import { useFormControllerRetry } from 'shared/hook-form/form-controller/use-form-controller-retry-delegate';
-import { STRATEGY_LAZY } from 'utils/swrStrategies';
 
-import { useStethSubmitGasLimit } from '../hooks';
-import {
-  stakeFormValidationResolver,
-  useStakeFormValidationContext,
-} from './validation';
-import { useStake } from '../use-stake';
+import { STRATEGY_LAZY } from 'consts/swr-strategies';
+import { config } from 'config';
+
 import {
   type StakeFormDataContextValue,
   type StakeFormInput,
   type StakeFormNetworkData,
 } from './types';
-import { useTokenMaxAmount } from 'shared/hooks/use-token-max-amount';
-import { BALANCE_PADDING } from 'config';
+import {
+  stakeFormValidationResolver,
+  useStakeFormValidationContext,
+} from './validation';
+
+import { useStake } from '../use-stake';
+import { useStethSubmitGasLimit } from '../hooks';
 
 //
 // Data context
@@ -96,7 +99,7 @@ const useStakeFormNetworkData = (): StakeFormNetworkData => {
     limit: stakingLimitInfo?.currentStakeLimit,
     isPadded: !isMultisig,
     gasLimit: gasLimit,
-    padding: BALANCE_PADDING,
+    padding: config.BALANCE_PADDING,
     isLoading: isMultisigLoading,
   });
 

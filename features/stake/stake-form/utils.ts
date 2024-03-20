@@ -1,10 +1,13 @@
+import { BigNumber } from 'ethers';
 import { isAddress } from 'ethers/lib/utils';
 import type { BaseProvider } from '@ethersproject/providers';
-import { BigNumber } from 'ethers';
-import { SUBMIT_EXTRA_GAS_TRANSACTION_RATIO, PRECISION } from 'config';
+
+import { config } from 'config';
 
 export const applyGasLimitRatio = (gasLimit: BigNumber): BigNumber =>
-  gasLimit.mul(SUBMIT_EXTRA_GAS_TRANSACTION_RATIO * PRECISION).div(PRECISION);
+  gasLimit
+    .mul(config.SUBMIT_EXTRA_GAS_TRANSACTION_RATIO * config.PRECISION)
+    .div(config.PRECISION);
 
 export const getAddress = async (
   input: string,

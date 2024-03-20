@@ -1,6 +1,6 @@
 import { Accordion, Link } from '@lidofinance/lido-ui';
-import { MATOMO_CLICK_EVENTS_TYPES } from 'config';
-import { LINK_ADD_NFT_GUIDE } from 'config/external-links';
+import { LINK_ADD_NFT_GUIDE } from 'consts/external-links';
+import { MATOMO_CLICK_EVENTS_TYPES } from 'consts/matomo-click-events';
 
 export const HowToAddNFT = () => {
   return (

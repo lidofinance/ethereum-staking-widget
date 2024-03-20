@@ -1,8 +1,8 @@
 import { BigNumber } from 'ethers';
 import { useContractSWR, useWSTETHContractRPC } from '@lido-sdk/react';
-
-import { STRATEGY_LAZY } from 'utils/swrStrategies';
 import { Zero } from '@ethersproject/constants';
+
+import { STRATEGY_LAZY } from 'consts/swr-strategies';
 
 type useEthAmountByInputProps = {
   isSteth: boolean;

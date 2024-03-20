@@ -2,24 +2,24 @@ import { FC, PropsWithChildren, useMemo } from 'react';
 import { ReefKnot, getConnectors, holesky } from 'reef-knot/core-react';
 import { WagmiConfig, createClient, configureChains, Chain } from 'wagmi';
 import * as wagmiChains from 'wagmi/chains';
-
-import { CHAINS } from 'utils/chains';
 import { getStaticRpcBatchProvider } from '@lido-sdk/providers';
 
-import { useClientConfig } from 'providers/client-config';
-import { useGetRpcUrlByChainId } from 'config';
-import { SDKLegacyProvider } from './sdk-legacy';
+import { useUserConfig } from 'config/user-config';
+import { useGetRpcUrlByChainId } from 'config/rpc';
+import { CHAINS } from 'consts/chains';
 import { ConnectWalletModal } from 'shared/wallet/connect-wallet-modal';
+
+import { SDKLegacyProvider } from './sdk-legacy';
 
 const wagmiChainsArray = Object.values({ ...wagmiChains, holesky });
 
 const Web3Provider: FC<PropsWithChildren> = ({ children }) => {
-  const { isWalletConnectionAllowed } = useClientConfig();
   const {
     defaultChain: defaultChainId,
     supportedChainIds,
     walletconnectProjectId,
-  } = useClientConfig();
+    isWalletConnectionAllowed,
+  } = useUserConfig();
 
   const { supportedChains, defaultChain } = useMemo(() => {
     const supportedChains = wagmiChainsArray.filter((chain) =>

@@ -1,6 +1,7 @@
 import { Button, Modal } from '@lidofinance/lido-ui';
 
-import { dynamics } from 'config';
+import { config } from 'config';
+import NoSsrWrapper from 'shared/components/no-ssr-wrapper';
 
 import {
   WarningIcon,
@@ -11,7 +12,6 @@ import {
   WarningTitle,
 } from './styles';
 import { useVersionCheck } from './use-version-check';
-import NoSsrWrapper from 'shared/components/no-ssr-wrapper';
 
 const LIDO_TWITTER_LINK = 'https://twitter.com/LidoFinance';
 
@@ -95,7 +95,7 @@ export const SecurityStatusBanner = () => {
     isUpdateAvailable,
     isVersionUnsafe,
     isNotVerifiable,
-    isIpfs: dynamics.ipfsMode,
+    isIpfs: config.ipfsMode,
   });
 
   const showModal = !!content && !(canClose && areConditionsAccepted);

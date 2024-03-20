@@ -1,18 +1,19 @@
-import { STRATEGY_LAZY } from 'utils/swrStrategies';
 import { useLidoSWR } from '@lido-sdk/react';
-import { enableQaHelpers } from 'utils';
+
+import { config } from 'config';
+import { STRATEGY_LAZY } from 'consts/swr-strategies';
+
+import { getSwapIntegration } from './integrations';
 import type {
   FetchRateResult,
   StakeSwapDiscountIntegrationKey,
   StakeSwapDiscountIntegrationValue,
 } from './types';
-import { STAKE_SWAP_INTEGRATION } from 'config';
-import { getSwapIntegration } from './integrations';
 
 const DISCOUNT_THRESHOLD = 1.004;
 const MOCK_LS_KEY = 'mock-qa-helpers-discount-rate';
 
-if (enableQaHelpers && typeof window !== 'undefined') {
+if (config.enableQaHelpers && typeof window !== 'undefined') {
   (window as any).setMockDiscountRate = (rate?: number) =>
     rate === undefined
       ? localStorage.removeItem(MOCK_LS_KEY)
@@ -28,7 +29,7 @@ const fetchRate = async (
   const integration = getSwapIntegration(integrationKey);
   let rate: number;
   const mock = localStorage.getItem(MOCK_LS_KEY);
-  if (enableQaHelpers && mock) {
+  if (config.enableQaHelpers && mock) {
     rate = parseFloat(mock);
   } else {
     rate = await integration.getRate();
@@ -43,7 +44,7 @@ const fetchRate = async (
 
 export const useSwapDiscount = () => {
   return useLidoSWR(
-    ['swr:swap-discount-rate', STAKE_SWAP_INTEGRATION],
+    ['swr:swap-discount-rate', config.STAKE_SWAP_INTEGRATION],
     // @ts-expect-error useLidoSWR has broken fetcher-key type signature
     fetchRate,
     {

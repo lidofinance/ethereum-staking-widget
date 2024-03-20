@@ -15,7 +15,7 @@ import { useWstethBySteth, useStethByWsteth } from 'shared/hooks';
 import type { WalletComponentType } from 'shared/wallet/types';
 import { CardBalance, CardRow, CardAccount, Fallback } from 'shared/wallet';
 import { StyledCard } from './styles';
-import { STRATEGY_LAZY } from 'utils/swrStrategies';
+import { STRATEGY_LAZY } from 'consts/swr-strategies';
 
 const WalletComponent: WalletComponentType = (props) => {
   const { account } = useSDK();

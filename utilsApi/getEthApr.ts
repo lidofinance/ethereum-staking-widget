@@ -1,7 +1,7 @@
-import { CHAINS } from 'utils/chains';
+import { iterateUrls } from '@lidofinance/rpc';
+import { CHAINS } from 'consts/chains';
 import { getStaticRpcBatchProvider } from './rpcProviders';
 import { rpcUrls } from './rpcUrls';
-import { iterateUrls } from '@lidofinance/rpc';
 
 export const getEthApr = async (): Promise<string> => {
   console.debug('Getting eth apr...');

@@ -1,7 +1,7 @@
 import { useContractSWR } from '@lido-sdk/react';
 
 import { useWithdrawalsContract } from './useWithdrawalsContract';
-import { STRATEGY_LAZY } from 'utils/swrStrategies';
+import { STRATEGY_LAZY } from 'consts/swr-strategies';
 
 export const useUnfinalizedStETH = () => {
   const { contractRpc } = useWithdrawalsContract();

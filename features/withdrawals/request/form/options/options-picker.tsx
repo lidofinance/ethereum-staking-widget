@@ -1,12 +1,20 @@
-import { formatEther, parseEther } from '@ethersproject/units';
+import { useWatch } from 'react-hook-form';
 
+import { formatEther, parseEther } from '@ethersproject/units';
+import { TOKENS } from '@lido-sdk/constants';
+
+import { MATOMO_CLICK_EVENTS_TYPES } from 'consts/matomo-click-events';
+import { DATA_UNAVAILABLE } from 'consts/text';
 import { useWaitingTime } from 'features/withdrawals/hooks/useWaitingTime';
+import { RequestFormInputType } from 'features/withdrawals/request/request-form-context';
+import { ENABLED_WITHDRAWAL_DEXES } from 'features/withdrawals/withdrawals-constants';
 import {
   getDexConfig,
   useWithdrawalRates,
 } from 'features/withdrawals/request/withdrawal-rates';
 import { useStethByWsteth } from 'shared/hooks';
 import { formatBalance } from 'utils/formatBalance';
+import { trackMatomoEvent } from 'utils/track-matomo-event';
 
 import {
   InlineLoaderSmall,
@@ -18,15 +26,6 @@ import {
   OptionsPickerRow,
   OptionsPickerSubLabel,
 } from './styles';
-import {
-  trackMatomoEvent,
-  MATOMO_CLICK_EVENTS_TYPES,
-} from 'config/trackMatomoEvent';
-import { useWatch } from 'react-hook-form';
-import { RequestFormInputType } from 'features/withdrawals/request/request-form-context';
-import { TOKENS } from '@lido-sdk/constants';
-import { ENABLED_WITHDRAWAL_DEXES } from 'features/withdrawals/withdrawals-constants';
-import { DATA_UNAVAILABLE } from 'config';
 
 type OptionButtonProps = {
   onClick: React.ComponentProps<'button'>['onClick'];

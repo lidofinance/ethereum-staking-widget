@@ -1,9 +1,9 @@
 import { FC } from 'react';
 import { Accordion } from '@lidofinance/lido-ui';
 
-import { MATOMO_CLICK_EVENTS_TYPES } from 'config';
-import { trackMatomoEvent } from 'config/trackMatomoEvent';
-import { WRAP_UNWRAP_PATH } from 'config/urls';
+import { WRAP_UNWRAP_PATH } from 'consts/urls';
+import { MATOMO_CLICK_EVENTS_TYPES } from 'consts/matomo-click-events';
+import { trackMatomoEvent } from 'utils/track-matomo-event';
 import { LocalLink } from 'shared/components/local-link';
 
 export const HowCouldIUnwrapWstethToSteth: FC = () => {

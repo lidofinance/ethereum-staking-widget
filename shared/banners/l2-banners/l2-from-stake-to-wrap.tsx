@@ -1,7 +1,8 @@
-import { L2Banner } from '../l2-banner';
-import { MATOMO_CLICK_EVENTS } from 'config';
 import { trackEvent } from '@lidofinance/analytics-matomo';
-import * as URLS from 'config/urls';
+import { WRAP_PATH } from 'consts/urls';
+import { MATOMO_CLICK_EVENTS } from 'consts/matomo-click-events';
+
+import { L2Banner } from '../l2-banner';
 
 const linkClickHandler = () => trackEvent(...MATOMO_CLICK_EVENTS.l2BannerStake);
 
@@ -10,7 +11,7 @@ export const L2FromStakeToWrap = () => {
     <L2Banner
       testId="L2Banner"
       buttonText="Go to Wrap"
-      buttonHref={URLS.WRAP_PATH}
+      buttonHref={WRAP_PATH}
       isLocalLink
       onClickButton={linkClickHandler}
       title="Planning to use wstETH on L2?"

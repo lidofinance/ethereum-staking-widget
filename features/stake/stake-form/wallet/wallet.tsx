@@ -1,15 +1,16 @@
+import { memo } from 'react';
+import { useWeb3 } from 'reef-knot/web3-react';
 import { TOKENS } from '@lido-sdk/constants';
 import { useSDK, useTokenAddress } from '@lido-sdk/react';
-import { useWeb3 } from 'reef-knot/web3-react';
 import { Divider, Question, Tooltip } from '@lidofinance/lido-ui';
-import { LIDO_APR_TOOLTIP_TEXT } from 'config';
-import { memo } from 'react';
+
+import { LIDO_APR_TOOLTIP_TEXT, DATA_UNAVAILABLE } from 'consts/text';
 import { TokenToWallet } from 'shared/components';
 import { FormatToken } from 'shared/formatters';
 import { useLidoApr } from 'shared/hooks';
-import { DATA_UNAVAILABLE } from 'config';
 import { CardAccount, CardBalance, CardRow, Fallback } from 'shared/wallet';
 import type { WalletComponentType } from 'shared/wallet/types';
+
 import { LimitMeter } from './limit-meter';
 import { FlexCenter, LidoAprStyled, StyledCard } from './styles';
 import { useStakeFormData } from '../stake-form-context';

@@ -10,7 +10,7 @@ import {
   WITHDRAWALS_REQUEST_PATH,
   WRAP_PATH,
   REFERRAL_PATH,
-} from 'config/urls';
+} from 'consts/urls';
 import NoSSRWrapper from 'shared/components/no-ssr-wrapper';
 import { usePrefixedReplace } from 'shared/hooks/use-prefixed-history';
 

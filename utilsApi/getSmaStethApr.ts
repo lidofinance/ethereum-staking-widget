@@ -1,11 +1,8 @@
-import getConfig from 'next/config';
-import { CHAINS } from 'utils/chains';
+import { secretConfig } from 'config';
+import { CHAINS } from 'consts/chains';
 
 import { standardFetcher } from 'utils/standardFetcher';
 import { responseTimeExternalMetricWrapper } from 'utilsApi';
-
-const { serverRuntimeConfig } = getConfig();
-const { ethAPIBasePath } = serverRuntimeConfig;
 
 type SMA_APR_RESPONSE = {
   data: {
@@ -53,14 +50,11 @@ type SMA_APR_RESPONSE = {
 };
 
 export const getSmaStethApr = async (): Promise<string> => {
-  // TODO: remove after deploy env variables
-  const basePath = ethAPIBasePath ? ethAPIBasePath : 'https://eth-api.lido.fi';
-  const url = `${basePath}/v1/protocol/steth/apr/sma`;
-
+  const url = `${secretConfig.ethAPIBasePath}/v1/protocol/steth/apr/sma`;
   const data = await responseTimeExternalMetricWrapper({
-    payload: basePath,
+    payload: secretConfig.ethAPIBasePath,
     request: () => standardFetcher<SMA_APR_RESPONSE>(url),
   });
 
-  return data.data.smaApr.toFixed(1);
+  return data?.data.smaApr.toFixed(1);
 };

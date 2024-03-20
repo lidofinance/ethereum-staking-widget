@@ -7,10 +7,8 @@ import { useEthAmountByStethWsteth } from 'features/withdrawals/hooks';
 import { useInpageNavigation } from 'providers/inpage-navigation';
 import { RequestFormInputType } from 'features/withdrawals/request/request-form-context';
 
-import {
-  trackMatomoEvent,
-  MATOMO_CLICK_EVENTS_TYPES,
-} from 'config/trackMatomoEvent';
+import { MATOMO_CLICK_EVENTS_TYPES } from 'consts/matomo-click-events';
+import { trackMatomoEvent } from 'utils/track-matomo-event';
 
 import {
   FormatTokenStyled,

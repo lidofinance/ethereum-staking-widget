@@ -2,10 +2,16 @@ import { useCallback } from 'react';
 import invariant from 'tiny-invariant';
 import { useSDK } from '@lido-sdk/react';
 
-import { useClientConfig } from 'providers/client-config';
-import { CHAINS } from 'utils/chains';
+import { CHAINS } from 'consts/chains';
 
-import dynamics from './dynamics';
+// Don't use absolute import here!
+// code'''
+//    import { config } from 'config';
+// '''
+// otherwise you will get something like a cyclic error!
+import { config } from '../get-config';
+
+import { useUserConfig } from '../user-config';
 
 export const getBackendRPCPath = (chainId: string | number): string => {
   const BASE_URL = typeof window === 'undefined' ? '' : window.location.origin;
@@ -13,7 +19,7 @@ export const getBackendRPCPath = (chainId: string | number): string => {
 };
 
 export const useGetRpcUrlByChainId = () => {
-  const clientConfig = useClientConfig();
+  const userConfig = useUserConfig();
 
   return useCallback(
     (chainId: CHAINS) => {
@@ -22,7 +28,7 @@ export const useGetRpcUrlByChainId = () => {
       // And we always need Mainnet RPC for some requests, e.g. ETH to USD price, ENS lookup.
       if (
         chainId !== CHAINS.Mainnet &&
-        !clientConfig.supportedChainIds.includes(chainId)
+        !userConfig.supportedChainIds.includes(chainId)
       ) {
         // Has no effect on functionality. Just a fix.
         // Return empty string as a stub
@@ -30,26 +36,25 @@ export const useGetRpcUrlByChainId = () => {
         return '';
       }
 
-      if (dynamics.ipfsMode) {
+      if (config.ipfsMode) {
         const rpc =
-          clientConfig.savedClientConfig.rpcUrls[chainId] ||
-          clientConfig.prefillUnsafeElRpcUrls[chainId]?.[0];
+          userConfig.savedUserConfig.rpcUrls[chainId] ||
+          userConfig.prefillUnsafeElRpcUrls[chainId]?.[0];
 
         invariant(rpc, '[useGetRpcUrlByChainId] RPC is required!');
         return rpc;
       } else {
         return (
-          clientConfig.savedClientConfig.rpcUrls[chainId] ||
+          userConfig.savedUserConfig.rpcUrls[chainId] ||
           getBackendRPCPath(chainId)
         );
       }
     },
-    [clientConfig],
+    [userConfig],
   );
 };
 
 export const useRpcUrl = () => {
   const { chainId } = useSDK();
-  const getRpcUrlByChainId = useGetRpcUrlByChainId();
-  return getRpcUrlByChainId(chainId as number);
+  return useGetRpcUrlByChainId()(chainId as number);
 };

@@ -1,15 +1,17 @@
+import { parseEther } from '@ethersproject/units';
 import { TOKENS } from '@lido-sdk/constants';
+
+import { OPEN_OCEAN_REFERRAL_ADDRESS } from 'consts/external-links';
+import { MATOMO_CLICK_EVENTS } from 'consts/matomo-click-events';
+import { use1inchDeepLinkProps } from 'features/stake/hooks';
+import { getOneInchRate } from 'utils/get-one-inch-rate';
 import { getOpenOceanRate } from 'utils/get-open-ocean-rate';
+
 import {
   StakeSwapDiscountIntegrationKey,
   StakeSwapDiscountIntegrationMap,
 } from './types';
 import { OpenOceanIcon, OneInchIcon, OverlayLink } from './styles';
-import { parseEther } from '@ethersproject/units';
-import { OPEN_OCEAN_REFERRAL_ADDRESS } from 'config/external-links';
-import { MATOMO_CLICK_EVENTS } from 'config/matomoClickEvents';
-import { getOneInchRate } from 'utils/get-one-inch-rate';
-import { use1inchDeepLinkProps } from 'features/stake/hooks';
 
 const DEFAULT_AMOUNT = parseEther('1');
 

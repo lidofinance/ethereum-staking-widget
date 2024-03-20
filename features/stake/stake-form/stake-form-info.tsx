@@ -1,11 +1,12 @@
-import { DataTable, DataTableRow } from '@lidofinance/lido-ui';
 import { useWatch } from 'react-hook-form';
-import { useContractSWR, useSTETHContractRPC } from '@lido-sdk/react';
-import { Zero } from '@ethersproject/constants';
 
+import { Zero } from '@ethersproject/constants';
+import { DataTable, DataTableRow } from '@lidofinance/lido-ui';
+import { useContractSWR, useSTETHContractRPC } from '@lido-sdk/react';
+
+import { DATA_UNAVAILABLE } from 'consts/text';
+import { STRATEGY_CONSTANT } from 'consts/swr-strategies';
 import { FormatPrice, FormatToken } from 'shared/formatters';
-import { STRATEGY_CONSTANT } from 'utils/swrStrategies';
-import { DATA_UNAVAILABLE } from 'config';
 import { useEthUsd } from 'shared/hooks/use-eth-usd';
 
 import { StakeFormInput, useStakeFormData } from './stake-form-context';

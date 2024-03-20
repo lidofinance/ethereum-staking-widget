@@ -1,10 +1,10 @@
-import { useStethEthRate } from 'features/rewards/hooks/use-steth-eth-rate';
-import { useRewardsHistory } from 'features/rewards/hooks';
-import { useRewardsBalanceData } from 'features/rewards/hooks/use-rewards-balance-data';
-
 import { Box, Link } from '@lidofinance/lido-ui';
+
+import { useRewardsHistory } from 'features/rewards/hooks';
 import EthSymbol from 'features/rewards/components/EthSymbol';
 import NumberFormat from 'features/rewards/components/NumberFormat';
+import { useStethEthRate } from 'features/rewards/hooks/use-steth-eth-rate';
+import { useRewardsBalanceData } from 'features/rewards/hooks/use-rewards-balance-data';
 
 import { Item } from './Item';
 import { Stat } from './Stat';

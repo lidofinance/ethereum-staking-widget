@@ -1,9 +1,15 @@
-import { parseEther } from '@ethersproject/units';
 import { BigNumber } from 'ethers';
-import dynamics from './dynamics';
-import { IPFS_REFERRAL_ADDRESS } from './ipfs';
 import { AddressZero } from '@ethersproject/constants';
+import { parseEther } from '@ethersproject/units';
+
 import { StakeSwapDiscountIntegrationKey } from 'features/stake/swap-discount-banner';
+
+import { IPFS_REFERRAL_ADDRESS } from './ipfs';
+
+// Don't use here:
+// import { config } from '../get-config';
+// otherwise you will get something like a cyclic error!
+import { preConfig } from '../get-preconfig';
 
 export const PRECISION = 10 ** 6;
 
@@ -20,7 +26,7 @@ export const STAKE_GASLIMIT_FALLBACK = BigNumber.from(
   ),
 );
 
-export const STAKE_FALLBACK_REFERRAL_ADDRESS = dynamics.ipfsMode
+export const STAKE_FALLBACK_REFERRAL_ADDRESS = preConfig.ipfsMode
   ? IPFS_REFERRAL_ADDRESS
   : AddressZero;
 

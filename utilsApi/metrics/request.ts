@@ -1,5 +1,5 @@
 import { Counter, Histogram, Registry } from 'prom-client';
-import { METRICS_PREFIX, METRIC_NAMES } from 'config';
+import { METRICS_PREFIX, METRIC_NAMES } from 'consts/metrics';
 
 export class RequestMetrics {
   apiTimings: Histogram<'hostname' | 'route' | 'entity' | 'status'>;
