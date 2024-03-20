@@ -21,7 +21,7 @@ export const SwapDiscountBanner = ({ children }: React.PropsWithChildren) => {
   } = data;
   const Link = CustomLink ?? OverlayLink;
   return (
-    <Wrap>
+    <Wrap data-testid="oneInchDiscountBanner">
       <Icon />
       <TextWrap>
         <BannerText discountPercent={discountPercent} />

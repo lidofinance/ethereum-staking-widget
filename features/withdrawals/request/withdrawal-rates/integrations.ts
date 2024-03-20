@@ -1,15 +1,17 @@
 import { Zero } from '@ethersproject/constants';
 import { getTokenAddress, CHAINS, TOKENS } from '@lido-sdk/constants';
 import { BigNumber } from 'ethers';
+import { getAddress } from 'ethers/lib/utils.js';
 import { formatEther } from '@ethersproject/units';
 
 import { getOneInchRate } from 'utils/get-one-inch-rate';
+import { getBebopRate } from 'utils/get-bebop-rate';
 import { getOpenOceanRate } from 'utils/get-open-ocean-rate';
 import { standardFetcher } from 'utils/standardFetcher';
 import { OPEN_OCEAN_REFERRAL_ADDRESS } from 'config/external-links';
 import { MATOMO_CLICK_EVENTS_TYPES } from 'config/matomoClickEvents';
 
-import { OneInchIcon, OpenOceanIcon, ParaSwapIcon } from './icons';
+import { BebopIcon, OneInchIcon, OpenOceanIcon, ParaSwapIcon } from './icons';
 
 import type {
   DexWithdrawalApi,
@@ -124,6 +126,23 @@ const getOneInchWithdrawalRate: GetRateType = async (params) => {
   };
 };
 
+const getBebopWithdrawalRate: GetRateType = async ({ amount, token }) => {
+  try {
+    if (amount.gt(Zero)) {
+      return await getBebopRate(amount, token, 'ETH');
+    }
+  } catch (e) {
+    console.warn(
+      '[getOneInchWithdrawalRate] Failed to receive withdraw rate',
+      e,
+    );
+  }
+  return {
+    rate: null,
+    toReceive: null,
+  };
+};
+
 const dexWithdrawalMap: DexWithdrawalIntegrationMap = {
   'open-ocean': {
     title: 'OpenOcean',
@@ -157,6 +176,16 @@ const dexWithdrawalMap: DexWithdrawalIntegrationMap = {
       `https://app.1inch.io/#/1/simple/swap/${
         token == TOKENS.STETH ? 'stETH' : 'wstETH'
       }/ETH?sourceTokenAmount=${formatEther(amount)}`,
+  },
+  bebop: {
+    title: 'Bebop',
+    icon: BebopIcon,
+    fetcher: getBebopWithdrawalRate,
+    matomoEvent: MATOMO_CLICK_EVENTS_TYPES.withdrawalGoToBebop,
+    link: (amount, token) =>
+      `https://bebop.xyz/trade?network=ethereum&buy=0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE&sell=${getAddress(
+        getTokenAddress(CHAINS.Mainnet, token),
+      )}&sellAmounts=${formatEther(amount)}`,
   },
 } as const;
 

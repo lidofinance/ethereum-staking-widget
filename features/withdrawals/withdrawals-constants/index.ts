@@ -1,3 +1,4 @@
+import { overrideWithQAMockArray } from 'utils';
 import type { DexWithdrawalApi } from '../request/withdrawal-rates';
 
 // max requests count for one tx
@@ -15,8 +16,8 @@ export const WHAT_IS_TURBO = '#whatIsTurboMode';
 // should be enough to load token balances/tvl/max&min amounts and other contract data
 export const VALIDATION_CONTEXT_TIMEOUT = 4000;
 
-export const ENABLED_WITHDRAWAL_DEXES: DexWithdrawalApi[] = [
-  'one-inch',
-  'open-ocean',
-  'paraswap',
-];
+export const ENABLED_WITHDRAWAL_DEXES: DexWithdrawalApi[] =
+  overrideWithQAMockArray(
+    ['one-inch', 'paraswap', 'bebop'],
+    'mock-qa-helpers-enabled-withdrawal-dexes',
+  );

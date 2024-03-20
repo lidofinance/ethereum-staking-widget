@@ -38,7 +38,18 @@ export const SDKLegacyProvider = (props: {
     void (async () => {
       if (!providerWeb3 && connector && isConnected) {
         const provider = await connector.getProvider();
-        const wrappedProvider = new Web3Provider(provider);
+        // `any` param + page reload on network change
+        // are described here: https://github.com/ethers-io/ethers.js/issues/866
+        // this approach is needed to fix a NETWORK_ERROR after chain changing
+        const wrappedProvider = new Web3Provider(provider, 'any');
+        wrappedProvider.on('network', (newNetwork, oldNetwork) => {
+          // When a Provider makes its initial connection, it emits a "network"
+          // event with a null oldNetwork along with the newNetwork. So, if the
+          // oldNetwork exists, it represents a changing network
+          if (oldNetwork) {
+            window.location.reload();
+          }
+        });
         wrappedProvider.pollingInterval = pollingInterval;
         setProviderWeb3(wrappedProvider);
       }

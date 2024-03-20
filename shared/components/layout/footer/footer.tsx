@@ -9,6 +9,7 @@ import {
   Version,
   LinkDivider,
 } from './styles';
+import { LinkToIpfs } from './link-to-ipfs';
 
 const getVersionInfo = () => {
   const { version, branch } = buildInfo;
@@ -37,22 +38,26 @@ const getVersionInfo = () => {
 
 const { label, link } = getVersionInfo();
 
-export const Footer: FC = () => (
-  <FooterStyle size="full" forwardedAs="footer">
-    <LogoLidoStyle />
-    <FooterLink data-testid="termsOfUse" href="https://lido.fi/terms-of-use">
-      Terms of Use
-    </FooterLink>
-    <LinkDivider />
-    <FooterLink
-      data-testid="privacyNotice"
-      href="https://lido.fi/privacy-notice"
-    >
-      Privacy Notice
-    </FooterLink>
-    <Version data-testid="appVersion" href={link}>
-      {label}
-    </Version>
-    <FooterDivider />
-  </FooterStyle>
-);
+export const Footer: FC = () => {
+  return (
+    <FooterStyle size="full" forwardedAs="footer">
+      <LogoLidoStyle />
+      <FooterLink data-testid="termsOfUse" href="https://lido.fi/terms-of-use">
+        Terms of Use
+      </FooterLink>
+      <LinkDivider />
+      <FooterLink
+        data-testid="privacyNotice"
+        href="https://lido.fi/privacy-notice"
+        $marginRight="auto"
+      >
+        Privacy Notice
+      </FooterLink>
+      <LinkToIpfs />
+      <Version data-testid="appVersion" href={link}>
+        {label}
+      </Version>
+      <FooterDivider />
+    </FooterStyle>
+  );
+};
