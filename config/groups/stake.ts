@@ -2,13 +2,13 @@ import { BigNumber } from 'ethers';
 import { AddressZero } from '@ethersproject/constants';
 import { parseEther } from '@ethersproject/units';
 
-// TODO
 import { StakeSwapDiscountIntegrationKey } from 'features/stake/swap-discount-banner';
 
 import { IPFS_REFERRAL_ADDRESS } from './ipfs';
 
-// Not use here:
+// Don't use here:
 // import { config } from '../get-config';
+// otherwise you will get something like a cyclic error!
 import { preConfig } from '../get-preconfig';
 
 export const PRECISION = 10 ** 6;

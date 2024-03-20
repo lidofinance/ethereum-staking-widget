@@ -21,10 +21,10 @@ export type SecretConfigType = Modify<
   }
 >;
 
-// 'getSecretConfig()' needs for backend side.
+// 'getSecretConfig()' is required for the backend side.
 // We can't merge with 'getPreConfig()' because we want to split responsibility
 //
-// Also you can note that 'getSecretConfig' is just proxy for 'serverRuntimeConfig'
+// Also you can note that 'getSecretConfig' is just a proxy for 'serverRuntimeConfig'
 // because we want similar approach with 'getConfig'
 export const getSecretConfig = (): SecretConfigType => {
   return {

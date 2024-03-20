@@ -9,7 +9,7 @@ declare global {
   }
 }
 
-// Not use dynamics directly in project!
+// Don't use dynamics directly in the project!
 // Only through:
 // code```
 //    import { config } from 'config'; // or

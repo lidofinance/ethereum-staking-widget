@@ -1,7 +1,8 @@
-// Not use absolute import here!
+// Don't use absolute import here!
 // code'''
 //    import { config } from 'config';
 // '''
+// otherwise you will get something like a cyclic error!
 import { config } from '../get-config';
 import { UserConfigDefaultType } from './types';
 

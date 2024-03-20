@@ -21,7 +21,6 @@ declare module 'next/config' {
 
       cspTrustedHosts: string | undefined;
       cspReportUri: string | undefined;
-      // cspReportOnly: boolean;
       cspReportOnly: string | undefined;
 
       subgraphMainnet: string | undefined;

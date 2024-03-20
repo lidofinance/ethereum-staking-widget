@@ -135,7 +135,7 @@ export default withBundleAnalyzer({
     },
   ],
 
-  // ATTENTION: If you will add a new variable you should to declare it in `global.d.ts`
+  // ATTENTION: If you add a new variable you should declare it in `global.d.ts`
   serverRuntimeConfig: {
     // https://nextjs.org/docs/pages/api-reference/next-config-js/basePath
     basePath,
@@ -165,7 +165,7 @@ export default withBundleAnalyzer({
     rewardsBackendAPI: process.env.REWARDS_BACKEND,
   },
 
-  // ATTENTION: If you will add a new variable you should to declare it in `global.d.ts`
+  // ATTENTION: If you add a new variable you should declare it in `global.d.ts`
   publicRuntimeConfig: {
     basePath,
     developmentMode,

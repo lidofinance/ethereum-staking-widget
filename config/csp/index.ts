@@ -3,10 +3,11 @@ import { AppProps } from 'next/app';
 import { withSecureHeaders } from 'next-secure-headers';
 import type { ContentSecurityPolicyOption } from 'next-secure-headers/lib/rules';
 
-// Not use absolute import here!
+// Don't use absolute import here!
 // code'''
 //    import { config, secretConfig } from 'config';
 // '''
+// otherwise you will get something like a cyclic error!
 import { config } from '../get-config';
 import { secretConfig } from '../get-secret-config';
 
