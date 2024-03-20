@@ -12,7 +12,7 @@ export const FooterStyle = styled(Container)`
   box-sizing: border-box;
   color: var(--lido-color-text);
   display: flex;
-  row-gap: 44px;
+  row-gap: 12px;
   flex-wrap: wrap;
 
   width: 100%;
