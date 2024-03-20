@@ -9,6 +9,7 @@ const linkClickHandler = () => trackEvent(...MATOMO_CLICK_EVENTS.l2BannerStake);
 export const L2FromStakeToWrap = () => {
   return (
     <L2Banner
+      testId="L2Banner"
       buttonText="Go to Wrap"
       buttonHref={WRAP_PATH}
       isLocalLink

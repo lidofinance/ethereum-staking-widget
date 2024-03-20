@@ -18,7 +18,7 @@ export const L2Wsteth = ({ matomoEventLink }: L2WstethProps) => {
   );
   return (
     <L2Banner
-      testidWrap="L2wstETHbanner"
+      testId="L2wstETHbanner"
       testidButton="l2WSstethlearnMore"
       buttonText="Learn More"
       onClickButton={linkClickHandler}
