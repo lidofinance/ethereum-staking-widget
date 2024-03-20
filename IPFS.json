@@ -1,13 +1,16 @@
 {
   "1": {
-    "cid": "bafybeigg5s263n24agznr66g46ze4ifn5rocrclpj2oyodllpxfnvsjaaq"
+    "cid": "bafybeibobqcno4ebv2o42krcaktcsk4znpbesmcwprfp5vqqmxzuofwnuy",
+    "leastSafeVersion": "0.36.1"
   },
   "5": {
     "__warning__": "For testing purposes only",
-    "cid": "bafybeig6ki66gopco3gegotbyh7kfxp3i7tagw37erh6ekhbtpecnobz4q"
+    "cid": "bafybeidxi4uewduubu2xfcxlvcq5mwgwxuhi2qvrfgnny4xn4l6exzzsbu",
+    "leastSafeVersion": "0.36.1"
   },
   "17000": {
     "__warning__": "For testing purposes only",
-    "cid": "bafybeihbihzqt66tke2oxtsttu7sgekzosbxjiezyet4j6a64z2byudl2m"
+    "cid": "bafybeid5bz27ke65sv3kl5rlser5w3klpcfn7h7m7lyuczivjr7h5zasyi",
+    "leastSafeVersion": "0.36.1"
   }
 }
