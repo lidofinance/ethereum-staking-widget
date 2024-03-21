@@ -55,11 +55,11 @@ const getRequestTimeForWQRequestIds = async (
       };
 
       result.push(modifiedResult);
+    }
 
-      if (idsPages.length > 1) {
-        // avoid backend spam
-        await new Promise((resolve) => setTimeout(resolve, 1000));
-      }
+    if (idsPages.length > 1) {
+      // avoid backend spam
+      await new Promise((resolve) => setTimeout(resolve, 1000));
     }
   }
 
