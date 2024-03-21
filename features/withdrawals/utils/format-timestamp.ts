@@ -1,5 +1,10 @@
 export const formatTimestamp = (timestamp: string, short = false): string => {
   const diff = new Date(timestamp).getTime() - Date.now();
+
+  if (diff < 0) {
+    return 'Pending';
+  }
+
   const hours = Math.ceil(diff / (1000 * 60 * 60));
   const hour = short ? 'h' : 'hour';
 
