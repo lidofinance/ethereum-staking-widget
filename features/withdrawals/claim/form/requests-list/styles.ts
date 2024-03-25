@@ -72,12 +72,6 @@ export const RequestsStatusStyled = styled.div<RequestProps>`
       ? 'rgba(83, 186, 149, 0.16)'
       : 'rgba(236, 134, 0, 0.16)'};
 
-  ${({ $variant }) =>
-    $variant === 'pending' &&
-    `&:hover {
-        background-color: rgba(236, 134, 0, 0.26);
-      }`}
-
   color: ${({ $variant }) => ($variant === 'ready' ? '#53BA95' : '#EC8600')};
   white-space: nowrap;
   overflow: hidden;
