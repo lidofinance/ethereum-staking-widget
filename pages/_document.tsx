@@ -6,20 +6,13 @@ import Document, {
   DocumentContext,
   DocumentInitialProps,
 } from 'next/document';
-import { createHeadersObject } from 'next-secure-headers';
 import { ServerStyleSheet } from 'styled-components';
 import { Fonts, LidoUIHead } from '@lidofinance/lido-ui';
 
 import { dynamics, BASE_PATH_ASSET } from 'config';
-import { InsertIpfsBaseScript } from 'features/ipfs';
-import { contentSecurityPolicy } from 'utilsApi/withCSP';
+import { InsertIpfsBaseScript, generateIpfsCSPMetaTag } from 'features/ipfs';
 
 let host = 'https://stake.lido.fi';
-
-const secureHeaders = createHeadersObject({ contentSecurityPolicy });
-const cspMetaTagContent =
-  secureHeaders['Content-Security-Policy'] ??
-  secureHeaders['Content-Security-Policy-Report-Only'];
 
 export default class MyDocument extends Document {
   static async getInitialProps(
@@ -78,7 +71,7 @@ export default class MyDocument extends Document {
           {dynamics.ipfsMode && (
             <meta
               httpEquiv="Content-Security-Policy"
-              content={cspMetaTagContent}
+              content={generateIpfsCSPMetaTag()}
             />
           )}
           <link rel="manifest" href={`${BASE_PATH_ASSET}/manifest.json`} />
