@@ -23,10 +23,8 @@ export const HowCanIUnstakeSteth: FC = () => {
         >
           Withdrawals Request and Claim tabs
         </LocalLink>{' '}
-        to unstake stETH and receive ETH at a 1:1 ratio. Under normal
-        circumstances, withdrawal period can take anywhere between 1-5 days.
-        After that, you can claim your ETH using the Claim tab. Also, you can
-        exchange stETH on{' '}
+        to unstake stETH and receive ETH at a 1:1 ratio. Also, you can exchange
+        stETH on{' '}
         <OuterLink
           href="https://lido.fi/lido-ecosystem?tokens=stETH&categories=Get"
           data-matomo={

@@ -9,6 +9,7 @@ export type RequestStatus = {
   isClaimed: boolean;
   id: BigNumber;
   stringId: string;
+  finalizationAt: string | null;
 };
 
 export type RequestStatusClaimable = RequestStatus & {

@@ -60,7 +60,10 @@ export const RequestItem = forwardRef<HTMLInputElement, RequestItemProps>(
           name={name}
           ref={ref}
         />
-        <RequestStatus status={status.isFinalized ? 'ready' : 'pending'} />
+        <RequestStatus
+          status={status.isFinalized ? 'ready' : 'pending'}
+          finalizationAt={status.finalizationAt}
+        />
         <LinkStyled
           data-testid="requestNftLink"
           href={getNFTUrl(token_id, chainId)}

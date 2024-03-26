@@ -1,39 +1,36 @@
-import { Tooltip } from '@lidofinance/lido-ui';
-import { useWaitingTime } from 'features/withdrawals/hooks/useWaitingTime';
-import {
-  RequestsStatusStyled,
-  DesktopStatus,
-  MobileStatusIcon,
-  RequestInfoIcon,
-} from './styles';
+import { RequestsStatusStyled, StatusIcon, StatusText } from './styles';
 import { forwardRef } from 'react';
+import { formatTimestamp } from '../../../utils/format-timestamp';
+import { useBreakpoint } from '@lidofinance/lido-ui';
 
-type RequestItemStatusProps = { status: 'ready' | 'pending' };
-
-export const RequestStatus: React.FC<RequestItemStatusProps> = ({ status }) => {
-  if (status === 'pending') return <RequestStatusPending />;
-  return <RequestStatusBody status="ready" />;
+type RequestItemStatusProps = {
+  status: 'ready' | 'pending';
+  finalizationAt: string | null;
 };
 
-const RequestStatusPending: React.FC = () => {
-  const waitingTime = useWaitingTime('');
-  return (
-    <Tooltip title={`Current withdrawal period is ${waitingTime.value}.`}>
-      <RequestStatusBody status="pending" />
-    </Tooltip>
-  );
+export const RequestStatus: React.FC<RequestItemStatusProps> = (props) => {
+  return <RequestStatusBody {...props} />;
 };
 
 const RequestStatusBody = forwardRef<
   HTMLDivElement,
   RequestItemStatusProps & React.ComponentProps<'div'>
->(({ status, ...props }, ref) => {
-  const statusText = status === 'ready' ? 'Ready to claim' : 'Pending';
+>(({ status, finalizationAt, ...props }, ref) => {
+  let statusText;
+  const isMobile = useBreakpoint('md');
+
+  if (status.toLocaleLowerCase() === 'ready') {
+    statusText = 'Ready';
+  } else if (finalizationAt) {
+    statusText = formatTimestamp(finalizationAt, isMobile);
+  } else {
+    statusText = 'Pending';
+  }
+
   return (
     <RequestsStatusStyled {...props} ref={ref} $variant={status}>
-      <DesktopStatus>{statusText}</DesktopStatus>
-      <MobileStatusIcon $variant={status} />
-      {status === 'pending' && <RequestInfoIcon />}
+      <StatusIcon $variant={status} />
+      <StatusText>{statusText}</StatusText>
     </RequestsStatusStyled>
   );
 });
