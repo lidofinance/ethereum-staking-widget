@@ -48,7 +48,7 @@ export const Wrapper = styled.div`
 
 export const L2Icons = styled.div`
   display: block;
-  width: 188px;
+  width: 214px;
   height: 32px;
   background-image: url(${({ theme }) =>
     theme.name === 'dark' ? IconsDark : IconsLight});
