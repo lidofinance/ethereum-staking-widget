@@ -51,7 +51,7 @@ const warningContent = ({
         canClose: false,
       };
     // we can show this banner on both infra and IPFS
-    case isVersionUnsafe && (!isIpfs || !isUpdateAvailable):
+    case isVersionUnsafe && !isUpdateAvailable:
       return {
         content: (
           <WarningText>
@@ -60,6 +60,17 @@ const warningContent = ({
         ),
         canClose: false,
         showTwitterLink: true,
+      };
+    case isVersionUnsafe && isUpdateAvailable:
+      return {
+        content: (
+          <WarningText>
+            This version of Lido staking widget has issues that could impact
+            your experience.
+          </WarningText>
+        ),
+        canClose: false,
+        showTwitterLink: false,
       };
     // outdated IPFS
     case isIpfs && isUpdateAvailable:
@@ -119,7 +130,15 @@ export const SecurityStatusBanner = () => {
           )}
           {isUpdateAvailable && (
             <a
-              href={data.remoteCidLink}
+              href={data.remoteCidLink ?? window.location.href}
+              onClick={
+                dynamics.ipfsMode
+                  ? undefined
+                  : (e) => {
+                      e.preventDefault();
+                      window.location.reload();
+                    }
+              }
               target="_self"
               rel="noopener noreferrer"
             >
