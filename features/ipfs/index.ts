@@ -6,3 +6,4 @@ export {
   useRemoteVersion,
 } from './security-status-banner';
 export { InsertIpfsBaseScript } from './ipfs-base-script';
+export { generateIpfsCSPMetaTag } from './generate-ipfs-csp-meta-tag';

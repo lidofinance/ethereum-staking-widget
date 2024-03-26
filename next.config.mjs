@@ -1,6 +1,7 @@
 import NextBundleAnalyzer from '@next/bundle-analyzer';
 import buildDynamics from './scripts/build-dynamics.mjs';
 import generateBuildId from './scripts/generate-build-id.mjs';
+import generateCspHeaders from './scripts/generate-csp-headers.mjs';
 
 buildDynamics();
 
@@ -143,6 +144,13 @@ export default withBundleAnalyzer({
           },
           { key: 'x-xss-protection', value: '1' },
           { key: 'x-download-options', value: 'noopen' },
+          ...generateCspHeaders({
+            cspTrustedHosts,
+            cspReportOnly,
+            cspReportUri,
+            developmentMode,
+            ipfsMode,
+          }),
         ],
       },
       {
