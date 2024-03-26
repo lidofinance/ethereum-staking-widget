@@ -50,6 +50,7 @@ export const getBebopRate = async (
     taker_address: ESTIMATE_ACCOUNT,
     sell_amounts: amount.toString(),
     approval_type: 'Standard',
+    source: 'lido',
   });
 
   const data = await standardFetcher<BebopGetQuotePartial>(
