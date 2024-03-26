@@ -23,7 +23,7 @@ export const RPCAvailabilityCheckResultBox = () => {
   return (
     <Wrap>
       <Text weight={700} size="xs" color="accentContrast">
-        You are currently using the IPFS widget&apos;s version.
+        You are currently using the IPFS widget version.
       </Text>
       <LinkArrow href={IPFS_INFO_URL}>What is IPFS</LinkArrow>
       {isRPCAvailable && (
