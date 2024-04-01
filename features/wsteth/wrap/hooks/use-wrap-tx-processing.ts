@@ -9,7 +9,12 @@ import { useCurrentStaticRpcProvider } from 'shared/hooks/use-current-static-rpc
 import { getFeeData } from 'utils/getFeeData';
 
 import type { WrapFormInputType } from '../wrap-form-context';
-import { applyGasLimitRatio } from 'features/stake/stake-form/utils';
+import {
+  MockLimitReachedError,
+  applyGasLimitRatio,
+} from 'features/stake/stake-form/utils';
+
+import { enableQaHelpers } from 'utils/qa';
 
 export const getGasParameters = async (
   provider: StaticJsonRpcBatchProvider,
@@ -48,6 +53,13 @@ export const useWrapTxProcessing = () => {
           );
         }
       } else {
+        if (
+          enableQaHelpers &&
+          window.localStorage.getItem('mockLimitReached') === 'true'
+        ) {
+          throw new MockLimitReachedError('Stake limit reached');
+        }
+
         const wstethTokenAddress = getTokenAddress(chainId, TOKENS.WSTETH);
         if (isMultisig) {
           return providerWeb3.getSigner().sendUncheckedTransaction({

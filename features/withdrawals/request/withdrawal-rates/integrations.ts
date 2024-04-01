@@ -186,7 +186,7 @@ const dexWithdrawalMap: DexWithdrawalIntegrationMap = {
     link: (amount, token) =>
       `https://bebop.xyz/trade?network=ethereum&buy=0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE&sell=${getAddress(
         getTokenAddress(CHAINS.Mainnet, token),
-      )}&sellAmounts=${formatEther(amount)}`,
+      )}&sellAmounts=${formatEther(amount)}&source=lido`,
   },
 } as const;
 
