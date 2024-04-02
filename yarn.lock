@@ -2559,15 +2559,16 @@
   resolved "https://registry.yarnpkg.com/@polka/url/-/url-1.0.0-next.24.tgz#58601079e11784d20f82d0585865bb42305c4df3"
   integrity sha512-2LuNTFBIO0m7kKIQvvPHN6UE63VjpmL9rnEEaOOaiSPbZK+zUOYIzBAWcED+3XYzhYsd/0mD57VdxAEqqV52CQ==
 
-"@reef-knot/connect-wallet-modal@3.0.2":
-  version "3.0.2"
-  resolved "https://registry.yarnpkg.com/@reef-knot/connect-wallet-modal/-/connect-wallet-modal-3.0.2.tgz#3ce4c108cd87be16fb7268f9036150db31af4efa"
-  integrity sha512-8IPFMhRR4bCyzEkZ87YrcKqkBlTgQC/+SduZIvTIIRcewnHWrZw0d1sjIfLsI2IwgwtMdRzl26LWnrpPRnwn6w==
+"@reef-knot/connect-wallet-modal@4.0.0":
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/@reef-knot/connect-wallet-modal/-/connect-wallet-modal-4.0.0.tgz#1b2f6280f8f18cbc8a2e9380d503f18829b0fced"
+  integrity sha512-r90JULBLKER5lu2d33pN+b5h3cOELZutCXUqKq1US4gPQ+JlBTiDSxDAAALPHBsCFWR6xygVNZxIWEiKDJfCDg==
   dependencies:
     "@ledgerhq/hw-app-eth" "^6.35.2"
     "@ledgerhq/hw-transport" "^6.30.1"
     "@ledgerhq/hw-transport-webhid" "^6.28.1"
     "@lidofinance/lido-ui" "^3.18.0"
+    "@reef-knot/wallets-list" "^1.13.0"
     "@types/react" "18.2.45"
     "@types/react-dom" "18.2.17"
 
@@ -2600,131 +2601,131 @@
     "@web3-react/types" "^6.0.7"
     tiny-invariant "^1.2.0"
 
-"@reef-knot/types@1.5.0":
-  version "1.5.0"
-  resolved "https://registry.yarnpkg.com/@reef-knot/types/-/types-1.5.0.tgz#2c8aa2952f977963163176be7e5f5619dbdbcd5b"
-  integrity sha512-xNlTimc/v6XcquGvohso5skTNIx3AbUEfOaY3UZ6ShzDo81zIsbEbYzfm099Sbbxp1yZfsnb3C+8M2K+m997hg==
+"@reef-knot/types@1.6.0":
+  version "1.6.0"
+  resolved "https://registry.yarnpkg.com/@reef-knot/types/-/types-1.6.0.tgz#160c55f89658cd8502a9fb11602256393c8b289e"
+  integrity sha512-FpaqyUeMWgqTaZtAX3mRKqRgLAxJpIDKGv5TN6/B2YFd4ihxdXEi68SbixiLeGrALsq5/cb2YYvxX1FUoNl+Ag==
 
-"@reef-knot/ui-react@1.0.8":
-  version "1.0.8"
-  resolved "https://registry.yarnpkg.com/@reef-knot/ui-react/-/ui-react-1.0.8.tgz#af4496caab9040ea07302ea9c35979ea8376a2c7"
-  integrity sha512-0sRmFhgpHWnX80sWZ+3LEOKQvT9zddxv5m9uT14Vo32c86QpFPhd9OiDaowtjCmqA5ykTbCpPe1tGp0GaAcomg==
+"@reef-knot/ui-react@1.1.0":
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/@reef-knot/ui-react/-/ui-react-1.1.0.tgz#55b3e648fb935791f03a2c4e5ef6da73f3ceedcf"
+  integrity sha512-2AVKKI6LahCjvNBeKbNlrZbcEdqc3QY/0YRZb4Dg6GkkM8A/QDkD/PivDkCWiagKrxDfFR9XuUGO7lM0QJyKsw==
   dependencies:
     react-transition-group "4"
     use-callback-ref "1.2.5"
 
-"@reef-knot/wallet-adapter-ambire@1.2.4":
-  version "1.2.4"
-  resolved "https://registry.yarnpkg.com/@reef-knot/wallet-adapter-ambire/-/wallet-adapter-ambire-1.2.4.tgz#8a436a575b1f7cf5eebe5a9a0311e1cccdcfd4b3"
-  integrity sha512-ZnVEYbQbsMFlyLIOAC8wGFdFlux0p7y3sdSgvBWbhoupDZaxUGNLXNHHauJ9mt1C1nLNhM9RpY8q4BBVKOD24g==
+"@reef-knot/wallet-adapter-ambire@1.3.0":
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/@reef-knot/wallet-adapter-ambire/-/wallet-adapter-ambire-1.3.0.tgz#adb0fa7ca26e9d89dce3d60b9943b005845aed5f"
+  integrity sha512-QyRfCRt5B1tYbmmZZQY7xeWLPqMAQLGXwmQlQploZ1qOR9lfEF+oGl50QSEGvPAM87qsAiMTFVLfG0268jGnVw==
 
-"@reef-knot/wallet-adapter-bitkeep@1.1.1":
-  version "1.1.1"
-  resolved "https://registry.yarnpkg.com/@reef-knot/wallet-adapter-bitkeep/-/wallet-adapter-bitkeep-1.1.1.tgz#a57370149070796b7affa0964376d0f290a2e856"
-  integrity sha512-bSb3mjcDEfuSLzGXRE/jmc6lr/NTaKnWxO0NBhqJa9WOCdq/i5i6LvUFFLns/PE6HutOQGOtdQa0M+OhDF495A==
+"@reef-knot/wallet-adapter-bitkeep@1.2.0":
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/@reef-knot/wallet-adapter-bitkeep/-/wallet-adapter-bitkeep-1.2.0.tgz#1d51f1a939a331de74b12a287fe8344dead6cedc"
+  integrity sha512-9Bnz3B/MMerNn2/+zKOahjB6Y1xM/0v2Zzk7IT26Ch+IIg0yxLqG+ppbMCsxQPEzFI4OCFe3cIUYQ1BN1mkkUQ==
 
-"@reef-knot/wallet-adapter-brave@1.0.1":
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/@reef-knot/wallet-adapter-brave/-/wallet-adapter-brave-1.0.1.tgz#247b246d4585d10dcec63e0b7cf4c79a85424561"
-  integrity sha512-9oAlDr7qV61Ajl8PtfXVOISf45HZ9DIPNoA/IVI2vNCaXYsMbhZxjkSKKdMdfoC8JBeHB3yxmq5XKJWW/4BO9g==
+"@reef-knot/wallet-adapter-brave@1.1.0":
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/@reef-knot/wallet-adapter-brave/-/wallet-adapter-brave-1.1.0.tgz#b10a8cc3444cf4a82196fd76c9630e19611f1201"
+  integrity sha512-OBCXPE0RMMDKkUJOpLJ8QPVWDjkPn4HM1yYSouBtB+1Hi0HIh1/EiUimJGwWANtFQ6kf9OSlUFW2+sIzJ/ARPQ==
 
-"@reef-knot/wallet-adapter-browser-extension@1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@reef-knot/wallet-adapter-browser-extension/-/wallet-adapter-browser-extension-1.0.0.tgz#63e922e532f2f5253f51047819589c838a0271e1"
-  integrity sha512-8R/3SG0kxTpVhWRKVGJGVSbwhUbOfNytu5wbWNLp7ijAUt8cqoGPwVk/bLM1UQPm7I6oke/s9Xa0+CVVusPl6g==
+"@reef-knot/wallet-adapter-browser-extension@1.1.0":
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/@reef-knot/wallet-adapter-browser-extension/-/wallet-adapter-browser-extension-1.1.0.tgz#fa6151a75b10fd5000b4e82c55c64069a8568eb4"
+  integrity sha512-rbrGdvinPhKhLjtHpVEX3oEcJcqSAANwapszH4+ttTBu1A+Pkp0f2Isaj1beSs2BN/1uyfsxLArMuB2IvQtsZg==
 
-"@reef-knot/wallet-adapter-coin98@1.0.1":
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/@reef-knot/wallet-adapter-coin98/-/wallet-adapter-coin98-1.0.1.tgz#5ddfe2f22a5cf18db0e7324455b2ad91b1b60e25"
-  integrity sha512-cZLELk4LNeQL1ZzNmtokeCWQ8j9oEvd93zlaUFGmy6SPluqq4hTw3SfBYyauVTxevtW4gxiIzOwShZmdYnZJPg==
+"@reef-knot/wallet-adapter-coin98@1.1.0":
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/@reef-knot/wallet-adapter-coin98/-/wallet-adapter-coin98-1.1.0.tgz#3e3179968ec4efb139b134f7f087b78f730ab72a"
+  integrity sha512-dpoVLipF8fHkp+l5WQwKB7FwbYivF1f+qmVtsYmbnYaplfSxSZViWzhH0HXhkJau1bfNiYcL36P44VmDS5Ou5Q==
 
-"@reef-knot/wallet-adapter-coinbase@1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@reef-knot/wallet-adapter-coinbase/-/wallet-adapter-coinbase-1.0.0.tgz#aeb61e29c132347a8c9d96fff9c95c09f2df6054"
-  integrity sha512-eOvN6L7fLNvAaLANePJxMhdLoMewgjsa4vYyBQ0G/ao5uUxAwtE9DuO8d7W3IOgP+wiEDPodLnuMDlu9JZsFdw==
+"@reef-knot/wallet-adapter-coinbase@1.1.0":
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/@reef-knot/wallet-adapter-coinbase/-/wallet-adapter-coinbase-1.1.0.tgz#fd071da727964c8bb7ba036b2f9f5cd049f82b2e"
+  integrity sha512-knUZVjEP+Nnh6U2Ojv3OC+OooITjzL+huMmoGatvRHP0TE1AutaXO8IecJU+z8+se8QiO6M3GoM83AZhtrOgGw==
 
-"@reef-knot/wallet-adapter-dapp-browser-injected@1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@reef-knot/wallet-adapter-dapp-browser-injected/-/wallet-adapter-dapp-browser-injected-1.0.0.tgz#87e31be96c5a603abaf125be416a59c4f10436c5"
-  integrity sha512-agsC3DJeEgXZM9FYcbWXNJXDwX6Ca9YZagueO6OHYjtCRz5ZWsGLDziug4+VRmsu+CHSXHiqUXHlXMF/bmEdLw==
+"@reef-knot/wallet-adapter-dapp-browser-injected@1.1.0":
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/@reef-knot/wallet-adapter-dapp-browser-injected/-/wallet-adapter-dapp-browser-injected-1.1.0.tgz#a9d82790f699045eaec0ec600ad12c092dab6a7b"
+  integrity sha512-TqEWswXyQhO65PKKPgmnsIn7dlvrz/UmCT1g7Pon4aRNmxMBFY5uhUQtrjShbll6tJocGFKJwVCC1oK/5g6TYQ==
 
-"@reef-knot/wallet-adapter-exodus@1.2.4":
-  version "1.2.4"
-  resolved "https://registry.yarnpkg.com/@reef-knot/wallet-adapter-exodus/-/wallet-adapter-exodus-1.2.4.tgz#1d0d0ff59f4583f20926c88f567a2bdf7b5a62c5"
-  integrity sha512-EdDPbyr3oN+ANkcNSFPdZnQCFdQmCgaPA8mJ+7O44uSPGffkygxHK5STMHkr6kUkGSbvOgR+fKP0y0oHUXBm2A==
+"@reef-knot/wallet-adapter-exodus@1.3.0":
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/@reef-knot/wallet-adapter-exodus/-/wallet-adapter-exodus-1.3.0.tgz#6d68836988d92dbe2953444bfb2ba3f1e9a8466b"
+  integrity sha512-ofm06YBg7oa7bpeTPbnwaqa5TZaiOkkyyLpQ3iGZW74YYnKZhgZdGplXTRadLWcBLIcC8V8PcyGOGfX0HM6l6Q==
 
-"@reef-knot/wallet-adapter-imtoken@1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@reef-knot/wallet-adapter-imtoken/-/wallet-adapter-imtoken-1.0.0.tgz#9af2609775e74dd20c052c8f5542500e40ab0006"
-  integrity sha512-JsHIIwUbsg4wl122ODBxPH2P0WLYI29PCxlZCIciIVRLIg+BHKbLuSHj7NTJL/atvj5SBDa8f/jzdf21MUuPfQ==
+"@reef-knot/wallet-adapter-imtoken@1.1.0":
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/@reef-knot/wallet-adapter-imtoken/-/wallet-adapter-imtoken-1.1.0.tgz#3219d8fb03bf6ec62632c88ead5e6eb989090cb7"
+  integrity sha512-CgBWGgEAIqIjM+odvfBdmGPG2PVkV9zH0LWFm9l1eSzgvOW29W37Kz+D6ZgNFHGn8c5gKM8IMTvuR4KdIQmLyA==
 
-"@reef-knot/wallet-adapter-ledger-hid@2.0.0":
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/@reef-knot/wallet-adapter-ledger-hid/-/wallet-adapter-ledger-hid-2.0.0.tgz#efe1b119c5568634f490d817aa30d4f23721fa61"
-  integrity sha512-USNAc7+iPgqkX2ASLRE6o1MuytiUJxh2FDyyf63DxwJMRO4Dzueuj90+8nVkUaDBFhQo7ZSGUt4AIkkSnzjP1g==
+"@reef-knot/wallet-adapter-ledger-hid@2.1.0":
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/@reef-knot/wallet-adapter-ledger-hid/-/wallet-adapter-ledger-hid-2.1.0.tgz#dd30ba10a5f1ad6162f2533d05dc878757646985"
+  integrity sha512-6foKJ8GgaIR3yQRGUtBk8Tytd5MUbiYTgPCIt8farhOSh22+XQu6c0IYt8RnUQaFPjP8SsSKpXA8Gcb2e5kXeg==
 
-"@reef-knot/wallet-adapter-ledger-live@2.0.0":
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/@reef-knot/wallet-adapter-ledger-live/-/wallet-adapter-ledger-live-2.0.0.tgz#592863aedb42b630e417c0123cf9a0f3d33e0c40"
-  integrity sha512-OJ4w1t8y2u68aPToIesYcWOap0CLCfw0/fd+KtLUbQE2Q6/M0BjU+9rKdAfHIiQkjZD+OXLmiOzoFnyTlefVyA==
+"@reef-knot/wallet-adapter-ledger-live@2.1.0":
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/@reef-knot/wallet-adapter-ledger-live/-/wallet-adapter-ledger-live-2.1.0.tgz#afceba1743479aa04c7a1dca05aa89b93e55e912"
+  integrity sha512-at2eA/5jvzO3FvZK2Sbrg1sOM4xiphKNfd8kTcb9kixqKLw1SJ8jEwigPC37xWURF0X8fUprz/whZaQ+MQSpFg==
 
-"@reef-knot/wallet-adapter-metamask@1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@reef-knot/wallet-adapter-metamask/-/wallet-adapter-metamask-1.0.0.tgz#a7c34ebe5bff79ee01ebd5a52c76862b9794cb2a"
-  integrity sha512-LF/827vZru8FaPj/O+7CX+eK31FF2yrtT3PiAiUmJ3Tlr16hNF1hQgBiBoqsbkdaWVCUF2ehIcdVCIZjsqawfA==
+"@reef-knot/wallet-adapter-metamask@1.1.0":
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/@reef-knot/wallet-adapter-metamask/-/wallet-adapter-metamask-1.1.0.tgz#4339960b8b49e0ccbd08cd539197a41793d8c254"
+  integrity sha512-n5oX16FHUsziI5VjFb+qYmBPNEL/K7BdE8Yiu6Xv4y6NwwM+++h2mwl3tJHvXrzbU/iu7yb8VdgaXy7j+4Lb2A==
 
-"@reef-knot/wallet-adapter-okx@1.3.1":
-  version "1.3.1"
-  resolved "https://registry.yarnpkg.com/@reef-knot/wallet-adapter-okx/-/wallet-adapter-okx-1.3.1.tgz#00f72748cc89b7b0c4fd255ec044326054412225"
-  integrity sha512-GVwvS2noyK3p8aKKP8H50ZVVUvrdj7nUTRFumS3HsZchiQYpNfCeX1W3svZ09+B3zl3ohTg1h9kNOlApQGHv6g==
+"@reef-knot/wallet-adapter-okx@1.4.0":
+  version "1.4.0"
+  resolved "https://registry.yarnpkg.com/@reef-knot/wallet-adapter-okx/-/wallet-adapter-okx-1.4.0.tgz#fc04cd0edd388cc4b06f82736d2f334324f6e153"
+  integrity sha512-VxY8WjKBsI6n6QfzHZ0cXDVRU4H0oc9UJyb8wbiruI0PurnId4qhvUWbewCZCZPUzDXJ9mDmY9fypvXCq2TcAA==
 
-"@reef-knot/wallet-adapter-safe@1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@reef-knot/wallet-adapter-safe/-/wallet-adapter-safe-1.0.0.tgz#f57c347c42530bb0caba9772f056507825830c1d"
-  integrity sha512-+2JgacdtYjfarbWr0ANEHFbCxU4f9Wlg9MWpf4mRUD45fk+9Rgu+k6xNCp+z14DEV5UiRzX6UX2E2bzToPftJw==
+"@reef-knot/wallet-adapter-safe@1.1.0":
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/@reef-knot/wallet-adapter-safe/-/wallet-adapter-safe-1.1.0.tgz#beaeeecd841740073be1c2900a776c9053c8b59c"
+  integrity sha512-tHf7xUwG2S21QiNdtGva39tvU+F6wTAK6CNpdAsmEmY88MYaLgEQ1SdofDSiJkQCIMtNminq/NledYbg5Zp6og==
 
-"@reef-knot/wallet-adapter-trust@1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@reef-knot/wallet-adapter-trust/-/wallet-adapter-trust-1.0.0.tgz#b7ea0b6b24bc5db38cc68df27528346a957a2fd9"
-  integrity sha512-1tEtBy13s2WYkedSt2nE/fZKzUtTULcvOsXlMrGx4CzKUJtcxYFQezjUbwc2UdlbRJTQTMaCWNPCs3RRuG63Nw==
+"@reef-knot/wallet-adapter-trust@1.1.0":
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/@reef-knot/wallet-adapter-trust/-/wallet-adapter-trust-1.1.0.tgz#a4fa59a1cb98eefa4b51d9f4370ffe507024b2cb"
+  integrity sha512-FshDIuUySWqdYGz3l5VhC24klw/8CEXigirVofCtjbIv0iB1N/HR1f9pJlcIMFF51AiBmf53VYl1+q56iugwpA==
 
-"@reef-knot/wallet-adapter-walletconnect@1.2.4":
-  version "1.2.4"
-  resolved "https://registry.yarnpkg.com/@reef-knot/wallet-adapter-walletconnect/-/wallet-adapter-walletconnect-1.2.4.tgz#5a4d1b23e1fad5cae302c5e996f12af3b1da3cd5"
-  integrity sha512-KDsCIiJsDypCepx3qU/vSdb598vncL74KdAd93dHzbUYk32ujmb74sR77Yl03zLhJ0Tbv1xU36WLpefQfN2P8g==
+"@reef-knot/wallet-adapter-walletconnect@1.3.0":
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/@reef-knot/wallet-adapter-walletconnect/-/wallet-adapter-walletconnect-1.3.0.tgz#2176055e3399ad6f4916c007d0c801183a584d54"
+  integrity sha512-aHyUljEtBk9gupKrhmTCHpKheWxCLwlZKKmtStKr9RzB/55aCkeYH8y4y+JGJIUTryb0iRfTQKr02oFeYTKiMA==
 
-"@reef-knot/wallet-adapter-xdefi@1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@reef-knot/wallet-adapter-xdefi/-/wallet-adapter-xdefi-1.0.0.tgz#64d978d33d2d095c46683b2becef9286ba8d579f"
-  integrity sha512-aFk27wkS6fG3RNplohvP59KCaOJJEzDiST2+uOuMj5cpivz8nAdBGWusn9i9Vmr3r4zULyPYuP9culyLNhqXzg==
+"@reef-knot/wallet-adapter-xdefi@1.1.0":
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/@reef-knot/wallet-adapter-xdefi/-/wallet-adapter-xdefi-1.1.0.tgz#2b42cf4740afee5cbb189e83a7134a4f48ec88fe"
+  integrity sha512-PzZ1a1DfbdoVvxD3c8fHIhIg1UZ/vNT8SeG3yiIgWA+l0PQfbOH/Ky/dEzcDY2RJ6asOuUivJkmnZzUi+IjbYA==
 
 "@reef-knot/wallets-helpers@1.1.5":
   version "1.1.5"
   resolved "https://registry.yarnpkg.com/@reef-knot/wallets-helpers/-/wallets-helpers-1.1.5.tgz#bceb7d91a6f7748ec093fbdf7422772bd71708b6"
   integrity sha512-OFWR6zsUy04Waujl1VlNNs91P/kyHeGLC49QLWs3vrHvVipEk7ydUhKU/dHrbuhjQBS7quKg4vrodyCUUl4zyQ==
 
-"@reef-knot/wallets-list@1.12.0":
-  version "1.12.0"
-  resolved "https://registry.yarnpkg.com/@reef-knot/wallets-list/-/wallets-list-1.12.0.tgz#0bc1b104ccccf14049ff999916d415f149f1527f"
-  integrity sha512-yut61rvMfwgJmsqkM2+voK95nbeX8GDYL9CixToe0TZB6XIHm0ixxUHl33zMAPSqKowoWT5odxSGOlJ8vj6fAA==
+"@reef-knot/wallets-list@1.13.0", "@reef-knot/wallets-list@^1.13.0":
+  version "1.13.0"
+  resolved "https://registry.yarnpkg.com/@reef-knot/wallets-list/-/wallets-list-1.13.0.tgz#47cf28e3bdc3be3aaa1386ccdb7a82b2bcbd7f0b"
+  integrity sha512-NHTj2wPOeJvLCvBK6SZcQruFlCjM6vKlRJWEHDV2FozJFPr0poCk6yY2eBrNv1TPd6moiS9wen6ME6Pm0oKJ/g==
   dependencies:
-    "@reef-knot/wallet-adapter-ambire" "1.2.4"
-    "@reef-knot/wallet-adapter-bitkeep" "1.1.1"
-    "@reef-knot/wallet-adapter-brave" "1.0.1"
-    "@reef-knot/wallet-adapter-browser-extension" "1.0.0"
-    "@reef-knot/wallet-adapter-coin98" "1.0.1"
-    "@reef-knot/wallet-adapter-coinbase" "1.0.0"
-    "@reef-knot/wallet-adapter-dapp-browser-injected" "1.0.0"
-    "@reef-knot/wallet-adapter-exodus" "1.2.4"
-    "@reef-knot/wallet-adapter-imtoken" "1.0.0"
-    "@reef-knot/wallet-adapter-ledger-hid" "2.0.0"
-    "@reef-knot/wallet-adapter-ledger-live" "2.0.0"
-    "@reef-knot/wallet-adapter-metamask" "1.0.0"
-    "@reef-knot/wallet-adapter-okx" "1.3.1"
-    "@reef-knot/wallet-adapter-safe" "1.0.0"
-    "@reef-knot/wallet-adapter-trust" "1.0.0"
-    "@reef-knot/wallet-adapter-walletconnect" "1.2.4"
-    "@reef-knot/wallet-adapter-xdefi" "1.0.0"
+    "@reef-knot/wallet-adapter-ambire" "1.3.0"
+    "@reef-knot/wallet-adapter-bitkeep" "1.2.0"
+    "@reef-knot/wallet-adapter-brave" "1.1.0"
+    "@reef-knot/wallet-adapter-browser-extension" "1.1.0"
+    "@reef-knot/wallet-adapter-coin98" "1.1.0"
+    "@reef-knot/wallet-adapter-coinbase" "1.1.0"
+    "@reef-knot/wallet-adapter-dapp-browser-injected" "1.1.0"
+    "@reef-knot/wallet-adapter-exodus" "1.3.0"
+    "@reef-knot/wallet-adapter-imtoken" "1.1.0"
+    "@reef-knot/wallet-adapter-ledger-hid" "2.1.0"
+    "@reef-knot/wallet-adapter-ledger-live" "2.1.0"
+    "@reef-knot/wallet-adapter-metamask" "1.1.0"
+    "@reef-knot/wallet-adapter-okx" "1.4.0"
+    "@reef-knot/wallet-adapter-safe" "1.1.0"
+    "@reef-knot/wallet-adapter-trust" "1.1.0"
+    "@reef-knot/wallet-adapter-walletconnect" "1.3.0"
+    "@reef-knot/wallet-adapter-xdefi" "1.1.0"
 
 "@reef-knot/web3-react@3.0.0":
   version "3.0.0"
@@ -9218,18 +9219,18 @@ redis-parser@^3.0.0:
   dependencies:
     redis-errors "^1.0.0"
 
-reef-knot@^3.0.2:
-  version "3.0.2"
-  resolved "https://registry.yarnpkg.com/reef-knot/-/reef-knot-3.0.2.tgz#9b5f93d56c77e7c942c301412e7c59c797bb1bbb"
-  integrity sha512-4NNlPPYknxH0BogH0lfsOflEgD+TXdc6YMq5YLN5/RE8fAMfUXIGHvVe/P+L6NsM2BDubQXCU1F8I7prknsaEw==
+reef-knot@^4.0.0:
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/reef-knot/-/reef-knot-4.0.0.tgz#f68db9f151b1b35f86e0992c02b00a7fe3a5715e"
+  integrity sha512-8FNTPx+tkznwFXCyEU+i0TBm4atY0hJQgzX1olTF0ZbBvzzfkWJ5mPKST2Z/k5cyqtgtmJR/s9H7ut9Y3lRBQA==
   dependencies:
-    "@reef-knot/connect-wallet-modal" "3.0.2"
+    "@reef-knot/connect-wallet-modal" "4.0.0"
     "@reef-knot/core-react" "3.0.0"
     "@reef-knot/ledger-connector" "3.0.0"
-    "@reef-knot/types" "1.5.0"
-    "@reef-knot/ui-react" "1.0.8"
+    "@reef-knot/types" "1.6.0"
+    "@reef-knot/ui-react" "1.1.0"
     "@reef-knot/wallets-helpers" "1.1.5"
-    "@reef-knot/wallets-list" "1.12.0"
+    "@reef-knot/wallets-list" "1.13.0"
     "@reef-knot/web3-react" "3.0.0"
 
 reflect.getprototypeof@^1.0.4:

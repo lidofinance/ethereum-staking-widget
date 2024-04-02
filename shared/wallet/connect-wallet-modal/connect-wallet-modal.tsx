@@ -1,6 +1,9 @@
 import { useThemeToggle } from '@lidofinance/lido-ui';
 import { WalletsModalForEth } from 'reef-knot/connect-wallet-modal';
+import { WalletIdsEthereum } from 'reef-knot/wallets';
 import { walletsMetrics } from 'config/matomoWalletsEvents';
+
+const WALLETS_PINNED: WalletIdsEthereum[] = ['okx', 'browserExtension'];
 
 export const ConnectWalletModal = () => {
   const { themeName } = useThemeToggle();
@@ -9,6 +12,7 @@ export const ConnectWalletModal = () => {
     <WalletsModalForEth
       shouldInvertWalletIcon={themeName === 'dark'}
       metrics={walletsMetrics}
+      walletsPinned={WALLETS_PINNED}
     />
   );
 };
