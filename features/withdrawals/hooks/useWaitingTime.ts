@@ -38,13 +38,23 @@ export const useWaitingTime = (
     return `${basePath}/v2/request-time/calculate${queryString}`;
   }, [debouncedAmount]);
 
-  const { data, initialLoading, error } = useLidoSWR(url, standardFetcher, {
-    ...STRATEGY_EAGER,
-    shouldRetryOnError: (e: unknown) => {
-      // if api is not happy about our request - no retry
-      return !(e && typeof e == 'object' && 'status' in e && e.status == 400);
+  const { data, initialLoading, error } = useLidoSWR(
+    ['swr:waiting-time'],
+    () =>
+      standardFetcher(url, {
+        headers: {
+          'Content-Type': 'application/json',
+          'WQ-Request-Source': 'widget',
+        },
+      }),
+    {
+      ...STRATEGY_EAGER,
+      shouldRetryOnError: (e: unknown) => {
+        // if api is not happy about our request - no retry
+        return !(e && typeof e == 'object' && 'status' in e && e.status == 400);
+      },
     },
-  }) as SWRResponse<RequestTimeV2Dto>;
+  ) as SWRResponse<RequestTimeV2Dto>;
   const { isBunker, isPaused } = useWithdrawals();
   const isRequestError = error instanceof FetcherError && error.status < 500;
 

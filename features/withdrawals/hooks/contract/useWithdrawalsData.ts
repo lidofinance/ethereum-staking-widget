@@ -2,10 +2,7 @@ import { useCallback } from 'react';
 import { Zero } from '@ethersproject/constants';
 import { BigNumber } from 'ethers';
 import { useLidoSWR } from '@lido-sdk/react';
-// import { useLidoShareRate } from 'features/withdrawals/hooks/contract/useLidoShareRate';
-
 import { useWithdrawalsContract } from './useWithdrawalsContract';
-
 import {
   RequestStatus,
   RequestStatusClaimable,
@@ -17,11 +14,21 @@ import { standardFetcher } from 'utils/standardFetcher';
 import { dynamics } from 'config';
 import { encodeURLQuery } from 'utils/encodeURLQuery';
 
-// import { calcExpectedRequestEth } from 'features/withdrawals/utils/calc-expected-request-eth';
-
 export type WithdrawalRequests = NonNullable<
   ReturnType<typeof useWithdrawalRequests>['data']
 >;
+
+export type RequestInfoDto = {
+  finalizationIn: number;
+  finalizationAt: string;
+  requestId: string;
+  requestedAt: string;
+};
+
+export type RequestTimeByRequestIds = {
+  requestInfo: RequestInfoDto;
+  nextCalculationAt: string;
+};
 
 const getRequestTimeForWQRequestIds = async (
   ids: string[],
@@ -45,7 +52,12 @@ const getRequestTimeForWQRequestIds = async (
     const params = encodeURLQuery({ ids: page.toString() });
     const queryString = params ? `?${params}` : '';
     const url = `${basePath}/v2/request-time${queryString}`;
-    const requests = (await standardFetcher(url)) as any;
+    const requests = await standardFetcher<RequestTimeByRequestIds[]>(url, {
+      headers: {
+        'Content-Type': 'application/json',
+        'WQ-Request-Source': 'widget',
+      },
+    });
 
     for (const request of requests) {
       if (!request || !request.requestInfo) continue;
