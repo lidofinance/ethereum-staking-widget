@@ -1,7 +1,7 @@
 import { useCallback, useMemo } from 'react';
 import { useIsMultisig } from 'shared/hooks/useIsMultisig';
 import { useSTETHBalance, useWSTETHBalance } from '@lido-sdk/react';
-import { STRATEGY_LAZY } from 'utils/swrStrategies';
+import { STRATEGY_LAZY } from 'consts/swr-strategies';
 
 export const useUnwrapFormNetworkData = () => {
   const { isMultisig } = useIsMultisig();

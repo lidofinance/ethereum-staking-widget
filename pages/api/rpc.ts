@@ -1,6 +1,9 @@
 import { rpcFactory } from '@lidofinance/next-pages';
 import { wrapRequest as wrapNextRequest } from '@lidofinance/next-api-wrapper';
-import { dynamics, METRICS_PREFIX, API_ROUTES } from 'config';
+
+import { config } from 'config';
+import { API_ROUTES } from 'consts/api';
+import { METRICS_PREFIX } from 'consts/metrics';
 import {
   fetchRPC,
   rateLimit,
@@ -36,7 +39,7 @@ const rpc = rpcFactory({
     'eth_chainId',
     'net_version',
   ],
-  defaultChain: `${dynamics.defaultChain}`,
+  defaultChain: `${config.defaultChain}`,
   providers: rpcUrls,
 });
 

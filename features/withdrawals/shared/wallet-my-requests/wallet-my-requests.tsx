@@ -1,9 +1,9 @@
 import { FC, PropsWithChildren } from 'react';
 import { Tooltip, TimeSquare, TickSquare } from '@lidofinance/lido-ui';
 
-import { CardBalance } from 'shared/wallet';
+import { DATA_UNAVAILABLE } from 'consts/text';
 import { useClaimData } from 'features/withdrawals/contexts/claim-data-context';
-import { DATA_UNAVAILABLE } from 'config';
+import { CardBalance } from 'shared/wallet';
 
 import { RequestCounterStyled } from './styles';
 

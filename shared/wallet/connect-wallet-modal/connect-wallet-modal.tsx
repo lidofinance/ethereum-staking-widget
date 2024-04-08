@@ -1,6 +1,7 @@
-import { useThemeToggle } from '@lidofinance/lido-ui';
 import { WalletsModalForEth } from 'reef-knot/connect-wallet-modal';
-import { walletsMetrics } from 'config/matomoWalletsEvents';
+import { useThemeToggle } from '@lidofinance/lido-ui';
+
+import { walletsMetrics } from 'consts/matomo-wallets-events';
 
 export const ConnectWalletModal = () => {
   const { themeName } = useThemeToggle();

@@ -1,16 +1,17 @@
 import { FC, PropsWithChildren } from 'react';
 import { CookieThemeProvider } from '@lidofinance/lido-ui';
+
 import { GlobalStyle } from 'styles';
+import { ConfigProvider } from 'config';
 
 import { AppFlagProvider } from './app-flag';
-import { ClientConfigProvider } from './client-config';
 import { IPFSInfoBoxStatusesProvider } from './ipfs-info-box-statuses';
 import { InpageNavigationProvider } from './inpage-navigation';
 import { ModalProvider } from './modal-provider';
 import Web3Provider from './web3';
 
 export const Providers: FC<PropsWithChildren> = ({ children }) => (
-  <ClientConfigProvider>
+  <ConfigProvider>
     <AppFlagProvider>
       <CookieThemeProvider>
         <GlobalStyle />
@@ -23,5 +24,5 @@ export const Providers: FC<PropsWithChildren> = ({ children }) => (
         </Web3Provider>
       </CookieThemeProvider>
     </AppFlagProvider>
-  </ClientConfigProvider>
+  </ConfigProvider>
 );
