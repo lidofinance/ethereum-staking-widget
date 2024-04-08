@@ -8,7 +8,7 @@ import {
   WITHDRAWALS_CLAIM_PATH,
   REWARDS_PATH,
   getPathWithoutFirstSlash,
-} from 'config/urls';
+} from 'consts/urls';
 import { LocalLink } from 'shared/components/local-link';
 import { useRouterPath } from 'shared/hooks/use-router-path';
 

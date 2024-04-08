@@ -1,6 +1,6 @@
 import { trackEvent } from '@lidofinance/analytics-matomo';
 import { TOKENS_TO_WRAP } from 'features/wsteth/shared/types';
-import { MATOMO_CLICK_EVENTS } from 'config';
+import { MATOMO_CLICK_EVENTS } from 'consts/matomo-click-events';
 import { TokenSelectHookForm } from 'shared/hook-form/controls/token-select-hook-form';
 
 const OPTIONS = [

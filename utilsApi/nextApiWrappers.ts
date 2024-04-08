@@ -9,16 +9,14 @@ import {
   DEFAULT_API_ERROR_MESSAGE,
 } from '@lidofinance/next-api-wrapper';
 import { rateLimitWrapper } from '@lidofinance/next-ip-rate-limit';
-import {
-  CACHE_DEFAULT_HEADERS,
-  RATE_LIMIT,
-  RATE_LIMIT_TIME_FRAME,
-} from 'config';
+import { CHAINS } from '@lido-sdk/constants';
+
+import { config, secretConfig } from 'config';
+
 import {
   getMetricContractInterface,
   METRIC_CONTRACT_ADDRESSES,
 } from './contractAddressesMetricsMap';
-import { CHAINS } from '@lido-sdk/constants';
 
 export enum HttpMethod {
   GET = 'GET',
@@ -177,8 +175,8 @@ export const requestAddressMetric =
   };
 
 export const rateLimit = rateLimitWrapper({
-  rateLimit: RATE_LIMIT,
-  rateLimitTimeFrame: RATE_LIMIT_TIME_FRAME,
+  rateLimit: secretConfig.rateLimit,
+  rateLimitTimeFrame: secretConfig.rateLimitTimeFrame,
 });
 
 export const nextDefaultErrorHandler =
@@ -212,7 +210,7 @@ export const defaultErrorHandler = nextDefaultErrorHandler({
 
 export const errorAndCacheDefaultWrappers = [
   cacheControl({
-    headers: CACHE_DEFAULT_HEADERS,
+    headers: config.CACHE_DEFAULT_HEADERS,
   }),
   defaultErrorHandler,
 ];

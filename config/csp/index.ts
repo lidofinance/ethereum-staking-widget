@@ -1,18 +1,19 @@
 import { FC } from 'react';
 import { AppProps } from 'next/app';
-import getConfig from 'next/config';
 import { withSecureHeaders } from 'next-secure-headers';
-
-import { dynamics } from 'config';
 import type { ContentSecurityPolicyOption } from 'next-secure-headers/lib/rules';
 
-const { serverRuntimeConfig } = getConfig();
-const { cspTrustedHosts, cspReportOnly, cspReportUri, developmentMode } =
-  serverRuntimeConfig;
+// Don't use absolute import here!
+// code'''
+//    import { config, secretConfig } from 'config';
+// '''
+// otherwise you will get something like a cyclic error!
+import { config } from '../get-config';
+import { secretConfig } from '../get-secret-config';
 
-const trustedHosts = cspTrustedHosts ? cspTrustedHosts.split(',') : [];
-
-const reportOnly = cspReportOnly == 'true';
+const trustedHosts = secretConfig.cspTrustedHosts
+  ? secretConfig.cspTrustedHosts.split(',')
+  : [];
 
 export const contentSecurityPolicy: ContentSecurityPolicyOption = {
   directives: {
@@ -28,7 +29,7 @@ export const contentSecurityPolicy: ContentSecurityPolicyOption = {
     scriptSrc: [
       "'self'",
       "'unsafe-inline'",
-      ...(developmentMode ? ["'unsafe-eval'"] : []), // for HMR
+      ...(config.developmentMode ? ["'unsafe-eval'"] : []), // for HMR
       ...trustedHosts,
     ],
 
@@ -37,14 +38,14 @@ export const contentSecurityPolicy: ContentSecurityPolicyOption = {
       "'self'",
       'https:',
       'wss:',
-      ...(developmentMode ? ['ws:'] : []), // for HMR
+      ...(config.developmentMode ? ['ws:'] : []), // for HMR
     ],
 
-    ...(!dynamics.ipfsMode && {
+    ...(!config.ipfsMode && {
       // CSP directive 'frame-ancestors' is ignored when delivered via a <meta> element.
       // CSP directive 'report-uri' is ignored when delivered via a <meta> element.
       frameAncestors: ['*'],
-      reportURI: cspReportUri,
+      reportURI: secretConfig.cspReportUri,
     }),
     childSrc: [
       "'self'",
@@ -52,9 +53,9 @@ export const contentSecurityPolicy: ContentSecurityPolicyOption = {
       'https://*.walletconnect.com',
     ],
     workerSrc: ["'none'"],
-    'base-uri': dynamics.ipfsMode ? undefined : ["'none'"],
+    'base-uri': config.ipfsMode ? undefined : ["'none'"],
   },
-  reportOnly,
+  reportOnly: secretConfig.cspReportOnly,
 };
 
 export const withCsp = (app: FC<AppProps>): FC =>

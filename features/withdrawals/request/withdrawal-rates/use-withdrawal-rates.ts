@@ -5,8 +5,8 @@ import { Zero } from '@ethersproject/constants';
 import { TOKENS } from '@lido-sdk/constants';
 import { useLidoSWR } from '@lido-sdk/react';
 
+import { STRATEGY_LAZY } from 'consts/swr-strategies';
 import { useDebouncedValue } from 'shared/hooks/useDebouncedValue';
-import { STRATEGY_LAZY } from 'utils/swrStrategies';
 
 import type { RequestFormInputType } from '../request-form-context';
 import { getDexConfig } from './integrations';

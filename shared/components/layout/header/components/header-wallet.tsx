@@ -6,7 +6,8 @@ import { CHAINS, getChainColor } from '@lido-sdk/constants';
 import { ThemeToggler } from '@lidofinance/lido-ui';
 import NoSSRWrapper from '../../../no-ssr-wrapper';
 
-import { dynamics } from 'config';
+import { config } from 'config';
+
 import { IPFSInfoBox } from 'features/ipfs/ipfs-info-box';
 import { Button, Connect } from 'shared/wallet';
 
@@ -42,9 +43,9 @@ const HeaderWallet: FC = () => {
       ) : (
         <Connect size="sm" />
       )}
-      {dynamics.ipfsMode && <HeaderSettingsButton />}
+      {config.ipfsMode && <HeaderSettingsButton />}
       {!queryTheme && <ThemeToggler data-testid="themeToggler" />}
-      {dynamics.ipfsMode && (
+      {config.ipfsMode && (
         <IPFSInfoBoxOnlyDesktopWrapper>
           <IPFSInfoBox />
         </IPFSInfoBoxOnlyDesktopWrapper>

@@ -2,8 +2,8 @@ import { BigNumber } from 'ethers';
 
 import { useWithdrawalRates } from 'features/withdrawals/request/withdrawal-rates/use-withdrawal-rates';
 import { FormatToken } from 'shared/formatters/format-token';
+import { trackMatomoEvent } from 'utils/track-matomo-event';
 
-import { trackMatomoEvent } from 'config/trackMatomoEvent';
 import {
   DexOptionBlockLink,
   DexOptionBlockTitle,

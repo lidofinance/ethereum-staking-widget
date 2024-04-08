@@ -1,5 +1,8 @@
 import { trackEvent } from '@lidofinance/analytics-matomo';
-import { MATOMO_CLICK_EVENTS, MATOMO_CLICK_EVENTS_TYPES } from 'config';
+import {
+  MATOMO_CLICK_EVENTS_TYPES,
+  MATOMO_CLICK_EVENTS,
+} from 'consts/matomo-click-events';
 
 const onClickHandler = (event: React.MouseEvent<HTMLElement, MouseEvent>) => {
   const { target } = event;

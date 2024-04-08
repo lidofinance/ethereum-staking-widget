@@ -1,5 +1,7 @@
 import { Tooltip } from '@lidofinance/lido-ui';
-import { DATA_UNAVAILABLE, LOCALE } from 'config';
+import { DATA_UNAVAILABLE } from 'consts/text';
+
+import { config } from 'config';
 import { Component } from 'types';
 
 export type FormatPriceComponent = Component<
@@ -12,7 +14,7 @@ export const FormatPrice: FormatPriceComponent = (props) => {
   const actual =
     amount == null
       ? DATA_UNAVAILABLE
-      : amount.toLocaleString(LOCALE, {
+      : amount.toLocaleString(config.LOCALE, {
           style: 'currency',
           currency,
         });
@@ -23,7 +25,7 @@ export const FormatPrice: FormatPriceComponent = (props) => {
         placement="topRight"
         title={
           <span>
-            {amount.toLocaleString(LOCALE, {
+            {amount.toLocaleString(config.LOCALE, {
               style: 'currency',
               currency,
               maximumFractionDigits: 10,
