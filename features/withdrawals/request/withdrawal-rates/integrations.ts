@@ -174,9 +174,9 @@ const dexWithdrawalMap: DexWithdrawalIntegrationMap = {
     icon: OneInchIcon,
     matomoEvent: MATOMO_CLICK_EVENTS_TYPES.withdrawalGoTo1inch,
     link: (amount, token) =>
-      `https://app.1inch.io/#/1/simple/swap/${
+      `https://app.1inch.io/#/1/advanced/swap/${
         token == TOKENS.STETH ? 'stETH' : 'wstETH'
-      }/ETH?sourceTokenAmount=${formatEther(amount)}`,
+      }/ETH?mode=classic&sourceTokenAmount=${formatEther(amount)}`,
   },
   bebop: {
     title: 'Bebop',
