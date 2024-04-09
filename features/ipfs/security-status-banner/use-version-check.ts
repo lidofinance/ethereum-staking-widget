@@ -52,7 +52,7 @@ export const useVersionCheck = () => {
       remoteVersionSWR.data &&
         ((currentCidSWR.data &&
           remoteVersionSWR.data.cid !== currentCidSWR.data) ||
-          !dynamics.ipfsMode) &&
+          !config.ipfsMode) &&
         remoteVersionSWR.data.leastSafeVersion !== NO_SAFE_VERSION,
     ),
     'mock-qa-helpers-security-banner-is-update-available',

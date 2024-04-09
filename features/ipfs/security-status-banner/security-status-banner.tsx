@@ -132,7 +132,7 @@ export const SecurityStatusBanner = () => {
             <a
               href={data.remoteCidLink ?? window.location.href}
               onClick={
-                dynamics.ipfsMode
+                config.ipfsMode
                   ? undefined
                   : (e) => {
                       e.preventDefault();
