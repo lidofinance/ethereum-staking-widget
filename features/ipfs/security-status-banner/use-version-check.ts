@@ -24,7 +24,7 @@ export const useVersionCheck = () => {
   const { forceDisconnect } = useForceDisconnect();
   const [areConditionsAccepted, setConditionsAccepted] = useState(false);
 
-  // local cid extraction
+  // only IPFS: local cid extraction
   const currentCidSWR = useLidoSWR(
     ['swr:ipfs-cid-extraction'],
     async () => {
@@ -44,11 +44,15 @@ export const useVersionCheck = () => {
   // ens cid extraction
   const remoteVersionSWR = useRemoteVersion();
 
+  // update is available
+  // for INFRA - leastSafeVersion is not NO_SAFE_VERSION
+  // for IPFS - ^this and current cid doesn't match
   const isUpdateAvailable = overrideWithQAMockBoolean(
     Boolean(
       remoteVersionSWR.data &&
-        currentCidSWR.data &&
-        remoteVersionSWR.data.cid !== currentCidSWR.data &&
+        ((currentCidSWR.data &&
+          remoteVersionSWR.data.cid !== currentCidSWR.data) ||
+          !dynamics.ipfsMode) &&
         remoteVersionSWR.data.leastSafeVersion !== NO_SAFE_VERSION,
     ),
     'mock-qa-helpers-security-banner-is-update-available',
