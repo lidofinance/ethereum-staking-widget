@@ -1,4 +1,4 @@
-import { dynamics } from 'config';
+import { config } from 'config';
 
 export type BackendQuery = {
   address: string;
@@ -15,8 +15,8 @@ export const backendRequest = async (query: BackendQuery) => {
   Object.entries(query).forEach(([k, v]) => params.append(k, v.toString()));
 
   let apiRewardsUrl;
-  if (dynamics.ipfsMode) {
-    apiRewardsUrl = `${dynamics.rewardsBackendBasePath}?${params.toString()}`;
+  if (config.ipfsMode) {
+    apiRewardsUrl = `${config.rewardsBackendBasePath}?${params.toString()}`;
   } else {
     apiRewardsUrl = `/api/rewards?${params.toString()}`;
   }

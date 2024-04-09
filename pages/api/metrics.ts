@@ -1,5 +1,5 @@
 import { wrapRequest as wrapNextRequest } from '@lidofinance/next-api-wrapper';
-import { API_ROUTES } from 'config';
+import { API_ROUTES } from 'consts/api';
 import {
   responseTimeMetric,
   errorAndCacheDefaultWrappers,

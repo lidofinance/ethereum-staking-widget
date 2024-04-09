@@ -9,7 +9,7 @@ import { useWithdrawals } from 'features/withdrawals/contexts/withdrawals-contex
 import { useUnfinalizedStETH } from 'features/withdrawals/hooks';
 import { useCallback, useMemo } from 'react';
 import { useWstethBySteth } from 'shared/hooks';
-import { STRATEGY_LAZY } from 'utils/swrStrategies';
+import { STRATEGY_LAZY } from 'consts/swr-strategies';
 
 // Provides all data fetching for form to function
 export const useRequestFormDataContextValue = () => {

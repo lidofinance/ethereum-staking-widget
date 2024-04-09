@@ -1,10 +1,10 @@
+import { DataTableRow } from '@lidofinance/lido-ui';
+import { parseEther } from '@ethersproject/units';
+
+import { FormatToken } from 'shared/formatters';
 import { useStethByWsteth } from 'shared/hooks';
 
-import { DataTableRow } from '@lidofinance/lido-ui';
-import { FormatToken } from 'shared/formatters';
-
-import { parseEther } from '@ethersproject/units';
-import { DATA_UNAVAILABLE } from 'config';
+import { DATA_UNAVAILABLE } from 'consts/text';
 
 const OneWsteth = parseEther('1');
 

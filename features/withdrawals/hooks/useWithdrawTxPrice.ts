@@ -1,27 +1,20 @@
 import { useMemo } from 'react';
-import { useLidoSWR, useSDK } from '@lido-sdk/react';
-import { standardFetcher } from 'utils/standardFetcher';
-import {
-  ESTIMATE_ACCOUNT,
-  WITHDRAWAL_QUEUE_CLAIM_GAS_LIMIT_DEFAULT,
-  WITHDRAWAL_QUEUE_REQUEST_STETH_APPROVED_GAS_LIMIT_DEFAULT,
-  WITHDRAWAL_QUEUE_REQUEST_STETH_PERMIT_GAS_LIMIT_DEFAULT,
-  WITHDRAWAL_QUEUE_REQUEST_WSTETH_PERMIT_GAS_LIMIT_DEFAULT,
-  WITHDRAWAL_QUEUE_REQUEST_WSTETH_APPROVED_GAS_LIMIT_DEFAULT,
-  dynamics,
-} from 'config';
-import { MAX_REQUESTS_COUNT } from 'features/withdrawals/withdrawals-constants';
-
+import { BigNumber } from 'ethers';
+import invariant from 'tiny-invariant';
 import { useWeb3 } from 'reef-knot/web3-react';
-import { TOKENS } from '@lido-sdk/constants';
 
-import { useWithdrawalsContract } from './contract/useWithdrawalsContract';
+import { TOKENS } from '@lido-sdk/constants';
+import { useLidoSWR, useSDK } from '@lido-sdk/react';
+
+import { config } from 'config';
+import { STRATEGY_LAZY } from 'consts/swr-strategies';
+import { MAX_REQUESTS_COUNT } from 'features/withdrawals/withdrawals-constants';
 import { useTxCostInUsd } from 'shared/hooks/txCost';
 import { useDebouncedValue } from 'shared/hooks/useDebouncedValue';
 import { encodeURLQuery } from 'utils/encodeURLQuery';
-import { BigNumber } from 'ethers';
-import invariant from 'tiny-invariant';
-import { STRATEGY_LAZY } from 'utils/swrStrategies';
+import { standardFetcher } from 'utils/standardFetcher';
+
+import { useWithdrawalsContract } from './contract/useWithdrawalsContract';
 import { RequestStatusClaimable } from '../types/request-status';
 
 type UseRequestTxPriceOptions = {
@@ -40,17 +33,17 @@ export const useRequestTxPrice = ({
   const fallback =
     token === 'STETH'
       ? isApprovalFlow
-        ? WITHDRAWAL_QUEUE_REQUEST_STETH_APPROVED_GAS_LIMIT_DEFAULT
-        : WITHDRAWAL_QUEUE_REQUEST_STETH_PERMIT_GAS_LIMIT_DEFAULT
+        ? config.WITHDRAWAL_QUEUE_REQUEST_STETH_APPROVED_GAS_LIMIT_DEFAULT
+        : config.WITHDRAWAL_QUEUE_REQUEST_STETH_PERMIT_GAS_LIMIT_DEFAULT
       : isApprovalFlow
-        ? WITHDRAWAL_QUEUE_REQUEST_WSTETH_APPROVED_GAS_LIMIT_DEFAULT
-        : WITHDRAWAL_QUEUE_REQUEST_WSTETH_PERMIT_GAS_LIMIT_DEFAULT;
+        ? config.WITHDRAWAL_QUEUE_REQUEST_WSTETH_APPROVED_GAS_LIMIT_DEFAULT
+        : config.WITHDRAWAL_QUEUE_REQUEST_WSTETH_PERMIT_GAS_LIMIT_DEFAULT;
 
   const cappedRequestCount = Math.min(requestCount || 1, MAX_REQUESTS_COUNT);
   const debouncedRequestCount = useDebouncedValue(cappedRequestCount, 2000);
 
   const url = useMemo(() => {
-    const basePath = dynamics.wqAPIBasePath;
+    const basePath = config.wqAPIBasePath;
     const params = encodeURLQuery({
       token,
       requestCount: debouncedRequestCount,
@@ -78,8 +71,8 @@ export const useRequestTxPrice = ({
             Array.from<BigNumber>({ length: debouncedRequestCount }).fill(
               BigNumber.from(100),
             ),
-            ESTIMATE_ACCOUNT,
-            { from: ESTIMATE_ACCOUNT },
+            config.ESTIMATE_ACCOUNT,
+            { from: config.ESTIMATE_ACCOUNT },
           );
           return gasLimit;
         } catch (error) {
@@ -161,7 +154,7 @@ export const useClaimTxPrice = (requests: RequestStatusClaimable[]) => {
   const gasLimit = isEstimateLoading
     ? undefined
     : gasLimitResult ??
-      WITHDRAWAL_QUEUE_CLAIM_GAS_LIMIT_DEFAULT.mul(requestCount);
+      config.WITHDRAWAL_QUEUE_CLAIM_GAS_LIMIT_DEFAULT.mul(requestCount);
 
   const { txCostUsd: price, initialLoading: isTxCostLoading } =
     useTxCostInUsd(gasLimit);

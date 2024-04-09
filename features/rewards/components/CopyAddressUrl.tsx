@@ -1,7 +1,8 @@
 import { useMemo } from 'react';
 import { ButtonIcon, Copy } from '@lidofinance/lido-ui';
 
-import { dynamics } from 'config';
+import { config } from 'config';
+
 import { useCopyToClipboard } from 'shared/hooks';
 import { getBasedHashHref } from 'utils/get-based-hash-href';
 
@@ -10,7 +11,7 @@ const CopyAddressUrl = ({ address }: { address: string }) => {
   const url = useMemo(() => {
     const { href } = location;
 
-    if (dynamics.ipfsMode) {
+    if (config.ipfsMode) {
       let withoutHashAndQuery = href.split('?')[0].split('#')[0];
       if (withoutHashAndQuery[withoutHashAndQuery.length - 1] === '/') {
         // Remove first '/'

@@ -1,11 +1,10 @@
 import { BigNumber } from 'ethers';
-import getConfig from 'next/config';
 
+import { secretConfig } from 'config';
 import { standardFetcher } from 'utils/standardFetcher';
 import { responseTimeExternalMetricWrapper } from 'utilsApi';
 
-const { serverRuntimeConfig } = getConfig();
-const ONE_INCH_API_KEY = serverRuntimeConfig.oneInchApiKey as string;
+const ONE_INCH_API_KEY = secretConfig.oneInchApiKey as string;
 const ONE_INCH_API_ENDPOINT = 'https://api.1inch.dev/swap/v5.2/1/quote';
 const RATE_PRECISION = 1000000;
 

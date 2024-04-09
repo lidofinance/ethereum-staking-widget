@@ -1,18 +1,15 @@
 import { Cache } from 'memory-cache';
 import { NextApiRequest, NextApiResponse } from 'next';
-import { parseEther } from '@ethersproject/units';
-import { Zero } from '@ethersproject/constants';
 import { BigNumber } from 'ethers';
 import invariant from 'tiny-invariant';
 
+import { parseEther } from '@ethersproject/units';
+import { Zero } from '@ethersproject/constants';
 import { wrapRequest as wrapNextRequest } from '@lidofinance/next-api-wrapper';
 import { CHAINS, TOKENS, getTokenAddress } from '@lido-sdk/constants';
 
-import {
-  CACHE_ONE_INCH_RATE_KEY,
-  CACHE_ONE_INCH_RATE_TTL,
-  API_ROUTES,
-} from 'config';
+import { config } from 'config';
+import { API_ROUTES } from 'consts/api';
 import {
   getOneInchRate,
   responseTimeMetric,
@@ -88,7 +85,7 @@ const validateAndParseParams = (req: NextApiRequest, res: NextApiResponse) => {
 // Returns 1inch rate
 const oneInchRate: API = async (req, res) => {
   const { token, amount } = validateAndParseParams(req, res);
-  const cacheKey = `${CACHE_ONE_INCH_RATE_KEY}-${token}-${amount}`;
+  const cacheKey = `${config.CACHE_ONE_INCH_RATE_KEY}-${token}-${amount}`;
   const cachedOneInchRate = cache.get(cacheKey);
 
   if (cachedOneInchRate) {
@@ -114,15 +111,15 @@ const oneInchRate: API = async (req, res) => {
       rate: oneInchRate.rate,
       toReceive: oneInchRate.toAmount.toString(),
     };
-    cache.put(cacheKey, result, CACHE_ONE_INCH_RATE_TTL);
+    cache.put(cacheKey, result, config.CACHE_ONE_INCH_RATE_TTL);
     res.status(200).json(result);
-  } catch (e) {
-    if (e instanceof FetcherError && PASSTHROUGH_CODES.includes(e.status)) {
-      res.status(e.status).json({ message: e.message });
+  } catch (err) {
+    if (err instanceof FetcherError && PASSTHROUGH_CODES.includes(err.status)) {
+      res.status(err.status).json({ message: err.message });
       return;
     }
-    console.error('[oneInchRate] Request to 1inch failed', e);
-    throw e;
+    console.error('[oneInchRate] Request to 1inch failed', err);
+    throw err;
   }
 };
 

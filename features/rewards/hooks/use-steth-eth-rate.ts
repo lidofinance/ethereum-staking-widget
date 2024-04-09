@@ -1,7 +1,7 @@
-import { STRATEGY_LAZY } from 'utils/swrStrategies';
-import { useMainnetStaticRpcProvider } from 'shared/hooks/use-mainnet-static-rpc-provider';
 import { useLidoSWR, useSDK } from '@lido-sdk/react';
 
+import { STRATEGY_LAZY } from 'consts/swr-strategies';
+import { useMainnetStaticRpcProvider } from 'shared/hooks/use-mainnet-static-rpc-provider';
 import { stEthEthRequest } from 'features/rewards/fetchers/requesters';
 import { constants } from 'ethers';
 

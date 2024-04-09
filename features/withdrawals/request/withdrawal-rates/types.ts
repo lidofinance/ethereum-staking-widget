@@ -1,6 +1,6 @@
-import type { TOKENS } from '@lido-sdk/constants';
-import { MATOMO_CLICK_EVENTS_TYPES } from 'config';
 import type { BigNumber } from 'ethers';
+import type { TOKENS } from '@lido-sdk/constants';
+import { MATOMO_CLICK_EVENTS_TYPES } from 'consts/matomo-click-events';
 import { TokensWithdrawable } from 'features/withdrawals/types/tokens-withdrawable';
 
 export type GetWithdrawalRateParams = {

@@ -1,19 +1,19 @@
+import { useFormContext } from 'react-hook-form';
+import { useWeb3 } from 'reef-knot/web3-react';
+
 import { parseEther } from '@ethersproject/units';
 import { DataTable, DataTableRow } from '@lidofinance/lido-ui';
-import { useFormContext } from 'react-hook-form';
+import { TOKENS } from '@lido-sdk/constants';
 
+import { DATA_UNAVAILABLE } from 'consts/text';
+import { useDebouncedWstethBySteth } from 'features/wsteth/shared/hooks/use-debounced-wsteth-steth';
+import { TOKENS_TO_WRAP } from 'features/wsteth/shared/types';
+import { AllowanceDataTableRow } from 'shared/components/allowance-data-table-row';
 import { FormatPrice, FormatToken } from 'shared/formatters';
 import { useTxCostInUsd, useWstethBySteth } from 'shared/hooks';
 
-import { TOKENS_TO_WRAP } from 'features/wsteth/shared/types';
-
 import { useApproveGasLimit } from '../hooks/use-approve-gas-limit';
 import { useWrapFormData, WrapFormInputType } from '../wrap-form-context';
-import { useWeb3 } from 'reef-knot/web3-react';
-import { AllowanceDataTableRow } from 'shared/components/allowance-data-table-row';
-import { TOKENS } from '@lido-sdk/constants';
-import { DATA_UNAVAILABLE } from 'config';
-import { useDebouncedWstethBySteth } from 'features/wsteth/shared/hooks/use-debounced-wsteth-steth';
 
 const oneSteth = parseEther('1');
 

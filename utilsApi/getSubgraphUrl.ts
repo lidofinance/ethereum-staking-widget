@@ -1,12 +1,11 @@
-import getConfig from 'next/config';
-import { CHAINS } from 'utils/chains';
+import { secretConfig } from 'config';
+import { CHAINS } from 'consts/chains';
 import { SubgraphChains } from 'types';
 
-const { serverRuntimeConfig } = getConfig();
 export const SUBGRAPH_URL = {
-  [CHAINS.Mainnet]: serverRuntimeConfig.subgraphMainnet,
-  [CHAINS.Goerli]: serverRuntimeConfig.subgraphGoerli,
-  [CHAINS.Holesky]: serverRuntimeConfig.subgraphHolesky,
+  [CHAINS.Mainnet]: secretConfig.subgraphMainnet,
+  [CHAINS.Goerli]: secretConfig.subgraphGoerli,
+  [CHAINS.Holesky]: secretConfig.subgraphHolesky,
 } as const;
 
 export const getSubgraphUrl = (chainId: SubgraphChains): string | undefined => {

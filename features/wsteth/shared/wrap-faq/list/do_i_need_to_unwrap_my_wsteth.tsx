@@ -1,10 +1,10 @@
 import { FC } from 'react';
 import { Accordion } from '@lidofinance/lido-ui';
 
-import { MATOMO_CLICK_EVENTS_TYPES } from 'config';
-import { WITHDRAWALS_REQUEST_PATH } from 'config/urls';
-import { trackMatomoEvent } from 'config/trackMatomoEvent';
+import { MATOMO_CLICK_EVENTS_TYPES } from 'consts/matomo-click-events';
+import { WITHDRAWALS_REQUEST_PATH } from 'consts/urls';
 import { LocalLink } from 'shared/components/local-link';
+import { trackMatomoEvent } from 'utils/track-matomo-event';
 
 export const DoINeedToUnwrapMyWsteth: FC = () => {
   return (
