@@ -27,7 +27,12 @@ const rewards: API = async (req, res) => {
   }
 
   const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), TIMEOUT);
+  const timeoutId = setTimeout(() => {
+    console.warn(
+      `rewards backend api request was aborted for address ${req.query.address} because it took longer 10 sec`,
+    );
+    controller.abort();
+  }, TIMEOUT);
 
   const query = req.query;
   const params = new URLSearchParams();
