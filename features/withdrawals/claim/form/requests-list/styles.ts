@@ -3,7 +3,6 @@ import { InlineLoader, Link, ThemeName } from '@lidofinance/lido-ui';
 
 import RequestReady from 'assets/icons/request-ready.svg';
 import RequestPending from 'assets/icons/request-pending.svg';
-import RequestInfo from 'assets/icons/request-info.svg';
 
 export const REQUESTS_LIST_ITEM_SIZE = 57;
 export const REQUESTS_LIST_LOADERS_COUNT = 3;
@@ -60,7 +59,6 @@ export const RequestsStatusStyled = styled.div<RequestProps>`
   margin-right: 8px;
   padding: 2px ${({ theme }) => theme.spaceMap.sm}px;
   ${({ theme }) => theme.mediaQueries.sm} {
-    padding: 4px;
     min-width: 24px;
     justify-content: center;
   }
@@ -74,44 +72,22 @@ export const RequestsStatusStyled = styled.div<RequestProps>`
       ? 'rgba(83, 186, 149, 0.16)'
       : 'rgba(236, 134, 0, 0.16)'};
 
-  ${({ $variant }) =>
-    $variant === 'pending' &&
-    `&:hover {
-        background-color: rgba(236, 134, 0, 0.26);
-      }`}
-
   color: ${({ $variant }) => ($variant === 'ready' ? '#53BA95' : '#EC8600')};
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 `;
 
-export const DesktopStatus = styled.span`
+export const StatusText = styled.span`
   font-size: 12px;
   font-weight: 600;
-  ${({ theme }) => theme.mediaQueries.sm} {
-    display: none;
-  }
 `;
 
-export const MobileStatusIcon = styled.img.attrs<RequestProps>(
-  ({ $variant }) => ({
-    alt: $variant,
-    src: $variant === 'ready' ? RequestReady : RequestPending,
-  }),
-)<RequestProps>`
-  display: none;
-  width: 16px;
-  height: 16px;
-  ${({ theme }) => theme.mediaQueries.sm} {
-    display: block;
-  }
-`;
-
-export const RequestInfoIcon = styled.img.attrs({
-  alt: 'info',
-  src: RequestInfo,
-})`
+export const StatusIcon = styled.img.attrs<RequestProps>(({ $variant }) => ({
+  alt: $variant,
+  src: $variant === 'ready' ? RequestReady : RequestPending,
+}))<RequestProps>`
+  display: block;
   width: 16px;
   height: 16px;
 `;
