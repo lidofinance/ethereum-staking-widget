@@ -2,10 +2,7 @@ import { useCallback } from 'react';
 import { Zero } from '@ethersproject/constants';
 import { BigNumber } from 'ethers';
 import { useLidoSWR } from '@lido-sdk/react';
-// import { useLidoShareRate } from 'features/withdrawals/hooks/contract/useLidoShareRate';
-
 import { useWithdrawalsContract } from './useWithdrawalsContract';
-
 import {
   RequestStatus,
   RequestStatusClaimable,
@@ -13,12 +10,74 @@ import {
 } from 'features/withdrawals/types/request-status';
 import { MAX_SHOWN_REQUEST_PER_TYPE } from 'features/withdrawals/withdrawals-constants';
 import { STRATEGY_LAZY } from 'consts/swr-strategies';
+import { standardFetcher } from 'utils/standardFetcher';
+import { default as dynamics } from 'config/dynamics';
 
-// import { calcExpectedRequestEth } from 'features/withdrawals/utils/calc-expected-request-eth';
+import { encodeURLQuery } from 'utils/encodeURLQuery';
 
 export type WithdrawalRequests = NonNullable<
   ReturnType<typeof useWithdrawalRequests>['data']
 >;
+
+export type RequestInfoDto = {
+  finalizationIn: number;
+  finalizationAt: string;
+  requestId: string;
+  requestedAt: string;
+};
+
+export type RequestTimeByRequestIds = {
+  requestInfo: RequestInfoDto;
+  nextCalculationAt: string;
+};
+
+const getRequestTimeForWQRequestIds = async (
+  ids: string[],
+): Promise<
+  {
+    id: string;
+    finalizationAt: string;
+  }[]
+> => {
+  const idsPages = [];
+  const pageSize = 20;
+
+  for (let i = 0; i < ids.length; i += pageSize) {
+    idsPages.push(ids.slice(i, i + pageSize));
+  }
+
+  const result = [];
+
+  for (const page of idsPages) {
+    const basePath = dynamics.wqAPIBasePath;
+    const params = encodeURLQuery({ ids: page.toString() });
+    const queryString = params ? `?${params}` : '';
+    const url = `${basePath}/v2/request-time${queryString}`;
+    const requests = await standardFetcher<RequestTimeByRequestIds[]>(url, {
+      headers: {
+        'Content-Type': 'application/json',
+        'WQ-Request-Source': 'widget',
+      },
+    });
+
+    for (const request of requests) {
+      if (!request || !request.requestInfo) continue;
+      const modifiedResult = {
+        id: request.requestInfo.requestId,
+        finalizationAt: request.requestInfo.finalizationAt,
+      };
+
+      result.push(modifiedResult);
+    }
+
+    if (idsPages.length > 1) {
+      // avoid backend spam
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+    }
+  }
+
+  return result;
+};
 
 export const useWithdrawalRequests = () => {
   const { contractRpc, account, chainId } = useWithdrawalsContract();
@@ -42,6 +101,21 @@ export const useWithdrawalRequests = () => {
 
       const claimableRequests: RequestStatus[] = [];
       const pendingRequests: RequestStatusPending[] = [];
+      const pendingRequestsIds: string[] = [];
+
+      requestStatuses.forEach((request, index) => {
+        if (!request.isFinalized) {
+          pendingRequestsIds.push(requestIds[index].toString());
+        }
+      });
+
+      let wqRequests: { finalizationAt: string; id: string }[] = [];
+
+      try {
+        wqRequests = await getRequestTimeForWQRequestIds(pendingRequestsIds);
+      } catch (e) {
+        console.warn('Failed to fetch request time for requests ids', e);
+      }
 
       let pendingAmountOfStETH = BigNumber.from(0);
       let claimableAmountOfStETH = BigNumber.from(0);
@@ -52,6 +126,7 @@ export const useWithdrawalRequests = () => {
           ...request,
           id,
           stringId: id.toString(),
+          finalizationAt: null,
         };
 
         if (request.isFinalized && !request.isClaimed) {
@@ -60,8 +135,10 @@ export const useWithdrawalRequests = () => {
             request.amountOfStETH,
           );
         } else if (!request.isFinalized) {
+          const r = wqRequests.find((r) => r.id === id.toString());
           pendingRequests.push({
             ...req,
+            finalizationAt: r?.finalizationAt ?? null,
             expectedEth: req.amountOfStETH, // TODO: replace with calcExpectedRequestEth(req, currentShareRate),
           });
           pendingAmountOfStETH = pendingAmountOfStETH.add(
