@@ -1,7 +1,7 @@
 import { useCallback } from 'react';
 import { Check, Close } from '@lidofinance/lido-ui';
 
-import { SETTINGS_PATH } from 'config/urls';
+import { SETTINGS_PATH } from 'consts/urls';
 import { useIPFSInfoBoxStatuses } from 'providers/ipfs-info-box-statuses';
 import { usePrefixedPush } from 'shared/hooks/use-prefixed-history';
 import { LinkArrow } from 'shared/components/link-arrow/link-arrow';

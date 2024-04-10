@@ -1,8 +1,8 @@
-import { CHAINS, TOKENS, getTokenAddress } from '@lido-sdk/constants';
 import { BigNumber } from 'ethers';
-import { standardFetcher } from './standardFetcher';
-import { ESTIMATE_ACCOUNT } from 'config';
 import { getAddress } from 'ethers/lib/utils.js';
+import { CHAINS, TOKENS, getTokenAddress } from '@lido-sdk/constants';
+import { config } from 'config';
+import { standardFetcher } from './standardFetcher';
 
 type BebopGetQuotePartial = {
   routes: {
@@ -47,7 +47,7 @@ export const getBebopRate = async (
   const params = new URLSearchParams({
     sell_tokens,
     buy_tokens,
-    taker_address: ESTIMATE_ACCOUNT,
+    taker_address: config.ESTIMATE_ACCOUNT,
     sell_amounts: amount.toString(),
     approval_type: 'Standard',
     source: 'lido',

@@ -3,7 +3,7 @@ import { Accordion } from '@lidofinance/lido-ui';
 import Link from 'next/link';
 import { LocalLink } from 'shared/components/local-link';
 import { WITHDRAWAL_PERIOD_PATH } from 'features/withdrawals/withdrawals-constants';
-import { WITHDRAWALS_REQUEST_PATH } from 'config/urls';
+import { WITHDRAWALS_REQUEST_PATH } from 'consts/urls';
 
 export const HowLongToWithdraw: FC = () => {
   return (

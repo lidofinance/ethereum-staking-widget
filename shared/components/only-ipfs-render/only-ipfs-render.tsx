@@ -1,5 +1,5 @@
-import { dynamics } from 'config';
+import { config } from 'config';
 
 export const OnlyIpfsRender = ({ children }: React.PropsWithChildren) => {
-  return dynamics.ipfsMode ? <>{children}</> : null;
+  return config.ipfsMode ? <>{children}</> : null;
 };

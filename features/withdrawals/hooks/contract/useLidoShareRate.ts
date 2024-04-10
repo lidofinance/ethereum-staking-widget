@@ -1,12 +1,13 @@
+import { BigNumber } from 'ethers';
 import {
   useSDK,
   useLidoSWR,
   SWRResponse,
   useSTETHContractRPC,
 } from '@lido-sdk/react';
-import { BigNumber } from 'ethers';
+
+import { STRATEGY_CONSTANT } from 'consts/swr-strategies';
 import { calcShareRate } from 'features/withdrawals/utils/calc-share-rate';
-import { STRATEGY_CONSTANT } from 'utils/swrStrategies';
 
 export const useLidoShareRate = (): SWRResponse<BigNumber> => {
   const { chainId } = useSDK();

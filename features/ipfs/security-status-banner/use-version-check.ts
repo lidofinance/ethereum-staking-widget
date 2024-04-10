@@ -3,14 +3,13 @@ import { useLidoSWR } from '@lido-sdk/react';
 import { useWeb3 } from 'reef-knot/web3-react';
 import { useForceDisconnect } from 'reef-knot/core-react';
 
-import { BASE_PATH_ASSET, dynamics } from 'config';
-import { STRATEGY_IMMUTABLE } from 'utils/swrStrategies';
-import { useClientConfig } from 'providers/client-config';
+import buildInfo from 'build-info.json';
+import { config } from 'config';
+import { useUserConfig } from 'config/user-config';
+import { STRATEGY_IMMUTABLE } from 'consts/swr-strategies';
 import { overrideWithQAMockBoolean } from 'utils/qa';
 
 import { isVersionLess } from './utils';
-
-import buildInfo from 'build-info.json';
 import { useRemoteVersion } from './use-remote-version';
 
 export const NO_SAFE_VERSION = 'NONE_AVAILABLE';
@@ -21,32 +20,39 @@ const URL_CID_REGEX =
 
 export const useVersionCheck = () => {
   const { active } = useWeb3();
-  const { setIsWalletConnectionAllowed } = useClientConfig();
+  const { setIsWalletConnectionAllowed } = useUserConfig();
   const { forceDisconnect } = useForceDisconnect();
   const [areConditionsAccepted, setConditionsAccepted] = useState(false);
 
-  // local cid extraction
+  // only IPFS: local cid extraction
   const currentCidSWR = useLidoSWR(
     ['swr:ipfs-cid-extraction'],
     async () => {
       const urlCid = URL_CID_REGEX.exec(window.location.href)?.groups?.cid;
       if (urlCid) return urlCid;
-      const headers = await fetch(`${BASE_PATH_ASSET}/runtime/window-env.js`, {
-        method: 'HEAD',
-      });
+      const headers = await fetch(
+        `${config.BASE_PATH_ASSET}/runtime/window-env.js`,
+        {
+          method: 'HEAD',
+        },
+      );
       return headers.headers.get('X-Ipfs-Roots');
     },
-    { ...STRATEGY_IMMUTABLE, isPaused: () => !dynamics.ipfsMode },
+    { ...STRATEGY_IMMUTABLE, isPaused: () => !config.ipfsMode },
   );
 
   // ens cid extraction
   const remoteVersionSWR = useRemoteVersion();
 
+  // update is available
+  // for INFRA - leastSafeVersion is not NO_SAFE_VERSION
+  // for IPFS - ^this and current cid doesn't match
   const isUpdateAvailable = overrideWithQAMockBoolean(
     Boolean(
       remoteVersionSWR.data &&
-        currentCidSWR.data &&
-        remoteVersionSWR.data.cid !== currentCidSWR.data &&
+        ((currentCidSWR.data &&
+          remoteVersionSWR.data.cid !== currentCidSWR.data) ||
+          !config.ipfsMode) &&
         remoteVersionSWR.data.leastSafeVersion !== NO_SAFE_VERSION,
     ),
     'mock-qa-helpers-security-banner-is-update-available',
@@ -74,7 +80,7 @@ export const useVersionCheck = () => {
     if (isVersionUnsafe) {
       setIsWalletConnectionAllowed(false);
     }
-    if (isVersionUnsafe || (dynamics.ipfsMode && isNotVerifiable)) {
+    if (isVersionUnsafe || (config.ipfsMode && isNotVerifiable)) {
       forceDisconnect();
     }
   }, [

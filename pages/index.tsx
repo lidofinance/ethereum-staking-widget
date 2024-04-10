@@ -1,6 +1,6 @@
-import { dynamics } from 'config';
+import { config } from 'config';
 
 import { StakePage } from 'features/stake';
 import { HomePageIpfs } from 'features/ipfs';
 
-export default dynamics.ipfsMode ? HomePageIpfs : StakePage;
+export default config.ipfsMode ? HomePageIpfs : StakePage;

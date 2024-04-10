@@ -10,12 +10,12 @@ import {
   migrationThemeCookiesToCrossDomainCookiesClientSide,
 } from '@lidofinance/lido-ui';
 
-import { dynamics } from 'config';
+import { config } from 'config';
+import { withCsp } from 'config/csp';
+import { SecurityStatusBanner } from 'features/ipfs';
 import { Providers } from 'providers';
 import { BackgroundGradient } from 'shared/components/background-gradient/background-gradient';
 import { nprogress, COOKIES_ALLOWED_FULL_KEY } from 'utils';
-import { withCsp } from 'utilsApi/withCSP';
-import { SecurityStatusBanner } from 'features/ipfs';
 
 // Migrations old theme cookies to new cross domain cookies
 migrationThemeCookiesToCrossDomainCookiesClientSide();
@@ -61,6 +61,6 @@ const AppWrapper = (props: AppProps): JSX.Element => {
   );
 };
 
-export default dynamics.ipfsMode || process.env.NODE_ENV === 'development'
+export default config.ipfsMode || process.env.NODE_ENV === 'development'
   ? AppWrapper
   : withCsp(AppWrapper);

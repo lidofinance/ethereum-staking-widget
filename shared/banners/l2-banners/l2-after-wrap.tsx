@@ -1,5 +1,5 @@
 import { trackEvent } from '@lidofinance/analytics-matomo';
-import { MATOMO_CLICK_EVENTS } from 'config';
+import { MATOMO_CLICK_EVENTS } from 'consts/matomo-click-events';
 import { L2Banner } from '../l2-banner';
 
 const linkClickHandler = () => trackEvent(...MATOMO_CLICK_EVENTS.l2LowFeeWrap);

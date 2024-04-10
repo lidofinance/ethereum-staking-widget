@@ -3,12 +3,9 @@ import {
   wrapRequest as wrapNextRequest,
   cacheControl,
 } from '@lidofinance/next-api-wrapper';
-import {
-  CACHE_ETH_PRICE_KEY,
-  CACHE_ETH_PRICE_TTL,
-  CACHE_ETH_PRICE_HEADERS,
-  API_ROUTES,
-} from 'config';
+
+import { config } from 'config';
+import { API_ROUTES } from 'consts/api';
 import {
   getEthPrice,
   defaultErrorHandler,
@@ -18,17 +15,21 @@ import {
 import Metrics from 'utilsApi/metrics';
 import { API } from 'types';
 
-const cache = new Cache<typeof CACHE_ETH_PRICE_KEY, unknown>();
+const cache = new Cache<typeof config.CACHE_ETH_PRICE_KEY, unknown>();
 
 // Proxy for third-party API.
 const ethPrice: API = async (req, res) => {
-  const cachedEthPrice = cache.get(CACHE_ETH_PRICE_KEY);
+  const cachedEthPrice = cache.get(config.CACHE_ETH_PRICE_KEY);
 
   if (cachedEthPrice) {
     res.json(cachedEthPrice);
   } else {
     const ethPrice = await getEthPrice();
-    cache.put(CACHE_ETH_PRICE_KEY, { price: ethPrice }, CACHE_ETH_PRICE_TTL);
+    cache.put(
+      config.CACHE_ETH_PRICE_KEY,
+      { price: ethPrice },
+      config.CACHE_ETH_PRICE_TTL,
+    );
 
     res.json({ price: ethPrice });
   }
@@ -37,6 +38,6 @@ const ethPrice: API = async (req, res) => {
 export default wrapNextRequest([
   rateLimit,
   responseTimeMetric(Metrics.request.apiTimings, API_ROUTES.ETH_PRICE),
-  cacheControl({ headers: CACHE_ETH_PRICE_HEADERS }),
+  cacheControl({ headers: config.CACHE_ETH_PRICE_HEADERS }),
   defaultErrorHandler,
 ])(ethPrice);

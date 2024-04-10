@@ -1,9 +1,9 @@
 import { FC } from 'react';
 import { Accordion, Link as OuterLink } from '@lidofinance/lido-ui';
 
-import { MATOMO_CLICK_EVENTS_TYPES } from 'config';
-import { trackMatomoEvent } from 'config/trackMatomoEvent';
-import { HOME_PATH } from 'config/urls';
+import { MATOMO_CLICK_EVENTS_TYPES } from 'consts/matomo-click-events';
+import { trackMatomoEvent } from 'utils/track-matomo-event';
+import { HOME_PATH } from 'consts/urls';
 import { LocalLink } from 'shared/components/local-link';
 
 export const HowCanIGetSteth: FC = () => {

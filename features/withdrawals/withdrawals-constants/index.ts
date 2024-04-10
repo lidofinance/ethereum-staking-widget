@@ -1,4 +1,4 @@
-import { overrideWithQAMockArray } from 'utils';
+import { overrideWithQAMockArray } from 'utils/qa';
 import type { DexWithdrawalApi } from '../request/withdrawal-rates';
 
 // max requests count for one tx

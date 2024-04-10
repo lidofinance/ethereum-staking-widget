@@ -1,17 +1,15 @@
 import { Question, Tooltip } from '@lidofinance/lido-ui';
 
-import { FormatToken } from 'shared/formatters';
+import { MATOMO_CLICK_EVENTS_TYPES } from 'consts/matomo-click-events';
 import { useWaitingTime } from 'features/withdrawals/hooks';
-
-import {
-  trackMatomoEvent,
-  MATOMO_CLICK_EVENTS_TYPES,
-} from 'config/trackMatomoEvent';
-import { QueueInfoStyled, DataTableRowStyled } from './styles';
-import { useRequestFormData } from '../request-form-context';
-import { useInpageNavigation } from 'providers/inpage-navigation';
 import { OnlyIpfsRender } from 'shared/components/only-ipfs-render';
 import { OnlyInfraRender } from 'shared/components/only-infra-render';
+import { FormatToken } from 'shared/formatters';
+import { useInpageNavigation } from 'providers/inpage-navigation';
+import { trackMatomoEvent } from 'utils/track-matomo-event';
+
+import { QueueInfoStyled, DataTableRowStyled } from './styles';
+import { useRequestFormData } from '../request-form-context';
 
 export const WalletQueueTooltip = () => {
   const waitingTime = useWaitingTime('');

@@ -1,7 +1,7 @@
 import { useLidoSWR } from '@lido-sdk/react';
 
 import { getFeeData } from 'utils/getFeeData';
-import { STRATEGY_LAZY } from 'utils/swrStrategies';
+import { STRATEGY_LAZY } from 'consts/swr-strategies';
 
 import { useCurrentStaticRpcProvider } from './use-current-static-rpc-provider';
 

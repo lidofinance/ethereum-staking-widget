@@ -5,16 +5,16 @@ import { useSDK, useWSTETHContractWeb3 } from '@lido-sdk/react';
 import { getTokenAddress, TOKENS } from '@lido-sdk/constants';
 import { StaticJsonRpcBatchProvider } from '@lidofinance/eth-providers';
 
-import { useCurrentStaticRpcProvider } from 'shared/hooks/use-current-static-rpc-provider';
-import { getFeeData } from 'utils/getFeeData';
-
-import type { WrapFormInputType } from '../wrap-form-context';
+import { config } from 'config';
 import {
   MockLimitReachedError,
   applyGasLimitRatio,
 } from 'features/stake/stake-form/utils';
 
-import { enableQaHelpers } from 'utils/qa';
+import { useCurrentStaticRpcProvider } from 'shared/hooks/use-current-static-rpc-provider';
+import { getFeeData } from 'utils/getFeeData';
+
+import type { WrapFormInputType } from '../wrap-form-context';
 
 export const getGasParameters = async (
   provider: StaticJsonRpcBatchProvider,
@@ -54,7 +54,7 @@ export const useWrapTxProcessing = () => {
         }
       } else {
         if (
-          enableQaHelpers &&
+          config.enableQaHelpers &&
           window.localStorage.getItem('mockLimitReached') === 'true'
         ) {
           throw new MockLimitReachedError('Stake limit reached');

@@ -9,7 +9,7 @@ import {
   RequestStatusPending,
 } from 'features/withdrawals/types/request-status';
 import { MAX_SHOWN_REQUEST_PER_TYPE } from 'features/withdrawals/withdrawals-constants';
-import { STRATEGY_LAZY } from 'utils/swrStrategies';
+import { STRATEGY_LAZY } from 'consts/swr-strategies';
 import { standardFetcher } from 'utils/standardFetcher';
 import { dynamics } from 'config';
 import { encodeURLQuery } from 'utils/encodeURLQuery';

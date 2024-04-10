@@ -1,15 +1,16 @@
-import { Zero } from '@ethersproject/constants';
-import { getTokenAddress, CHAINS, TOKENS } from '@lido-sdk/constants';
 import { BigNumber } from 'ethers';
 import { getAddress } from 'ethers/lib/utils.js';
+import { Zero } from '@ethersproject/constants';
 import { formatEther } from '@ethersproject/units';
+import { getTokenAddress, CHAINS, TOKENS } from '@lido-sdk/constants';
+
+import { OPEN_OCEAN_REFERRAL_ADDRESS } from 'consts/external-links';
+import { MATOMO_CLICK_EVENTS_TYPES } from 'consts/matomo-click-events';
 
 import { getOneInchRate } from 'utils/get-one-inch-rate';
 import { getBebopRate } from 'utils/get-bebop-rate';
 import { getOpenOceanRate } from 'utils/get-open-ocean-rate';
 import { standardFetcher } from 'utils/standardFetcher';
-import { OPEN_OCEAN_REFERRAL_ADDRESS } from 'config/external-links';
-import { MATOMO_CLICK_EVENTS_TYPES } from 'config/matomoClickEvents';
 
 import { BebopIcon, OneInchIcon, OpenOceanIcon, ParaSwapIcon } from './icons';
 
@@ -173,9 +174,9 @@ const dexWithdrawalMap: DexWithdrawalIntegrationMap = {
     icon: OneInchIcon,
     matomoEvent: MATOMO_CLICK_EVENTS_TYPES.withdrawalGoTo1inch,
     link: (amount, token) =>
-      `https://app.1inch.io/#/1/simple/swap/${
+      `https://app.1inch.io/#/1/advanced/swap/${
         token == TOKENS.STETH ? 'stETH' : 'wstETH'
-      }/ETH?sourceTokenAmount=${formatEther(amount)}`,
+      }/ETH?mode=classic&sourceTokenAmount=${formatEther(amount)}`,
   },
   bebop: {
     title: 'Bebop',

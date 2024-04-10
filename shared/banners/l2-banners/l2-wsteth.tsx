@@ -1,7 +1,9 @@
 import { useCallback } from 'react';
-import { L2Banner } from '../l2-banner';
-import { MATOMO_CLICK_EVENTS } from 'config';
 import { trackEvent } from '@lidofinance/analytics-matomo';
+
+import { MATOMO_CLICK_EVENTS } from 'consts/matomo-click-events';
+
+import { L2Banner } from '../l2-banner';
 
 type L2WstethProps = {
   matomoEventLink:

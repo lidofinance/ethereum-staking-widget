@@ -1,6 +1,7 @@
 import { Button, Modal } from '@lidofinance/lido-ui';
 
-import { dynamics } from 'config';
+import { config } from 'config';
+import NoSsrWrapper from 'shared/components/no-ssr-wrapper';
 
 import {
   WarningIcon,
@@ -11,7 +12,6 @@ import {
   WarningTitle,
 } from './styles';
 import { useVersionCheck } from './use-version-check';
-import NoSsrWrapper from 'shared/components/no-ssr-wrapper';
 
 const LIDO_TWITTER_LINK = 'https://twitter.com/LidoFinance';
 
@@ -51,7 +51,7 @@ const warningContent = ({
         canClose: false,
       };
     // we can show this banner on both infra and IPFS
-    case isVersionUnsafe && (!isIpfs || !isUpdateAvailable):
+    case isVersionUnsafe && !isUpdateAvailable:
       return {
         content: (
           <WarningText>
@@ -60,6 +60,17 @@ const warningContent = ({
         ),
         canClose: false,
         showTwitterLink: true,
+      };
+    case isVersionUnsafe && isUpdateAvailable:
+      return {
+        content: (
+          <WarningText>
+            This version of Lido staking widget has issues that could impact
+            your experience.
+          </WarningText>
+        ),
+        canClose: false,
+        showTwitterLink: false,
       };
     // outdated IPFS
     case isIpfs && isUpdateAvailable:
@@ -95,7 +106,7 @@ export const SecurityStatusBanner = () => {
     isUpdateAvailable,
     isVersionUnsafe,
     isNotVerifiable,
-    isIpfs: dynamics.ipfsMode,
+    isIpfs: config.ipfsMode,
   });
 
   const showModal = !!content && !(canClose && areConditionsAccepted);
@@ -119,7 +130,15 @@ export const SecurityStatusBanner = () => {
           )}
           {isUpdateAvailable && (
             <a
-              href={data.remoteCidLink}
+              href={data.remoteCidLink ?? window.location.href}
+              onClick={
+                config.ipfsMode
+                  ? undefined
+                  : (e) => {
+                      e.preventDefault();
+                      window.location.reload();
+                    }
+              }
               target="_self"
               rel="noopener noreferrer"
             >
