@@ -38,7 +38,7 @@ export const useWaitingTime = (
   }, [debouncedAmount]);
 
   const { data, initialLoading, error } = useLidoSWR(
-    ['swr:waiting-time'],
+    ['swr:waiting-time', debouncedAmount],
     () =>
       standardFetcher(url, {
         headers: {
