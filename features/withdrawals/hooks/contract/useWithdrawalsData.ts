@@ -11,7 +11,8 @@ import {
 import { MAX_SHOWN_REQUEST_PER_TYPE } from 'features/withdrawals/withdrawals-constants';
 import { STRATEGY_LAZY } from 'consts/swr-strategies';
 import { standardFetcher } from 'utils/standardFetcher';
-import { dynamics } from 'config';
+import { default as dynamics } from 'config/dynamics';
+
 import { encodeURLQuery } from 'utils/encodeURLQuery';
 
 export type WithdrawalRequests = NonNullable<
