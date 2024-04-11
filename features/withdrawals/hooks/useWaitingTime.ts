@@ -62,7 +62,7 @@ export const useWaitingTime = (
 
   const waitingTime =
     days && days > 1
-      ? `${isApproximate ? '~ ' : ''}1-${days} day(s)`
+      ? `${isApproximate ? '~ ' : ''}${days} days`
       : `${isApproximate ? '~ ' : ''}${days} day`;
   const value =
     isPaused || isRequestError ? '—' : isBunker ? 'Not estimated' : waitingTime;
