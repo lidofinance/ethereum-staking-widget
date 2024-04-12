@@ -2572,10 +2572,10 @@
     "@types/react" "18.2.45"
     "@types/react-dom" "18.2.17"
 
-"@reef-knot/core-react@3.1.0":
-  version "3.1.0"
-  resolved "https://registry.yarnpkg.com/@reef-knot/core-react/-/core-react-3.1.0.tgz#5cd447dcbb757d7b47784fdeb9bfd19e6d84ea83"
-  integrity sha512-vjqKU7J3Nyxjr74DecWIwvcvlcCypaUt64h7lDIaZ8gb6qJTxP1b0ONxwad87p6Xdt2RmoH6qV6KecdBH+sfug==
+"@reef-knot/core-react@3.1.1":
+  version "3.1.1"
+  resolved "https://registry.yarnpkg.com/@reef-knot/core-react/-/core-react-3.1.1.tgz#2620d2b1e11f205c912bcf91efcc2cfb7c27a9d7"
+  integrity sha512-AUeXIqMNrOnr04NnYnH4u7QDRKpaTi7sSwS+BkyAZBh11rjUkxNTRoGYzFsXbQMjtFCLQ7G17Qai+VtrMUh0NQ==
   dependencies:
     ua-parser-js "1.0.33"
 
@@ -9219,13 +9219,13 @@ redis-parser@^3.0.0:
   dependencies:
     redis-errors "^1.0.0"
 
-reef-knot@^4.1.0:
-  version "4.1.0"
-  resolved "https://registry.yarnpkg.com/reef-knot/-/reef-knot-4.1.0.tgz#54fb6f1db386a99fe383f6e447d95a3e19c489b9"
-  integrity sha512-hJLDuUQkQPwSDRkmkCNSDVLebGEpnawIOXBc/rhP1tPLuT1tVGVB1kHOSQD69PPcZWlvtJjxGSK1Y8/C0GLsxg==
+reef-knot@^4.1.1:
+  version "4.1.1"
+  resolved "https://registry.yarnpkg.com/reef-knot/-/reef-knot-4.1.1.tgz#e75797eb22f947c851eac0c72fbd5c7e750b3090"
+  integrity sha512-FzAfUcZFfjzSewnkljVIDqPoH6fnnz1hHLmn/nNJZMwohyZvAraukS/fIYaUAAME8Q9MiZxkGZwdLbp4dhc0Ng==
   dependencies:
     "@reef-knot/connect-wallet-modal" "4.1.0"
-    "@reef-knot/core-react" "3.1.0"
+    "@reef-knot/core-react" "3.1.1"
     "@reef-knot/ledger-connector" "3.0.0"
     "@reef-knot/types" "1.7.0"
     "@reef-knot/ui-react" "1.1.0"
