@@ -202,6 +202,35 @@ export const nextDefaultErrorHandler =
     }
   };
 
+type sunsetByArgs = {
+  replacementLink?: string;
+  sunsetTimestamp: number;
+};
+
+export const sunsetBy =
+  ({ replacementLink, sunsetTimestamp }: sunsetByArgs): RequestWrapper =>
+  async (req, res, next) => {
+    console.warn('Request to deprecated endpoint:', req.url);
+    const shouldDisable = Date.now() > sunsetTimestamp;
+
+    if (shouldDisable) {
+      if (replacementLink) {
+        res.setHeader('Location', replacementLink);
+        res.status(301);
+      } else {
+        res.status(404);
+      }
+      res.end();
+    } else {
+      res.setHeader('Deprecation', 'true');
+      res.setHeader('Sunset', new Date(sunsetTimestamp).toUTCString());
+      if (replacementLink) {
+        res.setHeader('Link', `${replacementLink}; rel="alternate"`);
+      }
+      await next?.(req, res, next);
+    }
+  };
+
 export const defaultErrorHandler = nextDefaultErrorHandler({
   serverLogger: console,
 });
