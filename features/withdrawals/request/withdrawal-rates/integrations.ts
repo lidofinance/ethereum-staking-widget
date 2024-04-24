@@ -178,6 +178,16 @@ const dexWithdrawalMap: DexWithdrawalIntegrationMap = {
         token == TOKENS.STETH ? 'stETH' : 'wstETH'
       }/ETH?mode=classic&sourceTokenAmount=${formatEther(amount)}`,
   },
+  'two-inch': {
+    title: '2inch',
+    fetcher: getOneInchWithdrawalRate,
+    icon: OneInchIcon,
+    matomoEvent: MATOMO_CLICK_EVENTS_TYPES.withdrawalGoTo1inch,
+    link: (amount, token) =>
+      `https://app.1inch.io/#/1/advanced/swap/${
+        token == TOKENS.STETH ? 'stETH' : 'wstETH'
+      }/ETH?mode=classic&sourceTokenAmount=${formatEther(amount)}`,
+  },
   bebop: {
     title: 'Bebop',
     icon: BebopIcon,

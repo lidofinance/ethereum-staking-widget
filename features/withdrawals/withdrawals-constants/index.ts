@@ -18,6 +18,6 @@ export const VALIDATION_CONTEXT_TIMEOUT = 4000;
 
 export const ENABLED_WITHDRAWAL_DEXES: DexWithdrawalApi[] =
   overrideWithQAMockArray(
-    ['one-inch', 'paraswap', 'bebop'],
+    ['one-inch', 'paraswap', 'bebop', 'open-ocean', 'two-inch'],
     'mock-qa-helpers-enabled-withdrawal-dexes',
   );

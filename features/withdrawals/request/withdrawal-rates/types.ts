@@ -19,7 +19,12 @@ export type SingleWithdrawalRateResult = {
   toReceive: BigNumber | null;
 };
 
-export type DexWithdrawalApi = 'paraswap' | 'open-ocean' | 'one-inch' | 'bebop';
+export type DexWithdrawalApi =
+  | 'paraswap'
+  | 'open-ocean'
+  | 'one-inch'
+  | 'bebop'
+  | 'two-inch';
 
 export type DexWithdrawalIntegration = {
   title: string;
