@@ -3,12 +3,13 @@ import { wrapRequest as wrapNextRequest } from '@lidofinance/next-api-wrapper';
 
 import { config } from 'config';
 
-import { API_ROUTES } from 'consts/api';
+import { API_DEFAULT_SUNSET_TIMESTAMP, API_ROUTES } from 'consts/api';
 import {
   getLdoStats,
   errorAndCacheDefaultWrappers,
   responseTimeMetric,
   rateLimit,
+  sunsetBy,
 } from 'utilsApi';
 import Metrics from 'utilsApi/metrics';
 import { API } from 'types';
@@ -39,5 +40,8 @@ const ldoStats: API = async (req, res) => {
 export default wrapNextRequest([
   rateLimit,
   responseTimeMetric(Metrics.request.apiTimings, API_ROUTES.LDO_STATS),
+  sunsetBy({
+    sunsetTimestamp: API_DEFAULT_SUNSET_TIMESTAMP,
+  }),
   ...errorAndCacheDefaultWrappers,
 ])(ldoStats);

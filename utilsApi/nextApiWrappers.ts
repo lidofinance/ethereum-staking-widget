@@ -222,8 +222,13 @@ export const sunsetBy =
       }
       res.end();
     } else {
+      const sunsetDate = new Date(sunsetTimestamp).toUTCString();
+      res.setHeader(
+        'Warning',
+        `299 - "this resource will be sunset by ${sunsetDate}"`,
+      );
       res.setHeader('Deprecation', 'true');
-      res.setHeader('Sunset', new Date(sunsetTimestamp).toUTCString());
+      res.setHeader('Sunset', sunsetDate);
       if (replacementLink) {
         res.setHeader('Link', `${replacementLink}; rel="alternate"`);
       }
