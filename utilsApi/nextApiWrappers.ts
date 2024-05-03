@@ -216,9 +216,11 @@ export const sunsetBy =
     if (shouldDisable) {
       if (replacementLink) {
         res.setHeader('Location', replacementLink);
+        // Permanent Redirect
         res.status(301);
       } else {
-        res.status(404);
+        // Gone
+        res.status(410);
       }
       res.end();
     } else {

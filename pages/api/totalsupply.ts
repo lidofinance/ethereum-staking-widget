@@ -5,12 +5,13 @@ import {
 } from '@lidofinance/next-api-wrapper';
 
 import { config } from 'config';
-import { API_ROUTES } from 'consts/api';
+import { API_DEFAULT_SUNSET_TIMESTAMP, API_ROUTES } from 'consts/api';
 import {
   getTotalStaked,
   defaultErrorHandler,
   responseTimeMetric,
   rateLimit,
+  sunsetBy,
 } from 'utilsApi';
 import Metrics from 'utilsApi/metrics';
 import { API } from 'types';
@@ -38,6 +39,9 @@ const totalSupply: API = async (req, res) => {
 export default wrapNextRequest([
   rateLimit,
   responseTimeMetric(Metrics.request.apiTimings, API_ROUTES.TOTALSUPPLY),
+  sunsetBy({
+    sunsetTimestamp: API_DEFAULT_SUNSET_TIMESTAMP,
+  }),
   cacheControl({ headers: config.CACHE_TOTAL_SUPPLY_HEADERS }),
   defaultErrorHandler,
 ])(totalSupply);
