@@ -1,5 +1,7 @@
 import { FC } from 'react';
 import { Accordion, Link } from '@lidofinance/lido-ui';
+
+import { config } from 'config';
 import { MATOMO_CLICK_EVENTS_TYPES } from 'consts/matomo-click-events';
 
 export const LidoEthApr: FC = () => {
@@ -25,7 +27,7 @@ export const LidoEthApr: FC = () => {
         </Link>{' '}
         and in our{' '}
         <Link
-          href={'https://docs.lido.fi/#liquid-staking'}
+          href={`${config.docsOrigin}/#liquid-staking`}
           data-matomo={MATOMO_CLICK_EVENTS_TYPES.faqLidoEthAprDocs}
         >
           Docs
