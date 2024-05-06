@@ -2,6 +2,7 @@ import type { BigNumber } from 'ethers';
 import { useSDK } from '@lido-sdk/react';
 import { Link, Loader } from '@lidofinance/lido-ui';
 
+import { config } from 'config';
 import { WITHDRAWALS_CLAIM_PATH } from 'consts/urls';
 import { MATOMO_CLICK_EVENTS_TYPES } from 'consts/matomo-click-events';
 import { trackMatomoEvent } from 'utils/track-matomo-event';
@@ -22,8 +23,7 @@ import {
   AddNftWrapper,
 } from './styles';
 
-const LINK_ADD_NFT_GUIDE =
-  'https://help.lido.fi/en/articles/7858367-how-do-i-add-the-lido-nft-to-metamask';
+const LINK_ADD_NFT_GUIDE = `${config.helpOrigin}/en/articles/7858367-how-do-i-add-the-lido-nft-to-metamask`;
 
 type TxRequestStageSuccessProps = {
   txHash: string | null;
