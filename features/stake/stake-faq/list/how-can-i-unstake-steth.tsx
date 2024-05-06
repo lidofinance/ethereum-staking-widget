@@ -2,6 +2,7 @@ import { FC } from 'react';
 
 import { Accordion, Link as OuterLink } from '@lidofinance/lido-ui';
 
+import { config } from 'config';
 import { WITHDRAWALS_CLAIM_PATH } from 'consts/urls';
 import { MATOMO_CLICK_EVENTS_TYPES } from 'consts/matomo-click-events';
 import { trackMatomoEvent } from 'utils/track-matomo-event';
@@ -26,7 +27,7 @@ export const HowCanIUnstakeSteth: FC = () => {
         to unstake stETH and receive ETH at a 1:1 ratio. Also, you can exchange
         stETH on{' '}
         <OuterLink
-          href="https://lido.fi/lido-ecosystem?tokens=stETH&categories=Get"
+          href={`${config.rootOrigin}/lido-ecosystem?tokens=stETH&categories=Get`}
           data-matomo={
             MATOMO_CLICK_EVENTS_TYPES.faqHowCanIUnstakeStEthIntegrations
           }

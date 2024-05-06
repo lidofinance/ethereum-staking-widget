@@ -1,5 +1,6 @@
 import { Box, Link } from '@lidofinance/lido-ui';
 
+import { config } from 'config';
 import { useRewardsHistory } from 'features/rewards/hooks';
 import EthSymbol from 'features/rewards/components/EthSymbol';
 import NumberFormat from 'features/rewards/components/NumberFormat';
@@ -69,7 +70,7 @@ export const Stats: React.FC = () => {
           )}
         </Stat>
         <Title hideMobile>
-          <Link href="https://lido.fi/faq">
+          <Link href={`${config.rootOrigin}/faq`}>
             <Box
               data-testid="moreInfo"
               color="secondary"

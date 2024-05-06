@@ -1,10 +1,12 @@
 import { trackEvent } from '@lidofinance/analytics-matomo';
-import { Curve } from 'shared/banners/curve';
+
+import { config } from 'config';
 import { MATOMO_CLICK_EVENTS } from 'consts/matomo-click-events';
+import { Curve } from 'shared/banners/curve';
 
 import { TextStyles, DescStyles, ButtonLinkWrap, ButtonStyled } from './styles';
 
-const ECOSYSTEM_LINK = 'https://lido.fi/lido-ecosystem';
+const ECOSYSTEM_LINK = `${config.rootOrigin}/lido-ecosystem`;
 
 const linkClickHandler = () =>
   trackEvent(...MATOMO_CLICK_EVENTS.clickExploreDeFi);

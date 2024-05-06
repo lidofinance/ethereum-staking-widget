@@ -20,7 +20,7 @@ export const LidoEthApr: FC = () => {
       <p>
         More about Lido staking APR for Ethereum you could find on the{' '}
         <Link
-          href={'https://lido.fi/ethereum'}
+          href={`${config.rootOrigin}/ethereum`}
           data-matomo={MATOMO_CLICK_EVENTS_TYPES.faqLidoEthAprEthLandingPage}
         >
           Ethereum landing page
