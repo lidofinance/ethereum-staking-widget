@@ -18,6 +18,17 @@ const toBoolean = (val) => {
 /** @type boolean */
 export const ipfsMode = toBoolean(process.env.IPFS_MODE);
 
+/** @type string */
+export const selfOrigin = process.env.SELF_ORIGIN;
+/** @type string */
+export const rootOrigin = process.env.ROOT_ORIGIN;
+/** @type string */
+export const docsOrigin = process.env.DOCS_ORIGIN;
+/** @type string */
+export const helpOrigin = process.env.HELP_ORIGIN;
+/** @type string */
+export const researchOrigin = process.env.RESEARCH_ORIGIN;
+
 // Keep fallback as in 'config/get-secret-config.ts'
 /** @type number */
 export const defaultChain = parseInt(process.env.DEFAULT_CHAIN, 10) || 17000;
