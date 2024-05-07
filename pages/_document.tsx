@@ -62,8 +62,10 @@ export default class MyDocument extends Document {
   }
 
   get metaPreviewImgUrl(): string {
-    // TODO: needs fix for IPFS
-    return `${config.selfOrigin}/lido-preview.png`;
+    const origin = config.ipfsMode
+      ? 'https://stake.lido.fi'
+      : config.selfOrigin;
+    return `${origin}/lido-preview.png`;
   }
 
   render(): JSX.Element {
