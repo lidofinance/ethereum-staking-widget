@@ -11,7 +11,7 @@ export const HowCanIGetSteth: FC = () => {
     <Accordion summary="How can I get stETH?">
       <p>
         You can get stETH many ways, including interacting with the smart
-        contract directly.Yet, it is much easier to use a{' '}
+        contract directly. Yet, it is much easier to use a{' '}
         <LocalLink
           href={HOME_PATH}
           onClick={() =>
@@ -20,8 +20,18 @@ export const HowCanIGetSteth: FC = () => {
           aria-hidden="true"
         >
           Lido Ethereum staking widget
-        </LocalLink>{' '}
-        and in other{' '}
+        </LocalLink>
+        , stake your tokens directly from{' '}
+        <LocalLink
+          href={'https://www.ledger.com/coin/wallet/ethereum'}
+          onClick={() =>
+            trackMatomoEvent(MATOMO_CLICK_EVENTS_TYPES.faqHowCanIGetStEthLedger)
+          }
+          aria-hidden="true"
+        >
+          Ledger Ethereum wallet
+        </LocalLink>
+        , or in other{' '}
         <OuterLink
           href={'https://lido.fi/lido-ecosystem?tokens=stETH&categories=Get'}
           data-matomo={MATOMO_CLICK_EVENTS_TYPES.faqHowCanIGetStEthIntegrations}
