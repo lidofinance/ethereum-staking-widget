@@ -22,15 +22,12 @@ export const HowCanIGetSteth: FC = () => {
           Lido Ethereum staking widget
         </LocalLink>
         , stake your tokens directly from{' '}
-        <LocalLink
+        <OuterLink
           href={'https://www.ledger.com/coin/wallet/ethereum'}
-          onClick={() =>
-            trackMatomoEvent(MATOMO_CLICK_EVENTS_TYPES.faqHowCanIGetStEthLedger)
-          }
-          aria-hidden="true"
+          data-matomo={MATOMO_CLICK_EVENTS_TYPES.faqHowCanIGetStEthLedger}
         >
           Ledger Ethereum wallet
-        </LocalLink>
+        </OuterLink>
         , or in other{' '}
         <OuterLink
           href={'https://lido.fi/lido-ecosystem?tokens=stETH&categories=Get'}
