@@ -74,17 +74,21 @@ export const useStake = ({ onConfirm, onRetry }: StakeOptions) => {
               maxFeePerGas,
             };
 
-            const originalGasLimit = await stethContractWeb3.estimateGas.submit(
+            const tx = await stethContractWeb3.populateTransaction.submit(
               referralAddress,
               overrides,
             );
 
+            // add tracking suffix
+            tx.data = tx.data + '01';
+
+            const originalGasLimit = await providerWeb3.estimateGas(tx);
             const gasLimit = applyGasLimitRatio(originalGasLimit);
 
-            return stethContractWeb3.submit(referralAddress, {
-              ...overrides,
-              gasLimit,
-            });
+            tx.gasLimit = gasLimit;
+
+            const signer = providerWeb3.getSigner();
+            return signer.sendTransaction(tx);
           }
         };
 
