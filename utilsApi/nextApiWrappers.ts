@@ -225,6 +225,7 @@ export const sunsetBy =
       res.end();
     } else {
       const sunsetDate = new Date(sunsetTimestamp).toUTCString();
+      res.status(299);
       res.setHeader(
         'Warning',
         `299 - "this resource will be sunset by ${sunsetDate}"`,
