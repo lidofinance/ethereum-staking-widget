@@ -26,6 +26,8 @@ export const STAKE_GASLIMIT_FALLBACK = BigNumber.from(
   ),
 );
 
+export const STAKE_WIDGET_METRIC_SUFFIX = '01';
+
 export const STAKE_FALLBACK_REFERRAL_ADDRESS = preConfig.ipfsMode
   ? IPFS_REFERRAL_ADDRESS
   : AddressZero;

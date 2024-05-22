@@ -29,7 +29,7 @@ export const getAddress = async (
 export const applyCalldataSuffix = (tx: PopulatedTransaction) => {
   if (!config.ipfsMode) {
     invariant(tx.data, 'transaction must have calldata');
-    tx.data = tx.data + '01';
+    tx.data = tx.data + config.STAKE_WIDGET_METRIC_SUFFIX;
   }
   return tx;
 };
