@@ -14,18 +14,10 @@ export const getAddress = async (
   input: string,
   providerRpc: BaseProvider,
 ): Promise<string> => {
-  let address;
   try {
-    // extract address from url or from ens
-    if (isAddress(input)) {
-      address = input;
-    } else {
-      const resolved = await providerRpc.resolveName(input);
-      if (resolved) address = resolved;
-    }
-    if (address) {
-      return address;
-    }
+    if (isAddress(input)) return input;
+    const address = await providerRpc.resolveName(input);
+    if (address) return address;
   } catch {
     // noop
   }
