@@ -1,5 +1,6 @@
 import { BigNumber } from 'ethers';
 import { parseEther } from '@ethersproject/units';
+import { AddressZero } from '@ethersproject/constants';
 
 import { StakeSwapDiscountIntegrationKey } from 'features/stake/swap-discount-banner';
 
@@ -9,7 +10,6 @@ import { IPFS_REFERRAL_ADDRESS } from './ipfs';
 // import { config } from '../get-config';
 // otherwise you will get something like a cyclic error!
 import { preConfig } from '../get-preconfig';
-import { AddressZero } from '@ethersproject/constants';
 
 export const PRECISION = 10 ** 6;
 
