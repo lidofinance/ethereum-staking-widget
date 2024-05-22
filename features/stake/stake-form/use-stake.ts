@@ -11,7 +11,12 @@ import { isContract } from 'utils/isContract';
 import { getFeeData } from 'utils/getFeeData';
 import { runWithTransactionLogger } from 'utils';
 
-import { MockLimitReachedError, getAddress, applyGasLimitRatio } from './utils';
+import {
+  MockLimitReachedError,
+  getAddress,
+  applyGasLimitRatio,
+  applyCalldataSuffix,
+} from './utils';
 import { useTxModalStagesStake } from './hooks/use-tx-modal-stages-stake';
 
 type StakeArguments = {
@@ -79,8 +84,7 @@ export const useStake = ({ onConfirm, onRetry }: StakeOptions) => {
               overrides,
             );
 
-            // add tracking suffix
-            tx.data = tx.data + '01';
+            applyCalldataSuffix(tx);
 
             const originalGasLimit = await providerWeb3.estimateGas(tx);
             const gasLimit = applyGasLimitRatio(originalGasLimit);
