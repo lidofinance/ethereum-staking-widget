@@ -20,6 +20,7 @@ export const enum MATOMO_CLICK_EVENTS_TYPES {
   faqLidoEthAprDocs = 'faqLidoEthAprDocs',
   faqHowCanIGetStEthWidget = 'faqHowCanIGetStEthWidget',
   faqHowCanIGetStEthIntegrations = 'faqHowCanIGetStEthIntegrations',
+  faqHowCanIGetStEthLedger = 'faqHowCanIGetStEthLedger',
   faqHowCanIUseSteth = 'faqHowCanIUseSteth',
   faqWhereCanICoverIdleFinance = 'faqWhereCanICoverIdleFinance',
   faqWhereCanICoverNexusMutual = 'faqWhereCanICoverNexusMutual',
@@ -150,6 +151,11 @@ export const MATOMO_CLICK_EVENTS: Record<
     'Ethereum_Staking_Widget',
     'Push «DEX Lido integrations» in FAQ How can I get stETH? on stake widget',
     'eth_widget_faq_howCanIGetStEth_dexLidoIntegrations',
+  ],
+  [MATOMO_CLICK_EVENTS_TYPES.faqHowCanIGetStEthLedger]: [
+    'Ethereum_Staking_Widget',
+    'Push «Ledger Ethereum wallet» in FAQ How can I get stETH? on stake widget',
+    'eth_widget_faq_howCanIGetStEth_ledgerEthereumWallet',
   ],
   [MATOMO_CLICK_EVENTS_TYPES.faqHowCanIUseSteth]: [
     'Ethereum_Staking_Widget',
