@@ -1,0 +1,30 @@
+name: Cron ping IPFS Gateway
+
+on:
+  schedule:
+    - cron: '0 12 * * *'
+  workflow_dispatch:
+    inputs:
+      IPFS_CID:
+        description: 'IPFS CID'
+        required: true
+        type: string
+      GATEWAY:
+        description: 'Gateway'
+        required: true
+        type: string
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    name: Ping IPFS Gateway
+    environment: Cron ping IPFS Gateway
+    steps:
+      - name: Ping IPFS Gateway
+        shell: bash
+        run: |
+          BODY_RESULT=`npx -y blumen@0.10.4 ping $IPFS_CID $GATEWAY`
+          echo "$BODY_RESULT" >> $GITHUB_STEP_SUMMARY
+        env:
+          IPFS_CID: ${{ inputs.IPFS_CID || vars.IPFS_CID }}
+          GATEWAY: ${{ inputs.GATEWAY || vars.GATEWAY }}
