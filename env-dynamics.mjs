@@ -21,7 +21,7 @@ export const ipfsMode = toBoolean(process.env.IPFS_MODE);
 /** @type string */
 export const selfOrigin = process.env.SELF_ORIGIN;
 /** @type string */
-export const rootOrigin = process.env.ROOT_ORIGIN;
+export const rootOrigin = process.env.ROOT_ORIGIN || '';
 /** @type string */
 export const docsOrigin = process.env.DOCS_ORIGIN;
 /** @type string */
