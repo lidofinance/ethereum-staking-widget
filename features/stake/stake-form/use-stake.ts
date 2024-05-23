@@ -1,5 +1,6 @@
 import { BigNumber } from 'ethers';
 import { useCallback } from 'react';
+import { useConnectorInfo } from 'reef-knot/core-react';
 import { useWeb3 } from 'reef-knot/web3-react';
 import invariant from 'tiny-invariant';
 
@@ -35,6 +36,10 @@ export const useStake = ({ onConfirm, onRetry }: StakeOptions) => {
   const { staticRpcProvider } = useCurrentStaticRpcProvider();
   const { providerWeb3, providerRpc } = useSDK();
   const { txModalStages } = useTxModalStagesStake();
+  const { isLedgerLive, isLedger } = useConnectorInfo();
+
+  // modifying calldata brakes clear sign
+  const shouldApplyCalldataSuffix = !isLedger && !isLedgerLive;
 
   return useCallback(
     async ({ amount, referral }: StakeArguments): Promise<boolean> => {
@@ -84,7 +89,7 @@ export const useStake = ({ onConfirm, onRetry }: StakeOptions) => {
               overrides,
             );
 
-            applyCalldataSuffix(tx);
+            if (shouldApplyCalldataSuffix) applyCalldataSuffix(tx);
 
             const originalGasLimit = await providerWeb3.estimateGas(tx);
             const gasLimit = applyGasLimitRatio(originalGasLimit);
@@ -130,10 +135,11 @@ export const useStake = ({ onConfirm, onRetry }: StakeOptions) => {
       account,
       providerWeb3,
       stethContractWeb3,
-      providerRpc,
       txModalStages,
+      providerRpc,
       onConfirm,
       staticRpcProvider,
+      shouldApplyCalldataSuffix,
       onRetry,
     ],
   );
