@@ -151,7 +151,6 @@ const useStakeFormNetworkData = (): StakeFormNetworkData => {
 // Data provider
 //
 export const StakeFormProvider: FC<PropsWithChildren> = ({ children }) => {
-  const router = useRouter();
   const networkData = useStakeFormNetworkData();
   const validationContextPromise = useStakeFormValidationContext(networkData);
 
@@ -168,22 +167,24 @@ export const StakeFormProvider: FC<PropsWithChildren> = ({ children }) => {
 
   // consumes amount query param
   // SSG safe
+  const { isReady, query, pathname, replace } = useRouter();
   useEffect(() => {
-    if (!router.isReady) return;
+    if (!isReady) return;
     try {
-      const { amount, ref, ...rest } = router.query;
+      const { amount, ref, ...rest } = query;
+
       if (typeof ref === 'string') {
         setValue('referral', ref);
       }
       if (typeof amount === 'string') {
-        void router.replace({ pathname: router.pathname, query: rest });
+        void replace({ pathname, query: rest });
         const amountBN = parseEther(amount);
         setValue('amount', amountBN);
       }
     } catch {
       //noop
     }
-  }, [router, setValue]);
+  }, [isReady, pathname, query, replace, setValue]);
 
   const { retryEvent, retryFire } = useFormControllerRetry();
 
