@@ -1,11 +1,11 @@
 ## Contributing Guidelines
 
-Thank you for your interest in contributing to our project! We appreciate your enthusiasm and support. Currently, we are actively working on developing comprehensive contributing guidelines to ensure a smooth and collaborative contribution process.
+Thank you for your interest in contributing to the project! Your enthusiasm and support are appreciated. Comprehensive contributing guidelines are actively being developed to ensure a smooth and collaborative contribution process.
 
-**Note:** At this moment, we cannot guarantee that we will process pull requests or issues, as we are still establishing the workflow and guidelines that will make it easier for everyone to participate in the project. We understand the importance of community involvement and want to create an inclusive and comfortable environment for all contributors.
+**Note:** At this moment, there is no guarantee that pull requests or issues will be processed, as the workflow and guidelines are still being established to make participation easier for everyone in the project. The importance of community involvement is understood, and an inclusive and comfortable environment for all contributors is being created.
 
-Rest assured, as soon as the contributing guide is ready, we will be more than happy to welcome your contributions and address any issues you may encounter. We'll make an announcement when the guidelines are finalized and open for contributions.
+Rest assured, as soon as the contributing guide is ready, contributions and any encountered issues will be welcomed and addressed. An announcement will be made when the guidelines are finalized and open for contributions.
 
-In the meantime, we encourage you to explore the project, familiarize yourself with the codebase, and provide feedback or suggestions that will be valuable during this development phase.
+In the meantime, exploring the project, familiarizing yourself with the codebase, and providing valuable feedback or suggestions during this development phase are encouraged.
 
-Thank you for your patience and understanding. We look forward to your future contributions once the contributing guidelines are in place!
+Thank you for your patience and understanding. Future contributions are eagerly anticipated once the contributing guidelines are in place!
