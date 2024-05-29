@@ -36,10 +36,9 @@ export const useStake = ({ onConfirm, onRetry }: StakeOptions) => {
   const { staticRpcProvider } = useCurrentStaticRpcProvider();
   const { providerWeb3, providerRpc } = useSDK();
   const { txModalStages } = useTxModalStagesStake();
-  const { isLedgerLive, isLedger } = useConnectorInfo();
 
-  // modifying calldata brakes clear sign
-  const shouldApplyCalldataSuffix = !isLedger && !isLedgerLive;
+  // modifying calldata brakes clear sign for LedgerLive
+  const shouldApplyCalldataSuffix = !useConnectorInfo().isLedgerLive;
 
   return useCallback(
     async ({ amount, referral }: StakeArguments): Promise<boolean> => {
@@ -67,37 +66,30 @@ export const useStake = ({ onConfirm, onRetry }: StakeOptions) => {
         ]);
 
         const callback = async () => {
+          const tx = await stethContractWeb3.populateTransaction.submit(
+            referralAddress,
+            {
+              value: amount,
+            },
+          );
+
+          if (shouldApplyCalldataSuffix) applyCalldataSuffix(tx);
+
           if (isMultisig) {
-            const tx = await stethContractWeb3.populateTransaction.submit(
-              referralAddress,
-              {
-                value: amount,
-              },
-            );
             return providerWeb3.getSigner().sendUncheckedTransaction(tx);
           } else {
             const { maxFeePerGas, maxPriorityFeePerGas } =
               await getFeeData(staticRpcProvider);
-            const overrides = {
-              value: amount,
-              maxPriorityFeePerGas,
-              maxFeePerGas,
-            };
 
-            const tx = await stethContractWeb3.populateTransaction.submit(
-              referralAddress,
-              overrides,
-            );
-
-            if (shouldApplyCalldataSuffix) applyCalldataSuffix(tx);
+            tx.maxFeePerGas = maxFeePerGas;
+            tx.maxPriorityFeePerGas = maxPriorityFeePerGas;
 
             const originalGasLimit = await providerWeb3.estimateGas(tx);
             const gasLimit = applyGasLimitRatio(originalGasLimit);
 
             tx.gasLimit = gasLimit;
 
-            const signer = providerWeb3.getSigner();
-            return signer.sendTransaction(tx);
+            return providerWeb3.getSigner().sendTransaction(tx);
           }
         };
 
