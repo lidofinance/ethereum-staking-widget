@@ -33,6 +33,19 @@ const DexOption: React.FC<DexOptionProps> = ({
   loading,
   onClickGoTo,
 }) => {
+  let amountComponent: React.ReactNode = '-';
+  if (loading) {
+    amountComponent = <InlineLoaderSmall />;
+  } else if (toReceive) {
+    amountComponent = (
+      <FormatToken
+        approx
+        amount={toReceive ?? BigNumber.from(0)}
+        symbol="ETH"
+      />
+    );
+  }
+
   return (
     <DexOptionStyled>
       <Icon />
@@ -45,18 +58,7 @@ const DexOption: React.FC<DexOptionProps> = ({
       >
         Go to {title}
       </DexOptionBlockLink>
-      <DexOptionAmount>
-        {loading && !toReceive && <InlineLoaderSmall />}
-        {toReceive ? (
-          <FormatToken
-            approx
-            amount={toReceive ?? BigNumber.from(0)}
-            symbol="ETH"
-          />
-        ) : (
-          '-'
-        )}
-      </DexOptionAmount>
+      <DexOptionAmount>{amountComponent}</DexOptionAmount>
     </DexOptionStyled>
   );
 };
