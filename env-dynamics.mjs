@@ -19,15 +19,24 @@ const toBoolean = (val) => {
 export const ipfsMode = toBoolean(process.env.IPFS_MODE);
 
 /** @type string */
-export const selfOrigin = process.env.SELF_ORIGIN;
+export const selfOrigin = process.env.SELF_ORIGIN || 'https://stake.lido.fi';
+// Fix in the build time (build time don't have env vars)
+
 /** @type string */
-export const rootOrigin = process.env.ROOT_ORIGIN || '';
+export const rootOrigin = process.env.ROOT_ORIGIN || 'https://lido.fi';
+// Fix in the build time (build time don't have env vars)
+
 /** @type string */
-export const docsOrigin = process.env.DOCS_ORIGIN;
+export const docsOrigin = process.env.DOCS_ORIGIN || 'https://docs.lido.fi';
+// Fix in the build time (build time don't have env vars)
+
 /** @type string */
-export const helpOrigin = process.env.HELP_ORIGIN;
+export const helpOrigin = process.env.HELP_ORIGIN || 'https://help.lido.fi';
+// Fix in the build time (build time don't have env vars)
+
 /** @type string */
-export const researchOrigin = process.env.RESEARCH_ORIGIN;
+export const researchOrigin = process.env.RESEARCH_ORIGIN || 'https://research.lido.fi';
+// Fix in the build time (build time don't have env vars)
 
 // Keep fallback as in 'config/get-secret-config.ts'
 /** @type number */
