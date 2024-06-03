@@ -29,7 +29,7 @@ export const useRemoteVersion = () => {
             return {
               cid: contentHash,
               ens: data.ens,
-              link: `https://${externalConfig.ens}.limo`,
+              link: `https://${data.ens}.limo`,
               leastSafeVersion: data.leastSafeVersion,
             };
           }

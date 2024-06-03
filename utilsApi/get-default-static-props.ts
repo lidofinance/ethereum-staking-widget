@@ -9,13 +9,14 @@ export const getDefaultStaticProps = <
 >(
   custom?: GetStaticProps<P, Q, D>,
 ): GetStaticProps<P & { ___prefetch_manifest___?: object }, Q, D> => {
+  let shouldZeroRevalidate = true;
   return async (context) => {
     const { ___prefetch_manifest___, revalidate } =
       await fetchExternalManifest();
     const props = ___prefetch_manifest___ ? { ___prefetch_manifest___ } : {};
     const base = {
       props,
-      revalidate,
+      revalidate: shouldZeroRevalidate ? 1 : revalidate,
     };
     if (custom) {
       const { props: customProps, ...rest } = (await custom(context)) as any;
@@ -25,6 +26,7 @@ export const getDefaultStaticProps = <
         props: { ...base.props, ...customProps },
       };
     }
+    shouldZeroRevalidate = false;
     return base;
   };
 };

@@ -13,6 +13,7 @@ export const isManifestEntryValid = (
   entry?: unknown,
 ): entry is ManifestEntry => {
   if (
+    // entry = {}
     entry &&
     typeof entry === 'object' &&
     entry &&
