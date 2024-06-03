@@ -34,11 +34,11 @@ const App = (props: AppProps) => {
 
 const MemoApp = memo(App);
 
-const AppWrapper = (props: AppProps): JSX.Element => {
-  const { ...rest } = props;
-
+const AppWrapper = (
+  props: AppProps<{ ___prefetch_manifest___?: object }>,
+): JSX.Element => {
   return (
-    <Providers>
+    <Providers prefetchedManifest={props.pageProps.___prefetch_manifest___}>
       {/* see https://nextjs.org/docs/messages/no-document-viewport-meta */}
       <Head>
         <meta
@@ -54,7 +54,7 @@ const AppWrapper = (props: AppProps): JSX.Element => {
         }}
       />
       <ToastContainer />
-      <MemoApp {...rest} />
+      <MemoApp {...props} />
       <CookiesTooltip />
       <SecurityStatusBanner />
     </Providers>

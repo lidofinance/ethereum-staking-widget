@@ -1,66 +1,55 @@
 import { useLidoSWR } from '@lido-sdk/react';
-import { config } from 'config';
+import { useConfig } from 'config';
 import { STRATEGY_LAZY } from 'consts/swr-strategies';
 import { useMainnetStaticRpcProvider } from 'shared/hooks/use-mainnet-static-rpc-provider';
-import { standardFetcher } from 'utils/standardFetcher';
 
 type EnsHashCheckReturn = {
   cid: string;
   ens?: string;
   leastSafeVersion?: string;
   link: string;
-} | null;
-
-type ReleaseInfoData = Record<string, ReleaseInfo>;
-
-type ReleaseInfo = {
-  cid?: string;
-  ens?: string;
-  leastSafeVersion?: string;
 };
-
-// for dev and local testing you can set to '/runtime/IPFS.json' and have file at /public/runtime/
-const IPFS_RELEASE_URL =
-  'https://raw.githubusercontent.com/lidofinance/ethereum-staking-widget/main/IPFS.json';
 
 export const useRemoteVersion = () => {
   const provider = useMainnetStaticRpcProvider();
-  // ens cid extraction
-  return useLidoSWR<EnsHashCheckReturn>(
-    ['swr:use-remote-version'],
-    async (): Promise<EnsHashCheckReturn> => {
-      const releaseInfoData = await standardFetcher<ReleaseInfoData>(
-        IPFS_RELEASE_URL,
-        {
-          headers: { Accept: 'application/json' },
-        },
-      );
 
-      const releaseInfo = releaseInfoData[config.defaultChain.toString()];
-      if (releaseInfo?.ens) {
-        const resolver = await provider.getResolver(releaseInfo.ens);
+  // we use directly non-optimistic manifest data
+  // can't trust static props(in IPFS esp) to generate warnings/disconnect wallet
+  const { data, error } = useConfig().externalConfig.fetchMeta;
+
+  // ens&cid extraction
+  return useLidoSWR<EnsHashCheckReturn>(
+    ['swr:use-remote-version', data],
+    async (): Promise<EnsHashCheckReturn> => {
+      if (data?.ens) {
+        const resolver = await provider.getResolver(data.ens);
         if (resolver) {
           const contentHash = await resolver.getContentHash();
           if (contentHash) {
             return {
               cid: contentHash,
-              ens: releaseInfo.ens,
-              link: `https://${releaseInfo.ens}.limo`,
-              leastSafeVersion: releaseInfo.leastSafeVersion,
+              ens: data.ens,
+              link: `https://${externalConfig.ens}.limo`,
+              leastSafeVersion: data.leastSafeVersion,
             };
           }
         }
       }
-      if (releaseInfo?.cid) {
+      if (data?.cid) {
         return {
-          cid: releaseInfo.cid,
-          link: `https://${releaseInfo.cid}.ipfs.cf-ipfs.com`,
-          leastSafeVersion: releaseInfo.leastSafeVersion,
+          cid: data.cid,
+          link: `https://${data.cid}.ipfs.cf-ipfs.com`,
+          leastSafeVersion: data.leastSafeVersion,
         };
       }
 
-      throw new Error('invalid IPFS manifest content');
+      throw new Error('[useRemoteVersion] invalid IPFS manifest content');
     },
-    { ...STRATEGY_LAZY },
+    {
+      ...STRATEGY_LAZY,
+      // we postpone fetch if we don't have external data and don't have error
+      // empty data will force fetcher to produce correct error
+      isPaused: () => !(data || error),
+    },
   );
 };

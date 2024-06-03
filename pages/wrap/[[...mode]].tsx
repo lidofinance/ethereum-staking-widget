@@ -1,9 +1,10 @@
 import { FC } from 'react';
-import { GetStaticPaths, GetStaticProps } from 'next';
+import { GetStaticPaths } from 'next';
 import Head from 'next/head';
 import { Layout } from 'shared/components';
 import { WrapUnwrapTabs } from 'features/wsteth/wrap-unwrap-tabs';
 import { useWeb3Key } from 'shared/hooks/useWeb3Key';
+import { getDefaultStaticProps } from 'utilsApi/get-default-static-props';
 
 const WrapPage: FC<WrapModePageProps> = ({ mode }) => {
   const key = useWeb3Key();
@@ -38,13 +39,13 @@ export const getStaticPaths: GetStaticPaths<WrapModePageParams> = async () => {
 };
 
 // we need [[...]] pattern for / and /unwrap
-export const getStaticProps: GetStaticProps<
+export const getStaticProps = getDefaultStaticProps<
   WrapModePageProps,
   WrapModePageParams
-> = async ({ params }) => {
+>(async ({ params }) => {
   const mode = params?.mode;
   if (!mode) return { props: { mode: 'wrap' } };
   if (mode[0] === 'unwrap') return { props: { mode: 'unwrap' } };
 
   return { notFound: true };
-};
+});

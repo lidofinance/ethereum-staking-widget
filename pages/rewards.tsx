@@ -5,6 +5,7 @@ import { TopCard, RewardsList } from 'features/rewards/features';
 import RewardsHistoryProvider from 'providers/rewardsHistory';
 import { Fallback } from 'shared/wallet';
 import { GoerliSunsetBanner } from 'shared/banners/goerli-sunset';
+import { getDefaultStaticProps } from 'utilsApi/get-default-static-props';
 
 const Rewards: FC = () => {
   return (
@@ -30,5 +31,7 @@ const Rewards: FC = () => {
     </Layout>
   );
 };
+
+export const getStaticProps = getDefaultStaticProps();
 
 export default Rewards;

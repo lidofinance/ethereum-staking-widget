@@ -11,13 +11,12 @@ import { useDebouncedValue } from 'shared/hooks/useDebouncedValue';
 import type { RequestFormInputType } from '../request-form-context';
 import { getDexConfig } from './integrations';
 
-import { ENABLED_WITHDRAWAL_DEXES } from 'features/withdrawals/withdrawals-constants';
-
 import type {
   DexWithdrawalApi,
   GetWithdrawalRateParams,
   GetWithdrawalRateResult,
 } from './types';
+import { useConfig } from 'config';
 
 export type useWithdrawalRatesOptions = {
   fallbackValue?: BigNumber;
@@ -57,15 +56,11 @@ export const useWithdrawalRates = ({
   const [token, amount] = useWatch<RequestFormInputType, ['token', 'amount']>({
     name: ['token', 'amount'],
   });
+  const enabledDexes = useConfig().externalConfig.enabledWithdrawalDexes;
   const fallbackedAmount = amount ?? fallbackValue;
   const debouncedAmount = useDebouncedValue(fallbackedAmount, 1000);
   const swr = useLidoSWR(
-    [
-      'swr:withdrawal-rates',
-      debouncedAmount.toString(),
-      token,
-      ENABLED_WITHDRAWAL_DEXES,
-    ],
+    ['swr:withdrawal-rates', debouncedAmount.toString(), token, enabledDexes],
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (_, amount, token, enabledDexes) =>
       getWithdrawalRates({
@@ -78,7 +73,7 @@ export const useWithdrawalRates = ({
       isPaused: () =>
         !debouncedAmount ||
         !debouncedAmount._isBigNumber ||
-        ENABLED_WITHDRAWAL_DEXES.length === 0,
+        enabledDexes.length === 0,
     },
   );
 
@@ -89,7 +84,7 @@ export const useWithdrawalRates = ({
   return {
     amount: fallbackedAmount,
     bestRate,
-    enabledDexes: ENABLED_WITHDRAWAL_DEXES,
+    enabledDexes,
     selectedToken: token,
     data: swr.data,
     get initialLoading() {
