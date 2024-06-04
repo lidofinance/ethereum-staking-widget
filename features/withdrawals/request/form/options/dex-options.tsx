@@ -66,7 +66,7 @@ const DexOption: React.FC<DexOptionProps> = ({
 export const DexOptions: React.FC<
   React.ComponentProps<typeof DexOptionsContainer>
 > = (props) => {
-  const { data, initialLoading, loading, amount, selectedToken, enabledDexes } =
+  const { data, initialLoading, amount, selectedToken, enabledDexes } =
     useWithdrawalRates();
 
   const isAnyDexEnabled = enabledDexes.length > 0;
@@ -92,7 +92,6 @@ export const DexOptions: React.FC<
               onClickGoTo={() => trackMatomoEvent(matomoEvent)}
               url={link(amount, selectedToken)}
               key={title}
-              loading={loading}
               toReceive={rate ? toReceive : null}
             />
           );
