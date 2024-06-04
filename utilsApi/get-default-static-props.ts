@@ -1,5 +1,7 @@
-import type { GetStaticProps, PreviewData } from 'next';
+import type { GetStaticProps, GetStaticPropsResult, PreviewData } from 'next';
 import type { ParsedUrlQuery } from 'querystring';
+
+import Metrics from 'utilsApi/metrics';
 import { fetchExternalManifest } from './fetch-external-manifest';
 
 export const getDefaultStaticProps = <
@@ -11,6 +13,7 @@ export const getDefaultStaticProps = <
 ): GetStaticProps<P & { ___prefetch_manifest___?: object }, Q, D> => {
   let shouldZeroRevalidate = true;
   return async (context) => {
+    /// common props
     const { ___prefetch_manifest___, revalidate } =
       await fetchExternalManifest();
     const props = ___prefetch_manifest___ ? { ___prefetch_manifest___ } : {};
@@ -18,15 +21,25 @@ export const getDefaultStaticProps = <
       props,
       revalidate: shouldZeroRevalidate ? 1 : revalidate,
     };
+
+    /// custom getStaticProps
+    let result = base as GetStaticPropsResult<P>;
     if (custom) {
       const { props: customProps, ...rest } = (await custom(context)) as any;
-      return {
+      result = {
         ...base,
         ...rest,
         props: { ...base.props, ...customProps },
       };
     }
+
+    /// metrics
+    console.debug(
+      `[getDefaultStaticProps] running revalidation, next revalidation in ${base.revalidate}`,
+    );
+    Metrics.request.ssrCounter.labels({ revalidate: base.revalidate }).inc(1);
+
     shouldZeroRevalidate = false;
-    return base;
+    return result;
   };
 };

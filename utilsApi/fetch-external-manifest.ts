@@ -42,16 +42,22 @@ export const fetchExternalManifest = async () => {
         config.CACHE_EXTERNAL_CONFIG_TTL,
       );
 
-      console.debug(`[fetchExternalConfig] fetched external config`, result);
+      console.debug(
+        `[fetchExternalManifest] fetched external manifest`,
+        result,
+      );
 
       return result;
     } catch (e) {
-      console.error(`[fetchExternalConfig] failed to fetch external config`, e);
+      console.error(
+        `[fetchExternalManifest] failed to fetch external manifest`,
+        e,
+      );
       retries -= 1;
     }
   }
   console.error(
-    `[fetchExternalConfig] failed to fetch external config after retries, revalidation is set to ${config.ERROR_REVALIDATION}`,
+    `[fetchExternalManifest] failed to fetch external manifest after retries, revalidation is set to ${config.ERROR_REVALIDATION}`,
   );
   return {
     revalidate: config.ERROR_REVALIDATION,
