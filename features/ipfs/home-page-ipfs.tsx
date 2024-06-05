@@ -111,6 +111,6 @@ export const HomePageIpfs: FC = () => {
     }
   }
 
-  // Fix for runtime of `dev-ipfs` (see: package.json scripts)
+  // Fix for runtime of `dev:ipfs` (see: package.json scripts)
   return <NoSSRWrapper>{spaPage}</NoSSRWrapper>;
 };
