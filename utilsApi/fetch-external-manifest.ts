@@ -1,5 +1,5 @@
 import { Cache } from 'memory-cache';
-import { IPFS_MANIFEST_PATH } from 'consts/external-links';
+import { IPFS_MANIFEST_URL } from 'consts/external-links';
 import { responseTimeExternalMetricWrapper } from './fetchApiWrapper';
 import { standardFetcher } from 'utils/standardFetcher';
 import { config } from 'config';
@@ -22,9 +22,9 @@ export const fetchExternalManifest = async () => {
   while (retries > 0) {
     try {
       const data = await responseTimeExternalMetricWrapper({
-        payload: IPFS_MANIFEST_PATH,
+        payload: IPFS_MANIFEST_URL,
         request: () =>
-          standardFetcher<unknown>(IPFS_MANIFEST_PATH, {
+          standardFetcher<unknown>(IPFS_MANIFEST_URL, {
             headers: { Accept: 'application/json' },
           }),
       });
@@ -48,10 +48,10 @@ export const fetchExternalManifest = async () => {
       );
 
       return result;
-    } catch (e) {
+    } catch (error) {
       console.error(
         `[fetchExternalManifest] failed to fetch external manifest`,
-        e,
+        error,
       );
       retries -= 1;
     }

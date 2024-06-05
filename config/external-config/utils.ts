@@ -16,8 +16,6 @@ export const isManifestEntryValid = (
     // entry = {}
     entry &&
     typeof entry === 'object' &&
-    entry &&
-    typeof entry === 'object' &&
     // entry.config = {}
     'config' in entry &&
     typeof entry.config === 'object' &&
