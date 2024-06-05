@@ -3,7 +3,6 @@ import { GetStaticPaths, GetStaticProps } from 'next';
 import Head from 'next/head';
 
 import { Layout } from 'shared/components';
-import NoSSRWrapper from 'shared/components/no-ssr-wrapper';
 
 import { WithdrawalsTabs } from 'features/withdrawals';
 import { WithdrawalsProvider } from 'features/withdrawals/contexts/withdrawals-context';
@@ -21,9 +20,7 @@ const Withdrawals: FC<WithdrawalsModePageParams> = ({ mode }) => {
         <title>Withdrawals | Lido</title>
       </Head>
       <WithdrawalsProvider mode={mode}>
-        <NoSSRWrapper>
-          <WithdrawalsTabs key={key} />
-        </NoSSRWrapper>
+        <WithdrawalsTabs key={key} />
       </WithdrawalsProvider>
     </Layout>
   );
