@@ -1,6 +1,7 @@
 import styled from 'styled-components';
 
 export const Wrap = styled.div`
+  position: relative;
   margin-bottom: 20px;
   padding: 16px;
   border-radius: 16px;
@@ -64,7 +65,14 @@ export const Strategies = styled.div`
   gap: 10px;
 
   ${({ theme }) => theme.mediaQueries.md} {
-    justify-content: center;
+    /* justify-content: center; */
+    display: grid;
+    width: fit-content;
+    grid-template-columns: repeat(3, auto);
+
+    & > *:nth-child(4) {
+      display: none;
+    }
   }
 `;
 
@@ -84,5 +92,9 @@ export const StrategyItem = styled.div`
 export const StrategyDivider = styled.div`
   svg {
     display: block;
+    fill: ${({ theme }) =>
+      theme.name === 'dark'
+        ? 'var(--lido-color-text)'
+        : 'var(--lido-color-textSecondary)'};
   }
 `;

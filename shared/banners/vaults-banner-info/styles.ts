@@ -1,6 +1,7 @@
 import styled from 'styled-components';
 
 export const Wrap = styled.div`
+  position: relative;
   padding: 16px;
   border-radius: 16px;
   background-color: ${({ theme }) =>
