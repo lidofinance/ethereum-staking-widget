@@ -33,6 +33,19 @@ const DexOption: React.FC<DexOptionProps> = ({
   loading,
   onClickGoTo,
 }) => {
+  let amountComponent: React.ReactNode = '-';
+  if (loading) {
+    amountComponent = <InlineLoaderSmall />;
+  } else if (toReceive) {
+    amountComponent = (
+      <FormatToken
+        approx
+        amount={toReceive ?? BigNumber.from(0)}
+        symbol="ETH"
+      />
+    );
+  }
+
   return (
     <DexOptionStyled>
       <Icon />
@@ -45,18 +58,7 @@ const DexOption: React.FC<DexOptionProps> = ({
       >
         Go to {title}
       </DexOptionBlockLink>
-      <DexOptionAmount>
-        {loading && !toReceive && <InlineLoaderSmall />}
-        {toReceive ? (
-          <FormatToken
-            approx
-            amount={toReceive ?? BigNumber.from(0)}
-            symbol="ETH"
-          />
-        ) : (
-          '-'
-        )}
-      </DexOptionAmount>
+      <DexOptionAmount>{amountComponent}</DexOptionAmount>
     </DexOptionStyled>
   );
 };
@@ -64,7 +66,7 @@ const DexOption: React.FC<DexOptionProps> = ({
 export const DexOptions: React.FC<
   React.ComponentProps<typeof DexOptionsContainer>
 > = (props) => {
-  const { data, initialLoading, loading, amount, selectedToken, enabledDexes } =
+  const { data, initialLoading, amount, selectedToken, enabledDexes } =
     useWithdrawalRates();
 
   const isAnyDexEnabled = enabledDexes.length > 0;
@@ -90,7 +92,6 @@ export const DexOptions: React.FC<
               onClickGoTo={() => trackMatomoEvent(matomoEvent)}
               url={link(amount, selectedToken)}
               key={title}
-              loading={loading}
               toReceive={rate ? toReceive : null}
             />
           );
