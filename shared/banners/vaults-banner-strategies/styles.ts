@@ -26,6 +26,9 @@ export const Icon = styled.div`
   }
 
   ${({ theme }) => theme.mediaQueries.md} {
+    order: 2;
+    margin-right: 0;
+
     &,
     svg {
       weight: 48px;
@@ -36,6 +39,11 @@ export const Icon = styled.div`
 
 export const Title = styled.div`
   text-align: left;
+
+  ${({ theme }) => theme.mediaQueries.md} {
+    flex: 1 1 auto;
+    order: 1;
+  }
 `;
 
 export const TitleText = styled.div`
