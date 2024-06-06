@@ -1,8 +1,6 @@
 import styled, { css } from 'styled-components';
-import { Button, Link } from '@lidofinance/lido-ui';
 import IconsLight from 'assets/icons/l2-swap-light.svg';
 import IconsDark from 'assets/icons/l2-swap-dark.svg';
-import { LocalLink } from 'shared/components/local-link';
 
 export const Wrapper = styled.div`
   position: relative;
@@ -75,34 +73,4 @@ export const TextWrap = styled.div`
   font-size: 12px;
   font-weight: 400;
   position: relative;
-`;
-
-const buttonLinkWrapCss = css`
-  display: block;
-
-  ${({ theme }) => theme.mediaQueries.md} {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-  }
-`;
-
-export const ButtonLinkWrap = styled(Link)`
-  ${buttonLinkWrapCss};
-`;
-
-export const ButtonLinkWrapLocal = styled(LocalLink)`
-  ${buttonLinkWrapCss};
-`;
-
-export const ButtonStyle = styled(Button)`
-  padding: 7px 16px;
-  font-size: 12px;
-  line-height: 20px;
-
-  ${({ theme }) => theme.mediaQueries.md} {
-    display: none;
-  }
 `;
