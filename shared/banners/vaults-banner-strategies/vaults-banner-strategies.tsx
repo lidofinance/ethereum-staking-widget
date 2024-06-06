@@ -42,32 +42,28 @@ export const VaultsBannerStrategies = () => {
         <Strategies>
           <StrategyItem>
             <b>stETH</b>
-            <br />
-            APR
+            <br /> APR
           </StrategyItem>
 
           {divider}
 
           <StrategyItem>
             <b>Symbiotic</b>
-            <br />
-            Points
+            <br /> Points
           </StrategyItem>
 
           {divider}
 
           <StrategyItem>
             <b>Mellow</b>
-            <br />
-            Points
+            <br /> Points
           </StrategyItem>
 
           {divider}
 
           <StrategyItem>
             <b>Restaking</b>
-            <br />
-            <b>APR</b> TBD
+            <br /> <b>APR</b> TBD
           </StrategyItem>
         </Strategies>
       </Wrap>

@@ -65,7 +65,6 @@ export const Strategies = styled.div`
   gap: 10px;
 
   ${({ theme }) => theme.mediaQueries.md} {
-    /* justify-content: center; */
     display: grid;
     width: fit-content;
     grid-template-columns: repeat(3, auto);
@@ -86,6 +85,11 @@ export const StrategyItem = styled.div`
 
   b {
     font-weight: 700;
+  }
+  ${({ theme }) => theme.mediaQueries.md} {
+    br {
+      display: none;
+    }
   }
 `;
 
