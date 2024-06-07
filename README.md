@@ -34,7 +34,7 @@ yarn dev
 for IPFS mode below:
 
 ```bash
-yarn dev-ipfs # will start with HMR
+yarn dev:ipfs # will start with HMR
 ```
 
 ### Environment variables
@@ -61,7 +61,7 @@ yarn build && yarn start
 for IPFS mode below:
 
 ```bash
-yarn build-ipfs
+yarn build:ipfs
 ```
 
 ## Adding a new route API
