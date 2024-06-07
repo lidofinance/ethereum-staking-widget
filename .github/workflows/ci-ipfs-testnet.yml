@@ -31,7 +31,7 @@ jobs:
           yarn install --frozen-lockfile
       - name: Build
         run: |
-          yarn build-ipfs
+          yarn build:ipfs
         env:
           ROOT_ORIGIN: ${{ vars.ROOT_ORIGIN }}
           DOCS_ORIGIN: ${{ vars.DOCS_ORIGIN }}
