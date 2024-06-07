@@ -23,7 +23,7 @@ const ldoStats: API = async (req, res) => {
   const cachedLidoStats = cache.get(config.CACHE_LDO_STATS_KEY);
 
   if (cachedLidoStats) {
-    res.status(200).json(cachedLidoStats);
+    res.json(cachedLidoStats);
   } else {
     const ldoStats = await getLdoStats();
 
@@ -33,7 +33,7 @@ const ldoStats: API = async (req, res) => {
       config.CACHE_LDO_STATS_TTL,
     );
 
-    res.status(200).json({ data: ldoStats });
+    res.json({ data: ldoStats });
   }
 };
 
