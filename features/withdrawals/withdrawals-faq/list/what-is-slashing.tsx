@@ -1,8 +1,9 @@
 import { Accordion, Link } from '@lidofinance/lido-ui';
+
+import { config } from 'config';
 import { MATOMO_CLICK_EVENTS_TYPES } from 'consts/matomo-click-events';
 
-const PENALTIES_INFO_LINK =
-  'https://help.lido.fi/en/articles/5232780-what-are-staking-validator-penalties';
+const PENALTIES_INFO_LINK = `${config.helpOrigin}/en/articles/5232780-what-are-staking-validator-penalties`;
 
 export const WhatIsSlashing: React.FC = () => {
   return (

@@ -14,8 +14,6 @@ import { config } from 'config';
 import { contentSecurityPolicy } from 'config/csp';
 import { InsertIpfsBaseScript } from 'features/ipfs/ipfs-base-script';
 
-let host = 'https://stake.lido.fi';
-
 const secureHeaders = createHeadersObject({ contentSecurityPolicy });
 const cspMetaTagContent =
   secureHeaders['Content-Security-Policy'] ??
@@ -27,10 +25,6 @@ export default class MyDocument extends Document {
   ): Promise<DocumentInitialProps> {
     const sheet = new ServerStyleSheet();
     const originalRenderPage = ctx.renderPage;
-
-    if (ctx?.req?.headers?.host) {
-      host = `https://${ctx?.req?.headers?.host}`;
-    }
 
     try {
       ctx.renderPage = () =>
@@ -68,7 +62,10 @@ export default class MyDocument extends Document {
   }
 
   get metaPreviewImgUrl(): string {
-    return `${host}/lido-preview.png`;
+    const origin = config.ipfsMode
+      ? 'https://stake.lido.fi'
+      : config.selfOrigin;
+    return `${origin}/lido-preview.png`;
   }
 
   render(): JSX.Element {

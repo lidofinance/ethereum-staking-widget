@@ -1,11 +1,13 @@
 import { CHAINS } from '@lido-sdk/constants';
 import { useSDK } from '@lido-sdk/react';
 import { Text, Link } from '@lidofinance/lido-ui';
+
+import { config } from 'config';
+
 import { SunsetMessageStyle } from './styles';
 
-const URL_INFORMATION = 'https://docs.lido.fi/deployed-contracts/goerli/';
-const URL_HOLESKY =
-  'https://docs.lido.fi/deployed-contracts/holesky/#hole%C5%A1ky-testnet';
+const URL_INFORMATION = `${config.docsOrigin}/deployed-contracts/goerli/`;
+const URL_HOLESKY = `${config.docsOrigin}/deployed-contracts/holesky/#hole%C5%A1ky-testnet`;
 
 export const GoerliSunsetBanner = () => {
   const { chainId } = useSDK();

@@ -1,3 +1,5 @@
+import { config } from 'config';
+
 import { BannerLinkButton } from '../banner-link-button';
 import { Wrapper, L2Icons, TextWrap, TextHeader, FooterWrap } from './styles';
 
@@ -12,7 +14,7 @@ type L2BannerProps = {
   onClickButton?: () => void;
 };
 
-export const L2_DISCOVERY_LINK = 'https://lido.fi/lido-on-l2';
+export const L2_DISCOVERY_LINK = `${config.rootOrigin}/lido-on-l2`;
 
 export const L2Banner = ({
   title,

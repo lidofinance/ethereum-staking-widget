@@ -2199,10 +2199,10 @@
     ua-parser-js "^1.0.35"
     use-callback-ref "1.2.5"
 
-"@lidofinance/lido-ui@^3.24.0":
-  version "3.24.0"
-  resolved "https://registry.yarnpkg.com/@lidofinance/lido-ui/-/lido-ui-3.24.0.tgz#2abcd5637423e672386769781c7b5dfd40b51a1e"
-  integrity sha512-z43M04ZOxW0ul96MFbXOcitioGxLyo9a4TMRqMzW8Va8CeYeFwPyUbdzBuRQ/kj8Tsw0vVGGIzRqlcy1doSvBg==
+"@lidofinance/lido-ui@^3.26.0":
+  version "3.26.0"
+  resolved "https://registry.yarnpkg.com/@lidofinance/lido-ui/-/lido-ui-3.26.0.tgz#44c65abbbc3aaa84f805ca8e99dcddd4010c975e"
+  integrity sha512-W990IJAZBuaJfxh8RxZRPUFwT/+xQ93uYAr/0/8an3IIGoX+lUKmyHn22r1FCZLK19xYR8Ikm6zLr3lvCM0t2w==
   dependencies:
     "@styled-system/should-forward-prop" "5.1.5"
     react-collapsed "3.0.2"

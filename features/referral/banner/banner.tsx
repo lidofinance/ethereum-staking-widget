@@ -1,6 +1,7 @@
 import { FC } from 'react';
 import { Block, Link } from '@lidofinance/lido-ui';
 
+import { config } from 'config';
 import { BannerTextStyle, BannerHeader, BannerMainTextStyle } from './styles';
 
 export const Banner: FC = () => {
@@ -19,9 +20,11 @@ export const Banner: FC = () => {
         </Link>
         partners approved by the Lido DAO are eligible for rewards. To apply to
         Lido&apos;s whitelist you could here:
-        <Link href="https://research.lido.fi/t/referral-program-whitelisting-ethereum/1039">
+        <Link
+          href={`${config.researchOrigin}/t/referral-program-whitelisting-ethereum/1039`}
+        >
           {' '}
-          https://research.lido.fi/t/referral-program-whitelisting-ethereum/1039
+          ${config.researchOrigin}/t/referral-program-whitelisting-ethereum/1039
         </Link>
       </p>
       <br />

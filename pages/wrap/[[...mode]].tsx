@@ -43,8 +43,9 @@ export const getStaticProps: GetStaticProps<
   WrapModePageParams
 > = async ({ params }) => {
   const mode = params?.mode;
-  if (!mode) return { props: { mode: 'wrap' } };
-  if (mode[0] === 'unwrap') return { props: { mode: 'unwrap' } };
+  if (!mode) return { props: { mode: 'wrap' }, revalidate: 60 };
+  if (mode[0] === 'unwrap')
+    return { props: { mode: 'unwrap' }, revalidate: 60 };
 
   return { notFound: true };
 };
