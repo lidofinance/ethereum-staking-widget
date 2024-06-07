@@ -22,7 +22,7 @@ const lidoStats: API = async (req, res) => {
   const cachedLidoStats = cache.get(config.CACHE_LIDO_STATS_KEY);
 
   if (cachedLidoStats) {
-    res.status(200).json(cachedLidoStats);
+    res.json(cachedLidoStats);
   } else {
     const lidoStats = await getLidoStats();
     cache.put(
@@ -31,7 +31,7 @@ const lidoStats: API = async (req, res) => {
       config.CACHE_LIDO_STATS_TTL,
     );
 
-    res.status(200).json({ data: lidoStats });
+    res.json({ data: lidoStats });
   }
 };
 
