@@ -8,6 +8,7 @@ import { useUserConfig } from 'config/user-config';
 import { useGetRpcUrlByChainId } from 'config/rpc';
 import { CHAINS } from 'consts/chains';
 import { ConnectWalletModal } from 'shared/wallet/connect-wallet-modal';
+import { onRpcProviderError } from 'utils/rpc-error-handler';
 
 import { SDKLegacyProvider } from './sdk-legacy';
 
@@ -61,7 +62,7 @@ const Web3Provider: FC<PropsWithChildren> = ({ children }) => {
           getRpcUrlByChainId(chain.id),
           undefined,
           12000,
-        ),
+        ).on('debug', onRpcProviderError),
       chain: {
         ...chain,
         rpcUrls: {
