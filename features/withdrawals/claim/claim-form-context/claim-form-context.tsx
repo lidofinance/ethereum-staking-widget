@@ -79,7 +79,7 @@ export const ClaimFormProvider: FC<PropsWithChildren> = ({ children }) => {
       defaultSelectedRequestCount,
     ).requests.map((request) => ({
       ...request,
-      checked: checkedIds.has(request.token_id),
+      checked: request.status.isFinalized && checkedIds.has(request.token_id),
     }));
 
     setValue('requests', newRequests, {
