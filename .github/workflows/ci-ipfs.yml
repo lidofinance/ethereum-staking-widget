@@ -40,8 +40,12 @@ jobs:
           yarn install --frozen-lockfile
       - name: Build
         run: |
-          yarn build-ipfs
+          yarn build:ipfs
         env:
+          ROOT_ORIGIN: ${{ vars.ROOT_ORIGIN }}
+          DOCS_ORIGIN: ${{ vars.DOCS_ORIGIN }}
+          HELP_ORIGIN: ${{ vars.HELP_ORIGIN }}
+          RESEARCH_ORIGIN: ${{ vars.RESEARCH_ORIGIN }}
           DEFAULT_CHAIN: ${{ vars.DEFAULT_CHAIN }}
           SUPPORTED_CHAINS: ${{ vars.SUPPORTED_CHAINS }}
           WIDGET_API_BASE_PATH_FOR_IPFS: ${{ vars.WIDGET_API_BASE_PATH_FOR_IPFS }}

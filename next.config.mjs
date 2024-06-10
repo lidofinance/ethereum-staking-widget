@@ -8,7 +8,7 @@ buildDynamics();
 const basePath = process.env.BASE_PATH;
 
 const developmentMode = process.env.NODE_ENV === 'development';
-const isIPFSMode = process.env.IPFS_MODE;
+const isIPFSMode = process.env.IPFS_MODE === 'true';
 
 // cache control
 export const CACHE_CONTROL_HEADER = 'x-cache-control';

@@ -1,4 +1,5 @@
 import { FC, memo } from 'react';
+import { useFeatureFlag, VAULTS_BANNER_IS_ENABLED } from 'config/feature-flags';
 
 import { StakeFormProvider } from './stake-form-context';
 
@@ -9,8 +10,10 @@ import { StakeFormInfo } from './stake-form-info';
 import { SwapDiscountBanner } from '../swap-discount-banner';
 import { StakeBlock, FormControllerStyled } from './styles';
 import { L2FromStakeToWrap } from 'shared/banners/l2-banners/l2-from-stake-to-wrap';
+import { VaultsBannerInfo } from 'shared/banners/vaults-banner-info';
 
 export const StakeForm: FC = memo(() => {
+  const { vaultsBannerIsEnabled } = useFeatureFlag(VAULTS_BANNER_IS_ENABLED);
   return (
     <StakeFormProvider>
       <Wallet />
@@ -19,7 +22,11 @@ export const StakeForm: FC = memo(() => {
           <StakeAmountInput />
           <StakeSubmitButton />
           <SwapDiscountBanner>
-            <L2FromStakeToWrap />
+            {vaultsBannerIsEnabled ? (
+              <VaultsBannerInfo />
+            ) : (
+              <L2FromStakeToWrap />
+            )}
           </SwapDiscountBanner>
         </FormControllerStyled>
         <StakeFormInfo />
