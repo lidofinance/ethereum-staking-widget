@@ -1,5 +1,4 @@
 import { config } from 'config';
-
 import { StakePage } from 'features/stake';
 import { HomePageIpfs } from 'features/ipfs';
 

@@ -13,10 +13,10 @@ const Settings: FC = () => {
   );
 };
 
-export default Settings;
-
 export const getStaticProps = getDefaultStaticProps(async () => {
   if (!config.ipfsMode) return { notFound: true };
 
   return { props: {} };
 });
+
+export default Settings;

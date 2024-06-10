@@ -82,7 +82,7 @@ const toFloor = (num: number): string =>
   (Math.floor(num * 10000) / 10000).toString();
 
 const DexButton: React.FC<OptionButtonProps> = ({ isActive, onClick }) => {
-  const { loading, bestRate, enabledDexes } = useWithdrawalRates({
+  const { initialLoading, bestRate, enabledDexes } = useWithdrawalRates({
     fallbackValue: DEFAULT_VALUE_FOR_RATE,
   });
   const isAnyDexEnabled = enabledDexes.length > 0;
@@ -106,7 +106,7 @@ const DexButton: React.FC<OptionButtonProps> = ({ isActive, onClick }) => {
       </OptionsPickerRow>
       <OptionsPickerRow data-testid="dexBestRate">
         <OptionsPickerSubLabel>Best Rate:</OptionsPickerSubLabel>
-        {loading ? <InlineLoaderSmall /> : bestRateValue}
+        {initialLoading ? <InlineLoaderSmall /> : bestRateValue}
       </OptionsPickerRow>
       <OptionsPickerRow data-testid="dexWaitingTime">
         <OptionsPickerSubLabel>Waiting time:</OptionsPickerSubLabel>{' '}

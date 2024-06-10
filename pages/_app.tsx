@@ -15,6 +15,7 @@ import { withCsp } from 'config/csp';
 import { SecurityStatusBanner } from 'features/ipfs';
 import { Providers } from 'providers';
 import { BackgroundGradient } from 'shared/components/background-gradient/background-gradient';
+import NoSsrWrapper from 'shared/components/no-ssr-wrapper';
 import { nprogress, COOKIES_ALLOWED_FULL_KEY } from 'utils';
 
 // Migrations old theme cookies to new cross domain cookies
@@ -55,7 +56,11 @@ const AppWrapper = (
       />
       <ToastContainer />
       <MemoApp {...props} />
-      <CookiesTooltip />
+
+      <NoSsrWrapper>
+        <CookiesTooltip privacyLink={`${config.rootOrigin}/privacy-notice`} />
+      </NoSsrWrapper>
+
       <SecurityStatusBanner />
     </Providers>
   );
