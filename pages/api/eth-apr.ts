@@ -6,7 +6,7 @@ import { config } from 'config';
 import {
   API_DEFAULT_SUNSET_TIMESTAMP,
   API_ROUTES,
-  MAINNET_REPLACEMENT_LINKS,
+  getReplacementLink,
 } from 'consts/api';
 import {
   getEthApr,
@@ -40,7 +40,7 @@ export default wrapNextRequest([
   responseTimeMetric(Metrics.request.apiTimings, API_ROUTES.ETH_APR),
   sunsetBy({
     sunsetTimestamp: API_DEFAULT_SUNSET_TIMESTAMP,
-    replacementLink: MAINNET_REPLACEMENT_LINKS[API_ROUTES.ETH_APR],
+    replacementLink: getReplacementLink(API_ROUTES.ETH_APR),
   }),
   ...errorAndCacheDefaultWrappers,
 ])(ethApr);
