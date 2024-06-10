@@ -95,7 +95,7 @@ export const useWithdrawalRequests = () => {
 
       const [requestIds, lastCheckpointIndex] = await Promise.all([
         contractRpc.getWithdrawalRequests(account).then((ids) => {
-          return ids.toSorted((aId, bId) => (aId.gt(bId) ? 1 : -1));
+          return [...ids].sort((aId, bId) => (aId.gt(bId) ? 1 : -1));
         }),
         contractRpc.getLastCheckpointIndex(),
       ]);
