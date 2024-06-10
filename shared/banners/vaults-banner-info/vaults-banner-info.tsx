@@ -1,7 +1,5 @@
 import { useThemeToggle } from '@lidofinance/lido-ui';
-
-import { BannerLinkButton } from '../banner-link-button';
-import { Wrap, Title, Description, Footer, Logos } from './styles';
+import { trackEvent } from '@lidofinance/analytics-matomo';
 
 import { ReactComponent as IconMevDark } from 'assets/vault-banner/icon-mev-dark.svg';
 import { ReactComponent as IconP2PDark } from 'assets/vault-banner/icon-p2p-dark.svg';
@@ -13,10 +11,13 @@ import { ReactComponent as IconP2PLight } from 'assets/vault-banner/icon-p2p-lig
 import { ReactComponent as IconRe7Light } from 'assets/vault-banner/icon-re7-light.svg';
 import { ReactComponent as IconStakehouseLight } from 'assets/vault-banner/icon-stakehouse-light.svg';
 
-import { trackEvent } from '@lidofinance/analytics-matomo';
+import { config } from 'config';
 import { MATOMO_CLICK_EVENTS } from 'consts/matomo-click-events';
 
-const LINK_LEARN_MORE = 'https://lido.fi/#defi-strategies';
+import { BannerLinkButton } from '../banner-link-button';
+import { Wrap, Title, Description, Footer, Logos } from './styles';
+
+const LINK_LEARN_MORE = `${config.rootOrigin}/#defi-strategies`;
 
 const linkClickHandler = () =>
   trackEvent(...MATOMO_CLICK_EVENTS.vaultsBannerLearnMore);

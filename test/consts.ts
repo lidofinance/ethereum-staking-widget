@@ -99,6 +99,9 @@ const LIDO_STATS_SCHEMA = {
             bid: {
               type: 'number',
             },
+            tsAdded: {
+              type: 'number',
+            },
             currency: {
               type: 'string',
             },
