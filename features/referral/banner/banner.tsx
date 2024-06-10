@@ -24,7 +24,7 @@ export const Banner: FC = () => {
           href={`${config.researchOrigin}/t/referral-program-whitelisting-ethereum/1039`}
         >
           {' '}
-          ${config.researchOrigin}/t/referral-program-whitelisting-ethereum/1039
+          {config.researchOrigin}/t/referral-program-whitelisting-ethereum/1039
         </Link>
       </p>
       <br />
