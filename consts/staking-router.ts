@@ -2,7 +2,7 @@ import { CHAINS } from '@lido-sdk/constants';
 import { contractHooksFactory } from '@lido-sdk/react';
 import invariant from 'tiny-invariant';
 
-import { StakingRouterAbi__factory } from 'generated/factories/StakingRouterAbi__factory';
+import { PartialStakingRouterAbi__factory } from 'generated/factories/PartialStakingRouterAbi__factory';
 
 export const STAKING_ROUTER_BY_NETWORK: {
   [key in CHAINS]?: string;
@@ -18,6 +18,6 @@ export const getStakingRouterAddress = (chainId: CHAINS): string => {
 };
 
 export const stakingRouter = contractHooksFactory(
-  StakingRouterAbi__factory,
+  PartialStakingRouterAbi__factory,
   (chainId) => getStakingRouterAddress(chainId),
 );

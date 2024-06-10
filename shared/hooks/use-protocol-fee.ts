@@ -3,7 +3,7 @@ import { formatEther } from '@ethersproject/units';
 import { CHAINS } from '@lido-sdk/constants';
 import { useLidoSWR, useSDK } from '@lido-sdk/react';
 import { useStakingRouter } from './use-stakign-router-contract';
-import { StakingRouterAbi } from 'generated/StakingRouterAbi';
+import { PartialStakingRouterAbi } from 'generated/PartialStakingRouterAbi';
 
 import { config } from 'config';
 import { STRATEGY_CONSTANT } from 'consts/swr-strategies';
@@ -18,7 +18,7 @@ export const useProtocolFee = () => {
     async (
       _key: string,
       _chainId: CHAINS,
-      contractRpc: StakingRouterAbi,
+      contractRpc: PartialStakingRouterAbi,
       shouldMock: boolean,
     ) => {
       const mockDataString = window.localStorage.getItem('protocolFee');
