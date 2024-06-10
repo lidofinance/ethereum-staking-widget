@@ -1,5 +1,7 @@
 import { FC } from 'react';
 import { Accordion, Link } from '@lidofinance/lido-ui';
+
+import { config } from 'config';
 import { MATOMO_CLICK_EVENTS_TYPES } from 'consts/matomo-click-events';
 
 export const HowCanIUseWsteth: FC = () => {
@@ -8,14 +10,14 @@ export const HowCanIUseWsteth: FC = () => {
       <p>
         wstETH is useful across{' '}
         <Link
-          href={'https://lido.fi/lido-ecosystem?networks=arbitrum%2Coptimism'}
+          href={`${config.rootOrigin}/lido-ecosystem?networks=arbitrum%2Coptimism`}
           data-matomo={MATOMO_CLICK_EVENTS_TYPES.faqHowCanIUseWstethL2}
         >
           L2
         </Link>{' '}
         and other{' '}
         <Link
-          href={'https://lido.fi/lido-ecosystem?tokens=wstETH'}
+          href={`${config.rootOrigin}/lido-ecosystem?tokens=wstETH`}
           data-matomo={
             MATOMO_CLICK_EVENTS_TYPES.faqHowCanIUseWstethDefiProtocols
           }
