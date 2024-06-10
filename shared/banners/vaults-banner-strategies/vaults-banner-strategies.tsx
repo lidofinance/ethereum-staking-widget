@@ -1,4 +1,12 @@
 import { Button, Link } from '@lidofinance/lido-ui';
+import { trackEvent } from '@lidofinance/analytics-matomo';
+
+import { ReactComponent as IconStakehouse } from 'assets/vault-banner/strategy-stakehouse.svg';
+import { ReactComponent as SymbolPlus } from 'assets/vault-banner/symbol-plus.svg';
+
+import { config } from 'config';
+import { MATOMO_CLICK_EVENTS } from 'consts/matomo-click-events';
+
 import {
   Wrap,
   Header,
@@ -10,13 +18,8 @@ import {
   StrategyItem,
   StrategyDivider,
 } from './styles';
-import { ReactComponent as IconStakehouse } from 'assets/vault-banner/strategy-stakehouse.svg';
-import { ReactComponent as SymbolPlus } from 'assets/vault-banner/symbol-plus.svg';
 
-import { trackEvent } from '@lidofinance/analytics-matomo';
-import { MATOMO_CLICK_EVENTS } from 'consts/matomo-click-events';
-
-const LINK_LEARN_MORE = 'https://lido.fi/#defi-strategies';
+const LINK_LEARN_MORE = `${config.rootOrigin}/#defi-strategies`;
 
 const linkClickHandler = () =>
   trackEvent(...MATOMO_CLICK_EVENTS.vaultsBannerExploreAll);
