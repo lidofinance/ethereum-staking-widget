@@ -1,4 +1,5 @@
 import { FC } from 'react';
+import { GetStaticProps } from 'next';
 import Head from 'next/head';
 import { Layout } from 'shared/components';
 import { TopCard, RewardsList } from 'features/rewards/features';
@@ -32,3 +33,10 @@ const Rewards: FC = () => {
 };
 
 export default Rewards;
+
+export const getStaticProps: GetStaticProps = async () => {
+  return {
+    props: {},
+    revalidate: 60,
+  };
+};

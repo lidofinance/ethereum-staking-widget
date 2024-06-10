@@ -1,5 +1,7 @@
 import { FC } from 'react';
 import { Accordion, Link } from '@lidofinance/lido-ui';
+
+import { config } from 'config';
 import { MATOMO_CLICK_EVENTS_TYPES } from 'consts/matomo-click-events';
 
 export const HowCanIUseSteth: FC = () => {
@@ -8,7 +10,7 @@ export const HowCanIUseSteth: FC = () => {
       <p>
         You can use your stETH as collateral, for lending, and{' '}
         <Link
-          href="https://lido.fi/lido-ecosystem"
+          href={`${config.rootOrigin}/lido-ecosystem`}
           data-matomo={MATOMO_CLICK_EVENTS_TYPES.faqHowCanIUseSteth}
         >
           more

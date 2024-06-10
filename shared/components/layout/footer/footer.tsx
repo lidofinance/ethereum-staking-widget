@@ -1,5 +1,6 @@
 import { FC } from 'react';
 import buildInfo from 'build-info.json';
+import { config } from 'config';
 
 import {
   FooterStyle,
@@ -42,13 +43,16 @@ export const Footer: FC = () => {
   return (
     <FooterStyle size="full" forwardedAs="footer">
       <LogoLidoStyle />
-      <FooterLink data-testid="termsOfUse" href="https://lido.fi/terms-of-use">
+      <FooterLink
+        data-testid="termsOfUse"
+        href={`${config.rootOrigin}/terms-of-use`}
+      >
         Terms of Use
       </FooterLink>
       <LinkDivider />
       <FooterLink
         data-testid="privacyNotice"
-        href="https://lido.fi/privacy-notice"
+        href={`${config.rootOrigin}/privacy-notice`}
         $marginRight="auto"
       >
         Privacy Notice
