@@ -60,13 +60,8 @@ export const NavLink = styled.span<{ active: boolean }>`
   letter-spacing: 0.04em;
   opacity: ${(props) => (props.active ? 1 : 0.8)};
 
-  :hover {
+  &:hover {
     opacity: 1;
-    color: var(--lido-color-secondary);
-  }
-
-  // TODO: Not actual - remove
-  :visited {
     color: var(--lido-color-secondary);
   }
 
