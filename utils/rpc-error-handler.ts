@@ -23,7 +23,7 @@ export const onRpcProviderError = (payload: unknown) => {
       ToastError('RPC connection error. Please try again later.', {
         toastId: 'RPC_ERROR',
         hideProgressBar: true,
-        position: 'bottom-right',
+        position: 'bottom-left',
       });
     console.error('[RPC connection error]', error);
   }
