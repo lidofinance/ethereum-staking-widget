@@ -1,4 +1,4 @@
-import { toast } from '@lidofinance/lido-ui';
+import { ToastError } from '@lidofinance/lido-ui';
 
 export enum DefaultValidationErrorTypes {
   VALIDATE = 'VALIDATE',
@@ -55,7 +55,9 @@ export const handleResolverValidationError = (
   }
   console.warn(`[${formName}] Unhandled validation error in resolver`, error);
 
-  toast.error('Unknown validation error. Please try again later.');
+  ToastError('Unknown validation error. Please try again later.', {
+    position: 'bottom-right',
+  });
 
   return {
     values: {},

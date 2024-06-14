@@ -1,4 +1,4 @@
-import { toast } from '@lidofinance/lido-ui';
+import { ToastError } from '@lidofinance/lido-ui';
 
 const ETHERS_SERVER_ERROR_CODES = [
   'UNKNOWN_ERROR',
@@ -20,9 +20,10 @@ export const onRpcProviderError = (payload: unknown) => {
   ) {
     const error = payload.error as { code: string; reason: string };
     if (ETHERS_SERVER_ERROR_CODES.includes(error.code.toLocaleUpperCase()))
-      toast.error('RPC connection error. Please try again later.', {
+      ToastError('RPC connection error. Please try again later.', {
         toastId: 'RPC_ERROR',
         hideProgressBar: true,
+        position: 'bottom-right',
       });
     console.error('[RPC connection error]', error);
   }
