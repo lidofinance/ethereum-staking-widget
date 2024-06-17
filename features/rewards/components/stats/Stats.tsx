@@ -70,7 +70,7 @@ export const Stats: React.FC = () => {
           )}
         </Stat>
         <Title hideMobile>
-          <Link href={`${config.rootOrigin}/faq`}>
+          <Link href={`${config.rootOrigin}/ethereum#apr`}>
             <Box
               data-testid="moreInfo"
               color="secondary"
