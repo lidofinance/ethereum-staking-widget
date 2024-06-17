@@ -9,6 +9,8 @@ import {
   errorAndCacheDefaultWrappers,
   responseTimeMetric,
   rateLimit,
+  httpMethodGuard,
+  HttpMethod,
 } from 'utilsApi';
 import Metrics from 'utilsApi/metrics';
 import { API } from 'types';
@@ -37,6 +39,7 @@ const ldoStats: API = async (req, res) => {
 };
 
 export default wrapNextRequest([
+  httpMethodGuard([HttpMethod.GET]),
   rateLimit,
   responseTimeMetric(Metrics.request.apiTimings, API_ROUTES.LDO_STATS),
   ...errorAndCacheDefaultWrappers,

@@ -8,6 +8,8 @@ import {
   errorAndCacheDefaultWrappers,
   responseTimeMetric,
   rateLimit,
+  httpMethodGuard,
+  HttpMethod,
 } from 'utilsApi';
 import Metrics from 'utilsApi/metrics';
 import { API } from 'types';
@@ -35,6 +37,7 @@ const lidoStats: API = async (req, res) => {
 };
 
 export default wrapNextRequest([
+  httpMethodGuard([HttpMethod.GET]),
   rateLimit,
   responseTimeMetric(Metrics.request.apiTimings, API_ROUTES.LIDO_STATS),
   ...errorAndCacheDefaultWrappers,
