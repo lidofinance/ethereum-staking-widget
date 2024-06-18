@@ -2,25 +2,20 @@ import { useWatch } from 'react-hook-form';
 
 import { Zero } from '@ethersproject/constants';
 import { DataTable, DataTableRow } from '@lidofinance/lido-ui';
-import { useContractSWR, useSTETHContractRPC } from '@lido-sdk/react';
 
 import { DATA_UNAVAILABLE } from 'consts/text';
-import { STRATEGY_CONSTANT } from 'consts/swr-strategies';
 import { FormatPrice, FormatToken } from 'shared/formatters';
 import { useEthUsd } from 'shared/hooks/use-eth-usd';
+import { useProtocolFee } from 'shared/hooks/use-protocol-fee';
 
 import { StakeFormInput, useStakeFormData } from './stake-form-context';
 
 export const StakeFormInfo = () => {
   const { gasCost, loading } = useStakeFormData();
   const amount = useWatch<StakeFormInput, 'amount'>({ name: 'amount' });
-  const contractRpc = useSTETHContractRPC();
-  const lidoFee = useContractSWR({
-    contract: contractRpc,
-    method: 'getFee',
-    config: STRATEGY_CONSTANT,
-  });
+
   const { usdAmount, initialLoading: isEthUsdLoading } = useEthUsd(gasCost);
+  const protocolFee = useProtocolFee();
 
   return (
     <DataTable data-testid="stakeFormInfo">
@@ -40,11 +35,11 @@ export const StakeFormInfo = () => {
       <DataTableRow
         title="Reward fee"
         data-testid="lidoFee"
-        loading={lidoFee.initialLoading}
+        loading={protocolFee.initialLoading}
         help="Please note: this fee applies to staking rewards only,
       and is NOT taken from your staked amount."
       >
-        {!lidoFee.data ? DATA_UNAVAILABLE : `${lidoFee.data / 100}%`}
+        {!protocolFee.data ? DATA_UNAVAILABLE : `${protocolFee.data}%`}
       </DataTableRow>
     </DataTable>
   );

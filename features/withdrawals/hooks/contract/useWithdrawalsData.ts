@@ -94,7 +94,9 @@ export const useWithdrawalRequests = () => {
       // const currentShareRate = args[3] as BigNumber;
 
       const [requestIds, lastCheckpointIndex] = await Promise.all([
-        contractRpc.getWithdrawalRequests(account),
+        contractRpc.getWithdrawalRequests(account).then((ids) => {
+          return [...ids].sort((aId, bId) => (aId.gt(bId) ? 1 : -1));
+        }),
         contractRpc.getLastCheckpointIndex(),
       ]);
       const requestStatuses = await contractRpc.getWithdrawalStatus(requestIds);
@@ -153,24 +155,21 @@ export const useWithdrawalRequests = () => {
       isClamped ||=
         pendingRequests.splice(MAX_SHOWN_REQUEST_PER_TYPE).length > 0;
 
-      const _sortedClaimableRequests = claimableRequests.sort((aReq, bReq) =>
-        aReq.id.gt(bReq.id) ? 1 : -1,
-      );
-
       const hints = await contractRpc.findCheckpointHints(
-        _sortedClaimableRequests.map(({ id }) => id),
+        claimableRequests.map(({ id }) => id),
         1,
         lastCheckpointIndex,
       );
 
       const claimableEth = await contractRpc.getClaimableEther(
-        _sortedClaimableRequests.map(({ id }) => id),
+        claimableRequests.map(({ id }) => id),
         hints,
       );
 
       let claimableAmountOfETH = BigNumber.from(0);
+
       const sortedClaimableRequests: RequestStatusClaimable[] =
-        _sortedClaimableRequests.map((request, index) => {
+        claimableRequests.map((request, index) => {
           claimableAmountOfETH = claimableAmountOfETH.add(claimableEth[index]);
           return {
             ...request,
@@ -195,6 +194,7 @@ export const useWithdrawalRequests = () => {
   );
   const oldData = swr.data;
   const mutate = swr.mutate;
+
   const optimisticClaimRequests = useCallback(
     async (requests: RequestStatusClaimable[]) => {
       if (!oldData) return undefined;
