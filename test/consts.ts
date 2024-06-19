@@ -276,6 +276,7 @@ export const GET_REQUESTS: GetRequest[] = [
   },
   {
     uri: '/api/sma-steth-apr',
+    isDeprecated: true,
     schema: {
       type: 'string',
       pattern: FLOAT_REGEX,
