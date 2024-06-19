@@ -4,6 +4,8 @@ import { responseTimeExternalMetricWrapper } from './fetchApiWrapper';
 import { standardFetcher } from 'utils/standardFetcher';
 import { config } from 'config';
 
+import FallbackLocalManifest from 'IPFS.json' assert { type: 'json' };
+
 export type ExternalConfigResult = {
   ___prefetch_manifest___: object | null;
   revalidate: number;
@@ -61,6 +63,6 @@ export const fetchExternalManifest = async () => {
   );
   return {
     revalidate: config.ERROR_REVALIDATION,
-    ___prefetch_manifest___: null,
+    ___prefetch_manifest___: FallbackLocalManifest,
   };
 };

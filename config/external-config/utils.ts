@@ -1,12 +1,11 @@
 import { useMemo } from 'react';
-import { getConfig } from '../get-config';
 import type { Manifest, ManifestEntry } from './types';
 import {
   type DexWithdrawalApi,
   getDexConfig,
 } from 'features/withdrawals/request/withdrawal-rates';
 
-const config = getConfig();
+import FallbackLocalManifest from 'IPFS.json' assert { type: 'json' };
 
 // TODO: refactor on config expansion
 export const isManifestEntryValid = (
@@ -57,6 +56,8 @@ export const useFallbackManifestEntry = (
 ): ManifestEntry => {
   return useMemo(() => {
     const isValid = isManifestValid(prefetchedManifest, chain);
-    return isValid ? prefetchedManifest[chain] : config.FALLBACK_MANIFEST_ENTRY;
+    return isValid
+      ? prefetchedManifest[chain]
+      : (FallbackLocalManifest as unknown as Manifest)[chain];
   }, [prefetchedManifest, chain]);
 };
