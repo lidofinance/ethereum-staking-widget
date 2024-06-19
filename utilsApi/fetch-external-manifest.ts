@@ -20,6 +20,15 @@ export const fetchExternalManifest = async () => {
   const cachedConfig = cache.get(config.CACHE_EXTERNAL_CONFIG_KEY);
   if (cachedConfig) return cachedConfig;
 
+  // for IPFS build we use local manifest
+  // this allows local CID verification
+  if (config.ipfsMode) {
+    return {
+      ___prefetch_manifest___: FallbackLocalManifest,
+      revalidate: config.DEFAULT_REVALIDATION,
+    };
+  }
+
   let retries = 3;
   while (retries > 0) {
     try {
