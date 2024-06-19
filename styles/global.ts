@@ -36,7 +36,7 @@ const GlobalStyle = createGlobalStyle`
     color: var(--lido-color-primary);
 
     &:visited {
-      color: var(--lido-color-primaryVisited);
+      color: var(--lido-color-primary);
     }
 
     &:hover {

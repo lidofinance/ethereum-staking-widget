@@ -1,27 +1,28 @@
-import React, { useEffect, useState } from 'react';
+import React, { PropsWithChildren, useEffect, useMemo, useState } from 'react';
 import { ProviderSDK } from '@lido-sdk/react';
 import { getStaticRpcBatchProvider } from '@lido-sdk/providers';
 import { Web3Provider } from '@ethersproject/providers';
 import { Chain, useAccount } from 'wagmi';
 import { mainnet } from 'wagmi/chains';
 import { useWeb3 } from 'reef-knot/web3-react';
+import { onRpcProviderError } from 'utils/rpc-error-handler';
 
 const POLLING_INTERVAL = 12_000;
 
-export const SDKLegacyProvider = (props: {
-  children?: React.ReactNode;
+type SDKLegacyProviderProps = PropsWithChildren<{
   defaultChainId: number;
   supportedChains: Chain[];
   rpc: Record<number, string>;
   pollingInterval?: number;
-}) => {
-  const {
-    children,
-    defaultChainId,
-    rpc,
-    supportedChains,
-    pollingInterval = POLLING_INTERVAL,
-  } = props;
+}>;
+
+export const SDKLegacyProvider = ({
+  children,
+  defaultChainId,
+  rpc,
+  supportedChains,
+  pollingInterval = POLLING_INTERVAL,
+}: SDKLegacyProviderProps) => {
   const { chainId = defaultChainId, account } = useWeb3();
   const { connector, isConnected } = useAccount();
 
@@ -56,21 +57,30 @@ export const SDKLegacyProvider = (props: {
     })();
   }, [connector, isConnected, pollingInterval, providerWeb3]);
 
-  const supportedChainIds = supportedChains.map((chain) => chain.id);
-
-  const providerRpc = getStaticRpcBatchProvider(
-    chainId,
-    rpc[chainId],
-    0,
-    pollingInterval,
+  const supportedChainIds = useMemo(
+    () => supportedChains.map((chain) => chain.id),
+    [supportedChains],
   );
 
-  const providerMainnetRpc = getStaticRpcBatchProvider(
-    mainnet.id,
-    rpc[mainnet.id],
-    0,
-    pollingInterval,
-  );
+  const { providerRpc, providerMainnetRpc } = useMemo(() => {
+    const providerRpc = getStaticRpcBatchProvider(
+      chainId,
+      rpc[chainId],
+      chainId,
+      pollingInterval,
+    );
+
+    const providerMainnetRpc = getStaticRpcBatchProvider(
+      mainnet.id,
+      rpc[mainnet.id],
+      mainnet.id,
+      pollingInterval,
+    );
+    providerRpc.on('debug', onRpcProviderError);
+    providerMainnetRpc.on('debug', onRpcProviderError);
+
+    return { providerRpc, providerMainnetRpc };
+  }, [chainId, pollingInterval, rpc]);
 
   return (
     // @ts-expect-error Property children does not exist on type

@@ -11,6 +11,8 @@ import {
   defaultErrorHandler,
   responseTimeMetric,
   rateLimit,
+  httpMethodGuard,
+  HttpMethod,
 } from 'utilsApi';
 import Metrics from 'utilsApi/metrics';
 import { API } from 'types';
@@ -36,6 +38,7 @@ const totalSupply: API = async (req, res) => {
 };
 
 export default wrapNextRequest([
+  httpMethodGuard([HttpMethod.GET]),
   rateLimit,
   responseTimeMetric(Metrics.request.apiTimings, API_ROUTES.TOTALSUPPLY),
   cacheControl({ headers: config.CACHE_TOTAL_SUPPLY_HEADERS }),
