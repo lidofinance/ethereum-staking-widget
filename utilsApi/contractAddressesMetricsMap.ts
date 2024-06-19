@@ -12,14 +12,11 @@ import {
   StethAbiFactory,
   WithdrawalQueueAbiFactory,
   WstethAbiFactory,
+  AggregatorAbiFactory,
 } from '@lido-sdk/contracts';
 
 import { config } from 'config';
 import { getAggregatorStEthUsdPriceFeedAddress } from 'consts/aggregator';
-import {
-  AggregatorAbi__factory,
-  AggregatorEthUsdPriceFeedAbi__factory,
-} from 'generated';
 
 export const CONTRACT_NAMES = {
   stETH: 'stETH',
@@ -34,9 +31,8 @@ export const METRIC_CONTRACT_ABIS = {
   [CONTRACT_NAMES.stETH]: StethAbiFactory.abi,
   [CONTRACT_NAMES.wstETH]: WstethAbiFactory.abi,
   [CONTRACT_NAMES.WithdrawalQueue]: WithdrawalQueueAbiFactory.abi,
-  [CONTRACT_NAMES.Aggregator]: AggregatorAbi__factory.abi,
-  [CONTRACT_NAMES.AggregatorStEthUsdPriceFeed]:
-    AggregatorEthUsdPriceFeedAbi__factory.abi,
+  [CONTRACT_NAMES.Aggregator]: AggregatorAbiFactory.abi,
+  [CONTRACT_NAMES.AggregatorStEthUsdPriceFeed]: AggregatorAbiFactory.abi,
 } as const;
 
 export const getMetricContractInterface = memoize(
