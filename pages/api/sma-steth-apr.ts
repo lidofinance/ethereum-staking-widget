@@ -9,6 +9,8 @@ import {
   errorAndCacheDefaultWrappers,
   rateLimit,
   getSmaStethApr,
+  httpMethodGuard,
+  HttpMethod,
 } from 'utilsApi';
 import Metrics from 'utilsApi/metrics';
 
@@ -33,6 +35,7 @@ const smaStethApr: API = async (_, res) => {
 };
 
 export default wrapNextRequest([
+  httpMethodGuard([HttpMethod.GET]),
   rateLimit,
   responseTimeMetric(Metrics.request.apiTimings, API_ROUTES.SMA_STETH_APR),
   ...errorAndCacheDefaultWrappers,
