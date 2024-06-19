@@ -1,9 +1,6 @@
 import { useMemo } from 'react';
 import type { Manifest, ManifestEntry } from './types';
-import {
-  type DexWithdrawalApi,
-  getDexConfig,
-} from 'features/withdrawals/request/withdrawal-rates';
+import { getDexConfig } from 'features/withdrawals/request/withdrawal-rates';
 
 import FallbackLocalManifest from 'IPFS.json' assert { type: 'json' };
 
@@ -27,15 +24,22 @@ export const isManifestEntryValid = (
     ) {
       const enabledWithdrawalDexes = config.enabledWithdrawalDexes;
       return (
-        (enabledWithdrawalDexes as string[]).every(
-          (dex) => !!getDexConfig(dex as DexWithdrawalApi),
-        ) &&
         new Set(enabledWithdrawalDexes).size === enabledWithdrawalDexes.length
       );
     }
     return false;
   }
   return false;
+};
+
+export const getBackwardCompatibleConfig = (
+  config: ManifestEntry['config'],
+): ManifestEntry['config'] => {
+  return {
+    enabledWithdrawalDexes: config.enabledWithdrawalDexes.filter(
+      (dex) => !!getDexConfig(dex),
+    ),
+  };
 };
 
 export const isManifestValid = (
