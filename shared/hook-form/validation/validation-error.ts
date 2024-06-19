@@ -56,6 +56,9 @@ export const handleResolverValidationError = (
   console.warn(`[${formName}] Unhandled validation error in resolver`, error);
 
   ToastError('Unknown validation error. Please try again later.', {
+    toastId: 'VALIDATION_ERROR',
+    hideProgressBar: true,
+    closeOnClick: true,
     position: 'bottom-left',
   });
 
