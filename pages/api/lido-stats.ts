@@ -2,12 +2,13 @@ import { Cache } from 'memory-cache';
 import { wrapRequest as wrapNextRequest } from '@lidofinance/next-api-wrapper';
 
 import { config } from 'config';
-import { API_ROUTES } from 'consts/api';
+import { API_DEFAULT_SUNSET_TIMESTAMP, API_ROUTES } from 'consts/api';
 import {
   getLidoStats,
   errorAndCacheDefaultWrappers,
   responseTimeMetric,
   rateLimit,
+  sunsetBy,
   httpMethodGuard,
   HttpMethod,
 } from 'utilsApi';
@@ -23,7 +24,7 @@ const lidoStats: API = async (req, res) => {
   const cachedLidoStats = cache.get(config.CACHE_LIDO_STATS_KEY);
 
   if (cachedLidoStats) {
-    res.status(200).json(cachedLidoStats);
+    res.json(cachedLidoStats);
   } else {
     const lidoStats = await getLidoStats();
     cache.put(
@@ -32,7 +33,7 @@ const lidoStats: API = async (req, res) => {
       config.CACHE_LIDO_STATS_TTL,
     );
 
-    res.status(200).json({ data: lidoStats });
+    res.json({ data: lidoStats });
   }
 };
 
@@ -40,5 +41,8 @@ export default wrapNextRequest([
   httpMethodGuard([HttpMethod.GET]),
   rateLimit,
   responseTimeMetric(Metrics.request.apiTimings, API_ROUTES.LIDO_STATS),
+  sunsetBy({
+    sunsetTimestamp: API_DEFAULT_SUNSET_TIMESTAMP,
+  }),
   ...errorAndCacheDefaultWrappers,
 ])(lidoStats);
