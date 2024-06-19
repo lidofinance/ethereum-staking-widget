@@ -67,8 +67,8 @@ yarn build:ipfs
 ## Adding a new route API
 
 - create a new file in `pages/api/` folder
-- use `wrapRequest` function from `utilsApi/apiWrappers.ts`
-- use default wrappers from `utilsApi/apiWrappers.ts` if needed (e.g. `defaultErrorHandler` for handle errors)
+- use `wrapRequest` function from `@lidofinance/next-api-wrapper` package.
+- use default wrappers from `utilsApi/nextApiWrappers.ts` if needed (e.g. `defaultErrorHandler` for handle errors)
 
 **Example:**
 
