@@ -17,7 +17,22 @@ test.describe('Smoke GET', () => {
       if (CONFIG.STAND_TYPE === 'testnet' && element.skipTestnet) return;
 
       const resp = await request.get(element.uri);
-      expect(resp.status()).toBe(200);
+
+      if (element.isDeprecated) {
+        expect([299, 410]).toContain(resp.status());
+        if (resp.status() === 299) {
+          expect(resp.headers()).toHaveProperty('warning');
+          expect(resp.headers()).toHaveProperty('deprecation');
+          expect(resp.headers()).toHaveProperty('sunset');
+          // continue default check
+        } else {
+          // on 410, nothing to check
+          return;
+        }
+      } else {
+        expect(resp.status()).toBe(200);
+      }
+
       const validationResult = validator.validate(
         await resp.json(),
         element.schema,
