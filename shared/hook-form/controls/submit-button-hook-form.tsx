@@ -2,7 +2,7 @@ import { useWeb3 } from 'reef-knot/web3-react';
 import { useFormState } from 'react-hook-form';
 
 import { ButtonIcon, Lock } from '@lidofinance/lido-ui';
-import { Connect } from 'shared/wallet';
+import { UnsupportedChainButton } from 'shared/wallet';
 import { isValidationErrorTypeValidate } from '../validation/validation-error';
 
 type SubmitButtonHookFormProps = Partial<
@@ -28,7 +28,7 @@ export const SubmitButtonHookForm: React.FC<SubmitButtonHookFormProps> = ({
       isValidationErrorTypeValidate(errors[errorField]?.type)) ||
     disabledProp;
 
-  if (!active) return <Connect fullwidth />;
+  if (!active) return <UnsupportedChainButton />;
 
   return (
     <ButtonIcon
