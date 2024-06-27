@@ -1,4 +1,4 @@
-import { memo, FC } from 'react';
+import { FC, memo, useEffect } from 'react';
 import { useFeatureFlag, VAULTS_BANNER_IS_ENABLED } from 'config/feature-flags';
 
 import { MATOMO_CLICK_EVENTS } from 'consts/matomo-click-events';
@@ -14,6 +14,11 @@ import { SubmitButtonUnwrap } from '../unwrap-form-controls/submit-button-unwrap
 
 export const UnwrapForm: FC = memo(() => {
   const { vaultsBannerIsEnabled } = useFeatureFlag(VAULTS_BANNER_IS_ENABLED);
+  // TODO: DEMO, delete later
+  useEffect(() => {
+    throw new Error('UnwrapForm -> useEffect');
+  }, []);
+
   return (
     <UnwrapFormProvider>
       <WrapBlock data-testid="unwrapForm">
