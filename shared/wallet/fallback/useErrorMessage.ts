@@ -1,19 +1,4 @@
-import {
-  useSupportedChains,
-  useConnectorError,
-  helpers,
-} from 'reef-knot/web3-react';
-import { useNetwork } from 'wagmi';
-
+// TODO: Removed from Reef Knot, how to FIX ??
 export const useErrorMessage = (): string | undefined => {
-  const error = useConnectorError();
-  const { isUnsupported } = useSupportedChains();
-  const { chains: supportedChains } = useNetwork();
-
-  // TODO: fix useConnectorError in reef-knot and remove this block
-  if (isUnsupported) {
-    return helpers.getUnsupportedChainError(supportedChains).message;
-  }
-
-  return error?.message;
+  return undefined;
 };

@@ -2,8 +2,8 @@ import React, { PropsWithChildren, useEffect, useMemo, useState } from 'react';
 import { ProviderSDK } from '@lido-sdk/react';
 import { getStaticRpcBatchProvider } from '@lido-sdk/providers';
 import { Web3Provider } from '@ethersproject/providers';
-import { Chain, useAccount } from 'wagmi';
-import { mainnet } from 'wagmi/chains';
+import { useAccount } from 'wagmi';
+import { mainnet, Chain } from 'wagmi/chains';
 import { useWeb3 } from 'reef-knot/web3-react';
 import { onRpcProviderError } from 'utils/rpc-error-handler';
 
@@ -11,7 +11,7 @@ const POLLING_INTERVAL = 12_000;
 
 type SDKLegacyProviderProps = PropsWithChildren<{
   defaultChainId: number;
-  supportedChains: Chain[];
+  supportedChains: readonly Chain[];
   rpc: Record<number, string>;
   pollingInterval?: number;
 }>;
@@ -37,11 +37,13 @@ export const SDKLegacyProvider = ({
 
   useEffect(() => {
     void (async () => {
-      if (!providerWeb3 && connector && isConnected) {
+      if (!providerWeb3 && connector && connector.getProvider && isConnected) {
         const provider = await connector.getProvider();
         // `any` param + page reload on network change
         // are described here: https://github.com/ethers-io/ethers.js/issues/866
         // this approach is needed to fix a NETWORK_ERROR after chain changing
+
+        // @ts-expect-error asdas
         const wrappedProvider = new Web3Provider(provider, 'any');
         wrappedProvider.on('network', (newNetwork, oldNetwork) => {
           // When a Provider makes its initial connection, it emits a "network"
