@@ -1,4 +1,4 @@
-import { useSDK } from '@lido-sdk/react';
+import { useAccount } from 'wagmi';
 import { Link } from '@lidofinance/lido-ui';
 
 import { ReactComponent as ArbitrumLogo } from 'assets/icons/l2/arbitrum.svg';
@@ -10,7 +10,9 @@ import { ReactComponent as PolygonLogo } from 'assets/icons/l2/polygon.svg';
 import { ReactComponent as ZkSyncLogo } from 'assets/icons/l2/zk-sync.svg';
 
 import { L2_CHAINS } from 'consts/chains';
+import { useChainIdWithoutAccount } from 'shared/hooks/use-chain-id-without-account';
 import { WalletCardComponent } from 'shared/wallet/card/types';
+
 import { L2FallbackWalletStyle, TextStyle, ButtonStyle } from './styles';
 
 const l2Logos = {
@@ -30,15 +32,19 @@ const getL2Logo = (chainId: L2_CHAINS) => {
 };
 
 export const L2Fallback: WalletCardComponent = (props) => {
-  const { chainId } = useSDK();
+  const chainIdWithoutAccount = useChainIdWithoutAccount();
+  const { chainId: accountChainId } = useAccount();
+
+  const _chainId = accountChainId || chainIdWithoutAccount;
+
   const network =
     Object.keys(L2_CHAINS)[
-      Object.values(L2_CHAINS).indexOf(chainId as unknown as L2_CHAINS)
+      Object.values(L2_CHAINS).indexOf(_chainId as unknown as L2_CHAINS)
     ];
 
   return (
     <L2FallbackWalletStyle {...props}>
-      {getL2Logo(chainId as unknown as L2_CHAINS)}
+      {getL2Logo(_chainId as unknown as L2_CHAINS)}
       <TextStyle>
         Learn about Lido on L2 opportunities on {network} network or switch to
         Ethereum mainnet to stake
