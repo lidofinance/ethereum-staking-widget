@@ -10,7 +10,7 @@ export const ErrorUnprocessable = () => (
         use{' '}
         <Link
           href={
-            'https://github.com/lidofinance/lido-ethereum-sdk/blob/main/packages/sdk/README.md#rewards'
+            'https://lidofinance.github.io/lido-ethereum-sdk/methods/rewards/#get-rewards-from-subgraph'
           }
         >
           Rewards Module from Lido Ethereum SDK
