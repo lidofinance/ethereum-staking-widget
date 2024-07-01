@@ -6,16 +6,16 @@ export const ErrorUnprocessable = () => (
     textProps={{ color: 'error' }}
     text={
       <>
-        This address has too many stETH transfers. For querying such addresses
-        use{' '}
+        This address has reached limit for parsed stETH transfers. Fetch rewards
+        directly from Lido Subgraph using{' '}
         <Link
           href={
             'https://lidofinance.github.io/lido-ethereum-sdk/methods/rewards/#get-rewards-from-subgraph'
           }
         >
           Rewards Module from Lido Ethereum SDK
-        </Link>{' '}
-        and fetch rewards from subgraph directly
+        </Link>
+        .
       </>
     }
   />
