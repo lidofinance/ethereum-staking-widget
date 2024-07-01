@@ -3,4 +3,5 @@ export type AddressInputProps = {
   isAddressResolving: boolean;
   handleInputChange: (value: string) => void;
   address: string;
+  addressError: string;
 };
