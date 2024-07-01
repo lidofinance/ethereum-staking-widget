@@ -16,7 +16,7 @@ export const WalletStethBalance = () => {
   return (
     <CardBalance
       small
-      title="stETH Balance"
+      title="stETH balance"
       loading={loading.isStethBalanceLoading}
       value={stethBalanceValue}
     />
