@@ -16,6 +16,7 @@ import {
   sunsetBy,
   httpMethodGuard,
   HttpMethod,
+  cors,
 } from 'utilsApi';
 import Metrics from 'utilsApi/metrics';
 
@@ -41,6 +42,7 @@ const smaStethApr: API = async (_, res) => {
 
 export default wrapNextRequest([
   httpMethodGuard([HttpMethod.GET]),
+  cors({ origin: ['*'], methods: [HttpMethod.GET] }),
   rateLimit,
   responseTimeMetric(Metrics.request.apiTimings, API_ROUTES.SMA_STETH_APR),
   sunsetBy({
