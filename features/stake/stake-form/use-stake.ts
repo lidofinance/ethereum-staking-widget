@@ -1,6 +1,5 @@
 import { BigNumber } from 'ethers';
 import { useCallback } from 'react';
-import { useConnectorInfo } from 'reef-knot/core-react';
 import { useWeb3 } from 'reef-knot/web3-react';
 import invariant from 'tiny-invariant';
 
@@ -37,8 +36,8 @@ export const useStake = ({ onConfirm, onRetry }: StakeOptions) => {
   const { providerWeb3, providerRpc } = useSDK();
   const { txModalStages } = useTxModalStagesStake();
 
-  // modifying calldata brakes clear sign for LedgerLive
-  const shouldApplyCalldataSuffix = !useConnectorInfo().isLedgerLive;
+  // temporary disable until Ledger is fixed
+  const shouldApplyCalldataSuffix = false;
 
   return useCallback(
     async ({ amount, referral }: StakeArguments): Promise<boolean> => {
