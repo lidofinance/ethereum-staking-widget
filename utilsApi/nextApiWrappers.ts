@@ -135,7 +135,7 @@ const collectRequestAddressMetric = async ({
       call.params[0].to
     ) {
       const { to, data } = call.params[0];
-      const address = utils.getAddress(to);
+      const address = utils.getAddress(to) as `0x${string}`;
       const contractName = METRIC_CONTRACT_ADDRESSES[chainId][address];
       const methodEncoded = data?.slice(0, 10); // `0x` and 8 next symbols
       const methodDecoded = contractName
