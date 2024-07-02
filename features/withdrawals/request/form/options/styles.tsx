@@ -76,41 +76,44 @@ export const OptionsPickerButton = styled.button<{ $active?: boolean }>`
   display: flex;
   flex-direction: column;
   gap: 4px;
+  position: relative;
+  cursor: pointer;
   // we need to update lido ui
   background-color: ${({ theme }) =>
     theme.name === ThemeName.light ? '#F6F8FA' : '#2D2D35'};
 
   border-radius: ${({ theme }) => theme.borderRadiusesMap.lg}px;
-  border: 1px solid var(--lido-color-border);
-  position: relative;
-  cursor: pointer;
-
+  border: ${({ $active }) => ($active ? '2' : '1')}px solid
+    var(--lido-color-border);
   border-color: ${({ $active }) =>
     $active ? '#00A3FF' : 'var(--lido-color-border)'};
-  padding: 16px 20px;
+  padding: ${({ $active }) => ($active ? '15px 19px' : '16px 20px')};
+
   font-size: 12px;
   font-family: inherit;
   color: var(--lido-color-text);
 
-  /* safari workaround */
+  /* safari outline workaround */
+  ::before {
+    content: '';
+    pointer-events: none;
+    position: absolute;
+    opacity: 0;
+    top: -3px;
+    right: -3px;
+    bottom: -3px;
+    left: -3px;
+  }
+
   &:focus {
     outline: none;
     ::before {
-      content: '';
-      pointer-events: none;
-      position: absolute;
-      top: -2px;
-      right: -2px;
-      bottom: -2px;
-      left: -2px;
-
+      opacity: 1;
+      // to match with border change speed
+      transition: opacity 0s linear 0.1s;
       border: 1px solid var(--lido-color-borderActive);
       border-radius: ${({ theme }) => theme.borderRadiusesMap.lg + 1}px;
     }
-  }
-
-  & > :first-child {
-    margin-bottom: 12px;
   }
 `;
 
@@ -122,10 +125,15 @@ export const OptionsPickerRow = styled.div`
   width: 100%;
   gap: 8px;
   line-height: 20px;
+  font-weight: 400;
   text-align: right;
   ${({ theme }) => theme.mediaQueries.md} {
     flex-direction: column;
     text-align: center;
+  }
+
+  &:first-child {
+    margin-bottom: 12px;
   }
 `;
 
@@ -170,10 +178,50 @@ export const OptionsPickerIcons = styled.div`
 
 // DEX OPTIONS
 
-export const DexOptionsContainer = styled.div`
+export const DexOptionsContainer = styled.div<{ $maxElements: number }>`
   display: flex;
   flex-direction: column;
   gap: 8px;
+
+  & > div,
+  span {
+    display: none;
+    ${({ theme }) => theme.mediaQueries.md} {
+      display: grid;
+    }
+
+    &:nth-of-type(-n + ${({ $maxElements }) => $maxElements}) {
+      display: grid;
+    }
+  }
+`;
+
+export const DexOptionsShowMore = styled.button`
+  display: flex;
+
+  ${({ theme }) => theme.mediaQueries.md} {
+    display: none;
+  }
+
+  padding: 2px 16px;
+  margin-top: 8px;
+  flex: 0 1;
+
+  align-self: center;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+
+  background: none;
+  outline: none;
+  border: none;
+  color: var(--lido-color-primary);
+  line-height: 20px;
+  font-size: 12px;
+  font-weight: 700;
+
+  cursor: pointer;
 `;
 
 export const DexOptionStyled = styled.div<{ $loading?: boolean }>`
@@ -264,4 +312,31 @@ export const DexWarning = styled.div`
     display: block;
     margin-right: ${({ theme }) => theme.spaceMap.xs}px;
   }
+`;
+
+const DexOptionsCheckMark = (props: React.ComponentProps<'svg'>) => (
+  <svg
+    width="24"
+    height="24"
+    viewBox="0 0 24 24"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    {...props}
+  >
+    <path
+      fillRule="evenodd"
+      clipRule="evenodd"
+      d="M11.2929 14.7071C11.6834 15.0976 12.3166 15.0976 12.7071 14.7071L16.7071 10.7071C17.0976 10.3166 17.0976 9.68342 16.7071 9.29289C16.3166 8.90237 15.6834 8.90237 15.2929 9.29289L12 12.5858L8.70711 9.29289C8.31658 8.90237 7.68342 8.90237 7.29289 9.29289C6.90237 9.68342 6.90237 10.3166 7.29289 10.7071L11.2929 14.7071Z"
+      fill="#00A3FF"
+    />
+  </svg>
+);
+
+export const DexOptionsCheckMarkIcon = styled(DexOptionsCheckMark)<{
+  $active?: boolean;
+}>`
+  transition: transform 0.3s ease-in-out;
+  transform: rotateY(180deg);
+  transform: ${({ $active }) =>
+    $active ? 'rotateZ(180deg)' : 'rotateZ(0deg)'};
 `;
