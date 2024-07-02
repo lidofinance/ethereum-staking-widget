@@ -32,6 +32,10 @@ export const CACHE_ONE_INCH_RATE_TTL = ms('5m');
 
 export const CACHE_TOTAL_SUPPLY_KEY = 'cache-total-supply';
 export const CACHE_TOTAL_SUPPLY_TTL = ms('1m');
+
+export const CACHE_EXTERNAL_CONFIG_KEY = 'cache-external-config';
+export const CACHE_EXTERNAL_CONFIG_TTL = ms('10m');
+
 export const CACHE_TOTAL_SUPPLY_HEADERS =
   'public, max-age=60, stale-if-error=1200, stale-while-revalidate=30';
 

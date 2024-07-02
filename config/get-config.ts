@@ -4,6 +4,7 @@ import * as estimate from './groups/estimate';
 import * as ipfs from './groups/ipfs';
 import * as locale from './groups/locale';
 import * as stake from './groups/stake';
+import * as revalidation from './groups/revalidation';
 import * as withdrawalQueueEstimate from './groups/withdrawal-queue-estimate';
 
 export type ConfigType = {
@@ -14,6 +15,7 @@ export type ConfigType = {
   typeof ipfs &
   typeof locale &
   typeof stake &
+  typeof revalidation &
   typeof withdrawalQueueEstimate &
   PreConfigType;
 
@@ -27,6 +29,7 @@ export const getConfig = (): ConfigType => {
     ...ipfs,
     ...locale,
     ...stake,
+    ...revalidation,
     ...withdrawalQueueEstimate,
 
     // highest priority
