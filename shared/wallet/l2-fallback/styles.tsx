@@ -2,10 +2,14 @@ import { Button } from '@lidofinance/lido-ui';
 import { Card } from 'shared/wallet';
 import styled from 'styled-components';
 
-export const FallbackWalletStyle = styled((props) => <Card {...props} />)`
+export const L2FallbackWalletStyle = styled((props) => <Card {...props} />)`
   text-align: center;
-  background: #7a8aa0;
-  background-image: none !important;
+  background: linear-gradient(
+    180deg,
+    #6562ff 11.28%,
+    #00a3ff 61.02%,
+    #63d6d2 100%
+  );
 `;
 
 export const TextStyle = styled.p`
