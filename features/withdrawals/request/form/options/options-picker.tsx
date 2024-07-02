@@ -97,7 +97,7 @@ const DexButton: React.FC<OptionButtonProps> = ({ isActive, onClick }) => {
       onClick={onClick}
     >
       <OptionsPickerRow>
-        <OptionsPickerLabel>Use aggregators</OptionsPickerLabel>
+        <OptionsPickerLabel>Use DEXs</OptionsPickerLabel>
         <OptionsPickerIcons>
           {ENABLED_WITHDRAWAL_DEXES.map((dexKey) => {
             const Icon = getDexConfig(dexKey).icon;

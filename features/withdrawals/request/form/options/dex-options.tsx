@@ -13,8 +13,13 @@ import {
   InlineLoaderSmall,
   DexOptionLoader,
   DexWarning,
+  DexOptionsShowMore,
+  DexOptionsCheckMarkIcon,
 } from './styles';
 import { ReactComponent as AttentionTriangle } from 'assets/icons/attention-triangle.svg';
+import { useState } from 'react';
+
+const MAX_SHOWN_ELEMENTS = 3;
 
 type DexOptionProps = {
   title: string;
@@ -66,13 +71,19 @@ const DexOption: React.FC<DexOptionProps> = ({
 export const DexOptions: React.FC<
   React.ComponentProps<typeof DexOptionsContainer>
 > = (props) => {
+  const [showMore, setShowMore] = useState(false);
   const { data, initialLoading, amount, selectedToken, enabledDexes } =
     useWithdrawalRates();
 
   const isAnyDexEnabled = enabledDexes.length > 0;
+  const allowExpand = enabledDexes.length > MAX_SHOWN_ELEMENTS;
 
   return (
-    <DexOptionsContainer data-testid="dexOptionContainer" {...props}>
+    <DexOptionsContainer
+      data-testid="dexOptionContainer"
+      $maxElements={showMore ? enabledDexes.length : MAX_SHOWN_ELEMENTS}
+      {...props}
+    >
       {!isAnyDexEnabled && (
         <DexWarning>
           <AttentionTriangle />
@@ -96,6 +107,17 @@ export const DexOptions: React.FC<
             />
           );
         })}
+      {allowExpand && (
+        <DexOptionsShowMore
+          onClick={(e) => {
+            e.preventDefault();
+            setShowMore(!showMore);
+          }}
+        >
+          {showMore ? 'Hide' : 'See all options'}
+          <DexOptionsCheckMarkIcon $active={showMore} />
+        </DexOptionsShowMore>
+      )}
     </DexOptionsContainer>
   );
 };
