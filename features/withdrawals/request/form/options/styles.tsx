@@ -163,8 +163,15 @@ export const OptionsPickerIcons = styled.div`
     width: 20px;
     height: 20px;
     border-radius: 100%;
-    border: 1px solid var(--lido-color-backgroundSecondary);
-    background-color: var(--lido-color-backgroundSecondary);
+    border: 1px solid;
+    border-color: ${({ theme }) =>
+      theme.name === ThemeName.light
+        ? 'var(--lido-color-backgroundSecondary)'
+        : '#F6F8FA'};
+    background-color: ${({ theme }) =>
+      theme.name === ThemeName.light
+        ? 'var(--lido-color-backgroundSecondary)'
+        : '#F6F8FA'};
     margin: -1px 0 -1px -8px;
     &:first-child {
       margin-left: 0px;
