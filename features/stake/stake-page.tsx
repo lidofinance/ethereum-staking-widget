@@ -9,7 +9,7 @@ export const StakePage: FC = () => {
   return (
     <Layout
       title="Stake Ether"
-      subtitle="Stake ETH and receive stETH while staking."
+      subtitle="Stake ETH and receive stETH while staking"
     >
       <Head>
         <title>Stake with Lido | Lido</title>

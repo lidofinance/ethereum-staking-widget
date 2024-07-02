@@ -17,7 +17,7 @@ export const TypeCell: FC<RewardsTableCellProps> = (props) => {
       </OnlyMobileCellValueWrapper>
       <TypeCellValueWrapper>
         {capitalize(String(value))}{' '}
-        {data.direction && capitalize(data.direction)}{' '}
+        {value === 'transfer' && data.direction && capitalize(data.direction)}
         <IndexerLink transactionHash={data.transactionHash} />
       </TypeCellValueWrapper>
     </Td>

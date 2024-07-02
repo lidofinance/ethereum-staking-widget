@@ -4,6 +4,7 @@ import { ErrorRateLimited } from '../errorBlocks/ErrorRateLimited';
 
 import { extractErrorMessage } from 'utils';
 import { FetcherError } from 'utils/fetcherError';
+import { ErrorUnprocessable } from '../errorBlocks/ErrorUnprocessable';
 
 type Props = {
   error: unknown;
@@ -18,6 +19,10 @@ export const RewardsListErrorMessage: React.FC<Props> = ({ error }) => {
 
   if (error instanceof FetcherError && error.status === 429) {
     return <ErrorRateLimited />;
+  }
+
+  if (error instanceof FetcherError && error.status === 422) {
+    return <ErrorUnprocessable />;
   }
 
   return <ErrorBlockBase text={errorMessage} />;
