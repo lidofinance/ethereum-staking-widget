@@ -148,16 +148,9 @@ export default withBundleAnalyzer({
     rpcUrls_17000: process.env.EL_RPC_URLS_17000,
     ethplorerApiKey: process.env.ETHPLORER_API_KEY,
 
-    oneInchApiKey: process.env.ONE_INCH_API_KEY,
-
     cspTrustedHosts: process.env.CSP_TRUSTED_HOSTS,
     cspReportUri: process.env.CSP_REPORT_URI,
     cspReportOnly: process.env.CSP_REPORT_ONLY,
-
-    subgraphMainnet: process.env.SUBGRAPH_MAINNET,
-    subgraphGoerli: process.env.SUBGRAPH_GOERLI,
-    subgraphHolesky: process.env.SUBGRAPH_HOLESKY,
-    subgraphRequestTimeout: process.env.SUBGRAPH_REQUEST_TIMEOUT,
 
     rateLimit: process.env.RATE_LIMIT,
     rateLimitTimeFrame: process.env.RATE_LIMIT_TIME_FRAME,

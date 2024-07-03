@@ -26,19 +26,23 @@ export const enum API_ROUTES {
 }
 
 const getEthApiOrigin = (path: string) => {
-  const { hostname, protocol } = new URL(config.rootOrigin);
-  return protocol + '//' + 'eth-api.' + hostname + path;
+  return config.ethAPIBasePath + path;
 };
 
-export const getReplacementLink = (
-  apiRoute: API_ROUTES,
-): string | undefined => {
+export const getReplacementLink = (apiRoute: API_ROUTES): string => {
   switch (apiRoute) {
     case API_ROUTES.ETH_APR:
       return getEthApiOrigin('/v1/protocol/eth/apr/last');
+    case API_ROUTES.ETH_PRICE:
+      return getEthApiOrigin('/v1/protocol/eth/price');
+    case API_ROUTES.TOTALSUPPLY:
+    case API_ROUTES.SHORT_LIDO_STATS:
+      return getEthApiOrigin('/v1/protocol/steth/stats');
     case API_ROUTES.SMA_STETH_APR:
       return getEthApiOrigin('/v1/protocol/steth/apr/sma');
+    case API_ROUTES.ONEINCH_RATE:
+      return getEthApiOrigin('/v1/swap/one-inch');
     default:
-      return;
+      throw new Error(`No replacement link found for route: ${apiRoute}`);
   }
 };

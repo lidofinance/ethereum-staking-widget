@@ -1,46 +1,40 @@
-import { Cache } from 'memory-cache';
 import {
   wrapRequest as wrapNextRequest,
   cacheControl,
 } from '@lidofinance/next-api-wrapper';
 
 import { config } from 'config';
-import { API_ROUTES } from 'consts/api';
 import {
-  getTotalStaked,
+  API_DEFAULT_SUNSET_TIMESTAMP,
+  API_ROUTES,
+  getReplacementLink,
+} from 'consts/api';
+import {
   defaultErrorHandler,
   responseTimeMetric,
   rateLimit,
   httpMethodGuard,
   HttpMethod,
+  sunsetBy,
 } from 'utilsApi';
 import Metrics from 'utilsApi/metrics';
-import { API } from 'types';
-
-const cache = new Cache<typeof config.CACHE_TOTAL_SUPPLY_KEY, string>();
-
-// Proxy for third-party API.
-const totalSupply: API = async (req, res) => {
-  const cachedTotalSupply = cache.get(config.CACHE_TOTAL_SUPPLY_KEY);
-
-  if (cachedTotalSupply) {
-    res.json(cachedTotalSupply);
-  } else {
-    const totalSupply = await getTotalStaked();
-    cache.put(
-      config.CACHE_TOTAL_SUPPLY_KEY,
-      totalSupply,
-      config.CACHE_TOTAL_SUPPLY_TTL,
-    );
-
-    res.json(totalSupply);
-  }
-};
+import { createEthApiProxy } from 'utilsApi/cached-proxy';
 
 export default wrapNextRequest([
   httpMethodGuard([HttpMethod.GET]),
   rateLimit,
   responseTimeMetric(Metrics.request.apiTimings, API_ROUTES.TOTALSUPPLY),
   cacheControl({ headers: config.CACHE_TOTAL_SUPPLY_HEADERS }),
+  sunsetBy({
+    sunsetTimestamp: API_DEFAULT_SUNSET_TIMESTAMP,
+    replacementLink: getReplacementLink(API_ROUTES.TOTALSUPPLY),
+  }),
   defaultErrorHandler,
-])(totalSupply);
+])(
+  createEthApiProxy({
+    cacheTTL: config.CACHE_TOTAL_SUPPLY_TTL,
+    endpoint: '/v1/protocol/steth/stats',
+    ignoreParams: true,
+    transformData: (data) => data.totalStaked,
+  }),
+);
