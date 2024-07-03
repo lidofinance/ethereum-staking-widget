@@ -21,7 +21,7 @@ export const SDKLegacyProvider = ({
   defaultChainId,
   pollingInterval = POLLING_INTERVAL,
 }: SDKLegacyProviderProps) => {
-  const { chainId = defaultChainId, account, active } = useWeb3();
+  const { chainId: web3ChainId = defaultChainId, account, active } = useWeb3();
   const { supportedChains } = useSupportedChains();
   const { data: client } = useConnectorClient();
   const { rpc } = useReefKnotContext();
@@ -46,6 +46,9 @@ export const SDKLegacyProvider = ({
     () => supportedChains.map((chain) => chain.chainId),
     [supportedChains],
   );
+
+  const chainId =
+    supportedChainIds.indexOf(web3ChainId) > -1 ? web3ChainId : defaultChainId;
 
   const providerRpc = getStaticRpcBatchProvider(
     chainId,
