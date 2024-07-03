@@ -18,7 +18,7 @@ export const Stats: React.FC = () => {
     data,
     initialLoading: pending,
   } = useRewardsHistory();
-  const { data: stEthEth } = useStethEthRate();
+  const stEthEth = useStethEthRate();
   const { data: balanceData } = useRewardsBalanceData();
 
   return (
