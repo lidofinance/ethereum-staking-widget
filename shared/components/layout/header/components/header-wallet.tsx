@@ -7,11 +7,9 @@ import { ThemeToggler } from '@lidofinance/lido-ui';
 import NoSSRWrapper from '../../../no-ssr-wrapper';
 
 import { config } from 'config';
-import { L2_CHAINS } from 'consts/chains';
 
 import { IPFSInfoBox } from 'features/ipfs/ipfs-info-box';
 import { Button, Connect } from 'shared/wallet';
-import { useChainIdWithoutAccount } from 'shared/hooks/use-chain-id-without-account';
 
 import { HeaderSettingsButton } from './header-settings-button';
 import {
@@ -24,7 +22,6 @@ const HeaderWallet: FC = () => {
   const router = useRouter();
   const { active } = useWeb3();
   const { account, chainId } = useSDK();
-  const chainIdWithoutAccount = useChainIdWithoutAccount();
 
   const chainName = CHAINS[chainId];
   const testNet = chainId !== CHAINS.Mainnet;
@@ -49,8 +46,7 @@ const HeaderWallet: FC = () => {
           </HeaderWalletChainStyle>
         </>
       )}
-      {active ||
-      (account && Object.values(L2_CHAINS).includes(chainIdWithoutAccount)) ? (
+      {active || account ? (
         <Button data-testid="accountSectionHeader" />
       ) : (
         <Connect size="sm" />
