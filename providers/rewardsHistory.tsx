@@ -32,6 +32,7 @@ export type RewardsHistoryValue = {
   page: number;
   skip: number;
   address: string;
+  addressError: string;
   inputValue: string;
   isOnlyRewards: boolean;
   isUseArchiveExchangeRate: boolean;
@@ -63,8 +64,13 @@ const RewardsHistoryProvider: FC<PropsWithChildren> = (props) => {
   const skip = page * PAGE_ITEMS;
   const limit = PAGE_ITEMS;
 
-  const { address, inputValue, setInputValue, isAddressResolving } =
-    useGetCurrentAddress();
+  const {
+    address,
+    addressError,
+    inputValue,
+    setInputValue,
+    isAddressResolving,
+  } = useGetCurrentAddress();
 
   const { data, error, loading, initialLoading, isLagging } =
     useRewardsDataLoad({
@@ -100,12 +106,14 @@ const RewardsHistoryProvider: FC<PropsWithChildren> = (props) => {
       setCurrency,
       isAddressResolving,
       address,
+      addressError,
       inputValue,
       setInputValue,
       isLagging,
     }),
     [
       address,
+      addressError,
       currencyObject,
       data,
       error,

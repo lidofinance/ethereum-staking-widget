@@ -16,18 +16,24 @@ export type WrapFormNetworkData = ReturnType<typeof useWrapFormNetworkData>;
 export type WrapFormApprovalData = ReturnType<typeof useWrapTxApprove>;
 
 export type WrapFormValidationContext = {
-  isWalletActive: boolean;
   asyncContext: Promise<WrapFormAsyncValidationContext>;
 };
 
 export type WrapFormAsyncValidationContext = {
-  stethBalance: BigNumber;
-  etherBalance: BigNumber;
   stakingLimitLevel: LIMIT_LEVEL;
   currentStakeLimit: BigNumber;
   gasCost: BigNumber;
-  isMultisig: boolean;
-};
+} & (
+  | {
+      isWalletActive: true;
+      stethBalance: BigNumber;
+      etherBalance: BigNumber;
+      isMultisig: boolean;
+    }
+  | {
+      isWalletActive: false;
+    }
+);
 
 export type WrapFormDataContextValueType = WrapFormNetworkData &
   WrapFormApprovalData & {

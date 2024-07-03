@@ -33,7 +33,7 @@ const WalletComponent: WalletComponentType = (props) => {
     <StyledCard data-testid="wrapCardSection" {...props}>
       <CardRow>
         <CardBalance
-          title="ETH Balance"
+          title="ETH balance"
           loading={ethBalance.initialLoading}
           value={
             <FormatToken
@@ -49,7 +49,7 @@ const WalletComponent: WalletComponentType = (props) => {
       <CardRow>
         <CardBalance
           small
-          title="stETH Balance"
+          title="stETH balance"
           loading={stethBalance.initialLoading || wstethBySteth.initialLoading}
           value={
             <>
@@ -75,7 +75,7 @@ const WalletComponent: WalletComponentType = (props) => {
         />
         <CardBalance
           small
-          title="wstETH Balance"
+          title="wstETH balance"
           loading={wstethBalance.initialLoading || stethByWsteth.initialLoading}
           value={
             <>

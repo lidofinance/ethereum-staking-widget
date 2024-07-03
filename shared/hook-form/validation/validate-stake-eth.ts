@@ -9,28 +9,28 @@ import type { BigNumber } from 'ethers';
 export type validateStakeEthParams = {
   formField: string;
   amount: BigNumber;
-  isWalletActive: boolean;
   stakingLimitLevel: LIMIT_LEVEL;
   currentStakeLimit: BigNumber;
   gasCost: BigNumber;
-  etherBalance: BigNumber;
-  isMultisig: boolean;
-};
+} & (
+  | { isWalletActive: true; etherBalance: BigNumber; isMultisig: boolean }
+  | { isWalletActive: false }
+);
 
 // Runs validation pipeline common between stake and wrapEth
-export const validateStakeEth = ({
-  isWalletActive,
-  amount,
-  formField,
-  currentStakeLimit,
-  etherBalance,
-  gasCost,
-  isMultisig,
-  stakingLimitLevel,
-}: validateStakeEthParams) => {
-  validateStakeLimit('amount', stakingLimitLevel);
+export const validateStakeEth = (params: validateStakeEthParams) => {
+  validateStakeLimit('amount', params.stakingLimitLevel);
 
-  if (isWalletActive) {
+  if (params.isWalletActive) {
+    const {
+      amount,
+      formField,
+      currentStakeLimit,
+      gasCost,
+
+      etherBalance,
+      isMultisig,
+    } = params;
     validateBignumberMax(
       formField,
       amount,
