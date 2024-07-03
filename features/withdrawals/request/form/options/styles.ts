@@ -14,11 +14,6 @@ export const LidoIcon = styled.img.attrs({
   display: block;
 `;
 
-export const OptionAmountRow = styled.div`
-  display: flex;
-  align-items: center;
-`;
-
 // LIDO OPTION
 
 export const LidoOptionContainer = styled.div`

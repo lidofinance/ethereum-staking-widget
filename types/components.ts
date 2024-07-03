@@ -9,8 +9,3 @@ export type Component<
   T extends keyof JSX.IntrinsicElements,
   P extends Record<string, unknown> = { children?: ReactNode },
 > = FC<ComponentProps<T, P>>;
-
-export type Override<
-  T extends Record<string, unknown>,
-  P extends Record<string, unknown>,
-> = Omit<T, keyof P> & P;
