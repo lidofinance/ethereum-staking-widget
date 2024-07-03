@@ -59,15 +59,14 @@ export const createCachedProxy = ({
       const transformedData = transformData(data) ?? data;
 
       cache.put(cacheKey, transformedData, cacheTTL);
-
-      res.status(200).json(transformedData);
+      res.json(transformedData);
     } catch (e) {
       if (e instanceof FetcherError && e.status >= 400 && e.status < 500) {
         console.warn(`[CachedProxy]Forwarding ${e.status} error from ${url}`);
         res.status(e.status);
       }
       console.warn(`[CachedProxy] Failed to proxy from ${url}`, e);
-      res.status(500);
+      res.status(500).end();
       throw e;
     }
   };

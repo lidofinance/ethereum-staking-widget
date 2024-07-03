@@ -5,8 +5,6 @@ import get from 'lodash/get';
 import { StaticJsonRpcBatchProvider } from '@lidofinance/eth-providers';
 import { CHAINS } from '@lido-sdk/constants';
 
-import STETH_ABI from 'abi/steth.abi.json';
-
 const CURVE_ABI = [
   {
     name: 'get_dy',
@@ -39,32 +37,14 @@ export const TOKENS_BY_CHAIN_ID = {
 
 export const TOKEN_ADDRESS_BY_CHAIN_ID = {
   [CHAINS.Mainnet]: {
-    [TOKENS.STETH]: '0xae7ab96520de3a18e5e111b5eaab095312d7fe84',
     [TOKENS.CURVE]: '0xDC24316b9AE028F1497c275EB9192a3Ea0f67022',
   },
-  [CHAINS.Ropsten]: {},
-  [CHAINS.Rinkeby]: {
-    [TOKENS.STETH]: '0xbA453033d328bFdd7799a4643611b616D80ddd97',
-  },
-  [CHAINS.Goerli]: {
-    [TOKENS.STETH]: '0x1643e812ae58766192cf7d2cf9567df2c37e9b7f',
-  },
-  [CHAINS.Kovan]: {},
 } as const;
 
 export const TOKEN_ABI_BY_CHAIN_ID = {
   [CHAINS.Mainnet]: {
-    [TOKENS.STETH]: STETH_ABI,
     [TOKENS.CURVE]: CURVE_ABI,
   },
-  [CHAINS.Ropsten]: {},
-  [CHAINS.Rinkeby]: {
-    [TOKENS.STETH]: STETH_ABI,
-  },
-  [CHAINS.Goerli]: {
-    [TOKENS.STETH]: STETH_ABI,
-  },
-  [CHAINS.Kovan]: {},
 } as const;
 
 export const getTokenAddress = (

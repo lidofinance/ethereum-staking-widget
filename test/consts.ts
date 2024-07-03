@@ -165,19 +165,22 @@ const LIDO_STATS_SCHEMA = {
 
 export const GET_REQUESTS: GetRequest[] = [
   {
-    uri: '/api/oneinch-rate',
+    uri: '/api/oneinch-rate?token=ETH',
+    isDeprecated: true,
     schema: {
       type: 'object',
       properties: {
         rate: { type: 'number', min: 0 },
         toReceive: { type: 'string' },
+        fromAmount: { type: 'string' },
       },
-      required: ['rate', 'toReceive'],
+      required: ['rate', 'toReceive', 'fromAmount'],
       additionalProperties: false,
     },
   },
   {
     uri: `/api/short-lido-stats?chainId=${CONFIG.STAND_CONFIG.chainId}`,
+    isDeprecated: true,
     schema: {
       type: 'object',
       properties: {
@@ -192,7 +195,7 @@ export const GET_REQUESTS: GetRequest[] = [
         'uniqueAnytimeHolders',
         'uniqueHolders',
       ],
-      additionalProperties: false,
+      additionalProperties: true,
     },
   },
   {
@@ -202,6 +205,7 @@ export const GET_REQUESTS: GetRequest[] = [
   },
   {
     uri: '/api/totalsupply',
+    isDeprecated: true,
     schema: { type: 'string', pattern: FLOAT_REGEX },
   },
   {
@@ -216,6 +220,7 @@ export const GET_REQUESTS: GetRequest[] = [
   },
   {
     uri: '/api/eth-price',
+    isDeprecated: true,
     schema: {
       type: 'object',
       properties: {

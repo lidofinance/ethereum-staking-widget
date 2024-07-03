@@ -1,11 +1,12 @@
 import { rpcFactory } from '@lidofinance/next-pages';
+import { CHAINS } from '@lido-sdk/constants';
 import { wrapRequest as wrapNextRequest } from '@lidofinance/next-api-wrapper';
+import { trackedFetchRpcFactory } from '@lidofinance/api-rpc';
 
-import { config } from 'config';
+import { config, secretConfig } from 'config';
 import { API_ROUTES } from 'consts/api';
 import { METRICS_PREFIX } from 'consts/metrics';
 import {
-  fetchRPC,
   rateLimit,
   responseTimeMetric,
   defaultErrorHandler,
@@ -14,10 +15,12 @@ import {
   HttpMethod,
 } from 'utilsApi';
 import Metrics from 'utilsApi/metrics';
-import { rpcUrls } from 'utilsApi/rpcUrls';
 
 const rpc = rpcFactory({
-  fetchRPC,
+  fetchRPC: trackedFetchRpcFactory({
+    registry: Metrics.registry,
+    prefix: METRICS_PREFIX,
+  }),
   serverLogger: console,
   metrics: {
     prefix: METRICS_PREFIX,
@@ -42,7 +45,11 @@ const rpc = rpcFactory({
     'net_version',
   ],
   defaultChain: `${config.defaultChain}`,
-  providers: rpcUrls,
+  providers: {
+    [CHAINS.Mainnet]: secretConfig.rpcUrls_1,
+    [CHAINS.Goerli]: secretConfig.rpcUrls_5,
+    [CHAINS.Holesky]: secretConfig.rpcUrls_17000,
+  },
 });
 
 export default wrapNextRequest([
