@@ -15,7 +15,7 @@ export const ErrorBoundaryFallback = () => {
         size={'xxs'}
         color={'secondary'}
       >
-        Restart the page
+        Reload page
       </Button>
     </ServicePage>
   );
