@@ -1,35 +1,24 @@
 import { FC } from 'react';
-import { Block, ThemeProvider, themeDark } from '@lidofinance/lido-ui';
-import { InputDescription } from 'features/rewards/components/inputDescription';
-import { AddressInput } from 'features/rewards/components/addressInput';
+import { useWeb3 } from 'reef-knot/web3-react';
+import { useAccount } from 'wagmi';
+
 import { StatsWrapper } from 'features/rewards/components/statsWrapper';
 import { Stats } from 'features/rewards/components/stats';
-import { InputWrapper } from 'features/rewards/components/inputWrapper';
-import { useRewardsHistory } from 'features/rewards/hooks';
+import { Fallback } from 'shared/wallet';
 
-const INPUT_DESC_TEXT =
-  'Current balance may differ from last balance in the table due to rounding.';
+import { Wallet } from './wallet';
+import { ConnectWallet } from './connect-wallet';
 
 export const TopCard: FC = () => {
-  const { address, isAddressResolving, inputValue, setInputValue } =
-    useRewardsHistory();
+  const { address } = useAccount();
+  const { active } = useWeb3();
 
   return (
-    <Block color="accent" style={{ padding: 0 }}>
-      <InputWrapper data-testid="inputSection" color="accent">
-        <ThemeProvider theme={themeDark}>
-          <AddressInput
-            address={address}
-            inputValue={inputValue}
-            handleInputChange={setInputValue}
-            isAddressResolving={isAddressResolving}
-          />
-          <InputDescription>{INPUT_DESC_TEXT}</InputDescription>
-        </ThemeProvider>
-      </InputWrapper>
+    <>
+      {address ? active ? <Wallet /> : <Fallback /> : <ConnectWallet />}
       <StatsWrapper>
         <Stats />
       </StatsWrapper>
-    </Block>
+    </>
   );
 };
