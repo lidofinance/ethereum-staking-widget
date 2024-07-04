@@ -10,7 +10,7 @@ const Rewards: FC = () => {
   return (
     <Layout
       title="Reward History"
-      subtitle="Track your Ethereum staking rewards with Lido."
+      subtitle="Track your Ethereum staking rewards with Lido"
       containerSize="content"
     >
       <Head>
