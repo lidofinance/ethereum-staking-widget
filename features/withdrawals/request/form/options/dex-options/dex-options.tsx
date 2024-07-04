@@ -10,7 +10,6 @@ import {
   DexOptionStyled,
   DexOptionsContainer,
   DexOptionAmount,
-  InlineLoaderSmall,
   DexOptionLoader,
   DexWarning,
   DexOptionsShowMore,
@@ -18,6 +17,7 @@ import {
 } from './styles';
 import { ReactComponent as AttentionTriangle } from 'assets/icons/attention-triangle.svg';
 import { useState } from 'react';
+import { InlineLoaderSmall } from '../styles';
 
 const MAX_SHOWN_ELEMENTS = 3;
 
@@ -79,34 +79,37 @@ export const DexOptions: React.FC<
   const allowExpand = enabledDexes.length > MAX_SHOWN_ELEMENTS;
 
   return (
-    <DexOptionsContainer
-      data-testid="dexOptionContainer"
-      $maxElements={showMore ? enabledDexes.length : MAX_SHOWN_ELEMENTS}
-      {...props}
-    >
-      {!isAnyDexEnabled && (
-        <DexWarning>
-          <AttentionTriangle />
-          <div>Aggregator&apos;s prices are not available now</div>
-        </DexWarning>
-      )}
-      {isAnyDexEnabled &&
-        initialLoading &&
-        enabledDexes.map((_, i) => <DexOptionLoader key={i} />)}
-      {isAnyDexEnabled &&
-        !initialLoading &&
-        data?.map(({ title, toReceive, link, rate, matomoEvent, icon }) => {
-          return (
-            <DexOption
-              title={title}
-              icon={icon}
-              onClickGoTo={() => trackMatomoEvent(matomoEvent)}
-              url={link(amount, selectedToken)}
-              key={title}
-              toReceive={rate ? toReceive : null}
-            />
-          );
-        })}
+    <>
+      <DexOptionsContainer
+        data-testid="dexOptionContainer"
+        $showMore={showMore}
+        $maxElements={showMore ? enabledDexes.length : MAX_SHOWN_ELEMENTS}
+        {...props}
+      >
+        {!isAnyDexEnabled && (
+          <DexWarning>
+            <AttentionTriangle />
+            <div>Aggregator&apos;s prices are not available now</div>
+          </DexWarning>
+        )}
+        {isAnyDexEnabled &&
+          initialLoading &&
+          enabledDexes.map((_, i) => <DexOptionLoader key={i} />)}
+        {isAnyDexEnabled &&
+          !initialLoading &&
+          data?.map(({ title, toReceive, link, rate, matomoEvent, icon }) => {
+            return (
+              <DexOption
+                title={title}
+                icon={icon}
+                onClickGoTo={() => trackMatomoEvent(matomoEvent)}
+                url={link(amount, selectedToken)}
+                key={title}
+                toReceive={rate ? toReceive : null}
+              />
+            );
+          })}
+      </DexOptionsContainer>
       {allowExpand && (
         <DexOptionsShowMore
           onClick={(e) => {
@@ -118,6 +121,6 @@ export const DexOptions: React.FC<
           <DexOptionsCheckMarkIcon $active={showMore} />
         </DexOptionsShowMore>
       )}
-    </DexOptionsContainer>
+    </>
   );
 };
