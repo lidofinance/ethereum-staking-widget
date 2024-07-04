@@ -11,9 +11,12 @@ export const useChainIdWithoutAccount = () => {
       if (!checkWindowDotEthereum()) return;
 
       try {
-        const chainIdHex = await window.ethereum.request({
+        const chainIdHex = await window?.ethereum?.request({
           method: 'eth_chainId',
         });
+
+        if (!chainIdHex) return;
+
         const chainId = parseInt(chainIdHex, 16);
         setChainId(chainId);
       } catch {
@@ -24,20 +27,22 @@ export const useChainIdWithoutAccount = () => {
     void fetchChainId();
 
     // Handler for chain changes
-    const handleChainChanged = (chainIdHex) => {
+    const handleChainChanged = (chainIdHex?: string | null | undefined) => {
+      if (!chainIdHex) return;
+
       const chainId = parseInt(chainIdHex, 16);
       setChainId(chainId);
     };
 
     if (checkWindowDotEthereum()) {
-      window.ethereum.on('chainChanged', handleChainChanged);
+      window?.ethereum?.on('chainChanged', handleChainChanged);
     }
 
     // Cleanup listener on component unmount
     return () => {
       if (!checkWindowDotEthereum()) return;
 
-      window.ethereum.removeListener('chainChanged', handleChainChanged);
+      window?.ethereum?.removeListener('chainChanged', handleChainChanged);
     };
   }, []);
 
