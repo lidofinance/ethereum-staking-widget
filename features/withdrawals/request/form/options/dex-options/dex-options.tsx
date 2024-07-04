@@ -72,6 +72,7 @@ export const DexOptions: React.FC<
   React.ComponentProps<typeof DexOptionsContainer>
 > = (props) => {
   const [showMore, setShowMore] = useState(false);
+  const [buttonText, setButtonText] = useState('See all options');
   const { data, initialLoading, amount, selectedToken, enabledDexes } =
     useWithdrawalRates();
 
@@ -84,6 +85,9 @@ export const DexOptions: React.FC<
         data-testid="dexOptionContainer"
         $showMore={showMore}
         $maxElements={showMore ? enabledDexes.length : MAX_SHOWN_ELEMENTS}
+        onTransitionEnd={() =>
+          setButtonText(showMore ? 'Hide' : 'See all options')
+        }
         {...props}
       >
         {!isAnyDexEnabled && (
@@ -117,7 +121,7 @@ export const DexOptions: React.FC<
             setShowMore(!showMore);
           }}
         >
-          {showMore ? 'Hide' : 'See all options'}
+          {buttonText}
           <DexOptionsCheckMarkIcon $active={showMore} />
         </DexOptionsShowMore>
       )}
