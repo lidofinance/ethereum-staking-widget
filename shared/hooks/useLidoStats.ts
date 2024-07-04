@@ -1,10 +1,10 @@
 import { useMemo } from 'react';
 import { useLidoSWR } from '@lido-sdk/react';
 
-import { config } from 'config';
 import { DATA_UNAVAILABLE } from 'consts/text';
 import { STRATEGY_LAZY } from 'consts/swr-strategies';
 import { standardFetcher } from 'utils/standardFetcher';
+import { ETH_API_ROUTES, getEthApiPath } from 'consts/api';
 
 type ResponseData = {
   uniqueAnytimeHolders: string;
@@ -21,7 +21,7 @@ export const useLidoStats = (): {
   };
   initialLoading: boolean;
 } => {
-  const url = `${config.ethAPIBasePath}/v1/protocol/steth/stats`;
+  const url = getEthApiPath(ETH_API_ROUTES.STETH_STATS);
   const lidoStats = useLidoSWR<ResponseData>(
     url,
     standardFetcher,

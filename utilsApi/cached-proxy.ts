@@ -2,8 +2,9 @@ import { API } from '@lidofinance/next-api-wrapper';
 import { Cache } from 'memory-cache';
 import { responseTimeExternalMetricWrapper } from './fetchApiWrapper';
 import { standardFetcher } from 'utils/standardFetcher';
-import { secretConfig } from 'config';
+import { config } from 'config';
 import { FetcherError } from 'utils/fetcherError';
+import { ETH_API_ROUTES, getEthApiPath } from 'consts/api';
 
 type ProxyOptions = {
   proxyUrl: string;
@@ -76,7 +77,7 @@ type EthApiProxyOptions = Pick<
   ProxyOptions,
   'transformData' | 'ignoreParams' | 'cacheTTL'
 > & {
-  endpoint: string;
+  endpoint: ETH_API_ROUTES;
 };
 
 export const createEthApiProxy = ({
@@ -89,8 +90,8 @@ export const createEthApiProxy = ({
     cacheTTL,
     ignoreParams,
     transformData,
-    proxyUrl: `${secretConfig.ethAPIBasePath}${endpoint}`,
-    metricsHost: secretConfig.ethAPIBasePath,
+    proxyUrl: getEthApiPath(endpoint),
+    metricsHost: config.ethAPIBasePath,
     timeout: 5000,
   });
 };

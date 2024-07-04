@@ -4,6 +4,7 @@ import { config } from 'config';
 import {
   API_DEFAULT_SUNSET_TIMESTAMP,
   API_ROUTES,
+  ETH_API_ROUTES,
   getReplacementLink,
 } from 'consts/api';
 import {
@@ -29,7 +30,7 @@ export default wrapNextRequest([
 ])(
   createEthApiProxy({
     cacheTTL: config.CACHE_SMA_STETH_APR_TTL,
-    endpoint: '/v1/protocol/steth/apr/sma',
+    endpoint: ETH_API_ROUTES.STETH_SMA_APR,
     ignoreParams: true,
     transformData: (data) => data.data.smaApr.toFixed(1),
   }),

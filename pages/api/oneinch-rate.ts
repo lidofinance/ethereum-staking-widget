@@ -4,6 +4,7 @@ import { config } from 'config';
 import {
   API_DEFAULT_SUNSET_TIMESTAMP,
   API_ROUTES,
+  ETH_API_ROUTES,
   getReplacementLink,
 } from 'consts/api';
 import {
@@ -31,7 +32,7 @@ export default wrapNextRequest([
 ])(
   createEthApiProxy({
     cacheTTL: config.CACHE_ONE_INCH_RATE_TTL,
-    endpoint: '/v1/swap/one-inch',
+    endpoint: ETH_API_ROUTES.SWAP_ONE_INCH,
     ignoreParams: false,
   }),
 );

@@ -1,7 +1,7 @@
 import { BigNumber } from 'ethers';
 import { TOKENS } from '@lido-sdk/constants';
-import { config } from 'config';
 import { standardFetcher } from './standardFetcher';
+import { ETH_API_ROUTES, getEthApiPath } from 'consts/api';
 
 type GetOneInchRateParams = {
   token: TOKENS.STETH | TOKENS.WSTETH | 'ETH';
@@ -14,7 +14,7 @@ export const getOneInchRate = async ({
 }: GetOneInchRateParams) => {
   const params = new URLSearchParams({ token });
   if (amount) params.append('amount', amount.toString());
-  const url = `${config.ethAPIBasePath}/v1/swap/one-inch?${params.toString()}`;
+  const url = getEthApiPath(ETH_API_ROUTES.SWAP_ONE_INCH, params);
   const data = await standardFetcher<{
     rate: number;
     toReceive: string;

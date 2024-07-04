@@ -7,6 +7,7 @@ import { config } from 'config';
 import {
   API_DEFAULT_SUNSET_TIMESTAMP,
   API_ROUTES,
+  ETH_API_ROUTES,
   getReplacementLink,
 } from 'consts/api';
 import {
@@ -33,7 +34,7 @@ export default wrapNextRequest([
 ])(
   createEthApiProxy({
     cacheTTL: config.CACHE_TOTAL_SUPPLY_TTL,
-    endpoint: '/v1/protocol/steth/stats',
+    endpoint: ETH_API_ROUTES.STETH_STATS,
     ignoreParams: true,
     transformData: (data) => data.totalStaked,
   }),
