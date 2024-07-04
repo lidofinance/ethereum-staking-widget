@@ -23,8 +23,13 @@ const WalletStyle = styled(WalletCardStyle)`
 `;
 
 export const Wallet: FC = () => {
-  const { address, isAddressResolving, inputValue, setInputValue } =
-    useRewardsHistory();
+  const {
+    address,
+    addressError,
+    isAddressResolving,
+    inputValue,
+    setInputValue,
+  } = useRewardsHistory();
 
   return (
     <WalletStyle>
@@ -32,6 +37,7 @@ export const Wallet: FC = () => {
         <ThemeProvider theme={themeDark}>
           <AddressInput
             address={address}
+            addressError={addressError}
             inputValue={inputValue}
             handleInputChange={setInputValue}
             isAddressResolving={isAddressResolving}
