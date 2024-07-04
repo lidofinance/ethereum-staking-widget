@@ -5,7 +5,6 @@ import { ReactComponent as ChevronBlue } from 'assets/icons/chevron-blue.svg';
 
 export const DexOptionsContainer = styled.div<{
   $maxElements: number;
-  $showMore: boolean;
 }>`
   --itemHeight: 82px;
   --itemGap: 8px;

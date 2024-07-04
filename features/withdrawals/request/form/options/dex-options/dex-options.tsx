@@ -82,7 +82,6 @@ export const DexOptions: React.FC<
     <>
       <DexOptionsContainer
         data-testid="dexOptionContainer"
-        $showMore={showMore}
         $maxElements={showMore ? enabledDexes.length : MAX_SHOWN_ELEMENTS}
         {...props}
       >
