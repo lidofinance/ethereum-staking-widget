@@ -16,8 +16,9 @@ import { WalletCardComponent } from 'shared/wallet/card/types';
 import { L2FallbackWalletStyle, TextStyle, ButtonStyle } from './styles';
 
 const l2Logos = {
-  [L2_CHAINS.Arbitrum_Nova]: ArbitrumLogo,
-  [L2_CHAINS.Arbitrum_One]: ArbitrumLogo,
+  // [L2_CHAINS.Arbitrum_Nova]: ArbitrumLogo,
+  // [L2_CHAINS.Arbitrum_One]: ArbitrumLogo,
+  [L2_CHAINS.Arbitrum]: ArbitrumLogo,
   [L2_CHAINS.Base]: BaseLogo,
   [L2_CHAINS.Linea]: LineaLogo,
   [L2_CHAINS.Mantle]: MantleLogo,
