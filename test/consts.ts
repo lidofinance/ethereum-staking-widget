@@ -230,7 +230,7 @@ export const GET_REQUESTS: GetRequest[] = [
         },
       },
       required: ['price'],
-      additionalProperties: false,
+      additionalProperties: true,
     },
   },
   {
