@@ -34,7 +34,7 @@ export const SubmitButtonHookForm: React.FC<SubmitButtonHookFormProps> = ({
 
   if (!active) {
     if (chainId && config.supportedChains.indexOf(chainId) > -1) {
-      return <Connect />;
+      return <Connect fullwidth />;
     }
 
     return <UnsupportedChainButton />;
