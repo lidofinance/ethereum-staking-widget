@@ -47,6 +47,7 @@ export const TokenSelectHookForm = ({
   errorField = 'amount',
   onChange,
   warning,
+  disabled = false,
 }: TokenSelectHookFormProps) => {
   const { field } = useController<Record<string, TOKENS>>({ name: fieldName });
   const { setValue, clearErrors } = useFormContext();
@@ -58,6 +59,7 @@ export const TokenSelectHookForm = ({
   return (
     <SelectIcon
       {...field}
+      disabled={disabled}
       warning={warning}
       icon={iconsMap[field.value]}
       data-testid="drop-down"

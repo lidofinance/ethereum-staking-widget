@@ -1,3 +1,4 @@
+import { useWeb3 } from 'reef-knot/web3-react';
 import {
   TOKENS,
   TokenOption,
@@ -10,5 +11,7 @@ const OPTIONS: TokenOption[] = [
 ];
 
 export const TokenSelectRequest = () => {
-  return <TokenSelectHookForm options={OPTIONS} />;
+  const { active } = useWeb3();
+
+  return <TokenSelectHookForm disabled={!active} options={OPTIONS} />;
 };

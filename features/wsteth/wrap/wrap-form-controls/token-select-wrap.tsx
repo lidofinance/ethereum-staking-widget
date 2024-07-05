@@ -1,4 +1,6 @@
 import { trackEvent } from '@lidofinance/analytics-matomo';
+import { useWeb3 } from 'reef-knot/web3-react';
+
 import { TOKENS_TO_WRAP } from 'features/wsteth/shared/types';
 import { MATOMO_CLICK_EVENTS } from 'consts/matomo-click-events';
 import { TokenSelectHookForm } from 'shared/hook-form/controls/token-select-hook-form';
@@ -20,8 +22,11 @@ type TokenSelectWrapProps = Pick<
 >;
 
 export const TokenSelectWrap = (props: TokenSelectWrapProps) => {
+  const { active } = useWeb3();
+
   return (
     <TokenSelectHookForm
+      disabled={!active}
       options={OPTIONS}
       onChange={(value) => {
         trackEvent(
