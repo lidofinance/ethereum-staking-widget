@@ -38,6 +38,7 @@ type TokenSelectHookFormProps = {
   errorField?: string;
   onChange?: (value: TOKENS) => void;
   warning?: boolean;
+  disabled?: boolean;
 };
 
 export const TokenSelectHookForm = ({
