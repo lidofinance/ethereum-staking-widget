@@ -1,11 +1,15 @@
 import styled, { css } from 'styled-components';
 
-import { NAV_MOBILE_MEDIA, NAV_MOBILE_HEIGHT } from 'styles/constants';
+import {
+  NAV_MOBILE_MEDIA,
+  NAV_MOBILE_HEIGHT,
+  NAV_DESKTOP_GUTTER_X,
+} from 'styles/constants';
 
 export const desktopCss = css`
-  margin: 0 46px;
+  margin: 0 ${NAV_DESKTOP_GUTTER_X}px;
   display: flex;
-  gap: 32px;
+  gap: ${({ theme }) => theme.spaceMap.xxl}px;
 
   svg {
     margin-right: 10px;
@@ -18,18 +22,19 @@ const mobileCss = css`
   bottom: 0;
   left: 0;
   right: 0;
-  padding: 8px;
+  padding: ${({ theme: { spaceMap } }) =>
+    `${spaceMap.sm}px ${spaceMap.sm}px max(env(safe-area-inset-bottom), ${spaceMap.sm}px)`};
   background-color: var(--lido-color-foreground);
   display: flex;
-  gap: 32px;
+  gap: ${({ theme }) => theme.spaceMap.xxl}px;
   justify-content: space-around;
   align-items: center;
   border-top: 1px solid var(--lido-color-border);
-  height: ${NAV_MOBILE_HEIGHT}px;
+  height: calc(${NAV_MOBILE_HEIGHT}px + env(safe-area-inset-bottom));
 
   svg {
     margin-right: 0;
-    margin-bottom: 7px;
+    margin-bottom: ${({ theme }) => theme.spaceMap.sm}px;
   }
 `;
 
@@ -71,6 +76,7 @@ export const NavLink = styled.span<{ active: boolean }>`
   }
 
   ${NAV_MOBILE_MEDIA} {
+    width: ${({ theme }) => theme.spaceMap.xl}px;
     flex-direction: column;
     text-transform: none;
     font-weight: 500;

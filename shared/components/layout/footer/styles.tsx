@@ -2,10 +2,17 @@ import styled from 'styled-components';
 import { Container, Link } from '@lidofinance/lido-ui';
 
 import { LogoLido } from 'shared/components/logos/logos';
-import { NAV_MOBILE_MEDIA } from 'styles/constants';
+import {
+  FOOTER_DESKTOP_PADDING_X,
+  FOOTER_DESKTOP_PADDING_Y,
+  FOOTER_MAX_WIDTH,
+  FOOTER_MOBILE_MARGIN_BOTTOM,
+  FOOTER_MOBILE_PADDING_X,
+  FOOTER_MOBILE_PADDING_Y,
+  NAV_MOBILE_MEDIA,
+} from 'styles/constants';
 
 import { ReactComponent as ExternalLinkIcon } from 'assets/icons/external-link-icon.svg';
-import React from 'react';
 
 export const FooterStyle = styled(Container)`
   position: relative;
@@ -16,12 +23,12 @@ export const FooterStyle = styled(Container)`
   flex-wrap: wrap;
 
   width: 100%;
-  max-width: 1424px;
-  padding: 24px 32px;
+  max-width: ${FOOTER_MAX_WIDTH}px;
+  padding: ${FOOTER_DESKTOP_PADDING_Y}px ${FOOTER_DESKTOP_PADDING_X}px;
 
   ${NAV_MOBILE_MEDIA} {
-    margin-bottom: 60px;
-    padding: 20px 18px;
+    margin-bottom: ${FOOTER_MOBILE_MARGIN_BOTTOM}px;
+    padding: ${FOOTER_MOBILE_PADDING_X}px ${FOOTER_MOBILE_PADDING_Y}px;
     justify-content: center;
   }
 `;
@@ -70,14 +77,14 @@ export const LinkDivider = styled.div`
 `;
 
 export const LogoLidoStyle = styled(LogoLido)`
-  margin-right: 32px;
+  margin-right: ${({ theme }) => theme.spaceMap.xxl}px;
 `;
 
 export const FooterDivider = styled.div`
   position: absolute;
   top: 0;
-  left: 32px;
-  width: calc(100% - 64px);
+  left: ${FOOTER_DESKTOP_PADDING_X}px;
+  width: calc(100% - ${FOOTER_DESKTOP_PADDING_X * 2}px);
   height: 1px;
   background: var(--lido-color-popupMenuItemBgActiveHover);
   opacity: 0.12;
@@ -107,13 +114,3 @@ export const ExternalLinkIconFooter = styled(ExternalLinkIcon).attrs({
     fill: var(--lido-color-textSecondary);
   }
 `;
-
-export const ExternalLink = ({
-  children,
-  ...props
-}: React.ComponentProps<typeof FooterLink>) => (
-  <FooterLink target="_blank" rel="noopener noreferrer" {...props}>
-    {children}
-    <ExternalLinkIconFooter />
-  </FooterLink>
-);

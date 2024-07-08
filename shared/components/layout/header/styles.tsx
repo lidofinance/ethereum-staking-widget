@@ -1,12 +1,12 @@
 import { Container } from '@lidofinance/lido-ui';
 import styled, { keyframes } from 'styled-components';
 
-import { NAV_MOBILE_MEDIA } from 'styles/constants';
+import { DOT_SIZE, HEADER_PADDING_Y, NAV_MOBILE_MEDIA } from 'styles/constants';
 
 export const HeaderStyle = styled((props) => <Container {...props} />)`
   position: relative;
-  padding-top: 18px;
-  padding-bottom: 18px;
+  padding-top: ${HEADER_PADDING_Y}px;
+  padding-bottom: ${HEADER_PADDING_Y}px;
   display: flex;
   align-items: center;
 `;
@@ -33,8 +33,8 @@ const glimmer = keyframes`
 `;
 
 export const DotStyle = styled.p`
-  height: 6px;
-  width: 6px;
+  height: ${DOT_SIZE}px;
+  width: ${DOT_SIZE}px;
   background-color: lightgreen;
   border-radius: 50%;
   animation: ${glimmer} 2s ease-in-out infinite;
