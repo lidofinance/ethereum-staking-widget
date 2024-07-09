@@ -22,7 +22,7 @@ import {
 
 const HeaderWallet: FC = () => {
   const router = useRouter();
-  const { chainId } = useAccount();
+  const { chainId, address } = useAccount();
   const { defaultChain: defaultChainId } = useUserConfig();
   const isActiveWallet = useIsConnectedWalletAndSupportedChain();
 
@@ -49,7 +49,7 @@ const HeaderWallet: FC = () => {
           </HeaderWalletChainStyle>
         </>
       )}
-      {isActiveWallet ? (
+      {address ? (
         <Button data-testid="accountSectionHeader" />
       ) : (
         <Connect size="sm" />
