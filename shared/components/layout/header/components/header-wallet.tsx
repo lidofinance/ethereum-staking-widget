@@ -26,14 +26,14 @@ const HeaderWallet: FC = () => {
   const { defaultChain: defaultChainId } = useUserConfig();
   const isActiveWallet = useIsConnectedWalletAndSupportedChain();
 
-  const chainName = CHAINS[chainId];
+  const chainName = CHAINS[chainId || defaultChainId];
   const testNet = chainId !== CHAINS.Mainnet;
   const showNet = testNet && isActiveWallet;
   const queryTheme = router?.query?.theme;
 
   const chainColor = useMemo(() => {
     try {
-      return getChainColor(chainId | defaultChainId);
+      return getChainColor(chainId || defaultChainId);
     } catch {
       return getChainColor(defaultChainId);
     }
