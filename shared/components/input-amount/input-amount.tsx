@@ -162,7 +162,7 @@ export const InputAmount = forwardRef<HTMLInputElement, InputAmountProps>(
             <>
               <InputDecoratorMaxButton
                 onClick={handleClickMax}
-                disabled={!handleClickMax}
+                disabled={!handleClickMax || props.disabled}
               />
               {isLocked ? <InputDecoratorLocked /> : undefined}
             </>
