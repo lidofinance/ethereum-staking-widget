@@ -18,8 +18,6 @@ import { WalletCardComponent } from 'shared/wallet/card/types';
 import { L2FallbackWalletStyle, TextStyle, ButtonStyle } from './styles';
 
 const l2Logos = {
-  // [L2_CHAINS.Arbitrum_Nova]: ArbitrumLogo,
-  // [L2_CHAINS.Arbitrum_One]: ArbitrumLogo,
   [L2_CHAINS.Arbitrum]: ArbitrumLogo,
   [L2_CHAINS.Base]: BaseLogo,
   [L2_CHAINS.Linea]: LineaLogo,
@@ -55,10 +53,7 @@ export const L2Fallback: WalletCardComponent = (props) => {
         Learn about Lido on L2 opportunities on {chainName} network or switch to
         Ethereum {defaultChainName} to stake
       </TextStyle>
-      <Link
-        href={'https://lido.fi/lido-on-l2'}
-        // onClick={() => console.log('Track Matomo!')}
-      >
+      <Link href={'https://lido.fi/lido-on-l2'}>
         <ButtonStyle size={'xs'}>Lido on L2 opportunities</ButtonStyle>
       </Link>
     </L2FallbackWalletStyle>

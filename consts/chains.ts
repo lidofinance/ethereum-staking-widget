@@ -7,8 +7,6 @@ export enum CHAINS {
 export enum L2_CHAINS {
   zkSync = 324,
   Optimism = 10,
-  // Arbitrum_One = 42161,
-  // Arbitrum_Nova = 42170,
   Arbitrum = 42161,
   Polygon_PoS = 137,
   Base = 8453,
