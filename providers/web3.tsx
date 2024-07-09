@@ -79,10 +79,13 @@ const Web3Provider: FC<PropsWithChildren> = ({ children }) => {
       chains: supportedChains,
       ssr: true,
       multiInjectedProviderDiscovery: false,
-      transports: supportedChains.reduce((res, curr) => ({
-        ...res,
-        [curr.id]: http(backendRPC[curr.id], { batch: true }),
-      })),
+      transports: supportedChains.reduce(
+        (res, curr) => ({
+          ...res,
+          [curr.id]: http(backendRPC[curr.id], { batch: true }),
+        }),
+        {},
+      ),
     });
   }, [supportedChains, backendRPC]);
 

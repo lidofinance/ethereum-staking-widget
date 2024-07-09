@@ -2745,10 +2745,10 @@
   resolved "https://registry.yarnpkg.com/@polka/url/-/url-1.0.0-next.24.tgz#58601079e11784d20f82d0585865bb42305c4df3"
   integrity sha512-2LuNTFBIO0m7kKIQvvPHN6UE63VjpmL9rnEEaOOaiSPbZK+zUOYIzBAWcED+3XYzhYsd/0mD57VdxAEqqV52CQ==
 
-"@reef-knot/connect-wallet-modal@5.0.0":
-  version "5.0.0"
-  resolved "https://registry.yarnpkg.com/@reef-knot/connect-wallet-modal/-/connect-wallet-modal-5.0.0.tgz#f25574e634650e2985cdf6e2dff71b5f7e7a9d0f"
-  integrity sha512-Keq1xg8GRNVvpCpsYSHxMwkFrF3zFY06E3Fke9kPQsdNWGZKaGmUd8Sn49QhdqsYWbTlWvNd2vpPxYDIGndDyg==
+"@reef-knot/connect-wallet-modal@5.0.1":
+  version "5.0.1"
+  resolved "https://registry.yarnpkg.com/@reef-knot/connect-wallet-modal/-/connect-wallet-modal-5.0.1.tgz#9696b02f3c97326b2f0f7ac4865f53754f952a1a"
+  integrity sha512-fcazH7TVdMcbT2p53wzAN239ekkFHndF3miqGMDr53pMNyGnF6TPIn+S2m4mhET9QQ2QyjsSjeOu8Wdk9DROqw==
   dependencies:
     "@ledgerhq/hw-app-eth" "^6.35.2"
     "@ledgerhq/hw-transport" "^6.30.1"
@@ -3844,7 +3844,6 @@
     eventemitter3 "5.0.1"
     mipd "0.0.5"
     zustand "4.4.1"
-
 "@walletconnect/core@2.13.0":
   version "2.13.0"
   resolved "https://registry.yarnpkg.com/@walletconnect/core/-/core-2.13.0.tgz#6b79b039930643e8ee85a0f512b143a35fdb8b52"
@@ -9412,12 +9411,12 @@ redis-parser@^3.0.0:
   dependencies:
     redis-errors "^1.0.0"
 
-"reef-knot@5.0.1 ":
-  version "5.0.1"
-  resolved "https://registry.yarnpkg.com/reef-knot/-/reef-knot-5.0.1.tgz#557dd80346f2c54ce964450a972a3afefee8e05b"
-  integrity sha512-tsjwfUmSgKmfwAK57ry7w0gHxVPT46cTAlHLZ7zIApQVSzetucDu5qkO8qqINCnAK+duOn05JysrALZ48a5s9w==
+reef-knot@5.0.2:
+  version "5.0.2"
+  resolved "https://registry.yarnpkg.com/reef-knot/-/reef-knot-5.0.2.tgz#13f026e9933a3fbdd05534ba382cad872abd7c76"
+  integrity sha512-fh8K3FLIWKcrvCphNbVXXtNS18PETfniw6DWArBCnHrJALosdQ+BxW6Fy/SAAVH9qty743cIB31ZjRdPlYdpRw==
   dependencies:
-    "@reef-knot/connect-wallet-modal" "5.0.0"
+    "@reef-knot/connect-wallet-modal" "5.0.1"
     "@reef-knot/core-react" "4.0.1"
     "@reef-knot/ledger-connector" "4.0.0"
     "@reef-knot/types" "2.0.0"

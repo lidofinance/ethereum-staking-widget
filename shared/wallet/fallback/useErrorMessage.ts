@@ -5,8 +5,6 @@ import {
 import { helpers, useSupportedChains } from 'reef-knot/web3-react';
 import { useAccount, useConfig, useConnect } from 'wagmi';
 
-export const useErrorMessage = (): string | undefined => {
-  const { error } = useConnect();
   const { chains } = useConfig();
   const { isConnected } = useAccount();
   const { isUnsupported } = useSupportedChains();
