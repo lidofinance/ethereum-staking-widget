@@ -2,7 +2,7 @@ import { memo, useMemo } from 'react';
 import { useAccount } from 'wagmi';
 
 import { TOKENS } from '@lido-sdk/constants';
-import { useSDK, useTokenAddress } from '@lido-sdk/react';
+import { useTokenAddress } from '@lido-sdk/react';
 import { Divider, Question, Tooltip } from '@lidofinance/lido-ui';
 
 import { L2_CHAINS } from 'consts/chains';
@@ -25,7 +25,7 @@ import { FlexCenter, LidoAprStyled, StyledCard } from './styles';
 import { useStakeFormData } from '../stake-form-context';
 
 const WalletComponent: WalletComponentType = (props) => {
-  const { account } = useSDK();
+  const { address } = useAccount();
   const { stakeableEther, stethBalance, loading } = useStakeFormData();
 
   const stethAddress = useTokenAddress(TOKENS.STETH);
@@ -50,7 +50,7 @@ const WalletComponent: WalletComponentType = (props) => {
             />
           }
         />
-        <CardAccount account={account} />
+        <CardAccount account={address as `0x${string}`} />
       </CardRow>
       <Divider />
       <CardRow>

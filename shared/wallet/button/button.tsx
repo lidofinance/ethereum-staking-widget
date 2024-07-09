@@ -1,9 +1,11 @@
 import { FC } from 'react';
-import { useWeb3 } from 'reef-knot/web3-react';
+import { useAccount } from 'wagmi';
 import { ButtonProps } from '@lidofinance/lido-ui';
-import { useEthereumBalance, useSDK } from '@lido-sdk/react';
-import { FormatToken } from 'shared/formatters';
+import { useEthereumBalance } from '@lido-sdk/react';
+
 import { STRATEGY_LAZY } from 'consts/swr-strategies';
+import { FormatToken } from 'shared/formatters';
+import { useIsConnectedWalletAndSupportedChain } from 'shared/hooks/use-is-connected-wallet-and-supported-chain';
 
 import { AddressBadge } from '../components/address-badge/address-badge';
 import { useWalletModal } from '../wallet-modal/use-wallet-modal';
@@ -17,9 +19,11 @@ import {
 
 export const Button: FC<ButtonProps> = (props) => {
   const { onClick, ...rest } = props;
+
+  const isActiveWallet = useIsConnectedWalletAndSupportedChain();
+  const { address } = useAccount();
+
   const { openModal } = useWalletModal();
-  const { active } = useWeb3();
-  const { account } = useSDK();
   const { data: balance, initialLoading } = useEthereumBalance(
     undefined,
     STRATEGY_LAZY,
@@ -31,7 +35,7 @@ export const Button: FC<ButtonProps> = (props) => {
       variant="text"
       color="secondary"
       onClick={() => openModal({})}
-      style={!initialLoading && !active ? { paddingLeft: '12px' } : {}}
+      style={!initialLoading && !isActiveWallet ? { paddingLeft: '12px' } : {}}
       {...rest}
     >
       <WalledButtonWrapperStyle>
@@ -39,7 +43,7 @@ export const Button: FC<ButtonProps> = (props) => {
           {initialLoading ? (
             <WalledButtonLoaderStyle />
           ) : (
-            active && (
+            isActiveWallet && (
               <FormatToken
                 amount={balance}
                 symbol="ETH"
@@ -48,7 +52,7 @@ export const Button: FC<ButtonProps> = (props) => {
             )
           )}
         </WalledButtonBalanceStyle>
-        <AddressBadge address={account} />
+        <AddressBadge address={address as `0x${string}`} />
       </WalledButtonWrapperStyle>
     </WalledButtonStyle>
   );
