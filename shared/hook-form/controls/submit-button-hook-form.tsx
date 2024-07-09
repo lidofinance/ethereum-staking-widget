@@ -1,10 +1,9 @@
-import { useWeb3 } from 'reef-knot/web3-react';
 import { useFormState } from 'react-hook-form';
+import { useAccount } from 'wagmi';
 import { ButtonIcon, Lock } from '@lidofinance/lido-ui';
 
-import { config } from 'config';
+import { useIsSupportedChain } from 'shared/hooks/use-is-supported-chain';
 import { Connect, UnsupportedChainButton } from 'shared/wallet';
-import { useChainIdWithoutAccount } from 'shared/hooks/use-chain-id-without-account';
 
 import { isValidationErrorTypeValidate } from '../validation/validation-error';
 
@@ -22,23 +21,24 @@ export const SubmitButtonHookForm: React.FC<SubmitButtonHookFormProps> = ({
   disabled: disabledProp,
   ...props
 }) => {
-  const chainId = useChainIdWithoutAccount();
-  const { active } = useWeb3();
+  const { isConnected } = useAccount();
+  const isSupportedChain = useIsSupportedChain();
   const { isValidating, isSubmitting } = useFormState();
   const { errors } = useFormState<Record<string, unknown>>();
+
+  if (!isConnected) {
+    return <Connect fullwidth />;
+  }
+
+  if (!isSupportedChain) {
+    return <UnsupportedChainButton />;
+  }
+
   const disabled =
     (errorField &&
       !!errors[errorField] &&
       isValidationErrorTypeValidate(errors[errorField]?.type)) ||
     disabledProp;
-
-  if (!active) {
-    if (chainId && config.supportedChains.indexOf(chainId) > -1) {
-      return <Connect fullwidth />;
-    }
-
-    return <UnsupportedChainButton />;
-  }
 
   return (
     <ButtonIcon

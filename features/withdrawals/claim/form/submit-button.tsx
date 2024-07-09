@@ -1,20 +1,28 @@
-import { Connect } from 'shared/wallet';
-import { Button } from '@lidofinance/lido-ui';
-import { useWeb3 } from 'reef-knot/web3-react';
-import { FormatToken } from 'shared/formatters/format-token';
-import { ClaimFormInputType, useClaimFormData } from '../claim-form-context';
-import { Zero } from '@ethersproject/constants';
 import { useFormState } from 'react-hook-form';
+import { useAccount } from 'wagmi';
+import { Button } from '@lidofinance/lido-ui';
+import { Zero } from '@ethersproject/constants';
+
+import { Connect, UnsupportedChainButton } from 'shared/wallet';
+import { FormatToken } from 'shared/formatters/format-token';
+import { useIsSupportedChain } from 'shared/hooks/use-is-supported-chain';
 import { isValidationErrorTypeUnhandled } from 'shared/hook-form/validation/validation-error';
 
+import { ClaimFormInputType, useClaimFormData } from '../claim-form-context';
+
 export const SubmitButton = () => {
-  const { active } = useWeb3();
+  const { isConnected } = useAccount();
+  const isSupportedChain = useIsSupportedChain();
   const { isSubmitting, isValidating, errors } =
     useFormState<ClaimFormInputType>();
   const { ethToClaim } = useClaimFormData();
   const { selectedRequests } = useClaimFormData();
 
-  if (!active) return <Connect fullwidth />;
+  if (!isConnected) return <Connect fullwidth />;
+
+  if (!isSupportedChain) {
+    return <UnsupportedChainButton />;
+  }
 
   const claimButtonAmount = ethToClaim.lte(Zero) ? null : (
     <FormatToken showAmountTip={false} amount={ethToClaim} symbol="ETH" />

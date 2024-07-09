@@ -1,9 +1,9 @@
 import { trackEvent } from '@lidofinance/analytics-matomo';
-import { useWeb3 } from 'reef-knot/web3-react';
 
 import { TOKENS_TO_WRAP } from 'features/wsteth/shared/types';
 import { MATOMO_CLICK_EVENTS } from 'consts/matomo-click-events';
 import { TokenSelectHookForm } from 'shared/hook-form/controls/token-select-hook-form';
+import { useIsConnectedWalletAndSupportedChain } from 'shared/hooks/use-is-connected-wallet-and-supported-chain';
 
 const OPTIONS = [
   {
@@ -22,11 +22,11 @@ type TokenSelectWrapProps = Pick<
 >;
 
 export const TokenSelectWrap = (props: TokenSelectWrapProps) => {
-  const { active } = useWeb3();
+  const isActiveWallet = useIsConnectedWalletAndSupportedChain();
 
   return (
     <TokenSelectHookForm
-      disabled={!active}
+      disabled={!isActiveWallet}
       options={OPTIONS}
       onChange={(value) => {
         trackEvent(

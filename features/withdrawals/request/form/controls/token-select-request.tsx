@@ -1,9 +1,9 @@
-import { useWeb3 } from 'reef-knot/web3-react';
 import {
   TOKENS,
   TokenOption,
   TokenSelectHookForm,
 } from 'shared/hook-form/controls/token-select-hook-form';
+import { useIsConnectedWalletAndSupportedChain } from 'shared/hooks/use-is-connected-wallet-and-supported-chain';
 
 const OPTIONS: TokenOption[] = [
   { token: TOKENS.STETH },
@@ -11,7 +11,7 @@ const OPTIONS: TokenOption[] = [
 ];
 
 export const TokenSelectRequest = () => {
-  const { active } = useWeb3();
+  const isActiveWallet = useIsConnectedWalletAndSupportedChain();
 
-  return <TokenSelectHookForm disabled={!active} options={OPTIONS} />;
+  return <TokenSelectHookForm disabled={!isActiveWallet} options={OPTIONS} />;
 };
