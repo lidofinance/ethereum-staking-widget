@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { useAccount } from 'wagmi';
 import { Link } from '@lidofinance/lido-ui';
 
@@ -9,8 +10,9 @@ import { ReactComponent as OptimismLogo } from 'assets/icons/l2/optimism.svg';
 import { ReactComponent as PolygonLogo } from 'assets/icons/l2/polygon.svg';
 import { ReactComponent as ZkSyncLogo } from 'assets/icons/l2/zk-sync.svg';
 
+import { useUserConfig } from 'config/user-config';
+import { CHAINS } from 'consts/chains';
 import { L2_CHAINS } from 'consts/chains';
-import { useChainIdWithoutAccount } from 'shared/hooks/use-chain-id-without-account';
 import { WalletCardComponent } from 'shared/wallet/card/types';
 
 import { L2FallbackWalletStyle, TextStyle, ButtonStyle } from './styles';
@@ -33,22 +35,25 @@ const getL2Logo = (chainId: L2_CHAINS) => {
 };
 
 export const L2Fallback: WalletCardComponent = (props) => {
-  const chainIdWithoutAccount = useChainIdWithoutAccount();
-  const { chainId: accountChainId } = useAccount();
+  const { chainId } = useAccount();
+  const { defaultChain } = useUserConfig();
 
-  const _chainId = accountChainId || chainIdWithoutAccount;
+  const defaultChainName = useMemo(() => {
+    return CHAINS[defaultChain];
+  }, [defaultChain]);
 
-  const network =
-    Object.keys(L2_CHAINS)[
-      Object.values(L2_CHAINS).indexOf(_chainId as unknown as L2_CHAINS)
+  const chainName = useMemo(() => {
+    return Object.keys(L2_CHAINS)[
+      Object.values(L2_CHAINS).indexOf(chainId as unknown as L2_CHAINS)
     ];
+  }, [chainId]);
 
   return (
     <L2FallbackWalletStyle {...props}>
-      {getL2Logo(_chainId as unknown as L2_CHAINS)}
+      {getL2Logo(chainId as unknown as L2_CHAINS)}
       <TextStyle>
-        Learn about Lido on L2 opportunities on {network} network or switch to
-        Ethereum mainnet to stake
+        Learn about Lido on L2 opportunities on {chainName} network or switch to
+        Ethereum {defaultChainName} to stake
       </TextStyle>
       <Link
         href={'https://lido.fi/lido-on-l2'}
