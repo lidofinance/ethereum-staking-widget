@@ -1,5 +1,5 @@
 import styled, { css } from 'styled-components';
-import { devicesMedia } from 'styles/global';
+import { devicesHeaderMedia } from 'styles/global';
 
 export const desktopCss = css`
   margin: 0 var(--nav-desktop-gutter-x);
@@ -36,7 +36,7 @@ const mobileCss = css`
 export const Nav = styled.div`
   ${desktopCss}
   // mobile kicks in on a bit higher width for nav
-  @media ${devicesMedia.mobile} {
+  @media ${devicesHeaderMedia.mobile} {
     ${mobileCss}
   }
   z-index: 6;
@@ -70,7 +70,7 @@ export const NavLink = styled.span<{ active: boolean }>`
       active ? `var(--lido-color-primary)` : `var(--lido-color-secondary)`};
   }
 
-  @media ${devicesMedia.mobile} {
+  @media ${devicesHeaderMedia.mobile} {
     width: ${({ theme }) => theme.spaceMap.xl}px;
     flex-direction: column;
     text-transform: none;

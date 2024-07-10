@@ -2,7 +2,7 @@ import { createGlobalStyle } from 'styled-components';
 
 import { NAV_MOBILE_HEIGHT, NAV_MOBILE_MAX_WIDTH } from './constants';
 
-export const devicesMedia = {
+export const devicesHeaderMedia = {
   mobile: `screen and (max-width: ${NAV_MOBILE_MAX_WIDTH}px)`,
 };
 
