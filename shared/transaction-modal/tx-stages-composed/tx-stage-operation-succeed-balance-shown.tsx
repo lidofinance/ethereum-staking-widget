@@ -1,5 +1,7 @@
 import styled from 'styled-components';
 
+import { useTokenAddress } from '@lido-sdk/react';
+import { TOKENS } from '@lido-sdk/constants';
 import { InlineLoader } from '@lidofinance/lido-ui';
 import { L2AfterStake } from 'shared/banners/l2-banners/l2-after-stake';
 import { L2AfterWrap } from 'shared/banners/l2-banners/l2-after-wrap';
@@ -10,6 +12,7 @@ import { TxStageSuccess } from '../tx-stages-basic';
 
 import type { BigNumber } from 'ethers';
 import { useFeatureFlag, VAULTS_BANNER_IS_ENABLED } from 'config/feature-flags';
+import { TokenToWallet } from '../../components';
 
 export const SkeletonBalance = styled(InlineLoader).attrs({
   color: 'text',
@@ -32,6 +35,10 @@ export const TxStageOperationSucceedBalanceShown = ({
   txHash,
 }: TxStageOperationSucceedBalanceShownProps) => {
   const { vaultsBannerIsEnabled } = useFeatureFlag(VAULTS_BANNER_IS_ENABLED);
+  const stethAddress = useTokenAddress(TOKENS.STETH);
+  const wstethAddress = useTokenAddress(TOKENS.WSTETH);
+  const tokenToWalletAddress =
+    balanceToken === 'wstETH' ? wstethAddress : stethAddress;
 
   const balanceEl = balance && (
     <TxAmount amount={balance} symbol={balanceToken} />
@@ -51,6 +58,10 @@ export const TxStageOperationSucceedBalanceShown = ({
         <>
           Your new balance is <wbr />
           {balance ? balanceEl : <SkeletonBalance />}
+          <TokenToWallet
+            data-testid="txSuccessAddToken"
+            address={tokenToWalletAddress}
+          />
         </>
       }
       description={
