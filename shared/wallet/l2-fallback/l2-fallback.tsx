@@ -23,7 +23,7 @@ const l2Logos = {
   [L2_CHAINS.Linea]: LineaLogo,
   [L2_CHAINS.Mantle]: MantleLogo,
   [L2_CHAINS.Optimism]: OptimismLogo,
-  [L2_CHAINS.Polygon_PoS]: PolygonLogo,
+  [L2_CHAINS.Polygon]: PolygonLogo,
   [L2_CHAINS.zkSync]: ZkSyncLogo,
 };
 
