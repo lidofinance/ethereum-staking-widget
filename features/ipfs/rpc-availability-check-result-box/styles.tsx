@@ -6,8 +6,6 @@ import {
   themeDefault,
 } from '@lidofinance/lido-ui';
 
-import { NAV_MOBILE_MEDIA } from 'styles/constants';
-
 type TextProps = Omit<ComponentProps<typeof TextOriginal>, 'color'> & {
   color?: keyof typeof themeDefault.colors;
 };
@@ -38,7 +36,7 @@ export const Wrap = styled.div`
     border-radius: 2px 0 0 0;
     background: var(--lido-color-accent);
 
-    ${NAV_MOBILE_MEDIA} {
+    @media screen and (max-width: var(--nav-mobile-max-width)) {
       display: none;
     }
   }

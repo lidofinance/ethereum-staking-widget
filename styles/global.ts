@@ -1,6 +1,24 @@
 import { createGlobalStyle } from 'styled-components';
 
+import { NAV_MOBILE_HEIGHT, NAV_MOBILE_MAX_WIDTH } from './constants';
+
 const GlobalStyle = createGlobalStyle`
+  :root {
+    --nav-mobile-height: ${NAV_MOBILE_HEIGHT}px;
+    --nav-mobile-max-width: ${NAV_MOBILE_MAX_WIDTH}px;
+    --nav-desktop-gutter-x: 46px;
+
+    --header-padding-y: 18px;
+    --dot-size: 6px;
+
+    --footer-max-width: 1424px;
+    --footer-desktop-padding-x: 32px;
+    --footer-desktop-padding-y: 24px;
+
+    --footer-mobile-padding-x: 20px;
+    --footer-mobile-padding-y: 18px;
+    --footer-mobile-margin-bottom: 60px;
+  }
   * {
     margin: 0;
     padding: 0;

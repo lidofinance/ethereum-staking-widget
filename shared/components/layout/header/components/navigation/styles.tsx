@@ -1,13 +1,7 @@
 import styled, { css } from 'styled-components';
 
-import {
-  NAV_MOBILE_MEDIA,
-  NAV_MOBILE_HEIGHT,
-  NAV_DESKTOP_GUTTER_X,
-} from 'styles/constants';
-
 export const desktopCss = css`
-  margin: 0 ${NAV_DESKTOP_GUTTER_X}px;
+  margin: 0 var(--nav-desktop-gutter-x);
   display: flex;
   gap: ${({ theme }) => theme.spaceMap.xxl}px;
 
@@ -30,7 +24,7 @@ const mobileCss = css`
   justify-content: space-around;
   align-items: center;
   border-top: 1px solid var(--lido-color-border);
-  height: calc(${NAV_MOBILE_HEIGHT}px + env(safe-area-inset-bottom));
+  height: calc(var(--nav-mobile-height) + env(safe-area-inset-bottom));
 
   svg {
     margin-right: 0;
@@ -41,7 +35,7 @@ const mobileCss = css`
 export const Nav = styled.div`
   ${desktopCss}
   // mobile kicks in on a bit higher width for nav
-  ${NAV_MOBILE_MEDIA} {
+  @media screen and (max-width: var(--nav-mobile-max-width)) {
     ${mobileCss}
   }
   z-index: 6;
@@ -75,7 +69,7 @@ export const NavLink = styled.span<{ active: boolean }>`
       active ? `var(--lido-color-primary)` : `var(--lido-color-secondary)`};
   }
 
-  ${NAV_MOBILE_MEDIA} {
+  @media screen and (max-width: var(--nav-mobile-max-width)) {
     width: ${({ theme }) => theme.spaceMap.xl}px;
     flex-direction: column;
     text-transform: none;
