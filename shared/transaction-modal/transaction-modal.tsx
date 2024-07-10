@@ -1,5 +1,5 @@
 import { Modal } from '@lidofinance/lido-ui';
-import { useConnectorInfo } from 'reef-knot/web3-react';
+import { useConnectorInfo } from 'reef-knot/core-react';
 import { getUseModal, ModalComponentType } from 'providers/modal-provider';
 
 type TransactionModalProps = {
