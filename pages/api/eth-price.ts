@@ -5,7 +5,7 @@ import {
 
 import { config } from 'config';
 import {
-  API_DEFAULT_SUNSET_TIMESTAMP,
+  API_LATER_SUNSET_TIMESTAMP,
   API_ROUTES,
   ETH_API_ROUTES,
   getReplacementLink,
@@ -28,7 +28,7 @@ export default wrapNextRequest([
   responseTimeMetric(Metrics.request.apiTimings, API_ROUTES.ETH_PRICE),
   cacheControl({ headers: config.CACHE_ETH_PRICE_HEADERS }),
   sunsetBy({
-    sunsetTimestamp: API_DEFAULT_SUNSET_TIMESTAMP,
+    sunsetTimestamp: API_LATER_SUNSET_TIMESTAMP,
     replacementLink: getReplacementLink(API_ROUTES.ETH_PRICE),
   }),
   defaultErrorHandler,

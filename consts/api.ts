@@ -5,9 +5,14 @@ export const ETHPLORER_TOKEN_ENDPOINT =
 
 export const HEALTHY_RPC_SERVICES_ARE_OVER = 'Healthy RPC services are over!';
 
-// 5rd August, Monday, middle of the working day
+// 5th August, Monday, middle of the working day
 export const API_DEFAULT_SUNSET_TIMESTAMP = new Date(
   '2024-08-05T09:00:00',
+).getTime();
+
+// 9th September, Monday, middle of the working day
+export const API_LATER_SUNSET_TIMESTAMP = new Date(
+  '2024-09-09T09:00:00',
 ).getTime();
 
 export const enum API_ROUTES {
