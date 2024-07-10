@@ -1,7 +1,7 @@
 import { IPFS_INFO_URL, useRemoteVersion } from 'features/ipfs';
 
 import { OnlyInfraRender } from 'shared/components/only-infra-render';
-import { ExternalLink } from './styles';
+import { ExternalLink } from './external-link';
 
 export const LinkToIpfs = () => {
   const { data } = useRemoteVersion();
