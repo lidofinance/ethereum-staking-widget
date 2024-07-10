@@ -4,6 +4,7 @@ import { Container, Link } from '@lidofinance/lido-ui';
 import { LogoLido } from 'shared/components/logos/logos';
 
 import { ReactComponent as ExternalLinkIcon } from 'assets/icons/external-link-icon.svg';
+import { devicesMedia } from 'styles/global';
 
 export const FooterStyle = styled(Container)`
   position: relative;
@@ -17,7 +18,7 @@ export const FooterStyle = styled(Container)`
   max-width: var(--footer-max-width);
   padding: var(--footer-desktop-padding-y) var(--footer-desktop-padding-x);
 
-  @media screen and (max-width: var(--nav-mobile-max-width)) {
+  @media ${devicesMedia.mobile} {
     margin-bottom: var(--footer-mobile-margin-bottom);
     padding: var(--footer-mobile-padding-x) var(--footer-mobile-padding-y);
     justify-content: center;
@@ -80,7 +81,7 @@ export const FooterDivider = styled.div`
   background: var(--lido-color-popupMenuItemBgActiveHover);
   opacity: 0.12;
 
-  @media screen and (max-width: var(--nav-mobile-max-width)) {
+  @media ${devicesMedia.mobile} {
     display: none;
   }
 `;

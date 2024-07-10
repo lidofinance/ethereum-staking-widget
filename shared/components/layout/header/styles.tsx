@@ -1,5 +1,6 @@
 import { Container } from '@lidofinance/lido-ui';
 import styled, { keyframes } from 'styled-components';
+import { devicesMedia } from 'styles/global';
 
 export const HeaderStyle = styled((props) => <Container {...props} />)`
   position: relative;
@@ -47,7 +48,7 @@ export const IPFSInfoBoxOnlyDesktopWrapper = styled.div`
   width: 255px;
   z-index: 3;
 
-  @media screen and (max-width: var(--nav-mobile-max-width)) {
+  @media ${devicesMedia.mobile} {
     display: none;
   }
 `;
