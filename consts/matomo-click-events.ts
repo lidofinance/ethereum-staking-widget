@@ -14,6 +14,7 @@ export const enum MATOMO_CLICK_EVENTS_TYPES {
   l2LowFeeStake = 'l2LowFeeStake',
   l2LowFeeWrap = 'l2LowFeeWrap',
   l2swap = 'l2swap',
+  lidoOnL2Opportunities = 'lidoOnL2Opportunities',
   vaultsBannerLearnMore = 'vaultsBannerLearnMore',
   vaultsBannerExploreAll = 'vaultsBannerExploreAll',
   // FAQ
@@ -127,6 +128,11 @@ export const MATOMO_CLICK_EVENTS: Record<
     'Ethereum_Staking_Widget',
     'Push «Swap» in Swap ETH to wstETH on L2 banner on staking widget',
     'eth_widget_banner_swap_ETH_on_L2',
+  ],
+  [MATOMO_CLICK_EVENTS_TYPES.lidoOnL2Opportunities]: [
+    'Ethereum_Staking_Widget',
+    'Push "Lido on L2 opportunities" ',
+    'eth_widget_lido_on_l2_opportunities',
   ],
   [MATOMO_CLICK_EVENTS_TYPES.vaultsBannerLearnMore]: [
     'Ethereum_Staking_Widget',

@@ -11,8 +11,8 @@ import { ReactComponent as PolygonLogo } from 'assets/icons/l2/polygon.svg';
 import { ReactComponent as ZkSyncLogo } from 'assets/icons/l2/zk-sync.svg';
 
 import { useUserConfig } from 'config/user-config';
-import { CHAINS } from 'consts/chains';
-import { L2_CHAINS } from 'consts/chains';
+import { CHAINS, L2_CHAINS } from 'consts/chains';
+import { MATOMO_CLICK_EVENTS_TYPES } from 'consts/matomo-click-events';
 import { WalletCardComponent } from 'shared/wallet/card/types';
 
 import { L2FallbackWalletStyle, TextStyle, ButtonStyle } from './styles';
@@ -53,7 +53,10 @@ export const L2Fallback: WalletCardComponent = (props) => {
         Learn about Lido on L2 opportunities on {chainName} network or switch to
         Ethereum {defaultChainName} to stake
       </TextStyle>
-      <Link href={'https://lido.fi/lido-on-l2'}>
+      <Link
+        href={'https://lido.fi/lido-on-l2'}
+        data-matomo={MATOMO_CLICK_EVENTS_TYPES.lidoOnL2Opportunities}
+      >
         <ButtonStyle size={'xs'}>Lido on L2 opportunities</ButtonStyle>
       </Link>
     </L2FallbackWalletStyle>
