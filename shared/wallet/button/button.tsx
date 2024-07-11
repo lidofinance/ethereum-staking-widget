@@ -1,6 +1,6 @@
 import { FC } from 'react';
 import { useAccount } from 'wagmi';
-import { ButtonProps } from '@lidofinance/lido-ui';
+import { ButtonProps, useBreakpoint } from '@lidofinance/lido-ui';
 import { useEthereumBalance } from '@lido-sdk/react';
 
 import { STRATEGY_LAZY } from 'consts/swr-strategies';
@@ -22,6 +22,7 @@ export const Button: FC<ButtonProps> = (props) => {
 
   const isActiveWallet = useIsConnectedWalletAndSupportedChain();
   const { address } = useAccount();
+  const isMobile = useBreakpoint('md');
 
   const { openModal } = useWalletModal();
   const { data: balance, initialLoading } = useEthereumBalance(
@@ -35,7 +36,11 @@ export const Button: FC<ButtonProps> = (props) => {
       variant="text"
       color="secondary"
       onClick={() => openModal({})}
-      style={!initialLoading && !isActiveWallet ? { paddingLeft: '12px' } : {}}
+      style={
+        !initialLoading && !isActiveWallet && !isMobile
+          ? { paddingLeft: '9px' }
+          : {}
+      }
       {...rest}
     >
       <WalledButtonWrapperStyle>
