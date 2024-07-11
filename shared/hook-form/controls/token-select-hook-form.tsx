@@ -1,3 +1,4 @@
+import styled from 'styled-components';
 import { useController, useFormState, useFormContext } from 'react-hook-form';
 
 import {
@@ -8,10 +9,29 @@ import {
   Wsteth,
   OptionValue,
 } from '@lidofinance/lido-ui';
+import { TOKENS as TOKENS_SDK } from '@lido-sdk/constants';
 
 import { getTokenDisplayName } from 'utils/getTokenDisplayName';
 import { isValidationErrorTypeValidate } from 'shared/hook-form/validation/validation-error';
-import { TOKENS as TOKENS_SDK } from '@lido-sdk/constants';
+
+// Temporarily: The 'SelectIconStyle' is being used to fix the 'SelectIcon' from the UI lib.
+export const SelectIconStyle = styled((props) => <SelectIcon {...props} />)`
+  & > span {
+    // The '!important' is important here!
+    border-color: ${({ disabled }) =>
+      disabled && 'var(--lido-color-border)!important'};
+    background: ${({ disabled }) =>
+      disabled ? 'var(--lido-color-background)' : 'transparent'};
+  }
+
+  &:hover {
+    & > span {
+      border-color: ${({ disabled }) => disabled && 'var(--lido-color-border)'};
+      background: ${({ disabled }) =>
+        disabled ? 'var(--lido-color-background)' : 'transparent'};
+    }
+  }
+`;
 
 export const TOKENS = {
   ETH: 'ETH',
@@ -58,7 +78,7 @@ export const TokenSelectHookForm = ({
   });
 
   return (
-    <SelectIcon
+    <SelectIconStyle
       {...field}
       disabled={disabled}
       warning={warning}
@@ -90,6 +110,6 @@ export const TokenSelectHookForm = ({
           {label || getTokenDisplayName(token)}
         </Option>
       ))}
-    </SelectIcon>
+    </SelectIconStyle>
   );
 };
