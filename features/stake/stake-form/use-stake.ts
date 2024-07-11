@@ -11,7 +11,12 @@ import { isContract } from 'utils/isContract';
 import { getFeeData } from 'utils/getFeeData';
 import { runWithTransactionLogger } from 'utils';
 
-import { MockLimitReachedError, getAddress, applyGasLimitRatio } from './utils';
+import {
+  MockLimitReachedError,
+  getAddress,
+  applyGasLimitRatio,
+  applyCalldataSuffix,
+} from './utils';
 import { useTxModalStagesStake } from './hooks/use-tx-modal-stages-stake';
 
 type StakeArguments = {
@@ -30,6 +35,9 @@ export const useStake = ({ onConfirm, onRetry }: StakeOptions) => {
   const { staticRpcProvider } = useCurrentStaticRpcProvider();
   const { providerWeb3, providerRpc } = useSDK();
   const { txModalStages } = useTxModalStagesStake();
+
+  // temporary disable until Ledger is fixed
+  const shouldApplyCalldataSuffix = false;
 
   return useCallback(
     async ({ amount, referral }: StakeArguments): Promise<boolean> => {
@@ -57,34 +65,30 @@ export const useStake = ({ onConfirm, onRetry }: StakeOptions) => {
         ]);
 
         const callback = async () => {
+          const tx = await stethContractWeb3.populateTransaction.submit(
+            referralAddress,
+            {
+              value: amount,
+            },
+          );
+
+          if (shouldApplyCalldataSuffix) applyCalldataSuffix(tx);
+
           if (isMultisig) {
-            const tx = await stethContractWeb3.populateTransaction.submit(
-              referralAddress,
-              {
-                value: amount,
-              },
-            );
             return providerWeb3.getSigner().sendUncheckedTransaction(tx);
           } else {
             const { maxFeePerGas, maxPriorityFeePerGas } =
               await getFeeData(staticRpcProvider);
-            const overrides = {
-              value: amount,
-              maxPriorityFeePerGas,
-              maxFeePerGas,
-            };
 
-            const originalGasLimit = await stethContractWeb3.estimateGas.submit(
-              referralAddress,
-              overrides,
-            );
+            tx.maxFeePerGas = maxFeePerGas;
+            tx.maxPriorityFeePerGas = maxPriorityFeePerGas;
 
+            const originalGasLimit = await providerWeb3.estimateGas(tx);
             const gasLimit = applyGasLimitRatio(originalGasLimit);
 
-            return stethContractWeb3.submit(referralAddress, {
-              ...overrides,
-              gasLimit,
-            });
+            tx.gasLimit = gasLimit;
+
+            return providerWeb3.getSigner().sendTransaction(tx);
           }
         };
 
@@ -122,10 +126,11 @@ export const useStake = ({ onConfirm, onRetry }: StakeOptions) => {
       account,
       providerWeb3,
       stethContractWeb3,
-      providerRpc,
       txModalStages,
+      providerRpc,
       onConfirm,
       staticRpcProvider,
+      shouldApplyCalldataSuffix,
       onRetry,
     ],
   );

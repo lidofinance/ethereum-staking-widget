@@ -14,6 +14,8 @@ export const enum MATOMO_CLICK_EVENTS_TYPES {
   l2LowFeeStake = 'l2LowFeeStake',
   l2LowFeeWrap = 'l2LowFeeWrap',
   l2swap = 'l2swap',
+  vaultsBannerLearnMore = 'vaultsBannerLearnMore',
+  vaultsBannerExploreAll = 'vaultsBannerExploreAll',
   // FAQ
   faqSafeWorkWithLidoAudits = 'faqSafeWorkWithLidoAudits',
   faqLidoEthAprEthLandingPage = 'faqLidoEthAprEthLandingPage',
@@ -54,6 +56,7 @@ export const enum MATOMO_CLICK_EVENTS_TYPES {
   withdrawalGoToCowSwap = 'withdrawalGoToCowSwap',
   withdrawalGoToParaswap = 'withdrawalGoToParaswap',
   withdrawalGoToOpenOcean = 'withdrawalGoToOpenOcean',
+  withdrawalGoToJumper = 'withdrawalGoToJumper',
   withdrawalEtherscanSuccessTemplate = 'withdrawalEtherscanSuccessTemplate',
   withdrawalGuideSuccessTemplate = 'withdrawalGuideSuccessTemplate',
 
@@ -125,6 +128,16 @@ export const MATOMO_CLICK_EVENTS: Record<
     'Ethereum_Staking_Widget',
     'Push «Swap» in Swap ETH to wstETH on L2 banner on staking widget',
     'eth_widget_banner_swap_ETH_on_L2',
+  ],
+  [MATOMO_CLICK_EVENTS_TYPES.vaultsBannerLearnMore]: [
+    'Ethereum_Staking_Widget',
+    'Click on "Learn more" on Vaults banner',
+    'eth_widget_learn_more_vaults_banner',
+  ],
+  [MATOMO_CLICK_EVENTS_TYPES.vaultsBannerExploreAll]: [
+    'Ethereum_Staking_Widget',
+    'Push "Explore all strategies"',
+    'eth_widget_explore_all_strategies',
   ],
   // FAQ
   [MATOMO_CLICK_EVENTS_TYPES.faqSafeWorkWithLidoAudits]: [
@@ -305,6 +318,11 @@ export const MATOMO_CLICK_EVENTS: Record<
     'Ethereum_Withdrawals_Widget',
     'Click on «Go to OpenOcean in aggregators list on Request tab',
     'eth_withdrawals_request_go_to_OpenOcean',
+  ],
+  [MATOMO_CLICK_EVENTS_TYPES.withdrawalGoToJumper]: [
+    'Ethereum_Withdrawals_Widget',
+    'Click on «Go to Jumper in aggregators list on Request tab',
+    'eth_withdrawals_request_go_to_Jumper',
   ],
   [MATOMO_CLICK_EVENTS_TYPES.withdrawalEtherscanSuccessTemplate]: [
     'Ethereum_Withdrawals_Widget',

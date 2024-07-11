@@ -1,19 +1,16 @@
 import { FC } from 'react';
 import { Accordion } from '@lidofinance/lido-ui';
-import { useContractSWR, useSTETHContractRPC } from '@lido-sdk/react';
 
 import { DATA_UNAVAILABLE } from 'consts/text';
+import { useProtocolFee } from 'shared/hooks/use-protocol-fee';
 
 export const LidoFee: FC = () => {
-  const contractRpc = useSTETHContractRPC();
-  const lidoFee = useContractSWR({
-    contract: contractRpc,
-    method: 'getFee',
-  });
+  const protocolFee = useProtocolFee();
+
   const feeValue =
-    lidoFee.initialLoading || !lidoFee.data
+    protocolFee.initialLoading || !protocolFee.data
       ? DATA_UNAVAILABLE
-      : `${lidoFee.data / 100}%`;
+      : `${protocolFee.data}%`;
 
   return (
     <Accordion summary="What fee is applied by Lido? What is this used for?">

@@ -6,7 +6,13 @@ import { isValidAnyAddress } from 'features/rewards/utils';
 import { AddressInputProps } from './types';
 
 export const AddressInput: FC<AddressInputProps> = (props) => {
-  const { inputValue, isAddressResolving, handleInputChange, address } = props;
+  const {
+    inputValue,
+    isAddressResolving,
+    handleInputChange,
+    address,
+    addressError,
+  } = props;
 
   return (
     <Input
@@ -23,7 +29,10 @@ export const AddressInput: FC<AddressInputProps> = (props) => {
       }
       rightDecorator={address ? <CopyAddressUrl address={inputValue} /> : null}
       spellCheck="false"
-      error={inputValue.length > 0 && !isValidAnyAddress(inputValue)}
+      error={
+        (inputValue.length > 0 && !isValidAnyAddress(inputValue)) ||
+        addressError
+      }
     />
   );
 };

@@ -24,37 +24,42 @@ export const useWrapFormValidationContext = ({
     wrapEthGasCost,
   } = networkData;
 
-  const isDataReady =
-    stethBalance &&
-    ethBalance &&
-    isMultisig !== undefined &&
+  const waitForAccountData = active
+    ? stethBalance && ethBalance && isMultisig !== undefined
+    : true;
+
+  const isDataReady = !!(
+    waitForAccountData &&
     wrapEthGasCost &&
-    stakeLimitInfo;
+    stakeLimitInfo
+  );
 
   const asyncContextValue: WrapFormAsyncValidationContext | undefined =
     useMemo(() => {
       return isDataReady
-        ? {
+        ? ({
+            isWalletActive: active,
             stethBalance,
             etherBalance: ethBalance,
             isMultisig,
             gasCost: wrapEthGasCost,
-            stakingLimitLevel: stakeLimitInfo.stakeLimitLevel,
-            currentStakeLimit: stakeLimitInfo.currentStakeLimit,
-          }
+            stakingLimitLevel: stakeLimitInfo?.stakeLimitLevel,
+            currentStakeLimit: stakeLimitInfo?.currentStakeLimit,
+          } as WrapFormAsyncValidationContext)
         : undefined;
     }, [
       isDataReady,
+      active,
+      stethBalance,
       ethBalance,
       isMultisig,
-      stakeLimitInfo,
-      stethBalance,
       wrapEthGasCost,
+      stakeLimitInfo?.stakeLimitLevel,
+      stakeLimitInfo?.currentStakeLimit,
     ]);
 
   const asyncContext = useAwaiter(asyncContextValue).awaiter;
   return {
-    isWalletActive: active,
     asyncContext,
   };
 };

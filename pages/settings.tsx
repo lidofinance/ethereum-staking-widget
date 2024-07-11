@@ -18,5 +18,8 @@ export default Settings;
 export const getStaticProps: GetStaticProps = async () => {
   if (!config.ipfsMode) return { notFound: true };
 
-  return { props: {} };
+  return {
+    props: {},
+    revalidate: 60,
+  };
 };

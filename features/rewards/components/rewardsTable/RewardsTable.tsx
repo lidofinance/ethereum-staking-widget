@@ -39,13 +39,15 @@ export const RewardsTable: FC<RewardsTableProps> = (props) => {
           </Tbody>
         </RewardsTableStyle>
       </RewardsTableWrapperStyle>
-      <RewardsTablePagination
-        pagesCount={pageCount}
-        onItemClick={(currentPage: number) => setPage(currentPage - 1)}
-        activePage={page + 1}
-        siblingCount={0}
-        data-testid="pagination"
-      />
+      {pageCount > 1 && (
+        <RewardsTablePagination
+          pagesCount={pageCount}
+          onItemClick={(currentPage: number) => setPage(currentPage - 1)}
+          activePage={page + 1}
+          siblingCount={0}
+          data-testid="pagination"
+        />
+      )}
     </>
   );
 };

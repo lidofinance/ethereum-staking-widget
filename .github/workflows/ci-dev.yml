@@ -30,15 +30,6 @@ jobs:
           TARGET_WORKFLOW: 'deploy_holesky_testnet_ethereum_staking_widget.yaml'
           TARGET: 'develop'
 
-      - name: Goerli testnet deploy
-        uses: lidofinance/dispatch-workflow@v1
-        env:
-          APP_ID: ${{ secrets.APP_ID }}
-          APP_PRIVATE_KEY: ${{ secrets.APP_PRIVATE_KEY }}
-          TARGET_REPO: 'lidofinance/infra-mainnet'
-          TARGET_WORKFLOW: 'deploy_testnet_ethereum_staking_widget.yaml'
-          TARGET: 'develop'
-
   tests:
     needs: deploy
     if: ${{ github.event.pull_request.draft == false }}

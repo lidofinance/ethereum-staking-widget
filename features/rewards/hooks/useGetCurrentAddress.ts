@@ -9,6 +9,7 @@ import { useCurrentStaticRpcProvider } from 'shared/hooks/use-current-static-rpc
 
 type UseGetCurrentAddress = () => {
   address: string;
+  addressError: string;
   inputValue: string;
   isAddressResolving: boolean;
   setInputValue: (value: string) => void;
@@ -21,6 +22,7 @@ export const useGetCurrentAddress: UseGetCurrentAddress = () => {
   }, []);
   const [isAddressResolving, setIsAddressResolving] = useState(false);
   const [address, setAddress] = useState('');
+  const [addressError, setAddressError] = useState('');
 
   const { account } = useSDK();
   const { staticRpcProvider } = useCurrentStaticRpcProvider();
@@ -29,12 +31,26 @@ export const useGetCurrentAddress: UseGetCurrentAddress = () => {
   const getEnsAddress = useCallback(
     async (value: string) => {
       setAddress('');
+      let result: string | null = null;
+      let error: string | null = null;
 
       setIsAddressResolving(true);
-      const result = await resolveEns(value, staticRpcProvider);
-      setIsAddressResolving(false);
+      try {
+        result = await resolveEns(value, staticRpcProvider);
+      } catch (e) {
+        console.error(e);
+        error = 'An error happened during ENS name resolving';
+      } finally {
+        setIsAddressResolving(false);
+      }
 
-      if (result) setAddress(result);
+      if (result) {
+        setAddress(result);
+      } else if (error) {
+        setAddressError(error);
+      } else {
+        setAddressError("The ENS name entered couldn't be found");
+      }
     },
     [staticRpcProvider],
   );
@@ -76,6 +92,7 @@ export const useGetCurrentAddress: UseGetCurrentAddress = () => {
 
   return {
     address,
+    addressError,
     inputValue,
     isAddressResolving,
     setInputValue,

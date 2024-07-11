@@ -1,11 +1,13 @@
 import { trackEvent } from '@lidofinance/analytics-matomo';
+
+import { config } from 'config';
 import { MATOMO_CLICK_EVENTS } from 'consts/matomo-click-events';
+
 import { L2Banner } from '../l2-banner';
 
 const linkClickHandler = () => trackEvent(...MATOMO_CLICK_EVENTS.l2LowFeeWrap);
 
-const L2_LEARN_MORE_AFTER_WRAP_LINK =
-  'https://lido.fi/lido-ecosystem?networks=arbitrum%2Coptimism%2Cbase%2Czksync+era%2Cmantle%2Clinea%2Cpolygon&criteria=or&tokens=wsteth';
+const L2_LEARN_MORE_AFTER_WRAP_LINK = `${config.rootOrigin}/lido-ecosystem?networks=arbitrum%2Coptimism%2Cbase%2Czksync+era%2Cmantle%2Clinea%2Cpolygon&criteria=or&tokens=wsteth`;
 
 export const L2AfterWrap = () => {
   return (

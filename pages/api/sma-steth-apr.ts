@@ -3,12 +3,19 @@ import { wrapRequest as wrapNextRequest } from '@lidofinance/next-api-wrapper';
 
 import { API } from 'types';
 import { config } from 'config';
-import { API_ROUTES } from 'consts/api';
+import {
+  API_DEFAULT_SUNSET_TIMESTAMP,
+  API_ROUTES,
+  getReplacementLink,
+} from 'consts/api';
 import {
   responseTimeMetric,
   errorAndCacheDefaultWrappers,
   rateLimit,
   getSmaStethApr,
+  sunsetBy,
+  httpMethodGuard,
+  HttpMethod,
 } from 'utilsApi';
 import Metrics from 'utilsApi/metrics';
 
@@ -33,7 +40,12 @@ const smaStethApr: API = async (_, res) => {
 };
 
 export default wrapNextRequest([
+  httpMethodGuard([HttpMethod.GET]),
   rateLimit,
   responseTimeMetric(Metrics.request.apiTimings, API_ROUTES.SMA_STETH_APR),
+  sunsetBy({
+    sunsetTimestamp: API_DEFAULT_SUNSET_TIMESTAMP,
+    replacementLink: getReplacementLink(API_ROUTES.SMA_STETH_APR),
+  }),
   ...errorAndCacheDefaultWrappers,
 ])(smaStethApr);

@@ -1,4 +1,5 @@
 import { FC } from 'react';
+import { GetStaticProps } from 'next';
 import Head from 'next/head';
 import { Layout } from 'shared/components';
 import { TopCard, RewardsList } from 'features/rewards/features';
@@ -10,7 +11,7 @@ const Rewards: FC = () => {
   return (
     <Layout
       title="Reward History"
-      subtitle="Track your Ethereum staking rewards with Lido."
+      subtitle="Track your Ethereum staking rewards with Lido"
       containerSize="content"
     >
       <Head>
@@ -32,3 +33,10 @@ const Rewards: FC = () => {
 };
 
 export default Rewards;
+
+export const getStaticProps: GetStaticProps = async () => {
+  return {
+    props: {},
+    revalidate: 60,
+  };
+};

@@ -8,7 +8,7 @@ buildDynamics();
 const basePath = process.env.BASE_PATH;
 
 const developmentMode = process.env.NODE_ENV === 'development';
-const isIPFSMode = process.env.IPFS_MODE;
+const isIPFSMode = process.env.IPFS_MODE === 'true';
 
 // cache control
 export const CACHE_CONTROL_HEADER = 'x-cache-control';
@@ -58,6 +58,7 @@ export default withBundleAnalyzer({
     // https://github.com/vercel/next.js/blob/v12.3.4/packages/next/build/webpack-config.ts#L417
     // Presumably, it is true by default in next v13 and won't be needed
     esmExternals: true,
+    newNextLinkBehavior: true,
   },
   webpack(config) {
     config.module.rules.push(
