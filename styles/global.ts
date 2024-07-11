@@ -23,10 +23,8 @@ const GlobalStyle = createGlobalStyle`
     --footer-mobile-padding-x: 20px;
     --footer-mobile-padding-y: 18px;
     --footer-mobile-margin-bottom: 60px;
-
-    --custom-background-secondary-light: #F6F8FA;
-    --custom-background-secondary-dark: #2D2D35;
-    --custom-background-secondary: ${({ theme }) => (theme.name === ThemeName.light ? 'var(--custom-background-secondary-light)' : 'var(--custom-background-secondary-dark)')} ;
+    
+    --custom-background-secondary: ${({ theme }) => (theme.name === ThemeName.light ? '#F6F8FA' : '#2D2D35')} ;
   }
   * {
     margin: 0;

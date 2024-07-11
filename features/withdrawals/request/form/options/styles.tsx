@@ -165,9 +165,8 @@ export const OptionsPickerIcons = styled.div`
     height: 20px;
     border-radius: 100%;
     border: 1px solid;
-    /* match background on light but light up on dark theme */
-    border-color: var(--custom-background-secondary-light);
-    background-color: var(--custom-background-secondary-light);
+    border-color: var(--custom-background-secondary);
+    background-color: var(--custom-background-secondary);
     margin: -1px 0 -1px -8px;
     &:first-child {
       margin-left: 0px;
