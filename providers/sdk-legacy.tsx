@@ -1,6 +1,6 @@
-import React, { PropsWithChildren, useMemo } from 'react';
+import React, { PropsWithChildren, useEffect, useMemo, useState } from 'react';
 import { useSupportedChains, useWeb3 } from 'reef-knot/web3-react';
-import { useConnectorClient } from 'wagmi';
+import { useClient, useConfig } from 'wagmi';
 
 import { Web3Provider } from '@ethersproject/providers';
 import { ProviderSDK } from '@lido-sdk/react';
@@ -21,44 +21,79 @@ export const SDKLegacyProvider = ({
   defaultChainId,
   pollingInterval = POLLING_INTERVAL,
 }: SDKLegacyProviderProps) => {
-  const { chainId = defaultChainId, account, active } = useWeb3();
+  const { chainId: web3ChainId = defaultChainId, account, active } = useWeb3();
   const { supportedChains } = useSupportedChains();
-  const { data: client } = useConnectorClient();
+  const config = useConfig();
+  const client = useClient();
   const { rpc } = useReefKnotContext();
 
-  const providerWeb3 = useMemo(() => {
-    if (!client || !client.account || !active) return;
-    const { chain, transport } = client;
+  const [providerWeb3, setProviderWeb3] = useState<Web3Provider | undefined>();
 
-    // https://wagmi.sh/core/guides/ethers#reference-implementation-1
-    const network = {
-      chainId: chain.id,
-      name: chain.name,
-      ensAddress: chain.contracts?.ensRegistry?.address,
+  useEffect(() => {
+    let isHookMounted = true;
+
+    const getProviderTransport = async () => {
+      const { state } = config;
+      if (!state.current) return client?.transport;
+      const connector = state.connections.get(state.current)?.connector;
+      if (!connector) return client?.transport;
+      const provider: any = await connector.getProvider();
+      return provider || client?.transport;
     };
-    const provider = new Web3Provider(transport, network);
-    provider.pollingInterval = pollingInterval;
 
-    return provider;
-  }, [active, client, pollingInterval]);
+    const getProviderValue = async () => {
+      if (!client || !account || !active) return undefined;
+      const { chain } = client;
+      const providerTransport = await getProviderTransport();
+
+      // https://wagmi.sh/core/guides/ethers#reference-implementation-1
+      const provider = new Web3Provider(providerTransport, {
+        chainId: chain.id,
+        name: chain.name,
+        ensAddress: chain.contracts?.ensRegistry?.address,
+      });
+      provider.pollingInterval = pollingInterval;
+
+      return provider;
+    };
+
+    const getProviderAndSet = async () => {
+      const provider = await getProviderValue();
+      if (isHookMounted) setProviderWeb3(provider);
+    };
+
+    void getProviderAndSet();
+
+    return () => {
+      isHookMounted = false;
+    };
+  }, [config, config.state, client, account, active, pollingInterval]);
 
   const supportedChainIds = useMemo(
     () => supportedChains.map((chain) => chain.chainId),
     [supportedChains],
   );
 
-  const providerRpc = getStaticRpcBatchProvider(
-    chainId,
-    rpc[chainId],
-    0,
-    POLLING_INTERVAL,
+  const chainId = useMemo(() => {
+    return supportedChainIds.indexOf(web3ChainId) > -1
+      ? web3ChainId
+      : defaultChainId;
+  }, [defaultChainId, supportedChainIds, web3ChainId]);
+
+  const providerRpc = useMemo(
+    () => getStaticRpcBatchProvider(chainId, rpc[chainId], 0, POLLING_INTERVAL),
+    [rpc, chainId],
   );
 
-  const providerMainnetRpc = getStaticRpcBatchProvider(
-    mainnet.id,
-    rpc[mainnet.id],
-    0,
-    POLLING_INTERVAL,
+  const providerMainnetRpc = useMemo(
+    () =>
+      getStaticRpcBatchProvider(
+        mainnet.id,
+        rpc[mainnet.id],
+        0,
+        POLLING_INTERVAL,
+      ),
+    [rpc],
   );
 
   return (
