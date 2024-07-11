@@ -2,8 +2,6 @@ import { Switch } from 'shared/components';
 
 import { WITHDRAWALS_CLAIM_PATH, WITHDRAWALS_REQUEST_PATH } from 'consts/urls';
 
-import { GoerliSunsetBanner } from 'shared/banners/goerli-sunset';
-
 import { ClaimDataProvider } from './contexts/claim-data-context';
 import { useWithdrawals } from './contexts/withdrawals-context';
 import { Claim } from './claim';
@@ -25,8 +23,6 @@ export const WithdrawalsTabs = () => {
   return (
     <ClaimDataProvider>
       <Switch checked={isClaimTab} routes={withdrawalRoutes} />
-
-      <GoerliSunsetBanner />
       {isClaimTab ? <Claim /> : <Request />}
     </ClaimDataProvider>
   );
