@@ -47,7 +47,7 @@ export const L2Fallback: WalletCardComponent = (props) => {
 
   return (
     <L2FallbackWalletStyle {...props}>
-      {getL2Logo(chainId as unknown as L2_CHAINS)}
+      {getL2Logo(chainId as L2_CHAINS)}
       <TextStyle>
         Learn about Lido on L2 opportunities on {l2ChainName} network or switch
         to Ethereum {defaultChainName} to stake
