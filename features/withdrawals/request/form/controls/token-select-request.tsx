@@ -3,7 +3,7 @@ import {
   TokenOption,
   TokenSelectHookForm,
 } from 'shared/hook-form/controls/token-select-hook-form';
-import { useConnectionStatuses } from 'shared/hooks/use-connection-statuses';
+import { useDappStatuses } from 'shared/hooks/use-dapp-statuses';
 
 const OPTIONS: TokenOption[] = [
   { token: TOKENS.STETH },
@@ -11,7 +11,7 @@ const OPTIONS: TokenOption[] = [
 ];
 
 export const TokenSelectRequest = () => {
-  const { isDappActive } = useConnectionStatuses();
+  const { isDappActive } = useDappStatuses();
 
   return <TokenSelectHookForm disabled={!isDappActive} options={OPTIONS} />;
 };

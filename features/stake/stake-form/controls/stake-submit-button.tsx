@@ -1,11 +1,11 @@
 import { LIMIT_LEVEL } from 'types';
 import { SubmitButtonHookForm } from 'shared/hook-form/controls/submit-button-hook-form';
-import { useConnectionStatuses } from 'shared/hooks/use-connection-statuses';
+import { useDappStatuses } from 'shared/hooks/use-dapp-statuses';
 
 import { useStakeFormData } from '../stake-form-context';
 
 export const StakeSubmitButton = () => {
-  const { isDappActive } = useConnectionStatuses();
+  const { isDappActive } = useDappStatuses();
   const { stakingLimitInfo } = useStakeFormData();
 
   return (

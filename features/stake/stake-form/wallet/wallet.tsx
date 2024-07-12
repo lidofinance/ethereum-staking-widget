@@ -9,7 +9,7 @@ import { LIDO_APR_TOOLTIP_TEXT, DATA_UNAVAILABLE } from 'consts/text';
 import { TokenToWallet } from 'shared/components';
 import { FormatToken } from 'shared/formatters';
 import { useLidoApr } from 'shared/hooks';
-import { useConnectionStatuses } from 'shared/hooks/use-connection-statuses';
+import { useDappStatuses } from 'shared/hooks/use-dapp-statuses';
 import {
   CardAccount,
   CardBalance,
@@ -96,7 +96,7 @@ const WalletComponent: WalletComponentType = (props) => {
 };
 
 export const Wallet: WalletComponentType = memo((props) => {
-  const { isChainL2, isDappActive } = useConnectionStatuses();
+  const { isChainL2, isDappActive } = useDappStatuses();
 
   if (isChainL2) {
     return <L2Fallback {...props} />;

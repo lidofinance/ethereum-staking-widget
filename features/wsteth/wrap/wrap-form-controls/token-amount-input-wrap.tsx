@@ -1,7 +1,7 @@
 import { useWatch } from 'react-hook-form';
 
 import { TokenAmountInputHookForm } from 'shared/hook-form/controls/token-amount-input-hook-form';
-import { useConnectionStatuses } from 'shared/hooks/use-connection-statuses';
+import { useDappStatuses } from 'shared/hooks/use-dapp-statuses';
 
 import { useWrapFormData, WrapFormInputType } from '../wrap-form-context';
 
@@ -11,7 +11,7 @@ type TokenAmountInputWrapProps = Pick<
 >;
 
 export const TokenAmountInputWrap = (props: TokenAmountInputWrapProps) => {
-  const { isDappActive } = useConnectionStatuses();
+  const { isDappActive } = useDappStatuses();
   const token = useWatch<WrapFormInputType, 'token'>({ name: 'token' });
   const { maxAmount, isApprovalNeededBeforeWrap } = useWrapFormData();
 
