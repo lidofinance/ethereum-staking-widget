@@ -10,10 +10,10 @@ import { useTvlMessage } from 'features/withdrawals/hooks/useTvlMessage';
 
 import { trackMatomoEvent } from 'utils/track-matomo-event';
 import { TokenAmountInputHookForm } from 'shared/hook-form/controls/token-amount-input-hook-form';
-import { useDappStatuses } from 'shared/hooks/use-dapp-statuses';
+import { useDappStatus } from 'shared/hooks/use-dapp-status';
 
 export const TokenAmountInputRequest = () => {
-  const { isDappActive } = useDappStatuses();
+  const { isDappActive } = useDappStatus();
   const token = useWatch<RequestFormInputType, 'token'>({ name: 'token' });
   const { maxAmount, isTokenLocked } = useRequestFormData();
 

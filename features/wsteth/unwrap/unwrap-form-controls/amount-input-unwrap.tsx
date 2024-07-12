@@ -2,12 +2,12 @@ import { Wsteth } from '@lidofinance/lido-ui';
 import { TOKENS } from '@lido-sdk/constants';
 
 import { TokenAmountInputHookForm } from 'shared/hook-form/controls/token-amount-input-hook-form';
-import { useDappStatuses } from 'shared/hooks/use-dapp-statuses';
+import { useDappStatus } from 'shared/hooks/use-dapp-status';
 
 import { useUnwrapFormData } from '../unwrap-form-context';
 
 export const TokenAmountInputUnwrap = () => {
-  const { isDappActive } = useDappStatuses();
+  const { isDappActive } = useDappStatus();
   const { maxAmount } = useUnwrapFormData();
 
   return (

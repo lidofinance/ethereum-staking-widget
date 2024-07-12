@@ -5,7 +5,7 @@ import { useEthereumBalance } from '@lido-sdk/react';
 
 import { STRATEGY_LAZY } from 'consts/swr-strategies';
 import { FormatToken } from 'shared/formatters';
-import { useDappStatuses } from 'shared/hooks/use-dapp-statuses';
+import { useDappStatus } from 'shared/hooks/use-dapp-status';
 
 import { AddressBadge } from '../components/address-badge/address-badge';
 import { useWalletModal } from '../wallet-modal/use-wallet-modal';
@@ -22,7 +22,7 @@ export const Button: FC<ButtonProps> = (props) => {
 
   const isMobile = useBreakpoint('md');
   const { address } = useAccount();
-  const { isDappActive } = useDappStatuses();
+  const { isDappActive } = useDappStatus();
 
   const { openModal } = useWalletModal();
   const { data: balance, initialLoading } = useEthereumBalance(

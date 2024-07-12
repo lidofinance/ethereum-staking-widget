@@ -5,7 +5,7 @@ import { L2_CHAINS } from 'consts/chains';
 
 import { useIsSupportedChain } from './use-is-supported-chain';
 
-export const useDappStatuses = () => {
+export const useDappStatus = () => {
   const { chainId, isConnected: isWalletConnected } = useAccount();
   const isSupportedChain = useIsSupportedChain();
 

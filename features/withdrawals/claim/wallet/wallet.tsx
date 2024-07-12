@@ -7,7 +7,7 @@ import {
   WalletWrapperStyled,
   WalletMyRequests,
 } from 'features/withdrawals/shared';
-import { useDappStatuses } from 'shared/hooks/use-dapp-statuses';
+import { useDappStatus } from 'shared/hooks/use-dapp-status';
 import { CardAccount, CardRow, Fallback, L2Fallback } from 'shared/wallet';
 import type { WalletComponentType } from 'shared/wallet/types';
 
@@ -33,7 +33,7 @@ export const WalletComponent = () => {
 };
 
 export const ClaimWallet: WalletComponentType = memo((props) => {
-  const { isL2Chain, isDappActive } = useDappStatuses();
+  const { isL2Chain, isDappActive } = useDappStatus();
 
   if (isL2Chain) {
     return <L2Fallback {...props} />;

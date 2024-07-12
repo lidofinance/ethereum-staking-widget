@@ -14,7 +14,7 @@ import { STRATEGY_LAZY } from 'consts/swr-strategies';
 import { FormatToken } from 'shared/formatters';
 import { TokenToWallet } from 'shared/components';
 import { useWstethBySteth, useStethByWsteth } from 'shared/hooks';
-import { useDappStatuses } from 'shared/hooks/use-dapp-statuses';
+import { useDappStatus } from 'shared/hooks/use-dapp-status';
 import type { WalletComponentType } from 'shared/wallet/types';
 import {
   CardBalance,
@@ -114,7 +114,7 @@ const WalletComponent: WalletComponentType = (props) => {
 };
 
 export const Wallet: WalletComponentType = memo((props) => {
-  const { isL2Chain, isDappActive } = useDappStatuses();
+  const { isL2Chain, isDappActive } = useDappStatus();
 
   if (isL2Chain) {
     return <L2Fallback {...props} />;

@@ -8,7 +8,7 @@ import { useSDK } from '@lido-sdk/react';
 import { WalletMyRequests } from 'features/withdrawals/shared';
 import { WalletWrapperStyled } from 'features/withdrawals/shared';
 import { CardAccount, CardRow, Fallback, L2Fallback } from 'shared/wallet';
-import { useDappStatuses } from 'shared/hooks/use-dapp-statuses';
+import { useDappStatus } from 'shared/hooks/use-dapp-status';
 import type { WalletComponentType } from 'shared/wallet/types';
 
 import { WalletStethBalance } from './wallet-steth-balance';
@@ -37,7 +37,7 @@ export const WalletComponent = () => {
 };
 
 export const RequestWallet: WalletComponentType = memo((props) => {
-  const { isL2Chain, isDappActive } = useDappStatuses();
+  const { isL2Chain, isDappActive } = useDappStatus();
 
   if (isL2Chain) {
     return <L2Fallback {...props} />;

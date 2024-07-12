@@ -9,7 +9,7 @@ import { config } from 'config';
 import { useUserConfig } from 'config/user-config';
 
 import { IPFSInfoBox } from 'features/ipfs/ipfs-info-box';
-import { useDappStatuses } from 'shared/hooks/use-dapp-statuses';
+import { useDappStatus } from 'shared/hooks/use-dapp-status';
 import { Button, Connect } from 'shared/wallet';
 import NoSSRWrapper from 'shared/components/no-ssr-wrapper';
 
@@ -24,7 +24,7 @@ const HeaderWallet: FC = () => {
   const router = useRouter();
   const { chainId, address } = useAccount();
   const { defaultChain: defaultChainId } = useUserConfig();
-  const { isDappActive } = useDappStatuses();
+  const { isDappActive } = useDappStatus();
 
   const chainName = CHAINS[chainId || defaultChainId];
   const testNet = chainId !== CHAINS.Mainnet;
