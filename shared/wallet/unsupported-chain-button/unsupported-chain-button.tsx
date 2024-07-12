@@ -1,11 +1,7 @@
 import { FC } from 'react';
-import styled from 'styled-components';
-import { Button, ButtonProps } from '@lidofinance/lido-ui';
+import { ButtonProps } from '@lidofinance/lido-ui';
 
-export const ButtonStyle = styled((props) => <Button {...props} />)`
-  background: var(--lido-color-backgroundSecondary);
-  color: var(--lido-color-textSecondary);
-`;
+import { ButtonStyle } from './styles';
 
 export const UnsupportedChainButton: FC<ButtonProps> = (props) => {
   return (
