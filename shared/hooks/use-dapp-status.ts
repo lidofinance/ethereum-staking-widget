@@ -9,11 +9,7 @@ export const useDappStatus = () => {
   const { chainId, isConnected: isWalletConnected } = useAccount();
   const isSupportedChain = useIsSupportedChain();
 
-  const isL2Chain = useMemo(() => {
-    if (!chainId) return false;
-
-    return !!L2_CHAINS[chainId];
-  }, [chainId]);
+  const isL2Chain = useMemo(() => !!chainId && !!L2_CHAINS[chainId], [chainId]);
 
   const isDappActive = useMemo(() => {
     if (!chainId) return false;
