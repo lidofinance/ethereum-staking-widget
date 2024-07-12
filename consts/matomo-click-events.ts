@@ -57,6 +57,7 @@ export const enum MATOMO_CLICK_EVENTS_TYPES {
   withdrawalGoToCowSwap = 'withdrawalGoToCowSwap',
   withdrawalGoToParaswap = 'withdrawalGoToParaswap',
   withdrawalGoToOpenOcean = 'withdrawalGoToOpenOcean',
+  withdrawalGoToJumper = 'withdrawalGoToJumper',
   withdrawalEtherscanSuccessTemplate = 'withdrawalEtherscanSuccessTemplate',
   withdrawalGuideSuccessTemplate = 'withdrawalGuideSuccessTemplate',
 
@@ -323,6 +324,11 @@ export const MATOMO_CLICK_EVENTS: Record<
     'Ethereum_Withdrawals_Widget',
     'Click on «Go to OpenOcean in aggregators list on Request tab',
     'eth_withdrawals_request_go_to_OpenOcean',
+  ],
+  [MATOMO_CLICK_EVENTS_TYPES.withdrawalGoToJumper]: [
+    'Ethereum_Withdrawals_Widget',
+    'Click on «Go to Jumper in aggregators list on Request tab',
+    'eth_withdrawals_request_go_to_Jumper',
   ],
   [MATOMO_CLICK_EVENTS_TYPES.withdrawalEtherscanSuccessTemplate]: [
     'Ethereum_Withdrawals_Widget',

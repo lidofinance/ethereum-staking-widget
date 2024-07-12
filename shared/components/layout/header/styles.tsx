@@ -1,12 +1,11 @@
 import { Container } from '@lidofinance/lido-ui';
 import styled, { keyframes } from 'styled-components';
-
-import { NAV_MOBILE_MEDIA } from 'styles/constants';
+import { devicesHeaderMedia } from 'styles/global';
 
 export const HeaderStyle = styled((props) => <Container {...props} />)`
   position: relative;
-  padding-top: 18px;
-  padding-bottom: 18px;
+  padding-top: var(--header-padding-y);
+  padding-bottom: var(--header-padding-y);
   display: flex;
   align-items: center;
 `;
@@ -33,8 +32,8 @@ const glimmer = keyframes`
 `;
 
 export const DotStyle = styled.p`
-  height: 6px;
-  width: 6px;
+  height: var(--dot-size);
+  width: var(--dot-size);
   background-color: lightgreen;
   border-radius: 50%;
   animation: ${glimmer} 2s ease-in-out infinite;
@@ -49,7 +48,7 @@ export const IPFSInfoBoxOnlyDesktopWrapper = styled.div`
   width: 255px;
   z-index: 3;
 
-  ${NAV_MOBILE_MEDIA} {
+  @media ${devicesHeaderMedia.mobile} {
     display: none;
   }
 `;
