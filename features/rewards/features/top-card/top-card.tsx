@@ -9,11 +9,11 @@ import { Wallet } from './wallet';
 import { ConnectWallet } from './connect-wallet';
 
 export const TopCard: FC = () => {
-  const { isConnected, isDappActive } = useDappStatuses();
+  const { isWalletConnected, isDappActive } = useDappStatuses();
 
   return (
     <>
-      {!isConnected && <ConnectWallet />}
+      {!isWalletConnected && <ConnectWallet />}
 
       {!isDappActive && <Fallback />}
 

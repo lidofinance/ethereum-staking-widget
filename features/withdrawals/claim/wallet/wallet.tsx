@@ -33,9 +33,9 @@ export const WalletComponent = () => {
 };
 
 export const ClaimWallet: WalletComponentType = memo((props) => {
-  const { isChainL2, isDappActive } = useDappStatuses();
+  const { isL2Chain, isDappActive } = useDappStatuses();
 
-  if (isChainL2) {
+  if (isL2Chain) {
     return <L2Fallback {...props} />;
   }
 

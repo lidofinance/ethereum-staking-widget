@@ -6,10 +6,10 @@ import { L2_CHAINS } from 'consts/chains';
 import { useIsSupportedChain } from './use-is-supported-chain';
 
 export const useDappStatuses = () => {
-  const { chainId, isConnected } = useAccount();
+  const { chainId, isConnected: isWalletConnected } = useAccount();
   const isSupportedChain = useIsSupportedChain();
 
-  const isChainL2 = useMemo(() => {
+  const isL2Chain = useMemo(() => {
     return (
       Object.values(L2_CHAINS).indexOf(chainId as unknown as L2_CHAINS) > -1
     );
@@ -18,13 +18,13 @@ export const useDappStatuses = () => {
   const isDappActive = useMemo(() => {
     if (!chainId) return false;
 
-    return isConnected && isSupportedChain;
-  }, [chainId, isConnected, isSupportedChain]);
+    return isWalletConnected && isSupportedChain;
+  }, [chainId, isWalletConnected, isSupportedChain]);
 
   return {
-    isConnected,
+    isWalletConnected,
     isSupportedChain,
-    isChainL2,
+    isL2Chain,
     isDappActive,
   };
 };
