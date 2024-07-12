@@ -42,9 +42,7 @@ export const L2Fallback: WalletCardComponent = (props) => {
 
   const l2ChainName = useMemo(() => {
     // Trick. Anyway, this condition is working only SPA starting.
-    if (!chainId) return '';
-
-    return L2_CHAINS[chainId];
+    return chainId ? L2_CHAINS[chainId] : '';
   }, [chainId]);
 
   return (
