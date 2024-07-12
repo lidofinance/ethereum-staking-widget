@@ -10,9 +10,9 @@ export const useDappStatus = () => {
   const isSupportedChain = useIsSupportedChain();
 
   const isL2Chain = useMemo(() => {
-    return (
-      Object.values(L2_CHAINS).indexOf(chainId as unknown as L2_CHAINS) > -1
-    );
+    if (!chainId) return false;
+
+    return !!L2_CHAINS[chainId];
   }, [chainId]);
 
   const isDappActive = useMemo(() => {

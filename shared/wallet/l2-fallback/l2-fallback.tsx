@@ -40,18 +40,19 @@ export const L2Fallback: WalletCardComponent = (props) => {
     return CHAINS[defaultChain];
   }, [defaultChain]);
 
-  const chainName = useMemo(() => {
-    return Object.keys(L2_CHAINS)[
-      Object.values(L2_CHAINS).indexOf(chainId as unknown as L2_CHAINS)
-    ];
+  const l2ChainName = useMemo(() => {
+    // Trick. Anyway, this condition is working only SPA starting.
+    if (!chainId) return '';
+
+    return L2_CHAINS[chainId];
   }, [chainId]);
 
   return (
     <L2FallbackWalletStyle {...props}>
       {getL2Logo(chainId as unknown as L2_CHAINS)}
       <TextStyle>
-        Learn about Lido on L2 opportunities on {chainName} network or switch to
-        Ethereum {defaultChainName} to stake
+        Learn about Lido on L2 opportunities on {l2ChainName} network or switch
+        to Ethereum {defaultChainName} to stake
       </TextStyle>
       <Link
         href={'https://lido.fi/lido-on-l2'}
