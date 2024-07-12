@@ -13,6 +13,7 @@ import { ClaimFormInputType, useClaimFormData } from '../claim-form-context';
 export const SubmitButton = () => {
   const { isConnected } = useAccount();
   const isSupportedChain = useIsSupportedChain();
+
   const { isSubmitting, isValidating, errors } =
     useFormState<ClaimFormInputType>();
   const { ethToClaim } = useClaimFormData();

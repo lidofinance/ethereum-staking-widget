@@ -1,25 +1,23 @@
 import { FC } from 'react';
-import { useAccount } from 'wagmi';
 
 import { StatsWrapper } from 'features/rewards/components/statsWrapper';
 import { Stats } from 'features/rewards/components/stats';
+import { useConnectionStatuses } from 'shared/hooks/use-connection-statuses';
 import { Fallback } from 'shared/wallet';
-import { useIsConnectedWalletAndSupportedChain } from 'shared/hooks/use-is-connected-wallet-and-supported-chain';
 
 import { Wallet } from './wallet';
 import { ConnectWallet } from './connect-wallet';
 
 export const TopCard: FC = () => {
-  const { isConnected } = useAccount();
-  const isActiveWallet = useIsConnectedWalletAndSupportedChain();
+  const { isConnected, isDappActive } = useConnectionStatuses();
 
   return (
     <>
       {!isConnected && <ConnectWallet />}
 
-      {isConnected && !isActiveWallet && <Fallback />}
+      {!isDappActive && <Fallback />}
 
-      {isConnected && isActiveWallet && <Wallet />}
+      {isDappActive && <Wallet />}
       <StatsWrapper>
         <Stats />
       </StatsWrapper>

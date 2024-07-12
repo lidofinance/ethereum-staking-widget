@@ -1,5 +1,4 @@
-import { memo, useMemo } from 'react';
-import { useAccount } from 'wagmi';
+import { memo } from 'react';
 
 import { Divider, Text } from '@lidofinance/lido-ui';
 import { TOKENS } from '@lido-sdk/constants';
@@ -11,12 +10,11 @@ import {
   useTokenAddress,
 } from '@lido-sdk/react';
 
-import { L2_CHAINS } from 'consts/chains';
 import { STRATEGY_LAZY } from 'consts/swr-strategies';
 import { FormatToken } from 'shared/formatters';
 import { TokenToWallet } from 'shared/components';
 import { useWstethBySteth, useStethByWsteth } from 'shared/hooks';
-import { useIsConnectedWalletAndSupportedChain } from 'shared/hooks/use-is-connected-wallet-and-supported-chain';
+import { useConnectionStatuses } from 'shared/hooks/use-connection-statuses';
 import type { WalletComponentType } from 'shared/wallet/types';
 import {
   CardBalance,
@@ -116,20 +114,13 @@ const WalletComponent: WalletComponentType = (props) => {
 };
 
 export const Wallet: WalletComponentType = memo((props) => {
-  const { chainId } = useAccount();
-  const isActiveWallet = useIsConnectedWalletAndSupportedChain();
-
-  const isChainL2 = useMemo(() => {
-    return (
-      Object.values(L2_CHAINS).indexOf(chainId as unknown as L2_CHAINS) > -1
-    );
-  }, [chainId]);
+  const { isChainL2, isDappActive } = useConnectionStatuses();
 
   if (isChainL2) {
     return <L2Fallback {...props} />;
   }
 
-  if (!isActiveWallet) {
+  if (!isDappActive) {
     return <Fallback {...props} />;
   }
 

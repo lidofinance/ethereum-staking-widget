@@ -9,9 +9,9 @@ import { config } from 'config';
 import { useUserConfig } from 'config/user-config';
 
 import { IPFSInfoBox } from 'features/ipfs/ipfs-info-box';
+import { useConnectionStatuses } from 'shared/hooks/use-connection-statuses';
 import { Button, Connect } from 'shared/wallet';
 import NoSSRWrapper from 'shared/components/no-ssr-wrapper';
-import { useIsConnectedWalletAndSupportedChain } from 'shared/hooks/use-is-connected-wallet-and-supported-chain';
 
 import { HeaderSettingsButton } from './header-settings-button';
 import {
@@ -24,11 +24,11 @@ const HeaderWallet: FC = () => {
   const router = useRouter();
   const { chainId, address } = useAccount();
   const { defaultChain: defaultChainId } = useUserConfig();
-  const isActiveWallet = useIsConnectedWalletAndSupportedChain();
+  const { isDappActive } = useConnectionStatuses();
 
   const chainName = CHAINS[chainId || defaultChainId];
   const testNet = chainId !== CHAINS.Mainnet;
-  const showNet = testNet && isActiveWallet;
+  const showNet = testNet && isDappActive;
   const queryTheme = router?.query?.theme;
 
   const chainColor = useMemo(() => {

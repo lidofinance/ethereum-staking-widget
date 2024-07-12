@@ -5,7 +5,7 @@ import { useEthereumBalance } from '@lido-sdk/react';
 
 import { STRATEGY_LAZY } from 'consts/swr-strategies';
 import { FormatToken } from 'shared/formatters';
-import { useIsConnectedWalletAndSupportedChain } from 'shared/hooks/use-is-connected-wallet-and-supported-chain';
+import { useConnectionStatuses } from 'shared/hooks/use-connection-statuses';
 
 import { AddressBadge } from '../components/address-badge/address-badge';
 import { useWalletModal } from '../wallet-modal/use-wallet-modal';
@@ -20,9 +20,9 @@ import {
 export const Button: FC<ButtonProps> = (props) => {
   const { onClick, ...rest } = props;
 
-  const isActiveWallet = useIsConnectedWalletAndSupportedChain();
-  const { address } = useAccount();
   const isMobile = useBreakpoint('md');
+  const { address } = useAccount();
+  const { isDappActive } = useConnectionStatuses();
 
   const { openModal } = useWalletModal();
   const { data: balance, initialLoading } = useEthereumBalance(
@@ -37,7 +37,7 @@ export const Button: FC<ButtonProps> = (props) => {
       color="secondary"
       onClick={() => openModal({})}
       style={
-        !initialLoading && !isActiveWallet && !isMobile
+        !initialLoading && !isDappActive && !isMobile
           ? { paddingLeft: '9px' }
           : {}
       }
@@ -48,7 +48,7 @@ export const Button: FC<ButtonProps> = (props) => {
           {initialLoading ? (
             <WalledButtonLoaderStyle />
           ) : (
-            isActiveWallet && (
+            isDappActive && (
               <FormatToken
                 amount={balance}
                 symbol="ETH"

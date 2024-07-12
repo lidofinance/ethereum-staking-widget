@@ -23,6 +23,7 @@ export const SubmitButtonHookForm: React.FC<SubmitButtonHookFormProps> = ({
 }) => {
   const { isConnected } = useAccount();
   const isSupportedChain = useIsSupportedChain();
+
   const { isValidating, isSubmitting } = useFormState();
   const { errors } = useFormState<Record<string, unknown>>();
 

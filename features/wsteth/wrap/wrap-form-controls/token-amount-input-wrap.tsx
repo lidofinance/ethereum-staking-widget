@@ -1,7 +1,7 @@
 import { useWatch } from 'react-hook-form';
 
 import { TokenAmountInputHookForm } from 'shared/hook-form/controls/token-amount-input-hook-form';
-import { useIsConnectedWalletAndSupportedChain } from 'shared/hooks/use-is-connected-wallet-and-supported-chain';
+import { useConnectionStatuses } from 'shared/hooks/use-connection-statuses';
 
 import { useWrapFormData, WrapFormInputType } from '../wrap-form-context';
 
@@ -11,13 +11,13 @@ type TokenAmountInputWrapProps = Pick<
 >;
 
 export const TokenAmountInputWrap = (props: TokenAmountInputWrapProps) => {
-  const isActiveWallet = useIsConnectedWalletAndSupportedChain();
+  const { isDappActive } = useConnectionStatuses();
   const token = useWatch<WrapFormInputType, 'token'>({ name: 'token' });
   const { maxAmount, isApprovalNeededBeforeWrap } = useWrapFormData();
 
   return (
     <TokenAmountInputHookForm
-      disabled={!isActiveWallet}
+      disabled={!isDappActive}
       fieldName="amount"
       token={token}
       data-testid="wrapInput"

@@ -3,7 +3,7 @@ import {
   TokenOption,
   TokenSelectHookForm,
 } from 'shared/hook-form/controls/token-select-hook-form';
-import { useIsConnectedWalletAndSupportedChain } from 'shared/hooks/use-is-connected-wallet-and-supported-chain';
+import { useConnectionStatuses } from 'shared/hooks/use-connection-statuses';
 
 const OPTIONS: TokenOption[] = [
   { token: TOKENS.STETH },
@@ -11,7 +11,7 @@ const OPTIONS: TokenOption[] = [
 ];
 
 export const TokenSelectRequest = () => {
-  const isActiveWallet = useIsConnectedWalletAndSupportedChain();
+  const { isDappActive } = useConnectionStatuses();
 
-  return <TokenSelectHookForm disabled={!isActiveWallet} options={OPTIONS} />;
+  return <TokenSelectHookForm disabled={!isDappActive} options={OPTIONS} />;
 };
