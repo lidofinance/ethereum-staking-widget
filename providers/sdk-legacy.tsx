@@ -1,13 +1,14 @@
 import React, { PropsWithChildren, useEffect, useMemo, useState } from 'react';
-import { useSupportedChains, useWeb3 } from 'reef-knot/web3-react';
-import { useClient, useConfig } from 'wagmi';
+import { useReefKnotContext } from 'reef-knot/core-react';
+import { useSupportedChains } from 'reef-knot/web3-react';
+import { useAccount, useClient, useConfig } from 'wagmi';
+import { mainnet } from 'wagmi/chains';
 
 import { Web3Provider } from '@ethersproject/providers';
 import { ProviderSDK } from '@lido-sdk/react';
-
-import { mainnet } from 'wagmi/chains';
 import { getStaticRpcBatchProvider } from '@lido-sdk/providers';
-import { useReefKnotContext } from 'reef-knot/core-react';
+
+import { useDappStatus } from 'shared/hooks/use-dapp-status';
 
 const POLLING_INTERVAL = 12_000;
 
@@ -21,8 +22,9 @@ export const SDKLegacyProvider = ({
   defaultChainId,
   pollingInterval = POLLING_INTERVAL,
 }: SDKLegacyProviderProps) => {
-  const { chainId: web3ChainId = defaultChainId, account, active } = useWeb3();
+  const { chainId: wagmiChainId = defaultChainId, address } = useAccount();
   const { supportedChains } = useSupportedChains();
+  const { isDappActive } = useDappStatus();
   const config = useConfig();
   const client = useClient();
   const { rpc } = useReefKnotContext();
@@ -42,7 +44,7 @@ export const SDKLegacyProvider = ({
     };
 
     const getProviderValue = async () => {
-      if (!client || !account || !active) return undefined;
+      if (!client || !address || !isDappActive) return undefined;
       const { chain } = client;
       const providerTransport = await getProviderTransport();
 
@@ -67,7 +69,7 @@ export const SDKLegacyProvider = ({
     return () => {
       isHookMounted = false;
     };
-  }, [config, config.state, client, account, active, pollingInterval]);
+  }, [config, config.state, client, address, isDappActive, pollingInterval]);
 
   const supportedChainIds = useMemo(
     () => supportedChains.map((chain) => chain.chainId),
@@ -75,10 +77,10 @@ export const SDKLegacyProvider = ({
   );
 
   const chainId = useMemo(() => {
-    return supportedChainIds.indexOf(web3ChainId) > -1
-      ? web3ChainId
+    return supportedChainIds.indexOf(wagmiChainId) > -1
+      ? wagmiChainId
       : defaultChainId;
-  }, [defaultChainId, supportedChainIds, web3ChainId]);
+  }, [defaultChainId, supportedChainIds, wagmiChainId]);
 
   const providerRpc = useMemo(
     () => getStaticRpcBatchProvider(chainId, rpc[chainId], 0, POLLING_INTERVAL),
@@ -104,7 +106,7 @@ export const SDKLegacyProvider = ({
       providerWeb3={providerWeb3}
       providerRpc={providerRpc}
       providerMainnetRpc={providerMainnetRpc}
-      account={account ?? undefined}
+      account={address ?? undefined}
     >
       {children}
     </ProviderSDK>
