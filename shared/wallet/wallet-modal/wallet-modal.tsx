@@ -1,4 +1,6 @@
 import { useCallback } from 'react';
+import { useAccount } from 'wagmi';
+
 import {
   ButtonIcon,
   Modal,
@@ -9,7 +11,6 @@ import {
 } from '@lidofinance/lido-ui';
 import { useEtherscanOpen } from '@lido-sdk/react';
 import { useConnectorInfo, useDisconnect } from 'reef-knot/core-react';
-import { useWeb3 } from 'reef-knot/web3-react';
 
 import type { ModalComponentType } from 'providers/modal-provider';
 import { useCopyToClipboard } from 'shared/hooks';
@@ -24,7 +25,7 @@ import {
 } from './styles';
 
 export const WalletModal: ModalComponentType = ({ onClose, ...props }) => {
-  const { account } = useWeb3();
+  const { address } = useAccount();
   const { connectorName } = useConnectorInfo();
   const { disconnect } = useDisconnect();
 
@@ -33,8 +34,8 @@ export const WalletModal: ModalComponentType = ({ onClose, ...props }) => {
     onClose?.();
   }, [disconnect, onClose]);
 
-  const handleCopy = useCopyToClipboard(account ?? '');
-  const handleEtherscan = useEtherscanOpen(account ?? '', 'address');
+  const handleCopy = useCopyToClipboard(address ?? '');
+  const handleEtherscan = useEtherscanOpen(address ?? '', 'address');
 
   return (
     <Modal title="Account" onClose={onClose} {...props}>
@@ -59,11 +60,11 @@ export const WalletModal: ModalComponentType = ({ onClose, ...props }) => {
         </WalletModalConnectedStyle>
 
         <WalletModalAccountStyle>
-          <Identicon address={account ?? ''} />
+          <Identicon address={address ?? ''} />
           <WalletModalAddressStyle>
             <Address
               data-testid="connectedAddress"
-              address={account ?? ''}
+              address={address ?? ''}
               symbols={6}
             />
           </WalletModalAddressStyle>
