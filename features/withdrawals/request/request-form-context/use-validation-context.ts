@@ -1,23 +1,23 @@
+import { useMemo } from 'react';
 import {
   MAX_REQUESTS_COUNT_LEDGER_LIMIT,
   MAX_REQUESTS_COUNT,
 } from 'features/withdrawals/withdrawals-constants';
-import { useMemo } from 'react';
 import { useIsLedgerLive } from 'shared/hooks/useIsLedgerLive';
 import { useAwaiter } from 'shared/hooks/use-awaiter';
+import { useDappStatus } from 'shared/hooks/use-dapp-status';
 import type {
   RequestFormDataType,
   RequestFormValidationAsyncContextType,
   RequestFormValidationContextType,
 } from './types';
-import { useWeb3 } from 'reef-knot/web3-react';
 
 // Prepares validation context object from request form data
 export const useValidationContext = (
   requestData: RequestFormDataType,
   setIntermediateValidationResults: RequestFormValidationContextType['setIntermediateValidationResults'],
 ): RequestFormValidationContextType => {
-  const { active } = useWeb3();
+  const { isDappActive } = useDappStatus();
   const isLedgerLive = useIsLedgerLive();
   const maxRequestCount = isLedgerLive
     ? MAX_REQUESTS_COUNT_LEDGER_LIMIT
@@ -68,7 +68,7 @@ export const useValidationContext = (
     useAwaiter<RequestFormValidationAsyncContextType>(context).awaiter;
 
   return {
-    isWalletActive: active,
+    isWalletActive: isDappActive,
     asyncContext,
     setIntermediateValidationResults,
   };

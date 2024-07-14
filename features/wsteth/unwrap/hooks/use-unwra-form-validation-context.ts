@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { useWeb3 } from 'reef-knot/web3-react';
+import { useDappStatus } from 'shared/hooks/use-dapp-status';
 import { useAwaiter } from 'shared/hooks/use-awaiter';
 
 import type { UnwrapFormNetworkData } from '../unwrap-form-context';
@@ -11,18 +11,18 @@ type UseUnwrapFormValidationContextArgs = {
 export const useUnwrapFormValidationContext = ({
   networkData,
 }: UseUnwrapFormValidationContextArgs) => {
-  const { active } = useWeb3();
+  const { isDappActive } = useDappStatus();
   const { maxAmount } = networkData;
 
   const validationContextAwaited = useMemo(() => {
-    if (active && !maxAmount) {
+    if (isDappActive && !maxAmount) {
       return undefined;
     }
     return {
-      isWalletActive: active,
+      isWalletActive: isDappActive,
       maxAmount,
     };
-  }, [active, maxAmount]);
+  }, [isDappActive, maxAmount]);
 
   return useAwaiter(validationContextAwaited).awaiter;
 };

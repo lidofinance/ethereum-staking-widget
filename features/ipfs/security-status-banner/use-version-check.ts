@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react';
-import { useLidoSWR } from '@lido-sdk/react';
-import { useWeb3 } from 'reef-knot/web3-react';
 import { useForceDisconnect } from 'reef-knot/core-react';
+import { useLidoSWR } from '@lido-sdk/react';
 
 import buildInfo from 'build-info.json';
 import { config } from 'config';
 import { useUserConfig } from 'config/user-config';
 import { STRATEGY_IMMUTABLE } from 'consts/swr-strategies';
+import { useDappStatus } from 'shared/hooks/use-dapp-status';
 import { overrideWithQAMockBoolean } from 'utils/qa';
 
 import { isVersionLess } from './utils';
@@ -19,7 +19,7 @@ const URL_CID_REGEX =
   /[/.](?<cid>Qm[1-9A-HJ-NP-Za-km-z]{44,}|b[A-Za-z2-7]{58,}|B[A-Z2-7]{58,}|z[1-9A-HJ-NP-Za-km-z]{48,}|F[0-9A-F]{50,})([./#?]|$)/;
 
 export const useVersionCheck = () => {
-  const { active } = useWeb3();
+  const { isDappActive } = useDappStatus();
   const { setIsWalletConnectionAllowed } = useUserConfig();
   const { forceDisconnect } = useForceDisconnect();
   const [areConditionsAccepted, setConditionsAccepted] = useState(false);
@@ -84,7 +84,7 @@ export const useVersionCheck = () => {
       forceDisconnect();
     }
   }, [
-    active,
+    isDappActive,
     forceDisconnect,
     isNotVerifiable,
     isVersionUnsafe,
