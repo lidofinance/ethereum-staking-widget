@@ -1,5 +1,5 @@
 import { FaqPlaceholder } from 'features/ipfs';
-import { useWeb3Key } from 'shared/hooks/useWeb3Key';
+import { useWagmiKey } from 'shared/hooks/use-wagmi-key';
 import NoSSRWrapper from 'shared/components/no-ssr-wrapper';
 import { GoerliSunsetBanner } from 'shared/banners/goerli-sunset';
 import { OnlyInfraRender } from 'shared/components/only-infra-render';
@@ -9,7 +9,7 @@ import { LidoStats } from './lido-stats/lido-stats';
 import { StakeForm } from './stake-form';
 
 export const Stake = () => {
-  const key = useWeb3Key();
+  const key = useWagmiKey();
   return (
     <>
       <GoerliSunsetBanner />

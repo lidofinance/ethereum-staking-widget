@@ -1,12 +1,13 @@
 import { FC } from 'react';
 import { GetStaticPaths, GetStaticProps } from 'next';
 import Head from 'next/head';
-import { Layout } from 'shared/components';
+
 import { WrapUnwrapTabs } from 'features/wsteth/wrap-unwrap-tabs';
-import { useWeb3Key } from 'shared/hooks/useWeb3Key';
+import { Layout } from 'shared/components';
+import { useWagmiKey } from 'shared/hooks/use-wagmi-key';
 
 const WrapPage: FC<WrapModePageProps> = ({ mode }) => {
-  const key = useWeb3Key();
+  const key = useWagmiKey();
   return (
     <Layout
       title="Wrap & Unwrap"

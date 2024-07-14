@@ -6,10 +6,10 @@ import { Layout } from 'shared/components';
 
 import { WithdrawalsTabs } from 'features/withdrawals';
 import { WithdrawalsProvider } from 'features/withdrawals/contexts/withdrawals-context';
-import { useWeb3Key } from 'shared/hooks/useWeb3Key';
+import { useWagmiKey } from 'shared/hooks/use-wagmi-key';
 
 const Withdrawals: FC<WithdrawalsModePageParams> = ({ mode }) => {
-  const key = useWeb3Key();
+  const key = useWagmiKey();
 
   return (
     <Layout
