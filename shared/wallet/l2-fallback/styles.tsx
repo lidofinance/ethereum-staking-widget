@@ -20,7 +20,6 @@ export const ButtonStyle = styled((props) => <Button {...props} />)`
   background: #ffffff1a;
 
   &:not(:disabled):hover {
-    // TODO
-    background: #ffffff1a;
+    background: #ffffff66;
   }
 `;
