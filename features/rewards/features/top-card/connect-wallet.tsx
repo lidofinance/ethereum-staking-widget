@@ -1,32 +1,12 @@
 import { FC, useCallback } from 'react';
-import styled, { css } from 'styled-components';
 import { useConnect } from 'reef-knot/core-react';
 import { Button } from '@lidofinance/lido-ui';
 import { wrapWithEventTrack } from '@lidofinance/analytics-matomo';
 
 import { useUserConfig } from 'config/user-config';
 import { MATOMO_CLICK_EVENTS } from 'consts/matomo-click-events';
-import { WalletCardStyle } from 'shared/wallet/card/styles';
 
-const ConnectWalletStyle = styled(WalletCardStyle)`
-  padding: 27px 27px 47px 27px;
-  text-align: center;
-
-  ${({ theme }) =>
-    theme.name === 'dark'
-      ? css`
-          color: var(--lido-color-text);
-          background: linear-gradient(48.34deg, #46464f -5.55%, #3b3b47 100%);
-        `
-      : css`
-          color: var(--lido-color-secondary);
-          background: linear-gradient(48.34deg, #d2ddff -5.55%, #e6e6e6 100%);
-        `}
-`;
-
-const TextStyle = styled.p`
-  margin-bottom: 12px;
-`;
+import { ConnectWalletStyle, ConnectWalletTextStyle } from './styles';
 
 export const ConnectWallet: FC = () => {
   const { isWalletConnectionAllowed } = useUserConfig();
@@ -42,7 +22,9 @@ export const ConnectWallet: FC = () => {
 
   return (
     <ConnectWalletStyle>
-      <TextStyle>Connect your wallet to view staking stats</TextStyle>
+      <ConnectWalletTextStyle>
+        Connect your wallet to view staking stats
+      </ConnectWalletTextStyle>
       <Button
         color={'secondary'}
         variant={'outlined'}
