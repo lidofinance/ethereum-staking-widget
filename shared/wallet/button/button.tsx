@@ -36,11 +36,7 @@ export const Button: FC<ButtonProps> = (props) => {
       variant="text"
       color="secondary"
       onClick={() => openModal({})}
-      style={
-        !initialLoading && !isDappActive && !isMobile
-          ? { paddingLeft: '9px' }
-          : {}
-      }
+      $isAddPaddingLeft={!initialLoading && !isDappActive && !isMobile}
       {...rest}
     >
       <WalledButtonWrapperStyle>
