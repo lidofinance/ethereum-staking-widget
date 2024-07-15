@@ -9,6 +9,7 @@ import { ReactComponent as MantleLogo } from 'assets/icons/l2/mantle.svg';
 import { ReactComponent as OptimismLogo } from 'assets/icons/l2/optimism.svg';
 import { ReactComponent as PolygonLogo } from 'assets/icons/l2/polygon.svg';
 import { ReactComponent as ZkSyncLogo } from 'assets/icons/l2/zk-sync.svg';
+import { ReactComponent as ScrollLogo } from 'assets/icons/l2/scroll.svg';
 
 import { useUserConfig } from 'config/user-config';
 import { CHAINS, L2_CHAINS } from 'consts/chains';
@@ -25,6 +26,7 @@ const l2Logos = {
   [L2_CHAINS.Optimism]: OptimismLogo,
   [L2_CHAINS.Polygon]: PolygonLogo,
   [L2_CHAINS.zkSync]: ZkSyncLogo,
+  [L2_CHAINS.Scroll]: ScrollLogo,
 };
 
 const getL2Logo = (chainId: L2_CHAINS) => {
