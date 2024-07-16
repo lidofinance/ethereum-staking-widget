@@ -1,6 +1,7 @@
 import { createGlobalStyle } from 'styled-components';
 
 import { NAV_MOBILE_HEIGHT, NAV_MOBILE_MAX_WIDTH } from './constants';
+import { ThemeName } from '@lidofinance/lido-ui';
 
 export const devicesHeaderMedia = {
   mobile: `screen and (max-width: ${NAV_MOBILE_MAX_WIDTH}px)`,
@@ -22,6 +23,8 @@ const GlobalStyle = createGlobalStyle`
     --footer-mobile-padding-x: 20px;
     --footer-mobile-padding-y: 18px;
     --footer-mobile-margin-bottom: 60px;
+    
+    --custom-background-secondary: ${({ theme }) => (theme.name === ThemeName.light ? '#F6F8FA' : '#2D2D35')} ;
   }
   * {
     margin: 0;

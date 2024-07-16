@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useEffect } from 'react';
 import { useAccount } from 'wagmi';
 
 import {
@@ -36,6 +36,13 @@ export const WalletModal: ModalComponentType = ({ onClose, ...props }) => {
 
   const handleCopy = useCopyToClipboard(address ?? '');
   const handleEtherscan = useEtherscanOpen(address ?? '', 'address');
+
+  useEffect(() => {
+    // Close the modal if a wallet was somehow disconnected while the modal was open
+    if (account == null || account.length === 0) {
+      onClose?.();
+    }
+  }, [account, onClose]);
 
   return (
     <Modal title="Account" onClose={onClose} {...props}>
