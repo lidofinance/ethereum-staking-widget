@@ -3,7 +3,7 @@ import { HOME_PATH } from 'consts/urls';
 import { LocalLink } from 'shared/components/local-link';
 
 type ErrorBlockNoStethProps = {
-  hasSteth: boolean;
+  hasSteth?: boolean;
 };
 
 export const ErrorBlockNoSteth = ({ hasSteth }: ErrorBlockNoStethProps) => {
