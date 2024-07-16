@@ -59,9 +59,7 @@ export const DexOptionStyled = styled.div<{ $loading?: boolean }>`
 
   min-height: var(--itemHeight);
   max-height: var(--itemHeight);
-  // we need to update lido ui
-  background-color: ${({ theme }) =>
-    theme.name === ThemeName.light ? '#F6F8FA' : '#2D2D35'};
+  background-color: var(--custom-background-secondary);
   border-radius: ${({ theme }) => theme.borderRadiusesMap.lg}px;
   padding: 16px 20px;
 
@@ -131,9 +129,7 @@ export const DexWarning = styled.div`
   padding: ${({ theme }) => theme.spaceMap.md}px;
   font-weight: 400;
   font-size: ${({ theme }) => theme.fontSizesMap.xs}px;
-  // we need to update lido ui
-  background-color: ${({ theme }) =>
-    theme.name === ThemeName.light ? '#F6F8FA' : '#2D2D35'};
+  background-color: var(--custom-background-secondary);
   border-radius: ${({ theme }) => theme.borderRadiusesMap.lg}px;
 
   svg {

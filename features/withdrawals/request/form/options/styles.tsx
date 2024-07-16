@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { InlineLoader, ThemeName } from '@lidofinance/lido-ui';
+import { InlineLoader } from '@lidofinance/lido-ui';
 import { FormatToken } from 'shared/formatters';
 
 import Lido from 'assets/icons/lido.svg';
@@ -27,9 +27,8 @@ export const InlineLoaderSmall = styled(InlineLoader)`
 export const LidoOptionContainer = styled.div`
   width: 100%;
   min-height: 82px;
-  // we need to update lido ui
-  background-color: ${({ theme }) =>
-    theme.name === ThemeName.light ? '#F6F8FA' : '#2D2D35'};
+
+  background-color: var(--custom-background-secondary);
   border-radius: ${({ theme }) => theme.borderRadiusesMap.lg}px;
 
   padding: 16px 20px;
@@ -81,9 +80,8 @@ export const OptionsPickerButton = styled.button<{ $active?: boolean }>`
   gap: 4px;
   position: relative;
   cursor: pointer;
-  // we need to update lido ui
-  background-color: ${({ theme }) =>
-    theme.name === ThemeName.light ? '#F6F8FA' : '#2D2D35'};
+
+  background-color: var(--custom-background-secondary);
 
   border-radius: ${({ theme }) => theme.borderRadiusesMap.lg}px;
   border: ${({ $active }) => ($active ? '2' : '1')}px solid
@@ -167,21 +165,11 @@ export const OptionsPickerIcons = styled.div`
     height: 20px;
     border-radius: 100%;
     border: 1px solid;
-    border-color: ${({ theme }) =>
-      theme.name === ThemeName.light
-        ? 'var(--lido-color-backgroundSecondary)'
-        : '#F6F8FA'};
-    background-color: ${({ theme }) =>
-      theme.name === ThemeName.light
-        ? 'var(--lido-color-backgroundSecondary)'
-        : '#F6F8FA'};
+    border-color: var(--custom-background-secondary);
+    background-color: var(--custom-background-secondary);
     margin: -1px 0 -1px -8px;
     &:first-child {
       margin-left: 0px;
     }
-    filter: ${({ theme }) =>
-      theme.name === ThemeName.light
-        ? 'drop-shadow(0px 0px 1px rgba(246, 248, 250, 255))'
-        : 'unset'};
   }
 `;
