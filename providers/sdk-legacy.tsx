@@ -1,5 +1,6 @@
 import React, { PropsWithChildren, useEffect, useMemo, useState } from 'react';
 import { useReefKnotContext } from 'reef-knot/core-react';
+// TODO: to remove the 'reef-knot/web3-react' after it will be deprecated
 import { useSupportedChains } from 'reef-knot/web3-react';
 import { useAccount, useClient, useConfig } from 'wagmi';
 import { mainnet } from 'wagmi/chains';
