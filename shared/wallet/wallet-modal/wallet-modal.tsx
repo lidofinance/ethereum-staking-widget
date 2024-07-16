@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useEffect } from 'react';
 import {
   ButtonIcon,
   Modal,
@@ -35,6 +35,13 @@ export const WalletModal: ModalComponentType = ({ onClose, ...props }) => {
 
   const handleCopy = useCopyToClipboard(account ?? '');
   const handleEtherscan = useEtherscanOpen(account ?? '', 'address');
+
+  useEffect(() => {
+    // Close the modal if a wallet was somehow disconnected while the modal was open
+    if (account == null || account.length === 0) {
+      onClose?.();
+    }
+  }, [account, onClose]);
 
   return (
     <Modal title="Account" onClose={onClose} {...props}>

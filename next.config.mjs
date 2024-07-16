@@ -58,6 +58,7 @@ export default withBundleAnalyzer({
     // https://github.com/vercel/next.js/blob/v12.3.4/packages/next/build/webpack-config.ts#L417
     // Presumably, it is true by default in next v13 and won't be needed
     esmExternals: true,
+    newNextLinkBehavior: true,
   },
   webpack(config) {
     config.module.rules.push(

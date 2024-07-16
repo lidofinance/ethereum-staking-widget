@@ -1,11 +1,10 @@
 import styled, { css } from 'styled-components';
-
-import { NAV_MOBILE_MEDIA, NAV_MOBILE_HEIGHT } from 'styles/constants';
+import { devicesHeaderMedia } from 'styles/global';
 
 export const desktopCss = css`
-  margin: 0 46px;
+  margin: 0 var(--nav-desktop-gutter-x);
   display: flex;
-  gap: 32px;
+  gap: ${({ theme }) => theme.spaceMap.xxl}px;
 
   svg {
     margin-right: 10px;
@@ -18,25 +17,26 @@ const mobileCss = css`
   bottom: 0;
   left: 0;
   right: 0;
-  padding: 8px;
+  padding: ${({ theme: { spaceMap } }) =>
+    `${spaceMap.sm}px ${spaceMap.sm}px max(env(safe-area-inset-bottom), ${spaceMap.sm}px)`};
   background-color: var(--lido-color-foreground);
   display: flex;
-  gap: 32px;
+  gap: ${({ theme }) => theme.spaceMap.xxl}px;
   justify-content: space-around;
   align-items: center;
   border-top: 1px solid var(--lido-color-border);
-  height: ${NAV_MOBILE_HEIGHT}px;
+  height: calc(var(--nav-mobile-height) + env(safe-area-inset-bottom));
 
   svg {
     margin-right: 0;
-    margin-bottom: 7px;
+    margin-bottom: ${({ theme }) => theme.spaceMap.sm}px;
   }
 `;
 
 export const Nav = styled.div`
   ${desktopCss}
   // mobile kicks in on a bit higher width for nav
-  ${NAV_MOBILE_MEDIA} {
+  @media ${devicesHeaderMedia.mobile} {
     ${mobileCss}
   }
   z-index: 6;
@@ -60,13 +60,8 @@ export const NavLink = styled.span<{ active: boolean }>`
   letter-spacing: 0.04em;
   opacity: ${(props) => (props.active ? 1 : 0.8)};
 
-  :hover {
+  &:hover {
     opacity: 1;
-    color: var(--lido-color-secondary);
-  }
-
-  // TODO: Not actual - remove
-  :visited {
     color: var(--lido-color-secondary);
   }
 
@@ -75,7 +70,8 @@ export const NavLink = styled.span<{ active: boolean }>`
       active ? `var(--lido-color-primary)` : `var(--lido-color-secondary)`};
   }
 
-  ${NAV_MOBILE_MEDIA} {
+  @media ${devicesHeaderMedia.mobile} {
+    width: ${({ theme }) => theme.spaceMap.xl}px;
     flex-direction: column;
     text-transform: none;
     font-weight: 500;

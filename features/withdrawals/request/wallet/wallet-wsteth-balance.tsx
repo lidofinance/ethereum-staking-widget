@@ -31,7 +31,7 @@ export const WalletWstethBalance = () => {
   return (
     <CardBalance
       small
-      title="wstETH Balance"
+      title="wstETH balance"
       loading={loading.isStethBalanceLoading || isStethByWstethLoading}
       value={stethBalanceValue}
     />

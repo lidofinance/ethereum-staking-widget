@@ -3,6 +3,7 @@ import { CONFIG } from './config.js';
 export interface GetRequest {
   uri: string;
   schema: object;
+  isDeprecated?: boolean;
   skipTestnet?: boolean;
 }
 
@@ -196,6 +197,7 @@ export const GET_REQUESTS: GetRequest[] = [
   },
   {
     uri: '/api/eth-apr',
+    isDeprecated: true,
     schema: { type: 'string', pattern: FLOAT_REGEX },
   },
   {
@@ -204,10 +206,12 @@ export const GET_REQUESTS: GetRequest[] = [
   },
   {
     uri: '/api/lidostats',
+    isDeprecated: true,
     schema: LIDO_STATS_SCHEMA,
   },
   {
     uri: '/api/ldo-stats',
+    isDeprecated: true,
     schema: LIDO_STATS_SCHEMA,
   },
   {
@@ -272,6 +276,7 @@ export const GET_REQUESTS: GetRequest[] = [
   },
   {
     uri: '/api/sma-steth-apr',
+    isDeprecated: true,
     schema: {
       type: 'string',
       pattern: FLOAT_REGEX,
