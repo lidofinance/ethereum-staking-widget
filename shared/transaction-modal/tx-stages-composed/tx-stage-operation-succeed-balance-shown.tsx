@@ -21,6 +21,11 @@ export const SkeletonBalance = styled(InlineLoader).attrs({
   width: 100px;
 `;
 
+export const BalanceContainer = styled('div')`
+  display: inline-block;
+  white-space: nowrap;
+`;
+
 type TxStageOperationSucceedBalanceShownProps = {
   balance?: BigNumber;
   balanceToken: string;
@@ -57,11 +62,13 @@ export const TxStageOperationSucceedBalanceShown = ({
       title={
         <>
           Your new balance is <wbr />
-          {balance ? balanceEl : <SkeletonBalance />}
-          <TokenToWallet
-            data-testid="txSuccessAddToken"
-            address={tokenToWalletAddress}
-          />
+          <BalanceContainer>
+            {balance ? balanceEl : <SkeletonBalance />}
+            <TokenToWallet
+              data-testid="txSuccessAddToken"
+              address={tokenToWalletAddress}
+            />
+          </BalanceContainer>
         </>
       }
       description={
