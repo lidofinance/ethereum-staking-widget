@@ -13,7 +13,7 @@ import type { TokensWrappable } from 'features/wsteth/shared/types';
 
 const STAGE_APPROVE_ARGS = {
   willReceiveToken: 'wstETH',
-  operationText: 'Approving',
+  operationText: 'Unlocking',
 };
 
 const STAGE_OPERATION_ARGS = {

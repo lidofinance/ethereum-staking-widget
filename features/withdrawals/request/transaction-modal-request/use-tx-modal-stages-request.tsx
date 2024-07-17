@@ -17,7 +17,7 @@ import type { TokensWithdrawable } from 'features/withdrawals/types/tokens-withd
 
 const STAGE_APPROVE_ARGS = {
   willReceiveToken: 'wstETH',
-  operationText: 'Approving',
+  operationText: 'Unlocking',
 };
 
 const STAGE_OPERATION_ARGS = {
