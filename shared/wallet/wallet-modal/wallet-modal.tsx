@@ -45,10 +45,10 @@ export const WalletModal: ModalComponentType = ({ onClose, ...props }) => {
 
   useEffect(() => {
     // Close the modal if a wallet was somehow disconnected while the modal was open
-    if (account == null || account.length === 0) {
+    if (address == null || address.length === 0) {
       onClose?.();
     }
-  }, [account, onClose]);
+  }, [address, onClose]);
 
   return (
     <Modal title="Account" onClose={onClose} {...props}>
