@@ -18,6 +18,7 @@ export const TopCard: FC = () => {
       {!isDappActive && <Fallback />}
 
       {isDappActive && <Wallet />}
+
       <StatsWrapper>
         <Stats />
       </StatsWrapper>

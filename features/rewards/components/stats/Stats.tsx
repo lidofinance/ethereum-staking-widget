@@ -71,11 +71,7 @@ export const Stats: React.FC = () => {
         </Stat>
         <Title hideMobile>
           <Link href={`${config.rootOrigin}/ethereum#apr`}>
-            <Box
-              data-testid="moreInfo"
-              color="secondary"
-              style={{ textDecoration: 'underline' }}
-            >
+            <Box data-testid="moreInfo" style={{ textDecoration: 'underline' }}>
               More info
             </Box>
           </Link>

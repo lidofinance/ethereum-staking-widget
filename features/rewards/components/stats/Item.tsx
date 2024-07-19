@@ -9,6 +9,7 @@ export const Item = ({ children, ...rest }: BoxProps) => (
     width={['100%', '100%', 'initial']}
     display={['flex', 'flex', 'initial']}
     justifyContent={['space-between', 'space-between', null]}
+    marginBottom={['6px']}
     {...rest}
   >
     {children}
