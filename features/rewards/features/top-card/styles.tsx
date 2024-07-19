@@ -1,5 +1,6 @@
 import styled, { css } from 'styled-components';
 import { WalletCardStyle } from 'shared/wallet/card/styles';
+import { AddressBadge } from 'shared/wallet/components/address-badge/address-badge';
 
 export const WalletStyle = styled(WalletCardStyle)`
   background: linear-gradient(
@@ -9,6 +10,25 @@ export const WalletStyle = styled(WalletCardStyle)`
     #40504f 100%
   );
   padding: 0 0 24px 0;
+`;
+
+export const WalletContentStyle = styled.div`
+  display: flex;
+  flex-wrap: nowrap;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: ${({ theme }) => theme.spaceMap.xxl}px;
+
+  ${({ theme }) => theme.mediaQueries.md} {
+    align-items: end;
+    flex-direction: column-reverse;
+  }
+`;
+
+export const WalletContentAddressBadgeStyle = styled(AddressBadge)`
+  background: #00000033;
 `;
 
 export const ConnectWalletStyle = styled(WalletCardStyle)`
