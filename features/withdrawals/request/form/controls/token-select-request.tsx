@@ -2,7 +2,7 @@ import {
   TOKENS,
   TokenOption,
   TokenSelectHookForm,
-} from 'shared/hook-form/controls/token-select-hook-form';
+} from 'shared/hook-form/controls/token-select-hook-form/token-select-hook-form';
 import { useDappStatus } from 'shared/hooks/use-dapp-status';
 
 const OPTIONS: TokenOption[] = [

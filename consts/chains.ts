@@ -12,4 +12,5 @@ export enum L2_CHAINS {
   Base = 8453,
   Mantle = 5000,
   Linea = 59144,
+  Scroll = 534352,
 }

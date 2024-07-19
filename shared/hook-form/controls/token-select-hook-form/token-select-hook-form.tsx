@@ -1,39 +1,11 @@
-import styled from 'styled-components';
 import { useController, useFormState, useFormContext } from 'react-hook-form';
 
-import {
-  SelectIcon,
-  Option,
-  Eth,
-  Steth,
-  Wsteth,
-  OptionValue,
-} from '@lidofinance/lido-ui';
+import { Option, Eth, Steth, Wsteth, OptionValue } from '@lidofinance/lido-ui';
 import { TOKENS as TOKENS_SDK } from '@lido-sdk/constants';
 
 import { getTokenDisplayName } from 'utils/getTokenDisplayName';
 import { isValidationErrorTypeValidate } from 'shared/hook-form/validation/validation-error';
-
-// Temporarily: The 'SelectIconStyle' is being used to fix the 'SelectIcon' from the UI lib.
-export const SelectIconStyle = styled((props) => <SelectIcon {...props} />)`
-  & > span {
-    // The '!important' is important here,
-    // because the 'lido-ui' lib has a bug with a disabled state
-    // when we move the cursor away from a SelectIcon (without the '!important' the SelectIcon becomes active).
-    border-color: ${({ disabled }) =>
-      disabled && 'var(--lido-color-border)!important'};
-    background: ${({ disabled }) =>
-      disabled ? 'var(--lido-color-background)' : 'transparent'};
-  }
-
-  &:hover {
-    & > span {
-      border-color: ${({ disabled }) => disabled && 'var(--lido-color-border)'};
-      background: ${({ disabled }) =>
-        disabled ? 'var(--lido-color-background)' : 'transparent'};
-    }
-  }
-`;
+import { SelectIconStyle } from './styles';
 
 export const TOKENS = {
   ETH: 'ETH',
