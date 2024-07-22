@@ -2770,10 +2770,10 @@
   resolved "https://registry.yarnpkg.com/@reef-knot/types/-/types-2.0.1.tgz#13f42861bff6c585a167423845efb0ef66517829"
   integrity sha512-ylgXjmJq9mGzF+1HulNEXh3mDbA3f7SNpvqTKqoPIs+f1NTAHpsXInK+PFe84vMCdA+o18yUMoxwVIZbwmDVrQ==
 
-"@reef-knot/ui-react@2.1.1":
-  version "2.1.1"
-  resolved "https://registry.yarnpkg.com/@reef-knot/ui-react/-/ui-react-2.1.1.tgz#d6687bfb883a312e9c85526fea0820d542d336b8"
-  integrity sha512-+IbhHsXf7J2zvL3NjQ5ftQYFKeC1UI8/wVVgAzv/oq/tEacsFtToNRRnopAPuYl2jzOLs2NxyPGaNnM/MjdgIQ==
+"@reef-knot/ui-react@2.1.2":
+  version "2.1.2"
+  resolved "https://registry.yarnpkg.com/@reef-knot/ui-react/-/ui-react-2.1.2.tgz#7f4c08ee52c7704e4bf2c796099a8f81af24b918"
+  integrity sha512-xRnbZZ4R1FTsLbHK1ftxbIrTJtNbOm8wjvdOyXWXLv3MnY4+zUVasF/J7Kwjr78uk7gnTyuLgJDaoKFT8/+m2w==
   dependencies:
     react-transition-group "4"
     use-callback-ref "1.2.5"
@@ -9380,16 +9380,16 @@ redis-parser@^3.0.0:
   dependencies:
     redis-errors "^1.0.0"
 
-reef-knot@5.2.0:
-  version "5.2.0"
-  resolved "https://registry.yarnpkg.com/reef-knot/-/reef-knot-5.2.0.tgz#477270b70c2f31a896c2b4540ebe6e22fe94afc6"
-  integrity sha512-GBh5leeBX51DG44LziGMeuIT8ZX060of3MUoKC06F4bzL0asvktStBZl2jIYpJJNLk/4vsyzowPqCOUvhbpRCA==
+reef-knot@5.2.1:
+  version "5.2.1"
+  resolved "https://registry.yarnpkg.com/reef-knot/-/reef-knot-5.2.1.tgz#18a7aa8817896d951d88d0a8212af91c12d65de4"
+  integrity sha512-3iZRohLSziJXrSqcA9bfGtrAqy3w+gmFlnrDEX7ryTpje1M7aksNZU/Y91AYxZJB0xv3Lv+5+2A/hhijYffSKA==
   dependencies:
     "@reef-knot/connect-wallet-modal" "5.2.0"
     "@reef-knot/core-react" "4.1.1"
     "@reef-knot/ledger-connector" "4.1.0"
     "@reef-knot/types" "2.0.1"
-    "@reef-knot/ui-react" "2.1.1"
+    "@reef-knot/ui-react" "2.1.2"
     "@reef-knot/wallets-helpers" "2.0.1"
     "@reef-knot/wallets-list" "2.0.1"
     "@reef-knot/web3-react" "4.0.1"
