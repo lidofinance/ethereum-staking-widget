@@ -5,7 +5,7 @@ import { useStakingLimitWarning } from 'shared/hooks/use-staking-limit-warning';
 import { useDappStatus } from 'shared/hooks/use-dapp-status';
 
 export const StakeAmountInput = () => {
-  const { isDappActive } = useDappStatus();
+  const { isWalletConnected, isDappActive } = useDappStatus();
   const { maxAmount, stakingLimitInfo } = useStakeFormData();
   const { limitWarning, limitError } = useStakingLimitWarning(
     stakingLimitInfo?.stakeLimitLevel,
@@ -13,7 +13,7 @@ export const StakeAmountInput = () => {
 
   return (
     <TokenAmountInputHookForm
-      disabled={!isDappActive}
+      disabled={isWalletConnected && !isDappActive}
       fieldName="amount"
       token={'ETH'}
       data-testid="stakeInput"

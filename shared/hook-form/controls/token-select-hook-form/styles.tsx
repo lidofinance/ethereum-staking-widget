@@ -9,15 +9,15 @@ export const SelectIconStyle = styled((props) => <SelectIcon {...props} />)`
     // when we move the cursor away from a SelectIcon (without the '!important' the SelectIcon becomes active).
     border-color: ${({ disabled }) =>
       disabled && 'var(--lido-color-border)!important'};
-    background: ${({ disabled }) =>
-      disabled ? 'var(--lido-color-background)' : 'transparent'};
+    background: ${({ disabled }) => disabled && 'var(--lido-color-background)'};
   }
 
   &:hover {
     & > span {
       border-color: ${({ disabled }) => disabled && 'var(--lido-color-border)'};
       background: ${({ disabled }) =>
-        disabled ? 'var(--lido-color-background)' : 'transparent'};
+        disabled && 'var(--lido-color-background)'};
     }
+    cursor: ${({ disabled }) => disabled && 'default'};
   }
 `;
