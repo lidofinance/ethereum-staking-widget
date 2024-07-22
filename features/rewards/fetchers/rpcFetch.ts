@@ -33,8 +33,6 @@ export type TOKENS = (typeof TOKENS)[keyof typeof TOKENS];
 
 export const TOKENS_BY_CHAIN_ID = {
   [CHAINS.Mainnet]: [TOKENS.STETH, TOKENS.WSTETH, TOKENS.CURVE],
-  [CHAINS.Rinkeby]: [TOKENS.STETH, TOKENS.WSTETH],
-  [CHAINS.Goerli]: [TOKENS.STETH, TOKENS.LDO_REWARDS, TOKENS.WSTETH],
 } as const;
 
 export const TOKEN_ADDRESS_BY_CHAIN_ID = {
@@ -42,14 +40,6 @@ export const TOKEN_ADDRESS_BY_CHAIN_ID = {
     [TOKENS.STETH]: '0xae7ab96520de3a18e5e111b5eaab095312d7fe84',
     [TOKENS.CURVE]: '0xDC24316b9AE028F1497c275EB9192a3Ea0f67022',
   },
-  [CHAINS.Ropsten]: {},
-  [CHAINS.Rinkeby]: {
-    [TOKENS.STETH]: '0xbA453033d328bFdd7799a4643611b616D80ddd97',
-  },
-  [CHAINS.Goerli]: {
-    [TOKENS.STETH]: '0x1643e812ae58766192cf7d2cf9567df2c37e9b7f',
-  },
-  [CHAINS.Kovan]: {},
 } as const;
 
 export const TOKEN_ABI_BY_CHAIN_ID = {
@@ -57,14 +47,6 @@ export const TOKEN_ABI_BY_CHAIN_ID = {
     [TOKENS.STETH]: STETH_ABI,
     [TOKENS.CURVE]: CURVE_ABI,
   },
-  [CHAINS.Ropsten]: {},
-  [CHAINS.Rinkeby]: {
-    [TOKENS.STETH]: STETH_ABI,
-  },
-  [CHAINS.Goerli]: {
-    [TOKENS.STETH]: STETH_ABI,
-  },
-  [CHAINS.Kovan]: {},
 } as const;
 
 export const getTokenAddress = (
