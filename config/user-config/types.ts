@@ -5,7 +5,6 @@ export type UserConfigDefaultType = {
   supportedChainIds: number[];
   prefillUnsafeElRpcUrls: {
     [CHAINS.Mainnet]: string[];
-    [CHAINS.Goerli]: string[];
     [CHAINS.Holesky]: string[];
   };
   walletconnectProjectId: string | undefined;
