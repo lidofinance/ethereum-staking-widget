@@ -26,7 +26,3 @@ export const ConnectWalletStyle = styled(WalletCardStyle)`
           background: linear-gradient(48.34deg, #d2ddff -5.55%, #e6e6e6 100%);
         `}
 `;
-
-export const ConnectWalletTextStyle = styled.p`
-  margin-bottom: 12px;
-`;
