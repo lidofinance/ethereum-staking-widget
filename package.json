@@ -68,7 +68,7 @@
     "react-hook-form": "^7.45.2",
     "react-is": "^18.2.0",
     "react-transition-group": "^4.4.2",
-    "reef-knot": "5.0.3",
+    "reef-knot": "5.2.1",
     "remark": "^13.0.0",
     "remark-external-links": "^8.0.0",
     "remark-html": "^13.0.1",
@@ -78,7 +78,7 @@
     "tiny-invariant": "^1.1.0",
     "uuid": "^8.3.2",
     "viem": "2.13.3",
-    "wagmi": "2.10.4"
+    "wagmi": "2.11.2"
   },
   "devDependencies": {
     "@commitlint/cli": "^17.4.4",
@@ -131,9 +131,7 @@
   },
   "resolutions": {
     "postcss": "^8.4.31",
-    "crypto-js": "^4.2.0",
-    "@ledgerhq/hw-transport-webhid": "6.28.1",
-    "@ledgerhq/hw-transport": "6.30.1"
+    "crypto-js": "^4.2.0"
   },
   "lint-staged": {
     "./**/*.{ts,tsx}": [
