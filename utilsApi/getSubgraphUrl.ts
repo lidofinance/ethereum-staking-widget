@@ -4,7 +4,6 @@ import { SubgraphChains } from 'types';
 
 export const SUBGRAPH_URL = {
   [CHAINS.Mainnet]: secretConfig.subgraphMainnet,
-  [CHAINS.Goerli]: secretConfig.subgraphGoerli,
   [CHAINS.Holesky]: secretConfig.subgraphHolesky,
 } as const;
 

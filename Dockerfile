@@ -22,11 +22,13 @@ ARG DEFAULT_CHAIN="1"
 ENV NEXT_TELEMETRY_DISABLED=1 \
   BASE_PATH=$BASE_PATH \
   SUPPORTED_CHAINS=$SUPPORTED_CHAINS \
- DEFAULT_CHAIN=$DEFAULT_CHAIN
+  DEFAULT_CHAIN=$DEFAULT_CHAIN
 
 WORKDIR /app
-RUN apk add --no-cache curl=~8
+RUN apk add --no-cache curl=~8 
+    
 COPY --from=build /app /app
+RUN chown -R node:node /app/.next
 
 USER node
 EXPOSE 3000

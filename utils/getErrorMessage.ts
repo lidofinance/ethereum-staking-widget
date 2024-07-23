@@ -19,7 +19,14 @@ export const getErrorMessage = (error: unknown): ErrorMessage => {
 
   const code = extractCodeFromError(error);
   switch (code) {
-    case -32000:
+    case -32000: {
+      // Handling user-canceled transaction from a safe-app
+      if ((error as any)?.message === 'User rejected transaction') {
+        return ErrorMessage.DENIED_SIG;
+      }
+    }
+    // intentional fallthrough
+    // eslint-disable-next-line no-fallthrough
     case 3:
     case 'UNPREDICTABLE_GAS_LIMIT':
     case 'INSUFFICIENT_FUNDS':
