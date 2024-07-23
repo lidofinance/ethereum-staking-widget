@@ -12,13 +12,7 @@ import { getBebopRate } from 'utils/get-bebop-rate';
 import { getOpenOceanRate } from 'utils/get-open-ocean-rate';
 import { standardFetcher } from 'utils/standardFetcher';
 
-import {
-  BebopIcon,
-  OneInchIcon,
-  OpenOceanIcon,
-  ParaSwapIcon,
-  JumperIcon,
-} from './icons';
+import { BebopIcon, OneInchIcon, OpenOceanIcon, ParaSwapIcon } from './icons';
 
 import type {
   DexWithdrawalApi,
@@ -26,7 +20,6 @@ import type {
   GetRateType,
   RateCalculationResult,
 } from './types';
-import { getJumperRate } from 'utils/get-jumper-rate';
 
 const RATE_PRECISION = 100000;
 const RATE_PRECISION_BN = BigNumber.from(RATE_PRECISION);
@@ -151,23 +144,6 @@ const getBebopWithdrawalRate: GetRateType = async ({ amount, token }) => {
   };
 };
 
-const getJumperWithdrawalRate: GetRateType = async ({ amount, token }) => {
-  try {
-    if (amount.gt(Zero)) {
-      return await getJumperRate(amount, token, 'ETH');
-    }
-  } catch (e) {
-    console.warn(
-      '[getOneInchWithdrawalRate] Failed to receive withdraw rate',
-      e,
-    );
-  }
-  return {
-    rate: null,
-    toReceive: null,
-  };
-};
-
 const dexWithdrawalMap: DexWithdrawalIntegrationMap = {
   'open-ocean': {
     title: 'OpenOcean',
@@ -211,16 +187,6 @@ const dexWithdrawalMap: DexWithdrawalIntegrationMap = {
       `https://bebop.xyz/trade?network=ethereum&buy=0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE&sell=${getAddress(
         getTokenAddress(CHAINS.Mainnet, token),
       )}&sellAmounts=${formatEther(amount)}&source=lido`,
-  },
-  jumper: {
-    title: 'Jumper',
-    icon: JumperIcon,
-    fetcher: getJumperWithdrawalRate,
-    matomoEvent: MATOMO_CLICK_EVENTS_TYPES.withdrawalGoToJumper,
-    link: (amount, token) =>
-      `https://jumper.exchange/?fromAmount=${formatEther(amount)}&fromChain=1&fromToken=${getAddress(
-        getTokenAddress(CHAINS.Mainnet, token),
-      )}&source=lido&toChain=1&toToken=0x0000000000000000000000000000000000000000`,
   },
 } as const;
 
