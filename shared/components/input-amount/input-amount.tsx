@@ -17,7 +17,7 @@ import { Input } from '@lidofinance/lido-ui';
 
 import { InputDecoratorMaxButton } from './input-decorator-max-button';
 import { InputDecoratorLocked } from './input-decorator-locked';
-import { InputStyle } from './styles';
+import { InputWrapperStyle } from './styles';
 
 type InputAmountProps = {
   onChange?: (value: BigNumber | null) => void;
@@ -154,26 +154,29 @@ export const InputAmount = forwardRef<HTMLInputElement, InputAmountProps>(
           }
         : undefined;
 
+    // Fix: We use InputWrapperStyle as wrapper, because `StakeFormProvider` works incorrect with Input styled (issue with ForwardRef)
     return (
-      <InputStyle
-        {...props}
-        placeholder={placeholder}
-        rightDecorator={
-          rightDecorator ?? (
-            <>
-              <InputDecoratorMaxButton
-                onClick={handleClickMax}
-                disabled={!handleClickMax || props.disabled}
-              />
-              {isLocked ? <InputDecoratorLocked /> : undefined}
-            </>
-          )
-        }
-        inputMode="decimal"
-        defaultValue={defaultValue}
-        onChange={handleChange}
-        ref={inputRef}
-      />
+      <InputWrapperStyle $disabled={props.disabled}>
+        <Input
+          {...props}
+          placeholder={placeholder}
+          rightDecorator={
+            rightDecorator ?? (
+              <>
+                <InputDecoratorMaxButton
+                  onClick={handleClickMax}
+                  disabled={!handleClickMax || props.disabled}
+                />
+                {isLocked ? <InputDecoratorLocked /> : undefined}
+              </>
+            )
+          }
+          inputMode="decimal"
+          defaultValue={defaultValue}
+          onChange={handleChange}
+          ref={inputRef}
+        />
+      </InputWrapperStyle>
     );
   },
 );
