@@ -5,7 +5,10 @@ import { TOKENS } from '@lido-sdk/constants';
 import { useTokenAddress } from '@lido-sdk/react';
 import { Divider, Question, Tooltip } from '@lidofinance/lido-ui';
 
+import { useConfig } from 'config';
 import { LIDO_APR_TOOLTIP_TEXT, DATA_UNAVAILABLE } from 'consts/text';
+import { CHAINS } from 'consts/chains';
+
 import { TokenToWallet } from 'shared/components';
 import { FormatToken } from 'shared/formatters';
 import { useLidoApr } from 'shared/hooks';
@@ -18,6 +21,7 @@ import {
   L2Fallback,
 } from 'shared/wallet';
 import type { WalletComponentType } from 'shared/wallet/types';
+import { overrideWithQAMockBoolean } from 'utils/qa';
 
 import { LimitMeter } from './limit-meter';
 import { FlexCenter, LidoAprStyled, StyledCard } from './styles';
@@ -96,9 +100,17 @@ const WalletComponent: WalletComponentType = (props) => {
 };
 
 export const Wallet: WalletComponentType = memo((props) => {
+  const { config } = useConfig();
   const { isL2Chain, isDappActive } = useDappStatus();
 
-  if (isL2Chain) {
+  // Display L2 banners only for defaultChain=Mainnet
+  // Or via QA helpers override
+  const showL2Chain = overrideWithQAMockBoolean(
+    isL2Chain && config.defaultChain === CHAINS.Mainnet,
+    'mock-qa-helpers-show-l2-banners-on-testnet',
+  );
+
+  if (showL2Chain) {
     return <L2Fallback {...props} />;
   }
 
