@@ -39,14 +39,14 @@ export const ClaimWallet: WalletComponentType = memo((props) => {
   const { config } = useConfig();
   const { isL2Chain, isDappActive } = useDappStatus();
 
-  // Display L2 banners only for defaultChain=Mainnet
+  // Display L2 banners only if defaultChain=Mainnet
   // Or via QA helpers override
   const showL2Chain = overrideWithQAMockBoolean(
-    isL2Chain && config.defaultChain === CHAINS.Mainnet,
+    config.defaultChain === CHAINS.Mainnet,
     'mock-qa-helpers-show-l2-banners-on-testnet',
   );
 
-  if (showL2Chain) {
+  if (isL2Chain && showL2Chain) {
     return <L2Fallback {...props} />;
   }
 
