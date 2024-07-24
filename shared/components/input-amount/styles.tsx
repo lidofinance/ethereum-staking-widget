@@ -1,7 +1,7 @@
 import styled, { css } from 'styled-components';
 import { Input } from '@lidofinance/lido-ui';
 
-export const InputStyle = styled((props) => <Input {...props} />)`
+export const InputStyle = styled(Input)`
   & > span {
     ${({ theme, disabled }) =>
       theme.name === 'dark'
