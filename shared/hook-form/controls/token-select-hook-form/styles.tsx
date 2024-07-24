@@ -2,7 +2,7 @@ import styled, { css } from 'styled-components';
 import { SelectIcon } from '@lidofinance/lido-ui';
 
 // Temporarily: The 'SelectIconStyle' is being used to fix the 'SelectIcon' from the UI lib.
-export const SelectIconStyle = styled((props) => <SelectIcon {...props} />)`
+export const SelectIconStyle = styled(SelectIcon)`
   & > span {
     // The '!important' is important here,
     // because the 'lido-ui' lib has a bug with a disabled state
