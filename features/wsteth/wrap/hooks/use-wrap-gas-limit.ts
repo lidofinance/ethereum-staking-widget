@@ -4,7 +4,7 @@ import { useLidoSWR, useWSTETHContractRPC } from '@lido-sdk/react';
 import { config } from 'config';
 import { WRAP_FROM_ETH_GAS_LIMIT, WRAP_GAS_LIMIT } from 'consts/tx';
 import { useCurrentStaticRpcProvider } from 'shared/hooks/use-current-static-rpc-provider';
-import { applyGasLimitRatio } from 'utils/apply-gas-limit-ratio';
+import { applyGasLimitRatio } from 'features/stake/stake-form/utils';
 
 export const useWrapGasLimit = () => {
   const wsteth = useWSTETHContractRPC();
@@ -18,13 +18,11 @@ export const useWrapGasLimit = () => {
 
       const fetchGasLimitETH = async () => {
         try {
-          return applyGasLimitRatio(
-            await staticRpcProvider.estimateGas({
-              from: config.ESTIMATE_ACCOUNT,
-              to: wsteth.address,
-              value: config.ESTIMATE_AMOUNT,
-            }),
-          );
+          return await staticRpcProvider.estimateGas({
+            from: config.ESTIMATE_ACCOUNT,
+            to: wsteth.address,
+            value: config.ESTIMATE_AMOUNT,
+          });
         } catch (error) {
           console.warn(`${_key}::[eth]`, error);
           return applyGasLimitRatio(WRAP_FROM_ETH_GAS_LIMIT);
