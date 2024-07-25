@@ -7,11 +7,11 @@ import { getERC20Contract } from '@lido-sdk/contracts';
 import { useAllowance, useSDK } from '@lido-sdk/react';
 
 import { isContract } from 'utils/isContract';
-import { getFeeData } from 'utils/getFeeData';
 import { runWithTransactionLogger } from 'utils';
 
 import { useCurrentStaticRpcProvider } from './use-current-static-rpc-provider';
 import { STRATEGY_LAZY } from 'consts/swr-strategies';
+import { sendTx } from 'utils/send-tx';
 
 type ApproveOptions =
   | {
@@ -60,24 +60,16 @@ export const useApprove = (
       const isMultisig = await isContract(account, providerWeb3);
 
       const processApproveTx = async () => {
-        if (isMultisig) {
-          const tx = await contractWeb3.populateTransaction.approve(
-            spender,
-            amount,
-          );
-          const hash = await providerWeb3
-            .getSigner()
-            .sendUncheckedTransaction(tx);
-          return hash;
-        } else {
-          const { maxFeePerGas, maxPriorityFeePerGas } =
-            await getFeeData(staticRpcProvider);
-          const tx = await contractWeb3.approve(spender, amount, {
-            maxFeePerGas,
-            maxPriorityFeePerGas,
-          });
-          return tx;
-        }
+        const tx = await contractWeb3.populateTransaction.approve(
+          spender,
+          amount,
+        );
+        return sendTx({
+          tx,
+          isMultisig,
+          staticProvider: staticRpcProvider,
+          walletProvider: providerWeb3,
+        });
       };
 
       const approveTx = await runWithTransactionLogger(
