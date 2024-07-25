@@ -1,4 +1,5 @@
 import { memo } from 'react';
+
 import { Divider, Text } from '@lidofinance/lido-ui';
 import { TOKENS } from '@lido-sdk/constants';
 import {
@@ -8,14 +9,25 @@ import {
   useWSTETHBalance,
   useTokenAddress,
 } from '@lido-sdk/react';
-import { useWeb3 } from 'reef-knot/web3-react';
+
+import { useConfig } from 'config';
+import { CHAINS } from 'consts/chains';
+import { STRATEGY_LAZY } from 'consts/swr-strategies';
 import { FormatToken } from 'shared/formatters';
 import { TokenToWallet } from 'shared/components';
 import { useWstethBySteth, useStethByWsteth } from 'shared/hooks';
+import { useDappStatus } from 'shared/hooks/use-dapp-status';
 import type { WalletComponentType } from 'shared/wallet/types';
-import { CardBalance, CardRow, CardAccount, Fallback } from 'shared/wallet';
+import {
+  CardBalance,
+  CardRow,
+  CardAccount,
+  Fallback,
+  L2Fallback,
+} from 'shared/wallet';
+import { overrideWithQAMockBoolean } from 'utils/qa';
+
 import { StyledCard } from './styles';
-import { STRATEGY_LAZY } from 'consts/swr-strategies';
 
 const WalletComponent: WalletComponentType = (props) => {
   const { account } = useSDK();
@@ -105,6 +117,23 @@ const WalletComponent: WalletComponentType = (props) => {
 };
 
 export const Wallet: WalletComponentType = memo((props) => {
-  const { active } = useWeb3();
-  return active ? <WalletComponent {...props} /> : <Fallback {...props} />;
+  const { config } = useConfig();
+  const { isL2Chain, isDappActive } = useDappStatus();
+
+  // Display L2 banners only if defaultChain=Mainnet
+  // Or via QA helpers override
+  const showL2Chain = overrideWithQAMockBoolean(
+    config.defaultChain === CHAINS.Mainnet,
+    'mock-qa-helpers-show-l2-banners-on-testnet',
+  );
+
+  if (isL2Chain && showL2Chain) {
+    return <L2Fallback {...props} />;
+  }
+
+  if (!isDappActive) {
+    return <Fallback {...props} />;
+  }
+
+  return <WalletComponent {...props} />;
 });

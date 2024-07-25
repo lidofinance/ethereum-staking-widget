@@ -2,7 +2,8 @@ import {
   TOKENS,
   TokenOption,
   TokenSelectHookForm,
-} from 'shared/hook-form/controls/token-select-hook-form';
+} from 'shared/hook-form/controls/token-select-hook-form/token-select-hook-form';
+import { useDappStatus } from 'shared/hooks/use-dapp-status';
 
 const OPTIONS: TokenOption[] = [
   { token: TOKENS.STETH },
@@ -10,5 +11,12 @@ const OPTIONS: TokenOption[] = [
 ];
 
 export const TokenSelectRequest = () => {
-  return <TokenSelectHookForm options={OPTIONS} />;
+  const { isWalletConnected, isDappActive } = useDappStatus();
+
+  return (
+    <TokenSelectHookForm
+      disabled={isWalletConnected && !isDappActive}
+      options={OPTIONS}
+    />
+  );
 };
