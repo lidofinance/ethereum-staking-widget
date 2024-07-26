@@ -1,12 +1,17 @@
 import { FC } from 'react';
 import { GetStaticProps } from 'next';
 import Head from 'next/head';
-import { Layout } from 'shared/components';
+
 import { TopCard, RewardsList } from 'features/rewards/features';
 import RewardsHistoryProvider from 'providers/rewardsHistory';
+
+import { Layout } from 'shared/components';
 import { Fallback } from 'shared/wallet';
+import { useDappStatus } from 'shared/hooks/use-dapp-status';
 
 const Rewards: FC = () => {
+  const { isWalletConnected, isDappActive } = useDappStatus();
+
   return (
     <Layout
       title="Reward History"
@@ -22,7 +27,7 @@ const Rewards: FC = () => {
         />
       </Head>
       <RewardsHistoryProvider>
-        <Fallback />
+        {isWalletConnected && !isDappActive && <Fallback />}
         <TopCard />
         <RewardsList />
       </RewardsHistoryProvider>
