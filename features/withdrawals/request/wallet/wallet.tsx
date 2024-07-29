@@ -51,7 +51,7 @@ export const RequestWallet: WalletComponentType = memo((props) => {
   );
 
   if (isL2Chain && showL2Chain) {
-    return <L2Fallback {...props} />;
+    return <L2Fallback textEnding={'to request withdrawals'} {...props} />;
   }
 
   if (!isDappActive) {
