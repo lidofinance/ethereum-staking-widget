@@ -17,6 +17,7 @@ import { CHAINS, L2_CHAINS } from 'consts/chains';
 import { MATOMO_CLICK_EVENTS_TYPES } from 'consts/matomo-click-events';
 
 import { L2FallbackWalletStyle, TextStyle, ButtonStyle } from './styles';
+import { trackMatomoEvent } from '../../../utils/track-matomo-event';
 
 export type L2FallbackComponent = FC<{ textEnding: string } & BlockProps>;
 
@@ -56,11 +57,15 @@ export const L2Fallback: L2FallbackComponent = (props) => {
         Learn about Lido on L2 opportunities on {l2ChainName} network or switch
         to Ethereum {defaultChainName} {props.textEnding}
       </TextStyle>
-      <Link
-        href={`${config.rootOrigin}/lido-on-l2`}
-        data-matomo={MATOMO_CLICK_EVENTS_TYPES.lidoOnL2Opportunities}
-      >
-        <ButtonStyle size={'xs'}>Lido on L2 opportunities</ButtonStyle>
+      <Link href={`${config.rootOrigin}/lido-on-l2`}>
+        <ButtonStyle
+          size={'xs'}
+          onClick={() =>
+            trackMatomoEvent(MATOMO_CLICK_EVENTS_TYPES.lidoOnL2Opportunities)
+          }
+        >
+          Lido on L2 opportunities
+        </ButtonStyle>
       </Link>
     </L2FallbackWalletStyle>
   );
