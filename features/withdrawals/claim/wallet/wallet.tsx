@@ -47,7 +47,7 @@ export const ClaimWallet: WalletComponentType = memo((props) => {
   );
 
   if (isL2Chain && showL2Chain) {
-    return <L2Fallback {...props} />;
+    return <L2Fallback textEnding={'to claim withdrawals'} {...props} />;
   }
 
   if (!isDappActive) {

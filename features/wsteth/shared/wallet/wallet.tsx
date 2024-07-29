@@ -128,7 +128,7 @@ export const Wallet: WalletComponentType = memo((props) => {
   );
 
   if (isL2Chain && showL2Chain) {
-    return <L2Fallback {...props} />;
+    return <L2Fallback textEnding={'to wrap/unwrap'} {...props} />;
   }
 
   if (!isDappActive) {
