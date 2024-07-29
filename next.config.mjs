@@ -144,7 +144,6 @@ export default withBundleAnalyzer({
 
     defaultChain: process.env.DEFAULT_CHAIN,
     rpcUrls_1: process.env.EL_RPC_URLS_1,
-    rpcUrls_5: process.env.EL_RPC_URLS_5,
     rpcUrls_17000: process.env.EL_RPC_URLS_17000,
     ethplorerApiKey: process.env.ETHPLORER_API_KEY,
 
@@ -155,7 +154,6 @@ export default withBundleAnalyzer({
     cspReportOnly: process.env.CSP_REPORT_ONLY,
 
     subgraphMainnet: process.env.SUBGRAPH_MAINNET,
-    subgraphGoerli: process.env.SUBGRAPH_GOERLI,
     subgraphHolesky: process.env.SUBGRAPH_HOLESKY,
     subgraphRequestTimeout: process.env.SUBGRAPH_REQUEST_TIMEOUT,
 

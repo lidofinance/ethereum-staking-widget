@@ -7,12 +7,12 @@ import { useDappStatus } from 'shared/hooks/use-dapp-status';
 import { useUnwrapFormData } from '../unwrap-form-context';
 
 export const TokenAmountInputUnwrap = () => {
-  const { isDappActive } = useDappStatus();
+  const { isWalletConnected, isDappActive } = useDappStatus();
   const { maxAmount } = useUnwrapFormData();
 
   return (
     <TokenAmountInputHookForm
-      disabled={!isDappActive}
+      disabled={isWalletConnected && !isDappActive}
       fieldName="amount"
       token={TOKENS.WSTETH}
       data-testid="unwrapInput"

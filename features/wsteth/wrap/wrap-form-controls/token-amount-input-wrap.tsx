@@ -11,13 +11,13 @@ type TokenAmountInputWrapProps = Pick<
 >;
 
 export const TokenAmountInputWrap = (props: TokenAmountInputWrapProps) => {
-  const { isDappActive } = useDappStatus();
+  const { isWalletConnected, isDappActive } = useDappStatus();
   const token = useWatch<WrapFormInputType, 'token'>({ name: 'token' });
   const { maxAmount, isApprovalNeededBeforeWrap } = useWrapFormData();
 
   return (
     <TokenAmountInputHookForm
-      disabled={!isDappActive}
+      disabled={isWalletConnected && !isDappActive}
       fieldName="amount"
       token={token}
       data-testid="wrapInput"

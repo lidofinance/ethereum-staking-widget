@@ -308,7 +308,7 @@ export const MATOMO_CLICK_EVENTS: Record<
   [MATOMO_CLICK_EVENTS_TYPES.withdrawalGoToBebop]: [
     'Ethereum_Withdrawals_Widget',
     'Click on «Go to Bebop» in aggregators list on Request tab',
-    'eth_withdrawals_request_go_to_1inch',
+    'eth_withdrawals_request_go_to_Bebop',
   ],
   [MATOMO_CLICK_EVENTS_TYPES.withdrawalGoToCowSwap]: [
     'Ethereum_Withdrawals_Widget',

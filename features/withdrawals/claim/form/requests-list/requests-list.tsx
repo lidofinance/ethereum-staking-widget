@@ -1,13 +1,14 @@
+import { useDappStatus } from 'shared/hooks/use-dapp-status';
+
 import { RequestItem } from './request-item';
 import { RequestsEmpty } from './requests-empty';
 import { Wrapper } from './styles';
 import { RequestsLoader } from './requests-loader';
 import { useFieldArray, useFormContext, useFormState } from 'react-hook-form';
 import { ClaimFormInputType } from '../../claim-form-context';
-import { useWeb3 } from 'reef-knot/web3-react';
 
 export const RequestsList: React.FC = () => {
-  const { active } = useWeb3();
+  const { isWalletConnected, isDappActive } = useDappStatus();
   const { isLoading } = useFormState<ClaimFormInputType>();
   const { register } = useFormContext<ClaimFormInputType>();
   const { fields } = useFieldArray<ClaimFormInputType, 'requests'>({
@@ -18,8 +19,13 @@ export const RequestsList: React.FC = () => {
     return <RequestsLoader />;
   }
 
-  if (!active || fields.length === 0) {
-    return <RequestsEmpty isWalletConnected={active} />;
+  if (!isDappActive || fields.length === 0) {
+    return (
+      <RequestsEmpty
+        isWalletConnected={isWalletConnected}
+        isDappActive={isDappActive}
+      />
+    );
   }
 
   return (
