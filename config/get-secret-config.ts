@@ -10,6 +10,7 @@ export type SecretConfigType = Modify<
 
     rpcUrls_1: [string, ...string[]];
     rpcUrls_17000: [string, ...string[]];
+    rpcUrls_11155111: [string, ...string[]];
 
     cspReportOnly: boolean;
 
@@ -41,6 +42,8 @@ export const getSecretConfig = (): SecretConfigType => {
       string,
       ...string[],
     ],
+    rpcUrls_11155111: (serverRuntimeConfig.rpcUrls_11155111?.split(',') ??
+      []) as [string, ...string[]],
 
     cspReportOnly: toBoolean(serverRuntimeConfig.cspReportOnly),
 
