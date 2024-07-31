@@ -13,18 +13,15 @@ export const WalletStyle = styled(WalletCardStyle)`
 `;
 
 export const WalletContentStyle = styled.div`
+  padding: ${({ theme }) => theme.spaceMap.xxl}px;
+`;
+
+export const WalletContentRowStyle = styled.div`
   display: flex;
   flex-wrap: nowrap;
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
-
-  padding: ${({ theme }) => theme.spaceMap.xxl}px;
-
-  ${({ theme }) => theme.mediaQueries.md} {
-    align-items: end;
-    flex-direction: column-reverse;
-  }
 `;
 
 export const WalletContentAddressBadgeStyle = styled(AddressBadge)`

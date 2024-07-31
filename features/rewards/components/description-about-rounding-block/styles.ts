@@ -1,9 +1,9 @@
 import styled from 'styled-components';
 
-export const WrapperStyle = styled.div`
+export const DescriptionAboutRoundingBlockStyled = styled.div`
   flex: 1;
   padding: ${({ theme }) => theme.spaceMap.sm}px;
-  margin-right: ${({ theme }) => theme.spaceMap.xl}px;
+  margin-top: ${({ theme }) => theme.spaceMap.md}px;
 
   border-radius: ${({ theme }) => theme.spaceMap.sm}px;
 
@@ -12,7 +12,6 @@ export const WrapperStyle = styled.div`
   text-align: center;
 
   ${({ theme }) => theme.mediaQueries.md} {
-    margin-right: 0;
     margin-top: ${({ theme }) => theme.spaceMap.xl}px;
   }
 `;

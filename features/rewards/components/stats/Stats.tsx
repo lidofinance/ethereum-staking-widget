@@ -5,7 +5,6 @@ import { useRewardsHistory } from 'features/rewards/hooks';
 import EthSymbol from 'features/rewards/components/EthSymbol';
 import NumberFormat from 'features/rewards/components/NumberFormat';
 import { useStethEthRate } from 'features/rewards/hooks/use-steth-eth-rate';
-import { useRewardsBalanceData } from 'features/rewards/hooks/use-rewards-balance-data';
 
 import { Item } from './Item';
 import { Stat } from './Stat';
@@ -19,30 +18,9 @@ export const Stats: React.FC = () => {
     initialLoading: pending,
   } = useRewardsHistory();
   const { data: stEthEth } = useStethEthRate();
-  const { data: balanceData } = useRewardsBalanceData();
 
   return (
     <>
-      <Item data-testid="stEthBalanceBlock">
-        <Title mb="8px">stETH balance</Title>
-        <Stat data-testid="stEthBalance" mb="6px">
-          <EthSymbol />
-          <NumberFormat
-            number={balanceData?.stEthBalanceParsed}
-            pending={pending}
-          />
-        </Stat>
-        <Title data-testid="stEthBalanceIn$" hideMobile>
-          <Box display="inline-block" pr="3px">
-            {currency.symbol}
-          </Box>
-          <NumberFormat
-            number={balanceData?.stEthCurrencyBalance}
-            currency
-            pending={pending}
-          />
-        </Title>
-      </Item>
       <Item data-testid="stEthRewardedBlock">
         <Title mb="8px">stETH rewarded</Title>
         <Stat data-testid="stEthRewarded" mb="6px" color="#61B75F">
