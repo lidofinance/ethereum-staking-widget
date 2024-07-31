@@ -22,6 +22,8 @@ export const WalletContentRowStyle = styled.div`
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
+
+  color: var(--lido-color-text);
 `;
 
 export const WalletContentAddressBadgeStyle = styled(AddressBadge)`
