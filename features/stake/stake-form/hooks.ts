@@ -5,7 +5,7 @@ import { useLidoSWR, useSDK, useSTETHContractRPC } from '@lido-sdk/react';
 import { config } from 'config';
 import { STRATEGY_CONSTANT } from 'consts/swr-strategies';
 
-import { applyGasLimitRatio } from './utils';
+import { applyGasLimitRatio } from 'utils/apply-gas-limit-ratio';
 
 type UseStethSubmitGasLimit = () => BigNumber;
 
