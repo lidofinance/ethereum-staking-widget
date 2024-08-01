@@ -23,20 +23,18 @@ export const sendTx = async ({
   walletProvider,
   shouldApplyGasLimitRatio = false,
 }: SendTxOptions) => {
-  if (isMultisig)
-    return walletProvider.getSigner().sendUncheckedTransaction(tx);
+  if (!isMultisig) {
+    const { maxFeePerGas, maxPriorityFeePerGas } =
+      await getFeeData(staticProvider);
 
-  const { maxFeePerGas, maxPriorityFeePerGas } =
-    await getFeeData(staticProvider);
+    tx.maxFeePerGas = maxFeePerGas;
+    tx.maxPriorityFeePerGas = maxPriorityFeePerGas;
 
-  tx.maxFeePerGas = maxFeePerGas;
-  tx.maxPriorityFeePerGas = maxPriorityFeePerGas;
+    const gasLimit = await estimateGas(tx, staticProvider);
 
-  const gasLimit = await estimateGas(tx, staticProvider);
-
-  tx.gasLimit = shouldApplyGasLimitRatio
-    ? applyGasLimitRatio(gasLimit)
-    : gasLimit;
-
-  return walletProvider.getSigner().sendTransaction(tx);
+    tx.gasLimit = shouldApplyGasLimitRatio
+      ? applyGasLimitRatio(gasLimit)
+      : gasLimit;
+  }
+  return walletProvider.getSigner().sendUncheckedTransaction(tx);
 };

@@ -13,6 +13,7 @@ import type {
   WrapFormApprovalData,
   WrapFormInputType,
 } from '../wrap-form-context';
+import { useCurrentStaticRpcProvider } from 'shared/hooks/use-current-static-rpc-provider';
 
 type UseWrapFormProcessorArgs = {
   approvalData: WrapFormApprovalData;
@@ -31,6 +32,7 @@ export const useWrapFormProcessor = ({
   const { isApprovalNeededBeforeWrap, processApproveTx } = approvalData;
   const { txModalStages } = useTxModalWrap();
   const wstETHContractRPC = useWSTETHContractRPC();
+  const { staticRpcProvider } = useCurrentStaticRpcProvider();
 
   return useCallback(
     async ({ amount, token }: WrapFormInputType) => {
@@ -45,8 +47,7 @@ export const useWrapFormProcessor = ({
           txModalStages.signApproval(amount, token);
 
           await processApproveTx({
-            onTxSent: (tx) => {
-              const txHash = typeof tx === 'string' ? tx : tx.hash;
+            onTxSent: (txHash) => {
               if (!isMultisig) {
                 txModalStages.pendingApproval(amount, token, txHash);
               }
@@ -60,10 +61,9 @@ export const useWrapFormProcessor = ({
 
         txModalStages.sign(amount, token, willReceive);
 
-        const tx = await runWithTransactionLogger('Wrap signing', () =>
+        const txHash = await runWithTransactionLogger('Wrap signing', () =>
           processWrapTx({ amount, token, isMultisig }),
         );
-        const txHash = typeof tx === 'string' ? tx : tx.hash;
 
         if (isMultisig) {
           txModalStages.successMultisig();
@@ -72,11 +72,9 @@ export const useWrapFormProcessor = ({
 
         txModalStages.pending(amount, token, willReceive, txHash);
 
-        if (typeof tx === 'object') {
-          await runWithTransactionLogger('Wrap block confirmation', async () =>
-            tx.wait(),
-          );
-        }
+        await runWithTransactionLogger('Wrap block confirmation', () =>
+          staticRpcProvider.waitForTransaction(txHash),
+        );
 
         const wstethBalance = await wstETHContractRPC.balanceOf(account);
 
@@ -98,6 +96,7 @@ export const useWrapFormProcessor = ({
       onConfirm,
       processApproveTx,
       processWrapTx,
+      staticRpcProvider,
       onRetry,
     ],
   );

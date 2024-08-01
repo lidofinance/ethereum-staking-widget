@@ -201,6 +201,7 @@ export const useWithdrawalRequest = ({
 }: useWithdrawalRequestParams) => {
   const { chainId } = useSDK();
   const withdrawalQueueAddress = getWithdrawalQueueAddress(chainId);
+  const { staticRpcProvider } = useCurrentStaticRpcProvider();
 
   const { connector } = useAccount();
   const { account } = useWeb3();
@@ -283,9 +284,8 @@ export const useWithdrawalRequest = ({
             txModalStages.signApproval(amount, token);
 
             await approve({
-              onTxSent: (tx) => {
+              onTxSent: (txHash) => {
                 if (!isMultisig) {
-                  const txHash = typeof tx === 'string' ? tx : tx.hash;
                   txModalStages.pendingApproval(amount, token, txHash);
                 }
               },
@@ -303,8 +303,10 @@ export const useWithdrawalRequest = ({
         txModalStages.sign(amount, token);
 
         const callback = await method({ signature, requests });
-        const tx = await runWithTransactionLogger('Request signing', callback);
-        const txHash = typeof tx === 'string' ? tx : tx.hash;
+        const txHash = await runWithTransactionLogger(
+          'Request signing',
+          callback,
+        );
 
         if (isMultisig) {
           txModalStages.successMultisig();
@@ -313,10 +315,9 @@ export const useWithdrawalRequest = ({
 
         txModalStages.pending(amount, token, txHash);
 
-        if (typeof tx === 'object') {
-          await runWithTransactionLogger(
-            'Request block confirmation',
-            async () => tx.wait(),
+        if (!isMultisig) {
+          await runWithTransactionLogger('Stake block confirmation', () =>
+            staticRpcProvider.waitForTransaction(txHash),
           );
         }
 
@@ -340,6 +341,7 @@ export const useWithdrawalRequest = ({
       needsApprove,
       onConfirm,
       onRetry,
+      staticRpcProvider,
       txModalStages,
     ],
   );

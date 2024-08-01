@@ -1,7 +1,7 @@
 import invariant from 'tiny-invariant';
 import { useCallback } from 'react';
 
-import { ContractReceipt, ContractTransaction } from '@ethersproject/contracts';
+import type { ContractReceipt } from '@ethersproject/contracts';
 import { BigNumber } from '@ethersproject/bignumber';
 import { getERC20Contract } from '@lido-sdk/contracts';
 import { useAllowance, useSDK } from '@lido-sdk/react';
@@ -16,7 +16,7 @@ import { sendTx } from 'utils/send-tx';
 type ApproveOptions =
   | {
       onTxStart?: () => void | Promise<void>;
-      onTxSent?: (tx: string | ContractTransaction) => void | Promise<void>;
+      onTxSent?: (tx: string) => void | Promise<void>;
       onTxAwaited?: (tx: ContractReceipt) => void | Promise<void>;
     }
   | undefined;
@@ -72,16 +72,16 @@ export const useApprove = (
         });
       };
 
-      const approveTx = await runWithTransactionLogger(
+      const approveTxHash = await runWithTransactionLogger(
         'Approve signing',
         processApproveTx,
       );
-      await onTxSent?.(approveTx);
+      await onTxSent?.(approveTxHash);
 
-      if (typeof approveTx === 'object') {
+      if (!isMultisig) {
         const receipt = await runWithTransactionLogger(
           'Approve block confirmation',
-          () => approveTx.wait(),
+          () => staticRpcProvider.waitForTransaction(approveTxHash),
         );
         await onTxAwaited?.(receipt);
       }

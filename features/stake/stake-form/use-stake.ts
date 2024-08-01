@@ -83,8 +83,10 @@ export const useStake = ({ onConfirm, onRetry }: StakeOptions) => {
           });
         };
 
-        const tx = await runWithTransactionLogger('Stake signing', callback);
-        const txHash = typeof tx === 'string' ? tx : tx.hash;
+        const txHash = await runWithTransactionLogger(
+          'Stake signing',
+          callback,
+        );
 
         if (isMultisig) {
           txModalStages.successMultisig();
@@ -93,9 +95,9 @@ export const useStake = ({ onConfirm, onRetry }: StakeOptions) => {
 
         txModalStages.pending(amount, txHash);
 
-        if (typeof tx === 'object') {
-          await runWithTransactionLogger('Wrap block confirmation', () =>
-            tx.wait(),
+        if (!isMultisig) {
+          await runWithTransactionLogger('Stake block confirmation', () =>
+            staticRpcProvider.waitForTransaction(txHash),
           );
         }
 

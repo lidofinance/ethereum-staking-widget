@@ -58,8 +58,10 @@ export const useClaim = ({ onRetry }: Args) => {
           });
         };
 
-        const tx = await runWithTransactionLogger('Claim signing', callback);
-        const txHash = typeof tx === 'string' ? tx : tx.hash;
+        const txHash = await runWithTransactionLogger(
+          'Claim signing',
+          callback,
+        );
 
         if (isMultisig) {
           txModalStages.successMultisig();
@@ -68,13 +70,11 @@ export const useClaim = ({ onRetry }: Args) => {
 
         txModalStages.pending(amount, txHash);
 
-        if (typeof tx === 'object') {
-          await runWithTransactionLogger('Claim block confirmation', async () =>
-            tx.wait(),
-          );
-          // we only update if we wait for tx
-          await optimisticClaimRequests(sortedRequests);
-        }
+        await runWithTransactionLogger('Claim block confirmation', async () =>
+          staticRpcProvider.waitForTransaction(txHash),
+        );
+
+        await optimisticClaimRequests(sortedRequests);
 
         txModalStages.success(amount, txHash);
         return true;
