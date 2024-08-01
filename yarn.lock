@@ -2734,10 +2734,10 @@
   resolved "https://registry.yarnpkg.com/@polka/url/-/url-1.0.0-next.24.tgz#58601079e11784d20f82d0585865bb42305c4df3"
   integrity sha512-2LuNTFBIO0m7kKIQvvPHN6UE63VjpmL9rnEEaOOaiSPbZK+zUOYIzBAWcED+3XYzhYsd/0mD57VdxAEqqV52CQ==
 
-"@reef-knot/connect-wallet-modal@5.2.0":
-  version "5.2.0"
-  resolved "https://registry.yarnpkg.com/@reef-knot/connect-wallet-modal/-/connect-wallet-modal-5.2.0.tgz#762d3b570b58405a6050b49eb16dbab5af009ab0"
-  integrity sha512-V75YfqrwHUrKWyo1McyuoMTFbGg/xFcc7pQSiQMxl1eRGBjL8nxtxj0Uj2Zv/3remCBCIq4VTP2J3DiGZQnUiw==
+"@reef-knot/connect-wallet-modal@5.2.2":
+  version "5.2.2"
+  resolved "https://registry.yarnpkg.com/@reef-knot/connect-wallet-modal/-/connect-wallet-modal-5.2.2.tgz#519377324db27a4570df2801aa0c113dadad3d0a"
+  integrity sha512-0ZT7bjFnuSa2dfWcV4yLouInMnWV9gy/CVsETKxTdU5u7wjOU1l2KnaGrSZCctTi3OxkJFkDI0uimApPnhF/Uw==
   dependencies:
     "@ledgerhq/hw-app-eth" "^6.37.1"
     "@ledgerhq/hw-transport" "^6.31.0"
@@ -3833,6 +3833,7 @@
     eventemitter3 "5.0.1"
     mipd "0.0.5"
     zustand "4.4.1"
+
 "@walletconnect/core@2.13.0":
   version "2.13.0"
   resolved "https://registry.yarnpkg.com/@walletconnect/core/-/core-2.13.0.tgz#6b79b039930643e8ee85a0f512b143a35fdb8b52"
@@ -4121,6 +4122,11 @@ JSONStream@^1.3.5:
   dependencies:
     jsonparse "^1.2.0"
     through ">=2.2.7 <3"
+
+abitype@0.9.8:
+  version "0.9.8"
+  resolved "https://registry.yarnpkg.com/abitype/-/abitype-0.9.8.tgz#1f120b6b717459deafd213dfbf3a3dd1bf10ae8c"
+  integrity sha512-puLifILdm+8sjyss4S+fsUN09obiT1g2YW6CtcQF+QDzxR0euzgEB29MZujC6zMk2a6SVmtttq1fc6+YFA7WYQ==
 
 abitype@1.0.0:
   version "1.0.0"
@@ -7252,6 +7258,11 @@ isomorphic-unfetch@3.1.0:
     node-fetch "^2.6.1"
     unfetch "^4.2.0"
 
+isows@1.0.3:
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/isows/-/isows-1.0.3.tgz#93c1cf0575daf56e7120bab5c8c448b0809d0d74"
+  integrity sha512-2cKei4vlmg2cxEjm3wVSqn8pcoRF/LX/wpifuuNquFO4SQmPwarClT+SUCA2lt+l581tTeZIPIZuIDo2jWN1fg==
+
 isows@1.0.4:
   version "1.0.4"
   resolved "https://registry.yarnpkg.com/isows/-/isows-1.0.4.tgz#810cd0d90cc4995c26395d2aa4cfa4037ebdf061"
@@ -8392,6 +8403,13 @@ minimist@^1.2.0, minimist@^1.2.6:
   resolved "https://registry.yarnpkg.com/minimist/-/minimist-1.2.8.tgz#c1a464e7693302e082a075cee0c057741ac4772c"
   integrity sha512-2yyAR8qBkN3YuheJanUpWC5U3bb5osDywNB8RzDVlDwDHbocAJveqqj1u8+SVD7jkWT4yvsHCpWqqWqAxb0zCA==
 
+mipd@0.0.5:
+  version "0.0.5"
+  resolved "https://registry.yarnpkg.com/mipd/-/mipd-0.0.5.tgz#367ee796531c23f0631f129038700b1406663aec"
+  integrity sha512-gbKA784D2WKb5H/GtqEv+Ofd1S9Zj+Z/PGDIl1u1QAbswkxD28BQ5bSXQxkeBzPBABg1iDSbiwGG1XqlOxRspA==
+  dependencies:
+    viem "^1.1.4"
+
 mipd@0.0.7:
   version "0.0.7"
   resolved "https://registry.yarnpkg.com/mipd/-/mipd-0.0.7.tgz#bb5559e21fa18dc3d9fe1c08902ef14b7ce32fd9"
@@ -9390,12 +9408,12 @@ redis-parser@^3.0.0:
   dependencies:
     redis-errors "^1.0.0"
 
-reef-knot@5.2.1:
-  version "5.2.1"
-  resolved "https://registry.yarnpkg.com/reef-knot/-/reef-knot-5.2.1.tgz#18a7aa8817896d951d88d0a8212af91c12d65de4"
-  integrity sha512-3iZRohLSziJXrSqcA9bfGtrAqy3w+gmFlnrDEX7ryTpje1M7aksNZU/Y91AYxZJB0xv3Lv+5+2A/hhijYffSKA==
+reef-knot@5.2.3:
+  version "5.2.3"
+  resolved "https://registry.yarnpkg.com/reef-knot/-/reef-knot-5.2.3.tgz#23554c91828454048889d7107aeb859089fb6581"
+  integrity sha512-L7cWKM+UNZpPGbGzraW6aoZZB3qyqOy7RU4Yic/54hHb63QOhD5f1cNnUi8mVAI2d+s/vrSCLznR1aLuf4RghA==
   dependencies:
-    "@reef-knot/connect-wallet-modal" "5.2.0"
+    "@reef-knot/connect-wallet-modal" "5.2.2"
     "@reef-knot/core-react" "4.1.1"
     "@reef-knot/ledger-connector" "4.1.0"
     "@reef-knot/types" "2.0.1"
@@ -10935,6 +10953,20 @@ viem@2.13.3:
     "@scure/bip39" "1.2.1"
     abitype "1.0.0"
     isows "1.0.4"
+    ws "8.13.0"
+
+viem@^1.1.4:
+  version "1.21.4"
+  resolved "https://registry.yarnpkg.com/viem/-/viem-1.21.4.tgz#883760e9222540a5a7e0339809202b45fe6a842d"
+  integrity sha512-BNVYdSaUjeS2zKQgPs+49e5JKocfo60Ib2yiXOWBT6LuVxY1I/6fFX3waEtpXvL1Xn4qu+BVitVtMh9lyThyhQ==
+  dependencies:
+    "@adraffy/ens-normalize" "1.10.0"
+    "@noble/curves" "1.2.0"
+    "@noble/hashes" "1.3.2"
+    "@scure/bip32" "1.3.2"
+    "@scure/bip39" "1.2.1"
+    abitype "0.9.8"
+    isows "1.0.3"
     ws "8.13.0"
 
 viem@^2.1.1:

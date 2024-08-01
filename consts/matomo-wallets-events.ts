@@ -29,6 +29,8 @@ export const enum MATOMO_WALLETS_EVENTS_TYPES {
   onConnectOkx = 'onConnectOkx',
   onClickBitget = 'onClickBitget',
   onConnectBitget = 'onConnectBitget',
+  onClickBrowser = 'onClickBrowser',
+  onConnectBrowser = 'onConnectBrowser',
 }
 
 export const MATOMO_WALLETS_EVENTS: Record<
@@ -165,6 +167,16 @@ export const MATOMO_WALLETS_EVENTS: Record<
     'Connect BitGet wallet',
     'eth_widget_connect_bitget',
   ],
+  [MATOMO_WALLETS_EVENTS_TYPES.onClickBrowser]: [
+    'Ethereum_Staking_Widget',
+    'Click Browser wallet',
+    'eth_widget_click_browser',
+  ],
+  [MATOMO_WALLETS_EVENTS_TYPES.onConnectBrowser]: [
+    'Ethereum_Staking_Widget',
+    'Connect Browser wallet',
+    'eth_widget_connect_browser',
+  ],
 };
 
 const getMetricHandler = (event: Parameters<typeof trackEvent>) => () =>
@@ -187,6 +199,9 @@ export const walletsMetrics: Metrics<WalletIdsEthereum> = {
         xdefi: getMetricHandler(MATOMO_WALLETS_EVENTS.onClickXdefi),
         okx: getMetricHandler(MATOMO_WALLETS_EVENTS.onClickOkx),
         bitget: getMetricHandler(MATOMO_WALLETS_EVENTS.onClickBitget),
+        browserExtension: getMetricHandler(
+          MATOMO_WALLETS_EVENTS.onClickBrowser,
+        ),
       },
     },
     connect: {
@@ -204,6 +219,9 @@ export const walletsMetrics: Metrics<WalletIdsEthereum> = {
         xdefi: getMetricHandler(MATOMO_WALLETS_EVENTS.onConnectXdefi),
         okx: getMetricHandler(MATOMO_WALLETS_EVENTS.onConnectOkx),
         bitget: getMetricHandler(MATOMO_WALLETS_EVENTS.onConnectBitget),
+        browserExtension: getMetricHandler(
+          MATOMO_WALLETS_EVENTS.onConnectBrowser,
+        ),
       },
     },
   },
