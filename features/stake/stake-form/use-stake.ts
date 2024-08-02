@@ -3,7 +3,11 @@ import { useCallback } from 'react';
 import { useWeb3 } from 'reef-knot/web3-react';
 import invariant from 'tiny-invariant';
 
-import { useSDK, useSTETHContractWeb3 } from '@lido-sdk/react';
+import {
+  useSDK,
+  useSTETHContractRPC,
+  useSTETHContractWeb3,
+} from '@lido-sdk/react';
 
 import { config } from 'config';
 import { useCurrentStaticRpcProvider } from 'shared/hooks/use-current-static-rpc-provider';
@@ -31,6 +35,7 @@ type StakeOptions = {
 
 export const useStake = ({ onConfirm, onRetry }: StakeOptions) => {
   const stethContractWeb3 = useSTETHContractWeb3();
+  const stethContract = useSTETHContractRPC();
   const { account, chainId } = useWeb3();
   const { staticRpcProvider } = useCurrentStaticRpcProvider();
   const { providerWeb3 } = useSDK();
@@ -101,7 +106,7 @@ export const useStake = ({ onConfirm, onRetry }: StakeOptions) => {
           );
         }
 
-        const stethBalance = await stethContractWeb3.balanceOf(account);
+        const stethBalance = await stethContract.balanceOf(account);
 
         await onConfirm?.();
 
@@ -120,8 +125,9 @@ export const useStake = ({ onConfirm, onRetry }: StakeOptions) => {
       providerWeb3,
       stethContractWeb3,
       txModalStages,
-      onConfirm,
       staticRpcProvider,
+      stethContract,
+      onConfirm,
       shouldApplyCalldataSuffix,
       onRetry,
     ],
