@@ -28,6 +28,7 @@ import { useWithdrawalsContract } from './useWithdrawalsContract';
 import { useTxModalStagesRequest } from 'features/withdrawals/request/transaction-modal-request/use-tx-modal-stages-request';
 import { useTransactionModal } from 'shared/transaction-modal/transaction-modal';
 import { sendTx } from 'utils/send-tx';
+import { overrideWithQAMockBoolean } from 'utils/qa';
 
 // this encapsulates permit/approval & steth/wsteth flows
 const useWithdrawalRequestMethods = () => {
@@ -236,8 +237,13 @@ export const useWithdrawalRequest = ({
     spender: withdrawalQueueAddress,
   });
 
+  const isWalletConnect = overrideWithQAMockBoolean(
+    connector?.id === 'walletConnect',
+    'mock-qa-helpers-force-approval-withdrawal-wallet-connect',
+  );
+
   const isApprovalFlow = Boolean(
-    connector?.id === 'walletConnect' ||
+    isWalletConnect ||
       isMultisig ||
       (allowance && allowance.gt(Zero) && !needsApprove),
   );
