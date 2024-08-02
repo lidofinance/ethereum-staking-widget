@@ -22,7 +22,7 @@ type ApproveOptions =
   | undefined;
 
 export type UseApproveResponse = {
-  approve: (options?: ApproveOptions) => Promise<void>;
+  approve: (options?: ApproveOptions) => Promise<string>;
   needsApprove: boolean;
   initialLoading: boolean;
   allowance: BigNumber | undefined;
@@ -87,6 +87,8 @@ export const useApprove = (
       }
 
       await updateAllowance();
+
+      return approveTxHash;
     },
     [
       chainId,
