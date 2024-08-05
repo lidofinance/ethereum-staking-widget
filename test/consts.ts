@@ -13,8 +13,6 @@ export interface PostRequest {
   schema: object;
 }
 
-const FLOAT_REGEX = /^\d+(\.\d+)?$/;
-
 const LIDO_STATS_SCHEMA = {
   type: 'object',
   properties: {
@@ -165,46 +163,6 @@ const LIDO_STATS_SCHEMA = {
 
 export const GET_REQUESTS: GetRequest[] = [
   {
-    uri: '/api/oneinch-rate',
-    schema: {
-      type: 'object',
-      properties: {
-        rate: { type: 'number', min: 0 },
-        toReceive: { type: 'string' },
-      },
-      required: ['rate', 'toReceive'],
-      additionalProperties: false,
-    },
-  },
-  {
-    uri: `/api/short-lido-stats?chainId=${CONFIG.STAND_CONFIG.chainId}`,
-    schema: {
-      type: 'object',
-      properties: {
-        uniqueAnytimeHolders: { type: 'string' },
-        uniqueHolders: { type: 'string' },
-        totalStaked: { type: 'string' },
-        marketCap: { type: 'number' },
-      },
-      required: [
-        'totalStaked',
-        'marketCap',
-        'uniqueAnytimeHolders',
-        'uniqueHolders',
-      ],
-      additionalProperties: false,
-    },
-  },
-  {
-    uri: '/api/eth-apr',
-    isDeprecated: true,
-    schema: { type: 'string', pattern: FLOAT_REGEX },
-  },
-  {
-    uri: '/api/totalsupply',
-    schema: { type: 'string', pattern: FLOAT_REGEX },
-  },
-  {
     uri: '/api/lidostats',
     isDeprecated: true,
     schema: LIDO_STATS_SCHEMA,
@@ -213,74 +171,6 @@ export const GET_REQUESTS: GetRequest[] = [
     uri: '/api/ldo-stats',
     isDeprecated: true,
     schema: LIDO_STATS_SCHEMA,
-  },
-  {
-    uri: '/api/eth-price',
-    schema: {
-      type: 'object',
-      properties: {
-        price: {
-          type: 'number',
-          min: 0,
-        },
-      },
-      required: ['price'],
-      additionalProperties: false,
-    },
-  },
-  {
-    uri: '/api/rewards?address=0x87c0e047F4e4D3e289A56a36570D4CB957A37Ef1&currency=usd&onlyRewards=false&archiveRate=true&skip=0&limit=10',
-    skipTestnet: true, // api/rewards don't work on testnet
-    schema: {
-      type: 'object',
-      properties: {
-        averageApr: { type: 'string' },
-        ethToStEthRatio: { type: 'number' },
-        events: {
-          type: 'array',
-          items: [
-            {
-              type: 'object',
-              additionalProperties: true,
-            },
-          ],
-        },
-        stETHCurrencyPrice: {
-          type: 'object',
-          properties: {
-            eth: { type: 'number' },
-            usd: { type: 'number' },
-          },
-          required: ['eth', 'usd'],
-          additionalProperties: false,
-        },
-        totalItems: { type: 'number' },
-        totals: {
-          type: 'object',
-          properties: {
-            currencyRewards: { type: 'string' },
-            ethRewards: { type: 'string' },
-          },
-        },
-        required: [
-          'averageApr',
-          'ethToStEthRatio',
-          'events',
-          'stETHCurrencyPrice',
-          'totalItems',
-          'totals',
-        ],
-        additionalProperties: false,
-      },
-    },
-  },
-  {
-    uri: '/api/sma-steth-apr',
-    isDeprecated: true,
-    schema: {
-      type: 'string',
-      pattern: FLOAT_REGEX,
-    },
   },
 ];
 
