@@ -145,6 +145,7 @@ export default withBundleAnalyzer({
     defaultChain: process.env.DEFAULT_CHAIN,
     rpcUrls_1: process.env.EL_RPC_URLS_1,
     rpcUrls_17000: process.env.EL_RPC_URLS_17000,
+    rpcUrls_11155111: process.env.EL_RPC_URLS_11155111,
     ethplorerApiKey: process.env.ETHPLORER_API_KEY,
 
     oneInchApiKey: process.env.ONE_INCH_API_KEY,
@@ -155,6 +156,7 @@ export default withBundleAnalyzer({
 
     subgraphMainnet: process.env.SUBGRAPH_MAINNET,
     subgraphHolesky: process.env.SUBGRAPH_HOLESKY,
+    subgraphSepolia: process.env.SUBGRAPH_SEPOLIA,
     subgraphRequestTimeout: process.env.SUBGRAPH_REQUEST_TIMEOUT,
 
     rateLimit: process.env.RATE_LIMIT,
