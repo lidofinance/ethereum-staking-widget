@@ -7,7 +7,7 @@ import { useLaggyDataWrapper } from './use-laggy-data-wrapper';
 type UseRewardsDataLoad = (props: {
   address: string;
   currency: string;
-  isOnlyRewards: boolean;
+  isIncludeTransfers: boolean;
   isUseArchiveExchangeRate: boolean;
   skip: number;
   limit: number;
@@ -23,7 +23,7 @@ export const useRewardsDataLoad: UseRewardsDataLoad = (props) => {
   const {
     address,
     currency,
-    isOnlyRewards,
+    isIncludeTransfers,
     isUseArchiveExchangeRate,
     skip,
     limit,
@@ -32,7 +32,7 @@ export const useRewardsDataLoad: UseRewardsDataLoad = (props) => {
   const requestOptions = {
     address,
     currency,
-    onlyRewards: isOnlyRewards,
+    onlyRewards: !isIncludeTransfers,
     archiveRate: isUseArchiveExchangeRate,
     skip,
     limit,

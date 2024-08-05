@@ -11,7 +11,7 @@ export const RightOptions: FC = () => {
     currencyObject,
     setCurrency,
     isUseArchiveExchangeRate,
-    isOnlyRewards,
+    isIncludeTransfers,
   } = useRewardsHistory();
   return (
     <RightOptionsWrapper>
@@ -20,7 +20,7 @@ export const RightOptions: FC = () => {
         currency={currencyObject}
         address={address}
         archiveRate={isUseArchiveExchangeRate}
-        onlyRewards={isOnlyRewards}
+        onlyRewards={!isIncludeTransfers}
       />
     </RightOptionsWrapper>
   );
