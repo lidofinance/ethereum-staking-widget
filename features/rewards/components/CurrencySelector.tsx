@@ -11,6 +11,10 @@ const StyledSelect = styled(Select)`
   height: 32px;
   width: 72px;
 
+  ${({ theme }) => theme.mediaQueries.lg} {
+    width: 100%;
+  }
+
   border-radius: 6px;
 
   & > span {
