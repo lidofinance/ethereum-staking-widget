@@ -29,7 +29,9 @@ export const Stats: React.FC = () => {
           </Box>
         </Stat>
         <Title data-testid="stEthRewardedIn$" hideMobile>
-          <Box display="inline-block">{currency.symbol}</Box>
+          <Box display="inline-block" pr={'3px'}>
+            {currency.symbol}
+          </Box>
           <NumberFormat
             number={data?.totals.currencyRewards}
             currency

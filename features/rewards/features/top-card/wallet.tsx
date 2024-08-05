@@ -45,7 +45,9 @@ export const Wallet: FC = () => {
               }
             >
               <Title data-testid="stEthBalanceIn$" hideMobile>
-                <Box display="inline-block">{currency.symbol}</Box>
+                <Box display="inline-block" pr={'3px'}>
+                  {currency.symbol}
+                </Box>
                 <NumberFormat
                   number={balanceData?.stEthCurrencyBalance}
                   currency
