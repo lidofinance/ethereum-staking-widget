@@ -48,7 +48,11 @@ type Props = Partial<FormatArgs> & {
 
 const NumberFormat = (props: Props) => {
   if (props.pending)
-    return <InlineLoader style={{ flexBasis: '60%', minWidth: '60px' }} />;
+    return (
+      <InlineLoader
+        style={{ flexBasis: '60%', minWidth: '60px', manWidth: '120px' }}
+      />
+    );
 
   return props.number ? (
     <Tooltip
