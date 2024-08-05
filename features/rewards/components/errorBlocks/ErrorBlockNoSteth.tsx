@@ -26,7 +26,7 @@ export const ErrorBlockNoSteth = ({ hasSteth }: ErrorBlockNoStethProps) => {
       <LocalLink href={HOME_PATH}>
         {!hasSteth && (
           <Box width="150px">
-            <Button>Stake now</Button>
+            <Button size={'xs'}>Stake now</Button>
           </Box>
         )}
       </LocalLink>
