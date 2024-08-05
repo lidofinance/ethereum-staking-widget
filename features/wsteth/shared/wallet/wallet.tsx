@@ -10,6 +10,8 @@ import {
   useTokenAddress,
 } from '@lido-sdk/react';
 
+import { useConfig } from 'config';
+import { CHAINS } from 'consts/chains';
 import { STRATEGY_LAZY } from 'consts/swr-strategies';
 import { FormatToken } from 'shared/formatters';
 import { TokenToWallet } from 'shared/components';
@@ -23,6 +25,7 @@ import {
   Fallback,
   L2Fallback,
 } from 'shared/wallet';
+import { overrideWithQAMockBoolean } from 'utils/qa';
 
 import { StyledCard } from './styles';
 
@@ -114,10 +117,18 @@ const WalletComponent: WalletComponentType = (props) => {
 };
 
 export const Wallet: WalletComponentType = memo((props) => {
+  const { config } = useConfig();
   const { isL2Chain, isDappActive } = useDappStatus();
 
-  if (isL2Chain) {
-    return <L2Fallback {...props} />;
+  // Display L2 banners only if defaultChain=Mainnet
+  // Or via QA helpers override
+  const showL2Chain = overrideWithQAMockBoolean(
+    config.defaultChain === CHAINS.Mainnet,
+    'mock-qa-helpers-show-l2-banners-on-testnet',
+  );
+
+  if (isL2Chain && showL2Chain) {
+    return <L2Fallback textEnding={'to wrap/unwrap'} {...props} />;
   }
 
   if (!isDappActive) {

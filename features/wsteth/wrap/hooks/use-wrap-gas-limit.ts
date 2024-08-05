@@ -1,13 +1,8 @@
 import { useAccount } from 'wagmi';
 import { useLidoSWR, useWSTETHContractRPC } from '@lido-sdk/react';
-import { CHAINS } from '@lido-sdk/constants';
 
 import { config } from 'config';
-import {
-  WRAP_FROM_ETH_GAS_LIMIT,
-  WRAP_GAS_LIMIT,
-  WRAP_GAS_LIMIT_GOERLI,
-} from 'consts/tx';
+import { WRAP_FROM_ETH_GAS_LIMIT, WRAP_GAS_LIMIT } from 'consts/tx';
 import { useCurrentStaticRpcProvider } from 'shared/hooks/use-current-static-rpc-provider';
 import { applyGasLimitRatio } from 'features/stake/stake-form/utils';
 
@@ -41,9 +36,7 @@ export const useWrapGasLimit = () => {
           });
         } catch (error) {
           console.warn(`${_key}::[steth]`, error);
-          return chainId === CHAINS.Goerli
-            ? WRAP_GAS_LIMIT_GOERLI
-            : WRAP_GAS_LIMIT;
+          return WRAP_GAS_LIMIT;
         }
       };
 
@@ -61,9 +54,6 @@ export const useWrapGasLimit = () => {
 
   return {
     gasLimitETH: data?.gasLimitETH || WRAP_FROM_ETH_GAS_LIMIT,
-    gasLimitStETH:
-      data?.gasLimitStETH || chainId === CHAINS.Goerli
-        ? WRAP_GAS_LIMIT_GOERLI
-        : WRAP_GAS_LIMIT,
+    gasLimitStETH: data?.gasLimitStETH || WRAP_GAS_LIMIT,
   };
 };

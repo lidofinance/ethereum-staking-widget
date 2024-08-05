@@ -22,11 +22,11 @@ type TokenSelectWrapProps = Pick<
 >;
 
 export const TokenSelectWrap = (props: TokenSelectWrapProps) => {
-  const { isDappActive } = useDappStatus();
+  const { isWalletConnected, isDappActive } = useDappStatus();
 
   return (
     <TokenSelectHookForm
-      disabled={!isDappActive}
+      disabled={isWalletConnected && !isDappActive}
       options={OPTIONS}
       onChange={(value) => {
         trackEvent(

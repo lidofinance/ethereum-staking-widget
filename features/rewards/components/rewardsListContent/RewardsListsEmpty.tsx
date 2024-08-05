@@ -1,4 +1,5 @@
 import { FC } from 'react';
+
 import { Divider } from '@lidofinance/lido-ui';
 
 import { RewardsListEmptyWrapper } from './RewardsListsEmptyStyles';
@@ -8,7 +9,7 @@ export const RewardsListsEmpty: FC = () => {
     <>
       <Divider indents="lg" />
       <RewardsListEmptyWrapper>
-        Connect your wallet to see the stats.
+        Connect your wallet or enter your Ethereum address to see the stats.
       </RewardsListEmptyWrapper>
     </>
   );

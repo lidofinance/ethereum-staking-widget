@@ -35,13 +35,6 @@ const Web3Provider: FC<PropsWithChildren> = ({ children }) => {
       supportedChainIds.includes(chain.id),
     );
 
-    // Adding Mumbai as a temporary workaround
-    // for the wagmi and walletconnect bug, when some wallets are failing to connect
-    // when there are only one supported network, so we need at least 2 of them.
-    // Mumbai should be the last in the array, otherwise wagmi can send request to it.
-    // TODO: remove after updating wagmi to v1+
-    supportedChains.push(wagmiChains.polygonMumbai);
-
     const defaultChain =
       supportedChains.find((chain) => chain.id === defaultChainId) ||
       supportedChains[0]; // first supported chain as fallback

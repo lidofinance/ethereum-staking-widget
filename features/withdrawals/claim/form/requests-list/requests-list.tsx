@@ -8,7 +8,7 @@ import { Wrapper } from './styles';
 import { RequestsLoader } from './requests-loader';
 
 export const RequestsList: React.FC = () => {
-  const { isDappActive } = useDappStatus();
+  const { isWalletConnected, isDappActive } = useDappStatus();
   const { isLoading } = useFormState<ClaimFormInputType>();
   const { register } = useFormContext<ClaimFormInputType>();
   const { fields } = useFieldArray<ClaimFormInputType, 'requests'>({
@@ -20,7 +20,12 @@ export const RequestsList: React.FC = () => {
   }
 
   if (!isDappActive || fields.length === 0) {
-    return <RequestsEmpty isWalletConnected={isDappActive} />;
+    return (
+      <RequestsEmpty
+        isWalletConnected={isWalletConnected}
+        isDappActive={isDappActive}
+      />
+    );
   }
 
   return (

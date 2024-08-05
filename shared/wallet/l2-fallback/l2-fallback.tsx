@@ -1,6 +1,6 @@
-import { useMemo } from 'react';
+import { FC, useMemo } from 'react';
 import { useAccount } from 'wagmi';
-import { Link } from '@lidofinance/lido-ui';
+import { BlockProps, Link } from '@lidofinance/lido-ui';
 
 import { ReactComponent as ArbitrumLogo } from 'assets/icons/l2/arbitrum.svg';
 import { ReactComponent as BaseLogo } from 'assets/icons/l2/base.svg';
@@ -15,9 +15,11 @@ import { config } from 'config';
 import { useUserConfig } from 'config/user-config';
 import { CHAINS, L2_CHAINS } from 'consts/chains';
 import { MATOMO_CLICK_EVENTS_TYPES } from 'consts/matomo-click-events';
-import { WalletCardComponent } from 'shared/wallet/card/types';
 
 import { L2FallbackWalletStyle, TextStyle, ButtonStyle } from './styles';
+import { trackMatomoEvent } from '../../../utils/track-matomo-event';
+
+export type L2FallbackComponent = FC<{ textEnding: string } & BlockProps>;
 
 const l2Logos = {
   [L2_CHAINS.Arbitrum]: ArbitrumLogo,
@@ -35,7 +37,7 @@ const getL2Logo = (chainId: L2_CHAINS) => {
   return SVGLogo ? <SVGLogo style={{ marginBottom: '13px' }} /> : null;
 };
 
-export const L2Fallback: WalletCardComponent = (props) => {
+export const L2Fallback: L2FallbackComponent = (props) => {
   const { chainId } = useAccount();
   const { defaultChain } = useUserConfig();
 
@@ -53,13 +55,17 @@ export const L2Fallback: WalletCardComponent = (props) => {
       {getL2Logo(chainId as L2_CHAINS)}
       <TextStyle>
         Learn about Lido on L2 opportunities on {l2ChainName} network or switch
-        to Ethereum {defaultChainName} to stake
+        to Ethereum {defaultChainName} {props.textEnding}
       </TextStyle>
-      <Link
-        href={`${config.rootOrigin}/lido-on-l2`}
-        data-matomo={MATOMO_CLICK_EVENTS_TYPES.lidoOnL2Opportunities}
-      >
-        <ButtonStyle size={'xs'}>Lido on L2 opportunities</ButtonStyle>
+      <Link href={`${config.rootOrigin}/lido-on-l2`}>
+        <ButtonStyle
+          size={'xs'}
+          onClick={() =>
+            trackMatomoEvent(MATOMO_CLICK_EVENTS_TYPES.lidoOnL2Opportunities)
+          }
+        >
+          Lido on L2 opportunities
+        </ButtonStyle>
       </Link>
     </L2FallbackWalletStyle>
   );
