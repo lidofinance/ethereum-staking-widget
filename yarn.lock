@@ -2110,53 +2110,53 @@
     bignumber.js "^9.1.2"
     rxjs "^7.8.1"
 
-"@lido-sdk/constants@3.2.1", "@lido-sdk/constants@^3.2.1":
-  version "3.2.1"
-  resolved "https://registry.yarnpkg.com/@lido-sdk/constants/-/constants-3.2.1.tgz#0c4582d7e76e4f8bc42e8f3c0d14dc0fbe481d77"
-  integrity sha512-zes0Mw0r1nEQYBNHV5fxK2H9Byowejy4haFy9LYDh1nL72aNJzzdh5S5iM+pKlEuLHQJHV5lVO/k9tunNJIKqQ==
+"@lido-sdk/constants@3.3.0", "@lido-sdk/constants@^3.3.0":
+  version "3.3.0"
+  resolved "https://registry.yarnpkg.com/@lido-sdk/constants/-/constants-3.3.0.tgz#044b652a000a067b9ee0ae9f58814434779bb108"
+  integrity sha512-R5XINgj/EQvyBfPF+Zv9B/ycFCqARD8rbWDp3J4luAMDbSUP3ncGw0x7Aj836k96eVnrh+jfd2tz/c99Dm6IaA==
   dependencies:
     tiny-invariant "^1.1.0"
 
-"@lido-sdk/contracts@3.0.4", "@lido-sdk/contracts@^3.0.4":
-  version "3.0.4"
-  resolved "https://registry.yarnpkg.com/@lido-sdk/contracts/-/contracts-3.0.4.tgz#85e3b203aa0a38841ecf22d7ac4e5f8d70848920"
-  integrity sha512-oW7gyHKcrss77sEPMmYm38M0CQ5+3GGlNewu9D+UJhtxRpLa+Jh3nWEd5tq/hMdMSN9cGoerVKFfBAhw6zKajg==
+"@lido-sdk/contracts@3.0.5", "@lido-sdk/contracts@^3.0.5":
+  version "3.0.5"
+  resolved "https://registry.yarnpkg.com/@lido-sdk/contracts/-/contracts-3.0.5.tgz#9778e83258de241e26bcd5c76589ff010856afbb"
+  integrity sha512-piu5wKqxs9QS85qG9OrwXfdg5ZCg+xlggj6Q8PMo9qbAk0UzBVuU7CcXUalpKeJpTQMV4SnvcJ0dwZNR2weK8g==
   dependencies:
-    "@lido-sdk/constants" "3.2.1"
+    "@lido-sdk/constants" "3.3.0"
     tiny-invariant "^1.1.0"
 
-"@lido-sdk/fetch@^2.1.12":
-  version "2.1.12"
-  resolved "https://registry.yarnpkg.com/@lido-sdk/fetch/-/fetch-2.1.12.tgz#aa0ef16212f4bad7ffed68928143e7cbdab94973"
-  integrity sha512-kFBrzCVxYnD3Q68cM4KY9E7w/4TAJk1BW2wAcPpJyWm1yQSRL1urhEZ6NGbwkp23QvayVStbNrQiezVOdDnzYw==
+"@lido-sdk/fetch@^2.2.0":
+  version "2.2.0"
+  resolved "https://registry.yarnpkg.com/@lido-sdk/fetch/-/fetch-2.2.0.tgz#e0034083edaed471f29163ebfdccc9b10cd58ea7"
+  integrity sha512-Jwi2W5azP4uuhmsWexkk4al0Y+pMx5PpB74klIBzgX/eoVnK+NOTxLemJa6GDq4KTIlriAM79jscY0TJvJJWQA==
   dependencies:
-    "@lido-sdk/constants" "3.2.1"
+    "@lido-sdk/constants" "3.3.0"
     node-fetch "^2.6.7"
     tiny-invariant "^1.1.0"
 
-"@lido-sdk/helpers@1.5.1", "@lido-sdk/helpers@^1.5.1":
-  version "1.5.1"
-  resolved "https://registry.yarnpkg.com/@lido-sdk/helpers/-/helpers-1.5.1.tgz#ced13f1df6e34a1d4ad551fde299524dc237b694"
-  integrity sha512-n8sTliverpxOy7PeTCUyG+bQPIJdg57AOON+6X2tZ19JxU3r6ZhHzo33x/9022aKu0A/Ya7edREDB6MadymdRg==
+"@lido-sdk/helpers@1.6.0", "@lido-sdk/helpers@^1.6.0":
+  version "1.6.0"
+  resolved "https://registry.yarnpkg.com/@lido-sdk/helpers/-/helpers-1.6.0.tgz#551cde8aa1251b310d4e1f93f7ec12680992c639"
+  integrity sha512-rg8sV7l3SWebx8tiagaDf+Q1F+UfgZ2FS31NDPzBUtG++QKP+9V1hTOrpwLNsmJhqQ0zbNhm84+ykHbCmEO+Cw==
   dependencies:
-    "@lido-sdk/constants" "3.2.1"
+    "@lido-sdk/constants" "3.3.0"
     tiny-invariant "^1.1.0"
 
-"@lido-sdk/providers@^1.4.14":
-  version "1.4.14"
-  resolved "https://registry.yarnpkg.com/@lido-sdk/providers/-/providers-1.4.14.tgz#b7c714aa753d662c0d51f71ee4990b3cb78ce790"
-  integrity sha512-m422uXuaGoXoUlF8oyFTIQsj8ljVet/x7nK0xF8UoURm/iuaAhTbEXpcxhmkx8JSSDli1928apJRAwxG0McgnQ==
+"@lido-sdk/providers@^1.4.15":
+  version "1.4.15"
+  resolved "https://registry.yarnpkg.com/@lido-sdk/providers/-/providers-1.4.15.tgz#2640afbd247cff90952d6710888d8b6a3c2ad0cd"
+  integrity sha512-155BlcEgKWFlC17itMAeflhfRnF+ejrRUOONfexgIzjcOtam+PB1WNLzpXj8zkhcLbuMW11zYJ0cfIc4QsToag==
   dependencies:
-    "@lido-sdk/constants" "3.2.1"
+    "@lido-sdk/constants" "3.3.0"
 
-"@lido-sdk/react@^2.0.5":
-  version "2.0.5"
-  resolved "https://registry.yarnpkg.com/@lido-sdk/react/-/react-2.0.5.tgz#13496354863bcd98f78cf223ac65254e9620419a"
-  integrity sha512-XRrO1Zg13IJO0TKhqT/TBJYTWuZg+2+8T+FPmegxwe7mfJSrg025lhtRPW8cjLHvPvVsW6RVgV/vW9iIeHvYpA==
+"@lido-sdk/react@^2.0.6":
+  version "2.0.6"
+  resolved "https://registry.yarnpkg.com/@lido-sdk/react/-/react-2.0.6.tgz#f1a245803eb7136f396ceff695a598b0c92056dd"
+  integrity sha512-4Gwnl+6v/3JS6yyfbyyJj4P/r6slcfW8GESSl5XvPQcK3T/Jt54MN3vIv1tmFyPr1RM/vxtiR4doR+jKEItadA==
   dependencies:
-    "@lido-sdk/constants" "3.2.1"
-    "@lido-sdk/contracts" "3.0.4"
-    "@lido-sdk/helpers" "1.5.1"
+    "@lido-sdk/constants" "3.3.0"
+    "@lido-sdk/contracts" "3.0.5"
+    "@lido-sdk/helpers" "1.6.0"
     swr "^1.0.1"
     tiny-invariant "^1.1.0"
     tiny-warning "^1.0.3"

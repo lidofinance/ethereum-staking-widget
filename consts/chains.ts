@@ -1,6 +1,7 @@
 export enum CHAINS {
   Mainnet = 1,
   Holesky = 17000,
+  Sepolia = 11155111,
 }
 
 export enum L2_CHAINS {
