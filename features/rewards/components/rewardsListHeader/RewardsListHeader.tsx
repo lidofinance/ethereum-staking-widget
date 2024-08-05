@@ -11,8 +11,12 @@ export const RewardsListHeader: FC = () => {
   return (
     <RewardsListHeaderStyle data-testid="rewardsHeader">
       <TitleStyle>Reward history</TitleStyle>
-      <LeftOptions />
-      {!error && data && data?.events.length > 0 && <RightOptions />}
+      {!error && data && data?.events.length > 0 && (
+        <>
+          <LeftOptions />
+          <RightOptions />
+        </>
+      )}
     </RewardsListHeaderStyle>
   );
 };
