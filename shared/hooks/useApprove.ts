@@ -1,28 +1,28 @@
 import invariant from 'tiny-invariant';
 import { useCallback } from 'react';
 
-import { ContractReceipt, ContractTransaction } from '@ethersproject/contracts';
+import type { ContractReceipt } from '@ethersproject/contracts';
 import { BigNumber } from '@ethersproject/bignumber';
 import { getERC20Contract } from '@lido-sdk/contracts';
 import { useAllowance, useSDK } from '@lido-sdk/react';
 
 import { isContract } from 'utils/isContract';
-import { getFeeData } from 'utils/getFeeData';
 import { runWithTransactionLogger } from 'utils';
 
 import { useCurrentStaticRpcProvider } from './use-current-static-rpc-provider';
 import { STRATEGY_LAZY } from 'consts/swr-strategies';
+import { sendTx } from 'utils/send-tx';
 
 type ApproveOptions =
   | {
       onTxStart?: () => void | Promise<void>;
-      onTxSent?: (tx: string | ContractTransaction) => void | Promise<void>;
+      onTxSent?: (tx: string) => void | Promise<void>;
       onTxAwaited?: (tx: ContractReceipt) => void | Promise<void>;
     }
   | undefined;
 
 export type UseApproveResponse = {
-  approve: (options?: ApproveOptions) => Promise<void>;
+  approve: (options?: ApproveOptions) => Promise<string>;
   needsApprove: boolean;
   initialLoading: boolean;
   allowance: BigNumber | undefined;
@@ -57,44 +57,38 @@ export const useApprove = (
       invariant(account, 'account is required');
       await onTxStart?.();
       const contractWeb3 = getERC20Contract(token, providerWeb3.getSigner());
-      const isMultisig = await isContract(account, providerWeb3);
+      const isMultisig = await isContract(account, staticRpcProvider);
 
       const processApproveTx = async () => {
-        if (isMultisig) {
-          const tx = await contractWeb3.populateTransaction.approve(
-            spender,
-            amount,
-          );
-          const hash = await providerWeb3
-            .getSigner()
-            .sendUncheckedTransaction(tx);
-          return hash;
-        } else {
-          const { maxFeePerGas, maxPriorityFeePerGas } =
-            await getFeeData(staticRpcProvider);
-          const tx = await contractWeb3.approve(spender, amount, {
-            maxFeePerGas,
-            maxPriorityFeePerGas,
-          });
-          return tx;
-        }
+        const tx = await contractWeb3.populateTransaction.approve(
+          spender,
+          amount,
+        );
+        return sendTx({
+          tx,
+          isMultisig,
+          staticProvider: staticRpcProvider,
+          walletProvider: providerWeb3,
+        });
       };
 
-      const approveTx = await runWithTransactionLogger(
+      const approveTxHash = await runWithTransactionLogger(
         'Approve signing',
         processApproveTx,
       );
-      await onTxSent?.(approveTx);
+      await onTxSent?.(approveTxHash);
 
-      if (typeof approveTx === 'object') {
+      if (!isMultisig) {
         const receipt = await runWithTransactionLogger(
           'Approve block confirmation',
-          () => approveTx.wait(),
+          () => staticRpcProvider.waitForTransaction(approveTxHash),
         );
         await onTxAwaited?.(receipt);
       }
 
       await updateAllowance();
+
+      return approveTxHash;
     },
     [
       chainId,
