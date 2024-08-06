@@ -1,6 +1,6 @@
 import { genExportData, saveAsCSV } from 'features/rewards/utils';
 import { useRewardsHistory } from 'features/rewards/hooks';
-import { backendRequest } from 'features/rewards/fetchers/requesters';
+import { backendRequest } from 'features/rewards/fetchers/backend';
 
 import { ButtonStyle } from './Exportstyled';
 
