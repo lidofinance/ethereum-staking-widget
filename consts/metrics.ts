@@ -5,4 +5,5 @@ export const enum METRIC_NAMES {
   API_RESPONSE = 'api_response',
   SUBGRAPHS_RESPONSE = 'subgraphs_response',
   ETH_CALL_ADDRESS_TO = 'eth_call_address_to',
+  SSR_COUNT = 'ssr_count',
 }

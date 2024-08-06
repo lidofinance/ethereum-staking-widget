@@ -7,7 +7,6 @@ import { MATOMO_CLICK_EVENTS_TYPES } from 'consts/matomo-click-events';
 import { DATA_UNAVAILABLE } from 'consts/text';
 import { useWaitingTime } from 'features/withdrawals/hooks/useWaitingTime';
 import { RequestFormInputType } from 'features/withdrawals/request/request-form-context';
-import { ENABLED_WITHDRAWAL_DEXES } from 'features/withdrawals/withdrawals-constants';
 import {
   getDexConfig,
   useWithdrawalRates,
@@ -99,7 +98,7 @@ const DexButton: React.FC<OptionButtonProps> = ({ isActive, onClick }) => {
       <OptionsPickerRow>
         <OptionsPickerLabel>Use DEXs</OptionsPickerLabel>
         <OptionsPickerIcons>
-          {ENABLED_WITHDRAWAL_DEXES.map((dexKey) => {
+          {enabledDexes.map((dexKey) => {
             const Icon = getDexConfig(dexKey).icon;
             return <Icon key={dexKey}></Icon>;
           })}
