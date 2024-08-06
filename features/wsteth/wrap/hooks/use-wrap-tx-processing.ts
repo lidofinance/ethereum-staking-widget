@@ -2,19 +2,18 @@ import { useCallback } from 'react';
 import invariant from 'tiny-invariant';
 
 import { useSDK, useWSTETHContractWeb3 } from '@lido-sdk/react';
-import { getTokenAddress, TOKENS } from '@lido-sdk/constants';
+import { TOKENS } from '@lido-sdk/constants';
 import { StaticJsonRpcBatchProvider } from '@lidofinance/eth-providers';
 
 import { config } from 'config';
-import {
-  MockLimitReachedError,
-  applyGasLimitRatio,
-} from 'features/stake/stake-form/utils';
+import { MockLimitReachedError } from 'features/stake/stake-form/utils';
 
 import { useCurrentStaticRpcProvider } from 'shared/hooks/use-current-static-rpc-provider';
 import { getFeeData } from 'utils/getFeeData';
 
 import type { WrapFormInputType } from '../wrap-form-context';
+import { sendTx } from 'utils/send-tx';
+import { PopulatedTransaction } from 'ethers';
 
 export const getGasParameters = async (
   provider: StaticJsonRpcBatchProvider,
@@ -43,15 +42,13 @@ export const useWrapTxProcessing = () => {
       invariant(wstethContractWeb3, 'wstethContractWeb3 must be presented');
 
       if (token === TOKENS.STETH) {
-        if (isMultisig) {
-          const tx = await wstethContractWeb3.populateTransaction.wrap(amount);
-          return providerWeb3.getSigner().sendUncheckedTransaction(tx);
-        } else {
-          return wstethContractWeb3.wrap(
-            amount,
-            await getGasParameters(staticRpcProvider),
-          );
-        }
+        const tx = await wstethContractWeb3.populateTransaction.wrap(amount);
+        return sendTx({
+          tx,
+          isMultisig,
+          staticProvider: staticRpcProvider,
+          walletProvider: providerWeb3,
+        });
       } else {
         if (
           config.enableQaHelpers &&
@@ -59,27 +56,20 @@ export const useWrapTxProcessing = () => {
         ) {
           throw new MockLimitReachedError('Stake limit reached');
         }
+        const from = await providerWeb3.getSigner().getAddress();
+        const tx: PopulatedTransaction = {
+          to: wstethContractWeb3.address,
+          value: amount,
+          from,
+        };
 
-        const wstethTokenAddress = getTokenAddress(chainId, TOKENS.WSTETH);
-        if (isMultisig) {
-          return providerWeb3.getSigner().sendUncheckedTransaction({
-            to: wstethTokenAddress,
-            value: amount,
-          });
-        } else {
-          const originalGasLimit = await wstethContractWeb3.signer.estimateGas({
-            to: wstethTokenAddress,
-            value: amount,
-          });
-
-          const gasLimit = applyGasLimitRatio(originalGasLimit);
-          return wstethContractWeb3.signer.sendTransaction({
-            to: wstethTokenAddress,
-            value: amount,
-            gasLimit,
-            ...(await getGasParameters(staticRpcProvider)),
-          });
-        }
+        return sendTx({
+          tx,
+          isMultisig,
+          staticProvider: staticRpcProvider,
+          walletProvider: providerWeb3,
+          shouldApplyGasLimitRatio: true,
+        });
       }
     },
     [chainId, providerWeb3, staticRpcProvider, wstethContractWeb3],

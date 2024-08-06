@@ -1,7 +1,6 @@
 import invariant from 'tiny-invariant';
 
 import { useCallback } from 'react';
-import { useSDK } from '@lido-sdk/react';
 import { useWeb3 } from 'reef-knot/web3-react';
 import { useWrapTxProcessing } from './use-wrap-tx-processing';
 import { useTxModalWrap } from './use-tx-modal-stages-wrap';
@@ -13,6 +12,7 @@ import type {
   WrapFormApprovalData,
   WrapFormInputType,
 } from '../wrap-form-context';
+import { useCurrentStaticRpcProvider } from 'shared/hooks/use-current-static-rpc-provider';
 
 type UseWrapFormProcessorArgs = {
   approvalData: WrapFormApprovalData;
@@ -26,27 +26,25 @@ export const useWrapFormProcessor = ({
   onRetry,
 }: UseWrapFormProcessorArgs) => {
   const { account } = useWeb3();
-  const { providerWeb3 } = useSDK();
   const processWrapTx = useWrapTxProcessing();
   const { isApprovalNeededBeforeWrap, processApproveTx } = approvalData;
   const { txModalStages } = useTxModalWrap();
   const wstETHContractRPC = useWSTETHContractRPC();
+  const { staticRpcProvider } = useCurrentStaticRpcProvider();
 
   return useCallback(
     async ({ amount, token }: WrapFormInputType) => {
       try {
         invariant(amount, 'amount should be presented');
         invariant(account, 'address should be presented');
-        invariant(providerWeb3, 'provider should be presented');
-        const isMultisig = await isContract(account, providerWeb3);
+        const isMultisig = await isContract(account, staticRpcProvider);
         const willReceive = await wstETHContractRPC.getWstETHByStETH(amount);
 
         if (isApprovalNeededBeforeWrap) {
           txModalStages.signApproval(amount, token);
 
           await processApproveTx({
-            onTxSent: (tx) => {
-              const txHash = typeof tx === 'string' ? tx : tx.hash;
+            onTxSent: (txHash) => {
               if (!isMultisig) {
                 txModalStages.pendingApproval(amount, token, txHash);
               }
@@ -60,10 +58,9 @@ export const useWrapFormProcessor = ({
 
         txModalStages.sign(amount, token, willReceive);
 
-        const tx = await runWithTransactionLogger('Wrap signing', () =>
+        const txHash = await runWithTransactionLogger('Wrap signing', () =>
           processWrapTx({ amount, token, isMultisig }),
         );
-        const txHash = typeof tx === 'string' ? tx : tx.hash;
 
         if (isMultisig) {
           txModalStages.successMultisig();
@@ -72,11 +69,9 @@ export const useWrapFormProcessor = ({
 
         txModalStages.pending(amount, token, willReceive, txHash);
 
-        if (typeof tx === 'object') {
-          await runWithTransactionLogger('Wrap block confirmation', async () =>
-            tx.wait(),
-          );
-        }
+        await runWithTransactionLogger('Wrap block confirmation', () =>
+          staticRpcProvider.waitForTransaction(txHash),
+        );
 
         const wstethBalance = await wstETHContractRPC.balanceOf(account);
 
@@ -91,13 +86,13 @@ export const useWrapFormProcessor = ({
     },
     [
       account,
-      providerWeb3,
       wstETHContractRPC,
       isApprovalNeededBeforeWrap,
       txModalStages,
       onConfirm,
       processApproveTx,
       processWrapTx,
+      staticRpcProvider,
       onRetry,
     ],
   );

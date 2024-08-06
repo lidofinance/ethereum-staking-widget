@@ -9,6 +9,7 @@ import {
 } from 'reef-knot/core-react';
 import { WalletsListEthereum } from 'reef-knot/wallets';
 
+import { config } from 'config';
 import { useUserConfig } from 'config/user-config';
 import { useGetRpcUrlByChainId } from 'config/rpc';
 import { CHAINS } from 'consts/chains';
@@ -67,11 +68,18 @@ const Web3Provider: FC<PropsWithChildren> = ({ children }) => {
     });
   }, [backendRPC, defaultChain, walletconnectProjectId]);
 
-  const config = useMemo(() => {
+  const wagmiConfig = useMemo(() => {
     return createConfig({
       chains: supportedChains,
       ssr: true,
+      batch: {
+        // eth_call's will be batched via multicall contract every 100ms
+        multicall: {
+          wait: 100,
+        },
+      },
       multiInjectedProviderDiscovery: false,
+      pollingInterval: config.PROVIDER_POLLING_INTERVAL,
       transports: supportedChains.reduce(
         (res, curr) => ({
           ...res,
@@ -84,7 +92,7 @@ const Web3Provider: FC<PropsWithChildren> = ({ children }) => {
 
   return (
     // default wagmi autoConnect, MUST be false in our case, because we use custom autoConnect from Reef Knot
-    <WagmiProvider config={config} reconnectOnMount={false}>
+    <WagmiProvider config={wagmiConfig} reconnectOnMount={false}>
       <QueryClientProvider client={queryClient}>
         <ReefKnot
           rpc={backendRPC}
@@ -92,7 +100,10 @@ const Web3Provider: FC<PropsWithChildren> = ({ children }) => {
           walletDataList={walletsDataList}
         >
           {isWalletConnectionAllowed && <AutoConnect autoConnect />}
-          <SDKLegacyProvider defaultChainId={defaultChain.id}>
+          <SDKLegacyProvider
+            defaultChainId={defaultChain.id}
+            pollingInterval={config.PROVIDER_POLLING_INTERVAL}
+          >
             {children}
             <ConnectWalletModal />
           </SDKLegacyProvider>

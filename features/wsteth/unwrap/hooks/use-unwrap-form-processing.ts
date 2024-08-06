@@ -13,6 +13,7 @@ import { useTxModalStagesUnwrap } from './use-tx-modal-stages-unwrap';
 import { isContract } from 'utils/isContract';
 import { runWithTransactionLogger } from 'utils';
 import type { UnwrapFormInputType } from '../unwrap-form-context';
+import { useCurrentStaticRpcProvider } from 'shared/hooks/use-current-static-rpc-provider';
 
 type UseUnwrapFormProcessorArgs = {
   onConfirm?: () => Promise<void>;
@@ -24,6 +25,7 @@ export const useUnwrapFormProcessor = ({
   onRetry,
 }: UseUnwrapFormProcessorArgs) => {
   const { account } = useWeb3();
+  const { staticRpcProvider } = useCurrentStaticRpcProvider();
   const { providerWeb3 } = useSDK();
   const processWrapTx = useUnwrapTxProcessing();
   const stETHContractRPC = useSTETHContractRPC();
@@ -41,11 +43,9 @@ export const useUnwrapFormProcessor = ({
 
         txModalStages.sign(amount, willReceive);
 
-        const tx = await runWithTransactionLogger('Unwrap signing', () =>
+        const txHash = await runWithTransactionLogger('Unwrap signing', () =>
           processWrapTx({ amount, isMultisig }),
         );
-
-        const txHash = typeof tx === 'string' ? tx : tx.hash;
 
         if (isMultisig) {
           txModalStages.successMultisig();
@@ -54,12 +54,9 @@ export const useUnwrapFormProcessor = ({
 
         txModalStages.pending(amount, willReceive, txHash);
 
-        if (typeof tx === 'object') {
-          await runWithTransactionLogger(
-            'Unwrap block confirmation',
-            async () => tx.wait(),
-          );
-        }
+        await runWithTransactionLogger('Unwrap block confirmation', async () =>
+          staticRpcProvider.waitForTransaction(txHash),
+        );
 
         const stethBalance = await stETHContractRPC.balanceOf(account);
 
@@ -74,13 +71,14 @@ export const useUnwrapFormProcessor = ({
     },
     [
       account,
-      onConfirm,
-      onRetry,
-      processWrapTx,
       providerWeb3,
+      wstETHContractRPC,
       txModalStages,
       stETHContractRPC,
-      wstETHContractRPC,
+      onConfirm,
+      processWrapTx,
+      staticRpcProvider,
+      onRetry,
     ],
   );
 };
