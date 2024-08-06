@@ -1,4 +1,4 @@
-import { useConnectorInfo } from 'reef-knot/web3-react';
+import { useConnectorInfo } from 'reef-knot/core-react';
 
 import {
   LedgerFail,

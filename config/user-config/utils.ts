@@ -14,8 +14,8 @@ export const getUserConfigDefault = (): UserConfigDefaultType => {
     supportedChainIds: config.supportedChains,
     prefillUnsafeElRpcUrls: {
       [CHAINS.Mainnet]: config.prefillUnsafeElRpcUrls1,
-      [CHAINS.Goerli]: config.prefillUnsafeElRpcUrls5,
       [CHAINS.Holesky]: config.prefillUnsafeElRpcUrls17000,
+      [CHAINS.Sepolia]: config.prefillUnsafeElRpcUrls11155111,
     },
     walletconnectProjectId: config.walletconnectProjectId,
   };

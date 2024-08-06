@@ -23,7 +23,7 @@ export type useWithdrawalRatesOptions = {
   fallbackValue?: BigNumber;
 };
 
-export const getWithdrawalRates = async (
+const getWithdrawalRates = async (
   params: GetWithdrawalRateParams,
 ): Promise<GetWithdrawalRateResult> => {
   const rates = await Promise.all(

@@ -1,5 +1,6 @@
 import { MatomoEventType, trackEvent } from '@lidofinance/analytics-matomo';
-import { Metrics as WalletsMetrics } from 'reef-knot/connect-wallet-modal';
+import { Metrics } from 'reef-knot/connect-wallet-modal';
+import { WalletIdsEthereum } from 'reef-knot/wallets';
 
 export const enum MATOMO_WALLETS_EVENTS_TYPES {
   onClickAmbire = 'onClickAmbire',
@@ -28,6 +29,8 @@ export const enum MATOMO_WALLETS_EVENTS_TYPES {
   onConnectOkx = 'onConnectOkx',
   onClickBitget = 'onClickBitget',
   onConnectBitget = 'onConnectBitget',
+  onClickBrowser = 'onClickBrowser',
+  onConnectBrowser = 'onConnectBrowser',
 }
 
 export const MATOMO_WALLETS_EVENTS: Record<
@@ -164,94 +167,61 @@ export const MATOMO_WALLETS_EVENTS: Record<
     'Connect BitGet wallet',
     'eth_widget_connect_bitget',
   ],
+  [MATOMO_WALLETS_EVENTS_TYPES.onClickBrowser]: [
+    'Ethereum_Staking_Widget',
+    'Click Browser wallet',
+    'eth_widget_click_browser',
+  ],
+  [MATOMO_WALLETS_EVENTS_TYPES.onConnectBrowser]: [
+    'Ethereum_Staking_Widget',
+    'Connect Browser wallet',
+    'eth_widget_connect_browser',
+  ],
 };
 
-export const walletsMetrics: WalletsMetrics = {
+const getMetricHandler = (event: Parameters<typeof trackEvent>) => () =>
+  trackEvent(...event);
+
+export const walletsMetrics: Metrics<WalletIdsEthereum> = {
   events: {
     click: {
       handlers: {
-        onClickAmbire: () => {
-          trackEvent(...MATOMO_WALLETS_EVENTS.onClickAmbire);
-        },
-        onClickBrave: () => {
-          trackEvent(...MATOMO_WALLETS_EVENTS.onClickBrave);
-        },
-        onClickCoin98: () => {
-          trackEvent(...MATOMO_WALLETS_EVENTS.onClickCoin98);
-        },
-        onClickCoinbase: () => {
-          trackEvent(...MATOMO_WALLETS_EVENTS.onClickCoinbase);
-        },
-        onClickExodus: () => {
-          trackEvent(...MATOMO_WALLETS_EVENTS.onClickExodus);
-        },
-        onClickImToken: () => {
-          trackEvent(...MATOMO_WALLETS_EVENTS.onClickImToken);
-        },
-        onClickLedger: () => {
-          trackEvent(...MATOMO_WALLETS_EVENTS.onClickLedger);
-        },
-        onClickMetamask: () => {
-          trackEvent(...MATOMO_WALLETS_EVENTS.onClickMetamask);
-        },
-        onClickTrust: () => {
-          trackEvent(...MATOMO_WALLETS_EVENTS.onClickTrust);
-        },
-        onClickWalletconnect: () => {
-          trackEvent(...MATOMO_WALLETS_EVENTS.onClickWC);
-        },
-        onClickXdefi: () => {
-          trackEvent(...MATOMO_WALLETS_EVENTS.onClickXdefi);
-        },
-        onClickOkx: () => {
-          trackEvent(...MATOMO_WALLETS_EVENTS.onClickOkx);
-        },
-        onClickBitget: () => {
-          trackEvent(...MATOMO_WALLETS_EVENTS.onClickBitget);
-        },
+        ambire: getMetricHandler(MATOMO_WALLETS_EVENTS.onClickAmbire),
+        brave: getMetricHandler(MATOMO_WALLETS_EVENTS.onClickBrave),
+        coin98: getMetricHandler(MATOMO_WALLETS_EVENTS.onClickCoin98),
+        coinbase: getMetricHandler(MATOMO_WALLETS_EVENTS.onClickCoinbase),
+        exodus: getMetricHandler(MATOMO_WALLETS_EVENTS.onClickExodus),
+        imToken: getMetricHandler(MATOMO_WALLETS_EVENTS.onClickImToken),
+        ledgerHID: getMetricHandler(MATOMO_WALLETS_EVENTS.onClickLedger),
+        metaMask: getMetricHandler(MATOMO_WALLETS_EVENTS.onClickMetamask),
+        trust: getMetricHandler(MATOMO_WALLETS_EVENTS.onClickTrust),
+        walletConnect: getMetricHandler(MATOMO_WALLETS_EVENTS.onClickWC),
+        xdefi: getMetricHandler(MATOMO_WALLETS_EVENTS.onClickXdefi),
+        okx: getMetricHandler(MATOMO_WALLETS_EVENTS.onClickOkx),
+        bitget: getMetricHandler(MATOMO_WALLETS_EVENTS.onClickBitget),
+        browserExtension: getMetricHandler(
+          MATOMO_WALLETS_EVENTS.onClickBrowser,
+        ),
       },
     },
     connect: {
       handlers: {
-        onConnectAmbire: () => {
-          trackEvent(...MATOMO_WALLETS_EVENTS.onConnectAmbire);
-        },
-        onConnectBrave: () => {
-          trackEvent(...MATOMO_WALLETS_EVENTS.onConnectBrave);
-        },
-        onConnectCoin98: () => {
-          trackEvent(...MATOMO_WALLETS_EVENTS.onConnectCoin98);
-        },
-        onConnectCoinbase: () => {
-          trackEvent(...MATOMO_WALLETS_EVENTS.onConnectCoinbase);
-        },
-        onConnectExodus: () => {
-          trackEvent(...MATOMO_WALLETS_EVENTS.onConnectExodus);
-        },
-        onConnectImToken: () => {
-          trackEvent(...MATOMO_WALLETS_EVENTS.onConnectImToken);
-        },
-        onConnectLedger: () => {
-          trackEvent(...MATOMO_WALLETS_EVENTS.onConnectLedger);
-        },
-        onConnectMetamask: () => {
-          trackEvent(...MATOMO_WALLETS_EVENTS.onConnectMetamask);
-        },
-        onConnectTrust: () => {
-          trackEvent(...MATOMO_WALLETS_EVENTS.onConnectTrust);
-        },
-        onConnectWalletconnect: () => {
-          trackEvent(...MATOMO_WALLETS_EVENTS.onConnectWC);
-        },
-        onConnectXdefi: () => {
-          trackEvent(...MATOMO_WALLETS_EVENTS.onConnectXdefi);
-        },
-        onConnectOkx: () => {
-          trackEvent(...MATOMO_WALLETS_EVENTS.onConnectOkx);
-        },
-        onConnectBitget: () => {
-          trackEvent(...MATOMO_WALLETS_EVENTS.onConnectBitget);
-        },
+        ambire: getMetricHandler(MATOMO_WALLETS_EVENTS.onConnectAmbire),
+        brave: getMetricHandler(MATOMO_WALLETS_EVENTS.onConnectBrave),
+        coin98: getMetricHandler(MATOMO_WALLETS_EVENTS.onConnectCoin98),
+        coinbase: getMetricHandler(MATOMO_WALLETS_EVENTS.onConnectCoinbase),
+        exodus: getMetricHandler(MATOMO_WALLETS_EVENTS.onConnectExodus),
+        imToken: getMetricHandler(MATOMO_WALLETS_EVENTS.onConnectImToken),
+        ledgerHID: getMetricHandler(MATOMO_WALLETS_EVENTS.onConnectLedger),
+        metaMask: getMetricHandler(MATOMO_WALLETS_EVENTS.onConnectMetamask),
+        trust: getMetricHandler(MATOMO_WALLETS_EVENTS.onConnectTrust),
+        walletConnect: getMetricHandler(MATOMO_WALLETS_EVENTS.onConnectWC),
+        xdefi: getMetricHandler(MATOMO_WALLETS_EVENTS.onConnectXdefi),
+        okx: getMetricHandler(MATOMO_WALLETS_EVENTS.onConnectOkx),
+        bitget: getMetricHandler(MATOMO_WALLETS_EVENTS.onConnectBitget),
+        browserExtension: getMetricHandler(
+          MATOMO_WALLETS_EVENTS.onConnectBrowser,
+        ),
       },
     },
   },

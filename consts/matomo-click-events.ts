@@ -3,6 +3,8 @@ import { MatomoEventType } from '@lidofinance/analytics-matomo';
 export const enum MATOMO_CLICK_EVENTS_TYPES {
   // Global
   connectWallet = 'connectWallet',
+  clickShowMoreWallets = 'clickShowMoreWallets',
+  clickShowLessWallets = 'clickShowLessWallets',
   clickCurvePool = 'clickCurvePool',
   clickBalancerPool = 'clickBalancerPool',
   clickExploreDeFi = 'clickExploreDeFi',
@@ -14,6 +16,7 @@ export const enum MATOMO_CLICK_EVENTS_TYPES {
   l2LowFeeStake = 'l2LowFeeStake',
   l2LowFeeWrap = 'l2LowFeeWrap',
   l2swap = 'l2swap',
+  lidoOnL2Opportunities = 'lidoOnL2Opportunities',
   vaultsBannerLearnMore = 'vaultsBannerLearnMore',
   vaultsBannerExploreAll = 'vaultsBannerExploreAll',
   // FAQ
@@ -77,6 +80,16 @@ export const MATOMO_CLICK_EVENTS: Record<
     'Push "Connect wallet" button',
     'eth_widget_connect_wallet',
   ],
+  [MATOMO_CLICK_EVENTS_TYPES.clickShowMoreWallets]: [
+    'Ethereum_Staking_Widget',
+    'Push "More wallets" on wallet modal',
+    'eth_widget_more_wallets',
+  ],
+  [MATOMO_CLICK_EVENTS_TYPES.clickShowLessWallets]: [
+    'Ethereum_Staking_Widget',
+    'Push "Less wallets" on wallet modal',
+    'eth_widget_less_wallets',
+  ],
   [MATOMO_CLICK_EVENTS_TYPES.clickCurvePool]: [
     'Ethereum_Staking_Widget',
     'Push «Explore» in Curve section on Transaction success banner',
@@ -127,6 +140,11 @@ export const MATOMO_CLICK_EVENTS: Record<
     'Ethereum_Staking_Widget',
     'Push «Swap» in Swap ETH to wstETH on L2 banner on staking widget',
     'eth_widget_banner_swap_ETH_on_L2',
+  ],
+  [MATOMO_CLICK_EVENTS_TYPES.lidoOnL2Opportunities]: [
+    'Ethereum_Staking_Widget',
+    'Push "Lido on L2 opportunities" ',
+    'eth_widget_lido_on_l2_opportunities',
   ],
   [MATOMO_CLICK_EVENTS_TYPES.vaultsBannerLearnMore]: [
     'Ethereum_Staking_Widget',
@@ -301,7 +319,7 @@ export const MATOMO_CLICK_EVENTS: Record<
   [MATOMO_CLICK_EVENTS_TYPES.withdrawalGoToBebop]: [
     'Ethereum_Withdrawals_Widget',
     'Click on «Go to Bebop» in aggregators list on Request tab',
-    'eth_withdrawals_request_go_to_1inch',
+    'eth_withdrawals_request_go_to_Bebop',
   ],
   [MATOMO_CLICK_EVENTS_TYPES.withdrawalGoToCowSwap]: [
     'Ethereum_Withdrawals_Widget',
