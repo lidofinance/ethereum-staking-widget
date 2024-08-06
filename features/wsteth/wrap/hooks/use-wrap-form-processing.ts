@@ -1,10 +1,8 @@
-import invariant from 'tiny-invariant';
-
 import { useCallback } from 'react';
+import invariant from 'tiny-invariant';
+import { useAccount } from 'wagmi';
+
 import { useSDK } from '@lido-sdk/react';
-import { useWeb3 } from 'reef-knot/web3-react';
-import { useWrapTxProcessing } from './use-wrap-tx-processing';
-import { useTxModalWrap } from './use-tx-modal-stages-wrap';
 import { useWSTETHContractRPC } from '@lido-sdk/react';
 
 import { runWithTransactionLogger } from 'utils';
@@ -13,6 +11,9 @@ import type {
   WrapFormApprovalData,
   WrapFormInputType,
 } from '../wrap-form-context';
+
+import { useWrapTxProcessing } from './use-wrap-tx-processing';
+import { useTxModalWrap } from './use-tx-modal-stages-wrap';
 
 type UseWrapFormProcessorArgs = {
   approvalData: WrapFormApprovalData;
@@ -25,7 +26,7 @@ export const useWrapFormProcessor = ({
   onConfirm,
   onRetry,
 }: UseWrapFormProcessorArgs) => {
-  const { account } = useWeb3();
+  const { address } = useAccount();
   const { providerWeb3 } = useSDK();
   const processWrapTx = useWrapTxProcessing();
   const { isApprovalNeededBeforeWrap, processApproveTx } = approvalData;
@@ -36,9 +37,9 @@ export const useWrapFormProcessor = ({
     async ({ amount, token }: WrapFormInputType) => {
       try {
         invariant(amount, 'amount should be presented');
-        invariant(account, 'address should be presented');
+        invariant(address, 'address should be presented');
         invariant(providerWeb3, 'provider should be presented');
-        const isMultisig = await isContract(account, providerWeb3);
+        const isMultisig = await isContract(address, providerWeb3);
         const willReceive = await wstETHContractRPC.getWstETHByStETH(amount);
 
         if (isApprovalNeededBeforeWrap) {
@@ -78,7 +79,7 @@ export const useWrapFormProcessor = ({
           );
         }
 
-        const wstethBalance = await wstETHContractRPC.balanceOf(account);
+        const wstethBalance = await wstETHContractRPC.balanceOf(address);
 
         await onConfirm?.();
         txModalStages.success(wstethBalance, txHash);
@@ -90,7 +91,7 @@ export const useWrapFormProcessor = ({
       }
     },
     [
-      account,
+      address,
       providerWeb3,
       wstETHContractRPC,
       isApprovalNeededBeforeWrap,

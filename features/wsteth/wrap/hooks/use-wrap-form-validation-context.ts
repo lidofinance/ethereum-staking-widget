@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { useWeb3 } from 'reef-knot/web3-react';
+import { useDappStatus } from 'shared/hooks/use-dapp-status';
 import { useAwaiter } from 'shared/hooks/use-awaiter';
 
 import type {
@@ -15,7 +15,7 @@ type UseWrapFormValidationContextArgs = {
 export const useWrapFormValidationContext = ({
   networkData,
 }: UseWrapFormValidationContextArgs): WrapFormValidationContext => {
-  const { active } = useWeb3();
+  const { isDappActive } = useDappStatus();
   const {
     stakeLimitInfo,
     ethBalance,
@@ -24,7 +24,7 @@ export const useWrapFormValidationContext = ({
     wrapEthGasCost,
   } = networkData;
 
-  const waitForAccountData = active
+  const waitForAccountData = isDappActive
     ? stethBalance && ethBalance && isMultisig !== undefined
     : true;
 
@@ -38,7 +38,7 @@ export const useWrapFormValidationContext = ({
     useMemo(() => {
       return isDataReady
         ? ({
-            isWalletActive: active,
+            isWalletActive: isDappActive,
             stethBalance,
             etherBalance: ethBalance,
             isMultisig,
@@ -49,7 +49,7 @@ export const useWrapFormValidationContext = ({
         : undefined;
     }, [
       isDataReady,
-      active,
+      isDappActive,
       stethBalance,
       ethBalance,
       isMultisig,

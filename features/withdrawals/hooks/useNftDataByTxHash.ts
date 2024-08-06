@@ -14,15 +14,15 @@ type NFTApiData = {
 };
 
 export const useNftDataByTxHash = (txHash: string | null) => {
-  const { contractRpc, account } = useWithdrawalsContract();
+  const { contractRpc, address } = useWithdrawalsContract();
   const { providerWeb3 } = useSDK();
 
   const swrNftApiData = useLidoSWR(
-    account && txHash && providerWeb3
-      ? ['swr:nft-data-by-tx-hash', txHash, account]
+    address && txHash && providerWeb3
+      ? ['swr:nft-data-by-tx-hash', txHash, address]
       : null,
     async () => {
-      if (!txHash || !account || !providerWeb3) return null;
+      if (!txHash || !address || !providerWeb3) return null;
 
       const txReciept: TransactionReceipt =
         await providerWeb3.getTransactionReceipt(txHash);

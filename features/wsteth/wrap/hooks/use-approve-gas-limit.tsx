@@ -1,5 +1,5 @@
 import { BigNumber } from 'ethers';
-import { useWeb3 } from 'reef-knot/web3-react';
+import { useAccount } from 'wagmi';
 import {
   useLidoSWR,
   useSTETHContractRPC,
@@ -13,7 +13,7 @@ import { STRATEGY_IMMUTABLE } from 'consts/swr-strategies';
 export const useApproveGasLimit = () => {
   const steth = useSTETHContractRPC();
   const wsteth = useWSTETHContractRPC();
-  const { chainId } = useWeb3();
+  const { chainId } = useAccount();
 
   const { data } = useLidoSWR(
     ['swr:approve-wrap-gas-limit', chainId],

@@ -1,14 +1,14 @@
+import { useAccount } from 'wagmi';
 import {
   useWithdrawalQueueContractWeb3,
   useWithdrawalQueueContractRPC,
 } from '@lido-sdk/react';
-import { useWeb3 } from 'reef-knot/web3-react';
 
 export const useWithdrawalsContract = () => {
   const contractWeb3 = useWithdrawalQueueContractWeb3();
   const contractRpc = useWithdrawalQueueContractRPC();
 
-  const { account, chainId } = useWeb3();
+  const { address, chainId } = useAccount();
 
-  return { contractWeb3, contractRpc, account, chainId };
+  return { contractWeb3, contractRpc, address, chainId };
 };

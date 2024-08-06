@@ -1,5 +1,4 @@
 import { useFormContext } from 'react-hook-form';
-import { useWeb3 } from 'reef-knot/web3-react';
 
 import { parseEther } from '@ethersproject/units';
 import { DataTable, DataTableRow } from '@lidofinance/lido-ui';
@@ -11,6 +10,7 @@ import { TOKENS_TO_WRAP } from 'features/wsteth/shared/types';
 import { AllowanceDataTableRow } from 'shared/components/allowance-data-table-row';
 import { FormatPrice, FormatToken } from 'shared/formatters';
 import { useTxCostInUsd, useWstethBySteth } from 'shared/hooks';
+import { useDappStatus } from 'shared/hooks/use-dapp-status';
 
 import { useApproveGasLimit } from '../hooks/use-approve-gas-limit';
 import { useWrapFormData, WrapFormInputType } from '../wrap-form-context';
@@ -18,7 +18,7 @@ import { useWrapFormData, WrapFormInputType } from '../wrap-form-context';
 const oneSteth = parseEther('1');
 
 export const WrapFormStats = () => {
-  const { active } = useWeb3();
+  const { isDappActive } = useDappStatus();
   const { allowance, wrapGasLimit, isApprovalLoading } = useWrapFormData();
 
   const { watch } = useFormContext<WrapFormInputType>();
@@ -82,7 +82,7 @@ export const WrapFormStats = () => {
       <AllowanceDataTableRow
         data-testid="allowance"
         allowance={allowance}
-        isBlank={!(isSteth && active)}
+        isBlank={!(isSteth && isDappActive)}
         loading={isApprovalLoading}
         token={TOKENS.STETH}
       />

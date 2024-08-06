@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef } from 'react';
-import { useWeb3 } from 'reef-knot/web3-react';
 import { useModalActions } from 'providers/modal-provider';
+import { useDappStatus } from 'shared/hooks/use-dapp-status';
 import { useTransactionModal, TransactionModal } from '../transaction-modal';
 
 export type TransactionModalTransitStage = (
@@ -12,7 +12,7 @@ export type TransactionModalTransitStage = (
 export const useTransactionModalStage = <S extends Record<string, Function>>(
   getStages: (transitStage: TransactionModalTransitStage) => S,
 ) => {
-  const { active } = useWeb3();
+  const { isDappActive } = useDappStatus();
   const { openModal } = useTransactionModal();
   const { closeModal } = useModalActions();
   const isMountedRef = useRef(true);
@@ -39,10 +39,10 @@ export const useTransactionModalStage = <S extends Record<string, Function>>(
   }, []);
 
   useEffect(() => {
-    if (!active) {
+    if (!isDappActive) {
       closeModal(TransactionModal);
     }
-  }, [active, closeModal]);
+  }, [isDappActive, closeModal]);
 
   return {
     txModalStages,

@@ -1,15 +1,15 @@
-import { useWeb3 } from 'reef-knot/web3-react';
+import { useDappStatus } from 'shared/hooks/use-dapp-status';
 import { LIMIT_LEVEL } from 'types';
 
 export const useStakingLimitWarning = (stakingLimitLevel?: LIMIT_LEVEL) => {
-  const { active } = useWeb3();
+  const { isDappActive } = useDappStatus();
   const limitWarning =
-    stakingLimitLevel === LIMIT_LEVEL.WARN && active
+    stakingLimitLevel === LIMIT_LEVEL.WARN && isDappActive
       ? 'Stake limit is almost exhausted. Your transaction may not go through.'
       : null;
 
   const limitError =
-    stakingLimitLevel === LIMIT_LEVEL.REACHED && active
+    stakingLimitLevel === LIMIT_LEVEL.REACHED && isDappActive
       ? 'Stake limit is exhausted. Please wait until the limit is restored.'
       : null;
 

@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { BigNumber } from 'ethers';
 import invariant from 'tiny-invariant';
-import { useWeb3 } from 'reef-knot/web3-react';
+import { useAccount } from 'wagmi';
 
 import { TOKENS } from '@lido-sdk/constants';
 import { useLidoSWR, useSDK } from '@lido-sdk/react';
@@ -109,7 +109,7 @@ export const useRequestTxPrice = ({
 
 export const useClaimTxPrice = (requests: RequestStatusClaimable[]) => {
   const { contractRpc } = useWithdrawalsContract();
-  const { account, chainId } = useWeb3();
+  const { address, chainId } = useAccount();
 
   const requestCount = requests.length || 1;
   const debouncedSortedSelectedRequests = useDebouncedValue(requests, 2000);
@@ -118,13 +118,13 @@ export const useClaimTxPrice = (requests: RequestStatusClaimable[]) => {
       [
         'swr:claim-request-gas-limit',
         debouncedSortedSelectedRequests,
-        account,
+        address,
         chainId,
       ],
       async () => {
         if (
           !chainId ||
-          !account ||
+          !address ||
           !contractRpc ||
           debouncedSortedSelectedRequests.length === 0
         )
@@ -135,12 +135,12 @@ export const useClaimTxPrice = (requests: RequestStatusClaimable[]) => {
           .claimWithdrawals(
             sortedRequests.map((r) => r.id),
             sortedRequests.map((r) => r.hint),
-            { from: account },
+            { from: address },
           )
           .catch((error) => {
             console.warn('Could not estimate gas for claim', {
               ids: sortedRequests.map((r) => r.id),
-              account,
+              address,
               error,
             });
             return undefined;
