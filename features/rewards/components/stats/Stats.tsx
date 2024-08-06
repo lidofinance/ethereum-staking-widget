@@ -4,6 +4,7 @@ import { config } from 'config';
 import { useRewardsHistory } from 'features/rewards/hooks';
 import NumberFormat from 'features/rewards/components/NumberFormat';
 import { useStethEthRate } from 'features/rewards/hooks/use-steth-eth-rate';
+import { useDappStatus } from 'shared/hooks/use-dapp-status';
 
 import { Item } from './Item';
 import { Stat } from './Stat';
@@ -17,13 +18,17 @@ export const Stats: React.FC = () => {
     initialLoading: pending,
   } = useRewardsHistory();
   const { data: stEthEth } = useStethEthRate();
+  const { isDappActive } = useDappStatus();
 
   return (
     <>
       <Item data-testid="stEthRewardedBlock">
         <Title mb="8px">stETH earned</Title>
         <Stat data-testid="stEthRewarded" mb="4px" color="#61B75F">
-          <NumberFormat number={data?.totals.ethRewards} pending={pending} />
+          <NumberFormat
+            number={isDappActive ? data?.totals.ethRewards : undefined}
+            pending={pending}
+          />
           <Box display="inline-block" pl={'3px'}>
             stETH
           </Box>
@@ -33,7 +38,7 @@ export const Stats: React.FC = () => {
             {currency.symbol}
           </Box>
           <NumberFormat
-            number={data?.totals.currencyRewards}
+            number={isDappActive ? data?.totals.currencyRewards : undefined}
             currency
             pending={pending}
           />
@@ -43,7 +48,11 @@ export const Stats: React.FC = () => {
         <Title mb="8px">Average APR</Title>
         <Stat data-testid="averageApr" mb="4px">
           {parseFloat(data?.averageApr || '0') ? (
-            <NumberFormat number={data?.averageApr} percent pending={pending} />
+            <NumberFormat
+              number={isDappActive ? data?.averageApr : undefined}
+              percent
+              pending={pending}
+            />
           ) : (
             '-'
           )}
@@ -61,14 +70,16 @@ export const Stats: React.FC = () => {
             {currency.symbol}
           </Box>
           <NumberFormat
-            number={data?.stETHCurrencyPrice[currency.id]}
+            number={
+              isDappActive ? data?.stETHCurrencyPrice[currency.id] : undefined
+            }
             ETH
             pending={pending}
           />
         </Stat>
         <Title data-testid="ethRate" hideMobile>
           <NumberFormat
-            number={stEthEth?.toString()}
+            number={isDappActive ? stEthEth?.toString() : undefined}
             StEthEth
             pending={pending}
           />
