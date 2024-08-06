@@ -23,7 +23,7 @@ export const Stats: React.FC = () => {
   return (
     <>
       <Item data-testid="stEthRewardedBlock">
-        <Title mb="8px">stETH earned</Title>
+        <Title mb="8px">stETH rewarded</Title>
         <Stat data-testid="stEthRewarded" mb="4px" color="#61B75F">
           <NumberFormat
             number={isDappActive ? data?.totals.ethRewards : undefined}
