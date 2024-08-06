@@ -14,8 +14,6 @@ export type SecretConfigType = Modify<
 
     cspReportOnly: boolean;
 
-    subgraphRequestTimeout: number;
-
     rateLimit: number;
     rateLimitTimeFrame: number;
   }
@@ -46,9 +44,6 @@ export const getSecretConfig = (): SecretConfigType => {
       []) as [string, ...string[]],
 
     cspReportOnly: toBoolean(serverRuntimeConfig.cspReportOnly),
-
-    subgraphRequestTimeout:
-      Number(serverRuntimeConfig.subgraphRequestTimeout) || 5000,
 
     rateLimit: Number(serverRuntimeConfig.rateLimit) || 100,
     rateLimitTimeFrame: Number(serverRuntimeConfig.rateLimitTimeFrame) || 60, // 1 minute;

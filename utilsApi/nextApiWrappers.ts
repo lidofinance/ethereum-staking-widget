@@ -214,7 +214,7 @@ type sunsetByArgs = {
 export const sunsetBy =
   ({ replacementLink, sunsetTimestamp }: sunsetByArgs): RequestWrapper =>
   async (req, res, next) => {
-    console.warn('Request to deprecated endpoint:', req.url);
+    console.warn(`Request to deprecated endpoint: ${req.url}`);
     const shouldDisable = Date.now() > sunsetTimestamp;
 
     if (shouldDisable) {

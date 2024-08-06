@@ -30,16 +30,9 @@ declare module 'next/config' {
       rpcUrls_11155111: string | undefined;
       ethplorerApiKey: string | undefined;
 
-      oneInchApiKey: string | undefined;
-
       cspTrustedHosts: string | undefined;
       cspReportUri: string | undefined;
       cspReportOnly: string | undefined;
-
-      subgraphMainnet: string | undefined;
-      subgraphHolesky: string | undefined;
-      subgraphSepolia: string | undefined;
-      subgraphRequestTimeout: string | undefined;
 
       rateLimit: string;
       rateLimitTimeFrame: string;
