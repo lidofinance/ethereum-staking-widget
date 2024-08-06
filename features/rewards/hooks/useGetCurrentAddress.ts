@@ -6,6 +6,7 @@ import { useSDK } from '@lido-sdk/react';
 
 import { resolveEns, isValidEns, isValidAddress } from 'features/rewards/utils';
 import { useCurrentStaticRpcProvider } from 'shared/hooks/use-current-static-rpc-provider';
+import { overrideWithQAMockString } from 'utils/qa';
 
 type UseGetCurrentAddress = () => {
   address: string;
@@ -86,7 +87,11 @@ export const useGetCurrentAddress: UseGetCurrentAddress = () => {
         return;
       }
       // From a connected wallet
-      if (account) setInputValue(account);
+      if (account) {
+        setInputValue(
+          overrideWithQAMockString(account, 'mock-qa-rewards-address'),
+        );
+      }
     }
   }, [account, query.address, isReady, setInputValue]);
 
