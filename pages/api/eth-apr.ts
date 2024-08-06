@@ -16,6 +16,7 @@ import {
   sunsetBy,
   httpMethodGuard,
   HttpMethod,
+  cors,
 } from 'utilsApi';
 import Metrics from 'utilsApi/metrics';
 
@@ -39,6 +40,7 @@ const ethApr: API = async (_, res) => {
 
 export default wrapNextRequest([
   httpMethodGuard([HttpMethod.GET]),
+  cors({ origin: ['*'], methods: [HttpMethod.GET] }),
   rateLimit,
   responseTimeMetric(Metrics.request.apiTimings, API_ROUTES.ETH_APR),
   sunsetBy({
