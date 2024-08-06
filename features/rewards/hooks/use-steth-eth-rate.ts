@@ -1,9 +1,10 @@
+import { constants } from 'ethers';
 import { useLidoSWR, useSDK } from '@lido-sdk/react';
 
+import { CHAINS } from 'consts/chains';
 import { STRATEGY_LAZY } from 'consts/swr-strategies';
-import { useMainnetStaticRpcProvider } from 'shared/hooks/use-mainnet-static-rpc-provider';
 import { stEthEthRequest } from 'features/rewards/fetchers/requesters';
-import { constants } from 'ethers';
+import { useMainnetStaticRpcProvider } from 'shared/hooks/use-mainnet-static-rpc-provider';
 
 export const useStethEthRate = () => {
   const { chainId } = useSDK();
@@ -12,12 +13,16 @@ export const useStethEthRate = () => {
   const swrResult = useLidoSWR(
     `steth-eth-${chainId}`,
     async () => {
-      if (chainId !== 1) {
-        return constants.WeiPerEther;
-      } else {
+      if (
+        [CHAINS.Mainnet, CHAINS.Sepolia, CHAINS.Holesky].indexOf(
+          chainId as CHAINS,
+        ) > -1
+      ) {
         const stEthEth = await stEthEthRequest(mainnetStaticRpcProvider);
         return stEthEth;
       }
+
+      return constants.WeiPerEther;
     },
     STRATEGY_LAZY,
   );
