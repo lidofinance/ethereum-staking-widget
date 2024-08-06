@@ -17,6 +17,7 @@ import { Input } from '@lidofinance/lido-ui';
 
 import { InputDecoratorMaxButton } from './input-decorator-max-button';
 import { InputDecoratorLocked } from './input-decorator-locked';
+import { InputStyle } from './styles';
 
 type InputAmountProps = {
   onChange?: (value: BigNumber | null) => void;
@@ -154,7 +155,7 @@ export const InputAmount = forwardRef<HTMLInputElement, InputAmountProps>(
         : undefined;
 
     return (
-      <Input
+      <InputStyle
         {...props}
         placeholder={placeholder}
         rightDecorator={
@@ -162,7 +163,7 @@ export const InputAmount = forwardRef<HTMLInputElement, InputAmountProps>(
             <>
               <InputDecoratorMaxButton
                 onClick={handleClickMax}
-                disabled={!handleClickMax}
+                disabled={!handleClickMax || props.disabled}
               />
               {isLocked ? <InputDecoratorLocked /> : undefined}
             </>

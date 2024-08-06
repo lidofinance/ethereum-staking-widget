@@ -1,7 +1,6 @@
 import { H1 } from '@lidofinance/lido-ui';
 import styled from 'styled-components';
-
-import { NAV_MOBILE_MEDIA } from 'styles/constants';
+import { devicesHeaderMedia } from 'styles/global';
 
 export const LayoutTitleStyle = styled((props) => <H1 {...props} />)`
   font-weight: 800;
@@ -31,7 +30,7 @@ export const LayoutSubTitleStyle = styled.h4`
 export const IPFSInfoBoxOnlyMobileAndPortableWrapper = styled.div`
   display: none;
 
-  ${NAV_MOBILE_MEDIA} {
+  @media ${devicesHeaderMedia.mobile} {
     display: block;
     margin-top: -6px;
     margin-bottom: 40px;

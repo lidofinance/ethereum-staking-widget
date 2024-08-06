@@ -26,8 +26,8 @@ declare module 'next/config' {
 
       defaultChain: string;
       rpcUrls_1: string | undefined;
-      rpcUrls_5: string | undefined;
       rpcUrls_17000: string | undefined;
+      rpcUrls_11155111: string | undefined;
       ethplorerApiKey: string | undefined;
 
       cspTrustedHosts: string | undefined;

@@ -1,17 +1,11 @@
 import { useController, useFormState, useFormContext } from 'react-hook-form';
 
-import {
-  SelectIcon,
-  Option,
-  Eth,
-  Steth,
-  Wsteth,
-  OptionValue,
-} from '@lidofinance/lido-ui';
+import { Option, Eth, Steth, Wsteth, OptionValue } from '@lidofinance/lido-ui';
+import { TOKENS as TOKENS_SDK } from '@lido-sdk/constants';
 
 import { getTokenDisplayName } from 'utils/getTokenDisplayName';
 import { isValidationErrorTypeValidate } from 'shared/hook-form/validation/validation-error';
-import { TOKENS as TOKENS_SDK } from '@lido-sdk/constants';
+import { SelectIconStyle } from './styles';
 
 export const TOKENS = {
   ETH: 'ETH',
@@ -38,6 +32,7 @@ type TokenSelectHookFormProps = {
   errorField?: string;
   onChange?: (value: TOKENS) => void;
   warning?: boolean;
+  disabled?: boolean;
 };
 
 export const TokenSelectHookForm = ({
@@ -47,6 +42,7 @@ export const TokenSelectHookForm = ({
   errorField = 'amount',
   onChange,
   warning,
+  disabled = false,
 }: TokenSelectHookFormProps) => {
   const { field } = useController<Record<string, TOKENS>>({ name: fieldName });
   const { setValue, clearErrors } = useFormContext();
@@ -56,8 +52,9 @@ export const TokenSelectHookForm = ({
   });
 
   return (
-    <SelectIcon
+    <SelectIconStyle
       {...field}
+      disabled={disabled}
       warning={warning}
       icon={iconsMap[field.value]}
       data-testid="drop-down"
@@ -87,6 +84,6 @@ export const TokenSelectHookForm = ({
           {label || getTokenDisplayName(token)}
         </Option>
       ))}
-    </SelectIcon>
+    </SelectIconStyle>
   );
 };

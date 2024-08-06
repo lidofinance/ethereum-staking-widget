@@ -9,8 +9,8 @@ export type SecretConfigType = Modify<
     defaultChain: number;
 
     rpcUrls_1: [string, ...string[]];
-    rpcUrls_5: [string, ...string[]];
     rpcUrls_17000: [string, ...string[]];
+    rpcUrls_11155111: [string, ...string[]];
 
     cspReportOnly: boolean;
 
@@ -36,14 +36,12 @@ export const getSecretConfig = (): SecretConfigType => {
       string,
       ...string[],
     ],
-    rpcUrls_5: (serverRuntimeConfig.rpcUrls_5?.split(',') ?? []) as [
-      string,
-      ...string[],
-    ],
     rpcUrls_17000: (serverRuntimeConfig.rpcUrls_17000?.split(',') ?? []) as [
       string,
       ...string[],
     ],
+    rpcUrls_11155111: (serverRuntimeConfig.rpcUrls_11155111?.split(',') ??
+      []) as [string, ...string[]],
 
     cspReportOnly: toBoolean(serverRuntimeConfig.cspReportOnly),
 

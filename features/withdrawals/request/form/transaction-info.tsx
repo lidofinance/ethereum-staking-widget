@@ -21,7 +21,7 @@ export const TransactionInfo = () => {
   const token = useWatch<RequestFormInputType, 'token'>({ name: 'token' });
   const { requests } = useValidationResults();
   const unlockCostTooltip = isApprovalFlow ? undefined : (
-    <>Lido leverages gasless token approvals via ERC-2612 permits</>
+    <>Lido leverages gasless token unlocks via ERC-2612 permits</>
   );
   const { txPriceUsd: requestTxPriceInUsd, loading: requestTxPriceLoading } =
     useRequestTxPrice({
