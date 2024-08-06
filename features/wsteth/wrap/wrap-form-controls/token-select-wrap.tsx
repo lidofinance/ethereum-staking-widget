@@ -1,7 +1,9 @@
 import { trackEvent } from '@lidofinance/analytics-matomo';
+
 import { TOKENS_TO_WRAP } from 'features/wsteth/shared/types';
 import { MATOMO_CLICK_EVENTS } from 'consts/matomo-click-events';
-import { TokenSelectHookForm } from 'shared/hook-form/controls/token-select-hook-form';
+import { TokenSelectHookForm } from 'shared/hook-form/controls/token-select-hook-form/token-select-hook-form';
+import { useDappStatus } from 'shared/hooks/use-dapp-status';
 
 const OPTIONS = [
   {
@@ -20,8 +22,11 @@ type TokenSelectWrapProps = Pick<
 >;
 
 export const TokenSelectWrap = (props: TokenSelectWrapProps) => {
+  const { isWalletConnected, isDappActive } = useDappStatus();
+
   return (
     <TokenSelectHookForm
+      disabled={isWalletConnected && !isDappActive}
       options={OPTIONS}
       onChange={(value) => {
         trackEvent(

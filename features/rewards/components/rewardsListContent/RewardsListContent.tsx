@@ -11,6 +11,9 @@ import {
   ErrorWrapper,
 } from './RewardsListContentStyles';
 import { RewardsTable } from 'features/rewards/components/rewardsTable';
+import { useSTETHBalance } from '@lido-sdk/react';
+import { STRATEGY_LAZY } from 'consts/swr-strategies';
+import { Zero } from '@ethersproject/constants';
 
 export const RewardsListContent: FC = () => {
   const {
@@ -22,10 +25,17 @@ export const RewardsListContent: FC = () => {
     setPage,
     isLagging,
   } = useRewardsHistory();
+  const { data: stethBalance, initialLoading: isStethBalanceLoading } =
+    useSTETHBalance(STRATEGY_LAZY);
+  const hasSteth = stethBalance?.gt(Zero);
 
   if (!data && !initialLoading && !error) return <RewardsListsEmpty />;
   // showing loading when canceling requests and empty response
-  if ((!data && !error) || (initialLoading && !data?.events.length)) {
+  if (
+    (!data && !error) ||
+    (initialLoading && !data?.events.length) ||
+    isStethBalanceLoading
+  ) {
     return (
       <>
         <Divider indents="lg" />
@@ -42,7 +52,9 @@ export const RewardsListContent: FC = () => {
       </ErrorWrapper>
     );
   }
-  if (data && data.events.length === 0) return <ErrorBlockNoSteth />;
+
+  if (data && data.events.length === 0)
+    return <ErrorBlockNoSteth hasSteth={hasSteth} />;
 
   return (
     <TableWrapperStyle data-testid="rewardsContent">

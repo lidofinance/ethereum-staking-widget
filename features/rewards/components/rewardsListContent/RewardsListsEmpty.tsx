@@ -1,4 +1,5 @@
 import { FC } from 'react';
+
 import { Divider } from '@lidofinance/lido-ui';
 
 import { RewardsListEmptyWrapper } from './RewardsListsEmptyStyles';
