@@ -14,12 +14,14 @@ import {
   sunsetBy,
   httpMethodGuard,
   HttpMethod,
+  cors,
 } from 'utilsApi';
 import Metrics from 'utilsApi/metrics';
 import { createEthApiProxy } from 'utilsApi/cached-proxy';
 
 export default wrapNextRequest([
   httpMethodGuard([HttpMethod.GET]),
+  cors({ origin: ['*'], methods: [HttpMethod.GET] }),
   rateLimit,
   responseTimeMetric(Metrics.request.apiTimings, API_ROUTES.SMA_STETH_APR),
   sunsetBy({

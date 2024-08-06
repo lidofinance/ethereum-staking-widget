@@ -17,6 +17,7 @@ import {
   httpMethodGuard,
   HttpMethod,
   sunsetBy,
+  cors,
 } from 'utilsApi';
 import Metrics from 'utilsApi/metrics';
 
@@ -24,6 +25,7 @@ import { createEthApiProxy } from 'utilsApi/cached-proxy';
 
 export default wrapNextRequest([
   httpMethodGuard([HttpMethod.GET]),
+  cors({ origin: ['*'], methods: [HttpMethod.GET] }),
   rateLimit,
   responseTimeMetric(Metrics.request.apiTimings, API_ROUTES.ETH_PRICE),
   cacheControl({ headers: config.CACHE_ETH_PRICE_HEADERS }),
