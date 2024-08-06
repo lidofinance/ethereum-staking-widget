@@ -47,8 +47,8 @@ const rpc = rpcFactory({
   defaultChain: `${config.defaultChain}`,
   providers: {
     [CHAINS.Mainnet]: secretConfig.rpcUrls_1,
-    [CHAINS.Goerli]: secretConfig.rpcUrls_5,
     [CHAINS.Holesky]: secretConfig.rpcUrls_17000,
+    [CHAINS.Sepolia]: secretConfig.rpcUrls_11155111,
   },
 });
 
