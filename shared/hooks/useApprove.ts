@@ -57,7 +57,7 @@ export const useApprove = (
       invariant(account, 'account is required');
       await onTxStart?.();
       const contractWeb3 = getERC20Contract(token, providerWeb3.getSigner());
-      const isMultisig = await isContract(account, providerWeb3);
+      const isMultisig = await isContract(account, staticRpcProvider);
 
       const processApproveTx = async () => {
         const tx = await contractWeb3.populateTransaction.approve(

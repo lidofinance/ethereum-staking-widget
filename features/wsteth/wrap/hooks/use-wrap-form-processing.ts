@@ -1,7 +1,6 @@
 import invariant from 'tiny-invariant';
 
 import { useCallback } from 'react';
-import { useSDK } from '@lido-sdk/react';
 import { useWeb3 } from 'reef-knot/web3-react';
 import { useWrapTxProcessing } from './use-wrap-tx-processing';
 import { useTxModalWrap } from './use-tx-modal-stages-wrap';
@@ -27,7 +26,6 @@ export const useWrapFormProcessor = ({
   onRetry,
 }: UseWrapFormProcessorArgs) => {
   const { account } = useWeb3();
-  const { providerWeb3 } = useSDK();
   const processWrapTx = useWrapTxProcessing();
   const { isApprovalNeededBeforeWrap, processApproveTx } = approvalData;
   const { txModalStages } = useTxModalWrap();
@@ -39,8 +37,7 @@ export const useWrapFormProcessor = ({
       try {
         invariant(amount, 'amount should be presented');
         invariant(account, 'address should be presented');
-        invariant(providerWeb3, 'provider should be presented');
-        const isMultisig = await isContract(account, providerWeb3);
+        const isMultisig = await isContract(account, staticRpcProvider);
         const willReceive = await wstETHContractRPC.getWstETHByStETH(amount);
 
         if (isApprovalNeededBeforeWrap) {
@@ -89,7 +86,6 @@ export const useWrapFormProcessor = ({
     },
     [
       account,
-      providerWeb3,
       wstETHContractRPC,
       isApprovalNeededBeforeWrap,
       txModalStages,
