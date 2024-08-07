@@ -65,6 +65,8 @@ export const createCachedProxy = ({
       if (e instanceof FetcherError && e.status >= 400 && e.status < 500) {
         console.warn(`[CachedProxy]Forwarding ${e.status} error from ${url}`);
         res.status(e.status);
+        res.send({ error: e.message });
+        return;
       }
       console.warn(`[CachedProxy] Failed to proxy from ${url}`, e);
       res.status(500).end();
