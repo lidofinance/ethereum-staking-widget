@@ -40,7 +40,10 @@ export const createCachedProxy = ({
     const cacheKey = `${proxyUrl}-${params?.toString() ?? ''}`;
 
     const cachedValue = cache.get(cacheKey);
-    if (cachedValue) return cachedValue;
+    if (cachedValue) {
+      res.json(cachedValue);
+      return;
+    }
 
     const url = proxyUrl + (params ? `?${params.toString()}` : '');
 
