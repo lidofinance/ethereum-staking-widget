@@ -60,7 +60,7 @@ export const Wallet: FC = () => {
 
             <WalletContentAddressBadgeStyle
               address={address as `0x${string}`}
-              symbolsMobile={6}
+              symbolsMobile={3}
               symbolsDesktop={6}
               onClick={() => openModal({})}
             />
