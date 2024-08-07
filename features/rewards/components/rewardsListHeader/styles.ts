@@ -4,7 +4,7 @@ export const RewardsListHeaderStyle = styled.div`
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 20px 32px;
+  gap: 20px 28px;
   height: 32px;
   align-items: center;
 
@@ -39,7 +39,7 @@ export const LeftOptionsWrapper = styled.div`
   }
 
   ${({ theme }) => theme.mediaQueries.md} {
-    flex-direction: column;
+    flex-direction: row;
   }
 `;
 

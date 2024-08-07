@@ -1,4 +1,3 @@
-import { InlineLoader } from '@lidofinance/lido-ui';
 import { Component } from 'types';
 import { useWalletModal } from '../wallet-modal/use-wallet-modal';
 import { AddressBadge } from '../components/address-badge/address-badge';
@@ -11,6 +10,7 @@ import {
   WalletCardExtraStyle,
   WalletCardAccountStyle,
   WalletCardContentStyle,
+  InlineLoaderStyled,
 } from './styles';
 import {
   WalletCardBalanceComponent,
@@ -44,11 +44,11 @@ export const CardBalance: WalletCardBalanceComponent = (props) => {
     <WalletCardBalanceStyle {...rest}>
       <WalletCardTitleStyle>{title}</WalletCardTitleStyle>
       <WalletCardValueStyle $small={small}>
-        {loading ? <InlineLoader /> : value}
+        {loading ? <InlineLoaderStyled /> : value}
       </WalletCardValueStyle>
       {hasExtra && (
         <WalletCardExtraStyle>
-          {loading ? <InlineLoader /> : extra}
+          {loading ? <InlineLoaderStyled /> : extra}
         </WalletCardExtraStyle>
       )}
       {hasChildren && (

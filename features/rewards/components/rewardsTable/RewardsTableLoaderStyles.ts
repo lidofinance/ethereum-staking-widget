@@ -35,6 +35,7 @@ export const ContentStyle = styled.div`
   display: flex;
   height: 100%;
   justify-content: center;
+  align-items: center;
 `;
 
 export const LoaderStyle = styled(Loader)`
