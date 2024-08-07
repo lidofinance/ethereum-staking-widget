@@ -1,4 +1,7 @@
-import { wrapRequest as wrapNextRequest } from '@lidofinance/next-api-wrapper';
+import {
+  cacheControl,
+  wrapRequest as wrapNextRequest,
+} from '@lidofinance/next-api-wrapper';
 
 import { config } from 'config';
 import {
@@ -24,6 +27,7 @@ export default wrapNextRequest([
   cors({ origin: ['*'], methods: [HttpMethod.GET] }),
   rateLimit,
   responseTimeMetric(Metrics.request.apiTimings, API_ROUTES.ONEINCH_RATE),
+  cacheControl({ headers: config.CACHE_DEFAULT_HEADERS }),
   sunsetBy({
     sunsetTimestamp: API_LATER_SUNSET_TIMESTAMP,
     replacementLink: getReplacementLink(API_ROUTES.ONEINCH_RATE),
