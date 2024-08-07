@@ -29,7 +29,7 @@ export const RewardsListsEmpty: FC = () => {
     <>
       <Divider indents="lg" />
       <RewardsListEmptyWrapper>
-        <p>Connect your wallet to view your staking stats</p>
+        <p>Connect your wallet to view your staking rewards</p>
         {isWalletConnected ? null : (
           <RewardsListEmptyButtonWrapper>
             <Button
