@@ -1,4 +1,4 @@
-import { FC } from 'react';
+import { FC, useEffect, useState } from 'react';
 
 import { StatsWrapper } from 'features/rewards/components/statsWrapper';
 import { Stats } from 'features/rewards/components/stats';
@@ -9,9 +9,15 @@ import { Wallet } from './wallet';
 import { ConnectWallet } from './connect-wallet';
 
 export const TopCard: FC = () => {
+  const [visible, setVisible] = useState(false);
   const { isWalletConnected, isDappActive } = useDappStatus();
 
-  return (
+  // fix flash after reload page
+  useEffect(() => {
+    setVisible(true);
+  }, []);
+
+  return !visible ? null : (
     <>
       {!isWalletConnected && <ConnectWallet />}
 
