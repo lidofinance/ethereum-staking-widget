@@ -7,6 +7,7 @@ import { useRewardsHistory } from 'features/rewards/hooks';
 import { useRewardsBalanceData } from 'features/rewards/hooks/use-rewards-balance-data';
 import { FlexCenter } from 'features/stake/stake-form/wallet/styles';
 import { CardBalance } from 'shared/wallet';
+import { useWalletModal } from 'shared/wallet/wallet-modal/use-wallet-modal';
 
 import {
   WalletStyle,
@@ -18,6 +19,7 @@ import {
 export const Wallet: FC = () => {
   const { data: balanceData } = useRewardsBalanceData();
   const { currencyObject: currency, address, loading } = useRewardsHistory();
+  const { openModal } = useWalletModal();
 
   return (
     <WalletStyle>
@@ -60,6 +62,7 @@ export const Wallet: FC = () => {
               address={address as `0x${string}`}
               symbolsMobile={6}
               symbolsDesktop={6}
+              onClick={() => openModal({})}
             />
           </WalletContentRowStyle>
         </WalletContentStyle>

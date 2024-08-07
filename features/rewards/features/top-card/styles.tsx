@@ -28,6 +28,7 @@ export const WalletContentRowStyle = styled.div`
 
 export const WalletContentAddressBadgeStyle = styled(AddressBadge)`
   background: #00000033;
+  cursor: pointer;
 `;
 
 export const ConnectWalletStyle = styled(WalletCardStyle)`
