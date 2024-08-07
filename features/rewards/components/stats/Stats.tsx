@@ -56,6 +56,9 @@ export const Stats: React.FC = () => {
           ) : (
             '-'
           )}
+          <Box display="inline-block" pl="3px">
+            %
+          </Box>
         </Stat>
         <Title hideMobile>
           <Link href={`${config.rootOrigin}/ethereum#apr`}>
