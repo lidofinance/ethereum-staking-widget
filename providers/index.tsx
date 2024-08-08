@@ -9,6 +9,7 @@ import { IPFSInfoBoxStatusesProvider } from './ipfs-info-box-statuses';
 import { InpageNavigationProvider } from './inpage-navigation';
 import { ModalProvider } from './modal-provider';
 import Web3Provider from './web3';
+import { LidoSDKProvider } from './lido-sdk';
 
 export const Providers: FC<PropsWithChildren> = ({ children }) => (
   <ConfigProvider>
@@ -16,11 +17,13 @@ export const Providers: FC<PropsWithChildren> = ({ children }) => (
       <CookieThemeProvider>
         <GlobalStyle />
         <Web3Provider>
-          <IPFSInfoBoxStatusesProvider>
-            <InpageNavigationProvider>
-              <ModalProvider>{children}</ModalProvider>
-            </InpageNavigationProvider>
-          </IPFSInfoBoxStatusesProvider>
+          <LidoSDKProvider>
+            <IPFSInfoBoxStatusesProvider>
+              <InpageNavigationProvider>
+                <ModalProvider>{children}</ModalProvider>
+              </InpageNavigationProvider>
+            </IPFSInfoBoxStatusesProvider>
+          </LidoSDKProvider>
         </Web3Provider>
       </CookieThemeProvider>
     </AppFlagProvider>

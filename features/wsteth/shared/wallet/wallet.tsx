@@ -2,16 +2,10 @@ import { memo } from 'react';
 
 import { Divider, Text } from '@lidofinance/lido-ui';
 import { TOKENS } from '@lido-sdk/constants';
-import {
-  useSDK,
-  useSTETHBalance,
-  useWSTETHBalance,
-  useTokenAddress,
-} from '@lido-sdk/react';
+import { useSDK, useTokenAddress } from '@lido-sdk/react';
 
 import { useConfig } from 'config';
 import { CHAINS } from 'consts/chains';
-import { STRATEGY_LAZY } from 'consts/swr-strategies';
 import { FormatToken } from 'shared/formatters';
 import { TokenToWallet } from 'shared/components';
 import { useWstethBySteth, useStethByWsteth } from 'shared/hooks';
@@ -27,13 +21,17 @@ import {
 import { overrideWithQAMockBoolean } from 'utils/qa';
 
 import { StyledCard } from './styles';
-import { useEthereumBalance } from 'shared/hooks/use-balance';
+import {
+  useEthereumBalance,
+  useStethBalance,
+  useWstethBalance,
+} from 'shared/hooks/use-balance';
 
 const WalletComponent: WalletComponentType = (props) => {
   const { account } = useSDK();
   const ethBalance = useEthereumBalance();
-  const stethBalance = useSTETHBalance(STRATEGY_LAZY);
-  const wstethBalance = useWSTETHBalance(STRATEGY_LAZY);
+  const stethBalance = useStethBalance();
+  const wstethBalance = useWstethBalance();
 
   const stethAddress = useTokenAddress(TOKENS.STETH);
   const wstethAddress = useTokenAddress(TOKENS.WSTETH);
@@ -62,7 +60,7 @@ const WalletComponent: WalletComponentType = (props) => {
         <CardBalance
           small
           title="stETH balance"
-          loading={stethBalance.initialLoading || wstethBySteth.initialLoading}
+          loading={stethBalance.isLoading || wstethBySteth.initialLoading}
           value={
             <>
               <FormatToken
@@ -88,7 +86,7 @@ const WalletComponent: WalletComponentType = (props) => {
         <CardBalance
           small
           title="wstETH balance"
-          loading={wstethBalance.initialLoading || stethByWsteth.initialLoading}
+          loading={wstethBalance.isLoading || stethByWsteth.initialLoading}
           value={
             <>
               <FormatToken

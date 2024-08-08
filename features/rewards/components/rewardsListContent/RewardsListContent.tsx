@@ -1,13 +1,12 @@
 import { FC } from 'react';
 import { Loader, Divider } from '@lidofinance/lido-ui';
-import { useSTETHBalance } from '@lido-sdk/react';
 import { Zero } from '@ethersproject/constants';
 
-import { STRATEGY_LAZY } from 'consts/swr-strategies';
 import { useRewardsHistory } from 'features/rewards/hooks';
 import { ErrorBlockNoSteth } from 'features/rewards/components/errorBlocks/ErrorBlockNoSteth';
 import { RewardsTable } from 'features/rewards/components/rewardsTable';
 import { useDappStatus } from 'shared/hooks/use-dapp-status';
+import { useStethBalance } from 'shared/hooks/use-balance';
 
 import { RewardsListsEmpty } from './RewardsListsEmpty';
 import { RewardsListErrorMessage } from './RewardsListErrorMessage';
@@ -28,8 +27,8 @@ export const RewardsListContent: FC = () => {
     setPage,
     isLagging,
   } = useRewardsHistory();
-  const { data: stethBalance, initialLoading: isStethBalanceLoading } =
-    useSTETHBalance(STRATEGY_LAZY);
+  const { data: stethBalance, isLoading: isStethBalanceLoading } =
+    useStethBalance();
   const hasSteth = stethBalance?.gt(Zero);
 
   if (!isDappActive || (!data && !initialLoading && !error))
