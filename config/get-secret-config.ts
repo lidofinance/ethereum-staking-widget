@@ -10,10 +10,9 @@ export type SecretConfigType = Modify<
 
     rpcUrls_1: [string, ...string[]];
     rpcUrls_17000: [string, ...string[]];
+    rpcUrls_11155111: [string, ...string[]];
 
     cspReportOnly: boolean;
-
-    subgraphRequestTimeout: number;
 
     rateLimit: number;
     rateLimitTimeFrame: number;
@@ -41,11 +40,10 @@ export const getSecretConfig = (): SecretConfigType => {
       string,
       ...string[],
     ],
+    rpcUrls_11155111: (serverRuntimeConfig.rpcUrls_11155111?.split(',') ??
+      []) as [string, ...string[]],
 
     cspReportOnly: toBoolean(serverRuntimeConfig.cspReportOnly),
-
-    subgraphRequestTimeout:
-      Number(serverRuntimeConfig.subgraphRequestTimeout) || 5000,
 
     rateLimit: Number(serverRuntimeConfig.rateLimit) || 100,
     rateLimitTimeFrame: Number(serverRuntimeConfig.rateLimitTimeFrame) || 60, // 1 minute;

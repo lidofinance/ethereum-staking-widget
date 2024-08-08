@@ -7,11 +7,11 @@ export const Stat = ({ children, ...rest }: BoxProps) => (
   <Box
     fontStyle="normal"
     fontWeight={[null, null, 600]}
-    fontSize={['14px', '14px', '20px']}
+    fontSize={['12px', '12px', '16px']}
     lineHeight="20px"
     color="text"
     height="20px"
-    mb="6px"
+    mb="2px"
     display={'flex'}
     {...rest}
   >

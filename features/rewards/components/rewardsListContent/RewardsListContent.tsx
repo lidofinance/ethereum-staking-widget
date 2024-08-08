@@ -1,7 +1,13 @@
 import { FC } from 'react';
 import { Loader, Divider } from '@lidofinance/lido-ui';
+import { useSTETHBalance } from '@lido-sdk/react';
+import { Zero } from '@ethersproject/constants';
+
+import { STRATEGY_LAZY } from 'consts/swr-strategies';
 import { useRewardsHistory } from 'features/rewards/hooks';
 import { ErrorBlockNoSteth } from 'features/rewards/components/errorBlocks/ErrorBlockNoSteth';
+import { RewardsTable } from 'features/rewards/components/rewardsTable';
+import { useDappStatus } from 'shared/hooks/use-dapp-status';
 
 import { RewardsListsEmpty } from './RewardsListsEmpty';
 import { RewardsListErrorMessage } from './RewardsListErrorMessage';
@@ -10,12 +16,9 @@ import {
   TableWrapperStyle,
   ErrorWrapper,
 } from './RewardsListContentStyles';
-import { RewardsTable } from 'features/rewards/components/rewardsTable';
-import { useSTETHBalance } from '@lido-sdk/react';
-import { STRATEGY_LAZY } from 'consts/swr-strategies';
-import { Zero } from '@ethersproject/constants';
 
 export const RewardsListContent: FC = () => {
+  const { isDappActive } = useDappStatus();
   const {
     error,
     initialLoading,
@@ -29,7 +32,8 @@ export const RewardsListContent: FC = () => {
     useSTETHBalance(STRATEGY_LAZY);
   const hasSteth = stethBalance?.gt(Zero);
 
-  if (!data && !initialLoading && !error) return <RewardsListsEmpty />;
+  if (!isDappActive || (!data && !initialLoading && !error))
+    return <RewardsListsEmpty />;
   // showing loading when canceling requests and empty response
   if (
     (!data && !error) ||

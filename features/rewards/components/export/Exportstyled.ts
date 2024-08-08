@@ -7,4 +7,9 @@ export const ButtonStyle = styled(Button)`
   min-width: unset;
   padding: 0 15px;
   font-size: 12px;
+  color: var(--lido-color-text);
+
+  &::before {
+    border-color: var(--lido-color-border);
+  }
 `;

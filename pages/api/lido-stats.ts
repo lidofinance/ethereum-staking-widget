@@ -11,6 +11,7 @@ import {
   sunsetBy,
   httpMethodGuard,
   HttpMethod,
+  cors,
 } from 'utilsApi';
 import Metrics from 'utilsApi/metrics';
 import { API } from 'types';
@@ -20,7 +21,7 @@ const cache = new Cache<typeof config.CACHE_LIDO_STATS_KEY, unknown>();
 // Proxy for third-party API.
 // Returns steth token information
 // DEPRECATED: In future will be delete!!!
-const lidoStats: API = async (req, res) => {
+export const lidoStats: API = async (req, res) => {
   const cachedLidoStats = cache.get(config.CACHE_LIDO_STATS_KEY);
 
   if (cachedLidoStats) {
@@ -39,6 +40,7 @@ const lidoStats: API = async (req, res) => {
 
 export default wrapNextRequest([
   httpMethodGuard([HttpMethod.GET]),
+  cors({ origin: ['*'], methods: [HttpMethod.GET] }),
   rateLimit,
   responseTimeMetric(Metrics.request.apiTimings, API_ROUTES.LIDO_STATS),
   sunsetBy({

@@ -47,8 +47,8 @@ export const simpleFormatCurrency = (
   const decimals = decimalOverride
     ? HUMAN_DECIMALS_CURRENCY + decimalOverride
     : manyDigits
-    ? PRECISE_DECIMALS_CURRENCY
-    : HUMAN_DECIMALS_CURRENCY;
+      ? PRECISE_DECIMALS_CURRENCY
+      : HUMAN_DECIMALS_CURRENCY;
 
   const options = {
     currency: 'USD', // TODO: make dynamic if beneficial
@@ -85,5 +85,5 @@ export const formatPercentage = (input: BigNumber, manyDigits: boolean) => {
     ? PRECISE_DECIMALS_PERCENT
     : HUMAN_DECIMALS_PERCENT;
 
-  return input.decimalPlaces(decimals).toString() + '%';
+  return input.decimalPlaces(decimals).toString();
 };

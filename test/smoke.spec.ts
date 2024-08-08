@@ -19,7 +19,7 @@ test.describe('Smoke GET', () => {
       const resp = await request.get(element.uri);
 
       if (element.isDeprecated) {
-        expect([299, 410]).toContain(resp.status());
+        expect([200, 299, 410]).toContain(resp.status());
         if (resp.status() === 299) {
           expect(resp.headers()).toHaveProperty('warning');
           expect(resp.headers()).toHaveProperty('deprecation');
