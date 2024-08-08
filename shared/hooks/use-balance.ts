@@ -13,8 +13,6 @@ import {
 
 import type { AbstractLidoSDKErc20 } from '@lidofinance/lido-ethereum-sdk/erc20';
 
-import {} from '@lidofinance/lido-ethereum-sdk/erc20';
-
 import type { GetBalanceData } from 'wagmi/query';
 import { Address } from 'viem';
 
@@ -62,6 +60,8 @@ const useTokenBalance = (contract: TokenContract, address?: Address) => {
     abi: contract?.abi,
     address: contract?.address,
     eventName: 'Transfer',
+    poll: true,
+
     enabled: !!(address && balanceQuery.data),
     args: { from: address! },
     onLogs: () => {
@@ -76,6 +76,7 @@ const useTokenBalance = (contract: TokenContract, address?: Address) => {
     abi: contract?.abi,
     address: contract?.address,
     eventName: 'Transfer',
+    poll: true,
     enabled: !!(address && balanceQuery.data),
     args: { to: address! },
     onLogs: () => {
