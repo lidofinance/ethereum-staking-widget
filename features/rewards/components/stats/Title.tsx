@@ -8,8 +8,7 @@ type TitleProps = BoxProps & {
 // TODO: refactoring to style files
 export const Title = ({ children, hideMobile, ...rest }: TitleProps) => (
   <Box
-    color="secondary"
-    fontSize="14px"
+    fontSize="12px"
     fontStyle="normal"
     fontWeight="normal"
     height="20px"
