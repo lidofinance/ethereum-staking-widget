@@ -4,7 +4,6 @@ import { Divider, Text } from '@lidofinance/lido-ui';
 import { TOKENS } from '@lido-sdk/constants';
 import {
   useSDK,
-  useEthereumBalance,
   useSTETHBalance,
   useWSTETHBalance,
   useTokenAddress,
@@ -28,10 +27,11 @@ import {
 import { overrideWithQAMockBoolean } from 'utils/qa';
 
 import { StyledCard } from './styles';
+import { useEthereumBalance } from 'shared/hooks/use-balance';
 
 const WalletComponent: WalletComponentType = (props) => {
   const { account } = useSDK();
-  const ethBalance = useEthereumBalance(undefined, STRATEGY_LAZY);
+  const ethBalance = useEthereumBalance();
   const stethBalance = useSTETHBalance(STRATEGY_LAZY);
   const wstethBalance = useWSTETHBalance(STRATEGY_LAZY);
 
@@ -46,7 +46,7 @@ const WalletComponent: WalletComponentType = (props) => {
       <CardRow>
         <CardBalance
           title="ETH balance"
-          loading={ethBalance.initialLoading}
+          loading={ethBalance.isLoading}
           value={
             <FormatToken
               data-testid="ethBalance"

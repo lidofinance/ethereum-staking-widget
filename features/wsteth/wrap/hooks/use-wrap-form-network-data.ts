@@ -1,9 +1,5 @@
 import { useCallback, useMemo } from 'react';
-import {
-  useWSTETHBalance,
-  useSTETHBalance,
-  useEthereumBalance,
-} from '@lido-sdk/react';
+import { useWSTETHBalance, useSTETHBalance } from '@lido-sdk/react';
 
 import { config } from 'config';
 import { STRATEGY_LAZY } from 'consts/swr-strategies';
@@ -12,14 +8,12 @@ import { useTokenMaxAmount } from 'shared/hooks/use-token-max-amount';
 import { useMaxGasPrice, useStakingLimitInfo } from 'shared/hooks';
 
 import { useWrapGasLimit } from './use-wrap-gas-limit';
+import { useEthereumBalance } from 'shared/hooks/use-balance';
 
 // Provides all data fetching for form to function
 export const useWrapFormNetworkData = () => {
   const { isMultisig, isLoading: isMultisigLoading } = useIsMultisig();
-  const { data: ethBalance, update: ethBalanceUpdate } = useEthereumBalance(
-    undefined,
-    STRATEGY_LAZY,
-  );
+  const { data: ethBalance, refetch: ethBalanceUpdate } = useEthereumBalance();
   const { data: stethBalance, update: stethBalanceUpdate } =
     useSTETHBalance(STRATEGY_LAZY);
   const { data: wstethBalance, update: wstethBalanceUpdate } =

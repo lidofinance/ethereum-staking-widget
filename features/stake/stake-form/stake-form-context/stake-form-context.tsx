@@ -11,7 +11,7 @@ import {
 import { useForm, FormProvider } from 'react-hook-form';
 import { useRouter } from 'next/router';
 
-import { useEthereumBalance, useSTETHBalance } from '@lido-sdk/react';
+import { useSTETHBalance } from '@lido-sdk/react';
 import { parseEther } from '@ethersproject/units';
 
 import {
@@ -39,6 +39,7 @@ import {
 
 import { useStake } from '../use-stake';
 import { useStethSubmitGasLimit } from '../hooks';
+import { useEthereumBalance } from 'shared/hooks/use-balance';
 
 //
 // Data context
@@ -75,9 +76,10 @@ const useStakeFormNetworkData = (): StakeFormNetworkData => {
 
   const {
     data: etherBalance,
-    update: updateEtherBalance,
-    initialLoading: isEtherBalanceLoading,
-  } = useEthereumBalance(undefined, STRATEGY_LAZY);
+    refetch: updateEtherBalance,
+    isLoading: isEtherBalanceLoading,
+  } = useEthereumBalance();
+
   const {
     data: stakingLimitInfo,
     mutate: mutateStakeLimit,
