@@ -1,3 +1,4 @@
+import { Button } from '@lidofinance/lido-ui';
 import { Card } from 'shared/wallet';
 import styled from 'styled-components';
 
@@ -7,4 +8,15 @@ export const FallbackWalletStyle = styled((props) => <Card {...props} />)`
   background-image: none !important;
 `;
 
-export const TextStyle = styled.p``;
+export const ButtonStyle = styled((props) => <Button {...props} />)`
+  background: #ffffff1a;
+
+  &:not(:disabled):hover,
+  &:focus-visible {
+    background: #ffffff4d;
+  }
+`;
+
+export const TextStyle = styled.p`
+  margin-bottom: 16px;
+`;
