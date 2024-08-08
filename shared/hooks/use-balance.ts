@@ -10,7 +10,7 @@ const dataToBN = (data: GetBalanceData) =>
 export const useEthereumBalance = () => {
   const queryClient = useQueryClient();
   const { address } = useAccount();
-  const { data: blockNumber } = useBlockNumber({ watch: true });
+  const { data: blockNumber } = useBlockNumber({ watch: !!address });
   const queryData = useBalance({
     address,
     query: { select: dataToBN, staleTime: 7000, enabled: !!address },
