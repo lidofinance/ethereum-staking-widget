@@ -91,7 +91,6 @@ export const ClaimFormFooterSticky: FC<
       const currFooterShift =
         footerHeight - Math.min(distanceFromElStart, footerHeight) - menuOffset;
       if (currFooterShift !== scrollState.footerShift) {
-        elFooter.style.setProperty('bottom', `${-currFooterShift}px`);
         scrollState.footerShift = currFooterShift;
       }
     } else {
@@ -132,6 +131,7 @@ export const ClaimFormFooterSticky: FC<
     <>
       <ClaimFormFooterWrapper
         isSticked={isEnabled && scrollState.isSticked}
+        footerShift={Math.abs(scrollState.footerShift)}
         ref={refFooter}
       >
         <ClaimFormFooter>
