@@ -9,13 +9,13 @@
     "noEmit": true,
     "esModuleInterop": true,
     "module": "esnext",
-    "moduleResolution": "node",
+    "moduleResolution": "nodenext",
     "resolveJsonModule": true,
     "isolatedModules": true,
     "jsx": "preserve",
     "baseUrl": ".",
-    "incremental": true
+    "incremental": true,
   },
   "include": ["**/*"],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules"],
 }
