@@ -132,6 +132,7 @@ export const ClaimFormFooterSticky: FC<
     <>
       <ClaimFormFooterWrapper
         isSticked={isEnabled && scrollState.isSticked}
+        footerShift={Math.abs(scrollState.footerShift)}
         ref={refFooter}
       >
         <ClaimFormFooter>
