@@ -11,7 +11,6 @@ import {
 import { useForm, FormProvider } from 'react-hook-form';
 import { useRouter } from 'next/router';
 
-import { useEthereumBalance, useSTETHBalance } from '@lido-sdk/react';
 import { parseEther } from '@ethersproject/units';
 
 import {
@@ -24,7 +23,6 @@ import { useMaxGasPrice } from 'shared/hooks';
 import { useIsMultisig } from 'shared/hooks/useIsMultisig';
 import { useFormControllerRetry } from 'shared/hook-form/form-controller/use-form-controller-retry-delegate';
 
-import { STRATEGY_LAZY } from 'consts/swr-strategies';
 import { config } from 'config';
 
 import {
@@ -39,6 +37,7 @@ import {
 
 import { useStake } from '../use-stake';
 import { useStethSubmitGasLimit } from '../hooks';
+import { useEthereumBalance, useStethBalance } from 'shared/hooks/use-balance';
 
 //
 // Data context
@@ -60,9 +59,9 @@ export const useStakeFormData = () => {
 const useStakeFormNetworkData = (): StakeFormNetworkData => {
   const {
     data: stethBalance,
-    update: updateStethBalance,
-    initialLoading: isStethBalanceLoading,
-  } = useSTETHBalance(STRATEGY_LAZY);
+    refetch: updateStethBalance,
+    isLoading: isStethBalanceLoading,
+  } = useStethBalance();
   const { isMultisig, isLoading: isMultisigLoading } = useIsMultisig();
   const gasLimit = useStethSubmitGasLimit();
   const { maxGasPrice, initialLoading: isMaxGasPriceLoading } =
@@ -75,9 +74,10 @@ const useStakeFormNetworkData = (): StakeFormNetworkData => {
 
   const {
     data: etherBalance,
-    update: updateEtherBalance,
-    initialLoading: isEtherBalanceLoading,
-  } = useEthereumBalance(undefined, STRATEGY_LAZY);
+    refetch: updateEtherBalance,
+    isLoading: isEtherBalanceLoading,
+  } = useEthereumBalance();
+
   const {
     data: stakingLimitInfo,
     mutate: mutateStakeLimit,

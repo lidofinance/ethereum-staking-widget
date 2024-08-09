@@ -224,7 +224,7 @@ export const useWithdrawalRequest = ({
     approve,
     needsApprove,
     allowance,
-    initialLoading: loadingUseApprove,
+    isLoading: loadingUseApprove,
   } = useApprove(
     valueBN,
     tokenContract.address,

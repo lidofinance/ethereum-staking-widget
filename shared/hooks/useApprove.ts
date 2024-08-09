@@ -4,14 +4,15 @@ import { useCallback } from 'react';
 import type { ContractReceipt } from '@ethersproject/contracts';
 import { BigNumber } from '@ethersproject/bignumber';
 import { getERC20Contract } from '@lido-sdk/contracts';
-import { useAllowance, useSDK } from '@lido-sdk/react';
+import { useSDK } from '@lido-sdk/react';
 
 import { isContract } from 'utils/isContract';
 import { runWithTransactionLogger } from 'utils';
 
 import { useCurrentStaticRpcProvider } from './use-current-static-rpc-provider';
-import { STRATEGY_LAZY } from 'consts/swr-strategies';
 import { sendTx } from 'utils/send-tx';
+import { useAllowance } from './use-allowance';
+import { Address } from 'viem';
 
 type ApproveOptions =
   | {
@@ -23,12 +24,9 @@ type ApproveOptions =
 
 export type UseApproveResponse = {
   approve: (options?: ApproveOptions) => Promise<string>;
+  allowance: ReturnType<typeof useAllowance>['data'];
   needsApprove: boolean;
-  initialLoading: boolean;
-  allowance: BigNumber | undefined;
-  loading: boolean;
-  error: unknown;
-};
+} & ReturnType<typeof useAllowance>;
 
 export const useApprove = (
   amount: BigNumber,
@@ -43,11 +41,14 @@ export const useApprove = (
   invariant(token != null, 'Token is required');
   invariant(spender != null, 'Spender is required');
 
-  const result = useAllowance(token, spender, mergedOwner, STRATEGY_LAZY);
-  const { data: allowance, initialLoading, update: updateAllowance } = result;
+  const allowanceQuery = useAllowance({
+    token: token as Address,
+    account: mergedOwner as Address,
+    spender: spender as Address,
+  });
 
   const needsApprove = Boolean(
-    !initialLoading && allowance && !amount.isZero() && amount.gt(allowance),
+    allowanceQuery.data && !amount.isZero() && amount.gt(allowanceQuery.data),
   );
 
   const approve = useCallback<UseApproveResponse['approve']>(
@@ -86,39 +87,26 @@ export const useApprove = (
         await onTxAwaited?.(receipt);
       }
 
-      await updateAllowance();
+      await allowanceQuery.refetch();
 
       return approveTxHash;
     },
     [
+      providerWeb3,
       chainId,
       account,
       token,
-      updateAllowance,
+      staticRpcProvider,
+      allowanceQuery,
       spender,
       amount,
-      staticRpcProvider,
-      providerWeb3,
     ],
   );
 
   return {
     approve,
     needsApprove,
-
-    allowance,
-    initialLoading,
-
-    /*
-     * support dependency collection
-     * https://swr.vercel.app/advanced/performance#dependency-collection
-     */
-
-    get loading() {
-      return result.loading;
-    },
-    get error() {
-      return result.error;
-    },
+    allowance: allowanceQuery.data,
+    ...allowanceQuery,
   };
 };

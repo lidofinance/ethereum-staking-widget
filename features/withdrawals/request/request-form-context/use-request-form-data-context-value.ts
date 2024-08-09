@@ -1,14 +1,10 @@
-import {
-  useSTETHContractRPC,
-  useSTETHBalance,
-  useWSTETHBalance,
-  useContractSWR,
-} from '@lido-sdk/react';
+import { useSTETHContractRPC, useContractSWR } from '@lido-sdk/react';
 import { useClaimData } from 'features/withdrawals/contexts/claim-data-context';
 import { useWithdrawals } from 'features/withdrawals/contexts/withdrawals-context';
 import { useUnfinalizedStETH } from 'features/withdrawals/hooks';
 import { useCallback, useMemo } from 'react';
 import { useWstethBySteth } from 'shared/hooks';
+import { useStethBalance, useWstethBalance } from 'shared/hooks/use-balance';
 import { STRATEGY_LAZY } from 'consts/swr-strategies';
 
 // Provides all data fetching for form to function
@@ -28,14 +24,14 @@ export const useRequestFormDataContextValue = () => {
   } = useWithdrawals();
   const {
     data: balanceSteth,
-    update: stethUpdate,
-    initialLoading: isStethBalanceLoading,
-  } = useSTETHBalance(STRATEGY_LAZY);
+    refetch: stethUpdate,
+    isLoading: isStethBalanceLoading,
+  } = useStethBalance();
   const {
     data: balanceWSteth,
-    update: wstethUpdate,
-    initialLoading: isWstethBalanceLoading,
-  } = useWSTETHBalance(STRATEGY_LAZY);
+    refetch: wstethUpdate,
+    isLoading: isWstethBalanceLoading,
+  } = useWstethBalance();
   const {
     data: unfinalizedStETH,
     update: unfinalizedStETHUpdate,
