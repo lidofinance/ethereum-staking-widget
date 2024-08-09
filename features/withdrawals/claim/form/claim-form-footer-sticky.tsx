@@ -91,7 +91,6 @@ export const ClaimFormFooterSticky: FC<
       const currFooterShift =
         footerHeight - Math.min(distanceFromElStart, footerHeight) - menuOffset;
       if (currFooterShift !== scrollState.footerShift) {
-        elFooter.style.setProperty('bottom', `${-currFooterShift}px`);
         scrollState.footerShift = currFooterShift;
       }
     } else {
