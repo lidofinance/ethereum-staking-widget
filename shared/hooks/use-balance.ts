@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { QueryKey, useQuery, useQueryClient } from '@tanstack/react-query';
 import { BigNumber } from 'ethers';
 import { useLidoSDK } from 'providers/lido-sdk';
-import { useEffect } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   useBlockNumber,
   useBalance,
@@ -12,14 +12,12 @@ import {
 } from 'wagmi';
 
 import type { AbstractLidoSDKErc20 } from '@lidofinance/lido-ethereum-sdk/erc20';
-
 import type { GetBalanceData } from 'wagmi/query';
-import { Address } from 'viem';
+import type { Address, Log } from 'viem';
 
-const dataToBN = (data: GetBalanceData) =>
-  BigNumber.from(data.value.toString());
+const nativeToBN = (data: bigint) => BigNumber.from(data.toString());
 
-const NativeToBN = (data: bigint) => BigNumber.from(data.toString());
+const balanceToBN = (data: GetBalanceData) => nativeToBN(data.value);
 
 export const useEthereumBalance = () => {
   const queryClient = useQueryClient();
@@ -27,7 +25,7 @@ export const useEthereumBalance = () => {
   const { data: blockNumber } = useBlockNumber({ watch: !!address });
   const queryData = useBalance({
     address,
-    query: { select: dataToBN, staleTime: 7000, enabled: !!address },
+    query: { select: balanceToBN, staleTime: 7000, enabled: !!address },
   });
 
   useEffect(() => {
@@ -46,46 +44,161 @@ type TokenContract = Awaited<
   ReturnType<InstanceType<typeof AbstractLidoSDKErc20>['getContract']>
 >;
 
-const useTokenBalance = (contract: TokenContract, address?: Address) => {
+type TokenSubscriptionState = Record<
+  Address,
+  {
+    subscribers: number;
+    queryKey: QueryKey;
+  }
+>;
+
+type SubscribeArgs = {
+  address: Address;
+  queryKey: QueryKey;
+};
+
+export const Erc20EventsAbi = [
+  {
+    type: 'event',
+    name: 'Approval',
+    inputs: [
+      { indexed: true, name: 'owner', type: 'address' },
+      { indexed: true, name: 'spender', type: 'address' },
+      { indexed: false, name: 'value', type: 'uint256' },
+    ],
+  },
+  {
+    type: 'event',
+    name: 'Transfer',
+    inputs: [
+      { indexed: true, name: 'from', type: 'address' },
+      { indexed: true, name: 'to', type: 'address' },
+      { indexed: false, name: 'value', type: 'uint256' },
+    ],
+  },
+] as const;
+
+export const useTokenTransferSubscription = () => {
+  const { address } = useAccount();
   const queryClient = useQueryClient();
+  const [subscriptions, setSubscriptions] = useState<TokenSubscriptionState>(
+    {},
+  );
+
+  const tokens = useMemo(
+    () => Object.keys(subscriptions) as Address[],
+    [subscriptions],
+  );
+
+  const onLogs = useCallback(
+    (logs: Log[]) => {
+      for (const log of logs) {
+        const subscription = subscriptions[log.address];
+        if (subscription) {
+          // we could optimistically update balance data
+          // but it's easier to refetch balance after transfer
+          void queryClient.invalidateQueries(
+            {
+              queryKey: subscription.queryKey,
+            },
+            { cancelRefetch: false },
+          );
+        }
+      }
+    },
+    [queryClient, subscriptions],
+  );
+
+  const shouldWatch = address && tokens.length > 0;
+
+  useWatchContractEvent({
+    abi: Erc20EventsAbi,
+    eventName: 'Transfer',
+    batch: true,
+    poll: true,
+    args: {
+      to: address,
+    },
+    address: tokens,
+    enabled: shouldWatch,
+    onLogs,
+  });
+
+  useWatchContractEvent({
+    abi: Erc20EventsAbi,
+    eventName: 'Transfer',
+    batch: true,
+    poll: true,
+    args: {
+      from: address,
+    },
+    address: tokens,
+    enabled: shouldWatch,
+    onLogs,
+  });
+
+  const subscribe = useCallback(({ address, queryKey }: SubscribeArgs) => {
+    setSubscriptions((old) => {
+      const existing = old[address];
+      return {
+        ...old,
+        [address]: {
+          queryKey,
+          subscribers: existing?.subscribers ?? 0 + 1,
+        },
+      };
+    });
+
+    // unsubscribe
+    return () => {
+      setSubscriptions((old) => {
+        const existing = old[address];
+        if (existing) {
+          if (existing.subscribers > 1) {
+            return {
+              ...old,
+              [address]: {
+                ...existing,
+                subscribers: existing.subscribers - 1,
+              },
+            };
+          } else {
+            delete old[address];
+            return { ...old };
+          }
+        } else return old;
+      });
+    };
+  }, []);
+
+  return subscribe;
+};
+
+// NB: contract can be undefined but for better wagmi typings is casted as NoNNullable
+const useTokenBalance = (contract: TokenContract, address?: Address) => {
+  const { subscribeToTokenUpdates } = useLidoSDK();
+  // const queryClient = useQueryClient();
   const balanceQuery = useReadContract({
     abi: contract?.abi,
     address: contract?.address,
     functionName: 'balanceOf',
     args: address && [address],
-    query: { enabled: !!address, select: NativeToBN },
+    query: { enabled: !!address, select: nativeToBN },
   });
 
-  useWatchContractEvent({
-    abi: contract?.abi,
-    address: contract?.address,
-    eventName: 'Transfer',
-    poll: true,
-
-    enabled: !!(address && balanceQuery.data),
-    args: { from: address! },
-    onLogs: () => {
-      void queryClient.invalidateQueries(
-        { queryKey: balanceQuery.queryKey },
-        { cancelRefetch: false },
-      );
-    },
-  });
-
-  useWatchContractEvent({
-    abi: contract?.abi,
-    address: contract?.address,
-    eventName: 'Transfer',
-    poll: true,
-    enabled: !!(address && balanceQuery.data),
-    args: { to: address! },
-    onLogs: () => {
-      void queryClient.invalidateQueries(
-        { queryKey: balanceQuery.queryKey },
-        { cancelRefetch: false },
-      );
-    },
-  });
+  useEffect(() => {
+    if (address && contract?.address) {
+      return subscribeToTokenUpdates({
+        address: contract.address,
+        queryKey: balanceQuery.queryKey,
+      });
+    }
+  }, [
+    address,
+    contract?.address,
+    balanceQuery.queryKey,
+    subscribeToTokenUpdates,
+  ]);
 
   return balanceQuery;
 };

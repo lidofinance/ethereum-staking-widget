@@ -1,5 +1,6 @@
 // TODO: move this to dedicated web3 configuration module
 
+import { config } from 'config';
 import { useMemo, useCallback } from 'react';
 import {
   Transport,
@@ -11,6 +12,14 @@ import {
   Chain,
 } from 'viem';
 import { Connection } from 'wagmi';
+
+// We disable those methods so wagmi uses getLogs intestead to watch events
+// Filters are not suitable for public rpc and break between fallbacks
+const DISABLED_METHODS = new Set([
+  'eth_newFilter',
+  'eth_getFilterChanges',
+  'eth_uninstallFilter',
+]);
 
 // Viem transport wrapper that allows runtime changes via setter
 const runtimeMutableTransport = (
@@ -27,6 +36,10 @@ const runtimeMutableTransport = (
           name: 'RuntimeMutableTransport',
           //@ts-expect-error invalid typings
           async request(requestParams, options) {
+            if (DISABLED_METHODS.has(requestParams.method))
+              throw new Error(
+                `Method ${requestParams.method} is not supported`,
+              );
             const transport = withInjectedTransport
               ? withInjectedTransport(params)
               : defaultTransport;
@@ -62,10 +75,13 @@ export const useWeb3Transport = (
       ({ transportMap, setTransportMap }, chain) => {
         const [transport, setTransport] = runtimeMutableTransport([
           http(backendRpcMap[chain.id], {
-            batch: true,
+            batch: { wait: config.PROVIDER_BATCH_TIME },
             name: backendRpcMap[chain.id],
           }),
-          http(),
+          http(undefined, {
+            batch: { wait: config.PROVIDER_BATCH_TIME },
+            name: 'default HTTP RPC',
+          }),
         ]);
         return {
           transportMap: {
