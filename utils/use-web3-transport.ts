@@ -1,17 +1,17 @@
-// TODO: move this to dedicated web3 configuration module
-
 import { config } from 'config';
 import { useMemo, useCallback } from 'react';
 import {
-  Transport,
+  type Transport,
   fallback,
   createTransport,
   http,
   EIP1193Provider,
   custom,
   Chain,
+  UnsupportedProviderMethodError,
 } from 'viem';
-import { Connection } from 'wagmi';
+import type { OnResponseFn } from 'viem/_types/clients/transports/fallback';
+import type { Connection } from 'wagmi';
 
 // We disable those methods so wagmi uses getLogs intestead to watch events
 // Filters are not suitable for public rpc and break between fallbacks
@@ -21,6 +21,8 @@ const DISABLED_METHODS = new Set([
   'eth_uninstallFilter',
 ]);
 
+const NOOP = () => {};
+
 // Viem transport wrapper that allows runtime changes via setter
 const runtimeMutableTransport = (
   mainTransports: Transport[],
@@ -29,26 +31,39 @@ const runtimeMutableTransport = (
   return [
     (params) => {
       const defaultTransport = fallback(mainTransports)(params);
-
+      let responseFn: OnResponseFn = NOOP;
       return createTransport(
         {
           key: 'RuntimeMutableTransport',
           name: 'RuntimeMutableTransport',
           //@ts-expect-error invalid typings
           async request(requestParams, options) {
-            if (DISABLED_METHODS.has(requestParams.method))
-              throw new Error(
-                `Method ${requestParams.method} is not supported`,
-              );
             const transport = withInjectedTransport
               ? withInjectedTransport(params)
               : defaultTransport;
+
+            if (DISABLED_METHODS.has(requestParams.method)) {
+              const error = new UnsupportedProviderMethodError(
+                new Error(`Method ${requestParams.method} is not supported`),
+              );
+              responseFn({
+                error,
+                method: requestParams.method,
+                params: params as unknown[],
+                transport,
+                status: 'error',
+              });
+              throw error;
+            }
+
+            transport.value?.onResponse(responseFn);
             return transport.request(requestParams, options);
           },
           type: 'fallback',
         },
         {
           transports: defaultTransport.value?.transports,
+          onResponse: (fn: OnResponseFn) => (responseFn = fn),
         },
       );
     },

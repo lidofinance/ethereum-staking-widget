@@ -60,15 +60,6 @@ type SubscribeArgs = {
 export const Erc20EventsAbi = [
   {
     type: 'event',
-    name: 'Approval',
-    inputs: [
-      { indexed: true, name: 'owner', type: 'address' },
-      { indexed: true, name: 'spender', type: 'address' },
-      { indexed: false, name: 'value', type: 'uint256' },
-    ],
-  },
-  {
-    type: 'event',
     name: 'Transfer',
     inputs: [
       { indexed: true, name: 'from', type: 'address' },
@@ -114,11 +105,12 @@ export const useTokenTransferSubscription = () => {
   useWatchContractEvent({
     abi: Erc20EventsAbi,
     eventName: 'Transfer',
-    batch: true,
-    poll: true,
-    args: {
-      to: address,
-    },
+    args: useMemo(
+      () => ({
+        to: address,
+      }),
+      [address],
+    ),
     address: tokens,
     enabled: shouldWatch,
     onLogs,
@@ -127,11 +119,12 @@ export const useTokenTransferSubscription = () => {
   useWatchContractEvent({
     abi: Erc20EventsAbi,
     eventName: 'Transfer',
-    batch: true,
-    poll: true,
-    args: {
-      from: address,
-    },
+    args: useMemo(
+      () => ({
+        from: address,
+      }),
+      [address],
+    ),
     address: tokens,
     enabled: shouldWatch,
     onLogs,
@@ -177,7 +170,7 @@ export const useTokenTransferSubscription = () => {
 // NB: contract can be undefined but for better wagmi typings is casted as NoNNullable
 const useTokenBalance = (contract: TokenContract, address?: Address) => {
   const { subscribeToTokenUpdates } = useLidoSDK();
-  // const queryClient = useQueryClient();
+
   const balanceQuery = useReadContract({
     abi: contract?.abi,
     address: contract?.address,
@@ -193,12 +186,9 @@ const useTokenBalance = (contract: TokenContract, address?: Address) => {
         queryKey: balanceQuery.queryKey,
       });
     }
-  }, [
-    address,
-    contract?.address,
-    balanceQuery.queryKey,
-    subscribeToTokenUpdates,
-  ]);
+    // queryKey causes rerender
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [address, contract?.address]);
 
   return balanceQuery;
 };
