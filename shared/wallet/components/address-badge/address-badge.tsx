@@ -1,19 +1,22 @@
 import { useBreakpoint, IdenticonBadgeProps } from '@lidofinance/lido-ui';
-import { AddressBadgeStyle } from './styles';
 import { Component } from 'types';
+import { AddressBadgeStyle } from './styles';
 
 export type AddressBadgeComponent = Component<
   'div',
-  Omit<IdenticonBadgeProps, 'address' | 'as'> & { address?: string | null }
+  Omit<IdenticonBadgeProps, 'address' | 'as'> & { address?: string | null } & {
+    symbolsMobile?: number;
+    symbolsDesktop?: number;
+  }
 >;
 
 export const AddressBadge: AddressBadgeComponent = (props) => {
-  const { address, ...rest } = props;
+  const { address, symbolsMobile = 3, symbolsDesktop = 6, ...rest } = props;
   const isMobile = useBreakpoint('md');
 
   return (
     <AddressBadgeStyle
-      symbols={isMobile ? 3 : 6}
+      symbols={isMobile ? symbolsMobile : symbolsDesktop}
       address={address ?? ''}
       {...rest}
     />

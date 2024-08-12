@@ -1,14 +1,9 @@
-import type { BigNumber, PopulatedTransaction } from 'ethers';
+import type { PopulatedTransaction } from 'ethers';
 import { isAddress } from 'ethers/lib/utils';
 import type { BaseProvider } from '@ethersproject/providers';
 
 import { config } from 'config';
 import invariant from 'tiny-invariant';
-
-export const applyGasLimitRatio = (gasLimit: BigNumber): BigNumber =>
-  gasLimit
-    .mul(config.SUBMIT_EXTRA_GAS_TRANSACTION_RATIO * config.PRECISION)
-    .div(config.PRECISION);
 
 export const getAddress = async (
   input: string,

@@ -1,39 +1,72 @@
 import { FC } from 'react';
-import { ThemeProvider, themeDark } from '@lidofinance/lido-ui';
+import { Box, ThemeProvider, themeDark } from '@lidofinance/lido-ui';
 
-import { InputDescription } from 'features/rewards/components/inputDescription';
-import { AddressInput } from 'features/rewards/components/addressInput';
-import { InputWrapper } from 'features/rewards/components/inputWrapper';
+import NumberFormat from 'features/rewards/components/NumberFormat';
+import { Title } from 'features/rewards/components/stats/Title';
 import { useRewardsHistory } from 'features/rewards/hooks';
+import { useRewardsBalanceData } from 'features/rewards/hooks/use-rewards-balance-data';
+import { FlexCenter } from 'features/stake/stake-form/wallet/styles';
+import { CardBalance } from 'shared/wallet';
+import { useWalletModal } from 'shared/wallet/wallet-modal/use-wallet-modal';
 
-import { WalletStyle } from './styles';
-
-const INPUT_DESC_TEXT =
-  'Current balance may differ from last balance in the table due to rounding.';
+import {
+  WalletStyle,
+  WalletContentStyle,
+  WalletContentAddressBadgeStyle,
+  WalletContentRowStyle,
+} from './styles';
 
 export const Wallet: FC = () => {
-  const {
-    address,
-    addressError,
-    isAddressResolving,
-    inputValue,
-    setInputValue,
-  } = useRewardsHistory();
+  const { data: balanceData } = useRewardsBalanceData();
+  const { currencyObject: currency, address, loading } = useRewardsHistory();
+  const { openModal } = useWalletModal();
 
   return (
     <WalletStyle>
-      <InputWrapper data-testid="inputSection" color="accent">
-        <ThemeProvider theme={themeDark}>
-          <AddressInput
-            address={address}
-            addressError={addressError}
-            inputValue={inputValue}
-            handleInputChange={setInputValue}
-            isAddressResolving={isAddressResolving}
-          />
-          <InputDescription>{INPUT_DESC_TEXT}</InputDescription>
-        </ThemeProvider>
-      </InputWrapper>
+      <ThemeProvider theme={themeDark}>
+        <WalletContentStyle>
+          <WalletContentRowStyle>
+            <CardBalance
+              data-testid="stEthBalanceBlock"
+              title={
+                <FlexCenter>
+                  <span>stETH balance</span>
+                </FlexCenter>
+              }
+              loading={loading}
+              value={
+                <div data-testid="stEthBalance">
+                  <NumberFormat
+                    number={balanceData?.stEthBalanceParsed}
+                    pending={loading}
+                  />
+                  <Box display="inline-block" pl={'3px'}>
+                    stETH
+                  </Box>
+                </div>
+              }
+            >
+              <Title data-testid="stEthBalanceIn$" hideMobile>
+                <Box display="inline-block" pr={'3px'}>
+                  {currency.symbol}
+                </Box>
+                <NumberFormat
+                  number={balanceData?.stEthCurrencyBalance}
+                  currency
+                  pending={loading}
+                />
+              </Title>
+            </CardBalance>
+
+            <WalletContentAddressBadgeStyle
+              address={address as `0x${string}`}
+              symbolsMobile={3}
+              symbolsDesktop={6}
+              onClick={() => openModal({})}
+            />
+          </WalletContentRowStyle>
+        </WalletContentStyle>
+      </ThemeProvider>
     </WalletStyle>
   );
 };

@@ -9,6 +9,7 @@ import { StakeForm } from './stake-form';
 
 export const Stake = () => {
   const key = useWeb3Key();
+
   return (
     <>
       <NoSSRWrapper>

@@ -3,21 +3,25 @@ import { useCallback } from 'react';
 import { useWeb3 } from 'reef-knot/web3-react';
 import invariant from 'tiny-invariant';
 
-import { useSDK, useSTETHContractWeb3 } from '@lido-sdk/react';
+import {
+  useSDK,
+  useSTETHContractRPC,
+  useSTETHContractWeb3,
+} from '@lido-sdk/react';
 
 import { config } from 'config';
 import { useCurrentStaticRpcProvider } from 'shared/hooks/use-current-static-rpc-provider';
 import { isContract } from 'utils/isContract';
-import { getFeeData } from 'utils/getFeeData';
 import { runWithTransactionLogger } from 'utils';
 
 import {
   MockLimitReachedError,
   getAddress,
-  applyGasLimitRatio,
   applyCalldataSuffix,
 } from './utils';
 import { useTxModalStagesStake } from './hooks/use-tx-modal-stages-stake';
+
+import { sendTx } from 'utils/send-tx';
 
 type StakeArguments = {
   amount: BigNumber | null;
@@ -31,9 +35,10 @@ type StakeOptions = {
 
 export const useStake = ({ onConfirm, onRetry }: StakeOptions) => {
   const stethContractWeb3 = useSTETHContractWeb3();
+  const stethContract = useSTETHContractRPC();
   const { account, chainId } = useWeb3();
   const { staticRpcProvider } = useCurrentStaticRpcProvider();
-  const { providerWeb3, providerRpc } = useSDK();
+  const { providerWeb3 } = useSDK();
   const { txModalStages } = useTxModalStagesStake();
 
   // temporary disable until Ledger is fixed
@@ -58,9 +63,9 @@ export const useStake = ({ onConfirm, onRetry }: StakeOptions) => {
         txModalStages.sign(amount);
 
         const [isMultisig, referralAddress] = await Promise.all([
-          isContract(account, providerRpc),
+          isContract(account, staticRpcProvider),
           referral
-            ? getAddress(referral, providerRpc)
+            ? getAddress(referral, staticRpcProvider)
             : config.STAKE_FALLBACK_REFERRAL_ADDRESS,
         ]);
 
@@ -74,26 +79,19 @@ export const useStake = ({ onConfirm, onRetry }: StakeOptions) => {
 
           if (shouldApplyCalldataSuffix) applyCalldataSuffix(tx);
 
-          if (isMultisig) {
-            return providerWeb3.getSigner().sendUncheckedTransaction(tx);
-          } else {
-            const { maxFeePerGas, maxPriorityFeePerGas } =
-              await getFeeData(staticRpcProvider);
-
-            tx.maxFeePerGas = maxFeePerGas;
-            tx.maxPriorityFeePerGas = maxPriorityFeePerGas;
-
-            const originalGasLimit = await providerWeb3.estimateGas(tx);
-            const gasLimit = applyGasLimitRatio(originalGasLimit);
-
-            tx.gasLimit = gasLimit;
-
-            return providerWeb3.getSigner().sendTransaction(tx);
-          }
+          return sendTx({
+            tx,
+            isMultisig,
+            staticProvider: staticRpcProvider,
+            walletProvider: providerWeb3,
+            shouldApplyGasLimitRatio: true,
+          });
         };
 
-        const tx = await runWithTransactionLogger('Stake signing', callback);
-        const txHash = typeof tx === 'string' ? tx : tx.hash;
+        const txHash = await runWithTransactionLogger(
+          'Stake signing',
+          callback,
+        );
 
         if (isMultisig) {
           txModalStages.successMultisig();
@@ -102,13 +100,13 @@ export const useStake = ({ onConfirm, onRetry }: StakeOptions) => {
 
         txModalStages.pending(amount, txHash);
 
-        if (typeof tx === 'object') {
-          await runWithTransactionLogger('Wrap block confirmation', () =>
-            tx.wait(),
+        if (!isMultisig) {
+          await runWithTransactionLogger('Stake block confirmation', () =>
+            staticRpcProvider.waitForTransaction(txHash),
           );
         }
 
-        const stethBalance = await stethContractWeb3.balanceOf(account);
+        const stethBalance = await stethContract.balanceOf(account);
 
         await onConfirm?.();
 
@@ -127,9 +125,9 @@ export const useStake = ({ onConfirm, onRetry }: StakeOptions) => {
       providerWeb3,
       stethContractWeb3,
       txModalStages,
-      providerRpc,
-      onConfirm,
       staticRpcProvider,
+      stethContract,
+      onConfirm,
       shouldApplyCalldataSuffix,
       onRetry,
     ],

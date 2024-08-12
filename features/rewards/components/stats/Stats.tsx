@@ -2,10 +2,9 @@ import { Box, Link } from '@lidofinance/lido-ui';
 
 import { config } from 'config';
 import { useRewardsHistory } from 'features/rewards/hooks';
-import EthSymbol from 'features/rewards/components/EthSymbol';
 import NumberFormat from 'features/rewards/components/NumberFormat';
 import { useStethEthRate } from 'features/rewards/hooks/use-steth-eth-rate';
-import { useRewardsBalanceData } from 'features/rewards/hooks/use-rewards-balance-data';
+import { useDappStatus } from 'shared/hooks/use-dapp-status';
 
 import { Item } from './Item';
 import { Stat } from './Stat';
@@ -18,43 +17,28 @@ export const Stats: React.FC = () => {
     data,
     initialLoading: pending,
   } = useRewardsHistory();
-  const { data: stEthEth } = useStethEthRate();
-  const { data: balanceData } = useRewardsBalanceData();
+  const stEthEth = useStethEthRate();
+  const { isDappActive } = useDappStatus();
 
   return (
     <>
-      <Item data-testid="stEthBalanceBlock">
-        <Title mb="8px">stETH balance</Title>
-        <Stat data-testid="stEthBalance" mb="6px">
-          <EthSymbol />
-          <NumberFormat
-            number={balanceData?.stEthBalanceParsed}
-            pending={pending}
-          />
-        </Stat>
-        <Title data-testid="stEthBalanceIn$" hideMobile>
-          <Box display="inline-block" pr="3px">
-            {currency.symbol}
-          </Box>
-          <NumberFormat
-            number={balanceData?.stEthCurrencyBalance}
-            currency
-            pending={pending}
-          />
-        </Title>
-      </Item>
       <Item data-testid="stEthRewardedBlock">
         <Title mb="8px">stETH rewarded</Title>
-        <Stat data-testid="stEthRewarded" mb="6px" color="#61B75F">
-          <EthSymbol />
-          <NumberFormat number={data?.totals.ethRewards} pending={pending} />
+        <Stat data-testid="stEthRewarded" mb="4px" color="#61B75F">
+          <NumberFormat
+            number={isDappActive ? data?.totals.ethRewards : undefined}
+            pending={pending}
+          />
+          <Box display="inline-block" pl={'3px'}>
+            stETH
+          </Box>
         </Stat>
         <Title data-testid="stEthRewardedIn$" hideMobile>
-          <Box display="inline-block" pr="3px">
+          <Box display="inline-block" pr={'3px'}>
             {currency.symbol}
           </Box>
           <NumberFormat
-            number={data?.totals.currencyRewards}
+            number={isDappActive ? data?.totals.currencyRewards : undefined}
             currency
             pending={pending}
           />
@@ -62,44 +46,49 @@ export const Stats: React.FC = () => {
       </Item>
       <Item data-testid="averageAprBlock">
         <Title mb="8px">Average APR</Title>
-        <Stat data-testid="averageApr" mb="6px">
+        <Stat data-testid="averageApr" mb="4px">
           {parseFloat(data?.averageApr || '0') ? (
-            <NumberFormat number={data?.averageApr} percent pending={pending} />
+            <NumberFormat
+              number={isDappActive ? data?.averageApr : undefined}
+              percent
+              pending={pending}
+            />
           ) : (
             '-'
           )}
+          <Box display="inline-block" pl="3px">
+            %
+          </Box>
         </Stat>
         <Title hideMobile>
           <Link href={`${config.rootOrigin}/ethereum#apr`}>
-            <Box
-              data-testid="moreInfo"
-              color="secondary"
-              style={{ textDecoration: 'underline' }}
-            >
-              More info
-            </Box>
+            <Box data-testid="moreInfo">More info</Box>
           </Link>
         </Title>
       </Item>
       <Item data-testid="stEthPriceBlock">
         <Title mb="8px">stETH price</Title>
-        <Stat data-testid="stEthPrice" mb="6px">
+        <Stat data-testid="stEthPrice" mb="4px">
           <Box display="inline-block" pr="3px">
             {currency.symbol}
           </Box>
           <NumberFormat
-            number={data?.stETHCurrencyPrice[currency.id]}
+            number={
+              isDappActive ? data?.stETHCurrencyPrice[currency.id] : undefined
+            }
             ETH
             pending={pending}
           />
         </Stat>
         <Title data-testid="ethRate" hideMobile>
-          <EthSymbol />
           <NumberFormat
-            number={stEthEth?.toString()}
+            number={isDappActive ? stEthEth?.toString() : undefined}
             StEthEth
             pending={pending}
           />
+          <Box display="inline-block" pl={'3px'}>
+            ETH
+          </Box>
         </Title>
       </Item>
     </>

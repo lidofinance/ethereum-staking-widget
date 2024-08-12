@@ -34,11 +34,11 @@ export type RewardsHistoryValue = {
   address: string;
   addressError: string;
   inputValue: string;
-  isOnlyRewards: boolean;
+  isIncludeTransfers: boolean;
   isUseArchiveExchangeRate: boolean;
   isLagging: boolean;
   setInputValue: (value: string) => void;
-  setIsOnlyRewards: (value: boolean) => void;
+  setIsIncludeTransfers: (value: boolean) => void;
   setIsUseArchiveExchangeRate: (value: boolean) => void;
   setPage: (page: number) => void;
   setCurrency: (value: string) => void;
@@ -56,7 +56,7 @@ const RewardsHistoryProvider: FC<PropsWithChildren> = (props) => {
     if (currencyValue) setCurrency(currencyValue);
   }, []);
 
-  const [isOnlyRewards, setIsOnlyRewards] = useState(false);
+  const [isIncludeTransfers, setIsIncludeTransfers] = useState(false);
   const [isUseArchiveExchangeRate, setIsUseArchiveExchangeRate] =
     useState(true);
   const [page, setPage] = useState(0);
@@ -75,7 +75,7 @@ const RewardsHistoryProvider: FC<PropsWithChildren> = (props) => {
   const { data, error, loading, initialLoading, isLagging } =
     useRewardsDataLoad({
       address,
-      isOnlyRewards,
+      isIncludeTransfers,
       isUseArchiveExchangeRate,
       currency,
       skip,
@@ -84,7 +84,7 @@ const RewardsHistoryProvider: FC<PropsWithChildren> = (props) => {
 
   useEffect(() => {
     setPage(0);
-  }, [isUseArchiveExchangeRate, isOnlyRewards]);
+  }, [isUseArchiveExchangeRate, isIncludeTransfers]);
 
   const currencyObject = getCurrency(currency);
 
@@ -99,8 +99,8 @@ const RewardsHistoryProvider: FC<PropsWithChildren> = (props) => {
       limit,
       page,
       setPage,
-      isOnlyRewards,
-      setIsOnlyRewards,
+      isIncludeTransfers,
+      setIsIncludeTransfers,
       setIsUseArchiveExchangeRate,
       isUseArchiveExchangeRate,
       setCurrency,
@@ -121,7 +121,7 @@ const RewardsHistoryProvider: FC<PropsWithChildren> = (props) => {
       inputValue,
       isAddressResolving,
       isLagging,
-      isOnlyRewards,
+      isIncludeTransfers,
       isUseArchiveExchangeRate,
       limit,
       loading,
