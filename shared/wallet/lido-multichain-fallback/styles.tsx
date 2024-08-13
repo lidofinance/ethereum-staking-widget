@@ -2,7 +2,9 @@ import { Button } from '@lidofinance/lido-ui';
 import { Card } from 'shared/wallet';
 import styled from 'styled-components';
 
-export const L2FallbackWalletStyle = styled((props) => <Card {...props} />)`
+export const LidoMultichainFallbackWalletStyle = styled((props) => (
+  <Card {...props} />
+))`
   text-align: center;
   background: linear-gradient(
     180deg,
