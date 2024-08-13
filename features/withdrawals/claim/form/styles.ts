@@ -83,12 +83,9 @@ export const ClaimFooterBodyEnder = styled.div`
   }
 `;
 
-export const ClaimFormFooterWrapper = styled.div<{
-  isSticked: boolean;
-  footerShift: number;
-}>`
+export const ClaimFormFooterWrapper = styled.div<{ isSticked: boolean }>`
   position: ${({ isSticked }) => (isSticked ? 'sticky' : 'relative')};
-  bottom: ${({ footerShift }) => (footerShift ? `${footerShift}px` : '0px')};
+  bottom: ${({ isSticked }) => (isSticked ? `60px` : '0px')};
   ${({ isSticked }) =>
     isSticked &&
     css`
