@@ -38,7 +38,7 @@ export const VaultsBannerStrategies = () => {
             <IconStakehouse />
           </Icon>
           <Title>
-            <TitleText>Restaking Vault</TitleText>
+            <TitleText>Decentralized Validator Vault</TitleText>
             <TitleDescription>Curated by Steakhouse Financial</TitleDescription>
           </Title>
         </Header>
@@ -51,7 +51,14 @@ export const VaultsBannerStrategies = () => {
           {divider}
 
           <StrategyItem>
-            <b>Symbiotic</b>
+            <b>Obol</b>
+            <br /> Points
+          </StrategyItem>
+
+          {divider}
+
+          <StrategyItem>
+            <b>SSV</b>
             <br /> Points
           </StrategyItem>
 
@@ -60,13 +67,6 @@ export const VaultsBannerStrategies = () => {
           <StrategyItem>
             <b>Mellow</b>
             <br /> Points
-          </StrategyItem>
-
-          {divider}
-
-          <StrategyItem>
-            <b>Restaking</b>
-            <br /> <b>APR</b> TBD
           </StrategyItem>
         </Strategies>
       </Wrap>
