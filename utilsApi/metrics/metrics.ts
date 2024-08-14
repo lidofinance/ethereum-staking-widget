@@ -6,13 +6,11 @@ import { METRICS_PREFIX } from 'consts/metrics';
 import buildInfoJson from 'build-info.json';
 
 import { RequestMetrics } from './request';
-import { SubgraphMetrics } from './subgraph';
 
 class Metrics {
   registry = new Registry();
 
   // compositions of metric types
-  subgraph = new SubgraphMetrics(this.registry);
   request = new RequestMetrics(this.registry);
 
   constructor() {
