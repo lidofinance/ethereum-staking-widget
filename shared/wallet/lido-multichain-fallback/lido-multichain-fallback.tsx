@@ -17,11 +17,7 @@ import { useUserConfig } from 'config/user-config';
 import { CHAINS, LIDO_MULTICHAIN_CHAINS } from 'consts/chains';
 import { MATOMO_CLICK_EVENTS_TYPES } from 'consts/matomo-click-events';
 
-import {
-  LidoMultichainFallbackWalletStyle,
-  TextStyle,
-  ButtonStyle,
-} from './styles';
+import { Wrap, TextStyle, ButtonStyle } from './styles';
 import { trackMatomoEvent } from '../../../utils/track-matomo-event';
 
 export type LidoMultichainFallbackComponent = FC<
@@ -34,10 +30,10 @@ const multichainLogos = {
   [LIDO_MULTICHAIN_CHAINS.Linea]: LineaLogo,
   [LIDO_MULTICHAIN_CHAINS.Mantle]: MantleLogo,
   [LIDO_MULTICHAIN_CHAINS.Optimism]: OptimismLogo,
-  [LIDO_MULTICHAIN_CHAINS.Polygon]: PolygonLogo,
-  [LIDO_MULTICHAIN_CHAINS.zkSync]: ZkSyncLogo,
+  [LIDO_MULTICHAIN_CHAINS['Polygon PoS']]: PolygonLogo,
+  [LIDO_MULTICHAIN_CHAINS['zkSync Era']]: ZkSyncLogo,
   [LIDO_MULTICHAIN_CHAINS.Scroll]: ScrollLogo,
-  [LIDO_MULTICHAIN_CHAINS.BNB]: BNBLogo,
+  [LIDO_MULTICHAIN_CHAINS['BNB Chain']]: BNBLogo,
 };
 
 const getChainLogo = (chainId: LIDO_MULTICHAIN_CHAINS) => {
@@ -52,6 +48,7 @@ export const LidoMultichainFallback: LidoMultichainFallbackComponent = (
   const { defaultChain } = useUserConfig();
 
   const defaultChainName = useMemo(() => {
+    if (CHAINS[defaultChain] === 'Mainnet') return 'Ethereum';
     return CHAINS[defaultChain];
   }, [defaultChain]);
 
@@ -61,11 +58,13 @@ export const LidoMultichainFallback: LidoMultichainFallbackComponent = (
   }, [chainId]);
 
   return (
-    <LidoMultichainFallbackWalletStyle {...props}>
+    <Wrap {...props} chainId={chainId as LIDO_MULTICHAIN_CHAINS}>
       {getChainLogo(chainId as LIDO_MULTICHAIN_CHAINS)}
       <TextStyle>
-        Explore DeFi opportunities on {lidoMultichainChainName} network or
-        switch to Ethereum {defaultChainName} {props.textEnding}
+        You’re currently on {lidoMultichainChainName}.
+        <br />
+        Explore Lido Multichain or switch to {defaultChainName}{' '}
+        {props.textEnding}.
       </TextStyle>
       <Link href={`${config.rootOrigin}/lido-multichain`}>
         <ButtonStyle
@@ -79,6 +78,6 @@ export const LidoMultichainFallback: LidoMultichainFallbackComponent = (
           Lido Multichain
         </ButtonStyle>
       </Link>
-    </LidoMultichainFallbackWalletStyle>
+    </Wrap>
   );
 };
