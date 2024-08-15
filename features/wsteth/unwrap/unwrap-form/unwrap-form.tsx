@@ -1,9 +1,6 @@
 import { FC, memo } from 'react';
-import { useFeatureFlag, VAULTS_BANNER_IS_ENABLED } from 'config/feature-flags';
 
-import { MATOMO_CLICK_EVENTS } from 'consts/matomo-click-events';
 import { InputWrap, WrapBlock } from 'features/wsteth/shared/styles';
-import { L2Wsteth } from 'shared/banners/l2-banners/l2-wsteth';
 import { VaultsBannerInfo } from 'shared/banners/vaults-banner-info';
 import { FormController } from 'shared/hook-form/form-controller/form-controller';
 
@@ -13,8 +10,6 @@ import { TokenAmountInputUnwrap } from '../unwrap-form-controls/amount-input-unw
 import { SubmitButtonUnwrap } from '../unwrap-form-controls/submit-button-unwrap';
 
 export const UnwrapForm: FC = memo(() => {
-  const { vaultsBannerIsEnabled } = useFeatureFlag(VAULTS_BANNER_IS_ENABLED);
-
   return (
     <UnwrapFormProvider>
       <WrapBlock data-testid="unwrapForm">
@@ -24,11 +19,7 @@ export const UnwrapForm: FC = memo(() => {
           </InputWrap>
           <SubmitButtonUnwrap />
         </FormController>
-        {vaultsBannerIsEnabled ? (
-          <VaultsBannerInfo />
-        ) : (
-          <L2Wsteth matomoEventLink={MATOMO_CLICK_EVENTS.l2BannerUnwrap} />
-        )}
+        <VaultsBannerInfo />
         <UnwrapStats />
       </WrapBlock>
     </UnwrapFormProvider>

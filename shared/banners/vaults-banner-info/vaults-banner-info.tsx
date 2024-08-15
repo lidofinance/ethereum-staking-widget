@@ -26,10 +26,9 @@ export const VaultsBannerInfo = () => {
   const { themeName } = useThemeToggle();
   return (
     <Wrap>
-      <Title>Explore restaking opportunities</Title>
+      <Title>Explore and participate in DeFi strategies</Title>
       <Description>
-        Use stETH to unlock restaking rewards through a set of carefully curated
-        vaults
+        Use stETH to unlock rewards through a set of carefully curated vaults
       </Description>
       <Footer>
         <Logos>

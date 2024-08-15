@@ -12,11 +12,7 @@ export const enum MATOMO_CLICK_EVENTS_TYPES {
   openOceanDiscount = 'openOceanDiscount',
   oneInchDiscount = 'oneInchDiscount',
   viewEtherscanOnStakePage = 'viewEtherscanOnStakePage',
-  l2BannerStake = 'l2BannerStake',
-  l2LowFeeStake = 'l2LowFeeStake',
-  l2LowFeeWrap = 'l2LowFeeWrap',
-  l2swap = 'l2swap',
-  lidoOnL2Opportunities = 'lidoOnL2Opportunities',
+  lidoOnLidoMultichainOpportunities = 'lidoOnLidoMultichainOpportunities',
   vaultsBannerLearnMore = 'vaultsBannerLearnMore',
   vaultsBannerExploreAll = 'vaultsBannerExploreAll',
   // FAQ
@@ -38,15 +34,12 @@ export const enum MATOMO_CLICK_EVENTS_TYPES {
   faqHowCanIGetWstethWrapLink = 'faqHowCanIGetWstethWrapLink',
   faqHowCanIGetWstethIntegrationsLink = 'faqHowCanIGetWstethIntegrationsLink',
   faqHowDoIUnwrapWstethUnwrapLink = 'faqHowDoIUnwrapWstethUnwrapLink',
-  faqHowCanIUseWstethL2 = 'faqHowCanIUseWstethL2',
+  faqHowCanIUseWstethLidoMultichain = 'faqHowCanIUseWstethLidoMultichain',
   faqHowCanIUseWstethDefiProtocols = 'faqHowCanIUseWstethDefiProtocols',
   faqDoINeedToUnwrapMyWstethWithdrawalsTabs = 'faqDoINeedToUnwrapMyWstethWithdrawalsTabs',
   // /wrap page
-  l2BannerWrap = 'l2BannerWrap',
   wrapTokenSelectSTETH = 'wrapTokenSelectSteth',
   wrapTokenSelectETH = 'wrapTokenSelectEth',
-  // Unwrap tab
-  l2BannerUnwrap = 'l2BannerUnwrap',
 
   // /withdrawal page
   withdrawalUseLido = 'withdrawalUseLido',
@@ -121,30 +114,10 @@ export const MATOMO_CLICK_EVENTS: Record<
     'Push «View on Etherscan» on the right side of Lido Statistics',
     'eth_widget_etherscan_stakePage',
   ],
-  [MATOMO_CLICK_EVENTS_TYPES.l2BannerStake]: [
+  [MATOMO_CLICK_EVENTS_TYPES.lidoOnLidoMultichainOpportunities]: [
     'Ethereum_Staking_Widget',
-    'Push "Learn more" at the L2 banner on "Stake" tab',
-    'eth_widget_banner_l2_stake',
-  ],
-  [MATOMO_CLICK_EVENTS_TYPES.l2LowFeeStake]: [
-    'Ethereum_Staking_Widget',
-    'Push «Learn more» in Unlock Low-Fee transactions on L2 on Transaction success banner on "Stake" tab',
-    'eth_widget_banner_learn_more_L2_stake',
-  ],
-  [MATOMO_CLICK_EVENTS_TYPES.l2LowFeeWrap]: [
-    'Ethereum_Staking_Widget',
-    'Push «Learn more» in Unlock Low-Fee transactions on L2 on Transaction success banner on "Wrap" tab',
-    'eth_widget_banner_learn_more_L2_wrap',
-  ],
-  [MATOMO_CLICK_EVENTS_TYPES.l2swap]: [
-    'Ethereum_Staking_Widget',
-    'Push «Swap» in Swap ETH to wstETH on L2 banner on staking widget',
-    'eth_widget_banner_swap_ETH_on_L2',
-  ],
-  [MATOMO_CLICK_EVENTS_TYPES.lidoOnL2Opportunities]: [
-    'Ethereum_Staking_Widget',
-    'Push "Lido on L2 opportunities" ',
-    'eth_widget_lido_on_l2_opportunities',
+    'Push "Lido on L2 opportunities" ', // L2 naiming for analytics history consistency
+    'eth_widget_lido_on_l2_opportunities', // L2 naiming for analytics history consistency
   ],
   [MATOMO_CLICK_EVENTS_TYPES.vaultsBannerLearnMore]: [
     'Ethereum_Staking_Widget',
@@ -247,10 +220,10 @@ export const MATOMO_CLICK_EVENTS: Record<
     'Push «stake.lido.fi/wrap/unwrap» How do I unwrap wstETH back to stETH?',
     'eth_widget_faq_howunwrapwsteth_unwrap',
   ],
-  [MATOMO_CLICK_EVENTS_TYPES.faqHowCanIUseWstethL2]: [
+  [MATOMO_CLICK_EVENTS_TYPES.faqHowCanIUseWstethLidoMultichain]: [
     'Ethereum_Staking_Widget',
-    'Push «L2» How can I use wstETH?',
-    'eth_widget_faq_howCanIUseWstETH_l2',
+    'Push «L2» How can I use wstETH?', // L2 naiming for analytics history consistency
+    'eth_widget_faq_howCanIUseWstETH_l2', // L2 naiming for analytics history consistency
   ],
   [MATOMO_CLICK_EVENTS_TYPES.faqHowCanIUseWstethDefiProtocols]: [
     'Ethereum_Staking_Widget',
@@ -263,11 +236,6 @@ export const MATOMO_CLICK_EVENTS: Record<
     'eth_widget_faq_doINeedToUnwrapMyWsteth_withdrawalsRequestAndClaimTabs',
   ],
   // /wrap page
-  [MATOMO_CLICK_EVENTS_TYPES.l2BannerWrap]: [
-    'Ethereum_Staking_Widget',
-    'Push "Learn more" at the L2 banner on "Wrap" tab',
-    'eth_widget_banner_l2_wrap',
-  ],
   [MATOMO_CLICK_EVENTS_TYPES.wrapTokenSelectETH]: [
     'Ethereum_Staking_Widget',
     'Select ETH to wrap to wsteth on wrap page',
@@ -277,12 +245,6 @@ export const MATOMO_CLICK_EVENTS: Record<
     'Ethereum_Staking_Widget',
     'Select STETH to wrap to wsteth on wrap page',
     'eth_widget_wrap_select_token_steth',
-  ],
-  // Unwrap tab
-  [MATOMO_CLICK_EVENTS_TYPES.l2BannerUnwrap]: [
-    'Ethereum_Staking_Widget',
-    'Push "Learn more" at the L2 banner on "Unwrap" tab',
-    'eth_widget_banner_l2_unwrap',
   ],
 
   // /withdrawal page
