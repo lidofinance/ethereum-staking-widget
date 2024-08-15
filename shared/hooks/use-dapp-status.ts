@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { useAccount } from 'wagmi';
 
-import { L2_CHAINS } from 'consts/chains';
+import { LIDO_MULTICHAIN_CHAINS } from 'consts/chains';
 
 import { useIsSupportedChain } from './use-is-supported-chain';
 
@@ -9,7 +9,10 @@ export const useDappStatus = () => {
   const { chainId, isConnected: isWalletConnected } = useAccount();
   const isSupportedChain = useIsSupportedChain();
 
-  const isL2Chain = useMemo(() => !!chainId && !!L2_CHAINS[chainId], [chainId]);
+  const isLidoMultichainChain = useMemo(
+    () => !!chainId && !!LIDO_MULTICHAIN_CHAINS[chainId],
+    [chainId],
+  );
 
   const isDappActive = useMemo(() => {
     if (!chainId) return false;
@@ -20,7 +23,7 @@ export const useDappStatus = () => {
   return {
     isWalletConnected,
     isSupportedChain,
-    isL2Chain,
+    isLidoMultichainChain,
     isDappActive,
   };
 };
