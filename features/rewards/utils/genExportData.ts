@@ -7,7 +7,7 @@ import { fromUnixTime } from 'date-fns';
 export const genExportData = (currency: CurrencyType, data: Event[] | null) =>
   data
     ? data.map((item) => ({
-        date: fromUnixTime(parseInt(item.blockTime)),
+        date: fromUnixTime(parseInt(item.blockTime)).toISOString(),
         type: item.type,
         direction: item.direction,
         change: weiToEther(item.change).toString(),
