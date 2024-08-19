@@ -15,11 +15,11 @@ export const useRemoteVersion = () => {
 
   // we use directly non-optimistic manifest data
   // can't trust static props(in IPFS esp) to generate warnings/disconnect wallet
-  const { data, error } = useConfig().externalConfig.fetchMeta;
+  const externalConfigSwr = useConfig().externalConfig.fetchMeta;
+  const { data, error } = externalConfigSwr;
 
-  // ens&cid extraction
-  return useLidoSWR<EnsHashCheckReturn>(
-    ['swr:use-remote-version', data],
+  const swr = useLidoSWR<EnsHashCheckReturn>(
+    ['swr:use-remote-version', externalConfigSwr.data],
     async (): Promise<EnsHashCheckReturn> => {
       if (data?.ens) {
         const resolver = await provider.getResolver(data.ens);
@@ -52,4 +52,22 @@ export const useRemoteVersion = () => {
       isPaused: () => !(data || error),
     },
   );
+
+  // merged externalConfigSwr && cidSwr
+  return {
+    data: swr.data,
+    get initialLoading() {
+      return (
+        swr.initialLoading ||
+        (externalConfigSwr.data == null && externalConfigSwr.isValidating)
+      );
+    },
+    get loading() {
+      return swr.loading || externalConfigSwr.isValidating;
+    },
+    get error() {
+      return swr.error || error;
+    },
+    update: swr.update,
+  };
 };
