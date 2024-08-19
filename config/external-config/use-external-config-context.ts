@@ -45,7 +45,6 @@ export const useExternalConfigContext = (
     },
     {
       ...STRATEGY_LAZY,
-      fallbackData: fallbackData,
       onError: onFetchError,
     },
   );
