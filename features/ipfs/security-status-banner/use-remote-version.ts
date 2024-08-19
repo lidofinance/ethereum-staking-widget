@@ -18,6 +18,8 @@ export const useRemoteVersion = () => {
   const externalConfigSwr = useConfig().externalConfig.fetchMeta;
   const { data, error } = externalConfigSwr;
 
+  // we only need this as swr because of possible future ENS support
+  // otherwise there is no fetch
   const swr = useLidoSWR<EnsHashCheckReturn>(
     ['swr:use-remote-version', externalConfigSwr.data],
     async (): Promise<EnsHashCheckReturn> => {
