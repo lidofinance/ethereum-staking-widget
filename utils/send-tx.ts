@@ -7,6 +7,7 @@ import type { PopulatedTransaction } from 'ethers';
 import { getFeeData } from './getFeeData';
 import { estimateGas } from './estimate-gas';
 import { applyGasLimitRatio } from 'utils/apply-gas-limit-ratio';
+import { applyRoundUpGasLimit } from 'utils/apply-round-up-gas-limit';
 
 export type SendTxOptions = {
   tx: PopulatedTransaction;
@@ -14,6 +15,7 @@ export type SendTxOptions = {
   walletProvider: Web3Provider;
   staticProvider: JsonRpcBatchProvider;
   shouldApplyGasLimitRatio?: boolean;
+  shouldRoundUpGasLimit?: boolean;
 };
 
 export const sendTx = async ({
@@ -22,6 +24,7 @@ export const sendTx = async ({
   staticProvider,
   walletProvider,
   shouldApplyGasLimitRatio = false,
+  shouldRoundUpGasLimit = false,
 }: SendTxOptions) => {
   if (!isMultisig) {
     const { maxFeePerGas, maxPriorityFeePerGas } =
@@ -34,6 +37,10 @@ export const sendTx = async ({
 
     tx.gasLimit = shouldApplyGasLimitRatio
       ? applyGasLimitRatio(gasLimit)
+      : gasLimit;
+
+    tx.gasLimit = shouldRoundUpGasLimit
+      ? applyRoundUpGasLimit(tx.gasLimit)
       : gasLimit;
   }
   return walletProvider.getSigner().sendUncheckedTransaction(tx);

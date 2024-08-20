@@ -15,18 +15,29 @@ import { config } from 'config';
 import { MATOMO_CLICK_EVENTS } from 'consts/matomo-click-events';
 
 import { BannerLinkButton } from '../banner-link-button';
-import { Wrap, Title, Description, Footer, Logos } from './styles';
+import { BannerWrap } from '../shared-banner-partials';
+import { Title, Description, Footer, Logos } from './styles';
 
 const LINK_LEARN_MORE = `${config.rootOrigin}/#defi-strategies`;
 
 const linkClickHandler = () =>
   trackEvent(...MATOMO_CLICK_EVENTS.vaultsBannerLearnMore);
 
-export const VaultsBannerInfo = () => {
+type VaultsBannerInfoProps = {
+  isTitleCompact?: boolean;
+  showLearnMoreButton?: boolean;
+};
+
+export const VaultsBannerInfo = ({
+  isTitleCompact,
+  showLearnMoreButton = true,
+}: VaultsBannerInfoProps) => {
   const { themeName } = useThemeToggle();
   return (
-    <Wrap>
-      <Title>Explore and participate in DeFi strategies</Title>
+    <BannerWrap>
+      <Title isCompact={isTitleCompact}>
+        Explore and participate in DeFi strategies
+      </Title>
       <Description>
         Use stETH to unlock rewards through a set of carefully curated vaults
       </Description>
@@ -41,10 +52,12 @@ export const VaultsBannerInfo = () => {
           {themeName === 'dark' ? <IconRe7Dark /> : <IconRe7Light />}
           {themeName === 'dark' ? <IconMevDark /> : <IconMevLight />}
         </Logos>
-        <BannerLinkButton href={LINK_LEARN_MORE} onClick={linkClickHandler}>
-          Learn more
-        </BannerLinkButton>
+        {showLearnMoreButton && (
+          <BannerLinkButton href={LINK_LEARN_MORE} onClick={linkClickHandler}>
+            Learn more
+          </BannerLinkButton>
+        )}
       </Footer>
-    </Wrap>
+    </BannerWrap>
   );
 };

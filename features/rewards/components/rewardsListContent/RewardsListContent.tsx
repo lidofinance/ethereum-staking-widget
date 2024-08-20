@@ -7,7 +7,6 @@ import { STRATEGY_LAZY } from 'consts/swr-strategies';
 import { useRewardsHistory } from 'features/rewards/hooks';
 import { ErrorBlockNoSteth } from 'features/rewards/components/errorBlocks/ErrorBlockNoSteth';
 import { RewardsTable } from 'features/rewards/components/rewardsTable';
-import { useDappStatus } from 'shared/hooks/use-dapp-status';
 
 import { RewardsListsEmpty } from './RewardsListsEmpty';
 import { RewardsListErrorMessage } from './RewardsListErrorMessage';
@@ -18,7 +17,6 @@ import {
 } from './RewardsListContentStyles';
 
 export const RewardsListContent: FC = () => {
-  const { isDappActive } = useDappStatus();
   const {
     error,
     initialLoading,
@@ -32,8 +30,7 @@ export const RewardsListContent: FC = () => {
     useSTETHBalance(STRATEGY_LAZY);
   const hasSteth = stethBalance?.gt(Zero);
 
-  if (!isDappActive || (!data && !initialLoading && !error))
-    return <RewardsListsEmpty />;
+  if (!data && !initialLoading && !error) return <RewardsListsEmpty />;
   // showing loading when canceling requests and empty response
   if (
     (!data && !error) ||

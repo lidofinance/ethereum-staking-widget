@@ -4,6 +4,7 @@ import {
 } from 'shared/transaction-modal/hooks/use-transaction-modal-stage';
 import { getGeneralTransactionModalStages } from 'shared/transaction-modal/hooks/get-general-transaction-modal-stages';
 
+import { VaultsBannerStrategies } from 'shared/banners/vaults-banner-strategies';
 import { TxStageSignOperationAmount } from 'shared/transaction-modal/tx-stages-composed/tx-stage-amount-operation';
 import { TxStageOperationSucceedBalanceShown } from 'shared/transaction-modal/tx-stages-composed/tx-stage-operation-succeed-balance-shown';
 
@@ -47,6 +48,7 @@ const getTxModalStagesUnwrap = (
         balance={balance}
         balanceToken={STAGE_OPERATION_ARGS.willReceiveToken}
         operationText={'Unwrapping'}
+        footer={<VaultsBannerStrategies />}
       />,
       {
         isClosableOnLedger: true,
