@@ -12,6 +12,7 @@ export const AddressInput: FC<AddressInputProps> = (props) => {
     handleInputChange,
     address,
     addressError,
+    loading,
   } = props;
 
   return (
@@ -21,7 +22,7 @@ export const AddressInput: FC<AddressInputProps> = (props) => {
       onChange={(e) => handleInputChange(e.target.value)}
       placeholder="Ethereum address"
       leftDecorator={
-        isAddressResolving ? (
+        loading || isAddressResolving ? (
           <Loader size="small" />
         ) : address ? (
           <Identicon data-testid="addressIcon" address={address} />

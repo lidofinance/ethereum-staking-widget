@@ -4,4 +4,5 @@ export type AddressInputProps = {
   handleInputChange: (value: string) => void;
   address: string;
   addressError: string;
+  loading: boolean;
 };

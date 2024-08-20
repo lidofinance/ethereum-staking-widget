@@ -13,6 +13,7 @@ export const Wallet: FC = () => {
     isAddressResolving,
     inputValue,
     setInputValue,
+    loading,
   } = useRewardsHistory();
 
   return (
@@ -25,6 +26,7 @@ export const Wallet: FC = () => {
             inputValue={inputValue}
             handleInputChange={setInputValue}
             isAddressResolving={isAddressResolving}
+            loading={loading}
           />
         </WalletContentStyle>
       </ThemeProvider>
