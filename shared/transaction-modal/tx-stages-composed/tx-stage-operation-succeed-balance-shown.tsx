@@ -3,7 +3,6 @@ import styled from 'styled-components';
 import { useTokenAddress } from '@lido-sdk/react';
 import { TOKENS } from '@lido-sdk/constants';
 import { InlineLoader } from '@lidofinance/lido-ui';
-import { VaultsBannerStrategies } from 'shared/banners/vaults-banner-strategies';
 import { TxAmount } from '../tx-stages-parts/tx-amount';
 import { SuccessText } from '../tx-stages-parts/success-text';
 import { TxStageSuccess } from '../tx-stages-basic';
@@ -28,6 +27,7 @@ type TxStageOperationSucceedBalanceShownProps = {
   balanceToken: string;
   operationText: string;
   txHash?: string;
+  footer?: React.ReactNode;
 };
 
 export const TxStageOperationSucceedBalanceShown = ({
@@ -35,6 +35,7 @@ export const TxStageOperationSucceedBalanceShown = ({
   balanceToken,
   operationText,
   txHash,
+  footer,
 }: TxStageOperationSucceedBalanceShownProps) => {
   const stethAddress = useTokenAddress(TOKENS.STETH);
   const wstethAddress = useTokenAddress(TOKENS.WSTETH);
@@ -64,7 +65,7 @@ export const TxStageOperationSucceedBalanceShown = ({
         <SuccessText operationText={operationText} txHash={txHash} />
       }
       showEtherscan={false}
-      footer={<VaultsBannerStrategies />}
+      footer={footer}
     />
   );
 };

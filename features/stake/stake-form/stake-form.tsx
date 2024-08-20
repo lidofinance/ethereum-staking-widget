@@ -8,7 +8,7 @@ import { StakeSubmitButton } from './controls/stake-submit-button';
 import { StakeFormInfo } from './stake-form-info';
 import { SwapDiscountBanner } from '../swap-discount-banner';
 import { StakeBlock, FormControllerStyled } from './styles';
-import { VaultsBannerInfo } from 'shared/banners/vaults-banner-info';
+import { DVVBanner } from 'shared/banners/dvv-banner';
 
 export const StakeForm: FC = memo(() => {
   return (
@@ -19,7 +19,7 @@ export const StakeForm: FC = memo(() => {
           <StakeAmountInput />
           <StakeSubmitButton />
           <SwapDiscountBanner>
-            <VaultsBannerInfo />
+            <DVVBanner />
           </SwapDiscountBanner>
         </FormControllerStyled>
         <StakeFormInfo />
