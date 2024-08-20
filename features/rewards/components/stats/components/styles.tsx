@@ -57,3 +57,8 @@ export const InlineLoader = styled(InlineLoaderLidoUI)`
     width: 60px;
   }
 `;
+
+export const FlexCenter = styled.div`
+  display: flex;
+  align-items: center;
+`;

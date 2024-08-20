@@ -11,13 +11,13 @@ import {
 
 type ItemProps = {
   dataTestId: string;
-  title: string;
+  title: ReactNode | ReactNode[];
 
   value: ReactNode | ReactNode[];
   valueDataTestId: string;
   valueGreenText?: boolean | undefined;
 
-  underValue: ReactNode | ReactNode[];
+  underValue?: ReactNode | ReactNode[] | undefined;
   underValueDataTestId?: string | undefined;
 
   loading: boolean;

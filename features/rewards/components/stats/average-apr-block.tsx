@@ -1,12 +1,11 @@
 import { FC } from 'react';
-import { Box, Link } from '@lidofinance/lido-ui';
-
-import { config } from 'config';
+import { Box, Question, Tooltip } from '@lidofinance/lido-ui';
 
 import NumberFormat from 'features/rewards/components/NumberFormat';
 import { useRewardsHistory } from 'features/rewards/hooks';
 
 import { Item } from './components/item';
+import { FlexCenter } from './components/styles';
 
 export const AverageAprBlock: FC = () => {
   const { data, initialLoading: loading } = useRewardsHistory();
@@ -15,7 +14,16 @@ export const AverageAprBlock: FC = () => {
     <Item
       loading={loading}
       dataTestId="averageAprBlock"
-      title="Average APR"
+      title={
+        <>
+          <FlexCenter>
+            Average APR
+            <Tooltip title={'APR on stETH over your staking period'}>
+              <Question />
+            </Tooltip>
+          </FlexCenter>
+        </>
+      }
       value={
         <>
           {parseFloat(data?.averageApr || '0') ? (
@@ -29,11 +37,6 @@ export const AverageAprBlock: FC = () => {
         </>
       }
       valueDataTestId="averageApr"
-      underValue={
-        <Link href={`${config.rootOrigin}/ethereum#apr`}>
-          <Box data-testid="moreInfo">More info</Box>
-        </Link>
-      }
     />
   );
 };
