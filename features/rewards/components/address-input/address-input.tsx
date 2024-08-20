@@ -1,7 +1,8 @@
-import { FC } from 'react';
+import { FC, useMemo } from 'react';
 import { Input, Loader, Identicon } from '@lidofinance/lido-ui';
 import CopyAddressUrl from 'features/rewards/components/CopyAddressUrl';
 import { isValidAnyAddress } from 'features/rewards/utils';
+import { ReactComponent as ErrorTriangle } from 'assets/icons/error-triangle.svg';
 
 import { AddressInputProps } from './types';
 
@@ -11,9 +12,14 @@ export const AddressInput: FC<AddressInputProps> = (props) => {
     isAddressResolving,
     handleInputChange,
     address,
-    addressError,
+    addressError: invalidENSAddress,
     loading,
   } = props;
+
+  const invalidEthereumAddress = useMemo(
+    () => inputValue.length > 0 && !isValidAnyAddress(inputValue),
+    [inputValue],
+  );
 
   return (
     <Input
@@ -24,6 +30,8 @@ export const AddressInput: FC<AddressInputProps> = (props) => {
       leftDecorator={
         loading || isAddressResolving ? (
           <Loader size="small" />
+        ) : invalidEthereumAddress || invalidENSAddress ? (
+          <ErrorTriangle />
         ) : address ? (
           <Identicon data-testid="addressIcon" address={address} />
         ) : null
@@ -31,8 +39,11 @@ export const AddressInput: FC<AddressInputProps> = (props) => {
       rightDecorator={address ? <CopyAddressUrl address={inputValue} /> : null}
       spellCheck="false"
       error={
-        (inputValue.length > 0 && !isValidAnyAddress(inputValue)) ||
-        addressError
+        invalidEthereumAddress
+          ? 'Invalid ethereum address'
+          : invalidENSAddress
+            ? invalidENSAddress
+            : null
       }
     />
   );
