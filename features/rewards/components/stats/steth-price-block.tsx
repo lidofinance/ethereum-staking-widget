@@ -31,7 +31,11 @@ export const StEthPriceBlock: FC = () => {
       valueDataTestId="stEthPrice"
       underValue={
         <>
-          <NumberFormat number={stEthEth?.toString()} StEthEth />
+          {data?.stETHCurrencyPrice[currency.id] ? (
+            <NumberFormat number={stEthEth?.toString()} StEthEth />
+          ) : (
+            '-'
+          )}
           <Box display="inline-block" pl={'3px'}>
             ETH
           </Box>
