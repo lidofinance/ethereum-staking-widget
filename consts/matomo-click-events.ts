@@ -18,6 +18,7 @@ export const enum MATOMO_CLICK_EVENTS_TYPES {
   obolBannerProceed = 'obolBannerProceed',
   obolBannerDVVLink = 'obolBannerDVVLink',
   exploreAllStrategiesAfterStake = 'exploreAllStrategiesAfterStake',
+  exploreAllStrategiesAfterWrap = 'exploreAllStrategiesAfterWrap',
   // FAQ
   faqSafeWorkWithLidoAudits = 'faqSafeWorkWithLidoAudits',
   faqLidoEthAprEthLandingPage = 'faqLidoEthAprEthLandingPage',
@@ -146,6 +147,11 @@ export const MATOMO_CLICK_EVENTS: Record<
     'Ethereum_Staking_Widget',
     'Push "Explore all strategies" after staking',
     'eth_widget_explore_all_strategies_after_staking',
+  ],
+  [MATOMO_CLICK_EVENTS_TYPES.exploreAllStrategiesAfterWrap]: [
+    'Ethereum_Staking_Widget',
+    'Push "Explore all strategies" after wrap',
+    'eth_widget_explore_all_strategies_after_wraping',
   ],
   // FAQ
   [MATOMO_CLICK_EVENTS_TYPES.faqSafeWorkWithLidoAudits]: [

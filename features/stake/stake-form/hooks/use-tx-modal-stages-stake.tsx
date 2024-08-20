@@ -12,9 +12,7 @@ import { TxStageOperationSucceedBalanceShown } from 'shared/transaction-modal/tx
 import type { BigNumber } from 'ethers';
 import { trackEvent } from '@lidofinance/analytics-matomo';
 import { MATOMO_CLICK_EVENTS } from 'consts/matomo-click-events';
-
-const LINK_EXPLORE_STRATEGIES =
-  'https://lido.fi/?pk_vid=6c467e14095d5ea11723712888b1fe5f#defi-strategies';
+import { LINK_EXPLORE_STRATEGIES } from '../../../../shared/banners/vaults-banner-info/const';
 
 const STAGE_OPERATION_ARGS = {
   token: 'ETH',
