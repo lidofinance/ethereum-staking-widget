@@ -1,17 +1,12 @@
 import styled from 'styled-components';
 
-export const Wrap = styled.div`
-  position: relative;
-  padding: 16px;
-  border-radius: 16px;
-  background-color: ${({ theme }) =>
-    theme.name === 'dark' ? '#28282f' : '#f2f3fc'};
-`;
-
+type TitleProps = {
+  isCompact?: boolean;
+};
 export const Title = styled.div`
   margin-bottom: 8px;
-  font-size: 20px;
-  line-height: 20px;
+  font-size: ${({ isCompact }: TitleProps) => (isCompact ? '16px' : '20px')};
+  line-height: 1;
   font-weight: 700;
   color: var(--lido-color-text);
 `;
