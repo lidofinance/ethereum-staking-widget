@@ -17,21 +17,29 @@ export const StEthBalanceBlock: FC = () => {
       dataTestId="stEthBalanceBlock"
       title="stETH balance"
       value={
-        <>
-          <NumberFormat number={balanceData?.stEthBalanceParsed} />
-          <Box display="inline-block" pl={'3px'}>
-            stETH
-          </Box>
-        </>
+        !balanceData?.stEthBalanceParsed ? (
+          '—'
+        ) : (
+          <>
+            <NumberFormat number={balanceData?.stEthBalanceParsed} />
+            <Box display="inline-block" pl={'3px'}>
+              stETH
+            </Box>
+          </>
+        )
       }
       valueDataTestId="stEthBalance"
       underValue={
-        <>
-          <Box display="inline-block" pr={'3px'}>
-            {currency.symbol}
-          </Box>
-          <NumberFormat number={balanceData?.stEthCurrencyBalance} currency />
-        </>
+        !balanceData?.stEthCurrencyBalance ? (
+          '—'
+        ) : (
+          <>
+            <Box display="inline-block" pr={'3px'}>
+              {currency.symbol}
+            </Box>
+            <NumberFormat number={balanceData?.stEthCurrencyBalance} currency />
+          </>
+        )
       }
       underValueDataTestId="stEthBalanceIn$"
     />

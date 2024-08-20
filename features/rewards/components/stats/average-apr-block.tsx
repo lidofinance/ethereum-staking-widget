@@ -27,13 +27,15 @@ export const AverageAprBlock: FC = () => {
       value={
         <>
           {parseFloat(data?.averageApr || '0') ? (
-            <NumberFormat number={data?.averageApr} percent />
+            <>
+              <NumberFormat number={data?.averageApr} percent />
+              <Box display="inline-block" pl="3px">
+                %
+              </Box>
+            </>
           ) : (
-            '-'
+            '—'
           )}
-          <Box display="inline-block" pl="3px">
-            %
-          </Box>
         </>
       }
       valueDataTestId="averageApr"

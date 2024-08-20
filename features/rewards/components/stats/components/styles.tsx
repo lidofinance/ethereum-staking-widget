@@ -40,10 +40,6 @@ export const Value = styled(Box)`
   }
 `;
 
-export const ValueGreen = styled(Value)`
-  color: #61b75f;
-`;
-
 export const UnderValue = styled(Title)`
   ${({ theme }) => theme.mediaQueries.md} {
     display: none;
@@ -61,4 +57,8 @@ export const InlineLoader = styled(InlineLoaderLidoUI)`
 export const FlexCenter = styled.div`
   display: flex;
   align-items: center;
+`;
+
+export const GreenText = styled.div`
+  color: #61b75f;
 `;
