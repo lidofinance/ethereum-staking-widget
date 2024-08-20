@@ -14,11 +14,7 @@ import { useCurrentStaticRpcProvider } from 'shared/hooks/use-current-static-rpc
 import { isContract } from 'utils/isContract';
 import { runWithTransactionLogger } from 'utils';
 
-import {
-  MockLimitReachedError,
-  getAddress,
-  applyCalldataSuffix,
-} from './utils';
+import { MockLimitReachedError, getAddress } from './utils';
 import { useTxModalStagesStake } from './hooks/use-tx-modal-stages-stake';
 
 import { sendTx } from 'utils/send-tx';
@@ -40,9 +36,6 @@ export const useStake = ({ onConfirm, onRetry }: StakeOptions) => {
   const { staticRpcProvider } = useCurrentStaticRpcProvider();
   const { providerWeb3 } = useSDK();
   const { txModalStages } = useTxModalStagesStake();
-
-  // temporary disable until Ledger is fixed
-  const shouldApplyCalldataSuffix = false;
 
   return useCallback(
     async ({ amount, referral }: StakeArguments): Promise<boolean> => {
@@ -77,14 +70,13 @@ export const useStake = ({ onConfirm, onRetry }: StakeOptions) => {
             },
           );
 
-          if (shouldApplyCalldataSuffix) applyCalldataSuffix(tx);
-
           return sendTx({
             tx,
             isMultisig,
             staticProvider: staticRpcProvider,
             walletProvider: providerWeb3,
             shouldApplyGasLimitRatio: true,
+            shouldRoundUpGasLimit: true,
           });
         };
 
@@ -128,7 +120,6 @@ export const useStake = ({ onConfirm, onRetry }: StakeOptions) => {
       staticRpcProvider,
       stethContract,
       onConfirm,
-      shouldApplyCalldataSuffix,
       onRetry,
     ],
   );
