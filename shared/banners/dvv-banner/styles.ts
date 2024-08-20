@@ -61,6 +61,7 @@ export const Footer = styled.div`
 export const FooterText = styled.div`
   color: var(--lido-color-textSecondary);
   font-size: 11px;
+  line-height: 17px;
   opacity: ${({ theme }) => (theme.name === 'dark' ? '0.5' : '1')};
 `;
 

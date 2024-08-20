@@ -68,7 +68,7 @@ export const DVVBanner = () => {
       <Footer>
         <FooterText>
           Not financial advice. Info and APR are illustrative, actual rewards
-          may vary. Vaults use carries risk. By proceeding, you&apos;ll be
+          may vary. Vaults use carries risk. By proceeding, you&apos;ll&nbsp;be
           redirected to a third-party site.
         </FooterText>
         <FooterAction>
