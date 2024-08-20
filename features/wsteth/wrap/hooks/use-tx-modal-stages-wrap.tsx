@@ -1,3 +1,6 @@
+import { Button, Link } from '@lidofinance/lido-ui';
+import { trackEvent } from '@lidofinance/analytics-matomo';
+
 import {
   TransactionModalTransitStage,
   useTransactionModalStage,
@@ -6,15 +9,14 @@ import { getGeneralTransactionModalStages } from 'shared/transaction-modal/hooks
 
 import { TxStageSignOperationAmount } from 'shared/transaction-modal/tx-stages-composed/tx-stage-amount-operation';
 import { TxStageOperationSucceedBalanceShown } from 'shared/transaction-modal/tx-stages-composed/tx-stage-operation-succeed-balance-shown';
+import { LINK_EXPLORE_STRATEGIES } from 'shared/banners/vaults-banner-info/const';
 
 import { getTokenDisplayName } from 'utils/getTokenDisplayName';
 import type { BigNumber } from 'ethers';
 import type { TokensWrappable } from 'features/wsteth/shared/types';
-import { VaultsBannerInfo } from '../../../../shared/banners/vaults-banner-info';
-import { Button, Link } from '@lidofinance/lido-ui';
-import { trackEvent } from '@lidofinance/analytics-matomo';
-import { MATOMO_CLICK_EVENTS } from '../../../../consts/matomo-click-events';
-import { LINK_EXPLORE_STRATEGIES } from '../../../../shared/banners/vaults-banner-info/const';
+import { VaultsBannerInfo } from 'shared/banners/vaults-banner-info';
+
+import { MATOMO_CLICK_EVENTS } from 'consts/matomo-click-events';
 
 const STAGE_APPROVE_ARGS = {
   willReceiveToken: 'wstETH',

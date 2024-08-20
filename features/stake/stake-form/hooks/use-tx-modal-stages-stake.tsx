@@ -12,7 +12,7 @@ import { TxStageOperationSucceedBalanceShown } from 'shared/transaction-modal/tx
 import type { BigNumber } from 'ethers';
 import { trackEvent } from '@lidofinance/analytics-matomo';
 import { MATOMO_CLICK_EVENTS } from 'consts/matomo-click-events';
-import { LINK_EXPLORE_STRATEGIES } from '../../../../shared/banners/vaults-banner-info/const';
+import { LINK_EXPLORE_STRATEGIES } from 'shared/banners/vaults-banner-info/const';
 
 const STAGE_OPERATION_ARGS = {
   token: 'ETH',
