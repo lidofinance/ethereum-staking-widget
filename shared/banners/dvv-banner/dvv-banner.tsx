@@ -1,5 +1,5 @@
 import { BannerTitleText } from '../shared-banner-partials';
-import { Button, Link } from '@lidofinance/lido-ui';
+import { Button, Link, useThemeToggle } from '@lidofinance/lido-ui';
 import {
   Wrap,
   Description,
@@ -13,8 +13,13 @@ import {
   FooterAction,
 } from './styles';
 
-import { ReactComponent as IconLidoLogo } from 'assets/dvv-banner/dvv-banner-lido-logo.svg';
-import { ReactComponent as IconPartnersLogo } from 'assets/dvv-banner/dvv-banner-partners-loogo.svg';
+import { ReactComponent as IconLidoLogoLight } from 'assets/dvv-banner/dvv-banner-lido-logo-light.svg';
+import { ReactComponent as IconPartnersLogoLight } from 'assets/dvv-banner/dvv-banner-partners-logo-light.svg';
+import { ReactComponent as IconLidoLogoDark } from 'assets/dvv-banner/dvv-banner-lido-logo-dark.svg';
+import { ReactComponent as IconPartnersLogoDark } from 'assets/dvv-banner/dvv-banner-partners-logo-dark.svg';
+
+import { trackEvent } from '@lidofinance/analytics-matomo';
+import { MATOMO_CLICK_EVENTS } from 'consts/matomo-click-events';
 
 const LINK_DVV_VAULT =
   'https://blog.lido.fi/decentralized-validator-vault-mellow-obol-ssv/';
@@ -22,20 +27,28 @@ const LINK_PROCEED_BUTTON =
   'https://app.mellow.finance/vaults/ethereum-dvsteth';
 
 export const DVVBanner = () => {
+  const { themeName } = useThemeToggle();
+  const isDarkTheme = themeName === 'dark';
   return (
     <Wrap>
       <BannerTitleText>New way to support decentralization</BannerTitleText>
 
       <Description>
-        You can stake ETH in <Link href={LINK_DVV_VAULT}>the DVV vault</Link> to
-        get stETH rewards, gain points through Obol, SSV, and Mellow, and help
-        to decentralize the Lido Protocol.
+        You can stake ETH in{' '}
+        <Link
+          href={LINK_DVV_VAULT}
+          onClick={() => trackEvent(...MATOMO_CLICK_EVENTS.obolBannerDVVLink)}
+        >
+          the DVV vault
+        </Link>{' '}
+        to get stETH rewards, gain points and help to decentralize the Lido
+        Protocol
       </Description>
 
       <Partners>
         <PartnerItem>
           <PartnerImage>
-            <IconLidoLogo />
+            {isDarkTheme ? <IconLidoLogoDark /> : <IconLidoLogoLight />}
           </PartnerImage>
           <PartnerText>
             <b>stETH</b> APR
@@ -44,7 +57,7 @@ export const DVVBanner = () => {
         <PartnerSeparator>+</PartnerSeparator>
         <PartnerItem>
           <PartnerImage>
-            <IconPartnersLogo />
+            {isDarkTheme ? <IconPartnersLogoDark /> : <IconPartnersLogoLight />}
           </PartnerImage>
           <PartnerText>
             <b>Obol</b> + <b>SSV</b> + <b>Mellow</b> Points
@@ -59,7 +72,10 @@ export const DVVBanner = () => {
           redirected to a third-party site.
         </FooterText>
         <FooterAction>
-          <Link href={LINK_PROCEED_BUTTON}>
+          <Link
+            href={LINK_PROCEED_BUTTON}
+            onClick={() => trackEvent(...MATOMO_CLICK_EVENTS.obolBannerProceed)}
+          >
             <Button fullwidth size="xs">
               Proceed
             </Button>

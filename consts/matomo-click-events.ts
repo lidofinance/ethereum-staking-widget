@@ -15,6 +15,9 @@ export const enum MATOMO_CLICK_EVENTS_TYPES {
   lidoOnLidoMultichainOpportunities = 'lidoOnLidoMultichainOpportunities',
   vaultsBannerLearnMore = 'vaultsBannerLearnMore',
   vaultsBannerExploreAll = 'vaultsBannerExploreAll',
+  obolBannerProceed = 'obolBannerProceed',
+  obolBannerDVVLink = 'obolBannerDVVLink',
+  exploreAllStrategiesAfterStake = 'exploreAllStrategiesAfterStake',
   // FAQ
   faqSafeWorkWithLidoAudits = 'faqSafeWorkWithLidoAudits',
   faqLidoEthAprEthLandingPage = 'faqLidoEthAprEthLandingPage',
@@ -128,6 +131,21 @@ export const MATOMO_CLICK_EVENTS: Record<
     'Ethereum_Staking_Widget',
     'Push "Explore all strategies"',
     'eth_widget_explore_all_strategies',
+  ],
+  [MATOMO_CLICK_EVENTS_TYPES.obolBannerProceed]: [
+    'Ethereum_Staking_Widget',
+    'Push "Proceed" Obol SSV',
+    'eth_widget_proceed_obol_ssv',
+  ],
+  [MATOMO_CLICK_EVENTS_TYPES.obolBannerDVVLink]: [
+    'Ethereum_Staking_Widget',
+    'Push "the DVV Vault" link on Obol SSV banner',
+    'eth_widget_the_dvv_vault_link_obol_ssv',
+  ],
+  [MATOMO_CLICK_EVENTS_TYPES.exploreAllStrategiesAfterStake]: [
+    'Ethereum_Staking_Widget',
+    'Push "Explore all strategies" after staking',
+    'eth_widget_explore_all_strategies_after_staking',
   ],
   // FAQ
   [MATOMO_CLICK_EVENTS_TYPES.faqSafeWorkWithLidoAudits]: [

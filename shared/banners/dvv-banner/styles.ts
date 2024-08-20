@@ -2,7 +2,10 @@ import styled from 'styled-components';
 import { BannerWrap } from '../shared-banner-partials';
 
 export const Wrap = styled(BannerWrap)`
-  background: radial-gradient(25% 100% at 60% 10%, #ecf2ff 0%, #ebedff 100%);
+  background: ${({ theme }) =>
+    theme.name === 'dark'
+      ? '#28282F'
+      : 'radial-gradient(25% 100% at 60% 10%, #ecf2ff 0%, #ebedff 100%)'};
   color: var(--lido-color-text);
 `;
 
@@ -57,6 +60,8 @@ export const Footer = styled.div`
 
 export const FooterText = styled.div`
   color: var(--lido-color-textSecondary);
+  font-size: 11px;
+  opacity: ${({ theme }) => (theme.name === 'dark' ? '0.5' : '1')};
 `;
 
 export const FooterAction = styled.div`
