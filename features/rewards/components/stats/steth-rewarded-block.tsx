@@ -20,7 +20,7 @@ export const StEthRewardedBlock: FC = () => {
       title="stETH rewarded"
       value={
         <>
-          <NumberFormat number={data?.totals.ethRewards} StEthEth />
+          <NumberFormat number={data?.totals.ethRewards} />
           <Box display="inline-block" pl={'3px'}>
             stETH
           </Box>
