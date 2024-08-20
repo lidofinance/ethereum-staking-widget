@@ -25,5 +25,5 @@ export const RewardsListErrorMessage: React.FC<Props> = ({ error }) => {
     return <ErrorUnprocessable />;
   }
 
-  return <ErrorBlockBase text={errorMessage} />;
+  return <ErrorBlockBase textProps={{ color: 'error' }} text={errorMessage} />;
 };
