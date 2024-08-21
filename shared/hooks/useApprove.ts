@@ -12,7 +12,8 @@ import { runWithTransactionLogger } from 'utils';
 import { useCurrentStaticRpcProvider } from './use-current-static-rpc-provider';
 import { sendTx } from 'utils/send-tx';
 import { useAllowance } from './use-allowance';
-import { Address } from 'viem';
+
+import type { Address } from 'viem';
 
 type ApproveOptions =
   | {
