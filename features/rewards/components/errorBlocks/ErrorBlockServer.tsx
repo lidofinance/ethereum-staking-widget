@@ -3,6 +3,6 @@ import { ErrorBlockBase } from './ErrorBlockBase';
 export const ErrorBlockServer = () => (
   <ErrorBlockBase
     textProps={{ color: 'error' }}
-    text="Subgraph returned a fatal error. Lido contributors were alerted and are working on a fix. Please repeat the request in a while."
+    text="Failed to fetch data from the Subgraph. Maintainers are notified and working on a fix."
   />
 );

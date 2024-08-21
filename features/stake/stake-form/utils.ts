@@ -1,9 +1,5 @@
-import type { PopulatedTransaction } from 'ethers';
 import { isAddress } from 'ethers/lib/utils';
 import type { BaseProvider } from '@ethersproject/providers';
-
-import { config } from 'config';
-import invariant from 'tiny-invariant';
 
 export const getAddress = async (
   input: string,
@@ -18,15 +14,6 @@ export const getAddress = async (
   }
   // if code gets here, ref is invalid and we need to throw error
   throw new ReferralAddressError();
-};
-
-// adds metrics indicator for widget tx
-export const applyCalldataSuffix = (tx: PopulatedTransaction) => {
-  if (!config.ipfsMode) {
-    invariant(tx.data, 'transaction must have calldata');
-    tx.data = tx.data + config.STAKE_WIDGET_METRIC_SUFFIX;
-  }
-  return tx;
 };
 
 export class ReferralAddressError extends Error {

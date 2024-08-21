@@ -11,9 +11,11 @@ export const HowCanIUseWsteth: FC = () => {
         wstETH is useful across{' '}
         <Link
           href={`${config.rootOrigin}/lido-ecosystem?networks=arbitrum%2Coptimism`}
-          data-matomo={MATOMO_CLICK_EVENTS_TYPES.faqHowCanIUseWstethL2}
+          data-matomo={
+            MATOMO_CLICK_EVENTS_TYPES.faqHowCanIUseWstethLidoMultichain
+          }
         >
-          L2
+          Lido Multichain
         </Link>{' '}
         and other{' '}
         <Link

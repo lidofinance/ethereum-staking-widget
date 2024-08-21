@@ -29,7 +29,9 @@ export const RewardsListsEmpty: FC = () => {
     <>
       <Divider indents="lg" />
       <RewardsListEmptyWrapper>
-        <p>Connect your wallet to view your staking rewards</p>
+        <p>
+          Connect your wallet or enter your Ethereum address to see the stats.
+        </p>
         {isWalletConnected ? null : (
           <RewardsListEmptyButtonWrapper>
             <Button
