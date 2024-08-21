@@ -4,10 +4,12 @@ import { Box } from '@lidofinance/lido-ui';
 import NumberFormat from 'features/rewards/components/NumberFormat';
 import { useRewardsHistory } from 'features/rewards/hooks';
 import { useRewardsBalanceData } from 'features/rewards/hooks/use-rewards-balance-data';
+import { useDappStatus } from 'shared/hooks/use-dapp-status';
 
 import { Item } from './components/item';
 
 export const StEthBalanceBlock: FC = () => {
+  const { isWalletConnected, isSupportedChain } = useDappStatus();
   const { data: balanceData } = useRewardsBalanceData();
   const { currencyObject: currency, loading } = useRewardsHistory();
 
@@ -17,6 +19,7 @@ export const StEthBalanceBlock: FC = () => {
       dataTestId="stEthBalanceBlock"
       title="stETH balance"
       value={
+        (isWalletConnected && !isSupportedChain) ||
         !balanceData?.stEthBalanceParsed ? (
           '—'
         ) : (
@@ -30,6 +33,7 @@ export const StEthBalanceBlock: FC = () => {
       }
       valueDataTestId="stEthBalance"
       underValue={
+        (isWalletConnected && !isSupportedChain) ||
         !balanceData?.stEthCurrencyBalance ? (
           '—'
         ) : (

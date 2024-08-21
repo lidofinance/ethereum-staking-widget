@@ -3,11 +3,13 @@ import { Box, Question, Tooltip } from '@lidofinance/lido-ui';
 
 import NumberFormat from 'features/rewards/components/NumberFormat';
 import { useRewardsHistory } from 'features/rewards/hooks';
+import { useDappStatus } from 'shared/hooks/use-dapp-status';
 
 import { Item } from './components/item';
 import { FlexCenter } from './components/styles';
 
 export const AverageAprBlock: FC = () => {
+  const { isWalletConnected, isSupportedChain } = useDappStatus();
   const { data, initialLoading: loading } = useRewardsHistory();
 
   return (
@@ -26,15 +28,16 @@ export const AverageAprBlock: FC = () => {
       }
       value={
         <>
-          {parseFloat(data?.averageApr || '0') ? (
+          {(isWalletConnected && !isSupportedChain) ||
+          !parseFloat(data?.averageApr || '0') ? (
+            '—'
+          ) : (
             <>
               <NumberFormat number={data?.averageApr} percent />
               <Box display="inline-block" pl="3px">
                 %
               </Box>
             </>
-          ) : (
-            '—'
           )}
         </>
       }

@@ -3,11 +3,13 @@ import { Box } from '@lidofinance/lido-ui';
 
 import { useRewardsHistory } from 'features/rewards/hooks';
 import NumberFormat from 'features/rewards/components/NumberFormat';
+import { useDappStatus } from 'shared/hooks/use-dapp-status';
 
 import { Item } from './components/item';
 import { GreenText } from './components/styles';
 
 export const StEthRewardedBlock: FC = () => {
+  const { isWalletConnected, isSupportedChain } = useDappStatus();
   const {
     currencyObject: currency,
     data,
@@ -20,7 +22,7 @@ export const StEthRewardedBlock: FC = () => {
       dataTestId="stEthRewardedBlock"
       title="stETH rewarded"
       value={
-        !data?.totals.ethRewards ? (
+        (isWalletConnected && !isSupportedChain) || !data?.totals.ethRewards ? (
           '—'
         ) : (
           <GreenText>
@@ -33,6 +35,7 @@ export const StEthRewardedBlock: FC = () => {
       }
       valueDataTestId="stEthRewarded"
       underValue={
+        (isWalletConnected && !isSupportedChain) ||
         !data?.totals.currencyRewards ? (
           '—'
         ) : (
