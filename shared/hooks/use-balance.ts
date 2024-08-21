@@ -1,4 +1,6 @@
+/* eslint-disable @typescript-eslint/no-unnecessary-type-assertion */
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
+
 import { QueryKey, useQuery, useQueryClient } from '@tanstack/react-query';
 import { BigNumber } from 'ethers';
 import { useLidoSDK } from 'providers/lido-sdk';
@@ -53,7 +55,7 @@ type TokenSubscriptionState = Record<
 >;
 
 type SubscribeArgs = {
-  address: Address;
+  tokenAddress: Address;
   queryKey: QueryKey;
 };
 
@@ -85,16 +87,15 @@ export const useTokenTransferSubscription = () => {
     (logs: Log[]) => {
       for (const log of logs) {
         const subscription = subscriptions[log.address];
-        if (subscription) {
-          // we could optimistically update balance data
-          // but it's easier to refetch balance after transfer
-          void queryClient.invalidateQueries(
-            {
-              queryKey: subscription.queryKey,
-            },
-            { cancelRefetch: false },
-          );
-        }
+        if (!subscription) continue;
+        // we could optimistically update balance data
+        // but it's easier to refetch balance after transfer
+        void queryClient.invalidateQueries(
+          {
+            queryKey: subscription.queryKey,
+          },
+          { cancelRefetch: false },
+        );
       }
     },
     [queryClient, subscriptions],
@@ -130,36 +131,35 @@ export const useTokenTransferSubscription = () => {
     onLogs,
   });
 
-  const subscribe = useCallback(({ address, queryKey }: SubscribeArgs) => {
+  const subscribe = useCallback(({ tokenAddress, queryKey }: SubscribeArgs) => {
     setSubscriptions((old) => {
-      const existing = old[address];
+      const existing = old[tokenAddress];
       return {
         ...old,
-        [address]: {
+        [tokenAddress]: {
           queryKey,
           subscribers: existing?.subscribers ?? 0 + 1,
         },
       };
     });
 
-    // unsubscribe
+    // returns unsubscribe to be used as useEffect return fn (for unmount)
     return () => {
       setSubscriptions((old) => {
-        const existing = old[address];
-        if (existing) {
-          if (existing.subscribers > 1) {
-            return {
-              ...old,
-              [address]: {
-                ...existing,
-                subscribers: existing.subscribers - 1,
-              },
-            };
-          } else {
-            delete old[address];
-            return { ...old };
-          }
-        } else return old;
+        const existing = old[tokenAddress];
+        if (!existing) return old;
+        if (existing.subscribers > 1) {
+          return {
+            ...old,
+            [tokenAddress]: {
+              ...existing,
+              subscribers: existing.subscribers - 1,
+            },
+          };
+        } else {
+          delete old[tokenAddress];
+          return { ...old };
+        }
       });
     };
   }, []);
@@ -182,7 +182,7 @@ const useTokenBalance = (contract: TokenContract, address?: Address) => {
   useEffect(() => {
     if (address && contract?.address) {
       return subscribeToTokenUpdates({
-        address: contract.address,
+        tokenAddress: contract.address,
         queryKey: balanceQuery.queryKey,
       });
     }
@@ -198,16 +198,14 @@ export const useStethBalance = () => {
 
   const { steth, core } = useLidoSDK();
 
-  const { data: contractData, isLoading } = useQuery({
+  const { data: contract, isLoading } = useQuery({
     queryKey: ['steth-contract', core.chainId],
     enabled: !!address,
     staleTime: Infinity,
     queryFn: async () => steth.getContract(),
   });
 
-  const contract = contractData as NonNullable<typeof contractData>;
-
-  const balanceData = useTokenBalance(contract, address);
+  const balanceData = useTokenBalance(contract!, address);
 
   return { ...balanceData, isLoading: isLoading || balanceData.isLoading };
 };
@@ -217,16 +215,14 @@ export const useWstethBalance = () => {
 
   const { wsteth, core } = useLidoSDK();
 
-  const { data: contractData, isLoading } = useQuery({
+  const { data: contract, isLoading } = useQuery({
     queryKey: ['wsteth-contract', core.chainId],
     enabled: !!address,
     staleTime: Infinity,
     queryFn: async () => wsteth.getContract(),
   });
 
-  const contract = contractData as NonNullable<typeof contractData>;
-
-  const balanceData = useTokenBalance(contract, address);
+  const balanceData = useTokenBalance(contract!, address);
 
   return { ...balanceData, isLoading: isLoading || balanceData.isLoading };
 };

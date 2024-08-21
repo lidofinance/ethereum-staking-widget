@@ -43,9 +43,6 @@ const rpc = rpcFactory({
     'eth_getLogs',
     'eth_chainId',
     'net_version',
-    'eth_newFilter',
-    'eth_getFilterChanges',
-    'eth_uninstallFilter',
   ],
   defaultChain: `${config.defaultChain}`,
   providers: {
