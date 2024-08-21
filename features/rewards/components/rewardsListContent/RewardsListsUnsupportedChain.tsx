@@ -21,10 +21,7 @@ export const RewardsListsUnsupportedChain: FC = () => {
     <>
       <Divider indents="lg" />
       <RewardsListEmptyWrapper>
-        <p>
-          Please switch to {supportedChainsNames} in your wallet and restart the
-          page.
-        </p>
+        <p>Please switch to {supportedChainsNames} in your wallet.</p>
       </RewardsListEmptyWrapper>
     </>
   );
