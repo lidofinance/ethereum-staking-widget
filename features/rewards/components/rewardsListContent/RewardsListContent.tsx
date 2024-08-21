@@ -7,9 +7,11 @@ import { STRATEGY_LAZY } from 'consts/swr-strategies';
 import { useRewardsHistory } from 'features/rewards/hooks';
 import { ErrorBlockNoSteth } from 'features/rewards/components/errorBlocks/ErrorBlockNoSteth';
 import { RewardsTable } from 'features/rewards/components/rewardsTable';
+import { useDappStatus } from 'shared/hooks/use-dapp-status';
 
 import { RewardsListsEmpty } from './RewardsListsEmpty';
 import { RewardsListErrorMessage } from './RewardsListErrorMessage';
+import { RewardsListsUnsupportedChain } from './RewardsListsUnsupportedChain';
 import {
   LoaderWrapper,
   TableWrapperStyle,
@@ -17,6 +19,7 @@ import {
 } from './RewardsListContentStyles';
 
 export const RewardsListContent: FC = () => {
+  const { isWalletConnected, isSupportedChain } = useDappStatus();
   const {
     error,
     initialLoading,
@@ -30,7 +33,11 @@ export const RewardsListContent: FC = () => {
     useSTETHBalance(STRATEGY_LAZY);
   const hasSteth = stethBalance?.gt(Zero);
 
+  if (isWalletConnected && !isSupportedChain)
+    return <RewardsListsUnsupportedChain />;
+
   if (!data && !initialLoading && !error) return <RewardsListsEmpty />;
+
   // showing loading when canceling requests and empty response
   if (
     (!data && !error) ||
@@ -46,6 +53,7 @@ export const RewardsListContent: FC = () => {
       </>
     );
   }
+
   if (error) {
     return (
       <ErrorWrapper>
