@@ -65,6 +65,16 @@ export const enum MATOMO_CLICK_EVENTS_TYPES {
   // /withdrawal/request and /withdrawal/claim shared events
   withdrawalWhatAreStakingPenaltiesFAQ = 'withdrawalWhatAreStakingPenaltiesFAQ',
   withdrawalNFTGuideFAQ = 'withdrawalNFTGuideFAQ',
+
+  // /rewards page
+  rewardsExportCSV = 'rewardsExportCSV',
+  rewardsHistoricalStethPriceCheck = 'rewardsHistoricalStethPriceCheck',
+  rewardsHistoricalStethPriceUncheck = 'rewardsHistoricalStethPriceUncheck',
+  rewardsIncludeTransfersCheck = 'rewardsIncludeTransfersCheck',
+  rewardsIncludeTransfersUncheck = 'rewardsIncludeTransfersUncheck',
+  rewardsHistoricalCurrencyUSD = 'rewardsHistoricalCurrencyUSD',
+  rewardsHistoricalCurrencyEUR = 'rewardsHistoricalCurrencyEUR',
+  rewardsHistoricalCurrencyGBP = 'rewardsHistoricalCurrencyGBP',
 }
 
 export const MATOMO_CLICK_EVENTS: Record<
@@ -350,5 +360,47 @@ export const MATOMO_CLICK_EVENTS: Record<
     'Ethereum_Withdrawals_Widget',
     'Push on "How do I add the Lido NFT to my wallet" guide link in FAQ',
     'eth_withdrawals_how_to_add_nft_guide_FAQ',
+  ],
+
+  // /rewards page
+  [MATOMO_CLICK_EVENTS_TYPES.rewardsExportCSV]: [
+    'Ethereum_Rewards_Widget',
+    'Click on "Export CSV"',
+    'eth_rewards_export_csv',
+  ],
+  [MATOMO_CLICK_EVENTS_TYPES.rewardsHistoricalStethPriceCheck]: [
+    'Ethereum_Rewards_Widget',
+    'Click check on "Historical stETH price" in check-box',
+    'eth_historical_stETH_price_check_box_check',
+  ],
+  [MATOMO_CLICK_EVENTS_TYPES.rewardsHistoricalStethPriceUncheck]: [
+    'Ethereum_Rewards_Widget',
+    'Click uncheck on "Historical stETH price" in check-box',
+    'eth_historical_stETH_price_check_box_uncheck',
+  ],
+  [MATOMO_CLICK_EVENTS_TYPES.rewardsIncludeTransfersCheck]: [
+    'Ethereum_Rewards_Widget',
+    'Click check on "Include transfers" in check-box',
+    'eth_include_transfers_check_box_check',
+  ],
+  [MATOMO_CLICK_EVENTS_TYPES.rewardsIncludeTransfersUncheck]: [
+    'Ethereum_Rewards_Widget',
+    'Click uncheck on "Include transfers" in check-box',
+    'eth_include_transfers_check_box_uncheck',
+  ],
+  [MATOMO_CLICK_EVENTS_TYPES.rewardsHistoricalCurrencyUSD]: [
+    'Ethereum_Rewards_Widget',
+    'Click on "USD" in currency choice',
+    'eth_historical_usd_currency_choice',
+  ],
+  [MATOMO_CLICK_EVENTS_TYPES.rewardsHistoricalCurrencyEUR]: [
+    'Ethereum_Rewards_Widget',
+    'Click on "EUR" in currency choice',
+    'eth_historical_eur_currency_choice',
+  ],
+  [MATOMO_CLICK_EVENTS_TYPES.rewardsHistoricalCurrencyGBP]: [
+    'Ethereum_Rewards_Widget',
+    'Click on "GBP" in currency choice',
+    'eth_historical_gbp_currency_choice',
   ],
 };

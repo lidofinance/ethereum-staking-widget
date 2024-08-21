@@ -4,6 +4,14 @@ import { Export } from 'features/rewards/components/export';
 
 import { RightOptionsWrapper } from './styles';
 import { useRewardsHistory } from 'features/rewards/hooks/useRewardsHistory';
+import { MatomoEventType, trackEvent } from '@lidofinance/analytics-matomo';
+import { MATOMO_CLICK_EVENTS } from 'consts/matomo-click-events';
+
+const MATOMO_EVENTS_MAP_CURRENCY_SELECTOR: Record<string, MatomoEventType> = {
+  usd: MATOMO_CLICK_EVENTS.rewardsHistoricalCurrencyUSD,
+  eur: MATOMO_CLICK_EVENTS.rewardsHistoricalCurrencyEUR,
+  gbp: MATOMO_CLICK_EVENTS.rewardsHistoricalCurrencyGBP,
+};
 
 export const RightOptions: FC = () => {
   const {
@@ -15,7 +23,14 @@ export const RightOptions: FC = () => {
   } = useRewardsHistory();
   return (
     <RightOptionsWrapper>
-      <CurrencySelector currency={currencyObject} onChange={setCurrency} />
+      <CurrencySelector
+        currency={currencyObject}
+        onChange={(value) => {
+          const event = MATOMO_EVENTS_MAP_CURRENCY_SELECTOR[value];
+          if (event) trackEvent(...event);
+          setCurrency(value);
+        }}
+      />
       <Export
         currency={currencyObject}
         address={address}
