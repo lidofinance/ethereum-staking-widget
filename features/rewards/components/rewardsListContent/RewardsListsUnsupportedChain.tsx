@@ -14,6 +14,7 @@ export const RewardsListsUnsupportedChain: FC = () => {
     // 'Chain ID' array to 'Chain name' array exclude unknown chain id
     const chains = supportedChains.map((id) => CHAINS[id]).filter(Boolean);
     const lastChain = chains.pop();
+    // to str
     return [chains.join(', '), lastChain].filter((chain) => chain).join(' or ');
   }, [supportedChains]);
 
