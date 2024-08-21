@@ -6,6 +6,7 @@ import { useSDK } from '@lido-sdk/react';
 
 import { resolveEns, isValidEns, isValidAddress } from 'features/rewards/utils';
 import { useCurrentStaticRpcProvider } from 'shared/hooks/use-current-static-rpc-provider';
+import { useDappStatus } from 'shared/hooks/use-dapp-status';
 import { overrideWithQAMockString } from 'utils/qa';
 
 type UseGetCurrentAddress = () => {
@@ -28,6 +29,7 @@ export const useGetCurrentAddress: UseGetCurrentAddress = () => {
   const { account } = useSDK();
   const { staticRpcProvider } = useCurrentStaticRpcProvider();
   const { isReady, query } = useRouter();
+  const { isSupportedChain } = useDappStatus();
 
   const getEnsAddress = useCallback(
     async (value: string) => {
@@ -87,13 +89,13 @@ export const useGetCurrentAddress: UseGetCurrentAddress = () => {
         return;
       }
       // From a connected wallet
-      if (account) {
+      if (account && isSupportedChain) {
         setInputValue(
           overrideWithQAMockString(account, 'mock-qa-rewards-address'),
         );
       }
     }
-  }, [account, query.address, isReady, setInputValue]);
+  }, [account, query.address, isReady, setInputValue, isSupportedChain]);
 
   return {
     address,
