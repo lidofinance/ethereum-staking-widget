@@ -31,7 +31,7 @@ export const StEthRewardedBlock: FC = () => {
           </GreenText>
         )
       }
-      valueDataTestId="stEthRewardedIn$"
+      valueDataTestId="stEthRewarded"
       underValue={
         !data?.totals.currencyRewards ? (
           '—'
@@ -44,7 +44,7 @@ export const StEthRewardedBlock: FC = () => {
           </>
         )
       }
-      underValueDataTestId="stEthBalanceIn$"
+      underValueDataTestId="stEthRewardedIn$"
     />
   );
 };
