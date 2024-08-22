@@ -59,6 +59,11 @@ type SubscribeArgs = {
   queryKey: QueryKey;
 };
 
+type UseBalanceProps = {
+  account?: Address;
+  shouldSubscribeToUpdates?: boolean;
+};
+
 export const Erc20EventsAbi = [
   {
     type: 'event',
@@ -168,7 +173,11 @@ export const useTokenTransferSubscription = () => {
 };
 
 // NB: contract can be undefined but for better wagmi typings is casted as NoNNullable
-const useTokenBalance = (contract: TokenContract, address?: Address) => {
+const useTokenBalance = (
+  contract: TokenContract,
+  address?: Address,
+  shouldSubscribe = true,
+) => {
   const { subscribeToTokenUpdates } = useLidoSDK();
 
   const balanceQuery = useReadContract({
@@ -180,7 +189,7 @@ const useTokenBalance = (contract: TokenContract, address?: Address) => {
   });
 
   useEffect(() => {
-    if (address && contract?.address) {
+    if (shouldSubscribe && address && contract?.address) {
       return subscribeToTokenUpdates({
         tokenAddress: contract.address,
         queryKey: balanceQuery.queryKey,
@@ -193,36 +202,52 @@ const useTokenBalance = (contract: TokenContract, address?: Address) => {
   return balanceQuery;
 };
 
-export const useStethBalance = () => {
+export const useStethBalance = ({
+  account,
+  shouldSubscribeToUpdates = true,
+}: UseBalanceProps = {}) => {
   const { address } = useAccount();
+  const mergedAccount = account ?? address;
 
   const { steth, core } = useLidoSDK();
 
   const { data: contract, isLoading } = useQuery({
     queryKey: ['steth-contract', core.chainId],
-    enabled: !!address,
+    enabled: !!mergedAccount,
     staleTime: Infinity,
     queryFn: async () => steth.getContract(),
   });
 
-  const balanceData = useTokenBalance(contract!, address);
+  const balanceData = useTokenBalance(
+    contract!,
+    mergedAccount,
+    shouldSubscribeToUpdates,
+  );
 
   return { ...balanceData, isLoading: isLoading || balanceData.isLoading };
 };
 
-export const useWstethBalance = () => {
+export const useWstethBalance = ({
+  account,
+  shouldSubscribeToUpdates = true,
+}: UseBalanceProps = {}) => {
   const { address } = useAccount();
+  const mergedAccount = account ?? address;
 
   const { wsteth, core } = useLidoSDK();
 
   const { data: contract, isLoading } = useQuery({
     queryKey: ['wsteth-contract', core.chainId],
-    enabled: !!address,
+    enabled: !!mergedAccount,
     staleTime: Infinity,
     queryFn: async () => wsteth.getContract(),
   });
 
-  const balanceData = useTokenBalance(contract!, address);
+  const balanceData = useTokenBalance(
+    contract!,
+    mergedAccount,
+    shouldSubscribeToUpdates,
+  );
 
   return { ...balanceData, isLoading: isLoading || balanceData.isLoading };
 };

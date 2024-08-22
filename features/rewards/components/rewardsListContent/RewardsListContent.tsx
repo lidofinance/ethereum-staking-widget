@@ -15,9 +15,12 @@ import {
   ErrorWrapper,
 } from './RewardsListContentStyles';
 
+import type { Address } from 'viem';
+
 export const RewardsListContent: FC = () => {
   const {
     error,
+    address,
     initialLoading,
     data,
     currencyObject,
@@ -26,7 +29,10 @@ export const RewardsListContent: FC = () => {
     isLagging,
   } = useRewardsHistory();
   const { data: stethBalance, isLoading: isStethBalanceLoading } =
-    useStethBalance();
+    useStethBalance({
+      account: address as Address,
+      shouldSubscribeToUpdates: false,
+    });
   const hasSteth = stethBalance?.gt(Zero);
 
   if (!data && !initialLoading && !error) return <RewardsListsEmpty />;
