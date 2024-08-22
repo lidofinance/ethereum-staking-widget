@@ -18,11 +18,12 @@ import {
   useRewardsDataLoad,
   useGetCurrentAddress,
 } from 'features/rewards/hooks';
-
 import { getCurrencyCookie } from 'features/rewards/components/CurrencySelector';
+import { useDappStatus } from 'shared/hooks/use-dapp-status';
 
 export type RewardsHistoryValue = {
   currencyObject: CurrencyType;
+  isDataAvailable: boolean;
   data?: Backend;
   error?: unknown;
   initialLoading: boolean;
@@ -48,6 +49,8 @@ export const RewardsHistoryContext = createContext({} as RewardsHistoryValue);
 
 const RewardsHistoryProvider: FC<PropsWithChildren> = (props) => {
   const { children } = props;
+
+  const { isWalletConnected, isSupportedChain } = useDappStatus();
 
   const [currency, setCurrency] = useState(DEFAULT_CURRENCY.id);
 
@@ -88,8 +91,14 @@ const RewardsHistoryProvider: FC<PropsWithChildren> = (props) => {
 
   const currencyObject = getCurrency(currency);
 
+  const isDataNotAvailable = useMemo(
+    () => !data || (isWalletConnected && !isSupportedChain),
+    [data, isWalletConnected, isSupportedChain],
+  );
+
   const value = useMemo(
     (): RewardsHistoryValue => ({
+      isDataAvailable: !isDataNotAvailable,
       data,
       error,
       loading,
@@ -115,6 +124,7 @@ const RewardsHistoryProvider: FC<PropsWithChildren> = (props) => {
       address,
       addressError,
       currencyObject,
+      isDataNotAvailable,
       data,
       error,
       initialLoading,
