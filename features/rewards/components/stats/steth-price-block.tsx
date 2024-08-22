@@ -11,7 +11,6 @@ export const StEthPriceBlock: FC = () => {
   const {
     currencyObject: currency,
     data,
-    isDataAvailable,
     initialLoading: loading,
   } = useRewardsHistory();
   const stEthEth = useStethEthRate();
@@ -22,7 +21,7 @@ export const StEthPriceBlock: FC = () => {
       dataTestId="stEthPriceBlock"
       title="stETH price"
       value={
-        data?.stETHCurrencyPrice[currency.id] && isDataAvailable ? (
+        data?.stETHCurrencyPrice[currency.id] ? (
           <>
             <Box display="inline-block" pr="3px">
               {currency.symbol}
@@ -35,7 +34,7 @@ export const StEthPriceBlock: FC = () => {
       }
       valueDataTestId="stEthPrice"
       underValue={
-        data?.stETHCurrencyPrice[currency.id] && isDataAvailable ? (
+        data?.stETHCurrencyPrice[currency.id] ? (
           <>
             <NumberFormat number={stEthEth?.toString()} StEthEth />
             <Box display="inline-block" pl={'3px'}>

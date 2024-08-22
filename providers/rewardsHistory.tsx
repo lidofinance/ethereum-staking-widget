@@ -23,7 +23,6 @@ import { useDappStatus } from 'shared/hooks/use-dapp-status';
 
 export type RewardsHistoryValue = {
   currencyObject: CurrencyType;
-  isDataAvailable: boolean;
   data?: Backend;
   error?: unknown;
   initialLoading: boolean;
@@ -91,15 +90,16 @@ const RewardsHistoryProvider: FC<PropsWithChildren> = (props) => {
 
   const currencyObject = getCurrency(currency);
 
-  const isDataNotAvailable = useMemo(
-    () => !data || (isWalletConnected && !isSupportedChain),
-    [data, isWalletConnected, isSupportedChain],
-  );
+  const isDataAvailable = useMemo(() => {
+    const isDataNotAvailable =
+      !data || (isWalletConnected && !isSupportedChain);
+    return !isDataNotAvailable;
+  }, [data, isWalletConnected, isSupportedChain]);
 
   const value = useMemo(
     (): RewardsHistoryValue => ({
-      isDataAvailable: !isDataNotAvailable,
-      data,
+      // we want user to not confuse which chain rewards are showing
+      data: isDataAvailable ? data : undefined,
       error,
       loading,
       initialLoading,
@@ -124,7 +124,7 @@ const RewardsHistoryProvider: FC<PropsWithChildren> = (props) => {
       address,
       addressError,
       currencyObject,
-      isDataNotAvailable,
+      isDataAvailable,
       data,
       error,
       initialLoading,

@@ -11,7 +11,6 @@ export const StEthRewardedBlock: FC = () => {
   const {
     currencyObject: currency,
     data,
-    isDataAvailable,
     initialLoading: loading,
   } = useRewardsHistory();
 
@@ -21,7 +20,7 @@ export const StEthRewardedBlock: FC = () => {
       dataTestId="stEthRewardedBlock"
       title="stETH rewarded"
       value={
-        data?.totals.ethRewards && isDataAvailable ? (
+        data?.totals.ethRewards ? (
           <GreenText>
             <NumberFormat number={data?.totals.ethRewards} />
             <Box display="inline-block" pl={'3px'}>
@@ -34,7 +33,7 @@ export const StEthRewardedBlock: FC = () => {
       }
       valueDataTestId="stEthRewarded"
       underValue={
-        data?.totals.currencyRewards && isDataAvailable ? (
+        data?.totals.currencyRewards ? (
           <>
             <Box display="inline-block" pr={'3px'}>
               {currency.symbol}

@@ -8,11 +8,7 @@ import { Item } from './components/item';
 import { FlexCenter } from './components/styles';
 
 export const AverageAprBlock: FC = () => {
-  const {
-    data,
-    isDataAvailable,
-    initialLoading: loading,
-  } = useRewardsHistory();
+  const { data, initialLoading: loading } = useRewardsHistory();
 
   return (
     <Item
@@ -27,7 +23,7 @@ export const AverageAprBlock: FC = () => {
         </FlexCenter>
       }
       value={
-        parseFloat(data?.averageApr || '0') && isDataAvailable ? (
+        parseFloat(data?.averageApr || '0') ? (
           <>
             <NumberFormat number={data?.averageApr} percent />
             <Box display="inline-block" pl="3px">

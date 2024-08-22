@@ -10,8 +10,8 @@ import { Item } from './components/item';
 export const StEthBalanceBlock: FC = () => {
   const { data: balanceData } = useRewardsBalanceData();
   const {
+    data: dataRewards,
     currencyObject: currency,
-    isDataAvailable,
     loading,
   } = useRewardsHistory();
 
@@ -21,7 +21,7 @@ export const StEthBalanceBlock: FC = () => {
       dataTestId="stEthBalanceBlock"
       title="stETH balance"
       value={
-        balanceData?.stEthBalanceParsed && isDataAvailable ? (
+        balanceData?.stEthBalanceParsed && dataRewards ? (
           <>
             <NumberFormat number={balanceData?.stEthBalanceParsed} />
             <Box display="inline-block" pl={'3px'}>
@@ -34,7 +34,7 @@ export const StEthBalanceBlock: FC = () => {
       }
       valueDataTestId="stEthBalance"
       underValue={
-        balanceData?.stEthCurrencyBalance && isDataAvailable ? (
+        balanceData?.stEthCurrencyBalance ? (
           <>
             <Box display="inline-block" pr={'3px'}>
               {currency.symbol}
