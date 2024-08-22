@@ -21,6 +21,7 @@ import type {
 
 export type useWithdrawalRatesOptions = {
   fallbackValue?: BigNumber;
+  isPaused?: boolean;
 };
 
 const getWithdrawalRates = async (
@@ -53,6 +54,7 @@ const getWithdrawalRates = async (
 
 export const useWithdrawalRates = ({
   fallbackValue = Zero,
+  isPaused,
 }: useWithdrawalRatesOptions = {}) => {
   const [token, amount] = useWatch<RequestFormInputType, ['token', 'amount']>({
     name: ['token', 'amount'],
@@ -76,6 +78,7 @@ export const useWithdrawalRates = ({
     {
       ...STRATEGY_LAZY,
       isPaused: () =>
+        isPaused ||
         !debouncedAmount ||
         !debouncedAmount._isBigNumber ||
         ENABLED_WITHDRAWAL_DEXES.length === 0,
