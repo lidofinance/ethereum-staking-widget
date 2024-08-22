@@ -13,7 +13,6 @@ export const AddressInput: FC<AddressInputProps> = (props) => {
     handleInputChange,
     address,
     addressError: invalidENSAddress,
-    loading,
   } = props;
 
   const invalidEthereumAddress = useMemo(
@@ -28,7 +27,7 @@ export const AddressInput: FC<AddressInputProps> = (props) => {
       onChange={(e) => handleInputChange(e.target.value)}
       placeholder="Ethereum address"
       leftDecorator={
-        loading || isAddressResolving ? (
+        isAddressResolving ? (
           <Loader size="small" />
         ) : invalidEthereumAddress || invalidENSAddress ? (
           <ErrorTriangle />
