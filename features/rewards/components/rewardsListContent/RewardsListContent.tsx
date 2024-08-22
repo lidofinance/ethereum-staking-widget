@@ -1,6 +1,7 @@
 import { FC } from 'react';
 import { Loader, Divider } from '@lidofinance/lido-ui';
-import { useSTETHBalance } from '@lido-sdk/react';
+import { useSDK, useTokenBalance } from '@lido-sdk/react';
+import { TOKENS, getTokenAddress } from '@lido-sdk/constants';
 import { Zero } from '@ethersproject/constants';
 
 import { STRATEGY_LAZY } from 'consts/swr-strategies';
@@ -21,6 +22,7 @@ import {
 export const RewardsListContent: FC = () => {
   const { isWalletConnected, isSupportedChain } = useDappStatus();
   const {
+    address,
     error,
     initialLoading,
     data,
@@ -29,8 +31,14 @@ export const RewardsListContent: FC = () => {
     setPage,
     isLagging,
   } = useRewardsHistory();
+  // temporarily until we switched to a new SDK
+  const { chainId } = useSDK();
   const { data: stethBalance, initialLoading: isStethBalanceLoading } =
-    useSTETHBalance(STRATEGY_LAZY);
+    useTokenBalance(
+      getTokenAddress(chainId || 1, TOKENS.STETH),
+      address,
+      STRATEGY_LAZY,
+    );
   const hasSteth = stethBalance?.gt(Zero);
 
   if (isWalletConnected && !isSupportedChain)
