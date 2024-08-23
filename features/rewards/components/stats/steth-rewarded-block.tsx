@@ -20,31 +20,31 @@ export const StEthRewardedBlock: FC = () => {
       dataTestId="stEthRewardedBlock"
       title="stETH rewarded"
       value={
-        !data?.totals.ethRewards ? (
-          '—'
-        ) : (
+        data?.totals.ethRewards ? (
           <GreenText>
             <NumberFormat number={data?.totals.ethRewards} />
             <Box display="inline-block" pl={'3px'}>
               stETH
             </Box>
           </GreenText>
+        ) : (
+          '—'
         )
       }
-      valueDataTestId="stEthRewardedIn$"
+      valueDataTestId="stEthRewarded"
       underValue={
-        !data?.totals.currencyRewards ? (
-          '—'
-        ) : (
+        data?.totals.currencyRewards ? (
           <>
             <Box display="inline-block" pr={'3px'}>
               {currency.symbol}
             </Box>
             <NumberFormat number={data?.totals.currencyRewards} currency />
           </>
+        ) : (
+          '—'
         )
       }
-      underValueDataTestId="stEthBalanceIn$"
+      underValueDataTestId="stEthRewardedIn$"
     />
   );
 };

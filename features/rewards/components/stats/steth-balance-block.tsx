@@ -9,7 +9,11 @@ import { Item } from './components/item';
 
 export const StEthBalanceBlock: FC = () => {
   const { data: balanceData } = useRewardsBalanceData();
-  const { currencyObject: currency, loading } = useRewardsHistory();
+  const {
+    data: dataRewards,
+    currencyObject: currency,
+    loading,
+  } = useRewardsHistory();
 
   return (
     <Item
@@ -17,28 +21,28 @@ export const StEthBalanceBlock: FC = () => {
       dataTestId="stEthBalanceBlock"
       title="stETH balance"
       value={
-        !balanceData?.stEthBalanceParsed ? (
-          '—'
-        ) : (
+        balanceData?.stEthBalanceParsed && dataRewards ? (
           <>
             <NumberFormat number={balanceData?.stEthBalanceParsed} />
             <Box display="inline-block" pl={'3px'}>
               stETH
             </Box>
           </>
+        ) : (
+          '—'
         )
       }
       valueDataTestId="stEthBalance"
       underValue={
-        !balanceData?.stEthCurrencyBalance ? (
-          '—'
-        ) : (
+        balanceData?.stEthCurrencyBalance ? (
           <>
             <Box display="inline-block" pr={'3px'}>
               {currency.symbol}
             </Box>
             <NumberFormat number={balanceData?.stEthCurrencyBalance} currency />
           </>
+        ) : (
+          '—'
         )
       }
       underValueDataTestId="stEthBalanceIn$"

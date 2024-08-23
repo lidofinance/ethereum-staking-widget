@@ -17,7 +17,7 @@ export const Wallet: FC = () => {
   } = useRewardsHistory();
 
   return (
-    <WalletStyle>
+    <WalletStyle data-testid="inputSection">
       <ThemeProvider theme={themeDark}>
         <WalletContentStyle>
           <AddressInput

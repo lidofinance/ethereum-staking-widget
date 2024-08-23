@@ -21,31 +21,29 @@ export const StEthPriceBlock: FC = () => {
       dataTestId="stEthPriceBlock"
       title="stETH price"
       value={
-        !data?.stETHCurrencyPrice[currency.id] ? (
-          '—'
-        ) : (
+        data?.stETHCurrencyPrice[currency.id] ? (
           <>
             <Box display="inline-block" pr="3px">
               {currency.symbol}
             </Box>
             <NumberFormat number={data?.stETHCurrencyPrice[currency.id]} ETH />
           </>
+        ) : (
+          '—'
         )
       }
       valueDataTestId="stEthPrice"
       underValue={
-        <>
-          {data?.stETHCurrencyPrice[currency.id] ? (
-            <>
-              <NumberFormat number={stEthEth?.toString()} StEthEth />
-              <Box display="inline-block" pl={'3px'}>
-                ETH
-              </Box>
-            </>
-          ) : (
-            '—'
-          )}
-        </>
+        data?.stETHCurrencyPrice[currency.id] ? (
+          <>
+            <NumberFormat number={stEthEth?.toString()} StEthEth />
+            <Box display="inline-block" pl={'3px'}>
+              ETH
+            </Box>
+          </>
+        ) : (
+          '—'
+        )
       }
       underValueDataTestId="ethRate"
     />
