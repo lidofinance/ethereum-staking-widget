@@ -1,3 +1,6 @@
+import { useMemo } from 'react';
+import useSWR from 'swr';
+
 import { STRATEGY_LAZY } from 'consts/swr-strategies';
 import { getConfig } from '../get-config';
 import { standardFetcher } from 'utils/standardFetcher';
@@ -7,9 +10,8 @@ import {
   isManifestEntryValid,
   useFallbackManifestEntry,
 } from './utils';
-import { ExternalConfig, ManifestEntry } from './types';
-import useSWR from 'swr';
-import { useMemo } from 'react';
+
+import type { ExternalConfig, ManifestEntry } from './types';
 
 const onFetchError = (error: unknown) => {
   console.warn(
