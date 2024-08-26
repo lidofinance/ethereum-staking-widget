@@ -68,10 +68,10 @@ export const fetchExternalManifest = async () => {
     }
   }
   console.error(
-    `[fetchExternalManifest] failed to fetch external manifest after retries, revalidation is set to ${config.ERROR_REVALIDATION}`,
+    `[fetchExternalManifest] failed to fetch external manifest after retries, revalidation is set to ${config.ERROR_REVALIDATION_SECONDS}`,
   );
   return {
-    revalidate: config.ERROR_REVALIDATION,
+    revalidate: config.ERROR_REVALIDATION_SECONDS,
     ___prefetch_manifest___: FallbackLocalManifest,
   };
 };
