@@ -3,6 +3,7 @@ import type { DexWithdrawalApi } from '../request/withdrawal-rates';
 
 // max requests count for one tx
 export const MAX_REQUESTS_COUNT = 256;
+// Leger Clear Sign only allows 2 requests per claim
 export const MAX_REQUESTS_COUNT_LEDGER_LIMIT = 2;
 
 export const DEFAULT_CLAIM_REQUEST_SELECTED = 80;
