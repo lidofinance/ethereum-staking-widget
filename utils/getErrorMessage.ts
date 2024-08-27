@@ -26,7 +26,6 @@ export const getErrorMessage = (error: unknown): ErrorMessage => {
       }
     }
     // intentional fallthrough
-    // eslint-disable-next-line no-fallthrough
     case 3:
     case 'UNPREDICTABLE_GAS_LIMIT':
     case 'INSUFFICIENT_FUNDS':
@@ -35,6 +34,7 @@ export const getErrorMessage = (error: unknown): ErrorMessage => {
       return ErrorMessage.INVALID_SIGNATURE;
     case 'ACTION_REJECTED':
     case 4001:
+    case 200001:
       return ErrorMessage.DENIED_SIG;
     case 'LIMIT_REACHED':
       return ErrorMessage.LIMIT_REACHED;
