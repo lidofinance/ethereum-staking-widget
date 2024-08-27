@@ -1,4 +1,4 @@
-const openKeys = [
+export const openKeys = [
   'SELF_ORIGIN',
   'ROOT_ORIGIN',
   'DOCS_ORIGIN',
@@ -25,14 +25,16 @@ const openKeys = [
   'WALLETCONNECT_PROJECT_ID',
   'REWARDS_BACKEND_BASE_PATH',
 ];
-const secretKeys = [
+
+export const secretKeys = [
   'EL_RPC_URLS_1',
   'EL_RPC_URLS_5',
   'EL_RPC_URLS_17000',
   'EL_RPC_URLS_11155111',
 ]
 
-const logOpenEnvironmentVariables = () => {
+
+export const logOpenEnvironmentVariables = () => {
   console.log('---------------------------------------------');
   console.log('Log environment variables (without secrets):');
   console.log('---------------------------------------------');
@@ -50,7 +52,7 @@ const logOpenEnvironmentVariables = () => {
   console.log('');
 };
 
-const logSecretEnvironmentVariables = () => {
+export const logSecretEnvironmentVariables = () => {
   console.log('---------------------------------------------');
   console.log('Log secret environment variables:');
   console.log('---------------------------------------------');
@@ -72,7 +74,7 @@ const logSecretEnvironmentVariables = () => {
   console.log('---------------------------------------------');
 };
 
-export default () => {
+export const logEnvironmentVariables = () => {
   logOpenEnvironmentVariables();
   logSecretEnvironmentVariables();
 };

@@ -1,6 +1,6 @@
 import NextBundleAnalyzer from '@next/bundle-analyzer';
 import buildDynamics from './scripts/build-dynamics.mjs';
-import logEnvironmentVariables from './scripts/log-environment-variables.mjs';
+import { logEnvironmentVariables } from './scripts/log-environment-variables.mjs';
 import generateBuildId from './scripts/generate-build-id.mjs';
 
 logEnvironmentVariables();
