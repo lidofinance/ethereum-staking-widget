@@ -1,6 +1,5 @@
 import { memo } from 'react';
 
-import { VaultsBannerInfo } from 'shared/banners/vaults-banner-info';
 import { FormController } from 'shared/hook-form/form-controller';
 
 import { WrapFormStats } from './wrap-stats';
@@ -17,7 +16,6 @@ export const WrapForm: React.FC = memo(() => {
           <InputGroupWrap />
           <SubmitButtonWrap />
         </FormController>
-        <VaultsBannerInfo />
         <WrapFormStats />
       </WrapBlock>
     </WrapFormProvider>
