@@ -7,7 +7,10 @@ import { walletsMetrics } from 'consts/matomo-wallets-events';
 import { trackEvent } from '@lidofinance/analytics-matomo';
 import { MATOMO_CLICK_EVENTS } from 'consts/matomo-click-events';
 
-const WALLETS_PINNED: WalletIdsEthereum[] = ['okx', 'browserExtension'];
+const WALLETS_PINNED: WalletIdsEthereum[] = [
+  'binanceWallet',
+  'browserExtension',
+];
 
 export const ConnectWalletModal = () => {
   const { themeName } = useThemeToggle();
