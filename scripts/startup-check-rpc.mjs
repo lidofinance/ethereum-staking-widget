@@ -26,7 +26,7 @@ export const startupCheckRPC = async () => {
       throw new Error('[startupCheckRPC] Chain IDs do not match!');
     }
 
-    console.debug('[startupCheckRPC] OK!');
+    console.info('[startupCheckRPC] OK!');
   } catch (err) {
     console.error('[startupCheckRPC] Error during startup check:');
     console.error(err);
