@@ -2,13 +2,13 @@ import NextBundleAnalyzer from '@next/bundle-analyzer';
 import buildDynamics from './scripts/build-dynamics.mjs';
 import { logEnvironmentVariables } from './scripts/log-environment-variables.mjs';
 import generateBuildId from './scripts/generate-build-id.mjs';
-import { startupCheckRPC } from './scripts/startup-check-rpc.mjs';
+import { startupCheckRPCs } from './scripts/startup-checks/rpc.mjs';
 
 logEnvironmentVariables();
 buildDynamics();
 
 if (process.env.RUN_STARTUP_CHECKS === 'true' && typeof window === 'undefined') {
-  void startupCheckRPC();
+  void startupCheckRPCs();
 }
 
 

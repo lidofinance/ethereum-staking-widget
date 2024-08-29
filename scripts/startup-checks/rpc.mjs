@@ -5,15 +5,15 @@ export const getRpcUrls = (chainId) => {
   return rpcUrls?.filter((url) => url);
 };
 
-export const startupCheckRPC = async () => {
-  console.info('[startupCheckRPC] Start check.');
+export const startupCheckRPCs = async () => {
+  console.info('[startupCheckRPCs] Starting...');
 
   try {
     const defaultChain = parseInt(process.env.DEFAULT_CHAIN, 10);
     const rpcUrls = getRpcUrls(defaultChain);
 
     if (!rpcUrls || rpcUrls.length === 0) {
-      throw new Error('[startupCheckRPC] No RPC URLs found!');
+      throw new Error('[startupCheckRPCs] No RPC URLs found!');
     }
 
     let errorCount = 0;
@@ -36,28 +36,28 @@ export const startupCheckRPC = async () => {
 
         const network = await rpcProvider.getNetwork();
         if (defaultChain === network.chainId) {
-          console.info(`[startupCheckRPC] RPC ${domain} works!`);
+          console.info(`[startupCheckRPCs] RPC ${domain} works!`);
         } else {
           errorCount += 1;
-          console.error(`[startupCheckRPC] RPC ${domain} does not work! RPC getNetwork response:`);
+          console.error(`[startupCheckRPCs] RPC ${domain} does not work! RPC getNetwork response:`);
           console.error(network);
         }
       } catch (err) {
         errorCount += 1;
-        console.error(`[startupCheckRPC] Error with RPC ${domain}:`);
+        console.error(`[startupCheckRPCs] Error with RPC ${domain}:`);
         console.error(err);
       }
     }
 
     if (errorCount > 0) {
-      console.info(`[startupCheckRPC] Number of working RPCs - ${rpcUrls.length - errorCount}`);
-      console.info(`[startupCheckRPC] Number of broken RPCs - ${errorCount}`);
-      throw new Error('[startupCheckRPC] Broken RPCs found!');
+      console.info(`[startupCheckRPCs] Number of working RPCs - ${rpcUrls.length - errorCount}`);
+      console.info(`[startupCheckRPCs] Number of broken RPCs - ${errorCount}`);
+      throw new Error('[startupCheckRPCs] Broken RPCs found!');
     }
 
-    console.info('[startupCheckRPC] All RPC works!');
+    console.info('[startupCheckRPCs] All RPC works!');
   } catch (err) {
-    console.error('[startupCheckRPC] Error during startup check:');
+    console.error('[startupCheckRPCs] Error during startup check:');
     console.error(err);
     // Exit with a failure code
     process.exit(1);
