@@ -5,7 +5,7 @@
   "type": "module",
   "license": "GPL-3.0-or-later",
   "scripts": {
-    "dev": "NODE_ENV=development RUN_STARTUP_CHECKS=true node server.mjs",
+    "dev": "NODE_ENV=development node server.mjs",
     "dev:ipfs": "IPFS_MODE=true next dev",
     "build": "NODE_OPTIONS='--no-warnings=ExperimentalWarning' next build",
     "build:analyze": "ANALYZE_BUNDLE=true yarn build",
