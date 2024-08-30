@@ -29,12 +29,13 @@ import { useTxModalStagesRequest } from 'features/withdrawals/request/transactio
 import { useTransactionModal } from 'shared/transaction-modal/transaction-modal';
 import { sendTx } from 'utils/send-tx';
 import { overrideWithQAMockBoolean } from 'utils/qa';
+import { useTxConfirmation } from 'shared/hooks/use-tx-conformation';
 
 // this encapsulates permit/approval & steth/wsteth flows
 const useWithdrawalRequestMethods = () => {
   const { providerWeb3 } = useSDK();
   const { staticRpcProvider } = useCurrentStaticRpcProvider();
-  const { account, chainId, contractWeb3 } = useWithdrawalsContract();
+  const { account, contractWeb3 } = useWithdrawalsContract();
 
   const permitSteth = useCallback(
     async ({
@@ -44,8 +45,6 @@ const useWithdrawalRequestMethods = () => {
       signature?: GatherPermitSignatureResult;
       requests: BigNumber[];
     }) => {
-      invariant(chainId, 'must have chainId');
-      invariant(account, 'must have account');
       invariant(providerWeb3, 'must have providerWeb3');
       invariant(signature, 'must have signature');
       invariant(contractWeb3, 'must have contractWeb3');
@@ -73,7 +72,7 @@ const useWithdrawalRequestMethods = () => {
 
       return callback;
     },
-    [account, chainId, contractWeb3, providerWeb3, staticRpcProvider],
+    [contractWeb3, providerWeb3, staticRpcProvider],
   );
 
   const permitWsteth = useCallback(
@@ -84,8 +83,6 @@ const useWithdrawalRequestMethods = () => {
       signature?: GatherPermitSignatureResult;
       requests: BigNumber[];
     }) => {
-      invariant(chainId, 'must have chainId');
-      invariant(account, 'must have account');
       invariant(signature, 'must have signature');
       invariant(providerWeb3, 'must have providerWeb3');
       invariant(contractWeb3, 'must have contractWeb3');
@@ -113,12 +110,11 @@ const useWithdrawalRequestMethods = () => {
 
       return callback;
     },
-    [account, chainId, contractWeb3, providerWeb3, staticRpcProvider],
+    [contractWeb3, providerWeb3, staticRpcProvider],
   );
 
   const steth = useCallback(
     async ({ requests }: { requests: BigNumber[] }) => {
-      invariant(chainId, 'must have chainId');
       invariant(account, 'must have account');
       invariant(contractWeb3, 'must have contractWeb3');
       invariant(providerWeb3, 'must have providerWeb3');
@@ -140,12 +136,11 @@ const useWithdrawalRequestMethods = () => {
 
       return callback;
     },
-    [account, chainId, contractWeb3, staticRpcProvider, providerWeb3],
+    [account, contractWeb3, staticRpcProvider, providerWeb3],
   );
 
   const wstETH = useCallback(
     async ({ requests }: { requests: BigNumber[] }) => {
-      invariant(chainId, 'must have chainId');
       invariant(account, 'must have account');
       invariant(contractWeb3, 'must have contractWeb3');
       invariant(providerWeb3, 'must have providerWeb3');
@@ -167,7 +162,7 @@ const useWithdrawalRequestMethods = () => {
 
       return callback;
     },
-    [account, chainId, contractWeb3, staticRpcProvider, providerWeb3],
+    [account, contractWeb3, staticRpcProvider, providerWeb3],
   );
 
   return useCallback(
@@ -202,7 +197,6 @@ export const useWithdrawalRequest = ({
 }: useWithdrawalRequestParams) => {
   const { chainId } = useSDK();
   const withdrawalQueueAddress = getWithdrawalQueueAddress(chainId);
-  const { staticRpcProvider } = useCurrentStaticRpcProvider();
 
   const { connector } = useAccount();
   const { account } = useWeb3();
@@ -210,6 +204,7 @@ export const useWithdrawalRequest = ({
   const { txModalStages } = useTxModalStagesRequest();
   const getRequestMethod = useWithdrawalRequestMethods();
   const { isMultisig, isLoading: isMultisigLoading } = useIsMultisig();
+  const waitForTx = useTxConfirmation();
 
   const wstethContract = useWSTETHContractRPC();
   const stethContract = useSTETHContractRPC();
@@ -322,8 +317,9 @@ export const useWithdrawalRequest = ({
         txModalStages.pending(amount, token, txHash);
 
         if (!isMultisig) {
-          await runWithTransactionLogger('Stake block confirmation', () =>
-            staticRpcProvider.waitForTransaction(txHash),
+          await runWithTransactionLogger(
+            'Withdrawal Request block confirmation',
+            () => waitForTx(txHash),
           );
         }
 
@@ -347,8 +343,8 @@ export const useWithdrawalRequest = ({
       needsApprove,
       onConfirm,
       onRetry,
-      staticRpcProvider,
       txModalStages,
+      waitForTx,
     ],
   );
 

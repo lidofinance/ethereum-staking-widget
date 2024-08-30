@@ -1,7 +1,6 @@
 import invariant from 'tiny-invariant';
 import { useCallback } from 'react';
 
-import type { ContractReceipt } from '@ethersproject/contracts';
 import { BigNumber } from '@ethersproject/bignumber';
 import { getERC20Contract } from '@lido-sdk/contracts';
 import { useSDK } from '@lido-sdk/react';
@@ -12,14 +11,15 @@ import { runWithTransactionLogger } from 'utils';
 import { useCurrentStaticRpcProvider } from './use-current-static-rpc-provider';
 import { sendTx } from 'utils/send-tx';
 import { useAllowance } from './use-allowance';
+import { useTxConfirmation } from './use-tx-conformation';
 
-import type { Address } from 'viem';
+import type { Address, TransactionReceipt } from 'viem';
 
 type ApproveOptions =
   | {
       onTxStart?: () => void | Promise<void>;
       onTxSent?: (tx: string) => void | Promise<void>;
-      onTxAwaited?: (tx: ContractReceipt) => void | Promise<void>;
+      onTxAwaited?: (tx: TransactionReceipt) => void | Promise<void>;
     }
   | undefined;
 
@@ -35,8 +35,9 @@ export const useApprove = (
   spender: string,
   owner?: string,
 ): UseApproveResponse => {
-  const { providerWeb3, account, chainId } = useSDK();
+  const { providerWeb3, account } = useSDK();
   const { staticRpcProvider } = useCurrentStaticRpcProvider();
+  const waitForTx = useTxConfirmation();
   const mergedOwner = owner ?? account;
 
   invariant(token != null, 'Token is required');
@@ -55,7 +56,6 @@ export const useApprove = (
   const approve = useCallback<UseApproveResponse['approve']>(
     async ({ onTxStart, onTxSent, onTxAwaited } = {}) => {
       invariant(providerWeb3 != null, 'Web3 provider is required');
-      invariant(chainId, 'chain id is required');
       invariant(account, 'account is required');
       await onTxStart?.();
       const contractWeb3 = getERC20Contract(token, providerWeb3.getSigner());
@@ -83,7 +83,7 @@ export const useApprove = (
       if (!isMultisig) {
         const receipt = await runWithTransactionLogger(
           'Approve block confirmation',
-          () => staticRpcProvider.waitForTransaction(approveTxHash),
+          () => waitForTx(approveTxHash),
         );
         await onTxAwaited?.(receipt);
       }
@@ -94,13 +94,13 @@ export const useApprove = (
     },
     [
       providerWeb3,
-      chainId,
       account,
       token,
       staticRpcProvider,
       allowanceQuery,
       spender,
       amount,
+      waitForTx,
     ],
   );
 

@@ -13,6 +13,7 @@ import { useSDK } from '@lido-sdk/react';
 import { useTxModalStagesClaim } from 'features/withdrawals/claim/transaction-modal-claim/use-tx-modal-stages-claim';
 import { useCurrentStaticRpcProvider } from 'shared/hooks/use-current-static-rpc-provider';
 import { sendTx } from 'utils/send-tx';
+import { useTxConfirmation } from 'shared/hooks/use-tx-conformation';
 
 type Args = {
   onRetry?: () => void;
@@ -25,6 +26,7 @@ export const useClaim = ({ onRetry }: Args) => {
   const { staticRpcProvider } = useCurrentStaticRpcProvider();
   const { optimisticClaimRequests } = useClaimData();
   const { txModalStages } = useTxModalStagesClaim();
+  const waitForTx = useTxConfirmation();
 
   return useCallback(
     async (sortedRequests: RequestStatusClaimable[]) => {
@@ -70,8 +72,8 @@ export const useClaim = ({ onRetry }: Args) => {
 
         txModalStages.pending(amount, txHash);
 
-        await runWithTransactionLogger('Claim block confirmation', async () =>
-          staticRpcProvider.waitForTransaction(txHash),
+        await runWithTransactionLogger('Claim block confirmation', () =>
+          waitForTx(txHash),
         );
 
         await optimisticClaimRequests(sortedRequests);
@@ -89,8 +91,9 @@ export const useClaim = ({ onRetry }: Args) => {
       account,
       providerWeb3,
       txModalStages,
-      staticRpcProvider,
       optimisticClaimRequests,
+      staticRpcProvider,
+      waitForTx,
       onRetry,
     ],
   );
