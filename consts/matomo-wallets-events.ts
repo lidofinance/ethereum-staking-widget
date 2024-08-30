@@ -31,6 +31,8 @@ export const enum MATOMO_WALLETS_EVENTS_TYPES {
   onConnectBitget = 'onConnectBitget',
   onClickBrowser = 'onClickBrowser',
   onConnectBrowser = 'onConnectBrowser',
+  onClickBinance = 'onClickBinance',
+  onConnectBinance = 'onConnectBinance',
 }
 
 export const MATOMO_WALLETS_EVENTS: Record<
@@ -177,6 +179,16 @@ export const MATOMO_WALLETS_EVENTS: Record<
     'Connect Browser wallet',
     'eth_widget_connect_browser',
   ],
+  [MATOMO_WALLETS_EVENTS_TYPES.onClickBinance]: [
+    'Ethereum_Staking_Widget',
+    'Click Binance Web3 wallet',
+    'eth_widget_click_binance_web3',
+  ],
+  [MATOMO_WALLETS_EVENTS_TYPES.onConnectBinance]: [
+    'Ethereum_Staking_Widget',
+    'Connect Binance Web3 wallet',
+    'eth_widget_connect_binance_web3_wallet',
+  ],
 };
 
 const getMetricHandler = (event: Parameters<typeof trackEvent>) => () =>
@@ -202,6 +214,7 @@ export const walletsMetrics: Metrics<WalletIdsEthereum> = {
         browserExtension: getMetricHandler(
           MATOMO_WALLETS_EVENTS.onClickBrowser,
         ),
+        binanceWallet: getMetricHandler(MATOMO_WALLETS_EVENTS.onClickBinance),
       },
     },
     connect: {
@@ -222,6 +235,7 @@ export const walletsMetrics: Metrics<WalletIdsEthereum> = {
         browserExtension: getMetricHandler(
           MATOMO_WALLETS_EVENTS.onConnectBrowser,
         ),
+        binanceWallet: getMetricHandler(MATOMO_WALLETS_EVENTS.onConnectBinance),
       },
     },
   },

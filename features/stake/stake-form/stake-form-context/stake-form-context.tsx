@@ -105,9 +105,9 @@ const useStakeFormNetworkData = (): StakeFormNetworkData => {
 
   const revalidate = useCallback(async () => {
     await Promise.allSettled([
-      updateStethBalance,
-      updateEtherBalance,
-      () => mutateStakeLimit(stakingLimitInfo),
+      updateStethBalance(),
+      updateEtherBalance(),
+      mutateStakeLimit(stakingLimitInfo),
     ]);
   }, [
     updateStethBalance,
