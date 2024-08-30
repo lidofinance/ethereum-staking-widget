@@ -1,9 +1,21 @@
 import { ethers } from 'ethers';
 
-export const getRpcUrls = (chainId) => {
+// Safely initialize a global variable
+let globalRPCCheckResults = globalThis.__rpcCheckResults || [];
+globalThis.__rpcCheckResults = globalRPCCheckResults;
+
+const getRpcUrls = (chainId) => {
   const rpcUrls = process.env[`EL_RPC_URLS_${chainId}`]?.split(',');
   return rpcUrls?.filter((url) => url);
 };
+
+export const BROKEN_URL = 'BROKEN_URL';
+
+const pushRPCCheckResult = (domain, success) => {
+  globalRPCCheckResults.push({ domain, success });
+};
+
+export const getRPCCheckResults = () => globalThis.__rpcCheckResults || [];
 
 export const startupCheckRPCs = async () => {
   console.info('[startupCheckRPCs] Starting...');
@@ -25,26 +37,30 @@ export const startupCheckRPCs = async () => {
       } catch (err) {
         errorCount += 1;
         console.error('There is a broken URL.');
+        pushRPCCheckResult(BROKEN_URL, false);
         continue;
       }
 
       try {
         const rpcProvider = new ethers.providers.JsonRpcProvider({
           url: url,
-          throttleLimit: 1, // prevents retries for 429 status
+          throttleLimit: 1,
         });
 
         const network = await rpcProvider.getNetwork();
         if (defaultChain === network.chainId) {
           console.info(`[startupCheckRPCs] RPC ${domain} works!`);
+          pushRPCCheckResult(domain, true);
         } else {
           errorCount += 1;
           console.error(`[startupCheckRPCs] RPC ${domain} does not work! RPC getNetwork response:`);
+          pushRPCCheckResult(domain, false);
           console.error(network);
         }
       } catch (err) {
         errorCount += 1;
         console.error(`[startupCheckRPCs] Error with RPC ${domain}:`);
+        pushRPCCheckResult(domain, false);
         console.error(err);
       }
     }
@@ -63,4 +79,3 @@ export const startupCheckRPCs = async () => {
     process.exit(1);
   }
 };
-
