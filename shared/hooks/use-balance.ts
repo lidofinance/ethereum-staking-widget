@@ -15,7 +15,7 @@ import {
 
 import type { AbstractLidoSDKErc20 } from '@lidofinance/lido-ethereum-sdk/erc20';
 import type { GetBalanceData } from 'wagmi/query';
-import type { Address, Log } from 'viem';
+import type { Address, WatchContractEventOnLogsFn } from 'viem';
 
 const nativeToBN = (data: bigint) => BigNumber.from(data.toString());
 
@@ -76,6 +76,12 @@ export const Erc20EventsAbi = [
   },
 ] as const;
 
+type OnLogsFn = WatchContractEventOnLogsFn<
+  typeof Erc20EventsAbi,
+  'Transfer',
+  true
+>;
+
 export const useTokenTransferSubscription = () => {
   const { address } = useAccount();
   const queryClient = useQueryClient();
@@ -88,10 +94,11 @@ export const useTokenTransferSubscription = () => {
     [subscriptions],
   );
 
-  const onLogs = useCallback(
-    (logs: Log[]) => {
+  const onLogs: OnLogsFn = useCallback(
+    (logs) => {
       for (const log of logs) {
-        const subscription = subscriptions[log.address];
+        const subscription =
+          subscriptions[log.address.toLowerCase() as Address];
         if (!subscription) continue;
         // we could optimistically update balance data
         // but it's easier to refetch balance after transfer
@@ -136,38 +143,42 @@ export const useTokenTransferSubscription = () => {
     onLogs,
   });
 
-  const subscribe = useCallback(({ tokenAddress, queryKey }: SubscribeArgs) => {
-    setSubscriptions((old) => {
-      const existing = old[tokenAddress];
-      return {
-        ...old,
-        [tokenAddress]: {
-          queryKey,
-          subscribers: existing?.subscribers ?? 0 + 1,
-        },
-      };
-    });
-
-    // returns unsubscribe to be used as useEffect return fn (for unmount)
-    return () => {
+  const subscribe = useCallback(
+    ({ tokenAddress: _tokenAddress, queryKey }: SubscribeArgs) => {
+      const tokenAddress = _tokenAddress.toLowerCase() as Address;
       setSubscriptions((old) => {
         const existing = old[tokenAddress];
-        if (!existing) return old;
-        if (existing.subscribers > 1) {
-          return {
-            ...old,
-            [tokenAddress]: {
-              ...existing,
-              subscribers: existing.subscribers - 1,
-            },
-          };
-        } else {
-          delete old[tokenAddress];
-          return { ...old };
-        }
+        return {
+          ...old,
+          [tokenAddress]: {
+            queryKey,
+            subscribers: existing?.subscribers ?? 0 + 1,
+          },
+        };
       });
-    };
-  }, []);
+
+      // returns unsubscribe to be used as useEffect return fn (for unmount)
+      return () => {
+        setSubscriptions((old) => {
+          const existing = old[tokenAddress];
+          if (!existing) return old;
+          if (existing.subscribers > 1) {
+            return {
+              ...old,
+              [tokenAddress]: {
+                ...existing,
+                subscribers: existing.subscribers - 1,
+              },
+            };
+          } else {
+            delete old[tokenAddress];
+            return { ...old };
+          }
+        });
+      };
+    },
+    [],
+  );
 
   return subscribe;
 };
