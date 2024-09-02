@@ -1,4 +1,5 @@
-import { ethers } from 'ethers';
+import { createClient, http } from 'viem';
+import { getChainId } from 'viem/actions'
 
 // Safely initialize a global variable
 let globalRPCCheckResults = globalThis.__rpcCheckResults || [];
@@ -43,25 +44,22 @@ export const startupCheckRPCs = async () => {
       }
 
       try {
-        const rpcProvider = new ethers.providers.JsonRpcProvider({
-          url: url,
-          throttleLimit: 1,
+        const client = createClient({
+          transport: http(url, { retryCount: 0, timeout: 1_000 })
         });
 
-        const network = await rpcProvider.getNetwork();
-        if (defaultChain === network.chainId) {
-          console.info(`[startupCheckRPCs] RPC ${domain} works!`);
+        const chainId = await getChainId(client);
+
+        if (defaultChain === chainId) {
           pushRPCCheckResult(domain, true);
+          console.info(`[startupCheckRPCs] RPC ${domain} getChainId works!`);
         } else {
-          errorCount += 1;
-          console.error(`[startupCheckRPCs] RPC ${domain} does not work! RPC getNetwork response:`);
-          pushRPCCheckResult(domain, false);
-          console.error(network);
+          throw(`[startupCheckRPCs] RPC ${domain} getChainId does not work!`);
         }
       } catch (err) {
         errorCount += 1;
-        console.error(`[startupCheckRPCs] Error with RPC ${domain}:`);
         pushRPCCheckResult(domain, false);
+        console.error(`[startupCheckRPCs] Error with RPC ${domain}:`);
         console.error(err);
       }
     }
