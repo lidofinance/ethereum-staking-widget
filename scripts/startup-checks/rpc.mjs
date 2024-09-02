@@ -7,6 +7,7 @@ globalThis.__rpcCheckResults = globalRPCCheckResults;
 
 export const BROKEN_URL = 'BROKEN_URL';
 export const DELAY_TO_STOP_SECONDS = 30_000;
+export const RPC_TIMEOUT_SECONDS = 10_000;
 
 const pushRPCCheckResult = (domain, success) => {
   globalRPCCheckResults.push({ domain, success });
@@ -45,7 +46,7 @@ export const startupCheckRPCs = async () => {
 
       try {
         const client = createClient({
-          transport: http(url, { retryCount: 0, timeout: 1_000 })
+          transport: http(url, { retryCount: 0, timeout: RPC_TIMEOUT_SECONDS })
         });
 
         const chainId = await getChainId(client);
@@ -60,7 +61,8 @@ export const startupCheckRPCs = async () => {
         errorCount += 1;
         pushRPCCheckResult(domain, false);
         console.error(`[startupCheckRPCs] Error with RPC ${domain}:`);
-        console.error(err);
+        console.error(String(err).replace(rpcUrls, domain));
+        console.error(`[startupCheckRPCs] Timeout: ${RPC_TIMEOUT_SECONDS} seconds`);
       }
     }
 
