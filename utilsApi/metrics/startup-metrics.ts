@@ -7,6 +7,7 @@ import { getRPCCheckResults } from 'scripts/startup-checks/rpc.mjs';
 
 import { config } from 'config';
 import { METRICS_PREFIX } from 'consts/metrics';
+
 import { StartupChecksRPCMetrics } from './startup-checks';
 
 const collectStartupChecksRPCMetrics = (registry: Registry): void => {
