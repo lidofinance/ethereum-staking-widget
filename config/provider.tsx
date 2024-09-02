@@ -6,26 +6,45 @@ import {
   useFeatureFlagsContext,
   FeatureFlagsContextType,
 } from './feature-flags';
+import {
+  type ExternalConfig,
+  useExternalConfigContext,
+} from './external-config';
 
 type ConfigProviderType = {
   config: ConfigType;
   userConfig: UserConfigContextType;
   featureFlags: FeatureFlagsContextType;
+  externalConfig: ExternalConfig;
 };
 
 export const ConfigContext = createContext<ConfigProviderType | null>(null);
 
-export const ConfigProvider = ({ children }: PropsWithChildren) => {
+type ConfigProviderProps = {
+  prefetchedManifest?: unknown;
+};
+
+export const ConfigProvider = ({
+  children,
+  prefetchedManifest,
+}: PropsWithChildren<ConfigProviderProps>) => {
   const userConfigContextValue = useUserConfigContext();
   const featureFlagsContextValue = useFeatureFlagsContext();
+  const externalConfigContextValue =
+    useExternalConfigContext(prefetchedManifest);
 
   const contextValue = useMemo(
     () => ({
       config: getConfig(),
       userConfig: userConfigContextValue,
       featureFlags: featureFlagsContextValue,
+      externalConfig: externalConfigContextValue,
     }),
-    [userConfigContextValue, featureFlagsContextValue],
+    [
+      userConfigContextValue,
+      featureFlagsContextValue,
+      externalConfigContextValue,
+    ],
   );
 
   return (

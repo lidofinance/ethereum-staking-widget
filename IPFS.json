@@ -1,7 +1,10 @@
 {
   "1": {
     "cid": "bafybeib3zmyqlmantvdd6i5q4ehmo4larvorgquyanne3uoqdbedwgh3aq",
-    "leastSafeVersion": "0.36.1"
+    "leastSafeVersion": "0.36.1",
+    "config": {
+      "enabledWithdrawalDexes": ["one-inch", "paraswap", "bebop"]
+    }
   },
   "5": {
     "__warning__": "For testing purposes only",
@@ -13,7 +16,7 @@
     "cid": "bafybeibbsoqlofslw273b4ih2pdxfaz2zbjmred2ijog725tcmfoewix7y",
     "leastSafeVersion": "0.36.1",
     "config": {
-      "enabledWithdrawalDexes": ["one-inch", "paraswap", "bebop"]
+      "enabledWithdrawalDexes": ["one-inch", "paraswap"]
     }
   }
 }
