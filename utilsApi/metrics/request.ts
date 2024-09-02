@@ -6,12 +6,14 @@ export class RequestMetrics {
   apiTimingsExternal: Histogram<'hostname' | 'route' | 'entity' | 'status'>;
   requestCounter: Counter<'route'>;
   ethCallToAddress: Counter<'address' | 'referrer'>;
+  ssrCounter: Counter<'revalidate'>;
 
   constructor(public registry: Registry) {
     this.apiTimings = this.apiTimingsInit('internal');
     this.apiTimingsExternal = this.apiTimingsInit('external');
     this.requestCounter = this.requestsCounterInit();
     this.ethCallToAddress = this.ethCallToAddressInit();
+    this.ssrCounter = this.ssrCounterInit();
   }
 
   apiTimingsInit(postfix: string) {
@@ -50,6 +52,15 @@ export class RequestMetrics {
         'methodEncoded',
         'methodDecoded',
       ],
+      registers: [this.registry],
+    });
+  }
+
+  ssrCounterInit() {
+    return new Counter({
+      name: METRICS_PREFIX + METRIC_NAMES.SSR_COUNT,
+      help: 'Counts of running getDefaultStaticProps with revalidation param',
+      labelNames: ['revalidate'],
       registers: [this.registry],
     });
   }
