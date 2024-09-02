@@ -6,7 +6,6 @@ let globalRPCCheckResults = globalThis.__rpcCheckResults || [];
 globalThis.__rpcCheckResults = globalRPCCheckResults;
 
 export const BROKEN_URL = 'BROKEN_URL';
-export const DELAY_TO_STOP_SECONDS = 30_000;
 export const RPC_TIMEOUT_SECONDS = 10_000;
 
 const pushRPCCheckResult = (domain, success) => {
@@ -53,39 +52,27 @@ export const startupCheckRPCs = async () => {
 
         if (defaultChain === chainId) {
           pushRPCCheckResult(domain, true);
-          console.info(`[startupCheckRPCs] RPC ${domain} getChainId works!`);
+          console.info(`[startupCheckRPCs] RPC ${domain} works!`);
         } else {
-          throw(`[startupCheckRPCs] RPC ${domain} getChainId does not work!`);
+          throw(`[startupCheckRPCs] RPC ${domain} does not work!`);
         }
       } catch (err) {
         errorCount += 1;
         pushRPCCheckResult(domain, false);
         console.error(`[startupCheckRPCs] Error with RPC ${domain}:`);
-        console.error(String(err).replace(rpcUrls, domain));
+        console.error(String(err).replaceAll(rpcUrls, domain));
         console.error(`[startupCheckRPCs] Timeout: ${RPC_TIMEOUT_SECONDS} seconds`);
       }
     }
 
     if (errorCount > 0) {
-      console.info(`[startupCheckRPCs] Number of working RPCs - ${rpcUrls.length - errorCount}`);
-      console.info(`[startupCheckRPCs] Number of broken RPCs - ${errorCount}`);
-      console.error('[startupCheckRPCs] Broken RPCs found! Stopping the app in 30 seconds...');
-
-      setTimeout(() => {
-        console.error('[startupCheckRPCs] Stop the app!');
-        process.exit(1);
-      }, DELAY_TO_STOP_SECONDS);
+      console.info(`[startupCheckRPCs] Number of working RPCs: ${rpcUrls.length - errorCount}`);
+      console.info(`[startupCheckRPCs] Number of broken RPCs: ${errorCount}`);
     } else {
       console.info('[startupCheckRPCs] All RPC works!');
     }
   } catch (err) {
     console.error('[startupCheckRPCs] Error during startup check:');
     console.error(err);
-    console.error('[startupCheckRPCs] Stopping the app in 30 seconds...');
-
-    setTimeout(() => {
-      console.error('[startupCheckRPCs] Stop the app!');
-      process.exit(1);
-    }, DELAY_TO_STOP_SECONDS);
   }
 };
