@@ -4,9 +4,9 @@ import invariant from 'tiny-invariant';
 import { useSDK, useWSTETHContractWeb3 } from '@lido-sdk/react';
 
 import { useCurrentStaticRpcProvider } from 'shared/hooks/use-current-static-rpc-provider';
-import { getFeeData } from 'utils/getFeeData';
 
 import type { UnwrapFormInputType } from '../unwrap-form-context';
+import { sendTx } from 'utils/send-tx';
 
 type UnwrapTxProcessorArgs = Omit<UnwrapFormInputType, 'dummyErrorField'> & {
   isMultisig: boolean;
@@ -24,17 +24,14 @@ export const useUnwrapTxProcessing = () => {
       invariant(providerWeb3, 'providerWeb3 must be presented');
       invariant(wstethContractWeb3, 'must have wstethContractWeb3');
 
-      if (isMultisig) {
-        const tx = await wstethContractWeb3.populateTransaction.unwrap(amount);
-        return providerWeb3.getSigner().sendUncheckedTransaction(tx);
-      } else {
-        const { maxFeePerGas, maxPriorityFeePerGas } =
-          await getFeeData(staticRpcProvider);
-        return wstethContractWeb3.unwrap(amount, {
-          maxPriorityFeePerGas: maxPriorityFeePerGas ?? undefined,
-          maxFeePerGas: maxFeePerGas ?? undefined,
-        });
-      }
+      const tx = await wstethContractWeb3.populateTransaction.unwrap(amount);
+
+      return sendTx({
+        tx,
+        isMultisig,
+        staticProvider: staticRpcProvider,
+        walletProvider: providerWeb3,
+      });
     },
     [chainId, providerWeb3, staticRpcProvider, wstethContractWeb3],
   );

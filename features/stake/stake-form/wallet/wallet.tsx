@@ -5,23 +5,21 @@ import { TOKENS } from '@lido-sdk/constants';
 import { useTokenAddress } from '@lido-sdk/react';
 import { Divider, Question, Tooltip } from '@lidofinance/lido-ui';
 
-import { useConfig } from 'config';
 import { LIDO_APR_TOOLTIP_TEXT, DATA_UNAVAILABLE } from 'consts/text';
-import { CHAINS } from 'consts/chains';
 
 import { TokenToWallet } from 'shared/components';
 import { FormatToken } from 'shared/formatters';
 import { useLidoApr } from 'shared/hooks';
 import { useDappStatus } from 'shared/hooks/use-dapp-status';
+import { useLidoMultichainFallbackCondition } from 'shared/hooks/use-lido-multichain-fallback-condition';
 import {
   CardAccount,
   CardBalance,
   CardRow,
   Fallback,
-  L2Fallback,
+  LidoMultichainFallback,
 } from 'shared/wallet';
 import type { WalletComponentType } from 'shared/wallet/types';
-import { overrideWithQAMockBoolean } from 'utils/qa';
 
 import { LimitMeter } from './limit-meter';
 import { FlexCenter, LidoAprStyled, StyledCard } from './styles';
@@ -100,18 +98,11 @@ const WalletComponent: WalletComponentType = (props) => {
 };
 
 export const Wallet: WalletComponentType = memo((props) => {
-  const { config } = useConfig();
-  const { isL2Chain, isDappActive } = useDappStatus();
+  const { isDappActive } = useDappStatus();
+  const { showLidoMultichainFallback } = useLidoMultichainFallbackCondition();
 
-  // Display L2 banners only if defaultChain=Mainnet
-  // Or via QA helpers override
-  const showL2Chain = overrideWithQAMockBoolean(
-    config.defaultChain === CHAINS.Mainnet,
-    'mock-qa-helpers-show-l2-banners-on-testnet',
-  );
-
-  if (isL2Chain && showL2Chain) {
-    return <L2Fallback textEnding={'to stake'} {...props} />;
+  if (showLidoMultichainFallback) {
+    return <LidoMultichainFallback textEnding={'to stake'} {...props} />;
   }
 
   if (!isDappActive) {

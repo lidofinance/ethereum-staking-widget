@@ -18,8 +18,8 @@ import {
   useRewardsDataLoad,
   useGetCurrentAddress,
 } from 'features/rewards/hooks';
-
 import { getCurrencyCookie } from 'features/rewards/components/CurrencySelector';
+import { useDappStatus } from 'shared/hooks/use-dapp-status';
 
 export type RewardsHistoryValue = {
   currencyObject: CurrencyType;
@@ -34,11 +34,11 @@ export type RewardsHistoryValue = {
   address: string;
   addressError: string;
   inputValue: string;
-  isOnlyRewards: boolean;
+  isIncludeTransfers: boolean;
   isUseArchiveExchangeRate: boolean;
   isLagging: boolean;
   setInputValue: (value: string) => void;
-  setIsOnlyRewards: (value: boolean) => void;
+  setIsIncludeTransfers: (value: boolean) => void;
   setIsUseArchiveExchangeRate: (value: boolean) => void;
   setPage: (page: number) => void;
   setCurrency: (value: string) => void;
@@ -49,6 +49,8 @@ export const RewardsHistoryContext = createContext({} as RewardsHistoryValue);
 const RewardsHistoryProvider: FC<PropsWithChildren> = (props) => {
   const { children } = props;
 
+  const { isWalletConnected, isSupportedChain } = useDappStatus();
+
   const [currency, setCurrency] = useState(DEFAULT_CURRENCY.id);
 
   useEffect(() => {
@@ -56,7 +58,7 @@ const RewardsHistoryProvider: FC<PropsWithChildren> = (props) => {
     if (currencyValue) setCurrency(currencyValue);
   }, []);
 
-  const [isOnlyRewards, setIsOnlyRewards] = useState(false);
+  const [isIncludeTransfers, setIsIncludeTransfers] = useState(false);
   const [isUseArchiveExchangeRate, setIsUseArchiveExchangeRate] =
     useState(true);
   const [page, setPage] = useState(0);
@@ -75,7 +77,7 @@ const RewardsHistoryProvider: FC<PropsWithChildren> = (props) => {
   const { data, error, loading, initialLoading, isLagging } =
     useRewardsDataLoad({
       address,
-      isOnlyRewards,
+      isIncludeTransfers,
       isUseArchiveExchangeRate,
       currency,
       skip,
@@ -84,13 +86,20 @@ const RewardsHistoryProvider: FC<PropsWithChildren> = (props) => {
 
   useEffect(() => {
     setPage(0);
-  }, [isUseArchiveExchangeRate, isOnlyRewards]);
+  }, [isUseArchiveExchangeRate, isIncludeTransfers]);
 
   const currencyObject = getCurrency(currency);
 
+  const isDataAvailable = useMemo(() => {
+    const isDataNotAvailable =
+      !data || (isWalletConnected && !isSupportedChain);
+    return !isDataNotAvailable;
+  }, [data, isWalletConnected, isSupportedChain]);
+
   const value = useMemo(
     (): RewardsHistoryValue => ({
-      data,
+      // we want user to not confuse which chain rewards are showing
+      data: isDataAvailable ? data : undefined,
       error,
       loading,
       initialLoading,
@@ -99,8 +108,8 @@ const RewardsHistoryProvider: FC<PropsWithChildren> = (props) => {
       limit,
       page,
       setPage,
-      isOnlyRewards,
-      setIsOnlyRewards,
+      isIncludeTransfers,
+      setIsIncludeTransfers,
       setIsUseArchiveExchangeRate,
       isUseArchiveExchangeRate,
       setCurrency,
@@ -115,13 +124,14 @@ const RewardsHistoryProvider: FC<PropsWithChildren> = (props) => {
       address,
       addressError,
       currencyObject,
+      isDataAvailable,
       data,
       error,
       initialLoading,
       inputValue,
       isAddressResolving,
       isLagging,
-      isOnlyRewards,
+      isIncludeTransfers,
       isUseArchiveExchangeRate,
       limit,
       loading,

@@ -10,7 +10,7 @@
     "build": "NODE_OPTIONS='--no-warnings=ExperimentalWarning' next build",
     "build:analyze": "ANALYZE_BUNDLE=true yarn build",
     "build:ipfs": "IPFS_MODE=true yarn build && IPFS_MODE=true next export",
-    "start": "NODE_ENV=production node -r next-logger --no-warnings=ExperimentalWarning server.mjs",
+    "start": "NODE_ENV=production RUN_STARTUP_CHECKS=true node -r next-logger --no-warnings=ExperimentalWarning server.mjs",
     "lint": "eslint --ext ts,tsx,js,mjs .",
     "lint:fix": "yarn lint --fix",
     "types": "tsc --noEmit",
@@ -45,7 +45,6 @@
     "@lidofinance/rpc": "^0.41.0",
     "@lidofinance/satanizer": "^0.41.0",
     "@tanstack/react-query": "^5.48.0",
-    "@wagmi/core": "^2.11.6",
     "bignumber.js": "9.1.0",
     "copy-to-clipboard": "^3.3.1",
     "cors": "^2.8.5",
@@ -66,10 +65,11 @@
     "react": "^18.2.0",
     "react-device-detect": "^1.17.0",
     "react-dom": "^18.2.0",
+    "react-error-boundary": "^4.0.13",
     "react-hook-form": "^7.45.2",
     "react-is": "^18.2.0",
     "react-transition-group": "^4.4.2",
-    "reef-knot": "5.2.3",
+    "reef-knot": "5.5.4",
     "remark": "^13.0.0",
     "remark-external-links": "^8.0.0",
     "remark-html": "^13.0.1",
@@ -79,7 +79,7 @@
     "tiny-invariant": "^1.1.0",
     "uuid": "^8.3.2",
     "viem": "2.13.3",
-    "wagmi": "2.11.2"
+    "wagmi": "2.12.2"
   },
   "devDependencies": {
     "@commitlint/cli": "^17.4.4",

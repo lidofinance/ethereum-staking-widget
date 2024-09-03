@@ -1,13 +1,15 @@
 import { FC } from 'react';
-import { GetStaticPaths, GetStaticProps } from 'next';
+import { GetStaticPaths } from 'next';
 import Head from 'next/head';
 
 import { WrapUnwrapTabs } from 'features/wsteth/wrap-unwrap-tabs';
 import { Layout } from 'shared/components';
 import { useWagmiKey } from 'shared/hooks/use-wagmi-key';
+import { getDefaultStaticProps } from 'utilsApi/get-default-static-props';
 
 const WrapPage: FC<WrapModePageProps> = ({ mode }) => {
   const key = useWagmiKey();
+
   return (
     <Layout
       title="Wrap & Unwrap"
@@ -39,14 +41,13 @@ export const getStaticPaths: GetStaticPaths<WrapModePageParams> = async () => {
 };
 
 // we need [[...]] pattern for / and /unwrap
-export const getStaticProps: GetStaticProps<
+export const getStaticProps = getDefaultStaticProps<
   WrapModePageProps,
   WrapModePageParams
-> = async ({ params }) => {
+>(async ({ params }) => {
   const mode = params?.mode;
-  if (!mode) return { props: { mode: 'wrap' }, revalidate: 60 };
-  if (mode[0] === 'unwrap')
-    return { props: { mode: 'unwrap' }, revalidate: 60 };
+  if (!mode) return { props: { mode: 'wrap' } };
+  if (mode[0] === 'unwrap') return { props: { mode: 'unwrap' } };
 
   return { notFound: true };
-};
+});

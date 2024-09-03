@@ -6,6 +6,7 @@ import { useSDK } from '@lido-sdk/react';
 
 import { resolveEns, isValidEns, isValidAddress } from 'features/rewards/utils';
 import { useCurrentStaticRpcProvider } from 'shared/hooks/use-current-static-rpc-provider';
+import { useDappStatus } from 'shared/hooks/use-dapp-status';
 
 type UseGetCurrentAddress = () => {
   address: string;
@@ -27,6 +28,7 @@ export const useGetCurrentAddress: UseGetCurrentAddress = () => {
   const { account } = useSDK();
   const { staticRpcProvider } = useCurrentStaticRpcProvider();
   const { isReady, query } = useRouter();
+  const { isSupportedChain } = useDappStatus();
 
   const getEnsAddress = useCallback(
     async (value: string) => {
@@ -86,9 +88,11 @@ export const useGetCurrentAddress: UseGetCurrentAddress = () => {
         return;
       }
       // From a connected wallet
-      if (account) setInputValue(account);
+      if (account && isSupportedChain) {
+        setInputValue(account);
+      }
     }
-  }, [account, query.address, isReady, setInputValue]);
+  }, [account, query.address, isReady, setInputValue, isSupportedChain]);
 
   return {
     address,

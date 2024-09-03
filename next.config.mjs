@@ -1,8 +1,16 @@
 import NextBundleAnalyzer from '@next/bundle-analyzer';
 import buildDynamics from './scripts/build-dynamics.mjs';
+import { logEnvironmentVariables } from './scripts/log-environment-variables.mjs';
 import generateBuildId from './scripts/generate-build-id.mjs';
+import { startupCheckRPCs } from './scripts/startup-checks/rpc.mjs';
 
+logEnvironmentVariables();
 buildDynamics();
+
+if (process.env.RUN_STARTUP_CHECKS === 'true' && typeof window === 'undefined') {
+  void startupCheckRPCs();
+}
+
 
 // https://nextjs.org/docs/pages/api-reference/next-config-js/basePath
 const basePath = process.env.BASE_PATH;
@@ -146,18 +154,10 @@ export default withBundleAnalyzer({
     rpcUrls_1: process.env.EL_RPC_URLS_1,
     rpcUrls_17000: process.env.EL_RPC_URLS_17000,
     rpcUrls_11155111: process.env.EL_RPC_URLS_11155111,
-    ethplorerApiKey: process.env.ETHPLORER_API_KEY,
-
-    oneInchApiKey: process.env.ONE_INCH_API_KEY,
 
     cspTrustedHosts: process.env.CSP_TRUSTED_HOSTS,
     cspReportUri: process.env.CSP_REPORT_URI,
     cspReportOnly: process.env.CSP_REPORT_ONLY,
-
-    subgraphMainnet: process.env.SUBGRAPH_MAINNET,
-    subgraphHolesky: process.env.SUBGRAPH_HOLESKY,
-    subgraphSepolia: process.env.SUBGRAPH_SEPOLIA,
-    subgraphRequestTimeout: process.env.SUBGRAPH_REQUEST_TIMEOUT,
 
     rateLimit: process.env.RATE_LIMIT,
     rateLimitTimeFrame: process.env.RATE_LIMIT_TIME_FRAME,

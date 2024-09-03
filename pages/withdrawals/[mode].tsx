@@ -1,12 +1,12 @@
-import { FC } from 'react';
-import { GetStaticPaths, GetStaticProps } from 'next';
+import type { FC } from 'react';
+import type { GetStaticPaths } from 'next';
 import Head from 'next/head';
-
-import { Layout } from 'shared/components';
 
 import { WithdrawalsTabs } from 'features/withdrawals';
 import { WithdrawalsProvider } from 'features/withdrawals/contexts/withdrawals-context';
+import { Layout } from 'shared/components';
 import { useWagmiKey } from 'shared/hooks/use-wagmi-key';
+import { getDefaultStaticProps } from 'utilsApi/get-default-static-props';
 
 const Withdrawals: FC<WithdrawalsModePageParams> = ({ mode }) => {
   const key = useWagmiKey();
@@ -41,10 +41,10 @@ export const getStaticPaths: GetStaticPaths<
   };
 };
 
-export const getStaticProps: GetStaticProps<
+export const getStaticProps = getDefaultStaticProps<
   WithdrawalsModePageParams,
   WithdrawalsModePageParams
-> = async ({ params }) => {
+>(async ({ params }) => {
   if (!params?.mode) return { notFound: true };
-  return { props: { mode: params.mode }, revalidate: 60 };
-};
+  return { props: { mode: params.mode } };
+});

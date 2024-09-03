@@ -8,8 +8,10 @@ import { useSDK } from '@lido-sdk/react';
 import { useClaimData } from 'features/withdrawals/contexts/claim-data-context';
 import { RequestStatusClaimable } from 'features/withdrawals/types/request-status';
 import { useTxModalStagesClaim } from 'features/withdrawals/claim/transaction-modal-claim/use-tx-modal-stages-claim';
+import { useCurrentStaticRpcProvider } from 'shared/hooks/use-current-static-rpc-provider';
 import { runWithTransactionLogger } from 'utils';
 import { isContract } from 'utils/isContract';
+import { sendTx } from 'utils/send-tx';
 
 import { useWithdrawalsContract } from './useWithdrawalsContract';
 
@@ -21,6 +23,7 @@ export const useClaim = ({ onRetry }: Args) => {
   const { address } = useAccount();
   const { providerWeb3 } = useSDK();
   const { contractWeb3 } = useWithdrawalsContract();
+  const { staticRpcProvider } = useCurrentStaticRpcProvider();
   const { optimisticClaimRequests } = useClaimData();
   const { txModalStages } = useTxModalStagesClaim();
 
@@ -44,35 +47,22 @@ export const useClaim = ({ onRetry }: Args) => {
         const ids = sortedRequests.map((r) => r.id);
         const hints = sortedRequests.map((r) => r.hint);
         const callback = async () => {
-          if (isMultisig) {
-            const tx = await contractWeb3.populateTransaction.claimWithdrawals(
-              ids,
-              hints,
-            );
-            return providerWeb3.getSigner().sendUncheckedTransaction(tx);
-          } else {
-            const feeData = await contractWeb3.provider.getFeeData();
-            const maxFeePerGas = feeData.maxFeePerGas ?? undefined;
-            const maxPriorityFeePerGas =
-              feeData.maxPriorityFeePerGas ?? undefined;
-            const gasLimit = await contractWeb3.estimateGas.claimWithdrawals(
-              ids,
-              hints,
-              {
-                maxFeePerGas,
-                maxPriorityFeePerGas,
-              },
-            );
-            return contractWeb3.claimWithdrawals(ids, hints, {
-              maxFeePerGas,
-              maxPriorityFeePerGas,
-              gasLimit,
-            });
-          }
+          const tx = await contractWeb3.populateTransaction.claimWithdrawals(
+            ids,
+            hints,
+          );
+          return sendTx({
+            tx,
+            isMultisig,
+            staticProvider: staticRpcProvider,
+            walletProvider: providerWeb3,
+          });
         };
 
-        const tx = await runWithTransactionLogger('Claim signing', callback);
-        const txHash = typeof tx === 'string' ? tx : tx.hash;
+        const txHash = await runWithTransactionLogger(
+          'Claim signing',
+          callback,
+        );
 
         if (isMultisig) {
           txModalStages.successMultisig();
@@ -81,13 +71,11 @@ export const useClaim = ({ onRetry }: Args) => {
 
         txModalStages.pending(amount, txHash);
 
-        if (typeof tx === 'object') {
-          await runWithTransactionLogger('Claim block confirmation', async () =>
-            tx.wait(),
-          );
-          // we only update if we wait for tx
-          await optimisticClaimRequests(sortedRequests);
-        }
+        await runWithTransactionLogger('Claim block confirmation', async () =>
+          staticRpcProvider.waitForTransaction(txHash),
+        );
+
+        await optimisticClaimRequests(sortedRequests);
 
         txModalStages.success(amount, txHash);
         return true;
@@ -101,8 +89,9 @@ export const useClaim = ({ onRetry }: Args) => {
       contractWeb3,
       address,
       providerWeb3,
-      optimisticClaimRequests,
       txModalStages,
+      staticRpcProvider,
+      optimisticClaimRequests,
       onRetry,
     ],
   );

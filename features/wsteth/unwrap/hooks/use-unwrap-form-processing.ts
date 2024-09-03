@@ -2,16 +2,13 @@ import { useCallback } from 'react';
 import invariant from 'tiny-invariant';
 import { useAccount } from 'wagmi';
 
-import {
-  useSDK,
-  useSTETHContractRPC,
-  useWSTETHContractRPC,
-} from '@lido-sdk/react';
+import { useSTETHContractRPC, useWSTETHContractRPC } from '@lido-sdk/react';
 
+import { useCurrentStaticRpcProvider } from 'shared/hooks/use-current-static-rpc-provider';
 import { isContract } from 'utils/isContract';
 import { runWithTransactionLogger } from 'utils';
-import type { UnwrapFormInputType } from '../unwrap-form-context';
 
+import type { UnwrapFormInputType } from '../unwrap-form-context';
 import { useUnwrapTxProcessing } from './use-unwrap-tx-processing';
 import { useTxModalStagesUnwrap } from './use-tx-modal-stages-unwrap';
 
@@ -25,7 +22,7 @@ export const useUnwrapFormProcessor = ({
   onRetry,
 }: UseUnwrapFormProcessorArgs) => {
   const { address } = useAccount();
-  const { providerWeb3 } = useSDK();
+  const { staticRpcProvider } = useCurrentStaticRpcProvider();
   const processWrapTx = useUnwrapTxProcessing();
   const stETHContractRPC = useSTETHContractRPC();
   const wstETHContractRPC = useWSTETHContractRPC();
@@ -36,17 +33,14 @@ export const useUnwrapFormProcessor = ({
       try {
         invariant(amount, 'amount should be presented');
         invariant(address, 'address should be presented');
-        invariant(providerWeb3, 'provider should be presented');
-        const isMultisig = await isContract(address, providerWeb3);
+        const isMultisig = await isContract(account, staticRpcProvider);
         const willReceive = await wstETHContractRPC.getStETHByWstETH(amount);
 
         txModalStages.sign(amount, willReceive);
 
-        const tx = await runWithTransactionLogger('Unwrap signing', () =>
+        const txHash = await runWithTransactionLogger('Unwrap signing', () =>
           processWrapTx({ amount, isMultisig }),
         );
-
-        const txHash = typeof tx === 'string' ? tx : tx.hash;
 
         if (isMultisig) {
           txModalStages.successMultisig();
@@ -55,12 +49,9 @@ export const useUnwrapFormProcessor = ({
 
         txModalStages.pending(amount, willReceive, txHash);
 
-        if (typeof tx === 'object') {
-          await runWithTransactionLogger(
-            'Unwrap block confirmation',
-            async () => tx.wait(),
-          );
-        }
+        await runWithTransactionLogger('Unwrap block confirmation', async () =>
+          staticRpcProvider.waitForTransaction(txHash),
+        );
 
         const stethBalance = await stETHContractRPC.balanceOf(address);
 
@@ -75,13 +66,13 @@ export const useUnwrapFormProcessor = ({
     },
     [
       address,
-      onConfirm,
-      onRetry,
-      processWrapTx,
-      providerWeb3,
+      wstETHContractRPC,
       txModalStages,
       stETHContractRPC,
-      wstETHContractRPC,
+      onConfirm,
+      processWrapTx,
+      staticRpcProvider,
+      onRetry,
     ],
   );
 };

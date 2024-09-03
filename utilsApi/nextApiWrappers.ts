@@ -61,8 +61,8 @@ export const cors =
 
     res.setHeader('Access-Control-Allow-Credentials', String(credentials));
     res.setHeader('Access-Control-Allow-Origin', origin);
-    res.setHeader('Access-Control-Allow-Methods', methods.toString());
-    res.setHeader('Access-Control-Allow-Headers', allowedHeaders.toString());
+    res.setHeader('Access-Control-Allow-Methods', methods.join(', '));
+    res.setHeader('Access-Control-Allow-Headers', allowedHeaders.join(', '));
 
     if (req.method === HttpMethod.OPTIONS) {
       // In preflight just need return a CORS headers
@@ -81,8 +81,12 @@ export const httpMethodGuard =
       !req.method ||
       !Object.values(methodAllowList).includes(req.method as HttpMethod)
     ) {
-      res.status(405);
-      throw new Error(`You can use only: ${methodAllowList.toString()}`);
+      // allow OPTIONS to pass trough but still add Allow header
+      res.setHeader('Allow', methodAllowList.join(', '));
+      if (req.method !== HttpMethod.OPTIONS) {
+        res.status(405);
+        throw new Error(`You can use only: ${methodAllowList.toString()}`);
+      }
     }
 
     await next?.(req, res, next);
@@ -210,7 +214,7 @@ type sunsetByArgs = {
 export const sunsetBy =
   ({ replacementLink, sunsetTimestamp }: sunsetByArgs): RequestWrapper =>
   async (req, res, next) => {
-    console.warn('Request to deprecated endpoint:', req.url);
+    console.warn(`Request to deprecated endpoint: ${req.url}`);
     const shouldDisable = Date.now() > sunsetTimestamp;
 
     if (shouldDisable) {

@@ -1,5 +1,9 @@
 import styled from 'styled-components';
-import { Block } from '@lidofinance/lido-ui';
+import { Block, InlineLoader } from '@lidofinance/lido-ui';
+
+export const InlineLoaderStyled = styled(InlineLoader)`
+  max-width: 120px;
+`;
 
 export const WalletCardStyle = styled((props) => <Block {...props} />)`
   margin-bottom: ${({ theme }) => -theme.borderRadiusesMap.xl}px;

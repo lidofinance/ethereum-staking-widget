@@ -1,15 +1,10 @@
 import { FC } from 'react';
 import { ThemeProvider, themeDark } from '@lidofinance/lido-ui';
 
-import { InputDescription } from 'features/rewards/components/inputDescription';
-import { AddressInput } from 'features/rewards/components/addressInput';
-import { InputWrapper } from 'features/rewards/components/inputWrapper';
 import { useRewardsHistory } from 'features/rewards/hooks';
+import { AddressInput } from 'features/rewards/components/address-input';
 
-import { WalletStyle } from './styles';
-
-const INPUT_DESC_TEXT =
-  'Current balance may differ from last balance in the table due to rounding.';
+import { WalletContentStyle, WalletStyle } from './styles';
 
 export const Wallet: FC = () => {
   const {
@@ -18,22 +13,23 @@ export const Wallet: FC = () => {
     isAddressResolving,
     inputValue,
     setInputValue,
+    loading,
   } = useRewardsHistory();
 
   return (
-    <WalletStyle>
-      <InputWrapper data-testid="inputSection" color="accent">
-        <ThemeProvider theme={themeDark}>
+    <WalletStyle data-testid="inputSection">
+      <ThemeProvider theme={themeDark}>
+        <WalletContentStyle>
           <AddressInput
             address={address}
             addressError={addressError}
             inputValue={inputValue}
             handleInputChange={setInputValue}
             isAddressResolving={isAddressResolving}
+            loading={loading}
           />
-          <InputDescription>{INPUT_DESC_TEXT}</InputDescription>
-        </ThemeProvider>
-      </InputWrapper>
+        </WalletContentStyle>
+      </ThemeProvider>
     </WalletStyle>
   );
 };

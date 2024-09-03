@@ -1,6 +1,6 @@
-import { LidoSubmission, LidoTransfer, TotalReward } from '.';
+import { LidoTransfer, TotalReward } from '.';
 
-export type SubgraphData = LidoSubmission | LidoTransfer | TotalReward;
+export type SubgraphData = LidoTransfer | TotalReward;
 
 export type AdditionalData = {
   type: string;

@@ -1,22 +1,28 @@
 import { FC } from 'react';
 import { Loader, Divider } from '@lidofinance/lido-ui';
+import { useSDK, useTokenBalance } from '@lido-sdk/react';
+import { TOKENS, getTokenAddress } from '@lido-sdk/constants';
+import { Zero } from '@ethersproject/constants';
+
+import { STRATEGY_LAZY } from 'consts/swr-strategies';
 import { useRewardsHistory } from 'features/rewards/hooks';
 import { ErrorBlockNoSteth } from 'features/rewards/components/errorBlocks/ErrorBlockNoSteth';
+import { RewardsTable } from 'features/rewards/components/rewardsTable';
+import { useDappStatus } from 'shared/hooks/use-dapp-status';
 
 import { RewardsListsEmpty } from './RewardsListsEmpty';
 import { RewardsListErrorMessage } from './RewardsListErrorMessage';
+import { RewardsListsUnsupportedChain } from './RewardsListsUnsupportedChain';
 import {
   LoaderWrapper,
   TableWrapperStyle,
   ErrorWrapper,
 } from './RewardsListContentStyles';
-import { RewardsTable } from 'features/rewards/components/rewardsTable';
-import { useSTETHBalance } from '@lido-sdk/react';
-import { STRATEGY_LAZY } from 'consts/swr-strategies';
-import { Zero } from '@ethersproject/constants';
 
 export const RewardsListContent: FC = () => {
+  const { isWalletConnected, isSupportedChain } = useDappStatus();
   const {
+    address,
     error,
     initialLoading,
     data,
@@ -25,11 +31,21 @@ export const RewardsListContent: FC = () => {
     setPage,
     isLagging,
   } = useRewardsHistory();
+  // temporarily until we switched to a new SDK
+  const { chainId } = useSDK();
   const { data: stethBalance, initialLoading: isStethBalanceLoading } =
-    useSTETHBalance(STRATEGY_LAZY);
+    useTokenBalance(
+      getTokenAddress(chainId || 1, TOKENS.STETH),
+      address,
+      STRATEGY_LAZY,
+    );
   const hasSteth = stethBalance?.gt(Zero);
 
+  if (isWalletConnected && !isSupportedChain)
+    return <RewardsListsUnsupportedChain />;
+
   if (!data && !initialLoading && !error) return <RewardsListsEmpty />;
+
   // showing loading when canceling requests and empty response
   if (
     (!data && !error) ||
@@ -45,6 +61,7 @@ export const RewardsListContent: FC = () => {
       </>
     );
   }
+
   if (error) {
     return (
       <ErrorWrapper>

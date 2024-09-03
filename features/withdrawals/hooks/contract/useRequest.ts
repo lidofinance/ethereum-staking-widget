@@ -1,3 +1,4 @@
+/* eslint-disable sonarjs/no-identical-functions */
 import { useCallback } from 'react';
 import { BigNumber } from 'ethers';
 import invariant from 'tiny-invariant';
@@ -21,11 +22,12 @@ import { useCurrentStaticRpcProvider } from 'shared/hooks/use-current-static-rpc
 import { useApprove } from 'shared/hooks/useApprove';
 import { runWithTransactionLogger } from 'utils';
 import { isContract } from 'utils/isContract';
-import { getFeeData } from 'utils/getFeeData';
 
 import { useWithdrawalsContract } from './useWithdrawalsContract';
 import { useTxModalStagesRequest } from 'features/withdrawals/request/transaction-modal-request/use-tx-modal-stages-request';
 import { useTransactionModal } from 'shared/transaction-modal/transaction-modal';
+import { sendTx } from 'utils/send-tx';
+import { overrideWithQAMockBoolean } from 'utils/qa';
 
 // this encapsulates permit/approval & steth/wsteth flows
 const useWithdrawalRequestMethods = () => {
@@ -42,42 +44,35 @@ const useWithdrawalRequestMethods = () => {
       requests: BigNumber[];
     }) => {
       invariant(chainId, 'must have chainId');
-      invariant(address, 'must have account');
+      invariant(address, 'must have address');
+      invariant(providerWeb3, 'must have providerWeb3');
       invariant(signature, 'must have signature');
       invariant(contractWeb3, 'must have contractWeb3');
 
-      const params = [
-        requests,
-        signature.owner,
-        {
-          value: signature.value,
-          deadline: signature.deadline,
-          v: signature.v,
-          r: signature.r,
-          s: signature.s,
-        },
-      ] as const;
-
-      const { maxFeePerGas, maxPriorityFeePerGas } =
-        await getFeeData(staticRpcProvider);
-      const gasLimit =
-        await contractWeb3.estimateGas.requestWithdrawalsWithPermit(...params, {
-          maxFeePerGas,
-          maxPriorityFeePerGas,
-        });
-
-      const txOptions = {
-        maxFeePerGas,
-        maxPriorityFeePerGas,
-        gasLimit,
-      };
+      const tx =
+        await contractWeb3.populateTransaction.requestWithdrawalsWithPermit(
+          requests,
+          signature.owner,
+          {
+            value: signature.value,
+            deadline: signature.deadline,
+            v: signature.v,
+            r: signature.r,
+            s: signature.s,
+          },
+        );
 
       const callback = () =>
-        contractWeb3.requestWithdrawalsWithPermit(...params, txOptions);
+        sendTx({
+          tx,
+          isMultisig: false,
+          staticProvider: staticRpcProvider,
+          walletProvider: providerWeb3,
+        });
 
       return callback;
     },
-    [address, chainId, contractWeb3, staticRpcProvider],
+    [address, chainId, contractWeb3, providerWeb3, staticRpcProvider],
   );
 
   const permitWsteth = useCallback(
@@ -89,46 +84,35 @@ const useWithdrawalRequestMethods = () => {
       requests: BigNumber[];
     }) => {
       invariant(chainId, 'must have chainId');
-      invariant(address, 'must have account');
+      invariant(address, 'must have address');
       invariant(signature, 'must have signature');
+      invariant(providerWeb3, 'must have providerWeb3');
       invariant(contractWeb3, 'must have contractWeb3');
 
-      const params = [
-        requests,
-        signature.owner,
-        {
-          value: signature.value,
-          deadline: signature.deadline,
-          v: signature.v,
-          r: signature.r,
-          s: signature.s,
-        },
-      ] as const;
-
-      const feeData = await getFeeData(staticRpcProvider);
-      const maxFeePerGas = feeData.maxFeePerGas ?? undefined;
-      const maxPriorityFeePerGas = feeData.maxPriorityFeePerGas ?? undefined;
-      const gasLimit =
-        await contractWeb3.estimateGas.requestWithdrawalsWstETHWithPermit(
-          ...params,
+      const tx =
+        await contractWeb3.populateTransaction.requestWithdrawalsWstETHWithPermit(
+          requests,
+          signature.owner,
           {
-            maxFeePerGas,
-            maxPriorityFeePerGas,
+            value: signature.value,
+            deadline: signature.deadline,
+            v: signature.v,
+            r: signature.r,
+            s: signature.s,
           },
         );
 
-      const txOptions = {
-        maxFeePerGas,
-        maxPriorityFeePerGas,
-        gasLimit,
-      };
-
       const callback = () =>
-        contractWeb3.requestWithdrawalsWstETHWithPermit(...params, txOptions);
+        sendTx({
+          tx,
+          isMultisig: false,
+          staticProvider: staticRpcProvider,
+          walletProvider: providerWeb3,
+        });
 
       return callback;
     },
-    [address, chainId, contractWeb3, staticRpcProvider],
+    [address, chainId, contractWeb3, providerWeb3, staticRpcProvider],
   );
 
   const steth = useCallback(
@@ -140,31 +124,18 @@ const useWithdrawalRequestMethods = () => {
 
       const isMultisig = await isContract(address, contractWeb3.provider);
 
-      const params = [requests, address] as const;
+      const tx = await contractWeb3.populateTransaction.requestWithdrawals(
+        requests,
+        address,
+      );
 
-      const callback = async () => {
-        if (isMultisig) {
-          const tx = await contractWeb3.populateTransaction.requestWithdrawals(
-            ...params,
-          );
-          return providerWeb3?.getSigner().sendUncheckedTransaction(tx);
-        } else {
-          const { maxFeePerGas, maxPriorityFeePerGas } =
-            await getFeeData(staticRpcProvider);
-          const gasLimit = await contractWeb3.estimateGas.requestWithdrawals(
-            ...params,
-            {
-              maxFeePerGas,
-              maxPriorityFeePerGas,
-            },
-          );
-          return contractWeb3.requestWithdrawals(...params, {
-            maxFeePerGas,
-            maxPriorityFeePerGas,
-            gasLimit,
-          });
-        }
-      };
+      const callback = async () =>
+        sendTx({
+          tx,
+          isMultisig,
+          staticProvider: staticRpcProvider,
+          walletProvider: providerWeb3,
+        });
 
       return callback;
     },
@@ -174,35 +145,24 @@ const useWithdrawalRequestMethods = () => {
   const wstETH = useCallback(
     async ({ requests }: { requests: BigNumber[] }) => {
       invariant(chainId, 'must have chainId');
-      invariant(address, 'must have account');
+      invariant(address, 'must have address');
       invariant(contractWeb3, 'must have contractWeb3');
       invariant(providerWeb3, 'must have providerWeb3');
       const isMultisig = await isContract(address, contractWeb3.provider);
 
-      const params = [requests, address] as const;
-      const callback = async () => {
-        if (isMultisig) {
-          const tx =
-            await contractWeb3.populateTransaction.requestWithdrawalsWstETH(
-              requests,
-              address,
-            );
-          return providerWeb3?.getSigner().sendUncheckedTransaction(tx);
-        } else {
-          const { maxFeePerGas, maxPriorityFeePerGas } =
-            await getFeeData(staticRpcProvider);
-          const gasLimit =
-            await contractWeb3.estimateGas.requestWithdrawalsWstETH(...params, {
-              maxFeePerGas,
-              maxPriorityFeePerGas,
-            });
-          return contractWeb3.requestWithdrawalsWstETH(...params, {
-            maxFeePerGas,
-            maxPriorityFeePerGas,
-            gasLimit,
-          });
-        }
-      };
+      const tx =
+        await contractWeb3.populateTransaction.requestWithdrawalsWstETH(
+          requests,
+          address,
+        );
+
+      const callback = async () =>
+        sendTx({
+          tx,
+          isMultisig,
+          staticProvider: staticRpcProvider,
+          walletProvider: providerWeb3,
+        });
 
       return callback;
     },
@@ -241,6 +201,7 @@ export const useWithdrawalRequest = ({
 }: useWithdrawalRequestParams) => {
   const { chainId } = useSDK();
   const withdrawalQueueAddress = getWithdrawalQueueAddress(chainId);
+  const { staticRpcProvider } = useCurrentStaticRpcProvider();
 
   const { connector, address } = useAccount();
   const { isBunker } = useWithdrawals();
@@ -274,8 +235,13 @@ export const useWithdrawalRequest = ({
     spender: withdrawalQueueAddress,
   });
 
+  const isWalletConnect = overrideWithQAMockBoolean(
+    connector?.id === 'walletConnect',
+    'mock-qa-helpers-force-approval-withdrawal-wallet-connect',
+  );
+
   const isApprovalFlow = Boolean(
-    connector?.id === 'walletConnect' ||
+    isWalletConnect ||
       isMultisig ||
       (allowance && allowance.gt(Zero) && !needsApprove),
   );
@@ -322,9 +288,8 @@ export const useWithdrawalRequest = ({
             txModalStages.signApproval(amount, token);
 
             await approve({
-              onTxSent: (tx) => {
+              onTxSent: (txHash) => {
                 if (!isMultisig) {
-                  const txHash = typeof tx === 'string' ? tx : tx.hash;
                   txModalStages.pendingApproval(amount, token, txHash);
                 }
               },
@@ -342,8 +307,10 @@ export const useWithdrawalRequest = ({
         txModalStages.sign(amount, token);
 
         const callback = await method({ signature, requests });
-        const tx = await runWithTransactionLogger('Request signing', callback);
-        const txHash = typeof tx === 'string' ? tx : tx.hash;
+        const txHash = await runWithTransactionLogger(
+          'Request signing',
+          callback,
+        );
 
         if (isMultisig) {
           txModalStages.successMultisig();
@@ -352,10 +319,9 @@ export const useWithdrawalRequest = ({
 
         txModalStages.pending(amount, token, txHash);
 
-        if (typeof tx === 'object') {
-          await runWithTransactionLogger(
-            'Request block confirmation',
-            async () => tx.wait(),
+        if (!isMultisig) {
+          await runWithTransactionLogger('Stake block confirmation', () =>
+            staticRpcProvider.waitForTransaction(txHash),
           );
         }
 
@@ -379,6 +345,7 @@ export const useWithdrawalRequest = ({
       needsApprove,
       onConfirm,
       onRetry,
+      staticRpcProvider,
       txModalStages,
     ],
   );

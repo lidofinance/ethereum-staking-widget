@@ -1,4 +1,5 @@
 import { memo } from 'react';
+import { ErrorBoundary } from 'react-error-boundary';
 import { AppProps } from 'next/app';
 import 'nprogress/nprogress.css';
 import Head from 'next/head';
@@ -15,6 +16,7 @@ import { withCsp } from 'config/csp';
 import { SecurityStatusBanner } from 'features/ipfs';
 import { Providers } from 'providers';
 import { BackgroundGradient } from 'shared/components/background-gradient/background-gradient';
+import { ErrorBoundaryFallback } from 'shared/components/error-boundary';
 import NoSsrWrapper from 'shared/components/no-ssr-wrapper';
 import { nprogress, COOKIES_ALLOWED_FULL_KEY } from 'utils';
 
@@ -30,16 +32,20 @@ nprogress();
 const App = (props: AppProps) => {
   const { Component, pageProps } = props;
 
-  return <Component {...pageProps} />;
+  return (
+    <ErrorBoundary fallbackRender={ErrorBoundaryFallback}>
+      <Component {...pageProps} />
+    </ErrorBoundary>
+  );
 };
 
 const MemoApp = memo(App);
 
-const AppWrapper = (props: AppProps): JSX.Element => {
-  const { ...rest } = props;
-
+const AppWrapper = (
+  props: AppProps<{ ___prefetch_manifest___?: object }>,
+): JSX.Element => {
   return (
-    <Providers>
+    <Providers prefetchedManifest={props.pageProps.___prefetch_manifest___}>
       {/* see https://nextjs.org/docs/messages/no-document-viewport-meta */}
       <Head>
         <meta
@@ -55,7 +61,7 @@ const AppWrapper = (props: AppProps): JSX.Element => {
         }}
       />
       <ToastContainer />
-      <MemoApp {...rest} />
+      <MemoApp {...props} />
 
       <NoSsrWrapper>
         <CookiesTooltip privacyLink={`${config.rootOrigin}/privacy-notice`} />
