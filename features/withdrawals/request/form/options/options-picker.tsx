@@ -91,9 +91,13 @@ const DexButton: React.FC<OptionButtonProps> = ({ isActive, onClick }) => {
     fallbackValue: DEFAULT_VALUE_FOR_RATE,
   });
   const isAnyDexEnabled = enabledDexes.length > 0;
+  const bestRateFloored = bestRate !== null && toFloor(bestRate);
   const bestRateValue =
-    !isPausedByTvlError && bestRate && isAnyDexEnabled
-      ? `1 : ${toFloor(bestRate)}`
+    !isPausedByTvlError &&
+    isAnyDexEnabled &&
+    bestRateFloored &&
+    bestRateFloored !== '0'
+      ? `1 : ${bestRateFloored}`
       : '—';
 
   return (
