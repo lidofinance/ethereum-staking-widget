@@ -16,7 +16,7 @@
     "cid": "bafybeibbsoqlofslw273b4ih2pdxfaz2zbjmred2ijog725tcmfoewix7y",
     "leastSafeVersion": "0.36.1",
     "config": {
-      "enabledWithdrawalDexes": ["one-inch", "paraswap"]
+      "enabledWithdrawalDexes": ["one-inch", "paraswap", "bebop"]
     }
   }
 }
