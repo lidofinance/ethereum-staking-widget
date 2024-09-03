@@ -2,7 +2,6 @@ import { useCallback } from 'react';
 import invariant from 'tiny-invariant';
 import { useAccount } from 'wagmi';
 
-import { useSDK } from '@lido-sdk/react';
 import { useWSTETHContractRPC } from '@lido-sdk/react';
 
 import { useCurrentStaticRpcProvider } from 'shared/hooks/use-current-static-rpc-provider';
@@ -39,7 +38,7 @@ export const useWrapFormProcessor = ({
       try {
         invariant(amount, 'amount should be presented');
         invariant(address, 'address should be presented');
-        const isMultisig = await isContract(account, staticRpcProvider);
+        const isMultisig = await isContract(address, staticRpcProvider);
         const willReceive = await wstETHContractRPC.getWstETHByStETH(amount);
 
         if (isApprovalNeededBeforeWrap) {

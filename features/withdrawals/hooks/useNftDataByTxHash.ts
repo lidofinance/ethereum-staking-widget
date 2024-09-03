@@ -18,7 +18,7 @@ export const useNftDataByTxHash = (txHash: string | null) => {
   const { staticRpcProvider } = useCurrentStaticRpcProvider();
 
   const swrNftApiData = useLidoSWR(
-    account && txHash ? ['swr:nft-data-by-tx-hash', txHash, account] : null,
+    address && txHash ? ['swr:nft-data-by-tx-hash', txHash, address] : null,
     async () => {
       if (!txHash || !address) return null;
 

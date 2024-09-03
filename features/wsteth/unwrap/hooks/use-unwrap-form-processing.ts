@@ -33,7 +33,7 @@ export const useUnwrapFormProcessor = ({
       try {
         invariant(amount, 'amount should be presented');
         invariant(address, 'address should be presented');
-        const isMultisig = await isContract(account, staticRpcProvider);
+        const isMultisig = await isContract(address, staticRpcProvider);
         const willReceive = await wstETHContractRPC.getStETHByWstETH(amount);
 
         txModalStages.sign(amount, willReceive);
