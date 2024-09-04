@@ -5,6 +5,8 @@ import { backendRequest } from 'features/rewards/fetchers/backend';
 import { ButtonStyle } from './Exportstyled';
 
 import type { CurrencyType } from 'features/rewards/constants';
+import { trackEvent } from '@lidofinance/analytics-matomo';
+import { MATOMO_CLICK_EVENTS } from 'consts/matomo-click-events';
 
 type ExportProps = {
   currency: CurrencyType;
@@ -33,6 +35,7 @@ export const Export = ({
     });
     const formatted = genExportData(currencyObject, result.events);
     saveAsCSV(formatted);
+    trackEvent(...MATOMO_CLICK_EVENTS.rewardsExportCSV);
   };
 
   return (
