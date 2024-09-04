@@ -1,4 +1,4 @@
-import { useWeb3 } from 'reef-knot/web3-react';
+import { useAccount } from 'wagmi';
 import { useLidoSWR, useWSTETHContractRPC } from '@lido-sdk/react';
 
 import { config } from 'config';
@@ -8,7 +8,7 @@ import { applyGasLimitRatio } from 'utils/apply-gas-limit-ratio';
 
 export const useWrapGasLimit = () => {
   const wsteth = useWSTETHContractRPC();
-  const { chainId } = useWeb3();
+  const { chainId } = useAccount();
   const { staticRpcProvider } = useCurrentStaticRpcProvider();
 
   const { data } = useLidoSWR(

@@ -1,7 +1,7 @@
 import { BigNumber } from 'ethers';
 import { useCallback } from 'react';
-import { useWeb3 } from 'reef-knot/web3-react';
 import invariant from 'tiny-invariant';
+import { useAccount } from 'wagmi';
 
 import {
   useSDK,
@@ -31,8 +31,8 @@ type StakeOptions = {
 
 export const useStake = ({ onConfirm, onRetry }: StakeOptions) => {
   const stethContractWeb3 = useSTETHContractWeb3();
+  const { address, chainId } = useAccount();
   const stethContract = useSTETHContractRPC();
-  const { account, chainId } = useWeb3();
   const { staticRpcProvider } = useCurrentStaticRpcProvider();
   const { providerWeb3 } = useSDK();
   const { txModalStages } = useTxModalStagesStake();
@@ -42,7 +42,7 @@ export const useStake = ({ onConfirm, onRetry }: StakeOptions) => {
       try {
         invariant(amount, 'amount is null');
         invariant(chainId, 'chainId is not defined');
-        invariant(account, 'account is not defined');
+        invariant(address, 'account is not defined');
         invariant(providerWeb3, 'providerWeb3 not defined');
         invariant(stethContractWeb3, 'steth is not defined');
 
@@ -56,7 +56,7 @@ export const useStake = ({ onConfirm, onRetry }: StakeOptions) => {
         txModalStages.sign(amount);
 
         const [isMultisig, referralAddress] = await Promise.all([
-          isContract(account, staticRpcProvider),
+          isContract(address, staticRpcProvider),
           referral
             ? getAddress(referral, staticRpcProvider)
             : config.STAKE_FALLBACK_REFERRAL_ADDRESS,
@@ -98,7 +98,7 @@ export const useStake = ({ onConfirm, onRetry }: StakeOptions) => {
           );
         }
 
-        const stethBalance = await stethContract.balanceOf(account);
+        const stethBalance = await stethContract.balanceOf(address);
 
         await onConfirm?.();
 
@@ -113,7 +113,7 @@ export const useStake = ({ onConfirm, onRetry }: StakeOptions) => {
     },
     [
       chainId,
-      account,
+      address,
       providerWeb3,
       stethContractWeb3,
       txModalStages,

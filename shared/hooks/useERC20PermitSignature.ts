@@ -1,14 +1,12 @@
 import { useCallback } from 'react';
+import { BigNumber, TypedDataDomain } from 'ethers';
 import invariant from 'tiny-invariant';
+import { useAccount } from 'wagmi';
 
 import { hexValue, splitSignature } from '@ethersproject/bytes';
 import { MaxUint256 } from '@ethersproject/constants';
-import { BigNumber, TypedDataDomain } from 'ethers';
-
 import { useSDK } from '@lido-sdk/react';
-
 import { Erc20Abi, StethAbi } from '@lido-sdk/contracts';
-import { useWeb3 } from 'reef-knot/web3-react';
 
 export type GatherPermitSignatureResult = {
   v: number;
@@ -57,13 +55,13 @@ export const useERC20PermitSignature = <
   tokenProvider,
   spender,
 }: UseERC20PermitSignatureProps<T>): UseERC20PermitSignatureResult => {
-  const { chainId, account } = useWeb3();
+  const { address, chainId } = useAccount();
   const { providerWeb3 } = useSDK();
 
   const gatherPermitSignature = useCallback(
     async (amount: BigNumber) => {
       invariant(chainId, 'chainId is needed');
-      invariant(account, 'account is needed');
+      invariant(address, 'account is needed');
       invariant(providerWeb3, 'providerWeb3 is needed');
       invariant(tokenProvider, 'tokenProvider is needed');
 
@@ -86,10 +84,10 @@ export const useERC20PermitSignature = <
           verifyingContract: tokenProvider.address,
         };
       }
-      const nonce = await tokenProvider.nonces(account);
+      const nonce = await tokenProvider.nonces(address);
 
       const message = {
-        owner: account,
+        owner: address,
         spender,
         value: amount.toString(),
         nonce: hexValue(nonce),
@@ -113,12 +111,12 @@ export const useERC20PermitSignature = <
             deadline,
             chainId: chainId,
             nonce: message.nonce,
-            owner: account,
+            owner: address,
             spender,
           };
         });
     },
-    [chainId, account, providerWeb3, tokenProvider, spender],
+    [chainId, address, providerWeb3, tokenProvider, spender],
   );
 
   return { gatherPermitSignature };

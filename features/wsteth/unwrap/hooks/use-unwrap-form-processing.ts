@@ -1,15 +1,16 @@
-import invariant from 'tiny-invariant';
-
 import { useCallback } from 'react';
-import { useSTETHContractRPC, useWSTETHContractRPC } from '@lido-sdk/react';
-import { useWeb3 } from 'reef-knot/web3-react';
-import { useUnwrapTxProcessing } from './use-unwrap-tx-processing';
-import { useTxModalStagesUnwrap } from './use-tx-modal-stages-unwrap';
+import invariant from 'tiny-invariant';
+import { useAccount } from 'wagmi';
 
+import { useSTETHContractRPC, useWSTETHContractRPC } from '@lido-sdk/react';
+
+import { useCurrentStaticRpcProvider } from 'shared/hooks/use-current-static-rpc-provider';
 import { isContract } from 'utils/isContract';
 import { runWithTransactionLogger } from 'utils';
+
 import type { UnwrapFormInputType } from '../unwrap-form-context';
-import { useCurrentStaticRpcProvider } from 'shared/hooks/use-current-static-rpc-provider';
+import { useUnwrapTxProcessing } from './use-unwrap-tx-processing';
+import { useTxModalStagesUnwrap } from './use-tx-modal-stages-unwrap';
 
 type UseUnwrapFormProcessorArgs = {
   onConfirm?: () => Promise<void>;
@@ -20,7 +21,7 @@ export const useUnwrapFormProcessor = ({
   onConfirm,
   onRetry,
 }: UseUnwrapFormProcessorArgs) => {
-  const { account } = useWeb3();
+  const { address } = useAccount();
   const { staticRpcProvider } = useCurrentStaticRpcProvider();
   const processWrapTx = useUnwrapTxProcessing();
   const stETHContractRPC = useSTETHContractRPC();
@@ -31,8 +32,8 @@ export const useUnwrapFormProcessor = ({
     async ({ amount }: UnwrapFormInputType) => {
       try {
         invariant(amount, 'amount should be presented');
-        invariant(account, 'address should be presented');
-        const isMultisig = await isContract(account, staticRpcProvider);
+        invariant(address, 'address should be presented');
+        const isMultisig = await isContract(address, staticRpcProvider);
         const willReceive = await wstETHContractRPC.getStETHByWstETH(amount);
 
         txModalStages.sign(amount, willReceive);
@@ -52,7 +53,7 @@ export const useUnwrapFormProcessor = ({
           staticRpcProvider.waitForTransaction(txHash),
         );
 
-        const stethBalance = await stETHContractRPC.balanceOf(account);
+        const stethBalance = await stETHContractRPC.balanceOf(address);
 
         await onConfirm?.();
         txModalStages.success(stethBalance, txHash);
@@ -64,7 +65,7 @@ export const useUnwrapFormProcessor = ({
       }
     },
     [
-      account,
+      address,
       wstETHContractRPC,
       txModalStages,
       stETHContractRPC,
