@@ -11,7 +11,7 @@ class Metrics {
   request = new RequestMetrics(this.registry);
 
   constructor() {
-    collectStartupMetrics(this.registry);
+    void collectStartupMetrics(this.registry);
     collectDefaultMetrics({ prefix: METRICS_PREFIX, register: this.registry });
   }
 }

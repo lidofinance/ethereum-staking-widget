@@ -1,22 +1,28 @@
 import { createClient, http } from 'viem';
 import { getChainId } from 'viem/actions';
 
+export const STATUS_CHECKING = 'CHECKING';
+export const STATUS_FINISHED = 'STATUS_FINISHED';
+
 // Safely initialize a global variable
-let globalRPCCheckResults = globalThis.__rpcCheckResults || [];
-globalThis.__rpcCheckResults = globalRPCCheckResults;
+let globalRPCCheck = globalThis.__rpcCheckStatus || {
+  status: STATUS_CHECKING,
+  results: [],
+};
+globalThis.__rpcCheckStatus = globalRPCCheck;
 
 export const BROKEN_URL = 'BROKEN_URL';
 export const RPC_TIMEOUT_MS = 10_000;
 export const MAX_RETRY_COUNT = 3;
-export const RETRY_WAIT_TIME_MS = 30_000;
+export const RETRY_WAIT_TIME_MS = 10_000;
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 const pushRPCCheckResult = (domain, success) => {
-  globalRPCCheckResults.push({ domain, success });
+  globalRPCCheck.results.push({ domain, success });
 };
 
-export const getRPCCheckResults = () => globalThis.__rpcCheckResults || [];
+export const getRPCChecks = () => globalThis.__rpcCheckStatus || { status: STATUS_CHECKING, results: [] };
 
 const getRpcUrls = (chainId) => {
   const rpcUrls = process.env[`EL_RPC_URLS_${chainId}`]?.split(',');
@@ -69,6 +75,7 @@ const checkRPCWithRetries = async (url, defaultChain) => {
 
 export const startupCheckRPCs = async () => {
   console.info('[startupCheckRPCs] Starting...');
+  globalRPCCheck.status = STATUS_CHECKING;
 
   try {
     const defaultChain = parseInt(process.env.DEFAULT_CHAIN, 10);
@@ -97,5 +104,7 @@ export const startupCheckRPCs = async () => {
   } catch (err) {
     console.error('[startupCheckRPCs] Error during startup check:');
     console.error(err);
+  } finally {
+    globalRPCCheck.status = STATUS_FINISHED;
   }
 };
