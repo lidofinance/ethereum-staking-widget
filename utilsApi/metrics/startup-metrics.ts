@@ -58,17 +58,17 @@ const collectStartupChecksRPCMetrics = async (
     );
 
     rpcCheckResults.forEach((_check: { domain: string; success: boolean }) => {
-      rpcMetrics.requestCounter
-        .labels(_check.domain, _check.success.toString())
-        .inc();
+      rpcMetrics.requestStatusGauge
+        .labels(_check.domain)
+        .set(Number(+!_check.success));
     });
   } catch (error) {
     console.error(
       `[collectStartupChecksRPCMetrics] Error collecting RPC metrics: ${error}`,
     );
-    rpcMetrics.requestCounter
-      .labels('BROKEN_URL', 'false') // false as string
-      .inc();
+    rpcMetrics.requestStatusGauge
+      .labels('BROKEN_URL') // false as string
+      .inc(1);
   }
 };
 

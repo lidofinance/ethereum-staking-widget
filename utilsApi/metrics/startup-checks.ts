@@ -1,21 +1,21 @@
-import { Counter, Registry } from 'prom-client';
+import { Gauge, Registry } from 'prom-client';
 import { METRICS_PREFIX, METRIC_NAMES } from 'consts/metrics';
 
 export class StartupChecksRPCMetrics {
-  requestCounter: Counter<'rpc_domain' | 'success'>;
+  requestStatusGauge: Gauge<'rpc_domain' | 'success'>;
 
   constructor(public registry: Registry) {
-    this.requestCounter = this.requestsCounterInit();
+    this.requestStatusGauge = this.requestStatusGaugeInit();
   }
 
-  requestsCounterInit() {
+  requestStatusGaugeInit() {
     const requestsCounterName =
-      METRICS_PREFIX + METRIC_NAMES.STARTUP_CHECKS_RPC;
+      METRICS_PREFIX + METRIC_NAMES.STARTUP_CHECKS_RPC_FAILED;
 
-    return new Counter({
+    return new Gauge({
       name: requestsCounterName,
       help: 'The total number of RPC checks after the app started.',
-      labelNames: ['rpc_domain', 'success'],
+      labelNames: ['rpc_domain'],
       registers: [this.registry],
     });
   }
