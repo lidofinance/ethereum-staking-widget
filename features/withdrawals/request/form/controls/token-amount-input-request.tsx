@@ -1,4 +1,4 @@
-import { useController, useWatch } from 'react-hook-form';
+import { useWatch } from 'react-hook-form';
 
 import { MATOMO_CLICK_EVENTS_TYPES } from 'consts/matomo-click-events';
 import { InputDecoratorTvlStake } from 'features/withdrawals/shared/input-decorator-tvl-stake';
@@ -17,13 +17,7 @@ export const TokenAmountInputRequest = () => {
   const token = useWatch<RequestFormInputType, 'token'>({ name: 'token' });
   const { maxAmount, isTokenLocked } = useRequestFormData();
 
-  const {
-    fieldState: { error },
-  } = useController<RequestFormInputType, 'amount'>({
-    name: 'amount',
-  });
-
-  const { balanceDiff } = useTvlMessage(error);
+  const { balanceDiff } = useTvlMessage();
 
   return (
     <TokenAmountInputHookForm

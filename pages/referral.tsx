@@ -1,5 +1,6 @@
 import { FC } from 'react';
-import { GetStaticProps } from 'next';
+
+import { getDefaultStaticProps } from 'utilsApi/get-default-static-props';
 import { Banner } from 'features/referral';
 import { Layout } from 'shared/components';
 
@@ -10,12 +11,6 @@ const Referral: FC = () => {
     </Layout>
   );
 };
+export const getStaticProps = getDefaultStaticProps();
 
 export default Referral;
-
-export const getStaticProps: GetStaticProps = async () => {
-  return {
-    props: {},
-    revalidate: 60,
-  };
-};

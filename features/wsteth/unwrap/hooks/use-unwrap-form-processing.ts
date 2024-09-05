@@ -1,19 +1,20 @@
-import invariant from 'tiny-invariant';
-
 import { useCallback } from 'react';
+import invariant from 'tiny-invariant';
+import { useAccount } from 'wagmi';
+
 import {
   useSDK,
   useSTETHContractRPC,
   useWSTETHContractRPC,
   useWSTETHContractWeb3,
 } from '@lido-sdk/react';
-import { useWeb3 } from 'reef-knot/web3-react';
-import { useTxModalStagesUnwrap } from './use-tx-modal-stages-unwrap';
 
+import { useCurrentStaticRpcProvider } from 'shared/hooks/use-current-static-rpc-provider';
 import { isContract } from 'utils/isContract';
 import { runWithTransactionLogger } from 'utils';
+
 import type { UnwrapFormInputType } from '../unwrap-form-context';
-import { useCurrentStaticRpcProvider } from 'shared/hooks/use-current-static-rpc-provider';
+import { useTxModalStagesUnwrap } from './use-tx-modal-stages-unwrap';
 import { sendTx } from 'utils/send-tx';
 import { useTxConfirmation } from 'shared/hooks/use-tx-conformation';
 
@@ -26,7 +27,7 @@ export const useUnwrapFormProcessor = ({
   onConfirm,
   onRetry,
 }: UseUnwrapFormProcessorArgs) => {
-  const { account } = useWeb3();
+  const { address } = useAccount();
   const { providerWeb3 } = useSDK();
   const { staticRpcProvider } = useCurrentStaticRpcProvider();
   const { txModalStages } = useTxModalStagesUnwrap();
@@ -39,12 +40,12 @@ export const useUnwrapFormProcessor = ({
     async ({ amount }: UnwrapFormInputType) => {
       try {
         invariant(amount, 'amount should be presented');
-        invariant(account, 'address should be presented');
+        invariant(address, 'address should be presented');
         invariant(providerWeb3, 'providerWeb3 must be presented');
         invariant(wstethContractWeb3, 'must have wstethContractWeb3');
 
         const [isMultisig, willReceive] = await Promise.all([
-          isContract(account, staticRpcProvider),
+          isContract(address, staticRpcProvider),
           wstETHContractRPC.getStETHByWstETH(amount),
         ]);
 
@@ -77,7 +78,7 @@ export const useUnwrapFormProcessor = ({
         );
 
         const [stethBalance] = await Promise.all([
-          stETHContractRPC.balanceOf(account),
+          stETHContractRPC.balanceOf(address),
           onConfirm(),
         ]);
 
@@ -90,7 +91,7 @@ export const useUnwrapFormProcessor = ({
       }
     },
     [
-      account,
+      address,
       providerWeb3,
       wstethContractWeb3,
       staticRpcProvider,

@@ -11,8 +11,15 @@ import { ModalProvider } from './modal-provider';
 import Web3Provider from './web3';
 import { LidoSDKProvider } from './lido-sdk';
 
-export const Providers: FC<PropsWithChildren> = ({ children }) => (
-  <ConfigProvider>
+type ProvidersProps = {
+  prefetchedManifest?: unknown;
+};
+
+export const Providers: FC<PropsWithChildren<ProvidersProps>> = ({
+  children,
+  prefetchedManifest,
+}) => (
+  <ConfigProvider prefetchedManifest={prefetchedManifest}>
     <AppFlagProvider>
       <CookieThemeProvider>
         <GlobalStyle />

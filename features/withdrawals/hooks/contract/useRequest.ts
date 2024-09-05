@@ -2,7 +2,6 @@
 import { useCallback } from 'react';
 import { BigNumber } from 'ethers';
 import invariant from 'tiny-invariant';
-import { useWeb3 } from 'reef-knot/web3-react';
 import { useAccount } from 'wagmi';
 import { Zero } from '@ethersproject/constants';
 import {
@@ -35,7 +34,7 @@ import { useTxConfirmation } from 'shared/hooks/use-tx-conformation';
 const useWithdrawalRequestMethods = () => {
   const { providerWeb3 } = useSDK();
   const { staticRpcProvider } = useCurrentStaticRpcProvider();
-  const { account, contractWeb3 } = useWithdrawalsContract();
+  const { address, contractWeb3 } = useWithdrawalsContract();
 
   const permitSteth = useCallback(
     async ({
@@ -115,15 +114,15 @@ const useWithdrawalRequestMethods = () => {
 
   const steth = useCallback(
     async ({ requests }: { requests: BigNumber[] }) => {
-      invariant(account, 'must have account');
+      invariant(address, 'must have account');
       invariant(contractWeb3, 'must have contractWeb3');
       invariant(providerWeb3, 'must have providerWeb3');
 
-      const isMultisig = await isContract(account, contractWeb3.provider);
+      const isMultisig = await isContract(address, staticRpcProvider);
 
       const tx = await contractWeb3.populateTransaction.requestWithdrawals(
         requests,
-        account,
+        address,
       );
 
       const callback = async () =>
@@ -136,20 +135,20 @@ const useWithdrawalRequestMethods = () => {
 
       return callback;
     },
-    [account, contractWeb3, staticRpcProvider, providerWeb3],
+    [address, contractWeb3, staticRpcProvider, providerWeb3],
   );
 
   const wstETH = useCallback(
     async ({ requests }: { requests: BigNumber[] }) => {
-      invariant(account, 'must have account');
+      invariant(address, 'must have address');
       invariant(contractWeb3, 'must have contractWeb3');
       invariant(providerWeb3, 'must have providerWeb3');
-      const isMultisig = await isContract(account, contractWeb3.provider);
+      const isMultisig = await isContract(address, staticRpcProvider);
 
       const tx =
         await contractWeb3.populateTransaction.requestWithdrawalsWstETH(
           requests,
-          account,
+          address,
         );
 
       const callback = async () =>
@@ -162,7 +161,7 @@ const useWithdrawalRequestMethods = () => {
 
       return callback;
     },
-    [account, contractWeb3, staticRpcProvider, providerWeb3],
+    [address, contractWeb3, staticRpcProvider, providerWeb3],
   );
 
   return useCallback(
@@ -198,8 +197,7 @@ export const useWithdrawalRequest = ({
   const { chainId } = useSDK();
   const withdrawalQueueAddress = getWithdrawalQueueAddress(chainId);
 
-  const { connector } = useAccount();
-  const { account } = useWeb3();
+  const { connector, address } = useAccount();
   const { isBunker } = useWithdrawals();
   const { txModalStages } = useTxModalStagesRequest();
   const getRequestMethod = useWithdrawalRequestMethods();
@@ -224,7 +222,7 @@ export const useWithdrawalRequest = ({
     valueBN,
     tokenContract.address,
     withdrawalQueueAddress,
-    account ?? undefined,
+    address ?? undefined,
   );
 
   const { gatherPermitSignature } = useERC20PermitSignature({

@@ -3,6 +3,8 @@ import { Tooltip, Checkbox } from '@lidofinance/lido-ui';
 
 import { useRewardsHistory } from 'features/rewards/hooks/useRewardsHistory';
 import { LeftOptionsWrapper } from './styles';
+import { trackEvent } from '@lidofinance/analytics-matomo';
+import { MATOMO_CLICK_EVENTS } from 'consts/matomo-click-events';
 
 export const LeftOptions: FC = () => {
   const {
@@ -20,7 +22,14 @@ export const LeftOptions: FC = () => {
       >
         <Checkbox
           checked={isIncludeTransfers}
-          onChange={() => setIsIncludeTransfers(!isIncludeTransfers)}
+          onChange={() => {
+            trackEvent(
+              ...(!isIncludeTransfers
+                ? MATOMO_CLICK_EVENTS.rewardsIncludeTransfersCheck
+                : MATOMO_CLICK_EVENTS.rewardsIncludeTransfersUncheck),
+            );
+            setIsIncludeTransfers(!isIncludeTransfers);
+          }}
           data-testid="includeTransfersCheckbox"
           label="Include transfers"
         />
@@ -33,9 +42,14 @@ export const LeftOptions: FC = () => {
       >
         <Checkbox
           checked={isUseArchiveExchangeRate}
-          onChange={() =>
-            setIsUseArchiveExchangeRate(!isUseArchiveExchangeRate)
-          }
+          onChange={() => {
+            trackEvent(
+              ...(!isUseArchiveExchangeRate
+                ? MATOMO_CLICK_EVENTS.rewardsHistoricalStethPriceCheck
+                : MATOMO_CLICK_EVENTS.rewardsHistoricalStethPriceUncheck),
+            );
+            setIsUseArchiveExchangeRate(!isUseArchiveExchangeRate);
+          }}
           data-testid="historicalStEthCheckbox"
           label="Historical stETH price"
         />

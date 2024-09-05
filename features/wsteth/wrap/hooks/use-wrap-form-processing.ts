@@ -1,21 +1,20 @@
-import invariant from 'tiny-invariant';
-
 import { useCallback } from 'react';
-import { useWeb3 } from 'reef-knot/web3-react';
-import { useWrapTxProcessing } from './use-wrap-tx-processing';
+import invariant from 'tiny-invariant';
+import { useAccount } from 'wagmi';
 
-import { useTxModalWrap } from './use-tx-modal-stages-wrap';
 import { useSDK, useWSTETHContractRPC } from '@lido-sdk/react';
 
+import { useCurrentStaticRpcProvider } from 'shared/hooks/use-current-static-rpc-provider';
 import { runWithTransactionLogger } from 'utils';
 import { isContract } from 'utils/isContract';
-import { useCurrentStaticRpcProvider } from 'shared/hooks/use-current-static-rpc-provider';
 import { useTxConfirmation } from 'shared/hooks/use-tx-conformation';
 
 import type {
   WrapFormApprovalData,
   WrapFormInputType,
 } from '../wrap-form-context';
+import { useWrapTxProcessing } from './use-wrap-tx-processing';
+import { useTxModalWrap } from './use-tx-modal-stages-wrap';
 
 type UseWrapFormProcessorArgs = {
   approvalData: WrapFormApprovalData;
@@ -28,24 +27,25 @@ export const useWrapFormProcessor = ({
   onConfirm,
   onRetry,
 }: UseWrapFormProcessorArgs) => {
-  const { account } = useWeb3();
-  const processWrapTx = useWrapTxProcessing();
-  const { isApprovalNeededBeforeWrap, processApproveTx } = approvalData;
-  const { txModalStages } = useTxModalWrap();
-  const wstETHContractRPC = useWSTETHContractRPC();
-  const waitForTx = useTxConfirmation();
-  const { staticRpcProvider } = useCurrentStaticRpcProvider();
+  const { address } = useAccount();
   const { providerWeb3 } = useSDK();
+  const { staticRpcProvider } = useCurrentStaticRpcProvider();
+  const wstETHContractRPC = useWSTETHContractRPC();
+
+  const { txModalStages } = useTxModalWrap();
+  const processWrapTx = useWrapTxProcessing();
+  const waitForTx = useTxConfirmation();
+  const { isApprovalNeededBeforeWrap, processApproveTx } = approvalData;
 
   return useCallback(
     async ({ amount, token }: WrapFormInputType) => {
       try {
         invariant(amount, 'amount should be presented');
-        invariant(account, 'address should be presented');
+        invariant(address, 'address should be presented');
         invariant(providerWeb3, 'providerWeb3 should be presented');
 
         const [isMultisig, willReceive] = await Promise.all([
-          isContract(account, staticRpcProvider),
+          isContract(address, staticRpcProvider),
           wstETHContractRPC.getWstETHByStETH(amount),
         ]);
 
@@ -83,7 +83,7 @@ export const useWrapFormProcessor = ({
         );
 
         const [wstethBalance] = await Promise.all([
-          wstETHContractRPC.balanceOf(account),
+          wstETHContractRPC.balanceOf(address),
           onConfirm(),
         ]);
 
@@ -96,7 +96,7 @@ export const useWrapFormProcessor = ({
       }
     },
     [
-      account,
+      address,
       providerWeb3,
       staticRpcProvider,
       wstETHContractRPC,

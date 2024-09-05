@@ -1,6 +1,6 @@
 import { forwardRef } from 'react';
-import { useWeb3 } from 'reef-knot/web3-react';
 import { useFormState, useWatch } from 'react-hook-form';
+import { useAccount } from 'wagmi';
 
 import { Checkbox, CheckboxProps, External } from '@lidofinance/lido-ui';
 import { FormatToken } from 'shared/formatters';
@@ -19,7 +19,7 @@ type RequestItemProps = {
 
 export const RequestItem = forwardRef<HTMLInputElement, RequestItemProps>(
   ({ token_id, name, disabled, index, ...props }, ref) => {
-    const { chainId } = useWeb3();
+    const { chainId } = useAccount();
     const { isSubmitting } = useFormState();
     const { canSelectMore } = useClaimFormData();
     const { checked, status } = useWatch<
