@@ -27,7 +27,9 @@ import {
 } from './use-default-values';
 import { ClaimFormHelperState, useHelperState } from './use-helper-state';
 
-type ClaimFormDataContextValueType = ClaimFormHelperState;
+type ClaimFormDataContextValueType = ClaimFormHelperState & {
+  maxSelectedCountReason: string | null;
+};
 
 const claimFormDataContext =
   createContext<ClaimFormDataContextValueType | null>(null);
@@ -43,8 +45,11 @@ export const ClaimFormProvider: FC<PropsWithChildren> = ({ children }) => {
   const { isDappActive } = useDappStatus();
   const { data } = useClaimData();
 
-  const { maxSelectedRequestCount, defaultSelectedRequestCount } =
-    useMaxSelectedCount();
+  const {
+    maxSelectedRequestCount,
+    defaultSelectedRequestCount,
+    maxSelectedCountReason,
+  } = useMaxSelectedCount();
   const { getDefaultValues } = useGetDefaultValues(defaultSelectedRequestCount);
 
   const formObject = useForm<ClaimFormInputType, ClaimFormValidationContext>({
@@ -55,10 +60,14 @@ export const ClaimFormProvider: FC<PropsWithChildren> = ({ children }) => {
     reValidateMode: 'onChange',
   });
   const { watch, reset, setValue, getValues, formState } = formObject;
-  const claimFormDataContextValue = useHelperState(
-    watch,
-    maxSelectedRequestCount,
+
+  const helperState = useHelperState(watch, maxSelectedRequestCount);
+
+  const claimFormDataContextValue = useMemo(
+    () => ({ ...helperState, maxSelectedCountReason }),
+    [helperState, maxSelectedCountReason],
   );
+
   const { retryEvent, retryFire } = useFormControllerRetry();
 
   const claim = useClaim({ onRetry: retryFire });

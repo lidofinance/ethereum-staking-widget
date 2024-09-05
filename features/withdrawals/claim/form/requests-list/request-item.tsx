@@ -2,7 +2,12 @@ import { forwardRef } from 'react';
 import { useFormState, useWatch } from 'react-hook-form';
 import { useAccount } from 'wagmi';
 
-import { Checkbox, CheckboxProps, External } from '@lidofinance/lido-ui';
+import {
+  Checkbox,
+  CheckboxProps,
+  External,
+  Tooltip,
+} from '@lidofinance/lido-ui';
 import { FormatToken } from 'shared/formatters';
 
 import { RequestStatus } from './request-item-status';
@@ -21,7 +26,7 @@ export const RequestItem = forwardRef<HTMLInputElement, RequestItemProps>(
   ({ token_id, name, disabled, index, ...props }, ref) => {
     const { chainId } = useAccount();
     const { isSubmitting } = useFormState();
-    const { canSelectMore } = useClaimFormData();
+    const { canSelectMore, maxSelectedCountReason } = useClaimFormData();
     const { checked, status } = useWatch<
       ClaimFormInputType,
       `requests.${number}`
@@ -42,15 +47,23 @@ export const RequestItem = forwardRef<HTMLInputElement, RequestItemProps>(
       : status.amountOfStETH;
     const symbol = isClaimable ? 'ETH' : 'stETH';
 
+    const showDisabledReasonTooltip =
+      maxSelectedCountReason &&
+      !canSelectMore &&
+      status.isFinalized &&
+      !checked;
+
     const label = (
       <FormatToken
         data-testid="requestAmount"
         amount={amountValue}
         symbol={symbol}
+        // prevents tip overlap
+        showAmountTip={!showDisabledReasonTooltip}
       />
     );
 
-    return (
+    const requestBody = (
       <RequestStyled data-testid={'requestItem'} $disabled={isDisabled}>
         <Checkbox
           {...props}
@@ -71,6 +84,14 @@ export const RequestItem = forwardRef<HTMLInputElement, RequestItemProps>(
           <External />
         </LinkStyled>
       </RequestStyled>
+    );
+
+    return showDisabledReasonTooltip ? (
+      <Tooltip title={maxSelectedCountReason} placement="top">
+        {requestBody}
+      </Tooltip>
+    ) : (
+      requestBody
     );
   },
 );
