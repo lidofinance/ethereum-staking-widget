@@ -18,6 +18,7 @@ import { MockLimitReachedError, getAddress } from './utils';
 import { useTxModalStagesStake } from './hooks/use-tx-modal-stages-stake';
 
 import { sendTx } from 'utils/send-tx';
+import { useTxConfirmation } from 'shared/hooks/use-tx-conformation';
 
 type StakeArguments = {
   amount: BigNumber | null;
@@ -31,17 +32,17 @@ type StakeOptions = {
 
 export const useStake = ({ onConfirm, onRetry }: StakeOptions) => {
   const stethContractWeb3 = useSTETHContractWeb3();
-  const { address, chainId } = useAccount();
+  const { address } = useAccount();
   const stethContract = useSTETHContractRPC();
   const { staticRpcProvider } = useCurrentStaticRpcProvider();
   const { providerWeb3 } = useSDK();
   const { txModalStages } = useTxModalStagesStake();
+  const waitForTx = useTxConfirmation();
 
   return useCallback(
     async ({ amount, referral }: StakeArguments): Promise<boolean> => {
       try {
         invariant(amount, 'amount is null');
-        invariant(chainId, 'chainId is not defined');
         invariant(address, 'account is not defined');
         invariant(providerWeb3, 'providerWeb3 not defined');
         invariant(stethContractWeb3, 'steth is not defined');
@@ -92,11 +93,9 @@ export const useStake = ({ onConfirm, onRetry }: StakeOptions) => {
 
         txModalStages.pending(amount, txHash);
 
-        if (!isMultisig) {
-          await runWithTransactionLogger('Stake block confirmation', () =>
-            staticRpcProvider.waitForTransaction(txHash),
-          );
-        }
+        await runWithTransactionLogger('Stake block confirmation', () =>
+          waitForTx(txHash),
+        );
 
         const stethBalance = await stethContract.balanceOf(address);
 
@@ -112,7 +111,6 @@ export const useStake = ({ onConfirm, onRetry }: StakeOptions) => {
       }
     },
     [
-      chainId,
       address,
       providerWeb3,
       stethContractWeb3,
@@ -120,6 +118,7 @@ export const useStake = ({ onConfirm, onRetry }: StakeOptions) => {
       staticRpcProvider,
       stethContract,
       onConfirm,
+      waitForTx,
       onRetry,
     ],
   );

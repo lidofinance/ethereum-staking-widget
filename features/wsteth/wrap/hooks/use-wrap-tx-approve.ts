@@ -31,7 +31,7 @@ export const useWrapTxApprove = ({ amount, token }: UseWrapTxApproveArgs) => {
     approve: processApproveTx,
     needsApprove,
     allowance,
-    loading: isApprovalLoading,
+    isLoading: isApprovalLoading,
   } = useApprove(
     amount,
     stethTokenAddress,

@@ -1,13 +1,11 @@
 import { FC } from 'react';
 import { Loader, Divider } from '@lidofinance/lido-ui';
-import { useSDK, useTokenBalance } from '@lido-sdk/react';
-import { TOKENS, getTokenAddress } from '@lido-sdk/constants';
 import { Zero } from '@ethersproject/constants';
 
-import { STRATEGY_LAZY } from 'consts/swr-strategies';
 import { useRewardsHistory } from 'features/rewards/hooks';
 import { ErrorBlockNoSteth } from 'features/rewards/components/errorBlocks/ErrorBlockNoSteth';
 import { RewardsTable } from 'features/rewards/components/rewardsTable';
+import { useStethBalance } from 'shared/hooks/use-balance';
 import { useDappStatus } from 'shared/hooks/use-dapp-status';
 
 import { RewardsListsEmpty } from './RewardsListsEmpty';
@@ -18,6 +16,8 @@ import {
   TableWrapperStyle,
   ErrorWrapper,
 } from './RewardsListContentStyles';
+
+import type { Address } from 'viem';
 
 export const RewardsListContent: FC = () => {
   const { isWalletConnected, isSupportedChain } = useDappStatus();
@@ -31,14 +31,11 @@ export const RewardsListContent: FC = () => {
     setPage,
     isLagging,
   } = useRewardsHistory();
-  // temporarily until we switched to a new SDK
-  const { chainId } = useSDK();
-  const { data: stethBalance, initialLoading: isStethBalanceLoading } =
-    useTokenBalance(
-      getTokenAddress(chainId || 1, TOKENS.STETH),
-      address,
-      STRATEGY_LAZY,
-    );
+  const { data: stethBalance, isLoading: isStethBalanceLoading } =
+    useStethBalance({
+      account: address as Address,
+      shouldSubscribeToUpdates: false,
+    });
   const hasSteth = stethBalance?.gt(Zero);
 
   if (isWalletConnected && !isSupportedChain)
