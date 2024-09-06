@@ -196,7 +196,13 @@ const useTokenBalance = (
     address: contract?.address,
     functionName: 'balanceOf',
     args: address && [address],
-    query: { enabled: !!address, select: nativeToBN },
+    query: {
+      enabled: !!address,
+      select: nativeToBN,
+      // because we update on events we can have high staleTime
+      // this prevents loader when changing pages
+      staleTime: 30_000,
+    },
   });
 
   useEffect(() => {
@@ -225,6 +231,7 @@ export const useStethBalance = ({
   const { data: contract, isLoading } = useQuery({
     queryKey: ['steth-contract', core.chainId],
     enabled: !!mergedAccount,
+
     staleTime: Infinity,
     queryFn: async () => steth.getContract(),
   });
