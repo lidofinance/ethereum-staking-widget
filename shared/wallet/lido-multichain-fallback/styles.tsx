@@ -63,6 +63,14 @@ export const Wrap = styled((props) => <Card {...props} />)<WrapProps>`
             #f0b90b 91.42%
           );
         `;
+      case LIDO_MULTICHAIN_CHAINS['Mode Chain']:
+        return css`
+          background: linear-gradient(
+            54.14deg,
+            #626931 -22.38%,
+            #b4c740 91.42%
+          );
+        `;
       default:
         return css`
           background: linear-gradient(
