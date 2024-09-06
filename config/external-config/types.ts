@@ -12,6 +12,7 @@ export type ManifestEntry = {
 
 export type ManifestConfig = {
   enabledWithdrawalDexes: DexWithdrawalApi[];
+  multiChainBanner: number[];
 };
 
 export type ExternalConfig = Omit<ManifestEntry, 'config'> &
