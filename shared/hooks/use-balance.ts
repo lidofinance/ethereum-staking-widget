@@ -33,6 +33,7 @@ export const useEthereumBalance = () => {
     },
     cacheTime: config.PROVIDER_POLLING_INTERVAL,
   });
+
   const queryData = useBalance({
     address,
     query: {
@@ -50,7 +51,9 @@ export const useEthereumBalance = () => {
       // dedups rpc requests
       { cancelRefetch: false },
     );
-  }, [blockNumber, queryClient, queryData.queryKey]);
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [blockNumber]);
 
   return queryData;
 };
