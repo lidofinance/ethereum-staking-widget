@@ -13,68 +13,7 @@ export interface PostRequest {
   schema: object;
 }
 
-const FLOAT_REGEX = /^\d+(\.\d+)?$/;
-
 export const GET_REQUESTS: GetRequest[] = [
-  {
-    uri: '/api/oneinch-rate?token=ETH',
-    isDeprecated: true,
-    schema: {
-      type: 'object',
-      properties: {
-        rate: { type: 'number', min: 0 },
-        toReceive: { type: 'string' },
-        fromAmount: { type: 'string' },
-      },
-      required: ['rate', 'toReceive', 'fromAmount'],
-      additionalProperties: false,
-    },
-  },
-  {
-    uri: `/api/short-lido-stats?chainId=${CONFIG.STAND_CONFIG.chainId}`,
-    isDeprecated: true,
-    schema: {
-      type: 'object',
-      properties: {
-        uniqueAnytimeHolders: { type: 'string' },
-        uniqueHolders: { type: 'string' },
-        totalStaked: { type: 'string' },
-        marketCap: { type: 'number' },
-      },
-      required: [
-        'totalStaked',
-        'marketCap',
-        'uniqueAnytimeHolders',
-        'uniqueHolders',
-      ],
-      additionalProperties: true,
-    },
-  },
-  {
-    uri: '/api/eth-apr',
-    isDeprecated: true,
-    schema: { type: 'string', pattern: FLOAT_REGEX },
-  },
-  {
-    uri: '/api/totalsupply',
-    isDeprecated: true,
-    schema: { type: 'string', pattern: FLOAT_REGEX },
-  },
-  {
-    uri: '/api/eth-price',
-    isDeprecated: true,
-    schema: {
-      type: 'object',
-      properties: {
-        price: {
-          type: 'number',
-          min: 0,
-        },
-      },
-      required: ['price'],
-      additionalProperties: true,
-    },
-  },
   {
     uri: '/api/rewards?address=0x87c0e047F4e4D3e289A56a36570D4CB957A37Ef1&currency=usd&onlyRewards=false&archiveRate=true&skip=0&limit=10',
     skipTestnet: true, // api/rewards don't work on testnet
@@ -119,14 +58,6 @@ export const GET_REQUESTS: GetRequest[] = [
         ],
         additionalProperties: false,
       },
-    },
-  },
-  {
-    uri: '/api/sma-steth-apr',
-    isDeprecated: true,
-    schema: {
-      type: 'string',
-      pattern: FLOAT_REGEX,
     },
   },
 ];

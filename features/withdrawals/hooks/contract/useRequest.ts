@@ -218,6 +218,7 @@ export const useWithdrawalRequest = ({
     needsApprove,
     allowance,
     isLoading: loadingUseApprove,
+    refetch: refetchAllowance,
   } = useApprove(
     valueBN,
     tokenContract.address,
@@ -321,7 +322,11 @@ export const useWithdrawalRequest = ({
           );
         }
 
-        await onConfirm?.();
+        await Promise.all([
+          onConfirm?.(),
+          isApprovalFlow &&
+            refetchAllowance({ throwOnError: false, cancelRefetch: false }),
+        ]);
         txModalStages.success(amount, token, txHash);
         return true;
       } catch (error) {
@@ -341,6 +346,7 @@ export const useWithdrawalRequest = ({
       needsApprove,
       onConfirm,
       onRetry,
+      refetchAllowance,
       txModalStages,
       waitForTx,
     ],
