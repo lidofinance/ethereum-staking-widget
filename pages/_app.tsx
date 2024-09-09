@@ -1,4 +1,4 @@
-import { memo } from 'react';
+import { memo, useEffect } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 import { AppProps } from 'next/app';
 import 'nprogress/nprogress.css';
@@ -31,6 +31,12 @@ nprogress();
 
 const App = (props: AppProps) => {
   const { Component, pageProps } = props;
+
+  useEffect(() => {
+    if (window.opener) {
+      window.opener = null;
+    }
+  }, []);
 
   return (
     <ErrorBoundary fallbackRender={ErrorBoundaryFallback}>
