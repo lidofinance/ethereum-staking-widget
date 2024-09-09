@@ -44,7 +44,7 @@ export const contentSecurityPolicy: ContentSecurityPolicyOption = {
     ...(!config.ipfsMode && {
       // CSP directive 'frame-ancestors' is ignored when delivered via a <meta> element.
       // CSP directive 'report-uri' is ignored when delivered via a <meta> element.
-      frameAncestors: ['none'],
+      frameAncestors: ['*'],
       reportURI: secretConfig.cspReportUri,
     }),
     childSrc: [
