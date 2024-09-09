@@ -22,7 +22,13 @@ type ChainsList = [wagmiChains.Chain, ...wagmiChains.Chain[]];
 
 const wagmiChainsArray = Object.values(wagmiChains) as any as ChainsList;
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false,
+    },
+  },
+});
 
 const Web3Provider: FC<PropsWithChildren> = ({ children }) => {
   const {
