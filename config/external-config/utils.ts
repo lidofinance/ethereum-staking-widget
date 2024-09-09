@@ -4,7 +4,45 @@ import { getDexConfig } from 'features/withdrawals/request/withdrawal-rates';
 
 import FallbackLocalManifest from 'IPFS.json' assert { type: 'json' };
 
-// TODO: refactor on config expansion
+const isEnabledDexesValid = (config: object) => {
+  if (
+    !(
+      'enabledWithdrawalDexes' in config &&
+      Array.isArray(config.enabledWithdrawalDexes)
+    )
+  )
+    return false;
+
+  const enabledWithdrawalDexes = config.enabledWithdrawalDexes;
+
+  if (
+    !enabledWithdrawalDexes.every(
+      (dex) => typeof dex === 'string' && dex !== '',
+    )
+  )
+    return false;
+
+  return new Set(enabledWithdrawalDexes).size === enabledWithdrawalDexes.length;
+};
+
+const isMultiChainBannerValid = (config: object) => {
+  // allow empty config
+  if (!('multiChainBanner' in config) || !config.multiChainBanner) return true;
+
+  if (!Array.isArray(config.multiChainBanner)) return false;
+
+  const multiChainBanner = config.multiChainBanner;
+
+  if (
+    !multiChainBanner.every(
+      (chainId) => typeof chainId === 'number' && chainId > 0,
+    )
+  )
+    return false;
+
+  return !(new Set(multiChainBanner).size !== multiChainBanner.length);
+};
+
 export const isManifestEntryValid = (
   entry?: unknown,
 ): entry is ManifestEntry => {
@@ -18,16 +56,10 @@ export const isManifestEntryValid = (
     entry.config
   ) {
     const config = entry.config;
-    if (
-      'enabledWithdrawalDexes' in config &&
-      Array.isArray(config.enabledWithdrawalDexes)
-    ) {
-      const enabledWithdrawalDexes = config.enabledWithdrawalDexes;
-      return (
-        new Set(enabledWithdrawalDexes).size === enabledWithdrawalDexes.length
-      );
-    }
-    return false;
+
+    return [isEnabledDexesValid, isMultiChainBannerValid]
+      .map((validator) => validator(config))
+      .every((isValid) => isValid);
   }
   return false;
 };
@@ -39,6 +71,7 @@ export const getBackwardCompatibleConfig = (
     enabledWithdrawalDexes: config.enabledWithdrawalDexes.filter(
       (dex) => !!getDexConfig(dex),
     ),
+    multiChainBanner: config.multiChainBanner ?? [],
   };
 };
 
