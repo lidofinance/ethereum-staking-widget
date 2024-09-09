@@ -16,6 +16,7 @@ import {
 import type { AbstractLidoSDKErc20 } from '@lidofinance/lido-ethereum-sdk/erc20';
 import type { GetBalanceData } from 'wagmi/query';
 import type { Address, WatchContractEventOnLogsFn } from 'viem';
+import { config } from 'config';
 
 const nativeToBN = (data: bigint) => BigNumber.from(data.toString());
 
@@ -24,10 +25,22 @@ const balanceToBN = (data: GetBalanceData) => nativeToBN(data.value);
 export const useEthereumBalance = () => {
   const queryClient = useQueryClient();
   const { address } = useAccount();
-  const { data: blockNumber } = useBlockNumber({ watch: !!address });
+  const { data: blockNumber } = useBlockNumber({
+    watch: {
+      poll: true,
+      pollingInterval: config.PROVIDER_POLLING_INTERVAL,
+      enabled: !!address,
+    },
+    cacheTime: config.PROVIDER_POLLING_INTERVAL,
+  });
   const queryData = useBalance({
     address,
-    query: { select: balanceToBN, staleTime: 7000, enabled: !!address },
+    query: {
+      select: balanceToBN,
+      // because we subscribe to block
+      staleTime: Infinity,
+      enabled: !!address,
+    },
   });
 
   useEffect(() => {
