@@ -6,6 +6,7 @@ import { TOKENS } from '@lido-sdk/constants';
 import { MATOMO_CLICK_EVENTS_TYPES } from 'consts/matomo-click-events';
 import { DATA_UNAVAILABLE } from 'consts/text';
 import { useWaitingTime } from 'features/withdrawals/hooks/useWaitingTime';
+import { useTvlError } from 'features/withdrawals/hooks/useTvlError';
 import { RequestFormInputType } from 'features/withdrawals/request/request-form-context';
 import {
   getDexConfig,
@@ -82,12 +83,22 @@ const toFloor = (num: number): string =>
   (Math.floor(num * 10000) / 10000).toString();
 
 const DexButton: React.FC<OptionButtonProps> = ({ isActive, onClick }) => {
+  const { balanceDiffSteth } = useTvlError();
+  const isPausedByTvlError = balanceDiffSteth !== undefined;
   const { initialLoading, bestRate, enabledDexes } = useWithdrawalRates({
+    isPaused: isPausedByTvlError,
     fallbackValue: DEFAULT_VALUE_FOR_RATE,
   });
   const isAnyDexEnabled = enabledDexes.length > 0;
+  const bestRateFloored = bestRate !== null && toFloor(bestRate);
   const bestRateValue =
-    bestRate && isAnyDexEnabled ? `1 : ${toFloor(bestRate)}` : '—';
+    !isPausedByTvlError &&
+    isAnyDexEnabled &&
+    bestRateFloored &&
+    bestRateFloored !== '0'
+      ? `1 : ${bestRateFloored}`
+      : '—';
+
   return (
     <OptionsPickerButton
       data-testid="dexOptions"
@@ -106,7 +117,11 @@ const DexButton: React.FC<OptionButtonProps> = ({ isActive, onClick }) => {
       </OptionsPickerRow>
       <OptionsPickerRow data-testid="dexBestRate">
         <OptionsPickerSubLabel>Best Rate:</OptionsPickerSubLabel>
-        {initialLoading ? <InlineLoaderSmall /> : bestRateValue}
+        {initialLoading && !isPausedByTvlError ? (
+          <InlineLoaderSmall />
+        ) : (
+          bestRateValue
+        )}
       </OptionsPickerRow>
       <OptionsPickerRow data-testid="dexWaitingTime">
         <OptionsPickerSubLabel>Waiting time:</OptionsPickerSubLabel>{' '}

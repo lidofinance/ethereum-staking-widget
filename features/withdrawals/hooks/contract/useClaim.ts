@@ -1,40 +1,43 @@
 import { useCallback } from 'react';
 import { BigNumber } from 'ethers';
+import invariant from 'tiny-invariant';
+import { useAccount } from 'wagmi';
+
+import { useSDK } from '@lido-sdk/react';
 
 import { useClaimData } from 'features/withdrawals/contexts/claim-data-context';
-import { runWithTransactionLogger } from 'utils';
-
-import { useWithdrawalsContract } from './useWithdrawalsContract';
 import { RequestStatusClaimable } from 'features/withdrawals/types/request-status';
-import invariant from 'tiny-invariant';
-import { isContract } from 'utils/isContract';
-import { useWeb3 } from 'reef-knot/web3-react';
-import { useSDK } from '@lido-sdk/react';
 import { useTxModalStagesClaim } from 'features/withdrawals/claim/transaction-modal-claim/use-tx-modal-stages-claim';
 import { useCurrentStaticRpcProvider } from 'shared/hooks/use-current-static-rpc-provider';
+import { runWithTransactionLogger } from 'utils';
+import { isContract } from 'utils/isContract';
 import { sendTx } from 'utils/send-tx';
+import { useTxConfirmation } from 'shared/hooks/use-tx-conformation';
+
+import { useWithdrawalsContract } from './useWithdrawalsContract';
 
 type Args = {
   onRetry?: () => void;
 };
 
 export const useClaim = ({ onRetry }: Args) => {
-  const { account } = useWeb3();
+  const { address } = useAccount();
   const { providerWeb3 } = useSDK();
   const { contractWeb3 } = useWithdrawalsContract();
   const { staticRpcProvider } = useCurrentStaticRpcProvider();
   const { optimisticClaimRequests } = useClaimData();
   const { txModalStages } = useTxModalStagesClaim();
+  const waitForTx = useTxConfirmation();
 
   return useCallback(
     async (sortedRequests: RequestStatusClaimable[]) => {
       try {
         invariant(contractWeb3, 'must have contract');
         invariant(sortedRequests, 'must have requests');
-        invariant(account, 'must have address');
+        invariant(address, 'must have address');
         invariant(providerWeb3, 'must have provider');
 
-        const isMultisig = await isContract(account, contractWeb3.provider);
+        const isMultisig = await isContract(address, contractWeb3.provider);
 
         const amount = sortedRequests.reduce(
           (s, r) => s.add(r.claimableEth),
@@ -70,8 +73,8 @@ export const useClaim = ({ onRetry }: Args) => {
 
         txModalStages.pending(amount, txHash);
 
-        await runWithTransactionLogger('Claim block confirmation', async () =>
-          staticRpcProvider.waitForTransaction(txHash),
+        await runWithTransactionLogger('Claim block confirmation', () =>
+          waitForTx(txHash),
         );
 
         await optimisticClaimRequests(sortedRequests);
@@ -86,11 +89,12 @@ export const useClaim = ({ onRetry }: Args) => {
     },
     [
       contractWeb3,
-      account,
+      address,
       providerWeb3,
       txModalStages,
-      staticRpcProvider,
       optimisticClaimRequests,
+      staticRpcProvider,
+      waitForTx,
       onRetry,
     ],
   );

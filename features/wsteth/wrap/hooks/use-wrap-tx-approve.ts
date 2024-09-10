@@ -1,11 +1,13 @@
 import { useMemo } from 'react';
-import { useWeb3 } from 'reef-knot/web3-react';
-import { useSDK } from '@lido-sdk/react';
-import { useApprove } from 'shared/hooks/useApprove';
-
+import { useAccount } from 'wagmi';
 import type { BigNumber } from 'ethers';
+
 import { getTokenAddress, TOKENS } from '@lido-sdk/constants';
+import { useSDK } from '@lido-sdk/react';
+
 import { TokensWrappable, TOKENS_TO_WRAP } from 'features/wsteth/shared/types';
+import { useApprove } from 'shared/hooks/useApprove';
+import { useDappStatus } from 'shared/hooks/use-dapp-status';
 
 type UseWrapTxApproveArgs = {
   amount: BigNumber;
@@ -13,7 +15,8 @@ type UseWrapTxApproveArgs = {
 };
 
 export const useWrapTxApprove = ({ amount, token }: UseWrapTxApproveArgs) => {
-  const { active, account } = useWeb3();
+  const { isDappActive } = useDappStatus();
+  const { address } = useAccount();
   const { chainId } = useSDK();
 
   const [stethTokenAddress, wstethTokenAddress] = useMemo(
@@ -28,16 +31,17 @@ export const useWrapTxApprove = ({ amount, token }: UseWrapTxApproveArgs) => {
     approve: processApproveTx,
     needsApprove,
     allowance,
-    loading: isApprovalLoading,
+    isLoading: isApprovalLoading,
+    refetch: refetchAllowance,
   } = useApprove(
     amount,
     stethTokenAddress,
     wstethTokenAddress,
-    account ? account : undefined,
+    address ? address : undefined,
   );
 
   const isApprovalNeededBeforeWrap =
-    active && needsApprove && token === TOKENS_TO_WRAP.STETH;
+    isDappActive && needsApprove && token === TOKENS_TO_WRAP.STETH;
 
   return useMemo(
     () => ({
@@ -46,6 +50,7 @@ export const useWrapTxApprove = ({ amount, token }: UseWrapTxApproveArgs) => {
       allowance,
       isApprovalLoading,
       isApprovalNeededBeforeWrap,
+      refetchAllowance,
     }),
     [
       allowance,
@@ -53,6 +58,7 @@ export const useWrapTxApprove = ({ amount, token }: UseWrapTxApproveArgs) => {
       needsApprove,
       isApprovalLoading,
       processApproveTx,
+      refetchAllowance,
     ],
   );
 };

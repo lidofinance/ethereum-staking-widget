@@ -1,8 +1,10 @@
 import { BigNumber } from 'ethers';
 
 import { useWithdrawalRates } from 'features/withdrawals/request/withdrawal-rates/use-withdrawal-rates';
+import { useTvlError } from 'features/withdrawals/hooks/useTvlError';
 import { FormatToken } from 'shared/formatters/format-token';
 import { trackMatomoEvent } from 'utils/track-matomo-event';
+import { getDexConfig } from 'features/withdrawals/request/withdrawal-rates';
 
 import {
   DexOptionBlockLink,
@@ -16,7 +18,7 @@ import {
   DexOptionsCheckMarkIcon,
 } from './styles';
 import { ReactComponent as AttentionTriangle } from 'assets/icons/attention-triangle.svg';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { InlineLoaderSmall } from '../styles';
 
 const MAX_SHOWN_ELEMENTS = 3;
@@ -73,11 +75,33 @@ export const DexOptions: React.FC<
 > = (props) => {
   const [showMore, setShowMore] = useState(false);
   const [buttonText, setButtonText] = useState('See all options');
+
+  const { balanceDiffSteth } = useTvlError();
+  const isPausedByTvlError = balanceDiffSteth !== undefined;
+
   const { data, initialLoading, amount, selectedToken, enabledDexes } =
-    useWithdrawalRates();
+    useWithdrawalRates({
+      isPaused: isPausedByTvlError,
+    });
 
   const isAnyDexEnabled = enabledDexes.length > 0;
   const allowExpand = enabledDexes.length > MAX_SHOWN_ELEMENTS;
+
+  const showLoader = !isPausedByTvlError && isAnyDexEnabled && initialLoading;
+  const showList = !isPausedByTvlError && isAnyDexEnabled && !initialLoading;
+  const showPausedList = isPausedByTvlError;
+
+  const dexesListData = useMemo(() => {
+    if (showList) return data;
+    if (showPausedList) {
+      return enabledDexes.map((dexId) => ({
+        ...getDexConfig(dexId),
+        toReceive: null,
+        rate: null,
+      }));
+    }
+    return null;
+  }, [data, enabledDexes, showList, showPausedList]);
 
   return (
     <>
@@ -95,23 +119,22 @@ export const DexOptions: React.FC<
             <div>Aggregator&apos;s prices are not available now</div>
           </DexWarning>
         )}
-        {isAnyDexEnabled &&
-          initialLoading &&
-          enabledDexes.map((_, i) => <DexOptionLoader key={i} />)}
-        {isAnyDexEnabled &&
-          !initialLoading &&
-          data?.map(({ title, toReceive, link, rate, matomoEvent, icon }) => {
-            return (
-              <DexOption
-                title={title}
-                icon={icon}
-                onClickGoTo={() => trackMatomoEvent(matomoEvent)}
-                url={link(amount, selectedToken)}
-                key={title}
-                toReceive={rate ? toReceive : null}
-              />
-            );
-          })}
+        {showLoader && enabledDexes.map((_, i) => <DexOptionLoader key={i} />)}
+        {(showList || showPausedList) &&
+          dexesListData?.map(
+            ({ title, toReceive, link, rate, matomoEvent, icon }) => {
+              return (
+                <DexOption
+                  title={title}
+                  icon={icon}
+                  onClickGoTo={() => trackMatomoEvent(matomoEvent)}
+                  url={link(amount, selectedToken)}
+                  key={title}
+                  toReceive={rate ? toReceive : null}
+                />
+              );
+            },
+          )}
       </DexOptionsContainer>
       {allowExpand && (
         <DexOptionsShowMore

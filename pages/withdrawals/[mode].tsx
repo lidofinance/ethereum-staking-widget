@@ -2,15 +2,14 @@ import type { FC } from 'react';
 import type { GetStaticPaths } from 'next';
 import Head from 'next/head';
 
-import { Layout } from 'shared/components';
-
 import { WithdrawalsTabs } from 'features/withdrawals';
 import { WithdrawalsProvider } from 'features/withdrawals/contexts/withdrawals-context';
-import { useWeb3Key } from 'shared/hooks/useWeb3Key';
+import { Layout } from 'shared/components';
+import { useWagmiKey } from 'shared/hooks/use-wagmi-key';
 import { getDefaultStaticProps } from 'utilsApi/get-default-static-props';
 
 const Withdrawals: FC<WithdrawalsModePageParams> = ({ mode }) => {
-  const key = useWeb3Key();
+  const key = useWagmiKey();
 
   return (
     <Layout

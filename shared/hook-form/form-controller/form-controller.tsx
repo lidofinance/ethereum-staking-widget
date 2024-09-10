@@ -1,6 +1,8 @@
 import { FC, PropsWithChildren, useEffect, useMemo } from 'react';
-import { useWeb3 } from 'reef-knot/web3-react';
 import { useFormContext } from 'react-hook-form';
+
+import { useDappStatus } from 'shared/hooks/use-dapp-status';
+
 import { useFormControllerContext } from './form-controller-context';
 
 type FormControllerProps = React.ComponentProps<'form'>;
@@ -9,7 +11,7 @@ export const FormController: FC<PropsWithChildren<FormControllerProps>> = ({
   children,
   ...props
 }) => {
-  const { active } = useWeb3();
+  const { isDappActive } = useDappStatus();
   const { handleSubmit, reset: resetDefault } = useFormContext();
   const {
     onSubmit,
@@ -34,11 +36,11 @@ export const FormController: FC<PropsWithChildren<FormControllerProps>> = ({
 
   // Reset form amount after disconnect wallet
   useEffect(() => {
-    if (!active) resetDefault();
+    if (!isDappActive) resetDefault();
     // reset will be captured when active changes
     // so we don't need it in deps
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [active]);
+  }, [isDappActive]);
 
   return (
     <form autoComplete="off" onSubmit={doSubmit} {...props}>

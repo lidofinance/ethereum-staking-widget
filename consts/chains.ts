@@ -14,4 +14,5 @@ export enum LIDO_MULTICHAIN_CHAINS {
   Linea = 59144,
   Scroll = 534352,
   'BNB Chain' = 56,
+  'Mode Chain' = 34443,
 }

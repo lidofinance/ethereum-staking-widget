@@ -7,26 +7,29 @@ import {
   useMemo,
 } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
-
 import invariant from 'tiny-invariant';
+
+import { useClaim } from 'features/withdrawals/hooks';
+import { useClaimData } from 'features/withdrawals/contexts/claim-data-context';
+import { useFormControllerRetry } from 'shared/hook-form/form-controller/use-form-controller-retry-delegate';
+import {
+  FormControllerContext,
+  FormControllerContextValueType,
+} from 'shared/hook-form/form-controller';
+import { useDappStatus } from 'shared/hooks/use-dapp-status';
+
 import { ClaimFormInputType, ClaimFormValidationContext } from './types';
 import { claimFormValidationResolver } from './validation';
-import { useClaim } from 'features/withdrawals/hooks';
 import { useMaxSelectedCount } from './use-max-selected-count';
-import { useFormControllerRetry } from 'shared/hook-form/form-controller/use-form-controller-retry-delegate';
 import {
   generateDefaultValues,
   useGetDefaultValues,
 } from './use-default-values';
 import { ClaimFormHelperState, useHelperState } from './use-helper-state';
-import {
-  FormControllerContext,
-  FormControllerContextValueType,
-} from 'shared/hook-form/form-controller';
-import { useClaimData } from 'features/withdrawals/contexts/claim-data-context';
-import { useWeb3 } from 'reef-knot/web3-react';
 
-type ClaimFormDataContextValueType = ClaimFormHelperState;
+type ClaimFormDataContextValueType = ClaimFormHelperState & {
+  maxSelectedCountReason: string | null;
+};
 
 const claimFormDataContext =
   createContext<ClaimFormDataContextValueType | null>(null);
@@ -39,25 +42,32 @@ export const useClaimFormData = () => {
 };
 
 export const ClaimFormProvider: FC<PropsWithChildren> = ({ children }) => {
-  const { active } = useWeb3();
+  const { isDappActive } = useDappStatus();
   const { data } = useClaimData();
 
-  const { maxSelectedRequestCount, defaultSelectedRequestCount } =
-    useMaxSelectedCount();
+  const {
+    maxSelectedRequestCount,
+    defaultSelectedRequestCount,
+    maxSelectedCountReason,
+  } = useMaxSelectedCount();
   const { getDefaultValues } = useGetDefaultValues(defaultSelectedRequestCount);
 
   const formObject = useForm<ClaimFormInputType, ClaimFormValidationContext>({
     defaultValues: getDefaultValues,
     resolver: claimFormValidationResolver,
-    context: { maxSelectedRequestCount, isWalletActive: active },
+    context: { maxSelectedRequestCount, isWalletActive: isDappActive },
     mode: 'onChange',
     reValidateMode: 'onChange',
   });
   const { watch, reset, setValue, getValues, formState } = formObject;
-  const claimFormDataContextValue = useHelperState(
-    watch,
-    maxSelectedRequestCount,
+
+  const helperState = useHelperState(watch, maxSelectedRequestCount);
+
+  const claimFormDataContextValue = useMemo(
+    () => ({ ...helperState, maxSelectedCountReason }),
+    [helperState, maxSelectedCountReason],
   );
+
   const { retryEvent, retryFire } = useFormControllerRetry();
 
   const claim = useClaim({ onRetry: retryFire });
