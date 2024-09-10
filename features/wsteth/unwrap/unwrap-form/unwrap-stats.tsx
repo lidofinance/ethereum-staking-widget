@@ -24,14 +24,6 @@ export const UnwrapStats = () => {
   return (
     <DataTable>
       <DataTableRow
-        title="Max transaction cost"
-        data-testid="maxGasFee"
-        loading={isUnwrapTxCostLoading}
-      >
-        <FormatPrice amount={unwrapTxCostInUsd} />
-      </DataTableRow>
-      <DataTableRowStethByWsteth />
-      <DataTableRow
         title="You will receive"
         loading={isWillReceiveStETHLoading}
       >
@@ -43,6 +35,14 @@ export const UnwrapStats = () => {
           trimEllipsis
         />
       </DataTableRow>
+      <DataTableRow
+        title="Max transaction cost"
+        data-testid="maxGasFee"
+        loading={isUnwrapTxCostLoading}
+      >
+        <FormatPrice amount={unwrapTxCostInUsd} />
+      </DataTableRow>
+      <DataTableRowStethByWsteth />
     </DataTable>
   );
 };

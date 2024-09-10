@@ -48,6 +48,18 @@ export const WrapFormStats = () => {
   return (
     <DataTable data-testid="wrapStats">
       <DataTableRow
+        title="You will receive"
+        loading={isWillReceiveWstethLoading}
+      >
+        <FormatToken
+          amount={willReceiveWsteth}
+          data-testid="youWillReceive"
+          fallback="-"
+          symbol="wstETH"
+          trimEllipsis
+        />
+      </DataTableRow>
+      <DataTableRow
         title="Max unlock cost"
         data-testid="maxUnlockFee"
         loading={isApproveCostLoading}
@@ -86,19 +98,6 @@ export const WrapFormStats = () => {
         loading={isApprovalLoading}
         token={TOKENS.STETH}
       />
-
-      <DataTableRow
-        title="You will receive"
-        loading={isWillReceiveWstethLoading}
-      >
-        <FormatToken
-          amount={willReceiveWsteth}
-          data-testid="youWillReceive"
-          fallback="-"
-          symbol="wstETH"
-          trimEllipsis
-        />
-      </DataTableRow>
     </DataTable>
   );
 };
