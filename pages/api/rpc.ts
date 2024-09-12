@@ -32,7 +32,6 @@ const rpc = rpcFactory({
     registry: Metrics.registry,
     prefix: METRICS_PREFIX,
   }),
-  serverLogger: console,
   metrics: {
     prefix: METRICS_PREFIX,
     registry: Metrics.registry,
