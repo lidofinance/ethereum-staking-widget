@@ -61,7 +61,7 @@ const rpc = rpcFactory({
     'net_version',
   ],
   allowedCallAddresses,
-  maxBatchCount: 10,
+  maxBatchCount: config.PROVIDER_MAX_BATCH,
 });
 
 export default wrapNextRequest([
