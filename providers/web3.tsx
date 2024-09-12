@@ -85,12 +85,8 @@ const Web3Provider: FC<PropsWithChildren> = ({ children }) => {
       chains: supportedChains,
       ssr: true,
       connectors: [],
-
       batch: {
-        // eth_call's can be batched via multicall contract
-        multicall: {
-          wait: config.PROVIDER_BATCH_TIME,
-        },
+        multicall: false,
       },
       multiInjectedProviderDiscovery: false,
       pollingInterval: config.PROVIDER_POLLING_INTERVAL,

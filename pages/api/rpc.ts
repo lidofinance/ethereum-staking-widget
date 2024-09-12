@@ -1,4 +1,3 @@
-import { rpcFactory } from '@lidofinance/next-pages';
 import { CHAINS } from '@lido-sdk/constants';
 import { wrapRequest as wrapNextRequest } from '@lidofinance/next-api-wrapper';
 import { trackedFetchRpcFactory } from '@lidofinance/api-rpc';
@@ -15,6 +14,18 @@ import {
   HttpMethod,
 } from 'utilsApi';
 import Metrics from 'utilsApi/metrics';
+import { rpcFactory } from 'utilsApi/rpcFactory';
+import { METRIC_CONTRACT_ADDRESSES } from 'utilsApi/contractAddressesMetricsMap';
+
+const allowedCallAddresses: Record<string, string[]> = Object.entries(
+  METRIC_CONTRACT_ADDRESSES,
+).reduce(
+  (acc, [chainId, addresses]) => {
+    acc[chainId] = Object.keys(addresses);
+    return acc;
+  },
+  {} as Record<string, string[]>,
+);
 
 const rpc = rpcFactory({
   fetchRPC: trackedFetchRpcFactory({
@@ -25,6 +36,12 @@ const rpc = rpcFactory({
   metrics: {
     prefix: METRICS_PREFIX,
     registry: Metrics.registry,
+  },
+  defaultChain: `${config.defaultChain}`,
+  providers: {
+    [CHAINS.Mainnet]: secretConfig.rpcUrls_1,
+    [CHAINS.Holesky]: secretConfig.rpcUrls_17000,
+    [CHAINS.Sepolia]: secretConfig.rpcUrls_11155111,
   },
   allowedRPCMethods: [
     'test',
@@ -44,12 +61,8 @@ const rpc = rpcFactory({
     'eth_chainId',
     'net_version',
   ],
-  defaultChain: `${config.defaultChain}`,
-  providers: {
-    [CHAINS.Mainnet]: secretConfig.rpcUrls_1,
-    [CHAINS.Holesky]: secretConfig.rpcUrls_17000,
-    [CHAINS.Sepolia]: secretConfig.rpcUrls_11155111,
-  },
+  allowedCallAddresses,
+  maxBatchCount: 10,
 });
 
 export default wrapNextRequest([
