@@ -17,6 +17,14 @@ import {
 
 import { config } from 'config';
 import { getAggregatorStEthUsdPriceFeedAddress } from 'consts/aggregator';
+import {
+  PartialCurveAbiAbi__factory,
+  PartialStakingRouterAbi__factory,
+  LidoLocatorAbi__factory,
+} from 'generated';
+import { getStakingRouterAddress } from 'consts/staking-router';
+import { MAINNET_CURVE } from 'features/rewards/hooks/use-steth-eth-rate';
+import { LIDO_LOCATOR_BY_CHAIN } from '@lidofinance/lido-ethereum-sdk';
 
 export const CONTRACT_NAMES = {
   stETH: 'stETH',
@@ -24,6 +32,9 @@ export const CONTRACT_NAMES = {
   WithdrawalQueue: 'WithdrawalQueue',
   Aggregator: 'Aggregator',
   AggregatorStEthUsdPriceFeed: 'AggregatorStEthUsdPriceFeed',
+  StakingRouter: 'StakingRouter',
+  StethCurve: 'StethCurve',
+  LidoLocator: 'LidoLocator',
 } as const;
 export type CONTRACT_NAMES = keyof typeof CONTRACT_NAMES;
 
@@ -33,6 +44,9 @@ export const METRIC_CONTRACT_ABIS = {
   [CONTRACT_NAMES.WithdrawalQueue]: WithdrawalQueueAbiFactory.abi,
   [CONTRACT_NAMES.Aggregator]: AggregatorAbiFactory.abi,
   [CONTRACT_NAMES.AggregatorStEthUsdPriceFeed]: AggregatorAbiFactory.abi,
+  [CONTRACT_NAMES.StakingRouter]: PartialStakingRouterAbi__factory.abi,
+  [CONTRACT_NAMES.StethCurve]: PartialCurveAbiAbi__factory.abi,
+  [CONTRACT_NAMES.LidoLocator]: LidoLocatorAbi__factory.abi,
 } as const;
 
 export const getMetricContractInterface = memoize(
@@ -82,6 +96,17 @@ export const METRIC_CONTRACT_ADDRESSES = (
         getAggregatorStEthUsdPriceFeedAddress,
         chainId,
       ),
+      [CONTRACT_NAMES.StakingRouter]: getAddressOrNull(
+        getStakingRouterAddress,
+        chainId,
+      ),
+      [CONTRACT_NAMES.StethCurve]: getAddressOrNull((chainId: CHAINS) => {
+        if (chainId === 1) return MAINNET_CURVE;
+        else throw new Error('no contract address');
+      }, chainId),
+      [CONTRACT_NAMES.LidoLocator]: getAddressOrNull((chainId: CHAINS) => {
+        return (LIDO_LOCATOR_BY_CHAIN as any)[chainId] as string;
+      }, chainId),
     };
     return {
       ...mapped,
