@@ -90,11 +90,17 @@ export const useWeb3Transport = (
       ({ transportMap, setTransportMap }, chain) => {
         const [transport, setTransport] = runtimeMutableTransport([
           http(backendRpcMap[chain.id], {
-            batch: { wait: config.PROVIDER_BATCH_TIME },
+            batch: {
+              wait: config.PROVIDER_BATCH_TIME,
+              batchSize: config.PROVIDER_MAX_BATCH,
+            },
             name: backendRpcMap[chain.id],
           }),
           http(undefined, {
-            batch: { wait: config.PROVIDER_BATCH_TIME },
+            batch: {
+              wait: config.PROVIDER_BATCH_TIME,
+              batchSize: config.PROVIDER_MAX_BATCH,
+            },
             name: 'default HTTP RPC',
           }),
         ]);

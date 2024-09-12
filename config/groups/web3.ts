@@ -4,6 +4,8 @@ import { parseEther } from '@ethersproject/units';
 export const PROVIDER_POLLING_INTERVAL = 12_000;
 // how long in ms to wait for RPC batching(multicall and provider)
 export const PROVIDER_BATCH_TIME = 150;
+// max batch
+export const PROVIDER_MAX_BATCH = 10;
 
 // account for gas estimation
 // will always have >=0.001 ether, >=0.001 stETH, >=0.001 wstETH
