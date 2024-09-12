@@ -109,8 +109,12 @@ export const rpcFactory = ({
             typeof params[0] === 'object' &&
             typeof params[0].to === 'string'
           ) {
-            if (!allowedCallAddressMap[chainId].has(params[0].to.toLowerCase()))
+            if (
+              !allowedCallAddressMap[chainId].has(params[0].to.toLowerCase())
+            ) {
+              rpcRequestBlocked.inc();
               throw new Error(`Address not allowed for eth_call`);
+            }
           } else throw new Error(`RPC method eth_call is invalid`);
         }
       }
