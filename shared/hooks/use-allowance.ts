@@ -62,6 +62,9 @@ type UseAllowanceProps = {
   spender: Address;
 };
 
+const onError = (error: unknown) =>
+  console.warn('[useAllowance] error while watching events', error);
+
 export const useAllowance = ({
   token,
   account,
@@ -95,7 +98,6 @@ export const useAllowance = ({
   useWatchContractEvent({
     abi: Erc20AllowanceAbi,
     eventName: 'Approval',
-    batch: true,
     poll: true,
     args: useMemo(
       () => ({
@@ -107,12 +109,12 @@ export const useAllowance = ({
     address: token,
     enabled,
     onLogs,
+    onError,
   });
 
   useWatchContractEvent({
     abi: Erc20AllowanceAbi,
     eventName: 'Transfer',
-    batch: false,
     poll: true,
     args: useMemo(
       () => ({
@@ -123,6 +125,7 @@ export const useAllowance = ({
     address: token,
     enabled,
     onLogs,
+    onError,
   });
 
   return allowanceQuery;

@@ -9,6 +9,7 @@ import {
   custom,
   Chain,
   UnsupportedProviderMethodError,
+  InvalidParamsRpcError,
 } from 'viem';
 import type { OnResponseFn } from 'viem/_types/clients/transports/fallback';
 import type { Connection } from 'wagmi';
@@ -45,6 +46,24 @@ const runtimeMutableTransport = (
             if (DISABLED_METHODS.has(requestParams.method)) {
               const error = new UnsupportedProviderMethodError(
                 new Error(`Method ${requestParams.method} is not supported`),
+              );
+              responseFn({
+                error,
+                method: requestParams.method,
+                params: params as unknown[],
+                transport,
+                status: 'error',
+              });
+              throw error;
+            }
+
+            if (
+              requestParams.method === 'eth_getLogs' &&
+              Array.isArray(requestParams?.params) &&
+              requestParams.params[0]?.address?.length < 0
+            ) {
+              const error = new InvalidParamsRpcError(
+                new Error(`Empty address for eth_getLogs is not supported`),
               );
               responseFn({
                 error,

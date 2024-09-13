@@ -15,10 +15,23 @@ import {
 } from 'utilsApi';
 import Metrics from 'utilsApi/metrics';
 import { rpcFactory } from 'utilsApi/rpcFactory';
-import { METRIC_CONTRACT_ADDRESSES } from 'utilsApi/contractAddressesMetricsMap';
+import {
+  METRIC_CONTRACT_ADDRESSES,
+  METRIC_CONTRACT_EVENT_ADDRESSES,
+} from 'utilsApi/contractAddressesMetricsMap';
 
 const allowedCallAddresses: Record<string, string[]> = Object.entries(
   METRIC_CONTRACT_ADDRESSES,
+).reduce(
+  (acc, [chainId, addresses]) => {
+    acc[chainId] = Object.keys(addresses);
+    return acc;
+  },
+  {} as Record<string, string[]>,
+);
+
+const allowedLogsAddresses: Record<string, string[]> = Object.entries(
+  METRIC_CONTRACT_EVENT_ADDRESSES,
 ).reduce(
   (acc, [chainId, addresses]) => {
     acc[chainId] = Object.keys(addresses);
@@ -61,7 +74,9 @@ const rpc = rpcFactory({
     'net_version',
   ],
   allowedCallAddresses,
+  allowedLogsAddresses,
   maxBatchCount: config.PROVIDER_MAX_BATCH,
+  disallowEmptyAddressGetLogs: false,
 });
 
 export default wrapNextRequest([
