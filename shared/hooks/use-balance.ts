@@ -98,6 +98,12 @@ type OnLogsFn = WatchContractEventOnLogsFn<
   true
 >;
 
+const onError = (error: unknown) =>
+  console.warn(
+    '[useTokenTransferSubscription] error while watching events',
+    error,
+  );
+
 export const useTokenTransferSubscription = () => {
   const { address } = useAccount();
   const queryClient = useQueryClient();
@@ -134,6 +140,8 @@ export const useTokenTransferSubscription = () => {
   useWatchContractEvent({
     abi: Erc20EventsAbi,
     eventName: 'Transfer',
+    batch: true,
+    poll: true,
     args: useMemo(
       () => ({
         to: address,
@@ -143,11 +151,14 @@ export const useTokenTransferSubscription = () => {
     address: tokens,
     enabled: shouldWatch,
     onLogs,
+    onError,
   });
 
   useWatchContractEvent({
     abi: Erc20EventsAbi,
     eventName: 'Transfer',
+    batch: true,
+    poll: true,
     args: useMemo(
       () => ({
         from: address,
@@ -157,6 +168,7 @@ export const useTokenTransferSubscription = () => {
     address: tokens,
     enabled: shouldWatch,
     onLogs,
+    onError,
   });
 
   const subscribe = useCallback(
