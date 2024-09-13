@@ -240,11 +240,11 @@ export const rpcFactory = ({
           .json('There are a problems with RPC provider');
       }
     } catch (error) {
-      if (error instanceof Error) {
+      if (error instanceof ClientError) {
+        res.status(400).json(error.message ?? DEFAULT_API_ERROR_MESSAGE);
+      } else if (error instanceof Error) {
         // TODO: check if there are errors duplication with iterateUrls
-        console.error(
-          '[rpcFactory]' + error.message ?? DEFAULT_API_ERROR_MESSAGE,
-        );
+        console.error(error.message ?? DEFAULT_API_ERROR_MESSAGE);
         res.status(500).json(error.message ?? DEFAULT_API_ERROR_MESSAGE);
       } else {
         res.status(500).json(HEALTHY_RPC_SERVICES_ARE_OVER);
