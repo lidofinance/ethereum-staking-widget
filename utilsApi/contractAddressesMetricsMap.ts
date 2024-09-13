@@ -115,3 +115,27 @@ export const METRIC_CONTRACT_ADDRESSES = (
   },
   {} as Record<CHAINS, Record<`0x${string}`, CONTRACT_NAMES>>,
 );
+
+export const METRIC_CONTRACT_EVENT_ADDRESSES = (
+  config.supportedChains as CHAINS[]
+).reduce(
+  (mapped, chainId) => {
+    const map = {
+      [CONTRACT_NAMES.stETH]: getAddressOrNull(
+        getTokenAddress,
+        chainId,
+        TOKENS.STETH,
+      ),
+      [CONTRACT_NAMES.wstETH]: getAddressOrNull(
+        getTokenAddress,
+        chainId,
+        TOKENS.WSTETH,
+      ),
+    };
+    return {
+      ...mapped,
+      [chainId]: invert(omitBy(map, isNull)),
+    };
+  },
+  {} as Record<CHAINS, Record<`0x${string}`, CONTRACT_NAMES>>,
+);
