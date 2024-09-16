@@ -16,11 +16,14 @@ const collectStartupChecksRPCMetrics = async (
   const rpcMetrics = new StartupChecksRPCMetrics(registry);
 
   try {
-    const { promise: rpcChecksPromise, results: rpcChecksResults } =
-      getRPCChecks();
-
     // Await the promise if it's still in progress
-    await rpcChecksPromise;
+    const rpcChecksResults = await getRPCChecks();
+
+    if (!rpcChecksResults) {
+      throw new Error(
+        '[collectStartupChecksRPCMetrics] getRPCChecks resolved as "null"!',
+      );
+    }
 
     rpcChecksResults.forEach((_check: { domain: string; success: boolean }) => {
       rpcMetrics.requestStatusGauge

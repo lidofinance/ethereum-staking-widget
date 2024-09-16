@@ -93,7 +93,7 @@ const checkRPCWithRetries = async (url, defaultChain) => {
   return false;
 };
 
-export const getRPCChecks = () => globalStartupRPCChecks;
+export const getRPCChecks = () => globalStartupRPCChecks.promise;
 
 export const startupCheckRPCs = async () => {
   console.info('[startupCheckRPCs] Starting RPC checks...');
@@ -116,8 +116,12 @@ export const startupCheckRPCs = async () => {
 
       console.info(`[startupCheckRPCs] Working RPCs: ${rpcUrls.length - brokenRPCCount}`);
       console.info(`[startupCheckRPCs] Broken RPCs: ${brokenRPCCount}`);
+
+      return globalStartupRPCChecks.results;
     } catch (err) {
       console.error('[startupCheckRPCs] Error during RPC checks:', err);
+
+      return null;
     }
   })();
 };
