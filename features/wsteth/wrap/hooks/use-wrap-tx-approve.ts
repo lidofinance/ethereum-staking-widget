@@ -31,7 +31,8 @@ export const useWrapTxApprove = ({ amount, token }: UseWrapTxApproveArgs) => {
     approve: processApproveTx,
     needsApprove,
     allowance,
-    loading: isApprovalLoading,
+    isLoading: isApprovalLoading,
+    refetch: refetchAllowance,
   } = useApprove(
     amount,
     stethTokenAddress,
@@ -49,6 +50,7 @@ export const useWrapTxApprove = ({ amount, token }: UseWrapTxApproveArgs) => {
       allowance,
       isApprovalLoading,
       isApprovalNeededBeforeWrap,
+      refetchAllowance,
     }),
     [
       allowance,
@@ -56,6 +58,7 @@ export const useWrapTxApprove = ({ amount, token }: UseWrapTxApproveArgs) => {
       needsApprove,
       isApprovalLoading,
       processApproveTx,
+      refetchAllowance,
     ],
   );
 };

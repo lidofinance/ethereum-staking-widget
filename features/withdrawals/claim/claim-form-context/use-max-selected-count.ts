@@ -15,8 +15,14 @@ export const useMaxSelectedCount = () => {
     DEFAULT_CLAIM_REQUEST_SELECTED,
     maxSelectedRequestCount,
   );
+
+  const maxSelectedCountReason = isLedgerLive
+    ? 'Ledger Clear Sign allows to claim up to 2 requests per transaction'
+    : null;
+
   return {
     maxSelectedRequestCount,
     defaultSelectedRequestCount,
+    maxSelectedCountReason,
   };
 };

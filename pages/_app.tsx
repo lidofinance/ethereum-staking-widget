@@ -45,7 +45,7 @@ const AppWrapper = (
   props: AppProps<{ ___prefetch_manifest___?: object }>,
 ): JSX.Element => {
   return (
-    <Providers prefetchedManifest={props.pageProps.___prefetch_manifest___}>
+    <Providers prefetchedManifest={props.pageProps?.___prefetch_manifest___}>
       {/* see https://nextjs.org/docs/messages/no-document-viewport-meta */}
       <Head>
         <meta

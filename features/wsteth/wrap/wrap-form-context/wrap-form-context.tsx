@@ -5,6 +5,7 @@ import {
   useMemo,
   createContext,
   useContext,
+  useCallback,
 } from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
 import { useWrapTxApprove } from '../hooks/use-wrap-tx-approve';
@@ -72,9 +73,16 @@ export const WrapFormProvider: FC<PropsWithChildren> = ({ children }) => {
   const approvalData = useWrapTxApprove({ amount: amount ?? Zero, token });
   const isSteth = token === TOKENS_TO_WRAP.STETH;
 
+  const onConfirm = useCallback(async () => {
+    await Promise.allSettled([
+      networkData.revalidateWrapFormData(),
+      approvalData.refetchAllowance(),
+    ]);
+  }, [networkData, approvalData]);
+
   const processWrapFormFlow = useWrapFormProcessor({
     approvalData,
-    onConfirm: networkData.revalidateWrapFormData,
+    onConfirm,
     onRetry: retryFire,
   });
 

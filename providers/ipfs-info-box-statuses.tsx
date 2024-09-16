@@ -9,6 +9,7 @@ import {
 import { useLidoSWR, useLocalStorage, useSDK } from '@lido-sdk/react';
 import invariant from 'tiny-invariant';
 
+import { config } from 'config';
 import { useRpcUrl } from 'config/rpc';
 import { SETTINGS_PATH } from 'consts/urls';
 import { STRATEGY_LAZY } from 'consts/swr-strategies';
@@ -56,7 +57,7 @@ export const IPFSInfoBoxStatusesProvider: FC<PropsWithChildren> = ({
   const { data: isRPCAvailableRaw, initialLoading: isLoading } = useLidoSWR(
     `rpc-url-check-${rpcUrl}-${chainId}`,
     async () => await checkRpcUrl(rpcUrl, chainId),
-    STRATEGY_LAZY,
+    { ...STRATEGY_LAZY, isPaused: () => !config.ipfsMode },
   );
   const isRPCAvailable = isRPCAvailableRaw === true;
 
