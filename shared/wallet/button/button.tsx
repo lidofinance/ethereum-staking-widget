@@ -1,9 +1,7 @@
 import { FC } from 'react';
 import { useAccount } from 'wagmi';
 import { ButtonProps, useBreakpoint } from '@lidofinance/lido-ui';
-import { useEthereumBalance } from '@lido-sdk/react';
 
-import { STRATEGY_LAZY } from 'consts/swr-strategies';
 import { FormatToken } from 'shared/formatters';
 import { useDappStatus } from 'shared/hooks/use-dapp-status';
 
@@ -16,6 +14,7 @@ import {
   WalledButtonBalanceStyle,
   WalledButtonLoaderStyle,
 } from './styles';
+import { useEthereumBalance } from 'shared/hooks/use-balance';
 
 export const Button: FC<ButtonProps> = (props) => {
   const { onClick, ...rest } = props;
@@ -25,10 +24,7 @@ export const Button: FC<ButtonProps> = (props) => {
   const { isDappActive } = useDappStatus();
 
   const { openModal } = useWalletModal();
-  const { data: balance, initialLoading } = useEthereumBalance(
-    undefined,
-    STRATEGY_LAZY,
-  );
+  const { data: balance, isLoading } = useEthereumBalance();
 
   return (
     <WalledButtonStyle
@@ -36,12 +32,12 @@ export const Button: FC<ButtonProps> = (props) => {
       variant="text"
       color="secondary"
       onClick={() => openModal({})}
-      $isAddPaddingLeft={!initialLoading && !isDappActive && !isMobile}
+      $isAddPaddingLeft={!isLoading && !isDappActive && !isMobile}
       {...rest}
     >
       <WalledButtonWrapperStyle>
         <WalledButtonBalanceStyle>
-          {initialLoading ? (
+          {isLoading ? (
             <WalledButtonLoaderStyle />
           ) : (
             isDappActive && (
