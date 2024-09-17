@@ -222,9 +222,9 @@ export const rpcFactory = ({
           .pipe(sizeLimit)
           .on('error', (error) => {
             if (error instanceof SizeTooLargeError) {
-              console.warn('[rpcFactory] RPC response too large', {
-                request: JSON.stringify(requests),
-              });
+              console.warn(
+                `[rpcFactory] RPC response too large: ${JSON.stringify(requests)}`,
+              );
               res.statusCode = 413; // Payload Too Large
               res.end(error.message);
             } else {
