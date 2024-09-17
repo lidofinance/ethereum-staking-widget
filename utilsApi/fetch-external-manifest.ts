@@ -8,7 +8,6 @@ import FallbackLocalManifest from 'IPFS.json' assert { type: 'json' };
 
 export type ExternalConfigResult = {
   ___prefetch_manifest___: object | null;
-  revalidate: number;
 };
 
 const cache = new Cache<
@@ -25,7 +24,6 @@ export const fetchExternalManifest = async () => {
   if (config.ipfsMode) {
     return {
       ___prefetch_manifest___: FallbackLocalManifest,
-      revalidate: config.DEFAULT_REVALIDATION,
     };
   }
 
@@ -44,7 +42,6 @@ export const fetchExternalManifest = async () => {
 
       const result = {
         ___prefetch_manifest___: data,
-        revalidate: config.DEFAULT_REVALIDATION,
       };
 
       cache.put(
@@ -68,10 +65,9 @@ export const fetchExternalManifest = async () => {
     }
   }
   console.error(
-    `[fetchExternalManifest] failed to fetch external manifest after retries, revalidation is set to ${config.ERROR_REVALIDATION_SECONDS}`,
+    `[fetchExternalManifest] failed to fetch external manifest after retries`,
   );
   return {
-    revalidate: config.ERROR_REVALIDATION_SECONDS,
     ___prefetch_manifest___: FallbackLocalManifest,
   };
 };

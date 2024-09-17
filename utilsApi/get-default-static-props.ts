@@ -19,7 +19,7 @@ export const getDefaultStaticProps = <
     const base = {
       props,
       // because next only remembers first value, default to short revalidation period
-      revalidate: config.ERROR_REVALIDATION_SECONDS,
+      revalidate: config.DEFAULT_REVALIDATION,
     };
 
     /// custom getStaticProps
@@ -37,7 +37,9 @@ export const getDefaultStaticProps = <
     console.debug(
       `[getDefaultStaticProps] running revalidation, next revalidation in ${result.revalidate}`,
     );
-    Metrics.request.ssrCounter.labels({ revalidate: base.revalidate }).inc(1);
+    Metrics.request.ssrCounter
+      .labels({ revalidate: String(result.revalidate) })
+      .inc(1);
 
     return result;
   };
