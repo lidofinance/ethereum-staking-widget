@@ -7,10 +7,12 @@ import { startupCheckRPCs } from './scripts/startup-checks/rpc.mjs';
 logEnvironmentVariables();
 buildDynamics();
 
-if (process.env.RUN_STARTUP_CHECKS === 'true' && typeof window === 'undefined') {
+if (
+  process.env.RUN_STARTUP_CHECKS === 'true' &&
+  typeof window === 'undefined'
+) {
   void startupCheckRPCs();
 }
-
 
 // https://nextjs.org/docs/pages/api-reference/next-config-js/basePath
 const basePath = process.env.BASE_PATH;

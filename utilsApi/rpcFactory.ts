@@ -225,8 +225,8 @@ export const rpcFactory = ({
               console.warn(
                 `[rpcFactory] RPC response too large: ${JSON.stringify(requests)}`,
               );
-              res.statusCode = 413; // Payload Too Large
-              res.end(error.message);
+              // Payload Too Large
+              res.status(413).end();
             } else {
               res.statusCode = 500;
               res.end(DEFAULT_API_ERROR_MESSAGE);
