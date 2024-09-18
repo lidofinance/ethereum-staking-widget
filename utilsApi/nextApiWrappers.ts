@@ -142,10 +142,20 @@ const collectRequestAddressMetric = async ({
       const address = utils.getAddress(to) as `0x${string}`;
       const contractName = METRIC_CONTRACT_ADDRESSES[chainId]?.[address];
       const methodEncoded = data?.slice(0, 10); // `0x` and 8 next symbols
-      const methodDecoded = contractName
-        ? getMetricContractInterface(contractName)?.getFunction(methodEncoded)
-            ?.name
-        : null;
+
+      let methodDecoded = 'N/A';
+      try {
+        if (contractName) {
+          methodDecoded =
+            getMetricContractInterface(contractName).getFunction(
+              methodEncoded,
+            ).name;
+        }
+      } catch (error) {
+        console.warn(
+          `[collectRequestAddressMetric] failed to decode ${methodEncoded} method for ${contractName}: ${error} `,
+        );
+      }
 
       metrics
         .labels({

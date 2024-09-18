@@ -3,6 +3,7 @@ import type { ParsedUrlQuery } from 'querystring';
 
 import Metrics from 'utilsApi/metrics';
 import { fetchExternalManifest } from './fetch-external-manifest';
+import { config } from 'config';
 
 export const getDefaultStaticProps = <
   P extends { [key: string]: any } = { [key: string]: any },
@@ -11,15 +12,14 @@ export const getDefaultStaticProps = <
 >(
   custom?: GetStaticProps<P, Q, D>,
 ): GetStaticProps<P & { ___prefetch_manifest___?: object }, Q, D> => {
-  let shouldZeroRevalidate = true;
   return async (context) => {
     /// common props
-    const { ___prefetch_manifest___, revalidate } =
-      await fetchExternalManifest();
+    const { ___prefetch_manifest___ } = await fetchExternalManifest();
     const props = ___prefetch_manifest___ ? { ___prefetch_manifest___ } : {};
     const base = {
       props,
-      revalidate: shouldZeroRevalidate ? 1 : revalidate,
+      // because next only remembers first value, default to short revalidation period
+      revalidate: config.DEFAULT_REVALIDATION,
     };
 
     /// custom getStaticProps
@@ -35,11 +35,12 @@ export const getDefaultStaticProps = <
 
     /// metrics
     console.debug(
-      `[getDefaultStaticProps] running revalidation, next revalidation in ${base.revalidate}`,
+      `[getDefaultStaticProps] running revalidation, next revalidation in ${result.revalidate}`,
     );
-    Metrics.request.ssrCounter.labels({ revalidate: base.revalidate }).inc(1);
+    Metrics.request.ssrCounter
+      .labels({ revalidate: String(result.revalidate) })
+      .inc(1);
 
-    shouldZeroRevalidate = false;
     return result;
   };
 };
