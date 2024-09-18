@@ -2,6 +2,7 @@ export enum CHAINS {
   Mainnet = 1,
   Holesky = 17000,
   Sepolia = 11155111,
+  OPSepoliaTestnet = 11155420,
 }
 
 export enum LIDO_MULTICHAIN_CHAINS {
