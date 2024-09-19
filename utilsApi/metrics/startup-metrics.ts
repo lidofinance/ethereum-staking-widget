@@ -3,23 +3,41 @@ import { collectStartupMetrics as collectBuildInfoMetrics } from '@lidofinance/a
 
 import buildInfoJson from 'build-info.json';
 import { openKeys } from 'scripts/log-environment-variables.mjs';
-import { getRPCCheckResults } from 'scripts/startup-checks/rpc.mjs';
+import { getRPCChecks } from 'scripts/startup-checks/rpc.mjs';
 
 import { config } from 'config';
 import { METRICS_PREFIX } from 'consts/metrics';
 
 import { StartupChecksRPCMetrics } from './startup-checks';
 
-const collectStartupChecksRPCMetrics = (registry: Registry): void => {
+const collectStartupChecksRPCMetrics = async (
+  registry: Registry,
+): Promise<void> => {
   const rpcMetrics = new StartupChecksRPCMetrics(registry);
 
-  getRPCCheckResults().forEach(
-    (_check: { domain: string; success: boolean }) => {
-      rpcMetrics.requestCounter
-        .labels(_check.domain, _check.success.toString())
-        .inc();
-    },
-  );
+  try {
+    // Await the promise if it's still in progress
+    const rpcChecksResults = await getRPCChecks();
+
+    if (!rpcChecksResults) {
+      throw new Error(
+        '[collectStartupChecksRPCMetrics] getRPCChecks resolved as "null"!',
+      );
+    }
+
+    rpcChecksResults.forEach((_check: { domain: string; success: boolean }) => {
+      rpcMetrics.requestStatusGauge
+        .labels(_check.domain)
+        .set(Number(+!_check.success));
+    });
+  } catch (error) {
+    console.error(
+      `[collectStartupChecksRPCMetrics] Error collecting RPC metrics: ${error}`,
+    );
+    rpcMetrics.requestStatusGauge
+      .labels('BROKEN_URL') // false as string
+      .inc(1);
+  }
 };
 
 const collectEnvInfoMetrics = (registry: Registry): void => {
@@ -37,7 +55,9 @@ const collectEnvInfoMetrics = (registry: Registry): void => {
   envInfo.labels(...labelPairs.map((pair) => pair.value)).set(1);
 };
 
-export const collectStartupMetrics = (registry: Registry): void => {
+export const collectStartupMetrics = async (
+  registry: Registry,
+): Promise<void> => {
   collectEnvInfoMetrics(registry);
 
   collectBuildInfoMetrics({
@@ -50,5 +70,5 @@ export const collectStartupMetrics = (registry: Registry): void => {
     branch: buildInfoJson.branch,
   });
 
-  collectStartupChecksRPCMetrics(registry);
+  await collectStartupChecksRPCMetrics(registry);
 };

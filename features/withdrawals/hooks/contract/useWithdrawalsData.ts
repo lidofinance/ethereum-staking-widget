@@ -14,6 +14,7 @@ import { standardFetcher } from 'utils/standardFetcher';
 import { default as dynamics } from 'config/dynamics';
 
 import { encodeURLQuery } from 'utils/encodeURLQuery';
+import type { WithdrawalQueueAbi } from '@lido-sdk/contracts';
 
 export type WithdrawalRequests = NonNullable<
   ReturnType<typeof useWithdrawalRequests>['data']
@@ -99,7 +100,17 @@ export const useWithdrawalRequests = () => {
         }),
         contractRpc.getLastCheckpointIndex(),
       ]);
-      const requestStatuses = await contractRpc.getWithdrawalStatus(requestIds);
+
+      const STATUS_BATCH_SIZE = 500;
+      const requestStatuses: Awaited<
+        ReturnType<WithdrawalQueueAbi['getWithdrawalStatus']>
+      > = [];
+
+      for (let i = 0; i < requestIds.length; i += STATUS_BATCH_SIZE) {
+        const batch = requestIds.slice(i, i + STATUS_BATCH_SIZE);
+        const batchStatuses = await contractRpc.getWithdrawalStatus(batch);
+        requestStatuses.push(...batchStatuses);
+      }
 
       const claimableRequests: RequestStatus[] = [];
       const pendingRequests: RequestStatusPending[] = [];

@@ -31,7 +31,7 @@ const overrideSetHeader = (res) => {
 
 // eslint-disable-next-line @typescript-eslint/no-floating-promises
 app.prepare().then(() => {
-  createServer(async (req, res) => {
+  const server = createServer(async (req, res) => {
     // Be sure to pass `true` as the second argument to `url.parse`.
     // This tells it to parse the query portion of the URL.
     const parsedUrl = parse(req.url, true);
@@ -46,5 +46,11 @@ app.prepare().then(() => {
     })
     .listen(port, () => {
       console.debug(`> Ready on http://${hostname}:${port}`);
-    });
+    })
+    // hanging socket timeout
+    .setTimeout(10_000);
+  // prevents malicious client from slowly sending headers and rest of request
+  server.headersTimeout = 10_000;
+  server.requestTimeout = 30_000;
+  server.maxHeadersCount = 50;
 });

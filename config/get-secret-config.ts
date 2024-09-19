@@ -11,6 +11,8 @@ export type SecretConfigType = Modify<
     rpcUrls_1: [string, ...string[]];
     rpcUrls_17000: [string, ...string[]];
     rpcUrls_11155111: [string, ...string[]];
+    // Dynamic keys like rpcUrls_<number>
+    [key: `rpcUrls_${number}`]: string[];
 
     cspReportOnly: boolean;
 
