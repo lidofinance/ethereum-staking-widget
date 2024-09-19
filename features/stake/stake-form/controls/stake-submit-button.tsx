@@ -5,13 +5,13 @@ import { useDappStatus } from 'shared/hooks/use-dapp-status';
 import { useStakeFormData } from '../stake-form-context';
 
 export const StakeSubmitButton = () => {
-  const { isDappActive } = useDappStatus();
+  const { isDappActiveOnStakePage } = useDappStatus();
   const { stakingLimitInfo } = useStakeFormData();
 
   return (
     <SubmitButtonHookForm
       disabled={
-        !isDappActive ||
+        !isDappActiveOnStakePage ||
         stakingLimitInfo?.stakeLimitLevel === LIMIT_LEVEL.REACHED
       }
       data-testid="stakeSubmitBtn"
