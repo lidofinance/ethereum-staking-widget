@@ -17,6 +17,7 @@ import type { AbstractLidoSDKErc20 } from '@lidofinance/lido-ethereum-sdk/erc20'
 import type { GetBalanceData } from 'wagmi/query';
 import type { Address, WatchContractEventOnLogsFn } from 'viem';
 import { config } from 'config';
+import { CHAINS } from 'consts/chains';
 
 const nativeToBN = (data: bigint) => BigNumber.from(data.toString());
 
@@ -251,17 +252,19 @@ export const useStethBalance = ({
   account,
   shouldSubscribeToUpdates = true,
 }: UseBalanceProps = {}) => {
-  const { address } = useAccount();
+  const { address, chainId } = useAccount();
   const mergedAccount = account ?? address;
 
-  const { steth, core } = useLidoSDK();
+  const { steth, core, l2 } = useLidoSDK();
+
+  const isL2 = chainId === CHAINS.OPSepoliaTestnet;
 
   const { data: contract, isLoading } = useQuery({
     queryKey: ['steth-contract', core.chainId],
     enabled: !!mergedAccount,
 
     staleTime: Infinity,
-    queryFn: async () => steth.getContract(),
+    queryFn: async () => (isL2 ? l2.steth.getContract() : steth.getContract()),
   });
 
   const balanceData = useTokenBalance(
@@ -277,16 +280,19 @@ export const useWstethBalance = ({
   account,
   shouldSubscribeToUpdates = true,
 }: UseBalanceProps = {}) => {
-  const { address } = useAccount();
+  const { address, chainId } = useAccount();
   const mergedAccount = account ?? address;
 
-  const { wsteth, core } = useLidoSDK();
+  const { wsteth, core, l2 } = useLidoSDK();
+
+  const isL2 = chainId === CHAINS.OPSepoliaTestnet;
 
   const { data: contract, isLoading } = useQuery({
     queryKey: ['wsteth-contract', core.chainId],
     enabled: !!mergedAccount,
     staleTime: Infinity,
-    queryFn: async () => wsteth.getContract(),
+    queryFn: async () =>
+      isL2 ? l2.wsteth.getContract() : wsteth.getContract(),
   });
 
   const balanceData = useTokenBalance(
