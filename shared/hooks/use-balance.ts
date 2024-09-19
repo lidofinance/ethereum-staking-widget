@@ -255,7 +255,7 @@ export const useStethBalance = ({
   const { address, chainId } = useAccount();
   const mergedAccount = account ?? address;
 
-  const { steth, core, l2 } = useLidoSDK();
+  const { steth, l2Steth, core } = useLidoSDK();
 
   const isL2 = chainId === CHAINS.OPSepoliaTestnet;
 
@@ -264,7 +264,7 @@ export const useStethBalance = ({
     enabled: !!mergedAccount,
 
     staleTime: Infinity,
-    queryFn: async () => (isL2 ? l2.steth.getContract() : steth.getContract()),
+    queryFn: async () => (isL2 ? l2Steth.getContract() : steth.getContract()),
   });
 
   const balanceData = useTokenBalance(
@@ -283,7 +283,7 @@ export const useWstethBalance = ({
   const { address, chainId } = useAccount();
   const mergedAccount = account ?? address;
 
-  const { wsteth, core, l2 } = useLidoSDK();
+  const { wsteth, l2Wsteth, core } = useLidoSDK();
 
   const isL2 = chainId === CHAINS.OPSepoliaTestnet;
 
@@ -291,8 +291,7 @@ export const useWstethBalance = ({
     queryKey: ['wsteth-contract', core.chainId],
     enabled: !!mergedAccount,
     staleTime: Infinity,
-    queryFn: async () =>
-      isL2 ? l2.wsteth.getContract() : wsteth.getContract(),
+    queryFn: async () => (isL2 ? l2Wsteth.getContract() : wsteth.getContract()),
   });
 
   const balanceData = useTokenBalance(
