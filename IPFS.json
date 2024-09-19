@@ -31,5 +31,14 @@
       "enabledWithdrawalDexes": ["one-inch", "paraswap", "bebop"],
       "multiChainBanner": []
     }
+  },
+  "11155420": {
+    "__warning__": "For testing purposes only",
+    "cid": "",
+    "leastSafeVersion": "0.36.1",
+    "config": {
+      "enabledWithdrawalDexes": ["one-inch", "paraswap", "bebop"],
+      "multiChainBanner": []
+    }
   }
 }
