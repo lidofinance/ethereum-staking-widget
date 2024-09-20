@@ -9,9 +9,8 @@ export const NFT_URL_PREFIX_BY_NETWORK: {
     `https://holesky.etherscan.io/nft/${contract}/${nftId}`,
   [CHAINS.Sepolia]: (nftId, contract) =>
     `https://sepolia.etherscan.io/nft/${contract}/${nftId}`,
-  // TODO
-  // [CHAINS.OPSepoliaTestnet]: (nftId, contract) =>
-  //   `https://sepolia.etherscan.io/nft/${contract}/${nftId}`,
+  [CHAINS.OptimismSepolia]: (nftId, contract) =>
+    `https://sepolia-optimistic.etherscan.io/nft/${contract}/${nftId}`,
 };
 
 export const getNFTUrl = (tokenId: string, chainId?: CHAINS) => {
