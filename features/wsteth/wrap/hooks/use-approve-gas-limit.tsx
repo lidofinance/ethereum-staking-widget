@@ -22,7 +22,7 @@ export const useApproveGasLimit = () => {
       if (!chainId) return;
 
       // TODO: not work on Optimism Sepolia
-      if (chainId === CHAINS.OPSepoliaTestnet) {
+      if (chainId === CHAINS.OptimismSepolia) {
         return BigNumber.from(WSTETH_APPROVE_GAS_LIMIT);
       }
 
