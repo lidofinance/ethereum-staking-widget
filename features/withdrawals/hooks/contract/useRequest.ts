@@ -9,7 +9,7 @@ import {
   useSTETHContractRPC,
   useWSTETHContractRPC,
 } from '@lido-sdk/react';
-import { TOKENS, getWithdrawalQueueAddress } from '@lido-sdk/constants';
+import { TOKENS, CHAINS, getWithdrawalQueueAddress } from '@lido-sdk/constants';
 
 import { TokensWithdrawable } from 'features/withdrawals/types/tokens-withdrawable';
 import { useWithdrawals } from 'features/withdrawals/contexts/withdrawals-context';
@@ -195,7 +195,9 @@ export const useWithdrawalRequest = ({
   onRetry,
 }: useWithdrawalRequestParams) => {
   const { chainId } = useSDK();
-  const withdrawalQueueAddress = getWithdrawalQueueAddress(chainId);
+  const withdrawalQueueAddress = getWithdrawalQueueAddress(
+    chainId === CHAINS.OptimismSepolia ? CHAINS.Sepolia : chainId,
+  );
 
   const { connector, address } = useAccount();
   const { isBunker } = useWithdrawals();
