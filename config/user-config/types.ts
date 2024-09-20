@@ -7,7 +7,7 @@ export type UserConfigDefaultType = {
     [CHAINS.Mainnet]: string[];
     [CHAINS.Holesky]: string[];
     [CHAINS.Sepolia]: string[];
-    [CHAINS.OPSepoliaTestnet]: string[];
+    [CHAINS.OptimismSepolia]: string[];
   };
   walletconnectProjectId: string | undefined;
 };

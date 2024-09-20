@@ -27,11 +27,11 @@ export const useDappStatus = () => {
   }, [chainId, isWalletConnected, isSupportedChain]);
 
   const isDappActiveOnStakePage = useMemo(() => {
-    return isDappActive && chainId !== CHAINS.OPSepoliaTestnet;
+    return isDappActive && chainId !== CHAINS.OptimismSepolia;
   }, [chainId, isDappActive]);
 
   const isDappActiveOnWqPage = useMemo(() => {
-    return isDappActive && chainId !== CHAINS.OPSepoliaTestnet;
+    return isDappActive && chainId !== CHAINS.OptimismSepolia;
   }, [chainId, isDappActive]);
 
   return {

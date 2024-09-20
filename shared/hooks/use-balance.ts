@@ -257,7 +257,7 @@ export const useStethBalance = ({
 
   const { steth, l2Steth, core } = useLidoSDK();
 
-  const isL2 = chainId === CHAINS.OPSepoliaTestnet;
+  const isL2 = chainId === CHAINS.OptimismSepolia;
 
   const { data: contract, isLoading } = useQuery({
     queryKey: ['steth-contract', core.chainId],
@@ -285,7 +285,7 @@ export const useWstethBalance = ({
 
   const { wsteth, l2Wsteth, core } = useLidoSDK();
 
-  const isL2 = chainId === CHAINS.OPSepoliaTestnet;
+  const isL2 = chainId === CHAINS.OptimismSepolia;
 
   const { data: contract, isLoading } = useQuery({
     queryKey: ['wsteth-contract', core.chainId],
