@@ -34,6 +34,7 @@ export const useApproveGasLimit = () => {
         );
         return gasLimit;
       } catch (error) {
+        console.warn(_key, error);
         return BigNumber.from(WSTETH_APPROVE_GAS_LIMIT);
       }
     },
