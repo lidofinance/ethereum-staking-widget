@@ -1,4 +1,4 @@
-import { Readable, Transform } from 'node:stream';
+import { Readable } from 'node:stream';
 import { ReadableStream } from 'node:stream/web';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { Counter, Registry } from 'prom-client';
@@ -38,28 +38,6 @@ export class SizeTooLargeError extends ClientError {
   }
 }
 
-const createSizeLogger = (MAX_SIZE: number) => {
-  let bytesWritten = 0;
-  const logSizeStream = new Transform({
-    transform(chunk, _encoding, callback) {
-      bytesWritten += chunk.length;
-      if (bytesWritten > MAX_SIZE) {
-        // Emit an error if size exceeds MAX_SIZE
-        return callback(
-          new SizeTooLargeError(
-            `Stream size exceeds the maximum limit of ${MAX_SIZE} bytes`,
-          ),
-        );
-      }
-      return callback(null, chunk); // Pass the chunk through
-    },
-    flush(callback) {
-      callback();
-    },
-  });
-  return logSizeStream;
-};
-
 export type RPCFactoryParams = {
   metrics: {
     prefix: string;
@@ -89,7 +67,6 @@ export const rpcFactory = ({
   allowedCallAddresses = {},
   allowedLogsAddresses = {},
   maxBatchCount,
-  maxResponseSize = 1_000_000, // ~1MB,
   disallowEmptyAddressGetLogs = false,
 }: RPCFactoryParams) => {
   const rpcRequestBlocked = new Counter({
@@ -214,26 +191,7 @@ export const rpcFactory = ({
         requested.headers.get('Content-Type') ?? 'application/json',
       );
       if (requested.body) {
-        const sizeLimit = createSizeLogger(maxResponseSize);
-        const readableStream = Readable.fromWeb(
-          requested.body as ReadableStream,
-        );
-        readableStream
-          .pipe(sizeLimit)
-          .on('error', (error) => {
-            if (error instanceof SizeTooLargeError) {
-              console.warn(
-                `[rpcFactory] RPC response too large: ${JSON.stringify(requests)}`,
-              );
-              // Payload Too Large
-              res.status(413).end();
-            } else {
-              res.statusCode = 500;
-              res.end(DEFAULT_API_ERROR_MESSAGE);
-            }
-            readableStream.destroy();
-          })
-          .pipe(res);
+        Readable.fromWeb(requested.body as ReadableStream).pipe(res);
       } else {
         res
           .status(requested.status)
