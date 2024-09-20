@@ -61,7 +61,7 @@ const runtimeMutableTransport = (
               requestParams.method === 'eth_getLogs' &&
               Array.isArray(requestParams?.params) &&
               // works for empty array, empty string and all falsish values
-              !!requestParams.params[0]?.address?.length
+              !requestParams.params[0]?.address?.length
             ) {
               console.warn(
                 '[runtimeMutableTransport] Invalid empty getLogs',
