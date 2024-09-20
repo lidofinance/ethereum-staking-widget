@@ -5,7 +5,7 @@ import invariant from 'tiny-invariant';
 import { PartialStakingRouterAbi__factory } from 'generated/factories/PartialStakingRouterAbi__factory';
 
 export const STAKING_ROUTER_BY_NETWORK: {
-  [key in CHAINS]?: string | null;
+  [key in CHAINS]?: string;
 } = {
   [CHAINS.Mainnet]: '0xFdDf38947aFB03C621C71b06C9C70bce73f12999',
   [CHAINS.Holesky]: '0xd6EbF043D30A7fe46D1Db32BA90a0A51207FE229',
