@@ -46,9 +46,7 @@ app.prepare().then(() => {
     })
     .listen(port, () => {
       console.debug(`> Ready on http://${hostname}:${port}`);
-    })
-    // hanging socket timeout
-    .setTimeout(10_000);
+    });
   // prevents malicious client from slowly sending headers and rest of request
   server.headersTimeout = 10_000;
   server.requestTimeout = 30_000;
