@@ -60,8 +60,13 @@ const runtimeMutableTransport = (
             if (
               requestParams.method === 'eth_getLogs' &&
               Array.isArray(requestParams?.params) &&
-              requestParams.params[0]?.address?.length < 0
+              // works for empty array, empty string and all falsish values
+              !!requestParams.params[0]?.address?.length
             ) {
+              console.warn(
+                '[runtimeMutableTransport] Invalid empty getLogs',
+                requestParams,
+              );
               const error = new InvalidParamsRpcError(
                 new Error(`Empty address for eth_getLogs is not supported`),
               );
