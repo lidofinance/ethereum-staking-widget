@@ -8,6 +8,7 @@ import {
 
 import { config } from 'config';
 import { WSTETH_APPROVE_GAS_LIMIT } from 'consts/tx';
+import { CHAINS } from 'consts/chains';
 import { STRATEGY_IMMUTABLE } from 'consts/swr-strategies';
 
 export const useApproveGasLimit = () => {
@@ -20,6 +21,11 @@ export const useApproveGasLimit = () => {
     async (_key, chainId) => {
       if (!chainId) return;
 
+      // TODO: not work on Optimism Sepolia
+      if (chainId === CHAINS.OPSepoliaTestnet) {
+        return BigNumber.from(WSTETH_APPROVE_GAS_LIMIT);
+      }
+
       try {
         const gasLimit = await steth.estimateGas.approve(
           wsteth.address,
@@ -28,7 +34,6 @@ export const useApproveGasLimit = () => {
         );
         return gasLimit;
       } catch (error) {
-        console.warn(_key, error);
         return BigNumber.from(WSTETH_APPROVE_GAS_LIMIT);
       }
     },
