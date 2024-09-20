@@ -8,9 +8,11 @@ import { SubmitButtonHookForm } from 'shared/hook-form/controls/submit-button-ho
 import { useFormState } from 'react-hook-form';
 import { isValidationErrorTypeUnhandled } from 'shared/hook-form/validation/validation-error';
 import { useIsMultisig } from 'shared/hooks/useIsMultisig';
+import { useDappStatus } from 'shared/hooks/use-dapp-status';
 
 // conditional render breaks useFormState, so it can't be inside SubmitButton
 export const useRequestSubmitButtonProps = (): SubmitButtonRequestProps => {
+  const { isDappActiveOnWqPage } = useDappStatus();
   const { isPaused } = useWithdrawals();
   const { isValidating, isSubmitting, errors } =
     useFormState<RequestFormInputType>({ name: ['requests', 'amount'] });
@@ -19,6 +21,7 @@ export const useRequestSubmitButtonProps = (): SubmitButtonRequestProps => {
     loading: isValidating || isSubmitting,
     disabled:
       isPaused ||
+      !isDappActiveOnWqPage ||
       (!!errors.amount && !isValidationErrorTypeUnhandled(errors.amount.type)),
   };
 };

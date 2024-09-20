@@ -30,11 +30,16 @@ export const useDappStatus = () => {
     return isDappActive && chainId !== CHAINS.OPSepoliaTestnet;
   }, [chainId, isDappActive]);
 
+  const isDappActiveOnWqPage = useMemo(() => {
+    return isDappActive && chainId !== CHAINS.OPSepoliaTestnet;
+  }, [chainId, isDappActive]);
+
   return {
     isWalletConnected,
     isSupportedChain,
     isLidoMultichainChain,
     isDappActive,
     isDappActiveOnStakePage,
+    isDappActiveOnWqPage,
   };
 };
