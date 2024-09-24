@@ -32,6 +32,11 @@ export const SDK_SUPPORTED_MULTICHAIN_CHAINS = [
 ];
 
 // TODO: move to @lidofinance/lido-ethereum-sdk package
-export const isSDKSupportedL2Chain = (chainId) => {
-  return SDK_SUPPORTED_MULTICHAIN_CHAINS.indexOf(chainId) > -1;
+export const isSDKSupportedL2Chain = (
+  chainId: CHAINS | LIDO_MULTICHAIN_CHAINS,
+) => {
+  return (
+    SDK_SUPPORTED_MULTICHAIN_CHAINS.indexOf(chainId as LIDO_MULTICHAIN_CHAINS) >
+    -1
+  );
 };
