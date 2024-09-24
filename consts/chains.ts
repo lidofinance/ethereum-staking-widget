@@ -30,3 +30,8 @@ export const SDK_LEGACY_SUPPORTED_CHAINS = [
 export const SDK_SUPPORTED_MULTICHAIN_CHAINS = [
   LIDO_MULTICHAIN_CHAINS.OptimismSepolia,
 ];
+
+// TODO: move to @lidofinance/lido-ethereum-sdk package
+export const isSDKSupportedL2Chain = (chainId) => {
+  return SDK_SUPPORTED_MULTICHAIN_CHAINS.indexOf(chainId) > -1;
+};

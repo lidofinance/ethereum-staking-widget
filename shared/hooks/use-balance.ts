@@ -17,8 +17,7 @@ import {
 import type { GetBalanceData } from 'wagmi/query';
 
 import { config } from 'config';
-
-import { useDappStatus } from './use-dapp-status';
+import { isSDKSupportedL2Chain } from 'consts/chains';
 
 const nativeToBN = (data: bigint) => BigNumber.from(data.toString());
 
@@ -254,7 +253,6 @@ export const useStethBalance = ({
   shouldSubscribeToUpdates = true,
 }: UseBalanceProps = {}) => {
   const { address } = useAccount();
-  const { isDappActiveOnL2 } = useDappStatus();
   const mergedAccount = account ?? address;
 
   const { steth, l2Steth, core } = useLidoSDK();
@@ -265,7 +263,9 @@ export const useStethBalance = ({
 
     staleTime: Infinity,
     queryFn: async () =>
-      isDappActiveOnL2 ? l2Steth.getContract() : steth.getContract(),
+      isSDKSupportedL2Chain(core.chainId)
+        ? l2Steth.getContract()
+        : steth.getContract(),
   });
 
   const balanceData = useTokenBalance(
@@ -282,7 +282,6 @@ export const useWstethBalance = ({
   shouldSubscribeToUpdates = true,
 }: UseBalanceProps = {}) => {
   const { address } = useAccount();
-  const { isDappActiveOnL2 } = useDappStatus();
   const mergedAccount = account ?? address;
 
   const { wsteth, l2Wsteth, core } = useLidoSDK();
@@ -292,7 +291,9 @@ export const useWstethBalance = ({
     enabled: !!mergedAccount,
     staleTime: Infinity,
     queryFn: async () =>
-      isDappActiveOnL2 ? l2Wsteth.getContract() : wsteth.getContract(),
+      isSDKSupportedL2Chain(core.chainId)
+        ? l2Wsteth.getContract()
+        : wsteth.getContract(),
   });
 
   const balanceData = useTokenBalance(

@@ -1,10 +1,7 @@
 import { useMemo } from 'react';
 import { useAccount } from 'wagmi';
 
-import {
-  LIDO_MULTICHAIN_CHAINS,
-  SDK_SUPPORTED_MULTICHAIN_CHAINS,
-} from 'consts/chains';
+import { isSDKSupportedL2Chain, LIDO_MULTICHAIN_CHAINS } from 'consts/chains';
 
 import { useIsSupportedChain } from './use-is-supported-chain';
 import { useConfig } from 'config';
@@ -32,7 +29,7 @@ export const useDappStatus = () => {
   const isDappActiveOnL2 = useMemo(() => {
     if (!chainId) return false;
 
-    return SDK_SUPPORTED_MULTICHAIN_CHAINS.indexOf(chainId) > -1;
+    return isSDKSupportedL2Chain(chainId);
   }, [chainId]);
 
   return {
