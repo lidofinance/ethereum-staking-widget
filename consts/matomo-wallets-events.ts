@@ -10,7 +10,9 @@ export const enum MATOMO_WALLETS_EVENTS_TYPES {
   onClickCoin98 = 'onClickCoin98',
   onConnectCoin98 = 'onConnectCoin98',
   onClickCoinbase = 'onClickCoinbase',
+  onClickCoinbaseSmartWallet = 'onClickCoinbaseSmartWallet',
   onConnectCoinbase = 'onConnectCoinbase',
+  onConnectCoinbaseSmartWallet = 'onConnectCoinbaseSmartWallet',
   onClickExodus = 'onClickExodus',
   onConnectExodus = 'onConnectExodus',
   onClickImToken = 'onClickImToken',
@@ -78,6 +80,16 @@ export const MATOMO_WALLETS_EVENTS: Record<
     'Ethereum_Staking_Widget',
     'Connect Coinbase Wallet wallet',
     'eth_widget_connect_coinbase_wallet',
+  ],
+  [MATOMO_WALLETS_EVENTS_TYPES.onClickCoinbaseSmartWallet]: [
+    'Ethereum_Staking_Widget',
+    'Click Coinbase Smart Wallet wallet',
+    'eth_widget_click_coinbase_smart_wallet',
+  ],
+  [MATOMO_WALLETS_EVENTS_TYPES.onConnectCoinbaseSmartWallet]: [
+    'Ethereum_Staking_Widget',
+    'Connect Coinbase Smart Wallet wallet',
+    'eth_widget_connect_coinbase_smart_wallet',
   ],
   [MATOMO_WALLETS_EVENTS_TYPES.onClickExodus]: [
     'Ethereum_Staking_Widget',
@@ -202,6 +214,9 @@ export const walletsMetrics: Metrics<WalletIdsEthereum> = {
         brave: getMetricHandler(MATOMO_WALLETS_EVENTS.onClickBrave),
         coin98: getMetricHandler(MATOMO_WALLETS_EVENTS.onClickCoin98),
         coinbase: getMetricHandler(MATOMO_WALLETS_EVENTS.onClickCoinbase),
+        coinbaseSmartWallet: getMetricHandler(
+          MATOMO_WALLETS_EVENTS.onClickCoinbaseSmartWallet,
+        ),
         exodus: getMetricHandler(MATOMO_WALLETS_EVENTS.onClickExodus),
         imToken: getMetricHandler(MATOMO_WALLETS_EVENTS.onClickImToken),
         ledgerHID: getMetricHandler(MATOMO_WALLETS_EVENTS.onClickLedger),
@@ -223,6 +238,9 @@ export const walletsMetrics: Metrics<WalletIdsEthereum> = {
         brave: getMetricHandler(MATOMO_WALLETS_EVENTS.onConnectBrave),
         coin98: getMetricHandler(MATOMO_WALLETS_EVENTS.onConnectCoin98),
         coinbase: getMetricHandler(MATOMO_WALLETS_EVENTS.onConnectCoinbase),
+        coinbaseSmartWallet: getMetricHandler(
+          MATOMO_WALLETS_EVENTS.onConnectCoinbaseSmartWallet,
+        ),
         exodus: getMetricHandler(MATOMO_WALLETS_EVENTS.onConnectExodus),
         imToken: getMetricHandler(MATOMO_WALLETS_EVENTS.onConnectImToken),
         ledgerHID: getMetricHandler(MATOMO_WALLETS_EVENTS.onConnectLedger),

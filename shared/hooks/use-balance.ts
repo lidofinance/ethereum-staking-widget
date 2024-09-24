@@ -136,7 +136,7 @@ export const useTokenTransferSubscription = () => {
     [queryClient, subscriptions],
   );
 
-  const shouldWatch = address && tokens.length > 0;
+  const shouldWatch = !!(address && tokens.length > 0);
 
   useWatchContractEvent({
     abi: Erc20EventsAbi,

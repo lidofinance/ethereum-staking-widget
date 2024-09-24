@@ -77,7 +77,7 @@ const rpc = rpcFactory({
   allowedCallAddresses,
   allowedLogsAddresses,
   maxBatchCount: config.PROVIDER_MAX_BATCH,
-  disallowEmptyAddressGetLogs: false,
+  disallowEmptyAddressGetLogs: true,
 });
 
 export default wrapNextRequest([
