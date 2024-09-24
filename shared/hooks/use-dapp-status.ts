@@ -8,7 +8,6 @@ import {
 
 import { useIsSupportedChain } from './use-is-supported-chain';
 import { useConfig } from 'config';
-import { CHAINS } from 'consts/chains';
 
 export const useDappStatus = () => {
   const { multiChainBanner } = useConfig().externalConfig;
@@ -36,23 +35,11 @@ export const useDappStatus = () => {
     return SDK_SUPPORTED_MULTICHAIN_CHAINS.indexOf(chainId) > -1;
   }, [chainId]);
 
-  // TODO: remove?
-  const isDappActiveOnStakePage = useMemo(() => {
-    return isDappActive && chainId !== CHAINS.OptimismSepolia;
-  }, [chainId, isDappActive]);
-
-  // TODO: remove?
-  const isDappActiveOnWqPage = useMemo(() => {
-    return isDappActive && chainId !== CHAINS.OptimismSepolia;
-  }, [chainId, isDappActive]);
-
   return {
     isWalletConnected,
     isSupportedChain,
     isLidoMultichainChain,
     isDappActive,
     isDappActiveOnL2,
-    isDappActiveOnStakePage,
-    isDappActiveOnWqPage,
   };
 };

@@ -12,7 +12,7 @@ import { useDappStatus } from 'shared/hooks/use-dapp-status';
 
 // conditional render breaks useFormState, so it can't be inside SubmitButton
 export const useRequestSubmitButtonProps = (): SubmitButtonRequestProps => {
-  const { isDappActiveOnWqPage } = useDappStatus();
+  const { isDappActiveOnL2 } = useDappStatus();
   const { isPaused } = useWithdrawals();
   const { isValidating, isSubmitting, errors } =
     useFormState<RequestFormInputType>({ name: ['requests', 'amount'] });
@@ -21,7 +21,7 @@ export const useRequestSubmitButtonProps = (): SubmitButtonRequestProps => {
     loading: isValidating || isSubmitting,
     disabled:
       isPaused ||
-      !isDappActiveOnWqPage ||
+      isDappActiveOnL2 ||
       (!!errors.amount && !isValidationErrorTypeUnhandled(errors.amount.type)),
   };
 };
