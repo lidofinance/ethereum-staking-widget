@@ -17,7 +17,7 @@ import {
 import type { GetBalanceData } from 'wagmi/query';
 
 import { config } from 'config';
-import { isSDKSupportedL2Chain } from 'consts/chains';
+import { isSDKSupportedL2Chain, CHAINS } from 'consts/chains';
 
 const nativeToBN = (data: bigint) => BigNumber.from(data.toString());
 
@@ -263,7 +263,7 @@ export const useStethBalance = ({
 
     staleTime: Infinity,
     queryFn: async () =>
-      isSDKSupportedL2Chain(core.chainId)
+      isSDKSupportedL2Chain(core.chainId as CHAINS)
         ? l2Steth.getContract()
         : steth.getContract(),
   });
@@ -291,7 +291,7 @@ export const useWstethBalance = ({
     enabled: !!mergedAccount,
     staleTime: Infinity,
     queryFn: async () =>
-      isSDKSupportedL2Chain(core.chainId)
+      isSDKSupportedL2Chain(core.chainId as CHAINS)
         ? l2Wsteth.getContract()
         : wsteth.getContract(),
   });

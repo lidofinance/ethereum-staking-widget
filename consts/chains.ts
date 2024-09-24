@@ -8,7 +8,6 @@ export enum CHAINS {
 export enum LIDO_MULTICHAIN_CHAINS {
   'zkSync Era' = 324,
   Optimism = 10,
-  OptimismSepolia = 11155420,
   Arbitrum = 42161,
   'Polygon PoS' = 137,
   Base = 8453,
@@ -27,16 +26,9 @@ export const SDK_LEGACY_SUPPORTED_CHAINS = [
 ];
 
 // TODO: move to @lidofinance/lido-ethereum-sdk package
-export const SDK_SUPPORTED_MULTICHAIN_CHAINS = [
-  LIDO_MULTICHAIN_CHAINS.OptimismSepolia,
-];
+export const SDK_SUPPORTED_MULTICHAIN_CHAINS = [CHAINS.OptimismSepolia];
 
 // TODO: move to @lidofinance/lido-ethereum-sdk package
-export const isSDKSupportedL2Chain = (
-  chainId: CHAINS | LIDO_MULTICHAIN_CHAINS,
-) => {
-  return (
-    SDK_SUPPORTED_MULTICHAIN_CHAINS.indexOf(chainId as LIDO_MULTICHAIN_CHAINS) >
-    -1
-  );
+export const isSDKSupportedL2Chain = (chainId: CHAINS) => {
+  return SDK_SUPPORTED_MULTICHAIN_CHAINS.indexOf(chainId) > -1;
 };
