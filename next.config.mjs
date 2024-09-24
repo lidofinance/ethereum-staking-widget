@@ -120,6 +120,10 @@ export default withBundleAnalyzer({
             value: 'same-origin',
           },
           {
+            key: 'Cross-Origin-Opener-Policy',
+            value: 'same-origin',
+          },
+          {
             key: 'x-content-type-options',
             value: 'nosniff',
           },
