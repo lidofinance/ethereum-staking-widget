@@ -13,9 +13,7 @@ export const STAKING_ROUTER_BY_NETWORK: {
 };
 
 export const getStakingRouterAddress = (chainId: CHAINS): string => {
-  const _chainId =
-    chainId === CHAINS.OptimismSepolia ? CHAINS.Sepolia : chainId;
-  const address = STAKING_ROUTER_BY_NETWORK[_chainId];
+  const address = STAKING_ROUTER_BY_NETWORK[chainId];
   invariant(address, 'chain is not supported');
   return address;
 };

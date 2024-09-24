@@ -8,6 +8,7 @@ export enum CHAINS {
 export enum LIDO_MULTICHAIN_CHAINS {
   'zkSync Era' = 324,
   Optimism = 10,
+  OptimismSepolia = 11155420,
   Arbitrum = 42161,
   'Polygon PoS' = 137,
   Base = 8453,
@@ -17,3 +18,15 @@ export enum LIDO_MULTICHAIN_CHAINS {
   'BNB Chain' = 56,
   'Mode Chain' = 34443,
 }
+
+// TODO: move to legacy lido-js-sdk package
+export const SDK_LEGACY_SUPPORTED_CHAINS = [
+  CHAINS.Mainnet,
+  CHAINS.Holesky,
+  CHAINS.Sepolia,
+];
+
+// TODO: move to @lidofinance/lido-ethereum-sdk package
+export const SDK_SUPPORTED_MULTICHAIN_CHAINS = [
+  LIDO_MULTICHAIN_CHAINS.OptimismSepolia,
+];

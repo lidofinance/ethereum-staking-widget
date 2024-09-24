@@ -2,9 +2,11 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
 import { QueryKey, useQuery, useQueryClient } from '@tanstack/react-query';
+import type { AbstractLidoSDKErc20 } from '@lidofinance/lido-ethereum-sdk/erc20';
 import { BigNumber } from 'ethers';
 import { useLidoSDK } from 'providers/lido-sdk';
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import type { Address, WatchContractEventOnLogsFn } from 'viem';
 import {
   useBlockNumber,
   useBalance,
@@ -12,12 +14,11 @@ import {
   useReadContract,
   useWatchContractEvent,
 } from 'wagmi';
-
-import type { AbstractLidoSDKErc20 } from '@lidofinance/lido-ethereum-sdk/erc20';
 import type { GetBalanceData } from 'wagmi/query';
-import type { Address, WatchContractEventOnLogsFn } from 'viem';
+
 import { config } from 'config';
-import { CHAINS } from 'consts/chains';
+
+import { useDappStatus } from './use-dapp-status';
 
 const nativeToBN = (data: bigint) => BigNumber.from(data.toString());
 
@@ -252,19 +253,19 @@ export const useStethBalance = ({
   account,
   shouldSubscribeToUpdates = true,
 }: UseBalanceProps = {}) => {
-  const { address, chainId } = useAccount();
+  const { address } = useAccount();
+  const { isDappActiveOnL2 } = useDappStatus();
   const mergedAccount = account ?? address;
 
   const { steth, l2Steth, core } = useLidoSDK();
-
-  const isL2 = chainId === CHAINS.OptimismSepolia;
 
   const { data: contract, isLoading } = useQuery({
     queryKey: ['steth-contract', core.chainId],
     enabled: !!mergedAccount,
 
     staleTime: Infinity,
-    queryFn: async () => (isL2 ? l2Steth.getContract() : steth.getContract()),
+    queryFn: async () =>
+      isDappActiveOnL2 ? l2Steth.getContract() : steth.getContract(),
   });
 
   const balanceData = useTokenBalance(
@@ -280,18 +281,18 @@ export const useWstethBalance = ({
   account,
   shouldSubscribeToUpdates = true,
 }: UseBalanceProps = {}) => {
-  const { address, chainId } = useAccount();
+  const { address } = useAccount();
+  const { isDappActiveOnL2 } = useDappStatus();
   const mergedAccount = account ?? address;
 
   const { wsteth, l2Wsteth, core } = useLidoSDK();
-
-  const isL2 = chainId === CHAINS.OptimismSepolia;
 
   const { data: contract, isLoading } = useQuery({
     queryKey: ['wsteth-contract', core.chainId],
     enabled: !!mergedAccount,
     staleTime: Infinity,
-    queryFn: async () => (isL2 ? l2Wsteth.getContract() : wsteth.getContract()),
+    queryFn: async () =>
+      isDappActiveOnL2 ? l2Wsteth.getContract() : wsteth.getContract(),
   });
 
   const balanceData = useTokenBalance(

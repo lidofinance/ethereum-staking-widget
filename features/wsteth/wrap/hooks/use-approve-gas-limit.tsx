@@ -8,7 +8,7 @@ import {
 
 import { config } from 'config';
 import { WSTETH_APPROVE_GAS_LIMIT } from 'consts/tx';
-import { CHAINS } from 'consts/chains';
+import { SDK_LEGACY_SUPPORTED_CHAINS } from 'consts/chains';
 import { STRATEGY_IMMUTABLE } from 'consts/swr-strategies';
 
 export const useApproveGasLimit = () => {
@@ -19,11 +19,8 @@ export const useApproveGasLimit = () => {
   const { data } = useLidoSWR(
     ['swr:approve-wrap-gas-limit', chainId],
     async (_key, chainId) => {
-      if (!chainId) return;
-
-      // TODO: not work on Optimism Sepolia
-      if (chainId === CHAINS.OptimismSepolia) {
-        return BigNumber.from(WSTETH_APPROVE_GAS_LIMIT);
+      if (!chainId || SDK_LEGACY_SUPPORTED_CHAINS.indexOf(chainId) < 0) {
+        return;
       }
 
       try {
