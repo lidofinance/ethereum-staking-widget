@@ -2989,15 +2989,6 @@
   resolved "https://registry.yarnpkg.com/@reef-knot/wallet-adapter-coinbase-smart-wallet/-/wallet-adapter-coinbase-smart-wallet-1.0.0.tgz#f3a2cea182059e280845ac9137dfd5cc8fe78302"
   integrity sha512-txZteS7ZOBPPr9pqbcEt0uLIOf5CB9imjTD6bu+uFEfpW4aLCdLnwqnhL+Vr1httKhSqGJPKKG8rP6onnp5Egw==
 
-"@reef-knot/wallet-adapter-coinbase@2.1.0":
-  version "2.1.0"
-  resolved "https://registry.yarnpkg.com/@reef-knot/wallet-adapter-coinbase/-/wallet-adapter-coinbase-2.1.0.tgz#9edb16889aa777fe90d6bb5582af2a577020f12e"
-  integrity sha512-AGI21eh6j7NOtTfiYNZk1u9qYIeOedv0iOCOga9p8DDLzEEzXGsr+dHZq39JX4TGk4BjEPAZUifbYf1ZS+ySDg==
-"@reef-knot/wallet-adapter-coinbase@2.2.0":
-  version "2.2.0"
-  resolved "https://registry.yarnpkg.com/@reef-knot/wallet-adapter-coinbase/-/wallet-adapter-coinbase-2.2.0.tgz#b74e77211dc3da5ef279428c119be5c79348e078"
-  integrity sha512-nJCUHzkPKKtHU6xK4FzzebjYwWdlxhOrHgOjCZMTSOxrOeexImtvS+ray8PtRH/PePlB1aAx/3osE5/JlPAdTA==
-
 "@reef-knot/wallet-adapter-coinbase@2.2.0":
   version "2.2.0"
   resolved "https://registry.yarnpkg.com/@reef-knot/wallet-adapter-coinbase/-/wallet-adapter-coinbase-2.2.0.tgz#b74e77211dc3da5ef279428c119be5c79348e078"
