@@ -4,6 +4,10 @@ import {
   LidoSDKstETH,
   LidoSDKwstETH,
 } from '@lidofinance/lido-ethereum-sdk/erc20';
+import {
+  LidoSDKL2Steth,
+  LidoSDKL2Wsteth,
+} from '@lidofinance/lido-ethereum-sdk/l2';
 import invariant from 'tiny-invariant';
 import { useChainId, useClient, useConnectorClient } from 'wagmi';
 import { useTokenTransferSubscription } from 'shared/hooks/use-balance';
@@ -13,6 +17,8 @@ type LidoSDKContextValue = {
   core: LidoSDKCore;
   steth: LidoSDKstETH;
   wsteth: LidoSDKwstETH;
+  l2Steth: LidoSDKL2Steth;
+  l2Wsteth: LidoSDKL2Wsteth;
   subscribeToTokenUpdates: ReturnType<typeof useTokenTransferSubscription>;
 };
 
@@ -46,7 +52,17 @@ export const LidoSDKProvider = ({ children }: React.PropsWithChildren) => {
     const steth = new LidoSDKstETH({ core });
     const wsteth = new LidoSDKwstETH({ core });
 
-    return { core, steth, wsteth, subscribeToTokenUpdates: subscribe };
+    const l2Steth = new LidoSDKL2Steth({ core });
+    const l2Wsteth = new LidoSDKL2Wsteth({ core });
+
+    return {
+      core,
+      steth,
+      wsteth,
+      l2Steth,
+      l2Wsteth,
+      subscribeToTokenUpdates: subscribe,
+    };
   }, [chainId, fallbackRpcUrl, publicClient, subscribe, walletClient]);
   return (
     <LidoSDKContext.Provider value={sdk}>{children}</LidoSDKContext.Provider>

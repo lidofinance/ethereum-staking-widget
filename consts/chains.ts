@@ -2,6 +2,7 @@ export enum CHAINS {
   Mainnet = 1,
   Holesky = 17000,
   Sepolia = 11155111,
+  OptimismSepolia = 11155420,
 }
 
 export enum LIDO_MULTICHAIN_CHAINS {
@@ -16,3 +17,18 @@ export enum LIDO_MULTICHAIN_CHAINS {
   'BNB Chain' = 56,
   'Mode Chain' = 34443,
 }
+
+// TODO: move to legacy lido-js-sdk package
+export const SDK_LEGACY_SUPPORTED_CHAINS = [
+  CHAINS.Mainnet,
+  CHAINS.Holesky,
+  CHAINS.Sepolia,
+];
+
+// TODO: move to @lidofinance/lido-ethereum-sdk package
+export const SDK_SUPPORTED_MULTICHAIN_CHAINS = [CHAINS.OptimismSepolia];
+
+// TODO: move to @lidofinance/lido-ethereum-sdk package
+export const isSDKSupportedL2Chain = (chainId: CHAINS) => {
+  return SDK_SUPPORTED_MULTICHAIN_CHAINS.indexOf(chainId) > -1;
+};

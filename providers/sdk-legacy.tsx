@@ -9,6 +9,7 @@ import { Web3Provider } from '@ethersproject/providers';
 import { ProviderSDK } from '@lido-sdk/react';
 import { getStaticRpcBatchProvider } from '@lido-sdk/providers';
 
+import { SDK_LEGACY_SUPPORTED_CHAINS } from 'consts/chains';
 import { useDappStatus } from 'shared/hooks/use-dapp-status';
 
 type SDKLegacyProviderProps = PropsWithChildren<{
@@ -76,7 +77,8 @@ export const SDKLegacyProvider = ({
   );
 
   const chainId = useMemo(() => {
-    return supportedChainIds.indexOf(wagmiChainId) > -1
+    return supportedChainIds.indexOf(wagmiChainId) > -1 &&
+      SDK_LEGACY_SUPPORTED_CHAINS.indexOf(wagmiChainId) > -1
       ? wagmiChainId
       : defaultChainId;
   }, [defaultChainId, supportedChainIds, wagmiChainId]);
