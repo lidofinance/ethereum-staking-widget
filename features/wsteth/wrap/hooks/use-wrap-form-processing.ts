@@ -1,6 +1,7 @@
 import { useCallback } from 'react';
 import invariant from 'tiny-invariant';
 import { useAccount } from 'wagmi';
+import { parseEther } from 'viem';
 
 import { useSDK, useWSTETHContractRPC } from '@lido-sdk/react';
 
@@ -13,8 +14,9 @@ import type {
   WrapFormApprovalData,
   WrapFormInputType,
 } from '../wrap-form-context';
-import { useWrapTxProcessing } from './use-wrap-tx-processing';
+// import { useWrapTxProcessing } from './use-wrap-tx-processing';
 import { useTxModalWrap } from './use-tx-modal-stages-wrap';
+import { useLidoSDK } from '../../../../providers/lido-sdk';
 
 type UseWrapFormProcessorArgs = {
   approvalData: WrapFormApprovalData;
@@ -33,7 +35,10 @@ export const useWrapFormProcessor = ({
   const wstETHContractRPC = useWSTETHContractRPC();
 
   const { txModalStages } = useTxModalWrap();
-  const processWrapTx = useWrapTxProcessing();
+  // const processWrapTx = useWrapTxProcessing();
+
+  const { l2 } = useLidoSDK();
+
   const waitForTx = useTxConfirmation();
   const { isApprovalNeededBeforeWrap, processApproveTx } = approvalData;
 
@@ -67,9 +72,22 @@ export const useWrapFormProcessor = ({
 
         txModalStages.sign(amount, token, willReceive);
 
-        const txHash = await runWithTransactionLogger('Wrap signing', () =>
-          processWrapTx({ amount, token, isMultisig }),
-        );
+        // console.log('address:', address);
+        // console.log('amount:', amount);
+        // console.log('amount.toString():', amount.toString());
+
+        const tx = await l2.unwrap({
+          // account: address,
+          // value: amount,
+          value: parseEther('0.0001'),
+        });
+        // console.log('tx:', tx);
+        const txHash = tx.hash;
+        // console.log('txHash:', txHash);
+
+        // const txHash = await runWithTransactionLogger('Wrap signing', () =>
+        //   processWrapTx({ amount, token, isMultisig }),
+        // );
 
         if (isMultisig) {
           txModalStages.successMultisig();
@@ -102,9 +120,9 @@ export const useWrapFormProcessor = ({
       wstETHContractRPC,
       isApprovalNeededBeforeWrap,
       txModalStages,
+      l2,
       onConfirm,
       processApproveTx,
-      processWrapTx,
       waitForTx,
       onRetry,
     ],

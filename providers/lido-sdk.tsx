@@ -7,9 +7,13 @@ import {
 import {
   LidoSDKL2Steth,
   LidoSDKL2Wsteth,
+  LidoSDKL2,
 } from '@lidofinance/lido-ethereum-sdk/l2';
 import invariant from 'tiny-invariant';
 import { useChainId, useClient, useConnectorClient } from 'wagmi';
+
+import { usePublicClient, useWalletClient } from 'wagmi';
+
 import { useTokenTransferSubscription } from 'shared/hooks/use-balance';
 import { useGetRpcUrlByChainId } from 'config/rpc';
 
@@ -17,6 +21,7 @@ type LidoSDKContextValue = {
   core: LidoSDKCore;
   steth: LidoSDKstETH;
   wsteth: LidoSDKwstETH;
+  l2: LidoSDKL2;
   l2Steth: LidoSDKL2Steth;
   l2Wsteth: LidoSDKL2Wsteth;
   subscribeToTokenUpdates: ReturnType<typeof useTokenTransferSubscription>;
@@ -39,6 +44,9 @@ export const LidoSDKProvider = ({ children }: React.PropsWithChildren) => {
   const fallbackRpcUrl = !publicClient ? getRpcUrl(chainId) : undefined;
   const { data: walletClient } = useConnectorClient();
 
+  const publicClient2 = usePublicClient();
+  const { data: walletClient2 } = useWalletClient();
+
   const sdk = useMemo(() => {
     const core = new LidoSDKCore({
       chainId,
@@ -49,21 +57,39 @@ export const LidoSDKProvider = ({ children }: React.PropsWithChildren) => {
       rpcUrls: !publicClient && fallbackRpcUrl ? [fallbackRpcUrl] : undefined,
     });
 
+    const l2 = new LidoSDKL2({
+      chainId,
+      logMode: 'debug',
+      rpcProvider: publicClient2 as any,
+      web3Provider: walletClient2 as any,
+      // viem client can be unavailable on ipfs+dev first renders
+      // rpcUrls: !publicClient && fallbackRpcUrl ? [fallbackRpcUrl] : undefined,
+    });
+
     const steth = new LidoSDKstETH({ core });
     const wsteth = new LidoSDKwstETH({ core });
 
-    const l2Steth = new LidoSDKL2Steth({ core });
-    const l2Wsteth = new LidoSDKL2Wsteth({ core });
+    const l2Steth = l2.steth;
+    const l2Wsteth = l2.wsteth;
 
     return {
       core,
       steth,
       wsteth,
+      l2,
       l2Steth,
       l2Wsteth,
       subscribeToTokenUpdates: subscribe,
     };
-  }, [chainId, fallbackRpcUrl, publicClient, subscribe, walletClient]);
+  }, [
+    chainId,
+    fallbackRpcUrl,
+    publicClient,
+    publicClient2,
+    subscribe,
+    walletClient,
+    walletClient2,
+  ]);
   return (
     <LidoSDKContext.Provider value={sdk}>{children}</LidoSDKContext.Provider>
   );
