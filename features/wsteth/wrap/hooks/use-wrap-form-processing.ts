@@ -1,10 +1,10 @@
 import { useCallback } from 'react';
 import invariant from 'tiny-invariant';
 import { useAccount } from 'wagmi';
-import { parseEther } from 'viem';
 
 import { useSDK, useWSTETHContractRPC } from '@lido-sdk/react';
 
+import { CHAINS, isSDKSupportedL2Chain } from 'consts/chains';
 import { useCurrentStaticRpcProvider } from 'shared/hooks/use-current-static-rpc-provider';
 import { runWithTransactionLogger } from 'utils';
 import { isContract } from 'utils/isContract';
@@ -14,7 +14,7 @@ import type {
   WrapFormApprovalData,
   WrapFormInputType,
 } from '../wrap-form-context';
-// import { useWrapTxProcessing } from './use-wrap-tx-processing';
+import { useWrapTxProcessing } from './use-wrap-tx-processing';
 import { useTxModalWrap } from './use-tx-modal-stages-wrap';
 import { useLidoSDK } from '../../../../providers/lido-sdk';
 
@@ -29,13 +29,13 @@ export const useWrapFormProcessor = ({
   onConfirm,
   onRetry,
 }: UseWrapFormProcessorArgs) => {
-  const { address } = useAccount();
+  const { address, chainId } = useAccount();
   const { providerWeb3 } = useSDK();
   const { staticRpcProvider } = useCurrentStaticRpcProvider();
   const wstETHContractRPC = useWSTETHContractRPC();
 
   const { txModalStages } = useTxModalWrap();
-  // const processWrapTx = useWrapTxProcessing();
+  const processWrapTx = useWrapTxProcessing();
 
   const { l2 } = useLidoSDK();
 
@@ -72,22 +72,19 @@ export const useWrapFormProcessor = ({
 
         txModalStages.sign(amount, token, willReceive);
 
-        // console.log('address:', address);
-        // console.log('amount:', amount);
-        // console.log('amount.toString():', amount.toString());
-
-        const tx = await l2.unwrap({
-          // account: address,
-          // value: amount,
-          value: parseEther('0.0001'),
-        });
-        // console.log('tx:', tx);
-        const txHash = tx.hash;
-        // console.log('txHash:', txHash);
-
-        // const txHash = await runWithTransactionLogger('Wrap signing', () =>
-        //   processWrapTx({ amount, token, isMultisig }),
-        // );
+        let txHash;
+        if (isSDKSupportedL2Chain(chainId as CHAINS)) {
+          // The operation 'stETH to wstETH' on L2 is unwrap
+          const tx = await l2.unwrap({
+            // value: amount.toString(), <- Not working
+            value: amount.toBigInt(),
+          });
+          txHash = tx.hash;
+        } else {
+          txHash = await runWithTransactionLogger('Wrap signing', () =>
+            processWrapTx({ amount, token, isMultisig }),
+          );
+        }
 
         if (isMultisig) {
           txModalStages.successMultisig();
@@ -114,6 +111,7 @@ export const useWrapFormProcessor = ({
       }
     },
     [
+      chainId,
       address,
       providerWeb3,
       staticRpcProvider,
@@ -123,6 +121,7 @@ export const useWrapFormProcessor = ({
       l2,
       onConfirm,
       processApproveTx,
+      processWrapTx,
       waitForTx,
       onRetry,
     ],

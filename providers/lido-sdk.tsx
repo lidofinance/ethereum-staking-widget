@@ -59,9 +59,9 @@ export const LidoSDKProvider = ({ children }: React.PropsWithChildren) => {
 
     const l2 = new LidoSDKL2({
       chainId,
-      logMode: 'debug',
-      rpcProvider: publicClient2 as any,
-      web3Provider: walletClient2 as any,
+      logMode: 'info',
+      rpcProvider: publicClient2,
+      web3Provider: walletClient2,
       // viem client can be unavailable on ipfs+dev first renders
       // rpcUrls: !publicClient && fallbackRpcUrl ? [fallbackRpcUrl] : undefined,
     });
