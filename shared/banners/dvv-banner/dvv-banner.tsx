@@ -20,9 +20,9 @@ import { ReactComponent as IconPartnersLogoDark } from 'assets/dvv-banner/dvv-ba
 
 import { trackEvent } from '@lidofinance/analytics-matomo';
 import { MATOMO_CLICK_EVENTS } from 'consts/matomo-click-events';
+import { config } from 'config';
 
-const LINK_DVV_VAULT =
-  'https://blog.lido.fi/decentralized-validator-vault-mellow-obol-ssv/';
+const LINK_DVV_VAULT = `${config.blogOrigin}/decentralized-validator-vault-mellow-obol-ssv/`;
 const LINK_PROCEED_BUTTON =
   'https://app.mellow.finance/vaults/ethereum-dvsteth';
 
