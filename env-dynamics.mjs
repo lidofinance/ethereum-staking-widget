@@ -40,7 +40,7 @@ export const researchOrigin =
 // Fix in the build time (build time don't have env vars)
 
 /** @type string */
-export const blogOrigin = process.env.RESEARCH_ORIGIN || 'https://blog.lido.fi';
+export const blogOrigin = process.env.BLOG_ORIGIN || 'https://blog.lido.fi';
 // Fix in the build time (build time don't have env vars)
 
 // Keep fallback as in 'config/get-secret-config.ts'
