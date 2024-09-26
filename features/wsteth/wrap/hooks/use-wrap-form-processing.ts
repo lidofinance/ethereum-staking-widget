@@ -6,6 +6,7 @@ import { useSDK, useWSTETHContractRPC } from '@lido-sdk/react';
 
 import { CHAINS, isSDKSupportedL2Chain } from 'consts/chains';
 import { useCurrentStaticRpcProvider } from 'shared/hooks/use-current-static-rpc-provider';
+import { useLidoSDK } from 'providers/lido-sdk';
 import { runWithTransactionLogger } from 'utils';
 import { isContract } from 'utils/isContract';
 import { useTxConfirmation } from 'shared/hooks/use-tx-conformation';
@@ -16,7 +17,6 @@ import type {
 } from '../wrap-form-context';
 import { useWrapTxProcessing } from './use-wrap-tx-processing';
 import { useTxModalWrap } from './use-tx-modal-stages-wrap';
-import { useLidoSDK } from '../../../../providers/lido-sdk';
 
 type UseWrapFormProcessorArgs = {
   approvalData: WrapFormApprovalData;
@@ -37,7 +37,7 @@ export const useWrapFormProcessor = ({
   const { txModalStages } = useTxModalWrap();
   const processWrapTx = useWrapTxProcessing();
 
-  const { l2 } = useLidoSDK();
+  const { sdk } = useLidoSDK();
 
   const waitForTx = useTxConfirmation();
   const { isApprovalNeededBeforeWrap, processApproveTx } = approvalData;
@@ -75,7 +75,7 @@ export const useWrapFormProcessor = ({
         let txHash;
         if (isSDKSupportedL2Chain(chainId as CHAINS)) {
           // The operation 'stETH to wstETH' on L2 is unwrap
-          const tx = await l2.unwrap({
+          const tx = await sdk.l2.unwrap({
             // value: amount.toString(), <- Not working
             value: amount.toBigInt(),
           });
@@ -118,7 +118,7 @@ export const useWrapFormProcessor = ({
       wstETHContractRPC,
       isApprovalNeededBeforeWrap,
       txModalStages,
-      l2,
+      sdk,
       onConfirm,
       processApproveTx,
       processWrapTx,

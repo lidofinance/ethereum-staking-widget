@@ -255,17 +255,17 @@ export const useStethBalance = ({
   const { address } = useAccount();
   const mergedAccount = account ?? address;
 
-  const { steth, l2Steth, core } = useLidoSDK();
+  const { sdk } = useLidoSDK();
 
   const { data: contract, isLoading } = useQuery({
-    queryKey: ['steth-contract', core.chainId],
+    queryKey: ['steth-contract', sdk.core.chainId],
     enabled: !!mergedAccount,
 
     staleTime: Infinity,
     queryFn: async () =>
-      isSDKSupportedL2Chain(core.chainId as CHAINS)
-        ? l2Steth.getContract()
-        : steth.getContract(),
+      isSDKSupportedL2Chain(sdk.core.chainId as CHAINS)
+        ? sdk.l2.steth.getContract()
+        : sdk.steth.getContract(),
   });
 
   const balanceData = useTokenBalance(
@@ -284,16 +284,16 @@ export const useWstethBalance = ({
   const { address } = useAccount();
   const mergedAccount = account ?? address;
 
-  const { wsteth, l2Wsteth, core } = useLidoSDK();
+  const { sdk } = useLidoSDK();
 
   const { data: contract, isLoading } = useQuery({
-    queryKey: ['wsteth-contract', core.chainId],
+    queryKey: ['wsteth-contract', sdk.core.chainId],
     enabled: !!mergedAccount,
     staleTime: Infinity,
     queryFn: async () =>
-      isSDKSupportedL2Chain(core.chainId as CHAINS)
-        ? l2Wsteth.getContract()
-        : wsteth.getContract(),
+      isSDKSupportedL2Chain(sdk.core.chainId as CHAINS)
+        ? sdk.l2.wsteth.getContract()
+        : sdk.wsteth.getContract(),
   });
 
   const balanceData = useTokenBalance(
