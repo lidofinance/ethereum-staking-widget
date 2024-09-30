@@ -8,7 +8,7 @@ import {
   useCallback,
 } from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
-import { useWrapTxApprove } from '../hooks/use-wrap-tx-approve';
+import { useWrapTxOnL1Approve } from '../hooks/use-wrap-tx-on-l1-approve';
 import { useWrapFormNetworkData } from '../hooks/use-wrap-form-network-data';
 import { useWrapFormProcessor } from '../hooks/use-wrap-form-processing';
 import { useWrapFormValidationContext } from '../hooks/use-wrap-form-validation-context';
@@ -70,7 +70,8 @@ export const WrapFormProvider: FC<PropsWithChildren> = ({ children }) => {
   const [token, amount] = watch(['token', 'amount']);
   const { retryEvent, retryFire } = useFormControllerRetry();
 
-  const approvalData = useWrapTxApprove({ amount: amount ?? Zero, token });
+  // TODO: approvalData ---> approvalDataOnL1
+  const approvalData = useWrapTxOnL1Approve({ amount: amount ?? Zero, token });
   const isSteth = token === TOKENS_TO_WRAP.STETH;
 
   const onConfirm = useCallback(async () => {

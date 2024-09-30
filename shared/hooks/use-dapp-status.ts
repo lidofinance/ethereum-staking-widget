@@ -29,6 +29,7 @@ export const useDappStatus = () => {
   const isDappActiveOnL2 = useMemo(() => {
     if (!chainId) return false;
 
+    // TODO: check connected
     return isSDKSupportedL2Chain(chainId);
   }, [chainId]);
 

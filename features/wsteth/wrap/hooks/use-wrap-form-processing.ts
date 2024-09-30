@@ -6,16 +6,16 @@ import { useSDK, useWSTETHContractRPC } from '@lido-sdk/react';
 
 import { CHAINS, isSDKSupportedL2Chain } from 'consts/chains';
 import { useCurrentStaticRpcProvider } from 'shared/hooks/use-current-static-rpc-provider';
-import { useLidoSDK } from 'providers/lido-sdk';
+import { useTxConfirmation } from 'shared/hooks/use-tx-conformation';
 import { runWithTransactionLogger } from 'utils';
 import { isContract } from 'utils/isContract';
-import { useTxConfirmation } from 'shared/hooks/use-tx-conformation';
 
 import type {
   WrapFormApprovalData,
   WrapFormInputType,
 } from '../wrap-form-context';
-import { useWrapTxProcessing } from './use-wrap-tx-processing';
+import { useWrapTxOnL1Processing } from './use-wrap-tx-on-l1-processing';
+import { useWrapTxOnL2Processing } from './use-wrap-tx-on-l2-processing';
 import { useTxModalWrap } from './use-tx-modal-stages-wrap';
 
 type UseWrapFormProcessorArgs = {
@@ -35,9 +35,8 @@ export const useWrapFormProcessor = ({
   const wstETHContractRPC = useWSTETHContractRPC();
 
   const { txModalStages } = useTxModalWrap();
-  const processWrapTx = useWrapTxProcessing();
-
-  const { sdk } = useLidoSDK();
+  const processWrapTxOnL1 = useWrapTxOnL1Processing();
+  const processWrapTxOnL2 = useWrapTxOnL2Processing();
 
   const waitForTx = useTxConfirmation();
   const { isApprovalNeededBeforeWrap, processApproveTx } = approvalData;
@@ -74,15 +73,10 @@ export const useWrapFormProcessor = ({
 
         let txHash;
         if (isSDKSupportedL2Chain(chainId as CHAINS)) {
-          // The operation 'stETH to wstETH' on L2 is unwrap
-          const tx = await sdk.l2.unwrap({
-            // value: amount.toString(), <- Not working
-            value: amount.toBigInt(),
-          });
-          txHash = tx.hash;
+          txHash = (await processWrapTxOnL2({ amount })).hash;
         } else {
           txHash = await runWithTransactionLogger('Wrap signing', () =>
-            processWrapTx({ amount, token, isMultisig }),
+            processWrapTxOnL1({ amount, token, isMultisig }),
           );
         }
 
@@ -111,17 +105,17 @@ export const useWrapFormProcessor = ({
       }
     },
     [
-      chainId,
       address,
       providerWeb3,
       staticRpcProvider,
       wstETHContractRPC,
       isApprovalNeededBeforeWrap,
       txModalStages,
-      sdk,
+      chainId,
       onConfirm,
       processApproveTx,
-      processWrapTx,
+      processWrapTxOnL2,
+      processWrapTxOnL1,
       waitForTx,
       onRetry,
     ],

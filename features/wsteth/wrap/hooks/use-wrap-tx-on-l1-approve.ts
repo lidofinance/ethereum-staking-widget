@@ -14,7 +14,10 @@ type UseWrapTxApproveArgs = {
   token: TokensWrappable;
 };
 
-export const useWrapTxApprove = ({ amount, token }: UseWrapTxApproveArgs) => {
+export const useWrapTxOnL1Approve = ({
+  amount,
+  token,
+}: UseWrapTxApproveArgs) => {
   const { isDappActive } = useDappStatus();
   const { address } = useAccount();
   const { chainId } = useSDK();
