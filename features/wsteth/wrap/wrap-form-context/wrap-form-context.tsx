@@ -70,19 +70,21 @@ export const WrapFormProvider: FC<PropsWithChildren> = ({ children }) => {
   const [token, amount] = watch(['token', 'amount']);
   const { retryEvent, retryFire } = useFormControllerRetry();
 
-  // TODO: approvalData ---> approvalDataOnL1
-  const approvalData = useWrapTxOnL1Approve({ amount: amount ?? Zero, token });
+  const approvalDataOnL1 = useWrapTxOnL1Approve({
+    amount: amount ?? Zero,
+    token,
+  });
   const isSteth = token === TOKENS_TO_WRAP.STETH;
 
   const onConfirm = useCallback(async () => {
     await Promise.allSettled([
       networkData.revalidateWrapFormData(),
-      approvalData.refetchAllowance(),
+      approvalDataOnL1.refetchAllowance(),
     ]);
-  }, [networkData, approvalData]);
+  }, [networkData, approvalDataOnL1]);
 
   const processWrapFormFlow = useWrapFormProcessor({
-    approvalData,
+    approvalDataOnL1,
     onConfirm,
     onRetry: retryFire,
   });
@@ -90,7 +92,7 @@ export const WrapFormProvider: FC<PropsWithChildren> = ({ children }) => {
   const value = useMemo(
     (): WrapFormDataContextValueType => ({
       ...networkData,
-      ...approvalData,
+      ...approvalDataOnL1,
       isSteth,
       stakeLimitInfo: networkData.stakeLimitInfo,
       maxAmount: isSteth ? networkData.stethBalance : networkData.maxAmountETH,
@@ -98,7 +100,7 @@ export const WrapFormProvider: FC<PropsWithChildren> = ({ children }) => {
         ? networkData.gasLimitStETH
         : networkData.gasLimitETH,
     }),
-    [networkData, approvalData, isSteth],
+    [networkData, approvalDataOnL1, isSteth],
   );
 
   const formControllerValue = useMemo(

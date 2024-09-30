@@ -19,13 +19,13 @@ import { useWrapTxOnL2Processing } from './use-wrap-tx-on-l2-processing';
 import { useTxModalWrap } from './use-tx-modal-stages-wrap';
 
 type UseWrapFormProcessorArgs = {
-  approvalData: WrapFormApprovalData;
+  approvalDataOnL1: WrapFormApprovalData;
   onConfirm: () => Promise<void>;
   onRetry?: () => void;
 };
 
 export const useWrapFormProcessor = ({
-  approvalData,
+  approvalDataOnL1,
   onConfirm,
   onRetry,
 }: UseWrapFormProcessorArgs) => {
@@ -39,7 +39,10 @@ export const useWrapFormProcessor = ({
   const processWrapTxOnL2 = useWrapTxOnL2Processing();
 
   const waitForTx = useTxConfirmation();
-  const { isApprovalNeededBeforeWrap, processApproveTx } = approvalData;
+  const {
+    isApprovalNeededBeforeWrap: isApprovalNeededBeforeWrapOnL1,
+    processApproveTx: processApproveTxOnL1,
+  } = approvalDataOnL1;
 
   return useCallback(
     async ({ amount, token }: WrapFormInputType) => {
@@ -53,10 +56,10 @@ export const useWrapFormProcessor = ({
           wstETHContractRPC.getWstETHByStETH(amount),
         ]);
 
-        if (isApprovalNeededBeforeWrap) {
+        if (isApprovalNeededBeforeWrapOnL1) {
           txModalStages.signApproval(amount, token);
 
-          await processApproveTx({
+          await processApproveTxOnL1({
             onTxSent: (txHash) => {
               if (!isMultisig) {
                 txModalStages.pendingApproval(amount, token, txHash);
@@ -109,11 +112,11 @@ export const useWrapFormProcessor = ({
       providerWeb3,
       staticRpcProvider,
       wstETHContractRPC,
-      isApprovalNeededBeforeWrap,
+      isApprovalNeededBeforeWrapOnL1,
       txModalStages,
       chainId,
       onConfirm,
-      processApproveTx,
+      processApproveTxOnL1,
       processWrapTxOnL2,
       processWrapTxOnL1,
       waitForTx,
