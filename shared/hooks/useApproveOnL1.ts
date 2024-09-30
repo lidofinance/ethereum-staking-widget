@@ -10,7 +10,7 @@ import { runWithTransactionLogger } from 'utils';
 
 import { useCurrentStaticRpcProvider } from './use-current-static-rpc-provider';
 import { sendTx } from 'utils/send-tx';
-import { useAllowance } from './use-allowance';
+import { useAllowanceOnL1 } from './use-allowance-on-l1';
 import { useTxConfirmation } from './use-tx-conformation';
 
 import type { Address, TransactionReceipt } from 'viem';
@@ -25,11 +25,11 @@ type ApproveOptions =
 
 export type UseApproveResponse = {
   approve: (options?: ApproveOptions) => Promise<string>;
-  allowance: ReturnType<typeof useAllowance>['data'];
+  allowance: ReturnType<typeof useAllowanceOnL1>['data'];
   needsApprove: boolean;
-} & ReturnType<typeof useAllowance>;
+} & ReturnType<typeof useAllowanceOnL1>;
 
-export const useApprove = (
+export const useApproveOnL1 = (
   amount: BigNumber,
   token: string,
   spender: string,
@@ -43,7 +43,7 @@ export const useApprove = (
   invariant(token != null, 'Token is required');
   invariant(spender != null, 'Spender is required');
 
-  const allowanceQuery = useAllowance({
+  const allowanceQuery = useAllowanceOnL1({
     token: token as Address,
     account: mergedOwner as Address,
     spender: spender as Address,

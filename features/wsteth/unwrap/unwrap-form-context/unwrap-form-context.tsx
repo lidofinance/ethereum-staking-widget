@@ -5,6 +5,7 @@ import {
   useMemo,
   createContext,
   useContext,
+  useCallback,
 } from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
 import { useUnwrapFormNetworkData } from '../hooks/use-unwrap-form-network-data';
@@ -23,6 +24,8 @@ import {
   UnwrapFormValidationContext,
 } from './types';
 import { UnwrapFormValidationResolver } from './unwrap-form-validators';
+import { useUnwrapTxOnL2Approve } from '../hooks/use-unwrap-tx-on-l2-approve';
+import { Zero } from '@ethersproject/constants';
 
 //
 // Data context
@@ -60,10 +63,22 @@ export const UnwrapFormProvider: FC<PropsWithChildren> = ({ children }) => {
     resolver: UnwrapFormValidationResolver,
   });
 
+  const { watch } = formObject;
+  const [amount] = watch(['amount']);
   const { retryEvent, retryFire } = useFormControllerRetry();
 
+  const approvalDataOnL2 = useUnwrapTxOnL2Approve({ amount: amount ?? Zero });
+
+  const onConfirm = useCallback(async () => {
+    await Promise.allSettled([
+      networkData.revalidateUnwrapFormData(),
+      approvalDataOnL2.refetchAllowance(),
+    ]);
+  }, [networkData, approvalDataOnL2]);
+
   const processUnwrapFormFlow = useUnwrapFormProcessor({
-    onConfirm: networkData.revalidateUnwrapFormData,
+    approvalDataOnL2,
+    onConfirm,
     onRetry: retryFire,
   });
 

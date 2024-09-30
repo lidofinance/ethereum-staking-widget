@@ -65,7 +65,7 @@ type UseAllowanceProps = {
 const onError = (error: unknown) =>
   console.warn('[useAllowance] error while watching events', error);
 
-export const useAllowance = ({
+export const useAllowanceOnL1 = ({
   token,
   account,
   spender,

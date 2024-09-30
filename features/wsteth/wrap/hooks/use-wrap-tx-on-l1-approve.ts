@@ -6,7 +6,7 @@ import { getTokenAddress, TOKENS } from '@lido-sdk/constants';
 import { useSDK } from '@lido-sdk/react';
 
 import { TokensWrappable, TOKENS_TO_WRAP } from 'features/wsteth/shared/types';
-import { useApprove } from 'shared/hooks/useApprove';
+import { useApproveOnL1 } from 'shared/hooks/useApproveOnL1';
 import { useDappStatus } from 'shared/hooks/use-dapp-status';
 
 type UseWrapTxApproveArgs = {
@@ -36,7 +36,7 @@ export const useWrapTxOnL1Approve = ({
     allowance,
     isLoading: isApprovalLoading,
     refetch: refetchAllowance,
-  } = useApprove(
+  } = useApproveOnL1(
     amount,
     stethTokenAddress,
     wstethTokenAddress,

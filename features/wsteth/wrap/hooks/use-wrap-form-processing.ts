@@ -74,7 +74,7 @@ export const useWrapFormProcessor = ({
 
         txModalStages.sign(amount, token, willReceive);
 
-        let txHash;
+        let txHash: string;
         if (isSDKSupportedL2Chain(chainId as CHAINS)) {
           txHash = (await processWrapTxOnL2({ amount })).hash;
         } else {
