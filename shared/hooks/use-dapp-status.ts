@@ -19,25 +19,30 @@ export const useDappStatus = () => {
     [chainId, multiChainBanner],
   );
 
-  // TODO: rename isDappActive to isDappActiveOnL1
   const isDappActive = useMemo(() => {
     if (!chainId) return false;
 
     return isWalletConnected && isSupportedChain;
   }, [chainId, isWalletConnected, isSupportedChain]);
 
+  const isDappActiveOnL1 = useMemo(() => {
+    if (!chainId) return false;
+
+    return isDappActive && !isSDKSupportedL2Chain(chainId);
+  }, [chainId, isDappActive]);
+
   const isDappActiveOnL2 = useMemo(() => {
     if (!chainId) return false;
 
-    // TODO: check connected
-    return isSDKSupportedL2Chain(chainId);
-  }, [chainId]);
+    return isDappActive && isSDKSupportedL2Chain(chainId);
+  }, [chainId, isDappActive]);
 
   return {
     isWalletConnected,
     isSupportedChain,
     isLidoMultichainChain,
     isDappActive,
+    isDappActiveOnL1,
     isDappActiveOnL2,
   };
 };

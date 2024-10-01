@@ -3,12 +3,14 @@ import type { BigNumber } from 'ethers';
 
 import { runWithTransactionLogger } from 'utils';
 import { useLidoSDK } from 'providers/lido-sdk';
+import { useDappStatus } from 'shared/hooks/use-dapp-status';
 
 type UseUnwrapTxApproveArgs = {
   amount: BigNumber;
 };
 
 export const useUnwrapTxOnL2Approve = ({ amount }: UseUnwrapTxApproveArgs) => {
+  const { isDappActiveOnL2 } = useDappStatus();
   const { sdk } = useLidoSDK();
   const [allowance, setAllowance] = useState<bigint | null>(null);
   const [isApprovalNeededBeforeUnwrap, setIsApprovalNeededBeforeUnwrap] =
@@ -67,12 +69,14 @@ export const useUnwrapTxOnL2Approve = ({ amount }: UseUnwrapTxApproveArgs) => {
       refetchAllowance,
       allowance,
       isApprovalNeededBeforeUnwrap,
+      isShowAllowance: isDappActiveOnL2,
     }),
     [
       processApproveTx,
       refetchAllowance,
       allowance,
       isApprovalNeededBeforeUnwrap,
+      isDappActiveOnL2,
     ],
   );
 };

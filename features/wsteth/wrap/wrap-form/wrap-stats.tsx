@@ -19,7 +19,8 @@ const oneSteth = parseEther('1');
 
 export const WrapFormStats = () => {
   const { isDappActive } = useDappStatus();
-  const { allowance, wrapGasLimit, isApprovalLoading } = useWrapFormData();
+  const { allowance, isShowAllowance, wrapGasLimit, isApprovalLoading } =
+    useWrapFormData();
 
   const { watch } = useFormContext<WrapFormInputType>();
   const [token, amount] = watch(['token', 'amount']);
@@ -91,13 +92,15 @@ export const WrapFormStats = () => {
           DATA_UNAVAILABLE
         )}
       </DataTableRow>
-      <AllowanceDataTableRow
-        data-testid="allowance"
-        allowance={allowance}
-        isBlank={!(isSteth && isDappActive)}
-        loading={isApprovalLoading}
-        token={TOKENS.STETH}
-      />
+      {isShowAllowance && (
+        <AllowanceDataTableRow
+          data-testid="allowance"
+          allowance={allowance}
+          isBlank={!(isSteth && isDappActive)}
+          loading={isApprovalLoading}
+          token={TOKENS.STETH}
+        />
+      )}
     </DataTable>
   );
 };

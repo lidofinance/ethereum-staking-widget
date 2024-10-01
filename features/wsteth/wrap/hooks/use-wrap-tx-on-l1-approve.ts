@@ -18,7 +18,7 @@ export const useWrapTxOnL1Approve = ({
   amount,
   token,
 }: UseWrapTxApproveArgs) => {
-  const { isDappActive } = useDappStatus();
+  const { isDappActive, isDappActiveOnL1 } = useDappStatus();
   const { address } = useAccount();
   const { chainId } = useSDK();
 
@@ -54,6 +54,7 @@ export const useWrapTxOnL1Approve = ({
       isApprovalLoading,
       isApprovalNeededBeforeWrap,
       refetchAllowance,
+      isShowAllowance: isDappActiveOnL1,
     }),
     [
       allowance,
@@ -62,6 +63,7 @@ export const useWrapTxOnL1Approve = ({
       isApprovalLoading,
       processApproveTx,
       refetchAllowance,
+      isDappActiveOnL1,
     ],
   );
 };
