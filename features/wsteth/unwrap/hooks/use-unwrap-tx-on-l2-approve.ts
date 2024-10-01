@@ -31,7 +31,7 @@ export const useUnwrapTxOnL2Approve = ({ amount }: UseUnwrapTxApproveArgs) => {
   }, [sdk.l2, amount]);
 
   const processApproveTx = useCallback(
-    async ({ onTxSent }) => {
+    async ({ onTxSent }: { onTxSent: (txHash: string) => void }) => {
       try {
         // TODO: remove without runWithTransactionLogger
         // const approveTxHash = (
@@ -47,7 +47,7 @@ export const useUnwrapTxOnL2Approve = ({ amount }: UseUnwrapTxApproveArgs) => {
           )
         ).hash;
 
-        await onTxSent?.(approveTxHash);
+        void onTxSent?.(approveTxHash);
 
         refetchAllowance();
 

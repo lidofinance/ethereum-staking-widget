@@ -8,9 +8,8 @@ import {
   useCallback,
 } from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
-import { useUnwrapFormNetworkData } from '../hooks/use-unwrap-form-network-data';
-import { useUnwrapFormProcessor } from '../hooks/use-unwrap-form-processing';
-import { useUnwrapFormValidationContext } from '../hooks/use-unwra-form-validation-context';
+import { Zero } from '@ethersproject/constants';
+
 import { useFormControllerRetry } from 'shared/hook-form/form-controller/use-form-controller-retry-delegate';
 
 import {
@@ -18,14 +17,17 @@ import {
   FormControllerContextValueType,
 } from 'shared/hook-form/form-controller';
 
+import { useUnwrapFormNetworkData } from '../hooks/use-unwrap-form-network-data';
+import { useUnwrapFormProcessor } from '../hooks/use-unwrap-form-processing';
+import { useUnwrapFormValidationContext } from '../hooks/use-unwra-form-validation-context';
+import { useUnwrapTxOnL2Approve } from '../hooks/use-unwrap-tx-on-l2-approve';
+
 import {
   UnwrapFormDataContextValueType,
   UnwrapFormInputType,
   UnwrapFormValidationContext,
 } from './types';
 import { UnwrapFormValidationResolver } from './unwrap-form-validators';
-import { useUnwrapTxOnL2Approve } from '../hooks/use-unwrap-tx-on-l2-approve';
-import { Zero } from '@ethersproject/constants';
 
 //
 // Data context
@@ -82,9 +84,8 @@ export const UnwrapFormProvider: FC<PropsWithChildren> = ({ children }) => {
     onRetry: retryFire,
   });
 
-  // TODO: TYPING
   const value = useMemo(
-    () => ({
+    (): UnwrapFormDataContextValueType => ({
       ...networkData,
       ...approvalDataOnL2,
     }),
