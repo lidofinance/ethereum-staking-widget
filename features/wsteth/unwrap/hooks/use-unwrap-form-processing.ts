@@ -30,7 +30,7 @@ type UseUnwrapFormProcessorArgs = {
 };
 
 export const useUnwrapFormProcessor = ({
-  // approvalDataOnL2,
+  approvalDataOnL2,
   onConfirm,
   onRetry,
 }: UseUnwrapFormProcessorArgs) => {
@@ -44,10 +44,10 @@ export const useUnwrapFormProcessor = ({
   const waitForTx = useTxConfirmation();
   const { sdk } = useLidoSDK();
 
-  // const {
-  // isApprovalNeededBeforeUnwrap: isApprovalNeededBeforeUnwrapOnL2,
-  // processApproveTx: processApproveTxOnL2,
-  // } = approvalDataOnL2;
+  const {
+    isApprovalNeededBeforeUnwrap: isApprovalNeededBeforeUnwrapOnL2,
+    processApproveTx: processApproveTxOnL2,
+  } = approvalDataOnL2;
 
   return useCallback(
     async ({ amount }: UnwrapFormInputType) => {
@@ -62,23 +62,22 @@ export const useUnwrapFormProcessor = ({
           wstETHContractRPC.getStETHByWstETH(amount),
         ]);
 
-        // if (isApprovalNeededBeforeUnwrapOnL2) {
-        //   txHash = (await processApproveTxOnL2({ amount: amount.toBigInt() })).hash;
-        //   .....
-        //   txModalStages.signApproval(amount, token);
-        //
-        //   await processApproveTxOnL1({
-        //     onTxSent: (txHash) => {
-        //       if (!isMultisig) {
-        //         txModalStages.pendingApproval(amount, token, txHash);
-        //       }
-        //     },
-        //   });
-        //   if (isMultisig) {
-        //     txModalStages.successMultisig();
-        //     return true;
-        //   }
-        // }
+        if (isApprovalNeededBeforeUnwrapOnL2) {
+          txModalStages.signApproval(amount);
+
+          await processApproveTxOnL2({
+            onTxSent: (txHash) => {
+              if (!isMultisig) {
+                txModalStages.pendingApproval(amount, txHash);
+              }
+            },
+          });
+
+          if (isMultisig) {
+            txModalStages.successMultisig();
+            return true;
+          }
+        }
 
         txModalStages.sign(amount, willReceive);
 
@@ -131,16 +130,18 @@ export const useUnwrapFormProcessor = ({
       }
     },
     [
-      sdk.l2,
       address,
       providerWeb3,
       wstethContractWeb3,
       staticRpcProvider,
       wstETHContractRPC,
+      isApprovalNeededBeforeUnwrapOnL2,
       txModalStages,
       chainId,
       stETHContractRPC,
       onConfirm,
+      processApproveTxOnL2,
+      sdk.l2,
       waitForTx,
       onRetry,
     ],

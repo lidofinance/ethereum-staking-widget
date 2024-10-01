@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useState, useEffect, useCallback } from 'react';
 import type { BigNumber } from 'ethers';
 
 import { useLidoSDK } from 'providers/lido-sdk';
@@ -8,24 +8,62 @@ type UseUnwrapTxApproveArgs = {
 };
 
 export const useUnwrapTxOnL2Approve = ({ amount }: UseUnwrapTxApproveArgs) => {
-  // TODO
-  // eslint-disable-next-line no-console
-  console.log(amount);
-
   const { sdk } = useLidoSDK();
+  const [allowance, setAllowance] = useState<bigint | null>(null);
+  const [isApprovalNeededBeforeUnwrap, setIsApprovalNeededBeforeUnwrap] =
+    useState<boolean>(true);
 
-  const isApprovalNeededBeforeUnwrap = false;
+  const refetchAllowance = useCallback(() => {
+    const checkAllowance = async () => {
+      try {
+        const allowance = await sdk.l2.getWstethForWrapAllowance();
+        setAllowance(allowance);
+        setIsApprovalNeededBeforeUnwrap(amount.gte(allowance));
+      } catch (error) {
+        console.error('Error fetching allowance on L2:', error);
+      }
+    };
+
+    void checkAllowance();
+  }, [sdk.l2, amount]);
+
+  const processApproveTx = useCallback(
+    async ({ onTxSent }) => {
+      try {
+        const approveTxHash = (
+          await sdk.l2.approveWstethForWrap({
+            value: amount.toBigInt(),
+          })
+        ).hash;
+
+        await onTxSent?.(approveTxHash);
+
+        refetchAllowance();
+
+        return approveTxHash;
+      } catch (error) {
+        console.error('Error approve on L2:', error);
+      }
+    },
+    [sdk.l2, amount, refetchAllowance],
+  );
+
+  useEffect(() => {
+    void refetchAllowance();
+  }, [refetchAllowance]);
 
   return useMemo(
     () => ({
-      // TODO
-      // eslint-disable-next-line @typescript-eslint/unbound-method
-      processApproveTx: sdk.l2.approveWstethForWrap,
-      // TODO
-      // eslint-disable-next-line @typescript-eslint/unbound-method
-      refetchAllowance: sdk.l2.getWstethForWrapAllowance,
+      processApproveTx,
+      refetchAllowance,
+      allowance,
       isApprovalNeededBeforeUnwrap,
     }),
-    [sdk.l2, isApprovalNeededBeforeUnwrap],
+    [
+      processApproveTx,
+      refetchAllowance,
+      allowance,
+      isApprovalNeededBeforeUnwrap,
+    ],
   );
 };

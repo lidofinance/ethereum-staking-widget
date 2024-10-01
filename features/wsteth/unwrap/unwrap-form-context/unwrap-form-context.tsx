@@ -82,6 +82,15 @@ export const UnwrapFormProvider: FC<PropsWithChildren> = ({ children }) => {
     onRetry: retryFire,
   });
 
+  // TODO: TYPING
+  const value = useMemo(
+    () => ({
+      ...networkData,
+      ...approvalDataOnL2,
+    }),
+    [networkData, approvalDataOnL2],
+  );
+
   const formControllerValue = useMemo(
     (): FormControllerContextValueType<UnwrapFormInputType> => ({
       onSubmit: processUnwrapFormFlow,
@@ -92,7 +101,7 @@ export const UnwrapFormProvider: FC<PropsWithChildren> = ({ children }) => {
 
   return (
     <FormProvider {...formObject}>
-      <UnwrapFormDataContext.Provider value={networkData}>
+      <UnwrapFormDataContext.Provider value={value}>
         <FormControllerContext.Provider value={formControllerValue}>
           {children}
         </FormControllerContext.Provider>
