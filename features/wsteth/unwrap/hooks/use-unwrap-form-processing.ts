@@ -83,14 +83,23 @@ export const useUnwrapFormProcessor = ({
 
         let txHash: string;
         if (isSDKSupportedL2Chain(chainId as CHAINS)) {
+          // TODO: remove without runWithTransactionLogger
+          // txHash = (
+          //   await sdk.l2.wrapWstethToSteth({
+          //     value: amount.toBigInt(),
+          //   })
+          // ).hash;
           txHash = (
-            await sdk.l2.wrapWstethToSteth({
-              value: amount.toBigInt(),
-            })
+            await runWithTransactionLogger('Unwrap signing on L2', () =>
+              // The operation 'wstETH to stETH' on L2 is 'wrap'
+              sdk.l2.wrapWstethToSteth({
+                value: amount.toBigInt(),
+              }),
+            )
           ).hash;
         } else {
           txHash = await runWithTransactionLogger(
-            'Unwrap signing',
+            'Unwrap signing on L1',
             async () => {
               const tx =
                 await wstethContractWeb3.populateTransaction.unwrap(amount);

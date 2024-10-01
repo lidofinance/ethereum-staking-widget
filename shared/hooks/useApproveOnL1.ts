@@ -75,7 +75,7 @@ export const useApproveOnL1 = (
       };
 
       const approveTxHash = await runWithTransactionLogger(
-        'Approve signing',
+        'Approve signing on L1',
         processApproveTx,
       );
       await onTxSent?.(approveTxHash);

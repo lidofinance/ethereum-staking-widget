@@ -1,6 +1,7 @@
 import { useMemo, useState, useEffect, useCallback } from 'react';
 import type { BigNumber } from 'ethers';
 
+import { runWithTransactionLogger } from 'utils';
 import { useLidoSDK } from 'providers/lido-sdk';
 
 type UseUnwrapTxApproveArgs = {
@@ -30,10 +31,18 @@ export const useUnwrapTxOnL2Approve = ({ amount }: UseUnwrapTxApproveArgs) => {
   const processApproveTx = useCallback(
     async ({ onTxSent }) => {
       try {
+        // TODO: remove without runWithTransactionLogger
+        // const approveTxHash = (
+        //   await sdk.l2.approveWstethForWrap({
+        //     value: amount.toBigInt(),
+        //   })
+        // ).hash;
         const approveTxHash = (
-          await sdk.l2.approveWstethForWrap({
-            value: amount.toBigInt(),
-          })
+          await runWithTransactionLogger('Approve signing on L2', () =>
+            sdk.l2.approveWstethForWrap({
+              value: amount.toBigInt(),
+            }),
+          )
         ).hash;
 
         await onTxSent?.(approveTxHash);
