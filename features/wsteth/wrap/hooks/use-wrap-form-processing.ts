@@ -76,9 +76,15 @@ export const useWrapFormProcessor = ({
 
         let txHash: string;
         if (isSDKSupportedL2Chain(chainId as CHAINS)) {
-          txHash = (await processWrapTxOnL2({ amount })).hash;
+          // TODO: remove without runWithTransactionLogger
+          // txHash = (await processWrapTxOnL2({ amount })).hash;
+          const txResult = await runWithTransactionLogger(
+            'Wrap signing on L2',
+            () => processWrapTxOnL2({ amount }),
+          );
+          txHash = txResult.hash;
         } else {
-          txHash = await runWithTransactionLogger('Wrap signing', () =>
+          txHash = await runWithTransactionLogger('Wrap signing on L1', () =>
             processWrapTxOnL1({ amount, token, isMultisig }),
           );
         }
