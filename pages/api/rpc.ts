@@ -1,9 +1,9 @@
-import { CHAINS } from '@lido-sdk/constants';
 import { wrapRequest as wrapNextRequest } from '@lidofinance/next-api-wrapper';
 import { trackedFetchRpcFactory } from '@lidofinance/api-rpc';
 
 import { config, secretConfig } from 'config';
 import { API_ROUTES } from 'consts/api';
+import { CHAINS } from 'consts/chains';
 import { METRICS_PREFIX } from 'consts/metrics';
 import {
   rateLimit,
@@ -73,6 +73,7 @@ const rpc = rpcFactory({
     [CHAINS.Mainnet]: secretConfig.rpcUrls_1,
     [CHAINS.Holesky]: secretConfig.rpcUrls_17000,
     [CHAINS.Sepolia]: secretConfig.rpcUrls_11155111,
+    [CHAINS.OptimismSepolia]: secretConfig.rpcUrls_11155420,
   },
   validation: {
     allowedRPCMethods,

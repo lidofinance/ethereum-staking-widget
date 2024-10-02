@@ -8,6 +8,7 @@ import {
 
 import { config } from 'config';
 import { WSTETH_APPROVE_GAS_LIMIT } from 'consts/tx';
+import { SDK_LEGACY_SUPPORTED_CHAINS, CHAINS } from 'consts/chains';
 import { STRATEGY_IMMUTABLE } from 'consts/swr-strategies';
 
 export const useApproveGasLimit = () => {
@@ -18,7 +19,12 @@ export const useApproveGasLimit = () => {
   const { data } = useLidoSWR(
     ['swr:approve-wrap-gas-limit', chainId],
     async (_key, chainId) => {
-      if (!chainId) return;
+      if (
+        !chainId ||
+        SDK_LEGACY_SUPPORTED_CHAINS.indexOf(chainId as CHAINS) < 0
+      ) {
+        return;
+      }
 
       try {
         const gasLimit = await steth.estimateGas.approve(

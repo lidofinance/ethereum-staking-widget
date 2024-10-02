@@ -2,9 +2,11 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
 import { QueryKey, useQuery, useQueryClient } from '@tanstack/react-query';
+import type { AbstractLidoSDKErc20 } from '@lidofinance/lido-ethereum-sdk/erc20';
 import { BigNumber } from 'ethers';
 import { useLidoSDK } from 'providers/lido-sdk';
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import type { Address, WatchContractEventOnLogsFn } from 'viem';
 import {
   useBlockNumber,
   useBalance,
@@ -12,11 +14,10 @@ import {
   useReadContract,
   useWatchContractEvent,
 } from 'wagmi';
-
-import type { AbstractLidoSDKErc20 } from '@lidofinance/lido-ethereum-sdk/erc20';
 import type { GetBalanceData } from 'wagmi/query';
-import type { Address, WatchContractEventOnLogsFn } from 'viem';
+
 import { config } from 'config';
+import { isSDKSupportedL2Chain, CHAINS } from 'consts/chains';
 
 const nativeToBN = (data: bigint) => BigNumber.from(data.toString());
 
@@ -254,14 +255,17 @@ export const useStethBalance = ({
   const { address } = useAccount();
   const mergedAccount = account ?? address;
 
-  const { steth, core } = useLidoSDK();
+  const { steth, l2Steth, core } = useLidoSDK();
 
   const { data: contract, isLoading } = useQuery({
     queryKey: ['steth-contract', core.chainId],
     enabled: !!mergedAccount,
 
     staleTime: Infinity,
-    queryFn: async () => steth.getContract(),
+    queryFn: async () =>
+      isSDKSupportedL2Chain(core.chainId as CHAINS)
+        ? l2Steth.getContract()
+        : steth.getContract(),
   });
 
   const balanceData = useTokenBalance(
@@ -280,13 +284,16 @@ export const useWstethBalance = ({
   const { address } = useAccount();
   const mergedAccount = account ?? address;
 
-  const { wsteth, core } = useLidoSDK();
+  const { wsteth, l2Wsteth, core } = useLidoSDK();
 
   const { data: contract, isLoading } = useQuery({
     queryKey: ['wsteth-contract', core.chainId],
     enabled: !!mergedAccount,
     staleTime: Infinity,
-    queryFn: async () => wsteth.getContract(),
+    queryFn: async () =>
+      isSDKSupportedL2Chain(core.chainId as CHAINS)
+        ? l2Wsteth.getContract()
+        : wsteth.getContract(),
   });
 
   const balanceData = useTokenBalance(
