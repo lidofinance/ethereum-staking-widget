@@ -14,13 +14,12 @@ import { useTxConfirmation } from 'shared/hooks/use-tx-conformation';
 import { isContract } from 'utils/isContract';
 import { runWithTransactionLogger } from 'utils';
 import { sendTx } from 'utils/send-tx';
+import { useLidoSDK } from 'providers/lido-sdk';
 
+import { useDappStatus } from '../../../../shared/hooks/use-dapp-status';
 import type { UnwrapFormInputType } from '../unwrap-form-context';
-import { useLidoSDK } from '../../../../providers/lido-sdk';
-
 import { useUnwrapTxOnL2Approve } from './use-unwrap-tx-on-l2-approve';
 import { useTxModalStagesUnwrap } from './use-tx-modal-stages-unwrap';
-import { useDappStatus } from '../../../../shared/hooks/use-dapp-status';
 
 export type UnwrapFormApprovalData = ReturnType<typeof useUnwrapTxOnL2Approve>;
 
@@ -43,7 +42,7 @@ export const useUnwrapFormProcessor = ({
   const wstETHContractRPC = useWSTETHContractRPC();
   const wstethContractWeb3 = useWSTETHContractWeb3();
   const waitForTx = useTxConfirmation();
-  const { sdk } = useLidoSDK();
+  const { lidoSDKL2 } = useLidoSDK();
   const { isDappActiveOnL2 } = useDappStatus();
 
   const {
@@ -88,7 +87,7 @@ export const useUnwrapFormProcessor = ({
           txHash = (
             await runWithTransactionLogger('Unwrap signing on L2', () =>
               // The operation 'wstETH to stETH' on L2 is 'wrap'
-              sdk.l2.wrapWstethToSteth({
+              lidoSDKL2.wrapWstethToSteth({
                 value: amount.toBigInt(),
               }),
             )
@@ -146,7 +145,7 @@ export const useUnwrapFormProcessor = ({
       stETHContractRPC,
       onConfirm,
       processApproveTxOnL2,
-      sdk.l2,
+      lidoSDKL2,
       waitForTx,
       onRetry,
     ],

@@ -11,7 +11,7 @@ type UseUnwrapTxApproveArgs = {
 
 export const useUnwrapTxOnL2Approve = ({ amount }: UseUnwrapTxApproveArgs) => {
   const { isDappActiveOnL2 } = useDappStatus();
-  const { sdk } = useLidoSDK();
+  const { lidoSDKCore, lidoSDKL2 } = useLidoSDK();
   const [allowance, setAllowance] = useState<bigint | null>(null);
   const [isApprovalNeededBeforeUnwrap, setIsApprovalNeededBeforeUnwrap] =
     useState<boolean>(true);
@@ -19,7 +19,7 @@ export const useUnwrapTxOnL2Approve = ({ amount }: UseUnwrapTxApproveArgs) => {
   const refetchAllowance = useCallback(() => {
     const checkAllowance = async () => {
       try {
-        const allowance = await sdk.l2.getWstethForWrapAllowance();
+        const allowance = await lidoSDKL2.getWstethForWrapAllowance();
         setAllowance(allowance);
         setIsApprovalNeededBeforeUnwrap(amount.gt(allowance));
       } catch (error) {
@@ -28,14 +28,14 @@ export const useUnwrapTxOnL2Approve = ({ amount }: UseUnwrapTxApproveArgs) => {
     };
 
     void checkAllowance();
-  }, [sdk.l2, amount]);
+  }, [lidoSDKL2, amount]);
 
   const processApproveTx = useCallback(
     async ({ onTxSent }: { onTxSent: (txHash: string) => void }) => {
       try {
         const approveTxHash = (
           await runWithTransactionLogger('Approve signing on L2', () =>
-            sdk.l2.approveWstethForWrap({
+            lidoSDKL2.approveWstethForWrap({
               value: amount.toBigInt(),
             }),
           )
@@ -50,14 +50,14 @@ export const useUnwrapTxOnL2Approve = ({ amount }: UseUnwrapTxApproveArgs) => {
         console.error('Error approve on L2:', error);
       }
     },
-    [sdk.l2, amount, refetchAllowance],
+    [lidoSDKL2, amount, refetchAllowance],
   );
 
   useEffect(() => {
-    if (sdk.core.web3Provider && isDappActiveOnL2) {
+    if (lidoSDKCore.web3Provider && isDappActiveOnL2) {
       void refetchAllowance();
     }
-  }, [isDappActiveOnL2, refetchAllowance, sdk.core.web3Provider]);
+  }, [isDappActiveOnL2, refetchAllowance, lidoSDKCore.web3Provider]);
 
   return useMemo(
     () => ({

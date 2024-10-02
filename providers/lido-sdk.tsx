@@ -1,14 +1,22 @@
 import { createContext, useContext, useMemo } from 'react';
-import { LidoSDK } from '@lidofinance/lido-ethereum-sdk';
 import invariant from 'tiny-invariant';
-// import { useChainId, useClient, useWalletClient } from 'wagmi';
 import { useChainId, usePublicClient, useWalletClient } from 'wagmi';
+
+import { LidoSDKCore } from '@lidofinance/lido-ethereum-sdk/core';
+import {
+  LidoSDKstETH,
+  LidoSDKwstETH,
+} from '@lidofinance/lido-ethereum-sdk/erc20';
+import { LidoSDKL2 } from '@lidofinance/lido-ethereum-sdk/l2';
 
 import { useGetRpcUrlByChainId } from 'config/rpc';
 import { useTokenTransferSubscription } from 'shared/hooks/use-balance';
 
 type LidoSDKContextValue = {
-  sdk: LidoSDK;
+  lidoSDKCore: LidoSDKCore;
+  lidoSDKL2: LidoSDKL2;
+  lidoSDKstETH: LidoSDKstETH;
+  lidoSDKwstETH: LidoSDKwstETH;
   subscribeToTokenUpdates: ReturnType<typeof useTokenTransferSubscription>;
 };
 
@@ -23,8 +31,6 @@ export const useLidoSDK = () => {
 
 export const LidoSDKProvider = ({ children }: React.PropsWithChildren) => {
   const subscribe = useTokenTransferSubscription();
-  // TODO: useClient() or usePublicClient() ?
-  // const publicClient = useClient();
   const publicClient = usePublicClient();
   const chainId = useChainId();
   const getRpcUrl = useGetRpcUrlByChainId();
@@ -32,18 +38,25 @@ export const LidoSDKProvider = ({ children }: React.PropsWithChildren) => {
   const { data: walletClient } = useWalletClient();
 
   const contextValue = useMemo(() => {
-    // @ts-expect-error: typing
-    const sdk = new LidoSDK({
-      chainId: chainId,
+    // @ts-expect-error: typing (rpcProvider + rpcUrls)
+    const core = new LidoSDKCore({
+      chainId,
+      logMode: 'none',
       rpcProvider: publicClient,
       web3Provider: walletClient,
-      logMode: 'none',
       // viem client can be unavailable on ipfs+dev first renders
       rpcUrls: !publicClient && fallbackRpcUrl ? [fallbackRpcUrl] : undefined,
     });
 
+    const stETH = new LidoSDKstETH({ core });
+    const wstETH = new LidoSDKwstETH({ core });
+    const l2 = new LidoSDKL2({ core });
+
     return {
-      sdk,
+      lidoSDKCore: core,
+      lidoSDKstETH: stETH,
+      lidoSDKwstETH: wstETH,
+      lidoSDKL2: l2,
       subscribeToTokenUpdates: subscribe,
     };
   }, [chainId, fallbackRpcUrl, publicClient, subscribe, walletClient]);

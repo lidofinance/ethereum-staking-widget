@@ -257,15 +257,17 @@ export const useStethBalance = ({
   const mergedAccount = account ?? address;
 
   const { isDappActiveOnL2 } = useDappStatus();
-  const { sdk } = useLidoSDK();
+  const { lidoSDKCore, lidoSDKL2, lidoSDKstETH } = useLidoSDK();
 
   const { data: contract, isLoading } = useQuery({
-    queryKey: ['steth-contract', sdk.core.chainId],
+    queryKey: ['steth-contract', lidoSDKCore.chainId],
     enabled: !!mergedAccount,
 
     staleTime: Infinity,
     queryFn: async () =>
-      isDappActiveOnL2 ? sdk.l2.steth.getContract() : sdk.steth.getContract(),
+      isDappActiveOnL2
+        ? lidoSDKL2.steth.getContract()
+        : lidoSDKstETH.getContract(),
   });
 
   const balanceData = useTokenBalance(
@@ -285,14 +287,16 @@ export const useWstethBalance = ({
   const mergedAccount = account ?? address;
 
   const { isDappActiveOnL2 } = useDappStatus();
-  const { sdk } = useLidoSDK();
+  const { lidoSDKCore, lidoSDKL2, lidoSDKwstETH } = useLidoSDK();
 
   const { data: contract, isLoading } = useQuery({
-    queryKey: ['wsteth-contract', sdk.core.chainId],
+    queryKey: ['wsteth-contract', lidoSDKCore.chainId],
     enabled: !!mergedAccount,
     staleTime: Infinity,
     queryFn: async () =>
-      isDappActiveOnL2 ? sdk.l2.wsteth.getContract() : sdk.wsteth.getContract(),
+      isDappActiveOnL2
+        ? lidoSDKL2.wsteth.getContract()
+        : lidoSDKwstETH.getContract(),
   });
 
   const balanceData = useTokenBalance(
