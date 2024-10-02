@@ -2,78 +2,78 @@ import { Readable } from 'node:stream';
 import { ReadableStream } from 'node:stream/web';
 import { pipeline } from 'node:stream/promises';
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { Counter, Registry } from 'prom-client';
-import type { TrackedFetchRPC } from '@lidofinance/api-rpc';
+import { Counter } from 'prom-client';
 import type { FetchRpcInitBody } from '@lidofinance/rpc';
 import { iterateUrls } from '@lidofinance/rpc';
 
 import {
   DEFAULT_API_ERROR_MESSAGE,
   HEALTHY_RPC_SERVICES_ARE_OVER,
-  UnsupportedHTTPMethodError,
-  UnsupportedChainIdError,
-  InvalidRequestError,
   ClientError,
 } from './errors';
 import {
-  ethCallValidation,
-  ethGetLogsValidation,
-  rpcMethodsValidation,
-  validateMaxSize,
+  baseRequestValidationFactory,
+  ethCallValidationFactory,
+  ethGetLogsValidationFactory,
+  rpcMethodsValidationFactory,
+  streamMaxSizeValidationFactory,
 } from './validation';
-
-export type RpcProviders = Record<string | number, [string, ...string[]]>;
-
-export type RPCFactoryParams = {
-  metrics: {
-    prefix: string;
-    registry: Registry;
-  };
-  providers: RpcProviders;
-  fetchRPC: TrackedFetchRPC;
-  defaultChain: string | number;
-  // If we don't specify allowed RPC methods, then we can't use
-  //  fetchRPC with prometheus, otherwise it will blow up, if someone will send arbitrary
-  //  methods
-  allowedRPCMethods: string[];
-  // filtration by eth_call to addresses
-  allowedCallAddresses?: Record<number, string[]>;
-  allowedLogsAddresses?: Record<number, string[]>;
-  disallowEmptyAddressGetLogs?: boolean;
-  maxBatchCount?: number;
-  maxResponseSize?: number;
-};
+import { RPCFactoryParams } from './types';
 
 export const rpcFactory = ({
-  metrics: { prefix, registry },
+  metrics,
   providers,
   fetchRPC,
   defaultChain,
-  allowedRPCMethods,
-  allowedCallAddresses,
-  maxResponseSize = 1_000_000,
-  allowedLogsAddresses,
-  maxBatchCount,
+  validation,
 }: RPCFactoryParams) => {
+  const {
+    allowedRPCMethods,
+    allowedCallAddresses,
+    allowedLogsAddresses,
+    maxResponseSize = 1_000_000,
+    maxBatchCount = 20,
+    currentBlockTTLms = 60_000,
+    maxGetLogsRange = 20_000,
+    blockEmptyAddressGetLogs = true,
+  } = validation;
+
+  // optional metrics
+  const { registry, prefix = '' } = metrics ?? {};
   const rpcRequestBlocked = new Counter({
     name: prefix + 'rpc_service_request_blocked',
     help: 'RPC service request blocked',
-    labelNames: [],
+    labelNames: ['reason'],
     registers: [],
   });
-  registry.registerMetric(rpcRequestBlocked);
+  registry && registry.registerMetric(rpcRequestBlocked);
 
-  const validateRpcMethod = rpcMethodsValidation(allowedRPCMethods);
+  const validateBaseRequest = baseRequestValidationFactory(
+    defaultChain,
+    providers,
+    maxBatchCount,
+  );
+
+  const validateRpcMethod = rpcMethodsValidationFactory(allowedRPCMethods);
 
   const validateEthCall =
-    allowedCallAddresses && allowedRPCMethods.includes('eth_call')
-      ? ethCallValidation(allowedCallAddresses)
+    allowedCallAddresses &&
+    (!allowedRPCMethods || allowedRPCMethods.includes('eth_call'))
+      ? ethCallValidationFactory(allowedCallAddresses)
       : undefined;
 
   const validateEthGetLogs =
-    allowedLogsAddresses && allowedRPCMethods.includes('eth_getLogs')
-      ? ethGetLogsValidation(allowedLogsAddresses)
+    (allowedLogsAddresses || blockEmptyAddressGetLogs) &&
+    (!allowedRPCMethods || allowedRPCMethods.includes('eth_getLogs'))
+      ? ethGetLogsValidationFactory(
+          allowedLogsAddresses,
+          blockEmptyAddressGetLogs,
+          maxGetLogsRange,
+          currentBlockTTLms,
+        )
       : undefined;
+
+  const validateMaxSteamSize = streamMaxSizeValidationFactory(maxResponseSize);
 
   const requestRPC = (chainId: number, body: FetchRpcInitBody) =>
     iterateUrls(
@@ -87,34 +87,13 @@ export const rpcFactory = ({
   return async (req: NextApiRequest, res: NextApiResponse): Promise<void> => {
     const abortController = new AbortController();
     try {
-      // Accept only POST requests
-      if (req.method !== 'POST') {
-        // We don't care about tracking blocked requests here
-        throw new UnsupportedHTTPMethodError();
-      }
-
-      const chainId = Number(req.query.chainId || defaultChain);
+      const { chainId, requests } = validateBaseRequest(req);
 
       const validationContext = {
         chainId,
         rpcRequestBlocked,
         requestRPC,
       };
-
-      // Allow only chainId of specified chains
-      if (providers[chainId] == null) {
-        // We don't care about tracking blocked requests here
-        throw new UnsupportedChainIdError();
-      }
-
-      const requests = Array.isArray(req.body) ? req.body : [req.body];
-
-      if (
-        typeof maxBatchCount === 'number' &&
-        requests.length > maxBatchCount
-      ) {
-        throw new InvalidRequestError(`Too many batched requests`);
-      }
 
       // We throw HTTP error for ANY invalid RPC request out of batch
       // because we assume that frontend must not send invalid requests at all
@@ -147,7 +126,7 @@ export const rpcFactory = ({
       // auto closes both Readable.fromWeb() and underlying proxyedRPC streams on error
       await pipeline(
         Readable.fromWeb(proxyedRPC.body as ReadableStream),
-        validateMaxSize(maxResponseSize),
+        validateMaxSteamSize(validationContext),
         res,
         {
           signal: abortController.signal,
