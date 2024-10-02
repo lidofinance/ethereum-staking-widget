@@ -196,22 +196,28 @@ export const rateLimit = rateLimitWrapper({
 export const nextDefaultErrorHandler =
   (args?: DefaultErrorHandlerArgs): RequestWrapper =>
   async (req, res, next) => {
-    const { errorMessage = DEFAULT_API_ERROR_MESSAGE, serverLogger: console } =
-      args || {};
+    const { errorMessage = DEFAULT_API_ERROR_MESSAGE } = args || {};
     try {
       await next?.(req, res, next);
     } catch (error) {
-      const isInnerError = res.statusCode === 200;
-      const status = isInnerError ? 500 : res.statusCode || 500;
+      if (!res.headersSent) {
+        const isInnerError = res.statusCode === 200;
+        const status = isInnerError ? 500 : res.statusCode || 500;
 
-      if (error instanceof Error) {
-        const serverError = 'status' in error && (error.status as number);
-        console?.error(extractErrorMessage(error, errorMessage));
-        res
-          .status(serverError || status)
-          .json({ message: extractErrorMessage(error, errorMessage) });
+        if (error instanceof Error) {
+          const serverError = 'status' in error && (error.status as number);
+          console?.error(extractErrorMessage(error, errorMessage));
+          res
+            .status(serverError || status)
+            .json({ message: extractErrorMessage(error, errorMessage) });
+        } else {
+          res.status(status).json({ message: errorMessage });
+        }
       } else {
-        res.status(status).json({ message: errorMessage });
+        console?.error(
+          '[nextDefaultErrorHandler] error after headers sent:',
+          extractErrorMessage(error, errorMessage),
+        );
       }
     }
   };
@@ -253,9 +259,7 @@ export const sunsetBy =
     }
   };
 
-export const defaultErrorHandler = nextDefaultErrorHandler({
-  serverLogger: console,
-});
+export const defaultErrorHandler = nextDefaultErrorHandler();
 
 // ready wrapper types
 

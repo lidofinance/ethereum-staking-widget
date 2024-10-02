@@ -131,21 +131,28 @@ export const rpcFactory = ({
         }
       }
 
-      const requested = await requestRPC(chainId, req.body as FetchRpcInitBody);
+      const proxyedRPC = await requestRPC(
+        chainId,
+        req.body as FetchRpcInitBody,
+      );
 
       res.setHeader(
         'Content-Type',
-        requested.headers.get('Content-Type') ?? 'application/json',
+        proxyedRPC.headers.get('Content-Type') ?? 'application/json',
       );
-      if (!requested.body) {
+      if (!proxyedRPC.body) {
         throw new Error('There are a problems with RPC provider');
       }
+
+      // auto closes both Readable.fromWeb() and underlying proxyedRPC streams on error
       await pipeline(
-        Readable.fromWeb(requested.body as ReadableStream),
+        Readable.fromWeb(proxyedRPC.body as ReadableStream),
         validateMaxSize(maxResponseSize),
         res,
-        { signal: abortController.signal },
-      ).finally(() => requested.body?.cancel());
+        {
+          signal: abortController.signal,
+        },
+      );
     } catch (error) {
       if (error instanceof ClientError) {
         res.status(400).json(error.message ?? DEFAULT_API_ERROR_MESSAGE);
@@ -154,12 +161,14 @@ export const rpcFactory = ({
         console.error(
           '[rpcFactory]' + error.message ?? DEFAULT_API_ERROR_MESSAGE,
         );
-        res.status(500).json(error.message ?? DEFAULT_API_ERROR_MESSAGE);
+        if (!res.headersSent) {
+          res.status(500).json(error.message ?? DEFAULT_API_ERROR_MESSAGE);
+        }
       } else {
         res.status(500).json(HEALTHY_RPC_SERVICES_ARE_OVER);
       }
     } finally {
-      // closes
+      // forces pipeline closure in case of external error/abort
       abortController.abort();
     }
   };
