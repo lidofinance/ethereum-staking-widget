@@ -4,9 +4,9 @@ import { useAccount } from 'wagmi';
 
 import { useSDK, useWSTETHContractRPC } from '@lido-sdk/react';
 
-import { CHAINS, isSDKSupportedL2Chain } from 'consts/chains';
 import { useCurrentStaticRpcProvider } from 'shared/hooks/use-current-static-rpc-provider';
 import { useTxConfirmation } from 'shared/hooks/use-tx-conformation';
+import { useDappStatus } from 'shared/hooks/use-dapp-status';
 import { runWithTransactionLogger } from 'utils';
 import { isContract } from 'utils/isContract';
 
@@ -29,10 +29,12 @@ export const useWrapFormProcessor = ({
   onConfirm,
   onRetry,
 }: UseWrapFormProcessorArgs) => {
-  const { address, chainId } = useAccount();
+  const { address } = useAccount();
   const { providerWeb3 } = useSDK();
   const { staticRpcProvider } = useCurrentStaticRpcProvider();
   const wstETHContractRPC = useWSTETHContractRPC();
+
+  const { isDappActiveOnL2 } = useDappStatus();
 
   const { txModalStages } = useTxModalWrap();
   const processWrapTxOnL1 = useWrapTxOnL1Processing();
@@ -75,9 +77,7 @@ export const useWrapFormProcessor = ({
         txModalStages.sign(amount, token, willReceive);
 
         let txHash: string;
-        if (isSDKSupportedL2Chain(chainId as CHAINS)) {
-          // TODO: remove without runWithTransactionLogger
-          // txHash = (await processWrapTxOnL2({ amount })).hash;
+        if (isDappActiveOnL2) {
           const txResult = await runWithTransactionLogger(
             'Wrap signing on L2',
             () => processWrapTxOnL2({ amount }),
@@ -120,7 +120,7 @@ export const useWrapFormProcessor = ({
       wstETHContractRPC,
       isApprovalNeededBeforeWrapOnL1,
       txModalStages,
-      chainId,
+      isDappActiveOnL2,
       onConfirm,
       processApproveTxOnL1,
       processWrapTxOnL2,

@@ -18,7 +18,7 @@ export const useWrapTxOnL1Approve = ({
   amount,
   token,
 }: UseWrapTxApproveArgs) => {
-  const { isDappActive, isDappActiveOnL1 } = useDappStatus();
+  const { isDappActiveOnL1 } = useDappStatus();
   const { address } = useAccount();
   const { chainId } = useSDK();
 
@@ -44,7 +44,7 @@ export const useWrapTxOnL1Approve = ({
   );
 
   const isApprovalNeededBeforeWrap =
-    isDappActive && needsApprove && token === TOKENS_TO_WRAP.STETH;
+    isDappActiveOnL1 && needsApprove && token === TOKENS_TO_WRAP.STETH;
 
   return useMemo(
     () => ({

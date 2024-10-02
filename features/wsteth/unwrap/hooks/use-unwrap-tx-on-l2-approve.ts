@@ -33,12 +33,6 @@ export const useUnwrapTxOnL2Approve = ({ amount }: UseUnwrapTxApproveArgs) => {
   const processApproveTx = useCallback(
     async ({ onTxSent }: { onTxSent: (txHash: string) => void }) => {
       try {
-        // TODO: remove without runWithTransactionLogger
-        // const approveTxHash = (
-        //   await sdk.l2.approveWstethForWrap({
-        //     value: amount.toBigInt(),
-        //   })
-        // ).hash;
         const approveTxHash = (
           await runWithTransactionLogger('Approve signing on L2', () =>
             sdk.l2.approveWstethForWrap({
@@ -60,8 +54,10 @@ export const useUnwrapTxOnL2Approve = ({ amount }: UseUnwrapTxApproveArgs) => {
   );
 
   useEffect(() => {
-    void refetchAllowance();
-  }, [refetchAllowance]);
+    if (sdk.core.web3Provider && isDappActiveOnL2) {
+      void refetchAllowance();
+    }
+  }, [isDappActiveOnL2, refetchAllowance, sdk.core.web3Provider]);
 
   return useMemo(
     () => ({

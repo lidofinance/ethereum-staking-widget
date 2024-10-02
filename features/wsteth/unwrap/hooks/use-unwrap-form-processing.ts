@@ -10,16 +10,17 @@ import {
 } from '@lido-sdk/react';
 
 import { useCurrentStaticRpcProvider } from 'shared/hooks/use-current-static-rpc-provider';
+import { useTxConfirmation } from 'shared/hooks/use-tx-conformation';
 import { isContract } from 'utils/isContract';
 import { runWithTransactionLogger } from 'utils';
+import { sendTx } from 'utils/send-tx';
 
 import type { UnwrapFormInputType } from '../unwrap-form-context';
-import { useTxModalStagesUnwrap } from './use-tx-modal-stages-unwrap';
-import { sendTx } from 'utils/send-tx';
-import { useTxConfirmation } from 'shared/hooks/use-tx-conformation';
-import { useUnwrapTxOnL2Approve } from '../../unwrap/hooks/use-unwrap-tx-on-l2-approve';
-import { CHAINS, isSDKSupportedL2Chain } from '../../../../consts/chains';
 import { useLidoSDK } from '../../../../providers/lido-sdk';
+
+import { useUnwrapTxOnL2Approve } from './use-unwrap-tx-on-l2-approve';
+import { useTxModalStagesUnwrap } from './use-tx-modal-stages-unwrap';
+import { useDappStatus } from '../../../../shared/hooks/use-dapp-status';
 
 export type UnwrapFormApprovalData = ReturnType<typeof useUnwrapTxOnL2Approve>;
 
@@ -34,7 +35,7 @@ export const useUnwrapFormProcessor = ({
   onConfirm,
   onRetry,
 }: UseUnwrapFormProcessorArgs) => {
-  const { address, chainId } = useAccount();
+  const { address } = useAccount();
   const { providerWeb3 } = useSDK();
   const { staticRpcProvider } = useCurrentStaticRpcProvider();
   const { txModalStages } = useTxModalStagesUnwrap();
@@ -43,6 +44,7 @@ export const useUnwrapFormProcessor = ({
   const wstethContractWeb3 = useWSTETHContractWeb3();
   const waitForTx = useTxConfirmation();
   const { sdk } = useLidoSDK();
+  const { isDappActiveOnL2 } = useDappStatus();
 
   const {
     isApprovalNeededBeforeUnwrap: isApprovalNeededBeforeUnwrapOnL2,
@@ -82,13 +84,7 @@ export const useUnwrapFormProcessor = ({
         txModalStages.sign(amount, willReceive);
 
         let txHash: string;
-        if (isSDKSupportedL2Chain(chainId as CHAINS)) {
-          // TODO: remove without runWithTransactionLogger
-          // txHash = (
-          //   await sdk.l2.wrapWstethToSteth({
-          //     value: amount.toBigInt(),
-          //   })
-          // ).hash;
+        if (isDappActiveOnL2) {
           txHash = (
             await runWithTransactionLogger('Unwrap signing on L2', () =>
               // The operation 'wstETH to stETH' on L2 is 'wrap'
@@ -146,7 +142,7 @@ export const useUnwrapFormProcessor = ({
       wstETHContractRPC,
       isApprovalNeededBeforeUnwrapOnL2,
       txModalStages,
-      chainId,
+      isDappActiveOnL2,
       stETHContractRPC,
       onConfirm,
       processApproveTxOnL2,
