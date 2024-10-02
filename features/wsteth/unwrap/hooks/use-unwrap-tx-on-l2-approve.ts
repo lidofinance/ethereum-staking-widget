@@ -21,7 +21,7 @@ export const useUnwrapTxOnL2Approve = ({ amount }: UseUnwrapTxApproveArgs) => {
       try {
         const allowance = await sdk.l2.getWstethForWrapAllowance();
         setAllowance(allowance);
-        setIsApprovalNeededBeforeUnwrap(amount.gte(allowance));
+        setIsApprovalNeededBeforeUnwrap(amount.gt(allowance));
       } catch (error) {
         console.error('Error fetching allowance on L2:', error);
       }
