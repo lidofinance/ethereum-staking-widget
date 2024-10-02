@@ -1,4 +1,5 @@
 import { useCallback } from 'react';
+import { BigNumber } from 'ethers';
 import invariant from 'tiny-invariant';
 import { useAccount } from 'wagmi';
 
@@ -9,6 +10,7 @@ import { useTxConfirmation } from 'shared/hooks/use-tx-conformation';
 import { useDappStatus } from 'shared/hooks/use-dapp-status';
 import { runWithTransactionLogger } from 'utils';
 import { isContract } from 'utils/isContract';
+import { useLidoSDK } from 'providers/lido-sdk';
 
 import type {
   WrapFormApprovalData,
@@ -33,6 +35,7 @@ export const useWrapFormProcessor = ({
   const { providerWeb3 } = useSDK();
   const { staticRpcProvider } = useCurrentStaticRpcProvider();
   const wstETHContractRPC = useWSTETHContractRPC();
+  const { lidoSDKL2, lidoSDKwstETH } = useLidoSDK();
 
   const { isDappActiveOnL2 } = useDappStatus();
 
@@ -101,11 +104,13 @@ export const useWrapFormProcessor = ({
         );
 
         const [wstethBalance] = await Promise.all([
-          wstETHContractRPC.balanceOf(address),
+          isDappActiveOnL2
+            ? lidoSDKL2.wsteth.balance(address)
+            : lidoSDKwstETH.balance(address),
           onConfirm(),
         ]);
 
-        txModalStages.success(wstethBalance, txHash);
+        txModalStages.success(BigNumber.from(wstethBalance), txHash);
         return true;
       } catch (error) {
         console.warn(error);
@@ -121,6 +126,8 @@ export const useWrapFormProcessor = ({
       isApprovalNeededBeforeWrapOnL1,
       txModalStages,
       isDappActiveOnL2,
+      lidoSDKL2.wsteth,
+      lidoSDKwstETH,
       onConfirm,
       processApproveTxOnL1,
       processWrapTxOnL2,

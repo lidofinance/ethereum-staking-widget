@@ -1,10 +1,10 @@
 import { useCallback } from 'react';
+import { BigNumber } from 'ethers';
 import invariant from 'tiny-invariant';
 import { useAccount } from 'wagmi';
 
 import {
   useSDK,
-  useSTETHContractRPC,
   useWSTETHContractRPC,
   useWSTETHContractWeb3,
 } from '@lido-sdk/react';
@@ -38,11 +38,10 @@ export const useUnwrapFormProcessor = ({
   const { providerWeb3 } = useSDK();
   const { staticRpcProvider } = useCurrentStaticRpcProvider();
   const { txModalStages } = useTxModalStagesUnwrap();
-  const stETHContractRPC = useSTETHContractRPC();
   const wstETHContractRPC = useWSTETHContractRPC();
   const wstethContractWeb3 = useWSTETHContractWeb3();
   const waitForTx = useTxConfirmation();
-  const { lidoSDKL2 } = useLidoSDK();
+  const { lidoSDKL2, lidoSDKstETH } = useLidoSDK();
   const { isDappActiveOnL2 } = useDappStatus();
 
   const {
@@ -121,11 +120,13 @@ export const useUnwrapFormProcessor = ({
         );
 
         const [stethBalance] = await Promise.all([
-          stETHContractRPC.balanceOf(address),
+          isDappActiveOnL2
+            ? lidoSDKL2.steth.balance(address)
+            : lidoSDKstETH.balance(address),
           onConfirm(),
         ]);
 
-        txModalStages.success(stethBalance, txHash);
+        txModalStages.success(BigNumber.from(stethBalance), txHash);
         return true;
       } catch (error: any) {
         console.warn(error);
@@ -142,10 +143,10 @@ export const useUnwrapFormProcessor = ({
       isApprovalNeededBeforeUnwrapOnL2,
       txModalStages,
       isDappActiveOnL2,
-      stETHContractRPC,
+      lidoSDKL2,
+      lidoSDKstETH,
       onConfirm,
       processApproveTxOnL2,
-      lidoSDKL2,
       waitForTx,
       onRetry,
     ],
