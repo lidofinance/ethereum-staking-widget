@@ -23,7 +23,7 @@ const getChainMainnetNameByChainId = (chainId: number): string => {
 };
 
 interface ContextValue {
-  chainName: number;
+  chainName: string;
   setChainName: React.Dispatch<React.SetStateAction<ChainNameType>>;
   getChainMainnetNameByChainId: (chainId: number) => ChainNameType;
   isMatchDappChainAndWalletChain: (walletChainId: number) => boolean;
