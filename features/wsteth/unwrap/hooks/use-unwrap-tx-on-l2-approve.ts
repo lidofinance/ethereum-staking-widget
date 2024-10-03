@@ -14,21 +14,23 @@ export const useUnwrapTxOnL2Approve = ({ amount }: UseUnwrapTxApproveArgs) => {
   const { lidoSDKCore, lidoSDKL2 } = useLidoSDK();
   const [allowance, setAllowance] = useState<bigint | null>(null);
   const [isApprovalNeededBeforeUnwrap, setIsApprovalNeededBeforeUnwrap] =
-    useState<boolean>(true);
+    useState<boolean>(false);
 
   const refetchAllowance = useCallback(() => {
     const checkAllowance = async () => {
       try {
         const allowance = await lidoSDKL2.getWstethForWrapAllowance();
         setAllowance(allowance);
-        setIsApprovalNeededBeforeUnwrap(amount.gt(allowance));
+        setIsApprovalNeededBeforeUnwrap(
+          isAccountActiveOnL2 && amount.gt(allowance),
+        );
       } catch (error) {
         console.error('Error fetching allowance on L2:', error);
       }
     };
 
     void checkAllowance();
-  }, [lidoSDKL2, amount]);
+  }, [lidoSDKL2, isAccountActiveOnL2, amount]);
 
   const processApproveTx = useCallback(
     async ({ onTxSent }: { onTxSent: (txHash: string) => void }) => {
