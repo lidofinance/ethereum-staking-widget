@@ -6,6 +6,8 @@ import {
 import { helpers, useSupportedChains } from 'reef-knot/web3-react';
 import { useAccount, useConnect, useConfig } from 'wagmi';
 import { useDappStatus } from 'shared/hooks/use-dapp-status';
+import { OPTIMISM, ETHEREUM, useDappChain } from 'providers/dapp-chain';
+import { capitalizeFirstLetter } from 'utils/capitalize-string';
 
 export const useErrorMessage = (): string | undefined => {
   const { chains } = useConfig();
@@ -16,14 +18,15 @@ export const useErrorMessage = (): string | undefined => {
   const { isLedger } = useConnectorInfo();
 
   const { isDappActiveAndNetworksMatched } = useDappStatus();
+  const { chainName } = useDappChain();
 
   if (isConnected && isUnsupported) {
     return getUnsupportedChainError(chains).message;
   }
 
   // TODO
-  if (!isDappActiveAndNetworksMatched) {
-    return 'Wrong network. Please switch to Ethereum/Optimism in your wallet to wrap/unwrap.';
+  if (!error && !isDappActiveAndNetworksMatched) {
+    return `Wrong network. Please switch to ${chainName === OPTIMISM ? capitalizeFirstLetter(ETHEREUM) : capitalizeFirstLetter(OPTIMISM)} in your wallet to wrap/unwrap.`;
   }
 
   if (!error) {
