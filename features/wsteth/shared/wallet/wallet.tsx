@@ -126,7 +126,6 @@ export const Wallet: WalletComponentType = memo((props) => {
     return <LidoMultichainFallback textEnding={'to wrap/unwrap'} {...props} />;
   }
 
-  // TODO
   if (!isDappActive || !isDappActiveAndNetworksMatched) {
     return <Fallback {...props} />;
   }
