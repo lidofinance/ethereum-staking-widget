@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 
 interface TooltipProps {
   $showArrow?: boolean;
@@ -6,9 +6,9 @@ interface TooltipProps {
 
 export const SelectIconTooltipWrapper = styled.div`
   position: absolute;
-  left: -100px;
+  left: 0;
   top: calc(100% + 16px);
-  width: 247px;
+  width: 244px;
   z-index: 5;
 `;
 
@@ -24,19 +24,19 @@ export const SelectIconTooltipContent = styled.div<TooltipProps>`
 
   ${({ $showArrow }) =>
     $showArrow &&
-    `
-    &:after {
-      content: '';
-      position: absolute;
-      top: -6px;
-      left: 50%;
-      display: block;
-      width: 12px;
-      height: 12px;
-      transform: rotate(45deg);
-      flex-shrink: 0;
-      border-radius: 2px 0 0 0;
-      background: var(--lido-color-accent);
-    }
-  `}
+    css`
+      &:after {
+        content: '';
+        position: absolute;
+        top: -6px;
+        left: 27px;
+        display: block;
+        width: 12px;
+        height: 12px;
+        transform: rotate(45deg);
+        flex-shrink: 0;
+        border-radius: 2px 0 0 0;
+        background: var(--lido-color-accent);
+      }
+    `}
 `;

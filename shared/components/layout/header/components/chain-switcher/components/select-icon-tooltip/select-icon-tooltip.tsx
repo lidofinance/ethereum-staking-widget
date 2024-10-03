@@ -14,7 +14,9 @@ export const SelectIconTooltip: FC<
     <SelectIconTooltipWrapper>
       <SelectIconTooltipContent $showArrow={showArrow}>
         <ThemeProvider theme={themeDark}>
-          <Text size={'xs'}>{children}</Text>
+          <Text size={'xs'} strong={true}>
+            {children}
+          </Text>
         </ThemeProvider>
       </SelectIconTooltipContent>
     </SelectIconTooltipWrapper>
