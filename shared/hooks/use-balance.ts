@@ -273,6 +273,7 @@ export const useStethBalance = ({
   });
 
   const balanceData = useTokenBalance(
+    // @ts-expect-error: It will not be actual after adding Optimism (chain_id = 10) to the new SDK.
     contract!,
     mergedAccount,
     shouldSubscribeToUpdates,
@@ -304,6 +305,7 @@ export const useWstethBalance = ({
   });
 
   const balanceData = useTokenBalance(
+    // @ts-expect-error: It will not be actual after adding Optimism (chain_id = 10) to the new SDK.
     contract!,
     mergedAccount,
     shouldSubscribeToUpdates,

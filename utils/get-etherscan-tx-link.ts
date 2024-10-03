@@ -7,9 +7,10 @@ export const getEtherscanTxLink = (
   chainId: CHAINS | CHAINS_SDK,
   hash: string,
 ): string => {
-  // TODO: Optimism
   if (chainId === CHAINS.OptimismSepolia) {
     return `https://sepolia-optimistic.etherscan.io/tx/${hash}`;
+  } else if (chainId === CHAINS.Optimism) {
+    return `https://optimistic.etherscan.io/tx/${hash}`;
   }
 
   return getEtherscanTxLinkSDK(chainId as CHAINS_SDK, hash);
