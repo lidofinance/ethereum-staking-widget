@@ -37,8 +37,14 @@ const WalletComponent: WalletComponentType = (props) => {
   const wstethBySteth = useWstethBySteth(stethBalance.data);
   const stethByWsteth = useStethByWsteth(wstethBalance.data);
 
+  const { isDappActiveOnL2 } = useDappStatus();
+
   return (
-    <StyledCard data-testid="wrapCardSection" {...props}>
+    <StyledCard
+      data-testid="wrapCardSection"
+      $redBg={isDappActiveOnL2}
+      {...props}
+    >
       <CardRow>
         <CardBalance
           title="ETH balance"
@@ -113,14 +119,15 @@ const WalletComponent: WalletComponentType = (props) => {
 };
 
 export const Wallet: WalletComponentType = memo((props) => {
-  const { isDappActive } = useDappStatus();
+  const { isDappActive, isDappActiveAndNetworksMatched } = useDappStatus();
   const { showLidoMultichainFallback } = useLidoMultichainFallbackCondition();
 
   if (showLidoMultichainFallback) {
     return <LidoMultichainFallback textEnding={'to wrap/unwrap'} {...props} />;
   }
 
-  if (!isDappActive) {
+  // TODO
+  if (!isDappActive && !isDappActiveAndNetworksMatched) {
     return <Fallback {...props} />;
   }
 

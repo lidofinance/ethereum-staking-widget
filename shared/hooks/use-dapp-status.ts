@@ -9,6 +9,8 @@ import { useDappChain } from 'providers/dapp-chain';
 
 export const useDappStatus = () => {
   const { multiChainBanner } = useConfig().externalConfig;
+  // TODO: remove mock
+  // const multiChainBanner = [324, 10, 42161, 137, 8453, 5000, 59144, 534352, 56, 34443];
   const { chainId, isConnected: isWalletConnected } = useAccount();
   const isSupportedChain = useIsSupportedChain();
   const { isMatchDappChainAndWalletChain } = useDappChain();

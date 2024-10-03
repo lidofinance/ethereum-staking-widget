@@ -1,5 +1,7 @@
 import { FC, useMemo } from 'react';
 import { useAccount } from 'wagmi';
+import { useRouter } from 'next/router';
+
 import { BlockProps, Link } from '@lidofinance/lido-ui';
 
 import { ReactComponent as ArbitrumLogo } from 'assets/icons/lido-multichain/arbitrum.svg';
@@ -17,9 +19,9 @@ import { config } from 'config';
 import { useUserConfig } from 'config/user-config';
 import { CHAINS, LIDO_MULTICHAIN_CHAINS } from 'consts/chains';
 import { MATOMO_CLICK_EVENTS_TYPES } from 'consts/matomo-click-events';
+import { trackMatomoEvent } from 'utils/track-matomo-event';
 
 import { Wrap, TextStyle, ButtonStyle } from './styles';
-import { trackMatomoEvent } from '../../../utils/track-matomo-event';
 
 export type LidoMultichainFallbackComponent = FC<
   { textEnding: string } & BlockProps
@@ -48,6 +50,7 @@ export const LidoMultichainFallback: LidoMultichainFallbackComponent = (
 ) => {
   const { chainId } = useAccount();
   const { defaultChain } = useUserConfig();
+  const router = useRouter();
 
   const defaultChainName = useMemo(() => {
     if (CHAINS[defaultChain] === 'Mainnet') return 'Ethereum';
@@ -59,14 +62,22 @@ export const LidoMultichainFallback: LidoMultichainFallbackComponent = (
     return (!!chainId && LIDO_MULTICHAIN_CHAINS[chainId]) || 'unknown';
   }, [chainId]);
 
+  // TODO
+  const switchToText = useMemo(
+    () =>
+      router.pathname === '/wrap/[[...mode]]'
+        ? 'Ethereum/Optimism'
+        : defaultChainName,
+    [router.pathname, defaultChainName],
+  );
+
   return (
     <Wrap {...props} chainId={chainId as LIDO_MULTICHAIN_CHAINS}>
       {getChainLogo(chainId as LIDO_MULTICHAIN_CHAINS)}
       <TextStyle>
         You’re currently on {lidoMultichainChainName}.
         <br />
-        Explore Lido Multichain or switch to {defaultChainName}{' '}
-        {props.textEnding}.
+        Explore Lido Multichain or switch to {switchToText} {props.textEnding}.
       </TextStyle>
       <Link href={`${config.rootOrigin}/lido-multichain`}>
         <ButtonStyle
