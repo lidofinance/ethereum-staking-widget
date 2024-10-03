@@ -3,7 +3,7 @@ import { useAccount } from 'wagmi';
 import { Button } from '@lidofinance/lido-ui';
 import { Zero } from '@ethersproject/constants';
 
-import { Connect, UnsupportedChainButton } from 'shared/wallet';
+import { Connect, DisabledButton } from 'shared/wallet';
 import { FormatToken } from 'shared/formatters/format-token';
 import { useIsSupportedChain } from 'shared/hooks/use-is-supported-chain';
 import { isValidationErrorTypeUnhandled } from 'shared/hook-form/validation/validation-error';
@@ -21,18 +21,18 @@ export const SubmitButton = () => {
 
   if (!isConnected) return <Connect fullwidth />;
 
-  if (!isSupportedChain) {
-    return <UnsupportedChainButton />;
+  const disabled =
+    (!!errors.requests &&
+      !isValidationErrorTypeUnhandled(errors.requests.type)) ||
+    selectedRequests.length === 0;
+
+  if (!isSupportedChain || disabled) {
+    return <DisabledButton>Claim</DisabledButton>;
   }
 
   const claimButtonAmount = ethToClaim.lte(Zero) ? null : (
     <FormatToken showAmountTip={false} amount={ethToClaim} symbol="ETH" />
   );
-
-  const disabled =
-    (!!errors.requests &&
-      !isValidationErrorTypeUnhandled(errors.requests.type)) ||
-    selectedRequests.length === 0;
 
   return (
     <Button
