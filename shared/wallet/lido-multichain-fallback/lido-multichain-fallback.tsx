@@ -65,7 +65,6 @@ export const LidoMultichainFallback: LidoMultichainFallbackComponent = (
     return (!!chainId && LIDO_MULTICHAIN_CHAINS[chainId]) || 'unknown';
   }, [chainId]);
 
-  // TODO
   const switchToText = useMemo(() => {
     if (router.pathname === '/wrap/[[...mode]]') {
       return chainName === OPTIMISM

@@ -24,7 +24,6 @@ export const useErrorMessage = (): string | undefined => {
     return getUnsupportedChainError(chains).message;
   }
 
-  // TODO
   if (isConnected && !error && !isDappActiveAndNetworksMatched) {
     return `Wrong network. Please switch to ${chainName === OPTIMISM ? capitalizeFirstLetter(ETHEREUM) : capitalizeFirstLetter(OPTIMISM)} in your wallet to wrap/unwrap.`;
   }
