@@ -7,25 +7,27 @@ import { CHAINS } from 'consts/chains';
 
 export const ETHEREUM = 'ETHEREUM';
 export const OPTIMISM = 'OPTIMISM';
+export const UNKNOWN = 'UNKNOWN';
 
-export const CHAIN_NAMES = [ETHEREUM, OPTIMISM];
-export type ChainNameType = (typeof CHAIN_NAMES)[number];
+export type ChainNameType = 'ETHEREUM' | 'OPTIMISM';
+type ChainNameOrUnknownType = ChainNameType | 'UNKNOWN';
 
-const getChainMainnetNameByChainId = (chainId: number): string => {
+const getChainMainnetNameByChainId = (
+  chainId: number,
+): ChainNameOrUnknownType => {
   if ([CHAINS.Mainnet, CHAINS.Holesky, CHAINS.Sepolia].includes(chainId)) {
     return ETHEREUM;
   } else if ([CHAINS.Optimism, CHAINS.OptimismSepolia].includes(chainId)) {
     return OPTIMISM;
   } else {
-    // TODO: invariant?
-    throw new Error('Invalid chainId');
+    return UNKNOWN;
   }
 };
 
 interface ContextValue {
   chainName: string;
   setChainName: React.Dispatch<React.SetStateAction<ChainNameType>>;
-  getChainMainnetNameByChainId: (chainId: number) => ChainNameType;
+  getChainMainnetNameByChainId: (chainId: number) => ChainNameOrUnknownType;
   isMatchDappChainAndWalletChain: (walletChainId: number) => boolean;
 }
 

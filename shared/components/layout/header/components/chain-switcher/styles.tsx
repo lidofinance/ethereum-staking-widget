@@ -1,6 +1,10 @@
 import styled, { css } from 'styled-components';
 import { SelectIcon } from '@lidofinance/lido-ui';
 
+export const SelectIconWrapper = styled.div`
+  position: relative;
+`;
+
 export const SelectIconStyled = styled(SelectIcon)`
   overflow: ${({ disabled }) => (disabled ? 'hidden' : 'visible')};
   width: ${({ disabled }) => (disabled ? '44px' : 'auto')};

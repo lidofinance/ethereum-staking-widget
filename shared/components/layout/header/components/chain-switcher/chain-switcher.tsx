@@ -1,4 +1,4 @@
-import { FC, useState, useCallback } from 'react';
+import { FC, useState, useCallback, ReactNode } from 'react';
 import { useRouter } from 'next/router';
 import { Option } from '@lidofinance/lido-ui';
 
@@ -14,9 +14,9 @@ import {
 import { useDappStatus } from 'shared/hooks/use-dapp-status';
 
 import { SelectIconTooltip } from './components/select-icon-tooltip/select-icon-tooltip';
-import { SelectIconStyled } from './styles';
+import { SelectIconStyled, SelectIconWrapper } from './styles';
 
-const iconsMap = {
+const iconsMap: Record<ChainNameType, ReactNode> = {
   [ETHEREUM]: <EthereumMainnetLogo />,
   [OPTIMISM]: <OptimismLogo />,
 };
@@ -26,28 +26,26 @@ export const ChainSwitcher: FC = () => {
   const { isDappActiveAndNetworksMatched } = useDappStatus();
   const router = useRouter();
 
-  const [value, setValue] = useState<keyof typeof iconsMap>(ETHEREUM);
+  const [value, setValue] = useState<ChainNameType>(ETHEREUM);
 
   const isOnWrapUnwrapPage = router.pathname === '/wrap/[[...mode]]';
 
   const onChange = useCallback(
-    // todo: typing
-    (value: keyof typeof iconsMap) => {
-      setValue(value);
+    (value: any) => {
+      setValue(value as ChainNameType);
       setChainName(value as ChainNameType);
     },
     [setChainName],
   );
 
   return (
-    <div style={{ position: 'relative' }}>
+    <SelectIconWrapper>
       <SelectIconStyled
         disabled={!isOnWrapUnwrapPage}
         icon={iconsMap[value]}
         value={value}
         variant="small"
-        // todo: typing
-        onChange={(value: any) => onChange(value)}
+        onChange={onChange}
       >
         <Option leftDecorator={iconsMap[ETHEREUM]} value={ETHEREUM}>
           Ethereum
@@ -63,6 +61,6 @@ export const ChainSwitcher: FC = () => {
             : 'Don’t forget to switch to Ethereum'}
         </SelectIconTooltip>
       )}
-    </div>
+    </SelectIconWrapper>
   );
 };
