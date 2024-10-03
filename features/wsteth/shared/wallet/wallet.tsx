@@ -127,7 +127,7 @@ export const Wallet: WalletComponentType = memo((props) => {
   }
 
   // TODO
-  if (!isDappActive && !isDappActiveAndNetworksMatched) {
+  if (!isDappActive || !isDappActiveAndNetworksMatched) {
     return <Fallback {...props} />;
   }
 
