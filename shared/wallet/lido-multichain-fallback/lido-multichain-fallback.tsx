@@ -20,6 +20,8 @@ import { useUserConfig } from 'config/user-config';
 import { CHAINS, LIDO_MULTICHAIN_CHAINS } from 'consts/chains';
 import { MATOMO_CLICK_EVENTS_TYPES } from 'consts/matomo-click-events';
 import { trackMatomoEvent } from 'utils/track-matomo-event';
+import { OPTIMISM, ETHEREUM, useDappChain } from 'providers/dapp-chain';
+import { capitalizeFirstLetter } from 'utils/capitalize-string';
 
 import { Wrap, TextStyle, ButtonStyle } from './styles';
 
@@ -50,6 +52,7 @@ export const LidoMultichainFallback: LidoMultichainFallbackComponent = (
 ) => {
   const { chainId } = useAccount();
   const { defaultChain } = useUserConfig();
+  const { chainName } = useDappChain();
   const router = useRouter();
 
   const defaultChainName = useMemo(() => {
@@ -63,13 +66,15 @@ export const LidoMultichainFallback: LidoMultichainFallbackComponent = (
   }, [chainId]);
 
   // TODO
-  const switchToText = useMemo(
-    () =>
-      router.pathname === '/wrap/[[...mode]]'
-        ? 'Ethereum/Optimism'
-        : defaultChainName,
-    [router.pathname, defaultChainName],
-  );
+  const switchToText = useMemo(() => {
+    if (router.pathname === '/wrap/[[...mode]]') {
+      return chainName === OPTIMISM
+        ? capitalizeFirstLetter(OPTIMISM)
+        : capitalizeFirstLetter(ETHEREUM);
+    } else {
+      return defaultChainName;
+    }
+  }, [chainName, router.pathname, defaultChainName]);
 
   return (
     <Wrap {...props} chainId={chainId as LIDO_MULTICHAIN_CHAINS}>
