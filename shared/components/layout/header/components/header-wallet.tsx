@@ -3,7 +3,6 @@ import { useRouter } from 'next/router';
 import { useAccount } from 'wagmi';
 
 import { CHAINS, getChainColor } from '@lido-sdk/constants';
-import { ThemeToggler } from '@lidofinance/lido-ui';
 
 import { config } from 'config';
 import { useUserConfig } from 'config/user-config';
@@ -19,6 +18,8 @@ import {
   DotStyle,
   IPFSInfoBoxOnlyDesktopWrapper,
 } from '../styles';
+import { ThemeTogglerStyled } from './styles';
+import { ChainSwitcher } from './chain-switcher/chain-switcher';
 
 const HeaderWallet: FC = () => {
   const router = useRouter();
@@ -50,12 +51,15 @@ const HeaderWallet: FC = () => {
         </>
       )}
       {address ? (
-        <Button data-testid="accountSectionHeader" />
+        <>
+          <ChainSwitcher />
+          <Button data-testid="accountSectionHeader" />
+        </>
       ) : (
         <Connect size="sm" />
       )}
       {config.ipfsMode && <HeaderSettingsButton />}
-      {!queryTheme && <ThemeToggler data-testid="themeToggler" />}
+      {!queryTheme && <ThemeTogglerStyled data-testid="themeToggler" />}
       {config.ipfsMode && (
         <IPFSInfoBoxOnlyDesktopWrapper>
           <IPFSInfoBox />
