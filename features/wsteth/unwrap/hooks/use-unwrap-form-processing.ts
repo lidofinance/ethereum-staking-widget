@@ -42,7 +42,7 @@ export const useUnwrapFormProcessor = ({
   const wstethContractWeb3 = useWSTETHContractWeb3();
   const waitForTx = useTxConfirmation();
   const { lidoSDKL2, lidoSDKstETH } = useLidoSDK();
-  const { isDappActiveOnL2 } = useDappStatus();
+  const { isAccountActiveOnL2 } = useDappStatus();
 
   const {
     isApprovalNeededBeforeUnwrap: isApprovalNeededBeforeUnwrapOnL2,
@@ -82,7 +82,7 @@ export const useUnwrapFormProcessor = ({
         txModalStages.sign(amount, willReceive);
 
         let txHash: string;
-        if (isDappActiveOnL2) {
+        if (isAccountActiveOnL2) {
           txHash = (
             await runWithTransactionLogger('Unwrap signing on L2', () =>
               // The operation 'wstETH to stETH' on L2 is 'wrap'
@@ -120,7 +120,7 @@ export const useUnwrapFormProcessor = ({
         );
 
         const [stethBalance] = await Promise.all([
-          isDappActiveOnL2
+          isAccountActiveOnL2
             ? lidoSDKL2.steth.balance(address)
             : lidoSDKstETH.balance(address),
           onConfirm(),
@@ -142,7 +142,7 @@ export const useUnwrapFormProcessor = ({
       wstETHContractRPC,
       isApprovalNeededBeforeUnwrapOnL2,
       txModalStages,
-      isDappActiveOnL2,
+      isAccountActiveOnL2,
       lidoSDKL2,
       lidoSDKstETH,
       onConfirm,

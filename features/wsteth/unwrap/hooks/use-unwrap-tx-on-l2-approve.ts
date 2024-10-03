@@ -10,7 +10,7 @@ type UseUnwrapTxApproveArgs = {
 };
 
 export const useUnwrapTxOnL2Approve = ({ amount }: UseUnwrapTxApproveArgs) => {
-  const { isDappActiveOnL2 } = useDappStatus();
+  const { isAccountActiveOnL2 } = useDappStatus();
   const { lidoSDKCore, lidoSDKL2 } = useLidoSDK();
   const [allowance, setAllowance] = useState<bigint | null>(null);
   const [isApprovalNeededBeforeUnwrap, setIsApprovalNeededBeforeUnwrap] =
@@ -54,10 +54,10 @@ export const useUnwrapTxOnL2Approve = ({ amount }: UseUnwrapTxApproveArgs) => {
   );
 
   useEffect(() => {
-    if (lidoSDKCore.web3Provider && isDappActiveOnL2) {
+    if (lidoSDKCore.web3Provider && isAccountActiveOnL2) {
       void refetchAllowance();
     }
-  }, [isDappActiveOnL2, refetchAllowance, lidoSDKCore.web3Provider]);
+  }, [isAccountActiveOnL2, refetchAllowance, lidoSDKCore.web3Provider]);
 
   return useMemo(
     () => ({
@@ -65,14 +65,14 @@ export const useUnwrapTxOnL2Approve = ({ amount }: UseUnwrapTxApproveArgs) => {
       refetchAllowance,
       allowance,
       isApprovalNeededBeforeUnwrap,
-      isShowAllowance: isDappActiveOnL2,
+      isShowAllowance: isAccountActiveOnL2,
     }),
     [
       processApproveTx,
       refetchAllowance,
       allowance,
       isApprovalNeededBeforeUnwrap,
-      isDappActiveOnL2,
+      isAccountActiveOnL2,
     ],
   );
 };

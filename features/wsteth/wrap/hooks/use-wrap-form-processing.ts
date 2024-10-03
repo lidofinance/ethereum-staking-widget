@@ -37,7 +37,7 @@ export const useWrapFormProcessor = ({
   const wstETHContractRPC = useWSTETHContractRPC();
   const { lidoSDKL2, lidoSDKwstETH } = useLidoSDK();
 
-  const { isDappActiveOnL2 } = useDappStatus();
+  const { isAccountActiveOnL2 } = useDappStatus();
 
   const { txModalStages } = useTxModalWrap();
   const processWrapTxOnL1 = useWrapTxOnL1Processing();
@@ -80,7 +80,7 @@ export const useWrapFormProcessor = ({
         txModalStages.sign(amount, token, willReceive);
 
         let txHash: string;
-        if (isDappActiveOnL2) {
+        if (isAccountActiveOnL2) {
           const txResult = await runWithTransactionLogger(
             'Wrap signing on L2',
             () => processWrapTxOnL2({ amount }),
@@ -104,7 +104,7 @@ export const useWrapFormProcessor = ({
         );
 
         const [wstethBalance] = await Promise.all([
-          isDappActiveOnL2
+          isAccountActiveOnL2
             ? lidoSDKL2.wsteth.balance(address)
             : lidoSDKwstETH.balance(address),
           onConfirm(),
@@ -125,7 +125,7 @@ export const useWrapFormProcessor = ({
       wstETHContractRPC,
       isApprovalNeededBeforeWrapOnL1,
       txModalStages,
-      isDappActiveOnL2,
+      isAccountActiveOnL2,
       lidoSDKL2.wsteth,
       lidoSDKwstETH,
       onConfirm,
