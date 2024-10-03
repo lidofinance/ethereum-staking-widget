@@ -2,8 +2,8 @@ import { FC, useState, useCallback } from 'react';
 import { useRouter } from 'next/router';
 import { Option } from '@lidofinance/lido-ui';
 
-import { ReactComponent as OptimismLogo } from 'assets/icons/lido-multichain/optimism.svg';
-import { ReactComponent as EthereumMainnetLogo } from 'assets/icons/mainnet.svg';
+import { ReactComponent as OptimismLogo } from 'assets/icons/chain-toggler/optimism.svg';
+import { ReactComponent as EthereumMainnetLogo } from 'assets/icons/chain-toggler/mainnet.svg';
 
 import {
   ChainNameType,
@@ -17,8 +17,8 @@ import { SelectIconTooltip } from './components/select-icon-tooltip/select-icon-
 import { SelectIconStyled } from './styles';
 
 const iconsMap = {
-  [ETHEREUM]: <EthereumMainnetLogo width={28} height={28} />,
-  [OPTIMISM]: <OptimismLogo width={28} height={28} />,
+  [ETHEREUM]: <EthereumMainnetLogo />,
+  [OPTIMISM]: <OptimismLogo />,
 };
 
 export const ChainSwitcher: FC = () => {
@@ -56,7 +56,7 @@ export const ChainSwitcher: FC = () => {
           Optimism
         </Option>
       </SelectIconStyled>
-      {!isDappActiveAndNetworksMatched && (
+      {isOnWrapUnwrapPage && !isDappActiveAndNetworksMatched && (
         <SelectIconTooltip showArrow={true}>
           {isOnWrapUnwrapPage
             ? 'This network doesn’t match your wallet’s network'
