@@ -2,10 +2,11 @@ import { FC, useMemo } from 'react';
 import { useRouter } from 'next/router';
 import { useAccount } from 'wagmi';
 
-import { CHAINS, getChainColor } from '@lido-sdk/constants';
+import { CHAINS as legacySDKCHAINS, getChainColor } from '@lido-sdk/constants';
 
 import { config } from 'config';
 import { useUserConfig } from 'config/user-config';
+import { CHAINS } from 'consts/chains';
 
 import { IPFSInfoBox } from 'features/ipfs/ipfs-info-box';
 import { useDappStatus } from 'shared/hooks/use-dapp-status';
@@ -27,8 +28,12 @@ const HeaderWallet: FC = () => {
   const { defaultChain: defaultChainId } = useUserConfig();
   const { isDappActive } = useDappStatus();
 
-  const chainName = CHAINS[chainId || defaultChainId];
-  const testNet = chainId !== CHAINS.Mainnet;
+  let chainName = legacySDKCHAINS[chainId || defaultChainId];
+  if (!chainName && chainId === CHAINS.OptimismSepolia) {
+    chainName = 'OP_Sep';
+  }
+
+  const testNet = chainId !== legacySDKCHAINS.Mainnet;
   const showNet = testNet && isDappActive;
   const queryTheme = router?.query?.theme;
 
