@@ -30,7 +30,7 @@ const HeaderWallet: FC = () => {
 
   let chainName = legacySDKCHAINS[chainId || defaultChainId];
   if (!chainName && chainId === CHAINS.OptimismSepolia) {
-    chainName = 'OP_Sep';
+    chainName = 'Optimism Sepolia';
   }
 
   const testNet = chainId !== legacySDKCHAINS.Mainnet;
