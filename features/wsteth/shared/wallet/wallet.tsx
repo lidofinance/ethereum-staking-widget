@@ -17,13 +17,15 @@ import {
   Fallback,
   LidoMultichainFallback,
 } from 'shared/wallet';
-
-import { StyledCard } from './styles';
 import {
   useEthereumBalance,
   useStethBalance,
   useWstethBalance,
 } from 'shared/hooks/use-balance';
+import { OPTIMISM, ETHEREUM, useDappChain } from 'providers/dapp-chain';
+import { capitalizeFirstLetter } from 'utils/capitalize-string';
+
+import { StyledCard } from './styles';
 
 const WalletComponent: WalletComponentType = (props) => {
   const { account } = useSDK();
@@ -121,12 +123,18 @@ const WalletComponent: WalletComponentType = (props) => {
 export const Wallet: WalletComponentType = memo((props) => {
   const { isDappActive, isDappActiveAndNetworksMatched } = useDappStatus();
   const { showLidoMultichainFallback } = useLidoMultichainFallbackCondition();
+  const { chainName } = useDappChain();
 
   if (showLidoMultichainFallback) {
     return <LidoMultichainFallback textEnding={'to wrap/unwrap'} {...props} />;
   }
 
-  if (!isDappActive || !isDappActiveAndNetworksMatched) {
+  if (!isDappActiveAndNetworksMatched) {
+    const error = `Wrong network. Please switch to ${chainName === OPTIMISM ? capitalizeFirstLetter(OPTIMISM) : capitalizeFirstLetter(ETHEREUM)} in your wallet to wrap/unwrap.`;
+    return <Fallback error={error} {...props} />;
+  }
+
+  if (!isDappActive) {
     return <Fallback {...props} />;
   }
 
