@@ -49,7 +49,8 @@ export const RewardsHistoryContext = createContext({} as RewardsHistoryValue);
 const RewardsHistoryProvider: FC<PropsWithChildren> = (props) => {
   const { children } = props;
 
-  const { isWalletConnected, isSupportedChain } = useDappStatus();
+  const { isWalletConnected, isSupportedChain, isAccountActiveOnL2 } =
+    useDappStatus();
 
   const [currency, setCurrency] = useState(DEFAULT_CURRENCY.id);
 
@@ -92,9 +93,9 @@ const RewardsHistoryProvider: FC<PropsWithChildren> = (props) => {
 
   const isDataAvailable = useMemo(() => {
     const isDataNotAvailable =
-      !data || (isWalletConnected && !isSupportedChain);
+      !data || (isWalletConnected && !isSupportedChain) || isAccountActiveOnL2;
     return !isDataNotAvailable;
-  }, [data, isWalletConnected, isSupportedChain]);
+  }, [data, isWalletConnected, isSupportedChain, isAccountActiveOnL2]);
 
   const value = useMemo(
     (): RewardsHistoryValue => ({
