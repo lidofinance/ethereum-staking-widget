@@ -8,6 +8,7 @@ export const SelectIconWrapper = styled.div`
 export const SelectIconStyled = styled(SelectIcon)`
   overflow: ${({ disabled }) => (disabled ? 'hidden' : 'visible')};
   width: ${({ disabled }) => (disabled ? '44px' : 'auto')};
+  height: 44px;
 
   &:not(:disabled):hover {
     & > span {
