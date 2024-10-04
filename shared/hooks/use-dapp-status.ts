@@ -21,68 +21,54 @@ export const useDappStatus = () => {
     [chainId, multiChainBanner],
   );
 
-  // TODO: rename to isAccountActive
-  const isDappActive = useMemo(() => {
-    if (!chainId) return false;
+  const dappStatuses = useMemo(() => {
+    const isDappActive = chainId
+      ? isWalletConnected && isSupportedChain
+      : false;
 
-    return isWalletConnected && isSupportedChain;
-  }, [chainId, isWalletConnected, isSupportedChain]);
+    const isAccountActiveOnL1 = chainId
+      ? isDappActive && !isSDKSupportedL2Chain(chainId)
+      : false;
+    const isAccountActiveOnL2 = chainId
+      ? isDappActive && isSDKSupportedL2Chain(chainId)
+      : false;
 
-  const isAccountActiveOnL1 = useMemo(() => {
-    if (!chainId) return false;
+    const isDappActiveOnL1 = chainId
+      ? isAccountActiveOnL1 && isMatchDappChainAndWalletChain(chainId)
+      : false;
+    const isDappActiveOnL2 = chainId
+      ? isAccountActiveOnL2 && isMatchDappChainAndWalletChain(chainId)
+      : false;
 
-    return isDappActive && !isSDKSupportedL2Chain(chainId);
-  }, [chainId, isDappActive]);
+    const isDappActiveAndNetworksMatched = chainId
+      ? (isAccountActiveOnL1 && isDappActiveOnL1) ||
+        (isAccountActiveOnL2 && isDappActiveOnL2)
+      : false;
 
-  const isAccountActiveOnL2 = useMemo(() => {
-    if (!chainId) return false;
+    return {
+      // TODO: rename to isAccountActive
+      isDappActive,
 
-    return isDappActive && isSDKSupportedL2Chain(chainId);
-  }, [chainId, isDappActive]);
+      isAccountActiveOnL1,
+      isAccountActiveOnL2,
 
-  const isDappActiveOnL1 = useMemo(() => {
-    if (!chainId) return false;
+      isDappActiveOnL1,
+      isDappActiveOnL2,
 
-    return isAccountActiveOnL1 && isMatchDappChainAndWalletChain(chainId);
-  }, [chainId, isAccountActiveOnL1, isMatchDappChainAndWalletChain]);
-
-  const isDappActiveOnL2 = useMemo(() => {
-    if (!chainId) return false;
-
-    return isAccountActiveOnL2 && isMatchDappChainAndWalletChain(chainId);
-  }, [chainId, isAccountActiveOnL2, isMatchDappChainAndWalletChain]);
-
-  // TODO: rename to isDappActive (see above)
-  const isDappActiveAndNetworksMatched = useMemo(() => {
-    if (!chainId) return false;
-
-    return (
-      (isAccountActiveOnL1 && isDappActiveOnL1) ||
-      (isAccountActiveOnL2 && isDappActiveOnL2)
-    );
+      // TODO: rename to isDappActive (see above)
+      isDappActiveAndNetworksMatched,
+    };
   }, [
     chainId,
-    isAccountActiveOnL1,
-    isDappActiveOnL1,
-    isAccountActiveOnL2,
-    isDappActiveOnL2,
+    isMatchDappChainAndWalletChain,
+    isSupportedChain,
+    isWalletConnected,
   ]);
 
   return {
     isWalletConnected,
     isSupportedChain,
     isLidoMultichainChain,
-
-    // TODO: rename to isAccountActive
-    isDappActive,
-
-    isAccountActiveOnL1,
-    isAccountActiveOnL2,
-
-    isDappActiveOnL1,
-    isDappActiveOnL2,
-
-    // TODO: rename to isDappActive (see above)
-    isDappActiveAndNetworksMatched,
+    ...dappStatuses,
   };
 };
