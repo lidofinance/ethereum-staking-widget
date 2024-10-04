@@ -3,17 +3,25 @@ import type { BigNumber } from 'ethers';
 
 import { useDebouncedValue } from 'shared/hooks/useDebouncedValue';
 import { useStethByWsteth } from 'shared/hooks/useStethByWsteth';
-import { useWstethBySteth } from 'shared/hooks/useWstethBySteth';
 import { useStETHByWstETHOnL2 } from 'shared/hooks/use-stETH-by-wstETH-on-l2';
+import { useWstethBySteth } from 'shared/hooks/useWstethBySteth';
+import { useWstETHByStETHOnL2 } from 'shared/hooks/use-wstETH-by-stETH-on-l2';
 
 export const useDebouncedWstethBySteth = (
   amount: BigNumber | null,
+  isL2 = false,
   delay = 500,
 ) => {
   const fallbackedAmount = amount ?? Zero;
   const amountDebounced = useDebouncedValue(fallbackedAmount, delay);
-  const swr = useWstethBySteth(amountDebounced ?? undefined);
   const isActualValue = fallbackedAmount.eq(amountDebounced);
+
+  const swrL1 = useWstethBySteth(amountDebounced ?? undefined);
+  const swrL2 = useWstETHByStETHOnL2(
+    isL2 && amountDebounced ? amountDebounced : undefined,
+  );
+
+  const swr = isL2 ? swrL2 : swrL1;
 
   return {
     get data() {

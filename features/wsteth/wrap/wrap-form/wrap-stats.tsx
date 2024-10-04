@@ -11,6 +11,7 @@ import { AllowanceDataTableRow } from 'shared/components/allowance-data-table-ro
 import { FormatPrice, FormatToken } from 'shared/formatters';
 import { useTxCostInUsd, useWstethBySteth } from 'shared/hooks';
 import { useDappStatus } from 'shared/hooks/use-dapp-status';
+import { useWstETHByStETHOnL2 } from 'shared/hooks/use-wstETH-by-stETH-on-l2';
 
 import { useApproveGasLimit } from '../hooks/use-approve-gas-limit';
 import { useWrapFormData, WrapFormInputType } from '../wrap-form-context';
@@ -18,7 +19,7 @@ import { useWrapFormData, WrapFormInputType } from '../wrap-form-context';
 const oneSteth = parseEther('1');
 
 export const WrapFormStats = () => {
-  const { isDappActive } = useDappStatus();
+  const { isDappActive, isDappActiveOnL2 } = useDappStatus();
   const { allowance, isShowAllowance, wrapGasLimit, isApprovalLoading } =
     useWrapFormData();
 
@@ -30,12 +31,17 @@ export const WrapFormStats = () => {
   const {
     data: willReceiveWsteth,
     initialLoading: isWillReceiveWstethLoading,
-  } = useDebouncedWstethBySteth(amount);
+  } = useDebouncedWstethBySteth(amount, isDappActiveOnL2);
 
   const {
-    data: oneWstethConverted,
-    initialLoading: isOneWstethConvertedLoading,
+    data: oneWstethConvertedOnL1,
+    initialLoading: isOneWstethConvertedLoadingOnL1,
   } = useWstethBySteth(oneSteth);
+
+  const {
+    data: oneWstethConvertedOnL2,
+    initialLoading: isOneWstethConvertedLoadingOnL2,
+  } = useWstETHByStETHOnL2(isDappActiveOnL2 ? oneSteth : undefined);
 
   const approveGasLimit = useApproveGasLimit();
   const {
@@ -77,14 +83,20 @@ export const WrapFormStats = () => {
       <DataTableRow
         title="Exchange rate"
         data-testid="exchangeRate"
-        loading={isOneWstethConvertedLoading}
+        loading={
+          isOneWstethConvertedLoadingOnL1 || isOneWstethConvertedLoadingOnL2
+        }
       >
-        {oneWstethConverted ? (
+        {oneWstethConvertedOnL1 || oneWstethConvertedOnL2 ? (
           <>
             1 {isSteth ? 'stETH' : 'ETH'} ={' '}
             <FormatToken
               data-testid="rate"
-              amount={oneWstethConverted}
+              amount={
+                isDappActiveOnL2
+                  ? oneWstethConvertedOnL2
+                  : oneWstethConvertedOnL1
+              }
               symbol="wstETH"
             />{' '}
           </>
