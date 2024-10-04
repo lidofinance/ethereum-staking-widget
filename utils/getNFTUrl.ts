@@ -13,7 +13,11 @@ export const NFT_URL_PREFIX_BY_NETWORK: {
 
 export const getNFTUrl = (tokenId: string, chainId?: CHAINS) => {
   if (!chainId) return '';
-  const contractAddress = getWithdrawalQueueAddress(chainId);
+  try {
+    const contractAddress = getWithdrawalQueueAddress(chainId);
 
-  return NFT_URL_PREFIX_BY_NETWORK[chainId]?.(tokenId, contractAddress) || '';
+    return NFT_URL_PREFIX_BY_NETWORK[chainId]?.(tokenId, contractAddress) || '';
+  } catch {
+    return '';
+  }
 };
