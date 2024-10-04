@@ -8,12 +8,14 @@ import { AllowanceDataTableRow } from 'shared/components/allowance-data-table-ro
 import { FormatToken } from 'shared/formatters/format-token';
 import { FormatPrice } from 'shared/formatters';
 import { useTxCostInUsd } from 'shared/hooks';
+import { useDappStatus } from 'shared/hooks/use-dapp-status';
 
 import { useDebouncedStethByWsteth } from 'features/wsteth/shared/hooks/use-debounced-wsteth-steth';
 import { useUnwrapGasLimit } from '../hooks/use-unwrap-gas-limit';
 import { useUnwrapFormData, UnwrapFormInputType } from '../unwrap-form-context';
 
 export const UnwrapStats = () => {
+  const { isAccountActiveOnL2 } = useDappStatus();
   const { allowance, isShowAllowance } = useUnwrapFormData();
   const amount = useWatch<UnwrapFormInputType, 'amount'>({ name: 'amount' });
   const unwrapGasLimit = useUnwrapGasLimit();
@@ -23,7 +25,7 @@ export const UnwrapStats = () => {
   } = useTxCostInUsd(unwrapGasLimit);
 
   const { data: willReceiveStETH, initialLoading: isWillReceiveStETHLoading } =
-    useDebouncedStethByWsteth(amount);
+    useDebouncedStethByWsteth(amount, isAccountActiveOnL2);
 
   return (
     <DataTable>
