@@ -5,12 +5,14 @@ import { Zero } from '@ethersproject/constants';
 
 import { Connect, DisabledButton } from 'shared/wallet';
 import { FormatToken } from 'shared/formatters/format-token';
+import { useDappStatus } from 'shared/hooks/use-dapp-status';
 import { useIsSupportedChain } from 'shared/hooks/use-is-supported-chain';
 import { isValidationErrorTypeUnhandled } from 'shared/hook-form/validation/validation-error';
 
 import { ClaimFormInputType, useClaimFormData } from '../claim-form-context';
 
 export const SubmitButton = () => {
+  const { isAccountActiveOnL2 } = useDappStatus();
   const { isConnected } = useAccount();
   const isSupportedChain = useIsSupportedChain();
 
@@ -21,14 +23,14 @@ export const SubmitButton = () => {
 
   if (!isConnected) return <Connect fullwidth />;
 
+  if (!isSupportedChain || isAccountActiveOnL2) {
+    return <DisabledButton>Claim</DisabledButton>;
+  }
+
   const disabled =
     (!!errors.requests &&
       !isValidationErrorTypeUnhandled(errors.requests.type)) ||
     selectedRequests.length === 0;
-
-  if (!isSupportedChain || disabled) {
-    return <DisabledButton>Claim</DisabledButton>;
-  }
 
   const claimButtonAmount = ethToClaim.lte(Zero) ? null : (
     <FormatToken showAmountTip={false} amount={ethToClaim} symbol="ETH" />

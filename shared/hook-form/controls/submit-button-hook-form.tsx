@@ -3,6 +3,7 @@ import { useAccount } from 'wagmi';
 import { ButtonIcon, Lock } from '@lidofinance/lido-ui';
 
 import { useIsSupportedChain } from 'shared/hooks/use-is-supported-chain';
+import { useDappStatus } from 'shared/hooks/use-dapp-status';
 import { Connect, DisabledButton } from 'shared/wallet';
 
 import { isValidationErrorTypeValidate } from '../validation/validation-error';
@@ -23,6 +24,7 @@ export const SubmitButtonHookForm: React.FC<SubmitButtonHookFormProps> = ({
 }) => {
   const { isConnected } = useAccount();
   const isSupportedChain = useIsSupportedChain();
+  const { isDappActiveAndNetworksMatched } = useDappStatus();
 
   const { isValidating, isSubmitting } = useFormState();
   const { errors } = useFormState<Record<string, unknown>>();
@@ -31,15 +33,14 @@ export const SubmitButtonHookForm: React.FC<SubmitButtonHookFormProps> = ({
     return <Connect fullwidth />;
   }
 
+  if (!isSupportedChain || !isDappActiveAndNetworksMatched) {
+    return <DisabledButton>{props.children}</DisabledButton>;
+  }
   const disabled =
     (errorField &&
       !!errors[errorField] &&
       isValidationErrorTypeValidate(errors[errorField]?.type)) ||
     disabledProp;
-
-  if (!isSupportedChain || disabled) {
-    return <DisabledButton>{props.children}</DisabledButton>;
-  }
 
   return (
     <ButtonIcon
@@ -47,6 +48,7 @@ export const SubmitButtonHookForm: React.FC<SubmitButtonHookFormProps> = ({
       type="submit"
       loading={isValidating || isSubmitting}
       icon={icon || isLocked ? <Lock /> : <></>}
+      disabled={disabled}
       {...props}
     />
   );

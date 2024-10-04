@@ -50,11 +50,14 @@ export const ChainSwitcher: FC = () => {
     if ([CHAINS.Mainnet, CHAINS.Holesky, CHAINS.Sepolia].includes(chainId)) {
       setValue(ETHEREUM);
       setChainName(ETHEREUM);
-    } else if ([CHAINS.Optimism, CHAINS.OptimismSepolia].includes(chainId)) {
+    } else if (
+      [CHAINS.Optimism, CHAINS.OptimismSepolia].includes(chainId) &&
+      isOnWrapUnwrapPage
+    ) {
       setValue(OPTIMISM);
       setChainName(OPTIMISM);
     }
-  }, [chainId, setChainName]);
+  }, [chainId, isOnWrapUnwrapPage, setChainName]);
 
   useEffect(() => {
     if (!isOnWrapUnwrapPage) {
