@@ -3,8 +3,6 @@ import invariant from 'tiny-invariant';
 
 import { CHAINS } from 'consts/chains';
 
-// import { config } from 'config';
-
 export const ETHEREUM = 'ETHEREUM';
 export const OPTIMISM = 'OPTIMISM';
 export const UNKNOWN = 'UNKNOWN';
