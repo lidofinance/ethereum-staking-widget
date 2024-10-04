@@ -26,7 +26,7 @@ import { capitalizeFirstLetter } from 'utils/capitalize-string';
 import { Wrap, TextStyle, ButtonStyle } from './styles';
 
 export type LidoMultichainFallbackComponent = FC<
-  { textEnding: string } & BlockProps
+  { textEnding: string; chainId?: number | undefined } & BlockProps
 >;
 
 const multichainLogos = {
@@ -50,10 +50,12 @@ const getChainLogo = (chainId: LIDO_MULTICHAIN_CHAINS) => {
 export const LidoMultichainFallback: LidoMultichainFallbackComponent = (
   props,
 ) => {
-  const { chainId } = useAccount();
+  const { chainId: chainIdWagmin } = useAccount();
   const { defaultChain } = useUserConfig();
   const { chainName } = useDappChain();
   const router = useRouter();
+
+  const chainId = props.chainId || chainIdWagmin;
 
   const defaultChainName = useMemo(() => {
     if (CHAINS[defaultChain] === 'Mainnet') return 'Ethereum';

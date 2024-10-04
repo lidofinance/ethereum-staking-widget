@@ -98,11 +98,17 @@ const WalletComponent: WalletComponentType = (props) => {
 };
 
 export const Wallet: WalletComponentType = memo((props) => {
-  const { isDappActive } = useDappStatus();
+  const { isDappActive, isAccountActiveOnL2 } = useDappStatus();
   const { showLidoMultichainFallback } = useLidoMultichainFallbackCondition();
 
   if (showLidoMultichainFallback) {
     return <LidoMultichainFallback textEnding={'to stake'} {...props} />;
+  }
+
+  if (isAccountActiveOnL2) {
+    return (
+      <LidoMultichainFallback chainId={10} textEnding={'to stake'} {...props} />
+    );
   }
 
   if (!isDappActive) {

@@ -43,12 +43,22 @@ export const WalletComponent = () => {
 };
 
 export const RequestWallet: WalletComponentType = memo((props) => {
-  const { isDappActive } = useDappStatus();
+  const { isDappActive, isAccountActiveOnL2 } = useDappStatus();
   const { showLidoMultichainFallback } = useLidoMultichainFallbackCondition();
 
   if (showLidoMultichainFallback) {
     return (
       <LidoMultichainFallback
+        textEnding={'to request withdrawals'}
+        {...props}
+      />
+    );
+  }
+
+  if (isAccountActiveOnL2) {
+    return (
+      <LidoMultichainFallback
+        chainId={10}
         textEnding={'to request withdrawals'}
         {...props}
       />
