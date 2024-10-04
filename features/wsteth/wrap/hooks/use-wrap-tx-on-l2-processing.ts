@@ -8,7 +8,7 @@ import type { WrapFormInputType } from '../wrap-form-context';
 type WrapTxProcessorArgs = Omit<WrapFormInputType, 'token'>;
 
 export const useWrapTxOnL2Processing = () => {
-  const { lidoSDKL2 } = useLidoSDK();
+  const { l2: lidoSDKL2 } = useLidoSDK();
 
   return useCallback(
     async ({ amount }: WrapTxProcessorArgs) => {

@@ -11,7 +11,7 @@ type UseUnwrapTxApproveArgs = {
 
 export const useUnwrapTxOnL2Approve = ({ amount }: UseUnwrapTxApproveArgs) => {
   const { isAccountActiveOnL2 } = useDappStatus();
-  const { lidoSDKCore, lidoSDKL2 } = useLidoSDK();
+  const { core: lidoSDKCore, l2: lidoSDKL2 } = useLidoSDK();
   const [allowance, setAllowance] = useState<bigint | null>(null);
   const [isApprovalNeededBeforeUnwrap, setIsApprovalNeededBeforeUnwrap] =
     useState<boolean>(false);

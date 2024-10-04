@@ -257,7 +257,11 @@ export const useStethBalance = ({
   const mergedAccount = account ?? address;
 
   const { isAccountActiveOnL1, isAccountActiveOnL2 } = useDappStatus();
-  const { lidoSDKCore, lidoSDKL2, lidoSDKstETH } = useLidoSDK();
+  const {
+    core: lidoSDKCore,
+    l2: lidoSDKL2,
+    stETH: lidoSDKstETH,
+  } = useLidoSDK();
 
   const { data: contract, isLoading } = useQuery({
     queryKey: ['steth-contract', lidoSDKCore.chainId],
@@ -290,7 +294,11 @@ export const useWstethBalance = ({
   const mergedAccount = account ?? address;
 
   const { isAccountActiveOnL1, isAccountActiveOnL2 } = useDappStatus();
-  const { lidoSDKCore, lidoSDKL2, lidoSDKwstETH } = useLidoSDK();
+  const {
+    core: lidoSDKCore,
+    l2: lidoSDKL2,
+    wstETH: lidoSDKwstETH,
+  } = useLidoSDK();
 
   const { data: contract, isLoading } = useQuery({
     queryKey: ['wsteth-contract', lidoSDKCore.chainId],

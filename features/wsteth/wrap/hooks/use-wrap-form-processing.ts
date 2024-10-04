@@ -35,7 +35,7 @@ export const useWrapFormProcessor = ({
   const { providerWeb3 } = useSDK();
   const { staticRpcProvider } = useCurrentStaticRpcProvider();
   const wstETHContractRPC = useWSTETHContractRPC();
-  const { lidoSDKL2, lidoSDKwstETH } = useLidoSDK();
+  const { l2: lidoSDKL2, wstETH: lidoSDKwstETH } = useLidoSDK();
 
   const { isAccountActiveOnL2 } = useDappStatus();
 

@@ -12,10 +12,10 @@ import { LidoSDKL2 } from '@lidofinance/lido-ethereum-sdk/l2';
 import { useTokenTransferSubscription } from 'shared/hooks/use-balance';
 
 type LidoSDKContextValue = {
-  lidoSDKCore: LidoSDKCore;
-  lidoSDKL2: LidoSDKL2;
-  lidoSDKstETH: LidoSDKstETH;
-  lidoSDKwstETH: LidoSDKwstETH;
+  core: LidoSDKCore;
+  stETH: LidoSDKstETH;
+  wstETH: LidoSDKwstETH;
+  l2: LidoSDKL2;
   subscribeToTokenUpdates: ReturnType<typeof useTokenTransferSubscription>;
 };
 
@@ -48,10 +48,10 @@ export const LidoSDKProvider = ({ children }: React.PropsWithChildren) => {
     const l2 = new LidoSDKL2({ core });
 
     return {
-      lidoSDKCore: core,
-      lidoSDKstETH: stETH,
-      lidoSDKwstETH: wstETH,
-      lidoSDKL2: l2,
+      core,
+      stETH,
+      wstETH,
+      l2,
       subscribeToTokenUpdates: subscribe,
     };
   }, [chainId, publicClient, subscribe, walletClient]);

@@ -41,7 +41,7 @@ export const useUnwrapFormProcessor = ({
   const wstETHContractRPC = useWSTETHContractRPC();
   const wstethContractWeb3 = useWSTETHContractWeb3();
   const waitForTx = useTxConfirmation();
-  const { lidoSDKL2, lidoSDKstETH } = useLidoSDK();
+  const { l2: lidoSDKL2, stETH: lidoSDKstETH } = useLidoSDK();
   const { isAccountActiveOnL2 } = useDappStatus();
 
   const {
