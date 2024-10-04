@@ -9,7 +9,6 @@ import {
 } from '@lidofinance/lido-ethereum-sdk/erc20';
 import { LidoSDKL2 } from '@lidofinance/lido-ethereum-sdk/l2';
 
-import { useGetRpcUrlByChainId } from 'config/rpc';
 import { useTokenTransferSubscription } from 'shared/hooks/use-balance';
 
 type LidoSDKContextValue = {
@@ -33,19 +32,15 @@ export const LidoSDKProvider = ({ children }: React.PropsWithChildren) => {
   const subscribe = useTokenTransferSubscription();
   const publicClient = usePublicClient();
   const chainId = useChainId();
-  const getRpcUrl = useGetRpcUrlByChainId();
-  const fallbackRpcUrl = !publicClient ? getRpcUrl(chainId) : undefined;
   const { data: walletClient } = useWalletClient();
 
   const contextValue = useMemo(() => {
-    // @ts-expect-error: typing (rpcProvider + rpcUrls)
+    // @ts-expect-error: typing (viem + LidoSDK)
     const core = new LidoSDKCore({
       chainId,
       logMode: 'none',
       rpcProvider: publicClient,
       web3Provider: walletClient,
-      // viem client can be unavailable on ipfs+dev first renders
-      rpcUrls: !publicClient && fallbackRpcUrl ? [fallbackRpcUrl] : undefined,
     });
 
     const stETH = new LidoSDKstETH({ core });
@@ -59,7 +54,7 @@ export const LidoSDKProvider = ({ children }: React.PropsWithChildren) => {
       lidoSDKL2: l2,
       subscribeToTokenUpdates: subscribe,
     };
-  }, [chainId, fallbackRpcUrl, publicClient, subscribe, walletClient]);
+  }, [chainId, publicClient, subscribe, walletClient]);
   return (
     <LidoSDKContext.Provider value={contextValue}>
       {children}
