@@ -5,11 +5,11 @@ import { useAccount } from 'wagmi';
 
 import { useSDK, useWSTETHContractRPC } from '@lido-sdk/react';
 
-import { useCurrentStaticRpcProvider } from 'shared/hooks/use-current-static-rpc-provider';
 import { useTxConfirmation } from 'shared/hooks/use-tx-conformation';
+import { useGetIsContract } from 'shared/hooks/use-is-contract';
 import { useDappStatus } from 'shared/hooks/use-dapp-status';
 import { runWithTransactionLogger } from 'utils';
-import { isContract } from 'utils/isContract';
+
 import { useLidoSDK } from 'providers/lido-sdk';
 
 import type {
@@ -33,7 +33,6 @@ export const useWrapFormProcessor = ({
 }: UseWrapFormProcessorArgs) => {
   const { address } = useAccount();
   const { providerWeb3 } = useSDK();
-  const { staticRpcProvider } = useCurrentStaticRpcProvider();
   const wstETHContractRPC = useWSTETHContractRPC();
   const { l2: lidoSDKL2, wstETH: lidoSDKwstETH } = useLidoSDK();
 
@@ -44,6 +43,7 @@ export const useWrapFormProcessor = ({
   const processWrapTxOnL2 = useWrapTxOnL2Processing();
 
   const waitForTx = useTxConfirmation();
+  const isContract = useGetIsContract();
   const {
     isApprovalNeededBeforeWrap: isApprovalNeededBeforeWrapOnL1,
     processApproveTx: processApproveTxOnL1,
@@ -57,7 +57,7 @@ export const useWrapFormProcessor = ({
         invariant(providerWeb3, 'providerWeb3 should be presented');
 
         const [isMultisig, willReceive] = await Promise.all([
-          isContract(address, staticRpcProvider),
+          isContract(address),
           wstETHContractRPC.getWstETHByStETH(amount),
         ]);
 
@@ -121,7 +121,7 @@ export const useWrapFormProcessor = ({
     [
       address,
       providerWeb3,
-      staticRpcProvider,
+      isContract,
       wstETHContractRPC,
       isApprovalNeededBeforeWrapOnL1,
       txModalStages,

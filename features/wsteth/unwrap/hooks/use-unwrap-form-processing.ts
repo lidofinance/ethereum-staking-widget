@@ -11,7 +11,6 @@ import {
 
 import { useCurrentStaticRpcProvider } from 'shared/hooks/use-current-static-rpc-provider';
 import { useTxConfirmation } from 'shared/hooks/use-tx-conformation';
-import { isContract } from 'utils/isContract';
 import { runWithTransactionLogger } from 'utils';
 import { sendTx } from 'utils/send-tx';
 import { useLidoSDK } from 'providers/lido-sdk';
@@ -20,6 +19,7 @@ import { useDappStatus } from '../../../../shared/hooks/use-dapp-status';
 import type { UnwrapFormInputType } from '../unwrap-form-context';
 import { useUnwrapTxOnL2Approve } from './use-unwrap-tx-on-l2-approve';
 import { useTxModalStagesUnwrap } from './use-tx-modal-stages-unwrap';
+import { useGetIsContract } from 'shared/hooks/use-is-contract';
 
 export type UnwrapFormApprovalData = ReturnType<typeof useUnwrapTxOnL2Approve>;
 
@@ -41,6 +41,7 @@ export const useUnwrapFormProcessor = ({
   const wstETHContractRPC = useWSTETHContractRPC();
   const wstethContractWeb3 = useWSTETHContractWeb3();
   const waitForTx = useTxConfirmation();
+  const isContract = useGetIsContract();
   const { l2: lidoSDKL2, stETH: lidoSDKstETH } = useLidoSDK();
   const { isAccountActiveOnL2 } = useDappStatus();
 
@@ -58,7 +59,7 @@ export const useUnwrapFormProcessor = ({
         invariant(wstethContractWeb3, 'must have wstethContractWeb3');
 
         const [isMultisig, willReceive] = await Promise.all([
-          isContract(address, staticRpcProvider),
+          isContract(address),
           wstETHContractRPC.getStETHByWstETH(amount),
         ]);
 
@@ -138,15 +139,16 @@ export const useUnwrapFormProcessor = ({
       address,
       providerWeb3,
       wstethContractWeb3,
-      staticRpcProvider,
+      isContract,
       wstETHContractRPC,
+      isAccountActiveOnL2,
       isApprovalNeededBeforeUnwrapOnL2,
       txModalStages,
-      isAccountActiveOnL2,
       lidoSDKL2,
       lidoSDKstETH,
       onConfirm,
       processApproveTxOnL2,
+      staticRpcProvider,
       waitForTx,
       onRetry,
     ],
