@@ -28,6 +28,6 @@ export const useTokenAddress = (token: string): Address => {
   }
   return getTokenAddress(
     core.chainId as unknown as OLD_CHAINS,
-    token as TOKENS,
+    token.toLocaleUpperCase() as TOKENS,
   ) as Address;
 };
