@@ -8,6 +8,7 @@ import {
   useWSTETHContractRPC,
   useWSTETHContractWeb3,
 } from '@lido-sdk/react';
+import { TransactionCallbackStage } from '@lidofinance/lido-ethereum-sdk/core';
 
 import { useCurrentStaticRpcProvider } from 'shared/hooks/use-current-static-rpc-provider';
 import { useTxConfirmation } from 'shared/hooks/use-tx-conformation';
@@ -15,12 +16,13 @@ import { runWithTransactionLogger } from 'utils';
 import { sendTx } from 'utils/send-tx';
 import { useLidoSDK } from 'providers/lido-sdk';
 
-import { useDappStatus } from '../../../../shared/hooks/use-dapp-status';
+import { useDappStatus } from 'shared/hooks/use-dapp-status';
+import { useGetIsContract } from 'shared/hooks/use-is-contract';
+import { convertToBigNumber } from 'utils/convert-to-big-number';
+
 import type { UnwrapFormInputType } from '../unwrap-form-context';
 import { useUnwrapTxOnL2Approve } from './use-unwrap-tx-on-l2-approve';
 import { useTxModalStagesUnwrap } from './use-tx-modal-stages-unwrap';
-import { useGetIsContract } from 'shared/hooks/use-is-contract';
-import { TransactionCallbackStage } from '@lidofinance/lido-ethereum-sdk/core';
 
 export type UnwrapFormApprovalData = ReturnType<typeof useUnwrapTxOnL2Approve>;
 
@@ -61,7 +63,11 @@ export const useUnwrapFormProcessor = ({
 
         const [isMultisig, willReceive] = await Promise.all([
           isContract(address),
-          wstETHContractRPC.getStETHByWstETH(amount),
+          isAccountActiveOnL2
+            ? lidoSDKL2.steth
+                .convertToSteth(amount.toBigInt())
+                .then(convertToBigNumber)
+            : wstETHContractRPC.getStETHByWstETH(amount),
         ]);
 
         if (isAccountActiveOnL2 && isApprovalNeededBeforeUnwrapOnL2) {
