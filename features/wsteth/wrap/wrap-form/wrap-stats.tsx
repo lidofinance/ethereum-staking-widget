@@ -68,7 +68,7 @@ export const WrapFormStats = () => {
           trimEllipsis
         />
       </DataTableRow>
-      {isShowAllowance && (
+      {(!isDappActive || isShowAllowance) && (
         <DataTableRow
           title="Max unlock cost"
           data-testid="maxUnlockFee"
@@ -102,10 +102,10 @@ export const WrapFormStats = () => {
           DATA_UNAVAILABLE
         )}
       </DataTableRow>
-      {isShowAllowance && (
+      {(!isDappActive || isShowAllowance) && (
         <AllowanceDataTableRow
           data-testid="allowance"
-          allowance={allowance}
+          allowance={allowance || 0}
           isBlank={!(isSteth && isDappActive)}
           loading={isApprovalLoading}
           token={TOKENS.STETH}
