@@ -17,23 +17,27 @@ export const DataTableRowStethByWsteth = ({
   toSymbol = 'stETH',
 }: DataTableRowStethByWstethProps) => {
   const { isDappActiveOnL2 } = useDappStatus();
-  const { data: dataOnL1, initialLoading: initialLoadingOnL1 } =
-    useStethByWsteth(OneWsteth);
-  const { data: dataOnL2, initialLoading: initialLoadingOnL2 } =
-    useStETHByWstETHOnL2(isDappActiveOnL2 ? OneWsteth : undefined);
+  const stethByWsteth = useStethByWsteth(OneWsteth);
+  const stETHByWstETHOnL2 = useStETHByWstETHOnL2(
+    isDappActiveOnL2 ? OneWsteth : undefined,
+  );
+
+  const { data, initialLoading } = isDappActiveOnL2
+    ? stETHByWstETHOnL2
+    : stethByWsteth;
 
   return (
     <DataTableRow
       data-testid="exchangeRate"
       title="Exchange rate"
-      loading={isDappActiveOnL2 ? initialLoadingOnL2 : initialLoadingOnL1}
+      loading={initialLoading}
     >
-      {dataOnL1 || dataOnL2 ? (
+      {data ? (
         <>
           1 wstETH =
           <FormatToken
             data-testid="destinationRate"
-            amount={isDappActiveOnL2 ? dataOnL2 : dataOnL1}
+            amount={data}
             symbol={toSymbol}
           />
         </>

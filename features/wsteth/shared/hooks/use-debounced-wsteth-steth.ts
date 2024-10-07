@@ -21,23 +21,23 @@ export const useDebouncedWstethBySteth = (
     isL2 && amountDebounced ? amountDebounced : undefined,
   );
 
-  const swr = isL2 ? swrL2 : swrL1;
+  const { data, initialLoading, loading, error, update } = isL2 ? swrL2 : swrL1;
 
   return {
     get data() {
-      return isActualValue ? swr.data : undefined;
+      return isActualValue ? data : undefined;
     },
     get initialLoading() {
-      return isActualValue ? swr.initialLoading : true;
+      return isActualValue ? initialLoading : true;
     },
     get loading() {
-      return swr.loading;
+      return loading;
     },
     get error() {
-      return swr.error;
+      return error;
     },
     get update() {
-      return swr.update;
+      return update;
     },
   };
 };
@@ -56,23 +56,23 @@ export const useDebouncedStethByWsteth = (
     isL2 && amountDebounced ? amountDebounced : undefined,
   );
 
-  const swr = isL2 ? swrL2 : swrL1;
+  const { data, initialLoading, loading, error, update } = isL2 ? swrL2 : swrL1;
 
   return {
     get data() {
-      return isActualValue ? swr.data : undefined;
+      return isActualValue ? data : undefined;
     },
     get initialLoading() {
-      return isActualValue ? swr.initialLoading : true;
+      return isActualValue ? initialLoading : true;
     },
     get loading() {
-      return swr.loading;
+      return loading;
     },
     get error() {
-      return swr.error;
+      return error;
     },
     get update() {
-      return swr.update;
+      return update;
     },
   };
 };

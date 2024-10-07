@@ -3,7 +3,7 @@ import useSWR from 'swr';
 
 import { useLidoSDK } from 'providers/lido-sdk';
 
-export const useWstETHByStETHOnL2 = (wsteth: BigNumber | undefined) => {
+export const useWstETHByStETHOnL2 = (steth: BigNumber | undefined) => {
   const { l2 } = useLidoSDK();
 
   const fetchSteth = async (amount: bigint) => {
@@ -11,7 +11,8 @@ export const useWstETHByStETHOnL2 = (wsteth: BigNumber | undefined) => {
   };
 
   const { data, error, isValidating, mutate } = useSWR(
-    wsteth ? [wsteth.toBigInt()] : null,
+    // if key is null, SWR will not fetch any data.
+    steth ? [steth.toBigInt()] : null,
     fetchSteth,
   );
 
