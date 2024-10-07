@@ -6,14 +6,14 @@ import { useLidoSDK } from 'providers/lido-sdk';
 export const useStETHByWstETHOnL2 = (wsteth: BigNumber | undefined) => {
   const { l2 } = useLidoSDK();
 
-  const fetchSteth = async (amount: bigint) => {
-    return await l2.steth.convertToSteth(amount);
-  };
-
   const { data, error, isValidating, mutate } = useSWR(
     // if key is null, SWR will not fetch any data.
-    wsteth ? [wsteth.toBigInt()] : null,
-    fetchSteth,
+    wsteth
+      ? ['[swr:use-steth-by-wsteth-l2]', wsteth.toBigInt(), l2.core.chainId]
+      : null,
+    (_key: string, amount: bigint) => {
+      return l2.steth.convertToSteth(amount);
+    },
   );
 
   return {
