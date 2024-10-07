@@ -21,12 +21,12 @@ import {
   useStethBalance,
   useWstethBalance,
 } from 'shared/hooks/use-balance';
-import { useWstETHByStETHOnL2 } from 'shared/hooks/use-wstETH-by-stETH-on-l2';
-import { useStETHByWstETHOnL2 } from 'shared/hooks/use-stETH-by-wstETH-on-l2';
 import { OPTIMISM, ETHEREUM, useDappChain } from 'providers/dapp-chain';
 import { capitalizeFirstLetter } from 'utils/capitalize-string';
 
 import { StyledCard } from './styles';
+import { useStETHByWstETHOnL2 } from 'shared/hooks/use-stETH-by-wstETH-on-l2';
+import { useWstETHByStETHOnL2 } from 'shared/hooks/use-wstETH-by-stETH-on-l2';
 
 const WalletComponent: WalletComponentType = (props) => {
   const { account } = useSDK();
@@ -35,6 +35,7 @@ const WalletComponent: WalletComponentType = (props) => {
   const stethBalance = useStethBalance();
   const wstethBalance = useWstethBalance();
 
+  // TODO merge those hooks and only fetch current chain
   const wstethByStethOnL1 = useWstethBySteth(
     !isAccountActiveOnL2 && stethBalance.data ? stethBalance.data : undefined,
   );
