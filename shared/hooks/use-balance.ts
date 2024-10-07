@@ -283,7 +283,11 @@ export const useStethBalance = ({
     shouldSubscribeToUpdates,
   );
 
-  return { ...balanceData, isLoading: isLoading || balanceData.isLoading };
+  return {
+    ...balanceData,
+    tokenAddress: contract ? contract.address : undefined,
+    isLoading: isLoading || balanceData.isLoading,
+  };
 };
 
 export const useWstethBalance = ({
@@ -319,5 +323,9 @@ export const useWstethBalance = ({
     shouldSubscribeToUpdates,
   );
 
-  return { ...balanceData, isLoading: isLoading || balanceData.isLoading };
+  return {
+    ...balanceData,
+    tokenAddress: contract ? contract.address : undefined,
+    isLoading: isLoading || balanceData.isLoading,
+  };
 };

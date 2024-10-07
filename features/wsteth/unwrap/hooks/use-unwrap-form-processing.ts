@@ -62,7 +62,7 @@ export const useUnwrapFormProcessor = ({
           wstETHContractRPC.getStETHByWstETH(amount),
         ]);
 
-        if (isApprovalNeededBeforeUnwrapOnL2) {
+        if (isAccountActiveOnL2 && isApprovalNeededBeforeUnwrapOnL2) {
           txModalStages.signApproval(amount);
 
           await processApproveTxOnL2({

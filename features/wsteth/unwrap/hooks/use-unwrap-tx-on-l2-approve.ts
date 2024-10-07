@@ -1,65 +1,61 @@
-import { useMemo, useState, useEffect, useCallback } from 'react';
+import { useMemo, useCallback } from 'react';
 import type { BigNumber } from 'ethers';
 
 import { runWithTransactionLogger } from 'utils';
 import { useLidoSDK } from 'providers/lido-sdk';
 import { useDappStatus } from 'shared/hooks/use-dapp-status';
+import { useAllowance } from 'shared/hooks/use-allowance';
+import { useAccount } from 'wagmi';
+import { LIDO_L2_CONTRACT_ADDRESSES } from '@lidofinance/lido-ethereum-sdk';
 
 type UseUnwrapTxApproveArgs = {
   amount: BigNumber;
 };
 
 export const useUnwrapTxOnL2Approve = ({ amount }: UseUnwrapTxApproveArgs) => {
+  const { address } = useAccount();
   const { isAccountActiveOnL2 } = useDappStatus();
-  const { core: lidoSDKCore, l2: lidoSDKL2 } = useLidoSDK();
-  const [allowance, setAllowance] = useState<bigint | null>(null);
-  const [isApprovalNeededBeforeUnwrap, setIsApprovalNeededBeforeUnwrap] =
-    useState<boolean>(false);
+  const { core, l2 } = useLidoSDK();
 
-  const refetchAllowance = useCallback(() => {
-    const checkAllowance = async () => {
-      try {
-        const allowance = await lidoSDKL2.getWstethForWrapAllowance();
-        setAllowance(allowance);
-        setIsApprovalNeededBeforeUnwrap(
-          isAccountActiveOnL2 && amount.gt(allowance),
-        );
-      } catch (error) {
-        console.error('Error fetching allowance on L2:', error);
-      }
-    };
+  const staticTokenAddress = LIDO_L2_CONTRACT_ADDRESSES[core.chainId]?.wsteth;
+  const staticSpenderAddress = LIDO_L2_CONTRACT_ADDRESSES[core.chainId]?.steth;
 
-    void checkAllowance();
-  }, [lidoSDKL2, isAccountActiveOnL2, amount]);
+  // only runs on l2
+  const {
+    data: allowance,
+    refetch: refetchAllowance,
+    isLoading: isAllowanceLoading,
+  } = useAllowance({
+    account: isAccountActiveOnL2 ? address : undefined,
+    spender: staticSpenderAddress,
+    token: staticTokenAddress,
+  });
+
+  const isApprovalNeededBeforeUnwrap = allowance && amount > allowance;
 
   const processApproveTx = useCallback(
     async ({ onTxSent }: { onTxSent: (txHash: string) => void }) => {
       try {
         const approveTxHash = (
           await runWithTransactionLogger('Approve signing on L2', () =>
-            lidoSDKL2.approveWstethForWrap({
+            l2.approveWstethForWrap({
               value: amount.toBigInt(),
             }),
           )
         ).hash;
 
-        void onTxSent?.(approveTxHash);
+        onTxSent?.(approveTxHash);
 
-        refetchAllowance();
+        // wait for refetch to settle
+        await refetchAllowance().catch();
 
         return approveTxHash;
       } catch (error) {
         console.error('Error approve on L2:', error);
       }
     },
-    [lidoSDKL2, amount, refetchAllowance],
+    [l2, amount, refetchAllowance],
   );
-
-  useEffect(() => {
-    if (lidoSDKCore.web3Provider && isAccountActiveOnL2) {
-      void refetchAllowance();
-    }
-  }, [isAccountActiveOnL2, refetchAllowance, lidoSDKCore.web3Provider]);
 
   return useMemo(
     () => ({
@@ -67,11 +63,13 @@ export const useUnwrapTxOnL2Approve = ({ amount }: UseUnwrapTxApproveArgs) => {
       refetchAllowance,
       allowance,
       isApprovalNeededBeforeUnwrap,
+      isAllowanceLoading,
       isShowAllowance: isAccountActiveOnL2,
     }),
     [
       processApproveTx,
       refetchAllowance,
+      isAllowanceLoading,
       allowance,
       isApprovalNeededBeforeUnwrap,
       isAccountActiveOnL2,

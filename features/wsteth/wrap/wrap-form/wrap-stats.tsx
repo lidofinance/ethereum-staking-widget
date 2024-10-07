@@ -66,13 +66,15 @@ export const WrapFormStats = () => {
           trimEllipsis
         />
       </DataTableRow>
-      <DataTableRow
-        title="Max unlock cost"
-        data-testid="maxUnlockFee"
-        loading={isApproveCostLoading}
-      >
-        <FormatPrice amount={approveTxCostInUsd} />
-      </DataTableRow>
+      {isShowAllowance && (
+        <DataTableRow
+          title="Max unlock cost"
+          data-testid="maxUnlockFee"
+          loading={isApproveCostLoading}
+        >
+          <FormatPrice amount={approveTxCostInUsd} />
+        </DataTableRow>
+      )}
       <DataTableRow
         title="Max transaction cost"
         data-testid="maxGasFee"

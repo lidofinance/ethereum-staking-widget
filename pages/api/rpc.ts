@@ -65,6 +65,7 @@ const rpc = rpcFactory({
     'eth_estimateGas',
     'eth_getBlockByNumber',
     'eth_feeHistory',
+    'eth_maxPriorityFeePerGas',
     'eth_getBalance',
     'eth_blockNumber',
     'eth_getTransactionByHash',
