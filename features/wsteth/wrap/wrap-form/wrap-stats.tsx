@@ -105,7 +105,7 @@ export const WrapFormStats = () => {
       {(!isDappActive || isShowAllowance) && (
         <AllowanceDataTableRow
           data-testid="allowance"
-          allowance={allowance || 0}
+          allowance={allowance}
           isBlank={!(isSteth && isDappActive)}
           loading={isApprovalLoading}
           token={TOKENS.STETH}
