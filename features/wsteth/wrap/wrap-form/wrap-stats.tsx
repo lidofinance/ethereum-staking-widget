@@ -33,7 +33,9 @@ export const WrapFormStats = () => {
     initialLoading: isWillReceiveWstethLoading,
   } = useDebouncedWstethBySteth(amount, isDappActiveOnL2);
 
-  const wstethBySteth = useWstethBySteth(oneSteth);
+  const wstethBySteth = useWstethBySteth(
+    !isDappActiveOnL2 ? oneSteth : undefined,
+  );
   const wstETHByStETHOnL2 = useWstETHByStETHOnL2(
     isDappActiveOnL2 ? oneSteth : undefined,
   );
