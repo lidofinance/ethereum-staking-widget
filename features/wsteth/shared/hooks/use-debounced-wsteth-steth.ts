@@ -53,7 +53,9 @@ export const useDebouncedStethByWsteth = (
   const amountDebounced = useDebouncedValue(fallbackedAmount, delay);
   const isActualValue = fallbackedAmount.eq(amountDebounced);
 
-  const swrL1 = useStethByWsteth(amountDebounced ?? undefined);
+  const swrL1 = useStethByWsteth(
+    !isL2 && amountDebounced ? amountDebounced : undefined,
+  );
   const swrL2 = useStETHByWstETHOnL2(
     isL2 && amountDebounced ? amountDebounced : undefined,
   );
