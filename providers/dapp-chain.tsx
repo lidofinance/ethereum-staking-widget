@@ -26,7 +26,9 @@ interface ContextValue {
   chainName: string;
   setChainName: React.Dispatch<React.SetStateAction<ChainNameType>>;
   getChainMainnetNameByChainId: (chainId: number) => ChainNameOrUnknownType;
-  isMatchDappChainAndWalletChain: (walletChainId: number) => boolean;
+  isMatchDappChainAndWalletChain: (
+    walletChainId?: number | undefined,
+  ) => boolean;
 }
 
 const DappChainContext = createContext<ContextValue | undefined>(undefined);
@@ -43,7 +45,8 @@ export const DappChainProvider: React.FC<{ children: React.ReactNode }> = ({
   const [chainName, setChainName] = useState<ChainNameType>(ETHEREUM);
 
   const isMatchDappChainAndWalletChain = useCallback(
-    (walletChainId: number): boolean => {
+    (walletChainId?: number | undefined): boolean => {
+      if (!walletChainId) return false;
       return chainName === getChainMainnetNameByChainId(walletChainId);
     },
     [chainName],

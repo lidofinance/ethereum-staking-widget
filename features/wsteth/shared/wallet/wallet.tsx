@@ -1,4 +1,5 @@
 import { memo } from 'react';
+import { useAccount } from 'wagmi';
 
 import { Divider, Text } from '@lidofinance/lido-ui';
 import { useSDK } from '@lido-sdk/react';
@@ -136,12 +137,12 @@ const WalletComponent: WalletComponentType = (props) => {
 };
 
 export const Wallet: WalletComponentType = memo((props) => {
-  const { isDappActive, isDappActiveAndNetworksMatched, isDappActiveOnL2 } =
-    useDappStatus();
+  const { chainId } = useAccount();
+  const { isDappActive, isDappActiveOnL2 } = useDappStatus();
   const { showLidoMultichainFallback } = useLidoMultichainFallbackCondition();
-  const { chainName } = useDappChain();
+  const { chainName, isMatchDappChainAndWalletChain } = useDappChain();
 
-  if (!isDappActiveAndNetworksMatched) {
+  if (isDappActive && !isMatchDappChainAndWalletChain(chainId)) {
     const error = `Wrong network. Please switch to ${chainName === OPTIMISM ? capitalizeFirstLetter(OPTIMISM) : capitalizeFirstLetter(ETHEREUM)} in your wallet to wrap/unwrap.`;
     return <Fallback error={error} {...props} />;
   }
