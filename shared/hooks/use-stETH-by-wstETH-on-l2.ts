@@ -11,6 +11,7 @@ export const useStETHByWstETHOnL2 = (wsteth: BigNumber | undefined) => {
   };
 
   const { data, error, isValidating, mutate } = useSWR(
+    // if key is null, SWR will not fetch any data.
     wsteth ? [wsteth.toBigInt()] : null,
     fetchSteth,
   );

@@ -33,15 +33,15 @@ export const WrapFormStats = () => {
     initialLoading: isWillReceiveWstethLoading,
   } = useDebouncedWstethBySteth(amount, isDappActiveOnL2);
 
-  const {
-    data: oneWstethConvertedOnL1,
-    initialLoading: isOneWstethConvertedLoadingOnL1,
-  } = useWstethBySteth(oneSteth);
+  const wstethBySteth = useWstethBySteth(oneSteth);
+  const wstETHByStETHOnL2 = useWstETHByStETHOnL2(
+    isDappActiveOnL2 ? oneSteth : undefined,
+  );
 
   const {
-    data: oneWstethConvertedOnL2,
-    initialLoading: isOneWstethConvertedLoadingOnL2,
-  } = useWstETHByStETHOnL2(isDappActiveOnL2 ? oneSteth : undefined);
+    data: oneWstethConverted,
+    initialLoading: oneWstethConvertedLoading,
+  } = isDappActiveOnL2 ? wstETHByStETHOnL2 : wstethBySteth;
 
   const approveGasLimit = useApproveGasLimit();
   const {
@@ -83,20 +83,14 @@ export const WrapFormStats = () => {
       <DataTableRow
         title="Exchange rate"
         data-testid="exchangeRate"
-        loading={
-          isOneWstethConvertedLoadingOnL1 || isOneWstethConvertedLoadingOnL2
-        }
+        loading={oneWstethConvertedLoading}
       >
-        {oneWstethConvertedOnL1 || oneWstethConvertedOnL2 ? (
+        {oneWstethConverted ? (
           <>
             1 {isSteth ? 'stETH' : 'ETH'} ={' '}
             <FormatToken
               data-testid="rate"
-              amount={
-                isDappActiveOnL2
-                  ? oneWstethConvertedOnL2
-                  : oneWstethConvertedOnL1
-              }
+              amount={oneWstethConverted}
               symbol="wstETH"
             />{' '}
           </>
