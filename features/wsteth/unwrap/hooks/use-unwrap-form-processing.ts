@@ -15,11 +15,13 @@ import { runWithTransactionLogger } from 'utils';
 import { sendTx } from 'utils/send-tx';
 import { useLidoSDK } from 'providers/lido-sdk';
 
-import { useDappStatus } from '../../../../shared/hooks/use-dapp-status';
+import { useDappStatus } from 'shared/hooks/use-dapp-status';
+import { useGetIsContract } from 'shared/hooks/use-is-contract';
+import { convertToBigNumber } from 'utils/convert-to-big-number';
+
 import type { UnwrapFormInputType } from '../unwrap-form-context';
 import { useUnwrapTxOnL2Approve } from './use-unwrap-tx-on-l2-approve';
 import { useTxModalStagesUnwrap } from './use-tx-modal-stages-unwrap';
-import { useGetIsContract } from 'shared/hooks/use-is-contract';
 
 export type UnwrapFormApprovalData = ReturnType<typeof useUnwrapTxOnL2Approve>;
 
@@ -60,7 +62,9 @@ export const useUnwrapFormProcessor = ({
 
         const [isMultisig, willReceive] = await Promise.all([
           isContract(address),
-          wstETHContractRPC.getStETHByWstETH(amount),
+          isAccountActiveOnL2
+            ? lidoSDKL2.steth.convertToSteth(amount.toBigInt())
+            : wstETHContractRPC.getStETHByWstETH(amount),
         ]);
 
         if (isAccountActiveOnL2 && isApprovalNeededBeforeUnwrapOnL2) {
@@ -80,7 +84,7 @@ export const useUnwrapFormProcessor = ({
           }
         }
 
-        txModalStages.sign(amount, willReceive);
+        txModalStages.sign(amount, convertToBigNumber(willReceive));
 
         let txHash: string;
         if (isAccountActiveOnL2) {
@@ -114,7 +118,7 @@ export const useUnwrapFormProcessor = ({
           return true;
         }
 
-        txModalStages.pending(amount, willReceive, txHash);
+        txModalStages.pending(amount, convertToBigNumber(willReceive), txHash);
 
         await runWithTransactionLogger('Unwrap block confirmation', () =>
           waitForTx(txHash),
