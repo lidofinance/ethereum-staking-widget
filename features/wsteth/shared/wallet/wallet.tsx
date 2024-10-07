@@ -35,7 +35,9 @@ const WalletComponent: WalletComponentType = (props) => {
   const stethBalance = useStethBalance();
   const wstethBalance = useWstethBalance();
 
-  const wstethByStethOnL1 = useWstethBySteth(stethBalance.data);
+  const wstethByStethOnL1 = useWstethBySteth(
+    !isAccountActiveOnL2 && stethBalance.data ? stethBalance.data : undefined,
+  );
   const wstethByStethOnL2 = useWstETHByStETHOnL2(
     isAccountActiveOnL2 && stethBalance.data ? stethBalance.data : undefined,
   );
@@ -43,7 +45,9 @@ const WalletComponent: WalletComponentType = (props) => {
     ? wstethByStethOnL2
     : wstethByStethOnL1;
 
-  const stethByWstethOnL1 = useStethByWsteth(wstethBalance.data);
+  const stethByWstethOnL1 = useStethByWsteth(
+    !isAccountActiveOnL2 && wstethBalance.data ? wstethBalance.data : undefined,
+  );
   const stethByWstethOnL2 = useStETHByWstETHOnL2(
     isAccountActiveOnL2 && stethBalance.data ? stethBalance.data : undefined,
   );
