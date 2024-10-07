@@ -1,5 +1,4 @@
 import { useMemo } from 'react';
-import { useAccount } from 'wagmi';
 import type { BigNumber } from 'ethers';
 
 import { getTokenAddress, TOKENS } from '@lido-sdk/constants';
@@ -18,8 +17,7 @@ export const useWrapTxOnL1Approve = ({
   amount,
   token,
 }: UseWrapTxApproveArgs) => {
-  const { isAccountActiveOnL1 } = useDappStatus();
-  const { address } = useAccount();
+  const { isDappActiveOnL1 } = useDappStatus();
   const { chainId } = useSDK();
 
   const [stethTokenAddress, wstethTokenAddress] = useMemo(
@@ -38,13 +36,12 @@ export const useWrapTxOnL1Approve = ({
     refetch: refetchAllowance,
   } = useApproveOnL1(
     amount,
-    stethTokenAddress,
-    wstethTokenAddress,
-    address ? address : undefined,
+    isDappActiveOnL1 ? stethTokenAddress : undefined,
+    isDappActiveOnL1 ? wstethTokenAddress : undefined,
   );
 
   const isApprovalNeededBeforeWrap =
-    isAccountActiveOnL1 && needsApprove && token === TOKENS_TO_WRAP.STETH;
+    isDappActiveOnL1 && needsApprove && token === TOKENS_TO_WRAP.STETH;
 
   return useMemo(
     () => ({
@@ -54,7 +51,7 @@ export const useWrapTxOnL1Approve = ({
       isApprovalLoading,
       isApprovalNeededBeforeWrap,
       refetchAllowance,
-      isShowAllowance: isAccountActiveOnL1,
+      isShowAllowance: isDappActiveOnL1,
     }),
     [
       allowance,
@@ -63,7 +60,7 @@ export const useWrapTxOnL1Approve = ({
       isApprovalLoading,
       processApproveTx,
       refetchAllowance,
-      isAccountActiveOnL1,
+      isDappActiveOnL1,
     ],
   );
 };
