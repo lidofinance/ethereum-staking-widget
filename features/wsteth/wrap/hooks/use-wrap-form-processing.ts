@@ -9,6 +9,7 @@ import { useTxConfirmation } from 'shared/hooks/use-tx-conformation';
 import { useGetIsContract } from 'shared/hooks/use-is-contract';
 import { useDappStatus } from 'shared/hooks/use-dapp-status';
 import { runWithTransactionLogger } from 'utils';
+import { convertToBigNumber } from 'utils/convert-to-big-number';
 
 import { useLidoSDK } from 'providers/lido-sdk';
 
@@ -58,7 +59,9 @@ export const useWrapFormProcessor = ({
 
         const [isMultisig, willReceive] = await Promise.all([
           isContract(address),
-          wstETHContractRPC.getWstETHByStETH(amount),
+          isAccountActiveOnL2
+            ? lidoSDKL2.steth.convertToShares(amount.toBigInt())
+            : wstETHContractRPC.getWstETHByStETH(amount),
         ]);
 
         if (isApprovalNeededBeforeWrapOnL1) {
@@ -77,7 +80,7 @@ export const useWrapFormProcessor = ({
           }
         }
 
-        txModalStages.sign(amount, token, willReceive);
+        txModalStages.sign(amount, token, convertToBigNumber(willReceive));
 
         let txHash: string;
         if (isAccountActiveOnL2) {
@@ -97,7 +100,12 @@ export const useWrapFormProcessor = ({
           return true;
         }
 
-        txModalStages.pending(amount, token, willReceive, txHash);
+        txModalStages.pending(
+          amount,
+          token,
+          convertToBigNumber(willReceive),
+          txHash,
+        );
 
         await runWithTransactionLogger('Wrap block confirmation', () =>
           waitForTx(txHash),
@@ -122,11 +130,12 @@ export const useWrapFormProcessor = ({
       address,
       providerWeb3,
       isContract,
+      isAccountActiveOnL2,
+      lidoSDKL2.steth,
+      lidoSDKL2.wsteth,
       wstETHContractRPC,
       isApprovalNeededBeforeWrapOnL1,
       txModalStages,
-      isAccountActiveOnL2,
-      lidoSDKL2.wsteth,
       lidoSDKwstETH,
       onConfirm,
       processApproveTxOnL1,
