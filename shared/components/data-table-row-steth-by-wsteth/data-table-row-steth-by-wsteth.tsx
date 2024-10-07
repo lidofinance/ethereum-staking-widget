@@ -17,7 +17,9 @@ export const DataTableRowStethByWsteth = ({
   toSymbol = 'stETH',
 }: DataTableRowStethByWstethProps) => {
   const { isDappActiveOnL2 } = useDappStatus();
-  const stethByWsteth = useStethByWsteth(OneWsteth);
+  const stethByWsteth = useStethByWsteth(
+    !isDappActiveOnL2 ? OneWsteth : undefined,
+  );
   const stETHByWstETHOnL2 = useStETHByWstETHOnL2(
     isDappActiveOnL2 ? OneWsteth : undefined,
   );
