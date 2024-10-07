@@ -8,6 +8,7 @@ import {
   LidoSDKwstETH,
 } from '@lidofinance/lido-ethereum-sdk/erc20';
 import { LidoSDKL2 } from '@lidofinance/lido-ethereum-sdk/l2';
+import { LidoSDKWrap } from '@lidofinance/lido-ethereum-sdk/wrap';
 
 import { useTokenTransferSubscription } from 'shared/hooks/use-balance';
 
@@ -16,6 +17,7 @@ type LidoSDKContextValue = {
   stETH: LidoSDKstETH;
   wstETH: LidoSDKwstETH;
   l2: LidoSDKL2;
+  wrap: LidoSDKWrap;
   subscribeToTokenUpdates: ReturnType<typeof useTokenTransferSubscription>;
 };
 
@@ -45,12 +47,14 @@ export const LidoSDKProvider = ({ children }: React.PropsWithChildren) => {
 
     const stETH = new LidoSDKstETH({ core });
     const wstETH = new LidoSDKwstETH({ core });
+    const wrap = new LidoSDKWrap({ core });
     const l2 = new LidoSDKL2({ core });
 
     return {
       core,
       stETH,
       wstETH,
+      wrap,
       l2,
       subscribeToTokenUpdates: subscribe,
     };

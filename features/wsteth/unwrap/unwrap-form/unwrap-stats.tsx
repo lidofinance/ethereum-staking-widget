@@ -13,6 +13,7 @@ import { useDappStatus } from 'shared/hooks/use-dapp-status';
 import { useDebouncedStethByWsteth } from 'features/wsteth/shared/hooks/use-debounced-wsteth-steth';
 import { useUnwrapGasLimit } from '../hooks/use-unwrap-gas-limit';
 import { useUnwrapFormData, UnwrapFormInputType } from '../unwrap-form-context';
+import { useApproveGasLimit } from 'features/wsteth/wrap/hooks/use-approve-gas-limit';
 
 export const UnwrapStats = () => {
   const { isAccountActiveOnL2 } = useDappStatus();
@@ -23,6 +24,12 @@ export const UnwrapStats = () => {
     txCostUsd: unwrapTxCostInUsd,
     initialLoading: isUnwrapTxCostLoading,
   } = useTxCostInUsd(unwrapGasLimit);
+
+  const approveGasLimit = useApproveGasLimit();
+  const {
+    txCostUsd: approveTxCostInUsd,
+    initialLoading: isApproveCostLoading,
+  } = useTxCostInUsd(approveGasLimit);
 
   const { data: willReceiveStETH, initialLoading: isWillReceiveStETHLoading } =
     useDebouncedStethByWsteth(amount, isAccountActiveOnL2);
@@ -48,6 +55,15 @@ export const UnwrapStats = () => {
       >
         <FormatPrice amount={unwrapTxCostInUsd} />
       </DataTableRow>
+      {isShowAllowance && (
+        <DataTableRow
+          title="Max unlock cost"
+          data-testid="maxUnlockFee"
+          loading={isApproveCostLoading}
+        >
+          <FormatPrice amount={approveTxCostInUsd} />
+        </DataTableRow>
+      )}
       <DataTableRowStethByWsteth />
       {isShowAllowance && (
         <AllowanceDataTableRow

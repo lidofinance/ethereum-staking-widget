@@ -57,15 +57,15 @@ type OnLogsFn = WatchContractEventOnLogsFn<
 >;
 
 type UseAllowanceProps = {
-  token: Address;
-  account: Address;
-  spender: Address;
+  token?: Address;
+  account?: Address;
+  spender?: Address;
 };
 
 const onError = (error: unknown) =>
   console.warn('[useAllowance] error while watching events', error);
 
-export const useAllowanceOnL1 = ({
+export const useAllowance = ({
   token,
   account,
   spender,
@@ -77,8 +77,11 @@ export const useAllowanceOnL1 = ({
     abi: Erc20AllowanceAbi,
     address: token,
     functionName: 'allowance',
-    args: [account, spender],
-    query: { enabled, select: nativeToBN },
+    args: [account, spender] as [Address, Address],
+    query: {
+      enabled,
+      select: nativeToBN,
+    },
   });
 
   const onLogs: OnLogsFn = useCallback(

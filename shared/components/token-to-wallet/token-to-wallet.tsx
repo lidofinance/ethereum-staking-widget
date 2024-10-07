@@ -4,13 +4,15 @@ import { TokenToWalletStyle } from './styles';
 
 import { Component } from 'types';
 
-export type TokenToWalletComponent = Component<'button', { address: string }>;
+export type TokenToWalletComponent = Component<'button', { address?: string }>;
 
 export const TokenToWallet: TokenToWalletComponent = (props) => {
   const { address, ...rest } = props;
-  const { addToken } = useTokenToWallet(address);
+  // TODO reacheck this for l2
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  const { addToken } = useTokenToWallet(address!);
 
-  if (!addToken) return null;
+  if (!addToken || !address) return null;
 
   const onClickHandler = async () => {
     const result = await addToken();

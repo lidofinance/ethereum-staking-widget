@@ -1,8 +1,7 @@
 import { memo } from 'react';
 
 import { Divider, Text } from '@lidofinance/lido-ui';
-import { TOKENS } from '@lido-sdk/constants';
-import { useSDK, useTokenAddress } from '@lido-sdk/react';
+import { useSDK } from '@lido-sdk/react';
 
 import { FormatToken } from 'shared/formatters';
 import { TokenToWallet } from 'shared/components';
@@ -32,9 +31,6 @@ const WalletComponent: WalletComponentType = (props) => {
   const ethBalance = useEthereumBalance();
   const stethBalance = useStethBalance();
   const wstethBalance = useWstethBalance();
-
-  const stethAddress = useTokenAddress(TOKENS.STETH);
-  const wstethAddress = useTokenAddress(TOKENS.WSTETH);
 
   const wstethBySteth = useWstethBySteth(stethBalance.data);
   const stethByWsteth = useStethByWsteth(wstethBalance.data);
@@ -76,7 +72,7 @@ const WalletComponent: WalletComponentType = (props) => {
               />
               <TokenToWallet
                 data-testid="addStethToWalletBtn"
-                address={stethAddress}
+                address={stethBalance.tokenAddress}
               />
               <Text size={'xxs'} color={'secondary'}>
                 <FormatToken
@@ -102,7 +98,7 @@ const WalletComponent: WalletComponentType = (props) => {
               />
               <TokenToWallet
                 data-testid="addWstethToWalletBtn"
-                address={wstethAddress}
+                address={wstethBalance.tokenAddress}
               />
               <Text size={'xxs'} color={'secondary'}>
                 <FormatToken
