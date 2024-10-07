@@ -17,7 +17,8 @@ import { useApproveGasLimit } from 'features/wsteth/wrap/hooks/use-approve-gas-l
 
 export const UnwrapStats = () => {
   const { isAccountActiveOnL2 } = useDappStatus();
-  const { allowance, isShowAllowance } = useUnwrapFormData();
+  const { allowance, isAllowanceLoading, isShowAllowance } =
+    useUnwrapFormData();
   const amount = useWatch<UnwrapFormInputType, 'amount'>({ name: 'amount' });
   const unwrapGasLimit = useUnwrapGasLimit();
   const {
@@ -69,7 +70,7 @@ export const UnwrapStats = () => {
         <AllowanceDataTableRow
           data-testid="allowance"
           allowance={BigNumber.from(allowance || '0')}
-          loading={false}
+          loading={isAllowanceLoading}
           token={TOKENS.WSTETH}
         />
       )}
