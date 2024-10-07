@@ -7,6 +7,7 @@ export const getEtherscanTxLink = (
   chainId: CHAINS | CHAINS_SDK,
   hash: string,
 ): string => {
+  // TODO: use viem for getting explorer
   if (chainId === CHAINS.OptimismSepolia) {
     return `https://sepolia-optimistic.etherscan.io/tx/${hash}`;
   } else if (chainId === CHAINS.Optimism) {
