@@ -9,14 +9,15 @@ export const useGetIsContract = () => {
   return useCallback(
     async (address: Address) => {
       const code = await client?.getCode({ address });
-      return code != '0x';
+
+      return toBool(code);
     },
     [client],
   );
 };
 
 const toBool = (data: Hex | undefined) => {
-  return data && data != '0x';
+  return !!(data && data != '0x');
 };
 
 // helper hook until migration to wagmi is complete
