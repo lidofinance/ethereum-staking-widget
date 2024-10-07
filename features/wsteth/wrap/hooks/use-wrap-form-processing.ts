@@ -4,6 +4,7 @@ import invariant from 'tiny-invariant';
 import { useAccount } from 'wagmi';
 
 import { useSDK, useWSTETHContractRPC } from '@lido-sdk/react';
+import { TransactionCallbackStage } from '@lidofinance/lido-ethereum-sdk/core';
 
 import { useTxConfirmation } from 'shared/hooks/use-tx-conformation';
 import { useGetIsContract } from 'shared/hooks/use-is-contract';
@@ -18,7 +19,6 @@ import type {
   WrapFormInputType,
 } from '../wrap-form-context';
 import { useWrapTxOnL1Processing } from './use-wrap-tx-on-l1-processing';
-import { useWrapTxOnL2Processing } from './use-wrap-tx-on-l2-processing';
 import { useTxModalWrap } from './use-tx-modal-stages-wrap';
 
 type UseWrapFormProcessorArgs = {
@@ -35,13 +35,12 @@ export const useWrapFormProcessor = ({
   const { address } = useAccount();
   const { providerWeb3 } = useSDK();
   const wstETHContractRPC = useWSTETHContractRPC();
-  const { l2: lidoSDKL2, wstETH: lidoSDKwstETH } = useLidoSDK();
+  const { l2, wstETH: lidoSDKwstETH } = useLidoSDK();
 
   const { isAccountActiveOnL2 } = useDappStatus();
 
   const { txModalStages } = useTxModalWrap();
   const processWrapTxOnL1 = useWrapTxOnL1Processing();
-  const processWrapTxOnL2 = useWrapTxOnL2Processing();
 
   const waitForTx = useTxConfirmation();
   const isContract = useGetIsContract();
@@ -60,7 +59,9 @@ export const useWrapFormProcessor = ({
         const [isMultisig, willReceive] = await Promise.all([
           isContract(address),
           isAccountActiveOnL2
-            ? lidoSDKL2.steth.convertToShares(amount.toBigInt())
+            ? l2.steth
+                .convertToShares(amount.toBigInt())
+                .then(convertToBigNumber)
             : wstETHContractRPC.getWstETHByStETH(amount),
         ]);
 
@@ -80,19 +81,29 @@ export const useWrapFormProcessor = ({
           }
         }
 
-        txModalStages.sign(amount, token, convertToBigNumber(willReceive));
+        txModalStages.sign(amount, token, willReceive);
 
         let txHash: string;
         if (isAccountActiveOnL2) {
           const txResult = await runWithTransactionLogger(
             'Wrap signing on L2',
-            () => processWrapTxOnL2({ amount }),
+            () =>
+              // The operation 'stETH to wstETH' on L2 is 'unwrap'
+              l2.unwrapStethToWsteth({
+                value: amount.toBigInt(),
+                callback: ({ stage }) => {
+                  if (stage === TransactionCallbackStage.RECEIPT)
+                    txModalStages.pending(amount, token, willReceive, txHash);
+                },
+              }),
           );
           txHash = txResult.hash;
         } else {
           txHash = await runWithTransactionLogger('Wrap signing on L1', () =>
             processWrapTxOnL1({ amount, token, isMultisig }),
           );
+          if (!isMultisig)
+            txModalStages.pending(amount, token, willReceive, txHash);
         }
 
         if (isMultisig) {
@@ -100,20 +111,13 @@ export const useWrapFormProcessor = ({
           return true;
         }
 
-        txModalStages.pending(
-          amount,
-          token,
-          convertToBigNumber(willReceive),
-          txHash,
-        );
-
         await runWithTransactionLogger('Wrap block confirmation', () =>
           waitForTx(txHash),
         );
 
         const [wstethBalance] = await Promise.all([
           isAccountActiveOnL2
-            ? lidoSDKL2.wsteth.balance(address)
+            ? l2.wsteth.balance(address)
             : lidoSDKwstETH.balance(address),
           onConfirm(),
         ]);
@@ -131,15 +135,13 @@ export const useWrapFormProcessor = ({
       providerWeb3,
       isContract,
       isAccountActiveOnL2,
-      lidoSDKL2.steth,
-      lidoSDKL2.wsteth,
       wstETHContractRPC,
       isApprovalNeededBeforeWrapOnL1,
       txModalStages,
+      l2,
       lidoSDKwstETH,
       onConfirm,
       processApproveTxOnL1,
-      processWrapTxOnL2,
       processWrapTxOnL1,
       waitForTx,
       onRetry,

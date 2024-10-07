@@ -22,7 +22,7 @@ export const useUnwrapGasLimit = () => {
           ? l2.getContract()
           : wrap.getContractWstETH());
 
-        const gas = contract.estimateGas.unwrap(
+        const gas = await contract.estimateGas.unwrap(
           [config.ESTIMATE_AMOUNT.toBigInt()],
           {
             account: config.ESTIMATE_ACCOUNT,

@@ -30,7 +30,7 @@ import { useWstETHByStETHOnL2 } from 'shared/hooks/use-wstETH-by-stETH-on-l2';
 
 const WalletComponent: WalletComponentType = (props) => {
   const { account } = useSDK();
-  const { isAccountActiveOnL2 } = useDappStatus();
+  const { isAccountActiveOnL2, isDappActiveOnL2 } = useDappStatus();
   const ethBalance = useEthereumBalance();
   const stethBalance = useStethBalance();
   const wstethBalance = useWstethBalance();
@@ -50,13 +50,11 @@ const WalletComponent: WalletComponentType = (props) => {
     !isAccountActiveOnL2 && wstethBalance.data ? wstethBalance.data : undefined,
   );
   const stethByWstethOnL2 = useStETHByWstETHOnL2(
-    isAccountActiveOnL2 && stethBalance.data ? stethBalance.data : undefined,
+    isAccountActiveOnL2 && wstethBalance.data ? wstethBalance.data : undefined,
   );
   const stethByWsteth = isAccountActiveOnL2
     ? stethByWstethOnL2
     : stethByWstethOnL1;
-
-  const { isDappActiveOnL2 } = useDappStatus();
 
   return (
     <StyledCard

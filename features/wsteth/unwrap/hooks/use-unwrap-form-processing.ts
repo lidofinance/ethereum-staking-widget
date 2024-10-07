@@ -8,6 +8,7 @@ import {
   useWSTETHContractRPC,
   useWSTETHContractWeb3,
 } from '@lido-sdk/react';
+import { TransactionCallbackStage } from '@lidofinance/lido-ethereum-sdk/core';
 
 import { useCurrentStaticRpcProvider } from 'shared/hooks/use-current-static-rpc-provider';
 import { useTxConfirmation } from 'shared/hooks/use-tx-conformation';
@@ -63,7 +64,9 @@ export const useUnwrapFormProcessor = ({
         const [isMultisig, willReceive] = await Promise.all([
           isContract(address),
           isAccountActiveOnL2
-            ? lidoSDKL2.steth.convertToSteth(amount.toBigInt())
+            ? lidoSDKL2.steth
+                .convertToSteth(amount.toBigInt())
+                .then(convertToBigNumber)
             : wstETHContractRPC.getStETHByWstETH(amount),
         ]);
 
@@ -84,7 +87,7 @@ export const useUnwrapFormProcessor = ({
           }
         }
 
-        txModalStages.sign(amount, convertToBigNumber(willReceive));
+        txModalStages.sign(amount, willReceive);
 
         let txHash: string;
         if (isAccountActiveOnL2) {
@@ -93,6 +96,10 @@ export const useUnwrapFormProcessor = ({
               // The operation 'wstETH to stETH' on L2 is 'wrap'
               lidoSDKL2.wrapWstethToSteth({
                 value: amount.toBigInt(),
+                callback: ({ stage }) => {
+                  if (stage === TransactionCallbackStage.RECEIPT)
+                    txModalStages.pending(amount, willReceive, txHash);
+                },
               }),
             )
           ).hash;
@@ -111,14 +118,13 @@ export const useUnwrapFormProcessor = ({
               });
             },
           );
+          if (!isMultisig) txModalStages.pending(amount, willReceive, txHash);
         }
 
         if (isMultisig) {
           txModalStages.successMultisig();
           return true;
         }
-
-        txModalStages.pending(amount, convertToBigNumber(willReceive), txHash);
 
         await runWithTransactionLogger('Unwrap block confirmation', () =>
           waitForTx(txHash),
