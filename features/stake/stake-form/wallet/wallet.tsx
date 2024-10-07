@@ -2,7 +2,6 @@ import { memo } from 'react';
 import { useAccount } from 'wagmi';
 
 import { TOKENS } from '@lido-sdk/constants';
-import { useTokenAddress } from '@lido-sdk/react';
 import { Divider, Question, Tooltip } from '@lidofinance/lido-ui';
 
 import { LIDO_APR_TOOLTIP_TEXT, DATA_UNAVAILABLE } from 'consts/text';
@@ -11,6 +10,7 @@ import { TokenToWallet } from 'shared/components';
 import { FormatToken } from 'shared/formatters';
 import { useLidoApr } from 'shared/hooks';
 import { useDappStatus } from 'shared/hooks/use-dapp-status';
+import { useTokenAddress } from 'shared/hooks/use-token-address';
 import { useLidoMultichainFallbackCondition } from 'shared/hooks/use-lido-multichain-fallback-condition';
 import {
   CardAccount,

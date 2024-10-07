@@ -1,10 +1,10 @@
 import { TOKENS } from '@lido-sdk/constants';
-import { useTokenAddress } from '@lido-sdk/react';
 
 import { TokenToWallet } from 'shared/components/token-to-wallet/token-to-wallet';
 import { CardBalance } from 'shared/wallet';
 import { FormatToken } from 'shared/formatters';
 import { useClaimData } from 'features/withdrawals/contexts/claim-data-context';
+import { useTokenAddress } from 'shared/hooks/use-token-address';
 
 export const WalletPendingAmount = () => {
   const stethAddress = useTokenAddress(TOKENS.STETH);

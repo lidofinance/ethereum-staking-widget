@@ -1,4 +1,4 @@
-import { ToastError, ToastInfo, Tooltip } from '@lidofinance/lido-ui';
+import { ToastInfo, Tooltip } from '@lidofinance/lido-ui';
 import { TokenToWalletStyle } from './styles';
 
 import { Component } from 'types';
@@ -56,7 +56,6 @@ export const TokenToWallet: TokenToWalletComponent = ({ address, ...rest }) => {
       ToastInfo('Tokens were successfully added to your wallet', {});
     } catch (error) {
       console.warn('[TokenToWallet] error adding token to wallet', error);
-      ToastError('Could not add token to your wallet', {});
     }
   };
 
