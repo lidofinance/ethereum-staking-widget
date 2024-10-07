@@ -29,6 +29,7 @@ import { MAINNET_CURVE } from 'features/rewards/hooks/use-steth-eth-rate';
 import {
   LIDO_LOCATOR_BY_CHAIN,
   LIDO_L2_CONTRACT_ADDRESSES,
+  CHAINS as CHAIN_SDK,
 } from '@lidofinance/lido-ethereum-sdk';
 
 export const CONTRACT_NAMES = {
@@ -118,13 +119,15 @@ export const METRIC_CONTRACT_ADDRESSES = (
         return (LIDO_LOCATOR_BY_CHAIN as any)[chainId] as string;
       }, chainId),
       [CONTRACT_NAMES.L2stETH]: getAddressOrNull((chainId: CHAINS) => {
+        const chainIDSDK = chainId as unknown as CHAIN_SDK;
         return (
-          (LIDO_L2_CONTRACT_ADDRESSES[chainId]?.['steth'] as string) ?? null
+          (LIDO_L2_CONTRACT_ADDRESSES[chainIDSDK]?.['steth'] as string) ?? null
         );
       }, chainId),
       [CONTRACT_NAMES.L2wstETH]: getAddressOrNull((chainId: CHAINS) => {
+        const chainIDSDK = chainId as unknown as CHAIN_SDK;
         return (
-          (LIDO_L2_CONTRACT_ADDRESSES[chainId]?.['wsteth'] as string) ?? null
+          (LIDO_L2_CONTRACT_ADDRESSES[chainIDSDK]?.['wsteth'] as string) ?? null
         );
       }, chainId),
     };
@@ -152,13 +155,15 @@ export const METRIC_CONTRACT_EVENT_ADDRESSES = (
         TOKENS.WSTETH,
       ),
       [CONTRACT_NAMES.L2stETH]: getAddressOrNull((chainId: CHAINS) => {
+        const chainIDSDK = chainId as unknown as CHAIN_SDK;
         return (
-          (LIDO_L2_CONTRACT_ADDRESSES[chainId]?.['steth'] as string) ?? null
+          (LIDO_L2_CONTRACT_ADDRESSES[chainIDSDK]?.['steth'] as string) ?? null
         );
       }, chainId),
       [CONTRACT_NAMES.L2wstETH]: getAddressOrNull((chainId: CHAINS) => {
+        const chainIDSDK = chainId as unknown as CHAIN_SDK;
         return (
-          (LIDO_L2_CONTRACT_ADDRESSES[chainId]?.['wsteth'] as string) ?? null
+          (LIDO_L2_CONTRACT_ADDRESSES[chainIDSDK]?.['wsteth'] as string) ?? null
         );
       }, chainId),
     };
