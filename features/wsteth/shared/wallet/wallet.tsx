@@ -121,17 +121,18 @@ const WalletComponent: WalletComponentType = (props) => {
 };
 
 export const Wallet: WalletComponentType = memo((props) => {
-  const { isDappActive, isDappActiveAndNetworksMatched } = useDappStatus();
+  const { isDappActive, isDappActiveAndNetworksMatched, isDappActiveOnL2 } =
+    useDappStatus();
   const { showLidoMultichainFallback } = useLidoMultichainFallbackCondition();
   const { chainName } = useDappChain();
-
-  if (showLidoMultichainFallback) {
-    return <LidoMultichainFallback textEnding={'to wrap/unwrap'} {...props} />;
-  }
 
   if (!isDappActiveAndNetworksMatched) {
     const error = `Wrong network. Please switch to ${chainName === OPTIMISM ? capitalizeFirstLetter(OPTIMISM) : capitalizeFirstLetter(ETHEREUM)} in your wallet to wrap/unwrap.`;
     return <Fallback error={error} {...props} />;
+  }
+
+  if (!isDappActiveOnL2 && showLidoMultichainFallback) {
+    return <LidoMultichainFallback textEnding={'to wrap/unwrap'} {...props} />;
   }
 
   if (!isDappActive) {

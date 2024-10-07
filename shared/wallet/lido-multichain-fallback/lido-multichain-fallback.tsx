@@ -81,7 +81,7 @@ export const LidoMultichainFallback: LidoMultichainFallbackComponent = (
     <Wrap {...props} chainId={chainId as LIDO_MULTICHAIN_CHAINS}>
       {getChainLogo(chainId as LIDO_MULTICHAIN_CHAINS)}
       <TextStyle>
-        You’re currently on {lidoMultichainChainName}.
+        You are currently on {lidoMultichainChainName}.
         <br />
         Explore Lido Multichain or switch to {switchToText} {props.textEnding}.
       </TextStyle>

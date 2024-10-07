@@ -21,14 +21,21 @@ import {
   PartialCurveAbiAbi__factory,
   PartialStakingRouterAbi__factory,
   LidoLocatorAbi__factory,
+  L2StethAbi__factory,
+  L2WstesthAbi__factory,
 } from 'generated';
 import { getStakingRouterAddress } from 'consts/staking-router';
 import { MAINNET_CURVE } from 'features/rewards/hooks/use-steth-eth-rate';
-import { LIDO_LOCATOR_BY_CHAIN } from '@lidofinance/lido-ethereum-sdk';
+import {
+  LIDO_LOCATOR_BY_CHAIN,
+  LIDO_L2_CONTRACT_ADDRESSES,
+} from '@lidofinance/lido-ethereum-sdk';
 
 export const CONTRACT_NAMES = {
   stETH: 'stETH',
   wstETH: 'wstETH',
+  L2stETH: 'L2stETH',
+  L2wstETH: 'L2wstETH',
   WithdrawalQueue: 'WithdrawalQueue',
   Aggregator: 'Aggregator',
   AggregatorStEthUsdPriceFeed: 'AggregatorStEthUsdPriceFeed',
@@ -47,6 +54,8 @@ export const METRIC_CONTRACT_ABIS = {
   [CONTRACT_NAMES.StakingRouter]: PartialStakingRouterAbi__factory.abi,
   [CONTRACT_NAMES.StethCurve]: PartialCurveAbiAbi__factory.abi,
   [CONTRACT_NAMES.LidoLocator]: LidoLocatorAbi__factory.abi,
+  [CONTRACT_NAMES.L2stETH]: L2StethAbi__factory.abi,
+  [CONTRACT_NAMES.L2wstETH]: L2WstesthAbi__factory.abi,
 } as const;
 
 export const getMetricContractInterface = memoize(
@@ -55,7 +64,7 @@ export const getMetricContractInterface = memoize(
 );
 
 const getAddressOrNull = <
-  G extends (...args: any) => string,
+  G extends (...args: any) => string | null,
   A extends Parameters<G>,
 >(
   getter: G,
@@ -69,6 +78,7 @@ const getAddressOrNull = <
   }
 };
 
+// TODO rework to viem and remove typechain
 export const METRIC_CONTRACT_ADDRESSES = (
   config.supportedChains as CHAINS[]
 ).reduce(
@@ -102,10 +112,20 @@ export const METRIC_CONTRACT_ADDRESSES = (
       ),
       [CONTRACT_NAMES.StethCurve]: getAddressOrNull((chainId: CHAINS) => {
         if (chainId === 1) return MAINNET_CURVE;
-        else throw new Error('no contract address');
+        return null;
       }, chainId),
       [CONTRACT_NAMES.LidoLocator]: getAddressOrNull((chainId: CHAINS) => {
         return (LIDO_LOCATOR_BY_CHAIN as any)[chainId] as string;
+      }, chainId),
+      [CONTRACT_NAMES.L2stETH]: getAddressOrNull((chainId: CHAINS) => {
+        return (
+          (LIDO_L2_CONTRACT_ADDRESSES[chainId]?.['steth'] as string) ?? null
+        );
+      }, chainId),
+      [CONTRACT_NAMES.L2wstETH]: getAddressOrNull((chainId: CHAINS) => {
+        return (
+          (LIDO_L2_CONTRACT_ADDRESSES[chainId]?.['wsteth'] as string) ?? null
+        );
       }, chainId),
     };
     return {
@@ -131,6 +151,16 @@ export const METRIC_CONTRACT_EVENT_ADDRESSES = (
         chainId,
         TOKENS.WSTETH,
       ),
+      [CONTRACT_NAMES.L2stETH]: getAddressOrNull((chainId: CHAINS) => {
+        return (
+          (LIDO_L2_CONTRACT_ADDRESSES[chainId]?.['steth'] as string) ?? null
+        );
+      }, chainId),
+      [CONTRACT_NAMES.L2wstETH]: getAddressOrNull((chainId: CHAINS) => {
+        return (
+          (LIDO_L2_CONTRACT_ADDRESSES[chainId]?.['wsteth'] as string) ?? null
+        );
+      }, chainId),
     };
     return {
       ...mapped,
