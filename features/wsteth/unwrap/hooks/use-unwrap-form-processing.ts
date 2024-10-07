@@ -20,6 +20,7 @@ import type { UnwrapFormInputType } from '../unwrap-form-context';
 import { useUnwrapTxOnL2Approve } from './use-unwrap-tx-on-l2-approve';
 import { useTxModalStagesUnwrap } from './use-tx-modal-stages-unwrap';
 import { useGetIsContract } from 'shared/hooks/use-is-contract';
+import { TransactionCallbackStage } from '@lidofinance/lido-ethereum-sdk/core';
 
 export type UnwrapFormApprovalData = ReturnType<typeof useUnwrapTxOnL2Approve>;
 
@@ -89,6 +90,10 @@ export const useUnwrapFormProcessor = ({
               // The operation 'wstETH to stETH' on L2 is 'wrap'
               lidoSDKL2.wrapWstethToSteth({
                 value: amount.toBigInt(),
+                callback: ({ stage }) => {
+                  if (stage === TransactionCallbackStage.RECEIPT)
+                    txModalStages.pending(amount, willReceive, txHash);
+                },
               }),
             )
           ).hash;
@@ -107,14 +112,13 @@ export const useUnwrapFormProcessor = ({
               });
             },
           );
+          if (!isMultisig) txModalStages.pending(amount, willReceive, txHash);
         }
 
         if (isMultisig) {
           txModalStages.successMultisig();
           return true;
         }
-
-        txModalStages.pending(amount, willReceive, txHash);
 
         await runWithTransactionLogger('Unwrap block confirmation', () =>
           waitForTx(txHash),

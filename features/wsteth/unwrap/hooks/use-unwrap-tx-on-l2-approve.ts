@@ -6,7 +6,8 @@ import { useLidoSDK } from 'providers/lido-sdk';
 import { useDappStatus } from 'shared/hooks/use-dapp-status';
 import { useAllowance } from 'shared/hooks/use-allowance';
 import { useAccount } from 'wagmi';
-import { LIDO_L2_CONTRACT_ADDRESSES } from '@lidofinance/lido-ethereum-sdk';
+import { LIDO_L2_CONTRACT_ADDRESSES } from '@lidofinance/lido-ethereum-sdk/common';
+import { TransactionCallbackStage } from '@lidofinance/lido-ethereum-sdk/core';
 
 type UseUnwrapTxApproveArgs = {
   amount: BigNumber;
@@ -40,11 +41,13 @@ export const useUnwrapTxOnL2Approve = ({ amount }: UseUnwrapTxApproveArgs) => {
           await runWithTransactionLogger('Approve signing on L2', () =>
             l2.approveWstethForWrap({
               value: amount.toBigInt(),
+              callback: ({ stage, payload }) => {
+                if (stage === TransactionCallbackStage.RECEIPT)
+                  onTxSent?.(payload);
+              },
             }),
           )
         ).hash;
-
-        onTxSent?.(approveTxHash);
 
         // wait for refetch to settle
         await refetchAllowance().catch();

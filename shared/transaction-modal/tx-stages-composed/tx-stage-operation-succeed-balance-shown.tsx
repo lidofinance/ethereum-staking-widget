@@ -37,6 +37,7 @@ export const TxStageOperationSucceedBalanceShown = ({
   txHash,
   footer,
 }: TxStageOperationSucceedBalanceShownProps) => {
+  // TODO fix for l2
   const stethAddress = useTokenAddress(TOKENS.STETH);
   const wstethAddress = useTokenAddress(TOKENS.WSTETH);
   const tokenToWalletAddress =

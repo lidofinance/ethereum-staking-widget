@@ -18,7 +18,7 @@ export const useStETHByWstETHOnL2 = (wsteth: BigNumber | undefined) => {
 
   return {
     // Make usable for UnwrapStats component (in future can be used like bigint)
-    data: data ? BigNumber.from(data) : undefined,
+    data: typeof data !== 'undefined' ? BigNumber.from(data) : undefined,
     initialLoading: isValidating && !data && !error,
     loading: isValidating,
     error,
