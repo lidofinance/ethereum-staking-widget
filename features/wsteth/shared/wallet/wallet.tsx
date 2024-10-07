@@ -21,6 +21,8 @@ import {
   useStethBalance,
   useWstethBalance,
 } from 'shared/hooks/use-balance';
+import { useWstETHByStETHOnL2 } from 'shared/hooks/use-wstETH-by-stETH-on-l2';
+import { useStETHByWstETHOnL2 } from 'shared/hooks/use-stETH-by-wstETH-on-l2';
 import { OPTIMISM, ETHEREUM, useDappChain } from 'providers/dapp-chain';
 import { capitalizeFirstLetter } from 'utils/capitalize-string';
 
@@ -28,12 +30,26 @@ import { StyledCard } from './styles';
 
 const WalletComponent: WalletComponentType = (props) => {
   const { account } = useSDK();
+  const { isAccountActiveOnL2 } = useDappStatus();
   const ethBalance = useEthereumBalance();
   const stethBalance = useStethBalance();
   const wstethBalance = useWstethBalance();
 
-  const wstethBySteth = useWstethBySteth(stethBalance.data);
-  const stethByWsteth = useStethByWsteth(wstethBalance.data);
+  const wstethByStethOnL1 = useWstethBySteth(stethBalance.data);
+  const wstethByStethOnL2 = useWstETHByStETHOnL2(
+    isAccountActiveOnL2 && stethBalance.data ? stethBalance.data : undefined,
+  );
+  const wstethBySteth = isAccountActiveOnL2
+    ? wstethByStethOnL2
+    : wstethByStethOnL1;
+
+  const stethByWstethOnL1 = useStethByWsteth(wstethBalance.data);
+  const stethByWstethOnL2 = useStETHByWstETHOnL2(
+    isAccountActiveOnL2 && stethBalance.data ? stethBalance.data : undefined,
+  );
+  const stethByWsteth = isAccountActiveOnL2
+    ? stethByWstethOnL2
+    : stethByWstethOnL1;
 
   const { isDappActiveOnL2 } = useDappStatus();
 
