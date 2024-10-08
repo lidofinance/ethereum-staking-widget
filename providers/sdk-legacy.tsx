@@ -24,7 +24,7 @@ export const SDKLegacyProvider = ({
 }: SDKLegacyProviderProps) => {
   const { chainId: wagmiChainId = defaultChainId, address } = useAccount();
   const { supportedChains } = useSupportedChains();
-  const { isDappActive } = useDappStatus();
+  const { isDappActiveOnL1 } = useDappStatus();
   const config = useConfig();
   const client = useClient();
   const { rpc } = useReefKnotContext();
@@ -44,7 +44,8 @@ export const SDKLegacyProvider = ({
     };
 
     const getProviderValue = async () => {
-      if (!client || !address || !isDappActive) return undefined;
+      // old sdk can only supports wallet connection on L1
+      if (!client || !address || !isDappActiveOnL1) return undefined;
       const { chain } = client;
       const providerTransport = await getProviderTransport();
 
@@ -69,7 +70,14 @@ export const SDKLegacyProvider = ({
     return () => {
       isHookMounted = false;
     };
-  }, [config, config.state, client, address, isDappActive, pollingInterval]);
+  }, [
+    config,
+    config.state,
+    client,
+    address,
+    isDappActiveOnL1,
+    pollingInterval,
+  ]);
 
   const supportedChainIds = useMemo(
     () => supportedChains.map((chain) => chain.chainId),
