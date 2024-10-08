@@ -1,5 +1,4 @@
 import { useLidoSDK } from 'providers/lido-sdk';
-import { isSDKSupportedL2Chain } from 'consts/chains';
 import {
   CHAINS,
   LIDO_L2_CONTRACT_ADDRESSES,
@@ -16,9 +15,9 @@ import type { Address } from 'viem';
 
 // TODO rework this and sdk to get all addresses sync way
 export const useTokenAddress = (token: string): Address => {
-  const { core } = useLidoSDK();
+  const { core, isL2 } = useLidoSDK();
   const tokenName = token.toLocaleLowerCase();
-  if (isSDKSupportedL2Chain(core.chainId as any)) {
+  if (isL2) {
     const address =
       LIDO_L2_CONTRACT_ADDRESSES[core.chainId as CHAINS]?.[
         tokenName as LIDO_L2_CONTRACT_NAMES

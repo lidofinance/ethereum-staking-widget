@@ -35,7 +35,7 @@ export const useWrapFormProcessor = ({
   const { address } = useAccount();
   const { providerWeb3 } = useSDK();
   const wstETHContractRPC = useWSTETHContractRPC();
-  const { l2, wstETH: lidoSDKwstETH } = useLidoSDK();
+  const { l2, wstETH } = useLidoSDK();
 
   const { isAccountActiveOnL2 } = useDappStatus();
 
@@ -118,7 +118,7 @@ export const useWrapFormProcessor = ({
         const [wstethBalance] = await Promise.all([
           isAccountActiveOnL2
             ? l2.wsteth.balance(address)
-            : lidoSDKwstETH.balance(address),
+            : wstETH.balance(address),
           onConfirm(),
         ]);
 
@@ -139,7 +139,7 @@ export const useWrapFormProcessor = ({
       isApprovalNeededBeforeWrapOnL1,
       txModalStages,
       l2,
-      lidoSDKwstETH,
+      wstETH,
       onConfirm,
       processApproveTxOnL1,
       processWrapTxOnL1,
