@@ -3,10 +3,7 @@ import { Accordion } from '@lidofinance/lido-ui';
 
 export const DoIStillGetStakingRewardsWithStETHOrWstETHOnOptimism: FC = () => {
   return (
-    <Accordion
-      defaultExpanded
-      summary="Do I still get staking rewards with stETH or wstETH on Optimism?"
-    >
+    <Accordion summary="Do I still get staking rewards with stETH or wstETH on Optimism?">
       <p>
         Yes, wrapped stETH gets staking rewards at the same rate as regular
         stETH. When you keep your stETH in a wrapper you cannot see your daily

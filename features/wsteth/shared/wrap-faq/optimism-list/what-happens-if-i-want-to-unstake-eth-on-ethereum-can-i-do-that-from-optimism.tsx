@@ -8,10 +8,7 @@ import { trackMatomoEvent } from 'utils/track-matomo-event';
 export const WhatHappensIfIWantToUnstakeETHOnEthereumCanIDoThatFromOptimism: FC =
   () => {
     return (
-      <Accordion
-        defaultExpanded
-        summary="What happens if I want to unstake ETH on Ethereum? Can I do that from Optimism?"
-      >
+      <Accordion summary="What happens if I want to unstake ETH on Ethereum? Can I do that from Optimism?">
         <p>
           You would need to{' '}
           <Link

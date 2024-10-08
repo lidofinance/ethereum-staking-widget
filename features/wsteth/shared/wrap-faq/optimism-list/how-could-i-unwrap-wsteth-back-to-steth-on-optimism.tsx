@@ -7,10 +7,7 @@ import { trackMatomoEvent } from 'utils/track-matomo-event';
 
 export const HowCouldIUnwrapWstETHBackToStETHOnOptimism: FC = () => {
   return (
-    <Accordion
-      defaultExpanded
-      summary="How could I unwrap wstETH back to stETH on Optimism?"
-    >
+    <Accordion summary="How could I unwrap wstETH back to stETH on Optimism?">
       <p>
         You can unwrap your wstETH tokens using{' '}
         <LocalLink
