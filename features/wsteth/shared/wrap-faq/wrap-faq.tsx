@@ -1,6 +1,7 @@
 import { Section } from 'shared/components';
 import { useMatomoEventHandle } from 'shared/hooks';
 import { useDappStatus } from 'shared/hooks/use-dapp-status';
+import { useDappChain, OPTIMISM } from 'providers/dapp-chain';
 
 import {
   WhatIsWsteth,
@@ -24,10 +25,11 @@ import {
 } from './optimism-list';
 
 export const WrapFaq = () => {
-  const { isAccountActiveOnL2 } = useDappStatus();
+  const { chainName } = useDappChain();
+  const { isWalletConnected } = useDappStatus();
   const onClickHandler = useMatomoEventHandle();
 
-  if (isAccountActiveOnL2) {
+  if (isWalletConnected && chainName === OPTIMISM) {
     return (
       <Section title="FAQ" onClick={onClickHandler}>
         <WhatIsWstethOnOptimism />
