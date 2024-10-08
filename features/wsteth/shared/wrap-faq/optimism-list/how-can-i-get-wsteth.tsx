@@ -41,6 +41,7 @@ export const HowCanIGetWstethOnOptimism: FC = () => {
         >
           DEX Lido integrations
         </OuterLink>
+        .
       </p>
     </Accordion>
   );
