@@ -20,7 +20,13 @@ import { useWeb3Transport } from 'utils/use-web3-transport';
 
 type ChainsList = [wagmiChains.Chain, ...wagmiChains.Chain[]];
 
-const wagmiChainsArray = Object.values(wagmiChains) as any as ChainsList;
+const wagmiChainMap = Object.values(wagmiChains).reduce(
+  (acc, chain) => {
+    acc[chain.id] = chain;
+    return acc;
+  },
+  {} as Record<number, wagmiChains.Chain>,
+);
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -39,15 +45,14 @@ const Web3Provider: FC<PropsWithChildren> = ({ children }) => {
   } = useUserConfig();
 
   const { supportedChains, defaultChain } = useMemo(() => {
-    const supportedChains = wagmiChainsArray.filter((chain) =>
-      supportedChainIds.includes(chain.id),
-    );
+    // must preserve order of supportedChainIds
+    const supportedChains = supportedChainIds
+      .map((id) => wagmiChainMap[id])
+      .filter((chain) => chain) as ChainsList;
 
-    const defaultChain =
-      supportedChains.find((chain) => chain.id === defaultChainId) ||
-      supportedChains[0]; // first supported chain as fallback
+    const defaultChain = wagmiChainMap[defaultChainId] || supportedChains[0];
     return {
-      supportedChains: supportedChains as ChainsList,
+      supportedChains,
       defaultChain,
     };
   }, [defaultChainId, supportedChainIds]);
