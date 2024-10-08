@@ -11,7 +11,7 @@ import { LidoSDKL2 } from '@lidofinance/lido-ethereum-sdk/l2';
 import { LidoSDKWrap } from '@lidofinance/lido-ethereum-sdk/wrap';
 
 import { useTokenTransferSubscription } from 'shared/hooks/use-balance';
-import { LIDO_L2_CONTRACT_ADDRESSES } from '@lidofinance/lido-ethereum-sdk';
+import { LIDO_L2_CONTRACT_ADDRESSES } from '@lidofinance/lido-ethereum-sdk/common';
 
 type LidoSDKContextValue = {
   core: LidoSDKCore;

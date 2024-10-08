@@ -3,7 +3,7 @@ import {
   CHAINS,
   LIDO_L2_CONTRACT_ADDRESSES,
   LIDO_L2_CONTRACT_NAMES,
-} from '@lidofinance/lido-ethereum-sdk';
+} from '@lidofinance/lido-ethereum-sdk/common';
 import invariant from 'tiny-invariant';
 import {
   CHAINS as OLD_CHAINS,
