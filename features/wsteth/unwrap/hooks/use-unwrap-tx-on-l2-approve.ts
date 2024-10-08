@@ -36,26 +36,22 @@ export const useUnwrapTxOnL2Approve = ({ amount }: UseUnwrapTxApproveArgs) => {
 
   const processApproveTx = useCallback(
     async ({ onTxSent }: { onTxSent: (txHash: string) => void }) => {
-      try {
-        const approveTxHash = (
-          await runWithTransactionLogger('Approve signing on L2', () =>
-            l2.approveWstethForWrap({
-              value: amount.toBigInt(),
-              callback: ({ stage, payload }) => {
-                if (stage === TransactionCallbackStage.RECEIPT)
-                  onTxSent?.(payload);
-              },
-            }),
-          )
-        ).hash;
+      const approveTxHash = (
+        await runWithTransactionLogger('Approve signing on L2', () =>
+          l2.approveWstethForWrap({
+            value: amount.toBigInt(),
+            callback: ({ stage, payload }) => {
+              if (stage === TransactionCallbackStage.RECEIPT)
+                onTxSent?.(payload);
+            },
+          }),
+        )
+      ).hash;
 
-        // wait for refetch to settle
-        await refetchAllowance().catch();
+      // wait for refetch to settle
+      await refetchAllowance().catch();
 
-        return approveTxHash;
-      } catch (error) {
-        console.error('Error approve on L2:', error);
-      }
+      return approveTxHash;
     },
     [l2, amount, refetchAllowance],
   );
