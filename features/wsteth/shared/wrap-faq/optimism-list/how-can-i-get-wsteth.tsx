@@ -23,7 +23,7 @@ export const HowCanIGetWstethOnOptimism: FC = () => {
         >
           Wrap &amp; Unwrap staking widget
         </LocalLink>{' '}
-        on Optimism,
+        on Optimism,{' '}
         <Link
           href={`https://superbridge.app/optimism/wstETH`}
           data-matomo={
@@ -32,7 +32,7 @@ export const HowCanIGetWstethOnOptimism: FC = () => {
         >
           bridge your wstETH from Ethereum to Optimism
         </Link>
-        , or use the
+        , or use the{' '}
         <OuterLink
           href={`${config.rootOrigin}/lido-ecosystem?tokens=wstETH&categories=Get`}
           data-matomo={
