@@ -21,7 +21,7 @@ export const Button: FC<ButtonProps> = (props) => {
 
   const isMobile = useBreakpoint('md');
   const { address } = useAccount();
-  const { isDappActive } = useDappStatus();
+  const { isDappActiveAndNetworksMatched } = useDappStatus();
 
   const { openModal } = useWalletModal();
   const { data: balance, isLoading } = useEthereumBalance();
@@ -32,7 +32,9 @@ export const Button: FC<ButtonProps> = (props) => {
       variant="text"
       color="secondary"
       onClick={() => openModal({})}
-      $isAddPaddingLeft={!isLoading && !isDappActive && !isMobile}
+      $isAddPaddingLeft={
+        !isLoading && !isDappActiveAndNetworksMatched && !isMobile
+      }
       {...rest}
     >
       <WalledButtonWrapperStyle>
@@ -40,7 +42,7 @@ export const Button: FC<ButtonProps> = (props) => {
           {isLoading ? (
             <WalledButtonLoaderStyle />
           ) : (
-            isDappActive && (
+            isDappActiveAndNetworksMatched && (
               <FormatToken
                 amount={balance}
                 symbol="ETH"
