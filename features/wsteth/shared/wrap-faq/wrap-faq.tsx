@@ -15,6 +15,7 @@ import {
 import {
   WhatIsWstethOnOptimism,
   HowCanIGetWstethOnOptimism,
+  HowCanIUseWstethOnOptimism,
   CanIStakeMyETHDirectlyOnOptimism,
   DoIStillGetStakingRewardsWithStETHOrWstETHOnOptimism,
   DoINeedToClaimMyStakingRewardsIfIWrapStETHToWstETHOnOptimism,
@@ -31,6 +32,7 @@ export const WrapFaq = () => {
       <Section title="FAQ" onClick={onClickHandler}>
         <WhatIsWstethOnOptimism />
         <HowCanIGetWstethOnOptimism />
+        <HowCanIUseWstethOnOptimism />
         <CanIStakeMyETHDirectlyOnOptimism />
         <DoIStillGetStakingRewardsWithStETHOrWstETHOnOptimism />
         <DoINeedToClaimMyStakingRewardsIfIWrapStETHToWstETHOnOptimism />
