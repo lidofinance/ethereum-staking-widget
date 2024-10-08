@@ -1,8 +1,10 @@
 import { memo } from 'react';
 
+import { CHAINS } from '@lido-sdk/constants';
 import { Divider } from '@lidofinance/lido-ui';
 import { useSDK } from '@lido-sdk/react';
 
+import { getConfig } from 'config';
 import {
   WalletWrapperStyled,
   WalletMyRequests,
@@ -39,7 +41,9 @@ export const WalletComponent = () => {
 };
 
 export const ClaimWallet: WalletComponentType = memo((props) => {
-  const { isDappActive, isAccountActiveOnL2 } = useDappStatus();
+  const { defaultChain } = getConfig();
+  const { isWalletConnected, isDappActive, isAccountActiveOnL2 } =
+    useDappStatus();
   const { showLidoMultichainFallback } = useLidoMultichainFallbackCondition();
 
   if (showLidoMultichainFallback) {
@@ -53,6 +57,15 @@ export const ClaimWallet: WalletComponentType = memo((props) => {
       <LidoMultichainFallback
         chainId={10}
         textEnding={'to claim withdrawals'}
+        {...props}
+      />
+    );
+  }
+
+  if (isWalletConnected && !isDappActive) {
+    return (
+      <Fallback
+        error={`Unsupported chain. Please switch to ${CHAINS[defaultChain]} in your wallet.`}
         {...props}
       />
     );

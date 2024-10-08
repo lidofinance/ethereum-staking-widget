@@ -1,9 +1,10 @@
 import { memo } from 'react';
 import { useAccount } from 'wagmi';
 
-import { TOKENS } from '@lido-sdk/constants';
+import { CHAINS, TOKENS } from '@lido-sdk/constants';
 import { Divider, Question, Tooltip } from '@lidofinance/lido-ui';
 
+import { getConfig } from 'config';
 import { LIDO_APR_TOOLTIP_TEXT, DATA_UNAVAILABLE } from 'consts/text';
 
 import { TokenToWallet } from 'shared/components';
@@ -21,9 +22,10 @@ import {
 } from 'shared/wallet';
 import type { WalletComponentType } from 'shared/wallet/types';
 
+import { useStakeFormData } from '../stake-form-context';
+
 import { LimitMeter } from './limit-meter';
 import { FlexCenter, LidoAprStyled, StyledCard } from './styles';
-import { useStakeFormData } from '../stake-form-context';
 
 const WalletComponent: WalletComponentType = (props) => {
   const { address } = useAccount();
@@ -98,7 +100,9 @@ const WalletComponent: WalletComponentType = (props) => {
 };
 
 export const Wallet: WalletComponentType = memo((props) => {
-  const { isDappActive, isAccountActiveOnL2 } = useDappStatus();
+  const { defaultChain } = getConfig();
+  const { isWalletConnected, isDappActive, isAccountActiveOnL2 } =
+    useDappStatus();
   const { showLidoMultichainFallback } = useLidoMultichainFallbackCondition();
 
   if (showLidoMultichainFallback) {
@@ -108,6 +112,15 @@ export const Wallet: WalletComponentType = memo((props) => {
   if (isAccountActiveOnL2) {
     return (
       <LidoMultichainFallback chainId={10} textEnding={'to stake'} {...props} />
+    );
+  }
+
+  if (isWalletConnected && !isDappActive) {
+    return (
+      <Fallback
+        error={`Unsupported chain. Please switch to ${CHAINS[defaultChain]} in your wallet.`}
+        {...props}
+      />
     );
   }
 
