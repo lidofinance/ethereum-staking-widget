@@ -85,11 +85,14 @@ export const SDKLegacyProvider = ({
   );
 
   const chainId = useMemo(() => {
-    return supportedChainIds.indexOf(wagmiChainId) > -1 &&
-      SDK_LEGACY_SUPPORTED_CHAINS.indexOf(wagmiChainId) > -1
-      ? wagmiChainId
-      : defaultChainId;
-  }, [defaultChainId, supportedChainIds, wagmiChainId]);
+    if (providerWeb3) {
+      return supportedChainIds.indexOf(wagmiChainId) > -1 &&
+        SDK_LEGACY_SUPPORTED_CHAINS.indexOf(wagmiChainId) > -1
+        ? wagmiChainId
+        : defaultChainId;
+    }
+    return defaultChainId;
+  }, [defaultChainId, providerWeb3, supportedChainIds, wagmiChainId]);
 
   const providerRpc = useMemo(
     () => getStaticRpcBatchProvider(chainId, rpc[chainId], 0, pollingInterval),

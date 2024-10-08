@@ -35,10 +35,17 @@ export const enum MATOMO_CLICK_EVENTS_TYPES {
   faqHowCanIUnstakeStEthIntegrations = 'faqHowCanIUnstakeStEthIntegrations',
   faqHowCanIGetWstethWrapLink = 'faqHowCanIGetWstethWrapLink',
   faqHowCanIGetWstethIntegrationsLink = 'faqHowCanIGetWstethIntegrationsLink',
+  faqHowCanIGetWstethOnOptimismWrapLink = 'faqHowCanIGetWstethOnOptimismWrapLink',
+  faqHowCanIGetWstethOnOptimismBridgeYourWstETHFromEthereumToOptimism = 'faqHowCanIGetWstethOnOptimismBridgeYourWstETHFromEthereumToOptimism',
+  faqHowCanIGetWstethOnOptimismIntegrations = 'faqHowCanIGetWstethOnOptimismIntegrations',
   faqHowDoIUnwrapWstethUnwrapLink = 'faqHowDoIUnwrapWstethUnwrapLink',
   faqHowCanIUseWstethLidoMultichain = 'faqHowCanIUseWstethLidoMultichain',
   faqHowCanIUseWstethDefiProtocols = 'faqHowCanIUseWstethDefiProtocols',
+  faqHowCanIUseWstethOnOptimismDefiProtocols = 'faqHowCanIUseWstethOnOptimismDefiProtocols',
   faqDoINeedToUnwrapMyWstethWithdrawalsTabs = 'faqDoINeedToUnwrapMyWstethWithdrawalsTabs',
+  faqHowCouldIUnwrapWstETHBackToStETHOnOptimismUnwrapLink = 'faqHowCouldIUnwrapWstETHBackToStETHOnOptimismUnwrapLink',
+  faqWhatHappensIfIWantToUnstakeETHOnEthereumCanIDoThatFromOptimismBridgeYourWstETHOrStETHBack = 'faqWhatHappensIfIWantToUnstakeETHOnEthereumCanIDoThatFromOptimismBridgeYourWstETHOrStETHBack',
+  faqWhatHappensIfIWantToUnstakeETHOnEthereumCanIDoThatFromOptimismWithdrawalsRequestAndClaim = 'faqWhatHappensIfIWantToUnstakeETHOnEthereumCanIDoThatFromOptimismWithdrawalsRequestAndClaim',
   // /wrap page
   wrapTokenSelectSTETH = 'wrapTokenSelectSteth',
   wrapTokenSelectETH = 'wrapTokenSelectEth',
@@ -237,6 +244,22 @@ export const MATOMO_CLICK_EVENTS: Record<
     'Push «DEX Lido integrations» in FAQ How can I get wstETH',
     'eth_widget_faq_howgetwsteth_dexLidoIntegrations',
   ],
+  [MATOMO_CLICK_EVENTS_TYPES.faqHowCanIGetWstethOnOptimismWrapLink]: [
+    'Ethereum_Staking_Widget',
+    'Push «Wrap & Unwrap staking widget» in FAQ How can I get wstETH (Optimism)',
+    'eth_widget_faq_howgetwsteth_wrap_optimism',
+  ],
+  [MATOMO_CLICK_EVENTS_TYPES.faqHowCanIGetWstethOnOptimismBridgeYourWstETHFromEthereumToOptimism]:
+    [
+      'Ethereum_Staking_Widget',
+      'Push «bridge your wstETH from Ethereum to Optimism» in How can I get wstETH on Optimism?',
+      'eth_widget_faq_howCanIGetWstethOnOptimism_bridgeYourWstETHFromEthereumToOptimism',
+    ],
+  [MATOMO_CLICK_EVENTS_TYPES.faqHowCanIGetWstethOnOptimismIntegrations]: [
+    'Ethereum_Staking_Widget',
+    'Push «DEX Lido integrations» in FAQ How can I get wstETH (Optimism)',
+    'eth_widget_faq_howgetwsteth_dexLidoIntegrations_optimism',
+  ],
   [MATOMO_CLICK_EVENTS_TYPES.faqHowDoIUnwrapWstethUnwrapLink]: [
     'Ethereum_Staking_Widget',
     'Push «stake.lido.fi/wrap/unwrap» How do I unwrap wstETH back to stETH?',
@@ -246,6 +269,11 @@ export const MATOMO_CLICK_EVENTS: Record<
     'Ethereum_Staking_Widget',
     'Push «L2» How can I use wstETH?', // L2 naiming for analytics history consistency
     'eth_widget_faq_howCanIUseWstETH_l2', // L2 naiming for analytics history consistency
+  ],
+  [MATOMO_CLICK_EVENTS_TYPES.faqHowCanIUseWstethOnOptimismDefiProtocols]: [
+    'Ethereum_Staking_Widget',
+    'Push «L2» How can I use wstETH? (Optimism)',
+    'eth_widget_faq_howCanIUseWstETH_l2_optimism',
   ],
   [MATOMO_CLICK_EVENTS_TYPES.faqHowCanIUseWstethDefiProtocols]: [
     'Ethereum_Staking_Widget',
@@ -257,6 +285,24 @@ export const MATOMO_CLICK_EVENTS: Record<
     'Push «Withdrawals Request and Claim tabs» Do I need to unwrap my wstETH before requesting withdrawals?',
     'eth_widget_faq_doINeedToUnwrapMyWsteth_withdrawalsRequestAndClaimTabs',
   ],
+  [MATOMO_CLICK_EVENTS_TYPES.faqHowCouldIUnwrapWstETHBackToStETHOnOptimismUnwrapLink]:
+    [
+      'Ethereum_Staking_Widget',
+      'Push «Wrap & Unwrap staking widget» How could I unwrap wstETH back to stETH on Optimism?',
+      'eth_widget_faq_howCouldIUnwrapWstETHBackToStETHOnOptimismUnwrapLink',
+    ],
+  [MATOMO_CLICK_EVENTS_TYPES.faqWhatHappensIfIWantToUnstakeETHOnEthereumCanIDoThatFromOptimismBridgeYourWstETHOrStETHBack]:
+    [
+      'Ethereum_Staking_Widget',
+      'Push «bridge your wstETH or stETH back» What happens if I want to unstake ETH on Ethereum? Can I do that from Optimism?',
+      'eth_widget_faq_WhatHappensIfIWantToUnstakeETHOnEthereumCanIDoThatFromOptimismBridgeYourWstETHOrStETHBack',
+    ],
+  [MATOMO_CLICK_EVENTS_TYPES.faqWhatHappensIfIWantToUnstakeETHOnEthereumCanIDoThatFromOptimismWithdrawalsRequestAndClaim]:
+    [
+      'Ethereum_Staking_Widget',
+      'Push «Withdrawals Request and Claim» What happens if I want to unstake ETH on Ethereum? Can I do that from Optimism?',
+      'eth_widget_faq_WhatHappensIfIWantToUnstakeETHOnEthereumCanIDoThatFromOptimismBridgeYourWstETHOrStETHBack',
+    ],
   // /wrap page
   [MATOMO_CLICK_EVENTS_TYPES.wrapTokenSelectETH]: [
     'Ethereum_Staking_Widget',

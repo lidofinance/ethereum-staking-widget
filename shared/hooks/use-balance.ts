@@ -18,8 +18,6 @@ import type { GetBalanceData } from 'wagmi/query';
 
 import { config } from 'config';
 
-import { useDappStatus } from './use-dapp-status';
-
 const nativeToBN = (data: bigint) => BigNumber.from(data.toString());
 
 const balanceToBN = (data: GetBalanceData) => nativeToBN(data.value);
@@ -253,21 +251,14 @@ export const useStethBalance = ({
   account,
   shouldSubscribeToUpdates = true,
 }: UseBalanceProps = {}) => {
+  const { core, l2, stETH, isL2 } = useLidoSDK();
   const { address } = useAccount();
+
   const mergedAccount = account ?? address;
 
-  const { isAccountActiveOnL1, isAccountActiveOnL2 } = useDappStatus();
-  const { core, l2, stETH, isL2 } = useLidoSDK();
-
   const { data: contract, isLoading } = useQuery({
-    queryKey: [
-      'steth-contract',
-      core.chainId,
-      isAccountActiveOnL1,
-      isAccountActiveOnL2,
-    ],
+    queryKey: ['steth-contract', core.chainId, isL2],
     enabled: !!mergedAccount,
-
     staleTime: Infinity,
     queryFn: async () => (isL2 ? l2.steth.getContract() : stETH.getContract()),
   });
@@ -291,19 +282,14 @@ export const useWstethBalance = ({
 }: UseBalanceProps = {}) => {
   const { address } = useAccount();
   const mergedAccount = account ?? address;
-  const {
-    core: lidoSDKCore,
-    l2: lidoSDKL2,
-    wstETH: lidoSDKwstETH,
-    isL2,
-  } = useLidoSDK();
+  const { core, l2, wstETH, isL2 } = useLidoSDK();
 
   const { data: contract, isLoading } = useQuery({
-    queryKey: ['wsteth-contract', lidoSDKCore.chainId, isL2],
+    queryKey: ['wsteth-contract', core.chainId, isL2],
     enabled: !!mergedAccount,
     staleTime: Infinity,
     queryFn: async () =>
-      isL2 ? lidoSDKL2.wsteth.getContract() : lidoSDKwstETH.getContract(),
+      isL2 ? l2.wsteth.getContract() : wstETH.getContract(),
   });
 
   const balanceData = useTokenBalance(
