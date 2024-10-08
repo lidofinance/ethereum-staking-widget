@@ -3,6 +3,7 @@ import invariant from 'tiny-invariant';
 import {
   useAccount,
   useChainId,
+  useConfig,
   usePublicClient,
   useSwitchChain,
   useWalletClient,
@@ -41,19 +42,26 @@ export const useLidoSDK = () => {
 
 export const LidoSDKProvider = ({ children }: React.PropsWithChildren) => {
   const subscribe = useTokenTransferSubscription();
+  // will only have
   const chainId = useChainId();
   const { data: walletClient } = useWalletClient({ chainId });
   const publicClient = usePublicClient({ chainId });
 
   // reset internal wagmi state after disconnect
   const { isConnected } = useAccount();
+
+  const wagmiConfig = useConfig();
   const { switchChain } = useSwitchChain();
   useEffect(() => {
     if (isConnected) {
-      return () =>
-        switchChain({
-          chainId: config.defaultChain,
-        });
+      return () => {
+        // protecs from side effect double run
+        if (!wagmiConfig.state.current) {
+          switchChain({
+            chainId: config.defaultChain,
+          });
+        }
+      };
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isConnected]);
