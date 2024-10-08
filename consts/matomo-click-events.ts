@@ -301,7 +301,7 @@ export const MATOMO_CLICK_EVENTS: Record<
     [
       'Ethereum_Staking_Widget',
       'Push «Withdrawals Request and Claim» What happens if I want to unstake ETH on Ethereum? Can I do that from Optimism?',
-      'eth_widget_faq_WhatHappensIfIWantToUnstakeETHOnEthereumCanIDoThatFromOptimismBridgeYourWstETHOrStETHBack',
+      'eth_widget_faq_WhatHappensIfIWantToUnstakeETHOnEthereumCanIDoThatFromOptimismWithdrawalsRequestAndClaim',
     ],
   // /wrap page
   [MATOMO_CLICK_EVENTS_TYPES.wrapTokenSelectETH]: [
