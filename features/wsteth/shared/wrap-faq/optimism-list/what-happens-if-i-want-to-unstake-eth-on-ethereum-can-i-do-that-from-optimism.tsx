@@ -31,8 +31,8 @@ export const WhatHappensIfIWantToUnstakeETHOnEthereumCanIDoThatFromOptimism: FC 
             aria-hidden="true"
           >
             Withdrawals Request and Claim
-          </LocalLink>
-          . tabs.
+          </LocalLink>{' '}
+          tabs.
         </p>
       </Accordion>
     );

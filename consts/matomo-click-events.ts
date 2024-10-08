@@ -36,6 +36,7 @@ export const enum MATOMO_CLICK_EVENTS_TYPES {
   faqHowCanIGetWstethWrapLink = 'faqHowCanIGetWstethWrapLink',
   faqHowCanIGetWstethIntegrationsLink = 'faqHowCanIGetWstethIntegrationsLink',
   faqHowCanIGetWstethOnOptimismWrapLink = 'faqHowCanIGetWstethOnOptimismWrapLink',
+  faqHowCanIGetWstethOnOptimismBridgeYourWstETHFromEthereumToOptimism = 'faqHowCanIGetWstethOnOptimismBridgeYourWstETHFromEthereumToOptimism',
   faqHowCanIGetWstethOnOptimismIntegrations = 'faqHowCanIGetWstethOnOptimismIntegrations',
   faqHowDoIUnwrapWstethUnwrapLink = 'faqHowDoIUnwrapWstethUnwrapLink',
   faqHowCanIUseWstethLidoMultichain = 'faqHowCanIUseWstethLidoMultichain',
@@ -248,6 +249,12 @@ export const MATOMO_CLICK_EVENTS: Record<
     'Push «Wrap & Unwrap staking widget» in FAQ How can I get wstETH (Optimism)',
     'eth_widget_faq_howgetwsteth_wrap_optimism',
   ],
+  [MATOMO_CLICK_EVENTS_TYPES.faqHowCanIGetWstethOnOptimismBridgeYourWstETHFromEthereumToOptimism]:
+    [
+      'Ethereum_Staking_Widget',
+      'Push «bridge your wstETH from Ethereum to Optimism» in How can I get wstETH on Optimism?',
+      'eth_widget_faq_howCanIGetWstethOnOptimism_bridgeYourWstETHFromEthereumToOptimism',
+    ],
   [MATOMO_CLICK_EVENTS_TYPES.faqHowCanIGetWstethOnOptimismIntegrations]: [
     'Ethereum_Staking_Widget',
     'Push «DEX Lido integrations» in FAQ How can I get wstETH (Optimism)',
