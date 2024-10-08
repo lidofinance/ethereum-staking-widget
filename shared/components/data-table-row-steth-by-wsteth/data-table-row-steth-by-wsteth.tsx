@@ -1,6 +1,7 @@
 import { DataTableRow } from '@lidofinance/lido-ui';
 import { parseEther } from '@ethersproject/units';
 
+import { DATA_UNAVAILABLE } from 'consts/text';
 import { FormatToken } from 'shared/formatters';
 import { useStethByWsteth } from 'shared/hooks';
 import { useStETHByWstETHOnL2 } from 'shared/hooks/use-stETH-by-wstETH-on-l2';
@@ -37,9 +38,9 @@ export const DataTableRowStethByWsteth = ({
       title="Exchange rate"
       loading={initialLoading}
     >
-      {!data || (isWalletConnected && !isDappActiveAndNetworksMatched) ? (
+      {isWalletConnected && !isDappActiveAndNetworksMatched ? (
         '-'
-      ) : (
+      ) : data ? (
         <>
           1 wstETH =
           <FormatToken
@@ -48,6 +49,8 @@ export const DataTableRowStethByWsteth = ({
             symbol={toSymbol}
           />
         </>
+      ) : (
+        DATA_UNAVAILABLE
       )}
     </DataTableRow>
   );

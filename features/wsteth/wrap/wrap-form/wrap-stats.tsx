@@ -4,6 +4,7 @@ import { parseEther } from '@ethersproject/units';
 import { DataTable, DataTableRow } from '@lidofinance/lido-ui';
 import { TOKENS } from '@lido-sdk/constants';
 
+import { DATA_UNAVAILABLE } from 'consts/text';
 import { useDebouncedWstethBySteth } from 'features/wsteth/shared/hooks/use-debounced-wsteth-steth';
 import { TOKENS_TO_WRAP } from 'features/wsteth/shared/types';
 import { AllowanceDataTableRow } from 'shared/components/allowance-data-table-row';
@@ -101,10 +102,9 @@ export const WrapFormStats = () => {
         data-testid="exchangeRate"
         loading={oneWstethConvertedLoading}
       >
-        {!oneWstethConverted ||
-        (isWalletConnected && !isDappActiveAndNetworksMatched) ? (
+        {isWalletConnected && !isDappActiveAndNetworksMatched ? (
           '-'
-        ) : (
+        ) : oneWstethConverted ? (
           <>
             1 {isSteth ? 'stETH' : 'ETH'} ={' '}
             <FormatToken
@@ -113,6 +113,8 @@ export const WrapFormStats = () => {
               symbol="wstETH"
             />{' '}
           </>
+        ) : (
+          DATA_UNAVAILABLE
         )}
       </DataTableRow>
       {(!isDappActive || isShowAllowance) && (
