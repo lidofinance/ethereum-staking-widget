@@ -16,7 +16,11 @@ import { useUnwrapFormData, UnwrapFormInputType } from '../unwrap-form-context';
 import { useApproveGasLimit } from 'features/wsteth/wrap/hooks/use-approve-gas-limit';
 
 export const UnwrapStats = () => {
-  const { isAccountActiveOnL2 } = useDappStatus();
+  const {
+    isWalletConnected,
+    isAccountActiveOnL2,
+    isDappActiveAndNetworksMatched,
+  } = useDappStatus();
   const { allowance, isAllowanceLoading, isShowAllowance } =
     useUnwrapFormData();
   const amount = useWatch<UnwrapFormInputType, 'amount'>({ name: 'amount' });
@@ -54,7 +58,11 @@ export const UnwrapStats = () => {
         data-testid="maxGasFee"
         loading={isUnwrapTxCostLoading}
       >
-        <FormatPrice amount={unwrapTxCostInUsd} />
+        {isWalletConnected && !isDappActiveAndNetworksMatched ? (
+          '-'
+        ) : (
+          <FormatPrice amount={unwrapTxCostInUsd} />
+        )}
       </DataTableRow>
       {isShowAllowance && (
         <DataTableRow
@@ -62,7 +70,11 @@ export const UnwrapStats = () => {
           data-testid="maxUnlockFee"
           loading={isApproveCostLoading}
         >
-          <FormatPrice amount={approveTxCostInUsd} />
+          {isWalletConnected && !isDappActiveAndNetworksMatched ? (
+            '-'
+          ) : (
+            <FormatPrice amount={approveTxCostInUsd} />
+          )}
         </DataTableRow>
       )}
       <DataTableRowStethByWsteth />

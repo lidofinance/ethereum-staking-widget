@@ -4,7 +4,6 @@ import { parseEther } from '@ethersproject/units';
 import { DataTable, DataTableRow } from '@lidofinance/lido-ui';
 import { TOKENS } from '@lido-sdk/constants';
 
-import { DATA_UNAVAILABLE } from 'consts/text';
 import { useDebouncedWstethBySteth } from 'features/wsteth/shared/hooks/use-debounced-wsteth-steth';
 import { TOKENS_TO_WRAP } from 'features/wsteth/shared/types';
 import { AllowanceDataTableRow } from 'shared/components/allowance-data-table-row';
@@ -19,7 +18,12 @@ import { useWrapFormData, WrapFormInputType } from '../wrap-form-context';
 const oneSteth = parseEther('1');
 
 export const WrapFormStats = () => {
-  const { isDappActive, isDappActiveOnL2 } = useDappStatus();
+  const {
+    isWalletConnected,
+    isDappActive,
+    isDappActiveOnL2,
+    isDappActiveAndNetworksMatched,
+  } = useDappStatus();
   const { allowance, isShowAllowance, wrapGasLimit, isApprovalLoading } =
     useWrapFormData();
 
@@ -74,7 +78,11 @@ export const WrapFormStats = () => {
           data-testid="maxUnlockFee"
           loading={isApproveCostLoading}
         >
-          <FormatPrice amount={approveTxCostInUsd} />
+          {isWalletConnected && !isDappActiveAndNetworksMatched ? (
+            '-'
+          ) : (
+            <FormatPrice amount={approveTxCostInUsd} />
+          )}
         </DataTableRow>
       )}
       <DataTableRow
@@ -82,14 +90,21 @@ export const WrapFormStats = () => {
         data-testid="maxGasFee"
         loading={isWrapCostLoading}
       >
-        <FormatPrice amount={wrapTxCostInUsd} />
+        {isWalletConnected && !isDappActiveAndNetworksMatched ? (
+          '-'
+        ) : (
+          <FormatPrice amount={wrapTxCostInUsd} />
+        )}
       </DataTableRow>
       <DataTableRow
         title="Exchange rate"
         data-testid="exchangeRate"
         loading={oneWstethConvertedLoading}
       >
-        {oneWstethConverted ? (
+        {!oneWstethConverted ||
+        (isWalletConnected && !isDappActiveAndNetworksMatched) ? (
+          '-'
+        ) : (
           <>
             1 {isSteth ? 'stETH' : 'ETH'} ={' '}
             <FormatToken
@@ -98,8 +113,6 @@ export const WrapFormStats = () => {
               symbol="wstETH"
             />{' '}
           </>
-        ) : (
-          DATA_UNAVAILABLE
         )}
       </DataTableRow>
       {(!isDappActive || isShowAllowance) && (
