@@ -91,9 +91,9 @@ export const useWrapFormProcessor = ({
               // The operation 'stETH to wstETH' on L2 is 'unwrap'
               l2.unwrapStethToWsteth({
                 value: amount.toBigInt(),
-                callback: ({ stage }) => {
+                callback: ({ stage, payload }) => {
                   if (stage === TransactionCallbackStage.RECEIPT)
-                    txModalStages.pending(amount, token, willReceive, txHash);
+                    txModalStages.pending(amount, token, willReceive, payload);
                 },
               }),
           );
