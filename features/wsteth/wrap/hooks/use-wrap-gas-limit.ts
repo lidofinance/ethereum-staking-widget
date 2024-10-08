@@ -14,20 +14,19 @@ import { useDappStatus } from 'shared/hooks/use-dapp-status';
 import { useLidoSDK } from 'providers/lido-sdk';
 import { ESTIMATE_ACCOUNT, ESTIMATE_AMOUNT } from 'config/groups/web3';
 import { BigNumber } from 'ethers';
-import { isSDKSupportedL2Chain } from 'consts/chains';
 import { Zero } from '@ethersproject/constants';
 
 export const useWrapGasLimit = () => {
   const { isAccountActiveOnL2 } = useDappStatus();
-  const { l2, wrap, core } = useLidoSDK();
+  const { l2, isL2, wrap, core } = useLidoSDK();
 
   const wrapFallback = isAccountActiveOnL2 ? WRAP_L2_GAS_LIMIT : WRAP_GAS_LIMIT;
 
   const { data } = useLidoSWR(
-    ['[swr:wrap-gas-limit]', core.chainId, isAccountActiveOnL2],
+    ['[swr:wrap-gas-limit]', core.chainId, isL2],
     async (_key: string) => {
       const fetchGasLimitETH = async () => {
-        if (isSDKSupportedL2Chain(core.chainId as any)) return Zero;
+        if (isL2) return Zero;
         try {
           return BigNumber.from(
             applyGasLimitRatioBigInt(
@@ -45,7 +44,7 @@ export const useWrapGasLimit = () => {
 
       const fetchGasLimitStETH = async () => {
         try {
-          if (isSDKSupportedL2Chain(core.chainId as any)) {
+          if (isL2) {
             // L2 unwrap steth to wsteth
             const contract = await l2.getContract();
             return BigNumber.from(

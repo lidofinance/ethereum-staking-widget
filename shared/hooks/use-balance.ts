@@ -257,27 +257,22 @@ export const useStethBalance = ({
   const mergedAccount = account ?? address;
 
   const { isAccountActiveOnL1, isAccountActiveOnL2 } = useDappStatus();
-  const {
-    core: lidoSDKCore,
-    l2: lidoSDKL2,
-    stETH: lidoSDKstETH,
-  } = useLidoSDK();
+  const { core, l2, stETH, isL2 } = useLidoSDK();
 
   const { data: contract, isLoading } = useQuery({
-    queryKey: ['steth-contract', lidoSDKCore.chainId],
+    queryKey: [
+      'steth-contract',
+      core.chainId,
+      isAccountActiveOnL1,
+      isAccountActiveOnL2,
+    ],
     enabled: !!mergedAccount,
 
     staleTime: Infinity,
-    queryFn: async () =>
-      isAccountActiveOnL1
-        ? lidoSDKstETH.getContract()
-        : isAccountActiveOnL2
-          ? lidoSDKL2.steth.getContract()
-          : 0,
+    queryFn: async () => (isL2 ? l2.steth.getContract() : stETH.getContract()),
   });
 
   const balanceData = useTokenBalance(
-    // @ts-expect-error: It will not be actual after adding Optimism (chain_id = 10) to the new SDK.
     contract!,
     mergedAccount,
     shouldSubscribeToUpdates,
@@ -296,28 +291,22 @@ export const useWstethBalance = ({
 }: UseBalanceProps = {}) => {
   const { address } = useAccount();
   const mergedAccount = account ?? address;
-
-  const { isAccountActiveOnL1, isAccountActiveOnL2 } = useDappStatus();
   const {
     core: lidoSDKCore,
     l2: lidoSDKL2,
     wstETH: lidoSDKwstETH,
+    isL2,
   } = useLidoSDK();
 
   const { data: contract, isLoading } = useQuery({
-    queryKey: ['wsteth-contract', lidoSDKCore.chainId],
+    queryKey: ['wsteth-contract', lidoSDKCore.chainId, isL2],
     enabled: !!mergedAccount,
     staleTime: Infinity,
     queryFn: async () =>
-      isAccountActiveOnL1
-        ? lidoSDKwstETH.getContract()
-        : isAccountActiveOnL2
-          ? lidoSDKL2.wsteth.getContract()
-          : 0,
+      isL2 ? lidoSDKL2.wsteth.getContract() : lidoSDKwstETH.getContract(),
   });
 
   const balanceData = useTokenBalance(
-    // @ts-expect-error: It will not be actual after adding Optimism (chain_id = 10) to the new SDK.
     contract!,
     mergedAccount,
     shouldSubscribeToUpdates,

@@ -35,7 +35,7 @@ export const useWrapFormProcessor = ({
   const { address } = useAccount();
   const { providerWeb3 } = useSDK();
   const wstETHContractRPC = useWSTETHContractRPC();
-  const { l2, wstETH: lidoSDKwstETH } = useLidoSDK();
+  const { l2, isL2, wstETH } = useLidoSDK();
 
   const { isAccountActiveOnL2 } = useDappStatus();
 
@@ -52,9 +52,11 @@ export const useWrapFormProcessor = ({
   return useCallback(
     async ({ amount, token }: WrapFormInputType) => {
       try {
+        if (!isL2) {
+          invariant(providerWeb3, 'providerWeb3 should be presented');
+        }
         invariant(amount, 'amount should be presented');
         invariant(address, 'address should be presented');
-        invariant(providerWeb3, 'providerWeb3 should be presented');
 
         const [isMultisig, willReceive] = await Promise.all([
           isContract(address),
@@ -118,7 +120,7 @@ export const useWrapFormProcessor = ({
         const [wstethBalance] = await Promise.all([
           isAccountActiveOnL2
             ? l2.wsteth.balance(address)
-            : lidoSDKwstETH.balance(address),
+            : wstETH.balance(address),
           onConfirm(),
         ]);
 
@@ -131,16 +133,17 @@ export const useWrapFormProcessor = ({
       }
     },
     [
+      isL2,
       address,
-      providerWeb3,
       isContract,
       isAccountActiveOnL2,
+      l2,
       wstETHContractRPC,
       isApprovalNeededBeforeWrapOnL1,
       txModalStages,
-      l2,
-      lidoSDKwstETH,
+      wstETH,
       onConfirm,
+      providerWeb3,
       processApproveTxOnL1,
       processWrapTxOnL1,
       waitForTx,

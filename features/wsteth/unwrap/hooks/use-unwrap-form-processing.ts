@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { useCallback } from 'react';
 import { BigNumber } from 'ethers';
 import invariant from 'tiny-invariant';
@@ -45,7 +46,7 @@ export const useUnwrapFormProcessor = ({
   const wstethContractWeb3 = useWSTETHContractWeb3();
   const waitForTx = useTxConfirmation();
   const isContract = useGetIsContract();
-  const { l2: lidoSDKL2, stETH: lidoSDKstETH } = useLidoSDK();
+  const { l2, stETH, isL2 } = useLidoSDK();
   const { isAccountActiveOnL2 } = useDappStatus();
 
   const {
@@ -58,19 +59,21 @@ export const useUnwrapFormProcessor = ({
       try {
         invariant(amount, 'amount should be presented');
         invariant(address, 'address should be presented');
-        invariant(providerWeb3, 'providerWeb3 must be presented');
-        invariant(wstethContractWeb3, 'must have wstethContractWeb3');
+        if (!isL2) {
+          invariant(providerWeb3, 'providerWeb3 must be presented');
+          invariant(wstethContractWeb3, 'must have wstethContractWeb3');
+        }
 
         const [isMultisig, willReceive] = await Promise.all([
           isContract(address),
-          isAccountActiveOnL2
-            ? lidoSDKL2.steth
+          isL2
+            ? l2.steth
                 .convertToSteth(amount.toBigInt())
                 .then(convertToBigNumber)
             : wstETHContractRPC.getStETHByWstETH(amount),
         ]);
 
-        if (isAccountActiveOnL2 && isApprovalNeededBeforeUnwrapOnL2) {
+        if (isL2 && isApprovalNeededBeforeUnwrapOnL2) {
           txModalStages.signApproval(amount);
 
           await processApproveTxOnL2({
@@ -90,11 +93,11 @@ export const useUnwrapFormProcessor = ({
         txModalStages.sign(amount, willReceive);
 
         let txHash: string;
-        if (isAccountActiveOnL2) {
+        if (isL2) {
           txHash = (
             await runWithTransactionLogger('Unwrap signing on L2', () =>
               // The operation 'wstETH to stETH' on L2 is 'wrap'
-              lidoSDKL2.wrapWstethToSteth({
+              l2.wrapWstethToSteth({
                 value: amount.toBigInt(),
                 callback: ({ stage, payload }) => {
                   if (stage === TransactionCallbackStage.RECEIPT)
@@ -108,13 +111,13 @@ export const useUnwrapFormProcessor = ({
             'Unwrap signing on L1',
             async () => {
               const tx =
-                await wstethContractWeb3.populateTransaction.unwrap(amount);
+                await wstethContractWeb3!.populateTransaction.unwrap(amount);
 
               return sendTx({
                 tx,
                 isMultisig,
                 staticProvider: staticRpcProvider,
-                walletProvider: providerWeb3,
+                walletProvider: providerWeb3!,
               });
             },
           );
@@ -132,8 +135,8 @@ export const useUnwrapFormProcessor = ({
 
         const [stethBalance] = await Promise.all([
           isAccountActiveOnL2
-            ? lidoSDKL2.steth.balance(address)
-            : lidoSDKstETH.balance(address),
+            ? l2.steth.balance(address)
+            : stETH.balance(address),
           onConfirm(),
         ]);
 
@@ -147,16 +150,17 @@ export const useUnwrapFormProcessor = ({
     },
     [
       address,
-      providerWeb3,
-      wstethContractWeb3,
+      isL2,
       isContract,
+      l2,
       wstETHContractRPC,
-      isAccountActiveOnL2,
       isApprovalNeededBeforeUnwrapOnL2,
       txModalStages,
-      lidoSDKL2,
-      lidoSDKstETH,
+      isAccountActiveOnL2,
+      stETH,
       onConfirm,
+      providerWeb3,
+      wstethContractWeb3,
       processApproveTxOnL2,
       staticRpcProvider,
       waitForTx,

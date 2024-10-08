@@ -30,7 +30,7 @@ import {
   LIDO_LOCATOR_BY_CHAIN,
   LIDO_L2_CONTRACT_ADDRESSES,
   CHAINS as CHAIN_SDK,
-} from '@lidofinance/lido-ethereum-sdk';
+} from '@lidofinance/lido-ethereum-sdk/common';
 
 export const CONTRACT_NAMES = {
   stETH: 'stETH',

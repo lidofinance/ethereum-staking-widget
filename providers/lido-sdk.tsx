@@ -2,7 +2,7 @@ import { createContext, useContext, useMemo } from 'react';
 import invariant from 'tiny-invariant';
 import { useChainId, usePublicClient, useWalletClient } from 'wagmi';
 
-import { LidoSDKCore } from '@lidofinance/lido-ethereum-sdk/core';
+import { CHAINS, LidoSDKCore } from '@lidofinance/lido-ethereum-sdk/core';
 import {
   LidoSDKstETH,
   LidoSDKwstETH,
@@ -11,6 +11,7 @@ import { LidoSDKL2 } from '@lidofinance/lido-ethereum-sdk/l2';
 import { LidoSDKWrap } from '@lidofinance/lido-ethereum-sdk/wrap';
 
 import { useTokenTransferSubscription } from 'shared/hooks/use-balance';
+import { LIDO_L2_CONTRACT_ADDRESSES } from '@lidofinance/lido-ethereum-sdk/common';
 
 type LidoSDKContextValue = {
   core: LidoSDKCore;
@@ -18,6 +19,7 @@ type LidoSDKContextValue = {
   wstETH: LidoSDKwstETH;
   l2: LidoSDKL2;
   wrap: LidoSDKWrap;
+  isL2: boolean;
   subscribeToTokenUpdates: ReturnType<typeof useTokenTransferSubscription>;
 };
 
@@ -56,6 +58,7 @@ export const LidoSDKProvider = ({ children }: React.PropsWithChildren) => {
       wstETH,
       wrap,
       l2,
+      isL2: !!LIDO_L2_CONTRACT_ADDRESSES[chainId as CHAINS],
       subscribeToTokenUpdates: subscribe,
     };
   }, [chainId, publicClient, subscribe, walletClient]);
