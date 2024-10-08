@@ -22,7 +22,7 @@ export const DoINeedToUnwrapMyWsteth: FC = () => {
         >
           Withdrawals Request and Claim tabs
         </LocalLink>
-        . Note that, under the hood, wstETH will unwrap to stETH first, so your
+        Note that, under the hood, wstETH will unwrap to stETH first, so your
         request will be denominated in stETH.
       </p>
     </Accordion>

@@ -30,6 +30,7 @@ export const HowCanIGetWsteth: FC = () => {
         >
           DEX Lido integrations
         </OuterLink>
+        .
       </p>
     </Accordion>
   );
