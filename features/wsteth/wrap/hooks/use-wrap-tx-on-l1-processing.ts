@@ -29,7 +29,7 @@ type WrapTxProcessorArgs = WrapFormInputType & {
   isMultisig: boolean;
 };
 
-export const useWrapTxProcessing = () => {
+export const useWrapTxOnL1Processing = () => {
   const { chainId, providerWeb3 } = useSDK();
   const { staticRpcProvider } = useCurrentStaticRpcProvider();
   const wstethContractWeb3 = useWSTETHContractWeb3();

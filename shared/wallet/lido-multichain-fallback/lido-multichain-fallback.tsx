@@ -1,5 +1,7 @@
 import { FC, useMemo } from 'react';
 import { useAccount } from 'wagmi';
+import { useRouter } from 'next/router';
+
 import { BlockProps, Link } from '@lidofinance/lido-ui';
 
 import { ReactComponent as ArbitrumLogo } from 'assets/icons/lido-multichain/arbitrum.svg';
@@ -17,12 +19,14 @@ import { config } from 'config';
 import { useUserConfig } from 'config/user-config';
 import { CHAINS, LIDO_MULTICHAIN_CHAINS } from 'consts/chains';
 import { MATOMO_CLICK_EVENTS_TYPES } from 'consts/matomo-click-events';
+import { trackMatomoEvent } from 'utils/track-matomo-event';
+import { OPTIMISM, ETHEREUM } from 'providers/dapp-chain';
+import { capitalizeFirstLetter } from 'utils/capitalize-string';
 
 import { Wrap, TextStyle, ButtonStyle } from './styles';
-import { trackMatomoEvent } from '../../../utils/track-matomo-event';
 
 export type LidoMultichainFallbackComponent = FC<
-  { textEnding: string } & BlockProps
+  { textEnding: string; chainId?: number | undefined } & BlockProps
 >;
 
 const multichainLogos = {
@@ -46,8 +50,11 @@ const getChainLogo = (chainId: LIDO_MULTICHAIN_CHAINS) => {
 export const LidoMultichainFallback: LidoMultichainFallbackComponent = (
   props,
 ) => {
-  const { chainId } = useAccount();
+  const { chainId: chainIdWagmin } = useAccount();
   const { defaultChain } = useUserConfig();
+  const router = useRouter();
+
+  const chainId = props.chainId || chainIdWagmin;
 
   const defaultChainName = useMemo(() => {
     if (CHAINS[defaultChain] === 'Mainnet') return 'Ethereum';
@@ -59,14 +66,21 @@ export const LidoMultichainFallback: LidoMultichainFallbackComponent = (
     return (!!chainId && LIDO_MULTICHAIN_CHAINS[chainId]) || 'unknown';
   }, [chainId]);
 
+  const switchToText = useMemo(() => {
+    if (router.pathname === '/wrap/[[...mode]]') {
+      return `${capitalizeFirstLetter(ETHEREUM)}/${capitalizeFirstLetter(OPTIMISM)}`;
+    } else {
+      return defaultChainName;
+    }
+  }, [router.pathname, defaultChainName]);
+
   return (
     <Wrap {...props} chainId={chainId as LIDO_MULTICHAIN_CHAINS}>
       {getChainLogo(chainId as LIDO_MULTICHAIN_CHAINS)}
       <TextStyle>
-        You’re currently on {lidoMultichainChainName}.
+        You are currently on {lidoMultichainChainName}.
         <br />
-        Explore Lido Multichain or switch to {defaultChainName}{' '}
-        {props.textEnding}.
+        Explore Lido Multichain or switch to {switchToText} {props.textEnding}.
       </TextStyle>
       <Link href={`${config.rootOrigin}/lido-multichain`}>
         <ButtonStyle

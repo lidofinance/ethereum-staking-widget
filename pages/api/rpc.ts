@@ -54,6 +54,7 @@ const rpc = rpcFactory({
     [CHAINS.Mainnet]: secretConfig.rpcUrls_1,
     [CHAINS.Holesky]: secretConfig.rpcUrls_17000,
     [CHAINS.Sepolia]: secretConfig.rpcUrls_11155111,
+    [CHAINS.Optimism]: secretConfig.rpcUrls_10,
     [CHAINS.OptimismSepolia]: secretConfig.rpcUrls_11155420,
   },
   allowedRPCMethods: [
@@ -64,6 +65,7 @@ const rpc = rpcFactory({
     'eth_estimateGas',
     'eth_getBlockByNumber',
     'eth_feeHistory',
+    'eth_maxPriorityFeePerGas',
     'eth_getBalance',
     'eth_blockNumber',
     'eth_getTransactionByHash',
