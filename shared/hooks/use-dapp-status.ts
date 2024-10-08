@@ -10,6 +10,7 @@ import { useDappChain } from 'providers/dapp-chain';
 export const useDappStatus = () => {
   const { multiChainBanner } = useConfig().externalConfig;
   const { chainId, isConnected: isWalletConnected } = useAccount();
+
   const isSupportedChain = useIsSupportedChain();
   const { isMatchDappChainAndWalletChain } = useDappChain();
 
@@ -40,10 +41,7 @@ export const useDappStatus = () => {
       ? isAccountActiveOnL2 && isMatchDappChainAndWalletChain(chainId)
       : false;
 
-    const isDappActiveAndNetworksMatched = chainId
-      ? (isAccountActiveOnL1 && isDappActiveOnL1) ||
-        (isAccountActiveOnL2 && isDappActiveOnL2)
-      : false;
+    const isDappActiveAndNetworksMatched = isDappActiveOnL1 || isDappActiveOnL2;
 
     return {
       // TODO: rename to isAccountActive
