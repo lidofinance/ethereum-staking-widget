@@ -18,8 +18,6 @@ import type { GetBalanceData } from 'wagmi/query';
 
 import { config } from 'config';
 
-import { useDappStatus } from './use-dapp-status';
-
 const nativeToBN = (data: bigint) => BigNumber.from(data.toString());
 
 const balanceToBN = (data: GetBalanceData) => nativeToBN(data.value);
@@ -253,19 +251,13 @@ export const useStethBalance = ({
   account,
   shouldSubscribeToUpdates = true,
 }: UseBalanceProps = {}) => {
+  const { core, l2, stETH, isL2 } = useLidoSDK();
   const { address } = useAccount();
+
   const mergedAccount = account ?? address;
 
-  const { isAccountActiveOnL1, isAccountActiveOnL2 } = useDappStatus();
-  const { core, l2, stETH, isL2 } = useLidoSDK();
-
   const { data: contract, isLoading } = useQuery({
-    queryKey: [
-      'steth-contract',
-      core.chainId,
-      isAccountActiveOnL1,
-      isAccountActiveOnL2,
-    ],
+    queryKey: ['steth-contract', core.chainId, isL2],
     enabled: !!mergedAccount,
 
     staleTime: Infinity,
