@@ -26,7 +26,7 @@ export const SelectIconStyled = styled(SelectIcon)`
   & > span {
     border: 0;
     padding-left: 8px;
-    padding-right: 8px;
+    padding-right: 14px;
   }
 
   border-radius: 10px;
