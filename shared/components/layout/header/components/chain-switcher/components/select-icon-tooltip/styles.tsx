@@ -1,4 +1,5 @@
 import styled, { css } from 'styled-components';
+import { ThemeName } from '@lidofinance/lido-ui';
 import { devicesHeaderMedia } from 'styles/global';
 
 interface TooltipProps {
@@ -29,7 +30,8 @@ export const SelectIconTooltipContent = styled.div<TooltipProps>`
   gap: 10px;
   padding: ${({ theme }) => theme.spaceMap.md}px
     ${({ theme }) => theme.spaceMap.md}px;
-  background-color: var(--lido-color-accent);
+  background-color: ${({ theme }) =>
+    theme.name === ThemeName.light ? 'var(--lido-color-accent)' : '#000000'};
   border-radius: ${({ theme }) => theme.borderRadiusesMap.sm}px;
 
   ${({ $showArrow }) =>
@@ -46,7 +48,10 @@ export const SelectIconTooltipContent = styled.div<TooltipProps>`
         transform: rotate(45deg);
         flex-shrink: 0;
         border-radius: 2px 0 0 0;
-        background: var(--lido-color-accent);
+        background-color: ${({ theme }) =>
+          theme.name === ThemeName.light
+            ? 'var(--lido-color-accent)'
+            : '#000000'};
 
         @media ${devicesHeaderMedia.mobile} {
           display: none;
