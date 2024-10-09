@@ -8,11 +8,13 @@ import {
   Copy,
   Address,
 } from '@lidofinance/lido-ui';
-import { useEtherscanOpen } from '@lido-sdk/react';
+import { openWindow } from '@lido-sdk/helpers';
 import { useConnectorInfo, useDisconnect } from 'reef-knot/core-react';
 
+import { useUserConfig } from 'config/user-config';
 import type { ModalComponentType } from 'providers/modal-provider';
 import { useCopyToClipboard } from 'shared/hooks';
+import { getEtherscanAddressLink } from 'utils/get-etherscan-address-link';
 import {
   WalletModalContentStyle,
   WalletModalConnectedStyle,
@@ -24,9 +26,10 @@ import {
 } from './styles';
 
 export const WalletModal: ModalComponentType = ({ onClose, ...props }) => {
-  const { address } = useAccount();
+  const { address, chainId } = useAccount();
   const { connectorName } = useConnectorInfo();
   const { disconnect } = useDisconnect();
+  const { defaultChain: defaultChainId } = useUserConfig();
 
   const handleDisconnect = useCallback(() => {
     disconnect?.();
@@ -34,7 +37,16 @@ export const WalletModal: ModalComponentType = ({ onClose, ...props }) => {
   }, [disconnect, onClose]);
 
   const handleCopy = useCopyToClipboard(address ?? '');
-  const handleEtherscan = useEtherscanOpen(address ?? '', 'address');
+  const handleEtherscan = useCallback(() => {
+    if (!chainId) return;
+
+    const link = getEtherscanAddressLink(
+      chainId,
+      address ?? '',
+      defaultChainId,
+    );
+    openWindow(link);
+  }, [address, chainId, defaultChainId]);
 
   useEffect(() => {
     // Close the modal if a wallet was somehow disconnected while the modal was open

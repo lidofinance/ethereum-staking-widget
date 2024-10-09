@@ -57,9 +57,9 @@ type OnLogsFn = WatchContractEventOnLogsFn<
 >;
 
 type UseAllowanceProps = {
-  token: Address;
-  account: Address;
-  spender: Address;
+  token?: Address;
+  account?: Address;
+  spender?: Address;
 };
 
 const onError = (error: unknown) =>
@@ -77,8 +77,11 @@ export const useAllowance = ({
     abi: Erc20AllowanceAbi,
     address: token,
     functionName: 'allowance',
-    args: [account, spender],
-    query: { enabled, select: nativeToBN },
+    args: [account, spender] as [Address, Address],
+    query: {
+      enabled,
+      select: nativeToBN,
+    },
   });
 
   const onLogs: OnLogsFn = useCallback(

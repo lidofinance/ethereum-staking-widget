@@ -1,45 +1,49 @@
 import { BigNumber } from 'ethers';
-import { useAccount } from 'wagmi';
-import {
-  useLidoSWR,
-  useSTETHContractRPC,
-  useWSTETHContractRPC,
-} from '@lido-sdk/react';
+import { useLidoSWR } from '@lido-sdk/react';
 
 import { config } from 'config';
-import { WSTETH_APPROVE_GAS_LIMIT } from 'consts/tx';
-import { SDK_LEGACY_SUPPORTED_CHAINS, CHAINS } from 'consts/chains';
-import { STRATEGY_IMMUTABLE } from 'consts/swr-strategies';
+import {
+  STETH_L2_APPROVE_GAS_LIMIT,
+  WSTETH_APPROVE_GAS_LIMIT,
+} from 'consts/tx';
+import { STRATEGY_LAZY } from 'consts/swr-strategies';
+import { useLidoSDK } from 'providers/lido-sdk';
+import { useDappStatus } from 'shared/hooks/use-dapp-status';
 
 export const useApproveGasLimit = () => {
-  const steth = useSTETHContractRPC();
-  const wsteth = useWSTETHContractRPC();
-  const { chainId } = useAccount();
+  const { isDappActiveOnL2 } = useDappStatus();
+  const { l2, stETH, isL2, wstETH, core } = useLidoSDK();
+
+  const fallback = isDappActiveOnL2
+    ? STETH_L2_APPROVE_GAS_LIMIT
+    : WSTETH_APPROVE_GAS_LIMIT;
 
   const { data } = useLidoSWR(
-    ['swr:approve-wrap-gas-limit', chainId],
-    async (_key, chainId) => {
-      if (
-        !chainId ||
-        SDK_LEGACY_SUPPORTED_CHAINS.indexOf(chainId as CHAINS) < 0
-      ) {
-        return;
-      }
-
+    ['swr:approve-wrap-gas-limit', isDappActiveOnL2, core.chainId],
+    async () => {
       try {
-        const gasLimit = await steth.estimateGas.approve(
-          wsteth.address,
-          config.ESTIMATE_AMOUNT,
-          { from: config.ESTIMATE_ACCOUNT },
+        // wsteth on l1, steth on l2
+        const spender = await (isL2
+          ? l2.contractAddress()
+          : wstETH.contractAddress());
+
+        // steth on l1, wsteth on l2
+        const contract = await (isL2 ? l2.getContract() : stETH.getContract());
+
+        const gas = await contract.estimateGas.approve(
+          [spender, config.ESTIMATE_AMOUNT.toBigInt()],
+          {
+            account: config.ESTIMATE_ACCOUNT,
+          },
         );
-        return gasLimit;
+        return BigNumber.from(gas);
       } catch (error) {
-        console.warn(_key, error);
-        return BigNumber.from(WSTETH_APPROVE_GAS_LIMIT);
+        console.warn(error);
+        return fallback;
       }
     },
-    STRATEGY_IMMUTABLE,
+    STRATEGY_LAZY,
   );
 
-  return data ?? WSTETH_APPROVE_GAS_LIMIT;
+  return data ?? fallback;
 };

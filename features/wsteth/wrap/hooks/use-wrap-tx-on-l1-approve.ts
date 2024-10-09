@@ -1,12 +1,11 @@
 import { useMemo } from 'react';
-import { useAccount } from 'wagmi';
 import type { BigNumber } from 'ethers';
 
 import { getTokenAddress, TOKENS } from '@lido-sdk/constants';
 import { useSDK } from '@lido-sdk/react';
 
 import { TokensWrappable, TOKENS_TO_WRAP } from 'features/wsteth/shared/types';
-import { useApprove } from 'shared/hooks/useApprove';
+import { useApproveOnL1 } from 'shared/hooks/useApproveOnL1';
 import { useDappStatus } from 'shared/hooks/use-dapp-status';
 
 type UseWrapTxApproveArgs = {
@@ -14,9 +13,11 @@ type UseWrapTxApproveArgs = {
   token: TokensWrappable;
 };
 
-export const useWrapTxApprove = ({ amount, token }: UseWrapTxApproveArgs) => {
-  const { isDappActive } = useDappStatus();
-  const { address } = useAccount();
+export const useWrapTxOnL1Approve = ({
+  amount,
+  token,
+}: UseWrapTxApproveArgs) => {
+  const { isDappActiveOnL1 } = useDappStatus();
   const { chainId } = useSDK();
 
   const [stethTokenAddress, wstethTokenAddress] = useMemo(
@@ -33,15 +34,14 @@ export const useWrapTxApprove = ({ amount, token }: UseWrapTxApproveArgs) => {
     allowance,
     isLoading: isApprovalLoading,
     refetch: refetchAllowance,
-  } = useApprove(
+  } = useApproveOnL1(
     amount,
-    stethTokenAddress,
-    wstethTokenAddress,
-    address ? address : undefined,
+    isDappActiveOnL1 ? stethTokenAddress : undefined,
+    isDappActiveOnL1 ? wstethTokenAddress : undefined,
   );
 
   const isApprovalNeededBeforeWrap =
-    isDappActive && needsApprove && token === TOKENS_TO_WRAP.STETH;
+    isDappActiveOnL1 && needsApprove && token === TOKENS_TO_WRAP.STETH;
 
   return useMemo(
     () => ({
@@ -51,6 +51,7 @@ export const useWrapTxApprove = ({ amount, token }: UseWrapTxApproveArgs) => {
       isApprovalLoading,
       isApprovalNeededBeforeWrap,
       refetchAllowance,
+      isShowAllowance: isDappActiveOnL1,
     }),
     [
       allowance,
@@ -59,6 +60,7 @@ export const useWrapTxApprove = ({ amount, token }: UseWrapTxApproveArgs) => {
       isApprovalLoading,
       processApproveTx,
       refetchAllowance,
+      isDappActiveOnL1,
     ],
   );
 };

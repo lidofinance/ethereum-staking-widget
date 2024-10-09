@@ -22,6 +22,13 @@ export const HeaderWalletChainStyle = styled.span<{ $color: string }>`
   margin-right: ${({ theme }) => theme.spaceMap.sm}px;
   color: ${({ $color }) => $color};
   line-height: 1.2em;
+
+  ${({ theme }) => theme.mediaQueries.md} {
+    font-size: 9px;
+    // for very long network names
+    text-overflow: ellipsis;
+    max-width: 38px;
+  }
 `;
 
 const glimmer = keyframes`

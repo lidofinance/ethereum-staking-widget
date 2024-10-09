@@ -5,6 +5,7 @@ export const WalledButtonStyle = styled((props) => <Button {...props} />)`
   flex-shrink: 1;
   min-width: unset;
   overflow: hidden;
+  border-radius: 10px;
 
   ${({ $isAddPaddingLeft }) => ($isAddPaddingLeft ? `padding-left: 9px` : '')};
 `;

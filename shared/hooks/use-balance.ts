@@ -17,7 +17,6 @@ import {
 import type { GetBalanceData } from 'wagmi/query';
 
 import { config } from 'config';
-import { isSDKSupportedL2Chain, CHAINS } from 'consts/chains';
 
 const nativeToBN = (data: bigint) => BigNumber.from(data.toString());
 
@@ -252,20 +251,17 @@ export const useStethBalance = ({
   account,
   shouldSubscribeToUpdates = true,
 }: UseBalanceProps = {}) => {
+  const { core, l2, stETH, isL2 } = useLidoSDK();
   const { address } = useAccount();
+
   const mergedAccount = account ?? address;
 
-  const { steth, l2Steth, core } = useLidoSDK();
-
   const { data: contract, isLoading } = useQuery({
-    queryKey: ['steth-contract', core.chainId],
+    queryKey: ['steth-contract', core.chainId, isL2],
     enabled: !!mergedAccount,
 
     staleTime: Infinity,
-    queryFn: async () =>
-      isSDKSupportedL2Chain(core.chainId as CHAINS)
-        ? l2Steth.getContract()
-        : steth.getContract(),
+    queryFn: async () => (isL2 ? l2.steth.getContract() : stETH.getContract()),
   });
 
   const balanceData = useTokenBalance(
@@ -274,7 +270,11 @@ export const useStethBalance = ({
     shouldSubscribeToUpdates,
   );
 
-  return { ...balanceData, isLoading: isLoading || balanceData.isLoading };
+  return {
+    ...balanceData,
+    tokenAddress: contract ? contract.address : undefined,
+    isLoading: isLoading || balanceData.isLoading,
+  };
 };
 
 export const useWstethBalance = ({
@@ -283,17 +283,19 @@ export const useWstethBalance = ({
 }: UseBalanceProps = {}) => {
   const { address } = useAccount();
   const mergedAccount = account ?? address;
-
-  const { wsteth, l2Wsteth, core } = useLidoSDK();
+  const {
+    core: lidoSDKCore,
+    l2: lidoSDKL2,
+    wstETH: lidoSDKwstETH,
+    isL2,
+  } = useLidoSDK();
 
   const { data: contract, isLoading } = useQuery({
-    queryKey: ['wsteth-contract', core.chainId],
+    queryKey: ['wsteth-contract', lidoSDKCore.chainId, isL2],
     enabled: !!mergedAccount,
     staleTime: Infinity,
     queryFn: async () =>
-      isSDKSupportedL2Chain(core.chainId as CHAINS)
-        ? l2Wsteth.getContract()
-        : wsteth.getContract(),
+      isL2 ? lidoSDKL2.wsteth.getContract() : lidoSDKwstETH.getContract(),
   });
 
   const balanceData = useTokenBalance(
@@ -302,5 +304,9 @@ export const useWstethBalance = ({
     shouldSubscribeToUpdates,
   );
 
-  return { ...balanceData, isLoading: isLoading || balanceData.isLoading };
+  return {
+    ...balanceData,
+    tokenAddress: contract ? contract.address : undefined,
+    isLoading: isLoading || balanceData.isLoading,
+  };
 };
