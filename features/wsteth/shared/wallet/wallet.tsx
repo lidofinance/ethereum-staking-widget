@@ -1,5 +1,6 @@
 import { memo } from 'react';
 import { useAccount } from 'wagmi';
+import { useConnectorInfo } from 'reef-knot/core-react';
 
 import { Divider, Text } from '@lidofinance/lido-ui';
 import { useSDK } from '@lido-sdk/react';
@@ -137,10 +138,16 @@ const WalletComponent: WalletComponentType = (props) => {
 };
 
 export const Wallet: WalletComponentType = memo((props) => {
+  const { isLedgerLive } = useConnectorInfo();
   const { chainId } = useAccount();
   const { isDappActive, isDappActiveOnL2 } = useDappStatus();
   const { showLidoMultichainFallback } = useLidoMultichainFallbackCondition();
   const { chainName, isMatchDappChainAndWalletChain } = useDappChain();
+
+  if (isLedgerLive && chainName === OPTIMISM) {
+    const error = `Optimism is not currently supported via Ledger-live.`;
+    return <Fallback error={error} {...props} />;
+  }
 
   if (isDappActive && !isMatchDappChainAndWalletChain(chainId)) {
     const error = `Wrong network. Please switch to ${chainName === OPTIMISM ? capitalizeFirstLetter(OPTIMISM) : capitalizeFirstLetter(ETHEREUM)} in your wallet to wrap/unwrap.`;
