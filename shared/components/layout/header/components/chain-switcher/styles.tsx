@@ -10,6 +10,8 @@ export const SelectIconStyled = styled(SelectIcon)`
   width: ${({ disabled }) => (disabled ? '44px' : '68px')};
   height: 44px;
 
+  cursor: ${({ disabled }) => (disabled ? 'default' : 'pointer')};
+
   &:not(:disabled):hover {
     & > span {
       ${({ theme, disabled }) =>
