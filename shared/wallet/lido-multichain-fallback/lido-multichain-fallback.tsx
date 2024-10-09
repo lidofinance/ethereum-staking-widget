@@ -50,11 +50,11 @@ const getChainLogo = (chainId: LIDO_MULTICHAIN_CHAINS) => {
 export const LidoMultichainFallback: LidoMultichainFallbackComponent = (
   props,
 ) => {
-  const { chainId: chainIdWagmin } = useAccount();
+  const { chainId: chainIdWagmi } = useAccount();
   const { defaultChain } = useUserConfig();
   const router = useRouter();
 
-  const chainId = props.chainId || chainIdWagmin;
+  const chainId = props.chainId || chainIdWagmi;
 
   const defaultChainName = useMemo(() => {
     if (CHAINS[defaultChain] === 'Mainnet') return 'Ethereum';

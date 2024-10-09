@@ -26,24 +26,17 @@ export const useDappStatus = () => {
       ? isWalletConnected && isSupportedChain
       : false;
 
-    const isAccountActiveOnL1 = chainId
-      ? isDappActive && !isSDKSupportedL2Chain(chainId)
-      : false;
-    const isAccountActiveOnL2 = chainId
-      ? isDappActive && isSDKSupportedL2Chain(chainId)
-      : false;
+    const isAccountActiveOnL1 = isDappActive && !isSDKSupportedL2Chain(chainId);
 
-    const isDappActiveOnL1 = chainId
-      ? isAccountActiveOnL1 && isMatchDappChainAndWalletChain(chainId)
-      : false;
-    const isDappActiveOnL2 = chainId
-      ? isAccountActiveOnL2 && isMatchDappChainAndWalletChain(chainId)
-      : false;
+    const isAccountActiveOnL2 = isDappActive && isSDKSupportedL2Chain(chainId);
 
-    const isDappActiveAndNetworksMatched = chainId
-      ? (isAccountActiveOnL1 && isDappActiveOnL1) ||
-        (isAccountActiveOnL2 && isDappActiveOnL2)
-      : false;
+    const isDappActiveOnL1 =
+      isAccountActiveOnL1 && isMatchDappChainAndWalletChain(chainId);
+
+    const isDappActiveOnL2 =
+      isAccountActiveOnL2 && isMatchDappChainAndWalletChain(chainId);
+
+    const isDappActiveAndNetworksMatched = isDappActiveOnL1 || isDappActiveOnL2;
 
     return {
       // TODO: rename to isAccountActive

@@ -10,6 +10,8 @@ export const SelectIconStyled = styled(SelectIcon)`
   width: ${({ disabled }) => (disabled ? '44px' : '68px')};
   height: 44px;
 
+  cursor: ${({ disabled }) => (disabled ? 'default' : 'pointer')};
+
   &:not(:disabled):hover {
     & > span {
       ${({ theme, disabled }) =>
@@ -26,7 +28,7 @@ export const SelectIconStyled = styled(SelectIcon)`
   & > span {
     border: 0;
     padding-left: 8px;
-    padding-right: 8px;
+    padding-right: 14px;
   }
 
   border-radius: 10px;
