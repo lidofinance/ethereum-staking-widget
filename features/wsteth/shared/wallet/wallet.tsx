@@ -145,7 +145,7 @@ export const Wallet: WalletComponentType = memo((props) => {
   const { chainName, isMatchDappChainAndWalletChain } = useDappChain();
 
   if (isLedgerLive && chainName === OPTIMISM) {
-    const error = `Optimism is not currently supported via Ledger-live.`;
+    const error = `Optimism is currently not supported in Ledger Live.`;
     return <Fallback error={error} {...props} />;
   }
 
