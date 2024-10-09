@@ -24,11 +24,7 @@ export const TopCard: FC = () => {
 
   return (
     <>
-      {isWalletConnected && !isSupportedChain ? (
-        <Fallback
-          error={`Unsupported chain. Please switch to ${CHAINS[defaultChain]} in your wallet.`}
-        />
-      ) : isAccountActiveOnL2 ? (
+      {(isWalletConnected && !isSupportedChain) || isAccountActiveOnL2 ? (
         <Fallback
           error={`Unsupported chain. Please switch to ${CHAINS[defaultChain]} in your wallet.`}
         />
