@@ -2922,10 +2922,10 @@
   resolved "https://registry.yarnpkg.com/@reef-knot/core-react/-/core-react-4.3.0.tgz#1497607e1459299924ff31948a029316030d4677"
   integrity sha512-TfyJrft9eQSqy5Vj8JFCRmFByzD/Y6LKsDyfjc4Q5H9kKjj+rE0V4+6fTDre1qWkXzzj+OSjErosqxsjNghOSw==
 
-"@reef-knot/ledger-connector@4.1.0":
-  version "4.1.0"
-  resolved "https://registry.yarnpkg.com/@reef-knot/ledger-connector/-/ledger-connector-4.1.0.tgz#f47825ad1d479eda33b3d0c38084627fae3723e1"
-  integrity sha512-Bh+/AVeDff28etUNXmQnfbnWpAX1RjWxvfqLCCZQFqY1typq66+pF8eXKg05c1hcN9XNxMBxy2OlKCy8U1VttQ==
+"@reef-knot/ledger-connector@4.1.1":
+  version "4.1.1"
+  resolved "https://registry.yarnpkg.com/@reef-knot/ledger-connector/-/ledger-connector-4.1.1.tgz#2c003b134f69e37e411211c7cbaffbe5dc1cc740"
+  integrity sha512-Ila6P+GNy9MAQdH5WXZaaFtfHxBSgmIYT5ZW79aZA+6q/uUGxPxmlyVfrtTDgqiAzHbfOTc4wru7NyODNRb4sw==
   dependencies:
     "@ethersproject/abstract-signer" "^5.7.0"
     "@ethersproject/address" "^5.7.0"
@@ -9792,14 +9792,14 @@ redis-parser@^3.0.0:
   dependencies:
     redis-errors "^1.0.0"
 
-reef-knot@5.7.0:
-  version "5.7.0"
-  resolved "https://registry.yarnpkg.com/reef-knot/-/reef-knot-5.7.0.tgz#fc85c37f4f437c195f74339ea77f13fa2d2f137d"
-  integrity sha512-QKD9Nj5lyifBQTdlO/sf+rCGG3+by8PBpIpz35z6Fr+bDt1I7IYjJa+zDQJsXNiW5pkNBZvv+LqvP76jALJyZg==
+reef-knot@5.7.1:
+  version "5.7.1"
+  resolved "https://registry.yarnpkg.com/reef-knot/-/reef-knot-5.7.1.tgz#9df1daad75e8e4b4d9abcf7aaad463d9a0f04685"
+  integrity sha512-2xjxObOdRiDAMBiCycdh9vBWFnlMhVfnlyMTF1Qml1iS0sxxto5l9f7Npk3fbtNat8hHeW99OYA3buP4gYbwqA==
   dependencies:
     "@reef-knot/connect-wallet-modal" "5.5.0"
     "@reef-knot/core-react" "4.3.0"
-    "@reef-knot/ledger-connector" "4.1.0"
+    "@reef-knot/ledger-connector" "4.1.1"
     "@reef-knot/types" "2.1.0"
     "@reef-knot/ui-react" "2.1.4"
     "@reef-knot/wallets-helpers" "2.1.0"
