@@ -10,7 +10,6 @@ export const SelectIconTooltipWrapper = styled.div`
   left: 0;
   top: calc(100% + 16px);
   width: 244px;
-  z-index: 5000;
 
   @media ${devicesHeaderMedia.mobile} {
     position: fixed;
@@ -19,6 +18,7 @@ export const SelectIconTooltipWrapper = styled.div`
     right: 20px;
     top: unset;
     width: auto;
+    z-index: 5000;
   }
 `;
 
