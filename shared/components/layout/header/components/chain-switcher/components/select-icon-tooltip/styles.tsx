@@ -1,4 +1,5 @@
 import styled, { css } from 'styled-components';
+import { devicesHeaderMedia } from 'styles/global';
 
 interface TooltipProps {
   $showArrow?: boolean;
@@ -9,7 +10,16 @@ export const SelectIconTooltipWrapper = styled.div`
   left: 0;
   top: calc(100% + 16px);
   width: 244px;
-  z-index: 5;
+  z-index: 5000;
+
+  @media ${devicesHeaderMedia.mobile} {
+    position: fixed;
+    bottom: 72px;
+    left: 20px;
+    right: 20px;
+    top: unset;
+    width: auto;
+  }
 `;
 
 export const SelectIconTooltipContent = styled.div<TooltipProps>`
@@ -37,6 +47,10 @@ export const SelectIconTooltipContent = styled.div<TooltipProps>`
         flex-shrink: 0;
         border-radius: 2px 0 0 0;
         background: var(--lido-color-accent);
+
+        @media ${devicesHeaderMedia.mobile} {
+          display: none;
+        }
       }
     `}
 `;
