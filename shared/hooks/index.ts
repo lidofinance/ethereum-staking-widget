@@ -10,4 +10,3 @@ export * from './useStakingLimitInfo';
 export * from './useMatomoEventHandle';
 export * from './useERC20PermitSignature';
 export * from './useDebouncedValue';
-export * from './useIsContract';

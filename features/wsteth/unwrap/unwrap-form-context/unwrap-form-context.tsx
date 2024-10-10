@@ -5,17 +5,22 @@ import {
   useMemo,
   createContext,
   useContext,
+  useCallback,
 } from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
-import { useUnwrapFormNetworkData } from '../hooks/use-unwrap-form-network-data';
-import { useUnwrapFormProcessor } from '../hooks/use-unwrap-form-processing';
-import { useUnwrapFormValidationContext } from '../hooks/use-unwra-form-validation-context';
+import { Zero } from '@ethersproject/constants';
+
 import { useFormControllerRetry } from 'shared/hook-form/form-controller/use-form-controller-retry-delegate';
 
 import {
   FormControllerContext,
   FormControllerContextValueType,
 } from 'shared/hook-form/form-controller';
+
+import { useUnwrapFormNetworkData } from '../hooks/use-unwrap-form-network-data';
+import { useUnwrapFormProcessor } from '../hooks/use-unwrap-form-processing';
+import { useUnwrapFormValidationContext } from '../hooks/use-unwra-form-validation-context';
+import { useUnwrapTxOnL2Approve } from '../hooks/use-unwrap-tx-on-l2-approve';
 
 import {
   UnwrapFormDataContextValueType,
@@ -60,12 +65,32 @@ export const UnwrapFormProvider: FC<PropsWithChildren> = ({ children }) => {
     resolver: UnwrapFormValidationResolver,
   });
 
+  const { watch } = formObject;
+  const [amount] = watch(['amount']);
   const { retryEvent, retryFire } = useFormControllerRetry();
 
+  const approvalDataOnL2 = useUnwrapTxOnL2Approve({ amount: amount ?? Zero });
+
+  const onConfirm = useCallback(async () => {
+    await Promise.allSettled([
+      networkData.revalidateUnwrapFormData(),
+      approvalDataOnL2.refetchAllowance(),
+    ]);
+  }, [networkData, approvalDataOnL2]);
+
   const processUnwrapFormFlow = useUnwrapFormProcessor({
-    onConfirm: networkData.revalidateUnwrapFormData,
+    approvalDataOnL2,
+    onConfirm,
     onRetry: retryFire,
   });
+
+  const value = useMemo(
+    (): UnwrapFormDataContextValueType => ({
+      ...networkData,
+      ...approvalDataOnL2,
+    }),
+    [networkData, approvalDataOnL2],
+  );
 
   const formControllerValue = useMemo(
     (): FormControllerContextValueType<UnwrapFormInputType> => ({
@@ -77,7 +102,7 @@ export const UnwrapFormProvider: FC<PropsWithChildren> = ({ children }) => {
 
   return (
     <FormProvider {...formObject}>
-      <UnwrapFormDataContext.Provider value={networkData}>
+      <UnwrapFormDataContext.Provider value={value}>
         <FormControllerContext.Provider value={formControllerValue}>
           {children}
         </FormControllerContext.Provider>

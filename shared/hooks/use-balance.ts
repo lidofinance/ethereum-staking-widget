@@ -2,9 +2,11 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
 import { QueryKey, useQuery, useQueryClient } from '@tanstack/react-query';
+import type { AbstractLidoSDKErc20 } from '@lidofinance/lido-ethereum-sdk/erc20';
 import { BigNumber } from 'ethers';
 import { useLidoSDK } from 'providers/lido-sdk';
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import type { Address, WatchContractEventOnLogsFn } from 'viem';
 import {
   useBlockNumber,
   useBalance,
@@ -12,10 +14,8 @@ import {
   useReadContract,
   useWatchContractEvent,
 } from 'wagmi';
-
-import type { AbstractLidoSDKErc20 } from '@lidofinance/lido-ethereum-sdk/erc20';
 import type { GetBalanceData } from 'wagmi/query';
-import type { Address, WatchContractEventOnLogsFn } from 'viem';
+
 import { config } from 'config';
 
 const nativeToBN = (data: bigint) => BigNumber.from(data.toString());
@@ -251,17 +251,17 @@ export const useStethBalance = ({
   account,
   shouldSubscribeToUpdates = true,
 }: UseBalanceProps = {}) => {
+  const { core, l2, stETH, isL2 } = useLidoSDK();
   const { address } = useAccount();
+
   const mergedAccount = account ?? address;
 
-  const { steth, core } = useLidoSDK();
-
   const { data: contract, isLoading } = useQuery({
-    queryKey: ['steth-contract', core.chainId],
+    queryKey: ['steth-contract', core.chainId, isL2],
     enabled: !!mergedAccount,
 
     staleTime: Infinity,
-    queryFn: async () => steth.getContract(),
+    queryFn: async () => (isL2 ? l2.steth.getContract() : stETH.getContract()),
   });
 
   const balanceData = useTokenBalance(
@@ -270,7 +270,11 @@ export const useStethBalance = ({
     shouldSubscribeToUpdates,
   );
 
-  return { ...balanceData, isLoading: isLoading || balanceData.isLoading };
+  return {
+    ...balanceData,
+    tokenAddress: contract ? contract.address : undefined,
+    isLoading: isLoading || balanceData.isLoading,
+  };
 };
 
 export const useWstethBalance = ({
@@ -279,14 +283,19 @@ export const useWstethBalance = ({
 }: UseBalanceProps = {}) => {
   const { address } = useAccount();
   const mergedAccount = account ?? address;
-
-  const { wsteth, core } = useLidoSDK();
+  const {
+    core: lidoSDKCore,
+    l2: lidoSDKL2,
+    wstETH: lidoSDKwstETH,
+    isL2,
+  } = useLidoSDK();
 
   const { data: contract, isLoading } = useQuery({
-    queryKey: ['wsteth-contract', core.chainId],
+    queryKey: ['wsteth-contract', lidoSDKCore.chainId, isL2],
     enabled: !!mergedAccount,
     staleTime: Infinity,
-    queryFn: async () => wsteth.getContract(),
+    queryFn: async () =>
+      isL2 ? lidoSDKL2.wsteth.getContract() : lidoSDKwstETH.getContract(),
   });
 
   const balanceData = useTokenBalance(
@@ -295,5 +304,9 @@ export const useWstethBalance = ({
     shouldSubscribeToUpdates,
   );
 
-  return { ...balanceData, isLoading: isLoading || balanceData.isLoading };
+  return {
+    ...balanceData,
+    tokenAddress: contract ? contract.address : undefined,
+    isLoading: isLoading || balanceData.isLoading,
+  };
 };

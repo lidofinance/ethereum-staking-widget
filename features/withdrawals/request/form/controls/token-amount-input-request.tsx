@@ -13,7 +13,8 @@ import { TokenAmountInputHookForm } from 'shared/hook-form/controls/token-amount
 import { useDappStatus } from 'shared/hooks/use-dapp-status';
 
 export const TokenAmountInputRequest = () => {
-  const { isWalletConnected, isDappActive } = useDappStatus();
+  const { isWalletConnected, isDappActive, isAccountActiveOnL2 } =
+    useDappStatus();
   const token = useWatch<RequestFormInputType, 'token'>({ name: 'token' });
   const { maxAmount, isTokenLocked } = useRequestFormData();
 
@@ -21,7 +22,7 @@ export const TokenAmountInputRequest = () => {
 
   return (
     <TokenAmountInputHookForm
-      disabled={isWalletConnected && !isDappActive}
+      disabled={(isWalletConnected && !isDappActive) || isAccountActiveOnL2}
       fieldName="amount"
       data-testid="requestInput"
       token={token}

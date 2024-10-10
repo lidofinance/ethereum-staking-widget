@@ -1,22 +1,62 @@
 import { ToastInfo, Tooltip } from '@lidofinance/lido-ui';
-import { useTokenToWallet } from '@lido-sdk/react';
 import { TokenToWalletStyle } from './styles';
 
 import { Component } from 'types';
+import { useWalletClient, useWatchAsset } from 'wagmi';
+import { Address, getContract } from 'viem';
+import { useConnectorInfo } from 'reef-knot/core-react';
 
-export type TokenToWalletComponent = Component<'button', { address: string }>;
+export type TokenToWalletComponent = Component<'button', { address?: string }>;
 
-export const TokenToWallet: TokenToWalletComponent = (props) => {
-  const { address, ...rest } = props;
-  const { addToken } = useTokenToWallet(address);
+const ERC20_METADATA_ABI = [
+  {
+    inputs: [],
+    name: 'symbol',
+    outputs: [{ internalType: 'string', name: '', type: 'string' }],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'decimals',
+    outputs: [{ internalType: 'uint8', name: '', type: 'uint8' }],
+    stateMutability: 'view',
+    type: 'function',
+  },
+] as const;
 
-  if (!addToken) return null;
+export const TokenToWallet: TokenToWalletComponent = ({ address, ...rest }) => {
+  const { watchAssetAsync } = useWatchAsset();
+  const { isInjected } = useConnectorInfo();
+  const { data: walletClient } = useWalletClient();
+
+  if (!walletClient || !address || !isInjected) return null;
 
   const onClickHandler = async () => {
-    const result = await addToken();
-    if (!result) return;
+    if (!address) return;
 
-    ToastInfo('Tokens were successfully added to your wallet', {});
+    try {
+      const tokenContract = getContract({
+        abi: ERC20_METADATA_ABI,
+        address: address as Address,
+        client: walletClient,
+      });
+
+      const [decimals, symbol] = await Promise.all([
+        tokenContract.read.decimals(),
+        tokenContract.read.symbol(),
+      ]);
+
+      const result = await watchAssetAsync({
+        type: 'ERC20',
+        options: { address, decimals, symbol },
+      });
+      if (!result) return;
+
+      ToastInfo('Tokens were successfully added to your wallet', {});
+    } catch (error) {
+      console.warn('[TokenToWallet] error adding token to wallet', error);
+    }
   };
 
   return (

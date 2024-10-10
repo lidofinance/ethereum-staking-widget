@@ -1,18 +1,33 @@
-import { createContext, useContext, useMemo } from 'react';
-import { LidoSDKCore } from '@lidofinance/lido-ethereum-sdk/core';
+import { createContext, useContext, useEffect, useMemo } from 'react';
+import invariant from 'tiny-invariant';
+import {
+  useAccount,
+  useChainId,
+  useConfig,
+  usePublicClient,
+  useSwitchChain,
+  useWalletClient,
+} from 'wagmi';
+
+import { CHAINS, LidoSDKCore } from '@lidofinance/lido-ethereum-sdk/core';
 import {
   LidoSDKstETH,
   LidoSDKwstETH,
 } from '@lidofinance/lido-ethereum-sdk/erc20';
-import invariant from 'tiny-invariant';
-import { useChainId, useClient, useConnectorClient } from 'wagmi';
+import { LidoSDKL2 } from '@lidofinance/lido-ethereum-sdk/l2';
+import { LidoSDKWrap } from '@lidofinance/lido-ethereum-sdk/wrap';
+
+import { config } from 'config';
 import { useTokenTransferSubscription } from 'shared/hooks/use-balance';
-import { useGetRpcUrlByChainId } from 'config/rpc';
+import { LIDO_L2_CONTRACT_ADDRESSES } from '@lidofinance/lido-ethereum-sdk/common';
 
 type LidoSDKContextValue = {
   core: LidoSDKCore;
-  steth: LidoSDKstETH;
-  wsteth: LidoSDKwstETH;
+  stETH: LidoSDKstETH;
+  wstETH: LidoSDKwstETH;
+  l2: LidoSDKL2;
+  wrap: LidoSDKWrap;
+  isL2: boolean;
   subscribeToTokenUpdates: ReturnType<typeof useTokenTransferSubscription>;
 };
 
@@ -27,28 +42,57 @@ export const useLidoSDK = () => {
 
 export const LidoSDKProvider = ({ children }: React.PropsWithChildren) => {
   const subscribe = useTokenTransferSubscription();
-  const publicClient = useClient();
+  // will only have
   const chainId = useChainId();
-  const getRpcUrl = useGetRpcUrlByChainId();
-  const fallbackRpcUrl = !publicClient ? getRpcUrl(chainId) : undefined;
-  const { data: walletClient } = useConnectorClient();
+  const { data: walletClient } = useWalletClient({ chainId });
+  const publicClient = usePublicClient({ chainId });
 
-  const sdk = useMemo(() => {
+  // reset internal wagmi state after disconnect
+  const { isConnected } = useAccount();
+
+  const wagmiConfig = useConfig();
+  const { switchChain } = useSwitchChain();
+  useEffect(() => {
+    if (isConnected) {
+      return () => {
+        // protecs from side effect double run
+        if (!wagmiConfig.state.current) {
+          switchChain({
+            chainId: config.defaultChain,
+          });
+        }
+      };
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isConnected]);
+
+  const contextValue = useMemo(() => {
+    // @ts-expect-error: typing (viem + LidoSDK)
     const core = new LidoSDKCore({
       chainId,
       logMode: 'none',
-      rpcProvider: publicClient as any,
-      web3Provider: walletClient as any,
-      // viem client can be unavailable on ipfs+dev first renders
-      rpcUrls: !publicClient && fallbackRpcUrl ? [fallbackRpcUrl] : undefined,
+      rpcProvider: publicClient,
+      web3Provider: walletClient,
     });
 
-    const steth = new LidoSDKstETH({ core });
-    const wsteth = new LidoSDKwstETH({ core });
+    const stETH = new LidoSDKstETH({ core });
+    const wstETH = new LidoSDKwstETH({ core });
+    const wrap = new LidoSDKWrap({ core });
+    const l2 = new LidoSDKL2({ core });
 
-    return { core, steth, wsteth, subscribeToTokenUpdates: subscribe };
-  }, [chainId, fallbackRpcUrl, publicClient, subscribe, walletClient]);
+    return {
+      core,
+      stETH,
+      wstETH,
+      wrap,
+      l2,
+      isL2: !!LIDO_L2_CONTRACT_ADDRESSES[chainId as CHAINS],
+      subscribeToTokenUpdates: subscribe,
+    };
+  }, [chainId, publicClient, subscribe, walletClient]);
   return (
-    <LidoSDKContext.Provider value={sdk}>{children}</LidoSDKContext.Provider>
+    <LidoSDKContext.Provider value={contextValue}>
+      {children}
+    </LidoSDKContext.Provider>
   );
 };

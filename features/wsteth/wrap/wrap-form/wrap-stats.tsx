@@ -11,6 +11,7 @@ import { AllowanceDataTableRow } from 'shared/components/allowance-data-table-ro
 import { FormatPrice, FormatToken } from 'shared/formatters';
 import { useTxCostInUsd, useWstethBySteth } from 'shared/hooks';
 import { useDappStatus } from 'shared/hooks/use-dapp-status';
+import { useWstETHByStETHOnL2 } from 'shared/hooks/use-wstETH-by-stETH-on-l2';
 
 import { useApproveGasLimit } from '../hooks/use-approve-gas-limit';
 import { useWrapFormData, WrapFormInputType } from '../wrap-form-context';
@@ -18,8 +19,14 @@ import { useWrapFormData, WrapFormInputType } from '../wrap-form-context';
 const oneSteth = parseEther('1');
 
 export const WrapFormStats = () => {
-  const { isDappActive } = useDappStatus();
-  const { allowance, wrapGasLimit, isApprovalLoading } = useWrapFormData();
+  const {
+    isWalletConnected,
+    isDappActive,
+    isDappActiveOnL2,
+    isDappActiveAndNetworksMatched,
+  } = useDappStatus();
+  const { allowance, isShowAllowance, wrapGasLimit, isApprovalLoading } =
+    useWrapFormData();
 
   const { watch } = useFormContext<WrapFormInputType>();
   const [token, amount] = watch(['token', 'amount']);
@@ -29,12 +36,19 @@ export const WrapFormStats = () => {
   const {
     data: willReceiveWsteth,
     initialLoading: isWillReceiveWstethLoading,
-  } = useDebouncedWstethBySteth(amount);
+  } = useDebouncedWstethBySteth(amount, isDappActiveOnL2);
+
+  const wstethBySteth = useWstethBySteth(
+    !isDappActiveOnL2 ? oneSteth : undefined,
+  );
+  const wstETHByStETHOnL2 = useWstETHByStETHOnL2(
+    isDappActiveOnL2 ? oneSteth : undefined,
+  );
 
   const {
     data: oneWstethConverted,
-    initialLoading: isOneWstethConvertedLoading,
-  } = useWstethBySteth(oneSteth);
+    initialLoading: oneWstethConvertedLoading,
+  } = isDappActiveOnL2 ? wstETHByStETHOnL2 : wstethBySteth;
 
   const approveGasLimit = useApproveGasLimit();
   const {
@@ -59,26 +73,38 @@ export const WrapFormStats = () => {
           trimEllipsis
         />
       </DataTableRow>
-      <DataTableRow
-        title="Max unlock cost"
-        data-testid="maxUnlockFee"
-        loading={isApproveCostLoading}
-      >
-        <FormatPrice amount={approveTxCostInUsd} />
-      </DataTableRow>
+      {(!isDappActive || isShowAllowance) && (
+        <DataTableRow
+          title="Max unlock cost"
+          data-testid="maxUnlockFee"
+          loading={isApproveCostLoading}
+        >
+          {isWalletConnected && !isDappActiveAndNetworksMatched ? (
+            '-'
+          ) : (
+            <FormatPrice amount={approveTxCostInUsd} />
+          )}
+        </DataTableRow>
+      )}
       <DataTableRow
         title="Max transaction cost"
         data-testid="maxGasFee"
         loading={isWrapCostLoading}
       >
-        <FormatPrice amount={wrapTxCostInUsd} />
+        {isWalletConnected && !isDappActiveAndNetworksMatched ? (
+          '-'
+        ) : (
+          <FormatPrice amount={wrapTxCostInUsd} />
+        )}
       </DataTableRow>
       <DataTableRow
         title="Exchange rate"
         data-testid="exchangeRate"
-        loading={isOneWstethConvertedLoading}
+        loading={oneWstethConvertedLoading}
       >
-        {oneWstethConverted ? (
+        {isWalletConnected && !isDappActiveAndNetworksMatched ? (
+          '-'
+        ) : oneWstethConverted ? (
           <>
             1 {isSteth ? 'stETH' : 'ETH'} ={' '}
             <FormatToken
@@ -91,13 +117,15 @@ export const WrapFormStats = () => {
           DATA_UNAVAILABLE
         )}
       </DataTableRow>
-      <AllowanceDataTableRow
-        data-testid="allowance"
-        allowance={allowance}
-        isBlank={!(isSteth && isDappActive)}
-        loading={isApprovalLoading}
-        token={TOKENS.STETH}
-      />
+      {(!isDappActive || isShowAllowance) && (
+        <AllowanceDataTableRow
+          data-testid="allowance"
+          allowance={allowance}
+          isBlank={!(isSteth && isDappActive)}
+          loading={isApprovalLoading}
+          token={TOKENS.STETH}
+        />
+      )}
     </DataTable>
   );
 };
