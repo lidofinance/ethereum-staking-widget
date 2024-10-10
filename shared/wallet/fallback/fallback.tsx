@@ -6,10 +6,10 @@ import { useErrorMessage } from './useErrorMessage';
 export const Fallback: WalletCardComponent = (props) => {
   const error = useErrorMessage();
 
-  if (error) {
+  if (props.error || error) {
     return (
       <FallbackWalletStyle {...props}>
-        <TextStyle>{error}</TextStyle>
+        <TextStyle>{props.error || error || ''}</TextStyle>
       </FallbackWalletStyle>
     );
   }

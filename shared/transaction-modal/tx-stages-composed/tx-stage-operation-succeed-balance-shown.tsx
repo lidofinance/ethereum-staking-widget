@@ -1,8 +1,7 @@
 import styled from 'styled-components';
 
-import { useTokenAddress } from '@lido-sdk/react';
-import { TOKENS } from '@lido-sdk/constants';
 import { InlineLoader } from '@lidofinance/lido-ui';
+import { useTokenAddress } from 'shared/hooks/use-token-address';
 import { TxAmount } from '../tx-stages-parts/tx-amount';
 import { SuccessText } from '../tx-stages-parts/success-text';
 import { TxStageSuccess } from '../tx-stages-basic';
@@ -37,10 +36,7 @@ export const TxStageOperationSucceedBalanceShown = ({
   txHash,
   footer,
 }: TxStageOperationSucceedBalanceShownProps) => {
-  const stethAddress = useTokenAddress(TOKENS.STETH);
-  const wstethAddress = useTokenAddress(TOKENS.WSTETH);
-  const tokenToWalletAddress =
-    balanceToken === 'wstETH' ? wstethAddress : stethAddress;
+  const tokenToWalletAddress = useTokenAddress(balanceToken);
 
   const balanceEl = balance && (
     <TxAmount amount={balance} symbol={balanceToken} />

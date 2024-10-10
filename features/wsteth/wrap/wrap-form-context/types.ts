@@ -1,5 +1,5 @@
 import type { useWrapFormNetworkData } from '../hooks/use-wrap-form-network-data';
-import type { useWrapTxApprove } from '../hooks/use-wrap-tx-approve';
+import type { useWrapTxOnL1Approve } from '../hooks/use-wrap-tx-on-l1-approve';
 
 import type { BigNumber } from 'ethers';
 import type { TokensWrappable } from 'features/wsteth/shared/types';
@@ -13,7 +13,7 @@ export type WrapFormInputType = {
 
 export type WrapFormNetworkData = ReturnType<typeof useWrapFormNetworkData>;
 
-export type WrapFormApprovalData = ReturnType<typeof useWrapTxApprove>;
+export type WrapFormApprovalData = ReturnType<typeof useWrapTxOnL1Approve>;
 
 export type WrapFormValidationContext = {
   asyncContext: Promise<WrapFormAsyncValidationContext>;

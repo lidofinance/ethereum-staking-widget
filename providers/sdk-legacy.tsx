@@ -9,6 +9,7 @@ import { Web3Provider } from '@ethersproject/providers';
 import { ProviderSDK } from '@lido-sdk/react';
 import { getStaticRpcBatchProvider } from '@lido-sdk/providers';
 
+import { SDK_LEGACY_SUPPORTED_CHAINS } from 'consts/chains';
 import { useDappStatus } from 'shared/hooks/use-dapp-status';
 
 type SDKLegacyProviderProps = PropsWithChildren<{
@@ -23,7 +24,7 @@ export const SDKLegacyProvider = ({
 }: SDKLegacyProviderProps) => {
   const { chainId: wagmiChainId = defaultChainId, address } = useAccount();
   const { supportedChains } = useSupportedChains();
-  const { isDappActive } = useDappStatus();
+  const { isDappActiveOnL1 } = useDappStatus();
   const config = useConfig();
   const client = useClient();
   const { rpc } = useReefKnotContext();
@@ -43,7 +44,8 @@ export const SDKLegacyProvider = ({
     };
 
     const getProviderValue = async () => {
-      if (!client || !address || !isDappActive) return undefined;
+      // old sdk can only supports wallet connection on L1
+      if (!client || !address || !isDappActiveOnL1) return undefined;
       const { chain } = client;
       const providerTransport = await getProviderTransport();
 
@@ -68,7 +70,14 @@ export const SDKLegacyProvider = ({
     return () => {
       isHookMounted = false;
     };
-  }, [config, config.state, client, address, isDappActive, pollingInterval]);
+  }, [
+    config,
+    config.state,
+    client,
+    address,
+    isDappActiveOnL1,
+    pollingInterval,
+  ]);
 
   const supportedChainIds = useMemo(
     () => supportedChains.map((chain) => chain.chainId),
@@ -76,10 +85,14 @@ export const SDKLegacyProvider = ({
   );
 
   const chainId = useMemo(() => {
-    return supportedChainIds.indexOf(wagmiChainId) > -1
-      ? wagmiChainId
-      : defaultChainId;
-  }, [defaultChainId, supportedChainIds, wagmiChainId]);
+    if (providerWeb3) {
+      return supportedChainIds.indexOf(wagmiChainId) > -1 &&
+        SDK_LEGACY_SUPPORTED_CHAINS.indexOf(wagmiChainId) > -1
+        ? wagmiChainId
+        : defaultChainId;
+    }
+    return defaultChainId;
+  }, [defaultChainId, providerWeb3, supportedChainIds, wagmiChainId]);
 
   const providerRpc = useMemo(
     () => getStaticRpcBatchProvider(chainId, rpc[chainId], 0, pollingInterval),

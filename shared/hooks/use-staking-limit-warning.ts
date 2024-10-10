@@ -2,14 +2,14 @@ import { useDappStatus } from 'shared/hooks/use-dapp-status';
 import { LIMIT_LEVEL } from 'types';
 
 export const useStakingLimitWarning = (stakingLimitLevel?: LIMIT_LEVEL) => {
-  const { isDappActive } = useDappStatus();
+  const { isDappActiveOnL1 } = useDappStatus();
   const limitWarning =
-    stakingLimitLevel === LIMIT_LEVEL.WARN && isDappActive
+    stakingLimitLevel === LIMIT_LEVEL.WARN && isDappActiveOnL1
       ? 'Stake limit is almost exhausted. Your transaction may not go through.'
       : null;
 
   const limitError =
-    stakingLimitLevel === LIMIT_LEVEL.REACHED && isDappActive
+    stakingLimitLevel === LIMIT_LEVEL.REACHED && isDappActiveOnL1
       ? 'Stake limit is exhausted. Please wait until the limit is restored.'
       : null;
 

@@ -1,5 +1,5 @@
 import { Box, External as ExternalLinkIcon } from '@lidofinance/lido-ui';
-import { getEtherscanTxLink } from '@lido-sdk/helpers';
+import { getEtherscanTxLink } from 'utils/get-etherscan-tx-link';
 
 import { config } from 'config';
 

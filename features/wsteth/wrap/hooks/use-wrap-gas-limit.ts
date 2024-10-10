@@ -1,29 +1,40 @@
-import { useAccount } from 'wagmi';
-import { useLidoSWR, useWSTETHContractRPC } from '@lido-sdk/react';
+import { useLidoSWR } from '@lido-sdk/react';
 
 import { config } from 'config';
-import { WRAP_FROM_ETH_GAS_LIMIT, WRAP_GAS_LIMIT } from 'consts/tx';
-import { useCurrentStaticRpcProvider } from 'shared/hooks/use-current-static-rpc-provider';
-import { applyGasLimitRatio } from 'utils/apply-gas-limit-ratio';
+import {
+  WRAP_FROM_ETH_GAS_LIMIT,
+  WRAP_GAS_LIMIT,
+  WRAP_L2_GAS_LIMIT,
+} from 'consts/tx';
+import {
+  applyGasLimitRatio,
+  applyGasLimitRatioBigInt,
+} from 'utils/apply-gas-limit-ratio';
+import { useDappStatus } from 'shared/hooks/use-dapp-status';
+import { useLidoSDK } from 'providers/lido-sdk';
+import { ESTIMATE_ACCOUNT, ESTIMATE_AMOUNT } from 'config/groups/web3';
+import { BigNumber } from 'ethers';
+import { Zero } from '@ethersproject/constants';
 
 export const useWrapGasLimit = () => {
-  const wsteth = useWSTETHContractRPC();
-  const { chainId } = useAccount();
-  const { staticRpcProvider } = useCurrentStaticRpcProvider();
+  const { isAccountActiveOnL2 } = useDappStatus();
+  const { l2, isL2, wrap, core } = useLidoSDK();
+
+  const wrapFallback = isAccountActiveOnL2 ? WRAP_L2_GAS_LIMIT : WRAP_GAS_LIMIT;
 
   const { data } = useLidoSWR(
-    ['[swr:wrap-gas-limit]', chainId],
-    async (_key, chainId) => {
-      if (!chainId) return;
-
+    ['[swr:wrap-gas-limit]', core.chainId, isL2],
+    async (_key: string) => {
       const fetchGasLimitETH = async () => {
+        if (isL2) return Zero;
         try {
-          return applyGasLimitRatio(
-            await staticRpcProvider.estimateGas({
-              from: config.ESTIMATE_ACCOUNT,
-              to: wsteth.address,
-              value: config.ESTIMATE_AMOUNT,
-            }),
+          return BigNumber.from(
+            applyGasLimitRatioBigInt(
+              await wrap.wrapEthEstimateGas({
+                value: ESTIMATE_AMOUNT.toBigInt(),
+                account: ESTIMATE_ACCOUNT,
+              }),
+            ),
           );
         } catch (error) {
           console.warn(`${_key}::[eth]`, error);
@@ -33,12 +44,29 @@ export const useWrapGasLimit = () => {
 
       const fetchGasLimitStETH = async () => {
         try {
-          return await wsteth.estimateGas.wrap(config.ESTIMATE_AMOUNT, {
-            from: config.ESTIMATE_ACCOUNT,
-          });
+          if (isL2) {
+            // L2 unwrap steth to wsteth
+            const contract = await l2.getContract();
+            return BigNumber.from(
+              await contract.estimateGas.unwrap([ESTIMATE_AMOUNT.toBigInt()], {
+                account: ESTIMATE_ACCOUNT,
+              }),
+            );
+          } else {
+            // L1 wrap steth to wsteth
+            const contract = await wrap.getContractWstETH();
+            return BigNumber.from(
+              await contract.estimateGas.wrap(
+                [config.ESTIMATE_AMOUNT.toBigInt()],
+                {
+                  account: config.ESTIMATE_ACCOUNT,
+                },
+              ),
+            );
+          }
         } catch (error) {
           console.warn(`${_key}::[steth]`, error);
-          return WRAP_GAS_LIMIT;
+          return wrapFallback;
         }
       };
 
@@ -56,6 +84,6 @@ export const useWrapGasLimit = () => {
 
   return {
     gasLimitETH: data?.gasLimitETH || WRAP_FROM_ETH_GAS_LIMIT,
-    gasLimitStETH: data?.gasLimitStETH || WRAP_GAS_LIMIT,
+    gasLimitStETH: data?.gasLimitStETH || wrapFallback,
   };
 };

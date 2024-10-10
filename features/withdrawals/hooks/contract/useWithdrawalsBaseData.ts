@@ -19,7 +19,7 @@ export const useWithdrawalsBaseData =
     const { contractRpc } = useWithdrawalsContract();
 
     return useLidoSWR(
-      ['swr:wqBaseData', contractRpc.address, chainId],
+      ['swr:wqBaseData', contractRpc?.address, chainId],
       async () => {
         const [minAmount, maxAmount, isPausedMode, isBunkerMode] =
           await Promise.all([

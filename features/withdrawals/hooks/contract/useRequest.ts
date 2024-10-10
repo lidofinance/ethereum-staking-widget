@@ -19,7 +19,7 @@ import {
 } from 'shared/hooks';
 import { useIsMultisig } from 'shared/hooks/useIsMultisig';
 import { useCurrentStaticRpcProvider } from 'shared/hooks/use-current-static-rpc-provider';
-import { useApprove } from 'shared/hooks/useApprove';
+import { useApproveOnL1 } from 'shared/hooks/useApproveOnL1';
 import { runWithTransactionLogger } from 'utils';
 import { isContract } from 'utils/isContract';
 
@@ -219,7 +219,7 @@ export const useWithdrawalRequest = ({
     allowance,
     isLoading: loadingUseApprove,
     refetch: refetchAllowance,
-  } = useApprove(
+  } = useApproveOnL1(
     valueBN,
     tokenContract.address,
     withdrawalQueueAddress,
