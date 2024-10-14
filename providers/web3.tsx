@@ -15,7 +15,6 @@ import { useGetRpcUrlByChainId } from 'config/rpc';
 import { CHAINS } from 'consts/chains';
 import { ConnectWalletModal } from 'shared/wallet/connect-wallet-modal';
 
-import { SDKLegacyProvider } from './sdk-legacy';
 import { useWeb3Transport } from 'utils/use-web3-transport';
 
 type ChainsList = [wagmiChains.Chain, ...wagmiChains.Chain[]];
@@ -115,13 +114,9 @@ const Web3Provider: FC<PropsWithChildren> = ({ children }) => {
           walletDataList={walletsDataList}
         >
           {isWalletConnectionAllowed && <AutoConnect autoConnect />}
-          <SDKLegacyProvider
-            defaultChainId={defaultChain.id}
-            pollingInterval={config.PROVIDER_POLLING_INTERVAL}
-          >
-            {children}
-            <ConnectWalletModal />
-          </SDKLegacyProvider>
+
+          {children}
+          <ConnectWalletModal />
         </ReefKnot>
       </QueryClientProvider>
     </WagmiProvider>
