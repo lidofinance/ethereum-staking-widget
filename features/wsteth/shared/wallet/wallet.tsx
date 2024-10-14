@@ -152,11 +152,16 @@ export const Wallet: WalletComponentType = memo((props) => {
   }
 
   if (isDappActive && !isMatchDappChainAndWalletChain(chainId)) {
+    const switchToEthereum =
+      config.defaultChain === CHAINS.Mainnet
+        ? 'Ethereum'
+        : capitalizeFirstLetter(CHAINS[config.defaultChain]);
+
     const switchToOptimism =
       config.supportedChains.indexOf(CHAINS.Optimism) > -1
         ? capitalizeFirstLetter(OPTIMISM)
         : 'Optimism Sepolia';
-    const error = `Wrong network. Please switch to ${chainName === OPTIMISM ? switchToOptimism : capitalizeFirstLetter(CHAINS[config.defaultChain])} in your wallet to wrap/unwrap.`;
+    const error = `Wrong network. Please switch to ${chainName === OPTIMISM ? switchToOptimism : switchToEthereum} in your wallet to wrap/unwrap.`;
     return <Fallback error={error} {...props} />;
   }
 
