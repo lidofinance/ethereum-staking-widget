@@ -3,12 +3,12 @@ import { useAccount } from 'wagmi';
 import { useUserConfig } from 'config/user-config';
 
 export const useIsSupportedChain = () => {
-  const { chainId } = useAccount();
+  const { chainId: walletChainId } = useAccount();
   const { supportedChainIds } = useUserConfig();
 
   return useMemo(() => {
-    if (!chainId) return false;
+    if (!walletChainId) return false;
 
-    return supportedChainIds.indexOf(chainId) > -1;
-  }, [chainId, supportedChainIds]);
+    return supportedChainIds.indexOf(walletChainId) > -1;
+  }, [walletChainId, supportedChainIds]);
 };

@@ -65,7 +65,7 @@ export const SDKLegacyProvider = ({ children }: PropsWithChildren) => {
       providerWeb3={ethersWeb3Provider}
       providerRpc={providerRpc}
       providerMainnetRpc={providerMainnetRpc}
-      account={address ?? undefined}
+      account={ethersWeb3Provider && address ? address : undefined}
     >
       {children}
     </ProviderSDK>

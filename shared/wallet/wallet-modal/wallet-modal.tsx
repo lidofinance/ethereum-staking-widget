@@ -24,9 +24,11 @@ import {
   WalletModalAddressStyle,
   WalletModalActionsStyle,
 } from './styles';
+import { useLidoSDK } from 'providers/lido-sdk';
 
 export const WalletModal: ModalComponentType = ({ onClose, ...props }) => {
-  const { address, chainId } = useAccount();
+  const { address } = useAccount();
+  const { chainId } = useLidoSDK();
   const { connectorName } = useConnectorInfo();
   const { disconnect } = useDisconnect();
   const { defaultChain: defaultChainId } = useUserConfig();

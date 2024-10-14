@@ -141,7 +141,7 @@ const WalletComponent: WalletComponentType = (props) => {
 
 export const Wallet: WalletComponentType = memo((props) => {
   const { isLedgerLive } = useConnectorInfo();
-  const { chainId } = useAccount();
+  const { chainId: walletChain } = useAccount();
   const { isDappActive, isDappActiveOnL2 } = useDappStatus();
   const { showLidoMultichainFallback } = useLidoMultichainFallbackCondition();
   const { chainName, isMatchDappChainAndWalletChain } = useDappChain();
@@ -151,7 +151,7 @@ export const Wallet: WalletComponentType = memo((props) => {
     return <Fallback error={error} {...props} />;
   }
 
-  if (isDappActive && !isMatchDappChainAndWalletChain(chainId)) {
+  if (isDappActive && !isMatchDappChainAndWalletChain(walletChain)) {
     const switchToOptimism =
       config.supportedChains.indexOf(CHAINS.Optimism) > -1
         ? capitalizeFirstLetter(OPTIMISM)

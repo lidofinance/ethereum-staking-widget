@@ -32,7 +32,7 @@ const iconsMap: Record<ChainNameType, ReactNode> = {
 };
 
 export const ChainSwitcher: FC = () => {
-  const { chainId } = useAccount();
+  const { chainId: walletChainId } = useAccount();
   const { setChainName } = useDappChain();
   const { isDappActiveAndNetworksMatched } = useDappStatus();
   const router = useRouter();
@@ -45,19 +45,21 @@ export const ChainSwitcher: FC = () => {
   );
 
   useEffect(() => {
-    if (!chainId) return;
+    if (!walletChainId) return;
 
-    if ([CHAINS.Mainnet, CHAINS.Holesky, CHAINS.Sepolia].includes(chainId)) {
+    if (
+      [CHAINS.Mainnet, CHAINS.Holesky, CHAINS.Sepolia].includes(walletChainId)
+    ) {
       setValue(ETHEREUM);
       setChainName(ETHEREUM);
     } else if (
-      [CHAINS.Optimism, CHAINS.OptimismSepolia].includes(chainId) &&
+      [CHAINS.Optimism, CHAINS.OptimismSepolia].includes(walletChainId) &&
       isOnWrapUnwrapPage
     ) {
       setValue(OPTIMISM);
       setChainName(OPTIMISM);
     }
-  }, [chainId, isOnWrapUnwrapPage, setChainName]);
+  }, [walletChainId, isOnWrapUnwrapPage, setChainName]);
 
   useEffect(() => {
     if (!isOnWrapUnwrapPage) {

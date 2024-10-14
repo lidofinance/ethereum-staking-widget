@@ -1,6 +1,5 @@
 import { forwardRef } from 'react';
 import { useFormState, useWatch } from 'react-hook-form';
-import { useAccount } from 'wagmi';
 
 import {
   Checkbox,
@@ -15,6 +14,7 @@ import { useClaimFormData, ClaimFormInputType } from '../../claim-form-context';
 
 import { getNFTUrl } from 'utils';
 import { RequestStyled, LinkStyled } from './styles';
+import { useSDK } from '@lido-sdk/react';
 
 type RequestItemProps = {
   token_id: string;
@@ -24,7 +24,7 @@ type RequestItemProps = {
 
 export const RequestItem = forwardRef<HTMLInputElement, RequestItemProps>(
   ({ token_id, name, disabled, index, ...props }, ref) => {
-    const { chainId } = useAccount();
+    const { chainId } = useSDK();
     const { isSubmitting } = useFormState();
     const { canSelectMore, maxSelectedCountReason } = useClaimFormData();
     const { checked, status } = useWatch<
