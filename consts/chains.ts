@@ -29,6 +29,6 @@ export const SDK_LEGACY_SUPPORTED_CHAINS = [
 ];
 
 // TODO: move to @lidofinance/lido-ethereum-sdk package
-export const isSDKSupportedL2Chain = (chainId: CHAINS) => {
-  return !!LIDO_L2_CONTRACT_ADDRESSES[chainId];
+export const isSDKSupportedL2Chain = (chainId?: CHAINS) => {
+  return chainId && !!LIDO_L2_CONTRACT_ADDRESSES[chainId];
 };

@@ -1,9 +1,12 @@
 import { memo } from 'react';
 import { useAccount } from 'wagmi';
+import { useConnectorInfo } from 'reef-knot/core-react';
 
 import { Divider, Text } from '@lidofinance/lido-ui';
 import { useSDK } from '@lido-sdk/react';
 
+import { config } from 'config';
+import { CHAINS } from 'consts/chains';
 import { FormatToken } from 'shared/formatters';
 import { TokenToWallet } from 'shared/components';
 import { useWstethBySteth, useStethByWsteth } from 'shared/hooks';
@@ -22,7 +25,7 @@ import {
   useStethBalance,
   useWstethBalance,
 } from 'shared/hooks/use-balance';
-import { OPTIMISM, ETHEREUM, useDappChain } from 'providers/dapp-chain';
+import { OPTIMISM, useDappChain } from 'providers/dapp-chain';
 import { capitalizeFirstLetter } from 'utils/capitalize-string';
 
 import { StyledCard } from './styles';
@@ -137,13 +140,23 @@ const WalletComponent: WalletComponentType = (props) => {
 };
 
 export const Wallet: WalletComponentType = memo((props) => {
+  const { isLedgerLive } = useConnectorInfo();
   const { chainId } = useAccount();
   const { isDappActive, isDappActiveOnL2 } = useDappStatus();
   const { showLidoMultichainFallback } = useLidoMultichainFallbackCondition();
   const { chainName, isMatchDappChainAndWalletChain } = useDappChain();
 
+  if (isLedgerLive && chainName === OPTIMISM) {
+    const error = `Optimism is currently not supported in Ledger Live.`;
+    return <Fallback error={error} {...props} />;
+  }
+
   if (isDappActive && !isMatchDappChainAndWalletChain(chainId)) {
-    const error = `Wrong network. Please switch to ${chainName === OPTIMISM ? capitalizeFirstLetter(OPTIMISM) : capitalizeFirstLetter(ETHEREUM)} in your wallet to wrap/unwrap.`;
+    const switchToOptimism =
+      config.supportedChains.indexOf(CHAINS.Optimism) > -1
+        ? capitalizeFirstLetter(OPTIMISM)
+        : 'Optimism Sepolia';
+    const error = `Wrong network. Please switch to ${chainName === OPTIMISM ? switchToOptimism : capitalizeFirstLetter(CHAINS[config.defaultChain])} in your wallet to wrap/unwrap.`;
     return <Fallback error={error} {...props} />;
   }
 
