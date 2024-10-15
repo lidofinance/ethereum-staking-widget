@@ -1,9 +1,7 @@
 import { memo } from 'react';
-import { useAccount } from 'wagmi';
 import { useConnectorInfo } from 'reef-knot/core-react';
 
 import { Divider, Text } from '@lidofinance/lido-ui';
-import { useSDK } from '@lido-sdk/react';
 
 import { config } from 'config';
 import { CHAINS } from 'consts/chains';
@@ -11,7 +9,6 @@ import { FormatToken } from 'shared/formatters';
 import { TokenToWallet } from 'shared/components';
 import { useWstethBySteth, useStethByWsteth } from 'shared/hooks';
 import { useDappStatus } from 'shared/hooks/use-dapp-status';
-import { useLidoMultichainFallbackCondition } from 'shared/hooks/use-lido-multichain-fallback-condition';
 import type { WalletComponentType } from 'shared/wallet/types';
 import {
   CardBalance,
@@ -33,30 +30,29 @@ import { useStETHByWstETHOnL2 } from 'shared/hooks/use-stETH-by-wstETH-on-l2';
 import { useWstETHByStETHOnL2 } from 'shared/hooks/use-wstETH-by-stETH-on-l2';
 
 const WalletComponent: WalletComponentType = (props) => {
-  const { account } = useSDK();
-  const { isAccountActiveOnL2, isDappActiveOnL2 } = useDappStatus();
+  const { isDappActiveOnL2, address } = useDappStatus();
   const ethBalance = useEthereumBalance();
   const stethBalance = useStethBalance();
   const wstethBalance = useWstethBalance();
 
   // TODO merge those hooks and only fetch current chain
   const wstethByStethOnL1 = useWstethBySteth(
-    !isAccountActiveOnL2 && stethBalance.data ? stethBalance.data : undefined,
+    !isDappActiveOnL2 && stethBalance.data ? stethBalance.data : undefined,
   );
   const wstethByStethOnL2 = useWstETHByStETHOnL2(
-    isAccountActiveOnL2 && stethBalance.data ? stethBalance.data : undefined,
+    isDappActiveOnL2 && stethBalance.data ? stethBalance.data : undefined,
   );
-  const wstethBySteth = isAccountActiveOnL2
+  const wstethBySteth = isDappActiveOnL2
     ? wstethByStethOnL2
     : wstethByStethOnL1;
 
   const stethByWstethOnL1 = useStethByWsteth(
-    !isAccountActiveOnL2 && wstethBalance.data ? wstethBalance.data : undefined,
+    !isDappActiveOnL2 && wstethBalance.data ? wstethBalance.data : undefined,
   );
   const stethByWstethOnL2 = useStETHByWstETHOnL2(
-    isAccountActiveOnL2 && wstethBalance.data ? wstethBalance.data : undefined,
+    isDappActiveOnL2 && wstethBalance.data ? wstethBalance.data : undefined,
   );
-  const stethByWsteth = isAccountActiveOnL2
+  const stethByWsteth = isDappActiveOnL2
     ? stethByWstethOnL2
     : stethByWstethOnL1;
 
@@ -78,7 +74,7 @@ const WalletComponent: WalletComponentType = (props) => {
             />
           }
         />
-        <CardAccount account={account} />
+        <CardAccount account={address} />
       </CardRow>
       <Divider />
       <CardRow>
@@ -141,9 +137,12 @@ const WalletComponent: WalletComponentType = (props) => {
 
 export const Wallet: WalletComponentType = memo((props) => {
   const { isLedgerLive } = useConnectorInfo();
-  const { chainId: walletChain } = useAccount();
-  const { isDappActive, isDappActiveOnL2 } = useDappStatus();
-  const { showLidoMultichainFallback } = useLidoMultichainFallbackCondition();
+  const {
+    isDappActive,
+    isDappActiveOnL2,
+    isLidoMultichainChain,
+    walletChainId,
+  } = useDappStatus();
   const { chainName, isMatchDappChainAndWalletChain } = useDappChain();
 
   if (isLedgerLive && chainName === OPTIMISM) {
@@ -151,7 +150,7 @@ export const Wallet: WalletComponentType = memo((props) => {
     return <Fallback error={error} {...props} />;
   }
 
-  if (isDappActive && !isMatchDappChainAndWalletChain(walletChain)) {
+  if (isDappActive && !isMatchDappChainAndWalletChain(walletChainId)) {
     const switchToOptimism =
       config.supportedChains.indexOf(CHAINS.Optimism) > -1
         ? capitalizeFirstLetter(OPTIMISM)
@@ -160,7 +159,7 @@ export const Wallet: WalletComponentType = memo((props) => {
     return <Fallback error={error} {...props} />;
   }
 
-  if (!isDappActiveOnL2 && showLidoMultichainFallback) {
+  if (!isDappActiveOnL2 && isLidoMultichainChain) {
     return <LidoMultichainFallback textEnding={'to wrap/unwrap'} {...props} />;
   }
 

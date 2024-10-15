@@ -1,7 +1,6 @@
 import { useCallback } from 'react';
 import { BigNumber } from 'ethers';
 import invariant from 'tiny-invariant';
-import { useAccount } from 'wagmi';
 
 import { useSDK } from '@lido-sdk/react';
 
@@ -13,6 +12,7 @@ import { runWithTransactionLogger } from 'utils';
 import { isContract } from 'utils/isContract';
 import { sendTx } from 'utils/send-tx';
 import { useTxConfirmation } from 'shared/hooks/use-tx-conformation';
+import { useDappStatus } from 'shared/hooks/use-dapp-status';
 
 import { useWithdrawalsContract } from './useWithdrawalsContract';
 
@@ -21,7 +21,7 @@ type Args = {
 };
 
 export const useClaim = ({ onRetry }: Args) => {
-  const { address } = useAccount();
+  const { address } = useDappStatus();
   const { providerWeb3 } = useSDK();
   const { contractWeb3 } = useWithdrawalsContract();
   const { staticRpcProvider } = useCurrentStaticRpcProvider();

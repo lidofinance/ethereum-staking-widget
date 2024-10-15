@@ -17,10 +17,10 @@ import { BigNumber } from 'ethers';
 import { Zero } from '@ethersproject/constants';
 
 export const useWrapGasLimit = () => {
-  const { isAccountActiveOnL2 } = useDappStatus();
+  const { isDappActiveOnL2 } = useDappStatus();
   const { l2, isL2, wrap, core } = useLidoSDK();
 
-  const wrapFallback = isAccountActiveOnL2 ? WRAP_L2_GAS_LIMIT : WRAP_GAS_LIMIT;
+  const wrapFallback = isDappActiveOnL2 ? WRAP_L2_GAS_LIMIT : WRAP_GAS_LIMIT;
 
   const { data } = useLidoSWR(
     ['[swr:wrap-gas-limit]', core.chainId, isL2],

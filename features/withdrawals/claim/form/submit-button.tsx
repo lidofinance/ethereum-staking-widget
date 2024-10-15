@@ -1,29 +1,25 @@
 import { useFormState } from 'react-hook-form';
-import { useAccount } from 'wagmi';
 import { Button } from '@lidofinance/lido-ui';
 import { Zero } from '@ethersproject/constants';
 
 import { Connect, DisabledButton } from 'shared/wallet';
 import { FormatToken } from 'shared/formatters/format-token';
-import { useDappStatus } from 'shared/hooks/use-dapp-status';
-import { useIsSupportedChain } from 'shared/hooks/use-is-supported-chain';
 import { isValidationErrorTypeUnhandled } from 'shared/hook-form/validation/validation-error';
 
 import { ClaimFormInputType, useClaimFormData } from '../claim-form-context';
+import { useDappStatus } from 'shared/hooks/use-dapp-status';
 
 export const SubmitButton = () => {
-  const { isAccountActiveOnL2 } = useDappStatus();
-  const { isConnected } = useAccount();
-  const isSupportedChain = useIsSupportedChain();
+  const { isSupportedChain, isWalletConnected } = useDappStatus();
 
   const { isSubmitting, isValidating, errors } =
     useFormState<ClaimFormInputType>();
   const { ethToClaim } = useClaimFormData();
   const { selectedRequests } = useClaimFormData();
 
-  if (!isConnected) return <Connect fullwidth />;
+  if (!isWalletConnected) return <Connect fullwidth />;
 
-  if (!isSupportedChain || isAccountActiveOnL2) {
+  if (!isSupportedChain) {
     return <DisabledButton>Claim</DisabledButton>;
   }
 

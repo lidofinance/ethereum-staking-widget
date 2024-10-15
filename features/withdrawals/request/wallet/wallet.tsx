@@ -15,7 +15,6 @@ import {
   LidoMultichainFallback,
 } from 'shared/wallet';
 import { useDappStatus } from 'shared/hooks/use-dapp-status';
-import { useLidoMultichainFallbackCondition } from 'shared/hooks/use-lido-multichain-fallback-condition';
 import type { WalletComponentType } from 'shared/wallet/types';
 
 import { WalletStethBalance } from './wallet-steth-balance';
@@ -45,23 +44,12 @@ export const WalletComponent = () => {
 
 export const RequestWallet: WalletComponentType = memo((props) => {
   const { defaultChain } = getConfig();
-  const { isWalletConnected, isDappActive, isAccountActiveOnL2 } =
+  const { isWalletConnected, isDappActive, isLidoMultichainChain } =
     useDappStatus();
-  const { showLidoMultichainFallback } = useLidoMultichainFallbackCondition();
 
-  if (showLidoMultichainFallback) {
+  if (isLidoMultichainChain) {
     return (
       <LidoMultichainFallback
-        textEnding={'to request withdrawals'}
-        {...props}
-      />
-    );
-  }
-
-  if (isAccountActiveOnL2) {
-    return (
-      <LidoMultichainFallback
-        chainId={10}
         textEnding={'to request withdrawals'}
         {...props}
       />

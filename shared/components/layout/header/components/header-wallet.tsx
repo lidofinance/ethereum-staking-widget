@@ -1,6 +1,5 @@
 import { FC, useMemo } from 'react';
 import { useRouter } from 'next/router';
-import { useAccount } from 'wagmi';
 
 import { CHAINS as legacySDKCHAINS, getChainColor } from '@lido-sdk/constants';
 
@@ -24,26 +23,25 @@ import { ChainSwitcher } from './chain-switcher/chain-switcher';
 
 const HeaderWallet: FC = () => {
   const router = useRouter();
-  const { chainId, address } = useAccount();
   const { defaultChain: defaultChainId } = useUserConfig();
-  const { isDappActive } = useDappStatus();
+  const { isDappActive, address, walletChainId } = useDappStatus();
 
-  let chainName = legacySDKCHAINS[chainId || defaultChainId];
-  if (!chainName && chainId === CHAINS.OptimismSepolia) {
+  let chainName = legacySDKCHAINS[walletChainId || defaultChainId];
+  if (!chainName && walletChainId === CHAINS.OptimismSepolia) {
     chainName = 'Optimism Sepolia';
   }
 
-  const testNet = chainId !== legacySDKCHAINS.Mainnet;
+  const testNet = walletChainId !== legacySDKCHAINS.Mainnet;
   const showNet = testNet && isDappActive;
   const queryTheme = router?.query?.theme;
 
   const chainColor = useMemo(() => {
     try {
-      return getChainColor(chainId || defaultChainId);
+      return getChainColor(walletChainId || defaultChainId);
     } catch {
       return getChainColor(defaultChainId);
     }
-  }, [chainId, defaultChainId]);
+  }, [walletChainId, defaultChainId]);
 
   return (
     <NoSSRWrapper>

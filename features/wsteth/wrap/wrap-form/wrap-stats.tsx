@@ -19,12 +19,8 @@ import { useWrapFormData, WrapFormInputType } from '../wrap-form-context';
 const oneSteth = parseEther('1');
 
 export const WrapFormStats = () => {
-  const {
-    isWalletConnected,
-    isDappActive,
-    isDappActiveOnL2,
-    isDappActiveAndNetworksMatched,
-  } = useDappStatus();
+  const { isWalletConnected, isAccountActive, isDappActive, isDappActiveOnL2 } =
+    useDappStatus();
   const { allowance, isShowAllowance, wrapGasLimit, isApprovalLoading } =
     useWrapFormData();
 
@@ -73,13 +69,13 @@ export const WrapFormStats = () => {
           trimEllipsis
         />
       </DataTableRow>
-      {(!isDappActive || isShowAllowance) && (
+      {(!isAccountActive || isShowAllowance) && (
         <DataTableRow
           title="Max unlock cost"
           data-testid="maxUnlockFee"
           loading={isApproveCostLoading}
         >
-          {isWalletConnected && !isDappActiveAndNetworksMatched ? (
+          {isWalletConnected && !isDappActive ? (
             '-'
           ) : (
             <FormatPrice amount={approveTxCostInUsd} />
@@ -91,7 +87,7 @@ export const WrapFormStats = () => {
         data-testid="maxGasFee"
         loading={isWrapCostLoading}
       >
-        {isWalletConnected && !isDappActiveAndNetworksMatched ? (
+        {isWalletConnected && !isDappActive ? (
           '-'
         ) : (
           <FormatPrice amount={wrapTxCostInUsd} />
@@ -102,7 +98,7 @@ export const WrapFormStats = () => {
         data-testid="exchangeRate"
         loading={oneWstethConvertedLoading}
       >
-        {isWalletConnected && !isDappActiveAndNetworksMatched ? (
+        {isWalletConnected && !isDappActive ? (
           '-'
         ) : oneWstethConverted ? (
           <>

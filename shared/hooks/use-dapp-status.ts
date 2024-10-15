@@ -3,65 +3,66 @@ import { useAccount } from 'wagmi';
 
 import { isSDKSupportedL2Chain, LIDO_MULTICHAIN_CHAINS } from 'consts/chains';
 
-import { useIsSupportedChain } from './use-is-supported-chain';
 import { useConfig } from 'config';
 import { useDappChain } from 'providers/dapp-chain';
+import {
+  useCurrentSupportedChain,
+  useIsConnectedWithSupportedChain,
+} from 'providers/supported-chain';
 
 export const useDappStatus = () => {
   const { multiChainBanner } = useConfig().externalConfig;
-  const { chainId, isConnected: isWalletConnected } = useAccount();
-  const isSupportedChain = useIsSupportedChain();
+  const {
+    address,
+    chainId: walletChainId,
+    isConnected: isWalletConnected,
+  } = useAccount();
+  const currentSupportedChain = useCurrentSupportedChain();
+  const { isSupportedChain } = useIsConnectedWithSupportedChain();
   const { isMatchDappChainAndWalletChain } = useDappChain();
 
-  const isLidoMultichainChain = useMemo(
-    () =>
-      !!chainId &&
-      !!LIDO_MULTICHAIN_CHAINS[chainId] &&
-      multiChainBanner.includes(chainId),
-    [chainId, multiChainBanner],
-  );
+  return useMemo(() => {
+    const isLidoMultichainChain =
+      !!walletChainId &&
+      !!LIDO_MULTICHAIN_CHAINS[walletChainId] &&
+      multiChainBanner.includes(walletChainId);
 
-  const dappStatuses = useMemo(() => {
-    const isDappActive = chainId
+    const isAccountActive = walletChainId
       ? isWalletConnected && isSupportedChain
       : false;
 
-    const isAccountActiveOnL1 = isDappActive && !isSDKSupportedL2Chain(chainId);
-
-    const isAccountActiveOnL2 = isDappActive && isSDKSupportedL2Chain(chainId);
-
     const isDappActiveOnL1 =
-      isAccountActiveOnL1 && isMatchDappChainAndWalletChain(chainId);
+      isAccountActive &&
+      !isSDKSupportedL2Chain(walletChainId) &&
+      isMatchDappChainAndWalletChain(walletChainId);
 
     const isDappActiveOnL2 =
-      isAccountActiveOnL2 && isMatchDappChainAndWalletChain(chainId);
+      isAccountActive &&
+      isSDKSupportedL2Chain(walletChainId) &&
+      isMatchDappChainAndWalletChain(walletChainId);
 
-    const isDappActiveAndNetworksMatched = isDappActiveOnL1 || isDappActiveOnL2;
+    const isDappActive =
+      isAccountActive && isMatchDappChainAndWalletChain(walletChainId);
 
     return {
-      // TODO: rename to isAccountActive
+      isAccountActive,
       isDappActive,
-
-      isAccountActiveOnL1,
-      isAccountActiveOnL2,
-
-      isDappActiveOnL1,
       isDappActiveOnL2,
-
-      // TODO: rename to isDappActive (see above)
-      isDappActiveAndNetworksMatched,
+      isDappActiveOnL1,
+      isLidoMultichainChain,
+      isSupportedChain,
+      isWalletConnected,
+      chainId: currentSupportedChain,
+      walletChainId,
+      address,
     };
   }, [
-    chainId,
+    walletChainId,
+    multiChainBanner,
+    isWalletConnected,
+    isSupportedChain,
     isMatchDappChainAndWalletChain,
-    isSupportedChain,
-    isWalletConnected,
+    currentSupportedChain,
+    address,
   ]);
-
-  return {
-    isWalletConnected,
-    isSupportedChain,
-    isLidoMultichainChain,
-    ...dappStatuses,
-  };
 };

@@ -2,7 +2,6 @@
 import { useCallback } from 'react';
 import { BigNumber } from 'ethers';
 import invariant from 'tiny-invariant';
-import { useAccount } from 'wagmi';
 
 import {
   useSDK,
@@ -38,7 +37,7 @@ export const useUnwrapFormProcessor = ({
   onConfirm,
   onRetry,
 }: UseUnwrapFormProcessorArgs) => {
-  const { address } = useAccount();
+  const { isDappActiveOnL2, address } = useDappStatus();
   const { providerWeb3 } = useSDK();
   const { staticRpcProvider } = useCurrentStaticRpcProvider();
   const { txModalStages } = useTxModalStagesUnwrap();
@@ -47,7 +46,6 @@ export const useUnwrapFormProcessor = ({
   const waitForTx = useTxConfirmation();
   const isContract = useGetIsContract();
   const { l2, stETH, isL2 } = useLidoSDK();
-  const { isAccountActiveOnL2 } = useDappStatus();
 
   const {
     isApprovalNeededBeforeUnwrap: isApprovalNeededBeforeUnwrapOnL2,
@@ -134,9 +132,7 @@ export const useUnwrapFormProcessor = ({
         );
 
         const [stethBalance] = await Promise.all([
-          isAccountActiveOnL2
-            ? l2.steth.balance(address)
-            : stETH.balance(address),
+          isDappActiveOnL2 ? l2.steth.balance(address) : stETH.balance(address),
           onConfirm(),
         ]);
 
@@ -156,7 +152,7 @@ export const useUnwrapFormProcessor = ({
       wstETHContractRPC,
       isApprovalNeededBeforeUnwrapOnL2,
       txModalStages,
-      isAccountActiveOnL2,
+      isDappActiveOnL2,
       stETH,
       onConfirm,
       providerWeb3,

@@ -20,8 +20,7 @@ import {
 import type { Address } from 'viem';
 
 export const RewardsListContent: FC = () => {
-  const { isWalletConnected, isSupportedChain, isAccountActiveOnL2 } =
-    useDappStatus();
+  const { isSupportedChain } = useDappStatus();
   const {
     address,
     error,
@@ -39,8 +38,7 @@ export const RewardsListContent: FC = () => {
     });
   const hasSteth = stethBalance?.gt(Zero);
 
-  if ((isWalletConnected && !isSupportedChain) || isAccountActiveOnL2)
-    return <RewardsListsUnsupportedChain />;
+  if (!isSupportedChain) return <RewardsListsUnsupportedChain />;
 
   if (!data && !initialLoading && !error) return <RewardsListsEmpty />;
 

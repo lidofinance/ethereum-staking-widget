@@ -16,11 +16,7 @@ import { useUnwrapFormData, UnwrapFormInputType } from '../unwrap-form-context';
 import { useApproveGasLimit } from 'features/wsteth/wrap/hooks/use-approve-gas-limit';
 
 export const UnwrapStats = () => {
-  const {
-    isWalletConnected,
-    isAccountActiveOnL2,
-    isDappActiveAndNetworksMatched,
-  } = useDappStatus();
+  const { isWalletConnected, isDappActiveOnL2, isDappActive } = useDappStatus();
   const { allowance, isAllowanceLoading, isShowAllowance } =
     useUnwrapFormData();
   const amount = useWatch<UnwrapFormInputType, 'amount'>({ name: 'amount' });
@@ -37,7 +33,7 @@ export const UnwrapStats = () => {
   } = useTxCostInUsd(approveGasLimit);
 
   const { data: willReceiveStETH, initialLoading: isWillReceiveStETHLoading } =
-    useDebouncedStethByWsteth(amount, isAccountActiveOnL2);
+    useDebouncedStethByWsteth(amount, isDappActiveOnL2);
 
   return (
     <DataTable>
@@ -58,7 +54,7 @@ export const UnwrapStats = () => {
         data-testid="maxGasFee"
         loading={isUnwrapTxCostLoading}
       >
-        {isWalletConnected && !isDappActiveAndNetworksMatched ? (
+        {isWalletConnected && !isDappActive ? (
           '-'
         ) : (
           <FormatPrice amount={unwrapTxCostInUsd} />
@@ -70,7 +66,7 @@ export const UnwrapStats = () => {
           data-testid="maxUnlockFee"
           loading={isApproveCostLoading}
         >
-          {isWalletConnected && !isDappActiveAndNetworksMatched ? (
+          {isWalletConnected && !isDappActive ? (
             '-'
           ) : (
             <FormatPrice amount={approveTxCostInUsd} />

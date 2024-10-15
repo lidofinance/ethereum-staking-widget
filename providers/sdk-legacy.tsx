@@ -1,12 +1,23 @@
 import React, { PropsWithChildren, useMemo } from 'react';
 import { useAccount, usePublicClient } from 'wagmi';
 
-import { Web3Provider } from '@ethersproject/providers';
+import { Network, Web3Provider } from '@ethersproject/providers';
 import { ProviderSDK } from '@lido-sdk/react';
 
 import { useLidoSDK } from './lido-sdk';
 import { config } from 'config';
 import { isSDKSupportedL2Chain } from 'consts/chains';
+
+// Stabilizes network detection to prevent repeated chainId calls
+class EthersToViemProvider extends Web3Provider {
+  detectNetwork(): Promise<Network> {
+    // eslint-disable-next-line @typescript-eslint/no-misused-promises
+    if (!this._cache['detectNetwork']) {
+      this._cache['detectNetwork'] = this._uncachedDetectNetwork();
+    }
+    return this._cache['detectNetwork'];
+  }
+}
 
 export const SDKLegacyProvider = ({ children }: PropsWithChildren) => {
   const { defaultChain, supportedChains, PROVIDER_POLLING_INTERVAL } = config;
@@ -43,19 +54,18 @@ export const SDKLegacyProvider = ({ children }: PropsWithChildren) => {
   const publicMainnetClient = usePublicClient({ chainId: 1 });
 
   // only Web3Provider can accept viem transport
-  const providerRpc = useMemo(
-    () =>
+  const providerRpc = useMemo(() => {
+    return new EthersToViemProvider(
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      new Web3Provider(onlyL1publicClient!.transport, onlyL1chainId),
-    [onlyL1chainId, onlyL1publicClient],
-  );
+      onlyL1publicClient!.transport,
+      onlyL1chainId,
+    );
+  }, [onlyL1chainId, onlyL1publicClient]);
 
-  const providerMainnetRpc = useMemo(
-    () =>
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      new Web3Provider(publicMainnetClient!.transport, 1),
-    [publicMainnetClient],
-  );
+  const providerMainnetRpc = useMemo(() => {
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    return new EthersToViemProvider(publicMainnetClient!.transport, 1);
+  }, [publicMainnetClient]);
 
   return (
     // @ts-expect-error Property children does not exist on type

@@ -6,6 +6,7 @@ import { ClaimDataProvider } from './contexts/claim-data-context';
 import { useWithdrawals } from './contexts/withdrawals-context';
 import { Claim } from './claim';
 import { Request } from './request';
+import { SupportOnlyL1Chains } from 'providers/supported-chain';
 
 const withdrawalRoutes = [
   {
@@ -21,9 +22,11 @@ const withdrawalRoutes = [
 export const WithdrawalsTabs = () => {
   const { isClaimTab } = useWithdrawals();
   return (
-    <ClaimDataProvider>
-      <Switch checked={isClaimTab} routes={withdrawalRoutes} />
-      {isClaimTab ? <Claim /> : <Request />}
-    </ClaimDataProvider>
+    <SupportOnlyL1Chains>
+      <ClaimDataProvider>
+        <Switch checked={isClaimTab} routes={withdrawalRoutes} />
+        {isClaimTab ? <Claim /> : <Request />}
+      </ClaimDataProvider>
+    </SupportOnlyL1Chains>
   );
 };

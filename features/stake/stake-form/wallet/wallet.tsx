@@ -1,6 +1,4 @@
 import { memo } from 'react';
-import { useAccount } from 'wagmi';
-
 import { CHAINS, TOKENS } from '@lido-sdk/constants';
 import { Divider, Question, Tooltip } from '@lidofinance/lido-ui';
 
@@ -12,7 +10,6 @@ import { FormatToken } from 'shared/formatters';
 import { useLidoApr } from 'shared/hooks';
 import { useDappStatus } from 'shared/hooks/use-dapp-status';
 import { useTokenAddress } from 'shared/hooks/use-token-address';
-import { useLidoMultichainFallbackCondition } from 'shared/hooks/use-lido-multichain-fallback-condition';
 import {
   CardAccount,
   CardBalance,
@@ -28,7 +25,7 @@ import { LimitMeter } from './limit-meter';
 import { FlexCenter, LidoAprStyled, StyledCard } from './styles';
 
 const WalletComponent: WalletComponentType = (props) => {
-  const { address } = useAccount();
+  const { address } = useDappStatus();
   const { stakeableEther, stethBalance, loading } = useStakeFormData();
 
   const stethAddress = useTokenAddress(TOKENS.STETH);
@@ -101,18 +98,11 @@ const WalletComponent: WalletComponentType = (props) => {
 
 export const Wallet: WalletComponentType = memo((props) => {
   const { defaultChain } = getConfig();
-  const { isWalletConnected, isDappActive, isAccountActiveOnL2 } =
+  const { isWalletConnected, isDappActive, isLidoMultichainChain } =
     useDappStatus();
-  const { showLidoMultichainFallback } = useLidoMultichainFallbackCondition();
 
-  if (showLidoMultichainFallback) {
+  if (isLidoMultichainChain) {
     return <LidoMultichainFallback textEnding={'to stake'} {...props} />;
-  }
-
-  if (isAccountActiveOnL2) {
-    return (
-      <LidoMultichainFallback chainId={10} textEnding={'to stake'} {...props} />
-    );
   }
 
   if (isWalletConnected && !isDappActive) {

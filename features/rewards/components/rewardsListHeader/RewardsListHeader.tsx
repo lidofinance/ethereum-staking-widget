@@ -8,8 +8,7 @@ import { RewardsListHeaderStyle } from './styles';
 import { TitleStyle } from './styles';
 
 export const RewardsListHeader: FC = () => {
-  const { isWalletConnected, isSupportedChain, isAccountActiveOnL2 } =
-    useDappStatus();
+  const { isSupportedChain, isDappActiveOnL2 } = useDappStatus();
   const { error, data } = useRewardsHistory();
 
   return (
@@ -18,9 +17,7 @@ export const RewardsListHeader: FC = () => {
       {!error &&
         data &&
         data?.events.length > 0 &&
-        (!isWalletConnected ||
-          (isWalletConnected && isSupportedChain) ||
-          !isAccountActiveOnL2) && (
+        (isSupportedChain || !isDappActiveOnL2) && (
           <>
             <LeftOptions />
             <RightOptions />

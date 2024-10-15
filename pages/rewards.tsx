@@ -7,6 +7,7 @@ import RewardsHistoryProvider from 'providers/rewardsHistory';
 import { Layout } from 'shared/components';
 
 import { getDefaultStaticProps } from 'utilsApi/get-default-static-props';
+import { SupportOnlyL1Chains } from 'providers/supported-chain';
 
 const Rewards: FC = () => {
   return (
@@ -23,10 +24,12 @@ const Rewards: FC = () => {
         reward tracker. View stETH balances, historical rewards and transfers."
         />
       </Head>
-      <RewardsHistoryProvider>
-        <TopCard />
-        <RewardsList />
-      </RewardsHistoryProvider>
+      <SupportOnlyL1Chains>
+        <RewardsHistoryProvider>
+          <TopCard />
+          <RewardsList />
+        </RewardsHistoryProvider>
+      </SupportOnlyL1Chains>
     </Layout>
   );
 };

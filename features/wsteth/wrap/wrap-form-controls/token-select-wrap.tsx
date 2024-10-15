@@ -22,11 +22,7 @@ type TokenSelectWrapProps = Pick<
 >;
 
 export const TokenSelectWrap = (props: TokenSelectWrapProps) => {
-  const {
-    isWalletConnected,
-    isDappActiveAndNetworksMatched,
-    isDappActiveOnL2,
-  } = useDappStatus();
+  const { isWalletConnected, isDappActive, isDappActiveOnL2 } = useDappStatus();
 
   const options = useMemo(() => {
     if (isDappActiveOnL2) {
@@ -38,7 +34,7 @@ export const TokenSelectWrap = (props: TokenSelectWrapProps) => {
 
   return (
     <TokenSelectHookForm
-      disabled={isWalletConnected && !isDappActiveAndNetworksMatched}
+      disabled={isWalletConnected && !isDappActive}
       options={options}
       onChange={(value) => {
         trackEvent(

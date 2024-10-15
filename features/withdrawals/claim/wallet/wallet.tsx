@@ -10,7 +10,6 @@ import {
   WalletMyRequests,
 } from 'features/withdrawals/shared';
 import { useDappStatus } from 'shared/hooks/use-dapp-status';
-import { useLidoMultichainFallbackCondition } from 'shared/hooks/use-lido-multichain-fallback-condition';
 import {
   CardAccount,
   CardRow,
@@ -42,23 +41,12 @@ export const WalletComponent = () => {
 
 export const ClaimWallet: WalletComponentType = memo((props) => {
   const { defaultChain } = getConfig();
-  const { isWalletConnected, isDappActive, isAccountActiveOnL2 } =
+  const { isWalletConnected, isDappActive, isLidoMultichainChain } =
     useDappStatus();
-  const { showLidoMultichainFallback } = useLidoMultichainFallbackCondition();
 
-  if (showLidoMultichainFallback) {
+  if (isLidoMultichainChain) {
     return (
       <LidoMultichainFallback textEnding={'to claim withdrawals'} {...props} />
-    );
-  }
-
-  if (isAccountActiveOnL2) {
-    return (
-      <LidoMultichainFallback
-        chainId={10}
-        textEnding={'to claim withdrawals'}
-        {...props}
-      />
     );
   }
 

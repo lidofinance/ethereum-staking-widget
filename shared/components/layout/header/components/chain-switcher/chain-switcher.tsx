@@ -7,7 +7,6 @@ import {
   useMemo,
 } from 'react';
 import { useRouter } from 'next/router';
-import { useAccount } from 'wagmi';
 
 import { Option } from '@lidofinance/lido-ui';
 
@@ -32,9 +31,8 @@ const iconsMap: Record<ChainNameType, ReactNode> = {
 };
 
 export const ChainSwitcher: FC = () => {
-  const { chainId: walletChainId } = useAccount();
   const { setChainName } = useDappChain();
-  const { isDappActiveAndNetworksMatched } = useDappStatus();
+  const { isDappActive, walletChainId } = useDappStatus();
   const router = useRouter();
 
   const [value, setValue] = useState<ChainNameType>(ETHEREUM);
@@ -92,7 +90,7 @@ export const ChainSwitcher: FC = () => {
           Optimism
         </Option>
       </SelectIconStyled>
-      {isOnWrapUnwrapPage && !isDappActiveAndNetworksMatched && (
+      {isOnWrapUnwrapPage && !isDappActive && (
         <SelectIconTooltip showArrow={true}>
           {isOnWrapUnwrapPage
             ? 'This network doesn’t match your wallet’s network'
