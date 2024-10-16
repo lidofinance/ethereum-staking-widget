@@ -5,13 +5,12 @@ import { BigNumber } from '@ethersproject/bignumber';
 import { getERC20Contract } from '@lido-sdk/contracts';
 import { useSDK } from '@lido-sdk/react';
 
+import { sendTx, useAllowance, useTxConfirmation } from 'modules/web3';
+
 import { isContract } from 'utils/isContract';
 import { runWithTransactionLogger } from 'utils';
 
 import { useCurrentStaticRpcProvider } from './use-current-static-rpc-provider';
-import { sendTx } from 'utils/send-tx';
-import { useAllowance } from './use-allowance';
-import { useTxConfirmation } from './use-tx-conformation';
 
 import type { Address, TransactionReceipt } from 'viem';
 

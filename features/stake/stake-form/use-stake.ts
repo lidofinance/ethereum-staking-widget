@@ -1,7 +1,6 @@
 import { BigNumber } from 'ethers';
 import { useCallback } from 'react';
 import invariant from 'tiny-invariant';
-import { useAccount } from 'wagmi';
 
 import {
   useSDK,
@@ -17,8 +16,7 @@ import { runWithTransactionLogger } from 'utils';
 import { MockLimitReachedError, getAddress } from './utils';
 import { useTxModalStagesStake } from './hooks/use-tx-modal-stages-stake';
 
-import { sendTx } from 'utils/send-tx';
-import { useTxConfirmation } from 'shared/hooks/use-tx-conformation';
+import { sendTx, useTxConfirmation, useDappStatus } from 'modules/web3';
 
 type StakeArguments = {
   amount: BigNumber | null;
@@ -32,7 +30,7 @@ type StakeOptions = {
 
 export const useStake = ({ onConfirm, onRetry }: StakeOptions) => {
   const stethContractWeb3 = useSTETHContractWeb3();
-  const { address } = useAccount();
+  const { address } = useDappStatus();
   const stethContract = useSTETHContractRPC();
   const { staticRpcProvider } = useCurrentStaticRpcProvider();
   const { providerWeb3 } = useSDK();

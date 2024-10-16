@@ -109,7 +109,8 @@ export const useRequestTxPrice = ({
 
 export const useClaimTxPrice = (requests: RequestStatusClaimable[]) => {
   const { contractRpc } = useWithdrawalsContract();
-  const { address, chainId } = useAccount();
+  const { chainId } = useSDK();
+  const { address } = useAccount();
 
   const requestCount = requests.length || 1;
   const debouncedSortedSelectedRequests = useDebouncedValue(requests, 2000);

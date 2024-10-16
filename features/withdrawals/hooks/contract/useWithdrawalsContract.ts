@@ -8,7 +8,7 @@ export const useWithdrawalsContract = () => {
   const contractWeb3 = useWithdrawalQueueContractWeb3();
   const contractRpc = useWithdrawalQueueContractRPC();
 
-  const { address, chainId } = useAccount();
+  const { address } = useAccount();
 
-  return { contractWeb3, contractRpc, address, chainId };
+  return { contractWeb3, contractRpc, address };
 };

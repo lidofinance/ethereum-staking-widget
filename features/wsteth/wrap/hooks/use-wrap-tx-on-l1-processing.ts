@@ -3,27 +3,15 @@ import invariant from 'tiny-invariant';
 
 import { useSDK, useWSTETHContractWeb3 } from '@lido-sdk/react';
 import { TOKENS } from '@lido-sdk/constants';
-import { StaticJsonRpcBatchProvider } from '@lidofinance/eth-providers';
 
 import { config } from 'config';
 import { MockLimitReachedError } from 'features/stake/stake-form/utils';
 
 import { useCurrentStaticRpcProvider } from 'shared/hooks/use-current-static-rpc-provider';
-import { getFeeData } from 'utils/getFeeData';
 
 import type { WrapFormInputType } from '../wrap-form-context';
-import { sendTx } from 'utils/send-tx';
+import { sendTx } from 'modules/web3';
 import { PopulatedTransaction } from 'ethers';
-
-export const getGasParameters = async (
-  provider: StaticJsonRpcBatchProvider,
-) => {
-  const { maxFeePerGas, maxPriorityFeePerGas } = await getFeeData(provider);
-  return {
-    maxPriorityFeePerGas,
-    maxFeePerGas,
-  };
-};
 
 type WrapTxProcessorArgs = WrapFormInputType & {
   isMultisig: boolean;

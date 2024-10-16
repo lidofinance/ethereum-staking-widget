@@ -16,7 +16,7 @@ import {
   FormControllerContext,
   FormControllerContextValueType,
 } from 'shared/hook-form/form-controller';
-import { useDappStatus } from 'shared/hooks/use-dapp-status';
+import { useDappStatus } from 'modules/web3';
 
 import { ClaimFormInputType, ClaimFormValidationContext } from './types';
 import { claimFormValidationResolver } from './validation';

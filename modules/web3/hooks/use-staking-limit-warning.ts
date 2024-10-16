@@ -1,4 +1,4 @@
-import { useDappStatus } from 'shared/hooks/use-dapp-status';
+import { useDappStatus } from './use-dapp-status';
 import { LIMIT_LEVEL } from 'types';
 
 export const useStakingLimitWarning = (stakingLimitLevel?: LIMIT_LEVEL) => {

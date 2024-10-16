@@ -1,20 +1,20 @@
+import { useDappStatus } from 'modules/web3';
 import {
   useConnectorInfo,
   getUnsupportedChainError,
 } from 'reef-knot/core-react';
 // TODO: to remove the 'reef-knot/web3-react' after it will be deprecated
-import { helpers, useSupportedChains } from 'reef-knot/web3-react';
-import { useAccount, useConnect, useConfig } from 'wagmi';
+import { helpers } from 'reef-knot/web3-react';
+import { useConnect, useConfig } from 'wagmi';
 
 export const useErrorMessage = (): string | undefined => {
   const { chains } = useConfig();
-  const { isConnected } = useAccount();
+  const { isSupportedChain, isWalletConnected } = useDappStatus();
   const { error } = useConnect();
 
-  const { isUnsupported } = useSupportedChains();
   const { isLedger } = useConnectorInfo();
 
-  if (isConnected && isUnsupported) {
+  if (isWalletConnected && !isSupportedChain) {
     return getUnsupportedChainError(chains).message;
   }
 

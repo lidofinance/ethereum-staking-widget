@@ -6,7 +6,7 @@ import { useSDK } from '@lido-sdk/react';
 
 import { resolveEns, isValidEns, isValidAddress } from 'features/rewards/utils';
 import { useCurrentStaticRpcProvider } from 'shared/hooks/use-current-static-rpc-provider';
-import { useDappStatus } from 'shared/hooks/use-dapp-status';
+import { useDappStatus } from 'modules/web3';
 
 type UseGetCurrentAddress = () => {
   address: string;

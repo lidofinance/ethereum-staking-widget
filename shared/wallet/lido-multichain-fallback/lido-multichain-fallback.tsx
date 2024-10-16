@@ -1,5 +1,4 @@
 import { FC, useMemo } from 'react';
-import { useAccount } from 'wagmi';
 import { useRouter } from 'next/router';
 
 import { BlockProps, Link } from '@lidofinance/lido-ui';
@@ -20,13 +19,14 @@ import { useUserConfig } from 'config/user-config';
 import { CHAINS, LIDO_MULTICHAIN_CHAINS } from 'consts/chains';
 import { MATOMO_CLICK_EVENTS_TYPES } from 'consts/matomo-click-events';
 import { trackMatomoEvent } from 'utils/track-matomo-event';
-import { OPTIMISM, ETHEREUM } from 'providers/dapp-chain';
-import { capitalizeFirstLetter } from 'utils/capitalize-string';
+
+import { capitalize } from 'utils/capitalize';
 
 import { Wrap, TextStyle, ButtonStyle } from './styles';
+import { useDappStatus, DAPP_CHAIN_TYPE } from 'modules/web3';
 
 export type LidoMultichainFallbackComponent = FC<
-  { textEnding: string; chainId?: number | undefined } & BlockProps
+  { textEnding: string } & BlockProps
 >;
 
 const multichainLogos = {
@@ -50,11 +50,9 @@ const getChainLogo = (chainId: LIDO_MULTICHAIN_CHAINS) => {
 export const LidoMultichainFallback: LidoMultichainFallbackComponent = (
   props,
 ) => {
-  const { chainId: chainIdWagmi } = useAccount();
+  const { walletChainId } = useDappStatus();
   const { defaultChain } = useUserConfig();
   const router = useRouter();
-
-  const chainId = props.chainId || chainIdWagmi;
 
   const defaultChainName = useMemo(() => {
     if (CHAINS[defaultChain] === 'Mainnet') return 'Ethereum';
@@ -63,20 +61,22 @@ export const LidoMultichainFallback: LidoMultichainFallbackComponent = (
 
   const lidoMultichainChainName = useMemo(() => {
     // Trick. Anyway, this condition is working only SPA starting.
-    return (!!chainId && LIDO_MULTICHAIN_CHAINS[chainId]) || 'unknown';
-  }, [chainId]);
+    return (
+      (!!walletChainId && LIDO_MULTICHAIN_CHAINS[walletChainId]) || 'unknown'
+    );
+  }, [walletChainId]);
 
   const switchToText = useMemo(() => {
     if (router.pathname === '/wrap/[[...mode]]') {
-      return `${capitalizeFirstLetter(ETHEREUM)}/${capitalizeFirstLetter(OPTIMISM)}`;
+      return `${capitalize(DAPP_CHAIN_TYPE.Ethereum)}/${capitalize(DAPP_CHAIN_TYPE.Optimism)}`;
     } else {
       return defaultChainName;
     }
   }, [router.pathname, defaultChainName]);
 
   return (
-    <Wrap {...props} chainId={chainId as LIDO_MULTICHAIN_CHAINS}>
-      {getChainLogo(chainId as LIDO_MULTICHAIN_CHAINS)}
+    <Wrap {...props} chainId={walletChainId as LIDO_MULTICHAIN_CHAINS}>
+      {getChainLogo(walletChainId as LIDO_MULTICHAIN_CHAINS)}
       <TextStyle>
         You are currently on {lidoMultichainChainName}.
         <br />

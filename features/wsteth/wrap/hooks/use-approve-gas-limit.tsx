@@ -7,8 +7,7 @@ import {
   WSTETH_APPROVE_GAS_LIMIT,
 } from 'consts/tx';
 import { STRATEGY_LAZY } from 'consts/swr-strategies';
-import { useLidoSDK } from 'providers/lido-sdk';
-import { useDappStatus } from 'shared/hooks/use-dapp-status';
+import { useLidoSDK, useDappStatus } from 'modules/web3';
 
 export const useApproveGasLimit = () => {
   const { isDappActiveOnL2 } = useDappStatus();

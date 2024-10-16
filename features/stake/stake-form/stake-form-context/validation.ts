@@ -3,7 +3,7 @@ import invariant from 'tiny-invariant';
 import { Zero } from '@ethersproject/constants';
 
 import { validateEtherAmount } from 'shared/hook-form/validation/validate-ether-amount';
-import { useDappStatus } from 'shared/hooks/use-dapp-status';
+import { useDappStatus } from 'modules/web3';
 import { VALIDATION_CONTEXT_TIMEOUT } from 'features/withdrawals/withdrawals-constants';
 import { handleResolverValidationError } from 'shared/hook-form/validation/validation-error';
 import { awaitWithTimeout } from 'utils/await-with-timeout';

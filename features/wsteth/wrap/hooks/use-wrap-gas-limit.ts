@@ -10,17 +10,17 @@ import {
   applyGasLimitRatio,
   applyGasLimitRatioBigInt,
 } from 'utils/apply-gas-limit-ratio';
-import { useDappStatus } from 'shared/hooks/use-dapp-status';
-import { useLidoSDK } from 'providers/lido-sdk';
+import { useDappStatus, useLidoSDK } from 'modules/web3';
+
 import { ESTIMATE_ACCOUNT, ESTIMATE_AMOUNT } from 'config/groups/web3';
 import { BigNumber } from 'ethers';
 import { Zero } from '@ethersproject/constants';
 
 export const useWrapGasLimit = () => {
-  const { isAccountActiveOnL2 } = useDappStatus();
+  const { isDappActiveOnL2 } = useDappStatus();
   const { l2, isL2, wrap, core } = useLidoSDK();
 
-  const wrapFallback = isAccountActiveOnL2 ? WRAP_L2_GAS_LIMIT : WRAP_GAS_LIMIT;
+  const wrapFallback = isDappActiveOnL2 ? WRAP_L2_GAS_LIMIT : WRAP_GAS_LIMIT;
 
   const { data } = useLidoSWR(
     ['[swr:wrap-gas-limit]', core.chainId, isL2],

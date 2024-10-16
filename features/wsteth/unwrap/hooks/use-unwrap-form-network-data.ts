@@ -1,6 +1,5 @@
 import { useCallback, useMemo } from 'react';
-import { useIsMultisig } from 'shared/hooks/useIsMultisig';
-import { useStethBalance, useWstethBalance } from 'shared/hooks/use-balance';
+import { useStethBalance, useWstethBalance, useIsMultisig } from 'modules/web3';
 
 export const useUnwrapFormNetworkData = () => {
   const { isMultisig } = useIsMultisig();
