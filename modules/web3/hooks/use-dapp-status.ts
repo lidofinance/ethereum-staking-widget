@@ -14,6 +14,8 @@ export const useDappStatus = () => {
     chainId: walletChainId,
     isConnected: isWalletConnected,
   } = useAccount();
+
+  //TODO: Might want to unify those states
   // uses nearest SupportedChains context to get correct value
   const { isSupportedChain, currentSupportedChain } = useSupportedChain();
   // uses singular global context to get chooses dapp chain
