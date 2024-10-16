@@ -19,11 +19,11 @@ import { useUserConfig } from 'config/user-config';
 import { CHAINS, LIDO_MULTICHAIN_CHAINS } from 'consts/chains';
 import { MATOMO_CLICK_EVENTS_TYPES } from 'consts/matomo-click-events';
 import { trackMatomoEvent } from 'utils/track-matomo-event';
-import { OPTIMISM, ETHEREUM } from 'modules/web3/web3-provider/dapp-chain';
+
 import { capitalize } from 'utils/capitalize';
 
 import { Wrap, TextStyle, ButtonStyle } from './styles';
-import { useDappStatus } from 'modules/web3';
+import { useDappStatus, DAPP_CHAIN_TYPE } from 'modules/web3';
 
 export type LidoMultichainFallbackComponent = FC<
   { textEnding: string } & BlockProps
@@ -68,7 +68,7 @@ export const LidoMultichainFallback: LidoMultichainFallbackComponent = (
 
   const switchToText = useMemo(() => {
     if (router.pathname === '/wrap/[[...mode]]') {
-      return `${capitalize(ETHEREUM)}/${capitalize(OPTIMISM)}`;
+      return `${capitalize(DAPP_CHAIN_TYPE.Ethereum)}/${capitalize(DAPP_CHAIN_TYPE.Optimism)}`;
     } else {
       return defaultChainName;
     }
