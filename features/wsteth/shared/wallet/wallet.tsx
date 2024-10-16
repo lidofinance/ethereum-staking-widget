@@ -140,7 +140,6 @@ export const Wallet: WalletComponentType = memo((props) => {
   const { isLedgerLive } = useConnectorInfo();
   const {
     isDappActive,
-    isDappActiveOnL2,
     isLidoMultichainChain,
     chainType,
     isDappChainTypedMatched,
@@ -152,6 +151,10 @@ export const Wallet: WalletComponentType = memo((props) => {
     return <Fallback error={error} {...props} />;
   }
 
+  if (isLidoMultichainChain) {
+    return <LidoMultichainFallback textEnding={'to wrap/unwrap'} {...props} />;
+  }
+
   if (isDappActive && !isDappChainTypedMatched) {
     const switchToOptimism =
       config.supportedChains.indexOf(CHAINS.Optimism) > -1
@@ -159,10 +162,6 @@ export const Wallet: WalletComponentType = memo((props) => {
         : 'Optimism Sepolia';
     const error = `Wrong network. Please switch to ${isOptimism ? switchToOptimism : capitalize(CHAINS[config.defaultChain])} in your wallet to wrap/unwrap.`;
     return <Fallback error={error} {...props} />;
-  }
-
-  if (!isDappActiveOnL2 && isLidoMultichainChain) {
-    return <LidoMultichainFallback textEnding={'to wrap/unwrap'} {...props} />;
   }
 
   if (!isDappActive) {

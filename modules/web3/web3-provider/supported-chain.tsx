@@ -13,24 +13,18 @@ const context = createContext<SupportedChainContextValue>({
 });
 context.displayName = 'SupportedChainsContext';
 
-export const useCurrentSupportedChain = () => {
-  const { chainId } = useLidoSDK();
-  const { chains } = useContext(context);
-  return useMemo(() => {
-    if (chains.includes(chainId)) return chainId;
-    return config.defaultChain;
-  }, [chainId, chains]);
-};
-
-export const useIsConnectedWithSupportedChain = () => {
+export const useSupportedChain = () => {
+  const { chainId: dappChain } = useLidoSDK();
   const { chainId: walletChain } = useAccount();
   const { chains } = useContext(context);
   return useMemo(() => {
     return {
-      // not connected is a supported chain
+      currentSupportedChain: chains.includes(dappChain)
+        ? dappChain
+        : config.defaultChain,
       isSupportedChain: walletChain ? chains.includes(walletChain) : true,
     };
-  }, [chains, walletChain]);
+  }, [chains, dappChain, walletChain]);
 };
 
 const onlyL1Chains = {
