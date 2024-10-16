@@ -10,8 +10,7 @@ import { TOKENS_TO_WRAP } from 'features/wsteth/shared/types';
 import { AllowanceDataTableRow } from 'shared/components/allowance-data-table-row';
 import { FormatPrice, FormatToken } from 'shared/formatters';
 import { useTxCostInUsd, useWstethBySteth } from 'shared/hooks';
-import { useDappStatus } from 'shared/hooks/use-dapp-status';
-import { useWstETHByStETHOnL2 } from 'shared/hooks/use-wstETH-by-stETH-on-l2';
+import { useDappStatus, useWstETHByStETHOnL2 } from 'modules/web3';
 
 import { useApproveGasLimit } from '../hooks/use-approve-gas-limit';
 import { useWrapFormData, WrapFormInputType } from '../wrap-form-context';

@@ -1,12 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unnecessary-type-assertion */
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-
-import { QueryKey, useQuery, useQueryClient } from '@tanstack/react-query';
-import type { AbstractLidoSDKErc20 } from '@lidofinance/lido-ethereum-sdk/erc20';
-import { BigNumber } from 'ethers';
-import { useLidoSDK } from 'providers/lido-sdk';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import type { Address, WatchContractEventOnLogsFn } from 'viem';
+import { type QueryKey, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   useBlockNumber,
   useBalance,
@@ -14,11 +9,16 @@ import {
   useReadContract,
   useWatchContractEvent,
 } from 'wagmi';
-import type { GetBalanceData } from 'wagmi/query';
+import { BigNumber } from 'ethers';
 
+import { useLidoSDK } from 'modules/web3';
 import { config } from 'config';
-import { useCurrentSupportedChain } from 'providers/supported-chain';
+
 import { useDappStatus } from './use-dapp-status';
+
+import type { Address, WatchContractEventOnLogsFn } from 'viem';
+import type { GetBalanceData } from 'wagmi/query';
+import type { AbstractLidoSDKErc20 } from '@lidofinance/lido-ethereum-sdk/erc20';
 
 const nativeToBN = (data: bigint) => BigNumber.from(data.toString());
 
@@ -222,8 +222,7 @@ const useTokenBalance = (
   address?: Address,
   shouldSubscribe = true,
 ) => {
-  const { isSupportedChain } = useDappStatus();
-  const chainId = useCurrentSupportedChain();
+  const { isSupportedChain, chainId } = useDappStatus();
   const { subscribeToTokenUpdates } = useLidoSDK();
 
   const enabled = !!address && isSupportedChain;

@@ -8,7 +8,7 @@ import { LIDO_APR_TOOLTIP_TEXT, DATA_UNAVAILABLE } from 'consts/text';
 import { TokenToWallet } from 'shared/components';
 import { FormatToken } from 'shared/formatters';
 import { useLidoApr } from 'shared/hooks';
-import { useDappStatus } from 'shared/hooks/use-dapp-status';
+import { useDappStatus } from 'modules/web3';
 import { useTokenAddress } from 'shared/hooks/use-token-address';
 import {
   CardAccount,

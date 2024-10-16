@@ -2,6 +2,7 @@ import { useCallback } from 'react';
 import { Zero } from '@ethersproject/constants';
 import { BigNumber } from 'ethers';
 import { useLidoSWR } from '@lido-sdk/react';
+import { useDappStatus } from 'modules/web3';
 import { useWithdrawalsContract } from './useWithdrawalsContract';
 import {
   RequestStatus,
@@ -81,7 +82,8 @@ const getRequestTimeForWQRequestIds = async (
 };
 
 export const useWithdrawalRequests = () => {
-  const { contractRpc, address, chainId } = useWithdrawalsContract();
+  const { chainId } = useDappStatus();
+  const { contractRpc, address } = useWithdrawalsContract();
   // const { data: currentShareRate } = useLidoShareRate();
 
   const swr = useLidoSWR(

@@ -13,9 +13,11 @@ import { config } from 'config';
 import { useUserConfig } from 'config/user-config';
 import { useGetRpcUrlByChainId } from 'config/rpc';
 import { CHAINS } from 'consts/chains';
-import { ConnectWalletModal } from 'shared/wallet/connect-wallet-modal';
+import { ConnectWalletModal } from './connect-wallet-modal';
 
-import { useWeb3Transport } from 'utils/use-web3-transport';
+import { useWeb3Transport } from './use-web3-transport';
+import { LidoSDKProvider } from './lido-sdk';
+import { SDKLegacyProvider } from './sdk-legacy';
 
 type ChainsList = [wagmiChains.Chain, ...wagmiChains.Chain[]];
 
@@ -35,7 +37,7 @@ const queryClient = new QueryClient({
   },
 });
 
-const Web3Provider: FC<PropsWithChildren> = ({ children }) => {
+export const Web3Provider: FC<PropsWithChildren> = ({ children }) => {
   const {
     defaultChain: defaultChainId,
     supportedChainIds,
@@ -114,13 +116,12 @@ const Web3Provider: FC<PropsWithChildren> = ({ children }) => {
           walletDataList={walletsDataList}
         >
           {isWalletConnectionAllowed && <AutoConnect autoConnect />}
-
-          {children}
+          <LidoSDKProvider>
+            <SDKLegacyProvider>{children}</SDKLegacyProvider>
+          </LidoSDKProvider>
           <ConnectWalletModal />
         </ReefKnot>
       </QueryClientProvider>
     </WagmiProvider>
   );
 };
-
-export default Web3Provider;

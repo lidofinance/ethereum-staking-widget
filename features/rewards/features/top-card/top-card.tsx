@@ -4,7 +4,7 @@ import { CHAINS } from '@lido-sdk/constants';
 import { getConfig } from 'config';
 import { StatsWrapper } from 'features/rewards/components/statsWrapper';
 import { Stats } from 'features/rewards/components/stats';
-import { useDappStatus } from 'shared/hooks/use-dapp-status';
+import { useDappStatus } from 'modules/web3';
 import { Fallback } from 'shared/wallet';
 
 import { Wallet } from './wallet';

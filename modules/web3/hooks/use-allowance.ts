@@ -1,9 +1,9 @@
+import { useCallback, useMemo } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { BigNumber } from 'ethers';
-import { useCurrentSupportedChain } from 'providers/supported-chain';
-import { useCallback, useMemo } from 'react';
 import { Address, WatchContractEventOnLogsFn } from 'viem';
 import { useReadContract, useWatchContractEvent } from 'wagmi';
+
 import { useDappStatus } from './use-dapp-status';
 
 const nativeToBN = (data: bigint) => BigNumber.from(data.toString());
@@ -72,7 +72,7 @@ export const useAllowance = ({
   account,
   spender,
 }: UseAllowanceProps) => {
-  const chainId = useCurrentSupportedChain();
+  const { chainId } = useDappStatus();
   const { isSupportedChain } = useDappStatus();
   const queryClient = useQueryClient();
   const enabled = !!(token && account && spender && isSupportedChain);

@@ -6,7 +6,7 @@ import { useSDK } from '@lido-sdk/react';
 
 import { TokensWrappable, TOKENS_TO_WRAP } from 'features/wsteth/shared/types';
 import { useApproveOnL1 } from 'shared/hooks/useApproveOnL1';
-import { useDappStatus } from 'shared/hooks/use-dapp-status';
+import { useDappStatus } from 'modules/web3';
 
 type UseWrapTxApproveArgs = {
   amount: BigNumber;

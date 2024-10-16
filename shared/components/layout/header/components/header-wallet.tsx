@@ -8,7 +8,7 @@ import { useUserConfig } from 'config/user-config';
 import { CHAINS } from 'consts/chains';
 
 import { IPFSInfoBox } from 'features/ipfs/ipfs-info-box';
-import { useDappStatus } from 'shared/hooks/use-dapp-status';
+import { useDappStatus } from 'modules/web3';
 import { Button, Connect } from 'shared/wallet';
 import NoSSRWrapper from 'shared/components/no-ssr-wrapper';
 

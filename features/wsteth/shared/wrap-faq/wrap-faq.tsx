@@ -1,6 +1,6 @@
 import { Section } from 'shared/components';
 import { useMatomoEventHandle } from 'shared/hooks';
-import { useDappStatus } from 'shared/hooks/use-dapp-status';
+import { useDappStatus } from 'modules/web3';
 import { useDappChain, OPTIMISM } from 'providers/dapp-chain';
 
 import {

@@ -1,6 +1,6 @@
 import { LIMIT_LEVEL } from 'types';
 import { SubmitButtonHookForm } from 'shared/hook-form/controls/submit-button-hook-form';
-import { useDappStatus } from 'shared/hooks/use-dapp-status';
+import { useDappStatus } from 'modules/web3';
 
 import { useStakeFormData } from '../stake-form-context';
 

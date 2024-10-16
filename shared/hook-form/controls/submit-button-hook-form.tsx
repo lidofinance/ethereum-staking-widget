@@ -2,7 +2,7 @@ import { useFormState } from 'react-hook-form';
 import { useAccount } from 'wagmi';
 import { ButtonIcon, Lock } from '@lidofinance/lido-ui';
 
-import { useDappStatus } from 'shared/hooks/use-dapp-status';
+import { useDappStatus } from 'modules/web3';
 import { Connect, DisabledButton } from 'shared/wallet';
 
 import { isValidationErrorTypeValidate } from '../validation/validation-error';

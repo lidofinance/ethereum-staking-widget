@@ -23,7 +23,7 @@ import { OPTIMISM, ETHEREUM } from 'providers/dapp-chain';
 import { capitalizeFirstLetter } from 'utils/capitalize-string';
 
 import { Wrap, TextStyle, ButtonStyle } from './styles';
-import { useDappStatus } from 'shared/hooks/use-dapp-status';
+import { useDappStatus } from 'modules/web3';
 
 export type LidoMultichainFallbackComponent = FC<
   { textEnding: string } & BlockProps

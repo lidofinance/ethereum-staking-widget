@@ -10,9 +10,7 @@ import { useTxModalStagesClaim } from 'features/withdrawals/claim/transaction-mo
 import { useCurrentStaticRpcProvider } from 'shared/hooks/use-current-static-rpc-provider';
 import { runWithTransactionLogger } from 'utils';
 import { isContract } from 'utils/isContract';
-import { sendTx } from 'utils/send-tx';
-import { useTxConfirmation } from 'shared/hooks/use-tx-conformation';
-import { useDappStatus } from 'shared/hooks/use-dapp-status';
+import { sendTx, useTxConfirmation, useDappStatus } from 'modules/web3';
 
 import { useWithdrawalsContract } from './useWithdrawalsContract';
 

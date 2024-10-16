@@ -5,13 +5,15 @@ import invariant from 'tiny-invariant';
 import { useSDK, useWSTETHContractRPC } from '@lido-sdk/react';
 import { TransactionCallbackStage } from '@lidofinance/lido-ethereum-sdk/core';
 
-import { useTxConfirmation } from 'shared/hooks/use-tx-conformation';
-import { useGetIsContract } from 'shared/hooks/use-is-contract';
-import { useDappStatus } from 'shared/hooks/use-dapp-status';
+import {
+  useTxConfirmation,
+  useGetIsContract,
+  useDappStatus,
+  useLidoSDK,
+} from 'modules/web3';
+
 import { runWithTransactionLogger } from 'utils';
 import { convertToBigNumber } from 'utils/convert-to-big-number';
-
-import { useLidoSDK } from 'providers/lido-sdk';
 
 import type {
   WrapFormApprovalData,

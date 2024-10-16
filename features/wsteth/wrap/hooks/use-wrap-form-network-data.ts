@@ -1,16 +1,17 @@
 import { useCallback, useMemo } from 'react';
 
 import { config } from 'config';
-import { useIsMultisig } from 'shared/hooks/useIsMultisig';
 import { useTokenMaxAmount } from 'shared/hooks/use-token-max-amount';
-import { useMaxGasPrice, useStakingLimitInfo } from 'shared/hooks';
+import { useStakingLimitInfo } from 'shared/hooks';
 
 import { useWrapGasLimit } from './use-wrap-gas-limit';
 import {
   useEthereumBalance,
   useStethBalance,
   useWstethBalance,
-} from 'shared/hooks/use-balance';
+  useMaxGasPrice,
+  useIsMultisig,
+} from 'modules/web3';
 
 // Provides all data fetching for form to function
 export const useWrapFormNetworkData = () => {

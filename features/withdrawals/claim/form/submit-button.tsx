@@ -7,7 +7,7 @@ import { FormatToken } from 'shared/formatters/format-token';
 import { isValidationErrorTypeUnhandled } from 'shared/hook-form/validation/validation-error';
 
 import { ClaimFormInputType, useClaimFormData } from '../claim-form-context';
-import { useDappStatus } from 'shared/hooks/use-dapp-status';
+import { useDappStatus } from 'modules/web3';
 
 export const SubmitButton = () => {
   const { isSupportedChain, isWalletConnected } = useDappStatus();

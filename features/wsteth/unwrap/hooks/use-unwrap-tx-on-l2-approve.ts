@@ -2,9 +2,8 @@ import { useMemo, useCallback } from 'react';
 import type { BigNumber } from 'ethers';
 
 import { runWithTransactionLogger } from 'utils';
-import { useLidoSDK } from 'providers/lido-sdk';
-import { useDappStatus } from 'shared/hooks/use-dapp-status';
-import { useAllowance } from 'shared/hooks/use-allowance';
+import { useLidoSDK, useDappStatus, useAllowance } from 'modules/web3';
+
 import { LIDO_L2_CONTRACT_ADDRESSES } from '@lidofinance/lido-ethereum-sdk/common';
 import { TransactionCallbackStage } from '@lidofinance/lido-ethereum-sdk/core';
 

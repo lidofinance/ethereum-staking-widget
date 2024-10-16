@@ -1,7 +1,7 @@
 import { BigNumber } from 'ethers';
 import useSWR from 'swr';
 
-import { useLidoSDK } from 'providers/lido-sdk';
+import { useLidoSDK } from 'modules/web3';
 
 export const useWstETHByStETHOnL2 = (steth: BigNumber | undefined) => {
   const { l2 } = useLidoSDK();

@@ -7,7 +7,7 @@ import RewardsHistoryProvider from 'providers/rewardsHistory';
 import { Layout } from 'shared/components';
 
 import { getDefaultStaticProps } from 'utilsApi/get-default-static-props';
-import { SupportOnlyL1Chains } from 'providers/supported-chain';
+import { SupportOnlyL1Chains } from 'modules/web3';
 
 const Rewards: FC = () => {
   return (

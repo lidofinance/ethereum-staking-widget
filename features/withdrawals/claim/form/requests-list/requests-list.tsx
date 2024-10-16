@@ -1,5 +1,5 @@
 import { useFieldArray, useFormContext, useFormState } from 'react-hook-form';
-import { useDappStatus } from 'shared/hooks/use-dapp-status';
+import { useDappStatus } from 'modules/web3';
 
 import { ClaimFormInputType } from '../../claim-form-context';
 import { RequestItem } from './request-item';

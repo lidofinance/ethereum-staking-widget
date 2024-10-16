@@ -8,7 +8,7 @@ import { AllowanceDataTableRow } from 'shared/components/allowance-data-table-ro
 import { FormatToken } from 'shared/formatters/format-token';
 import { FormatPrice } from 'shared/formatters';
 import { useTxCostInUsd } from 'shared/hooks';
-import { useDappStatus } from 'shared/hooks/use-dapp-status';
+import { useDappStatus } from 'modules/web3';
 
 import { useDebouncedStethByWsteth } from 'features/wsteth/shared/hooks/use-debounced-wsteth-steth';
 import { useUnwrapGasLimit } from '../hooks/use-unwrap-gas-limit';

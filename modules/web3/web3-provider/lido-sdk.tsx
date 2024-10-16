@@ -18,9 +18,8 @@ import { LidoSDKL2 } from '@lidofinance/lido-ethereum-sdk/l2';
 import { LidoSDKWrap } from '@lidofinance/lido-ethereum-sdk/wrap';
 
 import { config } from 'config';
-import { useTokenTransferSubscription } from 'shared/hooks/use-balance';
+import { useTokenTransferSubscription } from 'modules/web3/hooks/use-balance';
 import { LIDO_L2_CONTRACT_ADDRESSES } from '@lidofinance/lido-ethereum-sdk/common';
-import { SDKLegacyProvider } from './sdk-legacy';
 
 type LidoSDKContextValue = {
   core: LidoSDKCore;
@@ -94,7 +93,7 @@ export const LidoSDKProvider = ({ children }: React.PropsWithChildren) => {
   }, [chainId, publicClient, subscribe, walletClient]);
   return (
     <LidoSDKContext.Provider value={contextValue}>
-      <SDKLegacyProvider>{children}</SDKLegacyProvider>
+      {children}
     </LidoSDKContext.Provider>
   );
 };

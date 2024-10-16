@@ -8,7 +8,14 @@ import { CHAINS } from 'consts/chains';
 import { FormatToken } from 'shared/formatters';
 import { TokenToWallet } from 'shared/components';
 import { useWstethBySteth, useStethByWsteth } from 'shared/hooks';
-import { useDappStatus } from 'shared/hooks/use-dapp-status';
+import {
+  useDappStatus,
+  useEthereumBalance,
+  useStethBalance,
+  useWstethBalance,
+  useStETHByWstETHOnL2,
+  useWstETHByStETHOnL2,
+} from 'modules/web3';
 import type { WalletComponentType } from 'shared/wallet/types';
 import {
   CardBalance,
@@ -17,17 +24,10 @@ import {
   Fallback,
   LidoMultichainFallback,
 } from 'shared/wallet';
-import {
-  useEthereumBalance,
-  useStethBalance,
-  useWstethBalance,
-} from 'shared/hooks/use-balance';
 import { OPTIMISM, useDappChain } from 'providers/dapp-chain';
 import { capitalizeFirstLetter } from 'utils/capitalize-string';
 
 import { StyledCard } from './styles';
-import { useStETHByWstETHOnL2 } from 'shared/hooks/use-stETH-by-wstETH-on-l2';
-import { useWstETHByStETHOnL2 } from 'shared/hooks/use-wstETH-by-stETH-on-l2';
 
 const WalletComponent: WalletComponentType = (props) => {
   const { isDappActiveOnL2, address } = useDappStatus();

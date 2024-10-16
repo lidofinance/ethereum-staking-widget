@@ -6,7 +6,7 @@ import { ClaimDataProvider } from './contexts/claim-data-context';
 import { useWithdrawals } from './contexts/withdrawals-context';
 import { Claim } from './claim';
 import { Request } from './request';
-import { SupportOnlyL1Chains } from 'providers/supported-chain';
+import { SupportOnlyL1Chains } from 'modules/web3';
 
 const withdrawalRoutes = [
   {

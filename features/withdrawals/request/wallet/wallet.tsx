@@ -14,7 +14,7 @@ import {
   Fallback,
   LidoMultichainFallback,
 } from 'shared/wallet';
-import { useDappStatus } from 'shared/hooks/use-dapp-status';
+import { useDappStatus } from 'modules/web3';
 import type { WalletComponentType } from 'shared/wallet/types';
 
 import { WalletStethBalance } from './wallet-steth-balance';

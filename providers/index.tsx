@@ -4,13 +4,13 @@ import { CookieThemeProvider } from '@lidofinance/lido-ui';
 import { GlobalStyle } from 'styles';
 import { ConfigProvider } from 'config';
 
+import { Web3Provider } from 'modules/web3';
+
 import { DappChainProvider } from './dapp-chain';
 import { AppFlagProvider } from './app-flag';
 import { IPFSInfoBoxStatusesProvider } from './ipfs-info-box-statuses';
 import { InpageNavigationProvider } from './inpage-navigation';
 import { ModalProvider } from './modal-provider';
-import Web3Provider from './web3';
-import { LidoSDKProvider } from './lido-sdk';
 
 type ProvidersProps = {
   prefetchedManifest?: unknown;
@@ -26,13 +26,11 @@ export const Providers: FC<PropsWithChildren<ProvidersProps>> = ({
         <CookieThemeProvider>
           <GlobalStyle />
           <Web3Provider>
-            <LidoSDKProvider>
-              <IPFSInfoBoxStatusesProvider>
-                <InpageNavigationProvider>
-                  <ModalProvider>{children}</ModalProvider>
-                </InpageNavigationProvider>
-              </IPFSInfoBoxStatusesProvider>
-            </LidoSDKProvider>
+            <IPFSInfoBoxStatusesProvider>
+              <InpageNavigationProvider>
+                <ModalProvider>{children}</ModalProvider>
+              </InpageNavigationProvider>
+            </IPFSInfoBoxStatusesProvider>
           </Web3Provider>
         </CookieThemeProvider>
       </DappChainProvider>

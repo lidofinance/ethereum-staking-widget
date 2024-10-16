@@ -3,7 +3,7 @@ import {
   TokenOption,
   TokenSelectHookForm,
 } from 'shared/hook-form/controls/token-select-hook-form/token-select-hook-form';
-import { useDappStatus } from 'shared/hooks/use-dapp-status';
+import { useDappStatus } from 'modules/web3';
 
 const OPTIONS: TokenOption[] = [
   { token: TOKENS.STETH },

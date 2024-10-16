@@ -9,7 +9,7 @@ import {
   WalletWrapperStyled,
   WalletMyRequests,
 } from 'features/withdrawals/shared';
-import { useDappStatus } from 'shared/hooks/use-dapp-status';
+import { useDappStatus } from 'modules/web3';
 import {
   CardAccount,
   CardRow,

@@ -10,8 +10,8 @@ import {
   applyGasLimitRatio,
   applyGasLimitRatioBigInt,
 } from 'utils/apply-gas-limit-ratio';
-import { useDappStatus } from 'shared/hooks/use-dapp-status';
-import { useLidoSDK } from 'providers/lido-sdk';
+import { useDappStatus, useLidoSDK } from 'modules/web3';
+
 import { ESTIMATE_ACCOUNT, ESTIMATE_AMOUNT } from 'config/groups/web3';
 import { BigNumber } from 'ethers';
 import { Zero } from '@ethersproject/constants';

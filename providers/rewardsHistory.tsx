@@ -19,7 +19,7 @@ import {
   useGetCurrentAddress,
 } from 'features/rewards/hooks';
 import { getCurrencyCookie } from 'features/rewards/components/CurrencySelector';
-import { useDappStatus } from 'shared/hooks/use-dapp-status';
+import { useDappStatus } from 'modules/web3';
 
 export type RewardsHistoryValue = {
   currencyObject: CurrencyType;

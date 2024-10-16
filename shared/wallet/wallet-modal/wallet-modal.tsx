@@ -22,7 +22,7 @@ import {
   WalletModalAddressStyle,
   WalletModalActionsStyle,
 } from './styles';
-import { useDappStatus } from 'shared/hooks/use-dapp-status';
+import { useDappStatus } from 'modules/web3';
 
 export const WalletModal: ModalComponentType = ({ onClose, ...props }) => {
   const { address, chainId } = useDappStatus();

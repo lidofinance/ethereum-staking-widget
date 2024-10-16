@@ -16,9 +16,7 @@ import { runWithTransactionLogger } from 'utils';
 import { MockLimitReachedError, getAddress } from './utils';
 import { useTxModalStagesStake } from './hooks/use-tx-modal-stages-stake';
 
-import { sendTx } from 'utils/send-tx';
-import { useTxConfirmation } from 'shared/hooks/use-tx-conformation';
-import { useDappStatus } from 'shared/hooks/use-dapp-status';
+import { sendTx, useTxConfirmation, useDappStatus } from 'modules/web3';
 
 type StakeArguments = {
   amount: BigNumber | null;

@@ -20,7 +20,7 @@ import {
   OPTIMISM,
   useDappChain,
 } from 'providers/dapp-chain';
-import { useDappStatus } from 'shared/hooks/use-dapp-status';
+import { useDappStatus } from 'modules/web3';
 
 import { SelectIconTooltip } from './components/select-icon-tooltip/select-icon-tooltip';
 import { SelectIconStyled, SelectIconWrapper } from './styles';

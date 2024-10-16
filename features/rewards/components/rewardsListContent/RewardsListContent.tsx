@@ -5,8 +5,7 @@ import { Zero } from '@ethersproject/constants';
 import { useRewardsHistory } from 'features/rewards/hooks';
 import { ErrorBlockNoSteth } from 'features/rewards/components/errorBlocks/ErrorBlockNoSteth';
 import { RewardsTable } from 'features/rewards/components/rewardsTable';
-import { useStethBalance } from 'shared/hooks/use-balance';
-import { useDappStatus } from 'shared/hooks/use-dapp-status';
+import { useStethBalance, useDappStatus } from 'modules/web3';
 
 import { RewardsListsEmpty } from './RewardsListsEmpty';
 import { RewardsListErrorMessage } from './RewardsListErrorMessage';

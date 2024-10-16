@@ -1,7 +1,6 @@
 import { useWatch } from 'react-hook-form';
 import { InputGroupHookForm } from 'shared/hook-form/controls/input-group-hook-form';
-import { useStakingLimitWarning } from 'shared/hooks/use-staking-limit-warning';
-import { useDappStatus } from 'shared/hooks/use-dapp-status';
+import { useStakingLimitWarning, useDappStatus } from 'modules/web3';
 
 import { WrapFormInputType, useWrapFormData } from '../wrap-form-context';
 import { TokenAmountInputWrap } from './token-amount-input-wrap';

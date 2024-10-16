@@ -1,6 +1,6 @@
 import { FC } from 'react';
 import { useRewardsHistory } from 'features/rewards/hooks';
-import { useDappStatus } from 'shared/hooks/use-dapp-status';
+import { useDappStatus } from 'modules/web3';
 
 import { LeftOptions } from './LeftOptions';
 import { RightOptions } from './RightOptions';

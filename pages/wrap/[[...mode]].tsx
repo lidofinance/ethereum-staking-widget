@@ -4,7 +4,7 @@ import Head from 'next/head';
 
 import { WrapUnwrapTabs } from 'features/wsteth/wrap-unwrap-tabs';
 import { Layout } from 'shared/components';
-import { useWagmiKey } from 'shared/hooks/use-wagmi-key';
+import { useWagmiKey } from 'modules/web3';
 import { getDefaultStaticProps } from 'utilsApi/get-default-static-props';
 
 const WrapPage: FC<WrapModePageProps> = ({ mode }) => {

@@ -6,7 +6,7 @@ import buildInfo from 'build-info.json';
 import { config } from 'config';
 import { useUserConfig } from 'config/user-config';
 import { STRATEGY_IMMUTABLE } from 'consts/swr-strategies';
-import { useDappStatus } from 'shared/hooks/use-dapp-status';
+import { useDappStatus } from 'modules/web3';
 import { overrideWithQAMockBoolean } from 'utils/qa';
 
 import { isVersionLess } from './utils';

@@ -1,6 +1,6 @@
 import { config } from 'config';
 import { createContext, PropsWithChildren, useContext, useMemo } from 'react';
-import { useLidoSDK } from './lido-sdk';
+import { useLidoSDK } from './web3-provider/lido-sdk';
 import { isSDKSupportedL2Chain } from 'consts/chains';
 import { useAccount } from 'wagmi';
 

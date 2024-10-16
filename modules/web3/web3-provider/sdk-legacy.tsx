@@ -1,7 +1,7 @@
 import React, { PropsWithChildren, useMemo } from 'react';
 import { useAccount, usePublicClient } from 'wagmi';
 
-import { Network, Web3Provider } from '@ethersproject/providers';
+import { type Network, Web3Provider } from '@ethersproject/providers';
 import { ProviderSDK } from '@lido-sdk/react';
 
 import { useLidoSDK } from './lido-sdk';

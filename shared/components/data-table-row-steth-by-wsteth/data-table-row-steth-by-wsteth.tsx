@@ -4,8 +4,8 @@ import { parseEther } from '@ethersproject/units';
 import { DATA_UNAVAILABLE } from 'consts/text';
 import { FormatToken } from 'shared/formatters';
 import { useStethByWsteth } from 'shared/hooks';
-import { useStETHByWstETHOnL2 } from 'shared/hooks/use-stETH-by-wstETH-on-l2';
-import { useDappStatus } from 'shared/hooks/use-dapp-status';
+import { useStETHByWstETHOnL2 } from 'modules/web3';
+import { useDappStatus } from 'modules/web3';
 
 const OneWsteth = parseEther('1');
 

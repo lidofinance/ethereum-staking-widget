@@ -11,13 +11,15 @@ import {
 import { TransactionCallbackStage } from '@lidofinance/lido-ethereum-sdk/core';
 
 import { useCurrentStaticRpcProvider } from 'shared/hooks/use-current-static-rpc-provider';
-import { useTxConfirmation } from 'shared/hooks/use-tx-conformation';
+import {
+  useTxConfirmation,
+  sendTx,
+  useLidoSDK,
+  useDappStatus,
+  useGetIsContract,
+} from 'modules/web3';
 import { runWithTransactionLogger } from 'utils';
-import { sendTx } from 'utils/send-tx';
-import { useLidoSDK } from 'providers/lido-sdk';
 
-import { useDappStatus } from 'shared/hooks/use-dapp-status';
-import { useGetIsContract } from 'shared/hooks/use-is-contract';
 import { convertToBigNumber } from 'utils/convert-to-big-number';
 
 import type { UnwrapFormInputType } from '../unwrap-form-context';

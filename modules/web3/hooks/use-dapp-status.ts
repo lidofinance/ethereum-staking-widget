@@ -8,7 +8,7 @@ import { useDappChain } from 'providers/dapp-chain';
 import {
   useCurrentSupportedChain,
   useIsConnectedWithSupportedChain,
-} from 'providers/supported-chain';
+} from 'modules/web3/supported-chain';
 
 export const useDappStatus = () => {
   const { multiChainBanner } = useConfig().externalConfig;

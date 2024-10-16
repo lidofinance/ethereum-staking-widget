@@ -1,8 +1,7 @@
 import { Eth } from '@lidofinance/lido-ui';
 import { TokenAmountInputHookForm } from 'shared/hook-form/controls/token-amount-input-hook-form';
 import { useStakeFormData } from '../stake-form-context';
-import { useStakingLimitWarning } from 'shared/hooks/use-staking-limit-warning';
-import { useDappStatus } from 'shared/hooks/use-dapp-status';
+import { useStakingLimitWarning, useDappStatus } from 'modules/web3';
 
 export const StakeAmountInput = () => {
   const { isWalletConnected, isDappActive, isDappActiveOnL2 } = useDappStatus();

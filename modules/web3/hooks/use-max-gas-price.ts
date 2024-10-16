@@ -1,7 +1,8 @@
 import { useFeeHistory } from 'wagmi';
 import { BigNumber } from 'ethers';
 import type { GetFeeHistoryReturnType } from 'viem';
-import { useCurrentSupportedChain } from 'providers/supported-chain';
+
+import { useDappStatus } from './use-dapp-status';
 
 const REWARD_PERCENTILES = [25];
 
@@ -22,7 +23,7 @@ const feeHistoryToMaxFee = ({
 };
 
 export const useMaxGasPrice = () => {
-  const chainId = useCurrentSupportedChain();
+  const { chainId } = useDappStatus();
 
   const { data, isLoading, error, isFetching, refetch } = useFeeHistory({
     blockCount: 5,

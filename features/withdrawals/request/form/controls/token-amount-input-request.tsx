@@ -10,7 +10,7 @@ import { useTvlMessage } from 'features/withdrawals/hooks/useTvlMessage';
 
 import { trackMatomoEvent } from 'utils/track-matomo-event';
 import { TokenAmountInputHookForm } from 'shared/hook-form/controls/token-amount-input-hook-form';
-import { useDappStatus } from 'shared/hooks/use-dapp-status';
+import { useDappStatus } from 'modules/web3';
 
 export const TokenAmountInputRequest = () => {
   const { isWalletConnected, isDappActive, isDappActiveOnL2 } = useDappStatus();

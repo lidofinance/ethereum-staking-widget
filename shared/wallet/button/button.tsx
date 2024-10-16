@@ -2,7 +2,7 @@ import { FC } from 'react';
 import { ButtonProps, useBreakpoint } from '@lidofinance/lido-ui';
 
 import { FormatToken } from 'shared/formatters';
-import { useDappStatus } from 'shared/hooks/use-dapp-status';
+import { useDappStatus, useEthereumBalance } from 'modules/web3';
 
 import { AddressBadge } from '../components/address-badge/address-badge';
 import { useWalletModal } from '../wallet-modal/use-wallet-modal';
@@ -13,7 +13,6 @@ import {
   WalledButtonBalanceStyle,
   WalledButtonLoaderStyle,
 } from './styles';
-import { useEthereumBalance } from 'shared/hooks/use-balance';
 
 export const Button: FC<ButtonProps> = (props) => {
   const { onClick, ...rest } = props;

@@ -2,7 +2,7 @@ import { Steth } from '@lidofinance/lido-ui';
 import { useWatch } from 'react-hook-form';
 
 import { TokenAmountInputHookForm } from 'shared/hook-form/controls/token-amount-input-hook-form';
-import { useDappStatus } from 'shared/hooks/use-dapp-status';
+import { useDappStatus } from 'modules/web3';
 
 import { useWrapFormData, WrapFormInputType } from '../wrap-form-context';
 
