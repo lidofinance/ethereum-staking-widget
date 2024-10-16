@@ -19,7 +19,7 @@ export const useDappStatus = () => {
   // uses nearest SupportedChains context to get correct value
   const { isSupportedChain, currentSupportedChain } = useSupportedChain();
   // uses singular global context to get chooses dapp chain
-  const { isDappChainTypedMatched, chainType } = useDappChain();
+  const { isDappChainTypeMatched, chainType } = useDappChain();
 
   return useMemo(() => {
     const isLidoMultichainChain =
@@ -35,14 +35,14 @@ export const useDappStatus = () => {
     const isDappActiveOnL1 =
       isAccountActive &&
       !isSDKSupportedL2Chain(walletChainId) &&
-      isDappChainTypedMatched;
+      isDappChainTypeMatched;
 
     const isDappActiveOnL2 =
       isAccountActive &&
       isSDKSupportedL2Chain(walletChainId) &&
-      isDappChainTypedMatched;
+      isDappChainTypeMatched;
 
-    const isDappActive = isAccountActive && isDappChainTypedMatched;
+    const isDappActive = isAccountActive && isDappChainTypeMatched;
 
     return {
       isAccountActive,
@@ -55,7 +55,7 @@ export const useDappStatus = () => {
       chainId: currentSupportedChain,
       walletChainId,
       address,
-      isDappChainTypedMatched,
+      isDappChainTypeMatched,
       chainType,
     };
   }, [
@@ -63,7 +63,7 @@ export const useDappStatus = () => {
     multiChainBanner,
     isWalletConnected,
     isSupportedChain,
-    isDappChainTypedMatched,
+    isDappChainTypeMatched,
     currentSupportedChain,
     address,
     chainType,

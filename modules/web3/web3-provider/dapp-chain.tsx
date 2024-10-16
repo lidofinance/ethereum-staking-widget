@@ -40,7 +40,7 @@ type DappChainContextValue = {
   chainType: DAPP_CHAIN_TYPE;
   setChainType: React.Dispatch<React.SetStateAction<DAPP_CHAIN_TYPE>>;
   isChainTypeUnlocked: boolean;
-  isDappChainTypedMatched: boolean;
+  isDappChainTypeMatched: boolean;
 };
 
 const DappChainContext = createContext<DappChainContextValue | null>(null);
@@ -87,7 +87,7 @@ export const DappChainProvider: React.FC<{ children: React.ReactNode }> = ({
           chainType,
           setChainType,
           isChainTypeUnlocked,
-          isDappChainTypedMatched:
+          isDappChainTypeMatched:
             chainType === getChainMainnetNameByChainId(walletChainId),
         }),
         [chainType, isChainTypeUnlocked, walletChainId],

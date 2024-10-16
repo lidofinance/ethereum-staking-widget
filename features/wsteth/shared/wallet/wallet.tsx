@@ -140,7 +140,7 @@ export const Wallet: WalletComponentType = memo((props) => {
     isDappActive,
     isLidoMultichainChain,
     chainType,
-    isDappChainTypedMatched,
+    isDappChainTypeMatched,
   } = useDappStatus();
   const isOptimism = chainType === DAPP_CHAIN_TYPE.Optimism;
 
@@ -148,12 +148,17 @@ export const Wallet: WalletComponentType = memo((props) => {
     return <LidoMultichainFallback textEnding={'to wrap/unwrap'} {...props} />;
   }
 
-  if (isDappActive && !isDappChainTypedMatched) {
+  if (isDappActive && !isDappChainTypeMatched) {
+    const switchToEthereum =
+      config.defaultChain === CHAINS.Mainnet
+        ? 'Ethereum'
+        : capitalize(CHAINS[config.defaultChain]);
+
     const switchToOptimism =
       config.supportedChains.indexOf(CHAINS.Optimism) > -1
         ? capitalize(DAPP_CHAIN_TYPE.Optimism)
         : 'Optimism Sepolia';
-    const error = `Wrong network. Please switch to ${isOptimism ? switchToOptimism : capitalize(CHAINS[config.defaultChain])} in your wallet to wrap/unwrap.`;
+    const error = `Wrong network. Please switch to ${isOptimism ? switchToOptimism : switchToEthereum} in your wallet to wrap/unwrap.`;
     return <Fallback error={error} {...props} />;
   }
 
