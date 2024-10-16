@@ -9,6 +9,12 @@ import { TxStageOperationSucceedBalanceShown } from 'shared/transaction-modal/tx
 
 import type { BigNumber } from 'ethers';
 
+const STAGE_APPROVE_ARGS = {
+  token: 'wstETH',
+  willReceiveToken: 'wstETH',
+  operationText: 'Unlocking',
+};
+
 const STAGE_OPERATION_ARGS = {
   token: 'wstETH',
   willReceiveToken: 'stETH',
@@ -19,6 +25,21 @@ const getTxModalStagesUnwrap = (
   transitStage: TransactionModalTransitStage,
 ) => ({
   ...getGeneralTransactionModalStages(transitStage),
+
+  signApproval: (amount: BigNumber) =>
+    transitStage(
+      <TxStageSignOperationAmount {...STAGE_APPROVE_ARGS} amount={amount} />,
+    ),
+
+  pendingApproval: (amount: BigNumber, txHash?: string) =>
+    transitStage(
+      <TxStageSignOperationAmount
+        {...STAGE_APPROVE_ARGS}
+        amount={amount}
+        isPending
+        txHash={txHash}
+      />,
+    ),
 
   sign: (amount: BigNumber, willReceive: BigNumber) =>
     transitStage(

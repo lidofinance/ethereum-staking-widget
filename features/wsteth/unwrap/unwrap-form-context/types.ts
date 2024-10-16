@@ -1,6 +1,9 @@
-import type { useUnwrapFormNetworkData } from '../hooks/use-unwrap-form-network-data';
-
 import type { BigNumber } from 'ethers';
+
+import type { useUnwrapFormNetworkData } from '../hooks/use-unwrap-form-network-data';
+import { useUnwrapTxOnL2Approve } from '../hooks/use-unwrap-tx-on-l2-approve';
+
+export type UnwrapFormApprovalData = ReturnType<typeof useUnwrapTxOnL2Approve>;
 
 export type UnwrapFormInputType = {
   amount: null | BigNumber;
@@ -14,4 +17,5 @@ export type UnwrapFormValidationContext = {
   maxAmount?: BigNumber;
 };
 
-export type UnwrapFormDataContextValueType = UnwrapFormNetworkData;
+export type UnwrapFormDataContextValueType = UnwrapFormNetworkData &
+  UnwrapFormApprovalData;

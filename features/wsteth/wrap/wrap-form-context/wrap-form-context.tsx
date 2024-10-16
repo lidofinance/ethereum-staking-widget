@@ -8,7 +8,7 @@ import {
   useCallback,
 } from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
-import { useWrapTxApprove } from '../hooks/use-wrap-tx-approve';
+import { useWrapTxOnL1Approve } from '../hooks/use-wrap-tx-on-l1-approve';
 import { useWrapFormNetworkData } from '../hooks/use-wrap-form-network-data';
 import { useWrapFormProcessor } from '../hooks/use-wrap-form-processing';
 import { useWrapFormValidationContext } from '../hooks/use-wrap-form-validation-context';
@@ -70,18 +70,21 @@ export const WrapFormProvider: FC<PropsWithChildren> = ({ children }) => {
   const [token, amount] = watch(['token', 'amount']);
   const { retryEvent, retryFire } = useFormControllerRetry();
 
-  const approvalData = useWrapTxApprove({ amount: amount ?? Zero, token });
+  const approvalDataOnL1 = useWrapTxOnL1Approve({
+    amount: amount ?? Zero,
+    token,
+  });
   const isSteth = token === TOKENS_TO_WRAP.STETH;
 
   const onConfirm = useCallback(async () => {
     await Promise.allSettled([
       networkData.revalidateWrapFormData(),
-      approvalData.refetchAllowance(),
+      approvalDataOnL1.refetchAllowance(),
     ]);
-  }, [networkData, approvalData]);
+  }, [networkData, approvalDataOnL1]);
 
   const processWrapFormFlow = useWrapFormProcessor({
-    approvalData,
+    approvalDataOnL1,
     onConfirm,
     onRetry: retryFire,
   });
@@ -89,7 +92,7 @@ export const WrapFormProvider: FC<PropsWithChildren> = ({ children }) => {
   const value = useMemo(
     (): WrapFormDataContextValueType => ({
       ...networkData,
-      ...approvalData,
+      ...approvalDataOnL1,
       isSteth,
       stakeLimitInfo: networkData.stakeLimitInfo,
       maxAmount: isSteth ? networkData.stethBalance : networkData.maxAmountETH,
@@ -97,7 +100,7 @@ export const WrapFormProvider: FC<PropsWithChildren> = ({ children }) => {
         ? networkData.gasLimitStETH
         : networkData.gasLimitETH,
     }),
-    [networkData, approvalData, isSteth],
+    [networkData, approvalDataOnL1, isSteth],
   );
 
   const formControllerValue = useMemo(

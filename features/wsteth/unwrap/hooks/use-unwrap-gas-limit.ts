@@ -1,33 +1,40 @@
-import { useLidoSWR, useWSTETHContractRPC } from '@lido-sdk/react';
+import { useLidoSWR } from '@lido-sdk/react';
 
 import { config } from 'config';
-import { UNWRAP_GAS_LIMIT } from 'consts/tx';
+import { UNWRAP_GAS_LIMIT, UNWRAP_L2_GAS_LIMIT } from 'consts/tx';
 import { STRATEGY_LAZY } from 'consts/swr-strategies';
-import { useCurrentStaticRpcProvider } from 'shared/hooks/use-current-static-rpc-provider';
+import { useLidoSDK } from 'providers/lido-sdk';
+import { useDappStatus } from 'shared/hooks/use-dapp-status';
+import { BigNumber } from 'ethers';
 
 export const useUnwrapGasLimit = () => {
-  const wsteth = useWSTETHContractRPC();
-  const { chainId } = useCurrentStaticRpcProvider();
+  const { isDappActiveOnL2 } = useDappStatus();
+  const { l2, isL2, wrap, core } = useLidoSDK();
+
+  const fallback = isDappActiveOnL2 ? UNWRAP_L2_GAS_LIMIT : UNWRAP_GAS_LIMIT;
 
   const { data } = useLidoSWR(
-    ['swr:unwrap-gas-limit', chainId],
-    async (_key, chainId) => {
-      if (!chainId) return;
+    ['swr:unwrap-gas-limit', isDappActiveOnL2, core.chainId],
+    async () => {
       try {
-        const gasLimit = await wsteth.estimateGas.unwrap(
-          config.ESTIMATE_AMOUNT,
+        const contract = await (isL2
+          ? l2.getContract()
+          : wrap.getContractWstETH());
+
+        const gas = await contract.estimateGas.unwrap(
+          [config.ESTIMATE_AMOUNT.toBigInt()],
           {
-            from: config.ESTIMATE_ACCOUNT,
+            account: config.ESTIMATE_ACCOUNT,
           },
         );
-        return gasLimit;
+        return BigNumber.from(gas);
       } catch (error) {
         console.warn(error);
-        return UNWRAP_GAS_LIMIT;
+        return fallback;
       }
     },
     STRATEGY_LAZY,
   );
 
-  return data ?? UNWRAP_GAS_LIMIT;
+  return data ?? fallback;
 };

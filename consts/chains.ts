@@ -1,7 +1,10 @@
+import { LIDO_L2_CONTRACT_ADDRESSES } from '@lidofinance/lido-ethereum-sdk/common';
+
 export enum CHAINS {
   Mainnet = 1,
   Holesky = 17000,
   Sepolia = 11155111,
+  Optimism = 10,
   OptimismSepolia = 11155420,
 }
 
@@ -26,9 +29,6 @@ export const SDK_LEGACY_SUPPORTED_CHAINS = [
 ];
 
 // TODO: move to @lidofinance/lido-ethereum-sdk package
-export const SDK_SUPPORTED_MULTICHAIN_CHAINS = [CHAINS.OptimismSepolia];
-
-// TODO: move to @lidofinance/lido-ethereum-sdk package
-export const isSDKSupportedL2Chain = (chainId: CHAINS) => {
-  return SDK_SUPPORTED_MULTICHAIN_CHAINS.indexOf(chainId) > -1;
+export const isSDKSupportedL2Chain = (chainId?: CHAINS) => {
+  return chainId && !!LIDO_L2_CONTRACT_ADDRESSES[chainId];
 };

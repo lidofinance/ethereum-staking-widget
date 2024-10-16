@@ -29,10 +29,10 @@ export type UseApproveResponse = {
   needsApprove: boolean;
 } & ReturnType<typeof useAllowance>;
 
-export const useApprove = (
+export const useApproveOnL1 = (
   amount: BigNumber,
-  token: string,
-  spender: string,
+  token?: string,
+  spender?: string,
   owner?: string,
 ): UseApproveResponse => {
   const { providerWeb3, account } = useSDK();
@@ -40,8 +40,7 @@ export const useApprove = (
   const waitForTx = useTxConfirmation();
   const mergedOwner = owner ?? account;
 
-  invariant(token != null, 'Token is required');
-  invariant(spender != null, 'Spender is required');
+  const enabled = !!(token && spender && mergedOwner);
 
   const allowanceQuery = useAllowance({
     token: token as Address,
@@ -50,13 +49,18 @@ export const useApprove = (
   });
 
   const needsApprove = Boolean(
-    allowanceQuery.data && !amount.isZero() && amount.gt(allowanceQuery.data),
+    enabled &&
+      allowanceQuery.data &&
+      !amount.isZero() &&
+      amount.gt(allowanceQuery.data),
   );
 
   const approve = useCallback<UseApproveResponse['approve']>(
     async ({ onTxStart, onTxSent, onTxAwaited } = {}) => {
       invariant(providerWeb3 != null, 'Web3 provider is required');
       invariant(account, 'account is required');
+      invariant(token != null, 'Token is required');
+      invariant(spender != null, 'Spender is required');
       await onTxStart?.();
       const contractWeb3 = getERC20Contract(token, providerWeb3.getSigner());
       const isMultisig = await isContract(account, staticRpcProvider);
@@ -75,7 +79,7 @@ export const useApprove = (
       };
 
       const approveTxHash = await runWithTransactionLogger(
-        'Approve signing',
+        'Approve signing on L1',
         processApproveTx,
       );
       await onTxSent?.(approveTxHash);
