@@ -1,5 +1,4 @@
 import { memo } from 'react';
-import { useConnectorInfo } from 'reef-knot/core-react';
 
 import { Divider, Text } from '@lidofinance/lido-ui';
 
@@ -137,7 +136,6 @@ const WalletComponent: WalletComponentType = (props) => {
 };
 
 export const Wallet: WalletComponentType = memo((props) => {
-  const { isLedgerLive } = useConnectorInfo();
   const {
     isDappActive,
     isLidoMultichainChain,
@@ -145,11 +143,6 @@ export const Wallet: WalletComponentType = memo((props) => {
     isDappChainTypedMatched,
   } = useDappStatus();
   const isOptimism = chainType === DAPP_CHAIN_TYPE.Optimism;
-
-  if (isLedgerLive && isOptimism) {
-    const error = `Optimism is currently not supported in Ledger Live.`;
-    return <Fallback error={error} {...props} />;
-  }
 
   if (isLidoMultichainChain) {
     return <LidoMultichainFallback textEnding={'to wrap/unwrap'} {...props} />;
