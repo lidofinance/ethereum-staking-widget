@@ -55,16 +55,17 @@ export const SDKLegacyProvider = ({ children }: PropsWithChildren) => {
 
   // only Web3Provider can accept viem transport
   const providerRpc = useMemo(() => {
-    return new EthersToViemProvider(
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      onlyL1publicClient!.transport,
-      onlyL1chainId,
+    return (
+      onlyL1publicClient &&
+      new EthersToViemProvider(onlyL1publicClient.transport, onlyL1chainId)
     );
   }, [onlyL1chainId, onlyL1publicClient]);
 
   const providerMainnetRpc = useMemo(() => {
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    return new EthersToViemProvider(publicMainnetClient!.transport, 1);
+    return (
+      publicMainnetClient &&
+      new EthersToViemProvider(publicMainnetClient.transport, 1)
+    );
   }, [publicMainnetClient]);
 
   return (
