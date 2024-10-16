@@ -26,7 +26,7 @@ import {
   LidoMultichainFallback,
 } from 'shared/wallet';
 
-import { capitalizeFirstLetter } from 'utils/capitalize-string';
+import { capitalize } from 'utils/capitalize';
 
 import { StyledCard } from './styles';
 
@@ -155,9 +155,9 @@ export const Wallet: WalletComponentType = memo((props) => {
   if (isDappActive && !isDappChainTypedMatched) {
     const switchToOptimism =
       config.supportedChains.indexOf(CHAINS.Optimism) > -1
-        ? capitalizeFirstLetter(OPTIMISM)
+        ? capitalize(DAPP_CHAIN_TYPE.Optimism)
         : 'Optimism Sepolia';
-    const error = `Wrong network. Please switch to ${isOptimism ? switchToOptimism : capitalizeFirstLetter(CHAINS[config.defaultChain])} in your wallet to wrap/unwrap.`;
+    const error = `Wrong network. Please switch to ${isOptimism ? switchToOptimism : capitalize(CHAINS[config.defaultChain])} in your wallet to wrap/unwrap.`;
     return <Fallback error={error} {...props} />;
   }
 
