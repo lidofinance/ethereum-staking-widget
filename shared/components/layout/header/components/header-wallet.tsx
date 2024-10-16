@@ -33,7 +33,9 @@ const HeaderWallet: FC = () => {
     chainName = 'Optimism Sepolia';
   }
 
-  const testNet = chainId !== legacySDKCHAINS.Mainnet;
+  const testNet = !(
+    chainId === legacySDKCHAINS.Mainnet || chainId === CHAINS.Optimism
+  );
   const showNet = testNet && isDappActive;
   const queryTheme = router?.query?.theme;
 
