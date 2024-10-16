@@ -6,7 +6,6 @@ import { ConfigProvider } from 'config';
 
 import { Web3Provider } from 'modules/web3';
 
-import { DappChainProvider } from './dapp-chain';
 import { AppFlagProvider } from './app-flag';
 import { IPFSInfoBoxStatusesProvider } from './ipfs-info-box-statuses';
 import { InpageNavigationProvider } from './inpage-navigation';
@@ -22,18 +21,16 @@ export const Providers: FC<PropsWithChildren<ProvidersProps>> = ({
 }) => (
   <ConfigProvider prefetchedManifest={prefetchedManifest}>
     <AppFlagProvider>
-      <DappChainProvider>
-        <CookieThemeProvider>
-          <GlobalStyle />
-          <Web3Provider>
-            <IPFSInfoBoxStatusesProvider>
-              <InpageNavigationProvider>
-                <ModalProvider>{children}</ModalProvider>
-              </InpageNavigationProvider>
-            </IPFSInfoBoxStatusesProvider>
-          </Web3Provider>
-        </CookieThemeProvider>
-      </DappChainProvider>
+      <CookieThemeProvider>
+        <GlobalStyle />
+        <Web3Provider>
+          <IPFSInfoBoxStatusesProvider>
+            <InpageNavigationProvider>
+              <ModalProvider>{children}</ModalProvider>
+            </InpageNavigationProvider>
+          </IPFSInfoBoxStatusesProvider>
+        </Web3Provider>
+      </CookieThemeProvider>
     </AppFlagProvider>
   </ConfigProvider>
 );

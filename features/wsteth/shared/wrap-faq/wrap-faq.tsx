@@ -1,7 +1,6 @@
 import { Section } from 'shared/components';
 import { useMatomoEventHandle } from 'shared/hooks';
-import { useDappStatus } from 'modules/web3';
-import { useDappChain, OPTIMISM } from 'providers/dapp-chain';
+import { useDappStatus, DAPP_CHAIN_TYPE } from 'modules/web3';
 
 import {
   WhatIsWsteth,
@@ -25,11 +24,10 @@ import {
 } from './optimism-list';
 
 export const WrapFaq = () => {
-  const { chainName } = useDappChain();
-  const { isWalletConnected } = useDappStatus();
+  const { isWalletConnected, chainType } = useDappStatus();
   const onClickHandler = useMatomoEventHandle();
 
-  if (isWalletConnected && chainName === OPTIMISM) {
+  if (isWalletConnected && chainType === DAPP_CHAIN_TYPE.Optimism) {
     return (
       <Section title="FAQ" onClick={onClickHandler}>
         <WhatIsWstethOnOptimism />

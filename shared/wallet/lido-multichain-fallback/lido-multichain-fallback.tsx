@@ -19,7 +19,7 @@ import { useUserConfig } from 'config/user-config';
 import { CHAINS, LIDO_MULTICHAIN_CHAINS } from 'consts/chains';
 import { MATOMO_CLICK_EVENTS_TYPES } from 'consts/matomo-click-events';
 import { trackMatomoEvent } from 'utils/track-matomo-event';
-import { OPTIMISM, ETHEREUM } from 'providers/dapp-chain';
+import { OPTIMISM, ETHEREUM } from 'modules/web3/web3-provider/dapp-chain';
 import { capitalizeFirstLetter } from 'utils/capitalize-string';
 
 import { Wrap, TextStyle, ButtonStyle } from './styles';

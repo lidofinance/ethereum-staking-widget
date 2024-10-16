@@ -1,4 +1,9 @@
 export * from './hooks';
 export * from './utils';
-export { Web3Provider, useLidoSDK } from './web3-provider';
-export { SupportOnlyL1Chains } from './supported-chain';
+export {
+  Web3Provider,
+  useLidoSDK,
+  useDappChain,
+  SupportOnlyL1Chains,
+  DAPP_CHAIN_TYPE,
+} from './web3-provider';

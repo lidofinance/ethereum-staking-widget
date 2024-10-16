@@ -15,6 +15,7 @@ import {
   useWstethBalance,
   useStETHByWstETHOnL2,
   useWstETHByStETHOnL2,
+  DAPP_CHAIN_TYPE,
 } from 'modules/web3';
 import type { WalletComponentType } from 'shared/wallet/types';
 import {
@@ -24,7 +25,7 @@ import {
   Fallback,
   LidoMultichainFallback,
 } from 'shared/wallet';
-import { OPTIMISM, useDappChain } from 'providers/dapp-chain';
+
 import { capitalizeFirstLetter } from 'utils/capitalize-string';
 
 import { StyledCard } from './styles';
@@ -141,21 +142,22 @@ export const Wallet: WalletComponentType = memo((props) => {
     isDappActive,
     isDappActiveOnL2,
     isLidoMultichainChain,
-    walletChainId,
+    chainType,
+    isDappChainTypedMatched,
   } = useDappStatus();
-  const { chainName, isMatchDappChainAndWalletChain } = useDappChain();
+  const isOptimism = chainType === DAPP_CHAIN_TYPE.Optimism;
 
-  if (isLedgerLive && chainName === OPTIMISM) {
+  if (isLedgerLive && isOptimism) {
     const error = `Optimism is currently not supported in Ledger Live.`;
     return <Fallback error={error} {...props} />;
   }
 
-  if (isDappActive && !isMatchDappChainAndWalletChain(walletChainId)) {
+  if (isDappActive && !isDappChainTypedMatched) {
     const switchToOptimism =
       config.supportedChains.indexOf(CHAINS.Optimism) > -1
         ? capitalizeFirstLetter(OPTIMISM)
         : 'Optimism Sepolia';
-    const error = `Wrong network. Please switch to ${chainName === OPTIMISM ? switchToOptimism : capitalizeFirstLetter(CHAINS[config.defaultChain])} in your wallet to wrap/unwrap.`;
+    const error = `Wrong network. Please switch to ${isOptimism ? switchToOptimism : capitalizeFirstLetter(CHAINS[config.defaultChain])} in your wallet to wrap/unwrap.`;
     return <Fallback error={error} {...props} />;
   }
 

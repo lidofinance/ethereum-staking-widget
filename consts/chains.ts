@@ -21,13 +21,6 @@ export enum LIDO_MULTICHAIN_CHAINS {
   'Mode Chain' = 34443,
 }
 
-// TODO: move to legacy lido-js-sdk package
-export const SDK_LEGACY_SUPPORTED_CHAINS = [
-  CHAINS.Mainnet,
-  CHAINS.Holesky,
-  CHAINS.Sepolia,
-];
-
 // TODO: move to @lidofinance/lido-ethereum-sdk package
 export const isSDKSupportedL2Chain = (chainId?: CHAINS) => {
   return chainId && !!LIDO_L2_CONTRACT_ADDRESSES[chainId];

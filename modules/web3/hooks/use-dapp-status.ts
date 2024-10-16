@@ -4,11 +4,11 @@ import { useAccount } from 'wagmi';
 import { isSDKSupportedL2Chain, LIDO_MULTICHAIN_CHAINS } from 'consts/chains';
 
 import { useConfig } from 'config';
-import { useDappChain } from 'providers/dapp-chain';
+import { useDappChain } from 'modules/web3/web3-provider/dapp-chain';
 import {
   useCurrentSupportedChain,
   useIsConnectedWithSupportedChain,
-} from 'modules/web3/supported-chain';
+} from 'modules/web3/web3-provider/supported-chain';
 
 export const useDappStatus = () => {
   const { multiChainBanner } = useConfig().externalConfig;
@@ -19,7 +19,7 @@ export const useDappStatus = () => {
   } = useAccount();
   const currentSupportedChain = useCurrentSupportedChain();
   const { isSupportedChain } = useIsConnectedWithSupportedChain();
-  const { isMatchDappChainAndWalletChain } = useDappChain();
+  const { isDappChainTypedMatched, chainType } = useDappChain();
 
   return useMemo(() => {
     const isLidoMultichainChain =
@@ -34,15 +34,14 @@ export const useDappStatus = () => {
     const isDappActiveOnL1 =
       isAccountActive &&
       !isSDKSupportedL2Chain(walletChainId) &&
-      isMatchDappChainAndWalletChain(walletChainId);
+      isDappChainTypedMatched;
 
     const isDappActiveOnL2 =
       isAccountActive &&
       isSDKSupportedL2Chain(walletChainId) &&
-      isMatchDappChainAndWalletChain(walletChainId);
+      isDappChainTypedMatched;
 
-    const isDappActive =
-      isAccountActive && isMatchDappChainAndWalletChain(walletChainId);
+    const isDappActive = isAccountActive && isDappChainTypedMatched;
 
     return {
       isAccountActive,
@@ -55,14 +54,17 @@ export const useDappStatus = () => {
       chainId: currentSupportedChain,
       walletChainId,
       address,
+      isDappChainTypedMatched,
+      chainType,
     };
   }, [
     walletChainId,
     multiChainBanner,
     isWalletConnected,
     isSupportedChain,
-    isMatchDappChainAndWalletChain,
+    isDappChainTypedMatched,
     currentSupportedChain,
     address,
+    chainType,
   ]);
 };

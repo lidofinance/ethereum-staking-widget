@@ -1,100 +1,50 @@
-import {
-  FC,
-  ReactNode,
-  useState,
-  useCallback,
-  useEffect,
-  useMemo,
-} from 'react';
-import { useRouter } from 'next/router';
+import { FC, ReactNode } from 'react';
 
 import { Option } from '@lidofinance/lido-ui';
 
 import { ReactComponent as OptimismLogo } from 'assets/icons/chain-toggler/optimism.svg';
 import { ReactComponent as EthereumMainnetLogo } from 'assets/icons/chain-toggler/mainnet.svg';
 
-import { CHAINS } from 'consts/chains';
-import {
-  ChainNameType,
-  ETHEREUM,
-  OPTIMISM,
-  useDappChain,
-} from 'providers/dapp-chain';
+import { DAPP_CHAIN_TYPE, useDappChain } from 'modules/web3';
 import { useDappStatus } from 'modules/web3';
 
 import { SelectIconTooltip } from './components/select-icon-tooltip/select-icon-tooltip';
 import { SelectIconStyled, SelectIconWrapper } from './styles';
 
-const iconsMap: Record<ChainNameType, ReactNode> = {
-  [ETHEREUM]: <EthereumMainnetLogo />,
-  [OPTIMISM]: <OptimismLogo />,
+const iconsMap: Record<DAPP_CHAIN_TYPE, ReactNode> = {
+  [DAPP_CHAIN_TYPE.Ethereum]: <EthereumMainnetLogo />,
+  [DAPP_CHAIN_TYPE.Optimism]: <OptimismLogo />,
 };
 
 export const ChainSwitcher: FC = () => {
-  const { setChainName } = useDappChain();
-  const { isDappActive, walletChainId } = useDappStatus();
-  const router = useRouter();
-
-  const [value, setValue] = useState<ChainNameType>(ETHEREUM);
-
-  const isOnWrapUnwrapPage = useMemo(
-    () => router.pathname === '/wrap/[[...mode]]',
-    [router.pathname],
-  );
-
-  useEffect(() => {
-    if (!walletChainId) return;
-
-    if (
-      [CHAINS.Mainnet, CHAINS.Holesky, CHAINS.Sepolia].includes(walletChainId)
-    ) {
-      setValue(ETHEREUM);
-      setChainName(ETHEREUM);
-    } else if (
-      [CHAINS.Optimism, CHAINS.OptimismSepolia].includes(walletChainId) &&
-      isOnWrapUnwrapPage
-    ) {
-      setValue(OPTIMISM);
-      setChainName(OPTIMISM);
-    }
-  }, [walletChainId, isOnWrapUnwrapPage, setChainName]);
-
-  useEffect(() => {
-    if (!isOnWrapUnwrapPage) {
-      setValue(ETHEREUM);
-      setChainName(ETHEREUM);
-    }
-  }, [isOnWrapUnwrapPage, setChainName]);
-
-  const onChange = useCallback(
-    (value: any) => {
-      setValue(value as ChainNameType);
-      setChainName(value as ChainNameType);
-    },
-    [setChainName],
-  );
+  const { setChainType, chainType, isChainTypeUnlocked } = useDappChain();
+  const { isDappActive } = useDappStatus();
 
   return (
     <SelectIconWrapper>
       <SelectIconStyled
-        disabled={!isOnWrapUnwrapPage}
-        icon={iconsMap[value]}
-        value={value}
+        disabled={!isChainTypeUnlocked}
+        icon={iconsMap[chainType]}
+        value={chainType}
         variant="small"
-        onChange={onChange}
+        onChange={setChainType as any}
       >
-        <Option leftDecorator={iconsMap[ETHEREUM]} value={ETHEREUM}>
+        <Option
+          leftDecorator={iconsMap[DAPP_CHAIN_TYPE.Ethereum]}
+          value={DAPP_CHAIN_TYPE.Ethereum}
+        >
           Ethereum
         </Option>
-        <Option leftDecorator={iconsMap[OPTIMISM]} value={OPTIMISM}>
+        <Option
+          leftDecorator={iconsMap[DAPP_CHAIN_TYPE.Optimism]}
+          value={DAPP_CHAIN_TYPE.Optimism}
+        >
           Optimism
         </Option>
       </SelectIconStyled>
-      {isOnWrapUnwrapPage && !isDappActive && (
+      {isChainTypeUnlocked && !isDappActive && (
         <SelectIconTooltip showArrow={true}>
-          {isOnWrapUnwrapPage
-            ? 'This network doesn’t match your wallet’s network'
-            : 'Don’t forget to switch to Ethereum'}
+          This network doesn’t match your wallet’s network
         </SelectIconTooltip>
       )}
     </SelectIconWrapper>
