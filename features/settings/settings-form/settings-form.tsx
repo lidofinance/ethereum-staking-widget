@@ -1,7 +1,6 @@
 import { useCallback } from 'react';
 import { useForm } from 'react-hook-form';
 
-import { useSDK } from '@lido-sdk/react';
 import { Button, ToastSuccess, Block, Input } from '@lidofinance/lido-ui';
 
 import { useUserConfig } from 'config/user-config';
@@ -15,6 +14,7 @@ import {
   DescriptionTitle,
   SettingsFormWrap,
 } from './styles';
+import { useDappStatus } from 'modules/web3';
 
 type FormValues = {
   rpcUrl: string;
@@ -22,7 +22,7 @@ type FormValues = {
 
 export const SettingsForm = () => {
   const { savedUserConfig, setSavedUserConfig } = useUserConfig();
-  const { chainId } = useSDK();
+  const { chainId } = useDappStatus();
 
   const formMethods = useForm<FormValues>({
     mode: 'onChange',
