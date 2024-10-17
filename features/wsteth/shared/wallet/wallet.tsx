@@ -31,6 +31,7 @@ import { StyledCard } from './styles';
 import { useStETHByWstETHOnL2 } from 'shared/hooks/use-stETH-by-wstETH-on-l2';
 import { useWstETHByStETHOnL2 } from 'shared/hooks/use-wstETH-by-stETH-on-l2';
 import { useIsLedgerLive } from 'shared/hooks/useIsLedgerLive';
+import { useIsLedgerHardware } from '../../../../shared/hooks/useIsLedgerHardware';
 
 const WalletComponent: WalletComponentType = (props) => {
   const { account } = useSDK();
@@ -141,6 +142,7 @@ const WalletComponent: WalletComponentType = (props) => {
 
 export const Wallet: WalletComponentType = memo((props) => {
   const isLedgerLive = useIsLedgerLive();
+  const isLedgerHardware = useIsLedgerHardware();
   const { featureFlags } = useConfig().externalConfig;
   const { chainId } = useAccount();
   const { isDappActive, isDappActiveOnL2 } = useDappStatus();
@@ -149,6 +151,16 @@ export const Wallet: WalletComponentType = memo((props) => {
 
   if (!featureFlags.ledgerLiveL2 && isLedgerLive && chainName === OPTIMISM) {
     const error = `Optimism is currently not supported in Ledger Live.`;
+    return <Fallback error={error} {...props} />;
+  }
+
+  // Most likely Optimism support in LL and LH will arrive at the same time
+  if (
+    !featureFlags.ledgerLiveL2 &&
+    isLedgerHardware &&
+    chainName === OPTIMISM
+  ) {
+    const error = `Optimism is currently not supported in Ledger Hardware.`;
     return <Fallback error={error} {...props} />;
   }
 
