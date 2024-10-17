@@ -1,5 +1,6 @@
 import { memo } from 'react';
 import { useAccount } from 'wagmi';
+import { useConnectorInfo } from 'reef-knot/core-react';
 
 import { Divider, Text } from '@lidofinance/lido-ui';
 import { useSDK } from '@lido-sdk/react';
@@ -31,7 +32,6 @@ import { StyledCard } from './styles';
 import { useStETHByWstETHOnL2 } from 'shared/hooks/use-stETH-by-wstETH-on-l2';
 import { useWstETHByStETHOnL2 } from 'shared/hooks/use-wstETH-by-stETH-on-l2';
 import { useIsLedgerLive } from 'shared/hooks/useIsLedgerLive';
-import { useIsLedgerHardware } from '../../../../shared/hooks/useIsLedgerHardware';
 
 const WalletComponent: WalletComponentType = (props) => {
   const { account } = useSDK();
@@ -142,7 +142,7 @@ const WalletComponent: WalletComponentType = (props) => {
 
 export const Wallet: WalletComponentType = memo((props) => {
   const isLedgerLive = useIsLedgerLive();
-  const isLedgerHardware = useIsLedgerHardware();
+  const { isLedger: isLedgerHardware } = useConnectorInfo();
   const { featureFlags } = useConfig().externalConfig;
   const { chainId } = useAccount();
   const { isDappActive, isDappActiveOnL2 } = useDappStatus();
