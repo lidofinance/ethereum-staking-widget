@@ -14,6 +14,7 @@ import {
   WstethAbiFactory,
   AggregatorAbiFactory,
 } from '@lido-sdk/contracts';
+import { mainnet } from 'viem/chains';
 
 import { config } from 'config';
 import { getAggregatorStEthUsdPriceFeedAddress } from 'consts/aggregator';
@@ -23,6 +24,8 @@ import {
   LidoLocatorAbi__factory,
   L2StethAbi__factory,
   L2WstesthAbi__factory,
+  EnsResolverAbi__factory,
+  EnsRegistryAbi__factory,
 } from 'generated';
 import { getStakingRouterAddress } from 'consts/staking-router';
 import { MAINNET_CURVE } from 'features/rewards/hooks/use-steth-eth-rate';
@@ -43,6 +46,8 @@ export const CONTRACT_NAMES = {
   StakingRouter: 'StakingRouter',
   StethCurve: 'StethCurve',
   LidoLocator: 'LidoLocator',
+  EnsPublicResolver: 'EnsPublicResolver',
+  EnsRegistry: 'EnsRegistry',
 } as const;
 export type CONTRACT_NAMES = keyof typeof CONTRACT_NAMES;
 
@@ -57,6 +62,8 @@ export const METRIC_CONTRACT_ABIS = {
   [CONTRACT_NAMES.LidoLocator]: LidoLocatorAbi__factory.abi,
   [CONTRACT_NAMES.L2stETH]: L2StethAbi__factory.abi,
   [CONTRACT_NAMES.L2wstETH]: L2WstesthAbi__factory.abi,
+  [CONTRACT_NAMES.EnsPublicResolver]: EnsResolverAbi__factory.abi,
+  [CONTRACT_NAMES.EnsRegistry]: EnsRegistryAbi__factory.abi,
 } as const;
 
 export const getMetricContractInterface = memoize(
@@ -129,6 +136,19 @@ export const METRIC_CONTRACT_ADDRESSES = (
         return (
           (LIDO_L2_CONTRACT_ADDRESSES[chainIDSDK]?.['wsteth'] as string) ?? null
         );
+      }, chainId),
+      [CONTRACT_NAMES.EnsPublicResolver]: getAddressOrNull(
+        (chainId: CHAINS) => {
+          // used by ethers
+          if (chainId === 1)
+            return '0x4976fb03c32e5b8cfe2b6ccb31c09ba78ebaba41';
+          return null;
+        },
+        chainId,
+      ),
+      [CONTRACT_NAMES.EnsRegistry]: getAddressOrNull((chainId: CHAINS) => {
+        if (chainId === 1) return mainnet.contracts.ensRegistry.address;
+        return null;
       }, chainId),
     };
     return {
