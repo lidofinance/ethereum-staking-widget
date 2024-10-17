@@ -13,6 +13,9 @@ export type ManifestEntry = {
 export type ManifestConfig = {
   enabledWithdrawalDexes: DexWithdrawalApi[];
   multiChainBanner: number[];
+  featureFlags: {
+    ledgerLiveL2?: boolean;
+  };
 };
 
 export type ExternalConfig = Omit<ManifestEntry, 'config'> &
