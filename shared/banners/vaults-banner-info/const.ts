@@ -1,1 +1,3 @@
-export const LINK_EXPLORE_STRATEGIES = 'https://lido.fi/#defi-strategies';
+import { config } from 'config';
+
+export const LINK_EXPLORE_STRATEGIES = `${config.rootOrigin}/#defi-strategies`;

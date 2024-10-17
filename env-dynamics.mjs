@@ -35,7 +35,12 @@ export const helpOrigin = process.env.HELP_ORIGIN || 'https://help.lido.fi';
 // Fix in the build time (build time don't have env vars)
 
 /** @type string */
-export const researchOrigin = process.env.RESEARCH_ORIGIN || 'https://research.lido.fi';
+export const researchOrigin =
+  process.env.RESEARCH_ORIGIN || 'https://research.lido.fi';
+// Fix in the build time (build time don't have env vars)
+
+/** @type string */
+export const blogOrigin = process.env.BLOG_ORIGIN || 'https://blog.lido.fi';
 // Fix in the build time (build time don't have env vars)
 
 // Keep fallback as in 'config/get-secret-config.ts'
@@ -47,11 +52,14 @@ export const supportedChains = process.env?.SUPPORTED_CHAINS?.split(',').map(
 ) ?? [17000];
 
 /** @type string[] */
-export const prefillUnsafeElRpcUrls1 = process.env.PREFILL_UNSAFE_EL_RPC_URLS_1?.split(',') ?? [];
+export const prefillUnsafeElRpcUrls1 =
+  process.env.PREFILL_UNSAFE_EL_RPC_URLS_1?.split(',') ?? [];
 /** @type string[] */
-export const prefillUnsafeElRpcUrls17000 = process.env.PREFILL_UNSAFE_EL_RPC_URLS_17000?.split(',') ?? [];
+export const prefillUnsafeElRpcUrls17000 =
+  process.env.PREFILL_UNSAFE_EL_RPC_URLS_17000?.split(',') ?? [];
 /** @type string[] */
-export const prefillUnsafeElRpcUrls11155111 = process.env.PREFILL_UNSAFE_EL_RPC_URLS_11155111?.split(',') ?? [];
+export const prefillUnsafeElRpcUrls11155111 =
+  process.env.PREFILL_UNSAFE_EL_RPC_URLS_11155111?.split(',') ?? [];
 /** @type string[] */
 export const prefillUnsafeElRpcUrls10 = process.env.PREFILL_UNSAFE_EL_RPC_URLS_10?.split(',') ?? [];
 /** @type string[] */
@@ -77,6 +85,4 @@ export const widgetApiBasePathForIpfs =
   process.env.WIDGET_API_BASE_PATH_FOR_IPFS;
 
 /** @type string */
-export const rewardsBackendBasePath =
-  process.env.REWARDS_BACKEND_BASE_PATH;
-
+export const rewardsBackendBasePath = process.env.REWARDS_BACKEND_BASE_PATH;
