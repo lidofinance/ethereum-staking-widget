@@ -1,4 +1,4 @@
-import { useAccount } from 'wagmi';
+import { useChainId } from 'wagmi';
 import { Link } from '@lidofinance/lido-ui';
 
 import { config } from 'config';
@@ -9,7 +9,7 @@ import { InfoBoxStyled } from 'features/withdrawals/shared';
 const LIDO_TWITTER_LINK = 'https://twitter.com/lidofinance';
 
 export const PausedInfo = () => {
-  const { chainId } = useAccount();
+  const chainId = useChainId();
 
   const docsSepoliaLink = `${config.docsOrigin}/deployed-contracts/sepolia/`;
 
