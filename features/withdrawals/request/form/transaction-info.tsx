@@ -17,12 +17,7 @@ import {
 } from '../request-form-context';
 
 export const TransactionInfo = () => {
-  const {
-    isDappActive,
-    isWalletConnected,
-    isDappActiveAndNetworksMatched,
-    isAccountActiveOnL2,
-  } = useDappStatus();
+  const { isDappActive, isAccountActiveOnL2 } = useDappStatus();
 
   const { isApprovalFlow, isApprovalFlowLoading, allowance } =
     useRequestFormData();
@@ -57,7 +52,7 @@ export const TransactionInfo = () => {
         data-testid="maxTxCost"
         loading={requestTxPriceLoading}
       >
-        {isWalletConnected && !isDappActiveAndNetworksMatched ? (
+        {!isDappActive || isAccountActiveOnL2 ? (
           '-'
         ) : (
           <FormatPrice amount={requestTxPriceInUsd} />
