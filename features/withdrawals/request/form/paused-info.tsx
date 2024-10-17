@@ -11,19 +11,16 @@ const LIDO_TWITTER_LINK = 'https://twitter.com/lidofinance';
 export const PausedInfo = () => {
   const { chainId } = useAccount();
 
-  let link = <Link href={LIDO_TWITTER_LINK}>see here</Link>;
-
-  if (chainId == CHAINS.Sepolia) {
-    link = (
-      <Link href={`${config.docsOrigin}/deployed-contracts/sepolia/`}>
-        see here
-      </Link>
-    );
-  }
+  const docsSepoliaLink = `${config.docsOrigin}/deployed-contracts/sepolia/`;
 
   return (
     <InfoBoxStyled>
-      Withdrawals are currently unavailable. For more information, {link}
+      Withdrawals are currently unavailable. For more information,{' '}
+      <Link
+        href={chainId == CHAINS.Sepolia ? docsSepoliaLink : LIDO_TWITTER_LINK}
+      >
+        see here
+      </Link>
     </InfoBoxStyled>
   );
 };
