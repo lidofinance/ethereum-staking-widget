@@ -17,7 +17,13 @@ import {
 } from '../request-form-context';
 
 export const TransactionInfo = () => {
-  const { isDappActive } = useDappStatus();
+  const {
+    isDappActive,
+    isWalletConnected,
+    isDappActiveAndNetworksMatched,
+    isAccountActiveOnL2,
+  } = useDappStatus();
+
   const { isApprovalFlow, isApprovalFlowLoading, allowance } =
     useRequestFormData();
   const token = useWatch<RequestFormInputType, 'token'>({ name: 'token' });
@@ -51,13 +57,17 @@ export const TransactionInfo = () => {
         data-testid="maxTxCost"
         loading={requestTxPriceLoading}
       >
-        <FormatPrice amount={requestTxPriceInUsd} />
+        {isWalletConnected && !isDappActiveAndNetworksMatched ? (
+          '-'
+        ) : (
+          <FormatPrice amount={requestTxPriceInUsd} />
+        )}
       </DataTableRow>
       <AllowanceDataTableRow
         data-testid="allowance"
         token={token}
         allowance={allowance}
-        isBlank={!isDappActive}
+        isBlank={!isDappActive || isAccountActiveOnL2}
         loading={isApprovalFlowLoading}
       />
       {token === TOKENS.STETH ? (

@@ -17,6 +17,7 @@ import { useApproveGasLimit } from 'features/wsteth/wrap/hooks/use-approve-gas-l
 
 export const UnwrapStats = () => {
   const {
+    isDappActive,
     isWalletConnected,
     isAccountActiveOnL2,
     isDappActiveAndNetworksMatched,
@@ -84,7 +85,10 @@ export const UnwrapStats = () => {
           allowance={BigNumber.from(allowance || '0')}
           loading={isAllowanceLoading}
           token={TOKENS.WSTETH}
-          isBlank={isWalletConnected && !isDappActiveAndNetworksMatched}
+          isBlank={
+            !isDappActive ||
+            (isWalletConnected && !isDappActiveAndNetworksMatched)
+          }
         />
       )}
     </DataTable>
