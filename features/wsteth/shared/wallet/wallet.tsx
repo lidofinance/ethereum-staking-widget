@@ -154,12 +154,7 @@ export const Wallet: WalletComponentType = memo((props) => {
     return <Fallback error={error} {...props} />;
   }
 
-  // Most likely Optimism support in LL and LH will arrive at the same time
-  if (
-    !featureFlags.ledgerLiveL2 &&
-    isLedgerHardware &&
-    chainName === OPTIMISM
-  ) {
+  if (isLedgerHardware && chainName === OPTIMISM) {
     const error = `Optimism is currently not supported in Ledger Hardware.`;
     return <Fallback error={error} {...props} />;
   }
