@@ -1,5 +1,6 @@
 import { memo } from 'react';
 import { useAccount } from 'wagmi';
+import { useConnectorInfo } from 'reef-knot/core-react';
 
 import { Divider, Text } from '@lidofinance/lido-ui';
 import { useSDK } from '@lido-sdk/react';
@@ -141,6 +142,7 @@ const WalletComponent: WalletComponentType = (props) => {
 
 export const Wallet: WalletComponentType = memo((props) => {
   const isLedgerLive = useIsLedgerLive();
+  const { isLedger: isLedgerHardware } = useConnectorInfo();
   const { featureFlags } = useConfig().externalConfig;
   const { chainId } = useAccount();
   const { isDappActive, isDappActiveOnL2 } = useDappStatus();
@@ -149,6 +151,11 @@ export const Wallet: WalletComponentType = memo((props) => {
 
   if (!featureFlags.ledgerLiveL2 && isLedgerLive && chainName === OPTIMISM) {
     const error = `Optimism is currently not supported in Ledger Live.`;
+    return <Fallback error={error} {...props} />;
+  }
+
+  if (isLedgerHardware && chainName === OPTIMISM) {
+    const error = `Optimism is currently not supported in Ledger Hardware.`;
     return <Fallback error={error} {...props} />;
   }
 
