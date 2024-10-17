@@ -84,6 +84,7 @@ export const UnwrapStats = () => {
           allowance={BigNumber.from(allowance || '0')}
           loading={isAllowanceLoading}
           token={TOKENS.WSTETH}
+          isBlank={isWalletConnected && !isDappActiveAndNetworksMatched}
         />
       )}
     </DataTable>
