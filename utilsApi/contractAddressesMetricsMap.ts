@@ -119,7 +119,7 @@ export const METRIC_CONTRACT_ADDRESSES = (
         chainId,
       ),
       [CONTRACT_NAMES.StethCurve]: getAddressOrNull((chainId: CHAINS) => {
-        if (chainId === 1) return MAINNET_CURVE;
+        if (chainId === mainnet.id) return MAINNET_CURVE;
         return null;
       }, chainId),
       [CONTRACT_NAMES.LidoLocator]: getAddressOrNull((chainId: CHAINS) => {
@@ -140,14 +140,15 @@ export const METRIC_CONTRACT_ADDRESSES = (
       [CONTRACT_NAMES.EnsPublicResolver]: getAddressOrNull(
         (chainId: CHAINS) => {
           // used by ethers
-          if (chainId === 1)
+          if (chainId === mainnet.id)
             return '0x4976fb03c32e5b8cfe2b6ccb31c09ba78ebaba41';
           return null;
         },
         chainId,
       ),
       [CONTRACT_NAMES.EnsRegistry]: getAddressOrNull((chainId: CHAINS) => {
-        if (chainId === 1) return mainnet.contracts.ensRegistry.address;
+        if (chainId === mainnet.id)
+          return mainnet.contracts.ensRegistry.address;
         return null;
       }, chainId),
     };

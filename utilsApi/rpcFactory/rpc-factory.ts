@@ -16,6 +16,7 @@ import {
   ethCallValidationFactory,
   ethGetLogsValidationFactory,
   rpcMethodsValidationFactory,
+  shouldValidateRpcMethod,
   streamMaxSizeValidationFactory,
 } from './validation';
 import { RPCFactoryParams } from './types';
@@ -46,7 +47,7 @@ export const rpcFactory = ({
     labelNames: ['reason'],
     registers: [],
   });
-  registry && registry.registerMetric(rpcRequestBlocked);
+  registry?.registerMetric(rpcRequestBlocked);
 
   const validateBaseRequest = baseRequestValidationFactory(
     defaultChain,
@@ -58,13 +59,13 @@ export const rpcFactory = ({
 
   const validateEthCall =
     allowedCallAddresses &&
-    (!allowedRPCMethods || allowedRPCMethods.includes('eth_call'))
+    shouldValidateRpcMethod('eth_call', allowedRPCMethods)
       ? ethCallValidationFactory(allowedCallAddresses)
       : undefined;
 
   const validateEthGetLogs =
     (allowedLogsAddresses || blockEmptyAddressGetLogs) &&
-    (!allowedRPCMethods || allowedRPCMethods.includes('eth_getLogs'))
+    shouldValidateRpcMethod('eth_getLogs', allowedRPCMethods)
       ? ethGetLogsValidationFactory(
           allowedLogsAddresses,
           blockEmptyAddressGetLogs,
@@ -138,7 +139,7 @@ export const rpcFactory = ({
       } else if (error instanceof Error) {
         // TODO: check if there are errors duplication with iterateUrls
         console.error(
-          '[rpcFactory]' + error.message ?? DEFAULT_API_ERROR_MESSAGE,
+          '[rpcFactory]' + (error.message ?? DEFAULT_API_ERROR_MESSAGE),
         );
         if (!res.headersSent) {
           res.status(500).json(error.message ?? DEFAULT_API_ERROR_MESSAGE);

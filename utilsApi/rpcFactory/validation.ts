@@ -63,13 +63,7 @@ export const rpcMethodsValidationFactory = (allowedMethods?: string[]) => {
 export const ethCallValidationFactory = (
   allowedAddress: Record<number, string[]>,
 ) => {
-  const allowedCallAddressMap = Object.entries(allowedAddress).reduce(
-    (acc, [chainId, addresses]) => {
-      acc[chainId] = new Set(addresses.map((a) => a.toLowerCase()));
-      return acc;
-    },
-    {} as Record<string, Set<string>>,
-  );
+  const allowedCallAddressMap = createAllowedAddressMap(allowedAddress);
 
   return (
     request: RpcRequest,
@@ -97,13 +91,7 @@ export const ethGetLogsValidationFactory = (
   maxBlockRange: number | undefined,
   currentBlockTTL = 60_000,
 ) => {
-  const allowedAddressMap = Object.entries(allowedAddress ?? {}).reduce(
-    (acc, [chainId, addresses]) => {
-      acc[chainId] = new Set(addresses.map((a) => a.toLowerCase()));
-      return acc;
-    },
-    {} as Record<string, Set<string>>,
-  );
+  const allowedAddressMap = createAllowedAddressMap(allowedAddress ?? {});
 
   const maxBlockRangeBN = maxBlockRange ? BigNumber.from(maxBlockRange) : Zero;
 
@@ -220,3 +208,20 @@ export const streamMaxSizeValidationFactory =
       },
     });
   };
+
+// utils
+
+export const shouldValidateRpcMethod = (
+  method: string,
+  allowedRPCMethods?: string[],
+) => !allowedRPCMethods || allowedRPCMethods.includes(method);
+
+const createAllowedAddressMap = (allowedAddress: Record<number, string[]>) => {
+  return Object.entries(allowedAddress).reduce(
+    (acc, [chainId, addresses]) => {
+      acc[chainId] = new Set(addresses.map((a) => a.toLowerCase()));
+      return acc;
+    },
+    {} as Record<string, Set<string>>,
+  );
+};

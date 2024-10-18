@@ -200,25 +200,27 @@ export const nextDefaultErrorHandler =
     try {
       await next?.(req, res, next);
     } catch (error) {
-      if (!res.headersSent) {
-        const isInnerError = res.statusCode === 200;
-        const status = isInnerError ? 500 : res.statusCode || 500;
-
-        if (error instanceof Error) {
-          const serverError = 'status' in error && (error.status as number);
-          console?.error(extractErrorMessage(error, errorMessage));
-          res
-            .status(serverError || status)
-            .json({ message: extractErrorMessage(error, errorMessage) });
-        } else {
-          res.status(status).json({ message: errorMessage });
-        }
-      } else {
+      if (res.headersSent) {
         console?.error(
           '[nextDefaultErrorHandler] error after headers sent:',
           extractErrorMessage(error, errorMessage),
         );
+        return;
       }
+
+      const isInnerError = res.statusCode === 200;
+      const status = isInnerError ? 500 : res.statusCode || 500;
+
+      if (error instanceof Error) {
+        const serverError = 'status' in error && (error.status as number);
+        console?.error(extractErrorMessage(error, errorMessage));
+        res
+          .status(serverError || status)
+          .json({ message: extractErrorMessage(error, errorMessage) });
+        return;
+      }
+
+      res.status(status).json({ message: errorMessage });
     }
   };
 
