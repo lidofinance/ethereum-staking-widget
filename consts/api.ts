@@ -3,8 +3,6 @@ import { config } from 'config';
 export const ETHPLORER_TOKEN_ENDPOINT =
   'https://api.ethplorer.io/getTokenInfo/';
 
-export const HEALTHY_RPC_SERVICES_ARE_OVER = 'Healthy RPC services are over!';
-
 // 5th August, Monday, middle of the working day
 export const API_DEFAULT_SUNSET_TIMESTAMP = new Date(
   '2024-08-05T09:00:00',
