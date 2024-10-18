@@ -1,5 +1,4 @@
 import { FC, useMemo } from 'react';
-import { useRouter } from 'next/router';
 
 import { BlockProps, Link } from '@lidofinance/lido-ui';
 
@@ -23,7 +22,7 @@ import { trackMatomoEvent } from 'utils/track-matomo-event';
 import { capitalize } from 'utils/capitalize';
 
 import { Wrap, TextStyle, ButtonStyle } from './styles';
-import { useDappStatus, DAPP_CHAIN_TYPE } from 'modules/web3';
+import { useDappStatus, DAPP_CHAIN_TYPE, useDappChain } from 'modules/web3';
 
 export type LidoMultichainFallbackComponent = FC<
   { textEnding: string } & BlockProps
@@ -50,9 +49,9 @@ const getChainLogo = (chainId: LIDO_MULTICHAIN_CHAINS) => {
 export const LidoMultichainFallback: LidoMultichainFallbackComponent = (
   props,
 ) => {
+  const { isChainTypeUnlocked } = useDappChain();
   const { walletChainId } = useDappStatus();
   const { defaultChain } = useUserConfig();
-  const router = useRouter();
 
   const defaultChainName = useMemo(() => {
     if (CHAINS[defaultChain] === 'Mainnet') return 'Ethereum';
@@ -66,13 +65,14 @@ export const LidoMultichainFallback: LidoMultichainFallbackComponent = (
     );
   }, [walletChainId]);
 
+  // only show full list of chain where
   const switchToText = useMemo(() => {
-    if (router.pathname === '/wrap/[[...mode]]') {
-      return `${capitalize(DAPP_CHAIN_TYPE.Ethereum)}/${capitalize(DAPP_CHAIN_TYPE.Optimism)}`;
+    if (isChainTypeUnlocked) {
+      return `${defaultChainName}/${capitalize(DAPP_CHAIN_TYPE.Optimism)}`;
     } else {
       return defaultChainName;
     }
-  }, [router.pathname, defaultChainName]);
+  }, [defaultChainName, isChainTypeUnlocked]);
 
   return (
     <Wrap {...props} chainId={walletChainId as LIDO_MULTICHAIN_CHAINS}>

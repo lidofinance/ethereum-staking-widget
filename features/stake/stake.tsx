@@ -1,5 +1,5 @@
 import { FaqPlaceholder } from 'features/ipfs';
-import { SupportOnlyL1Chains, useWagmiKey } from 'modules/web3';
+import { useWagmiKey } from 'modules/web3';
 import NoSSRWrapper from 'shared/components/no-ssr-wrapper';
 import { OnlyInfraRender } from 'shared/components/only-infra-render';
 
@@ -11,7 +11,7 @@ export const Stake = () => {
   const key = useWagmiKey();
 
   return (
-    <SupportOnlyL1Chains>
+    <>
       <NoSSRWrapper>
         <StakeForm key={key} />
       </NoSSRWrapper>
@@ -19,6 +19,6 @@ export const Stake = () => {
       <OnlyInfraRender renderIPFS={<FaqPlaceholder />}>
         <StakeFaq />
       </OnlyInfraRender>
-    </SupportOnlyL1Chains>
+    </>
   );
 };

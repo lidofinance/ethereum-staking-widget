@@ -5,7 +5,6 @@ import { isSDKSupportedL2Chain, LIDO_MULTICHAIN_CHAINS } from 'consts/chains';
 
 import { useConfig } from 'config';
 import { useDappChain } from 'modules/web3/web3-provider/dapp-chain';
-import { useSupportedChain } from '../web3-provider/supported-chain';
 
 export const useDappStatus = () => {
   const { multiChainBanner } = useConfig().externalConfig;
@@ -15,11 +14,13 @@ export const useDappStatus = () => {
     isConnected: isWalletConnected,
   } = useAccount();
 
-  //TODO: Might want to unify those states
-  // uses nearest SupportedChains context to get correct value
-  const { isSupportedChain, currentSupportedChain } = useSupportedChain();
   // uses singular global context to get chooses dapp chain
-  const { isDappChainTypeMatched, chainType } = useDappChain();
+  const {
+    isChainTypeMatched,
+    chainType,
+    currentSupportedChain,
+    isSupportedChain,
+  } = useDappChain();
 
   return useMemo(() => {
     const isLidoMultichainChain =
@@ -35,14 +36,14 @@ export const useDappStatus = () => {
     const isDappActiveOnL1 =
       isAccountActive &&
       !isSDKSupportedL2Chain(walletChainId) &&
-      isDappChainTypeMatched;
+      isChainTypeMatched;
 
     const isDappActiveOnL2 =
       isAccountActive &&
       isSDKSupportedL2Chain(walletChainId) &&
-      isDappChainTypeMatched;
+      isChainTypeMatched;
 
-    const isDappActive = isAccountActive && isDappChainTypeMatched;
+    const isDappActive = isAccountActive && isChainTypeMatched;
 
     return {
       isAccountActive,
@@ -55,7 +56,7 @@ export const useDappStatus = () => {
       chainId: currentSupportedChain,
       walletChainId,
       address,
-      isDappChainTypeMatched,
+      isChainTypeMatched,
       chainType,
     };
   }, [
@@ -63,7 +64,7 @@ export const useDappStatus = () => {
     multiChainBanner,
     isWalletConnected,
     isSupportedChain,
-    isDappChainTypeMatched,
+    isChainTypeMatched,
     currentSupportedChain,
     address,
     chainType,

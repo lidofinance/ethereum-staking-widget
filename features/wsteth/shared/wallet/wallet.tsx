@@ -136,19 +136,15 @@ const WalletComponent: WalletComponentType = (props) => {
 };
 
 export const Wallet: WalletComponentType = memo((props) => {
-  const {
-    isDappActive,
-    isLidoMultichainChain,
-    chainType,
-    isDappChainTypeMatched,
-  } = useDappStatus();
+  const { isDappActive, isLidoMultichainChain, chainType, isChainTypeMatched } =
+    useDappStatus();
   const isOptimism = chainType === DAPP_CHAIN_TYPE.Optimism;
 
   if (isLidoMultichainChain) {
     return <LidoMultichainFallback textEnding={'to wrap/unwrap'} {...props} />;
   }
 
-  if (isDappActive && !isDappChainTypeMatched) {
+  if (isDappActive && !isChainTypeMatched) {
     const switchToEthereum =
       config.defaultChain === CHAINS.Mainnet
         ? 'Ethereum'
