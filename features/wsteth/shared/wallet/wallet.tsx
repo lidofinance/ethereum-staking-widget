@@ -1,11 +1,10 @@
 import { memo } from 'react';
 import { useAccount } from 'wagmi';
-import { useConnectorInfo } from 'reef-knot/core-react';
 
 import { Divider, Text } from '@lidofinance/lido-ui';
 import { useSDK } from '@lido-sdk/react';
 
-import { config } from 'config';
+import { config, useConfig } from 'config';
 import { CHAINS } from 'consts/chains';
 import { FormatToken } from 'shared/formatters';
 import { TokenToWallet } from 'shared/components';
@@ -31,6 +30,7 @@ import { capitalizeFirstLetter } from 'utils/capitalize-string';
 import { StyledCard } from './styles';
 import { useStETHByWstETHOnL2 } from 'shared/hooks/use-stETH-by-wstETH-on-l2';
 import { useWstETHByStETHOnL2 } from 'shared/hooks/use-wstETH-by-stETH-on-l2';
+import { useIsLedgerLive } from 'shared/hooks/useIsLedgerLive';
 
 const WalletComponent: WalletComponentType = (props) => {
   const { account } = useSDK();
@@ -140,23 +140,29 @@ const WalletComponent: WalletComponentType = (props) => {
 };
 
 export const Wallet: WalletComponentType = memo((props) => {
-  const { isLedgerLive } = useConnectorInfo();
+  const isLedgerLive = useIsLedgerLive();
+  const { featureFlags } = useConfig().externalConfig;
   const { chainId } = useAccount();
   const { isDappActive, isDappActiveOnL2 } = useDappStatus();
   const { showLidoMultichainFallback } = useLidoMultichainFallbackCondition();
   const { chainName, isMatchDappChainAndWalletChain } = useDappChain();
 
-  if (isLedgerLive && chainName === OPTIMISM) {
+  if (!featureFlags.ledgerLiveL2 && isLedgerLive && chainName === OPTIMISM) {
     const error = `Optimism is currently not supported in Ledger Live.`;
     return <Fallback error={error} {...props} />;
   }
 
   if (isDappActive && !isMatchDappChainAndWalletChain(chainId)) {
+    const switchToEthereum =
+      config.defaultChain === CHAINS.Mainnet
+        ? 'Ethereum'
+        : capitalizeFirstLetter(CHAINS[config.defaultChain]);
+
     const switchToOptimism =
       config.supportedChains.indexOf(CHAINS.Optimism) > -1
         ? capitalizeFirstLetter(OPTIMISM)
         : 'Optimism Sepolia';
-    const error = `Wrong network. Please switch to ${chainName === OPTIMISM ? switchToOptimism : capitalizeFirstLetter(CHAINS[config.defaultChain])} in your wallet to wrap/unwrap.`;
+    const error = `Wrong network. Please switch to ${chainName === OPTIMISM ? switchToOptimism : switchToEthereum} in your wallet to wrap/unwrap.`;
     return <Fallback error={error} {...props} />;
   }
 

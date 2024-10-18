@@ -43,6 +43,14 @@ const isMultiChainBannerValid = (config: object) => {
   return !(new Set(multiChainBanner).size !== multiChainBanner.length);
 };
 
+const isFeatureFlagsValid = (config: object) => {
+  // allow empty config
+  if (!('featureFlags' in config) || !config.featureFlags) return true;
+
+  // only objects
+  return !(typeof config.featureFlags !== 'object');
+};
+
 export const isManifestEntryValid = (
   entry?: unknown,
 ): entry is ManifestEntry => {
@@ -57,7 +65,7 @@ export const isManifestEntryValid = (
   ) {
     const config = entry.config;
 
-    return [isEnabledDexesValid, isMultiChainBannerValid]
+    return [isEnabledDexesValid, isMultiChainBannerValid, isFeatureFlagsValid]
       .map((validator) => validator(config))
       .every((isValid) => isValid);
   }
@@ -71,6 +79,7 @@ export const getBackwardCompatibleConfig = (
     enabledWithdrawalDexes: config.enabledWithdrawalDexes.filter(
       (dex) => !!getDexConfig(dex),
     ),
+    featureFlags: { ...(config.featureFlags ?? {}) },
     multiChainBanner: config.multiChainBanner ?? [],
   };
 };
