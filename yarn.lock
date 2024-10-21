@@ -2916,10 +2916,10 @@
   resolved "https://registry.yarnpkg.com/@polka/url/-/url-1.0.0-next.24.tgz#58601079e11784d20f82d0585865bb42305c4df3"
   integrity sha512-2LuNTFBIO0m7kKIQvvPHN6UE63VjpmL9rnEEaOOaiSPbZK+zUOYIzBAWcED+3XYzhYsd/0mD57VdxAEqqV52CQ==
 
-"@reef-knot/connect-wallet-modal@5.5.0":
-  version "5.5.0"
-  resolved "https://registry.yarnpkg.com/@reef-knot/connect-wallet-modal/-/connect-wallet-modal-5.5.0.tgz#3ef1c1650796f978169998c974e22f20f1fb15a6"
-  integrity sha512-Mw0rl7wTOMDcJ0QXBbCN2Zw3I25VQeGuOaSejIK0gYDlkff6JVjd4CY4KlGcAsIp9vCGBnJ+8aJPfLG8R0+jow==
+"@reef-knot/connect-wallet-modal@5.5.1":
+  version "5.5.1"
+  resolved "https://registry.yarnpkg.com/@reef-knot/connect-wallet-modal/-/connect-wallet-modal-5.5.1.tgz#3715732d2b889cecfa2964ec891f10e6d9284eab"
+  integrity sha512-umTAn056/XT1OJGMQbd+gIF4I79RlcHm2DUoPcaDqG/HepsUzwxY9pr+5/Dm6QAN2SwHffoJLTqUeKQAxQQmxg==
   dependencies:
     "@ledgerhq/hw-app-eth" "^6.37.1"
     "@ledgerhq/hw-transport" "^6.31.0"
@@ -9598,12 +9598,12 @@ redis-parser@^3.0.0:
   dependencies:
     redis-errors "^1.0.0"
 
-reef-knot@5.7.2:
-  version "5.7.2"
-  resolved "https://registry.yarnpkg.com/reef-knot/-/reef-knot-5.7.2.tgz#23dec3539718ffd53638b1670bee57bb5729c37c"
-  integrity sha512-f+yBBoZ2y4419E0DfcJFQ7Y+tiBymi3WjKbTgMtCy2POzj+H1P4Q+mIPi5YeSPIycLJD1LPSJn4nyxDGdCBI3g==
+reef-knot@5.7.3:
+  version "5.7.3"
+  resolved "https://registry.yarnpkg.com/reef-knot/-/reef-knot-5.7.3.tgz#5cb963576968e5941895234a1b86420366caeb60"
+  integrity sha512-flwrgb8+aZ7tf8uAb7P1Y5Y9JfvW5zYM8hJpdfdnWHE4Ayd9sPiMW1MAuh6ywh4PnghEthjAMgp31iBYQP1Lww==
   dependencies:
-    "@reef-knot/connect-wallet-modal" "5.5.0"
+    "@reef-knot/connect-wallet-modal" "5.5.1"
     "@reef-knot/core-react" "4.3.0"
     "@reef-knot/ledger-connector" "4.1.2"
     "@reef-knot/types" "2.1.0"

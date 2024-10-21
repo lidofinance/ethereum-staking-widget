@@ -10,10 +10,14 @@ import {
   useWstethBalance,
   useStETHByWstETHOnL2,
   useWstETHByStETHOnL2,
+  DAPP_CHAIN_TYPE,
 } from 'modules/web3';
 import { CardBalance, CardRow, CardAccount, Fallback } from 'shared/wallet';
 
 import { StyledCard } from './styles';
+import { useIsLedgerLive } from 'shared/hooks/useIsLedgerLive';
+import { useConfig } from 'config';
+import { useConnectorInfo } from 'reef-knot/core-react';
 
 const WalletComponent = () => {
   const { isDappActiveOnL2 } = useDappStatus();
@@ -122,6 +126,24 @@ type WrapWalletProps = {
 };
 
 export const Wallet = ({ isUnwrapMode }: WrapWalletProps) => {
+  const isLedgerLive = useIsLedgerLive();
+  const { isLedger: isLedgerHardware } = useConnectorInfo();
+  const { featureFlags } = useConfig().externalConfig;
+  const { chainType } = useDappStatus();
+  if (
+    !featureFlags.ledgerLiveL2 &&
+    isLedgerLive &&
+    chainType === DAPP_CHAIN_TYPE.Optimism
+  ) {
+    const error = `Optimism is currently not supported in Ledger Live.`;
+    return <Fallback error={error} />;
+  }
+
+  if (isLedgerHardware && chainType === DAPP_CHAIN_TYPE.Optimism) {
+    const error = `Optimism is currently not supported in Ledger Hardware.`;
+    return <Fallback error={error} />;
+  }
+
   return (
     <Fallback toActionText={`to ${isUnwrapMode ? 'unwrap' : 'wrap'}`}>
       <WalletComponent />

@@ -8,15 +8,18 @@ import { LidoMultichainFallback } from '../lido-multichain-fallback/lido-multich
 type FallbackProps = React.ComponentProps<WalletCardComponent> & {
   showMultichainBanner?: boolean;
   toActionText?: string;
+  error?: string;
 };
 export const Fallback = ({
   showMultichainBanner = true,
   children,
   toActionText,
+  error,
   ...props
 }: FallbackProps) => {
   const { isLidoMultichainChain, isWalletConnected } = useDappStatus();
-  const error = useErrorMessage();
+  let errorMessage = useErrorMessage();
+  if (error) errorMessage = error;
 
   if (showMultichainBanner && isLidoMultichainChain) {
     return (
@@ -27,7 +30,7 @@ export const Fallback = ({
   if (error) {
     return (
       <FallbackWalletStyle {...props}>
-        <TextStyle>{error}</TextStyle>
+        <TextStyle>{errorMessage}</TextStyle>
       </FallbackWalletStyle>
     );
   }
