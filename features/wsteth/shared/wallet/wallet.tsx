@@ -1,10 +1,11 @@
 import { memo } from 'react';
 import { useAccount } from 'wagmi';
+import { useConnectorInfo } from 'reef-knot/core-react';
 
 import { Divider, Text } from '@lidofinance/lido-ui';
 import { useSDK } from '@lido-sdk/react';
 
-import { config } from 'config';
+import { config, useConfig } from 'config';
 import { CHAINS } from 'consts/chains';
 import { FormatToken } from 'shared/formatters';
 import { TokenToWallet } from 'shared/components';
@@ -30,6 +31,7 @@ import { capitalizeFirstLetter } from 'utils/capitalize-string';
 import { StyledCard } from './styles';
 import { useStETHByWstETHOnL2 } from 'shared/hooks/use-stETH-by-wstETH-on-l2';
 import { useWstETHByStETHOnL2 } from 'shared/hooks/use-wstETH-by-stETH-on-l2';
+import { useIsLedgerLive } from 'shared/hooks/useIsLedgerLive';
 
 const WalletComponent: WalletComponentType = (props) => {
   const { account } = useSDK();
@@ -139,10 +141,23 @@ const WalletComponent: WalletComponentType = (props) => {
 };
 
 export const Wallet: WalletComponentType = memo((props) => {
+  const isLedgerLive = useIsLedgerLive();
+  const { isLedger: isLedgerHardware } = useConnectorInfo();
+  const { featureFlags } = useConfig().externalConfig;
   const { chainId } = useAccount();
   const { isDappActive, isDappActiveOnL2 } = useDappStatus();
   const { showLidoMultichainFallback } = useLidoMultichainFallbackCondition();
   const { chainName, isMatchDappChainAndWalletChain } = useDappChain();
+
+  if (!featureFlags.ledgerLiveL2 && isLedgerLive && chainName === OPTIMISM) {
+    const error = `Optimism is currently not supported in Ledger Live.`;
+    return <Fallback error={error} {...props} />;
+  }
+
+  if (isLedgerHardware && chainName === OPTIMISM) {
+    const error = `Optimism is currently not supported in Ledger Hardware.`;
+    return <Fallback error={error} {...props} />;
+  }
 
   if (isDappActive && !isMatchDappChainAndWalletChain(chainId)) {
     const switchToEthereum =
