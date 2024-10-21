@@ -22,17 +22,28 @@ const DISABLED_METHODS = new Set([
   'eth_uninstallFilter',
 ]);
 
-const NOOP = () => {};
-
 // Viem transport wrapper that allows runtime changes via setter
 const runtimeMutableTransport = (
   mainTransports: Transport[],
 ): [Transport, (t: Transport | null) => void] => {
   let withInjectedTransport: Transport | null = null;
+
+  // tuple [RuntimeMutableTransport(), injectedTransporterSetter()]
   return [
     (params) => {
       const defaultTransport = fallback(mainTransports)(params);
-      let responseFn: OnResponseFn = NOOP;
+      let externalOnResponse: OnResponseFn;
+
+      const onResponse: OnResponseFn = (params) => {
+        if (params.status === 'error' && !(params as any).skipLog) {
+          console.warn(
+            `[runtimeMutableTransport] error in RuntimeMutableTransport(using injected: ${!!withInjectedTransport})`,
+            params,
+          );
+        }
+        externalOnResponse?.(params);
+      };
+
       return createTransport(
         {
           key: 'RuntimeMutableTransport',
@@ -47,13 +58,15 @@ const runtimeMutableTransport = (
               const error = new UnsupportedProviderMethodError(
                 new Error(`Method ${requestParams.method} is not supported`),
               );
-              responseFn({
+              onResponse({
                 error,
                 method: requestParams.method,
                 params: params as unknown[],
                 transport,
                 status: 'error',
-              });
+                // skip logging because we expect wagmi to try those
+                skipLog: true,
+              } as any);
               throw error;
             }
 
@@ -63,14 +76,10 @@ const runtimeMutableTransport = (
               // works for empty array, empty string and all falsish values
               !requestParams.params[0]?.address?.length
             ) {
-              console.warn(
-                '[runtimeMutableTransport] Invalid empty getLogs',
-                requestParams,
-              );
               const error = new InvalidParamsRpcError(
                 new Error(`Empty address for eth_getLogs is not supported`),
               );
-              responseFn({
+              onResponse({
                 error,
                 method: requestParams.method,
                 params: params as unknown[],
@@ -80,14 +89,19 @@ const runtimeMutableTransport = (
               throw error;
             }
 
-            transport.value?.onResponse(responseFn);
+            transport.value?.onResponse(onResponse);
             return transport.request(requestParams, options);
           },
+          // crucial cause we quack like a fallback transport and some connectors(WC) rely on this
           type: 'fallback',
         },
+        // transport.value contents
         {
+          // this is fallbackTransport specific field, used by WC connectors to extract rpc Urls
+          // we can use defaultTransport because no injected transport
           transports: defaultTransport.value?.transports,
-          onResponse: (fn: OnResponseFn) => (responseFn = fn),
+          // providers that use this transport, use this to set onResponse callback for transport,
+          onResponse: (fn: OnResponseFn) => (externalOnResponse = fn),
         },
       );
     },
@@ -104,27 +118,28 @@ const runtimeMutableTransport = (
   ];
 };
 
-// returns Viem transport map that uses browser wallet RPC provider when avaliable fallbacked by our RPC
+// returns Viem transport map that uses browser wallet RPC provider when available fallbacked by our RPC and default RPCs
 export const useWeb3Transport = (
   supportedChains: Chain[],
   backendRpcMap: Record<number, string>,
 ) => {
   const { transportMap, setTransportMap } = useMemo(() => {
+    //
+    const batchConfig = {
+      wait: config.PROVIDER_BATCH_TIME,
+      batchSize: config.PROVIDER_MAX_BATCH,
+    };
     return supportedChains.reduce(
       ({ transportMap, setTransportMap }, chain) => {
         const [transport, setTransport] = runtimeMutableTransport([
+          // api/rpc
           http(backendRpcMap[chain.id], {
-            batch: {
-              wait: config.PROVIDER_BATCH_TIME,
-              batchSize: config.PROVIDER_MAX_BATCH,
-            },
+            batch: batchConfig,
             name: backendRpcMap[chain.id],
           }),
+          // fallback rpc from wagmi.chains like cloudfare-eth
           http(undefined, {
-            batch: {
-              wait: config.PROVIDER_BATCH_TIME,
-              batchSize: config.PROVIDER_MAX_BATCH,
-            },
+            batch: batchConfig,
             name: 'default HTTP RPC',
           }),
         ]);
