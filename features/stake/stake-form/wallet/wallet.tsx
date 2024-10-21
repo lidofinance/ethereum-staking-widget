@@ -1,38 +1,27 @@
-import { memo } from 'react';
-import { CHAINS, TOKENS } from '@lido-sdk/constants';
+import { TOKENS } from '@lido-sdk/constants';
 import { Divider, Question, Tooltip } from '@lidofinance/lido-ui';
 
-import { getConfig } from 'config';
 import { LIDO_APR_TOOLTIP_TEXT, DATA_UNAVAILABLE } from 'consts/text';
 
 import { TokenToWallet } from 'shared/components';
 import { FormatToken } from 'shared/formatters';
 import { useLidoApr } from 'shared/hooks';
-import { useDappStatus } from 'modules/web3';
 import { useTokenAddress } from 'shared/hooks/use-token-address';
-import {
-  CardAccount,
-  CardBalance,
-  CardRow,
-  Fallback,
-  LidoMultichainFallback,
-} from 'shared/wallet';
-import type { WalletComponentType } from 'shared/wallet/types';
+import { CardAccount, CardBalance, CardRow, Fallback } from 'shared/wallet';
 
 import { useStakeFormData } from '../stake-form-context';
 
 import { LimitMeter } from './limit-meter';
 import { FlexCenter, LidoAprStyled, StyledCard } from './styles';
 
-const WalletComponent: WalletComponentType = (props) => {
-  const { address } = useDappStatus();
+const WalletComponent = () => {
   const { stakeableEther, stethBalance, loading } = useStakeFormData();
 
   const stethAddress = useTokenAddress(TOKENS.STETH);
   const lidoApr = useLidoApr();
 
   return (
-    <StyledCard data-testid="stakeCardSection" {...props}>
+    <StyledCard data-testid="stakeCardSection">
       <CardRow>
         <CardBalance
           title={
@@ -50,7 +39,7 @@ const WalletComponent: WalletComponentType = (props) => {
             />
           }
         />
-        <CardAccount account={address as `0x${string}`} />
+        <CardAccount />
       </CardRow>
       <Divider />
       <CardRow>
@@ -96,27 +85,10 @@ const WalletComponent: WalletComponentType = (props) => {
   );
 };
 
-export const Wallet: WalletComponentType = memo((props) => {
-  const { defaultChain } = getConfig();
-  const { isWalletConnected, isDappActive, isLidoMultichainChain } =
-    useDappStatus();
-
-  if (isLidoMultichainChain) {
-    return <LidoMultichainFallback textEnding={'to stake'} {...props} />;
-  }
-
-  if (isWalletConnected && !isDappActive) {
-    return (
-      <Fallback
-        error={`Unsupported chain. Please switch to ${CHAINS[defaultChain]} in your wallet.`}
-        {...props}
-      />
-    );
-  }
-
-  if (!isDappActive) {
-    return <Fallback {...props} />;
-  }
-
-  return <WalletComponent {...props} />;
-});
+export const Wallet = () => {
+  return (
+    <Fallback toActionText="to stake">
+      <WalletComponent />
+    </Fallback>
+  );
+};

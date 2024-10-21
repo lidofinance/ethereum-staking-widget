@@ -17,6 +17,7 @@ import {
   WalletCardComponent,
   WalletCardRowComponent,
 } from './types';
+import { useDappStatus } from 'modules/web3';
 
 export const Card: WalletCardComponent = (props) => {
   return <WalletCardStyle color="accent" {...props} />;
@@ -60,17 +61,15 @@ export const CardBalance: WalletCardBalanceComponent = (props) => {
   );
 };
 
-export const CardAccount: Component<'div', { account?: string | null }> = (
-  props,
-) => {
-  const { account, ...rest } = props;
+export const CardAccount: Component<'div'> = (props) => {
+  const { address } = useDappStatus();
   const { openModal } = useWalletModal();
 
   return (
-    <WalletCardAccountStyle {...rest}>
+    <WalletCardAccountStyle {...props}>
       <AddressBadge
         data-testid="accountSectionCard"
-        address={account}
+        address={address}
         onClick={() => openModal({})}
         color="accent"
       />

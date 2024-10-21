@@ -2,17 +2,37 @@ import { WalletCardComponent } from 'shared/wallet/card/types';
 
 import { FallbackWalletStyle, TextStyle } from './styles';
 import { useErrorMessage } from './useErrorMessage';
+import { useDappStatus } from 'modules/web3';
+import { LidoMultichainFallback } from '../lido-multichain-fallback/lido-multichain-fallback';
 
-export const Fallback: WalletCardComponent = (props) => {
+type FallbackProps = React.ComponentProps<WalletCardComponent> & {
+  showMultichainBanner?: boolean;
+  toActionText?: string;
+};
+export const Fallback = ({
+  showMultichainBanner = true,
+  children,
+  toActionText,
+  ...props
+}: FallbackProps) => {
+  const { isLidoMultichainChain, isWalletConnected } = useDappStatus();
   const error = useErrorMessage();
 
-  if (props.error || error) {
+  if (showMultichainBanner && isLidoMultichainChain) {
+    return (
+      <LidoMultichainFallback textEnding={toActionText ?? ''} {...props} />
+    );
+  }
+
+  if (error) {
     return (
       <FallbackWalletStyle {...props}>
-        <TextStyle>{props.error || error || ''}</TextStyle>
+        <TextStyle>{error}</TextStyle>
       </FallbackWalletStyle>
     );
   }
 
-  return null;
+  if (!isWalletConnected) return null;
+
+  return children;
 };

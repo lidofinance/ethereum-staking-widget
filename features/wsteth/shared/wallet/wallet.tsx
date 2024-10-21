@@ -1,9 +1,5 @@
-import { memo } from 'react';
-
 import { Divider, Text } from '@lidofinance/lido-ui';
 
-import { config } from 'config';
-import { CHAINS } from 'consts/chains';
 import { FormatToken } from 'shared/formatters';
 import { TokenToWallet } from 'shared/components';
 import { useWstethBySteth, useStethByWsteth } from 'shared/hooks';
@@ -14,23 +10,13 @@ import {
   useWstethBalance,
   useStETHByWstETHOnL2,
   useWstETHByStETHOnL2,
-  DAPP_CHAIN_TYPE,
 } from 'modules/web3';
-import type { WalletComponentType } from 'shared/wallet/types';
-import {
-  CardBalance,
-  CardRow,
-  CardAccount,
-  Fallback,
-  LidoMultichainFallback,
-} from 'shared/wallet';
-
-import { capitalize } from 'utils/capitalize';
+import { CardBalance, CardRow, CardAccount, Fallback } from 'shared/wallet';
 
 import { StyledCard } from './styles';
 
-const WalletComponent: WalletComponentType = (props) => {
-  const { isDappActiveOnL2, address } = useDappStatus();
+const WalletComponent = () => {
+  const { isDappActiveOnL2 } = useDappStatus();
   const ethBalance = useEthereumBalance();
   const stethBalance = useStethBalance();
   const wstethBalance = useWstethBalance();
@@ -57,11 +43,7 @@ const WalletComponent: WalletComponentType = (props) => {
     : stethByWstethOnL1;
 
   return (
-    <StyledCard
-      data-testid="wrapCardSection"
-      $redBg={isDappActiveOnL2}
-      {...props}
-    >
+    <StyledCard data-testid="wrapCardSection" $redBg={isDappActiveOnL2}>
       <CardRow>
         <CardBalance
           title="ETH balance"
@@ -74,7 +56,7 @@ const WalletComponent: WalletComponentType = (props) => {
             />
           }
         />
-        <CardAccount account={address} />
+        <CardAccount />
       </CardRow>
       <Divider />
       <CardRow>
@@ -135,32 +117,14 @@ const WalletComponent: WalletComponentType = (props) => {
   );
 };
 
-export const Wallet: WalletComponentType = memo((props) => {
-  const { isDappActive, isLidoMultichainChain, chainType, isChainTypeMatched } =
-    useDappStatus();
-  const isOptimism = chainType === DAPP_CHAIN_TYPE.Optimism;
+type WrapWalletProps = {
+  isUnwrapMode: boolean;
+};
 
-  if (isLidoMultichainChain) {
-    return <LidoMultichainFallback textEnding={'to wrap/unwrap'} {...props} />;
-  }
-
-  if (isDappActive && !isChainTypeMatched) {
-    const switchToEthereum =
-      config.defaultChain === CHAINS.Mainnet
-        ? 'Ethereum'
-        : capitalize(CHAINS[config.defaultChain]);
-
-    const switchToOptimism =
-      config.supportedChains.indexOf(CHAINS.Optimism) > -1
-        ? capitalize(DAPP_CHAIN_TYPE.Optimism)
-        : 'Optimism Sepolia';
-    const error = `Wrong network. Please switch to ${isOptimism ? switchToOptimism : switchToEthereum} in your wallet to wrap/unwrap.`;
-    return <Fallback error={error} {...props} />;
-  }
-
-  if (!isDappActive) {
-    return <Fallback {...props} />;
-  }
-
-  return <WalletComponent {...props} />;
-});
+export const Wallet = ({ isUnwrapMode }: WrapWalletProps) => {
+  return (
+    <Fallback toActionText={`to ${isUnwrapMode ? 'unwrap' : 'wrap'}`}>
+      <WalletComponent />
+    </Fallback>
+  );
+};

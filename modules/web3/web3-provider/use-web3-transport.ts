@@ -14,8 +14,8 @@ import {
 import type { OnResponseFn } from 'viem/_types/clients/transports/fallback';
 import type { Connection } from 'wagmi';
 
-// We disable those methods so wagmi uses getLogs intestead to watch events
-// Filters are not suitable for public rpc and break between fallbacks
+// We disable those methods so wagmi uses getLogs instead to watch events
+// Filters are not suitable for public rpc and break when changing between fallbacks
 const DISABLED_METHODS = new Set([
   'eth_newFilter',
   'eth_getFilterChanges',

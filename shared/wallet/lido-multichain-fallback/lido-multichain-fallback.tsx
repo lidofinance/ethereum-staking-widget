@@ -1,4 +1,4 @@
-import { FC, useMemo } from 'react';
+import { FC } from 'react';
 
 import { BlockProps, Link } from '@lidofinance/lido-ui';
 
@@ -14,15 +14,13 @@ import { ReactComponent as BNBLogo } from 'assets/icons/lido-multichain/bnb.svg'
 import { ReactComponent as ModeLogo } from 'assets/icons/lido-multichain/mode.svg';
 
 import { config } from 'config';
-import { useUserConfig } from 'config/user-config';
-import { CHAINS, LIDO_MULTICHAIN_CHAINS } from 'consts/chains';
+import { LIDO_MULTICHAIN_CHAINS } from 'consts/chains';
 import { MATOMO_CLICK_EVENTS_TYPES } from 'consts/matomo-click-events';
 import { trackMatomoEvent } from 'utils/track-matomo-event';
 
-import { capitalize } from 'utils/capitalize';
-
 import { Wrap, TextStyle, ButtonStyle } from './styles';
-import { useDappStatus, DAPP_CHAIN_TYPE, useDappChain } from 'modules/web3';
+import { useDappStatus } from 'modules/web3';
+import { joinWithOr } from 'utils/join-with-or';
 
 export type LidoMultichainFallbackComponent = FC<
   { textEnding: string } & BlockProps
@@ -49,30 +47,11 @@ const getChainLogo = (chainId: LIDO_MULTICHAIN_CHAINS) => {
 export const LidoMultichainFallback: LidoMultichainFallbackComponent = (
   props,
 ) => {
-  const { isChainTypeUnlocked } = useDappChain();
-  const { walletChainId } = useDappStatus();
-  const { defaultChain } = useUserConfig();
+  const { walletChainId, supportedChainLabels } = useDappStatus();
 
-  const defaultChainName = useMemo(() => {
-    if (CHAINS[defaultChain] === 'Mainnet') return 'Ethereum';
-    return CHAINS[defaultChain];
-  }, [defaultChain]);
-
-  const lidoMultichainChainName = useMemo(() => {
-    // Trick. Anyway, this condition is working only SPA starting.
-    return (
-      (!!walletChainId && LIDO_MULTICHAIN_CHAINS[walletChainId]) || 'unknown'
-    );
-  }, [walletChainId]);
-
-  // only show full list of chain where
-  const switchToText = useMemo(() => {
-    if (isChainTypeUnlocked) {
-      return `${defaultChainName}/${capitalize(DAPP_CHAIN_TYPE.Optimism)}`;
-    } else {
-      return defaultChainName;
-    }
-  }, [defaultChainName, isChainTypeUnlocked]);
+  // Trick. Anyway, this condition is working only SPA starting.
+  const lidoMultichainChainName =
+    (!!walletChainId && LIDO_MULTICHAIN_CHAINS[walletChainId]) || 'unknown';
 
   return (
     <Wrap {...props} chainId={walletChainId as LIDO_MULTICHAIN_CHAINS}>
@@ -80,7 +59,10 @@ export const LidoMultichainFallback: LidoMultichainFallbackComponent = (
       <TextStyle>
         You are currently on {lidoMultichainChainName}.
         <br />
-        Explore Lido Multichain or switch to {switchToText} {props.textEnding}.
+        Explore Lido Multichain or switch to {joinWithOr(
+          supportedChainLabels,
+        )}{' '}
+        {props.textEnding}.
       </TextStyle>
       <Link href={`${config.rootOrigin}/lido-multichain`}>
         <ButtonStyle

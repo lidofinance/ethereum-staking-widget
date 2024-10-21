@@ -5,26 +5,24 @@ import Head from 'next/head';
 import { WithdrawalsTabs } from 'features/withdrawals';
 import { WithdrawalsProvider } from 'features/withdrawals/contexts/withdrawals-context';
 import { Layout } from 'shared/components';
-import { SupportOnlyL1Chains, useWagmiKey } from 'modules/web3';
+import { useWagmiKey } from 'modules/web3';
 import { getDefaultStaticProps } from 'utilsApi/get-default-static-props';
 
 const Withdrawals: FC<WithdrawalsModePageParams> = ({ mode }) => {
   const key = useWagmiKey();
 
   return (
-    <SupportOnlyL1Chains>
-      <Layout
-        title="Withdrawals"
-        subtitle="Request stETH/wstETH withdrawal and claim ETH"
-      >
-        <Head>
-          <title>Withdrawals | Lido</title>
-        </Head>
-        <WithdrawalsProvider mode={mode}>
-          <WithdrawalsTabs key={key} />
-        </WithdrawalsProvider>
-      </Layout>
-    </SupportOnlyL1Chains>
+    <Layout
+      title="Withdrawals"
+      subtitle="Request stETH/wstETH withdrawal and claim ETH"
+    >
+      <Head>
+        <title>Withdrawals | Lido</title>
+      </Head>
+      <WithdrawalsProvider mode={mode}>
+        <WithdrawalsTabs key={key} />
+      </WithdrawalsProvider>
+    </Layout>
   );
 };
 
