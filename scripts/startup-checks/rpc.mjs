@@ -117,8 +117,7 @@ export const startupCheckRPCs = async () => {
         const rpcUrls = getRPCUrls(chainId);
 
         if (!rpcUrls?.length) {
-          console.warn(`[startupCheckRPCs] No RPC URLs found for chain ${chainId}`);
-          continue;
+          throw new Error(`[startupCheckRPCs] No RPC URLs found for chain ${chainId}`);
         }
 
         const chainCheckResults = await Promise.all(
