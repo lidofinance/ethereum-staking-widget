@@ -1,6 +1,4 @@
-import { useMemo } from 'react';
 import { useAccount } from 'wagmi';
-
 import { isSDKSupportedL2Chain, LIDO_MULTICHAIN_CHAINS } from 'consts/chains';
 
 import { useConfig } from 'config';
@@ -14,58 +12,56 @@ export const useDappStatus = () => {
     isConnected: isWalletConnected,
   } = useAccount();
 
-  // uses singular global context to get chooses dapp chain
-  const dappChain = useDappChain();
+  // this can change between pages based on their dapp-chain context(or lack of)
+  const {
+    isChainTypeMatched,
+    chainType,
+    currentSupportedChain,
+    supportedChainIds,
+    supportedChainTypes,
+    isSupportedChain,
+    supportedChainLabels,
+  } = useDappChain();
 
-  return useMemo(() => {
-    const {
-      isChainTypeMatched,
-      chainType,
-      currentSupportedChain,
-      supportedChainIds,
-      supportedChainTypes,
-      isSupportedChain,
-      supportedChainLabels,
-    } = dappChain;
+  const isLidoMultichainChain =
+    !!walletChainId &&
+    !!LIDO_MULTICHAIN_CHAINS[walletChainId] &&
+    !isSupportedChain &&
+    multiChainBanner.includes(walletChainId);
 
-    const isLidoMultichainChain =
-      !!walletChainId &&
-      !!LIDO_MULTICHAIN_CHAINS[walletChainId] &&
-      !isSupportedChain &&
-      multiChainBanner.includes(walletChainId);
+  const isAccountActive = walletChainId
+    ? isWalletConnected && isSupportedChain
+    : false;
 
-    const isAccountActive = walletChainId
-      ? isWalletConnected && isSupportedChain
-      : false;
+  const isDappActiveOnL1 =
+    isAccountActive &&
+    !isSDKSupportedL2Chain(walletChainId) &&
+    isChainTypeMatched;
 
-    const isDappActiveOnL1 =
-      isAccountActive &&
-      !isSDKSupportedL2Chain(walletChainId) &&
-      isChainTypeMatched;
+  const isDappActiveOnL2 =
+    isAccountActive &&
+    isSDKSupportedL2Chain(walletChainId) &&
+    isChainTypeMatched;
 
-    const isDappActiveOnL2 =
-      isAccountActive &&
-      isSDKSupportedL2Chain(walletChainId) &&
-      isChainTypeMatched;
+  const isDappActive = isAccountActive && isChainTypeMatched;
 
-    const isDappActive = isAccountActive && isChainTypeMatched;
-
-    return {
-      isAccountActive,
-      isDappActive,
-      isDappActiveOnL2,
-      isDappActiveOnL1,
-      isLidoMultichainChain,
-      isSupportedChain,
-      supportedChainIds,
-      supportedChainTypes,
-      supportedChainLabels,
-      isWalletConnected,
-      chainId: currentSupportedChain,
-      walletChainId,
-      address,
-      isChainTypeMatched,
-      chainType,
-    };
-  }, [dappChain, walletChainId, multiChainBanner, isWalletConnected, address]);
+  // no useMemo because memoisation is more expensive than boolean flags
+  // hook is used in many places and every usage would create separate memoisation
+  return {
+    isAccountActive,
+    isDappActive,
+    isDappActiveOnL2,
+    isDappActiveOnL1,
+    isLidoMultichainChain,
+    isSupportedChain,
+    supportedChainIds,
+    supportedChainTypes,
+    supportedChainLabels,
+    isWalletConnected,
+    chainId: currentSupportedChain,
+    walletChainId,
+    address,
+    isChainTypeMatched,
+    chainType,
+  };
 };
