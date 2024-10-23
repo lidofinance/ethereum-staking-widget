@@ -36,8 +36,7 @@ const checkRPC = async (url, chainId) => {
       console.info(`[checkRPC] [chainId=${chainId}] RPC ${domain} is working`);
       return { domain, chainId, success: true };
     } else {
-      console.error(`[checkRPC] [chainId=${chainId}] Expected chainId ${chainId}, but got ${chainIdClient}`);
-      return { domain, chainId, success: false };
+      throw new Error(`Expected chainId ${chainId}, but got ${chainIdClient}`)
     }
   } catch (err) {
     console.error(`[checkRPC] [chainId=${chainId}] Error checking RPC ${domain}: ${err.message}`);
