@@ -71,6 +71,14 @@ export const Wrap = styled((props) => <Card {...props} />)<WrapProps>`
             #b4c740 91.42%
           );
         `;
+      case LIDO_MULTICHAIN_CHAINS['Zircuit Chain']:
+        return css`
+          background: linear-gradient(
+            54.14deg,
+            #1a4b3c -22.38%,
+            #01bb81 91.42%
+          );
+        `;
       default:
         return css`
           background: linear-gradient(
