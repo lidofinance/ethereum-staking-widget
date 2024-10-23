@@ -2898,10 +2898,10 @@
   resolved "https://registry.yarnpkg.com/@polka/url/-/url-1.0.0-next.24.tgz#58601079e11784d20f82d0585865bb42305c4df3"
   integrity sha512-2LuNTFBIO0m7kKIQvvPHN6UE63VjpmL9rnEEaOOaiSPbZK+zUOYIzBAWcED+3XYzhYsd/0mD57VdxAEqqV52CQ==
 
-"@reef-knot/connect-wallet-modal@5.5.0":
-  version "5.5.0"
-  resolved "https://registry.yarnpkg.com/@reef-knot/connect-wallet-modal/-/connect-wallet-modal-5.5.0.tgz#3ef1c1650796f978169998c974e22f20f1fb15a6"
-  integrity sha512-Mw0rl7wTOMDcJ0QXBbCN2Zw3I25VQeGuOaSejIK0gYDlkff6JVjd4CY4KlGcAsIp9vCGBnJ+8aJPfLG8R0+jow==
+"@reef-knot/connect-wallet-modal@5.5.1":
+  version "5.5.1"
+  resolved "https://registry.yarnpkg.com/@reef-knot/connect-wallet-modal/-/connect-wallet-modal-5.5.1.tgz#3715732d2b889cecfa2964ec891f10e6d9284eab"
+  integrity sha512-umTAn056/XT1OJGMQbd+gIF4I79RlcHm2DUoPcaDqG/HepsUzwxY9pr+5/Dm6QAN2SwHffoJLTqUeKQAxQQmxg==
   dependencies:
     "@ledgerhq/hw-app-eth" "^6.37.1"
     "@ledgerhq/hw-transport" "^6.31.0"
@@ -5751,10 +5751,10 @@ elliptic@6.5.4:
     minimalistic-assert "^1.0.1"
     minimalistic-crypto-utils "^1.0.1"
 
-elliptic@^6.5.4:
-  version "6.5.5"
-  resolved "https://registry.yarnpkg.com/elliptic/-/elliptic-6.5.5.tgz#c715e09f78b6923977610d4c2346d6ce22e6dded"
-  integrity sha512-7EjbcmUm17NQFu4Pmgmq2olYMj8nwMnpcddByChSUjArp8F5DQWcIcpriwO4ZToLNAJig0yiyjswfyGNje/ixw==
+elliptic@^6.5.7:
+  version "6.5.7"
+  resolved "https://registry.yarnpkg.com/elliptic/-/elliptic-6.5.7.tgz#8ec4da2cb2939926a1b9a73619d768207e647c8b"
+  integrity sha512-ESVCtTwiA+XhY3wyh24QqRGBoP3rEdDUl3EDUUo9tft074fi19IrdpH7hLCMMP3CIj7jb3W96rn8lt/BqIlt5Q==
   dependencies:
     bn.js "^4.11.9"
     brorand "^1.1.0"
@@ -9773,12 +9773,12 @@ redis-parser@^3.0.0:
   dependencies:
     redis-errors "^1.0.0"
 
-reef-knot@5.7.2:
-  version "5.7.2"
-  resolved "https://registry.yarnpkg.com/reef-knot/-/reef-knot-5.7.2.tgz#23dec3539718ffd53638b1670bee57bb5729c37c"
-  integrity sha512-f+yBBoZ2y4419E0DfcJFQ7Y+tiBymi3WjKbTgMtCy2POzj+H1P4Q+mIPi5YeSPIycLJD1LPSJn4nyxDGdCBI3g==
+reef-knot@5.7.3:
+  version "5.7.3"
+  resolved "https://registry.yarnpkg.com/reef-knot/-/reef-knot-5.7.3.tgz#5cb963576968e5941895234a1b86420366caeb60"
+  integrity sha512-flwrgb8+aZ7tf8uAb7P1Y5Y9JfvW5zYM8hJpdfdnWHE4Ayd9sPiMW1MAuh6ywh4PnghEthjAMgp31iBYQP1Lww==
   dependencies:
-    "@reef-knot/connect-wallet-modal" "5.5.0"
+    "@reef-knot/connect-wallet-modal" "5.5.1"
     "@reef-knot/core-react" "4.3.0"
     "@reef-knot/ledger-connector" "4.1.2"
     "@reef-knot/types" "2.1.0"
@@ -10121,11 +10121,11 @@ scrypt-js@3.0.1:
   integrity sha512-cdwTTnqPu0Hyvf5in5asVdZocVDTNRmR7XEcJuIzMjJeSHybHl7vpB66AzwTaIg6CLSbtjcxc8fqcySfnTkccA==
 
 secp256k1@^5.0.0:
-  version "5.0.0"
-  resolved "https://registry.yarnpkg.com/secp256k1/-/secp256k1-5.0.0.tgz#be6f0c8c7722e2481e9773336d351de8cddd12f7"
-  integrity sha512-TKWX8xvoGHrxVdqbYeZM9w+izTF4b9z3NhSaDkdn81btvuh+ivbIMGT/zQvDtTFWhRlThpoz6LEYTr7n8A5GcA==
+  version "5.0.1"
+  resolved "https://registry.yarnpkg.com/secp256k1/-/secp256k1-5.0.1.tgz#dc2c86187d48ff2da756f0f7e96417ee03c414b1"
+  integrity sha512-lDFs9AAIaWP9UCdtWrotXWWF9t8PWgQDcxqgAnpM9rMqxb3Oaq2J0thzPVSxBwdJgyQtkU/sYtFtbM1RSt/iYA==
   dependencies:
-    elliptic "^6.5.4"
+    elliptic "^6.5.7"
     node-addon-api "^5.0.0"
     node-gyp-build "^4.2.0"
 
