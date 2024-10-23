@@ -1,5 +1,4 @@
 import { useFormState } from 'react-hook-form';
-import { useAccount } from 'wagmi';
 import { ButtonIcon, Lock } from '@lidofinance/lido-ui';
 
 import { useDappStatus } from 'modules/web3';
@@ -21,13 +20,12 @@ export const SubmitButtonHookForm: React.FC<SubmitButtonHookFormProps> = ({
   disabled: disabledProp,
   ...props
 }) => {
-  const { isConnected } = useAccount();
-  const { isDappActive, isSupportedChain } = useDappStatus();
+  const { isDappActive, isSupportedChain, isWalletConnected } = useDappStatus();
 
   const { isValidating, isSubmitting } = useFormState();
   const { errors } = useFormState<Record<string, unknown>>();
 
-  if (!isConnected) {
+  if (!isWalletConnected) {
     return <Connect fullwidth />;
   }
 

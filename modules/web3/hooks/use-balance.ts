@@ -5,7 +5,6 @@ import { type QueryKey, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   useBlockNumber,
   useBalance,
-  useAccount,
   useReadContract,
   useWatchContractEvent,
 } from 'wagmi';
@@ -26,8 +25,7 @@ const balanceToBN = (data: GetBalanceData) => nativeToBN(data.value);
 
 export const useEthereumBalance = () => {
   const queryClient = useQueryClient();
-  const { chainId } = useDappStatus();
-  const { address } = useAccount();
+  const { chainId, address } = useDappStatus();
   const { data: blockNumber } = useBlockNumber({
     watch: {
       poll: true,
@@ -110,7 +108,7 @@ const onError = (error: unknown) =>
   );
 
 export const useTokenTransferSubscription = () => {
-  const { address } = useAccount();
+  const { address } = useDappStatus();
   const queryClient = useQueryClient();
   const [subscriptions, setSubscriptions] = useState<TokenSubscriptionState>(
     {},
@@ -261,8 +259,7 @@ export const useStethBalance = ({
   shouldSubscribeToUpdates = true,
 }: UseBalanceProps = {}) => {
   const { core, l2, stETH, isL2 } = useLidoSDK();
-  const { isSupportedChain } = useDappStatus();
-  const { address } = useAccount();
+  const { isSupportedChain, address } = useDappStatus();
 
   const mergedAccount = account ?? address;
 
@@ -291,8 +288,7 @@ export const useWstethBalance = ({
   account,
   shouldSubscribeToUpdates = true,
 }: UseBalanceProps = {}) => {
-  const { address } = useAccount();
-  const { isSupportedChain } = useDappStatus();
+  const { isSupportedChain, address } = useDappStatus();
   const mergedAccount = account ?? address;
   const {
     core: lidoSDKCore,

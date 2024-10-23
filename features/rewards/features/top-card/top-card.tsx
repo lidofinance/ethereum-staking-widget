@@ -17,9 +17,14 @@ export const TopCard: FC = () => {
 
   if (!visible) return null;
 
+  // We allow unconnected wallet and don't show multichain for rewards
   return (
     <>
-      {!isSupportedChain ? <Fallback /> : <Wallet />}
+      {!isSupportedChain ? (
+        <Fallback showMultichainBanner={false} />
+      ) : (
+        <Wallet />
+      )}
 
       <StatsWrapper>
         <Stats />

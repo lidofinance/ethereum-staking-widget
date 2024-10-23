@@ -1,12 +1,12 @@
 import { useCallback } from 'react';
 import { BigNumber, TypedDataDomain } from 'ethers';
 import invariant from 'tiny-invariant';
-import { useAccount } from 'wagmi';
 
 import { hexValue, splitSignature } from '@ethersproject/bytes';
 import { MaxUint256 } from '@ethersproject/constants';
 import { useSDK } from '@lido-sdk/react';
 import { Erc20Abi, StethAbi } from '@lido-sdk/contracts';
+import { useDappStatus } from 'modules/web3';
 
 export type GatherPermitSignatureResult = {
   v: number;
@@ -55,7 +55,7 @@ export const useERC20PermitSignature = <
   tokenProvider,
   spender,
 }: UseERC20PermitSignatureProps<T>): UseERC20PermitSignatureResult => {
-  const { address } = useAccount();
+  const { address } = useDappStatus();
 
   const { providerWeb3, chainId } = useSDK();
 

@@ -25,7 +25,12 @@ import { isContract } from 'utils/isContract';
 import { useWithdrawalsContract } from './useWithdrawalsContract';
 import { useTxModalStagesRequest } from 'features/withdrawals/request/transaction-modal-request/use-tx-modal-stages-request';
 import { useTransactionModal } from 'shared/transaction-modal/transaction-modal';
-import { sendTx, useTxConfirmation, useIsMultisig } from 'modules/web3';
+import {
+  sendTx,
+  useTxConfirmation,
+  useIsMultisig,
+  useDappStatus,
+} from 'modules/web3';
 import { overrideWithQAMockBoolean } from 'utils/qa';
 
 // this encapsulates permit/approval & steth/wsteth flows
@@ -193,9 +198,10 @@ export const useWithdrawalRequest = ({
   onRetry,
 }: useWithdrawalRequestParams) => {
   const { chainId } = useSDK();
+  const { address } = useDappStatus();
   const withdrawalQueueAddress = getWithdrawalQueueAddress(chainId);
 
-  const { connector, address } = useAccount();
+  const { connector } = useAccount();
   const { isBunker } = useWithdrawals();
   const { txModalStages } = useTxModalStagesRequest();
   const getRequestMethod = useWithdrawalRequestMethods();
