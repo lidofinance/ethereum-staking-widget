@@ -7,6 +7,7 @@ import {
   useBalance,
   useReadContract,
   useWatchContractEvent,
+  useAccount,
 } from 'wagmi';
 import { BigNumber } from 'ethers';
 
@@ -108,7 +109,7 @@ const onError = (error: unknown) =>
   );
 
 export const useTokenTransferSubscription = () => {
-  const { address } = useDappStatus();
+  const { address } = useAccount();
   const queryClient = useQueryClient();
   const [subscriptions, setSubscriptions] = useState<TokenSubscriptionState>(
     {},
