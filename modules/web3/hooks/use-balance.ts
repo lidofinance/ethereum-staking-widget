@@ -3,7 +3,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { type QueryKey, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
-  useBlockNumber,
   useBalance,
   useReadContract,
   useWatchContractEvent,
@@ -25,39 +24,18 @@ const nativeToBN = (data: bigint) => BigNumber.from(data.toString());
 const balanceToBN = (data: GetBalanceData) => nativeToBN(data.value);
 
 export const useEthereumBalance = () => {
-  const queryClient = useQueryClient();
-  const { chainId, address } = useDappStatus();
-  const { data: blockNumber } = useBlockNumber({
-    watch: {
-      poll: true,
-      pollingInterval: config.PROVIDER_POLLING_INTERVAL,
-      enabled: !!address,
-    },
-    chainId,
-    cacheTime: config.PROVIDER_POLLING_INTERVAL,
-  });
+  const { chainId, address, isDappActive } = useDappStatus();
 
   const queryData = useBalance({
     address,
     chainId,
     query: {
       select: balanceToBN,
-      // because we subscribe to block
-      staleTime: Infinity,
-      enabled: !!address,
+      staleTime: config.PROVIDER_POLLING_INTERVAL,
+      refetchInterval: config.PROVIDER_POLLING_INTERVAL,
+      enabled: isDappActive,
     },
   });
-
-  useEffect(() => {
-    void queryClient.invalidateQueries(
-      { queryKey: queryData.queryKey },
-      // this tells RQ to not force another refetch if this query is already revalidating
-      // dedups rpc requests
-      { cancelRefetch: false },
-    );
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [blockNumber]);
 
   return queryData;
 };
@@ -221,10 +199,10 @@ const useTokenBalance = (
   address?: Address,
   shouldSubscribe = true,
 ) => {
-  const { isSupportedChain, chainId } = useDappStatus();
+  const { isDappActive, chainId } = useDappStatus();
   const { subscribeToTokenUpdates } = useLidoSDK();
 
-  const enabled = !!address && isSupportedChain;
+  const enabled = !!address && isDappActive;
 
   const balanceQuery = useReadContract({
     abi: contract?.abi,
