@@ -14,6 +14,7 @@ import { ReactComponent as ZkSyncLogo } from 'assets/icons/lido-multichain/zk-sy
 import { ReactComponent as ScrollLogo } from 'assets/icons/lido-multichain/scroll.svg';
 import { ReactComponent as BNBLogo } from 'assets/icons/lido-multichain/bnb.svg';
 import { ReactComponent as ModeLogo } from 'assets/icons/lido-multichain/mode.svg';
+import { ReactComponent as ZircuitLogo } from 'assets/icons/lido-multichain/zircuit-logo.svg';
 
 import { config } from 'config';
 import { useUserConfig } from 'config/user-config';
@@ -40,6 +41,7 @@ const multichainLogos = {
   [LIDO_MULTICHAIN_CHAINS.Scroll]: ScrollLogo,
   [LIDO_MULTICHAIN_CHAINS['BNB Chain']]: BNBLogo,
   [LIDO_MULTICHAIN_CHAINS['Mode Chain']]: ModeLogo,
+  [LIDO_MULTICHAIN_CHAINS['Zircuit Chain']]: ZircuitLogo,
 };
 
 const getChainLogo = (chainId: LIDO_MULTICHAIN_CHAINS) => {
