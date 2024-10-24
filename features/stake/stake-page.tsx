@@ -1,9 +1,9 @@
-import { Stake } from './stake';
 import Head from 'next/head';
-import { FC } from 'react';
-import { Layout } from 'shared/components';
 
-export { Stake } from './stake';
+import { Layout } from 'shared/components';
+import { Stake } from './stake';
+
+import type { FC } from 'react';
 
 export const StakePage: FC = () => {
   return (

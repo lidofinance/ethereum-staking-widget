@@ -1,59 +1,41 @@
 /* eslint-disable @typescript-eslint/no-unnecessary-type-assertion */
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-
-import { QueryKey, useQuery, useQueryClient } from '@tanstack/react-query';
-import type { AbstractLidoSDKErc20 } from '@lidofinance/lido-ethereum-sdk/erc20';
-import { BigNumber } from 'ethers';
-import { useLidoSDK } from 'providers/lido-sdk';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import type { Address, WatchContractEventOnLogsFn } from 'viem';
+import { type QueryKey, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
-  useBlockNumber,
   useBalance,
-  useAccount,
   useReadContract,
   useWatchContractEvent,
+  useAccount,
 } from 'wagmi';
-import type { GetBalanceData } from 'wagmi/query';
+import { BigNumber } from 'ethers';
 
+import { useLidoSDK } from 'modules/web3';
 import { config } from 'config';
+
+import { useDappStatus } from './use-dapp-status';
+
+import type { Address, WatchContractEventOnLogsFn } from 'viem';
+import type { GetBalanceData } from 'wagmi/query';
+import type { AbstractLidoSDKErc20 } from '@lidofinance/lido-ethereum-sdk/erc20';
 
 const nativeToBN = (data: bigint) => BigNumber.from(data.toString());
 
 const balanceToBN = (data: GetBalanceData) => nativeToBN(data.value);
 
 export const useEthereumBalance = () => {
-  const queryClient = useQueryClient();
-  const { address } = useAccount();
-  const { data: blockNumber } = useBlockNumber({
-    watch: {
-      poll: true,
-      pollingInterval: config.PROVIDER_POLLING_INTERVAL,
-      enabled: !!address,
-    },
-    cacheTime: config.PROVIDER_POLLING_INTERVAL,
-  });
+  const { chainId, address, isDappActive } = useDappStatus();
 
   const queryData = useBalance({
     address,
+    chainId,
     query: {
       select: balanceToBN,
-      // because we subscribe to block
-      staleTime: Infinity,
-      enabled: !!address,
+      staleTime: config.PROVIDER_POLLING_INTERVAL,
+      refetchInterval: config.PROVIDER_POLLING_INTERVAL,
+      enabled: isDappActive,
     },
   });
-
-  useEffect(() => {
-    void queryClient.invalidateQueries(
-      { queryKey: queryData.queryKey },
-      // this tells RQ to not force another refetch if this query is already revalidating
-      // dedups rpc requests
-      { cancelRefetch: false },
-    );
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [blockNumber]);
 
   return queryData;
 };
@@ -217,15 +199,19 @@ const useTokenBalance = (
   address?: Address,
   shouldSubscribe = true,
 ) => {
+  const { isDappActive, chainId } = useDappStatus();
   const { subscribeToTokenUpdates } = useLidoSDK();
+
+  const enabled = !!address && isDappActive;
 
   const balanceQuery = useReadContract({
     abi: contract?.abi,
     address: contract?.address,
+    chainId,
     functionName: 'balanceOf',
     args: address && [address],
     query: {
-      enabled: !!address,
+      enabled,
       select: nativeToBN,
       // because we update on events we can have high staleTime
       // this prevents loader when changing pages
@@ -234,7 +220,7 @@ const useTokenBalance = (
   });
 
   useEffect(() => {
-    if (shouldSubscribe && address && contract?.address) {
+    if (shouldSubscribe && enabled && address && contract?.address) {
       return subscribeToTokenUpdates({
         tokenAddress: contract.address,
         queryKey: balanceQuery.queryKey,
@@ -242,7 +228,7 @@ const useTokenBalance = (
     }
     // queryKey causes rerender
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [address, contract?.address]);
+  }, [address, enabled, contract?.address]);
 
   return balanceQuery;
 };
@@ -252,13 +238,13 @@ export const useStethBalance = ({
   shouldSubscribeToUpdates = true,
 }: UseBalanceProps = {}) => {
   const { core, l2, stETH, isL2 } = useLidoSDK();
-  const { address } = useAccount();
+  const { isSupportedChain, address } = useDappStatus();
 
   const mergedAccount = account ?? address;
 
   const { data: contract, isLoading } = useQuery({
     queryKey: ['steth-contract', core.chainId, isL2],
-    enabled: !!mergedAccount,
+    enabled: !!mergedAccount && isSupportedChain,
 
     staleTime: Infinity,
     queryFn: async () => (isL2 ? l2.steth.getContract() : stETH.getContract()),
@@ -281,7 +267,7 @@ export const useWstethBalance = ({
   account,
   shouldSubscribeToUpdates = true,
 }: UseBalanceProps = {}) => {
-  const { address } = useAccount();
+  const { isSupportedChain, address } = useDappStatus();
   const mergedAccount = account ?? address;
   const {
     core: lidoSDKCore,
@@ -292,7 +278,7 @@ export const useWstethBalance = ({
 
   const { data: contract, isLoading } = useQuery({
     queryKey: ['wsteth-contract', lidoSDKCore.chainId, isL2],
-    enabled: !!mergedAccount,
+    enabled: !!mergedAccount && isSupportedChain,
     staleTime: Infinity,
     queryFn: async () =>
       isL2 ? lidoSDKL2.wsteth.getContract() : lidoSDKwstETH.getContract(),

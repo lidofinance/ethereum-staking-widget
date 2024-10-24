@@ -3,11 +3,11 @@ import type {
   Web3Provider,
 } from '@ethersproject/providers';
 import type { PopulatedTransaction } from 'ethers';
-
-import { getFeeData } from './getFeeData';
-import { estimateGas } from './estimate-gas';
 import { applyGasLimitRatio } from 'utils/apply-gas-limit-ratio';
-import { applyRoundUpGasLimit } from 'utils/apply-round-up-gas-limit';
+
+import { getFeeData } from './get-fee-data';
+import { estimateGas } from './estimate-gas';
+import { applyRoundUpGasLimit } from './apply-round-up-gas-limit';
 
 export type SendTxOptions = {
   tx: PopulatedTransaction;

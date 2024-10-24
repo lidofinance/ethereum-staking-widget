@@ -1,6 +1,6 @@
 import type { BigNumber } from 'ethers';
 import { useMemo } from 'react';
-import { useMaxGasPrice } from './useMaxGasPrice';
+import { useMaxGasPrice } from 'modules/web3';
 import { useEthUsd } from './use-eth-usd';
 
 export const useTxCostInUsd = (gasLimit?: BigNumber) => {

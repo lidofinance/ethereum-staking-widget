@@ -11,7 +11,7 @@ import {
   WarningBlock,
   WarningTitle,
 } from './styles';
-import { useVersionCheck } from './use-version-check';
+import { useVersionStatus } from './use-version-status';
 
 const LIDO_TWITTER_LINK = 'https://twitter.com/LidoFinance';
 
@@ -100,7 +100,7 @@ export const SecurityStatusBanner = () => {
     isVersionUnsafe,
     isNotVerifiable,
     data,
-  } = useVersionCheck();
+  } = useVersionStatus();
 
   const { content, canClose, showTwitterLink } = warningContent({
     isUpdateAvailable,

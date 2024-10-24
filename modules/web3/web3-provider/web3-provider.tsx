@@ -13,14 +13,16 @@ import { config } from 'config';
 import { useUserConfig } from 'config/user-config';
 import { useGetRpcUrlByChainId } from 'config/rpc';
 import { CHAINS } from 'consts/chains';
-import { ConnectWalletModal } from 'shared/wallet/connect-wallet-modal';
+import { ConnectWalletModal } from './connect-wallet-modal';
 
+import { useWeb3Transport } from './use-web3-transport';
+import { LidoSDKProvider } from './lido-sdk';
 import { SDKLegacyProvider } from './sdk-legacy';
-import { useWeb3Transport } from 'utils/use-web3-transport';
+import { SupportL1Chains } from './dapp-chain';
 
 type ChainsList = [wagmiChains.Chain, ...wagmiChains.Chain[]];
 
-const wagmiChainMap = Object.values(wagmiChains).reduce(
+export const wagmiChainMap = Object.values(wagmiChains).reduce(
   (acc, chain) => {
     acc[chain.id] = chain;
     return acc;
@@ -36,7 +38,7 @@ const queryClient = new QueryClient({
   },
 });
 
-const Web3Provider: FC<PropsWithChildren> = ({ children }) => {
+export const Web3Provider: FC<PropsWithChildren> = ({ children }) => {
   const {
     defaultChain: defaultChainId,
     supportedChainIds,
@@ -115,17 +117,14 @@ const Web3Provider: FC<PropsWithChildren> = ({ children }) => {
           walletDataList={walletsDataList}
         >
           {isWalletConnectionAllowed && <AutoConnect autoConnect />}
-          <SDKLegacyProvider
-            defaultChainId={defaultChain.id}
-            pollingInterval={config.PROVIDER_POLLING_INTERVAL}
-          >
-            {children}
-            <ConnectWalletModal />
-          </SDKLegacyProvider>
+          <LidoSDKProvider>
+            <SupportL1Chains>
+              <SDKLegacyProvider>{children}</SDKLegacyProvider>
+            </SupportL1Chains>
+          </LidoSDKProvider>
+          <ConnectWalletModal />
         </ReefKnot>
       </QueryClientProvider>
     </WagmiProvider>
   );
 };
-
-export default Web3Provider;

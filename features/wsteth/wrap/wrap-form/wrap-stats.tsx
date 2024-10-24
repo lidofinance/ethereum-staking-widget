@@ -10,8 +10,7 @@ import { TOKENS_TO_WRAP } from 'features/wsteth/shared/types';
 import { AllowanceDataTableRow } from 'shared/components/allowance-data-table-row';
 import { FormatPrice, FormatToken } from 'shared/formatters';
 import { useTxCostInUsd, useWstethBySteth } from 'shared/hooks';
-import { useDappStatus } from 'shared/hooks/use-dapp-status';
-import { useWstETHByStETHOnL2 } from 'shared/hooks/use-wstETH-by-stETH-on-l2';
+import { useDappStatus, useWstETHByStETHOnL2 } from 'modules/web3';
 
 import { useApproveGasLimit } from '../hooks/use-approve-gas-limit';
 import { useWrapFormData, WrapFormInputType } from '../wrap-form-context';
@@ -19,12 +18,8 @@ import { useWrapFormData, WrapFormInputType } from '../wrap-form-context';
 const oneSteth = parseEther('1');
 
 export const WrapFormStats = () => {
-  const {
-    isWalletConnected,
-    isDappActive,
-    isDappActiveOnL2,
-    isDappActiveAndNetworksMatched,
-  } = useDappStatus();
+  const { isWalletConnected, isAccountActive, isDappActive, isDappActiveOnL2 } =
+    useDappStatus();
   const { allowance, isShowAllowance, wrapGasLimit, isApprovalLoading } =
     useWrapFormData();
 
@@ -73,13 +68,13 @@ export const WrapFormStats = () => {
           trimEllipsis
         />
       </DataTableRow>
-      {(!isDappActive || isShowAllowance) && (
+      {(!isAccountActive || isShowAllowance) && (
         <DataTableRow
           title="Max unlock cost"
           data-testid="maxUnlockFee"
           loading={isApproveCostLoading}
         >
-          {isWalletConnected && !isDappActiveAndNetworksMatched ? (
+          {isWalletConnected && !isDappActive ? (
             '-'
           ) : (
             <FormatPrice amount={approveTxCostInUsd} />
@@ -91,7 +86,7 @@ export const WrapFormStats = () => {
         data-testid="maxGasFee"
         loading={isWrapCostLoading}
       >
-        {isWalletConnected && !isDappActiveAndNetworksMatched ? (
+        {isWalletConnected && !isDappActive ? (
           '-'
         ) : (
           <FormatPrice amount={wrapTxCostInUsd} />
@@ -102,7 +97,7 @@ export const WrapFormStats = () => {
         data-testid="exchangeRate"
         loading={oneWstethConvertedLoading}
       >
-        {isWalletConnected && !isDappActiveAndNetworksMatched ? (
+        {isWalletConnected && !isDappActive ? (
           '-'
         ) : oneWstethConverted ? (
           <>

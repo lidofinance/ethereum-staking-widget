@@ -18,7 +18,7 @@ import { LidoSDKL2 } from '@lidofinance/lido-ethereum-sdk/l2';
 import { LidoSDKWrap } from '@lidofinance/lido-ethereum-sdk/wrap';
 
 import { config } from 'config';
-import { useTokenTransferSubscription } from 'shared/hooks/use-balance';
+import { useTokenTransferSubscription } from 'modules/web3/hooks/use-balance';
 import { LIDO_L2_CONTRACT_ADDRESSES } from '@lidofinance/lido-ethereum-sdk/common';
 
 type LidoSDKContextValue = {
@@ -27,6 +27,7 @@ type LidoSDKContextValue = {
   wstETH: LidoSDKwstETH;
   l2: LidoSDKL2;
   wrap: LidoSDKWrap;
+  chainId: CHAINS;
   isL2: boolean;
   subscribeToTokenUpdates: ReturnType<typeof useTokenTransferSubscription>;
 };
@@ -46,7 +47,6 @@ export const LidoSDKProvider = ({ children }: React.PropsWithChildren) => {
   const chainId = useChainId();
   const { data: walletClient } = useWalletClient({ chainId });
   const publicClient = usePublicClient({ chainId });
-
   // reset internal wagmi state after disconnect
   const { isConnected } = useAccount();
 
@@ -86,6 +86,7 @@ export const LidoSDKProvider = ({ children }: React.PropsWithChildren) => {
       wstETH,
       wrap,
       l2,
+      chainId: core.chainId,
       isL2: !!LIDO_L2_CONTRACT_ADDRESSES[chainId as CHAINS],
       subscribeToTokenUpdates: subscribe,
     };

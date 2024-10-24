@@ -5,7 +5,7 @@ import {
 } from 'features/withdrawals/withdrawals-constants';
 import { useIsLedgerLive } from 'shared/hooks/useIsLedgerLive';
 import { useAwaiter } from 'shared/hooks/use-awaiter';
-import { useDappStatus } from 'shared/hooks/use-dapp-status';
+import { useDappStatus } from 'modules/web3';
 import type {
   RequestFormDataType,
   RequestFormValidationAsyncContextType,

@@ -24,7 +24,7 @@ export const WrapUnwrapTabs = ({ mode }: WrapUnwrapLayoutProps) => {
     <>
       <NoSsrWrapper>
         <Switch checked={isUnwrapMode} routes={NAV_ROUTES} />
-        <Wallet />
+        <Wallet isUnwrapMode={isUnwrapMode} />
         {isUnwrapMode ? <UnwrapForm /> : <WrapForm />}
       </NoSsrWrapper>
       <OnlyInfraRender renderIPFS={<FaqPlaceholder />}>

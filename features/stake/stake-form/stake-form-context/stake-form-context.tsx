@@ -19,8 +19,7 @@ import {
 } from 'shared/hook-form/form-controller';
 import { useTokenMaxAmount } from 'shared/hooks/use-token-max-amount';
 import { useStakingLimitInfo } from 'shared/hooks/useStakingLimitInfo';
-import { useMaxGasPrice } from 'shared/hooks';
-import { useIsMultisig } from 'shared/hooks/useIsMultisig';
+import { useIsMultisig, useMaxGasPrice } from 'modules/web3';
 import { useFormControllerRetry } from 'shared/hook-form/form-controller/use-form-controller-retry-delegate';
 
 import { config } from 'config';
@@ -37,7 +36,7 @@ import {
 
 import { useStake } from '../use-stake';
 import { useStethSubmitGasLimit } from '../hooks';
-import { useEthereumBalance, useStethBalance } from 'shared/hooks/use-balance';
+import { useEthereumBalance, useStethBalance } from 'modules/web3';
 
 //
 // Data context

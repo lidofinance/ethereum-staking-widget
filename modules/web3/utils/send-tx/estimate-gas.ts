@@ -1,5 +1,5 @@
-import { StaticJsonRpcBatchProvider } from '@lidofinance/eth-providers';
-import { PopulatedTransaction } from 'ethers';
+import type { StaticJsonRpcBatchProvider } from '@lidofinance/eth-providers';
+import type { PopulatedTransaction } from 'ethers';
 
 export const estimateGas = async (
   tx: PopulatedTransaction,

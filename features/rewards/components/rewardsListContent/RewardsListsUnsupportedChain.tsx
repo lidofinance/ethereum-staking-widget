@@ -1,22 +1,20 @@
 import { FC } from 'react';
 import { Divider } from '@lidofinance/lido-ui';
 
-import { useConfig } from 'config';
-import { CHAINS } from 'consts/chains';
 import { RewardsListEmptyWrapper } from './RewardsListsEmptyStyles';
+import { useDappStatus } from 'modules/web3';
+import { joinWithOr } from 'utils/join-with-or';
 
 export const RewardsListsUnsupportedChain: FC = () => {
-  const {
-    config: { defaultChain },
-  } = useConfig();
+  const { supportedChainLabels } = useDappStatus();
 
   return (
     <>
       <Divider indents="lg" />
       <RewardsListEmptyWrapper>
         <p>
-          Please switch to {CHAINS[defaultChain]} in your wallet to see the
-          stats.
+          Please switch to {joinWithOr(supportedChainLabels)} in your wallet to
+          see the stats.
         </p>
       </RewardsListEmptyWrapper>
     </>

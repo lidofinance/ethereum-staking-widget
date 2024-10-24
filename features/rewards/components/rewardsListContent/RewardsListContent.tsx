@@ -5,8 +5,7 @@ import { Zero } from '@ethersproject/constants';
 import { useRewardsHistory } from 'features/rewards/hooks';
 import { ErrorBlockNoSteth } from 'features/rewards/components/errorBlocks/ErrorBlockNoSteth';
 import { RewardsTable } from 'features/rewards/components/rewardsTable';
-import { useStethBalance } from 'shared/hooks/use-balance';
-import { useDappStatus } from 'shared/hooks/use-dapp-status';
+import { useStethBalance, useDappStatus } from 'modules/web3';
 
 import { RewardsListsEmpty } from './RewardsListsEmpty';
 import { RewardsListErrorMessage } from './RewardsListErrorMessage';
@@ -20,8 +19,7 @@ import {
 import type { Address } from 'viem';
 
 export const RewardsListContent: FC = () => {
-  const { isWalletConnected, isSupportedChain, isAccountActiveOnL2 } =
-    useDappStatus();
+  const { isSupportedChain } = useDappStatus();
   const {
     address,
     error,
@@ -39,8 +37,7 @@ export const RewardsListContent: FC = () => {
     });
   const hasSteth = stethBalance?.gt(Zero);
 
-  if ((isWalletConnected && !isSupportedChain) || isAccountActiveOnL2)
-    return <RewardsListsUnsupportedChain />;
+  if (!isSupportedChain) return <RewardsListsUnsupportedChain />;
 
   if (!data && !initialLoading && !error) return <RewardsListsEmpty />;
 

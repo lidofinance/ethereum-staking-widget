@@ -1,8 +1,8 @@
-import { useAccount } from 'wagmi';
 import { Link } from '@lidofinance/lido-ui';
 
 import { CHAINS } from 'consts/chains';
 import { getEtherscanTxLink } from 'utils/get-etherscan-tx-link';
+import { useDappStatus } from 'modules/web3';
 
 type TxLinkEtherscanProps = {
   text?: string;
@@ -12,7 +12,7 @@ type TxLinkEtherscanProps = {
 
 export const TxLinkEtherscan = (props: TxLinkEtherscanProps) => {
   const { txHash, text = 'View on Etherscan', onClick } = props;
-  const { chainId } = useAccount();
+  const { chainId } = useDappStatus();
 
   if (!txHash) return null;
 

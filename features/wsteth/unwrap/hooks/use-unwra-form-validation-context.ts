@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { useDappStatus } from 'shared/hooks/use-dapp-status';
+import { useDappStatus } from 'modules/web3';
 import { useAwaiter } from 'shared/hooks/use-awaiter';
 
 import type { UnwrapFormNetworkData } from '../unwrap-form-context';

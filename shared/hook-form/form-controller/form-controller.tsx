@@ -1,7 +1,7 @@
 import { FC, PropsWithChildren, useEffect, useMemo } from 'react';
 import { useFormContext } from 'react-hook-form';
 
-import { useDappStatus } from 'shared/hooks/use-dapp-status';
+import { useDappStatus } from 'modules/web3';
 
 import { useFormControllerContext } from './form-controller-context';
 

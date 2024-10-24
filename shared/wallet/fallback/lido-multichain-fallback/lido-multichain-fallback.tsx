@@ -1,6 +1,4 @@
-import { FC, useMemo } from 'react';
-import { useAccount } from 'wagmi';
-import { useRouter } from 'next/router';
+import { FC } from 'react';
 
 import { BlockProps, Link } from '@lidofinance/lido-ui';
 
@@ -16,17 +14,16 @@ import { ReactComponent as BNBLogo } from 'assets/icons/lido-multichain/bnb.svg'
 import { ReactComponent as ModeLogo } from 'assets/icons/lido-multichain/mode.svg';
 
 import { config } from 'config';
-import { useUserConfig } from 'config/user-config';
-import { CHAINS, LIDO_MULTICHAIN_CHAINS } from 'consts/chains';
+import { LIDO_MULTICHAIN_CHAINS } from 'consts/chains';
 import { MATOMO_CLICK_EVENTS_TYPES } from 'consts/matomo-click-events';
 import { trackMatomoEvent } from 'utils/track-matomo-event';
-import { OPTIMISM, ETHEREUM } from 'providers/dapp-chain';
-import { capitalizeFirstLetter } from 'utils/capitalize-string';
 
 import { Wrap, TextStyle, ButtonStyle } from './styles';
+import { useDappStatus } from 'modules/web3';
+import { joinWithOr } from 'utils/join-with-or';
 
 export type LidoMultichainFallbackComponent = FC<
-  { textEnding: string; chainId?: number | undefined } & BlockProps
+  { textEnding: string } & BlockProps
 >;
 
 const multichainLogos = {
@@ -50,37 +47,22 @@ const getChainLogo = (chainId: LIDO_MULTICHAIN_CHAINS) => {
 export const LidoMultichainFallback: LidoMultichainFallbackComponent = (
   props,
 ) => {
-  const { chainId: chainIdWagmi } = useAccount();
-  const { defaultChain } = useUserConfig();
-  const router = useRouter();
+  const { walletChainId, supportedChainLabels } = useDappStatus();
 
-  const chainId = props.chainId || chainIdWagmi;
-
-  const defaultChainName = useMemo(() => {
-    if (CHAINS[defaultChain] === 'Mainnet') return 'Ethereum';
-    return CHAINS[defaultChain];
-  }, [defaultChain]);
-
-  const lidoMultichainChainName = useMemo(() => {
-    // Trick. Anyway, this condition is working only SPA starting.
-    return (!!chainId && LIDO_MULTICHAIN_CHAINS[chainId]) || 'unknown';
-  }, [chainId]);
-
-  const switchToText = useMemo(() => {
-    if (router.pathname === '/wrap/[[...mode]]') {
-      return `${capitalizeFirstLetter(ETHEREUM)}/${capitalizeFirstLetter(OPTIMISM)}`;
-    } else {
-      return defaultChainName;
-    }
-  }, [router.pathname, defaultChainName]);
+  // Trick. Anyway, this condition is working only SPA starting.
+  const lidoMultichainChainName =
+    (!!walletChainId && LIDO_MULTICHAIN_CHAINS[walletChainId]) || 'unknown';
 
   return (
-    <Wrap {...props} chainId={chainId as LIDO_MULTICHAIN_CHAINS}>
-      {getChainLogo(chainId as LIDO_MULTICHAIN_CHAINS)}
+    <Wrap {...props} chainId={walletChainId as LIDO_MULTICHAIN_CHAINS}>
+      {getChainLogo(walletChainId as LIDO_MULTICHAIN_CHAINS)}
       <TextStyle>
         You are currently on {lidoMultichainChainName}.
         <br />
-        Explore Lido Multichain or switch to {switchToText} {props.textEnding}.
+        Explore Lido Multichain or switch to {joinWithOr(
+          supportedChainLabels,
+        )}{' '}
+        {props.textEnding}.
       </TextStyle>
       <Link href={`${config.rootOrigin}/lido-multichain`}>
         <ButtonStyle

@@ -6,6 +6,7 @@ export const ButtonStyle = styled((props) => <Button {...props} />)`
   color: var(--lido-color-textSecondary);
 
   &:disabled {
+    cursor: not-allowed;
     opacity: 1;
   }
 `;
