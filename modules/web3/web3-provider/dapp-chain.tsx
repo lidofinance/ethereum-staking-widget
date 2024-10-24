@@ -32,16 +32,7 @@ type UseDappChainValue = {
   supportedChainLabels: string[];
 } & DappChainContextValue;
 
-// Default value of this context only allows L1 chains and no chain switch
-const DappChainContext = createContext<DappChainContextValue>({
-  chainType: DAPP_CHAIN_TYPE.Ethereum,
-  // only L1 chains
-  supportedChainIds: config.supportedChains.filter(
-    (chain) => !isSDKSupportedL2Chain(chain),
-  ),
-  isChainTypeMatched: true,
-  setChainType: () => {},
-});
+const DappChainContext = createContext<DappChainContextValue | null>(null);
 DappChainContext.displayName = 'DappChainContext';
 
 const ETHEREUM_CHAINS = new Set([
@@ -65,8 +56,10 @@ const getChainTypeByChainId = (chainId?: number): DAPP_CHAIN_TYPE | null => {
 export const useDappChain = (): UseDappChainValue => {
   const context = useContext(DappChainContext);
   invariant(context, 'useDappChain was used outside of DappChainProvider');
+
   const { chainId: dappChain } = useLidoSDK();
   const { chainId: walletChain } = useAccount();
+
   return useMemo(() => {
     const supportedChainTypes = context.supportedChainIds
       .map(getChainTypeByChainId)
@@ -104,7 +97,7 @@ export const useDappChain = (): UseDappChainValue => {
   }, [context, dappChain, walletChain]);
 };
 
-export const SupportL2Chains: React.FC<{ children: React.ReactNode }> = ({
+export const SupportL2Chains: React.FC<React.PropsWithChildren> = ({
   children,
 }) => {
   const { chainId: walletChainId } = useAccount();
@@ -139,3 +132,25 @@ export const SupportL2Chains: React.FC<{ children: React.ReactNode }> = ({
     </DappChainContext.Provider>
   );
 };
+
+const onlyL1ChainsValue = {
+  chainType: DAPP_CHAIN_TYPE.Ethereum,
+  // only L1 chains
+  supportedChainIds: config.supportedChains.filter(
+    (chain) => !isSDKSupportedL2Chain(chain),
+  ),
+  isChainTypeMatched: true,
+  setChainType: () => {},
+};
+
+// Value of this context only allows L1 chains and no chain switch
+// this is actual for most pages and can be overriden by SupportL2Chains on per page basis
+// for safety reasons this cannot be default context value
+// in order to prevent accidental useDappChain/useDappStatus misusage in top-lvl components
+export const SupportL1Chains: React.FC<React.PropsWithChildren> = ({
+  children,
+}) => (
+  <DappChainContext.Provider value={onlyL1ChainsValue}>
+    {children}
+  </DappChainContext.Provider>
+);
