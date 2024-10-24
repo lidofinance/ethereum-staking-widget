@@ -4,7 +4,7 @@ import { useStakeFormData } from '../stake-form-context';
 import { useStakingLimitWarning, useDappStatus } from 'modules/web3';
 
 export const StakeAmountInput = () => {
-  const { isWalletConnected, isDappActive, isDappActiveOnL2 } = useDappStatus();
+  const { isDappActive } = useDappStatus();
   const { maxAmount, stakingLimitInfo } = useStakeFormData();
   const { limitWarning, limitError } = useStakingLimitWarning(
     stakingLimitInfo?.stakeLimitLevel,
@@ -12,7 +12,7 @@ export const StakeAmountInput = () => {
 
   return (
     <TokenAmountInputHookForm
-      disabled={(isWalletConnected && !isDappActive) || isDappActiveOnL2}
+      disabled={!isDappActive}
       fieldName="amount"
       token={'ETH'}
       data-testid="stakeInput"

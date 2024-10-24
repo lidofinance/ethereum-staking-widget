@@ -49,7 +49,7 @@ export const RewardsHistoryContext = createContext({} as RewardsHistoryValue);
 const RewardsHistoryProvider: FC<PropsWithChildren> = (props) => {
   const { children } = props;
 
-  const { isSupportedChain, isDappActiveOnL2 } = useDappStatus();
+  const { isSupportedChain } = useDappStatus();
 
   const [currency, setCurrency] = useState(DEFAULT_CURRENCY.id);
 
@@ -90,10 +90,7 @@ const RewardsHistoryProvider: FC<PropsWithChildren> = (props) => {
 
   const currencyObject = getCurrency(currency);
 
-  const isDataAvailable = useMemo(() => {
-    const isDataNotAvailable = !data || !isSupportedChain || isDappActiveOnL2;
-    return !isDataNotAvailable;
-  }, [data, isSupportedChain, isDappActiveOnL2]);
+  const isDataAvailable = data && isSupportedChain;
 
   const value = useMemo(
     (): RewardsHistoryValue => ({

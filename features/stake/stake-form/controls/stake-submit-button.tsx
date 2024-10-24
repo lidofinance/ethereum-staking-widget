@@ -5,14 +5,13 @@ import { useDappStatus } from 'modules/web3';
 import { useStakeFormData } from '../stake-form-context';
 
 export const StakeSubmitButton = () => {
-  const { isDappActive, isDappActiveOnL2 } = useDappStatus();
+  const { isDappActive } = useDappStatus();
   const { stakingLimitInfo } = useStakeFormData();
 
   return (
     <SubmitButtonHookForm
       disabled={
         !isDappActive ||
-        isDappActiveOnL2 ||
         stakingLimitInfo?.stakeLimitLevel === LIMIT_LEVEL.REACHED
       }
       data-testid="stakeSubmitBtn"

@@ -14,12 +14,13 @@ export const Fallback = ({
   showMultichainBanner = true,
   children,
   toActionText,
-  error,
+  error: errorProp,
   ...props
 }: FallbackProps) => {
   const { isLidoMultichainChain, isWalletConnected } = useDappStatus();
-  let errorMessage = useErrorMessage();
-  if (error) errorMessage = error;
+  let error = useErrorMessage();
+
+  if (errorProp) error = errorProp;
 
   if (showMultichainBanner && isLidoMultichainChain) {
     return (
@@ -30,7 +31,7 @@ export const Fallback = ({
   if (error) {
     return (
       <FallbackWalletStyle {...props}>
-        <TextStyle>{errorMessage}</TextStyle>
+        <TextStyle>{error}</TextStyle>
       </FallbackWalletStyle>
     );
   }

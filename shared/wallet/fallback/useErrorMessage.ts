@@ -9,7 +9,6 @@ export const useErrorMessage = (): string | undefined => {
   const { isLedger } = useConnectorInfo();
   const {
     isSupportedChain,
-    isWalletConnected,
     isChainTypeMatched,
     isAccountActive,
     chainType,
@@ -23,7 +22,7 @@ export const useErrorMessage = (): string | undefined => {
     return `Wrong network. Please switch to ${chainType} in your wallet to wrap/unwrap.`;
   }
 
-  if (isWalletConnected && !isSupportedChain) {
+  if (!isSupportedChain) {
     const switchTo = joinWithOr(supportedChainLabels);
 
     return `Unsupported chain. Please switch to ${switchTo} in your wallet.`;

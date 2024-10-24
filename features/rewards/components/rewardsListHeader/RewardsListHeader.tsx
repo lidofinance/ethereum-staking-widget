@@ -8,21 +8,18 @@ import { RewardsListHeaderStyle } from './styles';
 import { TitleStyle } from './styles';
 
 export const RewardsListHeader: FC = () => {
-  const { isSupportedChain, isDappActiveOnL2 } = useDappStatus();
+  const { isSupportedChain } = useDappStatus();
   const { error, data } = useRewardsHistory();
 
   return (
     <RewardsListHeaderStyle data-testid="rewardsHeader">
       <TitleStyle>Reward history</TitleStyle>
-      {!error &&
-        data &&
-        data?.events.length > 0 &&
-        (isSupportedChain || !isDappActiveOnL2) && (
-          <>
-            <LeftOptions />
-            <RightOptions />
-          </>
-        )}
+      {!error && data && data?.events.length > 0 && isSupportedChain && (
+        <>
+          <LeftOptions />
+          <RightOptions />
+        </>
+      )}
     </RewardsListHeaderStyle>
   );
 };

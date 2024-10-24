@@ -11,12 +11,7 @@ const OPTIONS: TokenOption[] = [
 ];
 
 export const TokenSelectRequest = () => {
-  const { isWalletConnected, isDappActive, isDappActiveOnL2 } = useDappStatus();
+  const { isDappActive } = useDappStatus();
 
-  return (
-    <TokenSelectHookForm
-      disabled={(isWalletConnected && !isDappActive) || isDappActiveOnL2}
-      options={OPTIONS}
-    />
-  );
+  return <TokenSelectHookForm disabled={!isDappActive} options={OPTIONS} />;
 };
