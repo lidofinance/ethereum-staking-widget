@@ -25,17 +25,19 @@ const collectStartupChecksRPCMetrics = async (
       );
     }
 
-    rpcChecksResults.forEach((_check: { domain: string; success: boolean }) => {
-      rpcMetrics.requestStatusGauge
-        .labels(_check.domain)
-        .set(Number(+!_check.success));
-    });
+    rpcChecksResults.forEach(
+      (_check: { domain: string; chainId: number; success: boolean }) => {
+        rpcMetrics.requestStatusGauge
+          .labels({ rpc_domain: _check.domain, chain_id: _check.chainId })
+          .set(Number(+!_check.success));
+      },
+    );
   } catch (error) {
     console.error(
       `[collectStartupChecksRPCMetrics] Error collecting RPC metrics: ${error}`,
     );
     rpcMetrics.requestStatusGauge
-      .labels('BROKEN_URL') // false as string
+      .labels({ rpc_domain: 'BROKEN_URL' }) // false as string, chainId is not important here
       .inc(1);
   }
 };
