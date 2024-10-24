@@ -4,6 +4,7 @@ import { Layout } from 'shared/components';
 import { Stake } from './stake';
 
 import type { FC } from 'react';
+
 export const StakePage: FC = () => {
   return (
     <Layout

@@ -13,15 +13,9 @@ export const useDappStatus = () => {
   } = useAccount();
 
   // this can change between pages based on their dapp-chain context(or lack of)
-  const {
-    isChainTypeMatched,
-    chainType,
-    currentSupportedChain,
-    supportedChainIds,
-    supportedChainTypes,
-    isSupportedChain,
-    supportedChainLabels,
-  } = useDappChain();
+  const dappChain = useDappChain();
+
+  const { isSupportedChain, isChainTypeMatched } = dappChain;
 
   const isLidoMultichainChain =
     !!walletChainId &&
@@ -48,20 +42,14 @@ export const useDappStatus = () => {
   // no useMemo because memoisation is more expensive than boolean flags
   // hook is used in many places and every usage would create separate memoisation
   return {
+    ...dappChain,
     isAccountActive,
     isDappActive,
     isDappActiveOnL2,
     isDappActiveOnL1,
     isLidoMultichainChain,
-    isSupportedChain,
-    supportedChainIds,
-    supportedChainTypes,
-    supportedChainLabels,
     isWalletConnected,
-    chainId: currentSupportedChain,
     walletChainId,
     address,
-    isChainTypeMatched,
-    chainType,
   };
 };

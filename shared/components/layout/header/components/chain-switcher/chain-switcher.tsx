@@ -5,7 +5,7 @@ import { Option } from '@lidofinance/lido-ui';
 import { ReactComponent as OptimismLogo } from 'assets/icons/chain-toggler/optimism.svg';
 import { ReactComponent as EthereumMainnetLogo } from 'assets/icons/chain-toggler/mainnet.svg';
 
-import { DAPP_CHAIN_TYPE, useDappChain } from 'modules/web3';
+import { DAPP_CHAIN_TYPE } from 'modules/web3';
 import { useDappStatus } from 'modules/web3';
 
 import { SelectIconTooltip } from './components/select-icon-tooltip/select-icon-tooltip';
@@ -17,8 +17,10 @@ const iconsMap: Record<DAPP_CHAIN_TYPE, ReactNode> = {
 };
 
 export const ChainSwitcher: FC = () => {
-  const { setChainType, chainType, isChainTypeUnlocked } = useDappChain();
-  const { isDappActive } = useDappStatus();
+  const { isDappActive, chainType, supportedChainTypes, setChainType } =
+    useDappStatus();
+
+  const isChainTypeUnlocked = supportedChainTypes.length > 1;
 
   return (
     <SelectIconWrapper>

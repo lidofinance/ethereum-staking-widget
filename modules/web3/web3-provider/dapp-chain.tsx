@@ -23,11 +23,10 @@ type DappChainContextValue = {
   setChainType: React.Dispatch<React.SetStateAction<DAPP_CHAIN_TYPE>>;
   supportedChainIds: number[];
   isChainTypeMatched: boolean;
-  isChainTypeUnlocked: boolean;
 };
 
 type UseDappChainValue = {
-  currentSupportedChain: number;
+  chainId: number;
   isSupportedChain: boolean;
   supportedChainTypes: DAPP_CHAIN_TYPE[];
   supportedChainLabels: string[];
@@ -36,7 +35,6 @@ type UseDappChainValue = {
 // Default value of this context only allows L1 chains and no chain switch
 const DappChainContext = createContext<DappChainContextValue>({
   chainType: DAPP_CHAIN_TYPE.Ethereum,
-  isChainTypeUnlocked: false,
   // only L1 chains
   supportedChainIds: config.supportedChains.filter(
     (chain) => !isSDKSupportedL2Chain(chain),
@@ -94,7 +92,7 @@ export const useDappChain = (): UseDappChainValue => {
 
     return {
       ...context,
-      currentSupportedChain: context.supportedChainIds.includes(dappChain)
+      chainId: context.supportedChainIds.includes(dappChain)
         ? dappChain
         : config.defaultChain,
       isSupportedChain: walletChain
@@ -131,7 +129,6 @@ export const SupportL2Chains: React.FC<{ children: React.ReactNode }> = ({
           chainType,
           setChainType,
           supportedChainIds: config.supportedChains,
-          isChainTypeUnlocked: true,
           isChainTypeMatched:
             chainType === getChainTypeByChainId(walletChainId),
         }),
