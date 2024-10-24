@@ -1,9 +1,11 @@
-import { WalletCardComponent } from 'shared/wallet/card/types';
-
-import { FallbackWalletStyle, TextStyle } from './styles';
-import { useErrorMessage } from './useErrorMessage';
 import { useDappStatus } from 'modules/web3';
-import { LidoMultichainFallback } from '../lido-multichain-fallback/lido-multichain-fallback';
+import { LIDO_MULTICHAIN_CHAINS } from 'consts/chains';
+import { WalletCardComponent } from 'shared/wallet/card/types';
+import { useConfig } from 'config';
+
+import { useErrorMessage } from './useErrorMessage';
+import { LidoMultichainFallback } from './lido-multichain-fallback';
+import { FallbackWalletStyle, TextStyle } from './styles';
 
 type FallbackProps = React.ComponentProps<WalletCardComponent> & {
   showMultichainBanner?: boolean;
@@ -17,12 +19,20 @@ export const Fallback = ({
   error: errorProp,
   ...props
 }: FallbackProps) => {
-  const { isLidoMultichainChain, isWalletConnected } = useDappStatus();
+  const { multiChainBanner } = useConfig().externalConfig;
+  const { isWalletConnected, walletChainId, isSupportedChain } =
+    useDappStatus();
   let error = useErrorMessage();
+
+  const isLidoMultichain =
+    !!walletChainId &&
+    !!LIDO_MULTICHAIN_CHAINS[walletChainId] &&
+    !isSupportedChain &&
+    multiChainBanner.includes(walletChainId);
 
   if (errorProp) error = errorProp;
 
-  if (showMultichainBanner && isLidoMultichainChain) {
+  if (showMultichainBanner && isLidoMultichain) {
     return (
       <LidoMultichainFallback textEnding={toActionText ?? ''} {...props} />
     );
