@@ -108,9 +108,8 @@ export const useRequestTxPrice = ({
 };
 
 export const useClaimTxPrice = (requests: RequestStatusClaimable[]) => {
-  const { address } = useDappStatus();
+  const { address, chainId } = useDappStatus();
   const { contractRpc } = useWithdrawalsContract();
-  const { chainId } = useDappStatus();
 
   const requestCount = requests.length || 1;
   const debouncedSortedSelectedRequests = useDebouncedValue(requests, 2000);
