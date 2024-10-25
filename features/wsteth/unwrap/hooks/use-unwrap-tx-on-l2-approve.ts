@@ -2,7 +2,12 @@ import { useMemo, useCallback } from 'react';
 import type { BigNumber } from 'ethers';
 
 import { runWithTransactionLogger } from 'utils';
-import { useLidoSDK, useDappStatus, useAllowance } from 'modules/web3';
+import {
+  useLidoSDK,
+  useDappStatus,
+  useAllowance,
+  DAPP_CHAIN_TYPE,
+} from 'modules/web3';
 
 import { LIDO_L2_CONTRACT_ADDRESSES } from '@lidofinance/lido-ethereum-sdk/common';
 import { TransactionCallbackStage } from '@lidofinance/lido-ethereum-sdk/core';
@@ -12,7 +17,7 @@ type UseUnwrapTxApproveArgs = {
 };
 
 export const useUnwrapTxOnL2Approve = ({ amount }: UseUnwrapTxApproveArgs) => {
-  const { isDappActiveOnL2, address } = useDappStatus();
+  const { isDappActiveOnL2, chainType, address } = useDappStatus();
   const { core, l2 } = useLidoSDK();
 
   const staticTokenAddress = LIDO_L2_CONTRACT_ADDRESSES[core.chainId]?.wsteth;
@@ -60,15 +65,18 @@ export const useUnwrapTxOnL2Approve = ({ amount }: UseUnwrapTxApproveArgs) => {
       allowance,
       isApprovalNeededBeforeUnwrap,
       isAllowanceLoading,
-      isShowAllowance: isDappActiveOnL2,
+      // todo
+      isShowAllowance:
+        isDappActiveOnL2 || chainType === DAPP_CHAIN_TYPE.Optimism,
     }),
     [
       processApproveTx,
       refetchAllowance,
-      isAllowanceLoading,
       allowance,
       isApprovalNeededBeforeUnwrap,
+      isAllowanceLoading,
       isDappActiveOnL2,
+      chainType,
     ],
   );
 };

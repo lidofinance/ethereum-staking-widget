@@ -112,7 +112,7 @@ export const WrapFormStats = () => {
           DATA_UNAVAILABLE
         )}
       </DataTableRow>
-      {(!isDappActive || isShowAllowance) && (
+      {isShowAllowance && (
         <AllowanceDataTableRow
           data-testid="allowance"
           allowance={allowance}
