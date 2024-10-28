@@ -1,10 +1,6 @@
 import styled, { css } from 'styled-components';
 
-type SelectProps = {
-  $disabled: boolean;
-};
-
-export const SelectStyled = styled.div<SelectProps>`
+export const ChainSwitcherStyled = styled.div<{ $disabled: boolean }>`
   display: inline-flex;
   flex-grow: 1;
   align-items: center;
@@ -25,8 +21,11 @@ export const SelectStyled = styled.div<SelectProps>`
 
   border-radius: 10px;
   transition: border-color 100ms;
+  cursor: ${({ $disabled }) => ($disabled ? 'not-allowed' : 'pointer')};
 
-  cursor: ${({ $disabled }) => ($disabled ? 'default' : 'pointer')};
+  // Fix the highlight by click
+  -webkit-tap-highlight-color: transparent;
+  outline: none;
 
   background: var(--lido-color-controlBg);
 
@@ -42,7 +41,7 @@ export const SelectStyled = styled.div<SelectProps>`
   }
 `;
 
-export const SelectIconStyle = styled.span`
+export const IconStyle = styled.span`
   display: flex;
   align-items: center;
   justify-content: center;
@@ -50,122 +49,14 @@ export const SelectIconStyle = styled.span`
   justify-self: stretch;
 `;
 
-type SelectArrowProps = {
-  $opened: boolean;
-};
-
-export const SelectArrowStyle = styled.div<SelectArrowProps>`
-  border: 3px solid currentColor;
+export const ArrowStyle = styled.div<{ $opened: boolean }>`
+  border: 3px solid #7a8aa0;
   border-bottom-width: 0;
   border-left-color: transparent;
   border-right-color: transparent;
 
-  color: var(--lido-color-text);
   margin-right: 6px;
 
   transform: rotate(${({ $opened }) => ($opened ? 180 : 0)}deg);
   transition: transform ${({ theme }) => theme.duration.norm} ease;
-`;
-
-type PopupMenuProps = {
-  $opened: boolean;
-};
-
-const visibleCSS = css`
-  opacity: 1;
-
-  &[data-placement] {
-    transform: translate(0, 0);
-  }
-`;
-
-const hiddenCSS = css`
-  opacity: 0;
-
-  &[data-placement^='top'] {
-    transform: translateY(6px);
-  }
-  &[data-placement^='right'] {
-    transform: translateX(-6px);
-  }
-  &[data-placement^='bottom'] {
-    transform: translateY(-6px);
-  }
-  &[data-placement^='left'] {
-    transform: translateX(6px);
-  }
-`;
-
-export const PopupMenuStyled = styled.div<PopupMenuProps>`
-  min-width: 146px;
-  z-index: 200;
-
-  position: absolute;
-  top: 48px;
-
-  overflow: auto;
-  overflow-x: hidden;
-  box-sizing: border-box;
-
-  margin: 0;
-  padding: 0;
-
-  background: var(--lido-color-foreground);
-  color: var(--lido-color-text);
-  font-size: ${({ theme }) => theme.fontSizesMap.xs}px;
-  line-height: 1.5em;
-  font-weight: 400;
-
-  border-radius: ${({ theme }) => theme.borderRadiusesMap.lg}px;
-  box-shadow: ${({ theme }) => theme.boxShadows.xs}
-    var(--lido-color-shadowLight);
-
-  transition: opacity 150ms ease;
-  transition-property: opacity, transform;
-
-  ${({ $opened }) => ($opened ? visibleCSS : hiddenCSS)};
-`;
-
-type PopupMenuOptionProps = {
-  $active: boolean;
-};
-
-export const PopupMenuOptionStyled = styled.div<PopupMenuOptionProps>`
-  display: flex;
-  align-items: center;
-
-  width: 100%;
-  height: 44px;
-  
-  padding: 0 15px;
-  margin: 0;
-  box-sizing: border-box;
-
-  text-align: left;
-  color: var(--lido-color-text);
-  
-  transition: opacity 100ms;
-
-  cursor: pointer;
-  
-  background: var(--lido-color-controlBg);
-
-  ${({ theme, $active }) =>
-    theme.name === 'dark'
-      ? css`
-          background: ${$active && '#34343D'};
-        `
-      : css`
-          background: ${$active && '#000A3D08'};
-        `}
-  
-  &:not(:disabled):hover {
-    ${({ theme }) =>
-      theme.name === 'dark'
-        ? css`
-            background: #34343d;
-          `
-        : css`
-            background: #000a3d08;
-          `}
 `;

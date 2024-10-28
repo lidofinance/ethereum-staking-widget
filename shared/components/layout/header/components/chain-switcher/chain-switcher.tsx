@@ -1,19 +1,14 @@
-import { FC, ReactNode, useState, useEffect, useRef } from 'react';
-
-import { ReactComponent as OptimismLogo } from 'assets/icons/chain-toggler/optimism.svg';
-import { ReactComponent as EthereumMainnetLogo } from 'assets/icons/chain-toggler/mainnet.svg';
-
+import { FC, useState, useRef, ReactNode } from 'react';
 import { DAPP_CHAIN_TYPE } from 'modules/web3';
 import { useDappStatus } from 'modules/web3';
 
+import { useClickOutside } from './hooks/use-click-outside';
+import { ChainSwitcherOptions } from './components/chain-switcher-options/chain-switcher-options';
 import { SelectIconTooltip } from './components/select-icon-tooltip/select-icon-tooltip';
-import {
-  SelectStyled,
-  SelectIconStyle,
-  SelectArrowStyle,
-  PopupMenuStyled,
-  PopupMenuOptionStyled,
-} from './styles';
+import { ChainSwitcherStyled, IconStyle, ArrowStyle } from './styles';
+
+import { ReactComponent as OptimismLogo } from 'assets/icons/chain-toggler/optimism.svg';
+import { ReactComponent as EthereumMainnetLogo } from 'assets/icons/chain-toggler/mainnet.svg';
 
 const iconsMap: Record<DAPP_CHAIN_TYPE, ReactNode> = {
   [DAPP_CHAIN_TYPE.Ethereum]: <EthereumMainnetLogo />,
@@ -23,67 +18,41 @@ const iconsMap: Record<DAPP_CHAIN_TYPE, ReactNode> = {
 export const ChainSwitcher: FC = () => {
   const { isDappActive, chainType, supportedChainTypes, setChainType } =
     useDappStatus();
-
   const [opened, setOpened] = useState(false);
   const selectRef = useRef<HTMLDivElement>(null);
 
-  const handlerOnClick = () => {
-    setOpened((prev) => !prev);
-  };
-
-  const handleChainTypeSelect = (chainType: DAPP_CHAIN_TYPE) => {
-    setChainType(chainType);
-    setOpened(false);
-  };
-
-  const handleClickOutside = (event: MouseEvent) => {
-    if (
-      selectRef.current &&
-      !selectRef.current.contains(event.target as Node)
-    ) {
-      setOpened(false);
-    }
-  };
-
-  useEffect(() => {
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, []);
-
   const isChainTypeUnlocked = supportedChainTypes.length > 1;
+
+  useClickOutside(selectRef, () => setOpened(false));
 
   return (
     <>
-      <SelectStyled
+      <ChainSwitcherStyled
         ref={selectRef}
         $disabled={!isChainTypeUnlocked}
-        onClick={handlerOnClick}
+        onClick={() => setOpened((prev) => !prev)}
       >
-        <SelectIconStyle>{iconsMap[chainType]}</SelectIconStyle>
-        {isChainTypeUnlocked && <SelectArrowStyle $opened={opened} />}
-      </SelectStyled>
+        <IconStyle>{iconsMap[chainType]}</IconStyle>
+        {isChainTypeUnlocked && <ArrowStyle $opened={opened} />}
+      </ChainSwitcherStyled>
 
-      <PopupMenuStyled $opened={opened}>
-        <PopupMenuOptionStyled
-          onClick={() => handleChainTypeSelect(DAPP_CHAIN_TYPE.Ethereum)}
-          $active={DAPP_CHAIN_TYPE.Ethereum === chainType}
-        >
-          {iconsMap[DAPP_CHAIN_TYPE.Ethereum]} Ethereum
-        </PopupMenuOptionStyled>
-        <PopupMenuOptionStyled
-          onClick={() => handleChainTypeSelect(DAPP_CHAIN_TYPE.Optimism)}
-          $active={DAPP_CHAIN_TYPE.Optimism === chainType}
-        >
-          {iconsMap[DAPP_CHAIN_TYPE.Optimism]} Optimism
-        </PopupMenuOptionStyled>
-      </PopupMenuStyled>
-
-      {isChainTypeUnlocked && !isDappActive && (
-        <SelectIconTooltip showArrow={true}>
-          This network doesn’t match your wallet’s network
-        </SelectIconTooltip>
+      {isChainTypeUnlocked && (
+        <>
+          <ChainSwitcherOptions
+            currentChainType={chainType}
+            onSelect={(chainType) => {
+              setChainType(chainType);
+              setOpened(false);
+            }}
+            opened={opened}
+            options={iconsMap}
+          />
+          {!isDappActive && (
+            <SelectIconTooltip showArrow>
+              This network doesn’t match your wallet’s network
+            </SelectIconTooltip>
+          )}
+        </>
       )}
     </>
   );
