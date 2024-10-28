@@ -59,7 +59,7 @@ const getChainTypeByChainId = (chainId?: number): DAPP_CHAIN_TYPE | null => {
 
 const getChainIdByChainType = (
   chainType: DAPP_CHAIN_TYPE,
-  supportedChainIds,
+  supportedChainIds: number[],
 ): number | null => {
   switch (chainType) {
     // At the current stage of the widget we don't care what ID is returned:
