@@ -4,6 +4,7 @@ import { useFormContext } from 'react-hook-form';
 import { useDappStatus } from 'shared/hooks/use-dapp-status';
 
 import { useFormControllerContext } from './form-controller-context';
+import { useWagmiConnectionChangedCallback } from 'shared/hooks/use-wagmi-connection-changed-callback';
 
 type FormControllerProps = React.ComponentProps<'form'>;
 
@@ -41,6 +42,9 @@ export const FormController: FC<PropsWithChildren<FormControllerProps>> = ({
     // so we don't need it in deps
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isDappActive]);
+
+  // Reset the form when chain id or wallet address changed
+  useWagmiConnectionChangedCallback(resetDefault);
 
   return (
     <form autoComplete="off" onSubmit={doSubmit} {...props}>

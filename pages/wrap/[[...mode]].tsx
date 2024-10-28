@@ -4,12 +4,9 @@ import Head from 'next/head';
 
 import { WrapUnwrapTabs } from 'features/wsteth/wrap-unwrap-tabs';
 import { Layout } from 'shared/components';
-import { useWagmiKey } from 'shared/hooks/use-wagmi-key';
 import { getDefaultStaticProps } from 'utilsApi/get-default-static-props';
 
 const WrapPage: FC<WrapModePageProps> = ({ mode }) => {
-  const key = useWagmiKey();
-
   return (
     <Layout
       title="Wrap & Unwrap"
@@ -18,7 +15,7 @@ const WrapPage: FC<WrapModePageProps> = ({ mode }) => {
       <Head>
         <title>Wrap | Lido</title>
       </Head>
-      <WrapUnwrapTabs mode={mode} key={key} />
+      <WrapUnwrapTabs mode={mode} />
     </Layout>
   );
 };
