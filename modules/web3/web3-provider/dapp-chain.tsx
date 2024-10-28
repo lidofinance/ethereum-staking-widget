@@ -26,7 +26,11 @@ type DappChainContextValue = {
 };
 
 type UseDappChainValue = {
+  // Current DApp chain ID (may not match with chainType)
   chainId: number;
+  // Chain ID by current chainType
+  chainTypeChainId: number;
+
   isSupportedChain: boolean;
   supportedChainTypes: DAPP_CHAIN_TYPE[];
   supportedChainLabels: string[];
@@ -51,6 +55,28 @@ const getChainTypeByChainId = (chainId?: number): DAPP_CHAIN_TYPE | null => {
     return DAPP_CHAIN_TYPE.Optimism;
   }
   return null;
+};
+
+const getChainIdByChainType = (
+  chainType: DAPP_CHAIN_TYPE,
+  supportedChainIds,
+): number | null => {
+  switch (chainType) {
+    case DAPP_CHAIN_TYPE.Ethereum:
+      return (
+        Array.from(ETHEREUM_CHAINS).find((id) =>
+          supportedChainIds.includes(id),
+        ) ?? null
+      );
+    case DAPP_CHAIN_TYPE.Optimism:
+      return (
+        Array.from(OPTIMISM_CHAINS).find((id) =>
+          supportedChainIds.includes(id),
+        ) ?? null
+      );
+    default:
+      return null;
+  }
 };
 
 export const useDappChain = (): UseDappChainValue => {
@@ -83,11 +109,16 @@ export const useDappChain = (): UseDappChainValue => {
       );
     });
 
+    const chainTypeChainId =
+      getChainIdByChainType(context.chainType, context.supportedChainIds) ||
+      config.defaultChain;
+
     return {
       ...context,
       chainId: context.supportedChainIds.includes(dappChain)
         ? dappChain
         : config.defaultChain,
+      chainTypeChainId,
       isSupportedChain: walletChain
         ? context.supportedChainIds.includes(walletChain)
         : true,

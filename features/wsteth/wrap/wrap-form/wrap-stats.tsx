@@ -18,8 +18,12 @@ import { useWrapFormData, WrapFormInputType } from '../wrap-form-context';
 const oneSteth = parseEther('1');
 
 export const WrapFormStats = () => {
-  const { isWalletConnected, isAccountActive, isDappActive, isDappActiveOnL2 } =
-    useDappStatus();
+  const {
+    isDappActive,
+    isDappActiveOnL2,
+    isChainTypeMatched,
+    chainTypeChainId,
+  } = useDappStatus();
   const { allowance, isShowAllowance, wrapGasLimit, isApprovalLoading } =
     useWrapFormData();
 
@@ -51,8 +55,12 @@ export const WrapFormStats = () => {
     initialLoading: isApproveCostLoading,
   } = useTxCostInUsd(approveGasLimit);
 
+  // This is used to get the TX price if the wallet chain id and header toggle network don't match
+  const chainIdForce = !isChainTypeMatched ? chainTypeChainId : undefined;
+  // The 'wrapGasLimit' difference between the networks is insignificant
+  // and can be neglected in the '!isChainTypeMatched' case
   const { txCostUsd: wrapTxCostInUsd, initialLoading: isWrapCostLoading } =
-    useTxCostInUsd(wrapGasLimit);
+    useTxCostInUsd(wrapGasLimit, chainIdForce);
 
   return (
     <DataTable data-testid="wrapStats">
@@ -68,17 +76,13 @@ export const WrapFormStats = () => {
           trimEllipsis
         />
       </DataTableRow>
-      {(!isAccountActive || isShowAllowance) && (
+      {isShowAllowance && (
         <DataTableRow
           title="Max unlock cost"
           data-testid="maxUnlockFee"
           loading={isApproveCostLoading}
         >
-          {isWalletConnected && !isDappActive ? (
-            '-'
-          ) : (
-            <FormatPrice amount={approveTxCostInUsd} />
-          )}
+          <FormatPrice amount={approveTxCostInUsd} />
         </DataTableRow>
       )}
       <DataTableRow
@@ -86,20 +90,14 @@ export const WrapFormStats = () => {
         data-testid="maxGasFee"
         loading={isWrapCostLoading}
       >
-        {isWalletConnected && !isDappActive ? (
-          '-'
-        ) : (
-          <FormatPrice amount={wrapTxCostInUsd} />
-        )}
+        <FormatPrice amount={wrapTxCostInUsd} />
       </DataTableRow>
       <DataTableRow
         title="Exchange rate"
         data-testid="exchangeRate"
         loading={oneWstethConvertedLoading}
       >
-        {isWalletConnected && !isDappActive ? (
-          '-'
-        ) : oneWstethConverted ? (
+        {oneWstethConverted ? (
           <>
             1 {isSteth ? 'stETH' : 'ETH'} ={' '}
             <FormatToken
