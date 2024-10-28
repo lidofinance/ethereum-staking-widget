@@ -44,6 +44,7 @@ export const WrapFormStats = () => {
     isDappActiveOnL2 ? oneSteth : undefined,
   );
 
+  // TODO: remove isDappActiveOnL2
   const {
     data: oneWstethConverted,
     initialLoading: oneWstethConvertedLoading,

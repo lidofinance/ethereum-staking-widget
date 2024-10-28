@@ -16,21 +16,30 @@ import { useUnwrapFormData, UnwrapFormInputType } from '../unwrap-form-context';
 import { useApproveGasLimit } from 'features/wsteth/wrap/hooks/use-approve-gas-limit';
 
 export const UnwrapStats = () => {
-  const { isWalletConnected, isDappActiveOnL2, isDappActive } = useDappStatus();
+  const { isDappActiveOnL2, isChainTypeMatched, chainTypeChainId } =
+    useDappStatus();
   const { allowance, isAllowanceLoading, isShowAllowance } =
     useUnwrapFormData();
   const amount = useWatch<UnwrapFormInputType, 'amount'>({ name: 'amount' });
+
+  // This is used to get the TX price if the wallet chain id and header toggle network don't match
+  const chainIdForce = !isChainTypeMatched ? chainTypeChainId : undefined;
+
   const unwrapGasLimit = useUnwrapGasLimit();
+  // The 'unwrapGasLimit' difference between the networks is insignificant
+  // and can be neglected in the '!isChainTypeMatched' case
   const {
     txCostUsd: unwrapTxCostInUsd,
     initialLoading: isUnwrapTxCostLoading,
-  } = useTxCostInUsd(unwrapGasLimit);
+  } = useTxCostInUsd(unwrapGasLimit, chainIdForce);
 
   const approveGasLimit = useApproveGasLimit();
+  // The 'approveGasLimit' difference between the networks is insignificant
+  // and can be neglected in the '!isChainTypeMatched' case
   const {
     txCostUsd: approveTxCostInUsd,
     initialLoading: isApproveCostLoading,
-  } = useTxCostInUsd(approveGasLimit);
+  } = useTxCostInUsd(approveGasLimit, chainIdForce);
 
   const { data: willReceiveStETH, initialLoading: isWillReceiveStETHLoading } =
     useDebouncedStethByWsteth(amount, isDappActiveOnL2);
@@ -54,11 +63,7 @@ export const UnwrapStats = () => {
         data-testid="maxGasFee"
         loading={isUnwrapTxCostLoading}
       >
-        {isWalletConnected && !isDappActive ? (
-          '-'
-        ) : (
-          <FormatPrice amount={unwrapTxCostInUsd} />
-        )}
+        <FormatPrice amount={unwrapTxCostInUsd} />
       </DataTableRow>
       {isShowAllowance && (
         <DataTableRow
@@ -66,11 +71,7 @@ export const UnwrapStats = () => {
           data-testid="maxUnlockFee"
           loading={isApproveCostLoading}
         >
-          {isWalletConnected && !isDappActive ? (
-            '-'
-          ) : (
-            <FormatPrice amount={approveTxCostInUsd} />
-          )}
+          <FormatPrice amount={approveTxCostInUsd} />
         </DataTableRow>
       )}
       <DataTableRowStethByWsteth />
