@@ -64,7 +64,7 @@ const getChainIdByChainType = (
   switch (chainType) {
     // At the current stage of the widget we don't care what ID is returned:
     // - 'chainTypeChainId' is only used for statistics;
-    // - on the prod environment, the function display of 'chainType' to 'chainId' will be 1 to 1 (bijective mapping).
+    // - on the prod environment, the function map of 'chainType' to 'chainId' will be 1 to 1 (bijective mapping).
 
     case DAPP_CHAIN_TYPE.Ethereum:
       return (
