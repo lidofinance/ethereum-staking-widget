@@ -24,7 +24,6 @@ export const DataTableRowStethByWsteth = ({
     isDappActiveOnL2 ? OneWsteth : undefined,
   );
 
-  // TODO: remove isDappActiveOnL2
   const { data, initialLoading } = isDappActiveOnL2
     ? stETHByWstETHOnL2
     : stethByWsteth;

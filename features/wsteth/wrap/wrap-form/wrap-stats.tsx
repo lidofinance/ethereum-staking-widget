@@ -44,20 +44,22 @@ export const WrapFormStats = () => {
     isDappActiveOnL2 ? oneSteth : undefined,
   );
 
-  // TODO: remove isDappActiveOnL2
   const {
     data: oneWstethConverted,
     initialLoading: oneWstethConvertedLoading,
   } = isDappActiveOnL2 ? wstETHByStETHOnL2 : wstethBySteth;
 
+  // This is used to get the TX price if the wallet chain id and header toggle network don't match
+  const chainIdForce = !isChainTypeMatched ? chainTypeChainId : undefined;
+
+  // The 'approveGasLimit' difference between the networks is insignificant
+  // and can be neglected in the '!isChainTypeMatched' case
   const approveGasLimit = useApproveGasLimit();
   const {
     txCostUsd: approveTxCostInUsd,
     initialLoading: isApproveCostLoading,
-  } = useTxCostInUsd(approveGasLimit);
+  } = useTxCostInUsd(approveGasLimit, chainIdForce);
 
-  // This is used to get the TX price if the wallet chain id and header toggle network don't match
-  const chainIdForce = !isChainTypeMatched ? chainTypeChainId : undefined;
   // The 'wrapGasLimit' difference between the networks is insignificant
   // and can be neglected in the '!isChainTypeMatched' case
   const { txCostUsd: wrapTxCostInUsd, initialLoading: isWrapCostLoading } =
