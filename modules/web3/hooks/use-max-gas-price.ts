@@ -22,13 +22,13 @@ const feeHistoryToMaxFee = ({
   return BigNumber.from(maxFeePerGas);
 };
 
-export const useMaxGasPrice = (chainIdForce?: number) => {
-  const { chainId } = useDappStatus();
+export const useMaxGasPrice = (chainId?: number) => {
+  const { chainId: dappChainId } = useDappStatus();
 
   const { data, isLoading, error, isFetching, refetch } = useFeeHistory({
     blockCount: 5,
     blockTag: 'pending',
-    chainId: chainIdForce || chainId,
+    chainId: chainId || dappChainId,
     rewardPercentiles: REWARD_PERCENTILES,
     query: {
       select: feeHistoryToMaxFee,
