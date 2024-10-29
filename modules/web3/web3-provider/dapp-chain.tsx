@@ -137,12 +137,11 @@ export const SupportL2Chains: React.FC<React.PropsWithChildren> = ({
   children,
 }) => {
   const { chainId: walletChainId, isConnected } = useAccount();
+  const wagmiConfig = useConfig();
   const [chainType, setChainType] = useState<DAPP_CHAIN_TYPE>(
     DAPP_CHAIN_TYPE.Ethereum,
   );
 
-  // Reset the chainType after disconnect
-  const wagmiConfig = useConfig();
   useEffect(() => {
     if (isConnected && walletChainId) {
       const newChainType = getChainTypeByChainId(walletChainId);
@@ -151,6 +150,7 @@ export const SupportL2Chains: React.FC<React.PropsWithChildren> = ({
       return () => {
         // protecs from side effect double run
         if (!wagmiConfig.state.current) {
+          // Reset the chainType after disconnect
           setChainType(DAPP_CHAIN_TYPE.Ethereum);
         }
       };
