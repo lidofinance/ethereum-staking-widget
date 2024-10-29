@@ -23,6 +23,7 @@ type DappChainContextValue = {
   setChainType: React.Dispatch<React.SetStateAction<DAPP_CHAIN_TYPE>>;
   supportedChainIds: number[];
   isChainTypeMatched: boolean;
+  isChainTypeOnL2: boolean;
 };
 
 type UseDappChainValue = {
@@ -135,7 +136,7 @@ export const useDappChain = (): UseDappChainValue => {
 export const SupportL2Chains: React.FC<React.PropsWithChildren> = ({
   children,
 }) => {
-  const { chainId: walletChainId } = useAccount();
+  const { chainId: walletChainId, isConnected } = useAccount();
   const [chainType, setChainType] = useState<DAPP_CHAIN_TYPE>(
     DAPP_CHAIN_TYPE.Ethereum,
   );
@@ -159,8 +160,14 @@ export const SupportL2Chains: React.FC<React.PropsWithChildren> = ({
           supportedChainIds: config.supportedChains,
           isChainTypeMatched:
             chainType === getChainTypeByChainId(walletChainId),
+          // At the moment a simple check is enough for us,
+          // however in the future we will either rethink this flag
+          // or use an array or Set (for example with L2_DAPP_CHAINS_TYPE)
+          isChainTypeOnL2: isConnected
+            ? chainType === DAPP_CHAIN_TYPE.Optimism
+            : false,
         }),
-        [chainType, walletChainId],
+        [chainType, walletChainId, isConnected],
       )}
     >
       {children}
@@ -175,6 +182,7 @@ const onlyL1ChainsValue = {
     (chain) => !isSDKSupportedL2Chain(chain),
   ),
   isChainTypeMatched: true,
+  isChainTypeOnL2: false,
   setChainType: () => {},
 };
 

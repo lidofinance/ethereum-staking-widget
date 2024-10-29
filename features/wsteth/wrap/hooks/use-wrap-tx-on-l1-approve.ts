@@ -6,7 +6,7 @@ import { useSDK } from '@lido-sdk/react';
 
 import { TokensWrappable, TOKENS_TO_WRAP } from 'features/wsteth/shared/types';
 import { useApproveOnL1 } from 'shared/hooks/useApproveOnL1';
-import { DAPP_CHAIN_TYPE, useDappStatus } from 'modules/web3';
+import { useDappStatus } from 'modules/web3';
 
 type UseWrapTxApproveArgs = {
   amount: BigNumber;
@@ -17,7 +17,8 @@ export const useWrapTxOnL1Approve = ({
   amount,
   token,
 }: UseWrapTxApproveArgs) => {
-  const { isWalletConnected, isDappActiveOnL1, chainType } = useDappStatus();
+  const { isWalletConnected, isDappActiveOnL1, isChainTypeOnL2 } =
+    useDappStatus();
   const { chainId } = useSDK();
 
   const [stethTokenAddress, wstethTokenAddress] = useMemo(
@@ -51,11 +52,8 @@ export const useWrapTxOnL1Approve = ({
       isApprovalLoading,
       isApprovalNeededBeforeWrap,
       refetchAllowance,
-      // todo
       isShowAllowance:
-        !isWalletConnected ||
-        isDappActiveOnL1 ||
-        chainType === DAPP_CHAIN_TYPE.Ethereum,
+        !isWalletConnected || isDappActiveOnL1 || !isChainTypeOnL2,
     }),
     [
       processApproveTx,
@@ -66,7 +64,7 @@ export const useWrapTxOnL1Approve = ({
       refetchAllowance,
       isWalletConnected,
       isDappActiveOnL1,
-      chainType,
+      isChainTypeOnL2,
     ],
   );
 };

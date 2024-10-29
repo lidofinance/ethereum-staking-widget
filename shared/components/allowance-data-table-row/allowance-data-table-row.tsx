@@ -30,7 +30,10 @@ export const AllowanceDataTableRow = ({
   return (
     <DataTableRow title={title} {...rest}>
       {isBlank ? (
-        '-'
+        <FormatToken
+          amount={BigNumber.from('0')}
+          symbol={getTokenDisplayName(token)}
+        />
       ) : isInfiniteAllowance ? (
         'Infinite'
       ) : (
