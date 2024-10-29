@@ -1,5 +1,9 @@
 import styled, { css } from 'styled-components';
 
+export const ChainSwitcherWrapperStyled = styled.div`
+  position: relative;
+`;
+
 export const ChainSwitcherStyled = styled.div<{ $disabled: boolean }>`
   display: inline-flex;
   flex-grow: 1;

@@ -5,7 +5,12 @@ import { useDappStatus } from 'modules/web3';
 import { useClickOutside } from './hooks/use-click-outside';
 import { ChainSwitcherOptions } from './components/chain-switcher-options/chain-switcher-options';
 import { SelectIconTooltip } from './components/select-icon-tooltip/select-icon-tooltip';
-import { ChainSwitcherStyled, IconStyle, ArrowStyle } from './styles';
+import {
+  ChainSwitcherWrapperStyled,
+  ChainSwitcherStyled,
+  IconStyle,
+  ArrowStyle,
+} from './styles';
 
 import { ReactComponent as OptimismLogo } from 'assets/icons/chain-toggler/optimism.svg';
 import { ReactComponent as EthereumMainnetLogo } from 'assets/icons/chain-toggler/mainnet.svg';
@@ -26,7 +31,7 @@ export const ChainSwitcher: FC = () => {
   useClickOutside(selectRef, () => setOpened(false));
 
   return (
-    <>
+    <ChainSwitcherWrapperStyled>
       <ChainSwitcherStyled
         ref={selectRef}
         $disabled={!isChainTypeUnlocked}
@@ -54,6 +59,6 @@ export const ChainSwitcher: FC = () => {
           )}
         </>
       )}
-    </>
+    </ChainSwitcherWrapperStyled>
   );
 };
