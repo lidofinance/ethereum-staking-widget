@@ -18,12 +18,7 @@ import { useWrapFormData, WrapFormInputType } from '../wrap-form-context';
 const oneSteth = parseEther('1');
 
 export const WrapFormStats = () => {
-  const {
-    isDappActive,
-    isDappActiveOnL2,
-    isChainTypeMatched,
-    chainTypeChainId,
-  } = useDappStatus();
+  const { isDappActive, isDappActiveOnL2, chainTypeChainId } = useDappStatus();
   const { allowance, isShowAllowance, wrapGasLimit, isApprovalLoading } =
     useWrapFormData();
 
@@ -49,21 +44,21 @@ export const WrapFormStats = () => {
     initialLoading: oneWstethConvertedLoading,
   } = isDappActiveOnL2 ? wstETHByStETHOnL2 : wstethBySteth;
 
-  // This is used to get the TX price if the wallet chain id and header toggle network don't match
-  const chainIdForce = !isChainTypeMatched ? chainTypeChainId : undefined;
-
   // The 'approveGasLimit' difference between the networks is insignificant
   // and can be neglected in the '!isChainTypeMatched' case
+  //
+  // Using the chainTypeChainId (chainId from the chain switcher) for TX calculation (and below for 'wrapTxCostInUsd'),
+  // because the statistics here are shown for the chain from the chain switcher
   const approveGasLimit = useApproveGasLimit();
   const {
     txCostUsd: approveTxCostInUsd,
     initialLoading: isApproveCostLoading,
-  } = useTxCostInUsd(approveGasLimit, chainIdForce);
+  } = useTxCostInUsd(approveGasLimit, chainTypeChainId);
 
   // The 'wrapGasLimit' difference between the networks is insignificant
   // and can be neglected in the '!isChainTypeMatched' case
   const { txCostUsd: wrapTxCostInUsd, initialLoading: isWrapCostLoading } =
-    useTxCostInUsd(wrapGasLimit, chainIdForce);
+    useTxCostInUsd(wrapGasLimit, chainTypeChainId);
 
   return (
     <DataTable data-testid="wrapStats">

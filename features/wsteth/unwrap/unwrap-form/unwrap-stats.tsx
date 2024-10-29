@@ -16,22 +16,21 @@ import { useUnwrapFormData, UnwrapFormInputType } from '../unwrap-form-context';
 import { useApproveGasLimit } from 'features/wsteth/wrap/hooks/use-approve-gas-limit';
 
 export const UnwrapStats = () => {
-  const { isDappActiveOnL2, isChainTypeMatched, chainTypeChainId } =
-    useDappStatus();
+  const { isDappActiveOnL2, chainTypeChainId } = useDappStatus();
   const { allowance, isAllowanceLoading, isShowAllowance } =
     useUnwrapFormData();
   const amount = useWatch<UnwrapFormInputType, 'amount'>({ name: 'amount' });
 
-  // This is used to get the TX price if the wallet chain id and header toggle network don't match
-  const chainIdForce = !isChainTypeMatched ? chainTypeChainId : undefined;
-
   const unwrapGasLimit = useUnwrapGasLimit();
   // The 'unwrapGasLimit' difference between the networks is insignificant
   // and can be neglected in the '!isChainTypeMatched' case
+  //
+  // Using the chainTypeChainId (chainId from the chain switcher) for TX calculation (and below for 'approveTxCostInUsd'),
+  // because the statistics here are shown for the chain from the chain switcher
   const {
     txCostUsd: unwrapTxCostInUsd,
     initialLoading: isUnwrapTxCostLoading,
-  } = useTxCostInUsd(unwrapGasLimit, chainIdForce);
+  } = useTxCostInUsd(unwrapGasLimit, chainTypeChainId);
 
   const approveGasLimit = useApproveGasLimit();
   // The 'approveGasLimit' difference between the networks is insignificant
@@ -39,7 +38,7 @@ export const UnwrapStats = () => {
   const {
     txCostUsd: approveTxCostInUsd,
     initialLoading: isApproveCostLoading,
-  } = useTxCostInUsd(approveGasLimit, chainIdForce);
+  } = useTxCostInUsd(approveGasLimit, chainTypeChainId);
 
   const { data: willReceiveStETH, initialLoading: isWillReceiveStETHLoading } =
     useDebouncedStethByWsteth(amount, isDappActiveOnL2);
