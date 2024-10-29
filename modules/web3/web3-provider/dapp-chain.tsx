@@ -89,7 +89,7 @@ export const useDappChain = (): UseDappChainValue => {
   invariant(context, 'useDappChain was used outside of DappChainProvider');
 
   const { chainId: dappChain } = useLidoSDK();
-  const { chainId: walletChain } = useAccount();
+  const { chainId: walletChain, isConnected } = useAccount();
 
   return useMemo(() => {
     const supportedChainTypes = context.supportedChainIds
@@ -114,9 +114,13 @@ export const useDappChain = (): UseDappChainValue => {
       );
     });
 
-    const chainTypeChainId =
-      getChainIdByChainType(context.chainType, context.supportedChainIds) ||
-      config.defaultChain;
+    // The check (is isConnected) is needed for the case when the wallet was disconnected:
+    // - the Ethereum in wallet or Optimism in wallet,
+    // - the Optimism in the chain switcher (important)
+    const chainTypeChainId = isConnected
+      ? getChainIdByChainType(context.chainType, context.supportedChainIds) ??
+        config.defaultChain
+      : config.defaultChain;
 
     return {
       ...context,
@@ -130,7 +134,7 @@ export const useDappChain = (): UseDappChainValue => {
       supportedChainTypes,
       supportedChainLabels,
     };
-  }, [context, dappChain, walletChain]);
+  }, [context, dappChain, isConnected, walletChain]);
 };
 
 export const SupportL2Chains: React.FC<React.PropsWithChildren> = ({
@@ -163,6 +167,9 @@ export const SupportL2Chains: React.FC<React.PropsWithChildren> = ({
           // At the moment a simple check is enough for us,
           // however in the future we will either rethink this flag
           // or use an array or Set (for example with L2_DAPP_CHAINS_TYPE)
+          //
+          // The check (is isConnected) is needed for the case when the wallet was disconnected
+          // with the Optimism in the chain switcher
           isChainTypeOnL2: isConnected
             ? chainType === DAPP_CHAIN_TYPE.Optimism
             : false,
