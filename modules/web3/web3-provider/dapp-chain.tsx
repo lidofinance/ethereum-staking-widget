@@ -144,7 +144,10 @@ export const SupportL2Chains: React.FC<React.PropsWithChildren> = ({
   // Reset the chainType after disconnect
   const wagmiConfig = useConfig();
   useEffect(() => {
-    if (isConnected) {
+    if (isConnected && walletChainId) {
+      const newChainType = getChainTypeByChainId(walletChainId);
+      if (newChainType) setChainType(newChainType);
+
       return () => {
         // protecs from side effect double run
         if (!wagmiConfig.state.current) {
@@ -153,17 +156,7 @@ export const SupportL2Chains: React.FC<React.PropsWithChildren> = ({
       };
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isConnected, setChainType]);
-
-  useEffect(() => {
-    if (!walletChainId) return;
-
-    const newChainType = getChainTypeByChainId(walletChainId);
-
-    if (!newChainType) return;
-
-    setChainType(newChainType);
-  }, [walletChainId]);
+  }, [walletChainId, isConnected, setChainType]);
 
   return (
     <DappChainContext.Provider
