@@ -52,6 +52,10 @@ export const useWrapTxOnL1Approve = ({
       isApprovalLoading,
       isApprovalNeededBeforeWrap,
       refetchAllowance,
+      // There are 3 cases when we show the allowance on the wrap page:
+      // 1. is wallet not connected (!isWalletConnected)
+      // 2. or any ETH supported chain and chain switcher is ETH (isDappActiveOnL1)
+      // 3. or any Optimism supported chain, but chain switcher is ETH (!isChainTypeOnL2)
       isShowAllowance:
         !isWalletConnected || isDappActiveOnL1 || !isChainTypeOnL2,
     }),
