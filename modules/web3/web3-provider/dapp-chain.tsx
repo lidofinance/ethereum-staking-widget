@@ -8,7 +8,7 @@ import React, {
 import invariant from 'tiny-invariant';
 
 import { CHAINS, isSDKSupportedL2Chain } from 'consts/chains';
-import { useAccount } from 'wagmi';
+import { useAccount, useConfig } from 'wagmi';
 import { config } from 'config';
 import { useLidoSDK } from './lido-sdk';
 import { wagmiChainMap } from './web3-provider';
@@ -89,7 +89,7 @@ export const useDappChain = (): UseDappChainValue => {
   invariant(context, 'useDappChain was used outside of DappChainProvider');
 
   const { chainId: dappChain } = useLidoSDK();
-  const { chainId: walletChain, isConnected } = useAccount();
+  const { chainId: walletChain } = useAccount();
 
   return useMemo(() => {
     const supportedChainTypes = context.supportedChainIds
@@ -114,13 +114,9 @@ export const useDappChain = (): UseDappChainValue => {
       );
     });
 
-    // The check (is isConnected) is needed for the case when the wallet was disconnected:
-    // - the Ethereum in wallet or Optimism in wallet,
-    // - the Optimism in the chain switcher (important)
-    const chainTypeChainId = isConnected
-      ? getChainIdByChainType(context.chainType, context.supportedChainIds) ??
-        config.defaultChain
-      : config.defaultChain;
+    const chainTypeChainId =
+      getChainIdByChainType(context.chainType, context.supportedChainIds) ??
+      config.defaultChain;
 
     return {
       ...context,
@@ -134,7 +130,7 @@ export const useDappChain = (): UseDappChainValue => {
       supportedChainTypes,
       supportedChainLabels,
     };
-  }, [context, dappChain, isConnected, walletChain]);
+  }, [context, dappChain, walletChain]);
 };
 
 export const SupportL2Chains: React.FC<React.PropsWithChildren> = ({
@@ -144,6 +140,20 @@ export const SupportL2Chains: React.FC<React.PropsWithChildren> = ({
   const [chainType, setChainType] = useState<DAPP_CHAIN_TYPE>(
     DAPP_CHAIN_TYPE.Ethereum,
   );
+
+  // Reset the chainType after disconnect
+  const wagmiConfig = useConfig();
+  useEffect(() => {
+    if (isConnected) {
+      return () => {
+        // protecs from side effect double run
+        if (!wagmiConfig.state.current) {
+          setChainType(DAPP_CHAIN_TYPE.Ethereum);
+        }
+      };
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isConnected, setChainType]);
 
   useEffect(() => {
     if (!walletChainId) return;
@@ -167,14 +177,9 @@ export const SupportL2Chains: React.FC<React.PropsWithChildren> = ({
           // At the moment a simple check is enough for us,
           // however in the future we will either rethink this flag
           // or use an array or Set (for example with L2_DAPP_CHAINS_TYPE)
-          //
-          // The check (is isConnected) is needed for the case when the wallet was disconnected
-          // with the Optimism in the chain switcher
-          isChainTypeOnL2: isConnected
-            ? chainType === DAPP_CHAIN_TYPE.Optimism
-            : false,
+          isChainTypeOnL2: chainType === DAPP_CHAIN_TYPE.Optimism,
         }),
-        [chainType, walletChainId, isConnected],
+        [chainType, walletChainId],
       )}
     >
       {children}
