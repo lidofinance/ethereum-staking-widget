@@ -161,12 +161,12 @@ const dexWithdrawalMap: DexWithdrawalIntegrationMap = {
     fetcher: getParaSwapWithdrawalRate,
     matomoEvent: MATOMO_CLICK_EVENTS_TYPES.withdrawalGoToParaswap,
     link: (amount, token) =>
-      `https://app.paraswap.io/?referrer=Lido&takeSurplus=true#/${getTokenAddress(
+      `https://app.paraswap.xyz/?referrer=Lido&takeSurplus=true#/swap/${getTokenAddress(
         CHAINS.Mainnet,
         token,
       )}-0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE/${formatEther(
         amount,
-      )}/SELL?network=ethereum`,
+      )}/SELL?version=6.2&network=ethereum`,
   },
   'one-inch': {
     title: '1inch',
