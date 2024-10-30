@@ -78,6 +78,7 @@ export const UnwrapStats = () => {
         <AllowanceDataTableRow
           data-testid="allowance"
           allowance={BigNumber.from(allowance || '0')}
+          isBlank={!isDappActiveOnL2}
           loading={isAllowanceLoading}
           token={TOKENS.WSTETH}
         />
