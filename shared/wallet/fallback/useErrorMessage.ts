@@ -19,7 +19,7 @@ export const useErrorMessage = (): string | undefined => {
   // Errors from chain state
 
   if (isAccountActive && !isChainTypeMatched) {
-    return `Wrong network. Please switch to ${chainType} in your wallet to wrap/unwrap.`;
+    return `Wrong network. Please switch to ${supportedChainLabels[chainType]} in your wallet to wrap/unwrap.`;
   }
 
   if (!isSupportedChain) {
