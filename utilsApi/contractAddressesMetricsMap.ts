@@ -79,10 +79,14 @@ const getAddressOrNull = <
   }
 };
 
+const supportedChainsWithMainnet: CHAINS[] = config.supportedChains.includes(
+  CHAINS.Mainnet,
+)
+  ? config.supportedChains
+  : [...config.supportedChains, CHAINS.Mainnet];
+
 // TODO rework to viem and remove typechain
-export const METRIC_CONTRACT_ADDRESSES = (
-  config.supportedChains as CHAINS[]
-).reduce(
+export const METRIC_CONTRACT_ADDRESSES = supportedChainsWithMainnet.reduce(
   (mapped, chainId) => {
     const map = {
       [CONTRACT_NAMES.stETH]: getAddressOrNull(
@@ -139,38 +143,39 @@ export const METRIC_CONTRACT_ADDRESSES = (
   {} as Record<CHAINS, Record<`0x${string}`, CONTRACT_NAMES>>,
 );
 
-export const METRIC_CONTRACT_EVENT_ADDRESSES = (
-  config.supportedChains as CHAINS[]
-).reduce(
-  (mapped, chainId) => {
-    const map = {
-      [CONTRACT_NAMES.stETH]: getAddressOrNull(
-        getTokenAddress,
-        chainId,
-        TOKENS.STETH,
-      ),
-      [CONTRACT_NAMES.wstETH]: getAddressOrNull(
-        getTokenAddress,
-        chainId,
-        TOKENS.WSTETH,
-      ),
-      [CONTRACT_NAMES.L2stETH]: getAddressOrNull((chainId: CHAINS) => {
-        const chainIDSDK = chainId as unknown as CHAIN_SDK;
-        return (
-          (LIDO_L2_CONTRACT_ADDRESSES[chainIDSDK]?.['steth'] as string) ?? null
-        );
-      }, chainId),
-      [CONTRACT_NAMES.L2wstETH]: getAddressOrNull((chainId: CHAINS) => {
-        const chainIDSDK = chainId as unknown as CHAIN_SDK;
-        return (
-          (LIDO_L2_CONTRACT_ADDRESSES[chainIDSDK]?.['wsteth'] as string) ?? null
-        );
-      }, chainId),
-    };
-    return {
-      ...mapped,
-      [chainId]: invert(omitBy(map, isNull)),
-    };
-  },
-  {} as Record<CHAINS, Record<`0x${string}`, CONTRACT_NAMES>>,
-);
+export const METRIC_CONTRACT_EVENT_ADDRESSES =
+  supportedChainsWithMainnet.reduce(
+    (mapped, chainId) => {
+      const map = {
+        [CONTRACT_NAMES.stETH]: getAddressOrNull(
+          getTokenAddress,
+          chainId,
+          TOKENS.STETH,
+        ),
+        [CONTRACT_NAMES.wstETH]: getAddressOrNull(
+          getTokenAddress,
+          chainId,
+          TOKENS.WSTETH,
+        ),
+        [CONTRACT_NAMES.L2stETH]: getAddressOrNull((chainId: CHAINS) => {
+          const chainIDSDK = chainId as unknown as CHAIN_SDK;
+          return (
+            (LIDO_L2_CONTRACT_ADDRESSES[chainIDSDK]?.['steth'] as string) ??
+            null
+          );
+        }, chainId),
+        [CONTRACT_NAMES.L2wstETH]: getAddressOrNull((chainId: CHAINS) => {
+          const chainIDSDK = chainId as unknown as CHAIN_SDK;
+          return (
+            (LIDO_L2_CONTRACT_ADDRESSES[chainIDSDK]?.['wsteth'] as string) ??
+            null
+          );
+        }, chainId),
+      };
+      return {
+        ...mapped,
+        [chainId]: invert(omitBy(map, isNull)),
+      };
+    },
+    {} as Record<CHAINS, Record<`0x${string}`, CONTRACT_NAMES>>,
+  );
