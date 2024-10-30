@@ -1,4 +1,4 @@
-import { MaxUint256 } from '@ethersproject/constants';
+import { MaxUint256, Zero } from '@ethersproject/constants';
 import { TOKENS } from '@lido-sdk/constants';
 import { DataTableRow } from '@lidofinance/lido-ui';
 import { BigNumber } from 'ethers';
@@ -30,7 +30,7 @@ export const AllowanceDataTableRow = ({
   return (
     <DataTableRow title={title} {...rest}>
       {isBlank ? (
-        '-'
+        <FormatToken amount={Zero} symbol={getTokenDisplayName(token)} />
       ) : isInfiniteAllowance ? (
         'Infinite'
       ) : (

@@ -18,8 +18,7 @@ import { useWrapFormData, WrapFormInputType } from '../wrap-form-context';
 const oneSteth = parseEther('1');
 
 export const WrapFormStats = () => {
-  const { isWalletConnected, isAccountActive, isDappActive, isDappActiveOnL2 } =
-    useDappStatus();
+  const { isDappActive, isDappActiveOnL2, chainTypeChainId } = useDappStatus();
   const { allowance, isShowAllowance, wrapGasLimit, isApprovalLoading } =
     useWrapFormData();
 
@@ -45,14 +44,21 @@ export const WrapFormStats = () => {
     initialLoading: oneWstethConvertedLoading,
   } = isDappActiveOnL2 ? wstETHByStETHOnL2 : wstethBySteth;
 
+  // The 'approveGasLimit' difference between the networks is insignificant
+  // and can be neglected in the '!isChainTypeMatched' case
+  //
+  // Using the chainTypeChainId (chainId from the chain switcher) for TX calculation (and below for 'wrapTxCostInUsd'),
+  // because the statistics here are shown for the chain from the chain switcher
   const approveGasLimit = useApproveGasLimit();
   const {
     txCostUsd: approveTxCostInUsd,
     initialLoading: isApproveCostLoading,
-  } = useTxCostInUsd(approveGasLimit);
+  } = useTxCostInUsd(approveGasLimit, chainTypeChainId);
 
+  // The 'wrapGasLimit' difference between the networks is insignificant
+  // and can be neglected in the '!isChainTypeMatched' case
   const { txCostUsd: wrapTxCostInUsd, initialLoading: isWrapCostLoading } =
-    useTxCostInUsd(wrapGasLimit);
+    useTxCostInUsd(wrapGasLimit, chainTypeChainId);
 
   return (
     <DataTable data-testid="wrapStats">
@@ -68,17 +74,13 @@ export const WrapFormStats = () => {
           trimEllipsis
         />
       </DataTableRow>
-      {(!isAccountActive || isShowAllowance) && (
+      {isShowAllowance && (
         <DataTableRow
           title="Max unlock cost"
           data-testid="maxUnlockFee"
           loading={isApproveCostLoading}
         >
-          {isWalletConnected && !isDappActive ? (
-            '-'
-          ) : (
-            <FormatPrice amount={approveTxCostInUsd} />
-          )}
+          <FormatPrice amount={approveTxCostInUsd} />
         </DataTableRow>
       )}
       <DataTableRow
@@ -86,20 +88,14 @@ export const WrapFormStats = () => {
         data-testid="maxGasFee"
         loading={isWrapCostLoading}
       >
-        {isWalletConnected && !isDappActive ? (
-          '-'
-        ) : (
-          <FormatPrice amount={wrapTxCostInUsd} />
-        )}
+        <FormatPrice amount={wrapTxCostInUsd} />
       </DataTableRow>
       <DataTableRow
         title="Exchange rate"
         data-testid="exchangeRate"
         loading={oneWstethConvertedLoading}
       >
-        {isWalletConnected && !isDappActive ? (
-          '-'
-        ) : oneWstethConverted ? (
+        {oneWstethConverted ? (
           <>
             1 {isSteth ? 'stETH' : 'ETH'} ={' '}
             <FormatToken
@@ -112,7 +108,7 @@ export const WrapFormStats = () => {
           DATA_UNAVAILABLE
         )}
       </DataTableRow>
-      {(!isDappActive || isShowAllowance) && (
+      {isShowAllowance && (
         <AllowanceDataTableRow
           data-testid="allowance"
           allowance={allowance}

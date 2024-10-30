@@ -12,7 +12,7 @@ type UseUnwrapTxApproveArgs = {
 };
 
 export const useUnwrapTxOnL2Approve = ({ amount }: UseUnwrapTxApproveArgs) => {
-  const { isDappActiveOnL2, address } = useDappStatus();
+  const { isDappActiveOnL2, isChainTypeOnL2, address } = useDappStatus();
   const { core, l2 } = useLidoSDK();
 
   const staticTokenAddress = LIDO_L2_CONTRACT_ADDRESSES[core.chainId]?.wsteth;
@@ -60,15 +60,19 @@ export const useUnwrapTxOnL2Approve = ({ amount }: UseUnwrapTxApproveArgs) => {
       allowance,
       isApprovalNeededBeforeUnwrap,
       isAllowanceLoading,
-      isShowAllowance: isDappActiveOnL2,
+      // There are 2 cases when we show the allowance on the unwrap page:
+      // 1. wallet chain is any Optimism supported chain and chain switcher is Optimism (isDappActiveOnL2)
+      // 2. or wallet chain is any ETH supported chain, but chain switcher is Optimism (isChainTypeOnL2)
+      isShowAllowance: isDappActiveOnL2 || isChainTypeOnL2,
     }),
     [
       processApproveTx,
       refetchAllowance,
-      isAllowanceLoading,
       allowance,
       isApprovalNeededBeforeUnwrap,
+      isAllowanceLoading,
       isDappActiveOnL2,
+      isChainTypeOnL2,
     ],
   );
 };

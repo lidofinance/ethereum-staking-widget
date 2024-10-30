@@ -23,10 +23,15 @@ type DappChainContextValue = {
   setChainType: React.Dispatch<React.SetStateAction<DAPP_CHAIN_TYPE>>;
   supportedChainIds: number[];
   isChainTypeMatched: boolean;
+  isChainTypeOnL2: boolean;
 };
 
 type UseDappChainValue = {
+  // Current DApp chain ID (may not match with chainType)
   chainId: number;
+  // Chain ID by current chainType
+  chainTypeChainId: number;
+
   isSupportedChain: boolean;
   supportedChainTypes: DAPP_CHAIN_TYPE[];
   supportedChainLabels: string[];
@@ -52,6 +57,15 @@ const getChainTypeByChainId = (chainId?: number): DAPP_CHAIN_TYPE | null => {
   }
   return null;
 };
+
+// At the current stage of the widget we don't care what ID is returned:
+// - 'chainTypeChainId' is only used for statistics;
+// - on the prod environment, the 'function map' of 'chainType' to 'chainId' will be 1 to 1 (bijective mapping).
+const getChainIdByChainType = (
+  chainType: DAPP_CHAIN_TYPE,
+  supportedChainIds: number[],
+): number | undefined =>
+  supportedChainIds.find((id) => getChainTypeByChainId(id) === chainType);
 
 export const useDappChain = (): UseDappChainValue => {
   const context = useContext(DappChainContext);
@@ -83,11 +97,16 @@ export const useDappChain = (): UseDappChainValue => {
       );
     });
 
+    const chainTypeChainId =
+      getChainIdByChainType(context.chainType, context.supportedChainIds) ??
+      config.defaultChain;
+
     return {
       ...context,
       chainId: context.supportedChainIds.includes(dappChain)
         ? dappChain
         : config.defaultChain,
+      chainTypeChainId,
       isSupportedChain: walletChain
         ? context.supportedChainIds.includes(walletChain)
         : true,
@@ -100,20 +119,25 @@ export const useDappChain = (): UseDappChainValue => {
 export const SupportL2Chains: React.FC<React.PropsWithChildren> = ({
   children,
 }) => {
-  const { chainId: walletChainId } = useAccount();
+  const { chainId: walletChainId, isConnected } = useAccount();
   const [chainType, setChainType] = useState<DAPP_CHAIN_TYPE>(
     DAPP_CHAIN_TYPE.Ethereum,
   );
 
   useEffect(() => {
-    if (!walletChainId) return;
+    if (!walletChainId) {
+      // This code resets 'chainType' to ETH when the wallet is disconnected.
+      // It also works on the first rendering, but we don't care, because the 'chainType' by default is ETH.
+      // Don't use it if you need to do something strictly, only when the wallet is disconnected.
+      setChainType(DAPP_CHAIN_TYPE.Ethereum);
+      return;
+    }
 
-    const newChainType = getChainTypeByChainId(walletChainId);
-
-    if (!newChainType) return;
-
-    setChainType(newChainType);
-  }, [walletChainId]);
+    if (isConnected) {
+      const newChainType = getChainTypeByChainId(walletChainId);
+      if (newChainType) setChainType(newChainType);
+    }
+  }, [walletChainId, isConnected, setChainType]);
 
   return (
     <DappChainContext.Provider
@@ -124,6 +148,10 @@ export const SupportL2Chains: React.FC<React.PropsWithChildren> = ({
           supportedChainIds: config.supportedChains,
           isChainTypeMatched:
             chainType === getChainTypeByChainId(walletChainId),
+          // At the moment a simple check is enough for us,
+          // however in the future we will either rethink this flag
+          // or use an array or Set (for example with L2_DAPP_CHAINS_TYPE)
+          isChainTypeOnL2: chainType === DAPP_CHAIN_TYPE.Optimism,
         }),
         [chainType, walletChainId],
       )}
@@ -140,6 +168,7 @@ const onlyL1ChainsValue = {
     (chain) => !isSDKSupportedL2Chain(chain),
   ),
   isChainTypeMatched: true,
+  isChainTypeOnL2: false,
   setChainType: () => {},
 };
 

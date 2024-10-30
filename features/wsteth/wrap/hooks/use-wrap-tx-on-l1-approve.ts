@@ -17,7 +17,8 @@ export const useWrapTxOnL1Approve = ({
   amount,
   token,
 }: UseWrapTxApproveArgs) => {
-  const { isDappActiveOnL1 } = useDappStatus();
+  const { isWalletConnected, isDappActiveOnL1, isChainTypeOnL2 } =
+    useDappStatus();
   const { chainId } = useSDK();
 
   const [stethTokenAddress, wstethTokenAddress] = useMemo(
@@ -51,16 +52,23 @@ export const useWrapTxOnL1Approve = ({
       isApprovalLoading,
       isApprovalNeededBeforeWrap,
       refetchAllowance,
-      isShowAllowance: isDappActiveOnL1,
+      // There are 3 cases when we show the allowance on the wrap page:
+      // 1. is wallet not connected (!isWalletConnected)
+      // 2. or wallet chain is any ETH supported chain and chain switcher is ETH (isDappActiveOnL1)
+      // 3. or wallet chain is any Optimism supported chain, but chain switcher is ETH (!isChainTypeOnL2)
+      isShowAllowance:
+        !isWalletConnected || isDappActiveOnL1 || !isChainTypeOnL2,
     }),
     [
-      allowance,
-      isApprovalNeededBeforeWrap,
-      needsApprove,
-      isApprovalLoading,
       processApproveTx,
+      needsApprove,
+      allowance,
+      isApprovalLoading,
+      isApprovalNeededBeforeWrap,
       refetchAllowance,
+      isWalletConnected,
       isDappActiveOnL1,
+      isChainTypeOnL2,
     ],
   );
 };

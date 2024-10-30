@@ -16,7 +16,7 @@ type DataTableRowStethByWstethProps = {
 export const DataTableRowStethByWsteth = ({
   toSymbol = 'stETH',
 }: DataTableRowStethByWstethProps) => {
-  const { isWalletConnected, isDappActiveOnL2, isDappActive } = useDappStatus();
+  const { isDappActiveOnL2 } = useDappStatus();
   const stethByWsteth = useStethByWsteth(
     !isDappActiveOnL2 ? OneWsteth : undefined,
   );
@@ -34,9 +34,7 @@ export const DataTableRowStethByWsteth = ({
       title="Exchange rate"
       loading={initialLoading}
     >
-      {isWalletConnected && !isDappActive ? (
-        '-'
-      ) : data ? (
+      {data ? (
         <>
           1 wstETH =
           <FormatToken
