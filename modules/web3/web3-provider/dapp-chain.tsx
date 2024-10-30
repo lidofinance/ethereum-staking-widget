@@ -8,7 +8,7 @@ import React, {
 import invariant from 'tiny-invariant';
 
 import { CHAINS, isSDKSupportedL2Chain } from 'consts/chains';
-import { useAccount, useConfig } from 'wagmi';
+import { useAccount } from 'wagmi';
 import { config } from 'config';
 import { useLidoSDK } from './lido-sdk';
 import { wagmiChainMap } from './web3-provider';
@@ -58,31 +58,14 @@ const getChainTypeByChainId = (chainId?: number): DAPP_CHAIN_TYPE | null => {
   return null;
 };
 
+// At the current stage of the widget we don't care what ID is returned:
+// - 'chainTypeChainId' is only used for statistics;
+// - on the prod environment, the 'function map' of 'chainType' to 'chainId' will be 1 to 1 (bijective mapping).
 const getChainIdByChainType = (
   chainType: DAPP_CHAIN_TYPE,
   supportedChainIds: number[],
-): number | null => {
-  switch (chainType) {
-    // At the current stage of the widget we don't care what ID is returned:
-    // - 'chainTypeChainId' is only used for statistics;
-    // - on the prod environment, the function map of 'chainType' to 'chainId' will be 1 to 1 (bijective mapping).
-
-    case DAPP_CHAIN_TYPE.Ethereum:
-      return (
-        Array.from(ETHEREUM_CHAINS).find((id) =>
-          supportedChainIds.includes(id),
-        ) ?? null
-      );
-    case DAPP_CHAIN_TYPE.Optimism:
-      return (
-        Array.from(OPTIMISM_CHAINS).find((id) =>
-          supportedChainIds.includes(id),
-        ) ?? null
-      );
-    default:
-      return null;
-  }
-};
+): number | undefined =>
+  supportedChainIds.find((id) => getChainTypeByChainId(id) === chainType);
 
 export const useDappChain = (): UseDappChainValue => {
   const context = useContext(DappChainContext);
@@ -137,25 +120,23 @@ export const SupportL2Chains: React.FC<React.PropsWithChildren> = ({
   children,
 }) => {
   const { chainId: walletChainId, isConnected } = useAccount();
-  const wagmiConfig = useConfig();
   const [chainType, setChainType] = useState<DAPP_CHAIN_TYPE>(
     DAPP_CHAIN_TYPE.Ethereum,
   );
 
   useEffect(() => {
-    if (isConnected && walletChainId) {
+    if (!walletChainId) {
+      // This code resets 'chainType' to ETH when the wallet is disconnected.
+      // It also works on the first rendering, but we don't care, because the 'chainType' by default is ETH.
+      // Don't use it if you need to do something strictly, only when the wallet is disconnected.
+      setChainType(DAPP_CHAIN_TYPE.Ethereum);
+      return;
+    }
+
+    if (isConnected) {
       const newChainType = getChainTypeByChainId(walletChainId);
       if (newChainType) setChainType(newChainType);
-
-      return () => {
-        // protecs from side effect double run
-        if (!wagmiConfig.state.current) {
-          // Reset the chainType after disconnect
-          setChainType(DAPP_CHAIN_TYPE.Ethereum);
-        }
-      };
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [walletChainId, isConnected, setChainType]);
 
   return (
