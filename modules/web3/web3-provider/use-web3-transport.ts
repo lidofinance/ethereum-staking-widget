@@ -11,6 +11,8 @@ import {
   UnsupportedProviderMethodError,
   InvalidParamsRpcError,
 } from 'viem';
+import { mainnet } from 'viem/chains';
+
 import type { OnResponseFn } from 'viem/_types/clients/transports/fallback';
 import type { Connection } from 'wagmi';
 
@@ -124,11 +126,15 @@ export const useWeb3Transport = (
   backendRpcMap: Record<number, string>,
 ) => {
   const { transportMap, setTransportMap } = useMemo(() => {
-    //
     const batchConfig = {
       wait: config.PROVIDER_BATCH_TIME,
       batchSize: config.PROVIDER_MAX_BATCH,
     };
+
+    if (!supportedChains.includes(mainnet)) {
+      supportedChains.push(mainnet);
+    }
+
     return supportedChains.reduce(
       ({ transportMap, setTransportMap }, chain) => {
         const [transport, setTransport] = runtimeMutableTransport([
