@@ -4,11 +4,12 @@ import React, {
   useState,
   useMemo,
   useEffect,
+  useCallback,
 } from 'react';
 import invariant from 'tiny-invariant';
 
 import { CHAINS, isSDKSupportedL2Chain } from 'consts/chains';
-import { useAccount } from 'wagmi';
+import { useAccount, useSwitchChain } from 'wagmi';
 import { config } from 'config';
 import { useLidoSDK } from './lido-sdk';
 import { wagmiChainMap } from './web3-provider';
@@ -20,7 +21,7 @@ export enum DAPP_CHAIN_TYPE {
 
 type DappChainContextValue = {
   chainType: DAPP_CHAIN_TYPE;
-  setChainType: React.Dispatch<React.SetStateAction<DAPP_CHAIN_TYPE>>;
+  setChainType: React.Dispatch<DAPP_CHAIN_TYPE>;
   supportedChainIds: number[];
   isChainTypeMatched: boolean;
   isChainTypeOnL2: boolean;
@@ -119,6 +120,7 @@ export const useDappChain = (): UseDappChainValue => {
 export const SupportL2Chains: React.FC<React.PropsWithChildren> = ({
   children,
 }) => {
+  const { switchChain } = useSwitchChain();
   const { chainId: walletChainId, isConnected } = useAccount();
   const [chainType, setChainType] = useState<DAPP_CHAIN_TYPE>(
     DAPP_CHAIN_TYPE.Ethereum,
@@ -139,12 +141,25 @@ export const SupportL2Chains: React.FC<React.PropsWithChildren> = ({
     }
   }, [walletChainId, isConnected, setChainType]);
 
+  const handleSetChainType = useCallback<React.Dispatch<DAPP_CHAIN_TYPE>>(
+    (newChainType) => {
+      setChainType(newChainType);
+
+      const newChainId =
+        getChainIdByChainType(newChainType, config.supportedChains) ??
+        config.defaultChain;
+
+      switchChain({ chainId: newChainId });
+    },
+    [switchChain],
+  );
+
   return (
     <DappChainContext.Provider
       value={useMemo(
         () => ({
           chainType,
-          setChainType,
+          setChainType: handleSetChainType,
           supportedChainIds: config.supportedChains,
           isChainTypeMatched:
             chainType === getChainTypeByChainId(walletChainId),
@@ -153,7 +168,7 @@ export const SupportL2Chains: React.FC<React.PropsWithChildren> = ({
           // or use an array or Set (for example with L2_DAPP_CHAINS_TYPE)
           isChainTypeOnL2: chainType === DAPP_CHAIN_TYPE.Optimism,
         }),
-        [chainType, walletChainId],
+        [chainType, handleSetChainType, walletChainId],
       )}
     >
       {children}
