@@ -19,6 +19,7 @@ export enum LIDO_MULTICHAIN_CHAINS {
   Scroll = 534352,
   'BNB Chain' = 56,
   'Mode Chain' = 34443,
+  'Zircuit Chain' = 48900,
 }
 
 // TODO: move to legacy lido-js-sdk package

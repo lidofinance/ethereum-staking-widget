@@ -4,6 +4,7 @@ export const openKeys = [
   'DOCS_ORIGIN',
   'HELP_ORIGIN',
   'RESEARCH_ORIGIN',
+  'BLOG_ORIGIN',
 
   'SUPPORTED_CHAINS',
   'DEFAULT_CHAIN',
@@ -33,8 +34,7 @@ export const secretKeys = [
   'EL_RPC_URLS_11155111',
   'EL_RPC_URLS_10',
   'EL_RPC_URLS_11155420',
-]
-
+];
 
 export const logOpenEnvironmentVariables = () => {
   console.log('---------------------------------------------');
