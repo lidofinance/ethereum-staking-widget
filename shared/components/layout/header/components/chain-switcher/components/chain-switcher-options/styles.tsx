@@ -1,7 +1,7 @@
 import styled, { css } from 'styled-components';
 
 export const PopoverWrapperStyled = styled.div<{ $backdrop: boolean }>`
-  position: absolute;
+  position: fixed;
   z-index: 200;
   top: 0;
   left: 0;

@@ -11,8 +11,12 @@ export const useClickOutside = (
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
-    document.addEventListener('touchstart', handleClickOutside);
+    // Preventing double execution on mobile devices
+    if ('ontouchstart' in window) {
+      document.addEventListener('touchstart', handleClickOutside);
+    } else {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
 
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
