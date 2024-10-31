@@ -1,56 +1,28 @@
+import React from 'react';
 import { Section } from 'shared/components';
 import { useMatomoEventHandle } from 'shared/hooks';
 import { useDappStatus, DAPP_CHAIN_TYPE } from 'modules/web3';
 
-import {
-  WhatIsWsteth,
-  HowCanIGetWsteth,
-  HowCanIUseWsteth,
-  DoIGetMyStakingRewards,
-  DoINeedToClaimMyStakingRewards,
-  HowCouldIUnwrapWstethToSteth,
-  DoINeedToUnwrapMyWsteth,
-} from './list';
+import { EthereumFAQ } from './ethereum-faq/faq';
+import { OptimismFAQ } from './optimism-faq/faq';
 
-import {
-  WhatIsWstethOnOptimism,
-  HowCanIGetWstethOnOptimism,
-  HowCanIUseWstethOnOptimism,
-  CanIStakeMyETHDirectlyOnOptimism,
-  DoIStillGetStakingRewardsWithStETHOrWstETHOnOptimism,
-  DoINeedToClaimMyStakingRewardsIfIWrapStETHToWstETHOnOptimism,
-  HowCouldIUnwrapWstETHBackToStETHOnOptimism,
-  WhatHappensIfIWantToUnstakeETHOnEthereumCanIDoThatFromOptimism,
-} from './optimism-list';
+export const faqComponentsMap = new Map([
+  [DAPP_CHAIN_TYPE.Ethereum, EthereumFAQ],
+  [DAPP_CHAIN_TYPE.Optimism, OptimismFAQ],
+  // FAQ for other networks
+]);
 
 export const WrapFaq = () => {
   const { isWalletConnected, chainType } = useDappStatus();
   const onClickHandler = useMatomoEventHandle();
 
-  if (isWalletConnected && chainType === DAPP_CHAIN_TYPE.Optimism) {
-    return (
-      <Section title="FAQ" onClick={onClickHandler}>
-        <WhatIsWstethOnOptimism />
-        <HowCanIGetWstethOnOptimism />
-        <HowCanIUseWstethOnOptimism />
-        <CanIStakeMyETHDirectlyOnOptimism />
-        <DoIStillGetStakingRewardsWithStETHOrWstETHOnOptimism />
-        <DoINeedToClaimMyStakingRewardsIfIWrapStETHToWstETHOnOptimism />
-        <HowCouldIUnwrapWstETHBackToStETHOnOptimism />
-        <WhatHappensIfIWantToUnstakeETHOnEthereumCanIDoThatFromOptimism />
-      </Section>
-    );
-  }
+  const faqComponent = !isWalletConnected
+    ? EthereumFAQ
+    : faqComponentsMap.get(chainType) || EthereumFAQ;
 
   return (
     <Section title="FAQ" onClick={onClickHandler}>
-      <WhatIsWsteth />
-      <HowCanIGetWsteth />
-      <HowCanIUseWsteth />
-      <DoIGetMyStakingRewards />
-      <DoINeedToClaimMyStakingRewards />
-      <HowCouldIUnwrapWstethToSteth />
-      <DoINeedToUnwrapMyWsteth />
+      {React.createElement(faqComponent, { key: chainType })}
     </Section>
   );
 };
