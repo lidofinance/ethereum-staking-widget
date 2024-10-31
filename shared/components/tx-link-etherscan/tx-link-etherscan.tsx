@@ -1,7 +1,7 @@
 import { Link } from '@lidofinance/lido-ui';
 
-import { CHAINS } from 'consts/chains';
-import { getEtherscanTxLink } from 'utils/get-etherscan-tx-link';
+import { config } from 'config';
+import { getEtherscanTxLink } from 'utils/etherscan';
 import { useDappStatus } from 'modules/web3';
 
 type TxLinkEtherscanProps = {
@@ -12,14 +12,14 @@ type TxLinkEtherscanProps = {
 
 export const TxLinkEtherscan = (props: TxLinkEtherscanProps) => {
   const { txHash, text = 'View on Etherscan', onClick } = props;
-  const { chainId } = useDappStatus();
+  const { walletChainId } = useDappStatus();
 
   if (!txHash) return null;
 
   return (
     <Link
       onClick={onClick}
-      href={getEtherscanTxLink(chainId as CHAINS, txHash)}
+      href={getEtherscanTxLink(walletChainId ?? config.defaultChain, txHash)}
     >
       {text}
     </Link>
