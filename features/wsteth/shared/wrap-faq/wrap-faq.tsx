@@ -16,13 +16,13 @@ export const WrapFaq = () => {
   const { isWalletConnected, chainType } = useDappStatus();
   const onClickHandler = useMatomoEventHandle();
 
-  const faqComponent = !isWalletConnected
+  const FAQ = !isWalletConnected
     ? EthereumFAQ
     : faqComponentsMap.get(chainType) || EthereumFAQ;
 
   return (
     <Section title="FAQ" onClick={onClickHandler}>
-      {React.createElement(faqComponent, { key: chainType })}
+      <FAQ />
     </Section>
   );
 };
