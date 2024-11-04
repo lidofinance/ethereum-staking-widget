@@ -4,8 +4,8 @@ import { parseEther } from '@ethersproject/units';
 import { DATA_UNAVAILABLE } from 'consts/text';
 import { FormatToken } from 'shared/formatters';
 import { useStethByWsteth } from 'shared/hooks';
-import { useStETHByWstETHOnL2 } from 'shared/hooks/use-stETH-by-wstETH-on-l2';
-import { useDappStatus } from 'shared/hooks/use-dapp-status';
+import { useStETHByWstETHOnL2 } from 'modules/web3';
+import { useDappStatus } from 'modules/web3';
 
 const OneWsteth = parseEther('1');
 
@@ -16,11 +16,7 @@ type DataTableRowStethByWstethProps = {
 export const DataTableRowStethByWsteth = ({
   toSymbol = 'stETH',
 }: DataTableRowStethByWstethProps) => {
-  const {
-    isWalletConnected,
-    isDappActiveOnL2,
-    isDappActiveAndNetworksMatched,
-  } = useDappStatus();
+  const { isDappActiveOnL2 } = useDappStatus();
   const stethByWsteth = useStethByWsteth(
     !isDappActiveOnL2 ? OneWsteth : undefined,
   );
@@ -38,9 +34,7 @@ export const DataTableRowStethByWsteth = ({
       title="Exchange rate"
       loading={initialLoading}
     >
-      {isWalletConnected && !isDappActiveAndNetworksMatched ? (
-        '-'
-      ) : data ? (
+      {data ? (
         <>
           1 wstETH =
           <FormatToken

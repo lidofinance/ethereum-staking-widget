@@ -1,9 +1,8 @@
 import { FC } from 'react';
-import { useAccount } from 'wagmi';
 import { ButtonProps, useBreakpoint } from '@lidofinance/lido-ui';
 
 import { FormatToken } from 'shared/formatters';
-import { useDappStatus } from 'shared/hooks/use-dapp-status';
+import { useDappStatus, useEthereumBalance } from 'modules/web3';
 
 import { AddressBadge } from '../components/address-badge/address-badge';
 import { useWalletModal } from '../wallet-modal/use-wallet-modal';
@@ -14,14 +13,12 @@ import {
   WalledButtonBalanceStyle,
   WalledButtonLoaderStyle,
 } from './styles';
-import { useEthereumBalance } from 'shared/hooks/use-balance';
 
 export const Button: FC<ButtonProps> = (props) => {
   const { onClick, ...rest } = props;
 
   const isMobile = useBreakpoint('md');
-  const { address } = useAccount();
-  const { isDappActiveAndNetworksMatched } = useDappStatus();
+  const { isDappActive, address } = useDappStatus();
 
   const { openModal } = useWalletModal();
   const { data: balance, isLoading } = useEthereumBalance();
@@ -32,9 +29,7 @@ export const Button: FC<ButtonProps> = (props) => {
       variant="text"
       color="secondary"
       onClick={() => openModal({})}
-      $isAddPaddingLeft={
-        !isLoading && !isDappActiveAndNetworksMatched && !isMobile
-      }
+      $isAddPaddingLeft={!isLoading && !isDappActive && !isMobile}
       {...rest}
     >
       <WalledButtonWrapperStyle>
@@ -42,7 +37,7 @@ export const Button: FC<ButtonProps> = (props) => {
           {isLoading ? (
             <WalledButtonLoaderStyle />
           ) : (
-            isDappActiveAndNetworksMatched && (
+            isDappActive && (
               <FormatToken
                 amount={balance}
                 symbol="ETH"

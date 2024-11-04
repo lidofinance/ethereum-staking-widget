@@ -1,12 +1,10 @@
 import { Eth } from '@lidofinance/lido-ui';
 import { TokenAmountInputHookForm } from 'shared/hook-form/controls/token-amount-input-hook-form';
 import { useStakeFormData } from '../stake-form-context';
-import { useStakingLimitWarning } from 'shared/hooks/use-staking-limit-warning';
-import { useDappStatus } from 'shared/hooks/use-dapp-status';
+import { useStakingLimitWarning, useDappStatus } from 'modules/web3';
 
 export const StakeAmountInput = () => {
-  const { isWalletConnected, isDappActive, isAccountActiveOnL2 } =
-    useDappStatus();
+  const { isWalletConnected, isDappActive } = useDappStatus();
   const { maxAmount, stakingLimitInfo } = useStakeFormData();
   const { limitWarning, limitError } = useStakingLimitWarning(
     stakingLimitInfo?.stakeLimitLevel,
@@ -14,7 +12,7 @@ export const StakeAmountInput = () => {
 
   return (
     <TokenAmountInputHookForm
-      disabled={(isWalletConnected && !isDappActive) || isAccountActiveOnL2}
+      disabled={isWalletConnected && !isDappActive}
       fieldName="amount"
       token={'ETH'}
       data-testid="stakeInput"

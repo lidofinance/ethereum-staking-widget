@@ -1,18 +1,19 @@
 import { useCallback } from 'react';
 import { BigNumber } from 'ethers';
 import invariant from 'tiny-invariant';
-import { useAccount } from 'wagmi';
 
 import { useSDK, useWSTETHContractRPC } from '@lido-sdk/react';
 import { TransactionCallbackStage } from '@lidofinance/lido-ethereum-sdk/core';
 
-import { useTxConfirmation } from 'shared/hooks/use-tx-conformation';
-import { useGetIsContract } from 'shared/hooks/use-is-contract';
-import { useDappStatus } from 'shared/hooks/use-dapp-status';
+import {
+  useTxConfirmation,
+  useGetIsContract,
+  useDappStatus,
+  useLidoSDK,
+} from 'modules/web3';
+
 import { runWithTransactionLogger } from 'utils';
 import { convertToBigNumber } from 'utils/convert-to-big-number';
-
-import { useLidoSDK } from 'providers/lido-sdk';
 
 import type {
   WrapFormApprovalData,
@@ -32,12 +33,10 @@ export const useWrapFormProcessor = ({
   onConfirm,
   onRetry,
 }: UseWrapFormProcessorArgs) => {
-  const { address } = useAccount();
+  const { isDappActiveOnL2, address } = useDappStatus();
   const { providerWeb3 } = useSDK();
   const wstETHContractRPC = useWSTETHContractRPC();
   const { l2, isL2, wstETH } = useLidoSDK();
-
-  const { isAccountActiveOnL2 } = useDappStatus();
 
   const { txModalStages } = useTxModalWrap();
   const processWrapTxOnL1 = useWrapTxOnL1Processing();
@@ -60,7 +59,7 @@ export const useWrapFormProcessor = ({
 
         const [isMultisig, willReceive] = await Promise.all([
           isContract(address),
-          isAccountActiveOnL2
+          isDappActiveOnL2
             ? l2.steth
                 .convertToShares(amount.toBigInt())
                 .then(convertToBigNumber)
@@ -86,7 +85,7 @@ export const useWrapFormProcessor = ({
         txModalStages.sign(amount, token, willReceive);
 
         let txHash: string;
-        if (isAccountActiveOnL2) {
+        if (isDappActiveOnL2) {
           const txResult = await runWithTransactionLogger(
             'Wrap signing on L2',
             () =>
@@ -118,7 +117,7 @@ export const useWrapFormProcessor = ({
         );
 
         const [wstethBalance] = await Promise.all([
-          isAccountActiveOnL2
+          isDappActiveOnL2
             ? l2.wsteth.balance(address)
             : wstETH.balance(address),
           onConfirm(),
@@ -136,7 +135,7 @@ export const useWrapFormProcessor = ({
       isL2,
       address,
       isContract,
-      isAccountActiveOnL2,
+      isDappActiveOnL2,
       l2,
       wstETHContractRPC,
       isApprovalNeededBeforeWrapOnL1,

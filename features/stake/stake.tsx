@@ -1,5 +1,5 @@
 import { FaqPlaceholder } from 'features/ipfs';
-import { useWagmiKey } from 'shared/hooks/use-wagmi-key';
+import { useWagmiKey } from 'modules/web3';
 import NoSSRWrapper from 'shared/components/no-ssr-wrapper';
 import { OnlyInfraRender } from 'shared/components/only-infra-render';
 

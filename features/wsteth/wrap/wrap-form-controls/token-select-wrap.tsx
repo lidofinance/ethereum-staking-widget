@@ -4,7 +4,7 @@ import { trackEvent } from '@lidofinance/analytics-matomo';
 import { TOKENS_TO_WRAP } from 'features/wsteth/shared/types';
 import { MATOMO_CLICK_EVENTS } from 'consts/matomo-click-events';
 import { TokenSelectHookForm } from 'shared/hook-form/controls/token-select-hook-form/token-select-hook-form';
-import { useDappStatus } from 'shared/hooks/use-dapp-status';
+import { useDappStatus } from 'modules/web3';
 
 const OPTION_STETH = {
   label: 'Lido (stETH)',
@@ -22,11 +22,7 @@ type TokenSelectWrapProps = Pick<
 >;
 
 export const TokenSelectWrap = (props: TokenSelectWrapProps) => {
-  const {
-    isWalletConnected,
-    isDappActiveAndNetworksMatched,
-    isDappActiveOnL2,
-  } = useDappStatus();
+  const { isWalletConnected, isDappActive, isDappActiveOnL2 } = useDappStatus();
 
   const options = useMemo(() => {
     if (isDappActiveOnL2) {
@@ -38,7 +34,7 @@ export const TokenSelectWrap = (props: TokenSelectWrapProps) => {
 
   return (
     <TokenSelectHookForm
-      disabled={isWalletConnected && !isDappActiveAndNetworksMatched}
+      disabled={isWalletConnected && !isDappActive}
       options={options}
       onChange={(value) => {
         trackEvent(

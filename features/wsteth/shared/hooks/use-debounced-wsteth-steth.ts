@@ -3,9 +3,8 @@ import type { BigNumber } from 'ethers';
 
 import { useDebouncedValue } from 'shared/hooks/useDebouncedValue';
 import { useStethByWsteth } from 'shared/hooks/useStethByWsteth';
-import { useStETHByWstETHOnL2 } from 'shared/hooks/use-stETH-by-wstETH-on-l2';
+import { useStETHByWstETHOnL2, useWstETHByStETHOnL2 } from 'modules/web3';
 import { useWstethBySteth } from 'shared/hooks/useWstethBySteth';
-import { useWstETHByStETHOnL2 } from 'shared/hooks/use-wstETH-by-stETH-on-l2';
 
 export const useDebouncedWstethBySteth = (
   amount: BigNumber | null,

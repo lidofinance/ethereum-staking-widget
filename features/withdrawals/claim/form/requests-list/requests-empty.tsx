@@ -1,18 +1,10 @@
-import { CHAINS } from '@lido-sdk/constants';
-import { useUserConfig } from 'config/user-config';
-
 import { EmptyText, WrapperEmpty } from './styles';
+import { useDappStatus } from 'modules/web3';
+import { joinWithOr } from 'utils/join-with-or';
 
-type RequestsEmptyProps = {
-  isWalletConnected?: boolean;
-  isDappActive?: boolean;
-};
-
-export const RequestsEmpty = ({
-  isWalletConnected,
-  isDappActive,
-}: RequestsEmptyProps) => {
-  const { defaultChain } = useUserConfig();
+export const RequestsEmpty = () => {
+  const { isWalletConnected, isSupportedChain, supportedChainLabels } =
+    useDappStatus();
 
   if (!isWalletConnected) {
     return (
@@ -22,11 +14,12 @@ export const RequestsEmpty = ({
     );
   }
 
-  if (isWalletConnected && !isDappActive) {
+  if (isWalletConnected && !isSupportedChain) {
     return (
       <WrapperEmpty>
         <EmptyText>
-          Switch to {CHAINS[defaultChain]} to see your withdrawal requests
+          Switch to {joinWithOr(supportedChainLabels)} to see your withdrawal
+          requests
         </EmptyText>
       </WrapperEmpty>
     );

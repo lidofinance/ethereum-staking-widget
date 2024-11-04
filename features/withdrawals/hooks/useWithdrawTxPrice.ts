@@ -1,10 +1,9 @@
 import { useMemo } from 'react';
 import { BigNumber } from 'ethers';
 import invariant from 'tiny-invariant';
-import { useAccount } from 'wagmi';
 
 import { TOKENS } from '@lido-sdk/constants';
-import { useLidoSWR, useSDK } from '@lido-sdk/react';
+import { useLidoSWR } from '@lido-sdk/react';
 
 import { config } from 'config';
 import { STRATEGY_LAZY } from 'consts/swr-strategies';
@@ -13,6 +12,7 @@ import { useTxCostInUsd } from 'shared/hooks/txCost';
 import { useDebouncedValue } from 'shared/hooks/useDebouncedValue';
 import { encodeURLQuery } from 'utils/encodeURLQuery';
 import { standardFetcher } from 'utils/standardFetcher';
+import { useDappStatus } from 'modules/web3';
 
 import { useWithdrawalsContract } from './contract/useWithdrawalsContract';
 import { RequestStatusClaimable } from '../types/request-status';
@@ -28,7 +28,7 @@ export const useRequestTxPrice = ({
   isApprovalFlow,
   requestCount,
 }: UseRequestTxPriceOptions) => {
-  const { chainId } = useSDK();
+  const { chainId } = useDappStatus();
   const { contractRpc } = useWithdrawalsContract();
   const fallback =
     token === 'STETH'
@@ -108,8 +108,8 @@ export const useRequestTxPrice = ({
 };
 
 export const useClaimTxPrice = (requests: RequestStatusClaimable[]) => {
+  const { address, chainId } = useDappStatus();
   const { contractRpc } = useWithdrawalsContract();
-  const { address, chainId } = useAccount();
 
   const requestCount = requests.length || 1;
   const debouncedSortedSelectedRequests = useDebouncedValue(requests, 2000);
