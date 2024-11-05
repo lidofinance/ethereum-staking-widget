@@ -7,6 +7,7 @@ import { ProviderSDK } from '@lido-sdk/react';
 import { useLidoSDK } from './lido-sdk';
 import { config } from 'config';
 import { isSDKSupportedL2Chain } from 'consts/chains';
+import { useMainnetStaticRpcProvider } from 'shared/hooks/use-mainnet-static-rpc-provider';
 
 // Stabilizes network detection to prevent repeated chainId calls
 class EthersToViemProvider extends Web3Provider {
@@ -61,12 +62,14 @@ export const SDKLegacyProvider = ({ children }: PropsWithChildren) => {
     );
   }, [onlyL1chainId, onlyL1publicClient]);
 
+  // Fallback for when mainnet is not present in supported chains
+  const staticMainnetProvider = useMainnetStaticRpcProvider();
+
   const providerMainnetRpc = useMemo(() => {
-    return (
-      publicMainnetClient &&
-      new EthersToViemProvider(publicMainnetClient.transport, 1)
-    );
-  }, [publicMainnetClient]);
+    return publicMainnetClient
+      ? new EthersToViemProvider(publicMainnetClient.transport, 1)
+      : staticMainnetProvider;
+  }, [publicMainnetClient, staticMainnetProvider]);
 
   return (
     // @ts-expect-error Property children does not exist on type
