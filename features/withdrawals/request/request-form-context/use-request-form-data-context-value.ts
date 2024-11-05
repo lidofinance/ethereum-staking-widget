@@ -4,7 +4,7 @@ import { useWithdrawals } from 'features/withdrawals/contexts/withdrawals-contex
 import { useUnfinalizedStETH } from 'features/withdrawals/hooks';
 import { useCallback, useMemo } from 'react';
 import { useWstethBySteth } from 'shared/hooks';
-import { useStethBalance, useWstethBalance } from 'shared/hooks/use-balance';
+import { useStethBalance, useWstethBalance } from 'modules/web3';
 import { STRATEGY_LAZY } from 'consts/swr-strategies';
 
 // Provides all data fetching for form to function

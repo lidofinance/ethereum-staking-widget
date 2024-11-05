@@ -2,10 +2,8 @@ import { useMemo, useCallback } from 'react';
 import type { BigNumber } from 'ethers';
 
 import { runWithTransactionLogger } from 'utils';
-import { useLidoSDK } from 'providers/lido-sdk';
-import { useDappStatus } from 'shared/hooks/use-dapp-status';
-import { useAllowance } from 'shared/hooks/use-allowance';
-import { useAccount } from 'wagmi';
+import { useLidoSDK, useDappStatus, useAllowance } from 'modules/web3';
+
 import { LIDO_L2_CONTRACT_ADDRESSES } from '@lidofinance/lido-ethereum-sdk/common';
 import { TransactionCallbackStage } from '@lidofinance/lido-ethereum-sdk/core';
 
@@ -14,8 +12,7 @@ type UseUnwrapTxApproveArgs = {
 };
 
 export const useUnwrapTxOnL2Approve = ({ amount }: UseUnwrapTxApproveArgs) => {
-  const { address } = useAccount();
-  const { isAccountActiveOnL2 } = useDappStatus();
+  const { isDappActiveOnL2, isChainTypeOnL2, address } = useDappStatus();
   const { core, l2 } = useLidoSDK();
 
   const staticTokenAddress = LIDO_L2_CONTRACT_ADDRESSES[core.chainId]?.wsteth;
@@ -27,7 +24,7 @@ export const useUnwrapTxOnL2Approve = ({ amount }: UseUnwrapTxApproveArgs) => {
     refetch: refetchAllowance,
     isLoading: isAllowanceLoading,
   } = useAllowance({
-    account: isAccountActiveOnL2 ? address : undefined,
+    account: isDappActiveOnL2 ? address : undefined,
     spender: staticSpenderAddress,
     token: staticTokenAddress,
   });
@@ -63,15 +60,19 @@ export const useUnwrapTxOnL2Approve = ({ amount }: UseUnwrapTxApproveArgs) => {
       allowance,
       isApprovalNeededBeforeUnwrap,
       isAllowanceLoading,
-      isShowAllowance: isAccountActiveOnL2,
+      // There are 2 cases when we show the allowance on the unwrap page:
+      // 1. wallet chain is any Optimism supported chain and chain switcher is Optimism (isDappActiveOnL2)
+      // 2. or wallet chain is any ETH supported chain, but chain switcher is Optimism (isChainTypeOnL2)
+      isShowAllowance: isDappActiveOnL2 || isChainTypeOnL2,
     }),
     [
       processApproveTx,
       refetchAllowance,
-      isAllowanceLoading,
       allowance,
       isApprovalNeededBeforeUnwrap,
-      isAccountActiveOnL2,
+      isAllowanceLoading,
+      isDappActiveOnL2,
+      isChainTypeOnL2,
     ],
   );
 };

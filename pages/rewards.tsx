@@ -23,6 +23,7 @@ const Rewards: FC = () => {
         reward tracker. View stETH balances, historical rewards and transfers."
         />
       </Head>
+
       <RewardsHistoryProvider>
         <TopCard />
         <RewardsList />

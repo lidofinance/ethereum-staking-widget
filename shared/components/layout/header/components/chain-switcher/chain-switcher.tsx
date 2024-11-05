@@ -1,102 +1,64 @@
-import {
-  FC,
-  ReactNode,
-  useState,
-  useCallback,
-  useEffect,
-  useMemo,
-} from 'react';
-import { useRouter } from 'next/router';
-import { useAccount } from 'wagmi';
+import { FC, useState, useRef, ReactNode } from 'react';
+import { DAPP_CHAIN_TYPE } from 'modules/web3';
+import { useDappStatus } from 'modules/web3';
 
-import { Option } from '@lidofinance/lido-ui';
+import { useClickOutside } from './hooks/use-click-outside';
+import { ChainSwitcherOptions } from './components/chain-switcher-options/chain-switcher-options';
+import { SelectIconTooltip } from './components/select-icon-tooltip/select-icon-tooltip';
+import {
+  ChainSwitcherWrapperStyled,
+  ChainSwitcherStyled,
+  IconStyle,
+  ArrowStyle,
+} from './styles';
 
 import { ReactComponent as OptimismLogo } from 'assets/icons/chain-toggler/optimism.svg';
 import { ReactComponent as EthereumMainnetLogo } from 'assets/icons/chain-toggler/mainnet.svg';
 
-import { CHAINS } from 'consts/chains';
-import {
-  ChainNameType,
-  ETHEREUM,
-  OPTIMISM,
-  useDappChain,
-} from 'providers/dapp-chain';
-import { useDappStatus } from 'shared/hooks/use-dapp-status';
-
-import { SelectIconTooltip } from './components/select-icon-tooltip/select-icon-tooltip';
-import { SelectIconStyled, SelectIconWrapper } from './styles';
-
-const iconsMap: Record<ChainNameType, ReactNode> = {
-  [ETHEREUM]: <EthereumMainnetLogo />,
-  [OPTIMISM]: <OptimismLogo />,
+const iconsMap: Record<DAPP_CHAIN_TYPE, ReactNode> = {
+  [DAPP_CHAIN_TYPE.Ethereum]: <EthereumMainnetLogo />,
+  [DAPP_CHAIN_TYPE.Optimism]: <OptimismLogo />,
 };
 
 export const ChainSwitcher: FC = () => {
-  const { chainId } = useAccount();
-  const { setChainName } = useDappChain();
-  const { isDappActiveAndNetworksMatched } = useDappStatus();
-  const router = useRouter();
+  const { isDappActive, chainType, supportedChainTypes, setChainType } =
+    useDappStatus();
+  const [opened, setOpened] = useState(false);
+  const selectRef = useRef<HTMLDivElement>(null);
 
-  const [value, setValue] = useState<ChainNameType>(ETHEREUM);
+  const isChainTypeUnlocked = supportedChainTypes.length > 1;
 
-  const isOnWrapUnwrapPage = useMemo(
-    () => router.pathname === '/wrap/[[...mode]]',
-    [router.pathname],
-  );
-
-  useEffect(() => {
-    if (!chainId) return;
-
-    if ([CHAINS.Mainnet, CHAINS.Holesky, CHAINS.Sepolia].includes(chainId)) {
-      setValue(ETHEREUM);
-      setChainName(ETHEREUM);
-    } else if (
-      [CHAINS.Optimism, CHAINS.OptimismSepolia].includes(chainId) &&
-      isOnWrapUnwrapPage
-    ) {
-      setValue(OPTIMISM);
-      setChainName(OPTIMISM);
-    }
-  }, [chainId, isOnWrapUnwrapPage, setChainName]);
-
-  useEffect(() => {
-    if (!isOnWrapUnwrapPage) {
-      setValue(ETHEREUM);
-      setChainName(ETHEREUM);
-    }
-  }, [isOnWrapUnwrapPage, setChainName]);
-
-  const onChange = useCallback(
-    (value: any) => {
-      setValue(value as ChainNameType);
-      setChainName(value as ChainNameType);
-    },
-    [setChainName],
-  );
+  useClickOutside(selectRef, () => setOpened(false));
 
   return (
-    <SelectIconWrapper>
-      <SelectIconStyled
-        disabled={!isOnWrapUnwrapPage}
-        icon={iconsMap[value]}
-        value={value}
-        variant="small"
-        onChange={onChange}
+    <ChainSwitcherWrapperStyled>
+      <ChainSwitcherStyled
+        ref={selectRef}
+        $disabled={!isChainTypeUnlocked}
+        onClick={() => setOpened((prev) => !prev)}
       >
-        <Option leftDecorator={iconsMap[ETHEREUM]} value={ETHEREUM}>
-          Ethereum
-        </Option>
-        <Option leftDecorator={iconsMap[OPTIMISM]} value={OPTIMISM}>
-          Optimism
-        </Option>
-      </SelectIconStyled>
-      {isOnWrapUnwrapPage && !isDappActiveAndNetworksMatched && (
-        <SelectIconTooltip showArrow={true}>
-          {isOnWrapUnwrapPage
-            ? 'This network doesn’t match your wallet’s network'
-            : 'Don’t forget to switch to Ethereum'}
-        </SelectIconTooltip>
+        <IconStyle>{iconsMap[chainType]}</IconStyle>
+        {isChainTypeUnlocked && <ArrowStyle $opened={opened} />}
+      </ChainSwitcherStyled>
+
+      {isChainTypeUnlocked && (
+        <>
+          <ChainSwitcherOptions
+            currentChainType={chainType}
+            onSelect={(chainType) => {
+              setChainType(chainType);
+              setOpened(false);
+            }}
+            opened={opened}
+            options={iconsMap}
+          />
+          {!isDappActive && (
+            <SelectIconTooltip showArrow>
+              This network doesn’t match your wallet’s network
+            </SelectIconTooltip>
+          )}
+        </>
       )}
-    </SelectIconWrapper>
+    </ChainSwitcherWrapperStyled>
   );
 };

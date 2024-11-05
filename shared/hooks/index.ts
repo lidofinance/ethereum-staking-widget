@@ -1,7 +1,6 @@
 export * from './useCopyToClipboard';
 export * from './useLidoStats';
 export * from './useLidoApr';
-export * from './useMaxGasPrice';
 export * from './useWstethBySteth';
 export * from './useStethByWsteth';
 export * from './txCost';

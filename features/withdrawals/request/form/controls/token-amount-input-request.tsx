@@ -10,11 +10,10 @@ import { useTvlMessage } from 'features/withdrawals/hooks/useTvlMessage';
 
 import { trackMatomoEvent } from 'utils/track-matomo-event';
 import { TokenAmountInputHookForm } from 'shared/hook-form/controls/token-amount-input-hook-form';
-import { useDappStatus } from 'shared/hooks/use-dapp-status';
+import { useDappStatus } from 'modules/web3';
 
 export const TokenAmountInputRequest = () => {
-  const { isWalletConnected, isDappActive, isAccountActiveOnL2 } =
-    useDappStatus();
+  const { isWalletConnected, isDappActive } = useDappStatus();
   const token = useWatch<RequestFormInputType, 'token'>({ name: 'token' });
   const { maxAmount, isTokenLocked } = useRequestFormData();
 
@@ -22,7 +21,7 @@ export const TokenAmountInputRequest = () => {
 
   return (
     <TokenAmountInputHookForm
-      disabled={(isWalletConnected && !isDappActive) || isAccountActiveOnL2}
+      disabled={isWalletConnected && !isDappActive}
       fieldName="amount"
       data-testid="requestInput"
       token={token}

@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef } from 'react';
 import { useModalActions } from 'providers/modal-provider';
-import { useDappStatus } from 'shared/hooks/use-dapp-status';
+import { useDappStatus } from 'modules/web3';
 import { useTransactionModal, TransactionModal } from '../transaction-modal';
 
 export type TransactionModalTransitStage = (

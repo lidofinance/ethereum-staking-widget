@@ -4,7 +4,7 @@ import { DataTableRow } from '@lidofinance/lido-ui';
 
 import { useRequestTxPrice } from 'features/withdrawals/hooks/useWithdrawTxPrice';
 import { useApproveGasLimit } from 'features/wsteth/wrap/hooks/use-approve-gas-limit';
-import { useDappStatus } from 'shared/hooks/use-dapp-status';
+import { useDappStatus } from 'modules/web3';
 import { AllowanceDataTableRow } from 'shared/components/allowance-data-table-row';
 import { DataTableRowStethByWsteth } from 'shared/components/data-table-row-steth-by-wsteth';
 import { FormatPrice } from 'shared/formatters';

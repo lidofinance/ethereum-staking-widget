@@ -40,6 +40,26 @@ const allowedLogsAddresses: Record<string, string[]> = Object.entries(
   {} as Record<string, string[]>,
 );
 
+const allowedRPCMethods = [
+  'test',
+  'eth_call',
+  'eth_gasPrice',
+  'eth_getCode',
+  'eth_estimateGas',
+  'eth_getBlockByNumber',
+  'eth_feeHistory',
+  'eth_maxPriorityFeePerGas',
+  'eth_getBalance',
+  'eth_blockNumber',
+  'eth_getTransactionByHash',
+  'eth_getTransactionReceipt',
+  'eth_getTransactionCount',
+  'eth_sendRawTransaction',
+  'eth_getLogs',
+  'eth_chainId',
+  'net_version',
+];
+
 const rpc = rpcFactory({
   fetchRPC: trackedFetchRpcFactory({
     registry: Metrics.registry,
@@ -57,29 +77,15 @@ const rpc = rpcFactory({
     [CHAINS.Optimism]: secretConfig.rpcUrls_10,
     [CHAINS.OptimismSepolia]: secretConfig.rpcUrls_11155420,
   },
-  allowedRPCMethods: [
-    'test',
-    'eth_call',
-    'eth_gasPrice',
-    'eth_getCode',
-    'eth_estimateGas',
-    'eth_getBlockByNumber',
-    'eth_feeHistory',
-    'eth_maxPriorityFeePerGas',
-    'eth_getBalance',
-    'eth_blockNumber',
-    'eth_getTransactionByHash',
-    'eth_getTransactionReceipt',
-    'eth_getTransactionCount',
-    'eth_sendRawTransaction',
-    'eth_getLogs',
-    'eth_chainId',
-    'net_version',
-  ],
-  allowedCallAddresses,
-  allowedLogsAddresses,
-  maxBatchCount: config.PROVIDER_MAX_BATCH,
-  disallowEmptyAddressGetLogs: true,
+  validation: {
+    allowedRPCMethods,
+    allowedCallAddresses,
+    allowedLogsAddresses,
+    maxBatchCount: config.PROVIDER_MAX_BATCH,
+    blockEmptyAddressGetLogs: true,
+    maxGetLogsRange: 20_000, // only 20k blocks size historical queries
+    maxResponseSize: 1_000_000, // 1mb max response
+  },
 });
 
 export default wrapNextRequest([

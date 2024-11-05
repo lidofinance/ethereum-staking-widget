@@ -4,19 +4,22 @@ import Head from 'next/head';
 
 import { WrapUnwrapTabs } from 'features/wsteth/wrap-unwrap-tabs';
 import { Layout } from 'shared/components';
+import { SupportL2Chains } from 'modules/web3';
 import { getDefaultStaticProps } from 'utilsApi/get-default-static-props';
 
 const WrapPage: FC<WrapModePageProps> = ({ mode }) => {
   return (
-    <Layout
-      title="Wrap & Unwrap"
-      subtitle="Stable-balance stETH wrapper for DeFi"
-    >
-      <Head>
-        <title>Wrap | Lido</title>
-      </Head>
-      <WrapUnwrapTabs mode={mode} />
-    </Layout>
+    <SupportL2Chains>
+      <Layout
+        title="Wrap & Unwrap"
+        subtitle="Stable-balance stETH wrapper for DeFi"
+      >
+        <Head>
+          <title>Wrap | Lido</title>
+        </Head>
+        <WrapUnwrapTabs mode={mode} />
+      </Layout>
+    </SupportL2Chains>
   );
 };
 

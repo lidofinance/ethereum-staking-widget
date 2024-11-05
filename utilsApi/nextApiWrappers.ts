@@ -196,11 +196,18 @@ export const rateLimit = rateLimitWrapper({
 export const nextDefaultErrorHandler =
   (args?: DefaultErrorHandlerArgs): RequestWrapper =>
   async (req, res, next) => {
-    const { errorMessage = DEFAULT_API_ERROR_MESSAGE, serverLogger: console } =
-      args || {};
+    const { errorMessage = DEFAULT_API_ERROR_MESSAGE } = args || {};
     try {
       await next?.(req, res, next);
     } catch (error) {
+      if (res.headersSent) {
+        console?.error(
+          '[nextDefaultErrorHandler] error after headers sent:',
+          extractErrorMessage(error, errorMessage),
+        );
+        return;
+      }
+
       const isInnerError = res.statusCode === 200;
       const status = isInnerError ? 500 : res.statusCode || 500;
 
@@ -210,9 +217,10 @@ export const nextDefaultErrorHandler =
         res
           .status(serverError || status)
           .json({ message: extractErrorMessage(error, errorMessage) });
-      } else {
-        res.status(status).json({ message: errorMessage });
+        return;
       }
+
+      res.status(status).json({ message: errorMessage });
     }
   };
 
@@ -253,9 +261,7 @@ export const sunsetBy =
     }
   };
 
-export const defaultErrorHandler = nextDefaultErrorHandler({
-  serverLogger: console,
-});
+export const defaultErrorHandler = nextDefaultErrorHandler();
 
 // ready wrapper types
 

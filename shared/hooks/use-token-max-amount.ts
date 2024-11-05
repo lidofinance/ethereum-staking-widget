@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { BigNumber } from 'ethers';
-import { useMaxGasPrice } from './useMaxGasPrice';
+import { useMaxGasPrice } from 'modules/web3';
 import { Zero } from '@ethersproject/constants';
 
 type UseTokenMaxAmountArgs = {
