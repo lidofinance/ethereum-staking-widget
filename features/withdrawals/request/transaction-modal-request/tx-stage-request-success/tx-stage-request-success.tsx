@@ -5,6 +5,7 @@ import { config } from 'config';
 import { WITHDRAWALS_CLAIM_PATH } from 'consts/urls';
 import { MATOMO_CLICK_EVENTS_TYPES } from 'consts/matomo-click-events';
 import { trackMatomoEvent } from 'utils/track-matomo-event';
+import { useIsMetamask } from 'modules/web3';
 
 import { useNftDataByTxHash } from 'features/withdrawals/hooks/useNftDataByTxHash';
 import { useTransactionModal } from 'shared/transaction-modal/transaction-modal';
@@ -21,7 +22,6 @@ import {
   NFTImageExample,
   AddNftWrapper,
 } from './styles';
-import { useConnectorInfo } from 'reef-knot/core-react';
 
 const LINK_ADD_NFT_GUIDE = `${config.helpOrigin}/en/articles/7858367-how-do-i-add-the-lido-nft-to-metamask`;
 
@@ -37,7 +37,8 @@ export const TxRequestStageSuccess = ({
   amount,
 }: TxRequestStageSuccessProps) => {
   const amountEl = <TxAmount amount={amount} symbol={tokenName} />;
-  const { isInjected: showAddGuideLink } = useConnectorInfo();
+  const showAddGuideLink = useIsMetamask();
+
   const { data: nftData, initialLoading: nftLoading } =
     useNftDataByTxHash(txHash);
   const { closeModal } = useTransactionModal();
