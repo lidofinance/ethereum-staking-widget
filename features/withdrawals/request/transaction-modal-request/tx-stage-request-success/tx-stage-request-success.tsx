@@ -1,5 +1,4 @@
 import type { BigNumber } from 'ethers';
-import { useSDK } from '@lido-sdk/react';
 import { Link, Loader } from '@lidofinance/lido-ui';
 
 import { config } from 'config';
@@ -22,6 +21,7 @@ import {
   NFTImageExample,
   AddNftWrapper,
 } from './styles';
+import { useConnectorInfo } from 'reef-knot/core-react';
 
 const LINK_ADD_NFT_GUIDE = `${config.helpOrigin}/en/articles/7858367-how-do-i-add-the-lido-nft-to-metamask`;
 
@@ -37,10 +37,9 @@ export const TxRequestStageSuccess = ({
   amount,
 }: TxRequestStageSuccessProps) => {
   const amountEl = <TxAmount amount={amount} symbol={tokenName} />;
-  const { providerWeb3 } = useSDK();
+  const { isInjected: showAddGuideLink } = useConnectorInfo();
   const { data: nftData, initialLoading: nftLoading } =
     useNftDataByTxHash(txHash);
-  const showAddGuideLink = !!providerWeb3?.provider.isMetaMask;
   const { closeModal } = useTransactionModal();
 
   const successDescription = (
