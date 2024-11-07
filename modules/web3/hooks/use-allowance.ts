@@ -88,7 +88,10 @@ export const useAllowance = ({
     query: {
       enabled,
       select: nativeToBN,
-      // bypasses laggy user RPCs
+      // because we update on events we can have high staleTime
+      // this prevents loader when changing pages
+      // but safes us from laggy user RPCs
+      staleTime: config.PROVIDER_POLLING_INTERVAL * 2,
       refetchInterval: config.PROVIDER_POLLING_INTERVAL * 2,
     },
   });
