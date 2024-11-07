@@ -4,6 +4,8 @@ import { BigNumber } from 'ethers';
 import { Address, WatchContractEventOnLogsFn } from 'viem';
 import { useReadContract, useWatchContractEvent } from 'wagmi';
 
+import { config } from 'config';
+
 import { useDappStatus } from './use-dapp-status';
 
 const nativeToBN = (data: bigint) => BigNumber.from(data.toString());
@@ -86,6 +88,8 @@ export const useAllowance = ({
     query: {
       enabled,
       select: nativeToBN,
+      // bypasses laggy user RPCs
+      refetchInterval: config.PROVIDER_POLLING_INTERVAL * 2,
     },
   });
 
@@ -100,7 +104,7 @@ export const useAllowance = ({
     },
     // queryKey is unstable
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [account, spender, token],
+    [chainId, account, spender, token],
   );
 
   useWatchContractEvent({
