@@ -1,13 +1,8 @@
 import { DataTableRow } from '@lidofinance/lido-ui';
-import { parseEther } from '@ethersproject/units';
 
 import { DATA_UNAVAILABLE } from 'consts/text';
 import { FormatToken } from 'shared/formatters';
-import { useStethByWsteth } from 'shared/hooks';
-import { useStETHByWstETHOnL2 } from 'modules/web3';
-import { useDappStatus } from 'modules/web3';
-
-const OneWsteth = parseEther('1');
+import { useStETHByWstETH, ONE_wstETH } from 'modules/web3';
 
 type DataTableRowStethByWstethProps = {
   toSymbol?: string;
@@ -16,17 +11,7 @@ type DataTableRowStethByWstethProps = {
 export const DataTableRowStethByWsteth = ({
   toSymbol = 'stETH',
 }: DataTableRowStethByWstethProps) => {
-  const { isDappActiveOnL2 } = useDappStatus();
-  const stethByWsteth = useStethByWsteth(
-    !isDappActiveOnL2 ? OneWsteth : undefined,
-  );
-  const stETHByWstETHOnL2 = useStETHByWstETHOnL2(
-    isDappActiveOnL2 ? OneWsteth : undefined,
-  );
-
-  const { data, initialLoading } = isDappActiveOnL2
-    ? stETHByWstETHOnL2
-    : stethByWsteth;
+  const { data: stethByWsteth, initialLoading } = useStETHByWstETH(ONE_wstETH);
 
   return (
     <DataTableRow
@@ -34,12 +19,12 @@ export const DataTableRowStethByWsteth = ({
       title="Exchange rate"
       loading={initialLoading}
     >
-      {data ? (
+      {stethByWsteth ? (
         <>
           1 wstETH =
           <FormatToken
             data-testid="destinationRate"
-            amount={data}
+            amount={stethByWsteth}
             symbol={toSymbol}
           />
         </>
