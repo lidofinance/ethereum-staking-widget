@@ -30,8 +30,7 @@ export const UnwrapStats = () => {
   const {
     txCostUsd: unwrapTxCostInUsd,
     initialLoading: isUnwrapTxCostLoading,
-    // TODO: NEW_SDK
-  } = useTxCostInUsd(unwrapGasLimit?.toBigInt(), chainTypeChainId);
+  } = useTxCostInUsd(unwrapGasLimit, chainTypeChainId);
 
   const approveGasLimit = useApproveGasLimit();
   // The 'approveGasLimit' difference between the networks is insignificant

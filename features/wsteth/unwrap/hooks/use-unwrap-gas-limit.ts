@@ -4,7 +4,6 @@ import { config } from 'config';
 import { UNWRAP_GAS_LIMIT, UNWRAP_L2_GAS_LIMIT } from 'consts/tx';
 import { STRATEGY_LAZY } from 'consts/swr-strategies';
 import { useLidoSDK, useDappStatus } from 'modules/web3';
-import { BigNumber } from 'ethers';
 
 export const useUnwrapGasLimit = () => {
   const { isDappActiveOnL2 } = useDappStatus();
@@ -12,6 +11,7 @@ export const useUnwrapGasLimit = () => {
 
   const fallback = isDappActiveOnL2 ? UNWRAP_L2_GAS_LIMIT : UNWRAP_GAS_LIMIT;
 
+  // TODO: NEW_SDK (useQuery)
   const { data } = useLidoSWR(
     ['swr:unwrap-gas-limit', isDappActiveOnL2, core.chainId],
     async () => {
@@ -20,13 +20,13 @@ export const useUnwrapGasLimit = () => {
           ? l2.getContract()
           : wrap.getContractWstETH());
 
-        const gas = await contract.estimateGas.unwrap(
+        return await contract.estimateGas.unwrap(
+          // TODO: NEW_SDK (ESTIMATE_AMOUNT will be bigint)
           [config.ESTIMATE_AMOUNT.toBigInt()],
           {
             account: config.ESTIMATE_ACCOUNT,
           },
         );
-        return BigNumber.from(gas);
       } catch (error) {
         console.warn(error);
         return fallback;
