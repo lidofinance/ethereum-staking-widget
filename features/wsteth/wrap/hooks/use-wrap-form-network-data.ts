@@ -1,4 +1,5 @@
 import { useCallback, useMemo } from 'react';
+import { BigNumber } from 'ethers';
 
 import { config } from 'config';
 import { useTokenMaxAmount } from 'shared/hooks/use-token-max-amount';
@@ -37,7 +38,7 @@ export const useWrapFormNetworkData = () => {
   });
 
   const wrapEthGasCost = maxGasPrice
-    ? maxGasPrice.mul(gasLimitStETH)
+    ? BigNumber.from(maxGasPrice).mul(gasLimitStETH)
     : undefined;
 
   const revalidateWrapFormData = useCallback(async () => {

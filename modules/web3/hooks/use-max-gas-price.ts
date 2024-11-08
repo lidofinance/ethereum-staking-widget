@@ -1,5 +1,4 @@
 import { useFeeHistory } from 'wagmi';
-import { BigNumber } from 'ethers';
 import type { GetFeeHistoryReturnType } from 'viem';
 
 import { useDappStatus } from './use-dapp-status';
@@ -18,8 +17,7 @@ const feeHistoryToMaxFee = ({
   const lastBaseFeePerGas = baseFeePerGas[0];
 
   // we have to multiply by 2 until we find a reliable way to predict baseFee change
-  const maxFeePerGas = lastBaseFeePerGas * BigInt(2) + maxPriorityFeePerGas;
-  return BigNumber.from(maxFeePerGas);
+  return lastBaseFeePerGas * BigInt(2) + maxPriorityFeePerGas;
 };
 
 export const useMaxGasPrice = (chainId?: number) => {

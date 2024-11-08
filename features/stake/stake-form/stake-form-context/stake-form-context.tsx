@@ -1,4 +1,5 @@
 import invariant from 'tiny-invariant';
+import { BigNumber } from 'ethers';
 import {
   FC,
   PropsWithChildren,
@@ -67,7 +68,10 @@ const useStakeFormNetworkData = (): StakeFormNetworkData => {
     useMaxGasPrice();
 
   const gasCost = useMemo(
-    () => (gasLimit && maxGasPrice ? gasLimit.mul(maxGasPrice) : undefined),
+    () =>
+      gasLimit && maxGasPrice
+        ? gasLimit.mul(BigNumber.from(maxGasPrice))
+        : undefined,
     [gasLimit, maxGasPrice],
   );
 

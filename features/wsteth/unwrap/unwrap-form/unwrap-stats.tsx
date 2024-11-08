@@ -7,7 +7,7 @@ import { DataTableRowStethByWsteth } from 'shared/components/data-table-row-stet
 import { AllowanceDataTableRow } from 'shared/components/allowance-data-table-row';
 import { FormatToken } from 'shared/formatters/format-token';
 import { FormatPrice } from 'shared/formatters';
-import { useTxCostInUsd } from 'shared/hooks';
+import { useTxCostInUsd } from 'shared/hooks/use-tx-cost-in-usd';
 import { useDappStatus } from 'modules/web3';
 
 import { useDebouncedStethByWsteth } from 'features/wsteth/shared/hooks/use-debounced-wsteth-steth';
@@ -30,7 +30,8 @@ export const UnwrapStats = () => {
   const {
     txCostUsd: unwrapTxCostInUsd,
     initialLoading: isUnwrapTxCostLoading,
-  } = useTxCostInUsd(unwrapGasLimit, chainTypeChainId);
+    // TODO: NEW_SDK
+  } = useTxCostInUsd(unwrapGasLimit?.toBigInt(), chainTypeChainId);
 
   const approveGasLimit = useApproveGasLimit();
   // The 'approveGasLimit' difference between the networks is insignificant
@@ -38,7 +39,8 @@ export const UnwrapStats = () => {
   const {
     txCostUsd: approveTxCostInUsd,
     initialLoading: isApproveCostLoading,
-  } = useTxCostInUsd(approveGasLimit, chainTypeChainId);
+    // TODO: NEW_SDK
+  } = useTxCostInUsd(approveGasLimit?.toBigInt(), chainTypeChainId);
 
   const { data: willReceiveStETH, initialLoading: isWillReceiveStETHLoading } =
     useDebouncedStethByWsteth(amount, isDappActiveOnL2);
