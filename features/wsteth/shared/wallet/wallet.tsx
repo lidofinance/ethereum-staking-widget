@@ -2,14 +2,14 @@ import { Divider, Text } from '@lidofinance/lido-ui';
 
 import { FormatToken } from 'shared/formatters';
 import { TokenToWallet } from 'shared/components';
-import { useWstethBySteth, useStethByWsteth } from 'shared/hooks';
+import { useStethByWsteth } from 'shared/hooks';
 import {
   useDappStatus,
   useEthereumBalance,
   useStethBalance,
   useWstethBalance,
   useStETHByWstETHOnL2,
-  useWstETHByStETHOnL2,
+  useWstethBySteth,
   DAPP_CHAIN_TYPE,
 } from 'modules/web3';
 import { CardBalance, CardRow, CardAccount, Fallback } from 'shared/wallet';
@@ -25,16 +25,8 @@ const WalletComponent = () => {
   const stethBalance = useStethBalance();
   const wstethBalance = useWstethBalance();
 
-  // TODO merge those hooks and only fetch current chain
-  const wstethByStethOnL1 = useWstethBySteth(
-    !isDappActiveOnL2 && stethBalance.data ? stethBalance.data : undefined,
-  );
-  const wstethByStethOnL2 = useWstETHByStETHOnL2(
-    isDappActiveOnL2 && stethBalance.data ? stethBalance.data : undefined,
-  );
-  const wstethBySteth = isDappActiveOnL2
-    ? wstethByStethOnL2
-    : wstethByStethOnL1;
+  // TODO: NEW_SDK (not use ?.toBigInt())
+  const wstethBySteth = useWstethBySteth(stethBalance?.data?.toBigInt());
 
   const stethByWstethOnL1 = useStethByWsteth(
     !isDappActiveOnL2 && wstethBalance.data ? wstethBalance.data : undefined,

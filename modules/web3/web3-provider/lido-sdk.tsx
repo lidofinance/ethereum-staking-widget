@@ -14,6 +14,7 @@ import {
   LidoSDKstETH,
   LidoSDKwstETH,
 } from '@lidofinance/lido-ethereum-sdk/erc20';
+import { LidoSDKShares } from '@lidofinance/lido-ethereum-sdk/shares';
 import { LidoSDKL2 } from '@lidofinance/lido-ethereum-sdk/l2';
 import { LidoSDKWrap } from '@lidofinance/lido-ethereum-sdk/wrap';
 
@@ -27,6 +28,7 @@ type LidoSDKContextValue = {
   wstETH: LidoSDKwstETH;
   l2: LidoSDKL2;
   wrap: LidoSDKWrap;
+  shares: LidoSDKShares;
   chainId: CHAINS;
   isL2: boolean;
   subscribeToTokenUpdates: ReturnType<typeof useTokenTransferSubscription>;
@@ -78,6 +80,7 @@ export const LidoSDKProvider = ({ children }: React.PropsWithChildren) => {
     const stETH = new LidoSDKstETH({ core });
     const wstETH = new LidoSDKwstETH({ core });
     const wrap = new LidoSDKWrap({ core });
+    const shares = new LidoSDKShares({ core });
     const l2 = new LidoSDKL2({ core });
 
     return {
@@ -85,6 +88,7 @@ export const LidoSDKProvider = ({ children }: React.PropsWithChildren) => {
       stETH,
       wstETH,
       wrap,
+      shares,
       l2,
       chainId: core.chainId,
       isL2: !!LIDO_L2_CONTRACT_ADDRESSES[chainId as CHAINS],

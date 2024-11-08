@@ -8,4 +8,5 @@ export * from './use-max-gas-price';
 export * from './use-is-multisig';
 export * from './use-stETH-by-wstETH-on-l2';
 export * from './use-wstETH-by-stETH-on-l2';
+export * from './use-wstETH-by-stETH';
 export * from './use-staking-limit-warning';

@@ -7,7 +7,8 @@ import { FormatBalanceArgs, useFormattedBalance } from 'utils';
 
 export type FormatTokenProps = FormatBalanceArgs & {
   symbol: string;
-  amount?: BigNumber;
+  // TODO: NEW_SDK (use only bigint)
+  amount?: BigNumber | bigint;
   approx?: boolean;
   showAmountTip?: boolean;
   fallback?: string;
@@ -26,20 +27,26 @@ export const FormatToken: FormatTokenComponent = ({
   adaptiveDecimals,
   ...rest
 }) => {
-  const { actual, isTrimmed, trimmed } = useFormattedBalance(amount, {
+  // TODO: NEW_SDK (remove: see typing)
+  const _amount =
+    amount && typeof amount === 'bigint'
+      ? BigNumber.from(amount)
+      : (amount as BigNumber);
+
+  const { actual, isTrimmed, trimmed } = useFormattedBalance(_amount, {
     maxDecimalDigits,
     maxTotalLength,
     trimEllipsis,
     adaptiveDecimals,
   });
 
-  if (!amount) return <span {...rest}>{fallback}</span>;
+  if (!_amount) return <span {...rest}>{fallback}</span>;
 
   const showTooltip = showAmountTip && isTrimmed;
 
   // we show prefix for non zero amount and if we need to show Tooltip Amount
   // overridden by explicitly set approx
-  const prefix = amount && !amount.isZero() && approx ? '≈ ' : '';
+  const prefix = _amount && !_amount.isZero() && approx ? '≈ ' : '';
 
   const body = (
     <span {...rest}>

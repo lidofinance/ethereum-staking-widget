@@ -3,6 +3,8 @@ import useSWR from 'swr';
 
 import { useLidoSDK } from 'modules/web3';
 
+// TODO: NEW_SDK (remove)
+// DEPRECATED
 export const useWstETHByStETHOnL2 = (steth: BigNumber | undefined) => {
   const { l2 } = useLidoSDK();
 
