@@ -43,7 +43,7 @@ export const UnwrapStats = () => {
   } = useTxCostInUsd(approveGasLimit, chainTypeChainId);
 
   const { data: willReceiveStETH, initialLoading: isWillReceiveStETHLoading } =
-    useDebouncedStethByWsteth(amount, isDappActiveOnL2);
+    useDebouncedStethByWsteth(amount?.toBigInt());
 
   return (
     <DataTable>
