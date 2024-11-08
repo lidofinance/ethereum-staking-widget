@@ -1,27 +1,17 @@
-import { Zero } from '@ethersproject/constants';
-import type { BigNumber } from 'ethers';
-
+import { useStETHByWstETH, useWstethBySteth } from 'modules/web3';
 import { useDebouncedValue } from 'shared/hooks/useDebouncedValue';
-import { useStETHByWstETH, useWstETHByStETHOnL2 } from 'modules/web3';
-import { useWstethBySteth } from 'shared/hooks/useWstethBySteth';
 
 export const useDebouncedWstethBySteth = (
-  amount: BigNumber | null,
-  isL2 = false,
+  amount: bigint | undefined,
   delay = 500,
 ) => {
-  const fallbackedAmount = amount ?? Zero;
+  const fallbackedAmount = amount ?? BigInt(0);
   const amountDebounced = useDebouncedValue(fallbackedAmount, delay);
-  const isActualValue = fallbackedAmount.eq(amountDebounced);
+  const isActualValue = fallbackedAmount === amountDebounced;
 
-  const swrL1 = useWstethBySteth(
-    !isL2 && amountDebounced ? amountDebounced : undefined,
+  const { data, initialLoading, loading, error, refetch } = useWstethBySteth(
+    amountDebounced && isActualValue ? amountDebounced : undefined,
   );
-  const swrL2 = useWstETHByStETHOnL2(
-    isL2 && amountDebounced ? amountDebounced : undefined,
-  );
-
-  const { data, initialLoading, loading, error, update } = isL2 ? swrL2 : swrL1;
 
   return {
     get data() {
@@ -37,7 +27,7 @@ export const useDebouncedWstethBySteth = (
       return error;
     },
     get update() {
-      return update;
+      return refetch;
     },
   };
 };

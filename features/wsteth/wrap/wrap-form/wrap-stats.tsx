@@ -1,25 +1,23 @@
-import { BigNumber } from 'ethers';
 import { useFormContext } from 'react-hook-form';
 
-import { parseEther } from '@ethersproject/units';
 import { DataTable, DataTableRow } from '@lidofinance/lido-ui';
 import { TOKENS } from '@lido-sdk/constants';
 
 import { DATA_UNAVAILABLE } from 'consts/text';
+import { ONE_stETH, useDappStatus, useWstethBySteth } from 'modules/web3';
+
 import { useDebouncedWstethBySteth } from 'features/wsteth/shared/hooks/use-debounced-wsteth-steth';
 import { TOKENS_TO_WRAP } from 'features/wsteth/shared/types';
 import { AllowanceDataTableRow } from 'shared/components/allowance-data-table-row';
+
 import { FormatPrice, FormatToken } from 'shared/formatters';
-import { useTxCostInUsd, useWstethBySteth } from 'shared/hooks';
-import { useDappStatus, useWstETHByStETHOnL2 } from 'modules/web3';
+import { useTxCostInUsd } from 'shared/hooks/use-tx-cost-in-usd';
 
 import { useApproveGasLimit } from '../hooks/use-approve-gas-limit';
 import { useWrapFormData, WrapFormInputType } from '../wrap-form-context';
 
-const oneSteth = parseEther('1');
-
 export const WrapFormStats = () => {
-  const { isDappActive, isDappActiveOnL2, chainTypeChainId } = useDappStatus();
+  const { isDappActive, chainTypeChainId } = useDappStatus();
   const { allowance, isShowAllowance, wrapGasLimit, isApprovalLoading } =
     useWrapFormData();
 
@@ -31,19 +29,12 @@ export const WrapFormStats = () => {
   const {
     data: willReceiveWsteth,
     initialLoading: isWillReceiveWstethLoading,
-  } = useDebouncedWstethBySteth(amount, isDappActiveOnL2);
-
-  const wstethBySteth = useWstethBySteth(
-    !isDappActiveOnL2 ? oneSteth : undefined,
-  );
-  const wstETHByStETHOnL2 = useWstETHByStETHOnL2(
-    isDappActiveOnL2 ? oneSteth : undefined,
-  );
+  } = useDebouncedWstethBySteth(amount?.toBigInt());
 
   const {
     data: oneWstethConverted,
     initialLoading: oneWstethConvertedLoading,
-  } = isDappActiveOnL2 ? wstETHByStETHOnL2 : wstethBySteth;
+  } = useWstethBySteth(ONE_stETH);
 
   // The 'approveGasLimit' difference between the networks is insignificant
   // and can be neglected in the '!isChainTypeMatched' case
@@ -54,12 +45,12 @@ export const WrapFormStats = () => {
   const {
     txCostUsd: approveTxCostInUsd,
     initialLoading: isApproveCostLoading,
-  } = useTxCostInUsd(BigNumber.from(approveGasLimit), chainTypeChainId);
+  } = useTxCostInUsd(approveGasLimit, chainTypeChainId);
 
   // The 'wrapGasLimit' difference between the networks is insignificant
   // and can be neglected in the '!isChainTypeMatched' case
   const { txCostUsd: wrapTxCostInUsd, initialLoading: isWrapCostLoading } =
-    useTxCostInUsd(wrapGasLimit, chainTypeChainId);
+    useTxCostInUsd(wrapGasLimit?.toBigInt(), chainTypeChainId);
 
   return (
     <DataTable data-testid="wrapStats">
