@@ -1,4 +1,3 @@
-import { BigNumber } from 'ethers';
 import { useLidoSWR } from '@lido-sdk/react';
 
 import { config } from 'config';
@@ -17,6 +16,7 @@ export const useApproveGasLimit = () => {
     ? STETH_L2_APPROVE_GAS_LIMIT
     : WSTETH_APPROVE_GAS_LIMIT;
 
+  // TODO: NEW_SDK (useQuery)
   const { data } = useLidoSWR(
     ['swr:approve-wrap-gas-limit', isDappActiveOnL2, core.chainId],
     async () => {
@@ -29,13 +29,13 @@ export const useApproveGasLimit = () => {
         // steth on l1, wsteth on l2
         const contract = await (isL2 ? l2.getContract() : stETH.getContract());
 
-        const gas = await contract.estimateGas.approve(
+        return await contract.estimateGas.approve(
+          // TODO: NEW_SDK (ESTIMATE_AMOUNT will be bigint)
           [spender, config.ESTIMATE_AMOUNT.toBigInt()],
           {
             account: config.ESTIMATE_ACCOUNT,
           },
         );
-        return BigNumber.from(gas);
       } catch (error) {
         console.warn(error);
         return fallback;

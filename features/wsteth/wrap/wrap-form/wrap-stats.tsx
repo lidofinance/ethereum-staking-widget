@@ -1,3 +1,4 @@
+import { BigNumber } from 'ethers';
 import { useFormContext } from 'react-hook-form';
 
 import { parseEther } from '@ethersproject/units';
@@ -53,7 +54,7 @@ export const WrapFormStats = () => {
   const {
     txCostUsd: approveTxCostInUsd,
     initialLoading: isApproveCostLoading,
-  } = useTxCostInUsd(approveGasLimit, chainTypeChainId);
+  } = useTxCostInUsd(BigNumber.from(approveGasLimit), chainTypeChainId);
 
   // The 'wrapGasLimit' difference between the networks is insignificant
   // and can be neglected in the '!isChainTypeMatched' case

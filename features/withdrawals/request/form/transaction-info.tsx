@@ -1,3 +1,4 @@
+import { BigNumber } from 'ethers';
 import { useWatch } from 'react-hook-form';
 import { TOKENS } from '@lido-sdk/constants';
 import { DataTableRow } from '@lidofinance/lido-ui';
@@ -34,7 +35,7 @@ export const TransactionInfo = () => {
   const {
     txCostUsd: approveTxCostInUsd,
     initialLoading: isApproveTxCostLoading,
-  } = useTxCostInUsd(useApproveGasLimit());
+  } = useTxCostInUsd(BigNumber.from(useApproveGasLimit()));
 
   return (
     <>
