@@ -1,6 +1,6 @@
+import { BigNumber } from 'ethers';
 import invariant from 'tiny-invariant';
 import { formatEther } from '@ethersproject/units';
-import type { BigNumber } from 'ethers';
 import type { Resolver } from 'react-hook-form';
 
 import { validateEtherAmount } from 'shared/hook-form/validation/validate-ether-amount';
@@ -41,6 +41,7 @@ export const WrapFormValidationResolver: Resolver<
         formField: 'amount',
         amount,
         ...awaitedContext,
+        gasCost: BigNumber.from(awaitedContext.gasCost),
       });
     } else if (awaitedContext.isWalletActive) {
       validateBignumberMax(

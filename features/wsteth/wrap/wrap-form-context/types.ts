@@ -22,7 +22,7 @@ export type WrapFormValidationContext = {
 export type WrapFormAsyncValidationContext = {
   stakingLimitLevel: LIMIT_LEVEL;
   currentStakeLimit: BigNumber;
-  gasCost: BigNumber;
+  gasCost: bigint;
 } & (
   | {
       isWalletActive: true;
@@ -39,6 +39,6 @@ export type WrapFormDataContextValueType = WrapFormNetworkData &
   WrapFormApprovalData & {
     isSteth: boolean;
     maxAmount?: BigNumber;
-    wrapGasLimit: BigNumber;
+    wrapGasLimit: bigint;
     stakeLimitInfo?: StakeLimitFullInfo;
   };

@@ -6,12 +6,13 @@ import { Zero } from '@ethersproject/constants';
 type UseTokenMaxAmountArgs = {
   balance?: BigNumber; // user balance
   limit?: BigNumber; // upper limit
-  gasLimit?: BigNumber; // operation gas limit
-  padding?: BigNumber; // untouchable amount to leave to user
+  gasLimit?: bigint; // operation gas limit
+  padding?: bigint; // untouchable amount to leave to user
   isPadded?: boolean;
   isLoading?: boolean;
 };
 
+// TODO: NEW_SDK (after stake iteration migrate to BigInt)
 // returns max amount that can be used for Max Button
 export const useTokenMaxAmount = ({
   limit,
@@ -30,11 +31,14 @@ export const useTokenMaxAmount = ({
 
     if (isPadded) {
       if (padding) {
-        maxAmount = maxAmount.sub(padding);
+        const _padding = BigNumber.from(padding);
+        maxAmount = maxAmount.sub(_padding);
       }
       // we return undefined if we should pad but don't have data
       if (gasLimit && maxGasPrice) {
-        maxAmount = maxAmount.sub(gasLimit.mul(BigNumber.from(maxGasPrice)));
+        const _maxGasPrice = BigNumber.from(maxGasPrice);
+        const _gasLimit = BigNumber.from(gasLimit);
+        maxAmount = maxAmount.sub(_gasLimit.mul(_maxGasPrice));
         if (maxAmount.lt(Zero)) maxAmount = Zero;
       } else maxAmount = undefined;
     }

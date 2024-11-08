@@ -9,6 +9,7 @@ export const useUnwrapGasLimit = () => {
   const { isDappActiveOnL2 } = useDappStatus();
   const { l2, isL2, wrap, core } = useLidoSDK();
 
+  // TODO: NEW_SDK (bigint)
   const fallback = isDappActiveOnL2 ? UNWRAP_L2_GAS_LIMIT : UNWRAP_GAS_LIMIT;
 
   // TODO: NEW_SDK (useQuery)

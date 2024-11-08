@@ -43,6 +43,7 @@ const getLimitLevel = (maxLimit: BigNumber, currentLimit: BigNumber) => {
   return LIMIT_LEVEL.SAFE;
 };
 
+// TODO: NEW_SDK (migrate to bigint)
 export const useStakingLimitInfo = () => {
   const { chainId } = useSDK();
   const steth = useSTETHContractRPC();

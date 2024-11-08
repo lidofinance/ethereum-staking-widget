@@ -101,7 +101,8 @@ const useStakeFormNetworkData = (): StakeFormNetworkData => {
     balance: etherBalance,
     limit: stakingLimitInfo?.currentStakeLimit,
     isPadded: !isMultisig,
-    gasLimit: gasLimit,
+    // TODO NEW SDK
+    gasLimit: gasLimit?.toBigInt(),
     padding: config.BALANCE_PADDING,
     isLoading: isMultisigLoading,
   });

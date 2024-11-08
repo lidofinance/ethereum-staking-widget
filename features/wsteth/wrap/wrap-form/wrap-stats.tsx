@@ -50,7 +50,7 @@ export const WrapFormStats = () => {
   // The 'wrapGasLimit' difference between the networks is insignificant
   // and can be neglected in the '!isChainTypeMatched' case
   const { txCostUsd: wrapTxCostInUsd, initialLoading: isWrapCostLoading } =
-    useTxCostInUsd(wrapGasLimit?.toBigInt(), chainTypeChainId);
+    useTxCostInUsd(wrapGasLimit, chainTypeChainId);
 
   return (
     <DataTable data-testid="wrapStats">

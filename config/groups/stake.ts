@@ -1,4 +1,6 @@
 import { BigNumber } from 'ethers';
+// TODO NEW SDK (broke dev and build)
+// import { parseEther } from 'viem';
 import { parseEther } from '@ethersproject/units';
 
 import { StakeSwapDiscountIntegrationKey } from 'features/stake/swap-discount-banner';
@@ -13,7 +15,7 @@ import { preConfig } from '../get-preconfig';
 export const PRECISION = 10 ** 6;
 
 // how much to leave out on user balance when max is pressed
-export const BALANCE_PADDING = parseEther('0.01');
+export const BALANCE_PADDING = parseEther('0.01').toBigInt();
 
 export const SUBMIT_EXTRA_GAS_TRANSACTION_RATIO = 1.05;
 

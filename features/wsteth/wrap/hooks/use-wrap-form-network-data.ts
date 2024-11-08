@@ -1,5 +1,4 @@
 import { useCallback, useMemo } from 'react';
-import { BigNumber } from 'ethers';
 
 import { config } from 'config';
 import { useTokenMaxAmount } from 'shared/hooks/use-token-max-amount';
@@ -22,12 +21,14 @@ export const useWrapFormNetworkData = () => {
   const { data: wstethBalance, refetch: wstethBalanceUpdate } =
     useWstethBalance();
 
+  // TODO: NEW_SDK (after stake migrate to BigInt)
   const { data: stakeLimitInfo, mutate: stakeLimitInfoUpdate } =
     useStakingLimitInfo();
 
   const { gasLimitETH, gasLimitStETH } = useWrapGasLimit();
   const { maxGasPrice } = useMaxGasPrice();
 
+  // TODO: NEW_SDK (after stake migrate to BigInt)
   const maxAmountETH = useTokenMaxAmount({
     balance: ethBalance,
     limit: stakeLimitInfo?.currentStakeLimit,
@@ -37,9 +38,7 @@ export const useWrapFormNetworkData = () => {
     isLoading: isMultisigLoading,
   });
 
-  const wrapEthGasCost = maxGasPrice
-    ? BigNumber.from(maxGasPrice).mul(gasLimitStETH)
-    : undefined;
+  const wrapEthGasCost = maxGasPrice ? maxGasPrice * gasLimitStETH : undefined;
 
   const revalidateWrapFormData = useCallback(async () => {
     await Promise.allSettled([

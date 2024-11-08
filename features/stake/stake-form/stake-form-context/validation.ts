@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { BigNumber } from 'ethers';
 import invariant from 'tiny-invariant';
 import { Zero } from '@ethersproject/constants';
 
@@ -49,7 +50,7 @@ export const stakeFormValidationResolver: Resolver<
       stakingLimitLevel,
       currentStakeLimit,
       etherBalance,
-      gasCost,
+      gasCost: BigNumber.from(gasCost),
       isMultisig,
     });
 
