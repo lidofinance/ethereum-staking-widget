@@ -13,7 +13,9 @@ export const useTxCostInUsd = (gasLimit?: bigint, chainId?: number) => {
   );
 
   // TODO: NEW_SDK (refactor useEthUsd to work with bigint)
-  const { usdAmount, ...ethUsdState } = useEthUsd(BigNumber.from(ethAmount));
+  const { usdAmount, ...ethUsdState } = useEthUsd(
+    ethAmount ? BigNumber.from(ethAmount) : undefined,
+  );
 
   return {
     maxGasPrice: maxGasPrice,
