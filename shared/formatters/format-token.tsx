@@ -28,6 +28,7 @@ export const FormatToken: FormatTokenComponent = ({
   ...rest
 }) => {
   // TODO: NEW_SDK (remove: see typing)
+  //  the Format Token is used on all pages and will be modified in the final iteration.
   const _amount =
     amount && typeof amount === 'bigint'
       ? BigNumber.from(amount)

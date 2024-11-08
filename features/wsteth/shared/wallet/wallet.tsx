@@ -2,15 +2,14 @@ import { Divider, Text } from '@lidofinance/lido-ui';
 
 import { FormatToken } from 'shared/formatters';
 import { TokenToWallet } from 'shared/components';
-import { useStethByWsteth } from 'shared/hooks';
 import {
   useDappStatus,
   useEthereumBalance,
   useStethBalance,
   useWstethBalance,
-  useStETHByWstETHOnL2,
   useWstethBySteth,
   DAPP_CHAIN_TYPE,
+  useStETHByWstETH,
 } from 'modules/web3';
 import { CardBalance, CardRow, CardAccount, Fallback } from 'shared/wallet';
 
@@ -27,16 +26,7 @@ const WalletComponent = () => {
 
   // TODO: NEW_SDK (not use ?.toBigInt())
   const wstethBySteth = useWstethBySteth(stethBalance?.data?.toBigInt());
-
-  const stethByWstethOnL1 = useStethByWsteth(
-    !isDappActiveOnL2 && wstethBalance.data ? wstethBalance.data : undefined,
-  );
-  const stethByWstethOnL2 = useStETHByWstETHOnL2(
-    isDappActiveOnL2 && wstethBalance.data ? wstethBalance.data : undefined,
-  );
-  const stethByWsteth = isDappActiveOnL2
-    ? stethByWstethOnL2
-    : stethByWstethOnL1;
+  const stethByWsteth = useStETHByWstETH(wstethBalance?.data?.toBigInt());
 
   return (
     <StyledCard data-testid="wrapCardSection" $redBg={isDappActiveOnL2}>
