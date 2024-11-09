@@ -1,10 +1,14 @@
 import { useWatch } from 'react-hook-form';
 
-import { formatEther, parseEther } from '@ethersproject/units';
+// TODO: NEW SDK
+// import { formatEther, parseEther } from '@ethersproject/units';
+import { formatEther, parseEther } from 'viem';
+
 import { TOKENS } from '@lido-sdk/constants';
 
 import { MATOMO_CLICK_EVENTS_TYPES } from 'consts/matomo-click-events';
 import { DATA_UNAVAILABLE } from 'consts/text';
+
 import { useWaitingTime } from 'features/withdrawals/hooks/useWaitingTime';
 import { useTvlError } from 'features/withdrawals/hooks/useTvlError';
 import { RequestFormInputType } from 'features/withdrawals/request/request-form-context';
@@ -12,6 +16,7 @@ import {
   getDexConfig,
   useWithdrawalRates,
 } from 'features/withdrawals/request/withdrawal-rates';
+
 import { useStethByWsteth } from 'shared/hooks';
 import { formatBalance } from 'utils/formatBalance';
 import { trackMatomoEvent } from 'utils/track-matomo-event';

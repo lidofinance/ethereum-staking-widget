@@ -1,25 +1,14 @@
 import { useCallback } from 'react';
-import { BigNumber } from 'ethers';
 import invariant from 'tiny-invariant';
 
-import { useSDK, useWSTETHContractRPC } from '@lido-sdk/react';
 import { TransactionCallbackStage } from '@lidofinance/lido-ethereum-sdk/core';
 
-import {
-  useTxConfirmation,
-  useGetIsContract,
-  useDappStatus,
-  useLidoSDK,
-} from 'modules/web3';
-
-import { runWithTransactionLogger } from 'utils';
-import { convertToBigNumber } from 'utils/convert-to-big-number';
+import { useDappStatus, useLidoSDK } from 'modules/web3';
 
 import type {
   WrapFormApprovalData,
   WrapFormInputType,
 } from '../wrap-form-context';
-import { useWrapTxOnL1Processing } from './use-wrap-tx-on-l1-processing';
 import { useTxModalWrap } from './use-tx-modal-stages-wrap';
 
 type UseWrapFormProcessorArgs = {
@@ -34,96 +23,74 @@ export const useWrapFormProcessor = ({
   onRetry,
 }: UseWrapFormProcessorArgs) => {
   const { isDappActiveOnL2, address } = useDappStatus();
-  const { providerWeb3 } = useSDK();
-  const wstETHContractRPC = useWSTETHContractRPC();
-  const { l2, isL2, wstETH } = useLidoSDK();
-
+  const { l2, shares, wstETH } = useLidoSDK();
   const { txModalStages } = useTxModalWrap();
-  const processWrapTxOnL1 = useWrapTxOnL1Processing();
 
-  const waitForTx = useTxConfirmation();
-  const isContract = useGetIsContract();
   const {
+    // will be used
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     isApprovalNeededBeforeWrap: isApprovalNeededBeforeWrapOnL1,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     processApproveTx: processApproveTxOnL1,
   } = approvalDataOnL1;
+
+  const showSuccessTxModal = useCallback(
+    async (txHash: `0x${string}`) => {
+      const wstethBalance = await (isDappActiveOnL2
+        ? l2.wsteth.balance(address)
+        : wstETH.balance(address));
+      txModalStages.success(wstethBalance, txHash);
+    },
+    [address, isDappActiveOnL2, l2.wsteth, txModalStages, wstETH],
+  );
 
   return useCallback(
     async ({ amount, token }: WrapFormInputType) => {
       try {
-        if (!isL2) {
-          invariant(providerWeb3, 'providerWeb3 should be presented');
-        }
         invariant(amount, 'amount should be presented');
         invariant(address, 'address should be presented');
 
-        const [isMultisig, willReceive] = await Promise.all([
-          isContract(address),
-          isDappActiveOnL2
-            ? l2.steth
-                .convertToShares(amount.toBigInt())
-                .then(convertToBigNumber)
-            : wstETHContractRPC.getWstETHByStETH(amount),
-        ]);
+        const willReceive = await (isDappActiveOnL2
+          ? l2.steth.convertToShares(amount)
+          : shares.convertToShares(amount));
 
-        if (isApprovalNeededBeforeWrapOnL1) {
-          txModalStages.signApproval(amount, token);
-
-          await processApproveTxOnL1({
-            onTxSent: (txHash) => {
-              if (!isMultisig) {
-                txModalStages.pendingApproval(amount, token, txHash);
+        if (isDappActiveOnL2) {
+          // The operation 'stETH to wstETH' on L2 is 'unwrap'
+          await l2.unwrapStethToWsteth({
+            value: amount,
+            callback: ({ stage, payload }) => {
+              switch (stage) {
+                case TransactionCallbackStage.SIGN:
+                  txModalStages.sign(amount, token, willReceive);
+                  break;
+                case TransactionCallbackStage.RECEIPT:
+                  txModalStages.pending(amount, token, willReceive, payload);
+                  break;
+                case TransactionCallbackStage.CONFIRMATION:
+                  void onConfirm?.();
+                  void showSuccessTxModal(payload?.transactionHash);
+                  break;
+                case TransactionCallbackStage.MULTISIG_DONE:
+                  txModalStages.successMultisig();
+                  break;
+                case TransactionCallbackStage.ERROR:
+                  txModalStages.failed(payload, onRetry);
+                  break;
+                default:
               }
             },
           });
-          if (isMultisig) {
-            txModalStages.successMultisig();
-            return true;
-          }
-        }
-
-        txModalStages.sign(amount, token, willReceive);
-
-        let txHash: string;
-        if (isDappActiveOnL2) {
-          const txResult = await runWithTransactionLogger(
-            'Wrap signing on L2',
-            () =>
-              // The operation 'stETH to wstETH' on L2 is 'unwrap'
-              l2.unwrapStethToWsteth({
-                value: amount.toBigInt(),
-                callback: ({ stage, payload }) => {
-                  if (stage === TransactionCallbackStage.RECEIPT)
-                    txModalStages.pending(amount, token, willReceive, payload);
-                },
-              }),
-          );
-          txHash = txResult.hash;
-        } else {
-          txHash = await runWithTransactionLogger('Wrap signing on L1', () =>
-            processWrapTxOnL1({ amount, token, isMultisig }),
-          );
-          if (!isMultisig)
-            txModalStages.pending(amount, token, willReceive, txHash);
-        }
-
-        if (isMultisig) {
-          txModalStages.successMultisig();
+          // enough for L2
           return true;
         }
 
-        await runWithTransactionLogger('Wrap block confirmation', () =>
-          waitForTx(txHash),
-        );
+        // if (token === LIDO_TOKENS.steth) {
+        //  ...await wrap.wrapSteth
+        // } else {
+        //  ...mock mockLimitReached
+        //  ...await wrap.wrapEth
+        // }
 
-        const [wstethBalance] = await Promise.all([
-          isDappActiveOnL2
-            ? l2.wsteth.balance(address)
-            : wstETH.balance(address),
-          onConfirm(),
-        ]);
-
-        txModalStages.success(BigNumber.from(wstethBalance), txHash);
         return true;
       } catch (error) {
         console.warn(error);
@@ -132,20 +99,13 @@ export const useWrapFormProcessor = ({
       }
     },
     [
-      isL2,
       address,
-      isContract,
       isDappActiveOnL2,
       l2,
-      wstETHContractRPC,
-      isApprovalNeededBeforeWrapOnL1,
+      shares,
       txModalStages,
-      wstETH,
       onConfirm,
-      providerWeb3,
-      processApproveTxOnL1,
-      processWrapTxOnL1,
-      waitForTx,
+      showSuccessTxModal,
       onRetry,
     ],
   );

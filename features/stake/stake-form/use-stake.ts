@@ -1,4 +1,3 @@
-import { BigNumber } from 'ethers';
 import { useCallback } from 'react';
 import invariant from 'tiny-invariant';
 
@@ -19,7 +18,7 @@ import { useTxModalStagesStake } from './hooks/use-tx-modal-stages-stake';
 import { sendTx, useTxConfirmation, useDappStatus } from 'modules/web3';
 
 type StakeArguments = {
-  amount: BigNumber | null;
+  amount: bigint | null;
   referral: string | null;
 };
 
@@ -95,11 +94,13 @@ export const useStake = ({ onConfirm, onRetry }: StakeOptions) => {
           waitForTx(txHash),
         );
 
+        // TODO: NEW SDK (bigint)
         const stethBalance = await stethContract.balanceOf(address);
 
         await onConfirm?.();
 
-        txModalStages.success(stethBalance, txHash);
+        // TODO: NEW SDK (bigint)
+        txModalStages.success(stethBalance.toBigInt(), txHash);
 
         return true;
       } catch (error) {

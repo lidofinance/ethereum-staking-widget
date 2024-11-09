@@ -1,14 +1,13 @@
-import { BigNumber } from 'ethers';
 import { TokensWithdrawable } from 'features/withdrawals/types/tokens-withdrawable';
 import { Dispatch, SetStateAction } from 'react';
 import { useRequestFormDataContextValue } from './use-request-form-data-context-value';
 
 export type ValidationResults = {
-  requests: null | BigNumber[];
+  requests: null | bigint[];
 };
 
 export type RequestFormInputType = {
-  amount: null | BigNumber;
+  amount: null | bigint;
   token: TokensWithdrawable;
   mode: 'lido' | 'dex';
 } & ValidationResults;
@@ -20,13 +19,13 @@ export type RequestFormValidationContextType = {
 };
 
 export type RequestFormValidationAsyncContextType = {
-  minUnstakeSteth: BigNumber;
-  minUnstakeWSteth: BigNumber;
-  balanceSteth: BigNumber;
-  balanceWSteth: BigNumber;
-  maxAmountPerRequestSteth: BigNumber;
-  maxAmountPerRequestWSteth: BigNumber;
-  stethTotalSupply: BigNumber;
+  minUnstakeSteth: bigint;
+  minUnstakeWSteth: bigint;
+  balanceSteth: bigint;
+  balanceWSteth: bigint;
+  maxAmountPerRequestSteth: bigint;
+  maxAmountPerRequestWSteth: bigint;
+  stethTotalSupply: bigint;
   maxRequestCount: number;
 };
 export type RequestFormDataType = ReturnType<
@@ -37,8 +36,8 @@ export type ExtraRequestFormDataType = {
   isApprovalFlow: boolean;
   isApprovalFlowLoading: boolean;
   isTokenLocked: boolean;
-  allowance: BigNumber | undefined;
-  maxAmount?: BigNumber;
+  allowance: bigint | undefined;
+  maxAmount?: bigint;
 };
 
 export type RequestFormDataContextValueType = RequestFormDataType &

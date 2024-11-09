@@ -24,9 +24,8 @@ const WalletComponent = () => {
   const stethBalance = useStethBalance();
   const wstethBalance = useWstethBalance();
 
-  // TODO: NEW_SDK (not use ?.toBigInt())
-  const wstethBySteth = useWstethBySteth(stethBalance?.data?.toBigInt());
-  const stethByWsteth = useStETHByWstETH(wstethBalance?.data?.toBigInt());
+  const wstethBySteth = useWstethBySteth(stethBalance?.data);
+  const stethByWsteth = useStETHByWstETH(wstethBalance?.data);
 
   return (
     <StyledCard data-testid="wrapCardSection" $redBg={isDappActiveOnL2}>

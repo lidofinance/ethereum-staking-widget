@@ -1,6 +1,7 @@
 import { ValidationError } from './validation-error';
 import type { BigNumber } from 'ethers';
 
+// DEPRECATED
 export const validateBignumberMin = (
   field: string,
   value: BigNumber,

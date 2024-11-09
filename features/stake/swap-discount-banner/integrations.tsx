@@ -1,4 +1,6 @@
-import { parseEther } from '@ethersproject/units';
+// TODO: NEW SDK
+// import { parseEther } from '@ethersproject/units';
+import { parseEther } from 'viem';
 import { TOKENS } from '@lido-sdk/constants';
 
 import { OPEN_OCEAN_REFERRAL_ADDRESS } from 'consts/external-links';

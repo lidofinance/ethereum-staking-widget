@@ -77,14 +77,14 @@ export const useRequestFormDataContextValue = () => {
 
   return useMemo(
     () => ({
-      maxAmountPerRequestSteth,
-      minUnstakeSteth,
+      maxAmountPerRequestSteth: maxAmountPerRequestSteth?.toBigInt(),
+      minUnstakeSteth: minUnstakeSteth?.toBigInt(),
       balanceSteth,
       balanceWSteth,
-      maxAmountPerRequestWSteth,
-      minUnstakeWSteth,
-      stethTotalSupply,
-      unfinalizedStETH,
+      maxAmountPerRequestWSteth: maxAmountPerRequestWSteth?.toBigInt(),
+      minUnstakeWSteth: minUnstakeWSteth?.toBigInt(),
+      stethTotalSupply: stethTotalSupply?.toBigInt(),
+      unfinalizedStETH: unfinalizedStETH?.toBigInt(),
       revalidateRequestFormData,
       loading,
     }),

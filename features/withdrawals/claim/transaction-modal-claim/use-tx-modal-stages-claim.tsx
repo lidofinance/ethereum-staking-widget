@@ -1,5 +1,3 @@
-import type { BigNumber } from 'ethers';
-
 import { MATOMO_CLICK_EVENTS_TYPES } from 'consts/matomo-click-events';
 
 import {
@@ -21,12 +19,12 @@ const STAGE_OPERATION_ARGS = {
 const getTxModalStagesClaim = (transitStage: TransactionModalTransitStage) => ({
   ...getGeneralTransactionModalStages(transitStage),
 
-  sign: (amount: BigNumber) =>
+  sign: (amount: bigint) =>
     transitStage(
       <TxStageSignOperationAmount {...STAGE_OPERATION_ARGS} amount={amount} />,
     ),
 
-  pending: (amount: BigNumber, txHash?: string) =>
+  pending: (amount: bigint, txHash?: string) =>
     transitStage(
       <TxStageSignOperationAmount
         {...STAGE_OPERATION_ARGS}
@@ -36,7 +34,7 @@ const getTxModalStagesClaim = (transitStage: TransactionModalTransitStage) => ({
       />,
     ),
 
-  success: (amount: BigNumber, txHash?: string) =>
+  success: (amount: bigint, txHash?: string) =>
     transitStage(
       <TxStageSuccess
         txHash={txHash}

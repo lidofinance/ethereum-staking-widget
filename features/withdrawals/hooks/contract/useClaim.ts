@@ -42,7 +42,7 @@ export const useClaim = ({ onRetry }: Args) => {
           BigNumber.from(0),
         );
 
-        txModalStages.sign(amount);
+        txModalStages.sign(amount.toBigInt());
 
         const ids = sortedRequests.map((r) => r.id);
         const hints = sortedRequests.map((r) => r.hint);
@@ -69,7 +69,7 @@ export const useClaim = ({ onRetry }: Args) => {
           return true;
         }
 
-        txModalStages.pending(amount, txHash);
+        txModalStages.pending(amount.toBigInt(), txHash);
 
         await runWithTransactionLogger('Claim block confirmation', () =>
           waitForTx(txHash),
@@ -77,7 +77,7 @@ export const useClaim = ({ onRetry }: Args) => {
 
         await optimisticClaimRequests(sortedRequests);
 
-        txModalStages.success(amount, txHash);
+        txModalStages.success(amount.toBigInt(), txHash);
         return true;
       } catch (error) {
         console.error(error);

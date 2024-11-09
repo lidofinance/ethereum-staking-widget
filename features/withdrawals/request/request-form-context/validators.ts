@@ -1,6 +1,5 @@
 import { formatEther } from '@ethersproject/units';
 import { TOKENS } from '@lido-sdk/constants';
-import { BigNumber } from 'ethers';
 import invariant from 'tiny-invariant';
 import { Resolver } from 'react-hook-form';
 
@@ -20,14 +19,16 @@ import {
 import { getTokenDisplayName } from 'utils/getTokenDisplayName';
 import { awaitWithTimeout } from 'utils/await-with-timeout';
 import { validateEtherAmount } from 'shared/hook-form/validation/validate-ether-amount';
-import { validateBignumberMin } from 'shared/hook-form/validation/validate-bignumber-min';
-import { validateBignumberMax } from 'shared/hook-form/validation/validate-bignumber-max';
+// import { validateBignumberMin } from 'shared/hook-form/validation/validate-bignumber-min';
+// import { validateBignumberMax } from 'shared/hook-form/validation/validate-bignumber-max';
+import { validateBigintMin } from 'shared/hook-form/validation/validate-bigint-min';
+import { validateBigintMax } from 'shared/hook-form/validation/validate-bigint-max';
 
 // helpers that should be shared when adding next hook-form
 
 export type TvlErrorPayload = {
-  balanceDiffSteth: BigNumber;
-  tvlDiff: BigNumber;
+  balanceDiffSteth: bigint;
+  tvlDiff: bigint;
 };
 export class ValidationTvlJoke extends ValidationError {
   static type = 'validate_tvl_joke';
@@ -51,30 +52,30 @@ export class ValidationSplitRequest extends ValidationError {
   }
 }
 
-const messageMinUnstake = (min: BigNumber, token: TokensWithdrawable) =>
+const messageMinUnstake = (min: bigint, token: TokensWithdrawable) =>
   `Minimum withdraw amount is ${formatEther(min)} ${getTokenDisplayName(
     token,
   )}`;
 
-const messageMaxAmount = (max: BigNumber, token: TokensWithdrawable) =>
+const messageMaxAmount = (max: bigint, token: TokensWithdrawable) =>
   `Entered ${getTokenDisplayName(
     token,
   )} amount exceeds your available balance of ${formatEther(max)}`;
 
 const validateSplitRequests = (
   field: string,
-  amount: BigNumber,
-  maxAmountPerRequest: BigNumber,
-  minAmountPerRequest: BigNumber,
+  amount: bigint,
+  maxAmountPerRequest: bigint,
+  minAmountPerRequest: bigint,
   maxRequestCount: number,
-): BigNumber[] => {
-  const maxAmount = maxAmountPerRequest.mul(maxRequestCount);
+): bigint[] => {
+  const maxAmount = maxAmountPerRequest * BigInt(maxRequestCount);
 
-  const lastRequestAmountEther = amount.mod(maxAmountPerRequest);
-  const restCount = lastRequestAmountEther.gt(0) ? 1 : 0;
-  const requestCount = amount.div(maxAmountPerRequest).toNumber() + restCount;
+  const lastRequestAmountEther = amount % maxAmountPerRequest;
+  const restCount = lastRequestAmountEther > BigInt(0) ? 1 : 0;
+  const requestCount = Number(amount / maxAmountPerRequest) + restCount;
 
-  const isMoreThanMax = amount.gt(maxAmount);
+  const isMoreThanMax = amount > maxAmount;
   if (isMoreThanMax) {
     throw new ValidationSplitRequest(
       field,
@@ -83,8 +84,8 @@ const validateSplitRequests = (
     );
   }
 
-  if (restCount && lastRequestAmountEther.lt(minAmountPerRequest)) {
-    const difference = minAmountPerRequest.sub(lastRequestAmountEther);
+  if (restCount && lastRequestAmountEther < minAmountPerRequest) {
+    const difference = minAmountPerRequest - lastRequestAmountEther;
     throw new ValidationSplitRequest(
       field,
       `Cannot split into valid requests as last request would be less than minimal withdrawal amount. Add ${formatEther(
@@ -94,7 +95,7 @@ const validateSplitRequests = (
     );
   }
 
-  const requests = Array.from<BigNumber>({ length: requestCount }).fill(
+  const requests = Array.from<bigint>({ length: requestCount }).fill(
     maxAmountPerRequest,
   );
   if (restCount) {
@@ -106,14 +107,14 @@ const validateSplitRequests = (
 
 const tvlJokeValidate = (
   field: string,
-  valueSteth: BigNumber,
-  tvl: BigNumber,
-  balanceSteth: BigNumber,
+  valueSteth: bigint,
+  tvl: bigint,
+  balanceSteth: bigint,
 ) => {
-  const tvlDiff = valueSteth.sub(tvl);
-  if (tvlDiff.gt(0))
+  const tvlDiff = valueSteth - tvl;
+  if (tvlDiff > BigInt(0))
     throw new ValidationTvlJoke(field, 'amount bigger than tvl', {
-      balanceDiffSteth: valueSteth.sub(balanceSteth),
+      balanceDiffSteth: valueSteth - balanceSteth,
       tvlDiff,
     });
 };
@@ -156,7 +157,8 @@ export const RequestFormValidationResolver: Resolver<
 
     // this check does not require async context and can be placed first
     // also limits async context missing edge cases on page start
-    validateEtherAmount('amount', amount, token);
+    // TODO: NEW SDK
+    validateEtherAmount('amount', amount ? amount : undefined, token);
 
     // early return
     if (!context.isWalletActive) return { values, errors: {} };
@@ -179,7 +181,13 @@ export const RequestFormValidationResolver: Resolver<
     } = transformContext(awaitedContext, values);
 
     if (isSteth) {
-      tvlJokeValidate('amount', amount, stethTotalSupply, balance);
+      // TODO: NEW SDK
+      tvlJokeValidate(
+        'amount',
+        amount ? amount : BigInt(0),
+        stethTotalSupply,
+        balance,
+      );
     }
 
     // early validation exit for dex option
@@ -187,25 +195,28 @@ export const RequestFormValidationResolver: Resolver<
       return { values, errors: { requests: 'wallet not connected' } };
     }
 
-    validateBignumberMin(
+    validateBigintMin(
       'amount',
-      amount,
+      // TODO: NEW SDK
+      amount ? amount : BigInt(0),
       minAmountPerRequest,
       messageMinUnstake(minAmountPerRequest, token),
     );
 
     const requests = validateSplitRequests(
       'amount',
-      amount,
+      // TODO: NEW SDK
+      amount ? amount : BigInt(0),
       maxAmountPerRequest,
       minAmountPerRequest,
       maxRequestCount,
     );
     validationResults.requests = requests;
 
-    validateBignumberMax(
+    validateBigintMax(
       'amount',
-      amount,
+      // TODO: NEW SDK
+      amount ? amount : BigInt(0),
       balance,
       messageMaxAmount(balance, token),
     );

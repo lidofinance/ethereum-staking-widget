@@ -1,11 +1,10 @@
-import { BigNumber } from 'ethers';
 import { TOKENS } from '@lido-sdk/constants';
 import { standardFetcher } from './standardFetcher';
 import { ETH_API_ROUTES, getEthApiPath } from 'consts/api';
 
 type GetOneInchRateParams = {
   token: TOKENS.STETH | TOKENS.WSTETH | 'ETH';
-  amount?: BigNumber;
+  amount?: bigint;
 };
 
 export const getOneInchRate = async ({
@@ -21,6 +20,6 @@ export const getOneInchRate = async ({
   }>(url);
   return {
     rate: data.rate,
-    toReceive: BigNumber.from(data.toReceive),
+    toReceive: BigInt(data.toReceive),
   };
 };

@@ -8,7 +8,6 @@ import { TxStageSignOperationAmount } from 'shared/transaction-modal/tx-stages-c
 import { TxStageOperationSucceedBalanceShown } from 'shared/transaction-modal/tx-stages-composed/tx-stage-operation-succeed-balance-shown';
 
 import { getTokenDisplayName } from 'utils/getTokenDisplayName';
-import type { BigNumber } from 'ethers';
 import type { TokensWrappable } from 'features/wsteth/shared/types';
 
 const STAGE_APPROVE_ARGS = {
@@ -24,7 +23,7 @@ const STAGE_OPERATION_ARGS = {
 const getTxModalStagesWrap = (transitStage: TransactionModalTransitStage) => ({
   ...getGeneralTransactionModalStages(transitStage),
 
-  signApproval: (amount: BigNumber, token: TokensWrappable) =>
+  signApproval: (amount: bigint, token: TokensWrappable) =>
     transitStage(
       <TxStageSignOperationAmount
         {...STAGE_APPROVE_ARGS}
@@ -33,11 +32,7 @@ const getTxModalStagesWrap = (transitStage: TransactionModalTransitStage) => ({
       />,
     ),
 
-  pendingApproval: (
-    amount: BigNumber,
-    token: TokensWrappable,
-    txHash?: string,
-  ) =>
+  pendingApproval: (amount: bigint, token: TokensWrappable, txHash?: string) =>
     transitStage(
       <TxStageSignOperationAmount
         {...STAGE_APPROVE_ARGS}
@@ -48,7 +43,7 @@ const getTxModalStagesWrap = (transitStage: TransactionModalTransitStage) => ({
       />,
     ),
 
-  sign: (amount: BigNumber, token: TokensWrappable, willReceive: BigNumber) =>
+  sign: (amount: bigint, token: TokensWrappable, willReceive: bigint) =>
     transitStage(
       <TxStageSignOperationAmount
         {...STAGE_OPERATION_ARGS}
@@ -59,9 +54,9 @@ const getTxModalStagesWrap = (transitStage: TransactionModalTransitStage) => ({
     ),
 
   pending: (
-    amount: BigNumber,
+    amount: bigint,
     token: TokensWrappable,
-    willReceive: BigNumber,
+    willReceive: bigint,
     txHash?: string,
   ) =>
     transitStage(
@@ -75,7 +70,7 @@ const getTxModalStagesWrap = (transitStage: TransactionModalTransitStage) => ({
       />,
     ),
 
-  success: (balance: BigNumber, txHash?: string) =>
+  success: (balance: bigint, txHash?: string) =>
     transitStage(
       <TxStageOperationSucceedBalanceShown
         txHash={txHash}

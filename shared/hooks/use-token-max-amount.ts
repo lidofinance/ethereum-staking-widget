@@ -1,18 +1,15 @@
 import { useMemo } from 'react';
-import { BigNumber } from 'ethers';
-import { useMaxGasPrice } from 'modules/web3';
-import { Zero } from '@ethersproject/constants';
+import { ZERO, useMaxGasPrice } from 'modules/web3';
 
 type UseTokenMaxAmountArgs = {
-  balance?: BigNumber; // user balance
-  limit?: BigNumber; // upper limit
+  balance?: bigint; // user balance
+  limit?: bigint; // upper limit
   gasLimit?: bigint; // operation gas limit
   padding?: bigint; // untouchable amount to leave to user
   isPadded?: boolean;
   isLoading?: boolean;
 };
 
-// TODO: NEW_SDK (after stake iteration migrate to BigInt)
 // returns max amount that can be used for Max Button
 export const useTokenMaxAmount = ({
   limit,
@@ -21,29 +18,26 @@ export const useTokenMaxAmount = ({
   gasLimit,
   isLoading = false,
   isPadded = false,
-}: UseTokenMaxAmountArgs): BigNumber | undefined => {
+}: UseTokenMaxAmountArgs): bigint | undefined => {
   const { maxGasPrice } = useMaxGasPrice();
 
   const maxAmount = useMemo(() => {
     if (!balance || isLoading) return undefined;
 
-    let maxAmount: BigNumber | undefined = balance;
+    let maxAmount: bigint | undefined = balance;
 
     if (isPadded) {
       if (padding) {
-        const _padding = BigNumber.from(padding);
-        maxAmount = maxAmount.sub(_padding);
+        maxAmount = maxAmount - padding;
       }
       // we return undefined if we should pad but don't have data
       if (gasLimit && maxGasPrice) {
-        const _maxGasPrice = BigNumber.from(maxGasPrice);
-        const _gasLimit = BigNumber.from(gasLimit);
-        maxAmount = maxAmount.sub(_gasLimit.mul(_maxGasPrice));
-        if (maxAmount.lt(Zero)) maxAmount = Zero;
+        maxAmount = maxAmount - gasLimit * maxGasPrice;
+        if (maxAmount < ZERO) maxAmount = ZERO;
       } else maxAmount = undefined;
     }
 
-    if (limit && maxAmount && maxAmount.gt(limit)) {
+    if (limit && maxAmount && maxAmount > limit) {
       maxAmount = limit;
     }
 

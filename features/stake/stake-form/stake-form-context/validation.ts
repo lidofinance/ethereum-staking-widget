@@ -1,22 +1,20 @@
 import { useMemo } from 'react';
-import { BigNumber } from 'ethers';
 import invariant from 'tiny-invariant';
-import { Zero } from '@ethersproject/constants';
+import type { Resolver } from 'react-hook-form';
 
-import { validateEtherAmount } from 'shared/hook-form/validation/validate-ether-amount';
-import { useDappStatus } from 'modules/web3';
+import { ZERO, useDappStatus } from 'modules/web3';
 import { VALIDATION_CONTEXT_TIMEOUT } from 'features/withdrawals/withdrawals-constants';
+import { useAwaiter } from 'shared/hooks/use-awaiter';
+import { validateStakeEth } from 'shared/hook-form/validation/validate-stake-eth';
+import { validateEtherAmount } from 'shared/hook-form/validation/validate-ether-amount';
 import { handleResolverValidationError } from 'shared/hook-form/validation/validation-error';
 import { awaitWithTimeout } from 'utils/await-with-timeout';
-import { useAwaiter } from 'shared/hooks/use-awaiter';
 
-import type { Resolver } from 'react-hook-form';
 import type {
   StakeFormInput,
   StakeFormNetworkData,
   StakeFormValidationContext,
 } from './types';
-import { validateStakeEth } from 'shared/hook-form/validation/validate-stake-eth';
 
 export const stakeFormValidationResolver: Resolver<
   StakeFormInput,
@@ -29,7 +27,8 @@ export const stakeFormValidationResolver: Resolver<
       'validation context must be presented as context promise',
     );
 
-    validateEtherAmount('amount', amount, 'ETH');
+    // TODO: NEW SDK (Type 'null' is not assignable to type 'bigint | undefined')
+    validateEtherAmount('amount', amount ? amount : undefined, 'ETH');
 
     const {
       isWalletActive,
@@ -45,12 +44,13 @@ export const stakeFormValidationResolver: Resolver<
 
     validateStakeEth({
       formField: 'amount',
-      amount,
+      // TODO: NEW SDK (Type 'null' is not assignable to type 'bigint'.)
+      amount: amount ? amount : BigInt(0),
       isWalletActive,
       stakingLimitLevel,
       currentStakeLimit,
       etherBalance,
-      gasCost: BigNumber.from(gasCost),
+      gasCost: gasCost,
       isMultisig,
     });
 
@@ -86,8 +86,8 @@ export const useStakeFormValidationContext = (
         stakingLimitLevel: stakingLimitInfo.stakeLimitLevel,
         currentStakeLimit: stakingLimitInfo.currentStakeLimit,
         // condition above guaranties stubs will only be passed when isDappActive = false
-        etherBalance: etherBalance ?? Zero,
-        gasCost: gasCost ?? Zero,
+        etherBalance: etherBalance ?? ZERO,
+        gasCost: gasCost ?? ZERO,
         isMultisig: isMultisig ?? false,
       };
     }

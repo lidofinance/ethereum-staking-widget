@@ -1,9 +1,8 @@
-import { BigNumber } from 'ethers';
 import { getAddress } from 'ethers/lib/utils.js';
-import { Zero } from '@ethersproject/constants';
 import { formatEther } from '@ethersproject/units';
 import { getTokenAddress, CHAINS, TOKENS } from '@lido-sdk/constants';
 
+import { ZERO } from 'modules/web3';
 import { OPEN_OCEAN_REFERRAL_ADDRESS } from 'consts/external-links';
 import { MATOMO_CLICK_EVENTS_TYPES } from 'consts/matomo-click-events';
 
@@ -22,23 +21,24 @@ import type {
 } from './types';
 
 const RATE_PRECISION = 100000;
-const RATE_PRECISION_BN = BigNumber.from(RATE_PRECISION);
+const RATE_PRECISION_BIG_INT = BigInt(RATE_PRECISION);
 
 // Helper function to calculate rate for SRC->DEST swap
 // accepts amount, so toReceive can be calculated when src!=amount
 const calculateRateReceive = (
-  amount: BigNumber,
-  src: BigNumber,
-  dest: BigNumber,
+  amount: bigint,
+  src: bigint,
+  dest: bigint,
 ): RateCalculationResult => {
-  const _rate = dest.mul(RATE_PRECISION_BN).div(src);
-  const toReceive = amount.mul(dest).div(src);
-  const rate = _rate.toNumber() / RATE_PRECISION;
+  const _rate = (dest * RATE_PRECISION_BIG_INT) / src;
+  const toReceive = (amount * dest) / src;
+  // TODO: NEW SDK
+  const rate = Number(_rate) / RATE_PRECISION;
   return { rate, toReceive };
 };
 
 const getOpenOceanWithdrawalRate: GetRateType = async ({ amount, token }) => {
-  if (amount && amount.gt(Zero)) {
+  if (amount && amount > ZERO) {
     try {
       const result = await getOpenOceanRate(amount, token, 'ETH');
       return result;
@@ -65,7 +65,7 @@ type ParaSwapPriceResponsePartial = {
 
 const getParaSwapWithdrawalRate: GetRateType = async ({ amount, token }) => {
   try {
-    if (amount.gt(Zero)) {
+    if (amount > ZERO) {
       const api = `https://apiv5.paraswap.io/prices`;
       const query = new URLSearchParams({
         srcToken: getTokenAddress(CHAINS.Mainnet, token),
@@ -83,17 +83,17 @@ const getParaSwapWithdrawalRate: GetRateType = async ({ amount, token }) => {
       const url = `${api}?${query.toString()}`;
       const data: ParaSwapPriceResponsePartial =
         await standardFetcher<ParaSwapPriceResponsePartial>(url);
-      const toReceive = BigNumber.from(data.priceRoute.destAmount);
+      const toReceive = BigInt(data.priceRoute.destAmount);
 
       const rate = calculateRateReceive(
         amount,
-        BigNumber.from(data.priceRoute.srcAmount),
+        BigInt(data.priceRoute.srcAmount),
         toReceive,
       ).rate;
 
       return {
         rate,
-        toReceive: BigNumber.from(data.priceRoute.destAmount),
+        toReceive: BigInt(data.priceRoute.destAmount),
       };
     }
   } catch (e) {
@@ -111,7 +111,7 @@ const getParaSwapWithdrawalRate: GetRateType = async ({ amount, token }) => {
 
 const getOneInchWithdrawalRate: GetRateType = async (params) => {
   try {
-    if (params.amount.gt(Zero)) {
+    if (params.amount > ZERO) {
       const result = await getOneInchRate(params);
       return result;
     }
@@ -129,7 +129,7 @@ const getOneInchWithdrawalRate: GetRateType = async (params) => {
 
 const getBebopWithdrawalRate: GetRateType = async ({ amount, token }) => {
   try {
-    if (amount.gt(Zero)) {
+    if (amount > ZERO) {
       return await getBebopRate(amount, token, 'ETH');
     }
   } catch (e) {

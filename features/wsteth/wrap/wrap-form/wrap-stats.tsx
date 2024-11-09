@@ -18,7 +18,7 @@ import { useWrapFormData, WrapFormInputType } from '../wrap-form-context';
 
 export const WrapFormStats = () => {
   const { isDappActive, chainTypeChainId } = useDappStatus();
-  const { allowance, isShowAllowance, wrapGasLimit, isApprovalLoading } =
+  const { allowance, isShowAllowance, wrapGasLimit, isAllowanceLoading } =
     useWrapFormData();
 
   const { watch } = useFormContext<WrapFormInputType>();
@@ -29,7 +29,8 @@ export const WrapFormStats = () => {
   const {
     data: willReceiveWsteth,
     initialLoading: isWillReceiveWstethLoading,
-  } = useDebouncedWstethBySteth(amount?.toBigInt());
+    // TODO: NEW SDK
+  } = useDebouncedWstethBySteth(amount ? amount : undefined);
 
   const {
     data: oneWstethConverted,
@@ -105,7 +106,7 @@ export const WrapFormStats = () => {
           data-testid="allowance"
           allowance={allowance}
           isBlank={!(isSteth && isDappActive)}
-          loading={isApprovalLoading}
+          loading={isAllowanceLoading}
           token={TOKENS.STETH}
         />
       )}

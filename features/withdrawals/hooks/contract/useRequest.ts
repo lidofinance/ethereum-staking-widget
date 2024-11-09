@@ -1,9 +1,9 @@
 /* eslint-disable sonarjs/no-identical-functions */
 import { useCallback } from 'react';
-import { BigNumber } from 'ethers';
 import invariant from 'tiny-invariant';
 import { useAccount } from 'wagmi';
-import { Zero } from '@ethersproject/constants';
+import { BigNumber } from 'ethers';
+
 import {
   useSDK,
   useSTETHContractRPC,
@@ -30,6 +30,7 @@ import {
   useTxConfirmation,
   useIsMultisig,
   useDappStatus,
+  ZERO,
 } from 'modules/web3';
 import { overrideWithQAMockBoolean } from 'utils/qa';
 
@@ -45,7 +46,7 @@ const useWithdrawalRequestMethods = () => {
       requests,
     }: {
       signature?: GatherPermitSignatureResult;
-      requests: BigNumber[];
+      requests: bigint[];
     }) => {
       invariant(providerWeb3, 'must have providerWeb3');
       invariant(signature, 'must have signature');
@@ -83,7 +84,7 @@ const useWithdrawalRequestMethods = () => {
       requests,
     }: {
       signature?: GatherPermitSignatureResult;
-      requests: BigNumber[];
+      requests: bigint[];
     }) => {
       invariant(signature, 'must have signature');
       invariant(providerWeb3, 'must have providerWeb3');
@@ -116,7 +117,7 @@ const useWithdrawalRequestMethods = () => {
   );
 
   const steth = useCallback(
-    async ({ requests }: { requests: BigNumber[] }) => {
+    async ({ requests }: { requests: bigint[] }) => {
       invariant(address, 'must have account');
       invariant(contractWeb3, 'must have contractWeb3');
       invariant(providerWeb3, 'must have providerWeb3');
@@ -142,7 +143,7 @@ const useWithdrawalRequestMethods = () => {
   );
 
   const wstETH = useCallback(
-    async ({ requests }: { requests: BigNumber[] }) => {
+    async ({ requests }: { requests: bigint[] }) => {
       invariant(address, 'must have address');
       invariant(contractWeb3, 'must have contractWeb3');
       invariant(providerWeb3, 'must have providerWeb3');
@@ -185,7 +186,7 @@ const useWithdrawalRequestMethods = () => {
 // and all needed indicators for ux
 
 type useWithdrawalRequestParams = {
-  amount: BigNumber | null;
+  amount: bigint | null;
   token: TOKENS.STETH | TOKENS.WSTETH;
   onConfirm?: () => Promise<void>;
   onRetry?: () => void;
@@ -214,7 +215,7 @@ export const useWithdrawalRequest = ({
 
   const { closeModal } = useTransactionModal();
 
-  const valueBN = amount ?? Zero;
+  const valueBigInt = amount ?? ZERO;
 
   // TODO  split into async callback and pauseable SWR
   const {
@@ -224,7 +225,7 @@ export const useWithdrawalRequest = ({
     isLoading: loadingUseApprove,
     refetch: refetchAllowance,
   } = useApproveOnL1(
-    valueBN,
+    valueBigInt,
     tokenContract.address,
     withdrawalQueueAddress,
     address ?? undefined,
@@ -243,7 +244,7 @@ export const useWithdrawalRequest = ({
   const isApprovalFlow = Boolean(
     isWalletConnect ||
       isMultisig ||
-      (allowance && allowance.gt(Zero) && !needsApprove),
+      (allowance && allowance > ZERO && !needsApprove),
   );
 
   const isApprovalFlowLoading =
@@ -257,8 +258,8 @@ export const useWithdrawalRequest = ({
       amount,
       token,
     }: {
-      requests: BigNumber[] | null;
-      amount: BigNumber | null;
+      requests: bigint[] | null;
+      amount: bigint | null;
       token: TokensWithdrawable;
     }) => {
       // define and set retry point
@@ -301,7 +302,7 @@ export const useWithdrawalRequest = ({
           }
         } else {
           txModalStages.signPermit();
-          signature = await gatherPermitSignature(amount);
+          signature = await gatherPermitSignature(BigNumber.from(amount));
         }
 
         txModalStages.sign(amount, token);

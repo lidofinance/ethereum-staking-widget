@@ -1,5 +1,4 @@
 import { useMemo } from 'react';
-import { BigNumber } from 'ethers';
 
 import { useMaxGasPrice } from 'modules/web3';
 import { useEthUsd } from './use-eth-usd';
@@ -12,10 +11,7 @@ export const useTxCostInUsd = (gasLimit?: bigint, chainId?: number) => {
     [gasLimit, maxGasPrice],
   );
 
-  // TODO: NEW_SDK (refactor useEthUsd to work with bigint)
-  const { usdAmount, ...ethUsdState } = useEthUsd(
-    ethAmount ? BigNumber.from(ethAmount) : undefined,
-  );
+  const { usdAmount, ...ethUsdState } = useEthUsd(ethAmount);
 
   return {
     maxGasPrice: maxGasPrice,

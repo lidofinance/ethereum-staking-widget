@@ -8,7 +8,8 @@ export const SubmitButtonWrap = () => {
 
   return (
     <SubmitButtonHookForm
-      isLocked={isLocked}
+      // TODO: NEW SDK (Type 'boolean | 0n | undefined' is not assignable to type 'boolean | undefined'.)
+      isLocked={isLocked as boolean}
       errorField="amount"
       data-testid="wrapBtn"
     >

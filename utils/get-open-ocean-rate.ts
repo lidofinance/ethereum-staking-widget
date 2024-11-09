@@ -1,5 +1,4 @@
 import { CHAINS, TOKENS, getTokenAddress } from '@lido-sdk/constants';
-import { BigNumber } from 'ethers';
 import { standardFetcher } from './standardFetcher';
 import { formatEther } from '@ethersproject/units';
 
@@ -33,23 +32,22 @@ type OpenOceanGetQuotePartial = {
 
 type RateToken = TOKENS.STETH | TOKENS.WSTETH | 'ETH';
 
-type RateCalculationResult = { rate: number; toReceive: BigNumber };
+type RateCalculationResult = { rate: number; toReceive: bigint };
 
 // To be exported when more integrations appear
 const RATE_PRECISION = 100000;
-const RATE_PRECISION_BN = BigNumber.from(RATE_PRECISION);
+const RATE_PRECISION_BIG_INT = BigInt(RATE_PRECISION);
 
 const calculateRateReceive = (
-  amount: BigNumber,
-  fromAmount: BigNumber,
-  toAmount: BigNumber,
+  amount: bigint,
+  fromAmount: bigint,
+  toAmount: bigint,
 ): RateCalculationResult => {
-  const _rate = toAmount.mul(RATE_PRECISION_BN).div(fromAmount);
-  const rate = _rate.toNumber() / RATE_PRECISION;
+  const _rate = (toAmount * RATE_PRECISION_BIG_INT) / fromAmount;
+  const rate = Number(_rate) / RATE_PRECISION;
   // if original amount is capped
-  const toReceive = amount.eq(fromAmount)
-    ? toAmount
-    : amount.mul(toAmount).div(fromAmount);
+  const toReceive =
+    amount === fromAmount ? toAmount : (amount * toAmount) / fromAmount;
   return { rate, toReceive };
 };
 
@@ -59,7 +57,7 @@ const getRateTokenAddress = (token: RateToken) =>
     : getTokenAddress(CHAINS.Mainnet, token);
 
 export const getOpenOceanRate = async (
-  amount: BigNumber,
+  amount: bigint,
   fromToken: RateToken,
   toToken: RateToken,
 ): Promise<RateCalculationResult> => {
@@ -81,7 +79,7 @@ export const getOpenOceanRate = async (
 
   return calculateRateReceive(
     amount,
-    BigNumber.from(quote.data.inAmount),
-    BigNumber.from(quote.data.outAmount),
+    BigInt(quote.data.inAmount),
+    BigInt(quote.data.outAmount),
   );
 };

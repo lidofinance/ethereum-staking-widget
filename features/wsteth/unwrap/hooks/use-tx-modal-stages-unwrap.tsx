@@ -7,8 +7,6 @@ import { getGeneralTransactionModalStages } from 'shared/transaction-modal/hooks
 import { TxStageSignOperationAmount } from 'shared/transaction-modal/tx-stages-composed/tx-stage-amount-operation';
 import { TxStageOperationSucceedBalanceShown } from 'shared/transaction-modal/tx-stages-composed/tx-stage-operation-succeed-balance-shown';
 
-import type { BigNumber } from 'ethers';
-
 const STAGE_APPROVE_ARGS = {
   token: 'wstETH',
   willReceiveToken: 'wstETH',
@@ -26,12 +24,12 @@ const getTxModalStagesUnwrap = (
 ) => ({
   ...getGeneralTransactionModalStages(transitStage),
 
-  signApproval: (amount: BigNumber) =>
+  signApproval: (amount: bigint) =>
     transitStage(
       <TxStageSignOperationAmount {...STAGE_APPROVE_ARGS} amount={amount} />,
     ),
 
-  pendingApproval: (amount: BigNumber, txHash?: string) =>
+  pendingApproval: (amount: bigint, txHash?: string) =>
     transitStage(
       <TxStageSignOperationAmount
         {...STAGE_APPROVE_ARGS}
@@ -41,7 +39,7 @@ const getTxModalStagesUnwrap = (
       />,
     ),
 
-  sign: (amount: BigNumber, willReceive: BigNumber) =>
+  sign: (amount: bigint, willReceive: bigint) =>
     transitStage(
       <TxStageSignOperationAmount
         {...STAGE_OPERATION_ARGS}
@@ -50,7 +48,7 @@ const getTxModalStagesUnwrap = (
       />,
     ),
 
-  pending: (amount: BigNumber, willReceive: BigNumber, txHash?: string) =>
+  pending: (amount: bigint, willReceive: bigint, txHash?: string) =>
     transitStage(
       <TxStageSignOperationAmount
         {...STAGE_OPERATION_ARGS}
@@ -61,7 +59,7 @@ const getTxModalStagesUnwrap = (
       />,
     ),
 
-  success: (balance: BigNumber, txHash?: string) =>
+  success: (balance: bigint, txHash?: string) =>
     transitStage(
       <TxStageOperationSucceedBalanceShown
         txHash={txHash}

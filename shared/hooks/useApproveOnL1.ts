@@ -28,8 +28,10 @@ export type UseApproveResponse = {
   needsApprove: boolean;
 } & ReturnType<typeof useAllowance>;
 
+// TODO: NEW SDK
+// DEPRECATED
 export const useApproveOnL1 = (
-  amount: BigNumber,
+  amount: bigint,
   token?: string,
   spender?: string,
   owner?: string,
@@ -50,8 +52,8 @@ export const useApproveOnL1 = (
   const needsApprove = Boolean(
     enabled &&
       allowanceQuery.data &&
-      !amount.isZero() &&
-      amount.gt(allowanceQuery.data),
+      amount !== BigInt(0) &&
+      amount > allowanceQuery.data,
   );
 
   const approve = useCallback<UseApproveResponse['approve']>(
@@ -67,7 +69,7 @@ export const useApproveOnL1 = (
       const processApproveTx = async () => {
         const tx = await contractWeb3.populateTransaction.approve(
           spender,
-          amount,
+          BigNumber.from(amount),
         );
         return sendTx({
           tx,

@@ -1,18 +1,14 @@
-import { BigNumber } from 'ethers';
 import { useMemo } from 'react';
 import { useMaxGasPrice } from 'modules/web3';
 import { useEthUsd } from './use-eth-usd';
 
 // TODO: NEW_SDK (remove)
 // DEPRECATED
-export const useTxCostInUsd = (gasLimit?: BigNumber, chainIdForce?: number) => {
+export const useTxCostInUsd = (gasLimit?: bigint, chainIdForce?: number) => {
   const { maxGasPrice, ...gasSwr } = useMaxGasPrice(chainIdForce);
 
   const ethAmount = useMemo(
-    () =>
-      maxGasPrice && gasLimit
-        ? BigNumber.from(maxGasPrice).mul(gasLimit)
-        : undefined,
+    () => (maxGasPrice && gasLimit ? maxGasPrice * gasLimit : undefined),
     [gasLimit, maxGasPrice],
   );
   const ethUsdSwr = useEthUsd(ethAmount);

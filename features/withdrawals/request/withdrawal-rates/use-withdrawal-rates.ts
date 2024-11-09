@@ -1,10 +1,9 @@
 import { useMemo } from 'react';
 import { useWatch } from 'react-hook-form';
-import { BigNumber } from 'ethers';
-import { Zero } from '@ethersproject/constants';
 import { TOKENS } from '@lido-sdk/constants';
 import { useLidoSWR } from '@lido-sdk/react';
 
+import { ZERO } from 'modules/web3';
 import { STRATEGY_LAZY } from 'consts/swr-strategies';
 import { useDebouncedValue } from 'shared/hooks/useDebouncedValue';
 
@@ -19,7 +18,7 @@ import type {
 import { useConfig } from 'config';
 
 export type useWithdrawalRatesOptions = {
-  fallbackValue?: BigNumber;
+  fallbackValue?: bigint;
   isPaused?: boolean;
 };
 
@@ -52,7 +51,7 @@ const getWithdrawalRates = async (
 };
 
 export const useWithdrawalRates = ({
-  fallbackValue = Zero,
+  fallbackValue = ZERO,
   isPaused,
 }: useWithdrawalRatesOptions = {}) => {
   const [token, amount] = useWatch<RequestFormInputType, ['token', 'amount']>({
@@ -66,7 +65,9 @@ export const useWithdrawalRates = ({
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (_, amount, token, enabledDexes) =>
       getWithdrawalRates({
-        amount: BigNumber.from(amount),
+        // TODO: NEW SDK
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+        amount: amount as unknown as bigint,
         token: token as TOKENS.STETH | TOKENS.WSTETH,
         dexes: enabledDexes as DexWithdrawalApi[],
       }),
@@ -75,7 +76,7 @@ export const useWithdrawalRates = ({
       isPaused: () =>
         isPaused ||
         !debouncedAmount ||
-        !debouncedAmount._isBigNumber ||
+        typeof debouncedAmount !== 'bigint' ||
         enabledDexes.length === 0,
     },
   );
@@ -91,10 +92,10 @@ export const useWithdrawalRates = ({
     selectedToken: token,
     data: swr.data,
     get initialLoading() {
-      return swr.initialLoading || !debouncedAmount.eq(fallbackedAmount);
+      return swr.initialLoading || debouncedAmount !== fallbackedAmount;
     },
     get loading() {
-      return swr.loading || !debouncedAmount.eq(fallbackedAmount);
+      return swr.loading || debouncedAmount !== fallbackedAmount;
     },
     get error() {
       return swr.error;

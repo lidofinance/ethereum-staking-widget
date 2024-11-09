@@ -1,12 +1,9 @@
 import { useCallback, useMemo } from 'react';
-import { useQueryClient } from '@tanstack/react-query';
-import { BigNumber } from 'ethers';
 import { Address, WatchContractEventOnLogsFn } from 'viem';
 import { useReadContract, useWatchContractEvent } from 'wagmi';
+import { useQueryClient } from '@tanstack/react-query';
 
 import { useDappStatus } from './use-dapp-status';
-
-const nativeToBN = (data: bigint) => BigNumber.from(data.toString());
 
 const Erc20AllowanceAbi = [
   {
@@ -85,7 +82,6 @@ export const useAllowance = ({
     args: [account, spender] as [Address, Address],
     query: {
       enabled,
-      select: nativeToBN,
     },
   });
 

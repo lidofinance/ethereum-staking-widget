@@ -1,5 +1,4 @@
 import { useMemo, useCallback } from 'react';
-import type { BigNumber } from 'ethers';
 
 import { runWithTransactionLogger } from 'utils';
 import { useLidoSDK, useDappStatus, useAllowance } from 'modules/web3';
@@ -8,7 +7,7 @@ import { LIDO_L2_CONTRACT_ADDRESSES } from '@lidofinance/lido-ethereum-sdk/commo
 import { TransactionCallbackStage } from '@lidofinance/lido-ethereum-sdk/core';
 
 type UseUnwrapTxApproveArgs = {
-  amount: BigNumber;
+  amount: bigint;
 };
 
 export const useUnwrapTxOnL2Approve = ({ amount }: UseUnwrapTxApproveArgs) => {
@@ -36,7 +35,7 @@ export const useUnwrapTxOnL2Approve = ({ amount }: UseUnwrapTxApproveArgs) => {
       const approveTxHash = (
         await runWithTransactionLogger('Approve signing on L2', () =>
           l2.approveWstethForWrap({
-            value: amount.toBigInt(),
+            value: amount,
             callback: ({ stage, payload }) => {
               if (stage === TransactionCallbackStage.RECEIPT)
                 onTxSent?.(payload);

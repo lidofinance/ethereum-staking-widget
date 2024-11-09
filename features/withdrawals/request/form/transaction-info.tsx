@@ -1,4 +1,3 @@
-import { BigNumber } from 'ethers';
 import { useWatch } from 'react-hook-form';
 import { TOKENS } from '@lido-sdk/constants';
 import { DataTableRow } from '@lidofinance/lido-ui';
@@ -9,7 +8,7 @@ import { useDappStatus } from 'modules/web3';
 import { AllowanceDataTableRow } from 'shared/components/allowance-data-table-row';
 import { DataTableRowStethByWsteth } from 'shared/components/data-table-row-steth-by-wsteth';
 import { FormatPrice } from 'shared/formatters';
-import { useTxCostInUsd } from 'shared/hooks';
+import { useTxCostInUsd } from 'shared/hooks/use-tx-cost-in-usd';
 
 import {
   RequestFormInputType,
@@ -35,7 +34,7 @@ export const TransactionInfo = () => {
   const {
     txCostUsd: approveTxCostInUsd,
     initialLoading: isApproveTxCostLoading,
-  } = useTxCostInUsd(BigNumber.from(useApproveGasLimit()));
+  } = useTxCostInUsd(useApproveGasLimit());
 
   return (
     <>

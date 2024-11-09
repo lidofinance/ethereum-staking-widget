@@ -1,6 +1,4 @@
-import { BigNumber } from 'ethers';
-
-import { parseEther } from '@ethersproject/units';
+import { parseEther } from 'viem';
 import { CHAINS } from '@lido-sdk/constants';
 import { StethAbi } from '@lido-sdk/contracts';
 import { useLidoSWR, useSDK, useSTETHContractRPC } from '@lido-sdk/react';
@@ -12,11 +10,11 @@ import { LIMIT_LEVEL } from 'types';
 export type StakeLimitFullInfo = {
   isStakingPaused: boolean;
   isStakingLimitSet: boolean;
-  currentStakeLimit: BigNumber;
-  maxStakeLimit: BigNumber;
-  maxStakeLimitGrowthBlocks: BigNumber;
-  prevStakeLimit: BigNumber;
-  prevStakeBlockNumber: BigNumber;
+  currentStakeLimit: bigint;
+  maxStakeLimit: bigint;
+  maxStakeLimitGrowthBlocks: bigint;
+  prevStakeLimit: bigint;
+  prevStakeBlockNumber: bigint;
   stakeLimitLevel: LIMIT_LEVEL;
 };
 
@@ -25,20 +23,19 @@ const stakeLimitFullInfoTemplate: StakeLimitFullInfo = {
   isStakingLimitSet: true,
   currentStakeLimit: parseEther('150000'),
   maxStakeLimit: parseEther('150000'),
-  maxStakeLimitGrowthBlocks: BigNumber.from(6400),
+  maxStakeLimitGrowthBlocks: BigInt(6400),
   prevStakeLimit: parseEther('149000'),
-  prevStakeBlockNumber: BigNumber.from(15145339),
+  prevStakeBlockNumber: BigInt(15145339),
   stakeLimitLevel: LIMIT_LEVEL.REACHED,
 };
 
 // almost reached whenever current limit is ≤25% of max limit, i.e. 4 times lower
-const WARN_THRESHOLD_RATIO = BigNumber.from(4);
+const WARN_THRESHOLD_RATIO = BigInt(4);
 
-const getLimitLevel = (maxLimit: BigNumber, currentLimit: BigNumber) => {
-  if (currentLimit.eq(0)) return LIMIT_LEVEL.REACHED;
+const getLimitLevel = (maxLimit: bigint, currentLimit: bigint) => {
+  if (currentLimit === BigInt(0)) return LIMIT_LEVEL.REACHED;
 
-  if (maxLimit.div(currentLimit).gte(WARN_THRESHOLD_RATIO))
-    return LIMIT_LEVEL.WARN;
+  if (maxLimit / currentLimit >= WARN_THRESHOLD_RATIO) return LIMIT_LEVEL.WARN;
 
   return LIMIT_LEVEL.SAFE;
 };
@@ -80,14 +77,23 @@ export const useStakingLimitInfo = () => {
         }
       }
 
+      // TODO: NEW SDK
       const stakeLimitFullInfo = await steth.getStakeLimitFullInfo();
 
       // destructuring to make hybrid array into an object,
       return {
+        // TODO: NEW SDK
         ...stakeLimitFullInfo,
+        // currentStakeLimit: stakeLimitFullInfo.currentStakeLimit,
+        // maxStakeLimit: stakeLimitFullInfo.maxStakeLimit,
+        // maxStakeLimitGrowthBlocks: stakeLimitFullInfo.maxStakeLimitGrowthBlocks,
+        // prevStakeLimit: stakeLimitFullInfo.prevStakeLimit,
+        // prevStakeBlockNumber: stakeLimitFullInfo.prevStakeBlockNumber,
+
+        // TODO: NEW SDK
         stakeLimitLevel: getLimitLevel(
-          stakeLimitFullInfo.maxStakeLimit,
-          stakeLimitFullInfo.currentStakeLimit,
+          stakeLimitFullInfo.maxStakeLimit.toBigInt(),
+          stakeLimitFullInfo.currentStakeLimit.toBigInt(),
         ),
       };
     },

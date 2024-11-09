@@ -8,7 +8,6 @@ import {
   useWatchContractEvent,
   useAccount,
 } from 'wagmi';
-import { BigNumber } from 'ethers';
 
 import { useLidoSDK } from 'modules/web3';
 import { config } from 'config';
@@ -19,9 +18,10 @@ import type { Address, WatchContractEventOnLogsFn } from 'viem';
 import type { GetBalanceData } from 'wagmi/query';
 import type { AbstractLidoSDKErc20 } from '@lidofinance/lido-ethereum-sdk/erc20';
 
-const nativeToBN = (data: bigint) => BigNumber.from(data.toString());
+// const nativeToBN = (data: bigint) => BigNumber.from(data.toString());
+// const balanceToBN = (data: GetBalanceData) => nativeToBN(data.value);
 
-const balanceToBN = (data: GetBalanceData) => nativeToBN(data.value);
+const selectBalance = (data: GetBalanceData) => data.value;
 
 export const useEthereumBalance = () => {
   const { chainId, address, isDappActive } = useDappStatus();
@@ -30,7 +30,7 @@ export const useEthereumBalance = () => {
     address,
     chainId,
     query: {
-      select: balanceToBN,
+      select: selectBalance,
       staleTime: config.PROVIDER_POLLING_INTERVAL,
       refetchInterval: config.PROVIDER_POLLING_INTERVAL,
       enabled: isDappActive,
@@ -212,7 +212,6 @@ const useTokenBalance = (
     args: address && [address],
     query: {
       enabled,
-      select: nativeToBN,
       // because we update on events we can have high staleTime
       // this prevents loader when changing pages
       staleTime: 30_000,

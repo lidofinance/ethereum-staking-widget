@@ -1,5 +1,4 @@
 import invariant from 'tiny-invariant';
-import { BigNumber } from 'ethers';
 import {
   FC,
   PropsWithChildren,
@@ -12,7 +11,7 @@ import {
 import { useForm, FormProvider } from 'react-hook-form';
 import { useRouter } from 'next/router';
 
-import { parseEther } from '@ethersproject/units';
+import { parseEther } from 'viem';
 
 import {
   FormControllerContext,
@@ -68,10 +67,7 @@ const useStakeFormNetworkData = (): StakeFormNetworkData => {
     useMaxGasPrice();
 
   const gasCost = useMemo(
-    () =>
-      gasLimit && maxGasPrice
-        ? gasLimit.mul(BigNumber.from(maxGasPrice))
-        : undefined,
+    () => (gasLimit && maxGasPrice ? gasLimit * maxGasPrice : undefined),
     [gasLimit, maxGasPrice],
   );
 
@@ -90,7 +86,7 @@ const useStakeFormNetworkData = (): StakeFormNetworkData => {
   const stakeableEther = useMemo(() => {
     if (!etherBalance || !stakingLimitInfo) return undefined;
     if (etherBalance && stakingLimitInfo.isStakingLimitSet) {
-      return etherBalance.lt(stakingLimitInfo.currentStakeLimit)
+      return etherBalance < stakingLimitInfo.currentStakeLimit
         ? etherBalance
         : stakingLimitInfo.currentStakeLimit;
     }
@@ -101,8 +97,7 @@ const useStakeFormNetworkData = (): StakeFormNetworkData => {
     balance: etherBalance,
     limit: stakingLimitInfo?.currentStakeLimit,
     isPadded: !isMultisig,
-    // TODO NEW SDK
-    gasLimit: gasLimit?.toBigInt(),
+    gasLimit: gasLimit,
     padding: config.BALANCE_PADDING,
     isLoading: isMultisigLoading,
   });
@@ -182,8 +177,8 @@ export const StakeFormProvider: FC<PropsWithChildren> = ({ children }) => {
       }
       if (typeof amount === 'string') {
         void replace({ pathname, query: rest });
-        const amountBN = parseEther(amount);
-        setValue('amount', amountBN);
+        const amountBigInt = parseEther(amount);
+        setValue('amount', amountBigInt);
       }
     } catch {
       //noop

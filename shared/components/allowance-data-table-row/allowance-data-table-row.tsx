@@ -1,8 +1,8 @@
-import { MaxUint256 } from '@ethersproject/constants';
+import { ReactNode, useMemo } from 'react';
 import { TOKENS } from '@lido-sdk/constants';
 import { DataTableRow } from '@lidofinance/lido-ui';
-import { BigNumber } from 'ethers';
-import { ReactNode, useMemo } from 'react';
+
+import { MAX_UINT_256 } from 'modules/web3';
 import { FormatToken } from 'shared/formatters';
 import { getTokenDisplayName } from 'utils/getTokenDisplayName';
 
@@ -12,7 +12,7 @@ export type AllowanceDataTableRowProps = Omit<
 > & {
   title?: ReactNode;
   token: TOKENS.WSTETH | TOKENS.STETH | 'ETH';
-  allowance?: BigNumber;
+  allowance?: bigint;
   loading?: boolean;
   isBlank?: boolean;
 };
@@ -25,7 +25,7 @@ export const AllowanceDataTableRow = ({
   ...rest
 }: AllowanceDataTableRowProps) => {
   const isInfiniteAllowance = useMemo(() => {
-    return allowance && allowance.eq(MaxUint256);
+    return allowance && allowance === MAX_UINT_256;
   }, [allowance]);
   return (
     <DataTableRow title={title} {...rest}>

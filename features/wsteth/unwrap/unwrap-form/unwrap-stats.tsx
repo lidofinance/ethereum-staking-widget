@@ -1,5 +1,4 @@
 import { useWatch } from 'react-hook-form';
-import { BigNumber } from 'ethers';
 import { DataTableRow, DataTable } from '@lidofinance/lido-ui';
 import { TOKENS } from '@lido-sdk/constants';
 
@@ -43,7 +42,7 @@ export const UnwrapStats = () => {
   } = useTxCostInUsd(approveGasLimit, chainTypeChainId);
 
   const { data: willReceiveStETH, initialLoading: isWillReceiveStETHLoading } =
-    useDebouncedStethByWsteth(amount?.toBigInt());
+    useDebouncedStethByWsteth(amount ? amount : undefined);
 
   return (
     <DataTable>
@@ -79,7 +78,7 @@ export const UnwrapStats = () => {
       {isShowAllowance && (
         <AllowanceDataTableRow
           data-testid="allowance"
-          allowance={BigNumber.from(allowance || '0')}
+          allowance={allowance || BigInt(0)}
           isBlank={!isDappActiveOnL2}
           loading={isAllowanceLoading}
           token={TOKENS.WSTETH}

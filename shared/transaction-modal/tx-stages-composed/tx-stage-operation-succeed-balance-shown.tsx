@@ -2,11 +2,11 @@ import styled from 'styled-components';
 
 import { InlineLoader } from '@lidofinance/lido-ui';
 import { useTokenAddress } from 'shared/hooks/use-token-address';
+
 import { TxAmount } from '../tx-stages-parts/tx-amount';
 import { SuccessText } from '../tx-stages-parts/success-text';
 import { TxStageSuccess } from '../tx-stages-basic';
 
-import type { BigNumber } from 'ethers';
 import { TokenToWallet } from '../../components';
 
 export const SkeletonBalance = styled(InlineLoader).attrs({
@@ -22,7 +22,7 @@ export const BalanceContainer = styled('div')`
 `;
 
 type TxStageOperationSucceedBalanceShownProps = {
-  balance?: BigNumber;
+  balance?: bigint;
   balanceToken: string;
   operationText: string;
   txHash?: string;
@@ -49,7 +49,8 @@ export const TxStageOperationSucceedBalanceShown = ({
         <>
           Your new balance is <wbr />
           <BalanceContainer>
-            {balance ? balanceEl : <SkeletonBalance />}
+            {/* TODO: NEW SDK */}
+            {balance ? balanceEl?.toString() : <SkeletonBalance />}
             <TokenToWallet
               data-testid="txSuccessAddToken"
               address={tokenToWalletAddress}

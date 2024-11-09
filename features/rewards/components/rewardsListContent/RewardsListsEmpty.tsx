@@ -6,6 +6,7 @@ import { Button, Divider } from '@lidofinance/lido-ui';
 import { useUserConfig } from 'config/user-config';
 import { MATOMO_CLICK_EVENTS } from 'consts/matomo-click-events';
 import { useDappStatus } from 'modules/web3';
+
 import {
   RewardsListEmptyButtonWrapper,
   RewardsListEmptyWrapper,

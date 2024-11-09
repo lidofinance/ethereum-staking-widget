@@ -1,4 +1,3 @@
-import { BigNumber } from 'ethers';
 import { getAddress } from 'ethers/lib/utils.js';
 import { CHAINS, TOKENS, getTokenAddress } from '@lido-sdk/constants';
 import { config } from 'config';
@@ -27,7 +26,7 @@ type BebopGetQuotePartial = {
 
 type RateToken = TOKENS.STETH | TOKENS.WSTETH | 'ETH';
 
-type RateCalculationResult = { rate: number; toReceive: BigNumber };
+type RateCalculationResult = { rate: number; toReceive: bigint };
 
 const getRateTokenAddress = (token: RateToken) =>
   token === 'ETH'
@@ -35,7 +34,7 @@ const getRateTokenAddress = (token: RateToken) =>
     : getTokenAddress(CHAINS.Mainnet, token);
 
 export const getBebopRate = async (
-  amount: BigNumber,
+  amount: bigint,
   fromToken: RateToken,
   toToken: RateToken,
 ): Promise<RateCalculationResult> => {
@@ -70,7 +69,7 @@ export const getBebopRate = async (
   ) {
     const rate = data.routes[0].quote.sellTokens[sell_tokens].priceBeforeFee;
 
-    const toAmount = BigNumber.from(
+    const toAmount = BigInt(
       data.routes[0].quote.buyTokens[buy_tokens].amountBeforeFee,
     );
     return {

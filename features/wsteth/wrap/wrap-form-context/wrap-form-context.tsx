@@ -8,16 +8,20 @@ import {
   useCallback,
 } from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
-import { useWrapTxOnL1Approve } from '../hooks/use-wrap-tx-on-l1-approve';
-import { useWrapFormNetworkData } from '../hooks/use-wrap-form-network-data';
-import { useWrapFormProcessor } from '../hooks/use-wrap-form-processing';
-import { useWrapFormValidationContext } from '../hooks/use-wrap-form-validation-context';
-import { useFormControllerRetry } from 'shared/hook-form/form-controller/use-form-controller-retry-delegate';
 
+import { ZERO } from 'modules/web3';
+
+import { useFormControllerRetry } from 'shared/hook-form/form-controller/use-form-controller-retry-delegate';
 import {
   FormControllerContext,
   FormControllerContextValueType,
 } from 'shared/hook-form/form-controller';
+import { TOKENS_TO_WRAP } from 'features/wsteth/shared/types';
+
+import { useWrapTxOnL1Approve } from '../hooks/use-wrap-tx-on-l1-approve';
+import { useWrapFormNetworkData } from '../hooks/use-wrap-form-network-data';
+import { useWrapFormProcessor } from '../hooks/use-wrap-form-processing';
+import { useWrapFormValidationContext } from '../hooks/use-wrap-form-validation-context';
 
 import {
   WrapFormDataContextValueType,
@@ -25,8 +29,6 @@ import {
   WrapFormValidationContext,
 } from './types';
 import { WrapFormValidationResolver } from './wrap-form-validators';
-import { TOKENS_TO_WRAP } from 'features/wsteth/shared/types';
-import { Zero } from '@ethersproject/constants';
 
 //
 // Data context
@@ -71,7 +73,7 @@ export const WrapFormProvider: FC<PropsWithChildren> = ({ children }) => {
   const { retryEvent, retryFire } = useFormControllerRetry();
 
   const approvalDataOnL1 = useWrapTxOnL1Approve({
-    amount: amount ?? Zero,
+    amount: amount ?? ZERO,
     token,
   });
   const isSteth = token === TOKENS_TO_WRAP.STETH;

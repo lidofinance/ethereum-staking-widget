@@ -1,19 +1,19 @@
-import { validateBignumberMax } from './validate-bignumber-max';
-import { validateStakeLimit } from './validate-stake-limit';
 import { formatEther } from '@ethersproject/units';
-import { Zero } from '@ethersproject/constants';
+import { ZERO } from 'modules/web3';
 
 import type { LIMIT_LEVEL } from 'types';
-import type { BigNumber } from 'ethers';
+import { validateBigintMax } from 'shared/hook-form/validation/validate-bigint-max';
+
+import { validateStakeLimit } from './validate-stake-limit';
 
 export type validateStakeEthParams = {
   formField: string;
-  amount: BigNumber;
+  amount: bigint;
   stakingLimitLevel: LIMIT_LEVEL;
-  currentStakeLimit: BigNumber;
-  gasCost: BigNumber;
+  currentStakeLimit: bigint;
+  gasCost: bigint;
 } & (
-  | { isWalletActive: true; etherBalance: BigNumber; isMultisig: boolean }
+  | { isWalletActive: true; etherBalance: bigint; isMultisig: boolean }
   | { isWalletActive: false }
 );
 
@@ -31,18 +31,20 @@ export const validateStakeEth = (params: validateStakeEthParams) => {
       etherBalance,
       isMultisig,
     } = params;
-    validateBignumberMax(
+    validateBigintMax(
       formField,
-      amount,
+      // TODO: NEW SDK
+      amount ? amount : BigInt(0),
       etherBalance,
       `Entered ETH amount exceeds your available balance of ${formatEther(
         etherBalance,
       )}`,
     );
 
-    validateBignumberMax(
+    validateBigintMax(
       formField,
-      amount,
+      // TODO: NEW SDK
+      amount ? amount : BigInt(0),
       currentStakeLimit,
       `Entered ETH amount exceeds current staking limit of ${formatEther(
         currentStakeLimit,
@@ -50,20 +52,21 @@ export const validateStakeEth = (params: validateStakeEthParams) => {
     );
 
     if (!isMultisig) {
-      const gasPaddedBalance = etherBalance.sub(gasCost);
+      const gasPaddedBalance = etherBalance - gasCost;
 
-      validateBignumberMax(
+      validateBigintMax(
         formField,
-        Zero,
+        ZERO,
         gasPaddedBalance,
         `Ensure you have sufficient ETH to cover the gas cost of ${formatEther(
           gasCost,
         )}`,
       );
 
-      validateBignumberMax(
+      validateBigintMax(
         formField,
-        amount,
+        // TODO: NEW SDK
+        amount ? amount : BigInt(0),
         gasPaddedBalance,
         `Enter ETH amount less than ${formatEther(
           gasPaddedBalance,

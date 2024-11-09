@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { useCallback } from 'react';
-import { BigNumber } from 'ethers';
 import invariant from 'tiny-invariant';
 
 import {
@@ -19,8 +18,6 @@ import {
   useGetIsContract,
 } from 'modules/web3';
 import { runWithTransactionLogger } from 'utils';
-
-import { convertToBigNumber } from 'utils/convert-to-big-number';
 
 import type { UnwrapFormInputType } from '../unwrap-form-context';
 import { useUnwrapTxOnL2Approve } from './use-unwrap-tx-on-l2-approve';
@@ -67,10 +64,9 @@ export const useUnwrapFormProcessor = ({
         const [isMultisig, willReceive] = await Promise.all([
           isContract(address),
           isL2
-            ? l2.steth
-                .convertToSteth(amount.toBigInt())
-                .then(convertToBigNumber)
-            : wstETHContractRPC.getStETHByWstETH(amount),
+            ? l2.steth.convertToSteth(amount)
+            : // TODO: NEW SDK
+              (await wstETHContractRPC.getStETHByWstETH(amount)).toBigInt(),
         ]);
 
         if (isL2 && isApprovalNeededBeforeUnwrapOnL2) {
@@ -98,7 +94,7 @@ export const useUnwrapFormProcessor = ({
             await runWithTransactionLogger('Unwrap signing on L2', () =>
               // The operation 'wstETH to stETH' on L2 is 'wrap'
               l2.wrapWstethToSteth({
-                value: amount.toBigInt(),
+                value: amount,
                 callback: ({ stage, payload }) => {
                   if (stage === TransactionCallbackStage.RECEIPT)
                     txModalStages.pending(amount, willReceive, payload);
@@ -138,7 +134,7 @@ export const useUnwrapFormProcessor = ({
           onConfirm(),
         ]);
 
-        txModalStages.success(BigNumber.from(stethBalance), txHash);
+        txModalStages.success(stethBalance, txHash);
         return true;
       } catch (error: any) {
         console.warn(error);

@@ -2,13 +2,11 @@ import { TxStageSign } from '../tx-stages-basic/tx-stage-sign';
 import { TxStagePending } from '../tx-stages-basic/tx-stage-pending';
 import { TxAmount } from '../tx-stages-parts/tx-amount';
 
-import type { BigNumber } from 'ethers';
-
 type TxStageSignOperationAmountProps = {
-  amount: BigNumber;
+  amount: bigint;
   token: string;
   operationText: string;
-  willReceive?: BigNumber;
+  willReceive?: bigint;
   willReceiveToken?: string;
   isPending?: boolean;
   txHash?: string;

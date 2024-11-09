@@ -9,14 +9,15 @@ import { STRATEGY_LAZY } from 'consts/swr-strategies';
 //  - (not use useEthPrice from '@lido-sdk/react')
 //  - use own code
 // DEPRECATED
-export const useEthUsd = (amount?: BigNumber) => {
+export const useEthUsd = (amount?: bigint) => {
   const { data: price, ...swr } = useEthPrice({
     ...STRATEGY_LAZY,
   });
 
   const usdAmount = useMemo(() => {
     if (price && amount) {
-      const txCostInEth = weiToEth(amount);
+      // TODO: NEW_SDK (bigint)
+      const txCostInEth = weiToEth(BigNumber.from(amount));
       return txCostInEth * price;
     }
     return undefined;

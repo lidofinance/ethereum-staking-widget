@@ -1,4 +1,3 @@
-import type { BigNumber } from 'ethers';
 import { useSDK } from '@lido-sdk/react';
 import { Link, Loader } from '@lidofinance/lido-ui';
 
@@ -28,7 +27,7 @@ const LINK_ADD_NFT_GUIDE = `${config.helpOrigin}/en/articles/7858367-how-do-i-ad
 type TxRequestStageSuccessProps = {
   txHash: string | null;
   tokenName: string;
-  amount: BigNumber;
+  amount: bigint;
 };
 
 export const TxRequestStageSuccess = ({
