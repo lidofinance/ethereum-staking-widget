@@ -4,11 +4,11 @@ import { STRATEGY_LAZY } from 'consts/swr-strategies';
 
 // TODO: NEW_SDK (remove)
 // DEPRECATED
-export const useWstethBySteth = (steth: BigNumber | undefined) => {
+export const useWstethBySteth = (steth: bigint | undefined) => {
   return useContractSWR({
     contract: useWSTETHContractRPC(),
     method: 'getWstETHByStETH',
-    params: [steth],
+    params: [steth ? BigNumber.from(steth) : BigNumber.from(0)],
     shouldFetch: !!steth,
     config: STRATEGY_LAZY,
   });

@@ -8,9 +8,7 @@ import {
 import invariant from 'tiny-invariant';
 
 import { StatusProps } from 'features/withdrawals/shared/status';
-
 import { useWithdrawalsBaseData } from 'features/withdrawals/hooks/contract/useWithdrawalsBaseData';
-import { BigNumber } from 'ethers';
 
 export type WithdrawalsContextValue = {
   isClaimTab: boolean;
@@ -19,8 +17,8 @@ export type WithdrawalsContextValue = {
   isPaused?: boolean;
   isTurbo?: boolean;
   isBunker?: boolean;
-  maxAmount?: BigNumber;
-  minAmount?: BigNumber;
+  maxAmount?: bigint;
+  minAmount?: bigint;
 };
 const WithdrawalsContext = createContext<WithdrawalsContextValue | null>(null);
 WithdrawalsContext.displayName = 'WithdrawalsContext';

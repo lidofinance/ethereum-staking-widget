@@ -1,5 +1,4 @@
 import { useCallback } from 'react';
-import { BigNumber } from 'ethers';
 import invariant from 'tiny-invariant';
 
 import { useSDK } from '@lido-sdk/react';
@@ -38,11 +37,11 @@ export const useClaim = ({ onRetry }: Args) => {
         const isMultisig = await isContract(address, contractWeb3.provider);
 
         const amount = sortedRequests.reduce(
-          (s, r) => s.add(r.claimableEth),
-          BigNumber.from(0),
+          (s, r) => s + r.claimableEth,
+          BigInt(0),
         );
 
-        txModalStages.sign(amount.toBigInt());
+        txModalStages.sign(amount);
 
         const ids = sortedRequests.map((r) => r.id);
         const hints = sortedRequests.map((r) => r.hint);
@@ -69,7 +68,7 @@ export const useClaim = ({ onRetry }: Args) => {
           return true;
         }
 
-        txModalStages.pending(amount.toBigInt(), txHash);
+        txModalStages.pending(amount, txHash);
 
         await runWithTransactionLogger('Claim block confirmation', () =>
           waitForTx(txHash),
@@ -77,7 +76,7 @@ export const useClaim = ({ onRetry }: Args) => {
 
         await optimisticClaimRequests(sortedRequests);
 
-        txModalStages.success(amount.toBigInt(), txHash);
+        txModalStages.success(amount, txHash);
         return true;
       } catch (error) {
         console.error(error);

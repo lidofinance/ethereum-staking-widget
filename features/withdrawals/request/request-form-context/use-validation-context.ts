@@ -45,11 +45,11 @@ export const useValidationContext = (
             balanceSteth,
             balanceWSteth,
             maxAmountPerRequestSteth,
-            maxAmountPerRequestWSteth,
+            maxAmountPerRequestWSteth: maxAmountPerRequestWSteth.toBigInt(),
             minUnstakeSteth,
-            minUnstakeWSteth,
+            minUnstakeWSteth: minUnstakeWSteth.toBigInt(),
             maxRequestCount,
-            stethTotalSupply,
+            stethTotalSupply: stethTotalSupply.toBigInt(),
           }
         : undefined;
     return validationContextObject;

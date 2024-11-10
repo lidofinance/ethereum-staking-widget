@@ -1,4 +1,3 @@
-import { BigNumber } from 'ethers';
 import {
   useSDK,
   useLidoSWR,
@@ -9,7 +8,7 @@ import {
 import { STRATEGY_CONSTANT } from 'consts/swr-strategies';
 import { calcShareRate } from 'features/withdrawals/utils/calc-share-rate';
 
-export const useLidoShareRate = (): SWRResponse<BigNumber> => {
+export const useLidoShareRate = (): SWRResponse<bigint> => {
   const { chainId } = useSDK();
   const steth = useSTETHContractRPC();
   return useLidoSWR(
@@ -19,7 +18,7 @@ export const useLidoShareRate = (): SWRResponse<BigNumber> => {
         steth.getTotalPooledEther(),
         steth.getTotalShares(),
       ]);
-      return calcShareRate(totalPooledEther, totalShares);
+      return calcShareRate(totalPooledEther.toBigInt(), totalShares.toBigInt());
     },
     STRATEGY_CONSTANT,
   );

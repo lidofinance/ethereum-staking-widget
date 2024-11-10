@@ -1,4 +1,3 @@
-import { BigNumber } from 'ethers';
 import { useSDK, useLidoSWR, SWRResponse } from '@lido-sdk/react';
 
 import { STRATEGY_CONSTANT } from 'consts/swr-strategies';
@@ -6,8 +5,8 @@ import { STRATEGY_CONSTANT } from 'consts/swr-strategies';
 import { useWithdrawalsContract } from './useWithdrawalsContract';
 
 type useWithdrawalsBaseDataResult = {
-  maxAmount: BigNumber;
-  minAmount: BigNumber;
+  maxAmount: bigint;
+  minAmount: bigint;
   isPaused: boolean;
   isBunker: boolean;
   isTurbo: boolean;
@@ -33,7 +32,13 @@ export const useWithdrawalsBaseData =
         const isBunker = !!isBunkerMode;
         const isTurbo = !isPaused && !isBunkerMode;
 
-        return { minAmount, maxAmount, isPaused, isBunker, isTurbo };
+        return {
+          minAmount: minAmount?.toBigInt(),
+          maxAmount: maxAmount?.toBigInt(),
+          isPaused,
+          isBunker,
+          isTurbo,
+        };
       },
       STRATEGY_CONSTANT,
     );

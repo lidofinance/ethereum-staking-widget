@@ -1,5 +1,6 @@
 import { useCallback } from 'react';
-import { BigNumber, TypedDataDomain } from 'ethers';
+// import { TypedDataDomain } from 'ethers';
+import { Address, TypedDataDomain } from 'viem';
 import invariant from 'tiny-invariant';
 
 import { hexValue, splitSignature } from '@ethersproject/bytes';
@@ -12,8 +13,8 @@ export type GatherPermitSignatureResult = {
   v: number;
   r: string;
   s: string;
-  deadline: BigNumber;
-  value: BigNumber;
+  deadline: bigint;
+  value: bigint;
   chainId: number;
   nonce: string;
   owner: string;
@@ -22,7 +23,7 @@ export type GatherPermitSignatureResult = {
 
 type UseERC20PermitSignatureResult = {
   gatherPermitSignature: (
-    amount: BigNumber,
+    amount: bigint,
   ) => Promise<GatherPermitSignatureResult>;
 };
 
@@ -60,7 +61,7 @@ export const useERC20PermitSignature = <
   const { providerWeb3, chainId } = useSDK();
 
   const gatherPermitSignature = useCallback(
-    async (amount: BigNumber) => {
+    async (amount: bigint) => {
       invariant(chainId, 'chainId is needed');
       invariant(address, 'account is needed');
       invariant(providerWeb3, 'providerWeb3 is needed');
@@ -75,14 +76,14 @@ export const useERC20PermitSignature = <
           name: eip712Domain.name,
           version: eip712Domain.version,
           chainId: eip712Domain.chainId.toNumber(),
-          verifyingContract: eip712Domain.verifyingContract,
+          verifyingContract: eip712Domain.verifyingContract as Address,
         };
       } else {
         domain = {
           name: 'Wrapped liquid staked Ether 2.0',
           version: '1',
           chainId,
-          verifyingContract: tokenProvider.address,
+          verifyingContract: tokenProvider.address as Address,
         };
       }
       const nonce = await tokenProvider.nonces(address);
@@ -109,7 +110,7 @@ export const useERC20PermitSignature = <
             r: signature.r,
             s: signature.s,
             value: amount,
-            deadline,
+            deadline: deadline.toBigInt(),
             chainId: chainId,
             nonce: message.nonce,
             owner: address,

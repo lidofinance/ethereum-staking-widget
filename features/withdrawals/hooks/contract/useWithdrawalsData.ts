@@ -1,21 +1,20 @@
 import { useCallback } from 'react';
-import { Zero } from '@ethersproject/constants';
-import { BigNumber } from 'ethers';
 import { useLidoSWR } from '@lido-sdk/react';
-import { useDappStatus } from 'modules/web3';
-import { useWithdrawalsContract } from './useWithdrawalsContract';
+import type { WithdrawalQueueAbi } from '@lido-sdk/contracts';
+
+import { ZERO, useDappStatus } from 'modules/web3';
+import { STRATEGY_LAZY } from 'consts/swr-strategies';
+import { default as dynamics } from 'config/dynamics';
 import {
   RequestStatus,
   RequestStatusClaimable,
   RequestStatusPending,
 } from 'features/withdrawals/types/request-status';
 import { MAX_SHOWN_REQUEST_PER_TYPE } from 'features/withdrawals/withdrawals-constants';
-import { STRATEGY_LAZY } from 'consts/swr-strategies';
 import { standardFetcher } from 'utils/standardFetcher';
-import { default as dynamics } from 'config/dynamics';
-
 import { encodeURLQuery } from 'utils/encodeURLQuery';
-import type { WithdrawalQueueAbi } from '@lido-sdk/contracts';
+
+import { useWithdrawalsContract } from './useWithdrawalsContract';
 
 export type WithdrawalRequests = NonNullable<
   ReturnType<typeof useWithdrawalRequests>['data']
@@ -132,23 +131,25 @@ export const useWithdrawalRequests = () => {
         console.warn('Failed to fetch request time for requests ids', e);
       }
 
-      let pendingAmountOfStETH = BigNumber.from(0);
-      let claimableAmountOfStETH = BigNumber.from(0);
+      let pendingAmountOfStETH = BigInt(0);
+      let claimableAmountOfStETH = BigInt(0);
 
       requestStatuses.forEach((request, index) => {
         const id = requestIds[index];
         const req: RequestStatus = {
           ...request,
-          id,
+          amountOfStETH: request.amountOfStETH.toBigInt(),
+          amountOfShares: request.amountOfShares.toBigInt(),
+          timestamp: request.timestamp.toBigInt(),
+          id: id.toBigInt(),
           stringId: id.toString(),
           finalizationAt: null,
         };
 
         if (request.isFinalized && !request.isClaimed) {
           claimableRequests.push(req);
-          claimableAmountOfStETH = claimableAmountOfStETH.add(
-            request.amountOfStETH,
-          );
+          claimableAmountOfStETH =
+            claimableAmountOfStETH + request.amountOfStETH.toBigInt();
         } else if (!request.isFinalized) {
           const r = wqRequests.find((r) => r.id === id.toString());
           pendingRequests.push({
@@ -156,9 +157,8 @@ export const useWithdrawalRequests = () => {
             finalizationAt: r?.finalizationAt ?? null,
             expectedEth: req.amountOfStETH, // TODO: replace with calcExpectedRequestEth(req, currentShareRate),
           });
-          pendingAmountOfStETH = pendingAmountOfStETH.add(
-            request.amountOfStETH,
-          );
+          pendingAmountOfStETH =
+            pendingAmountOfStETH + request.amountOfStETH.toBigInt();
         }
         return req;
       });
@@ -179,15 +179,16 @@ export const useWithdrawalRequests = () => {
         hints,
       );
 
-      let claimableAmountOfETH = BigNumber.from(0);
+      let claimableAmountOfETH = BigInt(0);
 
       const sortedClaimableRequests: RequestStatusClaimable[] =
         claimableRequests.map((request, index) => {
-          claimableAmountOfETH = claimableAmountOfETH.add(claimableEth[index]);
+          claimableAmountOfETH =
+            claimableAmountOfETH + claimableEth[index].toBigInt();
           return {
             ...request,
-            hint: hints[index],
-            claimableEth: claimableEth[index],
+            hint: hints[index].toBigInt(),
+            claimableEth: claimableEth[index].toBigInt(),
           };
         });
 
@@ -214,11 +215,11 @@ export const useWithdrawalRequests = () => {
       const { steth, eth } = requests.reduce(
         (acc, request) => {
           return {
-            steth: acc.steth.add(request.amountOfStETH),
-            eth: acc.eth.add(request.claimableEth),
+            steth: acc.steth + request.amountOfStETH,
+            eth: acc.eth + request.claimableEth,
           };
         },
-        { steth: Zero, eth: Zero },
+        { steth: ZERO, eth: ZERO },
       );
       const optimisticData = {
         ...oldData,
@@ -227,8 +228,8 @@ export const useWithdrawalRequests = () => {
         ),
         readyCount: oldData.readyCount - requests.length,
         claimedCount: oldData.claimedCount + requests.length,
-        claimableAmountOfStETH: oldData.claimableAmountOfStETH.sub(steth),
-        claimableAmountOfETH: oldData.claimableAmountOfETH.sub(eth),
+        claimableAmountOfStETH: oldData.claimableAmountOfStETH - steth,
+        claimableAmountOfETH: oldData.claimableAmountOfETH - eth,
       };
       return mutate(optimisticData, true);
     },

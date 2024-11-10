@@ -2,7 +2,6 @@
 import { useCallback } from 'react';
 import invariant from 'tiny-invariant';
 import { useAccount } from 'wagmi';
-import { BigNumber } from 'ethers';
 
 import {
   useSDK,
@@ -302,7 +301,7 @@ export const useWithdrawalRequest = ({
           }
         } else {
           txModalStages.signPermit();
-          signature = await gatherPermitSignature(BigNumber.from(amount));
+          signature = await gatherPermitSignature(amount);
         }
 
         txModalStages.sign(amount, token);
