@@ -17,6 +17,7 @@ import { formatEther, parseEther } from 'viem';
 import { Input } from '@lidofinance/lido-ui';
 
 import { MAX_UINT_256 } from 'modules/web3';
+import { isNonNegativeBigInt } from 'utils/is-non-negative-bigint';
 
 import { InputDecoratorMaxButton } from './input-decorator-max-button';
 import { InputDecoratorLocked } from './input-decorator-locked';
@@ -88,8 +89,9 @@ export const InputAmount = forwardRef<HTMLInputElement, InputAmountProps>(
           onChange?.(null);
         } else {
           const value = parseEtherSafe(currentValue);
-          // invalid value, so we rollback to last valid value
-          if (!value) {
+          // The check !value is not suitable because !value returns true for 0n.
+          if (!isNonNegativeBigInt(value)) {
+            // invalid value, so we rollback to last valid value
             const rollbackCaretPosition =
               caretPosition -
               Math.min(
@@ -105,8 +107,10 @@ export const InputAmount = forwardRef<HTMLInputElement, InputAmountProps>(
             return;
           }
 
-          const cappedValue = value > MAX_UINT_256 ? MAX_UINT_256 : value;
-          if (value > MAX_UINT_256) {
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          const cappedValue = value! > MAX_UINT_256 ? MAX_UINT_256 : value;
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          if (value! > MAX_UINT_256) {
             currentValue = formatEther(MAX_UINT_256);
           }
           onChange?.(cappedValue);
@@ -132,14 +136,16 @@ export const InputAmount = forwardRef<HTMLInputElement, InputAmountProps>(
     useEffect(() => {
       const input = inputRef.current;
       if (!input) return;
-      if (!value) {
+      // The check !value is not suitable because !value returns true for 0n.
+      if (!isNonNegativeBigInt(value)) {
         input.value = '';
       } else {
         const parsedValue = parseEtherSafe(input.value);
         // only change string state if casted values differ
         // this allows user to enter 0.100 without immediate change to 0.1
-        if (!parsedValue || parsedValue !== value) {
-          input.value = formatEther(value);
+        if (!isNonNegativeBigInt(parsedValue) || parsedValue !== value) {
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          input.value = formatEther(value!);
           // prevents rollback to incorrect value in onChange
           lastInputValue.current = input.value;
         }

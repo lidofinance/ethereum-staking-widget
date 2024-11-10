@@ -3,6 +3,7 @@ import {
   getTokenDisplayName,
   TOKEN_DISPLAY_NAMES,
 } from 'utils/getTokenDisplayName';
+import { isNonNegativeBigInt } from 'utils/is-non-negative-bigint';
 import { ValidationError } from './validation-error';
 
 // asserts only work with function declaration
@@ -12,15 +13,17 @@ export function validateEtherAmount(
   amount: bigint | undefined,
   token: keyof typeof TOKEN_DISPLAY_NAMES,
 ): asserts amount is bigint {
-  if (!amount) throw new ValidationError(field, '');
+  if (!isNonNegativeBigInt(amount)) throw new ValidationError(field, '');
 
-  if (amount <= ZERO)
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  if (amount! <= ZERO)
     throw new ValidationError(
       field,
       `Enter ${getTokenDisplayName(token)} ${field} greater than 0`,
     );
 
-  if (amount > MAX_UINT_256)
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  if (amount! > MAX_UINT_256)
     throw new ValidationError(
       field,
       `${getTokenDisplayName(token)} ${field} is not valid`,
