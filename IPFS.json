@@ -36,6 +36,14 @@
       "multiChainBanner": [],
       "featureFlags": {
         "ledgerLiveL2": true
+      },
+      "pages": {
+        "/withdrawals": {
+          "deactivate": true
+        },
+        "/rewards": {
+          "deactivate": true
+        }
       }
     }
   }

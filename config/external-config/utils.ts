@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import type { Manifest, ManifestEntry } from './types';
+import { Manifest, ManifestConfig, ManifestEntry } from './types';
 import { getDexConfig } from 'features/withdrawals/request/withdrawal-rates';
 
 import FallbackLocalManifest from 'IPFS.json' assert { type: 'json' };
@@ -81,6 +81,7 @@ export const getBackwardCompatibleConfig = (
     ),
     featureFlags: { ...(config.featureFlags ?? {}) },
     multiChainBanner: config.multiChainBanner ?? [],
+    pages: config.pages ?? ({} as ManifestConfig['pages']),
   };
 };
 

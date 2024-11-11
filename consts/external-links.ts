@@ -7,4 +7,6 @@ export const OPEN_OCEAN_REFERRAL_ADDRESS =
 
 // for dev and local testing you can set to 'http://localhost:3000/runtime/IPFS.json' and have file at /public/runtime/IPFS.json
 export const IPFS_MANIFEST_URL =
-  'https://raw.githubusercontent.com/lidofinance/ethereum-staking-widget/main/IPFS.json';
+  process.env.NODE_ENV === 'development'
+    ? 'http://localhost:3000/runtime/IPFS.json'
+    : 'https://raw.githubusercontent.com/lidofinance/ethereum-staking-widget/main/IPFS.json';

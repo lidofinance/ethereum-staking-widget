@@ -16,7 +16,15 @@ export type ManifestConfig = {
   featureFlags: {
     ledgerLiveL2?: boolean;
   };
+  pages?: {
+    [page in ManifestConfigPage]?: {
+      deactivate?: boolean;
+      sections?: [string, ...string[]];
+    };
+  };
 };
+
+export type ManifestConfigPage = '/' | '/wrap' | '/withdrawals' | '/rewards';
 
 export type ExternalConfig = Omit<ManifestEntry, 'config'> &
   ManifestConfig & {
