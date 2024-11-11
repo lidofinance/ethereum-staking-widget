@@ -137,7 +137,7 @@ export const SupportL2Chains: React.FC<React.PropsWithChildren> = ({
   );
 
   useEffect(() => {
-    if (!walletChainId) {
+    if (!walletChainId || !config.supportedChains.includes(walletChainId)) {
       // This code resets 'chainType' to ETH when the wallet is disconnected.
       // It also works on the first rendering, but we don't care, because the 'chainType' by default is ETH.
       // Don't use it if you need to do something strictly, only when the wallet is disconnected.
