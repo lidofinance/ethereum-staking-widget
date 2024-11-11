@@ -62,7 +62,6 @@ export const RequestFormProvider: FC<PropsWithChildren> = ({ children }) => {
   const [intermediateValidationResults, setIntermediateValidationResults] =
     useState<ValidationResults>({ requests: null });
 
-  // TODO: NEW SDK (fix friezes in useRequestFormDataContextValue->useWithdrawals->useWithdrawalsBaseData)
   const requestFormData = useRequestFormDataContextValue();
   const { balanceSteth, balanceWSteth, revalidateRequestFormData } =
     requestFormData;

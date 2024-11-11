@@ -49,8 +49,7 @@ export const useValidationContext = (
             minUnstakeSteth,
             minUnstakeWSteth,
             maxRequestCount,
-            // TODO: NEW SDK (remove .toBigInt())
-            stethTotalSupply: stethTotalSupply.toBigInt(),
+            stethTotalSupply,
           }
         : undefined;
     return validationContextObject;

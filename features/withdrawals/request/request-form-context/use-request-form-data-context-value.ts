@@ -86,7 +86,7 @@ export const useRequestFormDataContextValue = () => {
       balanceWSteth,
       maxAmountPerRequestWSteth,
       minUnstakeWSteth,
-      stethTotalSupply,
+      stethTotalSupply: stethTotalSupply?.toBigInt(),
       unfinalizedStETH,
       revalidateRequestFormData,
       loading,
