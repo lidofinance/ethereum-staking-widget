@@ -9,6 +9,7 @@ import type {
   WrapFormApprovalData,
   WrapFormInputType,
 } from '../wrap-form-context';
+import { TOKENS_TO_WRAP } from '../../shared/types';
 import { useTxModalWrap } from './use-tx-modal-stages-wrap';
 
 type UseWrapFormProcessorArgs = {
@@ -23,14 +24,11 @@ export const useWrapFormProcessor = ({
   onRetry,
 }: UseWrapFormProcessorArgs) => {
   const { isDappActiveOnL2, address } = useDappStatus();
-  const { l2, shares, wstETH } = useLidoSDK();
+  const { l2, shares, wrap, wstETH } = useLidoSDK();
   const { txModalStages } = useTxModalWrap();
 
   const {
-    // will be used
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     isApprovalNeededBeforeWrap: isApprovalNeededBeforeWrapOnL1,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     processApproveTx: processApproveTxOnL1,
   } = approvalDataOnL1;
 
@@ -80,16 +78,68 @@ export const useWrapFormProcessor = ({
               }
             },
           });
-          // enough for L2
+
           return true;
         }
 
-        // if (token === LIDO_TOKENS.steth) {
-        //  ...await wrap.wrapSteth
-        // } else {
-        //  ...mock mockLimitReached
-        //  ...await wrap.wrapEth
-        // }
+        if (token === TOKENS_TO_WRAP.STETH) {
+          if (isApprovalNeededBeforeWrapOnL1) {
+            await processApproveTxOnL1({ onRetry });
+          }
+
+          await wrap.wrapSteth({
+            value: amount,
+            callback: ({ stage, payload }) => {
+              switch (stage) {
+                case TransactionCallbackStage.SIGN:
+                  txModalStages.sign(amount, token, willReceive);
+                  break;
+                case TransactionCallbackStage.RECEIPT:
+                  txModalStages.pending(amount, token, willReceive, payload);
+                  break;
+                case TransactionCallbackStage.CONFIRMATION:
+                  void onConfirm?.();
+                  void showSuccessTxModal(payload?.transactionHash);
+                  break;
+                case TransactionCallbackStage.MULTISIG_DONE:
+                  txModalStages.successMultisig();
+                  break;
+                case TransactionCallbackStage.ERROR:
+                  txModalStages.failed(payload, onRetry);
+                  break;
+                default:
+              }
+            },
+          });
+        } else {
+          // TODO: NEW SDK (add mockLimitReached)
+
+          await wrap.wrapEth({
+            value: amount,
+            callback: ({ stage, payload }) => {
+              switch (stage) {
+                case TransactionCallbackStage.SIGN:
+                  txModalStages.sign(amount, token, willReceive);
+                  break;
+                case TransactionCallbackStage.RECEIPT:
+                  txModalStages.pending(amount, token, willReceive, payload);
+                  break;
+                case TransactionCallbackStage.CONFIRMATION:
+                  void onConfirm?.();
+                  void showSuccessTxModal(payload?.transactionHash);
+                  break;
+                case TransactionCallbackStage.MULTISIG_DONE:
+                  txModalStages.successMultisig();
+                  break;
+                case TransactionCallbackStage.ERROR:
+                  txModalStages.failed(payload, onRetry);
+                  break;
+                default:
+              }
+            },
+            account: address,
+          });
+        }
 
         return true;
       } catch (error) {
@@ -107,6 +157,9 @@ export const useWrapFormProcessor = ({
       onConfirm,
       showSuccessTxModal,
       onRetry,
+      isApprovalNeededBeforeWrapOnL1,
+      wrap,
+      processApproveTxOnL1,
     ],
   );
 };
