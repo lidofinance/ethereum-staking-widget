@@ -23,9 +23,10 @@ import {
   WalletModalActionsStyle,
 } from './styles';
 import { useDappStatus } from 'modules/web3';
+import { CHAINS } from '../../../consts/chains';
 
 export const WalletModal: ModalComponentType = ({ onClose, ...props }) => {
-  const { address, chainId } = useDappStatus();
+  const { address, chainId, walletChainId } = useDappStatus();
   const { connectorName } = useConnectorInfo();
   const { disconnect } = useDisconnect();
 
@@ -36,9 +37,16 @@ export const WalletModal: ModalComponentType = ({ onClose, ...props }) => {
 
   const handleCopy = useCopyToClipboard(address ?? '');
   const handleEtherscan = useCallback(() => {
-    const link = getEtherscanAddressLink(chainId, address ?? '', chainId);
+    // This component is wrapped by SupportL1Chains,
+    // but not wrapped by SupportL2Chains (the chainId will never be a L2 network).
+    // This is currently the fastest solution.
+    const link = getEtherscanAddressLink(
+      walletChainId as CHAINS,
+      address ?? '',
+      chainId,
+    );
     openWindow(link);
-  }, [address, chainId]);
+  }, [address, chainId, walletChainId]);
 
   useEffect(() => {
     // Close the modal if a wallet was somehow disconnected while the modal was open

@@ -12,14 +12,17 @@ type TxLinkEtherscanProps = {
 
 export const TxLinkEtherscan = (props: TxLinkEtherscanProps) => {
   const { txHash, text = 'View on Etherscan', onClick } = props;
-  const { chainId } = useDappStatus();
+  const { walletChainId } = useDappStatus();
 
   if (!txHash) return null;
 
+  // This component is used in TransactionModal, which is wrapped by SupportL1Chains,
+  // but not wrapped by SupportL2Chains (the chainId will never be a L2 network).
+  // This is currently the fastest solution.
   return (
     <Link
       onClick={onClick}
-      href={getEtherscanTxLink(chainId as CHAINS, txHash)}
+      href={getEtherscanTxLink(walletChainId as CHAINS, txHash)}
     >
       {text}
     </Link>
