@@ -1,6 +1,8 @@
-import { CHAINS, TOKENS, getTokenAddress } from '@lido-sdk/constants';
+import { TOKENS, CHAINS, getTokenAddress } from '@lido-sdk/constants';
 import { standardFetcher } from './standardFetcher';
 import { formatEther } from '@ethersproject/units';
+import { TOKENS_WITHDRAWABLE } from '../features/withdrawals/types/tokens-withdrawable';
+import { TOKENS_WRAPPABLE } from '../features/wsteth/shared/types';
 
 type OpenOceanGetGasPartial = {
   without_decimals: {
@@ -30,8 +32,6 @@ type OpenOceanGetQuotePartial = {
   };
 };
 
-type RateToken = TOKENS.STETH | TOKENS.WSTETH | 'ETH';
-
 type RateCalculationResult = { rate: number; toReceive: bigint };
 
 // To be exported when more integrations appear
@@ -51,15 +51,15 @@ const calculateRateReceive = (
   return { rate, toReceive };
 };
 
-const getRateTokenAddress = (token: RateToken) =>
+const getRateTokenAddress = (token: TOKENS_WITHDRAWABLE | TOKENS_WRAPPABLE) =>
   token === 'ETH'
     ? '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE'
-    : getTokenAddress(CHAINS.Mainnet, token);
+    : getTokenAddress(CHAINS.Mainnet, token as TOKENS);
 
 export const getOpenOceanRate = async (
   amount: bigint,
-  fromToken: RateToken,
-  toToken: RateToken,
+  fromToken: TOKENS_WITHDRAWABLE | TOKENS_WRAPPABLE,
+  toToken: TOKENS_WITHDRAWABLE | TOKENS_WRAPPABLE,
 ): Promise<RateCalculationResult> => {
   const basePath = 'https://open-api.openocean.finance/v3/1';
   const gasData = await standardFetcher<OpenOceanGetGasPartial>(

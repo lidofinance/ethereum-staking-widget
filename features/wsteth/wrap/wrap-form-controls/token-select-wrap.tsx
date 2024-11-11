@@ -8,7 +8,7 @@ import { useDappStatus } from 'modules/web3';
 
 const OPTION_STETH = {
   label: 'Lido (stETH)',
-  token: TOKENS_TO_WRAP.STETH,
+  token: TOKENS_TO_WRAP.stETH,
 };
 
 const OPTION_ETH = {

@@ -1,10 +1,9 @@
-import type { TOKENS } from '@lido-sdk/constants';
 import { MATOMO_CLICK_EVENTS_TYPES } from 'consts/matomo-click-events';
-import { TokensWithdrawable } from 'features/withdrawals/types/tokens-withdrawable';
+import { TOKENS_WITHDRAWABLE } from 'features/withdrawals/types/tokens-withdrawable';
 
 export type GetWithdrawalRateParams = {
   amount: bigint;
-  token: TOKENS.STETH | TOKENS.WSTETH;
+  token: TOKENS_WITHDRAWABLE;
   dexes: DexWithdrawalApi[];
 };
 
@@ -25,7 +24,7 @@ export type DexWithdrawalIntegration = {
   fetcher: GetRateType;
   icon: React.FC;
   matomoEvent: MATOMO_CLICK_EVENTS_TYPES;
-  link: (amount: bigint, token: TokensWithdrawable) => string;
+  link: (amount: bigint, token: TOKENS_WITHDRAWABLE) => string;
 };
 
 export type DexWithdrawalIntegrationMap = Record<

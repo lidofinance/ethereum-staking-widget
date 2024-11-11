@@ -1,13 +1,13 @@
 import type { useWrapFormNetworkData } from '../hooks/use-wrap-form-network-data';
 import type { useWrapTxOnL1Approve } from '../hooks/use-wrap-tx-on-l1-approve';
 
-import type { TokensWrappable } from 'features/wsteth/shared/types';
+import type { TOKENS_WRAPPABLE } from 'features/wsteth/shared/types';
 import { StakeLimitFullInfo } from 'shared/hooks';
 import { LIMIT_LEVEL } from 'types';
 
 export type WrapFormInputType = {
   amount: null | bigint;
-  token: TokensWrappable;
+  token: TOKENS_WRAPPABLE;
 };
 
 export type WrapFormNetworkData = ReturnType<typeof useWrapFormNetworkData>;

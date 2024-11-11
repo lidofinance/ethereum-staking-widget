@@ -1,5 +1,4 @@
 import { useWatch } from 'react-hook-form';
-import { TOKENS } from '@lido-sdk/constants';
 import { DataTableRow } from '@lidofinance/lido-ui';
 
 import { useRequestTxPrice } from 'features/withdrawals/hooks/useWithdrawTxPrice';
@@ -15,6 +14,7 @@ import {
   useRequestFormData,
   useValidationResults,
 } from '../request-form-context';
+import { TOKENS_WITHDRAWABLE } from '../../types/tokens-withdrawable';
 
 export const TransactionInfo = () => {
   const { isDappActive } = useDappStatus();
@@ -60,7 +60,7 @@ export const TransactionInfo = () => {
         isBlank={!isDappActive}
         loading={isApprovalFlowLoading}
       />
-      {token === TOKENS.STETH ? (
+      {token === TOKENS_WITHDRAWABLE.stETH ? (
         <DataTableRow data-testid="exchangeRate" title="Exchange rate">
           1 stETH = 1 ETH
         </DataTableRow>

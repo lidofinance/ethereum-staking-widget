@@ -3,12 +3,11 @@ import {
   useTransactionModalStage,
 } from 'shared/transaction-modal/hooks/use-transaction-modal-stage';
 import { getGeneralTransactionModalStages } from 'shared/transaction-modal/hooks/get-general-transaction-modal-stages';
-
 import { TxStageSignOperationAmount } from 'shared/transaction-modal/tx-stages-composed/tx-stage-amount-operation';
 import { TxStageOperationSucceedBalanceShown } from 'shared/transaction-modal/tx-stages-composed/tx-stage-operation-succeed-balance-shown';
 
+import type { TOKENS_WRAPPABLE } from 'features/wsteth/shared/types';
 import { getTokenDisplayName } from 'utils/getTokenDisplayName';
-import type { TokensWrappable } from 'features/wsteth/shared/types';
 
 const STAGE_APPROVE_ARGS = {
   willReceiveToken: 'wstETH',
@@ -23,7 +22,7 @@ const STAGE_OPERATION_ARGS = {
 const getTxModalStagesWrap = (transitStage: TransactionModalTransitStage) => ({
   ...getGeneralTransactionModalStages(transitStage),
 
-  signApproval: (amount: bigint, token: TokensWrappable) =>
+  signApproval: (amount: bigint, token: TOKENS_WRAPPABLE) =>
     transitStage(
       <TxStageSignOperationAmount
         {...STAGE_APPROVE_ARGS}
@@ -32,7 +31,7 @@ const getTxModalStagesWrap = (transitStage: TransactionModalTransitStage) => ({
       />,
     ),
 
-  pendingApproval: (amount: bigint, token: TokensWrappable, txHash?: string) =>
+  pendingApproval: (amount: bigint, token: TOKENS_WRAPPABLE, txHash?: string) =>
     transitStage(
       <TxStageSignOperationAmount
         {...STAGE_APPROVE_ARGS}
@@ -43,7 +42,7 @@ const getTxModalStagesWrap = (transitStage: TransactionModalTransitStage) => ({
       />,
     ),
 
-  sign: (amount: bigint, token: TokensWrappable, willReceive: bigint) =>
+  sign: (amount: bigint, token: TOKENS_WRAPPABLE, willReceive: bigint) =>
     transitStage(
       <TxStageSignOperationAmount
         {...STAGE_OPERATION_ARGS}
@@ -55,7 +54,7 @@ const getTxModalStagesWrap = (transitStage: TransactionModalTransitStage) => ({
 
   pending: (
     amount: bigint,
-    token: TokensWrappable,
+    token: TOKENS_WRAPPABLE,
     willReceive: bigint,
     txHash?: string,
   ) =>

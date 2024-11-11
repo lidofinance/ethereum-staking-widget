@@ -19,6 +19,7 @@ import type {
   GetRateType,
   RateCalculationResult,
 } from './types';
+import { TOKENS_WITHDRAWABLE } from '../../types/tokens-withdrawable';
 
 const RATE_PRECISION = 100000;
 const RATE_PRECISION_BIG_INT = BigInt(RATE_PRECISION);
@@ -68,7 +69,8 @@ const getParaSwapWithdrawalRate: GetRateType = async ({ amount, token }) => {
     if (amount > ZERO) {
       const api = `https://apiv5.paraswap.io/prices`;
       const query = new URLSearchParams({
-        srcToken: getTokenAddress(CHAINS.Mainnet, token),
+        // TODO: NEW SDK
+        srcToken: getTokenAddress(CHAINS.Mainnet, token as TOKENS),
         srcDecimals: '18',
         destToken: '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE',
         destDecimals: '18',
@@ -163,7 +165,7 @@ const dexWithdrawalMap: DexWithdrawalIntegrationMap = {
     link: (amount, token) =>
       `https://app.paraswap.xyz/?referrer=Lido&takeSurplus=true#/swap/${getTokenAddress(
         CHAINS.Mainnet,
-        token,
+        token as TOKENS,
       )}-0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE/${formatEther(
         amount,
       )}/SELL?version=6.2&network=ethereum`,
@@ -175,7 +177,7 @@ const dexWithdrawalMap: DexWithdrawalIntegrationMap = {
     matomoEvent: MATOMO_CLICK_EVENTS_TYPES.withdrawalGoTo1inch,
     link: (amount, token) =>
       `https://app.1inch.io/#/1/advanced/swap/${
-        token == TOKENS.STETH ? 'stETH' : 'wstETH'
+        token === TOKENS_WITHDRAWABLE.stETH ? 'stETH' : 'wstETH'
       }/ETH?mode=classic&sourceTokenAmount=${formatEther(amount)}`,
   },
   bebop: {
@@ -185,7 +187,7 @@ const dexWithdrawalMap: DexWithdrawalIntegrationMap = {
     matomoEvent: MATOMO_CLICK_EVENTS_TYPES.withdrawalGoToBebop,
     link: (amount, token) =>
       `https://bebop.xyz/trade?network=ethereum&buy=0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE&sell=${getAddress(
-        getTokenAddress(CHAINS.Mainnet, token),
+        getTokenAddress(CHAINS.Mainnet, token as TOKENS),
       )}&sellAmounts=${formatEther(amount)}&source=lido`,
   },
 } as const;

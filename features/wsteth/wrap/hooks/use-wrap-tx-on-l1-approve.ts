@@ -2,7 +2,7 @@ import { useMemo, useCallback } from 'react';
 
 import { TransactionCallbackStage } from '@lidofinance/lido-ethereum-sdk/core';
 
-import { TokensWrappable, TOKENS_TO_WRAP } from 'features/wsteth/shared/types';
+import { TOKENS_WRAPPABLE, TOKENS_TO_WRAP } from 'features/wsteth/shared/types';
 import {
   useAllowance,
   useDappStatus,
@@ -16,7 +16,7 @@ import { useTxModalWrap } from './use-tx-modal-stages-wrap';
 
 type UseWrapTxApproveArgs = {
   amount: bigint;
-  token: TokensWrappable;
+  token: TOKENS_WRAPPABLE;
 };
 
 export const useWrapTxOnL1Approve = ({
@@ -46,7 +46,7 @@ export const useWrapTxOnL1Approve = ({
     isNonNegativeBigInt(allowance) && amount > (allowance as bigint);
 
   const isApprovalNeededBeforeWrap =
-    isDappActiveOnL1 && needsApprove && token === TOKENS_TO_WRAP.STETH;
+    isDappActiveOnL1 && needsApprove && token === TOKENS_TO_WRAP.stETH;
 
   const processApproveTx = useCallback(
     async ({ onRetry }: { onRetry?: () => void }) => {

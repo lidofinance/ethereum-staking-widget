@@ -1,7 +1,6 @@
 import { useFormContext } from 'react-hook-form';
 
 import { DataTable, DataTableRow } from '@lidofinance/lido-ui';
-import { TOKENS } from '@lido-sdk/constants';
 
 import { DATA_UNAVAILABLE } from 'consts/text';
 import { ONE_stETH, useDappStatus, useWstethBySteth } from 'modules/web3';
@@ -24,7 +23,7 @@ export const WrapFormStats = () => {
   const { watch } = useFormContext<WrapFormInputType>();
   const [token, amount] = watch(['token', 'amount']);
 
-  const isSteth = token === TOKENS_TO_WRAP.STETH;
+  const isSteth = token === TOKENS_TO_WRAP.stETH;
 
   const {
     data: willReceiveWsteth,
@@ -107,7 +106,7 @@ export const WrapFormStats = () => {
           allowance={allowance}
           isBlank={!(isSteth && isDappActive)}
           loading={isAllowanceLoading}
-          token={TOKENS.STETH}
+          token={TOKENS_TO_WRAP.stETH}
         />
       )}
     </DataTable>

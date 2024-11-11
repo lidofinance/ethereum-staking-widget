@@ -84,7 +84,7 @@ export const useWrapFormProcessor = ({
           return true;
         }
 
-        if (token === TOKENS_TO_WRAP.STETH) {
+        if (token === TOKENS_TO_WRAP.stETH) {
           if (isApprovalNeededBeforeWrapOnL1) {
             await processApproveTxOnL1({ onRetry });
           }

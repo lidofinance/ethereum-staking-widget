@@ -2,7 +2,7 @@ import invariant from 'tiny-invariant';
 import { formatEther } from 'viem';
 import type { Resolver } from 'react-hook-form';
 
-import { TokensWrappable, TOKENS_TO_WRAP } from 'features/wsteth/shared/types';
+import { TOKENS_WRAPPABLE, TOKENS_TO_WRAP } from 'features/wsteth/shared/types';
 import { VALIDATION_CONTEXT_TIMEOUT } from 'features/withdrawals/withdrawals-constants';
 
 import { validateStakeEth } from 'shared/hook-form/validation/validate-stake-eth';
@@ -15,7 +15,7 @@ import { awaitWithTimeout } from 'utils/await-with-timeout';
 
 import type { WrapFormInputType, WrapFormValidationContext } from './types';
 
-const messageMaxAmount = (max: bigint, token: TokensWrappable) =>
+const messageMaxAmount = (max: bigint, token: TOKENS_WRAPPABLE) =>
   `Entered ${getTokenDisplayName(
     token,
   )} amount exceeds your available balance of ${formatEther(max)}`;

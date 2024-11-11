@@ -1,6 +1,5 @@
 import { useWatch } from 'react-hook-form';
 import { DataTableRow, DataTable } from '@lidofinance/lido-ui';
-import { TOKENS } from '@lido-sdk/constants';
 
 import { useDappStatus } from 'modules/web3';
 
@@ -15,6 +14,7 @@ import { useTxCostInUsd } from 'shared/hooks/use-tx-cost-in-usd';
 
 import { useUnwrapGasLimit } from '../hooks/use-unwrap-gas-limit';
 import { useUnwrapFormData, UnwrapFormInputType } from '../unwrap-form-context';
+import { TOKENS_TO_WRAP } from '../../shared/types';
 
 export const UnwrapStats = () => {
   const { isDappActiveOnL2, chainTypeChainId } = useDappStatus();
@@ -81,7 +81,7 @@ export const UnwrapStats = () => {
           allowance={allowance || BigInt(0)}
           isBlank={!isDappActiveOnL2}
           loading={isAllowanceLoading}
-          token={TOKENS.WSTETH}
+          token={TOKENS_TO_WRAP.wstETH}
         />
       )}
     </DataTable>

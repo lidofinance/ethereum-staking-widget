@@ -12,7 +12,7 @@ import { TxStageSignOperationAmount } from 'shared/transaction-modal/tx-stages-c
 import { TxRequestStageSuccess } from './tx-stage-request-success';
 
 import { getTokenDisplayName } from 'utils/getTokenDisplayName';
-import type { TokensWithdrawable } from 'features/withdrawals/types/tokens-withdrawable';
+import type { TOKENS_WITHDRAWABLE } from 'features/withdrawals/types/tokens-withdrawable';
 
 const STAGE_APPROVE_ARGS = {
   willReceiveToken: 'wstETH',
@@ -44,7 +44,7 @@ const getTxModalStagesRequest = (
 
   signPermit: () => transitStage(<TxStagePermit />),
 
-  signApproval: (amount: bigint, token: TokensWithdrawable) =>
+  signApproval: (amount: bigint, token: TOKENS_WITHDRAWABLE) =>
     transitStage(
       <TxStageSignOperationAmount
         {...STAGE_APPROVE_ARGS}
@@ -55,7 +55,7 @@ const getTxModalStagesRequest = (
 
   pendingApproval: (
     amount: bigint,
-    token: TokensWithdrawable,
+    token: TOKENS_WITHDRAWABLE,
     txHash?: string,
   ) =>
     transitStage(
@@ -68,7 +68,7 @@ const getTxModalStagesRequest = (
       />,
     ),
 
-  sign: (amount: bigint, token: TokensWithdrawable) =>
+  sign: (amount: bigint, token: TOKENS_WITHDRAWABLE) =>
     transitStage(
       <TxStageSignOperationAmount
         {...STAGE_OPERATION_ARGS}
@@ -77,7 +77,7 @@ const getTxModalStagesRequest = (
       />,
     ),
 
-  pending: (amount: bigint, token: TokensWithdrawable, txHash?: string) =>
+  pending: (amount: bigint, token: TOKENS_WITHDRAWABLE, txHash?: string) =>
     transitStage(
       <TxStageSignOperationAmount
         {...STAGE_OPERATION_ARGS}
@@ -88,7 +88,7 @@ const getTxModalStagesRequest = (
       />,
     ),
 
-  success: (amount: bigint, token: TokensWithdrawable, txHash: string) =>
+  success: (amount: bigint, token: TOKENS_WITHDRAWABLE, txHash: string) =>
     transitStage(
       <TxRequestStageSuccess
         amount={amount}

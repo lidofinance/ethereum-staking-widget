@@ -1,9 +1,8 @@
 import { formatEther } from '@ethersproject/units';
-import { TOKENS } from '@lido-sdk/constants';
 import invariant from 'tiny-invariant';
 import { Resolver } from 'react-hook-form';
 
-import { TokensWithdrawable } from 'features/withdrawals/types/tokens-withdrawable';
+import { TOKENS_WITHDRAWABLE } from 'features/withdrawals/types/tokens-withdrawable';
 import {
   RequestFormValidationAsyncContextType,
   RequestFormInputType,
@@ -52,12 +51,12 @@ export class ValidationSplitRequest extends ValidationError {
   }
 }
 
-const messageMinUnstake = (min: bigint, token: TokensWithdrawable) =>
+const messageMinUnstake = (min: bigint, token: TOKENS_WITHDRAWABLE) =>
   `Minimum withdraw amount is ${formatEther(min)} ${getTokenDisplayName(
     token,
   )}`;
 
-const messageMaxAmount = (max: bigint, token: TokensWithdrawable) =>
+const messageMaxAmount = (max: bigint, token: TOKENS_WITHDRAWABLE) =>
   `Entered ${getTokenDisplayName(
     token,
   )} amount exceeds your available balance of ${formatEther(max)}`;
@@ -124,7 +123,7 @@ const transformContext = (
   context: RequestFormValidationAsyncContextType,
   values: RequestFormInputType,
 ) => {
-  const isSteth = values.token === TOKENS.STETH;
+  const isSteth = values.token === TOKENS_WITHDRAWABLE.stETH;
   return {
     isSteth,
     balance: isSteth ? context.balanceSteth : context.balanceWSteth,

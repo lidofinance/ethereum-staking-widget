@@ -56,7 +56,7 @@ export const WrapFormProvider: FC<PropsWithChildren> = ({ children }) => {
   const formObject = useForm<WrapFormInputType, WrapFormValidationContext>({
     defaultValues: {
       amount: null,
-      token: TOKENS_TO_WRAP.STETH,
+      token: TOKENS_TO_WRAP.stETH,
     },
     context: validationContextPromise,
     criteriaMode: 'firstError',
@@ -76,7 +76,7 @@ export const WrapFormProvider: FC<PropsWithChildren> = ({ children }) => {
     amount: amount ?? ZERO,
     token,
   });
-  const isSteth = token === TOKENS_TO_WRAP.STETH;
+  const isSteth = token === TOKENS_TO_WRAP.stETH;
 
   const onConfirm = useCallback(async () => {
     await Promise.allSettled([

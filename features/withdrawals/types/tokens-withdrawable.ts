@@ -1,3 +1,10 @@
-import { TOKENS } from '@lido-sdk/constants';
+import { LIDO_TOKENS } from '@lidofinance/lido-ethereum-sdk/common';
 
-export type TokensWithdrawable = TOKENS.STETH | TOKENS.WSTETH;
+// TOKENS_TO_WITHDRAWABLE
+export const TOKENS_WITHDRAWABLE = {
+  [LIDO_TOKENS.steth]: LIDO_TOKENS.steth,
+  [LIDO_TOKENS.wsteth]: LIDO_TOKENS.wsteth,
+} as const;
+
+// TokensWithdrawable
+export type TOKENS_WITHDRAWABLE = keyof typeof TOKENS_WITHDRAWABLE;

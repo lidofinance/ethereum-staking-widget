@@ -1,10 +1,12 @@
-import { TOKENS } from '@lido-sdk/constants';
+import { LIDO_TOKENS } from '@lidofinance/lido-ethereum-sdk/common';
 
 export const TOKEN_DISPLAY_NAMES = {
-  ETH: 'ETH',
-  [TOKENS.STETH]: 'stETH',
-  [TOKENS.WSTETH]: 'wstETH',
+  [LIDO_TOKENS.eth]: 'ETH',
+  [LIDO_TOKENS.steth]: 'stETH',
+  [LIDO_TOKENS.wsteth]: 'wstETH',
 };
 
-export const getTokenDisplayName = (token: keyof typeof TOKEN_DISPLAY_NAMES) =>
+export type TOKEN_DISPLAY_NAMES_TYPE = keyof typeof TOKEN_DISPLAY_NAMES;
+
+export const getTokenDisplayName = (token: TOKEN_DISPLAY_NAMES_TYPE) =>
   TOKEN_DISPLAY_NAMES[token];

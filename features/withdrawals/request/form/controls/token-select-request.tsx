@@ -1,13 +1,13 @@
 import {
-  TOKENS,
   TokenOption,
   TokenSelectHookForm,
 } from 'shared/hook-form/controls/token-select-hook-form/token-select-hook-form';
 import { useDappStatus } from 'modules/web3';
+import { TOKENS_TO_WRAP } from '../../../../wsteth/shared/types';
 
 const OPTIONS: TokenOption[] = [
-  { token: TOKENS.STETH },
-  { token: TOKENS.WSTETH },
+  { token: TOKENS_TO_WRAP.stETH },
+  { token: TOKENS_TO_WRAP.wstETH },
 ];
 
 export const TokenSelectRequest = () => {

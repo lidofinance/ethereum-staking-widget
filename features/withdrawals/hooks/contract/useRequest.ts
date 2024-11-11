@@ -8,9 +8,9 @@ import {
   useSTETHContractRPC,
   useWSTETHContractRPC,
 } from '@lido-sdk/react';
-import { TOKENS, getWithdrawalQueueAddress } from '@lido-sdk/constants';
+import { getWithdrawalQueueAddress } from '@lido-sdk/constants';
 
-import { TokensWithdrawable } from 'features/withdrawals/types/tokens-withdrawable';
+import { TOKENS_WITHDRAWABLE } from 'features/withdrawals/types/tokens-withdrawable';
 import { useWithdrawals } from 'features/withdrawals/contexts/withdrawals-context';
 import {
   GatherPermitSignatureResult,
@@ -168,8 +168,8 @@ const useWithdrawalRequestMethods = () => {
   );
 
   return useCallback(
-    (isAllowance: boolean, token: TOKENS.STETH | TOKENS.WSTETH) => {
-      return token == TOKENS.STETH
+    (isAllowance: boolean, token: TOKENS_WITHDRAWABLE) => {
+      return token == TOKENS_WITHDRAWABLE.stETH
         ? isAllowance
           ? steth
           : permitSteth
@@ -186,7 +186,7 @@ const useWithdrawalRequestMethods = () => {
 
 type useWithdrawalRequestParams = {
   amount: bigint | null;
-  token: TOKENS.STETH | TOKENS.WSTETH;
+  token: TOKENS_WITHDRAWABLE;
   onConfirm?: () => Promise<void>;
   onRetry?: () => void;
 };
@@ -210,7 +210,8 @@ export const useWithdrawalRequest = ({
 
   const wstethContract = useWSTETHContractRPC();
   const stethContract = useSTETHContractRPC();
-  const tokenContract = token === TOKENS.STETH ? stethContract : wstethContract;
+  const tokenContract =
+    token === TOKENS_WITHDRAWABLE.stETH ? stethContract : wstethContract;
 
   const { closeModal } = useTransactionModal();
 
@@ -259,7 +260,7 @@ export const useWithdrawalRequest = ({
     }: {
       requests: bigint[] | null;
       amount: bigint | null;
-      token: TokensWithdrawable;
+      token: TOKENS_WITHDRAWABLE;
     }) => {
       // define and set retry point
       try {

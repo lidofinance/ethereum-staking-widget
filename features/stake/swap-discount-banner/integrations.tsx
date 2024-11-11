@@ -1,7 +1,6 @@
 // TODO: NEW SDK
 // import { parseEther } from '@ethersproject/units';
 import { parseEther } from 'viem';
-import { TOKENS } from '@lido-sdk/constants';
 
 import { OPEN_OCEAN_REFERRAL_ADDRESS } from 'consts/external-links';
 import { MATOMO_CLICK_EVENTS } from 'consts/matomo-click-events';
@@ -14,6 +13,7 @@ import {
   StakeSwapDiscountIntegrationMap,
 } from './types';
 import { OpenOceanIcon, OneInchIcon, OverlayLink } from './styles';
+import { TOKENS_WITHDRAWABLE } from '../../withdrawals/types/tokens-withdrawable';
 
 const DEFAULT_AMOUNT = parseEther('1');
 
@@ -24,7 +24,7 @@ const STAKE_SWAP_INTEGRATION_CONFIG: StakeSwapDiscountIntegrationMap = {
       const { rate } = await getOpenOceanRate(
         DEFAULT_AMOUNT,
         'ETH',
-        TOKENS.STETH,
+        TOKENS_WITHDRAWABLE.stETH,
       );
       return rate;
     },

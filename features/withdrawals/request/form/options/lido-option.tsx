@@ -1,7 +1,6 @@
 import { useWatch } from 'react-hook-form';
 
 import { Tooltip, Question } from '@lidofinance/lido-ui';
-import { TOKENS } from '@lido-sdk/constants';
 
 import { useEthAmountByStethWsteth } from 'features/withdrawals/hooks';
 import { useInpageNavigation } from 'providers/inpage-navigation';
@@ -18,6 +17,7 @@ import {
   LidoOptionInlineLoader,
 } from './styles';
 import { OnlyInfraRender } from 'shared/components/only-infra-render';
+import { TOKENS_TO_WRAP } from '../../../../wsteth/shared/types';
 
 const TooltipWithdrawalAmount = () => {
   const { navigateInpageAnchor } = useInpageNavigation();
@@ -58,7 +58,7 @@ export const LidoOption = () => {
 
   const { amount: ethAmount, loading: amountLoading } =
     useEthAmountByStethWsteth({
-      isSteth: token === TOKENS.STETH,
+      isSteth: token === TOKENS_TO_WRAP.stETH,
       amount,
     });
 

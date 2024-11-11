@@ -2,7 +2,6 @@ import { useMemo } from 'react';
 import { BigNumber } from 'ethers';
 import invariant from 'tiny-invariant';
 
-import { TOKENS } from '@lido-sdk/constants';
 import { useLidoSWR } from '@lido-sdk/react';
 
 import { useDappStatus } from 'modules/web3';
@@ -16,10 +15,11 @@ import { standardFetcher } from 'utils/standardFetcher';
 
 import { RequestStatusClaimable } from '../types/request-status';
 import { useWithdrawalsContract } from './contract/useWithdrawalsContract';
+import { TOKENS_WITHDRAWABLE } from '../types/tokens-withdrawable';
 
 type UseRequestTxPriceOptions = {
   requestCount?: number;
-  token: TOKENS;
+  token: TOKENS_WITHDRAWABLE;
   isApprovalFlow: boolean;
 };
 
@@ -31,7 +31,7 @@ export const useRequestTxPrice = ({
   const { chainId } = useDappStatus();
   const { contractRpc } = useWithdrawalsContract();
   const fallback =
-    token === 'STETH'
+    token === TOKENS_WITHDRAWABLE.stETH
       ? isApprovalFlow
         ? config.WITHDRAWAL_QUEUE_REQUEST_STETH_APPROVED_GAS_LIMIT_DEFAULT
         : config.WITHDRAWAL_QUEUE_REQUEST_STETH_PERMIT_GAS_LIMIT_DEFAULT

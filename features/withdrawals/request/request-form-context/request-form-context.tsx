@@ -8,7 +8,6 @@ import {
 } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import invariant from 'tiny-invariant';
-import { TOKENS } from '@lido-sdk/constants';
 
 import { useWithdrawalRequest } from 'features/withdrawals/hooks';
 
@@ -27,6 +26,7 @@ import {
   RequestFormValidationContextType,
   ValidationResults,
 } from './types';
+import { TOKENS_WITHDRAWABLE } from '../../types/tokens-withdrawable';
 
 //
 // data context
@@ -75,7 +75,7 @@ export const RequestFormProvider: FC<PropsWithChildren> = ({ children }) => {
   >({
     defaultValues: {
       amount: null,
-      token: TOKENS.STETH,
+      token: TOKENS_WITHDRAWABLE.stETH,
       mode: 'lido',
       requests: null,
     },
@@ -107,7 +107,8 @@ export const RequestFormProvider: FC<PropsWithChildren> = ({ children }) => {
     onRetry: retryFire,
   });
 
-  const maxAmount = token === TOKENS.STETH ? balanceSteth : balanceWSteth;
+  const maxAmount =
+    token === TOKENS_WITHDRAWABLE.stETH ? balanceSteth : balanceWSteth;
 
   const value = useMemo(
     (): RequestFormDataContextValueType => ({

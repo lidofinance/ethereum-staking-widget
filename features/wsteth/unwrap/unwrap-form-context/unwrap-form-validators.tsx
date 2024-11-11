@@ -8,13 +8,13 @@ import { getTokenDisplayName } from 'utils/getTokenDisplayName';
 import { handleResolverValidationError } from 'shared/hook-form/validation/validation-error';
 
 import { awaitWithTimeout } from 'utils/await-with-timeout';
-import { TOKENS } from '@lido-sdk/constants';
 import { VALIDATION_CONTEXT_TIMEOUT } from 'features/withdrawals/withdrawals-constants';
 import type { UnwrapFormInputType, UnwrapFormValidationContext } from './types';
+import { TOKENS_TO_WRAP } from '../../shared/types';
 
 const messageMaxAmount = (max: bigint) =>
   `Entered ${getTokenDisplayName(
-    TOKENS.WSTETH,
+    TOKENS_TO_WRAP.wstETH,
   )} amount exceeds your available balance of ${formatEther(max)}`;
 
 export const UnwrapFormValidationResolver: Resolver<
@@ -28,8 +28,11 @@ export const UnwrapFormValidationResolver: Resolver<
       'validation context must be presented as context promise',
     );
 
-    // TODO: NEW SDK
-    validateEtherAmount('amount', amount ? amount : undefined, TOKENS.WSTETH);
+    validateEtherAmount(
+      'amount',
+      amount ? amount : undefined,
+      TOKENS_TO_WRAP.wstETH,
+    );
 
     const { isWalletActive: active, maxAmount } = await awaitWithTimeout(
       validationContextPromise,

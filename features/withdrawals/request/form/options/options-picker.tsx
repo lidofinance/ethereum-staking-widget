@@ -4,11 +4,10 @@ import { useWatch } from 'react-hook-form';
 // import { formatEther, parseEther } from '@ethersproject/units';
 import { formatEther, parseEther } from 'viem';
 
-import { TOKENS } from '@lido-sdk/constants';
-
 import { MATOMO_CLICK_EVENTS_TYPES } from 'consts/matomo-click-events';
 import { DATA_UNAVAILABLE } from 'consts/text';
 
+import { TOKENS_WITHDRAWABLE } from 'features/withdrawals/types/tokens-withdrawable';
 import { useWaitingTime } from 'features/withdrawals/hooks/useWaitingTime';
 import { useTvlError } from 'features/withdrawals/hooks/useTvlError';
 import { RequestFormInputType } from 'features/withdrawals/request/request-form-context';
@@ -43,7 +42,7 @@ const LidoButton: React.FC<OptionButtonProps> = ({ isActive, onClick }) => {
   const [amount, token] = useWatch<RequestFormInputType, ['amount', 'token']>({
     name: ['amount', 'token'],
   });
-  const isSteth = token === TOKENS.STETH;
+  const isSteth = token === TOKENS_WITHDRAWABLE.stETH;
   const { value: waitingTime, initialLoading } = useWaitingTime(
     amount ? formatEther(amount) : '',
     {

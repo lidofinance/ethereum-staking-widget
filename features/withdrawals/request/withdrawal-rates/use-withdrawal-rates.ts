@@ -1,6 +1,5 @@
 import { useMemo } from 'react';
 import { useWatch } from 'react-hook-form';
-import { TOKENS } from '@lido-sdk/constants';
 import { useLidoSWR } from '@lido-sdk/react';
 
 import { ZERO } from 'modules/web3';
@@ -16,6 +15,7 @@ import type {
   GetWithdrawalRateResult,
 } from './types';
 import { useConfig } from 'config';
+import { TOKENS_WITHDRAWABLE } from '../../types/tokens-withdrawable';
 
 export type useWithdrawalRatesOptions = {
   fallbackValue?: bigint;
@@ -68,7 +68,7 @@ export const useWithdrawalRates = ({
         // TODO: NEW SDK
         // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
         amount: amount as unknown as bigint,
-        token: token as TOKENS.STETH | TOKENS.WSTETH,
+        token: token as TOKENS_WITHDRAWABLE,
         dexes: enabledDexes as DexWithdrawalApi[],
       }),
     {

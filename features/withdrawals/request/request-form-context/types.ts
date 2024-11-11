@@ -1,6 +1,6 @@
-import { TokensWithdrawable } from 'features/withdrawals/types/tokens-withdrawable';
+import { TOKENS_WITHDRAWABLE } from 'features/withdrawals/types/tokens-withdrawable';
 import { Dispatch, SetStateAction } from 'react';
-import { useRequestFormDataContextValue } from './use-request-form-data-context-value';
+import type { useRequestFormDataContextValue } from './use-request-form-data-context-value';
 
 export type ValidationResults = {
   requests: null | bigint[];
@@ -8,7 +8,7 @@ export type ValidationResults = {
 
 export type RequestFormInputType = {
   amount: null | bigint;
-  token: TokensWithdrawable;
+  token: TOKENS_WITHDRAWABLE;
   mode: 'lido' | 'dex';
 } & ValidationResults;
 

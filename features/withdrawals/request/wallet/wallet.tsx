@@ -1,20 +1,21 @@
 import { useWatch } from 'react-hook-form';
 
-import { TOKENS } from '@lido-sdk/constants';
 import { Divider } from '@lidofinance/lido-ui';
 
 import { WalletMyRequests } from 'features/withdrawals/shared';
 import { WalletWrapperStyled } from 'features/withdrawals/shared';
 import { CardAccount, CardRow, Fallback } from 'shared/wallet';
 
+import { RequestFormInputType } from '../request-form-context';
+import { TOKENS_WITHDRAWABLE } from '../../types/tokens-withdrawable';
+
 import { WalletStethBalance } from './wallet-steth-balance';
 import { WalletWstethBalance } from './wallet-wsteth-balance';
 import { WalletMode } from './wallet-mode';
-import { RequestFormInputType } from '../request-form-context';
 
 export const WalletComponent = () => {
   const token = useWatch<RequestFormInputType, 'token'>({ name: 'token' });
-  const isSteth = token === TOKENS.STETH;
+  const isSteth = token === TOKENS_WITHDRAWABLE.stETH;
 
   return (
     <WalletWrapperStyled data-testid="requestCardSection">

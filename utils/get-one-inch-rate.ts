@@ -1,9 +1,10 @@
-import { TOKENS } from '@lido-sdk/constants';
 import { standardFetcher } from './standardFetcher';
 import { ETH_API_ROUTES, getEthApiPath } from 'consts/api';
+import { TOKENS_WRAPPABLE } from '../features/wsteth/shared/types';
+import { TOKENS_WITHDRAWABLE } from '../features/withdrawals/types/tokens-withdrawable';
 
 type GetOneInchRateParams = {
-  token: TOKENS.STETH | TOKENS.WSTETH | 'ETH';
+  token: TOKENS_WITHDRAWABLE | TOKENS_WRAPPABLE;
   amount?: bigint;
 };
 

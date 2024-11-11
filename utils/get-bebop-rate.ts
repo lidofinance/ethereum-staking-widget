@@ -1,7 +1,10 @@
 import { getAddress } from 'ethers/lib/utils.js';
-import { CHAINS, TOKENS, getTokenAddress } from '@lido-sdk/constants';
+import { CHAINS, getTokenAddress, TOKENS } from '@lido-sdk/constants';
 import { config } from 'config';
 import { standardFetcher } from './standardFetcher';
+
+import { TOKENS_WITHDRAWABLE } from '../features/withdrawals/types/tokens-withdrawable';
+import { TOKENS_WRAPPABLE } from '../features/wsteth/shared/types';
 
 type BebopGetQuotePartial = {
   routes: {
@@ -24,14 +27,14 @@ type BebopGetQuotePartial = {
   }[];
 };
 
-type RateToken = TOKENS.STETH | TOKENS.WSTETH | 'ETH';
+type RateToken = TOKENS_WITHDRAWABLE | TOKENS_WRAPPABLE;
 
 type RateCalculationResult = { rate: number; toReceive: bigint };
 
 const getRateTokenAddress = (token: RateToken) =>
   token === 'ETH'
     ? '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE'
-    : getTokenAddress(CHAINS.Mainnet, token);
+    : getTokenAddress(CHAINS.Mainnet, token as TOKENS);
 
 export const getBebopRate = async (
   amount: bigint,
