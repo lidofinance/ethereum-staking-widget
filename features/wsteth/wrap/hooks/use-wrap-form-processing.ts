@@ -3,6 +3,8 @@ import invariant from 'tiny-invariant';
 
 import { TransactionCallbackStage } from '@lidofinance/lido-ethereum-sdk/core';
 
+import { config } from 'config';
+import { MockLimitReachedError } from 'features/stake/stake-form/utils';
 import { useDappStatus, useLidoSDK } from 'modules/web3';
 
 import type {
@@ -112,7 +114,12 @@ export const useWrapFormProcessor = ({
             },
           });
         } else {
-          // TODO: NEW SDK (add mockLimitReached)
+          if (
+            config.enableQaHelpers &&
+            window.localStorage.getItem('mockLimitReached') === 'true'
+          ) {
+            throw new MockLimitReachedError('Stake limit reached');
+          }
 
           await wrap.wrapEth({
             value: amount,
