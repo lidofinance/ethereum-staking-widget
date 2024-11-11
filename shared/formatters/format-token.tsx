@@ -4,6 +4,7 @@ import { Tooltip } from '@lidofinance/lido-ui';
 import { DATA_UNAVAILABLE } from 'consts/text';
 import { Component } from 'types';
 import { FormatBalanceArgs, useFormattedBalance } from 'utils';
+import { isNonNegativeBigInt } from 'utils/is-non-negative-bigint';
 
 export type FormatTokenProps = FormatBalanceArgs & {
   symbol: string;
@@ -30,7 +31,7 @@ export const FormatToken: FormatTokenComponent = ({
   // TODO: NEW_SDK (remove: see typing)
   //  the Format Token is used on all pages and will be modified in the final iteration.
   const _amount =
-    amount && typeof amount === 'bigint'
+    isNonNegativeBigInt(amount) && typeof amount === 'bigint'
       ? BigNumber.from(amount)
       : (amount as BigNumber);
 

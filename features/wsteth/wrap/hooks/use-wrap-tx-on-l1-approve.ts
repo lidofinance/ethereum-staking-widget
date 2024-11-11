@@ -7,6 +7,7 @@ import { useSDK } from '@lido-sdk/react';
 
 import { TokensWrappable, TOKENS_TO_WRAP } from 'features/wsteth/shared/types';
 import { useAllowance, useDappStatus, useLidoSDK } from 'modules/web3';
+import { isNonNegativeBigInt } from 'utils/is-non-negative-bigint';
 
 import { useTxModalWrap } from './use-tx-modal-stages-wrap';
 
@@ -46,7 +47,7 @@ export const useWrapTxOnL1Approve = ({
     token: wstethTokenAddress as Address,
   });
 
-  const needsApprove = allowance && amount > allowance;
+  const needsApprove = isNonNegativeBigInt(allowance) && amount > allowance;
 
   const isApprovalNeededBeforeWrap =
     isDappActiveOnL1 && needsApprove && token === TOKENS_TO_WRAP.STETH;
