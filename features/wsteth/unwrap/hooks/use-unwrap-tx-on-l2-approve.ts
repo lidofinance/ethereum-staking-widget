@@ -1,10 +1,12 @@
 import { useMemo, useCallback } from 'react';
 
-import { runWithTransactionLogger } from 'utils';
-import { useLidoSDK, useDappStatus, useAllowance } from 'modules/web3';
-
 import { LIDO_L2_CONTRACT_ADDRESSES } from '@lidofinance/lido-ethereum-sdk/common';
 import { TransactionCallbackStage } from '@lidofinance/lido-ethereum-sdk/core';
+
+import { useLidoSDK, useDappStatus, useAllowance } from 'modules/web3';
+
+import { useTxModalWrap } from '../../wrap/hooks/use-tx-modal-stages-wrap';
+import { TOKENS_TO_WRAP } from '../../shared/types';
 
 type UseUnwrapTxApproveArgs = {
   amount: bigint;
@@ -13,6 +15,7 @@ type UseUnwrapTxApproveArgs = {
 export const useUnwrapTxOnL2Approve = ({ amount }: UseUnwrapTxApproveArgs) => {
   const { isDappActiveOnL2, isChainTypeOnL2, address } = useDappStatus();
   const { core, l2 } = useLidoSDK();
+  const { txModalStages } = useTxModalWrap();
 
   const staticTokenAddress = LIDO_L2_CONTRACT_ADDRESSES[core.chainId]?.wsteth;
   const staticSpenderAddress = LIDO_L2_CONTRACT_ADDRESSES[core.chainId]?.steth;
@@ -31,25 +34,34 @@ export const useUnwrapTxOnL2Approve = ({ amount }: UseUnwrapTxApproveArgs) => {
   const isApprovalNeededBeforeUnwrap = allowance && amount > allowance;
 
   const processApproveTx = useCallback(
-    async ({ onTxSent }: { onTxSent: (txHash: string) => void }) => {
-      const approveTxHash = (
-        await runWithTransactionLogger('Approve signing on L2', () =>
-          l2.approveWstethForWrap({
-            value: amount,
-            callback: ({ stage, payload }) => {
-              if (stage === TransactionCallbackStage.RECEIPT)
-                onTxSent?.(payload);
-            },
-          }),
-        )
-      ).hash;
+    async ({ onRetry }: { onRetry?: () => void }) => {
+      const approveTxHash = await l2.approveWstethForWrap({
+        value: amount,
+        callback: ({ stage, payload }) => {
+          switch (stage) {
+            case TransactionCallbackStage.SIGN:
+              txModalStages.signApproval(amount, TOKENS_TO_WRAP.WSTETH);
+              break;
+            case TransactionCallbackStage.RECEIPT:
+              txModalStages.pendingApproval(amount, TOKENS_TO_WRAP.WSTETH);
+              break;
+            case TransactionCallbackStage.MULTISIG_DONE:
+              txModalStages.successMultisig();
+              break;
+            case TransactionCallbackStage.ERROR:
+              txModalStages.failed(payload, onRetry);
+              break;
+            default:
+          }
+        },
+      });
 
       // wait for refetch to settle
       await refetchAllowance().catch();
 
       return approveTxHash;
     },
-    [l2, amount, refetchAllowance],
+    [refetchAllowance, l2, amount, txModalStages],
   );
 
   return useMemo(
