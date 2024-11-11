@@ -3,8 +3,11 @@ import { useClaimData } from 'features/withdrawals/contexts/claim-data-context';
 import { useWithdrawals } from 'features/withdrawals/contexts/withdrawals-context';
 import { useUnfinalizedStETH } from 'features/withdrawals/hooks';
 import { useCallback, useMemo } from 'react';
-import { useWstethBySteth } from 'shared/hooks';
-import { useStethBalance, useWstethBalance } from 'modules/web3';
+import {
+  useStethBalance,
+  useWstethBalance,
+  useWstethBySteth,
+} from 'modules/web3';
 import { STRATEGY_LAZY } from 'consts/swr-strategies';
 
 // Provides all data fetching for form to function
@@ -21,7 +24,7 @@ export const useRequestFormDataContextValue = () => {
     maxAmount: maxAmountPerRequestSteth,
     minAmount: minUnstakeSteth,
     isWithdrawalsStatusLoading: isMinMaxStethLoading,
-  } = useWithdrawals();
+  } = useWithdrawals(); // TODO: NEW SDK (fix friezes useWithdrawals->useWithdrawalsBaseData)
   const {
     data: balanceSteth,
     refetch: stethUpdate,
@@ -77,14 +80,14 @@ export const useRequestFormDataContextValue = () => {
 
   return useMemo(
     () => ({
-      maxAmountPerRequestSteth: maxAmountPerRequestSteth,
-      minUnstakeSteth: minUnstakeSteth,
+      maxAmountPerRequestSteth,
+      minUnstakeSteth,
       balanceSteth,
       balanceWSteth,
-      maxAmountPerRequestWSteth: maxAmountPerRequestWSteth,
-      minUnstakeWSteth: minUnstakeWSteth,
-      stethTotalSupply: stethTotalSupply,
-      unfinalizedStETH: unfinalizedStETH,
+      maxAmountPerRequestWSteth,
+      minUnstakeWSteth,
+      stethTotalSupply,
+      unfinalizedStETH,
       revalidateRequestFormData,
       loading,
     }),

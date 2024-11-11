@@ -8,7 +8,7 @@ import {
 import invariant from 'tiny-invariant';
 
 import { StatusProps } from 'features/withdrawals/shared/status';
-import { useWithdrawalsBaseData } from 'features/withdrawals/hooks/contract/useWithdrawalsBaseData';
+// import { useWithdrawalsBaseData } from 'features/withdrawals/hooks/contract/useWithdrawalsBaseData';
 
 export type WithdrawalsContextValue = {
   isClaimTab: boolean;
@@ -38,9 +38,18 @@ export const WithdrawalsProvider: FC<
 > = ({ children, mode }) => {
   const isClaimTab = mode === 'claim';
 
-  const { data, initialLoading: isWithdrawalsStatusLoading } =
-    useWithdrawalsBaseData();
-  const { isBunker, isPaused, isTurbo, maxAmount, minAmount } = data ?? {};
+  // TODO: NEW SDK (fix friezes in useWithdrawalsBaseData)
+  // const { data, initialLoading: isWithdrawalsStatusLoading } =
+  //   useWithdrawalsBaseData();
+  // const { isBunker, isPaused, isTurbo, maxAmount, minAmount } = data ?? {};
+
+  // TODO: NEW SDK (temp)
+  const isPaused = false;
+  const isBunker = false;
+  const isTurbo = false;
+  const isWithdrawalsStatusLoading = false;
+  const maxAmount = BigInt(1);
+  const minAmount = BigInt(1);
 
   const withdrawalsStatus: StatusProps['variant'] = (() => {
     if (isPaused) return 'error';

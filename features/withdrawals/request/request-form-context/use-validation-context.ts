@@ -45,10 +45,11 @@ export const useValidationContext = (
             balanceSteth,
             balanceWSteth,
             maxAmountPerRequestSteth,
-            maxAmountPerRequestWSteth: maxAmountPerRequestWSteth.toBigInt(),
+            maxAmountPerRequestWSteth,
             minUnstakeSteth,
-            minUnstakeWSteth: minUnstakeWSteth.toBigInt(),
+            minUnstakeWSteth,
             maxRequestCount,
+            // TODO: NEW SDK (remove .toBigInt())
             stethTotalSupply: stethTotalSupply.toBigInt(),
           }
         : undefined;

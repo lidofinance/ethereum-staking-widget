@@ -8,6 +8,8 @@ export const useWstethBySteth = (steth: bigint | undefined) => {
   return useContractSWR({
     contract: useWSTETHContractRPC(),
     method: 'getWstETHByStETH',
+    // PROBLEMS HERE!
+    // params: [BigNumber.from(steth)],
     params: [steth ? BigNumber.from(steth) : BigNumber.from(0)],
     shouldFetch: !!steth,
     config: STRATEGY_LAZY,
