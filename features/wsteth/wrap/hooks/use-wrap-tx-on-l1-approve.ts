@@ -1,12 +1,15 @@
 import { useMemo, useCallback } from 'react';
-import { Address } from 'viem';
 
 import { TransactionCallbackStage } from '@lidofinance/lido-ethereum-sdk/core';
-import { getTokenAddress, TOKENS } from '@lido-sdk/constants';
-import { useSDK } from '@lido-sdk/react';
 
 import { TokensWrappable, TOKENS_TO_WRAP } from 'features/wsteth/shared/types';
-import { useAllowance, useDappStatus, useLidoSDK } from 'modules/web3';
+import {
+  useAllowance,
+  useDappStatus,
+  useLidoSDK,
+  useStETHContractAddress,
+  useWstETHContractAddress,
+} from 'modules/web3';
 import { isNonNegativeBigInt } from 'utils/is-non-negative-bigint';
 
 import { useTxModalWrap } from './use-tx-modal-stages-wrap';
@@ -23,17 +26,10 @@ export const useWrapTxOnL1Approve = ({
   const { address, isWalletConnected, isDappActiveOnL1, isChainTypeOnL2 } =
     useDappStatus();
   const { wrap } = useLidoSDK();
-  const { chainId } = useSDK();
   const { txModalStages } = useTxModalWrap();
 
-  const [stethTokenAddress, wstethTokenAddress] = useMemo(
-    () => [
-      // TODO: NEW SDK
-      getTokenAddress(chainId, TOKENS.STETH),
-      getTokenAddress(chainId, TOKENS.WSTETH),
-    ],
-    [chainId],
-  );
+  const { data: staticSpenderAddress } = useStETHContractAddress();
+  const { data: staticTokenAddress } = useWstETHContractAddress();
 
   // only runs on l1
   const {
@@ -42,12 +38,12 @@ export const useWrapTxOnL1Approve = ({
     refetch: refetchAllowance,
   } = useAllowance({
     account: isDappActiveOnL1 ? address : undefined,
-    // TODO: NEW SDK
-    spender: stethTokenAddress as Address,
-    token: wstethTokenAddress as Address,
+    spender: staticSpenderAddress,
+    token: staticTokenAddress,
   });
 
-  const needsApprove = isNonNegativeBigInt(allowance) && amount > allowance;
+  const needsApprove =
+    isNonNegativeBigInt(allowance) && amount > (allowance as bigint);
 
   const isApprovalNeededBeforeWrap =
     isDappActiveOnL1 && needsApprove && token === TOKENS_TO_WRAP.STETH;
