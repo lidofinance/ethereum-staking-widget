@@ -10,6 +10,7 @@ import {
 import { openWindow } from '@lido-sdk/helpers';
 import { useConnectorInfo, useDisconnect } from 'reef-knot/core-react';
 
+import { CHAINS } from 'consts/chains';
 import type { ModalComponentType } from 'providers/modal-provider';
 import { useCopyToClipboard } from 'shared/hooks';
 import { getEtherscanAddressLink } from 'utils/get-etherscan-address-link';
@@ -23,7 +24,6 @@ import {
   WalletModalActionsStyle,
 } from './styles';
 import { useDappStatus } from 'modules/web3';
-import { CHAINS } from '../../../consts/chains';
 
 export const WalletModal: ModalComponentType = ({ onClose, ...props }) => {
   const { address, chainId, walletChainId } = useDappStatus();
