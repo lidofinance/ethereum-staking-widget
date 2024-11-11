@@ -1,36 +1,68 @@
 import styled, { css } from 'styled-components';
-import { SelectIcon } from '@lidofinance/lido-ui';
 
-export const SelectIconWrapper = styled.div`
+export const ChainSwitcherWrapperStyled = styled.div`
   position: relative;
 `;
 
-export const SelectIconStyled = styled(SelectIcon)`
-  overflow: ${({ disabled }) => (disabled ? 'hidden' : 'visible')};
-  width: ${({ disabled }) => (disabled ? '44px' : '68px')};
+export const ChainSwitcherStyled = styled.div<{ $disabled: boolean }>`
+  z-index: 202;
+
+  display: inline-flex;
+  flex-grow: 1;
+  align-items: center;
+  justify-content: space-between;
+
+  position: relative;
+  overflow: ${({ $disabled }) => ($disabled ? 'hidden' : 'visible')};
+  box-sizing: border-box;
+
+  width: ${({ $disabled }) => ($disabled ? '44px' : '68px')};
   height: 44px;
+  margin-right: 12px;
+  padding: 9px 8px;
 
-  cursor: ${({ disabled }) => (disabled ? 'default' : 'pointer')};
-
-  &:not(:disabled):hover {
-    & > span {
-      ${({ theme, disabled }) =>
-        theme.name === 'dark'
-          ? css`
-              background: ${!disabled && '#34343D'};
-            `
-          : css`
-              background: ${!disabled && '#000A3D08'};
-            `}
-    }
-  }
-
-  & > span {
-    border: 0;
-    padding-left: 8px;
-    padding-right: 14px;
-  }
+  font-weight: 400;
+  font-size: 14px;
+  color: var(--lido-color-text);
 
   border-radius: 10px;
-  margin-right: 12px;
+  transition: border-color 100ms;
+  cursor: ${({ $disabled }) => ($disabled ? 'not-allowed' : 'pointer')};
+
+  // Fix the highlight by click
+  -webkit-tap-highlight-color: transparent;
+  outline: none;
+
+  background: var(--lido-color-controlBg);
+
+  &:not(:disabled):hover {
+    ${({ theme, $disabled }) =>
+      theme.name === 'dark'
+        ? css`
+            background: ${!$disabled && '#34343D'};
+          `
+        : css`
+            background: ${!$disabled && '#000A3D08'};
+          `}
+  }
+`;
+
+export const IconStyle = styled.span`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  align-self: stretch;
+  justify-self: stretch;
+`;
+
+export const ArrowStyle = styled.div<{ $opened: boolean }>`
+  border: 3px solid #7a8aa0;
+  border-bottom-width: 0;
+  border-left-color: transparent;
+  border-right-color: transparent;
+
+  margin-right: 6px;
+
+  transform: rotate(${({ $opened }) => ($opened ? 180 : 0)}deg);
+  transition: transform ${({ theme }) => theme.duration.norm} ease;
 `;

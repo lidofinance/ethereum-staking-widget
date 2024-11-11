@@ -1,4 +1,4 @@
-import { useLidoSDK } from 'providers/lido-sdk';
+import { useLidoSDK } from 'modules/web3';
 import {
   CHAINS,
   LIDO_L2_CONTRACT_ADDRESSES,

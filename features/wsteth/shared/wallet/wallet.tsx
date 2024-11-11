@@ -1,72 +1,53 @@
-import { memo } from 'react';
-import { useAccount } from 'wagmi';
-import { useConnectorInfo } from 'reef-knot/core-react';
-
 import { Divider, Text } from '@lidofinance/lido-ui';
-import { useSDK } from '@lido-sdk/react';
 
-import { config, useConfig } from 'config';
-import { CHAINS } from 'consts/chains';
 import { FormatToken } from 'shared/formatters';
 import { TokenToWallet } from 'shared/components';
 import { useWstethBySteth, useStethByWsteth } from 'shared/hooks';
-import { useDappStatus } from 'shared/hooks/use-dapp-status';
-import { useLidoMultichainFallbackCondition } from 'shared/hooks/use-lido-multichain-fallback-condition';
-import type { WalletComponentType } from 'shared/wallet/types';
 import {
-  CardBalance,
-  CardRow,
-  CardAccount,
-  Fallback,
-  LidoMultichainFallback,
-} from 'shared/wallet';
-import {
+  useDappStatus,
   useEthereumBalance,
   useStethBalance,
   useWstethBalance,
-} from 'shared/hooks/use-balance';
-import { OPTIMISM, useDappChain } from 'providers/dapp-chain';
-import { capitalizeFirstLetter } from 'utils/capitalize-string';
+  useStETHByWstETHOnL2,
+  useWstETHByStETHOnL2,
+  DAPP_CHAIN_TYPE,
+} from 'modules/web3';
+import { CardBalance, CardRow, CardAccount, Fallback } from 'shared/wallet';
 
 import { StyledCard } from './styles';
-import { useStETHByWstETHOnL2 } from 'shared/hooks/use-stETH-by-wstETH-on-l2';
-import { useWstETHByStETHOnL2 } from 'shared/hooks/use-wstETH-by-stETH-on-l2';
 import { useIsLedgerLive } from 'shared/hooks/useIsLedgerLive';
+import { useConfig } from 'config';
+import { useConnectorInfo } from 'reef-knot/core-react';
 
-const WalletComponent: WalletComponentType = (props) => {
-  const { account } = useSDK();
-  const { isAccountActiveOnL2, isDappActiveOnL2 } = useDappStatus();
+const WalletComponent = () => {
+  const { isDappActiveOnL2 } = useDappStatus();
   const ethBalance = useEthereumBalance();
   const stethBalance = useStethBalance();
   const wstethBalance = useWstethBalance();
 
   // TODO merge those hooks and only fetch current chain
   const wstethByStethOnL1 = useWstethBySteth(
-    !isAccountActiveOnL2 && stethBalance.data ? stethBalance.data : undefined,
+    !isDappActiveOnL2 && stethBalance.data ? stethBalance.data : undefined,
   );
   const wstethByStethOnL2 = useWstETHByStETHOnL2(
-    isAccountActiveOnL2 && stethBalance.data ? stethBalance.data : undefined,
+    isDappActiveOnL2 && stethBalance.data ? stethBalance.data : undefined,
   );
-  const wstethBySteth = isAccountActiveOnL2
+  const wstethBySteth = isDappActiveOnL2
     ? wstethByStethOnL2
     : wstethByStethOnL1;
 
   const stethByWstethOnL1 = useStethByWsteth(
-    !isAccountActiveOnL2 && wstethBalance.data ? wstethBalance.data : undefined,
+    !isDappActiveOnL2 && wstethBalance.data ? wstethBalance.data : undefined,
   );
   const stethByWstethOnL2 = useStETHByWstETHOnL2(
-    isAccountActiveOnL2 && wstethBalance.data ? wstethBalance.data : undefined,
+    isDappActiveOnL2 && wstethBalance.data ? wstethBalance.data : undefined,
   );
-  const stethByWsteth = isAccountActiveOnL2
+  const stethByWsteth = isDappActiveOnL2
     ? stethByWstethOnL2
     : stethByWstethOnL1;
 
   return (
-    <StyledCard
-      data-testid="wrapCardSection"
-      $redBg={isDappActiveOnL2}
-      {...props}
-    >
+    <StyledCard data-testid="wrapCardSection" $redBg={isDappActiveOnL2}>
       <CardRow>
         <CardBalance
           title="ETH balance"
@@ -79,7 +60,7 @@ const WalletComponent: WalletComponentType = (props) => {
             />
           }
         />
-        <CardAccount account={account} />
+        <CardAccount />
       </CardRow>
       <Divider />
       <CardRow>
@@ -140,46 +121,31 @@ const WalletComponent: WalletComponentType = (props) => {
   );
 };
 
-export const Wallet: WalletComponentType = memo((props) => {
+type WrapWalletProps = {
+  isUnwrapMode: boolean;
+};
+
+export const Wallet = ({ isUnwrapMode }: WrapWalletProps) => {
   const isLedgerLive = useIsLedgerLive();
   const { isLedger: isLedgerHardware } = useConnectorInfo();
   const { featureFlags } = useConfig().externalConfig;
-  const { chainId } = useAccount();
-  const { isDappActive, isDappActiveOnL2 } = useDappStatus();
-  const { showLidoMultichainFallback } = useLidoMultichainFallbackCondition();
-  const { chainName, isMatchDappChainAndWalletChain } = useDappChain();
+  const { chainType } = useDappStatus();
 
-  if (!featureFlags.ledgerLiveL2 && isLedgerLive && chainName === OPTIMISM) {
-    const error = `Optimism is currently not supported in Ledger Live.`;
-    return <Fallback error={error} {...props} />;
+  const isLedgerLiveOptimism =
+    !featureFlags.ledgerLiveL2 &&
+    isLedgerLive &&
+    chainType === DAPP_CHAIN_TYPE.Optimism;
+  const isLedgerHardwareOptimism =
+    isLedgerHardware && chainType === DAPP_CHAIN_TYPE.Optimism;
+
+  if (isLedgerLiveOptimism || isLedgerHardwareOptimism) {
+    const error = `Optimism is currently not supported in ${isLedgerLiveOptimism ? 'Ledger Live' : 'Ledger Hardware'}.`;
+    return <Fallback error={error} />;
   }
 
-  if (isLedgerHardware && chainName === OPTIMISM) {
-    const error = `Optimism is currently not supported in Ledger Hardware.`;
-    return <Fallback error={error} {...props} />;
-  }
-
-  if (isDappActive && !isMatchDappChainAndWalletChain(chainId)) {
-    const switchToEthereum =
-      config.defaultChain === CHAINS.Mainnet
-        ? 'Ethereum'
-        : capitalizeFirstLetter(CHAINS[config.defaultChain]);
-
-    const switchToOptimism =
-      config.supportedChains.indexOf(CHAINS.Optimism) > -1
-        ? capitalizeFirstLetter(OPTIMISM)
-        : 'Optimism Sepolia';
-    const error = `Wrong network. Please switch to ${chainName === OPTIMISM ? switchToOptimism : switchToEthereum} in your wallet to wrap/unwrap.`;
-    return <Fallback error={error} {...props} />;
-  }
-
-  if (!isDappActiveOnL2 && showLidoMultichainFallback) {
-    return <LidoMultichainFallback textEnding={'to wrap/unwrap'} {...props} />;
-  }
-
-  if (!isDappActive) {
-    return <Fallback {...props} />;
-  }
-
-  return <WalletComponent {...props} />;
-});
+  return (
+    <Fallback toActionText={`to ${isUnwrapMode ? 'unwrap' : 'wrap'}`}>
+      <WalletComponent />
+    </Fallback>
+  );
+};

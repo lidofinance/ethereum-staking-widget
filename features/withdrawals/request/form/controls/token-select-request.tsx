@@ -3,7 +3,7 @@ import {
   TokenOption,
   TokenSelectHookForm,
 } from 'shared/hook-form/controls/token-select-hook-form/token-select-hook-form';
-import { useDappStatus } from 'shared/hooks/use-dapp-status';
+import { useDappStatus } from 'modules/web3';
 
 const OPTIONS: TokenOption[] = [
   { token: TOKENS.STETH },
@@ -11,12 +11,11 @@ const OPTIONS: TokenOption[] = [
 ];
 
 export const TokenSelectRequest = () => {
-  const { isWalletConnected, isDappActive, isAccountActiveOnL2 } =
-    useDappStatus();
+  const { isWalletConnected, isDappActive } = useDappStatus();
 
   return (
     <TokenSelectHookForm
-      disabled={(isWalletConnected && !isDappActive) || isAccountActiveOnL2}
+      disabled={isWalletConnected && !isDappActive}
       options={OPTIONS}
     />
   );

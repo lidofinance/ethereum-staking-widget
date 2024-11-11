@@ -17,7 +17,6 @@ import {
   GatherPermitSignatureResult,
   useERC20PermitSignature,
 } from 'shared/hooks';
-import { useIsMultisig } from 'shared/hooks/useIsMultisig';
 import { useCurrentStaticRpcProvider } from 'shared/hooks/use-current-static-rpc-provider';
 import { useApproveOnL1 } from 'shared/hooks/useApproveOnL1';
 import { runWithTransactionLogger } from 'utils';
@@ -26,9 +25,13 @@ import { isContract } from 'utils/isContract';
 import { useWithdrawalsContract } from './useWithdrawalsContract';
 import { useTxModalStagesRequest } from 'features/withdrawals/request/transaction-modal-request/use-tx-modal-stages-request';
 import { useTransactionModal } from 'shared/transaction-modal/transaction-modal';
-import { sendTx } from 'utils/send-tx';
+import {
+  sendTx,
+  useTxConfirmation,
+  useIsMultisig,
+  useDappStatus,
+} from 'modules/web3';
 import { overrideWithQAMockBoolean } from 'utils/qa';
-import { useTxConfirmation } from 'shared/hooks/use-tx-conformation';
 
 // this encapsulates permit/approval & steth/wsteth flows
 const useWithdrawalRequestMethods = () => {
@@ -195,9 +198,10 @@ export const useWithdrawalRequest = ({
   onRetry,
 }: useWithdrawalRequestParams) => {
   const { chainId } = useSDK();
+  const { address } = useDappStatus();
   const withdrawalQueueAddress = getWithdrawalQueueAddress(chainId);
 
-  const { connector, address } = useAccount();
+  const { connector } = useAccount();
   const { isBunker } = useWithdrawals();
   const { txModalStages } = useTxModalStagesRequest();
   const getRequestMethod = useWithdrawalRequestMethods();

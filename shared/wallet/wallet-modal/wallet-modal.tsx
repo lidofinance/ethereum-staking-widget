@@ -1,5 +1,4 @@
 import { useCallback, useEffect } from 'react';
-import { useAccount } from 'wagmi';
 import {
   ButtonIcon,
   Modal,
@@ -11,7 +10,7 @@ import {
 import { openWindow } from '@lido-sdk/helpers';
 import { useConnectorInfo, useDisconnect } from 'reef-knot/core-react';
 
-import { useUserConfig } from 'config/user-config';
+import { CHAINS } from 'consts/chains';
 import type { ModalComponentType } from 'providers/modal-provider';
 import { useCopyToClipboard } from 'shared/hooks';
 import { getEtherscanAddressLink } from 'utils/get-etherscan-address-link';
@@ -24,12 +23,12 @@ import {
   WalletModalAddressStyle,
   WalletModalActionsStyle,
 } from './styles';
+import { useDappStatus } from 'modules/web3';
 
 export const WalletModal: ModalComponentType = ({ onClose, ...props }) => {
-  const { address, chainId } = useAccount();
+  const { address, chainId, walletChainId } = useDappStatus();
   const { connectorName } = useConnectorInfo();
   const { disconnect } = useDisconnect();
-  const { defaultChain: defaultChainId } = useUserConfig();
 
   const handleDisconnect = useCallback(() => {
     disconnect?.();
@@ -38,15 +37,16 @@ export const WalletModal: ModalComponentType = ({ onClose, ...props }) => {
 
   const handleCopy = useCopyToClipboard(address ?? '');
   const handleEtherscan = useCallback(() => {
-    if (!chainId) return;
-
+    // This component is wrapped by SupportL1Chains,
+    // but not wrapped by SupportL2Chains (the chainId will never be a L2 network).
+    // This is currently the fastest solution.
     const link = getEtherscanAddressLink(
-      chainId,
+      walletChainId as CHAINS,
       address ?? '',
-      defaultChainId,
+      chainId,
     );
     openWindow(link);
-  }, [address, chainId, defaultChainId]);
+  }, [address, chainId, walletChainId]);
 
   useEffect(() => {
     // Close the modal if a wallet was somehow disconnected while the modal was open

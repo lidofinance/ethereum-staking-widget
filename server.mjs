@@ -1,7 +1,6 @@
 import { createServer } from 'http';
 import { parse } from 'url';
 import next from 'next';
-
 const dev = process.env.NODE_ENV !== 'production';
 const hostname = 'localhost';
 const port = Number(process.env.PORT) || 3000;
@@ -18,6 +17,7 @@ const overrideSetHeader = (res) => {
   res.setHeader = function (header, value) {
     if (header.toLowerCase() === CACHE_CONTROL_HEADER) {
       cacheControlOverwritten = true;
+
       return setHeader.call(this, 'Cache-Control', value);
     }
 
