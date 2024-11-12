@@ -9,6 +9,7 @@ import {
   useWalletClient,
 } from 'wagmi';
 
+import { LidoSDKStake } from '@lidofinance/lido-ethereum-sdk/stake';
 import { CHAINS, LidoSDKCore } from '@lidofinance/lido-ethereum-sdk/core';
 import {
   LidoSDKstETH,
@@ -24,6 +25,7 @@ import { LIDO_L2_CONTRACT_ADDRESSES } from '@lidofinance/lido-ethereum-sdk/commo
 
 type LidoSDKContextValue = {
   core: LidoSDKCore;
+  stake: LidoSDKStake;
   stETH: LidoSDKstETH;
   wstETH: LidoSDKwstETH;
   l2: LidoSDKL2;
@@ -77,6 +79,7 @@ export const LidoSDKProvider = ({ children }: React.PropsWithChildren) => {
       web3Provider: walletClient,
     });
 
+    const stake = new LidoSDKStake({ core });
     const stETH = new LidoSDKstETH({ core });
     const wstETH = new LidoSDKwstETH({ core });
     const wrap = new LidoSDKWrap({ core });
@@ -85,6 +88,7 @@ export const LidoSDKProvider = ({ children }: React.PropsWithChildren) => {
 
     return {
       core,
+      stake,
       stETH,
       wstETH,
       wrap,
