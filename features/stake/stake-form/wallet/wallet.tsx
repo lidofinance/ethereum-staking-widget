@@ -1,4 +1,4 @@
-import { TOKENS } from '@lido-sdk/constants';
+import { LIDO_TOKENS } from '@lidofinance/lido-ethereum-sdk/common';
 import { Divider, Question, Tooltip } from '@lidofinance/lido-ui';
 
 import { LIDO_APR_TOOLTIP_TEXT, DATA_UNAVAILABLE } from 'consts/text';
@@ -17,7 +17,7 @@ import { FlexCenter, LidoAprStyled, StyledCard } from './styles';
 const WalletComponent = () => {
   const { stakeableEther, stethBalance, loading } = useStakeFormData();
 
-  const stethAddress = useTokenAddress(TOKENS.STETH);
+  const stethAddress = useTokenAddress(LIDO_TOKENS.steth);
   const lidoApr = useLidoApr();
 
   return (
