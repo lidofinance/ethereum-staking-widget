@@ -25,6 +25,7 @@ export const useGetCurrentAddress: UseGetCurrentAddress = () => {
   const [address, setAddress] = useState('');
   const [addressError, setAddressError] = useState('');
 
+  // TODO: NEW SDK
   const { account } = useSDK();
   const { staticRpcProvider } = useCurrentStaticRpcProvider();
   const { isReady, query } = useRouter();

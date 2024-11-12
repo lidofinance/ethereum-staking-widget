@@ -197,8 +197,7 @@ export const useWithdrawalRequest = ({
   onConfirm,
   onRetry,
 }: useWithdrawalRequestParams) => {
-  const { chainId } = useSDK();
-  const { address } = useDappStatus();
+  const { address, chainId } = useDappStatus();
   const withdrawalQueueAddress = getWithdrawalQueueAddress(chainId);
 
   const { connector } = useAccount();

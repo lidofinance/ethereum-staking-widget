@@ -7,14 +7,14 @@ import {
   External,
   Tooltip,
 } from '@lidofinance/lido-ui';
+
 import { FormatToken } from 'shared/formatters';
-
-import { RequestStatus } from './request-item-status';
-import { useClaimFormData, ClaimFormInputType } from '../../claim-form-context';
-
+import { useDappStatus } from 'modules/web3';
 import { getNFTUrl } from 'utils';
+
+import { useClaimFormData, ClaimFormInputType } from '../../claim-form-context';
+import { RequestStatus } from './request-item-status';
 import { RequestStyled, LinkStyled } from './styles';
-import { useSDK } from '@lido-sdk/react';
 
 type RequestItemProps = {
   token_id: string;
@@ -24,7 +24,7 @@ type RequestItemProps = {
 
 export const RequestItem = forwardRef<HTMLInputElement, RequestItemProps>(
   ({ token_id, name, disabled, index, ...props }, ref) => {
-    const { chainId } = useSDK();
+    const { chainId } = useDappStatus();
     const { isSubmitting } = useFormState();
     const { canSelectMore, maxSelectedCountReason } = useClaimFormData();
     const { checked, status } = useWatch<

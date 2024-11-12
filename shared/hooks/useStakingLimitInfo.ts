@@ -1,11 +1,12 @@
 import { parseEther } from 'viem';
 import { CHAINS } from '@lido-sdk/constants';
 import { StethAbi } from '@lido-sdk/contracts';
-import { useLidoSWR, useSDK, useSTETHContractRPC } from '@lido-sdk/react';
+import { useLidoSWR, useSTETHContractRPC } from '@lido-sdk/react';
 
 import { config } from 'config';
 import { STRATEGY_LAZY } from 'consts/swr-strategies';
 import { LIMIT_LEVEL } from 'types';
+import { useDappStatus } from 'modules/web3';
 
 export type StakeLimitFullInfo = {
   isStakingPaused: boolean;
@@ -42,7 +43,7 @@ const getLimitLevel = (maxLimit: bigint, currentLimit: bigint) => {
 
 // TODO: NEW_SDK (migrate to bigint)
 export const useStakingLimitInfo = () => {
-  const { chainId } = useSDK();
+  const { chainId } = useDappStatus();
   const steth = useSTETHContractRPC();
 
   return useLidoSWR<StakeLimitFullInfo>(

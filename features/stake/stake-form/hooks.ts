@@ -1,9 +1,8 @@
-import { ADDRESS_ZERO } from 'modules/web3';
-import { useLidoSWR, useSDK, useSTETHContractRPC } from '@lido-sdk/react';
+import { useLidoSWR, useSTETHContractRPC } from '@lido-sdk/react';
 
 import { config } from 'config';
 import { STRATEGY_CONSTANT } from 'consts/swr-strategies';
-
+import { ADDRESS_ZERO, useDappStatus } from 'modules/web3';
 import { applyGasLimitRatioBigInt } from 'utils/apply-gas-limit-ratio';
 
 type UseStethSubmitGasLimit = () => bigint;
@@ -11,7 +10,7 @@ type UseStethSubmitGasLimit = () => bigint;
 export const useStethSubmitGasLimit: UseStethSubmitGasLimit = () => {
   const stethContractRPC = useSTETHContractRPC();
 
-  const { chainId } = useSDK();
+  const { chainId } = useDappStatus();
   const { data } = useLidoSWR(
     ['submit-gas-limit', chainId],
     async () => {

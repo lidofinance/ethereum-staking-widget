@@ -1,15 +1,16 @@
 import { formatEther } from '@ethersproject/units';
-
 import { CHAINS } from '@lido-sdk/constants';
-import { useLidoSWR, useSDK } from '@lido-sdk/react';
-import { useStakingRouter } from './use-stakign-router-contract';
-import { PartialStakingRouterAbi } from 'generated/PartialStakingRouterAbi';
+import { useLidoSWR } from '@lido-sdk/react';
 
 import { config } from 'config';
 import { STRATEGY_CONSTANT } from 'consts/swr-strategies';
+import { PartialStakingRouterAbi } from 'generated/PartialStakingRouterAbi';
+import { useDappStatus } from 'modules/web3';
+
+import { useStakingRouter } from './use-stakign-router-contract';
 
 export const useProtocolFee = () => {
-  const { chainId } = useSDK();
+  const { chainId } = useDappStatus();
   const { contractRpc } = useStakingRouter();
 
   return useLidoSWR<number>(

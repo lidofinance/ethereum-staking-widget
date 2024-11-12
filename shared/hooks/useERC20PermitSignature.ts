@@ -56,9 +56,9 @@ export const useERC20PermitSignature = <
   tokenProvider,
   spender,
 }: UseERC20PermitSignatureProps<T>): UseERC20PermitSignatureResult => {
-  const { address } = useDappStatus();
+  const { address, chainId } = useDappStatus();
 
-  const { providerWeb3, chainId } = useSDK();
+  const { providerWeb3 } = useSDK();
 
   const gatherPermitSignature = useCallback(
     async (amount: bigint) => {

@@ -1,16 +1,17 @@
-import { useContractSWR, useSDK } from '@lido-sdk/react';
+import { constants } from 'ethers';
+import { useContractSWR } from '@lido-sdk/react';
+import { createContractGetter } from '@lido-sdk/contracts';
 
 import { STRATEGY_LAZY } from 'consts/swr-strategies';
 import { useMainnetStaticRpcProvider } from 'shared/hooks/use-mainnet-static-rpc-provider';
-import { constants } from 'ethers';
 import { PartialCurveAbiAbi__factory } from 'generated';
-import { createContractGetter } from '@lido-sdk/contracts';
+import { useDappStatus } from 'modules/web3';
 
 const getCurveContract = createContractGetter(PartialCurveAbiAbi__factory);
 export const MAINNET_CURVE = '0xDC24316b9AE028F1497c275EB9192a3Ea0f67022';
 
 export const useStethEthRate = () => {
-  const { chainId } = useSDK();
+  const { chainId } = useDappStatus();
   const mainnetStaticRpcProvider = useMainnetStaticRpcProvider();
 
   const contract = getCurveContract(MAINNET_CURVE, mainnetStaticRpcProvider);

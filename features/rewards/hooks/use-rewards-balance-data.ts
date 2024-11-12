@@ -1,16 +1,17 @@
 import { useMemo } from 'react';
-import { useSDK, useTokenBalance } from '@lido-sdk/react';
+import { useTokenBalance } from '@lido-sdk/react';
 import { TOKENS, getTokenAddress } from '@lido-sdk/constants';
 
 import { STRATEGY_LAZY } from 'consts/swr-strategies';
 import { ETHER } from 'features/rewards/constants';
+import { useDappStatus } from 'modules/web3';
 
 import { useRewardsHistory } from './useRewardsHistory';
 import { useLaggyDataWrapper } from './use-laggy-data-wrapper';
 import { Big, BigDecimal } from '../helpers';
 
 export const useRewardsBalanceData = () => {
-  const { chainId } = useSDK();
+  const { chainId } = useDappStatus();
   const { address, data, currencyObject } = useRewardsHistory();
 
   const { data: steth } = useTokenBalance(

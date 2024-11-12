@@ -6,13 +6,15 @@ import {
   useContext,
   useMemo,
 } from 'react';
-import { useLidoSWR, useLocalStorage, useSDK } from '@lido-sdk/react';
 import invariant from 'tiny-invariant';
+import { useLidoSWR, useLocalStorage } from '@lido-sdk/react';
 
 import { config } from 'config';
 import { useRpcUrl } from 'config/rpc';
 import { SETTINGS_PATH } from 'consts/urls';
 import { STRATEGY_LAZY } from 'consts/swr-strategies';
+
+import { useDappStatus } from 'modules/web3';
 import { useCSPViolation } from 'features/ipfs/csp-violation-box/use-csp-violation';
 import { useRouterPath } from 'shared/hooks/use-router-path';
 import { checkRpcUrl } from 'utils/check-rpc-url';
@@ -38,7 +40,7 @@ export const useIPFSInfoBoxStatuses = () => {
 export const IPFSInfoBoxStatusesProvider: FC<PropsWithChildren> = ({
   children,
 }) => {
-  const { chainId } = useSDK();
+  const { chainId } = useDappStatus();
 
   // CSP violation box
   const { isCSPViolated } = useCSPViolation();

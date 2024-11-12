@@ -1,6 +1,7 @@
-import { useSDK, useLidoSWR, SWRResponse } from '@lido-sdk/react';
+import { useLidoSWR, SWRResponse } from '@lido-sdk/react';
 
 import { STRATEGY_CONSTANT } from 'consts/swr-strategies';
+import { useDappStatus } from 'modules/web3';
 
 import { useWithdrawalsContract } from './useWithdrawalsContract';
 
@@ -14,7 +15,7 @@ type useWithdrawalsBaseDataResult = {
 
 export const useWithdrawalsBaseData =
   (): SWRResponse<useWithdrawalsBaseDataResult> => {
-    const { chainId } = useSDK();
+    const { chainId } = useDappStatus();
     const { contractRpc } = useWithdrawalsContract();
 
     return useLidoSWR(
