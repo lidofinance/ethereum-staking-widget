@@ -2,11 +2,9 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/router';
 import debounce from 'lodash/debounce';
 
-import { useSDK } from '@lido-sdk/react';
-
+import { useDappStatus } from 'modules/web3';
 import { resolveEns, isValidEns, isValidAddress } from 'features/rewards/utils';
 import { useCurrentStaticRpcProvider } from 'shared/hooks/use-current-static-rpc-provider';
-import { useDappStatus } from 'modules/web3';
 
 type UseGetCurrentAddress = () => {
   address: string;
@@ -25,8 +23,7 @@ export const useGetCurrentAddress: UseGetCurrentAddress = () => {
   const [address, setAddress] = useState('');
   const [addressError, setAddressError] = useState('');
 
-  // TODO: NEW SDK
-  const { account } = useSDK();
+  const { address: account } = useDappStatus();
   const { staticRpcProvider } = useCurrentStaticRpcProvider();
   const { isReady, query } = useRouter();
   const { isSupportedChain } = useDappStatus();
