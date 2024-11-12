@@ -1,12 +1,12 @@
 import { useWatch } from 'react-hook-form';
 
-import { Zero } from '@ethersproject/constants';
 import { DataTable, DataTableRow } from '@lidofinance/lido-ui';
 
 import { DATA_UNAVAILABLE } from 'consts/text';
 import { FormatPrice, FormatToken } from 'shared/formatters';
 import { useEthUsd } from 'shared/hooks/use-eth-usd';
 import { useProtocolFee } from 'shared/hooks/use-protocol-fee';
+import { ZERO } from 'modules/web3';
 
 import { StakeFormInput, useStakeFormData } from './stake-form-context';
 
@@ -20,7 +20,7 @@ export const StakeFormInfo = () => {
   return (
     <DataTable data-testid="stakeFormInfo">
       <DataTableRow title="You will receive" data-testid="youWillReceive">
-        <FormatToken amount={amount ?? Zero} symbol="stETH" trimEllipsis />
+        <FormatToken amount={amount ?? ZERO} symbol="stETH" trimEllipsis />
       </DataTableRow>
       <DataTableRow title="Exchange rate" data-testid="exchangeRate">
         1 ETH = 1 stETH
