@@ -1,8 +1,8 @@
 import { useCallback } from 'react';
 import invariant from 'tiny-invariant';
-import { useSDK } from '@lido-sdk/react';
 
 import { CHAINS } from 'consts/chains';
+import { useDappStatus } from 'modules/web3';
 
 // Don't use absolute import here!
 // code'''
@@ -42,7 +42,7 @@ export const useGetRpcUrlByChainId = () => {
 };
 
 export const useRpcUrl = () => {
-  // TODO: NEW SDK
-  const { chainId } = useSDK();
-  return useGetRpcUrlByChainId()(chainId as number);
+  // TODO: NEW SDK (check)
+  const { chainId } = useDappStatus();
+  return useGetRpcUrlByChainId()(chainId);
 };
