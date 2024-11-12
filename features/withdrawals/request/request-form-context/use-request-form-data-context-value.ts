@@ -1,25 +1,24 @@
-import { useSTETHContractRPC, useContractSWR } from '@lido-sdk/react';
+import { useCallback, useMemo } from 'react';
+
 import { useClaimData } from 'features/withdrawals/contexts/claim-data-context';
 import { useWithdrawals } from 'features/withdrawals/contexts/withdrawals-context';
-import { useUnfinalizedStETH } from 'features/withdrawals/hooks';
-import { useCallback, useMemo } from 'react';
+import {
+  useUnfinalizedStETH,
+  useTotalSupply,
+} from 'features/withdrawals/hooks';
 import {
   useStethBalance,
   useWstethBalance,
   useWstethBySteth,
 } from 'modules/web3';
-import { STRATEGY_LAZY } from 'consts/swr-strategies';
 
 // Provides all data fetching for form to function
 export const useRequestFormDataContextValue = () => {
   const { revalidate: revalidateClaimData } = useClaimData();
-  // useTotalSupply is bugged and switches to undefined for 1 render
+
   const { data: stethTotalSupply, initialLoading: isTotalSupplyLoading } =
-    useContractSWR({
-      contract: useSTETHContractRPC(),
-      method: 'totalSupply',
-      config: STRATEGY_LAZY,
-    });
+    useTotalSupply();
+
   const {
     maxAmount: maxAmountPerRequestSteth,
     minAmount: minUnstakeSteth,
@@ -37,7 +36,7 @@ export const useRequestFormDataContextValue = () => {
   } = useWstethBalance();
   const {
     data: unfinalizedStETH,
-    update: unfinalizedStETHUpdate,
+    refetch: unfinalizedStETHUpdate,
     initialLoading: isUnfinalizedStethLoading,
   } = useUnfinalizedStETH();
 
@@ -86,8 +85,8 @@ export const useRequestFormDataContextValue = () => {
       balanceWSteth,
       maxAmountPerRequestWSteth,
       minUnstakeWSteth,
-      stethTotalSupply: stethTotalSupply?.toBigInt(),
-      unfinalizedStETH: unfinalizedStETH?.toBigInt(),
+      stethTotalSupply: stethTotalSupply?.totalEther,
+      unfinalizedStETH: unfinalizedStETH,
       revalidateRequestFormData,
       loading,
     }),
