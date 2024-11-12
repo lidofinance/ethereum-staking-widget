@@ -1,38 +1,34 @@
 import { useMemo } from 'react';
-import { useTokenBalance } from '@lido-sdk/react';
-import { TOKENS, getTokenAddress } from '@lido-sdk/constants';
+import { getAddress } from 'viem';
 
-import { STRATEGY_LAZY } from 'consts/swr-strategies';
 import { ETHER } from 'features/rewards/constants';
-import { useDappStatus } from 'modules/web3';
+import { useStethBalance } from 'modules/web3';
 
 import { useRewardsHistory } from './useRewardsHistory';
 import { useLaggyDataWrapper } from './use-laggy-data-wrapper';
 import { Big, BigDecimal } from '../helpers';
 
 export const useRewardsBalanceData = () => {
-  const { chainId } = useDappStatus();
   const { address, data, currencyObject } = useRewardsHistory();
-
-  const { data: steth } = useTokenBalance(
-    getTokenAddress(chainId, TOKENS.STETH),
-    address,
-    STRATEGY_LAZY,
-  );
+  const { data: stethBalance } = useStethBalance({
+    account: address ? getAddress(address) : undefined,
+  });
 
   const balanceData = useMemo(
     () =>
-      steth
+      stethBalance
         ? {
-            stEthBalanceParsed: new Big(steth.toString()),
+            // TODO: NEW SDK (remove new Big)
+            stEthBalanceParsed: new Big(stethBalance.toString()),
             stEthCurrencyBalance:
               data &&
-              new BigDecimal(steth.toString()) // Convert to right BN
+              // TODO: NEW SDK (remove BN)
+              new BigDecimal(stethBalance.toString()) // Convert to right BN
                 .div(ETHER)
                 .times(data.stETHCurrencyPrice[currencyObject.id]),
           }
         : null,
-    [currencyObject.id, data, steth],
+    [currencyObject.id, data, stethBalance],
   );
 
   const { isLagging, dataOrLaggyData } = useLaggyDataWrapper(balanceData);
