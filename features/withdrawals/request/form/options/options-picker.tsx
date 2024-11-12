@@ -1,7 +1,4 @@
 import { useWatch } from 'react-hook-form';
-
-// TODO: NEW SDK
-// import { formatEther, parseEther } from '@ethersproject/units';
 import { formatEther, parseEther } from 'viem';
 
 import { MATOMO_CLICK_EVENTS_TYPES } from 'consts/matomo-click-events';
@@ -16,7 +13,8 @@ import {
   useWithdrawalRates,
 } from 'features/withdrawals/request/withdrawal-rates';
 
-import { useStethByWsteth } from 'shared/hooks';
+import { useStETHByWstETH } from 'modules/web3';
+
 import { formatBalance } from 'utils/formatBalance';
 import { trackMatomoEvent } from 'utils/track-matomo-event';
 
@@ -50,7 +48,8 @@ const LidoButton: React.FC<OptionButtonProps> = ({ isActive, onClick }) => {
     },
   );
   const { data: wstethAsSteth, initialLoading: isWstethAsStethLoading } =
-    useStethByWsteth(DEFAULT_VALUE_FOR_RATE);
+    useStETHByWstETH(DEFAULT_VALUE_FOR_RATE);
+
   const ratioLoading = !isSteth && isWstethAsStethLoading;
   const ratio = isSteth
     ? '1 : 1'

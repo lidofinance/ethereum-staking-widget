@@ -1,4 +1,3 @@
-import { BigNumber } from '@ethersproject/bignumber';
 import { Tooltip } from '@lidofinance/lido-ui';
 
 import { DATA_UNAVAILABLE } from 'consts/text';
@@ -8,8 +7,7 @@ import { isNonNegativeBigInt } from 'utils/is-non-negative-bigint';
 
 export type FormatTokenProps = FormatBalanceArgs & {
   symbol: string;
-  // TODO: NEW_SDK (use only bigint)
-  amount?: BigNumber | bigint;
+  amount?: bigint;
   approx?: boolean;
   showAmountTip?: boolean;
   fallback?: string;
@@ -28,27 +26,20 @@ export const FormatToken: FormatTokenComponent = ({
   adaptiveDecimals,
   ...rest
 }) => {
-  // TODO: NEW_SDK (remove: see typing)
-  //  the Format Token is used on all pages and will be modified in the final iteration.
-  const _amount =
-    isNonNegativeBigInt(amount) && typeof amount === 'bigint'
-      ? BigNumber.from(amount)
-      : (amount as BigNumber);
-
-  const { actual, isTrimmed, trimmed } = useFormattedBalance(_amount, {
+  const { actual, isTrimmed, trimmed } = useFormattedBalance(amount, {
     maxDecimalDigits,
     maxTotalLength,
     trimEllipsis,
     adaptiveDecimals,
   });
 
-  if (!_amount) return <span {...rest}>{fallback}</span>;
+  if (!isNonNegativeBigInt(amount)) return <span {...rest}>{fallback}</span>;
 
   const showTooltip = showAmountTip && isTrimmed;
 
   // we show prefix for non zero amount and if we need to show Tooltip Amount
   // overridden by explicitly set approx
-  const prefix = _amount && !_amount.isZero() && approx ? '≈ ' : '';
+  const prefix = amount && amount !== BigInt(0) && approx ? '≈ ' : '';
 
   const body = (
     <span {...rest}>

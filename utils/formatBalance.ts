@@ -1,7 +1,6 @@
-import { BigNumber } from '@ethersproject/bignumber';
-import { formatEther } from '@ethersproject/units';
-import { Zero } from '@ethersproject/constants';
 import { useMemo } from 'react';
+import { formatEther } from 'viem';
+import { ZERO } from 'modules/web3';
 
 export type FormatBalanceArgs = {
   maxDecimalDigits?: number;
@@ -11,7 +10,7 @@ export type FormatBalanceArgs = {
 };
 
 export const formatBalance = (
-  balance: BigNumber = Zero,
+  balance: bigint = ZERO,
   {
     maxDecimalDigits = 4,
     maxTotalLength,
@@ -64,7 +63,7 @@ export const formatBalance = (
 };
 
 export const useFormattedBalance: typeof formatBalance = (
-  balance = Zero,
+  balance = ZERO,
   { maxDecimalDigits = 4, maxTotalLength, adaptiveDecimals, trimEllipsis } = {},
 ) => {
   return useMemo(
