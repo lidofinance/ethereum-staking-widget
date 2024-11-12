@@ -12,7 +12,6 @@ import {
   LayoutSubTitleStyle,
   IPFSInfoBoxOnlyMobileAndPortableWrapper,
 } from './styles';
-// import { ExternalForbiddenPage } from '../external-forbidden-page';
 
 type Props = {
   title?: ReactNode;
@@ -27,7 +26,6 @@ export const Layout: FC<PropsWithChildren<Props>> = (props) => {
   return (
     <>
       <Header />
-      {/*<ExternalForbiddenPage />*/}
       <Main size={containerSize}>
         {config.ipfsMode && (
           <IPFSInfoBoxOnlyMobileAndPortableWrapper>
