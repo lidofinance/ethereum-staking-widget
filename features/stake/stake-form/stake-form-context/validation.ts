@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
-import invariant from 'tiny-invariant';
 import type { Resolver } from 'react-hook-form';
+import invariant from 'tiny-invariant';
 
 import { ZERO, useDappStatus } from 'modules/web3';
 import { VALIDATION_CONTEXT_TIMEOUT } from 'features/withdrawals/withdrawals-constants';
@@ -93,6 +93,7 @@ export const useStakeFormValidationContext = (
         // condition above guaranties stubs will only be passed when isDappActive = false
         etherBalance: etherBalance ?? ZERO,
         gasCost: gasCost ?? ZERO,
+        // TODO: NEW SDK (remove?)
         isMultisig: isMultisig ?? false,
       };
     }

@@ -1,4 +1,3 @@
-import invariant from 'tiny-invariant';
 import {
   FC,
   PropsWithChildren,
@@ -10,8 +9,11 @@ import {
 } from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
 import { useRouter } from 'next/router';
-
 import { parseEther } from 'viem';
+import invariant from 'tiny-invariant';
+
+import { config } from 'config';
+import { useEthereumBalance, useStethBalance } from 'modules/web3';
 
 import {
   FormControllerContext,
@@ -21,8 +23,6 @@ import { useTokenMaxAmount } from 'shared/hooks/use-token-max-amount';
 import { useStakingLimitInfo } from 'shared/hooks/useStakingLimitInfo';
 import { useIsMultisig, useMaxGasPrice } from 'modules/web3';
 import { useFormControllerRetry } from 'shared/hook-form/form-controller/use-form-controller-retry-delegate';
-
-import { config } from 'config';
 
 import {
   type StakeFormDataContextValue,
@@ -36,7 +36,6 @@ import {
 
 import { useStake } from '../use-stake';
 import { useStethSubmitGasLimit } from '../hooks';
-import { useEthereumBalance, useStethBalance } from 'modules/web3';
 
 //
 // Data context
@@ -135,6 +134,7 @@ const useStakeFormNetworkData = (): StakeFormNetworkData => {
   return {
     stethBalance,
     etherBalance,
+    // TODO: NEW SDK (remove?)
     isMultisig: isMultisigLoading ? undefined : isMultisig,
     stakeableEther,
     stakingLimitInfo,
