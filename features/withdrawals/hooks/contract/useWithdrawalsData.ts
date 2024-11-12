@@ -1,20 +1,20 @@
 import { useCallback } from 'react';
 import { useLidoSWR } from '@lido-sdk/react';
-import type { WithdrawalQueueAbi } from '@lido-sdk/contracts';
 
-import { ZERO, useDappStatus } from 'modules/web3';
+import { ZERO, useDappStatus, useLidoSDK } from 'modules/web3';
+
 import { STRATEGY_LAZY } from 'consts/swr-strategies';
 import { default as dynamics } from 'config/dynamics';
+
 import {
   RequestStatus,
   RequestStatusClaimable,
   RequestStatusPending,
 } from 'features/withdrawals/types/request-status';
 import { MAX_SHOWN_REQUEST_PER_TYPE } from 'features/withdrawals/withdrawals-constants';
+
 import { standardFetcher } from 'utils/standardFetcher';
 import { encodeURLQuery } from 'utils/encodeURLQuery';
-
-import { useWithdrawalsContract } from './useWithdrawalsContract';
 
 export type WithdrawalRequests = NonNullable<
   ReturnType<typeof useWithdrawalRequests>['data']
@@ -81,8 +81,8 @@ const getRequestTimeForWQRequestIds = async (
 };
 
 export const useWithdrawalRequests = () => {
-  const { chainId } = useDappStatus();
-  const { contractRpc, address } = useWithdrawalsContract();
+  const { withdraw } = useLidoSDK();
+  const { chainId, address } = useDappStatus();
   // const { data: currentShareRate } = useLidoShareRate();
 
   const swr = useLidoSWR(
@@ -92,24 +92,26 @@ export const useWithdrawalRequests = () => {
     //   : false,
     ['swr:withdrawals-requests', address, chainId],
     async (...args: unknown[]) => {
-      const account = args[1] as string;
+      const account = args[1] as `0x${string}`;
       // const currentShareRate = args[3] as BigNumber;
 
       const [requestIds, lastCheckpointIndex] = await Promise.all([
-        contractRpc.getWithdrawalRequests(account).then((ids) => {
-          return [...ids].sort((aId, bId) => (aId.gt(bId) ? 1 : -1));
-        }),
-        contractRpc.getLastCheckpointIndex(),
+        withdraw.views
+          .getWithdrawalRequestsIds({ account: account })
+          .then((ids) => {
+            return [...ids].sort((aId, bId) => (aId > bId ? 1 : -1));
+          }),
+        withdraw.views.getLastCheckpointIndex(),
       ]);
 
       const STATUS_BATCH_SIZE = 500;
-      const requestStatuses: Awaited<
-        ReturnType<WithdrawalQueueAbi['getWithdrawalStatus']>
-      > = [];
+      const requestStatuses = [];
 
       for (let i = 0; i < requestIds.length; i += STATUS_BATCH_SIZE) {
         const batch = requestIds.slice(i, i + STATUS_BATCH_SIZE);
-        const batchStatuses = await contractRpc.getWithdrawalStatus(batch);
+        const batchStatuses = await withdraw.views.getWithdrawalStatus({
+          requestsIds: batch,
+        });
         requestStatuses.push(...batchStatuses);
       }
 
@@ -138,18 +140,13 @@ export const useWithdrawalRequests = () => {
         const id = requestIds[index];
         const req: RequestStatus = {
           ...request,
-          amountOfStETH: request.amountOfStETH.toBigInt(),
-          amountOfShares: request.amountOfShares.toBigInt(),
-          timestamp: request.timestamp.toBigInt(),
-          id: id.toBigInt(),
-          stringId: id.toString(),
           finalizationAt: null,
         };
 
         if (request.isFinalized && !request.isClaimed) {
           claimableRequests.push(req);
           claimableAmountOfStETH =
-            claimableAmountOfStETH + request.amountOfStETH.toBigInt();
+            claimableAmountOfStETH + request.amountOfStETH;
         } else if (!request.isFinalized) {
           const r = wqRequests.find((r) => r.id === id.toString());
           pendingRequests.push({
@@ -157,8 +154,7 @@ export const useWithdrawalRequests = () => {
             finalizationAt: r?.finalizationAt ?? null,
             expectedEth: req.amountOfStETH, // TODO: replace with calcExpectedRequestEth(req, currentShareRate),
           });
-          pendingAmountOfStETH =
-            pendingAmountOfStETH + request.amountOfStETH.toBigInt();
+          pendingAmountOfStETH = pendingAmountOfStETH + request.amountOfStETH;
         }
         return req;
       });
@@ -168,27 +164,26 @@ export const useWithdrawalRequests = () => {
       isClamped ||=
         pendingRequests.splice(MAX_SHOWN_REQUEST_PER_TYPE).length > 0;
 
-      const hints = await contractRpc.findCheckpointHints(
-        claimableRequests.map(({ id }) => id),
-        1,
-        lastCheckpointIndex,
-      );
+      const hints = await withdraw.views.findCheckpointHints({
+        sortedIds: claimableRequests.map(({ id }) => id),
+        firstIndex: BigInt(1),
+        lastIndex: lastCheckpointIndex,
+      });
 
-      const claimableEth = await contractRpc.getClaimableEther(
-        claimableRequests.map(({ id }) => id),
+      const claimableEth = await withdraw.views.getClaimableEther({
+        sortedIds: claimableRequests.map(({ id }) => id),
         hints,
-      );
+      });
 
       let claimableAmountOfETH = BigInt(0);
 
       const sortedClaimableRequests: RequestStatusClaimable[] =
         claimableRequests.map((request, index) => {
-          claimableAmountOfETH =
-            claimableAmountOfETH + claimableEth[index].toBigInt();
+          claimableAmountOfETH = claimableAmountOfETH + claimableEth[index];
           return {
             ...request,
-            hint: hints[index].toBigInt(),
-            claimableEth: claimableEth[index].toBigInt(),
+            hint: hints[index],
+            claimableEth: claimableEth[index],
           };
         });
 

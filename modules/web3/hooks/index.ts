@@ -11,8 +11,3 @@ export * from './use-stETH-by-wstETH';
 export * from './use-staking-limit-warning';
 export * from './use-steth-contract-address';
 export * from './use-wsteth-contract-address';
-
-// TODO: NEW_SDK (remove)
-// DEPRECATED
-export * from './use-stETH-by-wstETH-on-l2';
-export * from './use-wstETH-by-stETH-on-l2';
