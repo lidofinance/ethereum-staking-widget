@@ -12,7 +12,7 @@ import { TokenSelectRequest } from './controls/token-select-request';
 import { TokenAmountInputRequest } from './controls/token-amount-input-request';
 import { InputGroupRequest } from './controls/input-group-request';
 import { RequestsInfo } from './requests-info';
-// import { ModePickerRequest } from './controls/mode-picker-request';
+import { ModePickerRequest } from './controls/mode-picker-request';
 import { DexOptions } from './options/dex-options';
 import { LidoOption } from './options/lido-option';
 import {
@@ -37,8 +37,7 @@ export const RequestForm = () => {
           <TokenAmountInputRequest />
         </InputGroupRequest>
         {mode === 'lido' && <RequestsInfo />}
-        {/* TODO: many renders */}
-        {/*<ModePickerRequest />*/}
+        <ModePickerRequest />
         {mode === 'lido' && (
           <>
             <LidoOption />
