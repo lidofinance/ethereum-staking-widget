@@ -7,7 +7,6 @@ import { applyGasLimitRatioBigInt } from 'utils/apply-gas-limit-ratio';
 
 export const useStethSubmitGasLimit = (): bigint => {
   const { stake } = useLidoSDK();
-
   const { chainId } = useDappStatus();
 
   const { data } = useLidoSWR(
