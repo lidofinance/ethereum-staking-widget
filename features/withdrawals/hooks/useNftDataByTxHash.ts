@@ -1,8 +1,10 @@
+import { decodeEventLog, getEventSelector } from 'viem';
 import { useLidoSWR } from '@lido-sdk/react';
-import { useWithdrawalsContract } from './contract/useWithdrawalsContract';
+import { WithdrawalQueueAbi } from '@lidofinance/lido-ethereum-sdk/withdraw';
+import type { TransactionReceipt } from '@ethersproject/abstract-provider';
 
 import { standardFetcher } from 'utils/standardFetcher';
-import type { TransactionReceipt } from '@ethersproject/abstract-provider';
+import { useDappStatus, useLidoSDK } from 'modules/web3';
 import { useCurrentStaticRpcProvider } from 'shared/hooks/use-current-static-rpc-provider';
 
 const EVENT_NAME = 'WithdrawalRequested';
@@ -14,7 +16,8 @@ type NFTApiData = {
 };
 
 export const useNftDataByTxHash = (txHash: string | null) => {
-  const { contractRpc, address } = useWithdrawalsContract();
+  const { address } = useDappStatus();
+  const { withdraw } = useLidoSDK();
   const { staticRpcProvider } = useCurrentStaticRpcProvider();
 
   const swrNftApiData = useLidoSWR(
@@ -25,17 +28,28 @@ export const useNftDataByTxHash = (txHash: string | null) => {
       const txReciept: TransactionReceipt =
         await staticRpcProvider.getTransactionReceipt(txHash);
 
-      const eventTopic = contractRpc.interface.getEventTopic(EVENT_NAME);
+      const eventTopic = getEventSelector(
+        `${EVENT_NAME}(uint256,address,address,uint256,uint256)`,
+      );
       const eventLogs = txReciept.logs.filter(
         (log) => log.topics[0] === eventTopic,
       );
-      const events = eventLogs.map((log) =>
-        contractRpc.interface.decodeEventLog(EVENT_NAME, log.data, log.topics),
-      );
+      const events = eventLogs.map((log) => {
+        return decodeEventLog({
+          abi: WithdrawalQueueAbi,
+          data: log.data as `0x${string}`,
+          // @ts-expect-error: typing (TODO: viem typing after eventLogs will be changed)
+          topics: log.topics,
+          eventName: EVENT_NAME,
+        });
+      });
 
       const nftDataRequests = events.map((e) => {
         const fetch = async () => {
-          const tokenURI = await contractRpc.tokenURI(Number(e.requestId));
+          // @ts-expect-error: typing (The property 'read' exist!)
+          const tokenURI = await withdraw.contract
+            .getContractWithdrawalQueue()
+            .read.tokenURI([Number(e.args.requestId)]);
           const nftData = await standardFetcher<NFTApiData>(tokenURI);
           return nftData;
         };
