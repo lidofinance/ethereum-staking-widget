@@ -83,7 +83,6 @@ const getRequestTimeForWQRequestIds = async (
 export const useWithdrawalRequests = () => {
   const { withdraw } = useLidoSDK();
   const { chainId, address } = useDappStatus();
-  // const { data: currentShareRate } = useLidoShareRate();
 
   const swr = useLidoSWR(
     // TODO: use this fragment for expected eth calculation
