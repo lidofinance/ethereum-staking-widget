@@ -46,9 +46,9 @@ export const useNftDataByTxHash = (txHash: string | null) => {
 
       const nftDataRequests = events.map((e) => {
         const fetch = async () => {
-          // @ts-expect-error: typing (The property 'read' exist!)
           const tokenURI = await withdraw.contract
             .getContractWithdrawalQueue()
+            // @ts-expect-error: typing (The property 'read' exist!)
             .read.tokenURI([Number(e.args.requestId)]);
           const nftData = await standardFetcher<NFTApiData>(tokenURI);
           return nftData;

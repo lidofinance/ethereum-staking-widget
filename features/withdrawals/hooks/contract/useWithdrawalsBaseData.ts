@@ -1,9 +1,7 @@
 import { useLidoSWR, SWRResponse } from '@lido-sdk/react';
 
 import { STRATEGY_CONSTANT } from 'consts/swr-strategies';
-import { useDappStatus } from 'modules/web3';
-
-import { useWithdrawalsContract } from './useWithdrawalsContract';
+import { useDappStatus, useLidoSDK } from 'modules/web3';
 
 type useWithdrawalsBaseDataResult = {
   maxAmount: bigint;
@@ -16,26 +14,27 @@ type useWithdrawalsBaseDataResult = {
 export const useWithdrawalsBaseData =
   (): SWRResponse<useWithdrawalsBaseDataResult> => {
     const { chainId } = useDappStatus();
-    const { contractRpc } = useWithdrawalsContract();
+    const { withdraw } = useLidoSDK();
 
     return useLidoSWR(
-      ['swr:wqBaseData', contractRpc?.address, chainId],
+      ['swr:wqBaseData', withdraw, chainId],
       async () => {
-        const [minAmount, maxAmount, isPausedMode, isBunkerMode] =
+        const [minAmount, maxAmount, isPausedMode, isBunkerMode, isTurboMode] =
           await Promise.all([
-            contractRpc.MIN_STETH_WITHDRAWAL_AMOUNT(),
-            contractRpc.MAX_STETH_WITHDRAWAL_AMOUNT(),
-            contractRpc.isPaused(),
-            contractRpc.isBunkerModeActive(),
+            withdraw.views.minStethWithdrawalAmount(),
+            withdraw.views.maxStethWithdrawalAmount(),
+            withdraw.views.isPaused(),
+            withdraw.views.isBunkerModeActive(),
+            withdraw.views.isTurboModeActive(),
           ]);
 
         const isPaused = !!isPausedMode;
         const isBunker = !!isBunkerMode;
-        const isTurbo = !isPaused && !isBunkerMode;
+        const isTurbo = !!isTurboMode;
 
         return {
-          minAmount: minAmount?.toBigInt(),
-          maxAmount: maxAmount?.toBigInt(),
+          minAmount,
+          maxAmount,
           isPaused,
           isBunker,
           isTurbo,
