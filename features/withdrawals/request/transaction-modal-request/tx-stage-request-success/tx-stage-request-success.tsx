@@ -1,10 +1,8 @@
-import { useSDK } from '@lido-sdk/react';
 import { Link, Loader } from '@lidofinance/lido-ui';
 
 import { config } from 'config';
 import { WITHDRAWALS_CLAIM_PATH } from 'consts/urls';
 import { MATOMO_CLICK_EVENTS_TYPES } from 'consts/matomo-click-events';
-import { trackMatomoEvent } from 'utils/track-matomo-event';
 
 import { useNftDataByTxHash } from 'features/withdrawals/hooks/useNftDataByTxHash';
 import { useTransactionModal } from 'shared/transaction-modal/transaction-modal';
@@ -12,6 +10,9 @@ import { TxStageSuccess } from 'shared/transaction-modal/tx-stages-basic/tx-stag
 import { TxLinkEtherscan } from 'shared/components/tx-link-etherscan';
 import { TxAmount } from 'shared/transaction-modal/tx-stages-parts/tx-amount';
 import { LocalLink } from 'shared/components/local-link';
+
+import { useIsMetamask } from 'modules/web3';
+import { trackMatomoEvent } from 'utils/track-matomo-event';
 
 import {
   Title,
@@ -36,10 +37,10 @@ export const TxRequestStageSuccess = ({
   amount,
 }: TxRequestStageSuccessProps) => {
   const amountEl = <TxAmount amount={amount} symbol={tokenName} />;
-  const { providerWeb3 } = useSDK();
+  const showAddGuideLink = useIsMetamask();
+
   const { data: nftData, initialLoading: nftLoading } =
     useNftDataByTxHash(txHash);
-  const showAddGuideLink = !!providerWeb3?.provider.isMetaMask;
   const { closeModal } = useTransactionModal();
 
   const successDescription = (

@@ -9,5 +9,6 @@ export * from './use-is-multisig';
 export * from './use-wstETH-by-stETH';
 export * from './use-stETH-by-wstETH';
 export * from './use-staking-limit-warning';
+export * from './use-is-metamask';
 export * from './use-steth-contract-address';
 export * from './use-wsteth-contract-address';
