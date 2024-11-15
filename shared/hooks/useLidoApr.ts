@@ -1,45 +1,21 @@
-import { SWRResponse, useLidoSWR } from '@lido-sdk/react';
-import { CHAINS } from '@lido-sdk/constants';
+import { CHAINS } from '@lidofinance/lido-ethereum-sdk/common';
 
-import { STRATEGY_LAZY } from 'consts/swr-strategies';
-import { standardFetcher } from 'utils/standardFetcher';
 import { ETH_API_ROUTES, getEthApiPath } from 'consts/api';
+import { STRATEGY_LAZY } from 'consts/react-query-strategies';
+import { useLidoQuery, UseLidoQueryResult } from 'shared/hooks/use-lido-query';
+import { standardFetcher } from 'utils/standardFetcher';
 
 type SMA_APR_RESPONSE = {
   data: {
     aprs: [
-      {
-        timeUnix: number;
-        apr: number;
-      },
-      {
-        timeUnix: number;
-        apr: number;
-      },
-      {
-        timeUnix: number;
-        apr: number;
-      },
-      {
-        timeUnix: number;
-        apr: number;
-      },
-      {
-        timeUnix: number;
-        apr: number;
-      },
-      {
-        timeUnix: number;
-        apr: number;
-      },
-      {
-        timeUnix: number;
-        apr: number;
-      },
-      {
-        timeUnix: number;
-        apr: number;
-      },
+      { timeUnix: number; apr: number },
+      { timeUnix: number; apr: number },
+      { timeUnix: number; apr: number },
+      { timeUnix: number; apr: number },
+      { timeUnix: number; apr: number },
+      { timeUnix: number; apr: number },
+      { timeUnix: number; apr: number },
+      { timeUnix: number; apr: number },
     ];
     smaApr: number;
   };
@@ -50,14 +26,23 @@ type SMA_APR_RESPONSE = {
   };
 };
 
-export const useLidoApr = (): SWRResponse<SMA_APR_RESPONSE> & {
+type UseLidoAprResult = UseLidoQueryResult<SMA_APR_RESPONSE> & {
   apr?: string;
-} => {
-  const { data, ...rest } = useLidoSWR<SMA_APR_RESPONSE>(
-    getEthApiPath(ETH_API_ROUTES.STETH_SMA_APR),
-    standardFetcher,
-    STRATEGY_LAZY,
-  );
+};
 
-  return { ...rest, apr: data?.data.smaApr.toFixed(1) };
+export const useLidoApr = (): UseLidoAprResult => {
+  const url = getEthApiPath(ETH_API_ROUTES.STETH_SMA_APR);
+
+  const result = useLidoQuery<SMA_APR_RESPONSE>({
+    queryKey: ['lido-apr', url],
+    queryFn: () => standardFetcher<SMA_APR_RESPONSE>(url),
+    strategy: STRATEGY_LAZY,
+  });
+
+  const { data } = result;
+
+  return {
+    ...result,
+    apr: data?.data?.smaApr?.toFixed(1),
+  };
 };
