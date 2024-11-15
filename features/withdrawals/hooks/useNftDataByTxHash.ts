@@ -1,11 +1,12 @@
 import { decodeEventLog, getEventSelector } from 'viem';
-import { useLidoSWR } from '@lido-sdk/react';
 import { WithdrawalQueueAbi } from '@lidofinance/lido-ethereum-sdk/withdraw';
 import type { TransactionReceipt } from '@ethersproject/abstract-provider';
 
-import { standardFetcher } from 'utils/standardFetcher';
-import { useDappStatus, useLidoSDK } from 'modules/web3';
+import { STRATEGY_EAGER } from 'consts/react-query-strategies';
 import { useCurrentStaticRpcProvider } from 'shared/hooks/use-current-static-rpc-provider';
+import { useLidoQuery } from 'shared/hooks/use-lido-query';
+import { useDappStatus, useLidoSDK } from 'modules/web3';
+import { standardFetcher } from 'utils/standardFetcher';
 
 const EVENT_NAME = 'WithdrawalRequested';
 
@@ -20,18 +21,19 @@ export const useNftDataByTxHash = (txHash: string | null) => {
   const { withdraw } = useLidoSDK();
   const { staticRpcProvider } = useCurrentStaticRpcProvider();
 
-  const swrNftApiData = useLidoSWR(
-    address && txHash ? ['swr:nft-data-by-tx-hash', txHash, address] : null,
-    async () => {
+  const queryResult = useLidoQuery<NFTApiData[] | null>({
+    queryKey: ['nft-data-by-tx-hash', txHash, address],
+    enabled: !!(txHash && address),
+    queryFn: async () => {
       if (!txHash || !address) return null;
 
-      const txReciept: TransactionReceipt =
+      const txReceipt: TransactionReceipt =
         await staticRpcProvider.getTransactionReceipt(txHash);
 
       const eventTopic = getEventSelector(
         `${EVENT_NAME}(uint256,address,address,uint256,uint256)`,
       );
-      const eventLogs = txReciept.logs.filter(
+      const eventLogs = txReceipt.logs.filter(
         (log) => log.topics[0] === eventTopic,
       );
       const events = eventLogs.map((log) => {
@@ -48,7 +50,7 @@ export const useNftDataByTxHash = (txHash: string | null) => {
         const fetch = async () => {
           const tokenURI = await withdraw.contract
             .getContractWithdrawalQueue()
-            // @ts-expect-error: typing (The property 'read' exist!)
+            // @ts-expect-error: typing (The property 'read' exists!)
             .read.tokenURI([Number(e.args.requestId)]);
           const nftData = await standardFetcher<NFTApiData>(tokenURI);
           return nftData;
@@ -61,7 +63,8 @@ export const useNftDataByTxHash = (txHash: string | null) => {
 
       return nftData;
     },
-  );
+    strategy: STRATEGY_EAGER,
+  });
 
-  return swrNftApiData;
+  return queryResult;
 };
