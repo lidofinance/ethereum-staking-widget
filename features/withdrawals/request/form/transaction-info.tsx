@@ -1,7 +1,7 @@
 import { useWatch } from 'react-hook-form';
 import { DataTableRow } from '@lidofinance/lido-ui';
 
-import { useRequestTxPrice } from 'features/withdrawals/hooks/useWithdrawTxPrice';
+import { useWithdrawRequestTxPrice } from 'features/withdrawals/hooks/use-withdraw-request-tx-price';
 import { useApproveGasLimit } from 'features/wsteth/wrap/hooks/use-approve-gas-limit';
 import { useDappStatus } from 'modules/web3';
 import { AllowanceDataTableRow } from 'shared/components/allowance-data-table-row';
@@ -26,11 +26,12 @@ export const TransactionInfo = () => {
     <>Lido leverages gasless token unlocks via ERC-2612 permits</>
   );
   const { txPriceUsd: requestTxPriceInUsd, loading: requestTxPriceLoading } =
-    useRequestTxPrice({
+    useWithdrawRequestTxPrice({
       token,
       isApprovalFlow,
       requestCount: requests?.length,
     });
+
   const {
     txCostUsd: approveTxCostInUsd,
     initialLoading: isApproveTxCostLoading,

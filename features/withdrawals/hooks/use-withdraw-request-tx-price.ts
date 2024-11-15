@@ -1,0 +1,106 @@
+import { useMemo } from 'react';
+
+import { config } from 'config';
+import { STRATEGY_LAZY } from 'consts/react-query-strategies';
+import { MAX_REQUESTS_COUNT } from 'features/withdrawals/withdrawals-constants';
+import { useDappStatus, useLidoSDK } from 'modules/web3';
+
+import { useTxCostInUsd } from 'shared/hooks/use-tx-cost-in-usd';
+import { useDebouncedValue } from 'shared/hooks/useDebouncedValue';
+import { useLidoQuery } from 'shared/hooks/use-lido-query';
+
+import { encodeURLQuery } from 'utils/encodeURLQuery';
+import { standardFetcher } from 'utils/standardFetcher';
+
+import { TOKENS_WITHDRAWABLE } from '../types/tokens-withdrawable';
+
+type UseRequestTxPriceOptions = {
+  requestCount?: number;
+  token: TOKENS_WITHDRAWABLE;
+  isApprovalFlow: boolean;
+};
+
+export const useWithdrawRequestTxPrice = ({
+  token,
+  isApprovalFlow,
+  requestCount,
+}: UseRequestTxPriceOptions) => {
+  const { chainId } = useDappStatus();
+  const { withdraw } = useLidoSDK();
+
+  const fallback =
+    token === TOKENS_WITHDRAWABLE.stETH
+      ? isApprovalFlow
+        ? config.WITHDRAWAL_QUEUE_REQUEST_STETH_APPROVED_GAS_LIMIT_DEFAULT
+        : config.WITHDRAWAL_QUEUE_REQUEST_STETH_PERMIT_GAS_LIMIT_DEFAULT
+      : isApprovalFlow
+        ? config.WITHDRAWAL_QUEUE_REQUEST_WSTETH_APPROVED_GAS_LIMIT_DEFAULT
+        : config.WITHDRAWAL_QUEUE_REQUEST_WSTETH_PERMIT_GAS_LIMIT_DEFAULT;
+
+  const cappedRequestCount = Math.min(requestCount || 1, MAX_REQUESTS_COUNT);
+  const debouncedRequestCount = useDebouncedValue(cappedRequestCount, 2000);
+
+  const url = useMemo(() => {
+    const basePath = config.wqAPIBasePath;
+    const params = encodeURLQuery({
+      token,
+      requestCount: debouncedRequestCount,
+    });
+    return `${basePath}/v1/estimate-gas?${params}`;
+  }, [debouncedRequestCount, token]);
+
+  const { data: permitEstimateData, isLoading: permitLoading } = useLidoQuery<{
+    gasLimit: number;
+  }>({
+    queryKey: ['permit-estimate', url],
+    enabled: !!chainId && !isApprovalFlow,
+    strategy: STRATEGY_LAZY,
+    queryFn: () => standardFetcher<{ gasLimit: number }>(url),
+  });
+
+  const permitGasLimit = permitEstimateData
+    ? BigInt(permitEstimateData.gasLimit || '0')
+    : undefined;
+
+  const { data: approvalFlowGasLimit, isLoading: approvalLoading } =
+    useLidoQuery<bigint>({
+      queryKey: [
+        'approval-flow-gas-limit',
+        debouncedRequestCount,
+        withdraw.core.chainId,
+      ],
+      enabled: !!chainId && isApprovalFlow,
+      strategy: STRATEGY_LAZY,
+      queryFn: async () => {
+        const contract = await withdraw.contract.getContractWithdrawalQueue();
+        const requestsStub = Array.from<bigint>({
+          length: debouncedRequestCount,
+        }).fill(BigInt(100));
+
+        return await contract.estimateGas.requestWithdrawals(
+          [requestsStub, config.ESTIMATE_ACCOUNT],
+          {
+            account: config.ESTIMATE_ACCOUNT,
+          },
+        );
+      },
+    });
+
+  const gasLimit =
+    (isApprovalFlow ? approvalFlowGasLimit : permitGasLimit) ??
+    fallback * BigInt(debouncedRequestCount);
+
+  const { txCostUsd: txPriceUsd, initialLoading: isTxCostLoading } =
+    useTxCostInUsd(gasLimit);
+
+  const loading =
+    cappedRequestCount !== debouncedRequestCount ||
+    (isApprovalFlow ? approvalLoading : permitLoading) ||
+    isTxCostLoading;
+
+  return {
+    loading,
+    txPriceUsd,
+    gasLimit,
+  };
+};
