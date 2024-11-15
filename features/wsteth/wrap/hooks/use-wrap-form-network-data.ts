@@ -22,7 +22,7 @@ export const useWrapFormNetworkData = () => {
     useWstethBalance();
 
   // TODO: NEW_SDK (after stake migrate to BigInt)
-  const { data: stakeLimitInfo, mutate: stakeLimitInfoUpdate } =
+  const { data: stakeLimitInfo, refetch: stakeLimitInfoUpdate } =
     useStakingLimitInfo();
 
   const { gasLimitETH, gasLimitStETH } = useWrapGasLimit();

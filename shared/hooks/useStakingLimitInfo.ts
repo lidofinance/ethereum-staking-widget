@@ -1,12 +1,11 @@
 import { parseEther } from 'viem';
-import { CHAINS } from '@lido-sdk/constants';
-import { StethAbi } from '@lido-sdk/contracts';
-import { useLidoSWR, useSTETHContractRPC } from '@lido-sdk/react';
+import { useSTETHContractRPC } from '@lido-sdk/react';
 
 import { config } from 'config';
-import { STRATEGY_LAZY } from 'consts/swr-strategies';
+import { STRATEGY_LAZY } from 'consts/react-query-strategies';
 import { LIMIT_LEVEL } from 'types';
 import { useDappStatus } from 'modules/web3';
+import { useLidoQuery, UseLidoQueryResult } from 'shared/hooks/use-lido-query';
 
 export type StakeLimitFullInfo = {
   isStakingPaused: boolean;
@@ -19,7 +18,7 @@ export type StakeLimitFullInfo = {
   stakeLimitLevel: LIMIT_LEVEL;
 };
 
-const stakeLimitFullInfoTemplate: StakeLimitFullInfo = {
+const stakeLimitFullInfoMockTemplate: StakeLimitFullInfo = {
   isStakingPaused: false,
   isStakingLimitSet: true,
   currentStakeLimit: parseEther('150000'),
@@ -30,7 +29,6 @@ const stakeLimitFullInfoTemplate: StakeLimitFullInfo = {
   stakeLimitLevel: LIMIT_LEVEL.REACHED,
 };
 
-// almost reached whenever current limit is ≤25% of max limit, i.e. 4 times lower
 const WARN_THRESHOLD_RATIO = BigInt(4);
 
 const getLimitLevel = (maxLimit: bigint, currentLimit: bigint) => {
@@ -41,66 +39,65 @@ const getLimitLevel = (maxLimit: bigint, currentLimit: bigint) => {
   return LIMIT_LEVEL.SAFE;
 };
 
-// TODO: NEW_SDK (migrate to bigint)
-export const useStakingLimitInfo = () => {
-  const { chainId } = useDappStatus();
-  const steth = useSTETHContractRPC();
+export const useStakingLimitInfo =
+  (): UseLidoQueryResult<StakeLimitFullInfo> => {
+    const { chainId } = useDappStatus();
+    const steth = useSTETHContractRPC();
 
-  return useLidoSWR<StakeLimitFullInfo>(
-    ['swr:getStakeLimitFullInfo', chainId, steth, config.enableQaHelpers],
-    // @ts-expect-error broken lidoSWR typings
-    async (
-      _key: string,
-      _chainId: CHAINS,
-      steth: StethAbi,
-      shouldMock: boolean,
-    ) => {
-      const mockDataString = window.localStorage.getItem(
-        'getStakeLimitFullInfo',
-      );
+    return useLidoQuery<StakeLimitFullInfo>({
+      queryKey: [
+        'query:getStakeLimitFullInfo',
+        chainId,
+        steth,
+        config.enableQaHelpers,
+      ],
+      queryFn: async () => {
+        const shouldMock = config.enableQaHelpers;
+        const mockDataString = window.localStorage.getItem(
+          'getStakeLimitFullInfo',
+        );
 
-      if (shouldMock && mockDataString) {
-        try {
-          const mockData = JSON.parse(mockDataString);
-          return {
-            ...stakeLimitFullInfoTemplate,
-            ...mockData,
-            currentStakeLimit: parseEther(mockData.currentStakeLimit),
-            maxStakeLimit: parseEther(mockData.maxStakeLimit),
-            stakeLimitLevel: getLimitLevel(
-              parseEther(mockData.maxStakeLimit),
-              parseEther(mockData.currentStakeLimit),
-            ),
-          };
-        } catch (e) {
-          console.warn('Failed to load mock data');
-          console.warn(e);
+        if (shouldMock && mockDataString) {
+          try {
+            const mockData = JSON.parse(mockDataString);
+            return {
+              ...stakeLimitFullInfoMockTemplate,
+              ...mockData,
+              currentStakeLimit: parseEther(mockData.currentStakeLimit),
+              maxStakeLimit: parseEther(mockData.maxStakeLimit),
+              stakeLimitLevel: getLimitLevel(
+                parseEther(mockData.maxStakeLimit),
+                parseEther(mockData.currentStakeLimit),
+              ),
+            };
+          } catch (e) {
+            console.warn('Failed to load mock data');
+            console.warn(e);
+          }
         }
-      }
 
-      // TODO: NEW SDK
-      const stakeLimitFullInfo = await steth.getStakeLimitFullInfo();
+        const stakeLimitFullInfo = await steth.getStakeLimitFullInfo();
 
-      // destructuring to make hybrid array into an object,
-      return {
-        // TODO: NEW SDK
-        ...stakeLimitFullInfo,
-        // currentStakeLimit: stakeLimitFullInfo.currentStakeLimit,
-        // maxStakeLimit: stakeLimitFullInfo.maxStakeLimit,
-        // maxStakeLimitGrowthBlocks: stakeLimitFullInfo.maxStakeLimitGrowthBlocks,
-        // prevStakeLimit: stakeLimitFullInfo.prevStakeLimit,
-        // prevStakeBlockNumber: stakeLimitFullInfo.prevStakeBlockNumber,
+        return {
+          // TODO: NEW SDK
+          ...stakeLimitFullInfo,
+          currentStakeLimit: stakeLimitFullInfo.currentStakeLimit?.toBigInt(),
+          maxStakeLimit: stakeLimitFullInfo.maxStakeLimit?.toBigInt(),
+          maxStakeLimitGrowthBlocks:
+            stakeLimitFullInfo.maxStakeLimitGrowthBlocks?.toBigInt(),
+          prevStakeLimit: stakeLimitFullInfo.prevStakeLimit?.toBigInt(),
+          prevStakeBlockNumber:
+            stakeLimitFullInfo.prevStakeBlockNumber?.toBigInt(),
 
-        // TODO: NEW SDK
-        stakeLimitLevel: getLimitLevel(
-          stakeLimitFullInfo.maxStakeLimit.toBigInt(),
-          stakeLimitFullInfo.currentStakeLimit.toBigInt(),
-        ),
-      };
-    },
-    {
-      ...STRATEGY_LAZY,
-      refreshInterval: 60000,
-    },
-  );
-};
+          stakeLimitLevel: getLimitLevel(
+            stakeLimitFullInfo.maxStakeLimit?.toBigInt(),
+            stakeLimitFullInfo.currentStakeLimit?.toBigInt(),
+          ),
+        };
+      },
+      strategy: {
+        ...STRATEGY_LAZY,
+        refetchInterval: 60000, // 60 seconds
+      },
+    });
+  };
