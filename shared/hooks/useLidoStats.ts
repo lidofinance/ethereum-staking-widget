@@ -1,10 +1,10 @@
 import { useMemo } from 'react';
-import { useLidoSWR } from '@lido-sdk/react';
 
-import { DATA_UNAVAILABLE } from 'consts/text';
-import { STRATEGY_LAZY } from 'consts/swr-strategies';
-import { standardFetcher } from 'utils/standardFetcher';
 import { ETH_API_ROUTES, getEthApiPath } from 'consts/api';
+import { DATA_UNAVAILABLE } from 'consts/text';
+import { STRATEGY_LAZY } from 'consts/react-query-strategies';
+import { useLidoQuery } from 'shared/hooks/use-lido-query';
+import { standardFetcher } from 'utils/standardFetcher';
 
 type ResponseData = {
   uniqueAnytimeHolders: string;
@@ -22,28 +22,29 @@ export const useLidoStats = (): {
   initialLoading: boolean;
 } => {
   const url = getEthApiPath(ETH_API_ROUTES.STETH_STATS);
-  const lidoStats = useLidoSWR<ResponseData>(
-    url,
-    standardFetcher,
-    STRATEGY_LAZY,
-  );
+
+  const { data: rawData, initialLoading } = useLidoQuery<ResponseData>({
+    queryKey: ['lido-stats', url],
+    queryFn: () => standardFetcher<ResponseData>(url),
+    strategy: STRATEGY_LAZY,
+  });
 
   const data = useMemo(() => {
     return {
-      totalStaked: lidoStats?.data?.totalStaked
-        ? `${Number(lidoStats.data.totalStaked).toLocaleString('en-US')} ETH`
+      totalStaked: rawData?.totalStaked
+        ? `${Number(rawData.totalStaked).toLocaleString('en-US')} ETH`
         : DATA_UNAVAILABLE,
-      stakers: lidoStats?.data?.uniqueAnytimeHolders
-        ? String(lidoStats.data.uniqueAnytimeHolders)
+      stakers: rawData?.uniqueAnytimeHolders
+        ? String(rawData.uniqueAnytimeHolders)
         : DATA_UNAVAILABLE,
-      marketCap: lidoStats?.data?.marketCap
-        ? `$${Math.round(lidoStats.data.marketCap).toLocaleString('en-US')}`
+      marketCap: rawData?.marketCap
+        ? `$${Math.round(rawData.marketCap).toLocaleString('en-US')}`
         : DATA_UNAVAILABLE,
     };
-  }, [lidoStats]);
+  }, [rawData]);
 
   return {
     data,
-    initialLoading: lidoStats.initialLoading,
+    initialLoading,
   };
 };
