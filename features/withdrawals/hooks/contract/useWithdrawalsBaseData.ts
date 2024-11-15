@@ -1,9 +1,8 @@
-import { useLidoSWR, SWRResponse } from '@lido-sdk/react';
+import { STRATEGY_CONSTANT } from 'consts/react-query-strategies';
+import { UseLidoQueryResult, useLidoQuery } from 'shared/hooks/use-lido-query';
+import { useLidoSDK } from 'modules/web3';
 
-import { STRATEGY_CONSTANT } from 'consts/swr-strategies';
-import { useDappStatus, useLidoSDK } from 'modules/web3';
-
-type useWithdrawalsBaseDataResult = {
+type UseWithdrawalsBaseDataResult = {
   maxAmount: bigint;
   minAmount: bigint;
   isPaused: boolean;
@@ -12,13 +11,12 @@ type useWithdrawalsBaseDataResult = {
 };
 
 export const useWithdrawalsBaseData =
-  (): SWRResponse<useWithdrawalsBaseDataResult> => {
-    const { chainId } = useDappStatus();
+  (): UseLidoQueryResult<UseWithdrawalsBaseDataResult> => {
     const { withdraw } = useLidoSDK();
 
-    return useLidoSWR(
-      ['swr:wqBaseData', withdraw, chainId],
-      async () => {
+    return useLidoQuery<UseWithdrawalsBaseDataResult>({
+      queryKey: ['query:withdrawalsBaseData', withdraw.core.chain],
+      queryFn: async () => {
         const [minAmount, maxAmount, isPausedMode, isBunkerMode, isTurboMode] =
           await Promise.all([
             withdraw.views.minStethWithdrawalAmount(),
@@ -40,6 +38,6 @@ export const useWithdrawalsBaseData =
           isTurbo,
         };
       },
-      STRATEGY_CONSTANT,
-    );
+      strategy: STRATEGY_CONSTANT,
+    });
   };
