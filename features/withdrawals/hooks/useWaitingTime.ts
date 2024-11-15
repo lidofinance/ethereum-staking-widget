@@ -1,10 +1,12 @@
 import { useMemo } from 'react';
-import { SWRResponse, useLidoSWR } from '@lido-sdk/react';
 
 import { config } from 'config';
-import { STRATEGY_EAGER } from 'consts/swr-strategies';
+import { STRATEGY_EAGER } from 'consts/react-query-strategies';
+
 import { useWithdrawals } from 'features/withdrawals/contexts/withdrawals-context';
+import { useLidoQuery } from 'shared/hooks/use-lido-query';
 import { useDebouncedValue } from 'shared/hooks';
+
 import { encodeURLQuery } from 'utils/encodeURLQuery';
 import { standardFetcher } from 'utils/standardFetcher';
 import { FetcherError } from 'utils/fetcherError';
@@ -23,13 +25,13 @@ type RequestTimeV2Dto = {
   nextCalculationAt: string;
 };
 
-// TODO: accept big Number
 export const useWaitingTime = (
   amount: string,
   options: useWaitingTimeOptions = {},
 ) => {
   const { isApproximate } = options;
   const debouncedAmount = useDebouncedValue(amount, 1000);
+
   const url = useMemo(() => {
     const basePath = config.wqAPIBasePath;
     const params = encodeURLQuery({ amount: debouncedAmount });
@@ -37,23 +39,24 @@ export const useWaitingTime = (
     return `${basePath}/v2/request-time/calculate${queryString}`;
   }, [debouncedAmount]);
 
-  const { data, initialLoading, error } = useLidoSWR(
-    ['swr:waiting-time', debouncedAmount],
-    () =>
-      standardFetcher(url, {
+  const { data, error, initialLoading } = useLidoQuery<RequestTimeV2Dto>({
+    queryKey: ['waiting-time', debouncedAmount],
+    queryFn: () =>
+      standardFetcher<RequestTimeV2Dto>(url, {
         headers: {
           'Content-Type': 'application/json',
           'WQ-Request-Source': 'widget',
         },
       }),
-    {
-      ...STRATEGY_EAGER,
-      shouldRetryOnError: (e: unknown) => {
-        // if api is not happy about our request - no retry
-        return !(e && typeof e == 'object' && 'status' in e && e.status == 400);
-      },
+    strategy: STRATEGY_EAGER,
+    retry: (failureCount, e) => {
+      if (e && e instanceof FetcherError && e.status === 400) {
+        return false;
+      }
+      return failureCount < 3;
     },
-  ) as SWRResponse<RequestTimeV2Dto>;
+  });
+
   const { isBunker, isPaused } = useWithdrawals();
   const isRequestError = error instanceof FetcherError && error.status < 500;
 
