@@ -233,10 +233,5 @@ export const useWithdrawalRequests = () => {
     [oldData, queryClient, refetch, queryKey],
   );
 
-  const revalidate = useCallback(
-    () => queryClient.setQueryData(queryKey, oldData),
-    [queryClient, queryKey, oldData],
-  );
-
-  return { ...queryResult, optimisticClaimRequests, revalidate };
+  return { ...queryResult, optimisticClaimRequests, revalidate: refetch };
 };
