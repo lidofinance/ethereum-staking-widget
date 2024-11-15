@@ -1,22 +1,23 @@
-import { useQuery } from '@tanstack/react-query';
+import { STRATEGY_LAZY } from 'consts/react-query-strategies';
+import { useLidoQuery, UseLidoQueryResult } from 'shared/hooks/use-lido-query';
 import { useLidoSDK } from 'modules/web3';
 
-export const useTotalSupply = () => {
+// TODO
+// import { SharesTotalSupplyResult } from '@lidofinance/lido-ethereum-sdk/shares';
+type SharesTotalSupplyResult = {
+  totalShares: bigint;
+  totalEther: bigint;
+};
+
+export const useTotalSupply = (): UseLidoQueryResult<
+  SharesTotalSupplyResult | undefined
+> => {
   const { shares } = useLidoSDK();
 
-  const { data, error, isLoading, isFetching, refetch } = useQuery({
+  return useLidoQuery({
     queryKey: ['use-total-supply', shares],
+    queryFn: async () => shares.getTotalSupply(),
+    strategy: STRATEGY_LAZY,
     enabled: !!shares,
-    // TODO: NEW SDK (STRATEGY_LAZY)
-    staleTime: Infinity,
-    queryFn: () => shares.getTotalSupply(),
   });
-
-  return {
-    data,
-    initialLoading: isLoading && !data && !error,
-    loading: isLoading || isFetching,
-    error,
-    refetch,
-  };
 };
