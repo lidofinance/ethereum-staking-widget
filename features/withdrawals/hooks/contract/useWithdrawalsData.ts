@@ -1,9 +1,9 @@
-import { useCallback } from 'react';
-import { useLidoSWR } from '@lido-sdk/react';
+import { useCallback, useMemo } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 
 import { ZERO, useDappStatus, useLidoSDK } from 'modules/web3';
 
-import { STRATEGY_LAZY } from 'consts/swr-strategies';
+import { STRATEGY_LAZY } from 'consts/react-query-strategies';
 import { default as dynamics } from 'config/dynamics';
 
 import {
@@ -13,6 +13,7 @@ import {
 } from 'features/withdrawals/types/request-status';
 import { MAX_SHOWN_REQUEST_PER_TYPE } from 'features/withdrawals/withdrawals-constants';
 
+import { useLidoQuery } from 'shared/hooks/use-lido-query';
 import { standardFetcher } from 'utils/standardFetcher';
 import { encodeURLQuery } from 'utils/encodeURLQuery';
 
@@ -83,23 +84,24 @@ const getRequestTimeForWQRequestIds = async (
 export const useWithdrawalRequests = () => {
   const { withdraw } = useLidoSDK();
   const { chainId, address } = useDappStatus();
+  const queryClient = useQueryClient();
 
-  const swr = useLidoSWR(
-    // TODO: use this fragment for expected eth calculation
-    // currentShareRate
-    //   ? ['swr:withdrawals-requests', address, chainId, currentShareRate]
-    //   : false,
-    ['swr:withdrawals-requests', address, chainId],
-    async (...args: unknown[]) => {
-      const account = args[1] as `0x${string}`;
-      // const currentShareRate = args[3] as BigNumber;
+  const queryKey = useMemo(
+    () => ['withdrawals-requests', address, chainId],
+    [address, chainId],
+  );
+
+  const queryResult = useLidoQuery({
+    queryKey,
+    queryFn: async () => {
+      if (!address) {
+        return;
+      }
 
       const [requestIds, lastCheckpointIndex] = await Promise.all([
         withdraw.views
-          .getWithdrawalRequestsIds({ account: account })
-          .then((ids) => {
-            return [...ids].sort((aId, bId) => (aId > bId ? 1 : -1));
-          }),
+          .getWithdrawalRequestsIds({ account: address })
+          .then((ids) => [...ids].sort((aId, bId) => (aId > bId ? 1 : -1))),
         withdraw.views.getLastCheckpointIndex(),
       ]);
 
@@ -144,8 +146,7 @@ export const useWithdrawalRequests = () => {
 
         if (request.isFinalized && !request.isClaimed) {
           claimableRequests.push(req);
-          claimableAmountOfStETH =
-            claimableAmountOfStETH + request.amountOfStETH;
+          claimableAmountOfStETH += request.amountOfStETH;
         } else if (!request.isFinalized) {
           const r = wqRequests.find((r) => r.id === id.toString());
           pendingRequests.push({
@@ -153,9 +154,8 @@ export const useWithdrawalRequests = () => {
             finalizationAt: r?.finalizationAt ?? null,
             expectedEth: req.amountOfStETH, // TODO: replace with calcExpectedRequestEth(req, currentShareRate),
           });
-          pendingAmountOfStETH = pendingAmountOfStETH + request.amountOfStETH;
+          pendingAmountOfStETH += request.amountOfStETH;
         }
-        return req;
       });
 
       let isClamped =
@@ -178,7 +178,7 @@ export const useWithdrawalRequests = () => {
 
       const sortedClaimableRequests: RequestStatusClaimable[] =
         claimableRequests.map((request, index) => {
-          claimableAmountOfETH = claimableAmountOfETH + claimableEth[index];
+          claimableAmountOfETH += claimableEth[index];
           return {
             ...request,
             hint: hints[index],
@@ -198,23 +198,24 @@ export const useWithdrawalRequests = () => {
         isClamped,
       };
     },
-    STRATEGY_LAZY,
-  );
-  const oldData = swr.data;
-  const mutate = swr.mutate;
+    strategy: STRATEGY_LAZY,
+  });
+
+  const oldData = queryResult.data;
+  const refetch = queryResult.refetch;
 
   const optimisticClaimRequests = useCallback(
     async (requests: RequestStatusClaimable[]) => {
-      if (!oldData) return undefined;
+      if (!oldData) return;
+
       const { steth, eth } = requests.reduce(
-        (acc, request) => {
-          return {
-            steth: acc.steth + request.amountOfStETH,
-            eth: acc.eth + request.claimableEth,
-          };
-        },
+        (acc, request) => ({
+          steth: acc.steth + request.amountOfStETH,
+          eth: acc.eth + request.claimableEth,
+        }),
         { steth: ZERO, eth: ZERO },
       );
+
       const optimisticData = {
         ...oldData,
         sortedClaimableRequests: oldData.sortedClaimableRequests.filter(
@@ -225,15 +226,17 @@ export const useWithdrawalRequests = () => {
         claimableAmountOfStETH: oldData.claimableAmountOfStETH - steth,
         claimableAmountOfETH: oldData.claimableAmountOfETH - eth,
       };
-      return mutate(optimisticData, true);
+
+      queryClient.setQueryData(queryKey, optimisticData);
+      await refetch();
     },
-    [oldData, mutate],
+    [oldData, queryClient, refetch, queryKey],
   );
 
   const revalidate = useCallback(
-    () => mutate(oldData, true),
-    [oldData, mutate],
+    () => queryClient.setQueryData(queryKey, oldData),
+    [queryClient, queryKey, oldData],
   );
 
-  return { ...swr, optimisticClaimRequests, revalidate };
+  return { ...queryResult, optimisticClaimRequests, revalidate };
 };
