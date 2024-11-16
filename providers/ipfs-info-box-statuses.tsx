@@ -7,16 +7,17 @@ import {
   useMemo,
 } from 'react';
 import invariant from 'tiny-invariant';
-import { useLidoSWR, useLocalStorage } from '@lido-sdk/react';
+import { useLocalStorage } from '@lido-sdk/react';
 
 import { config } from 'config';
 import { useRpcUrl } from 'config/rpc';
 import { SETTINGS_PATH } from 'consts/urls';
-import { STRATEGY_LAZY } from 'consts/swr-strategies';
+import { STRATEGY_LAZY } from 'consts/react-query-strategies';
 
 import { useDappStatus } from 'modules/web3';
 import { useCSPViolation } from 'features/ipfs/csp-violation-box/use-csp-violation';
 import { useRouterPath } from 'shared/hooks/use-router-path';
+import { useLidoQuery } from 'shared/hooks/use-lido-query';
 import { checkRpcUrl } from 'utils/check-rpc-url';
 
 type IPFSInfoBoxStatusesContextValue = {
@@ -56,11 +57,14 @@ export const IPFSInfoBoxStatusesProvider: FC<PropsWithChildren> = ({
   }, [setDismissStorage]);
 
   const rpcUrl = useRpcUrl();
-  const { data: isRPCAvailableRaw, initialLoading: isLoading } = useLidoSWR(
-    `rpc-url-check-${rpcUrl}-${chainId}`,
-    async () => await checkRpcUrl(rpcUrl, chainId),
-    { ...STRATEGY_LAZY, isPaused: () => !config.ipfsMode },
-  );
+  const { data: isRPCAvailableRaw, isLoading } = useLidoQuery({
+    queryKey: ['rpc-url-check', rpcUrl, chainId],
+    strategy: STRATEGY_LAZY,
+    enabled: !!config.ipfsMode,
+    queryFn: async () => {
+      return await checkRpcUrl(rpcUrl, chainId);
+    },
+  });
   const isRPCAvailable = isRPCAvailableRaw === true;
 
   const pathname = useRouterPath();
