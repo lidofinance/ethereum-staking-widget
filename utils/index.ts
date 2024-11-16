@@ -6,6 +6,5 @@ export * from './weiToEth';
 export * from './nprogress';
 export * from './getErrorMessage';
 export * from './extractErrorMessage';
-export * from './swrAbortableMiddleware';
 export * from './getNFTUrl';
 export * from './shortenTokenValue';

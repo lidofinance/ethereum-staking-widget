@@ -1,7 +1,8 @@
 import { config } from 'config';
+import { STRATEGY_LAZY } from 'consts/react-query-strategies';
 import { Backend } from 'features/rewards/types';
-import { useLidoSWR } from 'shared/hooks';
-import { swrAbortableMiddleware } from 'utils';
+import { useLidoQuery } from 'shared/hooks/use-lido-query';
+import { standardFetcher } from 'utils/standardFetcher';
 import { useLaggyDataWrapper } from './use-laggy-data-wrapper';
 
 type UseRewardsDataLoad = (props: {
@@ -50,16 +51,32 @@ export const useRewardsDataLoad: UseRewardsDataLoad = (props) => {
     apiRewardsUrl = `/api/rewards?${params.toString()}`;
   }
 
-  const { data, ...rest } = useLidoSWR<Backend>(
-    address ? apiRewardsUrl : null,
-    {
-      shouldRetryOnError: false,
-      revalidateOnFocus: false,
-      use: [swrAbortableMiddleware],
+  const { data, error, loading, initialLoading } = useLidoQuery<Backend>({
+    queryKey: ['rewards-data', address, apiRewardsUrl],
+    enabled: !!address,
+    strategy: {
+      ...STRATEGY_LAZY,
+      staleTime: 0,
+      // TODO
+      // @ts-expect-error: cacheTime field exists but type inconsistency
+      cacheTime: 0,
     },
-  );
+    queryFn: async ({ signal }) => {
+      // The 'react-query' has AbortController support built in,
+      // and it automatically cancels requests when
+      // the component is unmounted or the queryKey changes.
+      return standardFetcher(apiRewardsUrl, { signal });
+    },
+  });
 
   const { isLagging, dataOrLaggyData } = useLaggyDataWrapper(data);
 
-  return { ...rest, isLagging: !!address && isLagging, data: dataOrLaggyData };
+  return {
+    error,
+    loading,
+    initialLoading,
+    // Fix 'Type 'TQueryFnData' is not assignable to type 'Backend''
+    data: dataOrLaggyData as Backend,
+    isLagging: !!address && isLagging,
+  };
 };
