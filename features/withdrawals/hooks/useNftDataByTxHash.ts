@@ -1,9 +1,8 @@
 import { decodeEventLog, getEventSelector } from 'viem';
+import { usePublicClient } from 'wagmi';
 import { WithdrawalQueueAbi } from '@lidofinance/lido-ethereum-sdk/withdraw';
-import type { TransactionReceipt } from '@ethersproject/abstract-provider';
 
 import { STRATEGY_EAGER } from 'consts/react-query-strategies';
-import { useCurrentStaticRpcProvider } from 'shared/hooks/use-current-static-rpc-provider';
 import { useLidoQuery } from 'shared/hooks/use-lido-query';
 import { useDappStatus, useLidoSDK } from 'modules/web3';
 import { standardFetcher } from 'utils/standardFetcher';
@@ -17,18 +16,19 @@ type NFTApiData = {
 };
 
 export const useNftDataByTxHash = (txHash: string | null) => {
-  const { address } = useDappStatus();
+  const { address, chainId } = useDappStatus();
   const { withdraw } = useLidoSDK();
-  const { staticRpcProvider } = useCurrentStaticRpcProvider();
+  const publicClient = usePublicClient({ chainId });
 
   const queryResult = useLidoQuery<NFTApiData[] | null>({
     queryKey: ['nft-data-by-tx-hash', txHash, address],
-    enabled: !!(txHash && address),
+    enabled: !!(txHash && address && publicClient),
     queryFn: async () => {
-      if (!txHash || !address) return null;
+      if (!txHash || !address || !publicClient) return null;
 
-      const txReceipt: TransactionReceipt =
-        await staticRpcProvider.getTransactionReceipt(txHash);
+      const txReceipt = await publicClient.getTransactionReceipt({
+        hash: txHash as `0x${string}`,
+      });
 
       const eventTopic = getEventSelector(
         `${EVENT_NAME}(uint256,address,address,uint256,uint256)`,
@@ -39,8 +39,7 @@ export const useNftDataByTxHash = (txHash: string | null) => {
       const events = eventLogs.map((log) => {
         return decodeEventLog({
           abi: WithdrawalQueueAbi,
-          data: log.data as `0x${string}`,
-          // @ts-expect-error: typing (TODO: viem typing after eventLogs will be changed)
+          data: log.data,
           topics: log.topics,
           eventName: EVENT_NAME,
         });
