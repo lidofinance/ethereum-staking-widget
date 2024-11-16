@@ -1,21 +1,16 @@
 import { useMemo } from 'react';
 import { useWatch } from 'react-hook-form';
-import { useLidoSWR } from '@lido-sdk/react';
 
+import { useConfig } from 'config';
+import { STRATEGY_LAZY } from 'consts/react-query-strategies';
 import { ZERO } from 'modules/web3';
-import { STRATEGY_LAZY } from 'consts/swr-strategies';
 import { useDebouncedValue } from 'shared/hooks/useDebouncedValue';
+import { useLidoQuery } from 'shared/hooks/use-lido-query';
 
 import type { RequestFormInputType } from '../request-form-context';
-import { getDexConfig } from './integrations';
 
-import type {
-  DexWithdrawalApi,
-  GetWithdrawalRateParams,
-  GetWithdrawalRateResult,
-} from './types';
-import { useConfig } from 'config';
-import { TOKENS_WITHDRAWABLE } from '../../types/tokens-withdrawable';
+import { getDexConfig } from './integrations';
+import type { GetWithdrawalRateParams, GetWithdrawalRateResult } from './types';
 
 export type useWithdrawalRatesOptions = {
   fallbackValue?: bigint;
@@ -60,46 +55,47 @@ export const useWithdrawalRates = ({
   const enabledDexes = useConfig().externalConfig.enabledWithdrawalDexes;
   const fallbackedAmount = amount ?? fallbackValue;
   const debouncedAmount = useDebouncedValue(fallbackedAmount, 1000);
-  const swr = useLidoSWR(
-    ['swr:withdrawal-rates', debouncedAmount.toString(), token, enabledDexes],
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (_, amount, token, enabledDexes) =>
+
+  const queryResult = useLidoQuery({
+    queryKey: [
+      'withdrawal-rates',
+      debouncedAmount.toString(),
+      token,
+      enabledDexes,
+    ],
+    strategy: STRATEGY_LAZY,
+    enabled:
+      !isPaused &&
+      !!debouncedAmount &&
+      typeof debouncedAmount === 'bigint' &&
+      enabledDexes.length > 0,
+    queryFn: () =>
       getWithdrawalRates({
-        // TODO: NEW SDK
-        // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-        amount: amount as unknown as bigint,
-        token: token as TOKENS_WITHDRAWABLE,
-        dexes: enabledDexes as DexWithdrawalApi[],
+        amount: debouncedAmount,
+        token,
+        dexes: enabledDexes,
       }),
-    {
-      ...STRATEGY_LAZY,
-      isPaused: () =>
-        isPaused ||
-        !debouncedAmount ||
-        typeof debouncedAmount !== 'bigint' ||
-        enabledDexes.length === 0,
-    },
-  );
+  });
 
   const bestRate = useMemo(() => {
-    return swr.data?.[0]?.rate ?? null;
-  }, [swr.data]);
+    return queryResult.data?.[0]?.rate ?? null;
+  }, [queryResult.data]);
 
   return {
     amount: fallbackedAmount,
     bestRate,
     enabledDexes,
     selectedToken: token,
-    data: swr.data,
+    data: queryResult.data,
     get initialLoading() {
-      return swr.initialLoading || debouncedAmount !== fallbackedAmount;
+      return queryResult.initialLoading || debouncedAmount !== fallbackedAmount;
     },
     get loading() {
-      return swr.loading || debouncedAmount !== fallbackedAmount;
+      return queryResult.loading || debouncedAmount !== fallbackedAmount;
     },
     get error() {
-      return swr.error;
+      return queryResult.error;
     },
-    update: swr.update,
+    update: queryResult.refetch,
   };
 };
