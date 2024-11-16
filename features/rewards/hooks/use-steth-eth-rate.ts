@@ -1,29 +1,51 @@
-import { constants } from 'ethers';
-import { useContractSWR } from '@lido-sdk/react';
-import { createContractGetter } from '@lido-sdk/contracts';
+import { parseAbiItem, encodeFunctionData, decodeAbiParameters } from 'viem';
+import { usePublicClient } from 'wagmi';
+import { CHAINS } from '@lidofinance/lido-ethereum-sdk';
 
-import { STRATEGY_LAZY } from 'consts/swr-strategies';
-import { useMainnetStaticRpcProvider } from 'shared/hooks/use-mainnet-static-rpc-provider';
-import { PartialCurveAbiAbi__factory } from 'generated';
+import { useLidoQuery } from 'shared/hooks/use-lido-query';
+import { STRATEGY_LAZY } from 'consts/react-query-strategies';
 import { useDappStatus } from 'modules/web3';
 
-const getCurveContract = createContractGetter(PartialCurveAbiAbi__factory);
 export const MAINNET_CURVE = '0xDC24316b9AE028F1497c275EB9192a3Ea0f67022';
+
+// TODO: conts
+const WeiPerEther = BigInt(10 ** 18);
 
 export const useStethEthRate = () => {
   const { chainId } = useDappStatus();
-  const mainnetStaticRpcProvider = useMainnetStaticRpcProvider();
+  const publicClientMainnet = usePublicClient({ chainId: CHAINS.Mainnet });
 
-  const contract = getCurveContract(MAINNET_CURVE, mainnetStaticRpcProvider);
+  const { data, error } = useLidoQuery({
+    queryKey: ['steth-eth-rate', chainId],
+    strategy: STRATEGY_LAZY,
+    enabled: !!(chainId === CHAINS.Mainnet && publicClientMainnet),
+    queryFn: async () => {
+      if (chainId !== 1 || !publicClientMainnet) return WeiPerEther;
 
-  const swr = useContractSWR({
-    contract,
-    method: 'get_dy',
-    params: [0, 1, String(10 ** 18)],
-    config: STRATEGY_LAZY,
-    shouldFetch: chainId === 1,
+      const functionSignature = parseAbiItem(
+        'function get_dy(int128 i, int128 j, uint256 dx) view returns (uint256)',
+      );
+
+      const callData = encodeFunctionData({
+        abi: [functionSignature],
+        functionName: 'get_dy',
+        args: [BigInt(0), BigInt(1), BigInt(10 ** 18)],
+      });
+
+      const result = await publicClientMainnet.call({
+        to: MAINNET_CURVE,
+        data: callData,
+      });
+
+      const decoded = decodeAbiParameters(
+        functionSignature.outputs || [],
+        result.data as `0x${string}`, // view returns (uint256)
+      );
+
+      return decoded[0];
+    },
   });
 
-  if (chainId !== 1) return constants.WeiPerEther;
-  return swr.data;
+  if (error || chainId !== 1) return BigInt(10 ** 18);
+  return data || null;
 };
