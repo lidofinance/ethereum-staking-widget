@@ -1,6 +1,8 @@
+import { getEnsResolver, getEnsText } from 'viem/ens';
+import { CHAINS } from '@lidofinance/lido-ethereum-sdk';
+import { usePublicClient } from 'wagmi';
 import { useConfig } from 'config';
 import { STRATEGY_LAZY } from 'consts/react-query-strategies';
-import { useMainnetStaticRpcProvider } from 'shared/hooks/use-mainnet-static-rpc-provider';
 import { useLidoQuery } from 'shared/hooks/use-lido-query';
 
 type EnsHashCheckReturn = {
@@ -11,24 +13,31 @@ type EnsHashCheckReturn = {
 };
 
 export const useRemoteVersion = () => {
-  const provider = useMainnetStaticRpcProvider();
+  const publicClient = usePublicClient({ chainId: CHAINS.Mainnet });
 
   // we use directly non-optimistic manifest data
   // can't trust static props(in IPFS esp) to generate warnings/disconnect wallet
-  const externalConfigSwr = useConfig().externalConfig.fetchMeta;
-  const { data, error } = externalConfigSwr;
+  const externalConfigQueryReact = useConfig().externalConfig.fetchMeta;
+  const { data, error } = externalConfigQueryReact;
 
   // we only need this as 'react query result' because of possible future ENS support
   // otherwise there is no fetch
   const queryResult = useLidoQuery<EnsHashCheckReturn>({
-    queryKey: ['use-remote-version', externalConfigSwr.data],
+    queryKey: ['use-remote-version', externalConfigQueryReact.data],
     strategy: STRATEGY_LAZY,
     enabled: !!(data || error),
     queryFn: async (): Promise<EnsHashCheckReturn> => {
       if (data?.ens) {
-        const resolver = await provider.getResolver(data.ens);
-        if (resolver) {
-          const contentHash = await resolver.getContentHash();
+        // @ts-expect-error: it works, but typing issue
+        const resolverAddress = await getEnsResolver(publicClient, {
+          name: data.ens,
+        });
+        if (resolverAddress) {
+          // @ts-expect-error: it works, but typing issue
+          const contentHash = await getEnsText(publicClient, {
+            name: data.ens,
+            key: 'contenthash',
+          });
           if (contentHash) {
             return {
               cid: contentHash,
@@ -51,17 +60,18 @@ export const useRemoteVersion = () => {
     },
   });
 
-  // merged externalConfigSwr && cidSwr
+  // merged externalConfigQueryReact && cidQueryResult (queryResult)
   return {
     data: queryResult.data,
     get initialLoading() {
       return (
         queryResult.initialLoading ||
-        (externalConfigSwr.data == null && externalConfigSwr.isValidating)
+        (externalConfigQueryReact.data == null &&
+          externalConfigQueryReact.isValidating)
       );
     },
     get loading() {
-      return queryResult.loading || externalConfigSwr.isValidating;
+      return queryResult.loading || externalConfigQueryReact.isValidating;
     },
     get error() {
       return queryResult.error || error;

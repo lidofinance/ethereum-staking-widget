@@ -7,6 +7,7 @@ import { useGetRpcUrlByChainId } from 'config/rpc';
 import { CHAINS } from 'consts/chains';
 import { config } from 'config';
 
+// TODO: NEW SDK (to remove when SDK legace will be removed)
 export const useMainnetStaticRpcProvider = (): StaticJsonRpcBatchProvider => {
   const getRpcUrl = useGetRpcUrlByChainId();
   return useMemo(() => {
