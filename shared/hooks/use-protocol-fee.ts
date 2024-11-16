@@ -1,33 +1,32 @@
+// TODO: NEW SDK
 import { formatEther } from '@ethersproject/units';
-import { CHAINS } from '@lido-sdk/constants';
-import { useLidoSWR } from '@lido-sdk/react';
 
 import { config } from 'config';
-import { STRATEGY_CONSTANT } from 'consts/swr-strategies';
-import { PartialStakingRouterAbi } from 'generated/PartialStakingRouterAbi';
+import { STRATEGY_CONSTANT } from 'consts/react-query-strategies';
+import { useLidoQuery } from 'shared/hooks/use-lido-query';
 import { useDappStatus } from 'modules/web3';
 
 import { useStakingRouter } from './use-stakign-router-contract';
 
 export const useProtocolFee = () => {
   const { chainId } = useDappStatus();
+  // TODO: NEW SDK
   const { contractRpc } = useStakingRouter();
 
-  return useLidoSWR<number>(
-    ['swr:useProtocolFee', chainId, contractRpc, config.enableQaHelpers],
-    // @ts-expect-error broken lidoSWR typings
-    async (
-      _key: string,
-      _chainId: CHAINS,
-      contractRpc: PartialStakingRouterAbi,
-      shouldMock: boolean,
-    ) => {
+  return useLidoQuery({
+    queryKey: ['protocol-fee', chainId, contractRpc, config.enableQaHelpers],
+    strategy: {
+      ...STRATEGY_CONSTANT,
+      refetchInterval: 60000, // 1 minute
+    },
+    enabled: !!chainId && !!contractRpc,
+    queryFn: async () => {
       const mockDataString = window.localStorage.getItem('protocolFee');
 
-      if (shouldMock && mockDataString) {
+      if (config.enableQaHelpers && mockDataString) {
         try {
           const mockData = JSON.parse(mockDataString);
-          return mockData;
+          return Number(mockData);
         } catch (e) {
           console.warn('Failed to load mock data');
           console.warn(e);
@@ -39,9 +38,5 @@ export const useProtocolFee = () => {
 
       return value.toFixed(0);
     },
-    {
-      ...STRATEGY_CONSTANT,
-      refreshInterval: 60000,
-    },
-  );
+  });
 };
