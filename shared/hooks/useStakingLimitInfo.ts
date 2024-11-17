@@ -1,10 +1,9 @@
 import { parseEther } from 'viem';
-import { useSTETHContractRPC } from '@lido-sdk/react';
 
 import { config } from 'config';
 import { STRATEGY_LAZY } from 'consts/react-query-strategies';
 import { LIMIT_LEVEL } from 'types';
-import { useDappStatus } from 'modules/web3';
+import { useLidoSDK } from 'modules/web3';
 import { useLidoQuery, UseLidoQueryResult } from 'shared/hooks/use-lido-query';
 
 export type StakeLimitFullInfo = {
@@ -41,14 +40,12 @@ const getLimitLevel = (maxLimit: bigint, currentLimit: bigint) => {
 
 export const useStakingLimitInfo =
   (): UseLidoQueryResult<StakeLimitFullInfo> => {
-    const { chainId } = useDappStatus();
-    const steth = useSTETHContractRPC();
+    const { stake } = useLidoSDK();
 
     return useLidoQuery<StakeLimitFullInfo>({
       queryKey: [
         'query:getStakeLimitFullInfo',
-        chainId,
-        steth,
+        stake.core.chain,
         config.enableQaHelpers,
       ],
       queryFn: async () => {
@@ -76,23 +73,26 @@ export const useStakingLimitInfo =
           }
         }
 
-        const stakeLimitFullInfo = await steth.getStakeLimitFullInfo();
+        const contract = await stake.getContractStETH();
+        const [
+          isStakingPaused,
+          isStakingLimitSet,
+          currentStakeLimit,
+          maxStakeLimit,
+          maxStakeLimitGrowthBlocks,
+          prevStakeLimit,
+          prevStakeBlockNumber,
+        ] = await contract.read.getStakeLimitFullInfo();
 
         return {
-          // TODO: NEW SDK
-          ...stakeLimitFullInfo,
-          currentStakeLimit: stakeLimitFullInfo.currentStakeLimit?.toBigInt(),
-          maxStakeLimit: stakeLimitFullInfo.maxStakeLimit?.toBigInt(),
-          maxStakeLimitGrowthBlocks:
-            stakeLimitFullInfo.maxStakeLimitGrowthBlocks?.toBigInt(),
-          prevStakeLimit: stakeLimitFullInfo.prevStakeLimit?.toBigInt(),
-          prevStakeBlockNumber:
-            stakeLimitFullInfo.prevStakeBlockNumber?.toBigInt(),
-
-          stakeLimitLevel: getLimitLevel(
-            stakeLimitFullInfo.maxStakeLimit?.toBigInt(),
-            stakeLimitFullInfo.currentStakeLimit?.toBigInt(),
-          ),
+          isStakingPaused,
+          isStakingLimitSet,
+          currentStakeLimit,
+          maxStakeLimit,
+          maxStakeLimitGrowthBlocks,
+          prevStakeLimit,
+          prevStakeBlockNumber,
+          stakeLimitLevel: getLimitLevel(maxStakeLimit, currentStakeLimit),
         };
       },
       strategy: {
