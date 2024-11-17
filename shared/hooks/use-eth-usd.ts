@@ -3,12 +3,9 @@ import { usePublicClient } from 'wagmi';
 import { encodeFunctionData, decodeAbiParameters } from 'viem';
 import { CHAINS } from '@lidofinance/lido-ethereum-sdk';
 
+import { AGGREGATOR_STETH_USD_PRICE_FEED_BY_NETWORK } from 'consts/aggregator';
 import { STRATEGY_LAZY } from 'consts/react-query-strategies';
 import { useLidoQuery } from 'shared/hooks/use-lido-query';
-
-// Chainlink ETH/USD
-// only mainnet
-const ETH_USD_AGGREGATOR = '0xcfe54b5cd566ab89272946f602d76ea879cab4a8';
 
 const aggregatorAbi = [
   {
@@ -42,7 +39,7 @@ export const useEthUsd = (amount?: bigint) => {
       });
 
       const result = await publicClientMainnet.call({
-        to: ETH_USD_AGGREGATOR,
+        to: AGGREGATOR_STETH_USD_PRICE_FEED_BY_NETWORK[CHAINS.Mainnet],
         data: callData,
       });
 

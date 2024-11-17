@@ -116,7 +116,8 @@ export const METRIC_CONTRACT_ADDRESSES = supportedChainsWithMainnet.reduce(
       ),
       [CONTRACT_NAMES.AggregatorStEthUsdPriceFeed]: getAddressOrNull(
         getAggregatorStEthUsdPriceFeedAddress,
-        chainId,
+        // TODO: NEW SDK
+        chainId as unknown as CHAIN_SDK,
       ),
       [CONTRACT_NAMES.StakingRouter]: getAddressOrNull(
         getStakingRouterAddress,

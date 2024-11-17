@@ -1,9 +1,9 @@
-import { CHAINS } from '@lido-sdk/constants';
 import invariant from 'tiny-invariant';
+import { CHAINS } from '@lidofinance/lido-ethereum-sdk';
 
 // https://etherscan.io/address/0xcfe54b5cd566ab89272946f602d76ea879cab4a8
 export const AGGREGATOR_STETH_USD_PRICE_FEED_BY_NETWORK: {
-  [key in CHAINS]?: string;
+  [key in CHAINS]?: `0x${string}`;
 } = {
   [CHAINS.Mainnet]: '0xcfe54b5cd566ab89272946f602d76ea879cab4a8',
 };
