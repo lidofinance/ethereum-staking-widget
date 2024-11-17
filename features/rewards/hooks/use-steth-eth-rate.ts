@@ -2,14 +2,12 @@ import { parseAbiItem, encodeFunctionData, decodeAbiParameters } from 'viem';
 import { usePublicClient } from 'wagmi';
 import { CHAINS } from '@lidofinance/lido-ethereum-sdk';
 
-import { useLidoQuery } from 'shared/hooks/use-lido-query';
 import { STRATEGY_LAZY } from 'consts/react-query-strategies';
+import { WEI_PER_ETHER } from 'consts/tx';
+import { useLidoQuery } from 'shared/hooks/use-lido-query';
 import { useDappStatus } from 'modules/web3';
 
 export const MAINNET_CURVE = '0xDC24316b9AE028F1497c275EB9192a3Ea0f67022';
-
-// TODO: conts
-const WeiPerEther = BigInt(10 ** 18);
 
 export const useStethEthRate = () => {
   const { chainId } = useDappStatus();
@@ -20,7 +18,7 @@ export const useStethEthRate = () => {
     strategy: STRATEGY_LAZY,
     enabled: !!(chainId === CHAINS.Mainnet && publicClientMainnet),
     queryFn: async () => {
-      if (chainId !== 1 || !publicClientMainnet) return WeiPerEther;
+      if (chainId !== 1 || !publicClientMainnet) return WEI_PER_ETHER;
 
       const functionSignature = parseAbiItem(
         'function get_dy(int128 i, int128 j, uint256 dx) view returns (uint256)',
