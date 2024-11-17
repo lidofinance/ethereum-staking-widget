@@ -1,16 +1,16 @@
-import useSWR from 'swr';
 import invariant from 'tiny-invariant';
 import type { Address } from 'viem';
-
-import { LidoSDKCore } from '@lidofinance/lido-ethereum-sdk/core';
-
-import { useLidoSDK } from 'modules/web3';
 import {
   CHAINS,
   CONTRACTS_BY_TOKENS,
   LIDO_L2_CONTRACT_ADDRESSES,
   LIDO_L2_CONTRACT_NAMES,
 } from '@lidofinance/lido-ethereum-sdk/common';
+import { LidoSDKCore } from '@lidofinance/lido-ethereum-sdk/core';
+
+import { STRATEGY_CONSTANT } from 'consts/react-query-strategies';
+import { useLidoSDK } from 'modules/web3';
+import { useLidoQuery } from 'shared/hooks/use-lido-query';
 
 const fetchTokenAddress = async (
   token: string,
@@ -37,11 +37,13 @@ export const useTokenAddress = (
   token: string,
 ): Address | `0x${string}` | undefined => {
   const { core, isL2 } = useLidoSDK();
-  // TODO: NEW SDK (migrate to react query)
-  const { data: address } = useSWR(
-    token ? ['tokenAddress', token, core, isL2] : null,
-    () => fetchTokenAddress(token, core, isL2),
-  );
+
+  const { data: address } = useLidoQuery({
+    queryKey: ['tokenAddress', token, core, isL2],
+    enabled: !!token,
+    strategy: STRATEGY_CONSTANT,
+    queryFn: () => fetchTokenAddress(token, core, isL2),
+  });
 
   return address;
 };
