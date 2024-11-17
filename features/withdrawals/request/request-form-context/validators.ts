@@ -18,8 +18,6 @@ import {
 import { getTokenDisplayName } from 'utils/getTokenDisplayName';
 import { awaitWithTimeout } from 'utils/await-with-timeout';
 import { validateEtherAmount } from 'shared/hook-form/validation/validate-ether-amount';
-// import { validateBignumberMin } from 'shared/hook-form/validation/validate-bignumber-min';
-// import { validateBignumberMax } from 'shared/hook-form/validation/validate-bignumber-max';
 import { validateBigintMin } from 'shared/hook-form/validation/validate-bigint-min';
 import { validateBigintMax } from 'shared/hook-form/validation/validate-bigint-max';
 

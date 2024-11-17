@@ -23,7 +23,7 @@ export const useRequestFormDataContextValue = () => {
     maxAmount: maxAmountPerRequestSteth,
     minAmount: minUnstakeSteth,
     isWithdrawalsStatusLoading: isMinMaxStethLoading,
-  } = useWithdrawals(); // TODO: NEW SDK (fix friezes useWithdrawals->useWithdrawalsBaseData)
+  } = useWithdrawals();
   const {
     data: balanceSteth,
     refetch: stethUpdate,

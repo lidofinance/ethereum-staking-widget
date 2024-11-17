@@ -21,14 +21,12 @@ export const useWrapFormNetworkData = () => {
   const { data: wstethBalance, refetch: wstethBalanceUpdate } =
     useWstethBalance();
 
-  // TODO: NEW_SDK (after stake migrate to BigInt)
   const { data: stakeLimitInfo, refetch: stakeLimitInfoUpdate } =
     useStakingLimitInfo();
 
   const { gasLimitETH, gasLimitStETH } = useWrapGasLimit();
   const { maxGasPrice } = useMaxGasPrice();
 
-  // TODO: NEW_SDK (after stake migrate to BigInt)
   const maxAmountETH = useTokenMaxAmount({
     balance: ethBalance,
     limit: stakeLimitInfo?.currentStakeLimit,

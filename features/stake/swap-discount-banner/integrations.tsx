@@ -1,5 +1,3 @@
-// TODO: NEW SDK
-// import { parseEther } from '@ethersproject/units';
 import { parseEther } from 'viem';
 
 import { OPEN_OCEAN_REFERRAL_ADDRESS } from 'consts/external-links';

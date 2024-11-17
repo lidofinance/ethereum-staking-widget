@@ -1,7 +1,5 @@
 import { useRouter } from 'next/router';
-// TODO: NEW SDK
 import { formatEther } from 'viem';
-// import { formatEther } from '@ethersproject/units';
 import { Button } from '@lidofinance/lido-ui';
 import { useSafeQueryString } from 'shared/hooks/useSafeQueryString';
 
