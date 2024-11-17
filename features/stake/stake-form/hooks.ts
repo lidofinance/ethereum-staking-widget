@@ -2,7 +2,7 @@ import { config } from 'config';
 import { STRATEGY_CONSTANT } from 'consts/react-query-strategies';
 import { useLidoQuery } from 'shared/hooks/use-lido-query';
 import { ADDRESS_ZERO, useDappStatus, useLidoSDK } from 'modules/web3';
-import { applyGasLimitRatioBigInt } from 'utils/apply-gas-limit-ratio';
+import { applyGasLimitRatio } from 'utils/apply-gas-limit-ratio';
 
 export const useStethSubmitGasLimit = (): bigint => {
   const { stake } = useLidoSDK();
@@ -16,7 +16,7 @@ export const useStethSubmitGasLimit = (): bigint => {
         account: config.ESTIMATE_ACCOUNT,
         value: config.ESTIMATE_AMOUNT_BIGINT,
       });
-      return applyGasLimitRatioBigInt(gasLimit);
+      return applyGasLimitRatio(gasLimit);
     },
     strategy: STRATEGY_CONSTANT,
     enabled: !!chainId,

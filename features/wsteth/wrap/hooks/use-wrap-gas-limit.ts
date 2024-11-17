@@ -7,13 +7,13 @@ import {
   WRAP_GAS_LIMIT,
   WRAP_L2_GAS_LIMIT,
 } from 'consts/tx';
-import { applyGasLimitRatioBigInt } from 'utils/apply-gas-limit-ratio';
+import { applyGasLimitRatio } from 'utils/apply-gas-limit-ratio';
 import { useDappStatus, useLidoSDK, ZERO } from 'modules/web3';
 
 const fetchGasLimitETH = async (isL2: boolean, wrap: any) => {
   if (isL2) return ZERO;
   try {
-    return applyGasLimitRatioBigInt(
+    return applyGasLimitRatio(
       await wrap.wrapEthEstimateGas({
         value: config.ESTIMATE_AMOUNT_BIGINT,
         account: config.ESTIMATE_ACCOUNT,
@@ -21,7 +21,7 @@ const fetchGasLimitETH = async (isL2: boolean, wrap: any) => {
     );
   } catch (error) {
     console.warn(`[wrap-gas-limit::eth]`, error);
-    return applyGasLimitRatioBigInt(WRAP_FROM_ETH_GAS_LIMIT);
+    return applyGasLimitRatio(WRAP_FROM_ETH_GAS_LIMIT);
   }
 };
 

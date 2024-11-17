@@ -1,1 +1,2 @@
-export { sendTx } from './send-tx';
+export * from './apply-round-up-gas-limit';
+export * from './get-fee-data';

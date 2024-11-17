@@ -1,1 +1,1 @@
-export * from './send-tx/send-tx';
+export * from './send-tx';
