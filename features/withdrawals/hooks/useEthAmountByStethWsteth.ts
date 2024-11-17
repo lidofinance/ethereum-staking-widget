@@ -1,7 +1,4 @@
-import { useContractSWR, useWSTETHContractRPC } from '@lido-sdk/react';
-
-import { ZERO } from 'modules/web3';
-import { STRATEGY_LAZY } from 'consts/swr-strategies';
+import { ZERO, useStETHByWstETH } from 'modules/web3';
 
 type useEthAmountByInputProps = {
   isSteth: boolean;
@@ -13,19 +10,13 @@ export const useEthAmountByStethWsteth = ({
   amount,
 }: useEthAmountByInputProps) => {
   const fallbackedAmount = amount ?? ZERO;
-  const wsteth = isSteth ? null : fallbackedAmount;
-  const { data: stethByWstethBalance, loading } = useContractSWR({
-    contract: useWSTETHContractRPC(),
-    method: 'getStETHByWstETH',
-    params: [wsteth],
-    shouldFetch: !!wsteth,
-    config: STRATEGY_LAZY,
-  });
+  const wsteth = isSteth ? undefined : fallbackedAmount;
+  const { data: stethByWstethBalance, loading } = useStETHByWstETH(wsteth);
 
   if (isSteth)
     return {
       amount: fallbackedAmount ?? ZERO,
       loading: false,
     };
-  else return { amount: stethByWstethBalance?.toBigInt(), loading };
+  else return { amount: stethByWstethBalance, loading };
 };
