@@ -8,7 +8,7 @@ import { useLidoQuery } from 'shared/hooks/use-lido-query';
 
 // Chainlink ETH/USD
 // only mainnet
-const ETH_USD_AGGREGATOR = '0x5f4ec3df9cbd43714fe2740f5e3616155c5b8419';
+const ETH_USD_AGGREGATOR = '0xcfe54b5cd566ab89272946f602d76ea879cab4a8';
 
 const aggregatorAbi = [
   {
