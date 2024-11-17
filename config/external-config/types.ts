@@ -1,5 +1,5 @@
 import type { DexWithdrawalApi } from 'features/withdrawals/request/withdrawal-rates';
-import { SWRResponse } from 'swr';
+import { UseLidoQueryResult } from 'shared/hooks/use-lido-query';
 
 export type Manifest = Record<string, ManifestEntry>;
 
@@ -20,5 +20,5 @@ export type ManifestConfig = {
 
 export type ExternalConfig = Omit<ManifestEntry, 'config'> &
   ManifestConfig & {
-    fetchMeta: SWRResponse<ManifestEntry>;
+    fetchMeta: UseLidoQueryResult<ManifestEntry>;
   };

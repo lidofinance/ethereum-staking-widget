@@ -1,5 +1,4 @@
 import { FC, PropsWithChildren, useEffect, useMemo } from 'react';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { WagmiProvider, createConfig, useConnections } from 'wagmi';
 import * as wagmiChains from 'wagmi/chains';
 import {
@@ -29,14 +28,6 @@ export const wagmiChainMap = Object.values(wagmiChains).reduce(
   },
   {} as Record<number, wagmiChains.Chain>,
 );
-
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      refetchOnWindowFocus: false,
-    },
-  },
-});
 
 export const Web3Provider: FC<PropsWithChildren> = ({ children }) => {
   const {
@@ -110,21 +101,19 @@ export const Web3Provider: FC<PropsWithChildren> = ({ children }) => {
   return (
     // default wagmi autoConnect, MUST be false in our case, because we use custom autoConnect from Reef Knot
     <WagmiProvider config={wagmiConfig} reconnectOnMount={false}>
-      <QueryClientProvider client={queryClient}>
-        <ReefKnot
-          rpc={backendRPC}
-          chains={supportedChains}
-          walletDataList={walletsDataList}
-        >
-          {isWalletConnectionAllowed && <AutoConnect autoConnect />}
-          <LidoSDKProvider>
-            <SupportL1Chains>
-              <SDKLegacyProvider>{children}</SDKLegacyProvider>
-            </SupportL1Chains>
-          </LidoSDKProvider>
-          <ConnectWalletModal />
-        </ReefKnot>
-      </QueryClientProvider>
+      <ReefKnot
+        rpc={backendRPC}
+        chains={supportedChains}
+        walletDataList={walletsDataList}
+      >
+        {isWalletConnectionAllowed && <AutoConnect autoConnect />}
+        <LidoSDKProvider>
+          <SupportL1Chains>
+            <SDKLegacyProvider>{children}</SDKLegacyProvider>
+          </SupportL1Chains>
+        </LidoSDKProvider>
+        <ConnectWalletModal />
+      </ReefKnot>
     </WagmiProvider>
   );
 };

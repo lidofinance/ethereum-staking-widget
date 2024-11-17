@@ -25,6 +25,7 @@ export type UseLidoQueryResult<TData, TError = unknown> = UseQueryResult<
 > & {
   initialLoading: boolean;
   loading: boolean;
+  isValidating: boolean;
 };
 
 export const useLidoQuery = <
@@ -57,5 +58,6 @@ export const useLidoQuery = <
     // additional fields (see: UseLidoQueryResult)
     initialLoading: isLoading && !data && !error,
     loading: isLoading || isFetching,
+    isValidating: isLoading || isFetching,
   };
 };

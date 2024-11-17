@@ -1,59 +1,61 @@
 import { useMemo } from 'react';
-import useSWR from 'swr';
 
-import { STRATEGY_LAZY } from 'consts/swr-strategies';
-import { getConfig } from '../get-config';
-import { standardFetcher } from 'utils/standardFetcher';
+import { config } from 'config';
+import { STRATEGY_LAZY } from 'consts/react-query-strategies';
 import { IPFS_MANIFEST_URL } from 'consts/external-links';
+import { useLidoQuery } from 'shared/hooks/use-lido-query';
+import { standardFetcher } from 'utils/standardFetcher';
+
 import {
   getBackwardCompatibleConfig,
   isManifestEntryValid,
   useFallbackManifestEntry,
 } from './utils';
-
 import type { ExternalConfig, ManifestEntry } from './types';
-
-const onFetchError = (error: unknown) => {
-  console.warn(
-    '[useExternalConfigContext] while fetching external config:',
-    error,
-  );
-};
 
 export const useExternalConfigContext = (
   prefetchedManifest?: unknown,
 ): ExternalConfig => {
-  const { defaultChain } = getConfig();
+  const defaultChain = config.defaultChain;
   const fallbackData = useFallbackManifestEntry(
     prefetchedManifest,
-    defaultChain,
+    config.defaultChain,
   );
 
-  const swr = useSWR<ManifestEntry>(
-    ['swr:external-config', defaultChain],
-    async () => {
-      const result = await standardFetcher<Record<string, any>>(
-        IPFS_MANIFEST_URL,
-        {
-          headers: { Accept: 'application/json' },
-        },
-      );
-      const entry = result[defaultChain.toString()];
-      if (isManifestEntryValid(entry)) return entry;
-      throw new Error(
-        '[useExternalConfigContext] received invalid manifest',
-        result,
-      );
+  const queryResult = useLidoQuery<ManifestEntry>({
+    queryKey: ['external-config', defaultChain],
+    strategy: STRATEGY_LAZY,
+    enabled: !!defaultChain,
+    queryFn: async () => {
+      try {
+        const result = await standardFetcher<Record<string, any>>(
+          IPFS_MANIFEST_URL,
+          {
+            headers: { Accept: 'application/json' },
+          },
+        );
+
+        const entry = result[defaultChain.toString()];
+        if (isManifestEntryValid(entry)) return entry;
+
+        throw new Error(
+          '[useExternalConfig] received invalid manifest',
+          result,
+        );
+      } catch (err) {
+        console.warn(
+          '[useExternalConfigContext] while fetching external config:',
+          err,
+        );
+        // This line is necessary so that useLidoQuery (useQuery) can handle the error and return undefined
+        throw err;
+      }
     },
-    {
-      ...STRATEGY_LAZY,
-      onError: onFetchError,
-    },
-  );
+  });
 
   return useMemo(() => {
-    const { config, ...rest } = swr.data ?? fallbackData;
+    const { config, ...rest } = queryResult.data ?? fallbackData;
     const cleanConfig = getBackwardCompatibleConfig(config);
-    return { ...cleanConfig, ...rest, fetchMeta: swr };
-  }, [swr, fallbackData]);
+    return { ...cleanConfig, ...rest, fetchMeta: queryResult };
+  }, [queryResult, fallbackData]);
 };
