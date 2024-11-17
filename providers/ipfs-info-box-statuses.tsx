@@ -7,7 +7,6 @@ import {
   useMemo,
 } from 'react';
 import invariant from 'tiny-invariant';
-import { useLocalStorage } from '@lido-sdk/react';
 
 import { config } from 'config';
 import { useRpcUrl } from 'config/rpc';
@@ -18,6 +17,7 @@ import { useDappStatus } from 'modules/web3';
 import { useCSPViolation } from 'features/ipfs/csp-violation-box/use-csp-violation';
 import { useRouterPath } from 'shared/hooks/use-router-path';
 import { useLidoQuery } from 'shared/hooks/use-lido-query';
+import { useLocalStorage } from 'shared/hooks/use-local-storage';
 import { checkRpcUrl } from 'utils/check-rpc-url';
 
 type IPFSInfoBoxStatusesContextValue = {
