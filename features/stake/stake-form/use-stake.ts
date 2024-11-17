@@ -9,7 +9,7 @@ import {
 import { config } from 'config';
 import { useDappStatus, useLidoSDK } from 'modules/web3';
 
-import { MockLimitReachedError, getAddressViem } from './utils';
+import { MockLimitReachedError, getAddress } from './utils';
 import { useTxModalStagesStake } from './hooks/use-tx-modal-stages-stake';
 
 type StakeArguments = {
@@ -52,7 +52,7 @@ export const useStake = ({ onConfirm, onRetry }: StakeOptions) => {
 
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const referralAddress = referral
-          ? await getAddressViem(referral, stake.core.rpcProvider)
+          ? await getAddress(referral, stake.core.rpcProvider)
           : config.STAKE_FALLBACK_REFERRAL_ADDRESS;
 
         const txCallback: TransactionCallback = ({ stage, payload }) => {
