@@ -8,6 +8,8 @@ import {
 } from 'react';
 import invariant from 'tiny-invariant';
 
+import type { LIDO_CONTRACT_NAMES } from '@lidofinance/lido-ethereum-sdk/common';
+
 import { config } from 'config';
 import { useRpcUrl } from 'config/rpc';
 import { SETTINGS_PATH } from 'consts/urls';
@@ -18,6 +20,7 @@ import { useCSPViolation } from 'features/ipfs/csp-violation-box/use-csp-violati
 import { useRouterPath } from 'shared/hooks/use-router-path';
 import { useLidoQuery } from 'shared/hooks/use-lido-query';
 import { useLocalStorage } from 'shared/hooks/use-local-storage';
+import { useContractAddress } from 'shared/hooks/use-contract-address';
 import { checkRpcUrl } from 'utils/check-rpc-url';
 
 type IPFSInfoBoxStatusesContextValue = {
@@ -52,17 +55,28 @@ export const IPFSInfoBoxStatusesProvider: FC<PropsWithChildren> = ({
     false,
   );
 
+  const {
+    data: stethAddress,
+    // TODO:
+    //  import { LIDO_CONTRACT_NAMES } from '@lidofinance/lido-ethereum-sdk/common';
+    //  ERROR: LIDO_CONTRACT_NAMES is undefined
+    //  ...
+    //  import type { LIDO_CONTRACT_NAMES } from '@lidofinance/lido-ethereum-sdk/common';
+    //  OK: LIDO_CONTRACT_NAMES is Type
+  } = useContractAddress('lido' as LIDO_CONTRACT_NAMES);
+  // console.log('IPFSInfoBoxStatusesProvider stethAddress:', stethAddress);
+
   const handleClickDismiss = useCallback(() => {
     setDismissStorage(true);
   }, [setDismissStorage]);
 
   const rpcUrl = useRpcUrl();
   const { data: isRPCAvailableRaw, isLoading } = useLidoQuery({
-    queryKey: ['rpc-url-check', rpcUrl, chainId],
+    queryKey: ['rpc-url-check', rpcUrl, chainId, stethAddress],
     strategy: STRATEGY_LAZY,
     enabled: !!config.ipfsMode,
     queryFn: async () => {
-      return await checkRpcUrl(rpcUrl, chainId);
+      return await checkRpcUrl(rpcUrl, chainId, stethAddress);
     },
   });
   const isRPCAvailable = isRPCAvailableRaw === true;

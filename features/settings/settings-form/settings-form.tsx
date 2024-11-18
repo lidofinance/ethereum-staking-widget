@@ -1,11 +1,13 @@
 import { useCallback } from 'react';
 import { useForm } from 'react-hook-form';
 
+import type { LIDO_CONTRACT_NAMES } from '@lidofinance/lido-ethereum-sdk/common';
 import { Button, ToastSuccess, Block, Input } from '@lidofinance/lido-ui';
 
 import { useUserConfig } from 'config/user-config';
 import { CHAINS } from 'consts/chains';
 import { LinkArrow } from 'shared/components/link-arrow/link-arrow';
+import { useContractAddress } from 'shared/hooks/use-contract-address';
 import { RPCErrorType, checkRpcUrl } from 'utils/check-rpc-url';
 
 import {
@@ -31,6 +33,17 @@ export const SettingsForm = () => {
       rpcUrl: savedUserConfig.rpcUrls[chainId as unknown as CHAINS],
     },
   });
+
+  const {
+    data: stethAddress,
+    // TODO:
+    //  import { LIDO_CONTRACT_NAMES } from '@lidofinance/lido-ethereum-sdk/common';
+    //  ERROR: LIDO_CONTRACT_NAMES is undefined
+    //  ...
+    //  import type { LIDO_CONTRACT_NAMES } from '@lidofinance/lido-ethereum-sdk/common';
+    //  OK: LIDO_CONTRACT_NAMES is Type
+  } = useContractAddress('lido' as LIDO_CONTRACT_NAMES);
+  // console.log('SettingsForm stethAddress:', stethAddress);
 
   const {
     formState,
@@ -62,7 +75,7 @@ export const SettingsForm = () => {
   const validateRpcUrl = useCallback(
     async (rpcUrl: string) => {
       if (!rpcUrl) return true;
-      const rpcCheckResult = await checkRpcUrl(rpcUrl, chainId);
+      const rpcCheckResult = await checkRpcUrl(rpcUrl, chainId, stethAddress);
       switch (rpcCheckResult) {
         case true:
           return true;
@@ -74,7 +87,7 @@ export const SettingsForm = () => {
           return 'Url is working, but network does not match';
       }
     },
-    [chainId],
+    [chainId, stethAddress],
   );
 
   const handleReset = useCallback(() => {
