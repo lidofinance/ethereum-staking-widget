@@ -16,7 +16,6 @@ import { ConnectWalletModal } from './connect-wallet-modal';
 
 import { useWeb3Transport } from './use-web3-transport';
 import { LidoSDKProvider } from './lido-sdk';
-import { SDKLegacyProvider } from './sdk-legacy';
 import { SupportL1Chains } from './dapp-chain';
 
 type ChainsList = [wagmiChains.Chain, ...wagmiChains.Chain[]];
@@ -108,9 +107,7 @@ export const Web3Provider: FC<PropsWithChildren> = ({ children }) => {
       >
         {isWalletConnectionAllowed && <AutoConnect autoConnect />}
         <LidoSDKProvider>
-          <SupportL1Chains>
-            <SDKLegacyProvider>{children}</SDKLegacyProvider>
-          </SupportL1Chains>
+          <SupportL1Chains>{children}</SupportL1Chains>
         </LidoSDKProvider>
         <ConnectWalletModal />
       </ReefKnot>
