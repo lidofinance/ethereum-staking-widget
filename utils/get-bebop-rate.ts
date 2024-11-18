@@ -1,10 +1,8 @@
-import { getAddress } from 'ethers/lib/utils.js';
-import { CHAINS, getTokenAddress, TOKENS } from '@lido-sdk/constants';
+import { getAddress } from 'viem';
+import { LIDO_TOKENS } from '@lidofinance/lido-ethereum-sdk';
+
 import { config } from 'config';
 import { standardFetcher } from './standardFetcher';
-
-import { TOKENS_WITHDRAWABLE } from '../features/withdrawals/types/tokens-withdrawable';
-import { TOKENS_WRAPPABLE } from '../features/wsteth/shared/types';
 
 type BebopGetQuotePartial = {
   routes: {
@@ -27,19 +25,30 @@ type BebopGetQuotePartial = {
   }[];
 };
 
-type RateToken = TOKENS_WITHDRAWABLE | TOKENS_WRAPPABLE;
-
 type RateCalculationResult = { rate: number; toReceive: bigint };
 
-const getRateTokenAddress = (token: RateToken) =>
-  token === 'ETH'
-    ? '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE'
-    : getTokenAddress(CHAINS.Mainnet, token as TOKENS);
+// TODO: temp
+type TOKENS =
+  | Exclude<(typeof LIDO_TOKENS)[keyof typeof LIDO_TOKENS], 'unstETH'>
+  | 'LDO';
+
+// TODO: temp
+const TOKEN_ADDRESSES: Record<TOKENS, string> = {
+  stETH: '0xae7ab96520de3a18e5e111b5eaab095312d7fe84',
+  wstETH: '0x7f39c581f595b53c5cb19bd0b3f8da6c935e2ca0',
+  ETH: '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE',
+  LDO: '0x5a98fcbea516cf06857215779fd812ca3bef1b32',
+};
+
+// TODO: temp
+const getRateTokenAddress = (token: TOKENS): string => {
+  return TOKEN_ADDRESSES[token] || '';
+};
 
 export const getBebopRate = async (
   amount: bigint,
-  fromToken: RateToken,
-  toToken: RateToken,
+  fromToken: TOKENS,
+  toToken: TOKENS,
 ): Promise<RateCalculationResult> => {
   const basePath = 'https://api.bebop.xyz/router/ethereum/v1/quote';
 
