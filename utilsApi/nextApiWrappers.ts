@@ -9,14 +9,15 @@ import {
   DEFAULT_API_ERROR_MESSAGE,
 } from '@lidofinance/next-api-wrapper';
 import { rateLimitWrapper } from '@lidofinance/next-ip-rate-limit';
-import { CHAINS } from '@lido-sdk/constants';
+import { CHAINS } from '@lidofinance/lido-ethereum-sdk/common';
 
 import { config, secretConfig } from 'config';
 
-import {
-  getMetricContractInterface,
-  METRIC_CONTRACT_ADDRESSES,
-} from './contractAddressesMetricsMap';
+// import {
+//   // getMetricContractAbi
+//   // getMetricContractInterface,
+//   METRIC_CONTRACT_ADDRESSES,
+// } from './contractAddressesMetricsMap';
 
 export enum HttpMethod {
   GET = 'GET',
@@ -123,6 +124,8 @@ const parseRefererUrl = (referer: string) => {
 const collectRequestAddressMetric = async ({
   calls,
   referer,
+  // TODO
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   chainId,
   metrics,
 }: {
@@ -140,22 +143,26 @@ const collectRequestAddressMetric = async ({
     ) {
       const { to, data } = call.params[0];
       const address = utils.getAddress(to) as `0x${string}`;
-      const contractName = METRIC_CONTRACT_ADDRESSES[chainId]?.[address];
+      // TODO
+      const contractName = 'N/A';
+      // const contractName = METRIC_CONTRACT_ADDRESSES[chainId]?.[address];
       const methodEncoded = data?.slice(0, 10); // `0x` and 8 next symbols
 
-      let methodDecoded = 'N/A';
-      try {
-        if (contractName) {
-          methodDecoded =
-            getMetricContractInterface(contractName).getFunction(
-              methodEncoded,
-            ).name;
-        }
-      } catch (error) {
-        console.warn(
-          `[collectRequestAddressMetric] failed to decode ${methodEncoded} method for ${contractName}: ${error} `,
-        );
-      }
+      // TODO
+      const methodDecoded = 'N/A';
+      // let methodDecoded = 'N/A';
+      // try {
+      //   if (contractName) {
+      //     methodDecoded =
+      //       getMetricContractInterface(contractName).getFunction(
+      //         methodEncoded,
+      //       ).name;
+      //   }
+      // } catch (error) {
+      //   console.warn(
+      //     `[collectRequestAddressMetric] failed to decode ${methodEncoded} method for ${contractName}: ${error} `,
+      //   );
+      // }
 
       metrics
         .labels({
