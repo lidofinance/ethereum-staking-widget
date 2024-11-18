@@ -39,7 +39,9 @@ export const StakeFormInfo = () => {
         help="Please note: this fee applies to staking rewards only,
       and is NOT taken from your staked amount."
       >
-        {!protocolFee.data ? DATA_UNAVAILABLE : `${protocolFee.data}%`}
+        {!protocolFee.totalFeeString
+          ? DATA_UNAVAILABLE
+          : `${protocolFee.totalFeeString}%`}
       </DataTableRow>
     </DataTable>
   );
