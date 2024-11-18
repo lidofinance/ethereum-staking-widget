@@ -93,6 +93,7 @@ export const useWithdrawalRequests = () => {
 
   const queryResult = useLidoQuery({
     queryKey,
+    enabled: !!address,
     queryFn: async () => {
       if (!address) {
         return;
