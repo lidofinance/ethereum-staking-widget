@@ -1,19 +1,31 @@
 import { formatEther } from 'viem';
+import type { LIDO_CONTRACT_NAMES } from '@lidofinance/lido-ethereum-sdk/common';
+
 import { STRATEGY_CONSTANT } from 'consts/react-query-strategies';
 import { useLidoQuery } from 'shared/hooks/use-lido-query';
 import { useLidoSDK } from 'modules/web3';
-import { useStakingRouterAddress } from './use-stakign-router-contract-address';
+import { useContractAddress } from './use-contract-address';
 
 export const useProtocolFee = () => {
   const { core } = useLidoSDK();
   const {
-    data: address,
+    data: stakingRouterAddress,
     isLoading: isAddressLoading,
     error: addressError,
-  } = useStakingRouterAddress();
+    // TODO:
+    //  import { LIDO_CONTRACT_NAMES } from '@lidofinance/lido-ethereum-sdk/common';
+    //  ERROR: LIDO_CONTRACT_NAMES is undefined
+    //  ...
+    //  import type { LIDO_CONTRACT_NAMES } from '@lidofinance/lido-ethereum-sdk/common';
+    //  OK: LIDO_CONTRACT_NAMES is Type
+  } = useContractAddress('stakingRouter' as LIDO_CONTRACT_NAMES);
 
   const queryResult = useLidoQuery({
-    queryKey: ['staking-fee-aggregate-distribution', core.chainId, address],
+    queryKey: [
+      'staking-fee-aggregate-distribution',
+      core.chainId,
+      stakingRouterAddress,
+    ],
     strategy: {
       ...STRATEGY_CONSTANT,
       refetchInterval: 60000, // 1 minute
@@ -21,14 +33,14 @@ export const useProtocolFee = () => {
     enabled:
       !!core &&
       !!core.chainId &&
-      !!address &&
+      !!stakingRouterAddress &&
       !isAddressLoading &&
       !addressError,
     queryFn: async () => {
-      if (!address) return;
+      if (!stakingRouterAddress) return;
 
       return await core.rpcProvider.readContract({
-        address,
+        address: stakingRouterAddress,
         abi: [
           {
             inputs: [],
