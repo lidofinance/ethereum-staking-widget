@@ -18,9 +18,6 @@ import type { Address, WatchContractEventOnLogsFn } from 'viem';
 import type { GetBalanceData } from 'wagmi/query';
 import type { AbstractLidoSDKErc20 } from '@lidofinance/lido-ethereum-sdk/erc20';
 
-// const nativeToBN = (data: bigint) => BigNumber.from(data.toString());
-// const balanceToBN = (data: GetBalanceData) => nativeToBN(data.value);
-
 const selectBalance = (data: GetBalanceData) => data.value;
 
 export const useEthereumBalance = () => {
