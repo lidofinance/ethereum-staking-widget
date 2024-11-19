@@ -2939,10 +2939,10 @@
   resolved "https://registry.yarnpkg.com/@reef-knot/core-react/-/core-react-5.1.0.tgz#bc2e5b2e1dc844c19c67c0e16802da86f59ba748"
   integrity sha512-JNndXyOXOi1U7YznQSKiMQT/P2EzX3UpNlYpjBegz6GAc4njomiy73Xw1fmDBFmvGuL596tnoX1iHG7sqTBpxg==
 
-"@reef-knot/ledger-connector@4.1.4":
-  version "4.1.4"
-  resolved "https://registry.yarnpkg.com/@reef-knot/ledger-connector/-/ledger-connector-4.1.4.tgz#f029c5f68155284d4cc9020d16da7a52acebf98a"
-  integrity sha512-uOPGEGWJRaWDUt0aL/99diqJflwkZvBdVC5UFYZxfHjWTb+tyKH96Dar0jYXAv1/AFe/cYDA/uec+K8ceYMvBw==
+"@reef-knot/ledger-connector@4.2.0":
+  version "4.2.0"
+  resolved "https://registry.yarnpkg.com/@reef-knot/ledger-connector/-/ledger-connector-4.2.0.tgz#864c205c805f1e1e893300c013113c5800d80214"
+  integrity sha512-Av8iQHPr7aiz4UK/Koh6CMaN5UUg80vJNnQ4Y4HUuUwv6D5TRCjWNITRQM57PO2Qt4BMAqcPgfjlB4dxMOdOcg==
   dependencies:
     "@ethersproject/abstract-signer" "^5.7.0"
     "@ethersproject/address" "^5.7.0"
@@ -9537,14 +9537,14 @@ redis-parser@^3.0.0:
   dependencies:
     redis-errors "^1.0.0"
 
-reef-knot@6.0.1:
-  version "6.0.1"
-  resolved "https://registry.yarnpkg.com/reef-knot/-/reef-knot-6.0.1.tgz#684a42ac0364ebfb4ba47db9aec6c0f0e33889d5"
-  integrity sha512-gEeq7tE9bMHFK6vrskw1vdna4uowzj2LitpKh3vMjtqSq7M5hoGG3HouMiN2tzJi6k9OY5PL/ZGua6BDacErcA==
+reef-knot@6.0.2:
+  version "6.0.2"
+  resolved "https://registry.yarnpkg.com/reef-knot/-/reef-knot-6.0.2.tgz#8643e3edc86508f4f3edff94e22fc8ee3f1c3430"
+  integrity sha512-dNjUzoPho9DCysO0vl6GbCGirHs8DqDlkr2IUIt8iBxbuUKeIcvIO59umDUI8CglL4TRKyeV+HIG91EkbFdx8w==
   dependencies:
     "@reef-knot/connect-wallet-modal" "6.0.0"
     "@reef-knot/core-react" "5.1.0"
-    "@reef-knot/ledger-connector" "4.1.4"
+    "@reef-knot/ledger-connector" "4.2.0"
     "@reef-knot/types" "3.0.0"
     "@reef-knot/ui-react" "2.1.5"
     "@reef-knot/wallets-helpers" "2.1.1"
@@ -10097,7 +10097,7 @@ string-length@^4.0.1:
     char-regex "^1.0.2"
     strip-ansi "^6.0.0"
 
-"string-width-cjs@npm:string-width@^4.2.0", string-width@^4.1.0, string-width@^4.2.0, string-width@^4.2.3:
+"string-width-cjs@npm:string-width@^4.2.0":
   version "4.2.3"
   resolved "https://registry.yarnpkg.com/string-width/-/string-width-4.2.3.tgz#269c7117d27b05ad2e536830a8ec895ef9c6d010"
   integrity sha512-wKyQRQpjJ0sIp62ErSZdGsjMJWsap5oRNihHhu6G7JVO/9jIB6UyevL+tXuOqrng8j/cxKTWyWUwvSTriiZz/g==
@@ -10113,6 +10113,15 @@ string-width@^2.1.0:
   dependencies:
     is-fullwidth-code-point "^2.0.0"
     strip-ansi "^4.0.0"
+
+string-width@^4.1.0, string-width@^4.2.0, string-width@^4.2.3:
+  version "4.2.3"
+  resolved "https://registry.yarnpkg.com/string-width/-/string-width-4.2.3.tgz#269c7117d27b05ad2e536830a8ec895ef9c6d010"
+  integrity sha512-wKyQRQpjJ0sIp62ErSZdGsjMJWsap5oRNihHhu6G7JVO/9jIB6UyevL+tXuOqrng8j/cxKTWyWUwvSTriiZz/g==
+  dependencies:
+    emoji-regex "^8.0.0"
+    is-fullwidth-code-point "^3.0.0"
+    strip-ansi "^6.0.1"
 
 string-width@^5.0.0, string-width@^5.0.1, string-width@^5.1.2:
   version "5.1.2"
@@ -10179,7 +10188,7 @@ string_decoder@~1.1.1:
   dependencies:
     safe-buffer "~5.1.0"
 
-"strip-ansi-cjs@npm:strip-ansi@^6.0.1", strip-ansi@^6.0.0, strip-ansi@^6.0.1:
+"strip-ansi-cjs@npm:strip-ansi@^6.0.1":
   version "6.0.1"
   resolved "https://registry.yarnpkg.com/strip-ansi/-/strip-ansi-6.0.1.tgz#9e26c63d30f53443e9489495b2105d37b67a85d9"
   integrity sha512-Y38VPSHcqkFrCpFnQ9vuSXmquuv5oXOKpGeT6aGrr3o3Gc9AlVa6JBfUSOCnbxGGZF+/0ooI7KrPuUSztUdU5A==
@@ -10199,6 +10208,13 @@ strip-ansi@^5.1.0:
   integrity sha512-DuRs1gKbBqsMKIZlrffwlug8MHkcnpjs5VPmL1PAh+mA30U0DTotfDZ0d2UUsXpPmPmMMJ6W773MaA3J+lbiWA==
   dependencies:
     ansi-regex "^4.1.0"
+
+strip-ansi@^6.0.0, strip-ansi@^6.0.1:
+  version "6.0.1"
+  resolved "https://registry.yarnpkg.com/strip-ansi/-/strip-ansi-6.0.1.tgz#9e26c63d30f53443e9489495b2105d37b67a85d9"
+  integrity sha512-Y38VPSHcqkFrCpFnQ9vuSXmquuv5oXOKpGeT6aGrr3o3Gc9AlVa6JBfUSOCnbxGGZF+/0ooI7KrPuUSztUdU5A==
+  dependencies:
+    ansi-regex "^5.0.1"
 
 strip-ansi@^7.0.1:
   version "7.1.0"
@@ -11141,8 +11157,7 @@ winston@*:
     triple-beam "^1.3.0"
     winston-transport "^4.5.0"
 
-"wrap-ansi-cjs@npm:wrap-ansi@^7.0.0", wrap-ansi@^7.0.0:
-  name wrap-ansi-cjs
+"wrap-ansi-cjs@npm:wrap-ansi@^7.0.0":
   version "7.0.0"
   resolved "https://registry.yarnpkg.com/wrap-ansi/-/wrap-ansi-7.0.0.tgz#67e145cff510a6a6984bdf1152911d69d2eb9e43"
   integrity sha512-YVGIj2kamLSTxw6NsZjoBxfSwsn0ycdesmc4p+Q21c5zPuZ1pl+NfxVdxPtdHvmNVOQ6XSYG4AUtyt/Fi7D16Q==
@@ -11155,6 +11170,15 @@ wrap-ansi@^6.2.0:
   version "6.2.0"
   resolved "https://registry.yarnpkg.com/wrap-ansi/-/wrap-ansi-6.2.0.tgz#e9393ba07102e6c91a3b221478f0257cd2856e53"
   integrity sha512-r6lPcBGxZXlIcymEu7InxDMhdW0KDxpLgoFLcguasxCaJ/SOIZwINatK9KY/tf+ZrlywOKU0UDj3ATXUBfxJXA==
+  dependencies:
+    ansi-styles "^4.0.0"
+    string-width "^4.1.0"
+    strip-ansi "^6.0.0"
+
+wrap-ansi@^7.0.0:
+  version "7.0.0"
+  resolved "https://registry.yarnpkg.com/wrap-ansi/-/wrap-ansi-7.0.0.tgz#67e145cff510a6a6984bdf1152911d69d2eb9e43"
+  integrity sha512-YVGIj2kamLSTxw6NsZjoBxfSwsn0ycdesmc4p+Q21c5zPuZ1pl+NfxVdxPtdHvmNVOQ6XSYG4AUtyt/Fi7D16Q==
   dependencies:
     ansi-styles "^4.0.0"
     string-width "^4.1.0"
