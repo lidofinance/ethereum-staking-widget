@@ -36,7 +36,6 @@
     "copy-to-clipboard": "^3.3.1",
     "cors": "^2.8.5",
     "date-fns": "2.29.2",
-    "ethers": "^5.7.2",
     "fs-extra": "^10.1.0",
     "js-cookie": "^3.0.1",
     "lodash": "^4.17.21",

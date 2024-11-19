@@ -1,5 +1,5 @@
 import type { Histogram, Counter } from 'prom-client';
-import { utils } from 'ethers';
+import { getAddress } from 'viem';
 import { getStatusLabel } from '@lidofinance/api-metrics';
 import {
   RequestWrapper,
@@ -142,7 +142,7 @@ const collectRequestAddressMetric = async ({
       call.params[0].to
     ) {
       const { to, data } = call.params[0];
-      const address = utils.getAddress(to) as `0x${string}`;
+      const address = getAddress(to);
       // TODO
       const contractName = 'N/A';
       // const contractName = METRIC_CONTRACT_ADDRESSES[chainId]?.[address];
