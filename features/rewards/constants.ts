@@ -1,4 +1,4 @@
-export const ETHER = '1e18';
+export const ETHER = BigInt(1e18);
 
 export const HUMAN_DECIMALS = 8;
 export const PRECISE_DECIMALS = 18;
@@ -14,6 +14,7 @@ export const CURRENCIES = [
   { id: 'eur', code: 'EUR', symbol: '€', name: 'Euro' },
   { id: 'gbp', code: 'GBP', symbol: '£', name: 'Pound Sterling' },
 ] as { id: string; code: string; symbol: string; name: string }[];
+
 export const DEFAULT_CURRENCY = CURRENCIES[0];
 
 export const getCurrency = (id: string) => {

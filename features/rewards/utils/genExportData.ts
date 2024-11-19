@@ -1,8 +1,14 @@
-import { weiToEther } from 'features/rewards/utils';
+import { fromUnixTime } from 'date-fns';
+
+import { BigDecimal } from 'features/rewards/helpers';
+import type { BigNumber } from 'features/rewards/helpers';
 import type { Event } from 'features/rewards/types';
 import type { CurrencyType } from 'features/rewards/constants';
 
-import { fromUnixTime } from 'date-fns';
+export const ETHER = '1e18';
+
+export const weiToEther = (wei: BigNumber | string) =>
+  new BigDecimal(wei).div(ETHER);
 
 export const genExportData = (currency: CurrencyType, data: Event[] | null) =>
   data
