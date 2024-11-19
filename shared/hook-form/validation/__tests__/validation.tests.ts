@@ -1,15 +1,11 @@
 /* eslint-disable unicorn/consistent-function-scoping */
-import { MaxUint256 } from '@ethersproject/constants';
 import { LIDO_TOKENS } from '@lidofinance/lido-ethereum-sdk/common';
 
+import { MAX_UINT_256 } from '../../../../modules/web3';
 import { validateBigintMax } from '../validate-bigint-max';
 import { validateBigintMin } from '../validate-bigint-min';
 import { validateEtherAmount } from '../validate-ether-amount';
 import { DefaultValidationErrorTypes } from '../validation-error';
-
-// TODO: NEW SDK (Type error: Exponentiation cannot be performed on 'bigint' values unless the 'target' option is set to 'es2016' or later.)
-// export const MAX_UINT_256 = BigInt(2) ** BigInt(256) - BigInt(1);
-export const MAX_UINT_256 = MaxUint256.toBigInt();
 
 const message = 'test_message';
 const field = 'test_field';
