@@ -1,7 +1,3 @@
-// TODO: NEW SDK (broke dev and build)
-// import { parseEther } from 'viem';
-import { parseEther } from '@ethersproject/units';
-
 import { StakeSwapDiscountIntegrationKey } from 'features/stake/swap-discount-banner';
 
 import { IPFS_REFERRAL_ADDRESS } from './ipfs';
@@ -13,8 +9,15 @@ import { preConfig } from '../get-preconfig';
 
 export const PRECISION = 10 ** 6;
 
+// TODO
+// Can't use this code.
+// The problem is caused by incompatibility between viem (ESM only) and CJS in Next.js 12 (uses CommonJS for server rendering.)
+// code```
+//  import { parseEther } from 'viem';
+//  parseEther('0.01');
+// ```
 // how much to leave out on user balance when max is pressed
-export const BALANCE_PADDING = parseEther('0.01').toBigInt();
+export const BALANCE_PADDING = BigInt(10000000000000000); // same as parseEther('0.01')
 
 export const SUBMIT_EXTRA_GAS_TRANSACTION_RATIO = 1.05;
 

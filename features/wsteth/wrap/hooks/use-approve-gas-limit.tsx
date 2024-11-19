@@ -28,7 +28,7 @@ export const useApproveGasLimit = () => {
         const contract = await (isL2 ? l2.getContract() : stETH.getContract());
 
         return await contract.estimateGas.approve(
-          [spender, config.ESTIMATE_AMOUNT_BIGINT],
+          [spender, config.ESTIMATE_AMOUNT],
           {
             account: config.ESTIMATE_ACCOUNT,
           },

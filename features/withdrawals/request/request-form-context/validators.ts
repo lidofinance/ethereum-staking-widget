@@ -1,4 +1,4 @@
-import { formatEther } from '@ethersproject/units';
+import { formatEther } from 'viem';
 import invariant from 'tiny-invariant';
 import { Resolver } from 'react-hook-form';
 

@@ -1,5 +1,5 @@
 import invariant from 'tiny-invariant';
-import { formatEther } from '@ethersproject/units';
+import { formatEther } from 'viem';
 import type { Resolver } from 'react-hook-form';
 
 import { validateEtherAmount } from 'shared/hook-form/validation/validate-ether-amount';

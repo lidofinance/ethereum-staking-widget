@@ -15,7 +15,7 @@ const fetchGasLimitETH = async (isL2: boolean, wrap: any) => {
   try {
     return applyGasLimitRatio(
       await wrap.wrapEthEstimateGas({
-        value: config.ESTIMATE_AMOUNT_BIGINT,
+        value: config.ESTIMATE_AMOUNT,
         account: config.ESTIMATE_ACCOUNT,
       }),
     );
@@ -35,16 +35,13 @@ const fetchGasLimitStETH = async (
     if (isL2) {
       // L2 unwrap steth to wsteth
       const contract = await l2.getContract();
-      return await contract.estimateGas.unwrap(
-        [config.ESTIMATE_AMOUNT_BIGINT],
-        {
-          account: config.ESTIMATE_ACCOUNT,
-        },
-      );
+      return await contract.estimateGas.unwrap([config.ESTIMATE_AMOUNT], {
+        account: config.ESTIMATE_ACCOUNT,
+      });
     } else {
       // L1 wrap steth to wsteth
       const contract = await wrap.getContractWstETH();
-      return await contract.estimateGas.wrap([config.ESTIMATE_AMOUNT_BIGINT], {
+      return await contract.estimateGas.wrap([config.ESTIMATE_AMOUNT], {
         account: config.ESTIMATE_ACCOUNT,
       });
     }

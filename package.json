@@ -20,7 +20,6 @@
     "test:e2e": "playwright test"
   },
   "dependencies": {
-    "@ethersproject/units": "^5.7.0",
     "@lidofinance/analytics-matomo": "^0.45.1",
     "@lidofinance/api-metrics": "^0.45.1",
     "@lidofinance/api-rpc": "^0.45.1",

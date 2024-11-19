@@ -18,12 +18,9 @@ export const useUnwrapGasLimit = () => {
           ? await l2.getContract()
           : await wrap.getContractWstETH();
 
-        return await contract.estimateGas.unwrap(
-          [config.ESTIMATE_AMOUNT.toBigInt()],
-          {
-            account: config.ESTIMATE_ACCOUNT,
-          },
-        );
+        return await contract.estimateGas.unwrap([config.ESTIMATE_AMOUNT], {
+          account: config.ESTIMATE_ACCOUNT,
+        });
       } catch (error) {
         console.warn(error);
         return fallback;

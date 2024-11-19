@@ -9,10 +9,7 @@ import {
   useMemo,
   useRef,
 } from 'react';
-
-// TODO: NEW SDK (check that it doesn't broke build)
 import { formatEther, parseEther } from 'viem';
-// import { formatEther, parseEther } from '@ethersproject/units';
 
 import { Input } from '@lidofinance/lido-ui';
 
