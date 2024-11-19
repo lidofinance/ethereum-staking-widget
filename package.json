@@ -26,7 +26,6 @@
     "@ethersproject/contracts": "^5.7.0",
     "@ethersproject/providers": "^5.7.0",
     "@ethersproject/units": "^5.7.0",
-    "@lido-sdk/constants": "^3.3.0",
     "@lido-sdk/contracts": "^3.0.5",
     "@lido-sdk/fetch": "^2.2.0",
     "@lido-sdk/helpers": "^1.6.0",
@@ -128,7 +127,8 @@
   },
   "resolutions": {
     "postcss": "^8.4.31",
-    "crypto-js": "^4.2.0"
+    "crypto-js": "^4.2.0",
+    "wrap-ansi": "7.0.0"
   },
   "lint-staged": {
     "./**/*.{ts,tsx}": [
