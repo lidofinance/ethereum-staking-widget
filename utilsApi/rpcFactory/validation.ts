@@ -1,8 +1,8 @@
 import { Transform } from 'node:stream';
-
+import type { NextApiRequest } from 'next';
 import { Cache } from 'memory-cache';
-import { BigNumber } from 'ethers';
-import { Zero } from '@ethersproject/constants';
+
+import { ZERO } from 'modules/web3';
 
 import {
   ClientError,
@@ -12,7 +12,6 @@ import {
   UnsupportedHTTPMethodError,
 } from './errors';
 
-import type { NextApiRequest } from 'next';
 import type { RpcRequest, ValidationContext } from './types';
 
 // validation factories
@@ -93,9 +92,9 @@ export const ethGetLogsValidationFactory = (
 ) => {
   const allowedAddressMap = createAllowedAddressMap(allowedAddress ?? {});
 
-  const maxBlockRangeBN = maxBlockRange ? BigNumber.from(maxBlockRange) : Zero;
+  const maxBlockRangeBigInt = maxBlockRange ? BigInt(maxBlockRange) : ZERO;
 
-  const currentBlock = new Cache<number, BigNumber>();
+  const currentBlock = new Cache<number, bigint>();
 
   return async (
     request: RpcRequest,
@@ -148,10 +147,9 @@ export const ethGetLogsValidationFactory = (
         const shouldValidateBlockDistance = fromBlock.startsWith('0x');
 
         if (shouldValidateBlockDistance) {
-          const normalizedFromBlock = BigNumber.from(fromBlock);
-          let normalizedToBlock: BigNumber;
-          if (toBlock.startsWith('0x'))
-            normalizedToBlock = BigNumber.from(toBlock);
+          const normalizedFromBlock = BigInt(fromBlock);
+          let normalizedToBlock: bigint;
+          if (toBlock.startsWith('0x')) normalizedToBlock = BigInt(toBlock);
           else {
             const cached = currentBlock.get(chainId);
             if (cached) {
@@ -163,13 +161,13 @@ export const ethGetLogsValidationFactory = (
                 method: 'eth_blockNumber',
               })
                 .then((res) => res.json())
-                .then((res) => BigNumber.from(res.result));
+                .then((res) => BigInt(res.result));
               currentBlock.put(chainId, normalizedToBlock, currentBlockTTL);
             }
           }
-          const range = normalizedToBlock.sub(normalizedFromBlock);
+          const range = normalizedToBlock - normalizedFromBlock;
 
-          if (range.lt(Zero) || range.gt(maxBlockRangeBN)) {
+          if (range < ZERO || range > maxBlockRangeBigInt) {
             rpcRequestBlocked.inc({
               reason: 'eth_getLogs range is invalid',
             });
