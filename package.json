@@ -26,8 +26,6 @@
     "@ethersproject/contracts": "^5.7.0",
     "@ethersproject/providers": "^5.7.0",
     "@ethersproject/units": "^5.7.0",
-    "@lido-sdk/contracts": "^3.0.5",
-    "@lido-sdk/fetch": "^2.2.0",
     "@lido-sdk/helpers": "^1.6.0",
     "@lido-sdk/providers": "^1.4.15",
     "@lido-sdk/react": "^2.0.6",
