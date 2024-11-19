@@ -21,10 +21,8 @@
   },
   "dependencies": {
     "@ethersproject/bignumber": "^5.7.0",
-    "@ethersproject/bytes": "^5.7.0",
     "@ethersproject/constants": "^5.7.0",
     "@ethersproject/contracts": "^5.7.0",
-    "@ethersproject/providers": "^5.7.0",
     "@ethersproject/units": "^5.7.0",
     "@lidofinance/analytics-matomo": "^0.45.1",
     "@lidofinance/api-metrics": "^0.45.1",
