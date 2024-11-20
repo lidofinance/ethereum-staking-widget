@@ -117,7 +117,6 @@ const getAddressOrNull = async (
       contractName as LIDO_CONTRACT_NAMES,
     );
     return address ? getAddress(address) : null;
-    return null;
   } catch (error) {
     console.error(
       `Failed to fetch address for ${contractName} on chainId ${chainId}:`,
