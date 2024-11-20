@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import type { Address } from 'viem';
-import { useCallback } from 'react';
+import { useCallback, useRef } from 'react';
 import invariant from 'tiny-invariant';
 
 import { TransactionCallbackStage } from '@lidofinance/lido-ethereum-sdk/core';
@@ -27,21 +27,21 @@ export const useUnwrapFormProcessor = ({
   const { isDappActiveOnL2, address } = useDappStatus();
   const { txModalStages } = useTxModalStagesUnwrap();
   const { l2, stETH, wrap, isL2, shares } = useLidoSDK();
+  // Using useRef here instead of useState to store txHash because useRef updates immediately
+  // without triggering a rerender. Also, the React 18 also has issues with asynchronous state updates.
+  const txHashRef = useRef<Address | undefined>(undefined);
 
   const {
     isApprovalNeededBeforeUnwrap: isApprovalNeededBeforeUnwrapOnL2,
     processApproveTx: processApproveTxOnL2,
   } = approvalDataOnL2;
 
-  const showSuccessTxModal = useCallback(
-    async (txHash: Address) => {
-      const wstethBalance = await (isDappActiveOnL2
-        ? l2.steth.balance(address)
-        : stETH.balance(address));
-      txModalStages.success(wstethBalance, txHash);
-    },
-    [address, isDappActiveOnL2, l2.steth, stETH, txModalStages],
-  );
+  const showSuccessTxModal = useCallback(async () => {
+    const wstethBalance = await (isDappActiveOnL2
+      ? l2.steth.balance(address)
+      : stETH.balance(address));
+    txModalStages.success(wstethBalance, txHashRef.current);
+  }, [address, isDappActiveOnL2, l2.steth, stETH, txModalStages]);
 
   return useCallback(
     async ({ amount }: UnwrapFormInputType) => {
@@ -68,10 +68,11 @@ export const useUnwrapFormProcessor = ({
                   break;
                 case TransactionCallbackStage.RECEIPT:
                   txModalStages.pending(amount, willReceive, payload);
+                  txHashRef.current = payload; // the payload here is txHash
                   break;
-                case TransactionCallbackStage.CONFIRMATION:
+                case TransactionCallbackStage.DONE:
                   void onConfirm?.();
-                  void showSuccessTxModal(payload?.transactionHash);
+                  void showSuccessTxModal();
                   break;
                 case TransactionCallbackStage.MULTISIG_DONE:
                   txModalStages.successMultisig();
@@ -93,10 +94,11 @@ export const useUnwrapFormProcessor = ({
                   break;
                 case TransactionCallbackStage.RECEIPT:
                   txModalStages.pending(amount, willReceive, payload);
+                  txHashRef.current = payload; // the payload here is txHash
                   break;
-                case TransactionCallbackStage.CONFIRMATION:
+                case TransactionCallbackStage.DONE:
                   void onConfirm?.();
-                  void showSuccessTxModal(payload?.transactionHash);
+                  void showSuccessTxModal();
                   break;
                 case TransactionCallbackStage.MULTISIG_DONE:
                   txModalStages.successMultisig();

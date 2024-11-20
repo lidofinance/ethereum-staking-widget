@@ -1,5 +1,5 @@
 /* eslint-disable sonarjs/no-identical-functions */
-import { useCallback } from 'react';
+import { useCallback, useRef } from 'react';
 import invariant from 'tiny-invariant';
 import { useAccount } from 'wagmi';
 import { Address } from 'viem';
@@ -46,8 +46,11 @@ export const useWithdrawalRequest = ({
     token,
     address as Address,
   );
-
   const { closeModal } = useTransactionModal();
+
+  // Using useRef here instead of useState to store txHash because useRef updates immediately
+  // without triggering a rerender. Also, the React 18 also has issues with asynchronous state updates.
+  const txHashRef = useRef<Address | undefined>(undefined);
 
   const isWalletConnect = overrideWithQAMockBoolean(
     connector?.id === 'walletConnect',
@@ -116,10 +119,11 @@ export const useWithdrawalRequest = ({
               break;
             case TransactionCallbackStage.RECEIPT:
               txModalStages.pending(amount, token, payload);
+              txHashRef.current = payload; // the payload here is txHash
               break;
-            case TransactionCallbackStage.CONFIRMATION:
+            case TransactionCallbackStage.DONE:
               void onConfirm?.();
-              txModalStages.success(amount, token, payload?.transactionHash);
+              txModalStages.success(amount, token, txHashRef.current);
               if (isApprovalFlow) {
                 void refetchAllowance();
               }

@@ -1,5 +1,5 @@
 import type { Address } from 'viem';
-import { useCallback } from 'react';
+import { useCallback, useRef } from 'react';
 import invariant from 'tiny-invariant';
 
 import {
@@ -22,14 +22,14 @@ export const useClaim = ({ onRetry }: Args) => {
   const { optimisticClaimRequests } = useClaimData();
   const { txModalStages } = useTxModalStagesClaim();
 
+  // Using useRef here instead of useState to store txHash because useRef updates immediately
+  // without triggering a rerender. Also, the React 18 also has issues with asynchronous state updates.
+  const txHashRef = useRef<Address | undefined>(undefined);
+
   const showSuccessTxModal = useCallback(
-    async (
-      txHash: Address,
-      amount: bigint,
-      sortedRequests: RequestStatusClaimable[],
-    ) => {
+    async (amount: bigint, sortedRequests: RequestStatusClaimable[]) => {
       await optimisticClaimRequests(sortedRequests);
-      txModalStages.success(amount, txHash);
+      txModalStages.success(amount, txHashRef.current);
     },
     [optimisticClaimRequests, txModalStages],
   );
@@ -55,15 +55,10 @@ export const useClaim = ({ onRetry }: Args) => {
               break;
             case TransactionCallbackStage.RECEIPT:
               txModalStages.pending(amount, payload);
+              txHashRef.current = payload; // the payload here is txHash
               break;
-            case TransactionCallbackStage.CONFIRMATION:
-              // TODO: move this to `TransactionCallbackStage.DONE` ?
-              //  add the 'transactionHash' to 'payload' of `TransactionCallbackStage.DONE` ?
-              void showSuccessTxModal(
-                payload?.transactionHash,
-                amount,
-                sortedRequests,
-              );
+            case TransactionCallbackStage.DONE:
+              void showSuccessTxModal(amount, sortedRequests);
               break;
             case TransactionCallbackStage.MULTISIG_DONE:
               txModalStages.successMultisig();

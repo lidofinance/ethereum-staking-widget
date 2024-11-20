@@ -1,5 +1,5 @@
 import type { Address } from 'viem';
-import { useCallback } from 'react';
+import { useCallback, useRef } from 'react';
 import invariant from 'tiny-invariant';
 
 import { TransactionCallbackStage } from '@lidofinance/lido-ethereum-sdk/core';
@@ -29,21 +29,21 @@ export const useWrapFormProcessor = ({
   const { isDappActiveOnL2, address } = useDappStatus();
   const { l2, shares, wrap, wstETH } = useLidoSDK();
   const { txModalStages } = useTxModalWrap();
+  // Using useRef here instead of useState to store txHash because useRef updates immediately
+  // without triggering a rerender. Also, the React 18 also has issues with asynchronous state updates.
+  const txHashRef = useRef<Address | undefined>(undefined);
 
   const {
     isApprovalNeededBeforeWrap: isApprovalNeededBeforeWrapOnL1,
     processApproveTx: processApproveTxOnL1,
   } = approvalDataOnL1;
 
-  const showSuccessTxModal = useCallback(
-    async (txHash: Address) => {
-      const wstethBalance = await (isDappActiveOnL2
-        ? l2.wsteth.balance(address)
-        : wstETH.balance(address));
-      txModalStages.success(wstethBalance, txHash);
-    },
-    [address, isDappActiveOnL2, l2.wsteth, txModalStages, wstETH],
-  );
+  const showSuccessTxModal = useCallback(async () => {
+    const wstethBalance = await (isDappActiveOnL2
+      ? l2.wsteth.balance(address)
+      : wstETH.balance(address));
+    txModalStages.success(wstethBalance, txHashRef.current);
+  }, [address, isDappActiveOnL2, l2.wsteth, txModalStages, wstETH]);
 
   return useCallback(
     async ({ amount, token }: WrapFormInputType) => {
@@ -66,10 +66,11 @@ export const useWrapFormProcessor = ({
                   break;
                 case TransactionCallbackStage.RECEIPT:
                   txModalStages.pending(amount, token, willReceive, payload);
+                  txHashRef.current = payload; // the payload here is txHash
                   break;
-                case TransactionCallbackStage.CONFIRMATION:
+                case TransactionCallbackStage.DONE:
                   void onConfirm?.();
-                  void showSuccessTxModal(payload?.transactionHash);
+                  void showSuccessTxModal();
                   break;
                 case TransactionCallbackStage.MULTISIG_DONE:
                   txModalStages.successMultisig();
@@ -99,10 +100,11 @@ export const useWrapFormProcessor = ({
                   break;
                 case TransactionCallbackStage.RECEIPT:
                   txModalStages.pending(amount, token, willReceive, payload);
+                  txHashRef.current = payload; // the payload here is txHash
                   break;
-                case TransactionCallbackStage.CONFIRMATION:
+                case TransactionCallbackStage.DONE:
                   void onConfirm?.();
-                  void showSuccessTxModal(payload?.transactionHash);
+                  void showSuccessTxModal();
                   break;
                 case TransactionCallbackStage.MULTISIG_DONE:
                   txModalStages.successMultisig();
@@ -131,10 +133,11 @@ export const useWrapFormProcessor = ({
                   break;
                 case TransactionCallbackStage.RECEIPT:
                   txModalStages.pending(amount, token, willReceive, payload);
+                  txHashRef.current = payload; // the payload here is txHash
                   break;
-                case TransactionCallbackStage.CONFIRMATION:
+                case TransactionCallbackStage.DONE:
                   void onConfirm?.();
-                  void showSuccessTxModal(payload?.transactionHash);
+                  void showSuccessTxModal();
                   break;
                 case TransactionCallbackStage.MULTISIG_DONE:
                   txModalStages.successMultisig();
