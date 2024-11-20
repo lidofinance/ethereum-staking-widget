@@ -1,3 +1,4 @@
+import type { Address } from 'viem';
 import { Link } from '@lidofinance/lido-ui';
 
 import { config } from 'config';
@@ -6,7 +7,7 @@ import { getEtherscanTxLink } from 'utils/etherscan';
 
 type TxLinkEtherscanProps = {
   text?: string;
-  txHash?: string | null;
+  txHash?: Address;
   onClick?: React.MouseEventHandler<HTMLAnchorElement>;
 };
 

@@ -1,5 +1,6 @@
 import type { Address } from 'viem';
-import { useCallback } from 'react';
+import { getAddress as getAddressViem } from 'viem';
+import { useCallback, useRef } from 'react';
 import invariant from 'tiny-invariant';
 
 import {
@@ -27,14 +28,14 @@ export const useStake = ({ onConfirm, onRetry }: StakeOptions) => {
   const { address } = useDappStatus();
   const { stake, stETH } = useLidoSDK();
   const { txModalStages } = useTxModalStagesStake();
+  // Using useRef here instead of useState to store txHash because useRef updates immediately
+  // without triggering a rerender. Also, the React 18 also has issues with asynchronous state updates.
+  const txHashRef = useRef<Address | undefined>(undefined);
 
-  const showSuccessTxModal = useCallback(
-    async (txHash: Address) => {
-      const stethBalance = await stETH.balance(address);
-      txModalStages.success(stethBalance, txHash);
-    },
-    [address, stETH, txModalStages],
-  );
+  const showSuccessTxModal = useCallback(async () => {
+    const stethBalance = await stETH.balance(address);
+    txModalStages.success(stethBalance, txHashRef.current);
+  }, [address, stETH, txModalStages]);
 
   return useCallback(
     async ({ amount, referral }: StakeArguments): Promise<boolean> => {
@@ -61,12 +62,11 @@ export const useStake = ({ onConfirm, onRetry }: StakeOptions) => {
               break;
             case TransactionCallbackStage.RECEIPT:
               txModalStages.pending(amount, payload);
+              txHashRef.current = payload; // the payload here is txHash
               break;
-            case TransactionCallbackStage.CONFIRMATION:
-              // TODO: move this to `TransactionCallbackStage.DONE` ?
-              //  add the 'transactionHash' to 'payload' of `TransactionCallbackStage.DONE` ?
+            case TransactionCallbackStage.DONE:
               void onConfirm?.();
-              void showSuccessTxModal(payload?.transactionHash);
+              void showSuccessTxModal();
               break;
             case TransactionCallbackStage.MULTISIG_DONE:
               txModalStages.successMultisig();
@@ -81,8 +81,7 @@ export const useStake = ({ onConfirm, onRetry }: StakeOptions) => {
         await stake.stakeEth({
           value: amount,
           callback: txCallback,
-          // todo: viemGetAddress
-          // referralAddress: referralAddress.toLowerCase() as Address,
+          referralAddress: getAddressViem(referralAddress),
         });
 
         return true;
@@ -92,6 +91,6 @@ export const useStake = ({ onConfirm, onRetry }: StakeOptions) => {
         return false;
       }
     },
-    [address, txModalStages, stake, onConfirm, showSuccessTxModal, onRetry],
+    [address, stake, txModalStages, onConfirm, showSuccessTxModal, onRetry],
   );
 };

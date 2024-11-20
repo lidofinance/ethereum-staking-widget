@@ -1,3 +1,4 @@
+import type { Address } from 'viem';
 import styled from 'styled-components';
 
 import { InlineLoader } from '@lidofinance/lido-ui';
@@ -25,7 +26,7 @@ type TxStageOperationSucceedBalanceShownProps = {
   balance?: bigint;
   balanceToken: string;
   operationText: string;
-  txHash?: string;
+  txHash?: Address;
   footer?: React.ReactNode;
 };
 
@@ -38,9 +39,9 @@ export const TxStageOperationSucceedBalanceShown = ({
 }: TxStageOperationSucceedBalanceShownProps) => {
   const tokenToWalletAddress = useTokenAddress(balanceToken);
 
-  const balanceEl = balance && (
+  const balanceNode = balance ? (
     <TxAmount amount={balance} symbol={balanceToken} />
-  );
+  ) : null;
 
   return (
     <TxStageSuccess
@@ -49,8 +50,7 @@ export const TxStageOperationSucceedBalanceShown = ({
         <>
           Your new balance is <wbr />
           <BalanceContainer>
-            {/* TODO: NEW SDK */}
-            {balance ? balanceEl?.toString() : <SkeletonBalance />}
+            {balanceNode ?? <SkeletonBalance />}
             <TokenToWallet
               data-testid="txSuccessAddToken"
               address={tokenToWalletAddress}

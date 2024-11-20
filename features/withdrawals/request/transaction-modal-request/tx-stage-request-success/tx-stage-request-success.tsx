@@ -1,3 +1,4 @@
+import type { Address } from 'viem';
 import { Link, Loader } from '@lidofinance/lido-ui';
 
 import { config } from 'config';
@@ -26,7 +27,7 @@ import {
 const LINK_ADD_NFT_GUIDE = `${config.helpOrigin}/en/articles/7858367-how-do-i-add-the-lido-nft-to-metamask`;
 
 type TxRequestStageSuccessProps = {
-  txHash: string | null;
+  txHash?: Address;
   tokenName: string;
   amount: bigint;
 };
@@ -53,7 +54,7 @@ export const TxRequestStageSuccess = ({
       </LocalLink>{' '}
       to view your withdrawal requests or view your transaction on{' '}
       <TxLinkEtherscan
-        txHash={txHash ?? undefined}
+        txHash={txHash}
         text="Etherscan"
         onClick={() =>
           trackMatomoEvent(

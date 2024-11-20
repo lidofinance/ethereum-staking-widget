@@ -16,7 +16,7 @@ type NFTApiData = {
   name: string;
 };
 
-export const useNftDataByTxHash = (txHash: string | null) => {
+export const useNftDataByTxHash = (txHash?: Address) => {
   const { address, chainId } = useDappStatus();
   const { withdraw } = useLidoSDK();
   const publicClient = usePublicClient({ chainId });
@@ -28,7 +28,7 @@ export const useNftDataByTxHash = (txHash: string | null) => {
       if (!txHash || !address || !publicClient) return null;
 
       const txReceipt = await publicClient.getTransactionReceipt({
-        hash: txHash as Address,
+        hash: txHash,
       });
 
       const eventTopic = getEventSelector(
