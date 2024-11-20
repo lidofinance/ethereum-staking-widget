@@ -19,7 +19,7 @@ export const formatWEI = (input: string, manyDigits?: boolean) => {
 
 export const formatETH = (input: string, manyDigits?: boolean) => {
   return parseFloat(input).toFixed(
-    manyDigits ? PRECISE_DECIMALS_CURRENCY : HUMAN_DECIMALS_CURRENCY,
+    manyDigits ? PRECISE_DECIMALS : HUMAN_DECIMALS,
   );
 };
 
@@ -34,7 +34,9 @@ export const formatStEthEth = (input: string, manyDigits?: boolean) => {
 export const formatCurrency = (input: string, manyDigits?: boolean) => {
   const options = {
     currency: 'USD',
-    maximumFractionDigits: manyDigits ? PRECISE_DECIMALS : HUMAN_DECIMALS,
+    maximumFractionDigits: manyDigits
+      ? PRECISE_DECIMALS_CURRENCY
+      : HUMAN_DECIMALS_CURRENCY,
   };
 
   return new Intl.NumberFormat('en-GB', options).format(Number(input));
