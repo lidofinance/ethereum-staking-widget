@@ -18,15 +18,16 @@ import {
   rebasableL2StethAbi,
 } from '@lidofinance/lido-ethereum-sdk/l2';
 
-import { PartialCurveAbi } from 'abi/partial-curve-abi';
-import { PartialStakingRouterAbi } from 'abi/partial-staking-router';
-import { LidoLocatorAbi } from 'abi/lido-locator';
+import { AggregatorAbi } from 'abi/aggregator-abi';
 import { ENSRegistryAbi } from 'abi/ens-registry-abi';
 import { ENSResolverAbi } from 'abi/ens-resolver-abi';
+import { LidoLocatorAbi } from 'abi/lido-locator';
+import { PartialCurveAbi } from 'abi/partial-curve-abi';
+import { PartialStakingRouterAbi } from 'abi/partial-staking-router';
 
 import { config, secretConfig } from 'config';
 import { isSDKSupportedL2Chain } from 'consts/chains';
-// import { getAggregatorStEthUsdPriceFeedAddress } from 'consts/aggregator';
+import { AGGREGATOR_STETH_USD_PRICE_FEED_BY_NETWORK } from 'consts/aggregator';
 import { MAINNET_CURVE } from 'features/rewards/hooks/use-steth-eth-rate';
 
 export const CONTRACT_NAMES = {
@@ -35,8 +36,8 @@ export const CONTRACT_NAMES = {
   L2stETH: 'L2stETH',
   L2wstETH: 'L2wstETH',
   withdrawalQueue: 'withdrawalQueue',
-  // aggregator: 'aggregator',
-  // aggregatorStEthUsdPriceFeed: 'aggregatorStEthUsdPriceFeed',
+  aggregator: 'aggregator',
+  aggregatorStEthUsdPriceFeed: 'aggregatorStEthUsdPriceFeed',
   stakingRouter: 'stakingRouter',
   stethCurve: 'stethCurve',
   lidoLocator: 'lidoLocator',
@@ -49,9 +50,8 @@ export const METRIC_CONTRACT_ABIS = {
   [CONTRACT_NAMES.lido]: StethAbi,
   [CONTRACT_NAMES.wsteth]: WstethABI,
   [CONTRACT_NAMES.withdrawalQueue]: WithdrawalQueueAbi,
-  // TODO
-  // [CONTRACT_NAMES.aggregator]: AggregatorAbiFactory.abi,
-  // [CONTRACT_NAMES.aggregatorStEthUsdPriceFeed]: AggregatorAbiFactory.abi,
+  [CONTRACT_NAMES.aggregator]: AggregatorAbi,
+  [CONTRACT_NAMES.aggregatorStEthUsdPriceFeed]: AggregatorAbi,
   [CONTRACT_NAMES.stakingRouter]: PartialStakingRouterAbi,
   [CONTRACT_NAMES.stethCurve]: PartialCurveAbi,
   [CONTRACT_NAMES.lidoLocator]: LidoLocatorAbi,
@@ -143,15 +143,10 @@ export const initializeMetricContractAddresses = async () => {
           chainId,
           CONTRACT_NAMES.withdrawalQueue,
         ),
-        // TODO
-        // [CONTRACT_NAMES.aggregator]: await getAddressOrNull(
-        //   chainId,
-        //   CONTRACT_NAMES.aggregator,
-        // ),
-        // [CONTRACT_NAMES.aggregatorStEthUsdPriceFeed]: await getAddressOrNull(
-        //   chainId,
-        //   CONTRACT_NAMES.aggregatorStEthUsdPriceFeed,
-        // ),
+        [CONTRACT_NAMES.aggregator]:
+          AGGREGATOR_STETH_USD_PRICE_FEED_BY_NETWORK[chainId] ?? null,
+        [CONTRACT_NAMES.aggregatorStEthUsdPriceFeed]:
+          AGGREGATOR_STETH_USD_PRICE_FEED_BY_NETWORK[chainId] ?? null,
         [CONTRACT_NAMES.stakingRouter]: await getAddressOrNull(
           chainId,
           CONTRACT_NAMES.stakingRouter,
