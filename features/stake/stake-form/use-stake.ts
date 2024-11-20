@@ -9,7 +9,7 @@ import {
 } from '@lidofinance/lido-ethereum-sdk';
 
 import { config } from 'config';
-import { useDappStatus, useLidoSDK } from 'modules/web3';
+import { applyRoundUpGasLimit, useDappStatus, useLidoSDK } from 'modules/web3';
 
 import { MockLimitReachedError, getAddress } from './utils';
 import { useTxModalStagesStake } from './hooks/use-tx-modal-stages-stake';
@@ -59,7 +59,9 @@ export const useStake = ({ onConfirm, onRetry }: StakeOptions) => {
           switch (stage) {
             case TransactionCallbackStage.SIGN:
               txModalStages.sign(amount);
-              break;
+              return applyRoundUpGasLimit(
+                payload ?? config.STAKE_GASLIMIT_FALLBACK,
+              ); // the payload here is bigint
             case TransactionCallbackStage.RECEIPT:
               txModalStages.pending(amount, payload);
               txHashRef.current = payload; // the payload here is txHash
