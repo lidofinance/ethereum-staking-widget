@@ -89,7 +89,7 @@ const getTxModalStagesRequest = (
       />,
     ),
 
-  success: (amount: bigint, token: TOKENS_WITHDRAWABLE, txHash: Address) =>
+  success: (amount: bigint, token: TOKENS_WITHDRAWABLE, txHash?: Address) =>
     transitStage(
       <TxRequestStageSuccess
         amount={amount}
