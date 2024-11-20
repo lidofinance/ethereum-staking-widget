@@ -49,8 +49,6 @@ export const useStake = ({ onConfirm, onRetry }: StakeOptions) => {
           throw new MockLimitReachedError('Stake limit reached');
         }
 
-        txModalStages.sign(amount);
-
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const referralAddress = referral
           ? await getAddress(referral, stake.core.rpcProvider)
@@ -83,9 +81,8 @@ export const useStake = ({ onConfirm, onRetry }: StakeOptions) => {
         await stake.stakeEth({
           value: amount,
           callback: txCallback,
-          // TODO: fix issue 'InvalidAddressError: Address "0x11D00000000000000000000000000000000011D0" is invalid.'
-          // referralAddress: referralAddress as Address,
-          // TODO: override gas limit with shouldRoundUpGasLimit param
+          // todo: viemGetAddress
+          // referralAddress: referralAddress.toLowerCase() as Address,
         });
 
         return true;
