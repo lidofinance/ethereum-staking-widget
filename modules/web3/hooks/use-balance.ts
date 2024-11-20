@@ -196,10 +196,10 @@ const useTokenBalance = (
   address?: Address,
   shouldSubscribe = true,
 ) => {
-  const { isDappActive, chainId } = useDappStatus();
+  const { chainId } = useDappStatus();
   const { subscribeToTokenUpdates } = useLidoSDK();
 
-  const enabled = !!address && isDappActive;
+  const enabled = !!address;
 
   const balanceQuery = useReadContract({
     abi: contract?.abi,
