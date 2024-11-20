@@ -1,3 +1,4 @@
+import type { Address } from 'viem';
 import { useCallback } from 'react';
 import invariant from 'tiny-invariant';
 
@@ -23,7 +24,7 @@ export const useClaim = ({ onRetry }: Args) => {
 
   const showSuccessTxModal = useCallback(
     async (
-      txHash: `0x${string}`,
+      txHash: Address,
       amount: bigint,
       sortedRequests: RequestStatusClaimable[],
     ) => {

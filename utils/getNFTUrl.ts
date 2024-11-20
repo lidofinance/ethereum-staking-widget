@@ -1,3 +1,4 @@
+import type { Address } from 'viem';
 import { CHAINS } from '@lidofinance/lido-ethereum-sdk/common';
 
 export const NFT_URL_PREFIX_BY_NETWORK: {
@@ -13,7 +14,7 @@ export const NFT_URL_PREFIX_BY_NETWORK: {
 
 export const getNFTUrl = (
   tokenId: string,
-  contractAddress?: string | `0x${string}`,
+  contractAddress?: string | Address,
   chainId?: CHAINS,
 ) => {
   if (!chainId || !contractAddress) return '';

@@ -1,3 +1,4 @@
+import type { Address } from 'viem';
 import { parseAbiItem, encodeFunctionData, decodeAbiParameters } from 'viem';
 import { usePublicClient } from 'wagmi';
 import { CHAINS } from '@lidofinance/lido-ethereum-sdk';
@@ -27,7 +28,7 @@ export const useStethEthRate = () => {
       const callData = encodeFunctionData({
         abi: [functionSignature],
         functionName: 'get_dy',
-        args: [BigInt(0), BigInt(1), BigInt(10 ** 18)],
+        args: [BigInt(0), BigInt(1), WEI_PER_ETHER],
       });
 
       const result = await publicClientMainnet.call({
@@ -37,13 +38,13 @@ export const useStethEthRate = () => {
 
       const decoded = decodeAbiParameters(
         functionSignature.outputs || [],
-        result.data as `0x${string}`, // view returns (uint256)
+        result.data as Address, // view returns (uint256)
       );
 
       return decoded[0];
     },
   });
 
-  if (error || chainId !== 1) return BigInt(10 ** 18);
+  if (error || chainId !== 1) return WEI_PER_ETHER;
   return data || null;
 };

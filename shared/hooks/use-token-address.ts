@@ -33,9 +33,7 @@ const fetchTokenAddress = async (
   }
 };
 
-export const useTokenAddress = (
-  token: string,
-): Address | `0x${string}` | undefined => {
+export const useTokenAddress = (token: string): Address | undefined => {
   const { core, isL2 } = useLidoSDK();
 
   const { data: address } = useLidoQuery({

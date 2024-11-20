@@ -1,4 +1,5 @@
 import { Abi, getAddress } from 'viem';
+import type { Address } from 'viem';
 import { mainnet } from 'viem/chains';
 import { invert, isNull, memoize, omitBy } from 'lodash';
 
@@ -97,7 +98,7 @@ const lidoSDKs = supportedChainsWithMainnet.reduce<Record<number, LidoSDK>>(
 const getAddressOrNull = async (
   chainId: number,
   contractName: CONTRACT_NAMES,
-): Promise<`0x${string}` | null> => {
+): Promise<Address | null> => {
   try {
     // Bad function naming.
     // Check is needed so that L2 does not execute the code below
@@ -172,11 +173,11 @@ export const initializeMetricContractAddresses = async () => {
 
       const inverted = Object.entries(invert(omitBy(map, isNull))).reduce(
         (acc, [key, value]) => {
-          const typedKey = key as `0x${string}`;
+          const typedKey = key as Address;
           acc[typedKey] = value as CONTRACT_NAMES;
           return acc;
         },
-        {} as Record<`0x${string}`, CONTRACT_NAMES>,
+        {} as Record<Address, CONTRACT_NAMES>,
       );
 
       return {
@@ -190,7 +191,7 @@ export const initializeMetricContractAddresses = async () => {
         acc[chainId] = addresses;
         return acc;
       },
-      {} as Record<CHAINS, Record<`0x${string}`, CONTRACT_NAMES>>,
+      {} as Record<CHAINS, Record<Address, CONTRACT_NAMES>>,
     ),
   );
 
@@ -213,11 +214,11 @@ export const initializeMetricContractAddresses = async () => {
 
       const inverted = Object.entries(invert(omitBy(map, isNull))).reduce(
         (acc, [key, value]) => {
-          const typedKey = key as `0x${string}`;
+          const typedKey = key as Address;
           acc[typedKey] = value as CONTRACT_NAMES;
           return acc;
         },
-        {} as Record<`0x${string}`, CONTRACT_NAMES>,
+        {} as Record<Address, CONTRACT_NAMES>,
       );
 
       return {
@@ -231,7 +232,7 @@ export const initializeMetricContractAddresses = async () => {
         acc[chainId] = addresses;
         return acc;
       },
-      {} as Record<CHAINS, Record<`0x${string}`, CONTRACT_NAMES>>,
+      {} as Record<CHAINS, Record<Address, CONTRACT_NAMES>>,
     ),
   );
 

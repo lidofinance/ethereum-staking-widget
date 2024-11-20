@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
+import type { Address } from 'viem';
 import { useCallback } from 'react';
 import invariant from 'tiny-invariant';
 
@@ -33,7 +34,7 @@ export const useUnwrapFormProcessor = ({
   } = approvalDataOnL2;
 
   const showSuccessTxModal = useCallback(
-    async (txHash: `0x${string}`) => {
+    async (txHash: Address) => {
       const wstethBalance = await (isDappActiveOnL2
         ? l2.steth.balance(address)
         : stETH.balance(address));

@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
-import { usePublicClient } from 'wagmi';
+import type { Address } from 'viem';
 import { encodeFunctionData, decodeAbiParameters } from 'viem';
+import { usePublicClient } from 'wagmi';
 import { CHAINS } from '@lidofinance/lido-ethereum-sdk';
 
 import { AGGREGATOR_STETH_USD_PRICE_FEED_BY_NETWORK } from 'consts/aggregator';
@@ -45,7 +46,7 @@ export const useEthUsd = (amount?: bigint) => {
 
       const [latestAnswer] = decodeAbiParameters(
         [{ internalType: 'int256', name: '', type: 'int256' }],
-        result.data as `0x${string}`, // view returns (uint256)
+        result.data as Address, // view returns (uint256)
       );
 
       return latestAnswer / BigInt(10 ** 8);

@@ -1,3 +1,4 @@
+import type { Address } from 'viem';
 import { decodeEventLog, getEventSelector } from 'viem';
 import { usePublicClient } from 'wagmi';
 import { WithdrawalQueueAbi } from '@lidofinance/lido-ethereum-sdk/withdraw';
@@ -27,7 +28,7 @@ export const useNftDataByTxHash = (txHash: string | null) => {
       if (!txHash || !address || !publicClient) return null;
 
       const txReceipt = await publicClient.getTransactionReceipt({
-        hash: txHash as `0x${string}`,
+        hash: txHash as Address,
       });
 
       const eventTopic = getEventSelector(

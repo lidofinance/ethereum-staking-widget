@@ -1,3 +1,4 @@
+import type { Address } from 'viem';
 import { useCallback } from 'react';
 import invariant from 'tiny-invariant';
 
@@ -28,7 +29,7 @@ export const useStake = ({ onConfirm, onRetry }: StakeOptions) => {
   const { txModalStages } = useTxModalStagesStake();
 
   const showSuccessTxModal = useCallback(
-    async (txHash: `0x${string}`) => {
+    async (txHash: Address) => {
       const stethBalance = await stETH.balance(address);
       txModalStages.success(stethBalance, txHash);
     },

@@ -5,6 +5,7 @@ import {
   encodeFunctionData,
   decodeFunctionResult,
 } from 'viem';
+import type { Address } from 'viem';
 import { CHAINS } from '@lidofinance/lido-ethereum-sdk/common';
 
 import { isUrl } from './is-url';
@@ -31,7 +32,7 @@ const abi = [
 export const checkRpcUrl = async (
   rpcUrl: string,
   chainId: CHAINS,
-  stethAddress?: string | `0x${string}`,
+  stethAddress?: string | Address,
 ) => {
   if (!isUrl(rpcUrl)) return RPCErrorType.URL_IS_NOT_VALID;
 
@@ -58,7 +59,7 @@ export const checkRpcUrl = async (
     });
 
     const result = await client.call({
-      to: stethAddress as `0x${string}`,
+      to: stethAddress as Address,
       data: functionData,
     });
 
@@ -66,7 +67,7 @@ export const checkRpcUrl = async (
     decodeFunctionResult({
       abi,
       functionName,
-      data: result.data as `0x${string}`,
+      data: result.data as Address,
     });
 
     // All fine
