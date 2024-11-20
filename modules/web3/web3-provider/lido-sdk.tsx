@@ -2,13 +2,13 @@ import { createContext, useContext, useEffect, useMemo } from 'react';
 import invariant from 'tiny-invariant';
 import {
   useAccount,
-  useChainId,
   useConfig,
   usePublicClient,
   useSwitchChain,
   useWalletClient,
 } from 'wagmi';
 
+import { LIDO_L2_CONTRACT_ADDRESSES } from '@lidofinance/lido-ethereum-sdk/common';
 import { LidoSDKStake } from '@lidofinance/lido-ethereum-sdk/stake';
 import { CHAINS, LidoSDKCore } from '@lidofinance/lido-ethereum-sdk/core';
 import {
@@ -22,7 +22,7 @@ import { LidoSDKWithdraw } from '@lidofinance/lido-ethereum-sdk/withdraw';
 
 import { config } from 'config';
 import { useTokenTransferSubscription } from 'modules/web3/hooks/use-balance';
-import { LIDO_L2_CONTRACT_ADDRESSES } from '@lidofinance/lido-ethereum-sdk/common';
+import { useDappChain } from './dapp-chain';
 
 type LidoSDKContextValue = {
   core: LidoSDKCore;
@@ -49,8 +49,9 @@ export const useLidoSDK = () => {
 
 export const LidoSDKProvider = ({ children }: React.PropsWithChildren) => {
   const subscribe = useTokenTransferSubscription();
+
   // will only have
-  const chainId = useChainId();
+  const { chainId } = useDappChain();
   const { data: walletClient } = useWalletClient({ chainId });
   const publicClient = usePublicClient({ chainId });
   // reset internal wagmi state after disconnect
