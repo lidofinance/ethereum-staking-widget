@@ -28,11 +28,7 @@ export const UnwrapFormValidationResolver: Resolver<
       'validation context must be presented as context promise',
     );
 
-    validateEtherAmount(
-      'amount',
-      amount ? amount : undefined,
-      TOKENS_TO_WRAP.wstETH,
-    );
+    validateEtherAmount('amount', amount, TOKENS_TO_WRAP.wstETH);
 
     const { isWalletActive: active, maxAmount } = await awaitWithTimeout(
       validationContextPromise,
@@ -44,8 +40,7 @@ export const UnwrapFormValidationResolver: Resolver<
 
       validateBigintMax(
         'amount',
-        // TODO: NEW SDK
-        amount ? amount : BigInt(0),
+        amount,
         maxAmount,
         messageMaxAmount(maxAmount),
       );

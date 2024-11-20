@@ -29,8 +29,7 @@ export const WrapFormValidationResolver: Resolver<
     invariant(validationContext, 'validation context must be present');
     const { asyncContext } = validationContext;
 
-    // TODO: NEW SDK
-    validateEtherAmount('amount', amount ? amount : undefined, token);
+    validateEtherAmount('amount', amount, token);
 
     const awaitedContext = await awaitWithTimeout(
       asyncContext,
@@ -41,16 +40,14 @@ export const WrapFormValidationResolver: Resolver<
       // checks active internally after other wallet-less check
       validateStakeEth({
         formField: 'amount',
-        // TODO: NEW SDK
-        amount: amount ? amount : BigInt(0),
+        amount,
         ...awaitedContext,
         gasCost: awaitedContext.gasCost,
       });
     } else if (awaitedContext.isWalletActive) {
       validateBigintMax(
         'amount',
-        // TODO: NEW SDK
-        amount ? amount : BigInt(0),
+        amount,
         awaitedContext.stethBalance,
         messageMaxAmount(awaitedContext.stethBalance, token),
       );

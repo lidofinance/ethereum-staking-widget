@@ -33,8 +33,7 @@ export const validateStakeEth = (params: validateStakeEthParams) => {
     } = params;
     validateBigintMax(
       formField,
-      // TODO: NEW SDK
-      amount ? amount : BigInt(0),
+      amount,
       etherBalance,
       `Entered ETH amount exceeds your available balance of ${formatEther(
         etherBalance,
@@ -43,8 +42,7 @@ export const validateStakeEth = (params: validateStakeEthParams) => {
 
     validateBigintMax(
       formField,
-      // TODO: NEW SDK
-      amount ? amount : BigInt(0),
+      amount,
       currentStakeLimit,
       `Entered ETH amount exceeds current staking limit of ${formatEther(
         currentStakeLimit,
@@ -65,8 +63,7 @@ export const validateStakeEth = (params: validateStakeEthParams) => {
 
       validateBigintMax(
         formField,
-        // TODO: NEW SDK
-        amount ? amount : BigInt(0),
+        amount,
         gasPaddedBalance,
         `Enter ETH amount less than ${formatEther(
           gasPaddedBalance,

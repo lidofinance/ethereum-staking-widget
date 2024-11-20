@@ -154,8 +154,7 @@ export const RequestFormValidationResolver: Resolver<
 
     // this check does not require async context and can be placed first
     // also limits async context missing edge cases on page start
-    // TODO: NEW SDK
-    validateEtherAmount('amount', amount ? amount : undefined, token);
+    validateEtherAmount('amount', amount, token);
 
     // early return
     if (!context.isWalletActive) return { values, errors: {} };
@@ -178,13 +177,7 @@ export const RequestFormValidationResolver: Resolver<
     } = transformContext(awaitedContext, values);
 
     if (isSteth) {
-      // TODO: NEW SDK
-      tvlJokeValidate(
-        'amount',
-        amount ? amount : BigInt(0),
-        stethTotalSupply,
-        balance,
-      );
+      tvlJokeValidate('amount', amount, stethTotalSupply, balance);
     }
 
     // early validation exit for dex option
@@ -194,16 +187,14 @@ export const RequestFormValidationResolver: Resolver<
 
     validateBigintMin(
       'amount',
-      // TODO: NEW SDK
-      amount ? amount : BigInt(0),
+      amount,
       minAmountPerRequest,
       messageMinUnstake(minAmountPerRequest, token),
     );
 
     const requests = validateSplitRequests(
       'amount',
-      // TODO: NEW SDK
-      amount ? amount : BigInt(0),
+      amount,
       maxAmountPerRequest,
       minAmountPerRequest,
       maxRequestCount,
@@ -212,8 +203,7 @@ export const RequestFormValidationResolver: Resolver<
 
     validateBigintMax(
       'amount',
-      // TODO: NEW SDK
-      amount ? amount : BigInt(0),
+      amount,
       balance,
       messageMaxAmount(balance, token),
     );

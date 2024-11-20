@@ -15,7 +15,6 @@ import type {
   StakeFormNetworkData,
   StakeFormValidationContext,
 } from './types';
-import { isNonNegativeBigInt } from 'utils/is-non-negative-bigint';
 
 export const stakeFormValidationResolver: Resolver<
   StakeFormInput,
@@ -28,12 +27,7 @@ export const stakeFormValidationResolver: Resolver<
       'validation context must be presented as context promise',
     );
 
-    validateEtherAmount(
-      'amount',
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      isNonNegativeBigInt(amount) ? amount! : undefined,
-      'ETH',
-    );
+    validateEtherAmount('amount', amount, 'ETH');
 
     const {
       isWalletActive,
@@ -49,8 +43,7 @@ export const stakeFormValidationResolver: Resolver<
 
     validateStakeEth({
       formField: 'amount',
-      // TODO: NEW SDK (Type 'null' is not assignable to type 'bigint'.)
-      amount: amount ? amount : BigInt(0),
+      amount,
       isWalletActive,
       stakingLimitLevel,
       currentStakeLimit,
