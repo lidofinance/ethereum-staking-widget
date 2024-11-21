@@ -1,7 +1,7 @@
 import { getAddress } from 'viem';
-import { LIDO_TOKENS } from '@lidofinance/lido-ethereum-sdk';
 
 import { config } from 'config';
+import { TOKENS, getRateTokenAddress } from 'consts/token-addresses';
 import { standardFetcher } from './standardFetcher';
 
 type BebopGetQuotePartial = {
@@ -26,24 +26,6 @@ type BebopGetQuotePartial = {
 };
 
 type RateCalculationResult = { rate: number; toReceive: bigint };
-
-// TODO: temp
-type TOKENS =
-  | Exclude<(typeof LIDO_TOKENS)[keyof typeof LIDO_TOKENS], 'unstETH'>
-  | 'LDO';
-
-// TODO: temp
-const TOKEN_ADDRESSES: Record<TOKENS, string> = {
-  stETH: '0xae7ab96520de3a18e5e111b5eaab095312d7fe84',
-  wstETH: '0x7f39c581f595b53c5cb19bd0b3f8da6c935e2ca0',
-  ETH: '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE',
-  LDO: '0x5a98fcbea516cf06857215779fd812ca3bef1b32',
-};
-
-// TODO: temp
-const getRateTokenAddress = (token: TOKENS): string => {
-  return TOKEN_ADDRESSES[token] || '';
-};
 
 export const getBebopRate = async (
   amount: bigint,

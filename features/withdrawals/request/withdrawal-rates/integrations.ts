@@ -1,9 +1,9 @@
 import { formatEther, getAddress } from 'viem';
-import { LIDO_TOKENS } from '@lidofinance/lido-ethereum-sdk';
 
 import { ZERO } from 'modules/web3';
 import { OPEN_OCEAN_REFERRAL_ADDRESS } from 'consts/external-links';
 import { MATOMO_CLICK_EVENTS_TYPES } from 'consts/matomo-click-events';
+import { getRateTokenAddress } from 'consts/token-addresses';
 
 import { getOneInchRate } from 'utils/get-one-inch-rate';
 import { getBebopRate } from 'utils/get-bebop-rate';
@@ -11,24 +11,6 @@ import { getOpenOceanRate } from 'utils/get-open-ocean-rate';
 import { standardFetcher } from 'utils/standardFetcher';
 
 import { BebopIcon, OneInchIcon, OpenOceanIcon, ParaSwapIcon } from './icons';
-
-// TODO: temp
-type TOKENS =
-  | Exclude<(typeof LIDO_TOKENS)[keyof typeof LIDO_TOKENS], 'unstETH'>
-  | 'LDO';
-
-// TODO: temp
-const TOKEN_ADDRESSES: Record<TOKENS, string> = {
-  stETH: '0xae7ab96520de3a18e5e111b5eaab095312d7fe84',
-  wstETH: '0x7f39c581f595b53c5cb19bd0b3f8da6c935e2ca0',
-  ETH: '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE',
-  LDO: '0x5a98fcbea516cf06857215779fd812ca3bef1b32',
-};
-
-// TODO: temp
-const getRateTokenAddress = (token: TOKENS): string => {
-  return TOKEN_ADDRESSES[token] || '';
-};
 
 import type {
   DexWithdrawalApi,
