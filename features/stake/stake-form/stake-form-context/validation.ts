@@ -86,7 +86,6 @@ export const useStakeFormValidationContext = (
         // condition above guaranties stubs will only be passed when isDappActive = false
         etherBalance: etherBalance ?? ZERO,
         gasCost: gasCost ?? ZERO,
-        // TODO: NEW SDK (remove?)
         isMultisig: isMultisig ?? false,
       };
     }

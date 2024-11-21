@@ -129,7 +129,6 @@ const useStakeFormNetworkData = (): StakeFormNetworkData => {
   return {
     stethBalance,
     etherBalance,
-    // TODO: NEW SDK (remove?)
     isMultisig: isMultisigLoading ? undefined : isMultisig,
     stakeableEther,
     stakingLimitInfo,
