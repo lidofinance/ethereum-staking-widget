@@ -26,14 +26,6 @@ export const useClaim = ({ onRetry }: Args) => {
   // without triggering a rerender. Also, the React 18 also has issues with asynchronous state updates.
   const txHashRef = useRef<Address | undefined>(undefined);
 
-  const showSuccessTxModal = useCallback(
-    async (amount: bigint, sortedRequests: RequestStatusClaimable[]) => {
-      await optimisticClaimRequests(sortedRequests);
-      txModalStages.success(amount, txHashRef.current);
-    },
-    [optimisticClaimRequests, txModalStages],
-  );
-
   return useCallback(
     async (sortedRequests: RequestStatusClaimable[]) => {
       try {
@@ -48,17 +40,19 @@ export const useClaim = ({ onRetry }: Args) => {
         const requestsIds = sortedRequests.map((r) => r.id);
         const hints = sortedRequests.map((r) => r.hint);
 
-        const txCallback: TransactionCallback = ({ stage, payload }) => {
+        const txCallback: TransactionCallback = async ({ stage, payload }) => {
           switch (stage) {
             case TransactionCallbackStage.SIGN:
               txModalStages.sign(amount);
               break;
             case TransactionCallbackStage.RECEIPT:
               txModalStages.pending(amount, payload);
-              txHashRef.current = payload; // the payload here is txHash
+              // the payload here is txHash
+              txHashRef.current = payload;
               break;
             case TransactionCallbackStage.DONE:
-              void showSuccessTxModal(amount, sortedRequests);
+              await optimisticClaimRequests(sortedRequests);
+              txModalStages.success(amount, txHashRef.current);
               break;
             case TransactionCallbackStage.MULTISIG_DONE:
               txModalStages.successMultisig();
@@ -83,6 +77,6 @@ export const useClaim = ({ onRetry }: Args) => {
         return false;
       }
     },
-    [address, withdraw.claim, txModalStages, showSuccessTxModal, onRetry],
+    [address, withdraw.claim, txModalStages, optimisticClaimRequests, onRetry],
   );
 };

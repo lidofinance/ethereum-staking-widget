@@ -88,7 +88,7 @@ export const useWithdrawalRequest = ({
           }
         }
 
-        const txCallbackApproval: TransactionCallback = ({
+        const txCallbackApproval: TransactionCallback = async ({
           stage,
           payload,
         }) => {
@@ -109,7 +109,7 @@ export const useWithdrawalRequest = ({
           }
         };
 
-        const txCallback: TransactionCallback = ({ stage, payload }) => {
+        const txCallback: TransactionCallback = async ({ stage, payload }) => {
           switch (stage) {
             case TransactionCallbackStage.PERMIT:
               txModalStages.signPermit();
@@ -119,13 +119,14 @@ export const useWithdrawalRequest = ({
               break;
             case TransactionCallbackStage.RECEIPT:
               txModalStages.pending(amount, token, payload);
-              txHashRef.current = payload; // the payload here is txHash
+              // the payload here is txHash
+              txHashRef.current = payload;
               break;
             case TransactionCallbackStage.DONE:
               void onConfirm?.();
               txModalStages.success(amount, token, txHashRef.current);
               if (isApprovalFlow) {
-                void refetchAllowance();
+                await refetchAllowance();
               }
               break;
             case TransactionCallbackStage.MULTISIG_DONE:
