@@ -15,7 +15,6 @@ import { CHAINS } from 'consts/chains';
 import { ConnectWalletModal } from './connect-wallet-modal';
 
 import { useWeb3Transport } from './use-web3-transport';
-import { LidoSDKProvider } from './lido-sdk';
 import { SupportL1Chains } from './dapp-chain';
 
 type ChainsList = [wagmiChains.Chain, ...wagmiChains.Chain[]];
@@ -79,7 +78,10 @@ export const Web3Provider: FC<PropsWithChildren> = ({ children }) => {
 
   const wagmiConfig = useMemo(() => {
     return createConfig({
-      chains: supportedChains,
+      // Mainnet RPC is always required for some requests, e.g. ETH to USD price, ENS lookup
+      chains: supportedChains.includes(wagmiChains.mainnet)
+        ? supportedChains
+        : [...supportedChains, wagmiChains.mainnet],
       ssr: true,
       connectors: [],
       batch: {
@@ -106,9 +108,7 @@ export const Web3Provider: FC<PropsWithChildren> = ({ children }) => {
         walletDataList={walletsDataList}
       >
         {isWalletConnectionAllowed && <AutoConnect autoConnect />}
-        <LidoSDKProvider>
-          <SupportL1Chains>{children}</SupportL1Chains>
-        </LidoSDKProvider>
+        <SupportL1Chains>{children}</SupportL1Chains>
         <ConnectWalletModal />
       </ReefKnot>
     </WagmiProvider>
