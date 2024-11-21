@@ -22,8 +22,7 @@ export const TokenAmountInputWrap = (props: TokenAmountInputWrapProps) => {
       fieldName="amount"
       token={token}
       data-testid="wrapInput"
-      // TODO: NEW SDK (Type 'boolean | 0n | undefined' is not assignable to type 'boolean | undefined'.)
-      isLocked={isApprovalNeededBeforeWrap as boolean}
+      isLocked={!!isApprovalNeededBeforeWrap}
       maxValue={maxAmount}
       showErrorMessage={false}
       leftDecorator={isDappActiveOnL2 ? <Steth /> : undefined}
