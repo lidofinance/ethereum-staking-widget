@@ -1,6 +1,7 @@
 import { Address } from 'viem';
 import { useQuery, UseQueryResult } from '@tanstack/react-query';
 
+import { STRATEGY_EAGER } from 'consts/react-query-strategies';
 import { useLidoSDK } from 'modules/web3';
 import { TOKENS_WITHDRAWABLE } from 'features/withdrawals/types/tokens-withdrawable';
 
@@ -27,14 +28,13 @@ export const useWithdrawalApprove = (
 
   const { data, error, isLoading, isFetching, refetch } = useQuery({
     queryKey: [
-      'use-total-supply',
+      'use-withdrawal-approve',
       withdraw.core.chainId,
       amount.toString(),
       token,
     ],
     enabled,
-    // TODO: NEW SDK (STRATEGY)
-    staleTime: Infinity,
+    ...STRATEGY_EAGER,
     queryFn: () =>
       withdraw.approval.checkAllowance({
         amount,

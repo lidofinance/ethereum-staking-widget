@@ -1,4 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
+import { STRATEGY_LAZY } from 'consts/react-query-strategies';
 import { useLidoSDK } from 'modules/web3';
 
 export const useUnfinalizedStETH = () => {
@@ -7,7 +8,7 @@ export const useUnfinalizedStETH = () => {
   const { data, error, isLoading, isFetching, refetch } = useQuery({
     queryKey: ['use-unfinalized-stETH', withdraw.core.chainId],
     enabled: !!withdraw,
-    // TODO: NEW SDK (STRATEGY_LAZY)
+    ...STRATEGY_LAZY,
     staleTime: Infinity,
     queryFn: () => withdraw.views.getUnfinalizedStETH(),
   });
