@@ -42,7 +42,6 @@ export const useGetRpcUrlByChainId = () => {
 };
 
 export const useRpcUrl = () => {
-  // TODO: NEW SDK (check)
   const { chainId } = useDappStatus();
   return useGetRpcUrlByChainId()(chainId);
 };
