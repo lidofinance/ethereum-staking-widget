@@ -22,7 +22,7 @@ export const RewardsListContent: FC = () => {
   const {
     address,
     error,
-    initialLoading,
+    isLoading,
     data,
     currencyObject,
     page,
@@ -38,12 +38,12 @@ export const RewardsListContent: FC = () => {
 
   if (!isSupportedChain) return <RewardsListsUnsupportedChain />;
 
-  if (!data && !initialLoading && !error) return <RewardsListsEmpty />;
+  if (!data && !isLoading && !error) return <RewardsListsEmpty />;
 
   // showing loading when canceling requests and empty response
   if (
     (!data && !error) ||
-    (initialLoading && !data?.events.length) ||
+    (isLoading && !data?.events.length) ||
     isStethBalanceLoading
   ) {
     return (

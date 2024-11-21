@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
 import { useForceDisconnect } from 'reef-knot/core-react';
+import { useQuery } from '@tanstack/react-query';
 
 import buildInfo from 'build-info.json';
 import { config } from 'config';
 import { useUserConfig } from 'config/user-config';
 import { STRATEGY_IMMUTABLE } from 'consts/react-query-strategies';
-import { useLidoQuery } from 'shared/hooks/use-lido-query';
 import { useDappStatus } from 'modules/web3';
 import { overrideWithQAMockBoolean } from 'utils/qa';
 
@@ -25,9 +25,9 @@ export const useVersionStatus = () => {
   const [areConditionsAccepted, setConditionsAccepted] = useState(false);
 
   // only IPFS: local cid extraction
-  const currentCidQueryResult = useLidoQuery({
+  const currentCidQueryResult = useQuery({
     queryKey: ['ipfs-cid-extraction'],
-    strategy: STRATEGY_IMMUTABLE,
+    ...STRATEGY_IMMUTABLE,
     enabled: !!config.ipfsMode,
     queryFn: async () => {
       const urlCid = URL_CID_REGEX.exec(window.location.href)?.groups?.cid;
@@ -114,11 +114,13 @@ export const useVersionStatus = () => {
     get initialLoading() {
       return (
         remoteVersionQueryResult.initialLoading ||
-        currentCidQueryResult.initialLoading
+        currentCidQueryResult.isLoading
       );
     },
     get loading() {
-      return remoteVersionQueryResult.loading || currentCidQueryResult.loading;
+      return (
+        remoteVersionQueryResult.loading || currentCidQueryResult.isFetching
+      );
     },
     get error() {
       return remoteVersionQueryResult.error || currentCidQueryResult.error;

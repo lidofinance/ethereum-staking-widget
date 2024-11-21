@@ -1,6 +1,6 @@
+import { useQuery } from '@tanstack/react-query';
 import { config } from 'config';
 import { STRATEGY_LAZY } from 'consts/react-query-strategies';
-import { useLidoQuery } from 'shared/hooks/use-lido-query';
 
 import { getSwapIntegration } from './integrations';
 import type {
@@ -41,17 +41,17 @@ const fetchRate = async (
 };
 
 export const useSwapDiscount = () => {
-  return useLidoQuery({
+  return useQuery({
     queryKey: ['swap-discount-rate', config.STAKE_SWAP_INTEGRATION],
+    ...STRATEGY_LAZY,
     queryFn: async () => {
       try {
         return await fetchRate(config.STAKE_SWAP_INTEGRATION);
       } catch (err) {
         console.warn(`[useSwapDiscount] Error fetching ETH -> stETH: ${err}`);
-        // This line is necessary so that useLidoQuery (useQuery) can handle the error and return undefined
+        // This line is necessary so that useQuery can handle the error and return undefined
         throw err;
       }
     },
-    strategy: STRATEGY_LAZY,
   });
 };

@@ -79,7 +79,7 @@ const useStakeFormNetworkData = (): StakeFormNetworkData => {
   const {
     data: stakingLimitInfo,
     refetch: mutateStakeLimit,
-    initialLoading: isStakingLimitLoading,
+    isLoading: isStakingLimitIsLoading,
   } = useStakingLimitInfo();
 
   const stakeableEther = useMemo(() => {
@@ -115,14 +115,14 @@ const useStakeFormNetworkData = (): StakeFormNetworkData => {
       isMultisigLoading,
       isMaxGasPriceLoading,
       isEtherBalanceLoading,
-      isStakeableEtherLoading: isStakingLimitLoading || isEtherBalanceLoading,
+      isStakeableEtherLoading: isStakingLimitIsLoading || isEtherBalanceLoading,
     }),
     [
-      isEtherBalanceLoading,
-      isMaxGasPriceLoading,
-      isMultisigLoading,
       isStethBalanceLoading,
-      isStakingLimitLoading,
+      isMultisigLoading,
+      isMaxGasPriceLoading,
+      isEtherBalanceLoading,
+      isStakingLimitIsLoading,
     ],
   );
 

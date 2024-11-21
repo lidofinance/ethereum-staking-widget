@@ -9,7 +9,7 @@ export const useDebouncedWstethBySteth = (
   const amountDebounced = useDebouncedValue(fallbackedAmount, delay);
   const isActualValue = fallbackedAmount === amountDebounced;
 
-  const { data, initialLoading, loading, error, refetch } = useWstethBySteth(
+  const { data, isLoading, isFetching, error, refetch } = useWstethBySteth(
     isActualValue ? amountDebounced : null,
   );
 
@@ -18,10 +18,10 @@ export const useDebouncedWstethBySteth = (
       return isActualValue ? data : undefined;
     },
     get initialLoading() {
-      return isActualValue ? initialLoading : true;
+      return isActualValue ? isLoading : true;
     },
     get loading() {
-      return loading;
+      return isFetching;
     },
     get error() {
       return error;
@@ -40,7 +40,7 @@ export const useDebouncedStethByWsteth = (
   const amountDebounced = useDebouncedValue(fallbackedAmount, delay);
   const isActualValue = fallbackedAmount === amountDebounced;
 
-  const { data, initialLoading, loading, error, refetch } = useStETHByWstETH(
+  const { data, isLoading, isFetching, error, refetch } = useStETHByWstETH(
     isActualValue ? amountDebounced : null,
   );
 
@@ -49,10 +49,10 @@ export const useDebouncedStethByWsteth = (
       return isActualValue ? data : undefined;
     },
     get initialLoading() {
-      return isActualValue ? initialLoading : true;
+      return isActualValue ? isLoading : true;
     },
     get loading() {
-      return loading;
+      return isFetching;
     },
     get error() {
       return error;

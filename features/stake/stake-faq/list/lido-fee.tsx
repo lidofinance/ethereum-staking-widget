@@ -8,7 +8,7 @@ export const LidoFee: FC = () => {
   const protocolFee = useProtocolFee();
 
   const feeValue =
-    protocolFee.initialLoading || !protocolFee.totalFeeString
+    protocolFee.isLoading || !protocolFee.totalFeeString
       ? DATA_UNAVAILABLE
       : `${protocolFee.totalFeeString}%`;
 

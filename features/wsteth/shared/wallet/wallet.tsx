@@ -48,7 +48,7 @@ const WalletComponent = () => {
         <CardBalance
           small
           title="stETH balance"
-          loading={stethBalance.isLoading || wstethBySteth.initialLoading}
+          loading={stethBalance.isLoading || wstethBySteth.isLoading}
           value={
             <>
               <FormatToken
@@ -74,7 +74,7 @@ const WalletComponent = () => {
         <CardBalance
           small
           title="wstETH balance"
-          loading={wstethBalance.isLoading || stethByWsteth.initialLoading}
+          loading={wstethBalance.isLoading || stethByWsteth.isLoading}
           value={
             <>
               <FormatToken

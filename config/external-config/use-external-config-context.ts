@@ -1,9 +1,9 @@
 import { useMemo } from 'react';
+import { useQuery } from '@tanstack/react-query';
 
 import { config } from 'config';
 import { STRATEGY_LAZY } from 'consts/react-query-strategies';
 import { IPFS_MANIFEST_URL } from 'consts/external-links';
-import { useLidoQuery } from 'shared/hooks/use-lido-query';
 import { standardFetcher } from 'utils/standardFetcher';
 
 import {
@@ -22,9 +22,9 @@ export const useExternalConfigContext = (
     config.defaultChain,
   );
 
-  const queryResult = useLidoQuery<ManifestEntry>({
+  const queryResult = useQuery<ManifestEntry>({
     queryKey: ['external-config', defaultChain],
-    strategy: STRATEGY_LAZY,
+    ...STRATEGY_LAZY,
     enabled: !!defaultChain,
     queryFn: async () => {
       try {
@@ -47,7 +47,7 @@ export const useExternalConfigContext = (
           '[useExternalConfigContext] while fetching external config:',
           err,
         );
-        // This line is necessary so that useLidoQuery (useQuery) can handle the error and return undefined
+        // This line is necessary so that useQuery can handle the error and return undefined
         throw err;
       }
     },

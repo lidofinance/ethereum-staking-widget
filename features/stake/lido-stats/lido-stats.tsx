@@ -67,7 +67,7 @@ export const LidoStats: FC = memo(() => {
               </FlexCenterVertical>
             }
             show={showApr}
-            loading={lidoApr.initialLoading}
+            loading={lidoApr.isLoading}
             dataTestId="lidoAPR"
             highlight
           >
@@ -77,7 +77,7 @@ export const LidoStats: FC = memo(() => {
           <LidoStatsItem
             title="Total staked with Lido"
             show={showTotalStaked}
-            loading={lidoStats.initialLoading}
+            loading={lidoStats.isLoading}
             dataTestId="totalStaked"
           >
             {lidoStats.data.totalStaked}
@@ -86,7 +86,7 @@ export const LidoStats: FC = memo(() => {
           <LidoStatsItem
             title="Stakers"
             show={showStakers}
-            loading={lidoStats.initialLoading}
+            loading={lidoStats.isLoading}
             dataTestId="stakers"
           >
             {lidoStats.data.stakers}
@@ -95,7 +95,7 @@ export const LidoStats: FC = memo(() => {
           <LidoStatsItem
             title="stETH market cap"
             show={showMarketCap}
-            loading={lidoStats.initialLoading}
+            loading={lidoStats.isLoading}
             dataTestId="stEthMarketCap"
           >
             {lidoStats.data.marketCap}

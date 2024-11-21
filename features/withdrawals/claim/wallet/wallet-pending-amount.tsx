@@ -8,7 +8,7 @@ import { useTokenAddress } from 'shared/hooks/use-token-address';
 
 export const WalletPendingAmount = () => {
   const stethAddress = useTokenAddress(LIDO_TOKENS.steth);
-  const { data, initialLoading } = useClaimData();
+  const { data, isLoading } = useClaimData();
 
   const pendingAmount = (
     <>
@@ -22,7 +22,7 @@ export const WalletPendingAmount = () => {
       small
       data-testid="myPendingAmount"
       title="My pending amount"
-      loading={initialLoading}
+      loading={isLoading}
       value={pendingAmount}
     />
   );

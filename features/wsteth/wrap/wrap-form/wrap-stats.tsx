@@ -30,10 +30,8 @@ export const WrapFormStats = () => {
     initialLoading: isWillReceiveWstethLoading,
   } = useDebouncedWstethBySteth(amount);
 
-  const {
-    data: oneWstethConverted,
-    initialLoading: oneWstethConvertedLoading,
-  } = useWstethBySteth(ONE_stETH);
+  const { data: oneWstethConverted, isLoading: oneWstethConvertedLoading } =
+    useWstethBySteth(ONE_stETH);
 
   // The 'approveGasLimit' difference between the networks is insignificant
   // and can be neglected in the '!isChainTypeMatched' case

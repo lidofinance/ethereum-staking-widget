@@ -1,8 +1,8 @@
 import { formatEther } from 'viem';
 import type { LIDO_CONTRACT_NAMES } from '@lidofinance/lido-ethereum-sdk/common';
+import { useQuery } from '@tanstack/react-query';
 
 import { STRATEGY_CONSTANT } from 'consts/react-query-strategies';
-import { useLidoQuery } from 'shared/hooks/use-lido-query';
 import { useLidoSDK } from 'modules/web3';
 import { useContractAddress } from './use-contract-address';
 
@@ -12,24 +12,17 @@ export const useProtocolFee = () => {
     data: stakingRouterAddress,
     isLoading: isAddressLoading,
     error: addressError,
-    // TODO:
-    //  import { LIDO_CONTRACT_NAMES } from '@lidofinance/lido-ethereum-sdk/common';
-    //  ERROR: LIDO_CONTRACT_NAMES is undefined
-    //  ...
-    //  import type { LIDO_CONTRACT_NAMES } from '@lidofinance/lido-ethereum-sdk/common';
-    //  OK: LIDO_CONTRACT_NAMES is Type
   } = useContractAddress('stakingRouter' as LIDO_CONTRACT_NAMES);
 
-  const queryResult = useLidoQuery({
+  const queryResult = useQuery({
     queryKey: [
       'staking-fee-aggregate-distribution',
       core.chainId,
       stakingRouterAddress,
     ],
-    strategy: {
-      ...STRATEGY_CONSTANT,
-      refetchInterval: 60000, // 1 minute
-    },
+    ...STRATEGY_CONSTANT,
+    refetchInterval: 60000, // 1 minute
+
     enabled:
       !!core &&
       !!core.chainId &&

@@ -1,11 +1,11 @@
 import { useMemo } from 'react';
 import { useWatch } from 'react-hook-form';
+import { useQuery } from '@tanstack/react-query';
 
 import { useConfig } from 'config';
 import { STRATEGY_LAZY } from 'consts/react-query-strategies';
 import { ZERO } from 'modules/web3';
 import { useDebouncedValue } from 'shared/hooks/useDebouncedValue';
-import { useLidoQuery } from 'shared/hooks/use-lido-query';
 
 import type { RequestFormInputType } from '../request-form-context';
 
@@ -56,14 +56,14 @@ export const useWithdrawalRates = ({
   const fallbackedAmount = amount ?? fallbackValue;
   const debouncedAmount = useDebouncedValue(fallbackedAmount, 1000);
 
-  const queryResult = useLidoQuery({
+  const queryResult = useQuery({
     queryKey: [
       'withdrawal-rates',
       debouncedAmount.toString(),
       token,
       enabledDexes,
     ],
-    strategy: STRATEGY_LAZY,
+    ...STRATEGY_LAZY,
     enabled:
       !isPaused &&
       !!debouncedAmount &&
@@ -88,10 +88,10 @@ export const useWithdrawalRates = ({
     selectedToken: token,
     data: queryResult.data,
     get initialLoading() {
-      return queryResult.initialLoading || debouncedAmount !== fallbackedAmount;
+      return queryResult.isLoading || debouncedAmount !== fallbackedAmount;
     },
     get loading() {
-      return queryResult.loading || debouncedAmount !== fallbackedAmount;
+      return queryResult.isFetching || debouncedAmount !== fallbackedAmount;
     },
     get error() {
       return queryResult.error;

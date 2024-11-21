@@ -1,7 +1,8 @@
+import { useQuery } from '@tanstack/react-query';
 import { config } from 'config';
 import { STRATEGY_LAZY } from 'consts/react-query-strategies';
 import { Backend } from 'features/rewards/types';
-import { useLidoQuery } from 'shared/hooks/use-lido-query';
+
 import { standardFetcher } from 'utils/standardFetcher';
 import { useLaggyDataWrapper } from './use-laggy-data-wrapper';
 
@@ -15,8 +16,8 @@ type UseRewardsDataLoad = (props: {
 }) => {
   data?: Backend;
   error?: unknown;
-  loading: boolean;
-  initialLoading: boolean;
+  isFetching: boolean;
+  isLoading: boolean;
   isLagging: boolean;
 };
 
@@ -51,16 +52,14 @@ export const useRewardsDataLoad: UseRewardsDataLoad = (props) => {
     apiRewardsUrl = `/api/rewards?${params.toString()}`;
   }
 
-  const { data, error, loading, initialLoading } = useLidoQuery<Backend>({
+  const { data, error, isFetching, isLoading } = useQuery<Backend>({
     queryKey: ['rewards-data', address, apiRewardsUrl],
     enabled: !!address,
-    strategy: {
-      ...STRATEGY_LAZY,
-      staleTime: 0,
-      // TODO
-      // @ts-expect-error: cacheTime field exists but type inconsistency
-      cacheTime: 0,
-    },
+    ...STRATEGY_LAZY,
+    staleTime: 0,
+    // TODO
+    // @ts-expect-error: cacheTime is a valid property on the UseQueryOptions type
+    cacheTime: 0,
     queryFn: async ({ signal }) => {
       // The 'react-query' has AbortController support built in,
       // and it automatically cancels requests when
@@ -73,8 +72,8 @@ export const useRewardsDataLoad: UseRewardsDataLoad = (props) => {
 
   return {
     error,
-    loading,
-    initialLoading,
+    isFetching,
+    isLoading,
     // Fix 'Type 'TQueryFnData' is not assignable to type 'Backend''
     data: dataOrLaggyData as Backend,
     isLagging: !!address && isLagging,

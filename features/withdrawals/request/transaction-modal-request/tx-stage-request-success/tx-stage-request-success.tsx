@@ -40,8 +40,7 @@ export const TxRequestStageSuccess = ({
   const amountEl = <TxAmount amount={amount} symbol={tokenName} />;
   const showAddGuideLink = useIsMetamask();
 
-  const { data: nftData, initialLoading: nftLoading } =
-    useNftDataByTxHash(txHash);
+  const { data: nftData, isLoading: nftLoading } = useNftDataByTxHash(txHash);
   const { closeModal } = useTransactionModal();
 
   const successDescription = (

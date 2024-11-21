@@ -56,7 +56,7 @@ export const LidoOption = () => {
     name: ['token', 'amount'],
   });
 
-  const { amount: ethAmount, loading: amountLoading } =
+  const { amount: ethAmount, isLoading: amountLoading } =
     useEthAmountByStethWsteth({
       isSteth: token === TOKENS_TO_WRAP.stETH,
       amount,

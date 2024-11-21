@@ -2,10 +2,10 @@ import type { Address } from 'viem';
 import { parseAbiItem, encodeFunctionData, decodeAbiParameters } from 'viem';
 import { usePublicClient } from 'wagmi';
 import { CHAINS } from '@lidofinance/lido-ethereum-sdk';
+import { useQuery } from '@tanstack/react-query';
 
 import { STRATEGY_LAZY } from 'consts/react-query-strategies';
 import { WEI_PER_ETHER } from 'consts/tx';
-import { useLidoQuery } from 'shared/hooks/use-lido-query';
 import { useDappStatus } from 'modules/web3';
 
 export const MAINNET_CURVE = '0xDC24316b9AE028F1497c275EB9192a3Ea0f67022';
@@ -14,9 +14,9 @@ export const useStethEthRate = () => {
   const { chainId } = useDappStatus();
   const publicClientMainnet = usePublicClient({ chainId: CHAINS.Mainnet });
 
-  const { data, error } = useLidoQuery({
+  const { data, error } = useQuery({
     queryKey: ['steth-eth-rate', chainId],
-    strategy: STRATEGY_LAZY,
+    ...STRATEGY_LAZY,
     enabled: !!(chainId === CHAINS.Mainnet && publicClientMainnet),
     queryFn: async () => {
       if (chainId !== 1 || !publicClientMainnet) return WEI_PER_ETHER;

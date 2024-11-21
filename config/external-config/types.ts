@@ -1,5 +1,5 @@
+import { UseQueryResult } from '@tanstack/react-query';
 import type { DexWithdrawalApi } from 'features/withdrawals/request/withdrawal-rates';
-import { UseLidoQueryResult } from 'shared/hooks/use-lido-query';
 
 export type Manifest = Record<string, ManifestEntry>;
 
@@ -20,5 +20,5 @@ export type ManifestConfig = {
 
 export type ExternalConfig = Omit<ManifestEntry, 'config'> &
   ManifestConfig & {
-    fetchMeta: UseLidoQueryResult<ManifestEntry>;
+    fetchMeta: UseQueryResult<ManifestEntry>;
   };

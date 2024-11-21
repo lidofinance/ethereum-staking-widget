@@ -1,5 +1,5 @@
 import { useCallback, useMemo } from 'react';
-import { useQueryClient } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 
 import { ZERO, useDappStatus, useLidoSDK } from 'modules/web3';
 
@@ -13,7 +13,6 @@ import {
 } from 'features/withdrawals/types/request-status';
 import { MAX_SHOWN_REQUEST_PER_TYPE } from 'features/withdrawals/withdrawals-constants';
 
-import { useLidoQuery } from 'shared/hooks/use-lido-query';
 import { standardFetcher } from 'utils/standardFetcher';
 import { encodeURLQuery } from 'utils/encodeURLQuery';
 
@@ -91,9 +90,10 @@ export const useWithdrawalRequests = () => {
     [address, chainId],
   );
 
-  const queryResult = useLidoQuery({
+  const queryResult = useQuery({
     queryKey,
     enabled: !!address,
+    ...STRATEGY_LAZY,
     queryFn: async () => {
       if (!address) {
         return;
@@ -199,7 +199,6 @@ export const useWithdrawalRequests = () => {
         isClamped,
       };
     },
-    strategy: STRATEGY_LAZY,
   });
 
   const oldData = queryResult.data;

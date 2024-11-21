@@ -21,10 +21,10 @@ export const Curve: FC = () => {
     rel: 'noopener noreferrer',
   };
 
-  const { data, initialLoading } = useCurve();
+  const { data, isLoading } = useCurve();
 
   const apr = data?.data.totalApr.toFixed(2) ?? DATA_UNAVAILABLE;
-  const value = initialLoading ? <InlineLoader /> : apr;
+  const value = isLoading ? <InlineLoader /> : apr;
 
   return (
     <Banner

@@ -2,9 +2,9 @@ import type { Address } from 'viem';
 import { decodeEventLog, getEventSelector } from 'viem';
 import { usePublicClient } from 'wagmi';
 import { WithdrawalQueueAbi } from '@lidofinance/lido-ethereum-sdk/withdraw';
+import { useQuery } from '@tanstack/react-query';
 
 import { STRATEGY_EAGER } from 'consts/react-query-strategies';
-import { useLidoQuery } from 'shared/hooks/use-lido-query';
 import { useDappStatus, useLidoSDK } from 'modules/web3';
 import { standardFetcher } from 'utils/standardFetcher';
 
@@ -21,9 +21,10 @@ export const useNftDataByTxHash = (txHash?: Address) => {
   const { withdraw } = useLidoSDK();
   const publicClient = usePublicClient({ chainId });
 
-  const queryResult = useLidoQuery<NFTApiData[] | null>({
+  const queryResult = useQuery<NFTApiData[] | null>({
     queryKey: ['nft-data-by-tx-hash', txHash, address],
     enabled: !!(txHash && address && publicClient),
+    ...STRATEGY_EAGER,
     queryFn: async () => {
       if (!txHash || !address || !publicClient) return null;
 
@@ -63,7 +64,6 @@ export const useNftDataByTxHash = (txHash?: Address) => {
 
       return nftData;
     },
-    strategy: STRATEGY_EAGER,
   });
 
   return queryResult;

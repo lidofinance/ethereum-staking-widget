@@ -73,7 +73,7 @@ const WalletComponent = () => {
               )}
             </>
           }
-          loading={lidoApr.initialLoading}
+          loading={lidoApr.isLoading}
           value={
             <LidoAprStyled data-testid="lidoAprHeader">
               {lidoApr.apr ? `${lidoApr.apr}%` : DATA_UNAVAILABLE}

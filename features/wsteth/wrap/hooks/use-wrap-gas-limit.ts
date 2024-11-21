@@ -1,4 +1,4 @@
-import { useLidoQuery } from 'shared/hooks/use-lido-query';
+import { useQuery } from '@tanstack/react-query';
 
 import { config } from 'config';
 import { STRATEGY_EAGER } from 'consts/react-query-strategies';
@@ -57,12 +57,12 @@ export const useWrapGasLimit = () => {
 
   const wrapFallback = isDappActiveOnL2 ? WRAP_L2_GAS_LIMIT : WRAP_GAS_LIMIT;
 
-  const { data } = useLidoQuery<{
+  const { data } = useQuery<{
     gasLimitETH: bigint;
     gasLimitStETH: bigint;
   }>({
     queryKey: ['wrap-gas-limit', core.chainId, isL2],
-    strategy: STRATEGY_EAGER,
+    ...STRATEGY_EAGER,
     queryFn: async () => {
       const [gasLimitETH, gasLimitStETH] = await Promise.all([
         fetchGasLimitETH(isL2, wrap),

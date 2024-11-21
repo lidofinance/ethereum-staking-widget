@@ -8,16 +8,12 @@ import { useStethEthRate } from 'features/rewards/hooks/use-steth-eth-rate';
 import { Item } from './components/item';
 
 export const StEthPriceBlock: FC = () => {
-  const {
-    currencyObject: currency,
-    data,
-    initialLoading: loading,
-  } = useRewardsHistory();
+  const { currencyObject: currency, data, isLoading } = useRewardsHistory();
   const stEthEth = useStethEthRate();
 
   return (
     <Item
-      loading={loading}
+      loading={isLoading}
       dataTestId="stEthPriceBlock"
       title="stETH price"
       value={

@@ -1,5 +1,5 @@
+import { useQuery, UseQueryResult } from '@tanstack/react-query';
 import { STRATEGY_CONSTANT } from 'consts/react-query-strategies';
-import { UseLidoQueryResult, useLidoQuery } from 'shared/hooks/use-lido-query';
 import { useLidoSDK } from 'modules/web3';
 
 type UseWithdrawalsBaseDataResult = {
@@ -11,11 +11,12 @@ type UseWithdrawalsBaseDataResult = {
 };
 
 export const useWithdrawalsBaseData =
-  (): UseLidoQueryResult<UseWithdrawalsBaseDataResult> => {
+  (): UseQueryResult<UseWithdrawalsBaseDataResult> => {
     const { withdraw } = useLidoSDK();
 
-    return useLidoQuery<UseWithdrawalsBaseDataResult>({
+    return useQuery<UseWithdrawalsBaseDataResult>({
       queryKey: ['query:withdrawalsBaseData', withdraw.core.chain],
+      ...STRATEGY_CONSTANT,
       queryFn: async () => {
         const [minAmount, maxAmount, isPausedMode, isBunkerMode, isTurboMode] =
           await Promise.all([
@@ -38,6 +39,5 @@ export const useWithdrawalsBaseData =
           isTurbo,
         };
       },
-      strategy: STRATEGY_CONSTANT,
     });
   };

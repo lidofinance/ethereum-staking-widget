@@ -38,8 +38,7 @@ export const WithdrawalsProvider: FC<
 > = ({ children, mode }) => {
   const isClaimTab = mode === 'claim';
 
-  const { data, initialLoading: isWithdrawalsStatusLoading } =
-    useWithdrawalsBaseData();
+  const { data, isFetching, isLoading } = useWithdrawalsBaseData();
   const { isBunker, isPaused, isTurbo, maxAmount, minAmount } = data ?? {};
 
   const withdrawalsStatus: StatusProps['variant'] = (() => {
@@ -53,7 +52,7 @@ export const WithdrawalsProvider: FC<
     () => ({
       isClaimTab,
       withdrawalsStatus,
-      isWithdrawalsStatusLoading,
+      isWithdrawalsStatusLoading: isLoading || isFetching,
       isPaused,
       isTurbo,
       isBunker,
@@ -63,7 +62,8 @@ export const WithdrawalsProvider: FC<
     [
       isClaimTab,
       withdrawalsStatus,
-      isWithdrawalsStatusLoading,
+      isLoading,
+      isFetching,
       isPaused,
       isTurbo,
       isBunker,

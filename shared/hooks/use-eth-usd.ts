@@ -3,10 +3,10 @@ import type { Address } from 'viem';
 import { encodeFunctionData, decodeAbiParameters } from 'viem';
 import { usePublicClient } from 'wagmi';
 import { CHAINS } from '@lidofinance/lido-ethereum-sdk';
+import { useQuery } from '@tanstack/react-query';
 
 import { AGGREGATOR_STETH_USD_PRICE_FEED_BY_NETWORK } from 'consts/aggregator';
 import { STRATEGY_LAZY } from 'consts/react-query-strategies';
-import { useLidoQuery } from 'shared/hooks/use-lido-query';
 
 const aggregatorAbi = [
   {
@@ -24,13 +24,13 @@ export const useEthUsd = (amount?: bigint) => {
   const {
     data: price,
     error,
-    loading,
+    isLoading,
     refetch,
-    initialLoading,
-  } = useLidoQuery({
+    isFetching,
+  } = useQuery({
     queryKey: ['eth-usd-price'],
     enabled: !!publicClientMainnet,
-    strategy: STRATEGY_LAZY,
+    ...STRATEGY_LAZY,
     queryFn: async () => {
       if (!publicClientMainnet) return;
 
@@ -65,9 +65,9 @@ export const useEthUsd = (amount?: bigint) => {
   return {
     usdAmount,
     price,
-    initialLoading,
+    isLoading,
     error,
-    loading,
+    isFetching,
     update: refetch,
   };
 };

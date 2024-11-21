@@ -1,9 +1,9 @@
 import { getEnsResolver, getEnsText } from 'viem/ens';
+import { useQuery } from '@tanstack/react-query';
 import { CHAINS } from '@lidofinance/lido-ethereum-sdk';
 import { usePublicClient } from 'wagmi';
 import { useConfig } from 'config';
 import { STRATEGY_LAZY } from 'consts/react-query-strategies';
-import { useLidoQuery } from 'shared/hooks/use-lido-query';
 
 type EnsHashCheckReturn = {
   cid: string;
@@ -22,9 +22,9 @@ export const useRemoteVersion = () => {
 
   // we only need this as 'react query result' because of possible future ENS support
   // otherwise there is no fetch
-  const queryResult = useLidoQuery<EnsHashCheckReturn>({
+  const queryResult = useQuery<EnsHashCheckReturn>({
     queryKey: ['use-remote-version', externalConfigQueryReact.data],
-    strategy: STRATEGY_LAZY,
+    ...STRATEGY_LAZY,
     enabled: !!(data || error),
     queryFn: async (): Promise<EnsHashCheckReturn> => {
       if (data?.ens) {
@@ -64,14 +64,10 @@ export const useRemoteVersion = () => {
   return {
     data: queryResult.data,
     get initialLoading() {
-      return (
-        queryResult.initialLoading ||
-        (externalConfigQueryReact.data == null &&
-          externalConfigQueryReact.isValidating)
-      );
+      return queryResult.isLoading || externalConfigQueryReact.isLoading;
     },
     get loading() {
-      return queryResult.loading || externalConfigQueryReact.isValidating;
+      return queryResult.isFetching || externalConfigQueryReact.isFetching;
     },
     get error() {
       return queryResult.error || error;

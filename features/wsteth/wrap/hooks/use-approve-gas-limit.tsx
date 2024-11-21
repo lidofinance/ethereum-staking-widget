@@ -1,3 +1,4 @@
+import { useQuery } from '@tanstack/react-query';
 import { config } from 'config';
 import {
   STETH_L2_APPROVE_GAS_LIMIT,
@@ -5,7 +6,6 @@ import {
 } from 'consts/tx';
 import { STRATEGY_LAZY } from 'consts/react-query-strategies';
 
-import { useLidoQuery } from 'shared/hooks/use-lido-query';
 import { useLidoSDK, useDappStatus } from 'modules/web3';
 
 export const useApproveGasLimit = () => {
@@ -16,9 +16,9 @@ export const useApproveGasLimit = () => {
     ? STETH_L2_APPROVE_GAS_LIMIT
     : WSTETH_APPROVE_GAS_LIMIT;
 
-  const { data } = useLidoQuery<bigint | undefined>({
+  const { data } = useQuery<bigint | undefined>({
     queryKey: ['approve-wrap-gas-limit', isDappActiveOnL2, core.chainId],
-    strategy: STRATEGY_LAZY,
+    ...STRATEGY_LAZY,
     queryFn: async () => {
       try {
         const spender = await (isL2

@@ -11,12 +11,12 @@ export const useEthAmountByStethWsteth = ({
 }: useEthAmountByInputProps) => {
   const fallbackedAmount = amount ?? ZERO;
   const wsteth = isSteth ? undefined : fallbackedAmount;
-  const { data: stethByWstethBalance, loading } = useStETHByWstETH(wsteth);
+  const { data: stethByWstethBalance, isLoading } = useStETHByWstETH(wsteth);
 
   if (isSteth)
     return {
       amount: fallbackedAmount ?? ZERO,
       loading: false,
     };
-  else return { amount: stethByWstethBalance, loading };
+  else return { amount: stethByWstethBalance, isLoading };
 };

@@ -1,10 +1,11 @@
 import { useMemo } from 'react';
+import { useQuery } from '@tanstack/react-query';
+
+import { config } from 'config';
+import { STRATEGY_LAZY } from 'consts/react-query-strategies';
 import { useDebouncedValue } from 'shared/hooks/useDebouncedValue';
 import { useTxCostInUsd } from 'shared/hooks/use-tx-cost-in-usd';
 import { useDappStatus, useLidoSDK } from 'modules/web3';
-import { config } from 'config';
-import { STRATEGY_LAZY } from 'consts/react-query-strategies';
-import { useLidoQuery } from 'shared/hooks/use-lido-query';
 
 import { RequestStatusClaimable } from '../types/request-status';
 
@@ -28,11 +29,11 @@ export const useWithdrawClaimTxPrice = (requests: RequestStatusClaimable[]) => {
     [debouncedSortedSelectedRequests, address, withdraw.core.chainId],
   );
 
-  const { data: gasLimit, loading: isEstimateLoading } = useLidoQuery<bigint>({
+  const { data: gasLimit, isLoading: isEstimateLoading } = useQuery<bigint>({
     queryKey,
     enabled:
       !!chainId && !!address && debouncedSortedSelectedRequests.length > 0,
-    strategy: STRATEGY_LAZY,
+    ...STRATEGY_LAZY,
     queryFn: async () => {
       const sortedRequests = debouncedSortedSelectedRequests;
 

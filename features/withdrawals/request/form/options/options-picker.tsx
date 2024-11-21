@@ -41,13 +41,11 @@ const LidoButton: React.FC<OptionButtonProps> = ({ isActive, onClick }) => {
     name: ['amount', 'token'],
   });
   const isSteth = token === TOKENS_WITHDRAWABLE.stETH;
-  const { value: waitingTime, initialLoading } = useWaitingTime(
-    amount ? formatEther(amount) : '',
-    {
+  const { value: waitingTime, isLoading: isWaitingTimeLoading } =
+    useWaitingTime(amount ? formatEther(amount) : '', {
       isApproximate: true,
-    },
-  );
-  const { data: wstethAsSteth, initialLoading: isWstethAsStethLoading } =
+    });
+  const { data: wstethAsSteth, isLoading: isWstethAsStethLoading } =
     useStETHByWstETH(DEFAULT_VALUE_FOR_RATE);
 
   const ratioLoading = !isSteth && isWstethAsStethLoading;
@@ -76,7 +74,7 @@ const LidoButton: React.FC<OptionButtonProps> = ({ isActive, onClick }) => {
       </OptionsPickerRow>
       <OptionsPickerRow data-testid="lidoOptionWaitingTime">
         <OptionsPickerSubLabel>Waiting time:</OptionsPickerSubLabel>
-        {initialLoading ? <InlineLoaderSmall /> : waitingTime}
+        {isWaitingTimeLoading ? <InlineLoaderSmall /> : waitingTime}
       </OptionsPickerRow>
     </OptionsPickerButton>
   );

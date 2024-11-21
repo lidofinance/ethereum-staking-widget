@@ -16,7 +16,7 @@ import {
 export const useRequestFormDataContextValue = () => {
   const { revalidate: revalidateClaimData } = useClaimData();
 
-  const { data: stethTotalSupply, initialLoading: isTotalSupplyLoading } =
+  const { data: stethTotalSupply, isLoading: isTotalSupplyLoading } =
     useTotalSupply();
 
   const {
@@ -37,14 +37,12 @@ export const useRequestFormDataContextValue = () => {
   const {
     data: unfinalizedStETH,
     refetch: unfinalizedStETHUpdate,
-    initialLoading: isUnfinalizedStethLoading,
+    isLoading: isUnfinalizedStethLoading,
   } = useUnfinalizedStETH();
 
-  const {
-    data: maxAmountPerRequestWSteth,
-    initialLoading: isMaxWstethLoading,
-  } = useWstethBySteth(maxAmountPerRequestSteth);
-  const { data: minUnstakeWSteth, initialLoading: isMinWstethLoading } =
+  const { data: maxAmountPerRequestWSteth, isLoading: isMaxWstethLoading } =
+    useWstethBySteth(maxAmountPerRequestSteth);
+  const { data: minUnstakeWSteth, isLoading: isMinWstethLoading } =
     useWstethBySteth(minUnstakeSteth);
 
   const loading = useMemo(
@@ -85,8 +83,8 @@ export const useRequestFormDataContextValue = () => {
       balanceWSteth,
       maxAmountPerRequestWSteth,
       minUnstakeWSteth,
-      stethTotalSupply: stethTotalSupply?.totalEther,
-      unfinalizedStETH: unfinalizedStETH,
+      stethTotalSupply,
+      unfinalizedStETH,
       revalidateRequestFormData,
       loading,
     }),

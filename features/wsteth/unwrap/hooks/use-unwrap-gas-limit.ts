@@ -1,8 +1,8 @@
+import { useQuery } from '@tanstack/react-query';
 import { config } from 'config';
 import { UNWRAP_GAS_LIMIT, UNWRAP_L2_GAS_LIMIT } from 'consts/tx';
 import { STRATEGY_LAZY } from 'consts/react-query-strategies';
 import { useLidoSDK, useDappStatus } from 'modules/web3';
-import { useLidoQuery } from 'shared/hooks/use-lido-query';
 
 export const useUnwrapGasLimit = () => {
   const { isDappActiveOnL2 } = useDappStatus();
@@ -10,8 +10,9 @@ export const useUnwrapGasLimit = () => {
 
   const fallback = isDappActiveOnL2 ? UNWRAP_L2_GAS_LIMIT : UNWRAP_GAS_LIMIT;
 
-  const { data } = useLidoQuery<bigint>({
+  const { data } = useQuery<bigint>({
     queryKey: ['unwrap-gas-limit', isDappActiveOnL2, core.chainId],
+    ...STRATEGY_LAZY,
     queryFn: async () => {
       try {
         const contract = isL2
@@ -26,7 +27,6 @@ export const useUnwrapGasLimit = () => {
         return fallback;
       }
     },
-    strategy: STRATEGY_LAZY,
   });
 
   return data ?? fallback;

@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { useQuery } from '@tanstack/react-query';
 
 import { config } from 'config';
 import { STRATEGY_LAZY } from 'consts/react-query-strategies';
@@ -7,7 +8,6 @@ import { useDappStatus, useLidoSDK } from 'modules/web3';
 
 import { useTxCostInUsd } from 'shared/hooks/use-tx-cost-in-usd';
 import { useDebouncedValue } from 'shared/hooks/useDebouncedValue';
-import { useLidoQuery } from 'shared/hooks/use-lido-query';
 
 import { encodeURLQuery } from 'utils/encodeURLQuery';
 import { standardFetcher } from 'utils/standardFetcher';
@@ -49,12 +49,12 @@ export const useWithdrawRequestTxPrice = ({
     return `${basePath}/v1/estimate-gas?${params}`;
   }, [debouncedRequestCount, token]);
 
-  const { data: permitEstimateData, isLoading: permitLoading } = useLidoQuery<{
+  const { data: permitEstimateData, isLoading: permitLoading } = useQuery<{
     gasLimit: number;
   }>({
     queryKey: ['permit-estimate', url],
     enabled: !!chainId && !isApprovalFlow,
-    strategy: STRATEGY_LAZY,
+    ...STRATEGY_LAZY,
     queryFn: () => standardFetcher<{ gasLimit: number }>(url),
   });
 
@@ -63,14 +63,14 @@ export const useWithdrawRequestTxPrice = ({
     : undefined;
 
   const { data: approvalFlowGasLimit, isLoading: approvalLoading } =
-    useLidoQuery<bigint>({
+    useQuery<bigint>({
       queryKey: [
         'approval-flow-gas-limit',
         debouncedRequestCount,
         withdraw.core.chainId,
       ],
       enabled: !!chainId && isApprovalFlow,
-      strategy: STRATEGY_LAZY,
+      ...STRATEGY_LAZY,
       queryFn: async () => {
         const contract = await withdraw.contract.getContractWithdrawalQueue();
         const requestsStub = Array.from<bigint>({

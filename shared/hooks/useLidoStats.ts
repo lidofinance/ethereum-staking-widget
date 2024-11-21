@@ -1,9 +1,9 @@
 import { useMemo } from 'react';
+import { useQuery } from '@tanstack/react-query';
 
 import { ETH_API_ROUTES, getEthApiPath } from 'consts/api';
 import { DATA_UNAVAILABLE } from 'consts/text';
 import { STRATEGY_LAZY } from 'consts/react-query-strategies';
-import { useLidoQuery } from 'shared/hooks/use-lido-query';
 import { standardFetcher } from 'utils/standardFetcher';
 
 type ResponseData = {
@@ -19,14 +19,14 @@ export const useLidoStats = (): {
     stakers: string;
     marketCap: string;
   };
-  initialLoading: boolean;
+  isLoading: boolean;
 } => {
   const url = getEthApiPath(ETH_API_ROUTES.STETH_STATS);
 
-  const { data: rawData, initialLoading } = useLidoQuery<ResponseData>({
+  const { data: rawData, isLoading } = useQuery<ResponseData>({
     queryKey: ['lido-stats', url],
     queryFn: () => standardFetcher<ResponseData>(url),
-    strategy: STRATEGY_LAZY,
+    ...STRATEGY_LAZY,
   });
 
   const data = useMemo(() => {
@@ -45,6 +45,6 @@ export const useLidoStats = (): {
 
   return {
     data,
-    initialLoading,
+    isLoading,
   };
 };

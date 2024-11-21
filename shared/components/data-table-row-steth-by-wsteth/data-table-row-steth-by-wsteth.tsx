@@ -11,13 +11,13 @@ type DataTableRowStethByWstethProps = {
 export const DataTableRowStethByWsteth = ({
   toSymbol = 'stETH',
 }: DataTableRowStethByWstethProps) => {
-  const { data: stethByWsteth, initialLoading } = useStETHByWstETH(ONE_wstETH);
+  const { data: stethByWsteth, isLoading } = useStETHByWstETH(ONE_wstETH);
 
   return (
     <DataTableRow
       data-testid="exchangeRate"
       title="Exchange rate"
-      loading={initialLoading}
+      loading={isLoading}
     >
       {stethByWsteth ? (
         <>

@@ -1,10 +1,10 @@
 import { useMemo } from 'react';
+import { useQuery } from '@tanstack/react-query';
 
 import { config } from 'config';
 import { STRATEGY_EAGER } from 'consts/react-query-strategies';
 
 import { useWithdrawals } from 'features/withdrawals/contexts/withdrawals-context';
-import { useLidoQuery } from 'shared/hooks/use-lido-query';
 import { useDebouncedValue } from 'shared/hooks';
 
 import { encodeURLQuery } from 'utils/encodeURLQuery';
@@ -39,7 +39,7 @@ export const useWaitingTime = (
     return `${basePath}/v2/request-time/calculate${queryString}`;
   }, [debouncedAmount]);
 
-  const { data, error, initialLoading } = useLidoQuery<RequestTimeV2Dto>({
+  const { data, error, isLoading, isFetching } = useQuery<RequestTimeV2Dto>({
     queryKey: ['waiting-time', debouncedAmount],
     queryFn: () =>
       standardFetcher<RequestTimeV2Dto>(url, {
@@ -48,7 +48,7 @@ export const useWaitingTime = (
           'WQ-Request-Source': 'widget',
         },
       }),
-    strategy: STRATEGY_EAGER,
+    ...STRATEGY_EAGER,
     retry: (failureCount, e) => {
       if (e && e instanceof FetcherError && e.status === 400) {
         return false;
@@ -72,7 +72,8 @@ export const useWaitingTime = (
 
   return {
     ...data,
-    initialLoading,
+    isLoading,
+    isFetching,
     error,
     days,
     value,

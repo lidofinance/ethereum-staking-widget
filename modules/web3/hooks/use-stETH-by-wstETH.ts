@@ -19,8 +19,8 @@ export const useStETHByWstETH = (wsteth?: bigint | null) => {
 
   return {
     data,
-    initialLoading: isLoading && !data && !error,
-    loading: isLoading || isFetching,
+    isLoading,
+    isFetching,
     error,
     refetch,
   };

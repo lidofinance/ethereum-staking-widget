@@ -18,13 +18,13 @@ export const useTxCostInUsd = (gasLimit?: bigint, chainId?: number) => {
     txCostUsd: usdAmount,
 
     get initialLoading() {
-      return maxGasPriceState.initialLoading || ethUsdState.initialLoading;
+      return maxGasPriceState.initialLoading || ethUsdState.isLoading;
     },
     get error() {
       return maxGasPriceState.error || ethUsdState.error;
     },
     get loading() {
-      return maxGasPriceState.loading || ethUsdState.loading;
+      return maxGasPriceState.loading || ethUsdState.isLoading;
     },
     update() {
       return Promise.all([maxGasPriceState.update(), ethUsdState.update()]);
