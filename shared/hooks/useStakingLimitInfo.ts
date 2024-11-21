@@ -40,15 +40,22 @@ const getLimitLevel = (maxLimit: bigint, currentLimit: bigint) => {
 
 export const useStakingLimitInfo =
   (): UseLidoQueryResult<StakeLimitFullInfo> => {
-    const { stake } = useLidoSDK();
+    const { isL2, stake } = useLidoSDK();
+
+    const enabled = !!stake.core && !!stake.core.chainId && !isL2;
 
     return useLidoQuery<StakeLimitFullInfo>({
       queryKey: [
-        'query:getStakeLimitFullInfo',
-        stake.core.chain,
+        'get-stake-limit-full-info',
+        stake.core.chainId,
         config.enableQaHelpers,
       ],
+      enabled,
       queryFn: async () => {
+        if (!enabled) {
+          return;
+        }
+
         const shouldMock = config.enableQaHelpers;
         const mockDataString = window.localStorage.getItem(
           'getStakeLimitFullInfo',
