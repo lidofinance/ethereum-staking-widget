@@ -32,8 +32,9 @@ const abi = [
 export const checkRpcUrl = async (
   rpcUrl: string,
   chainId: CHAINS,
-  stethAddress?: string | Address,
+  stethAddress?: Address | string | null,
 ) => {
+  if (!stethAddress) return RPCErrorType.URL_IS_NOT_VALID; // TODO: L2 case
   if (!isUrl(rpcUrl)) return RPCErrorType.URL_IS_NOT_VALID;
 
   try {
