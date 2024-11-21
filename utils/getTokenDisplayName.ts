@@ -6,7 +6,7 @@ export const TOKEN_DISPLAY_NAMES = {
   [LIDO_TOKENS.wsteth]: 'wstETH',
 };
 
-export type TOKEN_DISPLAY_NAMES_TYPE = keyof typeof TOKEN_DISPLAY_NAMES;
+export type TOKEN_DISPLAY_NAMES = keyof typeof TOKEN_DISPLAY_NAMES;
 
-export const getTokenDisplayName = (token: TOKEN_DISPLAY_NAMES_TYPE) =>
+export const getTokenDisplayName = (token: TOKEN_DISPLAY_NAMES) =>
   TOKEN_DISPLAY_NAMES[token];

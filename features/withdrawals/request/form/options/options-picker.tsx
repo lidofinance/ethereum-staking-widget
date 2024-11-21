@@ -4,7 +4,7 @@ import { formatEther, parseEther } from 'viem';
 import { MATOMO_CLICK_EVENTS_TYPES } from 'consts/matomo-click-events';
 import { DATA_UNAVAILABLE } from 'consts/text';
 
-import { TOKENS_WITHDRAWABLE } from 'features/withdrawals/types/tokens-withdrawable';
+import { TOKENS_TO_WITHDRAWLS } from 'features/withdrawals/types/tokens-withdrawable';
 import { useWaitingTime } from 'features/withdrawals/hooks/useWaitingTime';
 import { useTvlError } from 'features/withdrawals/hooks/useTvlError';
 import { RequestFormInputType } from 'features/withdrawals/request/request-form-context';
@@ -40,7 +40,7 @@ const LidoButton: React.FC<OptionButtonProps> = ({ isActive, onClick }) => {
   const [amount, token] = useWatch<RequestFormInputType, ['amount', 'token']>({
     name: ['amount', 'token'],
   });
-  const isSteth = token === TOKENS_WITHDRAWABLE.stETH;
+  const isSteth = token === TOKENS_TO_WITHDRAWLS.stETH;
   const { value: waitingTime, isLoading: isWaitingTimeLoading } =
     useWaitingTime(amount ? formatEther(amount) : '', {
       isApproximate: true,

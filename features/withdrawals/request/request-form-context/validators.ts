@@ -2,7 +2,7 @@ import { formatEther } from 'viem';
 import invariant from 'tiny-invariant';
 import { Resolver } from 'react-hook-form';
 
-import { TOKENS_WITHDRAWABLE } from 'features/withdrawals/types/tokens-withdrawable';
+import { TOKENS_TO_WITHDRAWLS } from 'features/withdrawals/types/tokens-withdrawable';
 import {
   RequestFormValidationAsyncContextType,
   RequestFormInputType,
@@ -49,12 +49,12 @@ export class ValidationSplitRequest extends ValidationError {
   }
 }
 
-const messageMinUnstake = (min: bigint, token: TOKENS_WITHDRAWABLE) =>
+const messageMinUnstake = (min: bigint, token: TOKENS_TO_WITHDRAWLS) =>
   `Minimum withdraw amount is ${formatEther(min)} ${getTokenDisplayName(
     token,
   )}`;
 
-const messageMaxAmount = (max: bigint, token: TOKENS_WITHDRAWABLE) =>
+const messageMaxAmount = (max: bigint, token: TOKENS_TO_WITHDRAWLS) =>
   `Entered ${getTokenDisplayName(
     token,
   )} amount exceeds your available balance of ${formatEther(max)}`;
@@ -121,7 +121,7 @@ const transformContext = (
   context: RequestFormValidationAsyncContextType,
   values: RequestFormInputType,
 ) => {
-  const isSteth = values.token === TOKENS_WITHDRAWABLE.stETH;
+  const isSteth = values.token === TOKENS_TO_WITHDRAWLS.stETH;
   return {
     isSteth,
     balance: isSteth ? context.balanceSteth : context.balanceWSteth,

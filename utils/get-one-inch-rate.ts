@@ -1,10 +1,10 @@
 import { standardFetcher } from './standardFetcher';
 import { ETH_API_ROUTES, getEthApiPath } from 'consts/api';
-import { TOKENS_WRAPPABLE } from '../features/wsteth/shared/types';
-import { TOKENS_WITHDRAWABLE } from '../features/withdrawals/types/tokens-withdrawable';
+import { TOKENS_TO_WRAP } from 'features/wsteth/shared/types';
+import { TOKENS_TO_WITHDRAWLS } from '../features/withdrawals/types/tokens-withdrawable';
 
 type GetOneInchRateParams = {
-  token: TOKENS_WITHDRAWABLE | TOKENS_WRAPPABLE;
+  token: TOKENS_TO_WRAP | TOKENS_TO_WITHDRAWLS;
   amount?: bigint;
 };
 

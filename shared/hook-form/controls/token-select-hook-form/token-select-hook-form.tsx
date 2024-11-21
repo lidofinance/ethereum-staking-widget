@@ -5,14 +5,11 @@ import { Option, Eth, Steth, Wsteth, OptionValue } from '@lidofinance/lido-ui';
 import { getTokenDisplayName } from 'utils/getTokenDisplayName';
 import { isValidationErrorTypeValidate } from 'shared/hook-form/validation/validation-error';
 import { SelectIconStyle } from './styles';
-import {
-  TOKENS_TO_WRAP,
-  TOKENS_WRAPPABLE,
-} from '../../../../features/wsteth/shared/types';
+import { TOKENS_TO_WRAP } from 'features/wsteth/shared/types';
 
 export type TokenOption = {
   label?: string;
-  token: TOKENS_WRAPPABLE;
+  token: TOKENS_TO_WRAP;
 };
 
 const iconsMap = {
@@ -26,7 +23,7 @@ type TokenSelectHookFormProps = {
   fieldName?: string;
   resetField?: string;
   errorField?: string;
-  onChange?: (value: TOKENS_WRAPPABLE) => void;
+  onChange?: (value: TOKENS_TO_WRAP) => void;
   warning?: boolean;
   disabled?: boolean;
 };
@@ -40,7 +37,7 @@ export const TokenSelectHookForm = ({
   warning,
   disabled = false,
 }: TokenSelectHookFormProps) => {
-  const { field } = useController<Record<string, TOKENS_WRAPPABLE>>({
+  const { field } = useController<Record<string, TOKENS_TO_WRAP>>({
     name: fieldName,
   });
   const { setValue, clearErrors } = useFormContext();
@@ -69,7 +66,7 @@ export const TokenSelectHookForm = ({
           shouldValidate: false,
         });
         clearErrors(resetField);
-        onChange?.(value as TOKENS_WRAPPABLE);
+        onChange?.(value as TOKENS_TO_WRAP);
       }}
     >
       {options.map(({ label, token }) => (

@@ -14,7 +14,7 @@ import {
   useRequestFormData,
   useValidationResults,
 } from '../request-form-context';
-import { TOKENS_WITHDRAWABLE } from '../../types/tokens-withdrawable';
+import { TOKENS_TO_WITHDRAWLS } from '../../types/tokens-withdrawable';
 
 export const TransactionInfo = () => {
   const { isDappActive } = useDappStatus();
@@ -61,7 +61,7 @@ export const TransactionInfo = () => {
         isBlank={!isDappActive}
         loading={isApprovalFlowLoading}
       />
-      {token === TOKENS_WITHDRAWABLE.stETH ? (
+      {token === TOKENS_TO_WITHDRAWLS.stETH ? (
         <DataTableRow data-testid="exchangeRate" title="Exchange rate">
           1 stETH = 1 ETH
         </DataTableRow>

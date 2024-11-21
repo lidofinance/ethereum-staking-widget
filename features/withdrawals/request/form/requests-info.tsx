@@ -8,7 +8,7 @@ import {
 } from '../request-form-context';
 import { RequestsInfoStyled, RequestsInfoDescStyled } from './styles';
 import { ValidationSplitRequest } from '../request-form-context/validators';
-import { TOKENS_WITHDRAWABLE } from '../../types/tokens-withdrawable';
+import { TOKENS_TO_WITHDRAWLS } from '../../types/tokens-withdrawable';
 
 export const RequestsInfo = () => {
   const { errors } = useFormState<RequestFormInputType>();
@@ -26,7 +26,7 @@ export const RequestsInfo = () => {
 
   const requestCount = requests?.length ?? 0;
   const maxPerTx =
-    token === TOKENS_WITHDRAWABLE.stETH
+    token === TOKENS_TO_WITHDRAWLS.stETH
       ? maxAmountPerRequestSteth
       : maxAmountPerRequestWSteth;
 

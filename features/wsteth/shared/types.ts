@@ -7,5 +7,4 @@ export const TOKENS_TO_WRAP = {
   [LIDO_TOKENS.wsteth]: LIDO_TOKENS.wsteth,
 } as const;
 
-// TokensWrappable
-export type TOKENS_WRAPPABLE = keyof typeof TOKENS_TO_WRAP;
+export type TOKENS_TO_WRAP = keyof typeof TOKENS_TO_WRAP;

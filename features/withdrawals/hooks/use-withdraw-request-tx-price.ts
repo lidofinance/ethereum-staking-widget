@@ -12,11 +12,11 @@ import { useDebouncedValue } from 'shared/hooks/useDebouncedValue';
 import { encodeURLQuery } from 'utils/encodeURLQuery';
 import { standardFetcher } from 'utils/standardFetcher';
 
-import { TOKENS_WITHDRAWABLE } from '../types/tokens-withdrawable';
+import { TOKENS_TO_WITHDRAWLS } from '../types/tokens-withdrawable';
 
 type UseRequestTxPriceOptions = {
   requestCount?: number;
-  token: TOKENS_WITHDRAWABLE;
+  token: TOKENS_TO_WITHDRAWLS;
   isApprovalFlow: boolean;
 };
 
@@ -29,7 +29,7 @@ export const useWithdrawRequestTxPrice = ({
   const { withdraw } = useLidoSDK();
 
   const fallback =
-    token === TOKENS_WITHDRAWABLE.stETH
+    token === TOKENS_TO_WITHDRAWLS.stETH
       ? isApprovalFlow
         ? config.WITHDRAWAL_QUEUE_REQUEST_STETH_APPROVED_GAS_LIMIT_DEFAULT
         : config.WITHDRAWAL_QUEUE_REQUEST_STETH_PERMIT_GAS_LIMIT_DEFAULT

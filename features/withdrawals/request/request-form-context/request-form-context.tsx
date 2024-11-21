@@ -26,7 +26,7 @@ import {
   RequestFormValidationContextType,
   ValidationResults,
 } from './types';
-import { TOKENS_WITHDRAWABLE } from '../../types/tokens-withdrawable';
+import { TOKENS_TO_WITHDRAWLS } from '../../types/tokens-withdrawable';
 
 //
 // data context
@@ -75,7 +75,7 @@ export const RequestFormProvider: FC<PropsWithChildren> = ({ children }) => {
   >({
     defaultValues: {
       amount: null,
-      token: TOKENS_WITHDRAWABLE.stETH,
+      token: TOKENS_TO_WITHDRAWLS.stETH,
       mode: 'lido',
       requests: null,
     },
@@ -108,7 +108,7 @@ export const RequestFormProvider: FC<PropsWithChildren> = ({ children }) => {
   });
 
   const maxAmount =
-    token === TOKENS_WITHDRAWABLE.stETH ? balanceSteth : balanceWSteth;
+    token === TOKENS_TO_WITHDRAWLS.stETH ? balanceSteth : balanceWSteth;
 
   const value = useMemo(
     (): RequestFormDataContextValueType => ({

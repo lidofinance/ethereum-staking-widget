@@ -3,7 +3,7 @@ import { useQuery, UseQueryResult } from '@tanstack/react-query';
 
 import { STRATEGY_EAGER } from 'consts/react-query-strategies';
 import { useLidoSDK } from 'modules/web3';
-import { TOKENS_WITHDRAWABLE } from 'features/withdrawals/types/tokens-withdrawable';
+import { TOKENS_TO_WITHDRAWLS } from 'features/withdrawals/types/tokens-withdrawable';
 
 export type UseApproveResponse = {
   allowance?: bigint;
@@ -14,7 +14,7 @@ export type UseApproveResponse = {
 
 export const useWithdrawalApprove = (
   amount: bigint,
-  token: TOKENS_WITHDRAWABLE,
+  token: TOKENS_TO_WITHDRAWLS,
   account?: Address,
 ): UseApproveResponse => {
   const { withdraw } = useLidoSDK();

@@ -7,7 +7,7 @@ import { getGeneralTransactionModalStages } from 'shared/transaction-modal/hooks
 import { TxStageSignOperationAmount } from 'shared/transaction-modal/tx-stages-composed/tx-stage-amount-operation';
 import { TxStageOperationSucceedBalanceShown } from 'shared/transaction-modal/tx-stages-composed/tx-stage-operation-succeed-balance-shown';
 
-import type { TOKENS_WRAPPABLE } from 'features/wsteth/shared/types';
+import { TOKENS_TO_WRAP } from 'features/wsteth/shared/types';
 import { getTokenDisplayName } from 'utils/getTokenDisplayName';
 
 const STAGE_APPROVE_ARGS = {
@@ -23,7 +23,7 @@ const STAGE_OPERATION_ARGS = {
 const getTxModalStagesWrap = (transitStage: TransactionModalTransitStage) => ({
   ...getGeneralTransactionModalStages(transitStage),
 
-  signApproval: (amount: bigint, token: TOKENS_WRAPPABLE) =>
+  signApproval: (amount: bigint, token: TOKENS_TO_WRAP) =>
     transitStage(
       <TxStageSignOperationAmount
         {...STAGE_APPROVE_ARGS}
@@ -32,11 +32,7 @@ const getTxModalStagesWrap = (transitStage: TransactionModalTransitStage) => ({
       />,
     ),
 
-  pendingApproval: (
-    amount: bigint,
-    token: TOKENS_WRAPPABLE,
-    txHash?: Address,
-  ) =>
+  pendingApproval: (amount: bigint, token: TOKENS_TO_WRAP, txHash?: Address) =>
     transitStage(
       <TxStageSignOperationAmount
         {...STAGE_APPROVE_ARGS}
@@ -47,7 +43,7 @@ const getTxModalStagesWrap = (transitStage: TransactionModalTransitStage) => ({
       />,
     ),
 
-  sign: (amount: bigint, token: TOKENS_WRAPPABLE, willReceive: bigint) =>
+  sign: (amount: bigint, token: TOKENS_TO_WRAP, willReceive: bigint) =>
     transitStage(
       <TxStageSignOperationAmount
         {...STAGE_OPERATION_ARGS}
@@ -59,7 +55,7 @@ const getTxModalStagesWrap = (transitStage: TransactionModalTransitStage) => ({
 
   pending: (
     amount: bigint,
-    token: TOKENS_WRAPPABLE,
+    token: TOKENS_TO_WRAP,
     willReceive: bigint,
     txHash?: Address,
   ) =>

@@ -1,9 +1,9 @@
 import { MATOMO_CLICK_EVENTS_TYPES } from 'consts/matomo-click-events';
-import { TOKENS_WITHDRAWABLE } from 'features/withdrawals/types/tokens-withdrawable';
+import { TOKENS_TO_WITHDRAWLS } from 'features/withdrawals/types/tokens-withdrawable';
 
 export type GetWithdrawalRateParams = {
   amount: bigint;
-  token: TOKENS_WITHDRAWABLE;
+  token: TOKENS_TO_WITHDRAWLS;
   dexes: DexWithdrawalApi[];
 };
 
@@ -24,7 +24,7 @@ export type DexWithdrawalIntegration = {
   fetcher: GetRateType;
   icon: React.FC;
   matomoEvent: MATOMO_CLICK_EVENTS_TYPES;
-  link: (amount: bigint, token: TOKENS_WITHDRAWABLE) => string;
+  link: (amount: bigint, token: TOKENS_TO_WITHDRAWLS) => string;
 };
 
 export type DexWithdrawalIntegrationMap = Record<

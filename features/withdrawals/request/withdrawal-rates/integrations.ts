@@ -36,7 +36,7 @@ import type {
   GetRateType,
   RateCalculationResult,
 } from './types';
-import { TOKENS_WITHDRAWABLE } from '../../types/tokens-withdrawable';
+import { TOKENS_TO_WITHDRAWLS } from '../../types/tokens-withdrawable';
 
 const RATE_PRECISION = 100000;
 const RATE_PRECISION_BIG_INT = BigInt(RATE_PRECISION);
@@ -191,7 +191,7 @@ const dexWithdrawalMap: DexWithdrawalIntegrationMap = {
     matomoEvent: MATOMO_CLICK_EVENTS_TYPES.withdrawalGoTo1inch,
     link: (amount, token) =>
       `https://app.1inch.io/#/1/advanced/swap/${
-        token === TOKENS_WITHDRAWABLE.stETH ? 'stETH' : 'wstETH'
+        token === TOKENS_TO_WITHDRAWLS.stETH ? 'stETH' : 'wstETH'
       }/ETH?mode=classic&sourceTokenAmount=${formatEther(amount)}`,
   },
   bebop: {

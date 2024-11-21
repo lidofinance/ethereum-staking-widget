@@ -11,7 +11,7 @@ import {
   StakeSwapDiscountIntegrationMap,
 } from './types';
 import { OpenOceanIcon, OneInchIcon, OverlayLink } from './styles';
-import { TOKENS_WITHDRAWABLE } from '../../withdrawals/types/tokens-withdrawable';
+import { TOKENS_TO_WITHDRAWLS } from '../../withdrawals/types/tokens-withdrawable';
 
 const DEFAULT_AMOUNT = parseEther('1');
 
@@ -22,7 +22,7 @@ const STAKE_SWAP_INTEGRATION_CONFIG: StakeSwapDiscountIntegrationMap = {
       const { rate } = await getOpenOceanRate(
         DEFAULT_AMOUNT,
         'ETH',
-        TOKENS_WITHDRAWABLE.stETH,
+        TOKENS_TO_WITHDRAWLS.stETH,
       );
       return rate;
     },

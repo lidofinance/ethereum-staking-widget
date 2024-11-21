@@ -9,7 +9,7 @@ import {
   TransactionCallbackStage,
 } from '@lidofinance/lido-ethereum-sdk';
 
-import { TOKENS_WITHDRAWABLE } from 'features/withdrawals/types/tokens-withdrawable';
+import { TOKENS_TO_WITHDRAWLS } from 'features/withdrawals/types/tokens-withdrawable';
 import { useWithdrawals } from 'features/withdrawals/contexts/withdrawals-context';
 import { useTxModalStagesRequest } from 'features/withdrawals/request/transaction-modal-request/use-tx-modal-stages-request';
 import { useTransactionModal } from 'shared/transaction-modal/transaction-modal';
@@ -20,7 +20,7 @@ import { useWithdrawalApprove } from './use-withdrawal-approve';
 
 type useWithdrawalRequestParams = {
   amount: bigint | null;
-  token: TOKENS_WITHDRAWABLE;
+  token: TOKENS_TO_WITHDRAWLS;
   onConfirm?: () => Promise<void>;
   onRetry?: () => void;
 };
@@ -74,7 +74,7 @@ export const useWithdrawalRequest = ({
     }: {
       requests: bigint[] | null;
       amount: bigint | null;
-      token: TOKENS_WITHDRAWABLE;
+      token: TOKENS_TO_WITHDRAWLS;
     }) => {
       invariant(requests && request.length > 0, 'cannot submit empty requests');
       invariant(amount, 'cannot submit empty amount');

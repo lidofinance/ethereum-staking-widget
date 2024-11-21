@@ -2,7 +2,7 @@ import { useMemo, useCallback } from 'react';
 
 import { TransactionCallbackStage } from '@lidofinance/lido-ethereum-sdk/core';
 
-import { TOKENS_WRAPPABLE, TOKENS_TO_WRAP } from 'features/wsteth/shared/types';
+import { TOKENS_TO_WRAP } from 'features/wsteth/shared/types';
 import {
   useAllowance,
   useDappStatus,
@@ -15,7 +15,7 @@ import { useTxModalWrap } from './use-tx-modal-stages-wrap';
 
 type UseWrapTxApproveArgs = {
   amount: bigint;
-  token: TOKENS_WRAPPABLE;
+  token: TOKENS_TO_WRAP;
 };
 
 export const useWrapTxOnL1Approve = ({

@@ -7,7 +7,7 @@ import { WalletWrapperStyled } from 'features/withdrawals/shared';
 import { CardAccount, CardRow, Fallback } from 'shared/wallet';
 
 import { RequestFormInputType } from '../request-form-context';
-import { TOKENS_WITHDRAWABLE } from '../../types/tokens-withdrawable';
+import { TOKENS_TO_WITHDRAWLS } from '../../types/tokens-withdrawable';
 
 import { WalletStethBalance } from './wallet-steth-balance';
 import { WalletWstethBalance } from './wallet-wsteth-balance';
@@ -15,7 +15,7 @@ import { WalletMode } from './wallet-mode';
 
 export const WalletComponent = () => {
   const token = useWatch<RequestFormInputType, 'token'>({ name: 'token' });
-  const isSteth = token === TOKENS_WITHDRAWABLE.stETH;
+  const isSteth = token === TOKENS_TO_WITHDRAWLS.stETH;
 
   return (
     <WalletWrapperStyled data-testid="requestCardSection">
