@@ -1,5 +1,6 @@
 /* eslint-disable unicorn/consistent-function-scoping */
-import { LIDO_TOKENS } from '@lidofinance/lido-ethereum-sdk/common';
+// TODO: There are problems with import LIDO_TOKENS
+// import { LIDO_TOKENS } from '@lidofinance/lido-ethereum-sdk/common';
 
 import { MAX_UINT_256 } from '../../../../modules/web3';
 import { validateBigintMax } from '../validate-bigint-max';
@@ -54,11 +55,13 @@ describe('validateBigintMin', () => {
 
 describe('validateEtherAmount', () => {
   it('should work', () => {
-    validateEtherAmount(field, BigInt(12), LIDO_TOKENS.steth);
+    // validateEtherAmount(field, BigInt(12), LIDO_TOKENS.steth);
+    validateEtherAmount(field, BigInt(12), 'stETH');
   });
 
   it('should throw right error on null amount', () => {
-    const fn = () => validateEtherAmount(field, undefined, LIDO_TOKENS.steth);
+    // const fn = () => validateEtherAmount(field, undefined, LIDO_TOKENS.steth);
+    const fn = () => validateEtherAmount(field, undefined, 'stETH');
     expect(fn).toThrowError();
     try {
       fn();
@@ -71,7 +74,8 @@ describe('validateEtherAmount', () => {
   });
 
   it('should throw right error on zero', () => {
-    const fn = () => validateEtherAmount(field, BigInt(0), LIDO_TOKENS.steth);
+    // const fn = () => validateEtherAmount(field, BigInt(0), LIDO_TOKENS.steth);
+    const fn = () => validateEtherAmount(field, BigInt(0), 'stETH');
     expect(fn).toThrowError();
     try {
       fn();
@@ -85,7 +89,8 @@ describe('validateEtherAmount', () => {
 
   it('should throw right error on more than ethereum max uint', () => {
     const fn = () =>
-      validateEtherAmount(field, MAX_UINT_256 + BigInt(1), LIDO_TOKENS.steth);
+      // validateEtherAmount(field, MAX_UINT_256 + BigInt(1), LIDO_TOKENS.steth);
+      validateEtherAmount(field, MAX_UINT_256 + BigInt(1), 'stETH');
     expect(fn).toThrowError();
     try {
       fn();
