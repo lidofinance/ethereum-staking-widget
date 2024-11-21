@@ -2,7 +2,7 @@ import { useStETHByWstETH, useWstethBySteth } from 'modules/web3';
 import { useDebouncedValue } from 'shared/hooks/useDebouncedValue';
 
 export const useDebouncedWstethBySteth = (
-  amount: bigint | undefined,
+  amount?: bigint | null,
   delay = 500,
 ) => {
   const fallbackedAmount = amount ?? BigInt(0);
@@ -10,7 +10,7 @@ export const useDebouncedWstethBySteth = (
   const isActualValue = fallbackedAmount === amountDebounced;
 
   const { data, initialLoading, loading, error, refetch } = useWstethBySteth(
-    amountDebounced && isActualValue ? amountDebounced : undefined,
+    isActualValue ? amountDebounced : null,
   );
 
   return {
@@ -33,7 +33,7 @@ export const useDebouncedWstethBySteth = (
 };
 
 export const useDebouncedStethByWsteth = (
-  amount: bigint | undefined,
+  amount?: bigint | null,
   delay = 500,
 ) => {
   const fallbackedAmount = amount ?? BigInt(0);
@@ -41,7 +41,7 @@ export const useDebouncedStethByWsteth = (
   const isActualValue = fallbackedAmount === amountDebounced;
 
   const { data, initialLoading, loading, error, refetch } = useStETHByWstETH(
-    amountDebounced && isActualValue ? amountDebounced : undefined,
+    isActualValue ? amountDebounced : null,
   );
 
   return {

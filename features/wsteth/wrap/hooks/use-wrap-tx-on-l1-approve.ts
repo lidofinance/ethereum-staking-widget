@@ -10,7 +10,6 @@ import {
   useStETHContractAddress,
   useWstETHContractAddress,
 } from 'modules/web3';
-import { isNonNegativeBigInt } from 'utils/is-non-negative-bigint';
 
 import { useTxModalWrap } from './use-tx-modal-stages-wrap';
 
@@ -42,8 +41,7 @@ export const useWrapTxOnL1Approve = ({
     token: staticTokenAddress,
   });
 
-  const needsApprove =
-    isNonNegativeBigInt(allowance) && amount > (allowance as bigint);
+  const needsApprove = allowance != null && amount > allowance;
 
   const isApprovalNeededBeforeWrap =
     isDappActiveOnL1 && needsApprove && token === TOKENS_TO_WRAP.stETH;

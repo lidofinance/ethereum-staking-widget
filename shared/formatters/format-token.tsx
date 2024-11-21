@@ -3,11 +3,10 @@ import { Tooltip } from '@lidofinance/lido-ui';
 import { DATA_UNAVAILABLE } from 'consts/text';
 import { Component } from 'types';
 import { FormatBalanceArgs, useFormattedBalance } from 'utils';
-import { isNonNegativeBigInt } from 'utils/is-non-negative-bigint';
 
 export type FormatTokenProps = FormatBalanceArgs & {
   symbol: string;
-  amount?: bigint;
+  amount?: bigint | null;
   approx?: boolean;
   showAmountTip?: boolean;
   fallback?: string;
@@ -26,14 +25,17 @@ export const FormatToken: FormatTokenComponent = ({
   adaptiveDecimals,
   ...rest
 }) => {
-  const { actual, isTrimmed, trimmed } = useFormattedBalance(amount, {
-    maxDecimalDigits,
-    maxTotalLength,
-    trimEllipsis,
-    adaptiveDecimals,
-  });
+  const { actual, isTrimmed, trimmed } = useFormattedBalance(
+    amount != null ? amount : undefined,
+    {
+      maxDecimalDigits,
+      maxTotalLength,
+      trimEllipsis,
+      adaptiveDecimals,
+    },
+  );
 
-  if (!isNonNegativeBigInt(amount)) return <span {...rest}>{fallback}</span>;
+  if (amount == null) return <span {...rest}>{fallback}</span>;
 
   const showTooltip = showAmountTip && isTrimmed;
 

@@ -34,16 +34,9 @@ export const SettingsForm = () => {
     },
   });
 
-  const {
-    data: stethAddress,
-    // TODO:
-    //  import { LIDO_CONTRACT_NAMES } from '@lidofinance/lido-ethereum-sdk/common';
-    //  ERROR: LIDO_CONTRACT_NAMES is undefined
-    //  ...
-    //  import type { LIDO_CONTRACT_NAMES } from '@lidofinance/lido-ethereum-sdk/common';
-    //  OK: LIDO_CONTRACT_NAMES is Type
-  } = useContractAddress('lido' as LIDO_CONTRACT_NAMES);
-  // console.log('SettingsForm stethAddress:', stethAddress);
+  const { data: stethAddress } = useContractAddress(
+    'lido' as LIDO_CONTRACT_NAMES,
+  );
 
   const {
     formState,

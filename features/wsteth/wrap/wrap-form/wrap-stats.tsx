@@ -28,8 +28,7 @@ export const WrapFormStats = () => {
   const {
     data: willReceiveWsteth,
     initialLoading: isWillReceiveWstethLoading,
-    // TODO: NEW SDK
-  } = useDebouncedWstethBySteth(amount ? amount : undefined);
+  } = useDebouncedWstethBySteth(amount);
 
   const {
     data: oneWstethConverted,

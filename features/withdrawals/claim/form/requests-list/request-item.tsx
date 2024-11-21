@@ -36,15 +36,9 @@ export const RequestItem = forwardRef<HTMLInputElement, RequestItemProps>(
       name: `requests.${index}`,
     });
 
-    const {
-      data: withdrawalQueueAddress,
-      // TODO:
-      //  import { LIDO_CONTRACT_NAMES } from '@lidofinance/lido-ethereum-sdk/common';
-      //  ERROR: LIDO_CONTRACT_NAMES is undefined
-      //  ...
-      //  import type { LIDO_CONTRACT_NAMES } from '@lidofinance/lido-ethereum-sdk/common';
-      //  OK: LIDO_CONTRACT_NAMES is Type
-    } = useContractAddress('withdrawalQueue' as LIDO_CONTRACT_NAMES);
+    const { data: withdrawalQueueAddress } = useContractAddress(
+      'withdrawalQueue' as LIDO_CONTRACT_NAMES,
+    );
 
     const isDisabled =
       disabled ||
