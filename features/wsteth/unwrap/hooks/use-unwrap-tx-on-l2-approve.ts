@@ -37,7 +37,7 @@ export const useUnwrapTxOnL2Approve = ({ amount }: UseUnwrapTxApproveArgs) => {
     async ({ onRetry }: { onRetry?: () => void }) => {
       const approveTxHash = await l2.approveWstethForWrap({
         value: amount,
-        callback: ({ stage, payload }) => {
+        callback: async ({ stage, payload }) => {
           switch (stage) {
             case TransactionCallbackStage.SIGN:
               txModalStages.signApproval(amount, TOKENS_TO_WRAP.ETH);

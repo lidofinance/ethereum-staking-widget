@@ -50,7 +50,7 @@ export const useWrapTxOnL1Approve = ({
     async ({ onRetry }: { onRetry?: () => void }) => {
       const approveTx = await wrap.approveStethForWrap({
         value: amount,
-        callback: ({ stage, payload }) => {
+        callback: async ({ stage, payload }) => {
           switch (stage) {
             case TransactionCallbackStage.SIGN:
               txModalStages.signApproval(amount, token);

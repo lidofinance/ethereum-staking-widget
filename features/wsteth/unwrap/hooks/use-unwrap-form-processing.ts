@@ -36,13 +36,6 @@ export const useUnwrapFormProcessor = ({
     processApproveTx: processApproveTxOnL2,
   } = approvalDataOnL2;
 
-  const showSuccessTxModal = useCallback(async () => {
-    const wstethBalance = await (isDappActiveOnL2
-      ? l2.steth.balance(address)
-      : stETH.balance(address));
-    txModalStages.success(wstethBalance, txHashRef.current);
-  }, [address, isDappActiveOnL2, l2.steth, stETH, txModalStages]);
-
   return useCallback(
     async ({ amount }: UnwrapFormInputType) => {
       try {
@@ -61,18 +54,24 @@ export const useUnwrapFormProcessor = ({
           // The operation 'wstETH to stETH' on L2 is 'wrap'
           await l2.wrapWstethToSteth({
             value: amount,
-            callback: ({ stage, payload }) => {
+            callback: async ({ stage, payload }) => {
               switch (stage) {
                 case TransactionCallbackStage.SIGN:
                   txModalStages.sign(amount, willReceive);
                   break;
                 case TransactionCallbackStage.RECEIPT:
+                  // the payload here is txHash
                   txModalStages.pending(amount, willReceive, payload);
-                  txHashRef.current = payload; // the payload here is txHash
+                  txHashRef.current = payload;
                   break;
                 case TransactionCallbackStage.DONE:
-                  void onConfirm?.();
-                  void showSuccessTxModal();
+                  await onConfirm?.();
+                  txModalStages.success(
+                    await (isDappActiveOnL2
+                      ? l2.steth.balance(address)
+                      : stETH.balance(address)),
+                    txHashRef.current,
+                  );
                   break;
                 case TransactionCallbackStage.MULTISIG_DONE:
                   txModalStages.successMultisig();
@@ -87,7 +86,7 @@ export const useUnwrapFormProcessor = ({
         } else {
           await wrap.unwrap({
             value: amount,
-            callback: ({ stage, payload }) => {
+            callback: async ({ stage, payload }) => {
               switch (stage) {
                 case TransactionCallbackStage.SIGN:
                   txModalStages.sign(amount, willReceive);
@@ -97,8 +96,13 @@ export const useUnwrapFormProcessor = ({
                   txHashRef.current = payload; // the payload here is txHash
                   break;
                 case TransactionCallbackStage.DONE:
-                  void onConfirm?.();
-                  void showSuccessTxModal();
+                  await onConfirm?.();
+                  txModalStages.success(
+                    await (isDappActiveOnL2
+                      ? l2.steth.balance(address)
+                      : stETH.balance(address)),
+                    txHashRef.current,
+                  );
                   break;
                 case TransactionCallbackStage.MULTISIG_DONE:
                   txModalStages.successMultisig();
@@ -130,7 +134,7 @@ export const useUnwrapFormProcessor = ({
       onRetry,
       txModalStages,
       onConfirm,
-      showSuccessTxModal,
+      stETH,
       wrap,
     ],
   );
