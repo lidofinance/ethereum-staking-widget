@@ -19,6 +19,7 @@ import { LidoSDKShares } from '@lidofinance/lido-ethereum-sdk/shares';
 import { LidoSDKL2 } from '@lidofinance/lido-ethereum-sdk/l2';
 import { LidoSDKWrap } from '@lidofinance/lido-ethereum-sdk/wrap';
 import { LidoSDKWithdraw } from '@lidofinance/lido-ethereum-sdk/withdraw';
+import { LidoSDKStatistics } from '@lidofinance/lido-ethereum-sdk/statistics';
 
 import { config } from 'config';
 import { useTokenTransferSubscription } from 'modules/web3/hooks/use-balance';
@@ -33,6 +34,7 @@ type LidoSDKContextValue = {
   wrap: LidoSDKWrap;
   shares: LidoSDKShares;
   withdraw: LidoSDKWithdraw;
+  statistics: LidoSDKStatistics;
   chainId: CHAINS;
   isL2: boolean;
   subscribeToTokenUpdates: ReturnType<typeof useTokenTransferSubscription>;
@@ -89,6 +91,7 @@ export const LidoSDKProvider = ({ children }: React.PropsWithChildren) => {
     const shares = new LidoSDKShares({ core });
     const withdraw = new LidoSDKWithdraw({ core });
     const l2 = new LidoSDKL2({ core });
+    const statistics = new LidoSDKStatistics({ core });
 
     return {
       core,
@@ -99,6 +102,7 @@ export const LidoSDKProvider = ({ children }: React.PropsWithChildren) => {
       shares,
       withdraw,
       l2,
+      statistics,
       chainId: core.chainId,
       isL2: !!LIDO_L2_CONTRACT_ADDRESSES[chainId as CHAINS],
       subscribeToTokenUpdates: subscribe,
