@@ -1,422 +1,205 @@
-export declare const ENSRegistryAbi: readonly [
+export const ENSRegistryAbi = [
   {
-    readonly inputs: readonly [
-      {
-        readonly internalType: 'contract ENS';
-        readonly name: '_old';
-        readonly type: 'address';
-      },
-    ];
-    readonly payable: false;
-    readonly stateMutability: 'nonpayable';
-    readonly type: 'constructor';
+    inputs: [{ internalType: 'contract ENS', name: '_old', type: 'address' }],
+    stateMutability: 'nonpayable',
+    type: 'constructor',
   },
   {
-    readonly anonymous: false;
-    readonly inputs: readonly [
+    anonymous: false,
+    inputs: [
       {
-        readonly indexed: true;
-        readonly internalType: 'address';
-        readonly name: 'owner';
-        readonly type: 'address';
+        indexed: true,
+        internalType: 'address',
+        name: 'owner',
+        type: 'address',
       },
       {
-        readonly indexed: true;
-        readonly internalType: 'address';
-        readonly name: 'operator';
-        readonly type: 'address';
+        indexed: true,
+        internalType: 'address',
+        name: 'operator',
+        type: 'address',
       },
-      {
-        readonly indexed: false;
-        readonly internalType: 'bool';
-        readonly name: 'approved';
-        readonly type: 'bool';
-      },
-    ];
-    readonly name: 'ApprovalForAll';
-    readonly type: 'event';
+      { indexed: false, internalType: 'bool', name: 'approved', type: 'bool' },
+    ],
+    name: 'ApprovalForAll',
+    type: 'event',
   },
   {
-    readonly anonymous: false;
-    readonly inputs: readonly [
+    anonymous: false,
+    inputs: [
+      { indexed: true, internalType: 'bytes32', name: 'node', type: 'bytes32' },
       {
-        readonly indexed: true;
-        readonly internalType: 'bytes32';
-        readonly name: 'node';
-        readonly type: 'bytes32';
+        indexed: true,
+        internalType: 'bytes32',
+        name: 'label',
+        type: 'bytes32',
       },
       {
-        readonly indexed: true;
-        readonly internalType: 'bytes32';
-        readonly name: 'label';
-        readonly type: 'bytes32';
+        indexed: false,
+        internalType: 'address',
+        name: 'owner',
+        type: 'address',
       },
-      {
-        readonly indexed: false;
-        readonly internalType: 'address';
-        readonly name: 'owner';
-        readonly type: 'address';
-      },
-    ];
-    readonly name: 'NewOwner';
-    readonly type: 'event';
+    ],
+    name: 'NewOwner',
+    type: 'event',
   },
   {
-    readonly anonymous: false;
-    readonly inputs: readonly [
+    anonymous: false,
+    inputs: [
+      { indexed: true, internalType: 'bytes32', name: 'node', type: 'bytes32' },
       {
-        readonly indexed: true;
-        readonly internalType: 'bytes32';
-        readonly name: 'node';
-        readonly type: 'bytes32';
+        indexed: false,
+        internalType: 'address',
+        name: 'resolver',
+        type: 'address',
       },
-      {
-        readonly indexed: false;
-        readonly internalType: 'address';
-        readonly name: 'resolver';
-        readonly type: 'address';
-      },
-    ];
-    readonly name: 'NewResolver';
-    readonly type: 'event';
+    ],
+    name: 'NewResolver',
+    type: 'event',
   },
   {
-    readonly anonymous: false;
-    readonly inputs: readonly [
-      {
-        readonly indexed: true;
-        readonly internalType: 'bytes32';
-        readonly name: 'node';
-        readonly type: 'bytes32';
-      },
-      {
-        readonly indexed: false;
-        readonly internalType: 'uint64';
-        readonly name: 'ttl';
-        readonly type: 'uint64';
-      },
-    ];
-    readonly name: 'NewTTL';
-    readonly type: 'event';
+    anonymous: false,
+    inputs: [
+      { indexed: true, internalType: 'bytes32', name: 'node', type: 'bytes32' },
+      { indexed: false, internalType: 'uint64', name: 'ttl', type: 'uint64' },
+    ],
+    name: 'NewTTL',
+    type: 'event',
   },
   {
-    readonly anonymous: false;
-    readonly inputs: readonly [
+    anonymous: false,
+    inputs: [
+      { indexed: true, internalType: 'bytes32', name: 'node', type: 'bytes32' },
       {
-        readonly indexed: true;
-        readonly internalType: 'bytes32';
-        readonly name: 'node';
-        readonly type: 'bytes32';
+        indexed: false,
+        internalType: 'address',
+        name: 'owner',
+        type: 'address',
       },
-      {
-        readonly indexed: false;
-        readonly internalType: 'address';
-        readonly name: 'owner';
-        readonly type: 'address';
-      },
-    ];
-    readonly name: 'Transfer';
-    readonly type: 'event';
+    ],
+    name: 'Transfer',
+    type: 'event',
   },
   {
-    readonly constant: true;
-    readonly inputs: readonly [
-      {
-        readonly internalType: 'address';
-        readonly name: 'owner';
-        readonly type: 'address';
-      },
-      {
-        readonly internalType: 'address';
-        readonly name: 'operator';
-        readonly type: 'address';
-      },
-    ];
-    readonly name: 'isApprovedForAll';
-    readonly outputs: readonly [
-      {
-        readonly internalType: 'bool';
-        readonly name: '';
-        readonly type: 'bool';
-      },
-    ];
-    readonly payable: false;
-    readonly stateMutability: 'view';
-    readonly type: 'function';
+    inputs: [
+      { internalType: 'address', name: 'owner', type: 'address' },
+      { internalType: 'address', name: 'operator', type: 'address' },
+    ],
+    name: 'isApprovedForAll',
+    outputs: [{ internalType: 'bool', name: '', type: 'bool' }],
+    stateMutability: 'view',
+    type: 'function',
   },
   {
-    readonly constant: true;
-    readonly inputs: readonly [];
-    readonly name: 'old';
-    readonly outputs: readonly [
-      {
-        readonly internalType: 'contract ENS';
-        readonly name: '';
-        readonly type: 'address';
-      },
-    ];
-    readonly payable: false;
-    readonly stateMutability: 'view';
-    readonly type: 'function';
+    inputs: [],
+    name: 'old',
+    outputs: [{ internalType: 'contract ENS', name: '', type: 'address' }],
+    stateMutability: 'view',
+    type: 'function',
   },
   {
-    readonly constant: true;
-    readonly inputs: readonly [
-      {
-        readonly internalType: 'bytes32';
-        readonly name: 'node';
-        readonly type: 'bytes32';
-      },
-    ];
-    readonly name: 'owner';
-    readonly outputs: readonly [
-      {
-        readonly internalType: 'address';
-        readonly name: '';
-        readonly type: 'address';
-      },
-    ];
-    readonly payable: false;
-    readonly stateMutability: 'view';
-    readonly type: 'function';
+    inputs: [{ internalType: 'bytes32', name: 'node', type: 'bytes32' }],
+    name: 'owner',
+    outputs: [{ internalType: 'address', name: '', type: 'address' }],
+    stateMutability: 'view',
+    type: 'function',
   },
   {
-    readonly constant: true;
-    readonly inputs: readonly [
-      {
-        readonly internalType: 'bytes32';
-        readonly name: 'node';
-        readonly type: 'bytes32';
-      },
-    ];
-    readonly name: 'recordExists';
-    readonly outputs: readonly [
-      {
-        readonly internalType: 'bool';
-        readonly name: '';
-        readonly type: 'bool';
-      },
-    ];
-    readonly payable: false;
-    readonly stateMutability: 'view';
-    readonly type: 'function';
+    inputs: [{ internalType: 'bytes32', name: 'node', type: 'bytes32' }],
+    name: 'recordExists',
+    outputs: [{ internalType: 'bool', name: '', type: 'bool' }],
+    stateMutability: 'view',
+    type: 'function',
   },
   {
-    readonly constant: true;
-    readonly inputs: readonly [
-      {
-        readonly internalType: 'bytes32';
-        readonly name: 'node';
-        readonly type: 'bytes32';
-      },
-    ];
-    readonly name: 'resolver';
-    readonly outputs: readonly [
-      {
-        readonly internalType: 'address';
-        readonly name: '';
-        readonly type: 'address';
-      },
-    ];
-    readonly payable: false;
-    readonly stateMutability: 'view';
-    readonly type: 'function';
+    inputs: [{ internalType: 'bytes32', name: 'node', type: 'bytes32' }],
+    name: 'resolver',
+    outputs: [{ internalType: 'address', name: '', type: 'address' }],
+    stateMutability: 'view',
+    type: 'function',
   },
   {
-    readonly constant: false;
-    readonly inputs: readonly [
-      {
-        readonly internalType: 'address';
-        readonly name: 'operator';
-        readonly type: 'address';
-      },
-      {
-        readonly internalType: 'bool';
-        readonly name: 'approved';
-        readonly type: 'bool';
-      },
-    ];
-    readonly name: 'setApprovalForAll';
-    readonly outputs: readonly [];
-    readonly payable: false;
-    readonly stateMutability: 'nonpayable';
-    readonly type: 'function';
+    inputs: [
+      { internalType: 'address', name: 'operator', type: 'address' },
+      { internalType: 'bool', name: 'approved', type: 'bool' },
+    ],
+    name: 'setApprovalForAll',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
   },
   {
-    readonly constant: false;
-    readonly inputs: readonly [
-      {
-        readonly internalType: 'bytes32';
-        readonly name: 'node';
-        readonly type: 'bytes32';
-      },
-      {
-        readonly internalType: 'address';
-        readonly name: 'owner';
-        readonly type: 'address';
-      },
-    ];
-    readonly name: 'setOwner';
-    readonly outputs: readonly [];
-    readonly payable: false;
-    readonly stateMutability: 'nonpayable';
-    readonly type: 'function';
+    inputs: [
+      { internalType: 'bytes32', name: 'node', type: 'bytes32' },
+      { internalType: 'address', name: 'owner', type: 'address' },
+    ],
+    name: 'setOwner',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
   },
   {
-    readonly constant: false;
-    readonly inputs: readonly [
-      {
-        readonly internalType: 'bytes32';
-        readonly name: 'node';
-        readonly type: 'bytes32';
-      },
-      {
-        readonly internalType: 'address';
-        readonly name: 'owner';
-        readonly type: 'address';
-      },
-      {
-        readonly internalType: 'address';
-        readonly name: 'resolver';
-        readonly type: 'address';
-      },
-      {
-        readonly internalType: 'uint64';
-        readonly name: 'ttl';
-        readonly type: 'uint64';
-      },
-    ];
-    readonly name: 'setRecord';
-    readonly outputs: readonly [];
-    readonly payable: false;
-    readonly stateMutability: 'nonpayable';
-    readonly type: 'function';
+    inputs: [
+      { internalType: 'bytes32', name: 'node', type: 'bytes32' },
+      { internalType: 'address', name: 'owner', type: 'address' },
+      { internalType: 'address', name: 'resolver', type: 'address' },
+      { internalType: 'uint64', name: 'ttl', type: 'uint64' },
+    ],
+    name: 'setRecord',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
   },
   {
-    readonly constant: false;
-    readonly inputs: readonly [
-      {
-        readonly internalType: 'bytes32';
-        readonly name: 'node';
-        readonly type: 'bytes32';
-      },
-      {
-        readonly internalType: 'address';
-        readonly name: 'resolver';
-        readonly type: 'address';
-      },
-    ];
-    readonly name: 'setResolver';
-    readonly outputs: readonly [];
-    readonly payable: false;
-    readonly stateMutability: 'nonpayable';
-    readonly type: 'function';
+    inputs: [
+      { internalType: 'bytes32', name: 'node', type: 'bytes32' },
+      { internalType: 'address', name: 'resolver', type: 'address' },
+    ],
+    name: 'setResolver',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
   },
   {
-    readonly constant: false;
-    readonly inputs: readonly [
-      {
-        readonly internalType: 'bytes32';
-        readonly name: 'node';
-        readonly type: 'bytes32';
-      },
-      {
-        readonly internalType: 'bytes32';
-        readonly name: 'label';
-        readonly type: 'bytes32';
-      },
-      {
-        readonly internalType: 'address';
-        readonly name: 'owner';
-        readonly type: 'address';
-      },
-    ];
-    readonly name: 'setSubnodeOwner';
-    readonly outputs: readonly [
-      {
-        readonly internalType: 'bytes32';
-        readonly name: '';
-        readonly type: 'bytes32';
-      },
-    ];
-    readonly payable: false;
-    readonly stateMutability: 'nonpayable';
-    readonly type: 'function';
+    inputs: [
+      { internalType: 'bytes32', name: 'node', type: 'bytes32' },
+      { internalType: 'bytes32', name: 'label', type: 'bytes32' },
+      { internalType: 'address', name: 'owner', type: 'address' },
+    ],
+    name: 'setSubnodeOwner',
+    outputs: [{ internalType: 'bytes32', name: '', type: 'bytes32' }],
+    stateMutability: 'nonpayable',
+    type: 'function',
   },
   {
-    readonly constant: false;
-    readonly inputs: readonly [
-      {
-        readonly internalType: 'bytes32';
-        readonly name: 'node';
-        readonly type: 'bytes32';
-      },
-      {
-        readonly internalType: 'bytes32';
-        readonly name: 'label';
-        readonly type: 'bytes32';
-      },
-      {
-        readonly internalType: 'address';
-        readonly name: 'owner';
-        readonly type: 'address';
-      },
-      {
-        readonly internalType: 'address';
-        readonly name: 'resolver';
-        readonly type: 'address';
-      },
-      {
-        readonly internalType: 'uint64';
-        readonly name: 'ttl';
-        readonly type: 'uint64';
-      },
-    ];
-    readonly name: 'setSubnodeRecord';
-    readonly outputs: readonly [];
-    readonly payable: false;
-    readonly stateMutability: 'nonpayable';
-    readonly type: 'function';
+    inputs: [
+      { internalType: 'bytes32', name: 'node', type: 'bytes32' },
+      { internalType: 'bytes32', name: 'label', type: 'bytes32' },
+      { internalType: 'address', name: 'owner', type: 'address' },
+      { internalType: 'address', name: 'resolver', type: 'address' },
+      { internalType: 'uint64', name: 'ttl', type: 'uint64' },
+    ],
+    name: 'setSubnodeRecord',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
   },
   {
-    readonly constant: false;
-    readonly inputs: readonly [
-      {
-        readonly internalType: 'bytes32';
-        readonly name: 'node';
-        readonly type: 'bytes32';
-      },
-      {
-        readonly internalType: 'uint64';
-        readonly name: 'ttl';
-        readonly type: 'uint64';
-      },
-    ];
-    readonly name: 'setTTL';
-    readonly outputs: readonly [];
-    readonly payable: false;
-    readonly stateMutability: 'nonpayable';
-    readonly type: 'function';
+    inputs: [
+      { internalType: 'bytes32', name: 'node', type: 'bytes32' },
+      { internalType: 'uint64', name: 'ttl', type: 'uint64' },
+    ],
+    name: 'setTTL',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
   },
   {
-    readonly constant: true;
-    readonly inputs: readonly [
-      {
-        readonly internalType: 'bytes32';
-        readonly name: 'node';
-        readonly type: 'bytes32';
-      },
-    ];
-    readonly name: 'ttl';
-    readonly outputs: readonly [
-      {
-        readonly internalType: 'uint64';
-        readonly name: '';
-        readonly type: 'uint64';
-      },
-    ];
-    readonly payable: false;
-    readonly stateMutability: 'view';
-    readonly type: 'function';
+    inputs: [{ internalType: 'bytes32', name: 'node', type: 'bytes32' }],
+    name: 'ttl',
+    outputs: [{ internalType: 'uint64', name: '', type: 'uint64' }],
+    stateMutability: 'view',
+    type: 'function',
   },
-];
+] as const;

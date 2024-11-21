@@ -1,353 +1,201 @@
-export declare const AggregatorAbi: readonly [
+export const AggregatorAbi = [
   {
-    readonly inputs: readonly [
-      {
-        readonly internalType: 'address';
-        readonly name: '_aggregator';
-        readonly type: 'address';
-      },
-      {
-        readonly internalType: 'address';
-        readonly name: '_accessController';
-        readonly type: 'address';
-      },
-    ];
-    readonly stateMutability: 'nonpayable';
-    readonly type: 'constructor';
+    inputs: [
+      { internalType: 'address', name: '_aggregator', type: 'address' },
+      { internalType: 'address', name: '_accessController', type: 'address' },
+    ],
+    stateMutability: 'nonpayable',
+    type: 'constructor',
   },
   {
-    readonly anonymous: false;
-    readonly inputs: readonly [
+    anonymous: false,
+    inputs: [
       {
-        readonly indexed: true;
-        readonly internalType: 'int256';
-        readonly name: 'current';
-        readonly type: 'int256';
+        indexed: true,
+        internalType: 'int256',
+        name: 'current',
+        type: 'int256',
       },
       {
-        readonly indexed: true;
-        readonly internalType: 'uint256';
-        readonly name: 'roundId';
-        readonly type: 'uint256';
+        indexed: true,
+        internalType: 'uint256',
+        name: 'roundId',
+        type: 'uint256',
       },
       {
-        readonly indexed: false;
-        readonly internalType: 'uint256';
-        readonly name: 'updatedAt';
-        readonly type: 'uint256';
+        indexed: false,
+        internalType: 'uint256',
+        name: 'updatedAt',
+        type: 'uint256',
       },
-    ];
-    readonly name: 'AnswerUpdated';
-    readonly type: 'event';
+    ],
+    name: 'AnswerUpdated',
+    type: 'event',
   },
   {
-    readonly anonymous: false;
-    readonly inputs: readonly [
+    anonymous: false,
+    inputs: [
       {
-        readonly indexed: true;
-        readonly internalType: 'uint256';
-        readonly name: 'roundId';
-        readonly type: 'uint256';
+        indexed: true,
+        internalType: 'uint256',
+        name: 'roundId',
+        type: 'uint256',
       },
       {
-        readonly indexed: true;
-        readonly internalType: 'address';
-        readonly name: 'startedBy';
-        readonly type: 'address';
+        indexed: true,
+        internalType: 'address',
+        name: 'startedBy',
+        type: 'address',
       },
       {
-        readonly indexed: false;
-        readonly internalType: 'uint256';
-        readonly name: 'startedAt';
-        readonly type: 'uint256';
+        indexed: false,
+        internalType: 'uint256',
+        name: 'startedAt',
+        type: 'uint256',
       },
-    ];
-    readonly name: 'NewRound';
-    readonly type: 'event';
+    ],
+    name: 'NewRound',
+    type: 'event',
   },
   {
-    readonly anonymous: false;
-    readonly inputs: readonly [
-      {
-        readonly indexed: true;
-        readonly internalType: 'address';
-        readonly name: 'from';
-        readonly type: 'address';
-      },
-      {
-        readonly indexed: true;
-        readonly internalType: 'address';
-        readonly name: 'to';
-        readonly type: 'address';
-      },
-    ];
-    readonly name: 'OwnershipTransferRequested';
-    readonly type: 'event';
+    anonymous: false,
+    inputs: [
+      { indexed: true, internalType: 'address', name: 'from', type: 'address' },
+      { indexed: true, internalType: 'address', name: 'to', type: 'address' },
+    ],
+    name: 'OwnershipTransferRequested',
+    type: 'event',
   },
   {
-    readonly anonymous: false;
-    readonly inputs: readonly [
-      {
-        readonly indexed: true;
-        readonly internalType: 'address';
-        readonly name: 'from';
-        readonly type: 'address';
-      },
-      {
-        readonly indexed: true;
-        readonly internalType: 'address';
-        readonly name: 'to';
-        readonly type: 'address';
-      },
-    ];
-    readonly name: 'OwnershipTransferred';
-    readonly type: 'event';
+    anonymous: false,
+    inputs: [
+      { indexed: true, internalType: 'address', name: 'from', type: 'address' },
+      { indexed: true, internalType: 'address', name: 'to', type: 'address' },
+    ],
+    name: 'OwnershipTransferred',
+    type: 'event',
   },
   {
-    readonly inputs: readonly [];
-    readonly name: 'acceptOwnership';
-    readonly outputs: readonly [];
-    readonly stateMutability: 'nonpayable';
-    readonly type: 'function';
+    inputs: [],
+    name: 'acceptOwnership',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
   },
   {
-    readonly inputs: readonly [];
-    readonly name: 'accessController';
-    readonly outputs: readonly [
+    inputs: [],
+    name: 'accessController',
+    outputs: [
       {
-        readonly internalType: 'contract AccessControllerInterface';
-        readonly name: '';
-        readonly type: 'address';
+        internalType: 'contract AccessControllerInterface',
+        name: '',
+        type: 'address',
       },
-    ];
-    readonly stateMutability: 'view';
-    readonly type: 'function';
+    ],
+    stateMutability: 'view',
+    type: 'function',
   },
   {
-    readonly inputs: readonly [];
-    readonly name: 'aggregator';
-    readonly outputs: readonly [
-      {
-        readonly internalType: 'address';
-        readonly name: '';
-        readonly type: 'address';
-      },
-    ];
-    readonly stateMutability: 'view';
-    readonly type: 'function';
+    inputs: [],
+    name: 'aggregator',
+    outputs: [{ internalType: 'address', name: '', type: 'address' }],
+    stateMutability: 'view',
+    type: 'function',
   },
   {
-    readonly inputs: readonly [
-      {
-        readonly internalType: 'address';
-        readonly name: '_aggregator';
-        readonly type: 'address';
-      },
-    ];
-    readonly name: 'confirmAggregator';
-    readonly outputs: readonly [];
-    readonly stateMutability: 'nonpayable';
-    readonly type: 'function';
+    inputs: [{ internalType: 'address', name: '_aggregator', type: 'address' }],
+    name: 'confirmAggregator',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
   },
   {
-    readonly inputs: readonly [];
-    readonly name: 'decimals';
-    readonly outputs: readonly [
-      {
-        readonly internalType: 'uint8';
-        readonly name: '';
-        readonly type: 'uint8';
-      },
-    ];
-    readonly stateMutability: 'view';
-    readonly type: 'function';
+    inputs: [],
+    name: 'decimals',
+    outputs: [{ internalType: 'uint8', name: '', type: 'uint8' }],
+    stateMutability: 'view',
+    type: 'function',
   },
   {
-    readonly inputs: readonly [];
-    readonly name: 'description';
-    readonly outputs: readonly [
-      {
-        readonly internalType: 'string';
-        readonly name: '';
-        readonly type: 'string';
-      },
-    ];
-    readonly stateMutability: 'view';
-    readonly type: 'function';
+    inputs: [],
+    name: 'description',
+    outputs: [{ internalType: 'string', name: '', type: 'string' }],
+    stateMutability: 'view',
+    type: 'function',
   },
   {
-    readonly inputs: readonly [
-      {
-        readonly internalType: 'uint256';
-        readonly name: '_roundId';
-        readonly type: 'uint256';
-      },
-    ];
-    readonly name: 'getAnswer';
-    readonly outputs: readonly [
-      {
-        readonly internalType: 'int256';
-        readonly name: '';
-        readonly type: 'int256';
-      },
-    ];
-    readonly stateMutability: 'view';
-    readonly type: 'function';
+    inputs: [{ internalType: 'uint256', name: '_roundId', type: 'uint256' }],
+    name: 'getAnswer',
+    outputs: [{ internalType: 'int256', name: '', type: 'int256' }],
+    stateMutability: 'view',
+    type: 'function',
   },
   {
-    readonly inputs: readonly [
-      {
-        readonly internalType: 'uint80';
-        readonly name: '_roundId';
-        readonly type: 'uint80';
-      },
-    ];
-    readonly name: 'getRoundData';
-    readonly outputs: readonly [
-      {
-        readonly internalType: 'uint80';
-        readonly name: 'roundId';
-        readonly type: 'uint80';
-      },
-      {
-        readonly internalType: 'int256';
-        readonly name: 'answer';
-        readonly type: 'int256';
-      },
-      {
-        readonly internalType: 'uint256';
-        readonly name: 'startedAt';
-        readonly type: 'uint256';
-      },
-      {
-        readonly internalType: 'uint256';
-        readonly name: 'updatedAt';
-        readonly type: 'uint256';
-      },
-      {
-        readonly internalType: 'uint80';
-        readonly name: 'answeredInRound';
-        readonly type: 'uint80';
-      },
-    ];
-    readonly stateMutability: 'view';
-    readonly type: 'function';
+    inputs: [{ internalType: 'uint80', name: '_roundId', type: 'uint80' }],
+    name: 'getRoundData',
+    outputs: [
+      { internalType: 'uint80', name: 'roundId', type: 'uint80' },
+      { internalType: 'int256', name: 'answer', type: 'int256' },
+      { internalType: 'uint256', name: 'startedAt', type: 'uint256' },
+      { internalType: 'uint256', name: 'updatedAt', type: 'uint256' },
+      { internalType: 'uint80', name: 'answeredInRound', type: 'uint80' },
+    ],
+    stateMutability: 'view',
+    type: 'function',
   },
   {
-    readonly inputs: readonly [
-      {
-        readonly internalType: 'uint256';
-        readonly name: '_roundId';
-        readonly type: 'uint256';
-      },
-    ];
-    readonly name: 'getTimestamp';
-    readonly outputs: readonly [
-      {
-        readonly internalType: 'uint256';
-        readonly name: '';
-        readonly type: 'uint256';
-      },
-    ];
-    readonly stateMutability: 'view';
-    readonly type: 'function';
+    inputs: [{ internalType: 'uint256', name: '_roundId', type: 'uint256' }],
+    name: 'getTimestamp',
+    outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
+    stateMutability: 'view',
+    type: 'function',
   },
   {
-    readonly inputs: readonly [];
-    readonly name: 'latestAnswer';
-    readonly outputs: readonly [
-      {
-        readonly internalType: 'int256';
-        readonly name: '';
-        readonly type: 'int256';
-      },
-    ];
-    readonly stateMutability: 'view';
-    readonly type: 'function';
+    inputs: [],
+    name: 'latestAnswer',
+    outputs: [{ internalType: 'int256', name: '', type: 'int256' }],
+    stateMutability: 'view',
+    type: 'function',
   },
   {
-    readonly inputs: readonly [];
-    readonly name: 'latestRound';
-    readonly outputs: readonly [
-      {
-        readonly internalType: 'uint256';
-        readonly name: '';
-        readonly type: 'uint256';
-      },
-    ];
-    readonly stateMutability: 'view';
-    readonly type: 'function';
+    inputs: [],
+    name: 'latestRound',
+    outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
+    stateMutability: 'view',
+    type: 'function',
   },
   {
-    readonly inputs: readonly [];
-    readonly name: 'latestRoundData';
-    readonly outputs: readonly [
-      {
-        readonly internalType: 'uint80';
-        readonly name: 'roundId';
-        readonly type: 'uint80';
-      },
-      {
-        readonly internalType: 'int256';
-        readonly name: 'answer';
-        readonly type: 'int256';
-      },
-      {
-        readonly internalType: 'uint256';
-        readonly name: 'startedAt';
-        readonly type: 'uint256';
-      },
-      {
-        readonly internalType: 'uint256';
-        readonly name: 'updatedAt';
-        readonly type: 'uint256';
-      },
-      {
-        readonly internalType: 'uint80';
-        readonly name: 'answeredInRound';
-        readonly type: 'uint80';
-      },
-    ];
-    readonly stateMutability: 'view';
-    readonly type: 'function';
+    inputs: [],
+    name: 'latestRoundData',
+    outputs: [
+      { internalType: 'uint80', name: 'roundId', type: 'uint80' },
+      { internalType: 'int256', name: 'answer', type: 'int256' },
+      { internalType: 'uint256', name: 'startedAt', type: 'uint256' },
+      { internalType: 'uint256', name: 'updatedAt', type: 'uint256' },
+      { internalType: 'uint80', name: 'answeredInRound', type: 'uint80' },
+    ],
+    stateMutability: 'view',
+    type: 'function',
   },
   {
-    readonly inputs: readonly [];
-    readonly name: 'owner';
-    readonly outputs: readonly [
-      {
-        readonly internalType: 'address payable';
-        readonly name: '';
-        readonly type: 'address';
-      },
-    ];
-    readonly stateMutability: 'view';
-    readonly type: 'function';
+    inputs: [],
+    name: 'owner',
+    outputs: [{ internalType: 'address payable', name: '', type: 'address' }],
+    stateMutability: 'view',
+    type: 'function',
   },
   {
-    readonly inputs: readonly [
-      {
-        readonly internalType: 'address';
-        readonly name: '_to';
-        readonly type: 'address';
-      },
-    ];
-    readonly name: 'transferOwnership';
-    readonly outputs: readonly [];
-    readonly stateMutability: 'nonpayable';
-    readonly type: 'function';
+    inputs: [{ internalType: 'address', name: '_to', type: 'address' }],
+    name: 'transferOwnership',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
   },
   {
-    readonly inputs: readonly [];
-    readonly name: 'version';
-    readonly outputs: readonly [
-      {
-        readonly internalType: 'uint256';
-        readonly name: '';
-        readonly type: 'uint256';
-      },
-    ];
-    readonly stateMutability: 'view';
-    readonly type: 'function';
+    inputs: [],
+    name: 'version',
+    outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
+    stateMutability: 'view',
+    type: 'function',
   },
-];
+] as const;

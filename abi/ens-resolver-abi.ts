@@ -1,332 +1,190 @@
-export declare const ENSResolverAbi: readonly [
+export const ENSResolverAbi = [
   {
-    readonly inputs: readonly [
-      {
-        readonly internalType: 'contract ENS';
-        readonly name: '_ens';
-        readonly type: 'address';
-      },
-    ];
-    readonly payable: false;
-    readonly stateMutability: 'nonpayable';
-    readonly type: 'constructor';
+    inputs: [{ internalType: 'contract ENS', name: '_ens', type: 'address' }],
+    stateMutability: 'nonpayable',
+    type: 'constructor',
   },
   {
-    readonly anonymous: false;
-    readonly inputs: readonly [
+    anonymous: false,
+    inputs: [
+      { indexed: true, internalType: 'bytes32', name: 'node', type: 'bytes32' },
       {
-        readonly indexed: true;
-        readonly internalType: 'bytes32';
-        readonly name: 'node';
-        readonly type: 'bytes32';
+        indexed: true,
+        internalType: 'uint256',
+        name: 'contentType',
+        type: 'uint256',
       },
-      {
-        readonly indexed: true;
-        readonly internalType: 'uint256';
-        readonly name: 'contentType';
-        readonly type: 'uint256';
-      },
-    ];
-    readonly name: 'ABIChanged';
-    readonly type: 'event';
+    ],
+    name: 'ABIChanged',
+    type: 'event',
   },
   {
-    readonly anonymous: false;
-    readonly inputs: readonly [
-      {
-        readonly indexed: true;
-        readonly internalType: 'bytes32';
-        readonly name: 'node';
-        readonly type: 'bytes32';
-      },
-      {
-        readonly indexed: false;
-        readonly internalType: 'address';
-        readonly name: 'a';
-        readonly type: 'address';
-      },
-    ];
-    readonly name: 'AddrChanged';
-    readonly type: 'event';
+    anonymous: false,
+    inputs: [
+      { indexed: true, internalType: 'bytes32', name: 'node', type: 'bytes32' },
+      { indexed: false, internalType: 'address', name: 'a', type: 'address' },
+    ],
+    name: 'AddrChanged',
+    type: 'event',
   },
   {
-    readonly anonymous: false;
-    readonly inputs: readonly [
+    anonymous: false,
+    inputs: [
+      { indexed: true, internalType: 'bytes32', name: 'node', type: 'bytes32' },
       {
-        readonly indexed: true;
-        readonly internalType: 'bytes32';
-        readonly name: 'node';
-        readonly type: 'bytes32';
+        indexed: false,
+        internalType: 'uint256',
+        name: 'coinType',
+        type: 'uint256',
       },
       {
-        readonly indexed: false;
-        readonly internalType: 'uint256';
-        readonly name: 'coinType';
-        readonly type: 'uint256';
+        indexed: false,
+        internalType: 'bytes',
+        name: 'newAddress',
+        type: 'bytes',
       },
-      {
-        readonly indexed: false;
-        readonly internalType: 'bytes';
-        readonly name: 'newAddress';
-        readonly type: 'bytes';
-      },
-    ];
-    readonly name: 'AddressChanged';
-    readonly type: 'event';
+    ],
+    name: 'AddressChanged',
+    type: 'event',
   },
   {
-    readonly anonymous: false;
-    readonly inputs: readonly [
+    anonymous: false,
+    inputs: [
+      { indexed: true, internalType: 'bytes32', name: 'node', type: 'bytes32' },
       {
-        readonly indexed: true;
-        readonly internalType: 'bytes32';
-        readonly name: 'node';
-        readonly type: 'bytes32';
+        indexed: true,
+        internalType: 'address',
+        name: 'owner',
+        type: 'address',
       },
       {
-        readonly indexed: true;
-        readonly internalType: 'address';
-        readonly name: 'owner';
-        readonly type: 'address';
+        indexed: true,
+        internalType: 'address',
+        name: 'target',
+        type: 'address',
       },
       {
-        readonly indexed: true;
-        readonly internalType: 'address';
-        readonly name: 'target';
-        readonly type: 'address';
+        indexed: false,
+        internalType: 'bool',
+        name: 'isAuthorised',
+        type: 'bool',
       },
-      {
-        readonly indexed: false;
-        readonly internalType: 'bool';
-        readonly name: 'isAuthorised';
-        readonly type: 'bool';
-      },
-    ];
-    readonly name: 'AuthorisationChanged';
-    readonly type: 'event';
+    ],
+    name: 'AuthorisationChanged',
+    type: 'event',
   },
   {
-    readonly anonymous: false;
-    readonly inputs: readonly [
-      {
-        readonly indexed: true;
-        readonly internalType: 'bytes32';
-        readonly name: 'node';
-        readonly type: 'bytes32';
-      },
-      {
-        readonly indexed: false;
-        readonly internalType: 'bytes';
-        readonly name: 'hash';
-        readonly type: 'bytes';
-      },
-    ];
-    readonly name: 'ContenthashChanged';
-    readonly type: 'event';
+    anonymous: false,
+    inputs: [
+      { indexed: true, internalType: 'bytes32', name: 'node', type: 'bytes32' },
+      { indexed: false, internalType: 'bytes', name: 'hash', type: 'bytes' },
+    ],
+    name: 'ContenthashChanged',
+    type: 'event',
   },
   {
-    readonly anonymous: false;
-    readonly inputs: readonly [
+    anonymous: false,
+    inputs: [
+      { indexed: true, internalType: 'bytes32', name: 'node', type: 'bytes32' },
+      { indexed: false, internalType: 'bytes', name: 'name', type: 'bytes' },
       {
-        readonly indexed: true;
-        readonly internalType: 'bytes32';
-        readonly name: 'node';
-        readonly type: 'bytes32';
+        indexed: false,
+        internalType: 'uint16',
+        name: 'resource',
+        type: 'uint16',
       },
-      {
-        readonly indexed: false;
-        readonly internalType: 'bytes';
-        readonly name: 'name';
-        readonly type: 'bytes';
-      },
-      {
-        readonly indexed: false;
-        readonly internalType: 'uint16';
-        readonly name: 'resource';
-        readonly type: 'uint16';
-      },
-      {
-        readonly indexed: false;
-        readonly internalType: 'bytes';
-        readonly name: 'record';
-        readonly type: 'bytes';
-      },
-    ];
-    readonly name: 'DNSRecordChanged';
-    readonly type: 'event';
+      { indexed: false, internalType: 'bytes', name: 'record', type: 'bytes' },
+    ],
+    name: 'DNSRecordChanged',
+    type: 'event',
   },
   {
-    readonly anonymous: false;
-    readonly inputs: readonly [
+    anonymous: false,
+    inputs: [
+      { indexed: true, internalType: 'bytes32', name: 'node', type: 'bytes32' },
+      { indexed: false, internalType: 'bytes', name: 'name', type: 'bytes' },
       {
-        readonly indexed: true;
-        readonly internalType: 'bytes32';
-        readonly name: 'node';
-        readonly type: 'bytes32';
+        indexed: false,
+        internalType: 'uint16',
+        name: 'resource',
+        type: 'uint16',
       },
-      {
-        readonly indexed: false;
-        readonly internalType: 'bytes';
-        readonly name: 'name';
-        readonly type: 'bytes';
-      },
-      {
-        readonly indexed: false;
-        readonly internalType: 'uint16';
-        readonly name: 'resource';
-        readonly type: 'uint16';
-      },
-    ];
-    readonly name: 'DNSRecordDeleted';
-    readonly type: 'event';
+    ],
+    name: 'DNSRecordDeleted',
+    type: 'event',
   },
   {
-    readonly anonymous: false;
-    readonly inputs: readonly [
-      {
-        readonly indexed: true;
-        readonly internalType: 'bytes32';
-        readonly name: 'node';
-        readonly type: 'bytes32';
-      },
-    ];
-    readonly name: 'DNSZoneCleared';
-    readonly type: 'event';
+    anonymous: false,
+    inputs: [
+      { indexed: true, internalType: 'bytes32', name: 'node', type: 'bytes32' },
+    ],
+    name: 'DNSZoneCleared',
+    type: 'event',
   },
   {
-    readonly anonymous: false;
-    readonly inputs: readonly [
+    anonymous: false,
+    inputs: [
+      { indexed: true, internalType: 'bytes32', name: 'node', type: 'bytes32' },
       {
-        readonly indexed: true;
-        readonly internalType: 'bytes32';
-        readonly name: 'node';
-        readonly type: 'bytes32';
+        indexed: true,
+        internalType: 'bytes4',
+        name: 'interfaceID',
+        type: 'bytes4',
       },
       {
-        readonly indexed: true;
-        readonly internalType: 'bytes4';
-        readonly name: 'interfaceID';
-        readonly type: 'bytes4';
+        indexed: false,
+        internalType: 'address',
+        name: 'implementer',
+        type: 'address',
       },
-      {
-        readonly indexed: false;
-        readonly internalType: 'address';
-        readonly name: 'implementer';
-        readonly type: 'address';
-      },
-    ];
-    readonly name: 'InterfaceChanged';
-    readonly type: 'event';
+    ],
+    name: 'InterfaceChanged',
+    type: 'event',
   },
   {
-    readonly anonymous: false;
-    readonly inputs: readonly [
-      {
-        readonly indexed: true;
-        readonly internalType: 'bytes32';
-        readonly name: 'node';
-        readonly type: 'bytes32';
-      },
-      {
-        readonly indexed: false;
-        readonly internalType: 'string';
-        readonly name: 'name';
-        readonly type: 'string';
-      },
-    ];
-    readonly name: 'NameChanged';
-    readonly type: 'event';
+    anonymous: false,
+    inputs: [
+      { indexed: true, internalType: 'bytes32', name: 'node', type: 'bytes32' },
+      { indexed: false, internalType: 'string', name: 'name', type: 'string' },
+    ],
+    name: 'NameChanged',
+    type: 'event',
   },
   {
-    readonly anonymous: false;
-    readonly inputs: readonly [
-      {
-        readonly indexed: true;
-        readonly internalType: 'bytes32';
-        readonly name: 'node';
-        readonly type: 'bytes32';
-      },
-      {
-        readonly indexed: false;
-        readonly internalType: 'bytes32';
-        readonly name: 'x';
-        readonly type: 'bytes32';
-      },
-      {
-        readonly indexed: false;
-        readonly internalType: 'bytes32';
-        readonly name: 'y';
-        readonly type: 'bytes32';
-      },
-    ];
-    readonly name: 'PubkeyChanged';
-    readonly type: 'event';
+    anonymous: false,
+    inputs: [
+      { indexed: true, internalType: 'bytes32', name: 'node', type: 'bytes32' },
+      { indexed: false, internalType: 'bytes32', name: 'x', type: 'bytes32' },
+      { indexed: false, internalType: 'bytes32', name: 'y', type: 'bytes32' },
+    ],
+    name: 'PubkeyChanged',
+    type: 'event',
   },
   {
-    readonly constant: true;
-    readonly inputs: readonly [
-      {
-        readonly internalType: 'bytes32';
-        readonly name: 'node';
-        readonly type: 'bytes32';
-      },
-      {
-        readonly internalType: 'string';
-        readonly name: 'key';
-        readonly type: 'string';
-      },
-    ];
-    readonly name: 'text';
-    readonly outputs: readonly [
-      {
-        readonly internalType: 'string';
-        readonly name: '';
-        readonly type: 'string';
-      },
-    ];
-    readonly payable: false;
-    readonly stateMutability: 'view';
-    readonly type: 'function';
+    inputs: [
+      { internalType: 'bytes32', name: 'node', type: 'bytes32' },
+      { internalType: 'string', name: 'key', type: 'string' },
+    ],
+    name: 'text',
+    outputs: [{ internalType: 'string', name: '', type: 'string' }],
+    stateMutability: 'view',
+    type: 'function',
   },
   {
-    readonly constant: false;
-    readonly inputs: readonly [
-      {
-        readonly internalType: 'bytes32';
-        readonly name: 'node';
-        readonly type: 'bytes32';
-      },
-      {
-        readonly internalType: 'bytes';
-        readonly name: 'data';
-        readonly type: 'bytes';
-      },
-    ];
-    readonly name: 'setDNSRecords';
-    readonly outputs: readonly [];
-    readonly payable: false;
-    readonly stateMutability: 'nonpayable';
-    readonly type: 'function';
+    inputs: [
+      { internalType: 'bytes32', name: 'node', type: 'bytes32' },
+      { internalType: 'bytes', name: 'data', type: 'bytes' },
+    ],
+    name: 'setDNSRecords',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
   },
   {
-    readonly constant: true;
-    readonly inputs: readonly [
-      {
-        readonly internalType: 'bytes4';
-        readonly name: 'interfaceID';
-        readonly type: 'bytes4';
-      },
-    ];
-    readonly name: 'supportsInterface';
-    readonly outputs: readonly [
-      {
-        readonly internalType: 'bool';
-        readonly name: '';
-        readonly type: 'bool';
-      },
-    ];
-    readonly payable: false;
-    readonly stateMutability: 'pure';
-    readonly type: 'function';
+    inputs: [{ internalType: 'bytes4', name: 'interfaceID', type: 'bytes4' }],
+    name: 'supportsInterface',
+    outputs: [{ internalType: 'bool', name: '', type: 'bool' }],
+    stateMutability: 'pure',
+    type: 'function',
   },
-];
+] as const;

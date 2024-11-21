@@ -73,6 +73,14 @@ const supportedChainsWithMainnet: CHAINS[] = config.supportedChains.includes(
   ? config.supportedChains
   : [...config.supportedChains, CHAINS.Mainnet];
 
+// Utility to add a timeout to a promise
+const withTimeout = <T>(promise: Promise<T>, ms: number): Promise<T> => {
+  const timeout = new Promise<never>((_, reject) =>
+    setTimeout(() => reject(new Error('Request timed out')), ms),
+  );
+  return Promise.race([promise, timeout]);
+};
+
 const lidoSDKs = supportedChainsWithMainnet.reduce<Record<number, LidoSDK>>(
   (acc, chainId) => {
     const rpcUrlKey = `rpcUrls_${chainId}` as keyof typeof secretConfig;
@@ -109,12 +117,12 @@ const getAddressOrNull = async (
     const sdk = lidoSDKs[chainId];
     if (!sdk) {
       console.error(`SDK not initialized for chainId: ${chainId}`);
-      // Skip if sdk is missing
       return null;
     }
 
-    const address = await sdk.core.getContractAddress(
-      contractName as LIDO_CONTRACT_NAMES,
+    const address = await withTimeout(
+      sdk.core.getContractAddress(contractName as LIDO_CONTRACT_NAMES),
+      3000, // 3 second timeout
     );
     return address ? getAddress(address) : null;
   } catch (error) {
@@ -126,8 +134,33 @@ const getAddressOrNull = async (
   }
 };
 
+export let metricContractAddresses:
+  | Record<CHAINS, Record<Address, CONTRACT_NAMES>>
+  | undefined = undefined;
+export let metricContractEventAddresses:
+  | Record<CHAINS, Record<Address, CONTRACT_NAMES>>
+  | undefined = undefined;
+
 export const initializeMetricContractAddresses = async () => {
-  const metricContractAddresses = await Promise.all(
+  try {
+    const [_metricContractAddresses, _metricContractEventAddresses] =
+      await Promise.all([initializeAddresses(), initializeEventAddresses()]);
+
+    metricContractAddresses = _metricContractAddresses;
+    metricContractEventAddresses = _metricContractEventAddresses;
+
+    return {
+      metricContractAddresses: _metricContractAddresses,
+      metricContractEventAddresses: _metricContractEventAddresses,
+    };
+  } catch (error) {
+    console.error('Failed to initialize contract addresses:', error);
+    throw error;
+  }
+};
+
+const initializeAddresses = async () => {
+  const addresses = await Promise.allSettled(
     supportedChainsWithMainnet.map(async (chainId) => {
       const map = {
         [CONTRACT_NAMES.lido]: await getAddressOrNull(
@@ -167,29 +200,32 @@ export const initializeMetricContractAddresses = async () => {
 
       const inverted = Object.entries(invert(omitBy(map, isNull))).reduce(
         (acc, [key, value]) => {
-          const typedKey = key as Address;
-          acc[typedKey] = value as CONTRACT_NAMES;
+          acc[key as Address] = value as CONTRACT_NAMES;
           return acc;
         },
         {} as Record<Address, CONTRACT_NAMES>,
       );
 
-      return {
-        chainId,
-        addresses: inverted,
-      };
+      return { chainId, addresses: inverted };
     }),
-  ).then((results) =>
-    results.reduce(
-      (acc, { chainId, addresses }) => {
-        acc[chainId] = addresses;
-        return acc;
-      },
-      {} as Record<CHAINS, Record<Address, CONTRACT_NAMES>>,
-    ),
   );
 
-  const metricContractEventAddresses = await Promise.all(
+  return addresses.reduce(
+    (acc, result) => {
+      if (result.status === 'fulfilled') {
+        const { chainId, addresses } = result.value;
+        acc[chainId] = addresses;
+      } else {
+        console.error(`Failed to initialize addresses:`, result.reason);
+      }
+      return acc;
+    },
+    {} as Record<CHAINS, Record<Address, CONTRACT_NAMES>>,
+  );
+};
+
+const initializeEventAddresses = async () => {
+  const eventAddresses = await Promise.allSettled(
     supportedChainsWithMainnet.map(async (chainId) => {
       const map = {
         [CONTRACT_NAMES.lido]: await getAddressOrNull(
@@ -208,30 +244,26 @@ export const initializeMetricContractAddresses = async () => {
 
       const inverted = Object.entries(invert(omitBy(map, isNull))).reduce(
         (acc, [key, value]) => {
-          const typedKey = key as Address;
-          acc[typedKey] = value as CONTRACT_NAMES;
+          acc[key as Address] = value as CONTRACT_NAMES;
           return acc;
         },
         {} as Record<Address, CONTRACT_NAMES>,
       );
 
-      return {
-        chainId,
-        addresses: inverted,
-      };
+      return { chainId, addresses: inverted };
     }),
-  ).then((results) =>
-    results.reduce(
-      (acc, { chainId, addresses }) => {
-        acc[chainId] = addresses;
-        return acc;
-      },
-      {} as Record<CHAINS, Record<Address, CONTRACT_NAMES>>,
-    ),
   );
 
-  return {
-    metricContractAddresses,
-    metricContractEventAddresses,
-  };
+  return eventAddresses.reduce(
+    (acc, result) => {
+      if (result.status === 'fulfilled') {
+        const { chainId, addresses } = result.value;
+        acc[chainId] = addresses;
+      } else {
+        console.error(`Failed to initialize event addresses:`, result.reason);
+      }
+      return acc;
+    },
+    {} as Record<CHAINS, Record<Address, CONTRACT_NAMES>>,
+  );
 };

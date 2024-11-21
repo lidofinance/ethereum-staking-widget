@@ -1,174 +1,110 @@
-export declare const PartialStakingRouterAbi: readonly [
+export const PartialStakingRouterAbi = [
   {
-    readonly inputs: readonly [
-      {
-        readonly internalType: 'address';
-        readonly name: '_depositContract';
-        readonly type: 'address';
-      },
-    ];
-    readonly stateMutability: 'nonpayable';
-    readonly type: 'constructor';
+    inputs: [
+      { internalType: 'address', name: '_depositContract', type: 'address' },
+    ],
+    stateMutability: 'nonpayable',
+    type: 'constructor',
   },
   {
-    readonly anonymous: false;
-    readonly inputs: readonly [
+    anonymous: false,
+    inputs: [
       {
-        readonly indexed: true;
-        readonly internalType: 'uint256';
-        readonly name: 'stakingModuleId';
-        readonly type: 'uint256';
+        indexed: true,
+        internalType: 'uint256',
+        name: 'stakingModuleId',
+        type: 'uint256',
       },
       {
-        readonly indexed: false;
-        readonly internalType: 'uint256';
-        readonly name: 'stakingModuleFee';
-        readonly type: 'uint256';
+        indexed: false,
+        internalType: 'uint256',
+        name: 'stakingModuleFee',
+        type: 'uint256',
       },
       {
-        readonly indexed: false;
-        readonly internalType: 'uint256';
-        readonly name: 'treasuryFee';
-        readonly type: 'uint256';
+        indexed: false,
+        internalType: 'uint256',
+        name: 'treasuryFee',
+        type: 'uint256',
       },
       {
-        readonly indexed: false;
-        readonly internalType: 'address';
-        readonly name: 'setBy';
-        readonly type: 'address';
+        indexed: false,
+        internalType: 'address',
+        name: 'setBy',
+        type: 'address',
       },
-    ];
-    readonly name: 'StakingModuleFeesSet';
-    readonly type: 'event';
+    ],
+    name: 'StakingModuleFeesSet',
+    type: 'event',
   },
   {
-    readonly inputs: readonly [];
-    readonly name: 'FEE_PRECISION_POINTS';
-    readonly outputs: readonly [
-      {
-        readonly internalType: 'uint256';
-        readonly name: '';
-        readonly type: 'uint256';
-      },
-    ];
-    readonly stateMutability: 'view';
-    readonly type: 'function';
+    inputs: [],
+    name: 'FEE_PRECISION_POINTS',
+    outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
+    stateMutability: 'view',
+    type: 'function',
   },
   {
-    readonly inputs: readonly [];
-    readonly name: 'TOTAL_BASIS_POINTS';
-    readonly outputs: readonly [
-      {
-        readonly internalType: 'uint256';
-        readonly name: '';
-        readonly type: 'uint256';
-      },
-    ];
-    readonly stateMutability: 'view';
-    readonly type: 'function';
+    inputs: [],
+    name: 'TOTAL_BASIS_POINTS',
+    outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
+    stateMutability: 'view',
+    type: 'function',
   },
   {
-    readonly inputs: readonly [];
-    readonly name: 'getLido';
-    readonly outputs: readonly [
-      {
-        readonly internalType: 'address';
-        readonly name: '';
-        readonly type: 'address';
-      },
-    ];
-    readonly stateMutability: 'view';
-    readonly type: 'function';
+    inputs: [],
+    name: 'getLido',
+    outputs: [{ internalType: 'address', name: '', type: 'address' }],
+    stateMutability: 'view',
+    type: 'function',
   },
   {
-    readonly inputs: readonly [];
-    readonly name: 'getStakingFeeAggregateDistribution';
-    readonly outputs: readonly [
-      {
-        readonly internalType: 'uint96';
-        readonly name: 'modulesFee';
-        readonly type: 'uint96';
-      },
-      {
-        readonly internalType: 'uint96';
-        readonly name: 'treasuryFee';
-        readonly type: 'uint96';
-      },
-      {
-        readonly internalType: 'uint256';
-        readonly name: 'basePrecision';
-        readonly type: 'uint256';
-      },
-    ];
-    readonly stateMutability: 'view';
-    readonly type: 'function';
+    inputs: [],
+    name: 'getStakingFeeAggregateDistribution',
+    outputs: [
+      { internalType: 'uint96', name: 'modulesFee', type: 'uint96' },
+      { internalType: 'uint96', name: 'treasuryFee', type: 'uint96' },
+      { internalType: 'uint256', name: 'basePrecision', type: 'uint256' },
+    ],
+    stateMutability: 'view',
+    type: 'function',
   },
   {
-    readonly inputs: readonly [];
-    readonly name: 'getStakingFeeAggregateDistributionE4Precision';
-    readonly outputs: readonly [
-      {
-        readonly internalType: 'uint16';
-        readonly name: 'modulesFee';
-        readonly type: 'uint16';
-      },
-      {
-        readonly internalType: 'uint16';
-        readonly name: 'treasuryFee';
-        readonly type: 'uint16';
-      },
-    ];
-    readonly stateMutability: 'view';
-    readonly type: 'function';
+    inputs: [],
+    name: 'getStakingFeeAggregateDistributionE4Precision',
+    outputs: [
+      { internalType: 'uint16', name: 'modulesFee', type: 'uint16' },
+      { internalType: 'uint16', name: 'treasuryFee', type: 'uint16' },
+    ],
+    stateMutability: 'view',
+    type: 'function',
   },
   {
-    readonly inputs: readonly [];
-    readonly name: 'getStakingRewardsDistribution';
-    readonly outputs: readonly [
+    inputs: [],
+    name: 'getStakingRewardsDistribution',
+    outputs: [
+      { internalType: 'address[]', name: 'recipients', type: 'address[]' },
       {
-        readonly internalType: 'address[]';
-        readonly name: 'recipients';
-        readonly type: 'address[]';
+        internalType: 'uint256[]',
+        name: 'stakingModuleIds',
+        type: 'uint256[]',
       },
-      {
-        readonly internalType: 'uint256[]';
-        readonly name: 'stakingModuleIds';
-        readonly type: 'uint256[]';
-      },
-      {
-        readonly internalType: 'uint96[]';
-        readonly name: 'stakingModuleFees';
-        readonly type: 'uint96[]';
-      },
-      {
-        readonly internalType: 'uint96';
-        readonly name: 'totalFee';
-        readonly type: 'uint96';
-      },
-      {
-        readonly internalType: 'uint256';
-        readonly name: 'precisionPoints';
-        readonly type: 'uint256';
-      },
-    ];
-    readonly stateMutability: 'view';
-    readonly type: 'function';
+      { internalType: 'uint96[]', name: 'stakingModuleFees', type: 'uint96[]' },
+      { internalType: 'uint96', name: 'totalFee', type: 'uint96' },
+      { internalType: 'uint256', name: 'precisionPoints', type: 'uint256' },
+    ],
+    stateMutability: 'view',
+    type: 'function',
   },
   {
-    readonly inputs: readonly [];
-    readonly name: 'getTotalFeeE4Precision';
-    readonly outputs: readonly [
-      {
-        readonly internalType: 'uint16';
-        readonly name: 'totalFee';
-        readonly type: 'uint16';
-      },
-    ];
-    readonly stateMutability: 'view';
-    readonly type: 'function';
+    inputs: [],
+    name: 'getTotalFeeE4Precision',
+    outputs: [{ internalType: 'uint16', name: 'totalFee', type: 'uint16' }],
+    stateMutability: 'view',
+    type: 'function',
   },
   {
-    readonly stateMutability: 'payable';
-    readonly type: 'receive';
+    stateMutability: 'payable',
+    type: 'receive',
   },
-];
+] as const;

@@ -1,5 +1,5 @@
 import type { Histogram, Counter } from 'prom-client';
-import { getAddress } from 'viem';
+import { type Abi, type Address, getAddress, keccak256, toHex } from 'viem';
 import { getStatusLabel } from '@lidofinance/api-metrics';
 import {
   RequestWrapper,
@@ -13,11 +13,10 @@ import { CHAINS } from '@lidofinance/lido-ethereum-sdk/common';
 
 import { config, secretConfig } from 'config';
 
-// import {
-//   // getMetricContractAbi
-//   // getMetricContractInterface,
-//   METRIC_CONTRACT_ADDRESSES,
-// } from './contractAddressesMetricsMap';
+import {
+  metricContractAddresses,
+  getMetricContractAbi,
+} from './contractAddressesMetricsMap';
 
 export enum HttpMethod {
   GET = 'GET',
@@ -30,6 +29,27 @@ export enum HttpMethod {
   TRACE = 'TRACE',
   PATCH = 'PATCH',
 }
+
+export const getFunctionSelector = (func: any): string => {
+  const signature =
+    `${func.name}(${func.inputs.map((i: any) => i.type).join(',')})` as Address;
+  return toHex(keccak256(signature)).slice(0, 10);
+};
+
+export const getFunctionNameFromAbi = (
+  abi: Abi,
+  methodEncoded: string,
+): string | null => {
+  for (const item of abi) {
+    if (item.type === 'function') {
+      const selector = getFunctionSelector(item);
+      if (selector === methodEncoded) {
+        return item.name;
+      }
+    }
+  }
+  return null;
+};
 
 export const extractErrorMessage = (
   error: unknown,
@@ -124,8 +144,6 @@ const parseRefererUrl = (referer: string) => {
 const collectRequestAddressMetric = async ({
   calls,
   referer,
-  // TODO
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   chainId,
   metrics,
 }: {
@@ -143,26 +161,33 @@ const collectRequestAddressMetric = async ({
     ) {
       const { to, data } = call.params[0];
       const address = getAddress(to);
-      // TODO
-      const contractName = 'N/A';
-      // const contractName = METRIC_CONTRACT_ADDRESSES[chainId]?.[address];
+      // Race conditions not actual here.
+      // Here, we can use it without initializeMetricContractAddresses(),
+      // as initializeMetricContractAddresses() was already called in pages/api/rpc.ts.
+      // However, be careful when reusing this code.
+      const contractName = metricContractAddresses?.[chainId]?.[address];
       const methodEncoded = data?.slice(0, 10); // `0x` and 8 next symbols
 
-      // TODO
-      const methodDecoded = 'N/A';
-      // let methodDecoded = 'N/A';
-      // try {
-      //   if (contractName) {
-      //     methodDecoded =
-      //       getMetricContractInterface(contractName).getFunction(
-      //         methodEncoded,
-      //       ).name;
-      //   }
-      // } catch (error) {
-      //   console.warn(
-      //     `[collectRequestAddressMetric] failed to decode ${methodEncoded} method for ${contractName}: ${error} `,
-      //   );
-      // }
+      let methodDecoded = 'N/A';
+      if (!methodEncoded || methodEncoded.length !== 10) {
+        console.warn(`Invalid methodEncoded: ${methodEncoded}`);
+      } else {
+        try {
+          if (contractName) {
+            const abi = getMetricContractAbi(contractName);
+            if (!abi) {
+              console.warn(`ABI not found for contract: ${contractName}`);
+            } else {
+              const functionName = getFunctionNameFromAbi(abi, methodEncoded);
+              methodDecoded = functionName || 'Unknown Function';
+            }
+          }
+        } catch (error) {
+          console.warn(
+            `[collectRequestAddressMetric] failed to decode ${methodEncoded} method for ${contractName}: ${error}`,
+          );
+        }
+      }
 
       metrics
         .labels({

@@ -1,353 +1,185 @@
-export declare const LidoLocatorAbi: readonly [
+export const LidoLocatorAbi = [
   {
-    readonly inputs: readonly [
+    inputs: [
       {
-        readonly components: readonly [
+        components: [
           {
-            readonly internalType: 'address';
-            readonly name: 'accountingOracle';
-            readonly type: 'address';
+            internalType: 'address',
+            name: 'accountingOracle',
+            type: 'address',
           },
           {
-            readonly internalType: 'address';
-            readonly name: 'depositSecurityModule';
-            readonly type: 'address';
+            internalType: 'address',
+            name: 'depositSecurityModule',
+            type: 'address',
+          },
+          { internalType: 'address', name: 'elRewardsVault', type: 'address' },
+          { internalType: 'address', name: 'legacyOracle', type: 'address' },
+          { internalType: 'address', name: 'lido', type: 'address' },
+          {
+            internalType: 'address',
+            name: 'oracleReportSanityChecker',
+            type: 'address',
           },
           {
-            readonly internalType: 'address';
-            readonly name: 'elRewardsVault';
-            readonly type: 'address';
+            internalType: 'address',
+            name: 'postTokenRebaseReceiver',
+            type: 'address',
           },
+          { internalType: 'address', name: 'burner', type: 'address' },
+          { internalType: 'address', name: 'stakingRouter', type: 'address' },
+          { internalType: 'address', name: 'treasury', type: 'address' },
           {
-            readonly internalType: 'address';
-            readonly name: 'legacyOracle';
-            readonly type: 'address';
+            internalType: 'address',
+            name: 'validatorsExitBusOracle',
+            type: 'address',
           },
+          { internalType: 'address', name: 'withdrawalQueue', type: 'address' },
+          { internalType: 'address', name: 'withdrawalVault', type: 'address' },
           {
-            readonly internalType: 'address';
-            readonly name: 'lido';
-            readonly type: 'address';
+            internalType: 'address',
+            name: 'oracleDaemonConfig',
+            type: 'address',
           },
-          {
-            readonly internalType: 'address';
-            readonly name: 'oracleReportSanityChecker';
-            readonly type: 'address';
-          },
-          {
-            readonly internalType: 'address';
-            readonly name: 'postTokenRebaseReceiver';
-            readonly type: 'address';
-          },
-          {
-            readonly internalType: 'address';
-            readonly name: 'burner';
-            readonly type: 'address';
-          },
-          {
-            readonly internalType: 'address';
-            readonly name: 'stakingRouter';
-            readonly type: 'address';
-          },
-          {
-            readonly internalType: 'address';
-            readonly name: 'treasury';
-            readonly type: 'address';
-          },
-          {
-            readonly internalType: 'address';
-            readonly name: 'validatorsExitBusOracle';
-            readonly type: 'address';
-          },
-          {
-            readonly internalType: 'address';
-            readonly name: 'withdrawalQueue';
-            readonly type: 'address';
-          },
-          {
-            readonly internalType: 'address';
-            readonly name: 'withdrawalVault';
-            readonly type: 'address';
-          },
-          {
-            readonly internalType: 'address';
-            readonly name: 'oracleDaemonConfig';
-            readonly type: 'address';
-          },
-        ];
-        readonly internalType: 'struct LidoLocator.Config';
-        readonly name: '_config';
-        readonly type: 'tuple';
+        ],
+        internalType: 'struct LidoLocator.Config',
+        name: '_config',
+        type: 'tuple',
       },
-    ];
-    readonly stateMutability: 'nonpayable';
-    readonly type: 'constructor';
+    ],
+    stateMutability: 'nonpayable',
+    type: 'constructor',
   },
   {
-    readonly inputs: readonly [];
-    readonly name: 'ZeroAddress';
-    readonly type: 'error';
+    inputs: [],
+    name: 'ZeroAddress',
+    type: 'error',
   },
   {
-    readonly inputs: readonly [];
-    readonly name: 'accountingOracle';
-    readonly outputs: readonly [
-      {
-        readonly internalType: 'address';
-        readonly name: '';
-        readonly type: 'address';
-      },
-    ];
-    readonly stateMutability: 'view';
-    readonly type: 'function';
+    inputs: [],
+    name: 'accountingOracle',
+    outputs: [{ internalType: 'address', name: '', type: 'address' }],
+    stateMutability: 'view',
+    type: 'function',
   },
   {
-    readonly inputs: readonly [];
-    readonly name: 'burner';
-    readonly outputs: readonly [
-      {
-        readonly internalType: 'address';
-        readonly name: '';
-        readonly type: 'address';
-      },
-    ];
-    readonly stateMutability: 'view';
-    readonly type: 'function';
+    inputs: [],
+    name: 'burner',
+    outputs: [{ internalType: 'address', name: '', type: 'address' }],
+    stateMutability: 'view',
+    type: 'function',
   },
   {
-    readonly inputs: readonly [];
-    readonly name: 'coreComponents';
-    readonly outputs: readonly [
-      {
-        readonly internalType: 'address';
-        readonly name: '';
-        readonly type: 'address';
-      },
-      {
-        readonly internalType: 'address';
-        readonly name: '';
-        readonly type: 'address';
-      },
-      {
-        readonly internalType: 'address';
-        readonly name: '';
-        readonly type: 'address';
-      },
-      {
-        readonly internalType: 'address';
-        readonly name: '';
-        readonly type: 'address';
-      },
-      {
-        readonly internalType: 'address';
-        readonly name: '';
-        readonly type: 'address';
-      },
-      {
-        readonly internalType: 'address';
-        readonly name: '';
-        readonly type: 'address';
-      },
-    ];
-    readonly stateMutability: 'view';
-    readonly type: 'function';
+    inputs: [],
+    name: 'coreComponents',
+    outputs: [
+      { internalType: 'address', name: '', type: 'address' },
+      { internalType: 'address', name: '', type: 'address' },
+      { internalType: 'address', name: '', type: 'address' },
+      { internalType: 'address', name: '', type: 'address' },
+      { internalType: 'address', name: '', type: 'address' },
+      { internalType: 'address', name: '', type: 'address' },
+    ],
+    stateMutability: 'view',
+    type: 'function',
   },
   {
-    readonly inputs: readonly [];
-    readonly name: 'depositSecurityModule';
-    readonly outputs: readonly [
-      {
-        readonly internalType: 'address';
-        readonly name: '';
-        readonly type: 'address';
-      },
-    ];
-    readonly stateMutability: 'view';
-    readonly type: 'function';
+    inputs: [],
+    name: 'depositSecurityModule',
+    outputs: [{ internalType: 'address', name: '', type: 'address' }],
+    stateMutability: 'view',
+    type: 'function',
   },
   {
-    readonly inputs: readonly [];
-    readonly name: 'elRewardsVault';
-    readonly outputs: readonly [
-      {
-        readonly internalType: 'address';
-        readonly name: '';
-        readonly type: 'address';
-      },
-    ];
-    readonly stateMutability: 'view';
-    readonly type: 'function';
+    inputs: [],
+    name: 'elRewardsVault',
+    outputs: [{ internalType: 'address', name: '', type: 'address' }],
+    stateMutability: 'view',
+    type: 'function',
   },
   {
-    readonly inputs: readonly [];
-    readonly name: 'legacyOracle';
-    readonly outputs: readonly [
-      {
-        readonly internalType: 'address';
-        readonly name: '';
-        readonly type: 'address';
-      },
-    ];
-    readonly stateMutability: 'view';
-    readonly type: 'function';
+    inputs: [],
+    name: 'legacyOracle',
+    outputs: [{ internalType: 'address', name: '', type: 'address' }],
+    stateMutability: 'view',
+    type: 'function',
   },
   {
-    readonly inputs: readonly [];
-    readonly name: 'lido';
-    readonly outputs: readonly [
-      {
-        readonly internalType: 'address';
-        readonly name: '';
-        readonly type: 'address';
-      },
-    ];
-    readonly stateMutability: 'view';
-    readonly type: 'function';
+    inputs: [],
+    name: 'lido',
+    outputs: [{ internalType: 'address', name: '', type: 'address' }],
+    stateMutability: 'view',
+    type: 'function',
   },
   {
-    readonly inputs: readonly [];
-    readonly name: 'oracleDaemonConfig';
-    readonly outputs: readonly [
-      {
-        readonly internalType: 'address';
-        readonly name: '';
-        readonly type: 'address';
-      },
-    ];
-    readonly stateMutability: 'view';
-    readonly type: 'function';
+    inputs: [],
+    name: 'oracleDaemonConfig',
+    outputs: [{ internalType: 'address', name: '', type: 'address' }],
+    stateMutability: 'view',
+    type: 'function',
   },
   {
-    readonly inputs: readonly [];
-    readonly name: 'oracleReportComponentsForLido';
-    readonly outputs: readonly [
-      {
-        readonly internalType: 'address';
-        readonly name: '';
-        readonly type: 'address';
-      },
-      {
-        readonly internalType: 'address';
-        readonly name: '';
-        readonly type: 'address';
-      },
-      {
-        readonly internalType: 'address';
-        readonly name: '';
-        readonly type: 'address';
-      },
-      {
-        readonly internalType: 'address';
-        readonly name: '';
-        readonly type: 'address';
-      },
-      {
-        readonly internalType: 'address';
-        readonly name: '';
-        readonly type: 'address';
-      },
-      {
-        readonly internalType: 'address';
-        readonly name: '';
-        readonly type: 'address';
-      },
-      {
-        readonly internalType: 'address';
-        readonly name: '';
-        readonly type: 'address';
-      },
-    ];
-    readonly stateMutability: 'view';
-    readonly type: 'function';
+    inputs: [],
+    name: 'oracleReportComponentsForLido',
+    outputs: [
+      { internalType: 'address', name: '', type: 'address' },
+      { internalType: 'address', name: '', type: 'address' },
+      { internalType: 'address', name: '', type: 'address' },
+      { internalType: 'address', name: '', type: 'address' },
+      { internalType: 'address', name: '', type: 'address' },
+      { internalType: 'address', name: '', type: 'address' },
+      { internalType: 'address', name: '', type: 'address' },
+    ],
+    stateMutability: 'view',
+    type: 'function',
   },
   {
-    readonly inputs: readonly [];
-    readonly name: 'oracleReportSanityChecker';
-    readonly outputs: readonly [
-      {
-        readonly internalType: 'address';
-        readonly name: '';
-        readonly type: 'address';
-      },
-    ];
-    readonly stateMutability: 'view';
-    readonly type: 'function';
+    inputs: [],
+    name: 'oracleReportSanityChecker',
+    outputs: [{ internalType: 'address', name: '', type: 'address' }],
+    stateMutability: 'view',
+    type: 'function',
   },
   {
-    readonly inputs: readonly [];
-    readonly name: 'postTokenRebaseReceiver';
-    readonly outputs: readonly [
-      {
-        readonly internalType: 'address';
-        readonly name: '';
-        readonly type: 'address';
-      },
-    ];
-    readonly stateMutability: 'view';
-    readonly type: 'function';
+    inputs: [],
+    name: 'postTokenRebaseReceiver',
+    outputs: [{ internalType: 'address', name: '', type: 'address' }],
+    stateMutability: 'view',
+    type: 'function',
   },
   {
-    readonly inputs: readonly [];
-    readonly name: 'stakingRouter';
-    readonly outputs: readonly [
-      {
-        readonly internalType: 'address';
-        readonly name: '';
-        readonly type: 'address';
-      },
-    ];
-    readonly stateMutability: 'view';
-    readonly type: 'function';
+    inputs: [],
+    name: 'stakingRouter',
+    outputs: [{ internalType: 'address', name: '', type: 'address' }],
+    stateMutability: 'view',
+    type: 'function',
   },
   {
-    readonly inputs: readonly [];
-    readonly name: 'treasury';
-    readonly outputs: readonly [
-      {
-        readonly internalType: 'address';
-        readonly name: '';
-        readonly type: 'address';
-      },
-    ];
-    readonly stateMutability: 'view';
-    readonly type: 'function';
+    inputs: [],
+    name: 'treasury',
+    outputs: [{ internalType: 'address', name: '', type: 'address' }],
+    stateMutability: 'view',
+    type: 'function',
   },
   {
-    readonly inputs: readonly [];
-    readonly name: 'validatorsExitBusOracle';
-    readonly outputs: readonly [
-      {
-        readonly internalType: 'address';
-        readonly name: '';
-        readonly type: 'address';
-      },
-    ];
-    readonly stateMutability: 'view';
-    readonly type: 'function';
+    inputs: [],
+    name: 'validatorsExitBusOracle',
+    outputs: [{ internalType: 'address', name: '', type: 'address' }],
+    stateMutability: 'view',
+    type: 'function',
   },
   {
-    readonly inputs: readonly [];
-    readonly name: 'withdrawalQueue';
-    readonly outputs: readonly [
-      {
-        readonly internalType: 'address';
-        readonly name: '';
-        readonly type: 'address';
-      },
-    ];
-    readonly stateMutability: 'view';
-    readonly type: 'function';
+    inputs: [],
+    name: 'withdrawalQueue',
+    outputs: [{ internalType: 'address', name: '', type: 'address' }],
+    stateMutability: 'view',
+    type: 'function',
   },
   {
-    readonly inputs: readonly [];
-    readonly name: 'withdrawalVault';
-    readonly outputs: readonly [
-      {
-        readonly internalType: 'address';
-        readonly name: '';
-        readonly type: 'address';
-      },
-    ];
-    readonly stateMutability: 'view';
-    readonly type: 'function';
+    inputs: [],
+    name: 'withdrawalVault',
+    outputs: [{ internalType: 'address', name: '', type: 'address' }],
+    stateMutability: 'view',
+    type: 'function',
   },
-];
+] as const;

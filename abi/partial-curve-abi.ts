@@ -1,29 +1,14 @@
-export declare const PartialCurveAbi: readonly [
+export const PartialCurveAbi = [
   {
-    readonly constant: true;
-    readonly inputs: readonly [
-      {
-        readonly name: 'i';
-        readonly type: 'int128';
-      },
-      {
-        readonly name: 'j';
-        readonly type: 'int128';
-      },
-      {
-        readonly name: 'dx';
-        readonly type: 'uint256';
-      },
-    ];
-    readonly name: 'get_dy';
-    readonly outputs: readonly [
-      {
-        readonly name: '';
-        readonly type: 'uint256';
-      },
-    ];
-    readonly payable: false;
-    readonly stateMutability: 'view';
-    readonly type: 'function';
+    constant: true,
+    inputs: [
+      { name: 'i', type: 'int128' },
+      { name: 'j', type: 'int128' },
+      { name: 'dx', type: 'uint256' },
+    ],
+    name: 'get_dy',
+    outputs: [{ name: '', type: 'uint256' }],
+    stateMutability: 'view',
+    type: 'function',
   },
-];
+] as const;
