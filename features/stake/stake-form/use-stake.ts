@@ -32,11 +32,6 @@ export const useStake = ({ onConfirm, onRetry }: StakeOptions) => {
   // without triggering a rerender. Also, the React 18 also has issues with asynchronous state updates.
   const txHashRef = useRef<Address | undefined>(undefined);
 
-  const showSuccessTxModal = useCallback(async () => {
-    const stethBalance = await stETH.balance(address);
-    txModalStages.success(stethBalance, txHashRef.current);
-  }, [address, stETH, txModalStages]);
-
   return useCallback(
     async ({ amount, referral }: StakeArguments): Promise<boolean> => {
       try {
@@ -55,20 +50,25 @@ export const useStake = ({ onConfirm, onRetry }: StakeOptions) => {
           ? await getAddress(referral, stake.core.rpcProvider)
           : config.STAKE_FALLBACK_REFERRAL_ADDRESS;
 
-        const txCallback: TransactionCallback = ({ stage, payload }) => {
+        const txCallback: TransactionCallback = async ({ stage, payload }) => {
           switch (stage) {
             case TransactionCallbackStage.SIGN:
               txModalStages.sign(amount);
               return applyRoundUpGasLimit(
+                // the payload here is bigint
                 payload ?? config.STAKE_GASLIMIT_FALLBACK,
-              ); // the payload here is bigint
+              );
             case TransactionCallbackStage.RECEIPT:
               txModalStages.pending(amount, payload);
-              txHashRef.current = payload; // the payload here is txHash
+              // the payload here is txHash
+              txHashRef.current = payload;
               break;
             case TransactionCallbackStage.DONE:
-              void onConfirm?.();
-              void showSuccessTxModal();
+              await onConfirm?.();
+              txModalStages.success(
+                await stETH.balance(address),
+                txHashRef.current,
+              );
               break;
             case TransactionCallbackStage.MULTISIG_DONE:
               txModalStages.successMultisig();
@@ -93,6 +93,6 @@ export const useStake = ({ onConfirm, onRetry }: StakeOptions) => {
         return false;
       }
     },
-    [address, stake, txModalStages, onConfirm, showSuccessTxModal, onRetry],
+    [address, stake, txModalStages, onConfirm, stETH, onRetry],
   );
 };
