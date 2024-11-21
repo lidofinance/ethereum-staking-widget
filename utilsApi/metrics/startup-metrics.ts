@@ -20,6 +20,7 @@ const collectStartupChecksRPCMetrics = async (
     const rpcChecksResults = await getRPCChecks();
 
     if (!rpcChecksResults) {
+      // You will see this on 'yarn dev'
       throw new Error(
         '[collectStartupChecksRPCMetrics] getRPCChecks resolved as "null"!',
       );
