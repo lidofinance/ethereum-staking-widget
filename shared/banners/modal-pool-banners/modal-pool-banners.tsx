@@ -11,7 +11,7 @@ const ECOSYSTEM_LINK = `${config.rootOrigin}/lido-ecosystem`;
 const linkClickHandler = () =>
   trackEvent(...MATOMO_CLICK_EVENTS.clickExploreDeFi);
 
-// TODO: remove (not used)?
+// TODO: delete after confirmation
 export const ModalPoolBanners = () => {
   const linkProps = {
     href: ECOSYSTEM_LINK,
