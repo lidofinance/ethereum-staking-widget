@@ -1,4 +1,4 @@
-import { UseQueryResult } from '@tanstack/react-query';
+import type { UseQueryResult } from '@tanstack/react-query';
 import type { DexWithdrawalApi } from 'features/withdrawals/request/withdrawal-rates';
 
 export type Manifest = Record<string, ManifestEntry>;
