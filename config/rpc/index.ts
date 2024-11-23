@@ -2,7 +2,6 @@ import { useCallback } from 'react';
 import invariant from 'tiny-invariant';
 
 import { CHAINS } from 'consts/chains';
-import { useDappStatus } from 'modules/web3';
 
 // Don't use absolute import here!
 // code'''
@@ -39,9 +38,4 @@ export const useGetRpcUrlByChainId = () => {
     },
     [userConfig],
   );
-};
-
-export const useRpcUrl = () => {
-  const { chainId } = useDappStatus();
-  return useGetRpcUrlByChainId()(chainId);
 };
