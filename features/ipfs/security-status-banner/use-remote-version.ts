@@ -63,10 +63,10 @@ export const useRemoteVersion = () => {
   // merged externalConfigQueryReact && cidQueryResult (queryResult)
   return {
     data: queryResult.data,
-    get initialLoading() {
+    get isLoading() {
       return queryResult.isLoading || externalConfigQueryReact.isLoading;
     },
-    get loading() {
+    get isFetching() {
       return queryResult.isFetching || externalConfigQueryReact.isFetching;
     },
     get error() {

@@ -87,10 +87,10 @@ export const useWithdrawalRates = ({
     enabledDexes,
     selectedToken: token,
     data: queryResult.data,
-    get initialLoading() {
+    get isLoading() {
       return queryResult.isLoading || debouncedAmount !== fallbackedAmount;
     },
-    get loading() {
+    get isFetching() {
       return queryResult.isFetching || debouncedAmount !== fallbackedAmount;
     },
     get error() {

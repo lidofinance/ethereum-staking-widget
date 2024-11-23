@@ -28,20 +28,16 @@ export const UnwrapStats = () => {
   //
   // Using the chainTypeChainId (chainId from the chain switcher) for TX calculation (and below for 'approveTxCostInUsd'),
   // because the statistics here are shown for the chain from the chain switcher
-  const {
-    txCostUsd: unwrapTxCostInUsd,
-    initialLoading: isUnwrapTxCostLoading,
-  } = useTxCostInUsd(unwrapGasLimit, chainTypeChainId);
+  const { txCostUsd: unwrapTxCostInUsd, isLoading: isUnwrapTxCostLoading } =
+    useTxCostInUsd(unwrapGasLimit, chainTypeChainId);
 
   const approveGasLimit = useApproveGasLimit();
   // The 'approveGasLimit' difference between the networks is insignificant
   // and can be neglected in the '!isChainTypeMatched' case
-  const {
-    txCostUsd: approveTxCostInUsd,
-    initialLoading: isApproveCostLoading,
-  } = useTxCostInUsd(approveGasLimit, chainTypeChainId);
+  const { txCostUsd: approveTxCostInUsd, isLoading: isApproveCostLoading } =
+    useTxCostInUsd(approveGasLimit, chainTypeChainId);
 
-  const { data: willReceiveStETH, initialLoading: isWillReceiveStETHLoading } =
+  const { data: willReceiveStETH, isLoading: isWillReceiveStETHLoading } =
     useDebouncedStethByWsteth(amount);
 
   return (

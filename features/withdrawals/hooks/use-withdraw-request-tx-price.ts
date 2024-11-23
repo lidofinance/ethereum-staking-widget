@@ -90,7 +90,7 @@ export const useWithdrawRequestTxPrice = ({
     (isApprovalFlow ? approvalFlowGasLimit : permitGasLimit) ??
     fallback * BigInt(debouncedRequestCount);
 
-  const { txCostUsd: txPriceUsd, initialLoading: isTxCostLoading } =
+  const { txCostUsd: txPriceUsd, isLoading: isTxCostLoading } =
     useTxCostInUsd(gasLimit);
 
   const loading =

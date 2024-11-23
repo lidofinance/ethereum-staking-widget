@@ -8,8 +8,8 @@ import { TOKENS_TO_WITHDRAWLS } from 'features/withdrawals/types/tokens-withdraw
 export type UseApproveResponse = {
   allowance?: bigint;
   needsApprove?: boolean;
-  initialLoading: boolean;
-  loading: boolean;
+  isLoading: boolean;
+  isFetching: boolean;
 } & Pick<UseQueryResult, 'error' | 'refetch'>;
 
 export const useWithdrawalApprove = (
@@ -46,8 +46,8 @@ export const useWithdrawalApprove = (
   return {
     allowance: data?.allowance,
     needsApprove: data?.needsApprove,
-    initialLoading: isLoading && !data && !error,
-    loading: isLoading || isFetching,
+    isLoading,
+    isFetching,
     error,
     refetch,
   };

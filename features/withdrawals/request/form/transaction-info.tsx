@@ -32,10 +32,8 @@ export const TransactionInfo = () => {
       requestCount: requests?.length,
     });
 
-  const {
-    txCostUsd: approveTxCostInUsd,
-    initialLoading: isApproveTxCostLoading,
-  } = useTxCostInUsd(useApproveGasLimit());
+  const { txCostUsd: approveTxCostInUsd, isLoading: isApproveTxCostLoading } =
+    useTxCostInUsd(useApproveGasLimit());
 
   return (
     <>

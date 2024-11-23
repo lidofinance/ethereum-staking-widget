@@ -62,8 +62,7 @@ const useStakeFormNetworkData = (): StakeFormNetworkData => {
   } = useStethBalance();
   const { isMultisig, isLoading: isMultisigLoading } = useIsMultisig();
   const gasLimit = useStethSubmitGasLimit();
-  const { maxGasPrice, initialLoading: isMaxGasPriceLoading } =
-    useMaxGasPrice();
+  const { maxGasPrice, isLoading: isMaxGasPriceLoading } = useMaxGasPrice();
 
   const gasCost = useMemo(
     () => (gasLimit && maxGasPrice ? gasLimit * maxGasPrice : undefined),

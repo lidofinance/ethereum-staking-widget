@@ -25,10 +25,8 @@ export const WrapFormStats = () => {
 
   const isSteth = token === TOKENS_TO_WRAP.stETH;
 
-  const {
-    data: willReceiveWsteth,
-    initialLoading: isWillReceiveWstethLoading,
-  } = useDebouncedWstethBySteth(amount);
+  const { data: willReceiveWsteth, isLoading: isWillReceiveWstethLoading } =
+    useDebouncedWstethBySteth(amount);
 
   const { data: oneWstethConverted, isLoading: oneWstethConvertedLoading } =
     useWstethBySteth(ONE_stETH);
@@ -39,14 +37,12 @@ export const WrapFormStats = () => {
   // Using the chainTypeChainId (chainId from the chain switcher) for TX calculation (and below for 'wrapTxCostInUsd'),
   // because the statistics here are shown for the chain from the chain switcher
   const approveGasLimit = useApproveGasLimit();
-  const {
-    txCostUsd: approveTxCostInUsd,
-    initialLoading: isApproveCostLoading,
-  } = useTxCostInUsd(approveGasLimit, chainTypeChainId);
+  const { txCostUsd: approveTxCostInUsd, isLoading: isApproveCostLoading } =
+    useTxCostInUsd(approveGasLimit, chainTypeChainId);
 
   // The 'wrapGasLimit' difference between the networks is insignificant
   // and can be neglected in the '!isChainTypeMatched' case
-  const { txCostUsd: wrapTxCostInUsd, initialLoading: isWrapCostLoading } =
+  const { txCostUsd: wrapTxCostInUsd, isLoading: isWrapCostLoading } =
     useTxCostInUsd(wrapGasLimit, chainTypeChainId);
 
   return (

@@ -39,7 +39,7 @@ export const useWithdrawalRequest = ({
   const { isMultisig, isLoading: isMultisigLoading } = useIsMultisig();
   const {
     needsApprove,
-    loading: loadingUseApprove,
+    isFetching: isUseApproveFetching,
     refetch: refetchAllowance,
   } = useWithdrawalApprove(
     amount ? amount : BigInt(0),
@@ -62,7 +62,7 @@ export const useWithdrawalRequest = ({
   );
 
   const isApprovalFlowLoading =
-    isMultisigLoading || (isApprovalFlow && loadingUseApprove);
+    isMultisigLoading || (isApprovalFlow && isUseApproveFetching);
 
   const isTokenLocked = !!(isApprovalFlow && needsApprove);
 

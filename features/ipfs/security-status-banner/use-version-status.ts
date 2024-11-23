@@ -111,15 +111,14 @@ export const useVersionStatus = () => {
         remoteCidLink: remoteVersionQueryResult.data?.link,
       };
     },
-    get initialLoading() {
+    get isLoading() {
       return (
-        remoteVersionQueryResult.initialLoading ||
-        currentCidQueryResult.isLoading
+        remoteVersionQueryResult.isLoading || currentCidQueryResult.isLoading
       );
     },
-    get loading() {
+    get isFetching() {
       return (
-        remoteVersionQueryResult.loading || currentCidQueryResult.isFetching
+        remoteVersionQueryResult.isFetching || currentCidQueryResult.isFetching
       );
     },
     get error() {

@@ -37,13 +37,13 @@ export const useMaxGasPrice = (chainId?: number) => {
     get maxGasPrice() {
       return data;
     },
-    get initialLoading() {
+    get isLoading() {
       return isLoading;
     },
     get error() {
       return error;
     },
-    get loading() {
+    get isFetching() {
       return isFetching;
     },
     update() {

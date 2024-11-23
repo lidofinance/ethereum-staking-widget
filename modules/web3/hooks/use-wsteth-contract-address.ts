@@ -14,8 +14,8 @@ export const useWstETHContractAddress = () => {
 
   return {
     data,
-    initialLoading: isLoading && !data && !error,
-    loading: isLoading || isFetching,
+    isLoading,
+    isFetching,
     error,
   };
 };

@@ -73,7 +73,7 @@ export const DexOptions: React.FC<
   const { balanceDiffSteth } = useTvlError();
   const isPausedByTvlError = balanceDiffSteth !== undefined;
 
-  const { data, initialLoading, amount, selectedToken, enabledDexes } =
+  const { data, isLoading, amount, selectedToken, enabledDexes } =
     useWithdrawalRates({
       isPaused: isPausedByTvlError,
     });
@@ -81,8 +81,8 @@ export const DexOptions: React.FC<
   const isAnyDexEnabled = enabledDexes.length > 0;
   const allowExpand = enabledDexes.length > MAX_SHOWN_ELEMENTS;
 
-  const showLoader = !isPausedByTvlError && isAnyDexEnabled && initialLoading;
-  const showList = !isPausedByTvlError && isAnyDexEnabled && !initialLoading;
+  const showLoader = !isPausedByTvlError && isAnyDexEnabled && isLoading;
+  const showList = !isPausedByTvlError && isAnyDexEnabled && !isLoading;
   const showPausedList = isPausedByTvlError;
 
   const dexesListData = useMemo(() => {

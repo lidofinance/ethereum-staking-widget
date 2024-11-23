@@ -52,7 +52,7 @@ export const useWithdrawClaimTxPrice = (requests: RequestStatusClaimable[]) => {
     : gasLimit ??
       config.WITHDRAWAL_QUEUE_CLAIM_GAS_LIMIT_DEFAULT * BigInt(requestCount);
 
-  const { txCostUsd: claimTxPriceInUsd, initialLoading: isTxCostLoading } =
+  const { txCostUsd: claimTxPriceInUsd, isLoading: isTxCostLoading } =
     useTxCostInUsd(claimGasLimit);
 
   return {

@@ -17,14 +17,14 @@ export const useTxCostInUsd = (gasLimit?: bigint, chainId?: number) => {
     maxGasPrice: maxGasPrice,
     txCostUsd: usdAmount,
 
-    get initialLoading() {
-      return maxGasPriceState.initialLoading || ethUsdState.isLoading;
+    get isLoading() {
+      return maxGasPriceState.isLoading || ethUsdState.isLoading;
     },
     get error() {
       return maxGasPriceState.error || ethUsdState.error;
     },
-    get loading() {
-      return maxGasPriceState.loading || ethUsdState.isLoading;
+    get isFetching() {
+      return maxGasPriceState.isFetching || ethUsdState.isFetching;
     },
     update() {
       return Promise.all([maxGasPriceState.update(), ethUsdState.update()]);

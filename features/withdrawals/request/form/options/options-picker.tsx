@@ -86,7 +86,7 @@ const toFloor = (num: number): string =>
 const DexButton: React.FC<OptionButtonProps> = ({ isActive, onClick }) => {
   const { balanceDiffSteth } = useTvlError();
   const isPausedByTvlError = balanceDiffSteth !== undefined;
-  const { initialLoading, bestRate, enabledDexes } = useWithdrawalRates({
+  const { isLoading, bestRate, enabledDexes } = useWithdrawalRates({
     isPaused: isPausedByTvlError,
     fallbackValue: DEFAULT_VALUE_FOR_RATE,
   });
@@ -118,7 +118,7 @@ const DexButton: React.FC<OptionButtonProps> = ({ isActive, onClick }) => {
       </OptionsPickerRow>
       <OptionsPickerRow data-testid="dexBestRate">
         <OptionsPickerSubLabel>Best Rate:</OptionsPickerSubLabel>
-        {initialLoading && !isPausedByTvlError ? (
+        {isLoading && !isPausedByTvlError ? (
           <InlineLoaderSmall />
         ) : (
           bestRateValue

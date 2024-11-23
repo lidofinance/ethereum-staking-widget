@@ -17,10 +17,10 @@ export const useDebouncedWstethBySteth = (
     get data() {
       return isActualValue ? data : undefined;
     },
-    get initialLoading() {
+    get isLoading() {
       return isActualValue ? isLoading : true;
     },
-    get loading() {
+    get isFetching() {
       return isFetching;
     },
     get error() {
@@ -48,10 +48,10 @@ export const useDebouncedStethByWsteth = (
     get data() {
       return isActualValue ? data : undefined;
     },
-    get initialLoading() {
+    get isLoading() {
       return isActualValue ? isLoading : true;
     },
-    get loading() {
+    get isFetching() {
       return isFetching;
     },
     get error() {
