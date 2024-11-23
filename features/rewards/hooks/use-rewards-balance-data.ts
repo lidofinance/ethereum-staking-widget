@@ -19,7 +19,7 @@ export const useRewardsBalanceData = () => {
         ? {
             stEthBalanceParsed: stethBalance.toString(),
             stEthCurrencyBalance:
-              // not safe
+              // accuracy is okay for display
               data &&
               Number(stethBalance / ETHER) *
                 data?.stETHCurrencyPrice[currencyObject.id],

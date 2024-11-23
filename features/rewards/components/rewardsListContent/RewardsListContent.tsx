@@ -4,7 +4,7 @@ import { Loader, Divider } from '@lidofinance/lido-ui';
 import { useRewardsHistory } from 'features/rewards/hooks';
 import { ErrorBlockNoSteth } from 'features/rewards/components/errorBlocks/ErrorBlockNoSteth';
 import { RewardsTable } from 'features/rewards/components/rewardsTable';
-import { ZERO, useStethBalance, useDappStatus } from 'modules/web3';
+import { useStethBalance, useDappStatus } from 'modules/web3';
 
 import { RewardsListsEmpty } from './RewardsListsEmpty';
 import { RewardsListErrorMessage } from './RewardsListErrorMessage';
@@ -34,7 +34,7 @@ export const RewardsListContent: FC = () => {
       account: address as Address,
       shouldSubscribeToUpdates: false,
     });
-  const hasSteth = stethBalance !== undefined && stethBalance > ZERO;
+  const hasSteth = !!stethBalance;
 
   if (!isSupportedChain) return <RewardsListsUnsupportedChain />;
 
