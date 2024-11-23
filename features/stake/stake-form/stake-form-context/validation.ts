@@ -48,7 +48,7 @@ export const stakeFormValidationResolver: Resolver<
       stakingLimitLevel,
       currentStakeLimit,
       etherBalance,
-      gasCost: gasCost,
+      gasCost,
       isMultisig,
     });
 
