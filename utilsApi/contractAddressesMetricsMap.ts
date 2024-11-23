@@ -10,6 +10,7 @@ import {
   LIDO_CONTRACT_NAMES,
   CHAINS,
 } from '@lidofinance/lido-ethereum-sdk/common';
+import { LidoLocatorAbi } from '@lidofinance/lido-ethereum-sdk/core';
 import { StethAbi } from '@lidofinance/lido-ethereum-sdk/stake';
 import { WithdrawalQueueAbi } from '@lidofinance/lido-ethereum-sdk/withdraw';
 import { WstethABI } from '@lidofinance/lido-ethereum-sdk/wrap';
@@ -21,7 +22,6 @@ import {
 import { AggregatorAbi } from 'abi/aggregator-abi';
 import { ENSRegistryAbi } from 'abi/ens-registry-abi';
 import { ENSResolverAbi } from 'abi/ens-resolver-abi';
-import { LidoLocatorAbi } from 'abi/lido-locator';
 import { PartialCurveAbi } from 'abi/partial-curve-abi';
 import { PartialStakingRouterAbi } from 'abi/partial-staking-router';
 
