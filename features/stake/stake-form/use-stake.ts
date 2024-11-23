@@ -11,7 +11,7 @@ import {
 import { config } from 'config';
 import { applyRoundUpGasLimit, useDappStatus, useLidoSDK } from 'modules/web3';
 
-import { MockLimitReachedError, getAddress } from './utils';
+import { MockLimitReachedError, getRefferalAddress } from './utils';
 import { useTxModalStagesStake } from './hooks/use-tx-modal-stages-stake';
 
 type StakeArguments = {
@@ -47,7 +47,7 @@ export const useStake = ({ onConfirm, onRetry }: StakeOptions) => {
 
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const referralAddress = referral
-          ? await getAddress(referral, stake.core.rpcProvider)
+          ? await getRefferalAddress(referral, stake.core.rpcProvider)
           : config.STAKE_FALLBACK_REFERRAL_ADDRESS;
 
         const txCallback: TransactionCallback = async ({ stage, payload }) => {

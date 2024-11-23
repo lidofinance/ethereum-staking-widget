@@ -1,7 +1,7 @@
 import { PublicClient, isAddress } from 'viem';
 import { getEnsAddress } from 'viem/ens';
 
-export const getAddress = async (
+export const getRefferalAddress = async (
   input: string,
   provider: PublicClient,
 ): Promise<string> => {
