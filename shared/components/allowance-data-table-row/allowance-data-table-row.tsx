@@ -1,7 +1,7 @@
 import { ReactNode, useMemo } from 'react';
+import { maxUint256 } from 'viem';
 import { DataTableRow } from '@lidofinance/lido-ui';
 
-import { MAX_UINT_256 } from 'modules/web3';
 import { FormatToken } from 'shared/formatters';
 import { getTokenDisplayName } from 'utils/getTokenDisplayName';
 import { TOKENS_TO_WRAP } from 'features/wsteth/shared/types';
@@ -26,7 +26,7 @@ export const AllowanceDataTableRow = ({
   ...rest
 }: AllowanceDataTableRowProps) => {
   const isInfiniteAllowance = useMemo(() => {
-    return allowance && allowance === MAX_UINT_256;
+    return allowance && allowance === maxUint256;
   }, [allowance]);
   return (
     <DataTableRow title={title} {...rest}>

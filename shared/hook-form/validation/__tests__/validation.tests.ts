@@ -1,8 +1,8 @@
 /* eslint-disable unicorn/consistent-function-scoping */
+import { maxUint256 } from 'viem';
 // TODO: There are problems with import LIDO_TOKENS
 // import { LIDO_TOKENS } from '@lidofinance/lido-ethereum-sdk/common';
 
-import { MAX_UINT_256 } from '../../../../modules/web3';
 import { validateBigintMax } from '../validate-bigint-max';
 import { validateBigintMin } from '../validate-bigint-min';
 import { validateEtherAmount } from '../validate-ether-amount';
@@ -89,8 +89,8 @@ describe('validateEtherAmount', () => {
 
   it('should throw right error on more than ethereum max uint', () => {
     const fn = () =>
-      // validateEtherAmount(field, MAX_UINT_256 + BigInt(1), LIDO_TOKENS.steth);
-      validateEtherAmount(field, MAX_UINT_256 + BigInt(1), 'stETH');
+      // validateEtherAmount(field, maxUint256 + BigInt(1), LIDO_TOKENS.steth);
+      validateEtherAmount(field, maxUint256 + BigInt(1), 'stETH');
     expect(fn).toThrowError();
     try {
       fn();

@@ -9,11 +9,9 @@ import {
   useMemo,
   useRef,
 } from 'react';
-import { formatEther, parseEther } from 'viem';
+import { formatEther, parseEther, maxUint256 } from 'viem';
 
 import { Input } from '@lidofinance/lido-ui';
-
-import { MAX_UINT_256 } from 'modules/web3';
 
 import { InputDecoratorMaxButton } from './input-decorator-max-button';
 import { InputDecoratorLocked } from './input-decorator-locked';
@@ -103,9 +101,9 @@ export const InputAmount = forwardRef<HTMLInputElement, InputAmountProps>(
             return;
           }
 
-          const cappedValue = value > MAX_UINT_256 ? MAX_UINT_256 : value;
-          if (value > MAX_UINT_256) {
-            currentValue = formatEther(MAX_UINT_256);
+          const cappedValue = value > maxUint256 ? maxUint256 : value;
+          if (value > maxUint256) {
+            currentValue = formatEther(maxUint256);
           }
           onChange?.(cappedValue);
         }

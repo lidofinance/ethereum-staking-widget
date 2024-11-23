@@ -1,4 +1,5 @@
-import { MAX_UINT_256, ZERO } from 'modules/web3';
+import { maxUint256 } from 'viem';
+import { ZERO } from 'modules/web3';
 import { getTokenDisplayName } from 'utils/getTokenDisplayName';
 import { ValidationError } from './validation-error';
 import { TOKENS_TO_WRAP } from 'features/wsteth/shared/types';
@@ -19,7 +20,7 @@ export function validateEtherAmount(
       `Enter ${getTokenDisplayName(token)} ${field} greater than 0`,
     );
 
-  if (amount > MAX_UINT_256)
+  if (amount > maxUint256)
     throw new ValidationError(
       field,
       `${getTokenDisplayName(token)} ${field} is not valid`,
