@@ -77,7 +77,7 @@ const useStakeFormNetworkData = (): StakeFormNetworkData => {
 
   const {
     data: stakingLimitInfo,
-    refetch: mutateStakeLimit,
+    refetch: refetchStakeLimit,
     isLoading: isStakingLimitIsLoading,
   } = useStakingLimitInfo();
 
@@ -104,9 +104,9 @@ const useStakeFormNetworkData = (): StakeFormNetworkData => {
     await Promise.allSettled([
       updateStethBalance(),
       updateEtherBalance(),
-      mutateStakeLimit(),
+      refetchStakeLimit(),
     ]);
-  }, [updateStethBalance, updateEtherBalance, mutateStakeLimit]);
+  }, [updateStethBalance, updateEtherBalance, refetchStakeLimit]);
 
   const loading = useMemo(
     () => ({
