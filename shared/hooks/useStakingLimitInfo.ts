@@ -1,5 +1,5 @@
 import { parseEther } from 'viem';
-import { useQuery, UseQueryResult } from '@tanstack/react-query';
+import { useQuery, type UseQueryResult } from '@tanstack/react-query';
 
 import { config } from 'config';
 import { STRATEGY_LAZY } from 'consts/react-query-strategies';

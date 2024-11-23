@@ -1,5 +1,5 @@
 import { CHAINS } from '@lidofinance/lido-ethereum-sdk/common';
-import { useQuery, UseQueryResult } from '@tanstack/react-query';
+import { useQuery, type UseQueryResult } from '@tanstack/react-query';
 
 import { ETH_API_ROUTES, getEthApiPath } from 'consts/api';
 import { STRATEGY_LAZY } from 'consts/react-query-strategies';

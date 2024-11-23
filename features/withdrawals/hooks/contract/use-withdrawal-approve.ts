@@ -1,5 +1,5 @@
 import { Address } from 'viem';
-import { useQuery, UseQueryResult } from '@tanstack/react-query';
+import { useQuery, type UseQueryResult } from '@tanstack/react-query';
 
 import { STRATEGY_EAGER } from 'consts/react-query-strategies';
 import { useLidoSDK, ZERO } from 'modules/web3';
