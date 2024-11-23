@@ -1,4 +1,4 @@
-import type { Address } from 'viem';
+import type { Hash } from 'viem';
 import { TxStageSign } from '../tx-stages-basic/tx-stage-sign';
 import { TxStagePending } from '../tx-stages-basic/tx-stage-pending';
 import { TxAmount } from '../tx-stages-parts/tx-amount';
@@ -10,7 +10,7 @@ type TxStageSignOperationAmountProps = {
   willReceive?: bigint;
   willReceiveToken?: string;
   isPending?: boolean;
-  txHash?: Address;
+  txHash?: Hash;
 };
 
 export const TxStageSignOperationAmount = ({

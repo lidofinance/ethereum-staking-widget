@@ -1,4 +1,4 @@
-import type { Address } from 'viem';
+import type { Hash } from 'viem';
 import { TxLinkEtherscan } from 'shared/components/tx-link-etherscan';
 import { TransactionModalContent } from 'shared/transaction-modal/transaction-modal-content';
 import { StageIconLoader } from './icons';
@@ -6,7 +6,7 @@ import { StageIconLoader } from './icons';
 type TxStagePendingProps = {
   description?: React.ReactNode;
   title: React.ReactNode;
-  txHash?: Address;
+  txHash?: Hash;
 };
 
 export const TxStagePending = ({

@@ -1,4 +1,4 @@
-import type { Address } from 'viem';
+import type { Hash } from 'viem';
 import { Link, Loader } from '@lidofinance/lido-ui';
 
 import { config } from 'config';
@@ -27,7 +27,7 @@ import {
 const LINK_ADD_NFT_GUIDE = `${config.helpOrigin}/en/articles/7858367-how-do-i-add-the-lido-nft-to-metamask`;
 
 type TxRequestStageSuccessProps = {
-  txHash?: Address;
+  txHash?: Hash;
   tokenName: string;
   amount: bigint;
 };

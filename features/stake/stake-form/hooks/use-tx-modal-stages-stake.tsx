@@ -1,4 +1,4 @@
-import type { Address } from 'viem';
+import type { Hash } from 'viem';
 import { Button, Link } from '@lidofinance/lido-ui';
 import { trackEvent } from '@lidofinance/analytics-matomo';
 
@@ -32,7 +32,7 @@ const getTxModalStagesStake = (transitStage: TransactionModalTransitStage) => ({
       />,
     ),
 
-  pending: (amount: bigint, txHash?: Address) =>
+  pending: (amount: bigint, txHash?: Hash) =>
     transitStage(
       <TxStageSignOperationAmount
         {...STAGE_OPERATION_ARGS}
@@ -43,7 +43,7 @@ const getTxModalStagesStake = (transitStage: TransactionModalTransitStage) => ({
       />,
     ),
 
-  success: (balance: bigint, txHash?: Address) =>
+  success: (balance: bigint, txHash?: Hash) =>
     transitStage(
       <TxStageOperationSucceedBalanceShown
         txHash={txHash}

@@ -1,4 +1,4 @@
-import type { Address } from 'viem';
+import type { Hash } from 'viem';
 import { MATOMO_CLICK_EVENTS_TYPES } from 'consts/matomo-click-events';
 
 import {
@@ -25,7 +25,7 @@ const getTxModalStagesClaim = (transitStage: TransactionModalTransitStage) => ({
       <TxStageSignOperationAmount {...STAGE_OPERATION_ARGS} amount={amount} />,
     ),
 
-  pending: (amount: bigint, txHash?: Address) =>
+  pending: (amount: bigint, txHash?: Hash) =>
     transitStage(
       <TxStageSignOperationAmount
         {...STAGE_OPERATION_ARGS}
@@ -35,7 +35,7 @@ const getTxModalStagesClaim = (transitStage: TransactionModalTransitStage) => ({
       />,
     ),
 
-  success: (amount: bigint, txHash?: Address) =>
+  success: (amount: bigint, txHash?: Hash) =>
     transitStage(
       <TxStageSuccess
         txHash={txHash}

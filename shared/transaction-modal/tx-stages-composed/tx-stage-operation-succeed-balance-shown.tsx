@@ -1,4 +1,4 @@
-import type { Address } from 'viem';
+import type { Hash } from 'viem';
 import styled from 'styled-components';
 
 import { InlineLoader } from '@lidofinance/lido-ui';
@@ -26,7 +26,7 @@ type TxStageOperationSucceedBalanceShownProps = {
   balance?: bigint;
   balanceToken: string;
   operationText: string;
-  txHash?: Address;
+  txHash?: Hash;
   footer?: React.ReactNode;
 };
 

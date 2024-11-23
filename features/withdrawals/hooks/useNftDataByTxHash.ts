@@ -1,4 +1,4 @@
-import type { Address } from 'viem';
+import type { Hash } from 'viem';
 import { decodeEventLog, getEventSelector } from 'viem';
 import { usePublicClient } from 'wagmi';
 import { WithdrawalQueueAbi } from '@lidofinance/lido-ethereum-sdk/withdraw';
@@ -16,7 +16,7 @@ type NFTApiData = {
   name: string;
 };
 
-export const useNftDataByTxHash = (txHash?: Address) => {
+export const useNftDataByTxHash = (txHash?: Hash) => {
   const { address, chainId } = useDappStatus();
   const { withdraw } = useLidoSDK();
   const publicClient = usePublicClient({ chainId });

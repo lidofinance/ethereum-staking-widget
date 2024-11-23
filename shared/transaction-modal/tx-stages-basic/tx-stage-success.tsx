@@ -1,10 +1,10 @@
-import type { Address } from 'viem';
+import type { Hash } from 'viem';
 import { TxLinkEtherscan } from 'shared/components/tx-link-etherscan';
 import { TransactionModalContent } from 'shared/transaction-modal/transaction-modal-content';
 import { StageIconSuccess } from './icons';
 
 type TxStageSuccessProps = {
-  txHash?: Address;
+  txHash?: Hash;
   description: React.ReactNode;
   title: React.ReactNode;
   footer?: React.ReactNode;

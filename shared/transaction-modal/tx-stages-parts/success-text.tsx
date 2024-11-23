@@ -1,9 +1,9 @@
-import type { Address } from 'viem';
+import type { Hash } from 'viem';
 import { TxLinkEtherscan } from 'shared/components/tx-link-etherscan';
 
 type SuccessTextProps = {
   operationText: string;
-  txHash?: Address;
+  txHash?: Hash;
 };
 
 export const SuccessText = ({ operationText, txHash }: SuccessTextProps) => {

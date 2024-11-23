@@ -1,4 +1,4 @@
-import type { Address } from 'viem';
+import type { Hash } from 'viem';
 import {
   TransactionModalTransitStage,
   useTransactionModalStage,
@@ -30,7 +30,7 @@ const getTxModalStagesUnwrap = (
       <TxStageSignOperationAmount {...STAGE_APPROVE_ARGS} amount={amount} />,
     ),
 
-  pendingApproval: (amount: bigint, txHash?: Address) =>
+  pendingApproval: (amount: bigint, txHash?: Hash) =>
     transitStage(
       <TxStageSignOperationAmount
         {...STAGE_APPROVE_ARGS}
@@ -49,7 +49,7 @@ const getTxModalStagesUnwrap = (
       />,
     ),
 
-  pending: (amount: bigint, willReceive: bigint, txHash?: Address) =>
+  pending: (amount: bigint, willReceive: bigint, txHash?: Hash) =>
     transitStage(
       <TxStageSignOperationAmount
         {...STAGE_OPERATION_ARGS}
@@ -60,7 +60,7 @@ const getTxModalStagesUnwrap = (
       />,
     ),
 
-  success: (balance: bigint, txHash?: Address) =>
+  success: (balance: bigint, txHash?: Hash) =>
     transitStage(
       <TxStageOperationSucceedBalanceShown
         txHash={txHash}
