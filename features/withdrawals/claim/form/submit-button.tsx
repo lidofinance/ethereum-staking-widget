@@ -5,7 +5,7 @@ import { Connect, DisabledButton } from 'shared/wallet';
 import { FormatToken } from 'shared/formatters/format-token';
 import { isValidationErrorTypeUnhandled } from 'shared/hook-form/validation/validation-error';
 
-import { ZERO, useDappStatus } from 'modules/web3';
+import { useDappStatus } from 'modules/web3';
 
 import { ClaimFormInputType, useClaimFormData } from '../claim-form-context';
 
@@ -28,10 +28,9 @@ export const SubmitButton = () => {
       !isValidationErrorTypeUnhandled(errors.requests.type)) ||
     selectedRequests.length === 0;
 
-  const claimButtonAmount =
-    ethToClaim <= ZERO ? null : (
-      <FormatToken showAmountTip={false} amount={ethToClaim} symbol="ETH" />
-    );
+  const claimButtonAmount = ethToClaim ? null : (
+    <FormatToken showAmountTip={false} amount={ethToClaim} symbol="ETH" />
+  );
 
   return (
     <Button
