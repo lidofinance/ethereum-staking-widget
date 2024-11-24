@@ -4,7 +4,7 @@ import { usePublicClient } from 'wagmi';
 import { WithdrawalQueueAbi } from '@lidofinance/lido-ethereum-sdk/withdraw';
 import { useQuery } from '@tanstack/react-query';
 
-import { STRATEGY_EAGER } from 'consts/react-query-strategies';
+import { STRATEGY_CONSTANT } from 'consts/react-query-strategies';
 import { useDappStatus, useLidoSDK } from 'modules/web3';
 import { standardFetcher } from 'utils/standardFetcher';
 
@@ -21,10 +21,10 @@ export const useNftDataByTxHash = (txHash?: Hash) => {
   const { withdraw } = useLidoSDK();
   const publicClient = usePublicClient({ chainId });
 
-  const queryResult = useQuery<NFTApiData[] | null>({
+  return useQuery<NFTApiData[] | null>({
     queryKey: ['nft-data-by-tx-hash', txHash, address],
     enabled: !!(txHash && address && publicClient),
-    ...STRATEGY_EAGER,
+    ...STRATEGY_CONSTANT,
     queryFn: async () => {
       if (!txHash || !address || !publicClient) return null;
 
@@ -49,10 +49,11 @@ export const useNftDataByTxHash = (txHash?: Hash) => {
 
       const nftDataRequests = events.map((e) => {
         const fetch = async () => {
-          const tokenURI = await withdraw.contract
-            .getContractWithdrawalQueue()
-            // @ts-expect-error: typing (The property 'read' exists!)
-            .read.tokenURI([Number(e.args.requestId)]);
+          const contractWithdrawalQueue =
+            await withdraw.contract.getContractWithdrawalQueue();
+          const tokenURI = await contractWithdrawalQueue.read.tokenURI([
+            e.args.requestId,
+          ]);
           const nftData = await standardFetcher<NFTApiData>(tokenURI);
           return nftData;
         };
@@ -65,6 +66,4 @@ export const useNftDataByTxHash = (txHash?: Hash) => {
       return nftData;
     },
   });
-
-  return queryResult;
 };
