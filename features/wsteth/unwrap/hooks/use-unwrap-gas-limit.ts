@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { config } from 'config';
 import { UNWRAP_GAS_LIMIT, UNWRAP_L2_GAS_LIMIT } from 'consts/tx';
 import { STRATEGY_LAZY } from 'consts/react-query-strategies';
-import { useLidoSDK, useDappStatus } from 'modules/web3';
+import { useLidoSDK, useDappStatus, ESTIMATE_AMOUNT } from 'modules/web3';
 
 export const useUnwrapGasLimit = () => {
   const { isDappActiveOnL2 } = useDappStatus();
@@ -19,7 +19,7 @@ export const useUnwrapGasLimit = () => {
           ? await l2.getContract()
           : await wrap.getContractWstETH();
 
-        return await contract.estimateGas.unwrap([config.ESTIMATE_AMOUNT], {
+        return await contract.estimateGas.unwrap([ESTIMATE_AMOUNT], {
           account: config.ESTIMATE_ACCOUNT,
         });
       } catch (error) {

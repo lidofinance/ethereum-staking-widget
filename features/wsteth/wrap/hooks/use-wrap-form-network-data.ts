@@ -1,6 +1,5 @@
 import { useCallback, useMemo } from 'react';
 
-import { config } from 'config';
 import { useTokenMaxAmount } from 'shared/hooks/use-token-max-amount';
 import { useStakingLimitInfo } from 'shared/hooks';
 
@@ -11,6 +10,7 @@ import {
   useWstethBalance,
   useMaxGasPrice,
   useIsMultisig,
+  BALANCE_PADDING,
 } from 'modules/web3';
 
 // Provides all data fetching for form to function
@@ -32,7 +32,7 @@ export const useWrapFormNetworkData = () => {
     limit: stakeLimitInfo?.currentStakeLimit,
     isPadded: !isMultisig,
     gasLimit: gasLimitETH,
-    padding: config.BALANCE_PADDING,
+    padding: BALANCE_PADDING,
     isLoading: isMultisigLoading,
   });
 

@@ -12,8 +12,11 @@ import { useRouter } from 'next/router';
 import { parseEther } from 'viem';
 import invariant from 'tiny-invariant';
 
-import { config } from 'config';
-import { useEthereumBalance, useStethBalance } from 'modules/web3';
+import {
+  useEthereumBalance,
+  useStethBalance,
+  BALANCE_PADDING,
+} from 'modules/web3';
 
 import {
   FormControllerContext,
@@ -96,7 +99,7 @@ const useStakeFormNetworkData = (): StakeFormNetworkData => {
     limit: stakingLimitInfo?.currentStakeLimit,
     isPadded: !isMultisig,
     gasLimit: gasLimit,
-    padding: config.BALANCE_PADDING,
+    padding: BALANCE_PADDING,
     isLoading: isMultisigLoading,
   });
 

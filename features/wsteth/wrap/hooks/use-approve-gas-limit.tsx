@@ -6,7 +6,7 @@ import {
 } from 'consts/tx';
 import { STRATEGY_LAZY } from 'consts/react-query-strategies';
 
-import { useLidoSDK, useDappStatus } from 'modules/web3';
+import { useLidoSDK, useDappStatus, ESTIMATE_AMOUNT } from 'modules/web3';
 
 export const useApproveGasLimit = () => {
   const { isDappActiveOnL2 } = useDappStatus();
@@ -27,12 +27,9 @@ export const useApproveGasLimit = () => {
 
         const contract = await (isL2 ? l2.getContract() : stETH.getContract());
 
-        return await contract.estimateGas.approve(
-          [spender, config.ESTIMATE_AMOUNT],
-          {
-            account: config.ESTIMATE_ACCOUNT,
-          },
-        );
+        return await contract.estimateGas.approve([spender, ESTIMATE_AMOUNT], {
+          account: config.ESTIMATE_ACCOUNT,
+        });
       } catch (error) {
         console.warn(error);
         return fallback;

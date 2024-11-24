@@ -1,9 +1,8 @@
 import { useQuery } from '@tanstack/react-query';
 import { zeroAddress } from 'viem';
 import { config } from 'config';
-import { ESTIMATE_AMOUNT } from 'config/groups/web3';
 import { STRATEGY_CONSTANT } from 'consts/react-query-strategies';
-import { useLidoSDK } from 'modules/web3';
+import { useLidoSDK, ESTIMATE_AMOUNT } from 'modules/web3';
 import { applyGasLimitRatio } from 'utils/apply-gas-limit-ratio';
 
 export const useStethSubmitGasLimit = (): bigint => {

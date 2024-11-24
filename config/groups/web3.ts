@@ -18,6 +18,3 @@ export const PROVIDER_MAX_BATCH = 20;
 
 // on Mainnet, Holesky, Sepolia, Optimism, Optimism Sepolia
 export const ESTIMATE_ACCOUNT = '0x87c0e047F4e4D3e289A56a36570D4CB957A37Ef1';
-
-// TODO: see the BALANCE_PADDING in 'config/groups/stake.ts'
-export const ESTIMATE_AMOUNT = BigInt(1000000000000000); // same as parseEther('0.001')

@@ -9,16 +9,6 @@ import { preConfig } from '../get-preconfig';
 
 export const PRECISION = 10 ** 6;
 
-// TODO
-// Can't use this code.
-// The problem is caused by incompatibility between viem (ESM only) and CJS in Next.js 12 (uses CommonJS for server rendering.)
-// code```
-//  import { parseEther } from 'viem';
-//  parseEther('0.01');
-// ```
-// how much to leave out on user balance when max is pressed
-export const BALANCE_PADDING = BigInt(10000000000000000); // same as parseEther('0.01')
-
 export const SUBMIT_EXTRA_GAS_TRANSACTION_RATIO = 1.05;
 
 export const STETH_SUBMIT_GAS_LIMIT_DEFAULT = 90000;
