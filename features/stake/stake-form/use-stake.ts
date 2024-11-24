@@ -61,10 +61,14 @@ export const useStake = ({ onConfirm, onRetry }: StakeOptions) => {
               // the payload here is txHash
               txHash = payload;
               break;
-            case TransactionCallbackStage.DONE:
-              await onConfirm?.();
-              txModalStages.success(await stETH.balance(address), txHash);
+            case TransactionCallbackStage.DONE: {
+              const [, balance] = await Promise.all([
+                onConfirm?.(),
+                stETH.balance(address),
+              ]);
+              txModalStages.success(balance, txHash);
               break;
+            }
             case TransactionCallbackStage.MULTISIG_DONE:
               txModalStages.successMultisig();
               break;

@@ -61,15 +61,16 @@ export const useWrapFormProcessor = ({
                   // the payload here is txHash
                   txHash = payload;
                   break;
-                case TransactionCallbackStage.DONE:
-                  await onConfirm?.();
-                  txModalStages.success(
-                    await (isDappActiveOnL2
+                case TransactionCallbackStage.DONE: {
+                  const [, balance] = await Promise.all([
+                    onConfirm?.(),
+                    isDappActiveOnL2
                       ? l2.wsteth.balance(address)
-                      : wstETH.balance(address)),
-                    txHash,
-                  );
+                      : wstETH.balance(address),
+                  ]);
+                  txModalStages.success(balance, txHash);
                   break;
+                }
                 case TransactionCallbackStage.MULTISIG_DONE:
                   txModalStages.successMultisig();
                   break;
@@ -101,15 +102,16 @@ export const useWrapFormProcessor = ({
                   // the payload here is txHash
                   txHash = payload;
                   break;
-                case TransactionCallbackStage.DONE:
-                  await onConfirm?.();
-                  txModalStages.success(
-                    await (isDappActiveOnL2
+                case TransactionCallbackStage.DONE: {
+                  const [, balance] = await Promise.all([
+                    onConfirm?.(),
+                    isDappActiveOnL2
                       ? l2.wsteth.balance(address)
-                      : wstETH.balance(address)),
-                    txHash,
-                  );
+                      : wstETH.balance(address),
+                  ]);
+                  txModalStages.success(balance, txHash);
                   break;
+                }
                 case TransactionCallbackStage.MULTISIG_DONE:
                   txModalStages.successMultisig();
                   break;
@@ -140,15 +142,16 @@ export const useWrapFormProcessor = ({
                   // the payload here is txHash
                   txHash = payload;
                   break;
-                case TransactionCallbackStage.DONE:
-                  await onConfirm?.();
-                  txModalStages.success(
-                    await (isDappActiveOnL2
+                case TransactionCallbackStage.DONE: {
+                  const [, balance] = await Promise.all([
+                    onConfirm?.(),
+                    isDappActiveOnL2
                       ? l2.wsteth.balance(address)
-                      : wstETH.balance(address)),
-                    txHash,
-                  );
+                      : wstETH.balance(address),
+                  ]);
+                  txModalStages.success(balance, txHash);
                   break;
+                }
                 case TransactionCallbackStage.MULTISIG_DONE:
                   txModalStages.successMultisig();
                   break;
