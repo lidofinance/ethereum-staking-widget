@@ -15,7 +15,6 @@ import {
   LidoSDKstETH,
   LidoSDKwstETH,
 } from '@lidofinance/lido-ethereum-sdk/erc20';
-import { LidoSDKShares } from '@lidofinance/lido-ethereum-sdk/shares';
 import { LidoSDKL2 } from '@lidofinance/lido-ethereum-sdk/l2';
 import { LidoSDKWrap } from '@lidofinance/lido-ethereum-sdk/wrap';
 import { LidoSDKWithdraw } from '@lidofinance/lido-ethereum-sdk/withdraw';
@@ -32,7 +31,6 @@ type LidoSDKContextValue = {
   wstETH: LidoSDKwstETH;
   l2: LidoSDKL2;
   wrap: LidoSDKWrap;
-  shares: LidoSDKShares;
   withdraw: LidoSDKWithdraw;
   statistics: LidoSDKStatistics;
   chainId: CHAINS;
@@ -88,7 +86,6 @@ export const LidoSDKProvider = ({ children }: React.PropsWithChildren) => {
     const stETH = new LidoSDKstETH({ core });
     const wstETH = new LidoSDKwstETH({ core });
     const wrap = new LidoSDKWrap({ core });
-    const shares = new LidoSDKShares({ core });
     const withdraw = new LidoSDKWithdraw({ core });
     const l2 = new LidoSDKL2({ core });
     const statistics = new LidoSDKStatistics({ core });
@@ -99,7 +96,6 @@ export const LidoSDKProvider = ({ children }: React.PropsWithChildren) => {
       stETH,
       wstETH,
       wrap,
-      shares,
       withdraw,
       l2,
       statistics,

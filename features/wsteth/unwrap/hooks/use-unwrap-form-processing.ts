@@ -26,7 +26,7 @@ export const useUnwrapFormProcessor = ({
 }: UseUnwrapFormProcessorArgs) => {
   const { isDappActiveOnL2, address } = useDappStatus();
   const { txModalStages } = useTxModalStagesUnwrap();
-  const { l2, stETH, wrap, isL2, shares } = useLidoSDK();
+  const { l2, stETH, wrap, isL2 } = useLidoSDK();
   // Using useRef here instead of useState to store txHash because useRef updates immediately
   // without triggering a rerender. Also, the React 18 also has issues with asynchronous state updates.
   const txHashRef = useRef<Address | undefined>(undefined);
@@ -44,7 +44,7 @@ export const useUnwrapFormProcessor = ({
 
         const willReceive = await (isDappActiveOnL2
           ? l2.steth.convertToSteth(amount)
-          : shares.convertToSteth(amount));
+          : wrap.convertWstethToSteth(amount));
 
         if (isL2 && isApprovalNeededBeforeUnwrapOnL2) {
           await processApproveTxOnL2({ onRetry });
@@ -127,7 +127,6 @@ export const useUnwrapFormProcessor = ({
       address,
       isDappActiveOnL2,
       l2,
-      shares,
       isL2,
       isApprovalNeededBeforeUnwrapOnL2,
       processApproveTxOnL2,

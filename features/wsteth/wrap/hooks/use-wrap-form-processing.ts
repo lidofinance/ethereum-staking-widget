@@ -27,7 +27,7 @@ export const useWrapFormProcessor = ({
   onRetry,
 }: UseWrapFormProcessorArgs) => {
   const { isDappActiveOnL2, address } = useDappStatus();
-  const { l2, shares, wrap, wstETH } = useLidoSDK();
+  const { l2, wrap, wstETH } = useLidoSDK();
   const { txModalStages } = useTxModalWrap();
   // Using useRef here instead of useState to store txHash because useRef updates immediately
   // without triggering a rerender. Also, the React 18 also has issues with asynchronous state updates.
@@ -46,7 +46,7 @@ export const useWrapFormProcessor = ({
 
         const willReceive = await (isDappActiveOnL2
           ? l2.steth.convertToShares(amount)
-          : shares.convertToShares(amount));
+          : wrap.convertStethToWsteth(amount));
 
         if (isDappActiveOnL2) {
           // The operation 'stETH to wstETH' on L2 is 'unwrap'
@@ -174,13 +174,12 @@ export const useWrapFormProcessor = ({
       address,
       isDappActiveOnL2,
       l2,
-      shares,
+      wrap,
       txModalStages,
       onConfirm,
       wstETH,
       onRetry,
       isApprovalNeededBeforeWrapOnL1,
-      wrap,
       processApproveTxOnL1,
     ],
   );
