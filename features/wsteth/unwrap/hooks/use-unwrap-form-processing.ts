@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import type { Address } from 'viem';
-import { useCallback, useRef } from 'react';
+import type { Hash } from 'viem';
+import { useCallback } from 'react';
 import invariant from 'tiny-invariant';
 
 import { TransactionCallbackStage } from '@lidofinance/lido-ethereum-sdk/core';
@@ -27,9 +27,6 @@ export const useUnwrapFormProcessor = ({
   const { isDappActiveOnL2, address } = useDappStatus();
   const { txModalStages } = useTxModalStagesUnwrap();
   const { l2, stETH, wrap, isL2 } = useLidoSDK();
-  // Using useRef here instead of useState to store txHash because useRef updates immediately
-  // without triggering a rerender. Also, the React 18 also has issues with asynchronous state updates.
-  const txHashRef = useRef<Address | undefined>(undefined);
 
   const {
     isApprovalNeededBeforeUnwrap: isApprovalNeededBeforeUnwrapOnL2,
@@ -41,6 +38,8 @@ export const useUnwrapFormProcessor = ({
       try {
         invariant(amount, 'amount should be presented');
         invariant(address, 'address should be presented');
+
+        let txHash: Hash | undefined = undefined;
 
         const willReceive = await (isDappActiveOnL2
           ? l2.steth.convertToSteth(amount)
@@ -62,7 +61,7 @@ export const useUnwrapFormProcessor = ({
                 case TransactionCallbackStage.RECEIPT:
                   // the payload here is txHash
                   txModalStages.pending(amount, willReceive, payload);
-                  txHashRef.current = payload;
+                  txHash = payload;
                   break;
                 case TransactionCallbackStage.DONE:
                   await onConfirm?.();
@@ -70,7 +69,7 @@ export const useUnwrapFormProcessor = ({
                     await (isDappActiveOnL2
                       ? l2.steth.balance(address)
                       : stETH.balance(address)),
-                    txHashRef.current,
+                    txHash,
                   );
                   break;
                 case TransactionCallbackStage.MULTISIG_DONE:
@@ -93,7 +92,7 @@ export const useUnwrapFormProcessor = ({
                   break;
                 case TransactionCallbackStage.RECEIPT:
                   txModalStages.pending(amount, willReceive, payload);
-                  txHashRef.current = payload; // the payload here is txHash
+                  txHash = payload; // the payload here is txHash
                   break;
                 case TransactionCallbackStage.DONE:
                   await onConfirm?.();
@@ -101,7 +100,7 @@ export const useUnwrapFormProcessor = ({
                     await (isDappActiveOnL2
                       ? l2.steth.balance(address)
                       : stETH.balance(address)),
-                    txHashRef.current,
+                    txHash,
                   );
                   break;
                 case TransactionCallbackStage.MULTISIG_DONE:

@@ -1,5 +1,5 @@
-import type { Address } from 'viem';
-import { useCallback, useRef } from 'react';
+import type { Hash } from 'viem';
+import { useCallback } from 'react';
 import invariant from 'tiny-invariant';
 
 import { TransactionCallbackStage } from '@lidofinance/lido-ethereum-sdk/core';
@@ -29,9 +29,6 @@ export const useWrapFormProcessor = ({
   const { isDappActiveOnL2, address } = useDappStatus();
   const { l2, wrap, wstETH } = useLidoSDK();
   const { txModalStages } = useTxModalWrap();
-  // Using useRef here instead of useState to store txHash because useRef updates immediately
-  // without triggering a rerender. Also, the React 18 also has issues with asynchronous state updates.
-  const txHashRef = useRef<Address | undefined>(undefined);
 
   const {
     isApprovalNeededBeforeWrap: isApprovalNeededBeforeWrapOnL1,
@@ -43,6 +40,8 @@ export const useWrapFormProcessor = ({
       try {
         invariant(amount, 'amount should be presented');
         invariant(address, 'address should be presented');
+
+        let txHash: Hash | undefined = undefined;
 
         const willReceive = await (isDappActiveOnL2
           ? l2.steth.convertToShares(amount)
@@ -60,7 +59,7 @@ export const useWrapFormProcessor = ({
                 case TransactionCallbackStage.RECEIPT:
                   txModalStages.pending(amount, token, willReceive, payload);
                   // the payload here is txHash
-                  txHashRef.current = payload;
+                  txHash = payload;
                   break;
                 case TransactionCallbackStage.DONE:
                   await onConfirm?.();
@@ -68,7 +67,7 @@ export const useWrapFormProcessor = ({
                     await (isDappActiveOnL2
                       ? l2.wsteth.balance(address)
                       : wstETH.balance(address)),
-                    txHashRef.current,
+                    txHash,
                   );
                   break;
                 case TransactionCallbackStage.MULTISIG_DONE:
@@ -100,7 +99,7 @@ export const useWrapFormProcessor = ({
                 case TransactionCallbackStage.RECEIPT:
                   txModalStages.pending(amount, token, willReceive, payload);
                   // the payload here is txHash
-                  txHashRef.current = payload;
+                  txHash = payload;
                   break;
                 case TransactionCallbackStage.DONE:
                   await onConfirm?.();
@@ -108,7 +107,7 @@ export const useWrapFormProcessor = ({
                     await (isDappActiveOnL2
                       ? l2.wsteth.balance(address)
                       : wstETH.balance(address)),
-                    txHashRef.current,
+                    txHash,
                   );
                   break;
                 case TransactionCallbackStage.MULTISIG_DONE:
@@ -139,7 +138,7 @@ export const useWrapFormProcessor = ({
                 case TransactionCallbackStage.RECEIPT:
                   txModalStages.pending(amount, token, willReceive, payload);
                   // the payload here is txHash
-                  txHashRef.current = payload;
+                  txHash = payload;
                   break;
                 case TransactionCallbackStage.DONE:
                   await onConfirm?.();
@@ -147,7 +146,7 @@ export const useWrapFormProcessor = ({
                     await (isDappActiveOnL2
                       ? l2.wsteth.balance(address)
                       : wstETH.balance(address)),
-                    txHashRef.current,
+                    txHash,
                   );
                   break;
                 case TransactionCallbackStage.MULTISIG_DONE:

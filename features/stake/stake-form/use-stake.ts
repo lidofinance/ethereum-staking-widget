@@ -1,6 +1,6 @@
-import type { Address } from 'viem';
+import type { Hash } from 'viem';
 import { getAddress as getAddressViem } from 'viem';
-import { useCallback, useRef } from 'react';
+import { useCallback } from 'react';
 import invariant from 'tiny-invariant';
 
 import {
@@ -28,9 +28,6 @@ export const useStake = ({ onConfirm, onRetry }: StakeOptions) => {
   const { address } = useDappStatus();
   const { stake, stETH } = useLidoSDK();
   const { txModalStages } = useTxModalStagesStake();
-  // Using useRef here instead of useState to store txHash because useRef updates immediately
-  // without triggering a rerender. Also, the React 18 also has issues with asynchronous state updates.
-  const txHashRef = useRef<Address | undefined>(undefined);
 
   return useCallback(
     async ({ amount, referral }: StakeArguments): Promise<boolean> => {
@@ -50,6 +47,7 @@ export const useStake = ({ onConfirm, onRetry }: StakeOptions) => {
           ? await getRefferalAddress(referral, stake.core.rpcProvider)
           : config.STAKE_FALLBACK_REFERRAL_ADDRESS;
 
+        let txHash: Hash | undefined = undefined;
         const txCallback: TransactionCallback = async ({ stage, payload }) => {
           switch (stage) {
             case TransactionCallbackStage.SIGN:
@@ -61,14 +59,11 @@ export const useStake = ({ onConfirm, onRetry }: StakeOptions) => {
             case TransactionCallbackStage.RECEIPT:
               txModalStages.pending(amount, payload);
               // the payload here is txHash
-              txHashRef.current = payload;
+              txHash = payload;
               break;
             case TransactionCallbackStage.DONE:
               await onConfirm?.();
-              txModalStages.success(
-                await stETH.balance(address),
-                txHashRef.current,
-              );
+              txModalStages.success(await stETH.balance(address), txHash);
               break;
             case TransactionCallbackStage.MULTISIG_DONE:
               txModalStages.successMultisig();
