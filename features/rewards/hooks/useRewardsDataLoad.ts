@@ -56,10 +56,6 @@ export const useRewardsDataLoad: UseRewardsDataLoad = (props) => {
     queryKey: ['rewards-data', address, apiRewardsUrl],
     enabled: !!address,
     ...STRATEGY_LAZY,
-    staleTime: 0,
-    // TODO
-    // @ts-expect-error: cacheTime is a valid property on the UseQueryOptions type
-    cacheTime: 0,
     queryFn: async ({ signal }) => {
       // The 'react-query' has AbortController support built in,
       // and it automatically cancels requests when
