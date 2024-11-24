@@ -49,18 +49,20 @@ export const useWithdrawRequestTxPrice = ({
     return `${basePath}/v1/estimate-gas?${params}`;
   }, [debouncedRequestCount, token]);
 
-  const { data: permitEstimateData, isLoading: permitLoading } = useQuery<{
-    gasLimit: number;
-  }>({
+  const { data: permitGasLimit, isLoading: permitLoading } = useQuery<
+    { gasLimit: number },
+    Error,
+    bigint | undefined
+  >({
     queryKey: ['permit-estimate', url],
     enabled: !!chainId && !isApprovalFlow,
     ...STRATEGY_LAZY,
     queryFn: () => standardFetcher<{ gasLimit: number }>(url),
+    select: (permitEstimateData) =>
+      permitEstimateData
+        ? BigInt(permitEstimateData.gasLimit || '0')
+        : undefined,
   });
-
-  const permitGasLimit = permitEstimateData
-    ? BigInt(permitEstimateData.gasLimit || '0')
-    : undefined;
 
   const { data: approvalFlowGasLimit, isLoading: approvalLoading } =
     useQuery<bigint>({
