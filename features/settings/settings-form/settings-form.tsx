@@ -8,7 +8,7 @@ import { Button, ToastSuccess, Block, Input } from '@lidofinance/lido-ui';
 import { useUserConfig } from 'config/user-config';
 import { CHAINS } from 'consts/chains';
 import { LinkArrow } from 'shared/components/link-arrow/link-arrow';
-import { useContractAddress } from 'shared/hooks/use-contract-address';
+import { useContractAddress } from 'modules/web3';
 import { RPCErrorType, checkRpcUrl } from 'utils/check-rpc-url';
 
 import {

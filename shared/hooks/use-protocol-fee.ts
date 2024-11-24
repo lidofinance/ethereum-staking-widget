@@ -3,8 +3,7 @@ import type { LIDO_CONTRACT_NAMES } from '@lidofinance/lido-ethereum-sdk/common'
 import { useQuery } from '@tanstack/react-query';
 
 import { STRATEGY_CONSTANT } from 'consts/react-query-strategies';
-import { useLidoSDK } from 'modules/web3';
-import { useContractAddress } from './use-contract-address';
+import { useLidoSDK, useContractAddress } from 'modules/web3';
 
 export const useProtocolFee = () => {
   const { core } = useLidoSDK();

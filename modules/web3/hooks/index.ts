@@ -1,5 +1,6 @@
 export * from './use-allowance';
 export * from './use-balance';
+export * from './use-contract-address';
 export * from './use-dapp-status';
 export * from './use-is-contract';
 export * from './use-tx-conformation';

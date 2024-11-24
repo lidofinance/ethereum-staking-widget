@@ -16,11 +16,10 @@ import { useGetRpcUrlByChainId } from 'config/rpc';
 import { SETTINGS_PATH } from 'consts/urls';
 import { STRATEGY_LAZY } from 'consts/react-query-strategies';
 
-import { useDappStatus } from 'modules/web3';
+import { useDappStatus, useContractAddress } from 'modules/web3';
 import { useCSPViolation } from 'features/ipfs/csp-violation-box/use-csp-violation';
 import { useRouterPath } from 'shared/hooks/use-router-path';
 import { useLocalStorage } from 'shared/hooks/use-local-storage';
-import { useContractAddress } from 'shared/hooks/use-contract-address';
 import { checkRpcUrl } from 'utils/check-rpc-url';
 
 type IPFSInfoBoxStatusesContextValue = {

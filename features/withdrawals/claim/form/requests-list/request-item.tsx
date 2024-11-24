@@ -9,9 +9,8 @@ import {
 } from '@lidofinance/lido-ui';
 import type { LIDO_CONTRACT_NAMES } from '@lidofinance/lido-ethereum-sdk/common';
 
-import { useContractAddress } from 'shared/hooks/use-contract-address';
 import { FormatToken } from 'shared/formatters';
-import { useDappStatus } from 'modules/web3';
+import { useDappStatus, useContractAddress } from 'modules/web3';
 import { getNFTUrl } from 'utils';
 
 import { useClaimFormData, ClaimFormInputType } from '../../claim-form-context';
