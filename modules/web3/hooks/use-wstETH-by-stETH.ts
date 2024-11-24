@@ -4,7 +4,7 @@ import { useLidoSDK } from 'modules/web3';
 export const useWstethBySteth = (steth?: bigint | null) => {
   const { isL2, l2, shares, chainId } = useLidoSDK();
 
-  const { data, error, isLoading, isFetching, refetch } = useQuery({
+  return useQuery({
     queryKey: ['use-wsteth-by-steth', steth?.toString(), isL2, chainId],
     enabled: steth != null && !!(isL2 ? l2.wsteth : shares),
     staleTime: Infinity,
@@ -16,12 +16,4 @@ export const useWstethBySteth = (steth?: bigint | null) => {
         : shares.convertToShares(steth);
     },
   });
-
-  return {
-    data,
-    isLoading,
-    isFetching,
-    error,
-    refetch,
-  };
 };
