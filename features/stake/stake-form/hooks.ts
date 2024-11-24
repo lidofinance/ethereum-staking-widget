@@ -10,7 +10,6 @@ export const useStethSubmitGasLimit = (): bigint => {
 
   const { data } = useQuery({
     queryKey: ['submit-gas-limit', stake.core.chainId],
-    enabled: !!stake.core && !!stake.core.chainId,
     ...STRATEGY_CONSTANT,
     queryFn: async () => {
       const stethContract = await stake.getContractStETH();
