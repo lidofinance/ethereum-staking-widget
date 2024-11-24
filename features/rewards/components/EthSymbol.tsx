@@ -1,6 +1,5 @@
 import { Box } from '@lidofinance/lido-ui';
-
-const ETHER_SYMBOL = 'Ξ';
+import { ETHER_SYMBOL } from 'modules/web3';
 
 // TODO: move to separate folders
 const EthSymbol = () => (
