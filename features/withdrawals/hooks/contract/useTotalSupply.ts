@@ -6,7 +6,7 @@ export const useTotalSupply = (): UseQueryResult<bigint | undefined> => {
   const { stETH } = useLidoSDK();
 
   return useQuery({
-    queryKey: ['use-total-supply', stETH],
+    queryKey: ['use-total-supply', stETH.core.chainId],
     queryFn: async () => stETH.totalSupply(),
     ...STRATEGY_LAZY,
     enabled: !!stETH,
