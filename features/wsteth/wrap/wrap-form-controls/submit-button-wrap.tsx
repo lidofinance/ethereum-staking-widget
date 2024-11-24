@@ -8,7 +8,7 @@ export const SubmitButtonWrap = () => {
 
   return (
     <SubmitButtonHookForm
-      isLocked={!!isLocked}
+      isLocked={isLocked}
       errorField="amount"
       data-testid="wrapBtn"
     >

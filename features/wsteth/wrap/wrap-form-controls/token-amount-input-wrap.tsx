@@ -22,7 +22,7 @@ export const TokenAmountInputWrap = (props: TokenAmountInputWrapProps) => {
       fieldName="amount"
       token={token}
       data-testid="wrapInput"
-      isLocked={!!isApprovalNeededBeforeWrap}
+      isLocked={isApprovalNeededBeforeWrap}
       maxValue={maxAmount}
       showErrorMessage={false}
       leftDecorator={isDappActiveOnL2 ? <Steth /> : undefined}
