@@ -14,7 +14,7 @@ export const NFT_URL_PREFIX_BY_NETWORK: {
 
 export const getNFTUrl = (
   tokenId: string,
-  contractAddress?: Address | string | null,
+  contractAddress?: Address | null,
   chainId?: CHAINS,
 ) => {
   if (!chainId || !contractAddress) return '';
