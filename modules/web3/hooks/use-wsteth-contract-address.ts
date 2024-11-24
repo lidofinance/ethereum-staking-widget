@@ -4,18 +4,11 @@ import { useLidoSDK } from 'modules/web3';
 export const useWstETHContractAddress = () => {
   const { wstETH, l2, isL2 } = useLidoSDK();
 
-  const { data, error, isLoading, isFetching } = useQuery({
+  return useQuery({
     queryKey: ['use-wsteth-contract-address', isL2, l2.wsteth, wstETH],
     enabled: !!(isL2 ? l2.wsteth : wstETH),
     staleTime: Infinity,
     queryFn: () =>
       isL2 ? l2.wsteth.contractAddress() : wstETH.contractAddress(),
   });
-
-  return {
-    data,
-    isLoading,
-    isFetching,
-    error,
-  };
 };
