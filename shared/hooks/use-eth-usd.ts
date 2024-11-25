@@ -7,9 +7,11 @@ import { useQuery } from '@tanstack/react-query';
 import { AggregatorAbi } from 'abi/aggregator-abi';
 import { AGGREGATOR_STETH_USD_PRICE_FEED_BY_NETWORK } from 'consts/aggregator';
 import { STRATEGY_LAZY } from 'consts/react-query-strategies';
+import { useWagmiMainnetOnlyConfig } from 'modules/web3';
 
 export const useEthUsd = (amount?: bigint) => {
-  const publicClientMainnet = usePublicClient({ chainId: CHAINS.Mainnet });
+  const wagmiConfig = useWagmiMainnetOnlyConfig();
+  const publicClientMainnet = usePublicClient({ config: wagmiConfig });
 
   const {
     data: price,

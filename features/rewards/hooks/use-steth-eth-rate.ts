@@ -3,13 +3,14 @@ import { useReadContract, usePublicClient } from 'wagmi';
 
 import { PartialCurveAbi } from 'abi/partial-curve-abi';
 import { WEI_PER_ETHER } from 'consts/tx';
-import { useDappStatus } from 'modules/web3';
+import { useDappStatus, useWagmiMainnetOnlyConfig } from 'modules/web3';
 
 export const MAINNET_CURVE = '0xDC24316b9AE028F1497c275EB9192a3Ea0f67022';
 
 export const useStethEthRate = () => {
   const { chainId } = useDappStatus();
-  const publicClientMainnet = usePublicClient({ chainId: CHAINS.Mainnet });
+  const wagmiConfig = useWagmiMainnetOnlyConfig();
+  const publicClientMainnet = usePublicClient({ config: wagmiConfig });
 
   const { data, error } = useReadContract({
     address: MAINNET_CURVE,
