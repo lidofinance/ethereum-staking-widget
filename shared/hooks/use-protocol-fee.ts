@@ -3,6 +3,7 @@ import invariant from 'tiny-invariant';
 import type { LIDO_CONTRACT_NAMES } from '@lidofinance/lido-ethereum-sdk/common';
 import { useQuery } from '@tanstack/react-query';
 
+import { PartialStakingRouterAbi } from 'abi/partial-staking-router';
 import { STRATEGY_CONSTANT } from 'consts/react-query-strategies';
 import { useLidoSDK, useContractAddress } from 'modules/web3';
 
@@ -21,26 +22,15 @@ export const useProtocolFee = () => {
     ...STRATEGY_CONSTANT,
     refetchInterval: 60000, // 1 minute
     enabled: !!core.chainId && !!stakingRouterAddress,
-    queryFn: async () => {
+    queryFn: () => {
       invariant(
         stakingRouterAddress,
         '[useProtocolFee] The "staking Router Address" must be define',
       );
 
-      return await core.rpcProvider.readContract({
+      return core.rpcProvider.readContract({
         address: stakingRouterAddress,
-        abi: [
-          {
-            inputs: [],
-            name: 'getStakingFeeAggregateDistribution',
-            outputs: [
-              { internalType: 'uint256', name: 'modulesFee', type: 'uint256' },
-              { internalType: 'uint256', name: 'treasuryFee', type: 'uint256' },
-            ],
-            stateMutability: 'view',
-            type: 'function',
-          },
-        ],
+        abi: PartialStakingRouterAbi,
         functionName: 'getStakingFeeAggregateDistribution',
       });
     },
