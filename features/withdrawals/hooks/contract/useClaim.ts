@@ -28,10 +28,7 @@ export const useClaim = ({ onRetry }: Args) => {
         invariant(sortedRequests, 'must have requests');
         invariant(address, 'must have address');
 
-        const amount = sortedRequests.reduce(
-          (s, r) => s + r.claimableEth,
-          BigInt(0),
-        );
+        const amount = sortedRequests.reduce((s, r) => s + r.claimableEth, 0n);
 
         const requestsIds = sortedRequests.map((r) => r.id);
         const hints = sortedRequests.map((r) => r.hint);

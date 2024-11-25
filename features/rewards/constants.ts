@@ -1,4 +1,5 @@
-export const ETHER = BigInt(1e18);
+// 1e18
+export const ETHER = 1_000_000_000_000_000_000n;
 
 export const HUMAN_DECIMALS = 8;
 export const PRECISE_DECIMALS = 18;

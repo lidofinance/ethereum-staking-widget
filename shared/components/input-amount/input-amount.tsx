@@ -144,7 +144,7 @@ export const InputAmount = forwardRef<HTMLInputElement, InputAmountProps>(
     }, [value]);
 
     const handleClickMax =
-      onChange && maxValue !== undefined && maxValue > BigInt(0)
+      onChange && maxValue !== undefined && maxValue > 0n
         ? (event: MouseEvent<HTMLButtonElement>) => {
             onChange(maxValue);
             onMaxClick?.(event, maxValue);

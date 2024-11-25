@@ -12,12 +12,12 @@ const feeHistoryToMaxFee = ({
   const maxPriorityFeePerGas = reward
     ? reward?.map((fees) => fees[0]).reduce((sum, fee) => sum + fee) /
       BigInt(reward.length)
-    : BigInt(0);
+    : 0n;
 
   const lastBaseFeePerGas = baseFeePerGas[0];
 
   // we have to multiply by 2 until we find a reliable way to predict baseFee change
-  return lastBaseFeePerGas * BigInt(2) + maxPriorityFeePerGas;
+  return lastBaseFeePerGas * 2n + maxPriorityFeePerGas;
 };
 
 export const useMaxGasPrice = (chainId?: number) => {

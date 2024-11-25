@@ -13,12 +13,12 @@ const field = 'test_field';
 
 describe('validateBigintMax', () => {
   it('should work', () => {
-    validateBigintMax(field, BigInt(10), BigInt(12), message);
-    validateBigintMax(field, BigInt(12), BigInt(12), message);
+    validateBigintMax(field, 10n, 12n, message);
+    validateBigintMax(field, 12n, 12n, message);
   });
 
   it('should throw right error', () => {
-    const fn = () => validateBigintMax(field, BigInt(12), BigInt(10), message);
+    const fn = () => validateBigintMax(field, 12n, 10n, message);
     expect(fn).toThrowError();
     try {
       fn();
@@ -34,12 +34,12 @@ describe('validateBigintMax', () => {
 
 describe('validateBigintMin', () => {
   it('should work', () => {
-    validateBigintMin(field, BigInt(12), BigInt(10), message);
-    validateBigintMin(field, BigInt(12), BigInt(12), message);
+    validateBigintMin(field, 12n, 10n, message);
+    validateBigintMin(field, 12n, 12n, message);
   });
 
   it('should throw right error', () => {
-    const fn = () => validateBigintMin(field, BigInt(10), BigInt(12), message);
+    const fn = () => validateBigintMin(field, 10n, 12n, message);
     expect(fn).toThrowError();
     try {
       fn();
@@ -55,8 +55,8 @@ describe('validateBigintMin', () => {
 
 describe('validateEtherAmount', () => {
   it('should work', () => {
-    // validateEtherAmount(field, BigInt(12), LIDO_TOKENS.steth);
-    validateEtherAmount(field, BigInt(12), 'stETH');
+    // validateEtherAmount(field, 12n, LIDO_TOKENS.steth);
+    validateEtherAmount(field, 12n, 'stETH');
   });
 
   it('should throw right error on null amount', () => {
@@ -74,8 +74,8 @@ describe('validateEtherAmount', () => {
   });
 
   it('should throw right error on zero', () => {
-    // const fn = () => validateEtherAmount(field, BigInt(0), LIDO_TOKENS.steth);
-    const fn = () => validateEtherAmount(field, BigInt(0), 'stETH');
+    // const fn = () => validateEtherAmount(field, 0n, LIDO_TOKENS.steth);
+    const fn = () => validateEtherAmount(field, 0n, 'stETH');
     expect(fn).toThrowError();
     try {
       fn();
@@ -89,8 +89,8 @@ describe('validateEtherAmount', () => {
 
   it('should throw right error on more than ethereum max uint', () => {
     const fn = () =>
-      // validateEtherAmount(field, maxUint256 + BigInt(1), LIDO_TOKENS.steth);
-      validateEtherAmount(field, maxUint256 + BigInt(1), 'stETH');
+      // validateEtherAmount(field, maxUint256 + 1n, LIDO_TOKENS.steth);
+      validateEtherAmount(field, maxUint256 + 1n, 'stETH');
     expect(fn).toThrowError();
     try {
       fn();

@@ -22,16 +22,16 @@ const stakeLimitFullInfoMockTemplate: StakeLimitFullInfo = {
   isStakingLimitSet: true,
   currentStakeLimit: parseEther('150000'),
   maxStakeLimit: parseEther('150000'),
-  maxStakeLimitGrowthBlocks: BigInt(6400),
+  maxStakeLimitGrowthBlocks: 6_400n,
   prevStakeLimit: parseEther('149000'),
-  prevStakeBlockNumber: BigInt(15145339),
+  prevStakeBlockNumber: 15_145_339n,
   stakeLimitLevel: LIMIT_LEVEL.REACHED,
 };
 
-const WARN_THRESHOLD_RATIO = BigInt(4);
+const WARN_THRESHOLD_RATIO = 4n;
 
 const getLimitLevel = (maxLimit: bigint, currentLimit: bigint) => {
-  if (currentLimit === BigInt(0)) return LIMIT_LEVEL.REACHED;
+  if (currentLimit === 0n) return LIMIT_LEVEL.REACHED;
 
   if (maxLimit / currentLimit >= WARN_THRESHOLD_RATIO) return LIMIT_LEVEL.WARN;
 

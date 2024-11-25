@@ -3,7 +3,7 @@ import { formatBalance } from '../formatBalance';
 
 describe('formatBalance', () => {
   it('should format balance with default maxDecimalDigits', () => {
-    const balance = BigInt('1000000000000000000');
+    const balance = 1_000_000_000_000_000_000n;
     const expected = {
       actual: '1.0',
       trimmed: '1.0',
@@ -14,7 +14,7 @@ describe('formatBalance', () => {
   });
 
   it('should format balance with custom maxDecimalDigits', () => {
-    const balance = BigInt('1000000000000000000');
+    const balance = 1_000_000_000_000_000_000n;
     const expected = {
       actual: '1.0',
       trimmed: '1.0',
@@ -25,7 +25,7 @@ describe('formatBalance', () => {
   });
 
   it('should format balance with zero maxDecimalDigits', () => {
-    const balance = BigInt('1000000000000000000');
+    const balance = 1_000_000_000_000_000_000n;
     const expected = {
       actual: '1.0',
       trimmed: '1',
@@ -61,9 +61,8 @@ describe('formatBalance', () => {
   });
 
   it('should format balance with max decimal digits and max total length', () => {
-    const balance = BigInt(
-      '1000000000000000000000000010000000000000000000000000',
-    );
+    const balance =
+      1_000_000_000_000_000_000_000_000_010_000_000_000_000_000_000_000_000n;
     const maxDecimalDigits = 4;
     const maxTotalLength = 30;
     const expected = {
@@ -76,9 +75,8 @@ describe('formatBalance', () => {
   });
 
   it('should format balance with max decimal digits and without trimming', () => {
-    const balance = BigInt(
-      '1000000000000000000000000010000000000000000000000000',
-    );
+    const balance =
+      1_000_000_000_000_000_000_000_000_010_000_000_000_000_000_000_000_000n;
     const maxDecimalDigits = 4;
     const maxTotalLength = 50;
     const expected = {
@@ -91,7 +89,7 @@ describe('formatBalance', () => {
   });
 
   it('should format balance without decimal digits and without trimming', () => {
-    const balance = BigInt('1234567890123456789');
+    const balance = 1_234_567_890_123_456_789n;
     const maxDecimalDigits = 0;
     const maxTotalLength = 50;
     const expected = {
@@ -104,7 +102,7 @@ describe('formatBalance', () => {
   });
 
   it('should format balance with decimal digits and with trimming', () => {
-    const balance = BigInt('12345678901234567890123456789');
+    const balance = 12_345_678_901_234_567_890_123_456_789n;
     const maxDecimalDigits = 4;
     const maxTotalLength = 10;
     const expected = {
@@ -117,7 +115,7 @@ describe('formatBalance', () => {
   });
 
   it('should format balance with default maxDecimalDigits and maxTotalLength', () => {
-    const balance = BigInt('1000000000000000000');
+    const balance = 1_000_000_000_000_000_000n;
     const expected = {
       actual: '1.0',
       trimmed: '1.0',
@@ -128,7 +126,7 @@ describe('formatBalance', () => {
   });
 
   it('should format balance with custom maxDecimalDigits and maxTotalLength', () => {
-    const balance = BigInt('1000000000000000000');
+    const balance = 1_000_000_000_000_000_000n;
     const maxDecimalDigits = 2;
     const maxTotalLength = 5;
     const expected = {
@@ -141,7 +139,7 @@ describe('formatBalance', () => {
   });
 
   it('should format balance with zero maxDecimalDigits and maxTotalLength', () => {
-    const balance = BigInt('1000000000000000000');
+    const balance = 1_000_000_000_000_000_000n;
     const maxDecimalDigits = 0;
     const maxTotalLength = 2;
     const expected = {
@@ -154,7 +152,7 @@ describe('formatBalance', () => {
   });
 
   it('should format balance with maxTotalLength less than actual length', () => {
-    const balance = BigInt('100000000000000000000000');
+    const balance = 100_000_000_000_000_000_000_000n;
     const maxDecimalDigits = 2;
     const maxTotalLength = 3;
     const result = formatBalance(balance, { maxDecimalDigits, maxTotalLength });
@@ -167,7 +165,7 @@ describe('formatBalance', () => {
   });
 
   it('should format zero balance', () => {
-    const balance = BigInt('0');
+    const balance = 0n;
     const formattedBalance = formatBalance(balance);
     expect(formattedBalance).toEqual({
       actual: '0.0',

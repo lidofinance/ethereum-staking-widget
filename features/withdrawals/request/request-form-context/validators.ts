@@ -69,7 +69,7 @@ const validateSplitRequests = (
   const maxAmount = maxAmountPerRequest * BigInt(maxRequestCount);
 
   const lastRequestAmountEther = amount % maxAmountPerRequest;
-  const restCount = lastRequestAmountEther > BigInt(0) ? 1 : 0;
+  const restCount = lastRequestAmountEther > 0n ? 1 : 0;
   const requestCount = Number(amount / maxAmountPerRequest) + restCount;
 
   const isMoreThanMax = amount > maxAmount;
@@ -109,7 +109,7 @@ const tvlJokeValidate = (
   balanceSteth: bigint,
 ) => {
   const tvlDiff = valueSteth - tvl;
-  if (tvlDiff > BigInt(0))
+  if (tvlDiff > 0n)
     throw new ValidationTvlJoke(field, 'amount bigger than tvl', {
       balanceDiffSteth: valueSteth - balanceSteth,
       tvlDiff,

@@ -5,7 +5,7 @@ export const useDebouncedWstethBySteth = (
   amount?: bigint | null,
   delay = 500,
 ) => {
-  const fallbackedAmount = amount ?? BigInt(0);
+  const fallbackedAmount = amount ?? 0n;
   const amountDebounced = useDebouncedValue(fallbackedAmount, delay);
   const isActualValue = fallbackedAmount === amountDebounced;
 
@@ -36,7 +36,7 @@ export const useDebouncedStethByWsteth = (
   amount?: bigint | null,
   delay = 500,
 ) => {
-  const fallbackedAmount = amount ?? BigInt(0);
+  const fallbackedAmount = amount ?? 0n;
   const amountDebounced = useDebouncedValue(fallbackedAmount, delay);
   const isActualValue = fallbackedAmount === amountDebounced;
 

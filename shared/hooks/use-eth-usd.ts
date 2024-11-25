@@ -32,7 +32,7 @@ export const useEthUsd = (amount?: bigint) => {
         functionName: 'latestAnswer',
       });
 
-      return latestAnswer / BigInt(10 ** 8);
+      return latestAnswer / 10n ** 8n;
     },
   });
 

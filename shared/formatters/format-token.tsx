@@ -41,7 +41,7 @@ export const FormatToken: FormatTokenComponent = ({
 
   // we show prefix for non zero amount and if we need to show Tooltip Amount
   // overridden by explicitly set approx
-  const prefix = amount && amount !== BigInt(0) && approx ? '≈ ' : '';
+  const prefix = amount && amount !== 0n && approx ? '≈ ' : '';
 
   const body = (
     <span {...rest}>

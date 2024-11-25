@@ -77,7 +77,7 @@ export const useWithdrawRequestTxPrice = ({
         const contract = await withdraw.contract.getContractWithdrawalQueue();
         const requestsStub = Array.from<bigint>({
           length: debouncedRequestCount,
-        }).fill(BigInt(100));
+        }).fill(100n);
 
         return await contract.estimateGas.requestWithdrawals(
           [requestsStub, config.ESTIMATE_ACCOUNT],

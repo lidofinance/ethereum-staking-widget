@@ -9,16 +9,16 @@ const {
 } = __test__export;
 
 const field = 'test_field';
-const balance = BigInt(5);
+const balance = 5n;
 
 describe('tvlJokeValidate', () => {
   it('should work', () => {
-    tvlJokeValidate(field, BigInt(10), BigInt(12), balance);
+    tvlJokeValidate(field, 10n, 12n, balance);
   });
 
   it('should throw right error', () => {
-    const value = BigInt(20);
-    const tvl = BigInt(10);
+    const value = 20n;
+    const tvl = 10n;
     const fn = () => tvlJokeValidate(field, value, tvl, balance);
     expect(fn).toThrow();
     try {
@@ -42,25 +42,25 @@ describe('tvlJokeValidate', () => {
   });
 });
 
-const maxAmountPerRequest = BigInt(100);
-const minAmountPerRequest = BigInt(10);
+const maxAmountPerRequest = 100n;
+const minAmountPerRequest = 10n;
 const maxRequestCount = 100;
 
 describe('validateSplitRequests', () => {
   it('should split into 1 request', () => {
     const requests = validateSplitRequests(
       field,
-      BigInt(10),
+      10n,
       maxAmountPerRequest,
       minAmountPerRequest,
       maxRequestCount,
     );
     expect(requests).toHaveLength(1);
-    expect(requests[0] === BigInt(10)).toBe(true);
+    expect(requests[0] === 10n).toBe(true);
   });
 
   it('should split into 2 requests', () => {
-    const amount = maxAmountPerRequest + minAmountPerRequest * BigInt(5);
+    const amount = maxAmountPerRequest + minAmountPerRequest * 5n;
     const requests = validateSplitRequests(
       field,
       amount,
@@ -104,7 +104,7 @@ describe('validateSplitRequests', () => {
     const fn = () =>
       validateSplitRequests(
         field,
-        maxAmountPerRequest * BigInt(maxRequestCount) + BigInt(1),
+        maxAmountPerRequest * BigInt(maxRequestCount) + 1n,
         maxAmountPerRequest,
         minAmountPerRequest,
         maxRequestCount,
@@ -126,7 +126,7 @@ describe('validateSplitRequests', () => {
     const fn = () =>
       validateSplitRequests(
         field,
-        maxAmountPerRequest + minAmountPerRequest - BigInt(1),
+        maxAmountPerRequest + minAmountPerRequest - 1n,
         maxAmountPerRequest,
         minAmountPerRequest,
         maxRequestCount,

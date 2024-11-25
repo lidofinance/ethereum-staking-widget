@@ -41,11 +41,7 @@ export const useWithdrawalRequest = ({
     needsApprove,
     isFetching: isUseApproveFetching,
     refetch: refetchAllowance,
-  } = useWithdrawalApprove(
-    amount ? amount : BigInt(0),
-    token,
-    address as Address,
-  );
+  } = useWithdrawalApprove(amount ? amount : 0n, token, address as Address);
   const { closeModal } = useTransactionModal();
 
   const isWalletConnect = overrideWithQAMockBoolean(
@@ -180,7 +176,7 @@ export const useWithdrawalRequest = ({
   return {
     isTokenLocked,
     isApprovalFlow,
-    allowance: BigInt(0),
+    allowance: 0n,
     isApprovalFlowLoading,
     request,
   };

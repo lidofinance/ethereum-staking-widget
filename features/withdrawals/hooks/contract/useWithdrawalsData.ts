@@ -135,8 +135,8 @@ export const useWithdrawalRequests = () => {
         console.warn('Failed to fetch request time for requests ids', e);
       }
 
-      let pendingAmountOfStETH = BigInt(0);
-      let claimableAmountOfStETH = BigInt(0);
+      let pendingAmountOfStETH = 0n;
+      let claimableAmountOfStETH = 0n;
 
       requestStatuses.forEach((request, index) => {
         const id = requestIds[index];
@@ -166,7 +166,7 @@ export const useWithdrawalRequests = () => {
 
       const hints = await withdraw.views.findCheckpointHints({
         sortedIds: claimableRequests.map(({ id }) => id),
-        firstIndex: BigInt(1),
+        firstIndex: 1n,
         lastIndex: lastCheckpointIndex,
       });
 
@@ -175,7 +175,7 @@ export const useWithdrawalRequests = () => {
         hints,
       });
 
-      let claimableAmountOfETH = BigInt(0);
+      let claimableAmountOfETH = 0n;
 
       const sortedClaimableRequests: RequestStatusClaimable[] =
         claimableRequests.map((request, index) => {
