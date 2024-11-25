@@ -161,10 +161,6 @@ const collectRequestAddressMetric = async ({
     ) {
       const { to, data } = call.params[0];
       const address = getAddress(to);
-      // Race conditions not actual here.
-      // Here, we can use it without initializeMetricContractAddresses(),
-      // as initializeMetricContractAddresses() was already called in pages/api/rpc.ts.
-      // However, be careful when reusing this code.
       const contractName = METRIC_CONTRACT_ADDRESSES?.[chainId]?.[address];
       const methodEncoded = data?.slice(0, 10); // `0x` and 8 next symbols
 
