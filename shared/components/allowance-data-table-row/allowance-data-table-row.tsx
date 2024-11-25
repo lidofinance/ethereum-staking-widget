@@ -26,7 +26,7 @@ export const AllowanceDataTableRow = ({
   ...rest
 }: AllowanceDataTableRowProps) => {
   const isInfiniteAllowance = useMemo(() => {
-    return allowance && allowance === maxUint256;
+    return allowance === maxUint256;
   }, [allowance]);
   return (
     <DataTableRow title={title} {...rest}>

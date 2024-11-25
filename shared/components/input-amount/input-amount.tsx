@@ -135,7 +135,7 @@ export const InputAmount = forwardRef<HTMLInputElement, InputAmountProps>(
         const parsedValue = parseEtherSafe(input.value);
         // only change string state if casted values differ
         // this allows user to enter 0.100 without immediate change to 0.1
-        if (parsedValue == null || parsedValue !== value) {
+        if (parsedValue !== value) {
           input.value = formatEther(value);
           // prevents rollback to incorrect value in onChange
           lastInputValue.current = input.value;
@@ -144,7 +144,7 @@ export const InputAmount = forwardRef<HTMLInputElement, InputAmountProps>(
     }, [value]);
 
     const handleClickMax =
-      onChange && maxValue !== undefined && maxValue > 0n
+      onChange && maxValue
         ? (event: MouseEvent<HTMLButtonElement>) => {
             onChange(maxValue);
             onMaxClick?.(event, maxValue);
