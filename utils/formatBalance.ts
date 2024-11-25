@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { formatEther } from 'viem';
-import { ZERO } from 'modules/web3';
+// Tests failed if import import { ZERO } from 'modules/web3';
+import { ZERO } from 'modules/web3/consts/units';
 
 export type FormatBalanceArgs = {
   maxDecimalDigits?: number;

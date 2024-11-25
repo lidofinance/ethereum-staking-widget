@@ -1,11 +1,7 @@
-module.exports = {
-  testEnvironment: 'node',
+export default {
   transform: {
     '^.+\\.(t|j)sx?$': 'ts-jest',
   },
-  transformIgnorePatterns: [
-    'node_modules/(?!(wagmi|viem|@tanstack/react-query)/)',
-  ],
   moduleDirectories: ['node_modules', '<rootDir>'],
   modulePathIgnorePatterns: ['./test'],
 };

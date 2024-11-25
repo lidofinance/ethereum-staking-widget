@@ -1,5 +1,6 @@
 import { maxUint256 } from 'viem';
-import { ZERO } from 'modules/web3';
+// Tests failed if import import { ZERO } from 'modules/web3';
+import { ZERO } from 'modules/web3/consts/units';
 import { getTokenDisplayName } from 'utils/getTokenDisplayName';
 import { ValidationError } from './validation-error';
 import { TOKENS_TO_WRAP } from 'features/wsteth/shared/types';
