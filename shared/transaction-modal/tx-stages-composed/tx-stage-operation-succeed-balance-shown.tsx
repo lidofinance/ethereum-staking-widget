@@ -41,7 +41,9 @@ export const TxStageOperationSucceedBalanceShown = ({
 
   const balanceNode = balance ? (
     <TxAmount amount={balance} symbol={balanceToken} />
-  ) : null;
+  ) : (
+    <SkeletonBalance />
+  );
 
   return (
     <TxStageSuccess
@@ -50,7 +52,7 @@ export const TxStageOperationSucceedBalanceShown = ({
         <>
           Your new balance is <wbr />
           <BalanceContainer>
-            {balanceNode ?? <SkeletonBalance />}
+            {balanceNode}
             <TokenToWallet
               data-testid="txSuccessAddToken"
               address={tokenToWalletAddress}
