@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
 import { useForm } from 'react-hook-form';
-import { Address } from 'viem';
+import type { Address } from 'viem';
 
 import type { LIDO_CONTRACT_NAMES } from '@lidofinance/lido-ethereum-sdk/common';
 import { Button, ToastSuccess, Block, Input } from '@lidofinance/lido-ui';

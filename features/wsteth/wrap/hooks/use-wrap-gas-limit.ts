@@ -1,4 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
+import type { LidoSDKWrap } from '@lidofinance/lido-ethereum-sdk/wrap';
 
 import { config } from 'config';
 import { STRATEGY_EAGER } from 'consts/react-query-strategies';
@@ -10,7 +11,7 @@ import {
 import { applyGasLimitRatio } from 'utils/apply-gas-limit-ratio';
 import { useDappStatus, useLidoSDK, ZERO, ESTIMATE_AMOUNT } from 'modules/web3';
 
-const fetchGasLimitETH = async (isL2: boolean, wrap: any) => {
+const fetchGasLimitETH = async (isL2: boolean, wrap: LidoSDKWrap) => {
   if (isL2) return ZERO;
   try {
     return applyGasLimitRatio(

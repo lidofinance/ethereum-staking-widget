@@ -1,4 +1,4 @@
-import { Address } from 'viem';
+import type { Address } from 'viem';
 import { LIDO_TOKENS, CHAINS } from '@lidofinance/lido-ethereum-sdk';
 
 export type TOKENS =

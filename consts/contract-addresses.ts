@@ -1,5 +1,5 @@
 import { CHAINS } from '@lidofinance/lido-ethereum-sdk';
-import { Address } from 'viem';
+import type { Address } from 'viem';
 
 export const STAKING_ROUTER_BY_NETWORK: {
   [key in CHAINS]?: Address;
