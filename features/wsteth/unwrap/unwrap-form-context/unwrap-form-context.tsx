@@ -27,7 +27,6 @@ import {
   UnwrapFormValidationContext,
 } from './types';
 import { UnwrapFormValidationResolver } from './unwrap-form-validators';
-import { ZERO } from '../../../../modules/web3';
 
 //
 // Data context
@@ -69,7 +68,7 @@ export const UnwrapFormProvider: FC<PropsWithChildren> = ({ children }) => {
   const [amount] = watch(['amount']);
   const { retryEvent, retryFire } = useFormControllerRetry();
 
-  const approvalDataOnL2 = useUnwrapTxOnL2Approve({ amount: amount ?? ZERO });
+  const approvalDataOnL2 = useUnwrapTxOnL2Approve({ amount: amount ?? 0n });
 
   const onConfirm = useCallback(async () => {
     await Promise.allSettled([

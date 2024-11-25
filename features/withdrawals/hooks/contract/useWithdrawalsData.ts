@@ -1,7 +1,7 @@
 import { useCallback, useMemo } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 
-import { ZERO, useDappStatus, useLidoSDK } from 'modules/web3';
+import { useDappStatus, useLidoSDK } from 'modules/web3';
 
 import { STRATEGY_LAZY } from 'consts/react-query-strategies';
 import { default as dynamics } from 'config/dynamics';
@@ -213,7 +213,7 @@ export const useWithdrawalRequests = () => {
           steth: acc.steth + request.amountOfStETH,
           eth: acc.eth + request.claimableEth,
         }),
-        { steth: ZERO, eth: ZERO },
+        { steth: 0n, eth: 0n },
       );
 
       const optimisticData = {

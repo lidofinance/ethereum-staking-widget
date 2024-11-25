@@ -9,10 +9,10 @@ import {
   WRAP_L2_GAS_LIMIT,
 } from 'consts/tx';
 import { applyGasLimitRatio } from 'utils/apply-gas-limit-ratio';
-import { useDappStatus, useLidoSDK, ZERO, ESTIMATE_AMOUNT } from 'modules/web3';
+import { useDappStatus, useLidoSDK, ESTIMATE_AMOUNT } from 'modules/web3';
 
 const fetchGasLimitETH = async (isL2: boolean, wrap: LidoSDKWrap) => {
-  if (isL2) return ZERO;
+  if (isL2) return 0n;
   try {
     return applyGasLimitRatio(
       await wrap.wrapEthEstimateGas({

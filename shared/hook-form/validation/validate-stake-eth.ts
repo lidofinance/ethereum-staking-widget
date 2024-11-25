@@ -1,5 +1,4 @@
 import { formatEther } from 'viem';
-import { ZERO } from 'modules/web3';
 
 import type { LIMIT_LEVEL } from 'types';
 import { validateBigintMax } from 'shared/hook-form/validation/validate-bigint-max';
@@ -54,7 +53,7 @@ export const validateStakeEth = (params: validateStakeEthParams) => {
 
       validateBigintMax(
         formField,
-        ZERO,
+        0n,
         gasPaddedBalance,
         `Ensure you have sufficient ETH to cover the gas cost of ${formatEther(
           gasCost,

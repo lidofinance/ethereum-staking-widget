@@ -6,7 +6,6 @@ import { DATA_UNAVAILABLE } from 'consts/text';
 import { FormatPrice, FormatToken } from 'shared/formatters';
 import { useEthUsd } from 'shared/hooks/use-eth-usd';
 import { useProtocolFee } from 'shared/hooks/use-protocol-fee';
-import { ZERO } from 'modules/web3';
 
 import { StakeFormInput, useStakeFormData } from './stake-form-context';
 
@@ -20,7 +19,7 @@ export const StakeFormInfo = () => {
   return (
     <DataTable data-testid="stakeFormInfo">
       <DataTableRow title="You will receive" data-testid="youWillReceive">
-        <FormatToken amount={amount ?? ZERO} symbol="stETH" trimEllipsis />
+        <FormatToken amount={amount ?? 0n} symbol="stETH" trimEllipsis />
       </DataTableRow>
       <DataTableRow title="Exchange rate" data-testid="exchangeRate">
         1 ETH = 1 stETH

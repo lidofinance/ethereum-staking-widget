@@ -1,7 +1,5 @@
 import { useMemo } from 'react';
 import { formatEther } from 'viem';
-// Tests failed if import import { ZERO } from 'modules/web3';
-import { ZERO } from 'modules/web3/consts/units';
 
 export type FormatBalanceArgs = {
   maxDecimalDigits?: number;
@@ -11,7 +9,7 @@ export type FormatBalanceArgs = {
 };
 
 export const formatBalance = (
-  balance: bigint = ZERO,
+  balance = 0n,
   {
     maxDecimalDigits = 4,
     maxTotalLength,
@@ -70,7 +68,7 @@ export const formatBalance = (
 };
 
 export const useFormattedBalance: typeof formatBalance = (
-  balance = ZERO,
+  balance = 0n,
   { maxDecimalDigits = 4, maxTotalLength, adaptiveDecimals, trimEllipsis } = {},
 ) => {
   return useMemo(

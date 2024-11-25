@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { type UseFormWatch } from 'react-hook-form';
-import { ZERO } from 'modules/web3';
 
 import { RequestStatusClaimable } from 'features/withdrawals/types/request-status';
 
@@ -16,7 +15,7 @@ export type ClaimFormHelperState = {
 const initState = (): ClaimFormHelperState => ({
   selectedRequests: [],
   canSelectMore: true,
-  ethToClaim: ZERO,
+  ethToClaim: 0n,
   requestsCount: 0,
 });
 
@@ -36,8 +35,8 @@ export const useHelperState = (
           .map((r) => r?.status as RequestStatusClaimable) ?? [];
 
       const ethToClaim = selectedRequests.reduce((ethSum, request) => {
-        return ethSum + (request?.claimableEth ?? ZERO);
-      }, ZERO);
+        return ethSum + (request?.claimableEth ?? 0n);
+      }, 0n);
 
       setHelperState({
         selectedRequests,

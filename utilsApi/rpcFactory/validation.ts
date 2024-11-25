@@ -2,8 +2,6 @@ import { Transform } from 'node:stream';
 import type { NextApiRequest } from 'next';
 import { Cache } from 'memory-cache';
 
-import { ZERO } from 'modules/web3';
-
 import {
   ClientError,
   InvalidRequestError,
@@ -92,7 +90,7 @@ export const ethGetLogsValidationFactory = (
 ) => {
   const allowedAddressMap = createAllowedAddressMap(allowedAddress ?? {});
 
-  const maxBlockRangeBigInt = maxBlockRange ? BigInt(maxBlockRange) : ZERO;
+  const maxBlockRangeBigInt = maxBlockRange ? BigInt(maxBlockRange) : 0n;
 
   const currentBlock = new Cache<number, bigint>();
 
@@ -167,7 +165,7 @@ export const ethGetLogsValidationFactory = (
           }
           const range = normalizedToBlock - normalizedFromBlock;
 
-          if (range < ZERO || range > maxBlockRangeBigInt) {
+          if (range < 0n || range > maxBlockRangeBigInt) {
             rpcRequestBlocked.inc({
               reason: 'eth_getLogs range is invalid',
             });

@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import type { Resolver } from 'react-hook-form';
 import invariant from 'tiny-invariant';
 
-import { ZERO, useDappStatus } from 'modules/web3';
+import { useDappStatus } from 'modules/web3';
 import { VALIDATION_CONTEXT_TIMEOUT } from 'features/withdrawals/withdrawals-constants';
 import { useAwaiter } from 'shared/hooks/use-awaiter';
 import { validateStakeEth } from 'shared/hook-form/validation/validate-stake-eth';
@@ -84,8 +84,8 @@ export const useStakeFormValidationContext = (
         stakingLimitLevel: stakingLimitInfo.stakeLimitLevel,
         currentStakeLimit: stakingLimitInfo.currentStakeLimit,
         // condition above guaranties stubs will only be passed when isDappActive = false
-        etherBalance: etherBalance ?? ZERO,
-        gasCost: gasCost ?? ZERO,
+        etherBalance: etherBalance ?? 0n,
+        gasCost: gasCost ?? 0n,
         isMultisig: isMultisig ?? false,
       };
     }

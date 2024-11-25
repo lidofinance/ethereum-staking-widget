@@ -1,7 +1,6 @@
 import { formatEther, getAddress } from 'viem';
 import { CHAINS } from '@lidofinance/lido-ethereum-sdk';
 
-import { ZERO } from 'modules/web3';
 import { OPEN_OCEAN_REFERRAL_ADDRESS } from 'consts/external-links';
 import { MATOMO_CLICK_EVENTS_TYPES } from 'consts/matomo-click-events';
 import { getRateTokenAddress } from 'consts/token-addresses';
@@ -38,7 +37,7 @@ const calculateRateReceive = (
 };
 
 const getOpenOceanWithdrawalRate: GetRateType = async ({ amount, token }) => {
-  if (amount && amount > ZERO) {
+  if (amount && amount > 0n) {
     try {
       const result = await getOpenOceanRate(amount, token, 'ETH');
       return result;
@@ -65,7 +64,7 @@ type ParaSwapPriceResponsePartial = {
 
 const getParaSwapWithdrawalRate: GetRateType = async ({ amount, token }) => {
   try {
-    if (amount > ZERO) {
+    if (amount > 0n) {
       const api = `https://apiv5.paraswap.io/prices`;
       const query = new URLSearchParams({
         srcToken: getRateTokenAddress(CHAINS.Mainnet, token) as string,
@@ -111,7 +110,7 @@ const getParaSwapWithdrawalRate: GetRateType = async ({ amount, token }) => {
 
 const getOneInchWithdrawalRate: GetRateType = async (params) => {
   try {
-    if (params.amount > ZERO) {
+    if (params.amount > 0n) {
       const result = await getOneInchRate(params);
       return result;
     }
@@ -129,7 +128,7 @@ const getOneInchWithdrawalRate: GetRateType = async (params) => {
 
 const getBebopWithdrawalRate: GetRateType = async ({ amount, token }) => {
   try {
-    if (amount > ZERO) {
+    if (amount > 0n) {
       return await getBebopRate(amount, token, 'ETH');
     }
   } catch (e) {

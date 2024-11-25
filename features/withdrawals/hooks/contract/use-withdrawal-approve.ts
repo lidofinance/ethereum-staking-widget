@@ -2,7 +2,7 @@ import type { Address } from 'viem';
 import { useQuery, type UseQueryResult } from '@tanstack/react-query';
 
 import { STRATEGY_EAGER } from 'consts/react-query-strategies';
-import { useLidoSDK, ZERO } from 'modules/web3';
+import { useLidoSDK } from 'modules/web3';
 import { TOKENS_TO_WITHDRAWLS } from 'features/withdrawals/types/tokens-withdrawable';
 
 export type UseApproveResponse = {
@@ -19,12 +19,7 @@ export const useWithdrawalApprove = (
 ): UseApproveResponse => {
   const { withdraw } = useLidoSDK();
 
-  const enabled = !!(
-    withdraw.core.chainId &&
-    account &&
-    token &&
-    amount > ZERO
-  );
+  const enabled = !!(withdraw.core.chainId && account && token && amount > 0n);
 
   const { data, error, isLoading, isFetching, refetch } = useQuery({
     queryKey: [

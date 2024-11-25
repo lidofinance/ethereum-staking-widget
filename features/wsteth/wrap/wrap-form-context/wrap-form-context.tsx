@@ -9,8 +9,6 @@ import {
 } from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
 
-import { ZERO } from 'modules/web3';
-
 import { useFormControllerRetry } from 'shared/hook-form/form-controller/use-form-controller-retry-delegate';
 import {
   FormControllerContext,
@@ -73,7 +71,7 @@ export const WrapFormProvider: FC<PropsWithChildren> = ({ children }) => {
   const { retryEvent, retryFire } = useFormControllerRetry();
 
   const approvalDataOnL1 = useWrapTxOnL1Approve({
-    amount: amount ?? ZERO,
+    amount: amount ?? 0n,
     token,
   });
   const isSteth = token === TOKENS_TO_WRAP.stETH;

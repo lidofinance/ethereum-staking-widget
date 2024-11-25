@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { ZERO, useMaxGasPrice } from 'modules/web3';
+import { useMaxGasPrice } from 'modules/web3';
 
 type UseTokenMaxAmountArgs = {
   balance?: bigint; // user balance
@@ -33,7 +33,7 @@ export const useTokenMaxAmount = ({
       // we return undefined if we should pad but don't have data
       if (gasLimit && maxGasPrice) {
         maxAmount = maxAmount - gasLimit * maxGasPrice;
-        if (maxAmount < ZERO) maxAmount = ZERO;
+        if (maxAmount < 0n) maxAmount = 0n;
       } else maxAmount = undefined;
     }
 

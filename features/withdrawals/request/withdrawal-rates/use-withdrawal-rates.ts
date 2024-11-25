@@ -4,7 +4,6 @@ import { useQuery } from '@tanstack/react-query';
 
 import { useConfig } from 'config';
 import { STRATEGY_LAZY } from 'consts/react-query-strategies';
-import { ZERO } from 'modules/web3';
 import { useDebouncedValue } from 'shared/hooks/useDebouncedValue';
 
 import type { RequestFormInputType } from '../request-form-context';
@@ -46,7 +45,7 @@ const getWithdrawalRates = async (
 };
 
 export const useWithdrawalRates = ({
-  fallbackValue = ZERO,
+  fallbackValue = 0n,
   isPaused,
 }: useWithdrawalRatesOptions = {}) => {
   const [token, amount] = useWatch<RequestFormInputType, ['token', 'amount']>({

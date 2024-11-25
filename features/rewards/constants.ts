@@ -1,5 +1,6 @@
-// 1e18
-export const ETHER = 1_000_000_000_000_000_000n;
+import { parseEther } from 'viem';
+
+export const ETHER = parseEther('1');
 
 export const HUMAN_DECIMALS = 8;
 export const PRECISE_DECIMALS = 18;
