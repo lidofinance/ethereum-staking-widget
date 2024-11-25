@@ -20,7 +20,7 @@ export const formatBalance = (
   }: FormatBalanceArgs = {},
 ) => {
   let actual = formatEther(balance);
-  // formatEther from viem returns without '.0'
+  // the 'formatEther' from 'viem' returns without '.0' - decimals part (if the number is greater than 0 and does not have a decimal part)
   if (!actual.includes('.')) {
     actual += '.0';
   }
