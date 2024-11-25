@@ -3,6 +3,7 @@ import { getAddress } from 'viem';
 import { config } from 'config';
 import { TOKENS, getRateTokenAddress } from 'consts/token-addresses';
 import { standardFetcher } from './standardFetcher';
+import { CHAINS } from '@lidofinance/lido-ethereum-sdk';
 
 type BebopGetQuotePartial = {
   routes: {
@@ -34,8 +35,12 @@ export const getBebopRate = async (
 ): Promise<RateCalculationResult> => {
   const basePath = 'https://api.bebop.xyz/router/ethereum/v1/quote';
 
-  const sell_tokens = getAddress(getRateTokenAddress(fromToken));
-  const buy_tokens = getAddress(getRateTokenAddress(toToken));
+  const sell_tokens = getAddress(
+    getRateTokenAddress(CHAINS.Mainnet, fromToken) as string,
+  );
+  const buy_tokens = getAddress(
+    getRateTokenAddress(CHAINS.Mainnet, toToken) as string,
+  );
 
   const params = new URLSearchParams({
     sell_tokens,
