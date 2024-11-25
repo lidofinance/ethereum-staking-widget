@@ -67,9 +67,7 @@ export const IPFSInfoBoxStatusesProvider: FC<PropsWithChildren> = ({
     queryKey: ['rpc-url-check', rpcUrl, chainId, stethAddress],
     ...STRATEGY_LAZY,
     enabled: !!config.ipfsMode,
-    queryFn: async () => {
-      return await checkRpcUrl(rpcUrl, chainId, stethAddress);
-    },
+    queryFn: () => checkRpcUrl(rpcUrl, chainId, stethAddress),
   });
   const isRPCAvailable = isRPCAvailableRaw === true;
 
