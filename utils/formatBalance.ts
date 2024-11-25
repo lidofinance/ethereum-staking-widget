@@ -19,8 +19,14 @@ export const formatBalance = (
     trimEllipsis,
   }: FormatBalanceArgs = {},
 ) => {
-  const actual = formatEther(balance);
+  let actual = formatEther(balance);
+  // formatEther from viem returns without '.0'
+  if (!actual.includes('.')) {
+    actual += '.0';
+  }
+
   let trimmed = actual;
+
   let isTrimmed = false;
 
   if (actual.includes('.')) {

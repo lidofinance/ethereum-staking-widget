@@ -5,8 +5,8 @@ describe('formatBalance', () => {
   it('should format balance with default maxDecimalDigits', () => {
     const balance = 1_000_000_000_000_000_000n;
     const expected = {
-      actual: '1',
-      trimmed: '1',
+      actual: '1.0',
+      trimmed: '1.0',
       isTrimmed: false,
     };
     const formattedBalance = formatBalance(balance);
@@ -16,8 +16,8 @@ describe('formatBalance', () => {
   it('should format balance with custom maxDecimalDigits', () => {
     const balance = 1_000_000_000_000_000_000n;
     const expected = {
-      actual: '1',
-      trimmed: '1',
+      actual: '1.0',
+      trimmed: '1.0',
       isTrimmed: false,
     };
     const formattedBalance = formatBalance(balance, { maxDecimalDigits: 2 });
@@ -27,7 +27,7 @@ describe('formatBalance', () => {
   it('should format balance with zero maxDecimalDigits', () => {
     const balance = 1_000_000_000_000_000_000n;
     const expected = {
-      actual: '1',
+      actual: '1.0',
       trimmed: '1',
       isTrimmed: false,
     };
@@ -66,7 +66,7 @@ describe('formatBalance', () => {
     const maxDecimalDigits = 4;
     const maxTotalLength = 30;
     const expected = {
-      actual: '1000000000000000000000000010000000',
+      actual: '1000000000000000000000000010000000.0',
       trimmed: '100000000000000000000000001...',
       isTrimmed: true,
     };
@@ -80,8 +80,8 @@ describe('formatBalance', () => {
     const maxDecimalDigits = 4;
     const maxTotalLength = 50;
     const expected = {
-      actual: '1000000000000000000000000010000000',
-      trimmed: '1000000000000000000000000010000000',
+      actual: '1000000000000000000000000010000000.0',
+      trimmed: '1000000000000000000000000010000000.0',
       isTrimmed: false,
     };
     const result = formatBalance(balance, { maxDecimalDigits, maxTotalLength });
@@ -117,8 +117,8 @@ describe('formatBalance', () => {
   it('should format balance with default maxDecimalDigits and maxTotalLength', () => {
     const balance = 1_000_000_000_000_000_000n;
     const expected = {
-      actual: '1',
-      trimmed: '1',
+      actual: '1.0',
+      trimmed: '1.0',
       isTrimmed: false,
     };
     const result = formatBalance(balance);
@@ -130,7 +130,7 @@ describe('formatBalance', () => {
     const maxDecimalDigits = 2;
     const maxTotalLength = 5;
     const expected = {
-      actual: '1',
+      actual: '1.0',
       trimmed: '1',
       isTrimmed: false,
     };
@@ -143,7 +143,7 @@ describe('formatBalance', () => {
     const maxDecimalDigits = 0;
     const maxTotalLength = 2;
     const expected = {
-      actual: '1',
+      actual: '1.0',
       trimmed: '...',
       isTrimmed: true,
     };
@@ -157,7 +157,7 @@ describe('formatBalance', () => {
     const maxTotalLength = 3;
     const result = formatBalance(balance, { maxDecimalDigits, maxTotalLength });
     const expected = {
-      actual: '100000',
+      actual: '100000.0',
       trimmed: '...',
       isTrimmed: true,
     };
@@ -168,8 +168,8 @@ describe('formatBalance', () => {
     const balance = 0n;
     const formattedBalance = formatBalance(balance);
     expect(formattedBalance).toEqual({
-      actual: '0',
-      trimmed: '0',
+      actual: '0.0',
+      trimmed: '0.0',
       isTrimmed: false,
     });
   });
