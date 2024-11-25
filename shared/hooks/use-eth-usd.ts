@@ -45,7 +45,7 @@ export const useEthUsd = (amount?: bigint) => {
       // return latestAnswer / 10n ** BigInt(decimals);
 
       // temp
-      return latestAnswer / 100_000_000n; // same that latestAnswer / 10n ** BigInt(decimals);
+      return latestAnswer / 100_000_000n; // same that latestAnswer / 10n ** BigInt(decimals);, decimals is 8
     },
   });
 
