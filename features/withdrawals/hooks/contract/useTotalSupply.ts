@@ -7,7 +7,7 @@ export const useTotalSupply = (): UseQueryResult<bigint | undefined> => {
 
   return useQuery({
     queryKey: ['use-total-supply', stETH.core.chainId],
-    queryFn: async () => stETH.totalSupply(),
+    queryFn: () => stETH.totalSupply(),
     ...STRATEGY_LAZY,
     enabled: !!stETH,
   });

@@ -56,12 +56,11 @@ export const useRewardsDataLoad: UseRewardsDataLoad = (props) => {
     queryKey: ['rewards-data', address, apiRewardsUrl],
     enabled: !!address,
     ...STRATEGY_LAZY,
-    queryFn: async ({ signal }) => {
+    queryFn: ({ signal }) =>
       // The 'react-query' has AbortController support built in,
       // and it automatically cancels requests when
       // the component is unmounted or the queryKey changes.
-      return standardFetcher(apiRewardsUrl, { signal });
-    },
+      standardFetcher(apiRewardsUrl, { signal }),
   });
 
   const { isLagging, dataOrLaggyData } = useLaggyDataWrapper(data);

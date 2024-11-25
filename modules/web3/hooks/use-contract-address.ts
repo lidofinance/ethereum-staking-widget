@@ -18,7 +18,7 @@ export const useContractAddress = (
     queryKey: ['use-contract-address', core.chainId, isL2, contractName],
     enabled: !!core && !!core.chainId,
     ...STRATEGY_CONSTANT,
-    queryFn: async () => {
+    queryFn: () => {
       if (isL2) {
         // LIDO_L2_CONTRACT_ADDRESSES[core.chainId] have only 'wsteth' and 'steth' contract names
         return (
@@ -28,7 +28,7 @@ export const useContractAddress = (
         );
       }
 
-      return await core.getContractAddress(contractName as LIDO_CONTRACT_NAMES);
+      return core.getContractAddress(contractName as LIDO_CONTRACT_NAMES);
     },
   });
 };

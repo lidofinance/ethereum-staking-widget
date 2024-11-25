@@ -23,6 +23,7 @@ export const useEthUsd = (amount?: bigint) => {
     queryKey: ['eth-usd-price'],
     enabled: !!publicClientMainnet,
     ...STRATEGY_LAZY,
+    // the async is needed here because the decimals will be requested soon
     queryFn: async () => {
       if (!publicClientMainnet) return;
 

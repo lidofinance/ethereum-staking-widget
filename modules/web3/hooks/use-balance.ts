@@ -276,7 +276,7 @@ export const useWstethBalance = ({
     queryKey: ['wsteth-contract', lidoSDKCore.chainId, isL2],
     enabled: !!mergedAccount && isSupportedChain,
     staleTime: Infinity,
-    queryFn: async () =>
+    queryFn: () =>
       isL2 ? lidoSDKL2.wsteth.getContract() : lidoSDKwstETH.getContract(),
   });
 
