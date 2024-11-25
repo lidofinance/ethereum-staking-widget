@@ -36,7 +36,7 @@ export const useLidoApr = (): UseLidoAprResult => {
         return await standardFetcher<SMA_APR_RESPONSE>(url);
       } catch (error) {
         // Fallback from SDK
-        const lastApr = await statistics.apr.getLastApr();
+        const lastApr = await statistics.apr.getSmaApr({ days: 7 });
         return { data: { smaApr: lastApr } };
         // if "await statistics.apr.getLastApr()" does not work,
         // then the result will be "{ data: undefined; isError: true, ...}"
