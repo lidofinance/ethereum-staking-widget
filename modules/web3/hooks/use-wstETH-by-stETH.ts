@@ -9,11 +9,9 @@ export const useWstethBySteth = (steth?: bigint | null) => {
     enabled: steth != null && !!(isL2 ? l2.wsteth : wrap),
     staleTime: Infinity,
     queryFn: () => {
-      if (steth == null) return undefined;
-
       return isL2
-        ? l2.steth.convertToShares(steth)
-        : wrap.convertStethToWsteth(steth);
+        ? l2.steth.convertToShares(steth as bigint)
+        : wrap.convertStethToWsteth(steth as bigint);
     },
   });
 };
