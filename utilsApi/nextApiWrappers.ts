@@ -1,5 +1,6 @@
 import type { Histogram, Counter } from 'prom-client';
-import { type Abi, type Address, getAddress, keccak256, toHex } from 'viem';
+import { type Abi, getAddress } from 'viem';
+import { toFunctionSelector } from 'viem';
 import { getStatusLabel } from '@lidofinance/api-metrics';
 import {
   RequestWrapper,
@@ -30,19 +31,15 @@ export enum HttpMethod {
   PATCH = 'PATCH',
 }
 
-export const getFunctionSelector = (func: any): string => {
-  const signature =
-    `${func.name}(${func.inputs.map((i: any) => i.type).join(',')})` as Address;
-  return toHex(keccak256(signature)).slice(0, 10);
-};
-
 export const getFunctionNameFromAbi = (
   abi: Abi,
   methodEncoded: string,
 ): string | null => {
   for (const item of abi) {
     if (item.type === 'function') {
-      const selector = getFunctionSelector(item);
+      const selector = toFunctionSelector(
+        `${item.name}(${item.inputs.map((i: any) => i.type).join(',')})`,
+      );
       if (selector === methodEncoded) {
         return item.name;
       }
