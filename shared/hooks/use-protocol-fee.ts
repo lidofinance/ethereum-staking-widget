@@ -1,4 +1,5 @@
 import { formatEther } from 'viem';
+import invariant from 'tiny-invariant';
 import type { LIDO_CONTRACT_NAMES } from '@lidofinance/lido-ethereum-sdk/common';
 import { useQuery } from '@tanstack/react-query';
 
@@ -7,11 +8,9 @@ import { useLidoSDK, useContractAddress } from 'modules/web3';
 
 export const useProtocolFee = () => {
   const { core } = useLidoSDK();
-  const {
-    data: stakingRouterAddress,
-    isLoading: isAddressLoading,
-    error: addressError,
-  } = useContractAddress('stakingRouter' as LIDO_CONTRACT_NAMES);
+  const { data: stakingRouterAddress } = useContractAddress(
+    'stakingRouter' as LIDO_CONTRACT_NAMES,
+  );
 
   const queryResult = useQuery({
     queryKey: [
@@ -21,15 +20,12 @@ export const useProtocolFee = () => {
     ],
     ...STRATEGY_CONSTANT,
     refetchInterval: 60000, // 1 minute
-
-    enabled:
-      !!core &&
-      !!core.chainId &&
-      !!stakingRouterAddress &&
-      !isAddressLoading &&
-      !addressError,
+    enabled: !!core.chainId && !!stakingRouterAddress,
     queryFn: async () => {
-      if (!stakingRouterAddress) return;
+      invariant(
+        stakingRouterAddress,
+        '[useProtocolFee] The "staking Router Address" must be define',
+      );
 
       return await core.rpcProvider.readContract({
         address: stakingRouterAddress,
