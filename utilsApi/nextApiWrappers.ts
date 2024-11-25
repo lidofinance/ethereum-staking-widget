@@ -1,6 +1,6 @@
 import type { Histogram, Counter } from 'prom-client';
-import { type Abi, getAddress } from 'viem';
-import { toFunctionSelector } from 'viem';
+import { type Abi, getAddress, toFunctionSelector } from 'viem';
+
 import { getStatusLabel } from '@lidofinance/api-metrics';
 import {
   RequestWrapper,
