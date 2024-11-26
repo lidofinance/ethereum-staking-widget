@@ -37,20 +37,15 @@ export const useEthUsd = (amount?: bigint) => {
         functionName: 'latestAnswer',
       });
 
-      // TODO: Webpack or Babel does not handle BigInt ** BigInt (exponentiation) case correctly.
-      //  Webpack or Babel replaces ** operation with Math.pow(BigInt, BigInt) function
-      // const decimals = await publicClientMainnet.readContract({
-      //   address: AGGREGATOR_STETH_USD_PRICE_FEED_BY_NETWORK[
-      //     CHAINS.Mainnet
-      //     ] as Address,
-      //   abi: AggregatorAbi,
-      //   functionName: 'decimals',
-      // });
-      //
-      // return latestAnswer / 10n ** BigInt(decimals);
+      const decimals = await publicClientMainnet.readContract({
+        address: AGGREGATOR_STETH_USD_PRICE_FEED_BY_NETWORK[
+          CHAINS.Mainnet
+        ] as Address,
+        abi: AggregatorAbi,
+        functionName: 'decimals',
+      });
 
-      // temp
-      return latestAnswer / 100_000_000n; // same that latestAnswer / 10n ** BigInt(decimals);, decimals is 8
+      return latestAnswer / 10n ** BigInt(decimals);
     },
   });
 
