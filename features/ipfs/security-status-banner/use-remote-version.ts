@@ -1,3 +1,4 @@
+import { type PublicClient } from 'viem';
 import { getEnsResolver, getEnsText } from 'viem/ens';
 import { useQuery } from '@tanstack/react-query';
 
@@ -15,7 +16,10 @@ type EnsHashCheckReturn = {
 
 export const useRemoteVersion = () => {
   const wagmiConfig = useWagmiMainnetOnlyConfig();
-  const publicClientMainnet = usePublicClient({ config: wagmiConfig });
+  // it works, but typing issue
+  const publicClientMainnet = usePublicClient({
+    config: wagmiConfig,
+  }) as PublicClient;
 
   // we use directly non-optimistic manifest data
   // can't trust static props(in IPFS esp) to generate warnings/disconnect wallet
@@ -30,12 +34,10 @@ export const useRemoteVersion = () => {
     enabled: !!(data || error),
     queryFn: async (): Promise<EnsHashCheckReturn> => {
       if (data?.ens) {
-        // @ts-expect-error: it works, but typing issue
         const resolverAddress = await getEnsResolver(publicClientMainnet, {
           name: data.ens,
         });
         if (resolverAddress) {
-          // @ts-expect-error: it works, but typing issue
           const contentHash = await getEnsText(publicClientMainnet, {
             name: data.ens,
             key: 'contenthash',
