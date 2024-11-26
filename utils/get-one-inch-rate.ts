@@ -1,10 +1,9 @@
 import { standardFetcher } from './standardFetcher';
 import { ETH_API_ROUTES, getEthApiPath } from 'consts/api';
-import { TOKENS_TO_WRAP } from 'features/wsteth/shared/types';
-import { TOKENS_TO_WITHDRAWLS } from '../features/withdrawals/types/tokens-withdrawable';
+import { LIDO_TOKENS_VALUES } from 'consts/tokens';
 
 type GetOneInchRateParams = {
-  token: TOKENS_TO_WRAP | TOKENS_TO_WITHDRAWLS;
+  token: LIDO_TOKENS_VALUES;
   amount?: bigint;
 };
 

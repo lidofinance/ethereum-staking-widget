@@ -2,17 +2,16 @@ import { ReactNode, useMemo } from 'react';
 import { maxUint256 } from 'viem';
 import { DataTableRow } from '@lidofinance/lido-ui';
 
+import { LIDO_TOKENS_VALUES } from 'consts/tokens';
 import { FormatToken } from 'shared/formatters';
 import { getTokenDisplayName } from 'utils/getTokenDisplayName';
-import { TOKENS_TO_WRAP } from 'features/wsteth/shared/types';
-import { TOKENS_TO_WITHDRAWLS } from 'features/withdrawals/types/tokens-withdrawable';
 
 export type AllowanceDataTableRowProps = Omit<
   React.ComponentProps<typeof DataTableRow>,
   'title'
 > & {
   title?: ReactNode;
-  token: TOKENS_TO_WRAP | TOKENS_TO_WITHDRAWLS;
+  token: LIDO_TOKENS_VALUES;
   allowance?: bigint;
   loading?: boolean;
   isBlank?: boolean;
