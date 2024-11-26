@@ -79,14 +79,17 @@ const supportedChainsWithMainnet: CHAINS[] = config.supportedChains.includes(
 export const METRIC_CONTRACT_ADDRESSES = supportedChainsWithMainnet.reduce(
   (mapped, chainId) => {
     const map = {
-      [CONTRACT_NAMES.lido]: getRateTokenAddress(chainId, LIDO_TOKENS.steth),
-      [CONTRACT_NAMES.wsteth]: getRateTokenAddress(chainId, LIDO_TOKENS.wsteth),
-      [CONTRACT_NAMES.withdrawalQueue]: getWithdrawalQueueAddress(chainId),
+      [CONTRACT_NAMES.lido]:
+        getRateTokenAddress(chainId, LIDO_TOKENS.steth) ?? null,
+      [CONTRACT_NAMES.wsteth]:
+        getRateTokenAddress(chainId, LIDO_TOKENS.wsteth) ?? null,
+      [CONTRACT_NAMES.withdrawalQueue]:
+        getWithdrawalQueueAddress(chainId) ?? null,
       [CONTRACT_NAMES.aggregator]:
         AGGREGATOR_STETH_USD_PRICE_FEED_BY_NETWORK[chainId] ?? null,
       [CONTRACT_NAMES.aggregatorStEthUsdPriceFeed]:
         AGGREGATOR_STETH_USD_PRICE_FEED_BY_NETWORK[chainId] ?? null,
-      [CONTRACT_NAMES.stakingRouter]: getStakingRouterAddress(chainId),
+      [CONTRACT_NAMES.stakingRouter]: getStakingRouterAddress(chainId) ?? null,
       [CONTRACT_NAMES.stethCurve]:
         chainId === mainnet.id ? MAINNET_CURVE : null,
       [CONTRACT_NAMES.lidoLocator]: LIDO_LOCATOR_BY_CHAIN[chainId] ?? null,
@@ -113,12 +116,12 @@ export const METRIC_CONTRACT_EVENT_ADDRESSES =
   supportedChainsWithMainnet.reduce(
     (mapped, chainId) => {
       const map = {
-        [CONTRACT_NAMES.withdrawalQueue]: getWithdrawalQueueAddress(chainId),
-        [CONTRACT_NAMES.lido]: getRateTokenAddress(chainId, LIDO_TOKENS.steth),
-        [CONTRACT_NAMES.wsteth]: getRateTokenAddress(
-          chainId,
-          LIDO_TOKENS.wsteth,
-        ),
+        [CONTRACT_NAMES.withdrawalQueue]:
+          getWithdrawalQueueAddress(chainId) ?? null,
+        [CONTRACT_NAMES.lido]:
+          getRateTokenAddress(chainId, LIDO_TOKENS.steth) ?? null,
+        [CONTRACT_NAMES.wsteth]:
+          getRateTokenAddress(chainId, LIDO_TOKENS.wsteth) ?? null,
         [CONTRACT_NAMES.L2stETH]:
           LIDO_L2_CONTRACT_ADDRESSES[chainId]?.['steth'] ?? null,
         [CONTRACT_NAMES.L2wstETH]:
