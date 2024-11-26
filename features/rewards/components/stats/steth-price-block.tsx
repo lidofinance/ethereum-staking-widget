@@ -9,11 +9,11 @@ import { Item } from './components/item';
 
 export const StEthPriceBlock: FC = () => {
   const { currencyObject: currency, data, isLoading } = useRewardsHistory();
-  const stEthEth = useStethEthRate();
+  const { data: stEthEth, isLoading: isLoadingStEthEth } = useStethEthRate();
 
   return (
     <Item
-      loading={isLoading}
+      loading={isLoading || isLoadingStEthEth}
       dataTestId="stEthPriceBlock"
       title="stETH price"
       value={

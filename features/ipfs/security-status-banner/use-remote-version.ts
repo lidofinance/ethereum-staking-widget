@@ -1,11 +1,9 @@
-import { type PublicClient } from 'viem';
 import { getEnsResolver, getEnsText } from 'viem/ens';
 import { useQuery } from '@tanstack/react-query';
 
-import { usePublicClient } from 'wagmi';
 import { useConfig } from 'config';
 import { STRATEGY_LAZY } from 'consts/react-query-strategies';
-import { useWagmiMainnetOnlyConfig } from 'modules/web3';
+import { useMainnetOnlyWagmi } from 'modules/web3';
 
 type EnsHashCheckReturn = {
   cid: string;
@@ -15,11 +13,7 @@ type EnsHashCheckReturn = {
 };
 
 export const useRemoteVersion = () => {
-  const wagmiConfig = useWagmiMainnetOnlyConfig();
-  // it works, but typing issue
-  const publicClientMainnet = usePublicClient({
-    config: wagmiConfig,
-  }) as PublicClient;
+  const { publicClientMainnet } = useMainnetOnlyWagmi();
 
   // we use directly non-optimistic manifest data
   // can't trust static props(in IPFS esp) to generate warnings/disconnect wallet

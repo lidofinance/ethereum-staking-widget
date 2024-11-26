@@ -11,11 +11,12 @@ import {
   WagmiProvider,
   createConfig,
   useConnections,
+  usePublicClient,
   fallback,
   type Config,
 } from 'wagmi';
 import * as wagmiChains from 'wagmi/chains';
-import { http } from 'viem';
+import { http, type PublicClient } from 'viem';
 import {
   AutoConnect,
   ReefKnot,
@@ -43,7 +44,8 @@ export const wagmiChainMap = Object.values(wagmiChains).reduce(
 );
 
 type Web3ProviderContextValue = {
-  wagmiMainnetOnlyConfig: Config;
+  mainnetConfig: Config;
+  publicClientMainnet: PublicClient;
 };
 
 const Web3ProviderContext = createContext<Web3ProviderContextValue | null>(
@@ -51,13 +53,10 @@ const Web3ProviderContext = createContext<Web3ProviderContextValue | null>(
 );
 Web3ProviderContext.displayName = 'Web3ProviderContext';
 
-export const useWagmiMainnetOnlyConfig = () => {
+export const useMainnetOnlyWagmi = () => {
   const value = useContext(Web3ProviderContext);
-  invariant(
-    value,
-    'useWagmiMainnetOnlyConfig was used outside of Web3Provider',
-  );
-  return value.wagmiMainnetOnlyConfig;
+  invariant(value, 'useMainnetOnlyWagmi was used outside of Web3Provider');
+  return value;
 };
 
 export const Web3Provider: FC<PropsWithChildren> = ({ children }) => {
@@ -106,7 +105,7 @@ export const Web3Provider: FC<PropsWithChildren> = ({ children }) => {
     backendRPC,
   );
 
-  const wagmiMainnetOnlyConfig = useMemo(() => {
+  const mainnetConfig = useMemo(() => {
     const batchConfig = {
       wait: config.PROVIDER_BATCH_TIME,
       batchSize: config.PROVIDER_MAX_BATCH,
@@ -139,6 +138,10 @@ export const Web3Provider: FC<PropsWithChildren> = ({ children }) => {
     });
   }, [getRpcUrlByChainId]);
 
+  const publicClientMainnet = usePublicClient({
+    config: mainnetConfig,
+  });
+
   const wagmiConfig = useMemo(() => {
     return createConfig({
       chains: supportedChains,
@@ -160,7 +163,9 @@ export const Web3Provider: FC<PropsWithChildren> = ({ children }) => {
   }, [activeConnection, onActiveConnection]);
 
   return (
-    <Web3ProviderContext.Provider value={{ wagmiMainnetOnlyConfig }}>
+    <Web3ProviderContext.Provider
+      value={{ mainnetConfig, publicClientMainnet }}
+    >
       {/* default wagmi autoConnect, MUST be false in our case, because we use custom autoConnect from Reef Knot */}
       <WagmiProvider config={wagmiConfig} reconnectOnMount={false}>
         <ReefKnot
