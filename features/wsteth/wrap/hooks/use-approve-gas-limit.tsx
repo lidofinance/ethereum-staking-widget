@@ -34,7 +34,6 @@ export const useApproveGasLimit = () => {
         if (isL2) {
           return await l2.approveWstethForWrapEstimateGas({
             value: ESTIMATE_AMOUNT,
-            // to: spender,
             account: config.ESTIMATE_ACCOUNT,
           });
         } else {
