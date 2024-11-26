@@ -19,12 +19,10 @@ import {
 const fetchGasLimitETH = async (isL2: boolean, wrap: LidoSDKWrap) => {
   if (isL2) return 0n;
   try {
-    return applyGasLimitRatio(
-      await wrap.wrapEthEstimateGas({
-        value: ESTIMATE_AMOUNT,
-        account: config.ESTIMATE_ACCOUNT,
-      }),
-    );
+    return await wrap.wrapEthEstimateGas({
+      value: ESTIMATE_AMOUNT,
+      account: config.ESTIMATE_ACCOUNT,
+    });
   } catch (error) {
     console.warn(`[wrap-gas-limit::eth]`, error);
     return applyGasLimitRatio(WRAP_FROM_ETH_GAS_LIMIT);
