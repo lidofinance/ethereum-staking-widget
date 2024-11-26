@@ -8,7 +8,6 @@ import {
   ESTIMATE_AMOUNT,
   useLidoSDKL2,
 } from 'modules/web3';
-import { applyGasLimitRatio } from 'utils/apply-gas-limit-ratio';
 
 export const useUnwrapGasLimit = () => {
   const { chainId, isDappActiveOnL2 } = useDappStatus();
@@ -35,7 +34,7 @@ export const useUnwrapGasLimit = () => {
         }
       } catch (error) {
         console.warn(error);
-        return applyGasLimitRatio(fallback);
+        return fallback;
       }
     },
   });
