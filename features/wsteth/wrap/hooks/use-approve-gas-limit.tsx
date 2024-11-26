@@ -31,6 +31,9 @@ export const useApproveGasLimit = () => {
           ? l2.contractAddress()
           : wstETH.contractAddress());
 
+        // TODO
+        // l1: wrap.approveStethForWrapEstimateGas
+        // l2: l2.approveWstethForWrapEstimateGas
         const contract = await (isL2 ? l2.getContract() : stETH.getContract());
 
         return await contract.estimateGas.approve([spender, ESTIMATE_AMOUNT], {
