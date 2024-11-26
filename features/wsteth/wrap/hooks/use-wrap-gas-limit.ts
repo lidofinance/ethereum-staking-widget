@@ -9,7 +9,12 @@ import {
   WRAP_L2_GAS_LIMIT,
 } from 'consts/tx';
 import { applyGasLimitRatio } from 'utils/apply-gas-limit-ratio';
-import { useDappStatus, useLidoSDK, ESTIMATE_AMOUNT } from 'modules/web3';
+import {
+  useDappStatus,
+  useLidoSDK,
+  useLidoSDKL2,
+  ESTIMATE_AMOUNT,
+} from 'modules/web3';
 
 const fetchGasLimitETH = async (isL2: boolean, wrap: LidoSDKWrap) => {
   if (isL2) return 0n;
@@ -53,8 +58,9 @@ const fetchGasLimitStETH = async (
 };
 
 export const useWrapGasLimit = () => {
-  const { isDappActiveOnL2 } = useDappStatus();
-  const { l2, isL2, wrap, core } = useLidoSDK();
+  const { chainId, isDappActiveOnL2 } = useDappStatus();
+  const { wrap } = useLidoSDK();
+  const { l2, isL2 } = useLidoSDKL2();
 
   const wrapFallback = isDappActiveOnL2 ? WRAP_L2_GAS_LIMIT : WRAP_GAS_LIMIT;
 
@@ -62,7 +68,7 @@ export const useWrapGasLimit = () => {
     gasLimitETH: bigint;
     gasLimitStETH: bigint;
   }>({
-    queryKey: ['wrap-gas-limit', core.chainId, isL2],
+    queryKey: ['wrap-gas-limit', chainId, isL2],
     ...STRATEGY_EAGER,
     queryFn: async () => {
       const [gasLimitETH, gasLimitStETH] = await Promise.all([

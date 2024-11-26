@@ -5,7 +5,7 @@ import invariant from 'tiny-invariant';
 
 import { TransactionCallbackStage } from '@lidofinance/lido-ethereum-sdk/core';
 
-import { useLidoSDK, useDappStatus } from 'modules/web3';
+import { useDappStatus, useLidoSDK, useLidoSDKL2 } from 'modules/web3';
 
 import type { UnwrapFormInputType } from '../unwrap-form-context';
 import { useUnwrapTxOnL2Approve } from './use-unwrap-tx-on-l2-approve';
@@ -26,7 +26,8 @@ export const useUnwrapFormProcessor = ({
 }: UseUnwrapFormProcessorArgs) => {
   const { isDappActiveOnL2, address } = useDappStatus();
   const { txModalStages } = useTxModalStagesUnwrap();
-  const { l2, stETH, wrap, isL2 } = useLidoSDK();
+  const { stETH, wrap } = useLidoSDK();
+  const { l2, isL2 } = useLidoSDKL2();
 
   const {
     isApprovalNeededBeforeUnwrap: isApprovalNeededBeforeUnwrapOnL2,

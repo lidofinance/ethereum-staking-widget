@@ -7,12 +7,13 @@ import type {
 import { LIDO_L2_CONTRACT_ADDRESSES } from '@lidofinance/lido-ethereum-sdk/common';
 
 import { STRATEGY_CONSTANT } from 'consts/react-query-strategies';
-import { useLidoSDK } from 'modules/web3';
+import { useLidoSDK, useLidoSDKL2 } from 'modules/web3';
 
 export const useContractAddress = (
   contractName: LIDO_CONTRACT_NAMES | LIDO_L2_CONTRACT_NAMES,
 ) => {
-  const { isL2, core } = useLidoSDK();
+  const { core } = useLidoSDK();
+  const { isL2 } = useLidoSDKL2();
 
   return useQuery<Address | null>({
     queryKey: ['use-contract-address', core.chainId, isL2, contractName],

@@ -6,7 +6,7 @@ import { TransactionCallbackStage } from '@lidofinance/lido-ethereum-sdk/core';
 
 import { config } from 'config';
 import { MockLimitReachedError } from 'features/stake/stake-form/utils';
-import { useDappStatus, useLidoSDK } from 'modules/web3';
+import { useDappStatus, useLidoSDK, useLidoSDKL2 } from 'modules/web3';
 
 import type {
   WrapFormApprovalData,
@@ -27,7 +27,8 @@ export const useWrapFormProcessor = ({
   onRetry,
 }: UseWrapFormProcessorArgs) => {
   const { isDappActiveOnL2, address } = useDappStatus();
-  const { l2, wrap, wstETH } = useLidoSDK();
+  const { wrap, wstETH } = useLidoSDK();
+  const { l2 } = useLidoSDKL2();
   const { txModalStages } = useTxModalWrap();
 
   const {

@@ -1,8 +1,9 @@
 import { useQuery } from '@tanstack/react-query';
-import { useLidoSDK } from 'modules/web3';
+import { useLidoSDK, useLidoSDKL2 } from 'modules/web3';
 
 export const useWstethBySteth = (steth?: bigint | null) => {
-  const { isL2, l2, wrap, chainId } = useLidoSDK();
+  const { wrap, chainId } = useLidoSDK();
+  const { l2, isL2 } = useLidoSDKL2();
 
   return useQuery({
     queryKey: ['use-wsteth-by-steth', steth?.toString(), isL2, chainId],

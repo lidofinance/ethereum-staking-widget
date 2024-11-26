@@ -6,18 +6,24 @@ import {
 } from 'consts/tx';
 import { STRATEGY_LAZY } from 'consts/react-query-strategies';
 
-import { useLidoSDK, useDappStatus, ESTIMATE_AMOUNT } from 'modules/web3';
+import {
+  useLidoSDK,
+  useLidoSDKL2,
+  useDappStatus,
+  ESTIMATE_AMOUNT,
+} from 'modules/web3';
 
 export const useApproveGasLimit = () => {
-  const { isDappActiveOnL2 } = useDappStatus();
-  const { l2, stETH, isL2, wstETH, core } = useLidoSDK();
+  const { chainId, isDappActiveOnL2 } = useDappStatus();
+  const { stETH, wstETH } = useLidoSDK();
+  const { l2, isL2 } = useLidoSDKL2();
 
   const fallback = isDappActiveOnL2
     ? STETH_L2_APPROVE_GAS_LIMIT
     : WSTETH_APPROVE_GAS_LIMIT;
 
   const { data } = useQuery<bigint | undefined>({
-    queryKey: ['approve-wrap-gas-limit', isDappActiveOnL2, core.chainId],
+    queryKey: ['approve-wrap-gas-limit', isDappActiveOnL2, chainId],
     ...STRATEGY_LAZY,
     queryFn: async () => {
       try {

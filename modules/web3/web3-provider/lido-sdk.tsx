@@ -8,14 +8,12 @@ import {
   useWalletClient,
 } from 'wagmi';
 
-import { LIDO_L2_CONTRACT_ADDRESSES } from '@lidofinance/lido-ethereum-sdk/common';
 import { LidoSDKStake } from '@lidofinance/lido-ethereum-sdk/stake';
 import { CHAINS, LidoSDKCore } from '@lidofinance/lido-ethereum-sdk/core';
 import {
   LidoSDKstETH,
   LidoSDKwstETH,
 } from '@lidofinance/lido-ethereum-sdk/erc20';
-import { LidoSDKL2 } from '@lidofinance/lido-ethereum-sdk/l2';
 import { LidoSDKWrap } from '@lidofinance/lido-ethereum-sdk/wrap';
 import { LidoSDKWithdraw } from '@lidofinance/lido-ethereum-sdk/withdraw';
 import { LidoSDKStatistics } from '@lidofinance/lido-ethereum-sdk/statistics';
@@ -25,16 +23,14 @@ import { useTokenTransferSubscription } from 'modules/web3/hooks/use-balance';
 import { useDappChain } from './dapp-chain';
 
 type LidoSDKContextValue = {
+  chainId: CHAINS;
   core: LidoSDKCore;
   stake: LidoSDKStake;
   stETH: LidoSDKstETH;
   wstETH: LidoSDKwstETH;
-  l2: LidoSDKL2;
   wrap: LidoSDKWrap;
   withdraw: LidoSDKWithdraw;
   statistics: LidoSDKStatistics;
-  chainId: CHAINS;
-  isL2: boolean;
   subscribeToTokenUpdates: ReturnType<typeof useTokenTransferSubscription>;
 };
 
@@ -87,21 +83,19 @@ export const LidoSDKProvider = ({ children }: React.PropsWithChildren) => {
     const wstETH = new LidoSDKwstETH({ core });
     const wrap = new LidoSDKWrap({ core });
     const withdraw = new LidoSDKWithdraw({ core });
-    const l2 = new LidoSDKL2({ core });
     const statistics = new LidoSDKStatistics({ core });
 
     return {
+      chainId: core.chainId,
       core,
       stake,
       stETH,
       wstETH,
       wrap,
       withdraw,
-      l2,
       statistics,
-      chainId: core.chainId,
-      isL2: !!LIDO_L2_CONTRACT_ADDRESSES[chainId as CHAINS],
       subscribeToTokenUpdates: subscribe,
+      // the L2 module you can to find in the 'modules/web3/web3-provider/lido-sdk-l2.tsx'
     };
   }, [chainId, publicClient, subscribe, walletClient]);
   return (

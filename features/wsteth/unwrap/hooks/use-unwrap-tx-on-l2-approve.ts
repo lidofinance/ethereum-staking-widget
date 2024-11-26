@@ -3,7 +3,7 @@ import { useMemo, useCallback } from 'react';
 import { LIDO_L2_CONTRACT_ADDRESSES } from '@lidofinance/lido-ethereum-sdk/common';
 import { TransactionCallbackStage } from '@lidofinance/lido-ethereum-sdk/core';
 
-import { useLidoSDK, useDappStatus, useAllowance } from 'modules/web3';
+import { useLidoSDKL2, useDappStatus, useAllowance } from 'modules/web3';
 
 import { useTxModalWrap } from '../../wrap/hooks/use-tx-modal-stages-wrap';
 import { TOKENS_TO_WRAP } from '../../shared/types';
@@ -14,7 +14,7 @@ type UseUnwrapTxApproveArgs = {
 
 export const useUnwrapTxOnL2Approve = ({ amount }: UseUnwrapTxApproveArgs) => {
   const { isDappActiveOnL2, isChainTypeOnL2, address } = useDappStatus();
-  const { core, l2 } = useLidoSDK();
+  const { l2, core } = useLidoSDKL2();
   const { txModalStages } = useTxModalWrap();
 
   const staticTokenAddress = LIDO_L2_CONTRACT_ADDRESSES[core.chainId]?.wsteth;

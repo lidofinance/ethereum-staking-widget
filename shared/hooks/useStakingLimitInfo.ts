@@ -4,7 +4,7 @@ import { useQuery, type UseQueryResult } from '@tanstack/react-query';
 import { config } from 'config';
 import { STRATEGY_LAZY } from 'consts/react-query-strategies';
 import { LIMIT_LEVEL } from 'types';
-import { useLidoSDK } from 'modules/web3';
+import { useLidoSDK, useLidoSDKL2 } from 'modules/web3';
 
 export type StakeLimitFullInfo = {
   isStakingPaused: boolean;
@@ -39,7 +39,8 @@ const getLimitLevel = (maxLimit: bigint, currentLimit: bigint) => {
 };
 
 export const useStakingLimitInfo = (): UseQueryResult<StakeLimitFullInfo> => {
-  const { isL2, stake } = useLidoSDK();
+  const { stake } = useLidoSDK();
+  const { isL2 } = useLidoSDKL2();
 
   const enabled = !!stake.core && !!stake.core.chainId && !isL2;
 

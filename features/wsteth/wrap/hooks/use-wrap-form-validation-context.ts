@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { useDappStatus, useLidoSDK } from 'modules/web3';
+import { useDappStatus, useLidoSDKL2 } from 'modules/web3';
 import { useAwaiter } from 'shared/hooks/use-awaiter';
 
 import type {
@@ -15,8 +15,8 @@ type UseWrapFormValidationContextArgs = {
 export const useWrapFormValidationContext = ({
   networkData,
 }: UseWrapFormValidationContextArgs): WrapFormValidationContext => {
-  const { isL2 } = useLidoSDK();
   const { isDappActive } = useDappStatus();
+  const { isL2 } = useLidoSDKL2();
 
   const {
     stakeLimitInfo,
