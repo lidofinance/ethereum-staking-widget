@@ -51,7 +51,7 @@ const fetchGasLimitStETH = async (
     }
   } catch (error) {
     console.warn(`[wrap-gas-limit::steth]`, error);
-    return applyGasLimitRatio(wrapFallback);
+    return wrapFallback;
   }
 };
 
