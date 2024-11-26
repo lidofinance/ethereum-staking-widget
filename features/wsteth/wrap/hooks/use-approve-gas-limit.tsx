@@ -27,16 +27,14 @@ export const useApproveGasLimit = () => {
     ...STRATEGY_LAZY,
     queryFn: async () => {
       try {
-        const spender = await (isL2
-          ? l2.contractAddress()
-          : wstETH.contractAddress());
-
         if (isL2) {
           return await l2.approveWstethForWrapEstimateGas({
             value: ESTIMATE_AMOUNT,
             account: config.ESTIMATE_ACCOUNT,
           });
         } else {
+          const spender = await wstETH.contractAddress();
+
           return await wstETH.estimateApprove({
             amount: ESTIMATE_AMOUNT,
             to: spender,
