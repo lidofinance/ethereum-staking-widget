@@ -1,35 +1,26 @@
 import { formatEther } from 'viem';
-import invariant from 'tiny-invariant';
 import type { LIDO_CONTRACT_NAMES } from '@lidofinance/lido-ethereum-sdk/common';
 import { useQuery } from '@tanstack/react-query';
 
 import { PartialStakingRouterAbi } from 'abi/partial-staking-router';
 import { STRATEGY_CONSTANT } from 'consts/react-query-strategies';
-import { useLidoSDK, useContractAddress } from 'modules/web3';
+import { useLidoSDK } from 'modules/web3';
 
 export const useProtocolFee = () => {
   const { core } = useLidoSDK();
-  const { data: stakingRouterAddress } = useContractAddress(
-    'stakingRouter' as LIDO_CONTRACT_NAMES,
-  );
 
   const queryResult = useQuery({
-    queryKey: [
-      'staking-fee-aggregate-distribution',
-      core.chainId,
-      stakingRouterAddress,
-    ],
+    queryKey: ['staking-fee-aggregate-distribution', core.chainId],
     ...STRATEGY_CONSTANT,
     refetchInterval: 60000, // 1 minute
-    enabled: !!core.chainId && !!stakingRouterAddress,
-    queryFn: () => {
-      invariant(
-        stakingRouterAddress,
-        '[useProtocolFee] The "staking Router Address" must be define',
+    enabled: !!core.chainId,
+    queryFn: async () => {
+      const address = await core.getContractAddress(
+        'stakingRouter' as LIDO_CONTRACT_NAMES,
       );
 
-      return core.rpcProvider.readContract({
-        address: stakingRouterAddress,
+      return await core.rpcProvider.readContract({
+        address,
         abi: PartialStakingRouterAbi,
         functionName: 'getStakingFeeAggregateDistribution',
       });
