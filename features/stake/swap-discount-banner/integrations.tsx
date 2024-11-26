@@ -1,4 +1,5 @@
 import { parseEther } from 'viem';
+import { LIDO_TOKENS } from '@lidofinance/lido-ethereum-sdk';
 
 import { OPEN_OCEAN_REFERRAL_ADDRESS } from 'consts/external-links';
 import { MATOMO_CLICK_EVENTS } from 'consts/matomo-click-events';
@@ -41,7 +42,7 @@ const STAKE_SWAP_INTEGRATION_CONFIG: StakeSwapDiscountIntegrationMap = {
   'one-inch': {
     title: '1inch',
     async getRate() {
-      const { rate } = await getOneInchRate({ token: 'ETH' });
+      const { rate } = await getOneInchRate({ token: LIDO_TOKENS.eth });
       return rate;
     },
     BannerText({ discountPercent }) {

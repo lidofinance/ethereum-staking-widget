@@ -193,20 +193,7 @@ export const SupportL1Chains: React.FC<React.PropsWithChildren> = ({
 }) => (
   <DappChainContext.Provider value={onlyL1ChainsValue}>
     <LidoSDKProvider>
-      {/*
-        Note that LidoSDKL2Provider will actually be used inside SupportL2Chains.
-        But why is there a LidoSDKL2Provider here too?
-
-        We have common hooks that use both useLidoSDK (L1) and useLidoSDKL2 hooks.
-        In fact, this is needed so that common hooks do not fail with the invariant
-        when calling useLidoSDKL2 from LidoSDKL2Provider.
-
-        Inside this LidoSDKL2Provider there will be a chainID from L1,
-        but this will not cause an error until you try to perform any operation with the wrong network
-        (you can use isL2 to avoid this).
-
-        For React, nesting the same providers into each other is an acceptable situation.
-      */}
+      {/* Stub LidoSDKL2Provider for hooks that gives isL2:false. Will be overriden in SupportL2Chains */}
       <LidoSDKL2Provider>{children}</LidoSDKL2Provider>
     </LidoSDKProvider>
   </DappChainContext.Provider>

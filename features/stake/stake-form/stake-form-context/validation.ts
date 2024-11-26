@@ -4,6 +4,7 @@ import invariant from 'tiny-invariant';
 
 import { useDappStatus } from 'modules/web3';
 import { VALIDATION_CONTEXT_TIMEOUT } from 'features/withdrawals/withdrawals-constants';
+import { TOKENS_TO_WRAP } from 'features/wsteth/shared/types';
 import { useAwaiter } from 'shared/hooks/use-awaiter';
 import { validateStakeEth } from 'shared/hook-form/validation/validate-stake-eth';
 import { validateEtherAmount } from 'shared/hook-form/validation/validate-ether-amount';
@@ -27,7 +28,7 @@ export const stakeFormValidationResolver: Resolver<
       'validation context must be presented as context promise',
     );
 
-    validateEtherAmount('amount', amount, 'ETH');
+    validateEtherAmount('amount', amount, TOKENS_TO_WRAP.ETH);
 
     const {
       isWalletActive,

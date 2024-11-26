@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/router';
 import debounce from 'lodash/debounce';
 import { usePublicClient } from 'wagmi';
+import { type PublicClient } from 'viem';
 
 import { useDappStatus } from 'modules/web3';
 import { resolveEns, isValidEns, isValidAddress } from 'features/rewards/utils';
@@ -25,7 +26,8 @@ export const useGetCurrentAddress: UseGetCurrentAddress = () => {
 
   const { isReady, query } = useRouter();
   const { address: account, chainId, isSupportedChain } = useDappStatus();
-  const publicClient = usePublicClient({ chainId: chainId });
+  // it works, but typing issue
+  const publicClient = usePublicClient({ chainId: chainId }) as PublicClient;
 
   const getEnsAddress = useCallback(
     async (value: string) => {
@@ -35,7 +37,6 @@ export const useGetCurrentAddress: UseGetCurrentAddress = () => {
 
       setIsAddressResolving(true);
       try {
-        // @ts-expect-error: it works, but typing issue
         result = await resolveEns(value, publicClient);
       } catch (e) {
         console.error(e);

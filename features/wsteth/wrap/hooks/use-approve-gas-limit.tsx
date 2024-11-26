@@ -15,7 +15,7 @@ import {
 
 export const useApproveGasLimit = () => {
   const { chainId, isDappActiveOnL2 } = useDappStatus();
-  const { stETH, wstETH } = useLidoSDK();
+  const { wstETH } = useLidoSDK();
   const { l2, isL2 } = useLidoSDKL2();
 
   const fallback = isDappActiveOnL2
@@ -27,15 +27,20 @@ export const useApproveGasLimit = () => {
     ...STRATEGY_LAZY,
     queryFn: async () => {
       try {
-        const spender = await (isL2
-          ? l2.contractAddress()
-          : wstETH.contractAddress());
+        if (isL2) {
+          return await l2.approveWstethForWrapEstimateGas({
+            value: ESTIMATE_AMOUNT,
+            account: config.ESTIMATE_ACCOUNT,
+          });
+        } else {
+          const spender = await wstETH.contractAddress();
 
-        const contract = await (isL2 ? l2.getContract() : stETH.getContract());
-
-        return await contract.estimateGas.approve([spender, ESTIMATE_AMOUNT], {
-          account: config.ESTIMATE_ACCOUNT,
-        });
+          return await wstETH.estimateApprove({
+            amount: ESTIMATE_AMOUNT,
+            to: spender,
+            account: config.ESTIMATE_ACCOUNT,
+          });
+        }
       } catch (error) {
         console.warn(error);
         return fallback;

@@ -3,7 +3,7 @@ export * from './hooks';
 export * from './utils';
 export {
   Web3Provider,
-  useWagmiMainnetOnlyConfig,
+  useMainnetOnlyWagmi,
   useLidoSDK,
   useLidoSDKL2,
   SupportL2Chains,
