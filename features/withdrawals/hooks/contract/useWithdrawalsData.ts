@@ -1,4 +1,5 @@
 import { useCallback, useMemo } from 'react';
+import invariant from 'tiny-invariant';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 
 import { useDappStatus, useLidoSDK } from 'modules/web3';
@@ -95,9 +96,10 @@ export const useWithdrawalRequests = () => {
     enabled: !!address,
     ...STRATEGY_LAZY,
     queryFn: async () => {
-      if (!address) {
-        return;
-      }
+      invariant(
+        address,
+        '[useWithdrawalRequests] The "address" must be define',
+      );
 
       const [requestIds, lastCheckpointIndex] = await Promise.all([
         withdraw.views

@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import type { Address } from 'viem';
 import { usePublicClient } from 'wagmi';
+import invariant from 'tiny-invariant';
 import { CHAINS } from '@lidofinance/lido-ethereum-sdk';
 import { useQuery } from '@tanstack/react-query';
 
@@ -25,7 +26,10 @@ export const useEthUsd = (amount?: bigint) => {
     ...STRATEGY_LAZY,
     // the async is needed here because the decimals will be requested soon
     queryFn: async () => {
-      if (!publicClientMainnet) return;
+      invariant(
+        publicClientMainnet,
+        '[useEthUsd] The "publicClientMainnet" must be define',
+      );
 
       const latestAnswer = await publicClientMainnet.readContract({
         address: AGGREGATOR_STETH_USD_PRICE_FEED_BY_NETWORK[
