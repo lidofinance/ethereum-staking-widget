@@ -8,6 +8,7 @@ import {
   ESTIMATE_AMOUNT,
   useLidoSDKL2,
 } from 'modules/web3';
+import { applyGasLimitRatio } from 'utils/apply-gas-limit-ratio';
 
 export const useUnwrapGasLimit = () => {
   const { chainId, isDappActiveOnL2 } = useDappStatus();
@@ -21,16 +22,20 @@ export const useUnwrapGasLimit = () => {
     ...STRATEGY_LAZY,
     queryFn: async () => {
       try {
-        const contract = isL2
-          ? await l2.getContract()
-          : await wrap.getContractWstETH();
-
-        return await contract.estimateGas.unwrap([ESTIMATE_AMOUNT], {
-          account: config.ESTIMATE_ACCOUNT,
-        });
+        if (isL2) {
+          return await l2.wrapWstethToStethEstimateGas({
+            value: ESTIMATE_AMOUNT,
+            account: config.ESTIMATE_ACCOUNT,
+          });
+        } else {
+          return await wrap.unwrapEstimateGas({
+            value: ESTIMATE_AMOUNT,
+            account: config.ESTIMATE_ACCOUNT,
+          });
+        }
       } catch (error) {
         console.warn(error);
-        return fallback;
+        return applyGasLimitRatio(fallback);
       }
     },
   });
