@@ -10,11 +10,12 @@ import { LidoSDKCore } from '@lidofinance/lido-ethereum-sdk/core';
 import { useQuery } from '@tanstack/react-query';
 
 import { STRATEGY_CONSTANT } from 'consts/react-query-strategies';
-import { useLidoSDK } from 'modules/web3';
+import { useDappStatus, useLidoSDK, useLidoSDKL2 } from 'modules/web3';
 
 const fetchTokenAddress = async (
   token: string,
   core: LidoSDKCore,
+  chainId: CHAINS,
   isL2: boolean,
 ): Promise<Address> => {
   if (isL2) {
@@ -34,13 +35,15 @@ const fetchTokenAddress = async (
 };
 
 export const useTokenAddress = (token: string): Address | undefined => {
-  const { core, isL2 } = useLidoSDK();
+  const { chainId } = useDappStatus();
+  const { core } = useLidoSDK();
+  const { isL2 } = useLidoSDKL2();
 
   const { data: address } = useQuery({
-    queryKey: ['tokenAddress', token, core, isL2],
+    queryKey: ['tokenAddress', token, core, chainId, isL2],
     enabled: !!token,
     ...STRATEGY_CONSTANT,
-    queryFn: () => fetchTokenAddress(token, core, isL2),
+    queryFn: () => fetchTokenAddress(token, core, chainId, isL2),
   });
 
   return address;
