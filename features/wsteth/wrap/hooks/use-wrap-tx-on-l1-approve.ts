@@ -27,8 +27,8 @@ export const useWrapTxOnL1Approve = ({
   const { wrap } = useLidoSDK();
   const { txModalStages } = useTxModalWrap();
 
-  const { data: staticSpenderAddress } = useStETHContractAddress();
-  const { data: staticTokenAddress } = useWstETHContractAddress();
+  const { data: staticTokenAddress } = useStETHContractAddress();
+  const { data: staticSpenderAddress } = useWstETHContractAddress();
 
   // only runs on l1
   const {
