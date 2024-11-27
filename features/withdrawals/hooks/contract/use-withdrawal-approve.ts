@@ -19,12 +19,13 @@ export const useWithdrawalApprove = (
 ): UseApproveResponse => {
   const { withdraw } = useLidoSDK();
 
-  const enabled = !!(withdraw.core.chainId && account && token && amount > 0n);
+  const enabled = !!(withdraw.core.chainId && account && token);
 
   const { data, error, isLoading, isFetching, refetch } = useQuery({
     queryKey: [
       'use-withdrawal-approve',
       withdraw.core.chainId,
+      account,
       amount.toString(),
       token,
     ],

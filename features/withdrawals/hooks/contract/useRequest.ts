@@ -42,8 +42,7 @@ export const useWithdrawalRequest = ({
   } = useWithdrawalApprove(amount ? amount : 0n, token, address as Address);
   const { closeModal } = useTransactionModal();
 
-  const isApprovalFlow =
-    isMultisig || !!(allowance && allowance > 0n && !needsApprove);
+  const isApprovalFlow = isMultisig || !!(allowance && !needsApprove);
 
   const isApprovalFlowLoading =
     isMultisigLoading || (isApprovalFlow && isUseApproveFetching);
@@ -168,7 +167,7 @@ export const useWithdrawalRequest = ({
   return {
     isTokenLocked,
     isApprovalFlow,
-    allowance: 0n,
+    allowance,
     isApprovalFlowLoading,
     request,
   };
