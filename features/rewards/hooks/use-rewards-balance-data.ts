@@ -21,7 +21,8 @@ export const useRewardsBalanceData = () => {
             stEthCurrencyBalance:
               // accuracy is okay for display
               data &&
-              Number(stethBalance / ETHER) *
+              stethBalance &&
+              (Number(stethBalance) / Number(ETHER)) *
                 data?.stETHCurrencyPrice[currencyObject.id],
           }
         : null,
