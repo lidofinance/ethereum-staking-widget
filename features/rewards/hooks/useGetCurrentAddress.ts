@@ -2,10 +2,10 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/router';
 import debounce from 'lodash/debounce';
 import { usePublicClient } from 'wagmi';
-import { type PublicClient } from 'viem';
+import { isAddress, type PublicClient } from 'viem';
 
 import { useDappStatus } from 'modules/web3';
-import { resolveEns, isValidEns, isValidAddress } from 'features/rewards/utils';
+import { resolveEns, isValidEns } from 'features/rewards/utils';
 
 type UseGetCurrentAddress = () => {
   address: string;
@@ -61,7 +61,7 @@ export const useGetCurrentAddress: UseGetCurrentAddress = () => {
       debounce(async (value: string) => {
         if (value && isValidEns(value)) {
           await getEnsAddress(value);
-        } else if (isValidAddress(value)) {
+        } else if (isAddress(value)) {
           setAddress(value);
         } else {
           setAddress('');
