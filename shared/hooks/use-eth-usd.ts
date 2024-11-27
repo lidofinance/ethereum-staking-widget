@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import type { Address } from 'viem';
+import { getContract, type Address } from 'viem';
 import invariant from 'tiny-invariant';
 import { CHAINS } from '@lidofinance/lido-ethereum-sdk';
 import { useQuery } from '@tanstack/react-query';
@@ -29,21 +29,20 @@ export const useEthUsd = (amount?: bigint) => {
         '[useEthUsd] The "publicClientMainnet" must be define',
       );
 
-      const latestAnswer = await publicClientMainnet.readContract({
+      const contract = getContract({
         address: AGGREGATOR_STETH_USD_PRICE_FEED_BY_NETWORK[
           CHAINS.Mainnet
         ] as Address,
         abi: AggregatorAbi,
-        functionName: 'latestAnswer',
+        client: {
+          public: publicClientMainnet,
+        },
       });
 
-      const decimals = await publicClientMainnet.readContract({
-        address: AGGREGATOR_STETH_USD_PRICE_FEED_BY_NETWORK[
-          CHAINS.Mainnet
-        ] as Address,
-        abi: AggregatorAbi,
-        functionName: 'decimals',
-      });
+      const [latestAnswer, decimals] = await Promise.all([
+        contract.read.latestAnswer(),
+        contract.read.decimals(),
+      ]);
 
       return latestAnswer / 10n ** BigInt(decimals);
     },
