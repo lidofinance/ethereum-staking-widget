@@ -31,7 +31,7 @@ export const useUnwrapTxOnL2Approve = ({ amount }: UseUnwrapTxApproveArgs) => {
     token: staticTokenAddress,
   });
 
-  const isApprovalNeededBeforeUnwrap = allowance && amount > allowance;
+  const isApprovalNeededBeforeUnwrap = amount > allowance;
 
   const processApproveTx = useCallback(
     async ({ onRetry }: { onRetry?: () => void }) => {
