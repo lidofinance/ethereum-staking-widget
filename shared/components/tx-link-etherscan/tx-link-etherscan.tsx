@@ -17,6 +17,9 @@ export const TxLinkEtherscan = (props: TxLinkEtherscanProps) => {
 
   if (!txHash) return null;
 
+  // This component is used in TransactionModal, which is wrapped by SupportL1Chains,
+  // but not wrapped by SupportL2Chains (the chainId will never be a L2 network).
+  // This is currently the fastest solution.
   return (
     <Link
       onClick={onClick}

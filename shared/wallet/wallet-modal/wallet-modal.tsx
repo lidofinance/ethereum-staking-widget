@@ -38,6 +38,9 @@ export const WalletModal: ModalComponentType = ({ onClose, ...props }) => {
 
   const handleCopy = useCopyToClipboard(address ?? '');
   const handleEtherscan = useCallback(() => {
+    // This component is wrapped by SupportL1Chains,
+    // but not wrapped by SupportL2Chains (the chainId will never be a L2 network).
+    // This is currently the fastest solution.
     const link = getEtherscanAddressLink(
       walletChainId ?? config.defaultChain,
       address ?? '',

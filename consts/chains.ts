@@ -20,6 +20,7 @@ export enum LIDO_MULTICHAIN_CHAINS {
   'BNB Chain' = 56,
   'Mode Chain' = 34443,
   'Zircuit Chain' = 48900,
+  Unichain = 130,
 }
 
 // TODO: move to @lidofinance/lido-ethereum-sdk package

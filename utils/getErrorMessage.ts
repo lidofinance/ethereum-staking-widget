@@ -84,21 +84,10 @@ export const extractCodeFromError = (
       normalizedMessage.includes('rejected the request') ||
       normalizedMessage.includes('reject this request') ||
       normalizedMessage.includes('rejected methods') ||
-      normalizedMessage.includes('transaction declined')
+      normalizedMessage.includes('transaction declined') ||
+      normalizedMessage.includes('signed declined')
     )
       return 'ACTION_REJECTED';
-  }
-
-  // Ledger live errors
-  if (
-    'data' in error &&
-    typeof error.data === 'object' &&
-    Array.isArray(error.data) &&
-    typeof error.data['0'] === 'object' &&
-    typeof error.data['0'].message === 'string' &&
-    error.data['0'].message.toLowerCase().includes('rejected')
-  ) {
-    return 'ACTION_REJECTED';
   }
 
   if ('name' in error && typeof error.name == 'string') {

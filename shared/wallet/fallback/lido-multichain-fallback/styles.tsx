@@ -79,6 +79,10 @@ export const Wrap = styled((props) => <Card {...props} />)<WrapProps>`
             #01bb81 91.42%
           );
         `;
+      case LIDO_MULTICHAIN_CHAINS.Unichain:
+        return css`
+          background: linear-gradient(52.01deg, #fc0fa4 0.01%, #8e1459 100%);
+        `;
       default:
         return css`
           background: linear-gradient(
