@@ -11,7 +11,8 @@ export const useWstethBySteth = (steth?: bigint | null) => {
     enabled: steth != null && !!(isL2 ? l2.wsteth : wrap),
     staleTime: Infinity,
     queryFn: () => {
-      invariant(steth, '[useStETHByWstETH] The "wsteth" must be > 0n');
+      if (steth === 0n) return 0n;
+      invariant(steth);
 
       return isL2
         ? l2.steth.convertToShares(steth)

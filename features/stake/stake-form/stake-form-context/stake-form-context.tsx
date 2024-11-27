@@ -85,7 +85,7 @@ const useStakeFormNetworkData = (): StakeFormNetworkData => {
   } = useStakingLimitInfo();
 
   const stakeableEther = useMemo(() => {
-    if (!etherBalance || !stakingLimitInfo) return undefined;
+    if (etherBalance === undefined || !stakingLimitInfo) return undefined;
     if (etherBalance && stakingLimitInfo.isStakingLimitSet) {
       return etherBalance < stakingLimitInfo.currentStakeLimit
         ? etherBalance

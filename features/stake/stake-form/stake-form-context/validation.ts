@@ -74,11 +74,15 @@ export const useStakeFormValidationContext = (
 ): Promise<StakeFormValidationContext> => {
   const { isDappActive } = useDappStatus();
   const { stakingLimitInfo, etherBalance, isMultisig, gasCost } = networkData;
+
   const validationContextAwaited = useMemo(() => {
     if (
       stakingLimitInfo &&
       // we ether not connected or must have all account related data
-      (!isDappActive || (etherBalance && gasCost && isMultisig !== undefined))
+      (!isDappActive ||
+        (etherBalance !== undefined &&
+          gasCost !== undefined &&
+          isMultisig !== undefined))
     ) {
       return {
         isWalletActive: isDappActive,

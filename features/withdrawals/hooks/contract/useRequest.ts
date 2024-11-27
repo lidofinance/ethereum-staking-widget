@@ -1,7 +1,6 @@
 /* eslint-disable sonarjs/no-identical-functions */
 import { useCallback } from 'react';
 import invariant from 'tiny-invariant';
-import { useAccount } from 'wagmi';
 import type { Address, Hash } from 'viem';
 
 import {
@@ -15,7 +14,6 @@ import { useTxModalStagesRequest } from 'features/withdrawals/request/transactio
 import { useTransactionModal } from 'shared/transaction-modal/transaction-modal';
 import { useDappStatus, useIsMultisig, useLidoSDK } from 'modules/web3';
 
-import { overrideWithQAMockBoolean } from 'utils/qa';
 import { useWithdrawalApprove } from './use-withdrawal-approve';
 
 type useWithdrawalRequestParams = {
@@ -31,27 +29,21 @@ export const useWithdrawalRequest = ({
   onConfirm,
   onRetry,
 }: useWithdrawalRequestParams) => {
-  const { connector } = useAccount();
   const { address } = useDappStatus();
   const { isBunker } = useWithdrawals();
   const { withdraw } = useLidoSDK();
   const { txModalStages } = useTxModalStagesRequest();
   const { isMultisig, isLoading: isMultisigLoading } = useIsMultisig();
   const {
+    allowance,
     needsApprove,
     isFetching: isUseApproveFetching,
     refetch: refetchAllowance,
   } = useWithdrawalApprove(amount ? amount : 0n, token, address as Address);
   const { closeModal } = useTransactionModal();
 
-  const isWalletConnect = overrideWithQAMockBoolean(
-    connector?.id === 'walletConnect',
-    'mock-qa-helpers-force-approval-withdrawal-wallet-connect',
-  );
-
-  const isApprovalFlow = Boolean(
-    isWalletConnect || isMultisig || !needsApprove,
-  );
+  const isApprovalFlow =
+    isMultisig || !!(allowance && allowance > 0n && !needsApprove);
 
   const isApprovalFlowLoading =
     isMultisigLoading || (isApprovalFlow && isUseApproveFetching);

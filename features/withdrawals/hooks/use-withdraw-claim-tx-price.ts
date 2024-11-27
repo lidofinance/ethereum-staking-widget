@@ -34,17 +34,11 @@ export const useWithdrawClaimTxPrice = (requests: RequestStatusClaimable[]) => {
     enabled:
       !!chainId && !!address && debouncedSortedSelectedRequests.length > 0,
     ...STRATEGY_LAZY,
-    queryFn: async () => {
-      const sortedRequests = debouncedSortedSelectedRequests;
-
-      const contract = await withdraw.contract.getContractWithdrawalQueue();
-      return await contract.estimateGas.claimWithdrawals(
-        [sortedRequests.map((r) => r.id), sortedRequests.map((r) => r.hint)],
-        {
-          account: address,
-        },
-      );
-    },
+    queryFn: async () =>
+      withdraw.claim.claimRequestsEstimateGas({
+        requestsIds: debouncedSortedSelectedRequests.map((r) => r.id),
+        hints: debouncedSortedSelectedRequests.map((r) => r.hint),
+      }),
   });
 
   const claimGasLimit = isEstimateLoading

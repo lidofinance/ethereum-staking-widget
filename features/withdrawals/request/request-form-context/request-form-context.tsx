@@ -85,7 +85,6 @@ export const RequestFormProvider: FC<PropsWithChildren> = ({ children }) => {
     resolver: RequestFormValidationResolver,
   });
 
-  // TODO refactor this part as part of TX flow
   const {
     reset,
     watch,
