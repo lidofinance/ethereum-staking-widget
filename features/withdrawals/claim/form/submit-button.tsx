@@ -28,9 +28,9 @@ export const SubmitButton = () => {
       !isValidationErrorTypeUnhandled(errors.requests.type)) ||
     selectedRequests.length === 0;
 
-  const claimButtonAmount = ethToClaim ? null : (
+  const claimButtonAmount = ethToClaim ? (
     <FormatToken showAmountTip={false} amount={ethToClaim} symbol="ETH" />
-  );
+  ) : null;
 
   return (
     <Button
