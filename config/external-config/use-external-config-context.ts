@@ -19,7 +19,7 @@ export const useExternalConfigContext = (
   const defaultChain = config.defaultChain;
   const fallbackData = useFallbackManifestEntry(
     prefetchedManifest,
-    config.defaultChain,
+    defaultChain,
   );
 
   const queryResult = useQuery<ManifestEntry>({
