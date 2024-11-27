@@ -29,5 +29,6 @@ export const getRateTokenAddress = (
   chainId: CHAINS,
   token: TOKENS,
 ): Address | undefined => {
+  if (token === 'ETH') return '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
   return TOKENS_BY_NETWORK?.[chainId]?.[token];
 };

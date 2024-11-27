@@ -27,7 +27,9 @@ export const useWrapFormValidationContext = ({
   } = networkData;
 
   const waitForAccountData = isDappActive
-    ? stethBalance && ethBalance && isMultisig !== undefined
+    ? stethBalance !== undefined &&
+      ethBalance !== undefined &&
+      isMultisig !== undefined
     : true;
 
   const isDataReady = !!(

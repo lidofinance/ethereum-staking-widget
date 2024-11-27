@@ -36,7 +36,7 @@ export const UnwrapFormValidationResolver: Resolver<
     );
 
     if (active) {
-      invariant(maxAmount, 'maxAmount must be presented');
+      invariant(maxAmount !== undefined, 'maxAmount must be presented');
 
       validateBigintMax(
         'amount',

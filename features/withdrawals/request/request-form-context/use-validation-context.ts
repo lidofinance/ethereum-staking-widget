@@ -34,13 +34,13 @@ export const useValidationContext = (
 
   const context = useMemo(() => {
     const validationContextObject =
-      balanceSteth &&
-      balanceWSteth &&
-      maxAmountPerRequestSteth &&
-      maxAmountPerRequestWSteth &&
-      minUnstakeSteth &&
-      minUnstakeWSteth &&
-      stethTotalSupply
+      balanceSteth !== undefined &&
+      balanceWSteth !== undefined &&
+      maxAmountPerRequestSteth !== undefined &&
+      maxAmountPerRequestWSteth !== undefined &&
+      minUnstakeSteth !== undefined &&
+      minUnstakeWSteth !== undefined &&
+      stethTotalSupply !== undefined
         ? {
             balanceSteth,
             balanceWSteth,
