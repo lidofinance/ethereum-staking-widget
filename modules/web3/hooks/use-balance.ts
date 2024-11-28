@@ -215,7 +215,9 @@ const useTokenBalance = (
       select: nativeToBN,
       // because we update on events we can have high staleTime
       // this prevents loader when changing pages
-      staleTime: 30_000,
+      // but safes us from laggy user RPCs
+      staleTime: config.PROVIDER_POLLING_INTERVAL * 2,
+      refetchInterval: config.PROVIDER_POLLING_INTERVAL * 2,
     },
   });
 

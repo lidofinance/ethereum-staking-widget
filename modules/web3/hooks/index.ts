@@ -9,3 +9,4 @@ export * from './use-is-multisig';
 export * from './use-stETH-by-wstETH-on-l2';
 export * from './use-wstETH-by-stETH-on-l2';
 export * from './use-staking-limit-warning';
+export * from './use-is-metamask';
