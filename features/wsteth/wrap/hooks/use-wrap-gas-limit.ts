@@ -16,8 +16,7 @@ import {
   ESTIMATE_AMOUNT,
 } from 'modules/web3';
 
-const fetchGasLimitETH = async (isL2: boolean, wrap: LidoSDKWrap) => {
-  if (isL2) return 0n;
+const fetchGasLimitETH = async (wrap: LidoSDKWrap) => {
   try {
     return await wrap.wrapEthEstimateGas({
       value: ESTIMATE_AMOUNT,
@@ -63,22 +62,15 @@ export const useWrapGasLimit = () => {
   const wrapFallback = isDappActiveOnL2 ? WRAP_L2_GAS_LIMIT : WRAP_GAS_LIMIT;
 
   const { data } = useQuery<{
-    gasLimitETH: bigint;
+    gasLimitETH: bigint | null;
     gasLimitStETH: bigint;
   }>({
     queryKey: ['wrap-gas-limit', chainId, isL2],
     ...STRATEGY_EAGER,
-    queryFn: async () => {
-      const [gasLimitETH, gasLimitStETH] = await Promise.all([
-        fetchGasLimitETH(isL2, wrap),
-        fetchGasLimitStETH(isL2, l2, wrap, wrapFallback),
-      ]);
-
-      return {
-        gasLimitETH,
-        gasLimitStETH,
-      };
-    },
+    queryFn: async () => ({
+      gasLimitETH: !isL2 ? await fetchGasLimitETH(wrap) : null,
+      gasLimitStETH: await fetchGasLimitStETH(isL2, l2, wrap, wrapFallback),
+    }),
   });
 
   return {
