@@ -65,7 +65,7 @@ export const useWithdrawalRates = ({
     ...STRATEGY_LAZY,
     enabled:
       !isPaused &&
-      !!debouncedAmount &&
+      debouncedAmount != null &&
       typeof debouncedAmount === 'bigint' &&
       enabledDexes.length > 0,
     queryFn: () =>
