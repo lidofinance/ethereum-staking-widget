@@ -1,5 +1,5 @@
 import type { Hash } from 'viem';
-import { getAddress as getAddressViem } from 'viem';
+import { getAddress as getAddressViem, zeroHash } from 'viem';
 import { useCallback } from 'react';
 import invariant from 'tiny-invariant';
 
@@ -9,7 +9,13 @@ import {
 } from '@lidofinance/lido-ethereum-sdk';
 
 import { config } from 'config';
-import { applyRoundUpGasLimit, useDappStatus, useLidoSDK } from 'modules/web3';
+import {
+  applyRoundUpGasLimit,
+  useAA,
+  useDappStatus,
+  useLidoSDK,
+  useSendAACalls,
+} from 'modules/web3';
 
 import { MockLimitReachedError, getRefferalAddress } from './utils';
 import { useTxModalStagesStake } from './hooks/use-tx-modal-stages-stake';
@@ -26,6 +32,8 @@ type StakeOptions = {
 
 export const useStake = ({ onConfirm, onRetry }: StakeOptions) => {
   const { address } = useDappStatus();
+  const { isAA } = useAA();
+  const sendAACalls = useSendAACalls();
   const { stake, stETH } = useLidoSDK();
   const { txModalStages } = useTxModalStagesStake();
 
@@ -46,6 +54,46 @@ export const useStake = ({ onConfirm, onRetry }: StakeOptions) => {
         const referralAddress = referral
           ? await getRefferalAddress(referral, stake.core.rpcProvider)
           : config.STAKE_FALLBACK_REFERRAL_ADDRESS;
+
+        //
+        // ERC5792 flow
+        //
+        if (isAA) {
+          const calls: unknown[] = [];
+          const steth = await stake.getContractStETH();
+          calls.push({
+            to: steth.address,
+            abi: steth.abi,
+            functionName: 'submit',
+            args: [referralAddress],
+            value: amount,
+          });
+
+          txModalStages.sign(amount);
+          const callStatus = await sendAACalls(calls, (props) => {
+            if (props.stage === 'sent')
+              txModalStages.pending(amount, props.callId as Hash, isAA);
+          });
+
+          const [, balance] = await Promise.all([
+            onConfirm?.(),
+            stETH.balance(address),
+          ]);
+
+          // extract last receipt if there was no atomic batch
+          const txHash = callStatus.receipts
+            ? callStatus.receipts[callStatus.receipts.length - 1]
+                .transactionHash
+            : zeroHash;
+
+          txModalStages.success(balance, txHash);
+
+          return true;
+        }
+
+        //
+        // Legacy flow
+        //
 
         let txHash: Hash | undefined = undefined;
         const txCallback: TransactionCallback = async ({ stage, payload }) => {
@@ -92,6 +140,15 @@ export const useStake = ({ onConfirm, onRetry }: StakeOptions) => {
         return false;
       }
     },
-    [address, stake, txModalStages, onConfirm, stETH, onRetry],
+    [
+      address,
+      stake,
+      isAA,
+      txModalStages,
+      sendAACalls,
+      onConfirm,
+      stETH,
+      onRetry,
+    ],
   );
 };

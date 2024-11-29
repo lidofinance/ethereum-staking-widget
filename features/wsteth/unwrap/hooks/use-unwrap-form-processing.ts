@@ -1,11 +1,17 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import type { Hash } from 'viem';
+import { zeroHash, type Hash } from 'viem';
 import { useCallback } from 'react';
 import invariant from 'tiny-invariant';
 
 import { TransactionCallbackStage } from '@lidofinance/lido-ethereum-sdk/core';
 
-import { useDappStatus, useLidoSDK, useLidoSDKL2 } from 'modules/web3';
+import {
+  useAA,
+  useDappStatus,
+  useLidoSDK,
+  useLidoSDKL2,
+  useSendAACalls,
+} from 'modules/web3';
 
 import type { UnwrapFormInputType } from '../unwrap-form-context';
 import { useUnwrapTxOnL2Approve } from './use-unwrap-tx-on-l2-approve';
@@ -24,6 +30,8 @@ export const useUnwrapFormProcessor = ({
   onConfirm,
   onRetry,
 }: UseUnwrapFormProcessorArgs) => {
+  const { isAA } = useAA();
+  const sendAACalls = useSendAACalls();
   const { isDappActiveOnL2, address } = useDappStatus();
   const { txModalStages } = useTxModalStagesUnwrap();
   const { stETH, wrap } = useLidoSDK();
@@ -40,11 +48,68 @@ export const useUnwrapFormProcessor = ({
         invariant(amount, 'amount should be presented');
         invariant(address, 'address should be presented');
 
-        let txHash: Hash | undefined = undefined;
-
         const willReceive = await (isDappActiveOnL2
           ? l2.steth.convertToSteth(amount)
           : wrap.convertWstethToSteth(amount));
+
+        if (isAA) {
+          const calls: unknown[] = [];
+          if (isL2) {
+            const l2Steth = await l2.getContract();
+            const l2Wsteth = await l2.wsteth.getContract();
+            if (isApprovalNeededBeforeUnwrapOnL2) {
+              calls.push({
+                to: l2Wsteth.address,
+                abi: l2Wsteth.abi,
+                functionName: 'approve',
+                args: [l2Steth.address, amount] as const,
+              });
+            }
+            calls.push({
+              to: l2Steth.address,
+              abi: l2Steth.abi,
+              functionName: 'wrap',
+              args: [amount] as const,
+            });
+          } else {
+            const wsteth = await wrap.getContractWstETH();
+            calls.push({
+              to: wsteth.address,
+              abi: wsteth.abi,
+              functionName: 'unwrap',
+              args: [amount] as const,
+            });
+          }
+
+          txModalStages.sign(amount, willReceive);
+          const callStatus = await sendAACalls(calls, (props) => {
+            if (props.stage === 'sent')
+              txModalStages.pending(
+                amount,
+                willReceive,
+                props.callId as Hash,
+                isAA,
+              );
+          });
+
+          const [, balance] = await Promise.all([
+            onConfirm?.(),
+            isDappActiveOnL2
+              ? l2.steth.balance(address)
+              : stETH.balance(address),
+          ]);
+
+          const txHash = callStatus.receipts
+            ? callStatus.receipts[callStatus.receipts.length - 1]
+                .transactionHash
+            : zeroHash;
+
+          txModalStages.success(balance, txHash);
+
+          return true;
+        }
+
+        let txHash: Hash | undefined = undefined;
 
         if (isL2 && isApprovalNeededBeforeUnwrapOnL2) {
           await processApproveTxOnL2({ onRetry });
@@ -129,14 +194,16 @@ export const useUnwrapFormProcessor = ({
       address,
       isDappActiveOnL2,
       l2,
+      wrap,
+      isAA,
       isL2,
       isApprovalNeededBeforeUnwrapOnL2,
-      processApproveTxOnL2,
-      onRetry,
       txModalStages,
+      sendAACalls,
       onConfirm,
       stETH,
-      wrap,
+      processApproveTxOnL2,
+      onRetry,
     ],
   );
 };

@@ -12,7 +12,7 @@ export const SubmitButtonWrap = () => {
       errorField="amount"
       data-testid="wrapBtn"
     >
-      {isLocked ? `Unlock tokens ${isMultisig ? 'to' : 'and'} wrap` : 'Wrap'}
+      {isLocked && !isMultisig ? `Unlock tokens and wrap` : 'Wrap'}
     </SubmitButtonHookForm>
   );
 };

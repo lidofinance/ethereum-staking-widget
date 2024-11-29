@@ -1,4 +1,4 @@
-import type { Hash } from 'viem';
+import { zeroHash, type Hash } from 'viem';
 import { useCallback } from 'react';
 import invariant from 'tiny-invariant';
 
@@ -6,7 +6,13 @@ import { TransactionCallbackStage } from '@lidofinance/lido-ethereum-sdk/core';
 
 import { config } from 'config';
 import { MockLimitReachedError } from 'features/stake/stake-form/utils';
-import { useDappStatus, useLidoSDK, useLidoSDKL2 } from 'modules/web3';
+import {
+  useAA,
+  useSendAACalls,
+  useDappStatus,
+  useLidoSDK,
+  useLidoSDKL2,
+} from 'modules/web3';
 
 import type {
   WrapFormApprovalData,
@@ -26,9 +32,11 @@ export const useWrapFormProcessor = ({
   onConfirm,
   onRetry,
 }: UseWrapFormProcessorArgs) => {
-  const { isDappActiveOnL2, address } = useDappStatus();
-  const { wrap, wstETH } = useLidoSDK();
-  const { l2 } = useLidoSDKL2();
+  const { address } = useDappStatus();
+  const { wrap, wstETH, stETH } = useLidoSDK();
+  const { isAA } = useAA();
+  const sendAACalls = useSendAACalls();
+  const { l2, isL2 } = useLidoSDKL2();
   const { txModalStages } = useTxModalWrap();
 
   const {
@@ -42,13 +50,85 @@ export const useWrapFormProcessor = ({
         invariant(amount, 'amount should be presented');
         invariant(address, 'address should be presented');
 
-        let txHash: Hash | undefined = undefined;
-
-        const willReceive = await (isDappActiveOnL2
+        const willReceive = await (isL2
           ? l2.steth.convertToShares(amount)
           : wrap.convertStethToWsteth(amount));
 
-        if (isDappActiveOnL2) {
+        //
+        // ERC5792 flow
+        //
+        if (isAA) {
+          const calls: unknown[] = [];
+          // unwrap steth to wsteth on l2
+          if (isL2) {
+            const l2Steth = await l2.getContract();
+            calls.push({
+              to: l2Steth.address,
+              abi: l2Steth.abi,
+              functionName: 'unwrap',
+              args: [amount] as const,
+            });
+            // wrap steth to wsteth
+          } else if (token === TOKENS_TO_WRAP.stETH) {
+            const wrapContract = await wrap.getContractWstETH();
+            const stethContract = await stETH.getContract();
+
+            if (isApprovalNeededBeforeWrapOnL1) {
+              calls.push({
+                to: stethContract.address,
+                abi: stethContract.abi,
+                functionName: 'approve',
+                args: [wrapContract.address, amount] as const,
+              });
+            }
+            calls.push({
+              to: wrapContract.address,
+              abi: wrapContract.abi,
+              functionName: 'wrap',
+              args: [amount] as const,
+            });
+            // wrap eth to wsteth
+          } else {
+            const wrapContract = await wrap.getContractWstETH();
+            calls.push({
+              to: wrapContract.address,
+              value: amount,
+            });
+          }
+
+          txModalStages.sign(amount, token, willReceive);
+          const callStatus = await sendAACalls(calls, (props) => {
+            if (props.stage === 'sent')
+              txModalStages.pending(
+                amount,
+                token,
+                willReceive,
+                props.callId as Hash,
+                isAA,
+              );
+          });
+
+          const [, balance] = await Promise.all([
+            onConfirm?.(),
+            isL2 ? l2.wsteth.balance(address) : wstETH.balance(address),
+          ]);
+          // extract last receipt if there was no atomic batch
+          const txHash = callStatus.receipts
+            ? callStatus.receipts[callStatus.receipts.length - 1]
+                .transactionHash
+            : zeroHash;
+
+          txModalStages.success(balance, txHash);
+          return true;
+        }
+
+        //
+        // Legacy flow
+        //
+
+        let txHash: Hash | undefined = undefined;
+
+        if (isL2) {
           // The operation 'stETH to wstETH' on L2 is 'unwrap'
           await l2.unwrapStethToWsteth({
             value: amount,
@@ -65,9 +145,7 @@ export const useWrapFormProcessor = ({
                 case TransactionCallbackStage.DONE: {
                   const [, balance] = await Promise.all([
                     onConfirm?.(),
-                    isDappActiveOnL2
-                      ? l2.wsteth.balance(address)
-                      : wstETH.balance(address),
+                    isL2 ? l2.wsteth.balance(address) : wstETH.balance(address),
                   ]);
                   txModalStages.success(balance, txHash);
                   break;
@@ -87,6 +165,49 @@ export const useWrapFormProcessor = ({
         }
 
         if (token === TOKENS_TO_WRAP.stETH) {
+          if (isAA) {
+            const wrapContract = await wrap.getContractWstETH();
+            const stethContract = await stETH.getContract();
+
+            const calls: unknown[] = [];
+
+            if (isApprovalNeededBeforeWrapOnL1) {
+              calls.push({
+                to: stethContract.address,
+                abi: stethContract.abi,
+                functionName: 'approve',
+                args: [wrapContract.address, amount] as const,
+              });
+            }
+            calls.push({
+              to: wrapContract.address,
+              abi: wrapContract.abi,
+              functionName: 'wrap',
+              args: [amount] as const,
+            });
+            txModalStages.sign(amount, token, willReceive);
+            const callStatus = await sendAACalls(calls, (props) => {
+              if (props.stage === 'sent')
+                txModalStages.pending(
+                  amount,
+                  token,
+                  willReceive,
+                  props.callId as Hash,
+                );
+            });
+
+            const [, balance] = await Promise.all([
+              onConfirm?.(),
+              isL2 ? l2.wsteth.balance(address) : wstETH.balance(address),
+            ]);
+            const txHash = callStatus.receipts
+              ? callStatus.receipts[callStatus.receipts.length - 1]
+                  .transactionHash
+              : zeroHash;
+            txModalStages.success(balance, txHash);
+            return true;
+          }
+
           if (isApprovalNeededBeforeWrapOnL1) {
             await processApproveTxOnL1({ onRetry });
           }
@@ -99,16 +220,14 @@ export const useWrapFormProcessor = ({
                   txModalStages.sign(amount, token, willReceive);
                   break;
                 case TransactionCallbackStage.RECEIPT:
-                  txModalStages.pending(amount, token, willReceive, payload);
                   // the payload here is txHash
                   txHash = payload;
+                  txModalStages.pending(amount, token, willReceive, txHash);
                   break;
                 case TransactionCallbackStage.DONE: {
                   const [, balance] = await Promise.all([
                     onConfirm?.(),
-                    isDappActiveOnL2
-                      ? l2.wsteth.balance(address)
-                      : wstETH.balance(address),
+                    isL2 ? l2.wsteth.balance(address) : wstETH.balance(address),
                   ]);
                   txModalStages.success(balance, txHash);
                   break;
@@ -146,9 +265,7 @@ export const useWrapFormProcessor = ({
                 case TransactionCallbackStage.DONE: {
                   const [, balance] = await Promise.all([
                     onConfirm?.(),
-                    isDappActiveOnL2
-                      ? l2.wsteth.balance(address)
-                      : wstETH.balance(address),
+                    isL2 ? l2.wsteth.balance(address) : wstETH.balance(address),
                   ]);
                   txModalStages.success(balance, txHash);
                   break;
@@ -175,14 +292,17 @@ export const useWrapFormProcessor = ({
     },
     [
       address,
-      isDappActiveOnL2,
+      isL2,
       l2,
       wrap,
       txModalStages,
+      onRetry,
       onConfirm,
       wstETH,
-      onRetry,
+      isAA,
       isApprovalNeededBeforeWrapOnL1,
+      stETH,
+      sendAACalls,
       processApproveTxOnL1,
     ],
   );

@@ -30,14 +30,6 @@ export const validateStakeEth = (params: validateStakeEthParams) => {
       etherBalance,
       isMultisig,
     } = params;
-    validateBigintMax(
-      formField,
-      amount,
-      etherBalance,
-      `Entered ETH amount exceeds your available balance of ${formatEther(
-        etherBalance,
-      )}`,
-    );
 
     validateBigintMax(
       formField,
@@ -49,6 +41,16 @@ export const validateStakeEth = (params: validateStakeEthParams) => {
     );
 
     if (!isMultisig) {
+      // allow multisigs(AA) to have zero balance as they can be sponsored with ETH
+      validateBigintMax(
+        formField,
+        amount,
+        etherBalance,
+        `Entered ETH amount exceeds your available balance of ${formatEther(
+          etherBalance,
+        )}`,
+      );
+
       const gasPaddedBalance = etherBalance - gasCost;
 
       validateBigintMax(
