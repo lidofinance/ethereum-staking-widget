@@ -22,7 +22,7 @@ class EthersToViemProvider extends Web3Provider {
 
 export const SDKLegacyProvider = ({ children }: PropsWithChildren) => {
   const { defaultChain, supportedChains, PROVIDER_POLLING_INTERVAL } = config;
-  const { address } = useAccount();
+  const { address, isConnected } = useAccount();
   const { core, isL2, chainId } = useLidoSDK();
 
   const supportedChainIds = useMemo(
@@ -44,17 +44,10 @@ export const SDKLegacyProvider = ({ children }: PropsWithChildren) => {
     return provider;
   }, [isL2, core, PROVIDER_POLLING_INTERVAL]);
 
-  const onlyL1chainId = useMemo(() => {
-    if (ethersWeb3Provider) {
-      return chainId;
-    }
-    return defaultChain;
-  }, [chainId, defaultChain, ethersWeb3Provider]);
-
+  const onlyL1chainId = isConnected && !isL2 ? chainId : defaultChain;
   const onlyL1publicClient = usePublicClient({ chainId: onlyL1chainId });
   const publicMainnetClient = usePublicClient({ chainId: 1 });
 
-  // only Web3Provider can accept viem transport
   const providerRpc = useMemo(() => {
     return (
       onlyL1publicClient &&

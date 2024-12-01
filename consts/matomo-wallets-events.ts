@@ -1,6 +1,7 @@
 import { MatomoEventType, trackEvent } from '@lidofinance/analytics-matomo';
-import { Metrics } from 'reef-knot/connect-wallet-modal';
+import { MetricsProp } from '@reef-knot/types';
 import { WalletIdsEthereum } from 'reef-knot/wallets';
+import { MATOMO_CLICK_EVENTS } from './matomo-click-events';
 
 export const enum MATOMO_WALLETS_EVENTS_TYPES {
   onClickAmbire = 'onClickAmbire',
@@ -206,7 +207,7 @@ export const MATOMO_WALLETS_EVENTS: Record<
 const getMetricHandler = (event: Parameters<typeof trackEvent>) => () =>
   trackEvent(...event);
 
-export const walletsMetrics: Metrics<WalletIdsEthereum> = {
+export const walletsMetrics: MetricsProp<WalletIdsEthereum> = {
   events: {
     click: {
       handlers: {
@@ -230,6 +231,8 @@ export const walletsMetrics: Metrics<WalletIdsEthereum> = {
           MATOMO_WALLETS_EVENTS.onClickBrowser,
         ),
         binanceWallet: getMetricHandler(MATOMO_WALLETS_EVENTS.onClickBinance),
+        walletsLess: getMetricHandler(MATOMO_CLICK_EVENTS.clickShowLessWallets),
+        walletsMore: getMetricHandler(MATOMO_CLICK_EVENTS.clickShowMoreWallets),
       },
     },
     connect: {
