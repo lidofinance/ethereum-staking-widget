@@ -124,16 +124,22 @@ export const useWrapFormProcessor = ({
               window.sendCallsError = e;
               throw e;
             });
-            console.debug({ callsId });
+            // eslint-disable-next-line no-console
+            console.log('sent calls', { callsId });
             txModalStages.pending(amount, token, willReceive, callsId as Hash);
 
             const poll = async () => {
               const timeoutAt = Date.now() + 30_000;
               while (Date.now() < timeoutAt) {
-                const callStatus = await walletClient.getCallsStatus({
-                  id: callsId,
-                });
-                console.debug({ callStatus });
+                const callStatus = await walletClient
+                  .getCallsStatus({
+                    id: callsId,
+                  })
+                  .catch(() => {
+                    return { status: 'PENDING' } as const;
+                  });
+                // eslint-disable-next-line no-console
+                console.log('recieved call status', { callStatus });
                 if (callStatus.status === 'CONFIRMED') {
                   return callStatus;
                 }
