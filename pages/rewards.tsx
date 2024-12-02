@@ -32,8 +32,6 @@ const Rewards: FC = () => {
   );
 };
 
-export const getStaticProps = getDefaultStaticProps(async () => {
-  return { props: { path: '/rewards' } };
-});
+export const getStaticProps = getDefaultStaticProps('/rewards');
 
 export default Rewards;

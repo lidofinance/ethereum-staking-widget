@@ -24,7 +24,13 @@ export type ManifestConfig = {
   };
 };
 
-export type ManifestConfigPage = '/' | '/wrap' | '/withdrawals' | '/rewards';
+export type ManifestConfigPage =
+  | '/'
+  | '/wrap'
+  | '/withdrawals'
+  | '/rewards'
+  | '/settings'
+  | '/referral';
 
 export type ExternalConfig = Omit<ManifestEntry, 'config'> &
   ManifestConfig & {

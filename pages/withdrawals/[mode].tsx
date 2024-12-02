@@ -44,7 +44,7 @@ export const getStaticPaths: GetStaticPaths<
 export const getStaticProps = getDefaultStaticProps<
   WithdrawalsModePageParams,
   WithdrawalsModePageParams
->(async ({ params }) => {
+>('/withdrawals', async ({ params }) => {
   if (!params?.mode) return { notFound: true };
-  return { props: { mode: params.mode, path: '/withdrawals' } };
+  return { props: { mode: params.mode } };
 });

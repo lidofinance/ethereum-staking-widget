@@ -16,6 +16,7 @@ export const getDefaultStaticProps = <
   Q extends ParsedUrlQuery = ParsedUrlQuery,
   D extends PreviewData = PreviewData,
 >(
+  currentPath: ManifestConfigPage,
   custom?: GetStaticProps<P, Q, D>,
 ): GetStaticProps<P & { ___prefetch_manifest___?: object }, Q, D> => {
   return async (context) => {
@@ -28,34 +29,32 @@ export const getDefaultStaticProps = <
       revalidate: config.DEFAULT_REVALIDATION,
     };
 
-    /// custom getStaticProps
     let result = base as GetStaticPropsResult<P>;
+    const manifest = ___prefetch_manifest___ as
+      | { [key: number]: ManifestEntry }
+      | undefined;
+    const { defaultChain } = config;
+    const chainSettings = manifest?.[`${defaultChain}`];
+    const pages = chainSettings?.config?.pages;
+    const isDeactivate = pages?.[currentPath as ManifestConfigPage]?.deactivate;
+    // https://nextjs.org/docs/messages/gsp-redirect-during-prerender
+    const isBuild = process.env.npm_lifecycle_event === 'build';
+
+    if (chainSettings && isDeactivate && !isBuild) {
+      result = {
+        ...base,
+        redirect: { destination: '/', permanent: false } as Redirect,
+      };
+    }
+
+    /// custom getStaticProps
     if (custom) {
       const { props: customProps, ...rest } = (await custom(context)) as any;
-      const currentPath = customProps?.path as string | undefined;
-      const manifest = ___prefetch_manifest___ as
-        | { [key: number]: ManifestEntry }
-        | undefined;
-      const { defaultChain } = config;
-      const chainSettings = manifest?.[`${defaultChain}`];
-      const pages = chainSettings?.config?.pages;
-      const isDeactivate =
-        pages?.[currentPath as ManifestConfigPage]?.deactivate;
-      // https://nextjs.org/docs/messages/gsp-redirect-during-prerender
-      const isBuild = process.env.npm_lifecycle_event === 'build';
-
-      if (chainSettings && isDeactivate && !isBuild) {
-        result = {
-          revalidate: config.DEFAULT_REVALIDATION,
-          redirect: { destination: '/', permanent: false } as Redirect,
-        };
-      } else {
-        result = {
-          ...base,
-          ...rest,
-          props: { ...base.props, ...customProps },
-        };
-      }
+      result = {
+        ...result,
+        ...rest,
+        props: { ...base.props, ...customProps },
+      };
     }
 
     /// metrics

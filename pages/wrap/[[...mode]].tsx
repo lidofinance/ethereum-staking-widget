@@ -46,7 +46,7 @@ export const getStaticPaths: GetStaticPaths<WrapModePageParams> = async () => {
 export const getStaticProps = getDefaultStaticProps<
   WrapModePageProps,
   WrapModePageParams
->(async ({ params }) => {
+>('/wrap', async ({ params }) => {
   const mode = params?.mode;
   if (!mode) return { props: { mode: 'wrap' } };
   if (mode[0] === 'unwrap') return { props: { mode: 'unwrap' } };
