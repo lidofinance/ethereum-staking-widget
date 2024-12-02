@@ -32,11 +32,12 @@ const getTxModalStagesStake = (transitStage: TransactionModalTransitStage) => ({
       />,
     ),
 
-  pending: (amount: bigint, txHash?: Hash) =>
+  pending: (amount: bigint, txHash?: Hash, isAA?: boolean) =>
     transitStage(
       <TxStageSignOperationAmount
         {...STAGE_OPERATION_ARGS}
         amount={amount}
+        isAA={isAA}
         willReceive={amount}
         isPending
         txHash={txHash}
