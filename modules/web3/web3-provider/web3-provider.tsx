@@ -14,7 +14,7 @@ import { config } from 'config';
 import { useUserConfig } from 'config/user-config';
 import { useGetRpcUrlByChainId } from 'config/rpc';
 import { CHAINS } from 'consts/chains';
-import { walletsMetrics } from 'consts/matomo-wallets-events';
+import { walletMetricProps } from 'consts/matomo-wallets-events';
 
 import { useWeb3Transport } from './use-web3-transport';
 import { LidoSDKProvider } from './lido-sdk';
@@ -104,7 +104,7 @@ export const Web3Provider: FC<PropsWithChildren> = ({ children }) => {
 
       // Wallets config args
       ...getDefaultWalletsModalConfig(),
-      metrics: walletsMetrics,
+      ...walletMetricProps,
       walletsPinned: WALLETS_PINNED,
     });
   }, [
