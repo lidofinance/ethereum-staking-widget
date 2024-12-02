@@ -49,11 +49,17 @@ const getTxModalStagesUnwrap = (
       />,
     ),
 
-  pending: (amount: bigint, willReceive: bigint, txHash?: Hash) =>
+  pending: (
+    amount: bigint,
+    willReceive: bigint,
+    txHash?: Hash,
+    isAA?: boolean,
+  ) =>
     transitStage(
       <TxStageSignOperationAmount
         {...STAGE_OPERATION_ARGS}
         amount={amount}
+        isAA={isAA}
         willReceive={willReceive}
         isPending
         txHash={txHash}
