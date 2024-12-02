@@ -58,6 +58,7 @@ const getTxModalStagesWrap = (transitStage: TransactionModalTransitStage) => ({
     token: TOKENS_TO_WRAP,
     willReceive: bigint,
     txHash?: Hash,
+    isAA?: boolean,
   ) =>
     transitStage(
       <TxStageSignOperationAmount
@@ -67,6 +68,7 @@ const getTxModalStagesWrap = (transitStage: TransactionModalTransitStage) => ({
         willReceive={willReceive}
         isPending
         txHash={txHash}
+        isAA={isAA}
       />,
     ),
 

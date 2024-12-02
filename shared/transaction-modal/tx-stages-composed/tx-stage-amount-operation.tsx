@@ -11,6 +11,7 @@ type TxStageSignOperationAmountProps = {
   willReceiveToken?: string;
   isPending?: boolean;
   txHash?: Hash;
+  isAA?: boolean;
 };
 
 export const TxStageSignOperationAmount = ({
@@ -21,6 +22,7 @@ export const TxStageSignOperationAmount = ({
   operationText,
   isPending,
   txHash,
+  isAA,
 }: TxStageSignOperationAmountProps) => {
   const amountEl = <TxAmount amount={amount} symbol={token} />;
   const willReceiveEl = willReceive && willReceiveToken && (
@@ -30,6 +32,7 @@ export const TxStageSignOperationAmount = ({
 
   return (
     <Component
+      isAA={isAA}
       txHash={txHash}
       title={
         <>
