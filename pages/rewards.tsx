@@ -33,7 +33,7 @@ const Rewards: FC = () => {
 };
 
 export const getStaticProps = getDefaultStaticProps(async () => {
-  return { props: { path: '/withdrawals' } };
+  return { props: { path: '/rewards' } };
 });
 
 export default Rewards;
