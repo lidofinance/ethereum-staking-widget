@@ -1,4 +1,4 @@
-import { memo, useState, useCallback, useMemo, ReactNode } from 'react';
+import { useState, useCallback, useMemo, ReactNode } from 'react';
 import { useRouter } from 'next/router';
 
 import { useRouterPath } from 'shared/hooks/use-router-path';
@@ -8,7 +8,11 @@ import { HOME_PATH } from 'consts/urls';
 
 import { LayoutEffectSsrDelayed } from 'shared/components/layout-effect-ssr-delayed';
 
-const ExternalForbiddenRaw = ({ children }: { children: ReactNode }) => {
+export const ExternalForbiddenRouteProvider = ({
+  children,
+}: {
+  children: ReactNode;
+}) => {
   const [showContent, setShowContent] = useState(true);
   const router = useRouter();
   const path = useRouterPath();
@@ -34,5 +38,3 @@ const ExternalForbiddenRaw = ({ children }: { children: ReactNode }) => {
     </>
   );
 };
-
-export const ExternalForbiddenRouteProvider = memo(ExternalForbiddenRaw);
