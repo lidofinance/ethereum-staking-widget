@@ -25,9 +25,9 @@ export type RewardsHistoryValue = {
   currencyObject: CurrencyType;
   data?: Backend;
   error?: unknown;
-  initialLoading: boolean;
+  isLoading: boolean;
   isAddressResolving: boolean;
-  loading: boolean;
+  isFetching: boolean;
   limit: number;
   page: number;
   skip: number;
@@ -74,15 +74,14 @@ const RewardsHistoryProvider: FC<PropsWithChildren> = (props) => {
     isAddressResolving,
   } = useGetCurrentAddress();
 
-  const { data, error, loading, initialLoading, isLagging } =
-    useRewardsDataLoad({
-      address,
-      isIncludeTransfers,
-      isUseArchiveExchangeRate,
-      currency,
-      skip,
-      limit,
-    });
+  const { data, error, isFetching, isLoading, isLagging } = useRewardsDataLoad({
+    address,
+    isIncludeTransfers,
+    isUseArchiveExchangeRate,
+    currency,
+    skip,
+    limit,
+  });
 
   useEffect(() => {
     setPage(0);
@@ -97,8 +96,8 @@ const RewardsHistoryProvider: FC<PropsWithChildren> = (props) => {
       // we want user to not confuse which chain rewards are showing
       data: isDataAvailable ? data : undefined,
       error,
-      loading,
-      initialLoading,
+      isFetching,
+      isLoading,
       currencyObject,
       skip,
       limit,
@@ -123,14 +122,14 @@ const RewardsHistoryProvider: FC<PropsWithChildren> = (props) => {
       isDataAvailable,
       data,
       error,
-      initialLoading,
+      isLoading,
       inputValue,
       isAddressResolving,
       isLagging,
       isIncludeTransfers,
       isUseArchiveExchangeRate,
       limit,
-      loading,
+      isFetching,
       page,
       setInputValue,
       skip,

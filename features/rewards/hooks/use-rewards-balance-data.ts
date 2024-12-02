@@ -1,37 +1,32 @@
 import { useMemo } from 'react';
-import { useSDK, useTokenBalance } from '@lido-sdk/react';
-import { TOKENS, getTokenAddress } from '@lido-sdk/constants';
+import { getAddress } from 'viem';
 
-import { STRATEGY_LAZY } from 'consts/swr-strategies';
+import { useStethBalance } from 'modules/web3';
 import { ETHER } from 'features/rewards/constants';
 
 import { useRewardsHistory } from './useRewardsHistory';
 import { useLaggyDataWrapper } from './use-laggy-data-wrapper';
-import { Big, BigDecimal } from '../helpers';
 
 export const useRewardsBalanceData = () => {
-  const { chainId } = useSDK();
   const { address, data, currencyObject } = useRewardsHistory();
-
-  const { data: steth } = useTokenBalance(
-    getTokenAddress(chainId, TOKENS.STETH),
-    address,
-    STRATEGY_LAZY,
-  );
+  const { data: stethBalance } = useStethBalance({
+    account: address ? getAddress(address) : undefined,
+  });
 
   const balanceData = useMemo(
     () =>
-      steth
+      stethBalance
         ? {
-            stEthBalanceParsed: new Big(steth.toString()),
+            stEthBalanceParsed: stethBalance.toString(),
             stEthCurrencyBalance:
+              // accuracy is okay for display
               data &&
-              new BigDecimal(steth.toString()) // Convert to right BN
-                .div(ETHER)
-                .times(data.stETHCurrencyPrice[currencyObject.id]),
+              stethBalance &&
+              (Number(stethBalance) / Number(ETHER)) *
+                data?.stETHCurrencyPrice[currencyObject.id],
           }
         : null,
-    [currencyObject.id, data, steth],
+    [currencyObject.id, data, stethBalance],
   );
 
   const { isLagging, dataOrLaggyData } = useLaggyDataWrapper(balanceData);

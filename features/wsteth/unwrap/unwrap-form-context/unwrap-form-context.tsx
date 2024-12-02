@@ -8,7 +8,6 @@ import {
   useCallback,
 } from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
-import { Zero } from '@ethersproject/constants';
 
 import { useFormControllerRetry } from 'shared/hook-form/form-controller/use-form-controller-retry-delegate';
 
@@ -69,7 +68,7 @@ export const UnwrapFormProvider: FC<PropsWithChildren> = ({ children }) => {
   const [amount] = watch(['amount']);
   const { retryEvent, retryFire } = useFormControllerRetry();
 
-  const approvalDataOnL2 = useUnwrapTxOnL2Approve({ amount: amount ?? Zero });
+  const approvalDataOnL2 = useUnwrapTxOnL2Approve({ amount: amount ?? 0n });
 
   const onConfirm = useCallback(async () => {
     await Promise.allSettled([

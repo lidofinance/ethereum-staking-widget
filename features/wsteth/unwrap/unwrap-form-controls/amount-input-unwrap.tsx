@@ -1,10 +1,9 @@
 import { Wsteth } from '@lidofinance/lido-ui';
-import { TOKENS } from '@lido-sdk/constants';
-
 import { TokenAmountInputHookForm } from 'shared/hook-form/controls/token-amount-input-hook-form';
 import { useDappStatus } from 'modules/web3';
 
 import { useUnwrapFormData } from '../unwrap-form-context';
+import { TOKENS_TO_WRAP } from '../../shared/types';
 
 export const TokenAmountInputUnwrap = () => {
   const { isWalletConnected, isDappActive } = useDappStatus();
@@ -14,7 +13,7 @@ export const TokenAmountInputUnwrap = () => {
     <TokenAmountInputHookForm
       disabled={isWalletConnected && !isDappActive}
       fieldName="amount"
-      token={TOKENS.WSTETH}
+      token={TOKENS_TO_WRAP.wstETH}
       data-testid="unwrapInput"
       maxValue={maxAmount}
       leftDecorator={<Wsteth />}

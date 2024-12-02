@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { useDappStatus } from 'modules/web3';
+import { useDappStatus, useLidoSDKL2 } from 'modules/web3';
 import { useAwaiter } from 'shared/hooks/use-awaiter';
 
 import type {
@@ -16,6 +16,8 @@ export const useWrapFormValidationContext = ({
   networkData,
 }: UseWrapFormValidationContextArgs): WrapFormValidationContext => {
   const { isDappActive } = useDappStatus();
+  const { isL2 } = useLidoSDKL2();
+
   const {
     stakeLimitInfo,
     ethBalance,
@@ -25,13 +27,16 @@ export const useWrapFormValidationContext = ({
   } = networkData;
 
   const waitForAccountData = isDappActive
-    ? stethBalance && ethBalance && isMultisig !== undefined
+    ? stethBalance !== undefined &&
+      ethBalance !== undefined &&
+      isMultisig !== undefined
     : true;
 
   const isDataReady = !!(
     waitForAccountData &&
     wrapEthGasCost &&
-    stakeLimitInfo
+    // L2 dont't have stakeLimitInfo
+    (isL2 || stakeLimitInfo)
   );
 
   const asyncContextValue: WrapFormAsyncValidationContext | undefined =

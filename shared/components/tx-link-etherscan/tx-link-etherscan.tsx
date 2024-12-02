@@ -1,12 +1,13 @@
+import type { Hash } from 'viem';
 import { Link } from '@lidofinance/lido-ui';
 
-import { CHAINS } from 'consts/chains';
-import { getEtherscanTxLink } from 'utils/get-etherscan-tx-link';
+import { config } from 'config';
 import { useDappStatus } from 'modules/web3';
+import { getEtherscanTxLink } from 'utils/etherscan';
 
 type TxLinkEtherscanProps = {
   text?: string;
-  txHash?: string | null;
+  txHash?: Hash;
   onClick?: React.MouseEventHandler<HTMLAnchorElement>;
 };
 
@@ -22,7 +23,7 @@ export const TxLinkEtherscan = (props: TxLinkEtherscanProps) => {
   return (
     <Link
       onClick={onClick}
-      href={getEtherscanTxLink(walletChainId as CHAINS, txHash)}
+      href={getEtherscanTxLink(walletChainId ?? config.defaultChain, txHash)}
     >
       {text}
     </Link>

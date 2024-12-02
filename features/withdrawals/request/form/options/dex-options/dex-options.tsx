@@ -1,5 +1,3 @@
-import { BigNumber } from 'ethers';
-
 import { useWithdrawalRates } from 'features/withdrawals/request/withdrawal-rates/use-withdrawal-rates';
 import { useTvlError } from 'features/withdrawals/hooks/useTvlError';
 import { FormatToken } from 'shared/formatters/format-token';
@@ -28,7 +26,7 @@ type DexOptionProps = {
   icon: React.FC;
   url: string;
   loading?: boolean;
-  toReceive: BigNumber | null;
+  toReceive: bigint | null;
   onClickGoTo: React.MouseEventHandler<HTMLAnchorElement>;
 };
 
@@ -45,11 +43,7 @@ const DexOption: React.FC<DexOptionProps> = ({
     amountComponent = <InlineLoaderSmall />;
   } else if (toReceive) {
     amountComponent = (
-      <FormatToken
-        approx
-        amount={toReceive ?? BigNumber.from(0)}
-        symbol="ETH"
-      />
+      <FormatToken approx amount={toReceive ?? 0} symbol="ETH" />
     );
   }
 
@@ -79,7 +73,7 @@ export const DexOptions: React.FC<
   const { balanceDiffSteth } = useTvlError();
   const isPausedByTvlError = balanceDiffSteth !== undefined;
 
-  const { data, initialLoading, amount, selectedToken, enabledDexes } =
+  const { data, isLoading, amount, selectedToken, enabledDexes } =
     useWithdrawalRates({
       isPaused: isPausedByTvlError,
     });
@@ -87,8 +81,8 @@ export const DexOptions: React.FC<
   const isAnyDexEnabled = enabledDexes.length > 0;
   const allowExpand = enabledDexes.length > MAX_SHOWN_ELEMENTS;
 
-  const showLoader = !isPausedByTvlError && isAnyDexEnabled && initialLoading;
-  const showList = !isPausedByTvlError && isAnyDexEnabled && !initialLoading;
+  const showLoader = !isPausedByTvlError && isAnyDexEnabled && isLoading;
+  const showList = !isPausedByTvlError && isAnyDexEnabled && !isLoading;
   const showPausedList = isPausedByTvlError;
 
   const dexesListData = useMemo(() => {

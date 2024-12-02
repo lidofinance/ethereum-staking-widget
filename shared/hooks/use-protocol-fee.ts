@@ -1,46 +1,47 @@
-import { formatEther } from '@ethersproject/units';
+import { formatEther } from 'viem';
+import type { LIDO_CONTRACT_NAMES } from '@lidofinance/lido-ethereum-sdk/common';
+import { useQuery } from '@tanstack/react-query';
 
-import { CHAINS } from '@lido-sdk/constants';
-import { useLidoSWR, useSDK } from '@lido-sdk/react';
-import { useStakingRouter } from './use-stakign-router-contract';
-import { PartialStakingRouterAbi } from 'generated/PartialStakingRouterAbi';
-
-import { config } from 'config';
-import { STRATEGY_CONSTANT } from 'consts/swr-strategies';
+import { PartialStakingRouterAbi } from 'abi/partial-staking-router';
+import { STRATEGY_CONSTANT } from 'consts/react-query-strategies';
+import { useLidoSDK } from 'modules/web3';
 
 export const useProtocolFee = () => {
-  const { chainId } = useSDK();
-  const { contractRpc } = useStakingRouter();
+  const { core } = useLidoSDK();
 
-  return useLidoSWR<number>(
-    ['swr:useProtocolFee', chainId, contractRpc, config.enableQaHelpers],
-    // @ts-expect-error broken lidoSWR typings
-    async (
-      _key: string,
-      _chainId: CHAINS,
-      contractRpc: PartialStakingRouterAbi,
-      shouldMock: boolean,
-    ) => {
-      const mockDataString = window.localStorage.getItem('protocolFee');
+  const queryResult = useQuery({
+    queryKey: ['staking-fee-aggregate-distribution', core.chainId],
+    ...STRATEGY_CONSTANT,
+    refetchInterval: 60000, // 1 minute
+    enabled: !!core.chainId,
+    queryFn: async () => {
+      const address = await core.getContractAddress(
+        'stakingRouter' as LIDO_CONTRACT_NAMES,
+      );
 
-      if (shouldMock && mockDataString) {
-        try {
-          const mockData = JSON.parse(mockDataString);
-          return mockData;
-        } catch (e) {
-          console.warn('Failed to load mock data');
-          console.warn(e);
-        }
-      }
-
-      const fee = await contractRpc.getStakingFeeAggregateDistribution();
-      const value = Number(formatEther(fee.modulesFee.add(fee.treasuryFee)));
-
-      return value.toFixed(0);
+      return await core.rpcProvider.readContract({
+        address,
+        abi: PartialStakingRouterAbi,
+        functionName: 'getStakingFeeAggregateDistribution',
+      });
     },
-    {
-      ...STRATEGY_CONSTANT,
-      refreshInterval: 60000,
-    },
-  );
+  });
+
+  const modulesFee = queryResult?.data?.[0] ?? undefined;
+  const treasuryFee = queryResult?.data?.[1] ?? undefined;
+  const totalFee =
+    modulesFee && treasuryFee ? modulesFee + treasuryFee : undefined;
+
+  // Converts numerical wei to a string representation of ether
+  const totalFeeString = totalFee
+    ? Number(formatEther(totalFee)).toFixed(0)
+    : undefined;
+
+  return {
+    modulesFee,
+    treasuryFee,
+    totalFee,
+    totalFeeString,
+    ...queryResult,
+  };
 };

@@ -1,5 +1,5 @@
-import { useDappStatus } from './use-dapp-status';
 import { LIMIT_LEVEL } from 'types';
+import { useDappStatus } from './use-dapp-status';
 
 export const useStakingLimitWarning = (stakingLimitLevel?: LIMIT_LEVEL) => {
   const { isDappActiveOnL1 } = useDappStatus();

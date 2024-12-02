@@ -1,7 +1,7 @@
 import { Box, External as ExternalLinkIcon } from '@lidofinance/lido-ui';
-import { getEtherscanTxLink } from 'utils/get-etherscan-tx-link';
 
 import { config } from 'config';
+import { getEtherscanTxLink } from 'utils/etherscan';
 
 // TODO: move to separate folders
 type Props = {

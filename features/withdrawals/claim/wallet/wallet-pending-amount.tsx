@@ -1,4 +1,4 @@
-import { TOKENS } from '@lido-sdk/constants';
+import { LIDO_TOKENS } from '@lidofinance/lido-ethereum-sdk/common';
 
 import { TokenToWallet } from 'shared/components/token-to-wallet/token-to-wallet';
 import { CardBalance } from 'shared/wallet';
@@ -7,8 +7,8 @@ import { useClaimData } from 'features/withdrawals/contexts/claim-data-context';
 import { useTokenAddress } from 'shared/hooks/use-token-address';
 
 export const WalletPendingAmount = () => {
-  const stethAddress = useTokenAddress(TOKENS.STETH);
-  const { data, initialLoading } = useClaimData();
+  const stethAddress = useTokenAddress(LIDO_TOKENS.steth);
+  const { data, isLoading } = useClaimData();
 
   const pendingAmount = (
     <>
@@ -22,7 +22,7 @@ export const WalletPendingAmount = () => {
       small
       data-testid="myPendingAmount"
       title="My pending amount"
-      loading={initialLoading}
+      loading={isLoading}
       value={pendingAmount}
     />
   );
