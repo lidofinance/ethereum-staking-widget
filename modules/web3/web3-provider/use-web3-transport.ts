@@ -11,6 +11,8 @@ import {
   UnsupportedProviderMethodError,
   InvalidParamsRpcError,
 } from 'viem';
+import { mainnet } from 'viem/chains';
+
 import type { OnResponseFn } from 'viem/_types/clients/transports/fallback';
 import type { Connection } from 'wagmi';
 
@@ -123,13 +125,22 @@ export const useWeb3Transport = (
   supportedChains: Chain[],
   backendRpcMap: Record<number, string>,
 ) => {
+  const supportedChainsWithMainnet = useMemo(
+    () =>
+      // create a copy of the array in any way
+      supportedChains.includes(mainnet)
+        ? [...supportedChains]
+        : [...supportedChains, mainnet],
+    [supportedChains],
+  );
+
   const { transportMap, setTransportMap } = useMemo(() => {
-    //
     const batchConfig = {
       wait: config.PROVIDER_BATCH_TIME,
       batchSize: config.PROVIDER_MAX_BATCH,
     };
-    return supportedChains.reduce(
+
+    return supportedChainsWithMainnet.reduce(
       ({ transportMap, setTransportMap }, chain) => {
         const [transport, setTransport] = runtimeMutableTransport([
           // api/rpc
@@ -159,11 +170,11 @@ export const useWeb3Transport = (
         setTransportMap: {} as Record<number, (t: Transport | null) => void>,
       },
     );
-  }, [supportedChains, backendRpcMap]);
+  }, [supportedChainsWithMainnet, backendRpcMap]);
 
   const onActiveConnection = useCallback(
     async (activeConnection: Connection | null) => {
-      for (const chain of supportedChains) {
+      for (const chain of supportedChainsWithMainnet) {
         const setTransport = setTransportMap[chain.id];
         if (
           activeConnection &&
@@ -178,7 +189,7 @@ export const useWeb3Transport = (
         } else setTransport(null);
       }
     },
-    [setTransportMap, supportedChains],
+    [setTransportMap, supportedChainsWithMainnet],
   );
 
   return { transportMap, onActiveConnection };

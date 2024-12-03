@@ -18,7 +18,8 @@ export const ChainSwitcherOptions: FC<ChainSwitcherOptionsProps> = ({
 }) => (
   // We need the 'PopoverWrapperStyled' for block any events as if you had set 'pointer-events: none' on the body
   // while the 'PopupStyled' is opened
-  <PopoverWrapperStyled $backdrop={opened}>
+  <>
+    <PopoverWrapperStyled $backdrop={opened} />
     <PopupStyled $opened={opened}>
       {Object.entries(options).map(([chainType, icon]) => (
         <OptionStyled
@@ -30,5 +31,5 @@ export const ChainSwitcherOptions: FC<ChainSwitcherOptionsProps> = ({
         </OptionStyled>
       ))}
     </PopupStyled>
-  </PopoverWrapperStyled>
+  </>
 );

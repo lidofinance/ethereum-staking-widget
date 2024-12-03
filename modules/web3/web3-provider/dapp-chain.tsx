@@ -27,6 +27,10 @@ type DappChainContextValue = {
   isChainTypeOnL2: boolean;
 };
 
+export type SupportedChainLabels = {
+  [key in DAPP_CHAIN_TYPE]: string;
+};
+
 type UseDappChainValue = {
   // Current DApp chain ID (may not match with chainType)
   chainId: number;
@@ -35,7 +39,7 @@ type UseDappChainValue = {
 
   isSupportedChain: boolean;
   supportedChainTypes: DAPP_CHAIN_TYPE[];
-  supportedChainLabels: string[];
+  supportedChainLabels: SupportedChainLabels;
 } & DappChainContextValue;
 
 const DappChainContext = createContext<DappChainContextValue | null>(null);
@@ -84,7 +88,7 @@ export const useDappChain = (): UseDappChainValue => {
           chainType && array.indexOf(chainType) === index,
       ) as DAPP_CHAIN_TYPE[];
 
-    const supportedChainLabels = supportedChainTypes.map((chainType) => {
+    const getChainLabelByType = (chainType: DAPP_CHAIN_TYPE) => {
       // all testnets for chainType
       const testnetsForType = context.supportedChainIds
         .filter((id) => chainType == getChainTypeByChainId(id))
@@ -96,7 +100,15 @@ export const useDappChain = (): UseDappChainValue => {
         chainType +
         (testnetsForType.length > 0 ? `(${testnetsForType.join(',')})` : '')
       );
-    });
+    };
+
+    const supportedChainLabels = supportedChainTypes.reduce(
+      (acc, chainType) => ({
+        ...acc,
+        [chainType]: getChainLabelByType(chainType),
+      }),
+      {},
+    ) as SupportedChainLabels;
 
     const chainTypeChainId =
       getChainIdByChainType(context.chainType, context.supportedChainIds) ??
@@ -127,7 +139,7 @@ export const SupportL2Chains: React.FC<React.PropsWithChildren> = ({
   );
 
   useEffect(() => {
-    if (!walletChainId) {
+    if (!walletChainId || !config.supportedChains.includes(walletChainId)) {
       // This code resets 'chainType' to ETH when the wallet is disconnected.
       // It also works on the first rendering, but we don't care, because the 'chainType' by default is ETH.
       // Don't use it if you need to do something strictly, only when the wallet is disconnected.

@@ -7,6 +7,7 @@ import { ProviderSDK } from '@lido-sdk/react';
 import { useLidoSDK } from './lido-sdk';
 import { config } from 'config';
 import { isSDKSupportedL2Chain } from 'consts/chains';
+import { useMainnetStaticRpcProvider } from 'shared/hooks/use-mainnet-static-rpc-provider';
 
 // Stabilizes network detection to prevent repeated chainId calls
 class EthersToViemProvider extends Web3Provider {
@@ -21,7 +22,7 @@ class EthersToViemProvider extends Web3Provider {
 
 export const SDKLegacyProvider = ({ children }: PropsWithChildren) => {
   const { defaultChain, supportedChains, PROVIDER_POLLING_INTERVAL } = config;
-  const { address } = useAccount();
+  const { address, isConnected } = useAccount();
   const { core, isL2, chainId } = useLidoSDK();
 
   const supportedChainIds = useMemo(
@@ -43,17 +44,10 @@ export const SDKLegacyProvider = ({ children }: PropsWithChildren) => {
     return provider;
   }, [isL2, core, PROVIDER_POLLING_INTERVAL]);
 
-  const onlyL1chainId = useMemo(() => {
-    if (ethersWeb3Provider) {
-      return chainId;
-    }
-    return defaultChain;
-  }, [chainId, defaultChain, ethersWeb3Provider]);
-
+  const onlyL1chainId = isConnected && !isL2 ? chainId : defaultChain;
   const onlyL1publicClient = usePublicClient({ chainId: onlyL1chainId });
   const publicMainnetClient = usePublicClient({ chainId: 1 });
 
-  // only Web3Provider can accept viem transport
   const providerRpc = useMemo(() => {
     return (
       onlyL1publicClient &&
@@ -61,12 +55,14 @@ export const SDKLegacyProvider = ({ children }: PropsWithChildren) => {
     );
   }, [onlyL1chainId, onlyL1publicClient]);
 
+  // Fallback for when mainnet is not present in supported chains
+  const staticMainnetProvider = useMainnetStaticRpcProvider();
+
   const providerMainnetRpc = useMemo(() => {
-    return (
-      publicMainnetClient &&
-      new EthersToViemProvider(publicMainnetClient.transport, 1)
-    );
-  }, [publicMainnetClient]);
+    return publicMainnetClient
+      ? new EthersToViemProvider(publicMainnetClient.transport, 1)
+      : staticMainnetProvider;
+  }, [publicMainnetClient, staticMainnetProvider]);
 
   return (
     // @ts-expect-error Property children does not exist on type

@@ -18,7 +18,7 @@ import { BannerLinkButton } from '../banner-link-button';
 import { BannerWrap } from '../shared-banner-partials';
 import { Title, Description, Footer, Logos } from './styles';
 
-const LINK_LEARN_MORE = `${config.rootOrigin}/#defi-strategies`;
+const LINK_LEARN_MORE = `${config.rootOrigin}/steth-in-defi`;
 
 const linkClickHandler = () =>
   trackEvent(...MATOMO_CLICK_EVENTS.vaultsBannerLearnMore);

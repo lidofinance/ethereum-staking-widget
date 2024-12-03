@@ -5,6 +5,8 @@ export const ChainSwitcherWrapperStyled = styled.div`
 `;
 
 export const ChainSwitcherStyled = styled.div<{ $disabled: boolean }>`
+  z-index: 202;
+
   display: inline-flex;
   flex-grow: 1;
   align-items: center;
