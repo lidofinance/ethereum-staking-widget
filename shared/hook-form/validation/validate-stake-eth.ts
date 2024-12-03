@@ -10,9 +10,14 @@ export type validateStakeEthParams = {
   amount: bigint;
   stakingLimitLevel: LIMIT_LEVEL;
   currentStakeLimit: bigint;
+  shouldValidateEtherBalance: boolean;
   gasCost: bigint;
 } & (
-  | { isWalletActive: true; etherBalance: bigint; isMultisig: boolean }
+  | {
+      isWalletActive: true;
+      etherBalance: bigint;
+      isSmartAccount: boolean;
+    }
   | { isWalletActive: false }
 );
 
@@ -28,7 +33,7 @@ export const validateStakeEth = (params: validateStakeEthParams) => {
       gasCost,
 
       etherBalance,
-      isMultisig,
+      isSmartAccount,
     } = params;
 
     validateBigintMax(
@@ -40,8 +45,8 @@ export const validateStakeEth = (params: validateStakeEthParams) => {
       )}`,
     );
 
-    if (!isMultisig) {
-      // allow multisigs(AA) to have zero balance as they can be sponsored with ETH
+    if (!isSmartAccount) {
+      // allow Smart Account(AA) to have zero balance as they can be sponsored with ETH
       validateBigintMax(
         formField,
         amount,

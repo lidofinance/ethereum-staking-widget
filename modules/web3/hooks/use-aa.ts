@@ -33,7 +33,16 @@ export const useAA = () => {
 
   const isAA = !!capabilities;
 
-  return { ...capabilitiesQuery, isAA, capabilities };
+  const areAuxiliaryFundsSupported =
+    capabilities?.auxiliaryFunds &&
+    capabilities.auxiliaryFunds.supported === true;
+
+  return {
+    ...capabilitiesQuery,
+    isAA,
+    capabilities,
+    areAuxiliaryFundsSupported,
+  };
 };
 
 type SendCallsStages =

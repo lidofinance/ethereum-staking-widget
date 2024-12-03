@@ -10,7 +10,7 @@ export type StakeFormInput = {
 
 export type StakeFormLoading = {
   isStethBalanceLoading: boolean;
-  isMultisigLoading: boolean;
+  isSmartAccountLoading: boolean;
   isMaxGasPriceLoading: boolean;
   isEtherBalanceLoading: boolean;
   isStakeableEtherLoading: boolean;
@@ -18,7 +18,7 @@ export type StakeFormLoading = {
 
 export type StakeFormNetworkData = {
   etherBalance?: bigint;
-  isMultisig?: boolean;
+  isSmartAccount?: boolean;
   stethBalance?: bigint;
   stakeableEther?: bigint;
   stakingLimitInfo?: StakeLimitFullInfo;
@@ -35,5 +35,6 @@ export type StakeFormValidationContext = {
   currentStakeLimit: bigint;
   gasCost: bigint;
   etherBalance: bigint;
-  isMultisig: boolean;
+  isSmartAccount: boolean;
+  shouldValidateEtherBalance: boolean;
 };

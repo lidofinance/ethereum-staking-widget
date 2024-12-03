@@ -21,13 +21,14 @@ export type WrapFormValidationContext = {
 export type WrapFormAsyncValidationContext = {
   stakingLimitLevel: LIMIT_LEVEL;
   currentStakeLimit: bigint;
+  shouldValidateEtherBalance: boolean;
   gasCost: bigint;
 } & (
   | {
       isWalletActive: true;
       stethBalance: bigint;
       etherBalance: bigint;
-      isMultisig: boolean;
+      isSmartAccount: boolean;
     }
   | {
       isWalletActive: false;

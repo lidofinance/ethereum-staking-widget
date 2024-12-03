@@ -9,9 +9,14 @@ const toBool = (data: Hex | undefined) => {
   return !!(data && data != '0x');
 };
 
-export const useIsMultisig = () => {
+export const useIsSmartAccount = () => {
   const { address, chainId } = useDappStatus();
-  const { isAA, isLoading: isAALoading, error: isAAError } = useAA();
+  const {
+    isAA,
+    capabilities,
+    isLoading: isAALoading,
+    error: isAAError,
+  } = useAA();
 
   const shouldLegacyFetch = !!address && !isAA;
 
@@ -31,7 +36,8 @@ export const useIsMultisig = () => {
 
   return {
     isAA,
-    isMultisig: isAA || isContract,
+    capabilities,
+    isSmartAccount: isAA || isContract,
     // prevents legacy logic from polluting state
     isLoading: isContractLoading || (shouldLegacyFetch && isAALoading),
     error: isAAError || (shouldLegacyFetch ? isContractError : undefined),

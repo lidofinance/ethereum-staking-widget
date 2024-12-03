@@ -14,7 +14,7 @@ import { useTransactionModal } from 'shared/transaction-modal/transaction-modal'
 import {
   useAA,
   useDappStatus,
-  useIsMultisig,
+  useIsSmartAccount,
   useLidoSDK,
   useSendAACalls,
 } from 'modules/web3';
@@ -42,7 +42,8 @@ export const useWithdrawalRequest = ({
   const { isBunker } = useWithdrawals();
   const { withdraw, stETH, wstETH } = useLidoSDK();
   const { txModalStages } = useTxModalStagesRequest();
-  const { isMultisig, isLoading: isMultisigLoading } = useIsMultisig();
+  const { isSmartAccount, isLoading: isSmartAccountLoading } =
+    useIsSmartAccount();
   const {
     allowance,
     needsApprove,
@@ -51,10 +52,10 @@ export const useWithdrawalRequest = ({
   } = useWithdrawalApprove(amount ? amount : 0n, token, address as Address);
   const { closeModal } = useTransactionModal();
 
-  const isApprovalFlow = isMultisig || !!(allowance && !needsApprove);
+  const isApprovalFlow = isSmartAccount || !!(allowance && !needsApprove);
 
   const isApprovalFlowLoading =
-    isMultisigLoading || (isApprovalFlow && isUseApproveFetching);
+    isSmartAccountLoading || (isApprovalFlow && isUseApproveFetching);
   const isTokenLocked = !!(isApprovalFlow && needsApprove);
 
   const request = useCallback(
