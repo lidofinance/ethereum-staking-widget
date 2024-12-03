@@ -1,6 +1,6 @@
 import { formatEther } from 'viem';
 
-import { TOKENS, getRateTokenAddress } from 'consts/token-addresses';
+import { TOKENS, getTokenAddress } from 'consts/token-addresses';
 import { standardFetcher } from './standardFetcher';
 import { CHAINS } from '@lidofinance/lido-ethereum-sdk';
 
@@ -62,8 +62,8 @@ export const getOpenOceanRate = async (
   );
 
   const params = new URLSearchParams({
-    inTokenAddress: getRateTokenAddress(CHAINS.Mainnet, fromToken) as string,
-    outTokenAddress: getRateTokenAddress(CHAINS.Mainnet, toToken) as string,
+    inTokenAddress: getTokenAddress(CHAINS.Mainnet, fromToken) as string,
+    outTokenAddress: getTokenAddress(CHAINS.Mainnet, toToken) as string,
     gasPrice: gasData.without_decimals.standard.maxFeePerGas,
     amount: formatEther(amount),
   });

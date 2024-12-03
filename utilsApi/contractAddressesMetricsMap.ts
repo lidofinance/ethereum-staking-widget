@@ -25,7 +25,7 @@ import { PartialCurveAbi } from 'abi/partial-curve-abi';
 import { PartialStakingRouterAbi } from 'abi/partial-staking-router';
 
 import { config } from 'config';
-import { getRateTokenAddress } from 'consts/token-addresses';
+import { getTokenAddress } from 'consts/token-addresses';
 import {
   getWithdrawalQueueAddress,
   getStakingRouterAddress,
@@ -80,9 +80,9 @@ export const METRIC_CONTRACT_ADDRESSES = supportedChainsWithMainnet.reduce(
   (mapped, chainId) => {
     const map = {
       [CONTRACT_NAMES.lido]:
-        getRateTokenAddress(chainId, LIDO_TOKENS.steth) ?? null,
+        getTokenAddress(chainId, LIDO_TOKENS.steth) ?? null,
       [CONTRACT_NAMES.wsteth]:
-        getRateTokenAddress(chainId, LIDO_TOKENS.wsteth) ?? null,
+        getTokenAddress(chainId, LIDO_TOKENS.wsteth) ?? null,
       [CONTRACT_NAMES.withdrawalQueue]:
         getWithdrawalQueueAddress(chainId) ?? null,
       [CONTRACT_NAMES.aggregator]:
@@ -119,9 +119,9 @@ export const METRIC_CONTRACT_EVENT_ADDRESSES =
         [CONTRACT_NAMES.withdrawalQueue]:
           getWithdrawalQueueAddress(chainId) ?? null,
         [CONTRACT_NAMES.lido]:
-          getRateTokenAddress(chainId, LIDO_TOKENS.steth) ?? null,
+          getTokenAddress(chainId, LIDO_TOKENS.steth) ?? null,
         [CONTRACT_NAMES.wsteth]:
-          getRateTokenAddress(chainId, LIDO_TOKENS.wsteth) ?? null,
+          getTokenAddress(chainId, LIDO_TOKENS.wsteth) ?? null,
         [CONTRACT_NAMES.L2stETH]:
           LIDO_L2_CONTRACT_ADDRESSES[chainId]?.['steth'] ?? null,
         [CONTRACT_NAMES.L2wstETH]:
