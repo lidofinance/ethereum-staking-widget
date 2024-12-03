@@ -1,7 +1,6 @@
 /* eslint-disable sonarjs/no-identical-functions */
 import { useCallback } from 'react';
 import invariant from 'tiny-invariant';
-import { zeroHash, type Address, type Hash } from 'viem';
 
 import {
   TransactionCallback,
@@ -21,6 +20,8 @@ import {
 } from 'modules/web3';
 
 import { useWithdrawalApprove } from './use-withdrawal-approve';
+
+import type { Address, Hash } from 'viem';
 
 type useWithdrawalRequestParams = {
   amount: bigint | null;
@@ -107,7 +108,7 @@ export const useWithdrawalRequest = ({
           });
 
           txModalStages.sign(amount, token);
-          const callStatus = await sendAACalls(calls, (props) => {
+          const { txHash } = await sendAACalls(calls, (props) => {
             if (props.stage === 'sent')
               txModalStages.pending(amount, token, props.callId as Hash, isAA);
           });
@@ -116,11 +117,6 @@ export const useWithdrawalRequest = ({
           if (isApprovalFlow) {
             await refetchAllowance();
           }
-          // extract last receipt if there was no atomic batch
-          const txHash = callStatus.receipts
-            ? callStatus.receipts[callStatus.receipts.length - 1]
-                .transactionHash
-            : zeroHash;
 
           txModalStages.success(amount, token, txHash);
 

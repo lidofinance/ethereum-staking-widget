@@ -1,5 +1,5 @@
 import type { Hash } from 'viem';
-import { getAddress as getAddressViem, zeroHash } from 'viem';
+import { getAddress as getAddressViem } from 'viem';
 import { useCallback } from 'react';
 import invariant from 'tiny-invariant';
 
@@ -70,7 +70,7 @@ export const useStake = ({ onConfirm, onRetry }: StakeOptions) => {
           });
 
           txModalStages.sign(amount);
-          const callStatus = await sendAACalls(calls, (props) => {
+          const { txHash } = await sendAACalls(calls, (props) => {
             if (props.stage === 'sent')
               txModalStages.pending(amount, props.callId as Hash, isAA);
           });
@@ -79,12 +79,6 @@ export const useStake = ({ onConfirm, onRetry }: StakeOptions) => {
             onConfirm?.(),
             stETH.balance(address),
           ]);
-
-          // extract last receipt if there was no atomic batch
-          const txHash = callStatus.receipts
-            ? callStatus.receipts[callStatus.receipts.length - 1]
-                .transactionHash
-            : zeroHash;
 
           txModalStages.success(balance, txHash);
 

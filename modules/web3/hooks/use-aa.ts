@@ -103,7 +103,12 @@ export const useSendAACalls = () => {
         );
       }
 
-      return callStatus;
+      // extract last receipt if there was no atomic batch
+      const txHash = callStatus.receipts
+        ? callStatus.receipts[callStatus.receipts.length - 1].transactionHash
+        : undefined;
+
+      return { callStatus, txHash };
     },
     [core.web3Provider, sendCallsAsync],
   );

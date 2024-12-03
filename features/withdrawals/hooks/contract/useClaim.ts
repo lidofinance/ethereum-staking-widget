@@ -1,4 +1,3 @@
-import { zeroHash, type Hash } from 'viem';
 import { useCallback } from 'react';
 import invariant from 'tiny-invariant';
 
@@ -11,6 +10,8 @@ import { useClaimData } from 'features/withdrawals/contexts/claim-data-context';
 import { RequestStatusClaimable } from 'features/withdrawals/types/request-status';
 import { useTxModalStagesClaim } from 'features/withdrawals/claim/transaction-modal-claim/use-tx-modal-stages-claim';
 import { useAA, useDappStatus, useLidoSDK, useSendAACalls } from 'modules/web3';
+
+import type { Hash } from 'viem';
 
 type Args = {
   onRetry?: () => void;
@@ -47,18 +48,12 @@ export const useClaim = ({ onRetry }: Args) => {
           });
 
           txModalStages.sign(amount);
-          const callStatus = await sendAACalls(calls, (props) => {
+          const { txHash } = await sendAACalls(calls, (props) => {
             if (props.stage === 'sent')
               txModalStages.pending(amount, props.callId as Hash, isAA);
           });
 
           await optimisticClaimRequests(sortedRequests);
-          // extract last receipt if there was no atomic batch
-          const txHash = callStatus.receipts
-            ? callStatus.receipts[callStatus.receipts.length - 1]
-                .transactionHash
-            : zeroHash;
-
           txModalStages.success(amount, txHash);
 
           return true;

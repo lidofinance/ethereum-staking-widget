@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { zeroHash, type Hash } from 'viem';
 import { useCallback } from 'react';
 import invariant from 'tiny-invariant';
 
@@ -16,6 +14,8 @@ import {
 import type { UnwrapFormInputType } from '../unwrap-form-context';
 import { useUnwrapTxOnL2Approve } from './use-unwrap-tx-on-l2-approve';
 import { useTxModalStagesUnwrap } from './use-tx-modal-stages-unwrap';
+
+import type { Hash } from 'viem';
 
 export type UnwrapFormApprovalData = ReturnType<typeof useUnwrapTxOnL2Approve>;
 
@@ -82,7 +82,7 @@ export const useUnwrapFormProcessor = ({
           }
 
           txModalStages.sign(amount, willReceive);
-          const callStatus = await sendAACalls(calls, (props) => {
+          const { txHash } = await sendAACalls(calls, (props) => {
             if (props.stage === 'sent')
               txModalStages.pending(
                 amount,
@@ -98,11 +98,6 @@ export const useUnwrapFormProcessor = ({
               ? l2.steth.balance(address)
               : stETH.balance(address),
           ]);
-
-          const txHash = callStatus.receipts
-            ? callStatus.receipts[callStatus.receipts.length - 1]
-                .transactionHash
-            : zeroHash;
 
           txModalStages.success(balance, txHash);
 

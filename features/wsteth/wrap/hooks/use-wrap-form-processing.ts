@@ -1,4 +1,3 @@
-import { zeroHash, type Hash } from 'viem';
 import { useCallback } from 'react';
 import invariant from 'tiny-invariant';
 
@@ -20,6 +19,8 @@ import type {
 } from '../wrap-form-context';
 import { TOKENS_TO_WRAP } from '../../shared/types';
 import { useTxModalWrap } from './use-tx-modal-stages-wrap';
+
+import type { Hash } from 'viem';
 
 type UseWrapFormProcessorArgs = {
   approvalDataOnL1: WrapFormApprovalData;
@@ -97,7 +98,7 @@ export const useWrapFormProcessor = ({
           }
 
           txModalStages.sign(amount, token, willReceive);
-          const callStatus = await sendAACalls(calls, (props) => {
+          const { txHash } = await sendAACalls(calls, (props) => {
             if (props.stage === 'sent')
               txModalStages.pending(
                 amount,
@@ -112,11 +113,6 @@ export const useWrapFormProcessor = ({
             onConfirm?.(),
             isL2 ? l2.wsteth.balance(address) : wstETH.balance(address),
           ]);
-          // extract last receipt if there was no atomic batch
-          const txHash = callStatus.receipts
-            ? callStatus.receipts[callStatus.receipts.length - 1]
-                .transactionHash
-            : zeroHash;
 
           txModalStages.success(balance, txHash);
           return true;
@@ -165,49 +161,6 @@ export const useWrapFormProcessor = ({
         }
 
         if (token === TOKENS_TO_WRAP.stETH) {
-          if (isAA) {
-            const wrapContract = await wrap.getContractWstETH();
-            const stethContract = await stETH.getContract();
-
-            const calls: unknown[] = [];
-
-            if (isApprovalNeededBeforeWrapOnL1) {
-              calls.push({
-                to: stethContract.address,
-                abi: stethContract.abi,
-                functionName: 'approve',
-                args: [wrapContract.address, amount] as const,
-              });
-            }
-            calls.push({
-              to: wrapContract.address,
-              abi: wrapContract.abi,
-              functionName: 'wrap',
-              args: [amount] as const,
-            });
-            txModalStages.sign(amount, token, willReceive);
-            const callStatus = await sendAACalls(calls, (props) => {
-              if (props.stage === 'sent')
-                txModalStages.pending(
-                  amount,
-                  token,
-                  willReceive,
-                  props.callId as Hash,
-                );
-            });
-
-            const [, balance] = await Promise.all([
-              onConfirm?.(),
-              isL2 ? l2.wsteth.balance(address) : wstETH.balance(address),
-            ]);
-            const txHash = callStatus.receipts
-              ? callStatus.receipts[callStatus.receipts.length - 1]
-                  .transactionHash
-              : zeroHash;
-            txModalStages.success(balance, txHash);
-            return true;
-          }
-
           if (isApprovalNeededBeforeWrapOnL1) {
             await processApproveTxOnL1({ onRetry });
           }
