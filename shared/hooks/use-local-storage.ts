@@ -12,12 +12,13 @@ export const useLocalStorage = <T>(
 ): [storedValue: T, setValue: Dispatch<SetStateAction<T>>] => {
   const readValue = useCallback(() => {
     try {
+      if (typeof window === 'undefined') {
+        return initialValue;
+      }
       const item = window.localStorage.getItem(key);
       return item ? (JSON.parse(item) as T) : initialValue;
     } catch (error) {
-      if (typeof window === 'undefined') {
-        console.warn(`Error reading localStorage key "${key}"`);
-      }
+      console.warn(`Error reading localStorage key "${key}"`);
       return initialValue;
     }
   }, [initialValue, key]);

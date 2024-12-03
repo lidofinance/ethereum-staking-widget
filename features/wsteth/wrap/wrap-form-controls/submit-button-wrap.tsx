@@ -3,8 +3,8 @@ import { SubmitButtonHookForm } from 'shared/hook-form/controls/submit-button-ho
 import { useWrapFormData } from '../wrap-form-context';
 
 export const SubmitButtonWrap = () => {
-  const { isMultisig, isApprovalNeededBeforeWrap: isLocked } =
-    useWrapFormData();
+  const { isMultisig, isApprovalNeededBeforeWrap } = useWrapFormData();
+  const isLocked = isApprovalNeededBeforeWrap && !isMultisig;
 
   return (
     <SubmitButtonHookForm

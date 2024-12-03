@@ -78,13 +78,19 @@ const getTxModalStagesRequest = (
       />,
     ),
 
-  pending: (amount: bigint, token: TOKENS_TO_WITHDRAWLS, txHash?: Hash) =>
+  pending: (
+    amount: bigint,
+    token: TOKENS_TO_WITHDRAWLS,
+    txHash?: Hash,
+    isAA?: boolean,
+  ) =>
     transitStage(
       <TxStageSignOperationAmount
         {...STAGE_OPERATION_ARGS}
         amount={amount}
         token={getTokenDisplayName(token)}
         isPending
+        isAA={isAA}
         txHash={txHash}
       />,
     ),
