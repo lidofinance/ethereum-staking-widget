@@ -3,7 +3,7 @@ import { CHAINS } from '@lidofinance/lido-ethereum-sdk';
 
 import { OPEN_OCEAN_REFERRAL_ADDRESS } from 'consts/external-links';
 import { MATOMO_CLICK_EVENTS_TYPES } from 'consts/matomo-click-events';
-import { getRateTokenAddress } from 'consts/token-addresses';
+import { getTokenAddress } from 'consts/token-addresses';
 
 import { getOneInchRate } from 'utils/get-one-inch-rate';
 import { getBebopRate } from 'utils/get-bebop-rate';
@@ -67,7 +67,7 @@ const getParaSwapWithdrawalRate: GetRateType = async ({ amount, token }) => {
     if (amount > 0n) {
       const api = `https://apiv5.paraswap.io/prices`;
       const query = new URLSearchParams({
-        srcToken: getRateTokenAddress(CHAINS.Mainnet, token) as string,
+        srcToken: getTokenAddress(CHAINS.Mainnet, token) as string,
         srcDecimals: '18',
         destToken: '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE',
         destDecimals: '18',
@@ -161,7 +161,7 @@ const dexWithdrawalMap: DexWithdrawalIntegrationMap = {
     matomoEvent: MATOMO_CLICK_EVENTS_TYPES.withdrawalGoToParaswap,
     link: (amount, token) =>
       `https://app.paraswap.xyz/?referrer=Lido&takeSurplus=true#/swap/${
-        getRateTokenAddress(CHAINS.Mainnet, token) as string
+        getTokenAddress(CHAINS.Mainnet, token) as string
       }-0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE/${formatEther(
         amount,
       )}/SELL?version=6.2&network=ethereum`,
@@ -183,7 +183,7 @@ const dexWithdrawalMap: DexWithdrawalIntegrationMap = {
     matomoEvent: MATOMO_CLICK_EVENTS_TYPES.withdrawalGoToBebop,
     link: (amount, token) =>
       `https://bebop.xyz/trade?network=ethereum&buy=0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE&sell=${getAddress(
-        getRateTokenAddress(CHAINS.Mainnet, token) as string,
+        getTokenAddress(CHAINS.Mainnet, token) as string,
       )}&sellAmounts=${formatEther(amount)}&source=lido`,
   },
 } as const;

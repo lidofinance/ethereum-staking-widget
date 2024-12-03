@@ -25,7 +25,7 @@ export const TOKENS_BY_NETWORK: {
   },
 };
 
-export const getRateTokenAddress = (
+export const getTokenAddress = (
   chainId: CHAINS,
   token: TOKENS,
 ): Address | undefined => {
