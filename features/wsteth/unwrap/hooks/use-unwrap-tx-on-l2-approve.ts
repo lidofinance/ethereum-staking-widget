@@ -43,7 +43,11 @@ export const useUnwrapTxOnL2Approve = ({ amount }: UseUnwrapTxApproveArgs) => {
               txModalStages.signApproval(amount, TOKENS_TO_WRAP.ETH);
               break;
             case TransactionCallbackStage.RECEIPT:
-              txModalStages.pendingApproval(amount, TOKENS_TO_WRAP.wstETH);
+              txModalStages.pendingApproval(
+                amount,
+                TOKENS_TO_WRAP.wstETH,
+                payload,
+              );
               break;
             case TransactionCallbackStage.MULTISIG_DONE:
               txModalStages.successMultisig();
