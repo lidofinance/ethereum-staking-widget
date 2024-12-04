@@ -22,6 +22,8 @@ const format = (props: FormatArgs, manyDigits?: boolean): string => {
 
   const numberString = typeof number === 'string' ? number : number.toString();
 
+  if (numberString === '0') return numberString;
+
   if (StEthEth) {
     return formatStEthEth(numberString, manyDigits);
   } else if (currency) {
@@ -48,7 +50,7 @@ const NumberFormat = (props: Props) => {
       />
     );
 
-  return props.number ? (
+  return props.number != null ? (
     <Tooltip
       placement="bottom"
       title={

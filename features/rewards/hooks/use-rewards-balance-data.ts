@@ -15,13 +15,12 @@ export const useRewardsBalanceData = () => {
 
   const balanceData = useMemo(
     () =>
-      stethBalance
+      stethBalance != null
         ? {
             stEthBalanceParsed: stethBalance.toString(),
             stEthCurrencyBalance:
               // accuracy is okay for display
               data &&
-              stethBalance &&
               (Number(stethBalance) / Number(ETHER)) *
                 data?.stETHCurrencyPrice[currencyObject.id],
           }

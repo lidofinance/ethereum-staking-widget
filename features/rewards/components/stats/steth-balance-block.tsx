@@ -34,7 +34,7 @@ export const StEthBalanceBlock: FC = () => {
       }
       valueDataTestId="stEthBalance"
       underValue={
-        balanceData?.stEthCurrencyBalance ? (
+        balanceData?.stEthCurrencyBalance != null ? (
           <>
             <Box display="inline-block" pr={'3px'}>
               {currency.symbol}
