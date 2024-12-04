@@ -61,7 +61,7 @@ export const TokenToWallet: TokenToWalletComponent = ({ address, ...rest }) => {
         if (
           error?.code === -32602 // Trust
         ) {
-          ToastInfo('Tokens already existed');
+          ToastInfo('Tokens already added');
         } else if (
           error?.code === 4001 || // Metamask, coin98, okx
           error?.code === -32603 // Bitget
@@ -74,7 +74,7 @@ export const TokenToWallet: TokenToWalletComponent = ({ address, ...rest }) => {
           ToastError('The wallet does not support adding a token');
         } else {
           ToastError(
-            'An error occurred while adding token to wallet\nThe wallet probably does not support adding a token',
+            'An error occurred while adding token to wallet\nThe wallet might not support adding a token',
           );
         }
       }
