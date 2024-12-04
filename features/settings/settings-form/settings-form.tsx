@@ -1,7 +1,7 @@
 import { useCallback } from 'react';
 import { useForm } from 'react-hook-form';
 
-import type { LIDO_CONTRACT_NAMES } from '@lidofinance/lido-ethereum-sdk/common';
+import { LIDO_CONTRACT_NAMES } from '@lidofinance/lido-ethereum-sdk/common';
 import { Button, ToastSuccess, Block, Input } from '@lidofinance/lido-ui';
 
 import { useUserConfig } from 'config/user-config';
@@ -34,9 +34,7 @@ export const SettingsForm = () => {
     },
   });
 
-  const { data: stethAddress } = useContractAddress(
-    'lido' as LIDO_CONTRACT_NAMES,
-  );
+  const { data: stethAddress } = useContractAddress(LIDO_CONTRACT_NAMES.lido);
 
   const {
     formState,
