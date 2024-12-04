@@ -11,13 +11,15 @@ type FormatArgs = {
   number?: string | number | undefined;
   StEthEth?: boolean;
   currency?: boolean;
+  currencyMoreAccuracy?: boolean;
   percent?: boolean;
   ETH?: boolean;
 };
 
 // Using ETH as a default formatter
 const format = (props: FormatArgs, manyDigits?: boolean): string => {
-  const { number, StEthEth, currency, percent, ETH } = props;
+  const { number, StEthEth, currency, currencyMoreAccuracy, percent, ETH } =
+    props;
   if (number === undefined) return '';
 
   const numberString = typeof number === 'string' ? number : number.toString();
@@ -28,6 +30,8 @@ const format = (props: FormatArgs, manyDigits?: boolean): string => {
     return formatStEthEth(numberString, manyDigits);
   } else if (currency) {
     return formatCurrency(numberString, manyDigits);
+  } else if (currencyMoreAccuracy) {
+    return formatCurrency(numberString, manyDigits, true);
   } else if (percent) {
     return formatPercentage(numberString, manyDigits);
   } else if (ETH) {
