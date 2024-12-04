@@ -1,7 +1,10 @@
 import { useCallback } from 'react';
 import invariant from 'tiny-invariant';
 
-import { TransactionCallbackStage } from '@lidofinance/lido-ethereum-sdk/core';
+import {
+  type TransactionCallback,
+  TransactionCallbackStage,
+} from '@lidofinance/lido-ethereum-sdk/core';
 
 import {
   useAA,
@@ -15,7 +18,7 @@ import type { UnwrapFormInputType } from '../unwrap-form-context';
 import { useUnwrapTxOnL2Approve } from './use-unwrap-tx-on-l2-approve';
 import { useTxModalStagesUnwrap } from './use-tx-modal-stages-unwrap';
 
-import type { Hash } from 'viem';
+import type { Address, Hash } from 'viem';
 
 export type UnwrapFormApprovalData = ReturnType<typeof useUnwrapTxOnL2Approve>;
 
@@ -52,54 +55,70 @@ export const useUnwrapFormProcessor = ({
           ? l2.steth.convertToSteth(amount)
           : wrap.convertWstethToSteth(amount));
 
-        if (isAA) {
-          const calls: unknown[] = [];
-          if (isL2) {
-            const l2Steth = await l2.getContract();
-            const l2Wsteth = await l2.wsteth.getContract();
-            if (isApprovalNeededBeforeUnwrapOnL2) {
-              calls.push({
-                to: l2Wsteth.address,
-                abi: l2Wsteth.abi,
-                functionName: 'approve',
-                args: [l2Steth.address, amount] as const,
-              });
-            }
-            calls.push({
-              to: l2Steth.address,
-              abi: l2Steth.abi,
-              functionName: 'wrap',
-              args: [amount] as const,
-            });
-          } else {
-            const wsteth = await wrap.getContractWstETH();
-            calls.push({
-              to: wsteth.address,
-              abi: wsteth.abi,
-              functionName: 'unwrap',
-              args: [amount] as const,
-            });
-          }
-
-          txModalStages.sign(amount, willReceive);
-          const { txHash } = await sendAACalls(calls, (props) => {
-            if (props.stage === 'sent')
-              txModalStages.pending(
-                amount,
-                willReceive,
-                props.callId as Hash,
-                isAA,
-              );
-          });
-
+        const onUnwrapConfirm = async () => {
           const [, balance] = await Promise.all([
             onConfirm?.(),
             isDappActiveOnL2
               ? l2.steth.balance(address)
               : stETH.balance(address),
           ]);
+          return balance;
+        };
 
-          txModalStages.success(balance, txHash);
+        if (isAA) {
+          const calls: unknown[] = [];
+          if (isL2) {
+            const l2WrapCall = await l2.wrapWstethToStethPopulateTx({
+              value: amount,
+            });
+            if (isApprovalNeededBeforeUnwrapOnL2) {
+              const l2ApproveCall = await l2.wsteth.populateApprove({
+                amount,
+                to: l2WrapCall.to as Address,
+              });
+              calls.push({
+                to: l2ApproveCall.to,
+                data: l2ApproveCall.data,
+              });
+            }
+            calls.push({
+              to: l2WrapCall.to,
+              data: l2WrapCall.data,
+            });
+          } else {
+            const { to, data } = await wrap.unwrapPopulateTx({ value: amount });
+            calls.push({
+              to,
+              data,
+            });
+          }
+
+          await sendAACalls(calls, async (props) => {
+            switch (props.stage) {
+              case TransactionCallbackStage.SIGN:
+                txModalStages.sign(amount, willReceive);
+                break;
+              case TransactionCallbackStage.RECEIPT:
+                txModalStages.pending(
+                  amount,
+                  willReceive,
+                  props.callId as Hash,
+                  isAA,
+                );
+                break;
+              case TransactionCallbackStage.DONE: {
+                const balance = await onUnwrapConfirm();
+                txModalStages.success(balance, props.txHash);
+                break;
+              }
+              case TransactionCallbackStage.ERROR: {
+                txModalStages.failed(props.error, onRetry);
+                break;
+              }
+              default:
+                break;
+            }
+          });
 
           return true;
         }
@@ -110,71 +129,41 @@ export const useUnwrapFormProcessor = ({
           await processApproveTxOnL2({ onRetry });
         }
 
+        const callback: TransactionCallback = async ({ stage, payload }) => {
+          switch (stage) {
+            case TransactionCallbackStage.SIGN:
+              txModalStages.sign(amount, willReceive);
+              break;
+            case TransactionCallbackStage.RECEIPT:
+              // the payload here is txHash
+              txModalStages.pending(amount, willReceive, payload);
+              txHash = payload;
+              break;
+            case TransactionCallbackStage.DONE: {
+              const balance = await onUnwrapConfirm();
+              txModalStages.success(balance, txHash);
+              break;
+            }
+            case TransactionCallbackStage.MULTISIG_DONE:
+              txModalStages.successMultisig();
+              break;
+            case TransactionCallbackStage.ERROR:
+              txModalStages.failed(payload, onRetry);
+              break;
+            default:
+          }
+        };
+
         if (isL2) {
           // The operation 'wstETH to stETH' on L2 is 'wrap'
           await l2.wrapWstethToSteth({
             value: amount,
-            callback: async ({ stage, payload }) => {
-              switch (stage) {
-                case TransactionCallbackStage.SIGN:
-                  txModalStages.sign(amount, willReceive);
-                  break;
-                case TransactionCallbackStage.RECEIPT:
-                  // the payload here is txHash
-                  txModalStages.pending(amount, willReceive, payload);
-                  txHash = payload;
-                  break;
-                case TransactionCallbackStage.DONE: {
-                  const [, balance] = await Promise.all([
-                    onConfirm?.(),
-                    isDappActiveOnL2
-                      ? l2.steth.balance(address)
-                      : stETH.balance(address),
-                  ]);
-                  txModalStages.success(balance, txHash);
-                  break;
-                }
-                case TransactionCallbackStage.MULTISIG_DONE:
-                  txModalStages.successMultisig();
-                  break;
-                case TransactionCallbackStage.ERROR:
-                  txModalStages.failed(payload, onRetry);
-                  break;
-                default:
-              }
-            },
+            callback,
           });
         } else {
           await wrap.unwrap({
             value: amount,
-            callback: async ({ stage, payload }) => {
-              switch (stage) {
-                case TransactionCallbackStage.SIGN:
-                  txModalStages.sign(amount, willReceive);
-                  break;
-                case TransactionCallbackStage.RECEIPT:
-                  txModalStages.pending(amount, willReceive, payload);
-                  txHash = payload; // the payload here is txHash
-                  break;
-                case TransactionCallbackStage.DONE: {
-                  const [, balance] = await Promise.all([
-                    onConfirm?.(),
-                    isDappActiveOnL2
-                      ? l2.steth.balance(address)
-                      : stETH.balance(address),
-                  ]);
-                  txModalStages.success(balance, txHash);
-                  break;
-                }
-                case TransactionCallbackStage.MULTISIG_DONE:
-                  txModalStages.successMultisig();
-                  break;
-                case TransactionCallbackStage.ERROR:
-                  txModalStages.failed(payload, onRetry);
-                  break;
-                default:
-              }
-            },
+            callback,
           });
         }
 

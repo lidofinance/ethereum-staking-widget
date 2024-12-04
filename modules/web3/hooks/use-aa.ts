@@ -8,7 +8,8 @@ import {
 import invariant from 'tiny-invariant';
 import { useLidoSDK, useLidoSDKL2 } from '../web3-provider';
 import { config } from 'config';
-import { NOOP } from '@lidofinance/lido-ethereum-sdk';
+import { TransactionCallbackStage } from '@lidofinance/lido-ethereum-sdk';
+import { Hash } from 'viem';
 
 const retry = (retryCount: number, error: object) => {
   if (
@@ -47,12 +48,23 @@ export const useAA = () => {
 
 type SendCallsStages =
   | {
-      stage: 'sent';
+      stage: TransactionCallbackStage.SIGN;
+    }
+  | {
+      stage: TransactionCallbackStage.RECEIPT;
       callId: string;
     }
   | {
-      stage: 'confirmed';
+      stage: TransactionCallbackStage.CONFIRMATION;
       callStatus: GetCallsStatusReturnType;
+    }
+  | {
+      stage: TransactionCallbackStage.DONE;
+      txHash: Hash;
+    }
+  | {
+      stage: TransactionCallbackStage.ERROR;
+      error: unknown;
     };
 
 export class SendCallsError extends Error {}
@@ -66,58 +78,82 @@ export const useSendAACalls = () => {
   return useCallback(
     async (
       calls: unknown[],
-      callback: (props: SendCallsStages) => void = NOOP,
+      callback: (props: SendCallsStages) => Promise<void> = async () => {},
     ) => {
-      invariant(core.web3Provider);
-      const extendedWalletClient = core.web3Provider.extend(eip5792Actions());
+      try {
+        invariant(core.web3Provider);
+        const extendedWalletClient = core.web3Provider.extend(eip5792Actions());
 
-      const callId = await sendCallsAsync({
-        calls,
-      });
+        await callback({
+          stage: TransactionCallbackStage.SIGN,
+        });
 
-      callback({ stage: 'sent', callId });
+        const callId = await sendCallsAsync({
+          calls,
+        });
 
-      const poll = async () => {
-        const timeoutAt = Date.now() + config.AA_TX_POLLING_TIMEOUT;
-        while (Date.now() < timeoutAt) {
-          const callStatus = await extendedWalletClient
-            .getCallsStatus({
-              id: callId,
-            })
-            .catch(() => {
-              // workaround for gnosis safe bug
-              return { status: 'PENDING' } as const;
-            });
-          if (callStatus.status === 'CONFIRMED') {
-            return callStatus;
+        await callback({
+          stage: TransactionCallbackStage.RECEIPT,
+          callId,
+        });
+
+        const poll = async () => {
+          const timeoutAt = Date.now() + config.AA_TX_POLLING_TIMEOUT;
+          while (Date.now() < timeoutAt) {
+            const callStatus = await extendedWalletClient
+              .getCallsStatus({
+                id: callId,
+              })
+              .catch(() => {
+                // workaround for gnosis safe bug
+                return { status: 'PENDING' } as const;
+              });
+            if (callStatus.status === 'CONFIRMED') {
+              return callStatus;
+            }
+            await new Promise((resolve) =>
+              setTimeout(resolve, config.PROVIDER_POLLING_INTERVAL),
+            );
           }
-          await new Promise((resolve) =>
-            setTimeout(resolve, config.PROVIDER_POLLING_INTERVAL),
+          throw new SendCallsError(
+            'Timeout for transaction confirmation exceeded.',
+          );
+        };
+
+        const callStatus = await poll();
+
+        await callback({
+          stage: TransactionCallbackStage.CONFIRMATION,
+          callStatus,
+        });
+
+        if (
+          callStatus.receipts?.find((receipt) => receipt.status === 'reverted')
+        ) {
+          throw new SendCallsError(
+            'Some operation were reverted. Check your wallet for details.',
           );
         }
-        throw new SendCallsError(
-          'Timeout for transaction confirmation exceeded.',
-        );
-      };
 
-      const callStatus = await poll();
+        // extract last receipt if there was no atomic batch
+        const txHash = callStatus.receipts
+          ? callStatus?.receipts[callStatus.receipts.length - 1].transactionHash
+          : undefined;
 
-      callback({ stage: 'confirmed', callStatus });
+        if (!txHash) {
+          throw new SendCallsError('Could not locate tx hash');
+        }
 
-      if (
-        callStatus.receipts?.find((receipt) => receipt.status === 'reverted')
-      ) {
-        throw new SendCallsError(
-          'Some operation were reverted. Check your wallet for details.',
-        );
+        await callback({
+          stage: TransactionCallbackStage.DONE,
+          txHash,
+        });
+
+        return { callStatus, txHash };
+      } catch (error) {
+        await callback({ stage: TransactionCallbackStage.ERROR, error });
+        throw error;
       }
-
-      // extract last receipt if there was no atomic batch
-      const txHash = callStatus.receipts
-        ? callStatus.receipts[callStatus.receipts.length - 1].transactionHash
-        : undefined;
-
-      return { callStatus, txHash };
     },
     [core.web3Provider, sendCallsAsync],
   );

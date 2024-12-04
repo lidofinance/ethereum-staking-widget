@@ -38,23 +38,32 @@ export const useClaim = ({ onRetry }: Args) => {
         const hints = sortedRequests.map((r) => r.hint);
 
         if (isAA) {
-          const wq = await withdraw.contract.getContractWithdrawalQueue();
-          const calls: unknown[] = [];
-          calls.push({
-            to: wq.address,
-            abi: wq.abi,
-            functionName: 'claimWithdrawals',
-            args: [requestsIds, hints] as const,
+          const { to, data } = await withdraw.claim.claimRequestsPopulateTx({
+            requestsIds,
+            hints,
           });
 
-          txModalStages.sign(amount);
-          const { txHash } = await sendAACalls(calls, (props) => {
-            if (props.stage === 'sent')
-              txModalStages.pending(amount, props.callId as Hash, isAA);
+          await sendAACalls([{ to, data }], async (props) => {
+            switch (props.stage) {
+              case TransactionCallbackStage.SIGN:
+                txModalStages.sign(amount);
+                break;
+              case TransactionCallbackStage.RECEIPT:
+                txModalStages.pending(amount, props.callId as Hash, isAA);
+                break;
+              case TransactionCallbackStage.DONE: {
+                await optimisticClaimRequests(sortedRequests);
+                txModalStages.success(amount, props.txHash);
+                break;
+              }
+              case TransactionCallbackStage.ERROR: {
+                txModalStages.failed(props.error, onRetry);
+                break;
+              }
+              default:
+                break;
+            }
           });
-
-          await optimisticClaimRequests(sortedRequests);
-          txModalStages.success(amount, txHash);
 
           return true;
         }
@@ -101,7 +110,6 @@ export const useClaim = ({ onRetry }: Args) => {
       address,
       isAA,
       withdraw.claim,
-      withdraw.contract,
       txModalStages,
       sendAACalls,
       optimisticClaimRequests,

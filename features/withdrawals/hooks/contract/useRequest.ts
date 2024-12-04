@@ -40,7 +40,7 @@ export const useWithdrawalRequest = ({
   const { isAA } = useAA();
   const sendAACalls = useSendAACalls();
   const { isBunker } = useWithdrawals();
-  const { withdraw, stETH, wstETH } = useLidoSDK();
+  const { withdraw } = useLidoSDK();
   const { txModalStages } = useTxModalStagesRequest();
   const { isSmartAccount, isLoading: isSmartAccountLoading } =
     useIsSmartAccount();
@@ -80,46 +80,61 @@ export const useWithdrawalRequest = ({
           }
         }
 
+        const onWithdrawalConfirm = () => {
+          return Promise.all([
+            onConfirm?.(),
+            isApprovalFlow ? refetchAllowance() : Promise.resolve(null),
+          ]);
+        };
+
         if (isAA) {
-          const isSteth = token === 'stETH';
-          const requests = withdraw.request.splitAmountToRequests({
-            amount,
-            token,
-          });
-          const [wq, tokenContract] = await Promise.all([
-            withdraw.contract.getContractWithdrawalQueue(),
-            isSteth ? stETH.getContract() : wstETH.getContract(),
-          ] as const);
           const calls: unknown[] = [];
           if (needsApprove) {
+            const approvalCall = await withdraw.approval.approvePopulateTx({
+              amount,
+              token,
+            });
             calls.push({
-              to: tokenContract.address,
-              abi: tokenContract.abi,
-              functionName: 'approve',
-              args: [wq.address, amount] as const,
+              to: approvalCall.to,
+              data: approvalCall.data,
             });
           }
+          const withdrawalCall =
+            await withdraw.request.requestWithdrawalPopulateTx({
+              token,
+              amount,
+            });
           calls.push({
-            to: wq.address,
-            abi: wq.abi,
-            functionName: isSteth
-              ? 'requestWithdrawals'
-              : 'requestWithdrawalsWstETH',
-            args: [requests] as const,
+            to: withdrawalCall.to,
+            data: withdrawalCall.data,
           });
 
-          txModalStages.sign(amount, token);
-          const { txHash } = await sendAACalls(calls, (props) => {
-            if (props.stage === 'sent')
-              txModalStages.pending(amount, token, props.callId as Hash, isAA);
+          await sendAACalls(calls, async (props) => {
+            switch (props.stage) {
+              case TransactionCallbackStage.SIGN:
+                txModalStages.sign(amount, token);
+                break;
+              case TransactionCallbackStage.RECEIPT:
+                txModalStages.pending(
+                  amount,
+                  token,
+                  props.callId as Hash,
+                  isAA,
+                );
+                break;
+              case TransactionCallbackStage.DONE: {
+                await onWithdrawalConfirm();
+                txModalStages.success(amount, token, props.txHash);
+                break;
+              }
+              case TransactionCallbackStage.ERROR: {
+                txModalStages.failed(props.error, onRetry);
+                break;
+              }
+              default:
+                break;
+            }
           });
-
-          void onConfirm?.();
-          if (isApprovalFlow) {
-            await refetchAllowance();
-          }
-
-          txModalStages.success(amount, token, txHash);
 
           return true;
         }
@@ -213,12 +228,9 @@ export const useWithdrawalRequest = ({
       onRetry,
       refetchAllowance,
       sendAACalls,
-      stETH,
       txModalStages,
       withdraw.approval,
-      withdraw.contract,
       withdraw.request,
-      wstETH,
     ],
   );
 

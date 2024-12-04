@@ -54,32 +54,44 @@ export const useStake = ({ onConfirm, onRetry }: StakeOptions) => {
           ? await getRefferalAddress(referral, stake.core.rpcProvider)
           : config.STAKE_FALLBACK_REFERRAL_ADDRESS;
 
-        //
-        // ERC5792 flow
-        //
-        if (isAA) {
-          const calls: unknown[] = [];
-          const steth = await stake.getContractStETH();
-          calls.push({
-            to: steth.address,
-            abi: steth.abi,
-            functionName: 'submit',
-            args: [referralAddress],
-            value: amount,
-          });
-
-          txModalStages.sign(amount);
-          const { txHash } = await sendAACalls(calls, (props) => {
-            if (props.stage === 'sent')
-              txModalStages.pending(amount, props.callId as Hash, isAA);
-          });
-
+        const onStakeTxConfirmed = async () => {
           const [, balance] = await Promise.all([
             onConfirm?.(),
             stETH.balance(address),
           ]);
+          return balance;
+        };
 
-          txModalStages.success(balance, txHash);
+        //
+        // ERC5792 flow
+        //
+        if (isAA) {
+          const { to, data, value } = await stake.stakeEthPopulateTx({
+            value: amount,
+            referralAddress: getAddressViem(referralAddress),
+          });
+
+          await sendAACalls([{ to, data, value }], async (props) => {
+            switch (props.stage) {
+              case TransactionCallbackStage.SIGN:
+                txModalStages.sign(amount);
+                break;
+              case TransactionCallbackStage.RECEIPT:
+                txModalStages.pending(amount, props.callId as Hash, isAA);
+                break;
+              case TransactionCallbackStage.DONE: {
+                const balance = await onStakeTxConfirmed();
+                txModalStages.success(balance, props.txHash);
+                break;
+              }
+              case TransactionCallbackStage.ERROR: {
+                txModalStages.failed(props.error, onRetry);
+                break;
+              }
+              default:
+                break;
+            }
+          });
 
           return true;
         }
@@ -103,10 +115,7 @@ export const useStake = ({ onConfirm, onRetry }: StakeOptions) => {
               txHash = payload;
               break;
             case TransactionCallbackStage.DONE: {
-              const [, balance] = await Promise.all([
-                onConfirm?.(),
-                stETH.balance(address),
-              ]);
+              const balance = await onStakeTxConfirmed();
               txModalStages.success(balance, txHash);
               break;
             }
