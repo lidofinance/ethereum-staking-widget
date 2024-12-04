@@ -50,7 +50,6 @@ export const useStake = ({ onConfirm, onRetry }: StakeOptions) => {
           throw new MockLimitReachedError('Stake limit reached');
         }
 
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const referralAddress = referral
           ? await getRefferalAddress(referral, stake.core.rpcProvider)
           : config.STAKE_FALLBACK_REFERRAL_ADDRESS;

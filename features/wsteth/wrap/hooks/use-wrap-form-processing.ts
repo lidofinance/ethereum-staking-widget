@@ -71,8 +71,10 @@ export const useWrapFormProcessor = ({
             });
             // wrap steth to wsteth
           } else if (token === TOKENS_TO_WRAP.stETH) {
-            const wrapContract = await wrap.getContractWstETH();
-            const stethContract = await stETH.getContract();
+            const [wrapContract, stethContract] = await Promise.all([
+              wrap.getContractWstETH(),
+              stETH.getContract(),
+            ] as const);
 
             if (isApprovalNeededBeforeWrapOnL1) {
               calls.push({
