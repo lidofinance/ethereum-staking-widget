@@ -44,8 +44,7 @@ export const useWithdrawalRequest = ({
 
   const isApprovalFlow = isMultisig || !!(allowance && !needsApprove);
 
-  const isApprovalFlowLoading =
-    isMultisigLoading || (isApprovalFlow && isUseApproveFetching);
+  const isApprovalFlowLoading = isMultisigLoading || isUseApproveFetching;
 
   const isTokenLocked = !!(isApprovalFlow && needsApprove);
 
