@@ -1,5 +1,5 @@
 import { formatEther } from 'viem';
-import type { LIDO_CONTRACT_NAMES } from '@lidofinance/lido-ethereum-sdk/common';
+import { LIDO_CONTRACT_NAMES } from '@lidofinance/lido-ethereum-sdk/common';
 import { useQuery } from '@tanstack/react-query';
 
 import { PartialStakingRouterAbi } from 'abi/partial-staking-router';
@@ -16,7 +16,7 @@ export const useProtocolFee = () => {
     enabled: !!core.chainId,
     queryFn: async () => {
       const address = await core.getContractAddress(
-        'stakingRouter' as LIDO_CONTRACT_NAMES,
+        LIDO_CONTRACT_NAMES.stakingRouter,
       );
 
       return await core.rpcProvider.readContract({
