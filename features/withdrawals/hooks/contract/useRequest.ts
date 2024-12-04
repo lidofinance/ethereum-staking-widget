@@ -56,7 +56,7 @@ export const useWithdrawalRequest = ({
 
   const isApprovalFlowLoading =
     isSmartAccountLoading || (isApprovalFlow && isUseApproveFetching);
-  const isTokenLocked = !!(isApprovalFlow && needsApprove);
+  const isTokenLocked = !!(isApprovalFlow && needsApprove && !isAA);
 
   const request = useCallback(
     async ({
