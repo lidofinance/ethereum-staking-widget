@@ -8,7 +8,7 @@ import {
 } from 'react';
 import invariant from 'tiny-invariant';
 
-import type { LIDO_CONTRACT_NAMES } from '@lidofinance/lido-ethereum-sdk/common';
+import { LIDO_CONTRACT_NAMES } from '@lidofinance/lido-ethereum-sdk/common';
 import { useQuery } from '@tanstack/react-query';
 
 import { config } from 'config';
@@ -54,9 +54,7 @@ export const IPFSInfoBoxStatusesProvider: FC<PropsWithChildren> = ({
     false,
   );
 
-  const { data: stethAddress } = useContractAddress(
-    'lido' as LIDO_CONTRACT_NAMES,
-  );
+  const { data: stethAddress } = useContractAddress(LIDO_CONTRACT_NAMES.lido);
 
   const handleClickDismiss = useCallback(() => {
     setDismissStorage(true);

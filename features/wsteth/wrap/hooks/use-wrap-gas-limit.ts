@@ -67,10 +67,14 @@ export const useWrapGasLimit = () => {
   }>({
     queryKey: ['wrap-gas-limit', chainId, isL2],
     ...STRATEGY_EAGER,
-    queryFn: async () => ({
-      gasLimitETH: !isL2 ? await fetchGasLimitETH(wrap) : null,
-      gasLimitStETH: await fetchGasLimitStETH(isL2, l2, wrap, wrapFallback),
-    }),
+    queryFn: async () =>
+      Promise.all([
+        !isL2 ? fetchGasLimitETH(wrap) : Promise.resolve(null),
+        fetchGasLimitStETH(isL2, l2, wrap, wrapFallback),
+      ]).then(([gasLimitETH, gasLimitStETH]) => ({
+        gasLimitETH,
+        gasLimitStETH,
+      })),
   });
 
   return {

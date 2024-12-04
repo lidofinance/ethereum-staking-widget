@@ -7,7 +7,7 @@ import {
   External,
   Tooltip,
 } from '@lidofinance/lido-ui';
-import type { LIDO_CONTRACT_NAMES } from '@lidofinance/lido-ethereum-sdk/common';
+import { LIDO_CONTRACT_NAMES } from '@lidofinance/lido-ethereum-sdk/common';
 
 import { FormatToken } from 'shared/formatters';
 import { useDappStatus, useContractAddress } from 'modules/web3';
@@ -36,7 +36,7 @@ export const RequestItem = forwardRef<HTMLInputElement, RequestItemProps>(
     });
 
     const { data: withdrawalQueueAddress } = useContractAddress(
-      'withdrawalQueue' as LIDO_CONTRACT_NAMES,
+      LIDO_CONTRACT_NAMES.withdrawalQueue,
     );
 
     const isDisabled =
