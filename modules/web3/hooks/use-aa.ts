@@ -1,15 +1,17 @@
-import { useCapabilities, useSendCalls } from 'wagmi/experimental';
-import { useDappStatus } from './use-dapp-status';
 import { useCallback } from 'react';
+import invariant from 'tiny-invariant';
+import { useCapabilities, useSendCalls } from 'wagmi/experimental';
 import {
   eip5792Actions,
   type GetCallsStatusReturnType,
 } from 'viem/experimental';
-import invariant from 'tiny-invariant';
+import { TransactionCallbackStage } from '@lidofinance/lido-ethereum-sdk';
+
+import { useDappStatus } from './use-dapp-status';
 import { useLidoSDK, useLidoSDKL2 } from '../web3-provider';
 import { config } from 'config';
-import { TransactionCallbackStage } from '@lidofinance/lido-ethereum-sdk';
-import { Hash } from 'viem';
+
+import type { Hash } from 'viem';
 
 const retry = (retryCount: number, error: object) => {
   if (

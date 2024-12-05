@@ -35,7 +35,7 @@ export const useUnwrapFormProcessor = ({
 }: UseUnwrapFormProcessorArgs) => {
   const { isAA } = useAA();
   const sendAACalls = useSendAACalls();
-  const { isDappActiveOnL2, address } = useDappStatus();
+  const { address } = useDappStatus();
   const { txModalStages } = useTxModalStagesUnwrap();
   const { stETH, wrap } = useLidoSDK();
   const { l2, isL2 } = useLidoSDKL2();
@@ -51,16 +51,14 @@ export const useUnwrapFormProcessor = ({
         invariant(amount, 'amount should be presented');
         invariant(address, 'address should be presented');
 
-        const willReceive = await (isDappActiveOnL2
+        const willReceive = await (isL2
           ? l2.steth.convertToSteth(amount)
           : wrap.convertWstethToSteth(amount));
 
         const onUnwrapConfirm = async () => {
           const [, balance] = await Promise.all([
             onConfirm?.(),
-            isDappActiveOnL2
-              ? l2.steth.balance(address)
-              : stETH.balance(address),
+            isL2 ? l2.steth.balance(address) : stETH.balance(address),
           ]);
           return balance;
         };
@@ -176,7 +174,6 @@ export const useUnwrapFormProcessor = ({
     },
     [
       address,
-      isDappActiveOnL2,
       l2,
       wrap,
       isAA,
