@@ -135,6 +135,9 @@ export const useWithdrawalRequest = ({
               token,
               callback: txCallbackApproval,
             });
+
+            // Not run the 'withdraw.request.requestWithdrawal***', because we are waiting for other signatories
+            if (isMultisig) return true;
           }
 
           await withdraw.request.requestWithdrawal(txProps);
@@ -153,6 +156,7 @@ export const useWithdrawalRequest = ({
       closeModal,
       isApprovalFlow,
       isBunker,
+      isMultisig,
       needsApprove,
       onConfirm,
       onRetry,

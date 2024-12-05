@@ -6,7 +6,12 @@ import { TransactionCallbackStage } from '@lidofinance/lido-ethereum-sdk/core';
 
 import { config } from 'config';
 import { MockLimitReachedError } from 'features/stake/stake-form/utils';
-import { useDappStatus, useLidoSDK, useLidoSDKL2 } from 'modules/web3';
+import {
+  useDappStatus,
+  useIsMultisig,
+  useLidoSDK,
+  useLidoSDKL2,
+} from 'modules/web3';
 
 import type {
   WrapFormApprovalData,
@@ -30,6 +35,7 @@ export const useWrapFormProcessor = ({
   const { wrap, wstETH } = useLidoSDK();
   const { l2 } = useLidoSDKL2();
   const { txModalStages } = useTxModalWrap();
+  const { isMultisig } = useIsMultisig();
 
   const {
     isApprovalNeededBeforeWrap: isApprovalNeededBeforeWrapOnL1,
@@ -89,6 +95,9 @@ export const useWrapFormProcessor = ({
         if (token === TOKENS_TO_WRAP.stETH) {
           if (isApprovalNeededBeforeWrapOnL1) {
             await processApproveTxOnL1({ onRetry });
+
+            // Not run the 'wrap.wrapSteth', because we are waiting for other signatories
+            if (isMultisig) return true;
           }
 
           await wrap.wrapSteth({
@@ -179,11 +188,12 @@ export const useWrapFormProcessor = ({
       l2,
       wrap,
       txModalStages,
+      onRetry,
       onConfirm,
       wstETH,
-      onRetry,
       isApprovalNeededBeforeWrapOnL1,
       processApproveTxOnL1,
+      isMultisig,
     ],
   );
 };

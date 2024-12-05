@@ -5,7 +5,12 @@ import invariant from 'tiny-invariant';
 
 import { TransactionCallbackStage } from '@lidofinance/lido-ethereum-sdk/core';
 
-import { useDappStatus, useLidoSDK, useLidoSDKL2 } from 'modules/web3';
+import {
+  useDappStatus,
+  useIsMultisig,
+  useLidoSDK,
+  useLidoSDKL2,
+} from 'modules/web3';
 
 import type { UnwrapFormInputType } from '../unwrap-form-context';
 import { useUnwrapTxOnL2Approve } from './use-unwrap-tx-on-l2-approve';
@@ -28,6 +33,7 @@ export const useUnwrapFormProcessor = ({
   const { txModalStages } = useTxModalStagesUnwrap();
   const { stETH, wrap } = useLidoSDK();
   const { l2, isL2 } = useLidoSDKL2();
+  const { isMultisig } = useIsMultisig();
 
   const {
     isApprovalNeededBeforeUnwrap: isApprovalNeededBeforeUnwrapOnL2,
@@ -48,6 +54,9 @@ export const useUnwrapFormProcessor = ({
 
         if (isL2 && isApprovalNeededBeforeUnwrapOnL2) {
           await processApproveTxOnL2({ onRetry });
+
+          // Not run the 'l2.wrapWstethToSteth', because we are waiting for other signatories
+          if (isMultisig) return true;
         }
 
         if (isL2) {
@@ -129,14 +138,15 @@ export const useUnwrapFormProcessor = ({
       address,
       isDappActiveOnL2,
       l2,
+      wrap,
       isL2,
       isApprovalNeededBeforeUnwrapOnL2,
       processApproveTxOnL2,
       onRetry,
+      isMultisig,
       txModalStages,
       onConfirm,
       stETH,
-      wrap,
     ],
   );
 };
