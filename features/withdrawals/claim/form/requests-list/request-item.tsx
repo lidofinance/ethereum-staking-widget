@@ -7,14 +7,15 @@ import {
   External,
   Tooltip,
 } from '@lidofinance/lido-ui';
+import { LIDO_CONTRACT_NAMES } from '@lidofinance/lido-ethereum-sdk/common';
+
 import { FormatToken } from 'shared/formatters';
-
-import { RequestStatus } from './request-item-status';
-import { useClaimFormData, ClaimFormInputType } from '../../claim-form-context';
-
+import { useDappStatus, useContractAddress } from 'modules/web3';
 import { getNFTUrl } from 'utils';
+
+import { useClaimFormData, ClaimFormInputType } from '../../claim-form-context';
+import { RequestStatus } from './request-item-status';
 import { RequestStyled, LinkStyled } from './styles';
-import { useSDK } from '@lido-sdk/react';
 
 type RequestItemProps = {
   token_id: string;
@@ -24,7 +25,7 @@ type RequestItemProps = {
 
 export const RequestItem = forwardRef<HTMLInputElement, RequestItemProps>(
   ({ token_id, name, disabled, index, ...props }, ref) => {
-    const { chainId } = useSDK();
+    const { chainId } = useDappStatus();
     const { isSubmitting } = useFormState();
     const { canSelectMore, maxSelectedCountReason } = useClaimFormData();
     const { checked, status } = useWatch<
@@ -33,6 +34,10 @@ export const RequestItem = forwardRef<HTMLInputElement, RequestItemProps>(
     >({
       name: `requests.${index}`,
     });
+
+    const { data: withdrawalQueueAddress } = useContractAddress(
+      LIDO_CONTRACT_NAMES.withdrawalQueue,
+    );
 
     const isDisabled =
       disabled ||
@@ -79,7 +84,7 @@ export const RequestItem = forwardRef<HTMLInputElement, RequestItemProps>(
         />
         <LinkStyled
           data-testid="requestNftLink"
-          href={getNFTUrl(token_id, chainId)}
+          href={getNFTUrl(token_id, withdrawalQueueAddress, chainId)}
         >
           <External />
         </LinkStyled>

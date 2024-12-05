@@ -1,12 +1,13 @@
+import type { Hash } from 'viem';
 import { Link } from '@lidofinance/lido-ui';
 
 import { config } from 'config';
-import { getEtherscanTxLink } from 'utils/etherscan';
 import { useDappStatus } from 'modules/web3';
+import { getEtherscanTxLink } from 'utils/etherscan';
 
 type TxLinkEtherscanProps = {
   text?: string;
-  txHash?: string | null;
+  txHash?: Hash;
   onClick?: React.MouseEventHandler<HTMLAnchorElement>;
 };
 

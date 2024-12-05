@@ -1,8 +1,12 @@
-import { StaticJsonRpcBatchProvider } from '@lidofinance/eth-providers';
+import { PublicClient } from 'viem';
+import { getEnsAddress, normalize } from 'viem/ens';
 
 export const resolveEns = async (
   name: string | Promise<string>,
-  provider: StaticJsonRpcBatchProvider,
-) => {
-  return await provider.resolveName(name);
+  client: PublicClient,
+): Promise<string | null> => {
+  const resolvedName = typeof name === 'string' ? name : await name;
+  return await getEnsAddress(client, {
+    name: normalize(resolvedName),
+  });
 };

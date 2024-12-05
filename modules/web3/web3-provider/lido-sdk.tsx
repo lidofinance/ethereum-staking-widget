@@ -2,33 +2,35 @@ import { createContext, useContext, useEffect, useMemo } from 'react';
 import invariant from 'tiny-invariant';
 import {
   useAccount,
-  useChainId,
   useConfig,
   usePublicClient,
   useSwitchChain,
   useWalletClient,
 } from 'wagmi';
 
+import { LidoSDKStake } from '@lidofinance/lido-ethereum-sdk/stake';
 import { CHAINS, LidoSDKCore } from '@lidofinance/lido-ethereum-sdk/core';
 import {
   LidoSDKstETH,
   LidoSDKwstETH,
 } from '@lidofinance/lido-ethereum-sdk/erc20';
-import { LidoSDKL2 } from '@lidofinance/lido-ethereum-sdk/l2';
 import { LidoSDKWrap } from '@lidofinance/lido-ethereum-sdk/wrap';
+import { LidoSDKWithdraw } from '@lidofinance/lido-ethereum-sdk/withdraw';
+import { LidoSDKStatistics } from '@lidofinance/lido-ethereum-sdk/statistics';
 
 import { config } from 'config';
 import { useTokenTransferSubscription } from 'modules/web3/hooks/use-balance';
-import { LIDO_L2_CONTRACT_ADDRESSES } from '@lidofinance/lido-ethereum-sdk/common';
+import { useDappChain } from './dapp-chain';
 
 type LidoSDKContextValue = {
+  chainId: CHAINS;
   core: LidoSDKCore;
+  stake: LidoSDKStake;
   stETH: LidoSDKstETH;
   wstETH: LidoSDKwstETH;
-  l2: LidoSDKL2;
   wrap: LidoSDKWrap;
-  chainId: CHAINS;
-  isL2: boolean;
+  withdraw: LidoSDKWithdraw;
+  statistics: LidoSDKStatistics;
   subscribeToTokenUpdates: ReturnType<typeof useTokenTransferSubscription>;
 };
 
@@ -43,8 +45,9 @@ export const useLidoSDK = () => {
 
 export const LidoSDKProvider = ({ children }: React.PropsWithChildren) => {
   const subscribe = useTokenTransferSubscription();
-  // will only have supported chains from wagmi config
-  const chainId = useChainId();
+
+  // will only have
+  const { chainId } = useDappChain();
   const { data: walletClient } = useWalletClient({ chainId });
   const publicClient = usePublicClient({ chainId });
   // reset internal wagmi state after disconnect
@@ -75,20 +78,24 @@ export const LidoSDKProvider = ({ children }: React.PropsWithChildren) => {
       web3Provider: walletClient,
     });
 
+    const stake = new LidoSDKStake({ core });
     const stETH = new LidoSDKstETH({ core });
     const wstETH = new LidoSDKwstETH({ core });
     const wrap = new LidoSDKWrap({ core });
-    const l2 = new LidoSDKL2({ core });
+    const withdraw = new LidoSDKWithdraw({ core });
+    const statistics = new LidoSDKStatistics({ core });
 
     return {
+      chainId: core.chainId,
       core,
+      stake,
       stETH,
       wstETH,
       wrap,
-      l2,
-      chainId: core.chainId,
-      isL2: !!LIDO_L2_CONTRACT_ADDRESSES[chainId as CHAINS],
+      withdraw,
+      statistics,
       subscribeToTokenUpdates: subscribe,
+      // the L2 module you can to find in the 'modules/web3/web3-provider/lido-sdk-l2.tsx'
     };
   }, [chainId, publicClient, subscribe, walletClient]);
   return (

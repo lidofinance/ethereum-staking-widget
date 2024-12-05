@@ -7,13 +7,15 @@ import {
   Copy,
   Address,
 } from '@lidofinance/lido-ui';
-import { openWindow } from '@lido-sdk/helpers';
 import { useConnectorInfo, useDisconnect } from 'reef-knot/core-react';
 
 import { config } from 'config';
 import type { ModalComponentType } from 'providers/modal-provider';
 import { useCopyToClipboard } from 'shared/hooks';
+import { useDappStatus } from 'modules/web3';
 import { getEtherscanAddressLink } from 'utils/etherscan';
+import { openWindow } from 'utils/open-window';
+
 import {
   WalletModalContentStyle,
   WalletModalConnectedStyle,
@@ -23,7 +25,6 @@ import {
   WalletModalAddressStyle,
   WalletModalActionsStyle,
 } from './styles';
-import { useDappStatus } from 'modules/web3';
 
 export const WalletModal: ModalComponentType = ({ onClose, ...props }) => {
   const { address, walletChainId } = useDappStatus();

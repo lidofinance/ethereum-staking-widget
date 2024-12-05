@@ -1,10 +1,10 @@
 import { useWatch } from 'react-hook-form';
-
-import { formatEther, parseEther } from '@ethersproject/units';
-import { TOKENS } from '@lido-sdk/constants';
+import { formatEther, parseEther } from 'viem';
 
 import { MATOMO_CLICK_EVENTS_TYPES } from 'consts/matomo-click-events';
 import { DATA_UNAVAILABLE } from 'consts/text';
+
+import { TOKENS_TO_WITHDRAWLS } from 'features/withdrawals/types/tokens-withdrawable';
 import { useWaitingTime } from 'features/withdrawals/hooks/useWaitingTime';
 import { useTvlError } from 'features/withdrawals/hooks/useTvlError';
 import { RequestFormInputType } from 'features/withdrawals/request/request-form-context';
@@ -12,7 +12,9 @@ import {
   getDexConfig,
   useWithdrawalRates,
 } from 'features/withdrawals/request/withdrawal-rates';
-import { useStethByWsteth } from 'shared/hooks';
+
+import { useStETHByWstETH } from 'modules/web3';
+
 import { formatBalance } from 'utils/formatBalance';
 import { trackMatomoEvent } from 'utils/track-matomo-event';
 
@@ -38,15 +40,14 @@ const LidoButton: React.FC<OptionButtonProps> = ({ isActive, onClick }) => {
   const [amount, token] = useWatch<RequestFormInputType, ['amount', 'token']>({
     name: ['amount', 'token'],
   });
-  const isSteth = token === TOKENS.STETH;
-  const { value: waitingTime, initialLoading } = useWaitingTime(
-    amount ? formatEther(amount) : '',
-    {
+  const isSteth = token === TOKENS_TO_WITHDRAWLS.stETH;
+  const { value: waitingTime, isLoading: isWaitingTimeLoading } =
+    useWaitingTime(amount ? formatEther(amount) : '', {
       isApproximate: true,
-    },
-  );
-  const { data: wstethAsSteth, initialLoading: isWstethAsStethLoading } =
-    useStethByWsteth(DEFAULT_VALUE_FOR_RATE);
+    });
+  const { data: wstethAsSteth, isLoading: isWstethAsStethLoading } =
+    useStETHByWstETH(DEFAULT_VALUE_FOR_RATE);
+
   const ratioLoading = !isSteth && isWstethAsStethLoading;
   const ratio = isSteth
     ? '1 : 1'
@@ -73,7 +74,7 @@ const LidoButton: React.FC<OptionButtonProps> = ({ isActive, onClick }) => {
       </OptionsPickerRow>
       <OptionsPickerRow data-testid="lidoOptionWaitingTime">
         <OptionsPickerSubLabel>Waiting time:</OptionsPickerSubLabel>
-        {initialLoading ? <InlineLoaderSmall /> : waitingTime}
+        {isWaitingTimeLoading ? <InlineLoaderSmall /> : waitingTime}
       </OptionsPickerRow>
     </OptionsPickerButton>
   );
@@ -85,7 +86,7 @@ const toFloor = (num: number): string =>
 const DexButton: React.FC<OptionButtonProps> = ({ isActive, onClick }) => {
   const { balanceDiffSteth } = useTvlError();
   const isPausedByTvlError = balanceDiffSteth !== undefined;
-  const { initialLoading, bestRate, enabledDexes } = useWithdrawalRates({
+  const { isLoading, bestRate, enabledDexes } = useWithdrawalRates({
     isPaused: isPausedByTvlError,
     fallbackValue: DEFAULT_VALUE_FOR_RATE,
   });
@@ -117,7 +118,7 @@ const DexButton: React.FC<OptionButtonProps> = ({ isActive, onClick }) => {
       </OptionsPickerRow>
       <OptionsPickerRow data-testid="dexBestRate">
         <OptionsPickerSubLabel>Best Rate:</OptionsPickerSubLabel>
-        {initialLoading && !isPausedByTvlError ? (
+        {isLoading && !isPausedByTvlError ? (
           <InlineLoaderSmall />
         ) : (
           bestRateValue

@@ -1,11 +1,9 @@
-import type { BigNumber } from 'ethers';
+import type { Hash } from 'viem';
 import { Link, Loader } from '@lidofinance/lido-ui';
 
 import { config } from 'config';
 import { WITHDRAWALS_CLAIM_PATH } from 'consts/urls';
 import { MATOMO_CLICK_EVENTS_TYPES } from 'consts/matomo-click-events';
-import { trackMatomoEvent } from 'utils/track-matomo-event';
-import { useIsMetamask } from 'modules/web3';
 
 import { useNftDataByTxHash } from 'features/withdrawals/hooks/useNftDataByTxHash';
 import { useTransactionModal } from 'shared/transaction-modal/transaction-modal';
@@ -13,6 +11,9 @@ import { TxStageSuccess } from 'shared/transaction-modal/tx-stages-basic/tx-stag
 import { TxLinkEtherscan } from 'shared/components/tx-link-etherscan';
 import { TxAmount } from 'shared/transaction-modal/tx-stages-parts/tx-amount';
 import { LocalLink } from 'shared/components/local-link';
+
+import { useIsMetamask } from 'modules/web3';
+import { trackMatomoEvent } from 'utils/track-matomo-event';
 
 import {
   Title,
@@ -26,9 +27,9 @@ import {
 const LINK_ADD_NFT_GUIDE = `${config.helpOrigin}/en/articles/7858367-how-do-i-add-the-lido-nft-to-metamask`;
 
 type TxRequestStageSuccessProps = {
-  txHash: string | null;
+  txHash?: Hash;
   tokenName: string;
-  amount: BigNumber;
+  amount: bigint;
 };
 
 export const TxRequestStageSuccess = ({
@@ -39,8 +40,7 @@ export const TxRequestStageSuccess = ({
   const amountEl = <TxAmount amount={amount} symbol={tokenName} />;
   const showAddGuideLink = useIsMetamask();
 
-  const { data: nftData, initialLoading: nftLoading } =
-    useNftDataByTxHash(txHash);
+  const { data: nftData, isLoading: nftLoading } = useNftDataByTxHash(txHash);
   const { closeModal } = useTransactionModal();
 
   const successDescription = (
@@ -53,7 +53,7 @@ export const TxRequestStageSuccess = ({
       </LocalLink>{' '}
       to view your withdrawal requests or view your transaction on{' '}
       <TxLinkEtherscan
-        txHash={txHash ?? undefined}
+        txHash={txHash}
         text="Etherscan"
         onClick={() =>
           trackMatomoEvent(

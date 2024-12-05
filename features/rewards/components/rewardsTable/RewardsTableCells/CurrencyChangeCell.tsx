@@ -13,7 +13,7 @@ export const CurrencyChangeCell: FC<RewardsTableCellProps> = (props) => {
     <Td {...cellConfig} numeric>
       <ChangeCellValueWrapper negative={isNegative}>
         <span>{currency.symbol} </span>
-        <NumberFormat number={value} currency />
+        <NumberFormat number={value} currencyMoreAccuracy />
       </ChangeCellValueWrapper>
     </Td>
   );

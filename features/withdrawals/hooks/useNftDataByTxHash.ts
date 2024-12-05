@@ -1,9 +1,12 @@
-import { useLidoSWR } from '@lido-sdk/react';
-import { useWithdrawalsContract } from './contract/useWithdrawalsContract';
+import type { Hash } from 'viem';
+import { decodeEventLog, getEventSelector } from 'viem';
+import { usePublicClient } from 'wagmi';
+import { WithdrawalQueueAbi } from '@lidofinance/lido-ethereum-sdk/withdraw';
+import { useQuery } from '@tanstack/react-query';
 
+import { STRATEGY_CONSTANT } from 'consts/react-query-strategies';
+import { useDappStatus, useLidoSDK } from 'modules/web3';
 import { standardFetcher } from 'utils/standardFetcher';
-import type { TransactionReceipt } from '@ethersproject/abstract-provider';
-import { useCurrentStaticRpcProvider } from 'shared/hooks/use-current-static-rpc-provider';
 
 const EVENT_NAME = 'WithdrawalRequested';
 
@@ -13,29 +16,44 @@ type NFTApiData = {
   name: string;
 };
 
-export const useNftDataByTxHash = (txHash: string | null) => {
-  const { contractRpc, address } = useWithdrawalsContract();
-  const { staticRpcProvider } = useCurrentStaticRpcProvider();
+export const useNftDataByTxHash = (txHash?: Hash) => {
+  const { address, chainId } = useDappStatus();
+  const { withdraw } = useLidoSDK();
+  const publicClient = usePublicClient({ chainId });
 
-  const swrNftApiData = useLidoSWR(
-    address && txHash ? ['swr:nft-data-by-tx-hash', txHash, address] : null,
-    async () => {
-      if (!txHash || !address) return null;
+  return useQuery<NFTApiData[] | null>({
+    queryKey: ['nft-data-by-tx-hash', txHash, address],
+    enabled: !!(txHash && address && publicClient),
+    ...STRATEGY_CONSTANT,
+    queryFn: async () => {
+      if (!txHash || !address || !publicClient) return null;
 
-      const txReciept: TransactionReceipt =
-        await staticRpcProvider.getTransactionReceipt(txHash);
+      const txReceipt = await publicClient.getTransactionReceipt({
+        hash: txHash,
+      });
 
-      const eventTopic = contractRpc.interface.getEventTopic(EVENT_NAME);
-      const eventLogs = txReciept.logs.filter(
+      const eventTopic = getEventSelector(
+        `${EVENT_NAME}(uint256,address,address,uint256,uint256)`,
+      );
+      const eventLogs = txReceipt.logs.filter(
         (log) => log.topics[0] === eventTopic,
       );
-      const events = eventLogs.map((log) =>
-        contractRpc.interface.decodeEventLog(EVENT_NAME, log.data, log.topics),
-      );
+      const events = eventLogs.map((log) => {
+        return decodeEventLog({
+          abi: WithdrawalQueueAbi,
+          data: log.data,
+          topics: log.topics,
+          eventName: EVENT_NAME,
+        });
+      });
 
       const nftDataRequests = events.map((e) => {
         const fetch = async () => {
-          const tokenURI = await contractRpc.tokenURI(Number(e.requestId));
+          const contractWithdrawalQueue =
+            await withdraw.contract.getContractWithdrawalQueue();
+          const tokenURI = await contractWithdrawalQueue.read.tokenURI([
+            e.args.requestId,
+          ]);
           const nftData = await standardFetcher<NFTApiData>(tokenURI);
           return nftData;
         };
@@ -47,7 +65,5 @@ export const useNftDataByTxHash = (txHash: string | null) => {
 
       return nftData;
     },
-  );
-
-  return swrNftApiData;
+  });
 };

@@ -1,6 +1,5 @@
 import { useWatch } from 'react-hook-form';
 
-import { Zero } from '@ethersproject/constants';
 import { DataTable, DataTableRow } from '@lidofinance/lido-ui';
 
 import { DATA_UNAVAILABLE } from 'consts/text';
@@ -14,13 +13,13 @@ export const StakeFormInfo = () => {
   const { gasCost, loading } = useStakeFormData();
   const amount = useWatch<StakeFormInput, 'amount'>({ name: 'amount' });
 
-  const { usdAmount, initialLoading: isEthUsdLoading } = useEthUsd(gasCost);
+  const { usdAmount, isLoading: isEthUsdLoading } = useEthUsd(gasCost);
   const protocolFee = useProtocolFee();
 
   return (
     <DataTable data-testid="stakeFormInfo">
       <DataTableRow title="You will receive" data-testid="youWillReceive">
-        <FormatToken amount={amount ?? Zero} symbol="stETH" trimEllipsis />
+        <FormatToken amount={amount ?? 0n} symbol="stETH" trimEllipsis />
       </DataTableRow>
       <DataTableRow title="Exchange rate" data-testid="exchangeRate">
         1 ETH = 1 stETH
@@ -35,11 +34,13 @@ export const StakeFormInfo = () => {
       <DataTableRow
         title="Reward fee"
         data-testid="lidoFee"
-        loading={protocolFee.initialLoading}
+        loading={protocolFee.isLoading}
         help="Please note: this fee applies to staking rewards only,
       and is NOT taken from your staked amount."
       >
-        {!protocolFee.data ? DATA_UNAVAILABLE : `${protocolFee.data}%`}
+        {!protocolFee.totalFeeString
+          ? DATA_UNAVAILABLE
+          : `${protocolFee.totalFeeString}%`}
       </DataTableRow>
     </DataTable>
   );

@@ -1,7 +1,9 @@
+import { useQuery } from '@tanstack/react-query';
 import { config } from 'config';
+import { STRATEGY_LAZY } from 'consts/react-query-strategies';
 import { Backend } from 'features/rewards/types';
-import { useLidoSWR } from 'shared/hooks';
-import { swrAbortableMiddleware } from 'utils';
+
+import { standardFetcher } from 'utils/standardFetcher';
 import { useLaggyDataWrapper } from './use-laggy-data-wrapper';
 
 type UseRewardsDataLoad = (props: {
@@ -14,8 +16,8 @@ type UseRewardsDataLoad = (props: {
 }) => {
   data?: Backend;
   error?: unknown;
-  loading: boolean;
-  initialLoading: boolean;
+  isFetching: boolean;
+  isLoading: boolean;
   isLagging: boolean;
 };
 
@@ -50,16 +52,25 @@ export const useRewardsDataLoad: UseRewardsDataLoad = (props) => {
     apiRewardsUrl = `/api/rewards?${params.toString()}`;
   }
 
-  const { data, ...rest } = useLidoSWR<Backend>(
-    address ? apiRewardsUrl : null,
-    {
-      shouldRetryOnError: false,
-      revalidateOnFocus: false,
-      use: [swrAbortableMiddleware],
-    },
-  );
+  const { data, error, isFetching, isLoading } = useQuery<Backend>({
+    queryKey: ['rewards-data', address, apiRewardsUrl],
+    enabled: !!address,
+    ...STRATEGY_LAZY,
+    queryFn: ({ signal }) =>
+      // The 'react-query' has AbortController support built in,
+      // and it automatically cancels requests when
+      // the component is unmounted or the queryKey changes.
+      standardFetcher(apiRewardsUrl, { signal }),
+  });
 
   const { isLagging, dataOrLaggyData } = useLaggyDataWrapper(data);
 
-  return { ...rest, isLagging: !!address && isLagging, data: dataOrLaggyData };
+  return {
+    error,
+    isFetching,
+    isLoading,
+    // Fix 'Type 'TQueryFnData' is not assignable to type 'Backend''
+    data: dataOrLaggyData as Backend,
+    isLagging: !!address && isLagging,
+  };
 };

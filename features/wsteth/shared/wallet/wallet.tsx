@@ -2,15 +2,14 @@ import { Divider, Text } from '@lidofinance/lido-ui';
 
 import { FormatToken } from 'shared/formatters';
 import { TokenToWallet } from 'shared/components';
-import { useWstethBySteth, useStethByWsteth } from 'shared/hooks';
 import {
   useDappStatus,
   useEthereumBalance,
   useStethBalance,
   useWstethBalance,
-  useStETHByWstETHOnL2,
-  useWstETHByStETHOnL2,
+  useWstethBySteth,
   DAPP_CHAIN_TYPE,
+  useStETHByWstETH,
 } from 'modules/web3';
 import { CardBalance, CardRow, CardAccount, Fallback } from 'shared/wallet';
 
@@ -25,26 +24,8 @@ const WalletComponent = () => {
   const stethBalance = useStethBalance();
   const wstethBalance = useWstethBalance();
 
-  // TODO merge those hooks and only fetch current chain
-  const wstethByStethOnL1 = useWstethBySteth(
-    !isDappActiveOnL2 && stethBalance.data ? stethBalance.data : undefined,
-  );
-  const wstethByStethOnL2 = useWstETHByStETHOnL2(
-    isDappActiveOnL2 && stethBalance.data ? stethBalance.data : undefined,
-  );
-  const wstethBySteth = isDappActiveOnL2
-    ? wstethByStethOnL2
-    : wstethByStethOnL1;
-
-  const stethByWstethOnL1 = useStethByWsteth(
-    !isDappActiveOnL2 && wstethBalance.data ? wstethBalance.data : undefined,
-  );
-  const stethByWstethOnL2 = useStETHByWstETHOnL2(
-    isDappActiveOnL2 && wstethBalance.data ? wstethBalance.data : undefined,
-  );
-  const stethByWsteth = isDappActiveOnL2
-    ? stethByWstethOnL2
-    : stethByWstethOnL1;
+  const wstethBySteth = useWstethBySteth(stethBalance?.data);
+  const stethByWsteth = useStETHByWstETH(wstethBalance?.data);
 
   return (
     <StyledCard data-testid="wrapCardSection" $redBg={isDappActiveOnL2}>
@@ -67,7 +48,7 @@ const WalletComponent = () => {
         <CardBalance
           small
           title="stETH balance"
-          loading={stethBalance.isLoading || wstethBySteth.initialLoading}
+          loading={stethBalance.isLoading || wstethBySteth.isLoading}
           value={
             <>
               <FormatToken
@@ -93,7 +74,7 @@ const WalletComponent = () => {
         <CardBalance
           small
           title="wstETH balance"
-          loading={wstethBalance.isLoading || stethByWsteth.initialLoading}
+          loading={wstethBalance.isLoading || stethByWsteth.isLoading}
           value={
             <>
               <FormatToken

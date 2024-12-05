@@ -1,9 +1,10 @@
 import { FC } from 'react';
 import { Divider } from '@lidofinance/lido-ui';
 
-import { RewardsListEmptyWrapper } from './RewardsListsEmptyStyles';
 import { useDappStatus } from 'modules/web3';
 import { joinWithOr } from 'utils/join-with-or';
+
+import { RewardsListEmptyWrapper } from './RewardsListsEmptyStyles';
 
 export const RewardsListsUnsupportedChain: FC = () => {
   const { supportedChainLabels } = useDappStatus();

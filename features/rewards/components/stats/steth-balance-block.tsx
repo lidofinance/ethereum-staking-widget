@@ -12,12 +12,12 @@ export const StEthBalanceBlock: FC = () => {
   const {
     data: dataRewards,
     currencyObject: currency,
-    loading,
+    isLoading,
   } = useRewardsHistory();
 
   return (
     <Item
-      loading={loading}
+      loading={isLoading}
       dataTestId="stEthBalanceBlock"
       title="stETH balance"
       value={
@@ -34,7 +34,7 @@ export const StEthBalanceBlock: FC = () => {
       }
       valueDataTestId="stEthBalance"
       underValue={
-        balanceData?.stEthCurrencyBalance ? (
+        balanceData?.stEthCurrencyBalance != null ? (
           <>
             <Box display="inline-block" pr={'3px'}>
               {currency.symbol}

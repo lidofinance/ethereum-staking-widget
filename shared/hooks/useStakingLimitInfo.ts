@@ -1,61 +1,64 @@
-import { BigNumber } from 'ethers';
-
-import { parseEther } from '@ethersproject/units';
-import { CHAINS } from '@lido-sdk/constants';
-import { StethAbi } from '@lido-sdk/contracts';
-import { useLidoSWR, useSDK, useSTETHContractRPC } from '@lido-sdk/react';
+import { parseEther } from 'viem';
+import { useQuery, type UseQueryResult } from '@tanstack/react-query';
 
 import { config } from 'config';
-import { STRATEGY_LAZY } from 'consts/swr-strategies';
+import { STRATEGY_LAZY } from 'consts/react-query-strategies';
 import { LIMIT_LEVEL } from 'types';
+import { useLidoSDK, useLidoSDKL2 } from 'modules/web3';
 
 export type StakeLimitFullInfo = {
   isStakingPaused: boolean;
   isStakingLimitSet: boolean;
-  currentStakeLimit: BigNumber;
-  maxStakeLimit: BigNumber;
-  maxStakeLimitGrowthBlocks: BigNumber;
-  prevStakeLimit: BigNumber;
-  prevStakeBlockNumber: BigNumber;
+  currentStakeLimit: bigint;
+  maxStakeLimit: bigint;
+  maxStakeLimitGrowthBlocks: bigint;
+  prevStakeLimit: bigint;
+  prevStakeBlockNumber: bigint;
   stakeLimitLevel: LIMIT_LEVEL;
 };
 
-const stakeLimitFullInfoTemplate: StakeLimitFullInfo = {
+const stakeLimitFullInfoMockTemplate: StakeLimitFullInfo = {
   isStakingPaused: false,
   isStakingLimitSet: true,
   currentStakeLimit: parseEther('150000'),
   maxStakeLimit: parseEther('150000'),
-  maxStakeLimitGrowthBlocks: BigNumber.from(6400),
+  maxStakeLimitGrowthBlocks: 6_400n,
   prevStakeLimit: parseEther('149000'),
-  prevStakeBlockNumber: BigNumber.from(15145339),
+  prevStakeBlockNumber: 15_145_339n,
   stakeLimitLevel: LIMIT_LEVEL.REACHED,
 };
 
-// almost reached whenever current limit is ≤25% of max limit, i.e. 4 times lower
-const WARN_THRESHOLD_RATIO = BigNumber.from(4);
+const WARN_THRESHOLD_RATIO = 4n;
 
-const getLimitLevel = (maxLimit: BigNumber, currentLimit: BigNumber) => {
-  if (currentLimit.eq(0)) return LIMIT_LEVEL.REACHED;
+const getLimitLevel = (maxLimit: bigint, currentLimit: bigint) => {
+  if (currentLimit === 0n) return LIMIT_LEVEL.REACHED;
 
-  if (maxLimit.div(currentLimit).gte(WARN_THRESHOLD_RATIO))
-    return LIMIT_LEVEL.WARN;
+  if (maxLimit / currentLimit >= WARN_THRESHOLD_RATIO) return LIMIT_LEVEL.WARN;
 
   return LIMIT_LEVEL.SAFE;
 };
 
-export const useStakingLimitInfo = () => {
-  const { chainId } = useSDK();
-  const steth = useSTETHContractRPC();
+export const useStakingLimitInfo = (): UseQueryResult<StakeLimitFullInfo> => {
+  const { stake } = useLidoSDK();
+  const { isL2 } = useLidoSDKL2();
 
-  return useLidoSWR<StakeLimitFullInfo>(
-    ['swr:getStakeLimitFullInfo', chainId, steth, config.enableQaHelpers],
-    // @ts-expect-error broken lidoSWR typings
-    async (
-      _key: string,
-      _chainId: CHAINS,
-      steth: StethAbi,
-      shouldMock: boolean,
-    ) => {
+  const enabled = !!stake.core && !!stake.core.chainId && !isL2;
+
+  return useQuery<StakeLimitFullInfo>({
+    queryKey: [
+      'get-stake-limit-full-info',
+      stake.core.chainId,
+      config.enableQaHelpers,
+    ],
+    enabled,
+    ...STRATEGY_LAZY,
+    refetchInterval: 60000, // 60 seconds
+    queryFn: async () => {
+      if (!enabled) {
+        return;
+      }
+
+      const shouldMock = config.enableQaHelpers;
       const mockDataString = window.localStorage.getItem(
         'getStakeLimitFullInfo',
       );
@@ -64,7 +67,7 @@ export const useStakingLimitInfo = () => {
         try {
           const mockData = JSON.parse(mockDataString);
           return {
-            ...stakeLimitFullInfoTemplate,
+            ...stakeLimitFullInfoMockTemplate,
             ...mockData,
             currentStakeLimit: parseEther(mockData.currentStakeLimit),
             maxStakeLimit: parseEther(mockData.maxStakeLimit),
@@ -79,20 +82,27 @@ export const useStakingLimitInfo = () => {
         }
       }
 
-      const stakeLimitFullInfo = await steth.getStakeLimitFullInfo();
+      const contract = await stake.getContractStETH();
+      const [
+        isStakingPaused,
+        isStakingLimitSet,
+        currentStakeLimit,
+        maxStakeLimit,
+        maxStakeLimitGrowthBlocks,
+        prevStakeLimit,
+        prevStakeBlockNumber,
+      ] = await contract.read.getStakeLimitFullInfo();
 
-      // destructuring to make hybrid array into an object,
       return {
-        ...stakeLimitFullInfo,
-        stakeLimitLevel: getLimitLevel(
-          stakeLimitFullInfo.maxStakeLimit,
-          stakeLimitFullInfo.currentStakeLimit,
-        ),
+        isStakingPaused,
+        isStakingLimitSet,
+        currentStakeLimit,
+        maxStakeLimit,
+        maxStakeLimitGrowthBlocks,
+        prevStakeLimit,
+        prevStakeBlockNumber,
+        stakeLimitLevel: getLimitLevel(maxStakeLimit, currentStakeLimit),
       };
     },
-    {
-      ...STRATEGY_LAZY,
-      refreshInterval: 60000,
-    },
-  );
+  });
 };

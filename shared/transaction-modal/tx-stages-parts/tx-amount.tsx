@@ -1,8 +1,7 @@
-import { BigNumber } from 'ethers';
 import { FormatToken } from 'shared/formatters';
 
 type TxAmountProps = {
-  amount: BigNumber;
+  amount: bigint;
   symbol: string;
 };
 

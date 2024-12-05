@@ -1,6 +1,5 @@
 /* eslint-disable jest/expect-expect */
 /* eslint-disable jest/no-conditional-expect */
-import { BigNumber } from 'ethers';
 import { TvlErrorPayload, __test__export } from '../validators';
 const {
   ValidationSplitRequest,
@@ -9,18 +8,17 @@ const {
   validateSplitRequests,
 } = __test__export;
 
-const bn = (v: any) => BigNumber.from(v);
 const field = 'test_field';
-const balance = bn(5);
+const balance = 5n;
 
 describe('tvlJokeValidate', () => {
   it('should work', () => {
-    tvlJokeValidate(field, bn(10), bn(12), balance);
+    tvlJokeValidate(field, 10n, 12n, balance);
   });
 
   it('should throw right error', () => {
-    const value = bn(20);
-    const tvl = bn(10);
+    const value = 20n;
+    const tvl = 10n;
     const fn = () => tvlJokeValidate(field, value, tvl, balance);
     expect(fn).toThrow();
     try {
@@ -32,37 +30,37 @@ describe('tvlJokeValidate', () => {
       });
       expect(e).toHaveProperty('payload.balanceDiffSteth');
       expect(
-        value
-          .sub(balance)
-          .eq((e as { payload: TvlErrorPayload }).payload.balanceDiffSteth),
+        value - balance ===
+          (e as { payload: TvlErrorPayload }).payload.balanceDiffSteth,
       ).toBe(true);
 
       expect(e).toHaveProperty('payload.tvlDiff');
       expect(
-        value.sub(tvl).eq((e as { payload: TvlErrorPayload }).payload.tvlDiff),
+        value - tvl === (e as { payload: TvlErrorPayload }).payload.tvlDiff,
       ).toBe(true);
     }
   });
 });
 
-const maxAmountPerRequest = bn(100);
-const minAmountPerRequest = bn(10);
+const maxAmountPerRequest = 100n;
+const minAmountPerRequest = 10n;
 const maxRequestCount = 100;
+
 describe('validateSplitRequests', () => {
   it('should split into 1 request', () => {
     const requests = validateSplitRequests(
       field,
-      bn(10),
+      10n,
       maxAmountPerRequest,
       minAmountPerRequest,
       maxRequestCount,
     );
     expect(requests).toHaveLength(1);
-    expect(requests[0].eq(bn(10))).toBe(true);
+    expect(requests[0] === 10n).toBe(true);
   });
 
   it('should split into 2 requests', () => {
-    const amount = maxAmountPerRequest.add(minAmountPerRequest.mul(5));
+    const amount = maxAmountPerRequest + minAmountPerRequest * 5n;
     const requests = validateSplitRequests(
       field,
       amount,
@@ -71,34 +69,34 @@ describe('validateSplitRequests', () => {
       maxRequestCount,
     );
     expect(requests).toHaveLength(2);
-    expect(requests[0].eq(maxAmountPerRequest)).toBe(true);
-    expect(requests[1].eq(amount.sub(maxAmountPerRequest))).toBe(true);
+    expect(requests[0] === maxAmountPerRequest).toBe(true);
+    expect(requests[1] === amount - maxAmountPerRequest).toBe(true);
   });
 
   it('should split into 2(max+min) requests', () => {
     const requests = validateSplitRequests(
       field,
-      maxAmountPerRequest.add(minAmountPerRequest),
+      maxAmountPerRequest + minAmountPerRequest,
       maxAmountPerRequest,
       minAmountPerRequest,
       maxRequestCount,
     );
     expect(requests).toHaveLength(2);
-    expect(requests[0].eq(maxAmountPerRequest)).toBe(true);
-    expect(requests[1].eq(minAmountPerRequest)).toBe(true);
+    expect(requests[0] === maxAmountPerRequest).toBe(true);
+    expect(requests[1] === minAmountPerRequest).toBe(true);
   });
 
   it('should split into max requests', () => {
     const requests = validateSplitRequests(
       field,
-      maxAmountPerRequest.mul(maxRequestCount),
+      maxAmountPerRequest * BigInt(maxRequestCount),
       maxAmountPerRequest,
       minAmountPerRequest,
       maxRequestCount,
     );
     expect(requests).toHaveLength(maxRequestCount);
     requests.forEach((r) => {
-      expect(r.eq(maxAmountPerRequest)).toBe(true);
+      expect(r === maxAmountPerRequest).toBe(true);
     });
   });
 
@@ -106,7 +104,7 @@ describe('validateSplitRequests', () => {
     const fn = () =>
       validateSplitRequests(
         field,
-        maxAmountPerRequest.mul(maxRequestCount).add(1),
+        maxAmountPerRequest * BigInt(maxRequestCount) + 1n,
         maxAmountPerRequest,
         minAmountPerRequest,
         maxRequestCount,
@@ -128,7 +126,7 @@ describe('validateSplitRequests', () => {
     const fn = () =>
       validateSplitRequests(
         field,
-        maxAmountPerRequest.add(minAmountPerRequest).sub(1),
+        maxAmountPerRequest + minAmountPerRequest - 1n,
         maxAmountPerRequest,
         minAmountPerRequest,
         maxRequestCount,

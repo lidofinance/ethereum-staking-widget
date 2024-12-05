@@ -1,7 +1,5 @@
 import { useEffect, useState } from 'react';
 import { type UseFormWatch } from 'react-hook-form';
-import { Zero } from '@ethersproject/constants';
-import { type BigNumber } from 'ethers';
 
 import { RequestStatusClaimable } from 'features/withdrawals/types/request-status';
 
@@ -9,7 +7,7 @@ import { ClaimFormInputType } from './types';
 
 export type ClaimFormHelperState = {
   selectedRequests: RequestStatusClaimable[];
-  ethToClaim: BigNumber;
+  ethToClaim: bigint;
   canSelectMore: boolean;
   requestsCount: number;
 };
@@ -17,7 +15,7 @@ export type ClaimFormHelperState = {
 const initState = (): ClaimFormHelperState => ({
   selectedRequests: [],
   canSelectMore: true,
-  ethToClaim: Zero,
+  ethToClaim: 0n,
   requestsCount: 0,
 });
 
@@ -37,8 +35,8 @@ export const useHelperState = (
           .map((r) => r?.status as RequestStatusClaimable) ?? [];
 
       const ethToClaim = selectedRequests.reduce((ethSum, request) => {
-        return ethSum.add(request?.claimableEth ?? Zero);
-      }, Zero);
+        return ethSum + (request?.claimableEth ?? 0n);
+      }, 0n);
 
       setHelperState({
         selectedRequests,
