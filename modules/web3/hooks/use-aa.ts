@@ -34,9 +34,10 @@ export const useAA = () => {
 
   const isAA = !!capabilities;
 
-  const areAuxiliaryFundsSupported =
+  const areAuxiliaryFundsSupported = !!(
     capabilities?.auxiliaryFunds &&
-    capabilities.auxiliaryFunds.supported === true;
+    capabilities.auxiliaryFunds.supported === true
+  );
 
   return {
     ...capabilitiesQuery,

@@ -92,7 +92,7 @@ export const useStakeFormValidationContext = (
         isWalletActive: isDappActive,
         stakingLimitLevel: stakingLimitInfo.stakeLimitLevel,
         currentStakeLimit: stakingLimitInfo.currentStakeLimit,
-        shouldValidateEtherBalance: areAuxiliaryFundsSupported,
+        shouldValidateEtherBalance: !areAuxiliaryFundsSupported,
         // condition above guaranties stubs will only be passed when isDappActive = false
         etherBalance: etherBalance ?? 0n,
         gasCost: gasCost ?? 0n,

@@ -31,7 +31,7 @@ export const validateStakeEth = (params: validateStakeEthParams) => {
       formField,
       currentStakeLimit,
       gasCost,
-
+      shouldValidateEtherBalance,
       etherBalance,
       isSmartAccount,
     } = params;
@@ -45,8 +45,8 @@ export const validateStakeEth = (params: validateStakeEthParams) => {
       )}`,
     );
 
-    if (!isSmartAccount) {
-      // allow Smart Account(AA) to have zero balance as they can be sponsored with ETH
+    // allow Smart Account(AA) to have zero balance as they can be sponsored with ETH
+    if (shouldValidateEtherBalance) {
       validateBigintMax(
         formField,
         amount,
@@ -55,7 +55,9 @@ export const validateStakeEth = (params: validateStakeEthParams) => {
           etherBalance,
         )}`,
       );
+    }
 
+    if (!isSmartAccount) {
       const gasPaddedBalance = etherBalance - gasCost;
 
       validateBigintMax(

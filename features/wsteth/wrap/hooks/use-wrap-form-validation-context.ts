@@ -49,7 +49,7 @@ export const useWrapFormValidationContext = ({
             etherBalance: ethBalance,
             isSmartAccount,
             gasCost: wrapEthGasCost,
-            shouldValidateEtherBalance: areAuxiliaryFundsSupported,
+            shouldValidateEtherBalance: !areAuxiliaryFundsSupported,
             stakingLimitLevel: stakeLimitInfo?.stakeLimitLevel,
             currentStakeLimit: stakeLimitInfo?.currentStakeLimit,
           } as WrapFormAsyncValidationContext)
