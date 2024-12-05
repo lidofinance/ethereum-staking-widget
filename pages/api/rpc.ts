@@ -58,6 +58,7 @@ const allowedRPCMethods = [
   'eth_getLogs',
   'eth_chainId',
   'net_version',
+  'wallet_sendTransaction',
 ];
 
 const rpc = rpcFactory({
