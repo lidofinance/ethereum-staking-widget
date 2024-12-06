@@ -80,7 +80,7 @@ export const ClaimFormProvider: FC<PropsWithChildren> = ({ children }) => {
     if (!data || isSubmitting) return;
 
     // for regular updates generate new list but keep user input
-    const prevCheckState = getValues('requests')?.reduce(
+    const prevCheckState = (getValues('requests') || {}).reduce(
       (res, req) => ({
         ...res,
         [req.token_id]: req.checked,
@@ -94,8 +94,8 @@ export const ClaimFormProvider: FC<PropsWithChildren> = ({ children }) => {
     ).requests.map((request) => ({
       ...request,
       checked:
-        prevCheckState?.[request.token_id] !== undefined
-          ? prevCheckState?.[request.token_id]
+        prevCheckState[request.token_id] !== undefined
+          ? prevCheckState[request.token_id]
           : request.status.isFinalized,
     }));
 
