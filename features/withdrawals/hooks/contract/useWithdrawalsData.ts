@@ -82,7 +82,7 @@ const getRequestTimeForWQRequestIds = async (
 };
 
 export const useWithdrawalRequests = () => {
-  const { chainId } = useDappStatus();
+  const { chainId, isSupportedChain } = useDappStatus();
   const { contractRpc, address } = useWithdrawalsContract();
   // const { data: currentShareRate } = useLidoShareRate();
 
@@ -91,7 +91,7 @@ export const useWithdrawalRequests = () => {
     // currentShareRate
     //   ? ['swr:withdrawals-requests', address, chainId, currentShareRate]
     //   : false,
-    ['swr:withdrawals-requests', address, chainId],
+    ['swr:withdrawals-requests', address, chainId, isSupportedChain],
     async (...args: unknown[]) => {
       const account = args[1] as string;
       // const currentShareRate = args[3] as BigNumber;
