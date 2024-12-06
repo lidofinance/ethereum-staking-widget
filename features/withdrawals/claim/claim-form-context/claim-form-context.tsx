@@ -80,16 +80,23 @@ export const ClaimFormProvider: FC<PropsWithChildren> = ({ children }) => {
     if (!data || isSubmitting) return;
 
     // for regular updates generate new list but keep user input
-    const oldValues = getValues('requests');
-    const checkedIds = new Set(
-      oldValues?.filter((req) => req.checked).map((req) => req.token_id),
+    const prevCheckState = getValues('requests')?.reduce(
+      (res, req) => ({
+        ...res,
+        [req.token_id]: req.checked,
+      }),
+      {} as Record<string, boolean>,
     );
+
     const newRequests = generateDefaultValues(
       data,
       defaultSelectedRequestCount,
     ).requests.map((request) => ({
       ...request,
-      checked: request.status.isFinalized && checkedIds.has(request.token_id),
+      checked:
+        prevCheckState?.[request.token_id] !== undefined
+          ? prevCheckState?.[request.token_id]
+          : request.status.isFinalized,
     }));
 
     setValue('requests', newRequests, {
