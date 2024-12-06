@@ -5,12 +5,9 @@ import Head from 'next/head';
 import { WithdrawalsTabs } from 'features/withdrawals';
 import { WithdrawalsProvider } from 'features/withdrawals/contexts/withdrawals-context';
 import { Layout } from 'shared/components';
-import { useWagmiKey } from 'modules/web3';
 import { getDefaultStaticProps } from 'utilsApi/get-default-static-props';
 
 const Withdrawals: FC<WithdrawalsModePageParams> = ({ mode }) => {
-  const key = useWagmiKey();
-
   return (
     <Layout
       title="Withdrawals"
@@ -20,7 +17,7 @@ const Withdrawals: FC<WithdrawalsModePageParams> = ({ mode }) => {
         <title>Withdrawals | Lido</title>
       </Head>
       <WithdrawalsProvider mode={mode}>
-        <WithdrawalsTabs key={key} />
+        <WithdrawalsTabs />
       </WithdrawalsProvider>
     </Layout>
   );

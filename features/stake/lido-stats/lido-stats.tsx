@@ -1,17 +1,16 @@
 import { FC, memo, useMemo } from 'react';
 
-import { getEtherscanTokenLink } from '@lido-sdk/helpers';
 import { useSDK } from '@lido-sdk/react';
 import { getTokenAddress, TOKENS } from '@lido-sdk/constants';
 import { Block, DataTable, Question, Tooltip } from '@lidofinance/lido-ui';
 
-import { Section, MatomoLink } from 'shared/components';
-import { useLidoApr, useLidoStats } from 'shared/hooks';
-
 import { config } from 'config';
-
 import { LIDO_APR_TOOLTIP_TEXT, DATA_UNAVAILABLE } from 'consts/text';
 import { MATOMO_CLICK_EVENTS_TYPES } from 'consts/matomo-click-events';
+import { getEtherscanTokenLink } from 'utils/etherscan';
+
+import { Section, MatomoLink } from 'shared/components';
+import { useLidoApr, useLidoStats } from 'shared/hooks';
 
 import { FlexCenterVertical } from './styles';
 import { LidoStatsItem } from './lido-stats-item';

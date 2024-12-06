@@ -10,10 +10,10 @@ import {
 import { openWindow } from '@lido-sdk/helpers';
 import { useConnectorInfo, useDisconnect } from 'reef-knot/core-react';
 
-import { CHAINS } from 'consts/chains';
+import { config } from 'config';
 import type { ModalComponentType } from 'providers/modal-provider';
 import { useCopyToClipboard } from 'shared/hooks';
-import { getEtherscanAddressLink } from 'utils/get-etherscan-address-link';
+import { getEtherscanAddressLink } from 'utils/etherscan';
 import {
   WalletModalContentStyle,
   WalletModalConnectedStyle,
@@ -26,7 +26,7 @@ import {
 import { useDappStatus } from 'modules/web3';
 
 export const WalletModal: ModalComponentType = ({ onClose, ...props }) => {
-  const { address, chainId, walletChainId } = useDappStatus();
+  const { address, walletChainId } = useDappStatus();
   const { connectorName } = useConnectorInfo();
   const { disconnect } = useDisconnect();
 
@@ -41,12 +41,11 @@ export const WalletModal: ModalComponentType = ({ onClose, ...props }) => {
     // but not wrapped by SupportL2Chains (the chainId will never be a L2 network).
     // This is currently the fastest solution.
     const link = getEtherscanAddressLink(
-      walletChainId as CHAINS,
+      walletChainId ?? config.defaultChain,
       address ?? '',
-      chainId,
     );
     openWindow(link);
-  }, [address, chainId, walletChainId]);
+  }, [address, walletChainId]);
 
   useEffect(() => {
     // Close the modal if a wallet was somehow disconnected while the modal was open

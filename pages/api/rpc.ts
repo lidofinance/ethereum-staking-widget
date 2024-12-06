@@ -41,23 +41,23 @@ const allowedLogsAddresses: Record<string, string[]> = Object.entries(
 );
 
 const allowedRPCMethods = [
-    'test',
-    'eth_call',
-    'eth_gasPrice',
-    'eth_getCode',
-    'eth_estimateGas',
-    'eth_getBlockByNumber',
-    'eth_feeHistory',
-    'eth_maxPriorityFeePerGas',
-    'eth_getBalance',
-    'eth_blockNumber',
-    'eth_getTransactionByHash',
-    'eth_getTransactionReceipt',
-    'eth_getTransactionCount',
-    'eth_sendRawTransaction',
-    'eth_getLogs',
-    'eth_chainId',
-    'net_version',
+  'test',
+  'eth_call',
+  'eth_gasPrice',
+  'eth_getCode',
+  'eth_estimateGas',
+  'eth_getBlockByNumber',
+  'eth_feeHistory',
+  'eth_maxPriorityFeePerGas',
+  'eth_getBalance',
+  'eth_blockNumber',
+  'eth_getTransactionByHash',
+  'eth_getTransactionReceipt',
+  'eth_getTransactionCount',
+  'eth_sendRawTransaction',
+  'eth_getLogs',
+  'eth_chainId',
+  'net_version',
 ];
 
 const rpc = rpcFactory({
@@ -86,7 +86,6 @@ const rpc = rpcFactory({
     maxGetLogsRange: 20_000, // only 20k blocks size historical queries
     maxResponseSize: 1_000_000, // 1mb max response
   },
-
 });
 
 export default wrapNextRequest([
