@@ -39,10 +39,10 @@
       },
       "pages": {
         "/withdrawals": {
-          "deactivate": true
+          "shouldDeactivate": true
         },
         "/rewards": {
-          "deactivate": true
+          "shouldDeactivate": true
         }
       }
     }

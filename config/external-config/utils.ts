@@ -1,5 +1,12 @@
 import { useMemo } from 'react';
-import { Manifest, ManifestConfig, ManifestEntry } from './types';
+import {
+  Manifest,
+  ManifestConfig,
+  ManifestConfigPage,
+  ManifestConfigPageEnum,
+  ManifestConfigPageList,
+  ManifestEntry,
+} from './types';
 import { getDexConfig } from 'features/withdrawals/request/withdrawal-rates';
 
 import FallbackLocalManifest from 'IPFS.json' assert { type: 'json' };
@@ -51,6 +58,27 @@ const isFeatureFlagsValid = (config: object) => {
   return !(typeof config.featureFlags !== 'object');
 };
 
+const isPagesValid = (config: object) => {
+  if (!('pages' in config)) {
+    return true;
+  }
+
+  const pages = config.pages as ManifestConfig['pages'];
+  if (pages && typeof pages === 'object') {
+    const pagesKeysList = Object.keys(pages) as ManifestConfigPage[];
+    if (
+      !pagesKeysList.every((pagesKey) => ManifestConfigPageList.has(pagesKey))
+    ) {
+      return false;
+    }
+
+    // INFO: exclude possible issue when stack interface can be deactivated
+    return !pages[ManifestConfigPageEnum.Stake]?.shouldDeactivate;
+  }
+
+  return false;
+};
+
 export const isManifestEntryValid = (
   entry?: unknown,
 ): entry is ManifestEntry => {
@@ -65,7 +93,12 @@ export const isManifestEntryValid = (
   ) {
     const config = entry.config;
 
-    return [isEnabledDexesValid, isMultiChainBannerValid, isFeatureFlagsValid]
+    return [
+      isEnabledDexesValid,
+      isMultiChainBannerValid,
+      isFeatureFlagsValid,
+      isPagesValid,
+    ]
       .map((validator) => validator(config))
       .every((isValid) => isValid);
   }

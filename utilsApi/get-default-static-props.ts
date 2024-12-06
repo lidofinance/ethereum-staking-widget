@@ -36,7 +36,8 @@ export const getDefaultStaticProps = <
     const { defaultChain } = config;
     const chainSettings = manifest?.[`${defaultChain}`];
     const pages = chainSettings?.config?.pages;
-    const isDeactivate = pages?.[currentPath as ManifestConfigPage]?.deactivate;
+    const isDeactivate =
+      pages?.[currentPath as ManifestConfigPage]?.shouldDeactivate;
     // https://nextjs.org/docs/messages/gsp-redirect-during-prerender
     const isBuild = process.env.npm_lifecycle_event === 'build';
 
@@ -51,8 +52,8 @@ export const getDefaultStaticProps = <
     if (custom) {
       const { props: customProps, ...rest } = (await custom(context)) as any;
       result = {
-        ...result,
         ...rest,
+        ...result,
         props: { ...base.props, ...customProps },
       };
     }

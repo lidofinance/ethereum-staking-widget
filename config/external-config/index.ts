@@ -6,3 +6,4 @@ export type {
   ExternalConfig,
   ManifestConfigPage,
 } from './types';
+export { ManifestConfigPageList, ManifestConfigPageEnum } from './types';

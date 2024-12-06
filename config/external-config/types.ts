@@ -18,7 +18,7 @@ export type ManifestConfig = {
   };
   pages?: {
     [page in ManifestConfigPage]?: {
-      deactivate?: boolean;
+      shouldDeactivate?: boolean;
       sections?: [string, ...string[]];
     };
   };
@@ -31,6 +31,24 @@ export type ManifestConfigPage =
   | '/rewards'
   | '/settings'
   | '/referral';
+
+export const ManifestConfigPageList = new Set<ManifestConfigPage>([
+  '/',
+  '/wrap',
+  '/withdrawals',
+  '/rewards',
+  '/settings',
+  '/referral',
+]);
+
+export enum ManifestConfigPageEnum {
+  Stake = '/',
+  Wrap = '/wrap',
+  Withdrawals = '/withdrawals',
+  Rewards = '/rewards',
+  Settings = '/settings',
+  Referral = '/referral',
+}
 
 export type ExternalConfig = Omit<ManifestEntry, 'config'> &
   ManifestConfig & {

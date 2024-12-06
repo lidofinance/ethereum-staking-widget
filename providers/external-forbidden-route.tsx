@@ -22,7 +22,7 @@ export const ExternalForbiddenRouteProvider = ({
     if (pages) {
       const paths = Object.keys(pages) as ManifestConfigPage[];
       const forbiddenPath = paths.find((pathKey) => path.includes(pathKey));
-      if (forbiddenPath && pages[forbiddenPath]?.deactivate) {
+      if (forbiddenPath && pages[forbiddenPath]?.shouldDeactivate) {
         setShowContent(false);
         void router.push(HOME_PATH).finally(() => setShowContent(true));
       }
