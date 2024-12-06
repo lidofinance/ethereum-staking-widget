@@ -1,3 +1,4 @@
+import type { Hash } from 'viem';
 import {
   TransactionModalTransitStage,
   useTransactionModalStage,
@@ -12,8 +13,7 @@ import { TxStageSignOperationAmount } from 'shared/transaction-modal/tx-stages-c
 import { TxRequestStageSuccess } from './tx-stage-request-success';
 
 import { getTokenDisplayName } from 'utils/getTokenDisplayName';
-import type { BigNumber } from 'ethers';
-import type { TokensWithdrawable } from 'features/withdrawals/types/tokens-withdrawable';
+import type { TOKENS_TO_WITHDRAWLS } from 'features/withdrawals/types/tokens-withdrawable';
 
 const STAGE_APPROVE_ARGS = {
   willReceiveToken: 'wstETH',
@@ -45,7 +45,7 @@ const getTxModalStagesRequest = (
 
   signPermit: () => transitStage(<TxStagePermit />),
 
-  signApproval: (amount: BigNumber, token: TokensWithdrawable) =>
+  signApproval: (amount: bigint, token: TOKENS_TO_WITHDRAWLS) =>
     transitStage(
       <TxStageSignOperationAmount
         {...STAGE_APPROVE_ARGS}
@@ -55,9 +55,9 @@ const getTxModalStagesRequest = (
     ),
 
   pendingApproval: (
-    amount: BigNumber,
-    token: TokensWithdrawable,
-    txHash?: string,
+    amount: bigint,
+    token: TOKENS_TO_WITHDRAWLS,
+    txHash?: Hash,
   ) =>
     transitStage(
       <TxStageSignOperationAmount
@@ -69,7 +69,7 @@ const getTxModalStagesRequest = (
       />,
     ),
 
-  sign: (amount: BigNumber, token: TokensWithdrawable) =>
+  sign: (amount: bigint, token: TOKENS_TO_WITHDRAWLS) =>
     transitStage(
       <TxStageSignOperationAmount
         {...STAGE_OPERATION_ARGS}
@@ -78,18 +78,24 @@ const getTxModalStagesRequest = (
       />,
     ),
 
-  pending: (amount: BigNumber, token: TokensWithdrawable, txHash?: string) =>
+  pending: (
+    amount: bigint,
+    token: TOKENS_TO_WITHDRAWLS,
+    txHash?: Hash,
+    isAA?: boolean,
+  ) =>
     transitStage(
       <TxStageSignOperationAmount
         {...STAGE_OPERATION_ARGS}
         amount={amount}
         token={getTokenDisplayName(token)}
         isPending
+        isAA={isAA}
         txHash={txHash}
       />,
     ),
 
-  success: (amount: BigNumber, token: TokensWithdrawable, txHash: string) =>
+  success: (amount: bigint, token: TOKENS_TO_WITHDRAWLS, txHash?: Hash) =>
     transitStage(
       <TxRequestStageSuccess
         amount={amount}

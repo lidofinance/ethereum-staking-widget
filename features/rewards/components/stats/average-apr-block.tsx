@@ -8,11 +8,11 @@ import { Item } from './components/item';
 import { FlexCenter } from './components/styles';
 
 export const AverageAprBlock: FC = () => {
-  const { data, initialLoading: loading } = useRewardsHistory();
+  const { data, isLoading } = useRewardsHistory();
 
   return (
     <Item
-      loading={loading}
+      loading={isLoading}
       dataTestId="averageAprBlock"
       title={
         <FlexCenter>

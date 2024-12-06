@@ -15,7 +15,7 @@ export const useUnwrapFormValidationContext = ({
   const { maxAmount } = networkData;
 
   const validationContextAwaited = useMemo(() => {
-    if (isDappActive && !maxAmount) {
+    if (isDappActive && maxAmount === undefined) {
       return undefined;
     }
     return {

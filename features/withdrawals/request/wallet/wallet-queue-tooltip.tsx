@@ -32,7 +32,7 @@ export const WalletQueueTooltip = () => {
       <DataTableRowStyled
         title="Waiting time"
         data-testid="modeTooltipWaitingTime"
-        loading={waitingTime.initialLoading}
+        loading={waitingTime.isLoading}
       >
         {waitingTime.value}
       </DataTableRowStyled>

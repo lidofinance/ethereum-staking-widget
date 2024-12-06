@@ -1,22 +1,24 @@
-import { useSTETHContractRPC, useContractSWR } from '@lido-sdk/react';
+import { useCallback, useMemo } from 'react';
+
 import { useClaimData } from 'features/withdrawals/contexts/claim-data-context';
 import { useWithdrawals } from 'features/withdrawals/contexts/withdrawals-context';
-import { useUnfinalizedStETH } from 'features/withdrawals/hooks';
-import { useCallback, useMemo } from 'react';
-import { useWstethBySteth } from 'shared/hooks';
-import { useStethBalance, useWstethBalance } from 'modules/web3';
-import { STRATEGY_LAZY } from 'consts/swr-strategies';
+import {
+  useUnfinalizedStETH,
+  useTotalSupply,
+} from 'features/withdrawals/hooks';
+import {
+  useStethBalance,
+  useWstethBalance,
+  useWstethBySteth,
+} from 'modules/web3';
 
 // Provides all data fetching for form to function
 export const useRequestFormDataContextValue = () => {
   const { revalidate: revalidateClaimData } = useClaimData();
-  // useTotalSupply is bugged and switches to undefined for 1 render
-  const { data: stethTotalSupply, initialLoading: isTotalSupplyLoading } =
-    useContractSWR({
-      contract: useSTETHContractRPC(),
-      method: 'totalSupply',
-      config: STRATEGY_LAZY,
-    });
+
+  const { data: stethTotalSupply, isLoading: isTotalSupplyLoading } =
+    useTotalSupply();
+
   const {
     maxAmount: maxAmountPerRequestSteth,
     minAmount: minUnstakeSteth,
@@ -34,15 +36,13 @@ export const useRequestFormDataContextValue = () => {
   } = useWstethBalance();
   const {
     data: unfinalizedStETH,
-    update: unfinalizedStETHUpdate,
-    initialLoading: isUnfinalizedStethLoading,
+    refetch: unfinalizedStETHUpdate,
+    isLoading: isUnfinalizedStethLoading,
   } = useUnfinalizedStETH();
 
-  const {
-    data: maxAmountPerRequestWSteth,
-    initialLoading: isMaxWstethLoading,
-  } = useWstethBySteth(maxAmountPerRequestSteth);
-  const { data: minUnstakeWSteth, initialLoading: isMinWstethLoading } =
+  const { data: maxAmountPerRequestWSteth, isLoading: isMaxWstethLoading } =
+    useWstethBySteth(maxAmountPerRequestSteth);
+  const { data: minUnstakeWSteth, isLoading: isMinWstethLoading } =
     useWstethBySteth(minUnstakeSteth);
 
   const loading = useMemo(

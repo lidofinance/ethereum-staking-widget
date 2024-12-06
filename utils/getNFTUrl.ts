@@ -1,4 +1,5 @@
-import { CHAINS, getWithdrawalQueueAddress } from '@lido-sdk/constants';
+import type { Address } from 'viem';
+import { CHAINS } from '@lidofinance/lido-ethereum-sdk/common';
 
 export const NFT_URL_PREFIX_BY_NETWORK: {
   [key in CHAINS]?: (nftId: string, contract: string) => string;
@@ -11,11 +12,14 @@ export const NFT_URL_PREFIX_BY_NETWORK: {
     `https://sepolia.etherscan.io/nft/${contract}/${nftId}`,
 };
 
-export const getNFTUrl = (tokenId: string, chainId?: CHAINS) => {
-  if (!chainId) return '';
-  try {
-    const contractAddress = getWithdrawalQueueAddress(chainId);
+export const getNFTUrl = (
+  tokenId: string,
+  contractAddress?: Address | null,
+  chainId?: CHAINS,
+) => {
+  if (!chainId || !contractAddress) return '';
 
+  try {
     return NFT_URL_PREFIX_BY_NETWORK[chainId]?.(tokenId, contractAddress) || '';
   } catch {
     return '';

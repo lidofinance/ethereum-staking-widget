@@ -1,4 +1,3 @@
-import invariant from 'tiny-invariant';
 import {
   FC,
   PropsWithChildren,
@@ -10,8 +9,14 @@ import {
 } from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
 import { useRouter } from 'next/router';
+import { parseEther } from 'viem';
+import invariant from 'tiny-invariant';
 
-import { parseEther } from '@ethersproject/units';
+import {
+  useEthereumBalance,
+  useStethBalance,
+  BALANCE_PADDING,
+} from 'modules/web3';
 
 import {
   FormControllerContext,
@@ -19,10 +24,8 @@ import {
 } from 'shared/hook-form/form-controller';
 import { useTokenMaxAmount } from 'shared/hooks/use-token-max-amount';
 import { useStakingLimitInfo } from 'shared/hooks/useStakingLimitInfo';
-import { useIsMultisig, useMaxGasPrice } from 'modules/web3';
+import { useIsSmartAccount, useMaxGasPrice } from 'modules/web3';
 import { useFormControllerRetry } from 'shared/hook-form/form-controller/use-form-controller-retry-delegate';
-
-import { config } from 'config';
 
 import {
   type StakeFormDataContextValue,
@@ -36,7 +39,6 @@ import {
 
 import { useStake } from '../use-stake';
 import { useStethSubmitGasLimit } from '../hooks';
-import { useEthereumBalance, useStethBalance } from 'modules/web3';
 
 //
 // Data context
@@ -61,13 +63,13 @@ const useStakeFormNetworkData = (): StakeFormNetworkData => {
     refetch: updateStethBalance,
     isLoading: isStethBalanceLoading,
   } = useStethBalance();
-  const { isMultisig, isLoading: isMultisigLoading } = useIsMultisig();
+  const { isSmartAccount, isLoading: isSmartAccountLoading } =
+    useIsSmartAccount();
   const gasLimit = useStethSubmitGasLimit();
-  const { maxGasPrice, initialLoading: isMaxGasPriceLoading } =
-    useMaxGasPrice();
+  const { maxGasPrice, isLoading: isMaxGasPriceLoading } = useMaxGasPrice();
 
   const gasCost = useMemo(
-    () => (gasLimit && maxGasPrice ? gasLimit.mul(maxGasPrice) : undefined),
+    () => (gasLimit && maxGasPrice ? gasLimit * maxGasPrice : undefined),
     [gasLimit, maxGasPrice],
   );
 
@@ -79,14 +81,14 @@ const useStakeFormNetworkData = (): StakeFormNetworkData => {
 
   const {
     data: stakingLimitInfo,
-    mutate: mutateStakeLimit,
-    initialLoading: isStakingLimitLoading,
+    refetch: refetchStakeLimit,
+    isLoading: isStakingLimitIsLoading,
   } = useStakingLimitInfo();
 
   const stakeableEther = useMemo(() => {
-    if (!etherBalance || !stakingLimitInfo) return undefined;
+    if (etherBalance === undefined || !stakingLimitInfo) return undefined;
     if (etherBalance && stakingLimitInfo.isStakingLimitSet) {
-      return etherBalance.lt(stakingLimitInfo.currentStakeLimit)
+      return etherBalance < stakingLimitInfo.currentStakeLimit
         ? etherBalance
         : stakingLimitInfo.currentStakeLimit;
     }
@@ -96,46 +98,41 @@ const useStakeFormNetworkData = (): StakeFormNetworkData => {
   const maxAmount = useTokenMaxAmount({
     balance: etherBalance,
     limit: stakingLimitInfo?.currentStakeLimit,
-    isPadded: !isMultisig,
+    isPadded: !isSmartAccount,
     gasLimit: gasLimit,
-    padding: config.BALANCE_PADDING,
-    isLoading: isMultisigLoading,
+    padding: BALANCE_PADDING,
+    isLoading: isSmartAccountLoading,
   });
 
   const revalidate = useCallback(async () => {
     await Promise.allSettled([
       updateStethBalance(),
       updateEtherBalance(),
-      mutateStakeLimit(stakingLimitInfo),
+      refetchStakeLimit(),
     ]);
-  }, [
-    updateStethBalance,
-    updateEtherBalance,
-    mutateStakeLimit,
-    stakingLimitInfo,
-  ]);
+  }, [updateStethBalance, updateEtherBalance, refetchStakeLimit]);
 
   const loading = useMemo(
     () => ({
       isStethBalanceLoading,
-      isMultisigLoading,
+      isSmartAccountLoading,
       isMaxGasPriceLoading,
       isEtherBalanceLoading,
-      isStakeableEtherLoading: isStakingLimitLoading || isEtherBalanceLoading,
+      isStakeableEtherLoading: isStakingLimitIsLoading || isEtherBalanceLoading,
     }),
     [
-      isEtherBalanceLoading,
-      isMaxGasPriceLoading,
-      isMultisigLoading,
       isStethBalanceLoading,
-      isStakingLimitLoading,
+      isSmartAccountLoading,
+      isMaxGasPriceLoading,
+      isEtherBalanceLoading,
+      isStakingLimitIsLoading,
     ],
   );
 
   return {
     stethBalance,
     etherBalance,
-    isMultisig: isMultisigLoading ? undefined : isMultisig,
+    isSmartAccount,
     stakeableEther,
     stakingLimitInfo,
     gasCost,
@@ -177,8 +174,8 @@ export const StakeFormProvider: FC<PropsWithChildren> = ({ children }) => {
       }
       if (typeof amount === 'string') {
         void replace({ pathname, query: rest });
-        const amountBN = parseEther(amount);
-        setValue('amount', amountBN);
+        const amountBigInt = parseEther(amount);
+        setValue('amount', amountBigInt);
       }
     } catch {
       //noop

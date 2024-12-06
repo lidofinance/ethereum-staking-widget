@@ -4,13 +4,12 @@ import { InputAmount } from 'shared/components/input-amount';
 
 import { getTokenDisplayName } from 'utils/getTokenDisplayName';
 import { isValidationErrorTypeValidate } from 'shared/hook-form/validation/validation-error';
-import type { BigNumber } from 'ethers';
 
 type TokenAmountInputHookFormProps = Partial<
   React.ComponentProps<typeof InputAmount>
 > & {
   isLocked?: boolean;
-  maxValue?: BigNumber;
+  maxValue?: bigint;
   token: Parameters<typeof getTokenDisplayName>[0];
   fieldName: string;
   showErrorMessage?: boolean;

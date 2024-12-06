@@ -1,5 +1,5 @@
-import { parseEther } from '@ethersproject/units';
-import { TOKENS } from '@lido-sdk/constants';
+import { parseEther } from 'viem';
+import { LIDO_TOKENS } from '@lidofinance/lido-ethereum-sdk';
 
 import { OPEN_OCEAN_REFERRAL_ADDRESS } from 'consts/external-links';
 import { MATOMO_CLICK_EVENTS } from 'consts/matomo-click-events';
@@ -12,6 +12,7 @@ import {
   StakeSwapDiscountIntegrationMap,
 } from './types';
 import { OpenOceanIcon, OneInchIcon, OverlayLink } from './styles';
+import { TOKENS_TO_WITHDRAWLS } from '../../withdrawals/types/tokens-withdrawable';
 
 const DEFAULT_AMOUNT = parseEther('1');
 
@@ -22,7 +23,7 @@ const STAKE_SWAP_INTEGRATION_CONFIG: StakeSwapDiscountIntegrationMap = {
       const { rate } = await getOpenOceanRate(
         DEFAULT_AMOUNT,
         'ETH',
-        TOKENS.STETH,
+        TOKENS_TO_WITHDRAWLS.stETH,
       );
       return rate;
     },
@@ -41,7 +42,7 @@ const STAKE_SWAP_INTEGRATION_CONFIG: StakeSwapDiscountIntegrationMap = {
   'one-inch': {
     title: '1inch',
     async getRate() {
-      const { rate } = await getOneInchRate({ token: 'ETH' });
+      const { rate } = await getOneInchRate({ token: LIDO_TOKENS.eth });
       return rate;
     },
     BannerText({ discountPercent }) {

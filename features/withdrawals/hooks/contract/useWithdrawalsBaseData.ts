@@ -1,40 +1,43 @@
-import { BigNumber } from 'ethers';
-import { useSDK, useLidoSWR, SWRResponse } from '@lido-sdk/react';
+import { useQuery, type UseQueryResult } from '@tanstack/react-query';
+import { STRATEGY_CONSTANT } from 'consts/react-query-strategies';
+import { useLidoSDK } from 'modules/web3';
 
-import { STRATEGY_CONSTANT } from 'consts/swr-strategies';
-
-import { useWithdrawalsContract } from './useWithdrawalsContract';
-
-type useWithdrawalsBaseDataResult = {
-  maxAmount: BigNumber;
-  minAmount: BigNumber;
+type UseWithdrawalsBaseDataResult = {
+  maxAmount: bigint;
+  minAmount: bigint;
   isPaused: boolean;
   isBunker: boolean;
   isTurbo: boolean;
 };
 
 export const useWithdrawalsBaseData =
-  (): SWRResponse<useWithdrawalsBaseDataResult> => {
-    const { chainId } = useSDK();
-    const { contractRpc } = useWithdrawalsContract();
+  (): UseQueryResult<UseWithdrawalsBaseDataResult> => {
+    const { withdraw } = useLidoSDK();
 
-    return useLidoSWR(
-      ['swr:wqBaseData', contractRpc?.address, chainId],
-      async () => {
-        const [minAmount, maxAmount, isPausedMode, isBunkerMode] =
+    return useQuery<UseWithdrawalsBaseDataResult>({
+      queryKey: ['query:withdrawalsBaseData', withdraw.core.chain],
+      ...STRATEGY_CONSTANT,
+      queryFn: async () => {
+        const [minAmount, maxAmount, isPausedMode, isBunkerMode, isTurboMode] =
           await Promise.all([
-            contractRpc.MIN_STETH_WITHDRAWAL_AMOUNT(),
-            contractRpc.MAX_STETH_WITHDRAWAL_AMOUNT(),
-            contractRpc.isPaused(),
-            contractRpc.isBunkerModeActive(),
+            withdraw.views.minStethWithdrawalAmount(),
+            withdraw.views.maxStethWithdrawalAmount(),
+            withdraw.views.isPaused(),
+            withdraw.views.isBunkerModeActive(),
+            withdraw.views.isTurboModeActive(),
           ]);
 
         const isPaused = !!isPausedMode;
         const isBunker = !!isBunkerMode;
-        const isTurbo = !isPaused && !isBunkerMode;
+        const isTurbo = !!isTurboMode;
 
-        return { minAmount, maxAmount, isPaused, isBunker, isTurbo };
+        return {
+          minAmount,
+          maxAmount,
+          isPaused,
+          isBunker,
+          isTurbo,
+        };
       },
-      STRATEGY_CONSTANT,
-    );
+    });
   };

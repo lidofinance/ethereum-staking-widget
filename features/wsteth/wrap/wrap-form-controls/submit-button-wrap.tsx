@@ -3,8 +3,8 @@ import { SubmitButtonHookForm } from 'shared/hook-form/controls/submit-button-ho
 import { useWrapFormData } from '../wrap-form-context';
 
 export const SubmitButtonWrap = () => {
-  const { isMultisig, isApprovalNeededBeforeWrap: isLocked } =
-    useWrapFormData();
+  const { isSmartAccount, isApprovalNeededBeforeWrap } = useWrapFormData();
+  const isLocked = isApprovalNeededBeforeWrap && !isSmartAccount;
 
   return (
     <SubmitButtonHookForm
@@ -12,7 +12,7 @@ export const SubmitButtonWrap = () => {
       errorField="amount"
       data-testid="wrapBtn"
     >
-      {isLocked ? `Unlock tokens ${isMultisig ? 'to' : 'and'} wrap` : 'Wrap'}
+      {isLocked && !isSmartAccount ? `Unlock tokens and wrap` : 'Wrap'}
     </SubmitButtonHookForm>
   );
 };

@@ -1,6 +1,5 @@
 import { useCallback, useMemo } from 'react';
 
-import { config } from 'config';
 import { useTokenMaxAmount } from 'shared/hooks/use-token-max-amount';
 import { useStakingLimitInfo } from 'shared/hooks';
 
@@ -10,18 +9,20 @@ import {
   useStethBalance,
   useWstethBalance,
   useMaxGasPrice,
-  useIsMultisig,
+  useIsSmartAccount,
+  BALANCE_PADDING,
 } from 'modules/web3';
 
 // Provides all data fetching for form to function
 export const useWrapFormNetworkData = () => {
-  const { isMultisig, isLoading: isMultisigLoading } = useIsMultisig();
+  const { isSmartAccount, isLoading: isSmartAccountLoading } =
+    useIsSmartAccount();
   const { data: ethBalance, refetch: ethBalanceUpdate } = useEthereumBalance();
   const { data: stethBalance, refetch: stethBalanceUpdate } = useStethBalance();
   const { data: wstethBalance, refetch: wstethBalanceUpdate } =
     useWstethBalance();
 
-  const { data: stakeLimitInfo, mutate: stakeLimitInfoUpdate } =
+  const { data: stakeLimitInfo, refetch: stakeLimitInfoUpdate } =
     useStakingLimitInfo();
 
   const { gasLimitETH, gasLimitStETH } = useWrapGasLimit();
@@ -30,15 +31,13 @@ export const useWrapFormNetworkData = () => {
   const maxAmountETH = useTokenMaxAmount({
     balance: ethBalance,
     limit: stakeLimitInfo?.currentStakeLimit,
-    isPadded: !isMultisig,
+    isPadded: !isSmartAccount,
     gasLimit: gasLimitETH,
-    padding: config.BALANCE_PADDING,
-    isLoading: isMultisigLoading,
+    padding: BALANCE_PADDING,
+    isLoading: isSmartAccountLoading,
   });
 
-  const wrapEthGasCost = maxGasPrice
-    ? maxGasPrice.mul(gasLimitStETH)
-    : undefined;
+  const wrapEthGasCost = maxGasPrice ? maxGasPrice * gasLimitStETH : undefined;
 
   const revalidateWrapFormData = useCallback(async () => {
     await Promise.allSettled([
@@ -56,7 +55,7 @@ export const useWrapFormNetworkData = () => {
 
   return useMemo(
     () => ({
-      isMultisig,
+      isSmartAccount,
       ethBalance,
       stethBalance,
       wrapEthGasCost,
@@ -68,7 +67,7 @@ export const useWrapFormNetworkData = () => {
       maxAmountETH,
     }),
     [
-      isMultisig,
+      isSmartAccount,
       wrapEthGasCost,
       ethBalance,
       stethBalance,

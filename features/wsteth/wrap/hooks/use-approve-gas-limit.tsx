@@ -1,48 +1,52 @@
-import { BigNumber } from 'ethers';
-import { useLidoSWR } from '@lido-sdk/react';
-
+import { useQuery } from '@tanstack/react-query';
 import { config } from 'config';
 import {
   STETH_L2_APPROVE_GAS_LIMIT,
   WSTETH_APPROVE_GAS_LIMIT,
 } from 'consts/tx';
-import { STRATEGY_LAZY } from 'consts/swr-strategies';
-import { useLidoSDK, useDappStatus } from 'modules/web3';
+import { STRATEGY_LAZY } from 'consts/react-query-strategies';
+
+import {
+  useLidoSDK,
+  useLidoSDKL2,
+  useDappStatus,
+  ESTIMATE_AMOUNT,
+} from 'modules/web3';
 
 export const useApproveGasLimit = () => {
-  const { isDappActiveOnL2 } = useDappStatus();
-  const { l2, stETH, isL2, wstETH, core } = useLidoSDK();
+  const { chainId, isDappActiveOnL2 } = useDappStatus();
+  const { wstETH } = useLidoSDK();
+  const { l2, isL2 } = useLidoSDKL2();
 
   const fallback = isDappActiveOnL2
     ? STETH_L2_APPROVE_GAS_LIMIT
     : WSTETH_APPROVE_GAS_LIMIT;
 
-  const { data } = useLidoSWR(
-    ['swr:approve-wrap-gas-limit', isDappActiveOnL2, core.chainId],
-    async () => {
+  const { data } = useQuery<bigint | undefined>({
+    queryKey: ['approve-wrap-gas-limit', isDappActiveOnL2, chainId],
+    ...STRATEGY_LAZY,
+    queryFn: async () => {
       try {
-        // wsteth on l1, steth on l2
-        const spender = await (isL2
-          ? l2.contractAddress()
-          : wstETH.contractAddress());
-
-        // steth on l1, wsteth on l2
-        const contract = await (isL2 ? l2.getContract() : stETH.getContract());
-
-        const gas = await contract.estimateGas.approve(
-          [spender, config.ESTIMATE_AMOUNT.toBigInt()],
-          {
+        if (isL2) {
+          return await l2.approveWstethForWrapEstimateGas({
+            value: ESTIMATE_AMOUNT,
             account: config.ESTIMATE_ACCOUNT,
-          },
-        );
-        return BigNumber.from(gas);
+          });
+        } else {
+          const spender = await wstETH.contractAddress();
+
+          return await wstETH.estimateApprove({
+            amount: ESTIMATE_AMOUNT,
+            to: spender,
+            account: config.ESTIMATE_ACCOUNT,
+          });
+        }
       } catch (error) {
         console.warn(error);
         return fallback;
       }
     },
-    STRATEGY_LAZY,
-  );
+  });
 
   return data ?? fallback;
 };

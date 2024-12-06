@@ -6,15 +6,20 @@ import {
   useContext,
   useMemo,
 } from 'react';
-import { useLidoSWR, useLocalStorage, useSDK } from '@lido-sdk/react';
 import invariant from 'tiny-invariant';
 
+import { LIDO_CONTRACT_NAMES } from '@lidofinance/lido-ethereum-sdk/common';
+import { useQuery } from '@tanstack/react-query';
+
 import { config } from 'config';
-import { useRpcUrl } from 'config/rpc';
+import { useGetRpcUrlByChainId } from 'config/rpc';
 import { SETTINGS_PATH } from 'consts/urls';
-import { STRATEGY_LAZY } from 'consts/swr-strategies';
+import { STRATEGY_LAZY } from 'consts/react-query-strategies';
+
+import { useDappStatus, useContractAddress } from 'modules/web3';
 import { useCSPViolation } from 'features/ipfs/csp-violation-box/use-csp-violation';
 import { useRouterPath } from 'shared/hooks/use-router-path';
+import { useLocalStorage } from 'shared/hooks/use-local-storage';
 import { checkRpcUrl } from 'utils/check-rpc-url';
 
 type IPFSInfoBoxStatusesContextValue = {
@@ -38,7 +43,7 @@ export const useIPFSInfoBoxStatuses = () => {
 export const IPFSInfoBoxStatusesProvider: FC<PropsWithChildren> = ({
   children,
 }) => {
-  const { chainId } = useSDK();
+  const { chainId } = useDappStatus();
 
   // CSP violation box
   const { isCSPViolated } = useCSPViolation();
@@ -49,16 +54,19 @@ export const IPFSInfoBoxStatusesProvider: FC<PropsWithChildren> = ({
     false,
   );
 
+  const { data: stethAddress } = useContractAddress(LIDO_CONTRACT_NAMES.lido);
+
   const handleClickDismiss = useCallback(() => {
     setDismissStorage(true);
   }, [setDismissStorage]);
 
-  const rpcUrl = useRpcUrl();
-  const { data: isRPCAvailableRaw, initialLoading: isLoading } = useLidoSWR(
-    `rpc-url-check-${rpcUrl}-${chainId}`,
-    async () => await checkRpcUrl(rpcUrl, chainId),
-    { ...STRATEGY_LAZY, isPaused: () => !config.ipfsMode },
-  );
+  const rpcUrl = useGetRpcUrlByChainId()(chainId);
+  const { data: isRPCAvailableRaw, isLoading } = useQuery({
+    queryKey: ['rpc-url-check', rpcUrl, chainId, stethAddress],
+    ...STRATEGY_LAZY,
+    enabled: !!config.ipfsMode,
+    queryFn: () => checkRpcUrl(rpcUrl, chainId, stethAddress),
+  });
   const isRPCAvailable = isRPCAvailableRaw === true;
 
   const pathname = useRouterPath();

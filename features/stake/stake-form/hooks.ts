@@ -1,29 +1,22 @@
-import { BigNumber } from 'ethers';
-import { AddressZero } from '@ethersproject/constants';
-import { useLidoSWR, useSDK, useSTETHContractRPC } from '@lido-sdk/react';
-
+import { useQuery } from '@tanstack/react-query';
+import { zeroAddress } from 'viem';
 import { config } from 'config';
-import { STRATEGY_CONSTANT } from 'consts/swr-strategies';
+import { STRATEGY_CONSTANT } from 'consts/react-query-strategies';
+import { useLidoSDK, ESTIMATE_AMOUNT } from 'modules/web3';
 
-import { applyGasLimitRatio } from 'utils/apply-gas-limit-ratio';
+export const useStethSubmitGasLimit = (): bigint => {
+  const { stake } = useLidoSDK();
 
-type UseStethSubmitGasLimit = () => BigNumber;
-
-export const useStethSubmitGasLimit: UseStethSubmitGasLimit = () => {
-  const stethContractRPC = useSTETHContractRPC();
-
-  const { chainId } = useSDK();
-  const { data } = useLidoSWR(
-    ['submit-gas-limit', chainId],
-    async () => {
-      const gasLimit = await stethContractRPC.estimateGas.submit(AddressZero, {
-        from: config.ESTIMATE_ACCOUNT,
-        value: config.ESTIMATE_AMOUNT,
-      });
-      return applyGasLimitRatio(gasLimit);
-    },
-    STRATEGY_CONSTANT,
-  );
+  const { data } = useQuery({
+    queryKey: ['submit-gas-limit', stake.core.chainId],
+    ...STRATEGY_CONSTANT,
+    queryFn: () =>
+      stake.stakeEthEstimateGas({
+        account: config.ESTIMATE_ACCOUNT,
+        value: ESTIMATE_AMOUNT,
+        referralAddress: zeroAddress,
+      }),
+  });
 
   return data ?? config.STAKE_GASLIMIT_FALLBACK;
 };

@@ -7,7 +7,7 @@ import {
 import { SubmitButtonHookForm } from 'shared/hook-form/controls/submit-button-hook-form';
 import { useFormState } from 'react-hook-form';
 import { isValidationErrorTypeUnhandled } from 'shared/hook-form/validation/validation-error';
-import { useDappStatus, useIsMultisig } from 'modules/web3';
+import { useAA, useDappStatus } from 'modules/web3';
 import { DisabledButton } from 'shared/wallet';
 
 // conditional render breaks useFormState, so it can't be inside SubmitButton
@@ -34,10 +34,13 @@ export const SubmitButtonRequest = ({
   disabled,
 }: SubmitButtonRequestProps) => {
   const { isSupportedChain } = useDappStatus();
-  const { isMultisig } = useIsMultisig();
+  const { isAA } = useAA();
   const { isTokenLocked } = useRequestFormData();
-  const buttonTitle = isTokenLocked
-    ? `Unlock tokens ${isMultisig ? 'for' : 'and'} withdrawal`
+
+  const isLocked = isTokenLocked && !isAA;
+
+  const buttonTitle = isLocked
+    ? `Unlock tokens and withdraw`
     : 'Request withdrawal';
 
   if (!isSupportedChain) {
@@ -48,7 +51,7 @@ export const SubmitButtonRequest = ({
     <SubmitButtonHookForm
       errorField="amount"
       loading={loading}
-      isLocked={isTokenLocked}
+      isLocked={isLocked}
       disabled={disabled}
       data-testid="requestButton"
     >

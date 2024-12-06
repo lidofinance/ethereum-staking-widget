@@ -1,11 +1,10 @@
-import { BigNumber } from 'ethers';
-import { formatEther } from '@ethersproject/units';
 import { useRouter } from 'next/router';
+import { formatEther } from 'viem';
 import { Button } from '@lidofinance/lido-ui';
 import { useSafeQueryString } from 'shared/hooks/useSafeQueryString';
 
 type InputDecoratorTvlStakeProps = {
-  tvlDiff: BigNumber;
+  tvlDiff: bigint;
 };
 
 export const InputDecoratorTvlStake = ({

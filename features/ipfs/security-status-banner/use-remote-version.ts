@@ -1,7 +1,9 @@
-import { useLidoSWR } from '@lido-sdk/react';
+import { getEnsResolver, getEnsText } from 'viem/ens';
+import { useQuery } from '@tanstack/react-query';
+
 import { useConfig } from 'config';
-import { STRATEGY_LAZY } from 'consts/swr-strategies';
-import { useMainnetStaticRpcProvider } from 'shared/hooks/use-mainnet-static-rpc-provider';
+import { STRATEGY_LAZY } from 'consts/react-query-strategies';
+import { useMainnetOnlyWagmi } from 'modules/web3';
 
 type EnsHashCheckReturn = {
   cid: string;
@@ -11,22 +13,29 @@ type EnsHashCheckReturn = {
 };
 
 export const useRemoteVersion = () => {
-  const provider = useMainnetStaticRpcProvider();
+  const { publicClientMainnet } = useMainnetOnlyWagmi();
 
   // we use directly non-optimistic manifest data
   // can't trust static props(in IPFS esp) to generate warnings/disconnect wallet
-  const externalConfigSwr = useConfig().externalConfig.fetchMeta;
-  const { data, error } = externalConfigSwr;
+  const externalConfigQueryReact = useConfig().externalConfig.fetchMeta;
+  const { data, error } = externalConfigQueryReact;
 
-  // we only need this as swr because of possible future ENS support
+  // we only need this as 'react query result' because of possible future ENS support
   // otherwise there is no fetch
-  const swr = useLidoSWR<EnsHashCheckReturn>(
-    ['swr:use-remote-version', externalConfigSwr.data],
-    async (): Promise<EnsHashCheckReturn> => {
+  const queryResult = useQuery<EnsHashCheckReturn>({
+    queryKey: ['use-remote-version', externalConfigQueryReact.data],
+    ...STRATEGY_LAZY,
+    enabled: !!(data || error),
+    queryFn: async (): Promise<EnsHashCheckReturn> => {
       if (data?.ens) {
-        const resolver = await provider.getResolver(data.ens);
-        if (resolver) {
-          const contentHash = await resolver.getContentHash();
+        const resolverAddress = await getEnsResolver(publicClientMainnet, {
+          name: data.ens,
+        });
+        if (resolverAddress) {
+          const contentHash = await getEnsText(publicClientMainnet, {
+            name: data.ens,
+            key: 'contenthash',
+          });
           if (contentHash) {
             return {
               cid: contentHash,
@@ -47,29 +56,20 @@ export const useRemoteVersion = () => {
 
       throw new Error('[useRemoteVersion] invalid IPFS manifest content');
     },
-    {
-      ...STRATEGY_LAZY,
-      // we postpone fetch if we don't have external data and don't have error
-      // empty data will force fetcher to produce correct error
-      isPaused: () => !(data || error),
-    },
-  );
+  });
 
-  // merged externalConfigSwr && cidSwr
+  // merged externalConfigQueryReact && cidQueryResult (queryResult)
   return {
-    data: swr.data,
-    get initialLoading() {
-      return (
-        swr.initialLoading ||
-        (externalConfigSwr.data == null && externalConfigSwr.isValidating)
-      );
+    data: queryResult.data,
+    get isLoading() {
+      return queryResult.isLoading || externalConfigQueryReact.isLoading;
     },
-    get loading() {
-      return swr.loading || externalConfigSwr.isValidating;
+    get isFetching() {
+      return queryResult.isFetching || externalConfigQueryReact.isFetching;
     },
     get error() {
-      return swr.error || error;
+      return queryResult.error || error;
     },
-    update: swr.update,
+    update: queryResult.refetch,
   };
 };

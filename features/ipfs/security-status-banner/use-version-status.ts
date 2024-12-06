@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
 import { useForceDisconnect } from 'reef-knot/core-react';
-import { useLidoSWR } from '@lido-sdk/react';
+import { useQuery } from '@tanstack/react-query';
 
 import buildInfo from 'build-info.json';
 import { config } from 'config';
 import { useUserConfig } from 'config/user-config';
-import { STRATEGY_IMMUTABLE } from 'consts/swr-strategies';
+import { STRATEGY_IMMUTABLE } from 'consts/react-query-strategies';
 import { useDappStatus } from 'modules/web3';
 import { overrideWithQAMockBoolean } from 'utils/qa';
 
@@ -25,53 +25,56 @@ export const useVersionStatus = () => {
   const [areConditionsAccepted, setConditionsAccepted] = useState(false);
 
   // only IPFS: local cid extraction
-  const currentCidSWR = useLidoSWR(
-    ['swr:ipfs-cid-extraction'],
-    async () => {
+  const currentCidQueryResult = useQuery({
+    queryKey: ['ipfs-cid-extraction'],
+    ...STRATEGY_IMMUTABLE,
+    enabled: !!config.ipfsMode,
+    queryFn: async () => {
       const urlCid = URL_CID_REGEX.exec(window.location.href)?.groups?.cid;
       if (urlCid) return urlCid;
-      const headers = await fetch(
+
+      const response = await fetch(
         `${config.BASE_PATH_ASSET}/runtime/window-env.js`,
         {
           method: 'HEAD',
         },
       );
-      return headers.headers.get('X-Ipfs-Roots');
+
+      return response.headers.get('X-Ipfs-Roots');
     },
-    { ...STRATEGY_IMMUTABLE, isPaused: () => !config.ipfsMode },
-  );
+  });
 
   // ens cid extraction
-  const remoteVersionSWR = useRemoteVersion();
+  const remoteVersionQueryResult = useRemoteVersion();
 
   // update is available
   // for INFRA - leastSafeVersion is not NO_SAFE_VERSION
   // for IPFS - ^this and current cid doesn't match
   const isUpdateAvailable = overrideWithQAMockBoolean(
     Boolean(
-      remoteVersionSWR.data &&
-        ((currentCidSWR.data &&
-          remoteVersionSWR.data.cid !== currentCidSWR.data) ||
+      remoteVersionQueryResult.data &&
+        ((currentCidQueryResult.data &&
+          remoteVersionQueryResult.data.cid !== currentCidQueryResult.data) ||
           !config.ipfsMode) &&
-        remoteVersionSWR.data.leastSafeVersion !== NO_SAFE_VERSION,
+        remoteVersionQueryResult.data.leastSafeVersion !== NO_SAFE_VERSION,
     ),
     'mock-qa-helpers-security-banner-is-update-available',
   );
 
   const isVersionUnsafe = overrideWithQAMockBoolean(
     Boolean(
-      remoteVersionSWR.data?.leastSafeVersion &&
-        (remoteVersionSWR.data.leastSafeVersion === NO_SAFE_VERSION ||
+      remoteVersionQueryResult.data?.leastSafeVersion &&
+        (remoteVersionQueryResult.data.leastSafeVersion === NO_SAFE_VERSION ||
           isVersionLess(
             buildInfo.version,
-            remoteVersionSWR.data.leastSafeVersion,
+            remoteVersionQueryResult.data.leastSafeVersion,
           )),
     ),
     'mock-qa-helpers-security-banner-is-version-unsafe',
   );
 
   const isNotVerifiable = overrideWithQAMockBoolean(
-    !!remoteVersionSWR.error,
+    !!remoteVersionQueryResult.error,
     'mock-qa-helpers-security-banner-is-not-verifiable',
   );
 
@@ -103,19 +106,23 @@ export const useVersionStatus = () => {
 
     get data() {
       return {
-        remoteCid: remoteVersionSWR.data?.cid,
-        currentCid: currentCidSWR.data,
-        remoteCidLink: remoteVersionSWR.data?.link,
+        remoteCid: remoteVersionQueryResult.data?.cid,
+        currentCid: currentCidQueryResult.data,
+        remoteCidLink: remoteVersionQueryResult.data?.link,
       };
     },
-    get initialLoading() {
-      return remoteVersionSWR.initialLoading || currentCidSWR.initialLoading;
+    get isLoading() {
+      return (
+        remoteVersionQueryResult.isLoading || currentCidQueryResult.isLoading
+      );
     },
-    get loading() {
-      return remoteVersionSWR.loading || currentCidSWR.loading;
+    get isFetching() {
+      return (
+        remoteVersionQueryResult.isFetching || currentCidQueryResult.isFetching
+      );
     },
     get error() {
-      return remoteVersionSWR.error || currentCidSWR.error;
+      return remoteVersionQueryResult.error || currentCidQueryResult.error;
     },
   };
 };

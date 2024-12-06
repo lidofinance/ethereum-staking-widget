@@ -1,26 +1,29 @@
 import { useCallback } from 'react';
-import { BigNumber } from 'ethers';
 import invariant from 'tiny-invariant';
 
-import { useSDK, useWSTETHContractRPC } from '@lido-sdk/react';
-import { TransactionCallbackStage } from '@lidofinance/lido-ethereum-sdk/core';
-
 import {
-  useTxConfirmation,
-  useGetIsContract,
+  TransactionCallback,
+  TransactionCallbackStage,
+} from '@lidofinance/lido-ethereum-sdk/core';
+
+import { config } from 'config';
+import { MockLimitReachedError } from 'features/stake/stake-form/utils';
+import {
+  useAA,
+  useSendAACalls,
   useDappStatus,
   useLidoSDK,
+  useLidoSDKL2,
 } from 'modules/web3';
-
-import { runWithTransactionLogger } from 'utils';
-import { convertToBigNumber } from 'utils/convert-to-big-number';
 
 import type {
   WrapFormApprovalData,
   WrapFormInputType,
 } from '../wrap-form-context';
-import { useWrapTxOnL1Processing } from './use-wrap-tx-on-l1-processing';
+import { TOKENS_TO_WRAP } from '../../shared/types';
 import { useTxModalWrap } from './use-tx-modal-stages-wrap';
+
+import type { Hash } from 'viem';
 
 type UseWrapFormProcessorArgs = {
   approvalDataOnL1: WrapFormApprovalData;
@@ -33,16 +36,13 @@ export const useWrapFormProcessor = ({
   onConfirm,
   onRetry,
 }: UseWrapFormProcessorArgs) => {
-  const { isDappActiveOnL2, address } = useDappStatus();
-  const { providerWeb3 } = useSDK();
-  const wstETHContractRPC = useWSTETHContractRPC();
-  const { l2, isL2, wstETH } = useLidoSDK();
-
+  const { address } = useDappStatus();
+  const { wrap, wstETH, stETH } = useLidoSDK();
+  const { isAA } = useAA();
+  const sendAACalls = useSendAACalls();
+  const { l2, isL2 } = useLidoSDKL2();
   const { txModalStages } = useTxModalWrap();
-  const processWrapTxOnL1 = useWrapTxOnL1Processing();
 
-  const waitForTx = useTxConfirmation();
-  const isContract = useGetIsContract();
   const {
     isApprovalNeededBeforeWrap: isApprovalNeededBeforeWrapOnL1,
     processApproveTx: processApproveTxOnL1,
@@ -51,79 +51,160 @@ export const useWrapFormProcessor = ({
   return useCallback(
     async ({ amount, token }: WrapFormInputType) => {
       try {
-        if (!isL2) {
-          invariant(providerWeb3, 'providerWeb3 should be presented');
-        }
         invariant(amount, 'amount should be presented');
         invariant(address, 'address should be presented');
 
-        const [isMultisig, willReceive] = await Promise.all([
-          isContract(address),
-          isDappActiveOnL2
-            ? l2.steth
-                .convertToShares(amount.toBigInt())
-                .then(convertToBigNumber)
-            : wstETHContractRPC.getWstETHByStETH(amount),
-        ]);
+        const willReceive = await (isL2
+          ? l2.steth.convertToShares(amount)
+          : wrap.convertStethToWsteth(amount));
 
-        if (isApprovalNeededBeforeWrapOnL1) {
-          txModalStages.signApproval(amount, token);
+        const onWrapConfirm = async () => {
+          const [, balance] = await Promise.all([
+            onConfirm?.(),
+            isL2 ? l2.wsteth.balance(address) : wstETH.balance(address),
+          ]);
+          return balance;
+        };
 
-          await processApproveTxOnL1({
-            onTxSent: (txHash) => {
-              if (!isMultisig) {
-                txModalStages.pendingApproval(amount, token, txHash);
-              }
-            },
-          });
-          if (isMultisig) {
-            txModalStages.successMultisig();
-            return true;
+        //
+        // ERC5792 flow
+        //
+        if (isAA) {
+          const calls: unknown[] = [];
+          // unwrap steth to wsteth on l2
+          if (isL2) {
+            const { to, data } = await l2.unwrapStethPopulateTx({
+              value: amount,
+            });
+            calls.push({
+              to,
+              data,
+            });
+            // wrap steth to wsteth
+          } else if (token === TOKENS_TO_WRAP.stETH) {
+            const wrapCall = await wrap.wrapStethPopulateTx({ value: amount });
+
+            if (isApprovalNeededBeforeWrapOnL1) {
+              const { to, data } = await stETH.populateApprove({
+                amount,
+                to: wrapCall.to,
+              });
+              calls.push({
+                to,
+                data,
+              });
+            }
+            calls.push({
+              to: wrapCall.to,
+              data: wrapCall.data,
+            });
+            // wrap eth to wsteth
+          } else {
+            const { to, data, value } = await wrap.wrapEthPopulateTx({
+              value: amount,
+            });
+            calls.push({
+              to,
+              data,
+              value,
+            });
           }
-        }
 
-        txModalStages.sign(amount, token, willReceive);
+          await sendAACalls(calls, async (props) => {
+            switch (props.stage) {
+              case TransactionCallbackStage.SIGN:
+                txModalStages.sign(amount, token, willReceive);
+                break;
+              case TransactionCallbackStage.RECEIPT:
+                txModalStages.pending(
+                  amount,
+                  token,
+                  willReceive,
+                  props.callId as Hash,
+                  isAA,
+                );
+                break;
+              case TransactionCallbackStage.DONE: {
+                const balance = await onWrapConfirm();
+                txModalStages.success(balance, props.txHash);
+                break;
+              }
+              case TransactionCallbackStage.ERROR: {
+                txModalStages.failed(props.error, onRetry);
+                break;
+              }
+              default:
+                break;
+            }
+          });
 
-        let txHash: string;
-        if (isDappActiveOnL2) {
-          const txResult = await runWithTransactionLogger(
-            'Wrap signing on L2',
-            () =>
-              // The operation 'stETH to wstETH' on L2 is 'unwrap'
-              l2.unwrapStethToWsteth({
-                value: amount.toBigInt(),
-                callback: ({ stage, payload }) => {
-                  if (stage === TransactionCallbackStage.RECEIPT)
-                    txModalStages.pending(amount, token, willReceive, payload);
-                },
-              }),
-          );
-          txHash = txResult.hash;
-        } else {
-          txHash = await runWithTransactionLogger('Wrap signing on L1', () =>
-            processWrapTxOnL1({ amount, token, isMultisig }),
-          );
-          if (!isMultisig)
-            txModalStages.pending(amount, token, willReceive, txHash);
-        }
-
-        if (isMultisig) {
-          txModalStages.successMultisig();
           return true;
         }
 
-        await runWithTransactionLogger('Wrap block confirmation', () =>
-          waitForTx(txHash),
-        );
+        //
+        // Legacy flow
+        //
 
-        const [wstethBalance] = await Promise.all([
-          isDappActiveOnL2
-            ? l2.wsteth.balance(address)
-            : wstETH.balance(address),
-          onConfirm(),
-        ]);
+        let txHash: Hash | undefined = undefined;
 
-        txModalStages.success(BigNumber.from(wstethBalance), txHash);
+        const callback: TransactionCallback = async ({ stage, payload }) => {
+          switch (stage) {
+            case TransactionCallbackStage.SIGN:
+              txModalStages.sign(amount, token, willReceive);
+              break;
+            case TransactionCallbackStage.RECEIPT:
+              // the payload here is txHash
+              txHash = payload;
+              txModalStages.pending(amount, token, willReceive, txHash);
+              break;
+            case TransactionCallbackStage.DONE: {
+              const balance = await onWrapConfirm();
+              txModalStages.success(balance, txHash);
+              break;
+            }
+            case TransactionCallbackStage.MULTISIG_DONE:
+              txModalStages.successMultisig();
+              break;
+            case TransactionCallbackStage.ERROR:
+              txModalStages.failed(payload, onRetry);
+              break;
+            default:
+          }
+        };
+
+        if (isL2) {
+          // The operation 'stETH to wstETH' on L2 is 'unwrap'
+          await l2.unwrapStethToWsteth({
+            value: amount,
+            callback,
+          });
+
+          return true;
+        }
+
+        if (token === TOKENS_TO_WRAP.stETH) {
+          if (isApprovalNeededBeforeWrapOnL1) {
+            await processApproveTxOnL1({ onRetry });
+          }
+
+          await wrap.wrapSteth({
+            value: amount,
+            callback,
+          });
+        } else {
+          if (
+            config.enableQaHelpers &&
+            window.localStorage.getItem('mockLimitReached') === 'true'
+          ) {
+            throw new MockLimitReachedError('Stake limit reached');
+          }
+
+          await wrap.wrapEth({
+            value: amount,
+            callback,
+          });
+        }
+
         return true;
       } catch (error) {
         console.warn(error);
@@ -132,21 +213,19 @@ export const useWrapFormProcessor = ({
       }
     },
     [
-      isL2,
       address,
-      isContract,
-      isDappActiveOnL2,
+      isL2,
       l2,
-      wstETHContractRPC,
-      isApprovalNeededBeforeWrapOnL1,
+      wrap,
       txModalStages,
-      wstETH,
-      onConfirm,
-      providerWeb3,
-      processApproveTxOnL1,
-      processWrapTxOnL1,
-      waitForTx,
       onRetry,
+      onConfirm,
+      wstETH,
+      isAA,
+      isApprovalNeededBeforeWrapOnL1,
+      stETH,
+      sendAACalls,
+      processApproveTxOnL1,
     ],
   );
 };

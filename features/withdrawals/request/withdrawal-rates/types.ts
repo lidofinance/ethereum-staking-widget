@@ -1,22 +1,20 @@
-import type { BigNumber } from 'ethers';
-import type { TOKENS } from '@lido-sdk/constants';
 import { MATOMO_CLICK_EVENTS_TYPES } from 'consts/matomo-click-events';
-import { TokensWithdrawable } from 'features/withdrawals/types/tokens-withdrawable';
+import { TOKENS_TO_WITHDRAWLS } from 'features/withdrawals/types/tokens-withdrawable';
 
 export type GetWithdrawalRateParams = {
-  amount: BigNumber;
-  token: TOKENS.STETH | TOKENS.WSTETH;
+  amount: bigint;
+  token: TOKENS_TO_WITHDRAWLS;
   dexes: DexWithdrawalApi[];
 };
 
 export type RateCalculationResult = {
   rate: number;
-  toReceive: BigNumber;
+  toReceive: bigint;
 };
 
 export type SingleWithdrawalRateResult = {
   rate: number | null;
-  toReceive: BigNumber | null;
+  toReceive: bigint | null;
 };
 
 export type DexWithdrawalApi = 'paraswap' | 'open-ocean' | 'one-inch' | 'bebop';
@@ -26,7 +24,7 @@ export type DexWithdrawalIntegration = {
   fetcher: GetRateType;
   icon: React.FC;
   matomoEvent: MATOMO_CLICK_EVENTS_TYPES;
-  link: (amount: BigNumber, token: TokensWithdrawable) => string;
+  link: (amount: bigint, token: TOKENS_TO_WITHDRAWLS) => string;
 };
 
 export type DexWithdrawalIntegrationMap = Record<

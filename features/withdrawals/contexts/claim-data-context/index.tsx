@@ -1,8 +1,7 @@
 import { FC, PropsWithChildren, createContext, useContext } from 'react';
+import invariant from 'tiny-invariant';
 
 import { useWithdrawalRequests } from 'features/withdrawals/hooks';
-
-import invariant from 'tiny-invariant';
 
 const claimDataContext = createContext<ClaimDataValue | null>(null);
 claimDataContext.displayName = 'ClaimDataContext';

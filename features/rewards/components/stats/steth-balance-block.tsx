@@ -12,12 +12,12 @@ export const StEthBalanceBlock: FC = () => {
   const {
     data: dataRewards,
     currencyObject: currency,
-    loading,
+    isLoading,
   } = useRewardsHistory();
 
   return (
     <Item
-      loading={loading}
+      loading={isLoading}
       dataTestId="stEthBalanceBlock"
       title="stETH balance"
       value={

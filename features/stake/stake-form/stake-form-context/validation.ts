@@ -1,21 +1,21 @@
 import { useMemo } from 'react';
+import type { Resolver } from 'react-hook-form';
 import invariant from 'tiny-invariant';
-import { Zero } from '@ethersproject/constants';
 
-import { validateEtherAmount } from 'shared/hook-form/validation/validate-ether-amount';
-import { useDappStatus } from 'modules/web3';
+import { useAA, useDappStatus } from 'modules/web3';
 import { VALIDATION_CONTEXT_TIMEOUT } from 'features/withdrawals/withdrawals-constants';
+import { TOKENS_TO_WRAP } from 'features/wsteth/shared/types';
+import { useAwaiter } from 'shared/hooks/use-awaiter';
+import { validateStakeEth } from 'shared/hook-form/validation/validate-stake-eth';
+import { validateEtherAmount } from 'shared/hook-form/validation/validate-ether-amount';
 import { handleResolverValidationError } from 'shared/hook-form/validation/validation-error';
 import { awaitWithTimeout } from 'utils/await-with-timeout';
-import { useAwaiter } from 'shared/hooks/use-awaiter';
 
-import type { Resolver } from 'react-hook-form';
 import type {
   StakeFormInput,
   StakeFormNetworkData,
   StakeFormValidationContext,
 } from './types';
-import { validateStakeEth } from 'shared/hook-form/validation/validate-stake-eth';
 
 export const stakeFormValidationResolver: Resolver<
   StakeFormInput,
@@ -28,7 +28,7 @@ export const stakeFormValidationResolver: Resolver<
       'validation context must be presented as context promise',
     );
 
-    validateEtherAmount('amount', amount, 'ETH');
+    validateEtherAmount('amount', amount, TOKENS_TO_WRAP.ETH);
 
     const {
       isWalletActive,
@@ -36,7 +36,8 @@ export const stakeFormValidationResolver: Resolver<
       currentStakeLimit,
       etherBalance,
       gasCost,
-      isMultisig,
+      isSmartAccount,
+      shouldValidateEtherBalance,
     } = await awaitWithTimeout(
       validationContextPromise,
       VALIDATION_CONTEXT_TIMEOUT,
@@ -49,8 +50,9 @@ export const stakeFormValidationResolver: Resolver<
       stakingLimitLevel,
       currentStakeLimit,
       etherBalance,
+      shouldValidateEtherBalance,
       gasCost,
-      isMultisig,
+      isSmartAccount,
     });
 
     if (!isWalletActive) {
@@ -73,25 +75,39 @@ export const useStakeFormValidationContext = (
   networkData: StakeFormNetworkData,
 ): Promise<StakeFormValidationContext> => {
   const { isDappActive } = useDappStatus();
-  const { stakingLimitInfo, etherBalance, isMultisig, gasCost } = networkData;
+  const { areAuxiliaryFundsSupported } = useAA();
+  const { stakingLimitInfo, etherBalance, isSmartAccount, gasCost } =
+    networkData;
+
   const validationContextAwaited = useMemo(() => {
     if (
       stakingLimitInfo &&
       // we ether not connected or must have all account related data
-      (!isDappActive || (etherBalance && gasCost && isMultisig !== undefined))
+      (!isDappActive ||
+        (etherBalance !== undefined &&
+          gasCost !== undefined &&
+          isSmartAccount !== undefined))
     ) {
       return {
         isWalletActive: isDappActive,
         stakingLimitLevel: stakingLimitInfo.stakeLimitLevel,
         currentStakeLimit: stakingLimitInfo.currentStakeLimit,
+        shouldValidateEtherBalance: !areAuxiliaryFundsSupported,
         // condition above guaranties stubs will only be passed when isDappActive = false
-        etherBalance: etherBalance ?? Zero,
-        gasCost: gasCost ?? Zero,
-        isMultisig: isMultisig ?? false,
+        etherBalance: etherBalance ?? 0n,
+        gasCost: gasCost ?? 0n,
+        isSmartAccount: isSmartAccount ?? false,
       };
     }
     return undefined;
-  }, [isDappActive, etherBalance, gasCost, isMultisig, stakingLimitInfo]);
+  }, [
+    stakingLimitInfo,
+    isDappActive,
+    etherBalance,
+    gasCost,
+    isSmartAccount,
+    areAuxiliaryFundsSupported,
+  ]);
 
   return useAwaiter(validationContextAwaited).awaiter;
 };

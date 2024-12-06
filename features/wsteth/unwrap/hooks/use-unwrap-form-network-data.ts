@@ -1,8 +1,12 @@
 import { useCallback, useMemo } from 'react';
-import { useStethBalance, useWstethBalance, useIsMultisig } from 'modules/web3';
+import {
+  useStethBalance,
+  useWstethBalance,
+  useIsSmartAccount,
+} from 'modules/web3';
 
 export const useUnwrapFormNetworkData = () => {
-  const { isMultisig } = useIsMultisig();
+  const { isSmartAccount } = useIsSmartAccount();
   const { data: stethBalance, refetch: stethBalanceUpdate } = useStethBalance();
   const { data: wstethBalance, refetch: wstethBalanceUpdate } =
     useWstethBalance();
@@ -13,13 +17,13 @@ export const useUnwrapFormNetworkData = () => {
 
   const networkData = useMemo(
     () => ({
-      isMultisig,
+      isSmartAccount,
       stethBalance,
       wstethBalance,
       revalidateUnwrapFormData,
       maxAmount: wstethBalance,
     }),
-    [isMultisig, stethBalance, wstethBalance, revalidateUnwrapFormData],
+    [isSmartAccount, stethBalance, wstethBalance, revalidateUnwrapFormData],
   );
 
   return networkData;

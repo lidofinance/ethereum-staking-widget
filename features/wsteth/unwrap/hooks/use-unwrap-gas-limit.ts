@@ -1,39 +1,43 @@
-import { useLidoSWR } from '@lido-sdk/react';
-
+import { useQuery } from '@tanstack/react-query';
 import { config } from 'config';
 import { UNWRAP_GAS_LIMIT, UNWRAP_L2_GAS_LIMIT } from 'consts/tx';
-import { STRATEGY_LAZY } from 'consts/swr-strategies';
-import { useLidoSDK, useDappStatus } from 'modules/web3';
-import { BigNumber } from 'ethers';
+import { STRATEGY_LAZY } from 'consts/react-query-strategies';
+import {
+  useLidoSDK,
+  useDappStatus,
+  ESTIMATE_AMOUNT,
+  useLidoSDKL2,
+} from 'modules/web3';
 
 export const useUnwrapGasLimit = () => {
-  const { isDappActiveOnL2 } = useDappStatus();
-  const { l2, isL2, wrap, core } = useLidoSDK();
+  const { chainId, isDappActiveOnL2 } = useDappStatus();
+  const { wrap } = useLidoSDK();
+  const { l2, isL2 } = useLidoSDKL2();
 
   const fallback = isDappActiveOnL2 ? UNWRAP_L2_GAS_LIMIT : UNWRAP_GAS_LIMIT;
 
-  const { data } = useLidoSWR(
-    ['swr:unwrap-gas-limit', isDappActiveOnL2, core.chainId],
-    async () => {
+  const { data } = useQuery<bigint>({
+    queryKey: ['unwrap-gas-limit', isDappActiveOnL2, chainId],
+    ...STRATEGY_LAZY,
+    queryFn: async () => {
       try {
-        const contract = await (isL2
-          ? l2.getContract()
-          : wrap.getContractWstETH());
-
-        const gas = await contract.estimateGas.unwrap(
-          [config.ESTIMATE_AMOUNT.toBigInt()],
-          {
+        if (isL2) {
+          return await l2.wrapWstethToStethEstimateGas({
+            value: ESTIMATE_AMOUNT,
             account: config.ESTIMATE_ACCOUNT,
-          },
-        );
-        return BigNumber.from(gas);
+          });
+        } else {
+          return await wrap.unwrapEstimateGas({
+            value: ESTIMATE_AMOUNT,
+            account: config.ESTIMATE_ACCOUNT,
+          });
+        }
       } catch (error) {
         console.warn(error);
         return fallback;
       }
     },
-    STRATEGY_LAZY,
-  );
+  });
 
   return data ?? fallback;
 };

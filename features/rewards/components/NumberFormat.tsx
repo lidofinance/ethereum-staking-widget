@@ -1,18 +1,14 @@
+import { Tooltip, Box, InlineLoader } from '@lidofinance/lido-ui';
 import {
   formatWEI,
   formatETH,
-  formatStEthEth,
   formatCurrency,
+  formatStEthEth,
   formatPercentage,
 } from 'features/rewards/utils/numberFormatting';
-import { Tooltip, Box, InlineLoader } from '@lidofinance/lido-ui';
-import type { BigNumber } from 'features/rewards/helpers';
-import { Big, BigDecimal } from 'features/rewards/helpers';
-
-// TODO: move to separate folders
 
 type FormatArgs = {
-  number?: string | number | BigNumber | undefined;
+  number?: string | number | undefined;
   StEthEth?: boolean;
   currency?: boolean;
   percent?: boolean;
@@ -20,24 +16,22 @@ type FormatArgs = {
 };
 
 // Using ETH as a default formatter
-const format = (
-  { number, StEthEth, currency, percent, ETH }: FormatArgs,
-  manyDigits?: boolean,
-): string => {
+const format = (props: FormatArgs, manyDigits?: boolean): string => {
+  const { number, StEthEth, currency, percent, ETH } = props;
   if (number === undefined) return '';
 
-  const args = [new BigDecimal(number), Boolean(manyDigits)] as const;
+  const numberString = typeof number === 'string' ? number : number.toString();
 
   if (StEthEth) {
-    return formatStEthEth(...args);
+    return formatStEthEth(numberString, manyDigits);
   } else if (currency) {
-    return formatCurrency(...args);
+    return formatCurrency(numberString, manyDigits);
   } else if (percent) {
-    return formatPercentage(...args);
+    return formatPercentage(numberString, manyDigits);
   } else if (ETH) {
-    return formatETH(...args);
+    return formatETH(numberString, manyDigits);
   } else {
-    return formatWEI(new Big(number), args[1]);
+    return formatWEI(numberString, manyDigits);
   }
 };
 
