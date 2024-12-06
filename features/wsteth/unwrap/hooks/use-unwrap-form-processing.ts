@@ -18,7 +18,7 @@ import type { UnwrapFormInputType } from '../unwrap-form-context';
 import { useUnwrapTxOnL2Approve } from './use-unwrap-tx-on-l2-approve';
 import { useTxModalStagesUnwrap } from './use-tx-modal-stages-unwrap';
 
-import type { Address, Hash } from 'viem';
+import type { Hash } from 'viem';
 
 export type UnwrapFormApprovalData = ReturnType<typeof useUnwrapTxOnL2Approve>;
 
@@ -66,22 +66,21 @@ export const useUnwrapFormProcessor = ({
         if (isAA) {
           const calls: unknown[] = [];
           if (isL2) {
-            const l2WrapCall = await l2.wrapWstethToStethPopulateTx({
-              value: amount,
-            });
             if (isApprovalNeededBeforeUnwrapOnL2) {
-              const l2ApproveCall = await l2.wsteth.populateApprove({
-                amount,
-                to: l2WrapCall.to as Address,
+              const { to, data } = await l2.approveWstethForWrapPopulateTx({
+                value: amount,
               });
               calls.push({
-                to: l2ApproveCall.to,
-                data: l2ApproveCall.data,
+                to,
+                data,
               });
             }
+            const { to, data } = await l2.wrapWstethToStethPopulateTx({
+              value: amount,
+            });
             calls.push({
-              to: l2WrapCall.to,
-              data: l2WrapCall.data,
+              to,
+              data,
             });
           } else {
             const { to, data } = await wrap.unwrapPopulateTx({ value: amount });

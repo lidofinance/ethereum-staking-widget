@@ -23,7 +23,7 @@ import type {
 import { TOKENS_TO_WRAP } from '../../shared/types';
 import { useTxModalWrap } from './use-tx-modal-stages-wrap';
 
-import type { Address, Hash } from 'viem';
+import type { Hash } from 'viem';
 
 type UseWrapFormProcessorArgs = {
   approvalDataOnL1: WrapFormApprovalData;
@@ -87,7 +87,7 @@ export const useWrapFormProcessor = ({
             if (isApprovalNeededBeforeWrapOnL1) {
               const { to, data } = await stETH.populateApprove({
                 amount,
-                to: wrapCall.to as Address,
+                to: wrapCall.to,
               });
               calls.push({
                 to,

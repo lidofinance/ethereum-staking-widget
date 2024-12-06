@@ -208,7 +208,11 @@ export const useWithdrawalRequest = ({
 
           await withdraw.request.requestWithdrawal(txProps);
         } else {
-          await withdraw.request.requestWithdrawalWithPermit(txProps);
+          const deadline = BigInt(Math.floor(Date.now() / 1000) + 86_400); // 1 day
+          await withdraw.request.requestWithdrawalWithPermit({
+            ...txProps,
+            deadline,
+          });
         }
 
         return true;
