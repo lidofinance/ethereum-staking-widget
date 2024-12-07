@@ -41,7 +41,7 @@ export const TransactionInfo = () => {
         data-testid="maxUnlockCost"
         help={unlockCostTooltip}
         title="Max unlock cost"
-        loading={isApprovalFlowLoading || isApproveTxCostLoading}
+        loading={isApproveTxCostLoading}
       >
         {isApprovalFlow ? <FormatPrice amount={approveTxCostInUsd} /> : 'FREE'}
       </DataTableRow>
