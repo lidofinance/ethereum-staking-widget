@@ -16,7 +16,39 @@ export type ManifestConfig = {
   featureFlags: {
     ledgerLiveL2?: boolean;
   };
+  pages?: {
+    [page in ManifestConfigPage]?: {
+      shouldDisable?: boolean;
+      sections?: [string, ...string[]];
+    };
+  };
 };
+
+export type ManifestConfigPage =
+  | '/'
+  | '/wrap'
+  | '/withdrawals'
+  | '/rewards'
+  | '/settings'
+  | '/referral';
+
+export const ManifestConfigPageList = new Set<ManifestConfigPage>([
+  '/',
+  '/wrap',
+  '/withdrawals',
+  '/rewards',
+  '/settings',
+  '/referral',
+]);
+
+export enum ManifestConfigPageEnum {
+  Stake = '/',
+  Wrap = '/wrap',
+  Withdrawals = '/withdrawals',
+  Rewards = '/rewards',
+  Settings = '/settings',
+  Referral = '/referral',
+}
 
 export type ExternalConfig = Omit<ManifestEntry, 'config'> &
   ManifestConfig & {
