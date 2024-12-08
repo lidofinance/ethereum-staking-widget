@@ -18,7 +18,7 @@ export type ManifestConfig = {
   };
   pages?: {
     [page in ManifestConfigPage]?: {
-      shouldDeactivate?: boolean;
+      shouldDisable?: boolean;
       sections?: [string, ...string[]];
     };
   };

@@ -3,131 +3,42 @@ import {
   Manifest,
   ManifestConfig,
   ManifestConfigPage,
-  ManifestConfigPageEnum,
   ManifestConfigPageList,
   ManifestEntry,
 } from './types';
+import { isManifestValid } from 'utils/validate-ipfs-json';
 import { getDexConfig } from 'features/withdrawals/request/withdrawal-rates';
 
 import FallbackLocalManifest from 'IPFS.json' assert { type: 'json' };
 
-const isEnabledDexesValid = (config: object) => {
-  if (
-    !(
-      'enabledWithdrawalDexes' in config &&
-      Array.isArray(config.enabledWithdrawalDexes)
-    )
-  )
-    return false;
-
-  const enabledWithdrawalDexes = config.enabledWithdrawalDexes;
-
-  if (
-    !enabledWithdrawalDexes.every(
-      (dex) => typeof dex === 'string' && dex !== '',
-    )
-  )
-    return false;
-
-  return new Set(enabledWithdrawalDexes).size === enabledWithdrawalDexes.length;
-};
-
-const isMultiChainBannerValid = (config: object) => {
-  // allow empty config
-  if (!('multiChainBanner' in config) || !config.multiChainBanner) return true;
-
-  if (!Array.isArray(config.multiChainBanner)) return false;
-
-  const multiChainBanner = config.multiChainBanner;
-
-  if (
-    !multiChainBanner.every(
-      (chainId) => typeof chainId === 'number' && chainId > 0,
-    )
-  )
-    return false;
-
-  return !(new Set(multiChainBanner).size !== multiChainBanner.length);
-};
-
-const isFeatureFlagsValid = (config: object) => {
-  // allow empty config
-  if (!('featureFlags' in config) || !config.featureFlags) return true;
-
-  // only objects
-  return !(typeof config.featureFlags !== 'object');
-};
-
-const isPagesValid = (config: object) => {
-  if (!('pages' in config)) {
-    return true;
-  }
-
-  const pages = config.pages as ManifestConfig['pages'];
-  if (pages && typeof pages === 'object') {
-    const pagesKeysList = Object.keys(pages) as ManifestConfigPage[];
-    if (
-      !pagesKeysList.every((pagesKey) => ManifestConfigPageList.has(pagesKey))
-    ) {
-      return false;
-    }
-
-    // INFO: exclude possible issue when stack interface can be deactivated
-    return !pages[ManifestConfigPageEnum.Stake]?.shouldDeactivate;
-  }
-
-  return false;
-};
-
-export const isManifestEntryValid = (
-  entry?: unknown,
-): entry is ManifestEntry => {
-  if (
-    // entry = {}
-    entry &&
-    typeof entry === 'object' &&
-    // entry.config = {}
-    'config' in entry &&
-    typeof entry.config === 'object' &&
-    entry.config
-  ) {
-    const config = entry.config;
-
-    return [
-      isEnabledDexesValid,
-      isMultiChainBannerValid,
-      isFeatureFlagsValid,
-      isPagesValid,
-    ]
-      .map((validator) => validator(config))
-      .every((isValid) => isValid);
-  }
-  return false;
-};
-
 export const getBackwardCompatibleConfig = (
   config: ManifestEntry['config'],
 ): ManifestEntry['config'] => {
+  let pages: ManifestConfig['pages'];
+  const configPages = config.pages;
+  if (configPages) {
+    pages = (Object.keys(configPages) as ManifestConfigPage[])
+      .filter((key) => ManifestConfigPageList.has(key))
+      .reduce(
+        (acc, key) => {
+          if (acc) {
+            acc[key] = { ...configPages[key] };
+          }
+
+          return acc;
+        },
+        {} as ManifestConfig['pages'],
+      );
+  }
+
   return {
     enabledWithdrawalDexes: config.enabledWithdrawalDexes.filter(
       (dex) => !!getDexConfig(dex),
     ),
     featureFlags: { ...(config.featureFlags ?? {}) },
     multiChainBanner: config.multiChainBanner ?? [],
-    pages: config.pages ?? ({} as ManifestConfig['pages']),
+    pages,
   };
-};
-
-export const isManifestValid = (
-  manifest: unknown,
-  chain: number,
-): manifest is Manifest => {
-  const stringChain = chain.toString();
-  if (manifest && typeof manifest === 'object' && stringChain in manifest)
-    return isManifestEntryValid(
-      (manifest as Record<string, unknown>)[stringChain],
-    );
-  return false;
 };
 
 export const useFallbackManifestEntry = (

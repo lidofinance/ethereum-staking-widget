@@ -3,7 +3,10 @@ import { useRouter } from 'next/router';
 
 import { useRouterPath } from 'shared/hooks/use-router-path';
 import { useConfig } from 'config';
-import { ManifestConfigPage } from 'config/external-config';
+import {
+  ManifestConfigPage,
+  ManifestConfigPageEnum,
+} from 'config/external-config';
 import { HOME_PATH } from 'consts/urls';
 
 import { LayoutEffectSsrDelayed } from 'shared/components/layout-effect-ssr-delayed';
@@ -22,7 +25,11 @@ export const ExternalForbiddenRouteProvider = ({
     if (pages) {
       const paths = Object.keys(pages) as ManifestConfigPage[];
       const forbiddenPath = paths.find((pathKey) => path.includes(pathKey));
-      if (forbiddenPath && pages[forbiddenPath]?.shouldDeactivate) {
+      if (
+        forbiddenPath &&
+        forbiddenPath !== ManifestConfigPageEnum.Stake &&
+        pages[forbiddenPath]?.shouldDisable
+      ) {
         setShowContent(false);
         void router.push(HOME_PATH).finally(() => setShowContent(true));
       }

@@ -8,7 +8,11 @@ import type { ParsedUrlQuery } from 'querystring';
 
 import Metrics from 'utilsApi/metrics';
 import { fetchExternalManifest } from './fetch-external-manifest';
-import { ManifestConfigPage, ManifestEntry } from 'config/external-config';
+import {
+  ManifestConfigPage,
+  ManifestConfigPageEnum,
+  ManifestEntry,
+} from 'config/external-config';
 import { config } from 'config';
 
 export const getDefaultStaticProps = <
@@ -37,11 +41,16 @@ export const getDefaultStaticProps = <
     const chainSettings = manifest?.[`${defaultChain}`];
     const pages = chainSettings?.config?.pages;
     const isDeactivate =
-      pages?.[currentPath as ManifestConfigPage]?.shouldDeactivate;
+      pages?.[currentPath as ManifestConfigPage]?.shouldDisable;
     // https://nextjs.org/docs/messages/gsp-redirect-during-prerender
     const isBuild = process.env.npm_lifecycle_event === 'build';
 
-    if (chainSettings && isDeactivate && !isBuild) {
+    if (
+      chainSettings &&
+      currentPath !== ManifestConfigPageEnum.Stake &&
+      isDeactivate &&
+      !isBuild
+    ) {
       result = {
         ...base,
         redirect: { destination: '/', permanent: false } as Redirect,

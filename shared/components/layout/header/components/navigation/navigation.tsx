@@ -64,7 +64,7 @@ export const Navigation: FC = memo(() => {
     return routes.filter((route) => {
       const path = paths.find((path) => route.path.includes(path));
       if (!path) return true;
-      return !pages[path]?.shouldDeactivate;
+      return !pages[path]?.shouldDisable;
     });
   }, [pages]);
 
