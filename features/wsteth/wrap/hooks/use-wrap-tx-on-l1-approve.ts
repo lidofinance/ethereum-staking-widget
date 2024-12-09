@@ -82,7 +82,9 @@ export const useWrapTxOnL1Approve = ({
       processApproveTx,
       needsApprove,
       allowance,
-      isAllowanceLoading,
+      // fix first loading when the wallet is autoconnecting
+      isAllowanceLoading:
+        isDappActiveOnL1 && (allowance == null || isAllowanceLoading),
       isApprovalNeededBeforeWrap,
       refetchAllowance,
       // There are 3 cases when we show the allowance on the wrap page:
