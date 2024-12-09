@@ -4,7 +4,6 @@ export * from './use-contract-address';
 export * from './use-dapp-status';
 export * from './use-is-contract';
 export * from './use-tx-conformation';
-export * from './use-wagmi-key';
 export * from './use-max-gas-price';
 export * from './use-is-multisig';
 export * from './use-wstETH-by-stETH';
