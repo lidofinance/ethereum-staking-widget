@@ -7,12 +7,12 @@ import { useMainnetOnlyWagmi } from 'modules/web3';
 
 export const MAINNET_CURVE = '0xDC24316b9AE028F1497c275EB9192a3Ea0f67022';
 
-export const useStethEthRate = () => {
+export const useStethEthRate = ({ enabled = true }) => {
   const { publicClientMainnet } = useMainnetOnlyWagmi();
 
   const { data, error, isLoading, refetch, isFetching } = useQuery({
     queryKey: ['get_dy', publicClientMainnet],
-    enabled: !!publicClientMainnet,
+    enabled: enabled && !!publicClientMainnet,
     queryFn: () => {
       invariant(
         publicClientMainnet,

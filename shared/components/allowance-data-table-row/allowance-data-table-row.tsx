@@ -29,12 +29,15 @@ export const AllowanceDataTableRow = ({
   }, [allowance]);
   return (
     <DataTableRow title={title} {...rest}>
-      {isBlank ? (
+      {isBlank || allowance == null ? (
         '-'
       ) : isInfiniteAllowance ? (
         'Infinite'
       ) : (
-        <FormatToken amount={allowance} symbol={getTokenDisplayName(token)} />
+        <FormatToken
+          amount={allowance || 0n}
+          symbol={getTokenDisplayName(token)}
+        />
       )}
     </DataTableRow>
   );

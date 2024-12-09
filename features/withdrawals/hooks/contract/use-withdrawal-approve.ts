@@ -40,6 +40,8 @@ export const useWithdrawalApprove = (
         account,
         token,
       }),
+    // to keep the previous data during fetching new data
+    placeholderData: (prev) => prev,
   });
 
   return {
