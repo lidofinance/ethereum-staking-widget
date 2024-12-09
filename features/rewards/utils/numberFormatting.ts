@@ -31,12 +31,18 @@ export const formatStEthEth = (input: string, manyDigits?: boolean) => {
   return Number(ethers).toFixed(HUMAN_DECIMALS);
 };
 
-export const formatCurrency = (input: string, manyDigits?: boolean) => {
+export const formatCurrency = (
+  input: string,
+  manyDigits?: boolean,
+  moreHumanAccuracy = false,
+) => {
   const options = {
     currency: 'USD',
     maximumFractionDigits: manyDigits
       ? PRECISE_DECIMALS_CURRENCY
-      : HUMAN_DECIMALS_CURRENCY,
+      : HUMAN_DECIMALS_CURRENCY + (moreHumanAccuracy ? 2 : 0),
+    // with a humanMoreAccuracy - $0.0043
+    // without a humanMoreAccuracy - $3,820.91
   };
 
   return new Intl.NumberFormat('en-GB', options).format(Number(input));

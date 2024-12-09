@@ -1,4 +1,3 @@
-/* eslint-disable sonarjs/no-identical-functions */
 import { useCallback } from 'react';
 import invariant from 'tiny-invariant';
 
@@ -54,8 +53,7 @@ export const useWithdrawalRequest = ({
 
   const isApprovalFlow = isSmartAccount || !!(allowance && !needsApprove);
 
-  const isApprovalFlowLoading =
-    isSmartAccountLoading || (isApprovalFlow && isUseApproveFetching);
+  const isApprovalFlowLoading = isSmartAccountLoading || isUseApproveFetching;
   const isTokenLocked = !!(isApprovalFlow && needsApprove && !isAA);
 
   const request = useCallback(

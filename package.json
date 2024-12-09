@@ -60,8 +60,8 @@
     "tiny-async-pool": "^1.2.0",
     "tiny-invariant": "^1.1.0",
     "uuid": "^8.3.2",
-    "viem": "2.21.50",
-    "wagmi": "2.13.0"
+    "viem": "2.21.54",
+    "wagmi": "2.13.4"
   },
   "devDependencies": {
     "@commitlint/cli": "^17.4.4",

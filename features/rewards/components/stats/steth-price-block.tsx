@@ -22,7 +22,10 @@ export const StEthPriceBlock: FC = () => {
             <Box display="inline-block" pr="3px">
               {currency.symbol}
             </Box>
-            <NumberFormat number={data?.stETHCurrencyPrice[currency.id]} ETH />
+            <NumberFormat
+              number={data?.stETHCurrencyPrice[currency.id]}
+              currency
+            />
           </>
         ) : (
           '—'
