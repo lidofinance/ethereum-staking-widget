@@ -5,14 +5,6 @@ export enum DefaultValidationErrorTypes {
   UNHANDLED = 'UNHANDLED',
 }
 
-export const isValidationErrorTypeDefault = (type?: string) =>
-  (
-    [
-      DefaultValidationErrorTypes.VALIDATE,
-      DefaultValidationErrorTypes.UNHANDLED,
-    ] as (string | undefined)[]
-  ).includes(type);
-
 export const isValidationErrorTypeValidate = (type?: string) =>
   type === DefaultValidationErrorTypes.VALIDATE;
 

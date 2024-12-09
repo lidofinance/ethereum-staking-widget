@@ -1,7 +1,6 @@
-import { formatEther } from '@ethersproject/units';
-import { BigNumber } from 'ethers';
+import { formatEther } from 'viem';
 
 // not safe, use only for approximate calculations
-export const weiToEth = (wei: BigNumber): number => {
+export const weiToEth = (wei: bigint): number => {
   return parseFloat(formatEther(wei));
 };

@@ -1,8 +1,9 @@
-import { BigNumber } from 'ethers';
-import { getAddress } from 'ethers/lib/utils.js';
-import { CHAINS, TOKENS, getTokenAddress } from '@lido-sdk/constants';
+import { getAddress } from 'viem';
+
 import { config } from 'config';
+import { TOKENS, getTokenAddress } from 'consts/token-addresses';
 import { standardFetcher } from './standardFetcher';
+import { CHAINS } from '@lidofinance/lido-ethereum-sdk';
 
 type BebopGetQuotePartial = {
   routes: {
@@ -25,24 +26,21 @@ type BebopGetQuotePartial = {
   }[];
 };
 
-type RateToken = TOKENS.STETH | TOKENS.WSTETH | 'ETH';
-
-type RateCalculationResult = { rate: number; toReceive: BigNumber };
-
-const getRateTokenAddress = (token: RateToken) =>
-  token === 'ETH'
-    ? '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE'
-    : getTokenAddress(CHAINS.Mainnet, token);
+type RateCalculationResult = { rate: number; toReceive: bigint };
 
 export const getBebopRate = async (
-  amount: BigNumber,
-  fromToken: RateToken,
-  toToken: RateToken,
+  amount: bigint,
+  fromToken: TOKENS,
+  toToken: TOKENS,
 ): Promise<RateCalculationResult> => {
   const basePath = 'https://api.bebop.xyz/router/ethereum/v1/quote';
 
-  const sell_tokens = getAddress(getRateTokenAddress(fromToken));
-  const buy_tokens = getAddress(getRateTokenAddress(toToken));
+  const sell_tokens = getAddress(
+    getTokenAddress(CHAINS.Mainnet, fromToken) as string,
+  );
+  const buy_tokens = getAddress(
+    getTokenAddress(CHAINS.Mainnet, toToken) as string,
+  );
 
   const params = new URLSearchParams({
     sell_tokens,
@@ -70,7 +68,7 @@ export const getBebopRate = async (
   ) {
     const rate = data.routes[0].quote.sellTokens[sell_tokens].priceBeforeFee;
 
-    const toAmount = BigNumber.from(
+    const toAmount = BigInt(
       data.routes[0].quote.buyTokens[buy_tokens].amountBeforeFee,
     );
     return {
