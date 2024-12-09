@@ -25,11 +25,12 @@ const getTxModalStagesClaim = (transitStage: TransactionModalTransitStage) => ({
       <TxStageSignOperationAmount {...STAGE_OPERATION_ARGS} amount={amount} />,
     ),
 
-  pending: (amount: bigint, txHash?: Hash) =>
+  pending: (amount: bigint, txHash?: Hash, isAA?: boolean) =>
     transitStage(
       <TxStageSignOperationAmount
         {...STAGE_OPERATION_ARGS}
         amount={amount}
+        isAA={isAA}
         txHash={txHash}
         isPending
       />,
