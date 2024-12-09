@@ -24,23 +24,6 @@ export type ManifestConfig = {
   };
 };
 
-export type ManifestConfigPage =
-  | '/'
-  | '/wrap'
-  | '/withdrawals'
-  | '/rewards'
-  | '/settings'
-  | '/referral';
-
-export const ManifestConfigPageList = new Set<ManifestConfigPage>([
-  '/',
-  '/wrap',
-  '/withdrawals',
-  '/rewards',
-  '/settings',
-  '/referral',
-]);
-
 export enum ManifestConfigPageEnum {
   Stake = '/',
   Wrap = '/wrap',
@@ -49,6 +32,12 @@ export enum ManifestConfigPageEnum {
   Settings = '/settings',
   Referral = '/referral',
 }
+
+export type ManifestConfigPage = `${ManifestConfigPageEnum}`;
+
+export const ManifestConfigPageList = new Set<ManifestConfigPage>(
+  Object.values(ManifestConfigPageEnum),
+);
 
 export type ExternalConfig = Omit<ManifestEntry, 'config'> &
   ManifestConfig & {
