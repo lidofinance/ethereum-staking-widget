@@ -1,11 +1,9 @@
-import { BigNumber } from 'ethers';
-import { getAddress } from 'ethers/lib/utils.js';
-import { Zero } from '@ethersproject/constants';
-import { formatEther } from '@ethersproject/units';
-import { getTokenAddress, CHAINS, TOKENS } from '@lido-sdk/constants';
+import { formatEther, getAddress } from 'viem';
+import { CHAINS } from '@lidofinance/lido-ethereum-sdk';
 
 import { OPEN_OCEAN_REFERRAL_ADDRESS } from 'consts/external-links';
 import { MATOMO_CLICK_EVENTS_TYPES } from 'consts/matomo-click-events';
+import { getTokenAddress } from 'consts/token-addresses';
 
 import { getOneInchRate } from 'utils/get-one-inch-rate';
 import { getBebopRate } from 'utils/get-bebop-rate';
@@ -20,25 +18,26 @@ import type {
   GetRateType,
   RateCalculationResult,
 } from './types';
+import { TOKENS_TO_WITHDRAWLS } from '../../types/tokens-withdrawable';
 
 const RATE_PRECISION = 100000;
-const RATE_PRECISION_BN = BigNumber.from(RATE_PRECISION);
+const RATE_PRECISION_BIG_INT = BigInt(RATE_PRECISION);
 
 // Helper function to calculate rate for SRC->DEST swap
 // accepts amount, so toReceive can be calculated when src!=amount
 const calculateRateReceive = (
-  amount: BigNumber,
-  src: BigNumber,
-  dest: BigNumber,
+  amount: bigint,
+  src: bigint,
+  dest: bigint,
 ): RateCalculationResult => {
-  const _rate = dest.mul(RATE_PRECISION_BN).div(src);
-  const toReceive = amount.mul(dest).div(src);
-  const rate = _rate.toNumber() / RATE_PRECISION;
+  const _rate = (dest * RATE_PRECISION_BIG_INT) / src;
+  const toReceive = (amount * dest) / src;
+  const rate = Number(_rate) / RATE_PRECISION;
   return { rate, toReceive };
 };
 
 const getOpenOceanWithdrawalRate: GetRateType = async ({ amount, token }) => {
-  if (amount && amount.gt(Zero)) {
+  if (amount && amount > 0n) {
     try {
       const result = await getOpenOceanRate(amount, token, 'ETH');
       return result;
@@ -65,10 +64,10 @@ type ParaSwapPriceResponsePartial = {
 
 const getParaSwapWithdrawalRate: GetRateType = async ({ amount, token }) => {
   try {
-    if (amount.gt(Zero)) {
+    if (amount > 0n) {
       const api = `https://apiv5.paraswap.io/prices`;
       const query = new URLSearchParams({
-        srcToken: getTokenAddress(CHAINS.Mainnet, token),
+        srcToken: getTokenAddress(CHAINS.Mainnet, token) as string,
         srcDecimals: '18',
         destToken: '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE',
         destDecimals: '18',
@@ -83,17 +82,17 @@ const getParaSwapWithdrawalRate: GetRateType = async ({ amount, token }) => {
       const url = `${api}?${query.toString()}`;
       const data: ParaSwapPriceResponsePartial =
         await standardFetcher<ParaSwapPriceResponsePartial>(url);
-      const toReceive = BigNumber.from(data.priceRoute.destAmount);
+      const toReceive = BigInt(data.priceRoute.destAmount);
 
       const rate = calculateRateReceive(
         amount,
-        BigNumber.from(data.priceRoute.srcAmount),
+        BigInt(data.priceRoute.srcAmount),
         toReceive,
       ).rate;
 
       return {
         rate,
-        toReceive: BigNumber.from(data.priceRoute.destAmount),
+        toReceive: BigInt(data.priceRoute.destAmount),
       };
     }
   } catch (e) {
@@ -111,7 +110,7 @@ const getParaSwapWithdrawalRate: GetRateType = async ({ amount, token }) => {
 
 const getOneInchWithdrawalRate: GetRateType = async (params) => {
   try {
-    if (params.amount.gt(Zero)) {
+    if (params.amount > 0n) {
       const result = await getOneInchRate(params);
       return result;
     }
@@ -129,7 +128,7 @@ const getOneInchWithdrawalRate: GetRateType = async (params) => {
 
 const getBebopWithdrawalRate: GetRateType = async ({ amount, token }) => {
   try {
-    if (amount.gt(Zero)) {
+    if (amount > 0n) {
       return await getBebopRate(amount, token, 'ETH');
     }
   } catch (e) {
@@ -161,10 +160,9 @@ const dexWithdrawalMap: DexWithdrawalIntegrationMap = {
     fetcher: getParaSwapWithdrawalRate,
     matomoEvent: MATOMO_CLICK_EVENTS_TYPES.withdrawalGoToParaswap,
     link: (amount, token) =>
-      `https://app.paraswap.xyz/?referrer=Lido&takeSurplus=true#/swap/${getTokenAddress(
-        CHAINS.Mainnet,
-        token,
-      )}-0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE/${formatEther(
+      `https://app.paraswap.xyz/?referrer=Lido&takeSurplus=true#/swap/${
+        getTokenAddress(CHAINS.Mainnet, token) as string
+      }-0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE/${formatEther(
         amount,
       )}/SELL?version=6.2&network=ethereum`,
   },
@@ -175,7 +173,7 @@ const dexWithdrawalMap: DexWithdrawalIntegrationMap = {
     matomoEvent: MATOMO_CLICK_EVENTS_TYPES.withdrawalGoTo1inch,
     link: (amount, token) =>
       `https://app.1inch.io/#/1/advanced/swap/${
-        token == TOKENS.STETH ? 'stETH' : 'wstETH'
+        token === TOKENS_TO_WITHDRAWLS.stETH ? 'stETH' : 'wstETH'
       }/ETH?mode=classic&sourceTokenAmount=${formatEther(amount)}`,
   },
   bebop: {
@@ -185,7 +183,7 @@ const dexWithdrawalMap: DexWithdrawalIntegrationMap = {
     matomoEvent: MATOMO_CLICK_EVENTS_TYPES.withdrawalGoToBebop,
     link: (amount, token) =>
       `https://bebop.xyz/trade?network=ethereum&buy=0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE&sell=${getAddress(
-        getTokenAddress(CHAINS.Mainnet, token),
+        getTokenAddress(CHAINS.Mainnet, token) as string,
       )}&sellAmounts=${formatEther(amount)}&source=lido`,
   },
 } as const;

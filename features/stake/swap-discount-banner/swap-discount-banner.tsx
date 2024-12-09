@@ -5,9 +5,9 @@ import { useSwapDiscount } from './use-swap-discount';
 import { Wrap, TextWrap, OverlayLink } from './styles';
 
 export const SwapDiscountBanner = ({ children }: React.PropsWithChildren) => {
-  const { data, initialLoading } = useSwapDiscount();
+  const { data, isLoading } = useSwapDiscount();
 
-  if (initialLoading) return null;
+  if (isLoading) return null;
 
   if (!data || !data.shouldShowDiscount) return <>{children}</>;
 

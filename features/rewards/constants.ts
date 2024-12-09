@@ -1,4 +1,6 @@
-export const ETHER = '1e18';
+import { parseEther } from 'viem';
+
+export const ETHER = parseEther('1');
 
 export const HUMAN_DECIMALS = 8;
 export const PRECISE_DECIMALS = 18;
@@ -14,6 +16,7 @@ export const CURRENCIES = [
   { id: 'eur', code: 'EUR', symbol: '€', name: 'Euro' },
   { id: 'gbp', code: 'GBP', symbol: '£', name: 'Pound Sterling' },
 ] as { id: string; code: string; symbol: string; name: string }[];
+
 export const DEFAULT_CURRENCY = CURRENCIES[0];
 
 export const getCurrency = (id: string) => {

@@ -1,12 +1,11 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/router';
 import debounce from 'lodash/debounce';
+import { usePublicClient } from 'wagmi';
+import { isAddress, type PublicClient } from 'viem';
 
-import { useSDK } from '@lido-sdk/react';
-
-import { resolveEns, isValidEns, isValidAddress } from 'features/rewards/utils';
-import { useCurrentStaticRpcProvider } from 'shared/hooks/use-current-static-rpc-provider';
 import { useDappStatus } from 'modules/web3';
+import { resolveEns, isValidEns } from 'features/rewards/utils';
 
 type UseGetCurrentAddress = () => {
   address: string;
@@ -25,10 +24,10 @@ export const useGetCurrentAddress: UseGetCurrentAddress = () => {
   const [address, setAddress] = useState('');
   const [addressError, setAddressError] = useState('');
 
-  const { account } = useSDK();
-  const { staticRpcProvider } = useCurrentStaticRpcProvider();
   const { isReady, query } = useRouter();
-  const { isSupportedChain } = useDappStatus();
+  const { address: account, chainId, isSupportedChain } = useDappStatus();
+  // it works, but typing issue
+  const publicClient = usePublicClient({ chainId: chainId }) as PublicClient;
 
   const getEnsAddress = useCallback(
     async (value: string) => {
@@ -38,7 +37,7 @@ export const useGetCurrentAddress: UseGetCurrentAddress = () => {
 
       setIsAddressResolving(true);
       try {
-        result = await resolveEns(value, staticRpcProvider);
+        result = await resolveEns(value, publicClient);
       } catch (e) {
         console.error(e);
         error = 'An error happened during ENS name resolving';
@@ -54,7 +53,7 @@ export const useGetCurrentAddress: UseGetCurrentAddress = () => {
         setAddressError("The ENS name entered couldn't be found");
       }
     },
-    [staticRpcProvider],
+    [publicClient],
   );
 
   const resolveInputValue = useMemo(
@@ -62,7 +61,7 @@ export const useGetCurrentAddress: UseGetCurrentAddress = () => {
       debounce(async (value: string) => {
         if (value && isValidEns(value)) {
           await getEnsAddress(value);
-        } else if (isValidAddress(value)) {
+        } else if (isAddress(value)) {
           setAddress(value);
         } else {
           setAddress('');

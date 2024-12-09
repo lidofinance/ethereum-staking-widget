@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { formatEther } from '@ethersproject/units';
+import { formatEther } from 'viem';
 
 import { shortenTokenValue } from 'utils';
 import { useTvlError } from './useTvlError';

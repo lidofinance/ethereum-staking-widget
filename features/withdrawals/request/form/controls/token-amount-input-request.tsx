@@ -31,7 +31,7 @@ export const TokenAmountInputRequest = () => {
         trackMatomoEvent(MATOMO_CLICK_EVENTS_TYPES.withdrawalMaxInput);
       }}
       rightDecorator={
-        balanceDiff && <InputDecoratorTvlStake tvlDiff={balanceDiff} />
+        balanceDiff ? <InputDecoratorTvlStake tvlDiff={balanceDiff} /> : null
       }
       showErrorMessage={false}
     />

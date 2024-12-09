@@ -1,21 +1,21 @@
-import { useCallback } from 'react';
-import { Zero } from '@ethersproject/constants';
-import { BigNumber } from 'ethers';
-import { useLidoSWR } from '@lido-sdk/react';
-import { useDappStatus } from 'modules/web3';
-import { useWithdrawalsContract } from './useWithdrawalsContract';
+import { useCallback, useMemo } from 'react';
+import invariant from 'tiny-invariant';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+
+import { useDappStatus, useLidoSDK } from 'modules/web3';
+
+import { STRATEGY_LAZY } from 'consts/react-query-strategies';
+import { default as dynamics } from 'config/dynamics';
+
 import {
   RequestStatus,
   RequestStatusClaimable,
   RequestStatusPending,
 } from 'features/withdrawals/types/request-status';
 import { MAX_SHOWN_REQUEST_PER_TYPE } from 'features/withdrawals/withdrawals-constants';
-import { STRATEGY_LAZY } from 'consts/swr-strategies';
-import { standardFetcher } from 'utils/standardFetcher';
-import { default as dynamics } from 'config/dynamics';
 
+import { standardFetcher } from 'utils/standardFetcher';
 import { encodeURLQuery } from 'utils/encodeURLQuery';
-import type { WithdrawalQueueAbi } from '@lido-sdk/contracts';
 
 export type WithdrawalRequests = NonNullable<
   ReturnType<typeof useWithdrawalRequests>['data']
@@ -82,35 +82,40 @@ const getRequestTimeForWQRequestIds = async (
 };
 
 export const useWithdrawalRequests = () => {
-  const { chainId } = useDappStatus();
-  const { contractRpc, address } = useWithdrawalsContract();
-  // const { data: currentShareRate } = useLidoShareRate();
+  const { withdraw } = useLidoSDK();
+  const { chainId, address } = useDappStatus();
+  const queryClient = useQueryClient();
 
-  const swr = useLidoSWR(
-    // TODO: use this fragment for expected eth calculation
-    // currentShareRate
-    //   ? ['swr:withdrawals-requests', address, chainId, currentShareRate]
-    //   : false,
-    ['swr:withdrawals-requests', address, chainId],
-    async (...args: unknown[]) => {
-      const account = args[1] as string;
-      // const currentShareRate = args[3] as BigNumber;
+  const queryKey = useMemo(
+    () => ['withdrawals-requests', address, chainId],
+    [address, chainId],
+  );
+
+  const queryResult = useQuery({
+    queryKey,
+    enabled: !!address,
+    ...STRATEGY_LAZY,
+    queryFn: async () => {
+      invariant(
+        address,
+        '[useWithdrawalRequests] The "address" must be define',
+      );
 
       const [requestIds, lastCheckpointIndex] = await Promise.all([
-        contractRpc.getWithdrawalRequests(account).then((ids) => {
-          return [...ids].sort((aId, bId) => (aId.gt(bId) ? 1 : -1));
-        }),
-        contractRpc.getLastCheckpointIndex(),
+        withdraw.views
+          .getWithdrawalRequestsIds({ account: address })
+          .then((ids) => [...ids].sort((aId, bId) => (aId > bId ? 1 : -1))),
+        withdraw.views.getLastCheckpointIndex(),
       ]);
 
       const STATUS_BATCH_SIZE = 500;
-      const requestStatuses: Awaited<
-        ReturnType<WithdrawalQueueAbi['getWithdrawalStatus']>
-      > = [];
+      const requestStatuses = [];
 
       for (let i = 0; i < requestIds.length; i += STATUS_BATCH_SIZE) {
         const batch = requestIds.slice(i, i + STATUS_BATCH_SIZE);
-        const batchStatuses = await contractRpc.getWithdrawalStatus(batch);
+        const batchStatuses = await withdraw.views.getWithdrawalStatus({
+          requestsIds: batch,
+        });
         requestStatuses.push(...batchStatuses);
       }
 
@@ -132,23 +137,19 @@ export const useWithdrawalRequests = () => {
         console.warn('Failed to fetch request time for requests ids', e);
       }
 
-      let pendingAmountOfStETH = BigNumber.from(0);
-      let claimableAmountOfStETH = BigNumber.from(0);
+      let pendingAmountOfStETH = 0n;
+      let claimableAmountOfStETH = 0n;
 
       requestStatuses.forEach((request, index) => {
         const id = requestIds[index];
         const req: RequestStatus = {
           ...request,
-          id,
-          stringId: id.toString(),
           finalizationAt: null,
         };
 
         if (request.isFinalized && !request.isClaimed) {
           claimableRequests.push(req);
-          claimableAmountOfStETH = claimableAmountOfStETH.add(
-            request.amountOfStETH,
-          );
+          claimableAmountOfStETH += request.amountOfStETH;
         } else if (!request.isFinalized) {
           const r = wqRequests.find((r) => r.id === id.toString());
           pendingRequests.push({
@@ -156,11 +157,8 @@ export const useWithdrawalRequests = () => {
             finalizationAt: r?.finalizationAt ?? null,
             expectedEth: req.amountOfStETH, // TODO: replace with calcExpectedRequestEth(req, currentShareRate),
           });
-          pendingAmountOfStETH = pendingAmountOfStETH.add(
-            request.amountOfStETH,
-          );
+          pendingAmountOfStETH += request.amountOfStETH;
         }
-        return req;
       });
 
       let isClamped =
@@ -168,22 +166,22 @@ export const useWithdrawalRequests = () => {
       isClamped ||=
         pendingRequests.splice(MAX_SHOWN_REQUEST_PER_TYPE).length > 0;
 
-      const hints = await contractRpc.findCheckpointHints(
-        claimableRequests.map(({ id }) => id),
-        1,
-        lastCheckpointIndex,
-      );
+      const hints = await withdraw.views.findCheckpointHints({
+        sortedIds: claimableRequests.map(({ id }) => id),
+        firstIndex: 1n,
+        lastIndex: lastCheckpointIndex,
+      });
 
-      const claimableEth = await contractRpc.getClaimableEther(
-        claimableRequests.map(({ id }) => id),
+      const claimableEth = await withdraw.views.getClaimableEther({
+        sortedIds: claimableRequests.map(({ id }) => id),
         hints,
-      );
+      });
 
-      let claimableAmountOfETH = BigNumber.from(0);
+      let claimableAmountOfETH = 0n;
 
       const sortedClaimableRequests: RequestStatusClaimable[] =
         claimableRequests.map((request, index) => {
-          claimableAmountOfETH = claimableAmountOfETH.add(claimableEth[index]);
+          claimableAmountOfETH += claimableEth[index];
           return {
             ...request,
             hint: hints[index],
@@ -203,23 +201,23 @@ export const useWithdrawalRequests = () => {
         isClamped,
       };
     },
-    STRATEGY_LAZY,
-  );
-  const oldData = swr.data;
-  const mutate = swr.mutate;
+  });
+
+  const oldData = queryResult.data;
+  const refetch = queryResult.refetch;
 
   const optimisticClaimRequests = useCallback(
     async (requests: RequestStatusClaimable[]) => {
-      if (!oldData) return undefined;
+      if (!oldData) return;
+
       const { steth, eth } = requests.reduce(
-        (acc, request) => {
-          return {
-            steth: acc.steth.add(request.amountOfStETH),
-            eth: acc.eth.add(request.claimableEth),
-          };
-        },
-        { steth: Zero, eth: Zero },
+        (acc, request) => ({
+          steth: acc.steth + request.amountOfStETH,
+          eth: acc.eth + request.claimableEth,
+        }),
+        { steth: 0n, eth: 0n },
       );
+
       const optimisticData = {
         ...oldData,
         sortedClaimableRequests: oldData.sortedClaimableRequests.filter(
@@ -227,18 +225,15 @@ export const useWithdrawalRequests = () => {
         ),
         readyCount: oldData.readyCount - requests.length,
         claimedCount: oldData.claimedCount + requests.length,
-        claimableAmountOfStETH: oldData.claimableAmountOfStETH.sub(steth),
-        claimableAmountOfETH: oldData.claimableAmountOfETH.sub(eth),
+        claimableAmountOfStETH: oldData.claimableAmountOfStETH - steth,
+        claimableAmountOfETH: oldData.claimableAmountOfETH - eth,
       };
-      return mutate(optimisticData, true);
+
+      queryClient.setQueryData(queryKey, optimisticData);
+      await refetch();
     },
-    [oldData, mutate],
+    [oldData, queryClient, refetch, queryKey],
   );
 
-  const revalidate = useCallback(
-    () => mutate(oldData, true),
-    [oldData, mutate],
-  );
-
-  return { ...swr, optimisticClaimRequests, revalidate };
+  return { ...queryResult, optimisticClaimRequests, revalidate: refetch };
 };

@@ -8,15 +8,11 @@ import { Item } from './components/item';
 import { GreenText } from './components/styles';
 
 export const StEthRewardedBlock: FC = () => {
-  const {
-    currencyObject: currency,
-    data,
-    initialLoading: loading,
-  } = useRewardsHistory();
+  const { currencyObject: currency, data, isLoading } = useRewardsHistory();
 
   return (
     <Item
-      loading={loading}
+      loading={isLoading}
       dataTestId="stEthRewardedBlock"
       title="stETH rewarded"
       value={
