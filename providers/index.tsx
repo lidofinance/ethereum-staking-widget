@@ -10,6 +10,7 @@ import { AppFlagProvider } from './app-flag';
 import { IPFSInfoBoxStatusesProvider } from './ipfs-info-box-statuses';
 import { InpageNavigationProvider } from './inpage-navigation';
 import { ModalProvider } from './modal-provider';
+import { ExternalForbiddenRouteProvider } from './external-forbidden-route';
 
 type ProvidersProps = {
   prefetchedManifest?: unknown;
@@ -26,7 +27,11 @@ export const Providers: FC<PropsWithChildren<ProvidersProps>> = ({
         <Web3Provider>
           <IPFSInfoBoxStatusesProvider>
             <InpageNavigationProvider>
-              <ModalProvider>{children}</ModalProvider>
+              <ModalProvider>
+                <ExternalForbiddenRouteProvider>
+                  {children}
+                </ExternalForbiddenRouteProvider>
+              </ModalProvider>
             </InpageNavigationProvider>
           </IPFSInfoBoxStatusesProvider>
         </Web3Provider>

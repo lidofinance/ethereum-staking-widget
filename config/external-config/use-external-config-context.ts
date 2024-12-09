@@ -4,12 +4,9 @@ import useSWR from 'swr';
 import { STRATEGY_LAZY } from 'consts/swr-strategies';
 import { getConfig } from '../get-config';
 import { standardFetcher } from 'utils/standardFetcher';
+import { isManifestEntryValid } from 'utils/validate-ipfs-json';
 import { IPFS_MANIFEST_URL } from 'consts/external-links';
-import {
-  getBackwardCompatibleConfig,
-  isManifestEntryValid,
-  useFallbackManifestEntry,
-} from './utils';
+import { getBackwardCompatibleConfig, useFallbackManifestEntry } from './utils';
 
 import type { ExternalConfig, ManifestEntry } from './types';
 
