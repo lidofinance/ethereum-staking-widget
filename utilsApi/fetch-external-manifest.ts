@@ -4,7 +4,7 @@ import { responseTimeExternalMetricWrapper } from './fetchApiWrapper';
 import { standardFetcher } from 'utils/standardFetcher';
 
 import { config } from 'config';
-import { isManifestValid } from 'utils/validate-ipfs-json';
+import { isManifestValid } from 'config/external-config';
 
 import FallbackLocalManifest from 'IPFS.json' assert { type: 'json' };
 
