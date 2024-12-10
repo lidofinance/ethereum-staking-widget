@@ -9,7 +9,9 @@ import { Item } from './components/item';
 
 export const StEthPriceBlock: FC = () => {
   const { currencyObject: currency, data, isLoading } = useRewardsHistory();
-  const { data: stEthEth, isLoading: isLoadingStEthEth } = useStethEthRate();
+  const { data: stEthEth, isLoading: isLoadingStEthEth } = useStethEthRate({
+    enabled: !!data?.stETHCurrencyPrice[currency.id],
+  });
 
   return (
     <Item

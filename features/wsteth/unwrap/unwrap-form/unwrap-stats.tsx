@@ -74,7 +74,7 @@ export const UnwrapStats = () => {
       {isShowAllowance && (
         <AllowanceDataTableRow
           data-testid="allowance"
-          allowance={allowance || 0n}
+          allowance={allowance}
           isBlank={!isDappActiveOnL2}
           loading={isAllowanceLoading}
           token={TOKENS_TO_WRAP.wstETH}

@@ -83,12 +83,12 @@ const getRequestTimeForWQRequestIds = async (
 
 export const useWithdrawalRequests = () => {
   const { withdraw } = useLidoSDK();
-  const { chainId, address } = useDappStatus();
+  const { chainId, address, isSupportedChain } = useDappStatus();
   const queryClient = useQueryClient();
 
   const queryKey = useMemo(
-    () => ['withdrawals-requests', address, chainId],
-    [address, chainId],
+    () => ['withdrawals-requests', address, chainId, isSupportedChain],
+    [address, chainId, isSupportedChain],
   );
 
   const queryResult = useQuery({

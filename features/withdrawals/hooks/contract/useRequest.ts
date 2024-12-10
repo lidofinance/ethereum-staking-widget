@@ -46,15 +46,16 @@ export const useWithdrawalRequest = ({
   const {
     allowance,
     needsApprove,
-    isFetching: isUseApproveFetching,
+    isLoading: isUseApproveLoading,
     refetch: refetchAllowance,
   } = useWithdrawalApprove(amount ? amount : 0n, token, address as Address);
   const { closeModal } = useTransactionModal();
 
   const isApprovalFlow = isSmartAccount || !!(allowance && !needsApprove);
 
-  const isApprovalFlowLoading = isSmartAccountLoading || isUseApproveFetching;
-  const isTokenLocked = !!(isApprovalFlow && needsApprove && !isAA);
+  const isApprovalFlowLoading = isSmartAccountLoading || isUseApproveLoading;
+
+  const isTokenLocked = !!(isApprovalFlow && needsApprove);
 
   const request = useCallback(
     async ({
