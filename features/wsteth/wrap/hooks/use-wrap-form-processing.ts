@@ -1,4 +1,3 @@
-import type { Hash } from 'viem';
 import { useCallback } from 'react';
 import invariant from 'tiny-invariant';
 
