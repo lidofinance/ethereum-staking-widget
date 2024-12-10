@@ -20,10 +20,10 @@ const fetchTokenAddress = async (
 ): Promise<Address> => {
   if (isL2) {
     const address =
-      LIDO_L2_CONTRACT_ADDRESSES[core.chainId as CHAINS]?.[
-        token as LIDO_L2_CONTRACT_NAMES
+      LIDO_L2_CONTRACT_ADDRESSES[chainId]?.[
+        token.toLowerCase() as LIDO_L2_CONTRACT_NAMES
       ];
-    invariant(address, `Do not have address for ${token} on ${core.chainId}`);
+    invariant(address, `Do not have address for ${token} on ${chainId}`);
     return address;
   } else {
     const address = await core.getContractAddress(

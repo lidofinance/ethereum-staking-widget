@@ -6,13 +6,15 @@ import React, {
   useEffect,
 } from 'react';
 import invariant from 'tiny-invariant';
-import { LidoSDKProvider } from './lido-sdk';
-import { LidoSDKL2Provider } from './lido-sdk-l2';
 
 import { CHAINS, isSDKSupportedL2Chain } from 'consts/chains';
 import { useAccount } from 'wagmi';
 import { config } from 'config';
+import { ModalProvider } from 'providers/modal-provider';
+
 import { wagmiChainMap } from './web3-provider';
+import { LidoSDKProvider } from './lido-sdk';
+import { LidoSDKL2Provider } from './lido-sdk-l2';
 
 export enum DAPP_CHAIN_TYPE {
   Ethereum = 'Ethereum',
@@ -168,7 +170,10 @@ export const SupportL2Chains: React.FC<React.PropsWithChildren> = ({
         [chainType, walletChainId],
       )}
     >
-      <LidoSDKL2Provider>{children}</LidoSDKL2Provider>
+      <LidoSDKL2Provider>
+        {/* Some modals depend on the LidoSDKL2Provider */}
+        <ModalProvider>{children}</ModalProvider>
+      </LidoSDKL2Provider>
     </DappChainContext.Provider>
   );
 };
