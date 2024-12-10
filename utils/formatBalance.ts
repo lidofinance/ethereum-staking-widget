@@ -1,7 +1,5 @@
-import { BigNumber } from '@ethersproject/bignumber';
-import { formatEther } from '@ethersproject/units';
-import { Zero } from '@ethersproject/constants';
 import { useMemo } from 'react';
+import { formatEther } from 'viem';
 
 export type FormatBalanceArgs = {
   maxDecimalDigits?: number;
@@ -11,7 +9,7 @@ export type FormatBalanceArgs = {
 };
 
 export const formatBalance = (
-  balance: BigNumber = Zero,
+  balance = 0n,
   {
     maxDecimalDigits = 4,
     maxTotalLength,
@@ -19,8 +17,14 @@ export const formatBalance = (
     trimEllipsis,
   }: FormatBalanceArgs = {},
 ) => {
-  const actual = formatEther(balance);
+  let actual = formatEther(balance);
+  // the 'formatEther' from 'viem' returns without '.0' - decimals part (if the number is greater than 0 and does not have a decimal part)
+  if (!actual.includes('.')) {
+    actual += '.0';
+  }
+
   let trimmed = actual;
+
   let isTrimmed = false;
 
   if (actual.includes('.')) {
@@ -64,7 +68,7 @@ export const formatBalance = (
 };
 
 export const useFormattedBalance: typeof formatBalance = (
-  balance = Zero,
+  balance = 0n,
   { maxDecimalDigits = 4, maxTotalLength, adaptiveDecimals, trimEllipsis } = {},
 ) => {
   return useMemo(

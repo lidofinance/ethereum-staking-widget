@@ -10,8 +10,11 @@ import invariant from 'tiny-invariant';
 import { CHAINS, isSDKSupportedL2Chain } from 'consts/chains';
 import { useAccount } from 'wagmi';
 import { config } from 'config';
-import { useLidoSDK } from './lido-sdk';
+import { ModalProvider } from 'providers/modal-provider';
+
 import { wagmiChainMap } from './web3-provider';
+import { LidoSDKProvider } from './lido-sdk';
+import { LidoSDKL2Provider } from './lido-sdk-l2';
 
 export enum DAPP_CHAIN_TYPE {
   Ethereum = 'Ethereum',
@@ -74,8 +77,6 @@ const getChainIdByChainType = (
 export const useDappChain = (): UseDappChainValue => {
   const context = useContext(DappChainContext);
   invariant(context, 'useDappChain was used outside of DappChainProvider');
-
-  const { chainId: dappChain } = useLidoSDK();
   const { chainId: walletChain } = useAccount();
 
   return useMemo(() => {
@@ -115,9 +116,10 @@ export const useDappChain = (): UseDappChainValue => {
 
     return {
       ...context,
-      chainId: context.supportedChainIds.includes(dappChain)
-        ? dappChain
-        : config.defaultChain,
+      chainId:
+        walletChain && context.supportedChainIds.includes(walletChain)
+          ? walletChain
+          : config.defaultChain,
       chainTypeChainId,
       isSupportedChain: walletChain
         ? context.supportedChainIds.includes(walletChain)
@@ -125,7 +127,7 @@ export const useDappChain = (): UseDappChainValue => {
       supportedChainTypes,
       supportedChainLabels,
     };
-  }, [context, dappChain, walletChain]);
+  }, [context, walletChain]);
 };
 
 export const SupportL2Chains: React.FC<React.PropsWithChildren> = ({
@@ -168,7 +170,10 @@ export const SupportL2Chains: React.FC<React.PropsWithChildren> = ({
         [chainType, walletChainId],
       )}
     >
-      {children}
+      <LidoSDKL2Provider>
+        {/* Some modals depend on the LidoSDKL2Provider */}
+        <ModalProvider>{children}</ModalProvider>
+      </LidoSDKL2Provider>
     </DappChainContext.Provider>
   );
 };
@@ -192,6 +197,9 @@ export const SupportL1Chains: React.FC<React.PropsWithChildren> = ({
   children,
 }) => (
   <DappChainContext.Provider value={onlyL1ChainsValue}>
-    {children}
+    <LidoSDKProvider>
+      {/* Stub LidoSDKL2Provider for hooks that gives isL2:false. Will be overriden in SupportL2Chains */}
+      <LidoSDKL2Provider>{children}</LidoSDKL2Provider>
+    </LidoSDKProvider>
   </DappChainContext.Provider>
 );

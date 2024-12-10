@@ -1,27 +1,25 @@
-import type { BigNumber } from 'ethers';
-import { MaxUint256, Zero } from '@ethersproject/constants';
-import {
-  getTokenDisplayName,
-  TOKEN_DISPLAY_NAMES,
-} from 'utils/getTokenDisplayName';
+import { maxUint256 } from 'viem';
+import { getTokenDisplayName } from 'utils/getTokenDisplayName';
 import { ValidationError } from './validation-error';
+import { TOKENS_TO_WRAP } from 'features/wsteth/shared/types';
 
 // asserts only work with function declaration
 // eslint-disable-next-line func-style
 export function validateEtherAmount(
   field: string,
-  amount: BigNumber | null,
-  token: keyof typeof TOKEN_DISPLAY_NAMES,
-): asserts amount is BigNumber {
-  if (!amount) throw new ValidationError(field, '');
+  amount: bigint | undefined | null,
+  token: TOKENS_TO_WRAP,
+): asserts amount is bigint {
+  // also checks undefined
+  if (amount == null) throw new ValidationError(field, '');
 
-  if (amount.lte(Zero))
+  if (amount <= 0n)
     throw new ValidationError(
       field,
       `Enter ${getTokenDisplayName(token)} ${field} greater than 0`,
     );
 
-  if (amount.gt(MaxUint256))
+  if (amount > maxUint256)
     throw new ValidationError(
       field,
       `${getTokenDisplayName(token)} ${field} is not valid`,

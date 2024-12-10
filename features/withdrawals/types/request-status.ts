@@ -1,24 +1,22 @@
-import type { BigNumber } from 'ethers';
-
 export type RequestStatus = {
-  amountOfStETH: BigNumber;
-  amountOfShares: BigNumber;
+  amountOfStETH: bigint;
+  amountOfShares: bigint;
   owner: string;
-  timestamp: BigNumber;
+  timestamp: bigint;
   isFinalized: boolean;
   isClaimed: boolean;
-  id: BigNumber;
+  id: bigint;
   stringId: string;
   finalizationAt: string | null;
 };
 
 export type RequestStatusClaimable = RequestStatus & {
-  hint: BigNumber;
-  claimableEth: BigNumber;
+  hint: bigint;
+  claimableEth: bigint;
 };
 
 export type RequestStatusPending = RequestStatus & {
-  expectedEth: BigNumber;
+  expectedEth: bigint;
 };
 
 export type RequestStatusesUnion =

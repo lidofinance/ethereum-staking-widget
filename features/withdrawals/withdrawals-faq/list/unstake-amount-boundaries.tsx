@@ -12,7 +12,9 @@ const formatAmount = (value: number | undefined) =>
 export const UnstakeAmountBoundaries: React.FC = () => {
   const { maxAmount, minAmount } = useWithdrawals();
   const minAmountDisplay = formatAmount(Number(minAmount));
-  const maxAmountDisplay = formatAmount(maxAmount && weiToEth(maxAmount));
+  const maxAmountDisplay = formatAmount(
+    maxAmount ? Number(weiToEth(maxAmount)) : undefined,
+  );
 
   return (
     <Accordion summary="Is there any minimum or maximum amount of stETH/wstETH I can withdraw?">

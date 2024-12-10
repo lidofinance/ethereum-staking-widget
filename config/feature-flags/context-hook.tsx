@@ -1,5 +1,6 @@
 import { useMemo, useState, useCallback } from 'react';
-import { useLocalStorage } from '@lido-sdk/react';
+
+import { useLocalStorage } from 'shared/hooks/use-local-storage';
 
 import { getFeatureFlagsDefault } from './utils';
 import { FeatureFlagsType } from './types';

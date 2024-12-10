@@ -1,50 +1,42 @@
 import { FC, useMemo } from 'react';
 import { useRouter } from 'next/router';
 
-import { CHAINS as legacySDKCHAINS, getChainColor } from '@lido-sdk/constants';
+import { CHAINS } from '@lidofinance/lido-ethereum-sdk/common';
 
 import { config } from 'config';
 import { useUserConfig } from 'config/user-config';
-import { CHAINS } from 'consts/chains';
-
 import { IPFSInfoBox } from 'features/ipfs/ipfs-info-box';
 import { useDappStatus } from 'modules/web3';
 import { Button, Connect } from 'shared/wallet';
 import NoSSRWrapper from 'shared/components/no-ssr-wrapper';
+import { getChainColor } from 'utils/get-chain-color';
 
-import { HeaderSettingsButton } from './header-settings-button';
 import {
   HeaderWalletChainStyle,
   DotStyle,
   IPFSInfoBoxOnlyDesktopWrapper,
 } from '../styles';
-import { ThemeTogglerStyled } from './styles';
+
 import { ChainSwitcher } from './chain-switcher/chain-switcher';
+import { HeaderSettingsButton } from './header-settings-button';
+import { ThemeTogglerStyled } from './styles';
 
 const HeaderWallet: FC = () => {
   const router = useRouter();
   const { defaultChain: defaultChainId } = useUserConfig();
   const { isDappActive, address, walletChainId } = useDappStatus();
 
-  let chainName = legacySDKCHAINS[walletChainId || defaultChainId];
-  if (!chainName && walletChainId === CHAINS.OptimismSepolia) {
-    chainName = 'Optimism Sepolia';
-  }
-
+  const chainName = CHAINS[walletChainId || defaultChainId];
   const testNet = !(
-    walletChainId === legacySDKCHAINS.Mainnet ||
-    walletChainId === CHAINS.Optimism
+    walletChainId === CHAINS.Mainnet || walletChainId === CHAINS.Optimism
   );
   const showNet = testNet && isDappActive;
   const queryTheme = router?.query?.theme;
 
-  const chainColor = useMemo(() => {
-    try {
-      return getChainColor(walletChainId || defaultChainId);
-    } catch {
-      return getChainColor(defaultChainId);
-    }
-  }, [walletChainId, defaultChainId]);
+  const chainColor = useMemo(
+    () => getChainColor(walletChainId || defaultChainId),
+    [walletChainId, defaultChainId],
+  );
 
   return (
     <NoSSRWrapper>

@@ -1,7 +1,8 @@
-import { CHAINS, TOKENS, getTokenAddress } from '@lido-sdk/constants';
-import { BigNumber } from 'ethers';
+import { formatEther } from 'viem';
+
+import { TOKENS, getTokenAddress } from 'consts/token-addresses';
 import { standardFetcher } from './standardFetcher';
-import { formatEther } from '@ethersproject/units';
+import { CHAINS } from '@lidofinance/lido-ethereum-sdk';
 
 type OpenOceanGetGasPartial = {
   without_decimals: {
@@ -31,37 +32,29 @@ type OpenOceanGetQuotePartial = {
   };
 };
 
-type RateToken = TOKENS.STETH | TOKENS.WSTETH | 'ETH';
-
-type RateCalculationResult = { rate: number; toReceive: BigNumber };
+type RateCalculationResult = { rate: number; toReceive: bigint };
 
 // To be exported when more integrations appear
 const RATE_PRECISION = 100000;
-const RATE_PRECISION_BN = BigNumber.from(RATE_PRECISION);
+const RATE_PRECISION_BIG_INT = BigInt(RATE_PRECISION);
 
 const calculateRateReceive = (
-  amount: BigNumber,
-  fromAmount: BigNumber,
-  toAmount: BigNumber,
+  amount: bigint,
+  fromAmount: bigint,
+  toAmount: bigint,
 ): RateCalculationResult => {
-  const _rate = toAmount.mul(RATE_PRECISION_BN).div(fromAmount);
-  const rate = _rate.toNumber() / RATE_PRECISION;
+  const _rate = (toAmount * RATE_PRECISION_BIG_INT) / fromAmount;
+  const rate = Number(_rate) / RATE_PRECISION;
   // if original amount is capped
-  const toReceive = amount.eq(fromAmount)
-    ? toAmount
-    : amount.mul(toAmount).div(fromAmount);
+  const toReceive =
+    amount === fromAmount ? toAmount : (amount * toAmount) / fromAmount;
   return { rate, toReceive };
 };
 
-const getRateTokenAddress = (token: RateToken) =>
-  token === 'ETH'
-    ? '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE'
-    : getTokenAddress(CHAINS.Mainnet, token);
-
 export const getOpenOceanRate = async (
-  amount: BigNumber,
-  fromToken: RateToken,
-  toToken: RateToken,
+  amount: bigint,
+  fromToken: TOKENS,
+  toToken: TOKENS,
 ): Promise<RateCalculationResult> => {
   const basePath = 'https://open-api.openocean.finance/v3/1';
   const gasData = await standardFetcher<OpenOceanGetGasPartial>(
@@ -69,8 +62,8 @@ export const getOpenOceanRate = async (
   );
 
   const params = new URLSearchParams({
-    inTokenAddress: getRateTokenAddress(fromToken),
-    outTokenAddress: getRateTokenAddress(toToken),
+    inTokenAddress: getTokenAddress(CHAINS.Mainnet, fromToken) as string,
+    outTokenAddress: getTokenAddress(CHAINS.Mainnet, toToken) as string,
     gasPrice: gasData.without_decimals.standard.maxFeePerGas,
     amount: formatEther(amount),
   });
@@ -81,7 +74,7 @@ export const getOpenOceanRate = async (
 
   return calculateRateReceive(
     amount,
-    BigNumber.from(quote.data.inAmount),
-    BigNumber.from(quote.data.outAmount),
+    BigInt(quote.data.inAmount),
+    BigInt(quote.data.outAmount),
   );
 };

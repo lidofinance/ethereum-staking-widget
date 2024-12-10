@@ -8,9 +8,9 @@ export const LidoFee: FC = () => {
   const protocolFee = useProtocolFee();
 
   const feeValue =
-    protocolFee.initialLoading || !protocolFee.data
+    protocolFee.isLoading || !protocolFee.totalFeeString
       ? DATA_UNAVAILABLE
-      : `${protocolFee.data}%`;
+      : `${protocolFee.totalFeeString}%`;
 
   return (
     <Accordion summary="What fee is applied by Lido? What is this used for?">
