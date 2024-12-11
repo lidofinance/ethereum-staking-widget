@@ -14,4 +14,5 @@ export {
   isFeatureFlagsValid,
   isMultiChainBannerValid,
   isPagesValid,
+  shouldRedirectToRoot,
 } from './utils';

@@ -1,9 +1,11 @@
+import { config } from 'config';
 import {
   Manifest,
   ManifestConfig,
+  ManifestConfigPage,
   ManifestConfigPageEnum,
   ManifestEntry,
-} from './types';
+} from 'config/external-config';
 
 export const isMultiChainBannerValid = (config: object) => {
   // allow empty config
@@ -102,4 +104,22 @@ export const isManifestValid = (
       (manifest as Record<string, unknown>)[stringChain],
     );
   return false;
+};
+
+// Use in Next backend side
+export const shouldRedirectToRoot = (
+  currentPath: string,
+  manifest: Manifest | null,
+): boolean => {
+  const { defaultChain } = config;
+  const chainSettings = manifest?.[`${defaultChain}`];
+  const pages = chainSettings?.config?.pages;
+  const isDeactivate =
+    !!pages?.[currentPath as ManifestConfigPage]?.shouldDisable;
+  // https://nextjs.org/docs/messages/gsp-redirect-during-prerender
+  const isBuild = process.env.npm_lifecycle_event === 'build';
+
+  return (
+    currentPath !== ManifestConfigPageEnum.Stake && isDeactivate && !isBuild
+  );
 };

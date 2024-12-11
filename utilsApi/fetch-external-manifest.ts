@@ -4,12 +4,12 @@ import { responseTimeExternalMetricWrapper } from './fetchApiWrapper';
 import { standardFetcher } from 'utils/standardFetcher';
 
 import { config } from 'config';
-import { isManifestValid } from 'config/external-config';
+import { isManifestValid, type Manifest } from 'config/external-config';
 
 import FallbackLocalManifest from 'IPFS.json' assert { type: 'json' };
 
 export type ExternalConfigResult = {
-  ___prefetch_manifest___: object | null;
+  ___prefetch_manifest___: Manifest | null;
 };
 
 const cache = new Cache<

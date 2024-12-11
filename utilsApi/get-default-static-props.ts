@@ -8,12 +8,9 @@ import type { ParsedUrlQuery } from 'querystring';
 
 import Metrics from 'utilsApi/metrics';
 import { fetchExternalManifest } from './fetch-external-manifest';
-import {
-  ManifestConfigPage,
-  ManifestConfigPageEnum,
-  ManifestEntry,
-} from 'config/external-config';
+import type { Manifest, ManifestConfigPage } from 'config/external-config';
 import { config } from 'config';
+import { shouldRedirectToRoot } from 'config/external-config';
 
 export const getDefaultStaticProps = <
   P extends { [key: string]: any } = { [key: string]: any },
@@ -32,24 +29,13 @@ export const getDefaultStaticProps = <
       // because next only remembers first value, default to short revalidation period
       revalidate: config.DEFAULT_REVALIDATION,
     };
-
     let result = base as GetStaticPropsResult<P>;
-    const manifest = ___prefetch_manifest___ as
-      | { [key: number]: ManifestEntry }
-      | undefined;
-    const { defaultChain } = config;
-    const chainSettings = manifest?.[`${defaultChain}`];
-    const pages = chainSettings?.config?.pages;
-    const isDeactivate =
-      pages?.[currentPath as ManifestConfigPage]?.shouldDisable;
-    // https://nextjs.org/docs/messages/gsp-redirect-during-prerender
-    const isBuild = process.env.npm_lifecycle_event === 'build';
 
     if (
-      chainSettings &&
-      currentPath !== ManifestConfigPageEnum.Stake &&
-      isDeactivate &&
-      !isBuild
+      shouldRedirectToRoot(
+        currentPath,
+        ___prefetch_manifest___ as Manifest | null,
+      )
     ) {
       result = {
         ...base,
