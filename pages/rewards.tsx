@@ -32,6 +32,6 @@ const Rewards: FC = () => {
   );
 };
 
-export const getStaticProps = getDefaultStaticProps();
+export const getStaticProps = getDefaultStaticProps('/rewards');
 
 export default Rewards;

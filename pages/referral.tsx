@@ -11,6 +11,6 @@ const Referral: FC = () => {
     </Layout>
   );
 };
-export const getStaticProps = getDefaultStaticProps();
+export const getStaticProps = getDefaultStaticProps('/referral');
 
 export default Referral;

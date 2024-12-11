@@ -4,13 +4,13 @@ import { useQuery } from '@tanstack/react-query';
 import { config } from 'config';
 import { STRATEGY_LAZY } from 'consts/react-query-strategies';
 import { IPFS_MANIFEST_URL } from 'consts/external-links';
+import { isManifestEntryValid } from 'config/external-config';
 import { standardFetcher } from 'utils/standardFetcher';
-
 import {
   getBackwardCompatibleConfig,
-  isManifestEntryValid,
   useFallbackManifestEntry,
-} from './utils';
+} from './frontend-fallback';
+
 import type { ExternalConfig, ManifestEntry } from './types';
 
 export const useExternalConfigContext = (

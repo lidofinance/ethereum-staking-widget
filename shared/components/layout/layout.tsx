@@ -1,11 +1,9 @@
 import { ReactNode, FC, PropsWithChildren } from 'react';
-
 import { ContainerProps } from '@lidofinance/lido-ui';
 
 import { config } from 'config';
 
 import { IPFSInfoBox } from 'features/ipfs/ipfs-info-box';
-
 import { Header } from './header/header';
 import { Footer } from './footer/footer';
 import { Main } from './main/main';
