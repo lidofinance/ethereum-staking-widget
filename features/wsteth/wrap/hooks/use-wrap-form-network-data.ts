@@ -9,13 +9,14 @@ import {
   useStethBalance,
   useWstethBalance,
   useMaxGasPrice,
-  useIsMultisig,
+  useIsSmartAccount,
   BALANCE_PADDING,
 } from 'modules/web3';
 
 // Provides all data fetching for form to function
 export const useWrapFormNetworkData = () => {
-  const { isMultisig, isLoading: isMultisigLoading } = useIsMultisig();
+  const { isSmartAccount, isLoading: isSmartAccountLoading } =
+    useIsSmartAccount();
   const { data: ethBalance, refetch: ethBalanceUpdate } = useEthereumBalance();
   const { data: stethBalance, refetch: stethBalanceUpdate } = useStethBalance();
   const { data: wstethBalance, refetch: wstethBalanceUpdate } =
@@ -30,10 +31,10 @@ export const useWrapFormNetworkData = () => {
   const maxAmountETH = useTokenMaxAmount({
     balance: ethBalance,
     limit: stakeLimitInfo?.currentStakeLimit,
-    isPadded: !isMultisig,
+    isPadded: !isSmartAccount,
     gasLimit: gasLimitETH,
     padding: BALANCE_PADDING,
-    isLoading: isMultisigLoading,
+    isLoading: isSmartAccountLoading,
   });
 
   const wrapEthGasCost = maxGasPrice ? maxGasPrice * gasLimitStETH : undefined;
@@ -54,7 +55,7 @@ export const useWrapFormNetworkData = () => {
 
   return useMemo(
     () => ({
-      isMultisig,
+      isSmartAccount,
       ethBalance,
       stethBalance,
       wrapEthGasCost,
@@ -66,7 +67,7 @@ export const useWrapFormNetworkData = () => {
       maxAmountETH,
     }),
     [
-      isMultisig,
+      isSmartAccount,
       wrapEthGasCost,
       ethBalance,
       stethBalance,

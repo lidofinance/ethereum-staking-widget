@@ -24,7 +24,7 @@ import {
 } from 'shared/hook-form/form-controller';
 import { useTokenMaxAmount } from 'shared/hooks/use-token-max-amount';
 import { useStakingLimitInfo } from 'shared/hooks/useStakingLimitInfo';
-import { useIsMultisig, useMaxGasPrice } from 'modules/web3';
+import { useIsSmartAccount, useMaxGasPrice } from 'modules/web3';
 import { useFormControllerRetry } from 'shared/hook-form/form-controller/use-form-controller-retry-delegate';
 
 import {
@@ -63,7 +63,8 @@ const useStakeFormNetworkData = (): StakeFormNetworkData => {
     refetch: updateStethBalance,
     isLoading: isStethBalanceLoading,
   } = useStethBalance();
-  const { isMultisig, isLoading: isMultisigLoading } = useIsMultisig();
+  const { isSmartAccount, isLoading: isSmartAccountLoading } =
+    useIsSmartAccount();
   const gasLimit = useStethSubmitGasLimit();
   const { maxGasPrice, isLoading: isMaxGasPriceLoading } = useMaxGasPrice();
 
@@ -97,10 +98,10 @@ const useStakeFormNetworkData = (): StakeFormNetworkData => {
   const maxAmount = useTokenMaxAmount({
     balance: etherBalance,
     limit: stakingLimitInfo?.currentStakeLimit,
-    isPadded: !isMultisig,
+    isPadded: !isSmartAccount,
     gasLimit: gasLimit,
     padding: BALANCE_PADDING,
-    isLoading: isMultisigLoading,
+    isLoading: isSmartAccountLoading,
   });
 
   const revalidate = useCallback(async () => {
@@ -114,14 +115,14 @@ const useStakeFormNetworkData = (): StakeFormNetworkData => {
   const loading = useMemo(
     () => ({
       isStethBalanceLoading,
-      isMultisigLoading,
+      isSmartAccountLoading,
       isMaxGasPriceLoading,
       isEtherBalanceLoading,
       isStakeableEtherLoading: isStakingLimitIsLoading || isEtherBalanceLoading,
     }),
     [
       isStethBalanceLoading,
-      isMultisigLoading,
+      isSmartAccountLoading,
       isMaxGasPriceLoading,
       isEtherBalanceLoading,
       isStakingLimitIsLoading,
@@ -131,7 +132,7 @@ const useStakeFormNetworkData = (): StakeFormNetworkData => {
   return {
     stethBalance,
     etherBalance,
-    isMultisig: isMultisigLoading ? undefined : isMultisig,
+    isSmartAccount,
     stakeableEther,
     stakingLimitInfo,
     gasCost,
