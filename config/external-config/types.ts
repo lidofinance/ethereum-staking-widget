@@ -1,5 +1,5 @@
+import type { UseQueryResult } from '@tanstack/react-query';
 import type { DexWithdrawalApi } from 'features/withdrawals/request/withdrawal-rates';
-import { SWRResponse } from 'swr';
 
 export type Manifest = Record<string, ManifestEntry>;
 
@@ -41,5 +41,5 @@ export const ManifestConfigPageList = new Set<ManifestConfigPage>(
 
 export type ExternalConfig = Omit<ManifestEntry, 'config'> &
   ManifestConfig & {
-    fetchMeta: SWRResponse<ManifestEntry>;
+    fetchMeta: UseQueryResult<ManifestEntry>;
   };

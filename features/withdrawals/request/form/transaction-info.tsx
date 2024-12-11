@@ -1,20 +1,20 @@
 import { useWatch } from 'react-hook-form';
-import { TOKENS } from '@lido-sdk/constants';
 import { DataTableRow } from '@lidofinance/lido-ui';
 
-import { useRequestTxPrice } from 'features/withdrawals/hooks/useWithdrawTxPrice';
+import { useWithdrawRequestTxPrice } from 'features/withdrawals/hooks/use-withdraw-request-tx-price';
 import { useApproveGasLimit } from 'features/wsteth/wrap/hooks/use-approve-gas-limit';
 import { useDappStatus } from 'modules/web3';
 import { AllowanceDataTableRow } from 'shared/components/allowance-data-table-row';
 import { DataTableRowStethByWsteth } from 'shared/components/data-table-row-steth-by-wsteth';
 import { FormatPrice } from 'shared/formatters';
-import { useTxCostInUsd } from 'shared/hooks';
+import { useTxCostInUsd } from 'shared/hooks/use-tx-cost-in-usd';
 
 import {
   RequestFormInputType,
   useRequestFormData,
   useValidationResults,
 } from '../request-form-context';
+import { TOKENS_TO_WITHDRAWLS } from '../../types/tokens-withdrawable';
 
 export const TransactionInfo = () => {
   const { isDappActive } = useDappStatus();
@@ -26,15 +26,14 @@ export const TransactionInfo = () => {
     <>Lido leverages gasless token unlocks via ERC-2612 permits</>
   );
   const { txPriceUsd: requestTxPriceInUsd, loading: requestTxPriceLoading } =
-    useRequestTxPrice({
+    useWithdrawRequestTxPrice({
       token,
       isApprovalFlow,
       requestCount: requests?.length,
     });
-  const {
-    txCostUsd: approveTxCostInUsd,
-    initialLoading: isApproveTxCostLoading,
-  } = useTxCostInUsd(useApproveGasLimit());
+
+  const { txCostUsd: approveTxCostInUsd, isLoading: isApproveTxCostLoading } =
+    useTxCostInUsd(useApproveGasLimit());
 
   return (
     <>
@@ -42,7 +41,7 @@ export const TransactionInfo = () => {
         data-testid="maxUnlockCost"
         help={unlockCostTooltip}
         title="Max unlock cost"
-        loading={isApprovalFlowLoading || isApproveTxCostLoading}
+        loading={isApproveTxCostLoading}
       >
         {isApprovalFlow ? <FormatPrice amount={approveTxCostInUsd} /> : 'FREE'}
       </DataTableRow>
@@ -60,7 +59,7 @@ export const TransactionInfo = () => {
         isBlank={!isDappActive}
         loading={isApprovalFlowLoading}
       />
-      {token === TOKENS.STETH ? (
+      {token === TOKENS_TO_WITHDRAWLS.stETH ? (
         <DataTableRow data-testid="exchangeRate" title="Exchange rate">
           1 stETH = 1 ETH
         </DataTableRow>

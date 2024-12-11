@@ -1,63 +1,54 @@
-import { SWRResponse, useLidoSWR } from '@lido-sdk/react';
-import { CHAINS } from '@lido-sdk/constants';
+import { CHAINS } from '@lidofinance/lido-ethereum-sdk/common';
+import { useQuery, type UseQueryResult } from '@tanstack/react-query';
 
-import { STRATEGY_LAZY } from 'consts/swr-strategies';
-import { standardFetcher } from 'utils/standardFetcher';
 import { ETH_API_ROUTES, getEthApiPath } from 'consts/api';
+import { STRATEGY_LAZY } from 'consts/react-query-strategies';
+import { standardFetcher } from 'utils/standardFetcher';
+import { useLidoSDK } from 'modules/web3';
+
+type APR_RECORD = { timeUnix: number; apr: number };
 
 type SMA_APR_RESPONSE = {
   data: {
-    aprs: [
-      {
-        timeUnix: number;
-        apr: number;
-      },
-      {
-        timeUnix: number;
-        apr: number;
-      },
-      {
-        timeUnix: number;
-        apr: number;
-      },
-      {
-        timeUnix: number;
-        apr: number;
-      },
-      {
-        timeUnix: number;
-        apr: number;
-      },
-      {
-        timeUnix: number;
-        apr: number;
-      },
-      {
-        timeUnix: number;
-        apr: number;
-      },
-      {
-        timeUnix: number;
-        apr: number;
-      },
-    ];
     smaApr: number;
+    aprs?: APR_RECORD[];
   };
-  meta: {
+  meta?: {
     symbol: 'stETH';
     address: string;
     chainId: CHAINS;
   };
 };
 
-export const useLidoApr = (): SWRResponse<SMA_APR_RESPONSE> & {
+type UseLidoAprResult = UseQueryResult<SMA_APR_RESPONSE> & {
   apr?: string;
-} => {
-  const { data, ...rest } = useLidoSWR<SMA_APR_RESPONSE>(
-    getEthApiPath(ETH_API_ROUTES.STETH_SMA_APR),
-    standardFetcher,
-    STRATEGY_LAZY,
-  );
+};
 
-  return { ...rest, apr: data?.data.smaApr.toFixed(1) };
+export const useLidoApr = (): UseLidoAprResult => {
+  const { statistics } = useLidoSDK();
+  const url = getEthApiPath(ETH_API_ROUTES.STETH_SMA_APR);
+
+  const result = useQuery<SMA_APR_RESPONSE>({
+    queryKey: ['lido-apr', url],
+    ...STRATEGY_LAZY,
+    queryFn: async () => {
+      try {
+        return await standardFetcher<SMA_APR_RESPONSE>(url);
+      } catch (error) {
+        // Fallback from SDK
+        const lastApr = await statistics.apr.getSmaApr({ days: 7 });
+        return { data: { smaApr: lastApr } };
+        // if "await statistics.apr.getLastApr()" does not work,
+        // then the result will be "{ data: undefined; isError: true, ...}"
+        // the widget will handle this response
+      }
+    },
+  });
+
+  const { data } = result;
+
+  return {
+    ...result,
+    apr: data?.data?.smaApr?.toFixed(1),
+  };
 };

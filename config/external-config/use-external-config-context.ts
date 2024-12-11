@@ -1,11 +1,11 @@
 import { useMemo } from 'react';
-import useSWR from 'swr';
+import { useQuery } from '@tanstack/react-query';
 
-import { STRATEGY_LAZY } from 'consts/swr-strategies';
-import { getConfig } from '../get-config';
-import { standardFetcher } from 'utils/standardFetcher';
+import { config } from 'config';
+import { STRATEGY_LAZY } from 'consts/react-query-strategies';
 import { IPFS_MANIFEST_URL } from 'consts/external-links';
 import { isManifestEntryValid } from 'config/external-config';
+import { standardFetcher } from 'utils/standardFetcher';
 import {
   getBackwardCompatibleConfig,
   useFallbackManifestEntry,
@@ -13,47 +13,49 @@ import {
 
 import type { ExternalConfig, ManifestEntry } from './types';
 
-const onFetchError = (error: unknown) => {
-  console.warn(
-    '[useExternalConfigContext] while fetching external config:',
-    error,
-  );
-};
-
 export const useExternalConfigContext = (
   prefetchedManifest?: unknown,
 ): ExternalConfig => {
-  const { defaultChain } = getConfig();
+  const defaultChain = config.defaultChain;
   const fallbackData = useFallbackManifestEntry(
     prefetchedManifest,
     defaultChain,
   );
 
-  const swr = useSWR<ManifestEntry>(
-    ['swr:external-config', defaultChain],
-    async () => {
-      const result = await standardFetcher<Record<string, any>>(
-        IPFS_MANIFEST_URL,
-        {
-          headers: { Accept: 'application/json' },
-        },
-      );
-      const entry = result[defaultChain.toString()];
-      if (isManifestEntryValid(entry)) return entry;
-      throw new Error(
-        '[useExternalConfigContext] received invalid manifest',
-        result,
-      );
+  const queryResult = useQuery<ManifestEntry>({
+    queryKey: ['external-config', defaultChain],
+    ...STRATEGY_LAZY,
+    enabled: !!defaultChain,
+    queryFn: async () => {
+      try {
+        const result = await standardFetcher<Record<string, any>>(
+          IPFS_MANIFEST_URL,
+          {
+            headers: { Accept: 'application/json' },
+          },
+        );
+
+        const entry = result[defaultChain.toString()];
+        if (isManifestEntryValid(entry)) return entry;
+
+        throw new Error(
+          '[useExternalConfig] received invalid manifest',
+          result,
+        );
+      } catch (err) {
+        console.warn(
+          '[useExternalConfigContext] while fetching external config:',
+          err,
+        );
+        // This line is necessary so that useQuery can handle the error and return undefined
+        throw err;
+      }
     },
-    {
-      ...STRATEGY_LAZY,
-      onError: onFetchError,
-    },
-  );
+  });
 
   return useMemo(() => {
-    const { config, ...rest } = swr.data ?? fallbackData;
+    const { config, ...rest } = queryResult.data ?? fallbackData;
     const cleanConfig = getBackwardCompatibleConfig(config);
-    return { ...cleanConfig, ...rest, fetchMeta: swr };
-  }, [swr, fallbackData]);
+    return { ...cleanConfig, ...rest, fetchMeta: queryResult };
+  }, [queryResult, fallbackData]);
 };

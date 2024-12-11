@@ -5,7 +5,7 @@ import buildInfoJson from 'build-info.json';
 import { openKeys } from 'scripts/log-environment-variables.mjs';
 import { getRPCChecks } from 'scripts/startup-checks/rpc.mjs';
 
-import { config } from 'config';
+import { config, secretConfig } from 'config';
 import { METRICS_PREFIX } from 'consts/metrics';
 
 import { StartupChecksRPCMetrics } from './startup-checks';
@@ -19,7 +19,7 @@ const collectStartupChecksRPCMetrics = async (
     // Await the promise if it's still in progress
     const rpcChecksResults = await getRPCChecks();
 
-    if (!rpcChecksResults) {
+    if (!rpcChecksResults && !secretConfig.developmentMode) {
       throw new Error(
         '[collectStartupChecksRPCMetrics] getRPCChecks resolved as "null"!',
       );

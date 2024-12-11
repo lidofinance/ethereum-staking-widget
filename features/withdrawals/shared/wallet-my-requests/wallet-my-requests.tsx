@@ -8,7 +8,7 @@ import { CardBalance } from 'shared/wallet';
 import { RequestCounterStyled } from './styles';
 
 export const WalletMyRequests: FC<PropsWithChildren> = ({ children }) => {
-  const { data, initialLoading } = useClaimData();
+  const { data, isLoading } = useClaimData();
   const { readyCount = DATA_UNAVAILABLE, pendingCount = DATA_UNAVAILABLE } =
     data || {};
   const title = <>My requests {children}</>;
@@ -39,7 +39,7 @@ export const WalletMyRequests: FC<PropsWithChildren> = ({ children }) => {
     <CardBalance
       small
       title={title}
-      loading={initialLoading}
+      loading={isLoading}
       value={requestsContent}
     />
   );

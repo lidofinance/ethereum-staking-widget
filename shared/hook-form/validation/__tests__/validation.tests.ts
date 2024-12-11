@@ -1,26 +1,23 @@
 /* eslint-disable unicorn/consistent-function-scoping */
-import { BigNumber } from 'ethers';
-import { MaxUint256 } from '@ethersproject/constants';
-import { TOKENS } from '@lido-sdk/constants';
-import { validateBignumberMax } from '../validate-bignumber-max';
-import { validateBignumberMin } from '../validate-bignumber-min';
-import { validateEtherAmount } from '../validate-ether-amount';
+import { maxUint256 } from 'viem';
+import { TOKENS_TO_WRAP } from 'features/wsteth/shared/types';
 
+import { validateBigintMax } from '../validate-bigint-max';
+import { validateBigintMin } from '../validate-bigint-min';
+import { validateEtherAmount } from '../validate-ether-amount';
 import { DefaultValidationErrorTypes } from '../validation-error';
 
-const bn = (v: any) => BigNumber.from(v);
 const message = 'test_message';
 const field = 'test_field';
 
-describe('validateBignumberMax', () => {
+describe('validateBigintMax', () => {
   it('should work', () => {
-    validateBignumberMax(field, bn(10), bn(12), message);
-    validateBignumberMax(field, bn(12), bn(12), message);
+    validateBigintMax(field, 10n, 12n, message);
+    validateBigintMax(field, 12n, 12n, message);
   });
 
   it('should throw right error', () => {
-    const fn = () => validateBignumberMax(field, bn(12), bn(10), message);
-    // NB: instanceof is broken in jest runtime
+    const fn = () => validateBigintMax(field, 12n, 10n, message);
     expect(fn).toThrowError();
     try {
       fn();
@@ -34,14 +31,14 @@ describe('validateBignumberMax', () => {
   });
 });
 
-describe('validateBignumberMin', () => {
+describe('validateBigintMin', () => {
   it('should work', () => {
-    validateBignumberMin(field, bn(12), bn(10), message);
-    validateBignumberMin(field, bn(12), bn(12), message);
+    validateBigintMin(field, 12n, 10n, message);
+    validateBigintMin(field, 12n, 12n, message);
   });
 
   it('should throw right error', () => {
-    const fn = () => validateBignumberMin(field, bn(10), bn(12), message);
+    const fn = () => validateBigintMin(field, 10n, 12n, message);
     expect(fn).toThrowError();
     try {
       fn();
@@ -57,11 +54,12 @@ describe('validateBignumberMin', () => {
 
 describe('validateEtherAmount', () => {
   it('should work', () => {
-    validateEtherAmount(field, bn(12), TOKENS.STETH);
+    validateEtherAmount(field, 12n, TOKENS_TO_WRAP.stETH);
   });
 
   it('should throw right error on null amount', () => {
-    const fn = () => validateEtherAmount(field, null, TOKENS.STETH);
+    const fn = () =>
+      validateEtherAmount(field, undefined, TOKENS_TO_WRAP.stETH);
     expect(fn).toThrowError();
     try {
       fn();
@@ -73,8 +71,8 @@ describe('validateEtherAmount', () => {
     }
   });
 
-  it('should throw right error on zero ', () => {
-    const fn = () => validateEtherAmount(field, bn(0), TOKENS.STETH);
+  it('should throw right error on zero', () => {
+    const fn = () => validateEtherAmount(field, 0n, TOKENS_TO_WRAP.stETH);
     expect(fn).toThrowError();
     try {
       fn();
@@ -88,7 +86,7 @@ describe('validateEtherAmount', () => {
 
   it('should throw right error on more than ethereum max uint', () => {
     const fn = () =>
-      validateEtherAmount(field, MaxUint256.add(1), TOKENS.STETH);
+      validateEtherAmount(field, maxUint256 + 1n, TOKENS_TO_WRAP.stETH);
     expect(fn).toThrowError();
     try {
       fn();

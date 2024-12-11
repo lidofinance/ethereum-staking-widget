@@ -8,20 +8,15 @@ import {
   useWatchContractEvent,
   useAccount,
 } from 'wagmi';
-import { BigNumber } from 'ethers';
 
-import { useLidoSDK } from 'modules/web3';
+import { useDappStatus, useLidoSDK, useLidoSDKL2 } from 'modules/web3';
 import { config } from 'config';
-
-import { useDappStatus } from './use-dapp-status';
 
 import type { Address, WatchContractEventOnLogsFn } from 'viem';
 import type { GetBalanceData } from 'wagmi/query';
 import type { AbstractLidoSDKErc20 } from '@lidofinance/lido-ethereum-sdk/erc20';
 
-const nativeToBN = (data: bigint) => BigNumber.from(data.toString());
-
-const balanceToBN = (data: GetBalanceData) => nativeToBN(data.value);
+const selectBalance = (data: GetBalanceData) => data.value;
 
 export const useEthereumBalance = () => {
   const { chainId, address, isDappActive } = useDappStatus();
@@ -30,7 +25,7 @@ export const useEthereumBalance = () => {
     address,
     chainId,
     query: {
-      select: balanceToBN,
+      select: selectBalance,
       staleTime: config.PROVIDER_POLLING_INTERVAL,
       refetchInterval: config.PROVIDER_POLLING_INTERVAL,
       enabled: isDappActive,
@@ -199,10 +194,10 @@ const useTokenBalance = (
   address?: Address,
   shouldSubscribe = true,
 ) => {
-  const { isDappActive, chainId } = useDappStatus();
+  const { chainId } = useDappStatus();
   const { subscribeToTokenUpdates } = useLidoSDK();
 
-  const enabled = !!address && isDappActive;
+  const enabled = !!address;
 
   const balanceQuery = useReadContract({
     abi: contract?.abi,
@@ -212,7 +207,6 @@ const useTokenBalance = (
     args: address && [address],
     query: {
       enabled,
-      select: nativeToBN,
       // because we update on events we can have high staleTime
       // this prevents loader when changing pages
       // but safes us from laggy user RPCs
@@ -239,13 +233,15 @@ export const useStethBalance = ({
   account,
   shouldSubscribeToUpdates = true,
 }: UseBalanceProps = {}) => {
-  const { core, l2, stETH, isL2 } = useLidoSDK();
+  const { chainId } = useDappStatus();
+  const { stETH } = useLidoSDK();
+  const { l2, isL2 } = useLidoSDKL2();
   const { isSupportedChain, address } = useDappStatus();
 
   const mergedAccount = account ?? address;
 
   const { data: contract, isLoading } = useQuery({
-    queryKey: ['steth-contract', core.chainId, isL2],
+    queryKey: ['steth-contract', chainId, isL2],
     enabled: !!mergedAccount && isSupportedChain,
 
     staleTime: Infinity,
@@ -271,19 +267,15 @@ export const useWstethBalance = ({
 }: UseBalanceProps = {}) => {
   const { isSupportedChain, address } = useDappStatus();
   const mergedAccount = account ?? address;
-  const {
-    core: lidoSDKCore,
-    l2: lidoSDKL2,
-    wstETH: lidoSDKwstETH,
-    isL2,
-  } = useLidoSDK();
+  const { chainId } = useDappStatus();
+  const { wstETH } = useLidoSDK();
+  const { l2, isL2 } = useLidoSDKL2();
 
   const { data: contract, isLoading } = useQuery({
-    queryKey: ['wsteth-contract', lidoSDKCore.chainId, isL2],
+    queryKey: ['wsteth-contract', chainId, isL2],
     enabled: !!mergedAccount && isSupportedChain,
     staleTime: Infinity,
-    queryFn: async () =>
-      isL2 ? lidoSDKL2.wsteth.getContract() : lidoSDKwstETH.getContract(),
+    queryFn: () => (isL2 ? l2.wsteth.getContract() : wstETH.getContract()),
   });
 
   const balanceData = useTokenBalance(

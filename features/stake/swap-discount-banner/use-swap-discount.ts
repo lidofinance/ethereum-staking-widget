@@ -1,7 +1,6 @@
-import { useLidoSWR } from '@lido-sdk/react';
-
+import { useQuery } from '@tanstack/react-query';
 import { config } from 'config';
-import { STRATEGY_LAZY } from 'consts/swr-strategies';
+import { STRATEGY_LAZY } from 'consts/react-query-strategies';
 
 import { getSwapIntegration } from './integrations';
 import type {
@@ -23,7 +22,6 @@ if (config.enableQaHelpers && typeof window !== 'undefined') {
 // we show banner if STETH is considerably cheaper to get on dex than staking
 // ETH -> stETH rate > THRESHOLD
 const fetchRate = async (
-  _: string,
   integrationKey: StakeSwapDiscountIntegrationKey,
 ): Promise<FetchRateResult & StakeSwapDiscountIntegrationValue> => {
   const integration = getSwapIntegration(integrationKey);
@@ -43,19 +41,17 @@ const fetchRate = async (
 };
 
 export const useSwapDiscount = () => {
-  return useLidoSWR(
-    ['swr:swap-discount-rate', config.STAKE_SWAP_INTEGRATION],
-    // @ts-expect-error useLidoSWR has broken fetcher-key type signature
-    fetchRate,
-    {
-      ...STRATEGY_LAZY,
-      onError(error, key) {
-        console.warn(
-          `[useSwapDiscount] Error fetching ETH->Steth:`,
-          key,
-          error,
-        );
-      },
+  return useQuery({
+    queryKey: ['swap-discount-rate', config.STAKE_SWAP_INTEGRATION],
+    ...STRATEGY_LAZY,
+    queryFn: async () => {
+      try {
+        return await fetchRate(config.STAKE_SWAP_INTEGRATION);
+      } catch (err) {
+        console.warn(`[useSwapDiscount] Error fetching ETH -> stETH: ${err}`);
+        // This line is necessary so that useQuery can handle the error and return undefined
+        throw err;
+      }
     },
-  );
+  });
 };
