@@ -34,12 +34,11 @@ export const useAA = () => {
   const capabilities =
     capabilitiesQuery.data && capabilitiesQuery.data[chainId];
 
-  const isAA = !!capabilities;
+  // use new AA flow only for batching supported accounts
+  // because some wallets cannot handle non-atomic batching (e.g Ambire EOA)
+  const isAA = !!capabilities?.atomicBatch?.supported;
 
-  const areAuxiliaryFundsSupported = !!(
-    capabilities?.auxiliaryFunds &&
-    capabilities.auxiliaryFunds.supported === true
-  );
+  const areAuxiliaryFundsSupported = !!capabilities?.auxiliaryFunds?.supported;
 
   return {
     ...capabilitiesQuery,
