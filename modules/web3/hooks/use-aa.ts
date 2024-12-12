@@ -11,7 +11,7 @@ import { useDappStatus } from './use-dapp-status';
 import { useLidoSDK, useLidoSDKL2 } from '../web3-provider';
 import { config } from 'config';
 
-import type { Hash } from 'viem';
+import type { Address, Hash } from 'viem';
 
 const retry = (retryCount: number, error: object) => {
   if (
@@ -72,6 +72,8 @@ type SendCallsStages =
 
 export class SendCallsError extends Error {}
 
+export type AACall = { to: Address; data?: Hash; value?: bigint };
+
 export const useSendAACalls = () => {
   const { sendCallsAsync } = useSendCalls();
   const { core: l1core } = useLidoSDK();
@@ -80,7 +82,8 @@ export const useSendAACalls = () => {
 
   return useCallback(
     async (
-      calls: unknown[],
+      // falsish calls will be filtered out
+      calls: (AACall | null | undefined | false)[],
       callback: (props: SendCallsStages) => Promise<void> = async () => {},
     ) => {
       try {
@@ -92,7 +95,13 @@ export const useSendAACalls = () => {
         });
 
         const callId = await sendCallsAsync({
-          calls,
+          calls: calls
+            .filter((call) => !!call)
+            .map((call) => ({
+              to: call.to,
+              data: call.data,
+              value: call.value,
+            })),
         });
 
         await callback({

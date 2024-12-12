@@ -38,12 +38,12 @@ export const useClaim = ({ onRetry }: Args) => {
         const hints = sortedRequests.map((r) => r.hint);
 
         if (isAA) {
-          const { to, data } = await withdraw.claim.claimRequestsPopulateTx({
+          const claimCall = await withdraw.claim.claimRequestsPopulateTx({
             requestsIds,
             hints,
           });
 
-          await sendAACalls([{ to, data }], async (props) => {
+          await sendAACalls([claimCall], async (props) => {
             switch (props.stage) {
               case TransactionCallbackStage.SIGN:
                 txModalStages.sign(amount);

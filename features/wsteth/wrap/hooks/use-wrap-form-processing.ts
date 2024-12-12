@@ -2,7 +2,8 @@ import { useCallback } from 'react';
 import invariant from 'tiny-invariant';
 
 import {
-  TransactionCallback,
+  type PopulatedTransaction,
+  type TransactionCallback,
   TransactionCallbackStage,
 } from '@lidofinance/lido-ethereum-sdk/core';
 
@@ -14,6 +15,7 @@ import {
   useDappStatus,
   useLidoSDK,
   useLidoSDKL2,
+  type AACall,
 } from 'modules/web3';
 
 import type {
@@ -37,14 +39,14 @@ export const useWrapFormProcessor = ({
   onRetry,
 }: UseWrapFormProcessorArgs) => {
   const { address } = useDappStatus();
-  const { wrap, wstETH, stETH } = useLidoSDK();
+  const { wrap, wstETH } = useLidoSDK();
   const { isAA } = useAA();
   const sendAACalls = useSendAACalls();
   const { l2, isL2 } = useLidoSDKL2();
   const { txModalStages } = useTxModalWrap();
 
   const {
-    isApprovalNeededBeforeWrap: isApprovalNeededBeforeWrapOnL1,
+    isApprovalNeededBeforeWrap: needsApproveL1,
     processApproveTx: processApproveTxOnL1,
   } = approvalDataOnL1;
 
@@ -70,44 +72,27 @@ export const useWrapFormProcessor = ({
         // ERC5792 flow
         //
         if (isAA) {
-          const calls: unknown[] = [];
-          // unwrap steth to wsteth on l2
-          if (isL2) {
-            const { to, data } = await l2.unwrapStethPopulateTx({
-              value: amount,
-            });
-            calls.push({
-              to,
-              data,
-            });
-            // wrap steth to wsteth
-          } else if (token === TOKENS_TO_WRAP.stETH) {
-            const wrapCall = await wrap.wrapStethPopulateTx({ value: amount });
+          let calls: (AACall | false)[];
+          const args = {
+            value: amount,
+          };
 
-            if (isApprovalNeededBeforeWrapOnL1) {
-              const { to, data } = await stETH.populateApprove({
-                amount,
-                to: wrapCall.to,
-              });
-              calls.push({
-                to,
-                data,
-              });
-            }
-            calls.push({
-              to: wrapCall.to,
-              data: wrapCall.data,
-            });
-            // wrap eth to wsteth
+          if (isL2) {
+            // unwrap steth to wsteth on l2
+            calls = [await l2.unwrapStethPopulateTx(args)];
+          } else if (token === TOKENS_TO_WRAP.stETH) {
+            // optional approve + wrap steth to wsteth
+            calls = await Promise.all([
+              needsApproveL1 &&
+                // fix for sdk mistype
+                (wrap.approveStethForWrapPopulateTx(
+                  args,
+                ) as Promise<PopulatedTransaction>),
+              wrap.wrapStethPopulateTx(args),
+            ]);
           } else {
-            const { to, data, value } = await wrap.wrapEthPopulateTx({
-              value: amount,
-            });
-            calls.push({
-              to,
-              data,
-              value,
-            });
+            // wrap eth to wsteth
+            calls = [await wrap.wrapEthPopulateTx(args)];
           }
 
           await sendAACalls(calls, async (props) => {
@@ -183,7 +168,7 @@ export const useWrapFormProcessor = ({
         }
 
         if (token === TOKENS_TO_WRAP.stETH) {
-          if (isApprovalNeededBeforeWrapOnL1) {
+          if (needsApproveL1) {
             await processApproveTxOnL1({ onRetry });
           }
 
@@ -222,8 +207,7 @@ export const useWrapFormProcessor = ({
       onConfirm,
       wstETH,
       isAA,
-      isApprovalNeededBeforeWrapOnL1,
-      stETH,
+      needsApproveL1,
       sendAACalls,
       processApproveTxOnL1,
     ],

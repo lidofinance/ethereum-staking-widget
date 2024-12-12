@@ -66,12 +66,12 @@ export const useStake = ({ onConfirm, onRetry }: StakeOptions) => {
         // ERC5792 flow
         //
         if (isAA) {
-          const { to, data, value } = await stake.stakeEthPopulateTx({
+          const stakeCall = await stake.stakeEthPopulateTx({
             value: amount,
             referralAddress: getAddressViem(referralAddress),
           });
 
-          await sendAACalls([{ to, data, value }], async (props) => {
+          await sendAACalls([stakeCall], async (props) => {
             switch (props.stage) {
               case TransactionCallbackStage.SIGN:
                 txModalStages.sign(amount);

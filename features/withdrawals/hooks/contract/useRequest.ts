@@ -87,26 +87,11 @@ export const useWithdrawalRequest = ({
         };
 
         if (isAA) {
-          const calls: unknown[] = [];
-          if (needsApprove) {
-            const approvalCall = await withdraw.approval.approvePopulateTx({
-              amount,
-              token,
-            });
-            calls.push({
-              to: approvalCall.to,
-              data: approvalCall.data,
-            });
-          }
-          const withdrawalCall =
-            await withdraw.request.requestWithdrawalPopulateTx({
-              token,
-              amount,
-            });
-          calls.push({
-            to: withdrawalCall.to,
-            data: withdrawalCall.data,
-          });
+          const args = { amount, token };
+          const calls = await Promise.all([
+            needsApprove && withdraw.approval.approvePopulateTx(args),
+            withdraw.request.requestWithdrawalPopulateTx(args),
+          ]);
 
           await sendAACalls(calls, async (props) => {
             switch (props.stage) {

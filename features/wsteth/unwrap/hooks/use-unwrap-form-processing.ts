@@ -41,7 +41,7 @@ export const useUnwrapFormProcessor = ({
   const { l2, isL2 } = useLidoSDKL2();
 
   const {
-    isApprovalNeededBeforeUnwrap: isApprovalNeededBeforeUnwrapOnL2,
+    isApprovalNeededBeforeUnwrap: needsApproveL2,
     processApproveTx: processApproveTxOnL2,
   } = approvalDataOnL2;
 
@@ -64,30 +64,17 @@ export const useUnwrapFormProcessor = ({
         };
 
         if (isAA) {
-          const calls: unknown[] = [];
+          let calls;
+          const args = {
+            value: amount,
+          };
           if (isL2) {
-            if (isApprovalNeededBeforeUnwrapOnL2) {
-              const { to, data } = await l2.approveWstethForWrapPopulateTx({
-                value: amount,
-              });
-              calls.push({
-                to,
-                data,
-              });
-            }
-            const { to, data } = await l2.wrapWstethToStethPopulateTx({
-              value: amount,
-            });
-            calls.push({
-              to,
-              data,
-            });
+            calls = await Promise.all([
+              needsApproveL2 && l2.approveWstethForWrapPopulateTx(args),
+              l2.wrapWstethToStethPopulateTx(args),
+            ]);
           } else {
-            const { to, data } = await wrap.unwrapPopulateTx({ value: amount });
-            calls.push({
-              to,
-              data,
-            });
+            calls = [await wrap.unwrapPopulateTx(args)];
           }
 
           await sendAACalls(calls, async (props) => {
@@ -122,7 +109,7 @@ export const useUnwrapFormProcessor = ({
 
         let txHash: Hash | undefined = undefined;
 
-        if (isL2 && isApprovalNeededBeforeUnwrapOnL2) {
+        if (isL2 && needsApproveL2) {
           await processApproveTxOnL2({ onRetry });
         }
 
@@ -177,7 +164,7 @@ export const useUnwrapFormProcessor = ({
       wrap,
       isAA,
       isL2,
-      isApprovalNeededBeforeUnwrapOnL2,
+      needsApproveL2,
       txModalStages,
       sendAACalls,
       onConfirm,
