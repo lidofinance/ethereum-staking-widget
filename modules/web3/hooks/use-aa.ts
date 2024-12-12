@@ -95,13 +95,11 @@ export const useSendAACalls = () => {
         });
 
         const callId = await sendCallsAsync({
-          calls: calls
-            .filter((call) => !!call)
-            .map((call) => ({
-              to: call.to,
-              data: call.data,
-              value: call.value,
-            })),
+          calls: (calls.filter((call) => !!call) as AACall[]).map((call) => ({
+            to: call.to,
+            data: call.data,
+            value: call.value,
+          })),
         });
 
         await callback({
