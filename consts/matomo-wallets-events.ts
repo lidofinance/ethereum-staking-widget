@@ -30,7 +30,7 @@ const EVENTS_DATA_CONNECT_START: EventsData = {
   okx: ['OKX', 'okx'],
   trust: ['Trust', 'trust'],
   walletConnect: ['WalletConnect', 'walletconnect'],
-  xdefi: ['XDEFI', 'xdefi'],
+  ctrl: ['Ctrl', 'ctrl'],
 } as const;
 
 const EVENTS_DATA_CONNECT_SUCCESS: EventsData = {
