@@ -12,7 +12,7 @@ export enum ErrorMessage {
   INVALID_SIGNATURE = 'Invalid Permit signature. Perhaps it has expired or already been used. Try submitting a withdrawal request again.',
 }
 
-export const getErrorMessage = (error: unknown): ErrorMessage => {
+export const getErrorMessage = (error: unknown): ErrorMessage | string => {
   try {
     console.error('TX_ERROR:', { error, error_string: JSON.stringify(error) });
   } catch (e) {
@@ -61,7 +61,7 @@ export const getErrorMessage = (error: unknown): ErrorMessage => {
 // extracts message from Errors made by us
 const extractHumaneMessage = (error: unknown) => {
   if (error instanceof SendCallsError) {
-    error.message;
+    return error.message;
   }
   return null;
 };
@@ -81,6 +81,17 @@ export const extractCodeFromError = (
   ) {
     const receipt = error.receipt as { blockHash?: string };
     if (receipt.blockHash?.startsWith('0x')) return 'TRANSACTION_REVERTED';
+  }
+
+  if (
+    'cause' in error &&
+    typeof error.cause === 'object' &&
+    error.cause &&
+    'details' in error.cause &&
+    typeof error.cause.details == 'string' &&
+    error.cause.details.toLowerCase().includes('user reject')
+  ) {
+    return 'ACTION_REJECTED';
   }
 
   if ('reason' in error && typeof error.reason == 'string') {
