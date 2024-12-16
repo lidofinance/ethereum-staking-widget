@@ -4,6 +4,8 @@ export const PROVIDER_POLLING_INTERVAL = 12_000;
 export const PROVIDER_BATCH_TIME = 150;
 // max batch
 export const PROVIDER_MAX_BATCH = 20;
+// AA transaction polling timeout(ms)
+export const AA_TX_POLLING_TIMEOUT = 180_000; // 3 minutes
 
 // account for gas estimation
 // will always have:

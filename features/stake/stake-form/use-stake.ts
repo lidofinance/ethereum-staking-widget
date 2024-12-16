@@ -9,7 +9,13 @@ import {
 } from '@lidofinance/lido-ethereum-sdk';
 
 import { config } from 'config';
-import { applyRoundUpGasLimit, useDappStatus, useLidoSDK } from 'modules/web3';
+import {
+  applyRoundUpGasLimit,
+  useAA,
+  useDappStatus,
+  useLidoSDK,
+  useSendAACalls,
+} from 'modules/web3';
 
 import { MockLimitReachedError, getRefferalAddress } from './utils';
 import { useTxModalStagesStake } from './hooks/use-tx-modal-stages-stake';
@@ -26,6 +32,8 @@ type StakeOptions = {
 
 export const useStake = ({ onConfirm, onRetry }: StakeOptions) => {
   const { address } = useDappStatus();
+  const { isAA } = useAA();
+  const sendAACalls = useSendAACalls();
   const { stake, stETH } = useLidoSDK();
   const { txModalStages } = useTxModalStagesStake();
 
@@ -42,10 +50,55 @@ export const useStake = ({ onConfirm, onRetry }: StakeOptions) => {
           throw new MockLimitReachedError('Stake limit reached');
         }
 
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const referralAddress = referral
           ? await getRefferalAddress(referral, stake.core.rpcProvider)
           : config.STAKE_FALLBACK_REFERRAL_ADDRESS;
+
+        const onStakeTxConfirmed = async () => {
+          const [, balance] = await Promise.all([
+            onConfirm?.(),
+            stETH.balance(address),
+          ]);
+          return balance;
+        };
+
+        //
+        // ERC5792 flow
+        //
+        if (isAA) {
+          const stakeCall = await stake.stakeEthPopulateTx({
+            value: amount,
+            referralAddress: getAddressViem(referralAddress),
+          });
+
+          await sendAACalls([stakeCall], async (props) => {
+            switch (props.stage) {
+              case TransactionCallbackStage.SIGN:
+                txModalStages.sign(amount);
+                break;
+              case TransactionCallbackStage.RECEIPT:
+                txModalStages.pending(amount, props.callId as Hash, isAA);
+                break;
+              case TransactionCallbackStage.DONE: {
+                const balance = await onStakeTxConfirmed();
+                txModalStages.success(balance, props.txHash);
+                break;
+              }
+              case TransactionCallbackStage.ERROR: {
+                txModalStages.failed(props.error, onRetry);
+                break;
+              }
+              default:
+                break;
+            }
+          });
+
+          return true;
+        }
+
+        //
+        // Legacy flow
+        //
 
         let txHash: Hash | undefined = undefined;
         const txCallback: TransactionCallback = async ({ stage, payload }) => {
@@ -62,10 +115,7 @@ export const useStake = ({ onConfirm, onRetry }: StakeOptions) => {
               txHash = payload;
               break;
             case TransactionCallbackStage.DONE: {
-              const [, balance] = await Promise.all([
-                onConfirm?.(),
-                stETH.balance(address),
-              ]);
+              const balance = await onStakeTxConfirmed();
               txModalStages.success(balance, txHash);
               break;
             }
@@ -92,6 +142,15 @@ export const useStake = ({ onConfirm, onRetry }: StakeOptions) => {
         return false;
       }
     },
-    [address, stake, txModalStages, onConfirm, stETH, onRetry],
+    [
+      address,
+      stake,
+      isAA,
+      txModalStages,
+      sendAACalls,
+      onConfirm,
+      stETH,
+      onRetry,
+    ],
   );
 };

@@ -1,4 +1,3 @@
-import type { Hash } from 'viem';
 import { useCallback } from 'react';
 import invariant from 'tiny-invariant';
 
@@ -10,7 +9,9 @@ import {
 import { useClaimData } from 'features/withdrawals/contexts/claim-data-context';
 import { RequestStatusClaimable } from 'features/withdrawals/types/request-status';
 import { useTxModalStagesClaim } from 'features/withdrawals/claim/transaction-modal-claim/use-tx-modal-stages-claim';
-import { useDappStatus, useLidoSDK } from 'modules/web3';
+import { useAA, useDappStatus, useLidoSDK, useSendAACalls } from 'modules/web3';
+
+import type { Hash } from 'viem';
 
 type Args = {
   onRetry?: () => void;
@@ -19,6 +20,9 @@ type Args = {
 export const useClaim = ({ onRetry }: Args) => {
   const { address } = useDappStatus();
   const { withdraw } = useLidoSDK();
+  const { isAA } = useAA();
+  const sendAACalls = useSendAACalls();
+
   const { optimisticClaimRequests } = useClaimData();
   const { txModalStages } = useTxModalStagesClaim();
 
@@ -32,6 +36,37 @@ export const useClaim = ({ onRetry }: Args) => {
 
         const requestsIds = sortedRequests.map((r) => r.id);
         const hints = sortedRequests.map((r) => r.hint);
+
+        if (isAA) {
+          const claimCall = await withdraw.claim.claimRequestsPopulateTx({
+            requestsIds,
+            hints,
+          });
+
+          await sendAACalls([claimCall], async (props) => {
+            switch (props.stage) {
+              case TransactionCallbackStage.SIGN:
+                txModalStages.sign(amount);
+                break;
+              case TransactionCallbackStage.RECEIPT:
+                txModalStages.pending(amount, props.callId as Hash, isAA);
+                break;
+              case TransactionCallbackStage.DONE: {
+                await optimisticClaimRequests(sortedRequests);
+                txModalStages.success(amount, props.txHash);
+                break;
+              }
+              case TransactionCallbackStage.ERROR: {
+                txModalStages.failed(props.error, onRetry);
+                break;
+              }
+              default:
+                break;
+            }
+          });
+
+          return true;
+        }
 
         let txHash: Hash | undefined = undefined;
         const txCallback: TransactionCallback = async ({ stage, payload }) => {
@@ -71,6 +106,14 @@ export const useClaim = ({ onRetry }: Args) => {
         return false;
       }
     },
-    [address, withdraw.claim, txModalStages, optimisticClaimRequests, onRetry],
+    [
+      address,
+      isAA,
+      withdraw.claim,
+      txModalStages,
+      sendAACalls,
+      optimisticClaimRequests,
+      onRetry,
+    ],
   );
 };

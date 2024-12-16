@@ -1,7 +1,5 @@
-/* eslint-disable sonarjs/no-identical-functions */
 import { useCallback } from 'react';
 import invariant from 'tiny-invariant';
-import type { Address, Hash } from 'viem';
 
 import {
   TransactionCallback,
@@ -12,9 +10,17 @@ import { TOKENS_TO_WITHDRAWLS } from 'features/withdrawals/types/tokens-withdraw
 import { useWithdrawals } from 'features/withdrawals/contexts/withdrawals-context';
 import { useTxModalStagesRequest } from 'features/withdrawals/request/transaction-modal-request/use-tx-modal-stages-request';
 import { useTransactionModal } from 'shared/transaction-modal/transaction-modal';
-import { useDappStatus, useIsMultisig, useLidoSDK } from 'modules/web3';
+import {
+  useAA,
+  useDappStatus,
+  useIsSmartAccount,
+  useLidoSDK,
+  useSendAACalls,
+} from 'modules/web3';
 
 import { useWithdrawalApprove } from './use-withdrawal-approve';
+
+import type { Address, Hash } from 'viem';
 
 type useWithdrawalRequestParams = {
   amount: bigint | null;
@@ -30,10 +36,13 @@ export const useWithdrawalRequest = ({
   onRetry,
 }: useWithdrawalRequestParams) => {
   const { address } = useDappStatus();
+  const { isAA } = useAA();
+  const sendAACalls = useSendAACalls();
   const { isBunker } = useWithdrawals();
   const { withdraw } = useLidoSDK();
   const { txModalStages } = useTxModalStagesRequest();
-  const { isMultisig, isLoading: isMultisigLoading } = useIsMultisig();
+  const { isSmartAccount, isLoading: isSmartAccountLoading } =
+    useIsSmartAccount();
   const {
     allowance,
     needsApprove,
@@ -42,9 +51,9 @@ export const useWithdrawalRequest = ({
   } = useWithdrawalApprove(amount ? amount : 0n, token, address as Address);
   const { closeModal } = useTransactionModal();
 
-  const isApprovalFlow = isMultisig || !!(allowance && !needsApprove);
+  const isApprovalFlow = isSmartAccount || !!(allowance && !needsApprove);
 
-  const isApprovalFlowLoading = isMultisigLoading || isUseApproveLoading;
+  const isApprovalFlowLoading = isSmartAccountLoading || isUseApproveLoading;
 
   const isTokenLocked = !!(isApprovalFlow && needsApprove);
 
@@ -68,6 +77,50 @@ export const useWithdrawalRequest = ({
             closeModal();
             return false;
           }
+        }
+
+        const onWithdrawalConfirm = () => {
+          return Promise.all([
+            onConfirm?.(),
+            isApprovalFlow ? refetchAllowance() : Promise.resolve(null),
+          ]);
+        };
+
+        if (isAA) {
+          const args = { amount, token };
+          const calls = await Promise.all([
+            needsApprove && withdraw.approval.approvePopulateTx(args),
+            withdraw.request.requestWithdrawalPopulateTx(args),
+          ]);
+
+          await sendAACalls(calls, async (props) => {
+            switch (props.stage) {
+              case TransactionCallbackStage.SIGN:
+                txModalStages.sign(amount, token);
+                break;
+              case TransactionCallbackStage.RECEIPT:
+                txModalStages.pending(
+                  amount,
+                  token,
+                  props.callId as Hash,
+                  isAA,
+                );
+                break;
+              case TransactionCallbackStage.DONE: {
+                await onWithdrawalConfirm();
+                txModalStages.success(amount, token, props.txHash);
+                break;
+              }
+              case TransactionCallbackStage.ERROR: {
+                txModalStages.failed(props.error, onRetry);
+                break;
+              }
+              default:
+                break;
+            }
+          });
+
+          return true;
         }
 
         const txCallbackApproval: TransactionCallback = async ({
@@ -135,14 +188,15 @@ export const useWithdrawalRequest = ({
               token,
               callback: txCallbackApproval,
             });
-
-            // Not run the 'withdraw.request.requestWithdrawal***', because we are waiting for other signatories
-            if (isMultisig) return true;
           }
 
           await withdraw.request.requestWithdrawal(txProps);
         } else {
-          await withdraw.request.requestWithdrawalWithPermit(txProps);
+          const deadline = BigInt(Math.floor(Date.now() / 1000) + 86_400); // 1 day
+          await withdraw.request.requestWithdrawalWithPermit({
+            ...txProps,
+            deadline,
+          });
         }
 
         return true;
@@ -154,13 +208,14 @@ export const useWithdrawalRequest = ({
     },
     [
       closeModal,
+      isAA,
       isApprovalFlow,
       isBunker,
-      isMultisig,
       needsApprove,
       onConfirm,
       onRetry,
       refetchAllowance,
+      sendAACalls,
       txModalStages,
       withdraw.approval,
       withdraw.request,

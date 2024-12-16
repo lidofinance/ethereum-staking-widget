@@ -1,3 +1,5 @@
+import { SendCallsError } from 'modules/web3';
+
 export enum ErrorMessage {
   NOT_ENOUGH_ETHER = 'Not enough ether for gas.',
   DENIED_SIG = 'User denied the transaction signature.',
@@ -10,12 +12,17 @@ export enum ErrorMessage {
   INVALID_SIGNATURE = 'Invalid Permit signature. Perhaps it has expired or already been used. Try submitting a withdrawal request again.',
 }
 
-export const getErrorMessage = (error: unknown): ErrorMessage => {
+export const getErrorMessage = (error: unknown): ErrorMessage | string => {
   try {
     console.error('TX_ERROR:', { error, error_string: JSON.stringify(error) });
   } catch (e) {
     console.error('TX_ERROR:', e);
   }
+
+  // Try to extract humane error from trusted error types
+  const parsedMessage = extractHumaneMessage(error);
+
+  if (parsedMessage) return parsedMessage;
 
   const code = extractCodeFromError(error);
   switch (code) {
@@ -51,6 +58,14 @@ export const getErrorMessage = (error: unknown): ErrorMessage => {
   }
 };
 
+// extracts message from Errors made by us
+const extractHumaneMessage = (error: unknown) => {
+  if (error instanceof SendCallsError) {
+    return error.message;
+  }
+  return null;
+};
+
 // type safe error code extractor
 export const extractCodeFromError = (
   error: unknown,
@@ -66,6 +81,17 @@ export const extractCodeFromError = (
   ) {
     const receipt = error.receipt as { blockHash?: string };
     if (receipt.blockHash?.startsWith('0x')) return 'TRANSACTION_REVERTED';
+  }
+
+  if (
+    'cause' in error &&
+    typeof error.cause === 'object' &&
+    error.cause &&
+    'details' in error.cause &&
+    typeof error.cause.details == 'string' &&
+    error.cause.details.toLowerCase().includes('user reject')
+  ) {
+    return 'ACTION_REJECTED';
   }
 
   if ('reason' in error && typeof error.reason == 'string') {
