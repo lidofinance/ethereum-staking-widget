@@ -1,25 +1,27 @@
-import { BigNumber } from 'ethers';
+import type { Hash } from 'viem';
+import { getAddress as getAddressViem } from 'viem';
 import { useCallback } from 'react';
 import invariant from 'tiny-invariant';
 
 import {
-  useSDK,
-  useSTETHContractRPC,
-  useSTETHContractWeb3,
-} from '@lido-sdk/react';
+  TransactionCallbackStage,
+  type TransactionCallback,
+} from '@lidofinance/lido-ethereum-sdk';
 
 import { config } from 'config';
-import { useCurrentStaticRpcProvider } from 'shared/hooks/use-current-static-rpc-provider';
-import { isContract } from 'utils/isContract';
-import { runWithTransactionLogger } from 'utils';
+import {
+  applyRoundUpGasLimit,
+  useAA,
+  useDappStatus,
+  useLidoSDK,
+  useSendAACalls,
+} from 'modules/web3';
 
-import { MockLimitReachedError, getAddress } from './utils';
+import { MockLimitReachedError, getRefferalAddress } from './utils';
 import { useTxModalStagesStake } from './hooks/use-tx-modal-stages-stake';
 
-import { sendTx, useTxConfirmation, useDappStatus } from 'modules/web3';
-
 type StakeArguments = {
-  amount: BigNumber | null;
+  amount: bigint | null;
   referral: string | null;
 };
 
@@ -29,21 +31,17 @@ type StakeOptions = {
 };
 
 export const useStake = ({ onConfirm, onRetry }: StakeOptions) => {
-  const stethContractWeb3 = useSTETHContractWeb3();
   const { address } = useDappStatus();
-  const stethContract = useSTETHContractRPC();
-  const { staticRpcProvider } = useCurrentStaticRpcProvider();
-  const { providerWeb3 } = useSDK();
+  const { isAA } = useAA();
+  const sendAACalls = useSendAACalls();
+  const { stake, stETH } = useLidoSDK();
   const { txModalStages } = useTxModalStagesStake();
-  const waitForTx = useTxConfirmation();
 
   return useCallback(
     async ({ amount, referral }: StakeArguments): Promise<boolean> => {
       try {
         invariant(amount, 'amount is null');
         invariant(address, 'account is not defined');
-        invariant(providerWeb3, 'providerWeb3 not defined');
-        invariant(stethContractWeb3, 'steth is not defined');
 
         if (
           config.enableQaHelpers &&
@@ -52,54 +50,90 @@ export const useStake = ({ onConfirm, onRetry }: StakeOptions) => {
           throw new MockLimitReachedError('Stake limit reached');
         }
 
-        txModalStages.sign(amount);
+        const referralAddress = referral
+          ? await getRefferalAddress(referral, stake.core.rpcProvider)
+          : config.STAKE_FALLBACK_REFERRAL_ADDRESS;
 
-        const [isMultisig, referralAddress] = await Promise.all([
-          isContract(address, staticRpcProvider),
-          referral
-            ? getAddress(referral, staticRpcProvider)
-            : config.STAKE_FALLBACK_REFERRAL_ADDRESS,
-        ]);
-
-        const callback = async () => {
-          const tx = await stethContractWeb3.populateTransaction.submit(
-            referralAddress,
-            {
-              value: amount,
-            },
-          );
-
-          return sendTx({
-            tx,
-            isMultisig,
-            staticProvider: staticRpcProvider,
-            walletProvider: providerWeb3,
-            shouldApplyGasLimitRatio: true,
-            shouldRoundUpGasLimit: true,
-          });
+        const onStakeTxConfirmed = async () => {
+          const [, balance] = await Promise.all([
+            onConfirm?.(),
+            stETH.balance(address),
+          ]);
+          return balance;
         };
 
-        const txHash = await runWithTransactionLogger(
-          'Stake signing',
-          callback,
-        );
+        //
+        // ERC5792 flow
+        //
+        if (isAA) {
+          const stakeCall = await stake.stakeEthPopulateTx({
+            value: amount,
+            referralAddress: getAddressViem(referralAddress),
+          });
 
-        if (isMultisig) {
-          txModalStages.successMultisig();
+          await sendAACalls([stakeCall], async (props) => {
+            switch (props.stage) {
+              case TransactionCallbackStage.SIGN:
+                txModalStages.sign(amount);
+                break;
+              case TransactionCallbackStage.RECEIPT:
+                txModalStages.pending(amount, props.callId as Hash, isAA);
+                break;
+              case TransactionCallbackStage.DONE: {
+                const balance = await onStakeTxConfirmed();
+                txModalStages.success(balance, props.txHash);
+                break;
+              }
+              case TransactionCallbackStage.ERROR: {
+                txModalStages.failed(props.error, onRetry);
+                break;
+              }
+              default:
+                break;
+            }
+          });
+
           return true;
         }
 
-        txModalStages.pending(amount, txHash);
+        //
+        // Legacy flow
+        //
 
-        await runWithTransactionLogger('Stake block confirmation', () =>
-          waitForTx(txHash),
-        );
+        let txHash: Hash | undefined = undefined;
+        const txCallback: TransactionCallback = async ({ stage, payload }) => {
+          switch (stage) {
+            case TransactionCallbackStage.SIGN:
+              txModalStages.sign(amount);
+              return applyRoundUpGasLimit(
+                // the payload here is bigint
+                payload ?? config.STAKE_GASLIMIT_FALLBACK,
+              );
+            case TransactionCallbackStage.RECEIPT:
+              txModalStages.pending(amount, payload);
+              // the payload here is txHash
+              txHash = payload;
+              break;
+            case TransactionCallbackStage.DONE: {
+              const balance = await onStakeTxConfirmed();
+              txModalStages.success(balance, txHash);
+              break;
+            }
+            case TransactionCallbackStage.MULTISIG_DONE:
+              txModalStages.successMultisig();
+              break;
+            case TransactionCallbackStage.ERROR:
+              txModalStages.failed(payload, onRetry);
+              break;
+            default:
+          }
+        };
 
-        const stethBalance = await stethContract.balanceOf(address);
-
-        await onConfirm?.();
-
-        txModalStages.success(stethBalance, txHash);
+        await stake.stakeEth({
+          value: amount,
+          callback: txCallback,
+          referralAddress: getAddressViem(referralAddress),
+        });
 
         return true;
       } catch (error) {
@@ -110,13 +144,12 @@ export const useStake = ({ onConfirm, onRetry }: StakeOptions) => {
     },
     [
       address,
-      providerWeb3,
-      stethContractWeb3,
+      stake,
+      isAA,
       txModalStages,
-      staticRpcProvider,
-      stethContract,
+      sendAACalls,
       onConfirm,
-      waitForTx,
+      stETH,
       onRetry,
     ],
   );

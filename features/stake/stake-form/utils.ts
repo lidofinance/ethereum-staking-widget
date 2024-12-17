@@ -1,17 +1,19 @@
-import { isAddress } from 'ethers/lib/utils';
-import type { BaseProvider } from '@ethersproject/providers';
+import { PublicClient, isAddress } from 'viem';
+import { getEnsAddress } from 'viem/ens';
 
-export const getAddress = async (
+export const getRefferalAddress = async (
   input: string,
-  providerRpc: BaseProvider,
+  provider: PublicClient,
 ): Promise<string> => {
   try {
     if (isAddress(input)) return input;
-    const address = await providerRpc.resolveName(input);
-    if (address) return address;
+    const address = await getEnsAddress(provider, { name: input });
+    if (address) return address.toString();
+    return input;
   } catch {
     // noop
   }
+
   // if code gets here, ref is invalid and we need to throw error
   throw new ReferralAddressError();
 };

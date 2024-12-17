@@ -1,30 +1,24 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { useCallback } from 'react';
-import { BigNumber } from 'ethers';
 import invariant from 'tiny-invariant';
 
 import {
-  useSDK,
-  useWSTETHContractRPC,
-  useWSTETHContractWeb3,
-} from '@lido-sdk/react';
-import { TransactionCallbackStage } from '@lidofinance/lido-ethereum-sdk/core';
+  type TransactionCallback,
+  TransactionCallbackStage,
+} from '@lidofinance/lido-ethereum-sdk/core';
 
-import { useCurrentStaticRpcProvider } from 'shared/hooks/use-current-static-rpc-provider';
 import {
-  useTxConfirmation,
-  sendTx,
-  useLidoSDK,
+  useAA,
   useDappStatus,
-  useGetIsContract,
+  useLidoSDK,
+  useLidoSDKL2,
+  useSendAACalls,
 } from 'modules/web3';
-import { runWithTransactionLogger } from 'utils';
-
-import { convertToBigNumber } from 'utils/convert-to-big-number';
 
 import type { UnwrapFormInputType } from '../unwrap-form-context';
 import { useUnwrapTxOnL2Approve } from './use-unwrap-tx-on-l2-approve';
 import { useTxModalStagesUnwrap } from './use-tx-modal-stages-unwrap';
+
+import type { Hash } from 'viem';
 
 export type UnwrapFormApprovalData = ReturnType<typeof useUnwrapTxOnL2Approve>;
 
@@ -39,18 +33,15 @@ export const useUnwrapFormProcessor = ({
   onConfirm,
   onRetry,
 }: UseUnwrapFormProcessorArgs) => {
-  const { isDappActiveOnL2, address } = useDappStatus();
-  const { providerWeb3 } = useSDK();
-  const { staticRpcProvider } = useCurrentStaticRpcProvider();
+  const { isAA } = useAA();
+  const sendAACalls = useSendAACalls();
+  const { address } = useDappStatus();
   const { txModalStages } = useTxModalStagesUnwrap();
-  const wstETHContractRPC = useWSTETHContractRPC();
-  const wstethContractWeb3 = useWSTETHContractWeb3();
-  const waitForTx = useTxConfirmation();
-  const isContract = useGetIsContract();
-  const { l2, stETH, isL2 } = useLidoSDK();
+  const { stETH, wrap } = useLidoSDK();
+  const { l2, isL2 } = useLidoSDKL2();
 
   const {
-    isApprovalNeededBeforeUnwrap: isApprovalNeededBeforeUnwrapOnL2,
+    isApprovalNeededBeforeUnwrap: needsApproveL2,
     processApproveTx: processApproveTxOnL2,
   } = approvalDataOnL2;
 
@@ -59,86 +50,107 @@ export const useUnwrapFormProcessor = ({
       try {
         invariant(amount, 'amount should be presented');
         invariant(address, 'address should be presented');
-        if (!isL2) {
-          invariant(providerWeb3, 'providerWeb3 must be presented');
-          invariant(wstethContractWeb3, 'must have wstethContractWeb3');
-        }
 
-        const [isMultisig, willReceive] = await Promise.all([
-          isContract(address),
-          isL2
-            ? l2.steth
-                .convertToSteth(amount.toBigInt())
-                .then(convertToBigNumber)
-            : wstETHContractRPC.getStETHByWstETH(amount),
-        ]);
+        const willReceive = await (isL2
+          ? l2.steth.convertToSteth(amount)
+          : wrap.convertWstethToSteth(amount));
 
-        if (isL2 && isApprovalNeededBeforeUnwrapOnL2) {
-          txModalStages.signApproval(amount);
+        const onUnwrapConfirm = async () => {
+          const [, balance] = await Promise.all([
+            onConfirm?.(),
+            isL2 ? l2.steth.balance(address) : stETH.balance(address),
+          ]);
+          return balance;
+        };
 
-          await processApproveTxOnL2({
-            onTxSent: (txHash) => {
-              if (!isMultisig) {
-                txModalStages.pendingApproval(amount, txHash);
+        if (isAA) {
+          let calls;
+          const args = {
+            value: amount,
+          };
+          if (isL2) {
+            calls = await Promise.all([
+              needsApproveL2 && l2.approveWstethForWrapPopulateTx(args),
+              l2.wrapWstethToStethPopulateTx(args),
+            ]);
+          } else {
+            calls = [await wrap.unwrapPopulateTx(args)];
+          }
+
+          await sendAACalls(calls, async (props) => {
+            switch (props.stage) {
+              case TransactionCallbackStage.SIGN:
+                txModalStages.sign(amount, willReceive);
+                break;
+              case TransactionCallbackStage.RECEIPT:
+                txModalStages.pending(
+                  amount,
+                  willReceive,
+                  props.callId as Hash,
+                  isAA,
+                );
+                break;
+              case TransactionCallbackStage.DONE: {
+                const balance = await onUnwrapConfirm();
+                txModalStages.success(balance, props.txHash);
+                break;
               }
-            },
+              case TransactionCallbackStage.ERROR: {
+                txModalStages.failed(props.error, onRetry);
+                break;
+              }
+              default:
+                break;
+            }
           });
 
-          if (isMultisig) {
-            txModalStages.successMultisig();
-            return true;
-          }
-        }
-
-        txModalStages.sign(amount, willReceive);
-
-        let txHash: string;
-        if (isL2) {
-          txHash = (
-            await runWithTransactionLogger('Unwrap signing on L2', () =>
-              // The operation 'wstETH to stETH' on L2 is 'wrap'
-              l2.wrapWstethToSteth({
-                value: amount.toBigInt(),
-                callback: ({ stage, payload }) => {
-                  if (stage === TransactionCallbackStage.RECEIPT)
-                    txModalStages.pending(amount, willReceive, payload);
-                },
-              }),
-            )
-          ).hash;
-        } else {
-          txHash = await runWithTransactionLogger(
-            'Unwrap signing on L1',
-            async () => {
-              const tx =
-                await wstethContractWeb3!.populateTransaction.unwrap(amount);
-
-              return sendTx({
-                tx,
-                isMultisig,
-                staticProvider: staticRpcProvider,
-                walletProvider: providerWeb3!,
-              });
-            },
-          );
-          if (!isMultisig) txModalStages.pending(amount, willReceive, txHash);
-        }
-
-        if (isMultisig) {
-          txModalStages.successMultisig();
           return true;
         }
 
-        await runWithTransactionLogger('Unwrap block confirmation', () =>
-          waitForTx(txHash),
-        );
+        let txHash: Hash | undefined = undefined;
 
-        const [stethBalance] = await Promise.all([
-          isDappActiveOnL2 ? l2.steth.balance(address) : stETH.balance(address),
-          onConfirm(),
-        ]);
+        if (isL2 && needsApproveL2) {
+          await processApproveTxOnL2({ onRetry });
+        }
 
-        txModalStages.success(BigNumber.from(stethBalance), txHash);
+        const callback: TransactionCallback = async ({ stage, payload }) => {
+          switch (stage) {
+            case TransactionCallbackStage.SIGN:
+              txModalStages.sign(amount, willReceive);
+              break;
+            case TransactionCallbackStage.RECEIPT:
+              // the payload here is txHash
+              txModalStages.pending(amount, willReceive, payload);
+              txHash = payload;
+              break;
+            case TransactionCallbackStage.DONE: {
+              const balance = await onUnwrapConfirm();
+              txModalStages.success(balance, txHash);
+              break;
+            }
+            case TransactionCallbackStage.MULTISIG_DONE:
+              txModalStages.successMultisig();
+              break;
+            case TransactionCallbackStage.ERROR:
+              txModalStages.failed(payload, onRetry);
+              break;
+            default:
+          }
+        };
+
+        if (isL2) {
+          // The operation 'wstETH to stETH' on L2 is 'wrap'
+          await l2.wrapWstethToSteth({
+            value: amount,
+            callback,
+          });
+        } else {
+          await wrap.unwrap({
+            value: amount,
+            callback,
+          });
+        }
+
         return true;
       } catch (error: any) {
         console.warn(error);
@@ -148,20 +160,16 @@ export const useUnwrapFormProcessor = ({
     },
     [
       address,
-      isL2,
-      isContract,
       l2,
-      wstETHContractRPC,
-      isApprovalNeededBeforeUnwrapOnL2,
+      wrap,
+      isAA,
+      isL2,
+      needsApproveL2,
       txModalStages,
-      isDappActiveOnL2,
-      stETH,
+      sendAACalls,
       onConfirm,
-      providerWeb3,
-      wstethContractWeb3,
+      stETH,
       processApproveTxOnL2,
-      staticRpcProvider,
-      waitForTx,
       onRetry,
     ],
   );
