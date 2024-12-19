@@ -1,10 +1,39 @@
-import { useMemo } from 'react';
-import type { Manifest, ManifestEntry } from './types';
-import { getDexConfig } from 'features/withdrawals/request/withdrawal-rates';
+import { config } from 'config';
+import {
+  Manifest,
+  ManifestConfig,
+  ManifestConfigPage,
+  ManifestConfigPageEnum,
+  ManifestEntry,
+} from 'config/external-config';
 
-import FallbackLocalManifest from 'IPFS.json' assert { type: 'json' };
+export const isMultiChainBannerValid = (config: object) => {
+  // allow empty config
+  if (!('multiChainBanner' in config) || !config.multiChainBanner) return true;
 
-const isEnabledDexesValid = (config: object) => {
+  if (!Array.isArray(config.multiChainBanner)) return false;
+
+  const multiChainBanner = config.multiChainBanner;
+
+  if (
+    !multiChainBanner.every(
+      (chainId) => typeof chainId === 'number' && chainId > 0,
+    )
+  )
+    return false;
+
+  return !(new Set(multiChainBanner).size !== multiChainBanner.length);
+};
+
+export const isFeatureFlagsValid = (config: object) => {
+  // allow empty config
+  if (!('featureFlags' in config) || !config.featureFlags) return true;
+
+  // only objects
+  return !(typeof config.featureFlags !== 'object');
+};
+
+export const isEnabledDexesValid = (config: object) => {
   if (
     !(
       'enabledWithdrawalDexes' in config &&
@@ -25,30 +54,18 @@ const isEnabledDexesValid = (config: object) => {
   return new Set(enabledWithdrawalDexes).size === enabledWithdrawalDexes.length;
 };
 
-const isMultiChainBannerValid = (config: object) => {
-  // allow empty config
-  if (!('multiChainBanner' in config) || !config.multiChainBanner) return true;
+export const isPagesValid = (config: object) => {
+  if (!('pages' in config)) {
+    return true;
+  }
 
-  if (!Array.isArray(config.multiChainBanner)) return false;
+  const pages = config.pages as ManifestConfig['pages'];
+  if (pages && typeof pages === 'object') {
+    // INFO: exclude possible issue when stack interface can be deactivated
+    return !pages[ManifestConfigPageEnum.Stake]?.shouldDisable;
+  }
 
-  const multiChainBanner = config.multiChainBanner;
-
-  if (
-    !multiChainBanner.every(
-      (chainId) => typeof chainId === 'number' && chainId > 0,
-    )
-  )
-    return false;
-
-  return !(new Set(multiChainBanner).size !== multiChainBanner.length);
-};
-
-const isFeatureFlagsValid = (config: object) => {
-  // allow empty config
-  if (!('featureFlags' in config) || !config.featureFlags) return true;
-
-  // only objects
-  return !(typeof config.featureFlags !== 'object');
+  return false;
 };
 
 export const isManifestEntryValid = (
@@ -65,23 +82,16 @@ export const isManifestEntryValid = (
   ) {
     const config = entry.config;
 
-    return [isEnabledDexesValid, isMultiChainBannerValid, isFeatureFlagsValid]
+    return [
+      isEnabledDexesValid,
+      isMultiChainBannerValid,
+      isFeatureFlagsValid,
+      isPagesValid,
+    ]
       .map((validator) => validator(config))
       .every((isValid) => isValid);
   }
   return false;
-};
-
-export const getBackwardCompatibleConfig = (
-  config: ManifestEntry['config'],
-): ManifestEntry['config'] => {
-  return {
-    enabledWithdrawalDexes: config.enabledWithdrawalDexes.filter(
-      (dex) => !!getDexConfig(dex),
-    ),
-    featureFlags: { ...(config.featureFlags ?? {}) },
-    multiChainBanner: config.multiChainBanner ?? [],
-  };
 };
 
 export const isManifestValid = (
@@ -96,14 +106,20 @@ export const isManifestValid = (
   return false;
 };
 
-export const useFallbackManifestEntry = (
-  prefetchedManifest: unknown,
-  chain: number,
-): ManifestEntry => {
-  return useMemo(() => {
-    const isValid = isManifestValid(prefetchedManifest, chain);
-    return isValid
-      ? prefetchedManifest[chain]
-      : (FallbackLocalManifest as unknown as Manifest)[chain];
-  }, [prefetchedManifest, chain]);
+// Use in Next backend side
+export const shouldRedirectToRoot = (
+  currentPath: string,
+  manifest: Manifest | null,
+): boolean => {
+  const { defaultChain } = config;
+  const chainSettings = manifest?.[`${defaultChain}`];
+  const pages = chainSettings?.config?.pages;
+  const isDeactivate =
+    !!pages?.[currentPath as ManifestConfigPage]?.shouldDisable;
+  // https://nextjs.org/docs/messages/gsp-redirect-during-prerender
+  const isBuild = process.env.npm_lifecycle_event === 'build';
+
+  return (
+    currentPath !== ManifestConfigPageEnum.Stake && isDeactivate && !isBuild
+  );
 };
