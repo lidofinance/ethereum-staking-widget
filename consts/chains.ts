@@ -21,6 +21,7 @@ export enum LIDO_MULTICHAIN_CHAINS {
   'Mode Chain' = 34443,
   'Zircuit Chain' = 48900,
   Unichain = 130,
+  Metis = 1088,
 }
 
 // TODO: move to @lidofinance/lido-ethereum-sdk package
