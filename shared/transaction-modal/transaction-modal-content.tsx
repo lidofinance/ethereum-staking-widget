@@ -1,9 +1,15 @@
 import { memo } from 'react';
 import styled from 'styled-components';
 import { Text } from '@lidofinance/lido-ui';
+import { devicesHeaderMedia } from 'styles/global';
 
 export const Wrap = styled.div`
   text-align: center;
+  margin-top: -46px;
+
+  @media ${devicesHeaderMedia.mobile} {
+    margin-top: -42px;
+  }
 `;
 
 export const Title = styled(Text).attrs({
