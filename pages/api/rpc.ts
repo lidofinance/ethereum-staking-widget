@@ -1,5 +1,6 @@
 import { wrapRequest as wrapNextRequest } from '@lidofinance/next-api-wrapper';
 import { trackedFetchRpcFactory } from '@lidofinance/api-rpc';
+import { rpcFactory } from '@lidofinance/next-pages';
 
 import { config, secretConfig } from 'config';
 import { API_ROUTES } from 'consts/api';
@@ -14,7 +15,6 @@ import {
   HttpMethod,
 } from 'utilsApi';
 import Metrics from 'utilsApi/metrics';
-import { rpcFactory } from 'utilsApi/rpcFactory';
 import {
   METRIC_CONTRACT_ADDRESSES,
   METRIC_CONTRACT_EVENT_ADDRESSES,
