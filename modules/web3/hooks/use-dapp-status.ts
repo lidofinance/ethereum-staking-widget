@@ -13,7 +13,7 @@ export const useDappStatus = () => {
   // this can change between pages based on their dapp-chain context(or lack of)
   const dappChain = useDappChain();
 
-  const { isSupportedChain, isChainTypeMatched } = dappChain;
+  const { isSupportedChain, isChainIdMatched } = dappChain;
 
   const isAccountActive = walletChainId
     ? isWalletConnected && isSupportedChain
@@ -21,7 +21,7 @@ export const useDappStatus = () => {
 
   const isL2 = isSDKSupportedL2Chain(walletChainId);
 
-  const isDappActive = isAccountActive && isChainTypeMatched;
+  const isDappActive = isAccountActive && isChainIdMatched;
 
   const isDappActiveOnL1 = isDappActive && !isL2;
 

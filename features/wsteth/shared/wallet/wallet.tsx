@@ -1,4 +1,8 @@
+import { useConnectorInfo } from 'reef-knot/core-react';
 import { Divider, Text } from '@lidofinance/lido-ui';
+
+import { CHAINS } from 'consts/chains';
+import { useConfig } from 'config';
 
 import { FormatToken } from 'shared/formatters';
 import { TokenToWallet } from 'shared/components';
@@ -8,15 +12,12 @@ import {
   useStethBalance,
   useWstethBalance,
   useWstethBySteth,
-  DAPP_CHAIN_TYPE,
   useStETHByWstETH,
 } from 'modules/web3';
+import { useIsLedgerLive } from 'shared/hooks/useIsLedgerLive';
 import { CardBalance, CardRow, CardAccount, Fallback } from 'shared/wallet';
 
 import { StyledCard } from './styles';
-import { useIsLedgerLive } from 'shared/hooks/useIsLedgerLive';
-import { useConfig } from 'config';
-import { useConnectorInfo } from 'reef-knot/core-react';
 
 const WalletComponent = () => {
   const { isDappActiveOnL2 } = useDappStatus();
@@ -110,14 +111,16 @@ export const Wallet = ({ isUnwrapMode }: WrapWalletProps) => {
   const isLedgerLive = useIsLedgerLive();
   const { isLedger: isLedgerHardware } = useConnectorInfo();
   const { featureFlags } = useConfig().externalConfig;
-  const { chainType } = useDappStatus();
+  const { chainId } = useDappStatus();
 
   const isLedgerLiveOptimism =
-    !featureFlags.ledgerLiveL2 &&
-    isLedgerLive &&
-    chainType === DAPP_CHAIN_TYPE.Optimism;
+    (!featureFlags.ledgerLiveL2 &&
+      isLedgerLive &&
+      chainId === CHAINS.Optimism) ||
+    chainId === CHAINS.OptimismSepolia;
   const isLedgerHardwareOptimism =
-    isLedgerHardware && chainType === DAPP_CHAIN_TYPE.Optimism;
+    (isLedgerHardware && chainId === CHAINS.Optimism) ||
+    chainId === CHAINS.OptimismSepolia;
 
   if (isLedgerLiveOptimism || isLedgerHardwareOptimism) {
     const error = `Optimism is currently not supported in ${isLedgerLiveOptimism ? 'Ledger Live' : 'Ledger Hardware'}.`;

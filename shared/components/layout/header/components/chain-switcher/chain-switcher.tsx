@@ -1,9 +1,17 @@
-import { FC, useState, useRef, ReactNode } from 'react';
-import { DAPP_CHAIN_TYPE } from 'modules/web3';
+import { FC, useState, useRef } from 'react';
 import { useDappStatus } from 'modules/web3';
+import { wagmiChainMap } from 'modules/web3/web3-provider/web3-provider';
+import {
+  getChainTypeByChainId,
+  DAPP_CHAIN_TYPE,
+} from 'modules/web3/web3-provider/dapp-chain';
+import { config } from 'config';
 
 import { useClickOutside } from './hooks/use-click-outside';
-import { ChainSwitcherOptions } from './components/chain-switcher-options/chain-switcher-options';
+import {
+  ChainSwitcherOptions,
+  ChainOption,
+} from './components/chain-switcher-options/chain-switcher-options';
 import { SelectIconTooltip } from './components/select-icon-tooltip/select-icon-tooltip';
 import {
   ChainSwitcherWrapperStyled,
@@ -15,18 +23,30 @@ import {
 import { ReactComponent as OptimismLogo } from 'assets/icons/chain-toggler/optimism.svg';
 import { ReactComponent as EthereumMainnetLogo } from 'assets/icons/chain-toggler/mainnet.svg';
 
-const iconsMap: Record<DAPP_CHAIN_TYPE, ReactNode> = {
-  [DAPP_CHAIN_TYPE.Ethereum]: <EthereumMainnetLogo />,
-  [DAPP_CHAIN_TYPE.Optimism]: <OptimismLogo />,
-};
+type IconsMapType = Record<number, ChainOption>;
+
+const iconsMap: IconsMapType = config.supportedChains.reduce(
+  (acc: IconsMapType, chainId: number) => {
+    acc[chainId] = {
+      name: wagmiChainMap[chainId].name,
+      iconComponent:
+        getChainTypeByChainId(chainId) === DAPP_CHAIN_TYPE.Optimism ? (
+          <OptimismLogo />
+        ) : (
+          <EthereumMainnetLogo />
+        ),
+    };
+    return acc;
+  },
+  {},
+);
 
 export const ChainSwitcher: FC = () => {
-  const { isDappActive, chainType, supportedChainTypes, setChainType } =
-    useDappStatus();
+  const { isDappActive, chainId, setChainId, supportedL2 } = useDappStatus();
   const [opened, setOpened] = useState(false);
   const selectRef = useRef<HTMLDivElement>(null);
 
-  const isChainTypeUnlocked = supportedChainTypes.length > 1;
+  const isChainSwitcherUnlocked = supportedL2;
 
   useClickOutside(selectRef, () => setOpened(false));
 
@@ -34,19 +54,19 @@ export const ChainSwitcher: FC = () => {
     <ChainSwitcherWrapperStyled>
       <ChainSwitcherStyled
         ref={selectRef}
-        $disabled={!isChainTypeUnlocked}
+        $disabled={!isChainSwitcherUnlocked}
         onClick={() => setOpened((prev) => !prev)}
       >
-        <IconStyle>{iconsMap[chainType]}</IconStyle>
-        {isChainTypeUnlocked && <ArrowStyle $opened={opened} />}
+        <IconStyle>{iconsMap[chainId].iconComponent}</IconStyle>
+        {isChainSwitcherUnlocked && <ArrowStyle $opened={opened} />}
       </ChainSwitcherStyled>
 
-      {isChainTypeUnlocked && (
+      {isChainSwitcherUnlocked && (
         <>
           <ChainSwitcherOptions
-            currentChainType={chainType}
-            onSelect={(chainType) => {
-              setChainType(chainType);
+            currentChainId={chainId}
+            onSelect={(chainId) => {
+              setChainId(chainId);
               setOpened(false);
             }}
             opened={opened}

@@ -3,12 +3,13 @@ import React, {
   useContext,
   useState,
   useMemo,
+  useCallback,
   useEffect,
 } from 'react';
 import invariant from 'tiny-invariant';
 
 import { CHAINS, isSDKSupportedL2Chain } from 'consts/chains';
-import { useAccount } from 'wagmi';
+import { useAccount, useSwitchChain } from 'wagmi';
 import { config } from 'config';
 import { ModalProvider } from 'providers/modal-provider';
 
@@ -21,26 +22,21 @@ export enum DAPP_CHAIN_TYPE {
   Optimism = 'Optimism',
 }
 
-type DappChainContextValue = {
-  chainType: DAPP_CHAIN_TYPE;
-  setChainType: React.Dispatch<React.SetStateAction<DAPP_CHAIN_TYPE>>;
-  supportedChainIds: number[];
-  isChainTypeMatched: boolean;
-  isChainTypeOnL2: boolean;
-};
-
 export type SupportedChainLabels = {
   [key in DAPP_CHAIN_TYPE]: string;
 };
 
-type UseDappChainValue = {
-  // Current DApp chain ID (may not match with chainType)
+type DappChainContextValue = {
   chainId: number;
-  // Chain ID by current chainType
-  chainTypeChainId: number;
+  setChainId: React.Dispatch<number>;
+  supportedL2: boolean;
+  supportedChainIds: number[];
+  isChainIdOnL2: boolean;
+};
 
+type UseDappChainValue = {
   isSupportedChain: boolean;
-  supportedChainTypes: DAPP_CHAIN_TYPE[];
+  isChainIdMatched: boolean;
   supportedChainLabels: SupportedChainLabels;
 } & DappChainContextValue;
 
@@ -55,8 +51,9 @@ const ETHEREUM_CHAINS = new Set([
 
 const OPTIMISM_CHAINS = new Set([CHAINS.Optimism, CHAINS.OptimismSepolia]);
 
-const getChainTypeByChainId = (chainId?: number): DAPP_CHAIN_TYPE | null => {
-  if (!chainId) return null;
+export const getChainTypeByChainId = (
+  chainId: number,
+): DAPP_CHAIN_TYPE | null => {
   if (ETHEREUM_CHAINS.has(chainId)) {
     return DAPP_CHAIN_TYPE.Ethereum;
   } else if (OPTIMISM_CHAINS.has(chainId)) {
@@ -64,15 +61,6 @@ const getChainTypeByChainId = (chainId?: number): DAPP_CHAIN_TYPE | null => {
   }
   return null;
 };
-
-// At the current stage of the widget we don't care what ID is returned:
-// - 'chainTypeChainId' is only used for statistics;
-// - on the prod environment, the 'function map' of 'chainType' to 'chainId' will be 1 to 1 (bijective mapping).
-const getChainIdByChainType = (
-  chainType: DAPP_CHAIN_TYPE,
-  supportedChainIds: number[],
-): number | undefined =>
-  supportedChainIds.find((id) => getChainTypeByChainId(id) === chainType);
 
 export const useDappChain = (): UseDappChainValue => {
   const context = useContext(DappChainContext);
@@ -110,22 +98,13 @@ export const useDappChain = (): UseDappChainValue => {
       {},
     ) as SupportedChainLabels;
 
-    const chainTypeChainId =
-      getChainIdByChainType(context.chainType, context.supportedChainIds) ??
-      config.defaultChain;
-
     return {
       ...context,
-      chainId:
-        walletChain && context.supportedChainIds.includes(walletChain)
-          ? walletChain
-          : config.defaultChain,
-      chainTypeChainId,
+      supportedChainLabels,
       isSupportedChain: walletChain
         ? context.supportedChainIds.includes(walletChain)
         : true,
-      supportedChainTypes,
-      supportedChainLabels,
+      isChainIdMatched: walletChain === context.chainId,
     };
   }, [context, walletChain]);
 };
@@ -133,41 +112,41 @@ export const useDappChain = (): UseDappChainValue => {
 export const SupportL2Chains: React.FC<React.PropsWithChildren> = ({
   children,
 }) => {
-  const { chainId: walletChainId, isConnected } = useAccount();
-  const [chainType, setChainType] = useState<DAPP_CHAIN_TYPE>(
-    DAPP_CHAIN_TYPE.Ethereum,
-  );
+  const { chainId: walletChain, isConnected } = useAccount();
+  const { switchChain } = useSwitchChain();
+  const [chainId, setChainIdInternal] = useState<number>(config.defaultChain);
 
   useEffect(() => {
-    if (!walletChainId || !config.supportedChains.includes(walletChainId)) {
-      // This code resets 'chainType' to ETH when the wallet is disconnected.
-      // It also works on the first rendering, but we don't care, because the 'chainType' by default is ETH.
-      // Don't use it if you need to do something strictly, only when the wallet is disconnected.
-      setChainType(DAPP_CHAIN_TYPE.Ethereum);
-      return;
-    }
-
     if (isConnected) {
-      const newChainType = getChainTypeByChainId(walletChainId);
-      if (newChainType) setChainType(newChainType);
+      const chainId =
+        walletChain && config.supportedChains.includes(walletChain)
+          ? walletChain
+          : config.defaultChain;
+
+      setChainIdInternal(chainId);
     }
-  }, [walletChainId, isConnected, setChainType]);
+  }, [walletChain, isConnected, setChainIdInternal]);
+
+  const handleSetChainId = useCallback<React.Dispatch<number>>(
+    (newChainId) => {
+      setChainIdInternal(newChainId);
+      switchChain({ chainId: newChainId });
+    },
+    [switchChain],
+  );
 
   return (
     <DappChainContext.Provider
       value={useMemo(
         () => ({
-          chainType,
-          setChainType,
+          chainId,
+          setChainId: handleSetChainId,
+          supportedL2: true,
           supportedChainIds: config.supportedChains,
-          isChainTypeMatched:
-            chainType === getChainTypeByChainId(walletChainId),
-          // At the moment a simple check is enough for us,
-          // however in the future we will either rethink this flag
-          // or use an array or Set (for example with L2_DAPP_CHAINS_TYPE)
-          isChainTypeOnL2: chainType === DAPP_CHAIN_TYPE.Optimism,
+          isChainIdOnL2:
+            getChainTypeByChainId(chainId) === DAPP_CHAIN_TYPE.Optimism,
         }),
-        [chainType, walletChainId],
+        [chainId, handleSetChainId],
       )}
     >
       <LidoSDKL2Provider>
@@ -179,14 +158,13 @@ export const SupportL2Chains: React.FC<React.PropsWithChildren> = ({
 };
 
 const onlyL1ChainsValue = {
-  chainType: DAPP_CHAIN_TYPE.Ethereum,
+  setChainId: () => {},
   // only L1 chains
+  supportedL2: false,
   supportedChainIds: config.supportedChains.filter(
     (chain) => !isSDKSupportedL2Chain(chain),
   ),
-  isChainTypeMatched: true,
-  isChainTypeOnL2: false,
-  setChainType: () => {},
+  isChainIdOnL2: false,
 };
 
 // Value of this context only allows L1 chains and no chain switch
@@ -195,11 +173,27 @@ const onlyL1ChainsValue = {
 // in order to prevent accidental useDappChain/useDappStatus misusage in top-lvl components
 export const SupportL1Chains: React.FC<React.PropsWithChildren> = ({
   children,
-}) => (
-  <DappChainContext.Provider value={onlyL1ChainsValue}>
-    <LidoSDKProvider>
-      {/* Stub LidoSDKL2Provider for hooks that gives isL2:false. Will be overriden in SupportL2Chains */}
-      <LidoSDKL2Provider>{children}</LidoSDKL2Provider>
-    </LidoSDKProvider>
-  </DappChainContext.Provider>
-);
+}) => {
+  const { chainId: walletChain } = useAccount();
+
+  return (
+    <DappChainContext.Provider
+      value={useMemo(
+        () => ({
+          ...onlyL1ChainsValue,
+          chainId:
+            walletChain &&
+            onlyL1ChainsValue.supportedChainIds.includes(walletChain)
+              ? walletChain
+              : config.defaultChain,
+        }),
+        [walletChain],
+      )}
+    >
+      <LidoSDKProvider>
+        {/* Stub LidoSDKL2Provider for hooks that gives isL2:false. Will be overriden in SupportL2Chains */}
+        <LidoSDKL2Provider>{children}</LidoSDKL2Provider>
+      </LidoSDKProvider>
+    </DappChainContext.Provider>
+  );
+};
