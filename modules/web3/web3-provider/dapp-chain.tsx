@@ -129,7 +129,6 @@ export const SupportL2Chains: React.FC<React.PropsWithChildren> = ({
 
   const handleSetChainId = useCallback<React.Dispatch<number>>(
     (newChainId) => {
-      setChainIdInternal(newChainId);
       switchChain({ chainId: newChainId });
     },
     [switchChain],
