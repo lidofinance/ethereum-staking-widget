@@ -32,6 +32,7 @@ type DappChainContextValue = {
   supportedL2: boolean;
   supportedChainIds: number[];
   isChainIdOnL2: boolean;
+  isSwitchChainWait: boolean;
 };
 
 type UseDappChainValue = {
@@ -115,6 +116,7 @@ export const SupportL2Chains: React.FC<React.PropsWithChildren> = ({
   const { chainId: walletChain, isConnected } = useAccount();
   const { switchChain } = useSwitchChain();
   const [chainId, setChainIdInternal] = useState<number>(config.defaultChain);
+  const [isSwitchChainWait, setIsSwitchChainWait] = useState<boolean>(false);
 
   useEffect(() => {
     if (isConnected) {
@@ -124,14 +126,16 @@ export const SupportL2Chains: React.FC<React.PropsWithChildren> = ({
           : config.defaultChain;
 
       setChainIdInternal(chainId);
+      setIsSwitchChainWait(false);
     }
-  }, [walletChain, isConnected, setChainIdInternal]);
+  }, [walletChain, isConnected, setChainIdInternal, setIsSwitchChainWait]);
 
   const handleSetChainId = useCallback<React.Dispatch<number>>(
     (newChainId) => {
+      setIsSwitchChainWait(true);
       switchChain({ chainId: newChainId });
     },
-    [switchChain],
+    [switchChain, setIsSwitchChainWait],
   );
 
   return (
@@ -144,8 +148,9 @@ export const SupportL2Chains: React.FC<React.PropsWithChildren> = ({
           supportedChainIds: config.supportedChains,
           isChainIdOnL2:
             getChainTypeByChainId(chainId) === DAPP_CHAIN_TYPE.Optimism,
+          isSwitchChainWait,
         }),
-        [chainId, handleSetChainId],
+        [chainId, handleSetChainId, isSwitchChainWait],
       )}
     >
       <LidoSDKL2Provider>
@@ -164,6 +169,7 @@ const onlyL1ChainsValue = {
     (chain) => !isSDKSupportedL2Chain(chain),
   ),
   isChainIdOnL2: false,
+  isSwitchChainWait: false,
 };
 
 // Value of this context only allows L1 chains and no chain switch

@@ -19,7 +19,7 @@ export const Button: FC<ButtonProps> = (props) => {
   const { onClick, ...rest } = props;
 
   const isMobile = useBreakpoint('md');
-  const { isDappActive, address } = useDappStatus();
+  const { isDappActive, isSwitchChainWait, address } = useDappStatus();
 
   const { openModal } = useWalletModal();
   const { data: balance, isLoading } = useEthereumBalance();
@@ -35,7 +35,7 @@ export const Button: FC<ButtonProps> = (props) => {
     >
       <WalledButtonWrapperStyle>
         <WalledButtonBalanceStyle>
-          {isLoading ? (
+          {isLoading || isSwitchChainWait ? (
             <WalledButtonLoaderStyle />
           ) : (
             isDappActive && (

@@ -42,7 +42,8 @@ const iconsMap: IconsMapType = config.supportedChains.reduce(
 );
 
 export const ChainSwitcher: FC = () => {
-  const { isDappActive, chainId, setChainId, supportedL2 } = useDappStatus();
+  const { isDappActive, chainId, setChainId, supportedL2, isSwitchChainWait } =
+    useDappStatus();
   const [opened, setOpened] = useState(false);
   const selectRef = useRef<HTMLDivElement>(null);
 
@@ -72,7 +73,7 @@ export const ChainSwitcher: FC = () => {
             opened={opened}
             options={iconsMap}
           />
-          {!isDappActive && (
+          {!isDappActive && !isSwitchChainWait && (
             <SelectIconTooltip showArrow>
               This network doesn’t match your wallet’s network
             </SelectIconTooltip>
