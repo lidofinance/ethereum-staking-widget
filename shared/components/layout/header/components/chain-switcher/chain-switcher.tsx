@@ -1,8 +1,7 @@
-import { FC, useState, useRef } from 'react';
+import { FC, useState, useRef, useMemo } from 'react';
 import { useDappStatus } from 'modules/web3';
 import { wagmiChainMap } from 'modules/web3/web3-provider/web3-provider';
 import { getChainTypeByChainId, DAPP_CHAIN_TYPE } from 'modules/web3/consts';
-import { config } from 'config';
 
 import { useClickOutside } from './hooks/use-click-outside';
 import {
@@ -22,22 +21,6 @@ import { ReactComponent as EthereumMainnetLogo } from 'assets/icons/chain-toggle
 
 type IconsMapType = Record<number, ChainOption>;
 
-const iconsMap: IconsMapType = config.supportedChains.reduce(
-  (acc: IconsMapType, chainId: number) => {
-    acc[chainId] = {
-      name: wagmiChainMap[chainId].name,
-      iconComponent:
-        getChainTypeByChainId(chainId) === DAPP_CHAIN_TYPE.Optimism ? (
-          <OptimismLogo />
-        ) : (
-          <EthereumMainnetLogo />
-        ),
-    };
-    return acc;
-  },
-  {},
-);
-
 export const ChainSwitcher: FC = () => {
   const {
     isDappActive,
@@ -52,6 +35,23 @@ export const ChainSwitcher: FC = () => {
   const isChainSwitcherUnlocked = supportedChainIds.length > 1;
 
   useClickOutside(selectRef, () => setOpened(false));
+
+  const iconsMap = useMemo(
+    () =>
+      supportedChainIds.reduce((acc: IconsMapType, chainId: number) => {
+        acc[chainId] = {
+          name: wagmiChainMap[chainId].name,
+          iconComponent:
+            getChainTypeByChainId(chainId) === DAPP_CHAIN_TYPE.Optimism ? (
+              <OptimismLogo />
+            ) : (
+              <EthereumMainnetLogo />
+            ),
+        };
+        return acc;
+      }, {}),
+    [supportedChainIds],
+  );
 
   return (
     <ChainSwitcherWrapperStyled>
