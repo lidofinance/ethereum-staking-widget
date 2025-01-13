@@ -1,10 +1,7 @@
 import { FC, useState, useRef } from 'react';
 import { useDappStatus } from 'modules/web3';
 import { wagmiChainMap } from 'modules/web3/web3-provider/web3-provider';
-import {
-  getChainTypeByChainId,
-  DAPP_CHAIN_TYPE,
-} from 'modules/web3/web3-provider/dapp-chain';
+import { getChainTypeByChainId, DAPP_CHAIN_TYPE } from 'modules/web3/consts';
 import { config } from 'config';
 
 import { useClickOutside } from './hooks/use-click-outside';
@@ -42,12 +39,17 @@ const iconsMap: IconsMapType = config.supportedChains.reduce(
 );
 
 export const ChainSwitcher: FC = () => {
-  const { isDappActive, chainId, setChainId, supportedL2, isSwitchChainWait } =
-    useDappStatus();
+  const {
+    isDappActive,
+    chainId,
+    setChainId,
+    supportedChainIds,
+    isSwitchChainWait,
+  } = useDappStatus();
   const [opened, setOpened] = useState(false);
   const selectRef = useRef<HTMLDivElement>(null);
 
-  const isChainSwitcherUnlocked = supportedL2;
+  const isChainSwitcherUnlocked = supportedChainIds.length > 1;
 
   useClickOutside(selectRef, () => setOpened(false));
 

@@ -1,4 +1,4 @@
-import { type SupportedChainLabels } from 'modules/web3/web3-provider/dapp-chain';
+import { type SupportedChainLabels } from 'modules/web3/consts';
 
 export const joinWithOr = (labels: SupportedChainLabels) => {
   const labelArray = Object.values(labels);
