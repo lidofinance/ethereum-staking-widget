@@ -21,7 +21,8 @@ export const useDappStatus = () => {
 
   const isL2 = isSDKSupportedL2Chain(walletChainId);
 
-  const isDappActive = isAccountActive && isChainIdMatched;
+  const isDappActive =
+    isAccountActive && isChainIdMatched && !isSwitchChainWait;
 
   const isDappActiveOnL1 = isDappActive && !isL2;
 

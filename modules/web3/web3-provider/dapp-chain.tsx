@@ -113,10 +113,16 @@ export const useDappChain = (): UseDappChainValue => {
 export const SupportL2Chains: React.FC<React.PropsWithChildren> = ({
   children,
 }) => {
-  const { chainId: walletChain, isConnected } = useAccount();
-  const { switchChain } = useSwitchChain();
   const [chainId, setChainIdInternal] = useState<number>(config.defaultChain);
   const [isSwitchChainWait, setIsSwitchChainWait] = useState<boolean>(false);
+
+  const { chainId: walletChain, isConnected } = useAccount();
+  const { switchChain } = useSwitchChain({
+    mutation: {
+      onMutate: () => setIsSwitchChainWait(true),
+      onSettled: () => setIsSwitchChainWait(false),
+    },
+  });
 
   useEffect(() => {
     if (isConnected) {
@@ -126,16 +132,14 @@ export const SupportL2Chains: React.FC<React.PropsWithChildren> = ({
           : config.defaultChain;
 
       setChainIdInternal(chainId);
-      setIsSwitchChainWait(false);
     }
-  }, [walletChain, isConnected, setChainIdInternal, setIsSwitchChainWait]);
+  }, [walletChain, isConnected, setChainIdInternal]);
 
   const handleSetChainId = useCallback<React.Dispatch<number>>(
     (newChainId) => {
-      setIsSwitchChainWait(true);
       switchChain({ chainId: newChainId });
     },
-    [switchChain, setIsSwitchChainWait],
+    [switchChain],
   );
 
   return (
