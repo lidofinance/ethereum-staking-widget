@@ -2,12 +2,14 @@ import { Cache } from 'memory-cache';
 import { IPFS_MANIFEST_URL } from 'consts/external-links';
 import { responseTimeExternalMetricWrapper } from './fetchApiWrapper';
 import { standardFetcher } from 'utils/standardFetcher';
+
 import { config } from 'config';
+import { isManifestValid, type Manifest } from 'config/external-config';
 
 import FallbackLocalManifest from 'IPFS.json' assert { type: 'json' };
 
 export type ExternalConfigResult = {
-  ___prefetch_manifest___: object | null;
+  ___prefetch_manifest___: Manifest | null;
 };
 
 const cache = new Cache<
@@ -37,8 +39,13 @@ export const fetchExternalManifest = async () => {
             headers: { Accept: 'application/json' },
           }),
       });
-      if (!data || typeof data !== 'object')
+      if (
+        !data ||
+        typeof data !== 'object' ||
+        !isManifestValid(data, config.defaultChain)
+      ) {
         throw new Error(`invalid config received: ${data}`);
+      }
 
       const result = {
         ___prefetch_manifest___: data,
@@ -67,6 +74,7 @@ export const fetchExternalManifest = async () => {
   console.error(
     `[fetchExternalManifest] failed to fetch external manifest after retries`,
   );
+
   return {
     ___prefetch_manifest___: FallbackLocalManifest,
   };
