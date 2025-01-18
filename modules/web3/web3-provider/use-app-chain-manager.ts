@@ -6,6 +6,7 @@ import {
   type Dispatch,
 } from 'react';
 import { useAccount, useSwitchChain } from 'wagmi';
+import { useRouter } from 'next/router';
 
 import { config } from 'config';
 import { isSDKSupportedL2Chain } from 'consts/chains';
@@ -19,7 +20,8 @@ import { wagmiChainMap } from './web3-provider';
 
 export const useAppChainManager = (supportedL2: boolean) => {
   const [appChainId, setAppChainId] = useState<number>(config.defaultChain);
-  const [isSwitchChainWait, setIsSwitchChainWait] = useState<boolean>(false);
+  const [isSwitchChainWait, setIsSwitchChainWait] = useState<boolean>(true);
+  const router = useRouter();
 
   const { chainId: walletChainId, isConnected } = useAccount();
   const { switchChain } = useSwitchChain({
@@ -37,6 +39,36 @@ export const useAppChainManager = (supportedL2: boolean) => {
     [supportedL2],
   );
 
+  useEffect(() => {
+    const handleRouteChangeStart = () => {
+      setIsSwitchChainWait(true);
+    };
+
+    const handleRouteChangeComplete = () => {
+      if (isConnected) {
+        const chainId =
+          walletChainId && supportedChainIds.includes(walletChainId)
+            ? walletChainId
+            : config.defaultChain;
+
+        switchChain({ chainId: chainId });
+      }
+    };
+
+    router.events.on('routeChangeStart', handleRouteChangeStart);
+    router.events.on('routeChangeComplete', handleRouteChangeComplete);
+    return () => {
+      router.events.off('routeChangeComplete', handleRouteChangeComplete);
+      router.events.off('routeChangeStart', handleRouteChangeStart);
+    };
+  }, [
+    switchChain,
+    isConnected,
+    router.events,
+    supportedChainIds,
+    walletChainId,
+  ]);
+
   // Sync 'app chain id' with the 'wallet chain id' or use default
   useEffect(() => {
     if (isConnected) {
@@ -47,6 +79,8 @@ export const useAppChainManager = (supportedL2: boolean) => {
 
       setAppChainId(chainId);
     }
+
+    setIsSwitchChainWait(false);
   }, [walletChainId, isConnected, supportedChainIds]);
 
   const switchAppChainId = useCallback<Dispatch<number>>(
