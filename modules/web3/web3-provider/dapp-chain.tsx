@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useMemo } from 'react';
+import React, { createContext, useContext } from 'react';
 import invariant from 'tiny-invariant';
 
 import { ModalProvider } from 'providers/modal-provider';
@@ -41,34 +41,6 @@ export const SupportL2Chains: React.FC<React.PropsWithChildren> = ({
 
 export const useDappChain = () => {
   const context = useContext(DappChainContext);
-
   invariant(context, 'useDappChain was used outside of DappChainProvider');
-
-  return useMemo(() => {
-    const {
-      chainId,
-      setChainId,
-      switchToL2,
-      isSwitchChainWait,
-      supportedChainIds,
-      isChainIdOnL2,
-      supportedL2,
-      isSupportedChain,
-      isChainIdMatched,
-      supportedChainLabels,
-    } = context;
-
-    return {
-      chainId,
-      setChainId,
-      switchToL2,
-      isSwitchChainWait,
-      supportedChainIds,
-      isChainIdOnL2,
-      supportedL2,
-      isSupportedChain,
-      isChainIdMatched,
-      supportedChainLabels,
-    };
-  }, [context]);
+  return context;
 };

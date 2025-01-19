@@ -39,6 +39,7 @@ export const useAppChainManager = (supportedL2: boolean) => {
     [supportedL2],
   );
 
+  // Sync the 'wallet chain id' with the 'app chain id' or use default
   useEffect(() => {
     const handleRouteChangeStart = () => {
       setIsSwitchChainWait(true);
@@ -69,7 +70,7 @@ export const useAppChainManager = (supportedL2: boolean) => {
     walletChainId,
   ]);
 
-  // Sync 'app chain id' with the 'wallet chain id' or use default
+  // Sync the 'app chain id' with the 'wallet chain id' or use default
   useEffect(() => {
     if (isConnected) {
       const chainId =
