@@ -19,9 +19,13 @@ export const useErrorMessage = (): string | undefined => {
   } = useDappStatus();
   const { error } = useConnect();
 
+  if (isSwitchChainWait) {
+    return;
+  }
+
   // Errors from chain state
 
-  if (isAccountActive && !isChainIdMatched && !isSwitchChainWait) {
+  if (isAccountActive && !isChainIdMatched) {
     return `Wrong network. Please switch to ${wagmiChainMap[chainId].name} in your wallet to wrap/unwrap.`;
   }
 
