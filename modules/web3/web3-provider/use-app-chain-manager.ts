@@ -19,7 +19,7 @@ import {
 import { wagmiChainMap } from './web3-provider';
 
 export const useAppChainManager = (supportedL2: boolean) => {
-  const [appChainId, setAppChainId] = useState<number>(config.defaultChain);
+  const [dappChainId, setDappChainId] = useState<number>(config.defaultChain);
   const [isSwitchChainWait, setIsSwitchChainWait] = useState<boolean>(true);
   const router = useRouter();
 
@@ -78,7 +78,7 @@ export const useAppChainManager = (supportedL2: boolean) => {
           ? walletChainId
           : config.defaultChain;
 
-      setAppChainId(chainId);
+      setDappChainId(chainId);
     }
 
     setIsSwitchChainWait(false);
@@ -96,7 +96,7 @@ export const useAppChainManager = (supportedL2: boolean) => {
   const [isChainIdOnL2, supportedChainLabels] = useMemo(() => {
     const isChainIdOnL2 =
       supportedL2 &&
-      getChainTypeByChainId(appChainId) === DAPP_CHAIN_TYPE.Optimism;
+      getChainTypeByChainId(dappChainId) === DAPP_CHAIN_TYPE.Optimism;
 
     const supportedChainTypes = supportedChainIds
       .map(getChainTypeByChainId)
@@ -129,7 +129,7 @@ export const useAppChainManager = (supportedL2: boolean) => {
     ) as SupportedChainLabels;
 
     return [isChainIdOnL2, supportedChainLabels];
-  }, [supportedL2, appChainId, supportedChainIds]);
+  }, [supportedL2, dappChainId, supportedChainIds]);
 
   const isSupportedChain = useMemo(
     () => (walletChainId ? supportedChainIds.includes(walletChainId) : true),
@@ -137,7 +137,7 @@ export const useAppChainManager = (supportedL2: boolean) => {
   );
 
   return {
-    chainId: appChainId,
+    chainId: dappChainId,
     setChainId: switchAppChainId,
     isSwitchChainWait,
 
@@ -147,6 +147,6 @@ export const useAppChainManager = (supportedL2: boolean) => {
     supportedChainLabels,
     supportedChainIds,
     isSupportedChain,
-    isChainIdMatched: walletChainId === appChainId,
+    isChainIdMatched: walletChainId === dappChainId,
   };
 };
