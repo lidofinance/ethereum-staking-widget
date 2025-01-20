@@ -1,4 +1,3 @@
-import { Button } from '@lidofinance/lido-ui';
 import { LIDO_MULTICHAIN_CHAINS } from 'consts/chains';
 import { Card } from 'shared/wallet';
 import styled, { css } from 'styled-components';
@@ -98,12 +97,4 @@ export const Wrap = styled((props) => <Card {...props} />)<WrapProps>`
 
 export const TextStyle = styled.p`
   margin-bottom: 16px;
-`;
-
-export const ButtonStyle = styled((props) => <Button {...props} />)`
-  background: #ffffff1a;
-
-  &:not(:disabled):hover {
-    background: #ffffff66;
-  }
 `;

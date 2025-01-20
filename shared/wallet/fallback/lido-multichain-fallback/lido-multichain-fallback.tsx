@@ -18,11 +18,12 @@ import { ReactComponent as UnichainLogo } from 'assets/icons/lido-multichain/uni
 import { config } from 'config';
 import { LIDO_MULTICHAIN_CHAINS } from 'consts/chains';
 import { MATOMO_CLICK_EVENTS_TYPES } from 'consts/matomo-click-events';
-import { trackMatomoEvent } from 'utils/track-matomo-event';
-
-import { Wrap, TextStyle, ButtonStyle } from './styles';
 import { useDappStatus } from 'modules/web3';
+import { trackMatomoEvent } from 'utils/track-matomo-event';
 import { joinWithOr } from 'utils/join-with-or';
+
+import { ButtonStyle } from '../styles';
+import { Wrap, TextStyle } from './styles';
 
 export type LidoMultichainFallbackComponent = FC<
   { textEnding: string } & BlockProps
