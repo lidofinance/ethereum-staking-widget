@@ -6,7 +6,6 @@ import {
   type Dispatch,
 } from 'react';
 import { useAccount, useSwitchChain } from 'wagmi';
-import { useRouter } from 'next/router';
 
 import { config } from 'config';
 import { isSDKSupportedL2Chain } from 'consts/chains';
@@ -21,7 +20,6 @@ import { wagmiChainMap } from './web3-provider';
 export const useAppChainManager = (supportedL2: boolean) => {
   const [dappChainId, setDappChainId] = useState<number>(config.defaultChain);
   const [isSwitchChainWait, setIsSwitchChainWait] = useState<boolean>(true);
-  const router = useRouter();
 
   const { chainId: walletChainId, isConnected } = useAccount();
   const { switchChain } = useSwitchChain({
@@ -38,37 +36,6 @@ export const useAppChainManager = (supportedL2: boolean) => {
       ),
     [supportedL2],
   );
-
-  // Sync the 'wallet chain id' with the 'app chain id' or use default
-  useEffect(() => {
-    const handleRouteChangeStart = () => {
-      setIsSwitchChainWait(true);
-    };
-
-    const handleRouteChangeComplete = () => {
-      if (isConnected) {
-        const chainId =
-          walletChainId && supportedChainIds.includes(walletChainId)
-            ? walletChainId
-            : config.defaultChain;
-
-        switchChain({ chainId: chainId });
-      }
-    };
-
-    router.events.on('routeChangeStart', handleRouteChangeStart);
-    router.events.on('routeChangeComplete', handleRouteChangeComplete);
-    return () => {
-      router.events.off('routeChangeComplete', handleRouteChangeComplete);
-      router.events.off('routeChangeStart', handleRouteChangeStart);
-    };
-  }, [
-    switchChain,
-    isConnected,
-    router.events,
-    supportedChainIds,
-    walletChainId,
-  ]);
 
   // Sync the 'app chain id' with the 'wallet chain id' or use default
   useEffect(() => {
