@@ -106,7 +106,7 @@ export const useAppChainManager = (supportedL2: boolean) => {
     setChainId: switchAppChainId,
     isSwitchChainWait: !isMounted || isSwitchChainPending,
 
-    isTestnet: wagmiChainMap[dappChainId]?.isTestnet || false,
+    isTestnet: wagmiChainMap[dappChainId]?.testnet || false,
     isChainIdOnL2,
     supportedL2,
 
