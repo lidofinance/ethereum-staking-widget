@@ -7,7 +7,11 @@ import { useAppChainManager } from './use-app-chain-manager';
 import { LidoSDKProvider } from './lido-sdk';
 import { LidoSDKL2Provider } from './lido-sdk-l2';
 
-export const DappChainContext = createContext<any | null>(null);
+type DappChainContextValue = ReturnType<typeof useAppChainManager>;
+
+export const DappChainContext = createContext<DappChainContextValue | null>(
+  null,
+);
 DappChainContext.displayName = 'DappChainContext';
 
 export const SupportL1Chains: React.FC<React.PropsWithChildren> = ({
