@@ -19,15 +19,12 @@ import { wagmiChainMap } from './web3-provider';
 
 export const useAppChainManager = (supportedL2: boolean) => {
   const [dappChainId, setDappChainId] = useState<number>(config.defaultChain);
-  const [isSwitchChainWait, setIsSwitchChainWait] = useState<boolean>(true);
+
+  // Hack for launching widget (see: "Sync the 'app chain id' with the 'wallet chain id' or use default")
+  const [isMounted, setIsMounted] = useState<boolean>(false);
 
   const { chainId: walletChainId, isConnected } = useAccount();
-  const { switchChain } = useSwitchChain({
-    mutation: {
-      onMutate: () => setIsSwitchChainWait(true),
-      onSettled: () => setIsSwitchChainWait(false),
-    },
-  });
+  const { switchChain, isPending: isSwitchChainPending } = useSwitchChain();
 
   const supportedChainIds = useMemo(
     () =>
@@ -48,7 +45,8 @@ export const useAppChainManager = (supportedL2: boolean) => {
       setDappChainId(chainId);
     }
 
-    setIsSwitchChainWait(false);
+    // Hack for launching widget (at the moment of launching, the wallet network and widget network may not match)
+    setIsMounted(true);
   }, [walletChainId, isConnected, supportedChainIds]);
 
   const switchAppChainId = useCallback<Dispatch<number>>(
@@ -62,8 +60,8 @@ export const useAppChainManager = (supportedL2: boolean) => {
 
   const [isChainIdOnL2, supportedChainLabels] = useMemo(() => {
     const isChainIdOnL2 =
-      supportedL2 &&
-      getChainTypeByChainId(dappChainId) === DAPP_CHAIN_TYPE.Optimism;
+      // all L2 networks supported by the widget will be supported in SDK
+      supportedL2 && isSDKSupportedL2Chain(dappChainId);
 
     const supportedChainTypes = supportedChainIds
       .map(getChainTypeByChainId)
@@ -106,8 +104,9 @@ export const useAppChainManager = (supportedL2: boolean) => {
   return {
     chainId: dappChainId,
     setChainId: switchAppChainId,
-    isSwitchChainWait,
+    isSwitchChainWait: !isMounted || isSwitchChainPending,
 
+    isTestnet: wagmiChainMap[dappChainId]?.isTestnet || false,
     isChainIdOnL2,
     supportedL2,
 
