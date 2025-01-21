@@ -31,8 +31,6 @@ export const TokenToWallet: TokenToWalletComponent = ({ address, ...rest }) => {
   if (!walletClient || !address) return null;
 
   const onClickHandler = async () => {
-    if (!address) return;
-
     try {
       const tokenContract = getContract({
         abi: ERC20_METADATA_ABI,
@@ -51,9 +49,11 @@ export const TokenToWallet: TokenToWalletComponent = ({ address, ...rest }) => {
       });
 
       if (result) {
-        ToastInfo('Tokens were successfully added to your wallet', {});
+        ToastInfo(`${symbol} token was successfully added to your wallet`);
       } else {
-        ToastInfo('User rejected the request');
+        ToastInfo(
+          `Request to watch ${symbol} token was rejected by your wallet`,
+        );
       }
     } catch (error) {
       // Associating error code to UI messages
