@@ -118,6 +118,7 @@ export const Wallet = ({ isUnwrapMode }: WrapWalletProps) => {
       isLedgerLive &&
       chainId === CHAINS.Optimism) ||
     chainId === CHAINS.OptimismSepolia;
+
   const isLedgerHardwareOptimism =
     (isLedgerHardware && chainId === CHAINS.Optimism) ||
     chainId === CHAINS.OptimismSepolia;
