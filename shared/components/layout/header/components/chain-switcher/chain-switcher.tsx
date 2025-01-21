@@ -30,7 +30,7 @@ export const ChainSwitcher: FC = () => {
     chainId,
     setChainId,
     supportedChainIds,
-    isSwitchChainWait,
+    isSwitchChainPending,
   } = useDappStatus();
   const [opened, setOpened] = useState(false);
   const selectRef = useRef<HTMLDivElement>(null);
@@ -77,7 +77,7 @@ export const ChainSwitcher: FC = () => {
             opened={opened}
             options={iconsMap}
           />
-          {!isDappActive && !isSwitchChainWait && (
+          {!isDappActive && !isSwitchChainPending && (
             <SelectIconTooltip showArrow>
               This network doesn’t match your wallet’s network
             </SelectIconTooltip>

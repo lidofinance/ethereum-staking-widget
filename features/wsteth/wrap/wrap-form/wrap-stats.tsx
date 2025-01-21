@@ -31,17 +31,12 @@ export const WrapFormStats = () => {
   const { data: oneWstethConverted, isLoading: oneWstethConvertedLoading } =
     useWstethBySteth(ONE_stETH);
 
-  // The 'approveGasLimit' difference between the networks is insignificant
-  // and can be neglected in the '!isChainIdMatched' case
-  //
   // Using the chainId (chainId from the chain switcher) for TX calculation (and below for 'wrapTxCostInUsd'),
   // because the statistics here are shown for the chain from the chain switcher
   const approveGasLimit = useApproveGasLimit();
   const { txCostUsd: approveTxCostInUsd, isLoading: isApproveCostLoading } =
     useTxCostInUsd(approveGasLimit, chainId);
 
-  // The 'wrapGasLimit' difference between the networks is insignificant
-  // and can be neglected in the '!isChainIdMatched' case
   const { txCostUsd: wrapTxCostInUsd, isLoading: isWrapCostLoading } =
     useTxCostInUsd(wrapGasLimit, chainId);
 

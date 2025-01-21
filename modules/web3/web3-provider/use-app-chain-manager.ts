@@ -1,10 +1,4 @@
-import {
-  // useState,
-  // useEffect,
-  useCallback,
-  useMemo,
-  type Dispatch,
-} from 'react';
+import { useCallback, useMemo, type Dispatch } from 'react';
 import { useAccount, useSwitchChain } from 'wagmi';
 
 import { config } from 'config';
@@ -18,11 +12,7 @@ import {
 import { wagmiChainMap } from './web3-provider';
 
 export const useAppChainManager = (supportedL2: boolean) => {
-  // Hack for launching widget (see: "Sync the 'app chain id' with the 'wallet chain id' or use default")
-  // const [isMounted, setIsMounted] = useState<boolean>(false);
-
   const { chainId: walletChainId, isConnected } = useAccount();
-
   const { switchChain, isPending: isSwitchChainPending } = useSwitchChain();
 
   const supportedChainIds = useMemo(
@@ -43,12 +33,6 @@ export const useAppChainManager = (supportedL2: boolean) => {
     return config.defaultChain;
   }, [isConnected, walletChainId, supportedChainIds]);
 
-  // // Sync the 'app chain id' with the 'wallet chain id' or use default
-  // useEffect(() => {
-  //   // Hack for launching widget (at the moment of launching, the wallet network and widget network may not match)
-  //   setIsMounted(true);
-  // }, [walletChainId, isConnected, supportedChainIds]);
-
   const switchDappChainId = useCallback<Dispatch<number>>(
     (newChainId: number) => {
       if (supportedChainIds.includes(newChainId)) {
@@ -59,9 +43,8 @@ export const useAppChainManager = (supportedL2: boolean) => {
   );
 
   const [isChainIdOnL2, supportedChainLabels] = useMemo(() => {
-    const isChainIdOnL2 =
-      // all L2 networks supported by the widget will be supported in SDK
-      supportedL2 && isSDKSupportedL2Chain(dappChainId);
+    // all L2 networks supported by the widget will be supported in SDK
+    const isChainIdOnL2 = isSDKSupportedL2Chain(dappChainId);
 
     const supportedChainTypes = supportedChainIds
       .map(getChainTypeByChainId)
@@ -94,7 +77,7 @@ export const useAppChainManager = (supportedL2: boolean) => {
     ) as SupportedChainLabels;
 
     return [isChainIdOnL2, supportedChainLabels];
-  }, [supportedL2, dappChainId, supportedChainIds]);
+  }, [dappChainId, supportedChainIds]);
 
   const isSupportedChain = useMemo(
     () => (walletChainId ? supportedChainIds.includes(walletChainId) : true),
@@ -104,16 +87,14 @@ export const useAppChainManager = (supportedL2: boolean) => {
   return {
     chainId: dappChainId,
     setChainId: switchDappChainId,
-    // isSwitchChainWait: !isMounted || isSwitchChainPending,
-    isSwitchChainWait: isSwitchChainPending,
+    isSwitchChainPending,
 
     isTestnet: wagmiChainMap[dappChainId]?.testnet || false,
     isChainIdOnL2,
     supportedL2,
 
-    supportedChainLabels,
-    supportedChainIds,
     isSupportedChain,
-    isChainIdMatched: true,
+    supportedChainIds,
+    supportedChainLabels,
   };
 };
