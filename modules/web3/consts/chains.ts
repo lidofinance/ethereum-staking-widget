@@ -1,3 +1,6 @@
+import { ReactComponent as OptimismLogo } from 'assets/icons/chain-toggler/optimism.svg';
+import { ReactComponent as EthereumMainnetLogo } from 'assets/icons/chain-toggler/mainnet.svg';
+
 import { CHAINS } from 'consts/chains';
 
 export enum DAPP_CHAIN_TYPE {
@@ -30,3 +33,11 @@ export const getChainTypeByChainId = (
   }
   return null;
 };
+
+export const CHAIN_ICONS_MAP = new Map([
+  [CHAINS.Mainnet, EthereumMainnetLogo],
+  [CHAINS.Holesky, EthereumMainnetLogo],
+  [CHAINS.Sepolia, EthereumMainnetLogo],
+  [CHAINS.Optimism, OptimismLogo],
+  [CHAINS.OptimismSepolia, OptimismLogo],
+]);

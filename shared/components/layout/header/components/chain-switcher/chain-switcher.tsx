@@ -1,7 +1,13 @@
-import { FC, useState, useRef, useMemo } from 'react';
-import { useDappStatus } from 'modules/web3';
+import {
+  FC,
+  useState,
+  useRef,
+  useMemo,
+  createElement,
+  ComponentType,
+} from 'react';
+import { CHAIN_ICONS_MAP, useDappStatus } from 'modules/web3';
 import { wagmiChainMap } from 'modules/web3/web3-provider/web3-provider';
-import { getChainTypeByChainId, DAPP_CHAIN_TYPE } from 'modules/web3/consts';
 
 import { useClickOutside } from './hooks/use-click-outside';
 import {
@@ -15,9 +21,6 @@ import {
   IconStyle,
   ArrowStyle,
 } from './styles';
-
-import { ReactComponent as OptimismLogo } from 'assets/icons/chain-toggler/optimism.svg';
-import { ReactComponent as EthereumMainnetLogo } from 'assets/icons/chain-toggler/mainnet.svg';
 
 type IconsMapType = Record<number, ChainOption>;
 
@@ -41,12 +44,11 @@ export const ChainSwitcher: FC = () => {
       supportedChainIds.reduce((acc: IconsMapType, chainId: number) => {
         acc[chainId] = {
           name: wagmiChainMap[chainId].name,
-          iconComponent:
-            getChainTypeByChainId(chainId) === DAPP_CHAIN_TYPE.Optimism ? (
-              <OptimismLogo />
-            ) : (
-              <EthereumMainnetLogo />
-            ),
+          iconComponent: CHAIN_ICONS_MAP.has(Number(chainId))
+            ? createElement(
+                CHAIN_ICONS_MAP.get(Number(chainId)) as ComponentType,
+              )
+            : null,
         };
         return acc;
       }, {}),
