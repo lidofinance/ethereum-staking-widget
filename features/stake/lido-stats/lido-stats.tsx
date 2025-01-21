@@ -1,17 +1,17 @@
 import { FC, memo, useMemo } from 'react';
 
-import { getEtherscanTokenLink } from '@lido-sdk/helpers';
-import { useSDK } from '@lido-sdk/react';
-import { getTokenAddress, TOKENS } from '@lido-sdk/constants';
+import { LIDO_TOKENS } from '@lidofinance/lido-ethereum-sdk/common';
 import { Block, DataTable, Question, Tooltip } from '@lidofinance/lido-ui';
+
+import { config } from 'config';
+import { LIDO_APR_TOOLTIP_TEXT, DATA_UNAVAILABLE } from 'consts/text';
+import { MATOMO_CLICK_EVENTS_TYPES } from 'consts/matomo-click-events';
+import { useDappStatus } from 'modules/web3';
 
 import { Section, MatomoLink } from 'shared/components';
 import { useLidoApr, useLidoStats } from 'shared/hooks';
-
-import { config } from 'config';
-
-import { LIDO_APR_TOOLTIP_TEXT, DATA_UNAVAILABLE } from 'consts/text';
-import { MATOMO_CLICK_EVENTS_TYPES } from 'consts/matomo-click-events';
+import { useTokenAddress } from 'shared/hooks/use-token-address';
+import { getEtherscanTokenLink } from 'utils/etherscan';
 
 import { FlexCenterVertical } from './styles';
 import { LidoStatsItem } from './lido-stats-item';
@@ -21,16 +21,14 @@ const isStatItemAvailable = (val: any): boolean => {
 };
 
 export const LidoStats: FC = memo(() => {
-  const { chainId } = useSDK();
-  const etherscanLink = useMemo(() => {
-    return getEtherscanTokenLink(
-      chainId,
-      getTokenAddress(chainId, TOKENS.STETH),
-    );
-  }, [chainId]);
-
+  const { chainId } = useDappStatus();
   const lidoApr = useLidoApr();
   const lidoStats = useLidoStats();
+
+  const stethAddress = useTokenAddress(LIDO_TOKENS.steth);
+  const etherscanLink = useMemo(() => {
+    return getEtherscanTokenLink(chainId, stethAddress ?? '');
+  }, [chainId, stethAddress]);
 
   const showApr = !config.ipfsMode || isStatItemAvailable(lidoApr.apr);
   const showTotalStaked =
@@ -69,7 +67,7 @@ export const LidoStats: FC = memo(() => {
               </FlexCenterVertical>
             }
             show={showApr}
-            loading={lidoApr.initialLoading}
+            loading={lidoApr.isLoading}
             dataTestId="lidoAPR"
             highlight
           >
@@ -79,7 +77,7 @@ export const LidoStats: FC = memo(() => {
           <LidoStatsItem
             title="Total staked with Lido"
             show={showTotalStaked}
-            loading={lidoStats.initialLoading}
+            loading={lidoStats.isLoading}
             dataTestId="totalStaked"
           >
             {lidoStats.data.totalStaked}
@@ -88,7 +86,7 @@ export const LidoStats: FC = memo(() => {
           <LidoStatsItem
             title="Stakers"
             show={showStakers}
-            loading={lidoStats.initialLoading}
+            loading={lidoStats.isLoading}
             dataTestId="stakers"
           >
             {lidoStats.data.stakers}
@@ -97,7 +95,7 @@ export const LidoStats: FC = memo(() => {
           <LidoStatsItem
             title="stETH market cap"
             show={showMarketCap}
-            loading={lidoStats.initialLoading}
+            loading={lidoStats.isLoading}
             dataTestId="stEthMarketCap"
           >
             {lidoStats.data.marketCap}

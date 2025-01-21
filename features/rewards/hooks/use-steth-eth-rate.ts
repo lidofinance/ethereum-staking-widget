@@ -1,28 +1,38 @@
-import { useContractSWR, useSDK } from '@lido-sdk/react';
+import invariant from 'tiny-invariant';
+import { useQuery } from '@tanstack/react-query';
 
-import { STRATEGY_LAZY } from 'consts/swr-strategies';
-import { useMainnetStaticRpcProvider } from 'shared/hooks/use-mainnet-static-rpc-provider';
-import { constants } from 'ethers';
-import { PartialCurveAbiAbi__factory } from 'generated';
-import { createContractGetter } from '@lido-sdk/contracts';
+import { PartialCurveAbi } from 'abi/partial-curve-abi';
+import { WEI_PER_ETHER } from 'consts/tx';
+import { useMainnetOnlyWagmi } from 'modules/web3';
 
-const getCurveContract = createContractGetter(PartialCurveAbiAbi__factory);
 export const MAINNET_CURVE = '0xDC24316b9AE028F1497c275EB9192a3Ea0f67022';
 
-export const useStethEthRate = () => {
-  const { chainId } = useSDK();
-  const mainnetStaticRpcProvider = useMainnetStaticRpcProvider();
+export const useStethEthRate = ({ enabled = true }) => {
+  const { publicClientMainnet } = useMainnetOnlyWagmi();
 
-  const contract = getCurveContract(MAINNET_CURVE, mainnetStaticRpcProvider);
+  const { data, error, isLoading, refetch, isFetching } = useQuery({
+    queryKey: ['get_dy', publicClientMainnet],
+    enabled: enabled && !!publicClientMainnet,
+    queryFn: () => {
+      invariant(
+        publicClientMainnet,
+        '[useStethEthRate] The "publicClientMainnet" must be define',
+      );
 
-  const swr = useContractSWR({
-    contract,
-    method: 'get_dy',
-    params: [0, 1, String(10 ** 18)],
-    config: STRATEGY_LAZY,
-    shouldFetch: chainId === 1,
+      return publicClientMainnet.readContract({
+        address: MAINNET_CURVE,
+        abi: PartialCurveAbi,
+        functionName: 'get_dy',
+        args: [0n, 1n, WEI_PER_ETHER],
+      });
+    },
   });
 
-  if (chainId !== 1) return constants.WeiPerEther;
-  return swr.data;
+  return {
+    data: data || WEI_PER_ETHER,
+    isLoading,
+    error,
+    isFetching,
+    update: refetch,
+  };
 };

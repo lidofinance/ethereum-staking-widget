@@ -1,26 +1,47 @@
-import { FC, PropsWithChildren, useEffect, useMemo } from 'react';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { WagmiProvider, createConfig, useConnections } from 'wagmi';
-import * as wagmiChains from 'wagmi/chains';
 import {
-  AutoConnect,
-  ReefKnot,
-  getWalletsDataList,
-} from 'reef-knot/core-react';
-import { WalletsListEthereum } from 'reef-knot/wallets';
+  createContext,
+  useContext,
+  FC,
+  PropsWithChildren,
+  useEffect,
+  useMemo,
+} from 'react';
+import invariant from 'tiny-invariant';
+import { http, type PublicClient } from 'viem';
+import {
+  WagmiProvider,
+  createConfig,
+  useConnections,
+  usePublicClient,
+  fallback,
+  type Config,
+} from 'wagmi';
+import * as wagmiChains from 'wagmi/chains';
+
+import { ReefKnotProvider, getDefaultConfig } from 'reef-knot/core-react';
+import {
+  ReefKnotWalletsModal,
+  getDefaultWalletsModalConfig,
+} from 'reef-knot/connect-wallet-modal';
+import { WalletIdsEthereum, WalletsListEthereum } from 'reef-knot/wallets';
+
+import { useThemeToggle } from '@lidofinance/lido-ui';
 
 import { config } from 'config';
+import { CHAINS } from 'consts/chains';
 import { useUserConfig } from 'config/user-config';
 import { useGetRpcUrlByChainId } from 'config/rpc';
-import { CHAINS } from 'consts/chains';
-import { ConnectWalletModal } from './connect-wallet-modal';
+import { walletMetricProps } from 'consts/matomo-wallets-events';
 
-import { useWeb3Transport } from './use-web3-transport';
-import { LidoSDKProvider } from './lido-sdk';
-import { SDKLegacyProvider } from './sdk-legacy';
 import { SupportL1Chains } from './dapp-chain';
+import { useWeb3Transport } from './use-web3-transport';
 
 type ChainsList = [wagmiChains.Chain, ...wagmiChains.Chain[]];
+
+const WALLETS_PINNED: WalletIdsEthereum[] = [
+  'binanceWallet',
+  'browserExtension',
+];
 
 export const wagmiChainMap = Object.values(wagmiChains).reduce(
   (acc, chain) => {
@@ -30,13 +51,21 @@ export const wagmiChainMap = Object.values(wagmiChains).reduce(
   {} as Record<number, wagmiChains.Chain>,
 );
 
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      refetchOnWindowFocus: false,
-    },
-  },
-});
+type Web3ProviderContextValue = {
+  mainnetConfig: Config;
+  publicClientMainnet: PublicClient;
+};
+
+const Web3ProviderContext = createContext<Web3ProviderContextValue | null>(
+  null,
+);
+Web3ProviderContext.displayName = 'Web3ProviderContext';
+
+export const useMainnetOnlyWagmi = () => {
+  const value = useContext(Web3ProviderContext);
+  invariant(value, 'useMainnetOnlyWagmi was used outside of Web3Provider');
+  return value;
+};
 
 export const Web3Provider: FC<PropsWithChildren> = ({ children }) => {
   const {
@@ -45,6 +74,7 @@ export const Web3Provider: FC<PropsWithChildren> = ({ children }) => {
     walletconnectProjectId,
     isWalletConnectionAllowed,
   } = useUserConfig();
+  const { themeName } = useThemeToggle();
 
   const { supportedChains, defaultChain } = useMemo(() => {
     // must preserve order of supportedChainIds
@@ -65,41 +95,83 @@ export const Web3Provider: FC<PropsWithChildren> = ({ children }) => {
     () =>
       supportedChainIds.reduce(
         (res, curr) => ({ ...res, [curr]: getRpcUrlByChainId(curr) }),
-        {
-          // Mainnet RPC is always required for some requests, e.g. ETH to USD price, ENS lookup
-          [CHAINS.Mainnet]: getRpcUrlByChainId(CHAINS.Mainnet),
-        },
+        {},
       ),
     [supportedChainIds, getRpcUrlByChainId],
   );
-
-  const { walletsDataList } = useMemo(() => {
-    return getWalletsDataList({
-      walletsList: WalletsListEthereum,
-      rpc: backendRPC,
-      walletconnectProjectId,
-      defaultChain,
-    });
-  }, [backendRPC, defaultChain, walletconnectProjectId]);
-
   const { transportMap, onActiveConnection } = useWeb3Transport(
     supportedChains,
     backendRPC,
   );
 
-  const wagmiConfig = useMemo(() => {
+  const mainnetConfig = useMemo(() => {
+    const batchConfig = {
+      wait: config.PROVIDER_BATCH_TIME,
+      batchSize: config.PROVIDER_MAX_BATCH,
+    };
+
+    const rpcUrlMainnet = getRpcUrlByChainId(CHAINS.Mainnet);
+
     return createConfig({
-      chains: supportedChains,
+      chains: [wagmiChains.mainnet],
       ssr: true,
       connectors: [],
       batch: {
         multicall: false,
       },
-      multiInjectedProviderDiscovery: false,
       pollingInterval: config.PROVIDER_POLLING_INTERVAL,
-      transports: transportMap,
+      transports: {
+        [wagmiChains.mainnet.id]: fallback([
+          // api/rpc
+          http(rpcUrlMainnet, {
+            batch: batchConfig,
+            name: rpcUrlMainnet,
+          }),
+          // fallback rpc from wagmi.chains like cloudfare-eth
+          http(undefined, {
+            batch: batchConfig,
+            name: 'default public RPC URL',
+          }),
+        ]),
+      },
     });
-  }, [supportedChains, transportMap]);
+  }, [getRpcUrlByChainId]);
+
+  const publicClientMainnet = usePublicClient({
+    config: mainnetConfig,
+  });
+
+  const { wagmiConfig, reefKnotConfig, walletsModalConfig } = useMemo(() => {
+    return getDefaultConfig({
+      // Reef-Knot config args
+      rpc: backendRPC,
+      defaultChain: defaultChain,
+      walletconnectProjectId,
+      walletsList: WalletsListEthereum,
+
+      // Wagmi config args
+      transports: transportMap,
+      chains: supportedChains,
+      autoConnect: isWalletConnectionAllowed,
+      ssr: true,
+      pollingInterval: config.PROVIDER_POLLING_INTERVAL,
+      batch: {
+        multicall: false,
+      },
+
+      // Wallets config args
+      ...getDefaultWalletsModalConfig(),
+      ...walletMetricProps,
+      walletsPinned: WALLETS_PINNED,
+    });
+  }, [
+    backendRPC,
+    supportedChains,
+    defaultChain,
+    walletconnectProjectId,
+    isWalletConnectionAllowed,
+    transportMap,
+  ]);
 
   const [activeConnection] = useConnections({ config: wagmiConfig });
 
@@ -108,23 +180,19 @@ export const Web3Provider: FC<PropsWithChildren> = ({ children }) => {
   }, [activeConnection, onActiveConnection]);
 
   return (
-    // default wagmi autoConnect, MUST be false in our case, because we use custom autoConnect from Reef Knot
-    <WagmiProvider config={wagmiConfig} reconnectOnMount={false}>
-      <QueryClientProvider client={queryClient}>
-        <ReefKnot
-          rpc={backendRPC}
-          chains={supportedChains}
-          walletDataList={walletsDataList}
-        >
-          {isWalletConnectionAllowed && <AutoConnect autoConnect />}
-          <LidoSDKProvider>
-            <SupportL1Chains>
-              <SDKLegacyProvider>{children}</SDKLegacyProvider>
-            </SupportL1Chains>
-          </LidoSDKProvider>
-          <ConnectWalletModal />
-        </ReefKnot>
-      </QueryClientProvider>
-    </WagmiProvider>
+    <Web3ProviderContext.Provider
+      value={{ mainnetConfig, publicClientMainnet }}
+    >
+      {/* default wagmi autoConnect, MUST be false in our case, because we use custom autoConnect from Reef Knot */}
+      <WagmiProvider config={wagmiConfig} reconnectOnMount={false}>
+        <ReefKnotProvider config={reefKnotConfig}>
+          <ReefKnotWalletsModal
+            config={walletsModalConfig}
+            darkThemeEnabled={themeName === 'dark'}
+          />
+          <SupportL1Chains>{children}</SupportL1Chains>
+        </ReefKnotProvider>
+      </WagmiProvider>
+    </Web3ProviderContext.Provider>
   );
 };

@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { useDappStatus } from 'modules/web3';
+import { useAA, useDappStatus, useLidoSDKL2 } from 'modules/web3';
 import { useAwaiter } from 'shared/hooks/use-awaiter';
 
 import type {
@@ -16,22 +16,28 @@ export const useWrapFormValidationContext = ({
   networkData,
 }: UseWrapFormValidationContextArgs): WrapFormValidationContext => {
   const { isDappActive } = useDappStatus();
+  const { areAuxiliaryFundsSupported } = useAA();
+  const { isL2 } = useLidoSDKL2();
+
   const {
     stakeLimitInfo,
     ethBalance,
     stethBalance,
-    isMultisig,
+    isSmartAccount,
     wrapEthGasCost,
   } = networkData;
 
   const waitForAccountData = isDappActive
-    ? stethBalance && ethBalance && isMultisig !== undefined
+    ? stethBalance !== undefined &&
+      ethBalance !== undefined &&
+      isSmartAccount !== undefined
     : true;
 
   const isDataReady = !!(
     waitForAccountData &&
     wrapEthGasCost &&
-    stakeLimitInfo
+    // L2 dont't have stakeLimitInfo
+    (isL2 || stakeLimitInfo)
   );
 
   const asyncContextValue: WrapFormAsyncValidationContext | undefined =
@@ -41,8 +47,9 @@ export const useWrapFormValidationContext = ({
             isWalletActive: isDappActive,
             stethBalance,
             etherBalance: ethBalance,
-            isMultisig,
+            isSmartAccount,
             gasCost: wrapEthGasCost,
+            shouldValidateEtherBalance: !areAuxiliaryFundsSupported,
             stakingLimitLevel: stakeLimitInfo?.stakeLimitLevel,
             currentStakeLimit: stakeLimitInfo?.currentStakeLimit,
           } as WrapFormAsyncValidationContext)
@@ -52,8 +59,9 @@ export const useWrapFormValidationContext = ({
       isDappActive,
       stethBalance,
       ethBalance,
-      isMultisig,
+      isSmartAccount,
       wrapEthGasCost,
+      areAuxiliaryFundsSupported,
       stakeLimitInfo?.stakeLimitLevel,
       stakeLimitInfo?.currentStakeLimit,
     ]);

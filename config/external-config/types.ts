@@ -1,5 +1,5 @@
+import type { UseQueryResult } from '@tanstack/react-query';
 import type { DexWithdrawalApi } from 'features/withdrawals/request/withdrawal-rates';
-import { SWRResponse } from 'swr';
 
 export type Manifest = Record<string, ManifestEntry>;
 
@@ -16,9 +16,30 @@ export type ManifestConfig = {
   featureFlags: {
     ledgerLiveL2?: boolean;
   };
+  pages?: {
+    [page in ManifestConfigPage]?: {
+      shouldDisable?: boolean;
+      sections?: [string, ...string[]];
+    };
+  };
 };
+
+export enum ManifestConfigPageEnum {
+  Stake = '/',
+  Wrap = '/wrap',
+  Withdrawals = '/withdrawals',
+  Rewards = '/rewards',
+  Settings = '/settings',
+  Referral = '/referral',
+}
+
+export type ManifestConfigPage = `${ManifestConfigPageEnum}`;
+
+export const ManifestConfigPageList = new Set<ManifestConfigPage>(
+  Object.values(ManifestConfigPageEnum),
+);
 
 export type ExternalConfig = Omit<ManifestEntry, 'config'> &
   ManifestConfig & {
-    fetchMeta: SWRResponse<ManifestEntry>;
+    fetchMeta: UseQueryResult<ManifestEntry>;
   };

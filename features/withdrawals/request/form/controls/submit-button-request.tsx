@@ -1,14 +1,14 @@
+import { useFormState } from 'react-hook-form';
+import { SubmitButtonHookForm } from 'shared/hook-form/controls/submit-button-hook-form';
+import { isValidationErrorTypeUnhandled } from 'shared/hook-form/validation/validation-error';
+import { useDappStatus } from 'modules/web3';
+import { DisabledButton } from 'shared/wallet';
 import { useWithdrawals } from 'features/withdrawals/contexts/withdrawals-context';
+
 import {
   RequestFormInputType,
   useRequestFormData,
 } from '../../request-form-context';
-
-import { SubmitButtonHookForm } from 'shared/hook-form/controls/submit-button-hook-form';
-import { useFormState } from 'react-hook-form';
-import { isValidationErrorTypeUnhandled } from 'shared/hook-form/validation/validation-error';
-import { useDappStatus, useIsMultisig } from 'modules/web3';
-import { DisabledButton } from 'shared/wallet';
 
 // conditional render breaks useFormState, so it can't be inside SubmitButton
 export const useRequestSubmitButtonProps = (): SubmitButtonRequestProps => {
@@ -34,10 +34,10 @@ export const SubmitButtonRequest = ({
   disabled,
 }: SubmitButtonRequestProps) => {
   const { isSupportedChain } = useDappStatus();
-  const { isMultisig } = useIsMultisig();
   const { isTokenLocked } = useRequestFormData();
+
   const buttonTitle = isTokenLocked
-    ? `Unlock tokens ${isMultisig ? 'for' : 'and'} withdrawal`
+    ? `Unlock tokens and withdraw`
     : 'Request withdrawal';
 
   if (!isSupportedChain) {

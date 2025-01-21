@@ -1,19 +1,23 @@
-import { validateBignumberMax } from './validate-bignumber-max';
-import { validateStakeLimit } from './validate-stake-limit';
-import { formatEther } from '@ethersproject/units';
-import { Zero } from '@ethersproject/constants';
+import { formatEther } from 'viem';
 
 import type { LIMIT_LEVEL } from 'types';
-import type { BigNumber } from 'ethers';
+import { validateBigintMax } from 'shared/hook-form/validation/validate-bigint-max';
+
+import { validateStakeLimit } from './validate-stake-limit';
 
 export type validateStakeEthParams = {
   formField: string;
-  amount: BigNumber;
+  amount: bigint;
   stakingLimitLevel: LIMIT_LEVEL;
-  currentStakeLimit: BigNumber;
-  gasCost: BigNumber;
+  currentStakeLimit: bigint;
+  shouldValidateEtherBalance: boolean;
+  gasCost: bigint;
 } & (
-  | { isWalletActive: true; etherBalance: BigNumber; isMultisig: boolean }
+  | {
+      isWalletActive: true;
+      etherBalance: bigint;
+      isSmartAccount: boolean;
+    }
   | { isWalletActive: false }
 );
 
@@ -27,20 +31,12 @@ export const validateStakeEth = (params: validateStakeEthParams) => {
       formField,
       currentStakeLimit,
       gasCost,
-
+      shouldValidateEtherBalance,
       etherBalance,
-      isMultisig,
+      isSmartAccount,
     } = params;
-    validateBignumberMax(
-      formField,
-      amount,
-      etherBalance,
-      `Entered ETH amount exceeds your available balance of ${formatEther(
-        etherBalance,
-      )}`,
-    );
 
-    validateBignumberMax(
+    validateBigintMax(
       formField,
       amount,
       currentStakeLimit,
@@ -49,19 +45,31 @@ export const validateStakeEth = (params: validateStakeEthParams) => {
       )}`,
     );
 
-    if (!isMultisig) {
-      const gasPaddedBalance = etherBalance.sub(gasCost);
-
-      validateBignumberMax(
+    // allow Smart Account(AA) to have zero balance as they can be sponsored with ETH
+    if (shouldValidateEtherBalance) {
+      validateBigintMax(
         formField,
-        Zero,
+        amount,
+        etherBalance,
+        `Entered ETH amount exceeds your available balance of ${formatEther(
+          etherBalance,
+        )}`,
+      );
+    }
+
+    if (!isSmartAccount) {
+      const gasPaddedBalance = etherBalance - gasCost;
+
+      validateBigintMax(
+        formField,
+        0n,
         gasPaddedBalance,
         `Ensure you have sufficient ETH to cover the gas cost of ${formatEther(
           gasCost,
         )}`,
       );
 
-      validateBignumberMax(
+      validateBigintMax(
         formField,
         amount,
         gasPaddedBalance,

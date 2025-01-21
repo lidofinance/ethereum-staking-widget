@@ -1,0 +1,15 @@
+{
+  "presets": [
+    [
+      "next/babel",
+      {
+        "preset-env": {
+          "exclude": ["transform-exponentiation-operator"]
+        }
+      }
+    ]
+  ],
+  "plugins": [
+    "babel-plugin-styled-components"
+  ]
+}

@@ -1,4 +1,3 @@
-import { TOKENS } from '@lido-sdk/constants';
 import { useFormState, useWatch } from 'react-hook-form';
 import { FormatToken } from 'shared/formatters';
 import { getTokenDisplayName } from 'utils/getTokenDisplayName';
@@ -9,6 +8,7 @@ import {
 } from '../request-form-context';
 import { RequestsInfoStyled, RequestsInfoDescStyled } from './styles';
 import { ValidationSplitRequest } from '../request-form-context/validators';
+import { TOKENS_TO_WITHDRAWLS } from '../../types/tokens-withdrawable';
 
 export const RequestsInfo = () => {
   const { errors } = useFormState<RequestFormInputType>();
@@ -26,7 +26,7 @@ export const RequestsInfo = () => {
 
   const requestCount = requests?.length ?? 0;
   const maxPerTx =
-    token === TOKENS.STETH
+    token === TOKENS_TO_WITHDRAWLS.stETH
       ? maxAmountPerRequestSteth
       : maxAmountPerRequestWSteth;
 
