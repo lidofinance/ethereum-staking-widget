@@ -1,9 +1,10 @@
+import { usePublicClient, useWalletClient, useWatchAsset } from 'wagmi';
+import { type Address, type PublicClient, getContract } from 'viem';
+
 import { ToastError, ToastInfo, Tooltip } from '@lidofinance/lido-ui';
 import { TokenToWalletStyle } from './styles';
 
-import { Component } from 'types';
-import { useWalletClient, useWatchAsset } from 'wagmi';
-import { Address, getContract } from 'viem';
+import type { Component } from 'types';
 
 export type TokenToWalletComponent = Component<'button', { address?: string }>;
 
@@ -25,7 +26,8 @@ const ERC20_METADATA_ABI = [
 ] as const;
 
 export const TokenToWallet: TokenToWalletComponent = ({ address, ...rest }) => {
-  const { watchAssetAsync } = useWatchAsset();
+  const { watchAssetAsync } = useWatchAsset({ mutation: { retry: false } });
+  const client = usePublicClient();
   const { data: walletClient } = useWalletClient();
 
   if (!walletClient || !address) return null;
@@ -35,7 +37,7 @@ export const TokenToWallet: TokenToWalletComponent = ({ address, ...rest }) => {
       const tokenContract = getContract({
         abi: ERC20_METADATA_ABI,
         address: address as Address,
-        client: walletClient,
+        client: client as PublicClient,
       });
 
       const [decimals, symbol] = await Promise.all([
@@ -61,12 +63,12 @@ export const TokenToWallet: TokenToWalletComponent = ({ address, ...rest }) => {
         if (
           error?.code === -32602 // Trust
         ) {
-          ToastInfo('Tokens already added');
+          ToastInfo('Token is already added');
         } else if (
           error?.code === 4001 || // Metamask, coin98, okx
           error?.code === -32603 // Bitget
         ) {
-          ToastInfo('User rejected the request');
+          ToastInfo(`Request to watch token was rejected by your wallet`);
         } else if (
           error?.code === -1 || // LL and Safe through WC
           error?.code === -32601 // LL in Discover
