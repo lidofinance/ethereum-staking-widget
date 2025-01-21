@@ -110,12 +110,12 @@ export const Wallet = ({ isUnwrapMode }: WrapWalletProps) => {
   const isLedgerLive = useIsLedgerLive();
   const { isLedger: isLedgerHardware } = useConnectorInfo();
   const { featureFlags } = useConfig().externalConfig;
-  const { isL2 } = useDappStatus();
+  const { isChainIdOnL2 } = useDappStatus();
 
   const isLedgerLiveOptimism =
-    !featureFlags.ledgerLiveL2 && isLedgerLive && isL2;
+    !featureFlags.ledgerLiveL2 && isLedgerLive && isChainIdOnL2;
 
-  const isLedgerHardwareOptimism = isLedgerHardware && isL2;
+  const isLedgerHardwareOptimism = isLedgerHardware && isChainIdOnL2;
 
   if (isLedgerLiveOptimism || isLedgerHardwareOptimism) {
     const error = `Optimism is currently not supported in ${isLedgerLiveOptimism ? 'Ledger Live' : 'Ledger Hardware'}.`;
