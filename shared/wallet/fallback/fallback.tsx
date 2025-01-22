@@ -24,7 +24,7 @@ export const Fallback = ({
     externalConfig: { multiChainBanner },
     config: { defaultChain },
   } = useConfig();
-  const { isWalletConnected, walletChainId, isSupportedChain, setChainId } =
+  const { isWalletConnected, walletChainId, isSupportedChain, switchChainId } =
     useDappStatus();
   let error = useErrorMessage();
 
@@ -46,7 +46,7 @@ export const Fallback = ({
     return (
       <FallbackWalletStyle {...props}>
         <TextStyle>{error}</TextStyle>
-        <ButtonStyle size={'xs'} onClick={() => setChainId(defaultChain)}>
+        <ButtonStyle size={'xs'} onClick={() => switchChainId(defaultChain)}>
           Switch to {wagmiChainMap[defaultChain].name}
         </ButtonStyle>
       </FallbackWalletStyle>

@@ -6,6 +6,8 @@ import {
   createElement,
   ComponentType,
 } from 'react';
+import { ToastError } from '@lidofinance/lido-ui';
+
 import { CHAIN_ICONS_MAP, useDappStatus } from 'modules/web3';
 import { wagmiChainMap } from 'modules/web3/web3-provider/web3-provider';
 
@@ -25,12 +27,12 @@ import {
 type IconsMapType = Record<number, ChainOption>;
 
 export const ChainSwitcher: FC = () => {
-  const { isDappActive, chainId, setChainId, supportedChainIds } =
+  const { isDappActive, chainId, switchChainId, supportedChainIds } =
     useDappStatus();
-  const [opened, setOpened] = useState(false);
-  const selectRef = useRef<HTMLDivElement>(null);
 
-  const isChainSwitcherUnlocked = supportedChainIds.length > 1;
+  const [opened, setOpened] = useState(false);
+  const [isLocked, setIsLocked] = useState(supportedChainIds.length < 2);
+  const selectRef = useRef<HTMLDivElement>(null);
 
   useClickOutside(selectRef, () => setOpened(false));
 
@@ -54,20 +56,37 @@ export const ChainSwitcher: FC = () => {
     <ChainSwitcherWrapperStyled>
       <ChainSwitcherStyled
         ref={selectRef}
-        $disabled={!isChainSwitcherUnlocked}
-        onClick={() => setOpened((prev) => !prev)}
+        $disabled={isLocked}
+        $showArrow={!isLocked}
+        onClick={() => {
+          if (!isLocked) {
+            setOpened((prev) => !prev);
+          }
+        }}
       >
         <IconStyle>{iconsMap[chainId].iconComponent}</IconStyle>
-        {isChainSwitcherUnlocked && <ArrowStyle $opened={opened} />}
+        {!isLocked && <ArrowStyle $opened={opened} />}
       </ChainSwitcherStyled>
 
-      {isChainSwitcherUnlocked && (
+      {!isLocked && (
         <>
           <ChainSwitcherOptions
             currentChainId={chainId}
-            onSelect={(chainId) => {
-              setChainId(chainId);
+            onSelect={async (chainId) => {
               setOpened(false);
+              setIsLocked(true);
+              try {
+                await switchChainId(chainId);
+              } catch (err) {
+                ToastError(String(err), {
+                  toastId: 'SWITCH_CHAIN_ID_ERROR',
+                  hideProgressBar: true,
+                  closeOnClick: true,
+                  position: 'bottom-left',
+                });
+              } finally {
+                setIsLocked(false);
+              }
             }}
             opened={opened}
             options={iconsMap}

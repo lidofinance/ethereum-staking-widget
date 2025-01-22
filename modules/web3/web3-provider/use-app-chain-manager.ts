@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useEffect, type Dispatch } from 'react';
+import { useCallback, useMemo, useEffect } from 'react';
 import { useAccount, useConfig, useChainId, useSwitchChain } from 'wagmi';
 
 import { config } from 'config';
@@ -13,7 +13,7 @@ import { wagmiChainMap } from './web3-provider';
 
 export const useAppChainManager = (supportedL2: boolean) => {
   const chainId = useChainId();
-  const { switchChain } = useSwitchChain();
+  const { switchChain, switchChainAsync } = useSwitchChain();
 
   // reset internal wagmi state after disconnect
   const { isConnected, chainId: walletChain } = useAccount();
@@ -45,13 +45,29 @@ export const useAppChainManager = (supportedL2: boolean) => {
     return supportedChainIds.includes(chainId) ? chainId : config.defaultChain;
   }, [chainId, supportedChainIds]);
 
-  const switchDappChainId = useCallback<Dispatch<number>>(
-    (newChainId: number) => {
-      if (supportedChainIds.includes(newChainId)) {
-        switchChain({ chainId: newChainId });
+  const switchChainId = useCallback(
+    async (newChainId: number): Promise<void> => {
+      if (walletChain === newChainId) return;
+
+      if (!supportedChainIds.includes(newChainId)) {
+        throw new Error(
+          `Error switching chain (${newChainId} is unsupported chain)`,
+        );
       }
+
+      const timeoutPromise = new Promise<void>((_, reject) =>
+        setTimeout(
+          () => reject(new Error('Error switching chain (timeout)')),
+          5000,
+        ),
+      );
+
+      await Promise.race([
+        switchChainAsync({ chainId: newChainId }),
+        timeoutPromise,
+      ]);
     },
-    [switchChain, supportedChainIds],
+    [supportedChainIds, switchChainAsync, walletChain],
   );
 
   const [isChainIdOnL2, supportedChainLabels] = useMemo(() => {
@@ -93,7 +109,7 @@ export const useAppChainManager = (supportedL2: boolean) => {
 
   return {
     chainId: dappChainId,
-    setChainId: switchDappChainId,
+    switchChainId,
 
     isTestnet: wagmiChainMap[dappChainId]?.testnet || false,
     isChainIdOnL2,
