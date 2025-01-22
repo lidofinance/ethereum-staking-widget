@@ -1,5 +1,5 @@
-import { useCallback, useMemo, type Dispatch } from 'react';
-import { useAccount, useSwitchChain } from 'wagmi';
+import { useCallback, useMemo, useEffect, type Dispatch } from 'react';
+import { useAccount, useConfig, useChainId, useSwitchChain } from 'wagmi';
 
 import { config } from 'config';
 import { isSDKSupportedL2Chain } from 'consts/chains';
@@ -12,8 +12,25 @@ import {
 import { wagmiChainMap } from './web3-provider';
 
 export const useAppChainManager = (supportedL2: boolean) => {
-  const { chainId: walletChainId, isConnected } = useAccount();
+  const chainId = useChainId();
   const { switchChain, isPending: isSwitchChainPending } = useSwitchChain();
+
+  // reset internal wagmi state after disconnect
+  const { isConnected } = useAccount();
+  const wagmiConfig = useConfig();
+  useEffect(() => {
+    if (isConnected) {
+      return () => {
+        // protecs from side effect double run
+        if (!wagmiConfig.state.current) {
+          switchChain({
+            chainId: config.defaultChain,
+          });
+        }
+      };
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isConnected]);
 
   const supportedChainIds = useMemo(
     () =>
@@ -23,15 +40,10 @@ export const useAppChainManager = (supportedL2: boolean) => {
     [supportedL2],
   );
 
+  // Supported chain over the page
   const dappChainId = useMemo(() => {
-    if (isConnected && walletChainId) {
-      return supportedChainIds.includes(walletChainId)
-        ? walletChainId
-        : config.defaultChain;
-    }
-
-    return config.defaultChain;
-  }, [isConnected, walletChainId, supportedChainIds]);
+    return supportedChainIds.includes(chainId) ? chainId : config.defaultChain;
+  }, [chainId, supportedChainIds]);
 
   const switchDappChainId = useCallback<Dispatch<number>>(
     (newChainId: number) => {
@@ -79,9 +91,10 @@ export const useAppChainManager = (supportedL2: boolean) => {
     return [isChainIdOnL2, supportedChainLabels];
   }, [dappChainId, supportedChainIds]);
 
+  // Means supported chain on the page (L1, L2)
   const isSupportedChain = useMemo(
-    () => (walletChainId ? supportedChainIds.includes(walletChainId) : true),
-    [walletChainId, supportedChainIds],
+    () => (chainId ? supportedChainIds.includes(chainId) : true),
+    [chainId, supportedChainIds],
   );
 
   return {

@@ -36,7 +36,7 @@ export const useErrorMessage = (): string | undefined => {
     return `Unsupported chain. Please switch to ${switchTo} in your wallet.`;
   }
 
-  // Checks supported chains by page (for stake page the chainID=10 - OP Mainnet will be isSupportedChain=false)
+  // Checks supported chains by page (for stake page any L2 will be unsupported - isSupportedChain=false)
   if (!isSupportedChain) {
     return `Wrong network. Please switch to ${wagmiChainMap[chainId].name} in your wallet to wrap/unwrap.`;
   }

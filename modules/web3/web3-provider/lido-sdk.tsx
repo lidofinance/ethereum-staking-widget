@@ -1,12 +1,6 @@
-import { createContext, useContext, useEffect, useMemo } from 'react';
+import { createContext, useContext, useMemo } from 'react';
 import invariant from 'tiny-invariant';
-import {
-  useAccount,
-  useConfig,
-  usePublicClient,
-  useSwitchChain,
-  useWalletClient,
-} from 'wagmi';
+import { usePublicClient, useWalletClient } from 'wagmi';
 
 import { LidoSDKStake } from '@lidofinance/lido-ethereum-sdk/stake';
 import { CHAINS, LidoSDKCore } from '@lidofinance/lido-ethereum-sdk/core';
@@ -18,7 +12,6 @@ import { LidoSDKWrap } from '@lidofinance/lido-ethereum-sdk/wrap';
 import { LidoSDKWithdraw } from '@lidofinance/lido-ethereum-sdk/withdraw';
 import { LidoSDKStatistics } from '@lidofinance/lido-ethereum-sdk/statistics';
 
-import { config } from 'config';
 import { useTokenTransferSubscription } from 'modules/web3/hooks/use-balance';
 import { useDappChain } from './dapp-chain';
 
@@ -50,24 +43,6 @@ export const LidoSDKProvider = ({ children }: React.PropsWithChildren) => {
   const { chainId } = useDappChain();
   const { data: walletClient } = useWalletClient({ chainId });
   const publicClient = usePublicClient({ chainId });
-  // reset internal wagmi state after disconnect
-  const { isConnected } = useAccount();
-
-  const wagmiConfig = useConfig();
-  const { switchChain } = useSwitchChain();
-  useEffect(() => {
-    if (isConnected) {
-      return () => {
-        // protecs from side effect double run
-        if (!wagmiConfig.state.current) {
-          switchChain({
-            chainId: config.defaultChain,
-          });
-        }
-      };
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isConnected]);
 
   const contextValue = useMemo(() => {
     // @ts-expect-error: typing (viem + LidoSDK)
