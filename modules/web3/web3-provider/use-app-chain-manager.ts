@@ -16,7 +16,7 @@ export const useAppChainManager = (supportedL2: boolean) => {
   const { switchChain } = useSwitchChain();
 
   // reset internal wagmi state after disconnect
-  const { isConnected } = useAccount();
+  const { isConnected, chainId: walletChain } = useAccount();
   const wagmiConfig = useConfig();
   useEffect(() => {
     if (isConnected) {
@@ -91,12 +91,6 @@ export const useAppChainManager = (supportedL2: boolean) => {
     return [isChainIdOnL2, supportedChainLabels];
   }, [dappChainId, supportedChainIds]);
 
-  // Means supported chain on the page (L1, L2)
-  const isSupportedChain = useMemo(
-    () => (chainId ? supportedChainIds.includes(chainId) : true),
-    [chainId, supportedChainIds],
-  );
-
   return {
     chainId: dappChainId,
     setChainId: switchDappChainId,
@@ -105,7 +99,9 @@ export const useAppChainManager = (supportedL2: boolean) => {
     isChainIdOnL2,
     supportedL2,
 
-    isSupportedChain,
+    isSupportedChain: walletChain
+      ? supportedChainIds.includes(walletChain)
+      : true,
     supportedChainIds,
     supportedChainLabels,
   };
