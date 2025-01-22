@@ -15,14 +15,9 @@ export const useErrorMessage = (): string | undefined => {
     chainId,
     walletChainId,
     isWalletConnected,
-    isSwitchChainPending,
     supportedChainLabels,
   } = useDappStatus();
   const { error } = useConnect();
-
-  if (isSwitchChainPending) {
-    return;
-  }
 
   // Errors from chain state
 

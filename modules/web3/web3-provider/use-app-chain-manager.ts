@@ -13,7 +13,7 @@ import { wagmiChainMap } from './web3-provider';
 
 export const useAppChainManager = (supportedL2: boolean) => {
   const chainId = useChainId();
-  const { switchChain, isPending: isSwitchChainPending } = useSwitchChain();
+  const { switchChain } = useSwitchChain();
 
   // reset internal wagmi state after disconnect
   const { isConnected } = useAccount();
@@ -100,7 +100,6 @@ export const useAppChainManager = (supportedL2: boolean) => {
   return {
     chainId: dappChainId,
     setChainId: switchDappChainId,
-    isSwitchChainPending,
 
     isTestnet: wagmiChainMap[dappChainId]?.testnet || false,
     isChainIdOnL2,

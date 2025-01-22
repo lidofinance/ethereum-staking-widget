@@ -25,13 +25,8 @@ import {
 type IconsMapType = Record<number, ChainOption>;
 
 export const ChainSwitcher: FC = () => {
-  const {
-    isDappActive,
-    chainId,
-    setChainId,
-    supportedChainIds,
-    isSwitchChainPending,
-  } = useDappStatus();
+  const { isDappActive, chainId, setChainId, supportedChainIds } =
+    useDappStatus();
   const [opened, setOpened] = useState(false);
   const selectRef = useRef<HTMLDivElement>(null);
 
@@ -77,7 +72,7 @@ export const ChainSwitcher: FC = () => {
             opened={opened}
             options={iconsMap}
           />
-          {!isDappActive && !isSwitchChainPending && (
+          {!isDappActive && (
             <SelectIconTooltip showArrow>
               This network doesn’t match your wallet’s network
             </SelectIconTooltip>
