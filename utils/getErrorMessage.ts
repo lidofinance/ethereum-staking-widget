@@ -63,6 +63,7 @@ const extractHumaneMessage = (error: unknown) => {
   if (error instanceof SendCallsError) {
     return error.message;
   }
+
   return null;
 };
 
@@ -114,6 +115,9 @@ export const extractCodeFromError = (
       normalizedMessage.includes('signed declined')
     )
       return 'ACTION_REJECTED';
+
+    if (normalizedMessage.includes('not enough ether for gas'))
+      return 'INSUFFICIENT_FUNDS';
   }
 
   if ('name' in error && typeof error.name == 'string') {
