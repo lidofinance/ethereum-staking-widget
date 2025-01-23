@@ -5,6 +5,7 @@ import { ToastError, ToastInfo, Tooltip } from '@lidofinance/lido-ui';
 import { TokenToWalletStyle } from './styles';
 
 import type { Component } from 'types';
+import { useIsLedgerLive } from 'shared/hooks/useIsLedgerLive';
 
 export type TokenToWalletComponent = Component<'button', { address?: string }>;
 
@@ -27,10 +28,11 @@ const ERC20_METADATA_ABI = [
 
 export const TokenToWallet: TokenToWalletComponent = ({ address, ...rest }) => {
   const { watchAssetAsync } = useWatchAsset({ mutation: { retry: false } });
+  const isLegerLive = useIsLedgerLive();
   const client = usePublicClient();
   const { data: walletClient } = useWalletClient();
 
-  if (!walletClient || !address) return null;
+  if (isLegerLive || !walletClient || !address) return null;
 
   const onClickHandler = async () => {
     try {
