@@ -2,6 +2,7 @@ import { usePublicClient, useWalletClient, useWatchAsset } from 'wagmi';
 import { type Address, type PublicClient, getContract } from 'viem';
 
 import { ToastError, ToastInfo, Tooltip } from '@lidofinance/lido-ui';
+import { useIsLedgerLive } from 'shared/hooks/useIsLedgerLive';
 import { TokenToWalletStyle } from './styles';
 
 import type { Component } from 'types';
@@ -27,10 +28,11 @@ const ERC20_METADATA_ABI = [
 
 export const TokenToWallet: TokenToWalletComponent = ({ address, ...rest }) => {
   const { watchAssetAsync } = useWatchAsset({ mutation: { retry: false } });
+  const isLegerLive = useIsLedgerLive();
   const client = usePublicClient();
   const { data: walletClient } = useWalletClient();
 
-  if (!walletClient || !address) return null;
+  if (isLegerLive || !walletClient || !address) return null;
 
   const onClickHandler = async () => {
     try {
