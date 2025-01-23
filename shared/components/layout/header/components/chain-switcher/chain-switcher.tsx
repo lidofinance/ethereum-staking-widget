@@ -6,7 +6,6 @@ import {
   createElement,
   ComponentType,
 } from 'react';
-import { ToastError } from '@lidofinance/lido-ui';
 
 import { CHAIN_ICONS_MAP, useDappStatus } from 'modules/web3';
 import { wagmiChainMap } from 'modules/web3/web3-provider/web3-provider';
@@ -78,12 +77,7 @@ export const ChainSwitcher: FC = () => {
               try {
                 await switchChainId(chainId);
               } catch (err) {
-                ToastError(String(err), {
-                  toastId: 'SWITCH_CHAIN_ID_ERROR',
-                  hideProgressBar: true,
-                  closeOnClick: true,
-                  position: 'bottom-left',
-                });
+                console.warn(`[chain-switcher.tsx] ${err}`);
               } finally {
                 setIsLocked(false);
               }

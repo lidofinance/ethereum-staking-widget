@@ -46,7 +46,16 @@ export const Fallback = ({
     return (
       <FallbackWalletStyle {...props}>
         <TextStyle>{error}</TextStyle>
-        <ButtonStyle size={'xs'} onClick={() => switchChainId(defaultChain)}>
+        <ButtonStyle
+          size={'xs'}
+          onClick={async () => {
+            try {
+              await switchChainId(defaultChain);
+            } catch (err) {
+              console.warn(`[fallback.tsx] ${err}`);
+            }
+          }}
+        >
           Switch to {wagmiChainMap[defaultChain].name}
         </ButtonStyle>
       </FallbackWalletStyle>
