@@ -4,6 +4,12 @@ import { Text } from '@lidofinance/lido-ui';
 
 export const Wrap = styled.div`
   text-align: center;
+  margin-top: -34px;
+
+  ${({ theme }) => theme.mediaQueries.md} {
+    margin-top: -26px;
+    padding-bottom: 12px;
+  }
 `;
 
 export const Title = styled(Text).attrs({
