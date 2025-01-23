@@ -5,14 +5,13 @@ import { helpers } from 'reef-knot/web3-react';
 
 import { config } from 'config';
 import { useDappStatus } from 'modules/web3';
-import { wagmiChainMap } from 'modules/web3/web3-provider/web3-provider';
 import { joinWithOr } from 'utils/join-with-or';
 
 export const useErrorMessage = (): string | undefined => {
   const { isLedger } = useConnectorInfo();
   const {
     isSupportedChain,
-    chainId,
+    wagmiChain,
     walletChainId,
     isWalletConnected,
     supportedChainLabels,
@@ -33,7 +32,7 @@ export const useErrorMessage = (): string | undefined => {
 
   // Checks supported chains by page (for stake page any L2 will be unsupported - isSupportedChain=false)
   if (!isSupportedChain) {
-    return `Wrong network. Please switch to ${wagmiChainMap[chainId].name} in your wallet to wrap/unwrap.`;
+    return `Wrong network. Please switch to ${wagmiChain.name} in your wallet to wrap/unwrap.`;
   }
 
   // errors from connection state

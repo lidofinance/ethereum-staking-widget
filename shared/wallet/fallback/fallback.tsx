@@ -1,5 +1,4 @@
 import { useDappStatus } from 'modules/web3';
-import { wagmiChainMap } from 'modules/web3/web3-provider/web3-provider';
 import { useConfig } from 'config';
 import { LIDO_MULTICHAIN_CHAINS } from 'consts/chains';
 import { WalletCardComponent } from 'shared/wallet/card/types';
@@ -22,10 +21,14 @@ export const Fallback = ({
 }: FallbackProps) => {
   const {
     externalConfig: { multiChainBanner },
-    config: { defaultChain },
   } = useConfig();
-  const { isWalletConnected, walletChainId, isSupportedChain, switchChainId } =
-    useDappStatus();
+  const {
+    isWalletConnected,
+    walletChainId,
+    isSupportedChain,
+    switchChainId,
+    wagmiDefaultChain,
+  } = useDappStatus();
   let error = useErrorMessage();
 
   const isLidoMultichain =
@@ -50,13 +53,13 @@ export const Fallback = ({
           size={'xs'}
           onClick={async () => {
             try {
-              await switchChainId(defaultChain);
+              await switchChainId(wagmiDefaultChain.id);
             } catch (err) {
               console.warn(`[fallback.tsx] ${err}`);
             }
           }}
         >
-          Switch to {wagmiChainMap[defaultChain].name}
+          Switch to {wagmiDefaultChain.name}
         </ButtonStyle>
       </FallbackWalletStyle>
     );

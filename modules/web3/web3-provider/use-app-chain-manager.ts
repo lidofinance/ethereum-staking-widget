@@ -110,8 +110,10 @@ export const useAppChainManager = (supportedL2: boolean) => {
   return {
     chainId: dappChainId,
     switchChainId,
+    wagmiChain: wagmiChainMap[dappChainId],
 
-    isTestnet: wagmiChainMap[dappChainId]?.testnet || false,
+    wagmiDefaultChain: wagmiChainMap[config.defaultChain],
+
     isChainIdOnL2,
     supportedL2,
 
