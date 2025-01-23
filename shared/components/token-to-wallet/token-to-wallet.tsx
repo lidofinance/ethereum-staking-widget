@@ -2,10 +2,10 @@ import { usePublicClient, useWalletClient, useWatchAsset } from 'wagmi';
 import { type Address, type PublicClient, getContract } from 'viem';
 
 import { ToastError, ToastInfo, Tooltip } from '@lidofinance/lido-ui';
+import { useIsLedgerLive } from 'shared/hooks/useIsLedgerLive';
 import { TokenToWalletStyle } from './styles';
 
 import type { Component } from 'types';
-import { useIsLedgerLive } from 'shared/hooks/useIsLedgerLive';
 
 export type TokenToWalletComponent = Component<'button', { address?: string }>;
 
