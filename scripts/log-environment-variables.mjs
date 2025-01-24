@@ -34,6 +34,8 @@ export const secretKeys = [
   'EL_RPC_URLS_11155111',
   'EL_RPC_URLS_10',
   'EL_RPC_URLS_11155420',
+  'EL_RPC_URLS_1868',
+  'EL_RPC_URLS_1946'
 ];
 
 export const logOpenEnvironmentVariables = () => {

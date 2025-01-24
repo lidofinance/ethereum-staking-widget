@@ -107,8 +107,14 @@ export const useAppChainManager = (supportedL2: boolean) => {
     return [isChainIdOnL2, supportedChainLabels];
   }, [dappChainId, supportedChainIds]);
 
+  const chainType = useMemo(
+    () => getChainTypeByChainId(dappChainId),
+    [dappChainId],
+  );
+
   return {
     chainId: dappChainId,
+    chainType,
     switchChainId,
     wagmiChain: wagmiChainMap[dappChainId],
 

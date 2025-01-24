@@ -88,6 +88,7 @@ export const OptionStyled = styled.div<PopupMenuOptionProps>`
   color: var(--lido-color-text);
   transition: opacity 100ms;
   cursor: pointer;
+  white-space: nowrap;
 
   // Fix the highlight by click
   -webkit-tap-highlight-color: transparent;
