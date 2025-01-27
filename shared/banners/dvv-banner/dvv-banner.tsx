@@ -11,13 +11,13 @@ import {
   Footer,
   FooterText,
   FooterAction,
+  PartnerImageSSVMellow,
 } from './styles';
 
 import { ReactComponent as IconLidoLogoLight } from 'assets/dvv-banner/dvv-banner-lido-logo-light.svg';
-import { ReactComponent as IconPartnersLogoLight } from 'assets/dvv-banner/dvv-banner-partners-logo-light.svg';
+import { ReactComponent as IconPartnersSSVMellowLight } from 'assets/dvv-banner/dvv-banner-partners-ssv-mellow-light.svg';
 import { ReactComponent as IconLidoLogoDark } from 'assets/dvv-banner/dvv-banner-lido-logo-dark.svg';
-import { ReactComponent as IconPartnersLogoDark } from 'assets/dvv-banner/dvv-banner-partners-logo-dark.svg';
-
+import { ReactComponent as IconPartnersSSVMellowDark } from 'assets/dvv-banner/dvv-banner-partners-ssv-mellow-dark.svg';
 import { trackEvent } from '@lidofinance/analytics-matomo';
 import { MATOMO_CLICK_EVENTS } from 'consts/matomo-click-events';
 import { config } from 'config';
@@ -57,10 +57,16 @@ export const DVVBanner = () => {
         <PartnerSeparator>+</PartnerSeparator>
         <PartnerItem>
           <PartnerImage>
-            {isDarkTheme ? <IconPartnersLogoDark /> : <IconPartnersLogoLight />}
+            <PartnerImageSSVMellow>
+              {isDarkTheme ? (
+                <IconPartnersSSVMellowDark />
+              ) : (
+                <IconPartnersSSVMellowLight />
+              )}
+            </PartnerImageSSVMellow>
           </PartnerImage>
           <PartnerText>
-            <b>Obol</b> + <b>SSV</b> + <b>Mellow</b> Points
+            <b>SSV</b> + <b>Mellow</b> Points
           </PartnerText>
         </PartnerItem>
       </Partners>
