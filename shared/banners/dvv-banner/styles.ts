@@ -42,6 +42,11 @@ export const PartnerImage = styled.div`
   }
 `;
 
+// TODO: delete after returning previous icons
+export const PartnerImageSSVMellow = styled.div`
+  margin-left: -30px;
+`;
+
 export const PartnerText = styled.div``;
 
 export const PartnerSeparator = styled.div`
