@@ -5,11 +5,12 @@ import { useDappStatus, DAPP_CHAIN_TYPE } from 'modules/web3';
 
 import { EthereumFAQ } from './ethereum-faq/faq';
 import { OptimismFAQ } from './optimism-faq/faq';
+import { SoneiumFAQ } from './soneium-faq/faq';
 
 export const faqComponentsMap = new Map([
   [DAPP_CHAIN_TYPE.Ethereum, EthereumFAQ],
   [DAPP_CHAIN_TYPE.Optimism, OptimismFAQ],
-  // FAQ for other networks
+  [DAPP_CHAIN_TYPE.Soneium, SoneiumFAQ],
 ]);
 
 export const WrapFaq = () => {
