@@ -12,12 +12,14 @@ import {
   ArrowStyle,
 } from './styles';
 
-import { ReactComponent as OptimismLogo } from 'assets/icons/chain-toggler/optimism.svg';
 import { ReactComponent as EthereumMainnetLogo } from 'assets/icons/chain-toggler/mainnet.svg';
+import { ReactComponent as OptimismLogo } from 'assets/icons/chain-toggler/optimism.svg';
+import { ReactComponent as SoneiumLogo } from 'assets/icons/chain-toggler/soneium.svg';
 
 const iconsMap: Record<DAPP_CHAIN_TYPE, ReactNode> = {
   [DAPP_CHAIN_TYPE.Ethereum]: <EthereumMainnetLogo />,
   [DAPP_CHAIN_TYPE.Optimism]: <OptimismLogo />,
+  [DAPP_CHAIN_TYPE.Soneium]: <SoneiumLogo />,
 };
 
 export const ChainSwitcher: FC = () => {

@@ -76,8 +76,8 @@ export const useUnwrapTxOnL2Approve = ({ amount }: UseUnwrapTxApproveArgs) => {
       isApprovalNeededBeforeUnwrap,
       isAllowanceLoading,
       // There are 2 cases when we show the allowance on the unwrap page:
-      // 1. wallet chain is any Optimism supported chain and chain switcher is Optimism (isDappActiveOnL2)
-      // 2. or wallet chain is any ETH supported chain, but chain switcher is Optimism (isChainTypeOnL2)
+      // 1. wallet chain is L2 chain and chain switcher is on L2 chain (isDappActiveOnL2)
+      // 2. or wallet chain is any ETH supported chain, but chain switcher is on L2 chain (isChainTypeOnL2)
       isShowAllowance: isDappActiveOnL2 || isChainTypeOnL2,
     }),
     [
