@@ -1,8 +1,7 @@
-import { FC, useState, useRef, ReactNode } from 'react';
+import { FC, useState, ReactNode } from 'react';
 import { DAPP_CHAIN_TYPE } from 'modules/web3';
 import { useDappStatus } from 'modules/web3';
 
-import { useClickOutside } from './hooks/use-click-outside';
 import { ChainSwitcherOptions } from './components/chain-switcher-options/chain-switcher-options';
 import { SelectIconTooltip } from './components/select-icon-tooltip/select-icon-tooltip';
 import {
@@ -26,16 +25,12 @@ export const ChainSwitcher: FC = () => {
   const { isDappActive, chainType, supportedChainTypes, setChainType } =
     useDappStatus();
   const [opened, setOpened] = useState(false);
-  const selectRef = useRef<HTMLDivElement>(null);
 
   const isChainTypeUnlocked = supportedChainTypes.length > 1;
-
-  useClickOutside(selectRef, () => setOpened(false));
 
   return (
     <ChainSwitcherWrapperStyled>
       <ChainSwitcherStyled
-        ref={selectRef}
         $disabled={!isChainTypeUnlocked}
         onClick={() => setOpened((prev) => !prev)}
       >
@@ -51,6 +46,7 @@ export const ChainSwitcher: FC = () => {
               setChainType(chainType);
               setOpened(false);
             }}
+            setOpened={setOpened}
             opened={opened}
             options={iconsMap}
           />

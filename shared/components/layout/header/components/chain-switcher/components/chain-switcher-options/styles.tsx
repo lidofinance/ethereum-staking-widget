@@ -17,6 +17,8 @@ type PopupMenuProps = {
 
 const visibleCSS = css`
   opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
 
   &[data-placement] {
     transform: translate(0, 0);
@@ -25,6 +27,8 @@ const visibleCSS = css`
 
 const hiddenCSS = css`
   opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
 
   &[data-placement^='top'] {
     transform: translateY(6px);
