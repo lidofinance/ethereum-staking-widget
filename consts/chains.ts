@@ -6,6 +6,8 @@ export enum CHAINS {
   Sepolia = 11155111,
   Optimism = 10,
   OptimismSepolia = 11155420,
+  Soneium = 1868,
+  SoneiumMinato = 1946,
 }
 
 export enum LIDO_MULTICHAIN_CHAINS {
@@ -22,6 +24,7 @@ export enum LIDO_MULTICHAIN_CHAINS {
   'Zircuit Chain' = 48900,
   Unichain = 130,
   Metis = 1088,
+  Soneium = 1868,
 }
 
 // TODO: move to @lidofinance/lido-ethereum-sdk package

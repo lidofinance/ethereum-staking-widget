@@ -19,6 +19,7 @@ import { LidoSDKL2Provider } from './lido-sdk-l2';
 export enum DAPP_CHAIN_TYPE {
   Ethereum = 'Ethereum',
   Optimism = 'Optimism',
+  Soneium = 'Soneium',
 }
 
 type DappChainContextValue = {
@@ -55,12 +56,16 @@ const ETHEREUM_CHAINS = new Set([
 
 const OPTIMISM_CHAINS = new Set([CHAINS.Optimism, CHAINS.OptimismSepolia]);
 
+export const SONEIUM_CHAINS = new Set([CHAINS.Soneium, CHAINS.SoneiumMinato]);
+
 const getChainTypeByChainId = (chainId?: number): DAPP_CHAIN_TYPE | null => {
   if (!chainId) return null;
   if (ETHEREUM_CHAINS.has(chainId)) {
     return DAPP_CHAIN_TYPE.Ethereum;
   } else if (OPTIMISM_CHAINS.has(chainId)) {
     return DAPP_CHAIN_TYPE.Optimism;
+  } else if (SONEIUM_CHAINS.has(chainId)) {
+    return DAPP_CHAIN_TYPE.Soneium;
   }
   return null;
 };
@@ -165,7 +170,9 @@ export const SupportL2Chains: React.FC<React.PropsWithChildren> = ({
           // At the moment a simple check is enough for us,
           // however in the future we will either rethink this flag
           // or use an array or Set (for example with L2_DAPP_CHAINS_TYPE)
-          isChainTypeOnL2: chainType === DAPP_CHAIN_TYPE.Optimism,
+          isChainTypeOnL2:
+            chainType === DAPP_CHAIN_TYPE.Optimism ||
+            chainType === DAPP_CHAIN_TYPE.Soneium,
         }),
         [chainType, walletChainId],
       )}

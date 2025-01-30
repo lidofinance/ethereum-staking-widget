@@ -157,9 +157,12 @@ export default withBundleAnalyzer({
     rpcUrls_1: process.env.EL_RPC_URLS_1,
     rpcUrls_17000: process.env.EL_RPC_URLS_17000,
     rpcUrls_11155111: process.env.EL_RPC_URLS_11155111,
-    // OP rpcs
+    // Optimism rpcs
     rpcUrls_10: process.env.EL_RPC_URLS_10,
     rpcUrls_11155420: process.env.EL_RPC_URLS_11155420,
+    // Soneium rpcs
+    rpcUrls_1868: process.env.EL_RPC_URLS_1868,
+    rpcUrls_1946: process.env.EL_RPC_URLS_1946,
 
     cspTrustedHosts: process.env.CSP_TRUSTED_HOSTS,
     cspReportUri: process.env.CSP_REPORT_URI,
