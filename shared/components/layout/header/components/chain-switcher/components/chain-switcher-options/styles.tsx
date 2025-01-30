@@ -42,7 +42,7 @@ const hiddenCSS = css`
 
 export const PopupStyled = styled.div<PopupMenuProps>`
   z-index: 201;
-  min-width: 115px;
+  min-width: 120px;
 
   position: absolute;
   top: 48px;
