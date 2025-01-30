@@ -1,4 +1,3 @@
-import { useAccount } from 'wagmi';
 import { useConnectorInfo } from 'reef-knot/core-react';
 import { Divider, Text } from '@lidofinance/lido-ui';
 
@@ -118,15 +117,14 @@ export const Wallet = ({ isUnwrapMode }: WrapWalletProps) => {
   const isLedgerLive = useIsLedgerLive();
   const { isLedger: isLedgerHardware } = useConnectorInfo();
   const { featureFlags } = useConfig().externalConfig;
-  const { isChainTypeOnL2 } = useDappStatus();
-  const { chain } = useAccount();
+  const { isChainTypeOnL2, chainType } = useDappStatus();
 
   const isLedgerLiveOnL2 =
     !featureFlags.ledgerLiveL2 && isLedgerLive && isChainTypeOnL2;
   const isLedgerHardwareL2 = isLedgerHardware && isChainTypeOnL2;
 
   if (isLedgerLiveOnL2 || isLedgerHardwareL2) {
-    const error = `${chain?.name} is currently not supported in ${isLedgerLiveOnL2 ? 'Ledger Live' : 'Ledger Hardware'}.`;
+    const error = `${chainType} is currently not supported in ${isLedgerLiveOnL2 ? 'Ledger Live' : 'Ledger Hardware'}.`;
     return <Fallback error={error} />;
   }
 
