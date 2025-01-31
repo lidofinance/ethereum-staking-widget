@@ -29,4 +29,5 @@ export const WalledButtonLoaderStyle = styled((props) => (
   <InlineLoader {...props} />
 ))`
   width: 60px;
+  margin-right: 6px;
 `;

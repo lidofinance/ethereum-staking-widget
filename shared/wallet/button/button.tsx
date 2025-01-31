@@ -32,19 +32,19 @@ export const Button: FC<ButtonProps> = (props) => {
       {...rest}
     >
       <WalledButtonWrapperStyle>
-        <WalledButtonBalanceStyle>
-          {isLoading ? (
-            <WalledButtonLoaderStyle />
-          ) : (
-            isDappActive && (
+        {isLoading ? (
+          <WalledButtonLoaderStyle />
+        ) : (
+          isDappActive && (
+            <WalledButtonBalanceStyle>
               <FormatToken
                 amount={balance}
                 symbol="ETH"
                 showAmountTip={false}
               />
-            )
-          )}
-        </WalledButtonBalanceStyle>
+            </WalledButtonBalanceStyle>
+          )
+        )}
         <AddressBadge address={address as Address} />
       </WalledButtonWrapperStyle>
     </WalledButtonStyle>
