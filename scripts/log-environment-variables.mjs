@@ -30,12 +30,12 @@ export const openKeys = [
 export const secretKeys = [
   'EL_RPC_URLS_1',
   'EL_RPC_URLS_5',
+  'EL_RPC_URLS_10',
+  'EL_RPC_URLS_1868',
+  'EL_RPC_URLS_1946',
   'EL_RPC_URLS_17000',
   'EL_RPC_URLS_11155111',
-  'EL_RPC_URLS_10',
   'EL_RPC_URLS_11155420',
-  'EL_RPC_URLS_1868',
-  'EL_RPC_URLS_1946'
 ];
 
 export const logOpenEnvironmentVariables = () => {
@@ -61,8 +61,23 @@ export const logSecretEnvironmentVariables = () => {
   console.log('Log secret environment variables:');
   console.log('---------------------------------------------');
 
-  // console.log('process.env:', process.env)
+  if (!process.env['SUPPORTED_CHAINS']) {
+    console.error('CRITICAL ERROR: SUPPORTED_CHAINS is not defined in process.env!');
+    process.exit(1);
+  }
+
+  const supportedChains = process.env['SUPPORTED_CHAINS'].split(',').map(s => s.trim());
+
   for (const key of secretKeys) {
+    if (key.startsWith('EL_RPC_URLS_')) {
+      const chainId = key.replace('EL_RPC_URLS_', '');
+      if (!supportedChains.includes(chainId)) {
+        console.info(`Secret ${key} - skipped (${chainId} isn't in the SUPPORTED_CHAINS)!`);
+        // Skip check if chainId isn't in the SUPPORTED_CHAINS
+        continue;
+      }
+    }
+
     if (!process.env.hasOwnProperty(key)) {
       console.error(`Secret ${key} - ERROR (not exist in process.env)`);
       continue;
