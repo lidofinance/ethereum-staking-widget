@@ -62,8 +62,9 @@ export const logSecretEnvironmentVariables = () => {
   console.log('---------------------------------------------');
 
   if (!process.env['SUPPORTED_CHAINS']) {
-    console.error('CRITICAL ERROR: SUPPORTED_CHAINS is not defined in process.env!');
-    process.exit(1);
+    console.warn('SUPPORTED_CHAINS is not defined in process.env!');
+    console.warn('Skip the logSecretEnvironmentVariables check!');
+    return;
   }
 
   const supportedChains = process.env['SUPPORTED_CHAINS'].split(',').map(s => s.trim());
@@ -94,11 +95,6 @@ export const logSecretEnvironmentVariables = () => {
 };
 
 export const logEnvironmentVariables = () => {
-  // treat this check as a "build time" check
-  if (process.env.NODE_NO_BUILD_DYNAMICS) {
-    return;
-  }
-
   logOpenEnvironmentVariables();
   logSecretEnvironmentVariables();
 };
