@@ -18,6 +18,15 @@ export const useAppChainManager = (supportedL2: boolean) => {
   // reset internal wagmi state after disconnect
   const { isConnected, chainId: walletChain } = useAccount();
   const wagmiConfig = useConfig();
+
+  // const provider = connector?.getProvider();
+  // provider.session?.peer?.metadata
+  //  description: "Smart contract wallet for Ethereum"
+  //  icons: ['https://app.safe.global/images/logo-round.svg']
+  //  name: "Safe{Wallet}"
+  //  url: "https://app.safe.global"
+  // console.log('provider:', provider);
+
   useEffect(() => {
     if (isConnected) {
       return () => {

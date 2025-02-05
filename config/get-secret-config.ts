@@ -14,6 +14,10 @@ export type SecretConfigType = Modify<
 
     rpcUrls_10: [string, ...string[]];
     rpcUrls_11155420: [string, ...string[]];
+
+    rpcUrls_1868: [string, ...string[]];
+    rpcUrls_1946: [string, ...string[]];
+
     // Dynamic keys like rpcUrls_<number>
     [key: `rpcUrls_${number}`]: string[];
 
@@ -54,6 +58,15 @@ export const getSecretConfig = (): SecretConfigType => {
     ],
     rpcUrls_11155420: (serverRuntimeConfig.rpcUrls_11155420?.split(',') ??
       []) as [string, ...string[]],
+
+    rpcUrls_1868: (serverRuntimeConfig.rpcUrls_1868?.split(',') ?? []) as [
+      string,
+      ...string[],
+    ],
+    rpcUrls_1946: (serverRuntimeConfig.rpcUrls_1946?.split(',') ?? []) as [
+      string,
+      ...string[],
+    ],
 
     cspReportOnly: toBoolean(serverRuntimeConfig.cspReportOnly),
 

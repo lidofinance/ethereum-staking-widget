@@ -1,16 +1,8 @@
-import {
-  FC,
-  useState,
-  useRef,
-  useMemo,
-  createElement,
-  ComponentType,
-} from 'react';
+import { FC, useState, useMemo, createElement, ComponentType } from 'react';
 
 import { CHAIN_ICONS_MAP, useDappStatus } from 'modules/web3';
 import { wagmiChainMap } from 'modules/web3/web3-provider/web3-provider';
 
-import { useClickOutside } from './hooks/use-click-outside';
 import {
   ChainSwitcherOptions,
   ChainOption,
@@ -31,9 +23,6 @@ export const ChainSwitcher: FC = () => {
 
   const [opened, setOpened] = useState(false);
   const [isLocked, setIsLocked] = useState(supportedChainIds.length < 2);
-  const selectRef = useRef<HTMLDivElement>(null);
-
-  useClickOutside(selectRef, () => setOpened(false));
 
   const iconsMap = useMemo(
     () =>
@@ -54,7 +43,6 @@ export const ChainSwitcher: FC = () => {
   return (
     <ChainSwitcherWrapperStyled>
       <ChainSwitcherStyled
-        ref={selectRef}
         $disabled={isLocked}
         $showArrow={!isLocked}
         onClick={() => {
@@ -82,6 +70,7 @@ export const ChainSwitcher: FC = () => {
                 setIsLocked(false);
               }
             }}
+            setOpened={setOpened}
             opened={opened}
             options={iconsMap}
           />

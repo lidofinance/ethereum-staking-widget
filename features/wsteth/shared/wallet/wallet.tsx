@@ -2,6 +2,7 @@ import { useConnectorInfo } from 'reef-knot/core-react';
 import { Divider, Text } from '@lidofinance/lido-ui';
 
 import { useConfig } from 'config';
+import { CHAINS } from 'consts/chains';
 
 import { FormatToken } from 'shared/formatters';
 import { TokenToWallet } from 'shared/components';
@@ -19,7 +20,7 @@ import { CardBalance, CardRow, CardAccount, Fallback } from 'shared/wallet';
 import { StyledCard } from './styles';
 
 const WalletComponent = () => {
-  const { isDappActiveOnL2 } = useDappStatus();
+  const { chainId } = useDappStatus();
   const ethBalance = useEthereumBalance();
   const stethBalance = useStethBalance();
   const wstethBalance = useWstethBalance();
@@ -27,8 +28,17 @@ const WalletComponent = () => {
   const wstethBySteth = useWstethBySteth(stethBalance?.data);
   const stethByWsteth = useStETHByWstETH(wstethBalance?.data);
 
+  const isOptimism = [CHAINS.Optimism, CHAINS.OptimismSepolia].includes(
+    chainId,
+  );
+  const isSoneium = [CHAINS.Soneium, CHAINS.SoneiumMinato].includes(chainId);
+
   return (
-    <StyledCard data-testid="wrapCardSection" $redBg={isDappActiveOnL2}>
+    <StyledCard
+      data-testid="wrapCardSection"
+      $optimism={isOptimism}
+      $soneium={isSoneium}
+    >
       <CardRow>
         <CardBalance
           title="ETH balance"
@@ -110,15 +120,14 @@ export const Wallet = ({ isUnwrapMode }: WrapWalletProps) => {
   const isLedgerLive = useIsLedgerLive();
   const { isLedger: isLedgerHardware } = useConnectorInfo();
   const { featureFlags } = useConfig().externalConfig;
-  const { isChainIdOnL2 } = useDappStatus();
+  const { isChainIdOnL2, wagmiChain } = useDappStatus();
 
-  const isLedgerLiveOptimism =
+  const isLedgerLiveOnL2 =
     !featureFlags.ledgerLiveL2 && isLedgerLive && isChainIdOnL2;
+  const isLedgerHardwareL2 = isLedgerHardware && isChainIdOnL2;
 
-  const isLedgerHardwareOptimism = isLedgerHardware && isChainIdOnL2;
-
-  if (isLedgerLiveOptimism || isLedgerHardwareOptimism) {
-    const error = `Optimism is currently not supported in ${isLedgerLiveOptimism ? 'Ledger Live' : 'Ledger Hardware'}.`;
+  if (isLedgerLiveOnL2 || isLedgerHardwareL2) {
+    const error = `${wagmiChain.name} is currently not supported in ${isLedgerLiveOnL2 ? 'Ledger Live' : 'Ledger Hardware'}.`;
     return <Fallback error={error} />;
   }
 
