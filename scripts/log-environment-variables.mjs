@@ -94,6 +94,11 @@ export const logSecretEnvironmentVariables = () => {
 };
 
 export const logEnvironmentVariables = () => {
+  // treat this check as a "build time" check
+  if (process.env.NODE_NO_BUILD_DYNAMICS) {
+    return;
+  }
+
   logOpenEnvironmentVariables();
   logSecretEnvironmentVariables();
 };
