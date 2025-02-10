@@ -60,8 +60,7 @@ const collectEnvInfoMetrics = (registry: Registry): void => {
 export const collectStartupMetrics = async (
   registry: Registry,
 ): Promise<void> => {
-  // conflicts with HMR
-  if (config.developmentMode || config.ipfsMode) return;
+  if (!config.runMetrics) return;
 
   collectEnvInfoMetrics(registry);
 
