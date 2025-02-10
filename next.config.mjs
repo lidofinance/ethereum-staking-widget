@@ -179,6 +179,6 @@ export default withBundleAnalyzer({
   publicRuntimeConfig: {
     basePath,
     developmentMode,
-    runMetrics: process.env.RUN_METRICS === 'true',
+    collectMetrics: process.env.COLLECT_METRICS === 'true',
   },
 });

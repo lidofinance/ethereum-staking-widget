@@ -46,7 +46,7 @@ declare module 'next/config' {
     publicRuntimeConfig: {
       basePath: string | undefined;
       developmentMode: boolean;
-      runMetrics: boolean;
+      collectMetrics: boolean;
     };
   };
 

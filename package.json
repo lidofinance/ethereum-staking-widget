@@ -10,7 +10,7 @@
     "build": "NODE_OPTIONS='--no-warnings=ExperimentalWarning' next build",
     "build:analyze": "ANALYZE_BUNDLE=true yarn build",
     "build:ipfs": "IPFS_MODE=true yarn build && IPFS_MODE=true next export",
-    "start": "NODE_ENV=production RUN_METRICS=true RUN_STARTUP_CHECKS=true RUN_SECRET_ENV_LOGGING=true node -r next-logger --no-warnings=ExperimentalWarning server.mjs",
+    "start": "NODE_ENV=production COLLECT_METRICS=true RUN_STARTUP_CHECKS=true RUN_SECRET_ENV_LOGGING=true node -r next-logger --no-warnings=ExperimentalWarning server.mjs",
     "lint": "eslint --ext ts,tsx,js,mjs .",
     "lint:fix": "yarn lint --fix",
     "types": "tsc --noEmit",
