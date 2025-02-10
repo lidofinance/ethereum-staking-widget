@@ -7,10 +7,7 @@ import { startupCheckRPCs } from './scripts/startup-checks/rpc.mjs';
 logEnvironmentVariables();
 buildDynamics();
 
-if (
-  process.env.RUN_STARTUP_CHECKS === 'true' &&
-  typeof window === 'undefined'
-) {
+if (process.env.RUN_STARTUP_CHECKS === 'true') {
   void startupCheckRPCs();
 }
 
