@@ -2945,11 +2945,6 @@
   resolved "https://registry.yarnpkg.com/@reef-knot/types/-/types-4.1.0.tgz#c8d20138297d16ae9c04c06a007c968bb3eaeed7"
   integrity sha512-kiJKoMDoopdUHrAxGVCiJMaCSMAD9FV+yb7FuS12rXah3k5i7m6w823MFmROTSEz2LPaGawuTbmpD+YKV6VJ1g==
 
-"@reef-knot/types@^4.0.0":
-  version "4.0.0"
-  resolved "https://registry.yarnpkg.com/@reef-knot/types/-/types-4.0.0.tgz#2ee46debfb5a795bb478ad17d0c238c3f69a7844"
-  integrity sha512-ZNlI/2XZGz4UQwOIpMFN3ADr+oQCQo8Niy6ky8lnOMKn5w95zONAzq5IGu6m4/cA8eucYhVP4OBhmrQGJW7OKQ==
-
 "@reef-knot/ui-react@2.2.0":
   version "2.2.0"
   resolved "https://registry.yarnpkg.com/@reef-knot/ui-react/-/ui-react-2.2.0.tgz#457647d3a7c4678ea4a71d6304d3647c8e8d491e"
