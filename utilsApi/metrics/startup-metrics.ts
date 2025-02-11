@@ -5,7 +5,7 @@ import buildInfoJson from 'build-info.json';
 import { openKeys } from 'scripts/log-environment-variables.mjs';
 import { getRPCChecks } from 'scripts/startup-checks/rpc.mjs';
 
-import { config, secretConfig } from 'config';
+import { config } from 'config';
 import { METRICS_PREFIX } from 'consts/metrics';
 
 import { StartupChecksRPCMetrics } from './startup-checks';
@@ -19,7 +19,7 @@ const collectStartupChecksRPCMetrics = async (
     // Await the promise if it's still in progress
     const rpcChecksResults = await getRPCChecks();
 
-    if (!rpcChecksResults && !secretConfig.developmentMode) {
+    if (!rpcChecksResults) {
       throw new Error(
         '[collectStartupChecksRPCMetrics] getRPCChecks resolved as "null"!',
       );
@@ -60,8 +60,8 @@ const collectEnvInfoMetrics = (registry: Registry): void => {
 export const collectStartupMetrics = async (
   registry: Registry,
 ): Promise<void> => {
-  // conflicts with HMR
-  if (config.developmentMode) return;
+  if (!config.collectMetrics) return;
+
   collectEnvInfoMetrics(registry);
 
   collectBuildInfoMetrics({

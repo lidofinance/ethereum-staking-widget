@@ -80,5 +80,8 @@ export const logSecretEnvironmentVariables = () => {
 
 export const logEnvironmentVariables = () => {
   logOpenEnvironmentVariables();
-  logSecretEnvironmentVariables();
+
+  if (process.env.RUN_SECRET_ENV_LOGGING === 'true') {
+    logSecretEnvironmentVariables();
+  }
 };
