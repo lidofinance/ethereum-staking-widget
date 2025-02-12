@@ -7,5 +7,4 @@ export {
   useLidoSDK,
   useLidoSDKL2,
   SupportL2Chains,
-  DAPP_CHAIN_TYPE,
 } from './web3-provider';

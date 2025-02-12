@@ -6,8 +6,6 @@ export const WalledButtonStyle = styled((props) => <Button {...props} />)`
   min-width: unset;
   overflow: hidden;
   border-radius: 10px;
-
-  ${({ $isAddPaddingLeft }) => ($isAddPaddingLeft ? `padding-left: 9px` : '')};
 `;
 
 export const WalledButtonWrapperStyle = styled.span`
@@ -31,4 +29,5 @@ export const WalledButtonLoaderStyle = styled((props) => (
   <InlineLoader {...props} />
 ))`
   width: 60px;
+  margin-right: 6px;
 `;
