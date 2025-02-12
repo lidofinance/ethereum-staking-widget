@@ -1,7 +1,7 @@
 {
   "1": {
-    "cid": "bafybeib3zmyqlmantvdd6i5q4ehmo4larvorgquyanne3uoqdbedwgh3aq",
-    "leastSafeVersion": "0.36.1",
+    "cid": "bafybeiecvujvs74xvxgpwctmbfkcucazyaudmwuiw4wfv6ys7uio7o376u",
+    "leastSafeVersion": "0.76.1",
     "config": {
       "enabledWithdrawalDexes": ["one-inch", "paraswap", "bebop"],
       "multiChainBanner": [
