@@ -1,20 +1,21 @@
 import { FC, ReactNode, useRef } from 'react';
-import { DAPP_CHAIN_TYPE } from 'modules/web3';
 
 import { useClickOutside } from '../../hooks/use-click-outside';
 
 import { PopoverWrapperStyled, PopupStyled, OptionStyled } from './styles';
 
+export type ChainOption = { name: string; iconComponent: ReactNode };
+
 interface ChainSwitcherOptionsProps {
-  currentChainType: DAPP_CHAIN_TYPE;
-  onSelect: (chainType: DAPP_CHAIN_TYPE) => void;
+  currentChainId: number;
+  onSelect: (chainId: number) => void;
   opened: boolean;
   setOpened: (opened: boolean) => void;
-  options: Record<DAPP_CHAIN_TYPE, ReactNode>;
+  options: Record<number, ChainOption>;
 }
 
 export const ChainSwitcherOptions: FC<ChainSwitcherOptionsProps> = ({
-  currentChainType,
+  currentChainId,
   onSelect,
   setOpened,
   opened,
@@ -29,13 +30,13 @@ export const ChainSwitcherOptions: FC<ChainSwitcherOptionsProps> = ({
     <>
       <PopoverWrapperStyled $backdrop={opened} />
       <PopupStyled $opened={opened} ref={popupRef}>
-        {Object.entries(options).map(([chainType, icon]) => (
+        {Object.entries(options).map(([chainId, chainOption]) => (
           <OptionStyled
-            key={chainType}
-            onClick={() => onSelect(chainType as DAPP_CHAIN_TYPE)}
-            $active={chainType === currentChainType}
+            key={chainId}
+            onClick={() => onSelect(Number(chainId))}
+            $active={Number(chainId) === currentChainId}
           >
-            {icon} <span>{chainType}</span>
+            {chainOption.iconComponent} <span>{chainOption.name}</span>
           </OptionStyled>
         ))}
       </PopupStyled>

@@ -1,11 +1,11 @@
 import { useDappStatus } from 'modules/web3';
+import { useConfig } from 'config';
 import { LIDO_MULTICHAIN_CHAINS } from 'consts/chains';
 import { WalletCardComponent } from 'shared/wallet/card/types';
-import { useConfig } from 'config';
 
 import { useErrorMessage } from './useErrorMessage';
 import { LidoMultichainFallback } from './lido-multichain-fallback';
-import { FallbackWalletStyle, TextStyle } from './styles';
+import { ButtonStyle, FallbackWalletStyle, TextStyle } from './styles';
 
 type FallbackProps = React.ComponentProps<WalletCardComponent> & {
   showMultichainBanner?: boolean;
@@ -19,9 +19,16 @@ export const Fallback = ({
   error: errorProp,
   ...props
 }: FallbackProps) => {
-  const { multiChainBanner } = useConfig().externalConfig;
-  const { isWalletConnected, walletChainId, isSupportedChain } =
-    useDappStatus();
+  const {
+    externalConfig: { multiChainBanner },
+  } = useConfig();
+  const {
+    isWalletConnected,
+    walletChainId,
+    isSupportedChain,
+    switchChainId,
+    wagmiDefaultChain,
+  } = useDappStatus();
   let error = useErrorMessage();
 
   const isLidoMultichain =
@@ -42,6 +49,18 @@ export const Fallback = ({
     return (
       <FallbackWalletStyle {...props}>
         <TextStyle>{error}</TextStyle>
+        <ButtonStyle
+          size={'xs'}
+          onClick={async () => {
+            try {
+              await switchChainId(wagmiDefaultChain.id);
+            } catch (err) {
+              console.warn(`[fallback.tsx] ${err}`);
+            }
+          }}
+        >
+          Switch to {wagmiDefaultChain.name}
+        </ButtonStyle>
       </FallbackWalletStyle>
     );
   }

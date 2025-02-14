@@ -4,7 +4,10 @@ export const ChainSwitcherWrapperStyled = styled.div`
   position: relative;
 `;
 
-export const ChainSwitcherStyled = styled.div<{ $disabled: boolean }>`
+export const ChainSwitcherStyled = styled.div<{
+  $disabled: boolean;
+  $showArrow: boolean;
+}>`
   z-index: 202;
 
   display: inline-flex;
@@ -16,7 +19,7 @@ export const ChainSwitcherStyled = styled.div<{ $disabled: boolean }>`
   overflow: ${({ $disabled }) => ($disabled ? 'hidden' : 'visible')};
   box-sizing: border-box;
 
-  width: ${({ $disabled }) => ($disabled ? '44px' : '68px')};
+  width: ${({ $showArrow }) => ($showArrow ? '68px' : '44px')};
   height: 44px;
   margin-right: 12px;
   padding: 9px 8px;

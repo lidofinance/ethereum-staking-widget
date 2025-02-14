@@ -1,6 +1,6 @@
 import { FC } from 'react';
 import type { Address } from 'viem';
-import { ButtonProps, useBreakpoint } from '@lidofinance/lido-ui';
+import { ButtonProps } from '@lidofinance/lido-ui';
 
 import { FormatToken } from 'shared/formatters';
 import { useDappStatus, useEthereumBalance } from 'modules/web3';
@@ -18,7 +18,6 @@ import {
 export const Button: FC<ButtonProps> = (props) => {
   const { onClick, ...rest } = props;
 
-  const isMobile = useBreakpoint('md');
   const { isDappActive, address } = useDappStatus();
 
   const { openModal } = useWalletModal();
@@ -30,23 +29,22 @@ export const Button: FC<ButtonProps> = (props) => {
       variant="text"
       color="secondary"
       onClick={() => openModal({})}
-      $isAddPaddingLeft={!isLoading && !isDappActive && !isMobile}
       {...rest}
     >
       <WalledButtonWrapperStyle>
-        <WalledButtonBalanceStyle>
-          {isLoading ? (
-            <WalledButtonLoaderStyle />
-          ) : (
-            isDappActive && (
+        {isLoading ? (
+          <WalledButtonLoaderStyle />
+        ) : (
+          isDappActive && (
+            <WalledButtonBalanceStyle>
               <FormatToken
                 amount={balance}
                 symbol="ETH"
                 showAmountTip={false}
               />
-            )
-          )}
-        </WalledButtonBalanceStyle>
+            </WalledButtonBalanceStyle>
+          )
+        )}
         <AddressBadge address={address as Address} />
       </WalledButtonWrapperStyle>
     </WalledButtonStyle>
