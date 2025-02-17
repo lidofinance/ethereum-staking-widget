@@ -9,7 +9,6 @@ import {
   useStethBalance,
   useWstethBalance,
   useWstethBySteth,
-  DAPP_CHAIN_TYPE,
   useStETHByWstETH,
 } from 'modules/web3';
 import { CardBalance, CardRow, CardAccount, Fallback } from 'shared/wallet';
@@ -27,15 +26,8 @@ const WalletComponent = () => {
   const wstethBySteth = useWstethBySteth(stethBalance?.data);
   const stethByWsteth = useStETHByWstETH(wstethBalance?.data);
 
-  const isOptimism = chainType === DAPP_CHAIN_TYPE.Optimism;
-  const isSoneium = chainType === DAPP_CHAIN_TYPE.Soneium;
-
   return (
-    <StyledCard
-      data-testid="wrapCardSection"
-      $optimism={isOptimism}
-      $soneium={isSoneium}
-    >
+    <StyledCard data-testid="wrapCardSection" $chainType={chainType}>
       <CardRow>
         <CardBalance
           title="ETH balance"

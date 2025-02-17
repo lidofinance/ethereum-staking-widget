@@ -11,6 +11,8 @@ export type UserConfigDefaultType = {
     [CHAINS.Optimism]: string[];
     [CHAINS.Soneium]: string[];
     [CHAINS.SoneiumMinato]: string[];
+    [CHAINS.Unichain]: string[];
+    [CHAINS.UnichainSepolia]: string[];
   };
   walletconnectProjectId: string | undefined;
 };
