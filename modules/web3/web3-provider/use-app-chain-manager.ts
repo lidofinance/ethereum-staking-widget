@@ -14,19 +14,10 @@ import { wagmiChainMap } from './web3-provider';
 export const useAppChainManager = (supportedL2: boolean) => {
   const chainId = useChainId();
   const { switchChain, switchChainAsync } = useSwitchChain();
-
-  // reset internal wagmi state after disconnect
-  const { isConnected, chainId: walletChain } = useAccount();
+  const { connector, isConnected, chainId: walletChain } = useAccount();
   const wagmiConfig = useConfig();
 
-  // const provider = connector?.getProvider();
-  // provider.session?.peer?.metadata
-  //  description: "Smart contract wallet for Ethereum"
-  //  icons: ['https://app.safe.global/images/logo-round.svg']
-  //  name: "Safe{Wallet}"
-  //  url: "https://app.safe.global"
-  // console.log('provider:', provider);
-
+  // reset internal wagmi state after disconnect
   useEffect(() => {
     if (isConnected) {
       return () => {
@@ -54,9 +45,20 @@ export const useAppChainManager = (supportedL2: boolean) => {
     return supportedChainIds.includes(chainId) ? chainId : config.defaultChain;
   }, [chainId, supportedChainIds]);
 
+  const namespaceChainsIds = useMemo(() => {
+    return (
+      connector &&
+      typeof connector?.getNamespaceChainsIds === 'function' &&
+      connector?.getNamespaceChainsIds()
+    );
+  }, [connector]);
+
   const switchChainId = useCallback(
     async (newChainId: number): Promise<void> => {
-      if (walletChain === newChainId) return;
+      if (walletChain === newChainId) {
+        // wagmiConfig.setState((x) => ({ ...x, chainId: newChainId }));
+        return;
+      }
 
       if (!supportedChainIds.includes(newChainId)) {
         throw new Error(
@@ -64,11 +66,23 @@ export const useAppChainManager = (supportedL2: boolean) => {
         );
       }
 
+      if (
+        namespaceChainsIds &&
+        Array.isArray(namespaceChainsIds) &&
+        !namespaceChainsIds.includes(newChainId)
+      ) {
+        // force change chain in the wagmi state
+        wagmiConfig.setState((x) => ({ ...x, chainId: newChainId }));
+        return;
+      }
+
       const timeoutPromise = new Promise<void>((_, reject) =>
-        setTimeout(
-          () => reject(new Error('Error switching chain (timeout)')),
-          5000,
-        ),
+        setTimeout(() => {
+          reject(new Error('Error switching chain (timeout)'));
+
+          // force change chain in the wagmi state
+          wagmiConfig.setState((x) => ({ ...x, chainId: newChainId }));
+        }, 5000),
       );
 
       await Promise.race([
@@ -76,7 +90,13 @@ export const useAppChainManager = (supportedL2: boolean) => {
         timeoutPromise,
       ]);
     },
-    [supportedChainIds, switchChainAsync, walletChain],
+    [
+      namespaceChainsIds,
+      supportedChainIds,
+      switchChainAsync,
+      wagmiConfig,
+      walletChain,
+    ],
   );
 
   const [isChainIdOnL2, supportedChainLabels] = useMemo(() => {
@@ -129,6 +149,12 @@ export const useAppChainManager = (supportedL2: boolean) => {
     isSupportedChain: walletChain
       ? supportedChainIds.includes(walletChain)
       : true,
+
+    isChainMatched:
+      namespaceChainsIds &&
+      Array.isArray(namespaceChainsIds) &&
+      namespaceChainsIds.includes(chainId),
+
     supportedChainIds,
     supportedChainLabels,
   };

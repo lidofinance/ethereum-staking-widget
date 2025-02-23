@@ -15,6 +15,7 @@ export const useErrorMessage = (): string | undefined => {
     walletChainId,
     isWalletConnected,
     supportedChainLabels,
+    isChainMatched,
   } = useDappStatus();
   const { error } = useConnect();
 
@@ -31,7 +32,7 @@ export const useErrorMessage = (): string | undefined => {
   }
 
   // Checks supported chains by page (for stake page any L2 will be unsupported - isSupportedChain=false)
-  if (!isSupportedChain) {
+  if (isWalletConnected && (!isChainMatched || !isSupportedChain)) {
     return `Wrong network. Please switch to ${wagmiChain.name} in your wallet to wrap/unwrap.`;
   }
 
