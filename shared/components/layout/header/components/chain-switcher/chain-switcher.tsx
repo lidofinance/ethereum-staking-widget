@@ -1,4 +1,5 @@
 import { FC, useState, useMemo, createElement, ComponentType } from 'react';
+import { ToastInfo } from '@lidofinance/lido-ui';
 
 import { CHAIN_ICONS_MAP, useDappStatus } from 'modules/web3';
 import { wagmiChainMap } from 'modules/web3/web3-provider/web3-provider';
@@ -66,6 +67,7 @@ export const ChainSwitcher: FC = () => {
                 await switchChainId(chainId);
               } catch (err) {
                 console.warn(`[chain-switcher.tsx] ${err}`);
+                ToastInfo(String(err));
               } finally {
                 setIsLocked(false);
               }
