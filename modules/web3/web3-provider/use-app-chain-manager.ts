@@ -91,7 +91,7 @@ export const useAppChainManager = (supportedL2: boolean) => {
           reject(new Error('Error switching chain (timeout)'));
 
           // force change chain in the wagmi state
-          wagmiConfig.setState((x) => ({ ...x, chainId: newChainId }));
+          // wagmiConfig.setState((x) => ({ ...x, chainId: newChainId }));
         }, 5000),
       );
 
