@@ -53,6 +53,16 @@ export const useAppChainManager = (supportedL2: boolean) => {
     );
   }, [connector]);
 
+  const isChainMatched = useMemo(() => {
+    if (!namespaceChainsIds) return true;
+
+    return (
+      namespaceChainsIds &&
+      Array.isArray(namespaceChainsIds) &&
+      namespaceChainsIds.includes(chainId)
+    );
+  }, [chainId, namespaceChainsIds]);
+
   const switchChainId = useCallback(
     async (newChainId: number): Promise<void> => {
       if (walletChain === newChainId) {
@@ -150,10 +160,7 @@ export const useAppChainManager = (supportedL2: boolean) => {
       ? supportedChainIds.includes(walletChain)
       : true,
 
-    isChainMatched:
-      namespaceChainsIds &&
-      Array.isArray(namespaceChainsIds) &&
-      namespaceChainsIds.includes(chainId),
+    isChainMatched,
 
     supportedChainIds,
     supportedChainLabels,
