@@ -22,7 +22,7 @@ export const useWrapTxOnL1Approve = ({
   amount,
   token,
 }: UseWrapTxApproveArgs) => {
-  const { address, isWalletConnected, isDappActiveOnL1, isChainTypeOnL2 } =
+  const { address, isWalletConnected, isDappActiveOnL1, isChainIdOnL2 } =
     useDappStatus();
   const { wrap } = useLidoSDK();
   const { txModalStages } = useTxModalWrap();
@@ -90,9 +90,8 @@ export const useWrapTxOnL1Approve = ({
       // There are 3 cases when we show the allowance on the wrap page:
       // 1. is wallet not connected (!isWalletConnected)
       // 2. or wallet chain is any ETH supported chain and chain switcher is ETH (isDappActiveOnL1)
-      // 3. or wallet chain is L2 chain, but chain switcher is ETH (!isChainTypeOnL2)
-      isShowAllowance:
-        !isWalletConnected || isDappActiveOnL1 || !isChainTypeOnL2,
+      // 3. or wallet chain is any Optimism supported chain, but chain switcher is ETH (!isChainIdOnL2)
+      isShowAllowance: !isWalletConnected || isDappActiveOnL1 || !isChainIdOnL2,
     }),
     [
       processApproveTx,
@@ -103,7 +102,7 @@ export const useWrapTxOnL1Approve = ({
       refetchAllowance,
       isWalletConnected,
       isDappActiveOnL1,
-      isChainTypeOnL2,
+      isChainIdOnL2,
     ],
   );
 };

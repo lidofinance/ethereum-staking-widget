@@ -1,5 +1,4 @@
 import { useAccount } from 'wagmi';
-import { isSDKSupportedL2Chain } from 'consts/chains';
 
 import { useDappChain } from 'modules/web3/web3-provider/dapp-chain';
 
@@ -13,19 +12,15 @@ export const useDappStatus = () => {
   // this can change between pages based on their dapp-chain context(or lack of)
   const dappChain = useDappChain();
 
-  const { isSupportedChain, isChainTypeMatched } = dappChain;
+  const { isChainIdOnL2, isSupportedChain, isChainMatched } = dappChain;
 
   const isAccountActive = walletChainId
-    ? isWalletConnected && isSupportedChain
+    ? isWalletConnected && isSupportedChain && isChainMatched
     : false;
 
-  const isL2 = isSDKSupportedL2Chain(walletChainId);
-
-  const isDappActive = isAccountActive && isChainTypeMatched;
-
-  const isDappActiveOnL1 = isDappActive && !isL2;
-
-  const isDappActiveOnL2 = isDappActive && isL2;
+  const isDappActive = isAccountActive;
+  const isDappActiveOnL1 = isDappActive && !isChainIdOnL2;
+  const isDappActiveOnL2 = isDappActive && isChainIdOnL2;
 
   // no useMemo because memoisation is more expensive than boolean flags
   // hook is used in many places and every usage would create separate memoisation

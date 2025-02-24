@@ -24,18 +24,15 @@ import { ThemeTogglerStyled } from './styles';
 const HeaderWallet: FC = () => {
   const router = useRouter();
   const { defaultChain: defaultChainId } = useUserConfig();
-  const { isDappActive, address, walletChainId } = useDappStatus();
+  const { isWalletConnected, address, wagmiChain, chainId } = useDappStatus();
 
-  const chainName = CHAINS[walletChainId || defaultChainId];
-  const testNet = !(
-    walletChainId === CHAINS.Mainnet || walletChainId === CHAINS.Optimism
-  );
-  const showNet = testNet && isDappActive;
+  const chainName = CHAINS[chainId || defaultChainId];
+  const showNet = wagmiChain.testnet && isWalletConnected;
   const queryTheme = router?.query?.theme;
 
   const chainColor = useMemo(
-    () => getChainColor(walletChainId || defaultChainId),
-    [walletChainId, defaultChainId],
+    () => getChainColor(chainId || defaultChainId),
+    [chainId, defaultChainId],
   );
 
   return (
