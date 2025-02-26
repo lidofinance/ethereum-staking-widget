@@ -20,6 +20,6 @@ const backgrounds: Partial<Record<DAPP_CHAIN_TYPE, string>> & {
 
 export const StyledCard = styled(Card)<StyledCardProps>`
   background: ${({ $chainType }) => {
-    return backgrounds[$chainType ?? 'default'];
+    return backgrounds[$chainType ?? 'default'] ?? backgrounds['default'];
   }};
 `;
