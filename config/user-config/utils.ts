@@ -20,6 +20,8 @@ export const getUserConfigDefault = (): UserConfigDefaultType => {
       [CHAINS.OptimismSepolia]: config.prefillUnsafeElRpcUrls11155420,
       [CHAINS.Soneium]: config.prefillUnsafeElRpcUrls1868,
       [CHAINS.SoneiumMinato]: config.prefillUnsafeElRpcUrls1946,
+      [CHAINS.Unichain]: config.prefillUnsafeElRpcUrls130,
+      [CHAINS.UnichainSepolia]: config.prefillUnsafeElRpcUrls1301,
     },
     walletconnectProjectId: config.walletconnectProjectId,
   };

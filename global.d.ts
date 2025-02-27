@@ -32,6 +32,8 @@ declare module 'next/config' {
       rpcUrls_11155420: string | undefined;
       rpcUrls_1868: string | undefined;
       rpcUrls_1946: string | undefined;
+      rpcUrls_130: string | undefined;
+      rpcUrls_1301: string | undefined;
 
       cspTrustedHosts: string | undefined;
       cspReportUri: string | undefined;

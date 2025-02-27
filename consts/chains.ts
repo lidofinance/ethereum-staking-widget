@@ -8,6 +8,8 @@ export enum CHAINS {
   OptimismSepolia = 11155420,
   Soneium = 1868,
   SoneiumMinato = 1946,
+  Unichain = 130,
+  UnichainSepolia = 1301,
 }
 
 export enum LIDO_MULTICHAIN_CHAINS {

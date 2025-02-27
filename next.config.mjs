@@ -160,6 +160,9 @@ export default withBundleAnalyzer({
     // Soneium rpcs
     rpcUrls_1868: process.env.EL_RPC_URLS_1868,
     rpcUrls_1946: process.env.EL_RPC_URLS_1946,
+    // Unichain rpcs
+    rpcUrls_130: process.env.EL_RPC_URLS_130,
+    rpcUrls_1301: process.env.EL_RPC_URLS_1301,
 
     cspTrustedHosts: process.env.CSP_TRUSTED_HOSTS,
     cspReportUri: process.env.CSP_REPORT_URI,

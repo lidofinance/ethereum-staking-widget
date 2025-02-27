@@ -14,11 +14,13 @@ import {
 import { ReactComponent as EthereumMainnetLogo } from 'assets/icons/chain-toggler/mainnet.svg';
 import { ReactComponent as OptimismLogo } from 'assets/icons/chain-toggler/optimism.svg';
 import { ReactComponent as SoneiumLogo } from 'assets/icons/chain-toggler/soneium.svg';
+import { ReactComponent as UnichainLogo } from 'assets/icons/chain-toggler/unichain.svg';
 
 const iconsMap: Record<DAPP_CHAIN_TYPE, ReactNode> = {
   [DAPP_CHAIN_TYPE.Ethereum]: <EthereumMainnetLogo />,
   [DAPP_CHAIN_TYPE.Optimism]: <OptimismLogo />,
   [DAPP_CHAIN_TYPE.Soneium]: <SoneiumLogo />,
+  [DAPP_CHAIN_TYPE.Unichain]: <UnichainLogo />,
 };
 
 export const ChainSwitcher: FC = () => {
