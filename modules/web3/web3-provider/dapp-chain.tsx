@@ -6,9 +6,10 @@ import React, {
   useEffect,
 } from 'react';
 import invariant from 'tiny-invariant';
+import { useAccount } from 'wagmi';
+import { Chain } from 'wagmi/chains';
 
 import { isSDKSupportedL2Chain } from 'consts/chains';
-import { useAccount } from 'wagmi';
 import { config } from 'config';
 import { ModalProvider } from 'providers/modal-provider';
 
@@ -28,9 +29,9 @@ type DappChainContextValue = {
   setChainId: React.Dispatch<React.SetStateAction<number>>;
   chainType: DAPP_CHAIN_TYPE;
 
-  wagmiChain: any; // TODO
-  wagmiDefaultChain: any; // TODO
-  wagmiWalletChain: any; // TODO
+  wagmiChain: Chain;
+  wagmiDefaultChain: Chain;
+  wagmiWalletChain: Chain | undefined;
 
   isChainIdOnL2: boolean;
   supportedChainIds: number[];
@@ -121,7 +122,9 @@ export const SupportL2Chains: React.FC<React.PropsWithChildren> = ({
 
           wagmiChain: wagmiChainMap[chainId],
           wagmiDefaultChain: wagmiChainMap[config.defaultChain],
-          wagmiWalletChain: wagmiChainMap[walletChainId],
+          wagmiWalletChain: walletChainId
+            ? wagmiChainMap[walletChainId]
+            : undefined,
 
           isChainIdOnL2: isSDKSupportedL2Chain(chainId) ?? false,
           supportedChainIds: config.supportedChains,
@@ -175,7 +178,9 @@ export const SupportL1Chains: React.FC<React.PropsWithChildren> = ({
 
           wagmiChain: wagmiChainMap[config.defaultChain],
           wagmiDefaultChain: wagmiChainMap[config.defaultChain],
-          wagmiWalletChain: wagmiChainMap[walletChainId],
+          wagmiWalletChain: walletChainId
+            ? wagmiChainMap[walletChainId]
+            : undefined,
 
           // only L1 chains
           supportedChainIds: config.supportedChains.filter(
