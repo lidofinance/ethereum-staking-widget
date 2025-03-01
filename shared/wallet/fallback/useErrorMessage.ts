@@ -9,7 +9,7 @@ export const useErrorMessage = (): string | undefined => {
   const { isLedger } = useConnectorInfo();
   const {
     isSupportedChain,
-    isChainTypeMatched,
+    isChainMatched,
     isAccountActive,
     chainType,
     supportedChainLabels,
@@ -18,7 +18,7 @@ export const useErrorMessage = (): string | undefined => {
 
   // Errors from chain state
 
-  if (isAccountActive && !isChainTypeMatched) {
+  if (isAccountActive && !isChainMatched) {
     return `Wrong network. Please switch to ${supportedChainLabels[chainType]} in your wallet to wrap/unwrap.`;
   }
 
