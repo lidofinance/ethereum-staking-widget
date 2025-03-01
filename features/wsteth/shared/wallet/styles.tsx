@@ -1,6 +1,6 @@
 import { Card } from 'shared/wallet';
 import styled from 'styled-components';
-import { DAPP_CHAIN_TYPE } from 'modules/web3/consts/chains';
+import { DAPP_CHAIN_TYPE } from 'modules/web3';
 
 interface StyledCardProps {
   $chainType?: DAPP_CHAIN_TYPE;

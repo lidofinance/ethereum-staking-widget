@@ -26,7 +26,9 @@ export const OPTIMISM_CHAINS = new Set([
   CHAINS.Optimism,
   CHAINS.OptimismSepolia,
 ]);
+
 export const SONEIUM_CHAINS = new Set([CHAINS.Soneium, CHAINS.SoneiumMinato]);
+
 export const UNICHAIN_CHAINS = new Set([
   CHAINS.Unichain,
   CHAINS.UnichainSepolia,

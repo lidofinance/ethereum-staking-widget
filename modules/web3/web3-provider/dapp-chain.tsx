@@ -30,6 +30,7 @@ type DappChainContextValue = {
 
   wagmiChain: any; // TODO
   wagmiDefaultChain: any; // TODO
+  wagmiWalletChain: any; // TODO
 
   isChainIdOnL2: boolean;
   supportedChainIds: number[];
@@ -59,16 +60,15 @@ export const useDappChain = (): UseDappChainValue => {
       ) as DAPP_CHAIN_TYPE[];
 
     const getChainLabelByType = (chainType: DAPP_CHAIN_TYPE) => {
-      // all testnets for chainType
-      const testnetsForType = context.supportedChainIds
+      // all chain names for chainType
+      const chainNamesForType = context.supportedChainIds
         .filter((id) => chainType == getChainTypeByChainId(id))
         .map((id) => wagmiChainMap[id])
-        .filter((chain) => chain.testnet)
-        .map((chain) => chain.name);
+        .map((chain) => (chain.testnet ? chain.name : 'Mainnet'));
 
       return (
         chainType +
-        (testnetsForType.length > 0 ? `(${testnetsForType.join(',')})` : '')
+        (chainNamesForType.length > 0 ? `(${chainNamesForType.join(',')})` : '')
       );
     };
 
@@ -121,11 +121,12 @@ export const SupportL2Chains: React.FC<React.PropsWithChildren> = ({
 
           wagmiChain: wagmiChainMap[chainId],
           wagmiDefaultChain: wagmiChainMap[config.defaultChain],
+          wagmiWalletChain: wagmiChainMap[walletChainId],
 
           isChainIdOnL2: isSDKSupportedL2Chain(chainId) ?? false,
           supportedChainIds: config.supportedChains,
         }),
-        [chainId],
+        [chainId, walletChainId],
       )}
     >
       <LidoSDKL2Provider>
@@ -174,6 +175,7 @@ export const SupportL1Chains: React.FC<React.PropsWithChildren> = ({
 
           wagmiChain: wagmiChainMap[config.defaultChain],
           wagmiDefaultChain: wagmiChainMap[config.defaultChain],
+          wagmiWalletChain: wagmiChainMap[walletChainId],
 
           // only L1 chains
           supportedChainIds: config.supportedChains.filter(
@@ -181,7 +183,7 @@ export const SupportL1Chains: React.FC<React.PropsWithChildren> = ({
           ),
           isChainIdOnL2: false,
         }),
-        [chainId],
+        [chainId, walletChainId],
       )}
     >
       <LidoSDKProvider>
