@@ -51,7 +51,6 @@ export const LidoSDKProvider = ({ children }: React.PropsWithChildren) => {
   const { data: walletClient } = useWalletClient({ chainId });
   const publicClient = usePublicClient({ chainId });
   // reset internal wagmi state after disconnect
-  // TODO: to 'modules/web3/web3-provider/dapp-chain.tsx'
   const { isConnected } = useAccount();
 
   const wagmiConfig = useConfig();
