@@ -6,11 +6,13 @@ import { useDappStatus, DAPP_CHAIN_TYPE } from 'modules/web3';
 import { EthereumFAQ } from './ethereum-faq/faq';
 import { OptimismFAQ } from './optimism-faq/faq';
 import { SoneiumFAQ } from './soneium-faq/faq';
+import { UnichainFAQ } from './unichain-faq/faq';
 
 export const faqComponentsMap = new Map([
   [DAPP_CHAIN_TYPE.Ethereum, EthereumFAQ],
   [DAPP_CHAIN_TYPE.Optimism, OptimismFAQ],
   [DAPP_CHAIN_TYPE.Soneium, SoneiumFAQ],
+  [DAPP_CHAIN_TYPE.Unichain, UnichainFAQ],
 ]);
 
 export const WrapFaq = () => {

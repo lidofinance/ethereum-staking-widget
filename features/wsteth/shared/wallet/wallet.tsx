@@ -1,5 +1,6 @@
 import { useConnectorInfo } from 'reef-knot/core-react';
 import { Divider, Text } from '@lidofinance/lido-ui';
+import styled from 'styled-components';
 
 import { FormatToken } from 'shared/formatters';
 import { TokenToWallet } from 'shared/components';
@@ -9,7 +10,6 @@ import {
   useStethBalance,
   useWstethBalance,
   useWstethBySteth,
-  DAPP_CHAIN_TYPE,
   useStETHByWstETH,
 } from 'modules/web3';
 import { CardBalance, CardRow, CardAccount, Fallback } from 'shared/wallet';
@@ -17,6 +17,10 @@ import { CardBalance, CardRow, CardAccount, Fallback } from 'shared/wallet';
 import { StyledCard } from './styles';
 import { useIsLedgerLive } from 'shared/hooks/useIsLedgerLive';
 import { useConfig } from 'config';
+
+const SecondaryBalanceText = styled(Text).attrs({ size: 'xxs' })`
+  color: var(--lido-color-accentContrastSecondary);
+`;
 
 const WalletComponent = () => {
   const { chainType } = useDappStatus();
@@ -27,15 +31,8 @@ const WalletComponent = () => {
   const wstethBySteth = useWstethBySteth(stethBalance?.data);
   const stethByWsteth = useStETHByWstETH(wstethBalance?.data);
 
-  const isOptimism = chainType === DAPP_CHAIN_TYPE.Optimism;
-  const isSoneium = chainType === DAPP_CHAIN_TYPE.Soneium;
-
   return (
-    <StyledCard
-      data-testid="wrapCardSection"
-      $optimism={isOptimism}
-      $soneium={isSoneium}
-    >
+    <StyledCard data-testid="wrapCardSection" $chainType={chainType}>
       <CardRow>
         <CardBalance
           title="ETH balance"
@@ -67,14 +64,14 @@ const WalletComponent = () => {
                 data-testid="addStethToWalletBtn"
                 address={stethBalance.tokenAddress}
               />
-              <Text size={'xxs'} color={'secondary'}>
+              <SecondaryBalanceText>
                 <FormatToken
                   data-testid="wstEthBalanceOption"
                   amount={wstethBySteth.data}
                   symbol="wstETH"
                   approx={true}
                 />
-              </Text>
+              </SecondaryBalanceText>
             </>
           }
         />
@@ -93,14 +90,14 @@ const WalletComponent = () => {
                 data-testid="addWstethToWalletBtn"
                 address={wstethBalance.tokenAddress}
               />
-              <Text size={'xxs'} color={'secondary'}>
+              <SecondaryBalanceText>
                 <FormatToken
                   data-testid="stethBalanceOption"
                   amount={stethByWsteth.data}
                   symbol="stETH"
                   approx={true}
                 />
-              </Text>
+              </SecondaryBalanceText>
             </>
           }
         />

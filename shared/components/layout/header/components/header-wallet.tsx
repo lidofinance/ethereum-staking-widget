@@ -24,13 +24,10 @@ import { ThemeTogglerStyled } from './styles';
 const HeaderWallet: FC = () => {
   const router = useRouter();
   const { defaultChain: defaultChainId } = useUserConfig();
-  const { isDappActive, address, walletChainId } = useDappStatus();
+  const { isDappActive, address, walletChainId, isTestnet } = useDappStatus();
 
   const chainName = CHAINS[walletChainId || defaultChainId];
-  const testNet = !(
-    walletChainId === CHAINS.Mainnet || walletChainId === CHAINS.Optimism
-  );
-  const showNet = testNet && isDappActive;
+  const showNet = isTestnet && isDappActive;
   const queryTheme = router?.query?.theme;
 
   const chainColor = useMemo(

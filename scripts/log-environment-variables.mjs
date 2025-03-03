@@ -31,6 +31,8 @@ export const secretKeys = [
   'EL_RPC_URLS_1',
   'EL_RPC_URLS_5',
   'EL_RPC_URLS_10',
+  'EL_RPC_URLS_130',
+  'EL_RPC_URLS_1301',
   'EL_RPC_URLS_1868',
   'EL_RPC_URLS_1946',
   'EL_RPC_URLS_17000',

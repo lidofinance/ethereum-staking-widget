@@ -7,7 +7,11 @@ import React, {
 } from 'react';
 import invariant from 'tiny-invariant';
 
-import { CHAINS, isSDKSupportedL2Chain } from 'consts/chains';
+import {
+  CHAINS,
+  isSDKSupportedL2Chain,
+  isSDKSupportedChain,
+} from 'consts/chains';
 import { useAccount } from 'wagmi';
 import { config } from 'config';
 import { ModalProvider } from 'providers/modal-provider';
@@ -20,6 +24,7 @@ export enum DAPP_CHAIN_TYPE {
   Ethereum = 'Ethereum',
   Optimism = 'Optimism',
   Soneium = 'Soneium',
+  Unichain = 'Unichain',
 }
 
 type DappChainContextValue = {
@@ -55,8 +60,8 @@ const ETHEREUM_CHAINS = new Set([
 ]);
 
 const OPTIMISM_CHAINS = new Set([CHAINS.Optimism, CHAINS.OptimismSepolia]);
-
-export const SONEIUM_CHAINS = new Set([CHAINS.Soneium, CHAINS.SoneiumMinato]);
+const SONEIUM_CHAINS = new Set([CHAINS.Soneium, CHAINS.SoneiumMinato]);
+const UNICHAIN_CHAINS = new Set([CHAINS.Unichain, CHAINS.UnichainSepolia]);
 
 const getChainTypeByChainId = (chainId?: number): DAPP_CHAIN_TYPE | null => {
   if (!chainId) return null;
@@ -66,6 +71,8 @@ const getChainTypeByChainId = (chainId?: number): DAPP_CHAIN_TYPE | null => {
     return DAPP_CHAIN_TYPE.Optimism;
   } else if (SONEIUM_CHAINS.has(chainId)) {
     return DAPP_CHAIN_TYPE.Soneium;
+  } else if (UNICHAIN_CHAINS.has(chainId)) {
+    return DAPP_CHAIN_TYPE.Unichain;
   }
   return null;
 };
@@ -122,12 +129,15 @@ export const useDappChain = (): UseDappChainValue => {
     return {
       ...context,
       chainId:
-        walletChain && context.supportedChainIds.includes(walletChain)
+        walletChain &&
+        context.supportedChainIds.includes(walletChain) &&
+        isSDKSupportedChain(walletChain)
           ? walletChain
           : config.defaultChain,
       chainTypeChainId,
       isSupportedChain: walletChain
-        ? context.supportedChainIds.includes(walletChain)
+        ? context.supportedChainIds.includes(walletChain) &&
+          isSDKSupportedChain(walletChain)
         : true,
       supportedChainTypes,
       supportedChainLabels,
@@ -172,7 +182,8 @@ export const SupportL2Chains: React.FC<React.PropsWithChildren> = ({
           // or use an array or Set (for example with L2_DAPP_CHAINS_TYPE)
           isChainTypeOnL2:
             chainType === DAPP_CHAIN_TYPE.Optimism ||
-            chainType === DAPP_CHAIN_TYPE.Soneium,
+            chainType === DAPP_CHAIN_TYPE.Soneium ||
+            chainType === DAPP_CHAIN_TYPE.Unichain,
         }),
         [chainType, walletChainId],
       )}
