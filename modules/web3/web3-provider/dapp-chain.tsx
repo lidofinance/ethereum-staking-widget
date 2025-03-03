@@ -11,7 +11,7 @@ import { useAccount } from 'wagmi';
 import { Chain } from 'wagmi/chains';
 
 import {
-  CHAINS,
+  isSDKSupportedChainAndChainIsL1,
   isSDKSupportedL2Chain,
   isSDKSupportedChain,
 } from 'consts/chains';
@@ -112,7 +112,6 @@ export const SupportL2Chains: React.FC<React.PropsWithChildren> = ({
     ) {
       // This code resets 'chainId' to 'config.defaultChain' when the wallet is disconnected.
       // It also works on the first rendering, but we don't care.
-      // Don't use it if you need to do something strictly, only when the wallet is disconnected.
       setChainId(config.defaultChain);
       return;
     }
@@ -137,8 +136,8 @@ export const SupportL2Chains: React.FC<React.PropsWithChildren> = ({
             : undefined,
 
           isChainIdOnL2: isSDKSupportedL2Chain(chainId) ?? false,
-          supportedChainIds: config.supportedChains.filter(
-            (chain) => isSDKSupportedChain(chain),
+          supportedChainIds: config.supportedChains.filter((chain) =>
+            isSDKSupportedChain(chain),
           ),
         }),
         [chainId, walletChainId],
@@ -166,12 +165,10 @@ export const SupportL1Chains: React.FC<React.PropsWithChildren> = ({
     if (
       !walletChainId ||
       !config.supportedChains.includes(walletChainId) ||
-      !isSDKSupportedChain(walletChainId) ||
-      isSDKSupportedL2Chain(walletChainId)
+      !isSDKSupportedChainAndChainIsL1(walletChainId)
     ) {
       // This code resets 'chainId' to 'config.defaultChain' when the wallet is disconnected.
       // It also works on the first rendering, but we don't care.
-      // Don't use it if you need to do something strictly, only when the wallet is disconnected.
       setChainId(config.defaultChain);
       return;
     }
@@ -198,7 +195,8 @@ export const SupportL1Chains: React.FC<React.PropsWithChildren> = ({
           // only L1 chains
           isChainIdOnL2: false,
           supportedChainIds: config.supportedChains.filter(
-            (chain) => isSDKSupportedChain(chain) && !isSDKSupportedL2Chain(chain),
+            (chain) =>
+              isSDKSupportedChain(chain) && !isSDKSupportedL2Chain(chain),
           ),
         }),
         [chainId, walletChainId],
