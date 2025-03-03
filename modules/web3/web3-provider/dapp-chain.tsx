@@ -7,7 +7,11 @@ import React, {
 } from 'react';
 import invariant from 'tiny-invariant';
 
-import { CHAINS, isSDKSupportedL2Chain } from 'consts/chains';
+import {
+  CHAINS,
+  isSDKSupportedL2Chain,
+  isSDKSupportedChain,
+} from 'consts/chains';
 import { useAccount } from 'wagmi';
 import { config } from 'config';
 import { ModalProvider } from 'providers/modal-provider';
@@ -125,12 +129,15 @@ export const useDappChain = (): UseDappChainValue => {
     return {
       ...context,
       chainId:
-        walletChain && context.supportedChainIds.includes(walletChain)
+        walletChain &&
+        context.supportedChainIds.includes(walletChain) &&
+        isSDKSupportedChain(walletChain)
           ? walletChain
           : config.defaultChain,
       chainTypeChainId,
       isSupportedChain: walletChain
-        ? context.supportedChainIds.includes(walletChain)
+        ? context.supportedChainIds.includes(walletChain) &&
+          isSDKSupportedChain(walletChain)
         : true,
       supportedChainTypes,
       supportedChainLabels,
