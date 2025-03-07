@@ -50,9 +50,10 @@ export const useStake = ({ onConfirm, onRetry }: StakeOptions) => {
           throw new MockLimitReachedError('Stake limit reached');
         }
 
-        const referralAddress = referral
-          ? await getRefferalAddress(referral, stake.core.rpcProvider)
-          : config.STAKE_FALLBACK_REFERRAL_ADDRESS;
+        const referralAddress = await getRefferalAddress(
+          referral,
+          stake.core.rpcProvider,
+        );
 
         const onStakeTxConfirmed = async () => {
           const [, balance] = await Promise.all([
