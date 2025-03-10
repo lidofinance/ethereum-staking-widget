@@ -91,6 +91,10 @@ export const Wrap = styled((props) => <Card {...props} />)<WrapProps>`
         return css`
           background: linear-gradient(52.01deg, #9d1451 0.01%, #630876 100%);
         `;
+      case LIDO_MULTICHAIN_CHAINS.Lisk:
+        return css`
+          background: linear-gradient(52.01deg, #2b2212 0.01%, #e0b35e 100%);
+        `;
       default:
         return css`
           background: linear-gradient(

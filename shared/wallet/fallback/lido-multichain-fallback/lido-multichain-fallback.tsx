@@ -16,6 +16,7 @@ import { ReactComponent as ZircuitLogo } from 'assets/icons/lido-multichain/zirc
 import { ReactComponent as UnichainLogo } from 'assets/icons/lido-multichain/unichain.svg';
 import { ReactComponent as MetisLogo } from 'assets/icons/lido-multichain/metis.svg';
 import { ReactComponent as SoneiumLogo } from 'assets/icons/lido-multichain/soneium.svg';
+import { ReactComponent as LiskLogo } from 'assets/icons/lido-multichain/lisk.svg';
 
 import { config } from 'config';
 import { LIDO_MULTICHAIN_CHAINS } from 'consts/chains';
@@ -45,6 +46,7 @@ const multichainLogos = {
   [LIDO_MULTICHAIN_CHAINS.Unichain]: UnichainLogo,
   [LIDO_MULTICHAIN_CHAINS.Metis]: MetisLogo,
   [LIDO_MULTICHAIN_CHAINS.Soneium]: SoneiumLogo,
+  [LIDO_MULTICHAIN_CHAINS.Lisk]: LiskLogo,
 };
 
 const getChainLogo = (chainId: LIDO_MULTICHAIN_CHAINS) => {
