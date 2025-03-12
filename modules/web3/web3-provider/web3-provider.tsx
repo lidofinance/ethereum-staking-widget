@@ -16,7 +16,10 @@ import {
   fallback,
   type Config,
 } from 'wagmi';
-import * as wagmiChains from 'wagmi/chains';
+import * as _wagmiChains from 'wagmi/chains';
+import { Chain } from 'wagmi/chains';
+
+import { unichain, unichainSepolia } from '@lidofinance/lido-ethereum-sdk';
 
 import { ReefKnotProvider, getDefaultConfig } from 'reef-knot/core-react';
 import {
@@ -36,19 +39,21 @@ import { walletMetricProps } from 'consts/matomo-wallets-events';
 import { SupportL1Chains } from './dapp-chain';
 import { useWeb3Transport } from './use-web3-transport';
 
-type ChainsList = [wagmiChains.Chain, ...wagmiChains.Chain[]];
+type ChainsList = [Chain, ...Chain[]];
 
 const WALLETS_PINNED: WalletIdsEthereum[] = [
   'binanceWallet',
   'browserExtension',
 ];
 
+const wagmiChains = { ..._wagmiChains, unichain, unichainSepolia };
+
 export const wagmiChainMap = Object.values(wagmiChains).reduce(
   (acc, chain) => {
     acc[chain.id] = chain;
     return acc;
   },
-  {} as Record<number, wagmiChains.Chain>,
+  {} as Record<number, Chain>,
 );
 
 type Web3ProviderContextValue = {
