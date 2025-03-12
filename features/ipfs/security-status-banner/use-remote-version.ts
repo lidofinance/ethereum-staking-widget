@@ -49,7 +49,7 @@ export const useRemoteVersion = () => {
       if (data?.cid) {
         return {
           cid: data.cid,
-          link: `https://${data.cid}.ipfs.cf-ipfs.com`,
+          link: `https://${data.cid}.ipfs.dweb.link`,
           leastSafeVersion: data.leastSafeVersion,
         };
       }
