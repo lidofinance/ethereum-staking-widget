@@ -30,6 +30,7 @@ export enum LIDO_MULTICHAIN_CHAINS {
   Unichain = 130,
   Metis = 1088,
   Soneium = 1868,
+  Lisk = 1135,
 }
 
 // TODO: move to @lidofinance/lido-ethereum-sdk package

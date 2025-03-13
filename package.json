@@ -20,12 +20,12 @@
     "test:e2e": "playwright test"
   },
   "dependencies": {
-    "@lidofinance/analytics-matomo": "^0.48.0",
+    "@lidofinance/analytics-matomo": "^0.50.0",
     "@lidofinance/api-metrics": "^0.48.0",
     "@lidofinance/api-rpc": "^0.48.0",
     "@lidofinance/eth-api-providers": "^0.48.0",
     "@lidofinance/eth-providers": "^0.48.0",
-    "@lidofinance/lido-ethereum-sdk": "4.2.0-alpha.2",
+    "@lidofinance/lido-ethereum-sdk": "4.3.0-alpha.2",
     "@lidofinance/lido-ui": "^3.26.0",
     "@lidofinance/next-api-wrapper": "^0.48.0",
     "@lidofinance/next-ip-rate-limit": "^0.48.0",
@@ -59,7 +59,7 @@
     "tiny-async-pool": "^1.2.0",
     "tiny-invariant": "^1.1.0",
     "uuid": "^8.3.2",
-    "viem": "2.23.1",
+    "viem": "2.22.23",
     "wagmi": "2.14.11"
   },
   "devDependencies": {
