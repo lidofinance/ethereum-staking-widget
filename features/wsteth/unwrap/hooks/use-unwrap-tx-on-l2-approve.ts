@@ -13,7 +13,7 @@ type UseUnwrapTxApproveArgs = {
 };
 
 export const useUnwrapTxOnL2Approve = ({ amount }: UseUnwrapTxApproveArgs) => {
-  const { isDappActiveOnL2, isChainTypeOnL2, address } = useDappStatus();
+  const { isDappActiveOnL2, isChainIdOnL2, address } = useDappStatus();
   const { l2, core } = useLidoSDKL2();
   const { txModalStages } = useTxModalWrap();
 
@@ -77,8 +77,8 @@ export const useUnwrapTxOnL2Approve = ({ amount }: UseUnwrapTxApproveArgs) => {
       isAllowanceLoading,
       // There are 2 cases when we show the allowance on the unwrap page:
       // 1. wallet chain is L2 chain and chain switcher is on L2 chain (isDappActiveOnL2)
-      // 2. or wallet chain is any ETH supported chain, but chain switcher is on L2 chain (isChainTypeOnL2)
-      isShowAllowance: isDappActiveOnL2 || isChainTypeOnL2,
+      // 2. or wallet chain is any ETH supported chain, but chain switcher is on L2 chain (isChainIdOnL2)
+      isShowAllowance: isDappActiveOnL2 || isChainIdOnL2,
     }),
     [
       processApproveTx,
@@ -87,7 +87,7 @@ export const useUnwrapTxOnL2Approve = ({ amount }: UseUnwrapTxApproveArgs) => {
       isApprovalNeededBeforeUnwrap,
       isAllowanceLoading,
       isDappActiveOnL2,
-      isChainTypeOnL2,
+      isChainIdOnL2,
     ],
   );
 };

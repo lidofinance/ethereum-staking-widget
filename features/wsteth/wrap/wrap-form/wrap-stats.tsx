@@ -16,7 +16,7 @@ import { useApproveGasLimit } from '../hooks/use-approve-gas-limit';
 import { useWrapFormData, WrapFormInputType } from '../wrap-form-context';
 
 export const WrapFormStats = () => {
-  const { isDappActive, chainTypeChainId } = useDappStatus();
+  const { isDappActive, chainId } = useDappStatus();
   const { allowance, isShowAllowance, wrapGasLimit, isAllowanceLoading } =
     useWrapFormData();
 
@@ -32,18 +32,18 @@ export const WrapFormStats = () => {
     useWstethBySteth(ONE_stETH);
 
   // The 'approveGasLimit' difference between the networks is insignificant
-  // and can be neglected in the '!isChainTypeMatched' case
+  // and can be neglected in the '!isChainMatched' case
   //
-  // Using the chainTypeChainId (chainId from the chain switcher) for TX calculation (and below for 'wrapTxCostInUsd'),
+  // Using the chainId (chainId from the chain switcher) for TX calculation (and below for 'wrapTxCostInUsd'),
   // because the statistics here are shown for the chain from the chain switcher
   const approveGasLimit = useApproveGasLimit();
   const { txCostUsd: approveTxCostInUsd, isLoading: isApproveCostLoading } =
-    useTxCostInUsd(approveGasLimit, chainTypeChainId);
+    useTxCostInUsd(approveGasLimit, chainId);
 
   // The 'wrapGasLimit' difference between the networks is insignificant
-  // and can be neglected in the '!isChainTypeMatched' case
+  // and can be neglected in the '!isChainMatched' case
   const { txCostUsd: wrapTxCostInUsd, isLoading: isWrapCostLoading } =
-    useTxCostInUsd(wrapGasLimit, chainTypeChainId);
+    useTxCostInUsd(wrapGasLimit, chainId);
 
   return (
     <DataTable data-testid="wrapStats">

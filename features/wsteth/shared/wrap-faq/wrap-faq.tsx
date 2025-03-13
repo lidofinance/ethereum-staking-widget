@@ -1,7 +1,8 @@
 import React from 'react';
 import { Section } from 'shared/components';
 import { useMatomoEventHandle } from 'shared/hooks';
-import { useDappStatus, DAPP_CHAIN_TYPE } from 'modules/web3';
+import { useDappStatus } from 'modules/web3';
+import { DAPP_CHAIN_TYPE } from 'modules/web3/consts/chains';
 
 import { EthereumFAQ } from './ethereum-faq/faq';
 import { OptimismFAQ } from './optimism-faq/faq';
