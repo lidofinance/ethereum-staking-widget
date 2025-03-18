@@ -36,6 +36,7 @@ export const secretKeys = [
   'EL_RPC_URLS_1868',
   'EL_RPC_URLS_1946',
   'EL_RPC_URLS_17000',
+  'EL_RPC_URLS_560048',
   'EL_RPC_URLS_11155111',
   'EL_RPC_URLS_11155420',
 ];
@@ -69,13 +70,17 @@ export const logSecretEnvironmentVariables = () => {
     return;
   }
 
-  const supportedChains = process.env['SUPPORTED_CHAINS'].split(',').map(s => s.trim());
+  const supportedChains = process.env['SUPPORTED_CHAINS']
+    .split(',')
+    .map((s) => s.trim());
 
   for (const key of secretKeys) {
     if (key.startsWith('EL_RPC_URLS_')) {
       const chainId = key.replace('EL_RPC_URLS_', '');
       if (!supportedChains.includes(chainId)) {
-        console.info(`Secret ${key} - skipped (${chainId} isn't in the SUPPORTED_CHAINS)!`);
+        console.info(
+          `Secret ${key} - skipped (${chainId} isn't in the SUPPORTED_CHAINS)!`,
+        );
         // Skip check if chainId isn't in the SUPPORTED_CHAINS
         continue;
       }

@@ -56,6 +56,7 @@ DappChainContext.displayName = 'DappChainContext';
 const ETHEREUM_CHAINS = new Set([
   CHAINS.Mainnet,
   CHAINS.Holesky,
+  CHAINS.Hoodi,
   CHAINS.Sepolia,
 ]);
 
