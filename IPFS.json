@@ -53,7 +53,7 @@
     "cid": "",
     "leastSafeVersion": "0.36.1",
     "config": {
-      "enabledWithdrawalDexes": ["one-inch", "paraswap", "bebop"],
+      "enabledWithdrawalDexes": ["paraswap", "bebop"],
       "multiChainBanner": [],
       "featureFlags": {
         "ledgerLiveL2": true
