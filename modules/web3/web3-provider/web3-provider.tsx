@@ -19,7 +19,11 @@ import {
 import * as _wagmiChains from 'wagmi/chains';
 import { Chain } from 'wagmi/chains';
 
-import { unichain, unichainSepolia } from '@lidofinance/lido-ethereum-sdk';
+import {
+  unichain,
+  unichainSepolia,
+  hoodi,
+} from '@lidofinance/lido-ethereum-sdk';
 
 import { ReefKnotProvider, getDefaultConfig } from 'reef-knot/core-react';
 import {
@@ -46,7 +50,7 @@ const WALLETS_PINNED: WalletIdsEthereum[] = [
   'browserExtension',
 ];
 
-const wagmiChains = { ..._wagmiChains, unichain, unichainSepolia };
+const wagmiChains = { ..._wagmiChains, unichain, unichainSepolia, hoodi };
 
 export const wagmiChainMap = Object.values(wagmiChains).reduce(
   (acc, chain) => {

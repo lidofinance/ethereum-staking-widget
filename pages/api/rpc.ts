@@ -73,6 +73,7 @@ const rpc = rpcFactory({
   providers: {
     [CHAINS.Mainnet]: secretConfig.rpcUrls_1,
     [CHAINS.Holesky]: secretConfig.rpcUrls_17000,
+    [CHAINS.Hoodi]: secretConfig.rpcUrls_560048,
     [CHAINS.Sepolia]: secretConfig.rpcUrls_11155111,
     [CHAINS.Optimism]: secretConfig.rpcUrls_10,
     [CHAINS.OptimismSepolia]: secretConfig.rpcUrls_11155420,

@@ -154,6 +154,7 @@ export default withBundleAnalyzer({
     rpcUrls_1: process.env.EL_RPC_URLS_1,
     rpcUrls_17000: process.env.EL_RPC_URLS_17000,
     rpcUrls_11155111: process.env.EL_RPC_URLS_11155111,
+    rpcUrls_560048: process.env.EL_RPC_URLS_560048,
     // Optimism rpcs
     rpcUrls_10: process.env.EL_RPC_URLS_10,
     rpcUrls_11155420: process.env.EL_RPC_URLS_11155420,
