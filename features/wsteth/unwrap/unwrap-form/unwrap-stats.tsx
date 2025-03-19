@@ -17,25 +17,25 @@ import { useUnwrapFormData, UnwrapFormInputType } from '../unwrap-form-context';
 import { TOKENS_TO_WRAP } from '../../shared/types';
 
 export const UnwrapStats = () => {
-  const { isDappActiveOnL2, chainTypeChainId } = useDappStatus();
+  const { isDappActiveOnL2, chainId } = useDappStatus();
   const { allowance, isAllowanceLoading, isShowAllowance } =
     useUnwrapFormData();
   const amount = useWatch<UnwrapFormInputType, 'amount'>({ name: 'amount' });
 
   const unwrapGasLimit = useUnwrapGasLimit();
   // The 'unwrapGasLimit' difference between the networks is insignificant
-  // and can be neglected in the '!isChainTypeMatched' case
+  // and can be neglected in the '!isChainMatched' case
   //
-  // Using the chainTypeChainId (chainId from the chain switcher) for TX calculation (and below for 'approveTxCostInUsd'),
+  // Using the chainId (chainId from the chain switcher) for TX calculation (and below for 'approveTxCostInUsd'),
   // because the statistics here are shown for the chain from the chain switcher
   const { txCostUsd: unwrapTxCostInUsd, isLoading: isUnwrapTxCostLoading } =
-    useTxCostInUsd(unwrapGasLimit, chainTypeChainId);
+    useTxCostInUsd(unwrapGasLimit, chainId);
 
   const approveGasLimit = useApproveGasLimit();
   // The 'approveGasLimit' difference between the networks is insignificant
-  // and can be neglected in the '!isChainTypeMatched' case
+  // and can be neglected in the '!isChainMatched' case
   const { txCostUsd: approveTxCostInUsd, isLoading: isApproveCostLoading } =
-    useTxCostInUsd(approveGasLimit, chainTypeChainId);
+    useTxCostInUsd(approveGasLimit, chainId);
 
   const { data: willReceiveStETH, isLoading: isWillReceiveStETHLoading } =
     useDebouncedStethByWsteth(amount);

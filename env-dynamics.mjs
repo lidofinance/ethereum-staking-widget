@@ -45,11 +45,11 @@ export const blogOrigin = process.env.BLOG_ORIGIN || 'https://blog.lido.fi';
 
 // Keep fallback as in 'config/get-secret-config.ts'
 /** @type number */
-export const defaultChain = parseInt(process.env.DEFAULT_CHAIN, 10) || 17000;
+export const defaultChain = parseInt(process.env.DEFAULT_CHAIN, 10) || 560048;
 /** @type number[] */
 export const supportedChains = process.env?.SUPPORTED_CHAINS?.split(',').map(
   (chainId) => parseInt(chainId, 10),
-) ?? [17000];
+) ?? [560048];
 
 /** @type string[] */
 export const prefillUnsafeElRpcUrls1 =
@@ -58,20 +58,29 @@ export const prefillUnsafeElRpcUrls1 =
 export const prefillUnsafeElRpcUrls17000 =
   process.env.PREFILL_UNSAFE_EL_RPC_URLS_17000?.split(',') ?? [];
 /** @type string[] */
+export const prefillUnsafeElRpcUrls560048 =
+  process.env.PREFILL_UNSAFE_EL_RPC_URLS_560048?.split(',') ?? [];
+/** @type string[] */
 export const prefillUnsafeElRpcUrls11155111 =
   process.env.PREFILL_UNSAFE_EL_RPC_URLS_11155111?.split(',') ?? [];
 /** @type string[] */
-export const prefillUnsafeElRpcUrls10 = process.env.PREFILL_UNSAFE_EL_RPC_URLS_10?.split(',') ?? [];
+export const prefillUnsafeElRpcUrls10 =
+  process.env.PREFILL_UNSAFE_EL_RPC_URLS_10?.split(',') ?? [];
 /** @type string[] */
-export const prefillUnsafeElRpcUrls11155420 = process.env.PREFILL_UNSAFE_EL_RPC_URLS_11155420?.split(',') ?? [];
+export const prefillUnsafeElRpcUrls11155420 =
+  process.env.PREFILL_UNSAFE_EL_RPC_URLS_11155420?.split(',') ?? [];
 /** @type string[] */
-export const prefillUnsafeElRpcUrls1868 = process.env.PREFILL_UNSAFE_EL_RPC_URLS_1868?.split(',') ?? [];
+export const prefillUnsafeElRpcUrls1868 =
+  process.env.PREFILL_UNSAFE_EL_RPC_URLS_1868?.split(',') ?? [];
 /** @type string[] */
-export const prefillUnsafeElRpcUrls1946 = process.env.PREFILL_UNSAFE_EL_RPC_URLS_1946?.split(',') ?? [];
+export const prefillUnsafeElRpcUrls1946 =
+  process.env.PREFILL_UNSAFE_EL_RPC_URLS_1946?.split(',') ?? [];
 /** @type string[] */
-export const prefillUnsafeElRpcUrls130 = process.env.PREFILL_UNSAFE_EL_RPC_URLS_130?.split(',') ?? [];
+export const prefillUnsafeElRpcUrls130 =
+  process.env.PREFILL_UNSAFE_EL_RPC_URLS_130?.split(',') ?? [];
 /** @type string[] */
-export const prefillUnsafeElRpcUrls1301 = process.env.PREFILL_UNSAFE_EL_RPC_URLS_1301?.split(',') ?? [];
+export const prefillUnsafeElRpcUrls1301 =
+  process.env.PREFILL_UNSAFE_EL_RPC_URLS_1301?.split(',') ?? [];
 
 /** @type boolean */
 export const enableQaHelpers = toBoolean(process.env.ENABLE_QA_HELPERS);
