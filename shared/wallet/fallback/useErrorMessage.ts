@@ -9,17 +9,17 @@ export const useErrorMessage = (): string | undefined => {
   const { isLedger } = useConnectorInfo();
   const {
     isSupportedChain,
-    isChainTypeMatched,
+    isChainMatched,
     isAccountActive,
-    chainType,
     supportedChainLabels,
+    wagmiChain,
   } = useDappStatus();
   const { error } = useConnect();
 
   // Errors from chain state
 
-  if (isAccountActive && !isChainTypeMatched) {
-    return `Wrong network. Please switch to ${supportedChainLabels[chainType]} in your wallet to wrap/unwrap.`;
+  if (isAccountActive && !isChainMatched && wagmiChain) {
+    return `Wrong network. Please switch to ${wagmiChain.name} in your wallet to wrap/unwrap.`;
   }
 
   if (!isSupportedChain) {

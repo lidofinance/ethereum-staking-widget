@@ -114,14 +114,14 @@ export const Wallet = ({ isUnwrapMode }: WrapWalletProps) => {
   const isLedgerLive = useIsLedgerLive();
   const { isLedger: isLedgerHardware } = useConnectorInfo();
   const { featureFlags } = useConfig().externalConfig;
-  const { isChainTypeOnL2, chainType } = useDappStatus();
+  const { isChainIdOnL2, wagmiChain } = useDappStatus();
 
   const isLedgerLiveOnL2 =
-    !featureFlags.ledgerLiveL2 && isLedgerLive && isChainTypeOnL2;
-  const isLedgerHardwareL2 = isLedgerHardware && isChainTypeOnL2;
+    !featureFlags.ledgerLiveL2 && isLedgerLive && isChainIdOnL2;
+  const isLedgerHardwareL2 = isLedgerHardware && isChainIdOnL2;
 
   if (isLedgerLiveOnL2 || isLedgerHardwareL2) {
-    const error = `${chainType} is currently not supported in ${isLedgerLiveOnL2 ? 'Ledger Live' : 'Ledger Hardware'}.`;
+    const error = `${wagmiChain.name} is currently not supported in ${isLedgerLiveOnL2 ? 'Ledger Live' : 'Ledger Hardware'}.`;
     return <Fallback error={error} />;
   }
 
