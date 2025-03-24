@@ -5,7 +5,7 @@ import { helpers } from 'reef-knot/web3-react';
 import { joinWithOr } from 'utils/join-with-or';
 import { useConnect } from 'wagmi';
 
-export const useErrorMessage = (): string | undefined => {
+export const useErrorMessage = (toActionText?: string): string | undefined => {
   const { isLedger } = useConnectorInfo();
   const {
     isSupportedChain,
@@ -19,7 +19,7 @@ export const useErrorMessage = (): string | undefined => {
   // Errors from chain state
 
   if (isAccountActive && !isChainMatched && wagmiChain) {
-    return `Wrong network. Please switch to ${wagmiChain.name} in your wallet to wrap/unwrap.`;
+    return `Wrong network. Please switch to ${wagmiChain.name} in your wallet to ${toActionText}.`;
   }
 
   if (!isSupportedChain) {
