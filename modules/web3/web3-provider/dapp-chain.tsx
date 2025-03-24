@@ -186,7 +186,7 @@ export const SupportL1Chains: React.FC<React.PropsWithChildren> = ({
           setChainId,
           chainType: DAPP_CHAIN_TYPE.Ethereum,
 
-          wagmiChain: wagmiChainMap[config.defaultChain],
+          wagmiChain: wagmiChainMap[chainId],
           wagmiDefaultChain: wagmiChainMap[config.defaultChain],
           wagmiWalletChain: walletChainId
             ? wagmiChainMap[walletChainId]

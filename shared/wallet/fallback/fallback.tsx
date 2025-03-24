@@ -22,7 +22,7 @@ export const Fallback = ({
   const { multiChainBanner } = useConfig().externalConfig;
   const { isWalletConnected, walletChainId, isSupportedChain } =
     useDappStatus();
-  let error = useErrorMessage();
+  let error = useErrorMessage(toActionText);
 
   const isLidoMultichain =
     !!walletChainId &&
