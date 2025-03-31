@@ -19,6 +19,9 @@ const toBoolean = (val) => {
 export const ipfsMode = toBoolean(process.env.IPFS_MODE);
 
 /** @type string */
+export const contractsSet = process.env.CONTRACTS_SET|| 'mainnet';
+
+/** @type string */
 export const selfOrigin = process.env.SELF_ORIGIN || 'https://stake.lido.fi';
 // Fix in the build time (build time don't have env vars)
 

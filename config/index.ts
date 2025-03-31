@@ -1,3 +1,4 @@
+export * from './contracts-map';
 export * from './get-config';
 export * from './get-secret-config';
 export * from './provider';

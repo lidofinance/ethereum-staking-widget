@@ -17,6 +17,8 @@ const basePath = process.env.BASE_PATH;
 const developmentMode = process.env.NODE_ENV === 'development';
 const isIPFSMode = process.env.IPFS_MODE === 'true';
 
+const contractsSet = process.env.CONTRACTS_SET || 'mainnet';
+
 // cache control
 export const CACHE_CONTROL_HEADER = 'x-cache-control';
 export const CACHE_CONTROL_PAGES = [
@@ -148,6 +150,7 @@ export default withBundleAnalyzer({
     // https://nextjs.org/docs/pages/api-reference/next-config-js/basePath
     basePath,
     developmentMode,
+    contractsSet,
 
     // ETH rpcs
     defaultChain: process.env.DEFAULT_CHAIN,
@@ -180,6 +183,7 @@ export default withBundleAnalyzer({
   publicRuntimeConfig: {
     basePath,
     developmentMode,
+    contractsSet,
     collectMetrics: process.env.COLLECT_METRICS === 'true',
   },
 });

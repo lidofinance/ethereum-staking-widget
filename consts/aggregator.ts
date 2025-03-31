@@ -2,11 +2,12 @@ import type { Address } from 'viem';
 import invariant from 'tiny-invariant';
 import { CHAINS } from '@lidofinance/lido-ethereum-sdk';
 
-// https://etherscan.io/address/0xcfe54b5cd566ab89272946f602d76ea879cab4a8
+import { CONTRACTS_MAP } from 'config';
+
 export const AGGREGATOR_STETH_USD_PRICE_FEED_BY_NETWORK: {
   [key in CHAINS]?: Address;
 } = {
-  [CHAINS.Mainnet]: '0xcfe54b5cd566ab89272946f602d76ea879cab4a8',
+  [CHAINS.Mainnet]: CONTRACTS_MAP.mainnet.AGGREGATOR_STETH_USD_PRICE_FEED,
 };
 
 // Chainlink: STETH/USD Price Feed
