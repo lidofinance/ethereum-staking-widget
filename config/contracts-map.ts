@@ -28,7 +28,7 @@ export const CONTRACTS_OVERRIDES_BY_CHAIN =
   serverRuntimeConfig.contractsOverridesByChain ||
   publicRuntimeConfig.contractsOverridesByChain;
 
-// export contracts from all environments
+// export contracts for main chains (without devnets)
 export const CONTRACTS_MAP = {
   [CHAINS.Mainnet]: mainnetContracts as ContractAddresses,
   [CHAINS.Holesky]: holeskyContracts as ContractAddresses,
@@ -37,6 +37,7 @@ export const CONTRACTS_MAP = {
 } as Record<string, ContractAddresses>;
 
 export const OVERRIDE_CONTRACTS_MAP = {
+  // keys MUST be like in the `CONTRACTS_OVERRIDES_BY_CHAIN` env
   'devnet-1': sepoliaPublicDevnetContracts,
   'devnet-n': hoodiPublicDevnetContracts,
 } as Record<string, ContractAddresses>;
@@ -47,5 +48,6 @@ export const getContractsMapByChain = (chain: CHAINS): ContractAddresses => {
     return OVERRIDE_CONTRACTS_MAP[overrideSet];
   }
 
+  // TODO: invariant if CONTRACTS_MAP[chain] is undefined
   return CONTRACTS_MAP[chain] ?? CONTRACTS_MAP[CHAINS.Mainnet];
 };
