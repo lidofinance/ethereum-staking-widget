@@ -41,7 +41,7 @@ export const OVERRIDE_CONTRACTS_MAP = {
   'devnet-n': hoodiPublicDevnetContracts,
 } as Record<string, ContractAddresses>;
 
-export const getContractsByLabel = (chain: CHAINS): ContractAddresses => {
+export const getContractsMapByChain = (chain: CHAINS): ContractAddresses => {
   const overrideSet = CONTRACTS_OVERRIDES_BY_CHAIN[chain];
   if (overrideSet && OVERRIDE_CONTRACTS_MAP[overrideSet]) {
     return OVERRIDE_CONTRACTS_MAP[overrideSet];

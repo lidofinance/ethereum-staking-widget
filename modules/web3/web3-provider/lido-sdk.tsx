@@ -19,7 +19,7 @@ import { LidoSDKWithdraw } from '@lidofinance/lido-ethereum-sdk/withdraw';
 import { LidoSDKStatistics } from '@lidofinance/lido-ethereum-sdk/statistics';
 
 import { config } from 'config';
-import { getContractsByLabel } from 'config/contracts-map';
+import { getContractsMapByChain } from 'config/contracts-map';
 import { useTokenTransferSubscription } from 'modules/web3/hooks/use-balance';
 import { useDappChain } from './dapp-chain';
 
@@ -90,7 +90,7 @@ export const LidoSDKProvider = ({ children }: React.PropsWithChildren) => {
       logMode: 'none',
       rpcProvider: publicClient,
       web3Provider: walletClient,
-      customLidoLocatorAddress: getContractsByLabel(chainId).LIDO_LOCATOR,
+      customLidoLocatorAddress: getContractsMapByChain(chainId).LIDO_LOCATOR,
     });
 
     const stake = new LidoSDKStake({ core });
