@@ -4,11 +4,12 @@ const { publicRuntimeConfig, serverRuntimeConfig } = getConfigNext();
 
 import { CHAINS } from 'consts/chains';
 
-import holeskyContracts from 'contracts/holesky.json';
-import hoodiContracts from 'contracts/hoodi.json';
-import mainnetContracts from 'contracts/mainnet.json';
-import sepoliaContracts from 'contracts/sepolia.json';
-import sepoliaPublicDevnetContracts from 'contracts/sepolia-public-devnet.json';
+import holeskyContracts from 'contracts/holesky.json' assert { type: 'json' };
+import hoodiContracts from 'contracts/hoodi.json' assert { type: 'json' };
+import mainnetContracts from 'contracts/mainnet.json' assert { type: 'json' };
+import sepoliaContracts from 'contracts/sepolia.json' assert { type: 'json' };
+import sepoliaPublicDevnetContracts from 'contracts/sepolia-public-devnet.json' assert { type: 'json' };
+import hoodiPublicDevnetContracts from 'contracts/hoodi-public-devnet.json' assert { type: 'json' };
 
 export type ContractAddresses = {
   // TODO: not all available
@@ -23,11 +24,9 @@ export type ContractAddresses = {
   ENS_PUBLIC_RESOLVER: Address;
 };
 
-export const SEPOLIA_PUBLIC_DEVNET = 'SEPOLIA_PUBLIC_DEVNET';
-
-// current contracts set label
-export const CONTRACTS_SET_LABEL =
-  serverRuntimeConfig.contractsSet || publicRuntimeConfig.contractsSet;
+export const CONTRACTS_OVERRIDES_BY_CHAIN =
+  serverRuntimeConfig.contractsOverridesByChain ||
+  publicRuntimeConfig.contractsOverridesByChain;
 
 // export contracts from all environments
 export const CONTRACTS_MAP = {
@@ -35,10 +34,18 @@ export const CONTRACTS_MAP = {
   [CHAINS.Holesky]: holeskyContracts as ContractAddresses,
   [CHAINS.Hoodi]: hoodiContracts as ContractAddresses,
   [CHAINS.Sepolia]: sepoliaContracts as ContractAddresses,
-  [SEPOLIA_PUBLIC_DEVNET]: sepoliaPublicDevnetContracts as ContractAddresses,
 } as Record<string, ContractAddresses>;
 
-export type ChainLabel = keyof typeof CHAINS | typeof SEPOLIA_PUBLIC_DEVNET;
+export const OVERRIDE_CONTRACTS_MAP = {
+  'devnet-1': sepoliaPublicDevnetContracts,
+  'devnet-n': hoodiPublicDevnetContracts,
+} as Record<string, ContractAddresses>;
 
-export const getContractsByLabel = (label: ChainLabel): ContractAddresses =>
-  CONTRACTS_MAP[label] ?? CONTRACTS_MAP[CHAINS.Mainnet];
+export const getContractsByLabel = (chain: CHAINS): ContractAddresses => {
+  const overrideSet = CONTRACTS_OVERRIDES_BY_CHAIN[chain];
+  if (overrideSet && OVERRIDE_CONTRACTS_MAP[overrideSet]) {
+    return OVERRIDE_CONTRACTS_MAP[overrideSet];
+  }
+
+  return CONTRACTS_MAP[chain] ?? CONTRACTS_MAP[CHAINS.Mainnet];
+};

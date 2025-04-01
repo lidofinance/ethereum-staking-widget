@@ -31,7 +31,7 @@ import {
   getWithdrawalQueueAddress,
   getStakingRouterAddress,
 } from 'consts/contract-addresses';
-import { AGGREGATOR_STETH_USD_PRICE_FEED_BY_NETWORK } from 'consts/aggregator';
+import { getAggregatorStEthUsdPriceFeedAddress } from 'consts/aggregator';
 
 export const CONTRACT_NAMES = {
   lido: 'lido',
@@ -86,9 +86,9 @@ export const METRIC_CONTRACT_ADDRESSES = supportedChainsWithMainnet.reduce(
       [CONTRACT_NAMES.withdrawalQueue]:
         getWithdrawalQueueAddress(chainId) ?? null,
       [CONTRACT_NAMES.aggregator]:
-        AGGREGATOR_STETH_USD_PRICE_FEED_BY_NETWORK[chainId] ?? null,
+        getAggregatorStEthUsdPriceFeedAddress(chainId) ?? null,
       [CONTRACT_NAMES.aggregatorStEthUsdPriceFeed]:
-        AGGREGATOR_STETH_USD_PRICE_FEED_BY_NETWORK[chainId] ?? null,
+        getAggregatorStEthUsdPriceFeedAddress(chainId) ?? null,
       [CONTRACT_NAMES.stakingRouter]: getStakingRouterAddress(chainId) ?? null,
       [CONTRACT_NAMES.stethCurve]:
         chainId === mainnet.id

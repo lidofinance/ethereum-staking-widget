@@ -17,7 +17,18 @@ const basePath = process.env.BASE_PATH;
 const developmentMode = process.env.NODE_ENV === 'development';
 const isIPFSMode = process.env.IPFS_MODE === 'true';
 
-const contractsSet = process.env.CONTRACTS_SET || 'mainnet';
+const contractsOverridesByChain =
+  (process.env.CONTRACTS_OVERRIDES_BY_CHAIN || '')
+    .split(',')
+    .map((pair) => {
+      const [chainId, setName] = pair.split(':');
+      return [Number(chainId), setName];
+    })
+    .filter(([chainId, setName]) => !isNaN(chainId) && !!setName)
+    .reduce((acc, [chainId, setName]) => {
+      acc[chainId] = setName;
+      return acc;
+    }, {});
 
 // cache control
 export const CACHE_CONTROL_HEADER = 'x-cache-control';
@@ -150,7 +161,7 @@ export default withBundleAnalyzer({
     // https://nextjs.org/docs/pages/api-reference/next-config-js/basePath
     basePath,
     developmentMode,
-    contractsSet,
+    contractsOverridesByChain,
 
     // ETH rpcs
     defaultChain: process.env.DEFAULT_CHAIN,
@@ -183,7 +194,7 @@ export default withBundleAnalyzer({
   publicRuntimeConfig: {
     basePath,
     developmentMode,
-    contractsSet,
+    contractsOverridesByChain,
     collectMetrics: process.env.COLLECT_METRICS === 'true',
   },
 });

@@ -18,8 +18,19 @@ const toBoolean = (val) => {
 /** @type boolean */
 export const ipfsMode = toBoolean(process.env.IPFS_MODE);
 
-/** @type string */
-export const contractsSet = process.env.CONTRACTS_SET|| 'mainnet';
+/** @type {Record<string, string>} */
+const contractsOverridesByChain =
+  (process.env.CONTRACTS_OVERRIDES_BY_CHAIN || '')
+    .split(',')
+    .map((pair) => {
+      const [chainId, setName] = pair.split(':');
+      return [Number(chainId), setName];
+    })
+    .filter(([chainId, setName]) => !isNaN(chainId) && !!setName)
+    .reduce((acc, [chainId, setName]) => {
+      acc[chainId] = setName;
+      return acc;
+    }, {});
 
 /** @type string */
 export const selfOrigin = process.env.SELF_ORIGIN || 'https://stake.lido.fi';
