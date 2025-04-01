@@ -16,6 +16,12 @@ import {
 
 type IconsMapType = Record<number, ChainOption>;
 
+const overriddenChainNames: Record<number, string> = {
+  10: 'Optimism',
+  1868: 'Soneium',
+  130: 'Unichain',
+};
+
 export const ChainSwitcher: FC = () => {
   const { isDappActive, chainId, setChainId, supportedChainIds } =
     useDappStatus();
@@ -30,7 +36,7 @@ export const ChainSwitcher: FC = () => {
     () =>
       supportedChainIds.reduce((acc: IconsMapType, chainId: number) => {
         acc[chainId] = {
-          name: wagmiChainMap[chainId].name,
+          name: overriddenChainNames[chainId] ?? wagmiChainMap[chainId].name,
           iconComponent: CHAIN_ICONS_MAP.has(Number(chainId))
             ? createElement(
                 CHAIN_ICONS_MAP.get(Number(chainId)) as ComponentType,
