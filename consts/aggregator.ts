@@ -1,13 +1,14 @@
 import type { Address } from 'viem';
 import invariant from 'tiny-invariant';
-import { CHAINS } from '@lidofinance/lido-ethereum-sdk';
 
 import { CONTRACTS_MAP } from 'config';
+import { CHAINS } from 'consts/chains';
 
 export const AGGREGATOR_STETH_USD_PRICE_FEED_BY_NETWORK: {
   [key in CHAINS]?: Address;
 } = {
-  [CHAINS.Mainnet]: CONTRACTS_MAP.mainnet.AGGREGATOR_STETH_USD_PRICE_FEED,
+  [CHAINS.Mainnet]:
+    CONTRACTS_MAP[CHAINS.Mainnet].AGGREGATOR_STETH_USD_PRICE_FEED,
 };
 
 // Chainlink: STETH/USD Price Feed
