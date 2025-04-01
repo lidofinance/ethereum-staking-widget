@@ -73,8 +73,13 @@ export const useDappChain = (): UseDappChainValue => {
         .map((chain) => (chain.testnet ? chain.name : 'Mainnet'));
 
       return (
-        chainType +
-        (chainNamesForType.length > 0 ? `(${chainNamesForType.join(',')})` : '')
+        // Ethereum example:
+        // - Ethereum(Mainnet,Hoodi,Sepolia,Holesky)
+        // - or
+        // - Ethereum
+        chainNamesForType.length > 1
+          ? `${chainType}(${chainNamesForType.join(',')})`
+          : chainType
       );
     };
 
