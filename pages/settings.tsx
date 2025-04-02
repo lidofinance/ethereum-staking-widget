@@ -5,6 +5,8 @@ import { Layout } from 'shared/components';
 import { SettingsForm } from 'features/settings/settings-form';
 import { getDefaultStaticProps } from 'utilsApi/get-default-static-props';
 
+// just for testing
+
 const Settings: FC = () => {
   return (
     <Layout title="Settings">
