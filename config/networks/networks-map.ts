@@ -1,8 +1,11 @@
 import type { Address } from 'viem';
+import invariant from 'tiny-invariant';
 import getConfigNext from 'next/config';
 const { publicRuntimeConfig, serverRuntimeConfig } = getConfigNext();
 
 import { CHAINS } from '@lidofinance/lido-ethereum-sdk';
+
+import { isSDKSupportedChainAndChainIsL1 } from 'consts/chains';
 
 import holeskySet from 'networks/holesky.json' assert { type: 'json' };
 import hoodiSet from 'networks/hoodi.json' assert { type: 'json' };
@@ -57,9 +60,19 @@ export const DEVNETS_MAP = {
   'hoodi-public-devnet': hoodiPublicDevnetsSet as NetworkConfig,
 } as Record<string, NetworkConfig>;
 
-export const getNetworkConfigMapByChain = (
-  chain: CHAINS,
-): NetworkConfig | undefined => {
+export const getNetworkConfigMapByChain = (chain: CHAINS): NetworkConfig => {
   const overridedSetName = DEVNET_OVERRIDES[chain];
-  return overridedSetName ? DEVNETS_MAP[overridedSetName] : NETWORKS_MAP[chain];
+
+  const networkConfigMap = overridedSetName
+    ? DEVNETS_MAP[overridedSetName]
+    : NETWORKS_MAP[chain];
+
+  // invariant can only work on L1
+  isSDKSupportedChainAndChainIsL1(chain) &&
+    invariant(
+      networkConfigMap,
+      `Network config not found for L1 chainId: ${chain}`,
+    );
+
+  return networkConfigMap;
 };
