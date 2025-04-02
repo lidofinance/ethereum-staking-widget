@@ -5,8 +5,6 @@ const { publicRuntimeConfig, serverRuntimeConfig } = getConfigNext();
 
 import { CHAINS } from '@lidofinance/lido-ethereum-sdk';
 
-import { isSDKSupportedChainAndChainIsL1 } from 'consts/chains';
-
 import holeskySet from 'networks/holesky.json' assert { type: 'json' };
 import hoodiSet from 'networks/hoodi.json' assert { type: 'json' };
 import mainnetSet from 'networks/mainnet.json' assert { type: 'json' };
@@ -63,16 +61,12 @@ export const DEVNETS_MAP = {
 export const getNetworkConfigMapByChain = (chain: CHAINS): NetworkConfig => {
   const overridedSetName = DEVNET_OVERRIDES[chain];
 
-  const networkConfigMap = overridedSetName
-    ? DEVNETS_MAP[overridedSetName]
-    : NETWORKS_MAP[chain];
-
-  // invariant can only work on L1
-  isSDKSupportedChainAndChainIsL1(chain) &&
+  if (overridedSetName) {
     invariant(
-      networkConfigMap,
-      `Network config not found for L1 chainId: ${chain}`,
+      overridedSetName in DEVNETS_MAP,
+      `DEVNETS_MAP doesn't contain the override set "${overridedSetName}" for chainId: ${chain}`,
     );
+  }
 
-  return networkConfigMap;
+  return overridedSetName ? DEVNETS_MAP[overridedSetName] : NETWORKS_MAP[chain];
 };
