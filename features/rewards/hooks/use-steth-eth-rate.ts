@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { CHAINS } from '@lidofinance/lido-ethereum-sdk';
 
 import { PartialCurveAbi } from 'abi/partial-curve-abi';
-import { CONTRACTS_MAP } from 'config/contracts-map';
+import { CONTRACTS_MAP } from 'config/contracts/contracts-map';
 import { WEI_PER_ETHER } from 'consts/tx';
 import { useMainnetOnlyWagmi } from 'modules/web3';
 

@@ -2,7 +2,7 @@ import type { Address } from 'viem';
 import getConfigNext from 'next/config';
 const { publicRuntimeConfig, serverRuntimeConfig } = getConfigNext();
 
-import { CHAINS } from 'consts/chains';
+import { CHAINS } from '@lidofinance/lido-ethereum-sdk';
 
 import holeskyContracts from 'contracts/holesky.json' assert { type: 'json' };
 import hoodiContracts from 'contracts/hoodi.json' assert { type: 'json' };
@@ -11,17 +11,20 @@ import sepoliaContracts from 'contracts/sepolia.json' assert { type: 'json' };
 import sepoliaPublicDevnetContracts from 'contracts/sepolia-public-devnet.json' assert { type: 'json' };
 import hoodiPublicDevnetContracts from 'contracts/hoodi-public-devnet.json' assert { type: 'json' };
 
+export const CONTRACT_KEYS = {
+  LIDO_LOCATOR: 'LIDO_LOCATOR',
+  AGGREGATOR_STETH_USD_PRICE_FEED: 'AGGREGATOR_STETH_USD_PRICE_FEED',
+  LIDO_CURVE_LIQUIDITY_FARMING_POOL: 'LIDO_CURVE_LIQUIDITY_FARMING_POOL',
+  STAKING_ROUTER: 'STAKING_ROUTER',
+  WITHDRAWAL_QUEUE: 'WITHDRAWAL_QUEUE',
+  stETH: 'stETH',
+  wstETH: 'wstETH',
+  LDO: 'LDO',
+  ENS_PUBLIC_RESOLVER: 'ENS_PUBLIC_RESOLVER',
+} as const;
+
 export type ContractAddresses = {
-  // TODO: not all available
-  LIDO_LOCATOR: Address;
-  AGGREGATOR_STETH_USD_PRICE_FEED: Address;
-  LIDO_CURVE_LIQUIDITY_FARMING_POOL: Address;
-  STAKING_ROUTER: Address;
-  WITHDRAWAL_QUEUE: Address;
-  stETH: Address;
-  wstETH: Address;
-  LDO: Address;
-  ENS_PUBLIC_RESOLVER: Address;
+  [K in keyof typeof CONTRACT_KEYS]: Address;
 };
 
 export const CONTRACTS_OVERRIDES_BY_CHAIN =

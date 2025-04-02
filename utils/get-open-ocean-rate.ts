@@ -1,6 +1,6 @@
 import { formatEther } from 'viem';
 
-import { TOKENS, getTokenAddress } from 'consts/token-addresses';
+import { TOKENS, getTokenAddress } from 'config/contracts/token-address';
 import { standardFetcher } from './standardFetcher';
 import { CHAINS } from '@lidofinance/lido-ethereum-sdk';
 

@@ -4,7 +4,6 @@ import { mainnet } from 'viem/chains';
 import { invert, isNull, memoize, omitBy } from 'lodash';
 
 import {
-  LIDO_LOCATOR_BY_CHAIN,
   LIDO_L2_CONTRACT_ADDRESSES,
   LIDO_TOKENS,
   CHAINS,
@@ -25,13 +24,9 @@ import { PartialCurveAbi } from 'abi/partial-curve-abi';
 import { PartialStakingRouterAbi } from 'abi/partial-staking-router';
 
 import { config } from 'config';
-import { CONTRACTS_MAP } from 'config/contracts-map';
-import { getTokenAddress } from 'consts/token-addresses';
-import {
-  getWithdrawalQueueAddress,
-  getStakingRouterAddress,
-} from 'consts/contract-addresses';
-import { getAggregatorStEthUsdPriceFeedAddress } from 'consts/aggregator';
+import { CONTRACT_KEYS, CONTRACTS_MAP } from 'config/contracts/contracts-map';
+import { getContractAddress } from 'config/contracts/contract-address';
+import { getTokenAddress } from 'config/contracts/token-address';
 
 export const CONTRACT_NAMES = {
   lido: 'lido',
@@ -84,17 +79,25 @@ export const METRIC_CONTRACT_ADDRESSES = supportedChainsWithMainnet.reduce(
       [CONTRACT_NAMES.wsteth]:
         getTokenAddress(chainId, LIDO_TOKENS.wsteth) ?? null,
       [CONTRACT_NAMES.withdrawalQueue]:
-        getWithdrawalQueueAddress(chainId) ?? null,
+        getContractAddress(chainId, CONTRACT_KEYS.WITHDRAWAL_QUEUE) ?? null,
       [CONTRACT_NAMES.aggregator]:
-        getAggregatorStEthUsdPriceFeedAddress(chainId) ?? null,
+        getContractAddress(
+          chainId,
+          CONTRACT_KEYS.AGGREGATOR_STETH_USD_PRICE_FEED,
+        ) ?? null,
       [CONTRACT_NAMES.aggregatorStEthUsdPriceFeed]:
-        getAggregatorStEthUsdPriceFeedAddress(chainId) ?? null,
-      [CONTRACT_NAMES.stakingRouter]: getStakingRouterAddress(chainId) ?? null,
+        getContractAddress(
+          chainId,
+          CONTRACT_KEYS.AGGREGATOR_STETH_USD_PRICE_FEED,
+        ) ?? null,
+      [CONTRACT_NAMES.stakingRouter]:
+        getContractAddress(chainId, CONTRACT_KEYS.STAKING_ROUTER) ?? null,
       [CONTRACT_NAMES.stethCurve]:
         chainId === mainnet.id
           ? CONTRACTS_MAP[CHAINS.Mainnet].LIDO_CURVE_LIQUIDITY_FARMING_POOL
           : null,
-      [CONTRACT_NAMES.lidoLocator]: LIDO_LOCATOR_BY_CHAIN[chainId] ?? null,
+      [CONTRACT_NAMES.lidoLocator]:
+        getContractAddress(chainId, CONTRACT_KEYS.LIDO_LOCATOR) ?? null,
       [CONTRACT_NAMES.L2stETH]:
         LIDO_L2_CONTRACT_ADDRESSES[chainId]?.['steth'] ?? null,
       [CONTRACT_NAMES.L2wstETH]:
@@ -119,7 +122,7 @@ export const METRIC_CONTRACT_EVENT_ADDRESSES =
     (mapped, chainId) => {
       const map = {
         [CONTRACT_NAMES.withdrawalQueue]:
-          getWithdrawalQueueAddress(chainId) ?? null,
+          getContractAddress(chainId, CONTRACT_KEYS.WITHDRAWAL_QUEUE) ?? null,
         [CONTRACT_NAMES.lido]:
           getTokenAddress(chainId, LIDO_TOKENS.steth) ?? null,
         [CONTRACT_NAMES.wsteth]:
