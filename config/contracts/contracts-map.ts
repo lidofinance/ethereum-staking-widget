@@ -45,12 +45,11 @@ export const OVERRIDE_CONTRACTS_MAP = {
   'devnet-n': hoodiPublicDevnetContracts,
 } as Record<string, ContractAddresses>;
 
-export const getContractsMapByChain = (chain: CHAINS): ContractAddresses => {
-  const overrideSet = CONTRACTS_OVERRIDES_BY_CHAIN[chain];
-  if (overrideSet && OVERRIDE_CONTRACTS_MAP[overrideSet]) {
-    return OVERRIDE_CONTRACTS_MAP[overrideSet];
-  }
-
-  // TODO: invariant if CONTRACTS_MAP[chain] is undefined
-  return CONTRACTS_MAP[chain] ?? CONTRACTS_MAP[CHAINS.Mainnet];
+export const getContractsMapByChain = (
+  chain: CHAINS,
+): ContractAddresses | undefined => {
+  const overridedSetName = CONTRACTS_OVERRIDES_BY_CHAIN[chain];
+  return overridedSetName
+    ? OVERRIDE_CONTRACTS_MAP[overridedSetName]
+    : CONTRACTS_MAP[chain];
 };
