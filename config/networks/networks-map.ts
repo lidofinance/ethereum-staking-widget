@@ -11,26 +11,32 @@ import sepoliaSet from 'networks/sepolia.json' assert { type: 'json' };
 import sepoliaPublicDevnetSet from 'networks/sepolia-public-devnet.json' assert { type: 'json' };
 import hoodiPublicDevnetsSet from 'networks/hoodi-public-devnet.json' assert { type: 'json' };
 
-export const API_KEYS = {};
+export const API_NAMES = {};
 
-export const CONTRACT_KEYS = {
-  LIDO_LOCATOR: 'LIDO_LOCATOR',
-  AGGREGATOR_STETH_USD_PRICE_FEED: 'AGGREGATOR_STETH_USD_PRICE_FEED',
-  LIDO_CURVE_LIQUIDITY_FARMING_POOL: 'LIDO_CURVE_LIQUIDITY_FARMING_POOL',
-  STAKING_ROUTER: 'STAKING_ROUTER',
-  WITHDRAWAL_QUEUE: 'WITHDRAWAL_QUEUE',
-  stETH: 'stETH',
-  wstETH: 'wstETH',
-  LDO: 'LDO',
-  ENS_PUBLIC_RESOLVER: 'ENS_PUBLIC_RESOLVER',
+export const CONTRACT_NAMES = {
+  lido: 'lido',
+  steth: 'steth', // lido is same
+  wsteth: 'wsteth',
+  ldo: 'ldo',
+  L2stETH: 'L2stETH',
+  L2wstETH: 'L2wstETH',
+  withdrawalQueue: 'withdrawalQueue',
+  aggregator: 'aggregator',
+  aggregatorStEthUsdPriceFeed: 'aggregatorStEthUsdPriceFeed',
+  stakingRouter: 'stakingRouter',
+  stethCurve: 'stethCurve',
+  lidoLocator: 'lidoLocator',
+  ensPublicResolver: 'ensPublicResolver',
+  ensRegistry: 'ensRegistry',
 } as const;
+export type CONTRACT_NAMES = keyof typeof CONTRACT_NAMES;
 
 export type NetworkConfig = {
   api: {
-    [K in keyof typeof API_KEYS]: string;
+    [K in keyof typeof API_NAMES]: string;
   };
   contracts: {
-    [K in keyof typeof CONTRACT_KEYS]: Address;
+    [K in keyof typeof CONTRACT_NAMES]: Address;
   };
 };
 

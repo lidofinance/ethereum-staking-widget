@@ -5,7 +5,7 @@ import { CHAINS } from '@lidofinance/lido-ethereum-sdk';
 import { useQuery } from '@tanstack/react-query';
 
 import { AggregatorAbi } from 'abi/aggregator-abi';
-import { CONTRACT_KEYS } from 'config/networks/networks-map';
+import { CONTRACT_NAMES } from 'config/networks/networks-map';
 import { getContractAddress } from 'config/networks/contract-address';
 import { STRATEGY_LAZY } from 'consts/react-query-strategies';
 import { useMainnetOnlyWagmi } from 'modules/web3';
@@ -33,7 +33,7 @@ export const useEthUsd = (amount?: bigint) => {
       const contract = getContract({
         address: getContractAddress(
           CHAINS.Mainnet,
-          CONTRACT_KEYS.AGGREGATOR_STETH_USD_PRICE_FEED,
+          CONTRACT_NAMES.aggregatorStEthUsdPriceFeed,
         ) as Address,
         abi: AggregatorAbi,
         client: {

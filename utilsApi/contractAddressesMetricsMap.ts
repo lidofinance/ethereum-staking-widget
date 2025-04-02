@@ -24,25 +24,9 @@ import { PartialCurveAbi } from 'abi/partial-curve-abi';
 import { PartialStakingRouterAbi } from 'abi/partial-staking-router';
 
 import { config } from 'config';
-import { CONTRACT_KEYS, NETWORKS_MAP } from 'config/networks/networks-map';
+import { CONTRACT_NAMES, NETWORKS_MAP } from 'config/networks/networks-map';
 import { getContractAddress } from 'config/networks/contract-address';
 import { getTokenAddress } from 'config/networks/token-address';
-
-export const CONTRACT_NAMES = {
-  lido: 'lido',
-  wsteth: 'wsteth',
-  L2stETH: 'L2stETH',
-  L2wstETH: 'L2wstETH',
-  withdrawalQueue: 'withdrawalQueue',
-  aggregator: 'aggregator',
-  aggregatorStEthUsdPriceFeed: 'aggregatorStEthUsdPriceFeed',
-  stakingRouter: 'stakingRouter',
-  stethCurve: 'stethCurve',
-  lidoLocator: 'lidoLocator',
-  ensPublicResolver: 'ensPublicResolver',
-  ensRegistry: 'ensRegistry',
-} as const;
-export type CONTRACT_NAMES = keyof typeof CONTRACT_NAMES;
 
 export const METRIC_CONTRACT_ABIS = {
   [CONTRACT_NAMES.lido]: StethAbi,
@@ -59,8 +43,13 @@ export const METRIC_CONTRACT_ABIS = {
   [CONTRACT_NAMES.ensRegistry]: ENSRegistryAbi,
 } as const;
 
+export type MetricContractName = Exclude<
+  keyof typeof CONTRACT_NAMES,
+  'steth' | 'ldo'
+>;
+
 export const getMetricContractAbi = memoize(
-  (contractName: CONTRACT_NAMES): Abi => {
+  (contractName: MetricContractName): Abi => {
     return METRIC_CONTRACT_ABIS[contractName];
   },
 );
@@ -79,33 +68,32 @@ export const METRIC_CONTRACT_ADDRESSES = supportedChainsWithMainnet.reduce(
       [CONTRACT_NAMES.wsteth]:
         getTokenAddress(chainId, LIDO_TOKENS.wsteth) ?? null,
       [CONTRACT_NAMES.withdrawalQueue]:
-        getContractAddress(chainId, CONTRACT_KEYS.WITHDRAWAL_QUEUE) ?? null,
+        getContractAddress(chainId, CONTRACT_NAMES.withdrawalQueue) ?? null,
       [CONTRACT_NAMES.aggregator]:
         getContractAddress(
           chainId,
-          CONTRACT_KEYS.AGGREGATOR_STETH_USD_PRICE_FEED,
+          CONTRACT_NAMES.aggregatorStEthUsdPriceFeed,
         ) ?? null,
       [CONTRACT_NAMES.aggregatorStEthUsdPriceFeed]:
         getContractAddress(
           chainId,
-          CONTRACT_KEYS.AGGREGATOR_STETH_USD_PRICE_FEED,
+          CONTRACT_NAMES.aggregatorStEthUsdPriceFeed,
         ) ?? null,
       [CONTRACT_NAMES.stakingRouter]:
-        getContractAddress(chainId, CONTRACT_KEYS.STAKING_ROUTER) ?? null,
+        getContractAddress(chainId, CONTRACT_NAMES.stakingRouter) ?? null,
       [CONTRACT_NAMES.stethCurve]:
         chainId === mainnet.id
-          ? NETWORKS_MAP[CHAINS.Mainnet].contracts
-              .LIDO_CURVE_LIQUIDITY_FARMING_POOL
+          ? NETWORKS_MAP[CHAINS.Mainnet].contracts.stethCurve
           : null,
       [CONTRACT_NAMES.lidoLocator]:
-        getContractAddress(chainId, CONTRACT_KEYS.LIDO_LOCATOR) ?? null,
+        getContractAddress(chainId, CONTRACT_NAMES.lidoLocator) ?? null,
       [CONTRACT_NAMES.L2stETH]:
         LIDO_L2_CONTRACT_ADDRESSES[chainId]?.['steth'] ?? null,
       [CONTRACT_NAMES.L2wstETH]:
         LIDO_L2_CONTRACT_ADDRESSES[chainId]?.['wsteth'] ?? null,
       [CONTRACT_NAMES.ensPublicResolver]:
         chainId === mainnet.id
-          ? NETWORKS_MAP[CHAINS.Mainnet].contracts.ENS_PUBLIC_RESOLVER
+          ? NETWORKS_MAP[CHAINS.Mainnet].contracts.ensPublicResolver
           : null,
       [CONTRACT_NAMES.ensRegistry]:
         chainId === mainnet.id ? mainnet.contracts.ensRegistry.address : null,
@@ -123,7 +111,7 @@ export const METRIC_CONTRACT_EVENT_ADDRESSES =
     (mapped, chainId) => {
       const map = {
         [CONTRACT_NAMES.withdrawalQueue]:
-          getContractAddress(chainId, CONTRACT_KEYS.WITHDRAWAL_QUEUE) ?? null,
+          getContractAddress(chainId, CONTRACT_NAMES.withdrawalQueue) ?? null,
         [CONTRACT_NAMES.lido]:
           getTokenAddress(chainId, LIDO_TOKENS.steth) ?? null,
         [CONTRACT_NAMES.wsteth]:

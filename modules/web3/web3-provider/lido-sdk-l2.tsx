@@ -7,7 +7,7 @@ import { CHAINS, LidoSDKCore } from '@lidofinance/lido-ethereum-sdk/core';
 import { LidoSDKL2 } from '@lidofinance/lido-ethereum-sdk/l2';
 
 import { config } from 'config';
-import { CONTRACT_KEYS } from 'config/networks/networks-map';
+import { CONTRACT_NAMES } from 'config/networks/networks-map';
 import { getContractAddress } from 'config/networks/contract-address';
 
 import { useDappChain } from './dapp-chain';
@@ -55,7 +55,7 @@ export const LidoSDKL2Provider = ({ children }: React.PropsWithChildren) => {
       web3Provider: walletClient,
       customLidoLocatorAddress: getContractAddress(
         chainId,
-        CONTRACT_KEYS.LIDO_LOCATOR,
+        CONTRACT_NAMES.lidoLocator,
       ),
     });
 

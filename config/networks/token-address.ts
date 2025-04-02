@@ -1,7 +1,7 @@
 import type { Address } from 'viem';
 import { LIDO_TOKENS, CHAINS } from '@lidofinance/lido-ethereum-sdk';
 
-import { getNetworkConfigMapByChain } from './networks-map';
+import { CONTRACT_NAMES, getNetworkConfigMapByChain } from './networks-map';
 
 export type TOKENS =
   | Exclude<(typeof LIDO_TOKENS)[keyof typeof LIDO_TOKENS], 'unstETH'>
@@ -13,5 +13,7 @@ export const getTokenAddress = (
 ): Address | undefined => {
   if (token === 'ETH') return '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
 
-  return getNetworkConfigMapByChain(chain)?.contracts?.[token];
+  return getNetworkConfigMapByChain(chain)?.contracts?.[
+    String(token).toLocaleLowerCase() as CONTRACT_NAMES
+  ];
 };

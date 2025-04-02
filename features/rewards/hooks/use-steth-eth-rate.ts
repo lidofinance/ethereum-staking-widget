@@ -20,9 +20,7 @@ export const useStethEthRate = ({ enabled = true }) => {
       );
 
       return publicClientMainnet.readContract({
-        address:
-          NETWORKS_MAP[CHAINS.Mainnet].contracts
-            .LIDO_CURVE_LIQUIDITY_FARMING_POOL,
+        address: NETWORKS_MAP[CHAINS.Mainnet].contracts.stethCurve,
         abi: PartialCurveAbi,
         functionName: 'get_dy',
         args: [0n, 1n, WEI_PER_ETHER],
