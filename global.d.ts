@@ -23,7 +23,7 @@ declare module 'next/config' {
     serverRuntimeConfig: {
       basePath: string | undefined;
       developmentMode: boolean;
-      contractsOverridesByChain: Record<string, string>;
+      devnetOverrides: Record<string, string>;
 
       defaultChain: string;
       rpcUrls_1: string | undefined;
@@ -50,7 +50,7 @@ declare module 'next/config' {
     publicRuntimeConfig: {
       basePath: string | undefined;
       developmentMode: boolean;
-      contractsOverridesByChain: Record<string, string>;
+      devnetOverrides: Record<string, string>;
       collectMetrics: boolean;
     };
   };

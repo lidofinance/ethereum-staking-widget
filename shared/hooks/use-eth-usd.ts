@@ -5,8 +5,8 @@ import { CHAINS } from '@lidofinance/lido-ethereum-sdk';
 import { useQuery } from '@tanstack/react-query';
 
 import { AggregatorAbi } from 'abi/aggregator-abi';
-import { CONTRACT_KEYS } from 'config/contracts/contracts-map';
-import { getContractAddress } from 'config/contracts/contract-address';
+import { CONTRACT_KEYS } from 'config/networks/networks-map';
+import { getContractAddress } from 'config/networks/contract-address';
 import { STRATEGY_LAZY } from 'consts/react-query-strategies';
 import { useMainnetOnlyWagmi } from 'modules/web3';
 

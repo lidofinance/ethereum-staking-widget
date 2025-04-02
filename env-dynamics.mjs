@@ -19,8 +19,8 @@ const toBoolean = (val) => {
 export const ipfsMode = toBoolean(process.env.IPFS_MODE);
 
 /** @type {Record<string, string>} */
-const contractsOverridesByChain =
-  (process.env.CONTRACTS_OVERRIDES_BY_CHAIN || '')
+const devnetOverrides =
+  (process.env.DEVNET_OVERRIDES || '')
     .split(',')
     .map((pair) => {
       const [chainId, setName] = pair.split(':');

@@ -7,8 +7,8 @@ import { CHAINS, LidoSDKCore } from '@lidofinance/lido-ethereum-sdk/core';
 import { LidoSDKL2 } from '@lidofinance/lido-ethereum-sdk/l2';
 
 import { config } from 'config';
-import { CONTRACT_KEYS } from 'config/contracts/contracts-map';
-import { getContractAddress } from 'config/contracts/contract-address';
+import { CONTRACT_KEYS } from 'config/networks/networks-map';
+import { getContractAddress } from 'config/networks/contract-address';
 
 import { useDappChain } from './dapp-chain';
 

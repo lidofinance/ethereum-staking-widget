@@ -24,9 +24,9 @@ import { PartialCurveAbi } from 'abi/partial-curve-abi';
 import { PartialStakingRouterAbi } from 'abi/partial-staking-router';
 
 import { config } from 'config';
-import { CONTRACT_KEYS, CONTRACTS_MAP } from 'config/contracts/contracts-map';
-import { getContractAddress } from 'config/contracts/contract-address';
-import { getTokenAddress } from 'config/contracts/token-address';
+import { CONTRACT_KEYS, NETWORKS_MAP } from 'config/networks/networks-map';
+import { getContractAddress } from 'config/networks/contract-address';
+import { getTokenAddress } from 'config/networks/token-address';
 
 export const CONTRACT_NAMES = {
   lido: 'lido',
@@ -94,7 +94,8 @@ export const METRIC_CONTRACT_ADDRESSES = supportedChainsWithMainnet.reduce(
         getContractAddress(chainId, CONTRACT_KEYS.STAKING_ROUTER) ?? null,
       [CONTRACT_NAMES.stethCurve]:
         chainId === mainnet.id
-          ? CONTRACTS_MAP[CHAINS.Mainnet].LIDO_CURVE_LIQUIDITY_FARMING_POOL
+          ? NETWORKS_MAP[CHAINS.Mainnet].contracts
+              .LIDO_CURVE_LIQUIDITY_FARMING_POOL
           : null,
       [CONTRACT_NAMES.lidoLocator]:
         getContractAddress(chainId, CONTRACT_KEYS.LIDO_LOCATOR) ?? null,
@@ -104,7 +105,7 @@ export const METRIC_CONTRACT_ADDRESSES = supportedChainsWithMainnet.reduce(
         LIDO_L2_CONTRACT_ADDRESSES[chainId]?.['wsteth'] ?? null,
       [CONTRACT_NAMES.ensPublicResolver]:
         chainId === mainnet.id
-          ? CONTRACTS_MAP[CHAINS.Mainnet].ENS_PUBLIC_RESOLVER
+          ? NETWORKS_MAP[CHAINS.Mainnet].contracts.ENS_PUBLIC_RESOLVER
           : null,
       [CONTRACT_NAMES.ensRegistry]:
         chainId === mainnet.id ? mainnet.contracts.ensRegistry.address : null,

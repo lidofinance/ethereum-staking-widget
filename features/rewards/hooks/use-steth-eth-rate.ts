@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { CHAINS } from '@lidofinance/lido-ethereum-sdk';
 
 import { PartialCurveAbi } from 'abi/partial-curve-abi';
-import { CONTRACTS_MAP } from 'config/contracts/contracts-map';
+import { NETWORKS_MAP } from 'config/networks/networks-map';
 import { WEI_PER_ETHER } from 'consts/tx';
 import { useMainnetOnlyWagmi } from 'modules/web3';
 
@@ -21,7 +21,8 @@ export const useStethEthRate = ({ enabled = true }) => {
 
       return publicClientMainnet.readContract({
         address:
-          CONTRACTS_MAP[CHAINS.Mainnet].LIDO_CURVE_LIQUIDITY_FARMING_POOL,
+          NETWORKS_MAP[CHAINS.Mainnet].contracts
+            .LIDO_CURVE_LIQUIDITY_FARMING_POOL,
         abi: PartialCurveAbi,
         functionName: 'get_dy',
         args: [0n, 1n, WEI_PER_ETHER],

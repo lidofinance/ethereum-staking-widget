@@ -17,8 +17,8 @@ const basePath = process.env.BASE_PATH;
 const developmentMode = process.env.NODE_ENV === 'development';
 const isIPFSMode = process.env.IPFS_MODE === 'true';
 
-const contractsOverridesByChain =
-  (process.env.CONTRACTS_OVERRIDES_BY_CHAIN || '')
+const devnetOverrides =
+  (process.env.DEVNET_OVERRIDES || '')
     .split(',')
     .map((pair) => {
       const [chainId, setName] = pair.split(':');
@@ -161,7 +161,7 @@ export default withBundleAnalyzer({
     // https://nextjs.org/docs/pages/api-reference/next-config-js/basePath
     basePath,
     developmentMode,
-    contractsOverridesByChain,
+    devnetOverrides,
 
     // ETH rpcs
     defaultChain: process.env.DEFAULT_CHAIN,
@@ -194,7 +194,7 @@ export default withBundleAnalyzer({
   publicRuntimeConfig: {
     basePath,
     developmentMode,
-    contractsOverridesByChain,
+    devnetOverrides,
     collectMetrics: process.env.COLLECT_METRICS === 'true',
   },
 });
