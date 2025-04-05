@@ -10,7 +10,13 @@ export const useCurve = (): UseQueryResult<CurveResponse> => {
 
   return useQuery<CurveResponse>({
     queryKey: ['curve-apr', url],
-    queryFn: () => standardFetcher<CurveResponse>(url),
+    enabled: !!url,
+    queryFn: () => {
+      if (!url) {
+        throw new Error('Missing URL for curve APR request');
+      }
+      return standardFetcher<CurveResponse>(url);
+    },
     ...STRATEGY_LAZY,
   });
 };

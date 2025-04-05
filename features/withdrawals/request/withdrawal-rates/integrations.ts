@@ -112,7 +112,9 @@ const getOneInchWithdrawalRate: GetRateType = async (params) => {
   try {
     if (params.amount > 0n) {
       const result = await getOneInchRate(params);
-      return result;
+      if (result) {
+        return result;
+      }
     }
   } catch (e) {
     console.warn(

@@ -46,12 +46,16 @@ export const getEthApiPath = (
     | URLSearchParams
     | undefined,
 ) => {
+  if (!config.ethAPIBasePath) {
+    return null;
+  }
+
   let search = new URLSearchParams(params).toString();
   search = search ? '?' + search : '';
   return config.ethAPIBasePath + endpoint + search;
 };
 
-export const getReplacementLink = (apiRoute: API_ROUTES): string => {
+export const getReplacementLink = (apiRoute: API_ROUTES): string | null => {
   switch (apiRoute) {
     case API_ROUTES.ETH_APR:
       return getEthApiPath(ETH_API_ROUTES.ETH_APR);

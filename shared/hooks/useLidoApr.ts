@@ -33,6 +33,10 @@ export const useLidoApr = (): UseLidoAprResult => {
     ...STRATEGY_LAZY,
     queryFn: async () => {
       try {
+        if (!url) {
+          throw new Error('Missing URL for fetching SMA APR');
+        }
+
         return await standardFetcher<SMA_APR_RESPONSE>(url);
       } catch (error) {
         // Fallback from SDK

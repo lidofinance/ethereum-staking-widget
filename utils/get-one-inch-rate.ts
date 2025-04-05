@@ -7,13 +7,21 @@ type GetOneInchRateParams = {
   amount?: bigint;
 };
 
-export const getOneInchRate = async ({
-  token,
-  amount,
-}: GetOneInchRateParams) => {
-  const params = new URLSearchParams({ token });
-  if (amount) params.append('amount', amount.toString());
-  const url = getEthApiPath(ETH_API_ROUTES.SWAP_ONE_INCH, params);
+export const getOneInchRate = async (params: GetOneInchRateParams | null) => {
+  if (!params) {
+    return null;
+  }
+
+  const { token, amount } = params;
+
+  const urlParams = new URLSearchParams({ token });
+  if (amount) urlParams.append('amount', amount.toString());
+  const url = getEthApiPath(ETH_API_ROUTES.SWAP_ONE_INCH, urlParams);
+
+  if (!url) {
+    return null;
+  }
+
   const data = await standardFetcher<{
     rate: number;
     toReceive: string;
