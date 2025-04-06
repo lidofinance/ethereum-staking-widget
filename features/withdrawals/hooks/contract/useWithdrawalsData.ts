@@ -1,6 +1,7 @@
 import { useCallback, useMemo } from 'react';
 import invariant from 'tiny-invariant';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { LidoSDKWithdraw } from '@lidofinance/lido-ethereum-sdk/withdraw';
 
 import { useDappStatus, useLidoSDK } from 'modules/web3';
 
@@ -35,9 +36,10 @@ export type RequestTimeByRequestIds = {
 
 const getRequestTimeForWQRequestIds = async (
   ids: string[],
+  withdraw: LidoSDKWithdraw,
 ): Promise<
   {
-    id: string;
+    id: string | undefined;
     finalizationAt: string;
   }[]
 > => {
@@ -51,16 +53,40 @@ const getRequestTimeForWQRequestIds = async (
   const result = [];
 
   for (const page of idsPages) {
-    const basePath = dynamics.wqAPIBasePath;
-    const params = encodeURLQuery({ ids: page.toString() });
-    const queryString = params ? `?${params}` : '';
-    const url = `${basePath}/v2/request-time${queryString}`;
-    const requests = await standardFetcher<RequestTimeByRequestIds[]>(url, {
-      headers: {
-        'Content-Type': 'application/json',
-        'WQ-Request-Source': 'widget',
-      },
-    });
+    let url = null;
+
+    if (dynamics.wqAPIBasePath) {
+      const params = encodeURLQuery({ ids: page.toString() });
+      const queryString = params ? `?${params}` : '';
+      url = `${dynamics.wqAPIBasePath}/v2/request-time${queryString}`;
+    }
+
+    let requests;
+    try {
+      if (!url) {
+        throw new Error('Missing URL for fetching a request-time');
+      }
+
+      requests = await standardFetcher<RequestTimeByRequestIds[]>(url, {
+        headers: {
+          'Content-Type': 'application/json',
+          'WQ-Request-Source': 'widget',
+        },
+      });
+    } catch (error) {
+      // Fallback from SDK calls the API too
+      const ids = idsPages.flat().map((id) => BigInt(id));
+      requests =
+        await withdraw.waitingTime.getWithdrawalWaitingTimeByRequestIds({
+          ids,
+        });
+    }
+
+    if (!requests) {
+      throw new Error(
+        'Failed to fetch request time for requests ids with API and SDK',
+      );
+    }
 
     for (const request of requests) {
       if (!request || !request.requestInfo) continue;
@@ -96,10 +122,7 @@ export const useWithdrawalRequests = () => {
     enabled: !!address,
     ...STRATEGY_LAZY,
     queryFn: async () => {
-      invariant(
-        address,
-        '[useWithdrawalRequests] The "address" must be define',
-      );
+      invariant(address, '[useWithdrawalData] The "address" must be define');
 
       const [requestIds, lastCheckpointIndex] = await Promise.all([
         withdraw.views
@@ -129,12 +152,18 @@ export const useWithdrawalRequests = () => {
         }
       });
 
-      let wqRequests: { finalizationAt: string; id: string }[] = [];
+      let wqRequests: { finalizationAt: string; id: string | undefined }[] = [];
 
       try {
-        wqRequests = await getRequestTimeForWQRequestIds(pendingRequestsIds);
+        wqRequests = await getRequestTimeForWQRequestIds(
+          pendingRequestsIds,
+          withdraw,
+        );
       } catch (e) {
-        console.warn('Failed to fetch request time for requests ids', e);
+        console.warn(
+          '[useWithdrawalData] Fetch request time for requests ids:',
+          e,
+        );
       }
 
       let pendingAmountOfStETH = 0n;

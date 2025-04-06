@@ -7,6 +7,7 @@ import { STRATEGY_EAGER } from 'consts/react-query-strategies';
 import { useWithdrawals } from 'features/withdrawals/contexts/withdrawals-context';
 import { useDebouncedValue } from 'shared/hooks';
 
+import { useLidoSDK } from 'modules/web3';
 import { encodeURLQuery } from 'utils/encodeURLQuery';
 import { standardFetcher } from 'utils/standardFetcher';
 import { FetcherError } from 'utils/fetcherError';
@@ -30,9 +31,12 @@ export const useWaitingTime = (
   options: useWaitingTimeOptions = {},
 ) => {
   const { isApproximate } = options;
+  const { withdraw } = useLidoSDK();
   const debouncedAmount = useDebouncedValue(amount, 1000);
 
   const url = useMemo(() => {
+    if (!config.wqAPIBasePath) return null;
+
     const basePath = config.wqAPIBasePath;
     const params = encodeURLQuery({ amount: debouncedAmount });
     const queryString = params ? `?${params}` : '';
@@ -41,13 +45,25 @@ export const useWaitingTime = (
 
   const { data, error, isLoading, isFetching } = useQuery<RequestTimeV2Dto>({
     queryKey: ['waiting-time', debouncedAmount],
-    queryFn: () =>
-      standardFetcher<RequestTimeV2Dto>(url, {
-        headers: {
-          'Content-Type': 'application/json',
-          'WQ-Request-Source': 'widget',
-        },
-      }),
+    queryFn: async () => {
+      try {
+        if (!url) {
+          throw new Error('Missing URL for fetching a waiting-time');
+        }
+
+        return await standardFetcher<RequestTimeV2Dto>(url, {
+          headers: {
+            'Content-Type': 'application/json',
+            'WQ-Request-Source': 'widget',
+          },
+        });
+      } catch (error) {
+        // Fallback from SDK
+        return await withdraw.waitingTime.getWithdrawalWaitingTimeByAmount({
+          amount: BigInt(debouncedAmount),
+        });
+      }
+    },
     ...STRATEGY_EAGER,
     retry: (failureCount, e) => {
       if (e && e instanceof FetcherError && e.status === 400) {

@@ -1,3 +1,4 @@
+import type { NextApiRequest, NextApiResponse } from 'next';
 import {
   wrapRequest as wrapNextRequest,
   cacheControl,
@@ -21,7 +22,7 @@ if (!secretConfig.rewardsBackendAPI) {
   console.error(
     '[createCachedProxy] Skipped setup: secretConfig.rewardsBackendAPI is null',
   );
-  handler = (_req, res) => {
+  handler = (_: NextApiRequest, res: NextApiResponse) => {
     res.status(204).end();
   };
 } else {
