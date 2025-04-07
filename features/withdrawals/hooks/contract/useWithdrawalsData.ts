@@ -75,8 +75,7 @@ export const useWithdrawalRequests = () => {
         }
       });
 
-      const wqRequests: { finalizationAt: string; id: string | undefined }[] =
-        [];
+      let wqRequests: { finalizationAt: string; id: string | undefined }[] = [];
 
       try {
         const requests =
@@ -85,15 +84,12 @@ export const useWithdrawalRequests = () => {
             getCustomApiUrl,
           });
 
-        for (const request of requests) {
-          if (!request || !request.requestInfo) continue;
-          const modifiedResult = {
+        wqRequests = requests
+          .filter((request) => request?.requestInfo)
+          .map((request) => ({
             id: request.requestInfo.requestId,
             finalizationAt: request.requestInfo.finalizationAt,
-          };
-
-          wqRequests.push(modifiedResult);
-        }
+          }));
       } catch (e) {
         console.warn(
           `[useWithdrawalData] Failed to fetch request time for requests ids: ${pendingRequestsIds}. Details:`,
