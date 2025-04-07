@@ -1,3 +1,4 @@
+import invariant from 'tiny-invariant';
 import { useQuery, type UseQueryResult } from '@tanstack/react-query';
 import { ETH_API_ROUTES, getEthApiPath } from 'consts/api';
 import { STRATEGY_LAZY } from 'consts/react-query-strategies';
@@ -12,9 +13,7 @@ export const useCurve = (): UseQueryResult<CurveResponse> => {
     queryKey: ['curve-apr', url],
     enabled: !!url,
     queryFn: () => {
-      if (!url) {
-        throw new Error('Missing URL for curve APR request');
-      }
+      invariant(url, 'Missing URL for curve APR request');
       return standardFetcher<CurveResponse>(url);
     },
     ...STRATEGY_LAZY,
