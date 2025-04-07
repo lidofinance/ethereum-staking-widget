@@ -35,12 +35,11 @@ export const useWaitingTime = (
   const { data, error, isLoading, isFetching } = useQuery<RequestTimeV2Dto>({
     queryKey: ['waiting-time', debouncedAmount],
     enabled: !!config.wqAPIBasePath,
-    queryFn: async () => {
-      return await withdraw.waitingTime.getWithdrawalWaitingTimeByAmount({
+    queryFn: () =>
+      withdraw.waitingTime.getWithdrawalWaitingTimeByAmount({
         amount: BigInt(debouncedAmount),
         getCustomApiUrl,
-      });
-    },
+      }),
     ...STRATEGY_EAGER,
     retry: (failureCount, e) => {
       if (e && e instanceof FetcherError && e.status === 400) {
