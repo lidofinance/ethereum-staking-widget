@@ -253,7 +253,7 @@ export const nextDefaultErrorHandler =
   };
 
 type sunsetByArgs = {
-  replacementLink?: string | null;
+  replacementLink?: string;
   sunsetTimestamp: number;
 };
 

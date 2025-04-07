@@ -47,7 +47,7 @@ export const getEthApiPath = (
     | undefined,
 ) => {
   if (!config.ethAPIBasePath) {
-    return null;
+    return undefined;
   }
 
   let search = new URLSearchParams(params).toString();
@@ -55,7 +55,9 @@ export const getEthApiPath = (
   return config.ethAPIBasePath + endpoint + search;
 };
 
-export const getReplacementLink = (apiRoute: API_ROUTES): string | null => {
+export const getReplacementLink = (
+  apiRoute: API_ROUTES,
+): string | undefined => {
   switch (apiRoute) {
     case API_ROUTES.ETH_APR:
       return getEthApiPath(ETH_API_ROUTES.ETH_APR);
