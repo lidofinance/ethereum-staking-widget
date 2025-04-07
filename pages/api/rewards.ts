@@ -23,7 +23,7 @@ if (!secretConfig.rewardsBackendAPI) {
     '[createCachedProxy] Skipped setup: secretConfig.rewardsBackendAPI is null',
   );
   handler = (_: NextApiRequest, res: NextApiResponse) => {
-    res.status(204).end();
+    res.status(404).end();
   };
 } else {
   handler = createCachedProxy({

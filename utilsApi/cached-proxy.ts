@@ -96,7 +96,7 @@ export const createEthApiProxy = ({
   if (!proxyUrl) {
     console.error('[createEthApiProxy] Skipped setup: EthApiPath is null');
     return (_req, res) => {
-      res.status(204).end();
+      res.status(404).end();
     };
   }
 
