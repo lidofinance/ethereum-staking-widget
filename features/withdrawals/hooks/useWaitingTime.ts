@@ -4,6 +4,7 @@ import { config } from 'config';
 import { STRATEGY_EAGER } from 'consts/react-query-strategies';
 
 import { useWithdrawals } from 'features/withdrawals/contexts/withdrawals-context';
+import { getCustomApiUrl } from 'features/withdrawals/utils/get-custom-api-url';
 import { useDebouncedValue } from 'shared/hooks';
 
 import { useLidoSDK } from 'modules/web3';
@@ -37,7 +38,7 @@ export const useWaitingTime = (
     queryFn: async () => {
       return await withdraw.waitingTime.getWithdrawalWaitingTimeByAmount({
         amount: BigInt(debouncedAmount),
-        getCustomApiUrl: (defaultUrl) => defaultUrl ?? '',
+        getCustomApiUrl,
       });
     },
     ...STRATEGY_EAGER,

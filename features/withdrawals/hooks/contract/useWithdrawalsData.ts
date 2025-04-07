@@ -1,22 +1,18 @@
 import { useCallback, useMemo } from 'react';
 import invariant from 'tiny-invariant';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { LidoSDKWithdraw } from '@lidofinance/lido-ethereum-sdk/withdraw';
 
 import { useDappStatus, useLidoSDK } from 'modules/web3';
 
 import { STRATEGY_LAZY } from 'consts/react-query-strategies';
-import { default as dynamics } from 'config/dynamics';
 
 import {
   RequestStatus,
   RequestStatusClaimable,
   RequestStatusPending,
 } from 'features/withdrawals/types/request-status';
+import { getCustomApiUrl } from 'features/withdrawals/utils/get-custom-api-url';
 import { MAX_SHOWN_REQUEST_PER_TYPE } from 'features/withdrawals/withdrawals-constants';
-
-import { standardFetcher } from 'utils/standardFetcher';
-import { encodeURLQuery } from 'utils/encodeURLQuery';
 
 export type WithdrawalRequests = NonNullable<
   ReturnType<typeof useWithdrawalRequests>['data']
@@ -32,79 +28,6 @@ export type RequestInfoDto = {
 export type RequestTimeByRequestIds = {
   requestInfo: RequestInfoDto;
   nextCalculationAt: string;
-};
-
-const getRequestTimeForWQRequestIds = async (
-  ids: string[],
-  withdraw: LidoSDKWithdraw,
-): Promise<
-  {
-    id: string | undefined;
-    finalizationAt: string;
-  }[]
-> => {
-  const idsPages = [];
-  const pageSize = 20;
-
-  for (let i = 0; i < ids.length; i += pageSize) {
-    idsPages.push(ids.slice(i, i + pageSize));
-  }
-
-  const result = [];
-
-  for (const page of idsPages) {
-    let url = null;
-
-    if (dynamics.wqAPIBasePath) {
-      const params = encodeURLQuery({ ids: page.toString() });
-      const queryString = params ? `?${params}` : '';
-      url = `${dynamics.wqAPIBasePath}/v2/request-time${queryString}`;
-    }
-
-    let requests;
-    try {
-      if (!url) {
-        throw new Error('Missing URL for fetching a request-time');
-      }
-
-      requests = await standardFetcher<RequestTimeByRequestIds[]>(url, {
-        headers: {
-          'Content-Type': 'application/json',
-          'WQ-Request-Source': 'widget',
-        },
-      });
-    } catch (error) {
-      // Fallback from SDK calls the API too
-      const ids = idsPages.flat().map((id) => BigInt(id));
-      requests =
-        await withdraw.waitingTime.getWithdrawalWaitingTimeByRequestIds({
-          ids,
-        });
-    }
-
-    if (!requests) {
-      throw new Error(
-        'Failed to fetch request time for requests ids with API and SDK',
-      );
-    }
-
-    for (const request of requests) {
-      if (!request || !request.requestInfo) continue;
-      const modifiedResult = {
-        id: request.requestInfo.requestId,
-        finalizationAt: request.requestInfo.finalizationAt,
-      };
-
-      result.push(modifiedResult);
-    }
-
-    if (idsPages.length > 1) {
-      // avoid backend spam
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-    }
-  }
-
-  return result;
 };
 
 export const useWithdrawalRequests = () => {
@@ -144,24 +67,36 @@ export const useWithdrawalRequests = () => {
 
       const claimableRequests: RequestStatus[] = [];
       const pendingRequests: RequestStatusPending[] = [];
-      const pendingRequestsIds: string[] = [];
+      const pendingRequestsIds: bigint[] = [];
 
       requestStatuses.forEach((request, index) => {
         if (!request.isFinalized) {
-          pendingRequestsIds.push(requestIds[index].toString());
+          pendingRequestsIds.push(requestIds[index]);
         }
       });
 
-      let wqRequests: { finalizationAt: string; id: string | undefined }[] = [];
+      const wqRequests: { finalizationAt: string; id: string | undefined }[] =
+        [];
 
       try {
-        wqRequests = await getRequestTimeForWQRequestIds(
-          pendingRequestsIds,
-          withdraw,
-        );
+        const requests =
+          await withdraw.waitingTime.getWithdrawalWaitingTimeByRequestIds({
+            ids: pendingRequestsIds,
+            getCustomApiUrl,
+          });
+
+        for (const request of requests) {
+          if (!request || !request.requestInfo) continue;
+          const modifiedResult = {
+            id: request.requestInfo.requestId,
+            finalizationAt: request.requestInfo.finalizationAt,
+          };
+
+          wqRequests.push(modifiedResult);
+        }
       } catch (e) {
         console.warn(
-          '[useWithdrawalData] Fetch request time for requests ids:',
+          `[useWithdrawalData] Failed to fetch request time for requests ids: ${pendingRequestsIds}. Details:`,
           e,
         );
       }
