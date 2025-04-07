@@ -1,3 +1,4 @@
+import invariant from 'tiny-invariant';
 import { useQuery } from '@tanstack/react-query';
 
 import { ETH_API_ROUTES, getEthApiPath } from 'consts/api';
@@ -19,7 +20,7 @@ type QueryResponseData = {
 };
 
 export const useLidoStats = (): {
-  data?: QueryResponseData | null;
+  data?: QueryResponseData;
   isLoading: boolean;
 } => {
   const url = getEthApiPath(ETH_API_ROUTES.STETH_STATS);
@@ -27,21 +28,16 @@ export const useLidoStats = (): {
   const { data, isLoading } = useQuery<
     RequestResponseData | undefined,
     Error,
-    QueryResponseData | null
+    QueryResponseData | undefined
   >({
     queryKey: ['lido-stats', url],
     enabled: !!url,
     queryFn: () => {
-      if (!url) {
-        throw new Error('Missing URL for curve LidoStats request');
-      }
+      invariant(url, 'Missing URL for LidoStats request');
       return standardFetcher<RequestResponseData>(url);
     },
     select: (rawData) => {
-      if (!rawData) {
-        return null;
-      }
-
+      invariant(rawData, 'Failed to fetch LidoStats');
       return {
         totalStaked: rawData?.totalStaked
           ? `${Number(rawData.totalStaked).toLocaleString('en-US')} ETH`
