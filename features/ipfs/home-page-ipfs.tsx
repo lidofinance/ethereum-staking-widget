@@ -1,6 +1,7 @@
 import { FC, useMemo, useEffect } from 'react';
 import { useRouter } from 'next/router';
 
+import { config } from 'config';
 import {
   getPathWithoutFirstSlash,
   HOME_PATH,
@@ -32,7 +33,7 @@ const IPFS_ROUTABLE_PAGES = [
   // HOME_PATH not need here
   getPathWithoutFirstSlash(WRAP_PATH),
   getPathWithoutFirstSlash(WITHDRAWALS_PATH),
-  getPathWithoutFirstSlash(REWARDS_PATH),
+  config.isRewardsAvailable && getPathWithoutFirstSlash(REWARDS_PATH),
   getPathWithoutFirstSlash(REFERRAL_PATH),
   getPathWithoutFirstSlash(SETTINGS_PATH),
 ];
@@ -92,7 +93,11 @@ export const HomePageIpfs: FC = () => {
     }
 
     case getPathWithoutFirstSlash(REWARDS_PATH): {
-      spaPage = <RewardsPage />;
+      if (config.isRewardsAvailable) {
+        spaPage = <RewardsPage />;
+        break;
+      }
+      // skip this case (falls through to default)
       break;
     }
 
