@@ -23,7 +23,7 @@ type PageRoute = {
   exact?: boolean;
   full_path?: string;
   subPaths?: string[];
-  shouldDisable?: boolean;
+  isDisabled?: boolean;
 };
 
 const routesAll: PageRoute[] = [
@@ -49,11 +49,11 @@ const routesAll: PageRoute[] = [
     name: 'Rewards',
     path: REWARDS_PATH,
     icon: <Wallet data-testid="navRewards" />,
-    shouldDisable: !config.isRewardsAvailable,
+    isDisabled: !config.isRewardsAvailable,
   },
 ];
 
-const routes: PageRoute[] = routesAll.filter((route) => !route.shouldDisable);
+const routes: PageRoute[] = routesAll.filter((route) => !route.isDisabled);
 
 export const Navigation: FC = memo(() => {
   const pathname = useRouterPath();
