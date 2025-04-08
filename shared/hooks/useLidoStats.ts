@@ -43,7 +43,7 @@ export const useLidoStats = (): {
           ? `${Number(rawData.totalStaked).toLocaleString('en-US')} ETH`
           : DATA_UNAVAILABLE,
         stakers: rawData?.uniqueAnytimeHolders
-          ? String(rawData.uniqueAnytimeHolders)
+          ? Number(rawData.uniqueAnytimeHolders).toLocaleString('en-US')
           : DATA_UNAVAILABLE,
         marketCap: rawData?.marketCap
           ? `$${Math.round(rawData.marketCap).toLocaleString('en-US')}`
