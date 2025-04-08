@@ -41,6 +41,8 @@ export const useWithdrawRequestTxPrice = ({
   const debouncedRequestCount = useDebouncedValue(cappedRequestCount, 2000);
 
   const url = useMemo(() => {
+    if (!config.wqAPIBasePath) return null;
+
     const basePath = config.wqAPIBasePath;
     const params = encodeURLQuery({
       token,
@@ -55,9 +57,14 @@ export const useWithdrawRequestTxPrice = ({
     bigint | undefined
   >({
     queryKey: ['permit-estimate', url],
-    enabled: !!chainId && !isApprovalFlow,
+    enabled: !!chainId && !isApprovalFlow && !!url,
     ...STRATEGY_LAZY,
-    queryFn: () => standardFetcher<{ gasLimit: number }>(url),
+    queryFn: () => {
+      if (!url) {
+        throw new Error('Missing URL for "/v1/estimate-gas" request');
+      }
+      return standardFetcher<{ gasLimit: number }>(url);
+    },
     select: (permitEstimateData) =>
       permitEstimateData
         ? BigInt(permitEstimateData.gasLimit || '0')

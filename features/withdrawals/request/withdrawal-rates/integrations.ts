@@ -109,10 +109,11 @@ const getParaSwapWithdrawalRate: GetRateType = async ({ amount, token }) => {
 };
 
 const getOneInchWithdrawalRate: GetRateType = async (params) => {
+  const fallback = { rate: null, toReceive: null };
+
   try {
     if (params.amount > 0n) {
-      const result = await getOneInchRate(params);
-      return result;
+      return (await getOneInchRate(params)) ?? fallback;
     }
   } catch (e) {
     console.warn(
@@ -120,10 +121,8 @@ const getOneInchWithdrawalRate: GetRateType = async (params) => {
       e,
     );
   }
-  return {
-    rate: null,
-    toReceive: null,
-  };
+
+  return fallback;
 };
 
 const getBebopWithdrawalRate: GetRateType = async ({ amount, token }) => {

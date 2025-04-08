@@ -30,13 +30,17 @@ export const LidoStats: FC = memo(() => {
     return getEtherscanTokenLink(chainId, stethAddress ?? '');
   }, [chainId, stethAddress]);
 
+  if (!lidoStats.data) {
+    return null;
+  }
+
   const showApr = !config.ipfsMode || isStatItemAvailable(lidoApr.apr);
   const showTotalStaked =
-    !config.ipfsMode || isStatItemAvailable(lidoStats.data.totalStaked);
+    !config.ipfsMode || isStatItemAvailable(lidoStats.data?.totalStaked);
   const showStakers =
-    !config.ipfsMode || isStatItemAvailable(lidoStats.data.stakers);
+    !config.ipfsMode || isStatItemAvailable(lidoStats.data?.stakers);
   const showMarketCap =
-    !config.ipfsMode || isStatItemAvailable(lidoStats.data.marketCap);
+    !config.ipfsMode || isStatItemAvailable(lidoStats.data?.marketCap);
 
   if (!showApr && !showTotalStaked && !showStakers && !showMarketCap) {
     return null;
