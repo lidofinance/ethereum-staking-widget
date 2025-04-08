@@ -65,17 +65,22 @@ export const useDappChain = (): UseDappChainValue => {
           chainType && array.indexOf(chainType) === index,
       ) as DAPP_CHAIN_TYPE[];
 
+    const MAINNET = 'Mainnet';
+
     const getChainLabelByType = (chainType: DAPP_CHAIN_TYPE) => {
       // all chain names for chainType
       const chainNamesForType = context.supportedChainIds
         .filter((id) => chainType == getChainTypeByChainId(id))
         .map((id) => wagmiChainMap[id])
-        .map((chain) => (chain.testnet ? chain.name : 'Mainnet'));
+        .map((chain) => (chain.testnet ? chain.name : MAINNET));
 
-      return (
-        chainType +
-        (chainNamesForType.length > 0 ? `(${chainNamesForType.join(',')})` : '')
-      );
+      // Ethereum example:
+      // - Ethereum
+      // - or
+      // - Ethereum(Mainnet,Hoodi,Sepolia,Holesky)
+      return chainNamesForType.length === 1 && chainNamesForType[0] === MAINNET
+        ? chainType
+        : `${chainType}(${chainNamesForType.join(',')})`;
     };
 
     const supportedChainLabels = supportedChainTypes.reduce(
