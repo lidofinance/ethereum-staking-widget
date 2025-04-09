@@ -1,6 +1,5 @@
 import { FC, useState, useMemo, createElement, ComponentType } from 'react';
-import { CHAIN_ICONS_MAP, useDappStatus } from 'modules/web3';
-import { wagmiChainMap } from 'modules/web3/consts/chains';
+import { CHAIN_ICONS_MAP, useDappStatus, wagmiChainMap } from 'modules/web3';
 
 import {
   ChainSwitcherOptions,
