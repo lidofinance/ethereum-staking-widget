@@ -1,6 +1,5 @@
 import { FC, useState, useMemo, createElement, ComponentType } from 'react';
-import { CHAIN_ICONS_MAP, useDappStatus } from 'modules/web3';
-import { wagmiChainMap } from 'modules/web3/web3-provider/web3-provider';
+import { CHAIN_ICONS_MAP, useDappStatus, wagmiChainMap } from 'modules/web3';
 
 import {
   ChainSwitcherOptions,
@@ -49,8 +48,9 @@ export const ChainSwitcher: FC = () => {
   );
 
   return (
-    <ChainSwitcherWrapperStyled>
+    <ChainSwitcherWrapperStyled data-testid="chainSwitcher">
       <ChainSwitcherStyled
+        data-testid={`currentChain=${chainId}`}
         $disabled={isLocked}
         onClick={() => {
           if (!isLocked) {
@@ -59,7 +59,7 @@ export const ChainSwitcher: FC = () => {
         }}
       >
         <IconStyle>{iconsMap[chainId].iconComponent}</IconStyle>
-        {!isLocked && <ArrowStyle $opened={opened} />}
+        {!isLocked && <ArrowStyle data-testid="canExpanded" $opened={opened} />}
       </ChainSwitcherStyled>
 
       {!isLocked && (

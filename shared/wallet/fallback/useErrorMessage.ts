@@ -1,25 +1,26 @@
-import { useDappStatus } from 'modules/web3';
+import { useConnect } from 'wagmi';
 import { useConnectorInfo } from 'reef-knot/core-react';
 // TODO: to remove the 'reef-knot/web3-react' after it will be deprecated
 import { helpers } from 'reef-knot/web3-react';
+
 import { joinWithOr } from 'utils/join-with-or';
-import { useConnect } from 'wagmi';
+import { useDappStatus, getPrettyChainName } from 'modules/web3';
 
 export const useErrorMessage = (toActionText?: string): string | undefined => {
   const { isLedger } = useConnectorInfo();
   const {
+    chainId,
     isSupportedChain,
     isChainMatched,
     isAccountActive,
     supportedChainLabels,
-    wagmiChain,
   } = useDappStatus();
   const { error } = useConnect();
 
   // Errors from chain state
 
-  if (isAccountActive && !isChainMatched && wagmiChain) {
-    return `Wrong network. Please switch to ${wagmiChain.name} in your wallet to ${toActionText}.`;
+  if (isAccountActive && !isChainMatched) {
+    return `Wrong network. Please switch to ${getPrettyChainName(chainId)} in your wallet to ${toActionText}.`;
   }
 
   if (!isSupportedChain) {
