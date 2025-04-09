@@ -1,9 +1,20 @@
+import * as wagmiChains from 'wagmi/chains';
+import { Chain } from 'wagmi/chains';
+
 import { ReactComponent as OptimismLogo } from 'assets/icons/chain-toggler/optimism.svg';
 import { ReactComponent as EthereumMainnetLogo } from 'assets/icons/chain-toggler/mainnet.svg';
 import { ReactComponent as SoneiumLogo } from 'assets/icons/chain-toggler/soneium.svg';
 import { ReactComponent as UnichainLogo } from 'assets/icons/chain-toggler/unichain.svg';
 
 import { CHAINS } from 'consts/chains';
+
+export const wagmiChainMap = Object.values(wagmiChains).reduce(
+  (acc, chain) => {
+    acc[chain.id] = chain;
+    return acc;
+  },
+  {} as Record<number, Chain>,
+);
 
 export enum DAPP_CHAIN_TYPE {
   Ethereum = 'Ethereum',
@@ -58,3 +69,20 @@ export const CHAIN_MAP = new Map<number, DAPP_CHAIN_TYPE>([
 export const getChainTypeByChainId = (
   chainId?: number,
 ): DAPP_CHAIN_TYPE | null => (chainId ? CHAIN_MAP.get(chainId) ?? null : null);
+
+// Ethereum example:
+// - Ethereum
+// - or
+// - Ethereum(Hoodi)
+// - or
+// - Ethereum(Sepolia)
+// - or
+// - Ethereum(Holesky)
+export const getPrettyChainName = (chainId: number): string => {
+  const chainType = getChainTypeByChainId(chainId);
+  const chain = wagmiChainMap[chainId];
+
+  if (!chainType) return chain.name;
+
+  return chain.testnet ? `${chainType}(${chain.name})` : chainType;
+};

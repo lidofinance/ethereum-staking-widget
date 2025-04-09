@@ -1,5 +1,5 @@
 import invariant from 'tiny-invariant';
-import { wagmiChainMap } from 'modules/web3/web3-provider/web3-provider';
+import { wagmiChainMap } from 'modules/web3';
 
 export enum ETHERSCAN_ENTITIES {
   TX = 'tx',
