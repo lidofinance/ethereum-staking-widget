@@ -49,8 +49,9 @@ export const ChainSwitcher: FC = () => {
   );
 
   return (
-    <ChainSwitcherWrapperStyled>
+    <ChainSwitcherWrapperStyled data-testid="chainSwitcher">
       <ChainSwitcherStyled
+        data-testid={`currentChain=${chainId}`}
         $disabled={isLocked}
         onClick={() => {
           if (!isLocked) {
@@ -59,7 +60,7 @@ export const ChainSwitcher: FC = () => {
         }}
       >
         <IconStyle>{iconsMap[chainId].iconComponent}</IconStyle>
-        {!isLocked && <ArrowStyle $opened={opened} />}
+        {!isLocked && <ArrowStyle data-testid="canExpanded" $opened={opened} />}
       </ChainSwitcherStyled>
 
       {!isLocked && (

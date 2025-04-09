@@ -29,14 +29,16 @@ export const ChainSwitcherOptions: FC<ChainSwitcherOptionsProps> = ({
     // while the 'PopupStyled' is opened
     <>
       <PopoverWrapperStyled $backdrop={opened} />
-      <PopupStyled $opened={opened} ref={popupRef}>
+      <PopupStyled data-testid="chainList" $opened={opened} ref={popupRef}>
         {Object.entries(options).map(([chainId, chainOption]) => (
           <OptionStyled
+            data-testid={`chainRow=${chainId}`}
             key={chainId}
             onClick={() => onSelect(Number(chainId))}
             $active={Number(chainId) === currentChainId}
           >
-            {chainOption.iconComponent} <span>{chainOption.name}</span>
+            {chainOption.iconComponent}{' '}
+            <span data-testid="chainName">{chainOption.name}</span>
           </OptionStyled>
         ))}
       </PopupStyled>
