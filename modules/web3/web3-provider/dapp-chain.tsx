@@ -22,9 +22,9 @@ import {
   getChainTypeByChainId,
   DAPP_CHAIN_TYPE,
   SupportedChainLabels,
+  wagmiChainMap,
 } from '../consts';
 
-import { wagmiChainMap } from './web3-provider';
 import { LidoSDKProvider } from './lido-sdk';
 import { LidoSDKL2Provider } from './lido-sdk-l2';
 
