@@ -16,6 +16,7 @@ import {
   fallback,
   type Config,
 } from 'wagmi';
+import * as wagmiChains from 'wagmi/chains';
 import { Chain } from 'wagmi/chains';
 
 import { ReefKnotProvider, getDefaultConfig } from 'reef-knot/core-react';
@@ -35,7 +36,7 @@ import { walletMetricProps } from 'consts/matomo-wallets-events';
 
 import { SupportL1Chains } from './dapp-chain';
 import { useWeb3Transport } from './use-web3-transport';
-import { wagmiChains, wagmiChainMap } from '../consts';
+import { wagmiChainMap } from '../consts';
 
 type ChainsList = [Chain, ...Chain[]];
 

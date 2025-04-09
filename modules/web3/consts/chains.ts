@@ -1,9 +1,4 @@
-import {
-  unichain,
-  unichainSepolia,
-  hoodi,
-} from '@lidofinance/lido-ethereum-sdk';
-import * as _wagmiChains from 'wagmi/chains';
+import * as wagmiChains from 'wagmi/chains';
 import { Chain } from 'wagmi/chains';
 
 import { ReactComponent as OptimismLogo } from 'assets/icons/chain-toggler/optimism.svg';
@@ -12,13 +7,6 @@ import { ReactComponent as SoneiumLogo } from 'assets/icons/chain-toggler/soneiu
 import { ReactComponent as UnichainLogo } from 'assets/icons/chain-toggler/unichain.svg';
 
 import { CHAINS } from 'consts/chains';
-
-export const wagmiChains = {
-  ..._wagmiChains,
-  unichain,
-  unichainSepolia,
-  hoodi,
-};
 
 export const wagmiChainMap = Object.values(wagmiChains).reduce(
   (acc, chain) => {
