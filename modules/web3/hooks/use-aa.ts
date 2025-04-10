@@ -109,14 +109,9 @@ export const useSendAACalls = () => {
         const poll = async () => {
           const timeoutAt = Date.now() + config.AA_TX_POLLING_TIMEOUT;
           while (Date.now() < timeoutAt) {
-            const callStatus = await extendedWalletClient
-              .getCallsStatus({
-                id: callData.id,
-              })
-              .catch(() => {
-                // workaround for gnosis safe bug
-                return { status: 'pending' } as const;
-              });
+            const callStatus = await extendedWalletClient.getCallsStatus({
+              id: callData.id,
+            });
             if (callStatus.status === 'success') {
               return callStatus;
             }
