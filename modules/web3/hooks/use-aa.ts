@@ -93,7 +93,7 @@ export const useSendAACalls = () => {
           stage: TransactionCallbackStage.SIGN,
         });
 
-        const callId = await sendCallsAsync({
+        const callData = await sendCallsAsync({
           calls: (calls.filter((call) => !!call) as AACall[]).map((call) => ({
             to: call.to,
             data: call.data,
@@ -103,7 +103,7 @@ export const useSendAACalls = () => {
 
         await callback({
           stage: TransactionCallbackStage.RECEIPT,
-          callId,
+          callId: callData.id,
         });
 
         const poll = async () => {
@@ -111,13 +111,13 @@ export const useSendAACalls = () => {
           while (Date.now() < timeoutAt) {
             const callStatus = await extendedWalletClient
               .getCallsStatus({
-                id: callId,
+                id: callData.id,
               })
               .catch(() => {
                 // workaround for gnosis safe bug
-                return { status: 'PENDING' } as const;
+                return { status: 'pending' } as const;
               });
-            if (callStatus.status === 'CONFIRMED') {
+            if (callStatus.status === 'success') {
               return callStatus;
             }
             await new Promise((resolve) =>
