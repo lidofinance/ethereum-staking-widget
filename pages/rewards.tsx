@@ -1,7 +1,6 @@
 import { FC } from 'react';
 import Head from 'next/head';
 
-import { config } from 'config';
 import { TopCard, RewardsList } from 'features/rewards/features';
 import RewardsHistoryProvider from 'providers/rewardsHistory';
 
@@ -33,10 +32,6 @@ const Rewards: FC = () => {
   );
 };
 
-export const getStaticProps = getDefaultStaticProps('/rewards', async () => {
-  if (!config.isRewardsAvailable) return { notFound: true };
-
-  return { props: {} };
-});
+export const getStaticProps = getDefaultStaticProps('/rewards');
 
 export default Rewards;

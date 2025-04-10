@@ -19,8 +19,8 @@ import { createCachedProxy } from 'utilsApi/cached-proxy';
 
 let handler;
 if (!secretConfig.rewardsBackendAPI) {
-  console.error(
-    '[createCachedProxy] Skipped setup: secretConfig.rewardsBackendAPI is null',
+  console.info(
+    '[api/rewards] Skipped setup: secretConfig.rewardsBackendAPI is null',
   );
   handler = (_: NextApiRequest, res: NextApiResponse) => {
     res.status(404).end();

@@ -24,7 +24,6 @@ declare module 'next/config' {
       basePath: string | undefined;
       developmentMode: boolean;
       devnetOverrides: Record<string, string>;
-      isRewardsAvailable: boolean;
 
       defaultChain: string;
       rpcUrls_1: string | undefined;
@@ -52,7 +51,7 @@ declare module 'next/config' {
       basePath: string | undefined;
       developmentMode: boolean;
       devnetOverrides: Record<string, string>;
-      isRewardsAvailable: boolean;
+
       collectMetrics: boolean;
     };
   };

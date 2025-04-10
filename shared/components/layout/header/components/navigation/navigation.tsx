@@ -9,7 +9,7 @@ import {
   REWARDS_PATH,
   getPathWithoutFirstSlash,
 } from 'consts/urls';
-import { config, useConfig } from 'config';
+import { useConfig } from 'config';
 import { ManifestConfigPage } from 'config/external-config';
 import { LocalLink } from 'shared/components/local-link';
 import { useRouterPath } from 'shared/hooks/use-router-path';
@@ -26,7 +26,7 @@ type PageRoute = {
   isDisabled?: boolean;
 };
 
-const routesAll: PageRoute[] = [
+const routes: PageRoute[] = [
   {
     name: 'Stake',
     path: HOME_PATH,
@@ -49,11 +49,8 @@ const routesAll: PageRoute[] = [
     name: 'Rewards',
     path: REWARDS_PATH,
     icon: <Wallet data-testid="navRewards" />,
-    isDisabled: !config.isRewardsAvailable,
   },
 ];
-
-const routes: PageRoute[] = routesAll.filter((route) => !route.isDisabled);
 
 export const Navigation: FC = memo(() => {
   const pathname = useRouterPath();
