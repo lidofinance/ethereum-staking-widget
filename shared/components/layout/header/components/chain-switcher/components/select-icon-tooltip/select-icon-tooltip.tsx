@@ -11,7 +11,7 @@ export const SelectIconTooltip: FC<
   PropsWithChildren<SelectIconTooltipProps>
 > = ({ children, showArrow }) => {
   return (
-    <SelectIconTooltipWrapper>
+    <SelectIconTooltipWrapper data-testid="wrongNetworkTooltip">
       <SelectIconTooltipContent $showArrow={showArrow}>
         <ThemeProvider theme={themeDark}>
           <Text size={'xs'} strong={true}>

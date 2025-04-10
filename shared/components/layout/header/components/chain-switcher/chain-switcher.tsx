@@ -1,6 +1,5 @@
 import { FC, useState, useMemo, createElement, ComponentType } from 'react';
-import { CHAIN_ICONS_MAP, useDappStatus } from 'modules/web3';
-import { wagmiChainMap } from 'modules/web3/web3-provider/web3-provider';
+import { CHAIN_ICONS_MAP, useDappStatus, wagmiChainMap } from 'modules/web3';
 
 import {
   ChainSwitcherOptions,
@@ -16,6 +15,12 @@ import {
 
 type IconsMapType = Record<number, ChainOption>;
 
+const overriddenChainNames: Record<number, string> = {
+  10: 'Optimism',
+  1868: 'Soneium',
+  130: 'Unichain',
+};
+
 export const ChainSwitcher: FC = () => {
   const { isDappActive, chainId, setChainId, supportedChainIds } =
     useDappStatus();
@@ -30,7 +35,7 @@ export const ChainSwitcher: FC = () => {
     () =>
       supportedChainIds.reduce((acc: IconsMapType, chainId: number) => {
         acc[chainId] = {
-          name: wagmiChainMap[chainId].name,
+          name: overriddenChainNames[chainId] ?? wagmiChainMap[chainId].name,
           iconComponent: CHAIN_ICONS_MAP.has(Number(chainId))
             ? createElement(
                 CHAIN_ICONS_MAP.get(Number(chainId)) as ComponentType,
@@ -43,8 +48,9 @@ export const ChainSwitcher: FC = () => {
   );
 
   return (
-    <ChainSwitcherWrapperStyled>
+    <ChainSwitcherWrapperStyled data-testid="chainSwitcher">
       <ChainSwitcherStyled
+        data-testid={`currentChain=${chainId}`}
         $disabled={isLocked}
         onClick={() => {
           if (!isLocked) {
@@ -53,7 +59,7 @@ export const ChainSwitcher: FC = () => {
         }}
       >
         <IconStyle>{iconsMap[chainId].iconComponent}</IconStyle>
-        {!isLocked && <ArrowStyle $opened={opened} />}
+        {!isLocked && <ArrowStyle data-testid="canExpanded" $opened={opened} />}
       </ChainSwitcherStyled>
 
       {!isLocked && (
