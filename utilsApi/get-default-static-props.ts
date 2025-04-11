@@ -51,6 +51,11 @@ export const getDefaultStaticProps = <
         ...result,
         props: { ...base.props, ...customProps },
       };
+
+      // Fix error: `redirect` and `notFound` can not both be returned from getStaticProps at the same time.
+      if ('notFound' in result && 'redirect' in result) {
+        delete (result as any).notFound;
+      }
     }
 
     /// metrics

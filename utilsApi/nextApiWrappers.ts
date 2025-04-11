@@ -17,6 +17,7 @@ import { config, secretConfig } from 'config';
 import {
   METRIC_CONTRACT_ADDRESSES,
   getMetricContractAbi,
+  MetricContractName,
 } from './contractAddressesMetricsMap';
 
 export enum HttpMethod {
@@ -167,7 +168,9 @@ const collectRequestAddressMetric = async ({
       } else {
         try {
           if (contractName) {
-            const abi = getMetricContractAbi(contractName);
+            const abi = getMetricContractAbi(
+              contractName as MetricContractName,
+            );
             if (!abi) {
               console.warn(`ABI not found for contract: ${contractName}`);
             } else {

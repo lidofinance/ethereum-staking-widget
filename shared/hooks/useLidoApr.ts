@@ -1,3 +1,5 @@
+import invariant from 'tiny-invariant';
+
 import { CHAINS } from '@lidofinance/lido-ethereum-sdk/common';
 import { useQuery, type UseQueryResult } from '@tanstack/react-query';
 
@@ -33,6 +35,7 @@ export const useLidoApr = (): UseLidoAprResult => {
     ...STRATEGY_LAZY,
     queryFn: async () => {
       try {
+        invariant(url, 'Missing URL for fetching the SMA APR');
         return await standardFetcher<SMA_APR_RESPONSE>(url);
       } catch (error) {
         // Fallback from SDK

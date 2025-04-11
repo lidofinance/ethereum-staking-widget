@@ -23,6 +23,10 @@ export const Curve: FC = () => {
 
   const { data, isLoading } = useCurve();
 
+  if (!data) {
+    return null;
+  }
+
   const apr = data?.data.totalApr.toFixed(2) ?? DATA_UNAVAILABLE;
   const value = isLoading ? <InlineLoader /> : apr;
 

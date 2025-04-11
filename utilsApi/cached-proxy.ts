@@ -91,11 +91,20 @@ export const createEthApiProxy = ({
   ignoreParams,
   transformData,
 }: EthApiProxyOptions): API => {
+  const proxyUrl = getEthApiPath(endpoint);
+
+  if (!proxyUrl) {
+    console.error('[createEthApiProxy] Skipped setup: EthApiPath is null');
+    return (_req, res) => {
+      res.status(404).end();
+    };
+  }
+
   return createCachedProxy({
     cacheTTL,
     ignoreParams,
     transformData,
-    proxyUrl: getEthApiPath(endpoint),
+    proxyUrl,
     metricsHost: config.ethAPIBasePath,
     timeout: 5000,
   });
