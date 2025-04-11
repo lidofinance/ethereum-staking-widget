@@ -16,18 +16,7 @@ const basePath = process.env.BASE_PATH;
 
 const developmentMode = process.env.NODE_ENV === 'development';
 const isIPFSMode = process.env.IPFS_MODE === 'true';
-
-const devnetOverrides = (process.env.DEVNET_OVERRIDES || '')
-  .split(',')
-  .map((pair) => {
-    const [chainId, setName] = pair.split(':');
-    return [Number(chainId), setName];
-  })
-  .filter(([chainId, setName]) => !isNaN(chainId) && !!setName)
-  .reduce((acc, [chainId, setName]) => {
-    acc[chainId] = setName;
-    return acc;
-  }, {});
+const devnetOverrides = process.env.DEVNET_OVERRIDES;
 
 // cache control
 export const CACHE_CONTROL_HEADER = 'x-cache-control';

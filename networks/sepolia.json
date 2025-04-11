@@ -5,9 +5,8 @@
     "stethCurve": "",
     "stakingRouter": "0x4F36aAEb18Ab56A4e380241bea6ebF215b9cb12c",
     "withdrawalQueue": "0x1583C7b3f4C3B008720E6BcE5726336b0aB25fdd",
-    "steth": "0x3e3FE7dBc6B4C189E7128855dD526361c49b40Af",
+    "lido": "0x3e3FE7dBc6B4C189E7128855dD526361c49b40Af",
     "wsteth": "0xB82381A3fBD3FaFA77B3a7bE693342618240067b",
-    "ldo": "0xd06dF83b8ad6D89C86a187fba4Eae918d497BdCB",
     "ensPublicResolver": ""
   },
   "api": {}

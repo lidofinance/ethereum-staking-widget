@@ -5,20 +5,21 @@ const { publicRuntimeConfig, serverRuntimeConfig } = getConfigNext();
 
 import { CHAINS } from '@lidofinance/lido-ethereum-sdk';
 
-import holeskySet from 'networks/holesky.json' assert { type: 'json' };
-import hoodiSet from 'networks/hoodi.json' assert { type: 'json' };
+// Main deployments
 import mainnetSet from 'networks/mainnet.json' assert { type: 'json' };
+import hoodiSet from 'networks/hoodi.json' assert { type: 'json' };
 import sepoliaSet from 'networks/sepolia.json' assert { type: 'json' };
-import sepoliaPublicDevnetSet from 'networks/sepolia-public-devnet.json' assert { type: 'json' };
-import hoodiPublicDevnetsSet from 'networks/hoodi-public-devnet.json' assert { type: 'json' };
+import holeskySet from 'networks/holesky.json' assert { type: 'json' };
 
+// Devnet deployments
+import hoodiDevnet0Set from 'networks/hoodi-devnet-0.json' assert { type: 'json' };
+
+// For future overrides of APIs in devnets
 export const API_NAMES = {};
 
 export const CONTRACT_NAMES = {
   lido: 'lido',
-  steth: 'steth', // lido is same
   wsteth: 'wsteth',
-  ldo: 'ldo',
   L2stETH: 'L2stETH',
   L2wstETH: 'L2wstETH',
   withdrawalQueue: 'withdrawalQueue',
@@ -41,8 +42,22 @@ export type NetworkConfig = {
   };
 };
 
-export const DEVNET_OVERRIDES =
-  serverRuntimeConfig.devnetOverrides || publicRuntimeConfig.devnetOverrides;
+const DEVNET_OVERRIDES: Record<number, string> = (
+  serverRuntimeConfig.devnetOverrides ||
+  publicRuntimeConfig.devnetOverrides ||
+  ''
+)
+  .split(',')
+  .reduce(
+    (acc, override) => {
+      const [chainId, setName] = override.split(':');
+      if (!isNaN(Number(chainId)) && setName) {
+        acc[Number(chainId)] = setName;
+      }
+      return acc;
+    },
+    {} as Record<number, string>,
+  );
 
 // export contracts for main chains (without devnets)
 export const NETWORKS_MAP = {
@@ -54,8 +69,7 @@ export const NETWORKS_MAP = {
 
 export const DEVNETS_MAP = {
   // keys MUST be like in the `DEVNET_OVERRIDES` env
-  'sepolia-public-devnet': sepoliaPublicDevnetSet as NetworkConfig,
-  'hoodi-public-devnet': hoodiPublicDevnetsSet as NetworkConfig,
+  'hoodi-devnet-0': hoodiDevnet0Set as NetworkConfig,
 } as Record<string, NetworkConfig>;
 
 export const getNetworkConfigMapByChain = (chain: CHAINS): NetworkConfig => {
@@ -66,7 +80,8 @@ export const getNetworkConfigMapByChain = (chain: CHAINS): NetworkConfig => {
       overridedSetName in DEVNETS_MAP,
       `DEVNETS_MAP doesn't contain the override set "${overridedSetName}" for chainId: ${chain}`,
     );
+    return DEVNETS_MAP[overridedSetName];
   }
 
-  return overridedSetName ? DEVNETS_MAP[overridedSetName] : NETWORKS_MAP[chain];
+  return NETWORKS_MAP[chain];
 };

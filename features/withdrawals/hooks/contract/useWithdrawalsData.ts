@@ -11,7 +11,7 @@ import {
   RequestStatusClaimable,
   RequestStatusPending,
 } from 'features/withdrawals/types/request-status';
-import { getCustomApiUrl } from 'features/withdrawals/utils/get-custom-api-url';
+import { getWQApiUrlByChain } from 'features/withdrawals/utils/get-custom-api-url';
 import { MAX_SHOWN_REQUEST_PER_TYPE } from 'features/withdrawals/withdrawals-constants';
 
 export type WithdrawalRequests = NonNullable<
@@ -45,7 +45,7 @@ export const useWithdrawalRequests = () => {
     enabled: !!address,
     ...STRATEGY_LAZY,
     queryFn: async () => {
-      invariant(address, '[useWithdrawalData] The "address" must be define');
+      invariant(address, '[useWithdrawalData] The "address" must be defined');
 
       const [requestIds, lastCheckpointIndex] = await Promise.all([
         withdraw.views
@@ -81,7 +81,7 @@ export const useWithdrawalRequests = () => {
         const requests =
           await withdraw.waitingTime.getWithdrawalWaitingTimeByRequestIds({
             ids: pendingRequestsIds,
-            getCustomApiUrl,
+            getCustomApiUrl: getWQApiUrlByChain,
           });
 
         wqRequests = requests

@@ -13,6 +13,7 @@ import { encodeURLQuery } from 'utils/encodeURLQuery';
 import { standardFetcher } from 'utils/standardFetcher';
 
 import { TOKENS_TO_WITHDRAWLS } from '../types/tokens-withdrawable';
+import invariant from 'tiny-invariant';
 
 type UseRequestTxPriceOptions = {
   requestCount?: number;
@@ -60,9 +61,8 @@ export const useWithdrawRequestTxPrice = ({
     enabled: !!chainId && !isApprovalFlow && !!url,
     ...STRATEGY_LAZY,
     queryFn: () => {
-      if (!url) {
-        throw new Error('Missing URL for "/v1/estimate-gas" request');
-      }
+      invariant(url, 'Missing URL for "/v1/estimate-gas" request');
+
       return standardFetcher<{ gasLimit: number }>(url);
     },
     select: (permitEstimateData) =>

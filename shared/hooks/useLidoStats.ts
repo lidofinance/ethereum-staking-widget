@@ -25,11 +25,7 @@ export const useLidoStats = (): {
 } => {
   const url = getEthApiPath(ETH_API_ROUTES.STETH_STATS);
 
-  const { data, isLoading } = useQuery<
-    RequestResponseData | undefined,
-    Error,
-    QueryResponseData | undefined
-  >({
+  return useQuery<RequestResponseData, Error, QueryResponseData>({
     queryKey: ['lido-stats', url],
     enabled: !!url,
     queryFn: () => {
@@ -38,6 +34,7 @@ export const useLidoStats = (): {
     },
     select: (rawData) => {
       invariant(rawData, 'Failed to fetch LidoStats');
+
       return {
         totalStaked: rawData?.totalStaked
           ? `${Number(rawData.totalStaked).toLocaleString('en-US')} ETH`
@@ -52,9 +49,4 @@ export const useLidoStats = (): {
     },
     ...STRATEGY_LAZY,
   });
-
-  return {
-    data,
-    isLoading,
-  };
 };

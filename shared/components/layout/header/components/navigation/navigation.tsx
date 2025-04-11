@@ -23,7 +23,6 @@ type PageRoute = {
   exact?: boolean;
   full_path?: string;
   subPaths?: string[];
-  isDisabled?: boolean;
 };
 
 const routes: PageRoute[] = [

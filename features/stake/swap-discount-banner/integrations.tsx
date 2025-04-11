@@ -43,8 +43,7 @@ const STAKE_SWAP_INTEGRATION_CONFIG: StakeSwapDiscountIntegrationMap = {
     title: '1inch',
     async getRate() {
       const result = await getOneInchRate({ token: LIDO_TOKENS.eth });
-      // a fallback value of 1 is acceptable for devnet
-      return result?.rate ?? 1;
+      return result.rate;
     },
     BannerText({ discountPercent }) {
       return (

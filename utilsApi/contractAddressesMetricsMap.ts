@@ -43,10 +43,7 @@ export const METRIC_CONTRACT_ABIS = {
   [CONTRACT_NAMES.ensRegistry]: ENSRegistryAbi,
 } as const;
 
-export type MetricContractName = Exclude<
-  keyof typeof CONTRACT_NAMES,
-  'steth' | 'ldo'
->;
+export type MetricContractName = keyof typeof CONTRACT_NAMES;
 
 export const getMetricContractAbi = memoize(
   (contractName: MetricContractName): Abi => {
