@@ -31,11 +31,18 @@ export const useAA = () => {
     },
   });
 
-  const capabilities =
-    capabilitiesQuery.data && capabilitiesQuery.data[chainId];
+  // merge capabilities per https://eips.ethereum.org/EIPS/eip-5792
+  const capabilities = capabilitiesQuery.data
+    ? {
+        ...(capabilitiesQuery.data[0] ?? {}),
+        ...(capabilitiesQuery.data[chainId] ?? {}),
+      }
+    : undefined;
 
-  // use new AA flow only for batching supported accounts
-  // because some wallets cannot handle non-atomic batching (e.g Ambire EOA)
+  // use new AA flow only for atomic batch supported accounts
+  // per EIP-5792 ANY successful call to getCapabilities is a sign of EIP support
+  // but due to limited and variable support of this EIP we have to be narrow this down
+  // known issues - batched action support for EOAs in many wallets
   const isAA = !!capabilities?.atomicBatch?.supported;
 
   const areAuxiliaryFundsSupported = !!capabilities?.auxiliaryFunds?.supported;
@@ -112,7 +119,8 @@ export const useSendAACalls = () => {
             const callStatus = await extendedWalletClient.getCallsStatus({
               id: callData.id,
             });
-            if (callStatus.status === 'success') {
+
+            if (String(callStatus.status).toLowerCase() !== 'pending') {
               return callStatus;
             }
             await new Promise((resolve) =>
@@ -131,6 +139,12 @@ export const useSendAACalls = () => {
           callStatus,
         });
 
+        if (String(callStatus.status).toLowerCase() === 'failure') {
+          throw new SendCallsError(
+            'Transaction failed. Check your wallet for details.',
+          );
+        }
+
         if (
           callStatus.receipts?.find((receipt) => receipt.status === 'reverted')
         ) {
@@ -141,11 +155,14 @@ export const useSendAACalls = () => {
 
         // extract last receipt if there was no atomic batch
         const txHash = callStatus.receipts
-          ? callStatus?.receipts[callStatus.receipts.length - 1].transactionHash
+          ? callStatus?.receipts[callStatus.receipts.length - 1]
+              ?.transactionHash
           : undefined;
 
         if (!txHash) {
-          throw new SendCallsError('Could not locate tx hash');
+          throw new SendCallsError(
+            'Could not locate TX hash.Check your wallet for details.',
+          );
         }
 
         await callback({
