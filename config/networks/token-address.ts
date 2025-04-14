@@ -9,9 +9,11 @@ const TOKENS_TO_CONTRACTS = {
   [LIDO_TOKENS.unsteth]: CONTRACT_NAMES.withdrawalQueue,
 } as const;
 
+export type TOKENS = (typeof LIDO_TOKENS)[keyof typeof LIDO_TOKENS];
+
 export const getTokenAddress = (
   chain: CHAINS,
-  token: (typeof LIDO_TOKENS)[keyof typeof LIDO_TOKENS],
+  token: TOKENS,
 ): Address | undefined => {
   if (token === 'ETH') return '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
 
