@@ -113,7 +113,7 @@
     "postcss": "^8.4.31",
     "crypto-js": "^4.2.0",
     "wrap-ansi": "7.0.0",
-    "@safe-global/safe-apps-provider": "0.18.6"
+    "@safe-global/safe-apps-provider": ">=0.18.6"
   },
   "lint-staged": {
     "./**/*.{ts,tsx}": [
