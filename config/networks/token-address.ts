@@ -17,7 +17,7 @@ export const getTokenAddress = (
 ): Address | undefined => {
   if (token === 'ETH') return '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
 
-  return getNetworkConfigMapByChain(chain)?.contracts?.[
+  return getNetworkConfigMapByChain(chain)?.contracts[
     TOKENS_TO_CONTRACTS[token]
   ];
 };

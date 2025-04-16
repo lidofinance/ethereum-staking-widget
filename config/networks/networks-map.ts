@@ -61,7 +61,26 @@ const DEVNET_OVERRIDES: Record<number, string> = // Merge client&server values
       {} as Record<number, string>,
     );
 
+// For now stub L2 deployments,
+// as we don't need L2 devnets and it's easier to add more L2s
+const L2_NETWORK_MAP: Record<string, NetworkConfig> = Object.entries(
+  LIDO_L2_CONTRACT_ADDRESSES,
+).reduce(
+  (acc, [chainId, { wsteth, steth }]) => {
+    acc[chainId] = {
+      api: {},
+      contracts: {
+        [CONTRACT_NAMES.L2stETH]: steth,
+        [CONTRACT_NAMES.L2wstETH]: wsteth,
+      },
+    } as NetworkConfig;
+    return acc;
+  },
+  {} as Record<string, NetworkConfig>,
+);
+
 const NETWORKS_MAP = {
+  ...L2_NETWORK_MAP,
   [CHAINS.Mainnet]: mainnetSet as NetworkConfig,
   [CHAINS.Holesky]: holeskySet as NetworkConfig,
   [CHAINS.Hoodi]: hoodiSet as NetworkConfig,
@@ -84,20 +103,6 @@ export const getNetworkConfigMapByChain = (
       `DEVNETS_MAP doesn't contain the override set "${overridedSetName}" for chainId: ${chain}`,
     );
     return DEVNETS_MAP[overridedSetName];
-  }
-
-  if (LIDO_L2_CONTRACT_ADDRESSES[chain]) {
-    return {
-      api: {},
-      contracts: {
-        [CONTRACT_NAMES.L2stETH]: LIDO_L2_CONTRACT_ADDRESSES[chain]?.[
-          'steth'
-        ] as Address,
-        [CONTRACT_NAMES.L2wstETH]: LIDO_L2_CONTRACT_ADDRESSES[chain]?.[
-          'wsteth'
-        ] as Address,
-      },
-    } as NetworkConfig;
   }
 
   return NETWORKS_MAP[chain];
