@@ -50,8 +50,6 @@ declare module 'next/config' {
     publicRuntimeConfig: {
       basePath: string | undefined;
       developmentMode: boolean;
-      devnetOverrides: string;
-
       collectMetrics: boolean;
     };
   };

@@ -3,9 +3,9 @@ import { useQuery } from '@tanstack/react-query';
 import { CHAINS } from '@lidofinance/lido-ethereum-sdk';
 
 import { PartialCurveAbi } from 'abi/partial-curve-abi';
-import { NETWORKS_MAP } from 'config/networks/networks-map';
 import { WEI_PER_ETHER } from 'consts/tx';
 import { useMainnetOnlyWagmi } from 'modules/web3';
+import { getContractAddress } from 'config/networks/contract-address';
 
 export const useStethEthRate = ({ enabled = true }) => {
   const { publicClientMainnet } = useMainnetOnlyWagmi();
@@ -19,8 +19,14 @@ export const useStethEthRate = ({ enabled = true }) => {
         '[useStethEthRate] The "publicClientMainnet" must be define',
       );
 
+      const address = getContractAddress(CHAINS.Mainnet, 'stethCurve');
+      invariant(
+        address,
+        `[useStethEthRate] The "stethCurve" contract address must be defined`,
+      );
+
       return publicClientMainnet.readContract({
-        address: NETWORKS_MAP[CHAINS.Mainnet].contracts.stethCurve,
+        address,
         abi: PartialCurveAbi,
         functionName: 'get_dy',
         args: [0n, 1n, WEI_PER_ETHER],

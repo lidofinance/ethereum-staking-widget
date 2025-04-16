@@ -182,7 +182,6 @@ export default withBundleAnalyzer({
   publicRuntimeConfig: {
     basePath,
     developmentMode,
-    devnetOverrides,
     collectMetrics: process.env.COLLECT_METRICS === 'true',
   },
 });

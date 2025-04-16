@@ -1,13 +1,7 @@
 import { Abi } from 'viem';
 import type { Address } from 'viem';
-import { mainnet } from 'viem/chains';
-import { invert, isNull, memoize, omitBy } from 'lodash';
 
-import {
-  LIDO_L2_CONTRACT_ADDRESSES,
-  LIDO_TOKENS,
-  CHAINS,
-} from '@lidofinance/lido-ethereum-sdk/common';
+import { CHAINS } from '@lidofinance/lido-ethereum-sdk/common';
 import { LidoLocatorAbi } from '@lidofinance/lido-ethereum-sdk/core';
 import { StethAbi } from '@lidofinance/lido-ethereum-sdk/stake';
 import { WithdrawalQueueAbi } from '@lidofinance/lido-ethereum-sdk/withdraw';
@@ -24,9 +18,8 @@ import { PartialCurveAbi } from 'abi/partial-curve-abi';
 import { PartialStakingRouterAbi } from 'abi/partial-staking-router';
 
 import { config } from 'config';
-import { CONTRACT_NAMES, NETWORKS_MAP } from 'config/networks/networks-map';
+import { CONTRACT_NAMES } from 'config/networks/networks-map';
 import { getContractAddress } from 'config/networks/contract-address';
-import { getTokenAddress } from 'config/networks/token-address';
 
 export const METRIC_CONTRACT_ABIS = {
   [CONTRACT_NAMES.lido]: StethAbi,
@@ -45,11 +38,9 @@ export const METRIC_CONTRACT_ABIS = {
 
 export type MetricContractName = keyof typeof CONTRACT_NAMES;
 
-export const getMetricContractAbi = memoize(
-  (contractName: MetricContractName): Abi => {
-    return METRIC_CONTRACT_ABIS[contractName];
-  },
-);
+export const getMetricContractAbi = (contractName: MetricContractName): Abi => {
+  return METRIC_CONTRACT_ABIS[contractName];
+};
 
 const supportedChainsWithMainnet: CHAINS[] = config.supportedChains.includes(
   CHAINS.Mainnet,
@@ -57,47 +48,37 @@ const supportedChainsWithMainnet: CHAINS[] = config.supportedChains.includes(
   ? config.supportedChains
   : [...config.supportedChains, CHAINS.Mainnet];
 
+const CONTRACTS_WITH_EVENTS = [
+  CONTRACT_NAMES.withdrawalQueue,
+  CONTRACT_NAMES.lido,
+  CONTRACT_NAMES.wsteth,
+  CONTRACT_NAMES.L2stETH,
+  CONTRACT_NAMES.L2wstETH,
+];
+
+const invertContractsNamesToAddress = (
+  contractNames: CONTRACT_NAMES[],
+  chainId: CHAINS,
+) =>
+  contractNames.reduce(
+    (acc, contractName) => {
+      const address = getContractAddress(chainId, contractName);
+      if (address) {
+        acc[address] = contractName;
+      }
+      return acc;
+    },
+    {} as Record<Address, CONTRACT_NAMES>,
+  );
+
 export const METRIC_CONTRACT_ADDRESSES = supportedChainsWithMainnet.reduce(
   (mapped, chainId) => {
-    const map = {
-      [CONTRACT_NAMES.lido]:
-        getTokenAddress(chainId, LIDO_TOKENS.steth) ?? null,
-      [CONTRACT_NAMES.wsteth]:
-        getTokenAddress(chainId, LIDO_TOKENS.wsteth) ?? null,
-      [CONTRACT_NAMES.withdrawalQueue]:
-        getContractAddress(chainId, CONTRACT_NAMES.withdrawalQueue) ?? null,
-      [CONTRACT_NAMES.aggregator]:
-        getContractAddress(
-          chainId,
-          CONTRACT_NAMES.aggregatorStEthUsdPriceFeed,
-        ) ?? null,
-      [CONTRACT_NAMES.aggregatorStEthUsdPriceFeed]:
-        getContractAddress(
-          chainId,
-          CONTRACT_NAMES.aggregatorStEthUsdPriceFeed,
-        ) ?? null,
-      [CONTRACT_NAMES.stakingRouter]:
-        getContractAddress(chainId, CONTRACT_NAMES.stakingRouter) ?? null,
-      [CONTRACT_NAMES.stethCurve]:
-        chainId === mainnet.id
-          ? NETWORKS_MAP[CHAINS.Mainnet].contracts.stethCurve
-          : null,
-      [CONTRACT_NAMES.lidoLocator]:
-        getContractAddress(chainId, CONTRACT_NAMES.lidoLocator) ?? null,
-      [CONTRACT_NAMES.L2stETH]:
-        LIDO_L2_CONTRACT_ADDRESSES[chainId]?.['steth'] ?? null,
-      [CONTRACT_NAMES.L2wstETH]:
-        LIDO_L2_CONTRACT_ADDRESSES[chainId]?.['wsteth'] ?? null,
-      [CONTRACT_NAMES.ensPublicResolver]:
-        chainId === mainnet.id
-          ? NETWORKS_MAP[CHAINS.Mainnet].contracts.ensPublicResolver
-          : null,
-      [CONTRACT_NAMES.ensRegistry]:
-        chainId === mainnet.id ? mainnet.contracts.ensRegistry.address : null,
-    };
     return {
       ...mapped,
-      [chainId]: invert(omitBy(map, isNull)),
+      [chainId]: invertContractsNamesToAddress(
+        Object.values(CONTRACT_NAMES),
+        chainId,
+      ),
     };
   },
   {} as Record<CHAINS, Record<Address, CONTRACT_NAMES>>,
@@ -106,21 +87,12 @@ export const METRIC_CONTRACT_ADDRESSES = supportedChainsWithMainnet.reduce(
 export const METRIC_CONTRACT_EVENT_ADDRESSES =
   supportedChainsWithMainnet.reduce(
     (mapped, chainId) => {
-      const map = {
-        [CONTRACT_NAMES.withdrawalQueue]:
-          getContractAddress(chainId, CONTRACT_NAMES.withdrawalQueue) ?? null,
-        [CONTRACT_NAMES.lido]:
-          getTokenAddress(chainId, LIDO_TOKENS.steth) ?? null,
-        [CONTRACT_NAMES.wsteth]:
-          getTokenAddress(chainId, LIDO_TOKENS.wsteth) ?? null,
-        [CONTRACT_NAMES.L2stETH]:
-          LIDO_L2_CONTRACT_ADDRESSES[chainId]?.['steth'] ?? null,
-        [CONTRACT_NAMES.L2wstETH]:
-          LIDO_L2_CONTRACT_ADDRESSES[chainId]?.['wsteth'] ?? null,
-      };
       return {
         ...mapped,
-        [chainId]: invert(omitBy(map, isNull)),
+        [chainId]: invertContractsNamesToAddress(
+          Object.values(CONTRACTS_WITH_EVENTS),
+          chainId,
+        ),
       };
     },
     {} as Record<CHAINS, Record<Address, CONTRACT_NAMES>>,

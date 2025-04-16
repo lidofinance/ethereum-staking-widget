@@ -5,5 +5,5 @@ export const getContractAddress = <T extends keyof NetworkConfig['contracts']>(
   chainId: CHAINS,
   contractName: T,
 ): NetworkConfig['contracts'][T] | undefined => {
-  return getNetworkConfigMapByChain(chainId)?.contracts?.[contractName];
+  return getNetworkConfigMapByChain(chainId)?.contracts[contractName];
 };
