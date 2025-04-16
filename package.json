@@ -121,7 +121,8 @@
     ]
   },
   "browserslist": [
-    "> 1%, last 2 versions, not dead",
-    "last 1 ios_saf major versions"
+    "> 1%, last 2 versions",
+    "last 1 ios_saf major versions",
+    "not dead, not ie >= 0, not op_mini all"
   ]
 }
