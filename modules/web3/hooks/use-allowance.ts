@@ -71,10 +71,9 @@ export const useAllowance = ({
   account,
   spender,
 }: UseAllowanceProps) => {
-  const { chainId } = useDappStatus();
-  const { isSupportedChain } = useDappStatus();
+  const { chainId, isChainMatched } = useDappStatus();
   const queryClient = useQueryClient();
-  const enabled = !!(token && account && spender && isSupportedChain);
+  const enabled = !!(token && account && spender && isChainMatched);
 
   const allowanceQuery = useReadContract({
     abi: Erc20AllowanceAbi,
