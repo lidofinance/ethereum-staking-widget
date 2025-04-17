@@ -1,14 +1,13 @@
-import { useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 
 import { config } from 'config';
 import { STRATEGY_EAGER } from 'consts/react-query-strategies';
 
 import { useWithdrawals } from 'features/withdrawals/contexts/withdrawals-context';
+import { getWQApiUrlByChain } from 'features/withdrawals/utils/get-custom-api-url';
 import { useDebouncedValue } from 'shared/hooks';
 
-import { encodeURLQuery } from 'utils/encodeURLQuery';
-import { standardFetcher } from 'utils/standardFetcher';
+import { useLidoSDK } from 'modules/web3';
 import { FetcherError } from 'utils/fetcherError';
 
 const DEFAULT_DAYS_VALUE = 5;
@@ -30,23 +29,16 @@ export const useWaitingTime = (
   options: useWaitingTimeOptions = {},
 ) => {
   const { isApproximate } = options;
+  const { withdraw } = useLidoSDK();
   const debouncedAmount = useDebouncedValue(amount, 1000);
-
-  const url = useMemo(() => {
-    const basePath = config.wqAPIBasePath;
-    const params = encodeURLQuery({ amount: debouncedAmount });
-    const queryString = params ? `?${params}` : '';
-    return `${basePath}/v2/request-time/calculate${queryString}`;
-  }, [debouncedAmount]);
 
   const { data, error, isLoading, isFetching } = useQuery<RequestTimeV2Dto>({
     queryKey: ['waiting-time', debouncedAmount],
+    enabled: !!config.wqAPIBasePath,
     queryFn: () =>
-      standardFetcher<RequestTimeV2Dto>(url, {
-        headers: {
-          'Content-Type': 'application/json',
-          'WQ-Request-Source': 'widget',
-        },
+      withdraw.waitingTime.getWithdrawalWaitingTimeByAmount({
+        amount: BigInt(debouncedAmount),
+        getCustomApiUrl: getWQApiUrlByChain,
       }),
     ...STRATEGY_EAGER,
     retry: (failureCount, e) => {

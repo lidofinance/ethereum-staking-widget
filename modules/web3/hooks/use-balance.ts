@@ -197,7 +197,7 @@ const useTokenBalance = (
   const { chainId } = useDappStatus();
   const { subscribeToTokenUpdates } = useLidoSDK();
 
-  const enabled = !!address;
+  const enabled = !!(address && contract);
 
   const balanceQuery = useReadContract({
     abi: contract?.abi,
@@ -233,17 +233,16 @@ export const useStethBalance = ({
   account,
   shouldSubscribeToUpdates = true,
 }: UseBalanceProps = {}) => {
-  const { chainId } = useDappStatus();
+  const { chainId, address, isChainMatched } = useDappStatus();
   const { stETH } = useLidoSDK();
   const { l2, isL2 } = useLidoSDKL2();
-  const { isSupportedChain, address } = useDappStatus();
 
   const mergedAccount = account ?? address;
+  const enabled = !!mergedAccount && isChainMatched;
 
   const { data: contract, isLoading } = useQuery({
     queryKey: ['steth-contract', chainId, isL2],
-    enabled: !!mergedAccount && isSupportedChain,
-
+    enabled,
     staleTime: Infinity,
     queryFn: async () => (isL2 ? l2.steth.getContract() : stETH.getContract()),
   });
@@ -265,15 +264,16 @@ export const useWstethBalance = ({
   account,
   shouldSubscribeToUpdates = true,
 }: UseBalanceProps = {}) => {
-  const { isSupportedChain, address } = useDappStatus();
+  const { address, chainId, isChainMatched } = useDappStatus();
   const mergedAccount = account ?? address;
-  const { chainId } = useDappStatus();
   const { wstETH } = useLidoSDK();
   const { l2, isL2 } = useLidoSDKL2();
 
+  const enabled = !!mergedAccount && isChainMatched;
+
   const { data: contract, isLoading } = useQuery({
     queryKey: ['wsteth-contract', chainId, isL2],
-    enabled: !!mergedAccount && isSupportedChain,
+    enabled,
     staleTime: Infinity,
     queryFn: () => (isL2 ? l2.wsteth.getContract() : wstETH.getContract()),
   });

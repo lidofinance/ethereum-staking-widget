@@ -16,6 +16,7 @@ const basePath = process.env.BASE_PATH;
 
 const developmentMode = process.env.NODE_ENV === 'development';
 const isIPFSMode = process.env.IPFS_MODE === 'true';
+const devnetOverrides = process.env.DEVNET_OVERRIDES;
 
 // cache control
 export const CACHE_CONTROL_HEADER = 'x-cache-control';
@@ -148,6 +149,7 @@ export default withBundleAnalyzer({
     // https://nextjs.org/docs/pages/api-reference/next-config-js/basePath
     basePath,
     developmentMode,
+    devnetOverrides,
 
     // ETH rpcs
     defaultChain: process.env.DEFAULT_CHAIN,
