@@ -25,7 +25,7 @@ export const METRIC_CONTRACT_ABIS = {
   [CONTRACT_NAMES.lido]: StethAbi,
   [CONTRACT_NAMES.wsteth]: WstethABI,
   [CONTRACT_NAMES.withdrawalQueue]: WithdrawalQueueAbi,
-  [CONTRACT_NAMES.aggregator]: AggregatorAbi,
+  [CONTRACT_NAMES.aggregatorEthUsdPriceFeed]: AggregatorAbi,
   [CONTRACT_NAMES.aggregatorStEthUsdPriceFeed]: AggregatorAbi,
   [CONTRACT_NAMES.stakingRouter]: PartialStakingRouterAbi,
   [CONTRACT_NAMES.stethCurve]: PartialCurveAbi,
