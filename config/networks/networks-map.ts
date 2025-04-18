@@ -28,7 +28,7 @@ export const CONTRACT_NAMES = {
   L2stETH: 'L2stETH',
   L2wstETH: 'L2wstETH',
   withdrawalQueue: 'withdrawalQueue',
-  aggregator: 'aggregator',
+  aggregatorEthUsdPriceFeed: 'aggregatorEthUsdPriceFeed',
   aggregatorStEthUsdPriceFeed: 'aggregatorStEthUsdPriceFeed',
   stakingRouter: 'stakingRouter',
   stethCurve: 'stethCurve',

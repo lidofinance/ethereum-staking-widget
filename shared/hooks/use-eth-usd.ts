@@ -33,7 +33,7 @@ export const useEthUsd = (amount?: bigint) => {
       const contract = getContract({
         address: getContractAddress(
           CHAINS.Mainnet,
-          CONTRACT_NAMES.aggregatorStEthUsdPriceFeed,
+          CONTRACT_NAMES.aggregatorEthUsdPriceFeed,
         ) as Address,
         abi: AggregatorAbi,
         client: {
