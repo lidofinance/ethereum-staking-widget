@@ -121,9 +121,11 @@
     ]
   },
   "browserslist": [
-    "> 1%, last 2 versions",
+    "> 1% and last 2 versions",
     "last 1 ios_saf major versions",
-    "not dead, not ie >= 0"
+    "not dead",
+    "not ie >= 0",
+    "not op_mini all"
   ],
   "packageManager": "yarn@1.22.22+sha1.ac34549e6aa8e7ead463a7407e1c7390f61a6610"
 }
