@@ -1,4 +1,6 @@
 {
+  // this file is important because it forces babel instead of SWC
+  // which prevents issues with transforms for exponetial operator(**)
   "presets": [
     [
       "next/babel",
