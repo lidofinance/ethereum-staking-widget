@@ -3,7 +3,6 @@ import { MatomoEventType } from '@lidofinance/analytics-matomo';
 export const enum MATOMO_INPUT_EVENTS_TYPES {
   ethRewardsEnterAddressManually = 'ethRewardsEnterAddressManually',
   ethRewardsEnterAddressAuto = 'ethRewardsEnterAddressAuto',
-  ethRewardsEnterAddressFromQuery = 'ethRewardsEnterAddressFromQuery',
 }
 
 export const MATOMO_INPUT_EVENTS: Record<
