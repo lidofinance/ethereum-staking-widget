@@ -30,6 +30,10 @@ export const LidoStats: FC = memo(() => {
     return getEtherscanTokenLink(chainId, stethAddress ?? '');
   }, [chainId, stethAddress]);
 
+  if (!lidoStats.data) {
+    return null;
+  }
+
   const showApr = !config.ipfsMode || isStatItemAvailable(lidoApr.apr);
   const showTotalStaked =
     !config.ipfsMode || isStatItemAvailable(lidoStats.data.totalStaked);

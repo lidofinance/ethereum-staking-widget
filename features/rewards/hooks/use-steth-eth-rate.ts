@@ -1,11 +1,11 @@
 import invariant from 'tiny-invariant';
 import { useQuery } from '@tanstack/react-query';
+import { CHAINS } from '@lidofinance/lido-ethereum-sdk';
 
 import { PartialCurveAbi } from 'abi/partial-curve-abi';
 import { WEI_PER_ETHER } from 'consts/tx';
 import { useMainnetOnlyWagmi } from 'modules/web3';
-
-export const MAINNET_CURVE = '0xDC24316b9AE028F1497c275EB9192a3Ea0f67022';
+import { getContractAddress } from 'config/networks/contract-address';
 
 export const useStethEthRate = ({ enabled = true }) => {
   const { publicClientMainnet } = useMainnetOnlyWagmi();
@@ -19,8 +19,14 @@ export const useStethEthRate = ({ enabled = true }) => {
         '[useStethEthRate] The "publicClientMainnet" must be define',
       );
 
+      const address = getContractAddress(CHAINS.Mainnet, 'stethCurve');
+      invariant(
+        address,
+        `[useStethEthRate] The "stethCurve" contract address must be defined`,
+      );
+
       return publicClientMainnet.readContract({
-        address: MAINNET_CURVE,
+        address,
         abi: PartialCurveAbi,
         functionName: 'get_dy',
         args: [0n, 1n, WEI_PER_ETHER],
