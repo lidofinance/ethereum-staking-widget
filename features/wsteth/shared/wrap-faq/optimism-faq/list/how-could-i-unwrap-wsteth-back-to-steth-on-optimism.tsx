@@ -1,7 +1,7 @@
 import { FC } from 'react';
 import { Accordion } from '@lidofinance/lido-ui';
 import { WRAP_UNWRAP_PATH } from 'consts/urls';
-import { MATOMO_CLICK_EVENTS_TYPES } from 'consts/matomo-click-events';
+import { MATOMO_CLICK_EVENTS_TYPES } from 'consts/matomo';
 import { LocalLink } from 'shared/components/local-link';
 import { trackMatomoEvent } from 'utils/track-matomo-event';
 

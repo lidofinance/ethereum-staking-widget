@@ -1,7 +1,7 @@
 import { useWatch } from 'react-hook-form';
 import { formatEther, parseEther } from 'viem';
 
-import { MATOMO_CLICK_EVENTS_TYPES } from 'consts/matomo-click-events';
+import { MATOMO_CLICK_EVENTS_TYPES } from 'consts/matomo';
 import { DATA_UNAVAILABLE } from 'consts/text';
 
 import { TOKENS_TO_WITHDRAWLS } from 'features/withdrawals/types/tokens-withdrawable';

@@ -2,7 +2,7 @@ import { formatEther, getAddress } from 'viem';
 import { CHAINS } from '@lidofinance/lido-ethereum-sdk';
 
 import { OPEN_OCEAN_REFERRAL_ADDRESS } from 'consts/external-links';
-import { MATOMO_CLICK_EVENTS_TYPES } from 'consts/matomo-click-events';
+import { MATOMO_CLICK_EVENTS_TYPES } from 'consts/matomo';
 import { getTokenAddress } from 'consts/token-addresses';
 
 import { getOneInchRate } from 'utils/get-one-inch-rate';

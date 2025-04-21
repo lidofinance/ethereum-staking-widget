@@ -3,7 +3,7 @@ import { Accordion, Link, Link as OuterLink } from '@lidofinance/lido-ui';
 
 import { config } from 'config';
 import { WRAP_PATH } from 'consts/urls';
-import { MATOMO_CLICK_EVENTS_TYPES } from 'consts/matomo-click-events';
+import { MATOMO_CLICK_EVENTS_TYPES } from 'consts/matomo';
 import { trackMatomoEvent } from 'utils/track-matomo-event';
 import { LocalLink } from 'shared/components/local-link';
 

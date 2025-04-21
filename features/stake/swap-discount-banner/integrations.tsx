@@ -2,7 +2,7 @@ import { parseEther } from 'viem';
 import { LIDO_TOKENS } from '@lidofinance/lido-ethereum-sdk';
 
 import { OPEN_OCEAN_REFERRAL_ADDRESS } from 'consts/external-links';
-import { MATOMO_CLICK_EVENTS } from 'consts/matomo-click-events';
+import { MATOMO_CLICK_EVENTS } from 'consts/matomo';
 import { use1inchDeepLinkProps } from 'features/stake/hooks';
 import { getOneInchRate } from 'utils/get-one-inch-rate';
 import { getOpenOceanRate } from 'utils/get-open-ocean-rate';

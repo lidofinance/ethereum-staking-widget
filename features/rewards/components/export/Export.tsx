@@ -6,7 +6,7 @@ import { ButtonStyle } from './Exportstyled';
 
 import type { CurrencyType } from 'features/rewards/constants';
 import { trackEvent } from '@lidofinance/analytics-matomo';
-import { MATOMO_CLICK_EVENTS } from 'consts/matomo-click-events';
+import { MATOMO_CLICK_EVENTS } from 'consts/matomo';
 
 type ExportProps = {
   currency: CurrencyType;

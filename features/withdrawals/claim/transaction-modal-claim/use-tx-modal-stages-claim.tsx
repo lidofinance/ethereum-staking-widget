@@ -1,5 +1,5 @@
 import type { Hash } from 'viem';
-import { MATOMO_CLICK_EVENTS_TYPES } from 'consts/matomo-click-events';
+import { MATOMO_CLICK_EVENTS_TYPES } from 'consts/matomo';
 
 import {
   TransactionModalTransitStage,

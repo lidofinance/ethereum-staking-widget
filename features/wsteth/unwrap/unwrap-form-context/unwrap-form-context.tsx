@@ -16,6 +16,9 @@ import {
   FormControllerContextValueType,
 } from 'shared/hook-form/form-controller';
 
+import { MATOMO_TX_EVENTS_TYPES } from 'consts/matomo';
+import { trackMatomoEvent } from 'utils/track-matomo-event';
+
 import { useUnwrapFormNetworkData } from '../hooks/use-unwrap-form-network-data';
 import { useUnwrapFormProcessor } from '../hooks/use-unwrap-form-processing';
 import { useUnwrapFormValidationContext } from '../hooks/use-unwra-form-validation-context';
@@ -83,6 +86,18 @@ export const UnwrapFormProvider: FC<PropsWithChildren> = ({ children }) => {
     onRetry: retryFire,
   });
 
+  const onSubmit = useCallback(
+    async (args: UnwrapFormInputType) => {
+      trackMatomoEvent(MATOMO_TX_EVENTS_TYPES.unwrapStart);
+      const wrapResult = await processUnwrapFormFlow(args);
+      if (wrapResult) {
+        trackMatomoEvent(MATOMO_TX_EVENTS_TYPES.unwrapFinish);
+      }
+      return wrapResult;
+    },
+    [processUnwrapFormFlow],
+  );
+
   const value = useMemo(
     (): UnwrapFormDataContextValueType => ({
       ...networkData,
@@ -93,10 +108,10 @@ export const UnwrapFormProvider: FC<PropsWithChildren> = ({ children }) => {
 
   const formControllerValue = useMemo(
     (): FormControllerContextValueType<UnwrapFormInputType> => ({
-      onSubmit: processUnwrapFormFlow,
+      onSubmit,
       retryEvent,
     }),
-    [processUnwrapFormFlow, retryEvent],
+    [onSubmit, retryEvent],
   );
 
   return (

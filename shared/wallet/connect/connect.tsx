@@ -3,7 +3,7 @@ import { useConnect } from 'reef-knot/core-react';
 import { Button, ButtonProps } from '@lidofinance/lido-ui';
 import { wrapWithEventTrack } from '@lidofinance/analytics-matomo';
 
-import { MATOMO_CLICK_EVENTS } from 'consts/matomo-click-events';
+import { MATOMO_CLICK_EVENTS } from 'consts/matomo';
 import { useUserConfig } from 'config/user-config';
 
 export const Connect: FC<ButtonProps> = (props) => {

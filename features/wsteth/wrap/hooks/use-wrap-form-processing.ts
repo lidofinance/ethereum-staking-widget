@@ -1,5 +1,6 @@
 import { useCallback } from 'react';
 import invariant from 'tiny-invariant';
+import type { Hash } from 'viem';
 
 import {
   type PopulatedTransaction,
@@ -24,8 +25,6 @@ import type {
 } from '../wrap-form-context';
 import { TOKENS_TO_WRAP } from '../../shared/types';
 import { useTxModalWrap } from './use-tx-modal-stages-wrap';
-
-import type { Hash } from 'viem';
 
 type UseWrapFormProcessorArgs = {
   approvalDataOnL1: WrapFormApprovalData;

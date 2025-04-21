@@ -3,7 +3,7 @@ import { Button, InlineLoader } from '@lidofinance/lido-ui';
 import { trackEvent } from '@lidofinance/analytics-matomo';
 
 import { DATA_UNAVAILABLE } from 'consts/text';
-import { MATOMO_CLICK_EVENTS } from 'consts/matomo-click-events';
+import { MATOMO_CLICK_EVENTS } from 'consts/matomo';
 import { Banner } from 'shared/components';
 
 import { useCurve } from './useCurve';

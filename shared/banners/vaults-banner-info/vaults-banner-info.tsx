@@ -12,7 +12,7 @@ import { ReactComponent as IconRe7Light } from 'assets/vault-banner/icon-re7-lig
 import { ReactComponent as IconStakehouseLight } from 'assets/vault-banner/icon-stakehouse-light.svg';
 
 import { config } from 'config';
-import { MATOMO_CLICK_EVENTS } from 'consts/matomo-click-events';
+import { MATOMO_CLICK_EVENTS } from 'consts/matomo';
 
 import { BannerLinkButton } from '../banner-link-button';
 import { BannerWrap } from '../shared-banner-partials';

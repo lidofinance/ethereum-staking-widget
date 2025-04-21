@@ -19,7 +19,7 @@ import { ReactComponent as IconLidoLogoDark } from 'assets/dvv-banner/dvv-banner
 import { ReactComponent as IconPartnersLogoDark } from 'assets/dvv-banner/dvv-banner-partners-logo-dark.svg';
 
 import { trackEvent } from '@lidofinance/analytics-matomo';
-import { MATOMO_CLICK_EVENTS } from 'consts/matomo-click-events';
+import { MATOMO_CLICK_EVENTS } from 'consts/matomo';
 import { config } from 'config';
 
 const LINK_DVV_VAULT = `${config.blogOrigin}/decentralized-validator-vault-mellow-obol-ssv/`;

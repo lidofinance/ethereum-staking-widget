@@ -50,7 +50,7 @@ export const walletMetricProps: MetricProps = {
     const eventData = EVENTS_DATA_CONNECT_START[walletId];
     if (eventData) {
       trackEvent(
-        'Ethereum_Staking_Widget',
+        'Ethereum_Staking_Widget_Selecting_wallet_to_connect',
         `Click ${eventData[0]} wallet`,
         `eth_widget_click_${eventData[1]}`,
       );
@@ -64,6 +64,11 @@ export const walletMetricProps: MetricProps = {
         'Ethereum_Staking_Widget',
         `Connect ${eventData[0]}`,
         `eth_widget_connect_${eventData[1]}`,
+      );
+      trackEvent(
+        'Ethereum_Staking_Widget',
+        'Wallet is connected',
+        'eth_widget_wallet_connected',
       );
     }
   },

@@ -2,6 +2,7 @@ import {
   FC,
   PropsWithChildren,
   createContext,
+  useCallback,
   useContext,
   useEffect,
   useMemo,
@@ -17,6 +18,9 @@ import {
   FormControllerContextValueType,
 } from 'shared/hook-form/form-controller';
 import { useDappStatus } from 'modules/web3';
+
+import { MATOMO_TX_EVENTS_TYPES } from 'consts/matomo';
+import { trackMatomoEvent } from 'utils/track-matomo-event';
 
 import { ClaimFormInputType, ClaimFormValidationContext } from './types';
 import { claimFormValidationResolver } from './validation';
@@ -72,6 +76,18 @@ export const ClaimFormProvider: FC<PropsWithChildren> = ({ children }) => {
 
   const claim = useClaim({ onRetry: retryFire });
 
+  const onSubmit = useCallback(
+    async ({ selectedTokens }: ClaimFormInputType) => {
+      trackMatomoEvent(MATOMO_TX_EVENTS_TYPES.withdrawalClaimStart);
+      const claimResult = await claim(selectedTokens);
+      if (claimResult) {
+        trackMatomoEvent(MATOMO_TX_EVENTS_TYPES.withdrawalClaimFinish);
+      }
+      return claimResult;
+    },
+    [claim],
+  );
+
   const { isSubmitting } = formState;
 
   // handles reset and data update
@@ -115,14 +131,14 @@ export const ClaimFormProvider: FC<PropsWithChildren> = ({ children }) => {
   const formControllerValue: FormControllerContextValueType<ClaimFormInputType> =
     useMemo(
       () => ({
-        onSubmit: ({ selectedTokens }) => claim(selectedTokens),
+        onSubmit,
         onReset: () => {
           if (!data) return;
           reset(generateDefaultValues(data, defaultSelectedRequestCount));
         },
         retryEvent,
       }),
-      [claim, data, defaultSelectedRequestCount, reset, retryEvent],
+      [data, defaultSelectedRequestCount, onSubmit, reset, retryEvent],
     );
 
   return (

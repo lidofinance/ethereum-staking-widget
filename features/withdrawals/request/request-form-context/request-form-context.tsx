@@ -11,6 +11,9 @@ import invariant from 'tiny-invariant';
 
 import { useWithdrawalRequest } from 'features/withdrawals/hooks';
 
+import { MATOMO_TX_EVENTS_TYPES } from 'consts/matomo';
+import { trackMatomoEvent } from 'utils/track-matomo-event';
+
 import { useRequestFormDataContextValue } from './use-request-form-data-context-value';
 import { useValidationContext } from './use-validation-context';
 import { useFormControllerRetry } from 'shared/hook-form/form-controller/use-form-controller-retry-delegate';
@@ -106,6 +109,18 @@ export const RequestFormProvider: FC<PropsWithChildren> = ({ children }) => {
     onRetry: retryFire,
   });
 
+  const onSubmit = useMemo(
+    () => async (data: RequestFormInputType) => {
+      trackMatomoEvent(MATOMO_TX_EVENTS_TYPES.withdrawalRequestStart);
+      const requestResult = await request(data);
+      if (requestResult) {
+        trackMatomoEvent(MATOMO_TX_EVENTS_TYPES.withdrawalRequestFinish);
+      }
+      return requestResult;
+    },
+    [request],
+  );
+
   const maxAmount =
     token === TOKENS_TO_WITHDRAWLS.stETH ? balanceSteth : balanceWSteth;
 
@@ -131,7 +146,7 @@ export const RequestFormProvider: FC<PropsWithChildren> = ({ children }) => {
   const formControllerValue: FormControllerContextValueType<RequestFormInputType> =
     useMemo(
       () => ({
-        onSubmit: request,
+        onSubmit,
         onReset: ({ mode, token }: RequestFormInputType) => {
           reset({
             ...defaultValues,
@@ -141,7 +156,7 @@ export const RequestFormProvider: FC<PropsWithChildren> = ({ children }) => {
         },
         retryEvent,
       }),
-      [request, retryEvent, reset, defaultValues],
+      [onSubmit, retryEvent, reset, defaultValues],
     );
 
   return (

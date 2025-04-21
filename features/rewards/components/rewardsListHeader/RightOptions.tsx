@@ -5,7 +5,7 @@ import { Export } from 'features/rewards/components/export';
 import { RightOptionsWrapper } from './styles';
 import { useRewardsHistory } from 'features/rewards/hooks/useRewardsHistory';
 import { MatomoEventType, trackEvent } from '@lidofinance/analytics-matomo';
-import { MATOMO_CLICK_EVENTS } from 'consts/matomo-click-events';
+import { MATOMO_CLICK_EVENTS } from 'consts/matomo';
 
 const MATOMO_EVENTS_MAP_CURRENCY_SELECTOR: Record<string, MatomoEventType> = {
   usd: MATOMO_CLICK_EVENTS.rewardsHistoricalCurrencyUSD,

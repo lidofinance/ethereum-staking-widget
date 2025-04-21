@@ -1,7 +1,7 @@
 import { Accordion, Link } from '@lidofinance/lido-ui';
 
 import { config } from 'config';
-import { MATOMO_CLICK_EVENTS_TYPES } from 'consts/matomo-click-events';
+import { MATOMO_CLICK_EVENTS_TYPES } from 'consts/matomo';
 
 const PENALTIES_INFO_LINK = `${config.helpOrigin}/en/articles/5232780-what-are-staking-validator-penalties`;
 

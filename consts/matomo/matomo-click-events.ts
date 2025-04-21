@@ -3,12 +3,14 @@ import { MatomoEventType } from '@lidofinance/analytics-matomo';
 export const enum MATOMO_CLICK_EVENTS_TYPES {
   // Global
   connectWallet = 'connectWallet',
+  disconnectWalletManually = 'disconnectWalletManually',
   clickShowMoreWallets = 'clickShowMoreWallets',
   clickShowLessWallets = 'clickShowLessWallets',
   clickCurvePool = 'clickCurvePool',
   clickBalancerPool = 'clickBalancerPool',
   clickExploreDeFi = 'clickExploreDeFi',
-  // / page
+
+  // Staking page
   openOceanDiscount = 'openOceanDiscount',
   oneInchDiscount = 'oneInchDiscount',
   viewEtherscanOnStakePage = 'viewEtherscanOnStakePage',
@@ -17,6 +19,7 @@ export const enum MATOMO_CLICK_EVENTS_TYPES {
   obolBannerProceed = 'obolBannerProceed',
   obolBannerDVVLink = 'obolBannerDVVLink',
   exploreAllStrategiesAfterStake = 'exploreAllStrategiesAfterStake',
+
   // FAQ
   faqSafeWorkWithLidoAudits = 'faqSafeWorkWithLidoAudits',
   faqLidoEthAprEthLandingPage = 'faqLidoEthAprEthLandingPage',
@@ -109,9 +112,14 @@ export const MATOMO_CLICK_EVENTS: Record<
 > = {
   // Global
   [MATOMO_CLICK_EVENTS_TYPES.connectWallet]: [
+    'Ethereum_Staking_Widget_Selecting_wallet_to_connect',
+    'Select wallet to connect in the list of wallets',
+    'eth_widget_selecting_wallet_to_connect',
+  ],
+  [MATOMO_CLICK_EVENTS_TYPES.disconnectWalletManually]: [
     'Ethereum_Staking_Widget',
-    'Push "Connect wallet" button',
-    'eth_widget_connect_wallet',
+    'Disconnect wallet manually',
+    'eth_widget_disconnect_wallet',
   ],
   [MATOMO_CLICK_EVENTS_TYPES.clickShowMoreWallets]: [
     'Ethereum_Staking_Widget',
@@ -175,7 +183,7 @@ export const MATOMO_CLICK_EVENTS: Record<
     'eth_widget_the_dvv_vault_link_obol_ssv',
   ],
   [MATOMO_CLICK_EVENTS_TYPES.exploreAllStrategiesAfterStake]: [
-    'Ethereum_Staking_Widget',
+    'Ethereum_Staking_Widget_After_Staking_CTA',
     'Push "Explore all strategies" after staking',
     'eth_widget_explore_all_strategies_after_staking',
   ],
@@ -441,27 +449,27 @@ export const MATOMO_CLICK_EVENTS: Record<
     'eth_withdrawals_request_FAQ_tooltip_eth_amount',
   ],
   [MATOMO_CLICK_EVENTS_TYPES.withdrawalGoTo1inch]: [
-    'Ethereum_Withdrawals_Widget',
+    'Ethereum_Staking_Widget_Withdraw_Use_Aggregators',
     'Click on «Go to 1inch» in aggregators list on Request tab',
     'eth_withdrawals_request_go_to_1inch',
   ],
   [MATOMO_CLICK_EVENTS_TYPES.withdrawalGoToBebop]: [
-    'Ethereum_Withdrawals_Widget',
+    'Ethereum_Staking_Widget_Withdraw_Use_Aggregators',
     'Click on «Go to Bebop» in aggregators list on Request tab',
     'eth_withdrawals_request_go_to_Bebop',
   ],
   [MATOMO_CLICK_EVENTS_TYPES.withdrawalGoToCowSwap]: [
-    'Ethereum_Withdrawals_Widget',
+    'Ethereum_Staking_Widget_Withdraw_Use_Aggregators',
     'Click on «Go to CowSwap» in aggregators list on Request tab',
     'eth_withdrawals_request_go_to_CowSwap',
   ],
   [MATOMO_CLICK_EVENTS_TYPES.withdrawalGoToParaswap]: [
-    'Ethereum_Withdrawals_Widget',
+    'Ethereum_Staking_Widget_Withdraw_Use_Aggregators',
     'Click on «Go to Paraswap» in aggregators list on Request tab',
     'eth_withdrawals_request_go_to_Paraswap',
   ],
   [MATOMO_CLICK_EVENTS_TYPES.withdrawalGoToOpenOcean]: [
-    'Ethereum_Withdrawals_Widget',
+    'Ethereum_Staking_Widget_Withdraw_Use_Aggregators',
     'Click on «Go to OpenOcean in aggregators list on Request tab',
     'eth_withdrawals_request_go_to_OpenOcean',
   ],

@@ -5,7 +5,7 @@ import { Block, DataTable, Question, Tooltip } from '@lidofinance/lido-ui';
 
 import { config } from 'config';
 import { LIDO_APR_TOOLTIP_TEXT, DATA_UNAVAILABLE } from 'consts/text';
-import { MATOMO_CLICK_EVENTS_TYPES } from 'consts/matomo-click-events';
+import { MATOMO_CLICK_EVENTS_TYPES } from 'consts/matomo';
 import { useDappStatus } from 'modules/web3';
 
 import { Section, MatomoLink } from 'shared/components';

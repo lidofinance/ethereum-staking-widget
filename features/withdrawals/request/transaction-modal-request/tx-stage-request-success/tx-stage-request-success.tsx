@@ -3,7 +3,7 @@ import { Link, Loader } from '@lidofinance/lido-ui';
 
 import { config } from 'config';
 import { WITHDRAWALS_CLAIM_PATH } from 'consts/urls';
-import { MATOMO_CLICK_EVENTS_TYPES } from 'consts/matomo-click-events';
+import { MATOMO_CLICK_EVENTS_TYPES } from 'consts/matomo';
 
 import { useNftDataByTxHash } from 'features/withdrawals/hooks/useNftDataByTxHash';
 import { useTransactionModal } from 'shared/transaction-modal/transaction-modal';
