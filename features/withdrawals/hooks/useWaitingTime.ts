@@ -25,7 +25,7 @@ type RequestTimeV2Dto = {
 };
 
 export const useWaitingTime = (
-  amount: string,
+  amount: bigint | null,
   options: useWaitingTimeOptions = {},
 ) => {
   const { isApproximate } = options;
@@ -33,11 +33,11 @@ export const useWaitingTime = (
   const debouncedAmount = useDebouncedValue(amount, 1000);
 
   const { data, error, isLoading, isFetching } = useQuery<RequestTimeV2Dto>({
-    queryKey: ['waiting-time', debouncedAmount],
+    queryKey: ['waiting-time', debouncedAmount?.toString()],
     enabled: !!config.wqAPIBasePath,
     queryFn: () =>
       withdraw.waitingTime.getWithdrawalWaitingTimeByAmount({
-        amount: BigInt(debouncedAmount),
+        amount: amount != null ? amount : undefined,
         getCustomApiUrl: getWQApiUrlByChain,
       }),
     ...STRATEGY_EAGER,
