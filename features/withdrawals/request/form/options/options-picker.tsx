@@ -1,5 +1,5 @@
 import { useWatch } from 'react-hook-form';
-import { formatEther, parseEther } from 'viem';
+import { parseEther } from 'viem';
 
 import { MATOMO_CLICK_EVENTS_TYPES } from 'consts/matomo-click-events';
 import { DATA_UNAVAILABLE } from 'consts/text';
@@ -42,7 +42,7 @@ const LidoButton: React.FC<OptionButtonProps> = ({ isActive, onClick }) => {
   });
   const isSteth = token === TOKENS_TO_WITHDRAWLS.stETH;
   const { value: waitingTime, isLoading: isWaitingTimeLoading } =
-    useWaitingTime(amount ? formatEther(amount) : '', {
+    useWaitingTime(amount, {
       isApproximate: true,
     });
   const { data: wstethAsSteth, isLoading: isWstethAsStethLoading } =

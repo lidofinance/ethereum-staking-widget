@@ -23,6 +23,7 @@ declare module 'next/config' {
     serverRuntimeConfig: {
       basePath: string | undefined;
       developmentMode: boolean;
+      devnetOverrides: string;
 
       defaultChain: string;
       rpcUrls_1: string | undefined;

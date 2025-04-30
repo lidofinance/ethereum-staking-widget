@@ -9,7 +9,7 @@ import { TransactionCallbackStage } from '@lidofinance/lido-ethereum-sdk';
 
 import { useDappStatus } from './use-dapp-status';
 import { useLidoSDK, useLidoSDKL2 } from '../web3-provider';
-import { config } from 'config';
+import { config, useConfig } from 'config';
 
 import type { Address, Hash } from 'viem';
 
@@ -30,6 +30,7 @@ export const useAA = () => {
       retry,
     },
   });
+  const { featureFlags } = useConfig().externalConfig;
 
   // merge capabilities per https://eips.ethereum.org/EIPS/eip-5792
   const capabilities = capabilitiesQuery.data
@@ -43,7 +44,9 @@ export const useAA = () => {
   // per EIP-5792 ANY successful call to getCapabilities is a sign of EIP support
   // but due to limited and variable support of this EIP we have to be narrow this down
   // known issues - batched action support for EOAs in many wallets
-  const isAA = !!capabilities?.atomicBatch?.supported;
+  // Also, there is an option to disable batch txs via EIP-5792 sendCalls in IPFS.json config file
+  const isAA =
+    !!capabilities?.atomicBatch?.supported && !featureFlags.disableSendCalls;
 
   const areAuxiliaryFundsSupported = !!capabilities?.auxiliaryFunds?.supported;
 

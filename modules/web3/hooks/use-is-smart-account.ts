@@ -5,9 +5,13 @@ import { useAA } from './use-aa';
 
 import type { Address, Hex } from 'viem';
 
-const toBool = (data: Hex | undefined) => {
-  return !!(data && data != '0x');
-};
+const isDelegatedEOA = (data: Hex | undefined) =>
+  Boolean(data?.startsWith('0xef0100'));
+const isEOA = (data: Hex | undefined) => Boolean(data === '0x');
+
+// true if the address has some bytecode, but is not an EOA or a delegated EOA
+const processData = (data: Hex | undefined) =>
+  Boolean(data && !isEOA(data) && !isDelegatedEOA(data));
 
 export const useIsSmartAccount = () => {
   const { address, chainId } = useDappStatus();
@@ -22,7 +26,7 @@ export const useIsSmartAccount = () => {
 
   // pre-eip5792
   const {
-    data: isContract,
+    data: isContract, // see processData
     isLoading: isContractLoading,
     error: isContractError,
   } = useBytecode({
@@ -30,7 +34,7 @@ export const useIsSmartAccount = () => {
     chainId,
     query: {
       enabled: shouldLegacyFetch,
-      select: toBool,
+      select: processData,
     },
   });
 

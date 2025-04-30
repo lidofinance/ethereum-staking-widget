@@ -18,10 +18,8 @@ export const getPreConfig = (): PreConfigType => {
 
   return {
     BASE_PATH_ASSET,
-
     ...publicRuntimeConfig,
-
-    ...(typeof window !== 'undefined' ? window.__env__ : dynamics),
+    ...dynamics,
   };
 };
 

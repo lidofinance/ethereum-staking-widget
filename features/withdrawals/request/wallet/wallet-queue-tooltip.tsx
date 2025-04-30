@@ -12,7 +12,7 @@ import { QueueInfoStyled, DataTableRowStyled } from './styles';
 import { useRequestFormData } from '../request-form-context';
 
 export const WalletQueueTooltip = () => {
-  const waitingTime = useWaitingTime('');
+  const waitingTime = useWaitingTime(null);
   const { unfinalizedStETH } = useRequestFormData();
   const { navigateInpageAnchor } = useInpageNavigation();
 

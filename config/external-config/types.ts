@@ -15,6 +15,7 @@ export type ManifestConfig = {
   multiChainBanner: number[];
   featureFlags: {
     ledgerLiveL2?: boolean;
+    disableSendCalls?: boolean;
   };
   pages?: {
     [page in ManifestConfigPage]?: {

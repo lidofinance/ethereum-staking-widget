@@ -1,0 +1,10 @@
+{
+  "contracts": {
+    "lidoLocator": "0xbE861866E2Ca8f401e2b51b2cFb36A61B0Bf6840",
+    "stakingRouter": "0xf320D34b55E89826631C2bb1b3c5b50932cCaB3C",
+    "withdrawalQueue": "0xe41d78740A1009029c44E43618Fe09C8f368851F",
+    "lido": "0x04d160820C0f2E2C693D9Eb26078189D10A1a3e1",
+    "wsteth": "0xDFD55388020a8CEDADCe0B177DF5EF1E11553b43"
+  },
+  "api": {}
+}
