@@ -2,10 +2,7 @@ import { FC } from 'react';
 import { Link, LinkProps } from '@lidofinance/lido-ui';
 import { trackEvent } from '@lidofinance/analytics-matomo';
 
-import {
-  MATOMO_CLICK_EVENTS_TYPES,
-  MATOMO_CLICK_EVENTS,
-} from 'consts/matomo-click-events';
+import { MATOMO_CLICK_EVENTS_TYPES, MATOMO_CLICK_EVENTS } from 'consts/matomo';
 
 interface MatomoLinkProps extends LinkProps {
   matomoEvent: MATOMO_CLICK_EVENTS_TYPES;

@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { trackEvent } from '@lidofinance/analytics-matomo';
 
 import { TOKENS_TO_WRAP } from 'features/wsteth/shared/types';
-import { MATOMO_CLICK_EVENTS } from 'consts/matomo-click-events';
+import { MATOMO_CLICK_EVENTS } from 'consts/matomo';
 import { TokenSelectHookForm } from 'shared/hook-form/controls/token-select-hook-form/token-select-hook-form';
 import { useDappStatus } from 'modules/web3';
 

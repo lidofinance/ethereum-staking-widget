@@ -1,5 +1,8 @@
 import { trackEvent } from '@lidofinance/analytics-matomo';
-import type { ReefKnotWalletsModalConfig } from 'reef-knot/types';
+import type {
+  ReefKnotConfig,
+  ReefKnotWalletsModalConfig,
+} from 'reef-knot/types';
 import type { WalletIdsEthereum } from 'reef-knot/wallets';
 import { MATOMO_CLICK_EVENTS } from './matomo-click-events';
 
@@ -10,7 +13,8 @@ type MetricProps = Pick<
   | 'onClickWalletsLess'
   | 'onConnectStart'
   | 'onConnectSuccess'
->;
+> &
+  Pick<ReefKnotConfig, 'onAutoConnect' | 'onReconnect'>;
 
 type EventsData = Partial<Record<WalletIdsEthereum, [string, string]>>;
 
@@ -50,7 +54,7 @@ export const walletMetricProps: MetricProps = {
     const eventData = EVENTS_DATA_CONNECT_START[walletId];
     if (eventData) {
       trackEvent(
-        'Ethereum_Staking_Widget',
+        'Ethereum_Staking_Widget_Selecting_wallet_to_connect',
         `Click ${eventData[0]} wallet`,
         `eth_widget_click_${eventData[1]}`,
       );
@@ -65,6 +69,26 @@ export const walletMetricProps: MetricProps = {
         `Connect ${eventData[0]}`,
         `eth_widget_connect_${eventData[1]}`,
       );
+      trackEvent(
+        'Ethereum_Staking_Widget',
+        'Wallet is connected',
+        'eth_widget_wallet_connected',
+      );
     }
+  },
+
+  onAutoConnect: () => {
+    trackEvent(
+      'Ethereum_Staking_Widget',
+      'Wallet is auto-connected',
+      'eth_widget_wallet_autoconnected',
+    );
+  },
+  onReconnect: () => {
+    trackEvent(
+      'Ethereum_Staking_Widget',
+      'Wallet is reconnected',
+      'eth_widget_wallet_reconnected',
+    );
   },
 };

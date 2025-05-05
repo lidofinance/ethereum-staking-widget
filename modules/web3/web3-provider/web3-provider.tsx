@@ -32,7 +32,7 @@ import { config } from 'config';
 import { CHAINS } from 'consts/chains';
 import { useUserConfig } from 'config/user-config';
 import { useGetRpcUrlByChainId } from 'config/rpc';
-import { walletMetricProps } from 'consts/matomo-wallets-events';
+import { walletMetricProps } from 'consts/matomo';
 
 import { SupportL1Chains } from './dapp-chain';
 import { useWeb3Transport } from './use-web3-transport';
