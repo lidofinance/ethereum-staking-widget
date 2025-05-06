@@ -2,7 +2,7 @@ import type { Hash } from 'viem';
 import { Button, Link } from '@lidofinance/lido-ui';
 import { trackEvent } from '@lidofinance/analytics-matomo';
 
-import { MATOMO_CLICK_EVENTS } from 'consts/matomo-click-events';
+import { MATOMO_CLICK_EVENTS } from 'consts/matomo';
 
 import { LINK_EXPLORE_STRATEGIES } from 'shared/banners/vaults-banner-info/const';
 import {

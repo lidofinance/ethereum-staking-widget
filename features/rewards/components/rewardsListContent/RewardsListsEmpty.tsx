@@ -4,7 +4,7 @@ import { wrapWithEventTrack } from '@lidofinance/analytics-matomo';
 import { Button, Divider } from '@lidofinance/lido-ui';
 
 import { useUserConfig } from 'config/user-config';
-import { MATOMO_CLICK_EVENTS } from 'consts/matomo-click-events';
+import { MATOMO_CLICK_EVENTS } from 'consts/matomo';
 import { useDappStatus } from 'modules/web3';
 
 import {

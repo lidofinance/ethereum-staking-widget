@@ -4,7 +4,7 @@ import { Tooltip, Checkbox } from '@lidofinance/lido-ui';
 import { useRewardsHistory } from 'features/rewards/hooks/useRewardsHistory';
 import { LeftOptionsWrapper } from './styles';
 import { trackEvent } from '@lidofinance/analytics-matomo';
-import { MATOMO_CLICK_EVENTS } from 'consts/matomo-click-events';
+import { MATOMO_CLICK_EVENTS } from 'consts/matomo';
 
 export const LeftOptions: FC = () => {
   const {

@@ -20,7 +20,7 @@ import { ReactComponent as LiskLogo } from 'assets/icons/lido-multichain/lisk.sv
 
 import { config } from 'config';
 import { LIDO_MULTICHAIN_CHAINS } from 'consts/chains';
-import { MATOMO_CLICK_EVENTS_TYPES } from 'consts/matomo-click-events';
+import { MATOMO_CLICK_EVENTS_TYPES } from 'consts/matomo';
 import { trackMatomoEvent } from 'utils/track-matomo-event';
 
 import { Wrap, TextStyle, ButtonStyle } from './styles';

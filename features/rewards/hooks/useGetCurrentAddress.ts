@@ -6,6 +6,8 @@ import { isAddress, type PublicClient } from 'viem';
 
 import { useDappStatus } from 'modules/web3';
 import { resolveEns, isValidEns } from 'features/rewards/utils';
+import { MATOMO_INPUT_EVENTS_TYPES } from 'consts/matomo';
+import { trackMatomoEvent } from 'utils/track-matomo-event';
 
 type UseGetCurrentAddress = () => {
   address: string;
@@ -89,6 +91,7 @@ export const useGetCurrentAddress: UseGetCurrentAddress = () => {
       // From a connected wallet
       if (account && isSupportedChain) {
         setInputValue(account);
+        trackMatomoEvent(MATOMO_INPUT_EVENTS_TYPES.ethRewardsEnterAddressAuto);
       }
     }
   }, [account, query.address, isReady, setInputValue, isSupportedChain]);

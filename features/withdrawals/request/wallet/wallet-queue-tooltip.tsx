@@ -1,6 +1,6 @@
 import { Question, Tooltip } from '@lidofinance/lido-ui';
 
-import { MATOMO_CLICK_EVENTS_TYPES } from 'consts/matomo-click-events';
+import { MATOMO_CLICK_EVENTS_TYPES } from 'consts/matomo';
 import { useWaitingTime } from 'features/withdrawals/hooks';
 import { OnlyIpfsRender } from 'shared/components/only-ipfs-render';
 import { OnlyInfraRender } from 'shared/components/only-infra-render';

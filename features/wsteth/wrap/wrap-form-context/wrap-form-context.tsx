@@ -16,6 +16,9 @@ import {
 } from 'shared/hook-form/form-controller';
 import { TOKENS_TO_WRAP } from 'features/wsteth/shared/types';
 
+import { MATOMO_TX_EVENTS_TYPES } from 'consts/matomo';
+import { trackMatomoEvent } from 'utils/track-matomo-event';
+
 import { useWrapTxOnL1Approve } from '../hooks/use-wrap-tx-on-l1-approve';
 import { useWrapFormNetworkData } from '../hooks/use-wrap-form-network-data';
 import { useWrapFormProcessor } from '../hooks/use-wrap-form-processing';
@@ -89,6 +92,18 @@ export const WrapFormProvider: FC<PropsWithChildren> = ({ children }) => {
     onRetry: retryFire,
   });
 
+  const onSubmit = useCallback(
+    async (args: WrapFormInputType) => {
+      trackMatomoEvent(MATOMO_TX_EVENTS_TYPES.wrapStart);
+      const wrapResult = await processWrapFormFlow(args);
+      if (wrapResult) {
+        trackMatomoEvent(MATOMO_TX_EVENTS_TYPES.wrapFinish);
+      }
+      return wrapResult;
+    },
+    [processWrapFormFlow],
+  );
+
   const value = useMemo(
     (): WrapFormDataContextValueType => ({
       ...networkData,
@@ -105,7 +120,7 @@ export const WrapFormProvider: FC<PropsWithChildren> = ({ children }) => {
 
   const formControllerValue = useMemo(
     (): FormControllerContextValueType<WrapFormInputType> => ({
-      onSubmit: processWrapFormFlow,
+      onSubmit,
       onReset: ({ token }: WrapFormInputType) => {
         reset({
           ...defaultValues,
@@ -114,7 +129,7 @@ export const WrapFormProvider: FC<PropsWithChildren> = ({ children }) => {
       },
       retryEvent,
     }),
-    [processWrapFormFlow, retryEvent, reset, defaultValues],
+    [onSubmit, retryEvent, reset, defaultValues],
   );
 
   return (

@@ -17,6 +17,9 @@ import {
   useSendAACalls,
 } from 'modules/web3';
 
+import { MATOMO_TX_EVENTS_TYPES } from 'consts/matomo';
+import { trackMatomoEvent } from 'utils/track-matomo-event';
+
 import { MockLimitReachedError, getRefferalAddress } from './utils';
 import { useTxModalStagesStake } from './hooks/use-tx-modal-stages-stake';
 
@@ -39,6 +42,7 @@ export const useStake = ({ onConfirm, onRetry }: StakeOptions) => {
 
   return useCallback(
     async ({ amount, referral }: StakeArguments): Promise<boolean> => {
+      trackMatomoEvent(MATOMO_TX_EVENTS_TYPES.stakingStart);
       try {
         invariant(amount, 'amount is null');
         invariant(address, 'account is not defined');
@@ -83,6 +87,7 @@ export const useStake = ({ onConfirm, onRetry }: StakeOptions) => {
               case TransactionCallbackStage.DONE: {
                 const balance = await onStakeTxConfirmed();
                 txModalStages.success(balance, props.txHash);
+                trackMatomoEvent(MATOMO_TX_EVENTS_TYPES.stakingFinish);
                 break;
               }
               case TransactionCallbackStage.ERROR: {
@@ -118,6 +123,7 @@ export const useStake = ({ onConfirm, onRetry }: StakeOptions) => {
             case TransactionCallbackStage.DONE: {
               const balance = await onStakeTxConfirmed();
               txModalStages.success(balance, txHash);
+              trackMatomoEvent(MATOMO_TX_EVENTS_TYPES.stakingFinish);
               break;
             }
             case TransactionCallbackStage.MULTISIG_DONE:

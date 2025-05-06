@@ -11,6 +11,9 @@ import {
   useWstETHContractAddress,
 } from 'modules/web3';
 
+import { trackMatomoEvent } from 'utils/track-matomo-event';
+import { MATOMO_TX_EVENTS_TYPES } from 'consts/matomo';
+
 import { useTxModalWrap } from './use-tx-modal-stages-wrap';
 
 type UseWrapTxApproveArgs = {
@@ -48,6 +51,8 @@ export const useWrapTxOnL1Approve = ({
 
   const processApproveTx = useCallback(
     async ({ onRetry }: { onRetry?: () => void }) => {
+      trackMatomoEvent(MATOMO_TX_EVENTS_TYPES.wrapApprovalStart);
+
       const approveTx = await wrap.approveStethForWrap({
         value: amount,
         callback: async ({ stage, payload }) => {
@@ -71,6 +76,8 @@ export const useWrapTxOnL1Approve = ({
 
       // wait for refetch to settle
       await refetchAllowance().catch();
+
+      trackMatomoEvent(MATOMO_TX_EVENTS_TYPES.wrapApprovalFinish);
 
       return approveTx.hash;
     },

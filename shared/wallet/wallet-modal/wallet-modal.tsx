@@ -15,6 +15,8 @@ import { useCopyToClipboard } from 'shared/hooks';
 import { useDappStatus } from 'modules/web3';
 import { getEtherscanAddressLink } from 'utils/etherscan';
 import { openWindow } from 'utils/open-window';
+import { trackMatomoEvent } from 'utils/track-matomo-event';
+import { MATOMO_CLICK_EVENTS_TYPES } from 'consts/matomo';
 
 import {
   WalletModalContentStyle,
@@ -33,6 +35,7 @@ export const WalletModal: ModalComponentType = ({ onClose, ...props }) => {
 
   const handleDisconnect = useCallback(() => {
     disconnect?.();
+    trackMatomoEvent(MATOMO_CLICK_EVENTS_TYPES.disconnectWalletManually);
     onClose?.();
   }, [disconnect, onClose]);
 
