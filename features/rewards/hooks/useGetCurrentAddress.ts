@@ -65,9 +65,6 @@ export const useGetCurrentAddress: UseGetCurrentAddress = () => {
           await getEnsAddress(value);
         } else if (isAddress(value)) {
           setAddress(value);
-          trackMatomoEvent(
-            MATOMO_INPUT_EVENTS_TYPES.ethRewardsEnterAddressManually,
-          );
         } else {
           setAddress('');
         }

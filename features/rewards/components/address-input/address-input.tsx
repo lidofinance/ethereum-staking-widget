@@ -1,10 +1,14 @@
-import { FC, useMemo } from 'react';
+import { FC, useMemo, ChangeEvent } from 'react';
+import { isAddress } from 'viem';
 import { Input, Loader, Identicon } from '@lidofinance/lido-ui';
+
 import CopyAddressUrl from 'features/rewards/components/CopyAddressUrl';
 import { isValidAnyAddress } from 'features/rewards/utils';
 import { ReactComponent as ErrorTriangle } from 'assets/icons/error-triangle.svg';
+import { trackMatomoEvent } from 'utils/track-matomo-event';
+import { MATOMO_INPUT_EVENTS_TYPES } from 'consts/matomo';
 
-import { AddressInputProps } from './types';
+import type { AddressInputProps } from './types';
 
 export const AddressInput: FC<AddressInputProps> = (props) => {
   const {
@@ -20,11 +24,21 @@ export const AddressInput: FC<AddressInputProps> = (props) => {
     [inputValue],
   );
 
+  const onChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    handleInputChange(value);
+    if (isAddress(value)) {
+      trackMatomoEvent(
+        MATOMO_INPUT_EVENTS_TYPES.ethRewardsEnterAddressManually,
+      );
+    }
+  };
+
   return (
     <Input
       fullwidth
       value={inputValue}
-      onChange={(e) => handleInputChange(e.target.value)}
+      onChange={onChange}
       placeholder="Ethereum address"
       leftDecorator={
         isAddressResolving ? (
