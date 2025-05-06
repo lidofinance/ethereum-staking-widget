@@ -10,7 +10,7 @@ import { getBebopRate } from 'utils/get-bebop-rate';
 import { getOpenOceanRate } from 'utils/get-open-ocean-rate';
 import { standardFetcher } from 'utils/standardFetcher';
 
-import { BebopIcon, OneInchIcon, OpenOceanIcon, ParaSwapIcon } from './icons';
+import { BebopIcon, OneInchIcon, OpenOceanIcon, VeloraIcon } from './icons';
 
 import type {
   DexWithdrawalApi,
@@ -154,12 +154,12 @@ const dexWithdrawalMap: DexWithdrawalIntegrationMap = {
       )}#/ETH/${token}/ETH`,
   },
   paraswap: {
-    title: 'ParaSwap',
-    icon: ParaSwapIcon,
+    title: 'Velora',
+    icon: VeloraIcon,
     fetcher: getParaSwapWithdrawalRate,
     matomoEvent: MATOMO_CLICK_EVENTS_TYPES.withdrawalGoToParaswap,
     link: (amount, token) =>
-      `https://app.paraswap.xyz/?referrer=Lido&takeSurplus=true#/swap/${
+      `https://app.velora.xyz/?referrer=Lido&takeSurplus=true#/swap/${
         getTokenAddress(CHAINS.Mainnet, token) as string
       }-0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE/${formatEther(
         amount,
