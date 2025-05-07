@@ -9,7 +9,7 @@
         130, 1135
       ],
       "featureFlags": {
-        "disableSendCalls": false
+        "disableSendCalls": true
       }
     }
   },
