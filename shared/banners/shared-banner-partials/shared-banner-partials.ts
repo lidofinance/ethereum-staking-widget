@@ -12,7 +12,7 @@ export const BannerWrap = styled.div`
 export const BannerTitleText = styled.div`
   font-size: 20px;
   line-height: 28px;
-  font-weight: 700;
+  font-weight: 400;
   color: var(--lido-color-text);
 
   ${({ theme }) => theme.mediaQueries.md} {
