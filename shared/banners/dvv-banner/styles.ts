@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import { InlineLoader } from '@lidofinance/lido-ui';
 import { BannerWrap } from '../shared-banner-partials';
 
 export const Wrap = styled(BannerWrap)`
@@ -69,4 +70,10 @@ export const FooterAction = styled.div`
   ${({ theme }) => theme.mediaQueries.md} {
     width: 100%;
   }
+`;
+
+export const Loader = styled(InlineLoader).attrs({
+  color: 'text',
+})`
+  width: 40px;
 `;

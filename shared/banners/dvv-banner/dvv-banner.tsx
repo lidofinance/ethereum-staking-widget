@@ -1,10 +1,4 @@
-import styled from 'styled-components';
-import {
-  Button,
-  Link,
-  InlineLoader,
-  useThemeToggle,
-} from '@lidofinance/lido-ui';
+import { Button, Link, useThemeToggle } from '@lidofinance/lido-ui';
 import { BannerTitleText } from '../shared-banner-partials';
 import {
   Wrap,
@@ -17,6 +11,7 @@ import {
   Footer,
   FooterText,
   FooterAction,
+  Loader,
 } from './styles';
 
 import { ReactComponent as IconMellowLogo } from 'assets/dvv-banner/dvv-banner-mellow-logo.svg';
@@ -29,12 +24,6 @@ import { useDVstEthApr } from 'shared/hooks/useDVstEthApr';
 
 const LINK_PROCEED_BUTTON =
   'https://app.mellow.finance/vaults/ethereum-dvsteth';
-
-export const Loader = styled(InlineLoader).attrs({
-  color: 'text',
-})`
-  width: 40px;
-`;
 
 export const DVVBanner = () => {
   const { themeName } = useThemeToggle();
