@@ -19,10 +19,10 @@ export const Description = styled.div`
 `;
 
 export const Partners = styled.div`
-  margin-bottom: 10px;
+  margin-bottom: 12px;
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
 `;
 
 export const PartnerItem = styled.div`
@@ -46,28 +46,37 @@ export const PartnerImage = styled.div`
 export const PartnerText = styled.div``;
 
 export const PartnerSeparator = styled.div`
-  font-weight: 700;
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 28px;
 `;
 
 export const Footer = styled.div`
   display: flex;
   align-items: flex-end;
-  gap: 10px;
+  justify-content: space-between;
+  gap: 16px;
 
   ${({ theme }) => theme.mediaQueries.md} {
     flex-direction: column;
+    gap: 12px;
   }
 `;
 
 export const FooterText = styled.div`
   color: var(--lido-color-textSecondary);
-  font-size: 11px;
-  line-height: 17px;
+  font-size: 10px;
+  line-height: 16px;
   opacity: ${({ theme }) => (theme.name === 'dark' ? '0.5' : '1')};
+
+  ${({ theme }) => theme.mediaQueries.md} {
+    order: 2;
+  }
 `;
 
 export const FooterAction = styled.div`
   ${({ theme }) => theme.mediaQueries.md} {
+    order: 1;
     width: 100%;
   }
 `;
