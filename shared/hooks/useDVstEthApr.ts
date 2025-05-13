@@ -12,7 +12,7 @@ type RequestResponseData = Array<VaultDataPartial>;
 const API_ENDPOINT = 'https://points.mellow.finance/v1/vaults';
 
 export const useDVstEthApr = () => {
-  const result = useQuery<RequestResponseData, Error, VaultDataPartial>({
+  const result = useQuery<RequestResponseData, Error, string>({
     queryKey: ['dvsteth-apr'],
     ...STRATEGY_LAZY,
     queryFn: async () => {
@@ -24,14 +24,9 @@ export const useDVstEthApr = () => {
       const vaultData = data.find((vault) => vault.id === 'ethereum-dvsteth');
       invariant(vaultData, '[useDVstEthApr] invalid API response');
 
-      return vaultData;
+      return vaultData.apr.toFixed(1);
     },
   });
 
-  const apr = result.data?.apr.toFixed(1);
-
-  return {
-    ...result,
-    apr,
-  };
+  return { apr: result.data, ...result };
 };
