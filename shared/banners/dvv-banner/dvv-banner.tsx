@@ -29,7 +29,7 @@ export const DVVBanner = () => {
   const { themeName } = useThemeToggle();
   const isDarkTheme = themeName === 'dark';
   const { apr: DVstEthApr, isPending, isError } = useDVstEthApr();
-  const apr = !isError && DVstEthApr != null ? `${DVstEthApr}%` : '';
+  const apr = isError ? '' : `${DVstEthApr}%`;
 
   return (
     <Wrap>

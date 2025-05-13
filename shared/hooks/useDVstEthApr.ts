@@ -1,4 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
+import invariant from 'tiny-invariant';
 import { STRATEGY_LAZY } from 'consts/react-query-strategies';
 import { standardFetcher } from 'utils/standardFetcher';
 
@@ -11,18 +12,19 @@ type RequestResponseData = Array<VaultDataPartial>;
 const API_ENDPOINT = 'https://points.mellow.finance/v1/vaults';
 
 export const useDVstEthApr = () => {
-  const result = useQuery<
-    RequestResponseData,
-    Error,
-    VaultDataPartial | undefined
-  >({
+  const result = useQuery<RequestResponseData, Error, VaultDataPartial>({
     queryKey: ['dvsteth-apr'],
     ...STRATEGY_LAZY,
     queryFn: async () => {
       return await standardFetcher<RequestResponseData>(API_ENDPOINT);
     },
     select: (data) => {
-      return data.find((vault) => vault.id === 'ethereum-dvsteth');
+      invariant(data, '[useDVstEthApr] Failed to fetch API');
+
+      const vaultData = data.find((vault) => vault.id === 'ethereum-dvsteth');
+      invariant(vaultData, '[useDVstEthApr] invalid API response');
+
+      return vaultData;
     },
   });
 
