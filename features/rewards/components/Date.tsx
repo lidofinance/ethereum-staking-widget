@@ -1,13 +1,14 @@
 import { Tooltip, Box } from '@lidofinance/lido-ui';
-import { lightFormat, fromUnixTime } from 'date-fns';
 import type { Event } from 'features/rewards/types';
+import { fromUnixTime } from '../utils/fromUnixTime';
+import { formatDate } from '../utils/formatDate';
 
 // TODO: move to separate folders
 const Date = ({ blockTime }: { blockTime: Event['blockTime'] }) => {
   const parsed = fromUnixTime(parseInt(blockTime));
 
-  const light = lightFormat(parsed, 'dd.MM.yyyy');
-  const full = lightFormat(parsed, 'dd.MM.yyyy HH:mm');
+  const light = formatDate(parsed);
+  const full = formatDate(parsed, true);
 
   return (
     <Tooltip
