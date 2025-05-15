@@ -93,7 +93,7 @@ export const useDappChain = (): UseDappChainValue => {
 
     return {
       ...context,
-      isChainMatched: context.chainId === walletChain,
+      isChainMatched: walletChain ? context.chainId === walletChain : true,
       isSupportedChain: walletChain
         ? context.supportedChainIds.includes(walletChain) &&
           isSDKSupportedChain(walletChain)
