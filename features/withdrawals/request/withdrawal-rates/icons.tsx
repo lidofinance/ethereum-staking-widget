@@ -3,6 +3,7 @@ import OpenOcean from 'assets/icons/open-ocean.svg';
 import Velora from 'assets/icons/velora.svg';
 import Oneinch from 'assets/icons/oneinch-circle.svg';
 import Bebop from 'assets/icons/bebop.svg';
+import Jumper from 'assets/icons/jumper.svg';
 
 export const OpenOceanIcon = styled.img.attrs({
   src: OpenOcean,
@@ -28,6 +29,13 @@ export const OneInchIcon = styled.img.attrs({
 export const BebopIcon = styled.img.attrs({
   src: Bebop,
   alt: 'Bebop',
+})`
+  display: block;
+`;
+
+export const JumperIcon = styled.img.attrs({
+  src: Jumper,
+  alt: 'Jumper',
 })`
   display: block;
 `;

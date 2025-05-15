@@ -19,7 +19,7 @@ import { ReactComponent as AttentionTriangle } from 'assets/icons/attention-tria
 import { useMemo, useState } from 'react';
 import { InlineLoaderSmall } from '../styles';
 
-const MAX_SHOWN_ELEMENTS = 3;
+const MAX_SHOWN_ELEMENTS = 4;
 
 type DexOptionProps = {
   title: string;
