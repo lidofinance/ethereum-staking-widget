@@ -1,8 +1,9 @@
-import { fromUnixTime } from 'date-fns';
 import { formatEther } from 'viem';
 
 import type { Event } from 'features/rewards/types';
 import type { CurrencyType } from 'features/rewards/constants';
+
+import { fromUnixTime } from './fromUnixTime';
 
 export const genExportData = (currency: CurrencyType, data: Event[] | null) =>
   data
