@@ -8,33 +8,24 @@ import { getTokenAddress } from 'config/networks/token-address';
 import { getOneInchRate } from 'utils/get-one-inch-rate';
 import { getBebopRate } from 'utils/get-bebop-rate';
 import { getOpenOceanRate } from 'utils/get-open-ocean-rate';
+import { getJumperRate } from 'utils/get-jumper-rate';
 import { standardFetcher } from 'utils/standardFetcher';
+import { calculateRateReceive } from 'utils/calculate-rate-to-receive';
 
-import { BebopIcon, OneInchIcon, OpenOceanIcon, VeloraIcon } from './icons';
+import {
+  BebopIcon,
+  OneInchIcon,
+  OpenOceanIcon,
+  VeloraIcon,
+  JumperIcon,
+} from './icons';
 
 import type {
   DexWithdrawalApi,
   DexWithdrawalIntegrationMap,
   GetRateType,
-  RateCalculationResult,
 } from './types';
 import { TOKENS_TO_WITHDRAWLS } from '../../types/tokens-withdrawable';
-
-const RATE_PRECISION = 100000;
-const RATE_PRECISION_BIG_INT = BigInt(RATE_PRECISION);
-
-// Helper function to calculate rate for SRC->DEST swap
-// accepts amount, so toReceive can be calculated when src!=amount
-const calculateRateReceive = (
-  amount: bigint,
-  src: bigint,
-  dest: bigint,
-): RateCalculationResult => {
-  const _rate = (dest * RATE_PRECISION_BIG_INT) / src;
-  const toReceive = (amount * dest) / src;
-  const rate = Number(_rate) / RATE_PRECISION;
-  return { rate, toReceive };
-};
 
 const getOpenOceanWithdrawalRate: GetRateType = async ({ amount, token }) => {
   if (amount && amount > 0n) {
@@ -142,6 +133,23 @@ const getBebopWithdrawalRate: GetRateType = async ({ amount, token }) => {
   };
 };
 
+const getJumperWithdrawalRate: GetRateType = async ({ amount, token }) => {
+  try {
+    if (amount > 0n) {
+      return await getJumperRate(amount, token, 'ETH');
+    }
+  } catch (e) {
+    console.warn(
+      '[getJumperWithdrawalRate] Failed to receive withdraw rate',
+      e,
+    );
+  }
+  return {
+    rate: null,
+    toReceive: null,
+  };
+};
+
 const dexWithdrawalMap: DexWithdrawalIntegrationMap = {
   'open-ocean': {
     title: 'OpenOcean',
@@ -171,9 +179,7 @@ const dexWithdrawalMap: DexWithdrawalIntegrationMap = {
     icon: OneInchIcon,
     matomoEvent: MATOMO_CLICK_EVENTS_TYPES.withdrawalGoTo1inch,
     link: (amount, token) =>
-      `https://app.1inch.io/#/1/advanced/swap/${
-        token === TOKENS_TO_WITHDRAWLS.stETH ? 'stETH' : 'wstETH'
-      }/ETH?mode=classic&sourceTokenAmount=${formatEther(amount)}`,
+      `https://app.1inch.io/swap?src=1:${token === TOKENS_TO_WITHDRAWLS.stETH ? 'StETH' : 'WstETH'}&dst=1:ETH`,
   },
   bebop: {
     title: 'Bebop',
@@ -184,6 +190,18 @@ const dexWithdrawalMap: DexWithdrawalIntegrationMap = {
       `https://bebop.xyz/trade?network=ethereum&buy=0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE&sell=${getAddress(
         getTokenAddress(CHAINS.Mainnet, token) as string,
       )}&sellAmounts=${formatEther(amount)}&source=lido`,
+  },
+  jumper: {
+    title: 'Jumper',
+    icon: JumperIcon,
+    fetcher: getJumperWithdrawalRate,
+    matomoEvent: MATOMO_CLICK_EVENTS_TYPES.withdrawalGoToJumper,
+    link: (amount, token) =>
+      `https://jumper.exchange/?fromAmount=${formatEther(
+        amount,
+      )}&fromChain=1&fromToken=${
+        getTokenAddress(CHAINS.Mainnet, token) as string
+      }&toChain=1&toToken=0x0000000000000000000000000000000000000000`,
   },
 } as const;
 

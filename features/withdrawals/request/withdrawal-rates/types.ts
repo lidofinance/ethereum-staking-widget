@@ -7,17 +7,17 @@ export type GetWithdrawalRateParams = {
   dexes: DexWithdrawalApi[];
 };
 
-export type RateCalculationResult = {
-  rate: number;
-  toReceive: bigint;
-};
-
 export type SingleWithdrawalRateResult = {
   rate: number | null;
   toReceive: bigint | null;
 };
 
-export type DexWithdrawalApi = 'paraswap' | 'open-ocean' | 'one-inch' | 'bebop';
+export type DexWithdrawalApi =
+  | 'paraswap'
+  | 'open-ocean'
+  | 'one-inch'
+  | 'bebop'
+  | 'jumper';
 
 export type DexWithdrawalIntegration = {
   title: string;
