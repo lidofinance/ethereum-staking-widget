@@ -40,9 +40,20 @@ import { wagmiChainMap } from '../consts';
 
 type ChainsList = [Chain, ...Chain[]];
 
-const WALLETS_PINNED: WalletIdsEthereum[] = [
-  'binanceWallet',
+const WALLETS_PINNED: WalletIdsEthereum[] = ['browserExtension'];
+
+const WALLETS_SHOWN: WalletIdsEthereum[] = [
   'browserExtension',
+  'metaMask',
+  'okx',
+  'ledgerHID',
+  'ledgerLive',
+  'walletConnect',
+  'bitget',
+  'imToken',
+  'ambire',
+  'safe',
+  'dappBrowserInjected',
 ];
 
 type Web3ProviderContextValue = {
@@ -157,6 +168,7 @@ export const Web3Provider: FC<PropsWithChildren> = ({ children }) => {
       ...getDefaultWalletsModalConfig(),
       ...walletMetricProps,
       walletsPinned: WALLETS_PINNED,
+      walletsShown: WALLETS_SHOWN,
     });
   }, [
     backendRPC,
