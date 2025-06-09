@@ -1,10 +1,12 @@
-import { FC } from 'react';
+import { FC, useRef } from 'react';
 import { Loader, Divider } from '@lidofinance/lido-ui';
 
 import { useRewardsHistory } from 'features/rewards/hooks';
 import { ErrorBlockNoSteth } from 'features/rewards/components/errorBlocks/ErrorBlockNoSteth';
 import { RewardsTable } from 'features/rewards/components/rewardsTable';
 import { useStethBalance, useDappStatus } from 'modules/web3';
+import { trackMatomoEvent } from 'utils/track-matomo-event';
+import { MATOMO_FETCH_EVENTS_TYPES } from 'consts/matomo';
 
 import { RewardsListsEmpty } from './RewardsListsEmpty';
 import { RewardsListErrorMessage } from './RewardsListErrorMessage';
@@ -29,6 +31,7 @@ export const RewardsListContent: FC = () => {
     setPage,
     isLagging,
   } = useRewardsHistory();
+  const isDataLoadedAndLoggedOnce = useRef(false);
   const { data: stethBalance, isLoading: isStethBalanceLoading } =
     useStethBalance({
       account: address as Address,
@@ -67,9 +70,15 @@ export const RewardsListContent: FC = () => {
   if (data && data.events.length === 0)
     return <ErrorBlockNoSteth hasSteth={hasSteth} />;
 
+  const shouldShowRewardsTable = data?.events.length && !error;
+  if (shouldShowRewardsTable && !isDataLoadedAndLoggedOnce.current) {
+    isDataLoadedAndLoggedOnce.current = true;
+    trackMatomoEvent(MATOMO_FETCH_EVENTS_TYPES.ethRewardsDashboardDownloaded);
+  }
+
   return (
     <TableWrapperStyle data-testid="rewardsContent">
-      {data?.events.length && !error && (
+      {shouldShowRewardsTable && (
         <RewardsTable
           data={data.events}
           currency={currencyObject}
