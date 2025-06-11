@@ -1,84 +1,12 @@
 import { useCallback } from 'react';
 import invariant from 'tiny-invariant';
-import { useCapabilities, useSendCalls } from 'wagmi';
-import { type GetCallsStatusReturnType } from 'viem';
+import { useSendCalls } from 'wagmi';
 import { TransactionCallbackStage } from '@lidofinance/lido-ethereum-sdk';
-
-import { useDappStatus } from './use-dapp-status';
-import { useLidoSDK, useLidoSDKL2 } from '../web3-provider';
-import { config, useConfig } from 'config';
-
-import type { Address, Hash } from 'viem';
-
-const retry = (retryCount: number, error: object) => {
-  if (
-    'code' in error &&
-    typeof error.code === 'number' &&
-    error.code === -32601
-  )
-    return false;
-  return retryCount <= 3;
-};
-
-export const useAA = () => {
-  const { chainId } = useDappStatus();
-  const capabilitiesQuery = useCapabilities({
-    query: {
-      retry,
-    },
-  });
-  const { featureFlags } = useConfig().externalConfig;
-
-  // merge capabilities per https://eips.ethereum.org/EIPS/eip-5792
-  const capabilities = capabilitiesQuery.data
-    ? {
-        ...(capabilitiesQuery.data[0] ?? {}),
-        ...(capabilitiesQuery.data[chainId] ?? {}),
-      }
-    : undefined;
-
-  // use new AA flow only for atomic batch supported accounts
-  // per EIP-5792 ANY successful call to getCapabilities is a sign of EIP support
-  // but due to limited and variable support of this EIP we have to be narrow this down
-  // known issues - batched action support for EOAs in many wallets
-  // Also, there is an option to disable batch txs via EIP-5792 sendCalls in IPFS.json config file
-  const isAA =
-    !!capabilities?.atomicBatch?.supported && !featureFlags.disableSendCalls;
-
-  const areAuxiliaryFundsSupported = !!capabilities?.auxiliaryFunds?.supported;
-
-  return {
-    ...capabilitiesQuery,
-    isAA,
-    capabilities,
-    areAuxiliaryFundsSupported,
-  };
-};
-
-type SendCallsStages =
-  | {
-      stage: TransactionCallbackStage.SIGN;
-    }
-  | {
-      stage: TransactionCallbackStage.RECEIPT;
-      callId: string;
-    }
-  | {
-      stage: TransactionCallbackStage.CONFIRMATION;
-      callStatus: GetCallsStatusReturnType;
-    }
-  | {
-      stage: TransactionCallbackStage.DONE;
-      txHash: Hash;
-    }
-  | {
-      stage: TransactionCallbackStage.ERROR;
-      error: unknown;
-    };
+import { config } from 'config';
+import { useLidoSDK, useLidoSDKL2 } from '../../web3-provider';
+import { AACall, TxCallbackProps } from './types';
 
 export class SendCallsError extends Error {}
-
-export type AACall = { to: Address; data?: Hash; value?: bigint };
 
 export const useSendAACalls = () => {
   const { sendCallsAsync } = useSendCalls();
@@ -90,7 +18,7 @@ export const useSendAACalls = () => {
     async (
       // falsish calls will be filtered out
       calls: (AACall | null | undefined | false)[],
-      callback: (props: SendCallsStages) => Promise<void> = async () => {},
+      callback: (props: TxCallbackProps) => Promise<void> = async () => {},
     ) => {
       try {
         const walletClient = core.web3Provider;
@@ -134,11 +62,6 @@ export const useSendAACalls = () => {
 
         const callStatus = await poll();
 
-        await callback({
-          stage: TransactionCallbackStage.CONFIRMATION,
-          callStatus,
-        });
-
         if (String(callStatus.status).toLowerCase() === 'failure') {
           throw new SendCallsError(
             'Transaction failed. Check your wallet for details.',
@@ -172,7 +95,10 @@ export const useSendAACalls = () => {
 
         return { callStatus, txHash };
       } catch (error) {
-        await callback({ stage: TransactionCallbackStage.ERROR, error });
+        await callback({
+          stage: TransactionCallbackStage.ERROR,
+          error,
+        });
         throw error;
       }
     },
