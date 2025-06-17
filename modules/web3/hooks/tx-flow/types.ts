@@ -87,10 +87,10 @@ export type CallbacksForStages = {
  * Arguments for the transaction flow function returned by {@link useTxFlow}.
  * See callbacks for different stages of the transaction flow in {@link CallbacksForStages}.
  *
- * @property calls - A list of calls for EIP-5792 sendCalls.
+ * @property callsFn - A function returning a list of calls for EIP-5792 sendCalls. Gets called only in case of EIP-5792.
  * @property sendTransaction - Fallback function to send a transaction if EIP-5792 is not supported.
  */
 export type TxFlowArgs = {
-  calls: (AACall | null | undefined | false)[];
+  callsFn?: () => Promise<(AACall | null | undefined | false)[]>;
   sendTransaction: (txStagesCallback: TransactionCallback) => Promise<void>;
 } & CallbacksForStages;

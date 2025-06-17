@@ -5,11 +5,11 @@ import invariant from 'tiny-invariant';
 import { config } from 'config';
 import {
   applyRoundUpGasLimit,
-  useAA,
   useDappStatus,
   useLidoSDK,
+  useAA,
+  useTxFlow,
 } from 'modules/web3';
-import { useTxFlow } from 'modules/web3/hooks/tx-flow/use-tx-flow';
 
 import { MATOMO_TX_EVENTS_TYPES } from 'consts/matomo';
 import { trackMatomoEvent } from 'utils/track-matomo-event';
@@ -66,7 +66,7 @@ export const useStake = ({ onConfirm, onRetry }: StakeOptions) => {
           referralAddress: getAddressViem(referralAddress),
         });
         await txFlow({
-          calls: [stakeCall],
+          callsFn: async () => [stakeCall],
           sendTransaction: async (txStagesCallback) => {
             await stake.stakeEth({
               value: amount,

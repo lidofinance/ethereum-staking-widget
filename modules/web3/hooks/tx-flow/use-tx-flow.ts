@@ -1,7 +1,7 @@
 import { useCallback, useRef } from 'react';
 import { Hash } from 'viem';
 import { TransactionCallbackStage } from '@lidofinance/lido-ethereum-sdk';
-import { useAA } from './use-aa';
+import { useAA } from '../use-aa';
 import { useSendAACalls } from './use-send-aa-calls';
 import { TxCallbackProps, TxFlowArgs } from './types';
 
@@ -23,7 +23,7 @@ export const useTxFlow = () => {
 
   return useCallback(
     async ({
-      calls,
+      callsFn,
       sendTransaction,
       onPermit,
       onSign,
@@ -87,6 +87,7 @@ export const useTxFlow = () => {
       };
 
       if (isAA) {
+        const calls = callsFn ? await callsFn() : [];
         await sendAACalls(calls, async (props) => {
           await txStagesCallback(props);
         });

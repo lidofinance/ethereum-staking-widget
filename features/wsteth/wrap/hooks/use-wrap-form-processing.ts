@@ -1,22 +1,16 @@
 import { useCallback } from 'react';
 import invariant from 'tiny-invariant';
-import type { Hash } from 'viem';
 
-import {
-  type PopulatedTransaction,
-  type TransactionCallback,
-  TransactionCallbackStage,
-} from '@lidofinance/lido-ethereum-sdk/core';
+import { type PopulatedTransaction } from '@lidofinance/lido-ethereum-sdk/core';
 
 import { config } from 'config';
 import { MockLimitReachedError } from 'features/stake/stake-form/utils';
 import {
-  useAA,
-  useSendAACalls,
   useDappStatus,
   useLidoSDK,
   useLidoSDKL2,
-  type AACall,
+  useTxFlow,
+  useAA,
 } from 'modules/web3';
 
 import type {
@@ -40,9 +34,9 @@ export const useWrapFormProcessor = ({
   const { address } = useDappStatus();
   const { wrap, wstETH } = useLidoSDK();
   const { isAA } = useAA();
-  const sendAACalls = useSendAACalls();
   const { l2, isL2 } = useLidoSDKL2();
   const { txModalStages } = useTxModalWrap();
+  const txFlow = useTxFlow();
 
   const {
     isApprovalNeededBeforeWrap: needsApproveL1,
@@ -67,127 +61,86 @@ export const useWrapFormProcessor = ({
           return balance;
         };
 
-        //
-        // ERC5792 flow
-        //
-        if (isAA) {
-          let calls: (AACall | false)[];
-          const args = {
-            value: amount,
-          };
-
-          if (isL2) {
-            // unwrap steth to wsteth on l2
-            calls = [await l2.unwrapStethPopulateTx(args)];
-          } else if (token === TOKENS_TO_WRAP.stETH) {
-            // optional approve + wrap steth to wsteth
-            calls = await Promise.all([
-              needsApproveL1 &&
-                // fix for sdk mistype
-                (wrap.approveStethForWrapPopulateTx(
-                  args,
-                ) as Promise<PopulatedTransaction>),
-              wrap.wrapStethPopulateTx(args),
-            ]);
-          } else {
-            // wrap eth to wsteth
-            calls = [await wrap.wrapEthPopulateTx(args)];
-          }
-
-          await sendAACalls(calls, async (props) => {
-            switch (props.stage) {
-              case TransactionCallbackStage.SIGN:
-                txModalStages.sign(amount, token, willReceive);
-                break;
-              case TransactionCallbackStage.RECEIPT:
-                txModalStages.pending(
-                  amount,
-                  token,
-                  willReceive,
-                  props.callId as Hash,
-                  isAA,
-                );
-                break;
-              case TransactionCallbackStage.DONE: {
-                const balance = await onWrapConfirm();
-                txModalStages.success(balance, props.txHash);
-                break;
-              }
-              case TransactionCallbackStage.ERROR: {
-                txModalStages.failed(props.error, onRetry);
-                break;
-              }
-              default:
-                break;
+        await txFlow({
+          callsFn: async () => {
+            let calls = [];
+            const args = {
+              value: amount,
+            };
+            if (isL2) {
+              // unwrap steth to wsteth on l2
+              calls = [await l2.unwrapStethPopulateTx(args)];
+            } else if (token === TOKENS_TO_WRAP.stETH) {
+              // optional approve + wrap steth to wsteth
+              calls = await Promise.all([
+                needsApproveL1 &&
+                  // fix for sdk mistype
+                  (wrap.approveStethForWrapPopulateTx(
+                    args,
+                  ) as Promise<PopulatedTransaction>),
+                wrap.wrapStethPopulateTx(args),
+              ]);
+            } else {
+              // wrap eth to wsteth
+              calls = [await wrap.wrapEthPopulateTx(args)];
             }
-          });
-
-          return true;
-        }
-
-        //
-        // Legacy flow
-        //
-
-        let txHash: Hash | undefined = undefined;
-
-        const callback: TransactionCallback = async ({ stage, payload }) => {
-          switch (stage) {
-            case TransactionCallbackStage.SIGN:
-              txModalStages.sign(amount, token, willReceive);
-              break;
-            case TransactionCallbackStage.RECEIPT:
-              // the payload here is txHash
-              txHash = payload;
-              txModalStages.pending(amount, token, willReceive, txHash);
-              break;
-            case TransactionCallbackStage.DONE: {
-              const balance = await onWrapConfirm();
-              txModalStages.success(balance, txHash);
-              break;
+            return calls;
+          },
+          sendTransaction: async (txStagesCallback) => {
+            if (isL2) {
+              // The operation 'stETH to wstETH' on L2 is 'unwrap'
+              await l2.unwrapStethToWsteth({
+                value: amount,
+                callback: txStagesCallback,
+              });
             }
-            case TransactionCallbackStage.MULTISIG_DONE:
-              txModalStages.successMultisig();
-              break;
-            case TransactionCallbackStage.ERROR:
-              txModalStages.failed(payload, onRetry);
-              break;
-            default:
-          }
-        };
 
-        if (isL2) {
-          // The operation 'stETH to wstETH' on L2 is 'unwrap'
-          await l2.unwrapStethToWsteth({
-            value: amount,
-            callback,
-          });
+            if (token === TOKENS_TO_WRAP.stETH) {
+              if (needsApproveL1) {
+                await processApproveTxOnL1({ onRetry });
+              }
 
-          return true;
-        }
+              await wrap.wrapSteth({
+                value: amount,
+                callback: txStagesCallback,
+              });
+            } else {
+              if (
+                config.enableQaHelpers &&
+                window.localStorage.getItem('mockLimitReached') === 'true'
+              ) {
+                throw new MockLimitReachedError('Stake limit reached');
+              }
 
-        if (token === TOKENS_TO_WRAP.stETH) {
-          if (needsApproveL1) {
-            await processApproveTxOnL1({ onRetry });
-          }
-
-          await wrap.wrapSteth({
-            value: amount,
-            callback,
-          });
-        } else {
-          if (
-            config.enableQaHelpers &&
-            window.localStorage.getItem('mockLimitReached') === 'true'
-          ) {
-            throw new MockLimitReachedError('Stake limit reached');
-          }
-
-          await wrap.wrapEth({
-            value: amount,
-            callback,
-          });
-        }
+              await wrap.wrapEth({
+                value: amount,
+                callback: txStagesCallback,
+              });
+            }
+          },
+          onSign: async () => {
+            txModalStages.sign(amount, token, willReceive);
+          },
+          onReceipt: ({ txHashOrCallId }) => {
+            txModalStages.pending(
+              amount,
+              token,
+              willReceive,
+              txHashOrCallId,
+              isAA,
+            );
+          },
+          onSuccess: async ({ txHash }) => {
+            const balance = await onWrapConfirm();
+            txModalStages.success(balance, txHash);
+          },
+          onFailure: ({ error }) => {
+            txModalStages.failed(error, onRetry);
+          },
+          onMultisigDone: () => {
+            txModalStages.successMultisig();
+          },
+        });
 
         return true;
       } catch (error) {
@@ -201,14 +154,14 @@ export const useWrapFormProcessor = ({
       isL2,
       l2,
       wrap,
-      txModalStages,
-      onRetry,
+      txFlow,
       onConfirm,
       wstETH,
-      isAA,
       needsApproveL1,
-      sendAACalls,
       processApproveTxOnL1,
+      onRetry,
+      txModalStages,
+      isAA,
     ],
   );
 };
