@@ -58,6 +58,8 @@ export type TxCallbackProps =
   | sendTransactionCallbackProps
   | sendCallsCallbackProps;
 
+export type StageCallback<TArgs> = (args: TArgs) => Promise<void> | void;
+
 /**
  * Callbacks for different stages of the transaction flow.
  *
@@ -70,22 +72,22 @@ export type TxCallbackProps =
  * @property onMultisigDone - Callback for MULTISIG_DONE stage (multisig successful).
  * @property onFailure - Callback for ERROR stage (transaction failed).
  */
-export type CallbacksForStages = {
-  onSign?: (
-    args: onSignCallbackProps,
-  ) => Promise<bigint> | Promise<void> | void;
-  onPermit?: (args: onPermitCallbackProps) => Promise<void> | void;
-  onGasLimit?: (args: onGasLimitCallbackProps) => Promise<void> | void;
-  onReceipt?: (args: onReceiptCallbackProps) => Promise<void> | void;
-  onConfirmation?: (args: onConfirmationCallbackProps) => Promise<void> | void;
-  onSuccess?: (args: onSuccessCallbackProps) => Promise<void> | void;
-  onMultisigDone?: (args: onMultisigDoneCallbackProps) => Promise<void> | void;
-  onFailure?: (args: onFailureCallbackProps) => Promise<void> | void;
+export type StageCallbacks = {
+  onSign?:
+    | StageCallback<onSignCallbackProps>
+    | ((args: onSignCallbackProps) => Promise<bigint>);
+  onPermit?: StageCallback<onPermitCallbackProps>;
+  onGasLimit?: StageCallback<onGasLimitCallbackProps>;
+  onReceipt?: StageCallback<onReceiptCallbackProps>;
+  onConfirmation?: StageCallback<onConfirmationCallbackProps>;
+  onSuccess?: StageCallback<onSuccessCallbackProps>;
+  onMultisigDone?: StageCallback<onMultisigDoneCallbackProps>;
+  onFailure?: StageCallback<onFailureCallbackProps>;
 };
 
 /**
  * Arguments for the transaction flow function returned by {@link useTxFlow}.
- * See callbacks for different stages of the transaction flow in {@link CallbacksForStages}.
+ * See callbacks for different stages of the transaction flow in {@link StageCallbacks}.
  *
  * @property callsFn - A function returning a list of calls for EIP-5792 sendCalls. Gets called only in case of EIP-5792.
  * @property sendTransaction - Fallback function to send a transaction if EIP-5792 is not supported.
@@ -93,4 +95,4 @@ export type CallbacksForStages = {
 export type TxFlowArgs = {
   callsFn?: () => Promise<(AACall | null | undefined | false)[]>;
   sendTransaction: (txStagesCallback: TransactionCallback) => Promise<void>;
-} & CallbacksForStages;
+} & StageCallbacks;

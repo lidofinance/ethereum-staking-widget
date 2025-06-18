@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
 import invariant from 'tiny-invariant';
-import { useSendCalls } from 'wagmi';
+import { useAccount } from 'wagmi';
 import { TransactionCallbackStage } from '@lidofinance/lido-ethereum-sdk';
 import { config } from 'config';
 import { useLidoSDK, useLidoSDKL2 } from '../../web3-provider';
@@ -9,7 +9,7 @@ import { AACall, TxCallbackProps } from './types';
 export class SendCallsError extends Error {}
 
 export const useSendAACalls = () => {
-  const { sendCallsAsync } = useSendCalls();
+  const { address } = useAccount();
   const { core: l1core } = useLidoSDK();
   const { core: l2core, isL2 } = useLidoSDKL2();
   const core = isL2 ? l2core : l1core;
@@ -28,7 +28,8 @@ export const useSendAACalls = () => {
           stage: TransactionCallbackStage.SIGN,
         });
 
-        const callData = await sendCallsAsync({
+        const callData = await walletClient.sendCalls({
+          account: address ?? null,
           calls: (calls.filter((call) => !!call) as AACall[]).map((call) => ({
             to: call.to,
             data: call.data,
@@ -41,28 +42,13 @@ export const useSendAACalls = () => {
           callId: callData.id,
         });
 
-        const poll = async () => {
-          const timeoutAt = Date.now() + config.AA_TX_POLLING_TIMEOUT;
-          while (Date.now() < timeoutAt) {
-            const callStatus = await walletClient.getCallsStatus({
-              id: callData.id,
-            });
+        const callStatus = await walletClient.waitForCallsStatus({
+          id: callData.id,
+          pollingInterval: config.PROVIDER_POLLING_INTERVAL,
+          timeout: config.AA_TX_POLLING_TIMEOUT,
+        });
 
-            if (String(callStatus.status).toLowerCase() !== 'pending') {
-              return callStatus;
-            }
-            await new Promise((resolve) =>
-              setTimeout(resolve, config.PROVIDER_POLLING_INTERVAL),
-            );
-          }
-          throw new SendCallsError(
-            'Timeout for transaction confirmation exceeded.',
-          );
-        };
-
-        const callStatus = await poll();
-
-        if (String(callStatus.status).toLowerCase() === 'failure') {
+        if (callStatus.status === 'failure') {
           throw new SendCallsError(
             'Transaction failed. Check your wallet for details.',
           );
@@ -102,6 +88,6 @@ export const useSendAACalls = () => {
         throw error;
       }
     },
-    [core.web3Provider, sendCallsAsync],
+    [address, core.web3Provider],
   );
 };
