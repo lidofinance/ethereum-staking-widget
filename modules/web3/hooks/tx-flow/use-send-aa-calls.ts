@@ -35,6 +35,7 @@ export const useSendAACalls = () => {
             data: call.data,
             value: call.value,
           })),
+          experimental_fallback: true, // fallback to legacy sendTransaction if sendCalls is not supported
         });
 
         await callback({
