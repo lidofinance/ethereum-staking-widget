@@ -17,6 +17,7 @@ import {
 import { LidoSDKWrap } from '@lidofinance/lido-ethereum-sdk/wrap';
 import { LidoSDKWithdraw } from '@lidofinance/lido-ethereum-sdk/withdraw';
 import { LidoSDKStatistics } from '@lidofinance/lido-ethereum-sdk/statistics';
+import { LidoSDKDualGovernance } from '@lidofinance/lido-ethereum-sdk/dual-governance';
 
 import { config } from 'config';
 import { CONTRACT_NAMES } from 'config/networks/networks-map';
@@ -33,6 +34,7 @@ type LidoSDKContextValue = {
   wrap: LidoSDKWrap;
   withdraw: LidoSDKWithdraw;
   statistics: LidoSDKStatistics;
+  dualGovernance: LidoSDKDualGovernance;
   subscribeToTokenUpdates: ReturnType<typeof useTokenTransferSubscription>;
 };
 
@@ -101,6 +103,7 @@ export const LidoSDKProvider = ({ children }: React.PropsWithChildren) => {
     const wrap = new LidoSDKWrap({ core });
     const withdraw = new LidoSDKWithdraw({ core });
     const statistics = new LidoSDKStatistics({ core });
+    const dualGovernance = new LidoSDKDualGovernance({ core });
 
     return {
       chainId: core.chainId,
@@ -111,6 +114,7 @@ export const LidoSDKProvider = ({ children }: React.PropsWithChildren) => {
       wrap,
       withdraw,
       statistics,
+      dualGovernance,
       subscribeToTokenUpdates: subscribe,
       // the L2 module you can to find in the 'modules/web3/web3-provider/lido-sdk-l2.tsx'
     };
