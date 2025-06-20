@@ -8,7 +8,7 @@ import {
 import { BannerLinkButton } from '../banner-link-button';
 
 const DG_TRIGGER_PERCENT = 33;
-const DG_LINK = 'REPLACE-ME'; // TODO: replace the link
+const DG_LINK = 'https://dg.lido.fi';
 
 export const DualGovernanceBanner = ({ children }: React.PropsWithChildren) => {
   const { isWarningState, isBlockedState, currentVetoSupportPercent } =
