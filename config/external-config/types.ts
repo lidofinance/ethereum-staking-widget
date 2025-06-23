@@ -16,6 +16,7 @@ export type ManifestConfig = {
   featureFlags: {
     ledgerLiveL2?: boolean;
     disableSendCalls?: boolean;
+    dgBannerEnabled?: boolean;
     dgWarningState?: boolean;
     dgBlockedState?: boolean;
   };

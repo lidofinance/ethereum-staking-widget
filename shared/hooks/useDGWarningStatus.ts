@@ -9,6 +9,8 @@ export const useDGWarningStatus = (triggerPercent = 33) => {
   // Use feature flags for testing states
   const { featureFlags } = useConfig().externalConfig;
 
+  const isDGBannerEnabled = featureFlags.dgBannerEnabled;
+
   const queryResult = useQuery({
     queryKey: ['dgWarningStatus', triggerPercent],
     queryFn: async () => {
@@ -16,24 +18,21 @@ export const useDGWarningStatus = (triggerPercent = 33) => {
         triggerPercent,
       });
     },
+    enabled: isDGBannerEnabled,
     ...STRATEGY_LAZY,
   });
 
   const warningStatus = queryResult.data;
 
-  const isNormalState = warningStatus?.state === 'Normal';
-  const isWarningState =
-    warningStatus?.state === 'Warning' || featureFlags.dgWarningState;
-  const isBlockedState =
-    warningStatus?.state === 'Blocked' || featureFlags.dgBlockedState;
-  const isUnknownState = warningStatus?.state === 'Unknown';
-
   return {
     state: warningStatus?.state,
     currentVetoSupportPercent: warningStatus?.currentVetoSupportPercent,
-    isWarningState,
-    isBlockedState,
-    isNormalState,
-    isUnknownState,
+    isDGBannerEnabled,
+    isWarningState:
+      warningStatus?.state === 'Warning' || featureFlags.dgWarningState,
+    isBlockedState:
+      warningStatus?.state === 'Blocked' || featureFlags.dgBlockedState,
+    isNormalState: warningStatus?.state === 'Normal',
+    isUnknownState: warningStatus?.state === 'Unknown',
   };
 };

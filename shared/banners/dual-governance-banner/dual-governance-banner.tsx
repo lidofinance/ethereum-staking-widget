@@ -11,11 +11,16 @@ const DG_TRIGGER_PERCENT = 33;
 const DG_LINK = 'https://dg.lido.fi';
 
 export const DualGovernanceBanner = ({ children }: React.PropsWithChildren) => {
-  const { isWarningState, isBlockedState, currentVetoSupportPercent } =
-    useDGWarningStatus();
+  const {
+    isWarningState,
+    isBlockedState,
+    isDGBannerEnabled,
+    currentVetoSupportPercent,
+  } = useDGWarningStatus();
 
   // Show banner only for Warning and Blocked DG status
-  if (!isWarningState && !isBlockedState) return <>{children}</>;
+  if (isDGBannerEnabled && !isWarningState && !isBlockedState)
+    return <>{children}</>;
 
   return (
     <BannerWrapper $state={isBlockedState ? 'Blocked' : 'Warning'}>
