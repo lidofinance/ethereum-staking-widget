@@ -8,7 +8,7 @@ const isCapabilitySupported = (capability?: {
   if (!capability) return false;
 
   if (typeof capability.status === 'string') {
-    return capability.status != 'unsupported';
+    return capability.status === 'supported';
   }
 
   return !!capability.supported;
