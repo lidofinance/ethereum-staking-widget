@@ -18,7 +18,6 @@ export type ManifestConfig = {
     disableSendCalls?: boolean;
     dgBannerEnabled?: boolean;
     dgWarningState?: boolean;
-    dgBlockedState?: boolean;
   };
   pages?: {
     [page in ManifestConfigPage]?: {

@@ -30,8 +30,7 @@ export const useDGWarningStatus = (triggerPercent = 33) => {
     isDGBannerEnabled,
     isWarningState:
       warningStatus?.state === 'Warning' || featureFlags.dgWarningState,
-    isBlockedState:
-      warningStatus?.state === 'Blocked' || featureFlags.dgBlockedState,
+    isBlockedState: warningStatus?.state === 'Blocked',
     isNormalState: warningStatus?.state === 'Normal',
     isUnknownState: warningStatus?.state === 'Unknown',
   };
