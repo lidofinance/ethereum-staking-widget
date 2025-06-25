@@ -6,7 +6,7 @@ interface BannerWrapperProps {
 }
 export const BannerWrapper = styled(BannerWrap).attrs<BannerWrapperProps>(
   ({ $state }) => ({
-    $state: $state || 'Warning',
+    $state: $state,
   }),
 )<BannerWrapperProps>`
   background: ${({ $state }) => {

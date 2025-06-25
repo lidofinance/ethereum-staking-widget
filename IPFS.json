@@ -59,7 +59,9 @@
       "multiChainBanner": [],
       "featureFlags": {
         "ledgerLiveL2": true,
-        "disableSendCalls": false
+        "disableSendCalls": false,
+        "dgBannerEnabled": false,
+        "dgWarningState": false
       }
     }
   }
