@@ -8,15 +8,15 @@ import {
   overrideWithQAMockString,
 } from 'utils/qa';
 
-export type DGState = 'Blocked' | 'Warning' | 'Unknown' | 'Normal';
+export type DGWarningState = 'Blocked' | 'Warning' | 'Unknown' | 'Normal';
 
 export const useDGWarningStatus = (
   triggerPercent = 33,
 ): {
-  currentVetoSupportPercent: number;
+  vetoSupportPercent: number;
   isDGBannerEnabled: boolean;
   isDGActive: boolean;
-  dgStatus: DGState;
+  dgWarningState: DGWarningState;
 } => {
   const { dualGovernance } = useLidoSDK();
 
@@ -40,28 +40,28 @@ export const useDGWarningStatus = (
   });
 
   const dgWarningStatus = queryResult.data;
-  const dgOverrideState = overrideWithQAMockString(
+  const dgWarningOverrideState = overrideWithQAMockString(
     featureFlags.dgWarningState
       ? 'Warning'
       : dgWarningStatus?.state ?? 'Unknown',
     'mock-qa-helpers-dg-state',
-  ) as DGState;
+  ) as DGWarningState;
 
-  const currentVetoSupportPercent = overrideWithQAMockNumber(
+  const vetoSupportOverridePercent = overrideWithQAMockNumber(
     dgWarningStatus?.currentVetoSupportPercent ?? 0,
     'mock-qa-helpers-dg-current-veto-support-percent',
   );
 
-  const isWarningState = dgOverrideState === 'Warning';
-  const isBlockedState = dgOverrideState === 'Blocked';
+  const isWarningState = dgWarningOverrideState === 'Warning';
+  const isBlockedState = dgWarningOverrideState === 'Blocked';
   // we dont want to show banner if blocked state is true and currentVetoSupportPercent is not set
   const isDGActive =
-    isWarningState || (isBlockedState && currentVetoSupportPercent > 0);
+    isWarningState || (isBlockedState && vetoSupportOverridePercent > 0);
 
   return {
-    currentVetoSupportPercent,
+    vetoSupportPercent: vetoSupportOverridePercent,
     isDGBannerEnabled,
     isDGActive,
-    dgStatus: dgOverrideState,
+    dgWarningState: dgWarningOverrideState,
   };
 };

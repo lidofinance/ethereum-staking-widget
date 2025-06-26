@@ -1,9 +1,9 @@
 import { BannerTitle, BannerDescription } from './styles';
 
 export const BlockedState = ({
-  currentVetoSupportPercent,
+  vetoSupportPercent,
 }: {
-  currentVetoSupportPercent: number;
+  vetoSupportPercent: number;
 }) => {
   return (
     <>
@@ -14,8 +14,8 @@ export const BlockedState = ({
       <BannerDescription>
         Lido DAO governance is now in a dynamic timelock.
         <br />
-        {currentVetoSupportPercent}% of stETH supply opposes the DAO — the
-        staking may carry elevated risk.
+        {vetoSupportPercent}% of stETH supply opposes the DAO — the staking may
+        carry elevated risk.
         <br />
         Check details on Dual Governance page.
       </BannerDescription>
