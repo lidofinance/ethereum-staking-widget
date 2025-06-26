@@ -1,11 +1,6 @@
 import { useCallback } from 'react';
 import invariant from 'tiny-invariant';
 
-import {
-  TransactionCallback,
-  TransactionCallbackStage,
-} from '@lidofinance/lido-ethereum-sdk';
-
 import { TOKENS_TO_WITHDRAWLS } from 'features/withdrawals/types/tokens-withdrawable';
 import { useWithdrawals } from 'features/withdrawals/contexts/withdrawals-context';
 import { useTxModalStagesRequest } from 'features/withdrawals/request/transaction-modal-request/use-tx-modal-stages-request';
@@ -15,12 +10,12 @@ import {
   useDappStatus,
   useIsSmartAccount,
   useLidoSDK,
-  useSendAACalls,
+  useTxFlow,
 } from 'modules/web3';
 
 import { useWithdrawalApprove } from './use-withdrawal-approve';
 
-import type { Address, Hash } from 'viem';
+import type { Address } from 'viem';
 
 type useWithdrawalRequestParams = {
   amount: bigint | null;
@@ -37,10 +32,10 @@ export const useWithdrawalRequest = ({
 }: useWithdrawalRequestParams) => {
   const { address } = useDappStatus();
   const { isAA } = useAA();
-  const sendAACalls = useSendAACalls();
   const { isBunker } = useWithdrawals();
   const { withdraw } = useLidoSDK();
   const { txModalStages } = useTxModalStagesRequest();
+  const txFlow = useTxFlow();
   const { isSmartAccount, isLoading: isSmartAccountLoading } =
     useIsSmartAccount();
   const {
@@ -79,123 +74,85 @@ export const useWithdrawalRequest = ({
           }
         }
 
-        const onWithdrawalConfirm = () => {
-          return Promise.all([
-            onConfirm?.(),
-            isApprovalFlow ? refetchAllowance() : Promise.resolve(null),
-          ]);
-        };
-
-        if (isAA) {
+        const txFlowCallsFn = async () => {
           const args = { amount, token };
-          const calls = await Promise.all([
+          return await Promise.all([
             needsApprove && withdraw.approval.approvePopulateTx(args),
             withdraw.request.requestWithdrawalPopulateTx(args),
           ]);
+        };
 
-          await sendAACalls(calls, async (props) => {
-            switch (props.stage) {
-              case TransactionCallbackStage.SIGN:
-                txModalStages.sign(amount, token);
-                break;
-              case TransactionCallbackStage.RECEIPT:
-                txModalStages.pending(
+        if (!isAA && isApprovalFlow) {
+          await txFlow({
+            sendTransaction: async (txStagesCallback) => {
+              if (needsApprove) {
+                await withdraw.approval.approve({
                   amount,
                   token,
-                  props.callId as Hash,
-                  isAA,
-                );
-                break;
-              case TransactionCallbackStage.DONE: {
-                await onWithdrawalConfirm();
-                txModalStages.success(amount, token, props.txHash);
-                break;
+                  callback: txStagesCallback,
+                });
               }
-              case TransactionCallbackStage.ERROR: {
-                txModalStages.failed(props.error, onRetry);
-                break;
-              }
-              default:
-                break;
-            }
-          });
-
-          return true;
-        }
-
-        const txCallbackApproval: TransactionCallback = async ({
-          stage,
-          payload,
-        }) => {
-          switch (stage) {
-            case TransactionCallbackStage.SIGN:
+              await withdraw.request.requestWithdrawal({
+                requests,
+                token,
+                callback: txStagesCallback,
+              });
+            },
+            onSign: async () => {
               txModalStages.signApproval(amount, token);
-              break;
-            case TransactionCallbackStage.RECEIPT:
+            },
+            onReceipt: async ({ payload }) => {
               txModalStages.pendingApproval(amount, token, payload);
-              break;
-            case TransactionCallbackStage.MULTISIG_DONE:
+            },
+            onFailure: ({ error }) => {
+              txModalStages.failed(error, onRetry);
+            },
+            onMultisigDone: () => {
               txModalStages.successMultisig();
-              break;
-            case TransactionCallbackStage.ERROR:
-              txModalStages.failed(payload, onRetry);
-              break;
-            default:
-          }
-        };
-
-        let txHash: Hash | undefined = undefined;
-        const txCallback: TransactionCallback = async ({ stage, payload }) => {
-          switch (stage) {
-            case TransactionCallbackStage.PERMIT:
-              txModalStages.signPermit();
-              break;
-            case TransactionCallbackStage.SIGN:
-              txModalStages.sign(amount, token);
-              break;
-            case TransactionCallbackStage.RECEIPT:
-              txModalStages.pending(amount, token, payload);
-              // the payload here is txHash
-              txHash = payload;
-              break;
-            case TransactionCallbackStage.DONE:
-              void onConfirm?.();
-              txModalStages.success(amount, token, txHash);
-              if (isApprovalFlow) {
-                await refetchAllowance();
-              }
-              break;
-            case TransactionCallbackStage.MULTISIG_DONE:
-              txModalStages.successMultisig();
-              break;
-            case TransactionCallbackStage.ERROR:
-              txModalStages.failed(payload, onRetry);
-              break;
-            default:
-          }
-        };
-
-        const txProps = {
-          requests,
-          token,
-          callback: txCallback,
-        };
-
-        if (isApprovalFlow) {
-          if (needsApprove) {
-            await withdraw.approval.approve({
-              amount,
-              token,
-              callback: txCallbackApproval,
-            });
-          }
-
-          await withdraw.request.requestWithdrawal(txProps);
+            },
+          });
         } else {
-          const deadline = BigInt(Math.floor(Date.now() / 1000) + 86_400); // 1 day
-          await withdraw.request.requestWithdrawalWithPermit({
-            ...txProps,
-            deadline,
+          await txFlow({
+            callsFn: txFlowCallsFn,
+            sendTransaction: async (txStagesCallback) => {
+              const deadline = BigInt(Math.floor(Date.now() / 1000) + 86_400); // 1 day
+              await withdraw.request.requestWithdrawalWithPermit({
+                requests,
+                token,
+                callback: txStagesCallback,
+                deadline,
+              });
+            },
+            onPermit: async () => {
+              txModalStages.signPermit();
+            },
+            onSign: async () => {
+              txModalStages.sign(amount, token);
+            },
+            onReceipt: async ({ txHashOrCallId }) => {
+              txModalStages.pending(amount, token, txHashOrCallId, isAA);
+            },
+            onSuccess: async ({ txHash }) => {
+              if (isAA) {
+                await Promise.all([
+                  onConfirm?.(),
+                  isApprovalFlow ? refetchAllowance() : Promise.resolve(null),
+                ]);
+                txModalStages.success(amount, token, txHash);
+              } else {
+                void onConfirm?.();
+                txModalStages.success(amount, token, txHash);
+                if (isApprovalFlow) {
+                  await refetchAllowance();
+                }
+              }
+            },
+            onFailure: ({ error }) => {
+              txModalStages.failed(error, onRetry);
+            },
+            onMultisigDone: () => {
+              txModalStages.successMultisig();
+            },
           });
         }
 
@@ -215,7 +172,7 @@ export const useWithdrawalRequest = ({
       onConfirm,
       onRetry,
       refetchAllowance,
-      sendAACalls,
+      txFlow,
       txModalStages,
       withdraw.approval,
       withdraw.request,
