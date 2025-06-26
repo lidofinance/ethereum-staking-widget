@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useConfig } from 'config/use-config';
 import { STRATEGY_LAZY } from 'consts/react-query-strategies';
 import { useLidoSDK } from 'modules/web3';
+import { overrideWithQAMockBoolean, overrideWithQAMockNumber } from 'utils/qa';
 
 export const useDGWarningStatus = (triggerPercent = 33) => {
   const { dualGovernance } = useLidoSDK();
@@ -9,7 +10,10 @@ export const useDGWarningStatus = (triggerPercent = 33) => {
   // Use feature flags for testing states
   const { featureFlags } = useConfig().externalConfig;
 
-  const isDGBannerEnabled = featureFlags.dgBannerEnabled;
+  const isDGBannerEnabled = overrideWithQAMockBoolean(
+    Boolean(featureFlags.dgBannerEnabled),
+    'mock-qa-helpers-dg-banner-enabled',
+  );
 
   const queryResult = useQuery({
     queryKey: ['dgWarningStatus', triggerPercent],
@@ -24,13 +28,27 @@ export const useDGWarningStatus = (triggerPercent = 33) => {
 
   const warningStatus = queryResult.data;
 
+  const isWarningState = overrideWithQAMockBoolean(
+    warningStatus?.state === 'Warning' || Boolean(featureFlags.dgWarningState),
+    'mock-qa-helpers-dg-warning-state',
+  );
+
+  const isBlockedState = overrideWithQAMockBoolean(
+    warningStatus?.state === 'Blocked',
+    'mock-qa-helpers-dg-blocked-state',
+  );
+
+  const currentVetoSupportPercent = overrideWithQAMockNumber(
+    warningStatus?.currentVetoSupportPercent ?? 0,
+    'mock-qa-helpers-dg-current-veto-support-percent',
+  );
+
   return {
     state: warningStatus?.state,
-    currentVetoSupportPercent: warningStatus?.currentVetoSupportPercent,
+    currentVetoSupportPercent,
     isDGBannerEnabled,
-    isWarningState:
-      warningStatus?.state === 'Warning' || featureFlags.dgWarningState,
-    isBlockedState: warningStatus?.state === 'Blocked',
+    isWarningState,
+    isBlockedState,
     isNormalState: warningStatus?.state === 'Normal',
     isUnknownState: warningStatus?.state === 'Unknown',
   };
