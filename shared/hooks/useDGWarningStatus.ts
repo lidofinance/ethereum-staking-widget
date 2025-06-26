@@ -2,9 +2,22 @@ import { useQuery } from '@tanstack/react-query';
 import { useConfig } from 'config/use-config';
 import { STRATEGY_LAZY } from 'consts/react-query-strategies';
 import { useLidoSDK } from 'modules/web3';
-import { overrideWithQAMockBoolean, overrideWithQAMockNumber } from 'utils/qa';
+import {
+  overrideWithQAMockBoolean,
+  overrideWithQAMockNumber,
+  overrideWithQAMockString,
+} from 'utils/qa';
 
-export const useDGWarningStatus = (triggerPercent = 33) => {
+export type DGWarningState = 'Blocked' | 'Warning' | 'Unknown' | 'Normal';
+
+export const useDGWarningStatus = (
+  triggerPercent = 33,
+): {
+  vetoSupportPercent: number;
+  isDGBannerEnabled: boolean;
+  isDGActive: boolean;
+  dgWarningState: DGWarningState;
+} => {
   const { dualGovernance } = useLidoSDK();
 
   // Use feature flags for testing states
@@ -26,30 +39,29 @@ export const useDGWarningStatus = (triggerPercent = 33) => {
     ...STRATEGY_LAZY,
   });
 
-  const warningStatus = queryResult.data;
+  const dgWarningStatus = queryResult.data;
+  const dgWarningOverrideState = overrideWithQAMockString(
+    featureFlags.dgWarningState
+      ? 'Warning'
+      : dgWarningStatus?.state ?? 'Unknown',
+    'mock-qa-helpers-dg-state',
+  ) as DGWarningState;
 
-  const isWarningState = overrideWithQAMockBoolean(
-    warningStatus?.state === 'Warning' || Boolean(featureFlags.dgWarningState),
-    'mock-qa-helpers-dg-warning-state',
-  );
-
-  const isBlockedState = overrideWithQAMockBoolean(
-    warningStatus?.state === 'Blocked',
-    'mock-qa-helpers-dg-blocked-state',
-  );
-
-  const currentVetoSupportPercent = overrideWithQAMockNumber(
-    warningStatus?.currentVetoSupportPercent ?? 0,
+  const vetoSupportOverridePercent = overrideWithQAMockNumber(
+    dgWarningStatus?.currentVetoSupportPercent ?? 0,
     'mock-qa-helpers-dg-current-veto-support-percent',
   );
 
+  const isWarningState = dgWarningOverrideState === 'Warning';
+  const isBlockedState = dgWarningOverrideState === 'Blocked';
+  // we dont want to show banner if blocked state is true and currentVetoSupportPercent is not set
+  const isDGActive =
+    isWarningState || (isBlockedState && vetoSupportOverridePercent > 0);
+
   return {
-    state: warningStatus?.state,
-    currentVetoSupportPercent,
+    vetoSupportPercent: vetoSupportOverridePercent,
     isDGBannerEnabled,
-    isWarningState,
-    isBlockedState,
-    isNormalState: warningStatus?.state === 'Normal',
-    isUnknownState: warningStatus?.state === 'Unknown',
+    isDGActive,
+    dgWarningState: dgWarningOverrideState,
   };
 };
