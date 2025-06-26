@@ -39,29 +39,28 @@ export const useDGWarningStatus = (
     ...STRATEGY_LAZY,
   });
 
-  const dgWarningStatus = queryResult.data;
-  const dgWarningOverrideState = overrideWithQAMockString(
-    featureFlags.dgWarningState
-      ? 'Warning'
-      : dgWarningStatus?.state ?? 'Unknown',
+  const dgStatus = queryResult.data;
+  const dgWarningState = dgStatus?.state ?? 'Unknown';
+  const dgWarningStateOverriden = overrideWithQAMockString(
+    featureFlags.dgWarningState ? 'Warning' : dgWarningState,
     'mock-qa-helpers-dg-state',
   ) as DGWarningState;
 
-  const vetoSupportOverridePercent = overrideWithQAMockNumber(
-    dgWarningStatus?.currentVetoSupportPercent ?? 0,
+  const vetoSupportPercent = overrideWithQAMockNumber(
+    dgStatus?.currentVetoSupportPercent ?? 0,
     'mock-qa-helpers-dg-current-veto-support-percent',
   );
 
-  const isWarningState = dgWarningOverrideState === 'Warning';
-  const isBlockedState = dgWarningOverrideState === 'Blocked';
+  const isWarningState = dgWarningStateOverriden === 'Warning';
+  const isBlockedState = dgWarningStateOverriden === 'Blocked';
   // we dont want to show banner if blocked state is true and currentVetoSupportPercent is not set
   const isDGActive =
-    isWarningState || (isBlockedState && vetoSupportOverridePercent > 0);
+    isWarningState || (isBlockedState && vetoSupportPercent > 0);
 
   return {
-    vetoSupportPercent: vetoSupportOverridePercent,
+    vetoSupportPercent,
     isDGBannerEnabled,
     isDGActive,
-    dgWarningState: dgWarningOverrideState,
+    dgWarningState: dgWarningStateOverriden,
   };
 };

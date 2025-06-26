@@ -12,8 +12,8 @@ export const BannerWrapper = styled(BannerWrap).attrs<BannerWrapperProps>(
   }),
 )<BannerWrapperProps>`
   background: ${({ $state }) => {
-    if ($state === 'Warning') return '#ec860033';
     if ($state === 'Blocked') return '#e14d4d33';
+    return '#ec860033'; // Warning state and fallback for other states
   }};
   color: var(--lido-color-text);
 `;
