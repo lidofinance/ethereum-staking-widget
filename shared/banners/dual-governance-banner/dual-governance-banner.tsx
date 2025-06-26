@@ -1,9 +1,9 @@
 import { useDGWarningStatus } from 'shared/hooks/useDGWarningStatus';
 import { BannerWrapper, BannerLinkContainer } from './styles';
-import { BannerLinkButton } from '../banner-link-button';
 
 import { BlockedState } from './blocked-state';
 import { WarningState } from './warning-state';
+import { Button, Link } from '@lidofinance/lido-ui';
 
 const DG_TRIGGER_PERCENT = 33;
 const DG_LINK = 'https://dg.lido.fi';
@@ -34,7 +34,11 @@ export const DualGovernanceBanner = ({ children }: React.PropsWithChildren) => {
         <WarningState dgTriggerPercent={DG_TRIGGER_PERCENT} />
       )}
       <BannerLinkContainer>
-        <BannerLinkButton href={DG_LINK}>Dual Governance</BannerLinkButton>
+        <Link href={DG_LINK}>
+          <Button size="xs" color="primary">
+            Dual Governance
+          </Button>
+        </Link>
       </BannerLinkContainer>
     </BannerWrapper>
   );
