@@ -1,8 +1,10 @@
 import styled from 'styled-components';
 import { BannerWrap, BannerTitleText } from '../shared-banner-partials';
 
+import type { DGStatus } from 'shared/hooks/useDGWarningStatus';
+
 interface BannerWrapperProps {
-  $state?: 'Warning' | 'Blocked';
+  $state?: DGStatus;
 }
 export const BannerWrapper = styled(BannerWrap).attrs<BannerWrapperProps>(
   ({ $state }) => ({
