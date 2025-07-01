@@ -17,6 +17,7 @@ import holeskySet from 'networks/holesky.json' assert { type: 'json' };
 
 // Devnet deployments
 import hoodiDevnet0Set from 'networks/hoodi-devnet-0.json' assert { type: 'json' };
+import hoodiDevnet1Set from 'networks/hoodi-devnet-1.json' assert { type: 'json' };
 import { getPreConfig } from 'config/get-preconfig';
 
 // For future overrides of APIs in devnets
@@ -87,9 +88,11 @@ const NETWORKS_MAP = {
   [CHAINS.Sepolia]: sepoliaSet as NetworkConfig,
 } as Record<string, NetworkConfig>;
 
+// keys MUST correlate with the `DEVNET_OVERRIDES` env
 const DEVNETS_MAP = {
-  // keys MUST be like in the `DEVNET_OVERRIDES` env
+  // TODO: remove
   'hoodi-devnet-0': hoodiDevnet0Set as NetworkConfig,
+  'hoodi-devnet-1': hoodiDevnet1Set as NetworkConfig,
 } as Record<string, NetworkConfig>;
 
 export const getNetworkConfigMapByChain = (
