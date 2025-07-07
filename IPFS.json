@@ -9,7 +9,8 @@
         130, 1135, 1923
       ],
       "featureFlags": {
-        "disableSendCalls": false
+        "disableSendCalls": false,
+        "dgBannerEnabled": true
       }
     }
   },
