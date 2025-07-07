@@ -169,7 +169,8 @@ export const useWeb3Transport = (
         if (
           activeConnection &&
           chain.id === activeConnection.chainId &&
-          activeConnection.connector.type === 'injected'
+          (activeConnection.connector.type === 'injected' ||
+            activeConnection.connector.type === 'metaMask')
         ) {
           const provider = (await activeConnection.connector?.getProvider?.({
             chainId: chain.id,
