@@ -2333,10 +2333,10 @@
   resolved "https://registry.yarnpkg.com/@lidofinance/eth-providers/-/eth-providers-0.48.0.tgz#217279cc8433968531283b985617b981d59a8393"
   integrity sha512-ItzIN9psHu8stf8MTAmNaXmKyaVnsYzQ10zdvdX6TM56TcFRlxidTnR5UVeOObtr1Bm/pz61GYCOZkUI6q3aAw==
 
-"@lidofinance/lido-ethereum-sdk@4.4.0":
-  version "4.4.0"
-  resolved "https://registry.yarnpkg.com/@lidofinance/lido-ethereum-sdk/-/lido-ethereum-sdk-4.4.0.tgz#7b015dad29610c03d191ebe9631ad6ee9497b96c"
-  integrity sha512-Kw4Yr+UWUlkQVrJCyUvAyXP77A4puwdgMgQ3/LkiOYkhZEl+Zzx29rjBGKGc3AcnRz3MbnNIqatBSm9PFSKkRg==
+"@lidofinance/lido-ethereum-sdk@4.5.0":
+  version "4.5.0"
+  resolved "https://registry.yarnpkg.com/@lidofinance/lido-ethereum-sdk/-/lido-ethereum-sdk-4.5.0.tgz#88327a323d8241ce748dae069357f19103c74345"
+  integrity sha512-GaDJYukJFd/2g/Rf9rYgMTR2f946IHHecYzfOOUmaCwXG6+ckbSyxdRDCLuN1heE4GIiVoS4RfQCj08H4Gs0zA==
   dependencies:
     "@ethersproject/bytes" "^5.7.0"
     graphql "^16.8.1"
