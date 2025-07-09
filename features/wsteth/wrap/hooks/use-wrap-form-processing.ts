@@ -88,11 +88,14 @@ export const useWrapFormProcessor = ({
           },
           sendTransaction: async (txStagesCallback) => {
             if (isL2) {
-              // The operation 'stETH to wstETH' on L2 is 'unwrap'
-              await l2.unwrapStethToWsteth({
+              // 1. The operation 'stETH to wstETH' on L2 is 'unwrap'
+              // 2. Intentionally using void here instead of await
+              //    because awaiting causes an "Internal JSON-RPC error" for some reason.
+              void l2.unwrapStethToWsteth({
                 value: amount,
                 callback: txStagesCallback,
               });
+              return;
             }
 
             if (token === TOKENS_TO_WRAP.stETH) {
