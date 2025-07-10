@@ -91,6 +91,7 @@ export const useWrapFormProcessor = ({
               // 1. The operation 'stETH to wstETH' on L2 is 'unwrap'
               // 2. Intentionally using void here instead of await
               //    because awaiting causes an "Internal JSON-RPC error" for some reason.
+              //    TODO: investigate this issue.
               void l2.unwrapStethToWsteth({
                 value: amount,
                 callback: txStagesCallback,
