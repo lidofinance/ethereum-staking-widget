@@ -2,7 +2,7 @@ import type { Hash } from 'viem';
 import { TxLinkEtherscan } from 'shared/components/tx-link-etherscan';
 import { TransactionModalContent } from 'shared/transaction-modal/transaction-modal-content';
 import { StageIconLoader } from './icons';
-import { useShowCallsStatus } from 'wagmi/experimental';
+import { useShowCallsStatus } from 'wagmi';
 import { Link } from '@lidofinance/lido-ui';
 
 type TxStagePendingProps = {
