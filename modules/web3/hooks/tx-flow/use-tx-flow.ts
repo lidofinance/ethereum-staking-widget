@@ -43,8 +43,7 @@ export const useTxFlow = () => {
       const txStagesCallback = async (args: TxCallbackProps) => {
         switch (args.stage) {
           case TransactionCallbackStage.SIGN:
-            await onSign?.(args);
-            break;
+            return onSign?.(args);
           case TransactionCallbackStage.RECEIPT:
             // In case of AA sendCalls, the callId is used to track the transaction.
             // But in case of legacy sendTransaction, the payload is the transaction hash.
