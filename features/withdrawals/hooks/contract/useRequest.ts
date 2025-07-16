@@ -46,6 +46,7 @@ export const useWithdrawalRequest = ({
   } = useWithdrawalApprove(amount ? amount : 0n, token, address as Address);
   const { closeModal } = useTransactionModal();
 
+  // “use the classic approve-then-withdraw flow” rather than “use an ERC-2612 permit”
   const isApprovalFlow = isSmartAccount || !!(allowance && !needsApprove);
 
   const isApprovalFlowLoading = isSmartAccountLoading || isUseApproveLoading;
@@ -99,13 +100,24 @@ export const useWithdrawalRequest = ({
               });
             },
             onSign: async () => {
-              txModalStages.signApproval(amount, token);
+              if (needsApprove) {
+                return txModalStages.signApproval(amount, token);
+              }
+              return txModalStages.sign(amount, token);
             },
             onReceipt: async ({ payload }) => {
-              txModalStages.pendingApproval(amount, token, payload);
+              if (needsApprove) {
+                return txModalStages.pendingApproval(amount, token, payload);
+              }
+              return txModalStages.pending(amount, token, payload);
             },
             onFailure: ({ error }) => {
               txModalStages.failed(error, onRetry);
+            },
+            onSuccess: async ({ txHash }) => {
+              void onConfirm?.();
+              txModalStages.success(amount, token, txHash);
+              await refetchAllowance();
             },
             onMultisigDone: () => {
               txModalStages.successMultisig();
