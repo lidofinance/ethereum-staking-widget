@@ -9,10 +9,6 @@ const isDelegatedEOA = (data: Hex | undefined) =>
   Boolean(data?.startsWith('0xef0100'));
 const isEOA = (data: Hex | undefined) => Boolean(data === '0x');
 
-// true if the address has some bytecode, but is not an EOA or a delegated EOA
-const processData = (data: Hex | undefined) =>
-  Boolean(data && !isEOA(data) && !isDelegatedEOA(data));
-
 export const useIsSmartAccount = () => {
   const { address, chainId } = useDappStatus();
   const {
@@ -26,7 +22,7 @@ export const useIsSmartAccount = () => {
 
   // pre-eip5792
   const {
-    data: isContract, // see processData
+    data: hasBytecode,
     isLoading: isContractLoading,
     error: isContractError,
   } = useBytecode({
@@ -34,14 +30,17 @@ export const useIsSmartAccount = () => {
     chainId,
     query: {
       enabled: shouldLegacyFetch,
-      select: processData,
+      select: (data: Hex | undefined) =>
+        // true if the address has some bytecode, but is not an EOA or a delegated EOA
+        Boolean(data && !isEOA(data) && !isDelegatedEOA(data)),
     },
   });
 
   return {
     isAA,
+    hasBytecode,
+    isSmartAccount: isAA || hasBytecode,
     capabilities,
-    isSmartAccount: isAA || isContract,
     // prevents legacy logic from polluting state
     isLoading: isContractLoading || (shouldLegacyFetch && isAALoading),
     error: isAAError || (shouldLegacyFetch ? isContractError : undefined),

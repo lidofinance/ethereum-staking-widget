@@ -4,6 +4,7 @@ import { TransactionCallbackStage } from '@lidofinance/lido-ethereum-sdk/core';
 
 import { TOKENS_TO_WRAP } from 'features/wsteth/shared/types';
 import {
+  useAA,
   useAllowance,
   useDappStatus,
   useLidoSDK,
@@ -29,6 +30,7 @@ export const useWrapTxOnL1Approve = ({
     useDappStatus();
   const { wrap } = useLidoSDK();
   const { txModalStages } = useTxModalWrap();
+  const { isAA } = useAA();
 
   const { data: staticTokenAddress } = useStETHContractAddress();
   const { data: staticSpenderAddress } = useWstETHContractAddress();
@@ -44,10 +46,16 @@ export const useWrapTxOnL1Approve = ({
     token: staticTokenAddress,
   });
 
-  const needsApprove = allowance != null && amount > allowance;
-
-  const isApprovalNeededBeforeWrap =
-    isDappActiveOnL1 && needsApprove && token === TOKENS_TO_WRAP.stETH;
+  // Wrap requires approval on L1 only and if the following conditions are met:
+  // 1. the connected wallet doesn't support batch txs for the connected address
+  // 2. the allowance is not enough for the amount to wrap
+  // 3. the token is stETH
+  const needsApprove =
+    isDappActiveOnL1 &&
+    !isAA &&
+    allowance != null &&
+    amount > allowance &&
+    token === TOKENS_TO_WRAP.stETH;
 
   const processApproveTx = useCallback(
     async ({ onRetry }: { onRetry?: () => void }) => {
@@ -87,12 +95,11 @@ export const useWrapTxOnL1Approve = ({
   return useMemo(
     () => ({
       processApproveTx,
-      needsApprove,
       allowance,
       // fix first loading when the wallet is autoconnecting
       isAllowanceLoading:
         isDappActiveOnL1 && (allowance == null || isAllowanceLoading),
-      isApprovalNeededBeforeWrap,
+      needsApprove,
       refetchAllowance,
       // There are 3 cases when we show the allowance on the wrap page:
       // 1. is wallet not connected (!isWalletConnected)
@@ -102,10 +109,9 @@ export const useWrapTxOnL1Approve = ({
     }),
     [
       processApproveTx,
-      needsApprove,
       allowance,
       isAllowanceLoading,
-      isApprovalNeededBeforeWrap,
+      needsApprove,
       refetchAllowance,
       isWalletConnected,
       isDappActiveOnL1,

@@ -39,7 +39,7 @@ export const useWrapFormProcessor = ({
   const txFlow = useTxFlow();
 
   const {
-    isApprovalNeededBeforeWrap: needsApproveL1,
+    needsApprove: needsApproveL1,
     processApproveTx: processApproveTxOnL1,
   } = approvalDataOnL1;
 

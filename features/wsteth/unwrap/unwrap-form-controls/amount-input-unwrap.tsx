@@ -7,11 +7,12 @@ import { TOKENS_TO_WRAP } from '../../shared/types';
 
 export const TokenAmountInputUnwrap = () => {
   const { isWalletConnected, isDappActive } = useDappStatus();
-  const { maxAmount } = useUnwrapFormData();
+  const { maxAmount, needsApprove } = useUnwrapFormData();
 
   return (
     <TokenAmountInputHookForm
       disabled={isWalletConnected && !isDappActive}
+      isLocked={needsApprove}
       fieldName="amount"
       token={TOKENS_TO_WRAP.wstETH}
       data-testid="unwrapInput"
