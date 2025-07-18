@@ -3,7 +3,7 @@ import { useMemo, useCallback } from 'react';
 import { LIDO_L2_CONTRACT_ADDRESSES } from '@lidofinance/lido-ethereum-sdk/common';
 import { TransactionCallbackStage } from '@lidofinance/lido-ethereum-sdk/core';
 
-import { useLidoSDKL2, useDappStatus, useAllowance } from 'modules/web3';
+import { useLidoSDKL2, useDappStatus, useAllowance, useAA } from 'modules/web3';
 
 import { useTxModalWrap } from '../../wrap/hooks/use-tx-modal-stages-wrap';
 import { TOKENS_TO_WRAP } from '../../shared/types';
@@ -16,6 +16,7 @@ export const useUnwrapTxOnL2Approve = ({ amount }: UseUnwrapTxApproveArgs) => {
   const { isDappActiveOnL2, isChainIdOnL2, address } = useDappStatus();
   const { l2, core } = useLidoSDKL2();
   const { txModalStages } = useTxModalWrap();
+  const { isAA } = useAA();
 
   const staticTokenAddress = LIDO_L2_CONTRACT_ADDRESSES[core.chainId]?.wsteth;
   const staticSpenderAddress = LIDO_L2_CONTRACT_ADDRESSES[core.chainId]?.steth;
@@ -31,7 +32,11 @@ export const useUnwrapTxOnL2Approve = ({ amount }: UseUnwrapTxApproveArgs) => {
     token: staticTokenAddress,
   });
 
-  const isApprovalNeededBeforeUnwrap = allowance != null && amount > allowance;
+  // Unwrap requires approval on L2 only and if the following conditions are met:
+  // 1. the connected wallet doesn't support batch txs for the connected address
+  // 2. the allowance is not enough for the amount to unwrap
+  const needsApprove =
+    isDappActiveOnL2 && !isAA && allowance != null && amount > allowance;
 
   const processApproveTx = useCallback(
     async ({ onRetry }: { onRetry?: () => void }) => {
@@ -73,7 +78,7 @@ export const useUnwrapTxOnL2Approve = ({ amount }: UseUnwrapTxApproveArgs) => {
       processApproveTx,
       refetchAllowance,
       allowance,
-      isApprovalNeededBeforeUnwrap,
+      needsApprove,
       isAllowanceLoading,
       // There are 2 cases when we show the allowance on the unwrap page:
       // 1. wallet chain is L2 chain and chain switcher is on L2 chain (isDappActiveOnL2)
@@ -84,7 +89,7 @@ export const useUnwrapTxOnL2Approve = ({ amount }: UseUnwrapTxApproveArgs) => {
       processApproveTx,
       refetchAllowance,
       allowance,
-      isApprovalNeededBeforeUnwrap,
+      needsApprove,
       isAllowanceLoading,
       isDappActiveOnL2,
       isChainIdOnL2,

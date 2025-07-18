@@ -36,8 +36,11 @@ export const useWithdrawalRequest = ({
   const { withdraw } = useLidoSDK();
   const { txModalStages } = useTxModalStagesRequest();
   const txFlow = useTxFlow();
-  const { isSmartAccount, isLoading: isSmartAccountLoading } =
-    useIsSmartAccount();
+  const {
+    isSmartAccount,
+    hasBytecode,
+    isLoading: isSmartAccountLoading,
+  } = useIsSmartAccount();
   const {
     allowance,
     needsApprove,
@@ -46,12 +49,12 @@ export const useWithdrawalRequest = ({
   } = useWithdrawalApprove(amount ? amount : 0n, token, address as Address);
   const { closeModal } = useTransactionModal();
 
+  const hasEnoughAllowance = !!(allowance && !needsApprove);
+
   // “use the classic approve-then-withdraw flow” rather than “use an ERC-2612 permit”
-  const isApprovalFlow = isSmartAccount || !!(allowance && !needsApprove);
-
+  const isApprovalFlow = isSmartAccount || hasEnoughAllowance;
   const isApprovalFlowLoading = isSmartAccountLoading || isUseApproveLoading;
-
-  const isTokenLocked = !!(isApprovalFlow && needsApprove);
+  const isTokenLocked = !!(hasBytecode && !isAA && needsApprove);
 
   const request = useCallback(
     async ({
@@ -75,15 +78,9 @@ export const useWithdrawalRequest = ({
           }
         }
 
-        const txFlowCallsFn = async () => {
-          const args = { amount, token };
-          return await Promise.all([
-            needsApprove && withdraw.approval.approvePopulateTx(args),
-            withdraw.request.requestWithdrawalPopulateTx(args),
-          ]);
-        };
-
-        if (!isAA && isApprovalFlow) {
+        if ((!isAA && hasBytecode) || hasEnoughAllowance) {
+          // A rare case when the connected address has bytecode (is contract) but does not support batch txs for some reason
+          // or the address has enough allowance to skip approval
           await txFlow({
             sendTransaction: async (txStagesCallback) => {
               if (needsApprove) {
@@ -125,8 +122,16 @@ export const useWithdrawalRequest = ({
           });
         } else {
           await txFlow({
-            callsFn: txFlowCallsFn,
+            callsFn: async () => {
+              // Approve + Withdraw batch tx
+              const args = { amount, token };
+              return await Promise.all([
+                needsApprove && withdraw.approval.approvePopulateTx(args),
+                withdraw.request.requestWithdrawalPopulateTx(args),
+              ]);
+            },
             sendTransaction: async (txStagesCallback) => {
+              // ERC-2612 permit flow for EOAs (no batching)
               const deadline = BigInt(Math.floor(Date.now() / 1000) + 86_400); // 1 day
               await withdraw.request.requestWithdrawalWithPermit({
                 requests,
@@ -177,6 +182,8 @@ export const useWithdrawalRequest = ({
     },
     [
       closeModal,
+      hasBytecode,
+      hasEnoughAllowance,
       isAA,
       isApprovalFlow,
       isBunker,
