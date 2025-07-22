@@ -43,6 +43,7 @@ export const Button: FC<ButtonProps> = (props) => {
                 amount={balance}
                 symbol="ETH"
                 showAmountTip={false}
+                data-testid="accountBalance"
               />
             )
           )}
