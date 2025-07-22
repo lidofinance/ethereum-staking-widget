@@ -1,5 +1,6 @@
 import { useWatch } from 'react-hook-form';
 import { parseEther } from 'viem';
+import { Tooltip } from '@lidofinance/lido-ui';
 
 import { MATOMO_CLICK_EVENTS_TYPES } from 'consts/matomo';
 import { DATA_UNAVAILABLE } from 'consts/text';
@@ -27,6 +28,7 @@ import {
   OptionsPickerLabel,
   OptionsPickerRow,
   OptionsPickerSubLabel,
+  InlineQuestion,
 } from './styles';
 
 type OptionButtonProps = {
@@ -41,6 +43,7 @@ const LidoButton: React.FC<OptionButtonProps> = ({ isActive, onClick }) => {
     name: ['amount', 'token'],
   });
   const isSteth = token === TOKENS_TO_WITHDRAWLS.stETH;
+  const { isCongested } = useWaitingTime(null);
   const { value: waitingTime, isLoading: isWaitingTimeLoading } =
     useWaitingTime(amount, {
       isApproximate: true,
@@ -73,7 +76,14 @@ const LidoButton: React.FC<OptionButtonProps> = ({ isActive, onClick }) => {
         {ratioLoading ? <InlineLoaderSmall /> : ratio}
       </OptionsPickerRow>
       <OptionsPickerRow data-testid="lidoOptionWaitingTime">
-        <OptionsPickerSubLabel>Waiting time:</OptionsPickerSubLabel>
+        <OptionsPickerSubLabel>
+          Waiting time:&nbsp;
+          {isCongested && (
+            <Tooltip title=" Due to increased ecosystem activity, Ethereum’s validator exit queue is currently longer. As a result, Lido withdrawals can take additional time to process.">
+              <InlineQuestion />
+            </Tooltip>
+          )}
+        </OptionsPickerSubLabel>
         {isWaitingTimeLoading ? <InlineLoaderSmall /> : waitingTime}
       </OptionsPickerRow>
     </OptionsPickerButton>
