@@ -27,7 +27,7 @@ export const InlineQuestion = styled(Question)`
 // LIDO OPTION
 
 export const InlineLoaderSmall = styled(InlineLoader)`
-  max-width: 74px;
+  max-width: 50px;
 `;
 
 export const LidoOptionContainer = styled.div`
