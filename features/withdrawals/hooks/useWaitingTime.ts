@@ -12,6 +12,8 @@ import { FetcherError } from 'utils/fetcherError';
 
 const DEFAULT_DAYS_VALUE = 5;
 
+const CONGESTED_DAYS_THRESHOLD = 7;
+
 type useWaitingTimeOptions = {
   isApproximate?: boolean;
 };
@@ -29,11 +31,11 @@ export const useWaitingTime = (
   options: useWaitingTimeOptions = {},
 ) => {
   const { isApproximate } = options;
-  const { withdraw } = useLidoSDK();
+  const { withdraw, chainId } = useLidoSDK();
   const debouncedAmount = useDebouncedValue(amount, 1000);
 
   const { data, error, isLoading, isFetching } = useQuery<RequestTimeV2Dto>({
-    queryKey: ['waiting-time', debouncedAmount?.toString()],
+    queryKey: ['waiting-time', chainId, debouncedAmount?.toString()],
     enabled: !!config.wqAPIBasePath,
     queryFn: () =>
       withdraw.waitingTime.getWithdrawalWaitingTimeByAmount({
@@ -62,6 +64,8 @@ export const useWaitingTime = (
   const value =
     isPaused || isRequestError ? '—' : isBunker ? 'Not estimated' : waitingTime;
 
+  const isCongested = days >= CONGESTED_DAYS_THRESHOLD;
+
   return {
     ...data,
     isLoading,
@@ -69,5 +73,6 @@ export const useWaitingTime = (
     error,
     days,
     value,
+    isCongested,
   };
 };

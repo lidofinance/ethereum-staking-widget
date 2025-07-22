@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { InlineLoader } from '@lidofinance/lido-ui';
+import { InlineLoader, Question } from '@lidofinance/lido-ui';
 import { FormatToken } from 'shared/formatters';
 
 import Lido from 'assets/icons/lido.svg';
@@ -16,6 +16,12 @@ export const LidoIcon = styled.img.attrs({
 export const OptionAmountRow = styled.div`
   display: flex;
   align-items: center;
+`;
+
+export const InlineQuestion = styled(Question)`
+  width: 20px;
+  height: 20px;
+  vertical-align: top;
 `;
 
 // LIDO OPTION
