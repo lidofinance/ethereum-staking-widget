@@ -32,11 +32,16 @@ export const useUnwrapTxOnL2Approve = ({ amount }: UseUnwrapTxApproveArgs) => {
     token: staticTokenAddress,
   });
 
-  // Unwrap requires approval on L2 only and if the following conditions are met:
-  // 1. the connected wallet doesn't support batch txs for the connected address
+  // Unwrap requires approval if the following conditions are met:
+  // 1. the current network is L2
   // 2. the allowance is not enough for the amount to unwrap
-  const needsApprove =
-    isDappActiveOnL2 && !isAA && allowance != null && amount > allowance;
+  const hasEnoughAllowance = allowance != null && allowance >= amount;
+
+  const needsApprove = isDappActiveOnL2 && !hasEnoughAllowance;
+
+  // If the connected wallet supports batch txs for the connected address, then we don't need to show the unlock requirement,
+  // because the approval tx will be included in the batch.
+  const shouldShowUnlockRequirement = needsApprove && !isAA;
 
   const processApproveTx = useCallback(
     async ({ onRetry }: { onRetry?: () => void }) => {
@@ -79,6 +84,7 @@ export const useUnwrapTxOnL2Approve = ({ amount }: UseUnwrapTxApproveArgs) => {
       refetchAllowance,
       allowance,
       needsApprove,
+      shouldShowUnlockRequirement,
       isAllowanceLoading,
       // There are 2 cases when we show the allowance on the unwrap page:
       // 1. wallet chain is L2 chain and chain switcher is on L2 chain (isDappActiveOnL2)
@@ -90,6 +96,7 @@ export const useUnwrapTxOnL2Approve = ({ amount }: UseUnwrapTxApproveArgs) => {
       refetchAllowance,
       allowance,
       needsApprove,
+      shouldShowUnlockRequirement,
       isAllowanceLoading,
       isDappActiveOnL2,
       isChainIdOnL2,

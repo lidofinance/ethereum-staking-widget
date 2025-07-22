@@ -14,7 +14,7 @@ type TokenAmountInputWrapProps = Pick<
 export const TokenAmountInputWrap = (props: TokenAmountInputWrapProps) => {
   const { isWalletConnected, isDappActiveOnL2, isDappActive } = useDappStatus();
   const token = useWatch<WrapFormInputType, 'token'>({ name: 'token' });
-  const { maxAmount, needsApprove } = useWrapFormData();
+  const { maxAmount, shouldShowUnlockRequirement } = useWrapFormData();
 
   return (
     <TokenAmountInputHookForm
@@ -22,7 +22,7 @@ export const TokenAmountInputWrap = (props: TokenAmountInputWrapProps) => {
       fieldName="amount"
       token={token}
       data-testid="wrapInput"
-      isLocked={needsApprove}
+      isLocked={shouldShowUnlockRequirement}
       maxValue={maxAmount}
       showErrorMessage={false}
       leftDecorator={isDappActiveOnL2 ? <Steth /> : undefined}

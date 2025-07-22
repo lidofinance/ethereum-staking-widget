@@ -3,15 +3,15 @@ import { SubmitButtonHookForm } from 'shared/hook-form/controls/submit-button-ho
 import { useWrapFormData } from '../wrap-form-context';
 
 export const SubmitButtonWrap = () => {
-  const { needsApprove } = useWrapFormData();
+  const { shouldShowUnlockRequirement } = useWrapFormData();
 
   return (
     <SubmitButtonHookForm
-      isLocked={needsApprove}
+      isLocked={shouldShowUnlockRequirement}
       errorField="amount"
       data-testid="wrapBtn"
     >
-      {needsApprove ? `Unlock tokens and wrap` : 'Wrap'}
+      {shouldShowUnlockRequirement ? `Unlock tokens and wrap` : 'Wrap'}
     </SubmitButtonHookForm>
   );
 };

@@ -46,16 +46,19 @@ export const useWrapTxOnL1Approve = ({
     token: staticTokenAddress,
   });
 
-  // Wrap requires approval on L1 only and if the following conditions are met:
-  // 1. the connected wallet doesn't support batch txs for the connected address
+  // Wrap requires approval if the following conditions are met:
+  // 1. the current network is L1
   // 2. the allowance is not enough for the amount to wrap
   // 3. the token is stETH
+
+  const hasEnoughAllowance = allowance != null && allowance >= amount;
+
   const needsApprove =
-    isDappActiveOnL1 &&
-    !isAA &&
-    allowance != null &&
-    amount > allowance &&
-    token === TOKENS_TO_WRAP.stETH;
+    isDappActiveOnL1 && !hasEnoughAllowance && token === TOKENS_TO_WRAP.stETH;
+
+  // If the connected wallet supports batch txs for the connected address, then we don't need to show the unlock requirement,
+  // because the approval tx will be included in the batch.
+  const shouldShowUnlockRequirement = needsApprove && !isAA;
 
   const processApproveTx = useCallback(
     async ({ onRetry }: { onRetry?: () => void }) => {
@@ -100,6 +103,7 @@ export const useWrapTxOnL1Approve = ({
       isAllowanceLoading:
         isDappActiveOnL1 && (allowance == null || isAllowanceLoading),
       needsApprove,
+      shouldShowUnlockRequirement,
       refetchAllowance,
       // There are 3 cases when we show the allowance on the wrap page:
       // 1. is wallet not connected (!isWalletConnected)
@@ -112,6 +116,7 @@ export const useWrapTxOnL1Approve = ({
       allowance,
       isAllowanceLoading,
       needsApprove,
+      shouldShowUnlockRequirement,
       refetchAllowance,
       isWalletConnected,
       isDappActiveOnL1,
