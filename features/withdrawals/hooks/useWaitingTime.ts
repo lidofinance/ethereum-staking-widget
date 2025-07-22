@@ -39,7 +39,7 @@ export const useWaitingTime = (
     enabled: !!config.wqAPIBasePath,
     queryFn: () =>
       withdraw.waitingTime.getWithdrawalWaitingTimeByAmount({
-        amount: amount != null ? amount : undefined,
+        amount: debouncedAmount != null ? debouncedAmount : undefined,
         getCustomApiUrl: getWQApiUrlByChain,
       }),
     ...STRATEGY_EAGER,

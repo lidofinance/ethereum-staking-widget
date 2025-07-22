@@ -43,13 +43,11 @@ const LidoButton: React.FC<OptionButtonProps> = ({ isActive, onClick }) => {
     name: ['amount', 'token'],
   });
   const isSteth = token === TOKENS_TO_WITHDRAWLS.stETH;
-  const {
-    value: waitingTime,
-    isLoading: isWaitingTimeLoading,
-    isCongested,
-  } = useWaitingTime(amount, {
-    isApproximate: true,
-  });
+  const { isCongested } = useWaitingTime(null);
+  const { value: waitingTime, isLoading: isWaitingTimeLoading } =
+    useWaitingTime(amount, {
+      isApproximate: true,
+    });
   const { data: wstethAsSteth, isLoading: isWstethAsStethLoading } =
     useStETHByWstETH(DEFAULT_VALUE_FOR_RATE);
 
@@ -79,7 +77,7 @@ const LidoButton: React.FC<OptionButtonProps> = ({ isActive, onClick }) => {
       </OptionsPickerRow>
       <OptionsPickerRow data-testid="lidoOptionWaitingTime">
         <OptionsPickerSubLabel>
-          Waiting time:
+          Waiting time:&nbsp;
           {isCongested && (
             <Tooltip title=" Due to increased ecosystem activity, Ethereum’s validator exit queue is currently longer. As a result, Lido withdrawals can take additional time to process.">
               <InlineQuestion />

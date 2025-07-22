@@ -130,7 +130,6 @@ export const OptionsPickerRow = styled.div`
   justify-content: space-between;
 
   width: 100%;
-  gap: 8px;
   line-height: 20px;
   font-weight: 400;
   text-align: right;
