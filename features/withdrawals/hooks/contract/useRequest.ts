@@ -82,6 +82,12 @@ export const useWithdrawalRequest = ({
           // A rare case when the connected address has bytecode (is contract) but does not support batch txs for some reason
           // or the address has enough allowance to skip approval
           await txFlow({
+            callsFn: async () => [
+              await withdraw.request.requestWithdrawalPopulateTx({
+                amount,
+                token,
+              }),
+            ],
             sendTransaction: async (txStagesCallback) => {
               if (needsApprove) {
                 await withdraw.approval.approve({
