@@ -1,6 +1,7 @@
 import { FC } from 'react';
 import buildInfo from 'build-info.json';
 import { config } from 'config';
+import { OnlyInfraRender } from 'shared/components/only-infra-render';
 
 import {
   FooterStyle,
@@ -43,20 +44,22 @@ export const Footer: FC = () => {
   return (
     <FooterStyle size="full" forwardedAs="footer">
       <LogoLidoStyle />
-      <FooterLink
-        data-testid="termsOfUse"
-        href={`${config.rootOrigin}/terms-of-use`}
-      >
-        Terms of Use
-      </FooterLink>
-      <LinkDivider />
-      <FooterLink
-        data-testid="privacyNotice"
-        href={`${config.rootOrigin}/privacy-notice`}
-        $marginRight="auto"
-      >
-        Privacy Notice
-      </FooterLink>
+      <OnlyInfraRender>
+        <FooterLink
+          data-testid="termsOfUse"
+          href={`${config.rootOrigin}/terms-of-use`}
+        >
+          Terms of Use
+        </FooterLink>
+        <LinkDivider />
+        <FooterLink
+          data-testid="privacyNotice"
+          href={`${config.rootOrigin}/privacy-notice`}
+          $marginRight="auto"
+        >
+          Privacy Notice
+        </FooterLink>
+      </OnlyInfraRender>
       <LinkToIpfs />
       <Version data-testid="appVersion" href={link}>
         {label}
