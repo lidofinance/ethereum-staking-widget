@@ -24,7 +24,7 @@
     "cid": "bafybeibbsoqlofslw273b4ih2pdxfaz2zbjmred2ijog725tcmfoewix7y",
     "leastSafeVersion": "0.36.1",
     "config": {
-      "enabledWithdrawalDexes": ["one-inch", "paraswap", "bebop"],
+      "enabledWithdrawalDexes": ["one-inch", "paraswap", "bebop", "jumper"],
       "multiChainBanner": [],
       "featureFlags": {
         "ledgerLiveL2": true
@@ -36,7 +36,7 @@
     "cid": "",
     "leastSafeVersion": "0.36.1",
     "config": {
-      "enabledWithdrawalDexes": ["one-inch", "paraswap", "bebop"],
+      "enabledWithdrawalDexes": ["one-inch", "paraswap", "bebop", "jumper"],
       "multiChainBanner": [],
       "featureFlags": {
         "ledgerLiveL2": true
@@ -56,7 +56,7 @@
     "cid": "",
     "leastSafeVersion": "0.36.1",
     "config": {
-      "enabledWithdrawalDexes": ["one-inch", "paraswap", "bebop"],
+      "enabledWithdrawalDexes": ["one-inch", "paraswap", "bebop", "jumper"],
       "multiChainBanner": [],
       "featureFlags": {
         "ledgerLiveL2": true,
