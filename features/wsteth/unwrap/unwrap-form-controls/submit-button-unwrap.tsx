@@ -3,14 +3,15 @@ import { SubmitButtonHookForm } from 'shared/hook-form/controls/submit-button-ho
 import { useUnwrapFormData } from '../unwrap-form-context';
 
 export const SubmitButtonUnwrap = () => {
-  const { isSmartAccount, isApprovalNeededBeforeUnwrap: isLocked } =
-    useUnwrapFormData();
+  const { shouldShowUnlockRequirement } = useUnwrapFormData();
 
   return (
-    <SubmitButtonHookForm errorField="amount" data-testid="unwrapSubmitBtn">
-      {isLocked
-        ? `Unlock tokens ${isSmartAccount ? 'to' : 'and'} unwrap`
-        : 'Unwrap'}
+    <SubmitButtonHookForm
+      isLocked={shouldShowUnlockRequirement}
+      errorField="amount"
+      data-testid="unwrapSubmitBtn"
+    >
+      {shouldShowUnlockRequirement ? `Unlock tokens and unwrap` : 'Unwrap'}
     </SubmitButtonHookForm>
   );
 };
