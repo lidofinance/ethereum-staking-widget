@@ -27,6 +27,7 @@ export const FooterStyle = styled(Container)`
 
 type FooterLinkProps = {
   $marginRight?: string;
+  $marginLeft?: string;
 };
 
 export const FooterLink = styled(Link)<FooterLinkProps>`
@@ -39,6 +40,7 @@ export const FooterLink = styled(Link)<FooterLinkProps>`
   font-weight: 400;
 
   ${({ $marginRight }) => ($marginRight ? `margin-right:${$marginRight}` : '')};
+  ${({ $marginLeft }) => ($marginLeft ? `margin-left:${$marginLeft}` : '')};
 
   &:visited {
     color: var(--lido-color-textSecondary);

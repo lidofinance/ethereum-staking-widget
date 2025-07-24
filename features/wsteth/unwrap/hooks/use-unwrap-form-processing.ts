@@ -34,7 +34,7 @@ export const useUnwrapFormProcessor = ({
   const txFlow = useTxFlow();
 
   const {
-    isApprovalNeededBeforeUnwrap: needsApproveL2,
+    needsApprove: needsApproveL2,
     processApproveTx: processApproveTxOnL2,
   } = approvalDataOnL2;
 

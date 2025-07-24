@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { InlineLoader } from '@lidofinance/lido-ui';
+import { InlineLoader, Question } from '@lidofinance/lido-ui';
 import { FormatToken } from 'shared/formatters';
 
 import Lido from 'assets/icons/lido.svg';
@@ -18,10 +18,16 @@ export const OptionAmountRow = styled.div`
   align-items: center;
 `;
 
+export const InlineQuestion = styled(Question)`
+  width: 20px;
+  height: 20px;
+  vertical-align: top;
+`;
+
 // LIDO OPTION
 
 export const InlineLoaderSmall = styled(InlineLoader)`
-  max-width: 74px;
+  max-width: 50px;
 `;
 
 export const LidoOptionContainer = styled.div`
@@ -124,7 +130,6 @@ export const OptionsPickerRow = styled.div`
   justify-content: space-between;
 
   width: 100%;
-  gap: 8px;
   line-height: 20px;
   font-weight: 400;
   text-align: right;

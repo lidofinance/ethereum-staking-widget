@@ -4,6 +4,7 @@ import { TransactionCallbackStage } from '@lidofinance/lido-ethereum-sdk/core';
 
 import { TOKENS_TO_WRAP } from 'features/wsteth/shared/types';
 import {
+  useAA,
   useAllowance,
   useDappStatus,
   useLidoSDK,
@@ -29,6 +30,7 @@ export const useWrapTxOnL1Approve = ({
     useDappStatus();
   const { wrap } = useLidoSDK();
   const { txModalStages } = useTxModalWrap();
+  const { isAA } = useAA();
 
   const { data: staticTokenAddress } = useStETHContractAddress();
   const { data: staticSpenderAddress } = useWstETHContractAddress();
@@ -44,10 +46,19 @@ export const useWrapTxOnL1Approve = ({
     token: staticTokenAddress,
   });
 
-  const needsApprove = allowance != null && amount > allowance;
+  // Wrap requires approval if the following conditions are met:
+  // 1. the current network is L1
+  // 2. the allowance is not enough for the amount to wrap
+  // 3. the token is stETH
 
-  const isApprovalNeededBeforeWrap =
-    isDappActiveOnL1 && needsApprove && token === TOKENS_TO_WRAP.stETH;
+  const hasEnoughAllowance = allowance != null && allowance >= amount;
+
+  const needsApprove =
+    isDappActiveOnL1 && !hasEnoughAllowance && token === TOKENS_TO_WRAP.stETH;
+
+  // If the connected wallet supports batch txs for the connected address, then we don't need to show the unlock requirement,
+  // because the approval tx will be included in the batch.
+  const shouldShowUnlockRequirement = needsApprove && !isAA;
 
   const processApproveTx = useCallback(
     async ({ onRetry }: { onRetry?: () => void }) => {
@@ -87,12 +98,12 @@ export const useWrapTxOnL1Approve = ({
   return useMemo(
     () => ({
       processApproveTx,
-      needsApprove,
       allowance,
       // fix first loading when the wallet is autoconnecting
       isAllowanceLoading:
         isDappActiveOnL1 && (allowance == null || isAllowanceLoading),
-      isApprovalNeededBeforeWrap,
+      needsApprove,
+      shouldShowUnlockRequirement,
       refetchAllowance,
       // There are 3 cases when we show the allowance on the wrap page:
       // 1. is wallet not connected (!isWalletConnected)
@@ -102,10 +113,10 @@ export const useWrapTxOnL1Approve = ({
     }),
     [
       processApproveTx,
-      needsApprove,
       allowance,
       isAllowanceLoading,
-      isApprovalNeededBeforeWrap,
+      needsApprove,
+      shouldShowUnlockRequirement,
       refetchAllowance,
       isWalletConnected,
       isDappActiveOnL1,
