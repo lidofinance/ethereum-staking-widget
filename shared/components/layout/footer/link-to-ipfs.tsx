@@ -7,9 +7,17 @@ export const LinkToIpfs = () => {
   const { data } = useRemoteVersion();
   return (
     <OnlyInfraRender
-      renderIPFS={<ExternalLink href={IPFS_INFO_URL}>IPFS Docs</ExternalLink>}
+      renderIPFS={
+        <ExternalLink href={IPFS_INFO_URL} $marginLeft="auto">
+          IPFS Docs
+        </ExternalLink>
+      }
     >
-      {data && <ExternalLink href={data?.link}>IPFS</ExternalLink>}
+      {data && (
+        <ExternalLink href={data?.link} $marginLeft="auto">
+          IPFS
+        </ExternalLink>
+      )}
     </OnlyInfraRender>
   );
 };
