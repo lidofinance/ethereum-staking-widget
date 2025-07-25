@@ -6,10 +6,11 @@ import Head from 'next/head';
 
 import {
   ToastContainer,
-  CookiesTooltip,
   migrationAllowCookieToCrossDomainCookieClientSide,
   migrationThemeCookiesToCrossDomainCookiesClientSide,
 } from '@lidofinance/lido-ui';
+
+import { CookiesTooltip } from 'shared/components/cookies-tooltip/cookies-tooltip';
 
 import { config } from 'config';
 import { withCsp } from 'config/csp';
@@ -64,7 +65,10 @@ const AppWrapper = (
       <MemoApp {...props} />
 
       <NoSsrWrapper>
-        <CookiesTooltip privacyLink={`${config.rootOrigin}/privacy-notice`} />
+        <CookiesTooltip
+          privacyLink={`${config.rootOrigin}/privacy-notice`}
+          privacyLinkEnabled={!config.ipfsMode}
+        />
       </NoSsrWrapper>
 
       <SecurityStatusBanner />
