@@ -79,7 +79,7 @@ const LidoButton: React.FC<OptionButtonProps> = ({ isActive, onClick }) => {
         <OptionsPickerSubLabel>
           Waiting time:&nbsp;
           {isCongested && (
-            <Tooltip title=" Due to increased ecosystem activity, Ethereum’s validator exit queue is currently longer. As a result, Lido withdrawals can take additional time to process.">
+            <Tooltip title="Due to increased ecosystem activity, Ethereum’s validator exit queue is currently longer than usual. As a result, Lido withdrawals can take additional time to be processed.">
               <InlineQuestion />
             </Tooltip>
           )}

@@ -5,8 +5,8 @@ import 'nprogress/nprogress.css';
 import Head from 'next/head';
 
 import {
-  ToastContainer,
   CookiesTooltip,
+  ToastContainer,
   migrationAllowCookieToCrossDomainCookieClientSide,
   migrationThemeCookiesToCrossDomainCookiesClientSide,
 } from '@lidofinance/lido-ui';
@@ -64,7 +64,10 @@ const AppWrapper = (
       <MemoApp {...props} />
 
       <NoSsrWrapper>
-        <CookiesTooltip privacyLink={`${config.rootOrigin}/privacy-notice`} />
+        <CookiesTooltip
+          privacyLink={`${config.rootOrigin}/privacy-notice`}
+          privacyLinkEnabled={!config.ipfsMode}
+        />
       </NoSsrWrapper>
 
       <SecurityStatusBanner />
