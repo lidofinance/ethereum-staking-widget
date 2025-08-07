@@ -10,6 +10,15 @@ import {
   bridgedWstethAbi,
   rebasableL2StethAbi,
 } from '@lidofinance/lido-ethereum-sdk/l2';
+// TODO: update SDK and fix imports
+// eslint-disable-next-line import/no-unresolved
+import { escrow } from '@lidofinance/lido-ethereum-sdk/dist/types/dual-governance/abi/Escrow';
+// eslint-disable-next-line import/no-unresolved
+import { dualGovernanceAbi } from '@lidofinance/lido-ethereum-sdk/dist/types/dual-governance/abi/DualGovernance';
+// eslint-disable-next-line import/no-unresolved
+import { emergencyProtectedTimelockAbi } from '@lidofinance/lido-ethereum-sdk/dist/types/dual-governance/abi/EmergencyProtectedTimelock';
+// eslint-disable-next-line import/no-unresolved
+import { dgConfigProviderAbi } from '@lidofinance/lido-ethereum-sdk/dist/types/dual-governance/abi/DGConfigProvider';
 
 import { AggregatorAbi } from 'abi/aggregator-abi';
 import { ENSRegistryAbi } from 'abi/ens-registry-abi';
@@ -34,6 +43,10 @@ export const METRIC_CONTRACT_ABIS = {
   [CONTRACT_NAMES.L2wstETH]: bridgedWstethAbi,
   [CONTRACT_NAMES.ensPublicResolver]: ENSResolverAbi,
   [CONTRACT_NAMES.ensRegistry]: ENSRegistryAbi,
+  [CONTRACT_NAMES.dualGovernance]: dualGovernanceAbi,
+  [CONTRACT_NAMES.escrow]: escrow,
+  [CONTRACT_NAMES.emergencyProtectedTimelock]: emergencyProtectedTimelockAbi,
+  [CONTRACT_NAMES.dgConfigProvider]: dgConfigProviderAbi,
 } as const;
 
 export type MetricContractName = keyof typeof CONTRACT_NAMES;

@@ -4,7 +4,11 @@
     "stakingRouter": "0xCc820558B39ee15C7C45B59390B503b83fb499A8",
     "withdrawalQueue": "0xfe56573178f1bcdf53F01A6E9977670dcBBD9186",
     "lido": "0x3508A952176b3c15387C97BE809eaffB1982176a",
-    "wsteth": "0x7E99eE3C66636DE415D2d7C880938F2f40f94De4"
+    "wsteth": "0x7E99eE3C66636DE415D2d7C880938F2f40f94De4",
+    "dualGovernance": "0x9CAaCCc62c66d817CC59c44780D1b722359795bF",
+    "escrow": "0x781afe6C8D768CEaA9a97f2A75714e80AE0e83B9",
+    "emergencyProtectedTimelock": "0x0A5E22782C0Bd4AddF10D771f0bF0406B038282d",
+    "dgConfigProvider": "0x2b685e6fB288bBb7A82533BAfb679FfDF6E5bb33"
   },
   "api": {}
 }
