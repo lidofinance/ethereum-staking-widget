@@ -2333,7 +2333,7 @@
   resolved "https://registry.yarnpkg.com/@lidofinance/eth-providers/-/eth-providers-0.48.0.tgz#217279cc8433968531283b985617b981d59a8393"
   integrity sha512-ItzIN9psHu8stf8MTAmNaXmKyaVnsYzQ10zdvdX6TM56TcFRlxidTnR5UVeOObtr1Bm/pz61GYCOZkUI6q3aAw==
 
-"@lidofinance/lido-ethereum-sdk@^4.5.1":
+"@lidofinance/lido-ethereum-sdk@4.5.1":
   version "4.5.1"
   resolved "https://registry.yarnpkg.com/@lidofinance/lido-ethereum-sdk/-/lido-ethereum-sdk-4.5.1.tgz#41d229c6d6d665a6c9fcaf3371408641e7c2b1b6"
   integrity sha512-bR3oJSmYiFyiUXLGA9+W/swsWU9hvckHQVIrcCLEownRmKfes3Xec7UMSq0BSTgudgnskWi90kECwUw1kQkNvA==
