@@ -1,11 +1,12 @@
 import React from 'react';
-import { Button, Link } from '@lidofinance/lido-ui';
+import { Button } from '@lidofinance/lido-ui';
 
+import { LocalLink } from 'shared/components/local-link';
 import { EARN_PATH } from 'consts/urls';
-import { VaultHeader } from '../vault-header';
-import { VaultPartnerType } from '../../types';
-import { VaultStats } from '../vault-stats';
-import { VaultDescription } from '../vault-description';
+import { VaultHeader } from '../../../shared/vault-header';
+import { VaultPartnerType } from '../../../shared/types';
+import { VaultStats } from '../../../shared/vault-stats';
+import { VaultDescription } from '../../../shared/vault-description';
 import { VaultTokens } from '../vault-tokens';
 import { VaultCardStyled } from './styles';
 
@@ -36,10 +37,10 @@ export const VaultCard: React.FC<VaultCardProps> = ({
     {stats && <VaultStats tvl={stats.tvl} apy={stats.apy} />}
     <VaultDescription description={description} />
     <VaultTokens tokens={tokens} />
-    <Link href={`${EARN_PATH}/${urlSlug}`}>
+    <LocalLink href={`${EARN_PATH}/${urlSlug}/deposit`}>
       <Button fullwidth size="sm">
         Deposit
       </Button>
-    </Link>
+    </LocalLink>
   </VaultCardStyled>
 );

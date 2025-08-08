@@ -6,7 +6,7 @@ import {
   VaultPartnerRole,
   VaultPartnerText,
 } from './styles';
-import { VaultPartnerType } from '../../types';
+import { VaultPartnerType } from '../types';
 
 type VaultPartnersProps = {
   partners?: VaultPartnerType[];

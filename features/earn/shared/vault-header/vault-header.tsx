@@ -6,7 +6,7 @@ import {
   VaultLogoWrapper,
 } from './styles';
 import { VaultPartners } from '../vault-partners';
-import { VaultPartnerType } from '../../types';
+import { VaultPartnerType } from '../types';
 
 type VaultHeaderProps = {
   title: string;
