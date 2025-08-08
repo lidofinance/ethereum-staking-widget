@@ -14,47 +14,86 @@ export const TokenEthIcon = React.forwardRef(function TokenEthIcon(
       ref={svgRef}
       {...props}
     >
-      <g fill="#000" clipPath="url(#a)">
-        <rect width="20" height="20" fillOpacity=".04" rx="10" />
+      <g clipPath="url(#clip0_10520_12249)">
+        <rect width="20" height="20" rx="10" fill="#eee" />
         <path
-          d="m9.926 8.263-4.093 1.861 4.093 2.419 4.092-2.419z"
-          opacity=".6"
+          opacity="0.6"
+          d="M9.92617 8.2627L5.83301 10.1242L9.92617 12.5425L14.0177 10.1242L9.92617 8.2627Z"
+          fill="black"
         />
-        <path d="m5.833 10.124 4.093 2.419v-9.21z" opacity=".45" />
-        <path d="M9.925 3.333v9.21l4.091-2.419z" opacity=".8" />
-        <path d="m5.833 10.9 4.093 5.767v-3.348z" opacity=".45" />
-        <path d="M9.925 13.318v3.348l4.095-5.767z" opacity=".8" />
-        <g filter="url(#b)" opacity=".3">
+        <path
+          opacity="0.45"
+          d="M5.83301 10.1244L9.92617 12.5426L9.92617 3.33301L5.83301 10.1244Z"
+          fill="black"
+        />
+        <path
+          opacity="0.8"
+          d="M9.9248 3.33301L9.9248 12.5426L14.0164 10.1244L9.9248 3.33301Z"
+          fill="black"
+        />
+        <path
+          opacity="0.45"
+          d="M5.83301 10.9004L9.92617 16.6669V13.3186L5.83301 10.9004Z"
+          fill="black"
+        />
+        <path
+          opacity="0.8"
+          d="M9.9248 13.3177L9.9248 16.6659L14.0196 10.8994L9.9248 13.3177Z"
+          fill="black"
+        />
+        <g opacity="0.3" filter="url(#filter0_f_10520_12249)">
           <path
-            d="M12.093 8.18 8 10.04l4.093 2.419 4.092-2.419z"
-            opacity=".6"
+            opacity="0.6"
+            d="M12.0932 8.17969L8 10.0412L12.0932 12.4595L16.1847 10.0412L12.0932 8.17969Z"
+            fill="black"
           />
-          <path d="m8 10.041 4.093 2.419V3.25z" opacity=".45" />
-          <path d="M12.092 3.25v9.21l4.091-2.419z" opacity=".8" />
-          <path d="m8 10.817 4.093 5.767v-3.348z" opacity=".45" />
-          <path d="M12.092 13.235v3.348l4.095-5.767z" opacity=".8" />
+          <path
+            opacity="0.45"
+            d="M8 10.0414L12.0932 12.4596L12.0932 3.25L8 10.0414Z"
+            fill="black"
+          />
+          <path
+            opacity="0.8"
+            d="M12.0918 3.25L12.0918 12.4596L16.1833 10.0414L12.0918 3.25Z"
+            fill="black"
+          />
+          <path
+            opacity="0.45"
+            d="M8 10.8174L12.0932 16.5839V13.2356L8 10.8174Z"
+            fill="black"
+          />
+          <path
+            opacity="0.8"
+            d="M12.0918 13.2347L12.0918 16.5829L16.1866 10.8164L12.0918 13.2347Z"
+            fill="black"
+          />
         </g>
       </g>
       <defs>
-        <clipPath id="a">
-          <rect width="20" height="20" fill="#fff" rx="10" />
-        </clipPath>
         <filter
-          id="b"
-          width="36.187"
-          height="41.334"
+          id="filter0_f_10520_12249"
           x="-6"
           y="-10.75"
-          colorInterpolationFilters="sRGB"
+          width="36.1865"
+          height="41.334"
           filterUnits="userSpaceOnUse"
+          colorInterpolationFilters="sRGB"
         >
           <feFlood floodOpacity="0" result="BackgroundImageFix" />
-          <feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape" />
+          <feBlend
+            mode="normal"
+            in="SourceGraphic"
+            in2="BackgroundImageFix"
+            result="shape"
+          />
           <feGaussianBlur
-            result="effect1_foregroundBlur_10520_12249"
             stdDeviation="7"
+            result="effect1_foregroundBlur_10520_12249"
           />
         </filter>
+        <clipPath id="clip0_10520_12249">
+          <rect width="20" height="20" rx="10" fill="white" />
+        </clipPath>
       </defs>
     </svg>
   );

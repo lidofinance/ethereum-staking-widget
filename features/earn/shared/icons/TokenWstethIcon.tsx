@@ -14,69 +14,112 @@ export const TokenWstethIcon = React.forwardRef(function TokenWstethIcon(
       ref={svgRef}
       {...props}
     >
-      <g clipPath="url(#a)">
-        <rect width="20" height="20" fill="#00a3ff" rx="10" />
+      <g clipPath="url(#clip0_10520_12258)">
+        <rect width="20" height="20" rx="10" fill="#00A3FF" />
         <path
-          fill="#fff"
-          d="m13.692 8.985.1.155a4.34 4.34 0 0 1-.61 5.49 4.53 4.53 0 0 1-3.18 1.29z"
-          opacity=".6"
+          opacity="0.6"
+          d="M13.6918 8.98535L13.7926 9.13992C14.929 10.8833 14.6752 13.1665 13.1824 14.6292C12.3041 15.4897 11.1531 15.92 10.002 15.9202C10.002 15.9202 10.002 15.9202 13.6918 8.98535Z"
+          fill="white"
         />
         <path
-          fill="#fff"
-          d="m10.002 11.093 3.69-2.108-3.69 6.935z"
-          opacity=".2"
+          opacity="0.2"
+          d="M10.0016 11.093L13.6914 8.98535C10.0016 15.9202 10.0016 15.9202 10.0016 15.9202C10.0016 14.4098 10.0016 12.6791 10.0016 11.093Z"
+          fill="white"
         />
         <path
-          fill="#fff"
-          d="m6.308 8.985-.1.155a4.34 4.34 0 0 0 .61 5.49c.878.86 2.029 1.29 3.18 1.29z"
+          d="M6.30819 8.98535L6.20742 9.13992C5.07096 10.8833 5.32477 13.1665 6.81764 14.6292C7.69589 15.4897 8.84694 15.92 9.99803 15.9202C9.99803 15.9202 9.99803 15.9202 6.30819 8.98535Z"
+          fill="white"
         />
         <path
-          fill="#fff"
-          d="m9.996 11.093-3.69-2.108 3.69 6.935z"
-          opacity=".6"
+          opacity="0.6"
+          d="M9.99648 11.093L6.30664 8.98535C9.99649 15.9202 9.99648 15.9202 9.99648 15.9202C9.99648 14.4098 9.99648 12.6791 9.99648 11.093Z"
+          fill="white"
         />
-        <path fill="#fff" d="M10.003 6.385v3.635l3.178-1.816z" opacity=".2" />
         <path
-          fill="#fff"
-          d="m10.002 6.385-3.18 1.818 3.18 1.817z"
-          opacity=".6"
+          opacity="0.2"
+          d="M10.0029 6.38477V10.0199L13.1813 8.20351L10.0029 6.38477Z"
+          fill="white"
         />
-        <path fill="#fff" d="m10.002 3.327-3.18 4.877 3.18-1.824z" />
-        <path fill="#fff" d="m10.003 6.38 3.18 1.824-3.18-4.88z" opacity=".6" />
-        <g fill="#fff" filter="url(#b)" opacity=".7">
+        <path
+          opacity="0.6"
+          d="M10.002 6.38477L6.82129 8.20347L10.002 10.0199V6.38477Z"
+          fill="white"
+        />
+        <path
+          d="M10.002 3.32715L6.82129 8.20417L10.002 6.38035V3.32715Z"
+          fill="white"
+        />
+        <path
+          opacity="0.6"
+          d="M10.0029 6.37979L13.1838 8.20366L10.0029 3.32422V6.37979Z"
+          fill="white"
+        />
+        <g opacity="0.7" filter="url(#filter0_f_10520_12258)">
           <path
-            d="m15.559 11.309.106.162a4.57 4.57 0 0 1-.643 5.782 4.77 4.77 0 0 1-3.35 1.36z"
-            opacity=".6"
+            opacity="0.6"
+            d="M15.5589 11.3086L15.665 11.4714C16.8621 13.3077 16.5947 15.7126 15.0223 17.2534C14.0972 18.1598 12.8847 18.6131 11.6723 18.6132C11.6723 18.6132 11.6723 18.6132 15.5589 11.3086Z"
+            fill="white"
           />
-          <path d="m11.672 13.529 3.887-2.22-3.887 7.304z" opacity=".2" />
-          <path d="m7.782 11.309-.106.162a4.57 4.57 0 0 0 .643 5.782 4.77 4.77 0 0 0 3.35 1.36z" />
-          <path d="m11.667 13.529-3.887-2.22 3.887 7.304z" opacity=".6" />
-          <path d="M11.674 8.57v3.828l3.348-1.913z" opacity=".2" />
-          <path d="m11.673 8.57-3.35 1.915 3.35 1.913z" opacity=".6" />
-          <path d="m11.673 5.35-3.35 5.137 3.35-1.921z" />
-          <path d="m11.674 8.564 3.35 1.921-3.35-5.14z" opacity=".6" />
+          <path
+            opacity="0.2"
+            d="M11.672 13.5286L15.5586 11.3086C11.672 18.6132 11.672 18.6132 11.672 18.6132C11.672 17.0223 11.672 15.1994 11.672 13.5286Z"
+            fill="white"
+          />
+          <path
+            d="M7.78195 11.3086L7.67581 11.4714C6.47875 13.3077 6.7461 15.7126 8.31857 17.2534C9.24365 18.1598 10.4561 18.6131 11.6685 18.6132C11.6685 18.6132 11.6685 18.6132 7.78195 11.3086Z"
+            fill="white"
+          />
+          <path
+            opacity="0.6"
+            d="M11.6669 13.5286L7.78027 11.3086C11.6669 18.6132 11.6669 18.6132 11.6669 18.6132C11.6669 17.0223 11.6669 15.1994 11.6669 13.5286Z"
+            fill="white"
+          />
+          <path
+            opacity="0.2"
+            d="M11.6738 8.56934V12.3983L15.0217 10.4851L11.6738 8.56934Z"
+            fill="white"
+          />
+          <path
+            opacity="0.6"
+            d="M11.6726 8.56934L8.32227 10.485L11.6726 12.3983V8.56934Z"
+            fill="white"
+          />
+          <path
+            d="M11.6726 5.34961L8.32227 10.4867L11.6726 8.56561V5.34961Z"
+            fill="white"
+          />
+          <path
+            opacity="0.6"
+            d="M11.6738 8.56421L15.0243 10.4853L11.6738 5.3457V8.56421Z"
+            fill="white"
+          />
         </g>
       </g>
       <defs>
-        <clipPath id="a">
-          <rect width="20" height="20" fill="#fff" rx="10" />
-        </clipPath>
         <filter
-          id="b"
-          width="77.48"
-          height="81.268"
-          x="-27.069"
-          y="-28.654"
-          colorInterpolationFilters="sRGB"
+          id="filter0_f_10520_12258"
+          x="-27.0693"
+          y="-28.6543"
+          width="77.4795"
+          height="81.2676"
           filterUnits="userSpaceOnUse"
+          colorInterpolationFilters="sRGB"
         >
           <feFlood floodOpacity="0" result="BackgroundImageFix" />
-          <feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape" />
+          <feBlend
+            mode="normal"
+            in="SourceGraphic"
+            in2="BackgroundImageFix"
+            result="shape"
+          />
           <feGaussianBlur
-            result="effect1_foregroundBlur_10520_12258"
             stdDeviation="17"
+            result="effect1_foregroundBlur_10520_12258"
           />
         </filter>
+        <clipPath id="clip0_10520_12258">
+          <rect width="20" height="20" rx="10" fill="white" />
+        </clipPath>
       </defs>
     </svg>
   );
