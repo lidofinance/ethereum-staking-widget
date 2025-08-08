@@ -1,7 +1,9 @@
-import { standardFetcher } from './standardFetcher';
+import invariant from 'tiny-invariant';
+
 import { ETH_API_ROUTES, getEthApiPath } from 'consts/api';
 import { LIDO_TOKENS_VALUES } from 'consts/tokens';
-import invariant from 'tiny-invariant';
+
+import { standardFetcher } from './standardFetcher';
 
 type GetOneInchRateParams = {
   token: LIDO_TOKENS_VALUES;
@@ -20,6 +22,7 @@ export const getOneInchRate = async (params: GetOneInchRateParams) => {
   const data = await standardFetcher<{
     rate: number;
     toReceive: string;
+    fromAmount: string;
   }>(url);
 
   return {
