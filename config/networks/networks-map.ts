@@ -36,6 +36,10 @@ export const CONTRACT_NAMES = {
   lidoLocator: 'lidoLocator',
   ensPublicResolver: 'ensPublicResolver',
   ensRegistry: 'ensRegistry',
+  dualGovernance: 'dualGovernance',
+  escrow: 'escrow',
+  emergencyProtectedTimelock: 'emergencyProtectedTimelock',
+  dgConfigProvider: 'dgConfigProvider',
 } as const;
 export type CONTRACT_NAMES = keyof typeof CONTRACT_NAMES;
 
