@@ -8,6 +8,7 @@ export const VaultPartnersWrapper = styled.div`
 export const VaultPartner = styled.div`
   display: flex;
   margin-right: ${({ theme }) => theme.spaceMap.md}px;
+  height: 20px;
 `;
 
 export const VaultPartnerRole = styled.div`

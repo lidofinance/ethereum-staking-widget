@@ -2,7 +2,9 @@ import styled from 'styled-components';
 
 export const VaultTokensWrapper = styled.div`
   display: flex;
+  align-items: center;
   margin: 12px 0 24px 0;
+  line-height: 1;
 `;
 
 export const VaultTokensLabel = styled.div`
@@ -12,10 +14,12 @@ export const VaultTokensLabel = styled.div`
 
 export const VaultTokensList = styled.div`
   display: flex;
+  align-items: center;
 `;
 
 export const VaultToken = styled.div`
   display: flex;
+  align-items: center;
   margin-right: ${({ theme }) => theme.spaceMap.sm}px;
 `;
 
