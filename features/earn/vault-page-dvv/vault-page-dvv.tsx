@@ -2,7 +2,7 @@ import { FC } from 'react';
 import { Block } from '@lidofinance/lido-ui';
 
 import { ButtonBack } from 'shared/components/button-back/button-back';
-import { PartnerStakehouseIcon, VaultDDVIcon } from '../shared/icons';
+import { PartnerStakehouseIcon, VaultDDVIcon } from 'assets/earn';
 import { VaultDescription } from '../shared/vault-description';
 import { VaultHeader } from '../shared/vault-header';
 import { VaultStats } from '../shared/vault-stats';

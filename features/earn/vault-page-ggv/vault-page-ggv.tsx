@@ -3,16 +3,12 @@ import { Block } from '@lidofinance/lido-ui';
 
 import { ButtonBack } from 'shared/components/button-back/button-back';
 import { VaultHeader } from '../shared/vault-header';
-import {
-  Partner7seasIcon,
-  PartnerVedaIcon,
-  VaultGGVIcon,
-} from '../shared/icons';
+import { Partner7SeasIcon, PartnerVedaIcon, VaultGGVIcon } from 'assets/earn';
 import { VaultDescription } from '../shared/vault-description';
 import { VaultStats } from '../shared/vault-stats';
 
 const partners = [
-  { role: 'Curated by', icon: <Partner7seasIcon />, text: '7seas' },
+  { role: 'Curated by', icon: <Partner7SeasIcon />, text: '7seas' },
   {
     role: 'Infrastructure provider',
     icon: <PartnerVedaIcon />,

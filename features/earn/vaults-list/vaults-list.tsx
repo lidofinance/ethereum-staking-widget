@@ -4,14 +4,14 @@ import { VaultsListWrapper } from './styles';
 import {
   VaultDDVIcon,
   VaultGGVIcon,
-  Partner7seasIcon,
+  Partner7SeasIcon,
   PartnerStakehouseIcon,
   PartnerVedaIcon,
   TokenEthIcon,
   TokenStethIcon,
   TokenWethIcon,
   TokenWstethIcon,
-} from '../shared/icons';
+} from 'assets/earn';
 
 export const EarnVaultsList: FC = () => {
   return (
@@ -21,7 +21,7 @@ export const EarnVaultsList: FC = () => {
         description="Lido GGV leverages top DeFi protocols to maximize rewards on your stETH, with a single deposit."
         urlSlug="ggv"
         partners={[
-          { role: 'Curated by', icon: <Partner7seasIcon />, text: '7seas' },
+          { role: 'Curated by', icon: <Partner7SeasIcon />, text: '7seas' },
           {
             role: 'Infrastructure provider',
             icon: <PartnerVedaIcon />,
