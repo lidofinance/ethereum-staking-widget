@@ -8,7 +8,12 @@ import { VaultPartnerType } from '../../../shared/types';
 import { VaultStats } from '../../../shared/vault-stats';
 import { VaultDescription } from '../../../shared/vault-description';
 import { VaultTokens } from '../vault-tokens';
-import { VaultCardStyled } from './styles';
+import {
+  VaultCardMyPosition,
+  VaultCardMyPositionLabel,
+  VaultCardMyPositionValue,
+  VaultCardWrapper,
+} from './styles';
 
 type VaultCardProps = {
   title: string;
@@ -32,15 +37,19 @@ export const VaultCard: React.FC<VaultCardProps> = ({
   stats,
   urlSlug,
 }) => (
-  <VaultCardStyled>
+  <VaultCardWrapper>
     <VaultHeader title={title} partners={partners} logo={logo} />
     {stats && <VaultStats tvl={stats.tvl} apy={stats.apy} />}
     <VaultDescription description={description} />
     <VaultTokens tokens={tokens} />
+    <VaultCardMyPosition>
+      <VaultCardMyPositionLabel>My position</VaultCardMyPositionLabel>
+      <VaultCardMyPositionValue>0.00 gg</VaultCardMyPositionValue>
+    </VaultCardMyPosition>
     <LocalLink href={`${EARN_PATH}/${urlSlug}/deposit`}>
       <Button fullwidth size="sm">
         Deposit
       </Button>
     </LocalLink>
-  </VaultCardStyled>
+  </VaultCardWrapper>
 );
