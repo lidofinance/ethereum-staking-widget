@@ -13,6 +13,7 @@ import { useConfig } from 'config';
 import { ManifestConfigPage } from 'config/external-config';
 import { LocalLink } from 'shared/components/local-link';
 import { useRouterPath } from 'shared/hooks/use-router-path';
+import { EarnNavIcon } from 'features/earn/shared/icons/EarnNavIcon';
 
 import { Nav, NavLink } from './styles';
 
@@ -31,6 +32,11 @@ const routes: PageRoute[] = [
     path: HOME_PATH,
     icon: <Stake data-testid="navStake" />,
     exact: true,
+  },
+  {
+    name: 'Earn',
+    path: '/earn',
+    icon: <EarnNavIcon data-testid="navEarn" />,
   },
   {
     name: 'Wrap',
