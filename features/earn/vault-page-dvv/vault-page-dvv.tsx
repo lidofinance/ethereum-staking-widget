@@ -1,5 +1,7 @@
 import { FC } from 'react';
 import { Block } from '@lidofinance/lido-ui';
+
+import { ButtonBack } from 'shared/components/button-back/button-back';
 import { PartnerStakehouseIcon, VaultDDVIcon } from '../shared/icons';
 import { VaultDescription } from '../shared/vault-description';
 import { VaultHeader } from '../shared/vault-header';
@@ -19,14 +21,17 @@ const stats = { tvl: '86', apy: '4.4' };
 export const VaultPageDVV: FC<{ action: 'deposit' | 'withdraw' }> = ({
   action,
 }) => (
-  <Block>
-    <VaultHeader
-      title={`Lido DVV`}
-      logo={<VaultDDVIcon />}
-      partners={partners}
-    />
-    {stats && <VaultStats tvl={stats.tvl} apy={stats.apy} />}
-    <VaultDescription description={description} />
-    {action}
-  </Block>
+  <>
+    <ButtonBack url="/earn">Back to all vaults</ButtonBack>
+    <Block>
+      <VaultHeader
+        title={`Lido DVV`}
+        logo={<VaultDDVIcon />}
+        partners={partners}
+      />
+      {stats && <VaultStats tvl={stats.tvl} apy={stats.apy} />}
+      <VaultDescription description={description} />
+      {action}
+    </Block>
+  </>
 );
