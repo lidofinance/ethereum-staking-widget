@@ -2,10 +2,17 @@ import { FC } from 'react';
 import { Block } from '@lidofinance/lido-ui';
 
 import { ButtonBack } from 'shared/components/button-back/button-back';
-import { VaultHeader } from '../shared/vault-header';
 import { Partner7SeasIcon, PartnerVedaIcon, VaultGGVIcon } from 'assets/earn';
+import { VaultHeader } from '../shared/vault-header';
 import { VaultDescription } from '../shared/vault-description';
 import { VaultStats } from '../shared/vault-stats';
+import { SwitchStyled } from '../shared/styles';
+import {
+  EARN_PATH,
+  EARN_VAULT_DEPOSIT_SLUG,
+  EARN_VAULT_GGV_SLUG,
+  EARN_VAULT_WITHDRAW_SLUG,
+} from 'consts/urls';
 
 const partners = [
   { role: 'Curated by', icon: <Partner7SeasIcon />, text: '7seas' },
@@ -18,12 +25,22 @@ const partners = [
 const description =
   'Lido GGV leverages top DeFi protocols to maximize rewards on your stETH, with a single deposit.';
 const stats = { tvl: '431', apy: '10.4' };
+const routes = [
+  {
+    path: `${EARN_PATH}/${EARN_VAULT_GGV_SLUG}/${EARN_VAULT_DEPOSIT_SLUG}`,
+    name: 'Deposit',
+  },
+  {
+    path: `${EARN_PATH}/${EARN_VAULT_GGV_SLUG}/${EARN_VAULT_WITHDRAW_SLUG}`,
+    name: 'Withdraw',
+  },
+];
 
-export const VaultPageGGV: FC<{ action: 'deposit' | 'withdraw' }> = ({
-  action,
-}) => (
+export const VaultPageGGV: FC<{
+  action: typeof EARN_VAULT_DEPOSIT_SLUG | typeof EARN_VAULT_WITHDRAW_SLUG;
+}> = ({ action }) => (
   <>
-    <ButtonBack url="/earn">Back to all vaults</ButtonBack>
+    <ButtonBack url={EARN_PATH}>Back to all vaults</ButtonBack>
     <Block>
       <VaultHeader
         title={`Lido GGV`}
@@ -32,7 +49,11 @@ export const VaultPageGGV: FC<{ action: 'deposit' | 'withdraw' }> = ({
       />
       {stats && <VaultStats tvl={stats.tvl} apy={stats.apy} />}
       <VaultDescription description={description} />
-      {action}
+      <SwitchStyled
+        routes={routes}
+        checked={action === EARN_VAULT_WITHDRAW_SLUG}
+        fullwidth
+      />
     </Block>
   </>
 );

@@ -12,6 +12,7 @@ import {
   TokenWethIcon,
   TokenWstethIcon,
 } from 'assets/earn';
+import { EARN_VAULT_GGV_SLUG, EARN_VAULT_DVV_SLUG } from 'consts/urls';
 
 export const EarnVaultsList: FC = () => {
   return (
@@ -19,7 +20,7 @@ export const EarnVaultsList: FC = () => {
       <VaultCard
         title="Lido GGV"
         description="Lido GGV leverages top DeFi protocols to maximize rewards on your stETH, with a single deposit."
-        urlSlug="ggv"
+        urlSlug={EARN_VAULT_GGV_SLUG}
         partners={[
           { role: 'Curated by', icon: <Partner7SeasIcon />, text: '7seas' },
           {
@@ -40,7 +41,7 @@ export const EarnVaultsList: FC = () => {
       <VaultCard
         title="Lido DVV"
         description="The Decentralized Validator Vault accepts ETH deposits to the Lido protocol, accelerating the adoption of Distributed Validator Technology (DVT)"
-        urlSlug="dvv"
+        urlSlug={EARN_VAULT_DVV_SLUG}
         partners={[
           {
             role: 'Curated by',
