@@ -8,6 +8,7 @@ export const WITHDRAWALS_CLAIM_PATH = '/withdrawals/claim';
 export const REWARDS_PATH = '/rewards';
 export const SETTINGS_PATH = '/settings';
 export const REFERRAL_PATH = '/referral';
+export const EARN_PATH = '/earn';
 
 export const getPathWithoutFirstSlash = (path: string): string => {
   if (path.length === 0 || path[0] !== '/') return path;
