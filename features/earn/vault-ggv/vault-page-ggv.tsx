@@ -29,6 +29,7 @@ import { GGVDepositForm } from './deposit';
 import { GGVWithdrawForm } from './withdraw';
 import { useGGVStats } from './hooks/use-ggv-stats';
 import { useGGVPosition } from './hooks/use-ggv-position';
+import { GGV_TOKEN_SYMBOL } from './consts';
 
 const partners = [
   { role: 'Curated by', icon: <Partner7SeasIcon />, text: '7seas' },
@@ -80,7 +81,7 @@ export const VaultPageGGV: FC<{
         {isWalletConnected && (
           <VaultPosition
             position={{
-              symbol: 'gg',
+              symbol: GGV_TOKEN_SYMBOL,
               token: data?.ggvTokenAddress,
               balance: data?.sharesBalance,
               icon: <TokenGGIcon />,

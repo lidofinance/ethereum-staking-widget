@@ -13,6 +13,7 @@ import { EARN_VAULT_GGV_SLUG } from 'consts/urls';
 import { useGGVStats } from './hooks/use-ggv-stats';
 import { useGGVPosition } from './hooks/use-ggv-position';
 import { useDappStatus } from 'modules/web3';
+import { GGV_TOKEN_SYMBOL } from './consts';
 
 export const VaultCardGGV = () => {
   const { isWalletConnected } = useDappStatus();
@@ -41,7 +42,7 @@ export const VaultCardGGV = () => {
         isWalletConnected
           ? {
               balance: sharesBalance,
-              symbol: 'gg',
+              symbol: GGV_TOKEN_SYMBOL,
               isLoading: isLoadingPosition,
             }
           : undefined
