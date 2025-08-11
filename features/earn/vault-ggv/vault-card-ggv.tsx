@@ -11,9 +11,13 @@ import {
 import { VaultCard } from '../vaults-list/components/vault-card';
 import { EARN_VAULT_GGV_SLUG } from 'consts/urls';
 import { useGGVStats } from './hooks/use-ggv-stats';
+import { useGGVPosition } from './hooks/use-ggv-position';
+import { useDappStatus } from 'modules/web3';
 
 export const VaultCardGGV = () => {
+  const { isWalletConnected } = useDappStatus();
   const { tvl, apy, isLoading: isLoadingStats } = useGGVStats();
+  const { sharesBalance, isLoading: isLoadingPosition } = useGGVPosition();
   return (
     <VaultCard
       title="Lido GGV"
@@ -33,6 +37,15 @@ export const VaultCardGGV = () => {
         { name: 'stETH', logo: <TokenStethIcon /> },
         { name: 'wstETH', logo: <TokenWstethIcon /> },
       ]}
+      position={
+        isWalletConnected
+          ? {
+              balance: sharesBalance,
+              symbol: 'gg',
+              isLoading: isLoadingPosition,
+            }
+          : undefined
+      }
       stats={{ tvl, apy, isLoading: isLoadingStats }}
       logo={<VaultGGVIcon />}
     />

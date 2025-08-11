@@ -10,6 +10,9 @@ import { getContractAddress } from 'config/networks/contract-address';
 import { STRATEGY_LAZY } from 'consts/react-query-strategies';
 import { useMainnetOnlyWagmi } from 'modules/web3';
 
+const ETH_DECIMALS = 18n;
+const PRECISION = 4n;
+
 export const useEthUsd = (amount?: bigint) => {
   const { publicClientMainnet } = useMainnetOnlyWagmi();
 
@@ -46,17 +49,24 @@ export const useEthUsd = (amount?: bigint) => {
         contract.read.decimals(),
       ]);
 
-      // TODO: correct this calc - this removes all price precision beyond decimal point
-      return latestAnswer / 10n ** BigInt(decimals);
+      return {
+        latestAnswer,
+        decimals: BigInt(decimals),
+      };
     },
   });
 
   const usdAmount = useMemo(() => {
+    // shortcut
+    if (amount == 0n) return 0;
+
     if (price && amount) {
-      // There is no need for absolute precision here
-      const txCostInEth = Number(amount) / 10 ** 18;
-      return txCostInEth * Number(price);
+      const ethInUsd_P4 =
+        (amount * price.latestAnswer) /
+        10n ** (price.decimals + ETH_DECIMALS - PRECISION);
+      return Number(ethInUsd_P4) / 4;
     }
+
     return undefined;
   }, [amount, price]);
 
