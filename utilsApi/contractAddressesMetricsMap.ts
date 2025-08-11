@@ -10,6 +10,10 @@ import {
   bridgedWstethAbi,
   rebasableL2StethAbi,
 } from '@lidofinance/lido-ethereum-sdk/l2';
+import { escrowAbi } from '@lidofinance/lido-ethereum-sdk/dual-governance';
+import { dualGovernanceAbi } from '@lidofinance/lido-ethereum-sdk/dual-governance';
+import { emergencyProtectedTimelockAbi } from '@lidofinance/lido-ethereum-sdk/dual-governance';
+import { dgConfigProviderAbi } from '@lidofinance/lido-ethereum-sdk/dual-governance';
 
 import { AggregatorAbi } from 'abi/aggregator-abi';
 import { ENSRegistryAbi } from 'abi/ens-registry-abi';
@@ -34,6 +38,10 @@ export const METRIC_CONTRACT_ABIS = {
   [CONTRACT_NAMES.L2wstETH]: bridgedWstethAbi,
   [CONTRACT_NAMES.ensPublicResolver]: ENSResolverAbi,
   [CONTRACT_NAMES.ensRegistry]: ENSRegistryAbi,
+  [CONTRACT_NAMES.dualGovernance]: dualGovernanceAbi,
+  [CONTRACT_NAMES.escrow]: escrowAbi,
+  [CONTRACT_NAMES.emergencyProtectedTimelock]: emergencyProtectedTimelockAbi,
+  [CONTRACT_NAMES.dgConfigProvider]: dgConfigProviderAbi,
 } as const;
 
 export type MetricContractName = keyof typeof CONTRACT_NAMES;

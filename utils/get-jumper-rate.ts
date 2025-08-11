@@ -1,39 +1,32 @@
-import { CHAINS } from '@lidofinance/lido-ethereum-sdk';
-import { config } from 'config';
-import { TOKENS, getTokenAddress } from 'config/networks/token-address';
-import { standardFetcher } from './standardFetcher';
-import {
-  calculateRateReceive,
-  RateCalculationResult,
-} from './calculate-rate-to-receive';
+import { invariant } from '@lidofinance/lido-ethereum-sdk';
 
-type JumperGetQuotePartial = {
-  estimate: {
-    toAmount: string;
-    fromAmount: string;
-  };
+import { ETH_API_ROUTES, getEthApiPath } from 'consts/api';
+import { LIDO_TOKENS_VALUES } from 'consts/tokens';
+
+import { standardFetcher } from './standardFetcher';
+
+type GetOneInchRateParams = {
+  token: LIDO_TOKENS_VALUES;
+  amount?: bigint;
 };
 
-export const getJumperRate = async (
-  amount: bigint,
-  fromToken: TOKENS,
-  toToken: TOKENS,
-): Promise<RateCalculationResult> => {
-  const basePath = 'https://li.quest/v1/quote';
-  const params = new URLSearchParams({
-    fromChain: CHAINS.Mainnet.toString(),
-    toChain: CHAINS.Mainnet.toString(),
-    fromToken: getTokenAddress(CHAINS.Mainnet, fromToken) as string,
-    toToken: getTokenAddress(CHAINS.Mainnet, toToken) as string,
-    fromAmount: amount.toString(),
-    fromAddress: config.ESTIMATE_ACCOUNT,
-  });
+export const getJumperRate = async (params: GetOneInchRateParams) => {
+  const { token, amount } = params;
 
-  const data = await standardFetcher<JumperGetQuotePartial>(
-    `${basePath}?${params.toString()}`,
-  );
-  const fromAmount = BigInt(data?.estimate?.fromAmount);
-  const toAmount = BigInt(data?.estimate?.toAmount);
+  const urlParams = new URLSearchParams({ token });
+  if (amount) urlParams.append('amount', amount.toString());
+  const url = getEthApiPath(ETH_API_ROUTES.SWAP_JUMPER, urlParams);
 
-  return calculateRateReceive(amount, fromAmount, toAmount);
+  invariant(url, 'Missing URL for Jumper rate request');
+
+  const data = await standardFetcher<{
+    rate: number;
+    toReceive: string;
+    fromAmount: string;
+  }>(url);
+
+  return {
+    rate: data.rate,
+    toReceive: BigInt(data.toReceive),
+  };
 };

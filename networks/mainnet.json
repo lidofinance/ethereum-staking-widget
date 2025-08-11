@@ -8,7 +8,11 @@
     "withdrawalQueue": "0x889edC2eDab5f40e902b864aD4d7AdE8E412F9B1",
     "lido": "0xae7ab96520de3a18e5e111b5eaab095312d7fe84",
     "wsteth": "0x7f39c581f595b53c5cb19bd0b3f8da6c935e2ca0",
-    "ensPublicResolver": "0x4976fb03c32e5b8cfe2b6ccb31c09ba78ebaba41"
+    "ensPublicResolver": "0x4976fb03c32e5b8cfe2b6ccb31c09ba78ebaba41",
+    "dualGovernance": "0xcdF49b058D606AD34c5789FD8c3BF8B3E54bA2db",
+    "escrow": "0xA8F14D033f377779274Ae016584a05bF14Dccaf8",
+    "emergencyProtectedTimelock": "0xCE0425301C85c5Ea2A0873A2dEe44d78E02D2316",
+    "dgConfigProvider": "0xa1692Af6FDfdD1030E4E9c4Bc429986FA64CB5EF"
   },
   "api": {}
 }
