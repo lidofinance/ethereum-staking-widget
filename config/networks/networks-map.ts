@@ -36,6 +36,11 @@ export const CONTRACT_NAMES = {
   lidoLocator: 'lidoLocator',
   ensPublicResolver: 'ensPublicResolver',
   ensRegistry: 'ensRegistry',
+  // GGV
+  ggvVault: 'ggvVault',
+  ggvTeller: 'ggvTeller',
+  ggvAccountant: 'ggvAccountant',
+  ggvLens: 'ggvLens',
 } as const;
 export type CONTRACT_NAMES = keyof typeof CONTRACT_NAMES;
 

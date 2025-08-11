@@ -25,7 +25,7 @@ const partners = [
 ];
 const description =
   'The Decentralized Validator Vault accepts ETH deposits to the Lido protocol, accelerating the adoption of Distributed Validator Technology (DVT)';
-const stats = { tvl: '86', apy: '4.4' };
+const stats = { tvl: 86000000, apy: 4.4 };
 const routes = [
   {
     path: `${EARN_PATH}/${EARN_VAULT_DVV_SLUG}/${EARN_VAULT_DEPOSIT_SLUG}`,

@@ -3,41 +3,17 @@ import { VaultCard } from './components/vault-card/vault-card';
 import { VaultsListWrapper } from './styles';
 import {
   VaultDDVIcon,
-  VaultGGVIcon,
-  Partner7SeasIcon,
   PartnerStakehouseIcon,
-  PartnerVedaIcon,
   TokenEthIcon,
-  TokenStethIcon,
   TokenWethIcon,
-  TokenWstethIcon,
 } from 'assets/earn';
-import { EARN_VAULT_GGV_SLUG, EARN_VAULT_DVV_SLUG } from 'consts/urls';
+import { EARN_VAULT_DVV_SLUG } from 'consts/urls';
+import { VaultCardGGV } from '../vault-ggv';
 
 export const EarnVaultsList: FC = () => {
   return (
     <VaultsListWrapper>
-      <VaultCard
-        title="Lido GGV"
-        description="Lido GGV leverages top DeFi protocols to maximize rewards on your stETH, with a single deposit."
-        urlSlug={EARN_VAULT_GGV_SLUG}
-        partners={[
-          { role: 'Curated by', icon: <Partner7SeasIcon />, text: '7seas' },
-          {
-            role: 'Infrastructure provider',
-            icon: <PartnerVedaIcon />,
-            text: 'Veda',
-          },
-        ]}
-        tokens={[
-          { name: 'ETH', logo: <TokenEthIcon /> },
-          { name: 'WETH', logo: <TokenWethIcon /> },
-          { name: 'stETH', logo: <TokenStethIcon /> },
-          { name: 'wstETH', logo: <TokenWstethIcon /> },
-        ]}
-        stats={{ tvl: '431', apy: '10.4' }}
-        logo={<VaultGGVIcon />}
-      />
+      <VaultCardGGV />
       <VaultCard
         title="Lido DVV"
         description="The Decentralized Validator Vault accepts ETH deposits to the Lido protocol, accelerating the adoption of Distributed Validator Technology (DVT)"
@@ -53,7 +29,7 @@ export const EarnVaultsList: FC = () => {
           { name: 'ETH', logo: <TokenEthIcon /> },
           { name: 'WETH', logo: <TokenWethIcon /> },
         ]}
-        stats={{ tvl: '86', apy: '4.4' }}
+        stats={{ tvl: 86, apy: 4.4 }}
         logo={<VaultDDVIcon />}
       />
     </VaultsListWrapper>

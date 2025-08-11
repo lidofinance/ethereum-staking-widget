@@ -46,6 +46,7 @@ export const useEthUsd = (amount?: bigint) => {
         contract.read.decimals(),
       ]);
 
+      // TODO: correct this calc - this removes all price precision beyond decimal point
       return latestAnswer / 10n ** BigInt(decimals);
     },
   });

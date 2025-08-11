@@ -9,13 +9,17 @@ import {
 } from 'consts/urls';
 
 import { ButtonBack } from 'shared/components/button-back/button-back';
+
 import { Partner7SeasIcon, PartnerVedaIcon, VaultGGVIcon } from 'assets/earn';
+
 import { VaultHeader } from '../shared/vault-header';
 import { VaultDescription } from '../shared/vault-description';
-import { VaultStats } from '../shared/vault-stats';
 import { SwitchStyled } from '../shared/styles';
+
 import { GGVDepositForm } from './deposit';
 import { GGVWithdrawForm } from './withdraw';
+import { useGGVStats } from './hooks/use-ggv-stats';
+import { VaultStats } from '../shared/vault-stats';
 
 const partners = [
   { role: 'Curated by', icon: <Partner7SeasIcon />, text: '7seas' },
@@ -27,7 +31,6 @@ const partners = [
 ];
 const description =
   'Lido GGV leverages top DeFi protocols to maximize rewards on your stETH, with a single deposit.';
-const stats = { tvl: '431', apy: '10.4' };
 const routes = [
   {
     path: `${EARN_PATH}/${EARN_VAULT_GGV_SLUG}/${EARN_VAULT_DEPOSIT_SLUG}`,
@@ -45,6 +48,7 @@ export const VaultPageGGV: FC<{
   const isDeposit = action === EARN_VAULT_DEPOSIT_SLUG;
   const isWithdraw = action === EARN_VAULT_WITHDRAW_SLUG;
 
+  const { tvl, apy, isLoading } = useGGVStats();
   return (
     <>
       <ButtonBack url={EARN_PATH}>Back to all vaults</ButtonBack>
@@ -54,7 +58,7 @@ export const VaultPageGGV: FC<{
           logo={<VaultGGVIcon />}
           partners={partners}
         />
-        {stats && <VaultStats tvl={stats.tvl} apy={stats.apy} />}
+        <VaultStats tvl={tvl} apy={apy} isLoading={isLoading} />;
         <VaultDescription description={description} />
         <SwitchStyled routes={routes} checked={isWithdraw} fullwidth />
         {isDeposit && <GGVDepositForm />}

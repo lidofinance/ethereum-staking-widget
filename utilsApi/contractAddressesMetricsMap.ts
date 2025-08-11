@@ -17,6 +17,13 @@ import { ENSResolverAbi } from 'abi/ens-resolver-abi';
 import { PartialCurveAbi } from 'abi/partial-curve-abi';
 import { PartialStakingRouterAbi } from 'abi/partial-staking-router';
 
+import {
+  GGV_ACCOUNTANT_ABI,
+  GGV_LENS_ABI,
+  GGV_TELLER_ABI,
+  GGV_VAULT_ABI,
+} from 'features/earn/vault-ggv/contracts/abi';
+
 import { config } from 'config';
 import { CONTRACT_NAMES } from 'config/networks/networks-map';
 import { getContractAddress } from 'config/networks/contract-address';
@@ -34,6 +41,11 @@ export const METRIC_CONTRACT_ABIS = {
   [CONTRACT_NAMES.L2wstETH]: bridgedWstethAbi,
   [CONTRACT_NAMES.ensPublicResolver]: ENSResolverAbi,
   [CONTRACT_NAMES.ensRegistry]: ENSRegistryAbi,
+  // GGV
+  [CONTRACT_NAMES.ggvVault]: GGV_VAULT_ABI,
+  [CONTRACT_NAMES.ggvTeller]: GGV_TELLER_ABI,
+  [CONTRACT_NAMES.ggvAccountant]: GGV_ACCOUNTANT_ABI,
+  [CONTRACT_NAMES.ggvLens]: GGV_LENS_ABI,
 } as const;
 
 export type MetricContractName = keyof typeof CONTRACT_NAMES;

@@ -21,9 +21,10 @@ type VaultCardProps = {
   urlSlug: string;
   logo: React.ReactNode;
   partners?: VaultPartnerType[];
-  stats?: {
-    tvl: string;
-    apy: string;
+  stats: {
+    tvl?: number;
+    apy?: number;
+    isLoading?: boolean;
   };
   tokens: Array<{ name: string; logo: React.ReactNode }>;
 };
@@ -39,7 +40,7 @@ export const VaultCard: React.FC<VaultCardProps> = ({
 }) => (
   <VaultCardWrapper>
     <VaultHeader title={title} partners={partners} logo={logo} />
-    {stats && <VaultStats tvl={stats.tvl} apy={stats.apy} />}
+    <VaultStats tvl={stats.tvl} apy={stats.apy} isLoading={stats.isLoading} />
     <VaultDescription description={description} />
     <VaultTokens tokens={tokens} />
     <VaultCardMyPosition>

@@ -7,8 +7,8 @@ import {
   EARN_VAULT_GGV_SLUG,
   EARN_VAULT_WITHDRAW_SLUG,
 } from 'consts/urls';
-import { VaultPageDVV } from 'features/earn/vault-page-dvv/vault-page-dvv';
-import { VaultPageGGV } from 'features/earn/vault-page-ggv/vault-page-ggv';
+import { VaultPageDVV } from 'features/earn/vault-dvv/vault-page-dvv';
+import { VaultPageGGV } from 'features/earn/vault-ggv/vault-page-ggv';
 
 export default function VaultActionPage({
   vault,
