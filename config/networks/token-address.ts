@@ -7,6 +7,7 @@ const TOKENS_TO_CONTRACTS = {
   [LIDO_TOKENS.wsteth]: CONTRACT_NAMES.wsteth,
   [LIDO_TOKENS.steth]: CONTRACT_NAMES.lido,
   [LIDO_TOKENS.unsteth]: CONTRACT_NAMES.withdrawalQueue,
+  ['wETH']: CONTRACT_NAMES.weth,
 } as const;
 
 export type TOKENS = (typeof LIDO_TOKENS)[keyof typeof LIDO_TOKENS];

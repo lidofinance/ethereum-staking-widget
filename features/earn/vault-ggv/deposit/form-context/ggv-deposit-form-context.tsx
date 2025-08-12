@@ -28,6 +28,10 @@ export const GGVDepositFormProvider: FC<PropsWithChildren> = ({ children }) => {
       amount: null,
       token: 'ETH',
     },
+    criteriaMode: 'firstError',
+    mode: 'onChange',
+    // context: validationContext,
+    // resolver:
   });
   const { retryEvent } = useFormControllerRetry();
 

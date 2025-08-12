@@ -9,6 +9,7 @@
     "lido": "0xae7ab96520de3a18e5e111b5eaab095312d7fe84",
     "wsteth": "0x7f39c581f595b53c5cb19bd0b3f8da6c935e2ca0",
     "ensPublicResolver": "0x4976fb03c32e5b8cfe2b6ccb31c09ba78ebaba41",
+    "weth": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
 
     "ggvVault": "0xef417FCE1883c6653E7dC6AF7c6F85CCDE84Aa09",
     "ggvTeller": "0x0baAb6db8d694E1511992b504476ef4073fe614B",

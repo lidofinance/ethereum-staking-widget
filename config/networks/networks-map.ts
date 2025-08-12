@@ -36,6 +36,7 @@ export const CONTRACT_NAMES = {
   lidoLocator: 'lidoLocator',
   ensPublicResolver: 'ensPublicResolver',
   ensRegistry: 'ensRegistry',
+  weth: 'weth',
   // GGV
   ggvVault: 'ggvVault',
   ggvTeller: 'ggvTeller',
