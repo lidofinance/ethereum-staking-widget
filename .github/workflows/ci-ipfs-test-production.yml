@@ -16,7 +16,7 @@ jobs:
       ipfs_folder: ${{ env.ipfs_folder }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           persist-credentials: false
           fetch-depth: 0
