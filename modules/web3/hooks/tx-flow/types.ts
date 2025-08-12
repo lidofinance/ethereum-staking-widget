@@ -2,7 +2,7 @@ import {
   TransactionCallback,
   TransactionCallbackStage,
   TransactionCallbackProps as sendTransactionCallbackProps,
-} from '@lidofinance/lido-ethereum-sdk';
+} from '@lidofinance/lido-ethereum-sdk/core';
 import type {
   Address,
   Hash,

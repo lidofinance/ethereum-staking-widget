@@ -1,6 +1,6 @@
 import { useCallback, useRef } from 'react';
 import { Hash } from 'viem';
-import { TransactionCallbackStage } from '@lidofinance/lido-ethereum-sdk';
+import { TransactionCallbackStage } from '@lidofinance/lido-ethereum-sdk/core';
 import { useAA } from '../use-aa';
 import { useSendAACalls } from './use-send-aa-calls';
 import { TxCallbackProps, TxFlowArgs } from './types';

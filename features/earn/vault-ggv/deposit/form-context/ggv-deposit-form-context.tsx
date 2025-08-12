@@ -1,3 +1,4 @@
+import type { LIDO_TOKENS } from '@lidofinance/lido-ethereum-sdk/common';
 import { createContext, FC, PropsWithChildren, useMemo } from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
 
@@ -8,13 +9,30 @@ import {
 } from 'shared/hook-form/form-controller';
 
 const GGVDepositFormDataContext = createContext(null);
+GGVDepositFormDataContext.displayName = 'GGVDepositFormDataContext';
+
+type GGV_DEPOSIT_TOKENS =
+  | (typeof LIDO_TOKENS)['eth']
+  | (typeof LIDO_TOKENS)['steth']
+  | (typeof LIDO_TOKENS)['wsteth']
+  | 'wETH';
+
+type GGVDepositFormValues = {
+  amount: null | bigint;
+  token: GGV_DEPOSIT_TOKENS;
+};
 
 export const GGVDepositFormProvider: FC<PropsWithChildren> = ({ children }) => {
-  const formObject = useForm<any>();
+  const formObject = useForm<GGVDepositFormValues>({
+    defaultValues: {
+      amount: null,
+      token: 'ETH',
+    },
+  });
   const { retryEvent } = useFormControllerRetry();
 
   const formControllerValue = useMemo(
-    (): FormControllerContextValueType<any> => ({
+    (): FormControllerContextValueType<GGVDepositFormValues> => ({
       onSubmit: async () => false,
       retryEvent,
     }),

@@ -1,6 +1,6 @@
 import invariant from 'tiny-invariant';
 import { useQuery } from '@tanstack/react-query';
-import { CHAINS } from '@lidofinance/lido-ethereum-sdk';
+import { CHAINS } from '@lidofinance/lido-ethereum-sdk/common';
 
 import { PartialCurveAbi } from 'abi/partial-curve-abi';
 import { WEI_PER_ETHER } from 'consts/tx';

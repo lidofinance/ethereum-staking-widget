@@ -1,5 +1,5 @@
 import type { Address } from 'viem';
-import { LIDO_TOKENS, CHAINS } from '@lidofinance/lido-ethereum-sdk';
+import { LIDO_TOKENS, CHAINS } from '@lidofinance/lido-ethereum-sdk/common';
 
 import { CONTRACT_NAMES, getNetworkConfigMapByChain } from './networks-map';
 

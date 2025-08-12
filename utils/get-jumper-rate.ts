@@ -1,4 +1,4 @@
-import { CHAINS } from '@lidofinance/lido-ethereum-sdk';
+import { CHAINS } from '@lidofinance/lido-ethereum-sdk/common';
 import { config } from 'config';
 import { TOKENS, getTokenAddress } from 'config/networks/token-address';
 import { standardFetcher } from './standardFetcher';
