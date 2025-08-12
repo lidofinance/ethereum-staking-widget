@@ -10,7 +10,7 @@ const TOKENS_TO_CONTRACTS = {
   ['wETH']: CONTRACT_NAMES.weth,
 } as const;
 
-export type TOKENS = (typeof LIDO_TOKENS)[keyof typeof LIDO_TOKENS];
+export type TOKENS = (typeof LIDO_TOKENS)[keyof typeof LIDO_TOKENS] | 'wETH';
 
 export const getTokenAddress = (
   chain: CHAINS,

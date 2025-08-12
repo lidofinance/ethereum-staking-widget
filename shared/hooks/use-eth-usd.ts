@@ -64,7 +64,7 @@ export const useEthUsd = (amount?: bigint) => {
       const ethInUsd_P4 =
         (amount * price.latestAnswer) /
         10n ** (price.decimals + ETH_DECIMALS - PRECISION);
-      return Number(ethInUsd_P4) / 4;
+      return Number(ethInUsd_P4) / 10 ** Number(PRECISION);
     }
 
     return undefined;

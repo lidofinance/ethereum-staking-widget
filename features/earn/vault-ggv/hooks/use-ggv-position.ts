@@ -24,25 +24,16 @@ export const useGGVPosition = () => {
       const lens = getGGVLensContract(publicClientMainnet);
 
       // lens helper contains shares and underlying token balance fetchers
-      const [sharesBalance, wethBalance] = await publicClientMainnet.multicall({
-        allowFailure: false,
-        contracts: [
-          // fetch vault position from lens helper
-          {
-            abi: lens.abi,
-            address: lens.address,
-            functionName: 'balanceOf',
-            args: [address, vault.address],
-          },
-          // fetch vault position in WETH from lens helper
-          {
-            abi: lens.abi,
-            address: lens.address,
-            functionName: 'balanceOfInAssets',
-            args: [address, vault.address, accountant.address],
-          },
-        ] as const,
-      });
+      const [sharesBalance, wethBalance] = await Promise.all([
+        // fetch vault position from lens helper
+        lens.read.balanceOf([address, vault.address]),
+        // fetch vault position in WETH from lens helper
+        lens.read.balanceOfInAssets([
+          address,
+          vault.address,
+          accountant.address,
+        ]),
+      ]);
 
       return {
         sharesBalance,
