@@ -1,12 +1,14 @@
-import { FormatToken } from 'shared/formatters';
-
 import { useGGVDepositForm } from './form-context';
+import { VaultAvailable } from 'features/earn/shared/vault-available';
 
 export const GGVAvailableDeposit = () => {
-  const { maxAmount, token } = useGGVDepositForm();
+  const { maxAmount, token, isLoading } = useGGVDepositForm();
   return (
-    <div>
-      Available to deposit <FormatToken symbol={token} amount={maxAmount} />
-    </div>
+    <VaultAvailable
+      isLoading={isLoading}
+      label="Available to deposit"
+      amount={maxAmount}
+      symbol={token}
+    />
   );
 };

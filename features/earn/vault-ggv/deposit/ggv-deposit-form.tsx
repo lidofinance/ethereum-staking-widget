@@ -14,8 +14,8 @@ export const GGVDepositForm: FC = () => {
       <FormController>
         <GGVAvailableDeposit />
         <GGVDepositInputGroup />
-        <SubmitButtonHookForm>Deposit</SubmitButtonHookForm>
         <GGVWillReceive />
+        <SubmitButtonHookForm>Deposit</SubmitButtonHookForm>
       </FormController>
     </GGVDepositFormProvider>
   );

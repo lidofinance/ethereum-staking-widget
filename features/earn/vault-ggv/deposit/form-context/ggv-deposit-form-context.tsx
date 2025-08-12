@@ -42,7 +42,7 @@ const minBN = (a: bigint, b?: bigint | null) => (b == null || a < b ? a : b);
 
 export const GGVDepositFormProvider: FC<PropsWithChildren> = ({ children }) => {
   const { isDappActive, chainId } = useDappStatus();
-  const { validationContext, asyncValidationContextValue } =
+  const { validationContext, asyncValidationContextValue, isLoading } =
     useGGVDepositFormData();
   const formObject = useForm<
     GGVDepositFormValues,
@@ -73,12 +73,13 @@ export const GGVDepositFormProvider: FC<PropsWithChildren> = ({ children }) => {
   const contextValue = useMemo<GGVDepositFormDataContextValue>(() => {
     const tokenValues = asyncValidationContextValue?.[token];
     return {
+      isLoading,
       token,
       maxAmount: tokenValues
         ? minBN(tokenValues.balance, tokenValues?.maxDeposit)
         : undefined,
     };
-  }, [asyncValidationContextValue, token]);
+  }, [asyncValidationContextValue, isLoading, token]);
 
   return (
     <FormProvider {...formObject}>

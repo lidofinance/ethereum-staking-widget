@@ -68,13 +68,16 @@ export const useGGVDepositFormData = () => {
     asyncContext,
   };
 
+  const isLoading =
+    ethBalanceQuery.isLoading ||
+    stethBalanceQuery.isLoading ||
+    wstethBalanceQuery.isLoading ||
+    wethBalanceQuery.isLoading ||
+    ggvMaxDepositQuery.isLoading;
+
   return {
     asyncValidationContextValue,
     validationContext,
-    ethBalanceQuery,
-    stethBalanceQuery,
-    wstethBalanceQuery,
-    wethBalanceQuery,
-    ggvMaxDepositQuery,
+    isLoading,
   };
 };

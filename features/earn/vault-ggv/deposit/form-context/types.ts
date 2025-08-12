@@ -31,5 +31,6 @@ export type GGVDepositFormAsyncValidationContext = {
 
 export type GGVDepositFormDataContextValue = {
   maxAmount?: bigint;
+  isLoading: boolean;
   token: GGV_DEPOSIT_TOKENS;
 };
