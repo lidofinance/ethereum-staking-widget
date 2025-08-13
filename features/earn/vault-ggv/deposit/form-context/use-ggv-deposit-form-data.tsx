@@ -5,16 +5,19 @@ import {
   useWethBalance,
   useDappStatus,
 } from 'modules/web3';
-import { useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 
 import { useGGVMaxDeposit } from '../../hooks/use-ggv-max-deposit';
 import type {
   GGVDepositFormAsyncValidationContext,
   GGVDepositFormValidationContext,
+  GGVDepositFormValues,
 } from './types';
 import { useAwaiter } from 'shared/hooks/use-awaiter';
+import { useQueryClient } from '@tanstack/react-query';
 
 export const useGGVDepositFormData = () => {
+  const queryClient = useQueryClient();
   const { isAccountActive } = useDappStatus();
   const ethBalanceQuery = useEthereumBalance();
   const stethBalanceQuery = useStethBalance();
@@ -68,6 +71,30 @@ export const useGGVDepositFormData = () => {
     asyncContext,
   };
 
+  const refetchData = useCallback(
+    (token: GGVDepositFormValues['token']) => {
+      const tokenBalanceRefetch = {
+        ['ETH']: ethBalanceQuery.refetch,
+        ['stETH']: stethBalanceQuery.refetch,
+        ['wstETH']: wstethBalanceQuery.refetch,
+        ['wETH']: wethBalanceQuery.refetch,
+      }[token];
+
+      return Promise.all([
+        tokenBalanceRefetch({ cancelRefetch: true, throwOnError: false }),
+        // refetch all GGV related queries
+        queryClient.refetchQueries({ queryKey: ['ggv'] }),
+      ]);
+    },
+    [
+      queryClient,
+      ethBalanceQuery.refetch,
+      stethBalanceQuery.refetch,
+      wethBalanceQuery.refetch,
+      wstethBalanceQuery.refetch,
+    ],
+  );
+
   const isLoading =
     ethBalanceQuery.isLoading ||
     stethBalanceQuery.isLoading ||
@@ -79,5 +106,6 @@ export const useGGVDepositFormData = () => {
     asyncValidationContextValue,
     validationContext,
     isLoading,
+    refetchData,
   };
 };

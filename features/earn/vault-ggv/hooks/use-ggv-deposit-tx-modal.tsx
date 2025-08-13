@@ -1,0 +1,101 @@
+import type { Hash } from 'viem';
+
+import {
+  TransactionModalTransitStage,
+  useTransactionModalStage,
+} from 'shared/transaction-modal/hooks/use-transaction-modal-stage';
+import { getGeneralTransactionModalStages } from 'shared/transaction-modal/hooks/get-general-transaction-modal-stages';
+
+import { TxStageSignOperationAmount } from 'shared/transaction-modal/tx-stages-composed/tx-stage-amount-operation';
+
+import {
+  getTokenDisplayName,
+  TOKEN_DISPLAY_NAMES,
+} from 'utils/getTokenDisplayName';
+import { GGV_TOKEN_SYMBOL } from '../consts';
+import { VaultTxStageSuccess } from 'features/earn/shared/vault-tx-stage-success';
+
+const STAGE_APPROVE_ARGS = {
+  willReceiveToken: GGV_TOKEN_SYMBOL,
+  operationText: 'Unlocking',
+};
+
+const STAGE_OPERATION_ARGS = {
+  willReceiveToken: GGV_TOKEN_SYMBOL,
+  operationText: 'depositing',
+};
+
+const getTxModalStagesRequest = (
+  transitStage: TransactionModalTransitStage,
+) => ({
+  ...getGeneralTransactionModalStages(transitStage),
+
+  signApproval: (amount: bigint, token: TOKEN_DISPLAY_NAMES) =>
+    transitStage(
+      <TxStageSignOperationAmount
+        {...STAGE_APPROVE_ARGS}
+        amount={amount}
+        token={getTokenDisplayName(token)}
+      />,
+    ),
+
+  pendingApproval: (
+    amount: bigint,
+    token: TOKEN_DISPLAY_NAMES,
+    txHash?: Hash,
+  ) =>
+    transitStage(
+      <TxStageSignOperationAmount
+        {...STAGE_APPROVE_ARGS}
+        amount={amount}
+        token={getTokenDisplayName(token)}
+        isPending
+        txHash={txHash}
+      />,
+    ),
+
+  sign: (amount: bigint, willReceive: bigint, token: TOKEN_DISPLAY_NAMES) =>
+    transitStage(
+      <TxStageSignOperationAmount
+        {...STAGE_OPERATION_ARGS}
+        token={getTokenDisplayName(token)}
+        amount={amount}
+        willReceive={willReceive}
+      />,
+    ),
+
+  pending: (
+    amount: bigint,
+    willReceive: bigint,
+    token: TOKEN_DISPLAY_NAMES,
+    txHash?: Hash,
+    isAA?: boolean,
+  ) =>
+    transitStage(
+      <TxStageSignOperationAmount
+        {...STAGE_OPERATION_ARGS}
+        willReceive={willReceive}
+        amount={amount}
+        token={getTokenDisplayName(token)}
+        isPending
+        isAA={isAA}
+        txHash={txHash}
+      />,
+    ),
+
+  success: (newBalance: bigint, txHash?: Hash) =>
+    transitStage(
+      <VaultTxStageSuccess
+        txHash={txHash}
+        newBalance={newBalance}
+        vaultSymbol={GGV_TOKEN_SYMBOL}
+      />,
+      {
+        isClosableOnLedger: true,
+      },
+    ),
+});
+
+export const useTxModalStagesGGVDeposit = () => {
+  return useTransactionModalStage(getTxModalStagesRequest);
+};

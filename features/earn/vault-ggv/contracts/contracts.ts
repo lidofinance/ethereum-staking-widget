@@ -36,12 +36,33 @@ export const getGGVVaultContract = <
   });
 };
 
-export const getGGVTellerContract = <
+export const getGGVTellerContract = <TPublicClient extends PublicClient>(
+  publicClient: TPublicClient,
+) => {
+  const address = getContractAddress(
+    publicClient.chain?.id as number,
+    'ggvTeller',
+  );
+  invariant(
+    address,
+    `no GGV teller contract address for ${publicClient.chain?.id}`,
+  );
+
+  return getContract({
+    abi: GGV_TELLER_ABI,
+    address,
+    client: {
+      public: publicClient,
+    },
+  });
+};
+
+export const getGGVTellerWritableContract = <
   TPublicClient extends PublicClient,
   TWalletClient extends WalletClient = WalletClient,
 >(
   publicClient: TPublicClient,
-  walletClient?: TWalletClient,
+  walletClient: TWalletClient,
 ) => {
   const address = getContractAddress(
     publicClient.chain?.id as number,

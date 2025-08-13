@@ -4,7 +4,7 @@ import { TokenGGIcon } from 'assets/earn';
 
 import { VaultWillReceive } from 'features/earn/shared/vault-will-receive';
 
-import { useGGVPreviewDeposit } from '../hooks/use-gg-preview-deposit';
+import { useGGVPreviewDeposit } from '../hooks/use-ggv-preview-deposit';
 import { GGV_TOKEN_SYMBOL } from '../consts';
 import type { GGVDepositFormValues } from './form-context/types';
 

@@ -8,22 +8,21 @@ import {
 } from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
 
+import { useDappStatus } from 'modules/web3';
 import { useFormControllerRetry } from 'shared/hook-form/form-controller/use-form-controller-retry-delegate';
-import {
-  FormControllerContext,
-  FormControllerContextValueType,
-} from 'shared/hook-form/form-controller';
+import { FormControllerContext } from 'shared/hook-form/form-controller';
 
+import { isGGVAvailable } from '../../utils';
+import { useGGVDeposit } from '../../hooks/use-ggv-deposit';
+
+import { useGGVDepositFormData } from './use-ggv-deposit-form-data';
+import { GGVDepositFormValidationResolver } from './validation';
 import type {
   GGVDepositFormValidatedValues,
   GGVDepositFormValidationContext,
   GGVDepositFormValues,
   GGVDepositFormDataContextValue,
 } from './types';
-import { useGGVDepositFormData } from './use-ggv-deposit-form-data';
-import { GGVDepositFormValidationResolver } from './validation';
-import { useDappStatus } from 'modules/web3';
-import { isGGVAvailable } from '../../utils';
 
 const GGVDepositFormDataContext =
   createContext<GGVDepositFormDataContextValue | null>(null);
@@ -41,9 +40,23 @@ export const useGGVDepositForm = () => {
 const minBN = (a: bigint, b?: bigint | null) => (b == null || a < b ? a : b);
 
 export const GGVDepositFormProvider: FC<PropsWithChildren> = ({ children }) => {
+  // Wallet state
   const { isDappActive, chainId } = useDappStatus();
-  const { validationContext, asyncValidationContextValue, isLoading } =
-    useGGVDepositFormData();
+
+  // Network data for form
+  const {
+    validationContext,
+    asyncValidationContextValue,
+    refetchData,
+    isLoading,
+  } = useGGVDepositFormData();
+
+  // Retry event helper
+  const { retryEvent } = useFormControllerRetry();
+  // Deposit function
+  const { depositGGV } = useGGVDeposit(retryEvent.fire);
+
+  // Form state
   const formObject = useForm<
     GGVDepositFormValues,
     GGVDepositFormValidationContext,
@@ -59,15 +72,21 @@ export const GGVDepositFormProvider: FC<PropsWithChildren> = ({ children }) => {
     context: validationContext,
     resolver: GGVDepositFormValidationResolver,
   });
-  const { retryEvent } = useFormControllerRetry();
+
   const token = formObject.watch('token');
 
   const formControllerValue = useMemo(
-    (): FormControllerContextValueType<GGVDepositFormValues> => ({
-      onSubmit: async () => false,
+    () => ({
+      onSubmit: async (values: GGVDepositFormValidatedValues) => {
+        const result = await depositGGV(values);
+        if (result) {
+          await refetchData(values.token);
+        }
+        return result;
+      },
       retryEvent,
     }),
-    [retryEvent],
+    [depositGGV, refetchData, retryEvent],
   );
 
   const contextValue = useMemo<GGVDepositFormDataContextValue>(() => {
