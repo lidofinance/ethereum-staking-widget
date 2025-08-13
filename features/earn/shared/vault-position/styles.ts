@@ -32,7 +32,7 @@ export const PositionEntryTitle = styled.h3`
 
 export const PositionEntryBody = styled.div`
   display: grid;
-  grid-template-rows: 1fr 20px;
+  grid-template-rows: 24px 20px;
   gap: 0px 8px;
   grid-template-columns: 28px auto min-content;
 `;

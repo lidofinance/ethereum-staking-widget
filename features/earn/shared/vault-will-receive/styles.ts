@@ -1,4 +1,3 @@
-import { InlineLoader } from '@lidofinance/lido-ui';
 import styled from 'styled-components';
 
 export const VaultReceiveContainer = styled.div`
@@ -35,8 +34,4 @@ export const VaultReceiveMainValue = styled.span`
     width: 16px;
     height: 16px;
   }
-`;
-
-export const Loader = styled(InlineLoader)`
-  width: 60px;
 `;

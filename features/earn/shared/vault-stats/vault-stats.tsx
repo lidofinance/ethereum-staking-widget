@@ -1,4 +1,4 @@
-import { InlineLoader } from '@lidofinance/lido-ui';
+import { InlineLoader } from '../inline-loader';
 import {
   VaultStatsItem,
   VaultStatsLabel,
@@ -33,19 +33,17 @@ export const VaultStats: React.FC<VaultStatsProps> = ({
       <VaultStatsItem>
         <VaultStatsLabel>TVL</VaultStatsLabel>{' '}
         <VaultStatsValue>
-          {isLoading ? (
-            <InlineLoader />
-          ) : tvl != undefined ? (
-            formatTVL(tvl)
-          ) : (
-            '-'
-          )}
+          <InlineLoader isLoading={isLoading} width={70}>
+            {tvl != undefined ? formatTVL(tvl) : '-'}
+          </InlineLoader>
         </VaultStatsValue>
       </VaultStatsItem>
       <VaultStatsItem>
         <VaultStatsLabel>APY</VaultStatsLabel>{' '}
         <VaultStatsValue>
-          {isLoading ? <InlineLoader /> : apy !== undefined ? `${apy}%` : '-'}
+          <InlineLoader isLoading={isLoading} width={70}>
+            {apy !== undefined ? `${apy}%` : '-'}
+          </InlineLoader>
         </VaultStatsValue>
       </VaultStatsItem>
     </VaultStatsWrapper>

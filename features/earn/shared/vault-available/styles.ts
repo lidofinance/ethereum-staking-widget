@@ -5,6 +5,8 @@ export const VaultAvailableContainer = styled.div`
   flex-direction: row;
   justify-content: space-between;
 
+  margin-bottom: ${({ theme }) => theme.spaceMap.xs}px;
+
   font-size: 14px;
   font-weight: 700;
   line-height: 24px;

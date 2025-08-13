@@ -1,6 +1,7 @@
 import type { FC } from 'react';
 
 import { FormController } from 'shared/hook-form/form-controller';
+import { VaultTxInfo } from 'features/earn/shared/vault-tx-info';
 import { SubmitButtonHookForm } from 'shared/hook-form/controls/submit-button-hook-form';
 
 import { GGVDepositFormProvider } from './form-context';
@@ -14,7 +15,9 @@ export const GGVDepositForm: FC = () => {
       <FormController>
         <GGVAvailableDeposit />
         <GGVDepositInputGroup />
-        <GGVWillReceive />
+        <VaultTxInfo>
+          <GGVWillReceive />
+        </VaultTxInfo>
         <SubmitButtonHookForm>Deposit</SubmitButtonHookForm>
       </FormController>
     </GGVDepositFormProvider>

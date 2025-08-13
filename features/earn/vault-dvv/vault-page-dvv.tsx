@@ -3,9 +3,12 @@ import { Block } from '@lidofinance/lido-ui';
 
 import { ButtonBack } from 'shared/components/button-back/button-back';
 import { PartnerStakehouseIcon, VaultDDVIcon } from 'assets/earn';
+
 import { VaultDescription } from '../shared/vault-description';
 import { VaultHeader } from '../shared/vault-header';
 import { VaultStats } from '../shared/vault-stats';
+import { VaultSwitch } from '../shared/vault-switch';
+
 import {
   EARN_PATH,
   EARN_VAULT_DEPOSIT_SLUG,
@@ -14,7 +17,6 @@ import {
 } from 'consts/urls';
 import { DVVDepositForm } from './deposit';
 import { DVVWithdrawForm } from './withdraw';
-import { SwitchStyled } from '../shared/styles';
 
 const partners = [
   {
@@ -54,7 +56,7 @@ export const VaultPageDVV: FC<{
         />
         {stats && <VaultStats tvl={stats.tvl} apy={stats.apy} />}
         <VaultDescription description={description} />
-        <SwitchStyled routes={routes} checked={isWithdraw} fullwidth />
+        <VaultSwitch routes={routes} checked={isWithdraw} fullwidth />
         {isDeposit && <DVVDepositForm />}
         {isWithdraw && <DVVWithdrawForm />}
       </Block>

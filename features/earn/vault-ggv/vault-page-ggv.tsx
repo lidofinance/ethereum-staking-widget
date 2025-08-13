@@ -21,7 +21,7 @@ import {
 
 import { VaultHeader } from '../shared/vault-header';
 import { VaultDescription } from '../shared/vault-description';
-import { SwitchStyled } from '../shared/styles';
+import { VaultSwitch } from '../shared/vault-switch';
 import { VaultStats } from '../shared/vault-stats';
 import { VaultPosition } from '../shared/vault-position';
 
@@ -90,7 +90,7 @@ export const VaultPageGGV: FC<{
             }}
           />
         )}
-        <SwitchStyled routes={routes} checked={isWithdraw} fullwidth />
+        <VaultSwitch routes={routes} checked={isWithdraw} fullwidth />
         {isDeposit && <GGVDepositForm />}
         {isWithdraw && <GGVWithdrawForm />}
       </Block>

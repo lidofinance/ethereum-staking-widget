@@ -3,8 +3,8 @@ import {
   VaultReceiveContainer,
   VaultReceiveValue,
   VaultReceiveMainValue,
-  Loader,
 } from './styles';
+import { InlineLoader } from '../inline-loader';
 
 type VaultWillReceiveProps = {
   amount?: bigint;
@@ -25,19 +25,15 @@ export const VaultWillReceive = ({
     <VaultReceiveContainer>
       You will receive{' '}
       <VaultReceiveValue>
-        {isLoading ? (
-          <Loader />
-        ) : (
+        <InlineLoader isLoading={isLoading} width={60}>
           <VaultReceiveMainValue>
             <FormatToken symbol={symbol} amount={amount} fallback="-" />
             {icon}
           </VaultReceiveMainValue>
-        )}
-        {isLoading ? (
-          <Loader />
-        ) : (
+        </InlineLoader>
+        <InlineLoader isLoading={isLoading} width={60}>
           <FormatPrice amount={usdAmount} fallback="-" />
-        )}
+        </InlineLoader>
       </VaultReceiveValue>
     </VaultReceiveContainer>
   );

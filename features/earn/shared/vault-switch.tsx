@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 import { Switch } from 'shared/components/switch/switch';
 
-export const SwitchStyled = styled(Switch)`
+export const VaultSwitch = styled(Switch)`
   font-size: 10px;
   text-transform: uppercase;
   font-weight: 800;

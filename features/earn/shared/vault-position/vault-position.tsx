@@ -1,5 +1,5 @@
 import { type Address } from 'viem';
-import { InlineLoader, Tooltip, Question } from '@lidofinance/lido-ui';
+import { Tooltip, Question } from '@lidofinance/lido-ui';
 
 import { FormatPrice, FormatToken } from 'shared/formatters';
 import {
@@ -12,6 +12,7 @@ import {
   PositionSubBalance,
   PositionDecorator,
 } from './styles';
+import { InlineLoader } from '../inline-loader';
 
 type TokenBalance = {
   token?: Address;
@@ -36,31 +37,19 @@ const PositionBody = ({ position }: { position: TokenBalance }) => {
   return (
     <PositionEntryBody>
       <PositionIcon>{position.icon}</PositionIcon>
-      {position.isLoading ? (
-        // singular loader for shares/usd
-        <PositionBalance>
-          <InlineLoader />
-        </PositionBalance>
-      ) : (
-        <>
+
+      <PositionBalance>
+        <InlineLoader width={78} isLoading={position.isLoading}>
           <PositionBalance>
             <FormatToken symbol={position.symbol} amount={position.balance} />
           </PositionBalance>
-          {position.usdAmount !== undefined && (
-            <PositionSubBalance>
-              <FormatPrice amount={position.usdAmount} />
-            </PositionSubBalance>
-          )}
-        </>
-      )}
-
-      <PositionSubBalance>
-        {position.isLoading ? (
-          <InlineLoader />
-        ) : (
+        </InlineLoader>
+      </PositionBalance>
+      {!position.isLoading && (
+        <PositionSubBalance>
           <FormatPrice amount={position.usdAmount} />
-        )}
-      </PositionSubBalance>
+        </PositionSubBalance>
+      )}
       {position.rightDecorator && (
         <PositionDecorator>{position.rightDecorator}</PositionDecorator>
       )}

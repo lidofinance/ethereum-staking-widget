@@ -1,6 +1,6 @@
 import { FormatToken } from 'shared/formatters';
 import { VaultAvailableContainer, VaultAvailableLabel } from './styles';
-import { InlineLoader } from '@lidofinance/lido-ui';
+import { InlineLoader } from '../inline-loader';
 
 type VaultAvailableProps = {
   label: string;
@@ -18,11 +18,9 @@ export const VaultAvailable = ({
   return (
     <VaultAvailableContainer>
       <VaultAvailableLabel>{label}</VaultAvailableLabel>
-      {isLoading ? (
-        <InlineLoader />
-      ) : (
+      <InlineLoader width={78} isLoading={isLoading}>
         <FormatToken fallback="-" amount={amount} symbol={symbol} />
-      )}
+      </InlineLoader>
     </VaultAvailableContainer>
   );
 };

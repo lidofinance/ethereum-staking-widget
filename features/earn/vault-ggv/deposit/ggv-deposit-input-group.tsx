@@ -16,7 +16,7 @@ export const GGVDepositInputGroup: React.FC = () => {
   const token = useWatch<GGVDepositFormValues, 'token'>({ name: 'token' });
 
   return (
-    <InputGroupHookForm errorField="amount">
+    <InputGroupHookForm errorField="amount" bottomSpacing={false}>
       <TokenSelectHookForm
         errorField="amount"
         fieldName="token"
