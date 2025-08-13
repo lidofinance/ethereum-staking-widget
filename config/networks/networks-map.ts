@@ -42,6 +42,7 @@ export const CONTRACT_NAMES = {
   ggvTeller: 'ggvTeller',
   ggvAccountant: 'ggvAccountant',
   ggvLens: 'ggvLens',
+  ggvQueue: 'ggvQueue',
 } as const;
 export type CONTRACT_NAMES = keyof typeof CONTRACT_NAMES;
 

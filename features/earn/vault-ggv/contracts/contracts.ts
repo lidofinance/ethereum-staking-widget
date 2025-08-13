@@ -8,6 +8,7 @@ import {
   GGV_VAULT_ABI,
   GGV_ACCOUNTANT_ABI,
   GGV_LENS_ABI,
+  GGV_QUEUE_ABI,
 } from './abi';
 
 export const getGGVVaultContract = <
@@ -83,12 +84,8 @@ export const getGGVTellerWritableContract = <
   });
 };
 
-export const getGGVAccountantContract = <
-  TPublicClient extends PublicClient,
-  TWalletClient extends WalletClient = WalletClient,
->(
+export const getGGVAccountantContract = <TPublicClient extends PublicClient>(
   publicClient: TPublicClient,
-  walletClient?: TWalletClient,
 ) => {
   const address = getContractAddress(
     publicClient.chain?.id as number,
@@ -104,17 +101,12 @@ export const getGGVAccountantContract = <
     address,
     client: {
       public: publicClient,
-      wallet: walletClient,
     },
   });
 };
 
-export const getGGVLensContract = <
-  TPublicClient extends PublicClient,
-  TWalletClient extends WalletClient = WalletClient,
->(
+export const getGGVLensContract = <TPublicClient extends PublicClient>(
   publicClient: TPublicClient,
-  walletClient?: TWalletClient,
 ) => {
   const address = getContractAddress(
     publicClient.chain?.id as number,
@@ -127,6 +119,52 @@ export const getGGVLensContract = <
 
   return getContract({
     abi: GGV_LENS_ABI,
+    address,
+    client: {
+      public: publicClient,
+    },
+  });
+};
+
+export const getGGVQueueContract = <TPublicClient extends PublicClient>(
+  publicClient: TPublicClient,
+) => {
+  const address = getContractAddress(
+    publicClient.chain?.id as number,
+    'ggvQueue',
+  );
+  invariant(
+    address,
+    `no GGV queue contract address for ${publicClient.chain?.id}`,
+  );
+
+  return getContract({
+    abi: GGV_QUEUE_ABI,
+    address,
+    client: {
+      public: publicClient,
+    },
+  });
+};
+
+export const getGGVQueueWritableContract = <
+  TPublicClient extends PublicClient,
+  TWalletClient extends WalletClient = WalletClient,
+>(
+  publicClient: TPublicClient,
+  walletClient: TWalletClient,
+) => {
+  const address = getContractAddress(
+    publicClient.chain?.id as number,
+    'ggvQueue',
+  );
+  invariant(
+    address,
+    `no GGV queue contract address for ${publicClient.chain?.id}`,
+  );
+
+  return getContract({
+    abi: GGV_QUEUE_ABI,
     address,
     client: {
       public: publicClient,
