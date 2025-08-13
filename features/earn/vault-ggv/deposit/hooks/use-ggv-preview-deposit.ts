@@ -5,14 +5,14 @@ import { usePublicClient } from 'wagmi';
 import { useDappStatus } from 'modules/web3';
 import { getTokenAddress } from 'config/networks/token-address';
 
-import { isGGVAvailable } from '../utils';
+import { isGGVAvailable } from '../../utils';
 
-import type { GGVDepositFormValues } from '../deposit/form-context/types';
+import type { GGVDepositFormValues } from '../form-context/types';
 import {
   getGGVAccountantContract,
   getGGVLensContract,
   getGGVVaultContract,
-} from '../contracts';
+} from '../../contracts';
 import { useDebouncedValue } from 'shared/hooks';
 import { useMemo } from 'react';
 import { useEthUsd } from 'shared/hooks/use-eth-usd';

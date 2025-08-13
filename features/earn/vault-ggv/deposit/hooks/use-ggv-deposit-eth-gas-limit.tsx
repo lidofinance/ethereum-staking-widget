@@ -1,6 +1,6 @@
 import { ESTIMATE_AMOUNT, useMainnetOnlyWagmi } from 'modules/web3';
 import { useEstimateGas } from 'wagmi';
-import { getGGVTellerContract } from '../contracts';
+import { getGGVTellerContract } from '../../contracts';
 import { encodeFunctionData } from 'viem';
 import { getTokenAddress } from 'config/networks/token-address';
 import { useMemo } from 'react';

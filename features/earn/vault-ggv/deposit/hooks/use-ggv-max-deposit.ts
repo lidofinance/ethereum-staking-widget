@@ -8,9 +8,9 @@ import {
   getGGVLensContract,
   getGGVTellerContract,
   getGGVVaultContract,
-} from '../contracts';
+} from '../../contracts';
 import { getTokenAddress } from 'config/networks/token-address';
-import { isGGVAvailable } from '../utils';
+import { isGGVAvailable } from '../../utils';
 
 export const INFINITE_DEPOSIT_CAP = 2n ** 112n - 1n;
 const PRECISION = ONE_stETH; // 10^18

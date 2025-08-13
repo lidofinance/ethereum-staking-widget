@@ -7,12 +7,12 @@ import {
 } from 'modules/web3';
 import { useCallback, useMemo } from 'react';
 
-import { useGGVMaxDeposit } from '../../hooks/use-ggv-max-deposit';
+import { useGGVMaxDeposit } from './use-ggv-max-deposit';
 import type {
   GGVDepositFormAsyncValidationContext,
   GGVDepositFormValidationContext,
   GGVDepositFormValues,
-} from './types';
+} from '../form-context/types';
 import { useAwaiter } from 'shared/hooks/use-awaiter';
 import { useQueryClient } from '@tanstack/react-query';
 

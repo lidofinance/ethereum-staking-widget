@@ -12,7 +12,7 @@ import {
   getTokenDisplayName,
   TOKEN_DISPLAY_NAMES,
 } from 'utils/getTokenDisplayName';
-import { GGV_TOKEN_SYMBOL } from '../consts';
+import { GGV_TOKEN_SYMBOL } from '../../consts';
 import { VaultTxStageSuccess } from 'features/earn/shared/vault-tx-stage-success';
 
 const STAGE_APPROVE_ARGS = {

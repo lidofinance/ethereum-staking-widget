@@ -13,10 +13,10 @@ import { useFormControllerRetry } from 'shared/hook-form/form-controller/use-for
 import { FormControllerContext } from 'shared/hook-form/form-controller';
 
 import { isGGVAvailable } from '../../utils';
-import { useGGVDeposit } from '../../hooks/use-ggv-deposit';
-import { useGGVDepositStatus } from '../../hooks/use-ggv-deposit-status';
+import { useGGVDeposit } from '../hooks/use-ggv-deposit';
+import { useGGVDepositStatus } from '../hooks/use-ggv-deposit-status';
 
-import { useGGVDepositFormData } from './use-ggv-deposit-form-data';
+import { useGGVDepositFormData } from '../hooks/use-ggv-deposit-form-data';
 import { GGVDepositFormValidationResolver } from './validation';
 import type {
   GGVDepositFormValidatedValues,

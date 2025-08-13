@@ -10,7 +10,7 @@ import { TokenAmountInputHookForm } from 'shared/hook-form/controls/token-amount
 import type { GGVDepositFormValues } from './form-context/types';
 import { GGV_DEPOSABLE_TOKENS } from '../consts';
 import { useGGVDepositForm } from './form-context';
-import { useGGVDepositEthGasLimit } from '../hooks/use-ggv-deposit-eth-gas-limit';
+import { useGGVDepositEthGasLimit } from './hooks/use-ggv-deposit-eth-gas-limit';
 
 const OPTIONS = GGV_DEPOSABLE_TOKENS.map((token) => ({ token }));
 
