@@ -12,7 +12,7 @@ import {
 import { getTokenAddress } from 'config/networks/token-address';
 import { isGGVAvailable } from '../utils';
 
-const MAX_UINT_112 = 2n ** 112n - 1n;
+export const INFINITE_DEPOSIT_CAP = 2n ** 112n - 1n;
 const PRECISION = ONE_stETH; // 10^18
 
 export const useGGVMaxDeposit = () => {
@@ -30,7 +30,7 @@ export const useGGVMaxDeposit = () => {
       const accountant = getGGVAccountantContract(publicClient);
 
       const maxShares = await teller.read.depositCap();
-      if (maxShares === MAX_UINT_112) {
+      if (maxShares === INFINITE_DEPOSIT_CAP) {
         return {
           maxShares: null,
           maxWethDeposit: null,

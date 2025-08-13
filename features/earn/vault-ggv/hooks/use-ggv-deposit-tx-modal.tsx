@@ -58,6 +58,7 @@ const getTxModalStagesRequest = (
     transitStage(
       <TxStageSignOperationAmount
         {...STAGE_OPERATION_ARGS}
+        showOperationInDescription={false}
         token={getTokenDisplayName(token)}
         amount={amount}
         willReceive={willReceive}
@@ -74,6 +75,7 @@ const getTxModalStagesRequest = (
     transitStage(
       <TxStageSignOperationAmount
         {...STAGE_OPERATION_ARGS}
+        showOperationInDescription={false}
         willReceive={willReceive}
         amount={amount}
         token={getTokenDisplayName(token)}

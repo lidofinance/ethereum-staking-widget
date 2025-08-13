@@ -14,6 +14,7 @@ import { FormControllerContext } from 'shared/hook-form/form-controller';
 
 import { isGGVAvailable } from '../../utils';
 import { useGGVDeposit } from '../../hooks/use-ggv-deposit';
+import { useGGVDepositStatus } from '../../hooks/use-ggv-deposit-status';
 
 import { useGGVDepositFormData } from './use-ggv-deposit-form-data';
 import { GGVDepositFormValidationResolver } from './validation';
@@ -50,6 +51,7 @@ export const GGVDepositFormProvider: FC<PropsWithChildren> = ({ children }) => {
     refetchData,
     isLoading,
   } = useGGVDepositFormData();
+  const { data: depositStatus } = useGGVDepositStatus();
 
   // Retry event helper
   const { retryEvent } = useFormControllerRetry();
@@ -66,7 +68,10 @@ export const GGVDepositFormProvider: FC<PropsWithChildren> = ({ children }) => {
       amount: null,
       token: 'ETH',
     },
-    disabled: !isDappActive || !isGGVAvailable(chainId),
+    disabled:
+      !isDappActive ||
+      !isGGVAvailable(chainId) ||
+      depositStatus?.canDeposit === false,
     criteriaMode: 'firstError',
     mode: 'onChange',
     context: validationContext,

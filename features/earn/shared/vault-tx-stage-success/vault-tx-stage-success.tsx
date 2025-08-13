@@ -20,7 +20,7 @@ export const VaultTxStageSuccess = ({
       title={
         <>
           Your new balance is{' '}
-          <TxAmount amount={newBalance} symbol={vaultSymbol} />;
+          <TxAmount amount={newBalance} symbol={vaultSymbol} />
         </>
       }
       description={`Depositing operation was successful`}

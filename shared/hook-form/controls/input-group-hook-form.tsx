@@ -26,6 +26,7 @@ const InputGroupStyled = styled(InputGroup)<InputGroupStyleProps>`
 
 export const InputGroupHookForm: React.FC<InputGroupHookFormProps> = ({
   errorField,
+  bottomSpacing = true,
   ...props
 }) => {
   const { errors } = useFormState<Record<string, unknown>>({
@@ -34,5 +35,12 @@ export const InputGroupHookForm: React.FC<InputGroupHookFormProps> = ({
   const errorMessage =
     isValidationErrorTypeValidate(errors[errorField]?.type) &&
     errors[errorField]?.message;
-  return <InputGroupStyled fullwidth error={errorMessage} {...props} />;
+  return (
+    <InputGroupStyled
+      bottomSpacing={bottomSpacing}
+      fullwidth
+      error={errorMessage}
+      {...props}
+    />
+  );
 };

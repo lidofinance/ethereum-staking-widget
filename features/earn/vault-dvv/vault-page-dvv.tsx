@@ -17,6 +17,7 @@ import {
 } from 'consts/urls';
 import { DVVDepositForm } from './deposit';
 import { DVVWithdrawForm } from './withdraw';
+import { VaultLegal } from '../shared/vault-legal';
 
 const partners = [
   {
@@ -59,6 +60,7 @@ export const VaultPageDVV: FC<{
         <VaultSwitch routes={routes} checked={isWithdraw} fullwidth />
         {isDeposit && <DVVDepositForm />}
         {isWithdraw && <DVVWithdrawForm />}
+        <VaultLegal />
       </Block>
     </>
   );

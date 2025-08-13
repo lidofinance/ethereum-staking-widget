@@ -13,6 +13,7 @@ import {
   PositionDecorator,
 } from './styles';
 import { InlineLoader } from '../inline-loader';
+import { TokenToWallet } from 'shared/components';
 
 type TokenBalance = {
   token?: Address;
@@ -41,7 +42,8 @@ const PositionBody = ({ position }: { position: TokenBalance }) => {
       <PositionBalance>
         <InlineLoader width={78} isLoading={position.isLoading}>
           <PositionBalance>
-            <FormatToken symbol={position.symbol} amount={position.balance} />
+            <FormatToken symbol={position.symbol} amount={position.balance} />{' '}
+            <TokenToWallet address={position.token} />
           </PositionBalance>
         </InlineLoader>
       </PositionBalance>
