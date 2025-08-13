@@ -23,7 +23,7 @@ export const useGGVPreviewDeposit = (
 ) => {
   const { chainId } = useDappStatus();
   const publicClient = usePublicClient();
-  const isEnabled = amount != null && isGGVAvailable(chainId);
+  const isEnabled = isGGVAvailable(chainId);
 
   const values = useMemo(
     () => ({
@@ -59,32 +59,24 @@ export const useGGVPreviewDeposit = (
           weth: 0n,
         };
 
-      try {
-        const [shares, shareRate, decimals] = await Promise.all([
-          lens.read.previewDeposit([
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            getTokenAddress(chainId, token === 'ETH' ? 'wETH' : token)!,
-            amount,
-            vault.address,
-            accountant.address,
-          ]),
-          accountant.read.getRate(),
-          accountant.read.decimals(),
-        ]);
+      const [shares, shareRate, decimals] = await Promise.all([
+        lens.read.previewDeposit([
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          getTokenAddress(chainId, token === 'ETH' ? 'wETH' : token)!,
+          amount,
+          vault.address,
+          accountant.address,
+        ]),
+        accountant.read.getRate(),
+        accountant.read.decimals(),
+      ]);
 
-        const weth = (shares * shareRate) / 10n ** BigInt(decimals);
+      const weth = (shares * shareRate) / 10n ** BigInt(decimals);
 
-        return {
-          shares,
-          weth,
-        };
-      } catch (error) {
-        console.error(error);
-        return {
-          shares: 0n,
-          weth: 0n,
-        };
-      }
+      return {
+        shares,
+        weth,
+      };
     },
   });
 

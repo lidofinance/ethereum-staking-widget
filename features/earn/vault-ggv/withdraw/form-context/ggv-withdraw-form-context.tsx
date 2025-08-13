@@ -7,12 +7,14 @@ import {
   FormControllerContextValueType,
 } from 'shared/hook-form/form-controller';
 
+import type { GGVWithdrawalFormValues } from '../types';
+
 const GGVWithdrawFormDataContext = createContext(null);
 
 export const GGVWithdrawFormProvider: FC<PropsWithChildren> = ({
   children,
 }) => {
-  const formObject = useForm<any>();
+  const formObject = useForm<GGVWithdrawalFormValues>();
   const { retryEvent } = useFormControllerRetry();
 
   const formControllerValue = useMemo(
