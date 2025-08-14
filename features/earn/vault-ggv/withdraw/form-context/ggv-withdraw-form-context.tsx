@@ -1,4 +1,11 @@
-import { createContext, FC, PropsWithChildren, useMemo } from 'react';
+import invariant from 'tiny-invariant';
+import {
+  createContext,
+  FC,
+  PropsWithChildren,
+  useContext,
+  useMemo,
+} from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
 
 import { useFormControllerRetry } from 'shared/hook-form/form-controller/use-form-controller-retry-delegate';
@@ -7,27 +14,90 @@ import {
   FormControllerContextValueType,
 } from 'shared/hook-form/form-controller';
 
-import type { GGVWithdrawalFormValues } from '../types';
+import { useDappStatus } from 'modules/web3';
 
-const GGVWithdrawFormDataContext = createContext(null);
+import { isGGVAvailable } from '../../utils';
+import { useGGVWithdraw } from '../hooks/use-ggv-withdraw';
+import { useGGVWithdrawFormData } from './use-withdraw-form-data';
+import { GGVWithdrawalFormValidationResolver } from './validation';
+import type {
+  GGVWithdrawalFormValues,
+  GGVWithdrawalFormDataContextValue,
+  GGVWithdrawalFormValidatedValues,
+} from '../types';
+
+const GGVWithdrawFormDataContext =
+  createContext<GGVWithdrawalFormDataContextValue | null>(null);
+
+export const useGGVWithdrawForm = () => {
+  const value = useContext(GGVWithdrawFormDataContext);
+  invariant(
+    value,
+    'useGGVWithdrawForm must be used within a GGVWithdrawFormProvider',
+  );
+  return value;
+};
 
 export const GGVWithdrawFormProvider: FC<PropsWithChildren> = ({
   children,
 }) => {
-  const formObject = useForm<GGVWithdrawalFormValues>();
+  const { isDappActive, chainId } = useDappStatus();
+  const {
+    validationContext,
+    isLoadingFormState,
+    refetchData,
+    withdrawalState,
+    withdrawalStateQuery,
+  } = useGGVWithdrawFormData();
+
   const { retryEvent } = useFormControllerRetry();
+  const { withdrawGGV } = useGGVWithdraw(retryEvent.fire);
+
+  const formObject = useForm<GGVWithdrawalFormValues>({
+    defaultValues: {
+      amount: null,
+    },
+    disabled:
+      isLoadingFormState ||
+      !isDappActive ||
+      !isGGVAvailable(chainId) ||
+      !withdrawalState.canWithdraw,
+    criteriaMode: 'firstError',
+    mode: 'onChange',
+    context: validationContext,
+    resolver: GGVWithdrawalFormValidationResolver,
+  });
 
   const formControllerValue = useMemo(
     (): FormControllerContextValueType<any> => ({
-      onSubmit: async () => false,
+      onSubmit: async (values: GGVWithdrawalFormValidatedValues) => {
+        const result = await withdrawGGV(values);
+        if (result) {
+          await refetchData();
+        }
+        return result;
+      },
       retryEvent,
     }),
-    [retryEvent],
+    [refetchData, retryEvent, withdrawGGV],
+  );
+
+  const contextValue = useMemo(
+    (): GGVWithdrawalFormDataContextValue => ({
+      ...withdrawalState,
+      isLoading: isLoadingFormState,
+      minDiscount: withdrawalStateQuery.data?.minDiscount,
+    }),
+    [
+      isLoadingFormState,
+      withdrawalState,
+      withdrawalStateQuery.data?.minDiscount,
+    ],
   );
 
   return (
     <FormProvider {...formObject}>
-      <GGVWithdrawFormDataContext.Provider value={null}>
+      <GGVWithdrawFormDataContext.Provider value={contextValue}>
         <FormControllerContext.Provider value={formControllerValue}>
           {children}
         </FormControllerContext.Provider>

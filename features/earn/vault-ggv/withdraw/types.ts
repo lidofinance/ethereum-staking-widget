@@ -47,3 +47,33 @@ export type GGVWithdrawalFormValues = {
 export type GGVWithdrawalFormValidatedValues = {
   amount: bigint;
 };
+
+export type GGVWithdrawalFormValidationContext = {
+  isWalletActive: boolean;
+  asyncContext: Promise<GGVWithdrawalFormAsyncValidationContext>;
+};
+
+export type GGVWithdrawalFormAsyncValidationContext = {
+  balance: bigint;
+  maxWithdrawal: bigint | null;
+  minWithdrawal: bigint;
+};
+
+export type GGVWithdrawStoppedReason =
+  | 'paused'
+  | 'withdrawal-stopped'
+  | 'withdrawal-zero-capacity'
+  | 'transfer-from-shares-blocked'
+  | 'transfer-from-shares-time-locked'
+  | null;
+
+export type GGVWithdrawalState = {
+  isLoading: boolean;
+  canWithdraw: boolean;
+  reason: GGVWithdrawStoppedReason;
+  unlockTime?: Date;
+};
+
+export type GGVWithdrawalFormDataContextValue = GGVWithdrawalState & {
+  minDiscount?: number;
+};

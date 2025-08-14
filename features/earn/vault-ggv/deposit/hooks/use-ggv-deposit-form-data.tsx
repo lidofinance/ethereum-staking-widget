@@ -80,10 +80,12 @@ export const useGGVDepositFormData = () => {
         ['wETH']: wethBalanceQuery.refetch,
       }[token];
 
+      const options = { cancelRefetch: true, throwOnError: false };
+
       return Promise.all([
-        tokenBalanceRefetch({ cancelRefetch: true, throwOnError: false }),
+        tokenBalanceRefetch(options),
         // refetch all GGV related queries
-        queryClient.refetchQueries({ queryKey: ['ggv'] }),
+        queryClient.refetchQueries({ queryKey: ['ggv'] }, options),
       ]);
     },
     [

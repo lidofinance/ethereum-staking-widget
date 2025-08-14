@@ -11,12 +11,33 @@ import {
   GGV_QUEUE_ABI,
 } from './abi';
 
-export const getGGVVaultContract = <
+export const getGGVVaultContract = <TPublicClient extends PublicClient>(
+  publicClient: TPublicClient,
+) => {
+  const address = getContractAddress(
+    publicClient.chain?.id as number,
+    'ggvVault',
+  );
+  invariant(
+    address,
+    `no GGV vault contract address for ${publicClient.chain?.id}`,
+  );
+
+  return getContract({
+    abi: GGV_VAULT_ABI,
+    address,
+    client: {
+      public: publicClient,
+    },
+  });
+};
+
+export const getGGVVaultWritableContract = <
   TPublicClient extends PublicClient,
   TWalletClient extends WalletClient = WalletClient,
 >(
   publicClient: TPublicClient,
-  walletClient?: TWalletClient,
+  walletClient: TWalletClient,
 ) => {
   const address = getContractAddress(
     publicClient.chain?.id as number,

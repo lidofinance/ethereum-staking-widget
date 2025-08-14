@@ -12,12 +12,14 @@ import { useDebouncedValue } from 'shared/hooks';
 import { useEthUsd } from 'shared/hooks/use-eth-usd';
 
 import type { GGVWithdrawalFormValues } from '../types';
+import { useGGVWithdrawForm } from '../form-context';
 
 export const useGGVPreviewWithdrawal = (
   amount?: GGVWithdrawalFormValues['amount'],
 ) => {
   const { chainId } = useDappStatus();
   const { wrap } = useLidoSDK();
+  const { minDiscount } = useGGVWithdrawForm();
   const publicClient = usePublicClient();
   const isEnabled = isGGVAvailable(chainId);
 
@@ -30,6 +32,7 @@ export const useGGVPreviewWithdrawal = (
       'preview-withdrawal',
       {
         amount: debouncedAmount?.toString(),
+        minDiscount,
       },
     ] as const,
     enabled: isEnabled,
@@ -47,7 +50,8 @@ export const useGGVPreviewWithdrawal = (
       const wstethAmount = await queue.read.previewAssetsOut([
         wstethAddress,
         amount,
-        0,
+        // for preview we can assume minDiscount will be 1 during short loading time
+        minDiscount ?? 1,
       ]);
       const stethAmount = await wrap.convertWstethToSteth(wstethAmount);
 
