@@ -6,7 +6,7 @@ WORKDIR /app
 RUN apk add --no-cache git=~2
 COPY package.json yarn.lock ./
 
-RUN yarn install --frozen-lockfile --non-interactive --ignore-scripts && yarn cache clean
+RUN yarn install --frozen-lockfile --non-interactive yarn cache clean
 COPY . .
 RUN NODE_NO_BUILD_DYNAMICS=true yarn build
 # public/runtime is used to inject runtime vars; it should exist and user node should have write access there for it
