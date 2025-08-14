@@ -47,6 +47,7 @@ export const GGVWithdrawFormProvider: FC<PropsWithChildren> = ({
     isLoadingFormState,
     refetchData,
     withdrawalState,
+    withdrawalRequestsQuery,
     withdrawalStateQuery,
   } = useGGVWithdrawFormData();
 
@@ -61,8 +62,8 @@ export const GGVWithdrawFormProvider: FC<PropsWithChildren> = ({
       isLoadingFormState ||
       !isDappActive ||
       !isGGVAvailable(chainId) ||
-      !withdrawalState.canWithdraw,
-    criteriaMode: 'firstError',
+      !withdrawalState.canWithdraw ||
+      withdrawalRequestsQuery.data?.hasActiveRequests,
     mode: 'onChange',
     context: validationContext,
     resolver: GGVWithdrawalFormValidationResolver,
@@ -86,10 +87,13 @@ export const GGVWithdrawFormProvider: FC<PropsWithChildren> = ({
     (): GGVWithdrawalFormDataContextValue => ({
       ...withdrawalState,
       isLoading: isLoadingFormState,
+      hasActiveRequests:
+        withdrawalRequestsQuery.data?.hasActiveRequests ?? false,
       minDiscount: withdrawalStateQuery.data?.minDiscount,
     }),
     [
       isLoadingFormState,
+      withdrawalRequestsQuery.data?.hasActiveRequests,
       withdrawalState,
       withdrawalStateQuery.data?.minDiscount,
     ],

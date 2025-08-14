@@ -107,6 +107,7 @@ export const useGGVWithdrawFormData = () => {
     isLoadingFormState:
       withdrawalRequestsQuery.isLoading || withdrawalState.isLoading,
     withdrawalStateQuery,
+    withdrawalRequestsQuery,
     withdrawalState,
     validationContext,
     refetchData,

@@ -16,10 +16,10 @@ const WARNING_TEXT: Record<NonNullable<GGVWithdrawStoppedReason>, string> = {
 export const GGVWithdrawWarning = () => {
   const { reason, canWithdraw, unlockTime } = useGGVWithdrawForm();
 
-  if (canWithdraw === false) {
+  if (reason && canWithdraw === false) {
     return (
       <VaultWarning>
-        {reason && WARNING_TEXT[reason]}
+        {WARNING_TEXT[reason]}
         {unlockTime && ` ${unlockTime.toString()}.`}
       </VaultWarning>
     );

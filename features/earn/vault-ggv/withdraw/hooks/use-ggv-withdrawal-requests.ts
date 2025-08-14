@@ -5,6 +5,10 @@ import { getGGVVaultContract } from '../../contracts';
 import type { WQApiResponse } from '../types';
 import { Address, Hash } from 'viem';
 
+export type GGVWithdrawalRequestsResponse = ReturnType<
+  typeof transformAPIResponse
+>;
+
 const transformAPIResponse = (response: WQApiResponse) => {
   const transformRequest = (
     request: WQApiResponse['Response']['open_requests'][number],
@@ -32,8 +36,9 @@ const transformAPIResponse = (response: WQApiResponse) => {
 
   return {
     openRequests: response.Response.open_requests.map(transformRequest),
-    fulfilledRequests:
-      response.Response.fulfilled_requests.map(transformRequest),
+    fulfilledRequests: response.Response.fulfilled_requests
+      .map(transformRequest)
+      .sort((a, b) => Number(b.timestamp) - Number(a.timestamp)),
     expiredRequests: response.Response.expired_requests.map(transformRequest),
     canceledRequests: response.Response.cancelled_requests.map(
       ({ Cancellation, Request }) => ({
@@ -65,7 +70,11 @@ export const useGGVWithdrawalRequests = () => {
         res.json(),
       );
 
-      return transformAPIResponse(response);
+      const requests = transformAPIResponse(response);
+
+      // TODO: filter openRequests against contract to prevent stale data
+      // filter out non wsteth
+      return { requests, hasActiveRequests: requests.openRequests.length > 0 };
     },
   });
 };

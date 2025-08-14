@@ -1,3 +1,10 @@
+import type { GGVWithdrawalRequestsResponse } from './hooks/use-ggv-withdrawal-requests';
+
+export type { GGVWithdrawalRequestsResponse } from './hooks/use-ggv-withdrawal-requests';
+
+export type GGVWithdrawalRequest =
+  GGVWithdrawalRequestsResponse['openRequests'][number];
+
 type Cancellation = {
   block_number: string;
   timestamp: string;
@@ -76,4 +83,5 @@ export type GGVWithdrawalState = {
 
 export type GGVWithdrawalFormDataContextValue = GGVWithdrawalState & {
   minDiscount?: number;
+  hasActiveRequests: boolean;
 };
