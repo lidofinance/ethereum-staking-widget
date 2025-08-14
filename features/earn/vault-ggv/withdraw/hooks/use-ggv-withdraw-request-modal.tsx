@@ -9,7 +9,8 @@ import { getGeneralTransactionModalStages } from 'shared/transaction-modal/hooks
 import { TxStageSignOperationAmount } from 'shared/transaction-modal/tx-stages-composed/tx-stage-amount-operation';
 
 import { getTokenDisplayName } from 'utils/getTokenDisplayName';
-import { VaultTxStageSuccess } from 'features/earn/shared/vault-tx-stage-success';
+import { VaultCustomTxStageSuccess } from 'features/earn/shared/vault-custom-tx-stage-success';
+import { FormatToken } from 'shared/formatters';
 
 const STAGE_APPROVE_ARGS = {
   willReceiveToken: getTokenDisplayName('wstETH'),
@@ -71,12 +72,21 @@ const getTxModalStagesRequest = (
       />,
     ),
 
-  success: (newBalance: bigint, txHash?: Hash) =>
+  success: (willReceive: bigint, txHash?: Hash) =>
     transitStage(
-      <VaultTxStageSuccess
+      <VaultCustomTxStageSuccess
         txHash={txHash}
-        newBalance={newBalance}
-        vaultSymbol={}
+        title={`Withdrawal request has been sent`}
+        description={
+          <>
+            Request to withdraw{' '}
+            <FormatToken
+              amount={willReceive}
+              symbol={getTokenDisplayName('wstETH')}
+            />{' '}
+            has been sent.
+          </>
+        }
       />,
       {
         isClosableOnLedger: true,

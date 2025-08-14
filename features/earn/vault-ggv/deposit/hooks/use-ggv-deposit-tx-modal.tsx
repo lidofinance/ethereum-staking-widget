@@ -13,7 +13,7 @@ import {
   TOKEN_DISPLAY_NAMES,
 } from 'utils/getTokenDisplayName';
 import { GGV_TOKEN_SYMBOL } from '../../consts';
-import { VaultTxStageSuccess } from 'features/earn/shared/vault-tx-stage-success';
+import { VaultDepositTxStageSuccess } from 'features/earn/shared/vault-deposit-tx-stage-success';
 
 const STAGE_APPROVE_ARGS = {
   willReceiveToken: GGV_TOKEN_SYMBOL,
@@ -87,10 +87,11 @@ const getTxModalStagesRequest = (
 
   success: (newBalance: bigint, txHash?: Hash) =>
     transitStage(
-      <VaultTxStageSuccess
+      <VaultDepositTxStageSuccess
         txHash={txHash}
         newBalance={newBalance}
-        vaultSymbol={GGV_TOKEN_SYMBOL}
+        balanceSymbol={GGV_TOKEN_SYMBOL}
+        description={`Depositing operation was successful`}
       />,
       {
         isClosableOnLedger: true,

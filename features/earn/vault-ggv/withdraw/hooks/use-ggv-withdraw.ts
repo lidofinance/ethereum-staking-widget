@@ -120,8 +120,7 @@ export const useGGVWithdraw = (onRetry?: () => void) => {
             return txModalStages.pending(amount, willReceive, payload);
           },
           onSuccess: async ({ txHash }) => {
-            const balance = await wstETH.balance(address);
-            txModalStages.success(balance, txHash);
+            txModalStages.success(willReceive, txHash);
           },
           onMultisigDone: () => {
             txModalStages.successMultisig();
