@@ -8,7 +8,7 @@ index 6cb537a..07844e7 100644
 +{"version":3,"file":"useAutoConnect.d.ts","sourceRoot":"","sources":["../../src/hooks/useAutoConnect.ts"],"names":[],"mappings":"AAQA,eAAO,MAAM,cAAc,uBAAwB,OAAO,SAyDzD,CAAC"}
 \ No newline at end of file
 diff --git a/node_modules/@reef-knot/core-react/dist/hooks/useAutoConnect.js b/node_modules/@reef-knot/core-react/dist/hooks/useAutoConnect.js
-index 8a9730c..006731c 100644
+index 8a9730c..01609bf 100644
 --- a/node_modules/@reef-knot/core-react/dist/hooks/useAutoConnect.js
 +++ b/node_modules/@reef-knot/core-react/dist/hooks/useAutoConnect.js
 @@ -46,7 +46,8 @@ const useAutoConnect = autoConnectEnabled => {
@@ -16,8 +16,8 @@ index 8a9730c..006731c 100644
            // Wait for all EIP-6963 wallets to load their code and fire "eip6963:announceProvider" event
            // Without the delay, this code can be called from a browser's cache faster than wallet extension code
 -          yield new Promise(resolve => setTimeout(resolve, 100));
-+          yield new Promise(resolve => setTimeout(resolve, 400));
-+          console.log('Timeout before wallet reconnect is increased');
++          yield new Promise(resolve => setTimeout(resolve, 300));
++          console.log('Timeout is increased');
            const reconnectWithCallback = withCallback(reconnectAsync, onReconnect);
            yield reconnectWithCallback({
              connectors: [createConnectorFn]
