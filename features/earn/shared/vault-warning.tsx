@@ -17,8 +17,6 @@ const WarningContainer = styled.div`
   padding: ${({ theme }) => theme.spaceMap.md}px;
   background-color: #fdf3e5;
   gap: ${({ theme }) => theme.spaceMap.sm}px;
-
-  margin-bottom: 12px;
 `;
 
 const WarningContent = styled.div`

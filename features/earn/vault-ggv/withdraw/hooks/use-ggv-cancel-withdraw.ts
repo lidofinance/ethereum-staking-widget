@@ -31,32 +31,12 @@ export const useGGVCancelWithdraw = () => {
           core.web3Provider as WalletClient,
         );
 
-        const {
-          nonce,
-          user,
-          assetOut,
-          amountOfShares,
-          amountOfAssets,
-          creationTime,
-          secondsToMaturity,
-          secondsToDeadline,
-        } = request.metadata;
+        const { amountOfShares, amountOfAssets } = request.metadata;
 
         // used to display in modal
         const willReceive = amountOfShares;
 
-        const cancelArgs = [
-          {
-            nonce,
-            user,
-            assetOut,
-            amountOfShares,
-            amountOfAssets,
-            creationTime: Number(creationTime),
-            secondsToMaturity: Number(secondsToMaturity),
-            secondsToDeadline: Number(secondsToDeadline),
-          },
-        ] as const;
+        const cancelArgs = [{ ...request.metadata }] as const;
 
         await txFlow({
           callsFn: async () => {
@@ -93,7 +73,14 @@ export const useGGVCancelWithdraw = () => {
             );
           },
           onSuccess: async ({ txHash }) => {
-            return txModalStages.success(willReceive, txHash);
+            const [newBalance] = await Promise.all([
+              positionQuery.refetch(opts),
+              queryClient.refetchQueries({ queryKey: ['ggv'] }, opts),
+            ]);
+            return txModalStages.success(
+              newBalance.data?.sharesBalance as bigint,
+              txHash,
+            );
           },
           onMultisigDone: () => {
             txModalStages.successMultisig();

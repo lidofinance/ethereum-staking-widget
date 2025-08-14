@@ -11,6 +11,12 @@ type Cancellation = {
   transaction_hash: string;
 };
 
+type Fulfillment = {
+  block_number: string;
+  timestamp: string;
+  transaction_hash: string;
+};
+
 type RequestMetadata = {
   amountOfAssets: string;
   amountOfShares: string;
@@ -42,7 +48,10 @@ export type WQApiResponse = {
       Request: Request;
     }[];
     expired_requests: Request[];
-    fulfilled_requests: Request[];
+    fulfilled_requests: {
+      Fulfillment: Fulfillment;
+      Request: Request;
+    }[];
     open_requests: Request[];
   };
 };

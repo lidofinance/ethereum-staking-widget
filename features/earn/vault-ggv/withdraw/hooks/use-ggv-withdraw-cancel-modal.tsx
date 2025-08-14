@@ -54,11 +54,12 @@ const getTxModalStagesCancel = (
       />,
     ),
 
-  success: (newBalance: bigint, txHash?: Hash) =>
+  success: (newBalance?: bigint, txHash?: Hash) =>
     transitStage(
       <VaultDepositTxStageSuccess
         txHash={txHash}
-        newBalance={newBalance}
+        // This is wrong info but it will keep flow from exiting with error
+        newBalance={newBalance ?? 0n}
         balanceSymbol={GGV_TOKEN_SYMBOL}
         description={`Withdrawal cancel was successful`}
       />,

@@ -59,7 +59,8 @@ const PendingRequestEntry = ({ request }: RequestEntryProps) => {
       created on {new Date(Number(request.timestamp) * 1000).toDateString()}
       <ButtonText
         disabled={isLoading}
-        onClick={() => {
+        onClick={(event) => {
+          event.preventDefault();
           void cancelGGVWithdraw(request);
         }}
       >
@@ -92,7 +93,10 @@ export const GGVWithdrawRequest = () => {
 
     <RequestsContainer>
       <RequestSectionTitle>Latest withdrawal request</RequestSectionTitle>
-      <RequestEntry request={latest}>Completed on TODO</RequestEntry>
+      <RequestEntry request={latest.request}>
+        Completed on{' '}
+        {new Date(Number(latest.fulfillment.timestamp) * 1000).toDateString()}
+      </RequestEntry>
     </RequestsContainer>;
   }
 

@@ -1,13 +1,49 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { useQuery } from '@tanstack/react-query';
 import { useDappStatus, useMainnetOnlyWagmi } from 'modules/web3';
-import { getGGVVaultContract } from '../../contracts';
+import { getGGVQueueContract, getGGVVaultContract } from '../../contracts';
 
 import type { WQApiResponse } from '../types';
-import { Address, Hash } from 'viem';
+import {
+  Address,
+  encodeAbiParameters,
+  Hash,
+  isAddressEqual,
+  keccak256,
+} from 'viem';
+import { getTokenAddress } from 'config/networks/token-address';
 
 export type GGVWithdrawalRequestsResponse = ReturnType<
   typeof transformAPIResponse
 >;
+
+const REQUEST_STRUCT_ABI = [
+  { internalType: 'uint96', name: 'nonce', type: 'uint96' },
+  { internalType: 'address', name: 'user', type: 'address' },
+  { internalType: 'address', name: 'assetOut', type: 'address' },
+  { internalType: 'uint128', name: 'amountOfShares', type: 'uint128' },
+  { internalType: 'uint128', name: 'amountOfAssets', type: 'uint128' },
+  { internalType: 'uint40', name: 'creationTime', type: 'uint40' },
+  { internalType: 'uint24', name: 'secondsToMaturity', type: 'uint24' },
+  { internalType: 'uint24', name: 'secondsToDeadline', type: 'uint24' },
+] as const;
+
+// double checked against onchain method
+const getRequestId = ({
+  metadata,
+}: GGVWithdrawalRequestsResponse['openRequests'][number]) =>
+  keccak256(
+    encodeAbiParameters(REQUEST_STRUCT_ABI, [
+      metadata.nonce,
+      metadata.user,
+      metadata.assetOut,
+      metadata.amountOfShares,
+      metadata.amountOfAssets,
+      metadata.creationTime,
+      metadata.secondsToMaturity,
+      metadata.secondsToDeadline,
+    ]),
+  );
 
 const transformAPIResponse = (response: WQApiResponse) => {
   const transformRequest = (
@@ -23,21 +59,28 @@ const transformAPIResponse = (response: WQApiResponse) => {
     wantToken: request.wantToken as Address,
     wantTokenDecimals: BigInt(request.wantTokenDecimals),
     metadata: {
-      assetOut: request.metadata.assetOut as Address,
-      user: request.metadata.user as Address,
       nonce: BigInt(request.metadata.nonce),
-      creationTime: BigInt(request.metadata.creationTime),
+      user: request.metadata.user as Address,
+      assetOut: request.metadata.assetOut as Address,
       amountOfAssets: BigInt(request.metadata.amountOfAssets),
       amountOfShares: BigInt(request.metadata.amountOfShares),
-      secondsToDeadline: BigInt(request.metadata.secondsToDeadline),
-      secondsToMaturity: BigInt(request.metadata.secondsToMaturity),
+      creationTime: Number(request.metadata.creationTime),
+      secondsToDeadline: Number(request.metadata.secondsToDeadline),
+      secondsToMaturity: Number(request.metadata.secondsToMaturity),
     },
   });
 
   return {
     openRequests: response.Response.open_requests.map(transformRequest),
     fulfilledRequests: response.Response.fulfilled_requests
-      .map(transformRequest)
+      .map(({ Fulfillment, Request }) => ({
+        request: transformRequest(Request),
+        fulfillment: {
+          block_number: BigInt(Fulfillment.block_number),
+          timestamp: BigInt(Fulfillment.timestamp),
+          transaction_hash: Fulfillment.transaction_hash as Hash,
+        },
+      }))
       .sort((a, b) => Number(b.timestamp) - Number(a.timestamp)),
     expiredRequests: response.Response.expired_requests.map(transformRequest),
     canceledRequests: response.Response.cancelled_requests.map(
@@ -63,6 +106,11 @@ export const useGGVWithdrawalRequests = () => {
     queryFn: async () => {
       //TODO: add event based fallback
       const vault = getGGVVaultContract(publicClientMainnet);
+      const wstethAddress = getTokenAddress(
+        publicClientMainnet.chain!.id,
+        'wstETH',
+      );
+      const queue = getGGVQueueContract(publicClientMainnet);
 
       const url = `https://api.sevenseas.capital/boringQueue/ethereum/${vault.address}/${address}?string_values=true`;
 
@@ -71,6 +119,21 @@ export const useGGVWithdrawalRequests = () => {
       );
 
       const requests = transformAPIResponse(response);
+
+      // filter out non-wsteth requests
+      requests.openRequests = requests.openRequests.filter((request) =>
+        isAddressEqual(request.wantToken, wstethAddress!),
+      );
+      requests.fulfilledRequests = requests.fulfilledRequests.filter(
+        ({ request }) => isAddressEqual(request.wantToken, wstethAddress!),
+      );
+
+      // filter out requests that don't exist on chain
+      const existingRequestIds = await queue.read.getRequestIds();
+      const existingRequestIdsSet = new Set(existingRequestIds);
+      requests.openRequests = requests.openRequests.filter((request) =>
+        existingRequestIdsSet.has(getRequestId(request)),
+      );
 
       // TODO: filter openRequests against contract to prevent stale data
       // filter out non wsteth
