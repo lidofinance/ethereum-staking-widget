@@ -16,36 +16,36 @@ type CommonCallbackProps = {
   isAA: boolean;
 };
 
-export type onSignCallbackProps = CommonCallbackProps & {
+export type onSignCallbackProps = {
   stage: TransactionCallbackStage.SIGN;
   payload?: bigint;
 };
-export type onReceiptCallbackProps = CommonCallbackProps & {
+export type onReceiptCallbackProps = {
   stage: TransactionCallbackStage.RECEIPT;
   payload?: Hash; // txHash in case of legacy sendTransaction
   callId?: string; // callId in case of EIP-5792 sendCalls
   txHashOrCallId?: Hash;
 };
-export type onSuccessCallbackProps = CommonCallbackProps & {
+export type onSuccessCallbackProps = {
   stage: TransactionCallbackStage.DONE;
   payload?: bigint;
   txHash?: Hash;
 };
-export type onMultisigDoneCallbackProps = CommonCallbackProps & {
+export type onMultisigDoneCallbackProps = {
   stage: TransactionCallbackStage.MULTISIG_DONE;
 };
-export type onFailureCallbackProps = CommonCallbackProps & {
+export type onFailureCallbackProps = {
   stage: TransactionCallbackStage.ERROR;
   payload?: unknown; // defined in SDK and is meant to contain error, but not actually used anywhere
   error?: unknown;
 };
-export type onPermitCallbackProps = CommonCallbackProps & {
+export type onPermitCallbackProps = {
   stage: TransactionCallbackStage.PERMIT;
 };
-export type onGasLimitCallbackProps = CommonCallbackProps & {
+export type onGasLimitCallbackProps = {
   stage: TransactionCallbackStage.GAS_LIMIT;
 };
-export type onConfirmationCallbackProps = CommonCallbackProps & {
+export type onConfirmationCallbackProps = {
   stage: TransactionCallbackStage.CONFIRMATION;
   callStatus?: GetCallsStatusReturnType;
   payload?: TransactionReceipt;
@@ -62,7 +62,9 @@ export type TxCallbackProps =
   | sendTransactionCallbackProps
   | sendCallsCallbackProps;
 
-export type StageCallback<TArgs> = (args: TArgs) => Promise<void> | void;
+export type StageCallback<TArgs, TReturn = void> = (
+  args: TArgs & CommonCallbackProps,
+) => Promise<TReturn> | TReturn;
 
 /**
  * Callbacks for different stages of the transaction flow.
@@ -77,9 +79,7 @@ export type StageCallback<TArgs> = (args: TArgs) => Promise<void> | void;
  * @property onFailure - Callback for ERROR stage (transaction failed).
  */
 export type StageCallbacks = {
-  onSign?:
-    | StageCallback<onSignCallbackProps>
-    | ((args: onSignCallbackProps) => Promise<bigint>);
+  onSign?: StageCallback<onSignCallbackProps, bigint | void>;
   onPermit?: StageCallback<onPermitCallbackProps>;
   onGasLimit?: StageCallback<onGasLimitCallbackProps>;
   onReceipt?: StageCallback<onReceiptCallbackProps>;

@@ -1,13 +1,16 @@
-import { useCallback } from 'react';
-import { useDappStatus, useTxFlow, AACall, useLidoSDK } from 'modules/web3';
-import { GGVWithdrawalFormValidatedValues } from '../types';
-import { encodeFunctionData, maxUint24, WalletClient } from 'viem';
 import invariant from 'tiny-invariant';
+import { useCallback } from 'react';
+import { encodeFunctionData, maxUint24, WalletClient } from 'viem';
+
+import { useDappStatus, useTxFlow, AACall, useLidoSDK } from 'modules/web3';
+
 import {
   getGGVQueueWritableContract,
   getGGVVaultWritableContract,
 } from '../../contracts';
 import { useTxModalStagesGGVWithdrawalRequest } from './use-ggv-withdraw-request-modal';
+
+import type { GGVWithdrawalFormValidatedValues } from '../types';
 
 export const useGGVWithdraw = (onRetry?: () => void) => {
   const { address } = useDappStatus();
@@ -31,6 +34,7 @@ export const useGGVWithdraw = (onRetry?: () => void) => {
           core.web3Provider as WalletClient,
         );
 
+        // fetch actual minDiscount
         const minDiscount = (
           await queue.read.withdrawAssets([wstethAddress])
         )[3];
