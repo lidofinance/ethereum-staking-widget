@@ -81,7 +81,9 @@ const transformAPIResponse = (response: WQApiResponse) => {
           transaction_hash: Fulfillment.transaction_hash as Hash,
         },
       }))
-      .sort((a, b) => Number(b.timestamp) - Number(a.timestamp)),
+      .sort(
+        (a, b) => Number(b.request.timestamp) - Number(a.request.timestamp),
+      ),
     expiredRequests: response.Response.expired_requests.map(transformRequest),
     canceledRequests: response.Response.cancelled_requests.map(
       ({ Cancellation, Request }) => ({
