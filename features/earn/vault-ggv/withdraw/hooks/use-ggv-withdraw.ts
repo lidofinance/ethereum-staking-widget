@@ -113,11 +113,16 @@ export const useGGVWithdraw = (onRetry?: () => void) => {
             }
             return txModalStages.sign(amount, willReceive);
           },
-          onReceipt: async ({ payload }) => {
+          onReceipt: async ({ txHashOrCallId, isAA }) => {
             if (needsApprove) {
-              return txModalStages.pendingApproval(amount, payload);
+              return txModalStages.pendingApproval(amount, txHashOrCallId);
             }
-            return txModalStages.pending(amount, willReceive, payload);
+            return txModalStages.pending(
+              amount,
+              willReceive,
+              txHashOrCallId,
+              isAA,
+            );
           },
           onSuccess: async ({ txHash }) => {
             txModalStages.success(willReceive, txHash);

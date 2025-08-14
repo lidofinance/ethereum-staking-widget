@@ -138,11 +138,21 @@ export const useGGVDeposit = (onRetry?: () => void) => {
             }
             return txModalStages.sign(amount, willReceive, token);
           },
-          onReceipt: async ({ payload }) => {
+          onReceipt: async ({ txHashOrCallId, isAA }) => {
             if (needsApprove) {
-              return txModalStages.pendingApproval(amount, token, payload);
+              return txModalStages.pendingApproval(
+                amount,
+                token,
+                txHashOrCallId,
+              );
             }
-            return txModalStages.pending(amount, willReceive, token, payload);
+            return txModalStages.pending(
+              amount,
+              willReceive,
+              token,
+              txHashOrCallId,
+              isAA,
+            );
           },
           onSuccess: async ({ txHash }) => {
             const balance = await vault.read.balanceOf([address]);

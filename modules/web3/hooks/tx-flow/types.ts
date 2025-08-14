@@ -12,36 +12,40 @@ import type {
 
 export type AACall = { to: Address; data?: Hash; value?: bigint };
 
-export type onSignCallbackProps = {
+type CommonCallbackProps = {
+  isAA: boolean;
+};
+
+export type onSignCallbackProps = CommonCallbackProps & {
   stage: TransactionCallbackStage.SIGN;
   payload?: bigint;
 };
-export type onReceiptCallbackProps = {
+export type onReceiptCallbackProps = CommonCallbackProps & {
   stage: TransactionCallbackStage.RECEIPT;
   payload?: Hash; // txHash in case of legacy sendTransaction
   callId?: string; // callId in case of EIP-5792 sendCalls
   txHashOrCallId?: Hash;
 };
-export type onSuccessCallbackProps = {
+export type onSuccessCallbackProps = CommonCallbackProps & {
   stage: TransactionCallbackStage.DONE;
   payload?: bigint;
   txHash?: Hash;
 };
-export type onMultisigDoneCallbackProps = {
+export type onMultisigDoneCallbackProps = CommonCallbackProps & {
   stage: TransactionCallbackStage.MULTISIG_DONE;
 };
-export type onFailureCallbackProps = {
+export type onFailureCallbackProps = CommonCallbackProps & {
   stage: TransactionCallbackStage.ERROR;
   payload?: unknown; // defined in SDK and is meant to contain error, but not actually used anywhere
   error?: unknown;
 };
-export type onPermitCallbackProps = {
+export type onPermitCallbackProps = CommonCallbackProps & {
   stage: TransactionCallbackStage.PERMIT;
 };
-export type onGasLimitCallbackProps = {
+export type onGasLimitCallbackProps = CommonCallbackProps & {
   stage: TransactionCallbackStage.GAS_LIMIT;
 };
-export type onConfirmationCallbackProps = {
+export type onConfirmationCallbackProps = CommonCallbackProps & {
   stage: TransactionCallbackStage.CONFIRMATION;
   callStatus?: GetCallsStatusReturnType;
   payload?: TransactionReceipt;
