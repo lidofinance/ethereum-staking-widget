@@ -6,7 +6,7 @@ import {
   AACall,
   useLidoSDK,
 } from 'modules/web3';
-import { GGVDepositFormValidatedValues } from '../deposit/form-context/types';
+import { GGVDepositFormValidatedValues } from '../form-context/types';
 import { encodeFunctionData, getContract, WalletClient } from 'viem';
 import invariant from 'tiny-invariant';
 import { getTokenAddress } from 'config/networks/token-address';
@@ -15,7 +15,7 @@ import {
   getGGVLensContract,
   getGGVTellerWritableContract,
   getGGVVaultContract,
-} from '../contracts';
+} from '../../contracts';
 import { useTxModalStagesGGVDeposit } from './use-ggv-deposit-tx-modal';
 
 export const useGGVDeposit = (onRetry?: () => void) => {
@@ -138,11 +138,21 @@ export const useGGVDeposit = (onRetry?: () => void) => {
             }
             return txModalStages.sign(amount, willReceive, token);
           },
-          onReceipt: async ({ payload }) => {
+          onReceipt: async ({ txHashOrCallId, isAA }) => {
             if (needsApprove) {
-              return txModalStages.pendingApproval(amount, token, payload);
+              return txModalStages.pendingApproval(
+                amount,
+                token,
+                txHashOrCallId,
+              );
             }
-            return txModalStages.pending(amount, willReceive, token, payload);
+            return txModalStages.pending(
+              amount,
+              willReceive,
+              token,
+              txHashOrCallId,
+              isAA,
+            );
           },
           onSuccess: async ({ txHash }) => {
             const balance = await vault.read.balanceOf([address]);

@@ -6,13 +6,15 @@ import { TxAmount } from 'shared/transaction-modal/tx-stages-parts/tx-amount';
 type VaultTxStageSuccessProps = {
   txHash?: Hash;
   newBalance: bigint;
-  vaultSymbol: string;
+  balanceSymbol: string;
+  description: React.ReactNode;
 };
 
-export const VaultTxStageSuccess = ({
+export const VaultDepositTxStageSuccess = ({
   txHash,
   newBalance,
-  vaultSymbol,
+  balanceSymbol,
+  description,
 }: VaultTxStageSuccessProps) => {
   return (
     <TxStageSuccess
@@ -20,11 +22,11 @@ export const VaultTxStageSuccess = ({
       title={
         <>
           Your new balance is{' '}
-          <TxAmount amount={newBalance} symbol={vaultSymbol} />
+          <TxAmount amount={newBalance} symbol={balanceSymbol} />
         </>
       }
-      description={`Depositing operation was successful`}
-      showEtherscan={true}
+      description={description}
+      showEtherscan
     />
   );
 };

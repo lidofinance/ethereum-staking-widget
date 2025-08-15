@@ -5,14 +5,14 @@ import { usePublicClient } from 'wagmi';
 import { useDappStatus } from 'modules/web3';
 import { getTokenAddress } from 'config/networks/token-address';
 
-import { isGGVAvailable } from '../utils';
+import { isGGVAvailable } from '../../utils';
 
-import type { GGVDepositFormValues } from '../deposit/form-context/types';
+import type { GGVDepositFormValues } from '../form-context/types';
 import {
   getGGVAccountantContract,
   getGGVLensContract,
   getGGVVaultContract,
-} from '../contracts';
+} from '../../contracts';
 import { useDebouncedValue } from 'shared/hooks';
 import { useMemo } from 'react';
 import { useEthUsd } from 'shared/hooks/use-eth-usd';
@@ -23,7 +23,7 @@ export const useGGVPreviewDeposit = (
 ) => {
   const { chainId } = useDappStatus();
   const publicClient = usePublicClient();
-  const isEnabled = amount != null && isGGVAvailable(chainId);
+  const isEnabled = isGGVAvailable(chainId);
 
   const values = useMemo(
     () => ({
@@ -59,32 +59,24 @@ export const useGGVPreviewDeposit = (
           weth: 0n,
         };
 
-      try {
-        const [shares, shareRate, decimals] = await Promise.all([
-          lens.read.previewDeposit([
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            getTokenAddress(chainId, token === 'ETH' ? 'wETH' : token)!,
-            amount,
-            vault.address,
-            accountant.address,
-          ]),
-          accountant.read.getRate(),
-          accountant.read.decimals(),
-        ]);
+      const [shares, shareRate, decimals] = await Promise.all([
+        lens.read.previewDeposit([
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          getTokenAddress(chainId, token === 'ETH' ? 'wETH' : token)!,
+          amount,
+          vault.address,
+          accountant.address,
+        ]),
+        accountant.read.getRate(),
+        accountant.read.decimals(),
+      ]);
 
-        const weth = (shares * shareRate) / 10n ** BigInt(decimals);
+      const weth = (shares * shareRate) / 10n ** BigInt(decimals);
 
-        return {
-          shares,
-          weth,
-        };
-      } catch (error) {
-        console.error(error);
-        return {
-          shares: 0n,
-          weth: 0n,
-        };
-      }
+      return {
+        shares,
+        weth,
+      };
     },
   });
 

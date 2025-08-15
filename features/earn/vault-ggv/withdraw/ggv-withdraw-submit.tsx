@@ -1,9 +1,11 @@
-import { useDappStatus } from 'modules/web3';
-import { SubmitButtonHookForm } from 'shared/hook-form/controls/submit-button-hook-form';
-import { isGGVAvailable } from '../utils';
 import { useFormState } from 'react-hook-form';
+import { useDappStatus } from 'modules/web3';
 
-export const GGVDepositSubmitButton = () => {
+import { SubmitButtonHookForm } from 'shared/hook-form/controls/submit-button-hook-form';
+
+import { isGGVAvailable } from '../utils';
+
+export const GGVWithdrawSubmitButton = () => {
   const { chainId } = useDappStatus();
   const { disabled } = useFormState();
 
@@ -13,7 +15,7 @@ export const GGVDepositSubmitButton = () => {
 
   return (
     <SubmitButtonHookForm disabled={disabled || !isAvailable}>
-      {isAvailable ? 'Deposit' : notAvailableText}
+      {isAvailable ? 'Withdraw' : notAvailableText}
     </SubmitButtonHookForm>
   );
 };

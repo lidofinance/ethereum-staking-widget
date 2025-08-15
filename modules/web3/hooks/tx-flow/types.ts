@@ -12,6 +12,10 @@ import type {
 
 export type AACall = { to: Address; data?: Hash; value?: bigint };
 
+type CommonCallbackProps = {
+  isAA: boolean;
+};
+
 export type onSignCallbackProps = {
   stage: TransactionCallbackStage.SIGN;
   payload?: bigint;
@@ -58,7 +62,9 @@ export type TxCallbackProps =
   | sendTransactionCallbackProps
   | sendCallsCallbackProps;
 
-export type StageCallback<TArgs> = (args: TArgs) => Promise<void> | void;
+export type StageCallback<TArgs, TReturn = void> = (
+  args: TArgs & CommonCallbackProps,
+) => Promise<TReturn> | TReturn;
 
 /**
  * Callbacks for different stages of the transaction flow.
@@ -73,9 +79,7 @@ export type StageCallback<TArgs> = (args: TArgs) => Promise<void> | void;
  * @property onFailure - Callback for ERROR stage (transaction failed).
  */
 export type StageCallbacks = {
-  onSign?:
-    | StageCallback<onSignCallbackProps>
-    | ((args: onSignCallbackProps) => Promise<bigint>);
+  onSign?: StageCallback<onSignCallbackProps, bigint | void>;
   onPermit?: StageCallback<onPermitCallbackProps>;
   onGasLimit?: StageCallback<onGasLimitCallbackProps>;
   onReceipt?: StageCallback<onReceiptCallbackProps>;

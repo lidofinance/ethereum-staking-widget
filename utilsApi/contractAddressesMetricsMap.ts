@@ -26,6 +26,7 @@ import {
   GGV_LENS_ABI,
   GGV_TELLER_ABI,
   GGV_VAULT_ABI,
+  GGV_QUEUE_ABI,
 } from 'features/earn/vault-ggv/contracts/abi';
 
 import { config } from 'config';
@@ -53,6 +54,7 @@ export const METRIC_CONTRACT_ABIS = {
   [CONTRACT_NAMES.ggvTeller]: GGV_TELLER_ABI,
   [CONTRACT_NAMES.ggvAccountant]: GGV_ACCOUNTANT_ABI,
   [CONTRACT_NAMES.ggvLens]: GGV_LENS_ABI,
+  [CONTRACT_NAMES.ggvQueue]: GGV_QUEUE_ABI,
 } as const;
 
 export type MetricContractName = keyof typeof CONTRACT_NAMES;

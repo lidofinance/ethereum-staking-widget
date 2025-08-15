@@ -1,6 +1,7 @@
 import type { FC } from 'react';
 
-import { FormController } from 'shared/hook-form/form-controller';
+import { VaultFormSection } from 'features/earn/shared/vault-form-section';
+import { VaultForm } from 'features/earn/shared/vault-form';
 import { VaultTxInfo } from 'features/earn/shared/vault-tx-info';
 
 import { GGVDepositFormProvider } from './form-context';
@@ -13,15 +14,17 @@ import { GGVDepositWarning } from './ggv-deposit-warning';
 export const GGVDepositForm: FC = () => {
   return (
     <GGVDepositFormProvider>
-      <FormController>
+      <VaultForm>
         <GGVDepositWarning />
-        <GGVAvailableDeposit />
-        <GGVDepositInputGroup />
+        <VaultFormSection>
+          <GGVAvailableDeposit />
+          <GGVDepositInputGroup />
+        </VaultFormSection>
         <VaultTxInfo>
           <GGVWillReceive />
         </VaultTxInfo>
         <GGVDepositSubmitButton />
-      </FormController>
+      </VaultForm>
     </GGVDepositFormProvider>
   );
 };

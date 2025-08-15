@@ -40,7 +40,8 @@ export const useTxFlow = () => {
        *
        * @param args - The arguments for the current stage of the transaction.
        */
-      const txStagesCallback = async (args: TxCallbackProps) => {
+      const txStagesCallback = async (txArgs: TxCallbackProps) => {
+        const args = { ...txArgs, isAA };
         switch (args.stage) {
           case TransactionCallbackStage.SIGN:
             return onSign?.(args);
