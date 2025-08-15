@@ -29,8 +29,11 @@ export const useWstethUsd = (amountWsteth?: bigint, chainId?: number) => {
       };
     },
     select: ({ wstethToStethRate, decimals }) => {
-      if (!amountWsteth) {
+      if (amountWsteth === undefined) {
         return undefined;
+      }
+      if (amountWsteth == 0n) {
+        return 0n;
       }
       return (amountWsteth * wstethToStethRate) / decimals;
     },
