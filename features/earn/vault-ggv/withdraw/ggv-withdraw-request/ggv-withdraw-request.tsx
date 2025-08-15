@@ -1,7 +1,6 @@
-import { useStETHByWstETH } from 'modules/web3';
 import { FormatPrice, FormatToken } from 'shared/formatters';
 import { getTokenDisplayName } from 'utils/getTokenDisplayName';
-import { useEthUsd } from 'shared/hooks/use-eth-usd';
+import { useWstethUsd } from 'shared/hooks/use-wsteth-usd';
 
 import { TokenWstethIcon } from 'assets/earn';
 import { useGGVWithdrawalRequests } from '../hooks/use-ggv-withdrawal-requests';
@@ -27,10 +26,7 @@ const RequestEntry = ({
   request,
   children,
 }: React.PropsWithChildren<RequestEntryProps>) => {
-  const { data: stETHAmount } = useStETHByWstETH(
-    request.metadata.amountOfAssets,
-  );
-  const { usdAmount } = useEthUsd(stETHAmount);
+  const { usdAmount } = useWstethUsd(request.metadata.amountOfAssets);
 
   return (
     <RequestEntryContainer>

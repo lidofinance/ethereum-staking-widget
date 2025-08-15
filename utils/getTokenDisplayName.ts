@@ -7,6 +7,7 @@ export const TOKEN_DISPLAY_NAMES = {
   [LIDO_TOKENS.unsteth]: 'unstETH',
   ['wETH']: 'wETH',
   ['gg']: 'gg',
+  ['dvstETH']: 'DVstETH',
 };
 
 export type TOKEN_DISPLAY_NAMES = keyof typeof TOKEN_DISPLAY_NAMES;

@@ -19,8 +19,9 @@ type TokenBalance = {
   token?: Address;
   symbol: string;
   balance?: bigint;
+  decimals?: number;
   icon?: React.ReactNode;
-  usdAmount?: number;
+  usdAmount?: number | null;
   isLoading?: boolean;
   rightDecorator?: React.ReactNode;
 };
@@ -47,7 +48,7 @@ const PositionBody = ({ position }: { position: TokenBalance }) => {
           </PositionBalance>
         </InlineLoader>
       </PositionBalance>
-      {!position.isLoading && (
+      {!position.isLoading && position.usdAmount !== null && (
         <PositionSubBalance>
           <FormatPrice amount={position.usdAmount} />
         </PositionSubBalance>

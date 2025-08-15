@@ -10,6 +10,7 @@ export type FormatTokenProps = FormatBalanceArgs & {
   approx?: boolean;
   showAmountTip?: boolean;
   fallback?: string;
+  decimals?: number;
 };
 export type FormatTokenComponent = Component<'span', FormatTokenProps>;
 
@@ -23,6 +24,7 @@ export const FormatToken: FormatTokenComponent = ({
   trimEllipsis,
   fallback = DATA_UNAVAILABLE,
   adaptiveDecimals,
+  decimals,
   ...rest
 }) => {
   const { actual, isTrimmed, trimmed } = useFormattedBalance(
@@ -32,6 +34,7 @@ export const FormatToken: FormatTokenComponent = ({
       maxTotalLength,
       trimEllipsis,
       adaptiveDecimals,
+      decimals,
     },
   );
 
