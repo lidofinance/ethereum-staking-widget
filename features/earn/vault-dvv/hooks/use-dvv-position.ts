@@ -7,12 +7,12 @@ import { useWstethUsd } from 'shared/hooks/use-wsteth-usd';
 import { getDVVVaultContract } from '../contracts';
 
 export const useDVVPosition = () => {
-  const { address, isDappActive } = useDappStatus();
+  const { address } = useDappStatus();
   const { publicClientMainnet } = useMainnetOnlyWagmi();
 
   const query = useQuery({
     queryKey: ['dvv', 'position', { address }] as const,
-    enabled: isDappActive && !!address,
+    enabled: !!address,
     queryFn: async ({ queryKey }) => {
       const address = queryKey[2].address as Address;
       const vault = getDVVVaultContract(publicClientMainnet);
