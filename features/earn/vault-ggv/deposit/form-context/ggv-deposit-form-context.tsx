@@ -11,6 +11,7 @@ import { useForm, FormProvider } from 'react-hook-form';
 import { useDappStatus } from 'modules/web3';
 import { useFormControllerRetry } from 'shared/hook-form/form-controller/use-form-controller-retry-delegate';
 import { FormControllerContext } from 'shared/hook-form/form-controller';
+import { minBN } from 'utils/bn';
 
 import { isGGVAvailable } from '../../utils';
 import { useGGVDeposit } from '../hooks/use-ggv-deposit';
@@ -37,8 +38,6 @@ export const useGGVDepositForm = () => {
   );
   return context;
 };
-
-const minBN = (a: bigint, b?: bigint | null) => (b == null || a < b ? a : b);
 
 export const GGVDepositFormProvider: FC<PropsWithChildren> = ({ children }) => {
   // Wallet state

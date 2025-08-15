@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { useMainnetOnlyWagmi } from 'modules/web3';
 import { getGGVTellerContract, getGGVVaultContract } from '../../contracts';
-import { INFINITE_DEPOSIT_CAP } from './use-ggv-max-deposit';
+import { INFINITE_DEPOSIT_CAP } from '../../consts';
 
 type DepositStatusResponse = {
   canDeposit: boolean;

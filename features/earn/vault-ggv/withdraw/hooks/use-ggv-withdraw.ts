@@ -1,6 +1,6 @@
 import invariant from 'tiny-invariant';
 import { useCallback } from 'react';
-import { encodeFunctionData, maxUint24, WalletClient } from 'viem';
+import { encodeFunctionData, WalletClient } from 'viem';
 
 import { useDappStatus, useTxFlow, AACall, useLidoSDK } from 'modules/web3';
 
@@ -8,6 +8,7 @@ import {
   getGGVQueueWritableContract,
   getGGVVaultWritableContract,
 } from '../../contracts';
+import { MAX_REQUEST_DEADLINE } from '../../consts';
 import { useTxModalStagesGGVWithdrawalRequest } from './use-ggv-withdraw-request-modal';
 
 import type { GGVWithdrawalFormValidatedValues } from '../types';
@@ -62,8 +63,8 @@ export const useGGVWithdraw = (onRetry?: () => void) => {
           wstethAddress,
           amount,
           minDiscount,
-          // maximum request deadline
-          Number(maxUint24),
+
+          MAX_REQUEST_DEADLINE,
         ] as const;
 
         await txFlow({

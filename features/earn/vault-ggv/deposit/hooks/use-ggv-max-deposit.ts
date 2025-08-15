@@ -1,19 +1,20 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
+import invariant from 'tiny-invariant';
 import { useQuery } from '@tanstack/react-query';
 import { useDappStatus, ONE_stETH } from 'modules/web3';
-import invariant from 'tiny-invariant';
 import { usePublicClient } from 'wagmi';
+
+import { getTokenAddress } from 'config/networks/token-address';
+
 import {
   getGGVAccountantContract,
   getGGVLensContract,
   getGGVTellerContract,
   getGGVVaultContract,
 } from '../../contracts';
-import { getTokenAddress } from 'config/networks/token-address';
 import { isGGVAvailable } from '../../utils';
-import { maxUint112 } from 'viem';
+import { INFINITE_DEPOSIT_CAP } from '../../consts';
 
-export const INFINITE_DEPOSIT_CAP = maxUint112;
 const PRECISION = ONE_stETH; // 10^18
 
 export const useGGVMaxDeposit = () => {

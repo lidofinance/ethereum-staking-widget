@@ -1,3 +1,4 @@
+import { FormatLargeAmount, FormatPercent } from 'shared/formatters';
 import { InlineLoader } from '../inline-loader';
 import {
   VaultStatsItem,
@@ -12,17 +13,6 @@ type VaultStatsProps = {
   isLoading?: boolean;
 };
 
-const formatTVL = (value: number): string => {
-  if (value >= 1_000_000_000) {
-    return `$${(value / 1_000_000_000).toFixed(1).replace(/\.0$/, '')}B`;
-  } else if (value >= 1_000_000) {
-    return `$${(value / 1_000_000).toFixed(1).replace(/\.0$/, '')}M`;
-  } else if (value >= 1_000) {
-    return `$${(value / 1_000).toFixed(1).replace(/\.0$/, '')}K`;
-  }
-  return `$${value.toFixed(1).replace(/\.0$/, '')}`;
-};
-
 export const VaultStats: React.FC<VaultStatsProps> = ({
   tvl,
   apy,
@@ -34,7 +24,7 @@ export const VaultStats: React.FC<VaultStatsProps> = ({
         <VaultStatsLabel>TVL</VaultStatsLabel>{' '}
         <VaultStatsValue>
           <InlineLoader isLoading={isLoading} width={70}>
-            {tvl != undefined ? formatTVL(tvl) : '-'}
+            <FormatLargeAmount amount={tvl} fallback="-" />
           </InlineLoader>
         </VaultStatsValue>
       </VaultStatsItem>
@@ -42,7 +32,7 @@ export const VaultStats: React.FC<VaultStatsProps> = ({
         <VaultStatsLabel>APY</VaultStatsLabel>{' '}
         <VaultStatsValue>
           <InlineLoader isLoading={isLoading} width={70}>
-            {apy !== undefined ? `${apy}%` : '-'}
+            <FormatPercent value={apy} decimals="percent" fallback="-" />
           </InlineLoader>
         </VaultStatsValue>
       </VaultStatsItem>

@@ -1,14 +1,6 @@
 import React from 'react';
-import styled from 'styled-components';
 
-const LegalParagraph = styled.div`
-  font-size: 12px;
-  font-weight: 400;
-  line-height: 20px;
-
-  margin-top: 20px;
-  color: var(--lido-color-textSecondary);
-`;
+import { LegalParagraph } from './styles';
 
 type VaultLegalProps = {
   legalDisclosure?: React.ReactNode;
