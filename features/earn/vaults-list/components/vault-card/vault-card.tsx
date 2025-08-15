@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button } from '@lidofinance/lido-ui';
+import { Button, InlineLoader } from '@lidofinance/lido-ui';
 
 import { LocalLink } from 'shared/components/local-link';
 import { EARN_PATH } from 'consts/urls';
@@ -14,6 +14,7 @@ import {
   VaultCardMyPositionValue,
   VaultCardWrapper,
 } from './styles';
+import { FormatToken } from 'shared/formatters';
 
 type VaultCardProps = {
   title: string;
@@ -21,11 +22,17 @@ type VaultCardProps = {
   urlSlug: string;
   logo: React.ReactNode;
   partners?: VaultPartnerType[];
-  stats?: {
-    tvl: string;
-    apy: string;
+  stats: {
+    tvl?: number;
+    apy?: number;
+    isLoading?: boolean;
   };
   tokens: Array<{ name: string; logo: React.ReactNode }>;
+  position?: {
+    balance?: bigint;
+    isLoading?: boolean;
+    symbol: string;
+  };
 };
 
 export const VaultCard: React.FC<VaultCardProps> = ({
@@ -36,16 +43,25 @@ export const VaultCard: React.FC<VaultCardProps> = ({
   tokens,
   stats,
   urlSlug,
+  position,
 }) => (
   <VaultCardWrapper>
     <VaultHeader title={title} partners={partners} logo={logo} />
-    {stats && <VaultStats tvl={stats.tvl} apy={stats.apy} />}
+    <VaultStats tvl={stats.tvl} apy={stats.apy} isLoading={stats.isLoading} />
     <VaultDescription description={description} />
     <VaultTokens tokens={tokens} />
-    <VaultCardMyPosition>
-      <VaultCardMyPositionLabel>My position</VaultCardMyPositionLabel>
-      <VaultCardMyPositionValue>0.00 gg</VaultCardMyPositionValue>
-    </VaultCardMyPosition>
+    {position && (
+      <VaultCardMyPosition>
+        <VaultCardMyPositionLabel>My position</VaultCardMyPositionLabel>
+        <VaultCardMyPositionValue>
+          {position.isLoading ? (
+            <InlineLoader />
+          ) : (
+            <FormatToken symbol={position.symbol} amount={position.balance} />
+          )}
+        </VaultCardMyPositionValue>
+      </VaultCardMyPosition>
+    )}
     <LocalLink href={`${EARN_PATH}/${urlSlug}/deposit`}>
       <Button fullwidth size="sm">
         Deposit

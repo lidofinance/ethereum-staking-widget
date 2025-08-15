@@ -1,8 +1,10 @@
 import styled from 'styled-components';
 
-export const InfoBoxStyled = styled.div<{
+export type InfoBoxProps = {
   $variant?: 'error' | 'warning';
-}>`
+};
+
+export const InfoBoxStyled = styled.div<InfoBoxProps>`
   padding: ${({ theme }) => theme.spaceMap.lg}px;
   background-color: ${({ $variant }) =>
     $variant === 'error'

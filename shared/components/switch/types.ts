@@ -5,4 +5,6 @@ export type SwitchItemComponent = Component<'a'>;
 export type SwitchProps = {
   checked: boolean;
   routes: { name: string; path: string }[];
+  fullwidth?: boolean;
+  className?: string;
 };

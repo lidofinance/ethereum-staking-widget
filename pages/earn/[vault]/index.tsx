@@ -1,8 +1,14 @@
 import { GetStaticPaths, GetStaticProps } from 'next';
 import { useRouter } from 'next/router';
 import { useEffect } from 'react';
+import {
+  EARN_PATH,
+  EARN_VAULT_DEPOSIT_SLUG,
+  EARN_VAULT_DVV_SLUG,
+  EARN_VAULT_GGV_SLUG,
+} from 'consts/urls';
 
-const vaults = ['dvv', 'ggv'] as const;
+const vaults = [EARN_VAULT_DVV_SLUG, EARN_VAULT_GGV_SLUG] as const;
 
 export const getStaticPaths: GetStaticPaths = async () => {
   return {
@@ -24,7 +30,7 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
 export default function VaultRedirect({ vault }: { vault: string }) {
   const router = useRouter();
   useEffect(() => {
-    void router.replace(`/earn/${vault}/deposit`);
+    void router.replace(`${EARN_PATH}/${vault}/${EARN_VAULT_DEPOSIT_SLUG}`);
   }, [router, vault]);
   return null;
 }

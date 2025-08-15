@@ -11,6 +11,7 @@ export const VaultCardMyPosition = styled.div`
     ${({ theme }) => theme.spaceMap.xl}px 0;
   padding-top: ${({ theme }) => theme.spaceMap.md}px;
   border-top: 1px solid ${({ theme }) => theme.colors.border};
+  color: ${({ theme }) => theme.colors.text};
 `;
 
 export const VaultCardMyPositionLabel = styled.div`

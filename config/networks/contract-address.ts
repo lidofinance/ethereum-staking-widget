@@ -1,4 +1,4 @@
-import { CHAINS } from '@lidofinance/lido-ethereum-sdk';
+import { CHAINS } from '@lidofinance/lido-ethereum-sdk/common';
 import { getNetworkConfigMapByChain, type NetworkConfig } from './networks-map';
 
 export const getContractAddress = <T extends keyof NetworkConfig['contracts']>(

@@ -8,6 +8,7 @@ import { ReactComponent as TokenWstethIcon } from './token-wsteth.svg';
 import { ReactComponent as VaultDDVIcon } from './vault-ddv.svg';
 import { ReactComponent as VaultGGVIcon } from './vault-ggv.svg';
 import { ReactComponent as NavIconEarn } from './nav-icon-earn.svg';
+import { ReactComponent as TokenGGIcon } from './token-gg.svg';
 
 export {
   Partner7SeasIcon,
@@ -19,5 +20,6 @@ export {
   TokenStethIcon,
   TokenWethIcon,
   TokenWstethIcon,
+  TokenGGIcon,
   NavIconEarn,
 };
