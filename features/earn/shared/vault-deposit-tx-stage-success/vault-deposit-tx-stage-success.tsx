@@ -26,7 +26,7 @@ export const VaultDepositTxStageSuccess = ({
         </>
       }
       description={description}
-      showEtherscan={true}
+      showEtherscan
     />
   );
 };

@@ -14,7 +14,7 @@ export const GGVWithdrawSubmitButton = () => {
   const notAvailableText = 'Switch to Ethereum Mainnet';
 
   return (
-    <SubmitButtonHookForm disabled={disabled}>
+    <SubmitButtonHookForm disabled={disabled || !isAvailable}>
       {isAvailable ? 'Withdraw' : notAvailableText}
     </SubmitButtonHookForm>
   );

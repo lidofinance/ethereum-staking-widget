@@ -18,7 +18,7 @@ export const VaultCustomTxStageSuccess = ({
       txHash={txHash}
       title={title}
       description={description}
-      showEtherscan={true}
+      showEtherscan
     />
   );
 };
