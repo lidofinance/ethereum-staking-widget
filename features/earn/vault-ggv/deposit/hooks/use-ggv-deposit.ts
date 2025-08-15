@@ -92,7 +92,7 @@ export const useGGVDeposit = (onRetry?: () => void) => {
               });
             }
             calls.push({
-              to: vault.address,
+              to: teller.address,
               data: encodeFunctionData({
                 abi: teller.abi,
                 functionName: 'deposit',
