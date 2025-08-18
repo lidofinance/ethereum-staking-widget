@@ -4,7 +4,8 @@
     "stakingRouter": "0x7DE7173aeB9CDc06E429910104BD1e61a965f567",
     "withdrawalQueue": "0x07F941C56f155fA4233f0ed8d351C9Af3152E525",
     "lido": "0x2C220A2a91602dd93bEAC7b3A1773cdADE369ba1",
-    "wsteth": "0x05F2927c5c2825BC0dCDc14d258a99A36116bE8B"
+    "wsteth": "0x05F2927c5c2825BC0dCDc14d258a99A36116bE8B",
+    "weth": "0x2387fd72c1da19f6486b843f5da562679fbb4057"
   },
   "api": {}
 }

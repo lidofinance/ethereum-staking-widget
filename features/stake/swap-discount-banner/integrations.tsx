@@ -1,5 +1,5 @@
 import { parseEther } from 'viem';
-import { LIDO_TOKENS } from '@lidofinance/lido-ethereum-sdk';
+import { LIDO_TOKENS } from '@lidofinance/lido-ethereum-sdk/common';
 
 import { OPEN_OCEAN_REFERRAL_ADDRESS } from 'consts/external-links';
 import { MATOMO_CLICK_EVENTS } from 'consts/matomo';

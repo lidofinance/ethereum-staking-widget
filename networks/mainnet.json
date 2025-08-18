@@ -8,7 +8,14 @@
     "withdrawalQueue": "0x889edC2eDab5f40e902b864aD4d7AdE8E412F9B1",
     "lido": "0xae7ab96520de3a18e5e111b5eaab095312d7fe84",
     "wsteth": "0x7f39c581f595b53c5cb19bd0b3f8da6c935e2ca0",
-    "ensPublicResolver": "0x4976fb03c32e5b8cfe2b6ccb31c09ba78ebaba41"
+    "ensPublicResolver": "0x4976fb03c32e5b8cfe2b6ccb31c09ba78ebaba41",
+    "weth": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+
+    "ggvVault": "0xef417FCE1883c6653E7dC6AF7c6F85CCDE84Aa09",
+    "ggvTeller": "0x0baAb6db8d694E1511992b504476ef4073fe614B",
+    "ggvAccountant": "0xc873F2b7b3BA0a7faA2B56e210E3B965f2b618f5",
+    "ggvLens": "0x5232bc0F5999f8dA604c42E1748A13a170F94A1B",
+    "ggvQueue": "0xe39682c3C44b73285A2556D4869041e674d1a6B7"
   },
   "api": {}
 }
