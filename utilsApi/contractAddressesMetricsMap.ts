@@ -30,7 +30,10 @@ import {
   GGV_QUEUE_ABI,
 } from 'features/earn/vault-ggv/contracts/abi';
 // DVV
-import { DVV_VAULT_ABI } from 'features/earn/vault-dvv/contracts/abi/dvv-vault-abi';
+import {
+  DVV_VAULT_ABI,
+  DVV_DEPOSIT_WRAPPER_ABI,
+} from 'features/earn/vault-dvv/contracts/abi';
 
 import { config } from 'config';
 import { CONTRACT_NAMES } from 'config/networks/networks-map';
@@ -60,6 +63,7 @@ export const METRIC_CONTRACT_ABIS = {
   [CONTRACT_NAMES.ggvQueue]: GGV_QUEUE_ABI,
   // DVV
   [CONTRACT_NAMES.dvvVault]: DVV_VAULT_ABI,
+  [CONTRACT_NAMES.dvvDepositWrapper]: DVV_DEPOSIT_WRAPPER_ABI,
 } as const;
 
 export type MetricContractName = keyof typeof CONTRACT_NAMES;

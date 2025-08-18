@@ -8,7 +8,7 @@ import {
   MELLOW_POINT_SYMBOL,
   OBOL_TOKEN_SYMBOL,
   SSV_TOKEN_SYMBOL,
-} from '../const';
+} from '../consts';
 import {
   TokenDvstethIcon,
   TokenMellowIcon,
