@@ -9,7 +9,6 @@ import { useGGVPreviewWithdrawal } from './hooks/use-ggv-preview-withdrawal';
 
 import type { GGVWithdrawalFormValues } from './types';
 
-// TODO: rename file to `ggv-withdraw-will-receive
 export const GGVWithdrawWillReceive = () => {
   const { amount } = useWatch<GGVWithdrawalFormValues>();
   const { data, isLoading } = useGGVPreviewWithdrawal(amount);
