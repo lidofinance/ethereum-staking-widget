@@ -2,12 +2,14 @@ import styled from 'styled-components';
 
 export const VaultPartnersWrapper = styled.div`
   display: flex;
-  margin-top: ${({ theme }) => theme.spaceMap.xs}px;
+  flex-direction: row;
+  gap: ${({ theme }) => theme.spaceMap.xs}px
+    ${({ theme }) => theme.spaceMap.md}px;
+  flex-wrap: wrap;
 `;
 
 export const VaultPartner = styled.div`
   display: flex;
-  margin-right: ${({ theme }) => theme.spaceMap.md}px;
   height: 20px;
 `;
 

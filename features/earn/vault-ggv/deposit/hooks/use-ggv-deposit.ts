@@ -92,7 +92,7 @@ export const useGGVDeposit = (onRetry?: () => void) => {
               });
             }
             calls.push({
-              to: vault.address,
+              to: teller.address,
               data: encodeFunctionData({
                 abi: teller.abi,
                 functionName: 'deposit',
@@ -156,10 +156,12 @@ export const useGGVDeposit = (onRetry?: () => void) => {
             );
           },
           onSuccess: async ({ txHash }) => {
+            if (needsApprove) return;
             const balance = await vault.read.balanceOf([address]);
             txModalStages.success(balance, txHash);
           },
           onMultisigDone: () => {
+            if (needsApprove) return;
             txModalStages.successMultisig();
           },
         });

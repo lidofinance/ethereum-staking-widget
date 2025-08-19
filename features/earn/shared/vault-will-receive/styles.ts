@@ -1,17 +1,5 @@
 import styled from 'styled-components';
 
-export const VaultReceiveContainer = styled.div`
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: flex-start;
-
-  font-weight: 400;
-  color: var(--lido-color-textSecondary);
-  font-size: 12px;
-  line-height: 20px;
-`;
-
 export const VaultReceiveValue = styled.div`
   display: flex;
   flex-direction: column;

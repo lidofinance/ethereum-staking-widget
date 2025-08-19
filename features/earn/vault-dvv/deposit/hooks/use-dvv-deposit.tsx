@@ -163,10 +163,12 @@ export const useDVVDeposit = (onRetry?: () => void) => {
             );
           },
           onSuccess: async ({ txHash }) => {
+            if (needsApprove) return;
             const balance = await vault.read.balanceOf([address]);
             txModalStages.success(balance, txHash);
           },
           onMultisigDone: () => {
+            if (needsApprove) return;
             txModalStages.successMultisig();
           },
         });

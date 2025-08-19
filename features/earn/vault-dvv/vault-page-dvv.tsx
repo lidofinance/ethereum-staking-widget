@@ -1,5 +1,4 @@
 import { FC } from 'react';
-import { Block } from '@lidofinance/lido-ui';
 
 import { ButtonBack } from 'shared/components/button-back/button-back';
 import { PartnerStakehouseIcon, VaultDDVIcon } from 'assets/earn';
@@ -9,6 +8,7 @@ import { VaultHeader } from '../shared/vault-header';
 import { VaultStats } from '../shared/vault-stats';
 import { VaultSwitch } from '../shared/vault-switch';
 import { VaultLegal } from '../shared/vault-legal';
+import { VaultBlock } from '../shared/vault-block';
 
 import {
   EARN_PATH,
@@ -53,7 +53,7 @@ export const VaultPageDVV: FC<{
   return (
     <>
       <ButtonBack url={EARN_PATH}>Back to all vaults</ButtonBack>
-      <Block>
+      <VaultBlock>
         <VaultHeader
           title={`Lido DVV`}
           logo={<VaultDDVIcon />}
@@ -66,7 +66,7 @@ export const VaultPageDVV: FC<{
         {isDeposit && <DVVDepositForm />}
         {isWithdraw && <DVVWithdrawForm />}
         <VaultLegal allocation="TODO DVV allocation" />
-      </Block>
+      </VaultBlock>
     </>
   );
 };
