@@ -7,7 +7,7 @@ import {
 import { InlineLoader } from '../inline-loader';
 
 type VaultWillReceiveProps = {
-  amount?: bigint;
+  amount?: bigint | null;
   usdAmount?: number;
   icon: React.ReactNode;
   symbol: string;

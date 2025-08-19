@@ -2,9 +2,9 @@ import type { Resolver } from 'react-hook-form';
 import { formatEther } from 'viem';
 import invariant from 'tiny-invariant';
 import type {
-  GGVDepositFormValidationContext,
-  GGVDepositFormValues,
-} from './types';
+  DVVDepositFormValues,
+  DVVDepositFormValidationContext,
+} from '../types';
 
 import { VALIDATION_CONTEXT_TIMEOUT } from 'features/withdrawals/withdrawals-constants';
 
@@ -29,9 +29,9 @@ const messageMaxCapacity = (max: bigint, token: TOKEN_DISPLAY_NAMES) =>
     token,
   )} amount exceeds available vault capacity of ${formatEther(max)}`;
 
-export const GGVDepositFormValidationResolver: Resolver<
-  GGVDepositFormValues,
-  GGVDepositFormValidationContext
+export const DVVDepositFormValidationResolver: Resolver<
+  DVVDepositFormValues,
+  DVVDepositFormValidationContext
 > = async (values, context) => {
   const { amount, token } = values;
   try {
@@ -59,7 +59,6 @@ export const GGVDepositFormValidationResolver: Resolver<
       100n,
       `Enter amount larger than 100 wei`,
     );
-
     const { balance, maxDeposit } = awaitedContext[token];
 
     validateBigintMax(

@@ -12,7 +12,7 @@ import { VaultCard } from '../vaults-list/components/vault-card';
 
 import { useDVVStats } from './hooks/use-dvv-stats';
 import { useDVVPosition } from './hooks/use-dvv-position';
-import { DVV_TOKEN_SYMBOL } from './const';
+import { DVV_TOKEN_SYMBOL } from './consts';
 
 export const VaultCardDVV = () => {
   const { isWalletConnected } = useDappStatus();

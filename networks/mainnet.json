@@ -17,7 +17,8 @@
     "ggvLens": "0x5232bc0F5999f8dA604c42E1748A13a170F94A1B",
     "ggvQueue": "0xe39682c3C44b73285A2556D4869041e674d1a6B7",
 
-    "dvvVault": "0x5E362eb2c0706Bd1d134689eC75176018385430B"
+    "dvvVault": "0x5E362eb2c0706Bd1d134689eC75176018385430B",
+    "dvvDepositWrapper": "0xfd4a4922d1afe70000ce0ec6806454e78256504e"
   },
   "api": {}
 }
