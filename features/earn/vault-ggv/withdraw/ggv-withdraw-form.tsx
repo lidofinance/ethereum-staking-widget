@@ -1,6 +1,9 @@
 import type { FC } from 'react';
 
-import { VaultTxInfo } from 'features/earn/shared/vault-tx-info';
+import {
+  VaultTxInfo,
+  VaultTxInfoRow,
+} from 'features/earn/shared/vault-tx-info';
 import { VaultFormSection } from 'features/earn/shared/vault-form-section';
 import { VaultForm } from 'features/earn/shared/vault-form';
 
@@ -26,6 +29,7 @@ export const GGVWithdrawForm: FC = () => {
           </VaultFormSection>
           <VaultTxInfo>
             <GGVWithdrawWillReceive />
+            <VaultTxInfoRow title="Waiting Time:">3 days</VaultTxInfoRow>
           </VaultTxInfo>
           <GGVWithdrawSubmitButton />
         </GGVWhenNoActiveRequests>

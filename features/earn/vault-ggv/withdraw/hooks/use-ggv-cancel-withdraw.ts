@@ -73,6 +73,10 @@ export const useGGVCancelWithdraw = () => {
             );
           },
           onSuccess: async ({ txHash }) => {
+            const opts = {
+              cancelRefetch: true,
+              throwOnError: false,
+            };
             const [newBalance] = await Promise.all([
               positionQuery.refetch(opts),
               queryClient.refetchQueries({ queryKey: ['ggv'] }, opts),

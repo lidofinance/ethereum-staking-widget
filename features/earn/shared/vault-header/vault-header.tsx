@@ -3,7 +3,6 @@ import {
   VaultCardWrapper,
   VaultHeaderColumn,
   VaultHeaderTitle,
-  VaultLogoWrapper,
 } from './styles';
 import { VaultPartners } from '../vault-partners';
 import { VaultPartnerType } from '../types';
@@ -21,9 +20,7 @@ export const VaultHeader: FC<VaultHeaderProps> = ({
 }) => {
   return (
     <VaultCardWrapper>
-      <VaultHeaderColumn>
-        <VaultLogoWrapper>{logo}</VaultLogoWrapper>
-      </VaultHeaderColumn>
+      {logo}
       <VaultHeaderColumn>
         <VaultHeaderTitle>{title}</VaultHeaderTitle>
         <VaultPartners partners={partners} />

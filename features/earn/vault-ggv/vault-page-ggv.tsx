@@ -1,5 +1,4 @@
-import { FC } from 'react';
-import { Block } from '@lidofinance/lido-ui';
+import type { FC } from 'react';
 
 import {
   EARN_PATH,
@@ -25,6 +24,7 @@ import { VaultSwitch } from '../shared/vault-switch';
 import { VaultStats } from '../shared/vault-stats';
 import { VaultPosition } from '../shared/vault-position';
 import { VaultLegal } from '../shared/vault-legal';
+import { VaultBlock } from '../shared/vault-block';
 
 import { GGVDepositForm } from './deposit';
 import { GGVWithdrawForm } from './withdraw';
@@ -71,7 +71,7 @@ export const VaultPageGGV: FC<{
   return (
     <>
       <ButtonBack url={EARN_PATH}>Back to all vaults</ButtonBack>
-      <Block>
+      <VaultBlock>
         <VaultHeader
           title={`Lido GGV`}
           logo={<VaultGGVIcon />}
@@ -95,7 +95,7 @@ export const VaultPageGGV: FC<{
         {isDeposit && <GGVDepositForm />}
         {isWithdraw && <GGVWithdrawForm />}
         <VaultLegal />
-      </Block>
+      </VaultBlock>
     </>
   );
 };

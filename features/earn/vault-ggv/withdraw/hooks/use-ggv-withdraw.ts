@@ -130,9 +130,11 @@ export const useGGVWithdraw = (onRetry?: () => void) => {
             );
           },
           onSuccess: async ({ txHash }) => {
+            if (needsApprove) return;
             txModalStages.success(willReceive, txHash);
           },
           onMultisigDone: () => {
+            if (needsApprove) return;
             txModalStages.successMultisig();
           },
         });
