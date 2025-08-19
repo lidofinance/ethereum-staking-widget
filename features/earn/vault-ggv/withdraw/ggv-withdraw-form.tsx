@@ -9,7 +9,7 @@ import { VaultForm } from 'features/earn/shared/vault-form';
 
 import { GGVWithdrawFormProvider } from './form-context';
 import { GGVWithdrawInput } from './ggv-withdraw-input';
-import { GGVWithdrawAvailable } from './ggv-withdraw-available ';
+import { GGVWithdrawAvailable } from './ggv-withdraw-available';
 import { GGVWithdrawWillReceive } from './ggv-withdraw-recieve';
 import { GGVWithdrawWarning } from './ggv-withdraw-warning';
 import { GGVWithdrawSubmitButton } from './ggv-withdraw-submit';

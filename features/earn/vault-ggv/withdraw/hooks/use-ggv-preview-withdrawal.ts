@@ -40,7 +40,7 @@ export const useGGVPreviewWithdrawal = (
       invariant(publicClient, 'Public client is not available');
       const queue = getGGVQueueContract(publicClient);
 
-      if (!amount)
+      if (!debouncedAmount)
         return {
           wsteth: 0n,
           steth: 0n,
@@ -49,7 +49,7 @@ export const useGGVPreviewWithdrawal = (
       const wstethAddress = await wrap.contractAddressWstETH();
       const wstethAmount = await queue.read.previewAssetsOut([
         wstethAddress,
-        amount,
+        debouncedAmount,
         // for preview we can assume minDiscount will be 1 during short loading time
         minDiscount ?? 1,
       ]);

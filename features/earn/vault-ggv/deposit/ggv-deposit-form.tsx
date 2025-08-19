@@ -7,7 +7,7 @@ import { VaultTxInfo } from 'features/earn/shared/vault-tx-info';
 import { GGVDepositFormProvider } from './form-context';
 import { GGVDepositInputGroup } from './ggv-deposit-input-group';
 import { GGVAvailableDeposit } from './ggv-avaliable-deposit';
-import { GGVWillReceive } from './ggv-will-receive';
+import { GGVWillReceive } from './ggv-deposit-will-receive';
 import { GGVDepositSubmitButton } from './ggv-deposit-submit-botton';
 import { GGVDepositWarning } from './ggv-deposit-warning';
 

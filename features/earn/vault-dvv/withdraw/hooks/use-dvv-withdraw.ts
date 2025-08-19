@@ -2,74 +2,45 @@ import invariant from 'tiny-invariant';
 import { useCallback } from 'react';
 import { encodeFunctionData, WalletClient } from 'viem';
 
-import { useDappStatus, useTxFlow, AACall, useLidoSDK } from 'modules/web3';
+import { AACall, useDappStatus, useLidoSDK, useTxFlow } from 'modules/web3';
+import { useTxModalStagesDVVWithdraw } from './use-dvv-withdraw-tx-modal';
+import { getDVVaultWritableContract } from '../../contracts';
 
-import {
-  getGGVQueueWritableContract,
-  getGGVVaultWritableContract,
-} from '../../contracts';
-import { MAX_REQUEST_DEADLINE } from '../../consts';
-import { useTxModalStagesGGVWithdrawalRequest } from './use-ggv-withdraw-request-modal';
-
-import type { GGVWithdrawalFormValidatedValues } from '../types';
-
-export const useGGVWithdraw = (onRetry?: () => void) => {
+export const useDVVWithdraw = (onRetry?: () => void) => {
   const { address } = useDappStatus();
   const { core, wstETH } = useLidoSDK();
-  const { txModalStages } = useTxModalStagesGGVWithdrawalRequest();
+  const { txModalStages } = useTxModalStagesDVVWithdraw();
   const txFlow = useTxFlow();
 
-  const withdrawGGV = useCallback(
-    async ({ amount }: GGVWithdrawalFormValidatedValues) => {
+  const withdrawDVV = useCallback(
+    async ({ amount }: { amount: bigint }) => {
       invariant(address, 'the address is required');
 
       try {
-        const wstethAddress = await wstETH.contractAddress();
-        const vault = getGGVVaultWritableContract(
+        const vault = getDVVaultWritableContract(
           core.rpcProvider,
           core.web3Provider as WalletClient,
         );
-
-        const queue = getGGVQueueWritableContract(
-          core.rpcProvider,
-          core.web3Provider as WalletClient,
-        );
-
-        // fetch actual minDiscount
-        const minDiscount = (
-          await queue.read.withdrawAssets([wstethAddress])
-        )[3];
 
         // used to display in modal
-        const willReceive = await queue.read.previewAssetsOut([
-          wstethAddress,
-          amount,
-          minDiscount,
-        ]);
+        const willReceiveWstETH = await vault.read.previewRedeem([amount]);
 
         // determines:
         // - if approve tx/call to be used, after approve tx(or if included in AA call) set to false
         // - if to show approve or main tx modals
         let needsApprove = false;
 
-        const allowance = await vault.read.allowance([address, queue.address]);
+        const allowance = await vault.read.allowance([address, vault.address]);
 
         needsApprove = allowance < amount;
 
-        // approve amount of GG to withdrawal queue
-        const approveArgs = [queue.address, amount] as const;
-
-        const withdrawArgs = [
-          wstethAddress,
-          amount,
-          minDiscount,
-
-          MAX_REQUEST_DEADLINE,
-        ] as const;
+        const approveArgs = [vault.address, amount] as const; // spender, value
+        const withdrawArgs = [amount, address, address] as const; // shares, receiver, owner
 
         await txFlow({
           callsFn: async () => {
             const calls: AACall[] = [];
+
             if (needsApprove) {
               calls.push({
                 to: vault.address,
@@ -81,10 +52,10 @@ export const useGGVWithdraw = (onRetry?: () => void) => {
               });
             }
             calls.push({
-              to: queue.address,
+              to: vault.address,
               data: encodeFunctionData({
-                abi: queue.abi,
-                functionName: 'requestOnChainWithdraw',
+                abi: vault.abi,
+                functionName: 'redeem',
                 args: withdrawArgs,
               }),
             });
@@ -106,9 +77,8 @@ export const useGGVWithdraw = (onRetry?: () => void) => {
             needsApprove = false;
             await core.performTransaction({
               getGasLimit: (opts) =>
-                queue.estimateGas.requestOnChainWithdraw(withdrawArgs, opts),
-              sendTransaction: (opts) =>
-                queue.write.requestOnChainWithdraw(withdrawArgs, opts),
+                vault.estimateGas.redeem(withdrawArgs, opts),
+              sendTransaction: (opts) => vault.write.redeem(withdrawArgs, opts),
               callback: txStagesCallback,
             });
           },
@@ -116,7 +86,7 @@ export const useGGVWithdraw = (onRetry?: () => void) => {
             if (needsApprove) {
               return txModalStages.signApproval(amount);
             }
-            return txModalStages.sign(amount, willReceive);
+            return txModalStages.sign(amount, willReceiveWstETH);
           },
           onReceipt: async ({ txHashOrCallId, isAA }) => {
             if (needsApprove) {
@@ -124,14 +94,15 @@ export const useGGVWithdraw = (onRetry?: () => void) => {
             }
             return txModalStages.pending(
               amount,
-              willReceive,
+              willReceiveWstETH,
               txHashOrCallId,
               isAA,
             );
           },
           onSuccess: async ({ txHash }) => {
             if (needsApprove) return;
-            txModalStages.success(willReceive, txHash);
+            const wstETHBalance = await wstETH.balance(address);
+            txModalStages.success(wstETHBalance, txHash);
           },
           onMultisigDone: () => {
             if (needsApprove) return;
@@ -148,5 +119,7 @@ export const useGGVWithdraw = (onRetry?: () => void) => {
     [address, core, onRetry, txFlow, txModalStages, wstETH],
   );
 
-  return { withdrawGGV };
+  return {
+    withdrawDVV,
+  };
 };

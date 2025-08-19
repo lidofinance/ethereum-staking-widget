@@ -64,7 +64,7 @@ export const useDVVDepositFormData = () => {
 
       return Promise.all([
         tokenBalanceRefetch(options),
-        // refetch all GGV related queries
+        // refetch all DVV related queries
         queryClient.refetchQueries({ queryKey: ['dvv'] }, options),
       ]);
     },

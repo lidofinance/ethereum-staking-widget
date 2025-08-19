@@ -2,20 +2,16 @@ import invariant from 'tiny-invariant';
 import { useQuery } from '@tanstack/react-query';
 import { usePublicClient } from 'wagmi';
 
-import { useLidoSDK } from 'modules/web3';
-import { useDebouncedValue } from 'shared/hooks';
-import { useWstethUsd } from 'shared/hooks/use-wsteth-usd';
-
-import { getDVVVaultContract } from '../../contracts';
+import { useDebouncedValue } from 'shared/hooks/useDebouncedValue';
 import { useDVVAvailable } from '../../hooks/use-dvv-avaliable';
-import type { DVVDepositFormValues } from '../types';
+import { getDVVVaultContract } from '../../contracts';
+import { useLidoSDK } from 'modules/web3/web3-provider/lido-sdk';
+import { useEthUsd } from 'shared/hooks/use-eth-usd';
 
-export const useDVVPreviewDeposit = (
-  amount?: DVVDepositFormValues['amount'],
-) => {
+export const useDVVPreviewWithdrawal = (amount?: bigint | null) => {
   const publicClient = usePublicClient();
-  const { isDVVAvailable } = useDVVAvailable();
   const { wrap } = useLidoSDK();
+  const { isDVVAvailable } = useDVVAvailable();
 
   const debouncedAmount = useDebouncedValue(amount, 500);
   const isDebounced = amount !== debouncedAmount;
@@ -23,7 +19,7 @@ export const useDVVPreviewDeposit = (
   const query = useQuery({
     queryKey: [
       'dvv',
-      'preview-deposit',
+      'preview-withdrawal',
       {
         amount: debouncedAmount?.toString(),
       },
@@ -31,32 +27,28 @@ export const useDVVPreviewDeposit = (
     enabled: isDVVAvailable,
     queryFn: async () => {
       invariant(publicClient, 'Public client is not available');
-
       const vault = getDVVVaultContract(publicClient);
 
-      if (!amount)
+      if (!debouncedAmount)
         return {
-          shares: 0n,
           wsteth: 0n,
+          steth: 0n,
         };
 
-      const wsteth = await wrap.convertStethToWsteth(amount);
-      const shares = await vault.read.previewDeposit([wsteth]);
+      const wstethAmount = await vault.read.previewRedeem([debouncedAmount]);
+      const stethAmount = await wrap.convertWstethToSteth(wstethAmount);
 
-      return {
-        shares,
-        wsteth,
-      };
+      return { wsteth: wstethAmount, steth: stethAmount };
     },
   });
 
-  const usdQuery = useWstethUsd(query.data?.wsteth);
+  const usdQuery = useEthUsd(query.data?.steth);
 
   return {
     isLoading: isDebounced || query.isLoading || usdQuery.isLoading,
     data: {
-      shares: query.data?.shares,
       wsteth: query.data?.wsteth,
+      steth: query.data?.steth,
       usd: usdQuery.usdAmount,
     },
   };
