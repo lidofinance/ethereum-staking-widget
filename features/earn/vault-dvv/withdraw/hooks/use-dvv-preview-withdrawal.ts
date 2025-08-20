@@ -5,12 +5,10 @@ import { usePublicClient } from 'wagmi';
 import { useDebouncedValue } from 'shared/hooks/useDebouncedValue';
 import { useDVVAvailable } from '../../hooks/use-dvv-avaliable';
 import { getDVVVaultContract } from '../../contracts';
-import { useLidoSDK } from 'modules/web3/web3-provider/lido-sdk';
-import { useEthUsd } from 'shared/hooks/use-eth-usd';
+import { useWstethUsd } from 'shared/hooks/use-wsteth-usd';
 
 export const useDVVPreviewWithdrawal = (amount?: bigint | null) => {
   const publicClient = usePublicClient();
-  const { wrap } = useLidoSDK();
   const { isDVVAvailable } = useDVVAvailable();
 
   const debouncedAmount = useDebouncedValue(amount, 500);
@@ -32,23 +30,20 @@ export const useDVVPreviewWithdrawal = (amount?: bigint | null) => {
       if (!debouncedAmount)
         return {
           wsteth: 0n,
-          steth: 0n,
         };
 
       const wstethAmount = await vault.read.previewRedeem([debouncedAmount]);
-      const stethAmount = await wrap.convertWstethToSteth(wstethAmount);
 
-      return { wsteth: wstethAmount, steth: stethAmount };
+      return { wsteth: wstethAmount };
     },
   });
 
-  const usdQuery = useEthUsd(query.data?.steth);
+  const usdQuery = useWstethUsd(query.data?.wsteth);
 
   return {
     isLoading: isDebounced || query.isLoading || usdQuery.isLoading,
     data: {
       wsteth: query.data?.wsteth,
-      steth: query.data?.steth,
       usd: usdQuery.usdAmount,
     },
   };

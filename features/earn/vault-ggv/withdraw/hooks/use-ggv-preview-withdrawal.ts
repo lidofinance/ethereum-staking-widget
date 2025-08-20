@@ -9,7 +9,7 @@ import { isGGVAvailable } from '../../utils';
 import { getGGVQueueContract } from '../../contracts';
 import { useDebouncedValue } from 'shared/hooks';
 
-import { useEthUsd } from 'shared/hooks/use-eth-usd';
+import { useWstethUsd } from 'shared/hooks/use-wsteth-usd';
 
 import type { GGVWithdrawalFormValues } from '../types';
 import { useGGVWithdrawForm } from '../form-context';
@@ -43,7 +43,6 @@ export const useGGVPreviewWithdrawal = (
       if (!debouncedAmount)
         return {
           wsteth: 0n,
-          steth: 0n,
         };
 
       const wstethAddress = await wrap.contractAddressWstETH();
@@ -53,22 +52,19 @@ export const useGGVPreviewWithdrawal = (
         // for preview we can assume minDiscount will be 1 during short loading time
         minDiscount ?? 1,
       ]);
-      const stethAmount = await wrap.convertWstethToSteth(wstethAmount);
 
       return {
         wsteth: wstethAmount,
-        steth: stethAmount,
       };
     },
   });
 
-  const usdQuery = useEthUsd(query.data?.steth);
+  const usdQuery = useWstethUsd(query.data?.wsteth);
 
   return {
     isLoading: isDebounced || query.isLoading || usdQuery.isLoading,
     data: {
       wsteth: query.data?.wsteth,
-      steth: query.data?.steth,
       usd: usdQuery.usdAmount,
     },
   };
