@@ -14,6 +14,7 @@ import FallbackLocalManifest from 'IPFS.json' assert { type: 'json' };
 
 export const getBackwardCompatibleConfig = (
   config: ManifestEntry['config'],
+  override: Partial<ManifestEntry['config']> = {},
 ): ManifestEntry['config'] => {
   let pages: ManifestConfig['pages'];
   const configPages = config.pages;
@@ -33,15 +34,17 @@ export const getBackwardCompatibleConfig = (
   }
 
   return {
-    enabledWithdrawalDexes: config.enabledWithdrawalDexes.filter(
-      (dex) => !!getDexConfig(dex),
-    ),
-    featureFlags: { ...(config.featureFlags ?? {}) },
-    multiChainBanner: config.multiChainBanner ?? [],
+    enabledWithdrawalDexes:
+      override.enabledWithdrawalDexes ??
+      config.enabledWithdrawalDexes.filter((dex) => !!getDexConfig(dex)),
+    featureFlags: { ...(config.featureFlags ?? {}), ...override.featureFlags },
+    multiChainBanner:
+      override.multiChainBanner ?? config.multiChainBanner ?? [],
     earnVaults:
+      override.earnVaults ??
       config.earnVaults.filter((vault) => EARN_VAULTS.includes(vault.name)) ??
       [],
-    pages,
+    pages: { ...pages, ...override.pages },
   };
 };
 

@@ -12,10 +12,18 @@ import {
 } from './frontend-fallback';
 
 import type { ExternalConfig, ManifestEntry } from './types';
+import { useRouter } from 'next/router';
 
 export const useExternalConfigContext = (
   prefetchedManifest?: unknown,
 ): ExternalConfig => {
+  const { query } = useRouter();
+  // for embed - opt in
+  // for others -  opt out
+  const isEarnDisabled =
+    (query.embed != undefined && query.earn !== 'enabled') ||
+    query.earn === 'disabled';
+
   const defaultChain = config.defaultChain;
   const fallbackData = useFallbackManifestEntry(
     prefetchedManifest,
@@ -54,8 +62,18 @@ export const useExternalConfigContext = (
   });
 
   return useMemo(() => {
+    const override = isEarnDisabled
+      ? {
+          pages: {
+            '/earn': {
+              shouldDisable: true,
+            },
+          },
+        }
+      : undefined;
+
     const { config, ...rest } = queryResult.data ?? fallbackData;
-    const cleanConfig = getBackwardCompatibleConfig(config);
+    const cleanConfig = getBackwardCompatibleConfig(config, override);
     return { ...cleanConfig, ...rest, fetchMeta: queryResult };
-  }, [queryResult, fallbackData]);
+  }, [isEarnDisabled, queryResult, fallbackData]);
 };
