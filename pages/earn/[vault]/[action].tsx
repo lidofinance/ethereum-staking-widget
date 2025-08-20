@@ -1,4 +1,4 @@
-import { GetStaticPaths, GetStaticProps, InferGetStaticPropsType } from 'next';
+import { GetStaticPaths, InferGetStaticPropsType } from 'next';
 import Head from 'next/head';
 import { Layout } from 'shared/components';
 import {
@@ -7,6 +7,8 @@ import {
   EARN_VAULT_GGV_SLUG,
   EARN_VAULT_WITHDRAW_SLUG,
 } from 'consts/urls';
+import { getDefaultStaticProps } from 'utilsApi/get-default-static-props';
+
 import { VaultPageDVV } from 'features/earn/vault-dvv/vault-page-dvv';
 import { VaultPageGGV } from 'features/earn/vault-ggv/vault-page-ggv';
 
@@ -51,20 +53,21 @@ export const getStaticPaths: GetStaticPaths = async () => {
   return { paths, fallback: false };
 };
 
-export const getStaticProps: GetStaticProps<PageParams> = async ({
-  params,
-}) => {
-  const vault = params?.vault as string;
-  const action = params?.action as string;
+export const getStaticProps = getDefaultStaticProps<PageParams>(
+  '/earn',
+  async ({ params }) => {
+    const vault = params?.vault as string;
+    const action = params?.action as string;
 
-  if (!actionsByVault[vault] || !actionsByVault[vault].includes(action)) {
-    return { notFound: true };
-  }
+    if (!actionsByVault[vault] || !actionsByVault[vault].includes(action)) {
+      return { notFound: true };
+    }
 
-  return {
-    props: {
-      vault: vault as PageParams['vault'],
-      action: action as PageParams['action'],
-    },
-  };
-};
+    return {
+      props: {
+        vault: vault as PageParams['vault'],
+        action: action as PageParams['action'],
+      },
+    };
+  },
+);

@@ -2,6 +2,7 @@ import { FC } from 'react';
 import Head from 'next/head';
 import { Layout } from 'shared/components';
 import { EarnVaultsList } from 'features/earn/vaults-list/vaults-list';
+import { getDefaultStaticProps } from 'utilsApi/get-default-static-props';
 
 const PAGE_TITLE = 'Earn';
 const PAGE_DESCRIPTION =
@@ -19,5 +20,7 @@ const Earn: FC = () => {
     </Layout>
   );
 };
+
+export const getStaticProps = getDefaultStaticProps('/earn');
 
 export default Earn;

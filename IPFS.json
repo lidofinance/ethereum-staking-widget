@@ -11,13 +11,13 @@
       "featureFlags": {
         "disableSendCalls": false,
         "dgBannerEnabled": true
+      },
+      "pages": {
+        "/earn": {
+          "shouldDisable": false
+        }
       }
     }
-  },
-  "5": {
-    "__warning__": "For testing purposes only",
-    "cid": "bafybeidxi4uewduubu2xfcxlvcq5mwgwxuhi2qvrfgnny4xn4l6exzzsbu",
-    "leastSafeVersion": "0.36.1"
   },
   "17000": {
     "__warning__": "For testing purposes only",
