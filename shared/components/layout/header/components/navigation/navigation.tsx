@@ -24,6 +24,7 @@ type PageRoute = {
   exact?: boolean;
   full_path?: string;
   subPaths?: string[];
+  showNew?: boolean;
 };
 
 const routes: PageRoute[] = [
@@ -67,11 +68,19 @@ export const Navigation: FC = memo(() => {
     if (!pages) return routes;
 
     const paths = Object.keys(pages) as ManifestConfigPage[];
-    return routes.filter((route) => {
-      const path = paths.find((path) => route.path.includes(path));
-      if (!path) return true;
-      return !pages[path]?.shouldDisable;
-    });
+    return routes
+      .filter((route) => {
+        const path = paths.find((path) => route.path.includes(path));
+        if (!path) return true;
+        return !pages[path]?.shouldDisable;
+      })
+      .map((route) => {
+        const path = paths.find((path) => route.path.includes(path));
+        return {
+          ...route,
+          showNew: !!path && pages[path]?.showNew,
+        };
+      });
   }, [pages]);
 
   let pathnameWithoutQuery = pathname.split('?')[0];
@@ -82,7 +91,7 @@ export const Navigation: FC = memo(() => {
 
   return (
     <Nav>
-      {availableRoutes.map(({ name, path, subPaths, icon }) => {
+      {availableRoutes.map(({ name, path, subPaths, icon, showNew }) => {
         const isActive =
           pathnameWithoutQuery === getPathWithoutFirstSlash(path) ||
           (path.length > 1 && pathnameWithoutQuery.startsWith(path)) ||
@@ -91,7 +100,7 @@ export const Navigation: FC = memo(() => {
 
         return (
           <LocalLink key={path} href={path}>
-            <NavLink active={isActive}>
+            <NavLink active={isActive} showNew={showNew}>
               {icon}
               <span>{name}</span>
             </NavLink>
