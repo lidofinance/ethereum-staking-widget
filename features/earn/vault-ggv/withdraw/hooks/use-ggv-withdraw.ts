@@ -21,7 +21,7 @@ export const useGGVWithdraw = (onRetry?: () => void) => {
 
   const withdrawGGV = useCallback(
     async ({ amount }: GGVWithdrawalFormValidatedValues) => {
-      invariant(address, 'needs address');
+      invariant(address, 'the address is required');
 
       try {
         const wstethAddress = await wstETH.contractAddress();
