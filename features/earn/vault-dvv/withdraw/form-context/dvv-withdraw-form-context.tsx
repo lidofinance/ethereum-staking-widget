@@ -13,10 +13,17 @@ import {
   FormControllerContext,
   FormControllerContextValueType,
 } from 'shared/hook-form/form-controller';
+
+import { useDVVAvailable } from '../../hooks/use-dvv-avaliable';
+
 import { useDVVWithdraw } from '../hooks/use-dvv-withdraw';
-import { DVVWithdrawalFormValues, DVVWithdrawalFormContext } from '../types';
 import { useDVVWithdrawFormData } from './use-dvv-withdraw-form-data';
 import { DVVWithdrawalFormValidationResolver } from './validation';
+
+import type {
+  DVVWithdrawalFormValues,
+  DVVWithdrawalFormContext,
+} from '../types';
 
 const DVVWithdrawFormDataContext =
   createContext<DVVWithdrawalFormContext | null>(null);
@@ -35,6 +42,7 @@ export const DVVWithdrawFormProvider: FC<PropsWithChildren> = ({
 }) => {
   const { validationContext, isLoading, refetchData, isWithdrawalPaused } =
     useDVVWithdrawFormData();
+  const { isDVVAvailable, isWithdrawEnabled } = useDVVAvailable();
   const { retryEvent } = useFormControllerRetry();
   const { withdrawDVV } = useDVVWithdraw(retryEvent.fire);
 
@@ -42,7 +50,8 @@ export const DVVWithdrawFormProvider: FC<PropsWithChildren> = ({
     defaultValues: {
       amount: null,
     },
-    disabled: isLoading || isWithdrawalPaused,
+    disabled:
+      isLoading || isWithdrawalPaused || !isDVVAvailable || !isWithdrawEnabled,
     mode: 'onChange',
     context: validationContext,
     resolver: DVVWithdrawalFormValidationResolver,

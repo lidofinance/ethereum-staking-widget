@@ -6,9 +6,8 @@ import {
 } from 'assets/earn';
 import { useDappStatus } from 'modules/web3';
 
-import { EARN_VAULT_DVV_SLUG } from 'consts/urls';
-
-import { VaultCard } from '../vaults-list/components/vault-card';
+import { VaultCard } from '../shared/vault-card';
+import { EARN_VAULT_DVV_SLUG } from '../consts';
 
 import { useDVVStats } from './hooks/use-dvv-stats';
 import { useDVVPosition } from './hooks/use-dvv-position';

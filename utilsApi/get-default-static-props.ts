@@ -1,29 +1,40 @@
-import type {
-  GetStaticProps,
-  GetStaticPropsResult,
-  PreviewData,
-  Redirect,
-} from 'next';
+import type { GetStaticProps, GetStaticPropsResult, Redirect } from 'next';
 import type { ParsedUrlQuery } from 'querystring';
 
 import Metrics from 'utilsApi/metrics';
 import { fetchExternalManifest } from './fetch-external-manifest';
-import type { Manifest, ManifestConfigPage } from 'config/external-config';
+
 import { config } from 'config';
-import { shouldRedirectToRoot } from 'config/external-config';
+import {
+  getFallbackedManifestEntry,
+  shouldRedirectToRoot,
+} from 'config/external-config';
+
+import type {
+  Manifest,
+  ManifestConfigPage,
+  ManifestEntry,
+} from 'config/external-config';
+
+type PreviewData = { manifest: ManifestEntry };
+
+type PrefetchManifestProp = { ___prefetch_manifest___?: object };
 
 export const getDefaultStaticProps = <
   P extends { [key: string]: any } = { [key: string]: any },
   Q extends ParsedUrlQuery = ParsedUrlQuery,
-  D extends PreviewData = PreviewData,
 >(
   currentPath: ManifestConfigPage,
-  custom?: GetStaticProps<P, Q, D>,
-): GetStaticProps<P & { ___prefetch_manifest___?: object }, Q, D> => {
+  custom?: GetStaticProps<P, Q, PreviewData>,
+): GetStaticProps<P & PrefetchManifestProp, Q, PreviewData> => {
   return async (context) => {
     /// common props
     const { ___prefetch_manifest___ } = await fetchExternalManifest();
     const props = ___prefetch_manifest___ ? { ___prefetch_manifest___ } : {};
+    const fallbackedEntry = getFallbackedManifestEntry(
+      ___prefetch_manifest___,
+      config.defaultChain,
+    );
     const base: GetStaticPropsResult<typeof props> = {
       props,
       // because next only remembers first value, default to short revalidation period
@@ -45,7 +56,12 @@ export const getDefaultStaticProps = <
 
     /// custom getStaticProps
     if (custom) {
-      const { props: customProps, ...rest } = (await custom(context)) as any;
+      const { props: customProps, ...rest } = (await custom({
+        ...context,
+        previewData: {
+          manifest: fallbackedEntry,
+        },
+      })) as any;
       result = {
         ...rest,
         ...result,

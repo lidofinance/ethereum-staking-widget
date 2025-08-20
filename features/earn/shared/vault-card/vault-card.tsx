@@ -3,10 +3,10 @@ import { Button, InlineLoader } from '@lidofinance/lido-ui';
 
 import { LocalLink } from 'shared/components/local-link';
 import { EARN_PATH } from 'consts/urls';
-import { VaultHeader } from '../../../shared/vault-header';
-import { VaultPartnerType } from '../../../shared/types';
-import { VaultStats } from '../../../shared/vault-stats';
-import { VaultDescription } from '../../../shared/vault-description';
+import { VaultHeader } from '../vault-header';
+import { VaultPartnerType } from '../types';
+import { VaultStats } from '../vault-stats';
+import { VaultDescription } from '../vault-description';
 import { VaultTokens } from '../vault-tokens';
 import {
   VaultCardMyPosition,

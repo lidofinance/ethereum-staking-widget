@@ -4,10 +4,14 @@
     "leastSafeVersion": "0.76.1",
     "config": {
       "enabledWithdrawalDexes": ["one-inch", "paraswap", "bebop", "jumper"],
+
       "multiChainBanner": [
         324, 10, 42161, 137, 8453, 5000, 59144, 534352, 56, 34443, 48900, 1868,
         130, 1135, 1923
       ],
+
+      "earnVaults": [{ "name": "ggv" }, { "name": "dvv" }],
+
       "featureFlags": {
         "disableSendCalls": false,
         "dgBannerEnabled": true
@@ -15,7 +19,7 @@
       "pages": {
         "/earn": {
           "showNew": true,
-          "shouldDisable": false
+          "shouldDisable": true
         }
       }
     }

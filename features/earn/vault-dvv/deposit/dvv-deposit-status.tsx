@@ -1,6 +1,8 @@
 import { VaultWarning } from 'features/earn/shared/vault-warning';
+
 import { useDVVDepositLimit } from './hooks/use-dvv-deposit-limit';
-import { DVVDepositLimitReason } from './types';
+import { useDVVAvailable } from '../hooks/use-dvv-avaliable';
+import type { DVVDepositLimitReason } from './types';
 
 const WARNING_TEXT: Record<DVVDepositLimitReason, string> = {
   'deposit-limit-reached': 'Vault has reached deposit limit.',
@@ -9,10 +11,13 @@ const WARNING_TEXT: Record<DVVDepositLimitReason, string> = {
 };
 
 export const DVVDepositWarning = () => {
+  const { isDepositEnabled } = useDVVAvailable();
   const { data } = useDVVDepositLimit();
 
-  if (data?.reason) {
-    return <VaultWarning>{WARNING_TEXT[data.reason]}</VaultWarning>;
+  const reason = isDepositEnabled ? data?.reason : 'deposit-paused';
+
+  if (reason) {
+    return <VaultWarning>{WARNING_TEXT[reason]}</VaultWarning>;
   }
 
   return null;

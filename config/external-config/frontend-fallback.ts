@@ -8,6 +8,7 @@ import {
   isManifestValid,
 } from 'config/external-config';
 import { getDexConfig } from 'features/withdrawals/request/withdrawal-rates';
+import { EARN_VAULTS } from 'features/earn/consts';
 
 import FallbackLocalManifest from 'IPFS.json' assert { type: 'json' };
 
@@ -37,18 +38,29 @@ export const getBackwardCompatibleConfig = (
     ),
     featureFlags: { ...(config.featureFlags ?? {}) },
     multiChainBanner: config.multiChainBanner ?? [],
+    earnVaults:
+      config.earnVaults.filter((vault) => EARN_VAULTS.includes(vault.name)) ??
+      [],
     pages,
   };
 };
 
+export const getFallbackedManifestEntry = (
+  prefetchedManifest: unknown,
+  defaultChain: number,
+): ManifestEntry => {
+  const isValid = isManifestValid(prefetchedManifest, defaultChain);
+  return isValid
+    ? prefetchedManifest[defaultChain]
+    : (FallbackLocalManifest as unknown as Manifest)[defaultChain];
+};
+
 export const useFallbackManifestEntry = (
   prefetchedManifest: unknown,
-  chain: number,
+  defaultChain: number,
 ): ManifestEntry => {
-  return useMemo(() => {
-    const isValid = isManifestValid(prefetchedManifest, chain);
-    return isValid
-      ? prefetchedManifest[chain]
-      : (FallbackLocalManifest as unknown as Manifest)[chain];
-  }, [prefetchedManifest, chain]);
+  return useMemo(
+    () => getFallbackedManifestEntry(prefetchedManifest, defaultChain),
+    [prefetchedManifest, defaultChain],
+  );
 };

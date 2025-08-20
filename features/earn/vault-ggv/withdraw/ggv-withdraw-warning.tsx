@@ -1,6 +1,7 @@
 import { VaultWarning } from 'features/earn/shared/vault-warning';
 import { useGGVWithdrawForm } from './form-context';
 import { GGVWithdrawStoppedReason } from './types';
+import { useGGVAvailable } from '../hooks/use-ggv-available';
 
 const WARNING_TEXT: Record<NonNullable<GGVWithdrawStoppedReason>, string> = {
   paused: 'The vault withdrawals are paused.',
@@ -14,9 +15,12 @@ const WARNING_TEXT: Record<NonNullable<GGVWithdrawStoppedReason>, string> = {
 };
 
 export const GGVWithdrawWarning = () => {
-  const { reason, canWithdraw, unlockTime } = useGGVWithdrawForm();
+  const { isWithdrawEnabled } = useGGVAvailable();
+  const { reason: contractReason, unlockTime } = useGGVWithdrawForm();
 
-  if (reason && canWithdraw === false) {
+  const reason = isWithdrawEnabled ? contractReason : 'paused';
+
+  if (reason) {
     return (
       <VaultWarning>
         {WARNING_TEXT[reason]}
