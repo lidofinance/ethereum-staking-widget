@@ -45,8 +45,8 @@ export const DVVWithdrawalFormValidationResolver: Resolver<
       VALIDATION_CONTEXT_TIMEOUT,
     );
 
-    // TODO: what is the minimum withdrawal amount?
-    const minWithdrawal = 0n;
+    // 100 wei as withdrawal minimum to avoid share conversion issues
+    const minWithdrawal = 100n;
 
     validateBigintMin(
       'amount',
