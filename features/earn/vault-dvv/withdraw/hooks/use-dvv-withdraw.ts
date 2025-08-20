@@ -25,32 +25,11 @@ export const useDVVWithdraw = (onRetry?: () => void) => {
         // used to display in modal
         const willReceiveWstETH = await vault.read.previewRedeem([amount]);
 
-        // determines:
-        // - if approve tx/call to be used, after approve tx(or if included in AA call) set to false
-        // - if to show approve or main tx modals
-        let needsApprove = false;
-
-        const allowance = await vault.read.allowance([address, vault.address]);
-
-        needsApprove = allowance < amount;
-
-        const approveArgs = [vault.address, amount] as const; // spender, value
         const withdrawArgs = [amount, address, address] as const; // shares, receiver, owner
 
         await txFlow({
           callsFn: async () => {
             const calls: AACall[] = [];
-
-            if (needsApprove) {
-              calls.push({
-                to: vault.address,
-                data: encodeFunctionData({
-                  abi: vault.abi,
-                  functionName: 'approve',
-                  args: approveArgs,
-                }),
-              });
-            }
             calls.push({
               to: vault.address,
               data: encodeFunctionData({
@@ -59,22 +38,9 @@ export const useDVVWithdraw = (onRetry?: () => void) => {
                 args: withdrawArgs,
               }),
             });
-
-            needsApprove = false;
-
             return calls;
           },
           sendTransaction: async (txStagesCallback) => {
-            if (needsApprove) {
-              await core.performTransaction({
-                getGasLimit: (opts) =>
-                  vault.estimateGas.approve(approveArgs, opts),
-                sendTransaction: (opts) =>
-                  vault.write.approve(approveArgs, opts),
-                callback: txStagesCallback,
-              });
-            }
-            needsApprove = false;
             await core.performTransaction({
               getGasLimit: (opts) =>
                 vault.estimateGas.redeem(withdrawArgs, opts),
@@ -83,15 +49,9 @@ export const useDVVWithdraw = (onRetry?: () => void) => {
             });
           },
           onSign: async () => {
-            if (needsApprove) {
-              return txModalStages.signApproval(amount);
-            }
             return txModalStages.sign(amount, willReceiveWstETH);
           },
           onReceipt: async ({ txHashOrCallId, isAA }) => {
-            if (needsApprove) {
-              return txModalStages.pendingApproval(amount, txHashOrCallId);
-            }
             return txModalStages.pending(
               amount,
               willReceiveWstETH,
@@ -100,12 +60,10 @@ export const useDVVWithdraw = (onRetry?: () => void) => {
             );
           },
           onSuccess: async ({ txHash }) => {
-            if (needsApprove) return;
             const wstETHBalance = await wstETH.balance(address);
             txModalStages.success(wstETHBalance, txHash);
           },
           onMultisigDone: () => {
-            if (needsApprove) return;
             txModalStages.successMultisig();
           },
         });
