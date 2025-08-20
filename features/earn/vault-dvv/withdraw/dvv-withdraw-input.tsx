@@ -10,8 +10,9 @@ export const DVVWithdrawInput = () => {
 
   return (
     <TokenAmountInputHookForm
-      // TODO: 28px, but 24px in design
-      leftDecorator={<TokenDvstethIcon />}
+      leftDecorator={
+        <TokenDvstethIcon width={24} height={24} viewBox={'0 0 28 28'} />
+      }
       disabled={disabled}
       fieldName="amount"
       token={'dvstETH'}

@@ -12,8 +12,9 @@ export const GGVWithdrawInput = () => {
   return (
     <InputGroupHookForm errorField="amount" bottomSpacing={false}>
       <TokenAmountInputHookForm
-        // TODO: 28px, but 24px in design
-        leftDecorator={<TokenGGIcon />}
+        leftDecorator={
+          <TokenGGIcon width={24} height={24} viewBox={'0 0 28 28'} />
+        }
         disabled={disabled}
         fieldName="amount"
         token={'gg'}
