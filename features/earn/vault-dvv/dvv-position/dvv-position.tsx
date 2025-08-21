@@ -24,10 +24,10 @@ import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo/matomo-earn-events';
 
 type ClaimDecoratorProps = {
   claimUrl?: string;
-  token?: 'ssv' | 'obol';
+  matomoEvent?: MATOMO_EARN_EVENTS_TYPES;
 };
 
-const ClaimDecorator = ({ claimUrl, token }: ClaimDecoratorProps) => {
+const ClaimDecorator = ({ claimUrl, matomoEvent }: ClaimDecoratorProps) => {
   if (!claimUrl) return null;
 
   return (
@@ -36,11 +36,7 @@ const ClaimDecorator = ({ claimUrl, token }: ClaimDecoratorProps) => {
         variant="translucent"
         size="sm"
         onClick={() => {
-          if (token === 'ssv') {
-            trackMatomoEvent(MATOMO_EARN_EVENTS_TYPES.dvvRewardsClaimSsv);
-          } else if (token === 'obol') {
-            trackMatomoEvent(MATOMO_EARN_EVENTS_TYPES.dvvRewardsClaimObol);
-          }
+          if (matomoEvent) trackMatomoEvent(matomoEvent);
         }}
       >
         Claim <ExternalLinkIcon />
@@ -85,7 +81,10 @@ export const DVVPosition = () => {
           isLoading: isLoadingPoints,
           icon: <TokenSsvIcon />,
           rightDecorator: data?.ssv.claimable ? (
-            <ClaimDecorator claimUrl={data.ssv.claim_url} token="ssv" />
+            <ClaimDecorator
+              claimUrl={data.ssv.claim_url}
+              matomoEvent={MATOMO_EARN_EVENTS_TYPES.dvvRewardsClaimSsv}
+            />
           ) : undefined,
         },
         {
@@ -97,7 +96,10 @@ export const DVVPosition = () => {
           isLoading: isLoadingPoints,
           icon: <TokenObolIcon />,
           rightDecorator: data?.obol.claimable ? (
-            <ClaimDecorator claimUrl={data.obol.claim_url} token="obol" />
+            <ClaimDecorator
+              claimUrl={data.obol.claim_url}
+              matomoEvent={MATOMO_EARN_EVENTS_TYPES.dvvRewardsClaimObol}
+            />
           ) : undefined,
         },
       ]}

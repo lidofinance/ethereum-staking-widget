@@ -18,11 +18,11 @@ import { getTokenAddress } from 'config/networks/token-address';
 import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo/matomo-earn-events';
 import { trackMatomoEvent } from 'utils/track-matomo-event';
 
+import type { DVVDepositFormValidatedValues } from '../types';
 import {
   getDVVDepositWrapperWritableContract,
   getDVVaultWritableContract,
 } from '../../contracts';
-import { DVVDepositFormValidatedValues } from '../types';
 import { useTxModalStagesDVVDeposit } from './use-dvv-deposit-tx-modal';
 
 export const useDVVDeposit = (onRetry?: () => void) => {
