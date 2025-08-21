@@ -2,9 +2,12 @@ import invariant from 'tiny-invariant';
 import { useCallback } from 'react';
 import { encodeFunctionData, WalletClient } from 'viem';
 
+import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo';
+import { trackMatomoEvent } from 'utils/track-matomo-event';
 import { AACall, useDappStatus, useLidoSDK, useTxFlow } from 'modules/web3';
-import { useTxModalStagesDVVWithdraw } from './use-dvv-withdraw-tx-modal';
+
 import { getDVVaultWritableContract } from '../../contracts';
+import { useTxModalStagesDVVWithdraw } from './use-dvv-withdraw-tx-modal';
 
 export const useDVVWithdraw = (onRetry?: () => void) => {
   const { address } = useDappStatus();
@@ -14,6 +17,7 @@ export const useDVVWithdraw = (onRetry?: () => void) => {
 
   const withdrawDVV = useCallback(
     async ({ amount }: { amount: bigint }) => {
+      trackMatomoEvent(MATOMO_EARN_EVENTS_TYPES.dvvWithdrawStart);
       invariant(address, 'the address is required');
 
       try {
@@ -62,6 +66,7 @@ export const useDVVWithdraw = (onRetry?: () => void) => {
           onSuccess: async ({ txHash }) => {
             const wstETHBalance = await wstETH.balance(address);
             txModalStages.success(wstETHBalance, txHash);
+            trackMatomoEvent(MATOMO_EARN_EVENTS_TYPES.dvvWithdrawFinish);
           },
           onMultisigDone: () => {
             txModalStages.successMultisig();

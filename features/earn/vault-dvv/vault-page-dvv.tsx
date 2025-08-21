@@ -16,12 +16,14 @@ import {
   EARN_VAULT_DVV_SLUG,
   EARN_VAULT_WITHDRAW_SLUG,
 } from 'consts/urls';
+import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo/matomo-earn-events';
 
 import { DVVDepositForm } from './deposit';
 import { DVVWithdrawForm } from './withdraw';
 import { DVVPosition } from './dvv-position';
 
 import { useDVVStats } from './hooks/use-dvv-stats';
+import { trackMatomoEvent } from 'utils/track-matomo-event';
 
 const partners = [
   {
@@ -36,10 +38,12 @@ const routes = [
   {
     path: `${EARN_PATH}/${EARN_VAULT_DVV_SLUG}/${EARN_VAULT_DEPOSIT_SLUG}`,
     name: 'Deposit',
+    matomoEvent: MATOMO_EARN_EVENTS_TYPES.dvvDepositTabClick,
   },
   {
     path: `${EARN_PATH}/${EARN_VAULT_DVV_SLUG}/${EARN_VAULT_WITHDRAW_SLUG}`,
     name: 'Withdraw',
+    matomoEvent: MATOMO_EARN_EVENTS_TYPES.dvvWithdrawTabClick,
   },
 ];
 
@@ -52,7 +56,14 @@ export const VaultPageDVV: FC<{
 
   return (
     <>
-      <ButtonBack url={EARN_PATH}>Back to all vaults</ButtonBack>
+      <ButtonBack
+        url={EARN_PATH}
+        onClick={() => {
+          trackMatomoEvent(MATOMO_EARN_EVENTS_TYPES.dvvBackToAllVaults);
+        }}
+      >
+        Back to all vaults
+      </ButtonBack>
       <VaultBlock>
         <VaultHeader
           title={`Lido DVV`}
