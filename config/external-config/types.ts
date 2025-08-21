@@ -21,7 +21,7 @@ export type ManifestConfig = {
     dgBannerEnabled?: boolean;
     dgWarningState?: boolean;
   };
-  pages?: {
+  pages: {
     [page in ManifestConfigPage]?: {
       shouldDisable?: boolean;
       showNew?: boolean;
