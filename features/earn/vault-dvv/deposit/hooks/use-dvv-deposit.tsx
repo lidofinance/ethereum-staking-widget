@@ -1,20 +1,24 @@
 import { useCallback } from 'react';
 import {
-  useDappStatus,
-  useTxFlow,
-  Erc20AllowanceAbi,
-  AACall,
-  useLidoSDK,
-} from 'modules/web3';
-import { DVVDepositFormValidatedValues } from '../types';
-import {
   encodeFunctionData,
   getContract,
   WalletClient,
   zeroAddress,
 } from 'viem';
 import invariant from 'tiny-invariant';
+
+import {
+  useDappStatus,
+  useTxFlow,
+  Erc20AllowanceAbi,
+  AACall,
+  useLidoSDK,
+} from 'modules/web3';
 import { getTokenAddress } from 'config/networks/token-address';
+import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo/matomo-earn-events';
+import { trackMatomoEvent } from 'utils/track-matomo-event';
+
+import type { DVVDepositFormValidatedValues } from '../types';
 import {
   getDVVDepositWrapperWritableContract,
   getDVVaultWritableContract,
@@ -29,6 +33,7 @@ export const useDVVDeposit = (onRetry?: () => void) => {
 
   const depositDVV = useCallback(
     async ({ amount, token }: DVVDepositFormValidatedValues) => {
+      trackMatomoEvent(MATOMO_EARN_EVENTS_TYPES.dvvDepositStart);
       invariant(address, 'needs address');
       const tokenAddress = getTokenAddress(core.chainId, token);
       // used as substitute for ETH in previewDeposit
@@ -166,6 +171,7 @@ export const useDVVDeposit = (onRetry?: () => void) => {
             if (needsApprove) return;
             const balance = await vault.read.balanceOf([address]);
             txModalStages.success(balance, txHash);
+            trackMatomoEvent(MATOMO_EARN_EVENTS_TYPES.dvvDepositFinish);
           },
           onMultisigDone: () => {
             if (needsApprove) return;

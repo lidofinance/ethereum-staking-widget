@@ -8,6 +8,8 @@ import { useDappStatus } from 'modules/web3';
 
 import { VaultCard } from '../shared/vault-card';
 import { EARN_VAULT_DVV_SLUG } from '../consts';
+import { trackMatomoEvent } from 'utils/track-matomo-event';
+import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo';
 
 import { useDVVStats } from './hooks/use-dvv-stats';
 import { useDVVPosition } from './hooks/use-dvv-position';
@@ -44,6 +46,9 @@ export const VaultCardDVV = () => {
             }
           : undefined
       }
+      depositLinkCallback={() => {
+        trackMatomoEvent(MATOMO_EARN_EVENTS_TYPES.dvvDeposit);
+      }}
     />
   );
 };

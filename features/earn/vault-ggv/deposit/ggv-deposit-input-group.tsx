@@ -6,11 +6,33 @@ import { useTokenMaxAmount } from 'shared/hooks/use-token-max-amount';
 import { InputGroupHookForm } from 'shared/hook-form/controls/input-group-hook-form';
 import { TokenSelectHookForm } from 'shared/hook-form/controls/token-select-hook-form/token-select-hook-form';
 import { TokenAmountInputHookForm } from 'shared/hook-form/controls/token-amount-input-hook-form';
+import { TOKEN_DISPLAY_NAMES } from 'utils/getTokenDisplayName';
+import { trackMatomoEvent } from 'utils/track-matomo-event';
+import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo';
 
 import type { GGVDepositFormValues } from './form-context/types';
 import { GGV_DEPOSABLE_TOKENS } from '../consts';
 import { useGGVDepositForm } from './form-context';
 import { useGGVDepositEthGasLimit } from './hooks/use-ggv-deposit-eth-gas-limit';
+
+const trackTokenSelect = (value: TOKEN_DISPLAY_NAMES) => {
+  switch (value) {
+    case 'ETH':
+      trackMatomoEvent(MATOMO_EARN_EVENTS_TYPES.ggvSelectTokenEth);
+      break;
+    case 'wETH':
+      trackMatomoEvent(MATOMO_EARN_EVENTS_TYPES.ggvSelectTokenWeth);
+      break;
+    case 'stETH':
+      trackMatomoEvent(MATOMO_EARN_EVENTS_TYPES.ggvSelectTokenSteth);
+      break;
+    case 'wstETH':
+      trackMatomoEvent(MATOMO_EARN_EVENTS_TYPES.ggvSelectTokenWsteth);
+      break;
+    default:
+      break;
+  }
+};
 
 const OPTIONS = GGV_DEPOSABLE_TOKENS.map((token) => ({ token }));
 
@@ -45,6 +67,7 @@ export const GGVDepositInputGroup: React.FC = () => {
         resetField="amount"
         disabled={disabled}
         options={OPTIONS}
+        onChange={trackTokenSelect}
       />
       <TokenAmountInputHookForm
         disabled={disabled}
@@ -53,6 +76,9 @@ export const GGVDepositInputGroup: React.FC = () => {
         data-testid="ggv-deposit-input"
         maxValue={maxTokenAmount}
         showErrorMessage={false}
+        onMaxClick={() => {
+          trackMatomoEvent(MATOMO_EARN_EVENTS_TYPES.ggvDepositInputMaxClick);
+        }}
       />
     </InputGroupHookForm>
   );

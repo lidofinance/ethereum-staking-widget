@@ -34,6 +34,7 @@ type VaultCardProps = {
     isLoading?: boolean;
     symbol: string;
   };
+  depositLinkCallback?: () => void;
 };
 
 export const VaultCard: React.FC<VaultCardProps> = ({
@@ -45,6 +46,7 @@ export const VaultCard: React.FC<VaultCardProps> = ({
   stats,
   urlSlug,
   position,
+  depositLinkCallback,
 }) => (
   <VaultCardWrapper>
     <VaultHeader title={title} partners={partners} logo={logo} />
@@ -68,7 +70,10 @@ export const VaultCard: React.FC<VaultCardProps> = ({
         </VaultCardMyPositionValue>
       </VaultCardMyPosition>
     )}
-    <LocalLink href={`${EARN_PATH}/${urlSlug}/deposit`}>
+    <LocalLink
+      href={`${EARN_PATH}/${urlSlug}/deposit`}
+      onClick={depositLinkCallback}
+    >
       <Button fullwidth size="sm">
         Deposit
       </Button>
