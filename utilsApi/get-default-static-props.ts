@@ -15,6 +15,7 @@ import type {
   ManifestConfigPage,
   ManifestEntry,
 } from 'config/external-config';
+import { getBackwardCompatibleConfig } from 'config/external-config/frontend-fallback';
 
 type PreviewData = { manifest: ManifestEntry };
 
@@ -31,10 +32,12 @@ export const getDefaultStaticProps = <
     /// common props
     const { ___prefetch_manifest___ } = await fetchExternalManifest();
     const props = ___prefetch_manifest___ ? { ___prefetch_manifest___ } : {};
-    const fallbackedEntry = getFallbackedManifestEntry(
+
+    const ssrManifest = getFallbackedManifestEntry(
       ___prefetch_manifest___,
       config.defaultChain,
     );
+    ssrManifest.config = getBackwardCompatibleConfig(ssrManifest.config);
     const base: GetStaticPropsResult<typeof props> = {
       props,
       // because next only remembers first value, default to short revalidation period
@@ -59,7 +62,7 @@ export const getDefaultStaticProps = <
       const { props: customProps, ...rest } = (await custom({
         ...context,
         previewData: {
-          manifest: fallbackedEntry,
+          manifest: ssrManifest,
         },
       })) as any;
       result = {

@@ -36,13 +36,13 @@ export const getBackwardCompatibleConfig = (
   return {
     enabledWithdrawalDexes:
       override.enabledWithdrawalDexes ??
-      config.enabledWithdrawalDexes.filter((dex) => !!getDexConfig(dex)),
-    featureFlags: { ...(config.featureFlags ?? {}), ...override.featureFlags },
+      config.enabledWithdrawalDexes?.filter((dex) => !!getDexConfig(dex)),
+    featureFlags: { ...(config?.featureFlags ?? {}), ...override.featureFlags },
     multiChainBanner:
-      override.multiChainBanner ?? config.multiChainBanner ?? [],
+      override?.multiChainBanner ?? config?.multiChainBanner ?? [],
     earnVaults:
       override.earnVaults ??
-      config.earnVaults.filter((vault) => EARN_VAULTS.includes(vault.name)) ??
+      config.earnVaults?.filter((vault) => EARN_VAULTS.includes(vault.name)) ??
       [],
     pages: { ...pages, ...override.pages },
   };
