@@ -34,7 +34,7 @@ export const VaultCardDVV = () => {
         { name: 'ETH', logo: <TokenEthIcon /> },
         { name: 'WETH', logo: <TokenWethIcon /> },
       ]}
-      stats={{ tvl, apr, isLoading: isLoadingStats }}
+      stats={{ tvl, apx: apr, apxLabel: 'APR', isLoading: isLoadingStats }}
       logo={<VaultDDVIcon />}
       position={
         isWalletConnected

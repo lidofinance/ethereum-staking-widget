@@ -47,7 +47,7 @@ export const VaultCardGGV = () => {
             }
           : undefined
       }
-      stats={{ tvl, apy, isLoading: isLoadingStats }}
+      stats={{ tvl, apx: apy, apxLabel: 'APY', isLoading: isLoadingStats }}
       logo={<VaultGGVIcon />}
     />
   );

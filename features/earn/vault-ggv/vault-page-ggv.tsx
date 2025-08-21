@@ -77,7 +77,7 @@ export const VaultPageGGV: FC<{
           logo={<VaultGGVIcon />}
           partners={partners}
         />
-        <VaultStats tvl={tvl} apy={apy} isLoading={isLoading} />
+        <VaultStats tvl={tvl} apxLabel="APY" apx={apy} isLoading={isLoading} />
         <VaultDescription description={description} />
         {isWalletConnected && (
           <VaultPosition

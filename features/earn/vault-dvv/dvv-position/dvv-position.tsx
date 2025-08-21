@@ -1,3 +1,4 @@
+import { parseEther } from 'viem';
 import { useDappStatus } from 'modules/web3';
 
 import { VaultPosition } from '../../shared/vault-position';
@@ -48,10 +49,8 @@ export const DVVPosition = () => {
 
   if (!isWalletConnected) return null;
 
-  // convert mellow points to the wei at 18 decimals
-  const mellowPointsBalance =
-    BigInt(Math.floor((data?.mellowPoints ?? 0) * 10 ** 4)) * 10n ** 14n;
-
+  // convert mellow points to the wei at 18 decimals for easier compatibility with components
+  const mellowPointsBalance = parseEther(data?.mellowPoints.toFixed(4) ?? '0');
   return (
     <VaultPosition
       position={{

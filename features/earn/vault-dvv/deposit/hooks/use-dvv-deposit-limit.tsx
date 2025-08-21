@@ -77,6 +77,7 @@ export const useDVVDepositLimit = () => {
         };
       }
 
+      //  ETH -> stETH at 1:1 in the vault contract
       const maxDepositETH =
         await lidoWrap.convertWstethToSteth(maxDepositWsteth);
 

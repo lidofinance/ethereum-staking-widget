@@ -59,13 +59,18 @@ export const VaultPageDVV: FC<{
           logo={<VaultDDVIcon />}
           partners={partners}
         />
-        <VaultStats tvl={tvl} apr={apr} isLoading={isLoadingStats} />
+        <VaultStats
+          tvl={tvl}
+          apxLabel="APR"
+          apx={apr}
+          isLoading={isLoadingStats}
+        />
         <VaultDescription description={description} />
         <DVVPosition />
         <VaultSwitch routes={routes} checked={isWithdraw} fullwidth />
         {isDeposit && <DVVDepositForm />}
         {isWithdraw && <DVVWithdrawForm />}
-        <VaultLegal allocation="TODO DVV allocation" />
+        <VaultLegal allocation={null} />
       </VaultBlock>
     </>
   );
