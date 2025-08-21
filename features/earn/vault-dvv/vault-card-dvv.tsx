@@ -1,9 +1,4 @@
-import {
-  PartnerStakehouseIcon,
-  TokenEthIcon,
-  TokenWethIcon,
-  VaultDDVIcon,
-} from 'assets/earn';
+import { TokenEthIcon, TokenWethIcon, VaultDDVIcon } from 'assets/earn';
 import { useDappStatus } from 'modules/web3';
 
 import { EARN_VAULT_DVV_SLUG } from 'consts/urls';
@@ -12,7 +7,7 @@ import { VaultCard } from '../vaults-list/components/vault-card';
 
 import { useDVVStats } from './hooks/use-dvv-stats';
 import { useDVVPosition } from './hooks/use-dvv-position';
-import { DVV_TOKEN_SYMBOL } from './consts';
+import { DVV_PARTNERS, DVV_TOKEN_SYMBOL } from './consts';
 
 export const VaultCardDVV = () => {
   const { isWalletConnected } = useDappStatus();
@@ -23,13 +18,7 @@ export const VaultCardDVV = () => {
       title="Lido DVV"
       description="The Decentralized Validator Vault accepts ETH deposits to the Lido protocol, accelerating the adoption of Distributed Validator Technology (DVT)"
       urlSlug={EARN_VAULT_DVV_SLUG}
-      partners={[
-        {
-          role: 'Curated by',
-          icon: <PartnerStakehouseIcon />,
-          text: 'Stakehouse Financial',
-        },
-      ]}
+      partners={DVV_PARTNERS}
       tokens={[
         { name: 'ETH', logo: <TokenEthIcon /> },
         { name: 'WETH', logo: <TokenWethIcon /> },

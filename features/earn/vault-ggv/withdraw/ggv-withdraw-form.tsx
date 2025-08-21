@@ -29,7 +29,7 @@ export const GGVWithdrawForm: FC = () => {
           </VaultFormSection>
           <VaultTxInfo>
             <GGVWithdrawWillReceive />
-            <VaultTxInfoRow title="Waiting Time:">3 days</VaultTxInfoRow>
+            <VaultTxInfoRow title="Waiting time">3 days</VaultTxInfoRow>
           </VaultTxInfo>
           <GGVWithdrawSubmitButton />
         </GGVWhenNoActiveRequests>

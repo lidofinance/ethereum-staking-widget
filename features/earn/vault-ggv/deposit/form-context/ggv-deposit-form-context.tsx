@@ -88,9 +88,12 @@ export const GGVDepositFormProvider: FC<PropsWithChildren> = ({ children }) => {
         }
         return result;
       },
+      onReset: (values: GGVDepositFormValidatedValues) => {
+        formObject.reset({ amount: null, token: values.token });
+      },
       retryEvent,
     }),
-    [depositGGV, refetchData, retryEvent],
+    [depositGGV, formObject, refetchData, retryEvent],
   );
 
   const contextValue = useMemo<GGVDepositFormDataContextValue>(() => {

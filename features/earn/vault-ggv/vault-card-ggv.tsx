@@ -1,6 +1,4 @@
 import {
-  Partner7SeasIcon,
-  PartnerVedaIcon,
   TokenEthIcon,
   TokenStethIcon,
   TokenWethIcon,
@@ -13,7 +11,8 @@ import { EARN_VAULT_GGV_SLUG } from 'consts/urls';
 import { useGGVStats } from './hooks/use-ggv-stats';
 import { useGGVPosition } from './hooks/use-ggv-position';
 import { useDappStatus } from 'modules/web3';
-import { GGV_TOKEN_SYMBOL } from './consts';
+
+import { GGV_PARTNERS, GGV_TOKEN_SYMBOL } from './consts';
 
 export const VaultCardGGV = () => {
   const { isWalletConnected } = useDappStatus();
@@ -24,14 +23,7 @@ export const VaultCardGGV = () => {
       title="Lido GGV"
       description="Lido GGV leverages top DeFi protocols to maximize rewards on your stETH, with a single deposit."
       urlSlug={EARN_VAULT_GGV_SLUG}
-      partners={[
-        { role: 'Curated by', icon: <Partner7SeasIcon />, text: '7seas' },
-        {
-          role: 'Infrastructure provider',
-          icon: <PartnerVedaIcon />,
-          text: 'Veda',
-        },
-      ]}
+      partners={GGV_PARTNERS}
       tokens={[
         { name: 'ETH', logo: <TokenEthIcon /> },
         { name: 'WETH', logo: <TokenWethIcon /> },

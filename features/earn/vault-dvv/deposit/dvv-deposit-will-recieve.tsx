@@ -13,7 +13,7 @@ export const DVVDepositWillReceive = () => {
 
   return (
     <VaultWillReceive
-      icon={<TokenDvstethIcon width={16} height={16} viewBox="0 0 32 32" />}
+      icon={<TokenDvstethIcon width={16} height={16} viewBox="0 0 28 28" />}
       symbol={DVV_TOKEN_SYMBOL}
       isLoading={isLoading}
       amount={data.shares}

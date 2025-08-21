@@ -35,9 +35,14 @@ export type VaultPositionProps = {
   pointsTip?: React.ReactNode;
 };
 
-const PositionBody = ({ position }: { position: TokenBalance }) => {
+type PositionBodyProps = {
+  position: TokenBalance;
+  compact?: boolean;
+};
+
+const PositionBody = ({ position, compact }: PositionBodyProps) => {
   return (
-    <PositionEntryBody>
+    <PositionEntryBody compact={compact}>
       <PositionIcon>{position.icon}</PositionIcon>
 
       <PositionBalance>
@@ -84,7 +89,7 @@ export const VaultPosition = ({
       {rewards && (
         <PositionEntry>
           <PositionEntryTitle>
-            My rewards{' '}
+            Rewards{' '}
             {rewardsTip && (
               <Tooltip placement="top" title={rewardsTip}>
                 <Question />
@@ -99,7 +104,7 @@ export const VaultPosition = ({
       {points && (
         <PositionEntry>
           <PositionEntryTitle>
-            My Points{' '}
+            Points{' '}
             {pointsTip && (
               <Tooltip placement="top" title={pointsTip}>
                 <Question />
@@ -107,7 +112,7 @@ export const VaultPosition = ({
             )}
           </PositionEntryTitle>
           {points.map((point) => (
-            <PositionBody position={point} key={point.symbol} />
+            <PositionBody compact position={point} key={point.symbol} />
           ))}
         </PositionEntry>
       )}
