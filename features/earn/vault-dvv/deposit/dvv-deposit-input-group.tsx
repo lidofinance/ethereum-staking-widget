@@ -6,11 +6,27 @@ import { useTokenMaxAmount } from 'shared/hooks/use-token-max-amount';
 import { InputGroupHookForm } from 'shared/hook-form/controls/input-group-hook-form';
 import { TokenSelectHookForm } from 'shared/hook-form/controls/token-select-hook-form/token-select-hook-form';
 import { TokenAmountInputHookForm } from 'shared/hook-form/controls/token-amount-input-hook-form';
+import { TOKEN_DISPLAY_NAMES } from 'utils/getTokenDisplayName';
+import { trackMatomoEvent } from 'utils/track-matomo-event';
+import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo';
 
 import type { DVVDepositFormValues } from './types';
 import { useDVVDepositForm } from './form-context';
 import { DVV_DEPOSABLE_TOKENS } from '../consts';
 import { useDVVDepositEthGasLimit } from './hooks/use-dvv-deposit-eth-gas-limit';
+
+const trackTokenSelect = (value: TOKEN_DISPLAY_NAMES) => {
+  switch (value) {
+    case 'ETH':
+      trackMatomoEvent(MATOMO_EARN_EVENTS_TYPES.dvvSelectTokenEth);
+      break;
+    case 'wETH':
+      trackMatomoEvent(MATOMO_EARN_EVENTS_TYPES.dvvSelectTokenWeth);
+      break;
+    default:
+      break;
+  }
+};
 
 const OPTIONS = DVV_DEPOSABLE_TOKENS.map((token) => ({ token }));
 
@@ -45,6 +61,7 @@ export const DVVDepositInputGroup: React.FC = () => {
         resetField="amount"
         disabled={disabled}
         options={OPTIONS}
+        onChange={trackTokenSelect}
       />
       <TokenAmountInputHookForm
         disabled={disabled}
@@ -53,6 +70,9 @@ export const DVVDepositInputGroup: React.FC = () => {
         data-testid="ggv-deposit-input"
         maxValue={maxTokenAmount}
         showErrorMessage={false}
+        onMaxClick={() => {
+          trackMatomoEvent(MATOMO_EARN_EVENTS_TYPES.dvvDepositInputMaxClick);
+        }}
       />
     </InputGroupHookForm>
   );

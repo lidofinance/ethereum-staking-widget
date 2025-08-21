@@ -6,6 +6,8 @@ import {
   EARN_VAULT_GGV_SLUG,
   EARN_VAULT_WITHDRAW_SLUG,
 } from 'consts/urls';
+import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo';
+import { trackMatomoEvent } from 'utils/track-matomo-event';
 
 import { useDappStatus } from 'modules/web3';
 
@@ -46,10 +48,12 @@ const routes = [
   {
     path: `${EARN_PATH}/${EARN_VAULT_GGV_SLUG}/${EARN_VAULT_DEPOSIT_SLUG}`,
     name: 'Deposit',
+    matomoEvent: MATOMO_EARN_EVENTS_TYPES.ggvDepositTabClick,
   },
   {
     path: `${EARN_PATH}/${EARN_VAULT_GGV_SLUG}/${EARN_VAULT_WITHDRAW_SLUG}`,
     name: 'Withdraw',
+    matomoEvent: MATOMO_EARN_EVENTS_TYPES.ggvWithdrawTabClick,
   },
 ];
 
@@ -70,7 +74,14 @@ export const VaultPageGGV: FC<{
 
   return (
     <>
-      <ButtonBack url={EARN_PATH}>Back to all vaults</ButtonBack>
+      <ButtonBack
+        url={EARN_PATH}
+        onClick={() => {
+          trackMatomoEvent(MATOMO_EARN_EVENTS_TYPES.ggvBackToAllVaults);
+        }}
+      >
+        Back to all vaults
+      </ButtonBack>
       <VaultBlock>
         <VaultHeader
           title={`Lido GGV`}

@@ -2,8 +2,11 @@ import { useFormState } from 'react-hook-form';
 
 import { TokenGGIcon } from 'assets/earn';
 import { TokenAmountInputHookForm } from 'shared/hook-form/controls/token-amount-input-hook-form';
-import { useGGVPosition } from '../hooks/use-ggv-position';
 import { InputGroupHookForm } from 'shared/hook-form/controls/input-group-hook-form';
+import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo/matomo-earn-events';
+import { trackMatomoEvent } from 'utils/track-matomo-event';
+
+import { useGGVPosition } from '../hooks/use-ggv-position';
 
 export const GGVWithdrawInput = () => {
   const { data } = useGGVPosition();
@@ -21,6 +24,9 @@ export const GGVWithdrawInput = () => {
         data-testid="ggv-withdraw-input"
         maxValue={data?.sharesBalance}
         showErrorMessage={false}
+        onMaxClick={() => {
+          trackMatomoEvent(MATOMO_EARN_EVENTS_TYPES.ggvWithdrawInputMaxClick);
+        }}
       />
     </InputGroupHookForm>
   );
