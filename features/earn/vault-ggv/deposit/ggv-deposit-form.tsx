@@ -10,6 +10,7 @@ import { GGVAvailableDeposit } from './ggv-avaliable-deposit';
 import { GGVWillReceive } from './ggv-deposit-will-receive';
 import { GGVDepositSubmitButton } from './ggv-deposit-submit-botton';
 import { GGVDepositWarning } from './ggv-deposit-warning';
+import { VaultWarning } from 'features/earn/shared/vault-warning';
 
 export const GGVDepositForm: FC = () => {
   return (
@@ -23,6 +24,11 @@ export const GGVDepositForm: FC = () => {
         <VaultTxInfo>
           <GGVWillReceive />
         </VaultTxInfo>
+        <VaultWarning variant="info">
+          Deposited funds can’t be withdrawn for 24 hours after deposit.
+          <br />
+          Withdrawals are only in wstETH, regardless of deposited asset(s).
+        </VaultWarning>
         <GGVDepositSubmitButton />
       </VaultForm>
     </GGVDepositFormProvider>

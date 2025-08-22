@@ -113,7 +113,7 @@ export type MellowAPIResponse = {
   collector: string;
 }[];
 
-const useDVVApr = () => {
+export const useDVVApr = () => {
   return useQuery({
     queryKey: ['ddv', 'stats', 'apr'],
     queryFn: async () => {

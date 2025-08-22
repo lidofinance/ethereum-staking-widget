@@ -8,10 +8,10 @@ type VaultLegalProps = {
 };
 
 const DEFAULT_LEGAL_DISCLOSURE = (
-  <>
-    The vault involves protocol and legal risks including market, leverage, and
-    liquidity risks.
-  </>
+  <b>
+    Note, that the vault involves protocol, legal and other risks. You can find
+    more details in the FAQ below.
+  </b>
 );
 
 const DEFAULT_ALLOCATION = (
@@ -31,12 +31,7 @@ export const VaultLegal = ({
 }: VaultLegalProps) => {
   return (
     <>
-      {legalDisclosure && (
-        <LegalParagraph>
-          <b>Legal Disclosure: </b>
-          {legalDisclosure}
-        </LegalParagraph>
-      )}
+      {legalDisclosure && <LegalParagraph>{legalDisclosure}</LegalParagraph>}
       {allocation && (
         <LegalParagraph>
           <b>Allocation: </b>

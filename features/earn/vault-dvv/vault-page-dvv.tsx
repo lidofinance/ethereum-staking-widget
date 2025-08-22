@@ -30,6 +30,7 @@ import { DVVPosition } from './dvv-position';
 import { useDVVStats } from './hooks/use-dvv-stats';
 import { DVV_PARTNERS } from './consts';
 import { trackMatomoEvent } from 'utils/track-matomo-event';
+import { DVVAprBreakdown } from './dvv-apr-breakdown';
 
 const description =
   'The Decentralized Validator Vault accepts ETH deposits to the Lido protocol, accelerating the adoption of Distributed Validator Technology (DVT)';
@@ -74,6 +75,7 @@ export const VaultPageDVV: FC<{
             tvl={tvl}
             apxLabel="APR"
             apx={apr}
+            apxHint={<DVVAprBreakdown />}
             isLoading={isLoadingStats}
           />
 
