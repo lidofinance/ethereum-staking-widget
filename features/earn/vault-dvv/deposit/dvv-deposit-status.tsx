@@ -5,8 +5,9 @@ import { useDVVAvailable } from '../hooks/use-dvv-avaliable';
 import type { DVVDepositLimitReason } from './types';
 
 const WARNING_TEXT: Record<DVVDepositLimitReason, string> = {
-  'deposit-limit-reached': 'Vault has reached deposit limit.',
-  'deposit-paused': 'Deposits are currently paused.',
+  'deposit-limit-reached':
+    'Deposits are unavailable right now, the vault has reached its limit.',
+  'deposit-paused': 'Deposits are currently paused. Please try again later.',
   'non-whitelisted': 'Your address is not whitelisted for deposits.',
 };
 

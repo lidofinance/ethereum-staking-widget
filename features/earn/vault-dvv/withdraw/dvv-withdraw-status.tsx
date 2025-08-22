@@ -7,7 +7,11 @@ export const DVVWithdrawStatus = () => {
   const { data } = useDVVWithdrawLimit();
 
   if (data?.isWithdrawalPaused || !isWithdrawEnabled) {
-    return <VaultWarning>Withdrawals are currently paused.</VaultWarning>;
+    return (
+      <VaultWarning>
+        Withdrawals are currently paused. Please try again later.
+      </VaultWarning>
+    );
   }
 
   return null;

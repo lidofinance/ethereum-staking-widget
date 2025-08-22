@@ -4,14 +4,14 @@ import { GGVWithdrawStoppedReason } from './types';
 import { useGGVAvailable } from '../hooks/use-ggv-available';
 
 const WARNING_TEXT: Record<NonNullable<GGVWithdrawStoppedReason>, string> = {
-  paused: 'The vault withdrawals are paused.',
-  'withdrawal-stopped': 'The vault withdrawals have been stopped.',
+  paused: 'Withdrawals are currently paused. Please try again later.',
+  'withdrawal-stopped':
+    'Withdrawals are currently paused. Please try again later.',
   'withdrawal-zero-capacity':
-    'The vault has zero capacity for wstETH withdrawals.',
-  'transfer-from-shares-blocked':
-    'You are restricted from transferring shares.',
+    'The vault currently has no capacity for wstETH withdrawals.',
+  'transfer-from-shares-blocked': 'You are not allowed to transfer shares.',
   'transfer-from-shares-time-locked':
-    'You cannot withdraw recent deposits until',
+    'Recent deposits can’t be withdrawn the first 24 hours, please wait until',
 };
 
 export const GGVWithdrawWarning = () => {
