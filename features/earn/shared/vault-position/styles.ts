@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 
 export const PositionContainer = styled.div`
   display: flex;
@@ -30,11 +30,19 @@ export const PositionEntryTitle = styled.h3`
   }
 `;
 
-export const PositionEntryBody = styled.div`
+export const PositionEntryBody = styled.div<{
+  compact?: boolean;
+}>`
   display: grid;
-  grid-template-rows: 24px 20px;
   gap: 0px 8px;
+  grid-template-rows: 24px 20px;
   grid-template-columns: 28px auto min-content;
+
+  ${({ compact }) =>
+    compact &&
+    css`
+      grid-template-rows: 28px 0px;
+    `}
 `;
 
 export const PositionIcon = styled.div`

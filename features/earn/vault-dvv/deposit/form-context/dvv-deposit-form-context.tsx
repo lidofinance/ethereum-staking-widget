@@ -81,9 +81,12 @@ export const DVVDepositFormProvider: FC<PropsWithChildren> = ({ children }) => {
         }
         return result;
       },
+      onReset: (values: DVVDepositFormValidatedValues) => {
+        formObject.reset({ amount: null, token: values.token });
+      },
       retryEvent,
     }),
-    [depositDVV, refetchData, retryEvent],
+    [depositDVV, formObject, refetchData, retryEvent],
   );
 
   const contextValue = useMemo<DVVDepositFormContext>(() => {

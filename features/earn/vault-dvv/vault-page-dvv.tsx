@@ -1,7 +1,7 @@
 import { FC } from 'react';
 
 import { ButtonBack } from 'shared/components/button-back/button-back';
-import { PartnerStakehouseIcon, VaultDDVIcon } from 'assets/earn';
+import { VaultDDVIcon } from 'assets/earn';
 
 import { VaultDescription } from '../shared/vault-description';
 import { VaultHeader } from '../shared/vault-header';
@@ -23,15 +23,9 @@ import { DVVWithdrawForm } from './withdraw';
 import { DVVPosition } from './dvv-position';
 
 import { useDVVStats } from './hooks/use-dvv-stats';
+import { DVV_PARTNERS } from './consts';
 import { trackMatomoEvent } from 'utils/track-matomo-event';
 
-const partners = [
-  {
-    role: 'Curated by',
-    icon: <PartnerStakehouseIcon />,
-    text: 'Stakehouse Financial',
-  },
-];
 const description =
   'The Decentralized Validator Vault accepts ETH deposits to the Lido protocol, accelerating the adoption of Distributed Validator Technology (DVT)';
 const routes = [
@@ -68,9 +62,14 @@ export const VaultPageDVV: FC<{
         <VaultHeader
           title={`Lido DVV`}
           logo={<VaultDDVIcon />}
-          partners={partners}
+          partners={DVV_PARTNERS}
         />
-        <VaultStats tvl={tvl} apr={apr} isLoading={isLoadingStats} />
+        <VaultStats
+          tvl={tvl}
+          apxLabel="APR"
+          apx={apr}
+          isLoading={isLoadingStats}
+        />
         <VaultDescription description={description} />
         <DVVPosition />
         <VaultSwitch routes={routes} checked={isWithdraw} fullwidth />

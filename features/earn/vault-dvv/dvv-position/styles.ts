@@ -13,8 +13,8 @@ export const ClaimButton = styled(Button).attrs({
     display: flex;
     justify-content: center;
     align-items: baseline;
-    gap: 4px;
-    font-size: 12px;
+    gap: ${({ theme }) => theme.spaceMap.xs};
+    font-size: ${({ theme }) => theme.fontSizesMap.xxs};
     font-weight: 700;
     line-height: 20px;
   }

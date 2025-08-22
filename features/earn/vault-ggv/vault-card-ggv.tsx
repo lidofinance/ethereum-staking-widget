@@ -1,6 +1,4 @@
 import {
-  Partner7SeasIcon,
-  PartnerVedaIcon,
   TokenEthIcon,
   TokenStethIcon,
   TokenWethIcon,
@@ -17,7 +15,8 @@ import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo/matomo-earn-events';
 
 import { useGGVStats } from './hooks/use-ggv-stats';
 import { useGGVPosition } from './hooks/use-ggv-position';
-import { GGV_TOKEN_SYMBOL } from './consts';
+
+import { GGV_PARTNERS, GGV_TOKEN_SYMBOL } from './consts';
 
 export const VaultCardGGV = () => {
   const { isWalletConnected } = useDappStatus();
@@ -28,14 +27,7 @@ export const VaultCardGGV = () => {
       title="Lido GGV"
       description="Lido GGV leverages top DeFi protocols to maximize rewards on your stETH, with a single deposit."
       urlSlug={EARN_VAULT_GGV_SLUG}
-      partners={[
-        { role: 'Curated by', icon: <Partner7SeasIcon />, text: '7seas' },
-        {
-          role: 'Infrastructure provider',
-          icon: <PartnerVedaIcon />,
-          text: 'Veda',
-        },
-      ]}
+      partners={GGV_PARTNERS}
       tokens={[
         { name: 'ETH', logo: <TokenEthIcon /> },
         { name: 'WETH', logo: <TokenWethIcon /> },
@@ -51,7 +43,7 @@ export const VaultCardGGV = () => {
             }
           : undefined
       }
-      stats={{ tvl, apy, isLoading: isLoadingStats }}
+      stats={{ tvl, apx: apy, apxLabel: 'APY', isLoading: isLoadingStats }}
       logo={<VaultGGVIcon />}
       depositLinkCallback={() => {
         trackMatomoEvent(MATOMO_EARN_EVENTS_TYPES.ggvDeposit);

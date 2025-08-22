@@ -1,9 +1,11 @@
+import invariant from 'tiny-invariant';
+import { isAddressEqual, type Address } from 'viem';
 import { useQuery } from '@tanstack/react-query';
+
 import { getContractAddress } from 'config/networks/contract-address';
 import { CHAINS } from 'consts/chains';
 import { useDappStatus } from 'modules/web3';
-import { isAddressEqual, type Address } from 'viem';
-import invariant from 'tiny-invariant';
+import { bnAmountToNumber } from 'utils/bn';
 
 type UserPointsResponse = {
   user_address: Address;
@@ -46,11 +48,8 @@ const transformPoints = (
   claimable: BigInt(reward?.claimable_amount ?? 0),
   claimed: BigInt(reward?.claimed_amount ?? 0),
   usdAmount: reward
-    ? Number(
-        BigInt(Math.floor(reward.token.price * 10 ** 4)) *
-          BigInt(reward.claimable_amount),
-      ) /
-      10 ** (reward.token.decimals + 4)
+    ? bnAmountToNumber(BigInt(reward.claimed_amount), reward.token.decimals) *
+      reward.token.price
     : 0,
   ...reward,
 });

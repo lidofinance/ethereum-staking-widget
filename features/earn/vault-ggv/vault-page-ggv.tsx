@@ -8,12 +8,7 @@ import { useDappStatus } from 'modules/web3';
 
 import { ButtonBack } from 'shared/components/button-back/button-back';
 
-import {
-  Partner7SeasIcon,
-  PartnerVedaIcon,
-  TokenGGIcon,
-  VaultGGVIcon,
-} from 'assets/earn';
+import { TokenGGIcon, VaultGGVIcon } from 'assets/earn';
 
 import { VaultHeader } from '../shared/vault-header';
 import { VaultDescription } from '../shared/vault-description';
@@ -32,16 +27,8 @@ import { GGVDepositForm } from './deposit';
 import { GGVWithdrawForm } from './withdraw';
 import { useGGVStats } from './hooks/use-ggv-stats';
 import { useGGVPosition } from './hooks/use-ggv-position';
-import { GGV_TOKEN_SYMBOL } from './consts';
+import { GGV_PARTNERS, GGV_TOKEN_SYMBOL } from './consts';
 
-const partners = [
-  { role: 'Curated by', icon: <Partner7SeasIcon />, text: '7seas' },
-  {
-    role: 'Infrastructure provider',
-    icon: <PartnerVedaIcon />,
-    text: 'Veda',
-  },
-];
 const description =
   'Lido GGV leverages top DeFi protocols to maximize rewards on your stETH, with a single deposit.';
 const routes = [
@@ -86,9 +73,9 @@ export const VaultPageGGV: FC<{
         <VaultHeader
           title={`Lido GGV`}
           logo={<VaultGGVIcon />}
-          partners={partners}
+          partners={GGV_PARTNERS}
         />
-        <VaultStats tvl={tvl} apy={apy} isLoading={isLoading} />
+        <VaultStats tvl={tvl} apxLabel="APY" apx={apy} isLoading={isLoading} />
         <VaultDescription description={description} />
         {isWalletConnected && (
           <VaultPosition

@@ -1,6 +1,6 @@
 import { useWatch } from 'react-hook-form';
 
-import { TokenDvstethIcon } from 'assets/earn';
+import { TokenWstethIcon } from 'assets/earn';
 
 import { getTokenDisplayName } from 'utils/getTokenDisplayName';
 import { VaultWillReceive } from 'features/earn/shared/vault-will-receive';
@@ -13,7 +13,7 @@ export const DVVWithdrawWillReceive = () => {
 
   return (
     <VaultWillReceive
-      icon={<TokenDvstethIcon viewBox="0 0 28 28" width={16} height={16} />}
+      icon={<TokenWstethIcon viewBox="0 0 20 20" width={16} height={16} />}
       symbol={getTokenDisplayName('wstETH')}
       amount={data.wsteth}
       usdAmount={data.usd}
