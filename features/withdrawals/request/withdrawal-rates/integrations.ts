@@ -133,10 +133,10 @@ const getBebopWithdrawalRate: GetRateType = async ({ amount, token }) => {
   };
 };
 
-const getJumperWithdrawalRate: GetRateType = async ({ amount, token }) => {
+const getJumperWithdrawalRate: GetRateType = async (params) => {
   try {
-    if (amount > 0n) {
-      return await getJumperRate(amount, token, 'ETH');
+    if (params.amount > 0n) {
+      return await getJumperRate(params);
     }
   } catch (e) {
     console.warn(

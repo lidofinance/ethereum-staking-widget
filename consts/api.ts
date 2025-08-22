@@ -15,6 +15,7 @@ export const enum ETH_API_ROUTES {
   STETH_STATS = '/v1/protocol/steth/stats',
   STETH_SMA_APR = '/v1/protocol/steth/apr/sma',
   SWAP_ONE_INCH = '/v1/swap/one-inch',
+  SWAP_JUMPER = '/v1/swap/jumper',
   CURVE_APR = '/v1/pool/curve/steth-eth/apr/last',
 }
 
