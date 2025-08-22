@@ -6,9 +6,12 @@ import {
   EARN_VAULT_DVV_SLUG,
 } from 'features/earn/consts';
 import { VaultGGVIcon } from 'assets/earn';
+import { useGGVStats } from 'features/earn/vault-ggv/hooks/use-ggv-stats';
+import { trackMatomoEvent } from 'utils/track-matomo-event';
+
 import { BannerWrap } from '../shared-banner-partials';
 import { Message, Highlight, MessageContainer, LogoContainer } from './styles';
-import { useGGVStats } from 'features/earn/vault-ggv/hooks/use-ggv-stats';
+import { MATOMO_CLICK_EVENTS_TYPES } from 'consts/matomo';
 
 export const EarnGGVBanner = () => {
   const bannerLinkHref = `${EARN_PATH}/${EARN_VAULT_DVV_SLUG}/${EARN_VAULT_DEPOSIT_SLUG}`;
@@ -27,8 +30,13 @@ export const EarnGGVBanner = () => {
           <VaultGGVIcon viewBox="2 3 47 47" width={94} height={94} />
         </LogoContainer>
       </MessageContainer>
-      <Link href={bannerLinkHref}>
-        <Button size="sm" fullwidth color="primary">
+      <Link
+        href={bannerLinkHref}
+        onClick={() =>
+          trackMatomoEvent(MATOMO_CLICK_EVENTS_TYPES.startEarningGGV)
+        }
+      >
+        <Button size="sm" fullwidth>
           Start earning
         </Button>
       </Link>
