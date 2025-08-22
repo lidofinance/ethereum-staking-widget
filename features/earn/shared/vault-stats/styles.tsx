@@ -3,6 +3,8 @@ import styled from 'styled-components';
 export const VaultStatsWrapper = styled.div`
   display: flex;
   margin: ${({ theme }) => theme.spaceMap.md}px 0;
+  font-size: 16px;
+  line-height: 24px;
 `;
 export const VaultStatsItem = styled.div`
   display: flex;

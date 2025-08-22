@@ -31,14 +31,18 @@ export const VaultLegal = ({
 }: VaultLegalProps) => {
   return (
     <>
-      <LegalParagraph>
-        <b>Legal Disclosure: </b>
-        {legalDisclosure}
-      </LegalParagraph>
-      <LegalParagraph>
-        <b>Allocation: </b>
-        {allocation}
-      </LegalParagraph>
+      {legalDisclosure && (
+        <LegalParagraph>
+          <b>Legal Disclosure: </b>
+          {legalDisclosure}
+        </LegalParagraph>
+      )}
+      {allocation && (
+        <LegalParagraph>
+          <b>Allocation: </b>
+          {allocation}
+        </LegalParagraph>
+      )}
     </>
   );
 };

@@ -14,7 +14,7 @@ export const GGVWithdrawWillReceive = () => {
   const { data, isLoading } = useGGVPreviewWithdrawal(amount);
   return (
     <VaultWillReceive
-      icon={<TokenWstethIcon viewBox="0 0 28 28" width={16} height={16} />}
+      icon={<TokenWstethIcon viewBox="0 0 20 20" width={16} height={16} />}
       amount={data.wsteth}
       symbol={getTokenDisplayName('wstETH')}
       usdAmount={data.usd}

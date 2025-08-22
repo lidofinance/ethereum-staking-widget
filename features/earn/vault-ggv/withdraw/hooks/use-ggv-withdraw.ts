@@ -3,6 +3,8 @@ import { useCallback } from 'react';
 import { encodeFunctionData, WalletClient } from 'viem';
 
 import { useDappStatus, useTxFlow, AACall, useLidoSDK } from 'modules/web3';
+import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo';
+import { trackMatomoEvent } from 'utils/track-matomo-event';
 
 import {
   getGGVQueueWritableContract,
@@ -10,7 +12,6 @@ import {
 } from '../../contracts';
 import { MAX_REQUEST_DEADLINE } from '../../consts';
 import { useTxModalStagesGGVWithdrawalRequest } from './use-ggv-withdraw-request-modal';
-
 import type { GGVWithdrawalFormValidatedValues } from '../types';
 
 export const useGGVWithdraw = (onRetry?: () => void) => {
@@ -21,7 +22,8 @@ export const useGGVWithdraw = (onRetry?: () => void) => {
 
   const withdrawGGV = useCallback(
     async ({ amount }: GGVWithdrawalFormValidatedValues) => {
-      invariant(address, 'needs address');
+      trackMatomoEvent(MATOMO_EARN_EVENTS_TYPES.ggvWithdrawStart);
+      invariant(address, 'the address is required');
 
       try {
         const wstethAddress = await wstETH.contractAddress();
@@ -130,9 +132,12 @@ export const useGGVWithdraw = (onRetry?: () => void) => {
             );
           },
           onSuccess: async ({ txHash }) => {
+            if (needsApprove) return;
             txModalStages.success(willReceive, txHash);
+            trackMatomoEvent(MATOMO_EARN_EVENTS_TYPES.ggvWithdrawFinish);
           },
           onMultisigDone: () => {
+            if (needsApprove) return;
             txModalStages.successMultisig();
           },
         });

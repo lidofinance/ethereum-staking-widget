@@ -52,6 +52,7 @@ export const GGVDepositFormValidationResolver: Resolver<
       VALIDATION_CONTEXT_TIMEOUT,
     );
 
+    // prevents problems with eth/stETH/wstETH onchain conversion
     validateBigintMin(
       'amount',
       amount,

@@ -1,13 +1,11 @@
 import { FormatPrice, FormatToken } from 'shared/formatters';
-import {
-  VaultReceiveContainer,
-  VaultReceiveValue,
-  VaultReceiveMainValue,
-} from './styles';
+
+import { VaultReceiveValue, VaultReceiveMainValue } from './styles';
 import { InlineLoader } from '../inline-loader';
+import { VaultTxInfoRow } from '../vault-tx-info';
 
 type VaultWillReceiveProps = {
-  amount?: bigint;
+  amount?: bigint | null;
   usdAmount?: number;
   icon: React.ReactNode;
   symbol: string;
@@ -22,8 +20,7 @@ export const VaultWillReceive = ({
   isLoading,
 }: VaultWillReceiveProps) => {
   return (
-    <VaultReceiveContainer>
-      You will receive{' '}
+    <VaultTxInfoRow title={'You will receive'}>
       <VaultReceiveValue>
         <InlineLoader isLoading={isLoading} width={60}>
           <VaultReceiveMainValue>
@@ -35,6 +32,6 @@ export const VaultWillReceive = ({
           <FormatPrice amount={usdAmount} fallback="-" />
         </InlineLoader>
       </VaultReceiveValue>
-    </VaultReceiveContainer>
+    </VaultTxInfoRow>
   );
 };

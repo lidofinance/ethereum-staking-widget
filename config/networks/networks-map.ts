@@ -43,6 +43,9 @@ export const CONTRACT_NAMES = {
   ggvAccountant: 'ggvAccountant',
   ggvLens: 'ggvLens',
   ggvQueue: 'ggvQueue',
+  // DVV
+  dvvVault: 'dvvVault',
+  dvvDepositWrapper: 'dvvDepositWrapper',
 } as const;
 export type CONTRACT_NAMES = keyof typeof CONTRACT_NAMES;
 

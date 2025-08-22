@@ -13,9 +13,9 @@ import { useFormControllerRetry } from 'shared/hook-form/form-controller/use-for
 import { FormControllerContext } from 'shared/hook-form/form-controller';
 import { minBN } from 'utils/bn';
 
-import { isGGVAvailable } from '../../utils';
 import { useGGVDeposit } from '../hooks/use-ggv-deposit';
 import { useGGVDepositStatus } from '../hooks/use-ggv-deposit-status';
+import { useGGVAvailable } from '../../hooks/use-ggv-available';
 
 import { useGGVDepositFormData } from '../hooks/use-ggv-deposit-form-data';
 import { GGVDepositFormValidationResolver } from './validation';
@@ -41,8 +41,8 @@ export const useGGVDepositForm = () => {
 
 export const GGVDepositFormProvider: FC<PropsWithChildren> = ({ children }) => {
   // Wallet state
-  const { isDappActive, chainId } = useDappStatus();
-
+  const { isDappActive } = useDappStatus();
+  const { isGGVAvailable, isDepositEnabled } = useGGVAvailable();
   // Network data for form
   const {
     validationContext,
@@ -69,7 +69,8 @@ export const GGVDepositFormProvider: FC<PropsWithChildren> = ({ children }) => {
     },
     disabled:
       !isDappActive ||
-      !isGGVAvailable(chainId) ||
+      !isGGVAvailable ||
+      !isDepositEnabled ||
       depositStatus?.canDeposit === false,
     criteriaMode: 'firstError',
     mode: 'onChange',
@@ -88,9 +89,12 @@ export const GGVDepositFormProvider: FC<PropsWithChildren> = ({ children }) => {
         }
         return result;
       },
+      onReset: (values: GGVDepositFormValidatedValues) => {
+        formObject.reset({ amount: null, token: values.token });
+      },
       retryEvent,
     }),
-    [depositGGV, refetchData, retryEvent],
+    [depositGGV, formObject, refetchData, retryEvent],
   );
 
   const contextValue = useMemo<GGVDepositFormDataContextValue>(() => {

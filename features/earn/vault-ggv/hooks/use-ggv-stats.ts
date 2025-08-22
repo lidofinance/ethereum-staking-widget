@@ -18,7 +18,7 @@ const useGGVTvl = () => {
   const { publicClientMainnet } = useMainnetOnlyWagmi();
 
   return useQuery({
-    queryKey: ['ggv-vault', 'stats', 'tvl'],
+    queryKey: ['ggv', 'stats', 'tvl'],
     queryFn: async () => {
       const lens = getGGVLensContract(publicClientMainnet);
       const vault = getGGVVaultContract(publicClientMainnet);
@@ -86,7 +86,7 @@ const useGGVApy = () => {
   const { publicClientMainnet } = useMainnetOnlyWagmi();
 
   return useQuery({
-    queryKey: ['ggv-vault', 'stats', 'apy'],
+    queryKey: ['ggv', 'stats', 'apy'],
     queryFn: async () => {
       const vault = getGGVVaultContract(publicClientMainnet);
 

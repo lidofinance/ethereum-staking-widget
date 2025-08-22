@@ -4,14 +4,15 @@ import invariant from 'tiny-invariant';
 import { CHAINS } from '@lidofinance/lido-ethereum-sdk/common';
 import { useQuery } from '@tanstack/react-query';
 
+import { useMainnetOnlyWagmi } from 'modules/web3';
+
 import { AggregatorAbi } from 'abi/aggregator-abi';
 import { CONTRACT_NAMES } from 'config/networks/networks-map';
 import { getContractAddress } from 'config/networks/contract-address';
 import { STRATEGY_LAZY } from 'consts/react-query-strategies';
-import { useMainnetOnlyWagmi } from 'modules/web3';
+import { bnAmountToNumber } from 'utils/bn';
 
 const ETH_DECIMALS = 18n;
-const PRECISION = 4n;
 
 export const useEthUsd = (amount?: bigint) => {
   const { publicClientMainnet } = useMainnetOnlyWagmi();
@@ -61,10 +62,10 @@ export const useEthUsd = (amount?: bigint) => {
     if (amount == 0n) return 0;
 
     if (price && amount) {
-      const ethInUsd_P4 =
-        (amount * price.latestAnswer) /
-        10n ** (price.decimals + ETH_DECIMALS - PRECISION);
-      return Number(ethInUsd_P4) / 10 ** Number(PRECISION);
+      return bnAmountToNumber(
+        amount * price.latestAnswer,
+        Number(price.decimals + ETH_DECIMALS),
+      );
     }
 
     return undefined;

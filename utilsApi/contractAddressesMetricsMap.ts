@@ -21,6 +21,7 @@ import { PartialStakingRouterAbi } from 'abi/partial-staking-router';
 import { wethABI } from 'abi/weth-abi';
 
 // Earn contracts ABIs
+// GGV
 import {
   GGV_ACCOUNTANT_ABI,
   GGV_LENS_ABI,
@@ -28,6 +29,11 @@ import {
   GGV_VAULT_ABI,
   GGV_QUEUE_ABI,
 } from 'features/earn/vault-ggv/contracts/abi';
+// DVV
+import {
+  DVV_VAULT_ABI,
+  DVV_DEPOSIT_WRAPPER_ABI,
+} from 'features/earn/vault-dvv/contracts/abi';
 
 import { config } from 'config';
 import { CONTRACT_NAMES } from 'config/networks/networks-map';
@@ -55,6 +61,9 @@ export const METRIC_CONTRACT_ABIS = {
   [CONTRACT_NAMES.ggvAccountant]: GGV_ACCOUNTANT_ABI,
   [CONTRACT_NAMES.ggvLens]: GGV_LENS_ABI,
   [CONTRACT_NAMES.ggvQueue]: GGV_QUEUE_ABI,
+  // DVV
+  [CONTRACT_NAMES.dvvVault]: DVV_VAULT_ABI,
+  [CONTRACT_NAMES.dvvDepositWrapper]: DVV_DEPOSIT_WRAPPER_ABI,
 } as const;
 
 export type MetricContractName = keyof typeof CONTRACT_NAMES;
@@ -76,6 +85,9 @@ const CONTRACTS_WITH_EVENTS = [
   CONTRACT_NAMES.L2stETH,
   CONTRACT_NAMES.L2wstETH,
   CONTRACT_NAMES.weth,
+  // vaults are tokens, have transfer/approval events
+  CONTRACT_NAMES.dvvVault,
+  CONTRACT_NAMES.ggvVault,
 ];
 
 const invertContractsNamesToAddress = (

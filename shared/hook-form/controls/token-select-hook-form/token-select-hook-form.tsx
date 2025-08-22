@@ -1,13 +1,7 @@
 import { useController, useFormState, useFormContext } from 'react-hook-form';
 
-import {
-  Option,
-  Eth,
-  Steth,
-  Weth,
-  Wsteth,
-  OptionValue,
-} from '@lidofinance/lido-ui';
+import { Option, Eth, Steth, Wsteth, OptionValue } from '@lidofinance/lido-ui';
+import { TokenWethIcon } from 'assets/earn';
 
 import {
   getTokenDisplayName,
@@ -23,7 +17,7 @@ export type TokenOption = {
 
 const iconsMap = {
   [TOKEN_DISPLAY_NAMES.ETH]: <Eth />,
-  [TOKEN_DISPLAY_NAMES.wETH]: <Weth />,
+  [TOKEN_DISPLAY_NAMES.wETH]: <TokenWethIcon />,
   [TOKEN_DISPLAY_NAMES.stETH]: <Steth />,
   [TOKEN_DISPLAY_NAMES.wstETH]: <Wsteth />,
 } as const;

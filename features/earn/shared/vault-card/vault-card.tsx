@@ -3,10 +3,10 @@ import { Button, InlineLoader } from '@lidofinance/lido-ui';
 
 import { LocalLink } from 'shared/components/local-link';
 import { EARN_PATH } from 'consts/urls';
-import { VaultHeader } from '../../../shared/vault-header';
-import { VaultPartnerType } from '../../../shared/types';
-import { VaultStats } from '../../../shared/vault-stats';
-import { VaultDescription } from '../../../shared/vault-description';
+import { VaultHeader } from '../vault-header';
+import { VaultPartnerType } from '../types';
+import { VaultStats } from '../vault-stats';
+import { VaultDescription } from '../vault-description';
 import { VaultTokens } from '../vault-tokens';
 import {
   VaultCardMyPosition,
@@ -22,17 +22,14 @@ type VaultCardProps = {
   urlSlug: string;
   logo: React.ReactNode;
   partners?: VaultPartnerType[];
-  stats: {
-    tvl?: number;
-    apy?: number;
-    isLoading?: boolean;
-  };
+  stats: React.ComponentProps<typeof VaultStats>;
   tokens: Array<{ name: string; logo: React.ReactNode }>;
   position?: {
     balance?: bigint;
     isLoading?: boolean;
     symbol: string;
   };
+  depositLinkCallback?: () => void;
 };
 
 export const VaultCard: React.FC<VaultCardProps> = ({
@@ -44,10 +41,11 @@ export const VaultCard: React.FC<VaultCardProps> = ({
   stats,
   urlSlug,
   position,
+  depositLinkCallback,
 }) => (
   <VaultCardWrapper>
     <VaultHeader title={title} partners={partners} logo={logo} />
-    <VaultStats tvl={stats.tvl} apy={stats.apy} isLoading={stats.isLoading} />
+    <VaultStats {...stats} />
     <VaultDescription description={description} />
     <VaultTokens tokens={tokens} />
     {position && (
@@ -62,7 +60,10 @@ export const VaultCard: React.FC<VaultCardProps> = ({
         </VaultCardMyPositionValue>
       </VaultCardMyPosition>
     )}
-    <LocalLink href={`${EARN_PATH}/${urlSlug}/deposit`}>
+    <LocalLink
+      href={`${EARN_PATH}/${urlSlug}/deposit`}
+      onClick={depositLinkCallback}
+    >
       <Button fullwidth size="sm">
         Deposit
       </Button>

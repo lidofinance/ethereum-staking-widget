@@ -1,19 +1,11 @@
-import { useDappStatus } from 'modules/web3';
-import { SubmitButtonHookForm } from 'shared/hook-form/controls/submit-button-hook-form';
-import { isGGVAvailable } from '../utils';
-import { useFormState } from 'react-hook-form';
+import { VaultSubmitButton } from 'features/earn/shared/vault-submit-button';
+
+import { useGGVAvailable } from '../hooks/use-ggv-available';
 
 export const GGVDepositSubmitButton = () => {
-  const { chainId } = useDappStatus();
-  const { disabled } = useFormState();
-
-  const isAvailable = isGGVAvailable(chainId);
-
-  const notAvailableText = 'Switch to Ethereum Mainnet';
+  const { isGGVAvailable } = useGGVAvailable();
 
   return (
-    <SubmitButtonHookForm disabled={disabled || !isAvailable}>
-      {isAvailable ? 'Deposit' : notAvailableText}
-    </SubmitButtonHookForm>
+    <VaultSubmitButton isAvailable={isGGVAvailable}>Deposit</VaultSubmitButton>
   );
 };

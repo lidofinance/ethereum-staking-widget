@@ -10,12 +10,15 @@ import {
 type VaultStatsProps = {
   tvl?: number;
   apy?: number;
+  apx?: number;
+  apxLabel: 'APY' | 'APR';
   isLoading?: boolean;
 };
 
 export const VaultStats: React.FC<VaultStatsProps> = ({
   tvl,
-  apy,
+  apx,
+  apxLabel,
   isLoading,
 }) => {
   return (
@@ -29,10 +32,10 @@ export const VaultStats: React.FC<VaultStatsProps> = ({
         </VaultStatsValue>
       </VaultStatsItem>
       <VaultStatsItem>
-        <VaultStatsLabel>APY</VaultStatsLabel>{' '}
+        <VaultStatsLabel>{apxLabel}</VaultStatsLabel>{' '}
         <VaultStatsValue>
           <InlineLoader isLoading={isLoading} width={70}>
-            <FormatPercent value={apy} decimals="percent" fallback="-" />
+            <FormatPercent value={apx} decimals="percent" fallback="-" />
           </InlineLoader>
         </VaultStatsValue>
       </VaultStatsItem>

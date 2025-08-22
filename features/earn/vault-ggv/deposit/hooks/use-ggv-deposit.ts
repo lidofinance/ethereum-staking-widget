@@ -1,4 +1,7 @@
 import { useCallback } from 'react';
+import { encodeFunctionData, getContract, WalletClient } from 'viem';
+import invariant from 'tiny-invariant';
+
 import {
   useDappStatus,
   useTxFlow,
@@ -6,10 +9,11 @@ import {
   AACall,
   useLidoSDK,
 } from 'modules/web3';
-import { GGVDepositFormValidatedValues } from '../form-context/types';
-import { encodeFunctionData, getContract, WalletClient } from 'viem';
-import invariant from 'tiny-invariant';
 import { getTokenAddress } from 'config/networks/token-address';
+import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo/matomo-earn-events';
+import { trackMatomoEvent } from 'utils/track-matomo-event';
+
+import { GGVDepositFormValidatedValues } from '../form-context/types';
 import {
   getGGVAccountantContract,
   getGGVLensContract,
@@ -26,6 +30,7 @@ export const useGGVDeposit = (onRetry?: () => void) => {
 
   const depositGGV = useCallback(
     async ({ amount, token }: GGVDepositFormValidatedValues) => {
+      trackMatomoEvent(MATOMO_EARN_EVENTS_TYPES.ggvDepositStart);
       invariant(address, 'needs address');
       const tokenAddress = getTokenAddress(core.chainId, token);
       // used as substitute for ETH in previewDeposit
@@ -156,10 +161,13 @@ export const useGGVDeposit = (onRetry?: () => void) => {
             );
           },
           onSuccess: async ({ txHash }) => {
+            if (needsApprove) return;
             const balance = await vault.read.balanceOf([address]);
             txModalStages.success(balance, txHash);
+            trackMatomoEvent(MATOMO_EARN_EVENTS_TYPES.ggvDepositFinish);
           },
           onMultisigDone: () => {
+            if (needsApprove) return;
             txModalStages.successMultisig();
           },
         });

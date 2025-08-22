@@ -1,14 +1,32 @@
-import { FC } from 'react';
-import { FormController } from 'shared/hook-form/form-controller';
-import { SubmitButtonHookForm } from 'shared/hook-form/controls/submit-button-hook-form';
+import type { FC } from 'react';
+
+import { VaultForm } from 'features/earn/shared/vault-form';
+import { VaultSubmitButton } from 'features/earn/shared/vault-submit-button';
+import { VaultFormSection } from 'features/earn/shared/vault-form-section';
+
 import { DVVDepositFormProvider } from './form-context';
+import { DVVDepositInputGroup } from './dvv-deposit-input-group';
+import { DVVDepositAvailable } from './dvv-deposit-avaliable';
+import { DVVDepositWillReceive } from './dvv-deposit-will-recieve';
+import { DVVDepositWarning } from './dvv-deposit-status';
+
+import { useDVVAvailable } from '../hooks/use-dvv-avaliable';
 
 export const DVVDepositForm: FC = () => {
+  const { isDVVAvailable } = useDVVAvailable();
   return (
     <DVVDepositFormProvider>
-      <FormController>
-        <SubmitButtonHookForm>Deposit</SubmitButtonHookForm>
-      </FormController>
+      <VaultForm>
+        <DVVDepositWarning />
+        <VaultFormSection>
+          <DVVDepositAvailable />
+          <DVVDepositInputGroup />
+        </VaultFormSection>
+        <DVVDepositWillReceive />
+        <VaultSubmitButton isAvailable={isDVVAvailable}>
+          Deposit
+        </VaultSubmitButton>
+      </VaultForm>
     </DVVDepositFormProvider>
   );
 };
