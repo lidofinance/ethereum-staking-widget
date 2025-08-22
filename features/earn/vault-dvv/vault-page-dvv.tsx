@@ -1,6 +1,5 @@
 import { FC } from 'react';
 
-import { ButtonBack } from 'shared/components/button-back/button-back';
 import { VaultDDVIcon } from 'assets/earn';
 
 import { VaultDescription } from '../shared/vault-description';
@@ -8,7 +7,13 @@ import { VaultHeader } from '../shared/vault-header';
 import { VaultStats } from '../shared/vault-stats';
 import { VaultSwitch } from '../shared/vault-switch';
 import { VaultLegal } from '../shared/vault-legal';
-import { VaultBlock } from '../shared/vault-block';
+import { ButtonBack } from '../shared/button-back';
+
+import {
+  VaultBlock,
+  VaultBlockFormSection,
+  VaultBlockHeaderSection,
+} from '../shared/vault-block';
 import {
   EARN_VAULT_DVV_SLUG,
   EARN_VAULT_DEPOSIT_SLUG,
@@ -25,6 +30,7 @@ import { DVVPosition } from './dvv-position';
 import { useDVVStats } from './hooks/use-dvv-stats';
 import { DVV_PARTNERS } from './consts';
 import { trackMatomoEvent } from 'utils/track-matomo-event';
+import { DVVAprBreakdown } from './dvv-apr-breakdown';
 
 const description =
   'The Decentralized Validator Vault accepts ETH deposits to the Lido protocol, accelerating the adoption of Distributed Validator Technology (DVT)';
@@ -59,23 +65,29 @@ export const VaultPageDVV: FC<{
         Back to all vaults
       </ButtonBack>
       <VaultBlock>
-        <VaultHeader
-          title={`Lido DVV`}
-          logo={<VaultDDVIcon />}
-          partners={DVV_PARTNERS}
-        />
-        <VaultStats
-          tvl={tvl}
-          apxLabel="APR"
-          apx={apr}
-          isLoading={isLoadingStats}
-        />
-        <VaultDescription description={description} />
+        <VaultBlockHeaderSection>
+          <VaultHeader
+            title={`Lido DVV`}
+            logo={<VaultDDVIcon />}
+            partners={DVV_PARTNERS}
+          />
+          <VaultStats
+            tvl={tvl}
+            apxLabel="APR"
+            apx={apr}
+            apxHint={<DVVAprBreakdown />}
+            isLoading={isLoadingStats}
+          />
+
+          <VaultDescription description={description} />
+        </VaultBlockHeaderSection>
         <DVVPosition />
-        <VaultSwitch routes={routes} checked={isWithdraw} fullwidth />
-        {isDeposit && <DVVDepositForm />}
-        {isWithdraw && <DVVWithdrawForm />}
-        <VaultLegal allocation={null} />
+        <VaultBlockFormSection>
+          <VaultSwitch routes={routes} checked={isWithdraw} fullwidth />
+          {isDeposit && <DVVDepositForm />}
+          {isWithdraw && <DVVWithdrawForm />}
+          <VaultLegal allocation={null} />
+        </VaultBlockFormSection>
       </VaultBlock>
     </>
   );

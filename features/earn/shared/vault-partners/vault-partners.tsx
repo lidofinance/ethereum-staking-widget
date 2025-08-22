@@ -2,7 +2,6 @@ import { FC } from 'react';
 import {
   VaultPartnersWrapper,
   VaultPartner,
-  VaultPartnerIcon,
   VaultPartnerRole,
   VaultPartnerText,
 } from './styles';
@@ -18,7 +17,7 @@ export const VaultPartners: FC<VaultPartnersProps> = ({ partners }) => {
       {partners?.map((partner, index) => (
         <VaultPartner key={index}>
           <VaultPartnerRole>{partner.role}</VaultPartnerRole>
-          <VaultPartnerIcon>{partner.icon}</VaultPartnerIcon>
+          {partner.icon}
           <VaultPartnerText>{partner.text}</VaultPartnerText>
         </VaultPartner>
       ))}

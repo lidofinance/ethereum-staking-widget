@@ -12,6 +12,13 @@ import {
   rebasableL2StethAbi,
 } from '@lidofinance/lido-ethereum-sdk/l2';
 
+import {
+  escrowAbi,
+  emergencyProtectedTimelockAbi,
+  dualGovernanceAbi,
+  dgConfigProviderAbi,
+} from '@lidofinance/lido-ethereum-sdk/dual-governance';
+
 // Side contracts ABIs
 import { AggregatorAbi } from 'abi/aggregator-abi';
 import { ENSRegistryAbi } from 'abi/ens-registry-abi';
@@ -47,6 +54,11 @@ export const METRIC_CONTRACT_ABIS = {
   [CONTRACT_NAMES.withdrawalQueue]: WithdrawalQueueAbi,
   [CONTRACT_NAMES.L2stETH]: rebasableL2StethAbi,
   [CONTRACT_NAMES.L2wstETH]: bridgedWstethAbi,
+  // Dual Governance
+  [CONTRACT_NAMES.dualGovernance]: dualGovernanceAbi,
+  [CONTRACT_NAMES.escrow]: escrowAbi,
+  [CONTRACT_NAMES.emergencyProtectedTimelock]: emergencyProtectedTimelockAbi,
+  [CONTRACT_NAMES.dgConfigProvider]: dgConfigProviderAbi,
   // Side contracts ABIs
   [CONTRACT_NAMES.aggregatorEthUsdPriceFeed]: AggregatorAbi,
   [CONTRACT_NAMES.aggregatorStEthUsdPriceFeed]: AggregatorAbi,

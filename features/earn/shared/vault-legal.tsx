@@ -8,35 +8,19 @@ type VaultLegalProps = {
 };
 
 const DEFAULT_LEGAL_DISCLOSURE = (
-  <>
-    The vault involves protocol and legal risks including market, leverage, and
-    liquidity risks.
-  </>
-);
-
-const DEFAULT_ALLOCATION = (
-  <>
-    Your deposit is distributed across a curated set of high-performing DeFi
-    strategies, including lending markets (Aave, Fluid) and LP positions
-    (Uniswap v4, Balancer).
-    <br /> The exact allocation may vary over time based on market conditions
-    and strategy performance. All strategies are ETH-correlated to help minimize
-    risk from price volatility.
-  </>
+  <b>
+    Note, that the vault involves protocol, legal and other risks. You can find
+    more details in the FAQ below.
+  </b>
 );
 
 export const VaultLegal = ({
   legalDisclosure = DEFAULT_LEGAL_DISCLOSURE,
-  allocation = DEFAULT_ALLOCATION,
+  allocation,
 }: VaultLegalProps) => {
   return (
     <>
-      {legalDisclosure && (
-        <LegalParagraph>
-          <b>Legal Disclosure: </b>
-          {legalDisclosure}
-        </LegalParagraph>
-      )}
+      {legalDisclosure && <LegalParagraph>{legalDisclosure}</LegalParagraph>}
       {allocation && (
         <LegalParagraph>
           <b>Allocation: </b>

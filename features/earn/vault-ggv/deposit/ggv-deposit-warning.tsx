@@ -4,21 +4,19 @@ import { useGGVDepositStatus } from './hooks/use-ggv-deposit-status';
 import { useGGVAvailable } from '../hooks/use-ggv-available';
 
 const WARNING_TEXT = {
-  cap: 'The vault has reached its deposit limit.',
-  pause: 'The vault is paused.',
+  cap: 'Deposits are unavailable right now, the vault has reached its limit.',
+  pause: 'Deposits are currently paused. Please try again later.',
 };
 
 export const GGVDepositWarning = () => {
   const { isDepositEnabled } = useGGVAvailable();
   const { data: depositStatus } = useGGVDepositStatus();
 
-  if (depositStatus?.canDeposit === false || !isDepositEnabled) {
-    return (
-      <VaultWarning>
-        Deposits are currently unavailable.
-        {depositStatus?.reason && ' ' + WARNING_TEXT[depositStatus.reason]}
-      </VaultWarning>
-    );
+  const showWarning = depositStatus?.canDeposit === false || !isDepositEnabled;
+  const reason = WARNING_TEXT[depositStatus?.reason ?? 'pause'];
+
+  if (showWarning) {
+    return <VaultWarning>{reason}</VaultWarning>;
   }
 
   return null;

@@ -24,11 +24,19 @@ import { getPreConfig } from 'config/get-preconfig';
 export const API_NAMES = {};
 
 export const CONTRACT_NAMES = {
+  // Main Lido contract
   lido: 'lido',
   wsteth: 'wsteth',
+  withdrawalQueue: 'withdrawalQueue',
+  // DualGovernance
+  dualGovernance: 'dualGovernance',
+  escrow: 'escrow',
+  emergencyProtectedTimelock: 'emergencyProtectedTimelock',
+  dgConfigProvider: 'dgConfigProvider',
+  // l2 contracts
   L2stETH: 'L2stETH',
   L2wstETH: 'L2wstETH',
-  withdrawalQueue: 'withdrawalQueue',
+  // Aux contracts
   aggregatorEthUsdPriceFeed: 'aggregatorEthUsdPriceFeed',
   aggregatorStEthUsdPriceFeed: 'aggregatorStEthUsdPriceFeed',
   stakingRouter: 'stakingRouter',

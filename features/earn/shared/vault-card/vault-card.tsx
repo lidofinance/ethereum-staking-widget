@@ -1,20 +1,23 @@
 import React from 'react';
 import { Button, InlineLoader } from '@lidofinance/lido-ui';
 
-import { LocalLink } from 'shared/components/local-link';
 import { EARN_PATH } from 'consts/urls';
+import { FormatToken } from 'shared/formatters';
+
+import { EARN_VAULT_DEPOSIT_SLUG } from '../../consts';
 import { VaultHeader } from '../vault-header';
-import { VaultPartnerType } from '../types';
 import { VaultStats } from '../vault-stats';
 import { VaultDescription } from '../vault-description';
-import { VaultTokens } from '../vault-tokens';
+
 import {
   VaultCardMyPosition,
   VaultCardMyPositionLabel,
   VaultCardMyPositionValue,
   VaultCardWrapper,
+  VaultCardCTALink,
 } from './styles';
-import { FormatToken } from 'shared/formatters';
+
+import type { VaultPartnerType } from '../types';
 
 type VaultCardProps = {
   title: string;
@@ -46,8 +49,7 @@ export const VaultCard: React.FC<VaultCardProps> = ({
   <VaultCardWrapper>
     <VaultHeader title={title} partners={partners} logo={logo} />
     <VaultStats {...stats} />
-    <VaultDescription description={description} />
-    <VaultTokens tokens={tokens} />
+    <VaultDescription description={description} tokens={tokens} />
     {position && (
       <VaultCardMyPosition>
         <VaultCardMyPositionLabel>My position</VaultCardMyPositionLabel>
@@ -60,13 +62,13 @@ export const VaultCard: React.FC<VaultCardProps> = ({
         </VaultCardMyPositionValue>
       </VaultCardMyPosition>
     )}
-    <LocalLink
-      href={`${EARN_PATH}/${urlSlug}/deposit`}
+    <VaultCardCTALink
+      href={`${EARN_PATH}/${urlSlug}/${EARN_VAULT_DEPOSIT_SLUG}`}
       onClick={depositLinkCallback}
     >
       <Button fullwidth size="sm">
         Deposit
       </Button>
-    </LocalLink>
+    </VaultCardCTALink>
   </VaultCardWrapper>
 );

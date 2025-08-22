@@ -2,7 +2,6 @@ import styled from 'styled-components';
 
 export const VaultStatsWrapper = styled.div`
   display: flex;
-  margin: ${({ theme }) => theme.spaceMap.md}px 0;
   font-size: 16px;
   line-height: 24px;
 `;
@@ -11,7 +10,7 @@ export const VaultStatsItem = styled.div`
   margin-right: ${({ theme }) => theme.spaceMap.xl}px;
 `;
 export const VaultStatsLabel = styled.div`
-  font-size: ${({ theme }) => theme.fontSizesMap.lg}px;
+  font-size: ${({ theme }) => theme.fontSizesMap.sm}px;
   color: var(--lido-color-textSecondary);
   margin-right: ${({ theme }) => theme.spaceMap.xs}px;
 `;

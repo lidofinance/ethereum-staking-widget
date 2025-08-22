@@ -1,5 +1,7 @@
 import { FormatLargeAmount, FormatPercent } from 'shared/formatters';
 import { InlineLoader } from '../inline-loader';
+import { VaultTip } from '../vault-tip';
+
 import {
   VaultStatsItem,
   VaultStatsLabel,
@@ -13,6 +15,7 @@ type VaultStatsProps = {
   apx?: number;
   apxLabel: 'APY' | 'APR';
   isLoading?: boolean;
+  apxHint?: React.ReactNode;
 };
 
 export const VaultStats: React.FC<VaultStatsProps> = ({
@@ -20,6 +23,7 @@ export const VaultStats: React.FC<VaultStatsProps> = ({
   apx,
   apxLabel,
   isLoading,
+  apxHint,
 }) => {
   return (
     <VaultStatsWrapper>
@@ -35,9 +39,10 @@ export const VaultStats: React.FC<VaultStatsProps> = ({
         <VaultStatsLabel>{apxLabel}</VaultStatsLabel>{' '}
         <VaultStatsValue>
           <InlineLoader isLoading={isLoading} width={70}>
-            <FormatPercent value={apx} decimals="percent" fallback="-" />
+            <FormatPercent value={apx} decimals="percent" fallback="-" />*
           </InlineLoader>
         </VaultStatsValue>
+        {!isLoading && <VaultTip placement="bottom">{apxHint}</VaultTip>}
       </VaultStatsItem>
     </VaultStatsWrapper>
   );

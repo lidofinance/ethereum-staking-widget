@@ -6,8 +6,6 @@ import { trackMatomoEvent } from 'utils/track-matomo-event';
 
 import { useDappStatus } from 'modules/web3';
 
-import { ButtonBack } from 'shared/components/button-back/button-back';
-
 import { TokenGGIcon, VaultGGVIcon } from 'assets/earn';
 
 import { VaultHeader } from '../shared/vault-header';
@@ -16,7 +14,12 @@ import { VaultSwitch } from '../shared/vault-switch';
 import { VaultStats } from '../shared/vault-stats';
 import { VaultPosition } from '../shared/vault-position';
 import { VaultLegal } from '../shared/vault-legal';
-import { VaultBlock } from '../shared/vault-block';
+import { ButtonBack } from '../shared/button-back';
+import {
+  VaultBlock,
+  VaultBlockFormSection,
+  VaultBlockHeaderSection,
+} from '../shared/vault-block';
 import {
   EARN_VAULT_GGV_SLUG,
   EARN_VAULT_DEPOSIT_SLUG,
@@ -70,13 +73,20 @@ export const VaultPageGGV: FC<{
         Back to all vaults
       </ButtonBack>
       <VaultBlock>
-        <VaultHeader
-          title={`Lido GGV`}
-          logo={<VaultGGVIcon />}
-          partners={GGV_PARTNERS}
-        />
-        <VaultStats tvl={tvl} apxLabel="APY" apx={apy} isLoading={isLoading} />
-        <VaultDescription description={description} />
+        <VaultBlockHeaderSection>
+          <VaultHeader
+            title={`Lido GGV`}
+            logo={<VaultGGVIcon />}
+            partners={GGV_PARTNERS}
+          />
+          <VaultStats
+            tvl={tvl}
+            apxLabel="APY"
+            apx={apy}
+            isLoading={isLoading}
+          />
+          <VaultDescription description={description} />
+        </VaultBlockHeaderSection>
         {isWalletConnected && (
           <VaultPosition
             position={{
@@ -89,10 +99,23 @@ export const VaultPageGGV: FC<{
             }}
           />
         )}
-        <VaultSwitch routes={routes} checked={isWithdraw} fullwidth />
-        {isDeposit && <GGVDepositForm />}
-        {isWithdraw && <GGVWithdrawForm />}
-        <VaultLegal />
+        <VaultBlockFormSection>
+          <VaultSwitch routes={routes} checked={isWithdraw} fullwidth />
+          {isDeposit && <GGVDepositForm />}
+          {isWithdraw && <GGVWithdrawForm />}
+          <VaultLegal
+            allocation={
+              <>
+                Your deposit is distributed across a curated set of
+                high-performing DeFi strategies, including lending markets
+                (Aave, Fluid) and LP positions (Uniswap v4, Balancer). <br />
+                The exact allocation may vary over time based on market
+                conditions and strategy performance. All strategies are
+                ETH-correlated to help minimize risk from price volatility.
+              </>
+            }
+          />
+        </VaultBlockFormSection>
       </VaultBlock>
     </>
   );

@@ -23,6 +23,27 @@ import { ClaimButton } from './styles';
 import { trackMatomoEvent } from 'utils/track-matomo-event';
 import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo/matomo-earn-events';
 
+const DvvRewardsTip = () => (
+  <>
+    <p>
+      Obol rewards <b>update weekly</b> and must be claimed manually.
+    </p>
+    <p>
+      SSV rewards <b>update monthly</b> and must be claimed manually.
+    </p>
+    <p>Learn more</p>
+  </>
+);
+
+const DvvPointsTip = () => (
+  <p>
+    Points are <b>updated every hour</b>.<br />
+    0.00025 points per hour per 1$. <br />
+    For more information about how Mellow points work, please visit the Mellow
+    website
+  </p>
+);
+
 type ClaimDecoratorProps = {
   claimUrl?: string;
   matomoEvent?: MATOMO_EARN_EVENTS_TYPES;
@@ -70,6 +91,7 @@ export const DVVPosition = () => {
         isLoading: isLoadingPosition,
         usdAmount: usdBalance,
       }}
+      rewardsTip={<DvvRewardsTip />}
       rewards={[
         {
           symbol: SSV_TOKEN_SYMBOL,
@@ -102,6 +124,7 @@ export const DVVPosition = () => {
           ) : undefined,
         },
       ]}
+      pointsTip={<DvvPointsTip />}
       points={[
         {
           symbol: MELLOW_POINT_SYMBOL,
