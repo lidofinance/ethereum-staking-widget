@@ -1,33 +1,44 @@
-import { GetStaticPaths, GetStaticProps } from 'next';
+import { GetStaticPaths } from 'next';
 import { useRouter } from 'next/router';
 import { useEffect } from 'react';
+import { EARN_PATH } from 'consts/urls';
+import { getDefaultStaticProps } from 'utilsApi/get-default-static-props';
+
 import {
-  EARN_PATH,
   EARN_VAULT_DEPOSIT_SLUG,
-  EARN_VAULT_DVV_SLUG,
-  EARN_VAULT_GGV_SLUG,
-} from 'consts/urls';
+  EARN_VAULTS,
+  EarnVaultKey,
+} from 'features/earn/consts';
 
-const vaults = [EARN_VAULT_DVV_SLUG, EARN_VAULT_GGV_SLUG] as const;
+type PageParams = {
+  vault: EarnVaultKey;
+};
 
-export const getStaticPaths: GetStaticPaths = async () => {
+export const getStaticPaths: GetStaticPaths<PageParams> = async () => {
   return {
-    paths: vaults.map((vault) => ({ params: { vault } })),
+    paths: EARN_VAULTS.map((vault) => ({ params: { vault } })),
     fallback: false,
   };
 };
 
-export const getStaticProps: GetStaticProps = async ({ params }) => {
-  const vault = params?.vault as string;
+export const getStaticProps = getDefaultStaticProps(
+  '/earn',
+  async ({ params, previewData }) => {
+    const vaultSlug = params?.vault;
 
-  if (!vaults.includes(vault as (typeof vaults)[number])) {
-    return { notFound: true };
-  }
+    if (
+      !previewData?.manifest?.config.earnVaults.find(
+        (vault) => vault.name === vaultSlug,
+      )
+    ) {
+      return { notFound: true };
+    }
 
-  return { props: { vault } };
-};
+    return { props: { vault: vaultSlug } };
+  },
+);
 
-export default function VaultRedirect({ vault }: { vault: string }) {
+export default function VaultRedirect({ vault }: PageParams) {
   const router = useRouter();
   useEffect(() => {
     void router.replace(`${EARN_PATH}/${vault}/${EARN_VAULT_DEPOSIT_SLUG}`);

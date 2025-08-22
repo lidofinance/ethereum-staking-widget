@@ -6,11 +6,15 @@ import {
   VaultGGVIcon,
 } from 'assets/earn';
 
-import { VaultCard } from '../vaults-list/components/vault-card';
-import { EARN_VAULT_GGV_SLUG } from 'consts/urls';
+import { useDappStatus } from 'modules/web3';
+
+import { EARN_VAULT_GGV_SLUG } from '../consts';
+import { VaultCard } from '../shared/vault-card';
+import { trackMatomoEvent } from 'utils/track-matomo-event';
+import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo/matomo-earn-events';
+
 import { useGGVStats } from './hooks/use-ggv-stats';
 import { useGGVPosition } from './hooks/use-ggv-position';
-import { useDappStatus } from 'modules/web3';
 
 import { GGV_PARTNERS, GGV_TOKEN_SYMBOL } from './consts';
 
@@ -41,6 +45,9 @@ export const VaultCardGGV = () => {
       }
       stats={{ tvl, apx: apy, apxLabel: 'APY', isLoading: isLoadingStats }}
       logo={<VaultGGVIcon />}
+      depositLinkCallback={() => {
+        trackMatomoEvent(MATOMO_EARN_EVENTS_TYPES.ggvDeposit);
+      }}
     />
   );
 };

@@ -12,18 +12,18 @@ import {
   getGGVTellerContract,
   getGGVVaultContract,
 } from '../../contracts';
-import { isGGVAvailable } from '../../utils';
 import { INFINITE_DEPOSIT_CAP } from '../../consts';
+import { useGGVAvailable } from '../../hooks/use-ggv-available';
 
 const PRECISION = ONE_stETH; // 10^18
 
 export const useGGVMaxDeposit = () => {
   const { chainId } = useDappStatus();
   const publicClient = usePublicClient();
-  const enabled = isGGVAvailable(chainId);
+  const { isGGVAvailable } = useGGVAvailable();
   return useQuery({
     queryKey: ['ggv', 'maxDeposit', { chainId }],
-    enabled: enabled,
+    enabled: isGGVAvailable,
     queryFn: async () => {
       invariant(publicClient, 'Public client is not available');
       const teller = getGGVTellerContract(publicClient);

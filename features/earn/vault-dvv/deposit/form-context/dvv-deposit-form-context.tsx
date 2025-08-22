@@ -42,7 +42,7 @@ export const useDVVDepositForm = () => {
 };
 
 export const DVVDepositFormProvider: FC<PropsWithChildren> = ({ children }) => {
-  const { isDVVAvailable } = useDVVAvailable();
+  const { isDVVAvailable, isDepositEnabled } = useDVVAvailable();
   const { isDappActive } = useDappStatus();
   const {
     asyncValidationContextValue,
@@ -62,6 +62,7 @@ export const DVVDepositFormProvider: FC<PropsWithChildren> = ({ children }) => {
     disabled:
       !isDappActive ||
       !isDVVAvailable ||
+      !isDepositEnabled ||
       depositLimitQuery.data?.maxDepositETH === 0n,
     criteriaMode: 'firstError',
     mode: 'onChange',

@@ -7,15 +7,17 @@ import { LinkIpfs } from 'shared/components/link-ipfs';
 
 export const LocalLink: FC<PropsWithChildren<LinkProps>> = (props) => {
   const router = useRouter();
-  const { ref, embed, app, theme } = router.query;
+  const { ref, embed, app, theme, earn } = router.query;
   const { href, ...restProps } = props;
 
   const extraQuery = {} as Record<string, string>;
-  // Not support case: ?ref=01234&ref=56789
+  // does not support duplicates ?ref=01234&ref=56789
+
   if (ref && typeof ref === 'string') extraQuery.ref = ref;
   if (embed && typeof embed === 'string') extraQuery.embed = embed;
   if (app && typeof app === 'string') extraQuery.app = app;
   if (theme && typeof theme === 'string') extraQuery.theme = theme;
+  if (earn && typeof earn === 'string') extraQuery.earn = earn;
 
   if (typeof href === 'string') {
     if (config.ipfsMode) {

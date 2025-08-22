@@ -3,10 +3,10 @@ import { Button, InlineLoader } from '@lidofinance/lido-ui';
 
 import { LocalLink } from 'shared/components/local-link';
 import { EARN_PATH } from 'consts/urls';
-import { VaultHeader } from '../../../shared/vault-header';
-import { VaultPartnerType } from '../../../shared/types';
-import { VaultStats } from '../../../shared/vault-stats';
-import { VaultDescription } from '../../../shared/vault-description';
+import { VaultHeader } from '../vault-header';
+import { VaultPartnerType } from '../types';
+import { VaultStats } from '../vault-stats';
+import { VaultDescription } from '../vault-description';
 import { VaultTokens } from '../vault-tokens';
 import {
   VaultCardMyPosition,
@@ -29,6 +29,7 @@ type VaultCardProps = {
     isLoading?: boolean;
     symbol: string;
   };
+  depositLinkCallback?: () => void;
 };
 
 export const VaultCard: React.FC<VaultCardProps> = ({
@@ -40,6 +41,7 @@ export const VaultCard: React.FC<VaultCardProps> = ({
   stats,
   urlSlug,
   position,
+  depositLinkCallback,
 }) => (
   <VaultCardWrapper>
     <VaultHeader title={title} partners={partners} logo={logo} />
@@ -58,7 +60,10 @@ export const VaultCard: React.FC<VaultCardProps> = ({
         </VaultCardMyPositionValue>
       </VaultCardMyPosition>
     )}
-    <LocalLink href={`${EARN_PATH}/${urlSlug}/deposit`}>
+    <LocalLink
+      href={`${EARN_PATH}/${urlSlug}/deposit`}
+      onClick={depositLinkCallback}
+    >
       <Button fullwidth size="sm">
         Deposit
       </Button>

@@ -1,18 +1,21 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { useQuery } from '@tanstack/react-query';
-import { useDappStatus } from 'modules/web3';
-import { getGGVTellerContract } from '../../contracts';
-import { usePublicClient } from 'wagmi';
-import { isGGVAvailable } from '../../utils';
 import invariant from 'tiny-invariant';
+import { useQuery } from '@tanstack/react-query';
+import { usePublicClient } from 'wagmi';
+
+import { useDappStatus } from 'modules/web3';
+
+import { getGGVTellerContract } from '../../contracts';
+import { useGGVAvailable } from '../../hooks/use-ggv-available';
 
 export const useGGVUserShareState = () => {
   const { address } = useDappStatus();
   const publicClient = usePublicClient();
+  const { isGGVAvailable } = useGGVAvailable();
 
   return useQuery({
     queryKey: ['ggv', 'share-state', { address }],
-    enabled: address && isGGVAvailable(publicClient!.chain.id),
+    enabled: address && isGGVAvailable,
     queryFn: async () => {
       invariant(publicClient);
       invariant(address);

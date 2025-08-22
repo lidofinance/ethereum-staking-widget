@@ -9,13 +9,14 @@ import { VaultStats } from '../shared/vault-stats';
 import { VaultSwitch } from '../shared/vault-switch';
 import { VaultLegal } from '../shared/vault-legal';
 import { VaultBlock } from '../shared/vault-block';
-
 import {
-  EARN_PATH,
-  EARN_VAULT_DEPOSIT_SLUG,
   EARN_VAULT_DVV_SLUG,
+  EARN_VAULT_DEPOSIT_SLUG,
   EARN_VAULT_WITHDRAW_SLUG,
-} from 'consts/urls';
+} from '../consts';
+
+import { EARN_PATH } from 'consts/urls';
+import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo/matomo-earn-events';
 
 import { DVVDepositForm } from './deposit';
 import { DVVWithdrawForm } from './withdraw';
@@ -23,6 +24,7 @@ import { DVVPosition } from './dvv-position';
 
 import { useDVVStats } from './hooks/use-dvv-stats';
 import { DVV_PARTNERS } from './consts';
+import { trackMatomoEvent } from 'utils/track-matomo-event';
 
 const description =
   'The Decentralized Validator Vault accepts ETH deposits to the Lido protocol, accelerating the adoption of Distributed Validator Technology (DVT)';
@@ -30,10 +32,12 @@ const routes = [
   {
     path: `${EARN_PATH}/${EARN_VAULT_DVV_SLUG}/${EARN_VAULT_DEPOSIT_SLUG}`,
     name: 'Deposit',
+    matomoEvent: MATOMO_EARN_EVENTS_TYPES.dvvDepositTabClick,
   },
   {
     path: `${EARN_PATH}/${EARN_VAULT_DVV_SLUG}/${EARN_VAULT_WITHDRAW_SLUG}`,
     name: 'Withdraw',
+    matomoEvent: MATOMO_EARN_EVENTS_TYPES.dvvWithdrawTabClick,
   },
 ];
 
@@ -46,7 +50,14 @@ export const VaultPageDVV: FC<{
 
   return (
     <>
-      <ButtonBack url={EARN_PATH}>Back to all vaults</ButtonBack>
+      <ButtonBack
+        url={EARN_PATH}
+        onClick={() => {
+          trackMatomoEvent(MATOMO_EARN_EVENTS_TYPES.dvvBackToAllVaults);
+        }}
+      >
+        Back to all vaults
+      </ButtonBack>
       <VaultBlock>
         <VaultHeader
           title={`Lido DVV`}

@@ -20,17 +20,26 @@ import { ReactComponent as ExternalLinkIcon } from 'assets/icons/external-link-i
 
 import { useDVVPoints } from '../hooks/use-dvv-points';
 import { ClaimButton } from './styles';
+import { trackMatomoEvent } from 'utils/track-matomo-event';
+import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo/matomo-earn-events';
 
 type ClaimDecoratorProps = {
   claimUrl?: string;
+  matomoEvent?: MATOMO_EARN_EVENTS_TYPES;
 };
 
-const ClaimDecorator = ({ claimUrl }: ClaimDecoratorProps) => {
+const ClaimDecorator = ({ claimUrl, matomoEvent }: ClaimDecoratorProps) => {
   if (!claimUrl) return null;
 
   return (
     <a href={claimUrl} target="_blank" rel="noopener noreferrer">
-      <ClaimButton variant="translucent" size="sm">
+      <ClaimButton
+        variant="translucent"
+        size="sm"
+        onClick={() => {
+          if (matomoEvent) trackMatomoEvent(matomoEvent);
+        }}
+      >
         Claim <ExternalLinkIcon />
       </ClaimButton>
     </a>
@@ -71,7 +80,10 @@ export const DVVPosition = () => {
           isLoading: isLoadingPoints,
           icon: <TokenSsvIcon />,
           rightDecorator: data?.ssv.claimable ? (
-            <ClaimDecorator claimUrl={data.ssv.claim_url} />
+            <ClaimDecorator
+              claimUrl={data.ssv.claim_url}
+              matomoEvent={MATOMO_EARN_EVENTS_TYPES.dvvRewardsClaimSsv}
+            />
           ) : undefined,
         },
         {
@@ -83,7 +95,10 @@ export const DVVPosition = () => {
           isLoading: isLoadingPoints,
           icon: <TokenObolIcon />,
           rightDecorator: data?.obol.claimable ? (
-            <ClaimDecorator claimUrl={data.obol.claim_url} />
+            <ClaimDecorator
+              claimUrl={data.obol.claim_url}
+              matomoEvent={MATOMO_EARN_EVENTS_TYPES.dvvRewardsClaimObol}
+            />
           ) : undefined,
         },
       ]}

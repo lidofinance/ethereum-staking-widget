@@ -1,15 +1,11 @@
-import { useDappStatus } from 'modules/web3';
-
 import { VaultSubmitButton } from 'features/earn/shared/vault-submit-button';
 
-import { isGGVAvailable } from '../utils';
+import { useGGVAvailable } from '../hooks/use-ggv-available';
 
 export const GGVWithdrawSubmitButton = () => {
-  const { chainId } = useDappStatus();
-
-  const isAvailable = isGGVAvailable(chainId);
+  const { isGGVAvailable } = useGGVAvailable();
 
   return (
-    <VaultSubmitButton isAvailable={isAvailable}>Withdraw</VaultSubmitButton>
+    <VaultSubmitButton isAvailable={isGGVAvailable}>Withdraw</VaultSubmitButton>
   );
 };

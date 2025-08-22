@@ -3,17 +3,17 @@ import { useDappStatus } from 'modules/web3';
 
 import { useVaultConfig } from 'features/earn/shared/use-vault-config';
 
-export const useDVVAvailable = () => {
+export const useGGVAvailable = () => {
   const { chainId } = useDappStatus();
   const { vaults } = useVaultConfig();
 
   return {
-    isDVVAvailable: !!getContractAddress(chainId, 'dvvVault'),
+    isGGVAvailable: !!getContractAddress(chainId, 'ggvVault'),
     isDepositEnabled: !vaults.some(
-      (vault) => vault.name === 'dvv' && vault.deposit === false,
+      (vault) => vault.name === 'ggv' && vault.deposit === false,
     ),
     isWithdrawEnabled: !vaults.some(
-      (vault) => vault.name === 'dvv' && vault.withdraw === false,
+      (vault) => vault.name === 'ggv' && vault.withdraw === false,
     ),
   };
 };
