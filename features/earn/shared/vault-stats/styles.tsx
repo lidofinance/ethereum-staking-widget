@@ -10,7 +10,7 @@ export const VaultStatsItem = styled.div`
   margin-right: ${({ theme }) => theme.spaceMap.xl}px;
 `;
 export const VaultStatsLabel = styled.div`
-  font-size: ${({ theme }) => theme.fontSizesMap.lg}px;
+  font-size: ${({ theme }) => theme.fontSizesMap.sm}px;
   color: var(--lido-color-textSecondary);
   margin-right: ${({ theme }) => theme.spaceMap.xs}px;
 `;
