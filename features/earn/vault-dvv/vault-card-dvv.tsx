@@ -17,7 +17,7 @@ export const VaultCardDVV = () => {
   return (
     <VaultCard
       title="Lido DVV"
-      description="The Decentralized Validator Vault accepts ETH deposits to the Lido protocol, accelerating the adoption of Distributed Validator Technology (DVT)"
+      description="Lido DVV provides staking rewards boosted by Distributed Validator Technology (DVT) provider incentives while supporting Node Operator decentralization."
       urlSlug={EARN_VAULT_DVV_SLUG}
       partners={DVV_PARTNERS}
       tokens={[
