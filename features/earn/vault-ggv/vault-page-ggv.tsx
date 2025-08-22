@@ -6,8 +6,6 @@ import { trackMatomoEvent } from 'utils/track-matomo-event';
 
 import { useDappStatus } from 'modules/web3';
 
-import { ButtonBack } from 'shared/components/button-back/button-back';
-
 import { TokenGGIcon, VaultGGVIcon } from 'assets/earn';
 
 import { VaultHeader } from '../shared/vault-header';
@@ -16,6 +14,7 @@ import { VaultSwitch } from '../shared/vault-switch';
 import { VaultStats } from '../shared/vault-stats';
 import { VaultPosition } from '../shared/vault-position';
 import { VaultLegal } from '../shared/vault-legal';
+import { ButtonBack } from '../shared/button-back';
 import {
   VaultBlock,
   VaultBlockFormSection,

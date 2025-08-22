@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { LocalLink } from '../local-link';
+import { LocalLink } from 'shared/components/local-link';
 import { ReactComponent as ChevronLeft } from 'assets/icons/chevron-left.svg';
 
 export const LocalLinkStyled = styled(LocalLink)`
@@ -8,6 +8,8 @@ export const LocalLinkStyled = styled(LocalLink)`
   font-size: ${({ theme }) => theme.fontSizesMap.xs}px;
   line-height: ${({ theme }) => theme.spaceMap.xl}px;
   margin-bottom: ${({ theme }) => theme.spaceMap.sm}px;
+
+  font-weight: 400;
 
   &:link,
   &:visited {

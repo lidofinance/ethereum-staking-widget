@@ -1,6 +1,5 @@
 import { FC } from 'react';
 
-import { ButtonBack } from 'shared/components/button-back/button-back';
 import { VaultDDVIcon } from 'assets/earn';
 
 import { VaultDescription } from '../shared/vault-description';
@@ -8,6 +7,8 @@ import { VaultHeader } from '../shared/vault-header';
 import { VaultStats } from '../shared/vault-stats';
 import { VaultSwitch } from '../shared/vault-switch';
 import { VaultLegal } from '../shared/vault-legal';
+import { ButtonBack } from '../shared/button-back';
+
 import {
   VaultBlock,
   VaultBlockFormSection,
