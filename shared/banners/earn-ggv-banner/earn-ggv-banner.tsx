@@ -7,15 +7,22 @@ import {
 } from 'features/earn/consts';
 import { VaultGGVIcon } from 'assets/earn';
 import { useGGVStats } from 'features/earn/vault-ggv/hooks/use-ggv-stats';
+import { useGGVAvailable } from 'features/earn/vault-ggv/hooks/use-ggv-available';
+import { useIsEarnDisabled } from 'features/earn/shared/hooks/use-is-earn-disabled';
 import { trackMatomoEvent } from 'utils/track-matomo-event';
+import { MATOMO_CLICK_EVENTS_TYPES } from 'consts/matomo';
 
 import { BannerWrap } from '../shared-banner-partials';
 import { Message, Highlight, MessageContainer, LogoContainer } from './styles';
-import { MATOMO_CLICK_EVENTS_TYPES } from 'consts/matomo';
 
 export const EarnGGVBanner = () => {
   const bannerLinkHref = `${EARN_PATH}/${EARN_VAULT_DVV_SLUG}/${EARN_VAULT_DEPOSIT_SLUG}`;
   const { apy } = useGGVStats();
+
+  const isEarnDisabled = useIsEarnDisabled();
+  const { isGGVAvailable, isDepositEnabled } = useGGVAvailable();
+
+  if (isEarnDisabled || !isGGVAvailable || !isDepositEnabled) return null;
 
   return (
     <BannerWrap>

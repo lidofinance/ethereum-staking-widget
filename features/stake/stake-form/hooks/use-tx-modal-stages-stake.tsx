@@ -45,11 +45,7 @@ const getTxModalStagesStake = (transitStage: TransactionModalTransitStage) => ({
         balance={balance}
         balanceToken={'stETH'}
         operationText={'Staking'}
-        footer={
-          <>
-            <EarnGGVBanner />
-          </>
-        }
+        footer={<EarnGGVBanner />}
       />,
       {
         isClosableOnLedger: true,
