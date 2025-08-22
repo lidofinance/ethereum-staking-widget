@@ -6,11 +6,10 @@ import {
 } from 'assets/earn';
 import { useDappStatus } from 'modules/web3';
 
+import { VaultCard } from '../shared/vault-card';
+import { EARN_VAULT_DVV_SLUG } from '../consts';
 import { trackMatomoEvent } from 'utils/track-matomo-event';
-import { EARN_VAULT_DVV_SLUG } from 'consts/urls';
 import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo';
-
-import { VaultCard } from '../vaults-list/components/vault-card';
 
 import { useDVVStats } from './hooks/use-dvv-stats';
 import { useDVVPosition } from './hooks/use-dvv-position';

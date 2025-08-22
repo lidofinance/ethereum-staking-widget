@@ -1,11 +1,6 @@
 import type { FC } from 'react';
 
-import {
-  EARN_PATH,
-  EARN_VAULT_DEPOSIT_SLUG,
-  EARN_VAULT_GGV_SLUG,
-  EARN_VAULT_WITHDRAW_SLUG,
-} from 'consts/urls';
+import { EARN_PATH } from 'consts/urls';
 import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo';
 import { trackMatomoEvent } from 'utils/track-matomo-event';
 
@@ -27,6 +22,11 @@ import { VaultStats } from '../shared/vault-stats';
 import { VaultPosition } from '../shared/vault-position';
 import { VaultLegal } from '../shared/vault-legal';
 import { VaultBlock } from '../shared/vault-block';
+import {
+  EARN_VAULT_GGV_SLUG,
+  EARN_VAULT_DEPOSIT_SLUG,
+  EARN_VAULT_WITHDRAW_SLUG,
+} from '../consts';
 
 import { GGVDepositForm } from './deposit';
 import { GGVWithdrawForm } from './withdraw';

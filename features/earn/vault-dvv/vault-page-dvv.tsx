@@ -9,13 +9,13 @@ import { VaultStats } from '../shared/vault-stats';
 import { VaultSwitch } from '../shared/vault-switch';
 import { VaultLegal } from '../shared/vault-legal';
 import { VaultBlock } from '../shared/vault-block';
-
 import {
-  EARN_PATH,
-  EARN_VAULT_DEPOSIT_SLUG,
   EARN_VAULT_DVV_SLUG,
+  EARN_VAULT_DEPOSIT_SLUG,
   EARN_VAULT_WITHDRAW_SLUG,
-} from 'consts/urls';
+} from '../consts';
+
+import { EARN_PATH } from 'consts/urls';
 import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo/matomo-earn-events';
 
 import { DVVDepositForm } from './deposit';
@@ -76,7 +76,7 @@ export const VaultPageDVV: FC<{
         <VaultSwitch routes={routes} checked={isWithdraw} fullwidth />
         {isDeposit && <DVVDepositForm />}
         {isWithdraw && <DVVWithdrawForm />}
-        <VaultLegal allocation="TODO DVV allocation" />
+        <VaultLegal allocation={null} />
       </VaultBlock>
     </>
   );

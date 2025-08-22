@@ -2,26 +2,24 @@ import invariant from 'tiny-invariant';
 import { useQuery } from '@tanstack/react-query';
 import { usePublicClient } from 'wagmi';
 
-import { useDappStatus, useLidoSDK } from 'modules/web3';
+import { useLidoSDK } from 'modules/web3';
 
-import { isGGVAvailable } from '../../utils';
-
-import { getGGVQueueContract } from '../../contracts';
 import { useDebouncedValue } from 'shared/hooks';
-
 import { useWstethUsd } from 'shared/hooks/use-wsteth-usd';
 
-import type { GGVWithdrawalFormValues } from '../types';
+import { getGGVQueueContract } from '../../contracts';
+import { useGGVAvailable } from '../../hooks/use-ggv-available';
 import { useGGVWithdrawForm } from '../form-context';
+
+import type { GGVWithdrawalFormValues } from '../types';
 
 export const useGGVPreviewWithdrawal = (
   amount?: GGVWithdrawalFormValues['amount'],
 ) => {
-  const { chainId } = useDappStatus();
   const { wrap } = useLidoSDK();
   const { minDiscount } = useGGVWithdrawForm();
   const publicClient = usePublicClient();
-  const isEnabled = isGGVAvailable(chainId);
+  const { isGGVAvailable } = useGGVAvailable();
 
   const debouncedAmount = useDebouncedValue(amount, 500);
   const isDebounced = amount !== debouncedAmount;
@@ -35,7 +33,7 @@ export const useGGVPreviewWithdrawal = (
         minDiscount,
       },
     ] as const,
-    enabled: isEnabled,
+    enabled: isGGVAvailable,
     queryFn: async () => {
       invariant(publicClient, 'Public client is not available');
       const queue = getGGVQueueContract(publicClient);

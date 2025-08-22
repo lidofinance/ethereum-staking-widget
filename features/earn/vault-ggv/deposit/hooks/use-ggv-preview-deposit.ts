@@ -1,29 +1,27 @@
+import { useMemo } from 'react';
 import invariant from 'tiny-invariant';
 import { useQuery } from '@tanstack/react-query';
 import { usePublicClient } from 'wagmi';
 
-import { useDappStatus } from 'modules/web3';
+import { useDebouncedValue } from 'shared/hooks';
+import { useEthUsd } from 'shared/hooks/use-eth-usd';
+
 import { getTokenAddress } from 'config/networks/token-address';
 
-import { isGGVAvailable } from '../../utils';
-
-import type { GGVDepositFormValues } from '../form-context/types';
+import { useGGVAvailable } from '../../hooks/use-ggv-available';
 import {
   getGGVAccountantContract,
   getGGVLensContract,
   getGGVVaultContract,
 } from '../../contracts';
-import { useDebouncedValue } from 'shared/hooks';
-import { useMemo } from 'react';
-import { useEthUsd } from 'shared/hooks/use-eth-usd';
+import type { GGVDepositFormValues } from '../form-context/types';
 
 export const useGGVPreviewDeposit = (
   amount?: GGVDepositFormValues['amount'],
   token?: GGVDepositFormValues['token'],
 ) => {
-  const { chainId } = useDappStatus();
   const publicClient = usePublicClient();
-  const isEnabled = isGGVAvailable(chainId);
+  const { isGGVAvailable } = useGGVAvailable();
 
   const values = useMemo(
     () => ({
@@ -45,10 +43,10 @@ export const useGGVPreviewDeposit = (
         token: debounced.token?.toString(),
       },
     ] as const,
-    enabled: isEnabled,
+    enabled: isGGVAvailable,
     queryFn: async () => {
       const { amount, token } = debounced;
-      invariant(publicClient, 'Public client is not available');
+      invariant(publicClient?.chain, 'Public client is not available');
       const lens = getGGVLensContract(publicClient);
       const vault = getGGVVaultContract(publicClient);
       const accountant = getGGVAccountantContract(publicClient);
@@ -62,7 +60,10 @@ export const useGGVPreviewDeposit = (
       const [shares, shareRate, decimals] = await Promise.all([
         lens.read.previewDeposit([
           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          getTokenAddress(chainId, token === 'ETH' ? 'wETH' : token)!,
+          getTokenAddress(
+            publicClient.chain.id,
+            token === 'ETH' ? 'wETH' : token,
+          )!,
           amount,
           vault.address,
           accountant.address,

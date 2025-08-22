@@ -9,11 +9,12 @@ import {
 } from 'assets/earn';
 
 import { useDappStatus } from 'modules/web3';
+
+import { EARN_VAULT_GGV_SLUG } from '../consts';
+import { VaultCard } from '../shared/vault-card';
 import { trackMatomoEvent } from 'utils/track-matomo-event';
 import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo/matomo-earn-events';
-import { EARN_VAULT_GGV_SLUG } from 'consts/urls';
 
-import { VaultCard } from '../vaults-list/components/vault-card';
 import { useGGVStats } from './hooks/use-ggv-stats';
 import { useGGVPosition } from './hooks/use-ggv-position';
 import { GGV_TOKEN_SYMBOL } from './consts';

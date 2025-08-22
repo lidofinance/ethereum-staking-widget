@@ -16,7 +16,7 @@ import {
 
 import { useDappStatus } from 'modules/web3';
 
-import { isGGVAvailable } from '../../utils';
+import { useGGVAvailable } from '../../hooks/use-ggv-available';
 import { useGGVWithdraw } from '../hooks/use-ggv-withdraw';
 import { useGGVWithdrawFormData } from './use-withdraw-form-data';
 import { GGVWithdrawalFormValidationResolver } from './validation';
@@ -41,7 +41,8 @@ export const useGGVWithdrawForm = () => {
 export const GGVWithdrawFormProvider: FC<PropsWithChildren> = ({
   children,
 }) => {
-  const { isDappActive, chainId } = useDappStatus();
+  const { isGGVAvailable, isWithdrawEnabled } = useGGVAvailable();
+  const { isDappActive } = useDappStatus();
   const {
     validationContext,
     isLoadingFormState,
@@ -61,7 +62,8 @@ export const GGVWithdrawFormProvider: FC<PropsWithChildren> = ({
     disabled:
       isLoadingFormState ||
       !isDappActive ||
-      !isGGVAvailable(chainId) ||
+      !isGGVAvailable ||
+      !isWithdrawEnabled ||
       !withdrawalState.canWithdraw ||
       withdrawalRequestsQuery.data?.hasActiveRequests,
     mode: 'onChange',
