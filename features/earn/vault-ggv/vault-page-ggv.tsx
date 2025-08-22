@@ -103,7 +103,18 @@ export const VaultPageGGV: FC<{
           <VaultSwitch routes={routes} checked={isWithdraw} fullwidth />
           {isDeposit && <GGVDepositForm />}
           {isWithdraw && <GGVWithdrawForm />}
-          <VaultLegal />
+          <VaultLegal
+            allocation={
+              <>
+                Your deposit is distributed across a curated set of
+                high-performing DeFi strategies, including lending markets
+                (Aave, Fluid) and LP positions (Uniswap v4, Balancer). <br />
+                The exact allocation may vary over time based on market
+                conditions and strategy performance. All strategies are
+                ETH-correlated to help minimize risk from price volatility.
+              </>
+            }
+          />
         </VaultBlockFormSection>
       </VaultBlock>
     </>
