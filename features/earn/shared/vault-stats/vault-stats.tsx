@@ -1,12 +1,13 @@
 import { FormatLargeAmount, FormatPercent } from 'shared/formatters';
 import { InlineLoader } from '../inline-loader';
+import { VaultTip } from '../vault-tip';
+
 import {
   VaultStatsItem,
   VaultStatsLabel,
   VaultStatsValue,
   VaultStatsWrapper,
 } from './styles';
-import { Question, Tooltip } from '@lidofinance/lido-ui';
 
 type VaultStatsProps = {
   tvl?: number;
@@ -41,11 +42,7 @@ export const VaultStats: React.FC<VaultStatsProps> = ({
             <FormatPercent value={apx} decimals="percent" fallback="-" />*
           </InlineLoader>
         </VaultStatsValue>
-        {apxHint && !isLoading && (
-          <Tooltip placement="bottom" title={apxHint}>
-            <Question />
-          </Tooltip>
-        )}
+        {!isLoading && <VaultTip placement="bottom">{apxHint}</VaultTip>}
       </VaultStatsItem>
     </VaultStatsWrapper>
   );

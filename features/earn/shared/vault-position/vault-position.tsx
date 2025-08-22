@@ -1,7 +1,11 @@
 import { type Address } from 'viem';
-import { Tooltip, Question } from '@lidofinance/lido-ui';
 
 import { FormatPrice, FormatToken } from 'shared/formatters';
+import { TokenToWallet } from 'shared/components';
+
+import { VaultTip } from '../vault-tip';
+import { InlineLoader } from '../inline-loader';
+
 import {
   PositionBalance,
   PositionContainer,
@@ -12,8 +16,6 @@ import {
   PositionSubBalance,
   PositionDecorator,
 } from './styles';
-import { InlineLoader } from '../inline-loader';
-import { TokenToWallet } from 'shared/components';
 
 type TokenBalance = {
   token?: Address;
@@ -77,24 +79,14 @@ export const VaultPosition = ({
     <PositionContainer>
       <PositionEntry>
         <PositionEntryTitle>
-          My position{' '}
-          {positionTip && (
-            <Tooltip placement="top" title={positionTip}>
-              <Question />
-            </Tooltip>
-          )}
+          My position <VaultTip placement="top">{positionTip}</VaultTip>
         </PositionEntryTitle>
         <PositionBody position={position} />
       </PositionEntry>
       {rewards && (
         <PositionEntry>
           <PositionEntryTitle>
-            Rewards{' '}
-            {rewardsTip && (
-              <Tooltip placement="top" title={rewardsTip}>
-                <Question />
-              </Tooltip>
-            )}
+            Rewards <VaultTip placement="top">{rewardsTip}</VaultTip>
           </PositionEntryTitle>
           {rewards.map((reward) => (
             <PositionBody position={reward} key={reward.symbol} />
@@ -104,12 +96,7 @@ export const VaultPosition = ({
       {points && (
         <PositionEntry>
           <PositionEntryTitle>
-            Points{' '}
-            {pointsTip && (
-              <Tooltip placement="top" title={pointsTip}>
-                <Question />
-              </Tooltip>
-            )}
+            Points <VaultTip placement="top">{pointsTip}</VaultTip>
           </PositionEntryTitle>
           {points.map((point) => (
             <PositionBody compact position={point} key={point.symbol} />
