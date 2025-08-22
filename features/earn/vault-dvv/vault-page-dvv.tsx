@@ -8,7 +8,11 @@ import { VaultHeader } from '../shared/vault-header';
 import { VaultStats } from '../shared/vault-stats';
 import { VaultSwitch } from '../shared/vault-switch';
 import { VaultLegal } from '../shared/vault-legal';
-import { VaultBlock } from '../shared/vault-block';
+import {
+  VaultBlock,
+  VaultBlockFormSection,
+  VaultBlockHeaderSection,
+} from '../shared/vault-block';
 import {
   EARN_VAULT_DVV_SLUG,
   EARN_VAULT_DEPOSIT_SLUG,
@@ -59,23 +63,28 @@ export const VaultPageDVV: FC<{
         Back to all vaults
       </ButtonBack>
       <VaultBlock>
-        <VaultHeader
-          title={`Lido DVV`}
-          logo={<VaultDDVIcon />}
-          partners={DVV_PARTNERS}
-        />
-        <VaultStats
-          tvl={tvl}
-          apxLabel="APR"
-          apx={apr}
-          isLoading={isLoadingStats}
-        />
-        <VaultDescription description={description} />
+        <VaultBlockHeaderSection>
+          <VaultHeader
+            title={`Lido DVV`}
+            logo={<VaultDDVIcon />}
+            partners={DVV_PARTNERS}
+          />
+          <VaultStats
+            tvl={tvl}
+            apxLabel="APR"
+            apx={apr}
+            isLoading={isLoadingStats}
+          />
+
+          <VaultDescription description={description} />
+        </VaultBlockHeaderSection>
         <DVVPosition />
-        <VaultSwitch routes={routes} checked={isWithdraw} fullwidth />
-        {isDeposit && <DVVDepositForm />}
-        {isWithdraw && <DVVWithdrawForm />}
-        <VaultLegal allocation={null} />
+        <VaultBlockFormSection>
+          <VaultSwitch routes={routes} checked={isWithdraw} fullwidth />
+          {isDeposit && <DVVDepositForm />}
+          {isWithdraw && <DVVWithdrawForm />}
+          <VaultLegal allocation={null} />
+        </VaultBlockFormSection>
       </VaultBlock>
     </>
   );
