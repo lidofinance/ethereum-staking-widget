@@ -9,15 +9,19 @@ const WARNING_TEXT = {
 };
 
 export const GGVDepositWarning = () => {
-  const { isDepositEnabled } = useGGVAvailable();
+  const { isGGVAvailable, isDepositEnabled } = useGGVAvailable();
   const { data: depositStatus } = useGGVDepositStatus();
 
+  // Without this check, the warning can be displayed even if the vault is generally disabled
+  if (!isGGVAvailable) return null;
+
   const showWarning = depositStatus?.canDeposit === false || !isDepositEnabled;
-  const reason = WARNING_TEXT[depositStatus?.reason ?? 'pause'];
+  if (!showWarning) return null;
 
-  if (showWarning) {
-    return <VaultWarning>{reason}</VaultWarning>;
-  }
+  const reason = depositStatus?.reason ?? 'pause';
 
-  return null;
+  const message = WARNING_TEXT[reason];
+  if (!message) return null;
+
+  return <VaultWarning>{message}</VaultWarning>;
 };

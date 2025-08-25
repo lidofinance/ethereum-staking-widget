@@ -1,7 +1,7 @@
 import { VaultWarning } from 'features/earn/shared/vault-warning';
 
 import { useDVVDepositLimit } from './hooks/use-dvv-deposit-limit';
-import { useDVVAvailable } from '../hooks/use-dvv-avaliable';
+import { useDVVAvailable } from '../hooks/use-dvv-available';
 import type { DVVDepositLimitReason } from './types';
 
 const WARNING_TEXT: Record<DVVDepositLimitReason, string> = {
@@ -12,14 +12,17 @@ const WARNING_TEXT: Record<DVVDepositLimitReason, string> = {
 };
 
 export const DVVDepositWarning = () => {
-  const { isDepositEnabled } = useDVVAvailable();
+  const { isDVVAvailable, isDepositEnabled } = useDVVAvailable();
   const { data } = useDVVDepositLimit();
 
+  // Without this check, the warning can be displayed even if the vault is generally disabled
+  if (!isDVVAvailable) return null;
+
   const reason = isDepositEnabled ? data?.reason : 'deposit-paused';
+  if (!reason) return null;
 
-  if (reason) {
-    return <VaultWarning>{WARNING_TEXT[reason]}</VaultWarning>;
-  }
+  const message = WARNING_TEXT[reason as DVVDepositLimitReason];
+  if (!message) return null;
 
-  return null;
+  return <VaultWarning>{message}</VaultWarning>;
 };

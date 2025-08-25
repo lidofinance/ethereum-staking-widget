@@ -14,7 +14,7 @@ import {
   FormControllerContextValueType,
 } from 'shared/hook-form/form-controller';
 
-import { useDVVAvailable } from '../../hooks/use-dvv-avaliable';
+import { useDVVAvailable } from '../../hooks/use-dvv-available';
 
 import { useDVVWithdraw } from '../hooks/use-dvv-withdraw';
 import { useDVVWithdrawFormData } from './use-dvv-withdraw-form-data';
