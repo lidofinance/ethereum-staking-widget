@@ -1,3 +1,5 @@
+import styled, { css } from 'styled-components';
+
 import { ReactComponent as Partner7SeasIcon } from './partner-7seas.svg';
 import { ReactComponent as PartnerVedaIcon } from './partner-veda.svg';
 import { ReactComponent as PartnerStakehouseIcon } from './partner-stakehouse.svg';
@@ -17,18 +19,19 @@ import { ReactComponent as VaultDDVIcon } from './vault-ddv.svg';
 import { ReactComponent as VaultGGVIcon } from './vault-ggv.svg';
 
 import { ReactComponent as NavIconEarn } from './nav-icon-earn.svg';
-import styled from 'styled-components';
 
-const TokenObolIcon = styled(TokenObolIconRaw)`
+const themedBackground = css`
   path[data-id='background'] {
     fill: ${({ theme }) => (theme.name === 'dark' ? '#26262B' : '#fff')};
   }
 `;
 
+const TokenObolIcon = styled(TokenObolIconRaw)`
+  ${themedBackground}
+`;
+
 const TokenSsvIcon = styled(TokenSsvIconRaw)`
-  path[data-id='background'] {
-    fill: ${({ theme }) => (theme.name === 'dark' ? '#26262B' : '#fff')};
-  }
+  ${themedBackground}
 `;
 
 export {
