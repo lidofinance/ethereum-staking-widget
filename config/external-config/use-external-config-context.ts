@@ -7,6 +7,7 @@ import { IPFS_MANIFEST_URL } from 'consts/external-links';
 import { isManifestEntryValid } from 'config/external-config';
 import { standardFetcher } from 'utils/standardFetcher';
 import { useIsEarnDisabled } from 'features/earn/shared/hooks/use-is-earn-disabled';
+import { EARN_PATH } from 'consts/urls';
 
 import {
   getBackwardCompatibleConfig,
@@ -66,8 +67,8 @@ export const useExternalConfigContext = (
     const override = isEarnDisabled
       ? {
           pages: {
-            '/earn': {
-              ...cleanConfig.pages['/earn'],
+            [EARN_PATH]: {
+              ...cleanConfig.pages[EARN_PATH],
               shouldDisable: true,
             },
           },

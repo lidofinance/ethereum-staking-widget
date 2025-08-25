@@ -8,9 +8,9 @@ import {
 import { VaultGGVIcon } from 'assets/earn';
 import { useGGVStats } from 'features/earn/vault-ggv/hooks/use-ggv-stats';
 import { useGGVAvailable } from 'features/earn/vault-ggv/hooks/use-ggv-available';
-import { useIsEarnDisabled } from 'features/earn/shared/hooks/use-is-earn-disabled';
 import { trackMatomoEvent } from 'utils/track-matomo-event';
 import { MATOMO_CLICK_EVENTS_TYPES } from 'consts/matomo';
+import { FormatPercent } from 'shared/formatters/format-percent';
 
 import { BannerWrap } from '../shared-banner-partials';
 import { Message, Highlight, MessageContainer, LogoContainer } from './styles';
@@ -18,19 +18,21 @@ import { Message, Highlight, MessageContainer, LogoContainer } from './styles';
 export const EarnGGVBanner = () => {
   const bannerLinkHref = `${EARN_PATH}/${EARN_VAULT_DVV_SLUG}/${EARN_VAULT_DEPOSIT_SLUG}`;
   const { apy } = useGGVStats();
+  const { isGGVAvailable } = useGGVAvailable();
 
-  const isEarnDisabled = useIsEarnDisabled();
-  const { isGGVAvailable, isDepositEnabled } = useGGVAvailable();
-
-  if (isEarnDisabled || !isGGVAvailable || !isDepositEnabled) return null;
+  if (!isGGVAvailable) return null;
 
   return (
     <BannerWrap>
       <MessageContainer>
         <Message>
           <span>
-            Earn <Highlight>up to {apy}%</Highlight> of additional APY with Lido
-            GGV.
+            Earn{' '}
+            <Highlight>
+              up to{' '}
+              <FormatPercent value={apy} decimals="percent" fallback="-" />
+            </Highlight>{' '}
+            of additional APY with Lido GGV.
           </span>
         </Message>
         <LogoContainer>

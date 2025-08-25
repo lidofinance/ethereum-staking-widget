@@ -4,7 +4,6 @@ import Head from 'next/head';
 
 import { Layout } from 'shared/components';
 import { getDefaultStaticProps } from 'utilsApi/get-default-static-props';
-
 import { EarnVaultsList } from 'features/earn';
 
 const PAGE_TITLE = 'Earn';
