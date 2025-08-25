@@ -50,7 +50,11 @@ const PositionBody = ({ position, compact }: PositionBodyProps) => {
       <PositionBalance>
         <InlineLoader width={78} isLoading={position.isLoading}>
           <PositionBalance>
-            <FormatToken symbol={position.symbol} amount={position.balance} />{' '}
+            <FormatToken
+              symbol={position.symbol}
+              amount={position.balance}
+              trimEllipsis
+            />{' '}
             <TokenToWallet address={position.token} />
           </PositionBalance>
         </InlineLoader>

@@ -57,7 +57,11 @@ export const VaultCard: React.FC<VaultCardProps> = ({
           {position.isLoading ? (
             <InlineLoader />
           ) : (
-            <FormatToken symbol={position.symbol} amount={position.balance} />
+            <FormatToken
+              trimEllipsis
+              symbol={position.symbol}
+              amount={position.balance}
+            />
           )}
         </VaultCardMyPositionValue>
       </VaultCardMyPosition>

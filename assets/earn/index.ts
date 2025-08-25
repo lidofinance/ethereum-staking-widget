@@ -9,14 +9,27 @@ import { ReactComponent as TokenWethIcon } from './token-weth.svg';
 import { ReactComponent as TokenWstethIcon } from './token-wsteth.svg';
 import { ReactComponent as TokenGGIcon } from './token-gg.svg';
 import { ReactComponent as TokenDvstethIcon } from './token-dvsteth.svg';
-import { ReactComponent as TokenObolIcon } from './token-obol.svg';
-import { ReactComponent as TokenSsvIcon } from './token-ssv.svg';
+import { ReactComponent as TokenObolIconRaw } from './token-obol.svg';
+import { ReactComponent as TokenSsvIconRaw } from './token-ssv.svg';
 import { ReactComponent as TokenMellowIcon } from './token-mellow.svg';
 
 import { ReactComponent as VaultDDVIcon } from './vault-ddv.svg';
 import { ReactComponent as VaultGGVIcon } from './vault-ggv.svg';
 
 import { ReactComponent as NavIconEarn } from './nav-icon-earn.svg';
+import styled from 'styled-components';
+
+const TokenObolIcon = styled(TokenObolIconRaw)`
+  path[data-id='background'] {
+    fill: ${({ theme }) => (theme.name === 'dark' ? '#26262B' : '#fff')};
+  }
+`;
+
+const TokenSsvIcon = styled(TokenSsvIconRaw)`
+  path[data-id='background'] {
+    fill: ${({ theme }) => (theme.name === 'dark' ? '#26262B' : '#fff')};
+  }
+`;
 
 export {
   Partner7SeasIcon,

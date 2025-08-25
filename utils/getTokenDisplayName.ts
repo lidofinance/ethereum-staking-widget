@@ -7,7 +7,7 @@ export const TOKEN_DISPLAY_NAMES = {
   [LIDO_TOKENS.steth]: 'stETH',
   [LIDO_TOKENS.wsteth]: 'wstETH',
   [LIDO_TOKENS.unsteth]: 'unstETH',
-  ['wETH']: 'wETH',
+  ['wETH']: 'WETH',
   ['gg']: GGV_TOKEN_SYMBOL,
   ['dvstETH']: DVV_TOKEN_SYMBOL,
 };

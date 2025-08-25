@@ -22,6 +22,7 @@ export const InfoWarningIcon = styled.img.attrs({
   display: block;
   width: 14px;
   height: 14px;
+  margin: 5px;
 `;
 
 const WarningContainer = styled.div<VaultWarningProps>`
