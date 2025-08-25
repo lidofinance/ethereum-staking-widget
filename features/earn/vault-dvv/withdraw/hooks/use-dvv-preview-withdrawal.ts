@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { usePublicClient } from 'wagmi';
 
 import { useDebouncedValue } from 'shared/hooks/useDebouncedValue';
-import { useDVVAvailable } from '../../hooks/use-dvv-avaliable';
+import { useDVVAvailable } from '../../hooks/use-dvv-available';
 import { getDVVVaultContract } from '../../contracts';
 import { useWstethUsd } from 'shared/hooks/use-wsteth-usd';
 

@@ -4,7 +4,7 @@ import { VaultCardGGV } from '../vault-ggv';
 import { VaultCardDVV } from '../vault-dvv';
 
 import { VaultsListWrapper, VaultListDisclaimer } from './styles';
-import { useVaultConfig } from '../shared/use-vault-config';
+import { useVaultConfig } from '../shared/hooks/use-vault-config';
 
 const VAULT_CARDS = {
   ggv: VaultCardGGV,

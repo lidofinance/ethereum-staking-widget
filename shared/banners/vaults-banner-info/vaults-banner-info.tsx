@@ -1,3 +1,10 @@
+/* ============================================================
+ * 🚫 NOTICE 🚫
+ * ------------------------------------------------------------
+ * This banner is not used since the Earn page release.
+ * ============================================================
+ */
+
 import { useThemeToggle } from '@lidofinance/lido-ui';
 import { trackEvent } from '@lidofinance/analytics-matomo';
 

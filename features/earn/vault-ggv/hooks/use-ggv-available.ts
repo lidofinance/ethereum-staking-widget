@@ -1,19 +1,16 @@
-import { getContractAddress } from 'config/networks/contract-address';
-import { useDappStatus } from 'modules/web3';
-
-import { useVaultConfig } from 'features/earn/shared/use-vault-config';
+import { EARN_VAULT_GGV_SLUG as VAULT_NAME } from '../../consts';
+import { useVaultAvailable } from 'features/earn/shared/hooks/use-vault-available';
 
 export const useGGVAvailable = () => {
-  const { chainId } = useDappStatus();
-  const { vaults } = useVaultConfig();
+  const {
+    isVaultAvailable: isGGVAvailable,
+    isDepositEnabled,
+    isWithdrawEnabled,
+  } = useVaultAvailable({ vaultName: VAULT_NAME, contractName: 'ggvVault' });
 
   return {
-    isGGVAvailable: !!getContractAddress(chainId, 'ggvVault'),
-    isDepositEnabled: !vaults.some(
-      (vault) => vault.name === 'ggv' && vault.deposit === false,
-    ),
-    isWithdrawEnabled: !vaults.some(
-      (vault) => vault.name === 'ggv' && vault.withdraw === false,
-    ),
+    isGGVAvailable,
+    isDepositEnabled,
+    isWithdrawEnabled,
   };
 };

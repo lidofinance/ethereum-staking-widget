@@ -9,13 +9,13 @@ import { DVVWithdrawAvailable } from './dvv-withdraw-available';
 import { DVVWithdrawInput } from './dvv-withdraw-input';
 import { DVVWithdrawWillReceive } from './dvv-withdraw-will-receive';
 import { DVVWithdrawSubmitButton } from './dvv-withdraw-submit';
-import { DVVWithdrawStatus } from './dvv-withdraw-status';
+import { DVVWithdrawWarning } from './dvv-withdraw-warning';
 
 export const DVVWithdrawForm: FC = () => {
   return (
     <DVVWithdrawFormProvider>
       <VaultForm>
-        <DVVWithdrawStatus />
+        <DVVWithdrawWarning />
         <VaultFormSection>
           <DVVWithdrawAvailable />
           <DVVWithdrawInput />

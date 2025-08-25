@@ -7,7 +7,7 @@ import { useDebouncedValue } from 'shared/hooks';
 import { useWstethUsd } from 'shared/hooks/use-wsteth-usd';
 
 import { getDVVVaultContract } from '../../contracts';
-import { useDVVAvailable } from '../../hooks/use-dvv-avaliable';
+import { useDVVAvailable } from '../../hooks/use-dvv-available';
 import type { DVVDepositFormValues } from '../types';
 
 export const useDVVPreviewDeposit = (

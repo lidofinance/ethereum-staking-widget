@@ -16,7 +16,7 @@ import {
 import { useDappStatus } from 'modules/web3';
 import { minBN } from 'utils/bn';
 
-import { useDVVAvailable } from '../../hooks/use-dvv-avaliable';
+import { useDVVAvailable } from '../../hooks/use-dvv-available';
 import { useDVVDepositFormData } from './use-dvv-deposit-form-data';
 import { DVVDepositFormValidationResolver } from './validation';
 import { useDVVDeposit } from '../hooks/use-dvv-deposit';

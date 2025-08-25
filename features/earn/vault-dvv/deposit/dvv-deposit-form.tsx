@@ -5,13 +5,12 @@ import { VaultSubmitButton } from 'features/earn/shared/vault-submit-button';
 import { VaultFormSection } from 'features/earn/shared/vault-form-section';
 import { VaultWarning } from 'features/earn/shared/vault-warning';
 
+import { useDVVAvailable } from '../hooks/use-dvv-available';
 import { DVVDepositFormProvider } from './form-context';
 import { DVVDepositInputGroup } from './dvv-deposit-input-group';
-import { DVVDepositAvailable } from './dvv-deposit-avaliable';
+import { DVVDepositAvailable } from './dvv-deposit-available';
 import { DVVDepositWillReceive } from './dvv-deposit-will-recieve';
-import { DVVDepositWarning } from './dvv-deposit-status';
-
-import { useDVVAvailable } from '../hooks/use-dvv-avaliable';
+import { DVVDepositWarning } from './dvv-deposit-warning';
 
 export const DVVDepositForm: FC = () => {
   const { isDVVAvailable } = useDVVAvailable();

@@ -1,13 +1,13 @@
 import { useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { useRouter } from 'next/router';
 
 import { config } from 'config';
 import { STRATEGY_LAZY } from 'consts/react-query-strategies';
 import { IPFS_MANIFEST_URL } from 'consts/external-links';
 import { isManifestEntryValid } from 'config/external-config';
 import { standardFetcher } from 'utils/standardFetcher';
-import { useIsIframe } from 'shared/hooks/use-is-iframe';
+import { useIsEarnDisabled } from 'features/earn/shared/hooks/use-is-earn-disabled';
+import { EARN_PATH } from 'consts/urls';
 
 import {
   getBackwardCompatibleConfig,
@@ -20,12 +20,7 @@ import type { ExternalConfig, ManifestEntry } from './types';
 export const useExternalConfigContext = (
   prefetchedManifest?: unknown,
 ): ExternalConfig => {
-  const { query } = useRouter();
-  const isIframe = useIsIframe();
-  // for embed - opt in
-  // for others -  opt out
-  const isEarnDisabled =
-    (isIframe && query.earn !== 'enabled') || query.earn === 'disabled';
+  const isEarnDisabled = useIsEarnDisabled();
 
   const defaultChain = config.defaultChain;
   const fallbackData = useFallbackManifestEntry(
@@ -72,8 +67,8 @@ export const useExternalConfigContext = (
     const override = isEarnDisabled
       ? {
           pages: {
-            '/earn': {
-              ...cleanConfig.pages['/earn'],
+            [EARN_PATH]: {
+              ...cleanConfig.pages[EARN_PATH],
               shouldDisable: true,
             },
           },
