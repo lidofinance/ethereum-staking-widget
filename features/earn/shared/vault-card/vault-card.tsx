@@ -47,7 +47,7 @@ export const VaultCard: React.FC<VaultCardProps> = ({
   depositLinkCallback,
 }) => (
   <VaultCardWrapper>
-    <VaultHeader title={title} partners={partners} logo={logo} />
+    <VaultHeader compact title={title} partners={partners} logo={logo} />
     <VaultStats {...stats} />
     <VaultDescription description={description} tokens={tokens} />
     {position && (

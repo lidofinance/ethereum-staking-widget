@@ -11,4 +11,10 @@ export const VaultListDisclaimer = styled.p`
   font-weight: 400;
   line-height: 20px;
   margin-top: 20px;
+
+  margin-bottom: 60px;
+
+  ${({ theme }) => theme.mediaQueries.md} {
+    margin-bottom: 0px;
+  }
 `;

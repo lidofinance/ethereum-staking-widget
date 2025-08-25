@@ -16,6 +16,7 @@ type VaultStatsProps = {
   apxLabel: 'APY' | 'APR';
   isLoading?: boolean;
   apxHint?: React.ReactNode;
+  compact?: boolean;
 };
 
 export const VaultStats: React.FC<VaultStatsProps> = ({
@@ -24,9 +25,10 @@ export const VaultStats: React.FC<VaultStatsProps> = ({
   apxLabel,
   isLoading,
   apxHint,
+  compact,
 }) => {
   return (
-    <VaultStatsWrapper>
+    <VaultStatsWrapper compact={compact}>
       <VaultStatsItem>
         <VaultStatsLabel>TVL</VaultStatsLabel>{' '}
         <VaultStatsValue>

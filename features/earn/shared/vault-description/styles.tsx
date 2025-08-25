@@ -10,6 +10,10 @@ export const VaultTokensWrapper = styled.div`
 export const VaultTokensLabel = styled.div`
   color: ${({ theme }) => theme.colors.textSecondary};
   margin-right: ${({ theme }) => theme.spaceMap.sm}px;
+
+  ${({ theme }) => theme.mediaQueries.md} {
+    display: none;
+  }
 `;
 
 export const VaultTokensList = styled.div`

@@ -72,6 +72,7 @@ export const VaultPageDVV: FC<{
             partners={DVV_PARTNERS}
           />
           <VaultStats
+            compact
             tvl={tvl}
             apxLabel="APR"
             apx={apr}

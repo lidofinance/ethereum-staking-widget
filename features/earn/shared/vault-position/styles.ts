@@ -8,6 +8,10 @@ export const PositionContainer = styled.div`
   gap: ${({ theme }) => theme.spaceMap.lg}px;
   background-color: ${({ theme }) =>
     theme.name === 'light' ? `#F6F7F8` : 'var(--lido-color-controlBg)'};
+
+  ${({ theme }) => theme.mediaQueries.md} {
+    padding: 12px;
+  }
 `;
 
 export const PositionEntry = styled.div`
