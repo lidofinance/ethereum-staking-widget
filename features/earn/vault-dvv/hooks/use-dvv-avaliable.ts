@@ -1,19 +1,16 @@
-import { getContractAddress } from 'config/networks/contract-address';
-import { useDappStatus } from 'modules/web3';
-
-import { useVaultConfig } from 'features/earn/shared/hooks/use-vault-config';
+import { EARN_VAULT_DVV_SLUG as VAULT_NAME } from '../../consts';
+import { useVaultAvailable } from 'features/earn/shared/hooks/use-vault-available';
 
 export const useDVVAvailable = () => {
-  const { chainId } = useDappStatus();
-  const { vaults } = useVaultConfig();
+  const {
+    isVaultAvailable: isDVVAvailable,
+    isDepositEnabled,
+    isWithdrawEnabled,
+  } = useVaultAvailable({ vaultName: VAULT_NAME, contractName: 'dvvVault' });
 
   return {
-    isDVVAvailable: !!getContractAddress(chainId, 'dvvVault'),
-    isDepositEnabled: !vaults.some(
-      (vault) => vault.name === 'dvv' && vault.deposit === false,
-    ),
-    isWithdrawEnabled: !vaults.some(
-      (vault) => vault.name === 'dvv' && vault.withdraw === false,
-    ),
+    isDVVAvailable,
+    isDepositEnabled,
+    isWithdrawEnabled,
   };
 };
