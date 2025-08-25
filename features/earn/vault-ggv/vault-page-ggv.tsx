@@ -80,6 +80,7 @@ export const VaultPageGGV: FC<{
             partners={GGV_PARTNERS}
           />
           <VaultStats
+            compact
             tvl={tvl}
             apxLabel="APY"
             apx={apy}

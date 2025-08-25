@@ -1,9 +1,4 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { useQuery } from '@tanstack/react-query';
-import { useDappStatus, useMainnetOnlyWagmi } from 'modules/web3';
-import { getGGVQueueContract, getGGVVaultContract } from '../../contracts';
-
-import type { WQApiResponse } from '../types';
 import {
   Address,
   encodeAbiParameters,
@@ -11,7 +6,13 @@ import {
   isAddressEqual,
   keccak256,
 } from 'viem';
+import { useQuery } from '@tanstack/react-query';
+import { useDappStatus, useMainnetOnlyWagmi } from 'modules/web3';
+
+import { getGGVQueueContract, getGGVVaultContract } from '../../contracts';
 import { getTokenAddress } from 'config/networks/token-address';
+
+import type { WQApiResponse } from '../types';
 
 export type GGVWithdrawalRequestsResponse = ReturnType<
   typeof transformAPIResponse
@@ -103,9 +104,15 @@ export const useGGVWithdrawalRequests = () => {
   const { publicClientMainnet } = useMainnetOnlyWagmi();
 
   return useQuery({
-    queryKey: ['ggv', 'withdrawal-requests', { address }],
+    queryKey: [
+      'ggv',
+      'withdrawal-requests',
+      { address: address as Address },
+    ] as const,
     enabled: !!address,
-    queryFn: async () => {
+    queryFn: async ({ queryKey }) => {
+      const address = queryKey[2].address;
+
       //TODO: add event based fallback
       const vault = getGGVVaultContract(publicClientMainnet);
       const wstethAddress = getTokenAddress(

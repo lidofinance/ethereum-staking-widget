@@ -5,6 +5,10 @@ export const VaultPartnersWrapper = styled.div`
   flex-direction: row;
   gap: ${({ theme }) => theme.spaceMap.xs}px 12px;
   flex-wrap: wrap;
+
+  ${({ theme }) => theme.mediaQueries.md} {
+    font-size: ${({ theme }) => theme.fontSizesMap.xxs}px;
+  }
 `;
 
 export const VaultPartner = styled.div`

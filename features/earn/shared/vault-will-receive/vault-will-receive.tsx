@@ -24,7 +24,12 @@ export const VaultWillReceive = ({
       <VaultReceiveValue>
         <InlineLoader isLoading={isLoading} width={60}>
           <VaultReceiveMainValue>
-            <FormatToken symbol={symbol} amount={amount} fallback="-" />
+            <FormatToken
+              symbol={symbol}
+              amount={amount}
+              trimEllipsis
+              fallback="-"
+            />
             {icon}
           </VaultReceiveMainValue>
         </InlineLoader>

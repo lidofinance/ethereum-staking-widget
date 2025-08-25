@@ -11,18 +11,20 @@ type VaultHeaderProps = {
   title: string;
   partners?: VaultPartnerType[];
   logo: React.ReactNode;
+  compact?: boolean;
 };
 
 export const VaultHeader: FC<VaultHeaderProps> = ({
   title,
   partners,
   logo,
+  compact,
 }) => {
   return (
     <VaultCardWrapper>
       {logo}
       <VaultHeaderColumn>
-        <VaultHeaderTitle>{title}</VaultHeaderTitle>
+        <VaultHeaderTitle compact={compact}>{title}</VaultHeaderTitle>
         <VaultPartners partners={partners} />
       </VaultHeaderColumn>
     </VaultCardWrapper>

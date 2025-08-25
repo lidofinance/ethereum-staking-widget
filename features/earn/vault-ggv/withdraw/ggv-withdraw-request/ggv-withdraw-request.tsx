@@ -36,6 +36,7 @@ const RequestEntry = ({
       <RequestMainBalance>
         <FormatToken
           symbol={getTokenDisplayName('wstETH')}
+          trimEllipsis
           amount={request.metadata.amountOfAssets}
         />
       </RequestMainBalance>
@@ -87,13 +88,15 @@ export const GGVWithdrawRequest = () => {
   if (data.requests.fulfilledRequests.length > 0) {
     const latest = data.requests.fulfilledRequests[0];
 
-    <RequestsContainer>
-      <RequestSectionTitle>Latest withdrawal request</RequestSectionTitle>
-      <RequestEntry request={latest.request}>
-        Completed on{' '}
-        {new Date(Number(latest.fulfillment.timestamp) * 1000).toDateString()}
-      </RequestEntry>
-    </RequestsContainer>;
+    return (
+      <RequestsContainer>
+        <RequestSectionTitle>Latest withdrawal request</RequestSectionTitle>
+        <RequestEntry request={latest.request}>
+          Completed on{' '}
+          {new Date(Number(latest.fulfillment.timestamp) * 1000).toDateString()}
+        </RequestEntry>
+      </RequestsContainer>
+    );
   }
 
   return null;

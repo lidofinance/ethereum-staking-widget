@@ -22,6 +22,7 @@ export const InfoWarningIcon = styled.img.attrs({
   display: block;
   width: 14px;
   height: 14px;
+  margin: 5px;
 `;
 
 const WarningContainer = styled.div<VaultWarningProps>`
@@ -40,6 +41,10 @@ const WarningContainer = styled.div<VaultWarningProps>`
       background-color: ${({ theme }) =>
         theme.name === 'light' ? `#F6F7F8` : 'var(--lido-color-controlBg)'};
     `}
+
+  ${({ theme }) => theme.mediaQueries.md} {
+    padding: 12px;
+  }
 `;
 
 const WarningContent = styled.div<VaultWarningProps>`
@@ -53,6 +58,10 @@ const WarningContent = styled.div<VaultWarningProps>`
     ${({ theme }) => theme.spaceMap.xl}px +
       ${({ theme }) => theme.spaceMap.sm}px
   );
+
+  ${({ theme }) => theme.mediaQueries.md} {
+    padding-right: 0px;
+  }
 
   color: var(--lido-color-warning);
   ${({ variant }) =>
