@@ -11,16 +11,21 @@ export const useGGVAvailable = () => {
   const { vaults } = useVaultConfig();
 
   const isEarnPageEnabled = !pages[EARN_PATH]?.shouldDisable;
-  const isDepositEnabled = !vaults.some(
-    (vault) => vault.name === VAULT_NAME && vault.deposit === false,
-  );
-  const isWithdrawEnabled = !vaults.some(
-    (vault) => vault.name === VAULT_NAME && vault.withdraw === false,
-  );
+
+  // One of the conditions for a vault to be enabled – it must be present in the vaults config
+  const GGVConfig = vaults.find((vault) => vault.name === VAULT_NAME);
+  const isGGVInConfig = !!GGVConfig;
+
   const isGGVAvailable =
     !!getContractAddress(chainId, 'ggvVault') &&
     isEarnPageEnabled &&
-    isDepositEnabled;
+    isGGVInConfig;
+
+  // deposit and withdraw are NOT enabled by default
+  // If the vault passes global availability checks (isGGVAvailable), each feature
+  // must be explicitly enabled in the vault config (deposit === true / withdraw === true).
+  const isDepositEnabled = isGGVAvailable && GGVConfig.deposit === true;
+  const isWithdrawEnabled = isGGVAvailable && GGVConfig.withdraw === true;
 
   return {
     isGGVAvailable,

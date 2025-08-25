@@ -18,9 +18,9 @@ import { Message, Highlight, MessageContainer, LogoContainer } from './styles';
 export const EarnGGVBanner = () => {
   const bannerLinkHref = `${EARN_PATH}/${EARN_VAULT_DVV_SLUG}/${EARN_VAULT_DEPOSIT_SLUG}`;
   const { apy } = useGGVStats();
-  const { isGGVAvailable } = useGGVAvailable();
+  const { isDepositEnabled } = useGGVAvailable();
 
-  if (!isGGVAvailable) return null;
+  if (!isDepositEnabled) return null;
 
   return (
     <BannerWrap>
