@@ -3,7 +3,7 @@ import { getAddress } from 'viem';
 import { config } from 'config';
 import { TOKENS, getTokenAddress } from 'config/networks/token-address';
 import { standardFetcher } from './standardFetcher';
-import { CHAINS } from '@lidofinance/lido-ethereum-sdk';
+import { CHAINS } from '@lidofinance/lido-ethereum-sdk/common';
 
 type BebopGetQuotePartial = {
   routes: {

@@ -6,8 +6,12 @@ import { STRATEGY_LAZY } from 'consts/react-query-strategies';
 import { IPFS_MANIFEST_URL } from 'consts/external-links';
 import { isManifestEntryValid } from 'config/external-config';
 import { standardFetcher } from 'utils/standardFetcher';
+import { useIsEarnDisabled } from 'features/earn/shared/hooks/use-is-earn-disabled';
+import { EARN_PATH } from 'consts/urls';
+
 import {
   getBackwardCompatibleConfig,
+  overrideManifestConfig,
   useFallbackManifestEntry,
 } from './frontend-fallback';
 
@@ -16,6 +20,8 @@ import type { ExternalConfig, ManifestEntry } from './types';
 export const useExternalConfigContext = (
   prefetchedManifest?: unknown,
 ): ExternalConfig => {
+  const isEarnDisabled = useIsEarnDisabled();
+
   const defaultChain = config.defaultChain;
   const fallbackData = useFallbackManifestEntry(
     prefetchedManifest,
@@ -54,8 +60,23 @@ export const useExternalConfigContext = (
   });
 
   return useMemo(() => {
-    const { config, ...rest } = queryResult.data ?? fallbackData;
-    const cleanConfig = getBackwardCompatibleConfig(config);
-    return { ...cleanConfig, ...rest, fetchMeta: queryResult };
-  }, [queryResult, fallbackData]);
+    const { config: rawConfig, ...rest } = queryResult.data ?? fallbackData;
+
+    const cleanConfig = getBackwardCompatibleConfig(rawConfig);
+
+    const override = isEarnDisabled
+      ? {
+          pages: {
+            [EARN_PATH]: {
+              ...cleanConfig.pages[EARN_PATH],
+              shouldDisable: true,
+            },
+          },
+        }
+      : undefined;
+
+    const overrideConfig = overrideManifestConfig(cleanConfig, override);
+
+    return { ...overrideConfig, ...rest, fetchMeta: queryResult };
+  }, [isEarnDisabled, queryResult, fallbackData]);
 };

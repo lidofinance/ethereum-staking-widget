@@ -2,8 +2,8 @@ import styled from 'styled-components';
 
 import { LocalLink } from 'shared/components/local-link';
 
-export const SwitchWrapper = styled.div`
-  width: 268px;
+export const SwitchWrapper = styled.div<{ $fullwidth?: boolean }>`
+  width: ${({ $fullwidth }) => ($fullwidth ? '100%' : '268px')};
   height: 44px;
   background-color: var(--lido-color-backgroundDarken);
   border-radius: 22px;
@@ -18,13 +18,20 @@ export const SwitchWrapper = styled.div`
   margin: 0 auto 24px auto;
 `;
 
-export const Handle = styled.div<{ $checked: boolean }>`
-  width: 132px;
+export const Handle = styled.div<{ $checked: boolean; $fullwidth?: boolean }>`
+  width: ${({ $fullwidth }) => ($fullwidth ? 'calc(50% - 4px)' : '132px')};
   height: 40px;
   background-color: var(--lido-color-foreground);
   border-radius: 20px;
   position: absolute;
-  left: ${({ $checked }) => ($checked ? 'calc(100% - 134px)' : '2px')};
+  left: ${({ $checked, $fullwidth }) =>
+    $fullwidth
+      ? $checked
+        ? 'calc(50% + 2px)'
+        : '2px'
+      : $checked
+        ? 'calc(100% - 134px)'
+        : '2px'};
   transition: left 0.3s ease;
   top: 2px;
   z-index: 1;

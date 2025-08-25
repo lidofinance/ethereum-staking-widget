@@ -24,11 +24,19 @@ import { getPreConfig } from 'config/get-preconfig';
 export const API_NAMES = {};
 
 export const CONTRACT_NAMES = {
+  // Main Lido contract
   lido: 'lido',
   wsteth: 'wsteth',
+  withdrawalQueue: 'withdrawalQueue',
+  // DualGovernance
+  dualGovernance: 'dualGovernance',
+  escrow: 'escrow',
+  emergencyProtectedTimelock: 'emergencyProtectedTimelock',
+  dgConfigProvider: 'dgConfigProvider',
+  // l2 contracts
   L2stETH: 'L2stETH',
   L2wstETH: 'L2wstETH',
-  withdrawalQueue: 'withdrawalQueue',
+  // Aux contracts
   aggregatorEthUsdPriceFeed: 'aggregatorEthUsdPriceFeed',
   aggregatorStEthUsdPriceFeed: 'aggregatorStEthUsdPriceFeed',
   stakingRouter: 'stakingRouter',
@@ -36,10 +44,16 @@ export const CONTRACT_NAMES = {
   lidoLocator: 'lidoLocator',
   ensPublicResolver: 'ensPublicResolver',
   ensRegistry: 'ensRegistry',
-  dualGovernance: 'dualGovernance',
-  escrow: 'escrow',
-  emergencyProtectedTimelock: 'emergencyProtectedTimelock',
-  dgConfigProvider: 'dgConfigProvider',
+  weth: 'weth',
+  // GGV
+  ggvVault: 'ggvVault',
+  ggvTeller: 'ggvTeller',
+  ggvAccountant: 'ggvAccountant',
+  ggvLens: 'ggvLens',
+  ggvQueue: 'ggvQueue',
+  // DVV
+  dvvVault: 'dvvVault',
+  dvvDepositWrapper: 'dvvDepositWrapper',
 } as const;
 export type CONTRACT_NAMES = keyof typeof CONTRACT_NAMES;
 

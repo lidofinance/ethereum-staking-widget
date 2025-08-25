@@ -1,4 +1,5 @@
 export { useExternalConfigContext } from './use-external-config-context';
+export { getFallbackedManifestEntry } from './frontend-fallback';
 export type {
   ManifestConfig,
   Manifest,

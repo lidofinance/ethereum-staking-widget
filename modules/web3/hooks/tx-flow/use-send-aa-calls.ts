@@ -1,7 +1,7 @@
 import { useCallback } from 'react';
 import invariant from 'tiny-invariant';
 import { useAccount } from 'wagmi';
-import { TransactionCallbackStage } from '@lidofinance/lido-ethereum-sdk';
+import { TransactionCallbackStage } from '@lidofinance/lido-ethereum-sdk/core';
 import { config } from 'config';
 import { useLidoSDK, useLidoSDKL2 } from '../../web3-provider';
 import { AACall, TxCallbackProps } from './types';

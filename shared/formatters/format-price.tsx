@@ -6,14 +6,19 @@ import { Component } from 'types';
 
 export type FormatPriceComponent = Component<
   'span',
-  { amount: number | null | undefined; currency?: string }
+  { amount: number | null | undefined; currency?: string; fallback?: string }
 >;
 
 export const FormatPrice: FormatPriceComponent = (props) => {
-  const { amount, currency = 'USD', ...rest } = props;
+  const {
+    amount,
+    currency = 'USD',
+    fallback = DATA_UNAVAILABLE,
+    ...rest
+  } = props;
   const actual =
     amount == null
-      ? DATA_UNAVAILABLE
+      ? fallback
       : amount.toLocaleString(config.LOCALE, {
           style: 'currency',
           currency,
