@@ -102,3 +102,7 @@ export const rewardsBackendBasePath = process.env.REWARDS_BACKEND_BASE_PATH;
 
 /** @type string */
 export const devnetOverrides = process.env.DEVNET_OVERRIDES;
+
+/** @type boolean */
+export const addressValidationEnabled =
+  !!process.env.VALIDATION_SERVICE_BASE_PATH;

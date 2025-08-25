@@ -6,6 +6,7 @@ import { API_ROUTES } from 'consts/api';
 import { useEffect } from 'react';
 import { useUserConfig } from 'config/user-config';
 import { useForceDisconnect } from 'reef-knot/core-react';
+import { config } from 'config';
 
 export const NO_SAFE_VERSION = 'NONE_AVAILABLE';
 
@@ -17,7 +18,7 @@ export const useAddressValidation = () => {
   const currentValidationQueryResult = useQuery({
     queryKey: ['address-validation', address],
     ...STRATEGY_IMMUTABLE,
-    enabled: !!address,
+    enabled: !!address && config.addressValidationEnabled,
     queryFn: async () => {
       const response = await fetch(
         `${API_ROUTES.VALIDATION}?address=${address}`,
@@ -32,7 +33,10 @@ export const useAddressValidation = () => {
 
   // disconnect wallet and disallow connection for unsafe versions
   useEffect(() => {
-    if (currentValidationQueryResult.data?.isValid === false) {
+    if (
+      config.addressValidationEnabled &&
+      currentValidationQueryResult.data?.isValid === false
+    ) {
       forceDisconnect();
     }
   }, [
@@ -41,20 +45,30 @@ export const useAddressValidation = () => {
     setIsWalletConnectionAllowed,
   ]);
 
+  const isValid = config.addressValidationEnabled
+    ? true
+    : currentValidationQueryResult.data?.isValid;
+
   return {
     get data() {
       return {
-        isValid: currentValidationQueryResult.data?.isValid,
+        isValid,
       };
     },
     get isLoading() {
-      return currentValidationQueryResult.isLoading;
+      return config.addressValidationEnabled
+        ? currentValidationQueryResult.isLoading
+        : false;
     },
     get isFetching() {
-      return currentValidationQueryResult.isFetching;
+      return config.addressValidationEnabled
+        ? currentValidationQueryResult.isFetching
+        : false;
     },
     get error() {
-      return currentValidationQueryResult.error;
+      return config.addressValidationEnabled
+        ? currentValidationQueryResult.error
+        : undefined;
     },
   };
 };
