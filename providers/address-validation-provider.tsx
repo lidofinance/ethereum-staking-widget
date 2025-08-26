@@ -16,7 +16,7 @@ import {
   AddressValidationFile,
   validateAddressLocally,
 } from 'utils/address-validation';
-import { useApiAddressValidation } from 'features/ipfs/security-status-banner/use-api-address-validation';
+import { useApiAddressValidation } from 'shared/hooks/use-api-address-validation';
 
 const AddressValidationContext = createContext<boolean | undefined | null>(
   null,

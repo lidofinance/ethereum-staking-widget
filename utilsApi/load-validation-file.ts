@@ -1,6 +1,6 @@
 import { promises as fs } from 'fs';
 
-const CONFIG_PATH = process.env.CONFIG_PATH;
+const CONFIG_PATH = process.env.VALIDATION_FILE_PATH;
 
 export interface AddressValidationFile {
   addresses: string[];
