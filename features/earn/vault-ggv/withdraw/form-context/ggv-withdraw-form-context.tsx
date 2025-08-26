@@ -14,8 +14,6 @@ import {
   FormControllerContextValueType,
 } from 'shared/hook-form/form-controller';
 
-import { useDappStatus } from 'modules/web3';
-
 import { useGGVAvailable } from '../../hooks/use-ggv-available';
 import { useGGVWithdraw } from '../hooks/use-ggv-withdraw';
 import { useGGVWithdrawFormData } from './use-withdraw-form-data';
@@ -42,7 +40,6 @@ export const GGVWithdrawFormProvider: FC<PropsWithChildren> = ({
   children,
 }) => {
   const { isGGVAvailable, isWithdrawEnabled } = useGGVAvailable();
-  const { isDappActive } = useDappStatus();
   const {
     validationContext,
     isLoadingFormState,
@@ -61,9 +58,7 @@ export const GGVWithdrawFormProvider: FC<PropsWithChildren> = ({
     },
     disabled:
       isLoadingFormState ||
-      !isDappActive ||
-      !isGGVAvailable ||
-      !isWithdrawEnabled ||
+      (isGGVAvailable && !isWithdrawEnabled) ||
       !withdrawalState.canWithdraw ||
       withdrawalRequestsQuery.data?.hasActiveRequests,
     mode: 'onChange',

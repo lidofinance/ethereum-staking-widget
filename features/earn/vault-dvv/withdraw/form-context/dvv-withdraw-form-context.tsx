@@ -51,7 +51,7 @@ export const DVVWithdrawFormProvider: FC<PropsWithChildren> = ({
       amount: null,
     },
     disabled:
-      isLoading || isWithdrawalPaused || !isDVVAvailable || !isWithdrawEnabled,
+      isLoading || isWithdrawalPaused || (isDVVAvailable && !isWithdrawEnabled),
     mode: 'onChange',
     context: validationContext,
     resolver: DVVWithdrawalFormValidationResolver,

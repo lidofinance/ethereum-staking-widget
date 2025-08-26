@@ -53,7 +53,7 @@ export const VaultPageGGV: FC<{
   const isDeposit = action === EARN_VAULT_DEPOSIT_SLUG;
   const isWithdraw = action === EARN_VAULT_WITHDRAW_SLUG;
 
-  const { isWalletConnected } = useDappStatus();
+  const { isDappActive } = useDappStatus();
   const { tvl, apy, isLoading } = useGGVStats();
   const {
     data,
@@ -88,7 +88,7 @@ export const VaultPageGGV: FC<{
           />
           <VaultDescription description={description} />
         </VaultBlockHeaderSection>
-        {isWalletConnected && (
+        {isDappActive && (
           <VaultPosition
             position={{
               symbol: GGV_TOKEN_SYMBOL,

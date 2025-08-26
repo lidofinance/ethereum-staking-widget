@@ -75,9 +75,9 @@ export const DVVPosition = () => {
     isLoading: isLoadingPosition,
   } = useDVVPosition();
   const { data, isLoading: isLoadingPoints } = useDVVPoints();
-  const { isWalletConnected } = useDappStatus();
+  const { isDappActive } = useDappStatus();
 
-  if (!isWalletConnected) return null;
+  if (!isDappActive) return null;
 
   // convert mellow points to the wei at 18 decimals for easier compatibility with components
   const mellowPointsBalance = parseEther(data?.mellowPoints.toFixed(4) ?? '0');

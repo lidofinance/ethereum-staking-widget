@@ -54,12 +54,13 @@ const PositionBody = ({ position, compact }: PositionBodyProps) => {
               symbol={position.symbol}
               amount={position.balance}
               trimEllipsis
+              fallback="-"
             />{' '}
             <TokenToWallet address={position.token} />
           </PositionBalance>
         </InlineLoader>
       </PositionBalance>
-      {!position.isLoading && position.usdAmount !== null && (
+      {!position.isLoading && position.usdAmount != null && (
         <PositionSubBalance>
           <FormatPrice amount={position.usdAmount} />
         </PositionSubBalance>

@@ -4,6 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import { usePublicClient } from 'wagmi';
 
 import { useDebouncedValue } from 'shared/hooks';
+import { useDappStatus } from 'modules/web3';
 import { useEthUsd } from 'shared/hooks/use-eth-usd';
 
 import { getTokenAddress } from 'config/networks/token-address';
@@ -21,7 +22,10 @@ export const useGGVPreviewDeposit = (
   token?: GGVDepositFormValues['token'],
 ) => {
   const publicClient = usePublicClient();
+  const { isDappActive } = useDappStatus();
   const { isGGVAvailable } = useGGVAvailable();
+
+  const isEnabled = isDappActive && isGGVAvailable && amount != null;
 
   const values = useMemo(
     () => ({
@@ -32,18 +36,18 @@ export const useGGVPreviewDeposit = (
   );
 
   const debounced = useDebouncedValue(values, 500);
-  const isDebounced = values !== debounced;
+  const isDebounced = isEnabled && values !== debounced;
 
   const query = useQuery({
     queryKey: [
       'ggv',
       'preview-deposit',
       {
-        amount: debounced.amount?.toString(),
-        token: debounced.token?.toString(),
+        amount: isEnabled ? debounced.amount?.toString() : null,
+        token: isEnabled ? debounced.token?.toString() : null,
       },
     ] as const,
-    enabled: isGGVAvailable,
+    enabled: isEnabled,
     queryFn: async () => {
       const { amount, token } = debounced;
       invariant(publicClient?.chain, 'Public client is not available');

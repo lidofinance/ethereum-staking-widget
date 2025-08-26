@@ -61,6 +61,7 @@ export const VaultCard: React.FC<VaultCardProps> = ({
               trimEllipsis
               symbol={position.symbol}
               amount={position.balance}
+              fallback="—"
             />
           )}
         </VaultCardMyPositionValue>
@@ -71,7 +72,7 @@ export const VaultCard: React.FC<VaultCardProps> = ({
       onClick={depositLinkCallback}
     >
       <Button fullwidth size="sm">
-        Deposit
+        {position?.balance && position.balance > 0n ? 'Manage' : 'Deposit'}
       </Button>
     </VaultCardCTALink>
   </VaultCardWrapper>

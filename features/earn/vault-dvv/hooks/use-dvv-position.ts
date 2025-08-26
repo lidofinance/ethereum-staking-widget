@@ -7,12 +7,14 @@ import { useWstethUsd } from 'shared/hooks/use-wsteth-usd';
 import { getDVVVaultContract } from '../contracts';
 
 export const useDVVPosition = () => {
-  const { address } = useDappStatus();
+  const { address, isDappActive } = useDappStatus();
   const { publicClientMainnet } = useMainnetOnlyWagmi();
+
+  const isEnabled = isDappActive && !!address;
 
   const query = useQuery({
     queryKey: ['dvv', 'position', { address }] as const,
-    enabled: !!address,
+    enabled: isEnabled,
     queryFn: async ({ queryKey }) => {
       const address = queryKey[2].address as Address;
       const vault = getDVVVaultContract(publicClientMainnet);
@@ -28,17 +30,19 @@ export const useDVVPosition = () => {
     },
   });
 
+  const data = isEnabled ? query.data : undefined;
+
   const { usdAmount, ...usdQuery } = useWstethUsd(
-    query.data?.wstethBalance,
+    data?.wstethBalance,
     publicClientMainnet.chain?.id,
   );
 
   return {
     ...query,
     usdQuery,
-    dvvTokenAddress: query.data?.dvvTokenAddress,
-    sharesBalance: query.data?.sharesBalance,
-    wstethBalance: query.data?.wstethBalance,
+    dvvTokenAddress: data?.dvvTokenAddress,
+    sharesBalance: data?.sharesBalance,
+    wstethBalance: data?.wstethBalance,
     usdBalance: usdAmount,
   };
 };

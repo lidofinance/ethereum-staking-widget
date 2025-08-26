@@ -15,11 +15,11 @@ export type TokenOption = {
   token: TOKEN_DISPLAY_NAMES;
 };
 
-const iconsMap = {
-  [TOKEN_DISPLAY_NAMES.ETH]: <Eth />,
-  [TOKEN_DISPLAY_NAMES.wETH]: <TokenWethIcon />,
-  [TOKEN_DISPLAY_NAMES.stETH]: <Steth />,
-  [TOKEN_DISPLAY_NAMES.wstETH]: <Wsteth />,
+const iconsMap: { [key in TOKEN_DISPLAY_NAMES]?: JSX.Element } = {
+  ['ETH']: <Eth />,
+  ['wETH']: <TokenWethIcon />,
+  ['stETH']: <Steth />,
+  ['wstETH']: <Wsteth />,
 } as const;
 
 type TokenSelectHookFormProps = {
