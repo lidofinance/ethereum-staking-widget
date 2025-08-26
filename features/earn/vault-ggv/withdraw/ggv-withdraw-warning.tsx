@@ -29,7 +29,12 @@ export const GGVWithdrawWarning = () => {
   return (
     <VaultWarning>
       {message}
-      {unlockTime && ` ${unlockTime.toString()}.`}
+      {unlockTime &&
+        reason === 'transfer-from-shares-time-locked' &&
+        ` ${unlockTime.toLocaleString(undefined, {
+          dateStyle: 'medium',
+          timeStyle: 'short',
+        })}.`}
     </VaultWarning>
   );
 };

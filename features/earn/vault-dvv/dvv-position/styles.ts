@@ -14,7 +14,7 @@ export const ClaimButton = styled(Button).attrs({
     justify-content: center;
     align-items: baseline;
     gap: ${({ theme }) => theme.spaceMap.xs}px;
-    font-size: ${({ theme }) => theme.fontSizesMap.xxs}px;
+    font-size: ${({ theme }) => theme.fontSizesMap.xxs}px !important;
     font-weight: 700;
     line-height: 20px;
 
