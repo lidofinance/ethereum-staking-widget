@@ -31,6 +31,7 @@ import { GGVWithdrawForm } from './withdraw';
 import { useGGVStats } from './hooks/use-ggv-stats';
 import { useGGVPosition } from './hooks/use-ggv-position';
 import { GGV_PARTNERS, GGV_TOKEN_SYMBOL } from './consts';
+import { GGVFaq } from './faq/ggv-faq';
 
 const description =
   'Lido GGV leverages top DeFi protocols to maximize rewards on your stETH, with a single deposit.';
@@ -118,6 +119,7 @@ export const VaultPageGGV: FC<{
           />
         </VaultBlockFormSection>
       </VaultBlock>
+      <GGVFaq />
     </>
   );
 };
