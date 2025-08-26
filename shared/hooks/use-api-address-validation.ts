@@ -13,7 +13,8 @@ export const useApiAddressValidation = () => {
   const currentValidationQueryResult = useQuery<{ isValid: boolean }>({
     queryKey: ['address-validation', address],
     ...STRATEGY_LAZY,
-    enabled: !!address && config.addressApiValidationEnabled,
+    enabled:
+      !!address && config.addressApiValidationEnabled && !config.ipfsMode,
     queryFn: async () => {
       const response = await fetch(
         `${API_ROUTES.VALIDATION}?address=${address}`,
