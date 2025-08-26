@@ -12,7 +12,6 @@ import {
   WarningTitle,
 } from './styles';
 import { useVersionStatus } from './use-version-status';
-import { useAddressValidation } from './use-address-validation';
 
 const LIDO_TWITTER_LINK = 'https://twitter.com/LidoFinance';
 
@@ -102,7 +101,6 @@ export const SecurityStatusBanner = () => {
     isNotVerifiable,
     data,
   } = useVersionStatus();
-  useAddressValidation();
   const { content, canClose, showTwitterLink } = warningContent({
     isUpdateAvailable,
     isVersionUnsafe,

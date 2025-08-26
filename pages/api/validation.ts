@@ -46,11 +46,13 @@ if (!secretConfig.validationAPI) {
       return;
     }
 
+    const proxyUrl = () =>
+      secretConfig.validationAPI + '/v1/check/' + validatedAddress;
+
     return createCachedProxy({
-      proxyUrl: secretConfig.validationAPI + '/v1/check/' + validatedAddress,
+      proxyUrl,
       cacheTTL: 1000,
       ignoreParams: false,
-      metricsHost: secretConfig.validationAPI,
       timeout: 10_000,
     })(req, res);
   };

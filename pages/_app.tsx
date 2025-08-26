@@ -19,6 +19,7 @@ import { BackgroundGradient } from 'shared/components/background-gradient/backgr
 import { ErrorBoundaryFallback } from 'shared/components/error-boundary';
 import NoSsrWrapper from 'shared/components/no-ssr-wrapper';
 import { nprogress, COOKIES_ALLOWED_FULL_KEY } from 'utils';
+import { AddressValidationFile } from 'utils/address-validation';
 
 // Migrations old theme cookies to new cross domain cookies
 migrationThemeCookiesToCrossDomainCookiesClientSide();
@@ -42,10 +43,16 @@ const App = (props: AppProps) => {
 const MemoApp = memo(App);
 
 const AppWrapper = (
-  props: AppProps<{ ___prefetch_manifest___?: object }>,
+  props: AppProps<{
+    ___prefetch_manifest___?: object;
+    __validation_file__?: AddressValidationFile;
+  }>,
 ): JSX.Element => {
   return (
-    <Providers prefetchedManifest={props.pageProps?.___prefetch_manifest___}>
+    <Providers
+      prefetchedManifest={props.pageProps?.___prefetch_manifest___}
+      validationFile={props.pageProps?.__validation_file__}
+    >
       {/* see https://nextjs.org/docs/messages/no-document-viewport-meta */}
       <Head>
         <meta

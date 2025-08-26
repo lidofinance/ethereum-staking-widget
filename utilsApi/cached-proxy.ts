@@ -7,7 +7,7 @@ import { FetcherError } from 'utils/fetcherError';
 import { ETH_API_ROUTES, getEthApiPath } from 'consts/api';
 
 type ProxyOptions = {
-  proxyUrl: string;
+  proxyUrl: string | (() => string);
   cacheTTL: number;
   timeout?: number;
   ignoreParams?: boolean;
@@ -21,7 +21,7 @@ export const createCachedProxy = ({
   ignoreParams,
   timeout = 5000,
   transformData = (data) => data,
-  metricsHost = proxyUrl,
+  metricsHost = typeof proxyUrl === 'function' ? proxyUrl() : proxyUrl,
 }: ProxyOptions): API => {
   const cache = new Cache<string, any>();
   return async (req, res) => {
@@ -45,7 +45,9 @@ export const createCachedProxy = ({
       return;
     }
 
-    const url = proxyUrl + (params ? `?${params.toString()}` : '');
+    const proxyUrlString =
+      typeof proxyUrl === 'function' ? proxyUrl() : proxyUrl;
+    const url = proxyUrlString + (params ? `?${params.toString()}` : '');
 
     try {
       const data = await responseTimeExternalMetricWrapper({
