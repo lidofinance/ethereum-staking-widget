@@ -14,6 +14,7 @@ import {
   FormControllerContextValueType,
 } from 'shared/hook-form/form-controller';
 import { minBN } from 'utils/bn';
+import { useDappStatus } from 'modules/web3';
 
 import { useDVVAvailable } from '../../hooks/use-dvv-available';
 import { useDVVDepositFormData } from './use-dvv-deposit-form-data';
@@ -41,6 +42,7 @@ export const useDVVDepositForm = () => {
 };
 
 export const DVVDepositFormProvider: FC<PropsWithChildren> = ({ children }) => {
+  const { isDappActive, isWalletConnected } = useDappStatus();
   const { isDVVAvailable, isDepositEnabled } = useDVVAvailable();
   const {
     asyncValidationContextValue,
@@ -58,6 +60,7 @@ export const DVVDepositFormProvider: FC<PropsWithChildren> = ({ children }) => {
       token: 'ETH',
     },
     disabled:
+      (isWalletConnected && !isDappActive) ||
       (isDVVAvailable && !isDepositEnabled) ||
       depositLimitQuery.data?.maxDepositETH === 0n,
     criteriaMode: 'firstError',

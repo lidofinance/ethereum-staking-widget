@@ -8,6 +8,7 @@ import {
 } from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
 
+import { useDappStatus } from 'modules/web3';
 import { useFormControllerRetry } from 'shared/hook-form/form-controller/use-form-controller-retry-delegate';
 import { FormControllerContext } from 'shared/hook-form/form-controller';
 import { minBN } from 'utils/bn';
@@ -40,6 +41,7 @@ export const useGGVDepositForm = () => {
 
 export const GGVDepositFormProvider: FC<PropsWithChildren> = ({ children }) => {
   // Wallet state
+  const { isDappActive, isWalletConnected } = useDappStatus();
   const { isGGVAvailable, isDepositEnabled } = useGGVAvailable();
   // Network data for form
   const {
@@ -66,6 +68,7 @@ export const GGVDepositFormProvider: FC<PropsWithChildren> = ({ children }) => {
       token: 'ETH',
     },
     disabled:
+      (isWalletConnected && !isDappActive) ||
       (isGGVAvailable && !isDepositEnabled) ||
       depositStatus?.canDeposit === false,
     criteriaMode: 'firstError',

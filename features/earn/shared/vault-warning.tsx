@@ -54,11 +54,6 @@ const WarningContent = styled.div<VaultWarningProps>`
   font-weight: 700;
   line-height: 20px;
 
-  padding-right: calc(
-    ${({ theme }) => theme.spaceMap.xl}px +
-      ${({ theme }) => theme.spaceMap.sm}px
-  );
-
   ${({ theme }) => theme.mediaQueries.md} {
     padding-right: 0px;
   }
