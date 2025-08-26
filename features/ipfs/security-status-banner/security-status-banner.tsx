@@ -94,9 +94,7 @@ const warningContent = ({
       return {
         content: (
           <WarningBlock>
-            <WarningSubText>
-              Sorry, you don’t have access to our services right now.
-            </WarningSubText>
+            Sorry, you don’t have access to our services right now.
           </WarningBlock>
         ),
         canClose: false,
