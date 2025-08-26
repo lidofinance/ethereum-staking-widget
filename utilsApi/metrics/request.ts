@@ -7,6 +7,7 @@ export class RequestMetrics {
   requestCounter: Counter<'route'>;
   ethCallToAddress: Counter<'address' | 'referrer'>;
   ssrCounter: Counter<'revalidate'>;
+  validationFileLoadError: Counter<'error'>;
 
   constructor(public registry: Registry) {
     this.apiTimings = this.apiTimingsInit('internal');
@@ -14,6 +15,7 @@ export class RequestMetrics {
     this.requestCounter = this.requestsCounterInit();
     this.ethCallToAddress = this.ethCallToAddressInit();
     this.ssrCounter = this.ssrCounterInit();
+    this.validationFileLoadError = this.validationFileLoadErrorInit();
   }
 
   apiTimingsInit(postfix: string) {
@@ -61,6 +63,15 @@ export class RequestMetrics {
       name: METRICS_PREFIX + METRIC_NAMES.SSR_COUNT,
       help: 'Counts of running getDefaultStaticProps with revalidation param',
       labelNames: ['revalidate'],
+      registers: [this.registry],
+    });
+  }
+
+  validationFileLoadErrorInit() {
+    return new Counter({
+      name: METRICS_PREFIX + METRIC_NAMES.VALIDATION_FILE_LOAD_ERROR,
+      help: 'Counts of validation file load errors',
+      labelNames: ['error'],
       registers: [this.registry],
     });
   }
