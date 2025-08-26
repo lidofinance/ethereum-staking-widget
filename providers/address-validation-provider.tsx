@@ -4,6 +4,7 @@ import {
   createContext,
   useContext,
   useMemo,
+  useState,
 } from 'react';
 
 import { useQuery } from '@tanstack/react-query';
@@ -18,9 +19,19 @@ import {
 } from 'utils/address-validation';
 import { useApiAddressValidation } from 'shared/hooks/use-api-address-validation';
 
-const AddressValidationContext = createContext<boolean | undefined | null>(
-  null,
-);
+const AddressValidationContext = createContext<{
+  validationResult: {
+    isValid: boolean;
+  };
+  isNotValidAddress: boolean;
+  setIsNotValidAddress: (show: boolean) => void;
+}>({
+  validationResult: {
+    isValid: true,
+  },
+  isNotValidAddress: false,
+  setIsNotValidAddress: () => {},
+});
 AddressValidationContext.displayName = 'AddressValidationContext';
 
 export const useAddressValidation = () => {
@@ -140,6 +151,7 @@ export const AddressValidationProvider = ({
   const { forceDisconnect } = useForceDisconnect();
   const { address } = useAccount();
   const apiValidationQuery = useApiAddressValidation();
+  const [isNotValidAddress, setIsNotValidAddress] = useState(false);
 
   // File validation query (works independently of API settings)
   const fileValidationQuery = useQuery({
@@ -200,11 +212,20 @@ export const AddressValidationProvider = ({
   useEffect(() => {
     if (address && isValid === false) {
       forceDisconnect();
+      setIsNotValidAddress(true);
     }
   }, [address, isValid, forceDisconnect]);
 
   return (
-    <AddressValidationContext.Provider value={isValid}>
+    <AddressValidationContext.Provider
+      value={{
+        validationResult: {
+          isValid,
+        },
+        isNotValidAddress,
+        setIsNotValidAddress,
+      }}
+    >
       {children}
     </AddressValidationContext.Provider>
   );
