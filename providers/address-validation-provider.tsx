@@ -45,20 +45,20 @@ export const useAddressValidation = () => {
  *                  └───┬───────┬───┘
  *                      │ NO    │ YES
  *                      ▼       ▼
- *               ┌─────────┐   ┌─────────────────────────────────────┐
- *               │isValid: │   │     Start parallel queries:        │
- *               │  true   │   │                                     │
- *               └─────────┘   │ 1) apiValidationQuery               │
- *                             │    enabled: addressValidationEnabled│
- *                             │                                     │
- *                             │ 2) fileValidationQuery             │
- *                             │    enabled: !!address && !!file    │
- *                             └─────────────┬───────────────────────┘
+ *               ┌─────────┐   ┌────────────────────────────────────────┐
+ *               │isValid: │   │     Start parallel queries:            │
+ *               │  true   │   │                                        │
+ *               └─────────┘   │ 1) apiValidationQuery                  │
+ *                             │    enabled: addressApiValidationEnabled│
+ *                             │                                        │
+ *                             │ 2) fileValidationQuery                 │
+ *                             │    enabled: !!address && !!file        │
+ *                             └─────────────┬──────────────────────────┘
  *                                           │
  *                                           ▼
- *                             ┌─────────────────────────────────────┐
- *                             │     addressValidationEnabled?       │
- *                             └─────────────┬───────────────────────┘
+ *                             ┌────────────────────────────────────────┐
+ *                             │     addressApiValidationEnabled?       │
+ *                             └─────────────┬──────────────────────────┘
  *                                           │
  *                          ┌────────────────┴────────────────┐
  *                          │ TRUE                            │ FALSE
@@ -165,7 +165,7 @@ export const AddressValidationProvider = ({
     if (!address) return true;
 
     // Case 1: API is enabled
-    if (config.addressValidationEnabled) {
+    if (config.addressApiValidationEnabled) {
       // API responded successfully - use API result
       if (apiValidationQuery.data) {
         return apiValidationQuery.data.isValid;
