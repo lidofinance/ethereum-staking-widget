@@ -64,6 +64,7 @@ export const useAddressValidation = () => {
  *                             │                                        │
  *                             │ 2) fileValidationQuery                 │
  *                             │    enabled: !!address && !!file        │
+ *                             │    checks: file.isBroken → false      │
  *                             └─────────────┬──────────────────────────┘
  *                                           │
  *                                           ▼
@@ -138,6 +139,8 @@ export const useAddressValidation = () => {
  * PRIORITY ORDER:
  * 1. API result (when enabled & successful)
  * 2. File validation (as fallback or when API disabled)
+ *    - If file.isBroken = true → isValid = false
+ *    - Otherwise → validateAddressLocally()
  * 3. Default: true (safe fallback)
  */
 
@@ -159,6 +162,7 @@ export const AddressValidationProvider = ({
       'address-validation-file',
       address,
       validationFile?.addresses?.length,
+      validationFile?.isBroken,
     ],
     ...STRATEGY_LAZY,
     enabled: !!address && !!validationFile, // Always enabled when address and file exist
@@ -166,6 +170,9 @@ export const AddressValidationProvider = ({
       if (!address || !validationFile) {
         return { isValid: true };
       }
+
+      // If validation file is broken, consider all addresses invalid
+      // if (validationFile.isBroken) return { isValid: false }; // TODO: uncomment after testing
 
       return validateAddressLocally(address, validationFile);
     },
