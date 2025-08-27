@@ -5,6 +5,7 @@ const CONFIG_PATH = process.env.VALIDATION_FILE_PATH;
 
 export interface AddressValidationFile {
   addresses: string[];
+  isBrocken?: boolean;
 }
 
 const isValidValidationFile = (
@@ -55,6 +56,6 @@ export const loadValidationFile = async (): Promise<AddressValidationFile> => {
       .labels({ error: String(error) })
       .inc(1);
 
-    return { addresses: [] };
+    return { addresses: [], isBrocken: true };
   }
 };

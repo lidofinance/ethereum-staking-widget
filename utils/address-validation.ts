@@ -2,6 +2,7 @@ import { Address } from 'viem';
 
 export interface AddressValidationFile {
   addresses: string[];
+  isBrocken?: boolean;
 }
 
 export const validateAddressLocally = (
