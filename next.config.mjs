@@ -179,6 +179,7 @@ export default withBundleAnalyzer({
     ethAPIBasePath: process.env.ETH_API_BASE_PATH,
     rewardsBackendAPI: process.env.REWARDS_BACKEND,
     validationAPI: process.env.VALIDATION_SERVICE_BASE_PATH,
+    validationFilePath: process.env.VALIDATION_FILE_PATH,
   },
 
   // ATTENTION: If you add a new variable you should declare it in `global.d.ts`
