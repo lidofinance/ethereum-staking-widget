@@ -4,7 +4,7 @@ import { config } from 'config';
 
 export interface AddressValidationFile {
   addresses: string[];
-  isBrocken?: boolean;
+  isBroken?: boolean;
 }
 
 const isValidValidationFile = (
@@ -59,7 +59,7 @@ export const loadValidationFile = async (): Promise<AddressValidationFile> => {
         .labels({ error: 'invalid_format' })
         .inc(1);
 
-      return { addresses: [], isBrocken: true };
+      return { addresses: [], isBroken: true };
     }
 
     console.info(
@@ -76,6 +76,6 @@ export const loadValidationFile = async (): Promise<AddressValidationFile> => {
       .labels({ error: String(error) })
       .inc(1);
 
-    return { addresses: [], isBrocken: true };
+    return { addresses: [], isBroken: true };
   }
 };
