@@ -5,8 +5,6 @@ import { STRATEGY_LAZY } from 'consts/react-query-strategies';
 import { API_ROUTES } from 'consts/api';
 import { config } from 'config';
 
-export const NO_SAFE_VERSION = 'NONE_AVAILABLE';
-
 export const useApiAddressValidation = () => {
   const { address } = useAccount();
 
