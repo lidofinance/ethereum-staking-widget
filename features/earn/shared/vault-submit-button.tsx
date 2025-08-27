@@ -13,16 +13,11 @@ export const VaultSubmitButton = ({
   const { isSupportedChain } = useDappStatus();
   const { disabled } = useFormState();
 
-  let notAvailableText = 'Switch to Ethereum Mainnet';
-
-  if (!isSupportedChain) {
-    notAvailableText = 'Unsupported chain';
-    isAvailable = false;
-  }
+  const shouldSwitchChain = !isSupportedChain || !isAvailable;
 
   return (
-    <SubmitButtonHookForm disabled={disabled || !isAvailable}>
-      {isAvailable ? children : notAvailableText}
+    <SubmitButtonHookForm disabled={disabled || shouldSwitchChain}>
+      {shouldSwitchChain ? 'Switch to Ethereum Mainnet' : children}
     </SubmitButtonHookForm>
   );
 };
