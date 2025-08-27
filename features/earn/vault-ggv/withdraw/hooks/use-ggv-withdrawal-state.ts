@@ -43,7 +43,7 @@ export const useGGVWithdrawalState = () => {
         reason = 'paused';
       }
 
-      if (allowWithdraws) {
+      if (!allowWithdraws) {
         reason = 'withdrawal-stopped';
       }
 

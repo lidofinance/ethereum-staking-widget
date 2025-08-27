@@ -23,28 +23,33 @@ export const useGGVWithdrawFormData = () => {
   const withdrawalStateQuery = useGGVWithdrawalState();
   const withdrawalRequestsQuery = useGGVWithdrawalRequests();
   const shareStateQuery = useGGVUserShareState();
+
   const areSharesTimeLocked = useIsUnlocked(
     Number(shareStateQuery.data?.shareUnlockTime ?? 0),
   );
 
+  const { data: withdrawalData, isLoading: isWithdrawalLoading } =
+    withdrawalStateQuery;
+  const { data: shareData, isLoading: isShareLoading } = shareStateQuery;
+
   const withdrawalState = useMemo<GGVWithdrawalState>(() => {
-    if (withdrawalStateQuery.isLoading || shareStateQuery.isLoading) {
+    if (isWithdrawalLoading || isShareLoading) {
       return {
         isLoading: true,
         reason: null,
-        canWithdraw: false,
+        canWithdraw: true,
       };
     }
 
-    if (withdrawalStateQuery.data?.canWithdraw === false) {
+    if (withdrawalData?.canWithdraw === false) {
       return {
         isLoading: false,
-        reason: withdrawalStateQuery.data.reason,
-        canWithdraw: withdrawalStateQuery.data.canWithdraw,
+        reason: withdrawalData.reason,
+        canWithdraw: withdrawalData.canWithdraw,
       };
     }
 
-    if (shareStateQuery.data?.denyFrom === true) {
+    if (shareData?.denyFrom === true) {
       return {
         isLoading: false,
         reason: 'transfer-from-shares-blocked',
@@ -57,8 +62,8 @@ export const useGGVWithdrawFormData = () => {
         isLoading: false,
         reason: 'transfer-from-shares-time-locked',
         canWithdraw: false,
-        unlockTime: shareStateQuery.data?.shareUnlockTime
-          ? new Date(Number(shareStateQuery.data?.shareUnlockTime) * 1000)
+        unlockTime: shareData?.shareUnlockTime
+          ? new Date(Number(shareData?.shareUnlockTime) * 1000)
           : undefined,
       };
     }
@@ -68,7 +73,13 @@ export const useGGVWithdrawFormData = () => {
       reason: null,
       canWithdraw: true,
     };
-  }, [withdrawalStateQuery, shareStateQuery, areSharesTimeLocked]);
+  }, [
+    isWithdrawalLoading,
+    isShareLoading,
+    withdrawalData,
+    shareData,
+    areSharesTimeLocked,
+  ]);
 
   const validationAsyncContextValue = useMemo<
     GGVWithdrawalFormAsyncValidationContext | undefined
