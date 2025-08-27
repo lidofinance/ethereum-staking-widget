@@ -14,7 +14,7 @@ const Earn: FC = () => {
   return (
     <Layout title={PAGE_TITLE} subtitle={PAGE_DESCRIPTION}>
       <Head>
-        <title>{PAGE_TITLE} | Lido</title>
+        <title>{`${PAGE_TITLE} | Lido`}</title>
         <meta name="description" content={PAGE_DESCRIPTION} />
       </Head>
       <EarnVaultsList />
