@@ -1,10 +1,12 @@
 import { FC } from 'react';
 import { Accordion, Link } from '@lidofinance/lido-ui';
 import { useInpageNavigation } from 'providers/inpage-navigation';
+import { OnlyInfraRender } from 'shared/components/only-infra-render';
 
 export const RisksOfDepositing: FC = () => {
   const { navigateInpageAnchor } = useInpageNavigation();
   const OTHER_RISKS_PATH = `#lidoStakingRisks`;
+  const OTHER_RISKS_LINK_TEXT = `Other inherited Lido protocol risks`;
 
   return (
     <Accordion summary="What are the risks of depositing DVV?">
@@ -16,15 +18,17 @@ export const RisksOfDepositing: FC = () => {
         <li>Smart contract risk</li>
         <li>Validator slashing risk</li>
         <li>
-          <Link
-            href={OTHER_RISKS_PATH}
-            target="_self"
-            onClick={(e) => {
-              navigateInpageAnchor(e);
-            }}
-          >
-            Other inherited Lido protocol risks
-          </Link>
+          <OnlyInfraRender renderIPFS={OTHER_RISKS_LINK_TEXT}>
+            <Link
+              href={OTHER_RISKS_PATH}
+              target="_self"
+              onClick={(e) => {
+                navigateInpageAnchor(e);
+              }}
+            >
+              {OTHER_RISKS_LINK_TEXT}
+            </Link>
+          </OnlyInfraRender>
         </li>
       </ul>
       <p>
