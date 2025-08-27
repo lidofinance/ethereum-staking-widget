@@ -14,6 +14,7 @@ import { ReactComponent as TokenDvstethIcon } from './token-dvsteth.svg';
 import { ReactComponent as TokenObolIconRaw } from './token-obol.svg';
 import { ReactComponent as TokenSsvIconRaw } from './token-ssv.svg';
 import { ReactComponent as TokenMellowIcon } from './token-mellow.svg';
+import { ReactComponent as TokenStethDarkIcon } from './token-steth-dark.svg';
 
 import { ReactComponent as VaultDDVIcon } from './vault-ddv.svg';
 import { ReactComponent as VaultGGVIcon } from './vault-ggv.svg';
@@ -21,8 +22,14 @@ import { ReactComponent as VaultGGVIcon } from './vault-ggv.svg';
 import { ReactComponent as NavIconEarn } from './nav-icon-earn.svg';
 
 const themedBackground = css`
-  path[data-id='background'] {
-    fill: ${({ theme }) => (theme.name === 'dark' ? '#26262B' : '#fff')};
+  path,
+  rect {
+    &[data-id='background'] {
+      fill: ${({ theme }) => (theme.name === 'dark' ? '#34343D' : '#fff')};
+    }
+    &[data-id='background-border'] {
+      stroke: ${({ theme }) => (theme.name === 'dark' ? '#484850' : '#fff')};
+    }
   }
 `;
 
@@ -39,6 +46,7 @@ export {
   PartnerVedaIcon,
   PartnerStakehouseIcon,
   PartnerMellowIcon,
+  TokenStethDarkIcon,
   VaultGGVIcon,
   VaultDDVIcon,
   TokenEthIcon,
