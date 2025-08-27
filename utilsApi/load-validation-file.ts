@@ -1,7 +1,6 @@
 import { promises as fs } from 'fs';
 import Metrics from 'utilsApi/metrics';
-
-const CONFIG_PATH = process.env.VALIDATION_FILE_PATH;
+import { config } from 'config';
 
 export interface AddressValidationFile {
   addresses: string[];
@@ -21,7 +20,12 @@ const isValidValidationFile = (
 };
 
 export const loadValidationFile = async (): Promise<AddressValidationFile> => {
+  const CONFIG_PATH = config.validationFilePath;
+
+  console.info(`[loadValidationFile] CONFIG_PATH ${CONFIG_PATH}`);
+
   if (!CONFIG_PATH) {
+    console.warn('[loadValidationFile] No validation file path provided');
     return { addresses: [] };
   }
 
@@ -45,6 +49,10 @@ export const loadValidationFile = async (): Promise<AddressValidationFile> => {
 
       return { addresses: [] };
     }
+
+    console.info(
+      `[loadValidationFile] parsed with ${parsed.addresses.length} addresses`,
+    );
 
     return parsed;
   } catch (error) {
