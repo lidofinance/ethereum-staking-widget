@@ -21,6 +21,8 @@ const isValidValidationFile = (
 export const loadValidationFile = async (): Promise<AddressValidationFile> => {
   const CONFIG_PATH = config.validationFilePath;
 
+  console.info(`[loadValidationFile] CONFIG_PATH ${CONFIG_PATH}`);
+
   if (!CONFIG_PATH) {
     console.warn('[loadValidationFile] No validation file path provided');
     return { addresses: [] };
@@ -46,6 +48,10 @@ export const loadValidationFile = async (): Promise<AddressValidationFile> => {
 
       return { addresses: [] };
     }
+
+    console.info(
+      `[loadValidationFile] parsed with ${parsed.addresses.length} addresses`,
+    );
 
     return parsed;
   } catch (error) {
