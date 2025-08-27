@@ -12,6 +12,7 @@ import { IPFSInfoBoxStatusesProvider } from './ipfs-info-box-statuses';
 import { InpageNavigationProvider } from './inpage-navigation';
 import { ModalProvider } from './modal-provider';
 import { ExternalForbiddenRouteProvider } from './external-forbidden-route';
+import { STRATEGY_LAZY } from 'consts/react-query-strategies';
 
 type ProvidersProps = {
   prefetchedManifest?: unknown;
@@ -20,7 +21,7 @@ type ProvidersProps = {
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      refetchOnWindowFocus: false,
+      ...STRATEGY_LAZY,
     },
   },
 });
