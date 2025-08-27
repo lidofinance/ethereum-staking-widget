@@ -96,17 +96,17 @@ export const useAddressValidation = () => {
  *                   │ YES                │ NO (loading)
  *                   ▼                    ▼
  *            ┌─────────────────┐  ┌─────────────────┐
- *            │  File loaded?   │  │  File loaded?   │
- *            └─────┬───────────┘  └─────┬───────────┘
- *                  │                    │
- *                  ▼                    ▼
- *         ┌─────────────────┐   ┌──────────────────┐
- *         │ FALLBACK:       │   │ TEMPORARY:       │
- *         │ return file     │   │ return file      │
- *         │ .isValid        │   │ .isValid         │
- *         └─────────────────┘   └──────────────────┘
- *                  │                    │
- *                  └────────┬───────────┘
+ *            │  File loaded?   │  │ WAIT FOR API:   │
+ *            └─────┬───────────┘  │ return true     │
+ *                  │              │ (default)       │
+ *                  ▼              └─────────────────┘
+ *         ┌─────────────────┐
+ *         │ FALLBACK:       │
+ *         │ return file     │
+ *         │ .isValid        │
+ *         └─────────────────┘
+ *                  │
+ *                  └────────┬
  *                           │
  *                           ▼
  *                  ┌─────────────────┐
@@ -138,10 +138,10 @@ export const useAddressValidation = () => {
  *
  * PRIORITY ORDER:
  * 1. API result (when enabled & successful)
- * 2. File validation (as fallback or when API disabled)
+ * 2. File validation (ONLY as fallback when API failed, or when API disabled)
  *    - If file.isBroken = true → isValid = false
  *    - Otherwise → validateAddressLocally()
- * 3. Default: true (safe fallback)
+ * 3. Default: true (safe fallback when API is loading or no validation data)
  */
 
 export const AddressValidationProvider = ({
@@ -192,11 +192,6 @@ export const AddressValidationProvider = ({
 
       // API failed - fallback to file validation
       if (apiValidationQuery.error && fileValidationQuery.data) {
-        return fileValidationQuery.data.isValid;
-      }
-
-      // API is loading, no error yet - use file as temporary validation if available
-      if (!apiValidationQuery.error && fileValidationQuery.data) {
         return fileValidationQuery.data.isValid;
       }
     } else {
