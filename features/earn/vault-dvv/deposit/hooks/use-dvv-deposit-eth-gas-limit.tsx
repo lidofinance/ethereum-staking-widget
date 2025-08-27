@@ -35,7 +35,7 @@ export const useDVVDepositEthGasLimit = () => {
       }),
       value: ESTIMATE_AMOUNT,
       to: wrapper.address,
-      from: ESTIMATE_ACCOUNT,
+      account: ESTIMATE_ACCOUNT,
     };
   }, [publicClientMainnet]);
 
