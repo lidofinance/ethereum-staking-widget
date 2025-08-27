@@ -93,9 +93,7 @@ const warningContent = ({
     case isNotValidAddress:
       return {
         content: (
-          <WarningBlock>
-            Sorry, you don’t have access to our services right now.
-          </WarningBlock>
+          <WarningBlock>Sorry, access is currently unavailable.</WarningBlock>
         ),
         canClose: false,
       };

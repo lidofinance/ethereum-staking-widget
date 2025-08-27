@@ -35,6 +35,21 @@ if (!secretConfig.validationAPI) {
     res.status(404).end();
   };
 } else {
+  // Create proxy once at module level to preserve cache
+  const validationProxy = createCachedProxy({
+    proxyUrl: (req) => {
+      const validatedAddress = validateEthereumAddress(req.query.address);
+      if (!validatedAddress) {
+        throw new Error('Invalid address'); // This will be caught by the handler
+      }
+      return secretConfig.validationAPI + '/v1/check/' + validatedAddress;
+    },
+    cacheTTL: 1000,
+    ignoreParams: true, // Address is in path, not query
+    timeout: 10_000,
+    metricsHost: secretConfig.validationAPI,
+  });
+
   handler = (req: NextApiRequest, res: NextApiResponse) => {
     const validatedAddress = validateEthereumAddress(req.query.address);
 
@@ -46,15 +61,7 @@ if (!secretConfig.validationAPI) {
       return;
     }
 
-    const proxyUrl = () =>
-      secretConfig.validationAPI + '/v1/check/' + validatedAddress;
-
-    return createCachedProxy({
-      proxyUrl,
-      cacheTTL: 1000,
-      ignoreParams: false,
-      timeout: 10_000,
-    })(req, res);
+    return validationProxy(req, res);
   };
 }
 
