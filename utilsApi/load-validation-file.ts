@@ -19,13 +19,25 @@ const isValidValidationFile = (
   );
 };
 
-export const loadValidationFile = async (): Promise<AddressValidationFile> => {
-  const CONFIG_PATH = config.validationFilePath;
+const getValidationFilePath = (): string | undefined => {
+  return process.env.VALIDATION_FILE_PATH || config.validationFilePath;
+};
 
-  console.info(`[loadValidationFile] CONFIG_PATH ${CONFIG_PATH}`);
+export const loadValidationFile = async (): Promise<AddressValidationFile> => {
+  const CONFIG_PATH = getValidationFilePath();
+
+  console.info(
+    `[loadValidationFile] env VALIDATION_FILE_PATH: ${process.env.VALIDATION_FILE_PATH}`,
+  );
+  console.info(
+    `[loadValidationFile] config validationFilePath: ${config.validationFilePath}`,
+  );
+  console.info(`[loadValidationFile] final CONFIG_PATH: ${CONFIG_PATH}`);
 
   if (!CONFIG_PATH) {
-    console.warn('[loadValidationFile] No validation file path provided');
+    console.warn(
+      '[loadValidationFile] No validation file path provided in env or config',
+    );
     return { addresses: [] };
   }
 
@@ -47,7 +59,7 @@ export const loadValidationFile = async (): Promise<AddressValidationFile> => {
         .labels({ error: 'invalid_format' })
         .inc(1);
 
-      return { addresses: [] };
+      return { addresses: [], isBrocken: true };
     }
 
     console.info(

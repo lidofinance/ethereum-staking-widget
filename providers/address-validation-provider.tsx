@@ -172,7 +172,7 @@ export const AddressValidationProvider = ({
       }
 
       // If validation file is broken, consider all addresses invalid
-      if (validationFile.isBrocken) return { isValid: false };
+      // if (validationFile.isBrocken) return { isValid: false }; // TODO: uncomment after testing
 
       return validateAddressLocally(address, validationFile);
     },
