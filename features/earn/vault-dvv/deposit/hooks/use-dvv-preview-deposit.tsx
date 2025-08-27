@@ -2,7 +2,7 @@ import invariant from 'tiny-invariant';
 import { useQuery } from '@tanstack/react-query';
 import { usePublicClient } from 'wagmi';
 
-import { useLidoSDK } from 'modules/web3';
+import { useDappStatus, useLidoSDK } from 'modules/web3';
 import { useDebouncedValue } from 'shared/hooks';
 import { useWstethUsd } from 'shared/hooks/use-wsteth-usd';
 
@@ -13,22 +13,25 @@ import type { DVVDepositFormValues } from '../types';
 export const useDVVPreviewDeposit = (
   amount?: DVVDepositFormValues['amount'],
 ) => {
+  const { isDappActive } = useDappStatus();
   const publicClient = usePublicClient();
   const { isDVVAvailable } = useDVVAvailable();
   const { wrap } = useLidoSDK();
 
+  const isEnabled = isDappActive && isDVVAvailable && amount != null;
+
   const debouncedAmount = useDebouncedValue(amount, 500);
-  const isDebounced = amount !== debouncedAmount;
+  const isDebounced = isEnabled && amount !== debouncedAmount;
 
   const query = useQuery({
     queryKey: [
       'dvv',
       'preview-deposit',
       {
-        amount: debouncedAmount?.toString(),
+        amount: isEnabled ? debouncedAmount?.toString() : null,
       },
     ] as const,
-    enabled: isDVVAvailable,
+    enabled: isEnabled,
     queryFn: async () => {
       invariant(publicClient, 'Public client is not available');
 

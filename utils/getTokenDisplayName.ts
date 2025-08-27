@@ -10,7 +10,7 @@ export const TOKEN_DISPLAY_NAMES = {
   ['wETH']: 'WETH',
   ['gg']: GGV_TOKEN_SYMBOL,
   ['dvstETH']: DVV_TOKEN_SYMBOL,
-};
+} as const;
 
 export type TOKEN_DISPLAY_NAMES = keyof typeof TOKEN_DISPLAY_NAMES;
 

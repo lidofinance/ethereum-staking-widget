@@ -3,7 +3,7 @@ import { Button, Link } from '@lidofinance/lido-ui';
 import { EARN_PATH } from 'consts/urls';
 import {
   EARN_VAULT_DEPOSIT_SLUG,
-  EARN_VAULT_DVV_SLUG,
+  EARN_VAULT_GGV_SLUG,
 } from 'features/earn/consts';
 import { VaultGGVIcon } from 'assets/earn';
 import { useGGVStats } from 'features/earn/vault-ggv/hooks/use-ggv-stats';
@@ -16,7 +16,7 @@ import { BannerWrap } from '../shared-banner-partials';
 import { Message, Highlight, MessageContainer, LogoContainer } from './styles';
 
 export const EarnGGVBanner = () => {
-  const bannerLinkHref = `${EARN_PATH}/${EARN_VAULT_DVV_SLUG}/${EARN_VAULT_DEPOSIT_SLUG}`;
+  const bannerLinkHref = `${EARN_PATH}/${EARN_VAULT_GGV_SLUG}/${EARN_VAULT_DEPOSIT_SLUG}`;
   const { apy } = useGGVStats();
   const { isDepositEnabled } = useGGVAvailable();
 

@@ -13,9 +13,13 @@ export const ClaimButton = styled(Button).attrs({
     display: flex;
     justify-content: center;
     align-items: baseline;
-    gap: ${({ theme }) => theme.spaceMap.xs};
-    font-size: ${({ theme }) => theme.fontSizesMap.xxs};
+    gap: ${({ theme }) => theme.spaceMap.xs}px;
+    font-size: ${({ theme }) => theme.fontSizesMap.xxs}px !important;
     font-weight: 700;
     line-height: 20px;
+
+    & > svg {
+      padding: 0px 5px;
+    }
   }
 `;

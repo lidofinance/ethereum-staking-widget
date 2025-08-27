@@ -41,7 +41,7 @@ export const useGGVDepositForm = () => {
 
 export const GGVDepositFormProvider: FC<PropsWithChildren> = ({ children }) => {
   // Wallet state
-  const { isDappActive } = useDappStatus();
+  const { isDappActive, isWalletConnected } = useDappStatus();
   const { isGGVAvailable, isDepositEnabled } = useGGVAvailable();
   // Network data for form
   const {
@@ -68,9 +68,8 @@ export const GGVDepositFormProvider: FC<PropsWithChildren> = ({ children }) => {
       token: 'ETH',
     },
     disabled:
-      !isDappActive ||
-      !isGGVAvailable ||
-      !isDepositEnabled ||
+      (isWalletConnected && !isDappActive) ||
+      (isGGVAvailable && !isDepositEnabled) ||
       depositStatus?.canDeposit === false,
     criteriaMode: 'firstError',
     mode: 'onChange',

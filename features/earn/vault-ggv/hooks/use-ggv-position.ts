@@ -14,9 +14,11 @@ export const useGGVPosition = () => {
   const { address, isDappActive } = useDappStatus();
   const { publicClientMainnet } = useMainnetOnlyWagmi();
 
+  const isEnabled = isDappActive && !!address;
+
   const query = useQuery({
     queryKey: ['ggv', 'position', { address }] as const,
-    enabled: isDappActive && !!address,
+    enabled: isEnabled,
     queryFn: async ({ queryKey }) => {
       const address = queryKey[2].address as Address;
       const vault = getGGVVaultContract(publicClientMainnet);
@@ -43,14 +45,16 @@ export const useGGVPosition = () => {
     },
   });
 
-  const { usdAmount, ...usdQuery } = useEthUsd(query.data?.wethBalance);
+  const data = isEnabled ? query.data : undefined;
+
+  const { usdAmount, ...usdQuery } = useEthUsd(data?.wethBalance);
 
   return {
     ...query,
     usdQuery,
-    ggvTokenAddress: query.data?.ggvTokenAddress,
-    sharesBalance: query.data?.sharesBalance,
-    wethBalance: query.data?.wethBalance,
+    ggvTokenAddress: data?.ggvTokenAddress,
+    sharesBalance: data?.sharesBalance,
+    wethBalance: data?.wethBalance,
     usdBalance: usdAmount,
   };
 };

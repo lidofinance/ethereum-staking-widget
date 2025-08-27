@@ -13,6 +13,7 @@ import {
   FormControllerContext,
   FormControllerContextValueType,
 } from 'shared/hook-form/form-controller';
+import { useDappStatus } from 'modules/web3';
 
 import { useDVVAvailable } from '../../hooks/use-dvv-available';
 
@@ -40,6 +41,7 @@ export const useDVVWithdrawForm = () => {
 export const DVVWithdrawFormProvider: FC<PropsWithChildren> = ({
   children,
 }) => {
+  const { isDappActive, isWalletConnected } = useDappStatus();
   const { validationContext, isLoading, refetchData, isWithdrawalPaused } =
     useDVVWithdrawFormData();
   const { isDVVAvailable, isWithdrawEnabled } = useDVVAvailable();
@@ -51,7 +53,9 @@ export const DVVWithdrawFormProvider: FC<PropsWithChildren> = ({
       amount: null,
     },
     disabled:
-      isLoading || isWithdrawalPaused || !isDVVAvailable || !isWithdrawEnabled,
+      (isWalletConnected && !isDappActive) ||
+      isWithdrawalPaused ||
+      (isDVVAvailable && !isWithdrawEnabled),
     mode: 'onChange',
     context: validationContext,
     resolver: DVVWithdrawalFormValidationResolver,

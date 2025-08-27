@@ -53,7 +53,13 @@ const PendingRequestEntry = ({ request }: RequestEntryProps) => {
 
   return (
     <RequestEntry request={request}>
-      created on {new Date(Number(request.timestamp) * 1000).toDateString()}
+      created on{' '}
+      {new Date(Number(request.timestamp) * 1000).toLocaleDateString(
+        undefined,
+        {
+          dateStyle: 'medium',
+        },
+      )}
       <ButtonText
         disabled={isLoading}
         onClick={(event) => {
@@ -93,7 +99,11 @@ export const GGVWithdrawRequest = () => {
         <RequestSectionTitle>Latest withdrawal request</RequestSectionTitle>
         <RequestEntry request={latest.request}>
           Completed on{' '}
-          {new Date(Number(latest.fulfillment.timestamp) * 1000).toDateString()}
+          {new Date(
+            Number(latest.fulfillment.timestamp) * 1000,
+          ).toLocaleDateString(undefined, {
+            dateStyle: 'medium',
+          })}
         </RequestEntry>
       </RequestsContainer>
     );
