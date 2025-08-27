@@ -5,6 +5,11 @@ import Link, { LinkProps } from 'next/link';
 import { config } from 'config';
 import { LinkIpfs } from 'shared/components/link-ipfs';
 
+// TODO: make LocalLink support passing hash
+// Currently, hash is not supported because LinkIpfs does not support it,
+// since routing in IPFS is using hashes like this: /#/path
+// Ideally, LocalLink must be compatible with href as object
+
 export const LocalLink: FC<PropsWithChildren<LinkProps>> = (props) => {
   const router = useRouter();
   const { ref, embed, app, theme, earn } = router.query;
