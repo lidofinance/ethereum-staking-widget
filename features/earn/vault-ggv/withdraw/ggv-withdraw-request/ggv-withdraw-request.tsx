@@ -17,6 +17,7 @@ import {
   ButtonText,
 } from './style';
 import { useGGVCancelWithdraw } from '../hooks/use-ggv-cancel-withdraw';
+import { useGGVAvailable } from '../../hooks/use-ggv-available';
 
 type RequestEntryProps = {
   request: GGVWithdrawalRequest;
@@ -75,8 +76,9 @@ const PendingRequestEntry = ({ request }: RequestEntryProps) => {
 
 export const GGVWithdrawRequest = () => {
   const { data } = useGGVWithdrawalRequests();
+  const { isGGVAvailable } = useGGVAvailable();
 
-  if (!data) return null;
+  if (!data || !isGGVAvailable) return null;
 
   if (data.requests.openRequests.length > 0)
     return (

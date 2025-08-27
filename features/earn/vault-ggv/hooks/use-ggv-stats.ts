@@ -55,32 +55,22 @@ const useGGVTvl = () => {
 };
 
 type SevenSeasAPIPerformanceResponse = {
-  Response: {
-    aggregation_period: string;
-    apy: number;
-    chain_allocation: {
-      base: number;
-      bnb: number;
-      corn: number;
-      derive: number;
-      ethereum: number;
-    };
-    fees: number;
-    global_apy_breakdown: {
-      fee: number;
-      maturity_apy: number;
-      real_apy: number;
-    };
-    maturity_apy_breakdown: unknown[];
-    real_apy_breakdown: {
-      allocation: number;
-      apy: number;
-      chain: string;
-      protocol: string;
-    }[];
-    timestamp: string;
-  };
+  Response: [
+    {
+      block_number: number;
+      daily_apy: number;
+      price_usd: string;
+      share_price: number;
+      timestamp: string;
+      total_assets: string;
+      tvl: string;
+      unix_seconds: number;
+      vault_address: Address;
+    },
+  ];
 };
+
+const WEEK_SECONDS = 7 * 24 * 60 * 60;
 
 const useGGVApy = () => {
   const { publicClientMainnet } = useMainnetOnlyWagmi();
@@ -90,13 +80,20 @@ const useGGVApy = () => {
     queryFn: async () => {
       const vault = getGGVVaultContract(publicClientMainnet);
 
-      const url = `https://api.sevenseas.capital/performance/ethereum/${vault.address}`;
+      const weekAgo = Math.floor(new Date().getTime() / 1000 - WEEK_SECONDS);
+
+      const url = `https://api.sevenseas.capital/dailyData/ethereum/${vault.address}/${weekAgo}/latest`;
 
       const response = await fetch(url);
       const data = (await response.json()) as SevenSeasAPIPerformanceResponse;
 
-      // TODO: double check decimals on this endpoint
-      return data.Response.apy;
+      const latestResponse = data.Response[0];
+
+      if (!latestResponse) {
+        throw new Error('[GGV-APY] No data found');
+      }
+
+      return latestResponse.daily_apy;
     },
   });
 };

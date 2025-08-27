@@ -59,7 +59,6 @@ export const GGVWithdrawFormProvider: FC<PropsWithChildren> = ({
       amount: null,
     },
     disabled:
-      isLoadingFormState ||
       (isWalletConnected && !isDappActive) ||
       (isGGVAvailable && !isWithdrawEnabled) ||
       !withdrawalState.canWithdraw ||

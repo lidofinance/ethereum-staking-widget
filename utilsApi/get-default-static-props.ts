@@ -9,6 +9,10 @@ import {
   getFallbackedManifestEntry,
   shouldRedirectToRoot,
 } from 'config/external-config';
+import {
+  AddressValidationFile,
+  loadValidationFile,
+} from './load-validation-file';
 
 import type {
   Manifest,
@@ -19,7 +23,10 @@ import { getBackwardCompatibleConfig } from 'config/external-config/frontend-fal
 
 type PreviewData = { manifest: ManifestEntry };
 
-type PrefetchManifestProp = { ___prefetch_manifest___?: object };
+type PrefetchManifestProp = {
+  ___prefetch_manifest___?: object;
+  __validation_file__?: AddressValidationFile;
+};
 
 export const getDefaultStaticProps = <
   P extends { [key: string]: any } = { [key: string]: any },
@@ -29,21 +36,27 @@ export const getDefaultStaticProps = <
   custom?: GetStaticProps<P, Q, PreviewData>,
 ): GetStaticProps<P & PrefetchManifestProp, Q, PreviewData> => {
   return async (context) => {
+    const validationFile = await loadValidationFile();
+
     /// common props
     const { ___prefetch_manifest___ } = await fetchExternalManifest();
-    const props = ___prefetch_manifest___ ? { ___prefetch_manifest___ } : {};
+    const props = {
+      ...(___prefetch_manifest___ ? { ___prefetch_manifest___ } : {}),
+      __validation_file__: validationFile,
+    };
 
-    const ssrManifest = getFallbackedManifestEntry(
-      ___prefetch_manifest___,
-      config.defaultChain,
-    );
-    ssrManifest.config = getBackwardCompatibleConfig(ssrManifest.config);
     const base: GetStaticPropsResult<typeof props> = {
       props,
       // because next only remembers first value, default to short revalidation period
       revalidate: config.DEFAULT_REVALIDATION,
     };
-    let result = base as GetStaticPropsResult<P>;
+
+    let result = base as GetStaticPropsResult<
+      P & {
+        ___prefetch_manifest___?: object;
+        __validation_file__?: AddressValidationFile;
+      }
+    >;
 
     if (
       shouldRedirectToRoot(
@@ -59,6 +72,12 @@ export const getDefaultStaticProps = <
 
     /// custom getStaticProps
     if (custom) {
+      const ssrManifest = getFallbackedManifestEntry(
+        ___prefetch_manifest___,
+        config.defaultChain,
+      );
+      ssrManifest.config = getBackwardCompatibleConfig(ssrManifest.config);
+
       const { props: customProps, ...rest } = (await custom({
         ...context,
         previewData: {

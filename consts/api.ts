@@ -7,6 +7,7 @@ export const enum API_ROUTES {
   RPC = 'api/rpc',
   METRICS = 'api/metrics',
   REWARDS = 'api/rewards',
+  VALIDATION = 'api/validation',
 }
 
 export const enum ETH_API_ROUTES {

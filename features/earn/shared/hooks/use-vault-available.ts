@@ -13,7 +13,7 @@ export const useVaultAvailable = ({
   contractName: keyof NetworkConfig['contracts'];
 }) => {
   const { pages } = useConfig().externalConfig;
-  const { chainId } = useDappStatus();
+  const { chainId, isSupportedChain } = useDappStatus();
   const { vaults } = useVaultConfig();
 
   const isEarnPageEnabled = !pages[EARN_PATH]?.shouldDisable;
@@ -24,6 +24,7 @@ export const useVaultAvailable = ({
 
   const isVaultAvailable =
     !!getContractAddress(chainId, contractName) &&
+    isSupportedChain &&
     isEarnPageEnabled &&
     isVaultInConfig;
 

@@ -46,6 +46,7 @@ declare module 'next/config' {
 
       ethAPIBasePath: string;
       rewardsBackendAPI: string | undefined;
+      validationAPI: string | undefined;
     };
     publicRuntimeConfig: {
       basePath: string | undefined;
