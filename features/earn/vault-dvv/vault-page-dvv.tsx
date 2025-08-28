@@ -1,4 +1,5 @@
 import { FC } from 'react';
+import { Link } from '@lidofinance/lido-ui';
 
 import { VaultDDVIcon } from 'assets/earn';
 
@@ -23,6 +24,7 @@ import {
 
 import { EARN_PATH } from 'consts/urls';
 import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo/matomo-earn-events';
+import { useInpageNavigation } from 'providers/inpage-navigation';
 
 import { DVVDepositForm } from './deposit';
 import { DVVWithdrawForm } from './withdraw';
@@ -55,6 +57,7 @@ export const VaultPageDVV: FC<{
   const isDeposit = action === EARN_VAULT_DEPOSIT_SLUG;
   const isWithdraw = action === EARN_VAULT_WITHDRAW_SLUG;
   const { tvl, apr, isLoading: isLoadingStats } = useDVVStats();
+  const { navigateInpageAnchor } = useInpageNavigation();
 
   return (
     <>
@@ -89,7 +92,37 @@ export const VaultPageDVV: FC<{
           <VaultSwitch routes={routes} checked={isWithdraw} fullwidth />
           {isDeposit && <DVVDepositForm />}
           {isWithdraw && <DVVWithdrawForm />}
-          <VaultLegal allocation={null} />
+          <VaultLegal
+            legalDisclosure={
+              <>
+                Lido DVV service relies on third-party infrastructure provided
+                by Mellow. By proceeding, you are subject to Mellow’s{' '}
+                <Link href="https://mellow.finance/Mellow-Terms-of-Service.pdf">
+                  Terms of Service
+                </Link>{' '}
+                and{' '}
+                <Link href="https://mellow.finance/Mellow-Privacy-Notice.pdf">
+                  Privacy Notice
+                </Link>
+                .
+                <br />
+                <br />
+                Note, that the vault involves protocol, slashing and other
+                risks. You can find more details in the{' '}
+                <Link
+                  target="_self"
+                  href="#risks-of-depositing"
+                  onClick={(e) => {
+                    navigateInpageAnchor(e);
+                  }}
+                >
+                  FAQ
+                </Link>{' '}
+                below.
+              </>
+            }
+            allocation={null}
+          />
         </VaultBlockFormSection>
       </VaultBlock>
       <DVVFaq />

@@ -1,12 +1,13 @@
 import type { FC } from 'react';
+import { Link } from '@lidofinance/lido-ui';
 
 import { EARN_PATH } from 'consts/urls';
 import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo';
 import { trackMatomoEvent } from 'utils/track-matomo-event';
 
-import { useDappStatus } from 'modules/web3';
-
 import { TokenGGIcon, VaultGGVIcon } from 'assets/earn';
+import { useInpageNavigation } from 'providers/inpage-navigation';
+import { useDappStatus } from 'modules/web3';
 
 import { VaultHeader } from '../shared/vault-header';
 import { VaultDescription } from '../shared/vault-description';
@@ -63,6 +64,7 @@ export const VaultPageGGV: FC<{
     isLoading: isLoadingPosition,
     usdQuery: { isLoading: isLoadingUsd },
   } = useGGVPosition();
+  const { navigateInpageAnchor } = useInpageNavigation();
 
   return (
     <>
@@ -86,6 +88,7 @@ export const VaultPageGGV: FC<{
             tvl={tvl}
             apxLabel="APY"
             apx={apy}
+            apxHint={'Annual Percentage Yield'}
             isLoading={isLoading}
           />
           <VaultDescription description={description} />
@@ -107,6 +110,34 @@ export const VaultPageGGV: FC<{
           {isDeposit && <GGVDepositForm />}
           {isWithdraw && <GGVWithdrawForm />}
           <VaultLegal
+            legalDisclosure={
+              <>
+                <span>
+                  Lido GGV service relies on third-party infrastructure provided
+                  by Veda. By proceeding, you are subject to Veda’s{' '}
+                  <Link href="https://veda.tech/terms">Terms of Service</Link>{' '}
+                  and{' '}
+                  <Link href="https://veda.tech/privacy-policy">
+                    Privacy Policy
+                  </Link>
+                  .
+                  <br />
+                  <br />
+                  Note, that the vault involves protocol, legal and other risks.
+                  You can find more details in the{' '}
+                  <Link
+                    href="#risks-of-depositing"
+                    target="_self"
+                    onClick={(e) => {
+                      navigateInpageAnchor(e);
+                    }}
+                  >
+                    FAQ
+                  </Link>{' '}
+                  below.
+                </span>
+              </>
+            }
             allocation={
               <>
                 Your deposit is distributed across a curated set of
