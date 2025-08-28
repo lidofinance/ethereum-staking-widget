@@ -145,7 +145,8 @@ export const SecurityStatusBanner = () => {
               </Button>
             </a>
           )}
-          {isUpdateAvailable && (
+          {/* We don't want to show this button if the address is not valid */}
+          {isUpdateAvailable && !isNotValidAddress && (
             <a
               href={data.remoteCidLink ?? window.location.href}
               onClick={

@@ -33,16 +33,7 @@ const getValidationFilePath = (): string | undefined => {
 export const loadValidationFile = async (): Promise<AddressValidationFile> => {
   const CONFIG_PATH = getValidationFilePath();
 
-  console.info(
-    `[loadValidationFile] env VALIDATION_FILE_PATH: ${process.env.VALIDATION_FILE_PATH}`,
-  );
-  console.info(
-    `[loadValidationFile] config validationFilePath: ${config.validationFilePath}`,
-  );
-  console.info(
-    `[loadValidationFile] serverRuntimeConfig validationFilePath: ${serverRuntimeConfig.validationFilePath}`,
-  );
-  console.info(`[loadValidationFile] final CONFIG_PATH: ${CONFIG_PATH}`);
+  console.info(`[loadValidationFile] CONFIG_PATH: ${CONFIG_PATH}`);
 
   if (!CONFIG_PATH) {
     console.warn(

@@ -32,8 +32,6 @@ export const getDefaultStaticProps = <
   D
 > => {
   return async (context) => {
-    console.info(`[getDefaultStaticProps] Called for path: ${currentPath}`);
-
     const validationFile = await loadValidationFile();
 
     /// common props
