@@ -15,6 +15,7 @@ import { VaultStats } from '../shared/vault-stats';
 import { VaultPosition } from '../shared/vault-position';
 import { VaultLegal } from '../shared/vault-legal';
 import { ButtonBack } from '../shared/button-back';
+import { VaultDisclaimer } from '../shared/vault-disclaimer';
 import {
   VaultBlock,
   VaultBlockFormSection,
@@ -120,6 +121,7 @@ export const VaultPageGGV: FC<{
         </VaultBlockFormSection>
       </VaultBlock>
       <GGVFaq />
+      <VaultDisclaimer />
     </>
   );
 };
