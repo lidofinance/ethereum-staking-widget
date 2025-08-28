@@ -1,7 +1,8 @@
 import { FC } from 'react';
-import { Accordion, Link } from '@lidofinance/lido-ui';
+import { Link } from '@lidofinance/lido-ui';
 import { useInpageNavigation } from 'providers/inpage-navigation';
 import { OnlyInfraRender } from 'shared/components/only-infra-render';
+import { AccordionNavigatable } from 'shared/components/accordion-navigatable';
 
 export const RisksOfDepositing: FC = () => {
   const { navigateInpageAnchor } = useInpageNavigation();
@@ -9,7 +10,10 @@ export const RisksOfDepositing: FC = () => {
   const OTHER_RISKS_LINK_TEXT = `Other inherited Lido protocol risks`;
 
   return (
-    <Accordion summary="What are the risks of depositing DVV?">
+    <AccordionNavigatable
+      summary="What are the risks of depositing DVV?"
+      id="risks-of-depositing"
+    >
       <p>
         As with any DeFi products, there are risks. Please note this list is not
         exhaustive:
@@ -37,6 +41,6 @@ export const RisksOfDepositing: FC = () => {
           advisors to understand all potential risks before participating.
         </i>
       </p>
-    </Accordion>
+    </AccordionNavigatable>
   );
 };
