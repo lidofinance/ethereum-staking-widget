@@ -1,9 +1,12 @@
 import { FC } from 'react';
-import { Accordion } from '@lidofinance/lido-ui';
+import { AccordionNavigatable } from 'shared/components/accordion-navigatable';
 
 export const WhatIsApyForGGV: FC = () => {
   return (
-    <Accordion summary="What is APY for GGV, and how is it calculated?">
+    <AccordionNavigatable
+      summary="What is APY for GGV, and how is it calculated?"
+      id="what-is-apy-for-ggv"
+    >
       <p>
         The APY varies depending on the underlying strategies and market
         conditions. Details on the calculation can be seen here.{' '}
@@ -17,6 +20,6 @@ export const WhatIsApyForGGV: FC = () => {
           including changes to blockchain protocols and validator performance.
         </i>
       </p>
-    </Accordion>
+    </AccordionNavigatable>
   );
 };
