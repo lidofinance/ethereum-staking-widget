@@ -165,6 +165,7 @@ export const AddressValidationProvider = ({
       validationFile?.isBroken,
     ],
     ...STRATEGY_LAZY,
+    staleTime: 1 * 60 * 1000, // 1 minute
     enabled: !!address && !!validationFile, // Always enabled when address and file exist
     queryFn: async () => {
       if (!address || !validationFile) {
