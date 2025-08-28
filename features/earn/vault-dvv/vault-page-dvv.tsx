@@ -8,6 +8,7 @@ import { VaultStats } from '../shared/vault-stats';
 import { VaultSwitch } from '../shared/vault-switch';
 import { VaultLegal } from '../shared/vault-legal';
 import { ButtonBack } from '../shared/button-back';
+import { VaultDisclaimer } from '../shared/vault-disclaimer';
 
 import {
   VaultBlock,
@@ -92,6 +93,7 @@ export const VaultPageDVV: FC<{
         </VaultBlockFormSection>
       </VaultBlock>
       <DVVFaq />
+      <VaultDisclaimer />
     </>
   );
 };

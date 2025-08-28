@@ -1,8 +1,9 @@
+import { themeDark } from '@lidofinance/lido-ui';
 import {
   TokenMellowIcon,
   TokenObolIcon,
   TokenSsvIcon,
-  TokenStethIcon,
+  TokenStethDarkIcon,
 } from 'assets/earn';
 import { useDVVApr } from '../hooks/use-dvv-stats';
 
@@ -22,17 +23,27 @@ export const DVVAprBreakdown = () => {
       <BreakdownSection>
         APR
         <BreakdownItem>
-          <TokenSsvIcon width={24} height={24} viewBox="0 0 28 28" />{' '}
+          <TokenSsvIcon
+            theme={themeDark}
+            width={24}
+            height={24}
+            viewBox="0 0 28 28"
+          />{' '}
           <b>SSV Incentives</b>{' '}
           <FormatPercent value={ssvApr} decimals="percent" />
         </BreakdownItem>
         <BreakdownItem>
-          <TokenObolIcon width={24} height={24} viewBox="0 0 28 28" />{' '}
+          <TokenObolIcon
+            theme={themeDark}
+            width={24}
+            height={24}
+            viewBox="0 0 28 28"
+          />{' '}
           <b>Obol Incentives</b>{' '}
           <FormatPercent value={obolApr} decimals="percent" />
         </BreakdownItem>
         <BreakdownItem>
-          <TokenStethIcon width={24} height={24} viewBox="0 0 20 20" />{' '}
+          <TokenStethDarkIcon width={24} height={24} viewBox="0 0 24 24" />{' '}
           <b>Lido Staking APR</b>{' '}
           <FormatPercent value={stethApr} decimals="percent" />
         </BreakdownItem>

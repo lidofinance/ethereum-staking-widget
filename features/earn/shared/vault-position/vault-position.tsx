@@ -84,14 +84,14 @@ export const VaultPosition = ({
     <PositionContainer>
       <PositionEntry>
         <PositionEntryTitle>
-          My position <VaultTip placement="top">{positionTip}</VaultTip>
+          My position <VaultTip placement="topLeft">{positionTip}</VaultTip>
         </PositionEntryTitle>
         <PositionBody position={position} />
       </PositionEntry>
       {rewards && (
         <PositionEntry>
           <PositionEntryTitle>
-            Rewards <VaultTip placement="top">{rewardsTip}</VaultTip>
+            Rewards <VaultTip placement="topLeft">{rewardsTip}</VaultTip>
           </PositionEntryTitle>
           {rewards.map((reward) => (
             <PositionBody position={reward} key={reward.symbol} />
@@ -101,7 +101,7 @@ export const VaultPosition = ({
       {points && (
         <PositionEntry>
           <PositionEntryTitle>
-            Points <VaultTip placement="top">{pointsTip}</VaultTip>
+            Points <VaultTip placement="topLeft">{pointsTip}</VaultTip>
           </PositionEntryTitle>
           {points.map((point) => (
             <PositionBody compact position={point} key={point.symbol} />

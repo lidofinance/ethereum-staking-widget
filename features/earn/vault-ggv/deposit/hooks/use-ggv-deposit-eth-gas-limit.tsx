@@ -23,7 +23,7 @@ export const useGGVDepositEthGasLimit = () => {
       }),
       value: ESTIMATE_AMOUNT,
       to: teller.address,
-      from: ESTIMATE_ACCOUNT,
+      account: ESTIMATE_ACCOUNT,
     };
   }, [publicClientMainnet]);
 
