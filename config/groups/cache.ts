@@ -30,4 +30,6 @@ export const CACHE_DEFAULT_HEADERS =
   'public, max-age=180, stale-if-error=1200, stale-while-revalidate=60';
 export const CACHE_REWARDS_HEADERS =
   'public, max-age=30, stale-if-error=1200, stale-while-revalidate=30';
+export const CACHE_VALIDATION_HEADERS =
+  'public, max-age=30, stale-if-error=1200, stale-while-revalidate=30';
 export const CACHE_DEFAULT_ERROR_HEADERS = 'no-store, must-revalidate';
