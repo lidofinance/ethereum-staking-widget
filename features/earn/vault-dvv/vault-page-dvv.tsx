@@ -31,6 +31,7 @@ import { useDVVStats } from './hooks/use-dvv-stats';
 import { DVV_PARTNERS } from './consts';
 import { trackMatomoEvent } from 'utils/track-matomo-event';
 import { DVVAprBreakdown } from './dvv-apr-breakdown';
+import { DVVFaq } from './faq/dvv-faq';
 
 const description =
   'The Decentralized Validator Vault accepts ETH deposits to the Lido protocol, accelerating the adoption of Distributed Validator Technology (DVT)';
@@ -90,6 +91,7 @@ export const VaultPageDVV: FC<{
           <VaultLegal allocation={null} />
         </VaultBlockFormSection>
       </VaultBlock>
+      <DVVFaq />
     </>
   );
 };
