@@ -124,8 +124,8 @@ export const VaultPageGGV: FC<{
                   .
                   <br />
                   <br />
-                  Note, that the vault involves protocol, legal and other risks.
-                  You can find more details in the{' '}
+                  Note, that the vault involves protocol, slashing and other
+                  risks. You can find more details in the{' '}
                   <Link
                     href="#risks-of-depositing"
                     target="_self"

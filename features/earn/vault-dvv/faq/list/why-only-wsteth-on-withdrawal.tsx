@@ -10,7 +10,7 @@ export const WhyOnlyWstethOnWithdrawal: FC = () => {
   const ECOSYSTEM_PATH = `${config.rootOrigin}/lido-ecosystem?criteria=and&tokens=wsteth`;
 
   return (
-    <Accordion summary="Why, even though deposits are made in ETH/WETH/stETH/wstETH, do I only receive wstETH on withdrawal?">
+    <Accordion summary="Why, even though deposits are made in ETH/WETH, do I only receive wstETH on withdrawal?">
       <p>
         Withdrawals are processed in wstETH because this format allows the vault
         to reduce the time to claim and complete a withdrawal. By receiving

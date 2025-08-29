@@ -6,9 +6,7 @@ export const IsThereAFeeForWithdrawal: FC = () => {
     <Accordion summary="Is there a fee for withdrawal?">
       <p>
         There’s no withdrawal fee. However, as with any Ethereum transaction,
-        you’ll need to pay a network gas fee. Additionally, because GGV’s
-        underlying asset is wstETH, both the vault and any withdrawn wstETH are
-        subject to Lido’s 10% protocol fee on the net staking APR.
+        you’ll need to pay a network gas fee.
       </p>
     </Accordion>
   );

@@ -22,9 +22,9 @@ export const DVVFaq: FC = () => {
       <WhatIsLidoDVV />
       <WhatIsAprForDVV />
       <WhatAreMellowPoints />
+      <DepositFee />
       <RisksOfDepositing />
       <RisksOfStakingWithLido />
-      <DepositFee />
       <WhatIsDVstETH />
       <WhatCanIDoWithDVstETH />
       <HowDoesWithdrawalWork />
