@@ -1,9 +1,13 @@
 import { promises as fs } from 'fs';
 import Metrics from 'utilsApi/metrics';
 import { config } from 'config';
+import getConfigNext from 'next/config';
+
+const { serverRuntimeConfig } = getConfigNext();
 
 export interface AddressValidationFile {
   addresses: string[];
+  isBroken?: boolean;
 }
 
 const isValidValidationFile = (
@@ -18,13 +22,23 @@ const isValidValidationFile = (
   );
 };
 
-export const loadValidationFile = async (): Promise<AddressValidationFile> => {
-  const CONFIG_PATH = config.validationFilePath;
+const getValidationFilePath = (): string | undefined => {
+  return (
+    process.env.VALIDATION_FILE_PATH ||
+    config.validationFilePath ||
+    serverRuntimeConfig.validationFilePath
+  );
+};
 
-  console.info(`[loadValidationFile] CONFIG_PATH ${CONFIG_PATH}`);
+export const loadValidationFile = async (): Promise<AddressValidationFile> => {
+  const CONFIG_PATH = getValidationFilePath();
+
+  console.info(`[loadValidationFile] CONFIG_PATH: ${CONFIG_PATH}`);
 
   if (!CONFIG_PATH) {
-    console.warn('[loadValidationFile] No validation file path provided');
+    console.warn(
+      '[loadValidationFile] No validation file path provided in env or config',
+    );
     return { addresses: [] };
   }
 
@@ -46,7 +60,7 @@ export const loadValidationFile = async (): Promise<AddressValidationFile> => {
         .labels({ error: 'invalid_format' })
         .inc(1);
 
-      return { addresses: [] };
+      return { addresses: [], isBroken: true };
     }
 
     console.info(
@@ -63,6 +77,6 @@ export const loadValidationFile = async (): Promise<AddressValidationFile> => {
       .labels({ error: String(error) })
       .inc(1);
 
-    return { addresses: [] };
+    return { addresses: [], isBroken: true };
   }
 };
