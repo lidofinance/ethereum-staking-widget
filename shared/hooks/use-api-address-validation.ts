@@ -34,6 +34,7 @@ export const useApiAddressValidation = () => {
         method: 'GET',
       });
     },
+    retry: 1,
   });
 
   return currentValidationQueryResult;
