@@ -5,6 +5,7 @@
     "withdrawalQueue": "0x07F941C56f155fA4233f0ed8d351C9Af3152E525",
     "lido": "0x2C220A2a91602dd93bEAC7b3A1773cdADE369ba1",
     "wsteth": "0x05F2927c5c2825BC0dCDc14d258a99A36116bE8B",
+    "weth": "0x2387fd72c1da19f6486b843f5da562679fbb4057",
     "dualGovernance": "0x9CAaCCc62c66d817CC59c44780D1b722359795bF",
     "escrow": "0x781afe6C8D768CEaA9a97f2A75714e80AE0e83B9",
     "emergencyProtectedTimelock": "0x0A5E22782C0Bd4AddF10D771f0bF0406B038282d",

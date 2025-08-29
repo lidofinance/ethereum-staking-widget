@@ -7,7 +7,7 @@ import { config } from 'config';
 
 import { useDappStatus } from './use-dapp-status';
 
-const Erc20AllowanceAbi = [
+export const Erc20AllowanceAbi = [
   {
     type: 'event',
     name: 'Approval',
@@ -47,6 +47,18 @@ const Erc20AllowanceAbi = [
     ],
     payable: false,
     stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    constant: false,
+    inputs: [
+      { name: 'to', type: 'address' },
+      { name: 'amount', type: 'uint256' },
+    ],
+    name: 'approve',
+    outputs: [{ name: '', type: 'bool' }],
+    payable: false,
+    stateMutability: 'nonpayable',
     type: 'function',
   },
 ] as const;

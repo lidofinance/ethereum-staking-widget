@@ -9,6 +9,7 @@ type TxStageSignOperationAmountProps = {
   operationText: string;
   willReceive?: bigint;
   willReceiveToken?: string;
+  showOperationInDescription?: boolean;
   isPending?: boolean;
   txHash?: Hash;
   isAA?: boolean;
@@ -19,6 +20,7 @@ export const TxStageSignOperationAmount = ({
   token,
   willReceive,
   willReceiveToken,
+  showOperationInDescription = true,
   operationText,
   isPending,
   txHash,
@@ -42,11 +44,15 @@ export const TxStageSignOperationAmount = ({
       description={
         !isPending && (
           <>
-            {operationText} {amountEl}.{' '}
+            {showOperationInDescription && (
+              <>
+                {operationText} {amountEl}. <br />
+              </>
+            )}
             {willReceiveEl && (
               <>
-                <br />
-                You will receive {willReceiveEl}.
+                You will receive {willReceiveEl}{' '}
+                {showOperationInDescription ? '.' : ''}
               </>
             )}
           </>

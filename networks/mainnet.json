@@ -9,10 +9,21 @@
     "lido": "0xae7ab96520de3a18e5e111b5eaab095312d7fe84",
     "wsteth": "0x7f39c581f595b53c5cb19bd0b3f8da6c935e2ca0",
     "ensPublicResolver": "0x4976fb03c32e5b8cfe2b6ccb31c09ba78ebaba41",
+    "weth": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+
     "dualGovernance": "0xcdF49b058D606AD34c5789FD8c3BF8B3E54bA2db",
     "escrow": "0xA8F14D033f377779274Ae016584a05bF14Dccaf8",
     "emergencyProtectedTimelock": "0xCE0425301C85c5Ea2A0873A2dEe44d78E02D2316",
-    "dgConfigProvider": "0xa1692Af6FDfdD1030E4E9c4Bc429986FA64CB5EF"
+    "dgConfigProvider": "0xa1692Af6FDfdD1030E4E9c4Bc429986FA64CB5EF",
+
+    "ggvVault": "0xef417FCE1883c6653E7dC6AF7c6F85CCDE84Aa09",
+    "ggvTeller": "0x0baAb6db8d694E1511992b504476ef4073fe614B",
+    "ggvAccountant": "0xc873F2b7b3BA0a7faA2B56e210E3B965f2b618f5",
+    "ggvLens": "0x5232bc0F5999f8dA604c42E1748A13a170F94A1B",
+    "ggvQueue": "0xe39682c3C44b73285A2556D4869041e674d1a6B7",
+
+    "dvvVault": "0x5E362eb2c0706Bd1d134689eC75176018385430B",
+    "dvvDepositWrapper": "0xfd4a4922d1afe70000ce0ec6806454e78256504e"
   },
   "api": {}
 }

@@ -1,10 +1,14 @@
 import { FC } from 'react';
-import { Accordion, Link } from '@lidofinance/lido-ui';
+import { Link } from '@lidofinance/lido-ui';
 import { MATOMO_CLICK_EVENTS_TYPES } from 'consts/matomo';
+import { AccordionNavigatable } from 'shared/components/accordion-navigatable';
 
 export const RisksOfStakingWithLido: FC = () => {
   return (
-    <Accordion summary="What are the risks of staking with Lido?">
+    <AccordionNavigatable
+      id="lidoStakingRisks"
+      summary="What are the risks of staking with Lido?"
+    >
       <p>
         There exist a number of potential risks when staking using liquid
         staking protocols.
@@ -62,6 +66,6 @@ export const RisksOfStakingWithLido: FC = () => {
         The Lido DAO is driven to mitigate the above risks and eliminate them
         entirely to the extent possible. Despite this, they may still exist.
       </p>
-    </Accordion>
+    </AccordionNavigatable>
   );
 };

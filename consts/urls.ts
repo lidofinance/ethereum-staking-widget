@@ -9,6 +9,9 @@ export const REWARDS_PATH = '/rewards';
 export const SETTINGS_PATH = '/settings';
 export const REFERRAL_PATH = '/referral';
 
+// Earn paths
+export const EARN_PATH = '/earn';
+
 export const getPathWithoutFirstSlash = (path: string): string => {
   if (path.length === 0 || path[0] !== '/') return path;
 

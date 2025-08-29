@@ -1,4 +1,5 @@
 import { SendCallsError } from 'modules/web3';
+import { UnknownBundleIdError } from 'viem';
 
 export enum ErrorMessage {
   NOT_ENOUGH_ETHER = 'Not enough ether for gas.',
@@ -10,6 +11,7 @@ export enum ErrorMessage {
   DEVICE_LOCKED = 'Please unlock your Ledger hardware wallet',
   INVALID_REFERRAL = 'Invalid referral address or ENS',
   INVALID_SIGNATURE = 'Invalid Permit signature. Perhaps it has expired or already been used. Try submitting a withdrawal request again.',
+  BUNDLE_NOT_FOUND = 'Could not locate transaction. Check your wallet for details.',
 }
 
 export const getErrorMessage = (error: unknown): ErrorMessage | string => {
@@ -53,6 +55,9 @@ export const getErrorMessage = (error: unknown): ErrorMessage | string => {
       return ErrorMessage.ENABLE_BLIND_SIGNING;
     case 'DEVICE_LOCKED':
       return ErrorMessage.DEVICE_LOCKED;
+    case 'BUNDLE_NOT_FOUND':
+    case 5730:
+      return ErrorMessage.BUNDLE_NOT_FOUND;
     default:
       return ErrorMessage.SOMETHING_WRONG;
   }
@@ -74,6 +79,10 @@ export const extractCodeFromError = (
 ): number | string => {
   // early exit on non object error
   if (!error || typeof error != 'object') return 0;
+
+  if (error instanceof UnknownBundleIdError) {
+    return 'BUNDLE_NOT_FOUND';
+  }
 
   if (
     'code' in error &&

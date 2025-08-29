@@ -8,13 +8,19 @@ import {
   useWatchContractEvent,
   useAccount,
 } from 'wagmi';
+import { erc20abi } from '@lidofinance/lido-ethereum-sdk/erc20';
 
 import { useDappStatus, useLidoSDK, useLidoSDKL2 } from 'modules/web3';
 import { config } from 'config';
 
-import type { Address, WatchContractEventOnLogsFn } from 'viem';
+import {
+  getContract,
+  type Address,
+  type WatchContractEventOnLogsFn,
+} from 'viem';
 import type { GetBalanceData } from 'wagmi/query';
 import type { AbstractLidoSDKErc20 } from '@lidofinance/lido-ethereum-sdk/erc20';
+import { getTokenAddress } from 'config/networks/token-address';
 
 const selectBalance = (data: GetBalanceData) => data.value;
 
@@ -288,5 +294,39 @@ export const useWstethBalance = ({
     ...balanceData,
     tokenAddress: contract ? contract.address : undefined,
     isLoading: isLoading || balanceData.isLoading,
+  };
+};
+
+export const useWethBalance = ({
+  account,
+  shouldSubscribeToUpdates = true,
+}: UseBalanceProps = {}) => {
+  const { address, chainId, isChainMatched } = useDappStatus();
+  const { core } = useLidoSDK();
+  const mergedAccount = account ?? address;
+
+  const enabled = !!mergedAccount && isChainMatched;
+
+  const wethAddress = getTokenAddress(chainId, 'wETH');
+
+  const contract =
+    wethAddress && enabled
+      ? getContract({
+          address: wethAddress,
+          client: core.rpcProvider,
+          abi: erc20abi,
+        })
+      : undefined;
+
+  const balanceData = useTokenBalance(
+    contract as any,
+    mergedAccount,
+    shouldSubscribeToUpdates,
+  );
+
+  return {
+    ...balanceData,
+    tokenAddress: wethAddress,
+    isLoading: balanceData.isLoading,
   };
 };

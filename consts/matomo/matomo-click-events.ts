@@ -18,7 +18,7 @@ export const enum MATOMO_CLICK_EVENTS_TYPES {
   vaultsBannerLearnMore = 'vaultsBannerLearnMore',
   obolBannerProceed = 'obolBannerProceed',
   obolBannerDVVLink = 'obolBannerDVVLink',
-  exploreAllStrategiesAfterStake = 'exploreAllStrategiesAfterStake',
+  startEarningGGV = 'startEarningGGV',
 
   // FAQ
   faqSafeWorkWithLidoAudits = 'faqSafeWorkWithLidoAudits',
@@ -183,10 +183,10 @@ export const MATOMO_CLICK_EVENTS: Record<
     'Push "the DVV Vault" link on Obol SSV banner',
     'eth_widget_the_dvv_vault_link_obol_ssv',
   ],
-  [MATOMO_CLICK_EVENTS_TYPES.exploreAllStrategiesAfterStake]: [
+  [MATOMO_CLICK_EVENTS_TYPES.startEarningGGV]: [
     'Ethereum_Staking_Widget_After_Staking_CTA',
-    'Push "Explore all strategies" after staking',
-    'eth_widget_explore_all_strategies_after_staking',
+    'Click on the staking follow-up banner',
+    'eth_widget_start_earning_ggv',
   ],
   // FAQ
   [MATOMO_CLICK_EVENTS_TYPES.faqSafeWorkWithLidoAudits]: [
