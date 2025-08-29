@@ -19,6 +19,10 @@ export const RisksOfDepositing: FC = () => {
           be liquidated. Safeguards are in place to reduce (but not eliminate)
           this risk.
         </li>
+        <li>
+          Market price volatility risks - fluctuations in token prices can
+          impact the overall performance of the vault.
+        </li>
       </ul>
       <span>
         <i>

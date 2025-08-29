@@ -9,7 +9,7 @@ export const HowDoIClaimRewards: FC = () => {
         DVV UI, which will lead you to SSV and Obol UIs or directly on{' '}
         <Link href="https://www.ssvrewards.com">SSV UI</Link> or{' '}
         <Link href="https://obol.org/incentives">Obol UI</Link>. Mellow rewards
-        accumulated automatically and will be claimable in the future.
+        based on points accrued will be claimable in the future.
       </p>
     </Accordion>
   );

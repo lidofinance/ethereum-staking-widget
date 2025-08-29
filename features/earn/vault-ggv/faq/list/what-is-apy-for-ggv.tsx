@@ -13,7 +13,7 @@ export const WhatIsApyForGGV: FC = () => {
         derived from growth in its net asset value (NAV) over time. The NAV can
         increase through multiple use cases, such as staking, lending, providing
         liquidity on third-party providers. The user’s accrued rewards will
-        depend on the portion of the vault that they held.
+        depend on the portion of the vault that they hold.
       </p>
       <p>
         <i>

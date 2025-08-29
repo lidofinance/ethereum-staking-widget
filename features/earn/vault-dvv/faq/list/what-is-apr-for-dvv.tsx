@@ -14,8 +14,8 @@ export const WhatIsAprForDVV: FC = () => {
       id="what-is-apr-for-dvv"
     >
       <p>
-        DVV APR is nominated in ETH and consists of stETH APR, SSV and Obol
-        rewards:
+        APR is the annual percentage rate without compounding. DVV APR is net
+        APR nominated in ETH and consists of stETH APR, SSV, and Obol rewards:
       </p>
       <ul>
         <li>

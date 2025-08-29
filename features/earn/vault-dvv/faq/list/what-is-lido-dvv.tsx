@@ -12,8 +12,8 @@ export const WhatIsLidoDVV: FC = () => {
         validator security and resilience by distributing control across
         multiple operators, reducing single points of failure and slashing
         risks. Eligible vault users receive tokens from Obol and SSV, based on
-        the number of DVT-based validators active in the Lido protocol.{' '}
-        <Link href={LEARN_MORE_PATH}>Learn more.</Link>
+        the number of corresponding DVT-based validators active in the Lido
+        protocol. <Link href={LEARN_MORE_PATH}>Learn more.</Link>
       </p>
     </Accordion>
   );

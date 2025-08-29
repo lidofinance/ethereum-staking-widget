@@ -9,8 +9,8 @@ type VaultLegalProps = {
 
 const DEFAULT_LEGAL_DISCLOSURE = (
   <>
-    Note, that the vault involves protocol, legal and other risks. You can find
-    more details in the FAQ below.
+    Note, that the vault involves protocol, slashing and other risks. You can
+    find more details in the FAQ below.
   </>
 );
 
