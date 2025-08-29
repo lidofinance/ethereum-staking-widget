@@ -21,8 +21,10 @@ import {
   getGGVVaultContract,
 } from '../../contracts';
 import { useTxModalStagesGGVDeposit } from './use-ggv-deposit-tx-modal';
+import { useHonk } from './use-honk';
 
 export const useGGVDeposit = (onRetry?: () => void) => {
+  const { honk } = useHonk();
   const { address } = useDappStatus();
   const { core } = useLidoSDK();
   const { txModalStages } = useTxModalStagesGGVDeposit();
@@ -163,6 +165,7 @@ export const useGGVDeposit = (onRetry?: () => void) => {
           onSuccess: async ({ txHash }) => {
             if (needsApprove) return;
             const balance = await vault.read.balanceOf([address]);
+            honk();
             txModalStages.success(balance, txHash);
             trackMatomoEvent(MATOMO_EARN_EVENTS_TYPES.ggvDepositFinish);
           },
@@ -178,7 +181,7 @@ export const useGGVDeposit = (onRetry?: () => void) => {
         return false;
       }
     },
-    [address, core, onRetry, txFlow, txModalStages],
+    [address, core, honk, onRetry, txFlow, txModalStages],
   );
 
   return { depositGGV };
