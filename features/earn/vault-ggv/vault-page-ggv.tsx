@@ -34,6 +34,7 @@ import { useGGVStats } from './hooks/use-ggv-stats';
 import { useGGVPosition } from './hooks/use-ggv-position';
 import { GGV_PARTNERS, GGV_TOKEN_SYMBOL } from './consts';
 import { GGVFaq } from './faq/ggv-faq';
+import { GGVApyHint } from './ggv-apy-hint';
 
 const description =
   'Lido GGV leverages top DeFi protocols to maximize rewards on your stETH, with a single deposit.';
@@ -88,7 +89,7 @@ export const VaultPageGGV: FC<{
             tvl={tvl}
             apxLabel="APY"
             apx={apy}
-            apxHint={'Annual Percentage Yield'}
+            apxHint={<GGVApyHint />}
             isLoading={isLoading}
           />
           <VaultDescription description={description} />
