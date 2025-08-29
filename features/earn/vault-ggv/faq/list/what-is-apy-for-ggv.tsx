@@ -1,13 +1,19 @@
 import { FC } from 'react';
-import { Accordion } from '@lidofinance/lido-ui';
+import { AccordionNavigatable } from 'shared/components/accordion-navigatable';
 
 export const WhatIsApyForGGV: FC = () => {
   return (
-    <Accordion summary="What is APY for GGV, and how is it calculated?">
+    <AccordionNavigatable
+      summary="What is APY for GGV, and how is it calculated?"
+      id="what-is-apy-for-ggv"
+    >
       <p>
-        The APY varies depending on the underlying strategies and market
-        conditions. Details on the calculation can be seen here.{' '}
-        <b>[link to the docs]</b>
+        APY is the annual percentage yield including compounding. In the context
+        of GGV the APY calculation is the following: the vault’s rewards are
+        derived from growth in its net asset value (NAV) over time. The NAV can
+        increase through multiple use cases, such as staking, lending, providing
+        liquidity on third-party providers. The user’s accrued rewards will
+        depend on the portion of the vault that they held.
       </p>
       <p>
         <i>
@@ -17,6 +23,6 @@ export const WhatIsApyForGGV: FC = () => {
           including changes to blockchain protocols and validator performance.
         </i>
       </p>
-    </Accordion>
+    </AccordionNavigatable>
   );
 };

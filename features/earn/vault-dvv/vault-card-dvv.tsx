@@ -9,6 +9,7 @@ import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo';
 import { useDVVStats } from './hooks/use-dvv-stats';
 import { useDVVPosition } from './hooks/use-dvv-position';
 import { DVV_PARTNERS, DVV_TOKEN_SYMBOL } from './consts';
+import { DVVAprBreakdown } from './dvv-apr-breakdown';
 
 export const VaultCardDVV = () => {
   const { isWalletConnected } = useDappStatus();
@@ -24,7 +25,13 @@ export const VaultCardDVV = () => {
         { name: 'ETH', logo: <TokenEthIcon /> },
         { name: 'WETH', logo: <TokenWethIcon /> },
       ]}
-      stats={{ tvl, apx: apr, apxLabel: 'APR', isLoading: isLoadingStats }}
+      stats={{
+        tvl,
+        apx: apr,
+        apxLabel: 'APR',
+        isLoading: isLoadingStats,
+        apxHint: <DVVAprBreakdown />,
+      }}
       logo={<VaultDDVIcon />}
       position={
         isWalletConnected

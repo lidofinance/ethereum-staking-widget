@@ -29,7 +29,18 @@ export const GGVWithdrawForm: FC = () => {
           </VaultFormSection>
           <VaultTxInfo>
             <GGVWithdrawWillReceive />
-            <VaultTxInfoRow title="Waiting time">3 days</VaultTxInfoRow>
+            <VaultTxInfoRow
+              title="Waiting time"
+              help={
+                <>
+                  Withdrawals usually complete within 3 days, often sooner. You
+                  can track progress in your wallet or in the Withdrawal section
+                  of the Lido GGV UI.
+                </>
+              }
+            >
+              3 days
+            </VaultTxInfoRow>
           </VaultTxInfo>
           <GGVWithdrawSubmitButton />
         </GGVWhenNoActiveRequests>

@@ -1,6 +1,7 @@
 import { FC } from 'react';
-import { Accordion, Link } from '@lidofinance/lido-ui';
+import { Link } from '@lidofinance/lido-ui';
 import { config } from 'config';
+import { AccordionNavigatable } from 'shared/components/accordion-navigatable';
 
 export const WhatIsAprForDVV: FC = () => {
   const LIDO_APR_PATH = `${config.docsOrigin}/integrations/api/#lido-apr`;
@@ -8,7 +9,10 @@ export const WhatIsAprForDVV: FC = () => {
     'https://docs.mellow.finance/dvsteth-vault/overview';
 
   return (
-    <Accordion summary="What is APR for DVV, and how is it calculated?">
+    <AccordionNavigatable
+      summary="What is APR for DVV, and how is it calculated?"
+      id="what-is-apr-for-dvv"
+    >
       <p>
         DVV APR is nominated in ETH and consists of stETH APR, SSV and Obol
         rewards:
@@ -20,8 +24,9 @@ export const WhatIsAprForDVV: FC = () => {
         </li>
         <li>
           SSV and Obol rewards calculated daily based on token-to-ETH prices,
-          vault liquidity, and reward distributions. Find the full formula in
-          the <Link href={SSV_OBOL_REWARDS_PATH}>documentation.</Link>
+          vault liquidity, and reward distributions. You can find the full
+          formula in the{' '}
+          <Link href={SSV_OBOL_REWARDS_PATH}>documentation.</Link>
         </li>
       </ul>
       <p>
@@ -32,6 +37,6 @@ export const WhatIsAprForDVV: FC = () => {
           including changes to blockchain protocols and validator performance.
         </i>
       </p>
-    </Accordion>
+    </AccordionNavigatable>
   );
 };

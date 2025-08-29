@@ -1,14 +1,21 @@
 import { themeDark } from '@lidofinance/lido-ui';
+
 import {
   TokenMellowIcon,
   TokenObolIcon,
   TokenSsvIcon,
   TokenStethDarkIcon,
 } from 'assets/earn';
-import { useDVVApr } from '../hooks/use-dvv-stats';
-
-import { BreakdownContainer, BreakdownSection, BreakdownItem } from './styles';
 import { FormatPercent } from 'shared/formatters';
+import { LinkInpageAnchor } from 'shared/components/link-inpage-anchor';
+import { EARN_PATH } from 'consts/urls';
+import {
+  EARN_VAULT_DEPOSIT_SLUG,
+  EARN_VAULT_DVV_SLUG,
+} from 'features/earn/consts';
+
+import { useDVVApr } from '../hooks/use-dvv-stats';
+import { BreakdownContainer, BreakdownSection, BreakdownItem } from './styles';
 
 export const DVVAprBreakdown = () => {
   const { data } = useDVVApr();
@@ -18,10 +25,20 @@ export const DVVAprBreakdown = () => {
     (item) => item.id === 'steth',
   )?.value;
 
+  const DVV_DEPOSIT_PATH = `${EARN_PATH}/${EARN_VAULT_DVV_SLUG}/${EARN_VAULT_DEPOSIT_SLUG}`;
+
   return (
     <BreakdownContainer>
       <BreakdownSection>
-        APR
+        <span>
+          7-day average APR after{' '}
+          <LinkInpageAnchor pagePath={DVV_DEPOSIT_PATH} hash="#deposit-fee">
+            fees
+          </LinkInpageAnchor>
+        </span>
+      </BreakdownSection>
+      <BreakdownSection>
+        APR is the annual percentage rate without compounding
         <BreakdownItem>
           <TokenSsvIcon
             theme={themeDark}
@@ -56,7 +73,14 @@ export const DVVAprBreakdown = () => {
         </BreakdownItem>
       </BreakdownSection>
       <BreakdownSection>
-        You can find more details in the FAQ below.
+        <span>
+          <LinkInpageAnchor
+            pagePath={DVV_DEPOSIT_PATH}
+            hash="#what-is-apr-for-dvv"
+          >
+            Learn more in Lido DDV FAQ
+          </LinkInpageAnchor>{' '}
+        </span>
       </BreakdownSection>
     </BreakdownContainer>
   );

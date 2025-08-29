@@ -8,10 +8,10 @@ type VaultLegalProps = {
 };
 
 const DEFAULT_LEGAL_DISCLOSURE = (
-  <b>
+  <>
     Note, that the vault involves protocol, legal and other risks. You can find
     more details in the FAQ below.
-  </b>
+  </>
 );
 
 export const VaultLegal = ({
