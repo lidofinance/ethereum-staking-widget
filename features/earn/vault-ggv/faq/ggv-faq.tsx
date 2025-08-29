@@ -23,8 +23,8 @@ export const GGVFaq: FC = () => {
     <Section title="FAQ">
       <WhatIsLidoGGV />
       <WhatIsApyForGGV />
-      <RisksOfDepositing />
       <DepositFee />
+      <RisksOfDepositing />
       <WhatIsGGToken />
       <WhatCanIDoWithGGToken />
       <HowDoesWithdrawalWork />

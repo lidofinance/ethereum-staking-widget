@@ -24,8 +24,9 @@ export const WhatIsAprForDVV: FC = () => {
         </li>
         <li>
           SSV and Obol rewards calculated daily based on token-to-ETH prices,
-          vault liquidity, and reward distributions. Find the full formula in
-          the <Link href={SSV_OBOL_REWARDS_PATH}>documentation.</Link>
+          vault liquidity, and reward distributions. You can find the full
+          formula in the{' '}
+          <Link href={SSV_OBOL_REWARDS_PATH}>documentation.</Link>
         </li>
       </ul>
       <p>

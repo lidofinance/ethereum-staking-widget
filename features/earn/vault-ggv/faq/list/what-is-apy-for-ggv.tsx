@@ -8,9 +8,12 @@ export const WhatIsApyForGGV: FC = () => {
       id="what-is-apy-for-ggv"
     >
       <p>
-        The APY varies depending on the underlying strategies and market
-        conditions. Details on the calculation can be seen here.{' '}
-        <b>[link to the docs]</b>
+        APY is the annual percentage yield including compounding. In the context
+        of GGV the APY calculation is the following: the vault’s rewards are
+        derived from growth in its net asset value (NAV) over time. The NAV can
+        increase through multiple use cases, such as staking, lending, providing
+        liquidity on third-party providers. The user’s accrued rewards will
+        depend on the portion of the vault that they held.
       </p>
       <p>
         <i>
