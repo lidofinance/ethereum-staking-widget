@@ -1,6 +1,5 @@
 import { FC } from 'react';
 import { Section } from 'shared/components';
-import { RisksOfStakingWithLido } from 'features/stake/stake-faq/list';
 import {
   WhatIsLidoDVV,
   WhatIsAprForDVV,
@@ -24,7 +23,6 @@ export const DVVFaq: FC = () => {
       <WhatAreMellowPoints />
       <DepositFee />
       <RisksOfDepositing />
-      <RisksOfStakingWithLido />
       <WhatIsDVstETH />
       <WhatCanIDoWithDVstETH />
       <HowDoesWithdrawalWork />

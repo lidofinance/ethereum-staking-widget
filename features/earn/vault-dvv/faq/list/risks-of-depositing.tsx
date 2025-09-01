@@ -1,14 +1,8 @@
 import { FC } from 'react';
 import { Link } from '@lidofinance/lido-ui';
-import { useInpageNavigation } from 'providers/inpage-navigation';
-import { OnlyInfraRender } from 'shared/components/only-infra-render';
 import { AccordionNavigatable } from 'shared/components/accordion-navigatable';
 
 export const RisksOfDepositing: FC = () => {
-  const { navigateInpageAnchor } = useInpageNavigation();
-  const OTHER_RISKS_PATH = `#lidoStakingRisks`;
-  const OTHER_RISKS_LINK_TEXT = `Other inherited Lido protocol risks`;
-
   return (
     <AccordionNavigatable
       summary="What are the risks of depositing DVV?"
@@ -22,17 +16,9 @@ export const RisksOfDepositing: FC = () => {
         <li>Smart contract risk</li>
         <li>Validator slashing risk</li>
         <li>
-          <OnlyInfraRender renderIPFS={OTHER_RISKS_LINK_TEXT}>
-            <Link
-              href={OTHER_RISKS_PATH}
-              target="_self"
-              onClick={(e) => {
-                navigateInpageAnchor(e);
-              }}
-            >
-              {OTHER_RISKS_LINK_TEXT}
-            </Link>
-          </OnlyInfraRender>
+          <Link href="https://help.lido.fi/en/articles/5230603-what-are-the-risks-of-staking-with-lido">
+            Other inherited Lido protocol risks
+          </Link>
         </li>
       </ul>
       <p>
