@@ -127,7 +127,7 @@ export const VaultPageGGV: FC<{
                   risks. You can find more details in the{' '}
                   <LinkInpageAnchor hash="#risks-of-depositing">
                     FAQ
-                  </LinkInpageAnchor>
+                  </LinkInpageAnchor>{' '}
                   below.
                 </span>
               </>
