@@ -115,7 +115,7 @@ export type MellowAPIResponse = {
 
 export const useDVVApr = () => {
   return useQuery({
-    queryKey: ['ddv', 'stats', 'apr'],
+    queryKey: ['dvv', 'stats', 'apr'],
     queryFn: async () => {
       const url = `https://points.mellow.finance/v1/vaults`;
 

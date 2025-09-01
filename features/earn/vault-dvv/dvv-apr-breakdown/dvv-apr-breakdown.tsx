@@ -78,7 +78,7 @@ export const DVVAprBreakdown = () => {
             pagePath={DVV_DEPOSIT_PATH}
             hash="#what-is-apr-for-dvv"
           >
-            Learn more in Lido DDV FAQ
+            Learn more in Lido DVV FAQ
           </LinkInpageAnchor>{' '}
         </span>
       </BreakdownSection>

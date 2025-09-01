@@ -124,8 +124,8 @@ export const MATOMO_EARN_EVENTS: Record<
   ],
   [MATOMO_EARN_EVENTS_TYPES.dvvDeposit]: [
     'Ethereum_Earn_Widget',
-    'Click "Deposit" on Lido DDV on the list of vaults',
-    'eth_earn_list_lido_ddv_deposit',
+    'Click "Deposit" on Lido DVV on the list of vaults',
+    'eth_earn_list_lido_dvv_deposit',
   ],
   [MATOMO_EARN_EVENTS_TYPES.dvvDepositTabClick]: [
     'Ethereum_Earn_Widget',
@@ -189,7 +189,7 @@ export const MATOMO_EARN_EVENTS: Record<
   ],
   [MATOMO_EARN_EVENTS_TYPES.dvvBackToAllVaults]: [
     'Ethereum_Earn_Widget',
-    'Click on "Back to all vaults" on Lido DDV',
+    'Click on "Back to all vaults" on Lido DVV',
     'eth_earn_lido_dvv_back_to_all_vaults',
   ],
 };
