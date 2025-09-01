@@ -2,7 +2,7 @@ import styled, { css } from 'styled-components';
 
 import { ReactComponent as Partner7SeasIcon } from './partner-7seas.svg';
 import { ReactComponent as PartnerVedaIcon } from './partner-veda.svg';
-import { ReactComponent as PartnerStakehouseIcon } from './partner-stakehouse.svg';
+import { ReactComponent as PartnerSteakhouseIcon } from './partner-steakhouse.svg';
 import { ReactComponent as PartnerMellowIcon } from './partner-mellow.svg';
 
 import { ReactComponent as TokenEthIcon } from './token-eth.svg';
@@ -44,7 +44,7 @@ const TokenSsvIcon = styled(TokenSsvIconRaw)`
 export {
   Partner7SeasIcon,
   PartnerVedaIcon,
-  PartnerStakehouseIcon,
+  PartnerSteakhouseIcon,
   PartnerMellowIcon,
   TokenStethDarkIcon,
   VaultGGVIcon,

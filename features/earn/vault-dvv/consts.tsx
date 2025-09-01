@@ -1,4 +1,4 @@
-import { PartnerMellowIcon, PartnerStakehouseIcon } from 'assets/earn';
+import { PartnerMellowIcon, PartnerSteakhouseIcon } from 'assets/earn';
 import type { DVV_DEPOSIT_TOKENS } from './deposit/types';
 import type { Address } from 'viem';
 
@@ -20,8 +20,8 @@ export const OBOL_CLAIM_URL = (address: Address) =>
 export const DVV_PARTNERS = [
   {
     role: 'Curated by',
-    icon: <PartnerStakehouseIcon />,
-    text: 'Stakehouse Financial',
+    icon: <PartnerSteakhouseIcon />,
+    text: 'Steakhouse Financial',
   },
   {
     role: 'Infra provider',
