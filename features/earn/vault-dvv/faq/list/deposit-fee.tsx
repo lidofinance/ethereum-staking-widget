@@ -12,11 +12,7 @@ export const DepositFee: FC = () => {
         with any Ethereum interaction, there will be a network gas fee.
         Additionally, because DVV’s underlying token is wstETH, both the vault
         and any withdrawn wstETH are subject to Lido’s 10% protocol fee on the
-        net staking APR. What fee is applied during my deposit to DVV?
-        <br />
-        <br />
-        There’s no deposit fee or any other fees during your deposit, but as
-        with any Ethereum interaction, there will be a network gas fee.
+        net staking APR.
       </p>
     </AccordionNavigatable>
   );
