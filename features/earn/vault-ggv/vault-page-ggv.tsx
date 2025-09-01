@@ -6,7 +6,6 @@ import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo';
 import { trackMatomoEvent } from 'utils/track-matomo-event';
 
 import { TokenGGIcon, VaultGGVIcon } from 'assets/earn';
-import { useInpageNavigation } from 'providers/inpage-navigation';
 import { useDappStatus } from 'modules/web3';
 
 import { VaultHeader } from '../shared/vault-header';
@@ -35,6 +34,7 @@ import { useGGVPosition } from './hooks/use-ggv-position';
 import { GGV_PARTNERS, GGV_TOKEN_SYMBOL } from './consts';
 import { GGVFaq } from './faq/ggv-faq';
 import { GGVApyHint } from './ggv-apy-hint';
+import { LinkInpageAnchor } from 'shared/components/link-inpage-anchor';
 
 const description =
   'Lido GGV leverages top DeFi protocols to maximize rewards on your stETH, with a single deposit.';
@@ -65,7 +65,6 @@ export const VaultPageGGV: FC<{
     isLoading: isLoadingPosition,
     usdQuery: { isLoading: isLoadingUsd },
   } = useGGVPosition();
-  const { navigateInpageAnchor } = useInpageNavigation();
 
   return (
     <>
@@ -126,15 +125,9 @@ export const VaultPageGGV: FC<{
                   <br />
                   Note, that the vault involves protocol, slashing and other
                   risks. You can find more details in the{' '}
-                  <Link
-                    href="#risks-of-depositing"
-                    target="_self"
-                    onClick={(e) => {
-                      navigateInpageAnchor(e);
-                    }}
-                  >
+                  <LinkInpageAnchor hash="#risks-of-depositing">
                     FAQ
-                  </Link>{' '}
+                  </LinkInpageAnchor>
                   below.
                 </span>
               </>

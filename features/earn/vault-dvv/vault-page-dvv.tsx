@@ -3,6 +3,10 @@ import { Link } from '@lidofinance/lido-ui';
 
 import { VaultDDVIcon } from 'assets/earn';
 
+import { EARN_PATH } from 'consts/urls';
+import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo/matomo-earn-events';
+import { LinkInpageAnchor } from 'shared/components/link-inpage-anchor';
+
 import { VaultDescription } from '../shared/vault-description';
 import { VaultHeader } from '../shared/vault-header';
 import { VaultStats } from '../shared/vault-stats';
@@ -10,7 +14,6 @@ import { VaultSwitch } from '../shared/vault-switch';
 import { VaultLegal } from '../shared/vault-legal';
 import { ButtonBack } from '../shared/button-back';
 import { VaultDisclaimer } from '../shared/vault-disclaimer';
-
 import {
   VaultBlock,
   VaultBlockFormSection,
@@ -21,10 +24,6 @@ import {
   EARN_VAULT_DEPOSIT_SLUG,
   EARN_VAULT_WITHDRAW_SLUG,
 } from '../consts';
-
-import { EARN_PATH } from 'consts/urls';
-import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo/matomo-earn-events';
-import { useInpageNavigation } from 'providers/inpage-navigation';
 
 import { DVVDepositForm } from './deposit';
 import { DVVWithdrawForm } from './withdraw';
@@ -57,7 +56,6 @@ export const VaultPageDVV: FC<{
   const isDeposit = action === EARN_VAULT_DEPOSIT_SLUG;
   const isWithdraw = action === EARN_VAULT_WITHDRAW_SLUG;
   const { tvl, apr, isLoading: isLoadingStats } = useDVVStats();
-  const { navigateInpageAnchor } = useInpageNavigation();
 
   return (
     <>
@@ -109,15 +107,9 @@ export const VaultPageDVV: FC<{
                 <br />
                 Note, that the vault involves protocol, slashing and other
                 risks. You can find more details in the{' '}
-                <Link
-                  target="_self"
-                  href="#risks-of-depositing"
-                  onClick={(e) => {
-                    navigateInpageAnchor(e);
-                  }}
-                >
+                <LinkInpageAnchor hash="#risks-of-depositing">
                   FAQ
-                </Link>{' '}
+                </LinkInpageAnchor>{' '}
                 below.
               </>
             }
