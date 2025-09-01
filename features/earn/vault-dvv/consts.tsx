@@ -29,3 +29,6 @@ export const DVV_PARTNERS = [
     text: 'Mellow',
   },
 ];
+
+export const DVV_VAULT_DESCRIPTION =
+  'Lido DVV provides staking rewards boosted by Distributed Validator Technology incentives while supporting Lido Node Operator decentralization.';
