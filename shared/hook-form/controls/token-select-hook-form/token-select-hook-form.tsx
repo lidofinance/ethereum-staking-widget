@@ -1,21 +1,25 @@
 import { useController, useFormState, useFormContext } from 'react-hook-form';
 
 import { Option, Eth, Steth, Wsteth, OptionValue } from '@lidofinance/lido-ui';
+import { TokenWethIcon } from 'assets/earn';
 
-import { getTokenDisplayName } from 'utils/getTokenDisplayName';
+import {
+  getTokenDisplayName,
+  TOKEN_DISPLAY_NAMES,
+} from 'utils/getTokenDisplayName';
 import { isValidationErrorTypeValidate } from 'shared/hook-form/validation/validation-error';
 import { SelectIconStyle } from './styles';
-import { TOKENS_TO_WRAP } from 'features/wsteth/shared/types';
 
 export type TokenOption = {
   label?: string;
-  token: TOKENS_TO_WRAP;
+  token: TOKEN_DISPLAY_NAMES;
 };
 
-const iconsMap = {
-  [TOKENS_TO_WRAP.ETH]: <Eth />,
-  [TOKENS_TO_WRAP.stETH]: <Steth />,
-  [TOKENS_TO_WRAP.wstETH]: <Wsteth />,
+const iconsMap: { [key in TOKEN_DISPLAY_NAMES]?: JSX.Element } = {
+  ['ETH']: <Eth />,
+  ['wETH']: <TokenWethIcon />,
+  ['stETH']: <Steth />,
+  ['wstETH']: <Wsteth />,
 } as const;
 
 type TokenSelectHookFormProps = {
@@ -23,7 +27,7 @@ type TokenSelectHookFormProps = {
   fieldName?: string;
   resetField?: string;
   errorField?: string;
-  onChange?: (value: TOKENS_TO_WRAP) => void;
+  onChange?: (value: TOKEN_DISPLAY_NAMES) => void;
   warning?: boolean;
   disabled?: boolean;
 };
@@ -37,7 +41,7 @@ export const TokenSelectHookForm = ({
   warning,
   disabled = false,
 }: TokenSelectHookFormProps) => {
-  const { field } = useController<Record<string, TOKENS_TO_WRAP>>({
+  const { field } = useController<Record<string, TOKEN_DISPLAY_NAMES>>({
     name: fieldName,
   });
   const { setValue, clearErrors } = useFormContext();
@@ -66,7 +70,7 @@ export const TokenSelectHookForm = ({
           shouldValidate: false,
         });
         clearErrors(resetField);
-        onChange?.(value as TOKENS_TO_WRAP);
+        onChange?.(value as TOKEN_DISPLAY_NAMES);
       }}
     >
       {options.map(({ label, token }) => (

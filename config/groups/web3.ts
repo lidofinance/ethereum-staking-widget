@@ -19,4 +19,5 @@ export const AA_TX_POLLING_TIMEOUT = 180_000; // 3 minutes
 // >=0.001 wsTETH allowance to stETH (L2)
 
 // on Mainnet, Holesky, Hoodi, Sepolia, Optimism, Optimism Sepolia
-export const ESTIMATE_ACCOUNT = '0x87c0e047F4e4D3e289A56a36570D4CB957A37Ef1';
+export const ESTIMATE_ACCOUNT =
+  '0x87c0e047F4e4D3e289A56a36570D4CB957A37Ef1' as const;

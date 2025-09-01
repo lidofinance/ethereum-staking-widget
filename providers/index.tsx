@@ -7,6 +7,7 @@ import { ConfigProvider } from 'config';
 
 import { Web3Provider } from 'modules/web3';
 import { AddressValidationFile } from 'utils/address-validation';
+import { STRATEGY_LAZY } from 'consts/react-query-strategies';
 
 import { AppFlagProvider } from './app-flag';
 import { IPFSInfoBoxStatusesProvider } from './ipfs-info-box-statuses';
@@ -23,7 +24,7 @@ type ProvidersProps = {
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      refetchOnWindowFocus: false,
+      ...STRATEGY_LAZY,
     },
   },
 });

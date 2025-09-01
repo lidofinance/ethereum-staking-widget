@@ -1,11 +1,12 @@
 import { useMemo } from 'react';
-import { formatEther } from 'viem';
+import { formatUnits } from 'viem';
 
 export type FormatBalanceArgs = {
   maxDecimalDigits?: number;
   adaptiveDecimals?: boolean;
   maxTotalLength?: number;
   trimEllipsis?: boolean;
+  decimals?: number;
 };
 
 export const formatBalance = (
@@ -15,9 +16,10 @@ export const formatBalance = (
     maxTotalLength,
     adaptiveDecimals,
     trimEllipsis,
+    decimals = 18,
   }: FormatBalanceArgs = {},
 ) => {
-  let actual = formatEther(balance);
+  let actual = formatUnits(balance, decimals);
   // the 'formatEther' from 'viem' returns without '.0' - decimals part (if the number is greater than 0 and does not have a decimal part)
   if (!actual.includes('.')) {
     actual += '.0';

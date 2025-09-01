@@ -1,3 +1,10 @@
+/* ============================================================
+ * 🚫 NOTICE 🚫
+ * ------------------------------------------------------------
+ * This banner is hidden since the Earn page release.
+ * ============================================================
+ */
+
 import { Button, Link, useThemeToggle } from '@lidofinance/lido-ui';
 import { BannerTitleText } from '../shared-banner-partials';
 import {
