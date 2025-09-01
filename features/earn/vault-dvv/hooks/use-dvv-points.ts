@@ -5,7 +5,7 @@ import { useQuery } from '@tanstack/react-query';
 import { getContractAddress } from 'config/networks/contract-address';
 import { CHAINS } from 'consts/chains';
 import { useDappStatus } from 'modules/web3';
-import { bnAmountToNumber } from 'utils/bn';
+import { bnAmountToNumber, maxBN } from 'utils/bn';
 
 type UserPointsResponse = {
   user_address: Address;
@@ -44,15 +44,19 @@ type UserClaimPointsResponse = {
 
 const transformPoints = (
   reward?: UserClaimPointsResponse['vaults'][number]['rewards'][number],
-) => ({
-  claimable: BigInt(reward?.claimable_amount ?? 0),
-  claimed: BigInt(reward?.claimed_amount ?? 0),
-  usdAmount: reward
-    ? bnAmountToNumber(BigInt(reward.claimed_amount), reward.token.decimals) *
-      reward.token.price
-    : 0,
-  ...reward,
-});
+) => {
+  const claimable = maxBN(
+    BigInt(reward?.claimable_amount ?? 0) - BigInt(reward?.claimed_amount ?? 0),
+    0n,
+  );
+  return {
+    claimable,
+    usdAmount: reward
+      ? bnAmountToNumber(claimable, reward.token.decimals) * reward.token.price
+      : 0,
+    ...reward,
+  };
+};
 
 export const useDVVPoints = () => {
   const { address } = useDappStatus();
