@@ -1,6 +1,6 @@
 import { useCallback, useRef } from 'react';
 import { Hash } from 'viem';
-import { TransactionCallbackStage } from '@lidofinance/lido-ethereum-sdk';
+import { TransactionCallbackStage } from '@lidofinance/lido-ethereum-sdk/core';
 import { useAA } from '../use-aa';
 import { useSendAACalls } from './use-send-aa-calls';
 import { TxCallbackProps, TxFlowArgs } from './types';
@@ -40,7 +40,8 @@ export const useTxFlow = () => {
        *
        * @param args - The arguments for the current stage of the transaction.
        */
-      const txStagesCallback = async (args: TxCallbackProps) => {
+      const txStagesCallback = async (txArgs: TxCallbackProps) => {
+        const args = { ...txArgs, isAA };
         switch (args.stage) {
           case TransactionCallbackStage.SIGN:
             return onSign?.(args);

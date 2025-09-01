@@ -5,14 +5,19 @@ import { isValidationErrorTypeValidate } from 'shared/hook-form/validation/valid
 
 type InputGroupProps = React.ComponentProps<typeof InputGroup>;
 
-type InputGroupHookFormProps = InputGroupProps & {
-  errorField: string;
+type InputGroupStyleProps = {
+  success?: InputGroupProps['success'];
+  bottomSpacing?: boolean;
 };
 
-const InputGroupStyled = styled(InputGroup)<{
-  success?: InputGroupProps['success'];
-}>`
-  margin-bottom: ${({ theme }) => theme.spaceMap.md}px;
+type InputGroupHookFormProps = InputGroupProps &
+  InputGroupStyleProps & {
+    errorField: string;
+  };
+
+const InputGroupStyled = styled(InputGroup)<InputGroupStyleProps>`
+  margin-bottom: ${({ theme, bottomSpacing }) =>
+    bottomSpacing ? theme.spaceMap.md : 0}px;
   z-index: 2;
   span:nth-of-type(2) {
     white-space: ${({ success }) => !!success && 'unset'};
@@ -21,6 +26,7 @@ const InputGroupStyled = styled(InputGroup)<{
 
 export const InputGroupHookForm: React.FC<InputGroupHookFormProps> = ({
   errorField,
+  bottomSpacing = true,
   ...props
 }) => {
   const { errors } = useFormState<Record<string, unknown>>({
@@ -29,5 +35,12 @@ export const InputGroupHookForm: React.FC<InputGroupHookFormProps> = ({
   const errorMessage =
     isValidationErrorTypeValidate(errors[errorField]?.type) &&
     errors[errorField]?.message;
-  return <InputGroupStyled fullwidth error={errorMessage} {...props} />;
+  return (
+    <InputGroupStyled
+      bottomSpacing={bottomSpacing}
+      fullwidth
+      error={errorMessage}
+      {...props}
+    />
+  );
 };

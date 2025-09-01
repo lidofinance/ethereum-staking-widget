@@ -1,5 +1,6 @@
 import type { UseQueryResult } from '@tanstack/react-query';
 import type { DexWithdrawalApi } from 'features/withdrawals/request/withdrawal-rates';
+import type { EarnVaultKey } from 'features/earn/consts';
 
 export type Manifest = Record<string, ManifestEntry>;
 
@@ -13,15 +14,17 @@ export type ManifestEntry = {
 export type ManifestConfig = {
   enabledWithdrawalDexes: DexWithdrawalApi[];
   multiChainBanner: number[];
+  earnVaults: { name: EarnVaultKey; deposit?: boolean; withdraw?: boolean }[];
   featureFlags: {
     ledgerLiveL2?: boolean;
     disableSendCalls?: boolean;
     dgBannerEnabled?: boolean;
     dgWarningState?: boolean;
   };
-  pages?: {
+  pages: {
     [page in ManifestConfigPage]?: {
       shouldDisable?: boolean;
+      showNew?: boolean;
       sections?: [string, ...string[]];
     };
   };
@@ -34,6 +37,7 @@ export enum ManifestConfigPageEnum {
   Rewards = '/rewards',
   Settings = '/settings',
   Referral = '/referral',
+  Earn = '/earn',
 }
 
 export type ManifestConfigPage = `${ManifestConfigPageEnum}`;
