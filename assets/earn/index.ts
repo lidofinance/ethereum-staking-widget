@@ -16,7 +16,7 @@ import { ReactComponent as TokenSsvIconRaw } from './token-ssv.svg';
 import { ReactComponent as TokenMellowIcon } from './token-mellow.svg';
 import { ReactComponent as TokenStethDarkIcon } from './token-steth-dark.svg';
 
-import { ReactComponent as VaultDDVIcon } from './vault-ddv.svg';
+import { ReactComponent as VaultDVVIcon } from './vault-dvv.svg';
 import { ReactComponent as VaultGGVIcon } from './vault-ggv.svg';
 
 import { ReactComponent as NavIconEarn } from './nav-icon-earn.svg';
@@ -48,7 +48,7 @@ export {
   PartnerMellowIcon,
   TokenStethDarkIcon,
   VaultGGVIcon,
-  VaultDDVIcon,
+  VaultDVVIcon,
   TokenEthIcon,
   TokenStethIcon,
   TokenWethIcon,

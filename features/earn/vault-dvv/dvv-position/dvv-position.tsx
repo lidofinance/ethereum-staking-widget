@@ -7,7 +7,9 @@ import { useDVVPosition } from '../hooks/use-dvv-position';
 import {
   DVV_TOKEN_SYMBOL,
   MELLOW_POINT_SYMBOL,
+  OBOL_CLAIM_URL,
   OBOL_TOKEN_SYMBOL,
+  SSV_CLAIM_URL,
   SSV_TOKEN_SYMBOL,
 } from '../consts';
 import {
@@ -80,9 +82,9 @@ export const DVVPosition = () => {
     isLoading: isLoadingPosition,
   } = useDVVPosition();
   const { data, isLoading: isLoadingPoints } = useDVVPoints();
-  const { isDappActive } = useDappStatus();
+  const { isDappActive, address } = useDappStatus();
 
-  if (!isDappActive) return null;
+  if (!isDappActive || !address) return null;
 
   // convert mellow points to the wei at 18 decimals for easier compatibility with components
   const mellowPointsBalance = parseEther(data?.mellowPoints.toFixed(4) ?? '0');
@@ -108,7 +110,7 @@ export const DVVPosition = () => {
           icon: <TokenSsvIcon />,
           rightDecorator: data?.ssv.claimable ? (
             <ClaimDecorator
-              claimUrl={data.ssv.claim_url}
+              claimUrl={SSV_CLAIM_URL(address)}
               matomoEvent={MATOMO_EARN_EVENTS_TYPES.dvvRewardsClaimSsv}
             />
           ) : undefined,
@@ -123,7 +125,7 @@ export const DVVPosition = () => {
           icon: <TokenObolIcon />,
           rightDecorator: data?.obol.claimable ? (
             <ClaimDecorator
-              claimUrl={data.obol.claim_url}
+              claimUrl={OBOL_CLAIM_URL(address)}
               matomoEvent={MATOMO_EARN_EVENTS_TYPES.dvvRewardsClaimObol}
             />
           ) : undefined,

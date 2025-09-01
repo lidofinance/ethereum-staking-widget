@@ -1,4 +1,4 @@
-import { TokenEthIcon, TokenWethIcon, VaultDDVIcon } from 'assets/earn';
+import { TokenEthIcon, TokenWethIcon, VaultDVVIcon } from 'assets/earn';
 import { useDappStatus } from 'modules/web3';
 
 import { VaultCard } from '../shared/vault-card';
@@ -32,7 +32,7 @@ export const VaultCardDVV = () => {
         isLoading: isLoadingStats,
         apxHint: <DVVAprBreakdown />,
       }}
-      logo={<VaultDDVIcon />}
+      logo={<VaultDVVIcon />}
       position={
         isWalletConnected
           ? {
