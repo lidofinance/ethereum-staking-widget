@@ -5,6 +5,7 @@ import { AccordionNavigatable } from 'shared/components/accordion-navigatable';
 
 export const WhatIsAprForDVV: FC = () => {
   const LIDO_APR_PATH = `${config.docsOrigin}/integrations/api/#lido-apr`;
+  const LIDO_APR_PATH_TEXT = 'Learn more';
   const SSV_OBOL_REWARDS_PATH =
     'https://docs.mellow.finance/dvsteth-vault/overview';
 
@@ -20,7 +21,7 @@ export const WhatIsAprForDVV: FC = () => {
       <ul>
         <li>
           stETH APR based on Lido’s Ethereum staking rewards.{' '}
-          <Link href={LIDO_APR_PATH}>Learn more.</Link>
+          <Link href={LIDO_APR_PATH}>{LIDO_APR_PATH_TEXT}</Link>.
         </li>
         <li>
           SSV and Obol rewards calculated daily based on token-to-ETH prices,

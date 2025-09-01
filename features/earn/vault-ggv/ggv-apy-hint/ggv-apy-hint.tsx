@@ -4,6 +4,7 @@ import { EARN_PATH } from 'consts/urls';
 
 export const GGVApyHint = () => {
   const GGV_DEPOSIT_PATH = `${EARN_PATH}/${EARN_VAULT_GGV_SLUG}/${EARN_VAULT_DEPOSIT_SLUG}`;
+
   return (
     <span>
       7-day average APY after{' '}
