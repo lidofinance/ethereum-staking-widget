@@ -13,6 +13,7 @@ import {
   CanITransformWstethToEth,
   IsThereAFeeForWithdrawal,
   HowDoIClaimRewards,
+  WhoIsCurator,
 } from './list';
 
 export const DVVFaq: FC = () => {
@@ -23,6 +24,7 @@ export const DVVFaq: FC = () => {
       <WhatAreMellowPoints />
       <DepositFee />
       <RisksOfDepositing />
+      <WhoIsCurator />
       <WhatIsDVstETH />
       <WhatCanIDoWithDVstETH />
       <HowDoesWithdrawalWork />
