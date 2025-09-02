@@ -1,6 +1,7 @@
 import { type Address } from 'viem';
 import { bnAmountToNumber } from 'utils/bn';
 import { GGV_INCENTIVES, GGV_START_DATE } from './consts';
+import { standardFetcher } from 'utils/standardFetcher';
 
 type SevenSeasAPIDailyResponse = {
   Response: [
@@ -25,8 +26,7 @@ export const fetchDailyGGVApy = async (vault: Address) => {
 
   const url = `https://api.sevenseas.capital/dailyData/ethereum/${vault}/${weekAgo}/latest`;
 
-  const response = await fetch(url);
-  const data = (await response.json()) as SevenSeasAPIDailyResponse;
+  const data = await standardFetcher<SevenSeasAPIDailyResponse>(url);
 
   const latestResponse = data.Response[0];
 
@@ -55,8 +55,7 @@ type SevenSeasAPIPerformanceResponse = {
 export const fetchWeeklyGGVApy = async (vault: Address) => {
   const url = `https://api.sevenseas.capital/performance/ethereum/${vault}?aggregation_period=7`;
 
-  const response = await fetch(url);
-  const data = (await response.json()) as SevenSeasAPIPerformanceResponse;
+  const data = await standardFetcher<SevenSeasAPIPerformanceResponse>(url);
 
   return data.Response.apy;
 };
