@@ -60,6 +60,8 @@ const useGGVTvl = () => {
   });
 };
 
+const WEEK = 7 * 24 * 60 * 60 * 1000;
+
 const useGGVApy = () => {
   const { publicClientMainnet } = useMainnetOnlyWagmi();
 
@@ -71,8 +73,7 @@ const useGGVApy = () => {
       const accountant = getGGVAccountantContract(publicClientMainnet);
 
       const shouldSwitchTo7day =
-        new Date().getTime() - GGV_START_DATE.getTime() >
-        7 * 24 * 60 * 60 * 1000;
+        new Date().getTime() - GGV_START_DATE.getTime() > WEEK;
 
       if (shouldSwitchTo7day) {
         return fetchWeeklyGGVApy(vault.address);
