@@ -8,7 +8,11 @@ import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo';
 
 import { useDVVStats } from './hooks/use-dvv-stats';
 import { useDVVPosition } from './hooks/use-dvv-position';
-import { DVV_PARTNERS, DVV_TOKEN_SYMBOL } from './consts';
+import {
+  DVV_PARTNERS,
+  DVV_TOKEN_SYMBOL,
+  DVV_VAULT_DESCRIPTION,
+} from './consts';
 import { DVVAprBreakdown } from './dvv-apr-breakdown';
 
 export const VaultCardDVV = () => {
@@ -18,7 +22,7 @@ export const VaultCardDVV = () => {
   return (
     <VaultCard
       title="Lido DVV"
-      description="Lido DVV provides staking rewards boosted by Distributed Validator Technology (DVT) provider incentives while supporting Node Operator decentralization."
+      description={DVV_VAULT_DESCRIPTION}
       urlSlug={EARN_VAULT_DVV_SLUG}
       partners={DVV_PARTNERS}
       tokens={[

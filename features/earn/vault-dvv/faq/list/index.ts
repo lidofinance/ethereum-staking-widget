@@ -10,3 +10,4 @@ export * from './why-only-wsteth-on-withdrawal';
 export * from './can-i-transform-wsteth-to-eth';
 export * from './is-there-a-fee-for-withdrawal';
 export * from './how-do-i-claim-rewards';
+export * from './who-is-curator';
