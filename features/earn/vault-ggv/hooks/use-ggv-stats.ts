@@ -84,7 +84,7 @@ const useGGVApy = () => {
         lens.read.totalAssets([vault.address, accountant.address]),
       ]);
 
-      return dailyApr + calculateGGVIncentivesAPY(tvlWETH);
+      return Math.max(dailyApr, calculateGGVIncentivesAPY(tvlWETH));
     },
   });
 };

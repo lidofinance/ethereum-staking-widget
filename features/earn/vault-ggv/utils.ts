@@ -69,9 +69,9 @@ export const calculateGGVIncentivesAPY = (totalAssets: bigint) => {
 
   if (!incentive) return 0;
 
-  // (total_monthly_stETH / 30 / total_assets) * 365
+  // (total_monthly_stETH / 30 / total_assets) * 365 -> %
   const derived = bnAmountToNumber(
-    (incentive * 365n * 10n ** 18n) / (totalAssets * 30n),
+    (incentive * 365n * 100n * 10n ** 18n) / (totalAssets * 30n),
     18,
   );
 
