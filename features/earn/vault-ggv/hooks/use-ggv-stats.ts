@@ -13,6 +13,12 @@ import {
   getGGVLensContract,
   getGGVVaultContract,
 } from '../contracts';
+import {
+  calculateGGVIncentivesAPY,
+  fetchDailyGGVApy,
+  fetchWeeklyGGVApy,
+} from '../utils';
+import { GGV_START_DATE } from '../consts';
 
 const useGGVTvl = () => {
   const { publicClientMainnet } = useMainnetOnlyWagmi();
@@ -54,23 +60,7 @@ const useGGVTvl = () => {
   });
 };
 
-type SevenSeasAPIPerformanceResponse = {
-  Response: [
-    {
-      block_number: number;
-      daily_apy: number;
-      price_usd: string;
-      share_price: number;
-      timestamp: string;
-      total_assets: string;
-      tvl: string;
-      unix_seconds: number;
-      vault_address: Address;
-    },
-  ];
-};
-
-const WEEK_SECONDS = 7 * 24 * 60 * 60;
+const WEEK = 7 * 24 * 60 * 60 * 1000;
 
 const useGGVApy = () => {
   const { publicClientMainnet } = useMainnetOnlyWagmi();
@@ -78,22 +68,23 @@ const useGGVApy = () => {
   return useQuery({
     queryKey: ['ggv', 'stats', 'apy'],
     queryFn: async () => {
+      const lens = getGGVLensContract(publicClientMainnet);
       const vault = getGGVVaultContract(publicClientMainnet);
+      const accountant = getGGVAccountantContract(publicClientMainnet);
 
-      const weekAgo = Math.floor(new Date().getTime() / 1000 - WEEK_SECONDS);
+      const shouldSwitchTo7day =
+        new Date().getTime() - GGV_START_DATE.getTime() > WEEK;
 
-      const url = `https://api.sevenseas.capital/dailyData/ethereum/${vault.address}/${weekAgo}/latest`;
-
-      const response = await fetch(url);
-      const data = (await response.json()) as SevenSeasAPIPerformanceResponse;
-
-      const latestResponse = data.Response[0];
-
-      if (!latestResponse) {
-        throw new Error('[GGV-APY] No data found');
+      if (shouldSwitchTo7day) {
+        return fetchWeeklyGGVApy(vault.address);
       }
 
-      return latestResponse.daily_apy;
+      const [dailyApr, [_, tvlWETH]] = await Promise.all([
+        fetchDailyGGVApy(vault.address),
+        lens.read.totalAssets([vault.address, accountant.address]),
+      ]);
+
+      return Math.max(dailyApr, calculateGGVIncentivesAPY(tvlWETH));
     },
   });
 };
