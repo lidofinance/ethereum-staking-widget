@@ -16,6 +16,9 @@ export const GGVApyHint = () => {
       APY is the annual percentage yield including compounding
       <br />
       <br />
+      At GGV launch, and for the first 14 days, the daily APY will be displayed
+      instead of the 7-day APY due to insufficient historical data.
+      <br />
       <LinkInpageAnchor
         pagePath={GGV_DEPOSIT_PATH}
         hash={'#what-is-apy-for-ggv'}

@@ -73,7 +73,7 @@ const useGGVApy = () => {
       const accountant = getGGVAccountantContract(publicClientMainnet);
 
       const shouldSwitchTo7day =
-        new Date().getTime() - GGV_START_DATE.getTime() > WEEK;
+        new Date().getTime() - GGV_START_DATE.getTime() > 2 * WEEK;
 
       if (shouldSwitchTo7day) {
         return fetchWeeklyGGVApy(vault.address);
