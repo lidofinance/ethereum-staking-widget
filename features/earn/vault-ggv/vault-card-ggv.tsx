@@ -24,7 +24,7 @@ export const VaultCardGGV = () => {
   return (
     <VaultCard
       title="Lido GGV"
-      description="Lido GGV utilizes tried and tested strategies with premiere DeFi protocols for increased rewards on deposits of ETH or (w)stETH."
+      description="Lido GGV utilizes tried and tested strategies with premier DeFi protocols for increased rewards on deposits of ETH or (w)stETH."
       urlSlug={EARN_VAULT_GGV_SLUG}
       partners={GGV_PARTNERS}
       tokens={[

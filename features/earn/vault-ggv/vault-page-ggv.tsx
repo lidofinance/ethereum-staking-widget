@@ -111,26 +111,23 @@ export const VaultPageGGV: FC<{
           {isWithdraw && <GGVWithdrawForm />}
           <VaultLegal
             legalDisclosure={
-              <>
-                <span>
-                  Lido GGV service relies on third-party infrastructure provided
-                  by Veda. By proceeding, you are subject to Veda’s{' '}
-                  <Link href="https://veda.tech/terms">Terms of Service</Link>{' '}
-                  and{' '}
-                  <Link href="https://veda.tech/privacy-policy">
-                    Privacy Policy
-                  </Link>
-                  .
-                  <br />
-                  <br />
-                  Note, that the vault involves protocol, slashing and other
-                  risks. You can find more details in the{' '}
-                  <LinkInpageAnchor hash="#risks-of-depositing">
-                    FAQ
-                  </LinkInpageAnchor>{' '}
-                  below.
-                </span>
-              </>
+              <span>
+                Lido GGV service relies on third-party infrastructure provided
+                by Veda. By proceeding, you are subject to Veda’s{' '}
+                <Link href="https://veda.tech/terms">Terms of Service</Link> and{' '}
+                <Link href="https://veda.tech/privacy-policy">
+                  Privacy Policy
+                </Link>{' '}
+                as well as Lido’s Terms of Use.
+                <br />
+                <br />
+                Note, that the vault involves protocol, slashing and other
+                risks. You can find more details in the{' '}
+                <LinkInpageAnchor hash="#risks-of-depositing">
+                  FAQ
+                </LinkInpageAnchor>{' '}
+                below.
+              </span>
             }
             allocation={
               <>
