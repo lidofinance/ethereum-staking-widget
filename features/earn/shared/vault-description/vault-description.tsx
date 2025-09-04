@@ -18,7 +18,7 @@ export const VaultDescription: React.FC<{
       {description && <p>{description}</p>}
       {tokens && (
         <VaultTokensWrapper>
-          <VaultTokensLabel>Tokens</VaultTokensLabel>
+          <VaultTokensLabel>Deposit tokens</VaultTokensLabel>
           <VaultTokensList>
             {tokens.map((token, index) => (
               <VaultToken key={index}>
