@@ -3,6 +3,7 @@ import {
   TokenStethIcon,
   TokenWethIcon,
   TokenWstethIcon,
+  TokenGGIcon,
   VaultGGVIcon,
 } from 'assets/earn';
 
@@ -39,6 +40,7 @@ export const VaultCardGGV = () => {
               balance: sharesBalance,
               symbol: GGV_TOKEN_SYMBOL,
               isLoading: isLoadingPosition,
+              logo: <TokenGGIcon width={16} height={16} viewBox="0 0 28 28" />,
             }
           : undefined
       }
