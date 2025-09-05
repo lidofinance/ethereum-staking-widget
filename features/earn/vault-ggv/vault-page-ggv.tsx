@@ -7,6 +7,8 @@ import { trackMatomoEvent } from 'utils/track-matomo-event';
 
 import { TokenGGIcon, VaultGGVIcon } from 'assets/earn';
 import { useDappStatus } from 'modules/web3';
+import { LinkInpageAnchor } from 'shared/components/link-inpage-anchor';
+import { AprDisclaimer } from 'shared/components/apr-disclaimer/apr-disclaimer';
 
 import { VaultHeader } from '../shared/vault-header';
 import { VaultDescription } from '../shared/vault-description';
@@ -15,7 +17,6 @@ import { VaultStats } from '../shared/vault-stats';
 import { VaultPosition } from '../shared/vault-position';
 import { VaultLegal } from '../shared/vault-legal';
 import { ButtonBack } from '../shared/button-back';
-import { VaultDisclaimer } from '../shared/vault-disclaimer';
 import {
   VaultBlock,
   VaultBlockFormSection,
@@ -38,7 +39,6 @@ import {
 } from './consts';
 import { GGVFaq } from './faq/ggv-faq';
 import { GGVApyHint } from './ggv-apy-hint';
-import { LinkInpageAnchor } from 'shared/components/link-inpage-anchor';
 
 const routes = [
   {
@@ -145,7 +145,7 @@ export const VaultPageGGV: FC<{
         </VaultBlockFormSection>
       </VaultBlock>
       <GGVFaq />
-      <VaultDisclaimer />
+      <AprDisclaimer />
     </>
   );
 };

@@ -1,7 +1,7 @@
-import { VaultDisclaimerBlock } from './styles';
+import { AprDisclaimerBlock } from './styles';
 
-export const VaultDisclaimer = () => (
-  <VaultDisclaimerBlock>
+export const AprDisclaimer = () => (
+  <AprDisclaimerBlock>
     <p>
       * APR/APY figures are estimates, not guaranteed, and are subject to change
       based on network conditions.
@@ -16,5 +16,5 @@ export const VaultDisclaimer = () => (
       their own research, seek professional advice, and ensure they understand
       the risks before participating
     </p>
-  </VaultDisclaimerBlock>
+  </AprDisclaimerBlock>
 );

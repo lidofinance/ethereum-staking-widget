@@ -6,6 +6,7 @@ import { VaultDVVIcon } from 'assets/earn';
 import { EARN_PATH } from 'consts/urls';
 import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo/matomo-earn-events';
 import { LinkInpageAnchor } from 'shared/components/link-inpage-anchor';
+import { AprDisclaimer } from 'shared/components/apr-disclaimer/apr-disclaimer';
 
 import { VaultDescription } from '../shared/vault-description';
 import { VaultHeader } from '../shared/vault-header';
@@ -13,7 +14,6 @@ import { VaultStats } from '../shared/vault-stats';
 import { VaultSwitch } from '../shared/vault-switch';
 import { VaultLegal } from '../shared/vault-legal';
 import { ButtonBack } from '../shared/button-back';
-import { VaultDisclaimer } from '../shared/vault-disclaimer';
 import {
   VaultBlock,
   VaultBlockFormSection,
@@ -116,7 +116,7 @@ export const VaultPageDVV: FC<{
         </VaultBlockFormSection>
       </VaultBlock>
       <DVVFaq />
-      <VaultDisclaimer />
+      <AprDisclaimer />
     </>
   );
 };
