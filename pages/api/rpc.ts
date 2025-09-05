@@ -60,38 +60,44 @@ const allowedRPCMethods = [
   'net_version',
 ];
 
-const rpc = rpcFactory({
-  fetchRPC: trackedFetchRpcFactory({
-    registry: Metrics.registry,
-    prefix: METRICS_PREFIX,
-  }),
-  metrics: {
-    prefix: METRICS_PREFIX,
-    registry: Metrics.registry,
-  },
-  defaultChain: `${config.defaultChain}`,
-  providers: {
-    [CHAINS.Mainnet]: secretConfig.rpcUrls_1,
-    [CHAINS.Holesky]: secretConfig.rpcUrls_17000,
-    [CHAINS.Hoodi]: secretConfig.rpcUrls_560048,
-    [CHAINS.Sepolia]: secretConfig.rpcUrls_11155111,
-    [CHAINS.Optimism]: secretConfig.rpcUrls_10,
-    [CHAINS.OptimismSepolia]: secretConfig.rpcUrls_11155420,
-    [CHAINS.Soneium]: secretConfig.rpcUrls_1868,
-    [CHAINS.SoneiumMinato]: secretConfig.rpcUrls_1946,
-    [CHAINS.Unichain]: secretConfig.rpcUrls_130,
-    [CHAINS.UnichainSepolia]: secretConfig.rpcUrls_1301,
-  },
-  validation: {
-    allowedRPCMethods,
-    allowedCallAddresses,
-    allowedLogsAddresses,
-    maxBatchCount: config.PROVIDER_MAX_BATCH,
-    blockEmptyAddressGetLogs: true,
-    maxGetLogsRange: 20_000, // only 20k blocks size historical queries
-    maxResponseSize: 1_000_000, // 1mb max response
-  },
-});
+// FIX for dev mode
+const g = globalThis as any;
+const rpc =
+  g.__rpcSingleton__ ??
+  rpcFactory({
+    fetchRPC: trackedFetchRpcFactory({
+      registry: Metrics.registry,
+      prefix: METRICS_PREFIX,
+    }),
+    metrics: {
+      prefix: METRICS_PREFIX,
+      registry: Metrics.registry,
+    },
+    defaultChain: `${config.defaultChain}`,
+    providers: {
+      [CHAINS.Mainnet]: secretConfig.rpcUrls_1,
+      [CHAINS.Holesky]: secretConfig.rpcUrls_17000,
+      [CHAINS.Hoodi]: secretConfig.rpcUrls_560048,
+      [CHAINS.Sepolia]: secretConfig.rpcUrls_11155111,
+      [CHAINS.Optimism]: secretConfig.rpcUrls_10,
+      [CHAINS.OptimismSepolia]: secretConfig.rpcUrls_11155420,
+      [CHAINS.Soneium]: secretConfig.rpcUrls_1868,
+      [CHAINS.SoneiumMinato]: secretConfig.rpcUrls_1946,
+      [CHAINS.Unichain]: secretConfig.rpcUrls_130,
+      [CHAINS.UnichainSepolia]: secretConfig.rpcUrls_1301,
+    },
+    validation: {
+      allowedRPCMethods,
+      allowedCallAddresses,
+      allowedLogsAddresses,
+      maxBatchCount: config.PROVIDER_MAX_BATCH,
+      blockEmptyAddressGetLogs: true,
+      maxGetLogsRange: 20_000, // only 20k blocks size historical queries
+      maxResponseSize: 1_000_000, // 1mb max response
+    },
+  });
+
+if (!g.__rpcSingleton__) g.__rpcSingleton__ = rpc;
 
 export default wrapNextRequest([
   httpMethodGuard([HttpMethod.POST]),
