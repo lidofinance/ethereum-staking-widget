@@ -13,3 +13,4 @@ export * from './pending-request-rewards';
 export * from './how-many-withdrawal-requests';
 export * from './can-i-cancel-withdrawal-request';
 export * from './how-do-i-claim-rewards';
+export * from './who-is-curator';
