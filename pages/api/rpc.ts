@@ -60,7 +60,7 @@ const allowedRPCMethods = [
   'net_version',
 ];
 
-// FIX for dev mode
+// FIX(dev mode): prevent duplicate metric registration inside rpcFactory by wrapping it in a globalThis singleton
 const g = globalThis as any;
 const rpc =
   g.__rpcSingleton__ ??
