@@ -16,6 +16,7 @@ import {
   HowManyWithdrawalRequests,
   CanICancelWithdrawalRequest,
   HowDoIClaimRewards,
+  WhoIsCurator,
 } from './list';
 
 export const GGVFaq: FC = () => {
@@ -25,6 +26,7 @@ export const GGVFaq: FC = () => {
       <WhatIsApyForGGV />
       <DepositFee />
       <RisksOfDepositing />
+      <WhoIsCurator />
       <WhatIsGGToken />
       <WhatCanIDoWithGGToken />
       <HowDoesWithdrawalWork />

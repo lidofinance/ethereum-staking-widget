@@ -16,7 +16,7 @@ export const AverageAprBlock: FC = () => {
       dataTestId="averageAprBlock"
       title={
         <FlexCenter>
-          Average APR
+          Average APR *
           <Tooltip title={'APR on stETH over your staking period'}>
             <Question />
           </Tooltip>

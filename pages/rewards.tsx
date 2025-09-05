@@ -4,7 +4,7 @@ import Head from 'next/head';
 import { TopCard, RewardsList } from 'features/rewards/features';
 import RewardsHistoryProvider from 'providers/rewardsHistory';
 
-import { Layout } from 'shared/components';
+import { Layout, AprDisclaimer } from 'shared/components';
 
 import { getDefaultStaticProps } from 'utilsApi/get-default-static-props';
 
@@ -28,6 +28,7 @@ const Rewards: FC = () => {
         <TopCard />
         <RewardsList />
       </RewardsHistoryProvider>
+      <AprDisclaimer />
     </Layout>
   );
 };
