@@ -116,7 +116,7 @@ export const VaultPageDVV: FC<{
         </VaultBlockFormSection>
       </VaultBlock>
       <DVVFaq />
-      <AprDisclaimer />
+      <AprDisclaimer mentionAPY />
     </>
   );
 };

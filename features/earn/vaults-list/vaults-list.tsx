@@ -23,7 +23,7 @@ export const EarnVaultsList: FC = () => {
           return <VaultCard key={vault.name} />;
         })}
       </VaultsListWrapper>
-      <AprDisclaimer />
+      <AprDisclaimer mentionAPY />
     </>
   );
 };

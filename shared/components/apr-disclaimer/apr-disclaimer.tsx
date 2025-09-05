@@ -1,10 +1,14 @@
 import { AprDisclaimerBlock } from './styles';
 
-export const AprDisclaimer = () => (
+export const AprDisclaimer = ({
+  mentionAPY = false,
+}: {
+  mentionAPY?: boolean;
+}) => (
   <AprDisclaimerBlock>
     <p>
-      * APR/APY figures are estimates, not guaranteed, and are subject to change
-      based on network conditions.
+      * APR{mentionAPY && '/APY'} figures are estimates, not guaranteed, and are
+      subject to change based on network conditions.
     </p>
     <br />
     <p>

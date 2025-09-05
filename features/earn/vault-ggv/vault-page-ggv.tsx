@@ -145,7 +145,7 @@ export const VaultPageGGV: FC<{
         </VaultBlockFormSection>
       </VaultBlock>
       <GGVFaq />
-      <AprDisclaimer />
+      <AprDisclaimer mentionAPY />
     </>
   );
 };
