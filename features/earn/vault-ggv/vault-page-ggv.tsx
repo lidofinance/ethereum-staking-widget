@@ -31,13 +31,15 @@ import { GGVDepositForm } from './deposit';
 import { GGVWithdrawForm } from './withdraw';
 import { useGGVStats } from './hooks/use-ggv-stats';
 import { useGGVPosition } from './hooks/use-ggv-position';
-import { GGV_PARTNERS, GGV_TOKEN_SYMBOL } from './consts';
+import {
+  GGV_VAULT_DESCRIPTION,
+  GGV_PARTNERS,
+  GGV_TOKEN_SYMBOL,
+} from './consts';
 import { GGVFaq } from './faq/ggv-faq';
 import { GGVApyHint } from './ggv-apy-hint';
 import { LinkInpageAnchor } from 'shared/components/link-inpage-anchor';
 
-const description =
-  'Lido GGV leverages top DeFi protocols to maximize rewards on your stETH, with a single deposit.';
 const routes = [
   {
     path: `${EARN_PATH}/${EARN_VAULT_GGV_SLUG}/${EARN_VAULT_DEPOSIT_SLUG}`,
@@ -91,7 +93,7 @@ export const VaultPageGGV: FC<{
             apxHint={<GGVApyHint />}
             isLoading={isLoading}
           />
-          <VaultDescription description={description} />
+          <VaultDescription description={GGV_VAULT_DESCRIPTION} />
         </VaultBlockHeaderSection>
         {isDappActive && (
           <VaultPosition

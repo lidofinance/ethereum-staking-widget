@@ -16,6 +16,9 @@ export const GGV_DEPOSABLE_TOKENS: GGV_DEPOSIT_TOKENS[] = [
 export const INFINITE_DEPOSIT_CAP = maxUint112;
 export const MAX_REQUEST_DEADLINE = Number(maxUint24);
 
+export const GGV_VAULT_DESCRIPTION =
+  'Lido GGV utilizes tried and tested strategies with premier DeFi protocols for increased rewards on deposits of ETH or (w)stETH.';
+
 export const GGV_PARTNERS = [
   { role: 'Curated by', icon: <PartnerVedaIcon />, text: 'Veda' },
   {
