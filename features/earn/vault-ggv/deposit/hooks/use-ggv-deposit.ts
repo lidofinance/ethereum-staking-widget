@@ -8,6 +8,7 @@ import {
   Erc20AllowanceAbi,
   AACall,
   useLidoSDK,
+  applyRoundUpGasLimit,
 } from 'modules/web3';
 import { getTokenAddress } from 'config/networks/token-address';
 import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo/matomo-earn-events';
@@ -126,11 +127,13 @@ export const useGGVDeposit = (onRetry?: () => void) => {
             }
             needsApprove = false;
             await core.performTransaction({
-              getGasLimit: (opts) =>
-                teller.estimateGas.deposit(depositArgs, {
-                  ...opts,
-                  value: depositValue,
-                }),
+              getGasLimit: async (opts) =>
+                applyRoundUpGasLimit(
+                  await teller.estimateGas.deposit(depositArgs, {
+                    ...opts,
+                    value: depositValue,
+                  }),
+                ),
               sendTransaction: (opts) => {
                 return teller.write.deposit(depositArgs, {
                   ...opts,
