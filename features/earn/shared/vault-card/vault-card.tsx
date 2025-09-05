@@ -31,6 +31,7 @@ type VaultCardProps = {
     balance?: bigint;
     isLoading?: boolean;
     symbol: string;
+    logo: React.ReactNode;
   };
   depositLinkCallback?: () => void;
 };
@@ -57,12 +58,15 @@ export const VaultCard: React.FC<VaultCardProps> = ({
           {position.isLoading ? (
             <InlineLoader />
           ) : (
-            <FormatToken
-              trimEllipsis
-              symbol={position.symbol}
-              amount={position.balance}
-              fallback="—"
-            />
+            <>
+              <FormatToken
+                trimEllipsis
+                symbol={position.symbol}
+                amount={position.balance}
+                fallback="—"
+              />
+              {position.logo}
+            </>
           )}
         </VaultCardMyPositionValue>
       </VaultCardMyPosition>

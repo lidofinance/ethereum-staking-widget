@@ -3,6 +3,7 @@ import {
   TokenStethIcon,
   TokenWethIcon,
   TokenWstethIcon,
+  TokenGGIcon,
   VaultGGVIcon,
 } from 'assets/earn';
 
@@ -24,7 +25,7 @@ export const VaultCardGGV = () => {
   return (
     <VaultCard
       title="Lido GGV"
-      description="Lido GGV utilizes tried and tested strategies with premiere DeFi protocols for increased rewards on deposits of ETH or (w)stETH."
+      description="Lido GGV utilizes tried and tested strategies with premier DeFi protocols for increased rewards on deposits of ETH or (w)stETH."
       urlSlug={EARN_VAULT_GGV_SLUG}
       partners={GGV_PARTNERS}
       tokens={[
@@ -39,6 +40,7 @@ export const VaultCardGGV = () => {
               balance: sharesBalance,
               symbol: GGV_TOKEN_SYMBOL,
               isLoading: isLoadingPosition,
+              logo: <TokenGGIcon width={16} height={16} viewBox="0 0 28 28" />,
             }
           : undefined
       }
