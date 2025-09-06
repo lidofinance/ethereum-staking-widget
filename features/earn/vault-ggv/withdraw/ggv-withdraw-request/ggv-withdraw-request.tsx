@@ -39,6 +39,7 @@ const RequestEntry = ({
           symbol={getTokenDisplayName('wstETH')}
           trimEllipsis
           amount={request.metadata.amountOfAssets}
+          data-testid="request-amount"
         />
       </RequestMainBalance>
       <RequestSubBalance>
@@ -67,6 +68,7 @@ const PendingRequestEntry = ({ request }: RequestEntryProps) => {
           event.preventDefault();
           void cancelGGVWithdraw(request);
         }}
+        data-testid="cancel-request-btn"
       >
         Cancel
       </ButtonText>
@@ -82,7 +84,7 @@ export const GGVWithdrawRequest = () => {
 
   if (data.requests.openRequests.length > 0)
     return (
-      <RequestsContainer>
+      <RequestsContainer data-testid="pending-request">
         <RequestSectionTitle>Pending withdrawal request</RequestSectionTitle>
         {data.requests.openRequests.map((request) => (
           <PendingRequestEntry
@@ -97,7 +99,7 @@ export const GGVWithdrawRequest = () => {
     const latest = data.requests.fulfilledRequests[0];
 
     return (
-      <RequestsContainer>
+      <RequestsContainer data-testid="lts-request">
         <RequestSectionTitle>Latest withdrawal request</RequestSectionTitle>
         <RequestEntry request={latest.request}>
           Completed on{' '}

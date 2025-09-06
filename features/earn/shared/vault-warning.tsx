@@ -72,7 +72,7 @@ export const VaultWarning = ({
   variant = 'warning',
 }: React.PropsWithChildren<VaultWarningProps>) => {
   return (
-    <WarningContainer variant={variant}>
+    <WarningContainer variant={variant} data-testid="vault-warning">
       {variant === 'warning' && <WarningIcon />}
       {variant === 'info' && <InfoWarningIcon />}
       <WarningContent variant={variant}>{children}</WarningContent>
