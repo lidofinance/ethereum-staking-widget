@@ -47,7 +47,7 @@ export const VaultCard: React.FC<VaultCardProps> = ({
   position,
   depositLinkCallback,
 }) => (
-  <VaultCardWrapper>
+  <VaultCardWrapper data-testid={`${urlSlug}-vault-card`}>
     <VaultHeader compact title={title} partners={partners} logo={logo} />
     <VaultStats {...stats} />
     <VaultDescription description={description} tokens={tokens} />
@@ -64,6 +64,7 @@ export const VaultCard: React.FC<VaultCardProps> = ({
                 symbol={position.symbol}
                 amount={position.balance}
                 fallback="—"
+                data-testid={`${position.symbol}-position-amount`}
               />
               {position.logo}
             </>
@@ -75,7 +76,7 @@ export const VaultCard: React.FC<VaultCardProps> = ({
       href={`${EARN_PATH}/${urlSlug}/${EARN_VAULT_DEPOSIT_SLUG}`}
       onClick={depositLinkCallback}
     >
-      <Button fullwidth size="sm">
+      <Button fullwidth size="sm" data-testid="open-vault-btn">
         {position?.balance && position.balance > 0n ? 'Manage' : 'Deposit'}
       </Button>
     </VaultCardCTALink>

@@ -15,7 +15,7 @@ import { VaultWarning } from 'features/earn/shared/vault-warning';
 export const GGVDepositForm: FC = () => {
   return (
     <GGVDepositFormProvider>
-      <VaultForm>
+      <VaultForm data-testid="deposit-form">
         <GGVDepositWarning />
         <VaultFormSection>
           <GGVAvailableDeposit />

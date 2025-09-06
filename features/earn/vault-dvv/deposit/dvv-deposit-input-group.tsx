@@ -67,7 +67,7 @@ export const DVVDepositInputGroup: React.FC = () => {
         disabled={disabled}
         fieldName="amount"
         token={token}
-        data-testid="ggv-deposit-input"
+        data-testid="dvv-deposit-input"
         maxValue={maxTokenAmount}
         showErrorMessage={false}
         onMaxClick={() => {

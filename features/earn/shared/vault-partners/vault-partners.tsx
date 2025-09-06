@@ -13,7 +13,7 @@ type VaultPartnersProps = {
 
 export const VaultPartners: FC<VaultPartnersProps> = ({ partners }) => {
   return (
-    <VaultPartnersWrapper>
+    <VaultPartnersWrapper data-testid="vault-partners">
       {partners?.map((partner, index) => (
         <VaultPartner key={index}>
           <VaultPartnerRole>{partner.role}</VaultPartnerRole>

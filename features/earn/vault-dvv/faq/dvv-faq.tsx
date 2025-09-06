@@ -18,7 +18,7 @@ import {
 
 export const DVVFaq: FC = () => {
   return (
-    <Section title="FAQ">
+    <Section title="FAQ" data-testid="vault-faq">
       <WhatIsLidoDVV />
       <WhatIsAprForDVV />
       <WhatAreMellowPoints />

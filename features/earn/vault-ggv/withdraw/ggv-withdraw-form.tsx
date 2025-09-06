@@ -19,7 +19,7 @@ import { GGVWhenNoActiveRequests } from './ggv-when-no-active-requests';
 export const GGVWithdrawForm: FC = () => {
   return (
     <GGVWithdrawFormProvider>
-      <VaultForm>
+      <VaultForm data-testid="withdraw-form">
         <GGVWithdrawRequest />
         <GGVWhenNoActiveRequests>
           <GGVWithdrawWarning />
@@ -38,6 +38,7 @@ export const GGVWithdrawForm: FC = () => {
                   of the Lido GGV UI.
                 </>
               }
+              data-testid="waiting-time"
             >
               3 days
             </VaultTxInfoRow>

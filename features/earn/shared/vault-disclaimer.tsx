@@ -1,7 +1,7 @@
 import { VaultDisclaimerBlock } from './styles';
 
 export const VaultDisclaimer = () => (
-  <VaultDisclaimerBlock>
+  <VaultDisclaimerBlock data-testid="vault-disclaimer">
     <p>
       * APR/APY figures are estimates, not guaranteed, and are subject to change
       based on network conditions.

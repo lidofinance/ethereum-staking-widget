@@ -67,6 +67,7 @@ const ClaimDecorator = ({ claimUrl, matomoEvent }: ClaimDecoratorProps) => {
         onClick={() => {
           if (matomoEvent) trackMatomoEvent(matomoEvent);
         }}
+        data-testid="claim-btn"
       >
         Claim <ExternalLinkIcon />
       </ClaimButton>

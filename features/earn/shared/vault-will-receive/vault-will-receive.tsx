@@ -23,7 +23,7 @@ export const VaultWillReceive = ({
     <VaultTxInfoRow title={'You will receive'}>
       <VaultReceiveValue>
         <InlineLoader isLoading={isLoading} width={60}>
-          <VaultReceiveMainValue>
+          <VaultReceiveMainValue data-testid="amount-receive">
             <FormatToken
               symbol={symbol}
               amount={amount}

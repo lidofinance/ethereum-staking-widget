@@ -44,10 +44,13 @@ type PositionBodyProps = {
 
 const PositionBody = ({ position, compact }: PositionBodyProps) => {
   return (
-    <PositionEntryBody compact={compact}>
+    <PositionEntryBody
+      compact={compact}
+      data-testid={`${position.symbol}-position`}
+    >
       <PositionIcon>{position.icon}</PositionIcon>
 
-      <PositionBalance>
+      <PositionBalance data-testid={`${position.symbol}-amount`}>
         <InlineLoader width={78} isLoading={position.isLoading}>
           <PositionBalance>
             <FormatToken
