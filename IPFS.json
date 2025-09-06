@@ -17,7 +17,7 @@
       "pages": {
         "/earn": {
           "showNew": true,
-          "shouldDisable": false
+          "shouldDisable": true
         }
       }
     }
