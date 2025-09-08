@@ -1,4 +1,9 @@
-import { TokenEthIcon, TokenWethIcon, VaultDVVIcon } from 'assets/earn';
+import {
+  TokenEthIcon,
+  TokenWethIcon,
+  VaultDVVIcon,
+  TokenDvstethIcon,
+} from 'assets/earn';
 import { useDappStatus } from 'modules/web3';
 
 import { VaultCard } from '../shared/vault-card';
@@ -43,6 +48,9 @@ export const VaultCardDVV = () => {
               symbol: DVV_TOKEN_SYMBOL,
               balance: sharesBalance,
               isLoading: isLoadingPosition,
+              logo: (
+                <TokenDvstethIcon width={16} height={16} viewBox="0 0 28 28" />
+              ),
             }
           : undefined
       }

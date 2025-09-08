@@ -64,7 +64,7 @@ export const LidoStats: FC = memo(() => {
           <LidoStatsItem
             title={
               <FlexCenterVertical data-testid="aprTooltip">
-                Annual percentage rate
+                Annual percentage rate *
                 <Tooltip title={LIDO_APR_TOOLTIP_TEXT}>
                   <Question />
                 </Tooltip>

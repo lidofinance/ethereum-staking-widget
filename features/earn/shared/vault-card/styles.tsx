@@ -23,6 +23,13 @@ export const VaultCardMyPositionLabel = styled.div`
 
 export const VaultCardMyPositionValue = styled.div`
   font-weight: 700;
+  display: flex;
+  gap: 4px;
+
+  & > svg {
+    width: 16px;
+    height: 16px;
+  }
 `;
 
 export const VaultCardCTALink = styled(LocalLink)`

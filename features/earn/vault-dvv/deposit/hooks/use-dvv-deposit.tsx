@@ -1,10 +1,5 @@
 import { useCallback } from 'react';
-import {
-  encodeFunctionData,
-  getContract,
-  WalletClient,
-  zeroAddress,
-} from 'viem';
+import { encodeFunctionData, getContract, WalletClient } from 'viem';
 import invariant from 'tiny-invariant';
 
 import {
@@ -13,10 +8,12 @@ import {
   Erc20AllowanceAbi,
   AACall,
   useLidoSDK,
+  applyRoundUpGasLimit,
 } from 'modules/web3';
 import { getTokenAddress } from 'config/networks/token-address';
 import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo/matomo-earn-events';
 import { trackMatomoEvent } from 'utils/track-matomo-event';
+import { LIDO_ADDRESS } from 'config/groups/stake';
 
 import type { DVVDepositFormValidatedValues } from '../types';
 import {
@@ -87,7 +84,7 @@ export const useDVVDeposit = (onRetry?: () => void) => {
           amount, // amount not counted for eth but pass for better analytics
           vault.address,
           address, // receiver
-          zeroAddress, // referral
+          LIDO_ADDRESS, // referral
         ] as const;
         const depositValue = token === 'ETH' ? amount : 0n;
 
@@ -131,11 +128,13 @@ export const useDVVDeposit = (onRetry?: () => void) => {
             }
             needsApprove = false;
             await core.performTransaction({
-              getGasLimit: (opts) =>
-                wrapper.estimateGas.deposit(depositArgs, {
-                  ...opts,
-                  value: depositValue,
-                }),
+              getGasLimit: async (opts) =>
+                applyRoundUpGasLimit(
+                  await wrapper.estimateGas.deposit(depositArgs, {
+                    ...opts,
+                    value: depositValue,
+                  }),
+                ),
               sendTransaction: (opts) => {
                 return wrapper.write.deposit(depositArgs, {
                   ...opts,

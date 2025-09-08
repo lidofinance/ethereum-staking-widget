@@ -3,6 +3,7 @@ import {
   TokenStethIcon,
   TokenWethIcon,
   TokenWstethIcon,
+  TokenGGIcon,
   VaultGGVIcon,
 } from 'assets/earn';
 
@@ -14,7 +15,11 @@ import { EARN_VAULT_GGV_SLUG } from '../consts';
 import { VaultCard } from '../shared/vault-card';
 import { useGGVStats } from './hooks/use-ggv-stats';
 import { useGGVPosition } from './hooks/use-ggv-position';
-import { GGV_PARTNERS, GGV_TOKEN_SYMBOL } from './consts';
+import {
+  GGV_VAULT_DESCRIPTION,
+  GGV_PARTNERS,
+  GGV_TOKEN_SYMBOL,
+} from './consts';
 import { GGVApyHint } from './ggv-apy-hint';
 
 export const VaultCardGGV = () => {
@@ -24,7 +29,7 @@ export const VaultCardGGV = () => {
   return (
     <VaultCard
       title="Lido GGV"
-      description="Lido GGV utilizes tried and tested strategies with premiere DeFi protocols for increased rewards on deposits of ETH or (w)stETH."
+      description={GGV_VAULT_DESCRIPTION}
       urlSlug={EARN_VAULT_GGV_SLUG}
       partners={GGV_PARTNERS}
       tokens={[
@@ -39,6 +44,7 @@ export const VaultCardGGV = () => {
               balance: sharesBalance,
               symbol: GGV_TOKEN_SYMBOL,
               isLoading: isLoadingPosition,
+              logo: <TokenGGIcon width={16} height={16} viewBox="0 0 28 28" />,
             }
           : undefined
       }

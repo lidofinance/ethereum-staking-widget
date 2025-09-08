@@ -1,11 +1,12 @@
 import type { FC } from 'react';
 
+import { AprDisclaimer } from 'shared/components/apr-disclaimer';
+
 import { VaultCardGGV } from '../vault-ggv';
 import { VaultCardDVV } from '../vault-dvv';
 
 import { VaultsListWrapper } from './styles';
 import { useVaultConfig } from '../shared/hooks/use-vault-config';
-import { VaultDisclaimer } from '../shared/vault-disclaimer';
 
 const VAULT_CARDS = {
   ggv: VaultCardGGV,
@@ -22,7 +23,7 @@ export const EarnVaultsList: FC = () => {
           return <VaultCard key={vault.name} />;
         })}
       </VaultsListWrapper>
-      <VaultDisclaimer />
+      <AprDisclaimer mentionAPY />
     </>
   );
 };

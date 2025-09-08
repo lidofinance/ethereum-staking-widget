@@ -14,7 +14,10 @@ export const VaultSubmitButton = ({
   const shouldSwitchChain = !isAvailable;
 
   return (
-    <SubmitButtonHookForm disabled={disabled || shouldSwitchChain}>
+    <SubmitButtonHookForm
+      disabled={disabled || shouldSwitchChain}
+      data-testid="submit-btn"
+    >
       {shouldSwitchChain ? 'Switch to Ethereum Mainnet' : children}
     </SubmitButtonHookForm>
   );

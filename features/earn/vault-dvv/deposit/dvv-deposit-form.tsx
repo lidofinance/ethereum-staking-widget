@@ -16,7 +16,7 @@ export const DVVDepositForm: FC = () => {
   const { isDVVAvailable } = useDVVAvailable();
   return (
     <DVVDepositFormProvider>
-      <VaultForm>
+      <VaultForm data-testid="deposit-form">
         <DVVDepositWarning />
         <VaultFormSection>
           <DVVDepositAvailable />

@@ -7,6 +7,8 @@ import { trackMatomoEvent } from 'utils/track-matomo-event';
 
 import { TokenGGIcon, VaultGGVIcon } from 'assets/earn';
 import { useDappStatus } from 'modules/web3';
+import { LinkInpageAnchor } from 'shared/components/link-inpage-anchor';
+import { AprDisclaimer } from 'shared/components/apr-disclaimer/apr-disclaimer';
 
 import { VaultHeader } from '../shared/vault-header';
 import { VaultDescription } from '../shared/vault-description';
@@ -15,7 +17,6 @@ import { VaultStats } from '../shared/vault-stats';
 import { VaultPosition } from '../shared/vault-position';
 import { VaultLegal } from '../shared/vault-legal';
 import { ButtonBack } from '../shared/button-back';
-import { VaultDisclaimer } from '../shared/vault-disclaimer';
 import {
   VaultBlock,
   VaultBlockFormSection,
@@ -31,13 +32,14 @@ import { GGVDepositForm } from './deposit';
 import { GGVWithdrawForm } from './withdraw';
 import { useGGVStats } from './hooks/use-ggv-stats';
 import { useGGVPosition } from './hooks/use-ggv-position';
-import { GGV_PARTNERS, GGV_TOKEN_SYMBOL } from './consts';
+import {
+  GGV_VAULT_DESCRIPTION,
+  GGV_PARTNERS,
+  GGV_TOKEN_SYMBOL,
+} from './consts';
 import { GGVFaq } from './faq/ggv-faq';
 import { GGVApyHint } from './ggv-apy-hint';
-import { LinkInpageAnchor } from 'shared/components/link-inpage-anchor';
 
-const description =
-  'Lido GGV leverages top DeFi protocols to maximize rewards on your stETH, with a single deposit.';
 const routes = [
   {
     path: `${EARN_PATH}/${EARN_VAULT_GGV_SLUG}/${EARN_VAULT_DEPOSIT_SLUG}`,
@@ -91,7 +93,7 @@ export const VaultPageGGV: FC<{
             apxHint={<GGVApyHint />}
             isLoading={isLoading}
           />
-          <VaultDescription description={description} />
+          <VaultDescription description={GGV_VAULT_DESCRIPTION} />
         </VaultBlockHeaderSection>
         {isDappActive && (
           <VaultPosition
@@ -111,26 +113,23 @@ export const VaultPageGGV: FC<{
           {isWithdraw && <GGVWithdrawForm />}
           <VaultLegal
             legalDisclosure={
-              <>
-                <span>
-                  Lido GGV service relies on third-party infrastructure provided
-                  by Veda. By proceeding, you are subject to Veda’s{' '}
-                  <Link href="https://veda.tech/terms">Terms of Service</Link>{' '}
-                  and{' '}
-                  <Link href="https://veda.tech/privacy-policy">
-                    Privacy Policy
-                  </Link>
-                  .
-                  <br />
-                  <br />
-                  Note, that the vault involves protocol, slashing and other
-                  risks. You can find more details in the{' '}
-                  <LinkInpageAnchor hash="#risks-of-depositing">
-                    FAQ
-                  </LinkInpageAnchor>{' '}
-                  below.
-                </span>
-              </>
+              <span>
+                Lido GGV service relies on third-party infrastructure provided
+                by Veda. By proceeding, you are subject to Veda’s{' '}
+                <Link href="https://veda.tech/terms">Terms of Service</Link> and{' '}
+                <Link href="https://veda.tech/privacy-policy">
+                  Privacy Policy
+                </Link>{' '}
+                as well as Lido’s Terms of Use.
+                <br />
+                <br />
+                Note, that the vault involves protocol, slashing and other
+                risks. You can find more details in the{' '}
+                <LinkInpageAnchor hash="#risks-of-depositing">
+                  FAQ
+                </LinkInpageAnchor>{' '}
+                below.
+              </span>
             }
             allocation={
               <>
@@ -146,7 +145,7 @@ export const VaultPageGGV: FC<{
         </VaultBlockFormSection>
       </VaultBlock>
       <GGVFaq />
-      <VaultDisclaimer />
+      <AprDisclaimer mentionAPY />
     </>
   );
 };
