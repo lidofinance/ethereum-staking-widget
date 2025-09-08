@@ -1,15 +1,22 @@
+/* ============================================================
+ * 🚫 NOTICE 🚫
+ * ------------------------------------------------------------
+ * This banner is not used since the Earn page release.
+ * ============================================================
+ */
+
 import { useThemeToggle } from '@lidofinance/lido-ui';
 import { trackEvent } from '@lidofinance/analytics-matomo';
 
 import { ReactComponent as IconMevDark } from 'assets/vault-banner/icon-mev-dark.svg';
 import { ReactComponent as IconP2PDark } from 'assets/vault-banner/icon-p2p-dark.svg';
 import { ReactComponent as IconRe7Dark } from 'assets/vault-banner/icon-re7-dark.svg';
-import { ReactComponent as IconStakehouseDark } from 'assets/vault-banner/icon-stakehouse-dark.svg';
+import { ReactComponent as IconSteakhouseDark } from 'assets/vault-banner/icon-steakhouse-dark.svg';
 
 import { ReactComponent as IconMevLight } from 'assets/vault-banner/icon-mev-light.svg';
 import { ReactComponent as IconP2PLight } from 'assets/vault-banner/icon-p2p-light.svg';
 import { ReactComponent as IconRe7Light } from 'assets/vault-banner/icon-re7-light.svg';
-import { ReactComponent as IconStakehouseLight } from 'assets/vault-banner/icon-stakehouse-light.svg';
+import { ReactComponent as IconSteakhouseLight } from 'assets/vault-banner/icon-steakhouse-light.svg';
 
 import { config } from 'config';
 import { MATOMO_CLICK_EVENTS } from 'consts/matomo';
@@ -45,9 +52,9 @@ export const VaultsBannerInfo = ({
         <Logos>
           {themeName === 'dark' ? <IconP2PDark /> : <IconP2PLight />}
           {themeName === 'dark' ? (
-            <IconStakehouseDark />
+            <IconSteakhouseDark />
           ) : (
-            <IconStakehouseLight />
+            <IconSteakhouseLight />
           )}
           {themeName === 'dark' ? <IconRe7Dark /> : <IconRe7Light />}
           {themeName === 'dark' ? <IconMevDark /> : <IconMevLight />}

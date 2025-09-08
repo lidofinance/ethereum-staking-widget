@@ -9,16 +9,19 @@
         324, 10, 42161, 137, 8453, 5000, 59144, 534352, 56, 34443, 48900, 1868,
         130, 1135, 1923
       ],
+      "earnVaults": [{ "name": "ggv" }, { "name": "dvv" }],
+
       "featureFlags": {
         "disableSendCalls": false,
         "dgBannerEnabled": true
+      },
+      "pages": {
+        "/earn": {
+          "showNew": true,
+          "shouldDisable": false
+        }
       }
     }
-  },
-  "5": {
-    "__warning__": "For testing purposes only",
-    "cid": "bafybeidxi4uewduubu2xfcxlvcq5mwgwxuhi2qvrfgnny4xn4l6exzzsbu",
-    "leastSafeVersion": "0.36.1"
   },
   "17000": {
     "__warning__": "For testing purposes only",
@@ -48,6 +51,9 @@
         },
         "/rewards": {
           "shouldDisable": true
+        },
+        "/earn": {
+          "shouldDisable": true
         }
       }
     }
@@ -64,6 +70,12 @@
         "disableSendCalls": false,
         "dgBannerEnabled": false,
         "dgWarningState": false
+      },
+      "earnVaults": [{ "name": "ggv" }, { "name": "dvv" }],
+      "pages": {
+        "/earn": {
+          "showNew": true
+        }
       }
     }
   }

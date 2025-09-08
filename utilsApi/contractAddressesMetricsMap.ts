@@ -1,7 +1,8 @@
-import { Abi } from 'viem';
-import type { Address } from 'viem';
+import type { Address, Abi } from 'viem';
 
 import { CHAINS } from '@lidofinance/lido-ethereum-sdk/common';
+
+// LIDO SDK ABIs
 import { LidoLocatorAbi } from '@lidofinance/lido-ethereum-sdk/core';
 import { StethAbi } from '@lidofinance/lido-ethereum-sdk/stake';
 import { WithdrawalQueueAbi } from '@lidofinance/lido-ethereum-sdk/withdraw';
@@ -10,38 +11,71 @@ import {
   bridgedWstethAbi,
   rebasableL2StethAbi,
 } from '@lidofinance/lido-ethereum-sdk/l2';
-import { escrowAbi } from '@lidofinance/lido-ethereum-sdk/dual-governance';
-import { dualGovernanceAbi } from '@lidofinance/lido-ethereum-sdk/dual-governance';
-import { emergencyProtectedTimelockAbi } from '@lidofinance/lido-ethereum-sdk/dual-governance';
-import { dgConfigProviderAbi } from '@lidofinance/lido-ethereum-sdk/dual-governance';
 
+import {
+  escrowAbi,
+  emergencyProtectedTimelockAbi,
+  dualGovernanceAbi,
+  dgConfigProviderAbi,
+} from '@lidofinance/lido-ethereum-sdk/dual-governance';
+
+// Side contracts ABIs
 import { AggregatorAbi } from 'abi/aggregator-abi';
 import { ENSRegistryAbi } from 'abi/ens-registry-abi';
 import { ENSResolverAbi } from 'abi/ens-resolver-abi';
 import { PartialCurveAbi } from 'abi/partial-curve-abi';
 import { PartialStakingRouterAbi } from 'abi/partial-staking-router';
+import { wethABI } from 'abi/weth-abi';
+
+// Earn contracts ABIs
+// GGV
+import {
+  GGV_ACCOUNTANT_ABI,
+  GGV_LENS_ABI,
+  GGV_TELLER_ABI,
+  GGV_VAULT_ABI,
+  GGV_QUEUE_ABI,
+} from 'features/earn/vault-ggv/contracts/abi';
+// DVV
+import {
+  DVV_VAULT_ABI,
+  DVV_DEPOSIT_WRAPPER_ABI,
+} from 'features/earn/vault-dvv/contracts/abi';
 
 import { config } from 'config';
 import { CONTRACT_NAMES } from 'config/networks/networks-map';
 import { getContractAddress } from 'config/networks/contract-address';
 
 export const METRIC_CONTRACT_ABIS = {
+  // Lido
+  [CONTRACT_NAMES.lidoLocator]: LidoLocatorAbi,
   [CONTRACT_NAMES.lido]: StethAbi,
   [CONTRACT_NAMES.wsteth]: WstethABI,
   [CONTRACT_NAMES.withdrawalQueue]: WithdrawalQueueAbi,
-  [CONTRACT_NAMES.aggregatorEthUsdPriceFeed]: AggregatorAbi,
-  [CONTRACT_NAMES.aggregatorStEthUsdPriceFeed]: AggregatorAbi,
-  [CONTRACT_NAMES.stakingRouter]: PartialStakingRouterAbi,
-  [CONTRACT_NAMES.stethCurve]: PartialCurveAbi,
-  [CONTRACT_NAMES.lidoLocator]: LidoLocatorAbi,
   [CONTRACT_NAMES.L2stETH]: rebasableL2StethAbi,
   [CONTRACT_NAMES.L2wstETH]: bridgedWstethAbi,
-  [CONTRACT_NAMES.ensPublicResolver]: ENSResolverAbi,
-  [CONTRACT_NAMES.ensRegistry]: ENSRegistryAbi,
+  // Dual Governance
   [CONTRACT_NAMES.dualGovernance]: dualGovernanceAbi,
   [CONTRACT_NAMES.escrow]: escrowAbi,
   [CONTRACT_NAMES.emergencyProtectedTimelock]: emergencyProtectedTimelockAbi,
   [CONTRACT_NAMES.dgConfigProvider]: dgConfigProviderAbi,
+  // Side contracts ABIs
+  [CONTRACT_NAMES.aggregatorEthUsdPriceFeed]: AggregatorAbi,
+  [CONTRACT_NAMES.aggregatorStEthUsdPriceFeed]: AggregatorAbi,
+  [CONTRACT_NAMES.stakingRouter]: PartialStakingRouterAbi,
+  [CONTRACT_NAMES.stethCurve]: PartialCurveAbi,
+  [CONTRACT_NAMES.ensPublicResolver]: ENSResolverAbi,
+  [CONTRACT_NAMES.ensRegistry]: ENSRegistryAbi,
+  [CONTRACT_NAMES.weth]: wethABI,
+  // GGV
+  [CONTRACT_NAMES.ggvVault]: GGV_VAULT_ABI,
+  [CONTRACT_NAMES.ggvTeller]: GGV_TELLER_ABI,
+  [CONTRACT_NAMES.ggvAccountant]: GGV_ACCOUNTANT_ABI,
+  [CONTRACT_NAMES.ggvLens]: GGV_LENS_ABI,
+  [CONTRACT_NAMES.ggvQueue]: GGV_QUEUE_ABI,
+  // DVV
+  [CONTRACT_NAMES.dvvVault]: DVV_VAULT_ABI,
+  [CONTRACT_NAMES.dvvDepositWrapper]: DVV_DEPOSIT_WRAPPER_ABI,
 } as const;
 
 export type MetricContractName = keyof typeof CONTRACT_NAMES;
@@ -62,6 +96,10 @@ const CONTRACTS_WITH_EVENTS = [
   CONTRACT_NAMES.wsteth,
   CONTRACT_NAMES.L2stETH,
   CONTRACT_NAMES.L2wstETH,
+  CONTRACT_NAMES.weth,
+  // vaults are tokens, have transfer/approval events
+  CONTRACT_NAMES.dvvVault,
+  CONTRACT_NAMES.ggvVault,
 ];
 
 const invertContractsNamesToAddress = (

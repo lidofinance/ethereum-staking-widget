@@ -65,7 +65,7 @@ const WalletComponent = () => {
           small
           title={
             <>
-              Lido APR{' '}
+              Lido APR *{' '}
               {lidoApr.data && (
                 <Tooltip placement="bottom" title={LIDO_APR_TOOLTIP_TEXT}>
                   <Question />
