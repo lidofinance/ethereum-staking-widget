@@ -24,7 +24,9 @@ export const VaultHeader: FC<VaultHeaderProps> = ({
     <VaultCardWrapper>
       {logo}
       <VaultHeaderColumn>
-        <VaultHeaderTitle compact={compact}>{title}</VaultHeaderTitle>
+        <VaultHeaderTitle compact={compact} data-testid="vault-title">
+          {title}
+        </VaultHeaderTitle>
         <VaultPartners partners={partners} />
       </VaultHeaderColumn>
     </VaultCardWrapper>

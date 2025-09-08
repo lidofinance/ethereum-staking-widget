@@ -28,8 +28,8 @@ export const VaultStats: React.FC<VaultStatsProps> = ({
   compact,
 }) => {
   return (
-    <VaultStatsWrapper compact={compact}>
-      <VaultStatsItem>
+    <VaultStatsWrapper compact={compact} data-testid="vault-stats">
+      <VaultStatsItem data-testid="tvl-value">
         <VaultStatsLabel>TVL</VaultStatsLabel>{' '}
         <VaultStatsValue>
           <InlineLoader isLoading={isLoading} width={70}>
@@ -37,7 +37,7 @@ export const VaultStats: React.FC<VaultStatsProps> = ({
           </InlineLoader>
         </VaultStatsValue>
       </VaultStatsItem>
-      <VaultStatsItem>
+      <VaultStatsItem data-testid="apx-value">
         <VaultStatsLabel>{apxLabel}</VaultStatsLabel>{' '}
         <VaultStatsValue>
           <InlineLoader isLoading={isLoading} width={70}>

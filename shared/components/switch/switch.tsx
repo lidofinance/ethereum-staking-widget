@@ -9,13 +9,18 @@ export const Switch: FC<SwitchProps> = (props) => {
   const { checked, routes, fullwidth, className } = props;
 
   return (
-    <SwitchWrapper className={className} $fullwidth={fullwidth}>
+    <SwitchWrapper
+      className={className}
+      $fullwidth={fullwidth}
+      data-testid="switcher"
+    >
       <Handle $checked={checked} $fullwidth={fullwidth} />
       <SwitchItem
         href={routes[0].path}
         onClick={() =>
           routes[0].matomoEvent && trackMatomoEvent(routes[0].matomoEvent)
         }
+        data-testid={`${routes[0].name}-switch`}
       >
         {routes[0].name}
       </SwitchItem>
@@ -24,6 +29,7 @@ export const Switch: FC<SwitchProps> = (props) => {
         onClick={() =>
           routes[1].matomoEvent && trackMatomoEvent(routes[1].matomoEvent)
         }
+        data-testid={`${routes[1].name}-switch`}
       >
         {routes[1].name}
       </SwitchItem>

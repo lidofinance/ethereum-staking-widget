@@ -21,7 +21,7 @@ import {
 
 export const GGVFaq: FC = () => {
   return (
-    <Section title="FAQ">
+    <Section title="FAQ" data-testid="vault-faq">
       <WhatIsLidoGGV />
       <WhatIsApyForGGV />
       <DepositFee />

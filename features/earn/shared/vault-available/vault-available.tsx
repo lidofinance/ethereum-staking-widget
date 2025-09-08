@@ -19,7 +19,12 @@ export const VaultAvailable = ({
     <VaultAvailableContainer>
       <VaultAvailableLabel>{label}</VaultAvailableLabel>
       <InlineLoader width={78} isLoading={isLoading}>
-        <FormatToken fallback="-" amount={amount} symbol={symbol} />
+        <FormatToken
+          fallback="-"
+          amount={amount}
+          symbol={symbol}
+          data-testid="amount-available"
+        />
       </InlineLoader>
     </VaultAvailableContainer>
   );

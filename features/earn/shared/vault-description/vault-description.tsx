@@ -14,12 +14,12 @@ export const VaultDescription: React.FC<{
   tokens?: Array<{ name: string; logo: React.ReactNode }>;
 }> = ({ description, tokens }) => {
   return (
-    <VaultDescriptionWrapper>
+    <VaultDescriptionWrapper data-testid="vault-description">
       {description && <p>{description}</p>}
       {tokens && (
         <VaultTokensWrapper>
           <VaultTokensLabel>Deposit tokens</VaultTokensLabel>
-          <VaultTokensList>
+          <VaultTokensList data-testid="deposit-token-list">
             {tokens.map((token, index) => (
               <VaultToken key={index}>
                 <VaultTokenLogo>{token.logo}</VaultTokenLogo>

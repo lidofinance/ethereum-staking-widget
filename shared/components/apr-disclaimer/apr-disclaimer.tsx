@@ -5,7 +5,7 @@ export const AprDisclaimer = ({
 }: {
   mentionAPY?: boolean;
 }) => (
-  <AprDisclaimerBlock>
+  <AprDisclaimerBlock data-testid="vault-disclaimer">
     <p>
       * APR{mentionAPY && '/APY'} figures are estimates, not guaranteed, and are
       subject to change based on network conditions.
