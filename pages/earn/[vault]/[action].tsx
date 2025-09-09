@@ -3,7 +3,7 @@ import Head from 'next/head';
 import { Layout } from 'shared/components';
 import { getDefaultStaticProps } from 'utilsApi/get-default-static-props';
 
-import { VaultPageDVV, VaultPageGGV } from 'features/earn';
+import { VaultPageDVV, VaultPageGGV, VaultPageSTG } from 'features/earn';
 
 import {
   type EarnVaultKey,
@@ -17,7 +17,11 @@ type PageParams = {
   action: typeof EARN_VAULT_DEPOSIT_SLUG | typeof EARN_VAULT_WITHDRAW_SLUG;
 };
 
-const VAULT_PAGES = { ggv: VaultPageGGV, dvv: VaultPageDVV } as const;
+const VAULT_PAGES = {
+  ggv: VaultPageGGV,
+  dvv: VaultPageDVV,
+  stg: VaultPageSTG,
+} as const;
 
 export const getStaticPaths: GetStaticPaths = async () => {
   const paths: { params: { vault: string; action: string } }[] = [];
@@ -36,7 +40,19 @@ export const getStaticProps = getDefaultStaticProps<PageParams, PageParams>(
     const vault = params?.vault;
     const action = params?.action;
 
-    const vaults = previewData?.manifest?.config.earnVaults ?? [];
+    let vaults = previewData?.manifest?.config.earnVaults ?? [];
+
+    /* *********************************************************************
+     *  !!! IMPORTANT TODO (REMOVE WHEN STG IS ADDED TO CONFIG) !!!        *
+     *                                                                     *
+     *  This temporary entry forces the 'stg' vault into the UI while the *
+     *  official config does not yet include it.                           *
+     *                                                                     *
+     *  ACTION REQUIRED:
+     *    - Remove the following manual insertion (vaults = [{ name: 'stg' }, ...vaults];)
+     *      as soon as the 'stg' vault is present in previewData.manifest.config.earnVaults
+     ********************************************************************* */
+    vaults = [{ name: 'stg' }, ...vaults];
 
     // if vault is disabled by config
     // or action is not valid

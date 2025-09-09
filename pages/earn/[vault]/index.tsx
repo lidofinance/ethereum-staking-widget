@@ -26,11 +26,21 @@ export const getStaticProps = getDefaultStaticProps(
   async ({ params, previewData }) => {
     const vaultSlug = params?.vault;
 
-    if (
-      !previewData?.manifest?.config.earnVaults.find(
-        (vault) => vault.name === vaultSlug,
-      )
-    ) {
+    let vaults = previewData?.manifest?.config.earnVaults ?? [];
+
+    /* *********************************************************************
+     *  !!! IMPORTANT TODO (REMOVE WHEN STG IS ADDED TO CONFIG) !!!        *
+     *                                                                     *
+     *  This temporary entry forces the 'stg' vault into the UI while the *
+     *  official config does not yet include it.                           *
+     *                                                                     *
+     *  ACTION REQUIRED:
+     *    - Remove the following manual insertion (vaults = [{ name: 'stg' }, ...vaults];)
+     *      as soon as the 'stg' vault is present in previewData.manifest.config.earnVaults
+     ********************************************************************* */
+    vaults = [{ name: 'stg' }, ...vaults];
+
+    if (!vaults.some((vault) => vault.name === vaultSlug)) {
       return { notFound: true };
     }
 
