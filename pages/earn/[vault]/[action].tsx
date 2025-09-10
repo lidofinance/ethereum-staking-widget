@@ -40,19 +40,7 @@ export const getStaticProps = getDefaultStaticProps<PageParams, PageParams>(
     const vault = params?.vault;
     const action = params?.action;
 
-    let vaults = previewData?.manifest?.config.earnVaults ?? [];
-
-    /* *********************************************************************
-     *  !!! IMPORTANT TODO (REMOVE WHEN STG IS ADDED TO CONFIG) !!!        *
-     *                                                                     *
-     *  This temporary entry forces the 'stg' vault into the UI while the *
-     *  official config does not yet include it.                           *
-     *                                                                     *
-     *  ACTION REQUIRED:
-     *    - Remove the following manual insertion (vaults = [{ name: 'stg' }, ...vaults];)
-     *      as soon as the 'stg' vault is present in previewData.manifest.config.earnVaults
-     ********************************************************************* */
-    vaults = [{ name: 'stg' }, ...vaults];
+    const vaults = previewData?.manifest?.config.earnVaults ?? [];
 
     // if vault is disabled by config
     // or action is not valid
