@@ -1,7 +1,16 @@
-import React from 'react';
+import { VaultAvailable } from 'features/earn/shared/vault-available';
 
-export const STGAvailableDeposit: React.FC = () => {
-  return <div>Available to deposit: --</div>;
+export const STGAvailableDeposit = () => {
+  const isLoading = false;
+  const maxAmount = 0n;
+  const token = 'ETH';
+
+  return (
+    <VaultAvailable
+      isLoading={isLoading}
+      label="Available to deposit"
+      amount={maxAmount}
+      symbol={token}
+    />
+  );
 };
-
-export default STGAvailableDeposit;

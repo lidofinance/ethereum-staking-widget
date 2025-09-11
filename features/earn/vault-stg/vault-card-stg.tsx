@@ -1,6 +1,5 @@
 import {
   TokenEthIcon,
-  TokenStethIcon,
   TokenWethIcon,
   TokenWstethIcon,
   VaultSTGIcon,
@@ -34,7 +33,6 @@ export const VaultCardSTG = () => {
       tokens={[
         { name: 'ETH', logo: <TokenEthIcon /> },
         { name: 'WETH', logo: <TokenWethIcon /> },
-        { name: 'stETH', logo: <TokenStethIcon /> },
         { name: 'wstETH', logo: <TokenWstethIcon /> },
       ]}
       position={

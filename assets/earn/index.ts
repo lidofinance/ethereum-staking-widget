@@ -6,6 +6,7 @@ import { ReactComponent as PartnerSteakhouseIcon } from './partner-steakhouse.sv
 import { ReactComponent as PartnerMellowIcon } from './partner-mellow.svg';
 
 import { ReactComponent as TokenEthIcon } from './token-eth.svg';
+import { ReactComponent as TokenEthIcon32 } from './token-eth-32.svg';
 import { ReactComponent as TokenStethIcon } from './token-steth.svg';
 import { ReactComponent as TokenWethIcon } from './token-weth.svg';
 import { ReactComponent as TokenWstethIcon } from './token-wsteth.svg';
@@ -52,6 +53,7 @@ export {
   VaultDVVIcon,
   VaultSTGIcon,
   TokenEthIcon,
+  TokenEthIcon32,
   TokenStethIcon,
   TokenWethIcon,
   TokenWstethIcon,

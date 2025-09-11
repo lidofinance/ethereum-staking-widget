@@ -1,6 +1,6 @@
-import { Button } from '@lidofinance/lido-ui';
-import React from 'react';
+import { VaultSubmitButton } from 'features/earn/shared/vault-submit-button';
 
-export const STGDepositSubmitButton: React.FC = () => {
-  return <Button>Deposit</Button>;
+export const STGDepositSubmitButton = () => {
+  // TODO: isAvailable logic
+  return <VaultSubmitButton isAvailable>Deposit</VaultSubmitButton>;
 };

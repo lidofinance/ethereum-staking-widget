@@ -1,18 +1,15 @@
-import { parseEther } from 'viem';
+import { PartnerMellowIcon } from 'assets/earn';
 
-import { PartnerVedaIcon } from 'assets/earn';
+export const STG_TOKEN_SYMBOL = 'strETH';
 
-export const STG_TOKEN_SYMBOL = 'STG';
-
-export const STG_DEPOSABLE_TOKENS = ['ETH', 'wETH', 'stETH', 'wstETH'] as const;
+export const STG_DEPOSABLE_TOKENS = ['ETH', 'wETH', 'wstETH'] as const;
 
 export const STG_VAULT_DESCRIPTION =
-  'Lido STG (Starter Vault) is a placeholder vault used to onboard new strategies; implementation coming soon.';
+  'stRATEGY Vault Description placeholder; implementation coming soon.';
 
 export const STG_PARTNERS = [
-  { role: 'Curated by', icon: <PartnerVedaIcon />, text: 'Veda' },
+  { role: 'Curated by', icon: <></>, text: 'Runtime Labs' },
+  { role: 'Infra provider', icon: <PartnerMellowIcon />, text: 'Mellow' },
 ];
 
-export const STG_START_DATE = new Date();
-
-export const STG_INCENTIVES = [parseEther('0')];
+export const MELLOW_POINT_SYMBOL = 'Mellow';
