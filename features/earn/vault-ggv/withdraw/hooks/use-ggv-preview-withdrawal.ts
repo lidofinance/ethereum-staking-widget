@@ -67,6 +67,7 @@ export const useGGVPreviewWithdrawal = (
     data: {
       wsteth: query.data?.wsteth,
       usd: usdQuery.usdAmount,
+      eth: usdQuery.ethAmount,
     },
   };
 };

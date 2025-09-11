@@ -18,6 +18,7 @@ export const GGVWithdrawWillReceive = () => {
       amount={data.wsteth}
       symbol={getTokenDisplayName('wstETH')}
       usdAmount={data.usd}
+      ethAmount={data.eth}
       isLoading={isLoading}
     />
   );
