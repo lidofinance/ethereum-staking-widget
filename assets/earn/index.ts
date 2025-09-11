@@ -6,6 +6,7 @@ import { ReactComponent as PartnerSteakhouseIcon } from './partner-steakhouse.sv
 import { ReactComponent as PartnerMellowIcon } from './partner-mellow.svg';
 
 import { ReactComponent as TokenEthIcon } from './token-eth.svg';
+import { ReactComponent as TokenEthIcon32 } from './token-eth-32.svg';
 import { ReactComponent as TokenStethIcon } from './token-steth.svg';
 import { ReactComponent as TokenWethIcon } from './token-weth.svg';
 import { ReactComponent as TokenWstethIcon } from './token-wsteth.svg';
@@ -18,6 +19,7 @@ import { ReactComponent as TokenStethDarkIcon } from './token-steth-dark.svg';
 
 import { ReactComponent as VaultDVVIcon } from './vault-dvv.svg';
 import { ReactComponent as VaultGGVIcon } from './vault-ggv.svg';
+import { ReactComponent as VaultSTGIcon } from './vault-stg.svg';
 
 import { ReactComponent as NavIconEarn } from './nav-icon-earn.svg';
 
@@ -49,7 +51,9 @@ export {
   TokenStethDarkIcon,
   VaultGGVIcon,
   VaultDVVIcon,
+  VaultSTGIcon,
   TokenEthIcon,
+  TokenEthIcon32,
   TokenStethIcon,
   TokenWethIcon,
   TokenWstethIcon,
