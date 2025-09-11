@@ -2,7 +2,7 @@ import styled, { css } from 'styled-components';
 import { devicesHeaderMedia } from 'styles/global';
 
 export const desktopCss = css`
-  margin: 0 var(--nav-desktop-gutter-x);
+  margin: 0 ${({ theme }) => theme.spaceMap.xxl}px 0 var(--nav-desktop-gutter-x);
   display: flex;
   gap: ${({ theme }) => theme.spaceMap.xxl}px;
 
@@ -40,6 +40,16 @@ export const Nav = styled.div`
     ${mobileCss}
   }
   z-index: 6;
+`;
+
+export const Divider = styled.div`
+  width: 1px;
+  height: 12px;
+  align-self: center;
+  background-color: #000;
+  @media ${devicesHeaderMedia.mobile} {
+    display: none;
+  }
 `;
 
 // Not wrapping <a> inside <a> in IPFS mode
