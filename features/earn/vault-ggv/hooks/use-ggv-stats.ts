@@ -13,11 +13,7 @@ import {
   getGGVLensContract,
   getGGVVaultContract,
 } from '../contracts';
-import {
-  calculateGGVIncentivesAPY,
-  fetchDailyGGVApy,
-  fetchWeeklyGGVApy,
-} from '../utils';
+import { calculateGGVIncentivesAPY, fetchDailyGGVApy } from '../utils';
 import { GGV_START_DATE } from '../consts';
 
 const useGGVTvl = () => {
@@ -75,16 +71,14 @@ const useGGVApy = () => {
       const shouldSwitchTo7day =
         new Date().getTime() - GGV_START_DATE.getTime() > 2 * WEEK;
 
-      if (shouldSwitchTo7day) {
-        return fetchWeeklyGGVApy(vault.address);
-      }
-
-      const [dailyApr, [_, tvlWETH]] = await Promise.all([
+      const [{ average, daily }, [_, tvlWETH]] = await Promise.all([
         fetchDailyGGVApy(vault.address),
         lens.read.totalAssets([vault.address, accountant.address]),
       ]);
 
-      return Math.max(dailyApr, calculateGGVIncentivesAPY(tvlWETH));
+      const apr = shouldSwitchTo7day ? average : daily;
+
+      return Math.max(apr, calculateGGVIncentivesAPY(tvlWETH));
     },
   });
 };

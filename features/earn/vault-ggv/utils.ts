@@ -28,13 +28,18 @@ export const fetchDailyGGVApy = async (vault: Address) => {
 
   const data = await standardFetcher<SevenSeasAPIDailyResponse>(url);
 
-  const latestResponse = data.Response[0];
+  const latestApy = data.Response[0];
 
-  if (!latestResponse) {
+  if (!latestApy) {
     throw new Error('[GGV-APY] No data found');
   }
 
-  return latestResponse.daily_apy;
+  // 7 day sliding window average APY, safe if some data from api is missing
+  const averageApy =
+    data.Response.reduce((acc, curr) => acc + curr.daily_apy, 0) /
+    data.Response.length;
+
+  return { daily: latestApy.daily_apy, average: averageApy };
 };
 
 type SevenSeasAPIPerformanceResponse = {
