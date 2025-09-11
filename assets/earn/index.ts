@@ -21,6 +21,8 @@ import { ReactComponent as VaultGGVIcon } from './vault-ggv.svg';
 
 import { ReactComponent as NavIconEarn } from './nav-icon-earn.svg';
 
+import { ReactComponent as EarnGgvBannerIcon } from './earn-ggv-banner.svg';
+
 const themedBackground = css`
   path,
   rect {
@@ -59,4 +61,5 @@ export {
   TokenSsvIcon,
   TokenMellowIcon,
   NavIconEarn,
+  EarnGgvBannerIcon,
 };
