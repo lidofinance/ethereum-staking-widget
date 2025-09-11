@@ -46,7 +46,15 @@ export const Divider = styled.div`
   width: 1px;
   height: 12px;
   align-self: center;
-  background-color: #000;
+  background-color: var(--lido-color-textSecondary);
+
+  ${({ theme }) =>
+    theme.name == 'dark' &&
+    css`
+      background-color: #fff;
+      opacity: 0.8;
+    `}
+
   @media ${devicesHeaderMedia.mobile} {
     display: none;
   }
