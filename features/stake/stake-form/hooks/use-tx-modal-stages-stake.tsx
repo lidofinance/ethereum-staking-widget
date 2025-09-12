@@ -6,7 +6,7 @@ import {
 import { getGeneralTransactionModalStages } from 'shared/transaction-modal/hooks/get-general-transaction-modal-stages';
 import { TxStageSignOperationAmount } from 'shared/transaction-modal/tx-stages-composed/tx-stage-amount-operation';
 import { TxStageOperationSucceedBalanceShown } from 'shared/transaction-modal/tx-stages-composed/tx-stage-operation-succeed-balance-shown';
-import { EarnGGVBanner } from 'shared/banners/earn-ggv-banner';
+import { EarnUpGGVBanner } from 'shared/banners/earn-up-ggv-banner';
 
 const STAGE_OPERATION_ARGS = {
   token: 'ETH',
@@ -45,7 +45,7 @@ const getTxModalStagesStake = (transitStage: TransactionModalTransitStage) => ({
         balance={balance}
         balanceToken={'stETH'}
         operationText={'Staking'}
-        footer={<EarnGGVBanner />}
+        footer={<EarnUpGGVBanner />}
       />,
       {
         isClosableOnLedger: true,

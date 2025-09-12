@@ -1,7 +1,8 @@
 import { FC, memo } from 'react';
 
-import { StakeFormProvider } from './stake-form-context';
+import { EarnUpGGVBanner } from 'shared/banners/earn-up-ggv-banner';
 
+import { StakeFormProvider } from './stake-form-context';
 import { Wallet } from './wallet';
 import { StakeAmountInput } from './controls/stake-amount-input';
 import { StakeSubmitButton } from './controls/stake-submit-button';
@@ -19,7 +20,9 @@ export const StakeForm: FC = memo(() => {
           <StakeAmountInput />
           <StakeSubmitButton />
           <DualGovernanceBanner>
-            <SwapDiscountBanner />
+            <SwapDiscountBanner>
+              <EarnUpGGVBanner />
+            </SwapDiscountBanner>
           </DualGovernanceBanner>
         </FormControllerStyled>
         <StakeFormInfo />
