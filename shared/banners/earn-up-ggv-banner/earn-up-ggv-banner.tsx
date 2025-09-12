@@ -34,8 +34,9 @@ export const EarnUpGGVBanner = () => {
         <Message>
           <span>
             Earn up to{' '}
-            <FormatPercent value={apy} decimals="percent" fallback="-" /> of
-            extra APY with Lido GGV
+            <FormatPercent value={apy} decimals="percent" fallback="-" /> of{' '}
+            {/* eslint-disable-next-line no-irregular-whitespace */}
+            extra APY with Lido GGV
           </span>
         </Message>
         <LogoContainer>

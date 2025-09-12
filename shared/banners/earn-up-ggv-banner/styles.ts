@@ -29,15 +29,17 @@ export const Message = styled.div`
   line-height: 26px;
   font-weight: 700;
   flex: 1;
+  z-index: 2;
 `;
 
 export const LogoContainer = styled.div`
   position: relative;
-  flex: 0 0 106px;
-  min-width: 106px;
+  flex: 0 0 60px;
+  min-width: 60px;
 
   ${({ theme }) => theme.mediaQueries.sm} {
     flex: 1;
+    min-width: 96px;
   }
 `;
 
