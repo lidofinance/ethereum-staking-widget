@@ -4,8 +4,10 @@ import { CONTRACT_NAMES } from 'config/networks/networks-map';
 import { getContractAddress } from 'config/networks/contract-address';
 import { AggregatorAbi } from 'abi/aggregator-abi';
 import { CHAINS } from 'consts/chains';
+import { useConfig } from 'config';
 
 import { useMainnetOnlyWagmi } from 'modules/web3';
+import { VaultAPYType } from 'config/external-config/types';
 
 import { useQuery } from '@tanstack/react-query';
 import {
@@ -17,8 +19,8 @@ import {
   calculateGGVIncentivesAPY,
   fetchDailyGGVApy,
   fetchWeeklyGGVApy,
+  fetchWeeklyGGVApyAverage,
 } from '../utils';
-import { GGV_START_DATE } from '../consts';
 
 const useGGVTvl = () => {
   const { publicClientMainnet } = useMainnetOnlyWagmi();
@@ -60,9 +62,26 @@ const useGGVTvl = () => {
   });
 };
 
-const WEEK = 7 * 24 * 60 * 60 * 1000;
+const getGGVApy =
+  (ggvAPYType?: VaultAPYType) =>
+  async (vault: Address): Promise<number> => {
+    switch (ggvAPYType) {
+      case 'weekly':
+        return await fetchWeeklyGGVApy(vault);
+      case 'weekly_moving_average':
+        return await fetchWeeklyGGVApyAverage(vault);
+      case 'daily':
+        return (await fetchDailyGGVApy(vault)).daily;
+      default:
+        return (await fetchDailyGGVApy(vault)).daily;
+    }
+  };
 
 const useGGVApy = () => {
+  const ggvAPYType = useConfig().externalConfig.earnVaults.find(
+    (vault) => vault.name === 'ggv',
+  )?.apy?.type;
+
   const { publicClientMainnet } = useMainnetOnlyWagmi();
 
   return useQuery({
@@ -71,20 +90,14 @@ const useGGVApy = () => {
       const lens = getGGVLensContract(publicClientMainnet);
       const vault = getGGVVaultContract(publicClientMainnet);
       const accountant = getGGVAccountantContract(publicClientMainnet);
+      const apy = await getGGVApy(ggvAPYType)(vault.address);
 
-      const shouldSwitchTo7day =
-        new Date().getTime() - GGV_START_DATE.getTime() > 2 * WEEK;
-
-      if (shouldSwitchTo7day) {
-        return fetchWeeklyGGVApy(vault.address);
-      }
-
-      const [dailyApr, [_, tvlWETH]] = await Promise.all([
-        fetchDailyGGVApy(vault.address),
-        lens.read.totalAssets([vault.address, accountant.address]),
+      const [_, tvlWETH] = await lens.read.totalAssets([
+        vault.address,
+        accountant.address,
       ]);
 
-      return Math.max(dailyApr, calculateGGVIncentivesAPY(tvlWETH));
+      return Math.max(apy, calculateGGVIncentivesAPY(tvlWETH));
     },
   });
 };
