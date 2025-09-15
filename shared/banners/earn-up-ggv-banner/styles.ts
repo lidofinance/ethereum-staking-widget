@@ -61,8 +61,5 @@ export const OverlayLink = styled.a`
   bottom: 0;
   left: 0;
   right: 0;
-
-  & > button {
-    display: none;
-  }
+  z-index: 3;
 `;

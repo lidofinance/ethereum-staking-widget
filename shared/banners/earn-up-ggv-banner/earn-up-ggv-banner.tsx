@@ -1,5 +1,3 @@
-import { Button } from '@lidofinance/lido-ui';
-
 import { EARN_PATH } from 'consts/urls';
 import {
   EARN_VAULT_DEPOSIT_SLUG,
@@ -33,10 +31,16 @@ export const EarnUpGGVBanner = () => {
       <MessageContainer>
         <Message>
           <span>
-            Earn up to{' '}
-            <FormatPercent value={apy} decimals="percent" fallback="-" /> of{' '}
-            {/* eslint-disable-next-line no-irregular-whitespace */}
-            extra APY with Lido GGV
+            {apy ? (
+              <>
+                Earn up to{' '}
+                <FormatPercent value={apy} decimals="percent" fallback="-" /> of{' '}
+                {/* eslint-disable-next-line no-irregular-whitespace */}
+                extra APY with Lido GGV
+              </>
+            ) : (
+              'Earn extra APY with Lido GGV'
+            )}
           </span>
         </Message>
         <LogoContainer>
@@ -50,11 +54,7 @@ export const EarnUpGGVBanner = () => {
         onClick={() =>
           trackMatomoEvent(MATOMO_CLICK_EVENTS_TYPES.startEarningGGV)
         }
-      >
-        <Button size="sm" fullwidth>
-          Start earning
-        </Button>
-      </OverlayLink>
+      />
     </Wrap>
   );
 };
