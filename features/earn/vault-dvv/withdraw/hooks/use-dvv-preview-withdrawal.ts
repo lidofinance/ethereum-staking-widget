@@ -50,6 +50,7 @@ export const useDVVPreviewWithdrawal = (amount?: bigint | null) => {
     data: {
       wsteth: query.data?.wsteth,
       usd: usdQuery.usdAmount,
+      eth: usdQuery.ethAmount,
     },
   };
 };
