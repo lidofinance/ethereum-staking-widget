@@ -70,7 +70,11 @@
         "dgBannerEnabled": false,
         "dgWarningState": false
       },
-      "earnVaults": [{ "name": "ggv" }, { "name": "dvv" }, { "name": "stg" }],
+      "earnVaults": [
+        { "name": "ggv", "apy": { "type": "weekly" } },
+        { "name": "dvv" },
+        { "name": "stg" }
+      ],
       "pages": {
         "/earn": {
           "showNew": true

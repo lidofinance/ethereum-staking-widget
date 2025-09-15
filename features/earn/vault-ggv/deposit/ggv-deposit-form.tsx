@@ -25,7 +25,8 @@ export const GGVDepositForm: FC = () => {
           <GGVWillReceive />
         </VaultTxInfo>
         <VaultWarning variant="info">
-          Deposited funds can’t be withdrawn for 24 hours after deposit.
+          Deposited funds cannot be withdrawn, and GG token is non-transferable
+          for 24 hours after deposit.
           <br />
           Withdrawals are only in wstETH, regardless of deposited asset(s).
         </VaultWarning>

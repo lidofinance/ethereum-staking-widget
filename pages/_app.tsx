@@ -1,11 +1,10 @@
 import { memo } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
-import { AppProps } from 'next/app';
+import type { AppProps } from 'next/app';
 import 'nprogress/nprogress.css';
 import Head from 'next/head';
 
 import {
-  CookiesTooltip,
   ToastContainer,
   migrationAllowCookieToCrossDomainCookieClientSide,
   migrationThemeCookiesToCrossDomainCookiesClientSide,
@@ -15,10 +14,11 @@ import { config } from 'config';
 import { withCsp } from 'config/csp';
 import { SecurityStatusBanner } from 'features/ipfs';
 import { Providers } from 'providers';
-import { BackgroundGradient } from 'shared/components/background-gradient/background-gradient';
+import { BackgroundGradient } from 'shared/components/background-gradient';
 import { ErrorBoundaryFallback } from 'shared/components/error-boundary';
-import NoSsrWrapper from 'shared/components/no-ssr-wrapper';
+import { CookiesTooltip } from 'shared/components/cookies-tooltip';
 import { nprogress, COOKIES_ALLOWED_FULL_KEY } from 'utils';
+
 import { AddressValidationFile } from 'utils/address-validation';
 
 // Migrations old theme cookies to new cross domain cookies
@@ -69,14 +69,7 @@ const AppWrapper = (
       />
       <ToastContainer />
       <MemoApp {...props} />
-
-      <NoSsrWrapper>
-        <CookiesTooltip
-          privacyLink={`${config.rootOrigin}/privacy-notice`}
-          privacyLinkEnabled={!config.ipfsMode}
-        />
-      </NoSsrWrapper>
-
+      <CookiesTooltip />
       <SecurityStatusBanner />
     </Providers>
   );
