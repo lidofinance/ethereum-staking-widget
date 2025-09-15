@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import Link from 'next/link';
 
 import { BannerWrap } from '../shared-banner-partials';
 
@@ -54,7 +55,7 @@ export const IconWrapper = styled.div`
   }
 `;
 
-export const OverlayLink = styled.a`
+export const OverlayLink = styled(Link)`
   display: block;
   position: absolute;
   top: 0;
