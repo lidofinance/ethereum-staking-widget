@@ -71,8 +71,6 @@ const getGGVApy = async (
       return await fetchWeeklyGGVApy(vault);
     case 'weekly_moving_average':
       return await fetchWeeklyGGVApyAverage(vault);
-    case 'daily':
-      return (await fetchDailyGGVApy(vault)).daily;
     default:
       return (await fetchDailyGGVApy(vault)).daily;
   }
