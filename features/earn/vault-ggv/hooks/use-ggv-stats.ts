@@ -62,20 +62,21 @@ const useGGVTvl = () => {
   });
 };
 
-const getGGVApy =
-  (ggvAPYType?: VaultAPYType) =>
-  async (vault: Address): Promise<number> => {
-    switch (ggvAPYType) {
-      case 'weekly':
-        return await fetchWeeklyGGVApy(vault);
-      case 'weekly_moving_average':
-        return await fetchWeeklyGGVApyAverage(vault);
-      case 'daily':
-        return (await fetchDailyGGVApy(vault)).daily;
-      default:
-        return (await fetchDailyGGVApy(vault)).daily;
-    }
-  };
+const getGGVApy = async (
+  vault: Address,
+  ggvAPYType?: VaultAPYType,
+): Promise<number> => {
+  switch (ggvAPYType) {
+    case 'weekly':
+      return await fetchWeeklyGGVApy(vault);
+    case 'weekly_moving_average':
+      return await fetchWeeklyGGVApyAverage(vault);
+    case 'daily':
+      return (await fetchDailyGGVApy(vault)).daily;
+    default:
+      return (await fetchDailyGGVApy(vault)).daily;
+  }
+};
 
 const useGGVApy = () => {
   const ggvAPYType = useConfig().externalConfig.earnVaults.find(
@@ -85,12 +86,12 @@ const useGGVApy = () => {
   const { publicClientMainnet } = useMainnetOnlyWagmi();
 
   return useQuery({
-    queryKey: ['ggv', 'stats', 'apy'],
+    queryKey: ['ggv', 'stats', 'apy', ggvAPYType],
     queryFn: async () => {
       const lens = getGGVLensContract(publicClientMainnet);
       const vault = getGGVVaultContract(publicClientMainnet);
       const accountant = getGGVAccountantContract(publicClientMainnet);
-      const apy = await getGGVApy(ggvAPYType)(vault.address);
+      const apy = await getGGVApy(vault.address, ggvAPYType);
 
       const [_, tvlWETH] = await lens.read.totalAssets([
         vault.address,
