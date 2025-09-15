@@ -26,11 +26,9 @@ export const getStaticProps = getDefaultStaticProps(
   async ({ params, previewData }) => {
     const vaultSlug = params?.vault;
 
-    if (
-      !previewData?.manifest?.config.earnVaults.find(
-        (vault) => vault.name === vaultSlug,
-      )
-    ) {
+    const vaults = previewData?.manifest?.config.earnVaults ?? [];
+
+    if (!vaults.some((vault) => vault.name === vaultSlug)) {
       return { notFound: true };
     }
 
