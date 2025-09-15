@@ -15,7 +15,7 @@ import { LocalLink } from 'shared/components/local-link';
 import { useRouterPath } from 'shared/hooks/use-router-path';
 import { NavIconEarn } from 'assets/earn';
 
-import { Nav, NavLink } from './styles';
+import { Nav, NavLink, Divider } from './styles';
 
 type PageRoute = {
   name: string;
@@ -25,6 +25,7 @@ type PageRoute = {
   full_path?: string;
   subPaths?: string[];
   showNew?: boolean;
+  divider?: boolean;
 };
 
 const routes: PageRoute[] = [
@@ -33,11 +34,6 @@ const routes: PageRoute[] = [
     path: HOME_PATH,
     icon: <Stake data-testid="navStake" />,
     exact: true,
-  },
-  {
-    name: 'Earn',
-    path: '/earn',
-    icon: <NavIconEarn data-testid="navEarn" />,
   },
   {
     name: 'Wrap',
@@ -55,6 +51,12 @@ const routes: PageRoute[] = [
     name: 'Rewards',
     path: REWARDS_PATH,
     icon: <Wallet data-testid="navRewards" />,
+  },
+  {
+    divider: true,
+    name: 'Earn',
+    path: '/earn',
+    icon: <NavIconEarn data-testid="navEarn" />,
   },
 ];
 
@@ -91,22 +93,27 @@ export const Navigation: FC = memo(() => {
 
   return (
     <Nav>
-      {availableRoutes.map(({ name, path, subPaths, icon, showNew }) => {
-        const isActive =
-          pathnameWithoutQuery === getPathWithoutFirstSlash(path) ||
-          (path.length > 1 && pathnameWithoutQuery.startsWith(path)) ||
-          (Array.isArray(subPaths) &&
-            subPaths?.indexOf(pathnameWithoutQuery) > -1);
+      {availableRoutes.map(
+        ({ name, path, subPaths, icon, showNew, divider }) => {
+          const isActive =
+            pathnameWithoutQuery === getPathWithoutFirstSlash(path) ||
+            (path.length > 1 && pathnameWithoutQuery.startsWith(path)) ||
+            (Array.isArray(subPaths) &&
+              subPaths?.indexOf(pathnameWithoutQuery) > -1);
 
-        return (
-          <LocalLink key={path} href={path}>
-            <NavLink active={isActive} showNew={showNew}>
-              {icon}
-              <span>{name}</span>
-            </NavLink>
-          </LocalLink>
-        );
-      })}
+          return (
+            <>
+              {divider && <Divider />}
+              <LocalLink key={path} href={path}>
+                <NavLink active={isActive} showNew={showNew}>
+                  {icon}
+                  <span>{name}</span>
+                </NavLink>
+              </LocalLink>
+            </>
+          );
+        },
+      )}
     </Nav>
   );
 });
