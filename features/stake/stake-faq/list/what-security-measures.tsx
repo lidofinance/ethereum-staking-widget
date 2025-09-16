@@ -2,10 +2,13 @@ import { FC } from 'react';
 import { Accordion, Link } from '@lidofinance/lido-ui';
 import { MATOMO_CLICK_EVENTS_TYPES } from 'consts/matomo';
 
-export const SafeWorkWithLido: FC = () => {
+export const WhatSecurityMeasures: FC = () => {
   return (
-    <Accordion summary="Is it safe to work with Lido?">
-      <span> In order to work safe, Lido fits the next points:</span>
+    <Accordion summary="What security measures does the Lido protocol have in place?">
+      <span>
+        In order to provide users with a safe staking platform, the Lido
+        protocol fits the next points:
+      </span>
       <ul>
         <li>Open-sourcing & continuous review of all code.</li>
         <li>
@@ -32,8 +35,10 @@ export const SafeWorkWithLido: FC = () => {
         </li>
       </ul>
       <p>
-        Usually when staking ETH you choose only one validator. In the case of
-        Lido you stake across many validators, minimising your staking risk.
+        Please note that despite these factors potential risks still apply. For
+        further information and details please visit the{' '}
+        <Link href={'https://lido.fi/terms-of-use'}>Terms of Use</Link>, and
+        read the risks of staking with Lido referenced below.
       </p>
     </Accordion>
   );
