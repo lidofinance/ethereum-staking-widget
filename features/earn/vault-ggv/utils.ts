@@ -40,7 +40,7 @@ export const fetchDailyGGVApy = async (vault: Address) => {
   return { daily: latestApy.daily_apy, average: averageApy };
 };
 
-type SevenSeasAPIPerformanceResponse = {
+export type SevenSeasAPIPerformanceResponse = {
   Response: {
     apy: number;
     fees: number;
@@ -50,7 +50,12 @@ type SevenSeasAPIPerformanceResponse = {
       real_apy: number;
     };
     maturity_apy_breakdown: unknown[];
-    real_apy_breakdown: unknown[];
+    real_apy_breakdown: {
+      allocation: number;
+      apy: number;
+      chain: string;
+      protocol: string;
+    }[];
     timestamp: string;
   };
 };
