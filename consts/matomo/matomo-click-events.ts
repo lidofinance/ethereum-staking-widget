@@ -19,6 +19,7 @@ export const enum MATOMO_CLICK_EVENTS_TYPES {
   obolBannerProceed = 'obolBannerProceed',
   obolBannerDVVLink = 'obolBannerDVVLink',
   startEarningGGV = 'startEarningGGV',
+  vaultsBanner = 'vaultsBanner',
 
   // FAQ
   faqSafeWorkWithLidoAudits = 'faqSafeWorkWithLidoAudits',
@@ -187,6 +188,11 @@ export const MATOMO_CLICK_EVENTS: Record<
     'Ethereum_Staking_Widget_After_Staking_CTA',
     'Click on the staking follow-up banner',
     'eth_widget_start_earning_ggv',
+  ],
+  [MATOMO_CLICK_EVENTS_TYPES.vaultsBanner]: [
+    'Ethereum_Staking_Widget',
+    'Click on vault banner',
+    'eth_widget_vaults_banner',
   ],
   // FAQ
   [MATOMO_CLICK_EVENTS_TYPES.faqSafeWorkWithLidoAudits]: [

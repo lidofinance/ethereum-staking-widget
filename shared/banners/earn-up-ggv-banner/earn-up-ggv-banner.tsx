@@ -20,7 +20,12 @@ import {
   IconWrapper,
 } from './styles';
 
-export const EarnUpGGVBanner = () => {
+type EarnUpGGVBannerProps = {
+  matomoEvent: MATOMO_CLICK_EVENTS_TYPES;
+};
+
+export const EarnUpGGVBanner = (props: EarnUpGGVBannerProps) => {
+  const { matomoEvent } = props;
   const bannerLinkHref = `${EARN_PATH}/${EARN_VAULT_GGV_SLUG}/${EARN_VAULT_DEPOSIT_SLUG}`;
   const { apy } = useGGVStats();
   const { isDepositEnabled } = useGGVAvailable();
@@ -54,7 +59,7 @@ export const EarnUpGGVBanner = () => {
       <OverlayLink
         href={bannerLinkHref}
         onClick={() => {
-          trackMatomoEvent(MATOMO_CLICK_EVENTS_TYPES.startEarningGGV);
+          trackMatomoEvent(matomoEvent);
           closeModal();
         }}
       />
