@@ -14,12 +14,14 @@ import { WhatIsSlashing } from './list/what-is-slashing';
 import { LidoNFT } from './list/lido-nft';
 import { HowToAddNFT } from './list/add-nft';
 import { NFTNotChange } from './list/nft-not-change';
+import { RisksOfEngagingWithLido } from './list/risks-of-engaging-with-lido';
 
 export const ClaimFaq: React.FC = () => {
   const onClickHandler = useMatomoEventHandle();
 
   return (
     <Section title="FAQ" onClick={onClickHandler}>
+      <RisksOfEngagingWithLido />
       <WhatAreWithdrawals />
       <HowDoesWithdrawalsWork />
       <HowToWithdraw />

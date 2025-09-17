@@ -3,7 +3,7 @@ import { Accordion } from '@lidofinance/lido-ui';
 
 export const WhatIsWsteth: FC = () => {
   return (
-    <Accordion defaultExpanded summary="What is wstETH?">
+    <Accordion summary="What is wstETH?">
       <p>
         wstETH (wrapped stETH) is a non-rebasing version of stETH, wstETH&apos;s
         price denominated in stETH changes instead. The wstETH balance can only

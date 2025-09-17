@@ -14,7 +14,7 @@ export class WidgetPage {
       hasText: /^(Connect wallet|Unsupported chain)$/,
     });
     this.lidoStatistic = this.page.locator('section', {
-      hasText: 'Lido statistic',
+      hasText: 'Statistics of the Lido protocol',
     });
   }
 
