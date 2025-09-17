@@ -25,6 +25,7 @@ import { LidoNFT } from './list/lido-nft';
 import { HowToAddNFT } from './list/add-nft';
 import { NFTNotChange } from './list/nft-not-change';
 import { WhyWaitingTimeChanged } from './list/why-waiting-time-changed';
+import { RisksOfEngagingWithLido } from './list/risks-of-engaging-with-lido';
 
 // TODO: Replace this link when it will be finalized
 // const LEARN_MORE_LINK =
@@ -35,6 +36,7 @@ export const RequestFaq: React.FC = () => {
 
   return (
     <Section title="FAQ" onClick={onClickHandler}>
+      <RisksOfEngagingWithLido />
       <WhatAreWithdrawals />
       <HowDoesWithdrawalsWork />
       <HowToWithdraw />
