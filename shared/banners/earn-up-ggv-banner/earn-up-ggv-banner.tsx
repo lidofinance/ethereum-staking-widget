@@ -41,7 +41,7 @@ export const EarnUpGGVBanner = (props: EarnUpGGVBannerProps) => {
             {apy ? (
               <>
                 Earn up to{' '}
-                <FormatPercent value={apy} decimals="percent" fallback="-" />{' '}
+                <FormatPercent value={apy} decimals="percent" fallback="-" />*{' '}
                 {/* eslint-disable-next-line no-irregular-whitespace */}
                 APY with Lido GGV
               </>

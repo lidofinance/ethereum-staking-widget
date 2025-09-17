@@ -26,7 +26,7 @@ export const WhatSecurityMeasures: FC = () => {
           Oxorio, MixBytes, SigmaPrime, Quantstamp. Lido audits can be found in
           more detail{' '}
           <Link
-            href={'https://github.com/lidofinance/audits'}
+            href={'https://github.com/lidofinance/audits#lido-protocol-audits'}
             data-matomo={MATOMO_CLICK_EVENTS_TYPES.faqSafeWorkWithLidoAudits}
           >
             here
