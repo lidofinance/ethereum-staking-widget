@@ -2,7 +2,7 @@ import { Accordion } from '@lidofinance/lido-ui';
 
 export const WhatAreWithdrawals: React.FC = () => {
   return (
-    <Accordion defaultExpanded summary="What are withdrawals?">
+    <Accordion summary="What are withdrawals?">
       <p>
         Users can unstake their stETH or wstETH through withdrawals. Upon
         unstaking stETH, they will receive ETH at a 1:1 ratio. When unstaking

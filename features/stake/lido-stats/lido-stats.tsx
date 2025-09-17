@@ -48,7 +48,7 @@ export const LidoStats: FC = memo(() => {
 
   return (
     <Section
-      title="Lido statistics"
+      title="Statistics of the Lido protocol"
       headerDecorator={
         <MatomoLink
           href={etherscanLink}

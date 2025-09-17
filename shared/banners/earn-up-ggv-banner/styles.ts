@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import Link from 'next/link';
+import { LocalLink } from 'shared/components/local-link';
 
 import { BannerWrap } from '../shared-banner-partials';
 
@@ -35,12 +35,11 @@ export const Message = styled.div`
 
 export const LogoContainer = styled.div`
   position: relative;
-  flex: 0 0 60px;
-  min-width: 60px;
+  flex: 0 0 116px;
+  min-width: 116px;
 
   ${({ theme }) => theme.mediaQueries.sm} {
     flex: 1;
-    min-width: 96px;
   }
 `;
 
@@ -55,7 +54,7 @@ export const IconWrapper = styled.div`
   }
 `;
 
-export const OverlayLink = styled(Link)`
+export const OverlayLink = styled(LocalLink)`
   display: block;
   position: absolute;
   top: 0;

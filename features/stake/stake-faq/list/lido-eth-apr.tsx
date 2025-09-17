@@ -18,7 +18,13 @@ export const LidoEthApr: FC = () => {
         between node operators and the DAO Treasury.
       </p>
       <p>
-        More about Lido staking APR for Ethereum you could find on the{' '}
+        Please note that APR figures are only estimates and subject to change at
+        any time. Past performance is not a guarantee of future results. Rewards
+        are influenced by factors outside the platform’s control, including
+        changes to blockchain protocols and validator performance.
+      </p>
+      <p>
+        You can find more about Lido staking APR for Ethereum on the{' '}
         <Link
           href={`${config.rootOrigin}/ethereum`}
           data-matomo={MATOMO_CLICK_EVENTS_TYPES.faqLidoEthAprEthLandingPage}
