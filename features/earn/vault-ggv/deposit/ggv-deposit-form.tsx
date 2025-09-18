@@ -8,7 +8,7 @@ import { GGVDepositFormProvider } from './form-context';
 import { GGVDepositInputGroup } from './ggv-deposit-input-group';
 import { GGVAvailableDeposit } from './ggv-available-deposit';
 import { GGVWillReceive } from './ggv-deposit-will-receive';
-import { GGVDepositSubmitButton } from './ggv-deposit-submit-botton';
+import { GGVDepositSubmitButton } from './ggv-deposit-submit-button';
 import { GGVDepositWarning } from './ggv-deposit-warning';
 import { VaultWarning } from 'features/earn/shared/vault-warning';
 
