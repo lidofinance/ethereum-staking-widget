@@ -4,6 +4,8 @@ import { ReactComponent as Partner7SeasIcon } from './partner-7seas.svg';
 import { ReactComponent as PartnerVedaIcon } from './partner-veda.svg';
 import { ReactComponent as PartnerSteakhouseIcon } from './partner-steakhouse.svg';
 import { ReactComponent as PartnerMellowIcon } from './partner-mellow.svg';
+import { ReactComponent as PartnerRuntimeLabsIcon } from './partner-runtime-labs.svg';
+import { ReactComponent as PartnerRuntimeLabsIconInverted } from './partner-runtime-labs-inverted.svg';
 
 import { ReactComponent as TokenEthIcon } from './token-eth.svg';
 import { ReactComponent as TokenEthIcon32 } from './token-eth-32.svg';
@@ -48,6 +50,8 @@ export {
   PartnerVedaIcon,
   PartnerSteakhouseIcon,
   PartnerMellowIcon,
+  PartnerRuntimeLabsIcon,
+  PartnerRuntimeLabsIconInverted,
   TokenStethDarkIcon,
   VaultGGVIcon,
   VaultDVVIcon,
