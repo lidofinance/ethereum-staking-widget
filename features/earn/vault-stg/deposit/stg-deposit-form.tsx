@@ -1,7 +1,7 @@
 import { VaultFormSection } from 'features/earn/shared/vault-form-section';
 import { VaultForm } from 'features/earn/shared/vault-form';
 import { VaultTxInfo } from 'features/earn/shared/vault-tx-info';
-import { TokenEthIcon32, TokenDvstethIcon } from 'assets/earn';
+import { TokenEthIcon32, TokenStrethIcon } from 'assets/earn';
 
 import { STGDepositFormProvider } from './form-context';
 import { STGDepositInputGroup } from './stg-deposit-input-group';
@@ -29,7 +29,7 @@ export const STGDepositForm = () => {
           <br />
           <STGPendingAction
             title="Ready to claim"
-            tokenLogo={<TokenDvstethIcon />}
+            tokenLogo={<TokenStrethIcon />}
             tokenAmount="1,000"
             tokenName="strETH"
             tokenAmountUSD="$1,000"

@@ -18,6 +18,7 @@ import { ReactComponent as TokenObolIconRaw } from './token-obol.svg';
 import { ReactComponent as TokenSsvIconRaw } from './token-ssv.svg';
 import { ReactComponent as TokenMellowIcon } from './token-mellow.svg';
 import { ReactComponent as TokenStethDarkIcon } from './token-steth-dark.svg';
+import { ReactComponent as TokenStrethIcon } from './token-streth.svg';
 
 import { ReactComponent as VaultDVVIcon } from './vault-dvv.svg';
 import { ReactComponent as VaultGGVIcon } from './vault-ggv.svg';
@@ -53,6 +54,7 @@ export {
   PartnerRuntimeLabsIcon,
   PartnerRuntimeLabsIconInverted,
   TokenStethDarkIcon,
+  TokenStrethIcon,
   VaultGGVIcon,
   VaultDVVIcon,
   VaultSTGIcon,

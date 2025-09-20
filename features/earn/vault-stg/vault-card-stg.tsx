@@ -3,7 +3,7 @@ import {
   TokenWethIcon,
   TokenWstethIcon,
   VaultSTGIcon,
-  TokenDvstethIcon,
+  TokenStrethIcon,
 } from 'assets/earn';
 
 import { useDappStatus } from 'modules/web3';
@@ -41,9 +41,7 @@ export const VaultCardSTG = () => {
               balance: sharesBalance,
               symbol: STG_TOKEN_SYMBOL,
               isLoading: isLoadingPosition,
-              logo: (
-                <TokenDvstethIcon width={16} height={16} viewBox="0 0 28 28" />
-              ),
+              logo: <TokenStrethIcon width={16} height={16} />,
             }
           : undefined
       }

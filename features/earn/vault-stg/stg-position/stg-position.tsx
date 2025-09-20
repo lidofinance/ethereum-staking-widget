@@ -1,4 +1,4 @@
-import { TokenDvstethIcon, TokenMellowIcon } from 'assets/earn';
+import { TokenStrethIcon, TokenMellowIcon } from 'assets/earn';
 import { VaultPosition } from 'features/earn/shared/vault-position';
 import { STG_TOKEN_SYMBOL, MELLOW_POINT_SYMBOL } from '../consts';
 import { useSTGPosition } from '../hooks/use-stg-position';
@@ -6,7 +6,7 @@ import { parseEther } from 'viem';
 
 export const STGPosition = () => {
   const {
-    // data,
+    data,
     mellowPoints,
     isLoading,
     // usdBalance,
@@ -20,9 +20,9 @@ export const STGPosition = () => {
     <VaultPosition
       position={{
         symbol: STG_TOKEN_SYMBOL,
-        token: undefined,
-        balance: 0n, //data?.sharesBalance,
-        icon: <TokenDvstethIcon />,
+        token: data?.strethTokenAddress,
+        balance: data?.sharesBalance,
+        icon: <TokenStrethIcon />,
         isLoading: isLoading, // || isLoadingUsd,
         usdAmount: null,
       }}
