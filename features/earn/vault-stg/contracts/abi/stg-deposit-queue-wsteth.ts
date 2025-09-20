@@ -249,4 +249,4 @@ export const STG_DEPOSIT_QUEUE_WSTETH_ABI = [
     stateMutability: 'view',
     type: 'function',
   },
-];
+] as const;
