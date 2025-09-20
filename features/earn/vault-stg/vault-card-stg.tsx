@@ -7,10 +7,9 @@ import {
 } from 'assets/earn';
 
 import { useDappStatus } from 'modules/web3';
-
+import { useSTGStats } from './hooks/use-stg-stats';
+import { useSTGPosition } from './hooks/use-stg-position';
 import { VaultCard } from '../shared/vault-card';
-import { useGGVStats as usePlaceholderStats } from '../vault-ggv/hooks/use-ggv-stats';
-import { useGGVPosition as usePlaceholderPosition } from '../vault-ggv/hooks/use-ggv-position';
 import {
   STG_VAULT_DESCRIPTION,
   STG_PARTNERS,
@@ -19,10 +18,8 @@ import {
 
 export const VaultCardSTG = () => {
   const { isWalletConnected } = useDappStatus();
-  // reuse placeholder hooks until STG-specific hooks are implemented
-  const { tvl, apy, isLoading: isLoadingStats } = usePlaceholderStats();
-  const { sharesBalance, isLoading: isLoadingPosition } =
-    usePlaceholderPosition();
+  const { tvl, apy, isLoading: isLoadingStats } = useSTGStats();
+  const { sharesBalance, isLoading: isLoadingPosition } = useSTGPosition();
 
   return (
     <VaultCard
