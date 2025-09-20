@@ -24,11 +24,6 @@ const messageMaxBalance = (max: bigint, token: TOKEN_DISPLAY_NAMES) =>
     token,
   )} amount exceeds your available balance of ${formatEther(max)}`;
 
-const messageMaxCapacity = (max: bigint, token: TOKEN_DISPLAY_NAMES) =>
-  `Entered ${getTokenDisplayName(
-    token,
-  )} amount exceeds available vault capacity of ${formatEther(max)}`;
-
 export const STGDepositFormValidationResolver: Resolver<
   STGDepositFormValues,
   STGDepositFormValidationContext
@@ -60,7 +55,7 @@ export const STGDepositFormValidationResolver: Resolver<
       `Enter amount larger than 100 wei`,
     );
 
-    const { balance, maxDeposit } = awaitedContext[token];
+    const { balance } = awaitedContext[token];
 
     validateBigintMax(
       'amount',
@@ -68,14 +63,6 @@ export const STGDepositFormValidationResolver: Resolver<
       balance,
       messageMaxBalance(balance, token),
     );
-
-    maxDeposit &&
-      validateBigintMax(
-        'amount',
-        amount,
-        maxDeposit,
-        messageMaxCapacity(maxDeposit, token),
-      );
 
     return {
       values: { ...values },
