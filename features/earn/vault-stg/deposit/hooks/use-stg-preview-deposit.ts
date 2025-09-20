@@ -50,6 +50,7 @@ export const useSTGPreviewDeposit = ({
     enabled: isEnabled,
     queryFn: async () => {
       invariant(publicClient, 'Public client is not available');
+      invariant(userAddress, 'User address is not available');
 
       const contract = getSTGCollectorContract(publicClient);
       const depositQueueContract = getSTGDepositQueueContract({
@@ -66,7 +67,11 @@ export const useSTGPreviewDeposit = ({
         depositQueueContract.address, // queue
         debouncedAmount, // assets
         userAddress, // account
-        ['0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE', 86400, 3600], // config
+        {
+          baseAssetFallback: '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE',
+          oracleUpdateInterval: 86400n,
+          redeemHandlingInterval: 3600n,
+        }, // config
       ])) as DepositParams;
 
       return {
