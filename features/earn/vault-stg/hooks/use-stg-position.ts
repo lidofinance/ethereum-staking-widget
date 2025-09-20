@@ -35,11 +35,9 @@ export const useSTGPosition = () => {
 
       const sharesBalance = await shareManager.read.balanceOf([address]);
 
-      // const wstethBalance = await vault.read.convertToAssets([sharesBalance]);
-
       return {
         sharesBalance,
-        //   wstethBalance,
+        strethTokenAddress: shareManager.address,
       };
     },
   });
@@ -53,18 +51,14 @@ export const useSTGPosition = () => {
 
       const userPointsRes = await fetch(userPointsUrl);
       const userPointsData = (await userPointsRes.json()) as UserPointsResponse;
-      return userPointsData.find((vault) =>
+      const pointsForVault = userPointsData.find((vault) =>
         isAddressEqual(vault.vault_address, stgVaultAddress),
       );
+      return pointsForVault ?? null;
     },
   });
 
   const data = isEnabled ? strethBalanceQuery.data : undefined;
-
-  // const { usdAmount, ...usdQuery } = useWstethUsd(
-  //   data?.wstethBalance,
-  //   publicClientMainnet.chain?.id,
-  // );
 
   return {
     ...strethBalanceQuery,
@@ -73,8 +67,6 @@ export const useSTGPosition = () => {
     ),
     sharesBalance: data?.sharesBalance,
     // usdQuery,
-    // dvvTokenAddress: data?.dvvTokenAddress,
-    // wstethBalance: data?.wstethBalance,
     // usdBalance: usdAmount,
   };
 };
