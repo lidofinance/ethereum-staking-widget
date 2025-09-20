@@ -502,4 +502,4 @@ export const STG_COLLECTOR_ABI = [
     stateMutability: 'nonpayable',
     type: 'function',
   },
-];
+] as const;
