@@ -1,6 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
 
-// Minimal placeholder stats hook for STG until full implementation is provided
 export const useSTGStats = () => {
   const { data, isLoading } = useQuery({
     queryKey: ['stg', 'stats'],

@@ -3,13 +3,37 @@ import { getContract, WalletClient, type PublicClient } from 'viem';
 
 import { getContractAddress } from 'config/networks/contract-address';
 import {
+  STG_VAULT_ABI,
+  STG_COLLECTOR_ABI,
   STG_DEPOSIT_QUEUE_ETH_ABI,
   STG_DEPOSIT_QUEUE_WETH_ABI,
   STG_DEPOSIT_QUEUE_WSTETH_ABI,
   STG_REDEEM_QUEUE_WSTETH_ABI,
+  STG_SHARE_MANAGER_STRETH_ABI,
 } from './abi';
 
-export const getSTGDepositQueueETHContract = <
+export const getSTGVaultContract = <TPublicClient extends PublicClient>(
+  publicClient: TPublicClient,
+) => {
+  const address = getContractAddress(
+    publicClient.chain?.id as number,
+    'stgVault',
+  );
+  invariant(
+    address,
+    `no STG Vault contract address for ${publicClient.chain?.id}`,
+  );
+
+  return getContract({
+    abi: STG_VAULT_ABI,
+    address,
+    client: {
+      public: publicClient,
+    },
+  });
+};
+
+export const getSTGDepositQueueContractETH = <
   TPublicClient extends PublicClient,
 >(
   publicClient: TPublicClient,
@@ -32,7 +56,7 @@ export const getSTGDepositQueueETHContract = <
   });
 };
 
-export const getSTGDepositQueueETHWritableContract = <
+export const getSTGDepositQueueWritableContractETH = <
   TPublicClient extends PublicClient,
   TWalletClient extends WalletClient = WalletClient,
 >(
@@ -58,7 +82,7 @@ export const getSTGDepositQueueETHWritableContract = <
   });
 };
 
-export const getSTGDepositQueueWETHContract = <
+export const getSTGDepositQueueContractWETH = <
   TPublicClient extends PublicClient,
 >(
   publicClient: TPublicClient,
@@ -81,7 +105,7 @@ export const getSTGDepositQueueWETHContract = <
   });
 };
 
-export const getSTGDepositQueueWETHWritableContract = <
+export const getSTGDepositQueueWritableContractWETH = <
   TPublicClient extends PublicClient,
   TWalletClient extends WalletClient = WalletClient,
 >(
@@ -107,7 +131,7 @@ export const getSTGDepositQueueWETHWritableContract = <
   });
 };
 
-export const getSTGDepositQueueWSTETHContract = <
+export const getSTGDepositQueueContractWSTETH = <
   TPublicClient extends PublicClient,
 >(
   publicClient: TPublicClient,
@@ -130,7 +154,7 @@ export const getSTGDepositQueueWSTETHContract = <
   });
 };
 
-export const getSTGDepositQueueWSTETHWritableContract = <
+export const getSTGDepositQueueWritableContractWSTETH = <
   TPublicClient extends PublicClient,
   TWalletClient extends WalletClient = WalletClient,
 >(
@@ -156,7 +180,7 @@ export const getSTGDepositQueueWSTETHWritableContract = <
   });
 };
 
-export const getSTGRedeemQueueWSTETHContract = <
+export const getSTGRedeemQueueContractWSTETH = <
   TPublicClient extends PublicClient,
 >(
   publicClient: TPublicClient,
@@ -179,7 +203,7 @@ export const getSTGRedeemQueueWSTETHContract = <
   });
 };
 
-export const getSTGRedeemQueueWSTETHWritableContract = <
+export const getSTGRedeemQueueWritableContractWSTETH = <
   TPublicClient extends PublicClient,
   TWalletClient extends WalletClient = WalletClient,
 >(
@@ -201,6 +225,110 @@ export const getSTGRedeemQueueWSTETHWritableContract = <
     client: {
       public: publicClient,
       wallet: walletClient,
+    },
+  });
+};
+
+export const getSTGDepositQueueContract = <TPublicClient extends PublicClient>({
+  publicClient,
+  token,
+}: {
+  publicClient: TPublicClient;
+  token: string;
+}) => {
+  let contract;
+  switch (token) {
+    case 'ETH':
+      contract = getSTGDepositQueueContractETH(publicClient);
+      break;
+    case 'wETH':
+      contract = getSTGDepositQueueContractWETH(publicClient);
+      break;
+    case 'wstETH':
+      contract = getSTGDepositQueueContractWSTETH(publicClient);
+      break;
+    default:
+      throw new Error(`Unsupported token: ${token}`);
+  }
+  return contract;
+};
+
+export const getSTGDepositQueueWritableContract = <
+  TPublicClient extends PublicClient,
+  TWalletClient extends WalletClient = WalletClient,
+>({
+  publicClient,
+  walletClient,
+  token,
+}: {
+  publicClient: TPublicClient;
+  walletClient: TWalletClient;
+  token: string;
+}) => {
+  let contract;
+  switch (token) {
+    case 'ETH':
+      contract = getSTGDepositQueueWritableContractETH(
+        publicClient,
+        walletClient,
+      );
+      break;
+    case 'wETH':
+      contract = getSTGDepositQueueWritableContractWETH(
+        publicClient,
+        walletClient,
+      );
+      break;
+    case 'wstETH':
+      contract = getSTGDepositQueueWritableContractWSTETH(
+        publicClient,
+        walletClient,
+      );
+      break;
+    default:
+      throw new Error(`Unsupported token: ${token}`);
+  }
+  return contract;
+};
+
+export const getSTGShareManagerSTRETH = <TPublicClient extends PublicClient>(
+  publicClient: TPublicClient,
+) => {
+  const address = getContractAddress(
+    publicClient.chain?.id as number,
+    'stgTokenSTRETH',
+  );
+  invariant(
+    address,
+    `no STG Share Manager contract address for ${publicClient.chain?.id}`,
+  );
+
+  return getContract({
+    abi: STG_SHARE_MANAGER_STRETH_ABI,
+    address,
+    client: {
+      public: publicClient,
+    },
+  });
+};
+
+export const getSTGCollectorContract = <TPublicClient extends PublicClient>(
+  publicClient: TPublicClient,
+) => {
+  const address = getContractAddress(
+    publicClient.chain?.id as number,
+    'stgCollector',
+  );
+  invariant(
+    address,
+    `no STG Collector contract address for ${publicClient.chain?.id}`,
+  );
+
+  return getContract({
+    abi: STG_COLLECTOR_ABI,
+    address,
+    client: {
+      public: publicClient,
     },
   });
 };

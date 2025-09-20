@@ -26,7 +26,7 @@ import {
 
 import { STGDepositForm } from './deposit';
 import { STGWithdrawForm } from './withdraw';
-import { useSTGStats as usePlaceholderStats } from './hooks/use-stg-stats';
+import { useSTGStats } from './hooks/use-stg-stats';
 import { STG_VAULT_DESCRIPTION, STG_PARTNERS } from './consts';
 import { STGPosition } from './stg-position/stg-position';
 
@@ -48,7 +48,7 @@ export const VaultPageSTG: FC<{
   const isWithdraw = action === EARN_VAULT_WITHDRAW_SLUG;
 
   const { isDappActive } = useDappStatus();
-  const { tvl, apy, isLoading } = usePlaceholderStats();
+  const { tvl, apy, isLoading } = useSTGStats();
 
   return (
     <>

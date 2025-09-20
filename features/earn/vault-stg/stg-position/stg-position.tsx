@@ -1,35 +1,37 @@
 import { TokenDvstethIcon, TokenMellowIcon } from 'assets/earn';
 import { VaultPosition } from 'features/earn/shared/vault-position';
 import { STG_TOKEN_SYMBOL, MELLOW_POINT_SYMBOL } from '../consts';
-import { useSTGPosition as usePlaceholderPosition } from '../hooks/use-stg-position';
+import { useSTGPosition } from '../hooks/use-stg-position';
+import { parseEther } from 'viem';
 
 export const STGPosition = () => {
   const {
-    data,
-    usdBalance,
-    isLoading: isLoadingPosition,
-    usdQuery: { isLoading: isLoadingUsd } = { isLoading: false },
-  } = usePlaceholderPosition() as any;
+    // data,
+    mellowPoints,
+    isLoading,
+    // usdBalance,
+    // usdQuery: { isLoading: isLoadingUsd } = { isLoading: false },
+  } = useSTGPosition();
 
-  const mellowPointsBalance = 0n;
-  const isLoadingPoints = false;
+  // convert mellow points to the wei at 18 decimals for easier compatibility with components
+  const mellowPointsBalance = parseEther(mellowPoints.toFixed(4) ?? '0');
 
   return (
     <VaultPosition
       position={{
         symbol: STG_TOKEN_SYMBOL,
-        token: data?.ggvTokenAddress,
-        balance: data?.sharesBalance,
+        token: undefined,
+        balance: 0n, //data?.sharesBalance,
         icon: <TokenDvstethIcon />,
-        isLoading: isLoadingPosition || isLoadingUsd,
-        usdAmount: usdBalance,
+        isLoading: isLoading, // || isLoadingUsd,
+        usdAmount: null,
       }}
       points={[
         {
           symbol: MELLOW_POINT_SYMBOL,
           balance: mellowPointsBalance,
           usdAmount: null,
-          isLoading: isLoadingPoints,
+          isLoading: isLoading,
           icon: <TokenMellowIcon />,
         },
       ]}
