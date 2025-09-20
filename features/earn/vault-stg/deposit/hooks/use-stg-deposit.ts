@@ -48,7 +48,9 @@ export const useSTGDeposit = (onRetry?: () => void) => {
           },
         });
 
-        const stgTokenSTRETH = getSTGShareManagerSTRETH(core.rpcProvider);
+        const stgShareManagerSTRETH = getSTGShareManagerSTRETH(
+          core.rpcProvider,
+        );
 
         let needsApprove = false;
 
@@ -143,7 +145,9 @@ export const useSTGDeposit = (onRetry?: () => void) => {
           },
           onSuccess: async ({ txHash }) => {
             if (needsApprove) return;
-            const balance = await stgTokenSTRETH.read.balanceOf([address]);
+            const balance = await stgShareManagerSTRETH.read.balanceOf([
+              address,
+            ]);
             txModalStages.success(balance, txHash);
             // trackMatomoEvent(MATOMO_EARN_EVENTS_TYPES.stgDepositFinish);
           },

@@ -296,7 +296,7 @@ export const getSTGShareManagerSTRETH = <TPublicClient extends PublicClient>(
 ) => {
   const address = getContractAddress(
     publicClient.chain?.id as number,
-    'stgTokenSTRETH',
+    'stgShareManagerSTRETH',
   );
   invariant(
     address,

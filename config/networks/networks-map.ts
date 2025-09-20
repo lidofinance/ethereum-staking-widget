@@ -60,7 +60,7 @@ export const CONTRACT_NAMES = {
   stgDepositQueueWETH: 'stgDepositQueueWETH',
   stgDepositQueueWSTETH: 'stgDepositQueueWSTETH',
   stgRedeemQueueWSTETH: 'stgRedeemQueueWSTETH',
-  stgTokenSTRETH: 'stgTokenSTRETH',
+  stgShareManagerSTRETH: 'stgShareManagerSTRETH',
   stgCollector: 'stgCollector',
 } as const;
 export type CONTRACT_NAMES = keyof typeof CONTRACT_NAMES;
