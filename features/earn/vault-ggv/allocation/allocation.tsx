@@ -29,7 +29,11 @@ export const Allocation = () => {
         />
         <AllocationLegend data={data.chartData} />
         <AllocationTable allocation={data.allocations} />
-        <AllocationSummary apy={apy} totalTVL={data.totalTVL} />
+        <AllocationSummary
+          apy={apy}
+          totalTvlUSD={data.totalTvlUSD}
+          totalTvlETH={data.totalTvlETH}
+        />
       </Block>
     </Section>
   );

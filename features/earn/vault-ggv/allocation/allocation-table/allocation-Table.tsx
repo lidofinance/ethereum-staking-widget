@@ -9,7 +9,8 @@ export type Allocation = {
   chain: string;
   apy: number;
   allocation: number;
-  tvl: number;
+  tvlETH: number;
+  tvlUSD: number;
 };
 type AllocationProps = {
   allocation: Allocation[];
@@ -21,8 +22,8 @@ export const AllocationTable: FC<AllocationProps> = ({ allocation }) => {
       <TheadStyled>
         <Tr>
           <ThStyled>Protocol</ThStyled>
-          <ThStyled>Share</ThStyled>
-          <ThStyled>TVL</ThStyled>
+          <ThStyled align="right">Share</ThStyled>
+          <ThStyled align="right">TVL</ThStyled>
         </Tr>
       </TheadStyled>
       <Tbody>

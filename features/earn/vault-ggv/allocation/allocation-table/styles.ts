@@ -1,5 +1,6 @@
 import styled from 'styled-components';
 import { Table, Thead, Th, Td } from '@lidofinance/lido-ui';
+import { FormatToken } from 'shared/formatters';
 
 export const TableStyled = styled(Table)`
   width: 100%;
@@ -40,4 +41,11 @@ export const TdStyled = styled(Td)`
   font-weight: 400;
   line-height: 24px;
   font-size: ${({ theme }) => theme.fontSizesMap.xs}px;
+`;
+
+export const FormatTokenStyled = styled(FormatToken)`
+  font-size: ${({ theme }) => theme.fontSizesMap.xxs}px;
+  color: ${({ theme }) => theme.colors.textSecondary};
+  font-weight: 400;
+  line-height: 20px;
 `;

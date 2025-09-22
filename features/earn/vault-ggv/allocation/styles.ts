@@ -1,6 +1,8 @@
 import { DataTable, DataTableRow } from '@lidofinance/lido-ui';
 import styled from 'styled-components';
 
+import { FormatToken } from 'shared/formatters';
+
 export const AllocationLegendContainer = styled.div`
   margin-top: 20px;
   display: flex;
@@ -28,4 +30,17 @@ export const DataTableRowStyled = styled(DataTableRow)`
   line-height: 24px;
   font-size: ${({ theme }) => theme.fontSizesMap.xs}px;
   font-weight: 700;
+  margin-bottom: 0px;
+  margin-top: 8px;
+
+  & > div:first-child {
+    color: ${({ theme }) => theme.colors.text};
+  }
+`;
+
+export const FormatTokenStyled = styled(FormatToken)`
+  font-size: ${({ theme }) => theme.fontSizesMap.xxs}px;
+  color: ${({ theme }) => theme.colors.textSecondary};
+  font-weight: 400;
+  line-height: 20px;
 `;
