@@ -22,7 +22,8 @@ export const STGWithdrawFormValidationResolver: Resolver<
   STGWithdrawFormValues,
   STGWithdrawFormValidationContext
 > = async (values, context) => {
-  const { amount, token } = values;
+  const { amount } = values;
+  const token = 'strETH';
   try {
     invariant(context, 'must have context promise');
 
@@ -63,6 +64,6 @@ export const STGWithdrawFormValidationResolver: Resolver<
       errors: {},
     };
   } catch (error) {
-    return handleResolverValidationError(error, 'STGWithdrawForm', 'token');
+    return handleResolverValidationError(error, 'STGWithdrawForm', 'amount');
   }
 };

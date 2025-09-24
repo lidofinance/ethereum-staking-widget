@@ -12,13 +12,13 @@ import { STGWithdrawInput } from './stg-withdraw-input';
 import { STGWithdrawAvailable } from './stg-withdraw-available';
 import { STGWithdrawWillReceive } from './stg-withdraw-will-receive';
 import { STGWithdrawSubmitButton } from './stg-withdraw-submit-button';
-import { STGWithdrawPending } from './stg-withdraw-pending';
+import { STGWithdrawRequests } from './stg-withdraw-requests';
 
 const STGWithdrawFormContent: FC = () => {
   return (
     <VaultForm data-testid="withdraw-form">
       <VaultFormSection>
-        <STGWithdrawPending />
+        <STGWithdrawRequests />
         <STGWithdrawAvailable />
         <STGWithdrawInput />
       </VaultFormSection>

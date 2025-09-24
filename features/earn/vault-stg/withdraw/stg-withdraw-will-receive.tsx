@@ -7,7 +7,7 @@ import { useSTGPreviewWithdraw } from './hooks/use-stg-preview-withdraw';
 export const STGWithdrawWillReceive = () => {
   const { amount } = useWatch<STGWithdrawFormValues>();
 
-  const { data, isLoading } = useSTGPreviewWithdraw({ amount });
+  const { data, isLoading } = useSTGPreviewWithdraw({ shares: amount });
 
   return (
     <VaultWillReceive

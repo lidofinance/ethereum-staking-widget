@@ -4,17 +4,7 @@ import invariant from 'tiny-invariant';
 
 import { useDappStatus } from 'modules/web3';
 import { getSTGRedeemQueueContractWSTETH } from '../../contracts';
-
-type RequestData = {
-  // Timestamp when the redemption request was submitted.
-  timestamp: bigint;
-  // Amount of vault shares submitted for redemption.
-  shares: bigint;
-  // Whether the request has been processed and is now claimable.
-  isClaimable: boolean;
-  // Amount of assets that can be claimed by the user.
-  assets: bigint;
-};
+import type { WithdrawRequestData } from '../types';
 
 export const useSTGWithdrawRequests = () => {
   const { address, isDappActive } = useDappStatus();
@@ -30,11 +20,12 @@ export const useSTGWithdrawRequests = () => {
 
       const redeemQueueContract = getSTGRedeemQueueContractWSTETH(publicClient);
 
+      // Fetch the first 100 requests (see limit). Pagination is not implemented.
       const requests = (await redeemQueueContract.read.requestsOf([
         address, // account
         0n, // offset
         100n, // limit
-      ])) as RequestData[];
+      ])) as WithdrawRequestData[];
 
       return requests;
     },

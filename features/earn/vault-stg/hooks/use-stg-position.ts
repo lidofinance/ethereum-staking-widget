@@ -1,13 +1,14 @@
 import { isAddressEqual, type Address } from 'viem';
-import { usePublicClient } from 'wagmi';
 import { useQuery } from '@tanstack/react-query';
 import invariant from 'tiny-invariant';
 
-import { useDappStatus } from 'modules/web3';
+import { useDappStatus, useMainnetOnlyWagmi } from 'modules/web3';
 import { getContractAddress } from 'config/networks/contract-address';
 import { CHAINS } from 'consts/chains';
+import { standardFetcher } from 'utils/standardFetcher';
 import { getSTGShareManagerSTRETH } from '../contracts';
 import { getWithdrawalParams } from '../withdraw/utils';
+import { useWstethUsd } from 'shared/hooks/use-wsteth-usd';
 
 type UserPointsResponse = {
   user_address: Address;
@@ -22,7 +23,7 @@ type UserPointsResponse = {
 
 export const useSTGPosition = () => {
   const { address, isDappActive } = useDappStatus();
-  const publicClient = usePublicClient();
+  const { publicClientMainnet } = useMainnetOnlyWagmi();
   const stgVaultAddress = getContractAddress(CHAINS.Mainnet, 'stgVault');
   invariant(stgVaultAddress, 'No STG vault address found');
 
@@ -33,9 +34,9 @@ export const useSTGPosition = () => {
     enabled: isEnabled,
     queryFn: async () => {
       invariant(address, 'No address provided');
-      invariant(publicClient, 'Public client is not available');
+      invariant(publicClientMainnet, 'Public client is not available');
 
-      const shareManager = getSTGShareManagerSTRETH(publicClient);
+      const shareManager = getSTGShareManagerSTRETH(publicClientMainnet);
 
       const sharesBalance = await shareManager.read.balanceOf([address]);
 
@@ -46,6 +47,8 @@ export const useSTGPosition = () => {
     },
   });
 
+  const shares = strethBalanceQuery.data?.sharesBalance ?? 0n;
+
   const mellowPointsBalanceQuery = useQuery({
     queryKey: ['stg', 'mellow-points', { address }] as const,
     enabled: isEnabled,
@@ -53,8 +56,8 @@ export const useSTGPosition = () => {
       const mellowBaseUrl = `https://points.mellow.finance/v1/chain/1/users`;
       const userPointsUrl = `${mellowBaseUrl}/${address}`;
 
-      const userPointsRes = await fetch(userPointsUrl);
-      const userPointsData = (await userPointsRes.json()) as UserPointsResponse;
+      const userPointsData =
+        await standardFetcher<UserPointsResponse>(userPointsUrl);
       const pointsForVault = userPointsData.find((vault) =>
         isAddressEqual(vault.vault_address, stgVaultAddress),
       );
@@ -62,26 +65,27 @@ export const useSTGPosition = () => {
     },
   });
 
-  const usdQuery = useQuery({
-    queryKey: ['stg', 'position', 'usd', { address }] as const,
+  const strethToWstethQuery = useQuery({
+    queryKey: ['stg', 'position', 'usd', { shares: Number(shares) }] as const,
     enabled: isEnabled && !!strethBalanceQuery.data?.sharesBalance,
     queryFn: async () => {
-      invariant(publicClient, 'Public client is not available');
-      invariant(
-        strethBalanceQuery.data?.sharesBalance,
-        'No STRETH balance available',
-      );
-      const { sharesBalance } = strethBalanceQuery.data;
-      const { sharesUSDC } = await getWithdrawalParams({
-        shares: sharesBalance,
-        publicClient,
+      invariant(publicClientMainnet, 'Public client is not available');
+
+      const { assets } = await getWithdrawalParams({
+        shares,
+        publicClient: publicClientMainnet,
       });
-      return sharesUSDC;
+      return assets;
     },
   });
 
   const data = isEnabled ? strethBalanceQuery.data : undefined;
-  const usdBalance = isEnabled ? usdQuery.data : undefined;
+  const wsteth = strethToWstethQuery.data;
+
+  const { usdAmount, ...usdQuery } = useWstethUsd(
+    wsteth,
+    publicClientMainnet.chain?.id,
+  );
 
   return {
     ...strethBalanceQuery,
@@ -90,6 +94,6 @@ export const useSTGPosition = () => {
     ),
     sharesBalance: data?.sharesBalance,
     usdQuery,
-    usdBalance: usdBalance ?? 0n,
+    usdBalance: usdAmount ?? 0,
   };
 };

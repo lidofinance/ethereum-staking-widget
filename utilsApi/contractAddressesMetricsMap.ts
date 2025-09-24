@@ -117,6 +117,8 @@ const CONTRACTS_WITH_EVENTS = [
   // vaults are tokens, have transfer/approval events
   CONTRACT_NAMES.dvvVault,
   CONTRACT_NAMES.ggvVault,
+  // in case of stRATEGY the token is share manager contract
+  CONTRACT_NAMES.stgShareManagerSTRETH,
 ];
 
 const invertContractsNamesToAddress = (

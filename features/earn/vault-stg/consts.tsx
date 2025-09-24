@@ -17,3 +17,9 @@ export const STG_PARTNERS = [
 ];
 
 export const MELLOW_POINT_SYMBOL = 'Mellow';
+
+export const STG_COLLECTOR_CONFIG = {
+  baseAssetFallback: '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE',
+  oracleUpdateInterval: 86400n,
+  redeemHandlingInterval: 3600n,
+} as const;

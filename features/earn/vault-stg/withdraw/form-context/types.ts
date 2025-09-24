@@ -2,12 +2,10 @@ export type STG_WITHDRAW_TOKENS = 'strETH';
 
 export type STGWithdrawFormValues = {
   amount: null | bigint;
-  token: STG_WITHDRAW_TOKENS;
 };
 
 export type STGWithdrawFormValidatedValues = {
   amount: bigint;
-  token: STG_WITHDRAW_TOKENS;
 };
 
 export type STGWithdrawFormValidationContext = {
@@ -24,5 +22,4 @@ export type STGWithdrawFormAsyncValidationContext = {
 export type STGWithdrawFormDataContextValue = {
   maxAmount?: bigint;
   isLoading: boolean;
-  token: STG_WITHDRAW_TOKENS;
 };

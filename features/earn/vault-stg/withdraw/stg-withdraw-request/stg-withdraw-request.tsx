@@ -1,5 +1,4 @@
 import { Button } from '@lidofinance/lido-ui';
-import { formatUnits } from 'viem';
 import { FormatPrice } from 'shared/formatters/format-price';
 
 import {
@@ -27,12 +26,11 @@ export const Request = ({
   tokenLogo: React.ReactNode;
   tokenAmount: bigint;
   tokenName: string;
-  tokenAmountUSD: bigint;
+  tokenAmountUSD: number;
   createdDateTimestamp: bigint;
   actionText?: string;
   actionCallback?: () => void;
 }) => {
-  const amountUSD = Number(formatUnits(tokenAmountUSD, 8));
   const createdDate = new Date(
     Number(createdDateTimestamp) * 1000,
   ).toLocaleDateString('en-GB', {
@@ -55,7 +53,7 @@ export const Request = ({
             />
           </AmountTokenValue>
           <AmountUSD>
-            <FormatPrice amount={amountUSD} />
+            <FormatPrice amount={tokenAmountUSD} />
           </AmountUSD>
         </AmountContainer>
         <CreatedDate>created on {createdDate}</CreatedDate>

@@ -5,21 +5,20 @@ import invariant from 'tiny-invariant';
 import { useDebouncedValue } from 'shared/hooks/useDebouncedValue';
 import { useDappStatus } from 'modules/web3/hooks/use-dapp-status';
 import { useWstethUsd } from 'shared/hooks/use-wsteth-usd';
-import { STGWithdrawFormValues } from '../form-context/types';
 import { getWithdrawalParams } from '../utils';
 
 export const useSTGPreviewWithdraw = ({
-  amount,
+  shares,
 }: {
-  amount?: STGWithdrawFormValues['amount'];
+  shares?: bigint | null;
 }) => {
   const { isDappActive, address: userAddress } = useDappStatus();
   const publicClient = usePublicClient();
 
-  const isEnabled = isDappActive && amount != null;
+  const isEnabled = isDappActive && shares != null;
 
-  const debouncedAmount = useDebouncedValue(amount, 500);
-  const isDebounced = isEnabled && amount !== debouncedAmount;
+  const debouncedAmount = useDebouncedValue(shares, 500);
+  const isDebounced = isEnabled && shares !== debouncedAmount;
 
   const query = useQuery({
     queryKey: [

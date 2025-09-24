@@ -3,7 +3,6 @@ import invariant from 'tiny-invariant';
 import { encodeFunctionData, WalletClient } from 'viem';
 
 import {
-  AACall,
   applyRoundUpGasLimit,
   useDappStatus,
   useLidoSDK,
@@ -31,18 +30,16 @@ export const useSTGWithdrawClaim = (onRetry?: () => void) => {
         const claimArgs = [address, [timestamp]] as const;
 
         await txFlow({
-          callsFn: async () => {
-            const calls: AACall[] = [];
-            calls.push({
+          callsFn: async () => [
+            {
               to: redeemQueueContract.address,
               data: encodeFunctionData({
                 abi: redeemQueueContract.abi,
                 functionName: 'claim',
                 args: claimArgs,
               }),
-            });
-            return calls;
-          },
+            },
+          ],
           sendTransaction: async (txStagesCallback) => {
             await core.performTransaction({
               getGasLimit: async (opts) =>

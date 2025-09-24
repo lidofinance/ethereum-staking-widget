@@ -3,6 +3,7 @@ import {
   getSTGCollectorContract,
   getSTGRedeemQueueContractWSTETH,
 } from '../contracts';
+import { STG_COLLECTOR_CONFIG } from '../consts';
 
 export const getWithdrawalParams = async ({
   shares,
@@ -17,10 +18,6 @@ export const getWithdrawalParams = async ({
   return collector.read.getWithdrawalParams([
     shares,
     redeemQueueContract.address,
-    {
-      baseAssetFallback: '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE',
-      oracleUpdateInterval: 86400n,
-      redeemHandlingInterval: 3600n,
-    },
+    STG_COLLECTOR_CONFIG,
   ]);
 };

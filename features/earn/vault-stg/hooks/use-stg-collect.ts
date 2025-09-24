@@ -4,6 +4,7 @@ import invariant from 'tiny-invariant';
 
 import { useDappStatus } from 'modules/web3/hooks/use-dapp-status';
 import { getSTGCollectorContract, getSTGVaultContract } from '../contracts';
+import { STG_COLLECTOR_CONFIG } from '../consts';
 
 type STGCollectResponse = {
   vault: string;
@@ -65,11 +66,7 @@ export const useSTGCollect = () => {
       const response: STGCollectResponse = await collector.read.collect([
         address, // account
         vaultContract.address, // vault
-        {
-          baseAssetFallback: '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE',
-          oracleUpdateInterval: 86400n,
-          redeemHandlingInterval: 3600n,
-        }, // config
+        STG_COLLECTOR_CONFIG, // config
       ]);
 
       return { deposits: response.deposits };

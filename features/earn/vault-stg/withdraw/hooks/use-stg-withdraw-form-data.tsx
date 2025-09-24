@@ -7,7 +7,6 @@ import { useSTGPosition } from '../../hooks/use-stg-position';
 import {
   STGWithdrawFormAsyncValidationContext,
   STGWithdrawFormValidationContext,
-  STGWithdrawFormValues,
 } from '../form-context/types';
 
 export const useSTGWithdrawFormData = () => {
@@ -36,17 +35,14 @@ export const useSTGWithdrawFormData = () => {
     asyncContext,
   };
 
-  const refetchData = useCallback(
-    (_token: STGWithdrawFormValues['token']) => {
-      const options = { cancelRefetch: true, throwOnError: false };
+  const refetchData = useCallback(() => {
+    const options = { cancelRefetch: true, throwOnError: false };
 
-      return Promise.all([
-        // refetch all STG related queries
-        queryClient.refetchQueries({ queryKey: ['stg'] }, options),
-      ]);
-    },
-    [queryClient],
-  );
+    return Promise.all([
+      // refetch all STG related queries
+      queryClient.refetchQueries({ queryKey: ['stg'] }, options),
+    ]);
+  }, [queryClient]);
 
   const isLoading = false; // TODO: Add proper loading state
 

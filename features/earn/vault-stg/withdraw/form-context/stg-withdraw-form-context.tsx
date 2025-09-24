@@ -45,7 +45,7 @@ export const STGWithdrawFormProvider: React.FC<{
   const { withdrawSTG } = useSTGWithdraw(retryEvent.fire);
 
   const formObject = useForm({
-    defaultValues: { amount: null, token: 'strETH' as const },
+    defaultValues: { amount: null },
     disabled: isWalletConnected && !isDappActive,
     criteriaMode: 'firstError',
     mode: 'onChange',
@@ -53,19 +53,17 @@ export const STGWithdrawFormProvider: React.FC<{
     resolver: STGWithdrawFormValidationResolver,
   });
 
-  const token = formObject.watch('token');
-
   const formControllerValue = useMemo(
     (): FormControllerContextValueType<any> => ({
       onSubmit: async (values: STGWithdrawFormValidatedValues) => {
         const result = await withdrawSTG(values);
         if (result) {
-          await refetchData(values.token);
+          await refetchData();
         }
         return result;
       },
-      onReset: (values: STGWithdrawFormValidatedValues) => {
-        formObject.reset({ amount: null, token: values.token });
+      onReset: () => {
+        formObject.reset({ amount: null });
       },
       retryEvent,
     }),
@@ -73,15 +71,14 @@ export const STGWithdrawFormProvider: React.FC<{
   );
 
   const contextValue = useMemo<STGWithdrawFormDataContextValue>(() => {
-    const tokenBalance = asyncValidationContextValue?.[token];
+    const tokenBalance = asyncValidationContextValue?.['strETH'];
     const maxAmount =
       tokenBalance?.balance != undefined ? tokenBalance?.balance : undefined;
     return {
       maxAmount,
-      token,
       isLoading,
     };
-  }, [asyncValidationContextValue, isLoading, token]);
+  }, [asyncValidationContextValue, isLoading]);
 
   return (
     <FormProvider {...formObject}>

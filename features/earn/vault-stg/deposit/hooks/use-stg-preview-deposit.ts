@@ -11,6 +11,7 @@ import {
 } from '../../contracts';
 import { useWstethUsd } from 'shared/hooks/use-wsteth-usd';
 import { useEthUsd } from 'shared/hooks/use-eth-usd';
+import { STG_COLLECTOR_CONFIG } from '../../consts';
 
 export type DepositParams = {
   isDepositPossible: boolean;
@@ -45,6 +46,7 @@ export const useSTGPreviewDeposit = ({
       'preview-deposit',
       {
         amount: isEnabled ? debouncedAmount?.toString() : null,
+        token: isEnabled ? token : null,
       },
     ] as const,
     enabled: isEnabled,
@@ -67,11 +69,7 @@ export const useSTGPreviewDeposit = ({
         depositQueueContract.address, // queue
         debouncedAmount, // assets
         userAddress, // account
-        {
-          baseAssetFallback: '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE',
-          oracleUpdateInterval: 86400n,
-          redeemHandlingInterval: 3600n,
-        }, // config
+        STG_COLLECTOR_CONFIG, // config
       ])) as DepositParams;
 
       return {
