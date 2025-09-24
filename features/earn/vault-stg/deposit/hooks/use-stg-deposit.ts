@@ -2,6 +2,8 @@ import { useCallback } from 'react';
 import { encodeFunctionData, getContract, WalletClient } from 'viem';
 import invariant from 'tiny-invariant';
 
+import type { STGDepositFormValidatedValues } from '../form-context/types';
+
 import { config } from 'config';
 import {
   AACall,
@@ -11,7 +13,6 @@ import {
   useLidoSDK,
   useTxFlow,
 } from 'modules/web3';
-import { STGDepositFormValidatedValues } from '../form-context/types';
 import { getTokenAddress } from 'config/networks/token-address';
 import {
   getSTGDepositQueueWritableContract,

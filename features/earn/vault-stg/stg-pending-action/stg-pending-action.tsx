@@ -1,55 +1,75 @@
 import { Button } from '@lidofinance/lido-ui';
+import { formatUnits } from 'viem';
+import { FormatPrice } from 'shared/formatters/format-price';
+
 import {
-  Container,
+  RequestContainer,
   AmountContainer,
   AmountUSD,
   AmountTokenValue,
   CreatedDate,
   Entry,
-  Title,
   TokenLogo,
 } from './styles';
+import { FormatToken } from 'shared/formatters';
 
-export const STGPendingAction = ({
-  title,
+export { RequestsContainer, ActionableTitle } from './styles';
+
+export const Request = ({
   tokenLogo,
   tokenAmount,
   tokenName,
   tokenAmountUSD,
-  createdDate,
+  createdDateTimestamp,
   actionText,
   actionCallback,
 }: {
-  title: string;
   tokenLogo: React.ReactNode;
-  tokenAmount: string;
+  tokenAmount: bigint;
   tokenName: string;
-  tokenAmountUSD: string;
-  createdDate: string;
-  actionText: string;
-  actionCallback: () => void;
+  tokenAmountUSD: bigint;
+  createdDateTimestamp: bigint;
+  actionText?: string;
+  actionCallback?: () => void;
 }) => {
+  const amountUSD = Number(formatUnits(tokenAmountUSD, 8));
+  const createdDate = new Date(
+    Number(createdDateTimestamp) * 1000,
+  ).toLocaleDateString('en-GB', {
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric',
+  });
+
   return (
-    <Container>
-      <Title>{title}</Title>
+    <RequestContainer>
       <Entry>
         <TokenLogo>{tokenLogo}</TokenLogo>
         <AmountContainer>
           <AmountTokenValue>
-            {tokenAmount} {tokenName}
+            <FormatToken
+              fallback="-"
+              amount={tokenAmount}
+              symbol={tokenName}
+              maxDecimalDigits={5}
+            />
           </AmountTokenValue>
-          <AmountUSD>{tokenAmountUSD}</AmountUSD>
+          <AmountUSD>
+            <FormatPrice amount={amountUSD} />
+          </AmountUSD>
         </AmountContainer>
         <CreatedDate>created on {createdDate}</CreatedDate>
-        <Button
-          color="primary"
-          size="xs"
-          variant="translucent"
-          onClick={actionCallback}
-        >
-          {actionText}
-        </Button>
+        {actionText && (
+          <Button
+            color="primary"
+            size="xs"
+            variant="translucent"
+            onClick={actionCallback}
+          >
+            {actionText}
+          </Button>
+        )}
       </Entry>
-    </Container>
+    </RequestContainer>
   );
 };

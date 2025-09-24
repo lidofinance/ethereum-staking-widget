@@ -2,19 +2,20 @@ import { TokenStrethIcon, TokenMellowIcon } from 'assets/earn';
 import { VaultPosition } from 'features/earn/shared/vault-position';
 import { STG_TOKEN_SYMBOL, MELLOW_POINT_SYMBOL } from '../consts';
 import { useSTGPosition } from '../hooks/use-stg-position';
-import { parseEther } from 'viem';
+import { formatUnits, parseEther } from 'viem';
 
 export const STGPosition = () => {
   const {
     data,
     mellowPoints,
     isLoading,
-    // usdBalance,
-    // usdQuery: { isLoading: isLoadingUsd } = { isLoading: false },
+    usdBalance,
+    usdQuery: { isLoading: isLoadingUsd } = { isLoading: false },
   } = useSTGPosition();
 
   // convert mellow points to the wei at 18 decimals for easier compatibility with components
   const mellowPointsBalance = parseEther(mellowPoints.toFixed(4) ?? '0');
+  const usdAmount = Number(formatUnits(usdBalance, 8));
 
   return (
     <VaultPosition
@@ -23,8 +24,8 @@ export const STGPosition = () => {
         token: data?.strethTokenAddress,
         balance: data?.sharesBalance,
         icon: <TokenStrethIcon />,
-        isLoading: isLoading, // || isLoadingUsd,
-        usdAmount: null,
+        isLoading: isLoading || isLoadingUsd,
+        usdAmount,
       }}
       points={[
         {

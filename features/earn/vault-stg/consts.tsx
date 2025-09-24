@@ -1,8 +1,4 @@
-import {
-  PartnerMellowIcon,
-  PartnerRuntimeLabsIcon,
-  PartnerRuntimeLabsIconInverted,
-} from 'assets/earn';
+import { PartnerMellowIcon } from 'assets/earn';
 
 export const STG_TOKEN_SYMBOL = 'strETH';
 
@@ -14,9 +10,8 @@ export const STG_VAULT_DESCRIPTION =
 export const STG_PARTNERS = [
   {
     role: 'Curated by',
-    icon: <PartnerRuntimeLabsIcon />,
-    iconDarkTheme: <PartnerRuntimeLabsIconInverted />,
-    text: 'Runtime Labs',
+    icon: <PartnerMellowIcon />,
+    text: 'Mellow',
   },
   { role: 'Infra provider', icon: <PartnerMellowIcon />, text: 'Mellow' },
 ];

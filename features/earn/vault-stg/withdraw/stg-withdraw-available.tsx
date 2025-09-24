@@ -1,7 +1,16 @@
-import React from 'react';
+import { VaultAvailable } from 'features/earn/shared/vault-available';
+import { useSTGWithdrawForm } from './form-context';
+import { STG_TOKEN_SYMBOL } from '../consts';
 
 export const STGWithdrawAvailable: React.FC = () => {
-  return <div>Available to withdraw: --</div>;
-};
+  const { isLoading, maxAmount } = useSTGWithdrawForm();
 
-export default STGWithdrawAvailable;
+  return (
+    <VaultAvailable
+      isLoading={isLoading}
+      label="Available to withdraw"
+      amount={maxAmount}
+      symbol={STG_TOKEN_SYMBOL}
+    />
+  );
+};
