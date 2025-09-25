@@ -8,12 +8,14 @@ import { STGAvailableDeposit } from './stg-available-deposit';
 import { STGWillReceive } from './stg-deposit-will-receive';
 import { STGDepositSubmitButton } from './stg-deposit-submit-button';
 import { VaultWarning } from 'features/earn/shared/vault-warning';
+import { STGDepositRequests } from './stg-deposit-requests';
 
 export const STGDepositForm = () => {
   return (
     <STGDepositFormProvider>
       <VaultForm data-testid="deposit-form">
         <VaultFormSection>
+          <STGDepositRequests />
           <STGAvailableDeposit />
           <STGDepositInputGroup />
         </VaultFormSection>
