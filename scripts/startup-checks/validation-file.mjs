@@ -71,15 +71,9 @@ export const startupCheckValidationFile = async () => {
 
   globalStartupValidationFileChecks.promise = (async () => {
     try {
-      // If no validation file path is specified, skip check
-      if (!VALIDATION_FILE_PATH) {
+      // If no validation file path is specified or empty, skip check
+      if (!VALIDATION_FILE_PATH || VALIDATION_FILE_PATH.trim() === '') {
         console.info('[startupCheckValidationFile] No VALIDATION_FILE_PATH specified - skipping validation file check');
-        return { success: true, skipped: true };
-      }
-
-      // If path is empty string, skip check
-      if (VALIDATION_FILE_PATH.trim() === '') {
-        console.info('[startupCheckValidationFile] Empty VALIDATION_FILE_PATH - skipping validation file check');
         return { success: true, skipped: true };
       }
 
@@ -93,7 +87,6 @@ export const startupCheckValidationFile = async () => {
       
     } catch (error) {
       console.error('[startupCheckValidationFile] Critical error during validation file check:', error.message);
-      // Exit process to prevent build/start if validation file is invalid
       process.exit(1);
     }
   })();
