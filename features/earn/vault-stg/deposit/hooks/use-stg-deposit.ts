@@ -128,6 +128,7 @@ export const useSTGDeposit = (onRetry?: () => void) => {
               callback: txStagesCallback,
             });
           },
+
           onSign: () => {
             if (needsApprove) {
               return txModalStages.signApproval(amount, token);

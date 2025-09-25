@@ -58,7 +58,7 @@ export const VaultPageSTG: FC<{
       <VaultBlock>
         <VaultBlockHeaderSection>
           <VaultHeader
-            title={'stRATEGY'}
+            title={'Lido stRATEGY'}
             logo={<VaultSTGIcon />}
             partners={STG_PARTNERS}
           />

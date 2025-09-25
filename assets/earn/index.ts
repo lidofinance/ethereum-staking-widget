@@ -11,7 +11,9 @@ import { ReactComponent as TokenEthIcon } from './token-eth.svg';
 import { ReactComponent as TokenEthIcon32 } from './token-eth-32.svg';
 import { ReactComponent as TokenStethIcon } from './token-steth.svg';
 import { ReactComponent as TokenWethIcon } from './token-weth.svg';
+import { ReactComponent as TokenWethIcon32 } from './token-weth-32.svg';
 import { ReactComponent as TokenWstethIcon } from './token-wsteth.svg';
+import { ReactComponent as TokenWstethIcon32 } from './token-wsteth-32.svg';
 import { ReactComponent as TokenGGIcon } from './token-gg.svg';
 import { ReactComponent as TokenDvstethIcon } from './token-dvsteth.svg';
 import { ReactComponent as TokenObolIconRaw } from './token-obol.svg';
@@ -62,7 +64,9 @@ export {
   TokenEthIcon32,
   TokenStethIcon,
   TokenWethIcon,
+  TokenWethIcon32,
   TokenWstethIcon,
+  TokenWstethIcon32,
   TokenGGIcon,
   TokenDvstethIcon,
   TokenObolIcon,

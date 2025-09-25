@@ -23,7 +23,7 @@ export const VaultCardSTG = () => {
 
   return (
     <VaultCard
-      title="stRATEGY"
+      title="Lido stRATEGY"
       description={STG_VAULT_DESCRIPTION}
       urlSlug={'stg'}
       partners={STG_PARTNERS}

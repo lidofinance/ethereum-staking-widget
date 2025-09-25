@@ -27,17 +27,20 @@ export const Request = ({
   tokenAmount: bigint;
   tokenName: string;
   tokenAmountUSD: number;
-  createdDateTimestamp: bigint;
+  createdDateTimestamp?: bigint;
   actionText?: string;
   actionCallback?: () => void;
 }) => {
-  const createdDate = new Date(
-    Number(createdDateTimestamp) * 1000,
-  ).toLocaleDateString('en-GB', {
-    day: '2-digit',
-    month: 'short',
-    year: 'numeric',
-  });
+  const createdDate = createdDateTimestamp
+    ? new Date(Number(createdDateTimestamp) * 1000).toLocaleDateString(
+        'en-GB',
+        {
+          day: '2-digit',
+          month: 'short',
+          year: 'numeric',
+        },
+      )
+    : undefined;
 
   return (
     <RequestContainer>
@@ -56,7 +59,7 @@ export const Request = ({
             <FormatPrice amount={tokenAmountUSD} />
           </AmountUSD>
         </AmountContainer>
-        <CreatedDate>created on {createdDate}</CreatedDate>
+        {createdDate && <CreatedDate>created on {createdDate}</CreatedDate>}
         {actionText && (
           <Button
             color="primary"
