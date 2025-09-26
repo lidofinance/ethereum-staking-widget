@@ -11,6 +11,7 @@ import {
   STG_REDEEM_QUEUE_WSTETH_ABI,
   STG_SHARE_MANAGER_STRETH_ABI,
 } from './abi';
+import { STG_DEPOSIT_TOKENS } from '../deposit/form-context/types';
 
 export const getSTGVaultContract = <TPublicClient extends PublicClient>(
   publicClient: TPublicClient,
@@ -29,6 +30,32 @@ export const getSTGVaultContract = <TPublicClient extends PublicClient>(
     address,
     client: {
       public: publicClient,
+    },
+  });
+};
+
+export const getSTGVaultWritableContract = <
+  TPublicClient extends PublicClient,
+  TWalletClient extends WalletClient = WalletClient,
+>(
+  publicClient: TPublicClient,
+  walletClient: TWalletClient,
+) => {
+  const address = getContractAddress(
+    publicClient.chain?.id as number,
+    'stgVault',
+  );
+  invariant(
+    address,
+    `no STG Vault contract address for ${publicClient.chain?.id}`,
+  );
+
+  return getContract({
+    abi: STG_VAULT_ABI,
+    address,
+    client: {
+      public: publicClient,
+      wallet: walletClient,
     },
   });
 };
@@ -234,7 +261,7 @@ export const getSTGDepositQueueContract = <TPublicClient extends PublicClient>({
   token,
 }: {
   publicClient: TPublicClient;
-  token: string;
+  token: STG_DEPOSIT_TOKENS;
 }) => {
   let contract;
   switch (token) {
@@ -263,7 +290,7 @@ export const getSTGDepositQueueWritableContract = <
 }: {
   publicClient: TPublicClient;
   walletClient: TWalletClient;
-  token: string;
+  token: STG_DEPOSIT_TOKENS;
 }) => {
   let contract;
   switch (token) {

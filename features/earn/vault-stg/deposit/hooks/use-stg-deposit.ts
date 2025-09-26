@@ -26,7 +26,7 @@ export const useSTGDeposit = (onRetry?: () => void) => {
   const { txModalStages } = useTxModalStagesSTGDeposit();
   const txFlow = useTxFlow();
 
-  const depositSTG = useCallback(
+  const deposit = useCallback(
     async ({ amount, token }: STGDepositFormValidatedValues) => {
       // trackMatomoEvent(MATOMO_EARN_EVENTS_TYPES.stgDepositStart);
       invariant(address, 'needs address');
@@ -168,5 +168,5 @@ export const useSTGDeposit = (onRetry?: () => void) => {
     [address, core, onRetry, txFlow, txModalStages],
   );
 
-  return { depositSTG };
+  return { deposit };
 };

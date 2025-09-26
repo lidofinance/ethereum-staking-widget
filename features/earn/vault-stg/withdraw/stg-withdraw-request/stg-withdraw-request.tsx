@@ -26,7 +26,7 @@ export const Request = ({
   tokenLogo: React.ReactNode;
   tokenAmount: bigint;
   tokenName: string;
-  tokenAmountUSD: number;
+  tokenAmountUSD?: number;
   createdDateTimestamp?: bigint;
   actionText?: string;
   actionCallback?: () => void;
@@ -55,9 +55,11 @@ export const Request = ({
               maxDecimalDigits={5}
             />
           </AmountTokenValue>
-          <AmountUSD>
-            <FormatPrice amount={tokenAmountUSD} />
-          </AmountUSD>
+          {tokenAmountUSD != undefined && (
+            <AmountUSD>
+              <FormatPrice amount={tokenAmountUSD} />
+            </AmountUSD>
+          )}
         </AmountContainer>
         {createdDate && <CreatedDate>created on {createdDate}</CreatedDate>}
         {actionText && (

@@ -4,10 +4,19 @@ import { useQuery } from '@tanstack/react-query';
 
 import { useDappStatus } from 'modules/web3';
 import { getSTGDepositQueueContract } from '../../contracts';
+import { STG_DEPOSIT_TOKENS } from '../form-context/types';
 
 type DepositRequest = [bigint, bigint]; // (timestamp, assets)
 
-export const useSTGDepositRequest = (token: string) => {
+// Retrieves deposit queue information for a specific token:
+// - The latest deposit request for the connected address, including:
+//   - Creation timestamp
+//   - Amount of assets deposited
+//   The deposit request remains in the queue until claimed.
+//   Note: The queue contract does not indicate whether the request has been pushed to the vault.
+// - Claimable amount of shares (available after the deposit is pushed to the vault).
+
+export const useSTGDepositQueueRequest = (token: STG_DEPOSIT_TOKENS) => {
   const { address, isDappActive } = useDappStatus();
   const publicClient = usePublicClient();
 

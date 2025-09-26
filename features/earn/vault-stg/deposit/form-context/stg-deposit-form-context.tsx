@@ -15,6 +15,8 @@ import {
 import { useSTGDeposit } from '../hooks/use-stg-deposit';
 import { useSTGDepositFormData } from '../hooks/use-stg-deposit-form-data';
 import { STGDepositFormValidationResolver } from './validation';
+import { useSTGAvailable } from '../../hooks/use-stg-available';
+import { useDepositRequestData } from '../hooks';
 
 const STGDepositFormDataContext =
   createContext<STGDepositFormDataContextValue | null>(null);
@@ -34,6 +36,7 @@ export const STGDepositFormProvider: React.FC<{
 }> = ({ children }) => {
   // Wallet state
   const { isDappActive, isWalletConnected } = useDappStatus();
+  const { isSTGAvailable, isDepositEnabled } = useSTGAvailable();
 
   const {
     validationContext,
@@ -45,11 +48,13 @@ export const STGDepositFormProvider: React.FC<{
   // Retry event helper
   const { retryEvent } = useFormControllerRetry();
   // Deposit function
-  const { depositSTG } = useSTGDeposit(retryEvent.fire);
+  const { deposit } = useSTGDeposit(retryEvent.fire);
 
   const formObject = useForm({
     defaultValues: { amount: null, token: 'ETH' },
-    disabled: isWalletConnected && !isDappActive, //TODO: update value
+    disabled:
+      (isWalletConnected && !isDappActive) ||
+      (isSTGAvailable && !isDepositEnabled),
     criteriaMode: 'firstError',
     mode: 'onChange',
     context: validationContext,
@@ -58,10 +63,12 @@ export const STGDepositFormProvider: React.FC<{
 
   const token = formObject.watch('token');
 
+  const { isPushedToVault } = useDepositRequestData(token);
+
   const formControllerValue = useMemo(
     (): FormControllerContextValueType<any> => ({
       onSubmit: async (values: STGDepositFormValidatedValues) => {
-        const result = await depositSTG(values);
+        const result = await deposit(values);
         if (result) {
           await refetchData(values.token);
         }
@@ -72,7 +79,7 @@ export const STGDepositFormProvider: React.FC<{
       },
       retryEvent,
     }),
-    [depositSTG, formObject, refetchData, retryEvent],
+    [deposit, formObject, refetchData, retryEvent],
   );
 
   const contextValue = useMemo<STGDepositFormDataContextValue>(() => {
@@ -83,8 +90,10 @@ export const STGDepositFormProvider: React.FC<{
       maxAmount,
       token,
       isLoading,
+      // deposit is locked if the last request is not yet pushed to the vault
+      isDepositLockedForCurrentToken: !isPushedToVault,
     };
-  }, [asyncValidationContextValue, isLoading, token]);
+  }, [asyncValidationContextValue, isLoading, isPushedToVault, token]);
 
   return (
     <FormProvider {...formObject}>

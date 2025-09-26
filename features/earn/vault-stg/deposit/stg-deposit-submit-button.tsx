@@ -1,6 +1,21 @@
-import { VaultSubmitButton } from 'features/earn/shared/vault-submit-button';
+import { useFormState } from 'react-hook-form';
+import { useSTGAvailable } from '../hooks/use-stg-available';
+import { SubmitButtonHookForm } from 'shared/hook-form/controls/submit-button-hook-form';
+import { useSTGDepositForm } from './form-context';
 
 export const STGDepositSubmitButton = () => {
-  // TODO: isAvailable logic
-  return <VaultSubmitButton isAvailable>Deposit</VaultSubmitButton>;
+  const { disabled } = useFormState();
+  const { isDepositLockedForCurrentToken } = useSTGDepositForm();
+  const { isSTGAvailable } = useSTGAvailable();
+
+  const shouldSwitchChain = !isSTGAvailable;
+
+  return (
+    <SubmitButtonHookForm
+      disabled={disabled || shouldSwitchChain || isDepositLockedForCurrentToken}
+      data-testid="submit-btn"
+    >
+      {shouldSwitchChain ? 'Switch to Ethereum Mainnet' : 'Deposit'}
+    </SubmitButtonHookForm>
+  );
 };

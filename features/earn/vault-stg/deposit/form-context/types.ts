@@ -30,4 +30,5 @@ export type STGDepositFormDataContextValue = {
   maxAmount?: bigint;
   isLoading: boolean;
   token: STG_DEPOSIT_TOKENS;
+  isDepositLockedForCurrentToken: boolean;
 };
