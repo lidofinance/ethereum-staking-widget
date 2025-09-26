@@ -7,6 +7,7 @@ import {
   DataTableStyled,
   DataTableRowStyled,
   FormatTokenStyled,
+  DataTableRowContentStyled,
 } from './styles';
 
 type AllocationSummaryProps = {
@@ -23,15 +24,16 @@ export const AllocationSummary: FC<AllocationSummaryProps> = ({
   return (
     <DataTableStyled>
       <DataTableRowStyled title="Total">
-        <FormatLargeAmount amount={totalTvlUSD} fallback="-" />
-        <br />
-        <FormatTokenStyled
-          fallback="-"
-          amount={totalTvlETH}
-          symbol={'ETH'}
-          shortened
-          data-testid="ggv-allocation-total-tvl-eth"
-        />
+        <DataTableRowContentStyled>
+          <FormatLargeAmount amount={totalTvlUSD} fallback="-" />
+          <FormatTokenStyled
+            fallback="-"
+            amount={totalTvlETH}
+            symbol={'ETH'}
+            shortened
+            data-testid="ggv-allocation-total-tvl-eth"
+          />
+        </DataTableRowContentStyled>
       </DataTableRowStyled>
       <DataTableRowStyled title="APY">
         <FormatPercent value={apy} decimals="percent" fallback="-" />

@@ -12,6 +12,7 @@ import {
   TdNarrowStyled,
   ProtocolNameStyled,
   TdWithIconStyled,
+  DataTableRowContentStyled,
 } from './styles';
 
 type AllocationRowProps = {
@@ -34,20 +35,22 @@ export const AllocationRow: FC<AllocationRowProps> = (props) => {
       <TdWithIconStyled>
         <ProtocolIcon main={data.protocol} badge={data.chain} />
         <ProtocolNameStyled>
-          {data.protocol} {isAvailable && <VaultTip>{AVAILABLE_TIP}</VaultTip>}
+          {data.protocol}
+          {isAvailable && <VaultTip>{AVAILABLE_TIP}</VaultTip>}
           {isOther && <VaultTip>{OTHER_TIP}</VaultTip>}
         </ProtocolNameStyled>
       </TdWithIconStyled>
       <TdNarrowStyled align="right">{data.allocation}%</TdNarrowStyled>
       <TdNarrowStyled align="right">
-        <FormatLargeAmount amount={data.tvlUSD} fallback="-" />
-        <br />
-        <FormatTokenStyled
-          fallback="-"
-          amount={data.tvlETH}
-          symbol={'ETH'}
-          shortened
-        />
+        <DataTableRowContentStyled>
+          <FormatLargeAmount amount={data.tvlUSD} fallback="-" />
+          <FormatTokenStyled
+            fallback="-"
+            amount={data.tvlETH}
+            symbol={'ETH'}
+            shortened
+          />
+        </DataTableRowContentStyled>
       </TdNarrowStyled>
     </Tr>
   );

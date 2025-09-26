@@ -8,6 +8,7 @@ import {
 } from '@lidofinance/lido-ui';
 
 import { Section } from 'shared/components';
+import { LOCALE } from 'config/groups/locale';
 
 import { AllocationTable } from './allocation-table/allocation-Table';
 import { AllocationLegend } from './allocation-legend';
@@ -44,7 +45,7 @@ export const VaultAllocation: FC<VaultAllocationProps> = (props) => {
         <LastUpdatedStyled>
           Last updated:{' '}
           {new Date(Number(data.lastUpdated) * 1000).toLocaleDateString(
-            'en-US',
+            LOCALE,
             {
               month: 'short',
               day: 'numeric',

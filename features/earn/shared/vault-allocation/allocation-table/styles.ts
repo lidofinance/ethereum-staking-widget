@@ -64,6 +64,11 @@ export const TdWithIconStyled = styled(TdStyled)`
   }
 `;
 
+export const DataTableRowContentStyled = styled.div`
+  display: flex;
+  flex-direction: column;
+`;
+
 export const FormatTokenStyled = styled(FormatToken)`
   font-size: ${({ theme }) => theme.fontSizesMap.xxs}px;
   color: ${({ theme }) => theme.colors.textSecondary};
