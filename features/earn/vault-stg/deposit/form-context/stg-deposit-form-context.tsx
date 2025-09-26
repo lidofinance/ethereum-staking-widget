@@ -63,7 +63,7 @@ export const STGDepositFormProvider: React.FC<{
 
   const token = formObject.watch('token');
 
-  const { isPushedToVault } = useDepositRequestData(token);
+  const { isPushedToVault, depositRequest } = useDepositRequestData(token);
 
   const formControllerValue = useMemo(
     (): FormControllerContextValueType<any> => ({
@@ -91,9 +91,16 @@ export const STGDepositFormProvider: React.FC<{
       token,
       isLoading,
       // deposit is locked if the last request is not yet pushed to the vault
-      isDepositLockedForCurrentToken: !isPushedToVault,
+      isDepositLockedForCurrentToken:
+        Boolean(depositRequest) && !isPushedToVault,
     };
-  }, [asyncValidationContextValue, isLoading, isPushedToVault, token]);
+  }, [
+    asyncValidationContextValue,
+    depositRequest,
+    isLoading,
+    isPushedToVault,
+    token,
+  ]);
 
   return (
     <FormProvider {...formObject}>

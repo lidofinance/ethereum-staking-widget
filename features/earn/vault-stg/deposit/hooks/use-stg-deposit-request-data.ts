@@ -56,8 +56,9 @@ export const useDepositRequestData = (
   // to determine if the request is pushed to the vault.
   // The data from the Collector contract contains an 'eta' field,
   // which is not provided by the Deposit Queue contract.
-  // If eta is 0, it means the request is pushed,
-  // if eta is greater than 0, it means the request is pending.
+  // The deposit request, which is pushed to the vault, stays in the Deposit Queue until it is claimed.
+  // The pushed deposit request has eta = 0.
+  // The pending deposit request has eta > 0.
   const isPushedToVault = Boolean(collectedRequest?.eta === 0n);
 
   return {
