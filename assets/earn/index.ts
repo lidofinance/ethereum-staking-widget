@@ -23,6 +23,15 @@ import { ReactComponent as NavIconEarn } from './nav-icon-earn.svg';
 
 import { ReactComponent as EarnGgvBannerIcon } from './earn-ggv-banner.svg';
 
+export { ReactComponent as BaseIcon } from './allocation/base.svg';
+export { ReactComponent as ArbitrumIcon } from './allocation/arbitrum.svg';
+export { ReactComponent as EthereumIcon } from './allocation/ethereum.svg';
+export { ReactComponent as EulerIcon } from './allocation/euler.svg';
+export { ReactComponent as MorphoIcon } from './allocation/morpho.svg';
+export { ReactComponent as Univ3Icon } from './allocation/uniswap_v3.svg';
+export { ReactComponent as AaveV3Icon } from './allocation/aave_v3.svg';
+export { ReactComponent as BalancerIcon } from './allocation/balancer.svg';
+
 const themedBackground = css`
   path,
   rect {

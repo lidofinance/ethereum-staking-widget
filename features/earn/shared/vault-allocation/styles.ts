@@ -44,3 +44,17 @@ export const FormatTokenStyled = styled(FormatToken)`
   font-weight: 400;
   line-height: 20px;
 `;
+
+export const LastUpdatedStyled = styled.span`
+  font-size: ${({ theme }) => theme.fontSizesMap.xxs}px;
+  color: ${({ theme }) => theme.colors.textSecondary};
+  font-weight: 400;
+  line-height: 20px;
+`;
+
+export const LoaderWrapperStyled = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 490px;
+`;

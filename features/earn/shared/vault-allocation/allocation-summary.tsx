@@ -1,5 +1,4 @@
 import { FC } from 'react';
-import { parseEther } from 'viem';
 
 import { FormatPercent } from 'shared/formatters/format-percent';
 import { FormatLargeAmount } from 'shared/formatters/format-large-amount';
@@ -13,7 +12,7 @@ import {
 type AllocationSummaryProps = {
   apy?: number;
   totalTvlUSD: number;
-  totalTvlETH: number;
+  totalTvlETH: bigint;
 };
 
 export const AllocationSummary: FC<AllocationSummaryProps> = ({
@@ -28,10 +27,10 @@ export const AllocationSummary: FC<AllocationSummaryProps> = ({
         <br />
         <FormatTokenStyled
           fallback="-"
-          amount={parseEther(totalTvlETH.toString())}
+          amount={totalTvlETH}
           symbol={'ETH'}
           shortened
-          data-testid="ggv-total-tvl-eth"
+          data-testid="ggv-allocation-total-tvl-eth"
         />
       </DataTableRowStyled>
       <DataTableRowStyled title="APY">

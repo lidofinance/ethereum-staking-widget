@@ -3,20 +3,19 @@ import { bnAmountToNumber } from 'utils/bn';
 import { GGV_INCENTIVES, GGV_START_DATE } from './consts';
 import { standardFetcher } from 'utils/standardFetcher';
 
+export type SevenSeasAPIDailyResponseItem = {
+  block_number: number;
+  daily_apy: number;
+  price_usd: string;
+  share_price: number;
+  timestamp: string;
+  total_assets: string;
+  tvl: string;
+  unix_seconds: number;
+  vault_address: Address;
+};
 type SevenSeasAPIDailyResponse = {
-  Response: [
-    {
-      block_number: number;
-      daily_apy: number;
-      price_usd: string;
-      share_price: number;
-      timestamp: string;
-      total_assets: string;
-      tvl: string;
-      unix_seconds: number;
-      vault_address: Address;
-    },
-  ];
+  Response: SevenSeasAPIDailyResponseItem[];
 };
 
 const WEEK_SECONDS = 7 * 24 * 60 * 60;
@@ -66,6 +65,24 @@ export const fetchWeeklyGGVApy = async (vault: Address) => {
   const data = await standardFetcher<SevenSeasAPIPerformanceResponse>(url);
 
   return data.Response.apy * 100;
+};
+
+export const fetchGGVPerformance = async (vault: Address) => {
+  const url = `https://api.sevenseas.capital/performance/ethereum/${vault}`;
+
+  const data = await standardFetcher<SevenSeasAPIPerformanceResponse>(url);
+
+  return data;
+};
+
+export const fetchDailyGGVChainData = async (vault: Address) => {
+  const last3DaysTimestamp = Math.floor(Date.now() / 1000) - 86400 * 3;
+  const url = `https://api.sevenseas.capital/dailyData/all/${vault}/${last3DaysTimestamp}/latest`;
+
+  const data = await standardFetcher<SevenSeasAPIDailyResponse>(url);
+  const latestData = data.Response[0];
+
+  return latestData;
 };
 
 export const fetchWeeklyGGVApyAverage = async (vault: Address) => {

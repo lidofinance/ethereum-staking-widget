@@ -36,11 +36,32 @@ export const ThStyled = styled(Th)`
   font-size: ${({ theme }) => theme.fontSizesMap.xxs}px;
 `;
 
+export const ThWithTipStyled = styled(ThStyled)`
+  & > div:first-child {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    justify-content: end;
+  }
+`;
+
 export const TdStyled = styled(Td)`
-  color: ${({ theme }) => theme.colors.textSecondary};
   font-weight: 400;
   line-height: 24px;
   font-size: ${({ theme }) => theme.fontSizesMap.xs}px;
+  padding: 8px;
+`;
+
+export const TdNarrowStyled = styled(TdStyled)`
+  width: 1%;
+`;
+
+export const TdWithIconStyled = styled(TdStyled)`
+  & > div:first-child {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
 `;
 
 export const FormatTokenStyled = styled(FormatToken)`
@@ -48,4 +69,10 @@ export const FormatTokenStyled = styled(FormatToken)`
   color: ${({ theme }) => theme.colors.textSecondary};
   font-weight: 400;
   line-height: 20px;
+`;
+
+export const ProtocolNameStyled = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 4px;
 `;
