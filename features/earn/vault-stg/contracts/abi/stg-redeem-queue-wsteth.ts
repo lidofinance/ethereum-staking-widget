@@ -257,4 +257,4 @@ export const STG_REDEEM_QUEUE_WSTETH_ABI = [
     type: 'function',
   },
   { stateMutability: 'payable', type: 'receive' },
-];
+] as const;

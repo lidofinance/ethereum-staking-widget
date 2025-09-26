@@ -4,18 +4,23 @@ import { ReactComponent as Partner7SeasIcon } from './partner-7seas.svg';
 import { ReactComponent as PartnerVedaIcon } from './partner-veda.svg';
 import { ReactComponent as PartnerSteakhouseIcon } from './partner-steakhouse.svg';
 import { ReactComponent as PartnerMellowIcon } from './partner-mellow.svg';
+import { ReactComponent as PartnerRuntimeLabsIcon } from './partner-runtime-labs.svg';
+import { ReactComponent as PartnerRuntimeLabsIconInverted } from './partner-runtime-labs-inverted.svg';
 
 import { ReactComponent as TokenEthIcon } from './token-eth.svg';
 import { ReactComponent as TokenEthIcon32 } from './token-eth-32.svg';
 import { ReactComponent as TokenStethIcon } from './token-steth.svg';
 import { ReactComponent as TokenWethIcon } from './token-weth.svg';
+import { ReactComponent as TokenWethIcon32 } from './token-weth-32.svg';
 import { ReactComponent as TokenWstethIcon } from './token-wsteth.svg';
+import { ReactComponent as TokenWstethIcon32 } from './token-wsteth-32.svg';
 import { ReactComponent as TokenGGIcon } from './token-gg.svg';
 import { ReactComponent as TokenDvstethIcon } from './token-dvsteth.svg';
 import { ReactComponent as TokenObolIconRaw } from './token-obol.svg';
 import { ReactComponent as TokenSsvIconRaw } from './token-ssv.svg';
 import { ReactComponent as TokenMellowIcon } from './token-mellow.svg';
 import { ReactComponent as TokenStethDarkIcon } from './token-steth-dark.svg';
+import { ReactComponent as TokenStrethIcon } from './token-streth.svg';
 
 import { ReactComponent as VaultDVVIcon } from './vault-dvv.svg';
 import { ReactComponent as VaultGGVIcon } from './vault-ggv.svg';
@@ -48,7 +53,10 @@ export {
   PartnerVedaIcon,
   PartnerSteakhouseIcon,
   PartnerMellowIcon,
+  PartnerRuntimeLabsIcon,
+  PartnerRuntimeLabsIconInverted,
   TokenStethDarkIcon,
+  TokenStrethIcon,
   VaultGGVIcon,
   VaultDVVIcon,
   VaultSTGIcon,
@@ -56,7 +64,9 @@ export {
   TokenEthIcon32,
   TokenStethIcon,
   TokenWethIcon,
+  TokenWethIcon32,
   TokenWstethIcon,
+  TokenWstethIcon32,
   TokenGGIcon,
   TokenDvstethIcon,
   TokenObolIcon,

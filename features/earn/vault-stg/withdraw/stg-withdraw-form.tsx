@@ -11,24 +11,30 @@ import { STGWithdrawFormProvider } from './form-context';
 import { STGWithdrawInput } from './stg-withdraw-input';
 import { STGWithdrawAvailable } from './stg-withdraw-available';
 import { STGWithdrawWillReceive } from './stg-withdraw-will-receive';
-import { STGWithdrawWarning } from './stg-withdraw-warning';
-import { STGWithdrawSubmitButton } from './stg-withdraw-submit';
+import { STGWithdrawSubmitButton } from './stg-withdraw-submit-button';
+import { STGWithdrawRequests } from './stg-withdraw-requests';
+
+const STGWithdrawFormContent: FC = () => {
+  return (
+    <VaultForm data-testid="withdraw-form">
+      <VaultFormSection>
+        <STGWithdrawRequests />
+        <STGWithdrawAvailable />
+        <STGWithdrawInput />
+      </VaultFormSection>
+      <VaultTxInfo>
+        <STGWithdrawWillReceive />
+        <VaultTxInfoRow title="Waiting time">{'~2 days'}</VaultTxInfoRow>
+      </VaultTxInfo>
+      <STGWithdrawSubmitButton />
+    </VaultForm>
+  );
+};
 
 export const STGWithdrawForm: FC = () => {
   return (
     <STGWithdrawFormProvider>
-      <VaultForm data-testid="withdraw-form">
-        <STGWithdrawWarning />
-        <VaultFormSection>
-          <STGWithdrawAvailable />
-          <STGWithdrawInput />
-        </VaultFormSection>
-        <VaultTxInfo>
-          <STGWithdrawWillReceive />
-          <VaultTxInfoRow title="Waiting time">--</VaultTxInfoRow>
-        </VaultTxInfo>
-        <STGWithdrawSubmitButton />
-      </VaultForm>
+      <STGWithdrawFormContent />
     </STGWithdrawFormProvider>
   );
 };
