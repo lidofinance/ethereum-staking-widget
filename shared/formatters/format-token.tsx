@@ -4,6 +4,8 @@ import { DATA_UNAVAILABLE } from 'consts/text';
 import { Component } from 'types';
 import { FormatBalanceArgs, useFormattedBalance } from 'utils';
 
+import { getShortenedNumber } from './utils';
+
 export type FormatTokenProps = FormatBalanceArgs & {
   symbol: string;
   amount?: bigint | null;
@@ -11,6 +13,7 @@ export type FormatTokenProps = FormatBalanceArgs & {
   showAmountTip?: boolean;
   fallback?: string;
   decimals?: number;
+  shortened?: boolean;
 };
 export type FormatTokenComponent = Component<'span', FormatTokenProps>;
 
@@ -25,6 +28,7 @@ export const FormatToken: FormatTokenComponent = ({
   fallback = DATA_UNAVAILABLE,
   adaptiveDecimals,
   decimals,
+  shortened = false,
   ...rest
 }) => {
   const { actual, isTrimmed, trimmed } = useFormattedBalance(
@@ -49,7 +53,8 @@ export const FormatToken: FormatTokenComponent = ({
   const body = (
     <span {...rest}>
       {prefix}
-      {trimmed}&nbsp;{symbol}
+      {shortened ? getShortenedNumber(Number(trimmed), fallback) : trimmed}
+      &nbsp;{symbol}
     </span>
   );
 

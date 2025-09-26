@@ -1,4 +1,4 @@
-import { FC, memo, useMemo } from 'react';
+import { FC, memo, useMemo, Fragment } from 'react';
 import { Wallet, Stake, Wrap, Withdraw } from '@lidofinance/lido-ui';
 
 import {
@@ -102,15 +102,15 @@ export const Navigation: FC = memo(() => {
               subPaths?.indexOf(pathnameWithoutQuery) > -1);
 
           return (
-            <>
+            <Fragment key={path}>
               {divider && <Divider />}
-              <LocalLink key={path} href={path}>
+              <LocalLink href={path}>
                 <NavLink active={isActive} showNew={showNew}>
                   {icon}
                   <span>{name}</span>
                 </NavLink>
               </LocalLink>
-            </>
+            </Fragment>
           );
         },
       )}

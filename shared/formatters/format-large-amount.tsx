@@ -1,6 +1,8 @@
 import { DATA_UNAVAILABLE } from 'consts/text';
 import React from 'react';
 
+import { getShortenedNumber } from './utils';
+
 type FormatLargeAmountProps = {
   amount?: number;
   symbol?: string;
@@ -14,12 +16,5 @@ export const FormatLargeAmount = ({
 }: FormatLargeAmountProps): React.ReactNode => {
   if (!amount) return fallback;
 
-  if (amount >= 1_000_000_000) {
-    return `${symbol}${(amount / 1_000_000_000).toFixed(1).replace(/\.0$/, '')}B`;
-  } else if (amount >= 1_000_000) {
-    return `${symbol}${(amount / 1_000_000).toFixed(1).replace(/\.0$/, '')}M`;
-  } else if (amount >= 1_000) {
-    return `${symbol}${(amount / 1_000).toFixed(1).replace(/\.0$/, '')}K`;
-  }
-  return `${symbol}${amount.toFixed(0).replace(/\.0$/, '')}`;
+  return `${symbol}${getShortenedNumber(amount, fallback)}`;
 };
