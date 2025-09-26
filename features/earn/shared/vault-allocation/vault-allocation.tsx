@@ -36,6 +36,7 @@ export const VaultAllocation: FC<VaultAllocationProps> = (props) => {
         <Block>No data available</Block>
       </Section>
     );
+
   return (
     <Section
       title="Allocation"
