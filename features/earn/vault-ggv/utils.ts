@@ -80,7 +80,7 @@ export const fetchDailyGGVChainData = async (vault: Address) => {
   const url = `https://api.sevenseas.capital/dailyData/all/${vault}/${last3DaysTimestamp}/latest`;
 
   const data = await standardFetcher<SevenSeasAPIDailyResponse>(url);
-  const latestData = data.Response[0];
+  const latestData = data.Response;
 
   return latestData;
 };

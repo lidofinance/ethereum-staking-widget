@@ -18,11 +18,12 @@ import {
   LastUpdatedStyled,
   LoaderWrapperStyled,
   EmptyBlockStyled,
+  Footer,
 } from './styles';
 import { VaultAllocationProps } from './types';
 
 export const VaultAllocation: FC<VaultAllocationProps> = (props) => {
-  const { data, isLoading, apy } = props;
+  const { data, isLoading, apy, footer } = props;
 
   if (!data || isLoading)
     return (
@@ -71,6 +72,7 @@ export const VaultAllocation: FC<VaultAllocationProps> = (props) => {
           totalTvlUSD={data.totalTvlUSD}
           totalTvlETH={data.totalTvlETH}
         />
+        {footer && <Footer>{footer}</Footer>}
       </Block>
     </Section>
   );

@@ -11,6 +11,7 @@ import {
   BalancerIcon,
   EtherfiIcon,
   MerklIcon,
+  LineaIcon,
 } from 'assets/earn';
 
 import { Container, Badge, Content } from './styles';
@@ -34,6 +35,7 @@ export const ICONS_BADGE_MAP = {
   Ethereum: <EthereumIcon />,
   Base: <BaseIcon />,
   Arbitrum: <ArbitrumIcon />,
+  Linea: <LineaIcon />,
 };
 
 export const ProtocolIcon: FC<ProtocolIconProps> = ({ main, badge }) => {

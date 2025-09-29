@@ -20,4 +20,5 @@ export type VaultAllocationProps = {
   };
   isLoading: boolean;
   apy?: number;
+  footer?: string;
 };

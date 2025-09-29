@@ -69,3 +69,7 @@ export const EmptyBlockStyled = styled(Block)`
   justify-content: center;
   align-items: center;
 `;
+
+export const Footer = styled.div`
+  margin-top: ${({ theme }) => theme.spaceMap.xxl}px;
+`;

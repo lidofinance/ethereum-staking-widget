@@ -33,6 +33,7 @@ export { ReactComponent as AaveV3Icon } from './allocation/aave_v3.svg';
 export { ReactComponent as BalancerIcon } from './allocation/balancer.svg';
 export { ReactComponent as MerklIcon } from './allocation/merkl.svg';
 export { ReactComponent as EtherfiIcon } from './allocation/etherfi.svg';
+export { ReactComponent as LineaIcon } from './allocation/linea.svg';
 
 const themedBackground = css`
   path,

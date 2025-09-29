@@ -59,16 +59,77 @@ const ALLOCATION_CHAIN_NAMES_MAP = {
   ethereum: 'Ethereum',
   base: 'Base',
   arbitrum: 'Arbitrum',
+  linea: 'Linea',
   other: 'Other',
 };
 
+export const getTvlByAllocationsTimestamp = (
+  tvlData: SevenSeasAPIDailyResponseItem[],
+  allocationsTimestamp: string,
+) => {
+  const targetDate = new Date(allocationsTimestamp);
+
+  // 1) try exact match by original string
+  let tvlByAllocationsTimestamp = tvlData.find(
+    (item) => item.timestamp === allocationsTimestamp,
+  );
+
+  // 2) try match by calendar date (UTC)
+  if (!tvlByAllocationsTimestamp) {
+    tvlByAllocationsTimestamp = tvlData.find((item) => {
+      const d = new Date(item.timestamp);
+      return (
+        d.getUTCFullYear() === targetDate.getUTCFullYear() &&
+        d.getUTCMonth() === targetDate.getUTCMonth() &&
+        d.getUTCDate() === targetDate.getUTCDate()
+      );
+    });
+  }
+
+  // 3) nearest point by time, if day is not found (with window limit)
+  if (!tvlByAllocationsTimestamp) {
+    const targetUnix = Math.floor(targetDate.getTime() / 1000);
+    const nearest = tvlData.reduce(
+      (best, curr) => {
+        const diff = Math.abs(curr.unix_seconds - targetUnix);
+        if (best === null || diff < best.diff) {
+          return { item: curr, diff };
+        }
+        return best;
+      },
+      null as null | { item: SevenSeasAPIDailyResponseItem; diff: number },
+    );
+
+    // allow maximum 2 day spread
+    if (nearest && nearest.diff <= 2 * 86400) {
+      tvlByAllocationsTimestamp = nearest.item;
+    }
+  }
+
+  if (!tvlByAllocationsTimestamp) {
+    throw new Error('[GGV-ALLOCATION] No data found');
+  }
+
+  return tvlByAllocationsTimestamp;
+};
+
 export const getAllocationData = (
-  tvlData: SevenSeasAPIDailyResponseItem,
+  tvlData: SevenSeasAPIDailyResponseItem[],
   performanceData: SevenSeasAPIPerformanceResponse,
   latestAnswer: bigint,
   decimals: number,
 ) => {
-  const totalAssetsETH = parseEther(tvlData.total_assets);
+  const allocationsTimestamp = performanceData.Response.timestamp;
+  const tvlByAllocationsTimestamp = getTvlByAllocationsTimestamp(
+    tvlData,
+    allocationsTimestamp,
+  );
+
+  if (!tvlByAllocationsTimestamp) {
+    throw new Error('[GGV-ALLOCATION] No data found');
+  }
+
+  const totalAssetsETH = parseEther(tvlByAllocationsTimestamp.total_assets);
   const totalTvlUSDBigInt =
     (totalAssetsETH * latestAnswer) / 10n ** (BigInt(decimals) + 18n - 4n);
   const totalTvlUSD = Number(totalTvlUSDBigInt) / 10 ** 4;
@@ -83,7 +144,7 @@ export const getAllocationData = (
   const reserveAllocation = 1 - totalAllocation;
   const reserveAllocationPercentage = 100 - totalAllocationPercentage;
 
-  const lastUpdated = tvlData.unix_seconds;
+  const lastUpdated = tvlByAllocationsTimestamp.unix_seconds;
 
   return {
     totalTvlUSD,
