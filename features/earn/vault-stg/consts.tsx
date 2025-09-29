@@ -5,7 +5,7 @@ export const STG_TOKEN_SYMBOL = 'strETH';
 export const STG_DEPOSABLE_TOKENS = ['ETH', 'wETH', 'wstETH'] as const;
 
 export const STG_VAULT_DESCRIPTION =
-  'stRATEGY Vault Description placeholder; implementation coming soon.';
+  'Lido stRATEGY gives users exposure to a range of leading DeFi protocols targeting increased rewards, plus additional Mellow points';
 
 export const STG_PARTNERS = [
   {
