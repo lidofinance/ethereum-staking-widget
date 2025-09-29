@@ -50,6 +50,8 @@ const ALLOCATION_PROTOCOL_NAMES_MAP = {
   morpho: 'Morpho',
   univ3: 'Uniswap V3',
   balancer: 'Balancer',
+  merkl: 'Merkl',
+  etherfi: 'ether.fi',
   other: 'Other allocation',
   available: 'Available',
 };

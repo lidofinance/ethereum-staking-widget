@@ -9,6 +9,8 @@ import {
   BaseIcon,
   ArbitrumIcon,
   BalancerIcon,
+  EtherfiIcon,
+  MerklIcon,
 } from 'assets/earn';
 
 import { Container, Badge, Content } from './styles';
@@ -24,6 +26,8 @@ export const ICONS_MAIN_MAP = {
   Morpho: <MorphoIcon />,
   'Uniswap V3': <Univ3Icon />,
   Balancer: <BalancerIcon />,
+  Merkl: <MerklIcon />,
+  'ether.fi': <EtherfiIcon />,
 };
 
 export const ICONS_BADGE_MAP = {

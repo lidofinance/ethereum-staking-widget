@@ -31,6 +31,8 @@ export { ReactComponent as MorphoIcon } from './allocation/morpho.svg';
 export { ReactComponent as Univ3Icon } from './allocation/uniswap_v3.svg';
 export { ReactComponent as AaveV3Icon } from './allocation/aave_v3.svg';
 export { ReactComponent as BalancerIcon } from './allocation/balancer.svg';
+export { ReactComponent as MerklIcon } from './allocation/merkl.svg';
+export { ReactComponent as EtherfiIcon } from './allocation/etherfi.svg';
 
 const themedBackground = css`
   path,
