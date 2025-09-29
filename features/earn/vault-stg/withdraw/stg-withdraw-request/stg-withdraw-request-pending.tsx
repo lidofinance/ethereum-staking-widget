@@ -1,4 +1,4 @@
-import { InlineLoader } from '@lidofinance/lido-ui';
+import { InlineLoader } from 'features/earn/shared/inline-loader';
 import { TokenStrethIcon } from 'assets/earn';
 import { getTokenDisplayName } from 'utils/getTokenDisplayName';
 import { Request } from './stg-withdraw-request';
@@ -12,16 +12,16 @@ export const STGWithdrawRequestPending = ({
 }) => {
   const { data, isLoading } = useSTGPreviewWithdraw({ shares: request.shares });
 
-  return isLoading ? (
-    <InlineLoader />
-  ) : (
-    <Request
-      key={request.timestamp}
-      tokenLogo={<TokenStrethIcon />}
-      tokenAmount={request.shares}
-      tokenName={getTokenDisplayName('strETH')}
-      tokenAmountUSD={data?.usd ?? 0}
-      createdDateTimestamp={request.timestamp}
-    />
+  return (
+    <InlineLoader isLoading={isLoading} fullWidth>
+      <Request
+        key={request.timestamp}
+        tokenLogo={<TokenStrethIcon />}
+        tokenAmount={request.shares}
+        tokenName={getTokenDisplayName('strETH')}
+        tokenAmountUSD={data?.usd ?? 0}
+        createdDateTimestamp={request.timestamp}
+      />
+    </InlineLoader>
   );
 };

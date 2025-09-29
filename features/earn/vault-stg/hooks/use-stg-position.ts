@@ -71,11 +71,11 @@ export const useSTGPosition = () => {
     queryFn: async () => {
       invariant(publicClientMainnet, 'Public client is not available');
 
-      const { assets } = await getWithdrawalParams({
+      const { assets: assetsWsteth } = await getWithdrawalParams({
         shares,
         publicClient: publicClientMainnet,
       });
-      return assets;
+      return assetsWsteth;
     },
   });
 
