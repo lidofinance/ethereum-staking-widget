@@ -1,5 +1,7 @@
 import { LineData } from '@lidofinance/lido-ui';
 
+import { FormatPercent } from 'shared/formatters/format-percent';
+
 import {
   AllocationLegendContainer,
   AllocationLegendCircle,
@@ -17,7 +19,12 @@ export const AllocationLegend = ({ data }: AllocationLegendProps) => {
         <AllocationLegendItem key={item.color}>
           <AllocationLegendCircle style={{ backgroundColor: item.color }} />
           <div>
-            {item.threshold.label} {item.allocation}%
+            {item.threshold.label}{' '}
+            <FormatPercent
+              value={item.allocation}
+              decimals="percent"
+              fallback="-"
+            />
           </div>
         </AllocationLegendItem>
       ))}

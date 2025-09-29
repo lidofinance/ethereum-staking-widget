@@ -36,6 +36,7 @@ export const GGVWithdrawWarning = () => {
         ` ${unlockTime.toLocaleString(LOCALE, {
           dateStyle: 'medium',
           timeStyle: 'short',
+          hour12: false,
         })}.`}
     </VaultWarning>
   );

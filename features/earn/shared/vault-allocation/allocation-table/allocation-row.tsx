@@ -3,6 +3,7 @@ import { Tr } from '@lidofinance/lido-ui';
 
 import { FormatLargeAmount } from 'shared/formatters/format-large-amount';
 import { VaultTip } from 'features/earn/shared/vault-tip';
+import { FormatPercent } from 'shared/formatters/format-percent';
 
 import { ProtocolIcon } from '../protocol-icon';
 
@@ -40,7 +41,13 @@ export const AllocationRow: FC<AllocationRowProps> = (props) => {
           {isOther && <VaultTip>{OTHER_TIP}</VaultTip>}
         </ProtocolNameStyled>
       </TdWithIconStyled>
-      <TdNarrowStyled align="right">{data.allocation}%</TdNarrowStyled>
+      <TdNarrowStyled align="right">
+        <FormatPercent
+          value={data.allocation}
+          decimals="percent"
+          fallback="-"
+        />
+      </TdNarrowStyled>
       <TdNarrowStyled align="right">
         <DataTableRowContentStyled>
           <FormatLargeAmount amount={data.tvlUSD} fallback="-" />

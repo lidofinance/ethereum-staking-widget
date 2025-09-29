@@ -47,6 +47,7 @@ export const VaultAllocation: FC<VaultAllocationProps> = (props) => {
           {new Date(Number(data.lastUpdated) * 1000).toLocaleString(LOCALE, {
             dateStyle: 'medium',
             timeStyle: 'short',
+            hour12: false,
           })}
         </LastUpdatedStyled>
       }
