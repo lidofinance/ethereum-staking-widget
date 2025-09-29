@@ -1,5 +1,3 @@
-import { useMemo } from 'react';
-
 import {
   RequestsContainer,
   ActionableTitle,
@@ -7,24 +5,25 @@ import {
 import { useSTGWithdrawRequests } from './hooks/use-stg-withdraw-requests';
 import { STGWithdrawRequestClaimable } from './stg-withdraw-request/stg-withdraw-request-claimable';
 import { STGWithdrawRequestPending } from './stg-withdraw-request/stg-withdraw-request-pending';
+import { ButtonInline } from 'shared/components/button-inline/button-inline';
+import { useSTGWithdrawClaimAll } from './hooks/use-stg-withdraw-claim-all';
 
 export const STGWithdrawRequests = () => {
   const { data } = useSTGWithdrawRequests();
+  const { withdrawClaimAll } = useSTGWithdrawClaimAll();
 
-  const claimableRequests = useMemo(
-    () => data?.filter((item) => item.isClaimable === true) || [],
-    [data],
-  );
-  const pendingRequests = useMemo(
-    () => data?.filter((item) => item.isClaimable === false) || [],
-    [data],
-  );
+  const requests = data?.requests || [];
+  const claimableRequests = data?.claimableRequests || [];
+  const pendingRequests = data?.pendingRequests || [];
 
-  if (!data || data.length === 0) return null;
+  if (!data || requests.length === 0) return null;
   return (
     <RequestsContainer>
       {claimableRequests.length > 0 && (
-        <ActionableTitle>Ready to claim</ActionableTitle>
+        <ActionableTitle>
+          Ready to claim{' '}
+          <ButtonInline onClick={withdrawClaimAll}>Claim all</ButtonInline>
+        </ActionableTitle>
       )}
       {claimableRequests?.map((request) => (
         <STGWithdrawRequestClaimable

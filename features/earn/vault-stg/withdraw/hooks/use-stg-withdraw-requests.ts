@@ -29,6 +29,13 @@ export const useSTGWithdrawRequests = () => {
 
       return requests;
     },
+    select: (data) => {
+      const claimableRequests =
+        data.filter((item) => item.isClaimable === true) || [];
+      const pendingRequests =
+        data.filter((item) => item.isClaimable === false) || [];
+      return { requests: data, claimableRequests, pendingRequests };
+    },
     enabled: isEnabled,
   });
 };

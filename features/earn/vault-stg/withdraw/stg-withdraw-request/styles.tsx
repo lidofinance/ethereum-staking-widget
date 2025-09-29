@@ -16,6 +16,7 @@ export const RequestsContainer = styled.div`
 `;
 
 export const ActionableTitle = styled.div`
+  display: flex;
   font-weight: 700;
   font-size: ${({ theme }) => theme.fontSizesMap.xxs}px;
   line-height: 20px;
@@ -26,6 +27,10 @@ export const ActionableTitle = styled.div`
 
   &:not(:first-child) {
     margin-top: ${({ theme }) => theme.spaceMap.sm}px;
+  }
+
+  button {
+    margin-left: auto;
   }
 `;
 
