@@ -1,4 +1,5 @@
 import type { FC } from 'react';
+import { Link } from '@lidofinance/lido-ui';
 
 import { EARN_PATH } from 'consts/urls';
 
@@ -22,6 +23,7 @@ import {
   EARN_VAULT_DEPOSIT_SLUG,
   EARN_VAULT_STG_SLUG,
   EARN_VAULT_WITHDRAW_SLUG,
+  STG_DEPOSIT_PATH,
 } from '../consts';
 
 import { STGDepositForm } from './deposit';
@@ -80,13 +82,23 @@ export const VaultPageSTG: FC<{
             legalDisclosure={
               <span>
                 stRATEGY’s service relies on third-party infrastructure provided
-                by Mellow. By proceeding, you are subject to Mellow’s Terms of
-                Service and Privacy Notice.
+                by Mellow. By proceeding, you are subject to Mellow’s{' '}
+                <Link href="https://mellow.finance/Mellow-Terms-of-Service.pdf">
+                  Terms of Service
+                </Link>{' '}
+                and{' '}
+                <Link href="https://mellow.finance/Mellow-Privacy-Notice.pdf">
+                  Privacy Notice
+                </Link>
+                .
                 <br />
                 <br />
                 Note, that the vault involves protocol, slashing and other
                 risks. You can find more details in the{' '}
-                <LinkInpageAnchor hash="#risks-of-depositing">
+                <LinkInpageAnchor
+                  pagePath={STG_DEPOSIT_PATH}
+                  hash="#risks-of-depositing"
+                >
                   FAQ
                 </LinkInpageAnchor>{' '}
                 below.

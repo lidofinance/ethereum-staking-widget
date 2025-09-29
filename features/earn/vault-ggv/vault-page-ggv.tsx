@@ -23,9 +23,10 @@ import {
   VaultBlockHeaderSection,
 } from '../shared/vault-block';
 import {
-  EARN_VAULT_GGV_SLUG,
   EARN_VAULT_DEPOSIT_SLUG,
   EARN_VAULT_WITHDRAW_SLUG,
+  GGV_DEPOSIT_PATH,
+  GGV_WITHDRAW_PATH,
 } from '../consts';
 
 import { GGVDepositForm } from './deposit';
@@ -42,12 +43,12 @@ import { GGVApyHint } from './ggv-apy-hint';
 
 const routes = [
   {
-    path: `${EARN_PATH}/${EARN_VAULT_GGV_SLUG}/${EARN_VAULT_DEPOSIT_SLUG}`,
+    path: GGV_DEPOSIT_PATH,
     name: 'Deposit',
     matomoEvent: MATOMO_EARN_EVENTS_TYPES.ggvDepositTabClick,
   },
   {
-    path: `${EARN_PATH}/${EARN_VAULT_GGV_SLUG}/${EARN_VAULT_WITHDRAW_SLUG}`,
+    path: GGV_WITHDRAW_PATH,
     name: 'Withdraw',
     matomoEvent: MATOMO_EARN_EVENTS_TYPES.ggvWithdrawTabClick,
   },
@@ -125,7 +126,10 @@ export const VaultPageGGV: FC<{
                 <br />
                 Note, that the vault involves protocol, slashing and other
                 risks. You can find more details in the{' '}
-                <LinkInpageAnchor hash="#risks-of-depositing">
+                <LinkInpageAnchor
+                  pagePath={isDeposit ? GGV_DEPOSIT_PATH : GGV_WITHDRAW_PATH}
+                  hash="#risks-of-depositing"
+                >
                   FAQ
                 </LinkInpageAnchor>{' '}
                 below.
