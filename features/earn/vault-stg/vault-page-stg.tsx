@@ -31,6 +31,7 @@ import { STGWithdrawForm } from './withdraw';
 import { useSTGStats } from './hooks/use-stg-stats';
 import { STG_VAULT_DESCRIPTION, STG_PARTNERS } from './consts';
 import { STGPosition } from './stg-position/stg-position';
+import { STGFaq } from './faq/stg-faq';
 
 const routes = [
   {
@@ -107,6 +108,7 @@ export const VaultPageSTG: FC<{
           />
         </VaultBlockFormSection>
       </VaultBlock>
+      <STGFaq />
       <AprDisclaimer mentionAPY />
     </>
   );
