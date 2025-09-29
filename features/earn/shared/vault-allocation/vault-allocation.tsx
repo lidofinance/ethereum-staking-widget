@@ -14,7 +14,11 @@ import { AllocationTable } from './allocation-table/allocation-Table';
 import { AllocationLegend } from './allocation-legend';
 import { AllocationSummary } from './allocation-summary';
 
-import { LastUpdatedStyled, LoaderWrapperStyled } from './styles';
+import {
+  LastUpdatedStyled,
+  LoaderWrapperStyled,
+  EmptyBlockStyled,
+} from './styles';
 import { VaultAllocationProps } from './types';
 
 export const VaultAllocation: FC<VaultAllocationProps> = (props) => {
@@ -34,7 +38,7 @@ export const VaultAllocation: FC<VaultAllocationProps> = (props) => {
   if (!data && !isLoading)
     return (
       <Section title="Allocation">
-        <Block>No data available</Block>
+        <EmptyBlockStyled>No data available for now</EmptyBlockStyled>
       </Section>
     );
 

@@ -1,4 +1,4 @@
-import { DataTable, DataTableRow } from '@lidofinance/lido-ui';
+import { Block, DataTable, DataTableRow } from '@lidofinance/lido-ui';
 import styled from 'styled-components';
 
 import { FormatToken } from 'shared/formatters';
@@ -62,4 +62,10 @@ export const LoaderWrapperStyled = styled.div`
   align-items: center;
   justify-content: center;
   min-height: 490px;
+`;
+
+export const EmptyBlockStyled = styled(Block)`
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `;
