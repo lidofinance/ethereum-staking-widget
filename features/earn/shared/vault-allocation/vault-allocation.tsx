@@ -44,17 +44,10 @@ export const VaultAllocation: FC<VaultAllocationProps> = (props) => {
       headerDecorator={
         <LastUpdatedStyled>
           Last updated:{' '}
-          {new Date(Number(data.lastUpdated) * 1000).toLocaleDateString(
-            LOCALE,
-            {
-              month: 'short',
-              day: 'numeric',
-              hour: '2-digit',
-              minute: '2-digit',
-              hour12: false,
-              timeZoneName: 'short',
-            },
-          )}
+          {new Date(Number(data.lastUpdated) * 1000).toLocaleString(LOCALE, {
+            dateStyle: 'medium',
+            timeStyle: 'short',
+          })}
         </LastUpdatedStyled>
       }
     >

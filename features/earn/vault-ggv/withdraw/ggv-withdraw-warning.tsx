@@ -1,4 +1,6 @@
 import { VaultWarning } from 'features/earn/shared/vault-warning';
+import { LOCALE } from 'config/groups/locale';
+
 import { useGGVWithdrawForm } from './form-context';
 import { GGVWithdrawStoppedReason } from './types';
 import { useGGVAvailable } from '../hooks/use-ggv-available';
@@ -31,7 +33,7 @@ export const GGVWithdrawWarning = () => {
       {message}
       {unlockTime &&
         reason === 'transfer-from-shares-time-locked' &&
-        ` ${unlockTime.toLocaleString(undefined, {
+        ` ${unlockTime.toLocaleString(LOCALE, {
           dateStyle: 'medium',
           timeStyle: 'short',
         })}.`}
