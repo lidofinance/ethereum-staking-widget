@@ -70,47 +70,43 @@ export const getTvlByAllocationsTimestamp = (
   const targetDate = new Date(allocationsTimestamp);
 
   // 1) try exact match by original string
-  let tvlByAllocationsTimestamp = tvlData.find(
+  const tvlByAllocationsTimestamp = tvlData.find(
     (item) => item.timestamp === allocationsTimestamp,
   );
+  if (tvlByAllocationsTimestamp) return tvlByAllocationsTimestamp;
 
   // 2) try match by calendar date (UTC)
-  if (!tvlByAllocationsTimestamp) {
-    tvlByAllocationsTimestamp = tvlData.find((item) => {
-      const d = new Date(item.timestamp);
-      return (
-        d.getUTCFullYear() === targetDate.getUTCFullYear() &&
-        d.getUTCMonth() === targetDate.getUTCMonth() &&
-        d.getUTCDate() === targetDate.getUTCDate()
-      );
-    });
-  }
+  const tvlByAllocationsTimestampByDate = tvlData.find((item) => {
+    const d = new Date(item.timestamp);
+    return (
+      d.getUTCFullYear() === targetDate.getUTCFullYear() &&
+      d.getUTCMonth() === targetDate.getUTCMonth() &&
+      d.getUTCDate() === targetDate.getUTCDate()
+    );
+  });
+  if (tvlByAllocationsTimestampByDate) return tvlByAllocationsTimestampByDate;
 
   // 3) nearest point by time, if day is not found (with window limit)
-  if (!tvlByAllocationsTimestamp) {
-    const targetUnix = Math.floor(targetDate.getTime() / 1000);
-    const nearest = tvlData.reduce(
-      (best, curr) => {
-        const diff = Math.abs(curr.unix_seconds - targetUnix);
-        if (best === null || diff < best.diff) {
-          return { item: curr, diff };
-        }
-        return best;
-      },
-      null as null | { item: SevenSeasAPIDailyResponseItem; diff: number },
-    );
+  const targetUnix = Math.floor(targetDate.getTime() / 1000);
+  const nearest = tvlData.reduce(
+    (best, curr) => {
+      const diff = Math.abs(curr.unix_seconds - targetUnix);
+      if (best === null || diff < best.diff) {
+        return { item: curr, diff };
+      }
+      return best;
+    },
+    null as null | { item: SevenSeasAPIDailyResponseItem; diff: number },
+  );
 
-    // allow maximum 2 day spread
-    if (nearest && nearest.diff <= 2 * 86400) {
-      tvlByAllocationsTimestamp = nearest.item;
-    }
+  // allow maximum 2 day spread
+  if (nearest && nearest.diff <= 2 * 86400) {
+    const tvlByAllocationsTimestampNearest = nearest.item;
+
+    return tvlByAllocationsTimestampNearest;
   }
 
-  if (!tvlByAllocationsTimestamp) {
-    throw new Error('[GGV-ALLOCATION] No data found');
-  }
-
-  return tvlByAllocationsTimestamp;
+  throw new Error('[GGV-ALLOCATION] No data found');
 };
 
 export const getAllocationData = (
