@@ -9,6 +9,7 @@
         130, 1135, 1923
       ],
       "earnVaults": [
+        { "name": "strategy" },
         { "name": "ggv", "apy": { "type": "weekly" } },
         { "name": "dvv" },
         { "name": "stg" }
