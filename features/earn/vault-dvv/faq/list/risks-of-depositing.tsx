@@ -23,8 +23,14 @@ export const RisksOfDepositing: FC = () => {
       </ul>
       <p>
         <i>
-          Always conduct your own research and consult your own professional
-          advisors to understand all potential risks before participating.
+          Important: The risks described above are not exhaustive. Other risks
+          may exist and could arise unexpectedly. While contributors to the
+          protocol implement best-in-class security practices and continuously
+          monitor risk exposure, no system is entirely risk-free, and some risks
+          may remain despite all mitigation efforts. Anyone considering using
+          the vault should conduct their own research and seek independent
+          professional advice to ensure they fully understand the potential
+          risks and implications before participating.
         </i>
       </p>
     </AccordionNavigatable>

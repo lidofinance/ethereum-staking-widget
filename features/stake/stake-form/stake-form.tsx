@@ -1,7 +1,8 @@
 import { FC, memo } from 'react';
 
-import { StakeFormProvider } from './stake-form-context';
+import { EarnUpGGVBanner } from 'shared/banners/earn-up-ggv-banner';
 
+import { StakeFormProvider } from './stake-form-context';
 import { Wallet } from './wallet';
 import { StakeAmountInput } from './controls/stake-amount-input';
 import { StakeSubmitButton } from './controls/stake-submit-button';
@@ -9,6 +10,7 @@ import { StakeFormInfo } from './stake-form-info';
 import { SwapDiscountBanner } from '../swap-discount-banner';
 import { StakeBlock, FormControllerStyled } from './styles';
 import { DualGovernanceBanner } from 'shared/banners/dual-governance-banner';
+import { MATOMO_CLICK_EVENTS_TYPES } from 'consts/matomo';
 
 export const StakeForm: FC = memo(() => {
   return (
@@ -19,7 +21,11 @@ export const StakeForm: FC = memo(() => {
           <StakeAmountInput />
           <StakeSubmitButton />
           <DualGovernanceBanner>
-            <SwapDiscountBanner />
+            <SwapDiscountBanner>
+              <EarnUpGGVBanner
+                matomoEvent={MATOMO_CLICK_EVENTS_TYPES.vaultsBanner}
+              />
+            </SwapDiscountBanner>
           </DualGovernanceBanner>
         </FormControllerStyled>
         <StakeFormInfo />

@@ -3,10 +3,13 @@ import { Section } from 'shared/components';
 import {
   WhatIsLidoGGV,
   WhatIsApyForGGV,
-  RisksOfDepositing,
+  WhatAreTheRisksOutlinedInTheVault,
+  IsGGVAudited,
   DepositFee,
   WhatIsGGToken,
   WhatCanIDoWithGGToken,
+  WhyDidINotSeeAnyRewards,
+  HowLongShouldIStay,
   HowDoesWithdrawalWork,
   HowLongToWithdraw,
   WhyOnlyWstethOnWithdrawal,
@@ -25,10 +28,13 @@ export const GGVFaq: FC = () => {
       <WhatIsLidoGGV />
       <WhatIsApyForGGV />
       <DepositFee />
-      <RisksOfDepositing />
+      <WhatAreTheRisksOutlinedInTheVault />
+      <IsGGVAudited />
       <WhoIsCurator />
       <WhatIsGGToken />
       <WhatCanIDoWithGGToken />
+      <WhyDidINotSeeAnyRewards />
+      <HowLongShouldIStay />
       <HowDoesWithdrawalWork />
       <HowLongToWithdraw />
       <WhyOnlyWstethOnWithdrawal />

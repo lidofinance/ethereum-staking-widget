@@ -8,10 +8,10 @@ import {
   LidoEthApr,
   WhatIsSteth,
   HowCanIGetSteth,
-  SafeWorkWithLido,
+  WhatSecurityMeasures,
   HowCanIUseSteth,
   WhereCanICoverMySteth,
-  RisksOfStakingWithLido,
+  RisksOfEngagingWithLido,
   LidoFee,
   HowCanIUnstakeSteth,
 } from './list';
@@ -23,8 +23,8 @@ export const StakeFaq: FC = () => {
     <Section title="FAQ" onClick={onClickHandler}>
       <WhatIsLido />
       <HowDoesLidoWork />
-      <SafeWorkWithLido />
-      <RisksOfStakingWithLido />
+      <WhatSecurityMeasures />
+      <RisksOfEngagingWithLido />
       <LidoEthApr />
       <LidoFee />
       <WhatIsSteth />

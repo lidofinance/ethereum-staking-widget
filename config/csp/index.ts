@@ -23,6 +23,7 @@ export const contentSecurityPolicy: ContentSecurityPolicyOption = {
     imgSrc: [
       "'self'",
       'data:',
+      'blob:',
       'https://*.walletconnect.org',
       'https://*.walletconnect.com',
     ],
