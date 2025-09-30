@@ -1,4 +1,5 @@
 import type { FC } from 'react';
+import { Link } from '@lidofinance/lido-ui';
 
 import { EARN_PATH } from 'consts/urls';
 
@@ -22,13 +23,15 @@ import {
   EARN_VAULT_DEPOSIT_SLUG,
   EARN_VAULT_STG_SLUG,
   EARN_VAULT_WITHDRAW_SLUG,
+  STG_DEPOSIT_PATH,
 } from '../consts';
 
 import { STGDepositForm } from './deposit';
 import { STGWithdrawForm } from './withdraw';
-import { useSTGStats as usePlaceholderStats } from './hooks/use-stg-stats';
+import { useSTGStats } from './hooks/use-stg-stats';
 import { STG_VAULT_DESCRIPTION, STG_PARTNERS } from './consts';
 import { STGPosition } from './stg-position/stg-position';
+import { STGFaq } from './faq/stg-faq';
 
 const routes = [
   {
@@ -48,7 +51,7 @@ export const VaultPageSTG: FC<{
   const isWithdraw = action === EARN_VAULT_WITHDRAW_SLUG;
 
   const { isDappActive } = useDappStatus();
-  const { tvl, apy, isLoading } = usePlaceholderStats();
+  const { tvl, apy, isLoading } = useSTGStats();
 
   return (
     <>
@@ -58,7 +61,7 @@ export const VaultPageSTG: FC<{
       <VaultBlock>
         <VaultBlockHeaderSection>
           <VaultHeader
-            title={'stRATEGY'}
+            title={'Lido stRATEGY'}
             logo={<VaultSTGIcon />}
             partners={STG_PARTNERS}
           />
@@ -80,13 +83,23 @@ export const VaultPageSTG: FC<{
             legalDisclosure={
               <span>
                 stRATEGY’s service relies on third-party infrastructure provided
-                by Mellow. By proceeding, you are subject to Mellow’s Terms of
-                Service and Privacy Notice.
+                by Mellow. By proceeding, you are subject to Mellow’s{' '}
+                <Link href="https://mellow.finance/Mellow-Terms-of-Service.pdf">
+                  Terms of Service
+                </Link>{' '}
+                and{' '}
+                <Link href="https://mellow.finance/Mellow-Privacy-Notice.pdf">
+                  Privacy Notice
+                </Link>
+                .
                 <br />
                 <br />
                 Note, that the vault involves protocol, slashing and other
                 risks. You can find more details in the{' '}
-                <LinkInpageAnchor hash="#risks-of-depositing">
+                <LinkInpageAnchor
+                  pagePath={STG_DEPOSIT_PATH}
+                  hash="#risks-of-depositing"
+                >
                   FAQ
                 </LinkInpageAnchor>{' '}
                 below.
@@ -95,6 +108,7 @@ export const VaultPageSTG: FC<{
           />
         </VaultBlockFormSection>
       </VaultBlock>
+      <STGFaq />
       <AprDisclaimer mentionAPY />
     </>
   );

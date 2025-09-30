@@ -1,0 +1,52 @@
+import { useFormState } from 'react-hook-form';
+import { useSTGAvailable } from '../../hooks/use-stg-available';
+import { SubmitButtonHookForm } from 'shared/hook-form/controls/submit-button-hook-form';
+import { useSTGDepositForm } from '../form-context';
+import { useDepositRequestData } from '../hooks';
+import {
+  StyledTooltip,
+  StyledQuestionIcon,
+  SubmitButtonInnerContainer,
+} from './styles';
+
+export const STGDepositSubmitButton = () => {
+  const { disabled } = useFormState();
+  const { isDepositLockedForCurrentToken, token } = useSTGDepositForm();
+  const { isPushedToVault } = useDepositRequestData(token);
+  const { isSTGAvailable } = useSTGAvailable();
+
+  const shouldSwitchChain = !isSTGAvailable;
+
+  const button = (
+    <SubmitButtonHookForm
+      disabled={disabled || shouldSwitchChain || isDepositLockedForCurrentToken}
+      data-testid="submit-btn"
+    >
+      <SubmitButtonInnerContainer>
+        {shouldSwitchChain
+          ? 'Switch to Ethereum Mainnet'
+          : isPushedToVault
+            ? 'Claim and Deposit'
+            : 'Deposit'}
+        {isDepositLockedForCurrentToken && <StyledQuestionIcon />}
+      </SubmitButtonInnerContainer>
+    </SubmitButtonHookForm>
+  );
+
+  if (isDepositLockedForCurrentToken) {
+    return (
+      <StyledTooltip
+        placement="bottom"
+        title="You already have a pending request in ETH. To create a new deposit, please select a different token or cancel the existing deposit."
+      >
+        {/*
+          `div` wrapper is required around disabled button for the tooltip to work,
+          because disabled buttons do not trigger events
+        */}
+        <div>{button}</div>
+      </StyledTooltip>
+    );
+  }
+
+  return button;
+};

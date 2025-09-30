@@ -20,9 +20,10 @@ import {
   VaultBlockHeaderSection,
 } from '../shared/vault-block';
 import {
-  EARN_VAULT_DVV_SLUG,
   EARN_VAULT_DEPOSIT_SLUG,
   EARN_VAULT_WITHDRAW_SLUG,
+  DVV_DEPOSIT_PATH,
+  DVV_WITHDRAW_PATH,
 } from '../consts';
 
 import { DVVDepositForm } from './deposit';
@@ -37,12 +38,12 @@ import { DVVFaq } from './faq/dvv-faq';
 
 const routes = [
   {
-    path: `${EARN_PATH}/${EARN_VAULT_DVV_SLUG}/${EARN_VAULT_DEPOSIT_SLUG}`,
+    path: DVV_DEPOSIT_PATH,
     name: 'Deposit',
     matomoEvent: MATOMO_EARN_EVENTS_TYPES.dvvDepositTabClick,
   },
   {
-    path: `${EARN_PATH}/${EARN_VAULT_DVV_SLUG}/${EARN_VAULT_WITHDRAW_SLUG}`,
+    path: DVV_WITHDRAW_PATH,
     name: 'Withdraw',
     matomoEvent: MATOMO_EARN_EVENTS_TYPES.dvvWithdrawTabClick,
   },
@@ -105,7 +106,10 @@ export const VaultPageDVV: FC<{
                 <br />
                 Note, that the vault involves protocol, slashing and other
                 risks. You can find more details in the{' '}
-                <LinkInpageAnchor hash="#risks-of-depositing">
+                <LinkInpageAnchor
+                  pagePath={isDeposit ? DVV_DEPOSIT_PATH : DVV_WITHDRAW_PATH}
+                  hash="#risks-of-depositing"
+                >
                   FAQ
                 </LinkInpageAnchor>{' '}
                 below.

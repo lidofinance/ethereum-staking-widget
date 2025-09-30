@@ -3,14 +3,13 @@ import {
   TokenWethIcon,
   TokenWstethIcon,
   VaultSTGIcon,
-  TokenDvstethIcon,
+  TokenStrethIcon,
 } from 'assets/earn';
 
 import { useDappStatus } from 'modules/web3';
-
+import { useSTGStats } from './hooks/use-stg-stats';
+import { useSTGPosition } from './hooks/use-stg-position';
 import { VaultCard } from '../shared/vault-card';
-import { useGGVStats as usePlaceholderStats } from '../vault-ggv/hooks/use-ggv-stats';
-import { useGGVPosition as usePlaceholderPosition } from '../vault-ggv/hooks/use-ggv-position';
 import {
   STG_VAULT_DESCRIPTION,
   STG_PARTNERS,
@@ -19,14 +18,12 @@ import {
 
 export const VaultCardSTG = () => {
   const { isWalletConnected } = useDappStatus();
-  // reuse placeholder hooks until STG-specific hooks are implemented
-  const { tvl, apy, isLoading: isLoadingStats } = usePlaceholderStats();
-  const { sharesBalance, isLoading: isLoadingPosition } =
-    usePlaceholderPosition();
+  const { tvl, apy, isLoading: isLoadingStats } = useSTGStats();
+  const { sharesBalance, isLoading: isLoadingPosition } = useSTGPosition();
 
   return (
     <VaultCard
-      title="stRATEGY"
+      title="Lido stRATEGY"
       description={STG_VAULT_DESCRIPTION}
       urlSlug={'stg'}
       partners={STG_PARTNERS}
@@ -41,9 +38,7 @@ export const VaultCardSTG = () => {
               balance: sharesBalance,
               symbol: STG_TOKEN_SYMBOL,
               isLoading: isLoadingPosition,
-              logo: (
-                <TokenDvstethIcon width={16} height={16} viewBox="0 0 28 28" />
-              ),
+              logo: <TokenStrethIcon width={16} height={16} />,
             }
           : undefined
       }

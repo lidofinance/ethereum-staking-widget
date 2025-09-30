@@ -1,26 +1,43 @@
 import styled from 'styled-components';
 
-export const Container = styled.div`
+export const RequestsContainer = styled.div`
   display: flex;
   flex-direction: column;
-  padding: ${({ theme }) => theme.spaceMap.md}px;
-  border-radius: ${({ theme }) => theme.borderRadiusesMap.lg}px;
-  gap: ${({ theme }) => theme.spaceMap.lg}px;
+  gap: 12px;
   background-color: ${({ theme }) =>
     theme.name === 'light' ? `#F6F7F8` : 'var(--lido-color-controlBg)'};
+  padding: ${({ theme }) => theme.spaceMap.md}px;
+  margin-bottom: ${({ theme }) => theme.spaceMap.lg}px;
+  border-radius: ${({ theme }) => theme.borderRadiusesMap.lg}px;
 
   ${({ theme }) => theme.mediaQueries.md} {
     padding: 12px;
   }
 `;
 
-export const Title = styled.h3`
+export const ActionableTitle = styled.div`
+  display: flex;
   font-weight: 700;
   font-size: ${({ theme }) => theme.fontSizesMap.xxs}px;
   line-height: 20px;
   letter-spacing: 0px;
   vertical-align: middle;
   color: var(--lido-color-text);
+  margin-top: 0px;
+
+  &:not(:first-child) {
+    margin-top: ${({ theme }) => theme.spaceMap.sm}px;
+  }
+
+  button {
+    margin-left: auto;
+  }
+`;
+
+export const RequestContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: ${({ theme }) => theme.spaceMap.lg}px;
 `;
 
 export const Entry = styled.div`
