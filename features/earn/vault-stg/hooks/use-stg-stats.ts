@@ -1,6 +1,8 @@
 import { useQuery } from '@tanstack/react-query';
+import { getContractAddress } from 'config/networks/contract-address';
 import { useEthUsd } from 'shared/hooks/use-eth-usd';
 import { standardFetcher } from 'utils/standardFetcher';
+import { CHAINS } from 'consts/chains';
 
 type STGStatsResponse = {
   apy: number;
@@ -11,9 +13,9 @@ type STGStatsResponse = {
   };
 };
 
-// TODO: use vault address from config after replacing test contracts with production ones
-const STG_STATS_ENDPOINT =
-  'https://points-staging.mellow.finance/v1/chain/1/core-vaults/0x277C6A642564A91ff78b008022D65683cEE5CCC5/data';
+const stgVaultAddress = getContractAddress(CHAINS.Mainnet, 'stgVault');
+
+const STG_STATS_ENDPOINT = `https://points-staging.mellow.finance/v1/chain/${CHAINS.Mainnet}/core-vaults/${stgVaultAddress}/data`;
 
 export const useSTGStats = () => {
   const { data, isLoading } = useQuery<{ apy: number; tvlWei?: bigint }>({
