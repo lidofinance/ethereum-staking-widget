@@ -1,9 +1,12 @@
 import { FC } from 'react';
-import { Accordion } from '@lidofinance/lido-ui';
+import { AccordionNavigatable } from 'shared/components/accordion-navigatable';
 
 export const WhatFeesAreApplied: FC = () => {
   return (
-    <Accordion summary="What fees are applied when I deposit into stRATEGY?">
+    <AccordionNavigatable
+      summary="What fees are applied when I deposit into stRATEGY?"
+      id="deposit-fee"
+    >
       <p>
         When you deposit your tokens, you receive strETH tokens that represent
         your portion of the vault. Your strETH token balance never decreases to
@@ -25,6 +28,6 @@ export const WhatFeesAreApplied: FC = () => {
         So, while your strETH token balance stays the same, the value per token
         adjusts to account for fees and performance.
       </p>
-    </Accordion>
+    </AccordionNavigatable>
   );
 };
