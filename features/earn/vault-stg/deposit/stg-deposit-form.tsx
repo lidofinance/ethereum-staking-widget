@@ -1,6 +1,9 @@
 import { VaultFormSection } from 'features/earn/shared/vault-form-section';
 import { VaultForm } from 'features/earn/shared/vault-form';
-import { VaultTxInfo } from 'features/earn/shared/vault-tx-info';
+import {
+  VaultTxInfo,
+  VaultTxInfoRow,
+} from 'features/earn/shared/vault-tx-info';
 
 import { STGDepositFormProvider } from './form-context';
 import { STGDepositInputGroup } from './stg-deposit-input-group';
@@ -21,9 +24,9 @@ export const STGDepositForm = () => {
         </VaultFormSection>
         <VaultTxInfo>
           <STGWillReceive />
+          <VaultTxInfoRow title="Waiting time">{'24 hours'}</VaultTxInfoRow>
         </VaultTxInfo>
         <VaultWarning variant="info">
-          Withdrawing less than 3 days after deposit reduces rewards.
           Withdrawals are only in wstETH, regardless of deposited asset(s).
         </VaultWarning>
         <STGDepositSubmitButton />
