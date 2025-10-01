@@ -1,7 +1,11 @@
 import { Hash } from 'viem';
 import { TxStageSuccess } from 'shared/transaction-modal/tx-stages-basic';
 import { TOKEN_DISPLAY_NAMES } from 'utils/getTokenDisplayName';
-import { NotificationContainer, NotificationTitle } from './styles';
+import {
+  NotificationContainer,
+  NotificationTitle,
+  NotificationList,
+} from './styles';
 import { TxAmount } from 'shared/transaction-modal/tx-stages-parts/tx-amount';
 
 type Props = {
@@ -13,11 +17,11 @@ type Props = {
 const Notification = () => (
   <NotificationContainer>
     <NotificationTitle>Please note that:</NotificationTitle>
-    <ol>
+    <NotificationList>
       <li>Deposits process in ~24h</li>
       <li>LP tokens are claimable in Lido UI</li>
       <li>Unclaimed tokens still accrue rewards</li>
-    </ol>
+    </NotificationList>
   </NotificationContainer>
 );
 
