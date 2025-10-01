@@ -2,15 +2,9 @@ import { LinkInpageAnchor } from 'shared/components/link-inpage-anchor';
 import { STG_DEPOSIT_PATH } from 'features/earn/consts';
 import { TokenMellowIcon } from 'assets/earn';
 import { Container, Section, Item } from './styles';
-import { LOCALE } from 'config/groups/locale';
+import { STG_MELLOW_POINTS_BORDER_DATE_FORMATTED } from '../consts';
 
 export const STGApyHint = () => {
-  const borderDate = new Date('2025-10-27T00:00:00Z');
-  const borderDateFormatted = borderDate.toLocaleDateString(LOCALE, {
-    dateStyle: 'medium',
-    hour12: false,
-  });
-
   return (
     <Container>
       <Section>
@@ -33,14 +27,14 @@ export const STGApyHint = () => {
         </Item>
         <Item>
           <span>
-            <b>Before {borderDateFormatted}:</b>
+            <b>Before {STG_MELLOW_POINTS_BORDER_DATE_FORMATTED}:</b>
             <br />
             0.00075 points per hour per $1
           </span>
         </Item>
         <Item>
           <span>
-            <b>After {borderDateFormatted}:</b>
+            <b>After {STG_MELLOW_POINTS_BORDER_DATE_FORMATTED}:</b>
             <br />
             0.00025 points per hour per $1
           </span>

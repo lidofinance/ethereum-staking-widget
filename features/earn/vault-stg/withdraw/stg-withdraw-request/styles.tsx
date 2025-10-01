@@ -17,6 +17,7 @@ export const RequestsContainer = styled.div`
 
 export const ActionableTitle = styled.div`
   display: flex;
+  align-items: center;
   font-weight: 700;
   font-size: ${({ theme }) => theme.fontSizesMap.xxs}px;
   line-height: 20px;

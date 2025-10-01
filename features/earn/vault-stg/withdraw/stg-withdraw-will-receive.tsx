@@ -16,6 +16,12 @@ export const STGWithdrawWillReceive = () => {
       symbol="wstETH"
       usdAmount={data.usd}
       isLoading={isLoading}
+      help={
+        <>
+          The final claimable wstETH may differ slightly, since your request
+          continues earning until processing is complete.
+        </>
+      }
     />
   );
 };

@@ -24,7 +24,17 @@ export const STGDepositForm = () => {
         </VaultFormSection>
         <VaultTxInfo>
           <STGWillReceive />
-          <VaultTxInfoRow title="Waiting time">{'24 hours'}</VaultTxInfoRow>
+          <VaultTxInfoRow
+            title="Waiting time"
+            help={
+              <>
+                Deposits usually complete within 24 hours, often sooner. You can
+                track progress in the Deposit section of the Lido stRATEGY UI.
+              </>
+            }
+          >
+            {'24 hours'}
+          </VaultTxInfoRow>
         </VaultTxInfo>
         <VaultWarning variant="info">
           Withdrawals are only in wstETH, regardless of deposited asset(s).

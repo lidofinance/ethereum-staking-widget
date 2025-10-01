@@ -24,7 +24,17 @@ const STGWithdrawFormContent: FC = () => {
       </VaultFormSection>
       <VaultTxInfo>
         <STGWithdrawWillReceive />
-        <VaultTxInfoRow title="Waiting time">{'~2 days'}</VaultTxInfoRow>
+        <VaultTxInfoRow
+          title="Waiting time"
+          help={
+            <>
+              Withdrawals take ~48 hours to process. Once ready, your funds can
+              be claimed in the Lido UI
+            </>
+          }
+        >
+          {'~2 days'}
+        </VaultTxInfoRow>
       </VaultTxInfo>
       <STGWithdrawSubmitButton />
     </VaultForm>

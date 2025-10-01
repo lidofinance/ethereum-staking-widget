@@ -8,6 +8,7 @@ import { STGWithdrawRequestPending } from './stg-withdraw-request/stg-withdraw-r
 import { ButtonInline } from 'shared/components/button-inline/button-inline';
 import { useSTGWithdrawClaimAll } from './hooks/use-stg-withdraw-claim-all';
 import { useSTGAvailable } from '../hooks/use-stg-available';
+import { Question, Tooltip } from '@lidofinance/lido-ui';
 
 export const STGWithdrawRequests = () => {
   const { isSTGAvailable } = useSTGAvailable();
@@ -24,7 +25,21 @@ export const STGWithdrawRequests = () => {
       {claimableRequests.length > 0 && (
         <ActionableTitle>
           Ready to claim{' '}
-          <ButtonInline onClick={withdrawClaimAll}>Claim all</ButtonInline>
+          <Tooltip
+            placement="bottomLeft"
+            title="The final claimable wstETH may differ slightly, since your request continues earning until processing is complete."
+          >
+            <Question
+              style={{
+                height: 20,
+                width: 20,
+                color: 'var(--lido-color-textSecondary)',
+              }}
+            />
+          </Tooltip>
+          {claimableRequests.length > 1 && (
+            <ButtonInline onClick={withdrawClaimAll}>Claim all</ButtonInline>
+          )}
         </ActionableTitle>
       )}
       {claimableRequests?.map((request) => (

@@ -17,6 +17,12 @@ export const STGWillReceive = () => {
       symbol={STG_TOKEN_SYMBOL}
       usdAmount={data.usd}
       isLoading={isLoading}
+      help={
+        <>
+          The final claimable strETH amount may slightly differ based on the
+          latest token price update
+        </>
+      }
     />
   );
 };
