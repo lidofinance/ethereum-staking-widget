@@ -1,3 +1,4 @@
+import { Question, Tooltip } from '@lidofinance/lido-ui';
 import {
   RequestsContainer,
   ActionableTitle,
@@ -8,12 +9,13 @@ import { STGWithdrawRequestPending } from './stg-withdraw-request/stg-withdraw-r
 import { ButtonInline } from 'shared/components/button-inline/button-inline';
 import { useSTGWithdrawClaimAll } from './hooks/use-stg-withdraw-claim-all';
 import { useSTGAvailable } from '../hooks/use-stg-available';
-import { Question, Tooltip } from '@lidofinance/lido-ui';
+import { useSTGWithdrawClaim } from './hooks/use-stg-withdraw-claim';
 
 export const STGWithdrawRequests = () => {
   const { isSTGAvailable } = useSTGAvailable();
   const { data } = useSTGWithdrawRequests();
   const { withdrawClaimAll } = useSTGWithdrawClaimAll();
+  const { withdrawClaim, isClaiming } = useSTGWithdrawClaim();
 
   const requests = data?.requests || [];
   const claimableRequests = data?.claimableRequests || [];
@@ -46,6 +48,13 @@ export const STGWithdrawRequests = () => {
         <STGWithdrawRequestClaimable
           key={request.timestamp}
           request={request}
+          claim={() =>
+            withdrawClaim({
+              amount: request.assets,
+              timestamp: Number(request.timestamp),
+            })
+          }
+          isClaiming={isClaiming}
         />
       ))}
       {pendingRequests.length > 0 && (

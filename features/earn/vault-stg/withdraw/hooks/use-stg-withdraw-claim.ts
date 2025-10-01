@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import invariant from 'tiny-invariant';
 import { encodeFunctionData, WalletClient } from 'viem';
 
@@ -19,11 +19,14 @@ export const useSTGWithdrawClaim = (onRetry?: () => void) => {
   const { refetchData } = useSTGDepositFormData();
   const txFlow = useTxFlow();
 
+  const [isClaiming, setIsClaiming] = useState(false);
+
   const withdrawClaim = useCallback(
     async ({ amount, timestamp }: { amount: bigint; timestamp: number }) => {
       invariant(address, 'No address provided');
 
       try {
+        setIsClaiming(true);
         const redeemQueueContract = getSTGRedeemQueueWritableContractWSTETH(
           core.rpcProvider,
           core.web3Provider as WalletClient,
@@ -74,10 +77,12 @@ export const useSTGWithdrawClaim = (onRetry?: () => void) => {
         console.error(error);
         txModalStages.failed(error, onRetry);
         return false;
+      } finally {
+        setIsClaiming(false);
       }
     },
     [address, core, onRetry, refetchData, txFlow, txModalStages],
   );
 
-  return { withdrawClaim };
+  return { withdrawClaim, isClaiming };
 };

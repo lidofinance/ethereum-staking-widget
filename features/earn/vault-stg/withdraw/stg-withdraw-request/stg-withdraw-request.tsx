@@ -23,6 +23,7 @@ export const Request = ({
   createdDateTimestamp,
   actionText,
   actionCallback,
+  actionLoading,
 }: {
   tokenLogo: React.ReactNode;
   tokenAmount: bigint;
@@ -31,6 +32,7 @@ export const Request = ({
   createdDateTimestamp?: bigint;
   actionText?: string;
   actionCallback?: () => void;
+  actionLoading?: boolean;
 }) => {
   const createdDate = createdDateTimestamp
     ? new Date(Number(createdDateTimestamp) * 1000).toLocaleDateString(LOCALE, {
@@ -66,6 +68,7 @@ export const Request = ({
             size="xs"
             variant="translucent"
             onClick={actionCallback}
+            loading={actionLoading}
           >
             {actionText}
           </Button>
