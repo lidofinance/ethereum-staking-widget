@@ -16,4 +16,5 @@ export const SubmitButtonInnerContainer = styled.div`
   display: flex;
   align-items: center;
   height: 20px;
+  text-align: center;
 `;

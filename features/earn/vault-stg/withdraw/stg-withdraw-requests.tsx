@@ -7,8 +7,10 @@ import { STGWithdrawRequestClaimable } from './stg-withdraw-request/stg-withdraw
 import { STGWithdrawRequestPending } from './stg-withdraw-request/stg-withdraw-request-pending';
 import { ButtonInline } from 'shared/components/button-inline/button-inline';
 import { useSTGWithdrawClaimAll } from './hooks/use-stg-withdraw-claim-all';
+import { useSTGAvailable } from '../hooks/use-stg-available';
 
 export const STGWithdrawRequests = () => {
+  const { isSTGAvailable } = useSTGAvailable();
   const { data } = useSTGWithdrawRequests();
   const { withdrawClaimAll } = useSTGWithdrawClaimAll();
 
@@ -16,7 +18,7 @@ export const STGWithdrawRequests = () => {
   const claimableRequests = data?.claimableRequests || [];
   const pendingRequests = data?.pendingRequests || [];
 
-  if (!data || requests.length === 0) return null;
+  if (!data || requests.length === 0 || !isSTGAvailable) return null;
   return (
     <RequestsContainer>
       {claimableRequests.length > 0 && (
