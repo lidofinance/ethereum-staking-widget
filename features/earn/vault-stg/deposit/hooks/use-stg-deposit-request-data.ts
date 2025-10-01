@@ -29,6 +29,7 @@ export const useDepositRequestData = (
   // Fetch deposit request data from the Collector contract
   const { data: collectedData } = useSTGCollect();
   const allCollectedRequests = collectedData?.deposits;
+  const collectorTimestamp = collectedData?.collectorTimestamp;
 
   // Fetch deposit request data and claimable shares from the Deposit Queue contract
   const { depositRequest, claimableShares } = useSTGDepositQueueRequest(token);
@@ -57,9 +58,12 @@ export const useDepositRequestData = (
   // The data from the Collector contract contains an 'eta' field,
   // which is not provided by the Deposit Queue contract.
   // The deposit request, which is pushed to the vault, stays in the Deposit Queue until it is claimed.
-  // The pushed deposit request has eta = 0.
-  // The pending deposit request has eta > 0.
-  const isPushedToVault = Boolean(collectedRequest?.eta === 0n);
+  // The pushed deposit request has eta == 0n or eta < "current timestamp" from the Collector contract.
+  // Otherwise, the deposit request is considered pending.
+  const eta = collectedRequest?.eta;
+  const isPushedToVault = Boolean(
+    collectorTimestamp && eta && eta < collectorTimestamp,
+  );
 
   return {
     depositRequest,
