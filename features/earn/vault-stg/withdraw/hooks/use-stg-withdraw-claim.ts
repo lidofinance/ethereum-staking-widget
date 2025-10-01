@@ -58,15 +58,15 @@ export const useSTGWithdrawClaim = (onRetry?: () => void) => {
               callback: txStagesCallback,
             });
           },
-          onSign: async () => {
+          onSign: () => {
             txModalStages.sign(amount);
           },
-          onReceipt: async ({ txHashOrCallId, isAA }) => {
+          onReceipt: ({ txHashOrCallId, isAA }) => {
             txModalStages.pending(amount, txHashOrCallId, isAA);
           },
           onSuccess: async ({ txHash }) => {
             txModalStages.success(amount, txHash);
-            void refetchData('wstETH');
+            await refetchData('wstETH');
           },
         });
         return true;

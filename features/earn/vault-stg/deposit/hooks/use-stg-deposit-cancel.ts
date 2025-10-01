@@ -52,12 +52,12 @@ export const useSTGDepositCancel = (onRetry?: () => void) => {
           onSign: () => {
             txModalStages.sign(amount, token);
           },
-          onReceipt: async ({ txHashOrCallId, isAA }) => {
+          onReceipt: ({ txHashOrCallId, isAA }) => {
             txModalStages.pending(amount, token, txHashOrCallId, isAA);
           },
-          onSuccess: ({ txHash }) => {
+          onSuccess: async ({ txHash }) => {
             txModalStages.success(amount, token, txHash);
-            void refetchData(token);
+            await refetchData(token);
             // trackMatomoEvent(MATOMO_EARN_EVENTS_TYPES.stgDepositFinish);
           },
         });
