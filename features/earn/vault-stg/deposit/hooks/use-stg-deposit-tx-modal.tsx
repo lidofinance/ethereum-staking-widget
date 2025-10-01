@@ -11,8 +11,8 @@ import {
   getTokenDisplayName,
   TOKEN_DISPLAY_NAMES,
 } from 'utils/getTokenDisplayName';
-import { VaultDepositTxStageSuccess } from 'features/earn/shared/vault-deposit-tx-stage-success';
 import { STG_TOKEN_SYMBOL } from '../../consts';
+import { STGDepositTxStageSuccess } from '../stg-deposit-tx-stage-success';
 
 const STAGE_APPROVE_ARGS = {
   willReceiveToken: STG_TOKEN_SYMBOL,
@@ -21,7 +21,7 @@ const STAGE_APPROVE_ARGS = {
 
 const STAGE_OPERATION_ARGS = {
   willReceiveToken: STG_TOKEN_SYMBOL,
-  operationText: 'depositing',
+  operationText: 'Requesting deposit for',
 };
 
 const getTxModalStagesRequest = (
@@ -57,7 +57,7 @@ const getTxModalStagesRequest = (
     transitStage(
       <TxStageSignOperationAmount
         {...STAGE_OPERATION_ARGS}
-        showOperationInDescription={false}
+        showOperationInDescription={true}
         token={getTokenDisplayName(token)}
         amount={amount}
       />,
@@ -81,13 +81,12 @@ const getTxModalStagesRequest = (
       />,
     ),
 
-  success: (newBalance: bigint, txHash?: Hash) =>
+  success: (amount: bigint, token: TOKEN_DISPLAY_NAMES, txHash?: Hash) =>
     transitStage(
-      <VaultDepositTxStageSuccess
+      <STGDepositTxStageSuccess
         txHash={txHash}
-        newBalance={newBalance}
-        balanceSymbol={STG_TOKEN_SYMBOL}
-        description={`Depositing operation was successful`}
+        amount={amount}
+        token={token}
       />,
       {
         isClosableOnLedger: true,

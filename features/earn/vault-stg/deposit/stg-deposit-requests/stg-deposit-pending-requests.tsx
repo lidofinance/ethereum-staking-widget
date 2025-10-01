@@ -29,7 +29,7 @@ export const STGDepositPendingRequests: FC<PendingDepositRequestsProps> = ({
         <STGDepositPendingRequest
           key={requestData.token}
           depositRequestData={requestData}
-          onCancel={() => cancel(requestData.token)}
+          onCancel={() => cancel(requestData.assets, requestData.token)}
         />
       ))}
     </>

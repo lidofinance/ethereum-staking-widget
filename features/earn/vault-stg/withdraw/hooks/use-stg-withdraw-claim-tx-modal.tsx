@@ -31,17 +31,11 @@ const getTxModalStagesRequest = (
       />,
     ),
 
-  pending: (
-    amount: bigint,
-    willReceive: bigint,
-    txHash?: Hash,
-    isAA?: boolean,
-  ) =>
+  pending: (amount: bigint, txHash?: Hash, isAA?: boolean) =>
     transitStage(
       <TxStageSignOperationAmount
         {...STAGE_OPERATION_ARGS}
         showOperationInDescription={false}
-        willReceive={willReceive}
         amount={amount}
         isPending
         isAA={isAA}
@@ -55,10 +49,11 @@ const getTxModalStagesRequest = (
         txHash={txHash}
         title={
           <>
-            <TxAmount amount={amount} symbol="wstETH" /> has been claimed
+            <TxAmount amount={amount} symbol={'wstETH'} /> has been claimed.
           </>
         }
-        description="Claiming operation was successful"
+        description={null}
+        showEtherscan
       />,
       {
         isClosableOnLedger: true,

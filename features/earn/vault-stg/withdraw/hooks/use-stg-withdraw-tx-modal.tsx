@@ -6,13 +6,13 @@ import {
 } from 'shared/transaction-modal/hooks/use-transaction-modal-stage';
 import { getGeneralTransactionModalStages } from 'shared/transaction-modal/hooks/get-general-transaction-modal-stages';
 import { TxStageSignOperationAmount } from 'shared/transaction-modal/tx-stages-composed/tx-stage-amount-operation';
-import { VaultCustomTxStageSuccess } from 'features/earn/shared/vault-custom-tx-stage-success';
 import { getTokenDisplayName } from 'utils/getTokenDisplayName';
 import { FormatToken } from 'shared/formatters';
+import { TxStageSuccess } from 'shared/transaction-modal/tx-stages-basic';
 
 const STAGE_OPERATION_ARGS = {
   willReceiveToken: getTokenDisplayName('wstETH'),
-  token: getTokenDisplayName('strETH'),
+  token: getTokenDisplayName('wstETH'),
   operationText: 'requesting withdrawal for',
 };
 
@@ -21,27 +21,20 @@ const getTxModalStagesRequest = (
 ) => ({
   ...getGeneralTransactionModalStages(transitStage),
 
-  sign: (amount: bigint, willReceive: bigint) =>
+  sign: (amount: bigint) =>
     transitStage(
       <TxStageSignOperationAmount
         {...STAGE_OPERATION_ARGS}
-        willReceive={willReceive}
         showOperationInDescription={false}
         amount={amount}
       />,
     ),
 
-  pending: (
-    amount: bigint,
-    willReceive: bigint,
-    txHash?: Hash,
-    isAA?: boolean,
-  ) =>
+  pending: (amount: bigint, txHash?: Hash, isAA?: boolean) =>
     transitStage(
       <TxStageSignOperationAmount
         {...STAGE_OPERATION_ARGS}
         showOperationInDescription={false}
-        willReceive={willReceive}
         amount={amount}
         isPending
         isAA={isAA}
@@ -49,16 +42,17 @@ const getTxModalStagesRequest = (
       />,
     ),
 
-  success: (willReceiveWstETH: bigint, txHash?: Hash) =>
+  success: (amount: bigint, txHash?: Hash) =>
     transitStage(
-      <VaultCustomTxStageSuccess
+      <TxStageSuccess
         txHash={txHash}
-        title={`Withdrawal request has been sent`}
+        title={'Withdrawal request has been sent'}
+        showEtherscan
         description={
           <>
             Request to withdraw{' '}
             <FormatToken
-              amount={willReceiveWstETH}
+              amount={amount}
               symbol={getTokenDisplayName('wstETH')}
             />{' '}
             has been sent.

@@ -6,17 +6,16 @@ import {
 } from 'shared/transaction-modal/hooks/use-transaction-modal-stage';
 import { getGeneralTransactionModalStages } from 'shared/transaction-modal/hooks/get-general-transaction-modal-stages';
 import { TxStageSignOperationAmount } from 'shared/transaction-modal/tx-stages-composed/tx-stage-amount-operation';
-import { VaultCustomTxStageSuccess } from 'features/earn/shared/vault-custom-tx-stage-success';
 
 import {
   getTokenDisplayName,
   TOKEN_DISPLAY_NAMES,
 } from 'utils/getTokenDisplayName';
-import { STG_TOKEN_SYMBOL } from '../../consts';
+import { TxStageSuccess } from 'shared/transaction-modal/tx-stages-basic/tx-stage-success';
+import { TxAmount } from 'shared/transaction-modal/tx-stages-parts/tx-amount';
 
 const STAGE_OPERATION_ARGS = {
-  willReceiveToken: STG_TOKEN_SYMBOL,
-  operationText: 'cancelling deposit request',
+  operationText: 'cancelling deposit request for',
 };
 
 const getTxModalStagesRequest = (
@@ -52,11 +51,18 @@ const getTxModalStagesRequest = (
       />,
     ),
 
-  success: (_amount: bigint, txHash?: Hash) =>
+  success: (amount: bigint, token: TOKEN_DISPLAY_NAMES, txHash?: Hash) =>
     transitStage(
-      <VaultCustomTxStageSuccess
-        title={'The deposit request has been cancelled'}
+      <TxStageSuccess
         txHash={txHash}
+        title={'Deposit request has been cancelled'}
+        description={
+          <>
+            Request to deposit <TxAmount amount={amount} symbol={token} /> has
+            been cancelled.
+          </>
+        }
+        showEtherscan
       />,
       {
         isClosableOnLedger: true,

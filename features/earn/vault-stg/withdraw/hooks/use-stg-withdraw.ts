@@ -35,7 +35,7 @@ export const useSTGWithdraw = (onRetry: () => void) => {
           core.web3Provider as WalletClient,
         );
 
-        const { assets: willReceiveWstETH } = await getWithdrawalParams({
+        const { assets: amountWstETH } = await getWithdrawalParams({
           shares: amount,
           publicClient,
         });
@@ -72,18 +72,13 @@ export const useSTGWithdraw = (onRetry: () => void) => {
             });
           },
           onSign: async () => {
-            return txModalStages.sign(amount, willReceiveWstETH);
+            return txModalStages.sign(amountWstETH);
           },
           onReceipt: async ({ txHashOrCallId, isAA }) => {
-            return txModalStages.pending(
-              amount,
-              willReceiveWstETH,
-              txHashOrCallId,
-              isAA,
-            );
+            return txModalStages.pending(amountWstETH, txHashOrCallId, isAA);
           },
           onSuccess: async ({ txHash }) => {
-            txModalStages.success(willReceiveWstETH, txHash);
+            txModalStages.success(amountWstETH, txHash);
             // trackMatomoEvent(MATOMO_EARN_EVENTS_TYPES.stgWithdrawFinish);
           },
           onMultisigDone: () => {

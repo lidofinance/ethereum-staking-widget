@@ -21,9 +21,9 @@ import {
 } from '../shared/vault-block';
 import {
   EARN_VAULT_DEPOSIT_SLUG,
-  EARN_VAULT_STG_SLUG,
   EARN_VAULT_WITHDRAW_SLUG,
   STG_DEPOSIT_PATH,
+  STG_WITHDRAW_PATH,
 } from '../consts';
 
 import { STGDepositForm } from './deposit';
@@ -32,14 +32,15 @@ import { useSTGStats } from './hooks/use-stg-stats';
 import { STG_VAULT_DESCRIPTION, STG_PARTNERS } from './consts';
 import { STGPosition } from './stg-position/stg-position';
 import { STGFaq } from './faq/stg-faq';
+import { STGApyHint } from './stg-apy-hint/stg-apy-hint';
 
 const routes = [
   {
-    path: `${EARN_PATH}/${EARN_VAULT_STG_SLUG}/${EARN_VAULT_DEPOSIT_SLUG}`,
+    path: STG_DEPOSIT_PATH,
     name: 'Deposit',
   },
   {
-    path: `${EARN_PATH}/${EARN_VAULT_STG_SLUG}/${EARN_VAULT_WITHDRAW_SLUG}`,
+    path: STG_WITHDRAW_PATH,
     name: 'Withdraw',
   },
 ];
@@ -70,6 +71,7 @@ export const VaultPageSTG: FC<{
             tvl={tvl}
             apxLabel="APY"
             apx={apy}
+            apxHint={<STGApyHint />}
             isLoading={isLoading}
           />
           <VaultDescription description={STG_VAULT_DESCRIPTION} />
@@ -97,7 +99,7 @@ export const VaultPageSTG: FC<{
                 Note, that the vault involves protocol, slashing and other
                 risks. You can find more details in the{' '}
                 <LinkInpageAnchor
-                  pagePath={STG_DEPOSIT_PATH}
+                  pagePath={isDeposit ? STG_DEPOSIT_PATH : STG_WITHDRAW_PATH}
                   hash="#risks-of-depositing"
                 >
                   FAQ

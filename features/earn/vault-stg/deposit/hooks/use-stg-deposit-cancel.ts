@@ -5,15 +5,17 @@ import invariant from 'tiny-invariant';
 import { getSTGDepositQueueWritableContract } from '../../contracts';
 import { useTxModalStagesSTGDepositCancel } from './use-stg-deposit-cancel-tx-modal';
 import { STG_DEPOSIT_TOKENS } from '../form-context/types';
+import { useSTGDepositFormData } from './use-stg-deposit-form-data';
 
 export const useSTGDepositCancel = (onRetry?: () => void) => {
   const { address } = useDappStatus();
   const { core } = useLidoSDK();
   const { txModalStages } = useTxModalStagesSTGDepositCancel();
+  const { refetchData } = useSTGDepositFormData();
   const txFlow = useTxFlow();
 
   const cancel = useCallback(
-    async (token: STG_DEPOSIT_TOKENS) => {
+    async (amount: bigint, token: STG_DEPOSIT_TOKENS) => {
       invariant(address, 'Address is not available');
 
       const depositQueue = getSTGDepositQueueWritableContract({
@@ -47,6 +49,17 @@ export const useSTGDepositCancel = (onRetry?: () => void) => {
               callback: txStagesCallback,
             });
           },
+          onSign: () => {
+            txModalStages.sign(amount, token);
+          },
+          onReceipt: async ({ txHashOrCallId, isAA }) => {
+            txModalStages.pending(amount, token, txHashOrCallId, isAA);
+          },
+          onSuccess: ({ txHash }) => {
+            txModalStages.success(amount, token, txHash);
+            void refetchData(token);
+            // trackMatomoEvent(MATOMO_EARN_EVENTS_TYPES.stgDepositFinish);
+          },
         });
 
         return true;
@@ -56,7 +69,7 @@ export const useSTGDepositCancel = (onRetry?: () => void) => {
         return false;
       }
     },
-    [address, core, onRetry, txFlow, txModalStages],
+    [address, core, onRetry, refetchData, txFlow, txModalStages],
   );
 
   return { cancel };

@@ -9,12 +9,14 @@ import {
   useTxFlow,
 } from 'modules/web3';
 import { getSTGRedeemQueueWritableContractWSTETH } from '../../contracts';
+import { useSTGDepositFormData } from '../../deposit/hooks';
 import { useTxModalStagesSTGWithdrawClaim } from './use-stg-withdraw-claim-tx-modal';
 
 export const useSTGWithdrawClaim = (onRetry?: () => void) => {
   const { core } = useLidoSDK();
   const { address } = useDappStatus();
   const { txModalStages } = useTxModalStagesSTGWithdrawClaim();
+  const { refetchData } = useSTGDepositFormData();
   const txFlow = useTxFlow();
 
   const withdrawClaim = useCallback(
@@ -57,13 +59,14 @@ export const useSTGWithdrawClaim = (onRetry?: () => void) => {
             });
           },
           onSign: async () => {
-            return txModalStages.sign(amount);
+            txModalStages.sign(amount);
           },
           onReceipt: async ({ txHashOrCallId, isAA }) => {
-            return txModalStages.pending(amount, amount, txHashOrCallId, isAA);
+            txModalStages.pending(amount, txHashOrCallId, isAA);
           },
           onSuccess: async ({ txHash }) => {
-            return txModalStages.success(amount, txHash);
+            txModalStages.success(amount, txHash);
+            void refetchData('wstETH');
           },
         });
         return true;
@@ -73,7 +76,7 @@ export const useSTGWithdrawClaim = (onRetry?: () => void) => {
         return false;
       }
     },
-    [address, core, onRetry, txFlow, txModalStages],
+    [address, core, onRetry, refetchData, txFlow, txModalStages],
   );
 
   return { withdrawClaim };

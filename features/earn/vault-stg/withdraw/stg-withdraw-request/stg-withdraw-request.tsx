@@ -1,5 +1,6 @@
 import { Button } from '@lidofinance/lido-ui';
 import { FormatPrice } from 'shared/formatters/format-price';
+import { LOCALE } from 'config/groups/locale';
 
 import {
   RequestContainer,
@@ -32,14 +33,11 @@ export const Request = ({
   actionCallback?: () => void;
 }) => {
   const createdDate = createdDateTimestamp
-    ? new Date(Number(createdDateTimestamp) * 1000).toLocaleDateString(
-        'en-GB',
-        {
-          day: '2-digit',
-          month: 'short',
-          year: 'numeric',
-        },
-      )
+    ? new Date(Number(createdDateTimestamp) * 1000).toLocaleDateString(LOCALE, {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric',
+      })
     : undefined;
 
   return (
