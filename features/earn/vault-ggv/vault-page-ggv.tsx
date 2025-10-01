@@ -128,7 +128,7 @@ export const VaultPageGGV: FC<{
                 risks. You can find more details in the{' '}
                 <LinkInpageAnchor
                   pagePath={isDeposit ? GGV_DEPOSIT_PATH : GGV_WITHDRAW_PATH}
-                  hash="#risks-of-depositing"
+                  hash="#what-are-risks-outlined-in-the-vault"
                 >
                   FAQ
                 </LinkInpageAnchor>{' '}
