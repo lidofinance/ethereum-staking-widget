@@ -10,6 +10,7 @@ import { useDappStatus } from 'modules/web3';
 import { LinkInpageAnchor } from 'shared/components/link-inpage-anchor';
 import { AprDisclaimer } from 'shared/components/apr-disclaimer/apr-disclaimer';
 
+import { Allocation } from './allocation';
 import { VaultHeader } from '../shared/vault-header';
 import { VaultDescription } from '../shared/vault-description';
 import { VaultSwitch } from '../shared/vault-switch';
@@ -144,6 +145,7 @@ export const VaultPageGGV: FC<{
           />
         </VaultBlockFormSection>
       </VaultBlock>
+      <Allocation />
       <GGVFaq />
       <AprDisclaimer mentionAPY />
     </>
