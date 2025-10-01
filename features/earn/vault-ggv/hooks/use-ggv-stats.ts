@@ -76,7 +76,7 @@ const getGGVApy = async (
   }
 };
 
-const useGGVApy = () => {
+export const useGGVApy = () => {
   const ggvAPYType = useConfig().externalConfig.earnVaults.find(
     (vault) => vault.name === 'ggv',
   )?.apy?.type;
