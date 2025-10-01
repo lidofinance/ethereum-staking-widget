@@ -11,13 +11,15 @@ import {
 import { getSTGRedeemQueueWritableContractWSTETH } from '../../contracts';
 import { useTxModalStagesSTGWithdrawClaim } from './use-stg-withdraw-claim-tx-modal';
 import { useSTGWithdrawRequests } from './use-stg-withdraw-requests';
+import { useSTGDepositFormData } from '../../deposit/hooks';
 
 export const useSTGWithdrawClaimAll = (onRetry?: () => void) => {
   const { core } = useLidoSDK();
   const { address } = useDappStatus();
   const { txModalStages } = useTxModalStagesSTGWithdrawClaim();
-  const txFlow = useTxFlow();
+  const { refetchData } = useSTGDepositFormData();
   const { data } = useSTGWithdrawRequests();
+  const txFlow = useTxFlow();
 
   const claimableRequests = data?.claimableRequests || [];
   const totalClaimableAmount = claimableRequests.reduce(
@@ -67,18 +69,14 @@ export const useSTGWithdrawClaimAll = (onRetry?: () => void) => {
           });
         },
         onSign: async () => {
-          return txModalStages.sign(totalClaimableAmount);
+          txModalStages.sign(totalClaimableAmount);
         },
         onReceipt: async ({ txHashOrCallId, isAA }) => {
-          return txModalStages.pending(
-            totalClaimableAmount,
-            totalClaimableAmount,
-            txHashOrCallId,
-            isAA,
-          );
+          txModalStages.pending(totalClaimableAmount, txHashOrCallId, isAA);
         },
         onSuccess: async ({ txHash }) => {
-          return txModalStages.success(totalClaimableAmount, txHash);
+          txModalStages.success(totalClaimableAmount, txHash);
+          void refetchData('wstETH');
         },
       });
       return true;
@@ -91,6 +89,7 @@ export const useSTGWithdrawClaimAll = (onRetry?: () => void) => {
     address,
     core,
     onRetry,
+    refetchData,
     timestamps,
     totalClaimableAmount,
     txFlow,

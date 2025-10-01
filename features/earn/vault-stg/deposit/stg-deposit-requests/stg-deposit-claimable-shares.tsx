@@ -27,7 +27,7 @@ export const STGDepositClaimableShares = ({
         tokenName={getTokenDisplayName('strETH')}
         tokenAmountUSD={wstEthData?.usd ?? 0}
         actionText="Claim"
-        actionCallback={claim}
+        actionCallback={() => claim(claimableShares)}
       />
     </>
   );

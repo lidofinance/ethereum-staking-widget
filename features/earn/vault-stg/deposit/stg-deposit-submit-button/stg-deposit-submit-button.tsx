@@ -1,6 +1,7 @@
 import { useFormState } from 'react-hook-form';
 import { useSTGAvailable } from '../../hooks/use-stg-available';
 import { SubmitButtonHookForm } from 'shared/hook-form/controls/submit-button-hook-form';
+import { getTokenDisplayName } from 'utils/getTokenDisplayName';
 import { useSTGDepositForm } from '../form-context';
 import { useDepositRequestData } from '../hooks';
 import {
@@ -37,7 +38,7 @@ export const STGDepositSubmitButton = () => {
     return (
       <StyledTooltip
         placement="bottom"
-        title="You already have a pending request in ETH. To create a new deposit, please select a different token or cancel the existing deposit."
+        title={`You already have a pending request in ${getTokenDisplayName(token)}. To create a new deposit, please select a different token or cancel the existing deposit.`}
       >
         {/*
           `div` wrapper is required around disabled button for the tooltip to work,

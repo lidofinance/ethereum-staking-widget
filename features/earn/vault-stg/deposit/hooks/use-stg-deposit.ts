@@ -14,10 +14,7 @@ import {
   useTxFlow,
 } from 'modules/web3';
 import { getTokenAddress } from 'config/networks/token-address';
-import {
-  getSTGDepositQueueWritableContract,
-  getSTGShareManagerSTRETH,
-} from '../../contracts';
+import { getSTGDepositQueueWritableContract } from '../../contracts';
 import { useTxModalStagesSTGDeposit } from './use-stg-deposit-tx-modal';
 
 export const useSTGDeposit = (onRetry?: () => void) => {
@@ -48,10 +45,6 @@ export const useSTGDeposit = (onRetry?: () => void) => {
             wallet: core.web3Provider as WalletClient,
           },
         });
-
-        const stgShareManagerSTRETH = getSTGShareManagerSTRETH(
-          core.rpcProvider,
-        );
 
         let needsApprove = false;
 
@@ -128,7 +121,6 @@ export const useSTGDeposit = (onRetry?: () => void) => {
               callback: txStagesCallback,
             });
           },
-
           onSign: () => {
             if (needsApprove) {
               return txModalStages.signApproval(amount, token);
@@ -147,10 +139,7 @@ export const useSTGDeposit = (onRetry?: () => void) => {
           },
           onSuccess: async ({ txHash }) => {
             if (needsApprove) return;
-            const balance = await stgShareManagerSTRETH.read.balanceOf([
-              address,
-            ]);
-            txModalStages.success(balance, txHash);
+            txModalStages.success(amount, token, txHash);
             // trackMatomoEvent(MATOMO_EARN_EVENTS_TYPES.stgDepositFinish);
           },
           onMultisigDone: () => {

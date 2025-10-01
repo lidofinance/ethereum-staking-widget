@@ -6,13 +6,11 @@ import {
 } from 'shared/transaction-modal/hooks/use-transaction-modal-stage';
 import { getGeneralTransactionModalStages } from 'shared/transaction-modal/hooks/get-general-transaction-modal-stages';
 import { TxStageSignOperationAmount } from 'shared/transaction-modal/tx-stages-composed/tx-stage-amount-operation';
-import { VaultCustomTxStageSuccess } from 'features/earn/shared/vault-custom-tx-stage-success';
 
-import {
-  getTokenDisplayName,
-  TOKEN_DISPLAY_NAMES,
-} from 'utils/getTokenDisplayName';
+import { getTokenDisplayName } from 'utils/getTokenDisplayName';
 import { STG_TOKEN_SYMBOL } from '../../consts';
+import { TxStageSuccess } from 'shared/transaction-modal/tx-stages-basic';
+import { TxAmount } from 'shared/transaction-modal/tx-stages-parts/tx-amount';
 
 const STAGE_OPERATION_ARGS = {
   willReceiveToken: STG_TOKEN_SYMBOL,
@@ -24,39 +22,41 @@ const getTxModalStagesRequest = (
 ) => ({
   ...getGeneralTransactionModalStages(transitStage),
 
-  sign: (amount: bigint, token: TOKEN_DISPLAY_NAMES) =>
+  sign: (amount: bigint) =>
     transitStage(
       <TxStageSignOperationAmount
         {...STAGE_OPERATION_ARGS}
         showOperationInDescription={false}
-        token={getTokenDisplayName(token)}
+        token={getTokenDisplayName(STG_TOKEN_SYMBOL)}
         amount={amount}
       />,
     ),
 
-  pending: (
-    amount: bigint,
-    token: TOKEN_DISPLAY_NAMES,
-    txHash?: Hash,
-    isAA?: boolean,
-  ) =>
+  pending: (amount: bigint, txHash?: Hash, isAA?: boolean) =>
     transitStage(
       <TxStageSignOperationAmount
         {...STAGE_OPERATION_ARGS}
         showOperationInDescription={false}
         amount={amount}
-        token={getTokenDisplayName(token)}
+        token={getTokenDisplayName(STG_TOKEN_SYMBOL)}
         isPending
         isAA={isAA}
         txHash={txHash}
       />,
     ),
 
-  success: (_amount: bigint, txHash?: Hash) =>
+  success: (amount: bigint, txHash?: Hash) =>
     transitStage(
-      <VaultCustomTxStageSuccess
-        title={'Successfully claimed'}
+      <TxStageSuccess
         txHash={txHash}
+        title={
+          <>
+            <TxAmount amount={amount} symbol={STG_TOKEN_SYMBOL} /> has been
+            claimed.
+          </>
+        }
+        description={null}
+        showEtherscan
       />,
       {
         isClosableOnLedger: true,
