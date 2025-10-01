@@ -121,7 +121,7 @@ export const VaultPageGGV: FC<{
                 <Link href="https://veda.tech/privacy-policy">
                   Privacy Policy
                 </Link>{' '}
-                as{' '}
+                as well as{' '}
                 <Link href="https://lido.fi/terms-of-use">
                   Lido’s Terms of Use
                 </Link>
