@@ -122,7 +122,11 @@ export const VaultPageGGV: FC<{
                 <Link href="https://veda.tech/privacy-policy">
                   Privacy Policy
                 </Link>{' '}
-                as well as Lido’s Terms of Use.
+                as well as{' '}
+                <Link href="https://lido.fi/terms-of-use">
+                  Lido’s Terms of Use
+                </Link>
+                .
                 <br />
                 <br />
                 Note, that the vault involves protocol, slashing and other
@@ -135,16 +139,6 @@ export const VaultPageGGV: FC<{
                 </LinkInpageAnchor>{' '}
                 below.
               </span>
-            }
-            allocation={
-              <>
-                Your deposit is distributed across a curated set of
-                high-performing DeFi strategies, including lending markets
-                (Aave, Fluid) and LP positions (Uniswap v4, Balancer). <br />
-                The exact allocation may vary over time based on market
-                conditions and strategy performance. All strategies are
-                ETH-correlated to help minimize risk from price volatility.
-              </>
             }
           />
         </VaultBlockFormSection>
