@@ -61,9 +61,10 @@ export const useDepositRequestData = (
   // The pushed deposit request has eta == 0n or eta < "current timestamp" from the Collector contract.
   // Otherwise, the deposit request is considered pending.
   const eta = collectedRequest?.eta;
-  const isPushedToVault = Boolean(
-    collectorTimestamp && eta && eta < collectorTimestamp,
-  );
+  const isPushedToVault =
+    eta !== undefined &&
+    collectorTimestamp !== undefined &&
+    Boolean(eta < collectorTimestamp);
 
   return {
     depositRequest,
