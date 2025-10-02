@@ -43,6 +43,7 @@ export const enum MATOMO_EARN_EVENTS_TYPES {
   dvvBackToAllVaults = 'dvvBackToAllVaults',
 
   // Strategy Deposit
+  strategyDeposit = 'strategyDeposit',
   strategyDepositTab = 'strategyDepositTab',
   strategySelectTokenEth = 'strategySelectTokenEth',
   strategySelectTokenWeth = 'strategySelectTokenWeth',
@@ -218,6 +219,11 @@ export const MATOMO_EARN_EVENTS: Record<
     'Ethereum_Earn_Widget',
     'Click on "Back to all vaults" on Lido stRATEGY',
     'eth_earn_lido_strategy_back_to_all_vaults',
+  ],
+  [MATOMO_EARN_EVENTS_TYPES.strategyDeposit]: [
+    'Ethereum_Earn_Widget',
+    'Click "Deposit" on Lido stRATEGY on the list of vaults',
+    'eth_earn_list_lido_strategy_deposit',
   ],
   [MATOMO_EARN_EVENTS_TYPES.strategyDepositTab]: [
     'Ethereum_Earn_Widget',
