@@ -21,16 +21,16 @@ export const STGWithdrawRequests = () => {
   const claimableRequests = data?.claimableRequests || [];
   const pendingRequests = data?.pendingRequests || [];
 
+  const TOOLTIP_TEXT =
+    'The final claimable wstETH may differ slightly, since your request continues earning until processing is complete.';
+
   if (!data || requests.length === 0 || !isSTGAvailable) return null;
   return (
     <RequestsContainer>
       {claimableRequests.length > 0 && (
         <ActionableTitle>
           Ready to claim{' '}
-          <Tooltip
-            placement="bottomLeft"
-            title="The final claimable wstETH may differ slightly, since your request continues earning until processing is complete."
-          >
+          <Tooltip placement="bottomLeft" title={TOOLTIP_TEXT}>
             <Question
               style={{
                 height: 20,
@@ -60,6 +60,15 @@ export const STGWithdrawRequests = () => {
       {pendingRequests.length > 0 && (
         <ActionableTitle>
           Pending withdrawal request{pendingRequests.length > 1 ? 's' : ''}
+          <Tooltip placement="bottomLeft" title={TOOLTIP_TEXT}>
+            <Question
+              style={{
+                height: 20,
+                width: 20,
+                color: 'var(--lido-color-textSecondary)',
+              }}
+            />
+          </Tooltip>
         </ActionableTitle>
       )}
       {pendingRequests?.map((request) => {
