@@ -18,21 +18,13 @@ export const STGDepositSubmitButton = () => {
 
   const shouldSwitchChain = !isSTGAvailable;
 
-  const button = (
-    <SubmitButtonHookForm
-      disabled={disabled || shouldSwitchChain || isDepositLockedForCurrentToken}
-      data-testid="submit-btn"
-    >
-      <SubmitButtonInnerContainer>
-        {shouldSwitchChain
-          ? 'Switch to Ethereum Mainnet'
-          : isPushedToVault
-            ? 'Claim and Deposit'
-            : 'Deposit'}
-        {isDepositLockedForCurrentToken && <StyledQuestionIcon />}
-      </SubmitButtonInnerContainer>
-    </SubmitButtonHookForm>
-  );
+  if (shouldSwitchChain) {
+    return (
+      <SubmitButtonHookForm disabled data-testid="submit-btn">
+        Switch to Ethereum Mainnet
+      </SubmitButtonHookForm>
+    );
+  }
 
   if (isDepositLockedForCurrentToken) {
     return (
@@ -44,10 +36,21 @@ export const STGDepositSubmitButton = () => {
           `div` wrapper is required around disabled button for the tooltip to work,
           because disabled buttons do not trigger events
         */}
-        <div>{button}</div>
+        <div>
+          <SubmitButtonHookForm disabled data-testid="submit-btn">
+            <SubmitButtonInnerContainer>
+              Deposit
+              <StyledQuestionIcon />
+            </SubmitButtonInnerContainer>
+          </SubmitButtonHookForm>
+        </div>
       </StyledTooltip>
     );
   }
 
-  return button;
+  return (
+    <SubmitButtonHookForm disabled={disabled} data-testid="submit-btn">
+      {isPushedToVault ? 'Claim and Deposit' : 'Deposit'}
+    </SubmitButtonHookForm>
+  );
 };

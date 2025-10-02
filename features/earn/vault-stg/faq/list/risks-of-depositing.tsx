@@ -1,16 +1,17 @@
 import { FC } from 'react';
-import { Accordion } from '@lidofinance/lido-ui';
+import { AccordionNavigatable } from 'shared/components/accordion-navigatable';
 
 export const RisksOfDepositing: FC = () => {
   return (
-    <Accordion summary="What are the risks outlined in the vault, and what’s the approach for their mitigation?">
+    <AccordionNavigatable
+      id="risks-of-depositing"
+      summary="What are the risks outlined in the vault, and what’s the approach for their mitigation?"
+    >
       <p>
         As with any DeFi application, there are inherent risks. In this case,
         the vault is exposed to risks that can generally be categorized into two
-        areas:{' '}
-        <b>
-          protocol-level (technical) risk and strategy-level (operational) risk.
-        </b>
+        areas: <b>protocol-level (technical) risk</b> and{' '}
+        <b>strategy-level (operational) risk.</b>
       </p>
       <ol>
         <li>
@@ -67,6 +68,6 @@ export const RisksOfDepositing: FC = () => {
           risks and implications before participating.
         </i>
       </p>
-    </Accordion>
+    </AccordionNavigatable>
   );
 };
