@@ -17,6 +17,8 @@ import {
   STG_TOKEN_SYMBOL,
 } from './consts';
 import { STGApyHint } from './stg-apy-hint/stg-apy-hint';
+import { trackMatomoEvent } from 'utils/track-matomo-event';
+import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo/matomo-earn-events';
 
 export const VaultCardSTG = () => {
   const { isWalletConnected } = useDappStatus();
@@ -52,6 +54,9 @@ export const VaultCardSTG = () => {
         isLoading: isLoadingStats,
       }}
       logo={<VaultSTGIcon />}
+      depositLinkCallback={() => {
+        trackMatomoEvent(MATOMO_EARN_EVENTS_TYPES.strategyDeposit);
+      }}
     />
   );
 };
