@@ -50,6 +50,7 @@ export const STGDepositPendingRequest = ({
       createdDateTimestamp={depositRequest.timestamp}
       actionText="Cancel"
       actionCallback={onCancel}
+      actionButtonVariant="link-alike"
     />
   );
 };
