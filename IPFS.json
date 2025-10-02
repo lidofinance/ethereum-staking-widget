@@ -10,8 +10,7 @@
       ],
       "earnVaults": [
         { "name": "ggv", "apy": { "type": "weekly" } },
-        { "name": "dvv" },
-        { "name": "stg" }
+        { "name": "dvv" }
       ],
 
       "featureFlags": {
@@ -76,8 +75,7 @@
       },
       "earnVaults": [
         { "name": "ggv", "apy": { "type": "weekly" } },
-        { "name": "dvv" },
-        { "name": "stg" }
+        { "name": "dvv" }
       ],
       "pages": {
         "/earn": {
