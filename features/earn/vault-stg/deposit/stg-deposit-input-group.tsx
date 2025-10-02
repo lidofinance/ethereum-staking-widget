@@ -5,11 +5,30 @@ import { InputGroupHookForm } from 'shared/hook-form/controls/input-group-hook-f
 import { TokenAmountInputHookForm } from 'shared/hook-form/controls/token-amount-input-hook-form';
 import { TokenSelectHookForm } from 'shared/hook-form/controls/token-select-hook-form/token-select-hook-form';
 import { useTokenMaxAmount } from 'shared/hooks/use-token-max-amount';
+import { TOKEN_DISPLAY_NAMES } from 'utils/getTokenDisplayName';
+import { trackMatomoEvent } from 'utils/track-matomo-event';
+import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo';
 
 import { STG_DEPOSABLE_TOKENS } from '../consts';
 import { STGDepositFormValues } from './form-context/types';
 import { useSTGDepositEthGasLimit } from './hooks/use-stg-deposit-eth-gas-limit';
 import { useSTGDepositForm } from './form-context';
+
+const trackTokenSelect = (value: TOKEN_DISPLAY_NAMES) => {
+  switch (value) {
+    case 'ETH':
+      trackMatomoEvent(MATOMO_EARN_EVENTS_TYPES.strategySelectTokenEth);
+      break;
+    case 'wETH':
+      trackMatomoEvent(MATOMO_EARN_EVENTS_TYPES.strategySelectTokenWeth);
+      break;
+    case 'wstETH':
+      trackMatomoEvent(MATOMO_EARN_EVENTS_TYPES.strategySelectTokenWsteth);
+      break;
+    default:
+      break;
+  }
+};
 
 const OPTIONS = STG_DEPOSABLE_TOKENS.map((token) => ({ token }));
 
@@ -44,6 +63,7 @@ export const STGDepositInputGroup = () => {
         resetField="amount"
         disabled={disabled}
         options={OPTIONS}
+        onChange={trackTokenSelect}
       />
       <TokenAmountInputHookForm
         disabled={disabled}
@@ -52,6 +72,9 @@ export const STGDepositInputGroup = () => {
         data-testid="stg-deposit-input"
         maxValue={maxTokenAmount}
         showErrorMessage={false}
+        onMaxClick={() => {
+          trackMatomoEvent(MATOMO_EARN_EVENTS_TYPES.strategyDepositMax);
+        }}
       />
     </InputGroupHookForm>
   );

@@ -7,6 +7,8 @@ import { VaultSTGIcon } from 'assets/earn';
 import { useDappStatus } from 'modules/web3';
 import { LinkInpageAnchor } from 'shared/components/link-inpage-anchor';
 import { AprDisclaimer } from 'shared/components/apr-disclaimer/apr-disclaimer';
+import { trackMatomoEvent } from 'utils/track-matomo-event';
+import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo';
 
 import { VaultHeader } from '../shared/vault-header';
 import { VaultDescription } from '../shared/vault-description';
@@ -38,10 +40,12 @@ const routes = [
   {
     path: STG_DEPOSIT_PATH,
     name: 'Deposit',
+    matomoEvent: MATOMO_EARN_EVENTS_TYPES.strategyDepositTab,
   },
   {
     path: STG_WITHDRAW_PATH,
     name: 'Withdraw',
+    matomoEvent: MATOMO_EARN_EVENTS_TYPES.strategyWithdrawalTab,
   },
 ];
 
@@ -56,7 +60,12 @@ export const VaultPageSTG: FC<{
 
   return (
     <>
-      <ButtonBack url={EARN_PATH} onClick={() => {}}>
+      <ButtonBack
+        url={EARN_PATH}
+        onClick={() => {
+          trackMatomoEvent(MATOMO_EARN_EVENTS_TYPES.strategyBackToAllVaults);
+        }}
+      >
         Back to all vaults
       </ButtonBack>
       <VaultBlock>

@@ -2,6 +2,8 @@ import { useCallback } from 'react';
 import { encodeFunctionData, WalletClient } from 'viem';
 import { useDappStatus, useLidoSDK, useTxFlow } from 'modules/web3';
 import invariant from 'tiny-invariant';
+import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo';
+import { trackMatomoEvent } from 'utils/track-matomo-event';
 import { getSTGDepositQueueWritableContract } from '../../contracts';
 import { useTxModalStagesSTGDepositCancel } from './use-stg-deposit-cancel-tx-modal';
 import { STG_DEPOSIT_TOKENS } from '../form-context/types';
@@ -58,7 +60,7 @@ export const useSTGDepositCancel = (onRetry?: () => void) => {
           onSuccess: async ({ txHash }) => {
             txModalStages.success(amount, token, txHash);
             await refetchData(token);
-            // trackMatomoEvent(MATOMO_EARN_EVENTS_TYPES.stgDepositFinish);
+            trackMatomoEvent(MATOMO_EARN_EVENTS_TYPES.strategyDepositCancel);
           },
         });
 

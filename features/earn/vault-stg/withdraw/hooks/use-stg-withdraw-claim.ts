@@ -11,6 +11,8 @@ import {
 import { getSTGRedeemQueueWritableContractWSTETH } from '../../contracts';
 import { useSTGDepositFormData } from '../../deposit/hooks';
 import { useTxModalStagesSTGWithdrawClaim } from './use-stg-withdraw-claim-tx-modal';
+import { trackMatomoEvent } from 'utils/track-matomo-event';
+import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo/matomo-earn-events';
 
 export const useSTGWithdrawClaim = (onRetry?: () => void) => {
   const { core } = useLidoSDK();
@@ -70,6 +72,7 @@ export const useSTGWithdrawClaim = (onRetry?: () => void) => {
           onSuccess: async ({ txHash }) => {
             txModalStages.success(amount, txHash);
             await refetchData('wstETH');
+            trackMatomoEvent(MATOMO_EARN_EVENTS_TYPES.strategyWithdrawalClaim);
           },
         });
         return true;

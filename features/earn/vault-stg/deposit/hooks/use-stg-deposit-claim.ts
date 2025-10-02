@@ -1,10 +1,12 @@
 import { useCallback } from 'react';
 import { encodeFunctionData, WalletClient } from 'viem';
 import { useQueryClient } from '@tanstack/react-query';
-import { useDappStatus, useLidoSDK, useTxFlow } from 'modules/web3';
 import invariant from 'tiny-invariant';
+import { useDappStatus, useLidoSDK, useTxFlow } from 'modules/web3';
 import { getSTGVaultWritableContract } from '../../contracts';
 import { useTxModalStagesSTGDepositClaim } from './use-stg-deposit-claim-tx-modal';
+import { trackMatomoEvent } from 'utils/track-matomo-event';
+import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo';
 
 export const useSTGDepositClaim = (onRetry?: () => void) => {
   const { address } = useDappStatus();
@@ -63,7 +65,7 @@ export const useSTGDepositClaim = (onRetry?: () => void) => {
               { queryKey: ['stg'] },
               { cancelRefetch: true, throwOnError: false },
             );
-            // trackMatomoEvent(MATOMO_EARN_EVENTS_TYPES.stgDepositFinish);
+            trackMatomoEvent(MATOMO_EARN_EVENTS_TYPES.strategyDepositClaim);
           },
         });
 
