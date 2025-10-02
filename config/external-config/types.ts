@@ -24,6 +24,7 @@ export type ManifestConfig = {
     deposit?: boolean;
     withdraw?: boolean;
     apy?: VaultAPY;
+    showNew?: boolean;
   }[];
   featureFlags: {
     ledgerLiveL2?: boolean;

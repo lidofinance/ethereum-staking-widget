@@ -48,7 +48,13 @@ export const VaultCard: React.FC<VaultCardProps> = ({
   depositLinkCallback,
 }) => (
   <VaultCardWrapper data-testid={`${urlSlug}-vault-card`}>
-    <VaultHeader compact title={title} partners={partners} logo={logo} />
+    <VaultHeader
+      compact
+      title={title}
+      vaultName={urlSlug}
+      partners={partners}
+      logo={logo}
+    />
     <VaultStats {...stats} />
     <VaultDescription description={description} tokens={tokens} />
     {position && (
