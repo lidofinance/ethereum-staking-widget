@@ -15,6 +15,7 @@ type VaultWillReceiveProps = {
   icon: React.ReactNode;
   symbol: string;
   isLoading?: boolean;
+  help?: React.ReactNode;
 };
 
 export const VaultWillReceive = ({
@@ -24,9 +25,10 @@ export const VaultWillReceive = ({
   usdAmount,
   ethAmount,
   isLoading,
+  help,
 }: VaultWillReceiveProps) => {
   return (
-    <VaultTxInfoRow title={'You will receive'}>
+    <VaultTxInfoRow title={'You will receive'} help={help}>
       <VaultReceiveValue>
         <InlineLoader isLoading={isLoading} width={60}>
           <VaultReceiveMainValue data-testid="amount-receive">

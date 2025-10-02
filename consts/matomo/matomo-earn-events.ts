@@ -41,6 +41,28 @@ export const enum MATOMO_EARN_EVENTS_TYPES {
 
   // DVV Common
   dvvBackToAllVaults = 'dvvBackToAllVaults',
+
+  // Strategy Deposit
+  strategyDepositTab = 'strategyDepositTab',
+  strategySelectTokenEth = 'strategySelectTokenEth',
+  strategySelectTokenWeth = 'strategySelectTokenWeth',
+  strategySelectTokenWsteth = 'strategySelectTokenWsteth',
+  strategyDepositMax = 'strategyDepositMax',
+  strategyDepositingStart = 'strategyDepositingStart',
+  strategyDepositingFinish = 'strategyDepositingFinish',
+  strategyDepositCancel = 'strategyDepositCancel',
+  strategyDepositClaim = 'strategyDepositClaim',
+
+  // Strategy Withdrawal
+  strategyWithdrawalTab = 'strategyWithdrawalTab',
+  strategyWithdrawalMax = 'strategyWithdrawalMax',
+  strategyWithdrawalStart = 'strategyWithdrawalStart',
+  strategyWithdrawalFinish = 'strategyWithdrawalFinish',
+  strategyWithdrawalClaim = 'strategyWithdrawalClaim',
+  strategyWithdrawalClaimAll = 'strategyWithdrawalClaimAll',
+
+  // Strategy Common
+  strategyBackToAllVaults = 'strategyBackToAllVaults',
 }
 
 export const MATOMO_EARN_EVENTS: Record<
@@ -191,5 +213,85 @@ export const MATOMO_EARN_EVENTS: Record<
     'Ethereum_Earn_Widget',
     'Click on "Back to all vaults" on Lido DVV',
     'eth_earn_lido_dvv_back_to_all_vaults',
+  ],
+  [MATOMO_EARN_EVENTS_TYPES.strategyBackToAllVaults]: [
+    'Ethereum_Earn_Widget',
+    'Click on "Back to all vaults" on Lido stRATEGY',
+    'eth_earn_lido_strategy_back_to_all_vaults',
+  ],
+  [MATOMO_EARN_EVENTS_TYPES.strategyDepositTab]: [
+    'Ethereum_Earn_Widget',
+    'Click on Deposit tab on Lido stRATEGY',
+    'eth_earn_lido_strategy_deposit_tab',
+  ],
+  [MATOMO_EARN_EVENTS_TYPES.strategySelectTokenEth]: [
+    'Ethereum_Earn_Widget',
+    'Select ETH to deposit on Lido stRATEGY',
+    'eth_earn_lido_strategy_select_token_eth',
+  ],
+  [MATOMO_EARN_EVENTS_TYPES.strategySelectTokenWeth]: [
+    'Ethereum_Earn_Widget',
+    'Select WETH to deposit on Lido stRATEGY',
+    'eth_earn_lido_strategy_select_token_weth',
+  ],
+  [MATOMO_EARN_EVENTS_TYPES.strategySelectTokenWsteth]: [
+    'Ethereum_Earn_Widget',
+    'Select wstETH to deposit on Lido stRATEGY',
+    'eth_earn_lido_strategy_select_token_wsteth',
+  ],
+  [MATOMO_EARN_EVENTS_TYPES.strategyDepositMax]: [
+    'Ethereum_Earn_Widget',
+    'Click on "Max" in input on Deposit tab on Lido stRATEGY',
+    'eth_earn_lido_strategy_deposit_max',
+  ],
+  [MATOMO_EARN_EVENTS_TYPES.strategyDepositingStart]: [
+    'Ethereum_Earn_Widget',
+    'Initiating depositing transaction on Lido stRATEGY',
+    'eth_earn_lido_strategy_depositing_start',
+  ],
+  [MATOMO_EARN_EVENTS_TYPES.strategyDepositingFinish]: [
+    'Ethereum_Earn_Widget',
+    'Successful finish depositing transaction on Lido stRATEGY',
+    'eth_earn_lido_strategy_depositing_finish',
+  ],
+  [MATOMO_EARN_EVENTS_TYPES.strategyDepositCancel]: [
+    'Ethereum_Earn_Widget',
+    'Click on "Cancel" deposit tab on Lido stRATEGY',
+    'eth_earn_lido_strategy_deposit_cancel',
+  ],
+  [MATOMO_EARN_EVENTS_TYPES.strategyDepositClaim]: [
+    'Ethereum_Earn_Widget',
+    'Click on "Claim" deposit tab on Lido stRATEGY',
+    'eth_earn_lido_strategy_deposit_claim',
+  ],
+  [MATOMO_EARN_EVENTS_TYPES.strategyWithdrawalTab]: [
+    'Ethereum_Earn_Widget',
+    'Click on Withdrawal tab on Lido stRATEGY',
+    'eth_earn_lido_strategy_withdrawal_tab',
+  ],
+  [MATOMO_EARN_EVENTS_TYPES.strategyWithdrawalMax]: [
+    'Ethereum_Earn_Widget',
+    'Click on "Max" in input on Withdrawal tab on Lido stRATEGY',
+    'eth_earn_lido_strategy_withdrawal_max',
+  ],
+  [MATOMO_EARN_EVENTS_TYPES.strategyWithdrawalStart]: [
+    'Ethereum_Earn_Widget',
+    'Initiating withdrawal transaction on Lido stRATEGY',
+    'eth_earn_lido_strategy_withdrawal_start',
+  ],
+  [MATOMO_EARN_EVENTS_TYPES.strategyWithdrawalFinish]: [
+    'Ethereum_Earn_Widget',
+    'Successful finish withdrawal transaction on Lido stRATEGY',
+    'eth_earn_lido_strategy_withdrawal_finish',
+  ],
+  [MATOMO_EARN_EVENTS_TYPES.strategyWithdrawalClaim]: [
+    'Ethereum_Earn_Widget',
+    'Click on "Claim" withdrawal tab on Lido stRATEGY',
+    'eth_earn_lido_strategy_withdrawal_claim',
+  ],
+  [MATOMO_EARN_EVENTS_TYPES.strategyWithdrawalClaimAll]: [
+    'Ethereum_Earn_Widget',
+    'Click on "Claim all" withdrawal tab on Lido stRATEGY',
+    'eth_earn_lido_strategy_withdrawal_claim_all',
   ],
 };

@@ -54,6 +54,14 @@ export const CONTRACT_NAMES = {
   // DVV
   dvvVault: 'dvvVault',
   dvvDepositWrapper: 'dvvDepositWrapper',
+  //stRATEGY
+  stgVault: 'stgVault',
+  stgDepositQueueETH: 'stgDepositQueueETH',
+  stgDepositQueueWETH: 'stgDepositQueueWETH',
+  stgDepositQueueWSTETH: 'stgDepositQueueWSTETH',
+  stgRedeemQueueWSTETH: 'stgRedeemQueueWSTETH',
+  stgShareManagerSTRETH: 'stgShareManagerSTRETH',
+  stgCollector: 'stgCollector',
 } as const;
 export type CONTRACT_NAMES = keyof typeof CONTRACT_NAMES;
 
