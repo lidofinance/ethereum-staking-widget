@@ -8,6 +8,8 @@ import {
   useLidoSDK,
   useTxFlow,
 } from 'modules/web3';
+import { trackMatomoEvent } from 'utils/track-matomo-event';
+import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo/matomo-earn-events';
 import { getSTGRedeemQueueWritableContractWSTETH } from '../../contracts';
 import { useTxModalStagesSTGWithdrawClaim } from './use-stg-withdraw-claim-tx-modal';
 import { useSTGWithdrawRequests } from './use-stg-withdraw-requests';
@@ -75,8 +77,9 @@ export const useSTGWithdrawClaimAll = (onRetry?: () => void) => {
           txModalStages.pending(totalClaimableAmount, txHashOrCallId, isAA);
         },
         onSuccess: async ({ txHash }) => {
+          trackMatomoEvent(MATOMO_EARN_EVENTS_TYPES.strategyWithdrawalClaimAll);
           txModalStages.success(totalClaimableAmount, txHash);
-          void refetchData('wstETH');
+          await refetchData('wstETH');
         },
       });
       return true;

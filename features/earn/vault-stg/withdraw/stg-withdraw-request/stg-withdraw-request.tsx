@@ -12,6 +12,7 @@ import {
   TokenLogo,
 } from './styles';
 import { FormatToken } from 'shared/formatters';
+import { ButtonInline } from 'shared/components/button-inline';
 
 export { RequestsContainer, ActionableTitle } from './styles';
 
@@ -23,6 +24,8 @@ export const Request = ({
   createdDateTimestamp,
   actionText,
   actionCallback,
+  actionLoading,
+  actionButtonVariant = 'button',
 }: {
   tokenLogo: React.ReactNode;
   tokenAmount: bigint;
@@ -31,6 +34,8 @@ export const Request = ({
   createdDateTimestamp?: bigint;
   actionText?: string;
   actionCallback?: () => void;
+  actionLoading?: boolean;
+  actionButtonVariant?: 'button' | 'link-alike';
 }) => {
   const createdDate = createdDateTimestamp
     ? new Date(Number(createdDateTimestamp) * 1000).toLocaleDateString(LOCALE, {
@@ -39,6 +44,23 @@ export const Request = ({
         year: 'numeric',
       })
     : undefined;
+
+  const button =
+    actionButtonVariant === 'link-alike' ? (
+      <ButtonInline onClick={actionCallback} disabled={actionLoading}>
+        {actionText}
+      </ButtonInline>
+    ) : (
+      <Button
+        color="primary"
+        size="xs"
+        variant="translucent"
+        onClick={actionCallback}
+        loading={actionLoading}
+      >
+        {actionText}
+      </Button>
+    );
 
   return (
     <RequestContainer>
@@ -60,16 +82,7 @@ export const Request = ({
           )}
         </AmountContainer>
         {createdDate && <CreatedDate>created on {createdDate}</CreatedDate>}
-        {actionText && (
-          <Button
-            color="primary"
-            size="xs"
-            variant="translucent"
-            onClick={actionCallback}
-          >
-            {actionText}
-          </Button>
-        )}
+        {actionText && button}
       </Entry>
     </RequestContainer>
   );

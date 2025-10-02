@@ -12,6 +12,8 @@ import {
   AACall,
   applyRoundUpGasLimit,
 } from 'modules/web3';
+import { trackMatomoEvent } from 'utils/track-matomo-event';
+import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo';
 import { useTxModalStagesSTGWithdraw } from './use-stg-withdraw-tx-modal';
 import { getSTGRedeemQueueWritableContractWSTETH } from '../../contracts';
 import { getWithdrawalParams } from '../utils';
@@ -25,7 +27,7 @@ export const useSTGWithdraw = (onRetry: () => void) => {
 
   const withdrawSTG = useCallback(
     async ({ amount }: STGWithdrawFormValidatedValues): Promise<boolean> => {
-      // trackMatomoEvent(MATOMO_EARN_EVENTS_TYPES.stgWithdrawStart);
+      trackMatomoEvent(MATOMO_EARN_EVENTS_TYPES.strategyWithdrawalStart);
       invariant(address, 'needs address');
       invariant(publicClient, 'Public client is not available');
 
@@ -79,7 +81,7 @@ export const useSTGWithdraw = (onRetry: () => void) => {
           },
           onSuccess: async ({ txHash }) => {
             txModalStages.success(amountWstETH, txHash);
-            // trackMatomoEvent(MATOMO_EARN_EVENTS_TYPES.stgWithdrawFinish);
+            trackMatomoEvent(MATOMO_EARN_EVENTS_TYPES.strategyWithdrawalFinish);
           },
           onMultisigDone: () => {
             txModalStages.successMultisig();

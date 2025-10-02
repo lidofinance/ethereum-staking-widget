@@ -69,7 +69,10 @@ export const useSTGCollect = () => {
         STG_COLLECTOR_CONFIG, // config
       ]);
 
-      return { deposits: response.deposits };
+      return {
+        deposits: response.deposits,
+        collectorTimestamp: response.timestamp,
+      };
     },
     enabled: isEnabled,
   });

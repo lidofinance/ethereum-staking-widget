@@ -1,7 +1,9 @@
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import { encodeFunctionData, WalletClient } from 'viem';
 import { useDappStatus, useLidoSDK, useTxFlow } from 'modules/web3';
 import invariant from 'tiny-invariant';
+import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo';
+import { trackMatomoEvent } from 'utils/track-matomo-event';
 import { getSTGDepositQueueWritableContract } from '../../contracts';
 import { useTxModalStagesSTGDepositCancel } from './use-stg-deposit-cancel-tx-modal';
 import { STG_DEPOSIT_TOKENS } from '../form-context/types';
@@ -14,6 +16,8 @@ export const useSTGDepositCancel = (onRetry?: () => void) => {
   const { refetchData } = useSTGDepositFormData();
   const txFlow = useTxFlow();
 
+  const [isCanceling, setIsCanceling] = useState(false);
+
   const cancel = useCallback(
     async (amount: bigint, token: STG_DEPOSIT_TOKENS) => {
       invariant(address, 'Address is not available');
@@ -25,6 +29,7 @@ export const useSTGDepositCancel = (onRetry?: () => void) => {
       });
 
       try {
+        setIsCanceling(true);
         await txFlow({
           callsFn: async () => [
             {
@@ -57,8 +62,8 @@ export const useSTGDepositCancel = (onRetry?: () => void) => {
           },
           onSuccess: async ({ txHash }) => {
             txModalStages.success(amount, token, txHash);
+            trackMatomoEvent(MATOMO_EARN_EVENTS_TYPES.strategyDepositCancel);
             await refetchData(token);
-            // trackMatomoEvent(MATOMO_EARN_EVENTS_TYPES.stgDepositFinish);
           },
         });
 
@@ -67,10 +72,12 @@ export const useSTGDepositCancel = (onRetry?: () => void) => {
         console.error(error);
         txModalStages.failed(error, onRetry);
         return false;
+      } finally {
+        setIsCanceling(false);
       }
     },
     [address, core, onRetry, refetchData, txFlow, txModalStages],
   );
 
-  return { cancel };
+  return { cancel, isCanceling };
 };

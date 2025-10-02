@@ -18,6 +18,8 @@ export const VaultHeaderColumn = styled.div`
 `;
 
 export const VaultHeaderTitle = styled.div<{ compact?: boolean }>`
+  display: flex;
+  align-items: center;
   color: var(--lido-color-text);
   font-size: ${({ theme }) => theme.fontSizesMap.xl}px;
   font-weight: 700;
@@ -36,4 +38,19 @@ export const VaultHeaderTitle = styled.div<{ compact?: boolean }>`
         font-size: ${({ theme }) => theme.fontSizesMap.sm}px;
       }
     `}
+`;
+
+export const VaultHeaderNewTag = styled.div`
+  display: inline-block;
+  height: 18px;
+  margin-left: ${({ theme }) => theme.spaceMap.sm}px;
+  padding: ${({ theme }) => theme.spaceMap.xs}px;
+  line-height: 1;
+  font-size: ${({ theme }) => theme.fontSizesMap.xxxs}px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+  background-color: var(--lido-color-error);
+  color: #ffffff;
+  border-radius: ${({ theme }) => theme.borderRadiusesMap.xs}px;
 `;

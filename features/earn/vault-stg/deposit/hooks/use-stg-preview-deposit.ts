@@ -5,12 +5,13 @@ import invariant from 'tiny-invariant';
 import { useDebouncedValue } from 'shared/hooks/useDebouncedValue';
 import { useDappStatus } from 'modules/web3/hooks/use-dapp-status';
 import { STGDepositFormValues } from '../form-context/types';
+import { useWstethUsd } from 'shared/hooks/use-wsteth-usd';
+import { useEthUsd } from 'shared/hooks/use-eth-usd';
+import { useStETHByWstETH } from 'modules/web3/hooks/use-stETH-by-wstETH';
 import {
   getSTGCollectorContract,
   getSTGDepositQueueContract,
 } from '../../contracts';
-import { useWstethUsd } from 'shared/hooks/use-wsteth-usd';
-import { useEthUsd } from 'shared/hooks/use-eth-usd';
 import { STG_COLLECTOR_CONFIG } from '../../consts';
 
 export type DepositParams = {
@@ -82,10 +83,14 @@ export const useSTGPreviewDeposit = ({
   const ethUsdQuery = useEthUsd(debouncedAmount ?? 0n);
   const usdQuery = token === 'wstETH' ? wstethUsdQuery : ethUsdQuery;
 
+  const { data: stethByWsteth } = useStETHByWstETH(debouncedAmount);
+  const eth = token === 'wstETH' ? stethByWsteth : debouncedAmount ?? 0n;
+
   return {
     isLoading: isDebounced || query.isLoading || usdQuery?.isLoading,
     data: {
       shares: query.data?.shares,
+      eth,
       usd: usdQuery.usdAmount,
     },
   };

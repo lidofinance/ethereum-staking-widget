@@ -14,6 +14,8 @@ import {
   useTxFlow,
 } from 'modules/web3';
 import { getTokenAddress } from 'config/networks/token-address';
+import { trackMatomoEvent } from 'utils/track-matomo-event';
+import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo';
 import { getSTGDepositQueueWritableContract } from '../../contracts';
 import { useTxModalStagesSTGDeposit } from './use-stg-deposit-tx-modal';
 
@@ -25,7 +27,7 @@ export const useSTGDeposit = (onRetry?: () => void) => {
 
   const deposit = useCallback(
     async ({ amount, token }: STGDepositFormValidatedValues) => {
-      // trackMatomoEvent(MATOMO_EARN_EVENTS_TYPES.stgDepositStart);
+      trackMatomoEvent(MATOMO_EARN_EVENTS_TYPES.strategyDepositingStart);
       invariant(address, 'needs address');
       const tokenAddress = getTokenAddress(core.chainId, token);
       invariant(tokenAddress, 'Token address is not defined');
@@ -140,7 +142,7 @@ export const useSTGDeposit = (onRetry?: () => void) => {
           onSuccess: async ({ txHash }) => {
             if (needsApprove) return;
             txModalStages.success(amount, token, txHash);
-            // trackMatomoEvent(MATOMO_EARN_EVENTS_TYPES.stgDepositFinish);
+            trackMatomoEvent(MATOMO_EARN_EVENTS_TYPES.strategyDepositingFinish);
           },
           onMultisigDone: () => {
             if (needsApprove) return;
