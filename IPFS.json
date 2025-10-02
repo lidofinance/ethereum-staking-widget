@@ -9,7 +9,6 @@
         130, 1135, 1923
       ],
       "earnVaults": [
-        { "name": "strategy", "showNew": true },
         { "name": "ggv", "apy": { "type": "weekly" } },
         { "name": "dvv" }
       ],
@@ -75,7 +74,6 @@
         "dgWarningState": false
       },
       "earnVaults": [
-        { "name": "strategy", "showNew": true },
         { "name": "ggv", "apy": { "type": "weekly" } },
         { "name": "dvv" }
       ],
