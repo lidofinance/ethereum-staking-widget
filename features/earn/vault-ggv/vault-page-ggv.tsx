@@ -24,9 +24,10 @@ import {
   VaultBlockHeaderSection,
 } from '../shared/vault-block';
 import {
-  EARN_VAULT_GGV_SLUG,
   EARN_VAULT_DEPOSIT_SLUG,
   EARN_VAULT_WITHDRAW_SLUG,
+  GGV_DEPOSIT_PATH,
+  GGV_WITHDRAW_PATH,
 } from '../consts';
 
 import { GGVDepositForm } from './deposit';
@@ -43,12 +44,12 @@ import { GGVApyHint } from './ggv-apy-hint';
 
 const routes = [
   {
-    path: `${EARN_PATH}/${EARN_VAULT_GGV_SLUG}/${EARN_VAULT_DEPOSIT_SLUG}`,
+    path: GGV_DEPOSIT_PATH,
     name: 'Deposit',
     matomoEvent: MATOMO_EARN_EVENTS_TYPES.ggvDepositTabClick,
   },
   {
-    path: `${EARN_PATH}/${EARN_VAULT_GGV_SLUG}/${EARN_VAULT_WITHDRAW_SLUG}`,
+    path: GGV_WITHDRAW_PATH,
     name: 'Withdraw',
     matomoEvent: MATOMO_EARN_EVENTS_TYPES.ggvWithdrawTabClick,
   },
@@ -121,26 +122,23 @@ export const VaultPageGGV: FC<{
                 <Link href="https://veda.tech/privacy-policy">
                   Privacy Policy
                 </Link>{' '}
-                as well as Lido’s Terms of Use.
+                as well as{' '}
+                <Link href="https://lido.fi/terms-of-use">
+                  Lido’s Terms of Use
+                </Link>
+                .
                 <br />
                 <br />
                 Note, that the vault involves protocol, slashing and other
                 risks. You can find more details in the{' '}
-                <LinkInpageAnchor hash="#risks-of-depositing">
+                <LinkInpageAnchor
+                  pagePath={isDeposit ? GGV_DEPOSIT_PATH : GGV_WITHDRAW_PATH}
+                  hash="#what-are-risks-outlined-in-the-vault"
+                >
                   FAQ
                 </LinkInpageAnchor>{' '}
                 below.
               </span>
-            }
-            allocation={
-              <>
-                Your deposit is distributed across a curated set of
-                high-performing DeFi strategies, including lending markets
-                (Aave, Fluid) and LP positions (Uniswap v4, Balancer). <br />
-                The exact allocation may vary over time based on market
-                conditions and strategy performance. All strategies are
-                ETH-correlated to help minimize risk from price volatility.
-              </>
             }
           />
         </VaultBlockFormSection>

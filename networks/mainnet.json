@@ -23,7 +23,15 @@
     "ggvQueue": "0xe39682c3C44b73285A2556D4869041e674d1a6B7",
 
     "dvvVault": "0x5E362eb2c0706Bd1d134689eC75176018385430B",
-    "dvvDepositWrapper": "0xfd4a4922d1afe70000ce0ec6806454e78256504e"
+    "dvvDepositWrapper": "0xfd4a4922d1afe70000ce0ec6806454e78256504e",
+
+    "stgVault": "0x277C6A642564A91ff78b008022D65683cEE5CCC5",
+    "stgDepositQueueETH": "0xE707321B887b9da133AC5fCc5eDB78Ab177a152D",
+    "stgDepositQueueWETH": "0x2eA268f1018a4767bF5da42D531Ea9e943942A36",
+    "stgDepositQueueWSTETH": "0x614cb9E9D13712781DfD15aDC9F3DAde60E4eFAb",
+    "stgRedeemQueueWSTETH": "0x1ae8C006b5C97707aa074AaeD42BecAD2CF80Da2",
+    "stgShareManagerSTRETH": "0xcd3c0F51798D1daA92Fb192E57844Ae6cEE8a6c7",
+    "stgCollector": "0xe8a012c59c441d1790053bc1df87b23aab6d1b67"
   },
   "api": {}
 }

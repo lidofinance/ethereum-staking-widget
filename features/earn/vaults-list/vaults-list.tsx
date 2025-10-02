@@ -4,6 +4,7 @@ import { AprDisclaimer } from 'shared/components/apr-disclaimer';
 
 import { VaultCardGGV } from '../vault-ggv';
 import { VaultCardDVV } from '../vault-dvv';
+import { VaultCardSTG } from '../vault-stg';
 
 import { VaultsListWrapper } from './styles';
 import { useVaultConfig } from '../shared/hooks/use-vault-config';
@@ -11,6 +12,7 @@ import { useVaultConfig } from '../shared/hooks/use-vault-config';
 const VAULT_CARDS = {
   ggv: VaultCardGGV,
   dvv: VaultCardDVV,
+  strategy: VaultCardSTG,
 };
 
 export const EarnVaultsList: FC = () => {

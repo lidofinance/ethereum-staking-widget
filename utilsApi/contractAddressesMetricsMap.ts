@@ -41,6 +41,15 @@ import {
   DVV_VAULT_ABI,
   DVV_DEPOSIT_WRAPPER_ABI,
 } from 'features/earn/vault-dvv/contracts/abi';
+import {
+  STG_COLLECTOR_ABI,
+  STG_DEPOSIT_QUEUE_ETH_ABI,
+  STG_DEPOSIT_QUEUE_WETH_ABI,
+  STG_DEPOSIT_QUEUE_WSTETH_ABI,
+  STG_REDEEM_QUEUE_WSTETH_ABI,
+  STG_SHARE_MANAGER_STRETH_ABI,
+  STG_VAULT_ABI,
+} from 'features/earn/vault-stg/contracts/abi';
 
 import { config } from 'config';
 import { CONTRACT_NAMES } from 'config/networks/networks-map';
@@ -76,6 +85,14 @@ export const METRIC_CONTRACT_ABIS = {
   // DVV
   [CONTRACT_NAMES.dvvVault]: DVV_VAULT_ABI,
   [CONTRACT_NAMES.dvvDepositWrapper]: DVV_DEPOSIT_WRAPPER_ABI,
+  // STG
+  [CONTRACT_NAMES.stgVault]: STG_VAULT_ABI,
+  [CONTRACT_NAMES.stgDepositQueueETH]: STG_DEPOSIT_QUEUE_ETH_ABI,
+  [CONTRACT_NAMES.stgDepositQueueWETH]: STG_DEPOSIT_QUEUE_WETH_ABI,
+  [CONTRACT_NAMES.stgDepositQueueWSTETH]: STG_DEPOSIT_QUEUE_WSTETH_ABI,
+  [CONTRACT_NAMES.stgRedeemQueueWSTETH]: STG_REDEEM_QUEUE_WSTETH_ABI,
+  [CONTRACT_NAMES.stgShareManagerSTRETH]: STG_SHARE_MANAGER_STRETH_ABI,
+  [CONTRACT_NAMES.stgCollector]: STG_COLLECTOR_ABI,
 } as const;
 
 export type MetricContractName = keyof typeof CONTRACT_NAMES;
@@ -100,6 +117,8 @@ const CONTRACTS_WITH_EVENTS = [
   // vaults are tokens, have transfer/approval events
   CONTRACT_NAMES.dvvVault,
   CONTRACT_NAMES.ggvVault,
+  // in case of stRATEGY the token is share manager contract
+  CONTRACT_NAMES.stgShareManagerSTRETH,
 ];
 
 const invertContractsNamesToAddress = (

@@ -3,7 +3,7 @@ import Head from 'next/head';
 import { Layout } from 'shared/components';
 import { getDefaultStaticProps } from 'utilsApi/get-default-static-props';
 
-import { VaultPageDVV, VaultPageGGV } from 'features/earn';
+import { VaultPageDVV, VaultPageGGV, VaultPageSTG } from 'features/earn';
 
 import {
   type EarnVaultKey,
@@ -17,7 +17,11 @@ type PageParams = {
   action: typeof EARN_VAULT_DEPOSIT_SLUG | typeof EARN_VAULT_WITHDRAW_SLUG;
 };
 
-const VAULT_PAGES = { ggv: VaultPageGGV, dvv: VaultPageDVV } as const;
+const VAULT_PAGES = {
+  ggv: VaultPageGGV,
+  dvv: VaultPageDVV,
+  strategy: VaultPageSTG,
+} as const;
 
 export const getStaticPaths: GetStaticPaths = async () => {
   const paths: { params: { vault: string; action: string } }[] = [];

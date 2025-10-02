@@ -9,10 +9,9 @@
         130, 1135, 1923
       ],
       "earnVaults": [
-        { "name": "strategy" },
+        { "name": "strategy", "showNew": true },
         { "name": "ggv", "apy": { "type": "weekly" } },
-        { "name": "dvv" },
-        { "name": "stg" }
+        { "name": "dvv" }
       ],
 
       "featureFlags": {
@@ -76,10 +75,9 @@
         "dgWarningState": false
       },
       "earnVaults": [
-        { "name": "strategy" },
+        { "name": "strategy", "showNew": true },
         { "name": "ggv", "apy": { "type": "weekly" } },
-        { "name": "dvv" },
-        { "name": "stg" }
+        { "name": "dvv" }
       ],
       "pages": {
         "/earn": {
