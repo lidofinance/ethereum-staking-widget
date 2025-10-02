@@ -71,8 +71,8 @@ export const useSTGWithdrawClaim = (onRetry?: () => void) => {
           },
           onSuccess: async ({ txHash }) => {
             txModalStages.success(amount, txHash);
-            await refetchData('wstETH');
             trackMatomoEvent(MATOMO_EARN_EVENTS_TYPES.strategyWithdrawalClaim);
+            await refetchData('wstETH');
           },
         });
         return true;

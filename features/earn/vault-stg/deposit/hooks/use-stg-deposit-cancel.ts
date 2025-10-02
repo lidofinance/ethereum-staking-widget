@@ -59,8 +59,8 @@ export const useSTGDepositCancel = (onRetry?: () => void) => {
           },
           onSuccess: async ({ txHash }) => {
             txModalStages.success(amount, token, txHash);
-            await refetchData(token);
             trackMatomoEvent(MATOMO_EARN_EVENTS_TYPES.strategyDepositCancel);
+            await refetchData(token);
           },
         });
 

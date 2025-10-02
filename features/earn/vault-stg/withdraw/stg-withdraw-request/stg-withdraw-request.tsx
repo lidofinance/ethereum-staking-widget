@@ -82,7 +82,7 @@ export const Request = ({
           )}
         </AmountContainer>
         {createdDate && <CreatedDate>created on {createdDate}</CreatedDate>}
-        {actionText && <>{button}</>}
+        {actionText && button}
       </Entry>
     </RequestContainer>
   );

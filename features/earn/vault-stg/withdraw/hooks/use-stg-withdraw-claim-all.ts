@@ -77,9 +77,9 @@ export const useSTGWithdrawClaimAll = (onRetry?: () => void) => {
           txModalStages.pending(totalClaimableAmount, txHashOrCallId, isAA);
         },
         onSuccess: async ({ txHash }) => {
-          txModalStages.success(totalClaimableAmount, txHash);
-          void refetchData('wstETH');
           trackMatomoEvent(MATOMO_EARN_EVENTS_TYPES.strategyWithdrawalClaimAll);
+          txModalStages.success(totalClaimableAmount, txHash);
+          await refetchData('wstETH');
         },
       });
       return true;

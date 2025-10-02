@@ -1,17 +1,18 @@
 import { FC } from 'react';
+import { useConfig } from 'config/use-config';
+import { EarnVaultKey } from 'features/earn/consts';
+import { VaultPartners } from '../vault-partners';
+import { VaultPartnerType } from '../types';
 import {
   VaultCardWrapper,
   VaultHeaderColumn,
   VaultHeaderTitle,
   VaultHeaderNewTag,
 } from './styles';
-import { VaultPartners } from '../vault-partners';
-import { VaultPartnerType } from '../types';
-import { useConfig } from 'config/use-config';
 
 type VaultHeaderProps = {
   title: string;
-  vaultName?: string;
+  vaultName?: EarnVaultKey;
   partners?: VaultPartnerType[];
   logo: React.ReactNode;
   compact?: boolean;

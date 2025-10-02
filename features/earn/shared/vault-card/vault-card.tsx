@@ -4,7 +4,7 @@ import { Button, InlineLoader } from '@lidofinance/lido-ui';
 import { EARN_PATH } from 'consts/urls';
 import { FormatToken } from 'shared/formatters';
 
-import { EARN_VAULT_DEPOSIT_SLUG } from '../../consts';
+import { EARN_VAULT_DEPOSIT_SLUG, EarnVaultKey } from '../../consts';
 import { VaultHeader } from '../vault-header';
 import { VaultStats } from '../vault-stats';
 import { VaultDescription } from '../vault-description';
@@ -51,7 +51,7 @@ export const VaultCard: React.FC<VaultCardProps> = ({
     <VaultHeader
       compact
       title={title}
-      vaultName={urlSlug}
+      vaultName={urlSlug as EarnVaultKey}
       partners={partners}
       logo={logo}
     />

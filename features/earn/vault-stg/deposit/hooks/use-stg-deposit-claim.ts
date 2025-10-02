@@ -59,13 +59,13 @@ export const useSTGDepositClaim = (onRetry?: () => void) => {
           onReceipt: async ({ txHashOrCallId, isAA }) => {
             txModalStages.pending(amount, txHashOrCallId, isAA);
           },
-          onSuccess: ({ txHash }) => {
+          onSuccess: async ({ txHash }) => {
             txModalStages.success(amount, txHash);
-            void queryClient.refetchQueries(
+            trackMatomoEvent(MATOMO_EARN_EVENTS_TYPES.strategyDepositClaim);
+            await queryClient.refetchQueries(
               { queryKey: ['stg'] },
               { cancelRefetch: true, throwOnError: false },
             );
-            trackMatomoEvent(MATOMO_EARN_EVENTS_TYPES.strategyDepositClaim);
           },
         });
 
