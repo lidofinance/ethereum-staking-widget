@@ -16,6 +16,7 @@ export const STGWillReceive = () => {
       amount={data.shares}
       symbol={STG_TOKEN_SYMBOL}
       usdAmount={data.usd}
+      ethAmount={data.eth}
       isLoading={isLoading}
       help={
         <>
