@@ -23,9 +23,11 @@ const getTokenIcon = (tokenType: string) => {
 export const STGDepositPendingRequest = ({
   depositRequestData,
   onCancel = () => void 0,
+  isLoading = false,
 }: {
   depositRequestData: DepositRequestData;
   onCancel?: () => void;
+  isLoading?: boolean;
 }) => {
   const {
     depositRequest,
@@ -50,6 +52,7 @@ export const STGDepositPendingRequest = ({
       createdDateTimestamp={depositRequest.timestamp}
       actionText="Cancel"
       actionCallback={onCancel}
+      actionLoading={isLoading}
       actionButtonVariant="link-alike"
     />
   );

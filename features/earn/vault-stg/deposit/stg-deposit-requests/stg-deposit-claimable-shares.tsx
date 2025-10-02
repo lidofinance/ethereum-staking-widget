@@ -7,14 +7,16 @@ import { useSTGDepositClaim } from '../hooks/use-stg-deposit-claim';
 
 export const STGDepositClaimableShares = ({
   claimableShares,
+  claim,
+  isLoading,
 }: {
   claimableShares: bigint;
+  claim: ReturnType<typeof useSTGDepositClaim>['claim'];
+  isLoading: boolean;
 }) => {
   const { data: wstEthData } = useSTGPreviewWithdraw({
     shares: claimableShares,
   });
-  const { claim } = useSTGDepositClaim();
-
   if (claimableShares <= 0) {
     return null;
   }
@@ -43,6 +45,7 @@ export const STGDepositClaimableShares = ({
         tokenAmountUSD={wstEthData?.usd ?? 0}
         actionText="Claim"
         actionCallback={() => claim(claimableShares)}
+        actionLoading={isLoading}
       />
     </>
   );

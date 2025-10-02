@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import { encodeFunctionData, WalletClient } from 'viem';
 import { useDappStatus, useLidoSDK, useTxFlow } from 'modules/web3';
 import invariant from 'tiny-invariant';
@@ -16,6 +16,8 @@ export const useSTGDepositCancel = (onRetry?: () => void) => {
   const { refetchData } = useSTGDepositFormData();
   const txFlow = useTxFlow();
 
+  const [isCanceling, setIsCanceling] = useState(false);
+
   const cancel = useCallback(
     async (amount: bigint, token: STG_DEPOSIT_TOKENS) => {
       invariant(address, 'Address is not available');
@@ -27,6 +29,7 @@ export const useSTGDepositCancel = (onRetry?: () => void) => {
       });
 
       try {
+        setIsCanceling(true);
         await txFlow({
           callsFn: async () => [
             {
@@ -69,10 +72,12 @@ export const useSTGDepositCancel = (onRetry?: () => void) => {
         console.error(error);
         txModalStages.failed(error, onRetry);
         return false;
+      } finally {
+        setIsCanceling(false);
       }
     },
     [address, core, onRetry, refetchData, txFlow, txModalStages],
   );
 
-  return { cancel };
+  return { cancel, isCanceling };
 };

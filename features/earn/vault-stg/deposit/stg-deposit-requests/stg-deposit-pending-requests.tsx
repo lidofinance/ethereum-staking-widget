@@ -6,13 +6,15 @@ import { useSTGDepositCancel } from '../hooks/use-stg-deposit-cancel';
 
 interface PendingDepositRequestsProps {
   requestDataList: DepositRequestData[];
+  cancel: ReturnType<typeof useSTGDepositCancel>['cancel'];
+  isLoading: boolean;
 }
 
 export const STGDepositPendingRequests: FC<PendingDepositRequestsProps> = ({
   requestDataList,
+  cancel,
+  isLoading,
 }) => {
-  const { cancel } = useSTGDepositCancel();
-
   // Check if there are any pending requests (but not pushed to vault)
   const hasPendingRequests = requestDataList.some(
     ({ depositRequest, isPushedToVault }) => depositRequest && !isPushedToVault,
@@ -30,6 +32,7 @@ export const STGDepositPendingRequests: FC<PendingDepositRequestsProps> = ({
           key={requestData.token}
           depositRequestData={requestData}
           onCancel={() => cancel(requestData.assets, requestData.token)}
+          isLoading={isLoading}
         />
       ))}
     </>

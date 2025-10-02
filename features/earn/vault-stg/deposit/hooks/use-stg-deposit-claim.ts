@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import { encodeFunctionData, WalletClient } from 'viem';
 import { useQueryClient } from '@tanstack/react-query';
 import invariant from 'tiny-invariant';
@@ -13,8 +13,9 @@ export const useSTGDepositClaim = (onRetry?: () => void) => {
   const { core } = useLidoSDK();
   const queryClient = useQueryClient();
   const { txModalStages } = useTxModalStagesSTGDepositClaim();
-
   const txFlow = useTxFlow();
+
+  const [isClaiming, setIsClaiming] = useState(false);
 
   const claim = useCallback(
     async (amount: bigint) => {
@@ -28,6 +29,7 @@ export const useSTGDepositClaim = (onRetry?: () => void) => {
       const claimArgs = [address] as const;
 
       try {
+        setIsClaiming(true);
         await txFlow({
           callsFn: async () => [
             {
@@ -74,10 +76,12 @@ export const useSTGDepositClaim = (onRetry?: () => void) => {
         console.error(error);
         txModalStages.failed(error, onRetry);
         return false;
+      } finally {
+        setIsClaiming(false);
       }
     },
     [address, core, onRetry, queryClient, txFlow, txModalStages],
   );
 
-  return { claim };
+  return { claim, isClaiming };
 };

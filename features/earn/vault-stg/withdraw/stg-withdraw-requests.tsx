@@ -1,4 +1,5 @@
 import { Question, Tooltip } from '@lidofinance/lido-ui';
+import { ButtonInline } from 'shared/components/button-inline/button-inline';
 import {
   RequestsContainer,
   ActionableTitle,
@@ -6,7 +7,6 @@ import {
 import { useSTGWithdrawRequests } from './hooks/use-stg-withdraw-requests';
 import { STGWithdrawRequestClaimable } from './stg-withdraw-request/stg-withdraw-request-claimable';
 import { STGWithdrawRequestPending } from './stg-withdraw-request/stg-withdraw-request-pending';
-import { ButtonInline } from 'shared/components/button-inline/button-inline';
 import { useSTGWithdrawClaimAll } from './hooks/use-stg-withdraw-claim-all';
 import { useSTGAvailable } from '../hooks/use-stg-available';
 import { useSTGWithdrawClaim } from './hooks/use-stg-withdraw-claim';
@@ -40,7 +40,9 @@ export const STGWithdrawRequests = () => {
             />
           </Tooltip>
           {claimableRequests.length > 1 && (
-            <ButtonInline onClick={withdrawClaimAll}>Claim all</ButtonInline>
+            <ButtonInline disabled={isClaiming} onClick={withdrawClaimAll}>
+              Claim all
+            </ButtonInline>
           )}
         </ActionableTitle>
       )}
