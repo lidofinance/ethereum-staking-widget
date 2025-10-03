@@ -1,7 +1,7 @@
 {
   "1": {
     "cid": "bafybeiecvujvs74xvxgpwctmbfkcucazyaudmwuiw4wfv6ys7uio7o376u",
-    "leastSafeVersion": "NONE_AVAILABLE",
+    "leastSafeVersion": "0.76.1",
     "config": {
       "enabledWithdrawalDexes": ["one-inch", "paraswap", "bebop", "jumper"],
       "multiChainBanner": [
@@ -10,7 +10,7 @@
       ],
       "earnVaults": [
         { "name": "strategy", "showNew": true },
-        { "name": "ggv", "apy": { "type": "weekly" } },
+        { "name": "ggv", "apy": { "type": "weekly_moving_average" } },
         { "name": "dvv" }
       ],
 
