@@ -8,11 +8,7 @@ import {
 } from 'assets/earn';
 import { FormatPercent } from 'shared/formatters';
 import { LinkInpageAnchor } from 'shared/components/link-inpage-anchor';
-import { EARN_PATH } from 'consts/urls';
-import {
-  EARN_VAULT_DEPOSIT_SLUG,
-  EARN_VAULT_DVV_SLUG,
-} from 'features/earn/consts';
+import { DVV_DEPOSIT_PATH } from 'features/earn/consts';
 
 import { useDVVApr } from '../hooks/use-dvv-stats';
 import { BreakdownContainer, BreakdownSection, BreakdownItem } from './styles';
@@ -24,8 +20,6 @@ export const DVVAprBreakdown = () => {
   const stethApr = data?.aprBreakdown.find(
     (item) => item.id === 'steth',
   )?.value;
-
-  const DVV_DEPOSIT_PATH = `${EARN_PATH}/${EARN_VAULT_DVV_SLUG}/${EARN_VAULT_DEPOSIT_SLUG}`;
 
   return (
     <BreakdownContainer>

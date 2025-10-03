@@ -17,6 +17,7 @@ export const DVVWithdrawWillReceive = () => {
       symbol={getTokenDisplayName('wstETH')}
       amount={data.wsteth}
       usdAmount={data.usd}
+      ethAmount={data.eth}
       isLoading={isLoading}
     />
   );

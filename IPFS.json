@@ -4,11 +4,16 @@
     "leastSafeVersion": "NONE_AVAILABLE",
     "config": {
       "enabledWithdrawalDexes": ["one-inch", "paraswap", "bebop", "jumper"],
-      "earnVaults": [{ "name": "ggv" }, { "name": "gvv" }],
       "multiChainBanner": [
         324, 10, 42161, 137, 8453, 5000, 59144, 534352, 56, 34443, 48900, 1868,
         130, 1135, 1923
       ],
+      "earnVaults": [
+        { "name": "strategy", "showNew": true },
+        { "name": "ggv", "apy": { "type": "weekly" } },
+        { "name": "dvv" }
+      ],
+
       "featureFlags": {
         "disableSendCalls": false,
         "dgBannerEnabled": true
@@ -69,7 +74,11 @@
         "dgBannerEnabled": false,
         "dgWarningState": false
       },
-      "earnVaults": [{ "name": "ggv" }, { "name": "dvv" }],
+      "earnVaults": [
+        { "name": "strategy", "showNew": true },
+        { "name": "ggv", "apy": { "type": "weekly" } },
+        { "name": "dvv" }
+      ],
       "pages": {
         "/earn": {
           "showNew": true

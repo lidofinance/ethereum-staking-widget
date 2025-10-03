@@ -13,12 +13,13 @@ export const DepositFee: FC = () => {
         instead, fees are reflected in the value of each GG token:
         <ul>
           <li>
-            Platform fee: 1% annually, pro-rated for the time your deposited
-            tokens stay in the vault, is built into the GG token’s price.
+            Platform fee (AUM fee): 1% annually, pro-rated for the time your
+            deposited tokens stay in the vault, is built into the GG token’s
+            price.
           </li>
           <li>
-            Performance fee: 10% of the yield is deducted from gains before
-            they’re reflected in the GG token’s price.
+            Performance fee (allocated to Veda): 10% of the yield is deducted
+            from gains before they’re reflected in the GG token’s price.
           </li>
         </ul>
         So, while your GG token balance stays the same, the value per token

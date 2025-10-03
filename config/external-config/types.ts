@@ -11,10 +11,21 @@ export type ManifestEntry = {
   config: ManifestConfig;
 };
 
+export type VaultAPYType = 'daily' | 'weekly' | 'weekly_moving_average';
+type VaultAPY = {
+  type?: VaultAPYType;
+};
+
 export type ManifestConfig = {
   enabledWithdrawalDexes: DexWithdrawalApi[];
   multiChainBanner: number[];
-  earnVaults: { name: EarnVaultKey; deposit?: boolean; withdraw?: boolean }[];
+  earnVaults: {
+    name: EarnVaultKey;
+    deposit?: boolean;
+    withdraw?: boolean;
+    apy?: VaultAPY;
+    showNew?: boolean;
+  }[];
   featureFlags: {
     ledgerLiveL2?: boolean;
     disableSendCalls?: boolean;

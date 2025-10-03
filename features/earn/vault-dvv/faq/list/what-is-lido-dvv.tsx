@@ -4,7 +4,10 @@ import { Accordion, Link } from '@lidofinance/lido-ui';
 export const WhatIsLidoDVV: FC = () => {
   const LEARN_MORE_PATH = 'https://docs.mellow.finance/dvsteth-vault/overview';
   return (
-    <Accordion summary="What is Lido DVV, and how does it work?">
+    <Accordion
+      defaultExpanded
+      summary="What is Lido DVV, and how does it work?"
+    >
       <p>
         The Decentralized Validator Vault accepts ETH deposits to the Lido
         protocol, accelerating the adoption of Distributed Validator Technology
