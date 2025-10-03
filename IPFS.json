@@ -10,7 +10,7 @@
       ],
       "earnVaults": [
         { "name": "strategy", "showNew": true },
-        { "name": "ggv", "apy": { "type": "weekly" } },
+        { "name": "ggv", "apy": { "type": "weekly_moving_average" } },
         { "name": "dvv" }
       ],
 
