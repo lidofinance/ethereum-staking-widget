@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import invariant from 'tiny-invariant';
 import { useQuery } from '@tanstack/react-query';
 import { usePublicClient } from 'wagmi';
@@ -37,14 +38,21 @@ export const useGGVPreviewWithdrawal = (
       },
     ] as const,
     enabled: isEnabled,
-    queryFn: async () => {
+    queryFn: async (params) => {
+      console.log('CALLLLL params', Date.now());
+      console.log('CALLLLL min discount', minDiscount);
+      console.log('CALLLLL debouncedAmount', debouncedAmount?.toString());
+      console.log('CALLLLL key', params.queryKey);
+
       invariant(publicClient, 'Public client is not available');
       const queue = getGGVQueueContract(publicClient);
 
-      if (!debouncedAmount)
+      if (!debouncedAmount) {
+        console.log('CALLLLL debouncedAmount is undefined', debouncedAmount);
         return {
           wsteth: 0n,
         };
+      }
 
       const wstethAddress = await wrap.contractAddressWstETH();
       const wstethAmount = await queue.read.previewAssetsOut([
@@ -53,6 +61,8 @@ export const useGGVPreviewWithdrawal = (
         // for preview we can assume minDiscount will be 1 during short loading time
         minDiscount ?? 1,
       ]);
+
+      console.log('CALLLLL wstethAmount', wstethAmount);
 
       return {
         wsteth: wstethAmount,
