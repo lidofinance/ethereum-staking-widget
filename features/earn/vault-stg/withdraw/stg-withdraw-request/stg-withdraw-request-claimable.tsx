@@ -1,6 +1,6 @@
 import { TokenWstethIcon } from 'assets/earn';
 import { getTokenDisplayName } from 'utils/getTokenDisplayName';
-import { Request } from './stg-withdraw-request';
+import { STGRequest } from '../../components/request/stg-request';
 import { WithdrawRequestData } from '../types';
 import { useWstethUsd } from 'shared/hooks/use-wsteth-usd';
 
@@ -16,7 +16,7 @@ export const STGWithdrawRequestClaimable = ({
   const { usdAmount } = useWstethUsd(request.assets);
 
   return (
-    <Request
+    <STGRequest
       key={request.timestamp}
       tokenLogo={<TokenWstethIcon />}
       tokenAmount={request.assets}
