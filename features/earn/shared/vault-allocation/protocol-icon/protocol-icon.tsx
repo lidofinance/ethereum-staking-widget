@@ -12,6 +12,8 @@ import {
   EtherfiIcon,
   MerklIcon,
   LineaIcon,
+  YearnV3Icon,
+  KatanaIcon,
 } from 'assets/earn';
 
 import { Container, Badge, Content } from './styles';
@@ -29,6 +31,7 @@ export const ICONS_MAIN_MAP = {
   Balancer: <BalancerIcon />,
   Merkl: <MerklIcon />,
   'ether.fi': <EtherfiIcon />,
+  'Yearn V3': <YearnV3Icon />,
 };
 
 export const ICONS_BADGE_MAP = {
@@ -36,6 +39,7 @@ export const ICONS_BADGE_MAP = {
   Base: <BaseIcon />,
   Arbitrum: <ArbitrumIcon />,
   Linea: <LineaIcon />,
+  Katana: <KatanaIcon />,
 };
 
 export const ProtocolIcon: FC<ProtocolIconProps> = ({ main, badge }) => {

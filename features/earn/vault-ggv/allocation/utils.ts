@@ -52,6 +52,7 @@ const ALLOCATION_PROTOCOL_NAMES_MAP = {
   balancer: 'Balancer',
   merkl: 'Merkl',
   etherfi: 'ether.fi',
+  yearn: 'Yearn V3',
   other: 'Other allocation',
   available: 'Available',
 };
@@ -60,6 +61,7 @@ const ALLOCATION_CHAIN_NAMES_MAP = {
   base: 'Base',
   arbitrum: 'Arbitrum',
   linea: 'Linea',
+  katana: 'Katana',
   other: 'Other',
 };
 

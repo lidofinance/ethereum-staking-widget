@@ -41,6 +41,8 @@ export { ReactComponent as BalancerIcon } from './allocation/balancer.svg';
 export { ReactComponent as MerklIcon } from './allocation/merkl.svg';
 export { ReactComponent as EtherfiIcon } from './allocation/etherfi.svg';
 export { ReactComponent as LineaIcon } from './allocation/linea.svg';
+export { ReactComponent as YearnV3Icon } from './allocation/yearn-v3.svg';
+export { ReactComponent as KatanaIcon } from './allocation/katana.svg';
 
 const themedBackground = css`
   path,
