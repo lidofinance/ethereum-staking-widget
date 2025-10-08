@@ -1,7 +1,7 @@
 import { InlineLoader } from 'features/earn/shared/inline-loader';
 import { TokenStrethIcon } from 'assets/earn';
 import { getTokenDisplayName } from 'utils/getTokenDisplayName';
-import { Request } from './stg-withdraw-request';
+import { STGRequest } from '../../components/request/stg-request';
 import type { WithdrawRequestData } from '../types';
 import { useSTGPreviewWithdraw } from '../hooks/use-stg-preview-withdraw';
 
@@ -14,7 +14,7 @@ export const STGWithdrawRequestPending = ({
 
   return (
     <InlineLoader isLoading={isLoading} fullWidth>
-      <Request
+      <STGRequest
         key={request.timestamp}
         tokenLogo={<TokenStrethIcon />}
         tokenAmount={request.shares}
