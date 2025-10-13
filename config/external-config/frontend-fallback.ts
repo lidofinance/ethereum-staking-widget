@@ -5,6 +5,7 @@ import {
   ManifestConfigPage,
   ManifestConfigPageList,
   ManifestEntry,
+  getManifestKey,
   isManifestValid,
 } from 'config/external-config';
 import { getDexConfig } from 'features/withdrawals/request/withdrawal-rates';
@@ -59,19 +60,26 @@ export const overrideManifestConfig = (
 export const getFallbackedManifestEntry = (
   prefetchedManifest: unknown,
   defaultChain: number,
+  manifestOverride?: string,
 ): ManifestEntry => {
   const isValid = isManifestValid(prefetchedManifest, defaultChain);
   return isValid
-    ? prefetchedManifest[defaultChain]
+    ? prefetchedManifest[getManifestKey(defaultChain, manifestOverride)]
     : (FallbackLocalManifest as unknown as Manifest)[defaultChain];
 };
 
 export const useFallbackManifestEntry = (
   prefetchedManifest: unknown,
   defaultChain: number,
+  manifestOverride?: string,
 ): ManifestEntry => {
   return useMemo(
-    () => getFallbackedManifestEntry(prefetchedManifest, defaultChain),
-    [prefetchedManifest, defaultChain],
+    () =>
+      getFallbackedManifestEntry(
+        prefetchedManifest,
+        defaultChain,
+        manifestOverride,
+      ),
+    [prefetchedManifest, defaultChain, manifestOverride],
   );
 };

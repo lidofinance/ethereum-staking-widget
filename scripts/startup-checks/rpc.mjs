@@ -27,7 +27,10 @@ const checkRPC = async (url, chainId) => {
 
   try {
     const client = createClient({
-      transport: http(url, { retryCount: MAX_RETRY_COUNT, timeout: RPC_TIMEOUT_MS }),
+      transport: http(url, {
+        retryCount: MAX_RETRY_COUNT,
+        timeout: RPC_TIMEOUT_MS,
+      }),
     });
 
     const chainIdClient = await getChainId(client);
@@ -36,10 +39,12 @@ const checkRPC = async (url, chainId) => {
       console.info(`[checkRPC] [chainId=${chainId}] RPC ${domain} is working`);
       return { domain, chainId, success: true };
     } else {
-      throw new Error(`Expected chainId ${chainId}, but got ${chainIdClient}`)
+      throw new Error(`Expected chainId ${chainId}, but got ${chainIdClient}`);
     }
   } catch (err) {
-    console.error(`[checkRPC] [chainId=${chainId}] Error checking RPC ${domain}: ${err.message}`);
+    console.error(
+      `[checkRPC] [chainId=${chainId}] Error checking RPC ${domain}: ${err.message}`,
+    );
     return { domain, chainId, success: false };
   }
 };
@@ -56,10 +61,10 @@ export const startupCheckRPCs = async () => {
   globalStartupRPCChecks.promise = (async () => {
     try {
       const supportedChains = process.env?.SUPPORTED_CHAINS?.split(',').map(
-        (chainId) => parseInt(chainId, 10)
+        (chainId) => parseInt(chainId, 10),
       ) ?? [process.env.DEFAULT_CHAIN];
 
-      if (!supportedChains.length) {
+      if (supportedChains.length === 0) {
         throw new Error('[startupCheckRPCs] No supported chains found!');
       }
 
@@ -68,16 +73,22 @@ export const startupCheckRPCs = async () => {
       for (const chainId of supportedChains) {
         const rpcUrls = getRPCUrls(chainId);
         if (!rpcUrls?.length) {
-          throw new Error(`[startupCheckRPCs] [chainId=${chainId}] No RPC URLs found!`);
+          throw new Error(
+            `[startupCheckRPCs] [chainId=${chainId}] No RPC URLs found!`,
+          );
         }
 
         const chainCheckResults = await Promise.all(
-          rpcUrls.map((url) => checkRPC(url, chainId))
+          rpcUrls.map((url) => checkRPC(url, chainId)),
         );
         results.push(...chainCheckResults);
 
-        const brokenRPCCount = chainCheckResults.filter((result) => !result.success).length;
-        console.info(`[startupCheckRPCs] [chainId=${chainId}] Working/Total RPCs: ${chainCheckResults.length - brokenRPCCount}/${chainCheckResults.length}`);
+        const brokenRPCCount = chainCheckResults.filter(
+          (result) => !result.success,
+        ).length;
+        console.info(
+          `[startupCheckRPCs] [chainId=${chainId}] Working/Total RPCs: ${chainCheckResults.length - brokenRPCCount}/${chainCheckResults.length}`,
+        );
       }
 
       return results;

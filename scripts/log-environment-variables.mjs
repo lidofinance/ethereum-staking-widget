@@ -8,6 +8,7 @@ export const openKeys = [
 
   'SUPPORTED_CHAINS',
   'DEFAULT_CHAIN',
+  'MANIFEST_OVERRIDE',
 
   'CSP_TRUSTED_HOSTS',
   'CSP_REPORT_ONLY',
