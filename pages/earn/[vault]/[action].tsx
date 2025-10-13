@@ -20,7 +20,7 @@ type PageParams = {
 const VAULT_PAGES = {
   ggv: VaultPageGGV,
   dvv: VaultPageDVV,
-  strategy: VaultPageSTG,
+  'strategy-dont-enable': VaultPageSTG,
 } as const;
 
 export const getStaticPaths: GetStaticPaths = async () => {
