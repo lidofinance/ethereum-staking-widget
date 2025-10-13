@@ -12,7 +12,7 @@ import { useVaultConfig } from '../shared/hooks/use-vault-config';
 const VAULT_CARDS = {
   ggv: VaultCardGGV,
   dvv: VaultCardDVV,
-  strategy: VaultCardSTG,
+  'strategy-dont-enable': VaultCardSTG,
 };
 
 export const EarnVaultsList: FC = () => {
