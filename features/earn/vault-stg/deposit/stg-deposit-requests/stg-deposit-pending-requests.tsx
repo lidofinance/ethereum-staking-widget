@@ -18,7 +18,7 @@ export const STGDepositPendingRequests: FC<PendingDepositRequestsProps> = ({
 }) => {
   // Check if there are any pending requests (not claimable)
   const pendingRequests = depositRequests.filter(
-    (request) => request.isClaimable,
+    (request) => !request.isClaimable,
   );
 
   if (pendingRequests.length === 0) {
@@ -28,7 +28,7 @@ export const STGDepositPendingRequests: FC<PendingDepositRequestsProps> = ({
   return (
     <>
       <ActionableTitle>Pending deposit request</ActionableTitle>
-      {depositRequests.map((request) =>
+      {pendingRequests.map((request) =>
         request.token === 'wstETH' ? (
           <STGDepositPendingRequestWstETH
             key={request.token}
