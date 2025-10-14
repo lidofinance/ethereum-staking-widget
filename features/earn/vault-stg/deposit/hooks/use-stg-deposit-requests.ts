@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { getTokenAddress } from 'config/networks/token-address';
 import { useDappStatus } from 'modules/web3/hooks';
 import { STG_DEPOSIT_TOKENS } from '../form-context/types';
@@ -14,18 +15,17 @@ export type DepositRequest = {
 
 export type DepositRequests = Array<DepositRequest>;
 
-export const useDepositRequests = (): DepositRequests => {
+export const useDepositRequests = () => {
   const { chainId } = useDappStatus();
 
   // Fetch deposit request data from the Collector contract
   const { data: collectedData } = useSTGCollect();
   const collectedRequests = collectedData?.deposits;
-  if (!collectedRequests) return [];
 
-  const tokens = STG_DEPOSABLE_TOKENS;
+  const requests = useMemo(() => {
+    if (!collectedRequests || collectedRequests.length === 0) return [];
 
-  const requests = tokens
-    .map((token) => {
+    return STG_DEPOSABLE_TOKENS.map((token) => {
       const collectedRequest = collectedRequests.find(
         (request) =>
           request.asset.toLowerCase() ===
@@ -48,8 +48,18 @@ export const useDepositRequests = (): DepositRequests => {
         isClaimable,
         token,
       };
-    })
-    .filter((request): request is DepositRequest => !!request);
+    }).filter((request): request is DepositRequest => !!request);
+  }, [chainId, collectedRequests]);
 
-  return requests;
+  const claimableRequests = useMemo(
+    () => requests.filter((request) => request.isClaimable),
+    [requests],
+  );
+
+  const pendingRequests = useMemo(
+    () => requests.filter((request) => !request.isClaimable),
+    [requests],
+  );
+
+  return { requests, claimableRequests, pendingRequests };
 };

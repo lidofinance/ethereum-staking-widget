@@ -13,23 +13,25 @@ export const STGDepositRequests = () => {
   const { cancel, isCanceling } = useSTGDepositCancel();
   const { claim, isClaiming } = useSTGDepositClaim();
 
-  const depositRequests = useDepositRequests();
+  const {
+    requests: depositRequests,
+    claimableRequests,
+    pendingRequests,
+  } = useDepositRequests();
 
-  const totalClaimableShares = depositRequests.reduce(
+  if (depositRequests.length === 0 || !isSTGAvailable) {
+    return null;
+  }
+
+  const totalClaimableShares = claimableRequests.reduce(
     (sum, requestData) => sum + (requestData.claimableShares ?? 0n),
     0n,
   );
 
-  const hasAnyDepositRequests = depositRequests.length > 0;
-
-  if (!hasAnyDepositRequests || !isSTGAvailable) {
-    return null;
-  }
-
   return (
     <RequestsContainer>
       <STGDepositPendingRequests
-        depositRequests={depositRequests}
+        requests={pendingRequests}
         cancel={cancel}
         isLoading={isCanceling || isClaiming}
       />

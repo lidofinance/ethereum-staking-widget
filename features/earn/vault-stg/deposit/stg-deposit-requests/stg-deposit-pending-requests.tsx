@@ -6,29 +6,24 @@ import { STGDepositPendingRequestETH } from './stg-deposit-pending-request-eth';
 import { STGDepositPendingRequestWstETH } from './stg-deposit-pending-request-wsteth';
 
 interface PendingDepositRequestsProps {
-  depositRequests: DepositRequests;
+  requests: DepositRequests;
   cancel: ReturnType<typeof useSTGDepositCancel>['cancel'];
   isLoading: boolean;
 }
 
 export const STGDepositPendingRequests: FC<PendingDepositRequestsProps> = ({
-  depositRequests,
+  requests,
   cancel,
   isLoading,
 }) => {
-  // Check if there are any pending requests (not claimable)
-  const pendingRequests = depositRequests.filter(
-    (request) => !request.isClaimable,
-  );
-
-  if (pendingRequests.length === 0) {
+  if (requests.length === 0) {
     return null;
   }
 
   return (
     <>
       <ActionableTitle>Pending deposit request</ActionableTitle>
-      {pendingRequests.map((request) =>
+      {requests.map((request) =>
         request.token === 'wstETH' ? (
           <STGDepositPendingRequestWstETH
             key={request.token}
