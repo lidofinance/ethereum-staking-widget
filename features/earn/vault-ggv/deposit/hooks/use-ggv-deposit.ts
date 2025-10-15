@@ -11,6 +11,7 @@ import {
   applyRoundUpGasLimit,
 } from 'modules/web3';
 import { getTokenAddress } from 'config/networks/token-address';
+import { LIDO_ADDRESS } from 'config/groups/stake';
 import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo/matomo-earn-events';
 import { trackMatomoEvent } from 'utils/track-matomo-event';
 
@@ -83,7 +84,7 @@ export const useGGVDeposit = (onRetry?: () => void) => {
 
         const approveArgs = [vault.address, amount] as const;
         // for ETH token address is 0xee..ee
-        const depositArgs = [tokenAddress, amount, 0n] as const;
+        const depositArgs = [tokenAddress, amount, 0n, LIDO_ADDRESS] as const;
         const depositValue = token === 'ETH' ? amount : 0n;
 
         await txFlow({
