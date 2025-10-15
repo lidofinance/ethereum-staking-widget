@@ -6,11 +6,15 @@ export const useDVVAvailable = () => {
     isVaultAvailable: isDVVAvailable,
     isDepositEnabled,
     isWithdrawEnabled,
+    depositPauseReasonText,
+    withdrawPauseReasonText,
   } = useVaultAvailable({ vaultName: VAULT_NAME, contractName: 'dvvVault' });
 
   return {
     isDVVAvailable,
     isDepositEnabled,
     isWithdrawEnabled,
+    depositPauseReasonText,
+    withdrawPauseReasonText,
   };
 };
