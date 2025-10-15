@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import { config } from 'config';
 import { STRATEGY_LAZY } from 'consts/react-query-strategies';
 import { IPFS_MANIFEST_URL } from 'consts/external-links';
-import { isManifestEntryValid } from 'config/external-config';
+import { getManifestKey, isManifestEntryValid } from 'config/external-config';
 import { standardFetcher } from 'utils/standardFetcher';
 import { useIsEarnDisabled } from 'features/earn/shared/hooks/use-is-earn-disabled';
 import { EARN_PATH } from 'consts/urls';
@@ -22,14 +22,15 @@ export const useExternalConfigContext = (
 ): ExternalConfig => {
   const isEarnDisabled = useIsEarnDisabled();
 
-  const defaultChain = config.defaultChain;
+  const { defaultChain, manifestOverride } = config;
   const fallbackData = useFallbackManifestEntry(
     prefetchedManifest,
     defaultChain,
+    manifestOverride,
   );
 
   const queryResult = useQuery<ManifestEntry>({
-    queryKey: ['external-config', defaultChain],
+    queryKey: ['external-config', { defaultChain, manifestOverride }],
     ...STRATEGY_LAZY,
     enabled: !!defaultChain,
     queryFn: async () => {
@@ -41,7 +42,7 @@ export const useExternalConfigContext = (
           },
         );
 
-        const entry = result[defaultChain.toString()];
+        const entry = result[getManifestKey(defaultChain, manifestOverride)];
         if (isManifestEntryValid(entry)) return entry;
 
         throw new Error(
