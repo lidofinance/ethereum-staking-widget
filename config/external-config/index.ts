@@ -10,6 +10,7 @@ export type {
 export { ManifestConfigPageList, ManifestConfigPageEnum } from './types';
 export {
   isManifestValid,
+  getManifestKey,
   isManifestEntryValid,
   isEnabledDexesValid,
   isFeatureFlagsValid,

@@ -34,9 +34,14 @@ export const useVaultAvailable = ({
   const isDepositEnabled = isVaultAvailable && VaultConfig.deposit !== false;
   const isWithdrawEnabled = isVaultAvailable && VaultConfig.withdraw !== false;
 
+  const depositPauseReasonText = VaultConfig?.depositPauseReasonText;
+  const withdrawPauseReasonText = VaultConfig?.withdrawPauseReasonText;
+
   return {
     isVaultAvailable,
     isDepositEnabled,
     isWithdrawEnabled,
+    depositPauseReasonText,
+    withdrawPauseReasonText,
   };
 };

@@ -50,6 +50,9 @@ export const defaultChain = parseInt(process.env.DEFAULT_CHAIN, 10) || 560048;
 export const supportedChains = process.env?.SUPPORTED_CHAINS?.split(',').map(
   (chainId) => parseInt(chainId, 10),
 ) ?? [560048];
+// Keep fallback as in 'config/get-secret-config.ts'
+/** @type string | undefined */
+export const manifestOverride = process.env.MANIFEST_OVERRIDE;
 
 /** @type string[] */
 export const prefillUnsafeElRpcUrls1 =

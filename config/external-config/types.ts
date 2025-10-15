@@ -23,6 +23,8 @@ export type ManifestConfig = {
     name: EarnVaultKey;
     deposit?: boolean;
     withdraw?: boolean;
+    depositPauseReasonText?: string;
+    withdrawPauseReasonText?: string;
     apy?: VaultAPY;
     showNew?: boolean;
   }[];

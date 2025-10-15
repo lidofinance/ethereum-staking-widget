@@ -75,6 +75,7 @@ export const getDefaultStaticProps = <
       const ssrManifest = getFallbackedManifestEntry(
         ___prefetch_manifest___,
         config.defaultChain,
+        config.manifestOverride,
       );
       ssrManifest.config = getBackwardCompatibleConfig(ssrManifest.config);
 

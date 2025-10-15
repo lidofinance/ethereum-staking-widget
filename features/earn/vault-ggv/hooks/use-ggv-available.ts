@@ -6,11 +6,15 @@ export const useGGVAvailable = () => {
     isVaultAvailable: isGGVAvailable,
     isDepositEnabled,
     isWithdrawEnabled,
+    depositPauseReasonText,
+    withdrawPauseReasonText,
   } = useVaultAvailable({ vaultName: VAULT_NAME, contractName: 'ggvVault' });
 
   return {
     isGGVAvailable,
     isDepositEnabled,
     isWithdrawEnabled,
+    depositPauseReasonText,
+    withdrawPauseReasonText,
   };
 };
