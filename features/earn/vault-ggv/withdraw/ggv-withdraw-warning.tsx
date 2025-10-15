@@ -17,15 +17,21 @@ const WARNING_TEXT: Record<NonNullable<GGVWithdrawStoppedReason>, string> = {
 };
 
 export const GGVWithdrawWarning = () => {
-  const { isGGVAvailable, isWithdrawEnabled } = useGGVAvailable();
+  const { isGGVAvailable, isWithdrawEnabled, withdrawPauseReasonText } =
+    useGGVAvailable();
   const { reason: contractReason, unlockTime } = useGGVWithdrawForm();
 
   // Without this check, the warning can be displayed even if the vault is generally disabled
   if (!isGGVAvailable) return null;
 
-  const reason = isWithdrawEnabled ? contractReason : 'paused';
+  let message: string | null | undefined = withdrawPauseReasonText;
+  let reason;
 
-  const message = reason ? WARNING_TEXT[reason] : null;
+  if (!message) {
+    reason = isWithdrawEnabled ? contractReason : 'paused';
+    message = reason ? WARNING_TEXT[reason] : null;
+  }
+
   if (!message) return null;
 
   return (

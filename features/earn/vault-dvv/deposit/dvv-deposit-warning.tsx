@@ -12,7 +12,8 @@ const WARNING_TEXT: Record<DVVDepositLimitReason, string> = {
 };
 
 export const DVVDepositWarning = () => {
-  const { isDVVAvailable, isDepositEnabled } = useDVVAvailable();
+  const { isDVVAvailable, isDepositEnabled, depositPauseReasonText } =
+    useDVVAvailable();
   const { data } = useDVVDepositLimit();
 
   // Without this check, the warning can be displayed even if the vault is generally disabled
@@ -21,7 +22,8 @@ export const DVVDepositWarning = () => {
   const reason = isDepositEnabled ? data?.reason : 'deposit-paused';
   if (!reason) return null;
 
-  const message = WARNING_TEXT[reason as DVVDepositLimitReason];
+  const message =
+    depositPauseReasonText || WARNING_TEXT[reason as DVVDepositLimitReason];
   if (!message) return null;
 
   return <VaultWarning>{message}</VaultWarning>;
