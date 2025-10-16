@@ -7,7 +7,7 @@ export const LoaderWrapperStyle = styled.div`
   left: 0;
   width: 100%;
   height: 100%;
-  z-index: 10;
+  z-index: 70;
   animation: wrapper-loader 0.1s ease-out 0.25s 1 both;
 
   &:before {

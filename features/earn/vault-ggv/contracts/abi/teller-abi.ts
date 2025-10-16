@@ -458,7 +458,7 @@ export const GGV_TELLER_ABI = [
     anonymous: false,
     inputs: [
       {
-        indexed: true,
+        indexed: false,
         internalType: 'uint256',
         name: 'nonce',
         type: 'uint256',
@@ -498,6 +498,12 @@ export const GGV_TELLER_ABI = [
         internalType: 'uint256',
         name: 'shareLockPeriodAtTimeOfDeposit',
         type: 'uint256',
+      },
+      {
+        indexed: true,
+        internalType: 'address',
+        name: 'referralAddress',
+        type: 'address',
       },
     ],
     name: 'Deposit',
@@ -614,6 +620,25 @@ export const GGV_TELLER_ABI = [
     type: 'event',
   },
   { anonymous: false, inputs: [], name: 'Unpaused', type: 'event' },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: 'address',
+        name: 'asset',
+        type: 'address',
+      },
+      {
+        indexed: false,
+        internalType: 'uint256',
+        name: 'shareAmount',
+        type: 'uint256',
+      },
+    ],
+    name: 'Withdraw',
+    type: 'event',
+  },
   {
     inputs: [],
     name: 'accountant',
@@ -853,6 +878,7 @@ export const GGV_TELLER_ABI = [
       { internalType: 'contract ERC20', name: 'depositAsset', type: 'address' },
       { internalType: 'uint256', name: 'depositAmount', type: 'uint256' },
       { internalType: 'uint256', name: 'minimumMint', type: 'uint256' },
+      { internalType: 'address', name: 'referralAddress', type: 'address' },
     ],
     name: 'deposit',
     outputs: [{ internalType: 'uint256', name: 'shares', type: 'uint256' }],
@@ -868,6 +894,7 @@ export const GGV_TELLER_ABI = [
       { internalType: 'bytes', name: 'bridgeWildCard', type: 'bytes' },
       { internalType: 'contract ERC20', name: 'feeToken', type: 'address' },
       { internalType: 'uint256', name: 'maxFee', type: 'uint256' },
+      { internalType: 'address', name: 'referralAddress', type: 'address' },
     ],
     name: 'depositAndBridge',
     outputs: [
@@ -878,17 +905,30 @@ export const GGV_TELLER_ABI = [
   },
   {
     inputs: [
-      { internalType: 'contract ERC20', name: 'depositAsset', type: 'address' },
-      { internalType: 'uint256', name: 'depositAmount', type: 'uint256' },
-      { internalType: 'uint256', name: 'minimumMint', type: 'uint256' },
-      { internalType: 'uint256', name: 'deadline', type: 'uint256' },
-      { internalType: 'uint8', name: 'v', type: 'uint8' },
-      { internalType: 'bytes32', name: 'r', type: 'bytes32' },
-      { internalType: 'bytes32', name: 's', type: 'bytes32' },
-      { internalType: 'address', name: 'to', type: 'address' },
-      { internalType: 'bytes', name: 'bridgeWildCard', type: 'bytes' },
-      { internalType: 'contract ERC20', name: 'feeToken', type: 'address' },
-      { internalType: 'uint256', name: 'maxFee', type: 'uint256' },
+      {
+        components: [
+          {
+            internalType: 'contract ERC20',
+            name: 'depositAsset',
+            type: 'address',
+          },
+          { internalType: 'uint256', name: 'depositAmount', type: 'uint256' },
+          { internalType: 'uint256', name: 'minimumMint', type: 'uint256' },
+          { internalType: 'uint256', name: 'deadline', type: 'uint256' },
+          { internalType: 'uint8', name: 'v', type: 'uint8' },
+          { internalType: 'bytes32', name: 'r', type: 'bytes32' },
+          { internalType: 'bytes32', name: 's', type: 'bytes32' },
+          { internalType: 'address', name: 'to', type: 'address' },
+          { internalType: 'bytes', name: 'bridgeWildCard', type: 'bytes' },
+          { internalType: 'contract ERC20', name: 'feeToken', type: 'address' },
+          { internalType: 'uint256', name: 'maxFee', type: 'uint256' },
+          { internalType: 'address', name: 'referralAddress', type: 'address' },
+        ],
+        internalType:
+          'struct CrossChainTellerWithGenericBridge.DepositAndBridgeWithPermitParams',
+        name: 'params',
+        type: 'tuple',
+      },
     ],
     name: 'depositAndBridgeWithPermit',
     outputs: [
@@ -920,6 +960,7 @@ export const GGV_TELLER_ABI = [
       { internalType: 'uint8', name: 'v', type: 'uint8' },
       { internalType: 'bytes32', name: 'r', type: 'bytes32' },
       { internalType: 'bytes32', name: 's', type: 'bytes32' },
+      { internalType: 'address', name: 'referralAddress', type: 'address' },
     ],
     name: 'depositWithPermit',
     outputs: [{ internalType: 'uint256', name: 'shares', type: 'uint256' }],
@@ -1066,6 +1107,7 @@ export const GGV_TELLER_ABI = [
         name: 'shareLockUpPeriodAtTimeOfDeposit',
         type: 'uint256',
       },
+      { internalType: 'address', name: 'referralAddress', type: 'address' },
     ],
     name: 'refundDeposit',
     outputs: [],
@@ -1198,6 +1240,29 @@ export const GGV_TELLER_ABI = [
       { internalType: 'contract BoringVault', name: '', type: 'address' },
     ],
     stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'version',
+    outputs: [{ internalType: 'string', name: '', type: 'string' }],
+    stateMutability: 'pure',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'contract ERC20',
+        name: 'withdrawAsset',
+        type: 'address',
+      },
+      { internalType: 'uint256', name: 'shareAmount', type: 'uint256' },
+      { internalType: 'uint256', name: 'minimumAssets', type: 'uint256' },
+      { internalType: 'address', name: 'to', type: 'address' },
+    ],
+    name: 'withdraw',
+    outputs: [{ internalType: 'uint256', name: 'assetsOut', type: 'uint256' }],
+    stateMutability: 'nonpayable',
     type: 'function',
   },
 ] as const;
