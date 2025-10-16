@@ -6,6 +6,7 @@ import { getTokenAddress } from 'config/networks/token-address';
 import { useMemo } from 'react';
 import invariant from 'tiny-invariant';
 import { ESTIMATE_ACCOUNT } from 'config/groups/web3';
+import { LIDO_ADDRESS } from 'config/groups/stake';
 
 export const useGGVDepositEthGasLimit = () => {
   const { mainnetConfig, publicClientMainnet } = useMainnetOnlyWagmi();
@@ -19,7 +20,7 @@ export const useGGVDepositEthGasLimit = () => {
       data: encodeFunctionData({
         abi: teller.abi,
         functionName: 'deposit',
-        args: [ethAddress, ESTIMATE_AMOUNT, 0n],
+        args: [ethAddress, ESTIMATE_AMOUNT, 0n, LIDO_ADDRESS],
       }),
       value: ESTIMATE_AMOUNT,
       to: teller.address,
