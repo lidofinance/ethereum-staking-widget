@@ -11,7 +11,7 @@ import { useForm, FormProvider } from 'react-hook-form';
 import { useDappStatus } from 'modules/web3';
 import { useFormControllerRetry } from 'shared/hook-form/form-controller/use-form-controller-retry-delegate';
 import { FormControllerContext } from 'shared/hook-form/form-controller';
-import { useQueryReferralForm } from 'shared/hooks/use-query-values-form';
+import { useQueryParamsReferralForm } from 'shared/hooks/use-query-values-form';
 import { minBN } from 'utils/bn';
 
 import { useGGVDeposit } from '../hooks/use-ggv-deposit';
@@ -80,7 +80,7 @@ export const GGVDepositFormProvider: FC<PropsWithChildren> = ({ children }) => {
   });
   const token = formObject.watch('token');
   const { setValue } = formObject;
-  useQueryReferralForm<GGVDepositFormValues>({ setValue });
+  useQueryParamsReferralForm<GGVDepositFormValues>({ setValue });
 
   const formControllerValue = useMemo(
     () => ({

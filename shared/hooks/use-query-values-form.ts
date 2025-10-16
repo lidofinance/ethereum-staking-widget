@@ -3,36 +3,39 @@ import { useRouter } from 'next/router';
 import { Path, PathValue, UseFormSetValue } from 'react-hook-form';
 import { parseEther } from 'viem';
 
-type useQueryReferralFormArgs<T extends { referral: string | null }> = {
+type UseQueryParamsReferralFormArgs<T extends { referral: string | null }> = {
   setValue: UseFormSetValue<T>;
 };
 
-export const useQueryReferralForm = <T extends { referral: string | null }>({
+export const useQueryParamsReferralForm = <
+  T extends { referral: string | null },
+>({
   setValue,
-}: useQueryReferralFormArgs<T>) => {
-  const { isReady, query, pathname, replace } = useRouter();
+}: UseQueryParamsReferralFormArgs<T>) => {
+  const { isReady, query } = useRouter();
+  const { ref } = query;
+
   useEffect(() => {
     if (!isReady) return;
     try {
-      const { ref } = query;
-
       if (typeof ref === 'string') {
         setValue('referral' as Path<T>, ref as PathValue<T, Path<T>>);
       }
     } catch {
       //noop
     }
-  }, [isReady, pathname, query, replace, setValue]);
+  }, [isReady, ref, setValue]);
 };
 
-type useQueryAmountFormArgs<T extends { amount: bigint | null }> = {
+type UseQueryParamsAmountFormArgs<T extends { amount: bigint | null }> = {
   setValue: UseFormSetValue<T>;
 };
 
-export const useQueryAmountForm = <T extends { amount: bigint | null }>({
+export const useQueryParamsAmountForm = <T extends { amount: bigint | null }>({
   setValue,
-}: useQueryAmountFormArgs<T>) => {
+}: UseQueryParamsAmountFormArgs<T>) => {
   const { isReady, query, pathname, replace } = useRouter();
+
   useEffect(() => {
     if (!isReady) return;
     try {

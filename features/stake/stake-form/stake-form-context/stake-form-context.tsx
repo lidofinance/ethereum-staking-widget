@@ -37,8 +37,8 @@ import {
 import { useStake } from '../use-stake';
 import { useStethSubmitGasLimit } from '../hooks';
 import {
-  useQueryAmountForm,
-  useQueryReferralForm,
+  useQueryParamsAmountForm,
+  useQueryParamsReferralForm,
 } from 'shared/hooks/use-query-values-form';
 
 //
@@ -161,8 +161,8 @@ export const StakeFormProvider: FC<PropsWithChildren> = ({ children }) => {
     mode: 'onChange',
   });
   const { setValue } = formObject;
-  useQueryReferralForm<StakeFormInput>({ setValue });
-  useQueryAmountForm<StakeFormInput>({ setValue });
+  useQueryParamsReferralForm<StakeFormInput>({ setValue });
+  useQueryParamsAmountForm<StakeFormInput>({ setValue });
 
   const { retryEvent, retryFire } = useFormControllerRetry();
 

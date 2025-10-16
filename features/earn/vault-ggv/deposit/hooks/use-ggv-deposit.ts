@@ -1,10 +1,5 @@
 import { useCallback } from 'react';
-import {
-  encodeFunctionData,
-  getContract,
-  WalletClient,
-  getAddress as getAddressViem,
-} from 'viem';
+import { encodeFunctionData, getContract, WalletClient } from 'viem';
 import invariant from 'tiny-invariant';
 
 import {
@@ -100,7 +95,7 @@ export const useGGVDeposit = (onRetry?: () => void) => {
           tokenAddress,
           amount,
           0n,
-          getAddressViem(referralAddress),
+          referralAddress,
         ] as const;
 
         const depositValue = token === 'ETH' ? amount : 0n;

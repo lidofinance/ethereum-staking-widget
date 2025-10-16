@@ -1,4 +1,3 @@
-import { getAddress as getAddressViem } from 'viem';
 import { useCallback } from 'react';
 import invariant from 'tiny-invariant';
 
@@ -65,7 +64,7 @@ export const useStake = ({ onConfirm, onRetry }: StakeOptions) => {
 
         const stakeCall = await stake.stakeEthPopulateTx({
           value: amount,
-          referralAddress: getAddressViem(referralAddress),
+          referralAddress,
         });
         await txFlow({
           callsFn: async () => [stakeCall],
@@ -73,7 +72,7 @@ export const useStake = ({ onConfirm, onRetry }: StakeOptions) => {
             await stake.stakeEth({
               value: amount,
               callback: txStagesCallback,
-              referralAddress: getAddressViem(referralAddress),
+              referralAddress,
             });
           },
           onSign: async ({ payload }) => {

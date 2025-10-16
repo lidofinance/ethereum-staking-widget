@@ -15,7 +15,7 @@ import {
 } from 'shared/hook-form/form-controller';
 import { minBN } from 'utils/bn';
 import { useDappStatus } from 'modules/web3';
-import { useQueryReferralForm } from 'shared/hooks/use-query-values-form';
+import { useQueryParamsReferralForm } from 'shared/hooks/use-query-values-form';
 
 import { useDVVAvailable } from '../../hooks/use-dvv-available';
 import { useDVVDepositFormData } from './use-dvv-deposit-form-data';
@@ -73,7 +73,7 @@ export const DVVDepositFormProvider: FC<PropsWithChildren> = ({ children }) => {
 
   const token = formObject.watch('token');
   const { setValue } = formObject;
-  useQueryReferralForm<DVVDepositFormValues>({ setValue });
+  useQueryParamsReferralForm<DVVDepositFormValues>({ setValue });
 
   const formControllerValue = useMemo(
     (): FormControllerContextValueType<any> => ({

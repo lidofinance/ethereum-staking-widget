@@ -1,10 +1,5 @@
 import { useCallback } from 'react';
-import {
-  encodeFunctionData,
-  getContract,
-  getAddress as getAddressViem,
-  WalletClient,
-} from 'viem';
+import { encodeFunctionData, getContract, WalletClient } from 'viem';
 import invariant from 'tiny-invariant';
 
 import {
@@ -96,7 +91,7 @@ export const useDVVDeposit = (onRetry?: () => void) => {
           amount, // amount not counted for eth but pass for better analytics
           vault.address,
           address, // receiver
-          getAddressViem(referralAddress), // referral
+          referralAddress, // referral
         ] as const;
         const depositValue = token === 'ETH' ? amount : 0n;
 
