@@ -21,8 +21,8 @@ export const useQueryParamsReferralForm = <
       if (typeof ref === 'string') {
         setValue('referral' as Path<T>, ref as PathValue<T, Path<T>>);
       }
-    } catch {
-      //noop
+    } catch (error) {
+      console.warn('Error setting referral value from query params', error);
     }
   }, [isReady, ref, setValue]);
 };
@@ -46,8 +46,8 @@ export const useQueryParamsAmountForm = <T extends { amount: bigint | null }>({
         const amountBigInt = parseEther(amount);
         setValue('amount' as Path<T>, amountBigInt as PathValue<T, Path<T>>);
       }
-    } catch {
-      //noop
+    } catch (error) {
+      console.warn('Error setting amount value from query params', error);
     }
   }, [isReady, pathname, query, replace, setValue]);
 };
