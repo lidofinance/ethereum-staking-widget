@@ -33,19 +33,11 @@ export const getReferralAddress = async (
   }
 };
 
-export class ReferralAddressError extends Error {
+class ReferralAddressError extends Error {
   reason: string;
   constructor() {
     const message = 'execution reverted: INVALID_REFERRAL';
     super(message);
     this.reason = message;
-  }
-}
-
-export class MockLimitReachedError extends Error {
-  reason: string;
-  constructor(message: string) {
-    super(message);
-    this.reason = 'execution reverted: STAKE_LIMIT';
   }
 }
