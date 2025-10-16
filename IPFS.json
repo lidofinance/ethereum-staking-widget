@@ -10,7 +10,12 @@
       ],
       "earnVaults": [
         { "name": "strategy", "showNew": true },
-        { "name": "ggv", "apy": { "type": "weekly_moving_average" } },
+        {
+          "name": "ggv",
+          "apy": { "type": "weekly_moving_average" },
+          "deposit": false,
+          "depositPauseReasonText": "The vault is currently under maintenance. Deposits are temporarily paused, but withdrawals are functioning as usual."
+        },
         { "name": "dvv" }
       ],
 
