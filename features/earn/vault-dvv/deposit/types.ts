@@ -5,11 +5,13 @@ export type DVV_DEPOSIT_TOKENS = (typeof LIDO_TOKENS)['eth'] | 'wETH';
 export type DVVDepositFormValues = {
   amount: bigint | null;
   token: DVV_DEPOSIT_TOKENS;
+  referral: string | null;
 };
 
 export type DVVDepositFormValidatedValues = {
   amount: bigint;
   token: DVV_DEPOSIT_TOKENS;
+  referral: string | null;
 };
 
 export type DVVDepositFormValidationContext = {
