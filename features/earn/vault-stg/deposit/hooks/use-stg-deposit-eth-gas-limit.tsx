@@ -19,7 +19,7 @@ export const useSTGDepositEthGasLimit = (token: STG_DEPOSIT_TOKENS) => {
   const estimateArgs = useMemo(() => {
     const depositArgs = [
       ESTIMATE_AMOUNT,
-      config.STAKE_FALLBACK_REFERRAL_ADDRESS,
+      config.FALLBACK_REFERRAL_ADDRESS,
       [],
     ] as const;
 

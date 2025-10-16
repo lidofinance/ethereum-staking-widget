@@ -14,7 +14,6 @@ import { getTokenAddress } from 'config/networks/token-address';
 import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo/matomo-earn-events';
 import { trackMatomoEvent } from 'utils/track-matomo-event';
 import { getReferralAddress } from 'utils/get-referral-address';
-import { LIDO_ADDRESS } from 'config/groups/stake';
 
 import type { DVVDepositFormValidatedValues } from '../types';
 import {
@@ -61,7 +60,6 @@ export const useDVVDeposit = (onRetry?: () => void) => {
         const referralAddress = await getReferralAddress(
           referral,
           core.rpcProvider,
-          LIDO_ADDRESS,
         );
 
         // used to display in modal

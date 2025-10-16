@@ -1,13 +1,17 @@
 import { Address, PublicClient, isAddress, getAddress } from 'viem';
 import { getEnsAddress, normalize } from 'viem/ens';
 
+import { config } from 'config';
+
 export const getReferralAddress = async (
   input: string | null,
   provider: PublicClient,
-  fallbackAddress: Address,
+  fallbackAddress?: Address,
 ): Promise<Address> => {
   try {
-    const fallback = getAddress(fallbackAddress);
+    const fallback = fallbackAddress
+      ? getAddress(fallbackAddress)
+      : getAddress(config.FALLBACK_REFERRAL_ADDRESS);
 
     if (!input) return fallback;
 

@@ -51,7 +51,6 @@ export const useStake = ({ onConfirm, onRetry }: StakeOptions) => {
         const referralAddress = await getReferralAddress(
           referral,
           stake.core.rpcProvider,
-          config.STAKE_FALLBACK_REFERRAL_ADDRESS,
         );
 
         const onStakeTxConfirmed = async () => {
