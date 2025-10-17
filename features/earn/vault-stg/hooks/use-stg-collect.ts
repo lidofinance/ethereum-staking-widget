@@ -6,7 +6,7 @@ import { useDappStatus } from 'modules/web3/hooks/use-dapp-status';
 import { getSTGCollectorContract, getSTGVaultContract } from '../contracts';
 import { STG_COLLECTOR_CONFIG } from '../consts';
 
-type STGCollectResponse = {
+export type STGCollectResponse = {
   vault: string;
   baseAsset: string;
   assets: string[];
@@ -30,7 +30,7 @@ type STGCollectResponse = {
   timestamp: bigint;
 };
 
-type QueueInfo = {
+export type QueueInfo = {
   queue: string;
   asset: string;
   isDepositQueue: boolean;
@@ -40,12 +40,13 @@ type QueueInfo = {
   values: bigint[];
 };
 
-type RequestInfo = {
+export type RequestInfo = {
   queue: string;
   asset: string;
-  shares: bigint;
+  shares: bigint; // claimable shares
   assets: bigint;
   eta: bigint;
+  timestamp: bigint;
 };
 
 export const useSTGCollect = () => {

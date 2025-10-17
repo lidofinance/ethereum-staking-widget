@@ -1,11 +1,14 @@
 import { Question, Tooltip } from '@lidofinance/lido-ui';
 import { TokenStrethIcon } from 'assets/earn';
 import { getTokenDisplayName } from 'utils/getTokenDisplayName';
-import { ActionableTitle, Request } from '../../withdraw/stg-withdraw-request';
+import {
+  ActionableTitle,
+  STGRequest,
+} from '../../components/request/stg-request';
 import { useSTGPreviewWithdraw } from '../../withdraw/hooks/use-stg-preview-withdraw';
 import { useSTGDepositClaim } from '../hooks/use-stg-deposit-claim';
 
-export const STGDepositClaimableShares = ({
+export const STGDepositClaimableRequest = ({
   claimableShares,
   claim,
   isLoading,
@@ -38,7 +41,7 @@ export const STGDepositClaimableShares = ({
           />
         </Tooltip>
       </ActionableTitle>
-      <Request
+      <STGRequest
         tokenLogo={<TokenStrethIcon />}
         tokenAmount={claimableShares}
         tokenName={getTokenDisplayName('strETH')}

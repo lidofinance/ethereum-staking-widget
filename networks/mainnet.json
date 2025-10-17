@@ -31,7 +31,7 @@
     "stgDepositQueueWSTETH": "0x614cb9E9D13712781DfD15aDC9F3DAde60E4eFAb",
     "stgRedeemQueueWSTETH": "0x1ae8C006b5C97707aa074AaeD42BecAD2CF80Da2",
     "stgShareManagerSTRETH": "0xcd3c0F51798D1daA92Fb192E57844Ae6cEE8a6c7",
-    "stgCollector": "0x40a5F5A183efeEf94F4d2892670c9b72E4FBF866"
+    "stgCollector": "0x92d6eF307D71A164217038991d9f3290F3d70117"
   },
   "api": {}
 }

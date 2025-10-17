@@ -16,17 +16,7 @@ import { ButtonInline } from 'shared/components/button-inline';
 
 export { RequestsContainer, ActionableTitle } from './styles';
 
-export const Request = ({
-  tokenLogo,
-  tokenAmount,
-  tokenName,
-  tokenAmountUSD,
-  createdDateTimestamp,
-  actionText,
-  actionCallback,
-  actionLoading,
-  actionButtonVariant = 'button',
-}: {
+export type STGRequestProps = {
   tokenLogo: React.ReactNode;
   tokenAmount: bigint;
   tokenName: string;
@@ -36,7 +26,19 @@ export const Request = ({
   actionCallback?: () => void;
   actionLoading?: boolean;
   actionButtonVariant?: 'button' | 'link-alike';
-}) => {
+};
+
+export const STGRequest = ({
+  tokenLogo,
+  tokenAmount,
+  tokenName,
+  tokenAmountUSD,
+  createdDateTimestamp,
+  actionText,
+  actionCallback,
+  actionLoading,
+  actionButtonVariant = 'button',
+}: STGRequestProps) => {
   const createdDate = createdDateTimestamp
     ? new Date(Number(createdDateTimestamp) * 1000).toLocaleDateString(LOCALE, {
         day: '2-digit',
