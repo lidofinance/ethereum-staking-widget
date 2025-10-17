@@ -4,7 +4,6 @@ import invariant from 'tiny-invariant';
 
 import type { STGDepositFormValidatedValues } from '../form-context/types';
 
-import { config } from 'config';
 import {
   AACall,
   applyRoundUpGasLimit,
@@ -18,6 +17,7 @@ import { trackMatomoEvent } from 'utils/track-matomo-event';
 import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo';
 import { getSTGDepositQueueWritableContract } from '../../contracts';
 import { useTxModalStagesSTGDeposit } from './use-stg-deposit-tx-modal';
+import { getReferralAddress } from 'utils/get-referral-address';
 
 export const useSTGDeposit = (onRetry?: () => void) => {
   const { address } = useDappStatus();
@@ -26,7 +26,7 @@ export const useSTGDeposit = (onRetry?: () => void) => {
   const txFlow = useTxFlow();
 
   const deposit = useCallback(
-    async ({ amount, token }: STGDepositFormValidatedValues) => {
+    async ({ amount, token, referral }: STGDepositFormValidatedValues) => {
       trackMatomoEvent(MATOMO_EARN_EVENTS_TYPES.strategyDepositingStart);
       invariant(address, 'needs address');
       const tokenAddress = getTokenAddress(core.chainId, token);
@@ -48,6 +48,11 @@ export const useSTGDeposit = (onRetry?: () => void) => {
           },
         });
 
+        const referralAddress = await getReferralAddress(
+          referral,
+          core.rpcProvider,
+        );
+
         let needsApprove = false;
 
         if (token !== 'ETH') {
@@ -60,11 +65,7 @@ export const useSTGDeposit = (onRetry?: () => void) => {
         }
 
         const approveArgs = [depositContract.address, amount] as const;
-        const depositArgs = [
-          amount,
-          config.STAKE_FALLBACK_REFERRAL_ADDRESS,
-          [],
-        ] as const;
+        const depositArgs = [amount, referralAddress, []] as const;
         const msgValue = token === 'ETH' ? amount : 0n;
 
         await txFlow({

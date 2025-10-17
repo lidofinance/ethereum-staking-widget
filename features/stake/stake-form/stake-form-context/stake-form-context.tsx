@@ -4,12 +4,9 @@ import {
   useMemo,
   createContext,
   useContext,
-  useEffect,
   useCallback,
 } from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
-import { useRouter } from 'next/router';
-import { parseEther } from 'viem';
 import invariant from 'tiny-invariant';
 
 import {
@@ -39,6 +36,10 @@ import {
 
 import { useStake } from '../use-stake';
 import { useStethSubmitGasLimit } from '../hooks';
+import {
+  useQueryParamsAmountForm,
+  useQueryParamsReferralForm,
+} from 'shared/hooks/use-query-values-form';
 
 //
 // Data context
@@ -160,27 +161,8 @@ export const StakeFormProvider: FC<PropsWithChildren> = ({ children }) => {
     mode: 'onChange',
   });
   const { setValue } = formObject;
-
-  // consumes amount query param
-  // SSG safe
-  const { isReady, query, pathname, replace } = useRouter();
-  useEffect(() => {
-    if (!isReady) return;
-    try {
-      const { amount, ref, ...rest } = query;
-
-      if (typeof ref === 'string') {
-        setValue('referral', ref);
-      }
-      if (typeof amount === 'string') {
-        void replace({ pathname, query: rest });
-        const amountBigInt = parseEther(amount);
-        setValue('amount', amountBigInt);
-      }
-    } catch {
-      //noop
-    }
-  }, [isReady, pathname, query, replace, setValue]);
+  useQueryParamsReferralForm<StakeFormInput>({ setValue });
+  useQueryParamsAmountForm<StakeFormInput>({ setValue });
 
   const { retryEvent, retryFire } = useFormControllerRetry();
 

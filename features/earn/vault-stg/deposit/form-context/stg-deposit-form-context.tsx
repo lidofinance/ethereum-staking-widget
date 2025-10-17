@@ -7,10 +7,12 @@ import {
   FormControllerContextValueType,
 } from 'shared/hook-form/form-controller';
 import { useFormControllerRetry } from 'shared/hook-form/form-controller/use-form-controller-retry-delegate';
+import { useQueryParamsReferralForm } from 'shared/hooks/use-query-values-form';
 import { useDappStatus } from 'modules/web3/hooks/use-dapp-status';
 import {
   STGDepositFormDataContextValue,
   STGDepositFormValidatedValues,
+  STGDepositFormValues,
 } from './types';
 import { useSTGDeposit } from '../hooks/use-stg-deposit';
 import { useSTGDepositFormData } from '../hooks/use-stg-deposit-form-data';
@@ -51,7 +53,7 @@ export const STGDepositFormProvider: React.FC<{
   const { deposit } = useSTGDeposit(retryEvent.fire);
 
   const formObject = useForm({
-    defaultValues: { amount: null, token: 'ETH' },
+    defaultValues: { amount: null, token: 'ETH', referral: null },
     disabled:
       (isWalletConnected && !isDappActive) ||
       (isSTGAvailable && !isDepositEnabled),
@@ -62,6 +64,8 @@ export const STGDepositFormProvider: React.FC<{
   });
 
   const token = formObject.watch('token');
+  const { setValue } = formObject;
+  useQueryParamsReferralForm<STGDepositFormValues>({ setValue });
 
   const { isPushedToVault, depositRequest } = useDepositRequestData(token);
 

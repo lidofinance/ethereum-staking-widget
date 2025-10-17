@@ -13,7 +13,7 @@ import {
 import { getTokenAddress } from 'config/networks/token-address';
 import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo/matomo-earn-events';
 import { trackMatomoEvent } from 'utils/track-matomo-event';
-import { LIDO_ADDRESS } from 'config/groups/stake';
+import { getReferralAddress } from 'utils/get-referral-address';
 
 import type { DVVDepositFormValidatedValues } from '../types';
 import {
@@ -29,7 +29,7 @@ export const useDVVDeposit = (onRetry?: () => void) => {
   const txFlow = useTxFlow();
 
   const depositDVV = useCallback(
-    async ({ amount, token }: DVVDepositFormValidatedValues) => {
+    async ({ amount, token, referral }: DVVDepositFormValidatedValues) => {
       trackMatomoEvent(MATOMO_EARN_EVENTS_TYPES.dvvDepositStart);
       invariant(address, 'needs address');
       const tokenAddress = getTokenAddress(core.chainId, token);
@@ -56,6 +56,11 @@ export const useDVVDeposit = (onRetry?: () => void) => {
             wallet: core.web3Provider as WalletClient,
           },
         });
+
+        const referralAddress = await getReferralAddress(
+          referral,
+          core.rpcProvider,
+        );
 
         // used to display in modal
         const wstethAmount = await wrap.convertStethToWsteth(amount);
@@ -84,7 +89,7 @@ export const useDVVDeposit = (onRetry?: () => void) => {
           amount, // amount not counted for eth but pass for better analytics
           vault.address,
           address, // receiver
-          LIDO_ADDRESS, // referral
+          referralAddress, // referral
         ] as const;
         const depositValue = token === 'ETH' ? amount : 0n;
 

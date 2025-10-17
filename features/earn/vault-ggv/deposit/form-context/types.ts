@@ -9,11 +9,13 @@ export type GGV_DEPOSIT_TOKENS =
 export type GGVDepositFormValues = {
   amount: null | bigint;
   token: GGV_DEPOSIT_TOKENS;
+  referral: string | null;
 };
 
 export type GGVDepositFormValidatedValues = {
   amount: bigint;
   token: GGV_DEPOSIT_TOKENS;
+  referral: string | null;
 };
 
 export type GGVDepositFormValidationContext = {
