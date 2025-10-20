@@ -21,11 +21,6 @@ export const getSTGVaultContract = <TPublicClient extends PublicClient>(
     'stgVault',
   );
 
-  // eslint-disable-next-line no-console
-  console.log('--- DEBUG publicClient chainId', publicClient.chain?.id);
-  // eslint-disable-next-line no-console
-  console.log('--- DEBUG address', address);
-
   invariant(
     address,
     `no STG Vault contract address for ${publicClient.chain?.id}`,
