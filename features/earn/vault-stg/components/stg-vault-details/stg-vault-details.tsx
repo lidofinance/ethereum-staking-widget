@@ -14,6 +14,10 @@ import { getSTGVaultContract } from '../../contracts';
 export const STGVaultDetails = () => {
   const { chainId } = useDappStatus();
   const publicClient = usePublicClient();
+
+  // eslint-disable-next-line no-console
+  console.log('--- DEBUG chainId', chainId);
+
   invariant(publicClient, 'Public client is not available');
 
   const stgVault = getSTGVaultContract(publicClient);
