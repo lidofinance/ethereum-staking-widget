@@ -39,7 +39,7 @@ export const Nav = styled.div`
   @media ${devicesHeaderMedia.mobile} {
     ${mobileCss}
   }
-  z-index: 6;
+  z-index: 60;
 `;
 
 export const Divider = styled.div`

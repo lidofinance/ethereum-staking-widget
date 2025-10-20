@@ -10,6 +10,36 @@
       ],
       "earnVaults": [
         { "name": "strategy", "showNew": true },
+        {
+          "name": "ggv",
+          "apy": { "type": "weekly_moving_average" }
+        },
+        { "name": "dvv" }
+      ],
+
+      "featureFlags": {
+        "disableSendCalls": false,
+        "dgBannerEnabled": true
+      },
+      "pages": {
+        "/earn": {
+          "showNew": true,
+          "shouldDisable": false
+        }
+      }
+    }
+  },
+  "1-staging": {
+    "cid": "bafybeiecvujvs74xvxgpwctmbfkcucazyaudmwuiw4wfv6ys7uio7o376u",
+    "leastSafeVersion": "0.76.1",
+    "config": {
+      "enabledWithdrawalDexes": ["one-inch", "paraswap", "bebop", "jumper"],
+      "multiChainBanner": [
+        324, 10, 42161, 137, 8453, 5000, 59144, 534352, 56, 34443, 48900, 1868,
+        130, 1135, 1923
+      ],
+      "earnVaults": [
+        { "name": "strategy", "showNew": true },
         { "name": "ggv", "apy": { "type": "weekly_moving_average" } },
         { "name": "dvv" }
       ],

@@ -7,6 +7,13 @@ import {
   ManifestEntry,
 } from 'config/external-config';
 
+export const getManifestKey = (
+  defaultChain: number,
+  manifestOverride?: string,
+) =>
+  `${defaultChain}` +
+  (typeof manifestOverride === 'string' ? `-${manifestOverride}` : '');
+
 export const isMultiChainBannerValid = (config: object) => {
   // allow empty config
   if (!('multiChainBanner' in config) || !config.multiChainBanner) return true;
