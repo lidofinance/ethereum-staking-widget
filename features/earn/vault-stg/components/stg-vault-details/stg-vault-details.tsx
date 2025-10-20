@@ -1,8 +1,7 @@
 import { useMemo } from 'react';
 import { DataTableRow, Link } from '@lidofinance/lido-ui';
-import { usePublicClient } from 'wagmi';
 import invariant from 'tiny-invariant';
-import { useDappStatus } from 'modules/web3';
+import { useDappStatus, useMainnetOnlyWagmi } from 'modules/web3';
 import { getEtherscanTokenLink } from 'utils/etherscan';
 import { Section } from 'shared/components';
 import {
@@ -13,11 +12,11 @@ import { getSTGVaultContract } from '../../contracts';
 
 export const STGVaultDetails = () => {
   const { chainId } = useDappStatus();
-  const publicClient = usePublicClient();
+  const { publicClientMainnet } = useMainnetOnlyWagmi();
 
-  invariant(publicClient, 'Public client is not available');
+  invariant(publicClientMainnet, 'Public client is not available');
 
-  const stgVault = getSTGVaultContract(publicClient);
+  const stgVault = getSTGVaultContract(publicClientMainnet);
 
   const etherscanLink = useMemo(() => {
     return getEtherscanTokenLink(chainId, stgVault.address);
