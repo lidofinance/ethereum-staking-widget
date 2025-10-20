@@ -9,7 +9,6 @@
         130, 1135, 1923
       ],
       "earnVaults": [
-        { "name": "strategy", "showNew": true },
         {
           "name": "ggv",
           "apy": { "type": "weekly_moving_average" }
