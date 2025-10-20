@@ -22,8 +22,18 @@ export const useDepositRequests = () => {
   const { data: collectedData } = useSTGCollect();
   const collectedRequests = collectedData?.deposits;
 
+  // Serialize collected requests to use as a query key
+  // Default serialization doesn't work for bigint values
+  const collectedRequestsKey =
+    collectedRequests
+      ?.map(
+        (r) =>
+          `${r.asset}${r.eta.toString()}${r.timestamp.toString()}${r.shares.toString()}${r.assets.toString()}`,
+      )
+      .join(',') ?? '';
+
   const { data } = useQuery({
-    queryKey: ['stg-deposit-requests', chainId, collectedRequests],
+    queryKey: ['stg-deposit-requests', chainId, collectedRequestsKey],
     queryFn: () => {
       if (!collectedRequests || collectedRequests.length === 0) return [];
 
