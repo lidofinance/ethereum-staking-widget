@@ -5,8 +5,8 @@ import {
   STG_TOKEN_SYMBOL,
   MELLOW_POINT_SYMBOL,
   STG_MELLOW_POINTS_BORDER_DATE_FORMATTED,
-} from '../consts';
-import { useSTGPosition } from '../hooks/use-stg-position';
+} from '../../consts';
+import { useSTGPosition } from '../../hooks/use-stg-position';
 import Link from 'next/link';
 
 const PointsTip = () => (

@@ -1,6 +1,6 @@
 import { TokenWstethIcon } from 'assets/earn';
 import { getTokenDisplayName } from 'utils/getTokenDisplayName';
-import { STGRequest } from '../../components/request/stg-request';
+import { STGRequest } from '../../components/stg-request/stg-request';
 import { WithdrawRequestData } from '../types';
 import { useWstethUsd } from 'shared/hooks/use-wsteth-usd';
 

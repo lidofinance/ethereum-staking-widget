@@ -1,5 +1,5 @@
 import { FC } from 'react';
-import { ActionableTitle } from '../../components/request/stg-request';
+import { ActionableTitle } from '../../components/stg-request/stg-request';
 import { DepositRequests } from '../hooks/use-stg-deposit-requests';
 import { useSTGDepositCancel } from '../hooks/use-stg-deposit-cancel';
 import { STGDepositPendingRequestETH } from './stg-deposit-pending-request-eth';

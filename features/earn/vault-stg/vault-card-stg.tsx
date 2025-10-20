@@ -16,7 +16,7 @@ import {
   STG_PARTNERS,
   STG_TOKEN_SYMBOL,
 } from './consts';
-import { STGApyHint } from './stg-apy-hint/stg-apy-hint';
+import { STGApyHint } from './components/stg-apy-hint';
 import { trackMatomoEvent } from 'utils/track-matomo-event';
 import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo/matomo-earn-events';
 

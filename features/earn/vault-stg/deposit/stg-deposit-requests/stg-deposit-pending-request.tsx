@@ -3,7 +3,7 @@ import {
   TokenWethIcon32,
   TokenWstethIcon32,
 } from 'assets/earn';
-import { STGRequest } from '../../components/request/stg-request';
+import { STGRequest } from '../../components/stg-request/stg-request';
 import { getTokenDisplayName } from 'utils/getTokenDisplayName';
 import { DepositRequest } from '../hooks/use-stg-deposit-requests';
 

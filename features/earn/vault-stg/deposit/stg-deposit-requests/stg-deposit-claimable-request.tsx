@@ -4,7 +4,7 @@ import { getTokenDisplayName } from 'utils/getTokenDisplayName';
 import {
   ActionableTitle,
   STGRequest,
-} from '../../components/request/stg-request';
+} from '../../components/stg-request/stg-request';
 import { useSTGPreviewWithdraw } from '../../withdraw/hooks/use-stg-preview-withdraw';
 import { useSTGDepositClaim } from '../hooks/use-stg-deposit-claim';
 

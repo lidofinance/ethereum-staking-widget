@@ -1,5 +1,5 @@
 import { useSTGAvailable } from '../../hooks/use-stg-available';
-import { RequestsContainer } from '../../components/request/stg-request';
+import { RequestsContainer } from '../../components/stg-request/stg-request';
 import {
   useDepositRequests,
   useSTGDepositCancel,
