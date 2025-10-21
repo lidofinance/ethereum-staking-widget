@@ -48,7 +48,7 @@ export const STGVaultDetails = () => {
           title="Withdraw Period"
           tooltipText="The expected time it takes for withdrawal requests to be processed and tokens to become available."
         >
-          ~2 days
+          up to 72 hours
         </VaultDetailsItem>
         <VaultDetailsItem
           title="Performance fee"
