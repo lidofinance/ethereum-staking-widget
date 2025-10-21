@@ -18,7 +18,7 @@ import { useSTGDeposit } from '../hooks/use-stg-deposit';
 import { useSTGDepositFormData } from '../hooks/use-stg-deposit-form-data';
 import { STGDepositFormValidationResolver } from './validation';
 import { useSTGAvailable } from '../../hooks/use-stg-available';
-import { useDepositRequestData } from '../hooks';
+import { useDepositRequest } from '../hooks';
 
 const STGDepositFormDataContext =
   createContext<STGDepositFormDataContextValue | null>(null);
@@ -67,7 +67,7 @@ export const STGDepositFormProvider: React.FC<{
   const { setValue } = formObject;
   useQueryParamsReferralForm<STGDepositFormValues>({ setValue });
 
-  const { isPushedToVault, depositRequest } = useDepositRequestData(token);
+  const depositRequest = useDepositRequest(token);
 
   const formControllerValue = useMemo(
     (): FormControllerContextValueType<any> => ({
@@ -94,17 +94,11 @@ export const STGDepositFormProvider: React.FC<{
       maxAmount,
       token,
       isLoading,
-      // deposit is locked if the last request is not yet pushed to the vault
+      // deposit is locked if the last request is not yet claimable
       isDepositLockedForCurrentToken:
-        Boolean(depositRequest) && !isPushedToVault,
+        !!depositRequest && !depositRequest.isClaimable,
     };
-  }, [
-    asyncValidationContextValue,
-    depositRequest,
-    isLoading,
-    isPushedToVault,
-    token,
-  ]);
+  }, [asyncValidationContextValue, depositRequest, isLoading, token]);
 
   return (
     <FormProvider {...formObject}>

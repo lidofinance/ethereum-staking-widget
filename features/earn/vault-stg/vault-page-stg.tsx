@@ -32,9 +32,10 @@ import { STGDepositForm } from './deposit';
 import { STGWithdrawForm } from './withdraw';
 import { useSTGStats } from './hooks/use-stg-stats';
 import { STG_VAULT_DESCRIPTION, STG_PARTNERS } from './consts';
-import { STGPosition } from './stg-position/stg-position';
+import { STGPosition } from './components/stg-position';
 import { STGFaq } from './faq/stg-faq';
-import { STGApyHint } from './stg-apy-hint/stg-apy-hint';
+import { STGApyHint } from './components/stg-apy-hint';
+import { STGVaultDetails } from './components/stg-vault-details';
 
 const routes = [
   {
@@ -119,6 +120,7 @@ export const VaultPageSTG: FC<{
           />
         </VaultBlockFormSection>
       </VaultBlock>
+      <STGVaultDetails />
       <STGFaq />
       <AprDisclaimer mentionAPY />
     </>

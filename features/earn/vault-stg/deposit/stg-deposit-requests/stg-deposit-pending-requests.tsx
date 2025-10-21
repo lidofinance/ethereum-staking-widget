@@ -1,40 +1,45 @@
 import { FC } from 'react';
-import { ActionableTitle } from '../../withdraw/stg-withdraw-request';
-import { STGDepositPendingRequest } from './stg-deposit-pending-request';
-import { DepositRequestData } from '../hooks/use-stg-deposit-request-data';
+import { ActionableTitle } from '../../components/stg-request/stg-request';
+import { DepositRequests } from '../hooks/use-stg-deposit-requests';
 import { useSTGDepositCancel } from '../hooks/use-stg-deposit-cancel';
+import { STGDepositPendingRequestETH } from './stg-deposit-pending-request-eth';
+import { STGDepositPendingRequestWstETH } from './stg-deposit-pending-request-wsteth';
 
 interface PendingDepositRequestsProps {
-  requestDataList: DepositRequestData[];
+  requests: DepositRequests;
   cancel: ReturnType<typeof useSTGDepositCancel>['cancel'];
   isLoading: boolean;
 }
 
 export const STGDepositPendingRequests: FC<PendingDepositRequestsProps> = ({
-  requestDataList,
+  requests,
   cancel,
   isLoading,
 }) => {
-  // Check if there are any pending requests (but not pushed to vault)
-  const hasPendingRequests = requestDataList.some(
-    ({ depositRequest, isPushedToVault }) => depositRequest && !isPushedToVault,
-  );
-
-  if (!hasPendingRequests) {
+  if (requests.length === 0) {
     return null;
   }
 
   return (
     <>
       <ActionableTitle>Pending deposit request</ActionableTitle>
-      {requestDataList.map((requestData) => (
-        <STGDepositPendingRequest
-          key={requestData.token}
-          depositRequestData={requestData}
-          onCancel={() => cancel(requestData.assets, requestData.token)}
-          isLoading={isLoading}
-        />
-      ))}
+      {requests.map((request) =>
+        request.token === 'wstETH' ? (
+          <STGDepositPendingRequestWstETH
+            key={request.token}
+            request={request}
+            onCancel={() => cancel(request.assets, request.token)}
+            isLoading={isLoading}
+          />
+        ) : (
+          <STGDepositPendingRequestETH
+            key={request.token}
+            request={request}
+            onCancel={() => cancel(request.assets, request.token)}
+            isLoading={isLoading}
+          />
+        ),
+      )}
     </>
   );
 };

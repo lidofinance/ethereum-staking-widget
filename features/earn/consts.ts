@@ -5,7 +5,7 @@ export const EARN_VAULT_WITHDRAW_SLUG = 'withdraw';
 
 export const EARN_VAULT_GGV_SLUG = 'ggv';
 export const EARN_VAULT_DVV_SLUG = 'dvv';
-export const EARN_VAULT_STG_SLUG = 'strategy-dont-enable';
+export const EARN_VAULT_STG_SLUG = 'strategy';
 
 export const EARN_VAULTS = [
   EARN_VAULT_GGV_SLUG,
