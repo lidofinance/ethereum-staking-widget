@@ -1,11 +1,11 @@
-import { Request } from '../../withdraw/stg-withdraw-request';
 import {
   TokenEthIcon32,
   TokenWethIcon32,
   TokenWstethIcon32,
 } from 'assets/earn';
+import { STGRequest } from '../../components/stg-request/stg-request';
 import { getTokenDisplayName } from 'utils/getTokenDisplayName';
-import { DepositRequestData } from '../hooks/use-stg-deposit-request-data';
+import { DepositRequest } from '../hooks/use-stg-deposit-requests';
 
 const getTokenIcon = (tokenType: string) => {
   switch (tokenType) {
@@ -20,36 +20,34 @@ const getTokenIcon = (tokenType: string) => {
   }
 };
 
-export const STGDepositPendingRequest = ({
-  depositRequestData,
-  onCancel = () => void 0,
-  isLoading = false,
-}: {
-  depositRequestData: DepositRequestData;
-  onCancel?: () => void;
+export type STGDepositPendingRequestProps = {
+  request: DepositRequest;
+  usdAmount: number;
   isLoading?: boolean;
-}) => {
-  const {
-    depositRequest,
-    assets,
-    usdAmount,
-    token: tokenType,
-    isPushedToVault,
-  } = depositRequestData;
+  onCancel?: () => void;
+};
 
-  // We don't want to show requests that are already pushed to the vault
-  if (!depositRequest || isPushedToVault) {
+export const STGDepositPendingRequest = ({
+  request,
+  usdAmount,
+  isLoading = false,
+  onCancel = () => void 0,
+}: STGDepositPendingRequestProps) => {
+  const { assets, token, isClaimable } = request;
+
+  // We don't want to show claimable requests
+  if (!request || isClaimable) {
     return null;
   }
 
   return (
-    <Request
-      key={depositRequest.timestamp}
-      tokenLogo={getTokenIcon(tokenType)}
+    <STGRequest
+      key={token}
+      tokenLogo={getTokenIcon(token)}
       tokenAmount={assets}
-      tokenName={getTokenDisplayName(tokenType)}
-      tokenAmountUSD={usdAmount ?? 0}
-      createdDateTimestamp={depositRequest.timestamp}
+      tokenName={getTokenDisplayName(token)}
+      tokenAmountUSD={usdAmount}
+      createdDateTimestamp={request.createdTimestamp}
       actionText="Cancel"
       actionCallback={onCancel}
       actionLoading={isLoading}

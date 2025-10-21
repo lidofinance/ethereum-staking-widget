@@ -51,7 +51,7 @@ export const TxStageSignOperationAmount = ({
             )}
             {willReceiveEl && (
               <>
-                You will receive {willReceiveEl}{' '}
+                You will receive {willReceiveEl}
                 {showOperationInDescription ? '.' : ''}
               </>
             )}

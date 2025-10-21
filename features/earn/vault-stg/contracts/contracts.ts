@@ -20,6 +20,7 @@ export const getSTGVaultContract = <TPublicClient extends PublicClient>(
     publicClient.chain?.id as number,
     'stgVault',
   );
+
   invariant(
     address,
     `no STG Vault contract address for ${publicClient.chain?.id}`,

@@ -3,7 +3,7 @@ import { useSTGAvailable } from '../../hooks/use-stg-available';
 import { SubmitButtonHookForm } from 'shared/hook-form/controls/submit-button-hook-form';
 import { getTokenDisplayName } from 'utils/getTokenDisplayName';
 import { useSTGDepositForm } from '../form-context';
-import { useDepositRequestData } from '../hooks';
+import { useDepositRequest } from '../hooks';
 import {
   StyledTooltip,
   StyledQuestionIcon,
@@ -13,7 +13,7 @@ import {
 export const STGDepositSubmitButton = () => {
   const { disabled } = useFormState();
   const { isDepositLockedForCurrentToken, token } = useSTGDepositForm();
-  const { isPushedToVault } = useDepositRequestData(token);
+  const depositRequest = useDepositRequest(token);
   const { isSTGAvailable } = useSTGAvailable();
 
   const shouldSwitchChain = !isSTGAvailable;
@@ -50,7 +50,7 @@ export const STGDepositSubmitButton = () => {
 
   return (
     <SubmitButtonHookForm disabled={disabled} data-testid="submit-btn">
-      {isPushedToVault ? 'Claim and Deposit' : 'Deposit'}
+      {depositRequest?.isClaimable ? 'Claim and Deposit' : 'Deposit'}
     </SubmitButtonHookForm>
   );
 };

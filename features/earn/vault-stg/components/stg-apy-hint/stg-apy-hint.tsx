@@ -2,7 +2,7 @@ import { LinkInpageAnchor } from 'shared/components/link-inpage-anchor';
 import { STG_DEPOSIT_PATH } from 'features/earn/consts';
 import { TokenMellowIcon } from 'assets/earn';
 import { Container, Section, Item } from './styles';
-import { STG_MELLOW_POINTS_BORDER_DATE_FORMATTED } from '../consts';
+import { STG_MELLOW_POINTS_BORDER_DATE_FORMATTED } from '../../consts';
 
 export const STGApyHint = () => {
   return (

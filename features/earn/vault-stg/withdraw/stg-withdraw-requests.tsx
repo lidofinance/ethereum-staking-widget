@@ -3,7 +3,7 @@ import { ButtonInline } from 'shared/components/button-inline/button-inline';
 import {
   RequestsContainer,
   ActionableTitle,
-} from './stg-withdraw-request/stg-withdraw-request';
+} from '../components/stg-request/stg-request';
 import { useSTGWithdrawRequests } from './hooks/use-stg-withdraw-requests';
 import { STGWithdrawRequestClaimable } from './stg-withdraw-request/stg-withdraw-request-claimable';
 import { STGWithdrawRequestPending } from './stg-withdraw-request/stg-withdraw-request-pending';
