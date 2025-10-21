@@ -40,7 +40,8 @@ import {
   GGV_TOKEN_SYMBOL,
 } from './consts';
 import { GGVFaq } from './faq/ggv-faq';
-import { GGVApyHint } from './ggv-apy-hint';
+import { GGVApyHint } from './components/ggv-apy-hint';
+import { GGVVaultDetails } from './components/ggv-vault-details';
 
 const routes = [
   {
@@ -144,6 +145,7 @@ export const VaultPageGGV: FC<{
         </VaultBlockFormSection>
       </VaultBlock>
       <Allocation />
+      <GGVVaultDetails />
       <GGVFaq />
       <AprDisclaimer mentionAPY />
     </>
