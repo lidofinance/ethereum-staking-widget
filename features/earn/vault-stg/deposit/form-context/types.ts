@@ -8,11 +8,13 @@ export type STG_DEPOSIT_TOKENS =
 export type STGDepositFormValues = {
   amount: null | bigint;
   token: STG_DEPOSIT_TOKENS;
+  referral: string | null;
 };
 
 export type STGDepositFormValidatedValues = {
   amount: bigint;
   token: STG_DEPOSIT_TOKENS;
+  referral: string | null;
 };
 
 export type STGDepositFormValidationContext = {

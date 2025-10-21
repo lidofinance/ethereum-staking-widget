@@ -1,4 +1,3 @@
-import { getAddress as getAddressViem } from 'viem';
 import { useCallback } from 'react';
 import invariant from 'tiny-invariant';
 
@@ -13,8 +12,9 @@ import {
 
 import { MATOMO_TX_EVENTS_TYPES } from 'consts/matomo';
 import { trackMatomoEvent } from 'utils/track-matomo-event';
+import { getReferralAddress } from 'utils/get-referral-address';
 
-import { MockLimitReachedError, getRefferalAddress } from './utils';
+import { MockLimitReachedError } from './utils';
 import { useTxModalStagesStake } from './hooks/use-tx-modal-stages-stake';
 
 type StakeArguments = {
@@ -48,7 +48,7 @@ export const useStake = ({ onConfirm, onRetry }: StakeOptions) => {
           throw new MockLimitReachedError('Stake limit reached');
         }
 
-        const referralAddress = await getRefferalAddress(
+        const referralAddress = await getReferralAddress(
           referral,
           stake.core.rpcProvider,
         );
@@ -63,7 +63,7 @@ export const useStake = ({ onConfirm, onRetry }: StakeOptions) => {
 
         const stakeCall = await stake.stakeEthPopulateTx({
           value: amount,
-          referralAddress: getAddressViem(referralAddress),
+          referralAddress,
         });
         await txFlow({
           callsFn: async () => [stakeCall],
@@ -71,7 +71,7 @@ export const useStake = ({ onConfirm, onRetry }: StakeOptions) => {
             await stake.stakeEth({
               value: amount,
               callback: txStagesCallback,
-              referralAddress: getAddressViem(referralAddress),
+              referralAddress,
             });
           },
           onSign: async ({ payload }) => {
