@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { DataTableRow, Link } from '@lidofinance/lido-ui';
 import invariant from 'tiny-invariant';
-import { useDappStatus, useMainnetOnlyWagmi } from 'modules/web3';
+import { useMainnetOnlyWagmi } from 'modules/web3';
 import { getEtherscanTokenLink } from 'utils/etherscan';
 import { Section } from 'shared/components';
 import {
@@ -11,10 +11,11 @@ import {
 import { getGGVVaultContract } from '../../contracts';
 
 export const GGVVaultDetails = () => {
-  const { chainId } = useDappStatus();
   const { publicClientMainnet } = useMainnetOnlyWagmi();
+  const chainId = publicClientMainnet?.chain?.id;
 
   invariant(publicClientMainnet, 'Public client is not available');
+  invariant(chainId, 'Chain ID is not available');
 
   const ggvVault = getGGVVaultContract(publicClientMainnet);
 
