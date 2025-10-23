@@ -20,7 +20,7 @@ import {
   GGV_PARTNERS,
   GGV_TOKEN_SYMBOL,
 } from './consts';
-import { GGVApyHint } from './ggv-apy-hint';
+import { GGVApyHint } from './components/ggv-apy-hint';
 
 export const VaultCardGGV = () => {
   const { isWalletConnected } = useDappStatus();

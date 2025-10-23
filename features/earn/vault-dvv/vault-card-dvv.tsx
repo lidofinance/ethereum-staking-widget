@@ -18,7 +18,7 @@ import {
   DVV_TOKEN_SYMBOL,
   DVV_VAULT_DESCRIPTION,
 } from './consts';
-import { DVVAprBreakdown } from './dvv-apr-breakdown';
+import { DVVAprBreakdown } from './components/dvv-apr-breakdown';
 
 export const VaultCardDVV = () => {
   const { isWalletConnected } = useDappStatus();
