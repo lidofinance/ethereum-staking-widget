@@ -144,8 +144,8 @@ export const VaultPageGGV: FC<{
           />
         </VaultBlockFormSection>
       </VaultBlock>
-      <Allocation />
       <GGVVaultDetails />
+      <Allocation />
       <GGVFaq />
       <AprDisclaimer mentionAPY />
     </>
