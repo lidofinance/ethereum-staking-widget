@@ -28,13 +28,13 @@ import {
 
 import { DVVDepositForm } from './deposit';
 import { DVVWithdrawForm } from './withdraw';
-import { DVVPosition } from './dvv-position';
-
 import { useDVVStats } from './hooks/use-dvv-stats';
 import { DVV_PARTNERS, DVV_VAULT_DESCRIPTION } from './consts';
 import { trackMatomoEvent } from 'utils/track-matomo-event';
-import { DVVAprBreakdown } from './dvv-apr-breakdown';
 import { DVVFaq } from './faq/dvv-faq';
+import { DVVPosition } from './components/dvv-position';
+import { DVVAprBreakdown } from './components/dvv-apr-breakdown';
+import { DVVVaultDetails } from './components/dvv-vault-details';
 
 const routes = [
   {
@@ -119,6 +119,7 @@ export const VaultPageDVV: FC<{
           />
         </VaultBlockFormSection>
       </VaultBlock>
+      <DVVVaultDetails />
       <DVVFaq />
       <AprDisclaimer mentionAPY />
     </>

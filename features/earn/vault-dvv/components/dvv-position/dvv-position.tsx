@@ -1,9 +1,9 @@
 import { parseEther } from 'viem';
 import { useDappStatus } from 'modules/web3';
 
-import { VaultPosition } from '../../shared/vault-position';
+import { VaultPosition } from '../../../shared/vault-position';
 
-import { useDVVPosition } from '../hooks/use-dvv-position';
+import { useDVVPosition } from '../../hooks/use-dvv-position';
 import {
   DVV_TOKEN_SYMBOL,
   MELLOW_POINT_SYMBOL,
@@ -11,7 +11,7 @@ import {
   OBOL_TOKEN_SYMBOL,
   SSV_CLAIM_URL,
   SSV_TOKEN_SYMBOL,
-} from '../consts';
+} from '../../consts';
 import {
   TokenDvstethIcon,
   TokenMellowIcon,
@@ -20,7 +20,7 @@ import {
 } from 'assets/earn';
 import { ReactComponent as ExternalLinkIcon } from 'assets/icons/external-link-icon.svg';
 
-import { useDVVPoints } from '../hooks/use-dvv-points';
+import { useDVVPoints } from '../../hooks/use-dvv-points';
 import { ClaimButton } from './styles';
 import { trackMatomoEvent } from 'utils/track-matomo-event';
 import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo/matomo-earn-events';

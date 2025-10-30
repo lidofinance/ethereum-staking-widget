@@ -10,7 +10,7 @@ import { FormatPercent } from 'shared/formatters';
 import { LinkInpageAnchor } from 'shared/components/link-inpage-anchor';
 import { DVV_DEPOSIT_PATH } from 'features/earn/consts';
 
-import { useDVVApr } from '../hooks/use-dvv-stats';
+import { useDVVApr } from '../../hooks/use-dvv-stats';
 import { BreakdownContainer, BreakdownSection, BreakdownItem } from './styles';
 
 export const DVVAprBreakdown = () => {

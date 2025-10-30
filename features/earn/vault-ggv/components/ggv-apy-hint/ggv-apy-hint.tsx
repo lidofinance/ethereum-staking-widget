@@ -1,5 +1,5 @@
 import { LinkInpageAnchor } from 'shared/components/link-inpage-anchor';
-import { GGV_DEPOSIT_PATH } from '../../consts';
+import { GGV_DEPOSIT_PATH } from '../../../consts';
 
 export const GGVApyHint = () => {
   return (
