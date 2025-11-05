@@ -1,5 +1,6 @@
 import { FC } from 'react';
 import { Accordion, Link } from '@lidofinance/lido-ui';
+import { STG_MELLOW_POINTS_LAUNCH_DATE_FORMATTED_LONG } from '../../consts';
 
 export const WhatAreMellowPoints: FC = () => {
   const MELLOW_POINTS_DOCS_PATH =
@@ -8,7 +9,7 @@ export const WhatAreMellowPoints: FC = () => {
     <Accordion summary="What are Mellow points, and how are they calculated?">
       <p>
         The stRATEGY Vault offers boosted Mellow Points for the first 4 weeks
-        after launch (starting September 29, 2025):
+        after launch (starting {STG_MELLOW_POINTS_LAUNCH_DATE_FORMATTED_LONG}):
       </p>
       <ul>
         <li>
