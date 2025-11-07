@@ -49,7 +49,7 @@ export const useSTGPreviewWithdraw = ({
     },
   });
 
-  const wstethUsdQuery = useWstethUsd(debouncedAmount ?? 0n);
+  const wstethUsdQuery = useWstethUsd(query.data?.wsteth ?? 0n);
 
   return {
     isLoading: isDebounced || query.isLoading || wstethUsdQuery.isLoading,
