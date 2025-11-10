@@ -1,6 +1,6 @@
 import { FC, memo } from 'react';
 
-import { EarnUpGGVBanner } from 'shared/banners/earn-up-ggv-banner';
+import { EarnStgBanner } from 'shared/banners/earn-stg-banner';
 
 import { StakeFormProvider } from './stake-form-context';
 import { Wallet } from './wallet';
@@ -22,7 +22,7 @@ export const StakeForm: FC = memo(() => {
           <StakeSubmitButton />
           <DualGovernanceBanner>
             <SwapDiscountBanner>
-              <EarnUpGGVBanner
+              <EarnStgBanner
                 matomoEvent={MATOMO_CLICK_EVENTS_TYPES.vaultsBanner}
               />
             </SwapDiscountBanner>
