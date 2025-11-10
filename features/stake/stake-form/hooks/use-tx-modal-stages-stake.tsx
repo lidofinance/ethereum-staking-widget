@@ -6,7 +6,7 @@ import {
 import { getGeneralTransactionModalStages } from 'shared/transaction-modal/hooks/get-general-transaction-modal-stages';
 import { TxStageSignOperationAmount } from 'shared/transaction-modal/tx-stages-composed/tx-stage-amount-operation';
 import { TxStageOperationSucceedBalanceShown } from 'shared/transaction-modal/tx-stages-composed/tx-stage-operation-succeed-balance-shown';
-import { EarnUpGGVBanner } from 'shared/banners/earn-up-ggv-banner';
+import { EarnStgBanner } from 'shared/banners/earn-stg-banner';
 import { MATOMO_CLICK_EVENTS_TYPES } from 'consts/matomo';
 
 const STAGE_OPERATION_ARGS = {
@@ -47,9 +47,7 @@ const getTxModalStagesStake = (transitStage: TransactionModalTransitStage) => ({
         balanceToken={'stETH'}
         operationText={'Staking'}
         footer={
-          <EarnUpGGVBanner
-            matomoEvent={MATOMO_CLICK_EVENTS_TYPES.startEarningGGV}
-          />
+          <EarnStgBanner matomoEvent={MATOMO_CLICK_EVENTS_TYPES.startEarning} />
         }
       />,
       {

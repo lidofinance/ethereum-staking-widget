@@ -15,7 +15,7 @@ type STGStatsResponse = {
 
 const stgVaultAddress = getContractAddress(CHAINS.Mainnet, 'stgVault');
 
-const STG_STATS_ENDPOINT = `https://points-staging.mellow.finance/v1/chain/${CHAINS.Mainnet}/core-vaults/${stgVaultAddress}/data`;
+const STG_STATS_ENDPOINT = `https://points.mellow.finance/v1/chain/${CHAINS.Mainnet}/core-vaults/${stgVaultAddress}/data`;
 
 export const useSTGStats = () => {
   const { data, isLoading } = useQuery<{ apy: number; tvlWei?: bigint }>({

@@ -96,7 +96,7 @@ export const VaultPageSTG: FC<{
               <span>
                 stRATEGY’s service relies on third-party infrastructure provided
                 by Mellow. By proceeding, you are subject to Mellow’s{' '}
-                <Link href="https://mellow.finance/Mellow-Terms-of-Service.pdf">
+                <Link href="https://mellow.finance/Runtime-Labs-Vault-Legal-Notice.pdf">
                   Terms of Service
                 </Link>{' '}
                 and{' '}
