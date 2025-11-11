@@ -1,8 +1,7 @@
-import { usePublicClient } from 'wagmi';
 import { useQuery } from '@tanstack/react-query';
 import invariant from 'tiny-invariant';
 
-import { useDappStatus } from 'modules/web3/hooks/use-dapp-status';
+import { useDappStatus, useMainnetOnlyWagmi } from 'modules/web3';
 import { getSTGCollectorContract, getSTGVaultContract } from '../contracts';
 import { STG_COLLECTOR_CONFIG } from '../consts';
 
@@ -50,19 +49,20 @@ export type RequestInfo = {
 };
 
 export const useSTGCollect = () => {
-  const { address, isDappActive } = useDappStatus();
-  const publicClient = usePublicClient();
+  const { address: _address } = useDappStatus();
+  const { publicClientMainnet } = useMainnetOnlyWagmi();
 
-  const isEnabled = isDappActive && !!address;
+  // Use zero address if no wallet connected and address is undefined
+  // Because the contract call requires an address parameter
+  const address = _address ?? '0x0000000000000000000000000000000000000000';
 
   const query = useQuery({
-    queryKey: ['stg', 'collect', { address }] as const,
+    queryKey: ['stg', 'collect', { address: address ?? null }] as const,
     queryFn: async () => {
-      invariant(address, 'No address provided');
-      invariant(publicClient, 'Public client is not available');
+      invariant(publicClientMainnet, 'Public client is not available');
 
-      const collector = getSTGCollectorContract(publicClient);
-      const vaultContract = getSTGVaultContract(publicClient);
+      const collector = getSTGCollectorContract(publicClientMainnet);
+      const vaultContract = getSTGVaultContract(publicClientMainnet);
 
       const response: STGCollectResponse = await collector.read.collect([
         address, // account
@@ -73,9 +73,9 @@ export const useSTGCollect = () => {
       return {
         deposits: response.deposits,
         collectorTimestamp: response.timestamp,
+        totalTvlWei: response.totalBase,
       };
     },
-    enabled: isEnabled,
   });
 
   return {

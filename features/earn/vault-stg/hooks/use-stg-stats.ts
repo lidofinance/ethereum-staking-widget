@@ -3,14 +3,10 @@ import { getContractAddress } from 'config/networks/contract-address';
 import { useEthUsd } from 'shared/hooks/use-eth-usd';
 import { standardFetcher } from 'utils/standardFetcher';
 import { CHAINS } from 'consts/chains';
+import { useSTGCollect } from './use-stg-collect';
 
 type STGStatsResponse = {
   apy: number;
-  totalTvl: {
-    asset: string;
-    amount: string; // wei, stringified bigint
-    decimals: number; // expected 18 for ETH
-  };
 };
 
 const stgVaultAddress = getContractAddress(CHAINS.Mainnet, 'stgVault');
@@ -23,16 +19,14 @@ export const useSTGStats = () => {
     queryFn: async () => {
       const json = await standardFetcher<STGStatsResponse>(STG_STATS_ENDPOINT);
 
-      const tvlWei = json.totalTvl?.amount
-        ? BigInt(json.totalTvl.amount)
-        : undefined;
-
-      return { apy: json.apy, tvlWei };
+      return { apy: json.apy };
     },
   });
 
+  const { data: collectorData } = useSTGCollect();
+
   const { usdAmount: tvlUSD, isLoading: isEthUsdLoading } = useEthUsd(
-    data?.tvlWei,
+    collectorData?.totalTvlWei,
   );
 
   return {
