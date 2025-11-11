@@ -10,14 +10,16 @@ export const STGApyHint = () => {
       <Section>
         <span>
           {' '}
-          7-day average APR after{' '}
+          7-day average APY after{' '}
           <LinkInpageAnchor pagePath={STG_DEPOSIT_PATH} hash="#deposit-fee">
             fees
           </LinkInpageAnchor>
         </span>
       </Section>
       <Section>
-        APY is the annual percentage yield including compounding
+        APY is the annual percentage yield including compounding. APY includes
+        compounding and any current incentive rewards. Rates are not guaranteed
+        and may change over time.
       </Section>
       <Section>
         Points{' '}
