@@ -11,9 +11,15 @@ export const VaultCardWrapper = styled(Block)`
 
 export const VaultCardMyPosition = styled.div`
   display: flex;
+  flex-direction: column;
+  gap: ${({ theme }) => theme.spaceMap.xs}px;
   padding-top: ${({ theme }) => theme.spaceMap.md}px;
   border-top: 1px solid ${({ theme }) => theme.colors.border};
   color: ${({ theme }) => theme.colors.text};
+`;
+
+export const VaultCardMyPositionRow = styled.div`
+  display: flex;
 `;
 
 export const VaultCardMyPositionLabel = styled.div`

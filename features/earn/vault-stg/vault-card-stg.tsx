@@ -19,11 +19,15 @@ import {
 import { STGApyHint } from './components/stg-apy-hint';
 import { trackMatomoEvent } from 'utils/track-matomo-event';
 import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo/matomo-earn-events';
+import { useDepositRequests } from './deposit/hooks';
 
 export const VaultCardSTG = () => {
   const { isWalletConnected } = useDappStatus();
   const { tvl, apy, isLoading: isLoadingStats } = useSTGStats();
-  const { sharesBalance, isLoading: isLoadingPosition } = useSTGPosition();
+  const { strethSharesBalance, isLoading: isLoadingPosition } =
+    useSTGPosition();
+  const { totalClaimableStrethShares, isLoading: isLoadingDepositRequests } =
+    useDepositRequests();
 
   return (
     <VaultCard
@@ -39,9 +43,10 @@ export const VaultCardSTG = () => {
       position={
         isWalletConnected
           ? {
-              balance: sharesBalance,
+              balance: strethSharesBalance,
+              toBeClaimed: totalClaimableStrethShares,
               symbol: STG_TOKEN_SYMBOL,
-              isLoading: isLoadingPosition,
+              isLoading: isLoadingPosition || isLoadingDepositRequests,
               logo: <TokenStrethIcon width={16} height={16} />,
             }
           : undefined

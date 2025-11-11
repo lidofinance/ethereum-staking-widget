@@ -12,21 +12,21 @@ import {
 export const useSTGWithdrawFormData = () => {
   const queryClient = useQueryClient();
   const { isAccountActive } = useDappStatus();
-  const { sharesBalance } = useSTGPosition();
+  const { strethSharesBalance, isLoading } = useSTGPosition();
 
   const asyncValidationContextValue:
     | STGWithdrawFormAsyncValidationContext
     | undefined = useMemo(() => {
-    if (sharesBalance == undefined) {
+    if (strethSharesBalance == undefined) {
       return undefined;
     }
 
     return {
       strETH: {
-        balance: sharesBalance,
+        balance: strethSharesBalance,
       },
     };
-  }, [sharesBalance]);
+  }, [strethSharesBalance]);
 
   const asyncContext = useAwaiter(asyncValidationContextValue).awaiter;
 
@@ -43,8 +43,6 @@ export const useSTGWithdrawFormData = () => {
       queryClient.refetchQueries({ queryKey: ['stg'] }, options),
     ]);
   }, [queryClient]);
-
-  const isLoading = false; // TODO: Add proper loading state
 
   return {
     asyncValidationContextValue,
