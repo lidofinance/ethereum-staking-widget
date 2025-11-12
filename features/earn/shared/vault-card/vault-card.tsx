@@ -31,7 +31,8 @@ type VaultCardProps = {
   tokens: Array<{ name: string; logo: React.ReactNode }>;
   position?: {
     balance?: bigint;
-    toBeClaimed?: bigint;
+    claimable?: bigint;
+    pending?: Array<{ tokenSymbol: string; amount: bigint }>;
     isLoading?: boolean;
     symbol: string;
     logo: React.ReactNode;
@@ -78,23 +79,49 @@ export const VaultCard: React.FC<VaultCardProps> = ({
               </InlineLoader>
             </VaultCardMyPositionValue>
           </VaultCardMyPositionRow>
-          <VaultCardMyPositionRow>
-            {Boolean(position.toBeClaimed) && (
+          {position.pending && position.pending.length > 0 && (
+            <VaultCardMyPositionRow>
+              <>
+                <VaultCardMyPositionLabel>Pending</VaultCardMyPositionLabel>
+                {position.pending.map((pending) => (
+                  <VaultCardMyPositionValue key={pending.tokenSymbol}>
+                    <FormatToken
+                      trimEllipsis
+                      symbol={pending.tokenSymbol}
+                      amount={pending.amount}
+                      maxDecimalDigits={2}
+                      data-testid={`${pending.tokenSymbol}-pending-deposit-amount`}
+                    />
+                    {
+                      tokens.find(
+                        (t) =>
+                          t.name.toLowerCase() ===
+                          pending.tokenSymbol.toLowerCase(),
+                      )?.logo
+                    }
+                  </VaultCardMyPositionValue>
+                ))}
+              </>
+            </VaultCardMyPositionRow>
+          )}
+          {Boolean(position.claimable) && (
+            <VaultCardMyPositionRow>
               <>
                 <VaultCardMyPositionLabel>
-                  To be claimed
+                  Available to claim
                 </VaultCardMyPositionLabel>
                 <VaultCardMyPositionValue>
                   <FormatToken
                     trimEllipsis
                     symbol={position.symbol}
-                    amount={position.toBeClaimed}
+                    amount={position.claimable}
+                    data-testid={`${position.symbol}-claimable-amount`}
                   />
                   {position.logo}
                 </VaultCardMyPositionValue>
               </>
-            )}
-          </VaultCardMyPositionRow>
+            </VaultCardMyPositionRow>
+          )}
         </VaultCardMyPosition>
       </>
     )}

@@ -20,11 +20,12 @@ export const VaultCardMyPosition = styled.div`
 
 export const VaultCardMyPositionRow = styled.div`
   display: flex;
+  flex-wrap: wrap;
 `;
 
 export const VaultCardMyPositionLabel = styled.div`
   color: var(--lido-color-textSecondary);
-  margin-right: ${({ theme }) => theme.spaceMap.xs}px;
+  margin-right: 6px;
 `;
 
 export const VaultCardMyPositionValue = styled.div`
@@ -35,6 +36,12 @@ export const VaultCardMyPositionValue = styled.div`
   & > svg {
     width: 16px;
     height: 16px;
+  }
+
+  &:not(:last-child) {
+    border-right: 1px solid grey;
+    padding-right: 12px;
+    margin-right: 12px;
   }
 `;
 
