@@ -49,7 +49,7 @@ export const STGPosition = () => {
       position={{
         symbol: STG_TOKEN_SYMBOL,
         token: data?.strethTokenAddress,
-        balance: data?.sharesBalance,
+        balance: data?.strethSharesBalance,
         icon: <TokenStrethIcon />,
         isLoading: isLoading || isLoadingUsd,
         usdAmount,
