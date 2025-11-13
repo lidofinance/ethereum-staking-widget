@@ -70,7 +70,7 @@ export const useSTGPosition = () => {
       'stg',
       'position',
       'usd',
-      { shares: Number(strethShares) },
+      { shares: String(strethShares) },
     ] as const,
     enabled: isEnabled && !!strethBalanceQuery.data?.strethSharesBalance,
     queryFn: async () => {
