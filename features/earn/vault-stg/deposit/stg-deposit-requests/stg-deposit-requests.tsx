@@ -15,18 +15,13 @@ export const STGDepositRequests = () => {
 
   const {
     requests: depositRequests,
-    claimableRequests,
     pendingRequests,
+    totalClaimableStrethShares,
   } = useDepositRequests();
 
   if (depositRequests.length === 0 || !isSTGAvailable) {
     return null;
   }
-
-  const totalClaimableShares = claimableRequests.reduce(
-    (sum, requestData) => sum + (requestData.claimableShares ?? 0n),
-    0n,
-  );
 
   return (
     <RequestsContainer>
@@ -36,7 +31,7 @@ export const STGDepositRequests = () => {
         isLoading={isCanceling || isClaiming}
       />
       <STGDepositClaimableRequest
-        claimableShares={totalClaimableShares}
+        claimableShares={totalClaimableStrethShares}
         claim={claim}
         isLoading={isCanceling || isClaiming}
       />
