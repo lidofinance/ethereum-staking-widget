@@ -22,7 +22,7 @@ import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo/matomo-earn-events';
 
 export const VaultCardSTG = () => {
   const { isWalletConnected } = useDappStatus();
-  const { tvl, apy, isLoading: isLoadingStats } = useSTGStats();
+  const { totalTvlUsd, apy, isLoading: isLoadingStats } = useSTGStats();
   const { sharesBalance, isLoading: isLoadingPosition } = useSTGPosition();
 
   return (
@@ -47,7 +47,7 @@ export const VaultCardSTG = () => {
           : undefined
       }
       stats={{
-        tvl,
+        tvl: totalTvlUsd,
         apx: apy,
         apxLabel: 'APY',
         apxHint: <STGApyHint />,

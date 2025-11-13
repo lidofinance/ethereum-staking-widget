@@ -5,8 +5,24 @@ import { standardFetcher } from 'utils/standardFetcher';
 import { CHAINS } from 'consts/chains';
 import { useSTGCollect } from './use-stg-collect';
 
+type STGAllocation = {
+  id: string;
+  label: string;
+  sharePercent: number;
+  tvl: { amount: string; asset: string; decimals: number };
+  chain: string;
+};
+
 type STGStatsResponse = {
   apy: number;
+  allocations: Array<STGAllocation>;
+  lastUpdate: string;
+};
+
+type STGStatsQueryData = {
+  apy: number;
+  allocations: Array<STGAllocation>;
+  lastUpdateTimestamp: number;
 };
 
 const stgVaultAddress = getContractAddress(CHAINS.Mainnet, 'stgVault');
@@ -14,24 +30,31 @@ const stgVaultAddress = getContractAddress(CHAINS.Mainnet, 'stgVault');
 const STG_STATS_ENDPOINT = `https://points.mellow.finance/v1/chain/${CHAINS.Mainnet}/core-vaults/${stgVaultAddress}/data`;
 
 export const useSTGStats = () => {
-  const { data, isLoading } = useQuery<{ apy: number; tvlWei?: bigint }>({
+  const { data, isLoading } = useQuery<STGStatsQueryData>({
     queryKey: ['stg', 'stats'],
     queryFn: async () => {
       const json = await standardFetcher<STGStatsResponse>(STG_STATS_ENDPOINT);
-
-      return { apy: json.apy };
+      const lastUpdateTimestamp = Number(json.lastUpdate);
+      return {
+        apy: json.apy,
+        allocations: json.allocations,
+        lastUpdateTimestamp: lastUpdateTimestamp,
+      };
     },
   });
 
   const { data: collectorData } = useSTGCollect();
+  const totalTvlWei = collectorData?.totalTvlWei;
 
-  const { usdAmount: tvlUSD, isLoading: isEthUsdLoading } = useEthUsd(
-    collectorData?.totalTvlWei,
-  );
+  const { usdAmount: totalTvlUsd, isLoading: isEthUsdLoading } =
+    useEthUsd(totalTvlWei);
 
   return {
     isLoading: isLoading || isEthUsdLoading,
-    tvl: tvlUSD,
+    totalTvlUsd,
+    totalTvlWei,
     apy: data?.apy,
+    allocations: data?.allocations || [],
+    lastUpdateTimestamp: data?.lastUpdateTimestamp,
   } as const;
 };

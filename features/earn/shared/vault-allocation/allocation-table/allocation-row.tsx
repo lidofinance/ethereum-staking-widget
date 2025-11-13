@@ -18,6 +18,7 @@ import {
 
 type AllocationRowProps = {
   data: Allocation;
+  protocolIcons: { [key: string]: JSX.Element };
 };
 
 const AVAILABLE_TIP =
@@ -26,7 +27,7 @@ const OTHER_TIP =
   'The amount of a newly allocated position. Detailed data will be provided soon';
 
 export const AllocationRow: FC<AllocationRowProps> = (props) => {
-  const { data } = props;
+  const { data, protocolIcons } = props;
 
   const isAvailable = data.protocol === 'Available';
   const isOther = data.protocol === 'Other allocation';
@@ -34,7 +35,11 @@ export const AllocationRow: FC<AllocationRowProps> = (props) => {
   return (
     <Tr>
       <TdWithIconStyled>
-        <ProtocolIcon main={data.protocol} badge={data.chain} />
+        <ProtocolIcon
+          protocolIcons={protocolIcons}
+          main={data.protocol}
+          badge={data.chain}
+        />
         <ProtocolNameStyled>
           {data.protocol}
           {isAvailable && <VaultTip>{AVAILABLE_TIP}</VaultTip>}
@@ -54,8 +59,9 @@ export const AllocationRow: FC<AllocationRowProps> = (props) => {
           <FormatTokenStyled
             fallback="-"
             amount={data.tvlETH}
+            maxDecimalDigits={2}
             symbol={'ETH'}
-            shortened
+            shortened={data.tvlETH >= 10n * 10n ** 18n} // shortened only for >= 10 ETH in wei, looks more accurate
           />
         </DataTableRowContentStyled>
       </TdNarrowStyled>
