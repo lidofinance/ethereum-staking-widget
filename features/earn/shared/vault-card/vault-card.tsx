@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, InlineLoader } from '@lidofinance/lido-ui';
+import { Button } from '@lidofinance/lido-ui';
 
 import { EARN_PATH } from 'consts/urls';
 import { FormatToken } from 'shared/formatters';
@@ -8,6 +8,7 @@ import { EARN_VAULT_DEPOSIT_SLUG, EarnVaultKey } from '../../consts';
 import { VaultHeader } from '../vault-header';
 import { VaultStats } from '../vault-stats';
 import { VaultDescription } from '../vault-description';
+import { InlineLoader } from '../inline-loader';
 
 import {
   VaultCardMyPosition,
@@ -15,6 +16,7 @@ import {
   VaultCardMyPositionValue,
   VaultCardWrapper,
   VaultCardCTALink,
+  VaultCardMyPositionRow,
 } from './styles';
 
 import type { VaultPartnerType } from '../types';
@@ -29,6 +31,8 @@ type VaultCardProps = {
   tokens: Array<{ name: string; logo: React.ReactNode }>;
   position?: {
     balance?: bigint;
+    claimable?: bigint;
+    pending?: Array<{ tokenSymbol: string; amount: bigint }>;
     isLoading?: boolean;
     symbol: string;
     logo: React.ReactNode;
@@ -58,25 +62,68 @@ export const VaultCard: React.FC<VaultCardProps> = ({
     <VaultStats {...stats} />
     <VaultDescription description={description} tokens={tokens} />
     {position && (
-      <VaultCardMyPosition>
-        <VaultCardMyPositionLabel>My position</VaultCardMyPositionLabel>
-        <VaultCardMyPositionValue>
-          {position.isLoading ? (
-            <InlineLoader />
-          ) : (
-            <>
-              <FormatToken
-                trimEllipsis
-                symbol={position.symbol}
-                amount={position.balance}
-                fallback="—"
-                data-testid={`${position.symbol}-position-amount`}
-              />
-              {position.logo}
-            </>
+      <>
+        <VaultCardMyPosition>
+          <VaultCardMyPositionRow>
+            <VaultCardMyPositionLabel>My position</VaultCardMyPositionLabel>
+            <VaultCardMyPositionValue>
+              <InlineLoader width={32} isLoading={position.isLoading}>
+                <FormatToken
+                  trimEllipsis
+                  symbol={position.symbol}
+                  amount={position.balance}
+                  fallback="—"
+                  data-testid={`${position.symbol}-position-amount`}
+                />
+                {position.logo}
+              </InlineLoader>
+            </VaultCardMyPositionValue>
+          </VaultCardMyPositionRow>
+          {position.pending && position.pending.length > 0 && (
+            <VaultCardMyPositionRow>
+              <>
+                <VaultCardMyPositionLabel>Pending</VaultCardMyPositionLabel>
+                {position.pending.map((pending) => (
+                  <VaultCardMyPositionValue key={pending.tokenSymbol}>
+                    <FormatToken
+                      trimEllipsis
+                      symbol={pending.tokenSymbol}
+                      amount={pending.amount}
+                      maxDecimalDigits={2}
+                      data-testid={`${pending.tokenSymbol}-pending-deposit-amount`}
+                    />
+                    {
+                      tokens.find(
+                        (t) =>
+                          t.name.toLowerCase() ===
+                          pending.tokenSymbol.toLowerCase(),
+                      )?.logo
+                    }
+                  </VaultCardMyPositionValue>
+                ))}
+              </>
+            </VaultCardMyPositionRow>
           )}
-        </VaultCardMyPositionValue>
-      </VaultCardMyPosition>
+          {Boolean(position.claimable) && (
+            <VaultCardMyPositionRow>
+              <>
+                <VaultCardMyPositionLabel>
+                  Available to claim
+                </VaultCardMyPositionLabel>
+                <VaultCardMyPositionValue>
+                  <FormatToken
+                    trimEllipsis
+                    symbol={position.symbol}
+                    amount={position.claimable}
+                    data-testid={`${position.symbol}-claimable-amount`}
+                  />
+                  {position.logo}
+                </VaultCardMyPositionValue>
+              </>
+            </VaultCardMyPositionRow>
+          )}
+        </VaultCardMyPosition>
+      </>
     )}
     <VaultCardCTALink
       href={`${EARN_PATH}/${urlSlug}/${EARN_VAULT_DEPOSIT_SLUG}`}

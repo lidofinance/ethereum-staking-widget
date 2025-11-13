@@ -28,6 +28,8 @@ export const VaultToken = styled.div`
 `;
 
 export const VaultTokenLogo = styled.div`
+  height: 20px;
+  width: 20px;
   margin-right: ${({ theme }) => theme.spaceMap.xs}px;
 `;
 

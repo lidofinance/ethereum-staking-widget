@@ -8,24 +8,24 @@ import { useWstethUsd } from 'shared/hooks/use-wsteth-usd';
 import { getWithdrawalParams } from '../utils';
 
 export const useSTGPreviewWithdraw = ({
-  shares,
+  shares: strethShares,
 }: {
   shares?: bigint | null;
 }) => {
   const { isDappActive, address: userAddress } = useDappStatus();
   const publicClient = usePublicClient();
 
-  const isEnabled = isDappActive && shares != null;
+  const isEnabled = isDappActive && strethShares != null;
 
-  const debouncedAmount = useDebouncedValue(shares, 500);
-  const isDebounced = isEnabled && shares !== debouncedAmount;
+  const debouncedStrethShares = useDebouncedValue(strethShares, 500);
+  const isDebounced = isEnabled && strethShares !== debouncedStrethShares;
 
   const query = useQuery({
     queryKey: [
       'stg',
       'preview-widthdraw',
       {
-        amount: isEnabled ? debouncedAmount?.toString() : null,
+        amount: isEnabled ? debouncedStrethShares?.toString() : null,
       },
     ] as const,
     enabled: isEnabled,
@@ -33,13 +33,13 @@ export const useSTGPreviewWithdraw = ({
       invariant(publicClient, 'Public client is not available');
       invariant(userAddress, 'User address is not available');
 
-      if (!debouncedAmount)
+      if (!debouncedStrethShares)
         return {
           wsteth: 0n,
         };
 
       const { assets: wsteth } = await getWithdrawalParams({
-        shares: debouncedAmount,
+        shares: debouncedStrethShares,
         publicClient,
       });
 

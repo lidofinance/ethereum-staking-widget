@@ -1,7 +1,7 @@
 import {
-  TokenEthIcon,
-  TokenWethIcon,
-  TokenWstethIcon,
+  TokenEthScalableIcon,
+  TokenWethScalableIcon,
+  TokenWstethScalableIcon,
   VaultSTGIcon,
   TokenStrethIcon,
 } from 'assets/earn';
@@ -19,11 +19,29 @@ import {
 import { STGApyHint } from './components/stg-apy-hint';
 import { trackMatomoEvent } from 'utils/track-matomo-event';
 import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo/matomo-earn-events';
+import { useDepositRequests } from './deposit/hooks';
 
 export const VaultCardSTG = () => {
   const { isWalletConnected } = useDappStatus();
-  const { tvl, apy, isLoading: isLoadingStats } = useSTGStats();
-  const { sharesBalance, isLoading: isLoadingPosition } = useSTGPosition();
+  const { totalTvlUsd, apy, isLoading: isLoadingStats } = useSTGStats();
+  const { strethSharesBalance, isLoading: isLoadingPosition } =
+    useSTGPosition();
+  const {
+    totalClaimableStrethShares,
+    pendingRequests,
+    isLoading: isLoadingDepositRequests,
+  } = useDepositRequests();
+
+  const depositTokens = [
+    { name: 'ETH', logo: <TokenEthScalableIcon /> },
+    { name: 'WETH', logo: <TokenWethScalableIcon /> },
+    { name: 'wstETH', logo: <TokenWstethScalableIcon /> },
+  ];
+
+  const pending = pendingRequests.map((request) => ({
+    tokenSymbol: request.token,
+    amount: request.assets,
+  }));
 
   return (
     <VaultCard
@@ -31,23 +49,21 @@ export const VaultCardSTG = () => {
       description={STG_VAULT_DESCRIPTION}
       urlSlug={EARN_VAULT_STG_SLUG}
       partners={STG_PARTNERS}
-      tokens={[
-        { name: 'ETH', logo: <TokenEthIcon /> },
-        { name: 'WETH', logo: <TokenWethIcon /> },
-        { name: 'wstETH', logo: <TokenWstethIcon /> },
-      ]}
+      tokens={depositTokens}
       position={
         isWalletConnected
           ? {
-              balance: sharesBalance,
+              balance: strethSharesBalance,
               symbol: STG_TOKEN_SYMBOL,
-              isLoading: isLoadingPosition,
-              logo: <TokenStrethIcon width={16} height={16} />,
+              logo: <TokenStrethIcon />,
+              claimable: totalClaimableStrethShares,
+              pending,
+              isLoading: isLoadingPosition || isLoadingDepositRequests,
             }
           : undefined
       }
       stats={{
-        tvl,
+        tvl: totalTvlUsd,
         apx: apy,
         apxLabel: 'APY',
         apxHint: <STGApyHint />,

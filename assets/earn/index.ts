@@ -8,11 +8,14 @@ import { ReactComponent as PartnerRuntimeLabsIcon } from './partner-runtime-labs
 import { ReactComponent as PartnerRuntimeLabsIconInverted } from './partner-runtime-labs-inverted.svg';
 
 import { ReactComponent as TokenEthIcon } from './token-eth.svg';
+import { ReactComponent as TokenEthScalableIcon } from './token-eth-scalable.svg';
 import { ReactComponent as TokenEthIcon32 } from './token-eth-32.svg';
 import { ReactComponent as TokenStethIcon } from './token-steth.svg';
 import { ReactComponent as TokenWethIcon } from './token-weth.svg';
+import { ReactComponent as TokenWethScalableIcon } from './token-weth-scalable.svg';
 import { ReactComponent as TokenWethIcon32 } from './token-weth-32.svg';
 import { ReactComponent as TokenWstethIcon } from './token-wsteth.svg';
+import { ReactComponent as TokenWstethScalableIcon } from './token-wsteth-scalable.svg';
 import { ReactComponent as TokenWstethIcon32 } from './token-wsteth-32.svg';
 import { ReactComponent as TokenGGIcon } from './token-gg.svg';
 import { ReactComponent as TokenDvstethIcon } from './token-dvsteth.svg';
@@ -44,6 +47,8 @@ export { ReactComponent as EtherfiIcon } from './allocation/etherfi.svg';
 export { ReactComponent as LineaIcon } from './allocation/linea.svg';
 export { ReactComponent as YearnV3Icon } from './allocation/yearn-v3.svg';
 export { ReactComponent as KatanaIcon } from './allocation/katana.svg';
+export { ReactComponent as PlasmaIcon } from './allocation/plasma.svg';
+export { ReactComponent as SparkIcon } from './allocation/spark.svg';
 
 const themedBackground = css`
   path,
@@ -78,11 +83,14 @@ export {
   VaultDVVIcon,
   VaultSTGIcon,
   TokenEthIcon,
+  TokenEthScalableIcon,
   TokenEthIcon32,
   TokenStethIcon,
   TokenWethIcon,
+  TokenWethScalableIcon,
   TokenWethIcon32,
   TokenWstethIcon,
+  TokenWstethScalableIcon,
   TokenWstethIcon32,
   TokenGGIcon,
   TokenDvstethIcon,

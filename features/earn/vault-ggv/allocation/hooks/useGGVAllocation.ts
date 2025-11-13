@@ -6,16 +6,13 @@ import { CONTRACT_NAMES } from 'config/networks/networks-map';
 import { getContractAddress } from 'config/networks/contract-address';
 import { useMainnetOnlyWagmi } from 'modules/web3';
 import { CHAINS } from 'consts/chains';
+import { createAllocationsChartData } from 'features/earn/shared/vault-allocation/utils';
 
 import { getGGVVaultContract } from '../../contracts';
 import { fetchDailyGGVChainData, fetchGGVPerformance } from '../../utils';
 import { useGGVApy } from '../../hooks/use-ggv-stats';
 
-import {
-  getAllocationData,
-  createAllocationsChartData,
-  createAllocationsData,
-} from '../utils';
+import { getAllocationData, createAllocationsData } from '../utils';
 
 export const useGGVAllocation = () => {
   const { publicClientMainnet } = useMainnetOnlyWagmi();

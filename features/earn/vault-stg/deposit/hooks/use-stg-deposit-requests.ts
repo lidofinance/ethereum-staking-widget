@@ -19,11 +19,14 @@ export const useDepositRequests = (): {
   requests: DepositRequest[];
   claimableRequests: DepositRequest[];
   pendingRequests: DepositRequest[];
+  totalClaimableStrethShares: bigint;
+  isLoading: boolean;
 } => {
   const { chainId } = useDappStatus();
 
   // Fetch deposit request data from the Collector contract
-  const { data: collectedData } = useSTGCollect();
+  const { data: collectedData, isLoading: isLoadingCollectedData } =
+    useSTGCollect();
   const collectedRequests = collectedData?.deposits;
 
   return useMemo(() => {
@@ -32,6 +35,8 @@ export const useDepositRequests = (): {
         requests: [],
         claimableRequests: [],
         pendingRequests: [],
+        totalClaimableStrethShares: 0n,
+        isLoading: false,
       };
     }
 
@@ -60,10 +65,19 @@ export const useDepositRequests = (): {
       };
     }).filter((request): request is DepositRequest => !!request);
 
+    const claimableRequests = requests.filter((request) => request.isClaimable);
+    const pendingRequests = requests.filter((request) => !request.isClaimable);
+    const totalClaimableStrethShares = claimableRequests.reduce(
+      (sum, requestData) => sum + (requestData.claimableShares ?? 0n),
+      0n,
+    );
+
     return {
       requests,
-      claimableRequests: requests.filter((request) => request.isClaimable),
-      pendingRequests: requests.filter((request) => !request.isClaimable),
+      claimableRequests,
+      pendingRequests,
+      totalClaimableStrethShares,
+      isLoading: isLoadingCollectedData,
     };
-  }, [chainId, collectedRequests]);
+  }, [chainId, collectedRequests, isLoadingCollectedData]);
 };

@@ -38,16 +38,16 @@ export const useSTGPosition = () => {
 
       const shareManager = getSTGShareManagerSTRETH(publicClientMainnet);
 
-      const sharesBalance = await shareManager.read.balanceOf([address]);
+      const strethSharesBalance = await shareManager.read.balanceOf([address]);
 
       return {
-        sharesBalance,
+        strethSharesBalance,
         strethTokenAddress: shareManager.address,
       };
     },
   });
 
-  const shares = strethBalanceQuery.data?.sharesBalance ?? 0n;
+  const strethShares = strethBalanceQuery.data?.strethSharesBalance ?? 0n;
 
   const mellowPointsBalanceQuery = useQuery({
     queryKey: ['stg', 'mellow-points', { address }] as const,
@@ -66,13 +66,18 @@ export const useSTGPosition = () => {
   });
 
   const strethToWstethQuery = useQuery({
-    queryKey: ['stg', 'position', 'usd', { shares: Number(shares) }] as const,
-    enabled: isEnabled && !!strethBalanceQuery.data?.sharesBalance,
+    queryKey: [
+      'stg',
+      'position',
+      'usd',
+      { shares: String(strethShares) },
+    ] as const,
+    enabled: isEnabled && !!strethBalanceQuery.data?.strethSharesBalance,
     queryFn: async () => {
       invariant(publicClientMainnet, 'Public client is not available');
 
       const { assets: assetsWsteth } = await getWithdrawalParams({
-        shares,
+        shares: strethShares,
         publicClient: publicClientMainnet,
       });
       return assetsWsteth;
@@ -92,7 +97,7 @@ export const useSTGPosition = () => {
     mellowPoints: Number(
       mellowPointsBalanceQuery.data?.user_mellow_points ?? 0,
     ),
-    sharesBalance: data?.sharesBalance,
+    strethSharesBalance: data?.strethSharesBalance,
     usdQuery,
     usdBalance: usdAmount ?? 0,
   };
