@@ -23,7 +23,7 @@ import {
 import { VaultAllocationProps } from './types';
 
 export const VaultAllocation: FC<VaultAllocationProps> = (props) => {
-  const { data, isLoading, apy, footer } = props;
+  const { data, isLoading, apy, footer, protocolIcons } = props;
 
   if (!data || isLoading)
     return (
@@ -66,7 +66,10 @@ export const VaultAllocation: FC<VaultAllocationProps> = (props) => {
           data-testid="allocation-chart"
         />
         <AllocationLegend data={data.chartData} />
-        <AllocationTable allocation={data.allocations} />
+        <AllocationTable
+          allocation={data.allocations}
+          protocolIcons={protocolIcons}
+        />
         <AllocationSummary
           apy={apy}
           totalTvlUSD={data.totalTvlUSD}

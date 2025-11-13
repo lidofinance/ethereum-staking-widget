@@ -23,7 +23,7 @@ import { useDepositRequests } from './deposit/hooks';
 
 export const VaultCardSTG = () => {
   const { isWalletConnected } = useDappStatus();
-  const { tvl, apy, isLoading: isLoadingStats } = useSTGStats();
+  const { totalTvlUsd, apy, isLoading: isLoadingStats } = useSTGStats();
   const { strethSharesBalance, isLoading: isLoadingPosition } =
     useSTGPosition();
   const {
@@ -63,7 +63,7 @@ export const VaultCardSTG = () => {
           : undefined
       }
       stats={{
-        tvl,
+        tvl: totalTvlUsd,
         apx: apy,
         apxLabel: 'APY',
         apxHint: <STGApyHint />,

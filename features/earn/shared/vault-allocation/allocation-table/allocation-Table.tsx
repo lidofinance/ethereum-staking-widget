@@ -16,12 +16,16 @@ export type Allocation = {
 };
 type AllocationProps = {
   allocation: Allocation[];
+  protocolIcons: { [key: string]: JSX.Element };
 };
 
 const TVL_TIP =
   'TVL of the protocol’s allocated position (separate from the vault’s TVL)';
 
-export const AllocationTable: FC<AllocationProps> = ({ allocation }) => {
+export const AllocationTable: FC<AllocationProps> = ({
+  allocation,
+  protocolIcons,
+}) => {
   return (
     <TableStyled>
       <TheadStyled>
@@ -35,7 +39,11 @@ export const AllocationTable: FC<AllocationProps> = ({ allocation }) => {
       </TheadStyled>
       <Tbody>
         {allocation.map((item) => (
-          <AllocationRow key={`${item.protocol}-${item.chain}`} data={item} />
+          <AllocationRow
+            key={`${item.protocol}-${item.chain}`}
+            data={item}
+            protocolIcons={protocolIcons}
+          />
         ))}
       </Tbody>
     </TableStyled>

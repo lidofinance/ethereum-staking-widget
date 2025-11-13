@@ -36,6 +36,7 @@ import { STGPosition } from './components/stg-position';
 import { STGFaq } from './faq/stg-faq';
 import { STGApyHint } from './components/stg-apy-hint';
 import { STGVaultDetails } from './components/stg-vault-details';
+import { Allocation } from './allocation';
 
 const routes = [
   {
@@ -57,7 +58,7 @@ export const VaultPageSTG: FC<{
   const isWithdraw = action === EARN_VAULT_WITHDRAW_SLUG;
 
   const { isDappActive } = useDappStatus();
-  const { tvl, apy, isLoading } = useSTGStats();
+  const { totalTvlUsd, apy, isLoading } = useSTGStats();
 
   return (
     <>
@@ -78,7 +79,7 @@ export const VaultPageSTG: FC<{
           />
           <VaultStats
             compact
-            tvl={tvl}
+            tvl={totalTvlUsd}
             apxLabel="APY"
             apx={apy}
             apxHint={<STGApyHint />}
@@ -121,6 +122,7 @@ export const VaultPageSTG: FC<{
         </VaultBlockFormSection>
       </VaultBlock>
       <STGVaultDetails />
+      <Allocation />
       <STGFaq />
       <AprDisclaimer mentionAPY />
     </>
