@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Button } from '@lidofinance/lido-ui';
 import { FormatPrice } from 'shared/formatters/format-price';
 import { LOCALE } from 'config/groups/locale';
@@ -13,6 +14,8 @@ import {
 } from './styles';
 import { FormatToken } from 'shared/formatters';
 import { ButtonInline } from 'shared/components/button-inline';
+import { useAddressValidation } from 'providers/address-validation-provider';
+import { useDappStatus } from 'modules/web3';
 
 export { RequestsContainer, ActionableTitle } from './styles';
 
@@ -39,6 +42,10 @@ export const STGRequest = ({
   actionLoading,
   actionButtonVariant = 'button',
 }: STGRequestProps) => {
+  const { validateAddress } = useAddressValidation();
+  const { address } = useDappStatus();
+  const [isInnerLoading, setIsInnerLoading] = useState(false);
+
   const createdDate = createdDateTimestamp
     ? new Date(Number(createdDateTimestamp) * 1000).toLocaleDateString(LOCALE, {
         day: '2-digit',
@@ -47,9 +54,25 @@ export const STGRequest = ({
       })
     : undefined;
 
+  const clickHandler = async () => {
+    try {
+      setIsInnerLoading(true);
+      const result = await validateAddress(address);
+
+      // if address is not valid, don't submit the form
+      if (!result) return;
+
+      actionCallback?.();
+    } catch (error) {
+      console.error('Error in async operation [STGRequest]:', error);
+    } finally {
+      setIsInnerLoading(false);
+    }
+  };
+
   const button =
     actionButtonVariant === 'link-alike' ? (
-      <ButtonInline onClick={actionCallback} disabled={actionLoading}>
+      <ButtonInline onClick={clickHandler} disabled={actionLoading}>
         {actionText}
       </ButtonInline>
     ) : (
@@ -57,8 +80,8 @@ export const STGRequest = ({
         color="primary"
         size="xs"
         variant="translucent"
-        onClick={actionCallback}
-        loading={actionLoading}
+        onClick={clickHandler}
+        loading={actionLoading || isInnerLoading}
       >
         {actionText}
       </Button>
