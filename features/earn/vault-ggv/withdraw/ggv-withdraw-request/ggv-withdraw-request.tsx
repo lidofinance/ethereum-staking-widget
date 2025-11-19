@@ -1,10 +1,6 @@
-import { useState } from 'react';
-
 import { FormatPrice, FormatToken } from 'shared/formatters';
 import { getTokenDisplayName } from 'utils/getTokenDisplayName';
 import { useWstethUsd } from 'shared/hooks/use-wsteth-usd';
-import { useAddressValidation } from 'providers/address-validation-provider';
-import { useDappStatus } from 'modules/web3';
 
 import { TokenWstethIcon } from 'assets/earn';
 import { useGGVWithdrawalRequests } from '../hooks/use-ggv-withdrawal-requests';
@@ -56,26 +52,6 @@ const RequestEntry = ({
 
 const PendingRequestEntry = ({ request }: RequestEntryProps) => {
   const { cancelGGVWithdraw, isLoading } = useGGVCancelWithdraw();
-  const { validateAddress } = useAddressValidation();
-  const { address } = useDappStatus();
-  const [isInnerLoading, setIsInnerLoading] = useState(false);
-
-  const clickHandler = async (event: React.MouseEvent<HTMLButtonElement>) => {
-    event.preventDefault();
-    try {
-      setIsInnerLoading(true);
-      const result = await validateAddress(address);
-
-      // if address is not valid, don't submit the form
-      if (!result) return;
-
-      void cancelGGVWithdraw(request);
-    } catch (error) {
-      console.error('Error in async operation [cancelGGVWithdraw]:', error);
-    } finally {
-      setIsInnerLoading(false);
-    }
-  };
 
   return (
     <RequestEntry request={request}>
@@ -87,8 +63,11 @@ const PendingRequestEntry = ({ request }: RequestEntryProps) => {
         },
       )}
       <ButtonText
-        disabled={isLoading || isInnerLoading}
-        onClick={clickHandler}
+        disabled={isLoading}
+        onClick={(event) => {
+          event.preventDefault();
+          void cancelGGVWithdraw(request);
+        }}
         data-testid="cancel-request-btn"
       >
         Cancel
