@@ -1,4 +1,3 @@
-import { useRef } from 'react';
 import { useFormState } from 'react-hook-form';
 import { ButtonIcon, Lock } from '@lidofinance/lido-ui';
 
@@ -22,7 +21,6 @@ export const SubmitButtonHookForm: React.FC<SubmitButtonHookFormProps> = ({
   ...props
 }) => {
   const { isDappActive, isSupportedChain, isWalletConnected } = useDappStatus();
-  const ref = useRef<HTMLButtonElement>(null);
   const { isValidating, isSubmitting } = useFormState();
   const { errors } = useFormState<Record<string, unknown>>();
 
@@ -41,9 +39,8 @@ export const SubmitButtonHookForm: React.FC<SubmitButtonHookFormProps> = ({
 
   return (
     <ButtonIcon
-      ref={ref}
-      type="submit"
       fullwidth
+      type="submit"
       loading={isValidating || isSubmitting}
       icon={icon || isLocked ? <Lock /> : <></>}
       disabled={disabled}
