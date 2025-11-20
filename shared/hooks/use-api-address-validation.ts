@@ -1,7 +1,7 @@
-import { useQuery } from '@tanstack/react-query';
-import { useAccount } from 'wagmi';
+import { useCallback } from 'react';
+import { Address } from 'viem';
+import { useQueryClient } from '@tanstack/react-query';
 
-import { STRATEGY_LAZY } from 'consts/react-query-strategies';
 import { API_ROUTES } from 'consts/api';
 import { config } from 'config';
 import { standardFetcher } from 'utils/standardFetcher';
@@ -21,21 +21,36 @@ const getApiUrl = (route: string, params?: Record<string, string>) => {
 };
 
 export const useApiAddressValidation = () => {
-  const { address } = useAccount();
+  const queryClient = useQueryClient();
 
-  const currentValidationQueryResult = useQuery<{ isValid: boolean }>({
-    queryKey: ['address-validation', address],
-    ...STRATEGY_LAZY,
-    enabled:
-      !!address && config.addressApiValidationEnabled && !config.ipfsMode,
-    queryFn: async () => {
-      const url = getApiUrl(API_ROUTES.VALIDATION, { address: address || '' });
-      return await standardFetcher(url, {
-        method: 'GET',
+  const validateAddressAPI = useCallback(
+    async (addressToValidate: Address) => {
+      if (!config.addressApiValidationEnabled || config.ipfsMode) {
+        return { isValid: true };
+      }
+
+      const result = await queryClient.fetchQuery<{ isValid: boolean } | null>({
+        queryKey: ['address-validation-api', addressToValidate],
+        queryFn: async () => {
+          try {
+            const url = getApiUrl(API_ROUTES.VALIDATION, {
+              address: addressToValidate,
+            });
+            return await standardFetcher(url, {
+              method: 'GET',
+            });
+          } catch (error) {
+            return null;
+          }
+        },
+        staleTime: 1 * 60 * 1000, // 1 minute
+        retry: 1,
       });
-    },
-    retry: 1,
-  });
 
-  return currentValidationQueryResult;
+      return result;
+    },
+    [queryClient],
+  );
+
+  return validateAddressAPI;
 };

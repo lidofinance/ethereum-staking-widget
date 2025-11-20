@@ -21,7 +21,6 @@ export const SubmitButtonHookForm: React.FC<SubmitButtonHookFormProps> = ({
   ...props
 }) => {
   const { isDappActive, isSupportedChain, isWalletConnected } = useDappStatus();
-
   const { isValidating, isSubmitting } = useFormState();
   const { errors } = useFormState<Record<string, unknown>>();
 
