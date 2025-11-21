@@ -59,6 +59,7 @@ export const useSTGAllocation = () => {
             apy: 0, // not used in the allocations table? and is not available from the strategy API
             chain: allocation.chain,
             protocol: allocation.label,
+            // TODO: ensure tvl.asset == ETH and tvl.decimals == 18 for the correct calculations
             tvlETH: BigInt(allocation.tvl.amount),
             tvlUSD: totalTvlUsd
               ? (totalTvlUsd / 100) * allocation.sharePercent
@@ -89,7 +90,9 @@ export const useSTGAllocation = () => {
 
       allocationsKnown.sort((a, b) => b.allocation - a.allocation);
 
-      allocations.push(...allocationsKnown, allocationAvailable);
+      if (allocationsKnown.length > 0) {
+        allocations.push(...allocationsKnown, allocationAvailable);
+      }
       if (allocationPending && allocationPending.allocation > 0) {
         allocations.push(allocationPending);
       }

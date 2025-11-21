@@ -15,6 +15,8 @@ export const Allocation = () => {
     'Aave levered wstETH/ETH': <AaveV3Icon />,
   };
 
+  if (!data?.allocations.length) return null;
+
   return (
     <VaultAllocation
       data={data}
