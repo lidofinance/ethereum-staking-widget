@@ -20,6 +20,6 @@ export type VaultAllocationProps = {
   };
   protocolIcons: { [key: string]: JSX.Element };
   isLoading: boolean;
-  apy?: number;
+  apy?: number | null;
   footer?: string;
 };
