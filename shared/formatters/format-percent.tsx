@@ -11,7 +11,7 @@ export const FormatPercent = ({
   fallback = DATA_UNAVAILABLE,
   decimals,
 }: FormatPercentProps): React.ReactNode => {
-  if (value === undefined) return fallback;
+  if (value === undefined || !Number.isFinite(value)) return fallback;
 
   const normalized = decimals === 'unit' ? value * 100 : value;
 
