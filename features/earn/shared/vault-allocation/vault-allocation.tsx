@@ -10,7 +10,7 @@ import {
 import { Section } from 'shared/components';
 import { LOCALE } from 'config/groups/locale';
 
-import { AllocationTable } from './allocation-table/allocation-Table';
+import { AllocationTable } from './allocation-table/allocation-table';
 import { AllocationLegend } from './allocation-legend';
 import { AllocationSummary } from './allocation-summary';
 

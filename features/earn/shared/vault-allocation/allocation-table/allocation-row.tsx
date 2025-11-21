@@ -7,7 +7,7 @@ import { FormatPercent } from 'shared/formatters/format-percent';
 
 import { ProtocolIcon } from '../protocol-icon';
 
-import { Allocation } from './allocation-Table';
+import { Allocation } from './allocation-table';
 import {
   FormatTokenStyled,
   TdNarrowStyled,
