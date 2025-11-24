@@ -4,11 +4,7 @@ import type { AppProps } from 'next/app';
 import 'nprogress/nprogress.css';
 import Head from 'next/head';
 
-import {
-  ToastContainer,
-  migrationAllowCookieToCrossDomainCookieClientSide,
-  migrationThemeCookiesToCrossDomainCookiesClientSide,
-} from '@lidofinance/lido-ui';
+import { ToastContainer } from '@lidofinance/lido-ui';
 
 import { config } from 'config';
 import { withCsp } from 'config/csp';
@@ -16,16 +12,9 @@ import { SecurityStatusBanner } from 'features/ipfs';
 import { Providers } from 'providers';
 import { BackgroundGradient } from 'shared/components/background-gradient';
 import { ErrorBoundaryFallback } from 'shared/components/error-boundary';
-import { CookiesTooltip } from 'shared/components/cookies-tooltip';
-import { nprogress, COOKIES_ALLOWED_FULL_KEY } from 'utils';
+import { nprogress } from 'utils';
 
 import { AddressValidationFile } from 'utils/address-validation';
-
-// Migrations old theme cookies to new cross domain cookies
-migrationThemeCookiesToCrossDomainCookiesClientSide();
-
-// Migrations old allow cookies to new cross domain cookies
-migrationAllowCookieToCrossDomainCookieClientSide(COOKIES_ALLOWED_FULL_KEY);
 
 // Visualize route changes
 nprogress();
@@ -69,7 +58,6 @@ const AppWrapper = (
       />
       <ToastContainer />
       <MemoApp {...props} />
-      <CookiesTooltip />
       <SecurityStatusBanner />
     </Providers>
   );
