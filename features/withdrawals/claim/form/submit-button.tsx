@@ -1,5 +1,4 @@
 import { useFormState } from 'react-hook-form';
-import { Button } from '@lidofinance/lido-ui';
 
 import { Connect, DisabledButton } from 'shared/wallet';
 import { FormatToken } from 'shared/formatters/format-token';
@@ -8,12 +7,12 @@ import { isValidationErrorTypeUnhandled } from 'shared/hook-form/validation/vali
 import { useDappStatus } from 'modules/web3';
 
 import { ClaimFormInputType, useClaimFormData } from '../claim-form-context';
+import { SubmitButtonHookForm } from 'shared/hook-form/controls/submit-button-hook-form';
 
 export const SubmitButton = () => {
   const { isSupportedChain, isWalletConnected } = useDappStatus();
 
-  const { isSubmitting, isValidating, errors } =
-    useFormState<ClaimFormInputType>();
+  const { errors } = useFormState<ClaimFormInputType>();
   const { ethToClaim } = useClaimFormData();
   const { selectedRequests } = useClaimFormData();
 
@@ -33,14 +32,8 @@ export const SubmitButton = () => {
   ) : null;
 
   return (
-    <Button
-      data-testid="claimButton"
-      fullwidth
-      disabled={disabled}
-      loading={isSubmitting || isValidating}
-      type="submit"
-    >
+    <SubmitButtonHookForm disabled={disabled} data-testid="claimButton">
       Claim {claimButtonAmount}
-    </Button>
+    </SubmitButtonHookForm>
   );
 };
