@@ -111,25 +111,23 @@ export const SecurityStatusBanner = () => {
     isNotVerifiable,
     data,
   } = useVersionStatus();
-  const { isNotValidAddress, setIsNotValidAddress } = useAddressValidation();
+  const { isValidAddress, setIsValidAddress } = useAddressValidation();
   const { content, canClose, showTwitterLink } = warningContent({
     isUpdateAvailable,
     isVersionUnsafe,
     isNotVerifiable,
     isIpfs: config.ipfsMode,
-    isNotValidAddress,
+    isNotValidAddress: !isValidAddress,
   });
 
   const showModal =
-    (!!content && !(canClose && areConditionsAccepted)) || isNotValidAddress;
+    (!!content && !(canClose && areConditionsAccepted)) || !isValidAddress;
 
   return (
     <NoSsrWrapper>
       <Modal
         open={showModal}
-        onClose={
-          isNotValidAddress ? () => setIsNotValidAddress(false) : undefined
-        }
+        onClose={!isValidAddress ? () => setIsValidAddress(true) : undefined}
       >
         <Wrapper>
           <WarningIcon />
@@ -146,7 +144,7 @@ export const SecurityStatusBanner = () => {
             </a>
           )}
           {/* We don't want to show this button if the address is not valid */}
-          {isUpdateAvailable && !isNotValidAddress && (
+          {isUpdateAvailable && isValidAddress && (
             <a
               href={data.remoteCidLink ?? window.location.href}
               onClick={

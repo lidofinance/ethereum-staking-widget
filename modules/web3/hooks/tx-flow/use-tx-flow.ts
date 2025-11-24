@@ -1,6 +1,9 @@
 import { useCallback, useRef } from 'react';
 import { Hash } from 'viem';
 import { TransactionCallbackStage } from '@lidofinance/lido-ethereum-sdk/core';
+import { useAddressValidation } from 'providers/address-validation-provider';
+import { useDappStatus } from 'modules/web3';
+
 import { useAA } from '../use-aa';
 import { useSendAACalls } from './use-send-aa-calls';
 import { TxCallbackProps, TxFlowArgs } from './types';
@@ -17,6 +20,8 @@ export type TxStagesCallback = (args: TxCallbackProps) => Promise<void>;
 export const useTxFlow = () => {
   const { isAA } = useAA();
   const sendAACalls = useSendAACalls();
+  const { validateAddress } = useAddressValidation();
+  const { address } = useDappStatus();
 
   // Is used to memoize txHash to keep track of it across stages.
   const txHash = useRef<Hash | undefined>(undefined);
@@ -86,6 +91,10 @@ export const useTxFlow = () => {
         }
       };
 
+      const result = await validateAddress(address);
+      // if address is not valid, don't send the transaction
+      if (!result) return;
+
       if (isAA) {
         const calls = callsFn ? await callsFn() : [];
         await sendAACalls(calls, async (props) => {
@@ -95,6 +104,6 @@ export const useTxFlow = () => {
         await sendTransaction(txStagesCallback);
       }
     },
-    [isAA, sendAACalls],
+    [isAA, sendAACalls, validateAddress, address],
   );
 };
