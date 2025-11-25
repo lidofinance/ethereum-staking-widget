@@ -4,7 +4,7 @@ import Head from 'next/head';
 
 import { WithdrawalsTabs } from 'features/withdrawals';
 import { WithdrawalsProvider } from 'features/withdrawals/contexts/withdrawals-context';
-import { Layout } from 'shared/components';
+import { Layout, DisclaimerSection, LegalDisclaimer } from 'shared/components';
 import { getDefaultStaticProps } from 'utilsApi/get-default-static-props';
 
 const Withdrawals: FC<WithdrawalsModePageParams> = ({ mode }) => {
@@ -19,6 +19,9 @@ const Withdrawals: FC<WithdrawalsModePageParams> = ({ mode }) => {
       <WithdrawalsProvider mode={mode}>
         <WithdrawalsTabs />
       </WithdrawalsProvider>
+      <DisclaimerSection>
+        <LegalDisclaimer />
+      </DisclaimerSection>
     </Layout>
   );
 };

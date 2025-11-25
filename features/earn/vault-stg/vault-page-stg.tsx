@@ -5,8 +5,12 @@ import { EARN_PATH } from 'consts/urls';
 
 import { VaultSTGIcon } from 'assets/earn';
 import { useDappStatus } from 'modules/web3';
+import {
+  DisclaimerSection,
+  AprDisclaimer,
+  LegalDisclaimer,
+} from 'shared/components';
 import { LinkInpageAnchor } from 'shared/components/link-inpage-anchor';
-import { AprDisclaimer } from 'shared/components/apr-disclaimer/apr-disclaimer';
 import { trackMatomoEvent } from 'utils/track-matomo-event';
 import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo';
 
@@ -124,7 +128,10 @@ export const VaultPageSTG: FC<{
       <STGVaultDetails />
       <Allocation />
       <STGFaq />
-      <AprDisclaimer mentionAPY />
+      <DisclaimerSection>
+        <AprDisclaimer mentionAPY />
+        <LegalDisclaimer />
+      </DisclaimerSection>
     </>
   );
 };

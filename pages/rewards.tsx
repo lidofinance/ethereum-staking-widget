@@ -4,7 +4,12 @@ import Head from 'next/head';
 import { TopCard, RewardsList } from 'features/rewards/features';
 import RewardsHistoryProvider from 'providers/rewardsHistory';
 
-import { Layout, AprDisclaimer } from 'shared/components';
+import {
+  Layout,
+  DisclaimerSection,
+  AprDisclaimer,
+  LegalDisclaimer,
+} from 'shared/components';
 
 import { getDefaultStaticProps } from 'utilsApi/get-default-static-props';
 
@@ -28,7 +33,10 @@ const Rewards: FC = () => {
         <TopCard />
         <RewardsList />
       </RewardsHistoryProvider>
-      <AprDisclaimer />
+      <DisclaimerSection>
+        <AprDisclaimer />
+        <LegalDisclaimer />
+      </DisclaimerSection>
     </Layout>
   );
 };
