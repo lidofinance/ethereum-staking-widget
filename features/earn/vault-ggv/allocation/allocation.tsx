@@ -1,5 +1,5 @@
 import { VaultAllocation } from 'features/earn/shared/vault-allocation/vault-allocation';
-import { useGGVAllocation } from './hooks/useGGVAllocation';
+import { useGGVAllocation } from './hooks/use-ggv-allocation';
 
 import {
   AaveV3Icon,
