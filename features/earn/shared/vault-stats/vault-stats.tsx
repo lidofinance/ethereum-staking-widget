@@ -10,9 +10,9 @@ import {
 } from './styles';
 
 type VaultStatsProps = {
-  tvl?: number;
-  apy?: number;
-  apx?: number;
+  tvl?: number | null;
+  apy?: number | null;
+  apx?: number | null;
   apxLabel: 'APY' | 'APR';
   isLoading?: boolean;
   apxHint?: React.ReactNode;

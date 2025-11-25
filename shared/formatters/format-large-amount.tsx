@@ -4,7 +4,7 @@ import React from 'react';
 import { getShortenedNumber } from './utils';
 
 type FormatLargeAmountProps = {
-  amount?: number;
+  amount?: number | null;
   symbol?: string;
   fallback?: string;
 };
