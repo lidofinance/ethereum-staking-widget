@@ -13,6 +13,7 @@ export type Allocation = {
   allocation: number;
   tvlETH: bigint;
   tvlUSD: number;
+  icon?: React.FunctionComponent;
 };
 type AllocationProps = {
   allocation: Allocation[];

@@ -1,5 +1,5 @@
 import { VaultAllocation } from 'features/earn/shared/vault-allocation/vault-allocation';
-import { useSTGAllocation } from './hooks/useSTGAllocation';
+import { useSTGAllocation } from './hooks/use-stg-allocation';
 
 import { SparkIcon, AaveV3Icon } from 'assets/earn';
 
@@ -19,7 +19,13 @@ export const Allocation = () => {
 
   return (
     <VaultAllocation
-      data={data}
+      data={{
+        totalTvlETH: data.totalTvlWei,
+        totalTvlUSD: data.totalTvlUsd,
+        allocations: data.allocations,
+        chartData: data.chartData,
+        lastUpdated: data.lastUpdated,
+      }}
       isLoading={isLoading}
       apy={apy}
       footer={FOOTER_TEXT}

@@ -36,8 +36,7 @@ export const AllocationRow: FC<AllocationRowProps> = (props) => {
     <Tr>
       <TdWithIconStyled>
         <ProtocolIcon
-          protocolIcons={protocolIcons}
-          main={data.protocol}
+          main={data.icon ? <data.icon /> : protocolIcons[data.protocol]}
           badge={data.chain}
         />
         <ProtocolNameStyled>

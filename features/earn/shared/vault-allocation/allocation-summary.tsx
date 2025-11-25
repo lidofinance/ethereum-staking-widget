@@ -11,7 +11,7 @@ import {
 } from './styles';
 
 type AllocationSummaryProps = {
-  apy?: number;
+  apy?: number | null;
   totalTvlUSD: number;
   totalTvlETH: bigint;
 };

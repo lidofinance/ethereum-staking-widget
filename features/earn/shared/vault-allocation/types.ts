@@ -8,6 +8,7 @@ export type AllocationItem = {
   protocol: string;
   tvlETH: bigint;
   tvlUSD: number;
+  icon?: React.FunctionComponent;
 };
 
 export type VaultAllocationProps = {
