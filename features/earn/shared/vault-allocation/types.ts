@@ -19,7 +19,6 @@ export type VaultAllocationProps = {
     totalTvlUSD: number;
     totalTvlETH: bigint;
   };
-  protocolIcons: { [key: string]: JSX.Element };
   isLoading: boolean;
   apy?: number | null;
   footer?: string;

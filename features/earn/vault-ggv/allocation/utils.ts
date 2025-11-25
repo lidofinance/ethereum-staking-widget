@@ -3,6 +3,17 @@ import { parseEther } from 'viem';
 import { AllocationItem } from 'features/earn/shared/vault-allocation';
 
 import {
+  AaveV3Icon,
+  BalancerIcon,
+  EtherfiIcon,
+  EulerIcon,
+  MerklIcon,
+  MorphoIcon,
+  Univ3Icon,
+  YearnV3Icon,
+} from 'assets/earn';
+
+import {
   SevenSeasAPIPerformanceResponse,
   SevenSeasAPIDailyResponseItem,
 } from '../utils';
@@ -37,6 +48,16 @@ const ALLOCATION_CHAIN_NAMES_MAP = {
   linea: 'Linea',
   katana: 'Katana',
   other: 'Other',
+};
+const ALLOCATION_ICONS_MAP = {
+  aavev3: AaveV3Icon,
+  euler: EulerIcon,
+  morpho: MorphoIcon,
+  univ3: Univ3Icon,
+  balancer: BalancerIcon,
+  merkl: MerklIcon,
+  etherfi: EtherfiIcon,
+  yearn: YearnV3Icon,
 };
 
 export const getTvlByAllocationsTimestamp = (
@@ -191,6 +212,9 @@ export const createAllocationsData = (
           ALLOCATION_CHAIN_NAMES_MAP[
             item.chain as keyof typeof ALLOCATION_CHAIN_NAMES_MAP
           ],
+        icon: ALLOCATION_ICONS_MAP[
+          item.protocol as keyof typeof ALLOCATION_ICONS_MAP
+        ],
       };
 
       acc.push(currentItem);

@@ -18,7 +18,6 @@ import {
 
 type AllocationRowProps = {
   data: Allocation;
-  protocolIcons: { [key: string]: JSX.Element };
 };
 
 const AVAILABLE_TIP =
@@ -29,7 +28,7 @@ const PENDING_TIP =
   'The amount of tokens in the process of being deposited to the vault';
 
 export const AllocationRow: FC<AllocationRowProps> = (props) => {
-  const { data, protocolIcons } = props;
+  const { data } = props;
 
   const isAvailable = data.protocol === 'Available';
   const isOther = data.protocol === 'Other allocation';
@@ -39,7 +38,7 @@ export const AllocationRow: FC<AllocationRowProps> = (props) => {
     <Tr>
       <TdWithIconStyled>
         <ProtocolIcon
-          main={data.icon ? <data.icon /> : protocolIcons[data.protocol]}
+          mainIcon={data.icon ? <data.icon /> : null}
           badge={data.chain}
         />
         <ProtocolNameStyled>

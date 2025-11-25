@@ -12,7 +12,7 @@ import {
 import { Container, Badge, Content } from './styles';
 
 type ProtocolIconProps = {
-  main: JSX.Element;
+  mainIcon: JSX.Element | null;
   badge: string;
 };
 
@@ -25,10 +25,7 @@ export const ICONS_BADGE_MAP = {
   plasma: <PlasmaIcon />,
 };
 
-export const ProtocolIcon: FC<ProtocolIconProps> = ({
-  main: mainIcon,
-  badge,
-}) => {
+export const ProtocolIcon: FC<ProtocolIconProps> = ({ mainIcon, badge }) => {
   const badgeIcon =
     ICONS_BADGE_MAP[badge.toLowerCase() as keyof typeof ICONS_BADGE_MAP];
 
