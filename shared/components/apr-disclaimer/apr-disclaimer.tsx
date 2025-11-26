@@ -1,11 +1,9 @@
-import { AprDisclaimerBlock } from './styles';
-
 export const AprDisclaimer = ({
   mentionAPY = false,
 }: {
   mentionAPY?: boolean;
 }) => (
-  <AprDisclaimerBlock data-testid="vault-disclaimer">
+  <div data-testid="vault-disclaimer">
     <p>
       * APR{mentionAPY && '/APY'} figures are estimates, not guaranteed, and are
       subject to change based on network conditions.
@@ -20,5 +18,5 @@ export const AprDisclaimer = ({
       their own research, seek professional advice, and ensure they understand
       the risks before participating
     </p>
-  </AprDisclaimerBlock>
+  </div>
 );
