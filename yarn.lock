@@ -2301,10 +2301,10 @@
     bignumber.js "^9.1.2"
     rxjs "^7.8.1"
 
-"@lidofinance/analytics-matomo@^0.52.0":
-  version "0.52.0"
-  resolved "https://registry.yarnpkg.com/@lidofinance/analytics-matomo/-/analytics-matomo-0.52.0.tgz#06b99276f6315c6120589c79edd1fabac6561c63"
-  integrity sha512-wjIy0P4jJOThm3qu/oQoKuOaWtergOlfYl1BB1X5dT5OLGJjFe3UcCF8gFULdaqsbS1MnOj9M+xmqyi0QB/vYw==
+"@lidofinance/analytics-matomo@^0.56.0":
+  version "0.56.0"
+  resolved "https://registry.yarnpkg.com/@lidofinance/analytics-matomo/-/analytics-matomo-0.56.0.tgz#48ab44457635f878783c52e2b80f8ce98a09e149"
+  integrity sha512-uUcNauwkOVCYkwbUyLm6PnSEBQ2H9b+XAiRz6fMm2mrpoxyoZLmbfxCU2Ekg1hpnpFWcFlNW/G9bTQeopFhAbA==
 
 "@lidofinance/api-metrics@^0.48.0":
   version "0.48.0"

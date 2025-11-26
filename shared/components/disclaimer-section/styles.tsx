@@ -1,13 +1,17 @@
 import styled from 'styled-components';
 
-export const AprDisclaimerBlock = styled.section`
+export const DisclaimerSectionStyled = styled.section`
+  display: flex;
+  flex-direction: column;
+  gap: ${({ theme }) => theme.spaceMap.lg}px;
+
   color: var(--lido-color-textSecondary);
   font-size: ${({ theme }) => theme.fontSizesMap.xxs}px;
   font-style: normal;
   font-weight: 400;
-  line-height: 20px;
-  margin-top: 20px;
+  line-height: ${({ theme }) => theme.spaceMap.lg}px;
 
+  margin-top: 20px;
   margin-bottom: 60px;
 
   ${({ theme }) => theme.mediaQueries.md} {

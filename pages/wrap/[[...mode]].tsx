@@ -6,6 +6,8 @@ import { WrapUnwrapTabs } from 'features/wsteth/wrap-unwrap-tabs';
 import { Layout } from 'shared/components';
 import { SupportL2Chains } from 'modules/web3';
 import { getDefaultStaticProps } from 'utilsApi/get-default-static-props';
+import { LegalDisclaimer } from 'shared/components/legal-disclaimer';
+import { DisclaimerSection } from 'shared/components/disclaimer-section';
 
 const WrapPage: FC<WrapModePageProps> = ({ mode }) => {
   return (
@@ -18,6 +20,9 @@ const WrapPage: FC<WrapModePageProps> = ({ mode }) => {
           <title>Wrap | Lido</title>
         </Head>
         <WrapUnwrapTabs mode={mode} />
+        <DisclaimerSection>
+          <LegalDisclaimer />
+        </DisclaimerSection>
       </Layout>
     </SupportL2Chains>
   );

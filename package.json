@@ -20,7 +20,7 @@
     "test:e2e": "playwright test"
   },
   "dependencies": {
-    "@lidofinance/analytics-matomo": "^0.52.0",
+    "@lidofinance/analytics-matomo": "^0.56.0",
     "@lidofinance/api-metrics": "^0.48.0",
     "@lidofinance/api-rpc": "^0.48.0",
     "@lidofinance/eth-api-providers": "^0.48.0",

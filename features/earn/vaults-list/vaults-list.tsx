@@ -1,6 +1,10 @@
 import type { FC } from 'react';
 
-import { AprDisclaimer } from 'shared/components/apr-disclaimer';
+import {
+  DisclaimerSection,
+  AprDisclaimer,
+  LegalDisclaimer,
+} from 'shared/components';
 
 import { VaultCardGGV } from '../vault-ggv';
 import { VaultCardDVV } from '../vault-dvv';
@@ -25,7 +29,10 @@ export const EarnVaultsList: FC = () => {
           return <VaultCard key={vault.name} />;
         })}
       </VaultsListWrapper>
-      <AprDisclaimer mentionAPY />
+      <DisclaimerSection>
+        <AprDisclaimer mentionAPY />
+        <LegalDisclaimer />
+      </DisclaimerSection>
     </>
   );
 };

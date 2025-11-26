@@ -8,7 +8,11 @@ import { trackMatomoEvent } from 'utils/track-matomo-event';
 import { TokenGGIcon, VaultGGVIcon } from 'assets/earn';
 import { useDappStatus } from 'modules/web3';
 import { LinkInpageAnchor } from 'shared/components/link-inpage-anchor';
-import { AprDisclaimer } from 'shared/components/apr-disclaimer/apr-disclaimer';
+import {
+  DisclaimerSection,
+  AprDisclaimer,
+  LegalDisclaimer,
+} from 'shared/components';
 
 import { Allocation } from './allocation';
 import { VaultHeader } from '../shared/vault-header';
@@ -147,7 +151,10 @@ export const VaultPageGGV: FC<{
       <GGVVaultDetails />
       <Allocation />
       <GGVFaq />
-      <AprDisclaimer mentionAPY />
+      <DisclaimerSection>
+        <AprDisclaimer mentionAPY />
+        <LegalDisclaimer />
+      </DisclaimerSection>
     </>
   );
 };
