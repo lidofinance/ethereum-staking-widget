@@ -51,43 +51,36 @@ const createAllocationItem = (
   icon: ALLOCATION_ICONS_BY_ID[allocation.id],
 });
 
-const updateAggregatedAllocation = (
-  item: AllocationItem,
-  allocation: FetchedAllocation,
-  totalTvlUsd: number,
-): void => {
-  item.allocation += allocation.sharePercent;
-  item.tvlETH += BigInt(allocation.tvl.amount);
-  item.tvlUSD += calculateTvlUSD(totalTvlUsd, allocation.sharePercent);
+type AllocationCategory = 'known' | 'pending' | 'available' | 'other';
+
+type CategorizedAllocation = {
+  item: AllocationItem;
+  category: AllocationCategory;
 };
 
 const categorizeAllocation = (
   allocation: FetchedAllocation,
-  categories: {
-    known: AllocationItem[];
-    available: AllocationItem;
-    pending: AllocationItem;
-    other: AllocationItem;
-  },
   totalTvlUsd: number,
-): void => {
+): CategorizedAllocation => {
+  const item = createAllocationItem(allocation, totalTvlUsd);
+  let category: AllocationCategory = 'other';
+
   if (ALLOCATION_PROTOCOL_IDS_KNOWN.includes(allocation.id)) {
-    categories.known.push(createAllocationItem(allocation, totalTvlUsd));
-    return;
+    category = 'known';
   }
 
   if (allocation.id === ALLOCATION_PENDING_ID) {
-    // "Pending" is a single allocation item and is fetched from the API as a single item
-    categories.pending = createAllocationItem(allocation, totalTvlUsd);
-    return;
+    category = 'pending';
   }
 
   if (ALLOCATION_TOKEN_IDS_AVAILABLE.includes(allocation.id)) {
-    updateAggregatedAllocation(categories.available, allocation, totalTvlUsd);
-    return;
+    category = 'available';
   }
 
-  updateAggregatedAllocation(categories.other, allocation, totalTvlUsd);
+  return {
+    category,
+    item,
+  };
 };
 
 export const categorizeAllocations = (
@@ -95,20 +88,44 @@ export const categorizeAllocations = (
   totalTvlUsd: number,
 ) => {
   const known: AllocationItem[] = [];
-  const available: AllocationItem = {
+  let available: AllocationItem = {
     ...ALLOCATION_ITEM_DEFAULT,
     protocol: 'Available',
   };
-  const pending: AllocationItem = { ...ALLOCATION_ITEM_DEFAULT };
-  const other: AllocationItem = { ...ALLOCATION_ITEM_DEFAULT };
-
-  const categories = { known, available, pending, other };
+  let pending: AllocationItem = { ...ALLOCATION_ITEM_DEFAULT };
+  let other: AllocationItem = { ...ALLOCATION_ITEM_DEFAULT };
 
   fetchedAllocations.forEach((allocation) => {
-    categorizeAllocation(allocation, categories, totalTvlUsd);
+    const categorizedAllocation = categorizeAllocation(allocation, totalTvlUsd);
+
+    switch (categorizedAllocation.category) {
+      case 'known':
+        known.push(categorizedAllocation.item);
+        break;
+      case 'pending':
+        pending = categorizedAllocation.item;
+        break;
+      case 'available':
+        available = {
+          ...available,
+          allocation:
+            available.allocation + categorizedAllocation.item.allocation,
+          tvlETH: available.tvlETH + categorizedAllocation.item.tvlETH,
+          tvlUSD: available.tvlUSD + categorizedAllocation.item.tvlUSD,
+        };
+        break;
+      case 'other':
+        other = {
+          ...other,
+          allocation: other.allocation + categorizedAllocation.item.allocation,
+          tvlETH: other.tvlETH + categorizedAllocation.item.tvlETH,
+          tvlUSD: other.tvlUSD + categorizedAllocation.item.tvlUSD,
+        };
+        break;
+    }
   });
 
-  return categories;
+  return { known, available, pending, other };
 };
 
 export const buildAllocationsArray = (
