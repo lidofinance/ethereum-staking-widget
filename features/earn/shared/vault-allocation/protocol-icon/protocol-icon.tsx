@@ -12,7 +12,7 @@ import {
 import { Container, Badge, Content } from './styles';
 
 type ProtocolIconProps = {
-  mainIcon: JSX.Element | null;
+  mainIcon: React.ReactNode;
   badge: string;
 };
 
