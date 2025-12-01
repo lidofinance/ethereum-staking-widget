@@ -5,14 +5,13 @@ import { useEthUsd } from 'shared/hooks/use-eth-usd';
 import { standardFetcher } from 'utils/standardFetcher';
 import {
   UNIX_TIMESTAMP_SCHEMA,
-  NUMERIC_SCHEMA,
   PERCENT_SCHEMA,
+  APY_SCHEMA,
   logZodParseErrors,
 } from 'utils/zod';
 import { CHAINS } from 'consts/chains';
 import { useSTGCollect } from './use-stg-collect';
 
-const APY_SCHEMA = NUMERIC_SCHEMA;
 const ALLOCATION_SCHEMA = z.array(
   z.object({
     id: z.string(),
