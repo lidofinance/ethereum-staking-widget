@@ -3,7 +3,6 @@ import { LineData } from '@lidofinance/lido-ui';
 export type LineDataWithAllocation = LineData & { allocation: number };
 export type AllocationItem = {
   allocation: number;
-  apy: number;
   chain: string;
   protocol: string;
   tvlETH: bigint;

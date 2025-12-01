@@ -9,7 +9,6 @@ import { TableStyled, TheadStyled, ThStyled, ThWithTipStyled } from './styles';
 export type Allocation = {
   protocol: string;
   chain: string;
-  apy: number;
   allocation: number;
   tvlETH: bigint;
   tvlUSD: number;

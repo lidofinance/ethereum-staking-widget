@@ -21,7 +21,6 @@ const ALLOCATION_TOKEN_IDS_AVAILABLE = ['eth', 'weth', 'wsteth'];
 
 const ALLOCATION_ITEM_DEFAULT: AllocationItem = {
   allocation: 0,
-  apy: 0,
   chain: 'other',
   protocol: 'Other allocation',
   tvlUSD: 0,
@@ -45,7 +44,6 @@ const createAllocationItem = (
   totalTvlUsd: number,
 ): AllocationItem => ({
   allocation: allocation.sharePercent,
-  apy: 0,
   chain: allocation.chain,
   protocol: allocation.label,
   tvlETH: BigInt(allocation.tvl.amount),

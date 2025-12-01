@@ -167,7 +167,6 @@ export const createAllocationsData = (
   };
   const otherAllocations: AllocationItem = {
     allocation: 0,
-    apy: 0,
     chain: ALLOCATION_CHAIN_NAMES_MAP.other,
     protocol: ALLOCATION_PROTOCOL_NAMES_MAP.other,
     tvlUSD: 0,
@@ -184,7 +183,6 @@ export const createAllocationsData = (
 
       if (isUnknown) {
         otherAllocations.allocation += allocation;
-        otherAllocations.apy += item.apy * 100;
         otherAllocations.tvlETH += multiplyBigIntWithFloat(
           totalAssetsETH,
           item.allocation,
@@ -199,7 +197,6 @@ export const createAllocationsData = (
       const currentItem = {
         ...item,
         allocation,
-        apy: item.apy * 100,
         tvlETH: multiplyBigIntWithFloat(totalAssetsETH, item.allocation),
         tvlUSD:
           Number(multiplyBigIntWithFloat(totalTvlUSDBigInt, item.allocation)) /
@@ -229,7 +226,6 @@ export const createAllocationsData = (
 
   allocations.push({
     ...reserve,
-    apy: 0,
     chain: '',
     protocol: ALLOCATION_PROTOCOL_NAMES_MAP.available,
   });
