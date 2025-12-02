@@ -15,8 +15,8 @@ export type VaultAllocationProps = {
     lastUpdated: number;
     chartData: LineDataWithAllocation[];
     allocations: AllocationItem[];
-    totalTvlUSD: number;
-    totalTvlETH: bigint;
+    totalTvlUsd: number;
+    totalTvlWei: bigint;
   };
   isLoading: boolean;
   apy?: number | null;
