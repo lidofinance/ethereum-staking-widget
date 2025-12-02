@@ -53,30 +53,23 @@ export const useSTGStats = () => {
   const { data, isLoading } = useQuery<STGStatsQueryData>({
     queryKey: ['stg', 'stats'],
     queryFn: async () => {
-      try {
-        const json = await standardFetcher<STGStatsJSON>(STG_STATS_ENDPOINT);
+      const json = await standardFetcher<STGStatsJSON>(STG_STATS_ENDPOINT);
 
-        const apyParsed = APY_SCHEMA.safeParse(json.apy);
-        const allocationsParsed = ALLOCATION_SCHEMA.safeParse(json.allocations);
-        const lastUpdateParsed = UNIX_TIMESTAMP_SCHEMA.safeParse(
-          json.lastUpdate,
-        );
+      const apyParsed = APY_SCHEMA.safeParse(json.apy);
+      const allocationsParsed = ALLOCATION_SCHEMA.safeParse(json.allocations);
+      const lastUpdateParsed = UNIX_TIMESTAMP_SCHEMA.safeParse(json.lastUpdate);
 
-        logZodParseErrors(apyParsed, allocationsParsed, lastUpdateParsed);
+      logZodParseErrors(apyParsed, allocationsParsed, lastUpdateParsed);
 
-        return {
-          apy: apyParsed.success ? apyParsed.data : DEFAULT_DATA.apy,
-          allocations: allocationsParsed.success
-            ? allocationsParsed.data
-            : DEFAULT_DATA.allocations,
-          lastUpdateTimestamp: lastUpdateParsed.success
-            ? lastUpdateParsed.data
-            : DEFAULT_DATA.lastUpdateTimestamp,
-        };
-      } catch (error) {
-        console.error('Error fetching STG stats:', error);
-        return DEFAULT_DATA;
-      }
+      return {
+        apy: apyParsed.success ? apyParsed.data : DEFAULT_DATA.apy,
+        allocations: allocationsParsed.success
+          ? allocationsParsed.data
+          : DEFAULT_DATA.allocations,
+        lastUpdateTimestamp: lastUpdateParsed.success
+          ? lastUpdateParsed.data
+          : DEFAULT_DATA.lastUpdateTimestamp,
+      };
     },
   });
 
