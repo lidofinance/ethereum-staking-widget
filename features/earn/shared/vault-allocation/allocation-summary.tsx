@@ -12,23 +12,23 @@ import {
 
 type AllocationSummaryProps = {
   apy?: number | null;
-  totalTvlUSD: number;
-  totalTvlETH: bigint;
+  totalTvlUsd: number;
+  totalTvlWei: bigint;
 };
 
 export const AllocationSummary: FC<AllocationSummaryProps> = ({
   apy,
-  totalTvlUSD,
-  totalTvlETH,
+  totalTvlUsd,
+  totalTvlWei,
 }) => {
   return (
     <DataTableStyled>
       <DataTableRowStyled title="Total">
         <DataTableRowContentStyled>
-          <FormatLargeAmount amount={totalTvlUSD} fallback="-" />
+          <FormatLargeAmount amount={totalTvlUsd} fallback="-" />
           <FormatTokenStyled
             fallback="-"
-            amount={totalTvlETH}
+            amount={totalTvlWei}
             symbol={'ETH'}
             shortened
             data-testid="ggv-allocation-total-tvl-eth"

@@ -122,10 +122,10 @@ export const getAllocationData = (
     throw new Error('[GGV-ALLOCATION] No data found');
   }
 
-  const totalAssetsETH = parseEther(tvlByAllocationsTimestamp.total_assets);
+  const totalTvlWei = parseEther(tvlByAllocationsTimestamp.total_assets);
   const totalTvlUSDBigInt =
-    (totalAssetsETH * latestAnswer) / 10n ** (BigInt(decimals) + 18n - 4n);
-  const totalTvlUSD = Number(totalTvlUSDBigInt) / 10 ** 4;
+    (totalTvlWei * latestAnswer) / 10n ** (BigInt(decimals) + 18n - 4n);
+  const totalTvlUsd = Number(totalTvlUSDBigInt) / 10 ** 4;
 
   const totalAllocation = performanceData.Response.real_apy_breakdown.reduce(
     (acc, item) => acc + item.allocation,
@@ -140,9 +140,9 @@ export const getAllocationData = (
   const lastUpdated = tvlByAllocationsTimestamp.unix_seconds;
 
   return {
-    totalTvlUSD,
+    totalTvlUsd,
     totalTvlUSDBigInt,
-    totalAssetsETH,
+    totalTvlWei,
     reserveAllocation,
     reserveAllocationPercentage,
     totalAllocationPercentage,

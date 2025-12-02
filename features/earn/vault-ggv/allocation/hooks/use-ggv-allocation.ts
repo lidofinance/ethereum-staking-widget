@@ -42,9 +42,9 @@ export const useGGVAllocation = () => {
         ]);
 
       const {
-        totalTvlUSD,
+        totalTvlUsd,
         totalTvlUSDBigInt,
-        totalAssetsETH,
+        totalTvlWei,
         reserveAllocation,
         reserveAllocationPercentage,
         totalAllocationPercentage,
@@ -54,7 +54,7 @@ export const useGGVAllocation = () => {
       const allocations = createAllocationsData(
         reserveAllocationPercentage,
         totalTvlUSDBigInt,
-        totalAssetsETH,
+        totalTvlWei,
         reserveAllocation,
         performanceData.Response.real_apy_breakdown,
       );
@@ -67,8 +67,8 @@ export const useGGVAllocation = () => {
       return {
         chartData,
         allocations,
-        totalTvlUSD,
-        totalTvlETH: totalAssetsETH,
+        totalTvlUsd,
+        totalTvlWei,
         lastUpdated,
       };
     },

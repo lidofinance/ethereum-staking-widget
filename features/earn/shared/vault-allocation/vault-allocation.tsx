@@ -69,8 +69,8 @@ export const VaultAllocation: FC<VaultAllocationProps> = (props) => {
         <AllocationTable allocation={data.allocations} />
         <AllocationSummary
           apy={apy}
-          totalTvlUSD={data.totalTvlUSD}
-          totalTvlETH={data.totalTvlETH}
+          totalTvlUsd={data.totalTvlUsd}
+          totalTvlWei={data.totalTvlWei}
         />
         {footer && <Footer>{footer}</Footer>}
       </Block>
