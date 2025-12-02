@@ -1,4 +1,5 @@
 import { AllocationItem, LineDataWithAllocation } from './types';
+import { LOCALE } from 'config/groups/locale';
 
 export const hslToHex = (h: number, s: number, l: number) => {
   l /= 100;
@@ -48,4 +49,13 @@ export const createAllocationsChartData = (
   });
 
   return chartData;
+};
+
+export const formatLastUpdatedDate = (timestamp: number | undefined) => {
+  if (!timestamp) return 'N/A';
+  return new Date(Number(timestamp) * 1000).toLocaleString(LOCALE, {
+    dateStyle: 'medium',
+    timeStyle: 'short',
+    hour12: false,
+  });
 };

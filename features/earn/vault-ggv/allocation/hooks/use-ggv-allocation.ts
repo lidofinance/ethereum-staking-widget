@@ -51,7 +51,7 @@ export const useGGVAllocation = () => {
         lastUpdated,
       } = getAllocationData(tvlData, performanceData, latestAnswer, decimals);
 
-      const allocations = createAllocationsData(
+      const positions = createAllocationsData(
         reserveAllocationPercentage,
         totalTvlUSDBigInt,
         totalTvlWei,
@@ -60,13 +60,13 @@ export const useGGVAllocation = () => {
       );
 
       const chartData = createAllocationsChartData(
-        allocations,
+        positions,
         totalAllocationPercentage,
       );
 
       return {
         chartData,
-        allocations,
+        positions,
         totalTvlUsd,
         totalTvlWei,
         lastUpdated,

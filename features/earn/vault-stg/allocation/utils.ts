@@ -1,5 +1,5 @@
 import { FunctionComponent } from 'react';
-import { AllocationItem } from 'features/earn/shared/vault-allocation/types';
+import { AllocationItem as AllocationPosition } from 'features/earn/shared/vault-allocation/types';
 import { SparkIcon, AaveV3Icon } from 'assets/earn';
 
 const ALLOCATION_PROTOCOL_IDS_KNOWN = [
@@ -19,7 +19,7 @@ const ALLOCATION_PENDING_ID = 'pending-deposits';
 // Assets which are not allocated yet
 const ALLOCATION_TOKEN_IDS_AVAILABLE = ['eth', 'weth', 'wsteth'];
 
-const ALLOCATION_ITEM_DEFAULT: AllocationItem = {
+const ALLOCATION_ITEM_DEFAULT: AllocationPosition = {
   allocation: 0,
   chain: 'other',
   protocol: 'Other allocation',
@@ -27,7 +27,7 @@ const ALLOCATION_ITEM_DEFAULT: AllocationItem = {
   tvlETH: 0n,
 };
 
-type FetchedAllocation = {
+type FetchedPosition = {
   id: string;
   label: string;
   chain: string;
@@ -39,41 +39,41 @@ const calculateTvlUSD = (totalTvlUsd: number, sharePercent: number): number => {
   return (totalTvlUsd / 100) * sharePercent;
 };
 
-const createAllocationItem = (
-  allocation: FetchedAllocation,
+const createAllocationPosition = (
+  position: FetchedPosition,
   totalTvlUsd: number,
-): AllocationItem => ({
-  allocation: allocation.sharePercent,
-  chain: allocation.chain,
-  protocol: allocation.label,
-  tvlETH: BigInt(allocation.tvl.amount),
-  tvlUSD: calculateTvlUSD(totalTvlUsd, allocation.sharePercent),
-  icon: ALLOCATION_ICONS_BY_ID[allocation.id],
+): AllocationPosition => ({
+  allocation: position.sharePercent,
+  chain: position.chain,
+  protocol: position.label,
+  tvlETH: BigInt(position.tvl.amount),
+  tvlUSD: calculateTvlUSD(totalTvlUsd, position.sharePercent),
+  icon: ALLOCATION_ICONS_BY_ID[position.id],
 });
 
-type AllocationCategory = 'known' | 'pending' | 'available' | 'other';
+type PositionCategory = 'known' | 'pending' | 'available' | 'other';
 
-type CategorizedAllocation = {
-  item: AllocationItem;
-  category: AllocationCategory;
+type CategorizedPosition = {
+  item: AllocationPosition;
+  category: PositionCategory;
 };
 
-const categorizeAllocation = (
-  allocation: FetchedAllocation,
+const categorizePosition = (
+  position: FetchedPosition,
   totalTvlUsd: number,
-): CategorizedAllocation => {
-  const item = createAllocationItem(allocation, totalTvlUsd);
-  let category: AllocationCategory = 'other';
+): CategorizedPosition => {
+  const item = createAllocationPosition(position, totalTvlUsd);
+  let category: PositionCategory = 'other';
 
-  if (ALLOCATION_PROTOCOL_IDS_KNOWN.includes(allocation.id)) {
+  if (ALLOCATION_PROTOCOL_IDS_KNOWN.includes(position.id)) {
     category = 'known';
   }
 
-  if (allocation.id === ALLOCATION_PENDING_ID) {
+  if (position.id === ALLOCATION_PENDING_ID) {
     category = 'pending';
   }
 
-  if (ALLOCATION_TOKEN_IDS_AVAILABLE.includes(allocation.id)) {
+  if (ALLOCATION_TOKEN_IDS_AVAILABLE.includes(position.id)) {
     category = 'available';
   }
 
@@ -83,20 +83,20 @@ const categorizeAllocation = (
   };
 };
 
-export const categorizeAllocations = (
-  fetchedAllocations: FetchedAllocation[],
+export const categorizePositions = (
+  fetchedPositions: FetchedPosition[],
   totalTvlUsd: number,
 ) => {
-  const known: AllocationItem[] = [];
-  let available: AllocationItem = {
+  const known: AllocationPosition[] = [];
+  let available: AllocationPosition = {
     ...ALLOCATION_ITEM_DEFAULT,
     protocol: 'Available',
   };
-  let pending: AllocationItem = { ...ALLOCATION_ITEM_DEFAULT };
-  let other: AllocationItem = { ...ALLOCATION_ITEM_DEFAULT };
+  let pending: AllocationPosition = { ...ALLOCATION_ITEM_DEFAULT };
+  let other: AllocationPosition = { ...ALLOCATION_ITEM_DEFAULT };
 
-  fetchedAllocations.forEach((allocation) => {
-    const categorizedAllocation = categorizeAllocation(allocation, totalTvlUsd);
+  fetchedPositions.forEach((allocation) => {
+    const categorizedAllocation = categorizePosition(allocation, totalTvlUsd);
 
     switch (categorizedAllocation.category) {
       case 'known':
@@ -128,23 +128,23 @@ export const categorizeAllocations = (
   return { known, available, pending, other };
 };
 
-export const buildAllocationsArray = (
-  categorized: ReturnType<typeof categorizeAllocations>,
-): AllocationItem[] => {
+export const buildPositionsArray = (
+  categorized: ReturnType<typeof categorizePositions>,
+): AllocationPosition[] => {
   const { known, available, pending, other } = categorized;
-  const allocations: AllocationItem[] = [];
+  const positions: AllocationPosition[] = [];
 
   known.sort((a, b) => b.allocation - a.allocation);
 
   if (known.length > 0) {
-    allocations.push(...known, available);
+    positions.push(...known, available);
   }
   if (pending.allocation > 0) {
-    allocations.push(pending);
+    positions.push(pending);
   }
   if (other.allocation > 0) {
-    allocations.push(other);
+    positions.push(other);
   }
 
-  return allocations;
+  return positions;
 };

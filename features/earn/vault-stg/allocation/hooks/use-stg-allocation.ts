@@ -1,37 +1,36 @@
 import { useMemo } from 'react';
 import { createAllocationsChartData } from 'features/earn/shared/vault-allocation/utils';
 import { useSTGStats } from '../../hooks/use-stg-stats';
-import { buildAllocationsArray, categorizeAllocations } from '../utils';
+import { buildPositionsArray, categorizePositions } from '../utils';
 
 export const useSTGAllocation = () => {
   const {
     apy,
-    allocations: fetchedAllocations,
+    fetchedPositions,
     lastUpdateTimestamp,
-    totalTvlUsd: _totalTvlUsd,
-    totalTvlWei: _totalTvlWei,
+    totalTvlUsd,
+    totalTvlWei,
     isLoading,
   } = useSTGStats();
 
-  const totalTvlUsd = _totalTvlUsd ?? 0;
-  const totalTvlWei = _totalTvlWei ?? 0n;
+  const data = useMemo(() => {
+    if (!fetchedPositions?.length || !totalTvlUsd) return;
 
-  const allocation = useMemo(() => {
-    const categorized = categorizeAllocations(fetchedAllocations, totalTvlUsd);
-    const allocations = buildAllocationsArray(categorized);
-    const chartData = createAllocationsChartData(allocations, 100);
+    const categorized = categorizePositions(fetchedPositions, totalTvlUsd);
+    const positions = buildPositionsArray(categorized);
+    const chartData = createAllocationsChartData(positions, 100);
 
     return {
       chartData,
-      allocations,
+      positions,
       totalTvlUsd,
       totalTvlWei,
       lastUpdated: lastUpdateTimestamp ?? 0,
     };
-  }, [fetchedAllocations, totalTvlUsd, totalTvlWei, lastUpdateTimestamp]);
+  }, [fetchedPositions, totalTvlUsd, totalTvlWei, lastUpdateTimestamp]);
 
   return {
-    allocation,
+    data,
     isLoading,
     apy,
   };

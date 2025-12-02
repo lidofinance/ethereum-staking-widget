@@ -8,7 +8,6 @@ import {
 } from '@lidofinance/lido-ui';
 
 import { Section } from 'shared/components';
-import { LOCALE } from 'config/groups/locale';
 
 import { AllocationTable } from './allocation-table/allocation-table';
 import { AllocationLegend } from './allocation-legend';
@@ -21,11 +20,12 @@ import {
   Footer,
 } from './styles';
 import { VaultAllocationProps } from './types';
+import { formatLastUpdatedDate } from './utils';
 
 export const VaultAllocation: FC<VaultAllocationProps> = (props) => {
   const { data, isLoading, apy, footer } = props;
 
-  if (!data || isLoading)
+  if (isLoading)
     return (
       <Section title="Allocation">
         <Block>
@@ -36,7 +36,7 @@ export const VaultAllocation: FC<VaultAllocationProps> = (props) => {
       </Section>
     );
 
-  if (!data && !isLoading)
+  if (!data || !data.positions?.length)
     return (
       <Section title="Allocation">
         <EmptyBlockStyled>No data available for now</EmptyBlockStyled>
@@ -48,12 +48,7 @@ export const VaultAllocation: FC<VaultAllocationProps> = (props) => {
       title="Allocation"
       headerDecorator={
         <LastUpdatedStyled>
-          Last updated:{' '}
-          {new Date(Number(data.lastUpdated) * 1000).toLocaleString(LOCALE, {
-            dateStyle: 'medium',
-            timeStyle: 'short',
-            hour12: false,
-          })}
+          Last updated: {formatLastUpdatedDate(data.lastUpdated)}
         </LastUpdatedStyled>
       }
     >
@@ -66,7 +61,7 @@ export const VaultAllocation: FC<VaultAllocationProps> = (props) => {
           data-testid="allocation-chart"
         />
         <AllocationLegend data={data.chartData} />
-        <AllocationTable allocation={data.allocations} />
+        <AllocationTable allocation={data.positions} />
         <AllocationSummary
           apy={apy}
           totalTvlUsd={data.totalTvlUsd}

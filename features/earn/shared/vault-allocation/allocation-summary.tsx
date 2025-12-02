@@ -11,9 +11,9 @@ import {
 } from './styles';
 
 type AllocationSummaryProps = {
-  apy?: number | null;
-  totalTvlUsd: number;
-  totalTvlWei: bigint;
+  apy?: number;
+  totalTvlUsd?: number;
+  totalTvlWei?: bigint;
 };
 
 export const AllocationSummary: FC<AllocationSummaryProps> = ({

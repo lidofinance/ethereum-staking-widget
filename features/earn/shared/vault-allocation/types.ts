@@ -14,11 +14,11 @@ export type VaultAllocationProps = {
   data?: {
     lastUpdated: number;
     chartData: LineDataWithAllocation[];
-    allocations: AllocationItem[];
-    totalTvlUsd: number;
-    totalTvlWei: bigint;
+    positions: AllocationItem[];
+    totalTvlUsd?: number;
+    totalTvlWei?: bigint;
   };
   isLoading: boolean;
-  apy?: number | null;
+  apy?: number;
   footer?: string;
 };

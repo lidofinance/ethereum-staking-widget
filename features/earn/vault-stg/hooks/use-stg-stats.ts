@@ -1,4 +1,5 @@
 import * as z from 'zod';
+import { useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { getContractAddress } from 'config/networks/contract-address';
 import { useEthUsd } from 'shared/hooks/use-eth-usd';
@@ -7,7 +8,7 @@ import {
   UNIX_TIMESTAMP_SCHEMA,
   PERCENT_SCHEMA,
   APY_SCHEMA,
-  logZodParseErrors,
+  validate,
 } from 'utils/zod';
 import { CHAINS } from 'consts/chains';
 import { useSTGCollect } from './use-stg-collect';
@@ -31,47 +32,30 @@ const STG_STATS_SCHEMA = z.object({
   lastUpdate: UNIX_TIMESTAMP_SCHEMA,
 });
 
-type STGStatsJSON = z.infer<typeof STG_STATS_SCHEMA>;
-
-type STGStatsQueryData = {
-  apy: STGStatsJSON['apy'] | null;
-  allocations: STGStatsJSON['allocations'];
-  lastUpdateTimestamp: number | null;
-};
+type STGStatsFetchedData = z.infer<typeof STG_STATS_SCHEMA>;
 
 const stgVaultAddress = getContractAddress(CHAINS.Mainnet, 'stgVault');
 
 const STG_STATS_ENDPOINT = `https://points.mellow.finance/v1/chain/${CHAINS.Mainnet}/core-vaults/${stgVaultAddress}/data`;
 
-const DEFAULT_DATA: STGStatsQueryData = {
-  apy: null,
-  allocations: [],
-  lastUpdateTimestamp: null,
-};
-
 export const useSTGStats = () => {
-  const { data, isLoading } = useQuery<STGStatsQueryData>({
+  const { data: fetchedData, isLoading } = useQuery<STGStatsFetchedData>({
     queryKey: ['stg', 'stats'],
-    queryFn: async () => {
-      const json = await standardFetcher<STGStatsJSON>(STG_STATS_ENDPOINT);
-
-      const apyParsed = APY_SCHEMA.safeParse(json.apy);
-      const allocationsParsed = ALLOCATION_SCHEMA.safeParse(json.allocations);
-      const lastUpdateParsed = UNIX_TIMESTAMP_SCHEMA.safeParse(json.lastUpdate);
-
-      logZodParseErrors(apyParsed, allocationsParsed, lastUpdateParsed);
-
-      return {
-        apy: apyParsed.success ? apyParsed.data : DEFAULT_DATA.apy,
-        allocations: allocationsParsed.success
-          ? allocationsParsed.data
-          : DEFAULT_DATA.allocations,
-        lastUpdateTimestamp: lastUpdateParsed.success
-          ? lastUpdateParsed.data
-          : DEFAULT_DATA.lastUpdateTimestamp,
-      };
-    },
+    queryFn: () => standardFetcher<STGStatsFetchedData>(STG_STATS_ENDPOINT),
   });
+
+  const apy = useMemo(
+    () => validate(APY_SCHEMA, fetchedData?.apy),
+    [fetchedData?.apy],
+  );
+  const allocationPositions = useMemo(
+    () => validate(ALLOCATION_SCHEMA, fetchedData?.allocations),
+    [fetchedData?.allocations],
+  );
+  const lastUpdateTimestamp = useMemo(
+    () => validate(UNIX_TIMESTAMP_SCHEMA, fetchedData?.lastUpdate),
+    [fetchedData?.lastUpdate],
+  );
 
   const { data: collectorData, isLoading: isCollectorLoading } =
     useSTGCollect();
@@ -84,8 +68,8 @@ export const useSTGStats = () => {
     isLoading: isLoading || isCollectorLoading || isEthUsdLoading,
     totalTvlUsd,
     totalTvlWei,
-    apy: data?.apy,
-    allocations: data?.allocations || [],
-    lastUpdateTimestamp: data?.lastUpdateTimestamp,
+    apy,
+    fetchedPositions: allocationPositions,
+    lastUpdateTimestamp,
   } as const;
 };
