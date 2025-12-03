@@ -1,15 +1,9 @@
 import * as z from 'zod';
-import { useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { getContractAddress } from 'config/networks/contract-address';
 import { useEthUsd } from 'shared/hooks/use-eth-usd';
 import { standardFetcher } from 'utils/standardFetcher';
-import {
-  UNIX_TIMESTAMP_SCHEMA,
-  PERCENT_SCHEMA,
-  APY_SCHEMA,
-  validate,
-} from 'utils/zod';
+import { UNIX_TIMESTAMP_SCHEMA, PERCENT_SCHEMA, APY_SCHEMA } from 'utils/zod';
 import { CHAINS } from 'consts/chains';
 import { useSTGCollect } from './use-stg-collect';
 
@@ -39,23 +33,17 @@ const stgVaultAddress = getContractAddress(CHAINS.Mainnet, 'stgVault');
 const STG_STATS_ENDPOINT = `https://points.mellow.finance/v1/chain/${CHAINS.Mainnet}/core-vaults/${stgVaultAddress}/data`;
 
 export const useSTGStats = () => {
-  const { data: fetchedData, isLoading } = useQuery<STGStatsFetchedData>({
+  const { data, isLoading } = useQuery<STGStatsFetchedData>({
     queryKey: ['stg', 'stats'],
-    queryFn: () => standardFetcher<STGStatsFetchedData>(STG_STATS_ENDPOINT),
+    queryFn: async () => {
+      const fetchedData =
+        await standardFetcher<STGStatsFetchedData>(STG_STATS_ENDPOINT);
+      const apy = APY_SCHEMA.parse(fetchedData.apy);
+      const allocations = ALLOCATION_SCHEMA.parse(fetchedData.allocations);
+      const lastUpdate = UNIX_TIMESTAMP_SCHEMA.parse(fetchedData.lastUpdate);
+      return { apy, allocations, lastUpdate };
+    },
   });
-
-  const apy = useMemo(
-    () => validate(APY_SCHEMA, fetchedData?.apy),
-    [fetchedData?.apy],
-  );
-  const allocationPositions = useMemo(
-    () => validate(ALLOCATION_SCHEMA, fetchedData?.allocations),
-    [fetchedData?.allocations],
-  );
-  const lastUpdateTimestamp = useMemo(
-    () => validate(UNIX_TIMESTAMP_SCHEMA, fetchedData?.lastUpdate),
-    [fetchedData?.lastUpdate],
-  );
 
   const { data: collectorData, isLoading: isCollectorLoading } =
     useSTGCollect();
@@ -68,8 +56,8 @@ export const useSTGStats = () => {
     isLoading: isLoading || isCollectorLoading || isEthUsdLoading,
     totalTvlUsd,
     totalTvlWei,
-    apy,
-    fetchedPositions: allocationPositions,
-    lastUpdateTimestamp,
+    apy: data?.apy,
+    fetchedPositions: data?.allocations,
+    lastUpdateTimestamp: data?.lastUpdate,
   } as const;
 };

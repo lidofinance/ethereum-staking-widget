@@ -16,11 +16,3 @@ export const APY_SCHEMA = NUMERIC_SCHEMA;
 
 // Percentage validator (0 to 100), not suitable for APY which can be <0 and >100
 export const PERCENT_SCHEMA = z.number().min(0).max(100);
-
-export const validate = <T>(schema: z.ZodType<T>, value: T): T | undefined => {
-  try {
-    return schema.parse(value);
-  } catch (error) {
-    console.error('Validation error:', error);
-  }
-};
