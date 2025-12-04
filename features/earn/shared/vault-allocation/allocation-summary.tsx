@@ -25,9 +25,8 @@ export const AllocationSummary: FC<AllocationSummaryProps> = ({
     <DataTableStyled>
       <DataTableRowStyled title="Total">
         <DataTableRowContentStyled>
-          <FormatLargeAmount amount={totalTvlUsd} fallback="-" />
+          <FormatLargeAmount amount={totalTvlUsd} />
           <FormatTokenStyled
-            fallback="-"
             amount={totalTvlWei}
             symbol={'ETH'}
             shortened
@@ -36,7 +35,7 @@ export const AllocationSummary: FC<AllocationSummaryProps> = ({
         </DataTableRowContentStyled>
       </DataTableRowStyled>
       <DataTableRowStyled title="APY">
-        <FormatPercent value={apy} decimals="percent" fallback="-" />
+        <FormatPercent value={apy} decimals="percent" />
       </DataTableRowStyled>
     </DataTableStyled>
   );

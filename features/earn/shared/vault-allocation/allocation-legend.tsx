@@ -20,11 +20,7 @@ export const AllocationLegend = ({ data }: AllocationLegendProps) => {
           <AllocationLegendCircle style={{ backgroundColor: item.color }} />
           <div>
             {item.threshold.label}{' '}
-            <FormatPercent
-              value={item.allocation}
-              decimals="percent"
-              fallback="-"
-            />
+            <FormatPercent value={item.allocation} decimals="percent" />
           </div>
         </AllocationLegendItem>
       ))}

@@ -57,7 +57,6 @@ const PositionBody = ({ position, compact }: PositionBodyProps) => {
               symbol={position.symbol}
               amount={position.balance}
               trimEllipsis
-              fallback="-"
             />{' '}
             <TokenToWallet address={position.token} />
           </PositionBalance>

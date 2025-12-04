@@ -49,17 +49,12 @@ export const AllocationRow: FC<AllocationRowProps> = (props) => {
         </ProtocolNameStyled>
       </TdWithIconStyled>
       <TdNarrowStyled align="right">
-        <FormatPercent
-          value={data.allocation}
-          decimals="percent"
-          fallback="-"
-        />
+        <FormatPercent value={data.allocation} decimals="percent" />
       </TdNarrowStyled>
       <TdNarrowStyled align="right">
         <DataTableRowContentStyled>
-          <FormatLargeAmount amount={data.tvlUSD} fallback="-" />
+          <FormatLargeAmount amount={data.tvlUSD} />
           <FormatTokenStyled
-            fallback="-"
             amount={data.tvlETH}
             maxDecimalDigits={2}
             symbol={'ETH'}
