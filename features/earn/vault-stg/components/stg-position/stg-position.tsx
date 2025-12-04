@@ -45,7 +45,10 @@ export const STGPosition = () => {
   const mellowPointsBalance =
     mellowPoints && Number.isFinite(mellowPoints)
       ? parseEther(mellowPoints.toFixed(4))
-      : undefined;
+      : // temp solution for the problem that the new users will get undefined points balance from API
+        // TODO: find solution how to distinguish between new users and broken data from API
+        // set this to undefined after fixing the issue
+        0n;
 
   return (
     <VaultPosition
