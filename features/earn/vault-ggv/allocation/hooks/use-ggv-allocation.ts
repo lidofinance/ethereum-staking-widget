@@ -42,33 +42,33 @@ export const useGGVAllocation = () => {
         ]);
 
       const {
-        totalTvlUSD,
+        totalTvlUsd,
         totalTvlUSDBigInt,
-        totalAssetsETH,
+        totalTvlWei,
         reserveAllocation,
         reserveAllocationPercentage,
         totalAllocationPercentage,
         lastUpdated,
       } = getAllocationData(tvlData, performanceData, latestAnswer, decimals);
 
-      const allocations = createAllocationsData(
+      const positions = createAllocationsData(
         reserveAllocationPercentage,
         totalTvlUSDBigInt,
-        totalAssetsETH,
+        totalTvlWei,
         reserveAllocation,
         performanceData.Response.real_apy_breakdown,
       );
 
       const chartData = createAllocationsChartData(
-        allocations,
+        positions,
         totalAllocationPercentage,
       );
 
       return {
         chartData,
-        allocations,
-        totalTvlUSD,
-        totalTvlETH: totalAssetsETH,
+        positions,
+        totalTvlUsd,
+        totalTvlWei,
         lastUpdated,
       };
     },

@@ -53,6 +53,7 @@ export const useSTGPosition = () => {
     queryKey: ['stg', 'mellow-points', { address }] as const,
     enabled: isEnabled,
     queryFn: async () => {
+      // TODO: add zod validation
       const mellowBaseUrl = `https://points.mellow.finance/v1/chain/1/users`;
       const userPointsUrl = `${mellowBaseUrl}/${address}`;
 
@@ -61,6 +62,7 @@ export const useSTGPosition = () => {
       const pointsForVault = userPointsData.find((vault) =>
         isAddressEqual(vault.vault_address, stgVaultAddress),
       );
+
       return pointsForVault ?? null;
     },
   });
@@ -86,6 +88,9 @@ export const useSTGPosition = () => {
 
   const data = isEnabled ? strethBalanceQuery.data : undefined;
   const wsteth = strethToWstethQuery.data;
+  const mellowPoints = mellowPointsBalanceQuery.data?.user_mellow_points
+    ? Number(mellowPointsBalanceQuery.data.user_mellow_points)
+    : undefined;
 
   const { usdAmount, ...usdQuery } = useWstethUsd(
     wsteth,
@@ -94,9 +99,12 @@ export const useSTGPosition = () => {
 
   return {
     ...strethBalanceQuery,
-    mellowPoints: Number(
-      mellowPointsBalanceQuery.data?.user_mellow_points ?? 0,
-    ),
+    isLoading:
+      strethBalanceQuery.isLoading ||
+      mellowPointsBalanceQuery.isLoading ||
+      strethToWstethQuery.isLoading,
+    data,
+    mellowPoints,
     strethSharesBalance: data?.strethSharesBalance,
     usdQuery,
     usdBalance: usdAmount ?? 0,

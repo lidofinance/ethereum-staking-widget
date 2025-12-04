@@ -3,6 +3,17 @@ import { parseEther } from 'viem';
 import { AllocationItem } from 'features/earn/shared/vault-allocation';
 
 import {
+  AaveV3Icon,
+  BalancerIcon,
+  EtherfiIcon,
+  EulerIcon,
+  MerklIcon,
+  MorphoIcon,
+  Univ3Icon,
+  YearnV3Icon,
+} from 'assets/earn';
+
+import {
   SevenSeasAPIPerformanceResponse,
   SevenSeasAPIDailyResponseItem,
 } from '../utils';
@@ -37,6 +48,16 @@ const ALLOCATION_CHAIN_NAMES_MAP = {
   linea: 'Linea',
   katana: 'Katana',
   other: 'Other',
+};
+const ALLOCATION_ICONS_MAP = {
+  aavev3: AaveV3Icon,
+  euler: EulerIcon,
+  morpho: MorphoIcon,
+  univ3: Univ3Icon,
+  balancer: BalancerIcon,
+  merkl: MerklIcon,
+  etherfi: EtherfiIcon,
+  yearn: YearnV3Icon,
 };
 
 export const getTvlByAllocationsTimestamp = (
@@ -101,10 +122,10 @@ export const getAllocationData = (
     throw new Error('[GGV-ALLOCATION] No data found');
   }
 
-  const totalAssetsETH = parseEther(tvlByAllocationsTimestamp.total_assets);
+  const totalTvlWei = parseEther(tvlByAllocationsTimestamp.total_assets);
   const totalTvlUSDBigInt =
-    (totalAssetsETH * latestAnswer) / 10n ** (BigInt(decimals) + 18n - 4n);
-  const totalTvlUSD = Number(totalTvlUSDBigInt) / 10 ** 4;
+    (totalTvlWei * latestAnswer) / 10n ** (BigInt(decimals) + 18n - 4n);
+  const totalTvlUsd = Number(totalTvlUSDBigInt) / 10 ** 4;
 
   const totalAllocation = performanceData.Response.real_apy_breakdown.reduce(
     (acc, item) => acc + item.allocation,
@@ -119,9 +140,9 @@ export const getAllocationData = (
   const lastUpdated = tvlByAllocationsTimestamp.unix_seconds;
 
   return {
-    totalTvlUSD,
+    totalTvlUsd,
     totalTvlUSDBigInt,
-    totalAssetsETH,
+    totalTvlWei,
     reserveAllocation,
     reserveAllocationPercentage,
     totalAllocationPercentage,
@@ -146,7 +167,6 @@ export const createAllocationsData = (
   };
   const otherAllocations: AllocationItem = {
     allocation: 0,
-    apy: 0,
     chain: ALLOCATION_CHAIN_NAMES_MAP.other,
     protocol: ALLOCATION_PROTOCOL_NAMES_MAP.other,
     tvlUSD: 0,
@@ -163,7 +183,6 @@ export const createAllocationsData = (
 
       if (isUnknown) {
         otherAllocations.allocation += allocation;
-        otherAllocations.apy += item.apy * 100;
         otherAllocations.tvlETH += multiplyBigIntWithFloat(
           totalAssetsETH,
           item.allocation,
@@ -178,7 +197,6 @@ export const createAllocationsData = (
       const currentItem = {
         ...item,
         allocation,
-        apy: item.apy * 100,
         tvlETH: multiplyBigIntWithFloat(totalAssetsETH, item.allocation),
         tvlUSD:
           Number(multiplyBigIntWithFloat(totalTvlUSDBigInt, item.allocation)) /
@@ -191,6 +209,9 @@ export const createAllocationsData = (
           ALLOCATION_CHAIN_NAMES_MAP[
             item.chain as keyof typeof ALLOCATION_CHAIN_NAMES_MAP
           ],
+        icon: ALLOCATION_ICONS_MAP[
+          item.protocol as keyof typeof ALLOCATION_ICONS_MAP
+        ],
       };
 
       acc.push(currentItem);
@@ -205,7 +226,6 @@ export const createAllocationsData = (
 
   allocations.push({
     ...reserve,
-    apy: 0,
     chain: '',
     protocol: ALLOCATION_PROTOCOL_NAMES_MAP.available,
   });
