@@ -42,7 +42,13 @@ export const STGPosition = () => {
   } = useSTGPosition();
 
   // convert mellow points to the wei at 18 decimals for easier compatibility with components
-  const mellowPointsBalance = parseEther(mellowPoints.toFixed(4) ?? '0');
+  const mellowPointsBalance =
+    mellowPoints && Number.isFinite(mellowPoints)
+      ? parseEther(mellowPoints.toFixed(4))
+      : // temp solution for the problem that the new users will get undefined points balance from API
+        // TODO: find solution how to distinguish between new users and broken data from API
+        // set this to undefined after fixing the issue
+        0n;
 
   return (
     <VaultPosition

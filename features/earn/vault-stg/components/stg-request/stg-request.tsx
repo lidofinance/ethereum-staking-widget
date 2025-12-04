@@ -71,7 +71,6 @@ export const STGRequest = ({
         <AmountContainer>
           <AmountTokenValue>
             <FormatToken
-              fallback="-"
               amount={tokenAmount}
               symbol={tokenName}
               maxDecimalDigits={5}

@@ -59,7 +59,8 @@
     "tiny-invariant": "^1.1.0",
     "uuid": "^8.3.2",
     "viem": "2.31.3",
-    "wagmi": "2.15.6"
+    "wagmi": "2.15.6",
+    "zod": "^4.1.12"
   },
   "devDependencies": {
     "@commitlint/cli": "^17.4.4",

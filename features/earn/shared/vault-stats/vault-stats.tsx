@@ -10,9 +10,9 @@ import {
 } from './styles';
 
 type VaultStatsProps = {
-  tvl?: number;
-  apy?: number;
-  apx?: number;
+  tvl?: number | null;
+  apy?: number | null;
+  apx?: number | null;
   apxLabel: 'APY' | 'APR';
   isLoading?: boolean;
   apxHint?: React.ReactNode;
@@ -33,7 +33,7 @@ export const VaultStats: React.FC<VaultStatsProps> = ({
         <VaultStatsLabel>TVL</VaultStatsLabel>{' '}
         <VaultStatsValue>
           <InlineLoader isLoading={isLoading} width={70}>
-            <FormatLargeAmount amount={tvl} fallback="-" />
+            <FormatLargeAmount amount={tvl} />
           </InlineLoader>
         </VaultStatsValue>
       </VaultStatsItem>
@@ -41,7 +41,7 @@ export const VaultStats: React.FC<VaultStatsProps> = ({
         <VaultStatsLabel>{apxLabel}</VaultStatsLabel>{' '}
         <VaultStatsValue>
           <InlineLoader isLoading={isLoading} width={70}>
-            <FormatPercent value={apx} decimals="percent" fallback="-" />*
+            <FormatPercent value={apx} decimals="percent" />*
           </InlineLoader>
         </VaultStatsValue>
         {!isLoading && <VaultTip placement="bottom">{apxHint}</VaultTip>}
