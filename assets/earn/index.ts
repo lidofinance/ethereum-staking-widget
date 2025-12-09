@@ -49,6 +49,7 @@ export { ReactComponent as YearnV3Icon } from './allocation/yearn-v3.svg';
 export { ReactComponent as KatanaIcon } from './allocation/katana.svg';
 export { ReactComponent as PlasmaIcon } from './allocation/plasma.svg';
 export { ReactComponent as SparkIcon } from './allocation/spark.svg';
+export { ReactComponent as FluidIcon } from './allocation/fluid.svg';
 
 const themedBackground = css`
   path,
