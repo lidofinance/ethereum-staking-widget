@@ -31,11 +31,3 @@ export const STG_MELLOW_POINTS_LAUNCH_DATE_FORMATTED_LONG =
     dateStyle: 'long',
     hour12: false,
   });
-
-// launch date + 4 weeks
-export const STG_MELLOW_POINTS_BORDER_DATE = new Date('2025-12-04T00:00:00Z');
-export const STG_MELLOW_POINTS_BORDER_DATE_FORMATTED =
-  STG_MELLOW_POINTS_BORDER_DATE.toLocaleDateString(LOCALE, {
-    dateStyle: 'medium',
-    hour12: false,
-  });
