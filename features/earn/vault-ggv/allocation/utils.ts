@@ -11,6 +11,7 @@ import {
   MorphoIcon,
   Univ3Icon,
   YearnV3Icon,
+  FluidIcon,
 } from 'assets/earn';
 
 import {
@@ -38,6 +39,7 @@ const ALLOCATION_PROTOCOL_NAMES_MAP = {
   merkl: 'Merkl',
   etherfi: 'ether.fi',
   yearn: 'Yearn V3',
+  fluid: 'Fluid',
   other: 'Other allocation',
   available: 'Available',
 };
@@ -58,6 +60,7 @@ const ALLOCATION_ICONS_MAP = {
   merkl: MerklIcon,
   etherfi: EtherfiIcon,
   yearn: YearnV3Icon,
+  fluid: FluidIcon,
 };
 
 export const getTvlByAllocationsTimestamp = (
