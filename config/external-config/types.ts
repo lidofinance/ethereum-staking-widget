@@ -41,6 +41,11 @@ export type ManifestConfig = {
       sections?: [string, ...string[]];
     };
   };
+  api: {
+    validation: {
+      version: string;
+    };
+  };
 };
 
 export enum ManifestConfigPageEnum {

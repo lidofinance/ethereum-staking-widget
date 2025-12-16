@@ -8,7 +8,7 @@ import { FetcherError } from 'utils/fetcherError';
 import { ETH_API_ROUTES, getEthApiPath } from 'consts/api';
 
 type ProxyOptions = {
-  proxyUrl: string | ((req: NextApiRequest) => string);
+  proxyUrl: string | ((req: NextApiRequest) => Promise<string>);
   cacheTTL: number;
   timeout?: number;
   ignoreParams?: boolean;
@@ -40,7 +40,7 @@ export const createCachedProxy = ({
           );
     // Generate the actual proxy URL, passing req if the function accepts it
     const proxyUrlString =
-      typeof proxyUrl === 'function' ? proxyUrl(req) : proxyUrl;
+      typeof proxyUrl === 'function' ? await proxyUrl(req) : proxyUrl;
 
     const cacheKey = `${proxyUrlString}-${params?.toString() ?? ''}`;
 
@@ -108,7 +108,7 @@ export const createEthApiProxy = ({
     cacheTTL,
     ignoreParams,
     transformData,
-    proxyUrl: () => proxyUrl, // Wrap string in function
+    proxyUrl: async () => proxyUrl, // Wrap string in function
     metricsHost: config.ethAPIBasePath,
     timeout: 5000,
   });
