@@ -23,3 +23,5 @@ export const STG_COLLECTOR_CONFIG = {
   oracleUpdateInterval: 86400n,
   redeemHandlingInterval: 3600n,
 } as const;
+
+export const STG_STATS_ORIGIN = 'https://points.mellow.finance';

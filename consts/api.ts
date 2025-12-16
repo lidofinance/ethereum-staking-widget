@@ -8,6 +8,8 @@ export const enum API_ROUTES {
   METRICS = 'api/metrics',
   REWARDS = 'api/rewards',
   VALIDATION = 'api/validation',
+  EARN_VAULTS_APR = 'api/earn/vaults-apr',
+  EARN_VAULTS_TVL = 'api/earn/vaults-tvl',
 }
 
 export const enum ETH_API_ROUTES {

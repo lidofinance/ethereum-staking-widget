@@ -13,6 +13,7 @@ import { getGGVQueueContract, getGGVVaultContract } from '../../contracts';
 import { getTokenAddress } from 'config/networks/token-address';
 
 import type { WQApiResponse } from '../types';
+import { GGV_STATS_ORIGIN } from '../../consts';
 
 export type GGVWithdrawalRequestsResponse = ReturnType<
   typeof transformAPIResponse
@@ -121,7 +122,7 @@ export const useGGVWithdrawalRequests = () => {
       );
       const queue = getGGVQueueContract(publicClientMainnet);
 
-      const url = `https://api.sevenseas.capital/boringQueue/ethereum/${vault.address}/${address}?string_values=true`;
+      const url = `${GGV_STATS_ORIGIN}/boringQueue/ethereum/${vault.address}/${address}?string_values=true`;
 
       const response: WQApiResponse = await fetch(url).then((res) =>
         res.json(),
