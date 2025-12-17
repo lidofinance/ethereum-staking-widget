@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { config } from 'config';
+import { config, useConfig } from 'config';
 import { STRATEGY_LAZY } from 'consts/react-query-strategies';
 import { Backend } from 'features/rewards/types';
 
@@ -52,9 +52,11 @@ export const useRewardsDataLoad: UseRewardsDataLoad = (props) => {
     apiRewardsUrl = `/api/rewards?${params.toString()}`;
   }
 
+  const { featureFlags } = useConfig().externalConfig;
+
   const { data, error, isFetching, isLoading } = useQuery<Backend>({
     queryKey: ['rewards-data', address, apiRewardsUrl],
-    enabled: !!address,
+    enabled: !!address && !featureFlags.rewardsMaintenance,
     ...STRATEGY_LAZY,
     queryFn: ({ signal }) =>
       // The 'react-query' has AbortController support built in,
