@@ -22,7 +22,7 @@ export const InfoWarningIcon = styled.img.attrs({
   margin: 5px;
 `;
 
-export const WarningContainer = styled.div<BannerProps>`
+export const BannerContainer = styled.div<BannerProps>`
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -45,7 +45,7 @@ export const WarningContainer = styled.div<BannerProps>`
   }
 `;
 
-export const WarningContent = styled.div<BannerProps>`
+export const BannerContent = styled.div<BannerProps>`
   flex: 0 1 auto;
 
   font-size: 12px;

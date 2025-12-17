@@ -1,6 +1,6 @@
 import {
-  WarningContainer,
-  WarningContent,
+  BannerContainer,
+  BannerContent,
   WarningIcon,
   InfoWarningIcon,
 } from './styles';
@@ -14,11 +14,11 @@ export const InfoBanner = ({
   variant = 'info',
 }: React.PropsWithChildren<BannerProps>) => {
   return (
-    <WarningContainer variant={variant} data-testid="vault-warning">
+    <BannerContainer variant={variant}>
       {variant === 'warning' && <WarningIcon />}
       {variant === 'info' && <InfoWarningIcon />}
-      <WarningContent variant={variant}>{children}</WarningContent>
-    </WarningContainer>
+      <BannerContent variant={variant}>{children}</BannerContent>
+    </BannerContainer>
   );
 };
 
