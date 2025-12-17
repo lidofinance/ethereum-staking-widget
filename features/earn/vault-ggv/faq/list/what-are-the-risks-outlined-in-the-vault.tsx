@@ -40,10 +40,10 @@ export const WhatAreTheRisksOutlinedInTheVault: FC = () => {
           Leverage Risk: Leveraged staking may introduce the risk of
           liquidation. This risk is mitigated by using correlated tokens (e.g.,
           using wstETH as collateral to borrow ETH) which reduces the impact of
-          market price volatibility such as the risk of liquidation due to
-          changes in the value of the underlying assets. Additionally, the
-          specific leverage ratio is routinely monitored by the DeFi curation
-          team to remain within safe thresholds.
+          market price volatility such as the risk of liquidation due to changes
+          in the value of the underlying assets. Additionally, the specific
+          leverage ratio is routinely monitored by the DeFi curation team to
+          remain within safe thresholds.
         </li>
         <li>
           Liquidity Provision Risk: Providing liquidity on decentralized
