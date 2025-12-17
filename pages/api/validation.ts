@@ -17,6 +17,7 @@ import {
 } from 'utilsApi';
 import Metrics from 'utilsApi/metrics';
 import { createCachedProxy } from 'utilsApi/cached-proxy';
+import { getExternalConfig } from 'utilsApi/get-external-config';
 
 // Validate address to prevent SSRF attacks
 const validateEthereumAddress = (address: unknown): string | null => {
@@ -37,12 +38,19 @@ if (!secretConfig.validationAPI) {
 } else {
   // Create proxy once at module level to preserve cache
   const validationProxy = createCachedProxy({
-    proxyUrl: (req) => {
+    proxyUrl: async (req) => {
+      const manifestConfig = await getExternalConfig();
+
+      // default to version 1 if not set
+      const version = manifestConfig?.config.api?.validation?.version || '1';
+
       const validatedAddress = validateEthereumAddress(req.query.address);
-      if (!validatedAddress) {
-        throw new Error('Invalid address'); // This will be caught by the handler
-      }
-      return secretConfig.validationAPI + '/v1/check/' + validatedAddress;
+      if (!validatedAddress) throw new Error('Invalid address'); // This will be caught by the handler
+
+      const url =
+        secretConfig.validationAPI + `/v${version}/check/${validatedAddress}`;
+
+      return url;
     },
     cacheTTL: 1000,
     ignoreParams: true, // Address is in path, not query

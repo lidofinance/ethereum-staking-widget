@@ -26,6 +26,11 @@
           "showNew": true,
           "shouldDisable": false
         }
+      },
+      "api": {
+        "validation": {
+          "version": "2"
+        }
       }
     }
   },
@@ -53,6 +58,11 @@
           "showNew": true,
           "shouldDisable": false
         }
+      },
+      "api": {
+        "validation": {
+          "version": "1"
+        }
       }
     }
   },
@@ -65,6 +75,11 @@
       "multiChainBanner": [],
       "featureFlags": {
         "ledgerLiveL2": true
+      },
+      "api": {
+        "validation": {
+          "version": "1"
+        }
       }
     }
   },
@@ -87,6 +102,11 @@
         },
         "/earn": {
           "shouldDisable": true
+        }
+      },
+      "api": {
+        "validation": {
+          "version": "1"
         }
       }
     }
@@ -112,6 +132,11 @@
       "pages": {
         "/earn": {
           "showNew": true
+        }
+      },
+      "api": {
+        "validation": {
+          "version": "1"
         }
       }
     }
