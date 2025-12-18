@@ -9,22 +9,27 @@
         130, 1135, 1923
       ],
       "earnVaults": [
-        { "name": "strategy", "showNew": true },
+        { "name": "strategy" },
         {
           "name": "ggv",
           "apy": { "type": "weekly_moving_average" }
         },
         { "name": "dvv" }
       ],
-
       "featureFlags": {
         "disableSendCalls": false,
-        "dgBannerEnabled": true
+        "dgBannerEnabled": true,
+        "rewardsMaintenance": false
       },
       "pages": {
         "/earn": {
           "showNew": true,
           "shouldDisable": false
+        }
+      },
+      "api": {
+        "validation": {
+          "version": "2"
         }
       }
     }
@@ -39,19 +44,24 @@
         130, 1135, 1923
       ],
       "earnVaults": [
-        { "name": "strategy", "showNew": true },
+        { "name": "strategy" },
         { "name": "ggv", "apy": { "type": "weekly_moving_average" } },
         { "name": "dvv" }
       ],
-
       "featureFlags": {
         "disableSendCalls": false,
-        "dgBannerEnabled": true
+        "dgBannerEnabled": true,
+        "rewardsMaintenance": false
       },
       "pages": {
         "/earn": {
           "showNew": true,
           "shouldDisable": false
+        }
+      },
+      "api": {
+        "validation": {
+          "version": "1"
         }
       }
     }
@@ -65,6 +75,11 @@
       "multiChainBanner": [],
       "featureFlags": {
         "ledgerLiveL2": true
+      },
+      "api": {
+        "validation": {
+          "version": "1"
+        }
       }
     }
   },
@@ -88,6 +103,11 @@
         "/earn": {
           "shouldDisable": true
         }
+      },
+      "api": {
+        "validation": {
+          "version": "1"
+        }
       }
     }
   },
@@ -102,16 +122,22 @@
         "ledgerLiveL2": true,
         "disableSendCalls": false,
         "dgBannerEnabled": false,
-        "dgWarningState": false
+        "dgWarningState": false,
+        "rewardsMaintenance": false
       },
       "earnVaults": [
-        { "name": "strategy", "showNew": true },
+        { "name": "strategy" },
         { "name": "ggv", "apy": { "type": "weekly_moving_average" } },
         { "name": "dvv" }
       ],
       "pages": {
         "/earn": {
           "showNew": true
+        }
+      },
+      "api": {
+        "validation": {
+          "version": "1"
         }
       }
     }
