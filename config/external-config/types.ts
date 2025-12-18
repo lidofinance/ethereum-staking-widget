@@ -34,6 +34,7 @@ export type ManifestConfig = {
     dgBannerEnabled?: boolean;
     dgWarningState?: boolean;
     rewardsMaintenance?: boolean;
+    holidayDecorEnabled?: boolean;
   };
   pages: {
     [page in ManifestConfigPage]?: {
