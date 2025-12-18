@@ -1,5 +1,6 @@
 import { FC, useRef } from 'react';
 import { Loader, Divider } from '@lidofinance/lido-ui';
+import type { Address } from 'viem';
 
 import { useRewardsHistory } from 'features/rewards/hooks';
 import { ErrorBlockNoSteth } from 'features/rewards/components/errorBlocks/ErrorBlockNoSteth';
@@ -7,6 +8,8 @@ import { RewardsTable } from 'features/rewards/components/rewardsTable';
 import { useStethBalance, useDappStatus } from 'modules/web3';
 import { trackMatomoEvent } from 'utils/track-matomo-event';
 import { MATOMO_FETCH_EVENTS_TYPES } from 'consts/matomo';
+import { useConfig } from 'config';
+import { WarningBanner } from 'shared/banners/info-banner';
 
 import { RewardsListsEmpty } from './RewardsListsEmpty';
 import { RewardsListErrorMessage } from './RewardsListErrorMessage';
@@ -16,8 +19,6 @@ import {
   TableWrapperStyle,
   ErrorWrapper,
 } from './RewardsListContentStyles';
-
-import type { Address } from 'viem';
 
 export const RewardsListContent: FC = () => {
   const { isSupportedChain } = useDappStatus();
@@ -38,6 +39,18 @@ export const RewardsListContent: FC = () => {
       shouldSubscribeToUpdates: false,
     });
   const hasSteth = !!stethBalance;
+  const { featureFlags } = useConfig().externalConfig;
+
+  if (featureFlags.rewardsMaintenance) {
+    return (
+      <>
+        <Divider indents="lg" />
+        <WarningBanner>
+          The reward history service is currently undergoing maintenance.
+        </WarningBanner>
+      </>
+    );
+  }
 
   if (!isSupportedChain) return <RewardsListsUnsupportedChain />;
 

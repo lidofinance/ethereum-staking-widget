@@ -9,6 +9,7 @@ import { standardFetcher } from 'utils/standardFetcher';
 import { getSTGShareManagerSTRETH } from '../contracts';
 import { getWithdrawalParams } from '../withdraw/utils';
 import { useWstethUsd } from 'shared/hooks/use-wsteth-usd';
+import { STG_STATS_ORIGIN } from '../consts';
 
 type UserPointsResponse = {
   user_address: Address;
@@ -54,7 +55,7 @@ export const useSTGPosition = () => {
     enabled: isEnabled,
     queryFn: async () => {
       // TODO: add zod validation
-      const mellowBaseUrl = `https://points.mellow.finance/v1/chain/1/users`;
+      const mellowBaseUrl = `${STG_STATS_ORIGIN}/v1/chain/1/users`;
       const userPointsUrl = `${mellowBaseUrl}/${address}`;
 
       const userPointsData =

@@ -16,23 +16,27 @@ type VaultAPY = {
   type?: VaultAPYType;
 };
 
+export type EarnVaultConfigEntry = {
+  name: EarnVaultKey;
+  deposit?: boolean;
+  withdraw?: boolean;
+  depositPauseReasonText?: string;
+  withdrawPauseReasonText?: string;
+  apy?: VaultAPY;
+  showNew?: boolean;
+};
+
 export type ManifestConfig = {
   enabledWithdrawalDexes: DexWithdrawalApi[];
   multiChainBanner: number[];
-  earnVaults: {
-    name: EarnVaultKey;
-    deposit?: boolean;
-    withdraw?: boolean;
-    depositPauseReasonText?: string;
-    withdrawPauseReasonText?: string;
-    apy?: VaultAPY;
-    showNew?: boolean;
-  }[];
+  earnVaults: EarnVaultConfigEntry[];
   featureFlags: {
     ledgerLiveL2?: boolean;
     disableSendCalls?: boolean;
     dgBannerEnabled?: boolean;
     dgWarningState?: boolean;
+    rewardsMaintenance?: boolean;
+    holidayDecorEnabled?: boolean;
   };
   pages: {
     [page in ManifestConfigPage]?: {

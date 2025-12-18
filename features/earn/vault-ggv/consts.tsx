@@ -35,3 +35,5 @@ export const GGV_INCENTIVES = [
   parseEther('32'),
   parseEther('38.5'),
 ];
+
+export const GGV_STATS_ORIGIN = 'https://api.sevenseas.capital';

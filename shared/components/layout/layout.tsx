@@ -12,6 +12,7 @@ import {
   LayoutSubTitleStyle,
   IPFSInfoBoxOnlyMobileAndPortableWrapper,
 } from './styles';
+import { HolidaysDecorFooter } from '../holiday-decor';
 
 type Props = {
   title?: ReactNode;
@@ -37,6 +38,7 @@ export const Layout: FC<PropsWithChildren<Props>> = (props) => {
         {children}
       </Main>
       <Footer />
+      <HolidaysDecorFooter />
     </>
   );
 };

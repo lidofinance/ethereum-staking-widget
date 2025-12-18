@@ -16,10 +16,11 @@
         },
         { "name": "dvv" }
       ],
-
       "featureFlags": {
         "disableSendCalls": false,
-        "dgBannerEnabled": true
+        "dgBannerEnabled": true,
+        "rewardsMaintenance": false,
+        "holidayDecorEnabled": true
       },
       "pages": {
         "/earn": {
@@ -48,10 +49,11 @@
         { "name": "ggv", "apy": { "type": "weekly_moving_average" } },
         { "name": "dvv" }
       ],
-
       "featureFlags": {
         "disableSendCalls": false,
-        "dgBannerEnabled": true
+        "dgBannerEnabled": true,
+        "rewardsMaintenance": false,
+        "holidayDecorEnabled": true
       },
       "pages": {
         "/earn": {
@@ -76,6 +78,7 @@
       "featureFlags": {
         "ledgerLiveL2": true
       },
+      "earnVaults": [],
       "api": {
         "validation": {
           "version": "1"
@@ -93,6 +96,7 @@
       "featureFlags": {
         "ledgerLiveL2": true
       },
+      "earnVaults": [],
       "pages": {
         "/withdrawals": {
           "shouldDisable": true
@@ -122,7 +126,9 @@
         "ledgerLiveL2": true,
         "disableSendCalls": false,
         "dgBannerEnabled": false,
-        "dgWarningState": false
+        "dgWarningState": false,
+        "rewardsMaintenance": false,
+        "holidayDecorEnabled": true
       },
       "earnVaults": [
         { "name": "strategy" },

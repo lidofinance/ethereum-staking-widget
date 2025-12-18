@@ -6,6 +6,7 @@ import { getContractAddress } from 'config/networks/contract-address';
 import { CHAINS } from 'consts/chains';
 import { useDappStatus } from 'modules/web3';
 import { bnAmountToNumber, maxBN } from 'utils/bn';
+import { DVV_STATS_ORIGIN } from '../consts';
 
 type UserPointsResponse = {
   user_address: Address;
@@ -70,7 +71,7 @@ export const useDVVPoints = () => {
       const dvvVault = getContractAddress(CHAINS.Mainnet, 'dvvVault');
       invariant(dvvVault, 'No DVV vault address found');
 
-      const mellowBaseUrl = `https://points.mellow.finance/v1/chain/1/users`;
+      const mellowBaseUrl = `${DVV_STATS_ORIGIN}/v1/chain/1/users`;
 
       const userPointsUrl = `${mellowBaseUrl}/${address}`;
       const obolUrl = `${mellowBaseUrl}/${address}/obol`;

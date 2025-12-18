@@ -1,16 +1,16 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { type Address, getContract } from 'viem';
+import { useQuery } from '@tanstack/react-query';
+import { LidoSDKWrap } from '@lidofinance/lido-ethereum-sdk/wrap';
 
 import { CONTRACT_NAMES } from 'config/networks/networks-map';
 import { getContractAddress } from 'config/networks/contract-address';
 import { AggregatorAbi } from 'abi/aggregator-abi';
 import { CHAINS } from 'consts/chains';
-
 import { useMainnetOnlyWagmi } from 'modules/web3';
 
-import { useQuery } from '@tanstack/react-query';
 import { getDVVVaultContract } from '../contracts';
-import { LidoSDKWrap } from '@lidofinance/lido-ethereum-sdk/wrap';
+import { fetchDVVStatsAprBreakdown } from '../utils';
 
 const PRECISION = 4n;
 
@@ -117,22 +117,7 @@ export const useDVVApr = () => {
   return useQuery({
     queryKey: ['dvv', 'stats', 'apr'],
     queryFn: async () => {
-      const url = `https://points.mellow.finance/v1/vaults`;
-
-      const response = await fetch(url);
-      const data = (await response.json()) as MellowAPIResponse;
-
-      const dvstETHVault = data.find(
-        (vault) => vault.id === 'ethereum-dvsteth',
-      );
-
-      if (!dvstETHVault)
-        throw new Error('DVV Vault not found in Mellow API response');
-
-      return {
-        apr: dvstETHVault.apr,
-        aprBreakdown: dvstETHVault.apr_breakdown,
-      };
+      return fetchDVVStatsAprBreakdown();
     },
   });
 };
