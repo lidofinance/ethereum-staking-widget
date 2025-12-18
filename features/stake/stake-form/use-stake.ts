@@ -1,7 +1,7 @@
 import { useCallback } from 'react';
 import invariant from 'tiny-invariant';
 
-import { config } from 'config';
+import { config, useConfig } from 'config';
 import {
   applyRoundUpGasLimit,
   useDappStatus,
@@ -16,6 +16,7 @@ import { getReferralAddress } from 'utils/get-referral-address';
 
 import { MockLimitReachedError } from './utils';
 import { useTxModalStagesStake } from './hooks/use-tx-modal-stages-stake';
+import { useBells } from './hooks/use-bells';
 
 type StakeArguments = {
   amount: bigint | null;
@@ -28,11 +29,13 @@ type StakeOptions = {
 };
 
 export const useStake = ({ onConfirm, onRetry }: StakeOptions) => {
+  const { bells } = useBells();
   const { address } = useDappStatus();
   const { isAA } = useAA();
   const { stake, stETH } = useLidoSDK();
   const { txModalStages } = useTxModalStagesStake();
   const txFlow = useTxFlow();
+  const { featureFlags } = useConfig().externalConfig;
 
   return useCallback(
     async ({ amount, referral }: StakeArguments): Promise<boolean> => {
@@ -85,6 +88,9 @@ export const useStake = ({ onConfirm, onRetry }: StakeOptions) => {
           },
           onSuccess: async ({ txHash }) => {
             const balance = await onStakeTxConfirmed();
+            if (featureFlags.holidayDecorEnabled) {
+              bells();
+            }
             txModalStages.success(balance, txHash);
             trackMatomoEvent(MATOMO_TX_EVENTS_TYPES.stakingFinish);
           },
@@ -99,6 +105,17 @@ export const useStake = ({ onConfirm, onRetry }: StakeOptions) => {
         return false;
       }
     },
-    [address, stake, txFlow, isAA, onConfirm, stETH, txModalStages, onRetry],
+    [
+      address,
+      stake,
+      txFlow,
+      onConfirm,
+      stETH,
+      txModalStages,
+      isAA,
+      featureFlags.holidayDecorEnabled,
+      bells,
+      onRetry,
+    ],
   );
 };
