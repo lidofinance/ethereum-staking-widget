@@ -31,8 +31,8 @@ import { ReactComponent as VaultSTGIcon } from './vault-stg.svg';
 
 import { ReactComponent as NavIconEarn } from './nav-icon-earn.svg';
 
-import { ReactComponent as EarnGgvBannerIcon } from './earn-ggv-banner.svg';
 import { ReactComponent as EarnStgBannerIcon } from './earn-stg-banner.svg';
+import { ReactComponent as EarnUpToBannerIcon } from './earn-up-to-banner.svg';
 
 export { ReactComponent as BaseIcon } from './allocation/base.svg';
 export { ReactComponent as ArbitrumIcon } from './allocation/arbitrum.svg';
@@ -99,6 +99,6 @@ export {
   TokenSsvIcon,
   TokenMellowIcon,
   NavIconEarn,
-  EarnGgvBannerIcon,
   EarnStgBannerIcon,
+  EarnUpToBannerIcon,
 };

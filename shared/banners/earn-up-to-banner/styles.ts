@@ -4,25 +4,27 @@ import { LocalLink } from 'shared/components/local-link';
 import { BannerWrap } from '../shared-banner-partials';
 
 export const Wrap = styled(BannerWrap)`
+  container-type: inline-size;
+  container-name: earn-banner-container;
   background: linear-gradient(
-    278deg,
-    rgba(255, 191, 0, 0.6) -12.23%,
-    rgba(255, 191, 0, 0.15) 97.29%
+    278.02deg,
+    rgba(255, 191, 0, 0.15) -0.37%,
+    rgba(255, 170, 0, 0.6) 109.06%
   );
   color: var(--lido-color-text);
   overflow: hidden;
   padding: 16px 20px;
 `;
 
+export const InnerContainer = styled.div`
+  display: flex;
+  justify-content: space-between;
+`;
+
 export const MessageContainer = styled.div`
   display: flex;
   align-items: center;
   gap: 15px;
-
-  ${({ theme }) => theme.mediaQueries.sm} {
-    flex-direction: column;
-    gap: 12px;
-  }
 `;
 
 export const Message = styled.div`
@@ -31,27 +33,23 @@ export const Message = styled.div`
   font-weight: 700;
   flex: 1;
   z-index: 2;
+
+  ${({ theme }) => theme.mediaQueries.md} {
+    font-size: ${({ theme }) => theme.fontSizesMap.xs}px;
+    line-height: 24px;
+  }
 `;
 
 export const LogoContainer = styled.div`
   position: relative;
-  flex: 0 0 116px;
-  min-width: 116px;
-
-  ${({ theme }) => theme.mediaQueries.sm} {
-    flex: 1;
-  }
+  flex: 1 1 114px;
+  min-width: 114px;
 `;
 
 export const IconWrapper = styled.div`
   position: absolute;
-  top: -34px;
-  right: -50px;
-
-  ${({ theme }) => theme.mediaQueries.sm} {
-    top: -36px;
-    right: -118px;
-  }
+  right: -20px;
+  bottom: -20px;
 `;
 
 export const OverlayLink = styled(LocalLink)`
@@ -62,4 +60,8 @@ export const OverlayLink = styled(LocalLink)`
   left: 0;
   right: 0;
   z-index: 3;
+`;
+
+export const Nowrap = styled.span`
+  white-space: nowrap;
 `;
