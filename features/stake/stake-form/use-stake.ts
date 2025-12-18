@@ -16,6 +16,7 @@ import { getReferralAddress } from 'utils/get-referral-address';
 
 import { MockLimitReachedError } from './utils';
 import { useTxModalStagesStake } from './hooks/use-tx-modal-stages-stake';
+import { useBells } from './hooks/use-bells';
 
 type StakeArguments = {
   amount: bigint | null;
@@ -28,6 +29,7 @@ type StakeOptions = {
 };
 
 export const useStake = ({ onConfirm, onRetry }: StakeOptions) => {
+  const { bells } = useBells();
   const { address } = useDappStatus();
   const { isAA } = useAA();
   const { stake, stETH } = useLidoSDK();
@@ -85,6 +87,7 @@ export const useStake = ({ onConfirm, onRetry }: StakeOptions) => {
           },
           onSuccess: async ({ txHash }) => {
             const balance = await onStakeTxConfirmed();
+            bells();
             txModalStages.success(balance, txHash);
             trackMatomoEvent(MATOMO_TX_EVENTS_TYPES.stakingFinish);
           },
@@ -99,6 +102,16 @@ export const useStake = ({ onConfirm, onRetry }: StakeOptions) => {
         return false;
       }
     },
-    [address, stake, txFlow, isAA, onConfirm, stETH, txModalStages, onRetry],
+    [
+      address,
+      stake,
+      txFlow,
+      onConfirm,
+      stETH,
+      txModalStages,
+      isAA,
+      bells,
+      onRetry,
+    ],
   );
 };

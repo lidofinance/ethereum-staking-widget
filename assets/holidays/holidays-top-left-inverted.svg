@@ -1,18 +1,168 @@
 <svg viewBox="0 0 311 179" fill="none" xmlns="http://www.w3.org/2000/svg">
+<defs>
+<filter id="redGlow1" x="-100%" y="-100%" width="300%" height="300%">
+<feComponentTransfer in="SourceGraphic" result="brightened">
+<feFuncR type="linear" slope="1">
+<animate attributeName="slope" values="1;1.4;1" dur="4s" begin="0s" repeatCount="indefinite"/>
+</feFuncR>
+<feFuncG type="linear" slope="1">
+<animate attributeName="slope" values="1;1.4;1" dur="4s" begin="0s" repeatCount="indefinite"/>
+</feFuncG>
+<feFuncB type="linear" slope="1">
+<animate attributeName="slope" values="1;1.4;1" dur="4s" begin="0s" repeatCount="indefinite"/>
+</feFuncB>
+</feComponentTransfer>
+<feGaussianBlur in="brightened" stdDeviation="0" result="blur">
+<animate attributeName="stdDeviation" values="0;8;0" dur="4s" begin="0s" repeatCount="indefinite"/>
+</feGaussianBlur>
+<feFlood flood-color="#E23E3F" flood-opacity="0" result="color">
+<animate attributeName="flood-opacity" values="0;1;0" dur="4s" begin="0s" repeatCount="indefinite"/>
+</feFlood>
+<feComposite in="color" in2="blur" operator="in" result="coloredBlur"/>
+<feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="brightened"/></feMerge>
+</filter>
+<filter id="redGlow2" x="-100%" y="-100%" width="300%" height="300%">
+<feComponentTransfer in="SourceGraphic" result="brightened">
+<feFuncR type="linear" slope="1">
+<animate attributeName="slope" values="1;1.4;1" dur="4s" begin="1.3s" repeatCount="indefinite"/>
+</feFuncR>
+<feFuncG type="linear" slope="1">
+<animate attributeName="slope" values="1;1.4;1" dur="4s" begin="1.3s" repeatCount="indefinite"/>
+</feFuncG>
+<feFuncB type="linear" slope="1">
+<animate attributeName="slope" values="1;1.4;1" dur="4s" begin="1.3s" repeatCount="indefinite"/>
+</feFuncB>
+</feComponentTransfer>
+<feGaussianBlur in="brightened" stdDeviation="0" result="blur">
+<animate attributeName="stdDeviation" values="0;8;0" dur="4s" begin="1.3s" repeatCount="indefinite"/>
+</feGaussianBlur>
+<feFlood flood-color="#E23E3F" flood-opacity="0" result="color">
+<animate attributeName="flood-opacity" values="0;1;0" dur="4s" begin="1.3s" repeatCount="indefinite"/>
+</feFlood>
+<feComposite in="color" in2="blur" operator="in" result="coloredBlur"/>
+<feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="brightened"/></feMerge>
+</filter>
+<filter id="blueGlow" x="-100%" y="-100%" width="300%" height="300%">
+<feComponentTransfer in="SourceGraphic" result="brightened">
+<feFuncR type="linear" slope="1">
+<animate attributeName="slope" values="1;1.4;1" dur="4s" begin="2.7s" repeatCount="indefinite"/>
+</feFuncR>
+<feFuncG type="linear" slope="1">
+<animate attributeName="slope" values="1;1.4;1" dur="4s" begin="2.7s" repeatCount="indefinite"/>
+</feFuncG>
+<feFuncB type="linear" slope="1">
+<animate attributeName="slope" values="1;1.4;1" dur="4s" begin="2.7s" repeatCount="indefinite"/>
+</feFuncB>
+</feComponentTransfer>
+<feGaussianBlur in="brightened" stdDeviation="0" result="blur">
+<animate attributeName="stdDeviation" values="0;8;0" dur="4s" begin="2.7s" repeatCount="indefinite"/>
+</feGaussianBlur>
+<feFlood flood-color="#00A3FF" flood-opacity="0" result="color">
+<animate attributeName="flood-opacity" values="0;1;0" dur="4s" begin="2.7s" repeatCount="indefinite"/>
+</feFlood>
+<feComposite in="color" in2="blur" operator="in" result="coloredBlur"/>
+<feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="brightened"/></feMerge>
+</filter>
+<filter id="orangeGlow1" x="-100%" y="-100%" width="300%" height="300%">
+<feComponentTransfer in="SourceGraphic" result="brightened">
+<feFuncR type="linear" slope="1">
+<animate attributeName="slope" values="1;1.4;1" dur="4s" begin="0.7s" repeatCount="indefinite"/>
+</feFuncR>
+<feFuncG type="linear" slope="1">
+<animate attributeName="slope" values="1;1.4;1" dur="4s" begin="0.7s" repeatCount="indefinite"/>
+</feFuncG>
+<feFuncB type="linear" slope="1">
+<animate attributeName="slope" values="1;1.4;1" dur="4s" begin="0.7s" repeatCount="indefinite"/>
+</feFuncB>
+</feComponentTransfer>
+<feGaussianBlur in="brightened" stdDeviation="0" result="blur">
+<animate attributeName="stdDeviation" values="0;8;0" dur="4s" begin="0.7s" repeatCount="indefinite"/>
+</feGaussianBlur>
+<feFlood flood-color="#FFAA7D" flood-opacity="0" result="color">
+<animate attributeName="flood-opacity" values="0;1;0" dur="4s" begin="0.7s" repeatCount="indefinite"/>
+</feFlood>
+<feComposite in="color" in2="blur" operator="in" result="coloredBlur"/>
+<feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="brightened"/></feMerge>
+</filter>
+<filter id="orangeGlow2" x="-100%" y="-100%" width="300%" height="300%">
+<feComponentTransfer in="SourceGraphic" result="brightened">
+<feFuncR type="linear" slope="1">
+<animate attributeName="slope" values="1;1.4;1" dur="4s" begin="2s" repeatCount="indefinite"/>
+</feFuncR>
+<feFuncG type="linear" slope="1">
+<animate attributeName="slope" values="1;1.4;1" dur="4s" begin="2s" repeatCount="indefinite"/>
+</feFuncG>
+<feFuncB type="linear" slope="1">
+<animate attributeName="slope" values="1;1.4;1" dur="4s" begin="2s" repeatCount="indefinite"/>
+</feFuncB>
+</feComponentTransfer>
+<feGaussianBlur in="brightened" stdDeviation="0" result="blur">
+<animate attributeName="stdDeviation" values="0;8;0" dur="4s" begin="2s" repeatCount="indefinite"/>
+</feGaussianBlur>
+<feFlood flood-color="#FFAA7D" flood-opacity="0" result="color">
+<animate attributeName="flood-opacity" values="0;1;0" dur="4s" begin="2s" repeatCount="indefinite"/>
+</feFlood>
+<feComposite in="color" in2="blur" operator="in" result="coloredBlur"/>
+<feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="brightened"/></feMerge>
+</filter>
+<filter id="redGlow3" x="-100%" y="-100%" width="300%" height="300%">
+<feComponentTransfer in="SourceGraphic" result="brightened">
+<feFuncR type="linear" slope="1">
+<animate attributeName="slope" values="1;1.4;1" dur="4s" begin="3.5s" repeatCount="indefinite"/>
+</feFuncR>
+<feFuncG type="linear" slope="1">
+<animate attributeName="slope" values="1;1.4;1" dur="4s" begin="3.5s" repeatCount="indefinite"/>
+</feFuncG>
+<feFuncB type="linear" slope="1">
+<animate attributeName="slope" values="1;1.4;1" dur="4s" begin="3.5s" repeatCount="indefinite"/>
+</feFuncB>
+</feComponentTransfer>
+<feGaussianBlur in="brightened" stdDeviation="0" result="blur">
+<animate attributeName="stdDeviation" values="0;8;0" dur="4s" begin="3.5s" repeatCount="indefinite"/>
+</feGaussianBlur>
+<feFlood flood-color="#E23E3F" flood-opacity="0" result="color">
+<animate attributeName="flood-opacity" values="0;1;0" dur="4s" begin="3.5s" repeatCount="indefinite"/>
+</feFlood>
+<feComposite in="color" in2="blur" operator="in" result="coloredBlur"/>
+<feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="brightened"/></feMerge>
+</filter>
+<filter id="ethereumGlow" x="-150%" y="-150%" width="400%" height="400%">
+<feComponentTransfer in="SourceGraphic" result="brightened">
+<feFuncR type="linear" slope="1">
+<animate attributeName="slope" values="1;1.6;1" dur="5s" begin="0s" repeatCount="indefinite"/>
+</feFuncR>
+<feFuncG type="linear" slope="1">
+<animate attributeName="slope" values="1;1.6;1" dur="5s" begin="0s" repeatCount="indefinite"/>
+</feFuncG>
+<feFuncB type="linear" slope="1">
+<animate attributeName="slope" values="1;1.6;1" dur="5s" begin="0s" repeatCount="indefinite"/>
+</feFuncB>
+</feComponentTransfer>
+<feGaussianBlur in="brightened" stdDeviation="0" result="blur">
+<animate attributeName="stdDeviation" values="0;12;0" dur="5s" begin="0s" repeatCount="indefinite"/>
+</feGaussianBlur>
+<feFlood flood-color="#E2505E" flood-opacity="0" result="color">
+<animate attributeName="flood-opacity" values="0;1;0" dur="5s" begin="0s" repeatCount="indefinite"/>
+</feFlood>
+<feComposite in="color" in2="blur" operator="in" result="coloredBlur"/>
+<feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="brightened"/></feMerge>
+</filter>
+</defs>
 <path d="M149.5 21.3687C134.939 46.4791 84.7539 90.2671 0.500118 64.536" stroke="url(#paint0_radial_3875_2947)" stroke-linecap="round"/>
 <path d="M310 0.368652C310 0.368652 234.5 69.3687 138.646 61.3687C42.7916 53.3687 30.5004 22.3687 30.5004 22.3687" stroke="url(#paint1_radial_3875_2947)"/>
-<path d="M136.558 44.8107C139.84 43.9504 141.803 40.5925 140.943 37.3107C140.082 34.0289 136.725 32.066 133.443 32.9263C130.161 33.7867 128.198 37.1445 129.058 40.4263C129.919 43.7081 133.277 45.6711 136.558 44.8107Z" fill="url(#paint2_radial_3875_2947)"/>
+<path d="M136.558 44.8107C139.84 43.9504 141.803 40.5925 140.943 37.3107C140.082 34.0289 136.725 32.066 133.443 32.9263C130.161 33.7867 128.198 37.1445 129.058 40.4263C129.919 43.7081 133.277 45.6711 136.558 44.8107Z" fill="url(#paint2_radial_3875_2947)" filter="url(#redGlow1)"/>
 <path fill-rule="evenodd" clip-rule="evenodd" d="M134.256 34.8204C133.559 34.2551 132.238 34.7462 131.31 35.9155C130.382 37.0848 130.193 38.4908 130.89 39.0525C131.587 39.6177 132.907 39.1267 133.835 37.9574C134.763 36.7881 134.953 35.3821 134.256 34.8204Z" fill="url(#paint3_radial_3875_2947)"/>
-<path d="M180.558 66.8107C183.84 65.9504 185.803 62.5925 184.943 59.3107C184.082 56.0289 180.724 54.066 177.443 54.9263C174.161 55.7867 172.198 59.1445 173.058 62.4263C173.919 65.7081 177.276 67.6711 180.558 66.8107Z" fill="url(#paint4_radial_3875_2947)"/>
+<path d="M180.558 66.8107C183.84 65.9504 185.803 62.5925 184.943 59.3107C184.082 56.0289 180.724 54.066 177.443 54.9263C174.161 55.7867 172.198 59.1445 173.058 62.4263C173.919 65.7081 177.276 67.6711 180.558 66.8107Z" fill="url(#paint4_radial_3875_2947)" filter="url(#redGlow2)"/>
 <path fill-rule="evenodd" clip-rule="evenodd" d="M178.255 56.8204C177.558 56.2551 176.238 56.7462 175.31 57.9155C174.382 59.0848 174.193 60.4908 174.89 61.0525C175.587 61.6177 176.907 61.1267 177.835 59.9574C178.763 58.7881 178.952 57.3821 178.255 56.8204Z" fill="url(#paint5_radial_3875_2947)"/>
-<path d="M141.557 68.8091C144.838 67.9489 146.801 64.5915 145.941 61.3101C145.081 58.0288 141.723 56.0661 138.442 56.9263C135.16 57.7865 133.198 61.144 134.058 64.4253C134.918 67.7067 138.276 69.6694 141.557 68.8091Z" fill="url(#paint6_radial_3875_2947)"/>
+<path d="M141.557 68.8091C144.838 67.9489 146.801 64.5915 145.941 61.3101C145.081 58.0288 141.723 56.0661 138.442 56.9263C135.16 57.7865 133.198 61.144 134.058 64.4253C134.918 67.7067 138.276 69.6694 141.557 68.8091Z" fill="url(#paint6_radial_3875_2947)" filter="url(#blueGlow)"/>
 <path fill-rule="evenodd" clip-rule="evenodd" d="M139.255 58.8191C138.558 58.254 137.238 58.7449 136.31 59.9141C135.382 61.0833 135.193 62.4891 135.89 63.0507C136.587 63.6158 137.907 63.1249 138.835 61.9557C139.763 60.7865 139.952 59.3807 139.255 58.8191Z" fill="url(#paint7_radial_3875_2947)"/>
-<path d="M39.557 77.8089C42.8383 76.9487 44.8011 73.5912 43.9408 70.3099C43.0806 67.0285 39.7232 65.0658 36.4418 65.926C33.1604 66.7863 31.1977 70.1437 32.058 73.4251C32.9182 76.7064 36.2756 78.6691 39.557 77.8089Z" fill="url(#paint8_radial_3875_2947)"/>
+<path d="M39.557 77.8089C42.8383 76.9487 44.8011 73.5912 43.9408 70.3099C43.0806 67.0285 39.7232 65.0658 36.4418 65.926C33.1604 66.7863 31.1977 70.1437 32.058 73.4251C32.9182 76.7064 36.2756 78.6691 39.557 77.8089Z" fill="url(#paint8_radial_3875_2947)" filter="url(#orangeGlow1)"/>
 <path fill-rule="evenodd" clip-rule="evenodd" d="M37.2553 67.8189C36.5584 67.2537 35.2383 67.7447 34.3104 68.9138C33.3825 70.083 33.1934 71.4888 33.8902 72.0504C34.587 72.6156 35.9071 72.1246 36.8351 70.9555C37.763 69.7863 37.9521 68.3805 37.2553 67.8189Z" fill="url(#paint9_radial_3875_2947)"/>
-<path d="M237.557 52.8091C240.838 51.9489 242.801 48.5915 241.941 45.3101C241.081 42.0288 237.723 40.0661 234.442 40.9263C231.16 41.7865 229.198 45.144 230.058 48.4253C230.918 51.7067 234.276 53.6694 237.557 52.8091Z" fill="url(#paint10_radial_3875_2947)"/>
+<path d="M237.557 52.8091C240.838 51.9489 242.801 48.5915 241.941 45.3101C241.081 42.0288 237.723 40.0661 234.442 40.9263C231.16 41.7865 229.198 45.144 230.058 48.4253C230.918 51.7067 234.276 53.6694 237.557 52.8091Z" fill="url(#paint10_radial_3875_2947)" filter="url(#orangeGlow2)"/>
 <path fill-rule="evenodd" clip-rule="evenodd" d="M235.255 42.8191C234.558 42.254 233.238 42.7449 232.31 43.9141C231.382 45.0833 231.193 46.4891 231.89 47.0507C232.587 47.6158 233.907 47.1249 234.835 45.9557C235.763 44.7865 235.952 43.3807 235.255 42.8191Z" fill="url(#paint11_radial_3875_2947)"/>
-<path d="M71.5584 52.8107C74.8402 51.9504 76.8032 48.5925 75.9428 45.3107C75.0825 42.0289 71.7246 40.066 68.4428 40.9263C65.161 41.7867 63.1981 45.1445 64.0584 48.4263C64.9188 51.7081 68.2766 53.6711 71.5584 52.8107Z" fill="url(#paint12_radial_3875_2947)"/>
+<path d="M71.5584 52.8107C74.8402 51.9504 76.8032 48.5925 75.9428 45.3107C75.0825 42.0289 71.7246 40.066 68.4428 40.9263C65.161 41.7867 63.1981 45.1445 64.0584 48.4263C64.9188 51.7081 68.2766 53.6711 71.5584 52.8107Z" fill="url(#paint12_radial_3875_2947)" filter="url(#redGlow3)"/>
 <path fill-rule="evenodd" clip-rule="evenodd" d="M69.2556 42.8204C68.5587 42.2551 67.2384 42.7462 66.3104 43.9155C65.3823 45.0848 65.1932 46.4908 65.8901 47.0525C66.5871 47.6177 67.9073 47.1267 68.8354 45.9574C69.7634 44.7881 69.9526 43.3821 69.2556 42.8204Z" fill="url(#paint13_radial_3875_2947)"/>
+<g filter="url(#ethereumGlow)">
 <path d="M208.026 82.477L190.534 91.0806L208.509 101.066L225.587 90.1699L208.026 82.477Z" fill="url(#paint14_radial_3875_2947)"/>
 <path d="M207.943 79.2903L190.636 87.7108L208.607 97.5347L225.658 86.8009L207.943 79.2903Z" fill="url(#paint15_radial_3875_2947)"/>
 <path d="M207.943 79.2903L190.636 87.7108L208.607 97.5347L225.658 86.8009L207.943 79.2903Z" fill="url(#paint16_radial_3875_2947)"/>
@@ -24,6 +174,7 @@
 <path d="M207.401 58.4004L208.422 97.702L225.467 86.9683L207.401 58.4004Z" fill="url(#paint22_radial_3875_2947)"/>
 <path d="M207.401 58.4004L208.422 97.702L225.467 86.9683L207.401 58.4004Z" fill="url(#paint23_radial_3875_2947)"/>
 <path d="M207.401 58.4004L208.422 97.702L225.467 86.9683L207.401 58.4004Z" fill="url(#paint24_radial_3875_2947)"/>
+</g>
 <g style="mix-blend-mode:multiply" opacity="0.4">
 <path d="M207.655 65.6435C208.762 65.514 209.307 63.5789 209.307 63.5789C209.307 63.5789 209.861 64.2756 210.59 64.4845C209.665 63.3419 209.271 61.7489 209.279 60.4737C208.971 60.4954 208.522 60.5083 208.021 60.5201C207.773 60.627 207.519 60.7244 207.255 60.7764C206.817 60.8613 206.403 61.0226 205.962 61.0931C205.845 61.1103 204.961 61.2298 204.68 61.1835C204.683 61.2917 204.686 61.3998 204.682 61.5058C204.847 62.4161 204.634 63.3618 204.294 64.2263C204.248 64.3428 204.174 64.4601 204.078 64.5778C204.646 64.2613 205.173 63.7869 205.417 63.4155C205.417 63.4155 206.278 65.8058 207.651 65.646L207.655 65.6435Z" fill="#5E4D98"/>
 </g>

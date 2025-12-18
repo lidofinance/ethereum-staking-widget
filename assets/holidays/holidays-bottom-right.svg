@@ -1,6 +1,32 @@
 <svg width="314" height="135" viewBox="0 0 314 135" fill="none" xmlns="http://www.w3.org/2000/svg">
+<defs>
+<filter id="blueCrystalGlow" x="-150%" y="-150%" width="400%" height="400%">
+<feComponentTransfer in="SourceGraphic" result="brightened">
+<feFuncR type="linear" slope="1">
+<animate attributeName="slope" values="1;1.6;1" dur="5s" begin="3.5s" repeatCount="indefinite"/>
+</feFuncR>
+<feFuncG type="linear" slope="1">
+<animate attributeName="slope" values="1;1.6;1" dur="5s" begin="3.5s" repeatCount="indefinite"/>
+</feFuncG>
+<feFuncB type="linear" slope="1">
+<animate attributeName="slope" values="1;1.6;1" dur="5s" begin="3.5s" repeatCount="indefinite"/>
+</feFuncB>
+</feComponentTransfer>
+<feGaussianBlur in="brightened" stdDeviation="0" result="blur">
+<animate attributeName="stdDeviation" values="0;12;0" dur="5s" begin="3.5s" repeatCount="indefinite"/>
+</feGaussianBlur>
+<feFlood flood-color="#00A3FF" flood-opacity="0" result="color">
+<animate attributeName="flood-opacity" values="0;1;0" dur="5s" begin="3.5s" repeatCount="indefinite"/>
+</feFlood>
+<feComposite in="color" in2="blur" operator="in" result="coloredBlur"/>
+<feMerge>
+<feMergeNode in="coloredBlur"/>
+<feMergeNode in="brightened"/>
+</feMerge>
+</filter>
+</defs>
 <path d="M7.37793 153.5C55.8779 98 277.878 89.5 353.878 89V206.5C214.045 216.167 -47.17 215.921 7.37793 153.5Z" fill="white"/>
-<path d="M100.964 121.137C92.3068 123.085 83.7162 117.655 81.7763 109.008C79.8364 100.36 85.2818 91.7705 93.939 89.8218C102.596 87.873 111.187 93.3033 113.127 101.951C115.067 110.598 109.621 119.188 100.964 121.137Z" fill="url(#paint0_radial_3875_1944)"/>
+<path d="M100.964 121.137C92.3068 123.085 83.7162 117.655 81.7763 109.008C79.8364 100.36 85.2818 91.7705 93.939 89.8218C102.596 87.873 111.187 93.3033 113.127 101.951C115.067 110.598 109.621 119.188 100.964 121.137Z" fill="url(#paint0_radial_3875_1944)" filter="url(#blueCrystalGlow)"/>
 <path fill-rule="evenodd" clip-rule="evenodd" d="M93.819 93.8178C94.4233 91.7204 97.7446 90.8081 101.228 91.7822C104.711 92.7563 107.047 95.2435 106.438 97.334C105.834 99.4314 102.512 100.344 99.0295 99.3696C95.5465 98.3956 93.2097 95.9083 93.819 93.8178Z" fill="url(#paint1_radial_3875_1944)"/>
 <g style="mix-blend-mode:multiply" opacity="0.4">
 <path d="M91.6519 94.6028C90.6169 95.0132 89.1729 93.5446 89.1729 93.5446C89.1729 93.5446 89.0352 94.4299 88.5012 94.9626C88.7408 93.5032 88.2903 91.8939 87.6462 90.7594C87.9266 90.6325 88.3267 90.4307 88.7717 90.2032C89.0431 90.1804 89.3141 90.1468 89.5718 90.0675C89.9978 89.9353 90.4415 89.8825 90.8627 89.7361C90.974 89.6958 91.8082 89.3825 92.0317 89.2074C92.083 89.3055 92.1344 89.4035 92.1908 89.4962C92.501 90.3872 93.16 91.1302 93.8898 91.7404C93.9884 91.8225 94.1121 91.8919 94.2546 91.9516C93.5991 91.9388 92.8997 91.7661 92.5007 91.5502C92.5007 91.5502 92.9396 94.0935 91.6572 94.6028L91.6519 94.6028Z" fill="#5E4D98"/>
