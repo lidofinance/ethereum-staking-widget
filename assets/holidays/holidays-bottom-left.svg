@@ -1,5 +1,31 @@
 <svg width="297" height="125" viewBox="0 0 297 125" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path d="M204.595 99.8886C207.858 103.8 213.668 104.326 217.572 101.064C221.475 97.8015 221.994 91.9866 218.731 88.0756C215.467 84.1646 209.657 83.6386 205.754 86.9007C201.85 90.1627 201.331 95.9776 204.595 99.8886Z" fill="url(#paint0_radial_3875_2047)"/>
+<defs>
+<filter id="redCrystalGlow" x="-150%" y="-150%" width="400%" height="400%">
+<feComponentTransfer in="SourceGraphic" result="brightened">
+<feFuncR type="linear" slope="1">
+<animate attributeName="slope" values="1;1.6;1" dur="5s" begin="2.5s" repeatCount="indefinite"/>
+</feFuncR>
+<feFuncG type="linear" slope="1">
+<animate attributeName="slope" values="1;1.6;1" dur="5s" begin="2.5s" repeatCount="indefinite"/>
+</feFuncG>
+<feFuncB type="linear" slope="1">
+<animate attributeName="slope" values="1;1.6;1" dur="5s" begin="2.5s" repeatCount="indefinite"/>
+</feFuncB>
+</feComponentTransfer>
+<feGaussianBlur in="brightened" stdDeviation="0" result="blur">
+<animate attributeName="stdDeviation" values="0;12;0" dur="5s" begin="2.5s" repeatCount="indefinite"/>
+</feGaussianBlur>
+<feFlood flood-color="#E23E3F" flood-opacity="0" result="color">
+<animate attributeName="flood-opacity" values="0;1;0" dur="5s" begin="2.5s" repeatCount="indefinite"/>
+</feFlood>
+<feComposite in="color" in2="blur" operator="in" result="coloredBlur"/>
+<feMerge>
+<feMergeNode in="coloredBlur"/>
+<feMergeNode in="brightened"/>
+</feMerge>
+</filter>
+</defs>
+<path d="M204.595 99.8886C207.858 103.8 213.668 104.326 217.572 101.064C221.475 97.8015 221.994 91.9866 218.731 88.0756C215.467 84.1646 209.657 83.6386 205.754 86.9007C201.85 90.1627 201.331 95.9776 204.595 99.8886Z" fill="url(#paint0_radial_3875_2047)" filter="url(#redCrystalGlow)"/>
 <path fill-rule="evenodd" clip-rule="evenodd" d="M217.39 89.9381C217.847 88.7715 216.652 87.1961 214.725 86.4236C212.799 85.6511 210.865 85.9681 210.413 87.1333C209.956 88.2999 211.15 89.8753 213.077 90.6478C215.004 91.4203 216.937 91.1033 217.39 89.9381Z" fill="url(#paint1_radial_3875_2047)"/>
 <g style="mix-blend-mode:multiply" opacity="0.4">
 <path d="M218.153 91.0324C218.488 91.5976 219.627 91.4594 219.627 91.4594C219.627 91.4594 219.398 91.9117 219.465 92.349C219.837 91.5988 220.571 91.0331 221.237 90.7538C221.152 90.5935 221.037 90.3555 220.91 90.0893C220.794 89.9796 220.682 89.8652 220.591 89.7348C220.441 89.5189 220.257 89.3325 220.114 89.1119C220.077 89.0529 219.801 88.6052 219.758 88.444C219.702 88.4697 219.647 88.4954 219.59 88.5168C219.156 88.8078 218.612 88.9039 218.08 88.9138C218.008 88.915 217.929 88.9012 217.845 88.8761C218.147 89.1102 218.521 89.2878 218.773 89.3359C218.773 89.3359 217.736 90.3298 218.151 91.0305L218.153 91.0324Z" fill="#4D7398"/>
