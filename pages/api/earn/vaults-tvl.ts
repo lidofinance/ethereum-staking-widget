@@ -8,6 +8,8 @@ import {
 } from '@lidofinance/next-api-wrapper';
 import { LidoSDKWrap } from '@lidofinance/lido-ethereum-sdk/wrap';
 
+import { getExternalConfig } from 'utilsApi/get-external-config';
+
 import LocalManifestRaw from 'IPFS.json' assert { type: 'json' };
 
 import { config, secretConfig } from 'config';
@@ -45,98 +47,102 @@ type VaultsTvlResponse = {
   };
 };
 
+const DEFAULT_CACHE_TTL = 10 * 60 * 1000; // 10 minutes
+
 const LocalManifest = LocalManifestRaw as unknown as Manifest;
-const vaultsFromConfig = LocalManifest[CHAINS.Mainnet].config.earnVaults || [];
-const vaultNames = vaultsFromConfig.map((v) => v.name);
+const vaultsFromLocalManifest =
+  LocalManifest[CHAINS.Mainnet].config.earnVaults || [];
 
 const caches: Record<string, CacheClass<string, any>> = {};
 const cacheKeys: Record<string, string> = {};
 const cacheTTL: Record<string, number> = {};
 
-vaultNames.forEach((name) => {
-  caches[name] = new Cache<string, any>();
-  cacheKeys[name] = `${name}-tvl`;
-  cacheTTL[name] = 10 * 60 * 1000; // 10 minutes
+// initialize cache for each vault
+vaultsFromLocalManifest.forEach((vault) => {
+  caches[vault.name] = new Cache<string, any>();
+  cacheKeys[vault.name] = `${vault.name}-tvl`;
+  cacheTTL[vault.name] = DEFAULT_CACHE_TTL;
 });
 
 const fetchers: {
   [key: string]: () => Promise<{ tvlEthWei: string }>;
-} = {};
+} = {
+  dvv: async () => {
+    const chain = mainnet;
+    const publicClientMainnet = createPublicClient({
+      chain,
+      transport: fallback(secretConfig.rpcUrls_1.map((url) => http(url))),
+    });
 
-fetchers.dvv = async () => {
-  const chain = mainnet;
-  const publicClientMainnet = createPublicClient({
-    chain,
-    transport: fallback(secretConfig.rpcUrls_1.map((url) => http(url))),
-  });
+    const vault = getDVVVaultContract(publicClientMainnet);
 
-  const vault = getDVVVaultContract(publicClientMainnet);
+    const tvlWsteth = await vault.read.totalAssets();
 
-  const tvlWsteth = await vault.read.totalAssets();
+    const wrap = new LidoSDKWrap({
+      chainId: chain.id,
+      logMode: 'none',
+      rpcProvider: publicClientMainnet,
+    });
 
-  const wrap = new LidoSDKWrap({
-    chainId: chain.id,
-    logMode: 'none',
-    rpcProvider: publicClientMainnet,
-  });
+    const tvlSteth = await wrap.convertWstethToSteth(tvlWsteth);
 
-  const tvlSteth = await wrap.convertWstethToSteth(tvlWsteth);
+    return {
+      tvlEthWei: String(tvlSteth),
+    };
+  },
+  ggv: async () => {
+    const publicClientMainnet = createPublicClient({
+      chain: mainnet,
+      transport: fallback(secretConfig.rpcUrls_1.map((url) => http(url))),
+    });
 
-  return {
-    tvlEthWei: String(tvlSteth),
-  };
-};
+    const lens = getGGVLensContract(publicClientMainnet);
+    const vault = getGGVVaultContract(publicClientMainnet);
+    const accountant = getGGVAccountantContract(publicClientMainnet);
 
-fetchers.ggv = async () => {
-  const publicClientMainnet = createPublicClient({
-    chain: mainnet,
-    transport: fallback(secretConfig.rpcUrls_1.map((url) => http(url))),
-  });
+    const [_, tvlWETH] = await lens.read.totalAssets([
+      vault.address,
+      accountant.address,
+    ]);
 
-  const lens = getGGVLensContract(publicClientMainnet);
-  const vault = getGGVVaultContract(publicClientMainnet);
-  const accountant = getGGVAccountantContract(publicClientMainnet);
+    return {
+      tvlEthWei: String(tvlWETH),
+    };
+  },
+  strategy: async () => {
+    const publicClientMainnet = createPublicClient({
+      chain: mainnet,
+      transport: fallback(secretConfig.rpcUrls_1.map((url) => http(url))),
+    });
 
-  const [_, tvlWETH] = await lens.read.totalAssets([
-    vault.address,
-    accountant.address,
-  ]);
+    const collector = getSTGCollectorContract(publicClientMainnet);
+    const vaultContract = getSTGVaultContract(publicClientMainnet);
 
-  return {
-    tvlEthWei: String(tvlWETH),
-  };
-};
+    const collectorResponse: STGCollectResponse = await collector.read.collect([
+      '0x0000000000000000000000000000000000000000', // account
+      vaultContract.address, // vault
+      STG_COLLECTOR_CONFIG, // config
+    ]);
 
-fetchers.strategy = async () => {
-  const publicClientMainnet = createPublicClient({
-    chain: mainnet,
-    transport: fallback(secretConfig.rpcUrls_1.map((url) => http(url))),
-  });
+    const totalTvlWei = collectorResponse.totalBase;
 
-  const collector = getSTGCollectorContract(publicClientMainnet);
-  const vaultContract = getSTGVaultContract(publicClientMainnet);
-
-  const collectorResponse: STGCollectResponse = await collector.read.collect([
-    '0x0000000000000000000000000000000000000000', // account
-    vaultContract.address, // vault
-    STG_COLLECTOR_CONFIG, // config
-  ]);
-
-  const totalTvlWei = collectorResponse.totalBase;
-
-  return {
-    tvlEthWei: String(totalTvlWei),
-  };
+    return {
+      tvlEthWei: String(totalTvlWei),
+    };
+  },
 };
 
 const handler = async (_: NextApiRequest, res: NextApiResponse) => {
   try {
-    const fetchPromises = vaultNames.map((name) =>
+    const manifestConfig = await getExternalConfig();
+    const vaultsFromConfig = manifestConfig?.config.earnVaults || [];
+
+    const fetchPromises = vaultsFromConfig.map((vault) =>
       fetchWithCache({
-        cacheKey: cacheKeys[name],
-        cacheTTL: cacheTTL[name],
-        cache: caches[name],
-        fetcher: fetchers[name],
+        cacheKey: cacheKeys[vault.name],
+        cacheTTL: cacheTTL[vault.name],
+        cache: caches[vault.name],
+        fetcher: fetchers[vault.name],
       }),
     );
     const settledPromises = await Promise.allSettled(fetchPromises);
@@ -149,7 +155,7 @@ const handler = async (_: NextApiRequest, res: NextApiResponse) => {
     };
 
     settledPromises.forEach((promise, index) => {
-      const name = vaultNames[index];
+      const name = vaultsFromConfig[index].name;
       if (promise.status === 'fulfilled') {
         const fetchedCachedResult = promise.value;
         response.data[name] = {
