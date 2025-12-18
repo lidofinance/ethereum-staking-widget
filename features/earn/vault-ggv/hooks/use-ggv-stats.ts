@@ -7,7 +7,6 @@ import { CHAINS } from 'consts/chains';
 import { useConfig } from 'config';
 
 import { useMainnetOnlyWagmi } from 'modules/web3';
-import { VaultAPYType } from 'config/external-config/types';
 
 import { useQuery } from '@tanstack/react-query';
 import {
@@ -15,12 +14,7 @@ import {
   getGGVLensContract,
   getGGVVaultContract,
 } from '../contracts';
-import {
-  calculateGGVIncentivesAPY,
-  fetchDailyGGVApy,
-  fetchWeeklyGGVApy,
-  fetchWeeklyGGVApyAverage,
-} from '../utils';
+import { calculateGGVIncentivesAPY, getGGVApy } from '../utils';
 
 const useGGVTvl = () => {
   const { publicClientMainnet } = useMainnetOnlyWagmi();
@@ -60,20 +54,6 @@ const useGGVTvl = () => {
       };
     },
   });
-};
-
-const getGGVApy = async (
-  vault: Address,
-  ggvAPYType?: VaultAPYType,
-): Promise<number> => {
-  switch (ggvAPYType) {
-    case 'weekly':
-      return await fetchWeeklyGGVApy(vault);
-    case 'weekly_moving_average':
-      return await fetchWeeklyGGVApyAverage(vault);
-    default:
-      return (await fetchDailyGGVApy(vault)).daily;
-  }
 };
 
 export const useGGVApy = () => {

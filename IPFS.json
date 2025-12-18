@@ -78,6 +78,7 @@
       "featureFlags": {
         "ledgerLiveL2": true
       },
+      "earnVaults": [],
       "api": {
         "validation": {
           "version": "1"
@@ -95,6 +96,7 @@
       "featureFlags": {
         "ledgerLiveL2": true
       },
+      "earnVaults": [],
       "pages": {
         "/withdrawals": {
           "shouldDisable": true
