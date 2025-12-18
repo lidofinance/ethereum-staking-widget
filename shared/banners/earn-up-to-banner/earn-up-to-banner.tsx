@@ -24,7 +24,6 @@ type EarnUpToBannerProps = {
 
 export const EarnUpToBanner = (props: EarnUpToBannerProps) => {
   const { matomoEvent } = props;
-  const bannerLinkHref = EARN_PATH;
 
   const { closeModal } = useModalActions();
 
@@ -65,7 +64,7 @@ export const EarnUpToBanner = (props: EarnUpToBannerProps) => {
         </LogoContainer>
       </InnerContainer>
       <OverlayLink
-        href={bannerLinkHref}
+        href={EARN_PATH}
         onClick={() => {
           trackMatomoEvent(matomoEvent);
           closeModal();
