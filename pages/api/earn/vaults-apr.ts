@@ -37,8 +37,13 @@ import { GGV_STATS_ORIGIN } from 'features/earn/vault-ggv/consts';
 
 import LocalManifestRaw from 'IPFS.json' assert { type: 'json' };
 
-type VaultsAprResponse = {
-  data: Record<string, any>;
+export type VaultsAprResponse = {
+  data: {
+    maxValue: number;
+    [key: string]:
+      | { apr: number | undefined; timestamp: number | undefined }
+      | number;
+  };
   meta: {
     resTimestamp: number;
   };
