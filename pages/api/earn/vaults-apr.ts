@@ -50,7 +50,7 @@ const cacheTTL: Record<string, number> = {};
 vaultNames.forEach((name) => {
   caches[name] = new Cache<string, any>();
   cacheKeys[name] = `${name}-apr`;
-  cacheTTL[name] = 6 * 60 * 60 * 1000; // 6 hours
+  cacheTTL[name] = 60 * 60 * 1000; // 1 hour
 });
 
 const fetchers: {
