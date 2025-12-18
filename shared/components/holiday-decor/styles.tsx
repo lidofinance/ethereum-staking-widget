@@ -16,6 +16,7 @@ export const StyledHolidaysTopLeft = styled(HolidaysTopLeftSVG)`
   height: 179px;
   overflow: visible;
   will-change: auto;
+  pointer-events: none;
 
   @media ${devicesHeaderMedia.mobile} {
     width: 222px;
@@ -32,6 +33,7 @@ export const StyledHolidaysTopRight = styled(HolidaysTopRightSVG)`
   height: 118px;
   overflow: visible;
   will-change: auto;
+  pointer-events: none;
 
   @media ${devicesHeaderMedia.mobile} {
     width: 175px;
@@ -47,6 +49,7 @@ export const HolidaysDecorBottomFlexContainer = styled.div`
   align-items: flex-end;
   position: sticky;
   bottom: -6px;
+  pointer-events: none;
 
   @media ${devicesHeaderMedia.mobile} {
     display: none;
