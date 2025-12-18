@@ -1,7 +1,7 @@
 import { useCallback } from 'react';
 import invariant from 'tiny-invariant';
 
-import { config } from 'config';
+import { config, useConfig } from 'config';
 import {
   applyRoundUpGasLimit,
   useDappStatus,
@@ -35,6 +35,7 @@ export const useStake = ({ onConfirm, onRetry }: StakeOptions) => {
   const { stake, stETH } = useLidoSDK();
   const { txModalStages } = useTxModalStagesStake();
   const txFlow = useTxFlow();
+  const { featureFlags } = useConfig().externalConfig;
 
   return useCallback(
     async ({ amount, referral }: StakeArguments): Promise<boolean> => {
@@ -87,7 +88,9 @@ export const useStake = ({ onConfirm, onRetry }: StakeOptions) => {
           },
           onSuccess: async ({ txHash }) => {
             const balance = await onStakeTxConfirmed();
-            bells();
+            if (featureFlags.holidayDecorEnabled) {
+              bells();
+            }
             txModalStages.success(balance, txHash);
             trackMatomoEvent(MATOMO_TX_EVENTS_TYPES.stakingFinish);
           },
@@ -110,6 +113,7 @@ export const useStake = ({ onConfirm, onRetry }: StakeOptions) => {
       stETH,
       txModalStages,
       isAA,
+      featureFlags.holidayDecorEnabled,
       bells,
       onRetry,
     ],
