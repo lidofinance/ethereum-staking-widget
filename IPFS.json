@@ -19,7 +19,7 @@
       "featureFlags": {
         "disableSendCalls": false,
         "dgBannerEnabled": true,
-        "rewardsMaintenance": true,
+        "rewardsMaintenance": false,
         "holidayDecorEnabled": true
       },
       "pages": {
