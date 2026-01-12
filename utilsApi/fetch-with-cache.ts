@@ -22,12 +22,12 @@ export const fetchWithCache = async <T>({
   fetcher,
   enabled = true,
 }: Params<T>): Promise<CacheEntry<T> | undefined> => {
+  const failureKey = `${cacheKey}__error__`;
   try {
-    if (!enabled) {
+    if (!enabled || !cache || !cacheKey || !fetcher) {
       return undefined;
     }
 
-    const failureKey = `${cacheKey}__error__`;
     if (cache.get(failureKey)) {
       return undefined;
     }
@@ -46,7 +46,7 @@ export const fetchWithCache = async <T>({
   } catch (error) {
     console.error(`Error in fetchWithCache for key: ${cacheKey}`, error);
     if (failureTTL > 0) {
-      cache.put(`${cacheKey}__error__`, true, failureTTL);
+      cache.put(failureKey, true, failureTTL);
     }
     return undefined;
   }
