@@ -20,7 +20,7 @@
         "disableSendCalls": false,
         "dgBannerEnabled": true,
         "rewardsMaintenance": false,
-        "holidayDecorEnabled": true
+        "holidayDecorEnabled": false
       },
       "pages": {
         "/earn": {
@@ -53,7 +53,7 @@
         "disableSendCalls": false,
         "dgBannerEnabled": true,
         "rewardsMaintenance": false,
-        "holidayDecorEnabled": true
+        "holidayDecorEnabled": false
       },
       "pages": {
         "/earn": {
@@ -128,7 +128,7 @@
         "dgBannerEnabled": false,
         "dgWarningState": false,
         "rewardsMaintenance": false,
-        "holidayDecorEnabled": true
+        "holidayDecorEnabled": false
       },
       "earnVaults": [
         { "name": "strategy" },
