@@ -136,8 +136,9 @@ const handler = async (_: NextApiRequest, res: NextApiResponse) => {
   try {
     const manifestConfig = await getExternalConfig();
     const vaultsFromConfig = manifestConfig?.config.earnVaults || [];
+    const vaults = vaultsFromConfig.filter((v) => v.name in fetchers);
 
-    const fetchPromises = vaultsFromConfig.map((vault) =>
+    const fetchPromises = vaults.map((vault) =>
       fetchWithCache({
         cacheKey: cacheKeys[vault.name],
         cacheTTL: cacheTTL[vault.name],
@@ -155,7 +156,7 @@ const handler = async (_: NextApiRequest, res: NextApiResponse) => {
     };
 
     settledPromises.forEach((promise, index) => {
-      const name = vaultsFromConfig[index].name;
+      const name = vaults[index].name;
       if (promise.status === 'fulfilled') {
         const fetchedCachedResult = promise.value;
         response.data[name] = {
