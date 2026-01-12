@@ -40,7 +40,7 @@ import { STG_COLLECTOR_CONFIG } from 'features/earn/vault-stg/consts';
 import { STGCollectResponse } from 'features/earn/vault-stg/hooks/use-stg-collect';
 import { getDVVVaultContract } from 'features/earn/vault-dvv/contracts';
 
-type VaultsTvlResponse = {
+export type VaultsTvlResponse = {
   data: Record<string, any>;
   meta: {
     resTimestamp: number;
