@@ -37,6 +37,9 @@ export type ManifestConfig = {
     dgWarningState?: boolean;
     rewardsMaintenance?: boolean;
     holidayDecorEnabled?: boolean;
+    forceAllowance?: {
+      withdrawalRequest?: boolean;
+    };
   };
   pages: {
     [page in ManifestConfigPage]?: {

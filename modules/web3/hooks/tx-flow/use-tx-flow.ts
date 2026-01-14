@@ -95,8 +95,9 @@ export const useTxFlow = () => {
       // if address is not valid, don't send the transaction
       if (!result) return;
 
-      if (isAA) {
-        const calls = callsFn ? await callsFn() : [];
+      // callsFn must be defined for AA transactions. If it's not defined, the transaction will be sent to yourself instead of the smart account.
+      if (isAA && callsFn) {
+        const calls = await callsFn();
         await sendAACalls(calls, async (props) => {
           await txStagesCallback(props);
         });
