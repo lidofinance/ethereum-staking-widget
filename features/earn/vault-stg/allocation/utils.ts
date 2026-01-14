@@ -1,17 +1,21 @@
 import { FunctionComponent } from 'react';
 import { AllocationItem as AllocationPosition } from 'features/earn/shared/vault-allocation/types';
-import { SparkIcon, AaveV3Icon } from 'assets/earn';
+import { SparkIcon, AaveV3Icon, FluidIcon } from 'assets/earn';
 
 const ALLOCATION_PROTOCOL_IDS_KNOWN = [
   'aave-wsteth-weth',
+  'aave-wsteth-usd',
   'aave-ethena',
   'spark-wsteth-weth',
+  'fluid-resolv-usdt',
 ];
 
 const ALLOCATION_ICONS_BY_ID: { [key: string]: FunctionComponent } = {
   'aave-wsteth-weth': AaveV3Icon,
+  'aave-wsteth-usd': AaveV3Icon,
   'aave-ethena': AaveV3Icon,
   'spark-wsteth-weth': SparkIcon,
+  'fluid-resolv-usdt': FluidIcon,
 };
 
 const ALLOCATION_PENDING_ID = 'pending-deposits';
