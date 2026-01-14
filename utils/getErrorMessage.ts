@@ -1,5 +1,7 @@
 import { SendCallsError } from 'modules/web3';
 import { UnknownBundleIdError } from 'viem';
+import { trackEvent } from '@lidofinance/analytics-matomo';
+import debounce from 'lodash/debounce';
 
 export enum ErrorMessage {
   NOT_ENOUGH_ETHER = 'Not enough ether for gas.',
@@ -14,13 +16,7 @@ export enum ErrorMessage {
   BUNDLE_NOT_FOUND = 'Could not locate transaction. Check your wallet for details.',
 }
 
-export const getErrorMessage = (error: unknown): ErrorMessage | string => {
-  try {
-    console.error('TX_ERROR:', { error, error_string: JSON.stringify(error) });
-  } catch (e) {
-    console.error('TX_ERROR:', e);
-  }
-
+export const getError = (error: unknown): ErrorMessage | string => {
   // Try to extract humane error from trusted error types
   const parsedMessage = extractHumaneMessage(error);
 
@@ -61,6 +57,20 @@ export const getErrorMessage = (error: unknown): ErrorMessage | string => {
     default:
       return ErrorMessage.SOMETHING_WRONG;
   }
+};
+
+export const getErrorMessage = (error: unknown): ErrorMessage | string => {
+  try {
+    console.error('TX_ERROR:', { error, error_string: JSON.stringify(error) });
+  } catch (e) {
+    console.error('TX_ERROR:', e);
+  }
+
+  const errorMessage = getError(error);
+  // To prevent spamming the event on rerender or something else using debounce
+  trackErrorDebounced(errorMessage);
+
+  return errorMessage;
 };
 
 // extracts message from Errors made by us
@@ -149,3 +159,11 @@ export const extractCodeFromError = (
 
   return 0;
 };
+
+const trackErrorDebounced = debounce((errorMessage: string) => {
+  trackEvent(
+    'Ethereum_Staking_Widget',
+    `Transaction error message: ${errorMessage}`,
+    'eth_widget_tx_error_message',
+  );
+}, 1000);
