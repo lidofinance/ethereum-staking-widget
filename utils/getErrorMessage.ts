@@ -1,7 +1,9 @@
 import { SendCallsError } from 'modules/web3';
 import { UnknownBundleIdError } from 'viem';
-import { trackEvent } from '@lidofinance/analytics-matomo';
+import { trackMatomoEvent } from 'utils/track-matomo-event';
 import debounce from 'lodash/debounce';
+
+import { MATOMO_ERROR_EVENTS_TYPES } from 'consts/matomo/matomo-error-events';
 
 export enum ErrorMessage {
   NOT_ENOUGH_ETHER = 'Not enough ether for gas.',
@@ -160,10 +162,27 @@ export const extractCodeFromError = (
   return 0;
 };
 
+// Mapping from ErrorMessage values to MATOMO_ERROR_EVENTS_TYPES
+const ERROR_TO_MATOMO_MAP: Record<ErrorMessage, MATOMO_ERROR_EVENTS_TYPES> = {
+  [ErrorMessage.NOT_ENOUGH_ETHER]: MATOMO_ERROR_EVENTS_TYPES.NOT_ENOUGH_ETHER,
+  [ErrorMessage.DENIED_SIG]: MATOMO_ERROR_EVENTS_TYPES.DENIED_SIG,
+  [ErrorMessage.SOMETHING_WRONG]: MATOMO_ERROR_EVENTS_TYPES.SOMETHING_WRONG,
+  [ErrorMessage.TRANSACTION_REVERTED]:
+    MATOMO_ERROR_EVENTS_TYPES.TRANSACTION_REVERTED,
+  [ErrorMessage.ENABLE_BLIND_SIGNING]:
+    MATOMO_ERROR_EVENTS_TYPES.ENABLE_BLIND_SIGNING,
+  [ErrorMessage.LIMIT_REACHED]: MATOMO_ERROR_EVENTS_TYPES.LIMIT_REACHED,
+  [ErrorMessage.DEVICE_LOCKED]: MATOMO_ERROR_EVENTS_TYPES.DEVICE_LOCKED,
+  [ErrorMessage.INVALID_REFERRAL]: MATOMO_ERROR_EVENTS_TYPES.INVALID_REFERRAL,
+  [ErrorMessage.INVALID_SIGNATURE]: MATOMO_ERROR_EVENTS_TYPES.INVALID_SIGNATURE,
+  [ErrorMessage.BUNDLE_NOT_FOUND]: MATOMO_ERROR_EVENTS_TYPES.BUNDLE_NOT_FOUND,
+};
+
 const trackErrorDebounced = debounce((errorMessage: string) => {
-  trackEvent(
-    'Ethereum_Staking_Widget',
-    `Transaction error message: ${errorMessage}`,
-    'eth_widget_tx_error_message',
-  );
+  const matomoErrorEventType =
+    errorMessage in ERROR_TO_MATOMO_MAP
+      ? ERROR_TO_MATOMO_MAP[errorMessage as ErrorMessage]
+      : MATOMO_ERROR_EVENTS_TYPES.SOMETHING_WRONG;
+
+  trackMatomoEvent(matomoErrorEventType);
 }, 1000);
