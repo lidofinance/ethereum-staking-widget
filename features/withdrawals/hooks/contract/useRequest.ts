@@ -5,17 +5,9 @@ import { TOKENS_TO_WITHDRAWLS } from 'features/withdrawals/types/tokens-withdraw
 import { useWithdrawals } from 'features/withdrawals/contexts/withdrawals-context';
 import { useTxModalStagesRequest } from 'features/withdrawals/request/transaction-modal-request/use-tx-modal-stages-request';
 import { useTransactionModal } from 'shared/transaction-modal/transaction-modal';
-import {
-  useAA,
-  useDappStatus,
-  useIsSmartAccount,
-  useLidoSDK,
-  useTxFlow,
-} from 'modules/web3';
+import { useAA, useIsSmartAccount, useLidoSDK, useTxFlow } from 'modules/web3';
 
-import { useWithdrawalApprove } from './use-withdrawal-approve';
-
-import type { Address } from 'viem';
+import { useWithdrawalRequestTxApprove } from './use-withdrawal-request-tx-approve';
 
 type useWithdrawalRequestParams = {
   amount: bigint | null;
@@ -30,31 +22,25 @@ export const useWithdrawalRequest = ({
   onConfirm,
   onRetry,
 }: useWithdrawalRequestParams) => {
-  const { address } = useDappStatus();
   const { isAA } = useAA();
   const { isBunker } = useWithdrawals();
   const { withdraw } = useLidoSDK();
   const { txModalStages } = useTxModalStagesRequest();
   const txFlow = useTxFlow();
-  const {
-    isSmartAccount,
-    hasBytecode,
-    isLoading: isSmartAccountLoading,
-  } = useIsSmartAccount();
+  const { hasBytecode } = useIsSmartAccount();
   const {
     allowance,
     needsApprove,
-    isLoading: isUseApproveLoading,
-    refetch: refetchAllowance,
-  } = useWithdrawalApprove(amount ? amount : 0n, token, address as Address);
+    isApprovalFlow,
+    isApprovalFlowLoading,
+    isTokenLocked,
+    hasEnoughAllowance,
+    refetchAllowance,
+    processApproveTx,
+    isForceAllowance,
+  } = useWithdrawalRequestTxApprove({ amount, token });
+
   const { closeModal } = useTransactionModal();
-
-  const hasEnoughAllowance = !!(allowance && !needsApprove);
-
-  // “use the classic approve-then-withdraw flow” rather than “use an ERC-2612 permit”
-  const isApprovalFlow = isSmartAccount || hasEnoughAllowance;
-  const isApprovalFlowLoading = isSmartAccountLoading || isUseApproveLoading;
-  const isTokenLocked = !!(hasBytecode && !isAA && needsApprove);
 
   const request = useCallback(
     async ({
@@ -78,23 +64,16 @@ export const useWithdrawalRequest = ({
           }
         }
 
-        if ((!isAA && hasBytecode) || hasEnoughAllowance) {
-          // A rare case when the connected address has bytecode (is contract) but does not support batch txs for some reason
-          // or the address has enough allowance to skip approval
+        // A rare case when the connected address has bytecode (is contract) but does not support batch txs for some reason
+        // or the address has enough allowance to skip approval or allowance is forced
+        if (
+          (!isAA && (hasBytecode || isForceAllowance)) ||
+          hasEnoughAllowance
+        ) {
           await txFlow({
-            callsFn: async () => [
-              await withdraw.request.requestWithdrawalPopulateTx({
-                amount,
-                token,
-              }),
-            ],
             sendTransaction: async (txStagesCallback) => {
               if (needsApprove) {
-                await withdraw.approval.approve({
-                  amount,
-                  token,
-                  callback: txStagesCallback,
-                });
+                await processApproveTx({ onRetry });
               }
               await withdraw.request.requestWithdrawal({
                 requests,
@@ -103,15 +82,9 @@ export const useWithdrawalRequest = ({
               });
             },
             onSign: async () => {
-              if (needsApprove) {
-                return txModalStages.signApproval(amount, token);
-              }
               return txModalStages.sign(amount, token);
             },
             onReceipt: async ({ payload }) => {
-              if (needsApprove) {
-                return txModalStages.pendingApproval(amount, token, payload);
-              }
               return txModalStages.pending(amount, token, payload);
             },
             onFailure: ({ error }) => {
@@ -193,9 +166,11 @@ export const useWithdrawalRequest = ({
       isAA,
       isApprovalFlow,
       isBunker,
+      isForceAllowance,
       needsApprove,
       onConfirm,
       onRetry,
+      processApproveTx,
       refetchAllowance,
       txFlow,
       txModalStages,
