@@ -6,8 +6,7 @@ export const useIsForceAllowance = () => {
   const { query } = useRouter();
 
   const isUrlForceAllowance = query.forceAllowance === 'enabled';
-  const isFeatureFlagForceAllowance =
-    featureFlags.forceAllowance?.withdrawalRequest === true;
+  const isFeatureFlagForceAllowance = featureFlags.forceAllowance === true;
 
   return isUrlForceAllowance || isFeatureFlagForceAllowance;
 };
