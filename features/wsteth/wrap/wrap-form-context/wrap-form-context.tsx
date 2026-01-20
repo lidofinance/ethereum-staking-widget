@@ -10,6 +10,7 @@ import {
 import { useForm, FormProvider } from 'react-hook-form';
 
 import { useFormControllerRetry } from 'shared/hook-form/form-controller/use-form-controller-retry-delegate';
+import { useQueryParamsReferralForm } from 'shared/hooks/use-query-values-form';
 import {
   FormControllerContext,
   FormControllerContextValueType,
@@ -58,6 +59,7 @@ export const WrapFormProvider: FC<PropsWithChildren> = ({ children }) => {
     defaultValues: {
       amount: null,
       token: TOKENS_TO_WRAP.stETH,
+      referral: null,
     },
     context: validationContextPromise,
     criteriaMode: 'firstError',
@@ -69,7 +71,9 @@ export const WrapFormProvider: FC<PropsWithChildren> = ({ children }) => {
     watch,
     reset,
     formState: { defaultValues },
+    setValue,
   } = formObject;
+  useQueryParamsReferralForm<WrapFormInputType>({ setValue });
   const [token, amount] = watch(['token', 'amount']);
   const { retryEvent, retryFire } = useFormControllerRetry();
 
