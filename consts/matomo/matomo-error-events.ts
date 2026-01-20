@@ -53,17 +53,17 @@ export const MATOMO_ERROR_EVENTS: Record<
     'eth_widget_errors_invalid_referral',
   ],
   [MATOMO_ERROR_EVENTS_TYPES.INVALID_SIGNATURE]: [
-    'Ethereum_Staking_Widget_Errors_Errors',
+    'Ethereum_Staking_Widget_Errors',
     'Invalid Permit signature. Perhaps it has expired or already been used. Try submitting a withdrawal request again.',
     'eth_widget_errors_invalid_signature',
   ],
   [MATOMO_ERROR_EVENTS_TYPES.BUNDLE_NOT_FOUND]: [
-    'Ethereum_Staking_Widget_Errors_Errors',
+    'Ethereum_Staking_Widget_Errors',
     'Could not locate transaction. Check your wallet for details.',
     'eth_widget_errors_bundle_not_found',
   ],
   [MATOMO_ERROR_EVENTS_TYPES.SOMETHING_WRONG]: [
-    'Ethereum_Staking_Widget_Errors_Errors',
+    'Ethereum_Staking_Widget_Errors',
     'Something went wrong.',
     'eth_widget_errors_smth_wrong',
   ],
