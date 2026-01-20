@@ -14,6 +14,8 @@ export const enum MATOMO_TX_EVENTS_TYPES {
   unwrapFinish = 'unwrapFinish',
 
   // Withdrawal
+  withdrawalRequestApprovalStart = 'withdrawalRequestApprovalStart',
+  withdrawalRequestApprovalFinish = 'withdrawalRequestApprovalFinish',
   withdrawalRequestStart = 'withdrawalRequestStart',
   withdrawalRequestFinish = 'withdrawalRequestFinish',
   withdrawalClaimStart = 'withdrawalClaimStart',
@@ -66,6 +68,16 @@ export const MATOMO_TX_EVENTS: Record<MATOMO_TX_EVENTS_TYPES, MatomoEventType> =
       'eth_widget_unwrap_finish',
     ],
 
+    [MATOMO_TX_EVENTS_TYPES.withdrawalRequestApprovalStart]: [
+      'Ethereum_Staking_Widget',
+      'Start withdrawal request approval',
+      'eth_widget_withdrawal_request_approval_start',
+    ],
+    [MATOMO_TX_EVENTS_TYPES.withdrawalRequestApprovalFinish]: [
+      'Ethereum_Staking_Widget',
+      'Finish withdrawal request approval',
+      'eth_widget_withdrawal_request_approval_finish',
+    ],
     [MATOMO_TX_EVENTS_TYPES.withdrawalRequestStart]: [
       'Ethereum_Staking_Widget',
       'Start withdrawal request',
