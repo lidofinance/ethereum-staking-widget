@@ -5,6 +5,8 @@ WORKDIR /app
 
 RUN apk add --no-cache git=~2
 COPY package.json yarn.lock ./
+# copy with validate_addresses JSON file
+# COPY package.json yarn.lock validate_addresses.example.json ./
 
 RUN yarn install --frozen-lockfile --non-interactive --ignore-scripts && yarn cache clean
 COPY . .

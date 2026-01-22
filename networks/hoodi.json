@@ -9,7 +9,8 @@
     "dualGovernance": "0x9CAaCCc62c66d817CC59c44780D1b722359795bF",
     "escrow": "0x781afe6C8D768CEaA9a97f2A75714e80AE0e83B9",
     "emergencyProtectedTimelock": "0x0A5E22782C0Bd4AddF10D771f0bF0406B038282d",
-    "dgConfigProvider": "0x2b685e6fB288bBb7A82533BAfb679FfDF6E5bb33"
+    "dgConfigProvider": "0x2b685e6fB288bBb7A82533BAfb679FfDF6E5bb33",
+    "wstethReferralStaker": "0xf886BcC68b240316103fE8A12453Ce7831c2e835"
   },
   "api": {}
 }

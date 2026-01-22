@@ -6,7 +6,10 @@ import { CHAINS } from '@lidofinance/lido-ethereum-sdk/common';
 import { LidoLocatorAbi } from '@lidofinance/lido-ethereum-sdk/core';
 import { StethAbi } from '@lidofinance/lido-ethereum-sdk/stake';
 import { WithdrawalQueueAbi } from '@lidofinance/lido-ethereum-sdk/withdraw';
-import { WstethABI } from '@lidofinance/lido-ethereum-sdk/wrap';
+import {
+  WstethABI,
+  WstethReferralStakerABI,
+} from '@lidofinance/lido-ethereum-sdk/wrap';
 import {
   bridgedWstethAbi,
   rebasableL2StethAbi,
@@ -63,6 +66,8 @@ export const METRIC_CONTRACT_ABIS = {
   [CONTRACT_NAMES.withdrawalQueue]: WithdrawalQueueAbi,
   [CONTRACT_NAMES.L2stETH]: rebasableL2StethAbi,
   [CONTRACT_NAMES.L2wstETH]: bridgedWstethAbi,
+  // SI contracts
+  [CONTRACT_NAMES.wstethReferralStaker]: WstethReferralStakerABI,
   // Dual Governance
   [CONTRACT_NAMES.dualGovernance]: dualGovernanceAbi,
   [CONTRACT_NAMES.escrow]: escrowAbi,
