@@ -2333,10 +2333,10 @@
   resolved "https://registry.yarnpkg.com/@lidofinance/eth-providers/-/eth-providers-0.48.0.tgz#217279cc8433968531283b985617b981d59a8393"
   integrity sha512-ItzIN9psHu8stf8MTAmNaXmKyaVnsYzQ10zdvdX6TM56TcFRlxidTnR5UVeOObtr1Bm/pz61GYCOZkUI6q3aAw==
 
-"@lidofinance/lido-ethereum-sdk@4.6.0-alpha.3":
-  version "4.6.0-alpha.3"
-  resolved "https://registry.yarnpkg.com/@lidofinance/lido-ethereum-sdk/-/lido-ethereum-sdk-4.6.0-alpha.3.tgz#b56f03f4753d1f694660db22e40cb9a2f84e4ba2"
-  integrity sha512-PLNPWy7BDCa4mWpIFgaEVPpUdriYGvK07TuJRW5l63tSpRDF59Qp2CcrqJfS2fw38LanIEgsK0SRxx6izXTavA==
+"@lidofinance/lido-ethereum-sdk@4.6.0":
+  version "4.6.0"
+  resolved "https://registry.yarnpkg.com/@lidofinance/lido-ethereum-sdk/-/lido-ethereum-sdk-4.6.0.tgz#688be309fe41b11cf0276d6a4d498c31a041a5e5"
+  integrity sha512-ALUP7YqPRtlneSeCLFmI+PeW0Q8cBCFl67mc8Hxb1yRrmXjY2Zuj53QD3MWAXhJNa7Ikxu9DXIGNV1eAJ4ejxQ==
   dependencies:
     "@ethersproject/bytes" "^5.7.0"
     graphql "^16.8.1"
@@ -11302,6 +11302,7 @@ winston@*:
     winston-transport "^4.5.0"
 
 "wrap-ansi-cjs@npm:wrap-ansi@^7.0.0", wrap-ansi@^7.0.0:
+  name wrap-ansi-cjs
   version "7.0.0"
   resolved "https://registry.yarnpkg.com/wrap-ansi/-/wrap-ansi-7.0.0.tgz#67e145cff510a6a6984bdf1152911d69d2eb9e43"
   integrity sha512-YVGIj2kamLSTxw6NsZjoBxfSwsn0ycdesmc4p+Q21c5zPuZ1pl+NfxVdxPtdHvmNVOQ6XSYG4AUtyt/Fi7D16Q==
