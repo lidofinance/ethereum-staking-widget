@@ -28,6 +28,8 @@ export const CONTRACT_NAMES = {
   lido: 'lido',
   wsteth: 'wsteth',
   withdrawalQueue: 'withdrawalQueue',
+  // SI
+  wstethReferralStaker: 'wstethReferralStaker',
   // DualGovernance
   dualGovernance: 'dualGovernance',
   escrow: 'escrow',
@@ -54,7 +56,7 @@ export const CONTRACT_NAMES = {
   // DVV
   dvvVault: 'dvvVault',
   dvvDepositWrapper: 'dvvDepositWrapper',
-  //stRATEGY
+  // stRATEGY
   stgVault: 'stgVault',
   stgDepositQueueETH: 'stgDepositQueueETH',
   stgDepositQueueWETH: 'stgDepositQueueWETH',
