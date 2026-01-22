@@ -35,6 +35,7 @@ export const getBackwardCompatibleConfig = (
     ),
     featureFlags: { ...(config?.featureFlags ?? {}) },
     multiChainBanner: config?.multiChainBanner ?? [],
+    earnVaultsBanner: config?.earnVaultsBanner ?? {},
     earnVaults:
       config.earnVaults?.filter((vault) => EARN_VAULTS.includes(vault.name)) ??
       [],
@@ -54,6 +55,7 @@ export const overrideManifestConfig = (
     featureFlags: { ...config.featureFlags, ...override.featureFlags },
     multiChainBanner: override.multiChainBanner ?? config.multiChainBanner,
     earnVaults: override.earnVaults ?? config.earnVaults,
+    earnVaultsBanner: override.earnVaultsBanner ?? config.earnVaultsBanner,
     pages: { ...config.pages, ...override.pages },
     api: { ...config.api, ...override.api },
   };

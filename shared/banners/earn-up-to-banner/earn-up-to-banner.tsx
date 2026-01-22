@@ -1,11 +1,11 @@
 import { EARN_PATH } from 'consts/urls';
 import { EarnUpToBannerIcon } from 'assets/earn';
-import { useSTGAvailable } from 'features/earn/vault-stg/hooks/use-stg-available';
 import { useEarnVaultsApr } from 'shared/hooks/use-earn-vaults-apr';
 import { trackMatomoEvent } from 'utils/track-matomo-event';
 import { MATOMO_CLICK_EVENTS_TYPES } from 'consts/matomo';
 import { FormatPercent } from 'shared/formatters/format-percent';
 import { useModalActions } from 'providers/modal-provider';
+import { useConfig } from 'config/use-config';
 
 import {
   Message,
@@ -20,17 +20,28 @@ import {
 
 type EarnUpToBannerProps = {
   matomoEvent: MATOMO_CLICK_EVENTS_TYPES;
+  placement?: 'stakeForm' | 'afterStake';
 };
 
 export const EarnUpToBanner = (props: EarnUpToBannerProps) => {
   const { matomoEvent } = props;
 
+  const { externalConfig } = useConfig();
+  const showOnStakeForm =
+    externalConfig.earnVaultsBanner?.showOnStakeForm ?? true;
+  const showAfterStake =
+    externalConfig.earnVaultsBanner?.showAfterStake ?? true;
+
   const { closeModal } = useModalActions();
 
   const { maxValue } = useEarnVaultsApr();
-  const { isDepositEnabled } = useSTGAvailable();
 
-  if (!isDepositEnabled) return null;
+  if (
+    (props.placement === 'stakeForm' && !showOnStakeForm) ||
+    (props.placement === 'afterStake' && !showAfterStake)
+  ) {
+    return null;
+  }
 
   return (
     <Wrap>

@@ -6,7 +6,7 @@ import { STRATEGY_LAZY } from 'consts/react-query-strategies';
 import { IPFS_MANIFEST_URL } from 'consts/external-links';
 import { getManifestKey, isManifestEntryValid } from 'config/external-config';
 import { standardFetcher } from 'utils/standardFetcher';
-import { useIsEarnDisabled } from 'features/earn/shared/hooks/use-is-earn-disabled';
+import { useIsEarnDisabled } from 'features/earn/shared/hooks/use-is-earn-disabled-in-url';
 import { EARN_PATH } from 'consts/urls';
 
 import {
@@ -16,11 +16,13 @@ import {
 } from './frontend-fallback';
 
 import type { ExternalConfig, ManifestEntry } from './types';
+import { useUrlEnabledVaults } from 'features/earn/shared/hooks/use-url-enabled-vaults';
 
 export const useExternalConfigContext = (
   prefetchedManifest?: unknown,
 ): ExternalConfig => {
-  const isEarnDisabled = useIsEarnDisabled();
+  const { isEarnDisabled, someVaultsForceEnabled } = useIsEarnDisabled();
+  const { isVaultDisabled } = useUrlEnabledVaults();
 
   const { defaultChain, manifestOverride } = config;
   const fallbackData = useFallbackManifestEntry(
@@ -65,19 +67,38 @@ export const useExternalConfigContext = (
 
     const cleanConfig = getBackwardCompatibleConfig(rawConfig);
 
-    const override = isEarnDisabled
-      ? {
-          pages: {
-            [EARN_PATH]: {
-              ...cleanConfig.pages[EARN_PATH],
-              shouldDisable: true,
+    // Completely disables the Earn page unless some vaults are force-enabled via URL
+    const overridePages =
+      isEarnDisabled && !someVaultsForceEnabled
+        ? {
+            pages: {
+              [EARN_PATH]: {
+                ...cleanConfig.pages[EARN_PATH],
+                shouldDisable: true,
+              },
             },
-          },
-        }
-      : undefined;
+          }
+        : undefined;
 
-    const overrideConfig = overrideManifestConfig(cleanConfig, override);
+    const overrideEarnVaults = { earnVaults: [...cleanConfig.earnVaults] };
+
+    if (isEarnDisabled && someVaultsForceEnabled) {
+      overrideEarnVaults.earnVaults.forEach((vault) => {
+        vault.disabled = isVaultDisabled(vault.name);
+      });
+    }
+
+    const overrideConfig = overrideManifestConfig(cleanConfig, {
+      ...overridePages,
+      ...overrideEarnVaults,
+    });
 
     return { ...overrideConfig, ...rest, fetchMeta: queryResult };
-  }, [isEarnDisabled, queryResult, fallbackData]);
+  }, [
+    queryResult,
+    fallbackData,
+    isEarnDisabled,
+    someVaultsForceEnabled,
+    isVaultDisabled,
+  ]);
 };

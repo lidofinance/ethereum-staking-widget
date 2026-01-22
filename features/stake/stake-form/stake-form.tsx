@@ -24,6 +24,7 @@ export const StakeForm: FC = memo(() => {
             <SwapDiscountBanner>
               <EarnUpToBanner
                 matomoEvent={MATOMO_CLICK_EVENTS_TYPES.vaultsBanner}
+                placement="stakeForm"
               />
             </SwapDiscountBanner>
           </DualGovernanceBanner>
