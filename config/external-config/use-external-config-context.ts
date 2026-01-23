@@ -21,7 +21,7 @@ import { useUrlEnabledVaults } from 'features/earn/shared/hooks/use-url-enabled-
 export const useExternalConfigContext = (
   prefetchedManifest?: unknown,
 ): ExternalConfig => {
-  const { isEarnDisabled, someVaultsForceEnabled } = useIsEarnDisabled();
+  const { isEarnDisabled, isEarnPartial } = useIsEarnDisabled();
   const { isVaultDisabled } = useUrlEnabledVaults();
 
   const { defaultChain, manifestOverride } = config;
@@ -68,21 +68,20 @@ export const useExternalConfigContext = (
     const cleanConfig = getBackwardCompatibleConfig(rawConfig);
 
     // Completely disables the Earn page unless some vaults are force-enabled via URL
-    const overridePages =
-      isEarnDisabled && !someVaultsForceEnabled
-        ? {
-            pages: {
-              [EARN_PATH]: {
-                ...cleanConfig.pages[EARN_PATH],
-                shouldDisable: true,
-              },
+    const overridePages = isEarnDisabled
+      ? {
+          pages: {
+            [EARN_PATH]: {
+              ...cleanConfig.pages[EARN_PATH],
+              shouldDisable: true,
             },
-          }
-        : undefined;
+          },
+        }
+      : undefined;
 
     const overrideEarnVaults = { earnVaults: [...cleanConfig.earnVaults] };
 
-    if (isEarnDisabled && someVaultsForceEnabled) {
+    if (isEarnPartial) {
       overrideEarnVaults.earnVaults.forEach((vault) => {
         vault.disabled = isVaultDisabled(vault.name);
       });
@@ -98,7 +97,7 @@ export const useExternalConfigContext = (
     queryResult,
     fallbackData,
     isEarnDisabled,
-    someVaultsForceEnabled,
+    isEarnPartial,
     isVaultDisabled,
   ]);
 };
