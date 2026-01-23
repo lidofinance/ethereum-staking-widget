@@ -24,11 +24,6 @@ export type EarnVaultConfigEntry = {
   withdrawPauseReasonText?: string;
   apy?: VaultAPY;
   showNew?: boolean;
-  /**
-   * Note: Do not use this field to manually force-disable a vault via IPFS.json config.
-   * If disabled via this flag, the vault can be re-enabled using the enabledVaults URL parameter.
-   * To disable a vault reliably, it must be completely removed from the earnVaults array.
-   */
   disabled?: boolean;
 };
 
