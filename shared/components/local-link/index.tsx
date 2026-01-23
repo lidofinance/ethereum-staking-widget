@@ -12,8 +12,7 @@ import { LinkIpfs } from 'shared/components/link-ipfs';
 
 export const LocalLink: FC<PropsWithChildren<LinkProps>> = (props) => {
   const router = useRouter();
-  const { ref, embed, app, theme, earn, enabledVaults, forceAllowance } =
-    router.query;
+  const { ref, embed, app, theme, earn, forceAllowance } = router.query;
   const { href, ...restProps } = props;
 
   const extraQuery = {} as Record<string, string>;
@@ -24,8 +23,6 @@ export const LocalLink: FC<PropsWithChildren<LinkProps>> = (props) => {
   if (app && typeof app === 'string') extraQuery.app = app;
   if (theme && typeof theme === 'string') extraQuery.theme = theme;
   if (earn && typeof earn === 'string') extraQuery.earn = earn;
-  if (enabledVaults && typeof enabledVaults === 'string')
-    extraQuery.enabledVaults = enabledVaults;
   if (forceAllowance && typeof forceAllowance === 'string')
     extraQuery.forceAllowance = forceAllowance;
 
