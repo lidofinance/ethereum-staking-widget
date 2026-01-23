@@ -81,6 +81,7 @@ export const useExternalConfigContext = (
 
     if (isEarnPartial) {
       overrideEarnVaults.earnVaults.forEach((vault) => {
+        if (vault.disabled) return; // respect disabled flag from config
         vault.disabled = isVaultDisabled(vault.name);
       });
     }

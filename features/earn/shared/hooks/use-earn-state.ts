@@ -40,10 +40,10 @@ export const useEarnState = () => {
   // Earn page is disabled when:
   // - in iframe context, BUT it can be opt-in via URL
   // - if 'earn=disabled' query parameter is explicitly set (opt-out)
-  //
+
   // Earn page is partially enabled if:
   // - specific vaults are force-enabled via URL (earn=vault1,vault2)
-  //
+
   // Earn page is fully enabled with all vaults when:
   // - OR 'earn=enabled' is explicitly set in URL (opt-in)
   // - in all other cases (default behavior)
