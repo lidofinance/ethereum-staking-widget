@@ -6,7 +6,7 @@ import { STRATEGY_LAZY } from 'consts/react-query-strategies';
 import { IPFS_MANIFEST_URL } from 'consts/external-links';
 import { getManifestKey, isManifestEntryValid } from 'config/external-config';
 import { standardFetcher } from 'utils/standardFetcher';
-import { useIsEarnDisabled } from 'features/earn/shared/hooks/use-is-earn-disabled-in-url';
+import { useEarnState } from 'features/earn/shared/hooks/use-earn-state';
 import { EARN_PATH } from 'consts/urls';
 
 import {
@@ -16,13 +16,11 @@ import {
 } from './frontend-fallback';
 
 import type { ExternalConfig, ManifestEntry } from './types';
-import { useUrlEnabledVaults } from 'features/earn/shared/hooks/use-url-enabled-vaults';
 
 export const useExternalConfigContext = (
   prefetchedManifest?: unknown,
 ): ExternalConfig => {
-  const { isEarnDisabled, isEarnPartial } = useIsEarnDisabled();
-  const { isVaultDisabled } = useUrlEnabledVaults();
+  const { isEarnDisabled, isEarnPartial, isVaultDisabled } = useEarnState();
 
   const { defaultChain, manifestOverride } = config;
   const fallbackData = useFallbackManifestEntry(
