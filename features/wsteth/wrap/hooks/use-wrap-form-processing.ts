@@ -1,11 +1,15 @@
 import { useCallback } from 'react';
 import invariant from 'tiny-invariant';
 
-import { type PopulatedTransaction } from '@lidofinance/lido-ethereum-sdk/core';
+import {
+  LIDO_TOKENS,
+  type PopulatedTransaction,
+} from '@lidofinance/lido-ethereum-sdk/core';
 
 import { config } from 'config';
 import { MockLimitReachedError } from 'features/stake/stake-form/utils';
 import {
+  applyRoundUpGasLimit,
   useDappStatus,
   useLidoSDK,
   useLidoSDKL2,
@@ -134,8 +138,13 @@ export const useWrapFormProcessor = ({
               });
             }
           },
-          onSign: async () => {
+          onSign: async ({ payload }) => {
             txModalStages.sign(amount, token, willReceive);
+            if (token === LIDO_TOKENS.eth) {
+              return applyRoundUpGasLimit(
+                (payload as bigint) ?? config.WRAP_ETH_GASLIMIT_FALLBACK,
+              );
+            }
           },
           onReceipt: ({ txHashOrCallId }) => {
             txModalStages.pending(
