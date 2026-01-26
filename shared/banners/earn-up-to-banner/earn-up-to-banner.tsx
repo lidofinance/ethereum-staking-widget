@@ -5,7 +5,7 @@ import { trackMatomoEvent } from 'utils/track-matomo-event';
 import { MATOMO_CLICK_EVENTS_TYPES } from 'consts/matomo';
 import { FormatPercent } from 'shared/formatters/format-percent';
 import { useModalActions } from 'providers/modal-provider';
-import { useConfig } from 'config/use-config';
+import { useEarnBannerState } from 'features/earn/shared/hooks/use-earn-banner-state';
 
 import {
   Message,
@@ -26,11 +26,7 @@ type EarnUpToBannerProps = {
 export const EarnUpToBanner = (props: EarnUpToBannerProps) => {
   const { matomoEvent } = props;
 
-  const { externalConfig } = useConfig();
-  const showOnStakeForm =
-    externalConfig.earnVaultsBanner?.showOnStakeForm ?? true;
-  const showAfterStake =
-    externalConfig.earnVaultsBanner?.showAfterStake ?? true;
+  const { showOnStakeForm, showAfterStake } = useEarnBannerState();
 
   const { closeModal } = useModalActions();
 
