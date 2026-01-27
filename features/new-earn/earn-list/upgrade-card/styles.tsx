@@ -1,6 +1,5 @@
 import styled from 'styled-components';
-import { Block } from '@lidofinance/lido-ui';
-import { LocalLink } from 'shared/components/local-link';
+import { Block, Button } from '@lidofinance/lido-ui';
 
 export const UpgradeCardBlock = styled(Block)`
   background: linear-gradient(135deg, #f5f3ff 0%, #fef1f6 100%);
@@ -68,8 +67,6 @@ export const UpgradeIllustrationSlot = styled.div`
   }
 `;
 
-export const UpgradeCtaLink = styled(LocalLink)`
-  > button {
-    margin-top: 24px;
-  }
+export const UpgradeButton = styled(Button)`
+  margin-top: ${({ theme }) => theme.spaceMap.xl}px;
 `;

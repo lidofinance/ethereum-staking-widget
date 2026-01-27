@@ -1,4 +1,4 @@
-import type { FC } from 'react';
+import { useState, FC } from 'react';
 import { Question } from '@lidofinance/lido-ui';
 
 import { EarnEthIcon, EarnUsdIcon } from 'assets/earn-new';
@@ -11,6 +11,7 @@ import {
 
 import { UpgradeCard } from './upgrade-card';
 import { VaultCard } from './vault-card/vault-card';
+import { DrawerRight } from './drawer-right';
 import { CardsStack, ListWrapper } from './styles';
 
 const VAULTS = [
@@ -73,28 +74,36 @@ const VAULTS = [
 ];
 
 export const NewEarnList: FC = () => {
+  const [isDrawerRightOpen, setIsDrawerRightOpen] = useState(false);
+
   return (
-    <ListWrapper>
-      <UpgradeCard />
-      <CardsStack>
-        {VAULTS.map((vault) => (
-          <VaultCard
-            key={vault.key}
-            title={vault.title}
-            description={vault.description}
-            stats={vault.stats}
-            ctaLabel={vault.ctaLabel}
-            variant={vault.variant}
-            illustration={
-              vault.variant === 'eth' ? <EarnEthIcon /> : <EarnUsdIcon />
-            }
-          />
-        ))}
-      </CardsStack>
-      <DisclaimerSection>
-        <AprDisclaimer mentionAPY />
-        <LegalDisclaimer />
-      </DisclaimerSection>
-    </ListWrapper>
+    <>
+      <ListWrapper>
+        <UpgradeCard setIsDrawerRightOpen={setIsDrawerRightOpen} />
+        <CardsStack>
+          {VAULTS.map((vault) => (
+            <VaultCard
+              key={vault.key}
+              title={vault.title}
+              description={vault.description}
+              stats={vault.stats}
+              ctaLabel={vault.ctaLabel}
+              variant={vault.variant}
+              illustration={
+                vault.variant === 'eth' ? <EarnEthIcon /> : <EarnUsdIcon />
+              }
+            />
+          ))}
+        </CardsStack>
+        <DisclaimerSection>
+          <AprDisclaimer mentionAPY />
+          <LegalDisclaimer />
+        </DisclaimerSection>
+      </ListWrapper>
+      <DrawerRight
+        onClose={() => setIsDrawerRightOpen(false)}
+        isOpen={isDrawerRightOpen}
+      />
+    </>
   );
 };

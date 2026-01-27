@@ -1,4 +1,5 @@
-import { Button, Deposit, History, Link, Stake } from '@lidofinance/lido-ui';
+import { FC } from 'react';
+import { Deposit, History, Link, Stake } from '@lidofinance/lido-ui';
 import { useDappStatus } from 'modules/web3';
 import { UpgradeIllustrationIcon } from 'assets/earn-new';
 
@@ -12,12 +13,14 @@ import {
   UpgradeParagraph,
   UpgradeIllustrationSlot,
   UpgradeColumn,
-  UpgradeCtaLink,
+  UpgradeButton,
 } from './styles';
 
-const EARN_NEW_ETH_VAULT_PATH = '/earn-new/eth';
+type UpgradeCardProps = {
+  setIsDrawerRightOpen: (isOpen: boolean) => void;
+};
 
-export const UpgradeCard = () => {
+export const UpgradeCard: FC<UpgradeCardProps> = ({ setIsDrawerRightOpen }) => {
   const { isWalletConnected } = useDappStatus();
 
   // TODO; check assets available to upgrade
@@ -72,11 +75,13 @@ export const UpgradeCard = () => {
       </UpgradeContent>
 
       {/* TODO: replace with actual ETH vault route */}
-      <UpgradeCtaLink href={EARN_NEW_ETH_VAULT_PATH}>
-        <Button size="lg" fullwidth>
-          Upgrade to Lido Earn ETH
-        </Button>
-      </UpgradeCtaLink>
+      <UpgradeButton
+        size="lg"
+        fullwidth
+        onClick={() => setIsDrawerRightOpen(true)}
+      >
+        Upgrade to Lido Earn ETH
+      </UpgradeButton>
     </UpgradeCardBlock>
   );
 };
