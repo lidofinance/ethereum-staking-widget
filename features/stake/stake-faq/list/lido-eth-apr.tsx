@@ -24,12 +24,12 @@ export const LidoEthApr: FC = () => {
         changes to blockchain protocols and validator performance.
       </p>
       <p>
-        You can find more about Lido staking APR for Ethereum on the{' '}
+        You can find more about Lido APR on Ethereum on the{' '}
         <Link
-          href={`${config.rootOrigin}/ethereum`}
+          href={`${config.rootOrigin}/how-lido-works/apr-and-rewards-calculator`}
           data-matomo={MATOMO_CLICK_EVENTS_TYPES.faqLidoEthAprEthLandingPage}
         >
-          Ethereum landing page
+          APR and Rewards Calculator page
         </Link>{' '}
         and in our{' '}
         <Link
