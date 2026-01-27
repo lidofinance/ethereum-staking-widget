@@ -97,6 +97,21 @@ export default withBundleAnalyzer({
           },
         ],
       },
+
+      // Handle JSON imports with 'with' assertions syntax from node_modules
+      // by removing the assertions, because next v12 does not support them, which causes build error.
+      // Specifically targeting affected modules here
+      {
+        test: /node_modules\/@base-org\/account.*\.js$/,
+        use: {
+          loader: 'string-replace-loader',
+          options: {
+            search: 'with\\s*\\{\\s*type:\\s*[\'"]json[\'"]\\s*\\}',
+            replace: '',
+            flags: 'g',
+          },
+        },
+      },
     );
 
     return config;
