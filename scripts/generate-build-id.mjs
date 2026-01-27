@@ -1,4 +1,13 @@
-import buildInfo from '../build-info.json' assert { type: 'json' };
+import { readFileSync } from 'fs';
+import { fileURLToPath } from 'url';
+import path from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const buildInfo = JSON.parse(
+  readFileSync(path.join(__dirname, '../build-info.json'), 'utf-8'),
+);
 
 export default function generateBuildId() {
   const commit = buildInfo.commit;
