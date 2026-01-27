@@ -1,5 +1,5 @@
 # build env
-FROM node:20-alpine as build
+FROM node:24-alpine AS build
 
 WORKDIR /app
 
@@ -15,7 +15,7 @@ RUN NODE_NO_BUILD_DYNAMICS=true yarn build
 RUN rm -rf /app/public/runtime && mkdir /app/public/runtime && chown node /app/public/runtime
 
 # final image
-FROM node:20-alpine as base
+FROM node:24-alpine AS base
 
 ARG BASE_PATH=""
 ARG SUPPORTED_CHAINS="1"
