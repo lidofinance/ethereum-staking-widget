@@ -61,6 +61,7 @@ export enum ManifestConfigPageEnum {
   Settings = '/settings',
   Referral = '/referral',
   Earn = '/earn',
+  EarnNew = '/earn-new',
 }
 
 export type ManifestConfigPage = `${ManifestConfigPageEnum}`;
