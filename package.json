@@ -26,7 +26,7 @@
     "@lidofinance/eth-api-providers": "^0.48.0",
     "@lidofinance/eth-providers": "^0.48.0",
     "@lidofinance/lido-ethereum-sdk": "4.6.0",
-    "@lidofinance/lido-ui": "^3.31.0",
+    "@lidofinance/lido-ui": "^3.36.0",
     "@lidofinance/next-api-wrapper": "^0.48.0",
     "@lidofinance/next-ip-rate-limit": "^0.48.0",
     "@lidofinance/next-pages": "^0.48.0",
