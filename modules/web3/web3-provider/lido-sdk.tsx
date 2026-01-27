@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect, useMemo } from 'react';
 import invariant from 'tiny-invariant';
 import {
-  useAccount,
+  useConnection,
   useConfig,
   usePublicClient,
   useSwitchChain,
@@ -49,7 +49,7 @@ export const useLidoSDK = () => {
 
 export const LidoSDKProvider = ({ children }: React.PropsWithChildren) => {
   const subscribe = useTokenTransferSubscription();
-  const { isConnected } = useAccount();
+  const { isConnected } = useConnection();
   const { chainId, isChainMatched, wagmiWalletChain, supportedChainIds } =
     useDappChain();
   const walletChainId = wagmiWalletChain?.id;
@@ -69,7 +69,7 @@ export const LidoSDKProvider = ({ children }: React.PropsWithChildren) => {
 
   // reset internal wagmi state after disconnect
   const wagmiConfig = useConfig();
-  const { switchChain } = useSwitchChain();
+  const { mutate: switchChain } = useSwitchChain();
   useEffect(() => {
     if (isConnected) {
       return () => {
