@@ -114,6 +114,13 @@ export default withBundleAnalyzer({
       },
     );
 
+    // Fixes warning about missing dependency @react-native-async-storage/async-storage,
+    // which comes from @metamask/sdk v0.33.1
+    // See https://github.com/MetaMask/metamask-sdk/issues/1376
+    config.resolve.fallback = {
+      '@react-native-async-storage/async-storage': false,
+    };
+
     return config;
   },
   async headers() {
