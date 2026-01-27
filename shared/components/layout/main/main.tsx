@@ -13,10 +13,12 @@ export const Main: FC<ContainerProps> = (props) => {
   // Needed only for holiday decor to be displayed correctly on earn page (holidayDecorEnabled)
   const isEarnVault = router.pathname.includes(`${EARN_PATH}/[vault]/[action]`);
   const isEarnNew = router.pathname.includes(`earn-new`);
+  const isEarnNewVault = router.pathname.includes(`earn-new/eth`); // TODO: update to include all new earn vaults
+  const mainSize = isEarnNewVault ? 'full' : isEarnNew ? 'content' : size;
 
   return (
     <MainStyle
-      size={isEarnNew ? 'content' : size}
+      size={mainSize}
       forwardedAs="main"
       isHolidayDecorEnabled={featureFlags.holidayDecorEnabled}
       isEarnVault={isEarnVault}
