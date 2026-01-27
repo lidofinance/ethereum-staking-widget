@@ -43,6 +43,13 @@ export const Table = styled.table`
       border-bottom: none;
     }
   }
+
+  @media (max-width: 600px) {
+    tr > td:first-child,
+    th:first-child {
+      display: none;
+    }
+  }
 `;
 
 export const Tbody = styled.tbody`
@@ -86,4 +93,13 @@ export const Td = styled.td`
 export const HeaderWithIcon = styled.div`
   display: flex;
   align-items: center;
+`;
+
+export const MobileCellHeader = styled.div`
+  display: none;
+
+  @media (max-width: 600px) {
+    display: block;
+    font-weight: 700;
+  }
 `;

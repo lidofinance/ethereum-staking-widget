@@ -8,6 +8,7 @@ import {
   Td,
   HeaderWithIcon,
   TableHeader,
+  MobileCellHeader,
 } from './styles';
 
 const DATA = [
@@ -85,7 +86,10 @@ export const DrawerTable = () => {
             {item.rows.map((row) => (
               <Tr key={row.cells.join('-')}>
                 {row.cells.map((cell) => (
-                  <Td key={cell.toString()}>{cell}</Td>
+                  <Td key={cell.toString()}>
+                    <MobileCellHeader>{row.cells[0]}</MobileCellHeader>
+                    {cell}
+                  </Td>
                 ))}
               </Tr>
             ))}

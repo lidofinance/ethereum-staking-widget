@@ -30,14 +30,14 @@ export const DrawerRight: FC<DrawerRightProps> = ({ onClose, isOpen }) => {
     <DrawerRightStyled onKeyDown={handleKeyDown} tabIndex={-1} isOpen={isOpen}>
       <DrawerRightWrapper>
         <DrawerRightContent>
-          <DrawerRightClose
-            icon={<Close />}
-            size="xxs"
-            variant="ghost"
-            onClick={onClose}
-          />
           <DrawerRightHeader>
-            What is Lido Earn ETH Vault and how it works
+            <div>What is Lido Earn ETH Vault and how it works</div>
+            <DrawerRightClose
+              icon={<Close />}
+              size="xxs"
+              variant="ghost"
+              onClick={onClose}
+            />
           </DrawerRightHeader>
           <DrawerDescription>
             Lido Earn ETH Vault is a «meta-vault» that optimise rewards across
