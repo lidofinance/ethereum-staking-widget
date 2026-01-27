@@ -9,7 +9,7 @@ type VaultDataPartial = {
 };
 type RequestResponseData = Array<VaultDataPartial>;
 
-const API_ENDPOINT = 'https://points.mellow.finance/v1/vaults';
+const API_ENDPOINT = 'https://api.mellow.finance/v1/vaults';
 
 export const useDVstEthApr = () => {
   const result = useQuery<RequestResponseData, Error, string>({

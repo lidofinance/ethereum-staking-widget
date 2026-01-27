@@ -24,4 +24,4 @@ export const STG_COLLECTOR_CONFIG = {
   redeemHandlingInterval: 3600n,
 } as const;
 
-export const STG_STATS_ORIGIN = 'https://points.mellow.finance';
+export const STG_STATS_ORIGIN = 'https://api.mellow.finance';
