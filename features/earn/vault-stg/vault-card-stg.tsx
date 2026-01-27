@@ -7,6 +7,7 @@ import {
 } from 'assets/earn';
 
 import { useDappStatus } from 'modules/web3';
+import { useSTGApy } from './hooks/use-stg-apy';
 import { useSTGStats } from './hooks/use-stg-stats';
 import { useSTGPosition } from './hooks/use-stg-position';
 import { VaultCard } from '../shared/vault-card';
@@ -23,7 +24,8 @@ import { useDepositRequests } from './deposit/hooks';
 
 export const VaultCardSTG = () => {
   const { isWalletConnected } = useDappStatus();
-  const { totalTvlUsd, apy, isLoading: isLoadingStats } = useSTGStats();
+  const { totalTvlUsd } = useSTGStats();
+  const { apy, isLoading: isLoadingApy } = useSTGApy();
   const { strethSharesBalance, isLoading: isLoadingPosition } =
     useSTGPosition();
   const {
@@ -67,7 +69,7 @@ export const VaultCardSTG = () => {
         apx: apy,
         apxLabel: 'APY',
         apxHint: <STGApyHint />,
-        isLoading: isLoadingStats,
+        isLoading: isLoadingApy,
       }}
       logo={<VaultSTGIcon />}
       depositLinkCallback={() => {

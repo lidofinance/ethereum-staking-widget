@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { useEthUsd } from 'shared/hooks/use-eth-usd';
-import { UNIX_TIMESTAMP_SCHEMA, APY_SCHEMA } from 'utils/zod';
+import { UNIX_TIMESTAMP_SCHEMA } from 'utils/zod';
 import { useSTGCollect } from './use-stg-collect';
 import {
   ALLOCATION_SCHEMA,
@@ -8,15 +8,19 @@ import {
   STGStatsFetchedData,
 } from '../utils';
 
+type STGStatsData = {
+  allocations: STGStatsFetchedData['allocations'];
+  lastUpdate: STGStatsFetchedData['lastUpdate'];
+};
+
 export const useSTGStats = () => {
-  const { data, isLoading } = useQuery<STGStatsFetchedData>({
+  const { data, isLoading } = useQuery<STGStatsData>({
     queryKey: ['stg', 'stats'],
     queryFn: async () => {
       const fetchedData = await fetchSTGStats();
-      const apy = APY_SCHEMA.parse(fetchedData.apy);
       const allocations = ALLOCATION_SCHEMA.parse(fetchedData.allocations);
       const lastUpdate = UNIX_TIMESTAMP_SCHEMA.parse(fetchedData.lastUpdate);
-      return { apy, allocations, lastUpdate };
+      return { allocations, lastUpdate };
     },
   });
 
@@ -31,7 +35,6 @@ export const useSTGStats = () => {
     isLoading: isLoading || isCollectorLoading || isEthUsdLoading,
     totalTvlUsd,
     totalTvlWei,
-    apy: data?.apy,
     fetchedPositions: data?.allocations,
     lastUpdateTimestamp: data?.lastUpdate,
   } as const;
