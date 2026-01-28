@@ -50,7 +50,7 @@ jobs:
           STAND_URL: ${{ inputs.stand_url }}
           STAND_TYPE: ${{ inputs.stand_type }}
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v6
         if: always()
         with:
           name: playwright-report
