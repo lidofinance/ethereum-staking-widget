@@ -2,12 +2,22 @@ import styled from 'styled-components';
 import { Block, Button } from '@lidofinance/lido-ui';
 
 export const RightColumnStyled = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: ${({ theme }) => theme.spaceMap.md}px;
   min-width: 358px;
   max-width: 396px;
   width: 100%;
+  position: relative;
+`;
+
+export const FixedBlock = styled.div`
+  position: sticky;
+  top: 0;
+  gap: ${({ theme }) => theme.spaceMap.md}px;
+`;
+
+export const RightColumnContent = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: ${({ theme }) => theme.spaceMap.md}px;
 `;
 
 export const UpgradeAssets = styled(Block)`

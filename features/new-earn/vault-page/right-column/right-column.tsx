@@ -3,14 +3,18 @@ import { FC, PropsWithChildren } from 'react';
 import { Widget } from './widget/widget';
 
 import { UpgradeAssetsBlock } from './upgrade-assets';
-import { RightColumnStyled } from './styles';
+import { FixedBlock, RightColumnContent, RightColumnStyled } from './styles';
 
 export const RightColumn: FC<PropsWithChildren> = ({ children }) => {
   return (
     <RightColumnStyled>
-      <UpgradeAssetsBlock />
-      <Widget />
-      {children}
+      <FixedBlock>
+        <RightColumnContent>
+          <UpgradeAssetsBlock />
+          <Widget />
+        </RightColumnContent>
+        {children}
+      </FixedBlock>
     </RightColumnStyled>
   );
 };
