@@ -15,10 +15,16 @@ export const DrawerRightStyled = styled.div<{ isOpen: boolean }>`
   flex-direction: column;
 
   @media (max-width: 600px) {
-    left: ${({ isOpen }) => (isOpen ? '0' : '-100%')};
+    top: ${({ isOpen }) => (isOpen ? '0' : '100%')};
+    left: 0;
     right: auto;
     width: 100%;
-    background-color: rgba(0, 0, 0, 0.7);
+    background-color: ${({ isOpen }) =>
+      isOpen ? 'rgba(0, 0, 0, 0.7)' : 'transparent'};
+    transition:
+      top 0.15s ease-out,
+      background-color
+        ${({ isOpen }) => (isOpen ? '0.15s ease-out 0.15s' : '0s')};
   }
 `;
 
@@ -40,7 +46,7 @@ export const DrawerRightContent = styled.div`
   bottom: 0;
   left: 0;
   padding: ${({ theme }) => theme.spaceMap.xxl}px;
-  background-color: var(--lido-color-background);
+  background-color: var(--lido-color-foreground);
   color: var(--lido-color-text);
   display: flex;
   flex-direction: column;
