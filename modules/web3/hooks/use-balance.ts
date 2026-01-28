@@ -6,7 +6,7 @@ import {
   useBalance,
   useReadContract,
   useWatchContractEvent,
-  useAccount,
+  useConnection,
 } from 'wagmi';
 import { erc20abi } from '@lidofinance/lido-ethereum-sdk/erc20';
 
@@ -88,7 +88,7 @@ const onError = (error: unknown) =>
   );
 
 export const useTokenTransferSubscription = () => {
-  const { address } = useAccount();
+  const { address } = useConnection();
   const queryClient = useQueryClient();
   const [subscriptions, setSubscriptions] = useState<TokenSubscriptionState>(
     {},

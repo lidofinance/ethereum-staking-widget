@@ -1,4 +1,4 @@
-import { useAccount, useChains } from 'wagmi';
+import { useConnection, useChains } from 'wagmi';
 import { isSDKSupportedL2Chain } from 'consts/chains';
 
 import { useDappChain } from 'modules/web3/web3-provider/dapp-chain';
@@ -8,7 +8,7 @@ export const useDappStatus = () => {
     address,
     chainId: walletChainId,
     isConnected: isWalletConnected,
-  } = useAccount();
+  } = useConnection();
 
   // this can change between pages based on their dapp-chain context(or lack of)
   const dappChain = useDappChain();
