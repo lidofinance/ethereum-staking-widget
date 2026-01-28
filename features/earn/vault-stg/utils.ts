@@ -19,12 +19,16 @@ export const ALLOCATION_SCHEMA = z.array(
   }),
 );
 export const STG_STATS_SCHEMA = z.object({
-  apy: APY_SCHEMA,
   allocations: ALLOCATION_SCHEMA,
   lastUpdate: UNIX_TIMESTAMP_SCHEMA,
 });
 
 export type STGStatsFetchedData = z.infer<typeof STG_STATS_SCHEMA>;
+
+export const STG_APY_SCHEMA = z.object({
+  apy: APY_SCHEMA,
+});
+export type STGApyFetchedData = z.infer<typeof STG_APY_SCHEMA>;
 
 export const fetchSTGStats = async () => {
   const stgVaultAddress = getContractAddress(CHAINS.Mainnet, 'stgVault');
@@ -34,7 +38,10 @@ export const fetchSTGStats = async () => {
 };
 
 export const fetchSTGStatsApr = async () => {
-  const data = await fetchSTGStats();
-  const apy = APY_SCHEMA.parse(data.apy);
+  const stgVaultAddress = getContractAddress(CHAINS.Mainnet, 'stgVault');
+  const STG_APY_ENDPOINT = `${STG_STATS_ORIGIN}/v1/chain/${CHAINS.Mainnet}/core-vaults/${stgVaultAddress}/apy`;
+
+  const data = await standardFetcher<STGApyFetchedData>(STG_APY_ENDPOINT);
+  const apy = STG_APY_SCHEMA.parse(data).apy;
   return apy;
 };
