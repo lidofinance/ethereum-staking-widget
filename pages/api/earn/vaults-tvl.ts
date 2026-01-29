@@ -10,7 +10,7 @@ import { LidoSDKWrap } from '@lidofinance/lido-ethereum-sdk/wrap';
 
 import { getExternalConfig } from 'utilsApi/get-external-config';
 
-import LocalManifestRaw from 'IPFS.json' assert { type: 'json' };
+import LocalManifestRaw from 'IPFS.json';
 
 import { config, secretConfig } from 'config';
 import { API_ROUTES } from 'consts/api';

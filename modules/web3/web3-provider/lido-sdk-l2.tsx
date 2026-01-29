@@ -1,6 +1,6 @@
 import { createContext, useContext, useMemo } from 'react';
 import invariant from 'tiny-invariant';
-import { useAccount, usePublicClient, useWalletClient } from 'wagmi';
+import { useConnection, usePublicClient, useWalletClient } from 'wagmi';
 
 import { LIDO_L2_CONTRACT_ADDRESSES } from '@lidofinance/lido-ethereum-sdk/common';
 import { CHAINS, LidoSDKCore } from '@lidofinance/lido-ethereum-sdk/core';
@@ -29,7 +29,7 @@ export const useLidoSDKL2 = () => {
 };
 
 export const LidoSDKL2Provider = ({ children }: React.PropsWithChildren) => {
-  const { chainId: walletChain } = useAccount();
+  const { chainId: walletChain } = useConnection();
   const { chainId, isChainMatched, supportedChainIds } = useDappChain();
 
   // It is needed so that when the widget's chainId and the wallet's chainId do not match,

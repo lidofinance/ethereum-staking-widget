@@ -1,17 +1,18 @@
 import { useMemo } from 'react';
 import { createAllocationsChartData } from 'features/earn/shared/vault-allocation/utils';
 import { useSTGStats } from '../../hooks/use-stg-stats';
+import { useSTGApy } from '../../hooks/use-stg-apy';
 import { buildPositionsArray, categorizePositions } from '../utils';
 
 export const useSTGAllocation = () => {
   const {
-    apy,
     fetchedPositions,
     lastUpdateTimestamp,
     totalTvlUsd,
     totalTvlWei,
     isLoading,
   } = useSTGStats();
+  const { apy } = useSTGApy();
 
   const data = useMemo(() => {
     if (!fetchedPositions?.length || !totalTvlUsd) return;

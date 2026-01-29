@@ -10,14 +10,14 @@ import {
 } from '@lidofinance/lido-ethereum-sdk/common';
 
 // Main deployments
-import mainnetSet from 'networks/mainnet.json' assert { type: 'json' };
-import hoodiSet from 'networks/hoodi.json' assert { type: 'json' };
-import sepoliaSet from 'networks/sepolia.json' assert { type: 'json' };
-import holeskySet from 'networks/holesky.json' assert { type: 'json' };
+import mainnetSet from 'networks/mainnet.json';
+import hoodiSet from 'networks/hoodi.json';
+import sepoliaSet from 'networks/sepolia.json';
+import holeskySet from 'networks/holesky.json';
 
 // Devnet deployments
-import hoodiDevnet0Set from 'networks/hoodi-devnet-0.json' assert { type: 'json' };
-import hoodiDevnet1Set from 'networks/hoodi-devnet-1.json' assert { type: 'json' };
+import hoodiDevnet0Set from 'networks/hoodi-devnet-0.json';
+import hoodiDevnet1Set from 'networks/hoodi-devnet-1.json';
 import { getPreConfig } from 'config/get-preconfig';
 
 // For future overrides of APIs in devnets
