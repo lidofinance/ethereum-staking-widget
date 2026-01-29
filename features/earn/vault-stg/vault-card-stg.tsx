@@ -24,7 +24,7 @@ import { useDepositRequests } from './deposit/hooks';
 
 export const VaultCardSTG = () => {
   const { isWalletConnected } = useDappStatus();
-  const { totalTvlUsd } = useSTGStats();
+  const { totalTvlUsd, isLoading: isLoadingTvlUsd } = useSTGStats();
   const { apy, isLoading: isLoadingApy } = useSTGApy();
   const { strethSharesBalance, isLoading: isLoadingPosition } =
     useSTGPosition();
@@ -69,7 +69,7 @@ export const VaultCardSTG = () => {
         apx: apy,
         apxLabel: 'APY',
         apxHint: <STGApyHint />,
-        isLoading: isLoadingApy,
+        isLoading: isLoadingApy || isLoadingTvlUsd,
       }}
       logo={<VaultSTGIcon />}
       depositLinkCallback={() => {
