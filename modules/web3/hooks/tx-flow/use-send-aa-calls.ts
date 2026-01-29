@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
 import invariant from 'tiny-invariant';
-import { useAccount } from 'wagmi';
+import { useConnection } from 'wagmi';
 import { TransactionCallbackStage } from '@lidofinance/lido-ethereum-sdk/core';
 import { config } from 'config';
 import { useLidoSDK, useLidoSDKL2 } from '../../web3-provider';
@@ -9,7 +9,7 @@ import { AACall, TxCallbackProps } from './types';
 export class SendCallsError extends Error {}
 
 export const useSendAACalls = () => {
-  const { address } = useAccount();
+  const { address } = useConnection();
   const { core: l1core } = useLidoSDK();
   const { core: l2core, isL2 } = useLidoSDKL2();
   const core = isL2 ? l2core : l1core;
@@ -30,11 +30,13 @@ export const useSendAACalls = () => {
 
         const callData = await walletClient.sendCalls({
           account: address ?? null,
-          calls: (calls.filter((call) => !!call) as AACall[]).map((call) => ({
-            to: call.to,
-            data: call.data,
-            value: call.value,
-          })),
+          calls: calls
+            .filter((call) => !!call)
+            .map((call) => ({
+              to: call.to,
+              data: call.data,
+              value: call.value,
+            })),
           experimental_fallback: true, // fallback to legacy sendTransaction if sendCalls is not supported
         });
 

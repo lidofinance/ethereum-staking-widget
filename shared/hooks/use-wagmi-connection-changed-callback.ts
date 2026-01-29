@@ -1,10 +1,10 @@
 import { useEffect, useRef } from 'react';
-import { useAccount } from 'wagmi';
+import { useConnection } from 'wagmi';
 
 // Triggered when chain id or wallet address changed
 // except the case if initial connect
 export const useWagmiConnectionChangedCallback = (callback: () => void) => {
-  const { address, chainId } = useAccount();
+  const { address, chainId } = useConnection();
   const prevConnectStateRef = useRef([address, chainId]);
 
   useEffect(() => {
