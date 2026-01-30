@@ -1,7 +1,7 @@
 import { FC } from 'react';
 import { Close, Button } from '@lidofinance/lido-ui';
 
-import { useEscape } from 'features/new-earn/hooks/useEscape';
+import { useEscape } from 'shared/hooks/useEscape';
 
 import {
   DrawerRightStyled,
@@ -15,13 +15,12 @@ import {
 import { LocalLink } from 'shared/components/local-link';
 
 import { DrawerTable } from './drawer-table';
+import { ETH_DEPOSIT_PATH } from 'features/earn/consts';
 
 type DrawerRightProps = {
   onClose: () => void;
   isOpen: boolean;
 };
-
-const EARN_NEW_ETH_VAULT_PATH = '/earn-new/eth';
 
 export const DrawerRight: FC<DrawerRightProps> = ({ onClose, isOpen }) => {
   const { handleKeyDown } = useEscape({ onClose });
@@ -50,7 +49,7 @@ export const DrawerRight: FC<DrawerRightProps> = ({ onClose, isOpen }) => {
           </DrawerDescription>
           <DrawerTable />
           <DrawerRightFooter>
-            <LocalLink href={EARN_NEW_ETH_VAULT_PATH}>
+            <LocalLink href={ETH_DEPOSIT_PATH}>
               <Button fullwidth>Upgrade now</Button>
             </LocalLink>
             <Button fullwidth variant="outlined">

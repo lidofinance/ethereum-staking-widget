@@ -59,13 +59,9 @@ const VAULTS: Record<
   },
 } as const;
 
-type NewEarnVaultPageProps = {
-  vault: VaultKey;
-};
-
 // TODO: move to separate files
-export const NewEarnVaultPage: FC<NewEarnVaultPageProps> = ({ vault }) => {
-  const data = VAULTS[vault];
+export const VaultPageUSD: FC = () => {
+  const data = VAULTS['usd'];
 
   return (
     <Layout>

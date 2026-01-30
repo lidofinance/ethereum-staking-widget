@@ -24,6 +24,7 @@ export type EarnVaultConfigEntry = {
   withdrawPauseReasonText?: string;
   apy?: VaultAPY;
   showNew?: boolean;
+  deprecated?: boolean;
 };
 
 export type ManifestConfig = {

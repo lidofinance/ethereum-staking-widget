@@ -1,7 +1,10 @@
 import { FC } from 'react';
-import { Deposit, History, Link, Stake } from '@lidofinance/lido-ui';
+import { Deposit, History, Stake } from '@lidofinance/lido-ui';
+
 import { useDappStatus } from 'modules/web3';
 import { UpgradeIllustrationIcon } from 'assets/earn-new';
+import { ButtonInline } from 'shared/components/button-inline/button-inline';
+import { ETH_DEPOSIT_PATH } from 'features/earn/consts';
 
 import {
   UpgradeCardBlock,
@@ -15,6 +18,7 @@ import {
   UpgradeColumn,
   UpgradeButton,
 } from './styles';
+import { LocalLink } from 'shared/components/local-link';
 
 type UpgradeCardProps = {
   setIsDrawerRightOpen: (isOpen: boolean) => void;
@@ -58,15 +62,14 @@ export const UpgradeCard: FC<UpgradeCardProps> = ({ setIsDrawerRightOpen }) => {
           <UpgradeParagraph>
             To upgrade, simply deposit your GG share token into the Lido Earn
             ETH Vault. You’ll receive a new token representing your share.{' '}
-            <Link
-              href="#"
+            <ButtonInline
               onClick={(event) => {
                 event.preventDefault();
-                // TODO: wire to "Learn how it works" page
+                setIsDrawerRightOpen(true);
               }}
             >
               Learn how it works
-            </Link>
+            </ButtonInline>
           </UpgradeParagraph>
         </UpgradeColumn>
         <UpgradeIllustrationSlot>
@@ -74,14 +77,11 @@ export const UpgradeCard: FC<UpgradeCardProps> = ({ setIsDrawerRightOpen }) => {
         </UpgradeIllustrationSlot>
       </UpgradeContent>
 
-      {/* TODO: replace with actual ETH vault route */}
-      <UpgradeButton
-        size="lg"
-        fullwidth
-        onClick={() => setIsDrawerRightOpen(true)}
-      >
-        Upgrade to Lido Earn ETH
-      </UpgradeButton>
+      <LocalLink href={ETH_DEPOSIT_PATH}>
+        <UpgradeButton size="lg" fullwidth>
+          Upgrade to Lido Earn ETH
+        </UpgradeButton>
+      </LocalLink>
     </UpgradeCardBlock>
   );
 };

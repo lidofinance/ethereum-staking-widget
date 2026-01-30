@@ -40,7 +40,11 @@ export const STGWithdrawRequests = () => {
             />
           </Tooltip>
           {claimableRequests.length > 1 && (
-            <ButtonInline disabled={isClaiming} onClick={withdrawClaimAll}>
+            <ButtonInline
+              $variant="small"
+              disabled={isClaiming}
+              onClick={withdrawClaimAll}
+            >
               Claim all
             </ButtonInline>
           )}

@@ -1,4 +1,4 @@
-import type { FC } from 'react';
+import { useState, type FC } from 'react';
 
 import {
   DisclaimerSection,
@@ -6,56 +6,50 @@ import {
   LegalDisclaimer,
 } from 'shared/components';
 
+import { useVaultConfig } from '../shared/hooks/use-vault-config';
+import { DrawerRight } from '../shared/drawer-right';
+import { UpgradeCard } from '../shared/upgrade-card';
+
 import { VaultCardGGV } from '../vault-ggv';
 import { VaultCardDVV } from '../vault-dvv';
 import { VaultCardSTG } from '../vault-stg';
+import { VaultCardUSD } from '../vault-usd';
+import { VaultCardETH } from '../vault-eth';
 
-import { VaultsListWrapper } from './styles';
-import { useVaultConfig } from '../shared/hooks/use-vault-config';
-import { useEarnVaultsTvl } from 'shared/hooks/use-earn-vaults-tvl';
-import { VaultCardSkeleton } from '../shared/vault-card-skeleton';
+import { CardsStack, ListWrapper } from './styles';
 
 const VAULT_CARDS = {
   ggv: VaultCardGGV,
   dvv: VaultCardDVV,
   strategy: VaultCardSTG,
-};
-
-const getTvlSortFn = (tvlData?: Record<string, any>) => {
-  if (tvlData && tvlData.data) {
-    const { data } = tvlData;
-
-    return (a: { name: string }, b: { name: string }) => {
-      const tvlA = BigInt(data[a.name]?.tvlEthWei ?? 0n);
-      const tvlB = BigInt(data[b.name]?.tvlEthWei ?? 0n);
-      if (tvlA > tvlB) return -1;
-      if (tvlA < tvlB) return 1;
-      return 0;
-    };
-  } else {
-    // No sorting as fallback
-    return () => 0;
-  }
+  usd: VaultCardUSD,
+  eth: VaultCardETH,
 };
 
 export const EarnVaultsList: FC = () => {
   const { vaults } = useVaultConfig();
-  const { data: tvlData, isLoading: isTvlLoading } = useEarnVaultsTvl();
+  const [isDrawerRightOpen, setIsDrawerRightOpen] = useState(false);
 
   return (
     <>
-      <VaultsListWrapper>
-        {isTvlLoading
-          ? vaults.map((_, index) => <VaultCardSkeleton key={index} />)
-          : vaults.sort(getTvlSortFn(tvlData)).map((vault) => {
-              const VaultCard = VAULT_CARDS[vault.name];
-              return <VaultCard key={vault.name} />;
-            })}
-      </VaultsListWrapper>
-      <DisclaimerSection>
-        <AprDisclaimer mentionAPY />
-        <LegalDisclaimer />
-      </DisclaimerSection>
+      <ListWrapper>
+        <UpgradeCard setIsDrawerRightOpen={setIsDrawerRightOpen} />
+        <CardsStack>
+          {vaults.map((vault) => {
+            const VaultCard = VAULT_CARDS[vault.name];
+            return <VaultCard key={vault.name} />;
+          })}
+        </CardsStack>
+
+        <DisclaimerSection>
+          <AprDisclaimer mentionAPY />
+          <LegalDisclaimer />
+        </DisclaimerSection>
+      </ListWrapper>
+      <DrawerRight
+        onClose={() => setIsDrawerRightOpen(false)}
+        isOpen={isDrawerRightOpen}
+      />
     </>
   );
 };

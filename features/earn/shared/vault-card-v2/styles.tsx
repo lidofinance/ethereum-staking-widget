@@ -68,6 +68,30 @@ export const VaultIconWrapper = styled.div`
     width: 64px;
     height: 64px;
   }
+
+  position: relative;
+  z-index: 0;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 166px;
+    height: 166px;
+
+    background: rgba(255, 255, 255, 1);
+    border-radius: 50%;
+    filter: blur(54px);
+
+    z-index: -1;
+    pointer-events: none;
+
+    ${({ theme }) => theme.mediaQueries.sm} {
+      display: none;
+    }
+  }
 `;
 
 export const CardDivider = styled.div`

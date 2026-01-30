@@ -15,6 +15,9 @@ import {
   CardCta,
   VaultIconWrapper,
 } from './styles';
+import { LocalLink } from 'shared/components/local-link';
+import { EARN_PATH } from 'consts/urls';
+import { EARN_VAULT_DEPOSIT_SLUG } from 'features/earn/consts';
 
 export type VaultCardStat = {
   label: string;
@@ -27,20 +30,24 @@ export type VaultCardStat = {
 
 type VaultCardProps = {
   title: string;
-  description: string;
+  description?: string;
+  urlSlug: string;
   stats: VaultCardStat[];
   ctaLabel: string;
   variant: 'eth' | 'usd';
   illustration?: React.ReactNode;
+  depositLinkCallback?: () => void;
 };
 
 export const VaultCard: React.FC<VaultCardProps> = ({
   title,
   description,
+  urlSlug,
   stats,
   ctaLabel,
   variant,
   illustration,
+  depositLinkCallback,
 }) => {
   return (
     <CardWrapper $variant={variant}>
@@ -66,9 +73,14 @@ export const VaultCard: React.FC<VaultCardProps> = ({
         ))}
       </CardStats>
       <CardCta>
-        <Button fullwidth variant="translucent">
-          {ctaLabel}
-        </Button>
+        <LocalLink
+          href={`${EARN_PATH}/${urlSlug}/${EARN_VAULT_DEPOSIT_SLUG}`}
+          onClick={depositLinkCallback}
+        >
+          <Button fullwidth variant="translucent">
+            {ctaLabel}
+          </Button>
+        </LocalLink>
       </CardCta>
     </CardWrapper>
   );
