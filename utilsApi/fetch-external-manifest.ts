@@ -6,7 +6,7 @@ import { standardFetcher } from 'utils/standardFetcher';
 import { config } from 'config';
 import { isManifestValid, type Manifest } from 'config/external-config';
 
-import FallbackLocalManifest from 'IPFS.json' assert { type: 'json' };
+import FallbackLocalManifest from 'IPFS.json';
 
 export type ExternalConfigResult = {
   ___prefetch_manifest___: Manifest | null;

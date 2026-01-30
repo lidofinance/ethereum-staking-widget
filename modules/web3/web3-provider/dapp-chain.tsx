@@ -7,7 +7,7 @@ import React, {
 } from 'react';
 import invariant from 'tiny-invariant';
 
-import { useAccount } from 'wagmi';
+import { useConnection } from 'wagmi';
 import { Chain } from 'wagmi/chains';
 
 import {
@@ -54,7 +54,7 @@ DappChainContext.displayName = 'DappChainContext';
 export const useDappChain = (): UseDappChainValue => {
   const context = useContext(DappChainContext);
   invariant(context, 'useDappChain was used outside of DappChainProvider');
-  const { chainId: walletChain } = useAccount();
+  const { chainId: walletChain } = useConnection();
 
   return useMemo(() => {
     const supportedChainTypes = context.supportedChainIds
@@ -106,7 +106,7 @@ export const useDappChain = (): UseDappChainValue => {
 export const SupportL2Chains: React.FC<React.PropsWithChildren> = ({
   children,
 }) => {
-  const { chainId: walletChainId, isConnected } = useAccount();
+  const { chainId: walletChainId, isConnected } = useConnection();
   const [chainId, setChainId] = useState<number>(config.defaultChain);
 
   useEffect(() => {
@@ -163,7 +163,7 @@ export const SupportL2Chains: React.FC<React.PropsWithChildren> = ({
 export const SupportL1Chains: React.FC<React.PropsWithChildren> = ({
   children,
 }) => {
-  const { chainId: walletChainId, isConnected } = useAccount();
+  const { chainId: walletChainId, isConnected } = useConnection();
   const [chainId, setChainId] = useState<number>(config.defaultChain);
 
   useEffect(() => {
