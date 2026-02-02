@@ -11,7 +11,7 @@ import {
 import { getDexConfig } from 'features/withdrawals/request/withdrawal-rates';
 import { EARN_VAULTS } from 'features/earn/consts';
 
-import FallbackLocalManifest from 'IPFS.json' assert { type: 'json' };
+import FallbackLocalManifest from 'IPFS.json';
 
 export const getBackwardCompatibleConfig = (
   config: ManifestEntry['config'],

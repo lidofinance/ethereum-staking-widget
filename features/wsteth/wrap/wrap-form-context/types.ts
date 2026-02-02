@@ -1,3 +1,4 @@
+import { Address } from 'viem';
 import type { useWrapFormNetworkData } from '../hooks/use-wrap-form-network-data';
 import type { useWrapTxOnL1Approve } from '../hooks/use-wrap-tx-on-l1-approve';
 
@@ -6,8 +7,9 @@ import { StakeLimitFullInfo } from 'shared/hooks';
 import { LIMIT_LEVEL } from 'types';
 
 export type WrapFormInputType = {
-  amount: null | bigint;
+  amount: bigint | null;
   token: TOKENS_TO_WRAP;
+  referral: Address | null;
 };
 
 export type WrapFormNetworkData = ReturnType<typeof useWrapFormNetworkData>;

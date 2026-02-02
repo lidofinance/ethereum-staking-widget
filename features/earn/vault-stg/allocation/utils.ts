@@ -1,38 +1,16 @@
-import { FunctionComponent } from 'react';
 import { AllocationItem as AllocationPosition } from 'features/earn/shared/vault-allocation/types';
-import { SparkIcon, AaveV3Icon, FluidIcon } from 'assets/earn';
 
-const ALLOCATION_PROTOCOL_IDS_KNOWN = [
-  'aave-wsteth-weth',
-  'aave-wsteth-usd',
-  'aave-ethena',
-  'spark-wsteth-weth',
-  'fluid-resolv-usdt',
-];
-
-const ALLOCATION_ICONS_BY_ID: { [key: string]: FunctionComponent } = {
-  'aave-wsteth-weth': AaveV3Icon,
-  'aave-wsteth-usd': AaveV3Icon,
-  'aave-ethena': AaveV3Icon,
-  'spark-wsteth-weth': SparkIcon,
-  'fluid-resolv-usdt': FluidIcon,
-};
-
-const ALLOCATION_PENDING_ID = 'pending-deposits';
-
-// Assets which are not allocated yet
-const ALLOCATION_TOKEN_IDS_AVAILABLE = ['eth', 'weth', 'wsteth'];
-
-const ALLOCATION_ITEM_DEFAULT: AllocationPosition = {
-  allocation: 0,
-  chain: 'other',
-  protocol: 'Other allocation',
-  tvlUSD: 0,
-  tvlETH: 0n,
-};
+import {
+  ALLOCATION_PROTOCOL_IDS_KNOWN,
+  ALLOCATION_ICONS_BY_ID,
+  ALLOCATION_PENDING_ID,
+  ALLOCATION_TOKEN_IDS_AVAILABLE,
+  ALLOCATION_ITEM_DEFAULT,
+  AllocationProtocolId,
+} from './consts';
 
 type FetchedPosition = {
-  id: string;
+  id: AllocationProtocolId | string;
   label: string;
   chain: string;
   sharePercent: number;
@@ -52,7 +30,7 @@ const createAllocationPosition = (
   protocol: position.label,
   tvlETH: BigInt(position.tvl.amount),
   tvlUSD: calculateTvlUSD(totalTvlUsd, position.sharePercent),
-  icon: ALLOCATION_ICONS_BY_ID[position.id],
+  icon: ALLOCATION_ICONS_BY_ID[position.id as AllocationProtocolId],
 });
 
 type PositionCategory = 'known' | 'pending' | 'available' | 'other';
@@ -69,7 +47,9 @@ const categorizePosition = (
   const item = createAllocationPosition(position, totalTvlUsd);
   let category: PositionCategory = 'other';
 
-  if (ALLOCATION_PROTOCOL_IDS_KNOWN.includes(position.id)) {
+  if (
+    ALLOCATION_PROTOCOL_IDS_KNOWN.includes(position.id as AllocationProtocolId)
+  ) {
     category = 'known';
   }
 

@@ -1,17 +1,22 @@
 import { useCallback } from 'react';
 import invariant from 'tiny-invariant';
 
-import { type PopulatedTransaction } from '@lidofinance/lido-ethereum-sdk/core';
+import {
+  LIDO_TOKENS,
+  type PopulatedTransaction,
+} from '@lidofinance/lido-ethereum-sdk/core';
 
 import { config } from 'config';
 import { MockLimitReachedError } from 'features/stake/stake-form/utils';
 import {
+  applyRoundUpGasLimit,
   useDappStatus,
   useLidoSDK,
   useLidoSDKL2,
   useTxFlow,
   useAA,
 } from 'modules/web3';
+import { getReferralAddress } from 'utils/get-referral-address';
 
 import type {
   WrapFormApprovalData,
@@ -44,10 +49,15 @@ export const useWrapFormProcessor = ({
   } = approvalDataOnL1;
 
   return useCallback(
-    async ({ amount, token }: WrapFormInputType) => {
+    async ({ amount, token, referral }: WrapFormInputType) => {
       try {
         invariant(amount, 'amount should be presented');
         invariant(address, 'address should be presented');
+
+        const referralAddress = await getReferralAddress(
+          referral,
+          wrap.core.rpcProvider,
+        );
 
         const willReceive = await (isL2
           ? l2.steth.convertToShares(amount)
@@ -82,7 +92,12 @@ export const useWrapFormProcessor = ({
               ]);
             } else {
               // wrap eth to wsteth
-              calls = [await wrap.wrapEthPopulateTx(args)];
+              calls = [
+                await wrap.wrapEthPopulateTx({
+                  value: args.value,
+                  referralAddress,
+                }),
+              ];
             }
             return calls;
           },
@@ -118,12 +133,18 @@ export const useWrapFormProcessor = ({
 
               await wrap.wrapEth({
                 value: amount,
+                referralAddress,
                 callback: txStagesCallback,
               });
             }
           },
-          onSign: async () => {
+          onSign: async ({ payload }) => {
             txModalStages.sign(amount, token, willReceive);
+            if (token === LIDO_TOKENS.eth) {
+              return applyRoundUpGasLimit(
+                (payload as bigint) ?? config.WRAP_ETH_GASLIMIT_FALLBACK,
+              );
+            }
           },
           onReceipt: ({ txHashOrCallId }) => {
             txModalStages.pending(

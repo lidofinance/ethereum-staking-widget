@@ -5,7 +5,8 @@
     "withdrawalQueue": "0x1583C7b3f4C3B008720E6BcE5726336b0aB25fdd",
     "lido": "0x3e3FE7dBc6B4C189E7128855dD526361c49b40Af",
     "wsteth": "0xB82381A3fBD3FaFA77B3a7bE693342618240067b",
-    "weth": "0x7b79995e5f793A07Bc00c21412e50Ecae098E7f9"
+    "weth": "0x7b79995e5f793A07Bc00c21412e50Ecae098E7f9",
+    "wstethReferralStaker": "0x9E90338495FfD691bDDC680e47D94b60cF66dDad"
   },
   "api": {}
 }

@@ -34,6 +34,7 @@ import {
 
 import { STGDepositForm } from './deposit';
 import { STGWithdrawForm } from './withdraw';
+import { useSTGApy } from './hooks/use-stg-apy';
 import { useSTGStats } from './hooks/use-stg-stats';
 import { STG_VAULT_DESCRIPTION, STG_PARTNERS } from './consts';
 import { STGPosition } from './components/stg-position';
@@ -62,7 +63,8 @@ export const VaultPageSTG: FC<{
   const isWithdraw = action === EARN_VAULT_WITHDRAW_SLUG;
 
   const { isDappActive } = useDappStatus();
-  const { totalTvlUsd, apy, isLoading } = useSTGStats();
+  const { totalTvlUsd } = useSTGStats();
+  const { apy, isLoading: isApyLoading } = useSTGApy();
 
   return (
     <>
@@ -87,7 +89,7 @@ export const VaultPageSTG: FC<{
             apxLabel="APY"
             apx={apy}
             apxHint={<STGApyHint />}
-            isLoading={isLoading}
+            isLoading={isApyLoading}
           />
           <VaultDescription description={STG_VAULT_DESCRIPTION} />
         </VaultBlockHeaderSection>

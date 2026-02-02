@@ -17,7 +17,7 @@ export const SSV_CLAIM_URL = (address: Address) =>
 export const OBOL_CLAIM_URL = (address: Address) =>
   `https://launchpad.obol.org/cluster/list/?address=${address.toLowerCase()}/`;
 
-export const DVV_STATS_ORIGIN = 'https://points.mellow.finance';
+export const DVV_STATS_ORIGIN = 'https://api.mellow.finance';
 export const DVV_APR_ENDPOINT = `${DVV_STATS_ORIGIN}/v1/vaults`;
 
 export const DVV_PARTNERS = [

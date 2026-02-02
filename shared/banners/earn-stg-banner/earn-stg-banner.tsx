@@ -5,7 +5,7 @@ import {
 } from 'features/earn/consts';
 import { EarnStgBannerIcon } from 'assets/earn';
 import { useSTGAvailable } from 'features/earn/vault-stg/hooks/use-stg-available';
-import { useSTGStats } from 'features/earn/vault-stg/hooks/use-stg-stats';
+import { useSTGApy } from 'features/earn/vault-stg/hooks/use-stg-apy';
 import { trackMatomoEvent } from 'utils/track-matomo-event';
 import { MATOMO_CLICK_EVENTS_TYPES } from 'consts/matomo';
 import { FormatPercent } from 'shared/formatters/format-percent';
@@ -28,7 +28,7 @@ type EarnStgBannerProps = {
 export const EarnStgBanner = (props: EarnStgBannerProps) => {
   const { matomoEvent } = props;
   const bannerLinkHref = `${EARN_PATH}/${EARN_VAULT_STG_SLUG}/${EARN_VAULT_DEPOSIT_SLUG}`;
-  const { apy } = useSTGStats();
+  const { apy } = useSTGApy();
   const { isDepositEnabled } = useSTGAvailable();
   const { closeModal } = useModalActions();
 

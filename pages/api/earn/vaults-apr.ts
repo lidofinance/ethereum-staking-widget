@@ -35,7 +35,7 @@ import { DVV_STATS_ORIGIN } from 'features/earn/vault-dvv/consts';
 import { STG_STATS_ORIGIN } from 'features/earn/vault-stg/consts';
 import { GGV_STATS_ORIGIN } from 'features/earn/vault-ggv/consts';
 
-import LocalManifestRaw from 'IPFS.json' assert { type: 'json' };
+import LocalManifestRaw from 'IPFS.json';
 
 export type VaultsAprResponse = {
   data: {

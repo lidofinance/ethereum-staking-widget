@@ -10,6 +10,7 @@
     "wsteth": "0x7f39c581f595b53c5cb19bd0b3f8da6c935e2ca0",
     "ensPublicResolver": "0x4976fb03c32e5b8cfe2b6ccb31c09ba78ebaba41",
     "weth": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+    "wstethReferralStaker": "0xa88f0329C2c4ce51ba3fc619BBf44efE7120Dd0d",
 
     "dualGovernance": "0xcdF49b058D606AD34c5789FD8c3BF8B3E54bA2db",
     "escrow": "0xA8F14D033f377779274Ae016584a05bF14Dccaf8",
