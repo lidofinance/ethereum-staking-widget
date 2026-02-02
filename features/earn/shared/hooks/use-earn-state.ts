@@ -18,6 +18,19 @@ const EARN_STATE_KEYWORDS = [
 ] as const;
 
 /**
+ * Helper to cache earn param in global scope to prevent loss in iframe rerenders
+ */
+const getCachedEarnParam = () => {
+  if (typeof window === 'undefined') return undefined;
+  return (window as any).__earnParamCache__;
+};
+
+const setCachedEarnParam = (value: string | undefined) => {
+  if (typeof window === 'undefined') return;
+  (window as any).__earnParamCache__ = value;
+};
+
+/**
  * Determines the overall earn state based on runtime context and external configuration.
  *
  * Combines runtime state (URL parameters, iframe context) with external config to determine
@@ -94,25 +107,35 @@ export const useEarnState = () => {
  * **WARNING: It doesn't rely on external config, therefore it may not reflect the final earn state!**
  */
 export const useEarnRuntimeState = () => {
-  const { query } = useRouter();
+  const { query, isReady } = useRouter();
   const isIframe = useIsIframe();
+
+  // Cache the earn query param to prevent it from being lost on rerenders in iframe
+  // (Next.js Router can have unstable query params in iframe due to History API limitations)
+  if (isReady && query.earn && typeof query.earn === 'string') {
+    setCachedEarnParam(query.earn);
+  }
+
+  // Use cached value if current query.earn is undefined, but we had it before
+  const earnParam = query.earn || getCachedEarnParam();
 
   // Parse enabled vaults from URL param: ?earn=vault1,vault2
   let vaultsEnabledByUrl: string[] = [];
   if (
-    query.earn &&
-    typeof query.earn === 'string' &&
-    !EARN_STATE_KEYWORDS.includes(query.earn as any) // Only treat as vault names if it's not a keyword (enabled/disabled)
+    isReady &&
+    earnParam &&
+    typeof earnParam === 'string' &&
+    !EARN_STATE_KEYWORDS.includes(earnParam as any) // Only treat as vault names if it's not a keyword (enabled/disabled)
   ) {
-    vaultsEnabledByUrl = query.earn.split(',');
+    vaultsEnabledByUrl = earnParam.split(',');
   }
 
   const someVaultsEnabledByURL = vaultsEnabledByUrl.length > 0;
-  const isEarnEnabledByURL = query.earn === EARN_STATES.ENABLED;
-  const isEarnDisabledByURL = query.earn === EARN_STATES.DISABLED;
+  const isEarnEnabledByURL = isReady && earnParam === EARN_STATES.ENABLED;
+  const isEarnDisabledByURL = isReady && earnParam === EARN_STATES.DISABLED;
 
   const isEarnDisabledByRuntimeContext =
-    (isIframe && !isEarnEnabledByURL && !someVaultsEnabledByURL) ||
+    (isReady && isIframe && !isEarnEnabledByURL && !someVaultsEnabledByURL) ||
     isEarnDisabledByURL;
 
   const isVaultEnabledByUrl = (vaultName: string) =>
