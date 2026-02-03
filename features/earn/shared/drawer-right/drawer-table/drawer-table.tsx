@@ -1,5 +1,5 @@
 import React from 'react';
-import { EarnEthIcon } from 'assets/earn-new';
+import { VaultEthIcon } from 'assets/earn-v2';
 import {
   Table,
   Tr,
@@ -17,7 +17,7 @@ const DATA = [
       '',
       'Single vault',
       <HeaderWithIcon key="lido-earn-eth">
-        <EarnEthIcon width={28} height={28} />
+        <VaultEthIcon width={28} height={28} />
         Lido Earn ETH
       </HeaderWithIcon>,
     ],
@@ -53,14 +53,8 @@ const DATA = [
       {
         cells: [
           'Fees',
-          <>
-            1% management fee <br />
-            10% performance fee
-          </>,
-          <>
-            1% management fee <br />
-            10% performance fee
-          </>,
+          '1 % management fee <br /> 10 % performance fee',
+          '1 % management fee <br /> 10 % performance fee',
         ],
       },
     ],
@@ -83,12 +77,16 @@ export const DrawerTable = () => {
             </HeaderTr>
           </thead>
           <Tbody>
-            {item.rows.map((row) => (
-              <Tr key={row.cells.join('-')}>
-                {row.cells.map((cell) => (
-                  <Td key={cell.toString()}>
+            {item.rows.map((row, rowIndex) => (
+              <Tr key={rowIndex}>
+                {row.cells.map((cell, cellIndex) => (
+                  <Td key={cellIndex}>
                     <MobileCellHeader>{row.cells[0]}</MobileCellHeader>
-                    {cell}
+                    {typeof cell === 'string' ? (
+                      <span dangerouslySetInnerHTML={{ __html: cell }} />
+                    ) : (
+                      <>{cell}</>
+                    )}
                   </Td>
                 ))}
               </Tr>

@@ -18,23 +18,37 @@ import {
 import { LocalLink } from 'shared/components/local-link';
 import { EARN_PATH } from 'consts/urls';
 import { EARN_VAULT_DEPOSIT_SLUG } from 'features/earn/consts';
+import { InlineLoader } from '../inline-loader';
+import { FormatPercent } from 'shared/formatters/format-percent';
+import { VaultTip } from '../vault-tip';
+import { FormatLargeAmount } from 'shared/formatters/format-large-amount';
+import { FormatToken } from 'shared/formatters/format-token';
 
-export type VaultCardStat = {
-  label: string;
-  value: string;
-  accent?: boolean;
-  muted?: boolean;
-  labelIcon?: React.ReactNode;
-  // TODO: replace with formatted values from API
+type VaultStats = {
+  tvl?: number | null;
+  apx?: number | null;
+  apxLabel: 'APY' | 'APR';
+  isLoading?: boolean;
+  apxHint?: React.ReactNode;
+  compact?: boolean;
+};
+
+type VaultPosition = {
+  balance?: bigint;
+  claimable?: bigint;
+  pending?: Array<{ tokenSymbol: string; amount: bigint }>;
+  isLoading?: boolean;
+  symbol: string;
 };
 
 type VaultCardProps = {
   title: string;
   description?: string;
   urlSlug: string;
-  stats: VaultCardStat[];
+  stats: VaultStats;
   ctaLabel: string;
-  variant: 'eth' | 'usd';
+  position?: VaultPosition;
+  variant?: 'eth' | 'usd' | 'default';
   illustration?: React.ReactNode;
   depositLinkCallback?: () => void;
 };
@@ -44,8 +58,9 @@ export const VaultCard: React.FC<VaultCardProps> = ({
   description,
   urlSlug,
   stats,
+  position,
   ctaLabel,
-  variant,
+  variant = 'default',
   illustration,
   depositLinkCallback,
 }) => {
@@ -60,17 +75,43 @@ export const VaultCard: React.FC<VaultCardProps> = ({
       </CardHeader>
       <CardDivider />
       <CardStats>
-        {stats.map((stat) => (
-          <StatItem key={stat.label}>
-            <StatLabel>
-              {stat.label}
-              {stat.labelIcon}
-            </StatLabel>
-            <StatValue $accent={stat.accent} $muted={stat.muted}>
-              {stat.value}
+        <StatItem data-testid="apx-value">
+          <StatLabel>
+            {stats.apxLabel}
+            {!stats.isLoading && (
+              <VaultTip placement="bottom">{stats.apxHint}</VaultTip>
+            )}
+          </StatLabel>
+          <StatValue $accent>
+            <InlineLoader isLoading={stats.isLoading} width={70}>
+              <FormatPercent value={stats.apx} decimals="percent" />*
+            </InlineLoader>
+          </StatValue>
+        </StatItem>
+        <StatItem data-testid="tvl-value">
+          <StatLabel>TVL</StatLabel>
+          <StatValue>
+            <InlineLoader isLoading={stats.isLoading} width={70}>
+              <FormatLargeAmount amount={stats.tvl} />
+            </InlineLoader>
+          </StatValue>
+        </StatItem>
+        {position && (
+          <StatItem>
+            <StatLabel>My position</StatLabel>
+            <StatValue>
+              <InlineLoader width={32} isLoading={position.isLoading}>
+                <FormatToken
+                  trimEllipsis
+                  symbol={position.symbol}
+                  amount={position.balance}
+                  fallback="—"
+                  data-testid={`${position.symbol}-position-amount`}
+                />
+              </InlineLoader>
             </StatValue>
           </StatItem>
-        ))}
+        )}
       </CardStats>
       <CardCta>
         <LocalLink

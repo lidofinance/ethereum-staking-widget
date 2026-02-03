@@ -1,7 +1,18 @@
 import styled from 'styled-components';
 import { Block } from '@lidofinance/lido-ui';
 
-export const CardWrapper = styled(Block)<{ $variant: 'eth' | 'usd' }>`
+const getBackgroundGradient = (variant: 'eth' | 'usd' | 'default'): string => {
+  const gradients: Record<'eth' | 'usd' | 'default', string> = {
+    eth: 'radial-gradient(closest-side, rgba(184, 146, 255, 0.9), rgba(255, 255, 255, 0))',
+    usd: 'radial-gradient(closest-side, rgba(116, 170, 255, 0.9), rgba(255, 255, 255, 0))',
+    default: 'none',
+  };
+  return gradients[variant];
+};
+
+export const CardWrapper = styled(Block)<{
+  $variant: 'eth' | 'usd' | 'default';
+}>`
   position: relative;
   overflow: hidden;
   color: var(--lido-color-text);
@@ -16,10 +27,7 @@ export const CardWrapper = styled(Block)<{ $variant: 'eth' | 'usd' }>`
     border-radius: 50%;
     opacity: 0.5;
     filter: blur(10px);
-    background: ${({ $variant }) =>
-      $variant === 'eth'
-        ? 'radial-gradient(closest-side, rgba(184, 146, 255, 0.9), rgba(255, 255, 255, 0))'
-        : 'radial-gradient(closest-side, rgba(116, 170, 255, 0.9), rgba(255, 255, 255, 0))'};
+    background: ${({ $variant }) => getBackgroundGradient($variant)};
     pointer-events: none;
   }
 

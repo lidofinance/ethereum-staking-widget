@@ -2,7 +2,7 @@ import { FC } from 'react';
 import { Deposit, History, Stake } from '@lidofinance/lido-ui';
 
 import { useDappStatus } from 'modules/web3';
-import { UpgradeIllustrationIcon } from 'assets/earn-new';
+import { UpgradeIllustrationIcon } from 'assets/earn-v2';
 import { ButtonInline } from 'shared/components/button-inline/button-inline';
 import { ETH_DEPOSIT_PATH } from 'features/earn/consts';
 

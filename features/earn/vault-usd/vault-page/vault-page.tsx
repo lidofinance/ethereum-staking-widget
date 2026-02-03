@@ -1,6 +1,6 @@
 import type { ComponentType, FC, SVGProps } from 'react';
 
-import { EarnEthIcon, EarnUsdIcon } from 'assets/earn-new';
+import { VaultEthIcon, VaultUsdIcon } from 'assets/earn-v2';
 
 import { RightColumn } from './right-column';
 import { LeftColumn } from './left-column';
@@ -46,7 +46,7 @@ const VAULTS: Record<
     apy: '8.4%',
     tvl: '$95.2M',
     upgradeAmount: '2.9831 GG',
-    illustration: EarnEthIcon,
+    illustration: VaultEthIcon,
   },
   usd: {
     title: 'Lido Earn USD',
@@ -55,7 +55,7 @@ const VAULTS: Record<
     apy: '6.4%',
     tvl: '$103.2M',
     upgradeAmount: '—',
-    illustration: EarnUsdIcon,
+    illustration: VaultUsdIcon,
   },
 } as const;
 
