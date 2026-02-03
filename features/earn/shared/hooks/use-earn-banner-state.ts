@@ -3,12 +3,17 @@ import { useEarnState } from './use-earn-state';
 
 export const useEarnBannerState = () => {
   const { externalConfig } = useConfig();
-  const { isEarnEnabled } = useEarnState();
+
+  // We specifically check for 'disabled' state because other states are 'enabled' and 'partial'.
+  // We need to strictly hide the banner only when the state is 'disabled'.
+  const { isEarnDisabled } = useEarnState();
 
   const showOnStakeForm =
-    isEarnEnabled && (externalConfig.earnVaultsBanner?.showOnStakeForm ?? true);
+    !isEarnDisabled &&
+    (externalConfig.earnVaultsBanner?.showOnStakeForm ?? true);
   const showAfterStake =
-    isEarnEnabled && (externalConfig.earnVaultsBanner?.showAfterStake ?? true);
+    !isEarnDisabled &&
+    (externalConfig.earnVaultsBanner?.showAfterStake ?? true);
 
   return { showOnStakeForm, showAfterStake };
 };
