@@ -68,17 +68,18 @@ export const useEarnState = () => {
   }
 
   const isVaultEnabled = (vaultName: string) => {
+    // Respect disabled flag from external config
+    // If a vault is marked as disabled in config, it cannot be re-enabled via URL
+    const vaultConfig = earnVaults.find((vault) => vault.name === vaultName);
+    if (!vaultConfig || vaultConfig.disabled) return false;
+
     // If earn is fully disabled, no vault is enabled
     if (earnState === EARN_STATES.DISABLED) return false;
 
     // If earn is fully enabled, all vaults are enabled
     if (earnState === EARN_STATES.ENABLED) return true;
 
-    // Respect disabled flag from external config
-    const vaultConfig = earnVaults.find((vault) => vault.name === vaultName);
-    if (!vaultConfig || vaultConfig.disabled) return false;
-
-    return isVaultEnabledByUrl(vaultName);
+    return earnState === EARN_STATES.PARTIAL && isVaultEnabledByUrl(vaultName);
   };
 
   const isVaultDisabled = (vaultName: string) => !isVaultEnabled(vaultName);
