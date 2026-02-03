@@ -91,6 +91,7 @@ export const Table = styled.div`
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: ${({ theme }) => theme.spaceMap.lg}px;
+  font-weight: 400;
 
   ${({ theme }) => theme.mediaQueries.md} {
     grid-template-columns: 1fr;
