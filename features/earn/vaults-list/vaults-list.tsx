@@ -5,15 +5,15 @@ import {
   AprDisclaimer,
   LegalDisclaimer,
 } from 'shared/components';
+import { useEarnVaultsTvl } from 'shared/hooks/use-earn-vaults-tvl';
 
 import { VaultCardGGV } from '../vault-ggv';
 import { VaultCardDVV } from '../vault-dvv';
 import { VaultCardSTG } from '../vault-stg';
+import { VaultCardSkeleton } from '../shared/vault-card-skeleton';
+import { useEarnState } from '../shared/hooks/use-earn-state';
 
 import { VaultsListWrapper } from './styles';
-import { useVaultConfig } from '../shared/hooks/use-vault-config';
-import { useEarnVaultsTvl } from 'shared/hooks/use-earn-vaults-tvl';
-import { VaultCardSkeleton } from '../shared/vault-card-skeleton';
 
 const VAULT_CARDS = {
   ggv: VaultCardGGV,
@@ -39,15 +39,17 @@ const getTvlSortFn = (tvlData?: Record<string, any>) => {
 };
 
 export const EarnVaultsList: FC = () => {
-  const { vaults } = useVaultConfig();
+  const { earnVaultsEnabled } = useEarnState();
   const { data: tvlData, isLoading: isTvlLoading } = useEarnVaultsTvl();
 
   return (
     <>
       <VaultsListWrapper>
         {isTvlLoading
-          ? vaults.map((_, index) => <VaultCardSkeleton key={index} />)
-          : vaults.sort(getTvlSortFn(tvlData)).map((vault) => {
+          ? earnVaultsEnabled.map((_, index) => (
+              <VaultCardSkeleton key={index} />
+            ))
+          : earnVaultsEnabled.sort(getTvlSortFn(tvlData)).map((vault) => {
               const VaultCard = VAULT_CARDS[vault.name];
               return <VaultCard key={vault.name} />;
             })}

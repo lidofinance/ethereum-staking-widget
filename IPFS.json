@@ -8,6 +8,10 @@
         324, 10, 42161, 137, 8453, 5000, 59144, 534352, 56, 34443, 48900, 1868,
         130, 1135, 1923
       ],
+      "earnVaultsBanner": {
+        "showOnStakeForm": true,
+        "showAfterStake": true
+      },
       "earnVaults": [
         { "name": "strategy" },
         {
@@ -45,6 +49,10 @@
         324, 10, 42161, 137, 8453, 5000, 59144, 534352, 56, 34443, 48900, 1868,
         130, 1135, 1923
       ],
+      "earnVaultsBanner": {
+        "showOnStakeForm": true,
+        "showAfterStake": true
+      },
       "earnVaults": [
         { "name": "strategy" },
         { "name": "ggv", "apy": { "type": "weekly_moving_average" } },
@@ -132,6 +140,10 @@
         "rewardsMaintenance": false,
         "holidayDecorEnabled": false,
         "forceAllowance": false
+      },
+      "earnVaultsBanner": {
+        "showOnStakeForm": true,
+        "showAfterStake": true
       },
       "earnVaults": [
         { "name": "strategy" },

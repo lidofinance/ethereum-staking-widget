@@ -6,7 +6,7 @@ import { STRATEGY_LAZY } from 'consts/react-query-strategies';
 import { IPFS_MANIFEST_URL } from 'consts/external-links';
 import { getManifestKey, isManifestEntryValid } from 'config/external-config';
 import { standardFetcher } from 'utils/standardFetcher';
-import { useIsEarnDisabled } from 'features/earn/shared/hooks/use-is-earn-disabled';
+import { useEarnRuntimeState } from 'features/earn/shared/hooks/use-earn-state';
 import { EARN_PATH } from 'consts/urls';
 
 import {
@@ -20,7 +20,7 @@ import type { ExternalConfig, ManifestEntry } from './types';
 export const useExternalConfigContext = (
   prefetchedManifest?: unknown,
 ): ExternalConfig => {
-  const isEarnDisabled = useIsEarnDisabled();
+  const { isEarnDisabledByRuntimeContext } = useEarnRuntimeState();
 
   const { defaultChain, manifestOverride } = config;
   const fallbackData = useFallbackManifestEntry(
@@ -65,7 +65,10 @@ export const useExternalConfigContext = (
 
     const cleanConfig = getBackwardCompatibleConfig(rawConfig);
 
-    const override = isEarnDisabled
+    // TODO: replace this logic with useEarnState hook, which is a single source of truth for Earn state.
+    // Current blocker: the Navigation component (navigation.tsx) uses external config to disable pages,
+    // we don't want to couple it with specific Earn state logic.
+    const overridePages = isEarnDisabledByRuntimeContext
       ? {
           pages: {
             [EARN_PATH]: {
@@ -76,8 +79,10 @@ export const useExternalConfigContext = (
         }
       : undefined;
 
-    const overrideConfig = overrideManifestConfig(cleanConfig, override);
+    const overrideConfig = overrideManifestConfig(cleanConfig, {
+      ...overridePages,
+    });
 
     return { ...overrideConfig, ...rest, fetchMeta: queryResult };
-  }, [isEarnDisabled, queryResult, fallbackData]);
+  }, [queryResult, fallbackData, isEarnDisabledByRuntimeContext]);
 };

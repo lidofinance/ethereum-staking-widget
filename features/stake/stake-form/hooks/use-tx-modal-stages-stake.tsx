@@ -49,6 +49,7 @@ const getTxModalStagesStake = (transitStage: TransactionModalTransitStage) => ({
         footer={
           <EarnUpToBanner
             matomoEvent={MATOMO_CLICK_EVENTS_TYPES.startEarning}
+            placement="afterStake"
           />
         }
       />,
