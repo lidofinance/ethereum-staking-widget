@@ -1,0 +1,33 @@
+name: socket
+run-name: Socket.dev checks
+
+on:
+  workflow_dispatch
+
+# Prevent concurrent runs for the same commit
+concurrency:
+  group: socket--dev-checks-${{ github.ref }}-${{ github.sha }}
+  cancel-in-progress: true
+
+jobs:
+  socket:
+    permissions:
+      issues: write
+      contents: read
+      pull-requests: write
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "pypy3.10"
+      
+      - name: Install Socket CLI
+        run: npm install -g socket
+      
+      - name: Run Socket Security Scan
+        env:
+          SOCKET_CLI_API_TOKEN: ${{ secrets.SOCKET_SECURITY_API_KEY }}
+        run: socket scan create --reach --org "lido-labs" .
