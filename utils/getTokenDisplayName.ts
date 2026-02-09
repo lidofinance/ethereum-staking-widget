@@ -3,6 +3,7 @@ import { DVV_TOKEN_SYMBOL } from 'features/earn/vault-dvv/consts';
 import { GGV_TOKEN_SYMBOL } from 'features/earn/vault-ggv/consts';
 import { STG_TOKEN_SYMBOL } from 'features/earn/vault-stg/consts';
 
+// TODO: rework, move to some consts
 export const TOKEN_DISPLAY_NAMES = {
   [LIDO_TOKENS.eth]: 'ETH',
   [LIDO_TOKENS.steth]: 'stETH',
@@ -10,7 +11,9 @@ export const TOKEN_DISPLAY_NAMES = {
   [LIDO_TOKENS.unsteth]: 'unstETH',
   ['wETH']: 'WETH',
   ['gg']: GGV_TOKEN_SYMBOL,
+  ['GG']: GGV_TOKEN_SYMBOL,
   ['dvstETH']: DVV_TOKEN_SYMBOL,
+  ['DVstETH']: DVV_TOKEN_SYMBOL,
   ['strETH']: STG_TOKEN_SYMBOL,
 } as const;
 
