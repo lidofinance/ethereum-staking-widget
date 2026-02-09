@@ -4,6 +4,7 @@ import { ReactComponent as VaultDvvIcon } from './vault-dvv.svg';
 import { ReactComponent as VaultGgvIcon } from './vault-ggv.svg';
 import { ReactComponent as VaultStgIcon } from './vault-stg.svg';
 import { ReactComponent as UpgradeIllustrationIcon } from './upgrade.svg';
+import { ReactComponent as TokenEarnethIcon } from './token-earneth.svg';
 
 export {
   VaultEthIcon,
@@ -12,4 +13,5 @@ export {
   VaultGgvIcon,
   VaultStgIcon,
   UpgradeIllustrationIcon,
+  TokenEarnethIcon,
 };
