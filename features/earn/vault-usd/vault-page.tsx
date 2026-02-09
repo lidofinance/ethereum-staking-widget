@@ -9,7 +9,6 @@ const DATA = {
     'Lido Earn USD Vault is curated for USD-denominated assets, designed to target an optimal risk-reward profile without compromising on security, risk controls, or asset quality.',
   apy: '6.4%',
   tvl: '$103.2M',
-  upgradeAmount: '—',
   logo: VaultUsdIcon,
 } as const;
 
