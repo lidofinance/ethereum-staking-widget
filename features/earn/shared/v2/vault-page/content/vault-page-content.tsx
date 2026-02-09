@@ -1,11 +1,10 @@
 import { ComponentType, FC, PropsWithChildren, SVGProps } from 'react';
 
 import { TopSection } from './top-section';
-import { Chart } from './chart';
-import { LeftColumnStyled } from './styles';
+import { ContainerStyled } from './styles';
 
 type VaultIllustration = ComponentType<SVGProps<SVGSVGElement>>;
-type LeftColumnProps = {
+type VaultPageContentProps = {
   logo: VaultIllustration;
   title: string;
   description: string;
@@ -13,15 +12,14 @@ type LeftColumnProps = {
   tvl: string;
 };
 
-export const LeftColumn: FC<PropsWithChildren<LeftColumnProps>> = ({
+export const VaultPageContent: FC<PropsWithChildren<VaultPageContentProps>> = ({
   children,
   ...props
 }) => {
   return (
-    <LeftColumnStyled>
+    <ContainerStyled>
       <TopSection {...props} />
-      <Chart />
       {children}
-    </LeftColumnStyled>
+    </ContainerStyled>
   );
 };

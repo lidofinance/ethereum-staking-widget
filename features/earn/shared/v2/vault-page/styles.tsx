@@ -3,7 +3,7 @@ import { LocalLink } from 'shared/components/local-link';
 
 export const Layout = styled.div`
   display: flex;
-  gap: ${({ theme }) => theme.spaceMap.lg}px;
+  gap: 100px;
   margin: ${({ theme }) => theme.spaceMap.lg}px 0;
 
   ${({ theme }) => theme.mediaQueries.md} {
@@ -11,41 +11,11 @@ export const Layout = styled.div`
   }
 `;
 
-export const RightColumn = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: ${({ theme }) => theme.spaceMap.md}px;
-  min-width: 358px;
-  max-width: 396px;
-  width: 100%;
-`;
-
 export const Description = styled.p`
   color: var(--lido-color-textSecondary);
   font-size: ${({ theme }) => theme.fontSizesMap.xs}px;
   line-height: 1.6;
   margin: 0;
-`;
-
-export const ActionTabs = styled.div`
-  display: flex;
-  gap: ${({ theme }) => theme.spaceMap.sm}px;
-  border-bottom: 1px solid ${({ theme }) => theme.colors.border};
-  padding-bottom: ${({ theme }) => theme.spaceMap.xs}px;
-  max-width: 520px;
-`;
-
-export const ActionTab = styled.button<{ $active?: boolean }>`
-  border: none;
-  background: none;
-  font: inherit;
-  font-size: ${({ theme }) => theme.fontSizesMap.xs}px;
-  color: ${({ $active }) =>
-    $active ? 'var(--lido-color-text)' : 'var(--lido-color-textSecondary)'};
-  font-weight: ${({ $active }) => ($active ? 700 : 500)};
-  padding: ${({ theme }) => theme.spaceMap.xs}px 0;
-  border-bottom: ${({ $active }) =>
-    $active ? '2px solid var(--lido-color-primary)' : '2px solid transparent'};
 `;
 
 export const Section = styled.div`

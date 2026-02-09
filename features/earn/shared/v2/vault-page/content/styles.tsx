@@ -1,7 +1,8 @@
 import styled from 'styled-components';
 
-export const LeftColumnStyled = styled.div`
+export const ContainerStyled = styled.div`
   display: flex;
+  flex: 1 0;
   flex-direction: column;
   gap: ${({ theme }) => theme.spaceMap.xl}px;
 `;
