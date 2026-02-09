@@ -64,6 +64,24 @@ export const CONTRACT_NAMES = {
   stgRedeemQueueWSTETH: 'stgRedeemQueueWSTETH',
   stgShareManagerSTRETH: 'stgShareManagerSTRETH',
   stgCollector: 'stgCollector',
+  // Lido ETH
+  ethVault: 'ethVault',
+  ethDepositQueueETH: 'ethDepositQueueETH',
+  ethDepositQueueWETH: 'ethDepositQueueWETH',
+  ethDepositQueueWSTETH: 'ethDepositQueueWSTETH',
+  ethDepositQueueGG: 'ethDepositQueueGG',
+  ethDepositQueueSTRETH: 'ethDepositQueueSTRETH',
+  ethDepositQueueDVSTETH: 'ethDepositQueueDVSTETH',
+  ethShareManagerEARNETH: 'ethShareManagerEARNETH',
+  ethRedeemQueueWSTETH: 'ethRedeemQueueWSTETH',
+  ethCollector: 'ethCollector',
+  // Lido USD
+  usdVault: 'usdVault',
+  usdDepositQueueUSDC: 'usdDepositQueueUSDC',
+  usdDepositQueueUSDT: 'usdDepositQueueUSDT',
+  usdShareManagerEARNUSD: 'usdShareManagerEARNUSD',
+  usdRedeemQueueUSDC: 'usdRedeemQueueUSDC',
+  usdCollector: 'usdCollector',
 } as const;
 export type CONTRACT_NAMES = keyof typeof CONTRACT_NAMES;
 
