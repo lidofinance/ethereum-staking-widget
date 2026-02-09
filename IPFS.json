@@ -9,6 +9,8 @@
         130, 1135, 1923
       ],
       "earnVaults": [
+        { "name": "eth" },
+        { "name": "usd" },
         { "name": "strategy" },
         {
           "name": "ggv",
@@ -46,9 +48,15 @@
         130, 1135, 1923
       ],
       "earnVaults": [
-        { "name": "strategy" },
-        { "name": "ggv", "apy": { "type": "weekly_moving_average" } },
-        { "name": "dvv" }
+        { "name": "eth" },
+        { "name": "usd" },
+        { "name": "strategy", "deprecated": true },
+        {
+          "name": "ggv",
+          "apy": { "type": "weekly_moving_average" },
+          "deprecated": true
+        },
+        { "name": "dvv", "deprecated": true }
       ],
       "featureFlags": {
         "disableSendCalls": false,
@@ -134,9 +142,15 @@
         "forceAllowance": false
       },
       "earnVaults": [
-        { "name": "strategy" },
-        { "name": "ggv", "apy": { "type": "weekly_moving_average" } },
-        { "name": "dvv" }
+        { "name": "eth" },
+        { "name": "usd" },
+        { "name": "strategy", "deprecated": true },
+        {
+          "name": "ggv",
+          "apy": { "type": "weekly_moving_average" },
+          "deprecated": true
+        },
+        { "name": "dvv", "deprecated": true }
       ],
       "pages": {
         "/earn": {
