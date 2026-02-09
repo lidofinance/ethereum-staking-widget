@@ -1,0 +1,101 @@
+import { useCallback, useState } from 'react';
+import { encodeFunctionData } from 'viem';
+import { useQueryClient } from '@tanstack/react-query';
+import invariant from 'tiny-invariant';
+
+import { useDappStatus, useLidoSDK, useTxFlow } from 'modules/web3';
+
+import { Contract } from '../types/contract';
+import { TxModalStages } from '../types/txModalStages';
+import { QUERY_KEY } from '../consts';
+
+export const useDepositClaim = ({
+  onRetry,
+  vault,
+  txModalStages,
+}: {
+  onRetry?: () => void;
+  vault: Contract;
+  txModalStages: TxModalStages;
+}) => {
+  const { address } = useDappStatus();
+  const { core } = useLidoSDK();
+  const queryClient = useQueryClient();
+  const txFlow = useTxFlow();
+
+  const [isClaiming, setIsClaiming] = useState(false);
+
+  const claim = useCallback(
+    async (amount: bigint) => {
+      invariant(address, 'Address is not available');
+
+      const claimArgs = [address] as const;
+
+      try {
+        setIsClaiming(true);
+        await txFlow({
+          callsFn: async () => [
+            {
+              to: vault.address,
+              data: encodeFunctionData({
+                abi: vault.abi,
+                functionName: 'claimShares',
+                args: claimArgs,
+              }),
+            },
+          ],
+          sendTransaction: async (txStagesCallback) => {
+            await core.performTransaction({
+              getGasLimit: async (opts) =>
+                await vault.estimateGas.claimShares(claimArgs, {
+                  ...opts,
+                }),
+              sendTransaction: (opts) => {
+                return vault.write.claimShares(claimArgs, {
+                  ...opts,
+                });
+              },
+              callback: txStagesCallback,
+            });
+          },
+          onSign: () => {
+            txModalStages.sign(amount);
+          },
+          onReceipt: async ({ txHashOrCallId, isAA }) => {
+            txModalStages.pending(amount, txHashOrCallId, isAA);
+          },
+          onSuccess: async ({ txHash }) => {
+            txModalStages.success(amount, txHash);
+            // TODO: add matomo callback
+            await queryClient.refetchQueries(
+              { queryKey: [QUERY_KEY] },
+              { cancelRefetch: true, throwOnError: false },
+            );
+          },
+        });
+
+        return true;
+      } catch (error) {
+        console.error(error);
+        txModalStages.failed(error, onRetry);
+        return false;
+      } finally {
+        setIsClaiming(false);
+      }
+    },
+    [
+      address,
+      core,
+      onRetry,
+      queryClient,
+      txFlow,
+      txModalStages,
+      vault.abi,
+      vault.address,
+      vault.estimateGas,
+      vault.write,
+    ],
+  );
+
+  return { claim, isClaiming };
+};
