@@ -5,8 +5,9 @@ import {
   AprDisclaimer,
   LegalDisclaimer,
 } from 'shared/components';
+import { useEarnVaultsTvl } from 'shared/hooks/use-earn-vaults-tvl';
 
-import { useVaultConfig } from '../shared/hooks/use-vault-config';
+import { useEarnState } from '../shared/hooks/use-earn-state';
 import { DrawerRight } from '../shared/drawer-right';
 import { UpgradeCard } from '../shared/upgrade-card';
 
@@ -27,7 +28,7 @@ const VAULT_CARDS = {
 };
 
 export const EarnVaultsList: FC = () => {
-  const { vaults } = useVaultConfig();
+  const { earnVaultsEnabled } = useEarnState();
   const [isDrawerRightOpen, setIsDrawerRightOpen] = useState(false);
 
   return (
@@ -35,7 +36,7 @@ export const EarnVaultsList: FC = () => {
       <ListWrapper>
         <UpgradeCard setIsDrawerRightOpen={setIsDrawerRightOpen} />
         <CardsStack>
-          {vaults.map((vault) => {
+          {earnVaultsEnabled.map((vault) => {
             const VaultCard = VAULT_CARDS[vault.name];
             return <VaultCard key={vault.name} />;
           })}

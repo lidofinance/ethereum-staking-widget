@@ -25,12 +25,17 @@ export type EarnVaultConfigEntry = {
   apy?: VaultAPY;
   showNew?: boolean;
   deprecated?: boolean;
+  disabled?: boolean;
 };
 
 export type ManifestConfig = {
   enabledWithdrawalDexes: DexWithdrawalApi[];
   multiChainBanner: number[];
   earnVaults: EarnVaultConfigEntry[];
+  earnVaultsBanner: {
+    showOnStakeForm: boolean;
+    showAfterStake: boolean;
+  };
   featureFlags: {
     ledgerLiveL2?: boolean;
     disableSendCalls?: boolean;

@@ -121,12 +121,10 @@ export const shouldRedirectToRoot = (
   const { defaultChain } = config;
   const chainSettings = manifest?.[`${defaultChain}`];
   const pages = chainSettings?.config?.pages;
-  const isDeactivate =
+  const isDisabled =
     !!pages?.[currentPath as ManifestConfigPage]?.shouldDisable;
   // https://nextjs.org/docs/messages/gsp-redirect-during-prerender
   const isBuild = process.env.npm_lifecycle_event === 'build';
 
-  return (
-    currentPath !== ManifestConfigPageEnum.Stake && isDeactivate && !isBuild
-  );
+  return currentPath !== ManifestConfigPageEnum.Stake && isDisabled && !isBuild;
 };
