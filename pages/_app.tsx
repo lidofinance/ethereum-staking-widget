@@ -13,11 +13,15 @@ import { Providers } from 'providers';
 import { BackgroundGradient } from 'shared/components/background-gradient';
 import { ErrorBoundaryFallback } from 'shared/components/error-boundary';
 import { nprogress } from 'utils';
+import { z } from 'zod';
 
 import { AddressValidationFile } from 'utils/address-validation';
 
 // Visualize route changes
 nprogress();
+
+// Prevents Zod for calling `new Function("")` and causing an CSP error
+z.config({ jitless: true });
 
 const App = (props: AppProps) => {
   const { Component, pageProps } = props;
