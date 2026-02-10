@@ -179,7 +179,7 @@ const dexWithdrawalMap: DexWithdrawalIntegrationMap = {
     icon: OneInchIcon,
     matomoEvent: MATOMO_CLICK_EVENTS_TYPES.withdrawalGoTo1inch,
     link: (amount, token) =>
-      `https://1inch.com/swap?src=1:${token === TOKENS_TO_WITHDRAWLS.stETH ? 'stETH' : 'wstETH'}&dst=1:ETH&sourceTokenAmount=${formatEther(
+      `https://1inch.com/swap?src=1:${token === TOKENS_TO_WITHDRAWLS.stETH ? 'stETH' : 'wstETH'}&dst=1:ETH&srcAmount=${formatEther(
         amount,
       )}`,
   },
