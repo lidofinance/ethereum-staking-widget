@@ -54,7 +54,7 @@ const STAKE_SWAP_INTEGRATION_CONFIG: StakeSwapDiscountIntegrationMap = {
       );
     },
     Icon: OneInchIcon,
-    linkHref: `https://app.1inch.io/#/1/advanced/swap/ETH/stETH`,
+    linkHref: `https://1inch.com/swap?src=1:ETH&dst=1:stETH`,
     matomoEvent: MATOMO_CLICK_EVENTS.oneInchDiscount,
     CustomLink({ children, ...props }) {
       const customProps = use1inchDeepLinkProps();
