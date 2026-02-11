@@ -13,7 +13,7 @@ import { TokenAmountInputRequest } from './controls/token-amount-input-request';
 import { InputGroupRequest } from './controls/input-group-request';
 import { RequestsInfo } from './requests-info';
 import { ModePickerRequest } from './controls/mode-picker-request';
-import { DexOptions } from './options/dex-options';
+
 import { LidoOption } from './options/lido-option';
 import {
   SubmitButtonRequest,
@@ -21,6 +21,8 @@ import {
 } from './controls/submit-button-request';
 import { TransactionInfo } from './transaction-info';
 
+import { DexAlt } from './options/dex-options/dex-alt';
+//import { DexOptions } from './options/dex-options';
 export const RequestForm = () => {
   const { isBunker, isPaused } = useWithdrawals();
   // conditional render breaks useFormState, so it can't be inside SubmitButton
@@ -45,7 +47,7 @@ export const RequestForm = () => {
             <TransactionInfo />
           </>
         )}
-        {mode === 'dex' && <DexOptions />}
+        {mode === 'dex' && <DexAlt />}
       </FormController>
     </Block>
   );

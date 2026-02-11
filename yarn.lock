@@ -1439,6 +1439,38 @@
     "@types/conventional-commits-parser" "^5.0.0"
     chalk "^5.3.0"
 
+"@cowprotocol/events@^2.1.0":
+  version "2.1.0"
+  resolved "https://registry.npmjs.org/@cowprotocol/events/-/events-2.1.0.tgz#f3f863648c8a401b52a376ce2480e427c3aa4d59"
+  integrity sha512-6Z13zutTToSjRriA1sW8F96fZJQe2Np1YfbbM8Iylfy7+YOM6bDUkmfzfe5rlZxNkmwMRe2qOYilsXcYzP2zPw==
+  dependencies:
+    "@cowprotocol/types" "^2.1.1"
+
+"@cowprotocol/iframe-transport@^1.2.0":
+  version "1.2.0"
+  resolved "https://registry.npmjs.org/@cowprotocol/iframe-transport/-/iframe-transport-1.2.0.tgz#1d5a37b2a19ed3b45ab8a475632547c52f6447a1"
+  integrity sha512-M7LfVHoiCm4I+q0pRGYW7pLf81D1XhZxno8EkYHFUOcThor/ir7R4eN2QTygw3BtFF9Ll4e7G+p6WRdO+RgbxQ==
+
+"@cowprotocol/types@^2.1.1":
+  version "2.1.1"
+  resolved "https://registry.npmjs.org/@cowprotocol/types/-/types-2.1.1.tgz#e6f4cf18cd81dfc6d2b412db4d454ae8cb31d11e"
+  integrity sha512-F7VcDZg12+M2X7WMvWP4yGcl2ammVgfvtKsUEfl9IWSE42UhbElzSsUpBYR1clE5Gz/l11UsA/F6YRtEAGgYjw==
+
+"@cowprotocol/widget-lib@^0.22.3":
+  version "0.22.3"
+  resolved "https://registry.npmjs.org/@cowprotocol/widget-lib/-/widget-lib-0.22.3.tgz#6ed5e4789873ab547b5f9d06fd1630df4170a63e"
+  integrity sha512-VMMC9ul/VmPZi6lH6rpiZ2cnMIVMsxl+vWyN1gzOhPDXED0rek5eRdNOrndz5ALXuKSZYFLsGWAJMfsA+6DRug==
+  dependencies:
+    "@cowprotocol/events" "^2.1.0"
+    "@cowprotocol/iframe-transport" "^1.2.0"
+
+"@cowprotocol/widget-react@^0.14.6":
+  version "0.14.6"
+  resolved "https://registry.npmjs.org/@cowprotocol/widget-react/-/widget-react-0.14.6.tgz#a97dc75de5ebd9d9e4894939ba551e2148b3b694"
+  integrity sha512-03f6cFPyja4el9TOnuLoFXj3kWheWBH9G6SGuJ9Er9aknR7ZBn4s50TbAHu0KjjPiQdU4x8t05Q7Gz46UaqjxA==
+  dependencies:
+    "@cowprotocol/widget-lib" "^0.22.3"
+
 "@dabh/diagnostics@^2.0.2":
   version "2.0.3"
   resolved "https://registry.yarnpkg.com/@dabh/diagnostics/-/diagnostics-2.0.3.tgz#7f7e97ee9a725dffc7808d93668cc984e1dc477a"

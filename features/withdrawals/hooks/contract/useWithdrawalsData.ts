@@ -79,10 +79,12 @@ export const useWithdrawalRequests = () => {
 
       try {
         const requests =
-          await withdraw.waitingTime.getWithdrawalWaitingTimeByRequestIds({
-            ids: pendingRequestsIds,
-            getCustomApiUrl: getWQApiUrlByChain,
-          });
+          pendingRequestsIds.length > 0
+            ? await withdraw.waitingTime.getWithdrawalWaitingTimeByRequestIds({
+                ids: pendingRequestsIds,
+                getCustomApiUrl: getWQApiUrlByChain,
+              })
+            : [];
 
         wqRequests = requests
           .filter((request) => request?.requestInfo)
