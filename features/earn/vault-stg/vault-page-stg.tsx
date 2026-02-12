@@ -63,7 +63,7 @@ export const VaultPageSTG: FC<{
   const isWithdraw = action === EARN_VAULT_WITHDRAW_SLUG;
 
   const { isDappActive } = useDappStatus();
-  const { totalTvlUsd } = useSTGStats();
+  const { totalTvlUsd, isLoading: isTvlLoading } = useSTGStats();
   const { apy, isLoading: isApyLoading } = useSTGApy();
 
   return (
@@ -89,7 +89,7 @@ export const VaultPageSTG: FC<{
             apxLabel="APY"
             apx={apy}
             apxHint={<STGApyHint />}
-            isLoading={isApyLoading}
+            isLoading={isApyLoading || isTvlLoading}
           />
           <VaultDescription description={STG_VAULT_DESCRIPTION} />
         </VaultBlockHeaderSection>
