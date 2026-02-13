@@ -61,6 +61,11 @@ const categorizePosition = (
     category = 'available';
   }
 
+  // avoid categorizing positions with zero allocation
+  if (position.sharePercent <= 0 || item.tvlUSD <= 0) {
+    category = 'other';
+  }
+
   return {
     category,
     item,
