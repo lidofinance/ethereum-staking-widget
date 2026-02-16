@@ -123,7 +123,7 @@ export const getDepositQueueContractAddress = <
     case 'ETH':
       contractName = 'ethDepositQueueETH' as const;
       break;
-    case 'WETH':
+    case 'wETH':
       contractName = 'ethDepositQueueWETH' as const;
       break;
     case 'wstETH':

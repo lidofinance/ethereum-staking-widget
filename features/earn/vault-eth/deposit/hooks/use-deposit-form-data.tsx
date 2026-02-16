@@ -41,7 +41,7 @@ export const useEthVaultDepositFormData = () => {
       wstETH: {
         balance: wstethBalanceQuery.data,
       },
-      WETH: {
+      wETH: {
         balance: wethBalanceQuery.data,
       },
     };
@@ -59,7 +59,7 @@ export const useEthVaultDepositFormData = () => {
       const tokenBalanceRefetch = {
         ['ETH']: ethBalanceQuery.refetch,
         ['wstETH']: wstethBalanceQuery.refetch,
-        ['WETH']: wethBalanceQuery.refetch,
+        ['wETH']: wethBalanceQuery.refetch,
       }[token];
 
       const options = { cancelRefetch: true, throwOnError: false };
