@@ -17,3 +17,9 @@ export const CardsStack = styled.div`
   flex-direction: column;
   gap: ${({ theme }) => theme.spaceMap.lg}px;
 `;
+
+export const AccordionTitle = styled.div`
+  font-size: ${({ theme }) => theme.fontSizesMap.lg}px;
+  font-weight: 700;
+  padding: ${({ theme }) => theme.spaceMap.xl}px 0;
+`;
