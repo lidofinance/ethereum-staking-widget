@@ -96,6 +96,8 @@ export const VaultIconWrapper = styled.div`
     z-index: -1;
     pointer-events: none;
 
+    display: ${({ theme }) => (theme.name === 'light' ? 'block' : 'none')};
+
     ${({ theme }) => theme.mediaQueries.sm} {
       display: none;
     }
