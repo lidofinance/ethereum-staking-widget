@@ -1,6 +1,7 @@
+import { TOKEN_SYMBOLS } from 'consts/tokens';
 import { PartnerMellowIcon } from 'assets/earn';
 
-export const STG_TOKEN_SYMBOL = 'strETH';
+export const STG_TOKEN_SYMBOL = TOKEN_SYMBOLS.streth;
 
 export const STG_DEPOSABLE_TOKENS = ['ETH', 'wETH', 'wstETH'] as const;
 

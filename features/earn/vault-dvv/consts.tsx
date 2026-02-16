@@ -1,8 +1,9 @@
-import { PartnerMellowIcon, PartnerSteakhouseIcon } from 'assets/earn';
-import type { DVV_DEPOSIT_TOKENS } from './deposit/types';
 import type { Address } from 'viem';
+import { PartnerMellowIcon, PartnerSteakhouseIcon } from 'assets/earn';
+import { TOKEN_SYMBOLS } from 'consts/tokens';
+import type { DVV_DEPOSIT_TOKENS } from './deposit/types';
 
-export const DVV_TOKEN_SYMBOL = 'DVstETH';
+export const DVV_TOKEN_SYMBOL = TOKEN_SYMBOLS.dvsteth;
 
 export const OBOL_TOKEN_SYMBOL = 'OBOL';
 export const SSV_TOKEN_SYMBOL = 'SSV';
