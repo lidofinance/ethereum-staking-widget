@@ -12,6 +12,7 @@ export const ALLOCATION_PROTOCOL_IDS_KNOWN = [
   'aave-ethena',
   'spark-wsteth-weth',
   'fluid-resolv-usdt',
+  'aave-plasma-syrup-usdt-usdt0',
 ] as const;
 
 export const ALLOCATION_ICONS_BY_ID: {
@@ -23,6 +24,7 @@ export const ALLOCATION_ICONS_BY_ID: {
   'aave-ethena': AaveV3Icon,
   'spark-wsteth-weth': SparkIcon,
   'fluid-resolv-usdt': FluidIcon,
+  'aave-plasma-syrup-usdt-usdt0': AaveV3Icon,
 };
 
 export const ALLOCATION_PENDING_ID = 'pending-deposits';
