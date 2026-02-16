@@ -1,16 +1,14 @@
-import { ETH_DEPOSABLE_TOKENS } from '../../consts';
-
-export type ETH_DEPOSIT_TOKENS = (typeof ETH_DEPOSABLE_TOKENS)[number];
+import { EthDepositTokensMain } from '../../types';
 
 export type ETHDepositFormValues = {
   amount: null | bigint;
-  token: ETH_DEPOSIT_TOKENS;
+  token: EthDepositTokensMain;
   referral: string | null;
 };
 
 export type ETHDepositFormValidatedValues = {
   amount: bigint;
-  token: ETH_DEPOSIT_TOKENS;
+  token: EthDepositTokensMain;
   referral: string | null;
 };
 
@@ -20,7 +18,7 @@ export type ETHDepositFormValidationContext = {
 };
 
 export type ETHDepositFormAsyncValidationContext = {
-  [key in ETH_DEPOSIT_TOKENS]: {
+  [key in EthDepositTokensMain]: {
     balance: bigint;
   };
 };
@@ -28,6 +26,6 @@ export type ETHDepositFormAsyncValidationContext = {
 export type ETHDepositFormDataContextValue = {
   maxAmount?: bigint;
   isLoading: boolean;
-  token: ETH_DEPOSIT_TOKENS;
+  token: EthDepositTokensMain;
   isDepositLockedForCurrentToken: boolean;
 };

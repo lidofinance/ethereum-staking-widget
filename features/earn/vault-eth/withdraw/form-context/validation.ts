@@ -1,34 +1,28 @@
 import type { Resolver } from 'react-hook-form';
 import { formatEther } from 'viem';
 import invariant from 'tiny-invariant';
-import type {
-  ETHDepositFormValidationContext,
-  ETHDepositFormValues,
-} from './types';
 
 import { VALIDATION_CONTEXT_TIMEOUT } from 'features/withdrawals/withdrawals-constants';
-
 import { handleResolverValidationError } from 'shared/hook-form/validation/validation-error';
 import { validateEtherAmount } from 'shared/hook-form/validation/validate-ether-amount';
 import { validateBigintMin } from 'shared/hook-form/validation/validate-bigint-min';
 import { validateBigintMax } from 'shared/hook-form/validation/validate-bigint-max';
-
 import { awaitWithTimeout } from 'utils/await-with-timeout';
-import {
-  TOKEN_DISPLAY_NAMES,
-  getTokenDisplayName,
-} from 'utils/getTokenDisplayName';
+import { ETH_VAULT_TOKEN_SYMBOL } from '../../consts';
+import type {
+  EthVaultWithdrawFormValidationContext,
+  EthVaultWithdrawFormValues,
+} from './types';
 
-const messageMaxBalance = (max: bigint, token: TOKEN_DISPLAY_NAMES) =>
-  `Entered ${getTokenDisplayName(
-    token,
-  )} amount exceeds your available balance of ${formatEther(max)}`;
+const messageMaxBalance = (max: bigint, token: string) =>
+  `Entered ${token} amount exceeds your available balance of ${formatEther(max)}`;
 
-export const EthVaultDepositFormValidationResolver: Resolver<
-  ETHDepositFormValues,
-  ETHDepositFormValidationContext
+export const EthVaultWithdrawFormValidationResolver: Resolver<
+  EthVaultWithdrawFormValues,
+  EthVaultWithdrawFormValidationContext
 > = async (values, context) => {
-  const { amount, token } = values;
+  const { amount } = values;
+  const token = ETH_VAULT_TOKEN_SYMBOL;
   try {
     invariant(context, 'must have context promise');
 
@@ -47,7 +41,7 @@ export const EthVaultDepositFormValidationResolver: Resolver<
       VALIDATION_CONTEXT_TIMEOUT,
     );
 
-    // prevents problems with eth/stETH/wstETH onchain conversion
+    // prevents problems with conversion
     validateBigintMin(
       'amount',
       amount,
@@ -61,7 +55,7 @@ export const EthVaultDepositFormValidationResolver: Resolver<
       'amount',
       amount,
       balance,
-      messageMaxBalance(balance, token),
+      messageMaxBalance(balance, 'earnETH'),
     );
 
     return {
@@ -69,6 +63,6 @@ export const EthVaultDepositFormValidationResolver: Resolver<
       errors: {},
     };
   } catch (error) {
-    return handleResolverValidationError(error, 'ETHDepositForm', 'token');
+    return handleResolverValidationError(error, 'ETHWithdrawForm', 'amount');
   }
 };

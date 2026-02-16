@@ -1,2 +1,2 @@
-export * from './vault-page-eth';
-export * from './vault-card-eth';
+export * from './vault-page';
+export * from './vault-card';
