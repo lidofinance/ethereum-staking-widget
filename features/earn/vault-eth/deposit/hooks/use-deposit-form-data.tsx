@@ -8,6 +8,7 @@ import {
   useWethBalance,
   useDappStatus,
 } from 'modules/web3';
+import { MELLOW_VAULTS_QUERY_SCOPE } from 'modules/mellow-meta-vaults/consts';
 
 import {
   ETHDepositFormAsyncValidationContext,
@@ -70,7 +71,13 @@ export const useEthVaultDepositFormData = () => {
         queryClient.refetchQueries(
           { queryKey: [ETH_VAULT_QUERY_SCOPE] },
           options,
-        ), // TODO: check query key
+        ),
+        // The form state is not reloading without refetching MELLOW_VAULTS_QUERY_SCOPE because we are using it during queries
+        // TODO: think about better state management for vault data to avoid unnecessary queries refetching
+        queryClient.refetchQueries(
+          { queryKey: [MELLOW_VAULTS_QUERY_SCOPE] },
+          options,
+        ),
       ]);
     },
     [

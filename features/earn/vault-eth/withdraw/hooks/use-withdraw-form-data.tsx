@@ -3,6 +3,7 @@ import { useAwaiter } from 'shared/hooks/use-awaiter';
 import { useQueryClient } from '@tanstack/react-query';
 
 import { useDappStatus } from 'modules/web3';
+import { MELLOW_VAULTS_QUERY_SCOPE } from 'modules/mellow-meta-vaults';
 import { useEthVaultPosition } from '../../hooks/use-position';
 import {
   EthVaultWithdrawFormAsyncValidationContext,
@@ -43,6 +44,12 @@ export const useEthVaultWithdrawFormData = () => {
       // refetch all vault related queries
       queryClient.refetchQueries(
         { queryKey: [ETH_VAULT_QUERY_SCOPE] },
+        options,
+      ),
+      // The form state is not reloading without refetching MELLOW_VAULTS_QUERY_SCOPE because we are using it during queries
+      // TODO: think about better state management for vault data to avoid unnecessary queries refetching
+      queryClient.refetchQueries(
+        { queryKey: [MELLOW_VAULTS_QUERY_SCOPE] },
         options,
       ),
     ]);
