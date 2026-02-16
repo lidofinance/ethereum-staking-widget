@@ -2,7 +2,7 @@ import { TokenWstethIcon } from 'assets/earn';
 import { getTokenSymbol } from 'utils/getTokenSymbol';
 import { useWstethUsd } from 'shared/hooks/use-wsteth-usd';
 import { EthVaultRequest } from '../../components/request/request';
-import { WithdrawRequestData } from '../types';
+import type { WithdrawRequestData } from 'modules/mellow-meta-vaults/types/withdraw-request-data';
 
 export const EthVaultWithdrawRequestClaimable = ({
   request,

@@ -1,12 +1,10 @@
 import { usePublicClient } from 'wagmi';
 import invariant from 'tiny-invariant';
-
+import { useMemo } from 'react';
 import { usePreviewWithdraw } from 'modules/mellow-meta-vaults/hooks/use-preview-withdraw';
-import { useLidoSDK } from 'modules/web3';
-import { WalletClient } from 'viem';
 import {
   getCollectorContract,
-  getRedeemQueueWritableContractWSTETH,
+  getRedeemQueueContractWSTETH,
 } from '../../contracts';
 
 export const useEthVaultPreviewWithdraw = ({
@@ -14,14 +12,16 @@ export const useEthVaultPreviewWithdraw = ({
 }: {
   shares: bigint | null | undefined;
 }) => {
-  const { core } = useLidoSDK();
   const publicClient = usePublicClient();
   invariant(publicClient, 'Public client is not available');
 
-  const collector = getCollectorContract(publicClient);
-  const redeemQueue = getRedeemQueueWritableContractWSTETH(
-    publicClient,
-    core.web3Provider as WalletClient,
+  const collector = useMemo(
+    () => getCollectorContract(publicClient),
+    [publicClient],
+  );
+  const redeemQueue = useMemo(
+    () => getRedeemQueueContractWSTETH(publicClient),
+    [publicClient],
   );
 
   return usePreviewWithdraw({

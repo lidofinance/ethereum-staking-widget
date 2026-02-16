@@ -1,4 +1,5 @@
 import { PublicClient, WalletClient } from 'viem';
+import { DepositQueueWritableContract } from './contracts';
 
 export type DepositQueueGetter<
   DepositToken extends string,
@@ -12,4 +13,4 @@ export type DepositQueueGetter<
   publicClient: TPublicClient;
   walletClient: TWalletClient;
   token: DepositToken;
-}) => any; // TODO: fix any
+}) => DepositQueueWritableContract;

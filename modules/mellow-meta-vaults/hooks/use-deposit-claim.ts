@@ -7,7 +7,7 @@ import { useDappStatus, useLidoSDK, useTxFlow } from 'modules/web3';
 
 import { VaultWritableContract } from '../types/contracts';
 import { TxModalStages } from '../types/tx-modal-stages';
-import { QUERY_KEY } from '../consts';
+import { MELLOW_VAULTS_QUERY_SCOPE } from '../consts';
 
 export const useDepositClaim = ({
   vault,
@@ -68,7 +68,7 @@ export const useDepositClaim = ({
             txModalStages.success(amount, txHash);
             // TODO: add matomo callback
             await queryClient.refetchQueries(
-              { queryKey: [QUERY_KEY] },
+              { queryKey: [MELLOW_VAULTS_QUERY_SCOPE] },
               { cancelRefetch: true, throwOnError: false },
             );
           },

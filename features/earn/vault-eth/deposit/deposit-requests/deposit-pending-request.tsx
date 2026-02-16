@@ -7,16 +7,17 @@ import type { DepositRequest } from 'modules/mellow-meta-vaults/hooks/use-deposi
 import { getTokenDisplayName } from 'utils/getTokenDisplayName';
 import { EthVaultRequest } from '../../components/request/request';
 
-const getTokenIcon = (tokenType: string) => {
-  switch (tokenType) {
-    case 'ETH':
+const getTokenIcon = (_token: string) => {
+  const token = _token.toLowerCase();
+  switch (token) {
+    case 'eth':
       return <TokenEthIcon32 />;
-    case 'wETH':
+    case 'weth':
       return <TokenWethIcon32 />;
-    case 'wstETH':
+    case 'wsteth':
       return <TokenWstethIcon32 />;
     default:
-      return <TokenEthIcon32 />;
+      return <></>;
   }
 };
 

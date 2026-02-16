@@ -1,13 +1,13 @@
 import { UNIX_TIMESTAMP_SCHEMA } from 'utils/zod';
 import { useQuery } from '@tanstack/react-query';
 import { useEthUsd } from 'shared/hooks/use-eth-usd';
-import { ETH_VAULT_QUERY_KEY } from '../consts';
+import { ETH_VAULT_QUERY_SCOPE } from '../consts';
 import { ALLOCATION_SCHEMA, fetchEthVaultStats } from '../utils';
 import { useEthVaultCollect } from './use-collect';
 
 export const useEthVaultStats = () => {
   const { data, isLoading } = useQuery({
-    queryKey: [ETH_VAULT_QUERY_KEY, 'allocations'],
+    queryKey: [ETH_VAULT_QUERY_SCOPE, 'allocations'],
     queryFn: async () => {
       const fetchedData = await fetchEthVaultStats();
       const allocations = ALLOCATION_SCHEMA.parse(fetchedData.allocations);

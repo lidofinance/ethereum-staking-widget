@@ -10,8 +10,6 @@ import {
   AACall,
   applyRoundUpGasLimit,
 } from 'modules/web3';
-import { trackMatomoEvent } from 'utils/track-matomo-event';
-import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo';
 import { WithdrawParams } from './use-preview-withdraw';
 import { COLLECTOR_CONFIG } from '../consts';
 import {
@@ -89,7 +87,7 @@ export const useWithdraw = ({
           },
           onSuccess: async ({ txHash }) => {
             txModalStages.success(amountWstETH, txHash);
-            trackMatomoEvent(MATOMO_EARN_EVENTS_TYPES.strategyWithdrawalFinish);
+            // trackMatomoEvent(MATOMO_EARN_EVENTS_TYPES.strategyWithdrawalFinish); // TODO: add matomo event
           },
           onMultisigDone: () => {
             txModalStages.successMultisig();

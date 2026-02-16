@@ -1,6 +1,6 @@
-import { USD_VAULT_DEPOSABLE_TOKENS } from '../../consts';
+import { USD_VAULT_DEPOSIT_TOKENS } from '../../consts';
 
-export type USD_DEPOSIT_TOKENS = (typeof USD_VAULT_DEPOSABLE_TOKENS)[number];
+export type USD_DEPOSIT_TOKENS = (typeof USD_VAULT_DEPOSIT_TOKENS)[number];
 
 export type USDDepositFormValues = {
   amount: null | bigint;

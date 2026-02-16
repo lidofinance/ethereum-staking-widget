@@ -14,7 +14,7 @@ import {
   ETHDepositFormValidationContext,
   ETHDepositFormValues,
 } from '../form-context/types';
-import { ETH_VAULT_QUERY_KEY } from '../../consts';
+import { ETH_VAULT_QUERY_SCOPE } from '../../consts';
 
 export const useEthVaultDepositFormData = () => {
   const queryClient = useQueryClient();
@@ -68,7 +68,7 @@ export const useEthVaultDepositFormData = () => {
         tokenBalanceRefetch(options),
         // refetch all Eth Vault related queries
         queryClient.refetchQueries(
-          { queryKey: [ETH_VAULT_QUERY_KEY] },
+          { queryKey: [ETH_VAULT_QUERY_SCOPE] },
           options,
         ), // TODO: check query key
       ]);

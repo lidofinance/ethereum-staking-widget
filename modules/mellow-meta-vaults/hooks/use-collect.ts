@@ -3,7 +3,7 @@ import invariant from 'tiny-invariant';
 import { CollectorContract, VaultContract } from '../types/contracts';
 
 import { useDappStatus, useMainnetOnlyWagmi } from 'modules/web3';
-import { COLLECTOR_CONFIG, QUERY_KEY } from '../consts';
+import { COLLECTOR_CONFIG, MELLOW_VAULTS_QUERY_SCOPE } from '../consts';
 
 export type CollectResponse = {
   vault: string;
@@ -64,7 +64,7 @@ export const useCollect = ({
 
   const query = useQuery({
     queryKey: [
-      QUERY_KEY,
+      MELLOW_VAULTS_QUERY_SCOPE,
       'collect',
       collector.address,
       vault.address,

@@ -7,7 +7,7 @@ import { useDappStatus } from 'modules/web3/hooks/use-dapp-status';
 import { useWstethUsd } from 'shared/hooks/use-wsteth-usd';
 import { useEthUsd } from 'shared/hooks/use-eth-usd';
 import { useStETHByWstETH } from 'modules/web3/hooks/use-stETH-by-wstETH';
-import { COLLECTOR_CONFIG, QUERY_KEY } from '../consts';
+import { COLLECTOR_CONFIG, MELLOW_VAULTS_QUERY_SCOPE } from '../consts';
 import { CollectorContract, DepositQueueContract } from '../types/contracts';
 
 export type DepositParams = {
@@ -43,7 +43,7 @@ export const usePreviewDeposit = <DepositToken extends string>({
 
   const query = useQuery({
     queryKey: [
-      QUERY_KEY,
+      MELLOW_VAULTS_QUERY_SCOPE,
       'preview-deposit',
       collector.address,
       depositQueue.address,

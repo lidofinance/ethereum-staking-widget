@@ -9,7 +9,7 @@ import { TOKEN_DISPLAY_NAMES } from 'utils/getTokenDisplayName';
 import { trackMatomoEvent } from 'utils/track-matomo-event';
 import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo';
 
-import { ETH_VAULT_DEPOSABLE_TOKENS } from '../consts';
+import { ETH_VAULT_DEPOSIT_TOKENS } from '../consts';
 import { ETHDepositFormValues } from './form-context/types';
 import { useETHDepositEthGasLimit } from './hooks/use-deposit-eth-gas-limit';
 import { useETHDepositForm } from './form-context';
@@ -30,7 +30,7 @@ const trackTokenSelect = (value: TOKEN_DISPLAY_NAMES) => {
   }
 };
 
-const OPTIONS = ETH_VAULT_DEPOSABLE_TOKENS.map((token) => ({ token }));
+const OPTIONS = ETH_VAULT_DEPOSIT_TOKENS.map((token) => ({ token }));
 
 export const EthVaultDepositInputGroup = () => {
   const token = useWatch<ETHDepositFormValues, 'token'>({ name: 'token' });

@@ -5,11 +5,11 @@ import { useEthVaultDepositCancel } from '../hooks';
 import { EthVaultDepositPendingRequestETH } from './deposit-pending-request-eth';
 import { EthVaultDepositPendingRequestWstETH } from './deposit-pending-request-wsteth';
 
-interface PendingDepositRequestsProps {
+type PendingDepositRequestsProps = {
   requests: DepositRequests;
   cancel: ReturnType<typeof useEthVaultDepositCancel>['cancel'];
   isLoading: boolean;
-}
+};
 
 export const EthVaultDepositPendingRequests: FC<
   PendingDepositRequestsProps

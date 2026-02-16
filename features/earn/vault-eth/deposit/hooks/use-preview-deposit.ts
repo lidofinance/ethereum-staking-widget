@@ -2,12 +2,20 @@ import invariant from 'tiny-invariant';
 import { usePublicClient } from 'wagmi';
 import { usePreviewDeposit } from 'modules/mellow-meta-vaults';
 import { getCollectorContract, getDepositQueueContract } from '../../contracts';
+import { useMemo } from 'react';
 
 export const useEthVaultPreviewDeposit = ({ amount, token }: any) => {
   const publicClient = usePublicClient();
   invariant(publicClient, 'Public client is not available');
-  const collector = getCollectorContract(publicClient);
-  const depositQueue = getDepositQueueContract({ publicClient, token });
+
+  const collector = useMemo(
+    () => getCollectorContract(publicClient),
+    [publicClient],
+  );
+  const depositQueue = useMemo(
+    () => getDepositQueueContract({ publicClient, token }),
+    [publicClient, token],
+  );
 
   return usePreviewDeposit({
     collector,

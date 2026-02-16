@@ -1,11 +1,11 @@
 import { maxUint112, maxUint24, parseEther } from 'viem';
 import { PartnerVedaIcon } from 'assets/earn';
 import { TOKEN_SYMBOLS } from 'consts/tokens';
-import type { GGV_DEPOSIT_TOKENS } from './deposit/form-context/types';
+import type { GGVDepositTokens } from './deposit/form-context/types';
 
 export const GGV_TOKEN_SYMBOL = TOKEN_SYMBOLS.gg;
 
-export const GGV_DEPOSABLE_TOKENS: GGV_DEPOSIT_TOKENS[] = [
+export const GGV_DEPOSIT_TOKENS: GGVDepositTokens[] = [
   'ETH',
   'wETH',
   'stETH',

@@ -5,7 +5,7 @@ import { useDappStatus, useMainnetOnlyWagmi } from 'modules/web3';
 import { getShareManagerContractEARNETH } from '../contracts';
 import { getWithdrawalParams } from '../withdraw/utils';
 import { useWstethUsd } from 'shared/hooks/use-wsteth-usd';
-import { ETH_VAULT_QUERY_KEY } from '../consts';
+import { ETH_VAULT_QUERY_SCOPE } from '../consts';
 
 export const useEthVaultPosition = () => {
   const { address, isDappActive } = useDappStatus();
@@ -14,7 +14,7 @@ export const useEthVaultPosition = () => {
   const isEnabled = isDappActive && !!address;
 
   const earnethBalanceQuery = useQuery({
-    queryKey: [ETH_VAULT_QUERY_KEY, 'position', { address }] as const,
+    queryKey: [ETH_VAULT_QUERY_SCOPE, 'position', { address }] as const,
     enabled: isEnabled,
     queryFn: async () => {
       invariant(address, 'No address provided');
@@ -35,7 +35,7 @@ export const useEthVaultPosition = () => {
 
   const earnethToWstethQuery = useQuery({
     queryKey: [
-      ETH_VAULT_QUERY_KEY,
+      ETH_VAULT_QUERY_SCOPE,
       'position',
       'usd',
       { shares: String(earnethShares) },

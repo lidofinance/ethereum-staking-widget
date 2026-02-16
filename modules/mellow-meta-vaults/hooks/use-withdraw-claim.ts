@@ -21,7 +21,7 @@ export const useWithdrawClaim = <WithdrawToken extends string>({
   redeemQueue: RedeemQueueWritableContract;
   token: WithdrawToken;
   txModalStages: TxModalStages;
-  refetchTokenBalance: (token: WithdrawToken) => Promise<void>;
+  refetchTokenBalance: (token: WithdrawToken) => unknown;
   onRetry?: () => void;
 }) => {
   const { core } = useLidoSDK();
@@ -37,14 +37,16 @@ export const useWithdrawClaim = <WithdrawToken extends string>({
       try {
         setIsClaiming(true);
 
+        const { address, abi } = redeemQueue;
+
         const claimArgs = [address, [timestamp]] as const;
 
         await txFlow({
           callsFn: async () => [
             {
-              to: redeemQueue.address,
+              to: address,
               data: encodeFunctionData({
-                abi: redeemQueue.abi,
+                abi,
                 functionName: 'claim',
                 args: claimArgs,
               }),
@@ -91,10 +93,7 @@ export const useWithdrawClaim = <WithdrawToken extends string>({
       address,
       core,
       onRetry,
-      redeemQueue.abi,
-      redeemQueue.address,
-      redeemQueue.estimateGas,
-      redeemQueue.write,
+      redeemQueue,
       refetchTokenBalance,
       token,
       txFlow,

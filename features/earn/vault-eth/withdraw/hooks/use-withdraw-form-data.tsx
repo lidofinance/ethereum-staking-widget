@@ -8,7 +8,7 @@ import {
   EthVaultWithdrawFormAsyncValidationContext,
   EthVaultWithdrawFormValidationContext,
 } from '../form-context/types';
-import { ETH_VAULT_QUERY_KEY, ETH_VAULT_TOKEN_SYMBOL } from '../../consts';
+import { ETH_VAULT_QUERY_SCOPE, ETH_VAULT_TOKEN_SYMBOL } from '../../consts';
 
 export const useEthVaultWithdrawFormData = () => {
   const queryClient = useQueryClient();
@@ -41,7 +41,10 @@ export const useEthVaultWithdrawFormData = () => {
 
     return Promise.all([
       // refetch all vault related queries
-      queryClient.refetchQueries({ queryKey: [ETH_VAULT_QUERY_KEY] }, options),
+      queryClient.refetchQueries(
+        { queryKey: [ETH_VAULT_QUERY_SCOPE] },
+        options,
+      ),
     ]);
   }, [queryClient]);
 

@@ -3,7 +3,7 @@ import { usePublicClient } from 'wagmi';
 import invariant from 'tiny-invariant';
 
 import { useDappStatus } from 'modules/web3';
-import { QUERY_KEY } from '../consts';
+import { MELLOW_VAULTS_QUERY_SCOPE } from '../consts';
 import { RedeemQueueContract } from '../types/contracts';
 import { WithdrawRequestData } from '../types/withdraw-request-data';
 
@@ -19,7 +19,7 @@ export const useWithdrawRequests = ({
 
   return useQuery({
     queryKey: [
-      QUERY_KEY,
+      MELLOW_VAULTS_QUERY_SCOPE,
       redeemQueue.address,
       'withdraw-requests-of',
       { address },

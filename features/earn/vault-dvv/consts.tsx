@@ -1,7 +1,7 @@
 import type { Address } from 'viem';
 import { PartnerMellowIcon, PartnerSteakhouseIcon } from 'assets/earn';
 import { TOKEN_SYMBOLS } from 'consts/tokens';
-import type { DVV_DEPOSIT_TOKENS } from './deposit/types';
+import type { DVVDepositTokens } from './deposit/types';
 
 export const DVV_TOKEN_SYMBOL = TOKEN_SYMBOLS.dvsteth;
 
@@ -10,7 +10,7 @@ export const SSV_TOKEN_SYMBOL = 'SSV';
 
 export const MELLOW_POINT_SYMBOL = 'Mellow';
 
-export const DVV_DEPOSABLE_TOKENS = ['ETH', 'wETH'] as DVV_DEPOSIT_TOKENS[];
+export const DVV_DEPOSIT_TOKENS = ['ETH', 'wETH'] as DVVDepositTokens[];
 
 export const SSV_CLAIM_URL = (address: Address) =>
   `https://www.ssvrewards.com/?address=${address.toLowerCase()}&tab=lido`;

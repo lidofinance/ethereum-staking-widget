@@ -30,7 +30,7 @@ export const EthVaultDepositClaimableRequest = ({
         Ready to claim{' '}
         <Tooltip
           placement="bottomLeft"
-          title={`${ETH_VAULT_TOKEN_SYMBOL} can be claimed to be transferred, used in DeFi, or viewed in your wallet. If not claiming, the vault position isn’t affected, your deposited tokens start earning yield as soon as they enter the vault.`}
+          title={`${ETH_VAULT_TOKEN_SYMBOL} can be claimed to be transferred, used in DeFi, or viewed in your wallet. If not claimed, the vault position isn’t affected, your deposited tokens start earning yield as soon as they enter the vault.`}
         >
           <Question
             style={{

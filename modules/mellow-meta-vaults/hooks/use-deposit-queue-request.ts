@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 
 import { useDappStatus } from 'modules/web3';
 import { DepositQueueContract } from '../types/contracts';
-import { QUERY_KEY } from '../consts';
+import { MELLOW_VAULTS_QUERY_SCOPE } from '../consts';
 
 type DepositRequest = [bigint, bigint]; // (timestamp, assets)
 
@@ -30,7 +30,7 @@ export const useDepositQueueRequest = <DepositToken extends string>({
 
   const query = useQuery({
     queryKey: [
-      QUERY_KEY,
+      MELLOW_VAULTS_QUERY_SCOPE,
       'deposit-request',
       depositQueue.address,
       token,
