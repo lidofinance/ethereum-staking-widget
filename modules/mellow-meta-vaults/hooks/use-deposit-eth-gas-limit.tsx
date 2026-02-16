@@ -5,12 +5,12 @@ import { encodeFunctionData } from 'viem';
 import { config } from 'config';
 import { ESTIMATE_ACCOUNT } from 'config/groups/web3';
 import { ESTIMATE_AMOUNT, useMainnetOnlyWagmi } from 'modules/web3';
-import { Contract } from '../types/contract';
+import { DepositQueueContract } from '../types/contracts';
 
 export const useDepositEthGasLimit = ({
   depositContract,
 }: {
-  depositContract: Contract;
+  depositContract: DepositQueueContract;
 }) => {
   const { mainnetConfig } = useMainnetOnlyWagmi();
 

@@ -1,22 +1,21 @@
 import { useCallback, useState } from 'react';
-import { encodeFunctionData } from 'viem';
+import { encodeFunctionData, WalletClient } from 'viem';
 import invariant from 'tiny-invariant';
 
 import { useDappStatus, useLidoSDK, useTxFlow } from 'modules/web3';
-
-import { Contract } from '../types/contract';
-import { TxModalStages } from '../types/txModalStages';
+import { TxModalStages } from '../types/tx-modal-stages';
+import { DepositQueueGetter } from '../types/deposit-queue-getter';
 
 export const useDepositCancel = <DepositToken extends string>({
-  depositQueue,
+  depositQueueGetter,
   txModalStages,
-  onRetry,
   refetchTokenBalance,
+  onRetry,
 }: {
-  depositQueue: Contract;
+  depositQueueGetter: DepositQueueGetter<DepositToken>;
   txModalStages: TxModalStages;
+  refetchTokenBalance: (token: DepositToken) => unknown;
   onRetry?: () => void;
-  refetchTokenBalance: (token: DepositToken) => Promise<void>;
 }) => {
   const { address } = useDappStatus();
   const { core } = useLidoSDK();
@@ -29,6 +28,12 @@ export const useDepositCancel = <DepositToken extends string>({
       invariant(address, 'Address is not available');
 
       try {
+        const depositQueue = depositQueueGetter({
+          publicClient: core.rpcProvider,
+          walletClient: core.web3Provider as WalletClient,
+          token,
+        });
+
         setIsCanceling(true);
         await txFlow({
           callsFn: async () => [
@@ -73,10 +78,7 @@ export const useDepositCancel = <DepositToken extends string>({
     [
       address,
       core,
-      depositQueue.abi,
-      depositQueue.address,
-      depositQueue.estimateGas,
-      depositQueue.write,
+      depositQueueGetter,
       onRetry,
       refetchTokenBalance,
       txFlow,

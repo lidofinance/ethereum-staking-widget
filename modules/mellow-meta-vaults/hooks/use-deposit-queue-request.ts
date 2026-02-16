@@ -3,7 +3,7 @@ import invariant from 'tiny-invariant';
 import { useQuery } from '@tanstack/react-query';
 
 import { useDappStatus } from 'modules/web3';
-import { Contract } from '../types/contract';
+import { DepositQueueContract } from '../types/contracts';
 import { QUERY_KEY } from '../consts';
 
 type DepositRequest = [bigint, bigint]; // (timestamp, assets)
@@ -21,7 +21,7 @@ export const useDepositQueueRequest = <DepositToken extends string>({
   depositQueue,
 }: {
   token: DepositToken;
-  depositQueue: Contract;
+  depositQueue: DepositQueueContract;
 }) => {
   const { address, isDappActive } = useDappStatus();
   const publicClient = usePublicClient();

@@ -1,45 +1,51 @@
 import { useCallback, useState } from 'react';
-import { encodeFunctionData } from 'viem';
-import { useQueryClient } from '@tanstack/react-query';
 import invariant from 'tiny-invariant';
+import { encodeFunctionData } from 'viem';
 
-import { useDappStatus, useLidoSDK, useTxFlow } from 'modules/web3';
-
-import { VaultWritableContract } from '../types/contracts';
+import {
+  applyRoundUpGasLimit,
+  useDappStatus,
+  useLidoSDK,
+  useTxFlow,
+} from 'modules/web3';
 import { TxModalStages } from '../types/tx-modal-stages';
-import { QUERY_KEY } from '../consts';
+import { RedeemQueueWritableContract } from '../types/contracts';
 
-export const useDepositClaim = ({
-  vault,
+export const useWithdrawClaim = <WithdrawToken extends string>({
+  redeemQueue,
+  token,
   txModalStages,
   onRetry,
+  refetchTokenBalance,
 }: {
-  vault: VaultWritableContract;
+  redeemQueue: RedeemQueueWritableContract;
+  token: WithdrawToken;
   txModalStages: TxModalStages;
+  refetchTokenBalance: (token: WithdrawToken) => Promise<void>;
   onRetry?: () => void;
 }) => {
-  const { address } = useDappStatus();
   const { core } = useLidoSDK();
-  const queryClient = useQueryClient();
+  const { address } = useDappStatus();
   const txFlow = useTxFlow();
 
   const [isClaiming, setIsClaiming] = useState(false);
 
-  const claim = useCallback(
-    async (amount: bigint) => {
-      invariant(address, 'Address is not available');
-
-      const claimArgs = [address] as const;
+  const withdrawClaim = useCallback(
+    async ({ amount, timestamp }: { amount: bigint; timestamp: number }) => {
+      invariant(address, 'No address provided');
 
       try {
         setIsClaiming(true);
+
+        const claimArgs = [address, [timestamp]] as const;
+
         await txFlow({
           callsFn: async () => [
             {
-              to: vault.address,
+              to: redeemQueue.address,
               data: encodeFunctionData({
-                abi: vault.abi,
-                functionName: 'claimShares',
+                abi: redeemQueue.abi,
+                functionName: 'claim',
                 args: claimArgs,
               }),
             },
@@ -47,11 +53,13 @@ export const useDepositClaim = ({
           sendTransaction: async (txStagesCallback) => {
             await core.performTransaction({
               getGasLimit: async (opts) =>
-                await vault.estimateGas.claimShares(claimArgs, {
-                  ...opts,
-                }),
+                applyRoundUpGasLimit(
+                  await redeemQueue.estimateGas.claim(claimArgs, {
+                    ...opts,
+                  }),
+                ),
               sendTransaction: (opts) => {
-                return vault.write.claimShares(claimArgs, {
+                return redeemQueue.write.claim(claimArgs, {
                   ...opts,
                 });
               },
@@ -61,19 +69,15 @@ export const useDepositClaim = ({
           onSign: () => {
             txModalStages.sign(amount);
           },
-          onReceipt: async ({ txHashOrCallId, isAA }) => {
+          onReceipt: ({ txHashOrCallId, isAA }) => {
             txModalStages.pending(amount, txHashOrCallId, isAA);
           },
           onSuccess: async ({ txHash }) => {
             txModalStages.success(amount, txHash);
-            // TODO: add matomo callback
-            await queryClient.refetchQueries(
-              { queryKey: [QUERY_KEY] },
-              { cancelRefetch: true, throwOnError: false },
-            );
+            // trackMatomoEvent(MATOMO_EARN_EVENTS_TYPES.strategyWithdrawalClaim); // TODO: add matomo event
+            await refetchTokenBalance(token);
           },
         });
-
         return true;
       } catch (error) {
         console.error(error);
@@ -87,15 +91,16 @@ export const useDepositClaim = ({
       address,
       core,
       onRetry,
-      queryClient,
+      redeemQueue.abi,
+      redeemQueue.address,
+      redeemQueue.estimateGas,
+      redeemQueue.write,
+      refetchTokenBalance,
+      token,
       txFlow,
       txModalStages,
-      vault.abi,
-      vault.address,
-      vault.estimateGas,
-      vault.write,
     ],
   );
 
-  return { claim, isClaiming };
+  return { withdrawClaim, isClaiming };
 };
