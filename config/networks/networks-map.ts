@@ -46,7 +46,10 @@ export const CONTRACT_NAMES = {
   lidoLocator: 'lidoLocator',
   ensPublicResolver: 'ensPublicResolver',
   ensRegistry: 'ensRegistry',
+  // 3rd party tokens
   weth: 'weth',
+  usdc: 'usdc',
+  usdt: 'usdt',
   // GGV
   ggvVault: 'ggvVault',
   ggvTeller: 'ggvTeller',

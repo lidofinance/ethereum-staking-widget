@@ -6,9 +6,9 @@ import { config } from 'config';
 import { ESTIMATE_ACCOUNT } from 'config/groups/web3';
 import { ESTIMATE_AMOUNT, useMainnetOnlyWagmi } from 'modules/web3';
 import { getSTGDepositQueueContract } from '../../contracts';
-import { STG_DEPOSIT_TOKENS } from '../form-context/types';
+import type { STGDepositTokens } from '../form-context/types';
 
-export const useSTGDepositEthGasLimit = (token: STG_DEPOSIT_TOKENS) => {
+export const useSTGDepositEthGasLimit = (token: STGDepositTokens) => {
   const { mainnetConfig, publicClientMainnet } = useMainnetOnlyWagmi();
 
   const depositContract = getSTGDepositQueueContract({

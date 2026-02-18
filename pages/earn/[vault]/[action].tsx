@@ -11,7 +11,7 @@ import {
   EARN_VAULT_DEPOSIT_SLUG,
   EARN_VAULT_WITHDRAW_SLUG,
 } from 'features/earn/consts';
-import { VaultPageETH } from 'features/earn/vault-eth';
+import { EthVaultPage } from 'features/earn/vault-eth';
 import { VaultPageUSD } from 'features/earn/vault-usd';
 import { isV1DesignVault } from 'features/earn/shared/helpers/isV1DesignVault';
 
@@ -21,7 +21,7 @@ type PageParams = {
 };
 
 const VAULT_PAGES = {
-  eth: VaultPageETH,
+  eth: EthVaultPage,
   usd: VaultPageUSD,
   ggv: VaultPageGGV,
   dvv: VaultPageDVV,

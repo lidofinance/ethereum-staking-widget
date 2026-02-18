@@ -4,4 +4,4 @@ export const COLLECTOR_CONFIG = {
   redeemHandlingInterval: 3600n,
 } as const;
 
-export const QUERY_KEY = 'mellow-meta-vault';
+export const MELLOW_VAULTS_QUERY_SCOPE = 'mellow-meta-vault';

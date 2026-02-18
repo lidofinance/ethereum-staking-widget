@@ -1,4 +1,4 @@
 export {
-  ETHDepositFormProvider as ETHDepositFormProvider,
+  EthVaultDepositFormProvider as EthDepositFormProvider,
   useETHDepositForm,
-} from './eth-deposit-form-context';
+} from './deposit-form-context';

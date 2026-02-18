@@ -1,9 +1,9 @@
 import { useQuery } from '@tanstack/react-query';
 import invariant from 'tiny-invariant';
-import { Contract } from '../types/contract';
+import { CollectorContract, VaultContract } from '../types/contracts';
 
 import { useDappStatus, useMainnetOnlyWagmi } from 'modules/web3';
-import { COLLECTOR_CONFIG, QUERY_KEY } from '../consts';
+import { COLLECTOR_CONFIG, MELLOW_VAULTS_QUERY_SCOPE } from '../consts';
 
 export type CollectResponse = {
   vault: string;
@@ -52,8 +52,8 @@ export const useCollect = ({
   collector,
   vault,
 }: {
-  collector: Contract;
-  vault: Contract;
+  collector: CollectorContract;
+  vault: VaultContract;
 }) => {
   const { address: _address } = useDappStatus();
   const { publicClientMainnet } = useMainnetOnlyWagmi();
@@ -64,7 +64,7 @@ export const useCollect = ({
 
   const query = useQuery({
     queryKey: [
-      QUERY_KEY,
+      MELLOW_VAULTS_QUERY_SCOPE,
       'collect',
       collector.address,
       vault.address,

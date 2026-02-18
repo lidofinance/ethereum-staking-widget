@@ -1,4 +1,4 @@
-import { Contract } from '../types/contract';
+import { CollectorContract, VaultContract } from '../types/contracts';
 import { useDepositRequests } from './use-deposit-requests';
 
 export const useDepositRequest = <DepositToken extends string>({
@@ -6,8 +6,8 @@ export const useDepositRequest = <DepositToken extends string>({
   vault,
   token,
 }: {
-  collector: Contract;
-  vault: Contract;
+  collector: CollectorContract;
+  vault: VaultContract;
   token: DepositToken;
 }) => {
   const { requests } = useDepositRequests({

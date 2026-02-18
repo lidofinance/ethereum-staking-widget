@@ -24,7 +24,7 @@ const messageMaxBalance = (max: bigint, token: TOKEN_DISPLAY_NAMES) =>
     token,
   )} amount exceeds your available balance of ${formatEther(max)}`;
 
-export const ETHDepositFormValidationResolver: Resolver<
+export const EthVaultDepositFormValidationResolver: Resolver<
   ETHDepositFormValues,
   ETHDepositFormValidationContext
 > = async (values, context) => {

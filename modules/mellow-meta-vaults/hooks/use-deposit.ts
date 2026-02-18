@@ -1,10 +1,5 @@
 import { useCallback } from 'react';
-import {
-  encodeFunctionData,
-  getContract,
-  PublicClient,
-  WalletClient,
-} from 'viem';
+import { encodeFunctionData, getContract, WalletClient } from 'viem';
 import invariant from 'tiny-invariant';
 
 import {
@@ -17,22 +12,8 @@ import {
 } from 'modules/web3';
 import { getTokenAddress, TOKENS } from 'config/networks/token-address';
 import { getReferralAddress } from 'utils/get-referral-address';
-// import { Contract } from '../types/contract';
-import { TxModalStages } from '../types/txModalStages';
-
-type DepositQueueGetter<
-  DepositToken extends string,
-  TPublicClient extends PublicClient = PublicClient,
-  TWalletClient extends WalletClient = WalletClient,
-> = ({
-  publicClient,
-  walletClient,
-  token,
-}: {
-  publicClient: TPublicClient;
-  walletClient: TWalletClient;
-  token: DepositToken;
-}) => any; // TODO: fix any
+import { TxModalStages } from '../types/tx-modal-stages';
+import { DepositQueueGetter } from '../types/deposit-queue-getter';
 
 export const useDeposit = <DepositToken extends string>({
   depositQueueGetter,

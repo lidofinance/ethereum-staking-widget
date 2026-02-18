@@ -5,18 +5,18 @@ import invariant from 'tiny-invariant';
 
 import { useDappStatus, useLidoSDK, useTxFlow } from 'modules/web3';
 
-import { Contract } from '../types/contract';
-import { TxModalStages } from '../types/txModalStages';
-import { QUERY_KEY } from '../consts';
+import { VaultWritableContract } from '../types/contracts';
+import { TxModalStages } from '../types/tx-modal-stages';
+import { MELLOW_VAULTS_QUERY_SCOPE } from '../consts';
 
 export const useDepositClaim = ({
-  onRetry,
   vault,
   txModalStages,
+  onRetry,
 }: {
-  onRetry?: () => void;
-  vault: Contract;
+  vault: VaultWritableContract;
   txModalStages: TxModalStages;
+  onRetry?: () => void;
 }) => {
   const { address } = useDappStatus();
   const { core } = useLidoSDK();
@@ -68,7 +68,7 @@ export const useDepositClaim = ({
             txModalStages.success(amount, txHash);
             // TODO: add matomo callback
             await queryClient.refetchQueries(
-              { queryKey: [QUERY_KEY] },
+              { queryKey: [MELLOW_VAULTS_QUERY_SCOPE] },
               { cancelRefetch: true, throwOnError: false },
             );
           },

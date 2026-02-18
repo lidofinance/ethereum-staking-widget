@@ -1,1 +1,1 @@
-export * from './eth-deposit-form';
+export * from './deposit-form';

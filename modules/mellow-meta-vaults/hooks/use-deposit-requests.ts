@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { getTokenAddress, TOKENS } from 'config/networks/token-address';
 import { useDappStatus } from 'modules/web3/hooks';
-import { Contract } from '../types/contract';
+import { CollectorContract, VaultContract } from '../types/contracts';
 import { useCollect } from './use-collect';
 
 export type DepositRequest = {
@@ -19,14 +19,14 @@ export const useDepositRequests = <DepositToken extends string>({
   vault,
   depositTokens,
 }: {
-  collector: Contract;
-  vault: Contract;
+  collector: CollectorContract;
+  vault: VaultContract;
   depositTokens: DepositToken[];
 }): {
   requests: DepositRequest[];
   claimableRequests: DepositRequest[];
   pendingRequests: DepositRequest[];
-  totalClaimableStrethShares: bigint;
+  totalClaimableShares: bigint;
   isLoading: boolean;
 } => {
   const { chainId } = useDappStatus();
@@ -46,7 +46,7 @@ export const useDepositRequests = <DepositToken extends string>({
         requests: [],
         claimableRequests: [],
         pendingRequests: [],
-        totalClaimableStrethShares: 0n,
+        totalClaimableShares: 0n,
         isLoading: false,
       };
     }
@@ -80,7 +80,7 @@ export const useDepositRequests = <DepositToken extends string>({
 
     const claimableRequests = requests.filter((request) => request.isClaimable);
     const pendingRequests = requests.filter((request) => !request.isClaimable);
-    const totalClaimableStrethShares = claimableRequests.reduce(
+    const totalClaimableShares = claimableRequests.reduce(
       (sum, requestData) => sum + (requestData.claimableShares ?? 0n),
       0n,
     );
@@ -89,7 +89,7 @@ export const useDepositRequests = <DepositToken extends string>({
       requests,
       claimableRequests,
       pendingRequests,
-      totalClaimableStrethShares,
+      totalClaimableShares,
       isLoading: isLoadingCollectedData,
     };
   }, [chainId, collectedRequests, depositTokens, isLoadingCollectedData]);

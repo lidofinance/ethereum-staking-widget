@@ -29,6 +29,8 @@ import { ENSResolverAbi } from 'abi/ens-resolver-abi';
 import { PartialCurveAbi } from 'abi/partial-curve-abi';
 import { PartialStakingRouterAbi } from 'abi/partial-staking-router';
 import { wethABI } from 'abi/weth-abi';
+import { usdtABI } from 'abi/usdt-abi';
+import { usdcABI } from 'abi/usdc-abi';
 
 // Earn contracts ABIs
 // GGV
@@ -53,6 +55,13 @@ import {
   STG_SHARE_MANAGER_STRETH_ABI,
   STG_VAULT_ABI,
 } from 'features/earn/vault-stg/contracts/abi';
+import {
+  COLLECTOR_ABI,
+  DEPOSIT_QUEUE_ABI,
+  REDEEM_QUEUE_ABI,
+  SHARE_MANAGER_ABI,
+  VAULT_ABI,
+} from 'modules/mellow-meta-vaults/abi';
 
 import { config } from 'config';
 import { CONTRACT_NAMES } from 'config/networks/networks-map';
@@ -80,7 +89,10 @@ export const METRIC_CONTRACT_ABIS = {
   [CONTRACT_NAMES.stethCurve]: PartialCurveAbi,
   [CONTRACT_NAMES.ensPublicResolver]: ENSResolverAbi,
   [CONTRACT_NAMES.ensRegistry]: ENSRegistryAbi,
+  // 3rd party tokens
   [CONTRACT_NAMES.weth]: wethABI,
+  [CONTRACT_NAMES.usdc]: usdcABI,
+  [CONTRACT_NAMES.usdt]: usdtABI,
   // GGV
   [CONTRACT_NAMES.ggvVault]: GGV_VAULT_ABI,
   [CONTRACT_NAMES.ggvTeller]: GGV_TELLER_ABI,
@@ -98,6 +110,24 @@ export const METRIC_CONTRACT_ABIS = {
   [CONTRACT_NAMES.stgRedeemQueueWSTETH]: STG_REDEEM_QUEUE_WSTETH_ABI,
   [CONTRACT_NAMES.stgShareManagerSTRETH]: STG_SHARE_MANAGER_STRETH_ABI,
   [CONTRACT_NAMES.stgCollector]: STG_COLLECTOR_ABI,
+  // Lido ETH
+  [CONTRACT_NAMES.ethVault]: VAULT_ABI,
+  [CONTRACT_NAMES.ethDepositQueueETH]: DEPOSIT_QUEUE_ABI,
+  [CONTRACT_NAMES.ethDepositQueueWETH]: DEPOSIT_QUEUE_ABI,
+  [CONTRACT_NAMES.ethDepositQueueWSTETH]: DEPOSIT_QUEUE_ABI,
+  [CONTRACT_NAMES.ethDepositQueueGG]: DEPOSIT_QUEUE_ABI,
+  [CONTRACT_NAMES.ethDepositQueueSTRETH]: DEPOSIT_QUEUE_ABI,
+  [CONTRACT_NAMES.ethDepositQueueDVSTETH]: DEPOSIT_QUEUE_ABI,
+  [CONTRACT_NAMES.ethShareManagerEARNETH]: SHARE_MANAGER_ABI,
+  [CONTRACT_NAMES.ethRedeemQueueWSTETH]: REDEEM_QUEUE_ABI,
+  [CONTRACT_NAMES.ethCollector]: COLLECTOR_ABI,
+  // Lido USD
+  [CONTRACT_NAMES.usdVault]: VAULT_ABI,
+  [CONTRACT_NAMES.usdDepositQueueUSDC]: DEPOSIT_QUEUE_ABI,
+  [CONTRACT_NAMES.usdDepositQueueUSDT]: DEPOSIT_QUEUE_ABI,
+  [CONTRACT_NAMES.usdShareManagerEARNUSD]: SHARE_MANAGER_ABI,
+  [CONTRACT_NAMES.usdRedeemQueueUSDC]: REDEEM_QUEUE_ABI,
+  [CONTRACT_NAMES.usdCollector]: COLLECTOR_ABI,
 } as const;
 
 export type MetricContractName = keyof typeof CONTRACT_NAMES;
