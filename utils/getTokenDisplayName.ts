@@ -1,6 +1,6 @@
 import { LIDO_TOKENS } from '@lidofinance/lido-ethereum-sdk/common';
+import { TOKEN_SYMBOLS } from 'consts/tokens';
 import { DVV_TOKEN_SYMBOL } from 'features/earn/vault-dvv/consts';
-import { ETH_VAULT_TOKEN_SYMBOL } from 'features/earn/vault-eth/consts';
 import { GGV_TOKEN_SYMBOL } from 'features/earn/vault-ggv/consts';
 import { STG_TOKEN_SYMBOL } from 'features/earn/vault-stg/consts';
 
@@ -17,7 +17,10 @@ export const TOKEN_DISPLAY_NAMES = {
   ['dvstETH']: DVV_TOKEN_SYMBOL,
   ['DVstETH']: DVV_TOKEN_SYMBOL,
   ['strETH']: STG_TOKEN_SYMBOL,
-  [ETH_VAULT_TOKEN_SYMBOL]: ETH_VAULT_TOKEN_SYMBOL,
+  [TOKEN_SYMBOLS.earneth]: TOKEN_SYMBOLS.earneth,
+  [TOKEN_SYMBOLS.earnusd]: TOKEN_SYMBOLS.earnusd,
+  [TOKEN_SYMBOLS.usdc]: TOKEN_SYMBOLS.usdc,
+  [TOKEN_SYMBOLS.usdt]: TOKEN_SYMBOLS.usdt,
 } as const;
 
 export type TOKEN_DISPLAY_NAMES = keyof typeof TOKEN_DISPLAY_NAMES;

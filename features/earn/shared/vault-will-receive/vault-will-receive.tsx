@@ -16,6 +16,8 @@ type VaultWillReceiveProps = {
   symbol: string;
   isLoading?: boolean;
   help?: React.ReactNode;
+  fallbackMainValue?: string;
+  fallbackSecondaryValue?: string;
 };
 
 export const VaultWillReceive = ({
@@ -26,6 +28,8 @@ export const VaultWillReceive = ({
   ethAmount,
   isLoading,
   help,
+  fallbackMainValue = '-',
+  fallbackSecondaryValue = '-',
 }: VaultWillReceiveProps) => {
   return (
     <VaultTxInfoRow title={'You will receive'} help={help}>
@@ -36,14 +40,14 @@ export const VaultWillReceive = ({
               symbol={symbol}
               amount={amount}
               trimEllipsis
-              fallback="-"
+              fallback={fallbackMainValue}
             />
             {icon}
           </VaultReceiveMainValue>
         </InlineLoader>
         <InlineLoader isLoading={isLoading} width={80}>
           <VaultReceiveSecondaryValue>
-            <FormatPrice amount={usdAmount} fallback="-" />
+            <FormatPrice amount={usdAmount} fallback={fallbackSecondaryValue} />
             &nbsp;
             {ethAmount !== undefined && (
               <>
