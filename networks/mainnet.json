@@ -62,7 +62,10 @@
     "usdDepositQueueUSDT": "0x85Bf9D7d1Bbb747C797F45cB4d0f7Db49277ea97",
     "usdShareManagerEARNUSD": "0x974D2CD0584b22650B1C9617bb209c5196652c1A",
     "usdRedeemQueueUSDC": "0xD574c925bc7B5281Be0e4EE432DC7e822214F6E9",
-    "usdCollector": "0x40DA86d29AF2fe980733bD54E364e7507505b41B"
+    "usdCollector": "0x40DA86d29AF2fe980733bD54E364e7507505b41B",
+
+    "usdc": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+    "usdt": "0xdac17f958d2ee523a2206206994597c13d831ec7"
   },
   "api": {}
 }
