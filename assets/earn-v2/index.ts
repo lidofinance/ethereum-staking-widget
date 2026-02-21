@@ -4,7 +4,10 @@ import { ReactComponent as VaultDvvIcon } from './vault-dvv.svg';
 import { ReactComponent as VaultGgvIcon } from './vault-ggv.svg';
 import { ReactComponent as VaultStgIcon } from './vault-stg.svg';
 import { ReactComponent as UpgradeIllustrationIcon } from './upgrade.svg';
-import { ReactComponent as TokenEarnethIcon } from './token-earneth.svg';
+import { ReactComponent as TokenEarnEthIcon } from './token-earneth.svg';
+import { ReactComponent as TokenEarnUsdIcon } from './token-earnusd.svg';
+import { ReactComponent as TokenUsdcIcon } from './token-usdc.svg';
+import { ReactComponent as TokenUsdtIcon } from './token-usdt.svg';
 
 export {
   VaultEthIcon,
@@ -13,5 +16,8 @@ export {
   VaultGgvIcon,
   VaultStgIcon,
   UpgradeIllustrationIcon,
-  TokenEarnethIcon,
+  TokenEarnEthIcon,
+  TokenEarnUsdIcon,
+  TokenUsdcIcon,
+  TokenUsdtIcon,
 };
