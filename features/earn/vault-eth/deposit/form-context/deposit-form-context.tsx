@@ -20,15 +20,15 @@ import { EthVaultDepositFormValidationResolver } from './validation';
 import { useEthVaultAvailable } from '../../hooks/use-vault-available';
 import { useEthVaultDepositRequest } from '../hooks';
 
-const ETHDepositFormDataContext =
+const EthVaultDepositFormDataContext =
   createContext<ETHDepositFormDataContextValue | null>(null);
-ETHDepositFormDataContext.displayName = 'ETHDepositFormDataContext';
+EthVaultDepositFormDataContext.displayName = 'EthVaultDepositFormDataContext';
 
 export const useETHDepositForm = () => {
-  const context = useContext(ETHDepositFormDataContext);
+  const context = useContext(EthVaultDepositFormDataContext);
   invariant(
     context,
-    '[useETHDepositForm] ETHDepositFormDataContext is used outside provider',
+    '[useETHDepositForm] EthVaultDepositFormDataContext is used outside provider',
   );
   return context;
 };
@@ -102,11 +102,11 @@ export const EthVaultDepositFormProvider: React.FC<{
 
   return (
     <FormProvider {...formObject}>
-      <ETHDepositFormDataContext.Provider value={contextValue}>
+      <EthVaultDepositFormDataContext.Provider value={contextValue}>
         <FormControllerContext.Provider value={formControllerValue as any}>
           {children}
         </FormControllerContext.Provider>
-      </ETHDepositFormDataContext.Provider>
+      </EthVaultDepositFormDataContext.Provider>
     </FormProvider>
   );
 };

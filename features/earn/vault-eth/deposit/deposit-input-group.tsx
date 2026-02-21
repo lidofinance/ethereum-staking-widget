@@ -6,28 +6,27 @@ import { TokenAmountInputHookForm } from 'shared/hook-form/controls/token-amount
 import { TokenSelectHookForm } from 'shared/hook-form/controls/token-select-hook-form/token-select-hook-form';
 import { useTokenMaxAmount } from 'shared/hooks/use-token-max-amount';
 import { TOKEN_DISPLAY_NAMES } from 'utils/getTokenDisplayName';
-import { trackMatomoEvent } from 'utils/track-matomo-event';
-import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo';
 
 import { ETH_VAULT_DEPOSIT_TOKENS_MAIN } from '../consts';
 import { ETHDepositFormValues } from './form-context/types';
 import { useETHDepositEthGasLimit } from './hooks/use-deposit-eth-gas-limit';
 import { useETHDepositForm } from './form-context';
 
-const trackTokenSelect = (value: TOKEN_DISPLAY_NAMES) => {
-  switch (value) {
-    case 'ETH':
-      trackMatomoEvent(MATOMO_EARN_EVENTS_TYPES.strategySelectTokenEth);
-      break;
-    case 'wETH':
-      trackMatomoEvent(MATOMO_EARN_EVENTS_TYPES.strategySelectTokenWeth);
-      break;
-    case 'wstETH':
-      trackMatomoEvent(MATOMO_EARN_EVENTS_TYPES.strategySelectTokenWsteth);
-      break;
-    default:
-      break;
-  }
+const trackTokenSelect = (_value: TOKEN_DISPLAY_NAMES) => {
+  // TODO: add matomo events
+  // switch (value) {
+  //   case 'ETH':
+  //     trackMatomoEvent(MATOMO_EARN_EVENTS_TYPES.ethVaultSelectTokenEth);
+  //     break;
+  //   case 'wETH':
+  //     trackMatomoEvent(MATOMO_EARN_EVENTS_TYPES.ethVaultSelectTokenWeth);
+  //     break;
+  //   case 'wstETH':
+  //     trackMatomoEvent(MATOMO_EARN_EVENTS_TYPES.ethVaultSelectTokenWsteth);
+  //     break;
+  //   default:
+  //     break;
+  // }
 };
 
 const OPTIONS = ETH_VAULT_DEPOSIT_TOKENS_MAIN.map((token) => ({ token }));
@@ -69,11 +68,11 @@ export const EthVaultDepositInputGroup = () => {
         disabled={disabled}
         fieldName="amount"
         token={token}
-        data-testid="ETH-deposit-input"
+        data-testid="ETH-vault-deposit-input"
         maxValue={maxTokenAmount}
         showErrorMessage={false}
         onMaxClick={() => {
-          trackMatomoEvent(MATOMO_EARN_EVENTS_TYPES.strategyDepositMax);
+          // trackMatomoEvent(MATOMO_EARN_EVENTS_TYPES.ethVaultDepositMax); // TODO: add matomo event for ETH vault max click
         }}
       />
     </InputGroupHookForm>

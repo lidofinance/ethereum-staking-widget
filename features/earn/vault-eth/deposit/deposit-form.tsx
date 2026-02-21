@@ -4,7 +4,6 @@ import {
   VaultTxInfo,
   VaultTxInfoRow,
 } from 'features/earn/shared/vault-tx-info';
-import { VaultWarning } from 'features/earn/shared/vault-warning';
 
 import { EthDepositFormProvider } from './form-context';
 import { EthVaultDepositInputGroup } from './deposit-input-group';
@@ -36,9 +35,6 @@ export const EthVaultDepositForm = () => {
             {'24 hours'}
           </VaultTxInfoRow>
         </VaultTxInfo>
-        <VaultWarning variant="info">
-          Withdrawals are only in wstETH, regardless of deposited asset(s).
-        </VaultWarning>
         <EthVaultDepositSubmitButton />
       </VaultForm>
     </EthDepositFormProvider>

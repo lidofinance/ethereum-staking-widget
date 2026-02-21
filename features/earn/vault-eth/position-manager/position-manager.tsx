@@ -2,7 +2,7 @@ import type { FC } from 'react';
 import { Block } from '@lidofinance/lido-ui';
 
 import { EthVaultDepositForm } from '../deposit';
-import { ETHWithdrawForm } from '../withdraw';
+import { EthVaultWithdrawForm } from '../withdraw';
 import {
   EARN_VAULT_DEPOSIT_SLUG,
   EARN_VAULT_WITHDRAW_SLUG,
@@ -33,7 +33,7 @@ export const EthVaultPositionManager: FC<{
     <Block>
       <SwitchStyled routes={routes} checked={isWithdraw} fullwidth />
       {isDeposit && <EthVaultDepositForm />}
-      {isWithdraw && <ETHWithdrawForm />}
+      {isWithdraw && <EthVaultWithdrawForm />}
     </Block>
   );
 };

@@ -1,5 +1,5 @@
 import { InlineLoader } from 'features/earn/shared/inline-loader';
-import { TokenEarnethIcon } from 'assets/earn-v2';
+import { TokenEarnEthIcon } from 'assets/earn-v2';
 import { EthVaultRequest } from '../../components/request/request';
 import { useEthVaultPreviewWithdraw } from '../hooks/use-preview-withdraw';
 import { ETH_VAULT_TOKEN_SYMBOL } from '../../consts';
@@ -18,7 +18,7 @@ export const EthVaultWithdrawRequestPending = ({
     <InlineLoader isLoading={isLoading} fullWidth>
       <EthVaultRequest
         key={request.timestamp}
-        tokenLogo={<TokenEarnethIcon />}
+        tokenLogo={<TokenEarnEthIcon />}
         tokenAmount={request.shares}
         tokenName={ETH_VAULT_TOKEN_SYMBOL}
         tokenAmountUSD={data?.usd ?? 0}
