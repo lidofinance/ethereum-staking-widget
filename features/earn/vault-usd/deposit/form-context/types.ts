@@ -1,16 +1,14 @@
-import { USD_VAULT_DEPOSIT_TOKENS } from '../../consts';
-
-export type USD_DEPOSIT_TOKENS = (typeof USD_VAULT_DEPOSIT_TOKENS)[number];
+import { UsdDepositTokens } from '../../types';
 
 export type USDDepositFormValues = {
   amount: null | bigint;
-  token: USD_DEPOSIT_TOKENS;
+  token: UsdDepositTokens;
   referral: string | null;
 };
 
 export type USDDepositFormValidatedValues = {
   amount: bigint;
-  token: USD_DEPOSIT_TOKENS;
+  token: UsdDepositTokens;
   referral: string | null;
 };
 
@@ -20,7 +18,7 @@ export type USDDepositFormValidationContext = {
 };
 
 export type USDDepositFormAsyncValidationContext = {
-  [key in USD_DEPOSIT_TOKENS]: {
+  [key in UsdDepositTokens]: {
     balance: bigint;
   };
 };
@@ -28,6 +26,6 @@ export type USDDepositFormAsyncValidationContext = {
 export type USDDepositFormDataContextValue = {
   maxAmount?: bigint;
   isLoading: boolean;
-  token: USD_DEPOSIT_TOKENS;
+  token: UsdDepositTokens;
   isDepositLockedForCurrentToken: boolean;
 };
