@@ -4,7 +4,7 @@ import { trackMatomoEvent } from 'utils/track-matomo-event';
 import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo/matomo-earn-events';
 import { useDVVStats } from './hooks/use-dvv-stats';
 import { useDVVPosition } from './hooks/use-dvv-position';
-import { VaultCard } from '../shared/vault-card-v2';
+import { VaultCard } from '../shared/v2/vault-card';
 import { EARN_VAULT_DVV_SLUG } from '../consts';
 import { DVV_TOKEN_SYMBOL, DVV_VAULT_DESCRIPTION } from './consts';
 

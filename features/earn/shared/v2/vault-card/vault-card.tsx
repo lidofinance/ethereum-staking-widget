@@ -18,11 +18,11 @@ import {
 import { LocalLink } from 'shared/components/local-link';
 import { EARN_PATH } from 'consts/urls';
 import { EARN_VAULT_DEPOSIT_SLUG } from 'features/earn/consts';
-import { InlineLoader } from '../inline-loader';
 import { FormatPercent } from 'shared/formatters/format-percent';
-import { VaultTip } from '../vault-tip';
 import { FormatLargeAmount } from 'shared/formatters/format-large-amount';
 import { FormatToken } from 'shared/formatters/format-token';
+import { InlineLoader } from '../../inline-loader';
+import { VaultTip } from '../../vault-tip';
 
 type VaultStats = {
   tvl?: number | null;

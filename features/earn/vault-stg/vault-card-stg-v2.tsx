@@ -5,7 +5,7 @@ import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo/matomo-earn-events';
 import { useSTGApy } from './hooks/use-stg-apy';
 import { useSTGStats } from './hooks/use-stg-stats';
 import { useSTGPosition } from './hooks/use-stg-position';
-import { VaultCard } from '../shared/vault-card-v2';
+import { VaultCard } from '../shared/v2/vault-card';
 import { EARN_VAULT_STG_SLUG } from '../consts';
 import { STGApyHint } from './components/stg-apy-hint';
 import { useDepositRequests } from './deposit/hooks';

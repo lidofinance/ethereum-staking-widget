@@ -2,7 +2,7 @@ import { VaultGgvIcon } from 'assets/earn-v2';
 import { useDappStatus } from 'modules/web3';
 import { trackMatomoEvent } from 'utils/track-matomo-event';
 import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo/matomo-earn-events';
-import { VaultCard } from '../shared/vault-card-v2';
+import { VaultCard } from '../shared/v2/vault-card';
 import { EARN_VAULT_GGV_SLUG } from '../consts';
 import { GGVApyHint } from './components/ggv-apy-hint';
 import { GGV_VAULT_DESCRIPTION, GGV_TOKEN_SYMBOL } from './consts';
