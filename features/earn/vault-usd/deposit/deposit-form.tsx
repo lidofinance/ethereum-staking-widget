@@ -6,7 +6,7 @@ import {
 } from 'features/earn/shared/vault-tx-info';
 
 import { UsdVaultDepositFormProvider } from './form-context';
-import { UsdVaultWillReceive } from './deposit-will-receive';
+import { UsdVaultDepositWillReceive } from './deposit-will-receive';
 import { UsdVaultDepositInputGroup } from './deposit-input-group';
 import { UsdVaultAvailableDeposit } from './available-deposit';
 import { UsdVaultDepositSubmitButton } from './deposit-submit-button';
@@ -22,7 +22,7 @@ export const UsdVaultDepositForm = () => {
           <UsdVaultDepositInputGroup />
         </VaultFormSection>
         <VaultTxInfo>
-          <UsdVaultWillReceive />
+          <UsdVaultDepositWillReceive />
           <VaultTxInfoRow
             title="Waiting time"
             help={

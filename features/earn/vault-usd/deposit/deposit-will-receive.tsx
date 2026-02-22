@@ -5,7 +5,7 @@ import { USDDepositFormValues } from './form-context/types';
 import { TokenEarnUsdIcon } from 'assets/earn-v2';
 import { useUsdVaultPreviewDeposit } from './hooks/use-preview-deposit';
 
-export const UsdVaultWillReceive = () => {
+export const UsdVaultDepositWillReceive = () => {
   const { amount, token } = useWatch<USDDepositFormValues>();
 
   const { data, isLoading } = useUsdVaultPreviewDeposit({ amount, token });
