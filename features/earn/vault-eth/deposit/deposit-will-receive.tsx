@@ -5,7 +5,7 @@ import { ETHDepositFormValues } from './form-context/types';
 import { TokenEarnEthIcon } from 'assets/earn-v2';
 import { useEthVaultPreviewDeposit } from './hooks/use-preview-deposit';
 
-export const EthVaultWillReceive = () => {
+export const EthVaultDepositWillReceive = () => {
   const { amount, token } = useWatch<ETHDepositFormValues>();
 
   const { data, isLoading } = useEthVaultPreviewDeposit({ amount, token });

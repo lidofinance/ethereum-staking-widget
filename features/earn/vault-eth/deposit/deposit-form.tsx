@@ -7,7 +7,7 @@ import {
 
 import { EthDepositFormProvider } from './form-context';
 import { EthVaultDepositInputGroup } from './deposit-input-group';
-import { EthVaultWillReceive } from './deposit-will-receive';
+import { EthVaultDepositWillReceive } from './deposit-will-receive';
 import { EthVaultDepositSubmitButton } from './deposit-submit-button';
 import { EthVaultAvailableDeposit } from './available-deposit';
 import { EthVaultDepositRequests } from './deposit-requests';
@@ -22,7 +22,7 @@ export const EthVaultDepositForm = () => {
           <EthVaultDepositInputGroup />
         </VaultFormSection>
         <VaultTxInfo>
-          <EthVaultWillReceive />
+          <EthVaultDepositWillReceive />
           <VaultTxInfoRow
             title="Waiting time"
             help={
