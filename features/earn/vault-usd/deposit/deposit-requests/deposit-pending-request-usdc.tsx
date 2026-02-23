@@ -1,4 +1,4 @@
-import { useEthUsd } from 'shared/hooks/use-eth-usd';
+import { useUsdcUsd } from 'shared/hooks/use-usdc-usd';
 import {
   UsdVaultDepositPendingRequest,
   DepositPendingRequestProps,
@@ -8,13 +8,13 @@ type Props = Omit<DepositPendingRequestProps, 'usdAmount'>;
 
 export const UsdVaultDepositPendingRequestUSDC = (props: Props) => {
   const { request } = props;
-  const { usdAmount, isLoading: isUsdLoading } = useEthUsd(request.assets);
+  const { usdAmount } = useUsdcUsd(request.assets);
 
   return (
     <UsdVaultDepositPendingRequest
       {...props}
       usdAmount={usdAmount ?? 0}
-      isLoading={props.isLoading || isUsdLoading}
+      isLoading={props.isLoading}
     />
   );
 };

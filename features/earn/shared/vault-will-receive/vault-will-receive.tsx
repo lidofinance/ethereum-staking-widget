@@ -1,4 +1,5 @@
 import { FormatPrice, FormatToken } from 'shared/formatters';
+import { getTokenDecimals } from 'utils/token-decimals';
 
 import {
   VaultReceiveValue,
@@ -41,6 +42,7 @@ export const VaultWillReceive = ({
               amount={amount}
               trimEllipsis
               fallback={fallbackMainValue}
+              decimals={getTokenDecimals(symbol)}
             />
             {icon}
           </VaultReceiveMainValue>

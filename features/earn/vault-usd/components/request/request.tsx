@@ -13,6 +13,7 @@ import {
 } from './styles';
 import { FormatToken } from 'shared/formatters';
 import { ButtonInline } from 'shared/components/button-inline';
+import { getTokenDecimals } from 'utils/token-decimals';
 
 export { RequestsContainer, ActionableTitle } from './styles';
 
@@ -78,6 +79,7 @@ export const UsdVaultRequest = ({
               amount={tokenAmount}
               symbol={tokenName}
               maxDecimalDigits={5}
+              decimals={getTokenDecimals(tokenName)}
             />
           </AmountTokenValue>
           {tokenAmountUSD != undefined && (
