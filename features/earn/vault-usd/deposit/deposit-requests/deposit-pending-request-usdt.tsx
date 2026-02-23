@@ -13,7 +13,7 @@ export const UsdVaultDepositPendingRequestUSDT = (props: Props) => {
   return (
     <UsdVaultDepositPendingRequest
       {...props}
-      usdAmount={usdAmount ?? 0}
+      usdAmount={usdAmount}
       isLoading={props.isLoading}
     />
   );

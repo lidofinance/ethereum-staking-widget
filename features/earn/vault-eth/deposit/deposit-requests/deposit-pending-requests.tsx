@@ -1,5 +1,5 @@
 import { FC } from 'react';
-import { ActionableTitle } from '../../components/request/request';
+import { ActionableTitle } from 'modules/mellow-meta-vaults/components/request';
 import { DepositRequests } from 'modules/mellow-meta-vaults/hooks/use-deposit-requests';
 import { useEthVaultDepositCancel } from '../hooks';
 import { EthVaultDepositPendingRequestETH } from './deposit-pending-request-eth';

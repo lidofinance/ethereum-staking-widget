@@ -2,7 +2,7 @@ import { TokenUsdcIcon } from 'assets/earn-v2';
 import { useUsdcUsd } from 'shared/hooks/use-usdc-usd';
 import type { WithdrawRequestData } from 'modules/mellow-meta-vaults/types/withdraw-request-data';
 import { getTokenSymbol } from 'utils/getTokenSymbol';
-import { UsdVaultRequest } from '../../components/request/request';
+import { Request } from 'modules/mellow-meta-vaults/components/request';
 
 export const UsdVaultWithdrawRequestClaimable = ({
   request,
@@ -16,12 +16,12 @@ export const UsdVaultWithdrawRequestClaimable = ({
   const { usdAmount } = useUsdcUsd(request.assets);
 
   return (
-    <UsdVaultRequest
+    <Request
       key={request.timestamp}
       tokenLogo={<TokenUsdcIcon />}
       tokenAmount={request.assets}
       tokenName={getTokenSymbol('usdc')}
-      tokenAmountUSD={usdAmount ?? 0}
+      tokenAmountUSD={usdAmount}
       createdDateTimestamp={request.timestamp}
       actionText="Claim"
       actionCallback={claim}

@@ -34,7 +34,10 @@ export const fetchUsdVaultStats = async () => {
   const usdVaultAddress = getContractAddress(CHAINS.Mainnet, 'usdVault');
   const USD_STATS_ENDPOINT = `${USD_VAULT_STATS_ORIGIN}/v1/chain/${CHAINS.Mainnet}/core-vaults/${usdVaultAddress}/data`;
 
-  return standardFetcher<UsdVaultStatsFetchedData>(USD_STATS_ENDPOINT);
+  const data =
+    await standardFetcher<UsdVaultStatsFetchedData>(USD_STATS_ENDPOINT);
+  const stats = USD_VAULT_STATS_SCHEMA.parse(data);
+  return stats;
 };
 
 export const fetchUsdVaultStatsApr = async () => {

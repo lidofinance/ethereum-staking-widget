@@ -2,7 +2,7 @@ import { Question, Tooltip } from '@lidofinance/lido-ui';
 import {
   RequestsContainer,
   ActionableTitle,
-} from '../components/request/request';
+} from 'modules/mellow-meta-vaults/components/request';
 import { useUsdVaultWithdrawRequests } from './hooks/use-withdraw-requests';
 import { UsdVaultWithdrawRequestClaimable } from './withdraw-request/withdraw-request-claimable';
 import { UsdVaultWithdrawRequestPending } from './withdraw-request/withdraw-request-pending';

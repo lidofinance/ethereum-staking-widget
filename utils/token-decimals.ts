@@ -1,4 +1,4 @@
-import { Token } from 'consts/tokens';
+import type { Token } from 'consts/tokens';
 
 const TOKEN_DECIMALS: { [key in Token]?: number } = {
   // Stablecoin tokens (6 decimals)

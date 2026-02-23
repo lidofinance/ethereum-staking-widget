@@ -5,7 +5,7 @@ import {
 } from 'assets/earn';
 import type { DepositRequest } from 'modules/mellow-meta-vaults/hooks/use-deposit-requests';
 import { getTokenDisplayName } from 'utils/getTokenDisplayName';
-import { EthVaultRequest } from '../../components/request/request';
+import { Request } from 'modules/mellow-meta-vaults/components/request';
 
 const getTokenIcon = (_token: string) => {
   const token = _token.toLowerCase();
@@ -23,7 +23,7 @@ const getTokenIcon = (_token: string) => {
 
 export type DepositPendingRequestProps = {
   request: DepositRequest;
-  usdAmount: number;
+  usdAmount?: number;
   isLoading?: boolean;
   onCancel?: () => void;
 };
@@ -42,7 +42,7 @@ export const EthVaultDepositPendingRequest = ({
   }
 
   return (
-    <EthVaultRequest
+    <Request
       key={token}
       tokenLogo={getTokenIcon(token)}
       tokenAmount={assets}

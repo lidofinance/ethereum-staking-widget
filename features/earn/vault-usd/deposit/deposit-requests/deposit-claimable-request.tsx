@@ -45,7 +45,7 @@ export const UsdVaultDepositClaimableRequest = ({
         tokenLogo={<TokenEarnUsdIcon />}
         tokenAmount={claimableShares}
         tokenName={USD_VAULT_TOKEN_SYMBOL}
-        tokenAmountUSD={usdData?.usd ?? 0}
+        tokenAmountUSD={usdData?.usd}
         actionText="Claim"
         actionCallback={() => claim(claimableShares)}
         actionLoading={isLoading}

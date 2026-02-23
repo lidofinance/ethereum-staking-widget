@@ -45,7 +45,7 @@ export const EthVaultDepositClaimableRequest = ({
         tokenLogo={<TokenEarnEthIcon />}
         tokenAmount={claimableShares}
         tokenName={ETH_VAULT_TOKEN_SYMBOL}
-        tokenAmountUSD={wstEthData?.usd ?? 0}
+        tokenAmountUSD={wstEthData?.usd}
         actionText="Claim"
         actionCallback={() => claim(claimableShares)}
         actionLoading={isLoading}

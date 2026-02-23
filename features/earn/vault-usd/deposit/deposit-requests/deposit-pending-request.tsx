@@ -5,7 +5,7 @@ import {
 } from 'assets/earn';
 import type { DepositRequest } from 'modules/mellow-meta-vaults/hooks/use-deposit-requests';
 import { getTokenDisplayName } from 'utils/getTokenDisplayName';
-import { UsdVaultRequest } from '../../components/request/request';
+import { Request } from 'modules/mellow-meta-vaults/components/request';
 
 const getTokenIcon = (_token: string) => {
   const token = _token.toLowerCase();
@@ -42,7 +42,7 @@ export const UsdVaultDepositPendingRequest = ({
   }
 
   return (
-    <UsdVaultRequest
+    <Request
       key={token}
       tokenLogo={getTokenIcon(token)}
       tokenAmount={assets}
