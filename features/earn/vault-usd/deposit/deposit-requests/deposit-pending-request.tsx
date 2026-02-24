@@ -1,25 +1,7 @@
-import {
-  TokenEthIcon32,
-  TokenWethIcon32,
-  TokenWstethIcon32,
-} from 'assets/earn';
 import type { DepositRequest } from 'modules/mellow-meta-vaults/hooks/use-deposit-requests';
 import { getTokenDisplayName } from 'utils/getTokenDisplayName';
 import { Request } from 'modules/mellow-meta-vaults/components/request';
-
-const getTokenIcon = (_token: string) => {
-  const token = _token.toLowerCase();
-  switch (token) {
-    case 'eth':
-      return <TokenEthIcon32 />;
-    case 'weth':
-      return <TokenWethIcon32 />;
-    case 'wsteth':
-      return <TokenWstethIcon32 />;
-    default:
-      return <></>;
-  }
-};
+import { getTokenIcon } from 'utils/get-token-icon';
 
 export type DepositPendingRequestProps = {
   request: DepositRequest;

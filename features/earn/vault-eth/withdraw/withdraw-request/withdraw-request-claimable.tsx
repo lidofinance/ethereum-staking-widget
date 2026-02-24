@@ -1,4 +1,4 @@
-import { TokenWstethIcon } from 'assets/earn';
+import { TokenWstethScalableIcon } from 'assets/earn';
 import { getTokenSymbol } from 'utils/get-token-symbol';
 import { useWstethUsd } from 'shared/hooks/use-wsteth-usd';
 import { Request } from 'modules/mellow-meta-vaults/components/request';
@@ -18,7 +18,7 @@ export const EthVaultWithdrawRequestClaimable = ({
   return (
     <Request
       key={request.timestamp}
-      tokenLogo={<TokenWstethIcon />}
+      tokenLogo={<TokenWstethScalableIcon />}
       tokenAmount={request.assets}
       tokenName={getTokenSymbol('wsteth')}
       tokenAmountUSD={usdAmount}
