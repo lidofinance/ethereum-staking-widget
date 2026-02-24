@@ -11,6 +11,17 @@ type PendingDepositRequestsProps = {
   isLoading: boolean;
 };
 
+const requestComponentMap = {
+  wsteth: EthVaultDepositPendingRequestWstETH,
+  weth: EthVaultDepositPendingRequestETH,
+  eth: EthVaultDepositPendingRequestETH,
+  // TODO: add upgradable tokens
+  // gg
+  // dvsteth
+  // streth
+};
+type requestComponentMapKey = keyof typeof requestComponentMap;
+
 export const EthVaultDepositPendingRequests: FC<
   PendingDepositRequestsProps
 > = ({ requests, cancel, isLoading }) => {
@@ -21,23 +32,20 @@ export const EthVaultDepositPendingRequests: FC<
   return (
     <>
       <ActionableTitle>Pending deposit request</ActionableTitle>
-      {requests.map((request) =>
-        request.token === 'wstETH' ? (
-          <EthVaultDepositPendingRequestWstETH
+      {requests.map((request) => {
+        const Component =
+          requestComponentMap[
+            request.token.toLowerCase() as requestComponentMapKey
+          ];
+        return (
+          <Component
             key={request.token}
             request={request}
             onCancel={() => cancel(request.assets, request.token)}
             isLoading={isLoading}
           />
-        ) : (
-          <EthVaultDepositPendingRequestETH
-            key={request.token}
-            request={request}
-            onCancel={() => cancel(request.assets, request.token)}
-            isLoading={isLoading}
-          />
-        ),
-      )}
+        );
+      })}
     </>
   );
 };

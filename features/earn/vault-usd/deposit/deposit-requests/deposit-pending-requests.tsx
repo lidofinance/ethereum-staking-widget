@@ -11,6 +11,32 @@ type PendingDepositRequestsProps = {
   isLoading: boolean;
 };
 
+const requestComponentMap = {
+  usdc: UsdVaultDepositPendingRequestUSDC,
+  usdt: UsdVaultDepositPendingRequestUSDT,
+};
+type requestComponentMapKey = keyof typeof requestComponentMap;
+
+type PendingRequestComponentProps = {
+  token: requestComponentMapKey;
+  request: DepositRequests[number];
+  onCancel: () => void;
+  isLoading: boolean;
+};
+
+const PendingRequestComponent: FC<PendingRequestComponentProps> = ({
+  token,
+  request,
+  onCancel,
+  isLoading,
+}) => {
+  const Component =
+    requestComponentMap[token.toLowerCase() as requestComponentMapKey];
+  return (
+    <Component request={request} onCancel={onCancel} isLoading={isLoading} />
+  );
+};
+
 export const UsdVaultDepositPendingRequests: FC<
   PendingDepositRequestsProps
 > = ({ requests, cancel, isLoading }) => {
@@ -21,23 +47,15 @@ export const UsdVaultDepositPendingRequests: FC<
   return (
     <>
       <ActionableTitle>Pending deposit request</ActionableTitle>
-      {requests.map((request) =>
-        request.token === 'USDT' ? (
-          <UsdVaultDepositPendingRequestUSDT
-            key={request.token}
-            request={request}
-            onCancel={() => cancel(request.assets, request.token)}
-            isLoading={isLoading}
-          />
-        ) : (
-          <UsdVaultDepositPendingRequestUSDC
-            key={request.token}
-            request={request}
-            onCancel={() => cancel(request.assets, request.token)}
-            isLoading={isLoading}
-          />
-        ),
-      )}
+      {requests.map((request) => (
+        <PendingRequestComponent
+          key={request.token}
+          token={request.token}
+          request={request}
+          onCancel={() => cancel(request.assets, request.token)}
+          isLoading={isLoading}
+        />
+      ))}
     </>
   );
 };
