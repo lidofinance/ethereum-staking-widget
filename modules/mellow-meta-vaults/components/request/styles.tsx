@@ -48,6 +48,7 @@ export const Entry = styled.div`
 `;
 
 export const TokenLogo = styled.div`
+  flex: 1 0 auto;
   width: 28px;
   height: 28px;
 `;
