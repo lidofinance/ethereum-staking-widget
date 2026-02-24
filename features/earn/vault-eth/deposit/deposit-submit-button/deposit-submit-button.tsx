@@ -1,7 +1,7 @@
 import { useFormState } from 'react-hook-form';
 import { useEthVaultAvailable } from '../../hooks/use-vault-available';
 import { SubmitButtonHookForm } from 'shared/hook-form/controls/submit-button-hook-form';
-import { getTokenSymbol } from 'utils/getTokenSymbol';
+import { getTokenSymbol } from 'utils/get-token-symbol';
 import { useETHDepositForm } from '../form-context';
 import { useEthVaultDepositRequest } from '../hooks';
 import {

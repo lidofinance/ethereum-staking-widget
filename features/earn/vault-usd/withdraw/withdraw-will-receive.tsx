@@ -2,7 +2,7 @@ import { useWatch } from 'react-hook-form';
 import { VaultWillReceive } from 'features/earn/shared/vault-will-receive';
 import { TokenWstethIcon } from 'assets/earn';
 import { useStETHByWstETH } from 'modules/web3';
-import { getTokenSymbol } from 'utils/getTokenSymbol';
+import { getTokenSymbol } from 'utils/get-token-symbol';
 import { UsdVaultWithdrawFormValues } from './form-context/types';
 import { useUsdVaultPreviewWithdraw } from './hooks/use-preview-withdraw';
 

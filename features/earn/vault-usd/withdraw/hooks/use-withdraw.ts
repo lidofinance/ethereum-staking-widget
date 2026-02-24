@@ -9,7 +9,7 @@ import {
   getRedeemQueueWritableContractUSDC,
 } from '../../contracts';
 import { useTxModalStagesWithdraw } from 'modules/mellow-meta-vaults/hooks/use-withdraw-tx-modal';
-import { getTokenSymbol } from 'utils/getTokenSymbol';
+import { getTokenSymbol } from 'utils/get-token-symbol';
 
 export const useUsdVaultWithdraw = (onRetry: () => void) => {
   const { core } = useLidoSDK();

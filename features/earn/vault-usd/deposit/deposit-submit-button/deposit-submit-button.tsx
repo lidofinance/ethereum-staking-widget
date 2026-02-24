@@ -1,7 +1,7 @@
 import { useFormState } from 'react-hook-form';
 import { useUsdVaultAvailable } from '../../hooks/use-vault-available';
 import { SubmitButtonHookForm } from 'shared/hook-form/controls/submit-button-hook-form';
-import { getTokenSymbol } from 'utils/getTokenSymbol';
+import { getTokenSymbol } from 'utils/get-token-symbol';
 import { useUSDDepositForm } from '../form-context';
 import { useUsdVaultDepositRequest } from '../hooks';
 import {
