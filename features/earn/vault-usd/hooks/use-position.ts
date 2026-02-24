@@ -38,7 +38,7 @@ export const useUsdVaultPosition = () => {
       USD_VAULT_QUERY_SCOPE,
       'position',
       'usd',
-      { shares: String(earnusdShares) },
+      { shares: earnusdShares },
     ] as const,
     enabled: isEnabled && !!earnusdBalanceQuery.data?.earnusdSharesBalance,
     queryFn: async () => {
