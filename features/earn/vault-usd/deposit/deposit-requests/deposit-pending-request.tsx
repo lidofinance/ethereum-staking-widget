@@ -1,3 +1,4 @@
+import invariant from 'tiny-invariant';
 import type { DepositRequest } from 'modules/mellow-meta-vaults/hooks/use-deposit-requests';
 import { getTokenDisplayName } from 'utils/getTokenDisplayName';
 import { Request } from 'modules/mellow-meta-vaults/components/request';
@@ -17,11 +18,10 @@ export const UsdVaultDepositPendingRequest = ({
   onCancel = () => void 0,
 }: DepositPendingRequestProps) => {
   const { assets, token, isClaimable } = request;
-
-  // We don't want to show claimable requests
-  if (!request || isClaimable) {
-    return null;
-  }
+  invariant(
+    isClaimable === false,
+    'Claimable deposit request should not be displayed as pending',
+  );
 
   return (
     <Request
