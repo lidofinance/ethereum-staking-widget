@@ -8,6 +8,7 @@ import { ConfigProvider } from 'config';
 import { Web3Provider } from 'modules/web3';
 import { AddressValidationFile } from 'utils/address-validation';
 import { STRATEGY_LAZY } from 'consts/react-query-strategies';
+import { bigIntHashKey } from 'utils/bn-int-hash-key';
 
 import { AppFlagProvider } from './app-flag';
 import { IPFSInfoBoxStatusesProvider } from './ipfs-info-box-statuses';
@@ -24,6 +25,7 @@ type ProvidersProps = {
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
+      queryKeyHashFn: bigIntHashKey,
       ...STRATEGY_LAZY,
     },
   },
