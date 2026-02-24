@@ -83,6 +83,7 @@ export const useCollect = ({
         deposits: response.deposits,
         collectorTimestamp: response.timestamp,
         totalTvlWei: response.totalBase,
+        totalTvlUsd: response.totalUSD,
       };
     },
   });

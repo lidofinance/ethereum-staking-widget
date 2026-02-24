@@ -18,10 +18,11 @@ export const useUsdVaultStats = () => {
   const { data: collectorData, isLoading: isCollectorLoading } =
     useUsdVaultCollect();
   const totalTvlWei = collectorData?.totalTvlWei;
+  const totalTvlUsd = collectorData?.totalTvlUsd;
 
   return {
     isLoading: isLoading || isCollectorLoading,
-    totalTvlUsd: 0, // TODO: update with real usd value
+    totalTvlUsd,
     totalTvlWei,
     fetchedPositions: data?.allocations,
     lastUpdateTimestamp: data?.lastUpdate,
