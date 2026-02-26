@@ -1,9 +1,23 @@
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 import { Block, Button } from '@lidofinance/lido-ui';
 
 export const UpgradeCardBlock = styled(Block)`
-  background: linear-gradient(135deg, #f5f3ff 0%, #fef1f6 100%);
-  border: 1px solid rgba(201, 172, 255, 0.7);
+  ${({ theme }) =>
+    theme.name === 'light'
+      ? css`
+          background: linear-gradient(135deg, #f5f3ff 0%, #fef1f6 100%);
+          border: 1px solid rgba(201, 172, 255, 0.7);
+        `
+      : css`
+          background: linear-gradient(
+              87.27deg,
+              rgba(106, 154, 255, 0.2) -11.77%,
+              rgba(201, 172, 255, 0.2) 21.01%,
+              rgba(255, 206, 190, 0.2) 102.78%
+            ),
+            var(--lido-color-foreground);
+          border: 1px solid #c9acff;
+        `}
   color: var(--lido-color-text);
   max-width: 680px;
 `;

@@ -34,10 +34,12 @@ export const UpgradeCard: FC<UpgradeCardProps> = ({ setIsDrawerRightOpen }) => {
     <UpgradeCardBlock>
       <UpgradeContent>
         <UpgradeColumn>
-          <UpgradeTitle>Upgrade to Lido Earn ETH</UpgradeTitle>
+          <UpgradeTitle>Upgrade your tokens</UpgradeTitle>
           <span>
-            Move your assets from Lido DVV, GGV or stRATEGY into the upgraded
-            Lido vault
+            Lido DeFi vaults have been live and tested for 6 months. Today they
+            get a major upgrade. Instead of picking which curator or strategy
+            you prefer, the new EarnETH vault aggregates the winning curator on
+            your behalf.
           </span>
           <UpgradeList>
             <UpgradeItem>
@@ -60,8 +62,9 @@ export const UpgradeCard: FC<UpgradeCardProps> = ({ setIsDrawerRightOpen }) => {
             </UpgradeItem>
           </UpgradeList>
           <UpgradeParagraph>
-            To upgrade, simply deposit your GG share token into the Lido Earn
-            ETH Vault. You’ll receive a new token representing your share.{' '}
+            To upgrade you just need to deposit your upgradable tokens into the
+            EarnETH Vault and you’ll receive a new earnETH token representing
+            your position in Lido ETH Growth.{' '}
             <ButtonInline
               onClick={(event) => {
                 event.preventDefault();
@@ -79,7 +82,7 @@ export const UpgradeCard: FC<UpgradeCardProps> = ({ setIsDrawerRightOpen }) => {
 
       <LocalLink href={ETH_DEPOSIT_PATH}>
         <UpgradeButton size="lg" fullwidth>
-          Upgrade to Lido Earn ETH
+          Upgrade
         </UpgradeButton>
       </LocalLink>
     </UpgradeCardBlock>
