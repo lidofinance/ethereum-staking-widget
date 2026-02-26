@@ -1,14 +1,20 @@
+import invariant from 'tiny-invariant';
 import { useWatch } from 'react-hook-form';
 import { VaultWillReceive } from 'features/earn/shared/vault-will-receive';
 import { USD_VAULT_TOKEN_SYMBOL } from '../consts';
 import { USDDepositFormValues } from './form-context/types';
 import { TokenEarnUsdIcon } from 'assets/earn-v2';
 import { useUsdVaultPreviewDeposit } from './hooks/use-preview-deposit';
+import { asUsdDepositToken } from '../utils';
 
 export const UsdVaultDepositWillReceive = () => {
-  const { amount, token } = useWatch<USDDepositFormValues>();
+  const { amount, token: tokenSymbol } = useWatch<USDDepositFormValues>();
+  invariant(tokenSymbol, 'Token is required to preview deposit');
 
-  const { data, isLoading } = useUsdVaultPreviewDeposit({ amount, token });
+  const { data, isLoading } = useUsdVaultPreviewDeposit({
+    amount,
+    token: asUsdDepositToken(tokenSymbol),
+  });
 
   return (
     <VaultWillReceive

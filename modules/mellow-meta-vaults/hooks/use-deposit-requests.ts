@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
-import { getTokenAddress, TOKENS } from 'config/networks/token-address';
+import { getTokenAddress } from 'config/networks/token-address';
 import { useDappStatus } from 'modules/web3/hooks';
+import { type Token } from 'consts/tokens';
 import { CollectorContract, VaultContract } from '../types/contracts';
 import { useCollect } from './use-collect';
 
@@ -9,19 +10,19 @@ export type DepositRequest = {
   claimableShares: bigint;
   assets: bigint;
   isClaimable: boolean;
-  token: any; // TODO: fix type
+  token: Token;
 };
 
 export type DepositRequests = Array<DepositRequest>;
 
-export const useDepositRequests = <DepositToken extends string>({
+export const useDepositRequests = ({
   collector,
   vault,
   depositTokens,
 }: {
   collector: CollectorContract;
   vault: VaultContract;
-  depositTokens: DepositToken[];
+  depositTokens: Token[];
 }): {
   requests: DepositRequest[];
   claimableRequests: DepositRequest[];
@@ -56,7 +57,7 @@ export const useDepositRequests = <DepositToken extends string>({
         const collectedRequest = collectedRequests.find(
           (request) =>
             request.asset.toLowerCase() ===
-            getTokenAddress(chainId, token as TOKENS)?.toLowerCase(), // TODO: fix "as TOKENS"
+            getTokenAddress(chainId, token)?.toLowerCase(),
         );
 
         if (!collectedRequest) return null;
@@ -76,7 +77,7 @@ export const useDepositRequests = <DepositToken extends string>({
           token,
         };
       })
-      .filter((request): request is DepositRequest => !!request);
+      .filter((request) => !!request);
 
     const claimableRequests = requests.filter((request) => request.isClaimable);
     const pendingRequests = requests.filter((request) => !request.isClaimable);

@@ -1,14 +1,14 @@
-import { UsdDepositTokens } from '../../types';
+import { UsdDepositTokenSymbol } from '../../types';
 
 export type USDDepositFormValues = {
   amount: null | bigint;
-  token: UsdDepositTokens;
+  token: UsdDepositTokenSymbol;
   referral: string | null;
 };
 
 export type USDDepositFormValidatedValues = {
   amount: bigint;
-  token: UsdDepositTokens;
+  token: UsdDepositTokenSymbol;
   referral: string | null;
 };
 
@@ -18,7 +18,7 @@ export type USDDepositFormValidationContext = {
 };
 
 export type USDDepositFormAsyncValidationContext = {
-  [key in UsdDepositTokens]: {
+  [key in UsdDepositTokenSymbol]: {
     balance: bigint;
   };
 };
@@ -26,6 +26,6 @@ export type USDDepositFormAsyncValidationContext = {
 export type USDDepositFormDataContextValue = {
   maxAmount?: bigint;
   isLoading: boolean;
-  token: UsdDepositTokens;
+  token: UsdDepositTokenSymbol;
   isDepositLockedForCurrentToken: boolean;
 };

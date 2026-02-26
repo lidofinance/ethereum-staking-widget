@@ -9,7 +9,9 @@ import {
 import { useFormControllerRetry } from 'shared/hook-form/form-controller/use-form-controller-retry-delegate';
 import { useQueryParamsReferralForm } from 'shared/hooks/use-query-values-form';
 import { useDappStatus } from 'modules/web3/hooks/use-dapp-status';
-import {
+import { TOKEN_SYMBOLS } from 'consts/tokens';
+
+import type {
   ETHDepositFormDataContextValue,
   ETHDepositFormValidatedValues,
   ETHDepositFormValues,
@@ -19,6 +21,7 @@ import { useEthVaultDepositFormData } from '../hooks/use-deposit-form-data';
 import { EthVaultDepositFormValidationResolver } from './validation';
 import { useEthVaultAvailable } from '../../hooks/use-vault-available';
 import { useEthVaultDepositRequest } from '../hooks';
+import { asEthDepositToken } from '../../utils';
 
 const EthVaultDepositFormDataContext =
   createContext<ETHDepositFormDataContextValue | null>(null);
@@ -53,7 +56,7 @@ export const EthVaultDepositFormProvider: React.FC<{
   const { deposit } = useEthVaultDeposit(retryEvent.fire);
 
   const formObject = useForm({
-    defaultValues: { amount: null, token: 'ETH', referral: null },
+    defaultValues: { amount: null, token: TOKEN_SYMBOLS.eth, referral: null },
     disabled:
       (isWalletConnected && !isDappActive) ||
       (isEthVaultAvailable && !isDepositEnabled),
@@ -63,16 +66,21 @@ export const EthVaultDepositFormProvider: React.FC<{
     resolver: EthVaultDepositFormValidationResolver,
   });
 
-  const token = formObject.watch('token');
+  const tokenSymbol = formObject.watch('token');
   const { setValue } = formObject;
   useQueryParamsReferralForm<ETHDepositFormValues>({ setValue });
 
-  const depositRequest = useEthVaultDepositRequest({ token });
+  const depositRequest = useEthVaultDepositRequest({
+    token: asEthDepositToken(tokenSymbol),
+  });
 
   const formControllerValue = useMemo(
     (): FormControllerContextValueType<any> => ({
       onSubmit: async (values: ETHDepositFormValidatedValues) => {
-        const result = await deposit(values);
+        const result = await deposit({
+          ...values,
+          token: asEthDepositToken(values.token),
+        });
         if (result) {
           await refetchData(values.token);
         }
@@ -87,18 +95,18 @@ export const EthVaultDepositFormProvider: React.FC<{
   );
 
   const contextValue = useMemo<ETHDepositFormDataContextValue>(() => {
-    const tokenBalance = asyncValidationContextValue?.[token];
+    const tokenBalance = asyncValidationContextValue?.[tokenSymbol];
     const maxAmount =
       tokenBalance?.balance != undefined ? tokenBalance?.balance : undefined;
     return {
       maxAmount,
-      token,
+      token: tokenSymbol,
       isLoading,
       // deposit is locked if the last request is not yet claimable
       isDepositLockedForCurrentToken:
         !!depositRequest && !depositRequest.isClaimable,
     };
-  }, [asyncValidationContextValue, depositRequest, isLoading, token]);
+  }, [asyncValidationContextValue, depositRequest, isLoading, tokenSymbol]);
 
   return (
     <FormProvider {...formObject}>

@@ -1,3 +1,4 @@
+import invariant from 'tiny-invariant';
 import type { Token } from 'consts/tokens';
 
 const TOKEN_DECIMALS: { [key in Token]?: number } = {
@@ -7,5 +8,6 @@ const TOKEN_DECIMALS: { [key in Token]?: number } = {
 };
 
 export const getTokenDecimals = (token: string): number => {
+  invariant(token, 'Token is required to get decimals');
   return TOKEN_DECIMALS[token.toLowerCase() as Token] ?? 18; // Default to 18 decimals for tokens not listed
 };

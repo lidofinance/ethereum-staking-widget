@@ -2,8 +2,9 @@ import invariant from 'tiny-invariant';
 import { usePublicClient } from 'wagmi';
 import { useDepositCancel } from 'modules/mellow-meta-vaults/hooks/use-deposit-cancel';
 import { useTxModalStagesDepositCancel } from 'modules/mellow-meta-vaults/hooks/use-deposit-cancel-tx-modal';
+import { TOKEN_SYMBOLS } from 'consts/tokens';
 import { getDepositQueueWritableContract } from '../../contracts';
-import { UsdDepositTokens } from '../../types';
+import type { UsdDepositToken } from '../../types';
 import { useUsdVaultDepositFormData } from './use-deposit-form-data';
 
 export const useUsdVaultDepositCancel = (onRetry?: () => void) => {
@@ -18,10 +19,11 @@ export const useUsdVaultDepositCancel = (onRetry?: () => void) => {
     },
   });
 
-  return useDepositCancel<UsdDepositTokens>({
+  return useDepositCancel<UsdDepositToken>({
     depositQueueGetter: getDepositQueueWritableContract,
     txModalStages,
-    refetchTokenBalance: refetchData,
+    refetchTokenBalance: (token: UsdDepositToken) =>
+      refetchData(TOKEN_SYMBOLS[token]),
     onRetry,
   });
 };

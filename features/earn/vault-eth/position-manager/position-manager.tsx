@@ -10,17 +10,18 @@ import {
   ETH_WITHDRAW_PATH,
 } from '../../consts';
 import { SwitchStyled } from './styles';
+import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo';
 
 const routes = [
   {
     path: ETH_DEPOSIT_PATH,
     name: 'Deposit',
-    // matomoEvent: MATOMO_EARN_EVENTS_TYPES.ethDepositTab, // TODO: add matomo event
+    matomoEvent: MATOMO_EARN_EVENTS_TYPES.earnEthDepositTab,
   },
   {
     path: ETH_WITHDRAW_PATH,
     name: 'Withdraw',
-    // matomoEvent: MATOMO_EARN_EVENTS_TYPES.ethWithdrawalTab, // TODO: add matomo event
+    matomoEvent: MATOMO_EARN_EVENTS_TYPES.earnEthWithdrawalTab,
   },
 ];
 

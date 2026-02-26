@@ -4,6 +4,9 @@ import { getContractAddress } from 'config/networks/contract-address';
 import { standardFetcher } from 'utils/standardFetcher';
 import { UNIX_TIMESTAMP_SCHEMA, PERCENT_SCHEMA, APY_SCHEMA } from 'utils/zod';
 import { USD_VAULT_STATS_ORIGIN } from './consts';
+import { TokenSymbol } from 'consts/tokens';
+import { UsdDepositToken } from './types';
+import { asToken } from 'utils/as-token';
 
 export const ALLOCATION_SCHEMA = z.array(
   z.object({
@@ -47,4 +50,11 @@ export const fetchUsdVaultStatsApr = async () => {
   const data = await standardFetcher<UsdVaultApyFetchedData>(USD_APY_ENDPOINT);
   const apy = USD_VAULT_APY_SCHEMA.parse(data).apy;
   return apy;
+};
+
+// Converts a case sensitive TokenSymbol to an UsdDepositToken which must be lowercase.
+// This is needed because the form values use TokenSymbol which can be uppercase,
+// but some functions expects UsdDepositToken which is lowercase.
+export const asUsdDepositToken = (token: TokenSymbol) => {
+  return asToken<UsdDepositToken>(token);
 };

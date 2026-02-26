@@ -1,7 +1,8 @@
 import { useFormState } from 'react-hook-form';
-import { useUsdVaultAvailable } from '../../hooks/use-vault-available';
+import { asToken } from 'utils/as-token';
 import { SubmitButtonHookForm } from 'shared/hook-form/controls/submit-button-hook-form';
-import { getTokenSymbol } from 'utils/get-token-symbol';
+
+import { useUsdVaultAvailable } from '../../hooks/use-vault-available';
 import { useUSDDepositForm } from '../form-context';
 import { useUsdVaultDepositRequest } from '../hooks';
 import {
@@ -12,8 +13,11 @@ import {
 
 export const UsdVaultDepositSubmitButton = () => {
   const { disabled } = useFormState();
-  const { isDepositLockedForCurrentToken, token } = useUSDDepositForm();
-  const depositRequest = useUsdVaultDepositRequest({ token });
+  const { isDepositLockedForCurrentToken, token: tokenSymbol } =
+    useUSDDepositForm();
+  const depositRequest = useUsdVaultDepositRequest({
+    token: asToken(tokenSymbol),
+  });
   const { isUsdVaultAvailable } = useUsdVaultAvailable();
 
   const shouldSwitchChain = !isUsdVaultAvailable;
@@ -30,7 +34,7 @@ export const UsdVaultDepositSubmitButton = () => {
     return (
       <StyledTooltip
         placement="bottom"
-        title={`You already have a pending request in ${getTokenSymbol(token)}. To create a new deposit, please select a different token or cancel the existing deposit.`}
+        title={`You already have a pending request in ${tokenSymbol}. To create a new deposit, please select a different token or cancel the existing deposit.`}
       >
         {/*
           `div` wrapper is required around disabled button for the tooltip to work,

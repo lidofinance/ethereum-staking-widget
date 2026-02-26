@@ -21,6 +21,7 @@ import { EARN_VAULT_DEPOSIT_SLUG } from 'features/earn/consts';
 import { FormatPercent } from 'shared/formatters/format-percent';
 import { FormatLargeAmount } from 'shared/formatters/format-large-amount';
 import { FormatToken } from 'shared/formatters/format-token';
+import { getTokenDecimals } from 'utils/token-decimals';
 import { InlineLoader } from '../../inline-loader';
 import { VaultTip } from '../../vault-tip';
 
@@ -104,6 +105,7 @@ export const VaultCard: React.FC<VaultCardProps> = ({
                 <FormatToken
                   trimEllipsis
                   symbol={position.symbol}
+                  decimals={getTokenDecimals(position.symbol)}
                   amount={position.balance}
                   fallback="—"
                   data-testid={`${position.symbol}-position-amount`}

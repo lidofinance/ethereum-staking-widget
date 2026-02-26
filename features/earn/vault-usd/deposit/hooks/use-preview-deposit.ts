@@ -3,8 +3,15 @@ import { usePublicClient } from 'wagmi';
 import { usePreviewDeposit } from 'modules/mellow-meta-vaults';
 import { getCollectorContract, getDepositQueueContract } from '../../contracts';
 import { useMemo } from 'react';
+import { UsdDepositToken } from '../../types';
 
-export const useUsdVaultPreviewDeposit = ({ amount, token }: any) => {
+export const useUsdVaultPreviewDeposit = ({
+  amount,
+  token,
+}: {
+  amount?: bigint | null;
+  token: UsdDepositToken;
+}) => {
   const publicClient = usePublicClient();
   invariant(publicClient, 'Public client is not available');
 

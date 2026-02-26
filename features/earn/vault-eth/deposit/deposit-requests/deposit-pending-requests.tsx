@@ -33,12 +33,12 @@ export const EthVaultDepositPendingRequests: FC<
     <>
       <ActionableTitle>Pending deposit request</ActionableTitle>
       {requests.map((request) => {
-        const Component =
+        const PendingRequestComponent =
           requestComponentMap[
             request.token.toLowerCase() as requestComponentMapKey
           ];
         return (
-          <Component
+          <PendingRequestComponent
             key={request.token}
             request={request}
             onCancel={() => cancel(request.assets, request.token)}

@@ -8,10 +8,11 @@ import {
 import { TxStageSignOperationAmount } from 'shared/transaction-modal/tx-stages-composed/tx-stage-amount-operation';
 import { TxStageSuccess } from 'shared/transaction-modal/tx-stages-basic';
 import { TxAmount } from 'shared/transaction-modal/tx-stages-parts/tx-amount';
+import { type TokenSymbol } from 'consts/tokens';
 
 type StageOperationArgs = {
-  willReceiveToken: string;
-  token: string;
+  willReceiveToken: TokenSymbol;
+  token: TokenSymbol;
   operationText: string;
 };
 
@@ -49,7 +50,11 @@ const getTxModalStagesRequest = (
         txHash={txHash}
         title={
           <>
-            <TxAmount amount={amount} symbol={'wstETH'} /> has been claimed.
+            <TxAmount
+              amount={amount}
+              symbol={stageOperationArgs.willReceiveToken}
+            />{' '}
+            has been claimed.
           </>
         }
         description={null}

@@ -16,6 +16,7 @@ import {
   ETHDepositFormValues,
 } from '../form-context/types';
 import { ETH_VAULT_QUERY_SCOPE } from '../../consts';
+import { TOKEN_SYMBOLS } from 'consts/tokens';
 
 export const useEthVaultDepositFormData = () => {
   const queryClient = useQueryClient();
@@ -36,13 +37,13 @@ export const useEthVaultDepositFormData = () => {
     }
 
     return {
-      ETH: {
+      [TOKEN_SYMBOLS.eth]: {
         balance: ethBalanceQuery.data,
       },
-      wstETH: {
+      [TOKEN_SYMBOLS.wsteth]: {
         balance: wstethBalanceQuery.data,
       },
-      wETH: {
+      [TOKEN_SYMBOLS.weth]: {
         balance: wethBalanceQuery.data,
       },
     };
@@ -56,12 +57,12 @@ export const useEthVaultDepositFormData = () => {
   };
 
   const refetchData = useCallback(
-    (token: ETHDepositFormValues['token']) => {
+    (tokenFormValue: ETHDepositFormValues['token']) => {
       const tokenBalanceRefetch = {
-        ['ETH']: ethBalanceQuery.refetch,
-        ['wstETH']: wstethBalanceQuery.refetch,
-        ['wETH']: wethBalanceQuery.refetch,
-      }[token];
+        [TOKEN_SYMBOLS.eth]: ethBalanceQuery.refetch,
+        [TOKEN_SYMBOLS.wsteth]: wstethBalanceQuery.refetch,
+        [TOKEN_SYMBOLS.weth]: wethBalanceQuery.refetch,
+      }[tokenFormValue];
 
       const options = { cancelRefetch: true, throwOnError: false };
 

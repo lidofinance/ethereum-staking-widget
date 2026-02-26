@@ -14,13 +14,14 @@ import { FormatToken } from 'shared/formatters';
 import { ButtonInline } from 'shared/components/button-inline';
 import { getTokenDecimals } from 'utils/token-decimals';
 import { formatBlockchainTimestamp } from 'utils/format-blockchain-timestamp';
+import { TokenSymbol } from 'consts/tokens';
 
 export { RequestsContainer, ActionableTitle } from './styles';
 
 export type RequestProps = {
   tokenLogo: React.ReactNode;
   tokenAmount: bigint;
-  tokenName: string;
+  tokenName: TokenSymbol;
   tokenAmountUSD?: number;
   createdDateTimestamp?: bigint;
   actionText?: string;

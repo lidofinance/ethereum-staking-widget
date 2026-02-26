@@ -1,6 +1,8 @@
 import { VaultEthIcon } from 'assets/earn-v2';
 import { VaultCard } from '../shared/v2/vault-card';
 import { EARN_VAULT_ETH_SLUG } from '../consts';
+import { trackMatomoEvent } from 'utils/track-matomo-event';
+import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo';
 
 export const EthVaultCard = () => {
   const totalTvlUsd = 0;
@@ -24,8 +26,7 @@ export const EthVaultCard = () => {
       variant={'eth'}
       illustration={<VaultEthIcon />}
       depositLinkCallback={() => {
-        // TODO:
-        // trackMatomoEvent(MATOMO_EARN_EVENTS_TYPES.ethDeposit);
+        trackMatomoEvent(MATOMO_EARN_EVENTS_TYPES.earnListEarnEthDeposit);
       }}
     />
   );

@@ -9,10 +9,10 @@ import { TxStageSignOperationAmount } from 'shared/transaction-modal/tx-stages-c
 
 import { TxStageSuccess } from 'shared/transaction-modal/tx-stages-basic';
 import { TxAmount } from 'shared/transaction-modal/tx-stages-parts/tx-amount';
-import { getTokenSymbol } from 'utils/get-token-symbol';
+import { type TokenSymbol } from 'consts/tokens';
 
 type StageArgs = {
-  willReceiveToken: string;
+  willReceiveToken: TokenSymbol;
   operationText: string;
 };
 
@@ -27,7 +27,7 @@ const getTxModalStagesRequest = (
       <TxStageSignOperationAmount
         {...stageOperationArgs}
         showOperationInDescription={false}
-        token={getTokenSymbol(stageOperationArgs.willReceiveToken)}
+        token={stageOperationArgs.willReceiveToken}
         amount={amount}
       />,
     ),
@@ -38,7 +38,7 @@ const getTxModalStagesRequest = (
         {...stageOperationArgs}
         showOperationInDescription={false}
         amount={amount}
-        token={getTokenSymbol(stageOperationArgs.willReceiveToken)}
+        token={stageOperationArgs.willReceiveToken}
         isPending
         isAA={isAA}
         txHash={txHash}
@@ -53,7 +53,7 @@ const getTxModalStagesRequest = (
           <>
             <TxAmount
               amount={amount}
-              symbol={getTokenSymbol(stageOperationArgs.willReceiveToken)}
+              symbol={stageOperationArgs.willReceiveToken}
             />
             has been claimed.
           </>

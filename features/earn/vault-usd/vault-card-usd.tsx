@@ -1,4 +1,6 @@
 import { VaultUsdIcon } from 'assets/earn-v2';
+import { trackMatomoEvent } from 'utils/track-matomo-event';
+import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo';
 
 import { VaultCard } from '../shared/v2/vault-card';
 import { EARN_VAULT_USD_SLUG } from '../consts';
@@ -25,8 +27,7 @@ export const VaultCardUSD = () => {
       variant={'usd'}
       illustration={<VaultUsdIcon />}
       depositLinkCallback={() => {
-        // TODO:
-        // trackMatomoEvent(MATOMO_EARN_EVENTS_TYPES.usdDeposit);
+        trackMatomoEvent(MATOMO_EARN_EVENTS_TYPES.earnListEarnUsdDeposit);
       }}
     />
   );
