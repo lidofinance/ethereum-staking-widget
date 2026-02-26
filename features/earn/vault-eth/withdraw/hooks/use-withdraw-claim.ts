@@ -5,7 +5,7 @@ import { useMemo } from 'react';
 import { useLidoSDK } from 'modules/web3';
 import { useWithdrawClaim } from 'modules/mellow-meta-vaults/hooks/use-withdraw-claim';
 import { useTxModalStagesWithdrawClaim } from 'modules/mellow-meta-vaults/hooks/use-withdraw-claim-tx-modal';
-import { getTokenSymbol } from 'utils/getTokenSymbol';
+import { getTokenSymbol } from 'utils/get-token-symbol';
 import { getRedeemQueueWritableContractWSTETH } from '../../contracts';
 import { useEthVaultWithdrawFormData } from './use-withdraw-form-data';
 

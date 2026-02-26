@@ -1,5 +1,5 @@
 import { Question, Tooltip } from '@lidofinance/lido-ui';
-import { TokenEarnethIcon } from 'assets/earn-v2';
+import { TokenEarnEthIcon } from 'assets/earn-v2';
 import {
   ActionableTitle,
   Request,
@@ -42,10 +42,10 @@ export const EthVaultDepositClaimableRequest = ({
         </Tooltip>
       </ActionableTitle>
       <Request
-        tokenLogo={<TokenEarnethIcon />}
+        tokenLogo={<TokenEarnEthIcon />}
         tokenAmount={claimableShares}
         tokenName={ETH_VAULT_TOKEN_SYMBOL}
-        tokenAmountUSD={wstEthData?.usd ?? 0}
+        tokenAmountUSD={wstEthData?.usd}
         actionText="Claim"
         actionCallback={() => claim(claimableShares)}
         actionLoading={isLoading}

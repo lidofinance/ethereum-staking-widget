@@ -1,6 +1,6 @@
 import { InlineLoader } from 'features/earn/shared/inline-loader';
-import { TokenEarnethIcon } from 'assets/earn-v2';
-import { EthVaultRequest } from '../../components/request/request';
+import { TokenEarnEthIcon } from 'assets/earn-v2';
+import { Request } from 'modules/mellow-meta-vaults/components/request';
 import { useEthVaultPreviewWithdraw } from '../hooks/use-preview-withdraw';
 import { ETH_VAULT_TOKEN_SYMBOL } from '../../consts';
 import type { WithdrawRequestData } from 'modules/mellow-meta-vaults/types/withdraw-request-data';
@@ -16,12 +16,12 @@ export const EthVaultWithdrawRequestPending = ({
 
   return (
     <InlineLoader isLoading={isLoading} fullWidth>
-      <EthVaultRequest
+      <Request
         key={request.timestamp}
-        tokenLogo={<TokenEarnethIcon />}
+        tokenLogo={<TokenEarnEthIcon />}
         tokenAmount={request.shares}
         tokenName={ETH_VAULT_TOKEN_SYMBOL}
-        tokenAmountUSD={data?.usd ?? 0}
+        tokenAmountUSD={data?.usd}
         createdDateTimestamp={request.timestamp}
       />
     </InlineLoader>

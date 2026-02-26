@@ -41,7 +41,7 @@ const EthVaultWithdrawFormContent: FC = () => {
   );
 };
 
-export const ETHWithdrawForm: FC = () => {
+export const EthVaultWithdrawForm: FC = () => {
   return (
     <EthVaultWithdrawFormProvider>
       <EthVaultWithdrawFormContent />

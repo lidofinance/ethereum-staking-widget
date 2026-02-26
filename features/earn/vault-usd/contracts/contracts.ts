@@ -9,10 +9,10 @@ import {
   REDEEM_QUEUE_ABI,
   SHARE_MANAGER_ABI,
 } from 'modules/mellow-meta-vaults/abi';
+import { TOKEN_SYMBOLS } from 'consts/tokens';
+import type { UsdDepositTokens } from '../types';
 
-import { USD_DEPOSIT_TOKENS } from '../deposit/form-context/types';
-
-export const getUSDVaultContract = <TPublicClient extends PublicClient>(
+export const getVaultContract = <TPublicClient extends PublicClient>(
   publicClient: TPublicClient,
 ) => {
   const address = getContractAddress(
@@ -34,7 +34,7 @@ export const getUSDVaultContract = <TPublicClient extends PublicClient>(
   });
 };
 
-export const getUSDVaultWritableContract = <
+export const getVaultWritableContract = <
   TPublicClient extends PublicClient,
   TWalletClient extends WalletClient = WalletClient,
 >(
@@ -43,7 +43,7 @@ export const getUSDVaultWritableContract = <
 ) => {
   const address = getContractAddress(
     publicClient.chain?.id as number,
-    'ethVault',
+    'usdVault',
   );
   invariant(
     address,
@@ -60,9 +60,7 @@ export const getUSDVaultWritableContract = <
   });
 };
 
-export const getUSDDepositQueueContractUSDT = <
-  TPublicClient extends PublicClient,
->(
+export const getDepositQueueContractUSDT = <TPublicClient extends PublicClient>(
   publicClient: TPublicClient,
 ) => {
   const address = getContractAddress(
@@ -83,7 +81,7 @@ export const getUSDDepositQueueContractUSDT = <
   });
 };
 
-export const getUSDDepositQueueWritableContractUSDT = <
+export const getDepositQueueWritableContractUSDT = <
   TPublicClient extends PublicClient,
   TWalletClient extends WalletClient = WalletClient,
 >(
@@ -109,9 +107,7 @@ export const getUSDDepositQueueWritableContractUSDT = <
   });
 };
 
-export const getUSDDepositQueueContractUSDC = <
-  TPublicClient extends PublicClient,
->(
+export const getDepositQueueContractUSDC = <TPublicClient extends PublicClient>(
   publicClient: TPublicClient,
 ) => {
   const address = getContractAddress(
@@ -132,7 +128,7 @@ export const getUSDDepositQueueContractUSDC = <
   });
 };
 
-export const getUSDDepositQueueWritableContractUSDC = <
+export const getDepositQueueWritableContractUSDC = <
   TPublicClient extends PublicClient,
   TWalletClient extends WalletClient = WalletClient,
 >(
@@ -158,9 +154,7 @@ export const getUSDDepositQueueWritableContractUSDC = <
   });
 };
 
-export const getUSDRedeemQueueContractUSDC = <
-  TPublicClient extends PublicClient,
->(
+export const getRedeemQueueContractUSDC = <TPublicClient extends PublicClient>(
   publicClient: TPublicClient,
 ) => {
   const address = getContractAddress(
@@ -181,7 +175,7 @@ export const getUSDRedeemQueueContractUSDC = <
   });
 };
 
-export const getUSDRedeemQueueWritableContractUSDC = <
+export const getRedeemQueueWritableContractUSDC = <
   TPublicClient extends PublicClient,
   TWalletClient extends WalletClient = WalletClient,
 >(
@@ -207,28 +201,55 @@ export const getUSDRedeemQueueWritableContractUSDC = <
   });
 };
 
-export const getUSDDepositQueueContract = <TPublicClient extends PublicClient>({
+export const getDepositQueueContractAddress = <
+  TPublicClient extends PublicClient,
+>({
   publicClient,
   token,
 }: {
   publicClient: TPublicClient;
-  token: USD_DEPOSIT_TOKENS;
+  token: UsdDepositTokens;
 }) => {
-  let contract;
+  let contractName;
   switch (token) {
-    case 'USDT':
-      contract = getUSDDepositQueueContractUSDT(publicClient);
+    case TOKEN_SYMBOLS.usdt:
+      contractName = 'usdDepositQueueUSDT' as const;
       break;
-    case 'USDC':
-      contract = getUSDDepositQueueContractUSDC(publicClient);
+    case TOKEN_SYMBOLS.usdc:
+      contractName = 'usdDepositQueueUSDC' as const;
       break;
     default:
       throw new Error(`Unsupported token: ${token}`);
   }
-  return contract;
+
+  const address = getContractAddress(
+    publicClient.chain?.id as number,
+    contractName,
+  );
+  invariant(
+    address,
+    `no USD Deposit Queue ${token} contract address for ${publicClient.chain?.id}`,
+  );
+  return address;
 };
 
-export const getUSDDepositQueueWritableContract = <
+export const getDepositQueueContract = <TPublicClient extends PublicClient>({
+  publicClient,
+  token,
+}: {
+  publicClient: TPublicClient;
+  token: UsdDepositTokens;
+}) => {
+  return getContract({
+    abi: DEPOSIT_QUEUE_ABI,
+    address: getDepositQueueContractAddress({ publicClient, token }),
+    client: {
+      public: publicClient,
+    },
+  });
+};
+
+export const getDepositQueueWritableContract = <
   TPublicClient extends PublicClient,
   TWalletClient extends WalletClient = WalletClient,
 >({
@@ -238,29 +259,19 @@ export const getUSDDepositQueueWritableContract = <
 }: {
   publicClient: TPublicClient;
   walletClient: TWalletClient;
-  token: USD_DEPOSIT_TOKENS;
+  token: UsdDepositTokens;
 }) => {
-  let contract;
-  switch (token) {
-    case 'USDT':
-      contract = getUSDDepositQueueWritableContractUSDT(
-        publicClient,
-        walletClient,
-      );
-      break;
-    case 'USDC':
-      contract = getUSDDepositQueueWritableContractUSDC(
-        publicClient,
-        walletClient,
-      );
-      break;
-    default:
-      throw new Error(`Unsupported token: ${token}`);
-  }
-  return contract;
+  return getContract({
+    abi: DEPOSIT_QUEUE_ABI,
+    address: getDepositQueueContractAddress({ publicClient, token }),
+    client: {
+      public: publicClient,
+      wallet: walletClient,
+    },
+  });
 };
 
-export const getUSDShareManagerEARNUSD = <TPublicClient extends PublicClient>(
+export const getShareManagerEARNUSD = <TPublicClient extends PublicClient>(
   publicClient: TPublicClient,
 ) => {
   const address = getContractAddress(
@@ -281,7 +292,7 @@ export const getUSDShareManagerEARNUSD = <TPublicClient extends PublicClient>(
   });
 };
 
-export const getUSDCollectorContract = <TPublicClient extends PublicClient>(
+export const getCollectorContract = <TPublicClient extends PublicClient>(
   publicClient: TPublicClient,
 ) => {
   const address = getContractAddress(

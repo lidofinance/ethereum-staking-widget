@@ -9,7 +9,7 @@ import { TxStageSignOperationAmount } from 'shared/transaction-modal/tx-stages-c
 
 import { TxStageSuccess } from 'shared/transaction-modal/tx-stages-basic';
 import { TxAmount } from 'shared/transaction-modal/tx-stages-parts/tx-amount';
-import { getTokenSymbol } from 'utils/getTokenSymbol';
+import { getTokenSymbol } from 'utils/get-token-symbol';
 
 type StageArgs = {
   willReceiveToken: string;

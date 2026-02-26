@@ -1,12 +1,13 @@
 import { Hash } from 'viem';
 import { TxStageSuccess } from 'shared/transaction-modal/tx-stages-basic';
 import { TOKEN_DISPLAY_NAMES } from 'utils/getTokenDisplayName';
+import { getTokenDecimals } from 'utils/token-decimals';
+import { TxAmount } from 'shared/transaction-modal/tx-stages-parts/tx-amount';
 import {
   NotificationContainer,
   NotificationTitle,
   NotificationList,
 } from './styles';
-import { TxAmount } from 'shared/transaction-modal/tx-stages-parts/tx-amount';
 
 type Props = {
   txHash?: Hash;
@@ -33,8 +34,13 @@ export const DepositTxStageSuccess = ({ txHash, amount, token }: Props) => {
       description={
         <>
           <span>
-            Request to deposit <TxAmount amount={amount} symbol={token} /> has
-            been sent.
+            Request to deposit{' '}
+            <TxAmount
+              amount={amount}
+              symbol={token}
+              decimals={getTokenDecimals(token)}
+            />{' '}
+            has been sent.
           </span>
           <Notification />
         </>

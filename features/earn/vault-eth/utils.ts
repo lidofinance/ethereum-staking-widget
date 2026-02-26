@@ -34,7 +34,10 @@ export const fetchEthVaultStats = async () => {
   const ethVaultAddress = getContractAddress(CHAINS.Mainnet, 'ethVault');
   const ETH_STATS_ENDPOINT = `${ETH_VAULT_STATS_ORIGIN}/v1/chain/${CHAINS.Mainnet}/core-vaults/${ethVaultAddress}/data`;
 
-  return standardFetcher<EthVaultStatsFetchedData>(ETH_STATS_ENDPOINT);
+  const data =
+    await standardFetcher<EthVaultStatsFetchedData>(ETH_STATS_ENDPOINT);
+  const stats = ETH_VAULT_STATS_SCHEMA.parse(data);
+  return stats;
 };
 
 export const fetchEthVaultStatsApr = async () => {

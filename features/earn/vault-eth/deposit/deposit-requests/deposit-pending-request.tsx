@@ -1,29 +1,12 @@
-import {
-  TokenEthIcon32,
-  TokenWethIcon32,
-  TokenWstethIcon32,
-} from 'assets/earn';
+import invariant from 'tiny-invariant';
 import type { DepositRequest } from 'modules/mellow-meta-vaults/hooks/use-deposit-requests';
 import { getTokenDisplayName } from 'utils/getTokenDisplayName';
-import { EthVaultRequest } from '../../components/request/request';
-
-const getTokenIcon = (_token: string) => {
-  const token = _token.toLowerCase();
-  switch (token) {
-    case 'eth':
-      return <TokenEthIcon32 />;
-    case 'weth':
-      return <TokenWethIcon32 />;
-    case 'wsteth':
-      return <TokenWstethIcon32 />;
-    default:
-      return <></>;
-  }
-};
+import { Request } from 'modules/mellow-meta-vaults/components/request';
+import { getTokenIcon } from 'utils/get-token-icon';
 
 export type DepositPendingRequestProps = {
   request: DepositRequest;
-  usdAmount: number;
+  usdAmount?: number;
   isLoading?: boolean;
   onCancel?: () => void;
 };
@@ -35,14 +18,13 @@ export const EthVaultDepositPendingRequest = ({
   onCancel = () => void 0,
 }: DepositPendingRequestProps) => {
   const { assets, token, isClaimable } = request;
-
-  // We don't want to show claimable requests
-  if (!request || isClaimable) {
-    return null;
-  }
+  invariant(
+    isClaimable === false,
+    'Claimable deposit request should not be displayed as pending',
+  );
 
   return (
-    <EthVaultRequest
+    <Request
       key={token}
       tokenLogo={getTokenIcon(token)}
       tokenAmount={assets}

@@ -1,6 +1,6 @@
 import { VaultUsdIcon } from 'assets/earn-v2';
 
-import { VaultCard } from '../shared/vault-card-v2';
+import { VaultCard } from '../shared/v2/vault-card';
 import { EARN_VAULT_USD_SLUG } from '../consts';
 
 export const VaultCardUSD = () => {

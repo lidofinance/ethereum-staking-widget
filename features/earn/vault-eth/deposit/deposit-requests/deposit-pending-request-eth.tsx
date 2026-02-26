@@ -13,7 +13,7 @@ export const EthVaultDepositPendingRequestETH = (props: Props) => {
   return (
     <EthVaultDepositPendingRequest
       {...props}
-      usdAmount={usdAmount ?? 0}
+      usdAmount={usdAmount}
       isLoading={props.isLoading || isUsdLoading}
     />
   );

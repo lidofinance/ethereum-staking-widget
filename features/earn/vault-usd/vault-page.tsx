@@ -2,6 +2,8 @@ import type { FC } from 'react';
 
 import { VaultUsdIcon } from 'assets/earn-v2';
 import { VaultPage } from 'features/earn/shared/v2/vault-page/vault-page';
+import { UsdVaultPositionManager } from './position-manager/position-manager';
+import { EARN_VAULT_DEPOSIT_SLUG, EARN_VAULT_WITHDRAW_SLUG } from '../consts';
 
 const DATA = {
   title: 'Lido Earn USD',
@@ -12,8 +14,15 @@ const DATA = {
   logo: VaultUsdIcon,
 } as const;
 
-export const VaultPageUSD: FC = () => {
+export const VaultPageUSD: FC<{
+  action: typeof EARN_VAULT_DEPOSIT_SLUG | typeof EARN_VAULT_WITHDRAW_SLUG;
+}> = ({ action }) => {
   const data = DATA;
 
-  return <VaultPage {...data} />;
+  return (
+    <VaultPage
+      {...data}
+      sidePanel={<UsdVaultPositionManager action={action} />}
+    />
+  );
 };

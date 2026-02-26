@@ -4,11 +4,10 @@ import {
   VaultTxInfo,
   VaultTxInfoRow,
 } from 'features/earn/shared/vault-tx-info';
-import { VaultWarning } from 'features/earn/shared/vault-warning';
 
 import { EthDepositFormProvider } from './form-context';
 import { EthVaultDepositInputGroup } from './deposit-input-group';
-import { EthVaultWillReceive } from './deposit-will-receive';
+import { EthVaultDepositWillReceive } from './deposit-will-receive';
 import { EthVaultDepositSubmitButton } from './deposit-submit-button';
 import { EthVaultAvailableDeposit } from './available-deposit';
 import { EthVaultDepositRequests } from './deposit-requests';
@@ -23,7 +22,7 @@ export const EthVaultDepositForm = () => {
           <EthVaultDepositInputGroup />
         </VaultFormSection>
         <VaultTxInfo>
-          <EthVaultWillReceive />
+          <EthVaultDepositWillReceive />
           <VaultTxInfoRow
             title="Waiting time"
             help={
@@ -36,9 +35,6 @@ export const EthVaultDepositForm = () => {
             {'24 hours'}
           </VaultTxInfoRow>
         </VaultTxInfo>
-        <VaultWarning variant="info">
-          Withdrawals are only in wstETH, regardless of deposited asset(s).
-        </VaultWarning>
         <EthVaultDepositSubmitButton />
       </VaultForm>
     </EthDepositFormProvider>

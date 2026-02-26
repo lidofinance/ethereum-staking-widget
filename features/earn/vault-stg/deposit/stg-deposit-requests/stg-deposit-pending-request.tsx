@@ -1,24 +1,7 @@
-import {
-  TokenEthIcon32,
-  TokenWethIcon32,
-  TokenWstethIcon32,
-} from 'assets/earn';
 import { STGRequest } from '../../components/stg-request/stg-request';
 import { getTokenDisplayName } from 'utils/getTokenDisplayName';
 import { DepositRequest } from '../hooks/use-stg-deposit-requests';
-
-const getTokenIcon = (tokenType: string) => {
-  switch (tokenType) {
-    case 'ETH':
-      return <TokenEthIcon32 />;
-    case 'wETH':
-      return <TokenWethIcon32 />;
-    case 'wstETH':
-      return <TokenWstethIcon32 />;
-    default:
-      return <TokenEthIcon32 />;
-  }
-};
+import { getTokenIcon } from 'utils/get-token-icon';
 
 export type STGDepositPendingRequestProps = {
   request: DepositRequest;

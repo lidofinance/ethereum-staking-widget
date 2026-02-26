@@ -6,10 +6,9 @@ import {
   useCallback,
   useEffect,
   useImperativeHandle,
-  useMemo,
   useRef,
 } from 'react';
-import { formatEther, parseEther, maxUint256 } from 'viem';
+import { formatUnits, parseUnits, maxUint256 } from 'viem';
 
 import { Input } from '@lidofinance/lido-ui';
 
@@ -23,11 +22,12 @@ type InputAmountProps = {
   onMaxClick?: (event: MouseEvent<HTMLButtonElement>, maxValue: bigint) => void;
   maxValue?: bigint;
   isLocked?: boolean;
+  decimals?: number;
 } & Omit<ComponentProps<typeof Input>, 'onChange' | 'value'>;
 
-const parseEtherSafe = (value: string) => {
+const parseAmountSafe = (value: string, decimals: number) => {
   try {
-    return parseEther(value);
+    return parseUnits(value, decimals);
   } catch {
     return null;
   }
@@ -43,12 +43,14 @@ export const InputAmount = forwardRef<HTMLInputElement, InputAmountProps>(
       isLocked,
       maxValue,
       placeholder = '0',
+      decimals = 18,
       ...props
     },
     ref,
   ) => {
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    const defaultValue = useMemo(() => (value ? formatEther(value) : ''), []);
+    // Capture initial value only, once per component mount
+    const initialValueRef = useRef(value ? formatUnits(value, decimals) : '');
+    const defaultValue = initialValueRef.current;
 
     const lastInputValue = useRef(defaultValue);
     const inputRef = useRef<HTMLInputElement>(null);
@@ -82,7 +84,7 @@ export const InputAmount = forwardRef<HTMLInputElement, InputAmountProps>(
         if (currentValue === '') {
           onChange?.(null);
         } else {
-          const value = parseEtherSafe(currentValue);
+          const value = parseAmountSafe(currentValue, decimals);
           // The check !value is not suitable because !value returns true for 0n.
           if (value == null) {
             // invalid value, so we rollback to last valid value
@@ -103,7 +105,7 @@ export const InputAmount = forwardRef<HTMLInputElement, InputAmountProps>(
 
           const cappedValue = value > maxUint256 ? maxUint256 : value;
           if (value > maxUint256) {
-            currentValue = formatEther(maxUint256);
+            currentValue = formatUnits(maxUint256, decimals);
           }
           onChange?.(cappedValue);
         }
@@ -122,7 +124,7 @@ export const InputAmount = forwardRef<HTMLInputElement, InputAmountProps>(
         }
         lastInputValue.current = currentValue;
       },
-      [onChange],
+      [onChange, decimals],
     );
 
     useEffect(() => {
@@ -132,16 +134,16 @@ export const InputAmount = forwardRef<HTMLInputElement, InputAmountProps>(
       if (value == null) {
         input.value = '';
       } else {
-        const parsedValue = parseEtherSafe(input.value);
+        const parsedValue = parseAmountSafe(input.value, decimals);
         // only change string state if casted values differ
         // this allows user to enter 0.100 without immediate change to 0.1
         if (parsedValue !== value) {
-          input.value = formatEther(value);
+          input.value = formatUnits(value, decimals);
           // prevents rollback to incorrect value in onChange
           lastInputValue.current = input.value;
         }
       }
-    }, [value]);
+    }, [value, decimals]);
 
     const handleClickMax =
       onChange && maxValue

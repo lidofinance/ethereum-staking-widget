@@ -1,5 +1,5 @@
 import { VaultEthIcon } from 'assets/earn-v2';
-import { VaultCard } from '../shared/vault-card-v2';
+import { VaultCard } from '../shared/v2/vault-card';
 import { EARN_VAULT_ETH_SLUG } from '../consts';
 
 export const EthVaultCard = () => {

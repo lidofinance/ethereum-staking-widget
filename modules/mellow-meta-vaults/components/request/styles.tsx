@@ -47,7 +47,11 @@ export const Entry = styled.div`
   gap: 12px;
 `;
 
-export const TokenLogo = styled.div``;
+export const TokenLogo = styled.div`
+  flex: 1 0 auto;
+  width: 28px;
+  height: 28px;
+`;
 
 export const AmountContainer = styled.div`
   display: flex;

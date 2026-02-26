@@ -2,7 +2,7 @@ import { useFormState } from 'react-hook-form';
 
 import { InputGroupHookForm } from 'shared/hook-form/controls/input-group-hook-form';
 import { TokenAmountInputHookForm } from 'shared/hook-form/controls/token-amount-input-hook-form';
-import { TokenEarnethIcon } from 'assets/earn-v2';
+import { TokenEarnEthIcon } from 'assets/earn-v2';
 
 import { useEthVaultWithdrawForm } from './form-context';
 import { ETH_VAULT_TOKEN_SYMBOL } from '../consts';
@@ -14,7 +14,7 @@ export const EthVaultWithdrawInput: React.FC = () => {
   return (
     <InputGroupHookForm errorField="amount" bottomSpacing={false}>
       <TokenAmountInputHookForm
-        leftDecorator={<TokenEarnethIcon width={24} height={24} />}
+        leftDecorator={<TokenEarnEthIcon width={24} height={24} />}
         disabled={disabled}
         fieldName="amount"
         token={ETH_VAULT_TOKEN_SYMBOL}

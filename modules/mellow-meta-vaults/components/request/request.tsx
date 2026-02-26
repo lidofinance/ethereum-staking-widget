@@ -1,6 +1,5 @@
 import { Button } from '@lidofinance/lido-ui';
 import { FormatPrice } from 'shared/formatters/format-price';
-import { LOCALE } from 'config/groups/locale';
 
 import {
   RequestContainer,
@@ -13,6 +12,8 @@ import {
 } from './styles';
 import { FormatToken } from 'shared/formatters';
 import { ButtonInline } from 'shared/components/button-inline';
+import { getTokenDecimals } from 'utils/token-decimals';
+import { formatBlockchainTimestamp } from 'utils/format-blockchain-timestamp';
 
 export { RequestsContainer, ActionableTitle } from './styles';
 
@@ -40,11 +41,7 @@ export const Request = ({
   actionButtonVariant = 'button',
 }: RequestProps) => {
   const createdDate = createdDateTimestamp
-    ? new Date(Number(createdDateTimestamp) * 1000).toLocaleDateString(LOCALE, {
-        day: '2-digit',
-        month: 'short',
-        year: 'numeric',
-      })
+    ? formatBlockchainTimestamp(createdDateTimestamp)
     : undefined;
 
   const button =
@@ -78,6 +75,7 @@ export const Request = ({
               amount={tokenAmount}
               symbol={tokenName}
               maxDecimalDigits={5}
+              decimals={getTokenDecimals(tokenName)}
             />
           </AmountTokenValue>
           {tokenAmountUSD != undefined && (
