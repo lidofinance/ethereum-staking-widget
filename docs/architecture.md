@@ -86,7 +86,7 @@ Account Abstraction (safe-global, ERC-4337) supported via reef-knot.
 
 ## Blockchain integrations
 
-Networks: Mainnet (1), Sepolia (11155111), Holesky (17000),
+Networks: Mainnet (1), Sepolia (11155111), Hoodi (560048),
 Optimism (10), Optimism Sepolia (11155420), Soneium (1868), Unichain (130)
 
 Key contracts:
