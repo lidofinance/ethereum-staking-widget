@@ -6,15 +6,12 @@ import {
 } from 'shared/transaction-modal/hooks/use-transaction-modal-stage';
 import { getGeneralTransactionModalStages } from 'shared/transaction-modal/hooks/get-general-transaction-modal-stages';
 import { TxStageSignOperationAmount } from 'shared/transaction-modal/tx-stages-composed/tx-stage-amount-operation';
-
-import {
-  getTokenDisplayName,
-  TOKEN_DISPLAY_NAMES,
-} from 'utils/getTokenDisplayName';
+import { getTokenDisplayName } from 'utils/getTokenDisplayName';
 import { DepositTxStageSuccess } from 'modules/mellow-meta-vaults/components/deposit-tx-stage-success';
+import { type TokenSymbol } from 'consts/tokens';
 
 type StageArgs = {
-  willReceiveToken: string;
+  willReceiveToken: TokenSymbol;
   operationText: string;
 };
 
@@ -25,7 +22,7 @@ const getTxModalStagesRequest = (
 ) => ({
   ...getGeneralTransactionModalStages(transitStage),
 
-  signApproval: (amount: bigint, token: TOKEN_DISPLAY_NAMES) =>
+  signApproval: (amount: bigint, token: TokenSymbol) =>
     transitStage(
       <TxStageSignOperationAmount
         {...stageApproveArgs}
@@ -34,11 +31,7 @@ const getTxModalStagesRequest = (
       />,
     ),
 
-  pendingApproval: (
-    amount: bigint,
-    token: TOKEN_DISPLAY_NAMES,
-    txHash?: Hash,
-  ) =>
+  pendingApproval: (amount: bigint, token: TokenSymbol, txHash?: Hash) =>
     transitStage(
       <TxStageSignOperationAmount
         {...stageApproveArgs}
@@ -49,7 +42,7 @@ const getTxModalStagesRequest = (
       />,
     ),
 
-  sign: (amount: bigint, token: TOKEN_DISPLAY_NAMES) =>
+  sign: (amount: bigint, token: TokenSymbol) =>
     transitStage(
       <TxStageSignOperationAmount
         {...stageOperationArgs}
@@ -61,7 +54,7 @@ const getTxModalStagesRequest = (
 
   pending: (
     amount: bigint,
-    token: TOKEN_DISPLAY_NAMES,
+    token: TokenSymbol,
     txHash?: Hash,
     isAA?: boolean,
   ) =>
@@ -77,7 +70,7 @@ const getTxModalStagesRequest = (
       />,
     ),
 
-  success: (amount: bigint, token: TOKEN_DISPLAY_NAMES, txHash?: Hash) =>
+  success: (amount: bigint, token: TokenSymbol, txHash?: Hash) =>
     transitStage(
       <DepositTxStageSuccess txHash={txHash} amount={amount} token={token} />,
       {
