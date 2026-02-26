@@ -3,12 +3,10 @@
 ## What is this?
 
 **Lido Ethereum Liquid Staking Widget** — a web interface for participating in Ethereum staking via the Lido protocol.
-Monorepo based on Next.js 12. Deployed as a web application and/or on IPFS.
+Project based on Next.js 12. Deployed as a web application and/or on IPFS.
 
 ## Quick orientation
 
-- Repo root: `/workspaces/ethereum-staking-widget/`
-- Feature branch worktree: `.worktrees/feature/migration-research`
 - Package manager: **yarn**
 - Node: v20+
 
