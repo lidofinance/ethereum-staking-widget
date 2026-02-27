@@ -15,7 +15,7 @@ export const UpgradeCardBlock = styled(Block)`
               rgba(201, 172, 255, 0.2) 21.01%,
               rgba(255, 206, 190, 0.2) 102.78%
             ),
-            var(--lido-color-foreground);
+            #27272e;
           border: 1px solid #c9acff;
         `}
   color: var(--lido-color-text);
