@@ -1,5 +1,6 @@
 import type { FC } from 'react';
 import { Block } from '@lidofinance/lido-ui';
+import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo';
 
 import { EthVaultDepositForm } from '../deposit';
 import { EthVaultWithdrawForm } from '../withdraw';
@@ -10,7 +11,7 @@ import {
   ETH_WITHDRAW_PATH,
 } from '../../consts';
 import { SwitchStyled } from './styles';
-import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo';
+import { UpgradeAssetsBlock } from '../upgrade-assets/upgrade-assets';
 
 const routes = [
   {
@@ -31,10 +32,13 @@ export const EthVaultPositionManager: FC<{
   const isDeposit = action === EARN_VAULT_DEPOSIT_SLUG;
   const isWithdraw = action === EARN_VAULT_WITHDRAW_SLUG;
   return (
-    <Block>
-      <SwitchStyled routes={routes} checked={isWithdraw} fullwidth />
-      {isDeposit && <EthVaultDepositForm />}
-      {isWithdraw && <EthVaultWithdrawForm />}
-    </Block>
+    <>
+      <UpgradeAssetsBlock />
+      <Block>
+        <SwitchStyled routes={routes} checked={isWithdraw} fullwidth />
+        {isDeposit && <EthVaultDepositForm />}
+        {isWithdraw && <EthVaultWithdrawForm />}
+      </Block>
+    </>
   );
 };
