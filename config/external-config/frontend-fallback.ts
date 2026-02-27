@@ -66,17 +66,22 @@ export const getFallbackedManifestEntry = (
   defaultChain: number,
   manifestOverride?: string,
 ): ManifestEntry => {
+  const manifestKey = getManifestKey(defaultChain, manifestOverride);
   const localFallback = (FallbackLocalManifest as unknown as Manifest)[
-    defaultChain
+    manifestKey
   ];
-  // isManifestValid only checks for the base chain key only,
-  // but doesn't check for the manifest override key if it's provided
-  const isValid = isManifestValid(prefetchedManifest, defaultChain);
-  return (
-    (isValid
-      ? prefetchedManifest[getManifestKey(defaultChain, manifestOverride)]
-      : undefined) ?? localFallback
-  );
+
+  const isValid = isManifestValid(prefetchedManifest, manifestKey);
+
+  const fallbacked = isValid ? prefetchedManifest[manifestKey] : localFallback;
+
+  if (!fallbacked) {
+    throw new Error(
+      `[getFallbackedManifestEntry] No valid manifest entry for ${manifestKey} found in remote or local fallback IPFS.json`,
+    );
+  }
+
+  return fallbacked;
 };
 
 export const useFallbackManifestEntry = (
