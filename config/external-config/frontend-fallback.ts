@@ -66,10 +66,17 @@ export const getFallbackedManifestEntry = (
   defaultChain: number,
   manifestOverride?: string,
 ): ManifestEntry => {
+  const localFallback = (FallbackLocalManifest as unknown as Manifest)[
+    defaultChain
+  ];
+  // isManifestValid only checks for the base chain key only,
+  // but doesn't check for the manifest override key if it's provided
   const isValid = isManifestValid(prefetchedManifest, defaultChain);
-  return isValid
-    ? prefetchedManifest[getManifestKey(defaultChain, manifestOverride)]
-    : (FallbackLocalManifest as unknown as Manifest)[defaultChain];
+  return (
+    (isValid
+      ? prefetchedManifest[getManifestKey(defaultChain, manifestOverride)]
+      : undefined) ?? localFallback
+  );
 };
 
 export const useFallbackManifestEntry = (
