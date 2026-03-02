@@ -1,3 +1,4 @@
+import { Tabs } from '@lidofinance/lido-ui';
 import styled from 'styled-components';
 import { LocalLink } from 'shared/components/local-link';
 
@@ -50,9 +51,9 @@ export const InfoRowValue = styled.span`
 `;
 
 export const Metrics = styled.div`
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: ${({ theme }) => theme.spaceMap.md}px;
+  display: flex;
+  flex-direction: column;
+  gap: ${({ theme }) => theme.spaceMap.sm}px;
   padding-bottom: ${({ theme }) => theme.spaceMap.md}px;
   border-bottom: 1px solid ${({ theme }) => theme.colors.border};
 `;
@@ -96,4 +97,10 @@ export const TableValue = styled.span`
 
 export const TableLink = styled(LocalLink)`
   color: var(--lido-color-primary);
+`;
+
+export const TabsStyled = styled(Tabs)`
+  & * {
+    font-family: inherit;
+  }
 `;
