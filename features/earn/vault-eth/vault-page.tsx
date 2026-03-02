@@ -6,6 +6,7 @@ import { VaultPage } from 'features/earn/shared/v2/vault-page/vault-page';
 import type { InfoItem } from 'features/earn/shared/v2/vault-page/vault-page';
 
 import { EthVaultPositionManager } from './position-manager/position-manager';
+import { EarnEthFaq } from './faq/faq';
 import { EARN_VAULT_DEPOSIT_SLUG, EARN_VAULT_WITHDRAW_SLUG } from '../consts';
 
 const FEES = [
@@ -92,6 +93,7 @@ export const EthVaultPage: FC<{
       {...DATA}
       sidePanel={<EthVaultPositionManager action={action} />}
       vaultName="ethVault"
+      faqContent={<EarnEthFaq />}
     />
   );
 };
