@@ -23,6 +23,7 @@ export const VaultPageUSD: FC<{
     <VaultPage
       {...data}
       sidePanel={<UsdVaultPositionManager action={action} />}
+      vaultName="usdVault"
     />
   );
 };

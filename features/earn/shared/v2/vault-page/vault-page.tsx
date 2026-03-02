@@ -1,6 +1,8 @@
 import { useState, type ComponentType, type FC, type SVGProps } from 'react';
 import { Tab, Tabs } from '@lidofinance/lido-ui';
 
+import { VaultChart } from '../vault-chart';
+
 import { SidePanel } from './side-panel';
 import { VaultPageContent } from './content';
 import {
@@ -31,6 +33,7 @@ type Props = {
   tvl: string;
   logo: VaultIllustration;
   sidePanel?: React.ReactNode;
+  vaultName: 'ethVault' | 'usdVault';
 };
 
 const TABS = {
@@ -70,6 +73,7 @@ export const VaultPage: FC<Props> = (props) => {
 
         {activeTab === TABS.PERFORMANCE && (
           <>
+            <VaultChart vaultName={props.vaultName} />
             <Metrics>
               <InfoRow>
                 <InfoRowLabel>7D APY</InfoRowLabel>

@@ -1,0 +1,71 @@
+import * as z from 'zod';
+
+import { standardFetcher } from 'utils/standardFetcher';
+
+/**
+ * Lido Ethereum API — APR for stETH.
+ * @see https://eth-api.lido.fi/api#/APR%20for%20Eth%20and%20stEth/ProtocolController_findAPRforSTETH
+ */
+const LIDO_STETH_APR_ORIGIN = 'https://eth-api.lido.fi/v1/protocol/steth/apr';
+
+const LidoAprItemSchema = z.object({
+  timeUnix: z.number(),
+  apr: z.number(),
+});
+
+const LidoStethAprResponseSchema = z.object({
+  data: z.array(LidoAprItemSchema),
+  pagination: z.object({
+    page: z.number(),
+    pageSize: z.number(),
+    itemCount: z.number(),
+    pageCount: z.number(),
+  }),
+  meta: z
+    .object({
+      symbol: z.string(),
+      address: z.string(),
+      chainId: z.number(),
+    })
+    .optional(),
+});
+
+export type LidoAprItem = z.infer<typeof LidoAprItemSchema>;
+export type LidoStethAprResponse = z.infer<typeof LidoStethAprResponseSchema>;
+
+/** Chart point: timestamp in ms and rate (APR in percent). Same shape as Treasury for chart reuse. */
+export type StakingApyChartPoint = {
+  timestampMs: number;
+  rate: number;
+};
+
+/** Parsed Lido API response for chart (array of points). */
+export type StakingApyFetchedData = StakingApyChartPoint[];
+
+const PAGE_SIZE = 100;
+
+/**
+ * Fetches stETH APR time series from Lido API.
+ * Single request with startTime/endTime (unix timestamps); pageSize=100 is enough for 3 months.
+ */
+export const fetchStakingApyData = async (
+  fromTimestamp: number,
+): Promise<StakingApyFetchedData | null> => {
+  try {
+    const endTime = Math.floor(Date.now() / 1000);
+    const url = `${LIDO_STETH_APR_ORIGIN}?startTime=${fromTimestamp}&endTime=${endTime}&page=1&pageSize=${PAGE_SIZE}`;
+
+    const raw = await standardFetcher<unknown>(url);
+    const parsed = LidoStethAprResponseSchema.parse(raw);
+
+    const result: StakingApyChartPoint[] = parsed.data.map((item) => ({
+      timestampMs: item.timeUnix * 1000,
+      rate: item.apr,
+    }));
+    result.sort((a, b) => a.timestampMs - b.timestampMs);
+    return result;
+  } catch (error) {
+    console.error('Error fetching Lido stETH APR data:', error);
+    return null;
+  }
+};
