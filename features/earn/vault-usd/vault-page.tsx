@@ -4,6 +4,7 @@ import { VaultUsdIcon } from 'assets/earn-v2';
 import { VaultPage } from 'features/earn/shared/v2/vault-page/vault-page';
 
 import { UsdVaultPositionManager } from './position-manager/position-manager';
+import { EarnUsdFaq } from './faq/faq';
 import { EARN_VAULT_DEPOSIT_SLUG, EARN_VAULT_WITHDRAW_SLUG } from '../consts';
 import { Link } from '@lidofinance/lido-ui';
 
@@ -87,6 +88,7 @@ export const VaultPageUSD: FC<{
       {...DATA}
       sidePanel={<UsdVaultPositionManager action={action} />}
       vaultName="usdVault"
+      faqContent={<EarnUsdFaq />}
     />
   );
 };
