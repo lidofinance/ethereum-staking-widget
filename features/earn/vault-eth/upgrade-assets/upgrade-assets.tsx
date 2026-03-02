@@ -1,10 +1,13 @@
 import { useCallback, useState } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import { useFormContext } from 'react-hook-form';
 import { useDappStatus } from 'modules/web3';
 import { TOKENS, TOKEN_SYMBOLS } from 'consts/tokens';
 import { TokenStrethIcon } from 'assets/earn';
 import { TokenGGIcon, TokenDvstethIcon } from 'assets/earn-v2';
 import { FormatToken } from 'shared/formatters/format-token';
+import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo/matomo-earn-events';
+import { trackMatomoEvent } from 'utils/track-matomo-event';
 
 import {
   UpgradeAssets,
@@ -19,8 +22,7 @@ import { ETH_VAULT_DEPOSIT_TOKENS_UPGRADABLE } from '../consts';
 import { useEthVaultDeposit } from '../deposit/hooks';
 import { EthDepositTokenUpgradable } from '../types';
 import { ETHDepositFormValues } from '../deposit/form-context/types';
-import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo/matomo-earn-events';
-import { trackMatomoEvent } from 'utils/track-matomo-event';
+import { MELLOW_VAULTS_QUERY_SCOPE } from 'modules/mellow-meta-vaults/consts';
 
 const TOKEN_ICON_MAP = {
   [TOKENS.gg]: <TokenGGIcon />,
@@ -43,8 +45,10 @@ const getMatomoEventForToken = (token: EthDepositTokenUpgradable) => {
 
 export const UpgradeAssetsBlock = () => {
   const { isWalletConnected } = useDappStatus();
-  const { balances } = useUpgradableTokenBalances();
+  const queryClient = useQueryClient();
+  const { balances, refetchBalances } = useUpgradableTokenBalances();
   const [isUpgrading, setIsUpgrading] = useState(false);
+
   const { watch } = useFormContext<ETHDepositFormValues>();
   const referral = watch('referral');
 
@@ -58,12 +62,20 @@ export const UpgradeAssetsBlock = () => {
       amount?: bigint;
       token: EthDepositTokenUpgradable;
     }) => {
-      // TODO: add matomo events on success tx
-      if (!amount) return;
+      const amountMockedString = window.localStorage.getItem(
+        '_QA_EarnEthUpgradeDepositAmount',
+      );
+      const amountMocked = amountMockedString
+        ? BigInt(amountMockedString)
+        : undefined;
+      const depositAmount = amountMocked ?? amount;
+
+      if (!depositAmount) return;
       setIsUpgrading(true);
+
       try {
         const isDepositSuccessful = await deposit({
-          amount,
+          amount: depositAmount,
           token,
           referral,
         });
@@ -72,12 +84,17 @@ export const UpgradeAssetsBlock = () => {
           if (matomoEvent) {
             trackMatomoEvent(matomoEvent);
           }
+          await refetchBalances();
+          await queryClient.refetchQueries(
+            { queryKey: [MELLOW_VAULTS_QUERY_SCOPE] },
+            { cancelRefetch: true, throwOnError: false },
+          );
         }
       } finally {
         setIsUpgrading(false);
       }
     },
-    [deposit, referral],
+    [deposit, queryClient, referral, refetchBalances],
   );
 
   if (!isWalletConnected) return null;

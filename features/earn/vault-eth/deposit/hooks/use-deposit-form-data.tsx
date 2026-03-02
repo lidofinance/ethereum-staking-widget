@@ -58,11 +58,15 @@ export const useEthVaultDepositFormData = () => {
 
   const refetchData = useCallback(
     (tokenFormValue: ETHDepositFormValues['token']) => {
-      const tokenBalanceRefetch = {
-        [TOKEN_SYMBOLS.eth]: ethBalanceQuery.refetch,
-        [TOKEN_SYMBOLS.wsteth]: wstethBalanceQuery.refetch,
-        [TOKEN_SYMBOLS.weth]: wethBalanceQuery.refetch,
-      }[tokenFormValue];
+      const tokenBalanceRefetch =
+        {
+          [TOKEN_SYMBOLS.eth]: ethBalanceQuery.refetch,
+          [TOKEN_SYMBOLS.wsteth]: wstethBalanceQuery.refetch,
+          [TOKEN_SYMBOLS.weth]: wethBalanceQuery.refetch,
+        }[tokenFormValue] ??
+        // fallback for upgradable tokens,
+        // which are not part of the form validation context and don't require refetching on deposit page after upgrade
+        (() => Promise.resolve());
 
       const options = { cancelRefetch: true, throwOnError: false };
 
