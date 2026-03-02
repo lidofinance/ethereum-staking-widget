@@ -1,4 +1,5 @@
 import type { FC } from 'react';
+import { Block } from '@lidofinance/lido-ui';
 
 import {
   VaultTxInfo,
@@ -13,31 +14,35 @@ import { EthVaultWithdrawAvailable } from './withdraw-available';
 import { EthVaultWithdrawWillReceive } from './withdraw-will-receive';
 import { EthVaultWithdrawSubmitButton } from './withdraw-submit-button';
 import { EthVaultWithdrawRequests } from './withdraw-requests';
+import { ActionSwitch } from '../components/action-switch';
 
 const EthVaultWithdrawFormContent: FC = () => {
   return (
-    <VaultForm data-testid="withdraw-form">
-      <VaultFormSection>
-        <EthVaultWithdrawRequests />
-        <EthVaultWithdrawAvailable />
-        <EthVaultWithdrawInput />
-      </VaultFormSection>
-      <VaultTxInfo>
-        <EthVaultWithdrawWillReceive />
-        <VaultTxInfoRow
-          title="Waiting time"
-          help={
-            <>
-              Withdrawals take up to 72 hours to process. Once ready, your funds
-              can be claimed in the Lido UI
-            </>
-          }
-        >
-          {'up to 72 hours'}
-        </VaultTxInfoRow>
-      </VaultTxInfo>
-      <EthVaultWithdrawSubmitButton />
-    </VaultForm>
+    <Block>
+      <VaultForm data-testid="withdraw-form">
+        <ActionSwitch isWithdraw />
+        <VaultFormSection>
+          <EthVaultWithdrawRequests />
+          <EthVaultWithdrawAvailable />
+          <EthVaultWithdrawInput />
+        </VaultFormSection>
+        <VaultTxInfo>
+          <EthVaultWithdrawWillReceive />
+          <VaultTxInfoRow
+            title="Waiting time"
+            help={
+              <>
+                Withdrawals take up to 72 hours to process. Once ready, your
+                funds can be claimed in the Lido UI
+              </>
+            }
+          >
+            {'up to 72 hours'}
+          </VaultTxInfoRow>
+        </VaultTxInfo>
+        <EthVaultWithdrawSubmitButton />
+      </VaultForm>
+    </Block>
   );
 };
 

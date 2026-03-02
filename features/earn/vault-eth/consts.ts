@@ -1,4 +1,6 @@
+import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo/matomo-earn-events';
 import { TOKENS, TOKEN_SYMBOLS } from 'consts/tokens';
+import { ETH_DEPOSIT_PATH, ETH_WITHDRAW_PATH } from '../consts';
 
 export const ETH_VAULT_TOKEN_SYMBOL = TOKEN_SYMBOLS.earneth;
 
@@ -31,3 +33,16 @@ export const ETH_VAULT_DEPOSIT_TOKENS = [
 export const ETH_VAULT_QUERY_SCOPE = 'earn-vault-eth';
 
 export const ETH_VAULT_STATS_ORIGIN = 'https://api.mellow.finance';
+
+export const ETH_VAULT_ROUTES = [
+  {
+    path: ETH_DEPOSIT_PATH,
+    name: 'Deposit',
+    matomoEvent: MATOMO_EARN_EVENTS_TYPES.earnEthDepositTab,
+  },
+  {
+    path: ETH_WITHDRAW_PATH,
+    name: 'Withdraw',
+    matomoEvent: MATOMO_EARN_EVENTS_TYPES.earnEthWithdrawalTab,
+  },
+];

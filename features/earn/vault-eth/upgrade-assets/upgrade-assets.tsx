@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import { useDappStatus } from 'modules/web3';
 import { TOKENS, TOKEN_SYMBOLS } from 'consts/tokens';
 import { TokenStrethIcon } from 'assets/earn';
@@ -27,6 +27,7 @@ const TOKEN_ICON_MAP = {
 export const UpgradeAssetsBlock = () => {
   const { isWalletConnected } = useDappStatus();
   const { balances } = useUpgradableTokenBalances();
+  const [isUpgrading, setIsUpgrading] = useState(false);
 
   const { deposit } = useEthVaultDeposit();
 
@@ -38,13 +39,18 @@ export const UpgradeAssetsBlock = () => {
       amount?: bigint;
       token: EthDepositTokenUpgradable;
     }) => {
-      // TODO: add matomo events ?
+      // TODO: add matomo events
       if (!amount) return;
-      await deposit({
-        amount,
-        token,
-        referral: null, // TODO: handle referral for upgrade flow
-      });
+      setIsUpgrading(true);
+      try {
+        await deposit({
+          amount,
+          token,
+          referral: null, // TODO: handle referral for upgrade flow
+        });
+      } finally {
+        setIsUpgrading(false);
+      }
     },
     [deposit],
   );
@@ -79,6 +85,7 @@ export const UpgradeAssetsBlock = () => {
             size="xs"
             variant="translucent"
             onClick={() => upgrade({ token, amount: balances[token] })}
+            loading={isUpgrading}
           >
             Upgrade
           </UpgradeAssetsButton>
