@@ -1,4 +1,5 @@
 import { useCallback, useState } from 'react';
+import { useFormContext } from 'react-hook-form';
 import { useDappStatus } from 'modules/web3';
 import { TOKENS, TOKEN_SYMBOLS } from 'consts/tokens';
 import { TokenStrethIcon } from 'assets/earn';
@@ -17,6 +18,7 @@ import { useUpgradableTokenBalances } from './use-upgradable-token-balances';
 import { ETH_VAULT_DEPOSIT_TOKENS_UPGRADABLE } from '../consts';
 import { useEthVaultDeposit } from '../deposit/hooks';
 import { EthDepositTokenUpgradable } from '../types';
+import { ETHDepositFormValues } from '../deposit/form-context/types';
 
 const TOKEN_ICON_MAP = {
   [TOKENS.gg]: <TokenGGIcon />,
@@ -28,6 +30,8 @@ export const UpgradeAssetsBlock = () => {
   const { isWalletConnected } = useDappStatus();
   const { balances } = useUpgradableTokenBalances();
   const [isUpgrading, setIsUpgrading] = useState(false);
+  const { watch } = useFormContext<ETHDepositFormValues>();
+  const referral = watch('referral');
 
   const { deposit } = useEthVaultDeposit();
 
@@ -39,20 +43,20 @@ export const UpgradeAssetsBlock = () => {
       amount?: bigint;
       token: EthDepositTokenUpgradable;
     }) => {
-      // TODO: add matomo events
+      // TODO: add matomo events on success tx
       if (!amount) return;
       setIsUpgrading(true);
       try {
         await deposit({
           amount,
           token,
-          referral: null, // TODO: handle referral for upgrade flow
+          referral,
         });
       } finally {
         setIsUpgrading(false);
       }
     },
-    [deposit],
+    [deposit, referral],
   );
 
   if (!isWalletConnected) return null;
