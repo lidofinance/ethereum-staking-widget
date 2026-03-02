@@ -2,7 +2,9 @@ import type { FC } from 'react';
 
 import { VaultEthIcon } from 'assets/earn-v2';
 import { VaultPage } from 'features/earn/shared/v2/vault-page/vault-page';
+
 import { EthVaultPositionManager } from './position-manager/position-manager';
+
 import { EARN_VAULT_DEPOSIT_SLUG, EARN_VAULT_WITHDRAW_SLUG } from '../consts';
 
 const DATA = {
@@ -23,6 +25,7 @@ export const EthVaultPage: FC<{
     <VaultPage
       {...data}
       sidePanel={<EthVaultPositionManager action={action} />}
+      vaultName="ethVault"
     />
   );
 };
