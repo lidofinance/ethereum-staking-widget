@@ -7,17 +7,20 @@ import { useDappStatus } from 'modules/web3/hooks/use-dapp-status';
 import { useWstethUsd } from 'shared/hooks/use-wsteth-usd';
 import { COLLECTOR_CONFIG, MELLOW_VAULTS_QUERY_SCOPE } from '../consts';
 import { CollectorContract, RedeemQueueContract } from '../types/contracts';
+import { TOKENS, type Token } from 'consts/tokens';
 
 export type WithdrawParams = {
-  assets: bigint;
+  assets: bigint; // e.g. wstETH or USDC amount to receive from redeeming the shares
 };
 
 export const usePreviewWithdraw = ({
   redeemQueue,
+  redeemQueueToken,
   collector,
   shares,
 }: {
   redeemQueue: RedeemQueueContract;
+  redeemQueueToken: Token;
   collector: CollectorContract;
   shares: bigint | null | undefined;
 }) => {
@@ -46,28 +49,32 @@ export const usePreviewWithdraw = ({
 
       if (!debouncedStrethShares)
         return {
-          wsteth: 0n,
+          assets: 0n,
         };
 
-      const { assets: wsteth } = (await collector.read.getWithdrawalParams([
+      const { assets } = (await collector.read.getWithdrawalParams([
         debouncedStrethShares,
         redeemQueue.address,
         COLLECTOR_CONFIG,
       ])) as WithdrawParams;
 
       return {
-        wsteth,
+        assets,
       };
     },
   });
 
-  const wstethUsdQuery = useWstethUsd(query.data?.wsteth ?? 0n);
+  // Actual if redeeming wstETH
+  const wstethUsdQuery = useWstethUsd(query.data?.assets ?? 0n);
+
+  const usd =
+    redeemQueueToken === TOKENS.wsteth ? wstethUsdQuery.usdAmount : undefined;
 
   return {
     isLoading: isDebounced || query.isLoading || wstethUsdQuery.isLoading,
     data: {
-      wsteth: query.data?.wsteth,
-      usd: wstethUsdQuery.usdAmount,
+      assets: query.data?.assets,
+      usd,
     },
   };
 };

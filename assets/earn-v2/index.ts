@@ -10,6 +10,7 @@ import { ReactComponent as TokenUsdcIcon } from './token-usdc.svg';
 import { ReactComponent as TokenUsdtIcon } from './token-usdt.svg';
 import { ReactComponent as TokenGGIcon } from './token-gg.svg';
 import { ReactComponent as TokenDvstethIcon } from './token-dvsteth.svg';
+import { ReactComponent as TokenStrethIcon } from './token-streth.svg';
 
 export {
   VaultEthIcon,
@@ -24,4 +25,5 @@ export {
   TokenUsdtIcon,
   TokenGGIcon,
   TokenDvstethIcon,
+  TokenStrethIcon,
 };

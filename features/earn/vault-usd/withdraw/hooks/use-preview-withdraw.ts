@@ -2,6 +2,7 @@ import { usePublicClient } from 'wagmi';
 import invariant from 'tiny-invariant';
 import { useMemo } from 'react';
 import { usePreviewWithdraw } from 'modules/mellow-meta-vaults/hooks/use-preview-withdraw';
+import { TOKENS } from 'consts/tokens';
 import {
   getCollectorContract,
   getRedeemQueueContractUSDC,
@@ -27,6 +28,7 @@ export const useUsdVaultPreviewWithdraw = ({
   return usePreviewWithdraw({
     collector,
     redeemQueue,
+    redeemQueueToken: TOKENS.usdc,
     shares: usdShares,
   });
 };

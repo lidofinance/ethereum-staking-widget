@@ -3,11 +3,14 @@ import {
   TokenWethScalableIcon,
   TokenWstethScalableIcon,
   TokenStethScalableIcon,
+} from 'assets/earn';
+import {
+  TokenUsdcIcon,
+  TokenUsdtIcon,
   TokenStrethIcon,
   TokenDvstethIcon,
   TokenGGIcon,
-} from 'assets/earn';
-import { TokenUsdcIcon, TokenUsdtIcon } from 'assets/earn-v2';
+} from 'assets/earn-v2';
 import { TOKENS, type Token, type TokenSymbol } from 'consts/tokens';
 
 // This function is used to get the icon dynamically for a given token,

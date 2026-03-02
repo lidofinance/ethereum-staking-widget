@@ -10,6 +10,7 @@ import { TxStageSignOperationAmount } from 'shared/transaction-modal/tx-stages-c
 import { TxStageSuccess } from 'shared/transaction-modal/tx-stages-basic';
 import { TxAmount } from 'shared/transaction-modal/tx-stages-parts/tx-amount';
 import { type TokenSymbol } from 'consts/tokens';
+import { getTokenDecimals } from 'utils/token-decimals';
 
 type StageArgs = {
   willReceiveToken: TokenSymbol;
@@ -54,7 +55,8 @@ const getTxModalStagesRequest = (
             <TxAmount
               amount={amount}
               symbol={stageOperationArgs.willReceiveToken}
-            />
+              decimals={getTokenDecimals(stageOperationArgs.willReceiveToken)}
+            />{' '}
             has been claimed.
           </>
         }

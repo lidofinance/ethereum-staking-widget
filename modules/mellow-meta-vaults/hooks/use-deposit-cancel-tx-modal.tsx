@@ -9,6 +9,7 @@ import { TxStageSignOperationAmount } from 'shared/transaction-modal/tx-stages-c
 import { TxStageSuccess } from 'shared/transaction-modal/tx-stages-basic/tx-stage-success';
 import { TxAmount } from 'shared/transaction-modal/tx-stages-parts/tx-amount';
 import { TOKEN_SYMBOLS, type Token } from 'consts/tokens';
+import { getTokenDecimals } from 'utils/token-decimals';
 
 type StageArgs = {
   operationText: string;
@@ -51,8 +52,12 @@ const getTxModalStagesRequest = (
         description={
           <>
             Request to deposit{' '}
-            <TxAmount amount={amount} symbol={TOKEN_SYMBOLS[token]} /> has been
-            cancelled.
+            <TxAmount
+              amount={amount}
+              symbol={TOKEN_SYMBOLS[token]}
+              decimals={getTokenDecimals(token)}
+            />{' '}
+            has been cancelled.
           </>
         }
         showEtherscan
