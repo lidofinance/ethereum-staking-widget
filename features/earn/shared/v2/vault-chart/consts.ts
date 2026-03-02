@@ -2,6 +2,8 @@
 export const TREASURY_YIELD_CURVE_ORIGIN =
   'https://home.treasury.gov/resource-center/data-chart-center/interest-rates/pages/xml';
 
+export const METAVAULT_CHART_ORIGIN = 'https://api.mellow.finance';
+
 export const SECONDS_PER_DAY = 60 * 60 * 24;
 export const DAYS_BY_RANGE: Record<string, number> = { '1M': 30, '3M': 90 };
 

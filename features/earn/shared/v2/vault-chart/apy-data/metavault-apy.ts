@@ -3,6 +3,8 @@ import * as z from 'zod';
 import { CHAINS } from 'consts/chains';
 import { standardFetcher } from 'utils/standardFetcher';
 
+import { METAVAULT_CHART_ORIGIN } from '../consts';
+
 export const METAVAULT_CHART_DATA_SCHEMA = z.array(
   z.object({
     tvl: z.object({
@@ -35,8 +37,7 @@ export const fetchMetavaultChartData = async (
   vaultAddress: string,
 ) => {
   try {
-    // TODO: Change to production endpoint
-    const METAVAULT_CHART_ENDPOINT = `https://api.stage.mellow.finance/v1/chain/${CHAINS.Mainnet}/core-vaults/${vaultAddress}/historical-data?from_timestamp=${fromTimestamp}`;
+    const METAVAULT_CHART_ENDPOINT = `${METAVAULT_CHART_ORIGIN}/v1/chain/${CHAINS.Mainnet}/core-vaults/${vaultAddress}/historical-data?from_timestamp=${fromTimestamp}`;
 
     const data = await standardFetcher<MetavaultChartFetchedData>(
       METAVAULT_CHART_ENDPOINT,
