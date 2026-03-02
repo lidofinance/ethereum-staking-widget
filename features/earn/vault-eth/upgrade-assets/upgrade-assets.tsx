@@ -19,11 +19,26 @@ import { ETH_VAULT_DEPOSIT_TOKENS_UPGRADABLE } from '../consts';
 import { useEthVaultDeposit } from '../deposit/hooks';
 import { EthDepositTokenUpgradable } from '../types';
 import { ETHDepositFormValues } from '../deposit/form-context/types';
+import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo/matomo-earn-events';
+import { trackMatomoEvent } from 'utils/track-matomo-event';
 
 const TOKEN_ICON_MAP = {
   [TOKENS.gg]: <TokenGGIcon />,
   [TOKENS.streth]: <TokenStrethIcon />,
   [TOKENS.dvsteth]: <TokenDvstethIcon />,
+};
+
+const getMatomoEventForToken = (token: EthDepositTokenUpgradable) => {
+  switch (token) {
+    case TOKENS.gg:
+      return MATOMO_EARN_EVENTS_TYPES.earnEthGgTokenUpgrade;
+    case TOKENS.streth:
+      return MATOMO_EARN_EVENTS_TYPES.earnEthStrethTokenUpgrade;
+    case TOKENS.dvsteth:
+      return MATOMO_EARN_EVENTS_TYPES.earnEthDvstethTokenUpgrade;
+    default:
+      return undefined;
+  }
 };
 
 export const UpgradeAssetsBlock = () => {
@@ -47,11 +62,17 @@ export const UpgradeAssetsBlock = () => {
       if (!amount) return;
       setIsUpgrading(true);
       try {
-        await deposit({
+        const isDepositSuccessful = await deposit({
           amount,
           token,
           referral,
         });
+        if (isDepositSuccessful) {
+          const matomoEvent = getMatomoEventForToken(token);
+          if (matomoEvent) {
+            trackMatomoEvent(matomoEvent);
+          }
+        }
       } finally {
         setIsUpgrading(false);
       }
