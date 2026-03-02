@@ -27,7 +27,14 @@ export const VaultChart = (props: VaultChartProps) => {
 
   const isETHVault = vaultName === 'ethVault';
   const isUSDVault = vaultName === 'usdVault';
-  const vaultAddress = getContractAddress(CHAINS.Mainnet, vaultName);
+
+  // const vaultAddress = getContractAddress(CHAINS.Mainnet, vaultName);
+  // TODO: REPLACE BEFORE RELEASE
+  const vaultAddress = getContractAddress(
+    CHAINS.Mainnet,
+    //@ts-expect-error currently using test contracts, prod contract addresses are using __ prefix now
+    isETHVault ? 'stgVault' : '__usdVault',
+  );
 
   const [activeChart, setActiveChart] = useState<'tvl' | 'apy'>('tvl');
   const [activeTimeRange, setActiveTimeRange] = useState<'1M' | '3M'>('1M');
