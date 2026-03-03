@@ -129,6 +129,7 @@ export const VaultChart = (props: VaultChartProps) => {
     isETHVault,
   ]);
 
+  // TODO: break this up into variables for more clear logic
   const isChartLoading =
     activeChart === 'apy'
       ? isVaultLoading ||

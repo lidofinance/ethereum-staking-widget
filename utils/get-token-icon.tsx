@@ -1,3 +1,4 @@
+import invariant from 'tiny-invariant';
 import {
   TokenEthScalableIcon,
   TokenWethScalableIcon,
@@ -39,6 +40,6 @@ export const getTokenIcon = (t: Token | TokenSymbol) => {
     case TOKENS.streth:
       return <TokenStrethIcon />;
     default:
-      return <></>;
+      return invariant(false, `Unsupported token: ${t}`);
   }
 };

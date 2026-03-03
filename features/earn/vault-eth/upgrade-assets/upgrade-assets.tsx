@@ -58,9 +58,10 @@ export const UpgradeAssetsBlock = () => {
       amount,
       token,
     }: {
-      amount?: bigint;
+      amount?: bigint; // TODO: consider getting this value inside the function instead of passing it as an argument
       token: EthDepositTokenUpgradable;
     }) => {
+      // TODO: use qa helper to set mocked amount instead of using localStorage directly
       const amountMockedString = window.localStorage.getItem(
         '_QA_EarnEthUpgradeDepositAmount',
       );
