@@ -1,3 +1,4 @@
+import { useStgUsd } from 'features/earn/vault-stg';
 import {
   EthVaultDepositPendingRequest,
   DepositPendingRequestProps,
@@ -6,8 +7,12 @@ import {
 type Props = Omit<DepositPendingRequestProps, 'usdAmount'>;
 
 export const EthVaultDepositPendingRequestStreth = (props: Props) => {
-  // TODO: usd conversion for streth
+  const { data, isLoading } = useStgUsd(props.request.assets);
   return (
-    <EthVaultDepositPendingRequest {...props} isLoading={props.isLoading} />
+    <EthVaultDepositPendingRequest
+      {...props}
+      usdAmount={data?.usd}
+      isLoading={props.isLoading || isLoading}
+    />
   );
 };

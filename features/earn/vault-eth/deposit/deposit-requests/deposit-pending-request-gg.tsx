@@ -2,12 +2,19 @@ import {
   EthVaultDepositPendingRequest,
   DepositPendingRequestProps,
 } from './deposit-pending-request';
+import { useGgvUsd } from 'features/earn/vault-ggv';
 
 type Props = Omit<DepositPendingRequestProps, 'usdAmount'>;
 
 export const EthVaultDepositPendingRequestGg = (props: Props) => {
-  // TODO: usd conversion for GG
+  const { data: ggvData, isLoading: isGgvLoading } = useGgvUsd(
+    props.request.assets,
+  );
   return (
-    <EthVaultDepositPendingRequest {...props} isLoading={props.isLoading} />
+    <EthVaultDepositPendingRequest
+      {...props}
+      usdAmount={ggvData?.usd}
+      isLoading={props.isLoading || isGgvLoading}
+    />
   );
 };
