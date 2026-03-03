@@ -2,55 +2,78 @@ import { Switcher, SwitcherItem } from '@lidofinance/lido-ui';
 
 import { SwitcherWrapper } from './styles';
 
+export const CHART_TIME_RANGE = {
+  '1M': '1M',
+  '3M': '3M',
+} as const;
+export type ChartTimeRange = keyof typeof CHART_TIME_RANGE;
+
+export const CHART_TYPE = {
+  tvl: 'tvl',
+  apy: 'apy',
+} as const;
+export type ChartType = keyof typeof CHART_TYPE;
+
 type VaultChartControlsProps = {
-  activeChart: 'tvl' | 'apy';
-  setActiveChart: (chart: 'tvl' | 'apy') => void;
-  activeTimeRange: '1M' | '3M';
-  setActiveTimeRange: (timeRange: '1M' | '3M') => void;
+  activeChart: ChartType;
+  setActiveChart: (chart: ChartType) => void;
+  activeTimeRange: ChartTimeRange;
+  setActiveTimeRange: (timeRange: ChartTimeRange) => void;
+  // False while data is loading or when vault history is shorter than 1 month.
+  is3MAvailable: boolean;
+  disableControls: boolean;
 };
 
 export const VaultChartControls = (props: VaultChartControlsProps) => {
-  const { activeChart, setActiveChart, activeTimeRange, setActiveTimeRange } =
-    props;
+  const {
+    activeChart,
+    setActiveChart,
+    activeTimeRange,
+    setActiveTimeRange,
+    is3MAvailable,
+    disableControls,
+  } = props;
 
-  const handleChartChange = (chart: 'tvl' | 'apy') => {
+  const handleChartChange = (chart: ChartType) => {
     setActiveChart(chart);
   };
 
-  const handleTimeRangeChange = (timeRange: '1M' | '3M') => {
+  const handleTimeRangeChange = (timeRange: ChartTimeRange) => {
     setActiveTimeRange(timeRange);
   };
 
   return (
-    <SwitcherWrapper>
+    <SwitcherWrapper disabled={disableControls}>
       <Switcher>
         <SwitcherItem
-          active={activeChart === 'tvl'}
-          onClick={() => handleChartChange('tvl')}
-        >
-          TVL
-        </SwitcherItem>
-        <SwitcherItem
-          active={activeChart === 'apy'}
-          onClick={() => handleChartChange('apy')}
+          active={activeChart === CHART_TYPE.apy}
+          onClick={() => handleChartChange(CHART_TYPE.apy)}
         >
           APY
         </SwitcherItem>
-      </Switcher>
-      <Switcher>
         <SwitcherItem
-          active={activeTimeRange === '1M'}
-          onClick={() => handleTimeRangeChange('1M')}
+          active={activeChart === CHART_TYPE.tvl}
+          onClick={() => handleChartChange(CHART_TYPE.tvl)}
         >
-          1M
-        </SwitcherItem>
-        <SwitcherItem
-          active={activeTimeRange === '3M'}
-          onClick={() => handleTimeRangeChange('3M')}
-        >
-          3M
+          TVL
         </SwitcherItem>
       </Switcher>
+      {is3MAvailable && (
+        <Switcher>
+          <SwitcherItem
+            active={activeTimeRange === CHART_TIME_RANGE['1M']}
+            onClick={() => handleTimeRangeChange(CHART_TIME_RANGE['1M'])}
+          >
+            1M
+          </SwitcherItem>
+          <SwitcherItem
+            active={activeTimeRange === CHART_TIME_RANGE['3M']}
+            onClick={() => handleTimeRangeChange(CHART_TIME_RANGE['3M'])}
+          >
+            3M
+          </SwitcherItem>
+        </Switcher>
+      )}
     </SwitcherWrapper>
   );
 };

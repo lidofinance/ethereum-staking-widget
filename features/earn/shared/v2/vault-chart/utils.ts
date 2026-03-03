@@ -42,9 +42,9 @@ export const formatTooltipContent = (
     const formatted = isTvl
       ? formatTvl(rawValue as string)
       : `${Number(rawValue).toFixed(2)}%`;
-    return `${marker}${seriesName}&nbsp;&nbsp;&nbsp;<b>${formatted}</b>`;
+    return `<div style="margin-bottom:4px">${marker}${seriesName}&nbsp;&nbsp;&nbsp;<b>${formatted}</b></div>`;
   });
-  return `${formatDate(timestamp)}<br/>${lines.join('<br/>')}`;
+  return `${formatDate(timestamp)}<div style="margin-top:8px">${lines.join('')}</div>`;
 };
 
 export const buildChartSeries = ({

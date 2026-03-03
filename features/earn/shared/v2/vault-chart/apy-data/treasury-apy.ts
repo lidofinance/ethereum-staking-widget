@@ -71,22 +71,17 @@ export const getMonthRange = (fromDate: Date, toDate: Date): string[] => {
 export const fetchTreasuryChartData = async (
   fromTimestampSeconds: number,
 ): Promise<TreasuryChartPoint[] | null> => {
-  try {
-    const fromMs = fromTimestampSeconds * 1000;
-    const fromDate = new Date(fromMs);
-    const toDate = new Date();
-    const toMs = toDate.setHours(23, 59, 59, 999); // end of today
+  const fromMs = fromTimestampSeconds * 1000;
+  const fromDate = new Date(fromMs);
+  const toDate = new Date();
+  const toMs = toDate.setHours(23, 59, 59, 999); // end of today
 
-    const months = getMonthRange(fromDate, toDate);
+  const months = getMonthRange(fromDate, toDate);
 
-    // Fetch only the needed months in parallel; months are in ascending order so flat() is sorted.
-    const allPoints = (await Promise.all(months.map(fetchMonthXml))).flat();
+  // Fetch only the needed months in parallel; months are in ascending order so flat() is sorted.
+  const allPoints = (await Promise.all(months.map(fetchMonthXml))).flat();
 
-    return allPoints.filter(
-      (p) => p.timestampMs >= fromMs && p.timestampMs <= toMs,
-    );
-  } catch (error) {
-    console.error('Error fetching Treasury chart data:', error);
-    return null;
-  }
+  return allPoints.filter(
+    (p) => p.timestampMs >= fromMs && p.timestampMs <= toMs,
+  );
 };

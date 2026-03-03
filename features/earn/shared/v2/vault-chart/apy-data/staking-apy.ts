@@ -51,21 +51,16 @@ const PAGE_SIZE = 100;
 export const fetchStakingApyData = async (
   fromTimestamp: number,
 ): Promise<StakingApyFetchedData | null> => {
-  try {
-    const endTime = Math.floor(Date.now() / 1000);
-    const url = `${LIDO_STETH_APR_ORIGIN}?startTime=${fromTimestamp}&endTime=${endTime}&page=1&pageSize=${PAGE_SIZE}`;
+  const endTime = Math.floor(Date.now() / 1000);
+  const url = `${LIDO_STETH_APR_ORIGIN}?startTime=${fromTimestamp}&endTime=${endTime}&page=1&pageSize=${PAGE_SIZE}`;
 
-    const raw = await standardFetcher<unknown>(url);
-    const parsed = LidoStethAprResponseSchema.parse(raw);
+  const raw = await standardFetcher<unknown>(url);
+  const parsed = LidoStethAprResponseSchema.parse(raw);
 
-    const result: StakingApyChartPoint[] = parsed.data.map((item) => ({
-      timestampMs: item.timeUnix * 1000,
-      rate: item.apr,
-    }));
-    result.sort((a, b) => a.timestampMs - b.timestampMs);
-    return result;
-  } catch (error) {
-    console.error('Error fetching Lido stETH APR data:', error);
-    return null;
-  }
+  const result: StakingApyChartPoint[] = parsed.data.map((item) => ({
+    timestampMs: item.timeUnix * 1000,
+    rate: item.apr,
+  }));
+  result.sort((a, b) => a.timestampMs - b.timestampMs);
+  return result;
 };

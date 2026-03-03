@@ -36,17 +36,12 @@ export const fetchMetavaultChartData = async (
   fromTimestamp: number,
   vaultAddress: string,
 ) => {
-  try {
-    const METAVAULT_CHART_ENDPOINT = `${METAVAULT_CHART_ORIGIN}/v1/chain/${CHAINS.Mainnet}/core-vaults/${vaultAddress}/historical-data?from_timestamp=${fromTimestamp}`;
+  const METAVAULT_CHART_ENDPOINT = `${METAVAULT_CHART_ORIGIN}/v1/chain/${CHAINS.Mainnet}/core-vaults/${vaultAddress}/historical-data?from_timestamp=${fromTimestamp}`;
 
-    const data = await standardFetcher<MetavaultChartFetchedData>(
-      METAVAULT_CHART_ENDPOINT,
-    );
-    const chartData = METAVAULT_CHART_DATA_SCHEMA.parse(data);
+  const data = await standardFetcher<MetavaultChartFetchedData>(
+    METAVAULT_CHART_ENDPOINT,
+  );
+  const chartData = METAVAULT_CHART_DATA_SCHEMA.parse(data);
 
-    return chartData;
-  } catch (error) {
-    console.error('Error fetching Metavault chart data:', error);
-    return null;
-  }
+  return chartData;
 };
