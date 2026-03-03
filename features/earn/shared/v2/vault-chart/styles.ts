@@ -34,4 +34,11 @@ export const ErrorMessageStyled = styled(Box)`
   display: flex;
   align-items: center;
   justify-content: center;
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 24px;
+  color: var(--lido-color-text);
+  opacity: 0.5;
+  background-color: #e1e4e8;
+  border-radius: 10px;
 `;
