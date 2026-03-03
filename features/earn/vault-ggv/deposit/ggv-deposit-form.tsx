@@ -11,26 +11,33 @@ import { GGVWillReceive } from './ggv-deposit-will-receive';
 import { GGVDepositSubmitButton } from './ggv-deposit-submit-button';
 import { GGVDepositWarning } from './ggv-deposit-warning';
 import { VaultWarning } from 'features/earn/shared/vault-warning';
+import { useGGVAvailable } from '../hooks/use-ggv-available';
 
 export const GGVDepositForm: FC = () => {
+  const { isVaultDeprecated } = useGGVAvailable();
+
   return (
     <GGVDepositFormProvider>
       <VaultForm data-testid="deposit-form">
         <GGVDepositWarning />
-        <VaultFormSection>
-          <GGVAvailableDeposit />
-          <GGVDepositInputGroup />
-        </VaultFormSection>
-        <VaultTxInfo>
-          <GGVWillReceive />
-        </VaultTxInfo>
-        <VaultWarning variant="info">
-          Deposited funds cannot be withdrawn, and GG token is non-transferable
-          for 24 hours after deposit.
-          <br />
-          Withdrawals are only in wstETH, regardless of deposited asset(s).
-        </VaultWarning>
-        <GGVDepositSubmitButton />
+        {!isVaultDeprecated && (
+          <>
+            <VaultFormSection>
+              <GGVAvailableDeposit />
+              <GGVDepositInputGroup />
+            </VaultFormSection>
+            <VaultTxInfo>
+              <GGVWillReceive />
+            </VaultTxInfo>
+            <VaultWarning variant="info">
+              Deposited funds cannot be withdrawn, and GG token is
+              non-transferable for 24 hours after deposit.
+              <br />
+              Withdrawals are only in wstETH, regardless of deposited asset(s).
+            </VaultWarning>
+            <GGVDepositSubmitButton />
+          </>
+        )}
       </VaultForm>
     </GGVDepositFormProvider>
   );

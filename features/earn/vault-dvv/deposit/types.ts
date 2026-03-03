@@ -27,11 +27,6 @@ export type DVVDepositFormAsyncValidationContext = {
   };
 };
 
-export type DVVDepositLimitReason =
-  | 'non-whitelisted'
-  | 'deposit-paused'
-  | 'deposit-limit-reached';
-
 export type DVVDepositFormContext = {
   maxAmount?: bigint;
   token: DVVDepositTokens;
