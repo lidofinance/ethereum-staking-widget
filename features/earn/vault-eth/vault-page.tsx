@@ -1,7 +1,12 @@
 import { Link } from '@lidofinance/lido-ui';
 import type { FC, ReactNode } from 'react';
 
-import { VaultEthIcon } from 'assets/earn-v2';
+import {
+  PartnerNethermindIconCircle,
+  PartnerUltrafieldsIconCircle,
+  PartnerVedaIconCircle,
+  VaultEthIcon,
+} from 'assets/earn-v2';
 import { VaultPage } from 'features/earn/shared/v2/vault-page/vault-page';
 import type { InfoItem } from 'features/earn/shared/v2/vault-page/vault-page';
 
@@ -19,19 +24,32 @@ const FEES = [
 const GENERAL_INFO_LEFT: InfoItem[] = [
   {
     label: 'Curators',
-    value: <Link href="https://ultrayield.app/">UltraYield by Edge ↗</Link>,
+    value: (
+      <>
+        <PartnerUltrafieldsIconCircle width={20} height={20} />
+        <Link href="https://ultrayield.app/">UltraYield by Edge ↗</Link>
+      </>
+    ),
   },
   {
     label: '',
-    value: <Link href="https://veda.tech/">Veda ↗</Link>,
+    value: (
+      <>
+        <PartnerVedaIconCircle width={20} height={20} />
+        <Link href="https://veda.tech/">Veda ↗</Link>
+      </>
+    ),
   },
   { label: 'Vault contract deployed', value: '02 Feb 2026' },
   {
     label: 'Audit',
     value: (
-      <Link href="https://content.gitbook.com/content/PyujKH9RYkVLASDhGflO/blobs/15Q3SGxZgZ9VEWqXueO2/Nethermind_Mellow-Core-Vaults_20250903.pdf">
-        Nethermind ↗
-      </Link>
+      <>
+        <PartnerNethermindIconCircle width={20} height={20} />
+        <Link href="https://content.gitbook.com/content/PyujKH9RYkVLASDhGflO/blobs/15Q3SGxZgZ9VEWqXueO2/Nethermind_Mellow-Core-Vaults_20250903.pdf">
+          Nethermind ↗
+        </Link>
+      </>
     ),
   },
   { label: 'Last audit date', value: '21 Jan 2026' },
