@@ -3,8 +3,6 @@ import type { TooltipComponentFormatterCallbackParams } from 'echarts';
 import type { Address } from 'viem';
 import * as echarts from 'echarts/core';
 
-import { unixTimestampToMs } from 'utils/unix-timestamp-to-ms';
-
 import {
   formatTvl,
   formatTooltipContent,
@@ -21,8 +19,6 @@ import {
 import { useTreasuryChartData } from './use-treasury-chart-data';
 import { useStakingChartData } from './use-staking-chart-data';
 import { useMetavaultChartData } from './use-vault-chart-data';
-
-const DEFAULT_DECIMALS = 18;
 
 type UseChartDataProps = {
   fromTimestampSeconds: number;
@@ -50,7 +46,11 @@ export const useChartData = (props: UseChartDataProps) => {
     data,
     isLoading: isVaultLoading,
     isError,
-  } = useMetavaultChartData(fromTimestampSeconds, vaultAddress);
+  } = useMetavaultChartData({
+    fromTimestamp: fromTimestampSeconds,
+    vaultAddress,
+    isETHVault,
+  });
   const { data: treasuryData, isLoading: isTreasuryLoading } =
     useTreasuryChartData(
       fromTimestampSeconds,
@@ -62,10 +62,6 @@ export const useChartData = (props: UseChartDataProps) => {
       activeChart === CHART_TYPE.apy && isETHVault,
     );
 
-  const vaultTvlDecimals = useMemo(() => {
-    return data?.[0]?.tvl?.decimals ?? DEFAULT_DECIMALS;
-  }, [data]);
-
   // Cutoff timestamp for 1M view: today's midnight minus 30 days.
   const oneMonthTimestampMs = useMemo(() => {
     const startOfTodayMs = new Date().setHours(0, 0, 0, 0);
@@ -74,19 +70,16 @@ export const useChartData = (props: UseChartDataProps) => {
 
   const [tvlSeriesData, apySeriesData] = useMemo(() => {
     if (!data) return [[], []];
-    const timestamps = data.map((item) =>
-      unixTimestampToMs(Number(item.timestamp)),
-    );
     return [
-      data.map((item, i) => [timestamps[i], item.tvl.amount]),
-      data.map((item, i) => [timestamps[i], Number(item.apy.value)]),
+      data.map((item) => [item.timestampMs, item.tvlUsd]),
+      data.map((item) => [item.timestampMs, item.apyValue]),
     ];
   }, [data]);
 
   // True when fetched data contains points older than 1M → 3M view is meaningful.
   const hasMoreThanOneMonthData = useMemo(() => {
     if (tvlSeriesData.length === 0) return false;
-    const earliestTs = Math.min(...tvlSeriesData.map(([ts]) => ts as number));
+    const earliestTs = Math.min(...tvlSeriesData.map(([ts]) => ts));
 
     return earliestTs < oneMonthTimestampMs;
   }, [tvlSeriesData, oneMonthTimestampMs]);
@@ -96,7 +89,7 @@ export const useChartData = (props: UseChartDataProps) => {
   const filteredTvlSeriesData = useMemo(
     () =>
       activeTimeRange === CHART_TIME_RANGE['1M']
-        ? tvlSeriesData.filter(([ts]) => (ts as number) >= oneMonthTimestampMs)
+        ? tvlSeriesData.filter(([ts]) => ts >= oneMonthTimestampMs)
         : tvlSeriesData,
     [tvlSeriesData, activeTimeRange, oneMonthTimestampMs],
   );
@@ -111,19 +104,15 @@ export const useChartData = (props: UseChartDataProps) => {
   const yAxisFormatter = useMemo(
     () =>
       activeChart === CHART_TYPE.tvl
-        ? (value: string) => formatTvl(value, vaultTvlDecimals)
+        ? (value: number) => formatTvl(value)
         : (value: string) => `${value}%`,
-    [activeChart, vaultTvlDecimals],
+    [activeChart],
   );
 
   const tooltipFormatter = useMemo(
     () => (params: TooltipComponentFormatterCallbackParams) =>
-      formatTooltipContent(
-        params,
-        activeChart === CHART_TYPE.tvl,
-        vaultTvlDecimals,
-      ),
-    [activeChart, vaultTvlDecimals],
+      formatTooltipContent(params, activeChart === CHART_TYPE.tvl),
+    [activeChart],
   );
 
   // alignToVaultTimestamps uses filteredApySeriesData so treasury/staking series

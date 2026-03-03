@@ -1,5 +1,4 @@
 import { TooltipComponentFormatterCallbackParams } from 'echarts';
-import { formatUnits } from 'viem';
 import { LOCALE } from 'config/groups/locale';
 
 import { shortenTokenValue } from 'utils/shortenTokenValue';
@@ -17,9 +16,11 @@ import {
   BASE_SERIES_OPTIONS,
 } from './consts';
 
-/** Format TVL using ECharts params (all series at this axis point). */
-export const formatTvl = (amount: string, decimals: number) =>
-  `$${shortenTokenValue(Number(formatUnits(BigInt(amount), decimals)))}`;
+/**
+ * Format TVL for display.
+ * Expects `amount` already converted to USD (done by the vault data hook before reaching here).
+ */
+export const formatTvl = (amount: number) => `$${shortenTokenValue(amount)}`;
 
 /** Format date using ECharts params (all series at this axis point). */
 const formatDate = (timestamp: number) =>
@@ -33,7 +34,6 @@ const formatDate = (timestamp: number) =>
 export const formatTooltipContent = (
   params: TooltipComponentFormatterCallbackParams,
   isTvl: boolean,
-  decimals: number,
 ): string => {
   if (!Array.isArray(params) || params.length === 0) return '';
   const first = params[0];
@@ -41,7 +41,7 @@ export const formatTooltipContent = (
   const lines = params.map(({ marker, seriesName, value }) => {
     const rawValue = (value as [number, string | number])[1];
     const formatted = isTvl
-      ? formatTvl(rawValue as string, decimals)
+      ? formatTvl(rawValue as number)
       : `${Number(rawValue).toFixed(2)}%`;
     return `<div style="margin-bottom:4px">${marker}${seriesName}&nbsp;&nbsp;&nbsp;<b>${formatted}</b></div>`;
   });
