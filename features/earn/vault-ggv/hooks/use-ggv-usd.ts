@@ -24,12 +24,12 @@ export const useGgvUsd = (ggvShares?: bigint) => {
     ] as const,
     enabled: typeof ggvShares === 'bigint',
     queryFn: async () => {
-      const queue = getGGVQueueContract(publicClientMainnet);
-
       if (!ggvShares)
         return {
           wsteth: 0n,
         };
+
+      const queue = getGGVQueueContract(publicClientMainnet);
 
       const wstethAddress = await wrap.contractAddressWstETH();
 

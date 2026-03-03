@@ -14,11 +14,11 @@ export const useDvvUsd = (dvvShares?: bigint) => {
     ] as const,
     enabled: typeof dvvShares === 'bigint',
     queryFn: async () => {
+      if (!dvvShares) return { wsteth: 0n };
+
       const vault = getDVVVaultContract(publicClientMainnet);
 
-      const wsteth = dvvShares
-        ? await vault.read.convertToAssets([dvvShares])
-        : 0n;
+      const wsteth = await vault.read.convertToAssets([dvvShares]);
 
       return {
         wsteth,
