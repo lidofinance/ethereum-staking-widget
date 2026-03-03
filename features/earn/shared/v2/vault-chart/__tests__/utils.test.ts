@@ -21,27 +21,31 @@ import {
 
 describe('formatTvl', () => {
   it('formats 0 wei as $0', () => {
-    expect(formatTvl('0')).toBe('$0');
+    expect(formatTvl('0', 18)).toBe('$0');
   });
 
   it('formats 1 ETH (1e18 wei) as $1', () => {
-    expect(formatTvl('1000000000000000000')).toBe('$1');
+    expect(formatTvl('1000000000000000000', 18)).toBe('$1');
   });
 
   it('formats 1 000 ETH (1e21 wei) as $1K', () => {
-    expect(formatTvl('1000000000000000000000')).toBe('$1K');
+    expect(formatTvl('1000000000000000000000', 18)).toBe('$1K');
   });
 
   it('formats 1 500 000 ETH (1.5M * 1e18 wei) as $1.5M', () => {
-    expect(formatTvl('1500000000000000000000000')).toBe('$1.5M');
+    expect(formatTvl('1500000000000000000000000', 18)).toBe('$1.5M');
   });
 
   it('formats 1B ETH as $1B', () => {
-    expect(formatTvl('1000000000000000000000000000')).toBe('$1B');
+    expect(formatTvl('1000000000000000000000000000', 18)).toBe('$1B');
   });
 
   it('prepends $ sign', () => {
-    expect(formatTvl('5000000000000000000')).toMatch(/^\$/);
+    expect(formatTvl('5000000000000000000', 18)).toMatch(/^\$/);
+  });
+
+  it('respects decimals — 1 000 000 USDC (1e12 units, 6 decimals) as $1M', () => {
+    expect(formatTvl('1000000000000', 6)).toBe('$1M');
   });
 });
 
@@ -60,11 +64,11 @@ describe('formatTooltipContent', () => {
   const T = 1705320000000; // 2024-01-15T12:00:00Z
 
   it('returns empty string for empty array', () => {
-    expect(formatTooltipContent(makeParams([]), true)).toBe('');
+    expect(formatTooltipContent(makeParams([]), true, 18)).toBe('');
   });
 
   it('returns empty string for non-array input', () => {
-    expect(formatTooltipContent({} as never, true)).toBe('');
+    expect(formatTooltipContent({} as never, true, 18)).toBe('');
   });
 
   it('formats a single TVL series entry', () => {
@@ -75,7 +79,7 @@ describe('formatTooltipContent', () => {
         marker: '●',
       },
     ]);
-    const result = formatTooltipContent(params, true);
+    const result = formatTooltipContent(params, true, 18);
     expect(result).toContain('$1K');
     expect(result).toContain('Vault TVL');
     expect(result).toContain('●');
@@ -85,7 +89,7 @@ describe('formatTooltipContent', () => {
     const params = makeParams([
       { seriesName: 'Vault APY', value: [T, 5.25], marker: '●' },
     ]);
-    const result = formatTooltipContent(params, false);
+    const result = formatTooltipContent(params, false, 18);
     expect(result).toContain('5.25%');
     expect(result).toContain('Vault APY');
   });
@@ -95,7 +99,7 @@ describe('formatTooltipContent', () => {
       { seriesName: 'Vault APY', value: [T, 4.5], marker: '●' },
       { seriesName: 'US Treasury Bonds APY', value: [T, 4.8], marker: '◆' },
     ]);
-    const result = formatTooltipContent(params, false);
+    const result = formatTooltipContent(params, false, 18);
     expect(result).toContain('4.50%');
     expect(result).toContain('4.80%');
     expect(result).toContain('US Treasury Bonds APY');
@@ -105,7 +109,7 @@ describe('formatTooltipContent', () => {
     const params = makeParams([
       { seriesName: 'Vault APY', value: [T, 3], marker: '●' },
     ]);
-    const result = formatTooltipContent(params, false);
+    const result = formatTooltipContent(params, false, 18);
     expect(result).toContain('3.00%');
   });
 
@@ -117,9 +121,21 @@ describe('formatTooltipContent', () => {
         marker: '●',
       },
     ]);
-    const result = formatTooltipContent(params, true);
+    const result = formatTooltipContent(params, true, 18);
     expect(result).not.toContain('%');
     expect(result).toContain('$');
+  });
+
+  it('passes decimals through to TVL formatter (6 decimals for USDC)', () => {
+    const params = makeParams([
+      {
+        seriesName: 'Vault TVL',
+        value: [T, '1000000000000'], // 1e12 units with 6 decimals = $1M
+        marker: '●',
+      },
+    ]);
+    const result = formatTooltipContent(params, true, 6);
+    expect(result).toContain('$1M');
   });
 });
 

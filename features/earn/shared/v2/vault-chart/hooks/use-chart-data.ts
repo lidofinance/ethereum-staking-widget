@@ -22,6 +22,8 @@ import { useTreasuryChartData } from './use-treasury-chart-data';
 import { useStakingChartData } from './use-staking-chart-data';
 import { useMetavaultChartData } from './use-vault-chart-data';
 
+const DEFAULT_DECIMALS = 18;
+
 type UseChartDataProps = {
   fromTimestampSeconds: number;
   vaultAddress?: Address;
@@ -59,6 +61,10 @@ export const useChartData = (props: UseChartDataProps) => {
       fromTimestampSeconds,
       activeChart === CHART_TYPE.apy && isETHVault,
     );
+
+  const vaultTvlDecimals = useMemo(() => {
+    return data?.[0]?.tvl?.decimals ?? DEFAULT_DECIMALS;
+  }, [data]);
 
   // Cutoff timestamp for 1M view: today's midnight minus 30 days.
   const oneMonthTimestampMs = useMemo(() => {
@@ -105,15 +111,19 @@ export const useChartData = (props: UseChartDataProps) => {
   const yAxisFormatter = useMemo(
     () =>
       activeChart === CHART_TYPE.tvl
-        ? (value: string) => formatTvl(value)
+        ? (value: string) => formatTvl(value, vaultTvlDecimals)
         : (value: string) => `${value}%`,
-    [activeChart],
+    [activeChart, vaultTvlDecimals],
   );
 
   const tooltipFormatter = useMemo(
     () => (params: TooltipComponentFormatterCallbackParams) =>
-      formatTooltipContent(params, activeChart === CHART_TYPE.tvl),
-    [activeChart],
+      formatTooltipContent(
+        params,
+        activeChart === CHART_TYPE.tvl,
+        vaultTvlDecimals,
+      ),
+    [activeChart, vaultTvlDecimals],
   );
 
   // alignToVaultTimestamps uses filteredApySeriesData so treasury/staking series
