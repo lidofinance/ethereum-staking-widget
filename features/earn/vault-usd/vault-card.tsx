@@ -6,11 +6,13 @@ import { VaultCard } from '../shared/v2/vault-card';
 import { EARN_VAULT_USD_SLUG } from '../consts';
 import { useUsdVaultApy } from './hooks/use-vault-apy';
 import { useUsdVaultStats } from './hooks/use-vault-stats';
+import { UsdVaultApyHint } from './components/apy-hint';
 
 export const UsdVaultCard = () => {
   const { apy, isLoading: isApyLoading } = useUsdVaultApy();
   const { totalTvlUsd, isLoading: isTvlLoading } = useUsdVaultStats();
 
+  // TODO: add "position" (token balance)
   return (
     <VaultCard
       title="Lido Earn USD"
@@ -19,8 +21,8 @@ export const UsdVaultCard = () => {
       stats={{
         tvl: totalTvlUsd,
         apx: apy,
-        apxLabel: 'APY',
-        apxHint: <></>,
+        apxLabel: 'APY* (7d avg.)',
+        apxHint: <UsdVaultApyHint />,
         isLoading: isApyLoading || isTvlLoading,
       }}
       ctaLabel={'Deposit'}

@@ -5,11 +5,13 @@ import { VaultCard } from '../shared/v2/vault-card';
 import { EARN_VAULT_ETH_SLUG } from '../consts';
 import { useEthVaultStats } from './hooks/use-vault-stats';
 import { useEthVaultApy } from './hooks/use-vault-apy';
+import { EthVaultApyHint } from './components/apy-hint';
 
 export const EthVaultCard = () => {
   const { apy, isLoading: isApyLoading } = useEthVaultApy();
   const { totalTvlUsd, isLoading: isTvlLoading } = useEthVaultStats();
 
+  // TODO: add "position" (token balance)
   return (
     <VaultCard
       title="Lido Earn ETH"
@@ -18,8 +20,8 @@ export const EthVaultCard = () => {
       stats={{
         tvl: totalTvlUsd,
         apx: apy,
-        apxLabel: 'APY',
-        apxHint: <></>,
+        apxLabel: 'APY* (7d avg.)',
+        apxHint: <EthVaultApyHint />,
         isLoading: isApyLoading || isTvlLoading,
       }}
       ctaLabel={'Deposit'}

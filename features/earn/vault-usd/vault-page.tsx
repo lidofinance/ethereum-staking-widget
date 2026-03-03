@@ -14,6 +14,7 @@ import { EARN_VAULT_DEPOSIT_SLUG, EARN_VAULT_WITHDRAW_SLUG } from '../consts';
 import { useUsdVaultStats } from './hooks/use-vault-stats';
 import { useUsdVaultApy } from './hooks/use-vault-apy';
 import { Disclaimers } from '../shared/v2/disclaimers/disclaimers';
+import { UsdVaultApyHint } from './components/apy-hint';
 
 const FEES = [
   { label: 'Performance fee', value: '10%' },
@@ -107,6 +108,7 @@ export const VaultPageUSD: FC<{
         tvl={totalTvlUsd}
         isApxLoading={isApyLoading}
         isTvlLoading={isTvlLoading}
+        apxHint={<UsdVaultApyHint />}
         sidePanel={<UsdVaultPositionManager action={action} />}
         vaultName="usdVault"
         faqContent={<EarnUsdFaq />}

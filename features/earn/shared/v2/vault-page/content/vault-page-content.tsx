@@ -12,6 +12,7 @@ type VaultPageContentProps = {
   tvl?: number | null;
   isApxLoading?: boolean;
   isTvlLoading?: boolean;
+  apxHint?: React.ReactNode;
 };
 
 export const VaultPageContent: FC<PropsWithChildren<VaultPageContentProps>> = ({

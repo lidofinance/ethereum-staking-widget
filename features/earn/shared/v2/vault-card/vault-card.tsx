@@ -31,7 +31,7 @@ import { VaultTip } from '../../vault-tip';
 type VaultStats = {
   tvl?: number | null;
   apx?: number | null;
-  apxLabel: 'APY' | 'APR';
+  apxLabel: string;
   isLoading?: boolean;
   apxHint?: React.ReactNode;
   compact?: boolean;
@@ -94,9 +94,7 @@ export const VaultCard: React.FC<VaultCardProps> = ({
         <StatItem data-testid="apx-value">
           <StatLabel>
             {stats.apxLabel}
-            {!stats.isLoading && (
-              <VaultTip placement="bottom">{stats.apxHint}</VaultTip>
-            )}
+            <VaultTip placement="bottom">{stats.apxHint}</VaultTip>
           </StatLabel>
           <StatValue $accent>
             <InlineLoader isLoading={stats.isLoading} width={70}>

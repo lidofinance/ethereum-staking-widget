@@ -16,6 +16,7 @@ import { EarnEthFaq } from './faq/faq';
 import { useEthVaultStats } from './hooks/use-vault-stats';
 import { useEthVaultApy } from './hooks/use-vault-apy';
 import { EARN_VAULT_DEPOSIT_SLUG, EARN_VAULT_WITHDRAW_SLUG } from '../consts';
+import { EthVaultApyHint } from './components/apy-hint';
 
 const FEES = [
   { label: 'Performance fee', value: '10%' },
@@ -118,6 +119,7 @@ export const EthVaultPage: FC<{
         tvl={totalTvlUsd}
         isApxLoading={isApyLoading}
         isTvlLoading={isTvlLoading}
+        apxHint={<EthVaultApyHint />}
         sidePanel={<EthVaultPositionManager action={action} />}
         vaultName="ethVault"
         faqContent={<EarnEthFaq />}
