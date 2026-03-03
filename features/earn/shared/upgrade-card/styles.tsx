@@ -24,7 +24,7 @@ export const UpgradeCardBlock = styled(Block)`
 
 export const UpgradeContent = styled.div`
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 214px;
+  grid-template-columns: minmax(0, 1fr) 192px;
   gap: 32px;
   font-size: ${({ theme }) => theme.fontSizesMap.xs}px;
   line-height: 24px;
