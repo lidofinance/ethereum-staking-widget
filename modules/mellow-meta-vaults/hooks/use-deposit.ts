@@ -72,6 +72,8 @@ export const useDeposit = <DepositQueueToken extends string>({
         );
 
         let needsApprove = false;
+        // some tokens (like USDT) require resetting approval to 0 before setting it to a new value
+        let needsApprovalReset = false;
 
         if (token !== TOKENS.eth) {
           const allowance = await depositTokenContract.read.allowance([
@@ -80,9 +82,13 @@ export const useDeposit = <DepositQueueToken extends string>({
           ]);
 
           needsApprove = allowance < amount;
+
+          needsApprovalReset =
+            token === TOKENS.usdt && needsApprove && allowance > 0n;
         }
 
         const approveArgs = [depositQueue.address, amount] as const;
+        const resetApproveArgs = [depositQueue.address, 0n] as const;
         const depositArgs = [amount, referralAddress, []] as const;
         const msgValue = token === TOKENS.eth ? amount : 0n;
 
@@ -90,6 +96,17 @@ export const useDeposit = <DepositQueueToken extends string>({
           callsFn: async () => {
             const calls: AACall[] = [];
             if (needsApprove) {
+              if (needsApprovalReset) {
+                calls.push({
+                  to: tokenAddress,
+                  data: encodeFunctionData({
+                    abi: depositTokenContract.abi,
+                    functionName: 'approve',
+                    args: resetApproveArgs,
+                  }),
+                });
+              }
+
               calls.push({
                 to: tokenAddress,
                 data: encodeFunctionData({
@@ -115,6 +132,24 @@ export const useDeposit = <DepositQueueToken extends string>({
           },
           sendTransaction: async (txStagesCallback) => {
             if (needsApprove) {
+              if (needsApprovalReset) {
+                await core.performTransaction({
+                  getGasLimit: (opts) =>
+                    depositTokenContract.estimateGas.approve(
+                      resetApproveArgs,
+                      opts,
+                    ),
+                  sendTransaction: (opts) => {
+                    return depositTokenContract.write.approve(
+                      resetApproveArgs,
+                      opts,
+                    );
+                  },
+                  callback: txStagesCallback,
+                });
+                needsApprovalReset = false;
+              }
+
               await core.performTransaction({
                 getGasLimit: (opts) =>
                   depositTokenContract.estimateGas.approve(approveArgs, opts),
