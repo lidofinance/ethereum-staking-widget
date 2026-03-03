@@ -14,7 +14,7 @@ import { UpgradeCard } from '../shared/upgrade-card';
 import { VaultCardGGV } from '../vault-ggv/vault-card-ggv-v2';
 import { VaultCardDVV } from '../vault-dvv/vault-card-dvv-v2';
 import { VaultCardSTG } from '../vault-stg/vault-card-stg-v2';
-import { VaultCardUSD } from '../vault-usd';
+import { UsdVaultCard } from '../vault-usd';
 import { EthVaultCard } from '../vault-eth';
 
 import { AccordionTitle, CardsStack, ListWrapper } from './styles';
@@ -23,7 +23,7 @@ const VAULT_CARDS = {
   ggv: VaultCardGGV,
   dvv: VaultCardDVV,
   strategy: VaultCardSTG,
-  usd: VaultCardUSD,
+  usd: UsdVaultCard,
   eth: EthVaultCard,
 };
 

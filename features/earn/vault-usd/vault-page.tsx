@@ -1,4 +1,5 @@
 import type { FC, ReactNode } from 'react';
+import { Link } from '@lidofinance/lido-ui';
 
 import { VaultUsdIcon } from 'assets/earn-v2';
 import { VaultPage } from 'features/earn/shared/v2/vault-page/vault-page';
@@ -6,7 +7,8 @@ import { VaultPage } from 'features/earn/shared/v2/vault-page/vault-page';
 import { UsdVaultPositionManager } from './position-manager/position-manager';
 import { EarnUsdFaq } from './faq/faq';
 import { EARN_VAULT_DEPOSIT_SLUG, EARN_VAULT_WITHDRAW_SLUG } from '../consts';
-import { Link } from '@lidofinance/lido-ui';
+import { useUsdVaultStats } from './hooks/use-vault-stats';
+import { useUsdVaultApy } from './hooks/use-vault-apy';
 
 const FEES = [
   { label: 'Performance fee', value: '10%' },
@@ -71,8 +73,6 @@ const DATA = {
   title: 'EarnUSD',
   description:
     'EarnUSD Vault is curated for USD-denominated assets, designed to target an optimal risk-reward profile without compromising on security, risk controls, or asset quality. It’s built to feel like saving',
-  apy: '6.4%',
-  tvl: '$103.2M',
   logo: VaultUsdIcon,
   fees: FEES,
   generalInfoLeft: GENERAL_INFO_LEFT,
@@ -83,9 +83,16 @@ const DATA = {
 export const VaultPageUSD: FC<{
   action: typeof EARN_VAULT_DEPOSIT_SLUG | typeof EARN_VAULT_WITHDRAW_SLUG;
 }> = ({ action }) => {
+  const { apy, isLoading: isApyLoading } = useUsdVaultApy();
+  const { totalTvlUsd, isLoading: isTvlLoading } = useUsdVaultStats();
+
   return (
     <VaultPage
       {...DATA}
+      apx={apy}
+      tvl={totalTvlUsd}
+      isApxLoading={isApyLoading}
+      isTvlLoading={isTvlLoading}
       sidePanel={<UsdVaultPositionManager action={action} />}
       vaultName="usdVault"
       faqContent={<EarnUsdFaq />}

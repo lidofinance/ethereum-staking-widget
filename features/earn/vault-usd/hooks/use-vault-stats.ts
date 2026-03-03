@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { USD_VAULT_QUERY_SCOPE } from '../consts';
 import { ALLOCATION_SCHEMA, fetchUsdVaultStats } from '../utils';
 import { useUsdVaultCollect } from './use-collect';
+import { convertTotalUsdToNumber } from 'features/earn/shared/utils/collector-totalusd';
 
 export const useUsdVaultStats = () => {
   const { data, isLoading } = useQuery({
@@ -18,7 +19,8 @@ export const useUsdVaultStats = () => {
   const { data: collectorData, isLoading: isCollectorLoading } =
     useUsdVaultCollect();
   const totalTvlWei = collectorData?.totalTvlWei;
-  const totalTvlUsd = collectorData?.totalTvlUsd;
+
+  const totalTvlUsd = convertTotalUsdToNumber(collectorData?.totalTvlUsd);
 
   return {
     isLoading: isLoading || isCollectorLoading,

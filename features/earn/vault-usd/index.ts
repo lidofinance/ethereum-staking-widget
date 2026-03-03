@@ -1,2 +1,2 @@
 export * from './vault-page';
-export * from './vault-card-usd';
+export * from './vault-card';

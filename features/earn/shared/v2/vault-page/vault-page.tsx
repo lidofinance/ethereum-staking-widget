@@ -39,8 +39,10 @@ export type InfoItem = {
 type Props = {
   title: string;
   description: string;
-  apy: string;
-  tvl: string;
+  apx?: number | null;
+  tvl?: number | null;
+  isApxLoading?: boolean;
+  isTvlLoading?: boolean;
   logo: VaultIllustration;
   sidePanel?: ReactNode;
   vaultName: 'ethVault' | 'usdVault';

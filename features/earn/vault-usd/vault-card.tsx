@@ -4,12 +4,12 @@ import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo';
 
 import { VaultCard } from '../shared/v2/vault-card';
 import { EARN_VAULT_USD_SLUG } from '../consts';
+import { useUsdVaultApy } from './hooks/use-vault-apy';
+import { useUsdVaultStats } from './hooks/use-vault-stats';
 
-export const VaultCardUSD = () => {
-  const totalTvlUsd = 0;
-  const apy = 0;
-  const isLoadingTvlUsd = false;
-  const isLoadingApy = false;
+export const UsdVaultCard = () => {
+  const { apy, isLoading: isApyLoading } = useUsdVaultApy();
+  const { totalTvlUsd, isLoading: isTvlLoading } = useUsdVaultStats();
 
   return (
     <VaultCard
@@ -21,7 +21,7 @@ export const VaultCardUSD = () => {
         apx: apy,
         apxLabel: 'APY',
         apxHint: <></>,
-        isLoading: isLoadingApy || isLoadingTvlUsd,
+        isLoading: isApyLoading || isTvlLoading,
       }}
       ctaLabel={'Deposit'}
       variant={'usd'}

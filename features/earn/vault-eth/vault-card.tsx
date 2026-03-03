@@ -1,14 +1,14 @@
 import { VaultEthIcon } from 'assets/earn-v2';
-import { VaultCard } from '../shared/v2/vault-card';
-import { EARN_VAULT_ETH_SLUG } from '../consts';
 import { trackMatomoEvent } from 'utils/track-matomo-event';
 import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo';
+import { VaultCard } from '../shared/v2/vault-card';
+import { EARN_VAULT_ETH_SLUG } from '../consts';
+import { useEthVaultStats } from './hooks/use-vault-stats';
+import { useEthVaultApy } from './hooks/use-vault-apy';
 
 export const EthVaultCard = () => {
-  const totalTvlUsd = 0;
-  const apy = 0;
-  const isLoadingTvlUsd = false;
-  const isLoadingApy = false;
+  const { apy, isLoading: isApyLoading } = useEthVaultApy();
+  const { totalTvlUsd, isLoading: isTvlLoading } = useEthVaultStats();
 
   return (
     <VaultCard
@@ -20,7 +20,7 @@ export const EthVaultCard = () => {
         apx: apy,
         apxLabel: 'APY',
         apxHint: <></>,
-        isLoading: isLoadingApy || isLoadingTvlUsd,
+        isLoading: isApyLoading || isTvlLoading,
       }}
       ctaLabel={'Deposit'}
       variant={'eth'}

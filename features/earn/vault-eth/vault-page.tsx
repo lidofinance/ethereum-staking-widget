@@ -7,6 +7,8 @@ import type { InfoItem } from 'features/earn/shared/v2/vault-page/vault-page';
 
 import { EthVaultPositionManager } from './position-manager/position-manager';
 import { EarnEthFaq } from './faq/faq';
+import { useEthVaultStats } from './hooks/use-vault-stats';
+import { useEthVaultApy } from './hooks/use-vault-apy';
 import { EARN_VAULT_DEPOSIT_SLUG, EARN_VAULT_WITHDRAW_SLUG } from '../consts';
 
 const FEES = [
@@ -76,8 +78,6 @@ const DATA = {
   title: 'EarnETH',
   description:
     'EarnETH is an ETH growth vault allocating ETH and stETH across leading, blue-chip DeFi protocols meant to optimize for capital efficiency',
-  apy: '8.4%',
-  tvl: '$95.2M',
   logo: VaultEthIcon,
   fees: FEES,
   generalInfoLeft: GENERAL_INFO_LEFT,
@@ -88,9 +88,16 @@ const DATA = {
 export const EthVaultPage: FC<{
   action: typeof EARN_VAULT_DEPOSIT_SLUG | typeof EARN_VAULT_WITHDRAW_SLUG;
 }> = ({ action }) => {
+  const { apy, isLoading: isApyLoading } = useEthVaultApy();
+  const { totalTvlUsd, isLoading: isTvlLoading } = useEthVaultStats();
+
   return (
     <VaultPage
       {...DATA}
+      apx={apy}
+      tvl={totalTvlUsd}
+      isApxLoading={isApyLoading}
+      isTvlLoading={isTvlLoading}
       sidePanel={<EthVaultPositionManager action={action} />}
       vaultName="ethVault"
       faqContent={<EarnEthFaq />}

@@ -8,8 +8,10 @@ type VaultPageContentProps = {
   logo: VaultIllustration;
   title: string;
   description: string;
-  apy: string;
-  tvl: string;
+  apx?: number | null;
+  tvl?: number | null;
+  isApxLoading?: boolean;
+  isTvlLoading?: boolean;
 };
 
 export const VaultPageContent: FC<PropsWithChildren<VaultPageContentProps>> = ({
