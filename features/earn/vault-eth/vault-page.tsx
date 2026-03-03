@@ -9,6 +9,7 @@ import {
 } from 'assets/earn-v2';
 import { VaultPage } from 'features/earn/shared/v2/vault-page/vault-page';
 import type { InfoItem } from 'features/earn/shared/v2/vault-page/vault-page';
+import { Disclaimers } from 'features/earn/shared/v2/disclaimers/disclaimers';
 
 import { EthVaultPositionManager } from './position-manager/position-manager';
 import { EarnEthFaq } from './faq/faq';
@@ -110,15 +111,18 @@ export const EthVaultPage: FC<{
   const { totalTvlUsd, isLoading: isTvlLoading } = useEthVaultStats();
 
   return (
-    <VaultPage
-      {...DATA}
-      apx={apy}
-      tvl={totalTvlUsd}
-      isApxLoading={isApyLoading}
-      isTvlLoading={isTvlLoading}
-      sidePanel={<EthVaultPositionManager action={action} />}
-      vaultName="ethVault"
-      faqContent={<EarnEthFaq />}
-    />
+    <>
+      <VaultPage
+        {...DATA}
+        apx={apy}
+        tvl={totalTvlUsd}
+        isApxLoading={isApyLoading}
+        isTvlLoading={isTvlLoading}
+        sidePanel={<EthVaultPositionManager action={action} />}
+        vaultName="ethVault"
+        faqContent={<EarnEthFaq />}
+      />
+      <Disclaimers />
+    </>
   );
 };

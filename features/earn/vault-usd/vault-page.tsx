@@ -13,6 +13,7 @@ import { EarnUsdFaq } from './faq/faq';
 import { EARN_VAULT_DEPOSIT_SLUG, EARN_VAULT_WITHDRAW_SLUG } from '../consts';
 import { useUsdVaultStats } from './hooks/use-vault-stats';
 import { useUsdVaultApy } from './hooks/use-vault-apy';
+import { Disclaimers } from '../shared/v2/disclaimers/disclaimers';
 
 const FEES = [
   { label: 'Performance fee', value: '10%' },
@@ -99,15 +100,18 @@ export const VaultPageUSD: FC<{
   const { totalTvlUsd, isLoading: isTvlLoading } = useUsdVaultStats();
 
   return (
-    <VaultPage
-      {...DATA}
-      apx={apy}
-      tvl={totalTvlUsd}
-      isApxLoading={isApyLoading}
-      isTvlLoading={isTvlLoading}
-      sidePanel={<UsdVaultPositionManager action={action} />}
-      vaultName="usdVault"
-      faqContent={<EarnUsdFaq />}
-    />
+    <>
+      <VaultPage
+        {...DATA}
+        apx={apy}
+        tvl={totalTvlUsd}
+        isApxLoading={isApyLoading}
+        isTvlLoading={isTvlLoading}
+        sidePanel={<UsdVaultPositionManager action={action} />}
+        vaultName="usdVault"
+        faqContent={<EarnUsdFaq />}
+      />
+      <Disclaimers />
+    </>
   );
 };
