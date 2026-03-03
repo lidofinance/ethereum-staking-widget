@@ -5,6 +5,7 @@ import {
   DisclaimerSection,
   AprDisclaimer,
   LegalDisclaimer,
+  ButtonInline,
 } from 'shared/components';
 
 import { useEarnState } from '../shared/hooks/use-earn-state';
@@ -17,7 +18,12 @@ import { VaultCardSTG } from '../vault-stg/vault-card-stg-v2';
 import { UsdVaultCard } from '../vault-usd';
 import { EthVaultCard } from '../vault-eth';
 
-import { AccordionTitle, CardsStack, ListWrapper } from './styles';
+import {
+  AccordionTitle,
+  CardsStack,
+  ListSubtitle,
+  ListWrapper,
+} from './styles';
 
 const VAULT_CARDS = {
   ggv: VaultCardGGV,
@@ -44,6 +50,19 @@ export const EarnVaultsList: FC = () => {
 
   return (
     <>
+      <ListSubtitle>
+        Deploy ETH and USD stablecoins into DeFi vaults for on-chain yield
+        through the world&apos;s leading protocols.
+        <br />
+        <ButtonInline
+          onClick={(event) => {
+            event.preventDefault();
+            setIsDrawerRightOpen(true);
+          }}
+        >
+          How Lido Earn Works
+        </ButtonInline>
+      </ListSubtitle>
       <ListWrapper>
         <UpgradeCard setIsDrawerRightOpen={setIsDrawerRightOpen} />
         <CardsStack>

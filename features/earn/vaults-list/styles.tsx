@@ -1,5 +1,11 @@
 import styled from 'styled-components';
 
+export const ListSubtitle = styled.div`
+  text-align: center;
+  margin-bottom: ${({ theme }) => theme.spaceMap.xl}px;
+  font-weight: 400;
+`;
+
 export const ListWrapper = styled.div`
   max-width: 680px;
   margin: 0 auto;
