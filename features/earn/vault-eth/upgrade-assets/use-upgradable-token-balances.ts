@@ -11,6 +11,7 @@ import { ETH_VAULT_QUERY_SCOPE } from '../consts';
 import invariant from 'tiny-invariant';
 import { getDepositQueueContract } from '../contracts';
 import { EthDepositToken } from '../types';
+import { useEthVaultAvailable } from '../hooks/use-vault-available';
 
 export const UPGRADABLE_TOKEN_BALANCES_QUERY_KEY = 'upgradable-token-balances';
 
@@ -18,6 +19,7 @@ export const useUpgradableTokenBalances = () => {
   const { address, chainId, isDappActive } = useDappStatus();
   const enabled = isDappActive && !!address;
   const publicClient = usePublicClient({ chainId });
+  const vaultAvailable = useEthVaultAvailable();
 
   const ggvShareStateQuery = useGGVUserShareState();
   const areGgvSharesTimeLocked = useIsUnlocked(
@@ -31,7 +33,7 @@ export const useUpgradableTokenBalances = () => {
       address,
       chainId,
     ],
-    enabled: enabled && !!publicClient,
+    enabled: enabled && !!publicClient && vaultAvailable.isDepositEnabled,
     queryFn: async () => {
       invariant(publicClient, 'Public client is not defined');
       invariant(address, 'Address is not defined');
