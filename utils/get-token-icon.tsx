@@ -40,6 +40,6 @@ export const getTokenIcon = (t: Token | TokenSymbol) => {
     case TOKENS.streth:
       return <TokenStrethIcon />;
     default:
-      return invariant(false, `Unsupported token: ${t}`);
+      invariant(false, `Unsupported token: ${t}`);
   }
 };
