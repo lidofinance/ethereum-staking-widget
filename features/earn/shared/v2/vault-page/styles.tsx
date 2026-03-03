@@ -92,6 +92,9 @@ export const TableLabel = styled.span`
 `;
 
 export const TableValue = styled.span`
+  display: flex;
+  align-items: center;
+  gap: ${({ theme }) => theme.spaceMap.xs}px;
   text-align: right;
 `;
 

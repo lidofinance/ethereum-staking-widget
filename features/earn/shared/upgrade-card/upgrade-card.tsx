@@ -1,10 +1,17 @@
 import { FC } from 'react';
-import { Deposit, History, Stake } from '@lidofinance/lido-ui';
 
 import { useDappStatus } from 'modules/web3';
-import { UpgradeIllustrationIcon } from 'assets/earn-v2';
+import {
+  UpgradeIllustrationIcon,
+  IconChartColumnIncreasing,
+  IconChartPie,
+  IconRotateCw,
+} from 'assets/earn-v2';
 import { ButtonInline } from 'shared/components/button-inline/button-inline';
 import { ETH_DEPOSIT_PATH } from 'features/earn/consts';
+import { LocalLink } from 'shared/components/local-link';
+import { useUpgradableTokenBalances } from 'features/earn/vault-eth/upgrade-assets/use-upgradable-token-balances';
+import { ETH_VAULT_DEPOSIT_TOKENS_UPGRADABLE } from 'features/earn/vault-eth/consts';
 
 import {
   UpgradeCardBlock,
@@ -18,7 +25,6 @@ import {
   UpgradeColumn,
   UpgradeButton,
 } from './styles';
-import { LocalLink } from 'shared/components/local-link';
 
 type UpgradeCardProps = {
   setIsDrawerRightOpen: (isOpen: boolean) => void;
@@ -26,9 +32,17 @@ type UpgradeCardProps = {
 
 export const UpgradeCard: FC<UpgradeCardProps> = ({ setIsDrawerRightOpen }) => {
   const { isWalletConnected } = useDappStatus();
+  const { balances } = useUpgradableTokenBalances();
 
-  // TODO; check assets available to upgrade
   if (!isWalletConnected) return null;
+
+  const hasBalance = (token: keyof typeof balances) =>
+    balances[token] != null && balances[token] > 0n;
+
+  const upgradableTokens =
+    ETH_VAULT_DEPOSIT_TOKENS_UPGRADABLE.filter(hasBalance);
+
+  if (upgradableTokens.length === 0) return null;
 
   return (
     <UpgradeCardBlock>
@@ -44,27 +58,29 @@ export const UpgradeCard: FC<UpgradeCardProps> = ({ setIsDrawerRightOpen }) => {
           <UpgradeList>
             <UpgradeItem>
               <UpgradeItemIcon aria-hidden>
-                <Deposit width={18} height={18} />
+                <IconChartPie width={20} height={20} />
               </UpgradeItemIcon>
-              <span>Auto-allocation across Lido’s best ETH strategies</span>
+              <span>
+                Auto-allocation across Lido&apos;s best ETH strategies
+              </span>
             </UpgradeItem>
             <UpgradeItem>
               <UpgradeItemIcon aria-hidden>
-                <Stake width={18} height={18} />
+                <IconChartColumnIncreasing width={20} height={20} />
               </UpgradeItemIcon>
               <span>No unstaking. Rewards keep accruing</span>
             </UpgradeItem>
             <UpgradeItem>
               <UpgradeItemIcon aria-hidden>
-                <History width={18} height={18} />
+                <IconRotateCw width={20} height={20} />
               </UpgradeItemIcon>
               <span>Up to date with new strategies</span>
             </UpgradeItem>
           </UpgradeList>
           <UpgradeParagraph>
             To upgrade you just need to deposit your upgradable tokens into the
-            EarnETH Vault and you’ll receive a new earnETH token representing
-            your position in Lido ETH Growth.{' '}
+            EarnETH Vault and you&apos;ll receive a new earnETH token
+            representing your position in Lido ETH Growth.{' '}
             <ButtonInline
               onClick={(event) => {
                 event.preventDefault();
