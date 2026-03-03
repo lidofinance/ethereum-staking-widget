@@ -123,9 +123,12 @@ export const buildChartSeries = ({
 };
 
 /**
- * Maps each vault timestamp to the closest point from a pre-sorted raw series.
- * `raw` MUST be sorted by timestampMs ascending (Treasury and staking fetchers guarantee this).
- * Uses binary search: O(n log m) instead of O(n·m) linear scan.
+ * Maps each vault timestamp to the rate from a raw series on the same UTC calendar date.
+ * Falls back to the nearest prior date when no exact match exists (weekends, US public holidays).
+ *
+ * Matching by UTC date (not by millisecond distance) avoids spurious day shifts that occur
+ * when vault timestamps land late in the day (e.g. 23:00 UTC is closer to the next day's
+ * midnight than to the current day's midnight).
  */
 export const alignToVaultTimestamps = (
   raw: { timestampMs: number; rate: number }[],
@@ -133,22 +136,33 @@ export const alignToVaultTimestamps = (
 ): [number, number][] => {
   if (raw.length === 0 || apySeriesData.length === 0) return [];
 
+  // Build a map: UTC date string "YYYY-MM-DD" → rate for O(1) lookup.
+  const dateToRate = new Map<string, number>();
+  for (const point of raw) {
+    const dateKey = new Date(point.timestampMs).toISOString().slice(0, 10);
+    dateToRate.set(dateKey, point.rate);
+  }
+
+  // Sorted date keys for binary search fallback (nearest prior trading day).
+  const sortedKeys = [...dateToRate.keys()].sort();
+
   return apySeriesData.map(([vaultTs]) => {
-    // Binary search: find first index where raw[mid].timestampMs >= vaultTs.
-    let left = 0;
-    let right = raw.length - 1;
-    while (left < right) {
-      const mid = (left + right) >> 1;
-      if (raw[mid].timestampMs < vaultTs) left = mid + 1;
-      else right = mid;
+    const vaultDateKey = new Date(vaultTs).toISOString().slice(0, 10);
+
+    const exactRate = dateToRate.get(vaultDateKey);
+    if (exactRate !== undefined) {
+      return [vaultTs, exactRate];
     }
-    // Compare left with left-1 to pick the truly closest point.
-    const closest =
-      left > 0 &&
-      Math.abs(raw[left - 1].timestampMs - vaultTs) <
-        Math.abs(raw[left].timestampMs - vaultTs)
-        ? raw[left - 1]
-        : raw[left];
-    return [vaultTs, closest.rate];
+
+    // No data for this UTC date (weekend / holiday): find nearest prior trading day.
+    let left = 0;
+    let right = sortedKeys.length - 1;
+    while (left < right) {
+      const mid = (left + right + 1) >> 1;
+      if (sortedKeys[mid] <= vaultDateKey) left = mid;
+      else right = mid - 1;
+    }
+    // sortedKeys is built from dateToRate.keys(), so the value is always defined.
+    return [vaultTs, dateToRate.get(sortedKeys[left]) ?? 0];
   });
 };

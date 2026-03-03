@@ -42,7 +42,10 @@ const fetchMonthXml = async (yyyymm: string): Promise<TreasuryChartPoint[]> => {
     const rate = Number.parseFloat(rateEl.textContent.trim());
     if (Number.isNaN(rate)) continue;
 
-    const timestampMs = new Date(dateStr).getTime();
+    // Split off the time part so the string is treated as a UTC date (YYYY-MM-DD).
+    // "2026-02-26T00:00:00" has no timezone suffix, so new Date() would parse it
+    // as local midnight — shifting timestamps in non-UTC browsers (e.g. UTC+3 → Feb 25 21:00 UTC).
+    const timestampMs = new Date(dateStr.split('T')[0]).getTime();
     points.push({ timestampMs, rate });
   }
 
