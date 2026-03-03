@@ -1,3 +1,4 @@
+import { useDvvUsd } from 'features/earn/vault-dvv';
 import {
   EthVaultDepositPendingRequest,
   DepositPendingRequestProps,
@@ -6,8 +7,12 @@ import {
 type Props = Omit<DepositPendingRequestProps, 'usdAmount'>;
 
 export const EthVaultDepositPendingRequestDvsteth = (props: Props) => {
-  // TODO: usd conversion for dvstETH
+  const { data, isLoading } = useDvvUsd(props.request.assets);
   return (
-    <EthVaultDepositPendingRequest {...props} isLoading={props.isLoading} />
+    <EthVaultDepositPendingRequest
+      {...props}
+      usdAmount={data?.usd}
+      isLoading={props.isLoading || isLoading}
+    />
   );
 };
