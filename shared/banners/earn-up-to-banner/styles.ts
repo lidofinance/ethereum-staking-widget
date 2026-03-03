@@ -7,10 +7,13 @@ export const Wrap = styled(BannerWrap)`
   container-type: inline-size;
   container-name: earn-banner-container;
   background: linear-gradient(
-    278.02deg,
-    rgba(255, 191, 0, 0.15) -0.37%,
-    rgba(255, 170, 0, 0.6) 109.06%
-  );
+      87deg,
+      rgba(106, 154, 255, 0.2) -11.77%,
+      rgba(201, 172, 255, 0.2) 21.01%,
+      rgba(255, 206, 190, 0.2) 102.78%
+    ),
+    #fff;
+
   color: var(--lido-color-text);
   overflow: hidden;
   padding: 16px 20px;
@@ -48,8 +51,8 @@ export const LogoContainer = styled.div`
 
 export const IconWrapper = styled.div`
   position: absolute;
-  right: -20px;
-  bottom: -20px;
+  right: -26px;
+  top: -20px;
 `;
 
 export const OverlayLink = styled(LocalLink)`
