@@ -12,7 +12,7 @@ export const useDvvUsd = (dvvShares?: bigint) => {
       'dvv-wsteth',
       { dvvShares: dvvShares?.toString() },
     ] as const,
-    enabled: dvvShares != undefined,
+    enabled: typeof dvvShares === 'bigint',
     queryFn: async () => {
       const vault = getDVVVaultContract(publicClientMainnet);
 

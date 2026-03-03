@@ -13,18 +13,16 @@ export const useGgvUsd = (ggvShares?: bigint) => {
 
   const { data: withdrawalState } = useGGVWithdrawalState();
 
-  const isEnabled = ggvShares != null;
-
   const query = useQuery({
     queryKey: [
       'ggv',
       'ggv-wsteth',
       {
-        ggvShares: isEnabled ? ggvShares?.toString() : null,
+        ggvShares: ggvShares?.toString(),
         minDiscount: withdrawalState?.minDiscount.toString() ?? '1',
       },
     ] as const,
-    enabled: isEnabled,
+    enabled: typeof ggvShares === 'bigint',
     queryFn: async () => {
       const queue = getGGVQueueContract(publicClientMainnet);
 

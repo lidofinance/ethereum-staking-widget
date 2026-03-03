@@ -12,10 +12,10 @@ export const useStgUsd = (stgShares?: bigint) => {
       'stg',
       'stg-usd',
       {
-        amount: stgShares?.toString() ?? null,
+        amount: stgShares?.toString(),
       },
     ] as const,
-    enabled: stgShares !== undefined,
+    enabled: typeof stgShares === 'bigint',
     queryFn: async () => {
       if (!stgShares)
         return {
