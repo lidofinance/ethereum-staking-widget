@@ -12,6 +12,8 @@ import { UsdVaultAvailableDeposit } from './available-deposit';
 import { UsdVaultDepositSubmitButton } from './deposit-submit-button';
 import { UsdVaultDepositRequests } from './deposit-requests';
 
+// TODO: add Deposit Warning and ability to disable deposit via config
+
 export const UsdVaultDepositForm = () => {
   return (
     <UsdVaultDepositFormProvider>

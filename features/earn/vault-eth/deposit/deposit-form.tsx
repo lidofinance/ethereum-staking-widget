@@ -16,6 +16,8 @@ import { EthVaultDepositRequests } from './deposit-requests';
 import { ActionSwitch } from '../components/action-switch';
 import { UpgradeAssetsBlock } from '../upgrade-assets/upgrade-assets';
 
+// TODO: add Deposit Warning and ability to disable deposit via config
+
 export const EthVaultDepositForm = () => {
   return (
     <EthDepositFormProvider>

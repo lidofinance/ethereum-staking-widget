@@ -16,6 +16,8 @@ import { EthVaultWithdrawSubmitButton } from './withdraw-submit-button';
 import { EthVaultWithdrawRequests } from './withdraw-requests';
 import { ActionSwitch } from '../components/action-switch';
 
+// TODO: add Withdraw Warning and ability to disable withdraw via config
+
 const EthVaultWithdrawFormContent: FC = () => {
   return (
     <Block>
