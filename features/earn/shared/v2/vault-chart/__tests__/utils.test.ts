@@ -19,29 +19,31 @@ import {
 
 // ─── formatTvl ──────────────────────────────────────────────────────────────
 
+// formatTvl receives USD values already normalized by the vault data hook.
+// No wei conversion happens here — just display formatting.
 describe('formatTvl', () => {
-  it('formats 0 wei as $0', () => {
-    expect(formatTvl('0')).toBe('$0');
+  it('formats $0', () => {
+    expect(formatTvl(0)).toBe('$0');
   });
 
-  it('formats 1 ETH (1e18 wei) as $1', () => {
-    expect(formatTvl('1000000000000000000')).toBe('$1');
+  it('formats $1', () => {
+    expect(formatTvl(1)).toBe('$1');
   });
 
-  it('formats 1 000 ETH (1e21 wei) as $1K', () => {
-    expect(formatTvl('1000000000000000000000')).toBe('$1K');
+  it('formats $1K', () => {
+    expect(formatTvl(1_000)).toBe('$1K');
   });
 
-  it('formats 1 500 000 ETH (1.5M * 1e18 wei) as $1.5M', () => {
-    expect(formatTvl('1500000000000000000000000')).toBe('$1.5M');
+  it('formats $1.5M', () => {
+    expect(formatTvl(1_500_000)).toBe('$1.5M');
   });
 
-  it('formats 1B ETH as $1B', () => {
-    expect(formatTvl('1000000000000000000000000000')).toBe('$1B');
+  it('formats $1B', () => {
+    expect(formatTvl(1_000_000_000)).toBe('$1B');
   });
 
   it('prepends $ sign', () => {
-    expect(formatTvl('5000000000000000000')).toMatch(/^\$/);
+    expect(formatTvl(5)).toMatch(/^\$/);
   });
 });
 
@@ -56,6 +58,7 @@ type MockParam = {
 const makeParams = (items: MockParam[]) =>
   items as unknown as Parameters<typeof formatTooltipContent>[0];
 
+// TVL values in params are pre-converted USD numbers (normalization happens in vault data hook).
 describe('formatTooltipContent', () => {
   const T = 1705320000000; // 2024-01-15T12:00:00Z
 
@@ -67,13 +70,9 @@ describe('formatTooltipContent', () => {
     expect(formatTooltipContent({} as never, true)).toBe('');
   });
 
-  it('formats a single TVL series entry', () => {
+  it('formats a single TVL series entry (USD number)', () => {
     const params = makeParams([
-      {
-        seriesName: 'Vault TVL',
-        value: [T, '1000000000000000000000'],
-        marker: '●',
-      },
+      { seriesName: 'Vault TVL', value: [T, 1_000], marker: '●' },
     ]);
     const result = formatTooltipContent(params, true);
     expect(result).toContain('$1K');
@@ -111,11 +110,7 @@ describe('formatTooltipContent', () => {
 
   it('TVL uses shortened format, not percent', () => {
     const params = makeParams([
-      {
-        seriesName: 'Vault TVL',
-        value: [T, '500000000000000000000000000'],
-        marker: '●',
-      },
+      { seriesName: 'Vault TVL', value: [T, 500_000_000], marker: '●' },
     ]);
     const result = formatTooltipContent(params, true);
     expect(result).not.toContain('%');
@@ -270,116 +265,127 @@ describe('buildChartSeries', () => {
 });
 
 // ─── alignToVaultTimestamps ──────────────────────────────────────────────────
+// All timestamps are UTC-midnight values for known calendar dates.
+// Jan 15 2024 (Mon) = 1705276800000, each subsequent day adds 86_400_000 ms.
+const DAY = 86_400_000;
+const MON_JAN_15 = new Date('2024-01-15').getTime(); // Monday
+const TUE_JAN_16 = MON_JAN_15 + DAY;
+const WED_JAN_17 = MON_JAN_15 + 2 * DAY;
+const FRI_JAN_19 = MON_JAN_15 + 4 * DAY;
+const SAT_JAN_20 = MON_JAN_15 + 5 * DAY; // no Treasury data on weekends
+const SUN_JAN_21 = MON_JAN_15 + 6 * DAY;
+const MON_JAN_22 = MON_JAN_15 + 7 * DAY;
+
+// Treasury has data Mon–Fri (trading days only).
+const weekRaw = [
+  { timestampMs: MON_JAN_15, rate: 4.1 },
+  { timestampMs: TUE_JAN_16, rate: 4.2 },
+  { timestampMs: WED_JAN_17, rate: 4.3 },
+  { timestampMs: FRI_JAN_19, rate: 4.5 },
+  { timestampMs: MON_JAN_22, rate: 4.6 },
+];
 
 describe('alignToVaultTimestamps', () => {
   it('returns [] when raw is empty', () => {
-    expect(alignToVaultTimestamps([], [[1000, 4.5]])).toEqual([]);
+    expect(alignToVaultTimestamps([], [[MON_JAN_15, 0]])).toEqual([]);
   });
 
   it('returns [] when apySeriesData is empty', () => {
     expect(
-      alignToVaultTimestamps([{ timestampMs: 1000, rate: 4.5 }], []),
+      alignToVaultTimestamps([{ timestampMs: MON_JAN_15, rate: 4.1 }], []),
     ).toEqual([]);
   });
 
-  it('aligns exact timestamp matches', () => {
-    const raw = [
-      { timestampMs: 1000, rate: 4 },
-      { timestampMs: 2000, rate: 5 },
-      { timestampMs: 3000, rate: 6 },
-    ];
-    const result = alignToVaultTimestamps(raw, [
-      [1000, 0],
-      [2000, 0],
-      [3000, 0],
+  it('matches by UTC calendar date when vault timestamp is at midnight', () => {
+    const result = alignToVaultTimestamps(weekRaw, [
+      [MON_JAN_15, 0],
+      [TUE_JAN_16, 0],
+      [WED_JAN_17, 0],
     ]);
     expect(result).toEqual([
-      [1000, 4],
-      [2000, 5],
-      [3000, 6],
+      [MON_JAN_15, 4.1],
+      [TUE_JAN_16, 4.2],
+      [WED_JAN_17, 4.3],
     ]);
   });
 
-  it('picks the closer of two neighbours', () => {
-    const raw = [
-      { timestampMs: 1000, rate: 4 },
-      { timestampMs: 3000, rate: 6 },
-    ];
-    // t=1800: distance to 1000 is 800, distance to 3000 is 1200 → should pick rate 4.0
-    const result = alignToVaultTimestamps(raw, [[1800, 0]]);
-    expect(result).toEqual([[1800, 4]]);
+  // Regression for the reported bug: vault timestamps are mid-day (not midnight).
+  // Previously, a vault point at 18:00 UTC would be closer in ms to the *next* day's
+  // Treasury midnight than to the current day's midnight → off-by-one-day error.
+  it('matches same calendar day even when vault timestamp is mid-day (18:00 UTC)', () => {
+    const vaultMidDay = MON_JAN_15 + 18 * 3_600_000; // Mon Jan 15 18:00 UTC
+    const result = alignToVaultTimestamps(weekRaw, [[vaultMidDay, 0]]);
+    // Must return Jan 15 rate (4.1), not Jan 16 rate (4.2).
+    expect(result).toEqual([[vaultMidDay, 4.1]]);
   });
 
-  it('picks the closer of two neighbours (right side closer)', () => {
-    const raw = [
-      { timestampMs: 1000, rate: 4 },
-      { timestampMs: 3000, rate: 6 },
-    ];
-    // t=2500: distance to 1000 is 1500, distance to 3000 is 500 → should pick rate 6.0
-    const result = alignToVaultTimestamps(raw, [[2500, 0]]);
-    expect(result).toEqual([[2500, 6]]);
+  it('matches same calendar day even when vault timestamp is end-of-day (23:59:59 UTC)', () => {
+    const vaultEndOfDay = MON_JAN_15 + DAY - 1000; // Mon Jan 15 23:59:59 UTC
+    const result = alignToVaultTimestamps(weekRaw, [[vaultEndOfDay, 0]]);
+    expect(result).toEqual([[vaultEndOfDay, 4.1]]);
   });
 
-  it('handles t before all raw points (clamps to first)', () => {
-    const raw = [
-      { timestampMs: 2000, rate: 5 },
-      { timestampMs: 4000, rate: 7 },
-    ];
-    const result = alignToVaultTimestamps(raw, [[500, 0]]);
-    expect(result).toEqual([[500, 5]]);
+  it('falls back to nearest prior trading day for Saturday', () => {
+    // Saturday Jan 20 — Treasury has no data. Should use Friday Jan 19 (4.5).
+    const result = alignToVaultTimestamps(weekRaw, [[SAT_JAN_20, 0]]);
+    expect(result).toEqual([[SAT_JAN_20, 4.5]]);
   });
 
-  it('handles t after all raw points (clamps to last)', () => {
-    const raw = [
-      { timestampMs: 1000, rate: 4 },
-      { timestampMs: 2000, rate: 5 },
-    ];
-    const result = alignToVaultTimestamps(raw, [[9999, 0]]);
-    expect(result).toEqual([[9999, 5]]);
+  it('falls back to nearest prior trading day for Sunday', () => {
+    // Sunday Jan 21 — Treasury has no data. Should use Friday Jan 19 (4.5).
+    const result = alignToVaultTimestamps(weekRaw, [[SUN_JAN_21, 0]]);
+    expect(result).toEqual([[SUN_JAN_21, 4.5]]);
+  });
+
+  it('handles vault timestamp before all raw points (returns earliest rate)', () => {
+    const beforeAll = MON_JAN_15 - DAY; // Sunday Jan 14
+    const result = alignToVaultTimestamps(weekRaw, [[beforeAll, 0]]);
+    // No prior trading day: binary search clamps to index 0.
+    expect(result[0][1]).toBe(4.1);
+  });
+
+  it('handles vault timestamp after all raw points (returns latest rate)', () => {
+    const afterAll = MON_JAN_22 + DAY; // Tuesday Jan 23 (after last raw entry)
+    const result = alignToVaultTimestamps(weekRaw, [[afterAll, 0]]);
+    expect(result).toEqual([[afterAll, 4.6]]);
   });
 
   it('handles a single raw point — always returns that rate', () => {
-    const raw = [{ timestampMs: 5000, rate: 3.5 }];
+    const raw = [{ timestampMs: MON_JAN_15, rate: 3.5 }];
     const result = alignToVaultTimestamps(raw, [
-      [1000, 0],
-      [2000, 0],
-      [9000, 0],
+      [MON_JAN_15, 0],
+      [TUE_JAN_16, 0],
+      [MON_JAN_22, 0],
     ]);
-    expect(result).toEqual([
-      [1000, 3.5],
-      [2000, 3.5],
-      [9000, 3.5],
-    ]);
+    result.forEach(([, rate]) => expect(rate).toBe(3.5));
   });
 
-  it('preserves vault timestamps in output', () => {
-    const raw = [
-      { timestampMs: 1000, rate: 4 },
-      { timestampMs: 2000, rate: 5 },
-    ];
-    // vault timestamps differ from raw — output timestamps must match vault, not raw
-    const result = alignToVaultTimestamps(raw, [
-      [1100, 0],
-      [1900, 0],
+  it('preserves vault timestamps in output (never substitutes raw timestamps)', () => {
+    const vaultMon = MON_JAN_15 + 12 * 3_600_000; // 12:00 UTC
+    const vaultTue = TUE_JAN_16 + 20 * 3_600_000; // 20:00 UTC
+    const result = alignToVaultTimestamps(weekRaw, [
+      [vaultMon, 0],
+      [vaultTue, 0],
     ]);
-    expect(result[0][0]).toBe(1100);
-    expect(result[1][0]).toBe(1900);
+    expect(result[0][0]).toBe(vaultMon);
+    expect(result[1][0]).toBe(vaultTue);
   });
 
-  it('handles many raw points efficiently (smoke test for large input)', () => {
+  it('handles many raw points efficiently (smoke test for 365-day input)', () => {
     const raw = Array.from({ length: 365 }, (_, i) => ({
-      timestampMs: i * 86_400_000,
+      timestampMs: MON_JAN_15 + i * DAY,
       rate: i * 0.01,
     }));
+    // Vault timestamps are mid-day to stress-test date matching.
     const apyData = Array.from({ length: 90 }, (_, i) => [
-      i * 86_400_000 + 1000,
+      MON_JAN_15 + i * DAY + 3_600_000 * 14, // 14:00 UTC each day
       0,
     ]);
     const result = alignToVaultTimestamps(raw, apyData);
     expect(result).toHaveLength(90);
     result.forEach(([t, rate], i) => {
       expect(t).toBe(apyData[i][0]);
-      expect(typeof rate).toBe('number');
+      expect(rate).toBeCloseTo(i * 0.01, 10);
     });
   });
 });
