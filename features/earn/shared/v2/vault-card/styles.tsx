@@ -1,5 +1,6 @@
 import styled from 'styled-components';
-import { Block } from '@lidofinance/lido-ui';
+import { Block, Badge } from '@lidofinance/lido-ui';
+import { ReactComponent as ChevronsUp } from 'assets/icons/chevrons-up.svg';
 
 const getBackgroundGradient = (variant: 'eth' | 'usd' | 'default'): string => {
   const gradients: Record<'eth' | 'usd' | 'default', string> = {
@@ -55,9 +56,21 @@ export const CardHeaderContent = styled.div`
 `;
 
 export const CardTitle = styled.div`
+  display: flex;
+  align-items: center;
+  gap: ${({ theme }) => theme.spaceMap.md}px;
   font-size: 26px;
   line-height: 38px;
   font-weight: 700;
+`;
+
+export const CardTitleBadge = styled(Badge)`
+  height: 32px;
+`;
+
+export const ChevronsUpIcon = styled(ChevronsUp)`
+  width: 20px;
+  height: 20px;
 `;
 
 export const CardDescription = styled.p`

@@ -1,7 +1,6 @@
 import { useFormState } from 'react-hook-form';
 import { useEthVaultAvailable } from '../../hooks/use-vault-available';
 import { SubmitButtonHookForm } from 'shared/hook-form/controls/submit-button-hook-form';
-import { getTokenSymbol } from 'utils/get-token-symbol';
 import { useETHDepositForm } from '../form-context';
 import { useEthVaultDepositRequest } from '../hooks';
 import {
@@ -9,11 +8,14 @@ import {
   StyledQuestionIcon,
   SubmitButtonInnerContainer,
 } from './styles';
+import { asEthDepositToken } from '../../utils';
 
 export const EthVaultDepositSubmitButton = () => {
   const { disabled } = useFormState();
   const { isDepositLockedForCurrentToken, token } = useETHDepositForm();
-  const depositRequest = useEthVaultDepositRequest({ token });
+  const depositRequest = useEthVaultDepositRequest({
+    token: asEthDepositToken(token),
+  });
   const { isEthVaultAvailable } = useEthVaultAvailable();
 
   const shouldSwitchChain = !isEthVaultAvailable;
@@ -30,7 +32,7 @@ export const EthVaultDepositSubmitButton = () => {
     return (
       <StyledTooltip
         placement="bottom"
-        title={`You already have a pending request in ${getTokenSymbol(token)}. To create a new deposit, please select a different token or cancel the existing deposit.`}
+        title={`You already have a pending request in ${token}. To create a new deposit, please select a different token or cancel the existing deposit.`}
       >
         {/*
           `div` wrapper is required around disabled button for the tooltip to work,

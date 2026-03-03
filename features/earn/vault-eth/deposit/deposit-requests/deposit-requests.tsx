@@ -1,5 +1,5 @@
-import { useEthVaultAvailable } from '../../hooks/use-vault-available';
 import { RequestsContainer } from 'modules/mellow-meta-vaults/components/request';
+import { useEthVaultAvailable } from '../../hooks/use-vault-available';
 import {
   useEthVaultDepositRequests,
   useEthVaultDepositCancel,

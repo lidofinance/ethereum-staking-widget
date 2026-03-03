@@ -1,27 +1,37 @@
 import type { Address } from 'viem';
-import { LIDO_TOKENS, CHAINS } from '@lidofinance/lido-ethereum-sdk/common';
+import { CHAINS } from '@lidofinance/lido-ethereum-sdk/common';
 
 import { CONTRACT_NAMES, getNetworkConfigMapByChain } from './networks-map';
-import { TOKEN_SYMBOLS } from 'consts/tokens';
+import { Token, TOKENS, type TokenSymbol } from 'consts/tokens';
+import { asToken } from 'utils/as-token';
 
-const TOKENS_TO_CONTRACTS = {
-  [LIDO_TOKENS.wsteth]: CONTRACT_NAMES.wsteth,
-  [LIDO_TOKENS.steth]: CONTRACT_NAMES.lido,
-  [LIDO_TOKENS.unsteth]: CONTRACT_NAMES.withdrawalQueue,
-  ['wETH']: CONTRACT_NAMES.weth,
-  [TOKEN_SYMBOLS.usdc]: CONTRACT_NAMES.usdc,
-  [TOKEN_SYMBOLS.usdt]: CONTRACT_NAMES.usdt,
+const TOKENS_TO_CONTRACTS: Record<
+  Token,
+  keyof typeof CONTRACT_NAMES | undefined
+> = {
+  [TOKENS.eth]: undefined, // ETH does not have a contract address
+  [TOKENS.wsteth]: CONTRACT_NAMES.wsteth,
+  [TOKENS.steth]: CONTRACT_NAMES.lido,
+  [TOKENS.unsteth]: CONTRACT_NAMES.withdrawalQueue,
+  [TOKENS.weth]: CONTRACT_NAMES.weth,
+  [TOKENS.usdc]: CONTRACT_NAMES.usdc,
+  [TOKENS.usdt]: CONTRACT_NAMES.usdt,
+  [TOKENS.gg]: CONTRACT_NAMES.ggvVault,
+  [TOKENS.dvsteth]: CONTRACT_NAMES.dvvVault,
+  [TOKENS.streth]: CONTRACT_NAMES.stgShareManagerSTRETH,
+  [TOKENS.earneth]: CONTRACT_NAMES.ethShareManagerEARNETH,
+  [TOKENS.earnusd]: CONTRACT_NAMES.usdShareManagerEARNUSD,
 } as const;
-
-export type TOKENS = keyof typeof TOKENS_TO_CONTRACTS | 'ETH';
 
 export const getTokenAddress = (
   chain: CHAINS,
-  token: TOKENS,
+  _token: TokenSymbol | Token,
 ): Address | undefined => {
-  if (token === 'ETH') return '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
+  const token = asToken(_token);
 
-  return getNetworkConfigMapByChain(chain)?.contracts[
-    TOKENS_TO_CONTRACTS[token]
-  ];
+  if (token === TOKENS.eth) return '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
+
+  return TOKENS_TO_CONTRACTS[token]
+    ? getNetworkConfigMapByChain(chain)?.contracts[TOKENS_TO_CONTRACTS[token]]
+    : undefined;
 };

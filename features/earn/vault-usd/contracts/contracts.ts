@@ -9,8 +9,8 @@ import {
   REDEEM_QUEUE_ABI,
   SHARE_MANAGER_ABI,
 } from 'modules/mellow-meta-vaults/abi';
-import { TOKEN_SYMBOLS } from 'consts/tokens';
-import type { UsdDepositTokens } from '../types';
+import { TOKENS } from 'consts/tokens';
+import type { UsdDepositToken } from '../types';
 
 export const getVaultContract = <TPublicClient extends PublicClient>(
   publicClient: TPublicClient,
@@ -208,14 +208,14 @@ export const getDepositQueueContractAddress = <
   token,
 }: {
   publicClient: TPublicClient;
-  token: UsdDepositTokens;
+  token: UsdDepositToken;
 }) => {
   let contractName;
   switch (token) {
-    case TOKEN_SYMBOLS.usdt:
+    case TOKENS.usdt:
       contractName = 'usdDepositQueueUSDT' as const;
       break;
-    case TOKEN_SYMBOLS.usdc:
+    case TOKENS.usdc:
       contractName = 'usdDepositQueueUSDC' as const;
       break;
     default:
@@ -238,7 +238,7 @@ export const getDepositQueueContract = <TPublicClient extends PublicClient>({
   token,
 }: {
   publicClient: TPublicClient;
-  token: UsdDepositTokens;
+  token: UsdDepositToken;
 }) => {
   return getContract({
     abi: DEPOSIT_QUEUE_ABI,
@@ -259,7 +259,7 @@ export const getDepositQueueWritableContract = <
 }: {
   publicClient: TPublicClient;
   walletClient: TWalletClient;
-  token: UsdDepositTokens;
+  token: UsdDepositToken;
 }) => {
   return getContract({
     abi: DEPOSIT_QUEUE_ABI,

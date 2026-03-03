@@ -7,6 +7,7 @@ import { useDappStatus } from 'modules/web3/hooks/use-dapp-status';
 import { useWstethUsd } from 'shared/hooks/use-wsteth-usd';
 import { useEthUsd } from 'shared/hooks/use-eth-usd';
 import { useStETHByWstETH } from 'modules/web3/hooks/use-stETH-by-wstETH';
+import { TOKENS } from 'consts/tokens';
 import { COLLECTOR_CONFIG, MELLOW_VAULTS_QUERY_SCOPE } from '../consts';
 import { CollectorContract, DepositQueueContract } from '../types/contracts';
 
@@ -30,7 +31,7 @@ export const usePreviewDeposit = <DepositToken extends string>({
 }: {
   depositQueue: DepositQueueContract;
   collector: CollectorContract;
-  amount?: bigint;
+  amount?: bigint | null;
   token?: DepositToken;
 }) => {
   const { isDappActive, address: userAddress } = useDappStatus();
@@ -75,12 +76,16 @@ export const usePreviewDeposit = <DepositToken extends string>({
     },
   });
 
+  // Ensure that the token is lowercase to match TOKENS
+  const tokenLowercase = token?.toLowerCase();
+  const isWstEth = tokenLowercase === TOKENS.wsteth;
+
   const wstethUsdQuery = useWstethUsd(debouncedAmount ?? 0n);
   const ethUsdQuery = useEthUsd(debouncedAmount ?? 0n);
-  const usdQuery = token === 'wstETH' ? wstethUsdQuery : ethUsdQuery;
+  const usdQuery = isWstEth ? wstethUsdQuery : ethUsdQuery;
 
   const { data: stethByWsteth } = useStETHByWstETH(debouncedAmount);
-  const eth = token === 'wstETH' ? stethByWsteth : debouncedAmount ?? 0n;
+  const eth = isWstEth ? stethByWsteth : debouncedAmount ?? 0n;
 
   return {
     isLoading: isDebounced || query.isLoading || usdQuery?.isLoading,

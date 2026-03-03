@@ -13,7 +13,7 @@ import {
 } from 'features/earn/consts';
 import { EthVaultPage } from 'features/earn/vault-eth';
 import { VaultPageUSD } from 'features/earn/vault-usd';
-import { isV1DesignVault } from 'features/earn/shared/helpers/isV1DesignVault';
+import { isV1DesignVault } from 'features/earn/shared/utils/isV1DesignVault';
 
 type PageParams = {
   vault: EarnVaultKey;

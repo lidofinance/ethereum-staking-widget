@@ -10,19 +10,26 @@ import {
   useLidoSDK,
   useTxFlow,
 } from 'modules/web3';
-import { getTokenAddress, TOKENS } from 'config/networks/token-address';
+import { getTokenAddress } from 'config/networks/token-address';
 import { getReferralAddress } from 'utils/get-referral-address';
+import { trackMatomoEvent } from 'utils/track-matomo-event';
+import { type Token, TOKENS } from 'consts/tokens';
+import { MATOMO_EVENT_TYPE } from 'consts/matomo';
 import { TxModalStages } from '../types/tx-modal-stages';
 import { DepositQueueGetter } from '../types/deposit-queue-getter';
 
-export const useDeposit = <DepositToken extends string>({
+export const useDeposit = <DepositQueueToken extends string>({
   depositQueueGetter,
   txModalStages,
   onRetry,
+  matomoEventStart,
+  matomoEventSuccess,
 }: {
-  depositQueueGetter: DepositQueueGetter<DepositToken>;
+  depositQueueGetter: DepositQueueGetter<DepositQueueToken>;
   txModalStages: TxModalStages;
   onRetry?: () => void;
+  matomoEventStart?: MATOMO_EVENT_TYPE;
+  matomoEventSuccess?: MATOMO_EVENT_TYPE;
 }) => {
   const { address } = useDappStatus();
   const { core } = useLidoSDK();
@@ -35,19 +42,19 @@ export const useDeposit = <DepositToken extends string>({
       referral,
     }: {
       amount: bigint;
-      token: DepositToken;
+      token: Token;
       referral: string | null;
     }) => {
-      // TODO: trackMatomoEvent(strategyDepositingStart);
+      if (matomoEventStart) trackMatomoEvent(matomoEventStart);
       invariant(address, 'needs address');
-      const tokenAddress = getTokenAddress(core.chainId, token as TOKENS); // TODO: fix token type
+      const tokenAddress = getTokenAddress(core.chainId, token);
       invariant(tokenAddress, 'Token address is not defined');
 
       try {
         const depositQueue = depositQueueGetter({
           publicClient: core.rpcProvider,
           walletClient: core.web3Provider as WalletClient,
-          token,
+          token: token as DepositQueueToken,
         });
 
         const depositTokenContract = getContract({
@@ -66,7 +73,7 @@ export const useDeposit = <DepositToken extends string>({
 
         let needsApprove = false;
 
-        if (token !== 'ETH') {
+        if (token !== TOKENS.eth) {
           const allowance = await depositTokenContract.read.allowance([
             address,
             depositQueue.address,
@@ -77,7 +84,7 @@ export const useDeposit = <DepositToken extends string>({
 
         const approveArgs = [depositQueue.address, amount] as const;
         const depositArgs = [amount, referralAddress, []] as const;
-        const msgValue = token === 'ETH' ? amount : 0n;
+        const msgValue = token === TOKENS.eth ? amount : 0n;
 
         await txFlow({
           callsFn: async () => {
@@ -154,7 +161,7 @@ export const useDeposit = <DepositToken extends string>({
           onSuccess: async ({ txHash }) => {
             if (needsApprove) return;
             txModalStages.success(amount, token, txHash);
-            // TODO: trackMatomoEvent();
+            if (matomoEventSuccess) trackMatomoEvent(matomoEventSuccess);
           },
           onMultisigDone: () => {
             if (needsApprove) return;
@@ -168,7 +175,16 @@ export const useDeposit = <DepositToken extends string>({
         return false;
       }
     },
-    [address, core, depositQueueGetter, onRetry, txFlow, txModalStages],
+    [
+      address,
+      core,
+      depositQueueGetter,
+      matomoEventStart,
+      matomoEventSuccess,
+      onRetry,
+      txFlow,
+      txModalStages,
+    ],
   );
 
   return { deposit };

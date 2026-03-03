@@ -1,8 +1,8 @@
 import invariant from 'tiny-invariant';
 import type { DepositRequest } from 'modules/mellow-meta-vaults/hooks/use-deposit-requests';
-import { getTokenDisplayName } from 'utils/getTokenDisplayName';
 import { Request } from 'modules/mellow-meta-vaults/components/request';
 import { getTokenIcon } from 'utils/get-token-icon';
+import { getTokenSymbol } from 'utils/get-token-symbol';
 
 export type DepositPendingRequestProps = {
   request: DepositRequest;
@@ -28,7 +28,7 @@ export const UsdVaultDepositPendingRequest = ({
       key={token}
       tokenLogo={getTokenIcon(token)}
       tokenAmount={assets}
-      tokenName={getTokenDisplayName(token)}
+      tokenName={getTokenSymbol(token)}
       tokenAmountUSD={usdAmount}
       createdDateTimestamp={request.createdTimestamp}
       actionText="Cancel"

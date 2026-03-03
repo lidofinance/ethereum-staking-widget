@@ -10,7 +10,8 @@ import { useFormControllerRetry } from 'shared/hook-form/form-controller/use-for
 import { useQueryParamsReferralForm } from 'shared/hooks/use-query-values-form';
 import { useDappStatus } from 'modules/web3/hooks/use-dapp-status';
 import { TOKEN_SYMBOLS } from 'consts/tokens';
-import {
+
+import type {
   USDDepositFormDataContextValue,
   USDDepositFormValidatedValues,
   USDDepositFormValues,
@@ -20,6 +21,7 @@ import { useUsdVaultDepositFormData } from '../hooks/use-deposit-form-data';
 import { UsdVaultDepositFormValidationResolver } from './validation';
 import { useUsdVaultAvailable } from '../../hooks/use-vault-available';
 import { useUsdVaultDepositRequest } from '../hooks';
+import { asUsdDepositToken } from '../../utils';
 
 const UsdVaultDepositFormDataContext =
   createContext<USDDepositFormDataContextValue | null>(null);
@@ -64,16 +66,21 @@ export const UsdVaultDepositFormProvider: React.FC<{
     resolver: UsdVaultDepositFormValidationResolver,
   });
 
-  const token = formObject.watch('token');
+  const tokenSymbol = formObject.watch('token');
   const { setValue } = formObject;
   useQueryParamsReferralForm<USDDepositFormValues>({ setValue });
 
-  const depositRequest = useUsdVaultDepositRequest({ token });
+  const depositRequest = useUsdVaultDepositRequest({
+    token: asUsdDepositToken(tokenSymbol),
+  });
 
   const formControllerValue = useMemo(
     (): FormControllerContextValueType<any> => ({
       onSubmit: async (values: USDDepositFormValidatedValues) => {
-        const result = await deposit(values);
+        const result = await deposit({
+          ...values,
+          token: asUsdDepositToken(values.token),
+        });
         if (result) {
           await refetchData(values.token);
         }
@@ -88,18 +95,18 @@ export const UsdVaultDepositFormProvider: React.FC<{
   );
 
   const contextValue = useMemo<USDDepositFormDataContextValue>(() => {
-    const tokenBalance = asyncValidationContextValue?.[token];
+    const tokenBalance = asyncValidationContextValue?.[tokenSymbol];
     const maxAmount =
       tokenBalance?.balance != undefined ? tokenBalance?.balance : undefined;
     return {
       maxAmount,
-      token,
+      token: tokenSymbol,
       isLoading,
       // deposit is locked if the last request is not yet claimable
       isDepositLockedForCurrentToken:
         !!depositRequest && !depositRequest.isClaimable,
     };
-  }, [asyncValidationContextValue, depositRequest, isLoading, token]);
+  }, [asyncValidationContextValue, depositRequest, isLoading, tokenSymbol]);
 
   return (
     <FormProvider {...formObject}>

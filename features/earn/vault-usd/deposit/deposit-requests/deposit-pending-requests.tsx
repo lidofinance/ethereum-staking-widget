@@ -1,9 +1,13 @@
 import { FC } from 'react';
 import { ActionableTitle } from 'modules/mellow-meta-vaults/components/request';
 import { DepositRequests } from 'modules/mellow-meta-vaults/hooks/use-deposit-requests';
+import { TOKENS } from 'consts/tokens';
+import { asToken } from 'utils/as-token';
+
 import { useUsdVaultDepositCancel } from '../hooks';
 import { UsdVaultDepositPendingRequestUSDC } from './deposit-pending-request-usdc';
 import { UsdVaultDepositPendingRequestUSDT } from './deposit-pending-request-usdt';
+import type { UsdDepositToken } from '../../types';
 
 type PendingDepositRequestsProps = {
   requests: DepositRequests;
@@ -12,29 +16,8 @@ type PendingDepositRequestsProps = {
 };
 
 const requestComponentMap = {
-  usdc: UsdVaultDepositPendingRequestUSDC,
-  usdt: UsdVaultDepositPendingRequestUSDT,
-};
-type requestComponentMapKey = keyof typeof requestComponentMap;
-
-type PendingRequestComponentProps = {
-  token: requestComponentMapKey;
-  request: DepositRequests[number];
-  onCancel: () => void;
-  isLoading: boolean;
-};
-
-const PendingRequestComponent: FC<PendingRequestComponentProps> = ({
-  token,
-  request,
-  onCancel,
-  isLoading,
-}) => {
-  const Component =
-    requestComponentMap[token.toLowerCase() as requestComponentMapKey];
-  return (
-    <Component request={request} onCancel={onCancel} isLoading={isLoading} />
-  );
+  [TOKENS.usdc]: UsdVaultDepositPendingRequestUSDC,
+  [TOKENS.usdt]: UsdVaultDepositPendingRequestUSDT,
 };
 
 export const UsdVaultDepositPendingRequests: FC<
@@ -47,15 +30,18 @@ export const UsdVaultDepositPendingRequests: FC<
   return (
     <>
       <ActionableTitle>Pending deposit request</ActionableTitle>
-      {requests.map((request) => (
-        <PendingRequestComponent
-          key={request.token}
-          token={request.token}
-          request={request}
-          onCancel={() => cancel(request.assets, request.token)}
-          isLoading={isLoading}
-        />
-      ))}
+      {requests.map((request) => {
+        const PendingRequestComponent =
+          requestComponentMap[asToken<UsdDepositToken>(request.token)];
+        return (
+          <PendingRequestComponent
+            key={request.token}
+            request={request}
+            onCancel={() => cancel(request.assets, request.token)}
+            isLoading={isLoading}
+          />
+        );
+      })}
     </>
   );
 };

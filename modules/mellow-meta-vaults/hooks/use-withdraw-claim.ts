@@ -37,16 +37,14 @@ export const useWithdrawClaim = <WithdrawToken extends string>({
       try {
         setIsClaiming(true);
 
-        const { address, abi } = redeemQueue;
-
         const claimArgs = [address, [timestamp]] as const;
 
         await txFlow({
           callsFn: async () => [
             {
-              to: address,
+              to: redeemQueue.address,
               data: encodeFunctionData({
-                abi,
+                abi: redeemQueue.abi,
                 functionName: 'claim',
                 args: claimArgs,
               }),

@@ -1,6 +1,8 @@
 import type { FC } from 'react';
 import { Block } from '@lidofinance/lido-ui';
 
+import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo';
+
 import { UsdVaultDepositForm } from '../deposit/deposit-form';
 import { UsdVaultWithdrawForm } from '../withdraw/withdraw-form';
 import {
@@ -15,12 +17,12 @@ const routes = [
   {
     path: USD_DEPOSIT_PATH,
     name: 'Deposit',
-    // matomoEvent: MATOMO_EARN_EVENTS_TYPES.usdDepositTab, // TODO: add matomo event
+    matomoEvent: MATOMO_EARN_EVENTS_TYPES.earnUsdDepositTab,
   },
   {
     path: USD_WITHDRAW_PATH,
     name: 'Withdraw',
-    // matomoEvent: MATOMO_EARN_EVENTS_TYPES.usdWithdrawalTab, // TODO: add matomo event
+    matomoEvent: MATOMO_EARN_EVENTS_TYPES.earnUsdWithdrawalTab,
   },
 ];
 

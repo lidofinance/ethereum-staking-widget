@@ -14,6 +14,8 @@ import {
   CardDivider,
   CardCta,
   VaultIconWrapper,
+  CardTitleBadge,
+  ChevronsUpIcon,
 } from './styles';
 import { LocalLink } from 'shared/components/local-link';
 import { EARN_PATH } from 'consts/urls';
@@ -21,6 +23,8 @@ import { EARN_VAULT_DEPOSIT_SLUG } from 'features/earn/consts';
 import { FormatPercent } from 'shared/formatters/format-percent';
 import { FormatLargeAmount } from 'shared/formatters/format-large-amount';
 import { FormatToken } from 'shared/formatters/format-token';
+import { getTokenDecimals } from 'utils/token-decimals';
+import { useConfig } from 'config/use-config';
 import { InlineLoader } from '../../inline-loader';
 import { VaultTip } from '../../vault-tip';
 
@@ -64,11 +68,23 @@ export const VaultCard: React.FC<VaultCardProps> = ({
   illustration,
   depositLinkCallback,
 }) => {
+  const isDeprecated = useConfig().externalConfig.earnVaults.find(
+    (vault) => vault.name === urlSlug,
+  )?.deprecated;
+
   return (
     <CardWrapper $variant={variant}>
       <CardHeader>
         <CardHeaderContent>
-          <CardTitle>{title}</CardTitle>
+          <CardTitle>
+            {title}
+            {isDeprecated && (
+              <CardTitleBadge variant="gradient" icon={<ChevronsUpIcon />}>
+                {' '}
+                Upgrading
+              </CardTitleBadge>
+            )}
+          </CardTitle>
           <CardDescription>{description}</CardDescription>
         </CardHeaderContent>
         <VaultIconWrapper>{illustration}</VaultIconWrapper>
@@ -104,6 +120,7 @@ export const VaultCard: React.FC<VaultCardProps> = ({
                 <FormatToken
                   trimEllipsis
                   symbol={position.symbol}
+                  decimals={getTokenDecimals(position.symbol)}
                   amount={position.balance}
                   fallback="—"
                   data-testid={`${position.symbol}-position-amount`}

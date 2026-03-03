@@ -22,7 +22,7 @@ import {
 import { useDappStatus, useLidoSDK, useLidoSDKL2 } from 'modules/web3';
 import { config } from 'config';
 import { getTokenAddress } from 'config/networks/token-address';
-import { TokenSymbols } from 'consts/tokens';
+import { Token, TOKEN_SYMBOLS } from 'consts/tokens';
 import { useUsdcUsd } from 'shared/hooks/use-usdc-usd';
 
 const selectBalance = (data: GetBalanceData) => data.value;
@@ -339,7 +339,7 @@ export const useStablecoinBalance = ({
   account,
   shouldSubscribeToUpdates = true,
 }: {
-  token: TokenSymbols['usdt'] | TokenSymbols['usdc'];
+  token: Extract<Token, 'usdc' | 'usdt'>;
   account?: Address;
   shouldSubscribeToUpdates?: boolean;
 }) => {
@@ -349,7 +349,7 @@ export const useStablecoinBalance = ({
 
   const enabled = !!mergedAccount && isChainMatched;
 
-  const tokenAddress = getTokenAddress(chainId, token);
+  const tokenAddress = getTokenAddress(chainId, TOKEN_SYMBOLS[token]);
 
   const contract =
     tokenAddress && enabled

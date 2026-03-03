@@ -1,14 +1,14 @@
-import { EthDepositTokensMain } from '../../types';
+import { EthDepositTokenSymbolForm } from '../../types';
 
 export type ETHDepositFormValues = {
   amount: null | bigint;
-  token: EthDepositTokensMain;
+  token: EthDepositTokenSymbolForm;
   referral: string | null;
 };
 
 export type ETHDepositFormValidatedValues = {
   amount: bigint;
-  token: EthDepositTokensMain;
+  token: EthDepositTokenSymbolForm;
   referral: string | null;
 };
 
@@ -18,7 +18,7 @@ export type ETHDepositFormValidationContext = {
 };
 
 export type ETHDepositFormAsyncValidationContext = {
-  [key in EthDepositTokensMain]: {
+  [key in EthDepositTokenSymbolForm]: {
     balance: bigint;
   };
 };
@@ -26,6 +26,6 @@ export type ETHDepositFormAsyncValidationContext = {
 export type ETHDepositFormDataContextValue = {
   maxAmount?: bigint;
   isLoading: boolean;
-  token: EthDepositTokensMain;
+  token: EthDepositTokenSymbolForm;
   isDepositLockedForCurrentToken: boolean;
 };

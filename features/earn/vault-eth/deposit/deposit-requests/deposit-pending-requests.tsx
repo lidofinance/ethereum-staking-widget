@@ -4,6 +4,9 @@ import { DepositRequests } from 'modules/mellow-meta-vaults/hooks/use-deposit-re
 import { useEthVaultDepositCancel } from '../hooks';
 import { EthVaultDepositPendingRequestETH } from './deposit-pending-request-eth';
 import { EthVaultDepositPendingRequestWstETH } from './deposit-pending-request-wsteth';
+import { EthVaultDepositPendingRequestGg } from './deposit-pending-request-gg';
+import { EthVaultDepositPendingRequestStreth } from './deposit-pending-request-streth';
+import { EthVaultDepositPendingRequestDvsteth } from './deposit-pending-request-dvsteth';
 
 type PendingDepositRequestsProps = {
   requests: DepositRequests;
@@ -15,10 +18,9 @@ const requestComponentMap = {
   wsteth: EthVaultDepositPendingRequestWstETH,
   weth: EthVaultDepositPendingRequestETH,
   eth: EthVaultDepositPendingRequestETH,
-  // TODO: add upgradable tokens
-  // gg
-  // dvsteth
-  // streth
+  gg: EthVaultDepositPendingRequestGg,
+  dvsteth: EthVaultDepositPendingRequestDvsteth,
+  streth: EthVaultDepositPendingRequestStreth,
 };
 type requestComponentMapKey = keyof typeof requestComponentMap;
 
@@ -33,12 +35,12 @@ export const EthVaultDepositPendingRequests: FC<
     <>
       <ActionableTitle>Pending deposit request</ActionableTitle>
       {requests.map((request) => {
-        const Component =
+        const PendingRequestComponent =
           requestComponentMap[
             request.token.toLowerCase() as requestComponentMapKey
           ];
         return (
-          <Component
+          <PendingRequestComponent
             key={request.token}
             request={request}
             onCancel={() => cancel(request.assets, request.token)}

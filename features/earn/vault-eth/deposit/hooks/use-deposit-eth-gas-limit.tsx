@@ -4,9 +4,9 @@ import invariant from 'tiny-invariant';
 
 import { useDepositEthGasLimit } from 'modules/mellow-meta-vaults';
 import { getDepositQueueContract } from '../../contracts';
-import { EthDepositTokens } from '../../types';
+import { EthDepositToken } from '../../types';
 
-export const useETHDepositEthGasLimit = (token: EthDepositTokens) => {
+export const useETHDepositEthGasLimit = (token: EthDepositToken) => {
   const publicClient = usePublicClient();
   invariant(publicClient, 'Public client is not available');
   const depositContract = useMemo(

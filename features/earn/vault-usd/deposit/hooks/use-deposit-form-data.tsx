@@ -5,6 +5,7 @@ import { useAwaiter } from 'shared/hooks/use-awaiter';
 import { useDappStatus, useStablecoinBalance } from 'modules/web3';
 import { MELLOW_VAULTS_QUERY_SCOPE } from 'modules/mellow-meta-vaults/consts';
 import { TOKEN_SYMBOLS } from 'consts/tokens';
+import { asToken } from 'utils/as-token';
 
 import {
   USDDepositFormAsyncValidationContext,
@@ -18,11 +19,11 @@ export const useUsdVaultDepositFormData = () => {
   const { isAccountActive, address } = useDappStatus();
   const usdcBalanceQuery = useStablecoinBalance({
     account: address,
-    token: TOKEN_SYMBOLS.usdc,
+    token: asToken(TOKEN_SYMBOLS.usdc),
   });
   const usdtBalanceQuery = useStablecoinBalance({
     account: address,
-    token: TOKEN_SYMBOLS.usdt,
+    token: asToken(TOKEN_SYMBOLS.usdt),
   });
 
   const asyncValidationContextValue:

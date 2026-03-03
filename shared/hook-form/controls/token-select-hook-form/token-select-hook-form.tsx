@@ -21,8 +21,8 @@ const iconsMap: { [key in TOKEN_DISPLAY_NAMES]?: JSX.Element } = {
   ['wETH']: <TokenWethIcon />,
   ['stETH']: <Steth />,
   ['wstETH']: <Wsteth />,
-  ['USDC']: <TokenUsdcIcon />,
-  ['USDT']: <TokenUsdtIcon />,
+  ['USDC']: <TokenUsdcIcon width={24} height={24} />,
+  ['USDT']: <TokenUsdtIcon width={24} height={24} />,
 } as const;
 
 type TokenSelectHookFormProps = {

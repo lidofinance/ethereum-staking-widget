@@ -6,13 +6,14 @@ import {
 } from 'shared/transaction-modal/hooks/use-transaction-modal-stage';
 import { getGeneralTransactionModalStages } from 'shared/transaction-modal/hooks/get-general-transaction-modal-stages';
 import { TxStageSignOperationAmount } from 'shared/transaction-modal/tx-stages-composed/tx-stage-amount-operation';
-import { getTokenDisplayName } from 'utils/getTokenDisplayName';
 import { FormatToken } from 'shared/formatters';
 import { TxStageSuccess } from 'shared/transaction-modal/tx-stages-basic';
+import { type TokenSymbol } from 'consts/tokens';
+import { getTokenDecimals } from 'utils/token-decimals';
 
 type StageOperationArgs = {
-  willReceiveToken: string;
-  token: string;
+  willReceiveToken: TokenSymbol;
+  token: TokenSymbol;
   operationText: string;
 };
 
@@ -54,7 +55,8 @@ const getTxModalStagesRequest = (
             Request to withdraw{' '}
             <FormatToken
               amount={amount}
-              symbol={getTokenDisplayName('wstETH')}
+              symbol={stageOperationArgs.token}
+              decimals={getTokenDecimals(stageOperationArgs.token)}
             />{' '}
             has been sent.
           </>

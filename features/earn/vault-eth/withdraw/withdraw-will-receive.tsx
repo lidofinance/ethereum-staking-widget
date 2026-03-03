@@ -5,19 +5,20 @@ import { useStETHByWstETH } from 'modules/web3';
 import { getTokenSymbol } from 'utils/get-token-symbol';
 import { EthVaultWithdrawFormValues } from './form-context/types';
 import { useEthVaultPreviewWithdraw } from './hooks/use-preview-withdraw';
+import { TOKENS } from 'consts/tokens';
 
 export const EthVaultWithdrawWillReceive = () => {
   const { amount } = useWatch<EthVaultWithdrawFormValues>();
 
   const { data, isLoading } = useEthVaultPreviewWithdraw({ shares: amount });
-  const wsteth = data.wsteth;
+  const wsteth = data.assets;
   const { data: eth, isLoading: isLoadingEth } = useStETHByWstETH(wsteth);
 
   return (
     <VaultWillReceive
       icon={<TokenWstethIcon width={16} height={16} viewBox="0 0 20 20" />}
       amount={wsteth}
-      symbol={getTokenSymbol('wsteth')}
+      symbol={getTokenSymbol(TOKENS.wsteth)}
       usdAmount={data.usd}
       ethAmount={eth}
       isLoading={isLoading || isLoadingEth}

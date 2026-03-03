@@ -1,10 +1,17 @@
-import { useState, type ComponentType, type FC, type SVGProps } from 'react';
-import { Tab, Tabs } from '@lidofinance/lido-ui';
+import {
+  useState,
+  type ComponentType,
+  type FC,
+  type ReactNode,
+  type SVGProps,
+} from 'react';
+import { Tab } from '@lidofinance/lido-ui';
+
+import { VaultChart } from '../vault-chart';
 
 import { SidePanel } from './side-panel';
 import { VaultPageContent } from './content';
 import {
-  Description,
   InfoRow,
   InfoRowLabel,
   InfoRowValue,
@@ -17,20 +24,34 @@ import {
   TableGroup,
   TableItem,
   TableLabel,
-  TableLink,
-  TableDivider,
   TableValue,
+  Description,
+  TabsStyled,
 } from './styles';
 
 type VaultIllustration = ComponentType<SVGProps<SVGSVGElement>>;
 
+export type InfoItem = {
+  label: ReactNode;
+  value?: ReactNode;
+};
+
 type Props = {
   title: string;
   description: string;
-  apy: string;
-  tvl: string;
+  apx?: number | null;
+  tvl?: number | null;
+  isApxLoading?: boolean;
+  isTvlLoading?: boolean;
   logo: VaultIllustration;
-  sidePanel?: React.ReactNode;
+  sidePanel?: ReactNode;
+  vaultName: 'ethVault' | 'usdVault';
+  fees: InfoItem[];
+  generalInfoLeft: InfoItem[];
+  generalInfoRight: InfoItem[];
+  riskDisclosure: ReactNode;
+  strategyContent?: ReactNode;
+  faqContent?: ReactNode;
 };
 
 const TABS = {
@@ -40,6 +61,15 @@ const TABS = {
 } as const;
 
 export const VaultPage: FC<Props> = (props) => {
+  const {
+    fees,
+    generalInfoLeft,
+    generalInfoRight,
+    riskDisclosure,
+    strategyContent,
+    faqContent,
+  } = props;
+
   const [activeTab, setActiveTab] = useState<(typeof TABS)[keyof typeof TABS]>(
     TABS.PERFORMANCE,
   );
@@ -47,7 +77,7 @@ export const VaultPage: FC<Props> = (props) => {
   return (
     <Layout>
       <VaultPageContent {...props}>
-        <Tabs>
+        <TabsStyled>
           <Tab
             active={activeTab === TABS.PERFORMANCE}
             onClick={() => setActiveTab(TABS.PERFORMANCE)}
@@ -66,119 +96,55 @@ export const VaultPage: FC<Props> = (props) => {
           >
             FAQ
           </Tab>
-        </Tabs>
+        </TabsStyled>
 
         {activeTab === TABS.PERFORMANCE && (
           <>
+            <VaultChart vaultName={props.vaultName} />
             <Metrics>
-              <InfoRow>
-                <InfoRowLabel>7D APY</InfoRowLabel>
-                <InfoRowValue>8.4%</InfoRowValue>
-              </InfoRow>
-              <InfoRow>
-                <InfoRowLabel>30D APY</InfoRowLabel>
-                <InfoRowValue>7.65%</InfoRowValue>
-              </InfoRow>
-              <InfoRow>
-                <InfoRowLabel>Performance fee</InfoRowLabel>
-                <InfoRowValue>10%</InfoRowValue>
-              </InfoRow>
-              <InfoRow>
-                <InfoRowLabel>Platform fee</InfoRowLabel>
-                <InfoRowValue>1%</InfoRowValue>
-              </InfoRow>
+              {fees.map((fee, index) => (
+                <InfoRow key={index}>
+                  <InfoRowLabel>{fee.label}</InfoRowLabel>
+                  {fee.value != null && (
+                    <InfoRowValue>{fee.value}</InfoRowValue>
+                  )}
+                </InfoRow>
+              ))}
             </Metrics>
             <Section>
               <SectionTitle>General Information</SectionTitle>
               <Table>
                 <TableGroup>
-                  <TableItem>
-                    <TableLabel>Curator</TableLabel>
-                    <TableValue>● Mellow</TableValue>
-                  </TableItem>
-                  <TableItem>
-                    <TableLabel>Sub-vault curators</TableLabel>
-                    <TableValue>● AAVE · ● Morpho · ● Uniswap</TableValue>
-                  </TableItem>
+                  {generalInfoLeft.map((item, index) => (
+                    <TableItem key={index}>
+                      <TableLabel>{item.label}</TableLabel>
+                      {item.value != null && (
+                        <TableValue>{item.value}</TableValue>
+                      )}
+                    </TableItem>
+                  ))}
                 </TableGroup>
                 <TableGroup>
-                  <TableItem>
-                    <TableLabel>Audit</TableLabel>
-                    <TableValue>● Certora</TableValue>
-                  </TableItem>
-                  <TableItem>
-                    <TableLabel>Last audit date</TableLabel>
-                    <TableValue>10 Sep 2025</TableValue>
-                  </TableItem>
-                  <TableItem>
-                    <TableLabel>Deposit wait time</TableLabel>
-                    <TableValue>24 hours</TableValue>
-                  </TableItem>
-                  <TableItem>
-                    <TableLabel>Withdrawal wait time</TableLabel>
-                    <TableValue>up to 72 hours</TableValue>
-                  </TableItem>
-                </TableGroup>
-              </Table>
-              <TableDivider />
-              <Table>
-                <TableGroup>
-                  <TableItem>
-                    <TableLabel>Vault contract deployed</TableLabel>
-                    <TableValue>19 Sep 2025</TableValue>
-                  </TableItem>
-                  <TableItem>
-                    <TableLabel>Last transaction</TableLabel>
-                    <TableValue>2025-12-16 16:31:23</TableValue>
-                  </TableItem>
-                </TableGroup>
-                <TableGroup>
-                  <TableItem>
-                    <TableLabel>View on Etherscan</TableLabel>
-                    <TableValue>
-                      <TableLink
-                        href="http://etherscan.io"
-                        onClick={(event) => {
-                          event.preventDefault();
-                          // TODO: link to Etherscan
-                        }}
-                      >
-                        View on Etherscan
-                      </TableLink>
-                    </TableValue>
-                  </TableItem>
-                  <TableItem>
-                    <TableLabel>View on Debank</TableLabel>
-                    <TableValue>
-                      <TableLink
-                        href="http://debank.com"
-                        onClick={(event) => {
-                          event.preventDefault();
-                          // TODO: link to Debank
-                        }}
-                      >
-                        View on Debank
-                      </TableLink>
-                    </TableValue>
-                  </TableItem>
+                  {generalInfoRight.map((item, index) => (
+                    <TableItem key={index}>
+                      <TableLabel>{item.label}</TableLabel>
+                      {item.value != null && (
+                        <TableValue>{item.value}</TableValue>
+                      )}
+                    </TableItem>
+                  ))}
                 </TableGroup>
               </Table>
             </Section>
             <RiskSection>
               <SectionTitle>Risk Disclosures</SectionTitle>
-              <Description>
-                Lorem ipsum dolor sit amet consectetur. Iaculis nascetur turpis
-                vitae sit vestibulum ultrices enim nisi pellentesque. Cras
-                egestas consectetur quis in fermentum. Nisi est lorem vel
-                fringilla vel mattis fusce aliquet semper. Facilisis elit at ac
-                odio lorem volutpat sed. Imperdiet pulvinar porta nunc elit non
-                hendrerit adipiscing fermentum pellentesque. Sollicitudin nec
-                porttitor diam non. Arcu amet et porttitor quis mattis nam erat.
-                Interdum quis egestas at nisl viverra eget lorem.
-              </Description>
+              <Description>{riskDisclosure}</Description>
             </RiskSection>
           </>
         )}
+
+        {activeTab === TABS.STRATEGY && strategyContent}
+        {activeTab === TABS.FAQ && faqContent}
       </VaultPageContent>
       <SidePanel>{props.sidePanel}</SidePanel>
     </Layout>

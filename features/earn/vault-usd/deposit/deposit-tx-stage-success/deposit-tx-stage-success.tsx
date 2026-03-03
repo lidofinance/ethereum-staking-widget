@@ -7,6 +7,7 @@ import {
   NotificationList,
 } from './styles';
 import { TxAmount } from 'shared/transaction-modal/tx-stages-parts/tx-amount';
+import { getTokenDecimals } from 'utils/token-decimals';
 
 type Props = {
   txHash?: Hash;
@@ -37,8 +38,13 @@ export const UsdVaultDepositTxStageSuccess = ({
       description={
         <>
           <span>
-            Request to deposit <TxAmount amount={amount} symbol={token} /> has
-            been sent.
+            Request to deposit
+            <TxAmount
+              amount={amount}
+              symbol={token}
+              decimals={getTokenDecimals(token)}
+            />
+            has been sent.
           </span>
           <Notification />
         </>

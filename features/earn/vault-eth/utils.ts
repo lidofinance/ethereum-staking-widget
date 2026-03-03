@@ -2,8 +2,11 @@ import * as z from 'zod';
 import { CHAINS } from 'consts/chains';
 import { getContractAddress } from 'config/networks/contract-address';
 import { standardFetcher } from 'utils/standardFetcher';
+import type { TokenSymbol } from 'consts/tokens';
+import { asToken } from 'utils/as-token';
 import { UNIX_TIMESTAMP_SCHEMA, PERCENT_SCHEMA, APY_SCHEMA } from 'utils/zod';
 import { ETH_VAULT_STATS_ORIGIN } from './consts';
+import type { EthDepositToken } from './types';
 
 export const ALLOCATION_SCHEMA = z.array(
   z.object({
@@ -47,4 +50,11 @@ export const fetchEthVaultStatsApr = async () => {
   const data = await standardFetcher<EthVaultApyFetchedData>(ETH_APY_ENDPOINT);
   const apy = ETH_VAULT_APY_SCHEMA.parse(data).apy;
   return apy;
+};
+
+// Converts a case sensitive TokenSymbol to an EthDepositToken which must be lowercase.
+// This is needed because the form values use TokenSymbol which can be uppercase,
+// but some functions expects EthDepositToken which is lowercase.
+export const asEthDepositToken = (token: TokenSymbol) => {
+  return asToken<EthDepositToken>(token);
 };
