@@ -34,17 +34,17 @@ export const useUpgradableTokenBalances = () => {
     ],
     enabled: enabled && !!publicClient,
     queryFn: async () => {
-      const client = publicClient;
-      const addr = address;
-      if (!client || !addr) return null;
+      // TODO: refactor, note that skipToken (possible solution) doesn't work with refetch
+      // This condition is a guard for TS only, because this condition is already handled by `enabled`
+      if (!publicClient || !address) return null;
 
       const readBalance = (tokenAddress: typeof ggAddress) =>
         tokenAddress
-          ? client.readContract({
+          ? publicClient.readContract({
               abi: erc20abi,
               address: tokenAddress,
               functionName: 'balanceOf',
-              args: [addr],
+              args: [address],
             })
           : Promise.resolve(undefined);
 

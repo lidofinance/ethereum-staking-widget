@@ -89,7 +89,7 @@ export const useChartData = (props: UseChartDataProps) => {
 
   // Init chart once on mount. Chart div is always in the DOM (no early return), so ref is set.
   useEffect(() => {
-    if (!chartRef.current) return;
+    if (!chartRef.current) return; // TODO: add invariant that chartRef is set by this point (check if it is safe)
     const chart = echarts.init(chartRef.current, {}, { renderer: 'svg' });
     chartInstanceRef.current = chart;
 
