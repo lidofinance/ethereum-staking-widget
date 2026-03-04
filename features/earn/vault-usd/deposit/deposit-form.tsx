@@ -30,7 +30,7 @@ export const UsdVaultDepositForm = () => {
             help={
               <>
                 Deposits usually complete within 24 hours, often sooner. You can
-                track progress in the Deposit section of the Lido USD Vault UI.
+                track progress in the Deposit section of the current vault.
               </>
             }
           >

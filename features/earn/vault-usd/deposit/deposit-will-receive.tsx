@@ -27,8 +27,9 @@ export const UsdVaultDepositWillReceive = () => {
       isLoading={isLoading}
       help={
         <>
-          The final claimable ${USD_VAULT_TOKEN_SYMBOL} amount may slightly
-          differ based on the latest token price update
+          The earnUSD token represents your share in the EarnUSD vault. Its
+          USD-equivalent value reflects your deposit and the vault&apos;s
+          performance, and may fluctuate over time.
         </>
       }
     />
