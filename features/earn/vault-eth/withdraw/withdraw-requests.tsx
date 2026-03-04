@@ -8,22 +8,46 @@ import { EthVaultWithdrawRequestClaimable } from './withdraw-request/withdraw-re
 import { EthVaultWithdrawRequestPending } from './withdraw-request/withdraw-request-pending';
 import { useEthVaultAvailable } from '../hooks/use-vault-available';
 import { useEthVaultWithdrawClaim } from './hooks/use-withdraw-claim';
+import { useEthVaultPosition } from '../hooks/use-position';
+import { TokenEarnEthIcon } from 'assets/earn-v2';
+import { ETH_VAULT_TOKEN_SYMBOL } from '../consts';
+import { VaultPosition } from 'features/earn/shared/v2/vault-position';
 
 export const EthVaultWithdrawRequests = () => {
   const { isEthVaultAvailable } = useEthVaultAvailable();
-  const { data } = useEthVaultWithdrawRequests();
+  const { data: requestsData } = useEthVaultWithdrawRequests();
   const { withdrawClaim, isClaiming } = useEthVaultWithdrawClaim();
 
-  const requests = data?.requests || [];
-  const claimableRequests = data?.claimableRequests || [];
-  const pendingRequests = data?.pendingRequests || [];
+  const {
+    data: earnethPositionData,
+    isLoading,
+    usdBalance: usdAmount,
+    usdQuery: { isLoading: isLoadingUsd } = { isLoading: false },
+  } = useEthVaultPosition();
+
+  const earnethBalance = earnethPositionData?.earnethSharesBalance ?? 0n;
+
+  const requests = requestsData?.requests || [];
+  const claimableRequests = requestsData?.claimableRequests || [];
+  const pendingRequests = requestsData?.pendingRequests || [];
 
   const TOOLTIP_TEXT =
     'The final claimable wstETH may differ slightly, since your request continues earning until processing is complete.';
 
-  if (!data || requests.length === 0 || !isEthVaultAvailable) return null;
+  if ((earnethBalance === 0n && requests.length === 0) || !isEthVaultAvailable)
+    return null;
   return (
     <RequestsContainer>
+      <VaultPosition
+        position={{
+          symbol: ETH_VAULT_TOKEN_SYMBOL,
+          token: earnethPositionData?.earnethTokenAddress,
+          balance: earnethBalance,
+          icon: <TokenEarnEthIcon />,
+          isLoading: isLoading || isLoadingUsd,
+          usdAmount,
+        }}
+      />
       {claimableRequests.length > 0 && (
         <ActionableTitle>
           Ready to claim{' '}
