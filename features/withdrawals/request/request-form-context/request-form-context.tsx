@@ -13,6 +13,7 @@ import { useWithdrawalRequest } from 'features/withdrawals/hooks';
 
 import { MATOMO_TX_EVENTS_TYPES } from 'consts/matomo';
 import { trackMatomoEvent } from 'utils/track-matomo-event';
+import { trackWithdrawalFinishEvent } from 'utils/track-withdrawal-finish-event';
 
 import { useRequestFormDataContextValue } from './use-request-form-data-context-value';
 import { useValidationContext } from './use-validation-context';
@@ -113,8 +114,8 @@ export const RequestFormProvider: FC<PropsWithChildren> = ({ children }) => {
     () => async (data: RequestFormInputType) => {
       trackMatomoEvent(MATOMO_TX_EVENTS_TYPES.withdrawalRequestStart);
       const requestResult = await request(data);
-      if (requestResult) {
-        trackMatomoEvent(MATOMO_TX_EVENTS_TYPES.withdrawalRequestFinish);
+      if (requestResult && data.amount) {
+        trackWithdrawalFinishEvent(data.amount);
       }
       return requestResult;
     },

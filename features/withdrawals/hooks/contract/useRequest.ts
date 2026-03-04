@@ -8,6 +8,7 @@ import { useTransactionModal } from 'shared/transaction-modal/transaction-modal'
 import { useAA, useIsSmartAccount, useLidoSDK, useTxFlow } from 'modules/web3';
 
 import { useWithdrawalRequestTxApprove } from './use-withdrawal-request-tx-approve';
+import { applyRoundUpDeadline } from 'utils/apply-round-up-deadline';
 
 type useWithdrawalRequestParams = {
   amount: bigint | null;
@@ -111,7 +112,10 @@ export const useWithdrawalRequest = ({
             },
             sendTransaction: async (txStagesCallback) => {
               // ERC-2612 permit flow for EOAs (no batching)
-              const deadline = BigInt(Math.floor(Date.now() / 1000) + 86_400); // 1 day
+              // deadline always ends in 999 — detectable on-chain as a UI origin flag
+              const deadline = applyRoundUpDeadline(
+                BigInt(Math.floor(Date.now() / 1000)) + 86_400n,
+              );
               await withdraw.request.requestWithdrawalWithPermit({
                 requests,
                 token,
