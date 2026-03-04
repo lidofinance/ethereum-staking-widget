@@ -11,6 +11,7 @@ import { VaultChart } from '../vault-chart';
 
 import { SidePanel } from './side-panel';
 import { VaultPageContent } from './content';
+import { TopSection } from './content/top-section';
 import {
   InfoRow,
   InfoRowLabel,
@@ -76,7 +77,16 @@ export const VaultPage: FC<Props> = (props) => {
 
   return (
     <Layout>
-      <VaultPageContent {...props}>
+      <TopSection
+        logo={props.logo}
+        title={props.title}
+        description={props.description}
+        apx={props.apx}
+        tvl={props.tvl}
+        isApxLoading={props.isApxLoading}
+        isTvlLoading={props.isTvlLoading}
+      />
+      <VaultPageContent>
         <TabsStyled>
           <Tab
             active={activeTab === TABS.PERFORMANCE}

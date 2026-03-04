@@ -43,9 +43,10 @@ export const CardHeader = styled.div`
   justify-content: space-between;
   gap: ${({ theme }) => theme.spaceMap.md}px;
 
-  ${({ theme }) => theme.mediaQueries.sm} {
+  ${({ theme }) => theme.mediaQueries.md} {
     flex-direction: column-reverse;
     align-items: flex-start;
+    align-items: center;
   }
 `;
 
@@ -53,6 +54,11 @@ export const CardHeaderContent = styled.div`
   display: flex;
   flex-direction: column;
   gap: ${({ theme }) => theme.spaceMap.xs}px;
+
+  ${({ theme }) => theme.mediaQueries.md} {
+    align-items: center;
+    text-align: center;
+  }
 `;
 
 export const CardTitle = styled.div`
@@ -85,9 +91,9 @@ export const VaultIconWrapper = styled.div`
   display: grid;
   place-items: center;
 
-  ${({ theme }) => theme.mediaQueries.sm} {
-    width: 64px;
-    height: 64px;
+  ${({ theme }) => theme.mediaQueries.md} {
+    width: 124px;
+    height: 124px;
   }
 
   position: relative;
@@ -143,7 +149,7 @@ export const StatItem = styled.div`
   flex-direction: column;
   gap: 6px;
 
-  ${({ theme }) => theme.mediaQueries.sm} {
+  ${({ theme }) => theme.mediaQueries.md} {
     flex-direction: row;
     justify-content: space-between;
     align-items: center;

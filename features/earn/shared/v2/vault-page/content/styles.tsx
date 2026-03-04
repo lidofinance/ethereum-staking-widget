@@ -2,9 +2,12 @@ import styled from 'styled-components';
 
 export const ContainerStyled = styled.div`
   display: flex;
-  flex: 1 0;
   flex-direction: column;
   gap: ${({ theme }) => theme.spaceMap.xl}px;
+
+  ${({ theme }) => theme.mediaQueries.xl} {
+    order: 3;
+  }
 `;
 
 export const TopSectionStyled = styled.div`
