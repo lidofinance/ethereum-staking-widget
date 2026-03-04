@@ -1,6 +1,11 @@
-import { Switcher, SwitcherItem } from '@lidofinance/lido-ui';
+import { PropsWithChildren } from 'react';
 
-import { SwitcherWrapper } from './styles';
+import {
+  SwitcherWrapper,
+  SwitcherItemStyled,
+  SwitchersInlineLoaderStyled,
+  SwitcherStyled,
+} from './styles';
 
 export const CHART_TIME_RANGE = {
   '1M': '1M',
@@ -15,6 +20,7 @@ export const CHART_TYPE = {
 export type ChartType = keyof typeof CHART_TYPE;
 
 type VaultChartControlsProps = {
+  isInitialLoading: boolean;
   activeChart: ChartType;
   setActiveChart: (chart: ChartType) => void;
   activeTimeRange: ChartTimeRange;
@@ -24,14 +30,18 @@ type VaultChartControlsProps = {
   disableControls: boolean;
 };
 
-export const VaultChartControls = (props: VaultChartControlsProps) => {
+export const VaultChartControls = (
+  props: PropsWithChildren<VaultChartControlsProps>,
+) => {
   const {
+    isInitialLoading,
     activeChart,
     setActiveChart,
     activeTimeRange,
     setActiveTimeRange,
     is3MAvailable,
     disableControls,
+    children,
   } = props;
 
   const handleChartChange = (chart: ChartType) => {
@@ -43,36 +53,41 @@ export const VaultChartControls = (props: VaultChartControlsProps) => {
   };
 
   return (
-    <SwitcherWrapper disabled={disableControls}>
-      <Switcher>
-        <SwitcherItem
-          active={activeChart === CHART_TYPE.apy}
-          onClick={() => handleChartChange(CHART_TYPE.apy)}
-        >
-          APY
-        </SwitcherItem>
-        <SwitcherItem
-          active={activeChart === CHART_TYPE.tvl}
-          onClick={() => handleChartChange(CHART_TYPE.tvl)}
-        >
-          TVL
-        </SwitcherItem>
-      </Switcher>
-      {is3MAvailable && (
-        <Switcher>
-          <SwitcherItem
+    <SwitcherWrapper $isLoading={isInitialLoading}>
+      {isInitialLoading ? (
+        <SwitchersInlineLoaderStyled />
+      ) : (
+        <SwitcherStyled $disabled={disableControls}>
+          <SwitcherItemStyled
+            active={activeChart === CHART_TYPE.apy}
+            onClick={() => handleChartChange(CHART_TYPE.apy)}
+          >
+            APY
+          </SwitcherItemStyled>
+          <SwitcherItemStyled
+            active={activeChart === CHART_TYPE.tvl}
+            onClick={() => handleChartChange(CHART_TYPE.tvl)}
+          >
+            TVL
+          </SwitcherItemStyled>
+        </SwitcherStyled>
+      )}
+      {children}
+      {!isInitialLoading && is3MAvailable && (
+        <SwitcherStyled $disabled={disableControls}>
+          <SwitcherItemStyled
             active={activeTimeRange === CHART_TIME_RANGE['1M']}
             onClick={() => handleTimeRangeChange(CHART_TIME_RANGE['1M'])}
           >
             1M
-          </SwitcherItem>
-          <SwitcherItem
+          </SwitcherItemStyled>
+          <SwitcherItemStyled
             active={activeTimeRange === CHART_TIME_RANGE['3M']}
             onClick={() => handleTimeRangeChange(CHART_TIME_RANGE['3M'])}
           >
             3M
-          </SwitcherItem>
-        </Switcher>
+          </SwitcherItemStyled>
+        </SwitcherStyled>
       )}
     </SwitcherWrapper>
   );

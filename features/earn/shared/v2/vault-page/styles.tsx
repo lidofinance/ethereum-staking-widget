@@ -109,4 +109,11 @@ export const TabsStyled = styled(Tabs)`
   & * {
     font-family: inherit;
   }
+
+  ${({ theme }) => theme.mediaQueries.md} {
+    span {
+      font-size: ${({ theme }) => theme.fontSizesMap.xs}px;
+      line-height: 24px;
+    }
+  }
 `;

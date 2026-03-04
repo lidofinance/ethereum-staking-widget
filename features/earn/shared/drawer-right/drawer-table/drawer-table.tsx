@@ -1,4 +1,6 @@
 import React from 'react';
+import { Badge, ArrowTop } from '@lidofinance/lido-ui';
+
 import { VaultEthIcon } from 'assets/earn-v2';
 import {
   Table,
@@ -9,17 +11,26 @@ import {
   HeaderWithIcon,
   TableHeader,
   MobileCellHeader,
+  HeaderWrapper,
 } from './styles';
 
 const DATA = [
   {
     header: [
       '',
-      'Single vault',
-      <HeaderWithIcon key="lido-earn-eth">
-        <VaultEthIcon width={28} height={28} />
-        Lido Earn ETH
-      </HeaderWithIcon>,
+      <HeaderWrapper key="single-vault">
+        <Badge variant="gray">Before upgrade</Badge>
+        Single vault
+      </HeaderWrapper>,
+      <HeaderWrapper key="earn-eth">
+        <Badge icon={<ArrowTop height={16} width={16} />} variant="gradient">
+          After upgrade
+        </Badge>
+        <HeaderWithIcon>
+          <VaultEthIcon width={28} height={28} />
+          EarnETH
+        </HeaderWithIcon>
+      </HeaderWrapper>,
     ],
     rows: [
       {
@@ -33,21 +44,21 @@ const DATA = [
         cells: [
           'Reward Strategy',
           'Earning rewards in a specific strategy/vault',
-          'Continue earning rewards, but in a best strategy available without explicit switching',
+          'Keep earning rewards while we optimize for the best available strategy',
         ],
       },
       {
         cells: [
           'Vault Selection',
           'Manual vault choice',
-          'Constant optimization between best strategies',
+          'Constant optimization between strategies',
         ],
       },
       {
         cells: [
           'Curator Model',
           'Lock-in to a specific curator',
-          'An evolving set of curators working on the best risk/rewards optimization',
+          'An evolving set of curators working on the  risk/rewards optimization',
         ],
       },
       {
@@ -65,7 +76,7 @@ export const DrawerTable = () => {
   return (
     <div>
       <TableHeader>
-        Comparison between GGV/stRATEGY and the Lido Earn ETH Vault
+        Comparison between GGV/stRATEGY and the EarnETH Vault
       </TableHeader>
       {DATA.map((item) => (
         <Table key={item.header.join('-')}>

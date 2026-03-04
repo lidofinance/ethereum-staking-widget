@@ -74,6 +74,12 @@ export const HeaderTr = styled.tr`
     border-top-left-radius: 20px;
     border-top-right-radius: 20px;
   }
+
+  ${({ theme }) => theme.mediaQueries.md} {
+    th {
+      font-size: ${({ theme }) => theme.fontSizesMap.sm}px;
+    }
+  }
 `;
 
 export const Tr = styled.tr`
@@ -88,6 +94,17 @@ export const Tr = styled.tr`
 
 export const Td = styled.td`
   padding: 12px 20px;
+
+  &:first-child {
+    padding-left: 0;
+  }
+`;
+
+export const HeaderWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
 `;
 
 export const HeaderWithIcon = styled.div`
@@ -101,5 +118,9 @@ export const MobileCellHeader = styled.div`
   @media (max-width: 600px) {
     display: block;
     font-weight: 700;
+  }
+
+  ${({ theme }) => theme.mediaQueries.md} {
+    font-size: ${({ theme }) => theme.fontSizesMap.xxs}px;
   }
 `;

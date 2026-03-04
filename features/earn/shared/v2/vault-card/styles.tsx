@@ -67,6 +67,7 @@ export const CardTitle = styled.div`
   font-size: 26px;
   line-height: 38px;
   font-weight: 700;
+  z-index: 1;
 `;
 
 export const CardTitleBadge = styled(Badge)`
@@ -158,7 +159,8 @@ export const StatItem = styled.div`
 
 export const StatLabel = styled.span`
   color: var(--lido-color-textSecondary);
-  font-size: ${({ theme }) => theme.fontSizesMap.xxs}px;
+  font-size: ${({ theme }) => theme.fontSizesMap.xs}px;
+  line-height: 24px;
   display: inline-flex;
   align-items: center;
   gap: 4px;
@@ -178,6 +180,11 @@ export const StatValue = styled.span<{ $accent?: boolean; $muted?: boolean }>`
       : $accent
         ? 'var(--lido-color-success)'
         : 'var(--lido-color-text)'};
+
+  ${({ theme }) => theme.mediaQueries.md} {
+    font-size: ${({ theme }) => theme.fontSizesMap.xs}px;
+    line-height: 24px;
+  }
 `;
 
 export const CardCta = styled.div`
