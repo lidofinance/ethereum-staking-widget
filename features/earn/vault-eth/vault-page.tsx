@@ -9,7 +9,7 @@ import {
 } from 'assets/earn-v2';
 import { VaultPage } from 'features/earn/shared/v2/vault-page/vault-page';
 import type { InfoItem } from 'features/earn/shared/v2/vault-page/vault-page';
-import { Disclaimers } from 'features/earn/shared/v2/disclaimers/disclaimers';
+import { Disclaimers } from 'features/earn/shared/v2/disclaimers';
 
 import { EthVaultPositionManager } from './position-manager/position-manager';
 import { EarnEthFaq } from './faq/faq';
