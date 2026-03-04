@@ -39,6 +39,7 @@ export const ErrorMessageStyled = styled(Box)`
   line-height: 24px;
   color: var(--lido-color-text);
   opacity: 0.5;
-  background-color: #e1e4e8;
+  background-color: ${({ theme }) =>
+    theme.name === 'light' ? '#e1e4e8' : '#273852'};
   border-radius: 10px;
 `;

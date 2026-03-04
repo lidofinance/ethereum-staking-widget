@@ -5,15 +5,16 @@ import { BannerWrap } from '../shared-banner-partials';
 
 export const Wrap = styled(BannerWrap)`
   container-type: inline-size;
-  container-name: earn-banner-container;
-  background: linear-gradient(
+  border: 1px solid #c9acff;
+  background: ${({ theme }) =>
+    `linear-gradient(
       87deg,
       rgba(106, 154, 255, 0.2) -11.77%,
       rgba(201, 172, 255, 0.2) 21.01%,
       rgba(255, 206, 190, 0.2) 102.78%
     ),
-    #fff;
-
+    ${theme.name === 'light' ? '#fff' : '#273852'}
+    `};
   color: var(--lido-color-text);
   overflow: hidden;
   padding: 16px 20px;
