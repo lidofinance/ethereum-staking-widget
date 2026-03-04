@@ -1,28 +1,7 @@
-import { ComponentType, FC, PropsWithChildren, SVGProps } from 'react';
+import { FC, PropsWithChildren } from 'react';
 
-import { TopSection } from './top-section';
 import { ContainerStyled } from './styles';
 
-type VaultIllustration = ComponentType<SVGProps<SVGSVGElement>>;
-type VaultPageContentProps = {
-  logo: VaultIllustration;
-  title: string;
-  description: string;
-  apx?: number | null;
-  tvl?: number | null;
-  isApxLoading?: boolean;
-  isTvlLoading?: boolean;
-  apxHint?: React.ReactNode;
-};
-
-export const VaultPageContent: FC<PropsWithChildren<VaultPageContentProps>> = ({
-  children,
-  ...props
-}) => {
-  return (
-    <ContainerStyled>
-      <TopSection {...props} />
-      {children}
-    </ContainerStyled>
-  );
+export const VaultPageContent: FC<PropsWithChildren> = ({ children }) => {
+  return <ContainerStyled>{children}</ContainerStyled>;
 };

@@ -3,12 +3,14 @@ import styled from 'styled-components';
 import { LocalLink } from 'shared/components/local-link';
 
 export const Layout = styled.div`
-  display: flex;
-  gap: 100px;
+  display: grid;
+  grid-template-columns: 1fr minmax(358px, 396px);
+  column-gap: 100px;
+  row-gap: ${({ theme }) => theme.spaceMap.xl}px;
   margin: ${({ theme }) => theme.spaceMap.lg}px 0;
 
-  ${({ theme }) => theme.mediaQueries.md} {
-    flex-direction: column;
+  ${({ theme }) => theme.mediaQueries.xl} {
+    grid-template-columns: 1fr;
   }
 `;
 
@@ -66,6 +68,7 @@ export const Table = styled.div`
 
   ${({ theme }) => theme.mediaQueries.md} {
     grid-template-columns: 1fr;
+    gap: ${({ theme }) => theme.spaceMap.sm}px;
   }
 `;
 
@@ -105,5 +108,12 @@ export const TableLink = styled(LocalLink)`
 export const TabsStyled = styled(Tabs)`
   & * {
     font-family: inherit;
+  }
+
+  ${({ theme }) => theme.mediaQueries.md} {
+    span {
+      font-size: ${({ theme }) => theme.fontSizesMap.xs}px;
+      line-height: 24px;
+    }
   }
 `;

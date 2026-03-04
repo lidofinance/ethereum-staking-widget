@@ -1,10 +1,15 @@
 import styled from 'styled-components';
 
 export const SidePanelStyled = styled.div`
-  min-width: 358px;
-  max-width: 396px;
-  width: 100%;
   position: relative;
+  grid-column: 2;
+  grid-row: 1 / span 2;
+
+  ${({ theme }) => theme.mediaQueries.xl} {
+    order: 2;
+    grid-column: auto;
+    grid-row: auto;
+  }
 `;
 
 export const FixedBlock = styled.div`

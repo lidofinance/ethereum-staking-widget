@@ -43,9 +43,9 @@ export const CardHeader = styled.div`
   justify-content: space-between;
   gap: ${({ theme }) => theme.spaceMap.md}px;
 
-  ${({ theme }) => theme.mediaQueries.sm} {
+  ${({ theme }) => theme.mediaQueries.md} {
     flex-direction: column-reverse;
-    align-items: flex-start;
+    align-items: center;
   }
 `;
 
@@ -53,6 +53,11 @@ export const CardHeaderContent = styled.div`
   display: flex;
   flex-direction: column;
   gap: ${({ theme }) => theme.spaceMap.xs}px;
+
+  ${({ theme }) => theme.mediaQueries.md} {
+    align-items: center;
+    text-align: center;
+  }
 `;
 
 export const CardTitle = styled.div`
@@ -62,6 +67,7 @@ export const CardTitle = styled.div`
   font-size: 26px;
   line-height: 38px;
   font-weight: 700;
+  z-index: 1;
 `;
 
 export const CardTitleBadge = styled(Badge)`
@@ -85,9 +91,9 @@ export const VaultIconWrapper = styled.div`
   display: grid;
   place-items: center;
 
-  ${({ theme }) => theme.mediaQueries.sm} {
-    width: 64px;
-    height: 64px;
+  ${({ theme }) => theme.mediaQueries.md} {
+    width: 124px;
+    height: 124px;
   }
 
   position: relative;
@@ -143,7 +149,7 @@ export const StatItem = styled.div`
   flex-direction: column;
   gap: 6px;
 
-  ${({ theme }) => theme.mediaQueries.sm} {
+  ${({ theme }) => theme.mediaQueries.md} {
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
@@ -153,7 +159,8 @@ export const StatItem = styled.div`
 
 export const StatLabel = styled.span`
   color: var(--lido-color-textSecondary);
-  font-size: ${({ theme }) => theme.fontSizesMap.xxs}px;
+  font-size: ${({ theme }) => theme.fontSizesMap.xs}px;
+  line-height: 24px;
   display: inline-flex;
   align-items: center;
   gap: 4px;
@@ -176,6 +183,11 @@ export const StatValue = styled.span<{ $accent?: boolean; $muted?: boolean }>`
       : $accent
         ? 'var(--lido-color-success)'
         : 'var(--lido-color-text)'};
+
+  ${({ theme }) => theme.mediaQueries.md} {
+    font-size: ${({ theme }) => theme.fontSizesMap.xs}px;
+    line-height: 24px;
+  }
 `;
 
 export const StatValueIcon = styled.span`

@@ -2,9 +2,12 @@ import styled from 'styled-components';
 
 export const ContainerStyled = styled.div`
   display: flex;
-  flex: 1 0;
   flex-direction: column;
   gap: ${({ theme }) => theme.spaceMap.xl}px;
+
+  ${({ theme }) => theme.mediaQueries.xl} {
+    order: 3;
+  }
 `;
 
 export const TopSectionStyled = styled.div`
@@ -29,6 +32,11 @@ export const TopSectionHeaderTitle = styled.h1`
   font-size: 36px;
   font-weight: 700;
   line-height: 50px;
+
+  ${({ theme }) => theme.mediaQueries.md} {
+    font-size: 26px;
+    line-height: 38px;
+  }
 `;
 
 export const TopSectionHeaderIcon = styled.span`
@@ -43,6 +51,11 @@ export const TopSectionHeaderIcon = styled.span`
     height: 100%;
     display: block;
     overflow: visible;
+  }
+
+  ${({ theme }) => theme.mediaQueries.md} {
+    width: 40px;
+    height: 40px;
   }
 `;
 
@@ -84,4 +97,9 @@ export const TopSectionStatValue = styled.span<{ $accent?: boolean }>`
   line-height: 28px;
   color: ${({ $accent }) =>
     $accent ? 'var(--lido-color-success)' : 'var(--lido-color-text)'};
+
+  ${({ theme }) => theme.mediaQueries.md} {
+    font-size: ${({ theme }) => theme.fontSizesMap.sm}px;
+    line-height: 24px;
+  }
 `;

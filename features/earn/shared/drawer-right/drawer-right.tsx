@@ -11,6 +11,7 @@ import {
   DrawerDescription,
   DrawerRightClose,
   DrawerRightFooter,
+  DrawerRightText,
 } from './styles';
 import { LocalLink } from 'shared/components/local-link';
 
@@ -48,21 +49,21 @@ export const DrawerRight: FC<DrawerRightProps> = ({ onClose, isOpen }) => {
             ETH-denominated assets.
           </DrawerDescription>
           <DrawerTable />
-          <DrawerDescription>
+          <DrawerRightText>
             The table above describes structural differences between accessing a
             single vault strategy and accessing a meta-vault that allocates
             across multiple strategies. It is provided for informational
             purposes only and does not constitute a recommendation. Outcomes and
             rewards may vary based on strategy composition, market conditions,
             and protocol parameters.
-          </DrawerDescription>
-          <DrawerDescription>
+          </DrawerRightText>
+          <DrawerRightText>
             All Mellow points you accumulate remain yours, with your balance
             visible on the{' '}
-            <Link href="https://app.mellow.finance/dashboard">
+            <Link href="https://app.mellow.finance/dashboard" target="_blank">
               Mellow Dashboard
             </Link>
-          </DrawerDescription>
+          </DrawerRightText>
           <DrawerRightFooter>
             <LocalLink href={ETH_DEPOSIT_PATH}>
               <Button fullwidth>Upgrade now</Button>

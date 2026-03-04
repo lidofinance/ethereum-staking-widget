@@ -1,4 +1,6 @@
 import React from 'react';
+import { Badge, ArrowTop } from '@lidofinance/lido-ui';
+
 import { VaultEthIcon } from 'assets/earn-v2';
 import { ReactComponent as ChevronsUp } from 'assets/icons/chevrons-up.svg';
 import {
@@ -61,7 +63,7 @@ const DATA = [
         cells: [
           'Curator Model',
           'Lock-in to a specific curator',
-          'An evolving set of curators working on the best risk/rewards optimization',
+          'An evolving set of curators working on the  risk/rewards optimization',
         ],
       },
       {

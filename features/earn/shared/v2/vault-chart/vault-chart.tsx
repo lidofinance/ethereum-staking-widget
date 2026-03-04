@@ -21,11 +21,7 @@ import {
 import { SECONDS_PER_DAY, DAYS_BY_RANGE } from './consts';
 import { buildChartSeries } from './utils';
 import { useChartData } from './hooks';
-import {
-  ChartInlineLoaderStyled,
-  SwitchersInlineLoaderStyled,
-  ErrorMessageStyled,
-} from './styles';
+import { ChartInlineLoaderStyled, ErrorMessageStyled } from './styles';
 
 // ECharts tree-shaking: register only the components we use. Must run before echarts.init().
 echarts.use([SVGRenderer, LineChart, TooltipComponent, GridComponent]);
@@ -105,7 +101,7 @@ export const VaultChart = (props: VaultChartProps) => {
         grid: { left: 0, right: 0, top: 0, bottom: 0, containLabel: false },
         tooltip: {
           trigger: 'axis',
-          position: (pt: number[]) => [pt[0], '10%'], // keep tooltip inside chart when hovering near the left edge
+          confine: true,
           formatter: tooltipFormatter,
           ...(isDark && {
             backgroundColor: '#131317',
@@ -169,19 +165,15 @@ export const VaultChart = (props: VaultChartProps) => {
       : isVaultLoading;
 
   return (
-    <>
-      {isInitialLoading ? (
-        <SwitchersInlineLoaderStyled />
-      ) : (
-        <VaultChartControls
-          activeChart={activeChart}
-          setActiveChart={setActiveChart}
-          activeTimeRange={activeTimeRange}
-          setActiveTimeRange={setActiveTimeRange}
-          is3MAvailable={hasMoreThanOneMonthData}
-          disableControls={isLoadingError}
-        />
-      )}
+    <VaultChartControls
+      isInitialLoading={isInitialLoading}
+      activeChart={activeChart}
+      setActiveChart={setActiveChart}
+      activeTimeRange={activeTimeRange}
+      setActiveTimeRange={setActiveTimeRange}
+      is3MAvailable={hasMoreThanOneMonthData}
+      disableControls={isLoadingError}
+    >
       {/* Wrapper has fixed height; chart div is absolute so ECharts’ fixed-size SVG doesn’t block flex shrink. Chart stays mounted so init runs once. */}
       <div style={{ position: 'relative', width: '100%', height: '305px' }}>
         {isChartLoading && <ChartInlineLoaderStyled />}
@@ -197,6 +189,6 @@ export const VaultChart = (props: VaultChartProps) => {
           }}
         />
       </div>
-    </>
+    </VaultChartControls>
   );
 };

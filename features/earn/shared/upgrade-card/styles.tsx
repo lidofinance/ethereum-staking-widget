@@ -45,6 +45,11 @@ export const UpgradeTitle = styled.h3`
   font-size: 26px;
   font-weight: 700;
   line-height: 38px;
+
+  ${({ theme }) => theme.mediaQueries.md} {
+    font-size: 20px;
+    line-height: 28px;
+  }
 `;
 
 export const UpgradeList = styled.div`

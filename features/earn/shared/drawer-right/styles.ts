@@ -59,6 +59,10 @@ export const DrawerRightContent = styled.div`
     top: 84px;
     border-radius: 24px 24px 0 0;
   }
+
+  ${({ theme }) => theme.mediaQueries.md} {
+    padding: ${({ theme }) => theme.spaceMap.xl}px;
+  }
 `;
 
 export const DrawerRightHeader = styled.div`
@@ -79,4 +83,11 @@ export const DrawerRightFooter = styled.div`
   display: flex;
   flex-direction: column;
   gap: 12px;
+`;
+
+export const DrawerRightText = styled.div`
+  font-size: ${({ theme }) => theme.fontSizesMap.xs}px;
+  font-weight: 400;
+  line-height: 24px;
+  color: var(--lido-color-textSecondary);
 `;
