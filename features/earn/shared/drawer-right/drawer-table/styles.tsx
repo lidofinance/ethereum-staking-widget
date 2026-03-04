@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import { Badge } from '@lidofinance/lido-ui';
 
 export const TableHeader = styled.div`
   font-size: ${({ theme }) => theme.fontSizesMap.sm}px;
@@ -90,9 +91,16 @@ export const Td = styled.td`
   padding: 12px 20px;
 `;
 
-export const HeaderWithIcon = styled.div`
+export const HeaderCell = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: ${({ theme }) => theme.spaceMap.sm}px;
+`;
+
+export const HeaderTitle = styled.div`
   display: flex;
   align-items: center;
+  gap: ${({ theme }) => theme.spaceMap.xs}px;
 `;
 
 export const MobileCellHeader = styled.div`
@@ -102,4 +110,10 @@ export const MobileCellHeader = styled.div`
     display: block;
     font-weight: 700;
   }
+`;
+
+export const DrawerBadge = styled(Badge)`
+  height: ${({ theme }) => theme.spaceMap.xxl}px;
+  justify-content: center;
+  align-self: flex-start;
 `;

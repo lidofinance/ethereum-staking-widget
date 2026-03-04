@@ -6,6 +6,7 @@ import { EARN_VAULT_ETH_SLUG } from '../consts';
 import { useEthVaultStats } from './hooks/use-vault-stats';
 import { useEthVaultApy } from './hooks/use-vault-apy';
 import { EthVaultApyHint } from './components/apy-hint';
+import { ETH_VAULT_DESCRIPTION, ETH_VAULT_TITLE } from './consts';
 
 export const EthVaultCard = () => {
   const { apy, isLoading: isApyLoading } = useEthVaultApy();
@@ -14,8 +15,8 @@ export const EthVaultCard = () => {
   // TODO: add "position" (token balance)
   return (
     <VaultCard
-      title="Lido Earn ETH"
-      description="Lido Earn ETH vault utilizes tried and tested strategies with premier DeFi protocols for increased rewards on deposits of ETH or stETH."
+      title={ETH_VAULT_TITLE}
+      description={ETH_VAULT_DESCRIPTION}
       urlSlug={EARN_VAULT_ETH_SLUG}
       stats={{
         tvl: totalTvlUsd,

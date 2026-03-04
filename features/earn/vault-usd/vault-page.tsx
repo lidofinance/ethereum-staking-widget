@@ -15,6 +15,7 @@ import { useUsdVaultStats } from './hooks/use-vault-stats';
 import { useUsdVaultApy } from './hooks/use-vault-apy';
 import { Disclaimers } from '../shared/v2/disclaimers';
 import { UsdVaultApyHint } from './components/apy-hint';
+import { USD_VAULT_DESCRIPTION, USD_VAULT_TITLE } from './consts';
 
 const FEES = [
   { label: 'Performance fee', value: '10%' },
@@ -84,9 +85,8 @@ const RISK_DISCLOSURE = (
 );
 
 const DATA = {
-  title: 'EarnUSD',
-  description:
-    'EarnUSD Vault is curated for USD-denominated assets, designed to target an optimal risk-reward profile without compromising on security, risk controls, or asset quality. It’s built to feel like saving',
+  title: USD_VAULT_TITLE,
+  description: USD_VAULT_DESCRIPTION,
   logo: VaultUsdIcon,
   fees: FEES,
   generalInfoLeft: GENERAL_INFO_LEFT,

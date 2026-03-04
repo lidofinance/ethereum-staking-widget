@@ -7,6 +7,7 @@ import { EARN_VAULT_USD_SLUG } from '../consts';
 import { useUsdVaultApy } from './hooks/use-vault-apy';
 import { useUsdVaultStats } from './hooks/use-vault-stats';
 import { UsdVaultApyHint } from './components/apy-hint';
+import { USD_VAULT_DESCRIPTION, USD_VAULT_TITLE } from './consts';
 
 export const UsdVaultCard = () => {
   const { apy, isLoading: isApyLoading } = useUsdVaultApy();
@@ -15,8 +16,8 @@ export const UsdVaultCard = () => {
   // TODO: add "position" (token balance)
   return (
     <VaultCard
-      title="Lido Earn USD"
-      description="Lido Earn USD Vault is curated for USD-denominated assets, designed to target an optimal risk-reward profile without compromising on security, risk controls, or asset quality. It’s built to feel like saving."
+      title={USD_VAULT_TITLE}
+      description={USD_VAULT_DESCRIPTION}
       urlSlug={EARN_VAULT_USD_SLUG}
       stats={{
         tvl: totalTvlUsd,
