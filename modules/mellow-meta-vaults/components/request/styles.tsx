@@ -60,7 +60,7 @@ export const AmountContainer = styled.div`
 `;
 
 export const AmountTokenValue = styled.span`
-  font-size: ${({ theme }) => theme.fontSizesMap.sm}px;
+  font-size: ${({ theme }) => theme.fontSizesMap.xs}px;
   font-weight: 700;
   font-style: Bold;
   line-height: 24px;
@@ -80,4 +80,11 @@ export const CreatedDate = styled.span`
   font-weight: 400;
   line-height: 20px;
   letter-spacing: 0px;
+`;
+
+export const ActionContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 0;
 `;
