@@ -45,7 +45,6 @@ export const CardHeader = styled.div`
 
   ${({ theme }) => theme.mediaQueries.md} {
     flex-direction: column-reverse;
-    align-items: flex-start;
     align-items: center;
   }
 `;
