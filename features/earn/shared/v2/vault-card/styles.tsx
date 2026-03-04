@@ -82,6 +82,8 @@ export const ChevronsUpIcon = styled(ChevronsUp)`
 export const CardDescription = styled.p`
   color: var(--lido-color-textSecondary);
   font-size: ${({ theme }) => theme.fontSizesMap.xs}px;
+  line-height: 24px;
+  font-weight: 400;
 `;
 
 export const VaultIconWrapper = styled.div`
@@ -125,7 +127,7 @@ export const VaultIconWrapper = styled.div`
 
 export const CardDivider = styled.div`
   height: 1px;
-  margin: ${({ theme }) => theme.spaceMap.md}px 0;
+  margin: ${({ theme }) => theme.spaceMap.xl}px 0;
   background: ${({ theme }) => theme.colors.border};
 `;
 

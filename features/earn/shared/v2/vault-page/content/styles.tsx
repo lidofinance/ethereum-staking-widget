@@ -3,7 +3,7 @@ import styled from 'styled-components';
 export const ContainerStyled = styled.div`
   display: flex;
   flex-direction: column;
-  gap: ${({ theme }) => theme.spaceMap.xl}px;
+  gap: ${({ theme }) => theme.spaceMap.xxl}px;
 
   ${({ theme }) => theme.mediaQueries.xl} {
     order: 3;

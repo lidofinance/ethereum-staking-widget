@@ -51,6 +51,15 @@ export { ReactComponent as KatanaIcon } from './allocation/katana.svg';
 export { ReactComponent as PlasmaIcon } from './allocation/plasma.svg';
 export { ReactComponent as SparkIcon } from './allocation/spark.svg';
 export { ReactComponent as FluidIcon } from './allocation/fluid.svg';
+export { ReactComponent as MapleIcon } from './allocation/maple.svg';
+export { ReactComponent as GearboxIcon } from './allocation/gearbox.svg';
+export { ReactComponent as SteakhouseIcon } from './allocation/steakhouse.svg';
+export { ReactComponent as SentoraIcon } from './allocation/sentora.svg';
+export { ReactComponent as SkyIcon } from './allocation/sky.svg';
+export { ReactComponent as FelixIcon } from './allocation/felix.svg';
+export { ReactComponent as MonadIcon } from './allocation/nomad.svg';
+export { ReactComponent as HyperliquidIcon } from './allocation/hyperliquid.svg';
+export { ReactComponent as HyperlendIcon } from './allocation/hyperlend.svg';
 
 const themedBackground = css`
   path,
