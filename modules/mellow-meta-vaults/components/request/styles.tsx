@@ -18,12 +18,12 @@ export const RequestsContainer = styled.div`
 export const ActionableTitle = styled.div`
   display: flex;
   align-items: center;
-  font-weight: 700;
+  font-weight: 400;
   font-size: ${({ theme }) => theme.fontSizesMap.xxs}px;
   line-height: 20px;
   letter-spacing: 0px;
   vertical-align: middle;
-  color: var(--lido-color-text);
+  color: var(--lido-color-text-secondary);
   margin-top: 0px;
 
   &:not(:first-child) {
