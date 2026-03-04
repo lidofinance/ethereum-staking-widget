@@ -1,4 +1,4 @@
-import { StrategyIcon } from './stratagy-icon';
+import { StrategyIcon } from './strategy-icon';
 
 import { StrategyItemStyled } from './styles';
 
