@@ -16,6 +16,7 @@ import {
   VaultIconWrapper,
   CardTitleBadge,
   ChevronsUpIcon,
+  StatValueIcon,
 } from './styles';
 import { LocalLink } from 'shared/components/local-link';
 import { EARN_PATH } from 'consts/urls';
@@ -43,6 +44,7 @@ type VaultPosition = {
   pending?: Array<{ tokenSymbol: string; amount: bigint }>;
   isLoading?: boolean;
   symbol: string;
+  icon?: React.ReactNode;
 };
 
 type VaultCardProps = {
@@ -103,7 +105,7 @@ export const VaultCard: React.FC<VaultCardProps> = ({
           </StatValue>
         </StatItem>
         <StatItem data-testid="tvl-value">
-          <StatLabel>TVL</StatLabel>
+          <StatLabel>Total TVL</StatLabel>
           <StatValue>
             <InlineLoader isLoading={stats.isLoading} width={70}>
               <FormatLargeAmount amount={stats.tvl} />
@@ -123,6 +125,9 @@ export const VaultCard: React.FC<VaultCardProps> = ({
                   fallback="—"
                   data-testid={`${position.symbol}-position-amount`}
                 />
+                {position.icon && (
+                  <StatValueIcon>{position.icon}</StatValueIcon>
+                )}
               </InlineLoader>
             </StatValue>
           </StatItem>

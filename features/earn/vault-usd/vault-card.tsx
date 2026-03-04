@@ -1,5 +1,6 @@
 import { VaultUsdIcon } from 'assets/earn-v2';
 import { trackMatomoEvent } from 'utils/track-matomo-event';
+import { getTokenIcon } from 'utils/get-token-icon';
 import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo';
 
 import { VaultCard } from '../shared/v2/vault-card';
@@ -7,13 +8,19 @@ import { EARN_VAULT_USD_SLUG } from '../consts';
 import { useUsdVaultApy } from './hooks/use-vault-apy';
 import { useUsdVaultStats } from './hooks/use-vault-stats';
 import { UsdVaultApyHint } from './components/apy-hint';
-import { USD_VAULT_DESCRIPTION, USD_VAULT_TITLE } from './consts';
+import {
+  USD_VAULT_DESCRIPTION,
+  USD_VAULT_TITLE,
+  USD_VAULT_TOKEN_SYMBOL,
+} from './consts';
+import { useUsdVaultPosition } from './hooks/use-position';
 
 export const UsdVaultCard = () => {
   const { apy, isLoading: isApyLoading } = useUsdVaultApy();
   const { totalTvlUsd, isLoading: isTvlLoading } = useUsdVaultStats();
+  const { data: usdPositionData, isLoading: isPositionLoading } =
+    useUsdVaultPosition();
 
-  // TODO: add "position" (token balance)
   return (
     <VaultCard
       title={USD_VAULT_TITLE}
@@ -25,6 +32,12 @@ export const UsdVaultCard = () => {
         apxLabel: 'APY* (7d avg.)',
         apxHint: <UsdVaultApyHint />,
         isLoading: isApyLoading || isTvlLoading,
+      }}
+      position={{
+        balance: usdPositionData?.earnusdSharesBalance,
+        symbol: USD_VAULT_TOKEN_SYMBOL,
+        icon: getTokenIcon(USD_VAULT_TOKEN_SYMBOL),
+        isLoading: isPositionLoading,
       }}
       ctaLabel={'Deposit'}
       variant={'usd'}
