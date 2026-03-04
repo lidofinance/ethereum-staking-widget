@@ -84,6 +84,7 @@ export const VaultPage: FC<Props> = (props) => {
         description={props.description}
         apx={props.apx}
         tvl={props.tvl}
+        apxHint={props.apxHint}
         isApxLoading={props.isApxLoading}
         isTvlLoading={props.isTvlLoading}
       />
