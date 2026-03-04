@@ -7,6 +7,7 @@ import {
   VaultUsdIcon,
 } from 'assets/earn-v2';
 import { VaultPage } from 'features/earn/shared/v2/vault-page/vault-page';
+import { StrategyContent } from 'features/earn/shared/v2/strategy-content';
 
 import { UsdVaultPositionManager } from './position-manager/position-manager';
 import { EarnUsdFaq } from './faq/faq';
@@ -94,6 +95,54 @@ const DATA = {
   riskDisclosure: RISK_DISCLOSURE,
 } as const;
 
+const STATIC_ALLOCATIONS_CONTENT = [
+  {
+    protocol: 'Maple',
+    badge: 'ethereum',
+    name: 'Maple syrupUSDC',
+  },
+  {
+    protocol: 'Gearbox',
+    badge: 'Monad',
+    name: 'Gearbox Edge UltraYield USDC',
+  },
+  {
+    protocol: 'Steakhouse',
+    badge: 'ethereum',
+    name: 'Steakhouse USDC',
+  },
+  {
+    protocol: 'Sentora',
+    badge: 'ethereum',
+    name: 'Sentora PYUSD Main vault',
+  },
+  {
+    protocol: 'Sky',
+    badge: 'ethereum',
+    name: 'Sky sUSDS Saving',
+  },
+  {
+    protocol: 'Morpho',
+    badge: 'base',
+    name: 'Morpho cbBTC/USDC',
+  },
+  {
+    protocol: 'Felix',
+    badge: 'Hyperliquid',
+    name: 'Felix USDC',
+  },
+  {
+    protocol: 'Euler',
+    badge: 'ethereum',
+    name: 'Euler Sentora USDC cluster',
+  },
+  {
+    protocol: 'Hyperlend',
+    badge: 'Hyperliquid',
+    name: 'Hyperlend supply USDC',
+  },
+];
+
 export const VaultPageUSD: FC<{
   action: typeof EARN_VAULT_DEPOSIT_SLUG | typeof EARN_VAULT_WITHDRAW_SLUG;
 }> = ({ action }) => {
@@ -112,6 +161,9 @@ export const VaultPageUSD: FC<{
         sidePanel={<UsdVaultPositionManager action={action} />}
         vaultName="usdVault"
         faqContent={<EarnUsdFaq />}
+        strategyContent={
+          <StrategyContent allocations={STATIC_ALLOCATIONS_CONTENT} />
+        }
       />
       <Disclaimers />
     </>

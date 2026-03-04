@@ -34,8 +34,9 @@ export const SectionTitle = styled.h3`
 `;
 
 export const RiskSection = styled(Section)`
-  padding-top: ${({ theme }) => theme.spaceMap.lg}px;
+  padding-top: ${({ theme }) => theme.spaceMap.xxl}px;
   border-top: 1px solid ${({ theme }) => theme.colors.border};
+  font-weight: 400;
 `;
 
 export const InfoRow = styled.div`
@@ -49,14 +50,14 @@ export const InfoRowLabel = styled.span`
 `;
 
 export const InfoRowValue = styled.span`
-  font-weight: 600;
+  font-weight: 400;
 `;
 
 export const Metrics = styled.div`
   display: flex;
   flex-direction: column;
   gap: ${({ theme }) => theme.spaceMap.sm}px;
-  padding-bottom: ${({ theme }) => theme.spaceMap.md}px;
+  padding-bottom: ${({ theme }) => theme.spaceMap.xxl}px;
   border-bottom: 1px solid ${({ theme }) => theme.colors.border};
 `;
 
@@ -99,6 +100,10 @@ export const TableValue = styled.span`
   align-items: center;
   gap: ${({ theme }) => theme.spaceMap.xs}px;
   text-align: right;
+
+  a {
+    color: var(--lido-color-text);
+  }
 `;
 
 export const TableLink = styled(LocalLink)`
