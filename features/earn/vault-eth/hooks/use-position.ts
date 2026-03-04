@@ -37,7 +37,7 @@ export const useEthVaultPosition = () => {
     queryKey: [
       ETH_VAULT_QUERY_SCOPE,
       'position',
-      'usd',
+      'wsteth',
       { shares: String(earnethShares) },
     ] as const,
     enabled: isEnabled && !!earnethBalanceQuery.data?.earnethSharesBalance,

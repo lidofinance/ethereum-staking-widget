@@ -11,7 +11,7 @@ export const DisclaimerSectionStyled = styled.section`
   font-weight: 400;
   line-height: ${({ theme }) => theme.spaceMap.lg}px;
 
-  margin-top: 20px;
+  margin-top: ${({ theme }) => theme.spaceMap.xxl}px;
   margin-bottom: 60px;
 
   ${({ theme }) => theme.mediaQueries.md} {

@@ -131,7 +131,7 @@ export const CardDivider = styled.div`
 
 export const CardStats = styled.div`
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(3, auto);
   gap: ${({ theme }) => theme.spaceMap.lg}px;
 
   ${({ theme }) => theme.mediaQueries.md} {
@@ -172,6 +172,9 @@ export const StatLabel = styled.span`
 `;
 
 export const StatValue = styled.span<{ $accent?: boolean; $muted?: boolean }>`
+  display: inline-flex;
+  align-items: center;
+  gap: ${({ theme }) => theme.spaceMap.xs}px;
   font-size: ${({ theme }) => theme.fontSizesMap.lg}px;
   font-weight: 700;
   color: ${({ $accent, $muted }) =>
@@ -185,6 +188,13 @@ export const StatValue = styled.span<{ $accent?: boolean; $muted?: boolean }>`
     font-size: ${({ theme }) => theme.fontSizesMap.xs}px;
     line-height: 24px;
   }
+`;
+
+export const StatValueIcon = styled.span`
+  display: inline-flex;
+  flex: 0 0 24px;
+  width: 24px;
+  height: 24px;
 `;
 
 export const CardCta = styled.div`

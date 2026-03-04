@@ -18,12 +18,12 @@ export const RequestsContainer = styled.div`
 export const ActionableTitle = styled.div`
   display: flex;
   align-items: center;
-  font-weight: 700;
+  font-weight: 400;
   font-size: ${({ theme }) => theme.fontSizesMap.xxs}px;
   line-height: 20px;
   letter-spacing: 0px;
   vertical-align: middle;
-  color: var(--lido-color-text);
+  color: var(--lido-color-text-secondary);
   margin-top: 0px;
 
   &:not(:first-child) {
@@ -60,7 +60,7 @@ export const AmountContainer = styled.div`
 `;
 
 export const AmountTokenValue = styled.span`
-  font-size: ${({ theme }) => theme.fontSizesMap.sm}px;
+  font-size: ${({ theme }) => theme.fontSizesMap.xs}px;
   font-weight: 700;
   font-style: Bold;
   line-height: 24px;
@@ -80,4 +80,11 @@ export const CreatedDate = styled.span`
   font-weight: 400;
   line-height: 20px;
   letter-spacing: 0px;
+`;
+
+export const ActionContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 0;
 `;

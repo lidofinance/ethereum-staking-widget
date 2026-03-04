@@ -83,6 +83,8 @@ export const TopSectionStatItem = styled.div`
 `;
 
 export const TopSectionStatLabel = styled.span`
+  display: flex;
+  align-items: center;
   color: var(--lido-color-textSecondary);
   font-size: ${({ theme }) => theme.fontSizesMap.xs}px;
   font-weight: 400;

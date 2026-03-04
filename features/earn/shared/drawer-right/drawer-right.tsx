@@ -69,7 +69,7 @@ export const DrawerRight: FC<DrawerRightProps> = ({ onClose, isOpen }) => {
               <Button fullwidth>Upgrade now</Button>
             </LocalLink>
             <Button fullwidth variant="outlined">
-              Ask the Earn team
+              Get in touch
             </Button>
           </DrawerRightFooter>
         </DrawerRightContent>

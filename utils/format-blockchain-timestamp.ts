@@ -9,6 +9,9 @@ const DEFAULT_DATE_FORMAT_OPTIONS: Intl.DateTimeFormatOptions = {
 
 export const formatBlockchainTimestamp = (
   timestamp: bigint | number,
-  options: Intl.DateTimeFormatOptions = DEFAULT_DATE_FORMAT_OPTIONS,
+  {
+    options = DEFAULT_DATE_FORMAT_OPTIONS,
+    locale = LOCALE,
+  }: { options?: Intl.DateTimeFormatOptions; locale?: string } = {},
 ): string =>
-  new Date(unixTimestampToMs(timestamp)).toLocaleDateString(LOCALE, options);
+  new Date(unixTimestampToMs(timestamp)).toLocaleDateString(locale, options);

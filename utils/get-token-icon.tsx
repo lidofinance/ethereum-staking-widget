@@ -11,6 +11,8 @@ import {
   TokenStrethIcon,
   TokenDvstethIcon,
   TokenGGIcon,
+  TokenEarnUsdIcon,
+  TokenEarnEthIcon,
 } from 'assets/earn-v2';
 import { TOKENS, type Token, type TokenSymbol } from 'consts/tokens';
 
@@ -39,6 +41,10 @@ export const getTokenIcon = (t: Token | TokenSymbol) => {
       return <TokenDvstethIcon />;
     case TOKENS.streth:
       return <TokenStrethIcon />;
+    case TOKENS.earneth:
+      return <TokenEarnEthIcon />;
+    case TOKENS.earnusd:
+      return <TokenEarnUsdIcon />;
     default:
       invariant(false, `Unsupported token: ${t}`);
   }

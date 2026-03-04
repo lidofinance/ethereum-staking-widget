@@ -42,6 +42,7 @@ type Props = {
   description: string;
   apx?: number | null;
   tvl?: number | null;
+  apxHint?: React.ReactNode;
   isApxLoading?: boolean;
   isTvlLoading?: boolean;
   logo: VaultIllustration;

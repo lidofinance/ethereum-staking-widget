@@ -14,7 +14,7 @@ export const SidePanelStyled = styled.div`
 
 export const FixedBlock = styled.div`
   position: sticky;
-  top: 0;
+  top: ${({ theme }) => theme.spaceMap.md}px;
   gap: ${({ theme }) => theme.spaceMap.md}px;
 `;
 

@@ -2,41 +2,46 @@ import React from 'react';
 import { Badge, ArrowTop } from '@lidofinance/lido-ui';
 
 import { VaultEthIcon } from 'assets/earn-v2';
+import { ReactComponent as ChevronsUp } from 'assets/icons/chevrons-up.svg';
 import {
   Table,
   Tr,
   HeaderTr,
   Tbody,
   Td,
-  HeaderWithIcon,
+  HeaderCell,
   TableHeader,
   MobileCellHeader,
-  HeaderWrapper,
+  HeaderTitle,
+  DrawerBadge,
 } from './styles';
 
 const DATA = [
   {
     header: [
       '',
-      <HeaderWrapper key="single-vault">
-        <Badge variant="gray">Before upgrade</Badge>
-        Single vault
-      </HeaderWrapper>,
-      <HeaderWrapper key="earn-eth">
-        <Badge icon={<ArrowTop height={16} width={16} />} variant="gradient">
+      <HeaderCell key="lido-single-vault">
+        <DrawerBadge>Before upgrade</DrawerBadge>
+        <HeaderTitle>Single vault</HeaderTitle>
+      </HeaderCell>,
+      <HeaderCell key="lido-earn-eth">
+        <DrawerBadge
+          variant="gradient"
+          icon={<ChevronsUp width={20} height={20} />}
+        >
           After upgrade
-        </Badge>
-        <HeaderWithIcon>
+        </DrawerBadge>
+        <HeaderTitle>
           <VaultEthIcon width={28} height={28} />
-          EarnETH
-        </HeaderWithIcon>
-      </HeaderWrapper>,
+          <HeaderTitle>EarnETH</HeaderTitle>
+        </HeaderTitle>
+      </HeaderCell>,
     ],
     rows: [
       {
         cells: [
           'Vault Token',
-          'GG / strETH tokens, represanting shares in the specific vault',
+          'GG / strETH tokens, representing shares in the specific vault',
           'earnETH, representing shares in the ETH meta-vault',
         ],
       },

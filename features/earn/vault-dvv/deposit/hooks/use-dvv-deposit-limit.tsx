@@ -1,5 +1,7 @@
 import invariant from 'tiny-invariant';
 import { useQuery } from '@tanstack/react-query';
+import { maxUint256 } from 'viem';
+import { LidoSDKWrap } from '@lidofinance/lido-ethereum-sdk/wrap';
 
 import { useDappStatus, useMainnetOnlyWagmi } from 'modules/web3';
 
@@ -7,10 +9,7 @@ import {
   getDVVDepositWrapperContract,
   getDVVVaultContract,
 } from '../../contracts';
-
-import type { DVVDepositLimitReason } from '../types';
-import { maxUint256 } from 'viem';
-import { LidoSDKWrap } from '@lidofinance/lido-ethereum-sdk/wrap';
+import { type DVVDepositLimitReason } from '../dvv-deposit-warning';
 
 type DVVDepositLimit = {
   maxDepositETH: bigint | null;

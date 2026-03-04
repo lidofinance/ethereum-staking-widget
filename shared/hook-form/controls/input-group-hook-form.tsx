@@ -20,7 +20,7 @@ const InputGroupStyled = styled(InputGroup)<InputGroupStyleProps>`
     bottomSpacing ? theme.spaceMap.md : 0}px;
   z-index: 2;
   span:nth-of-type(2) {
-    white-space: ${({ success }) => !!success && 'unset'};
+    white-space: unset;
   }
 `;
 
