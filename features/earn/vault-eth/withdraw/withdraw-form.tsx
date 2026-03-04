@@ -1,5 +1,4 @@
 import type { FC } from 'react';
-import { Block } from '@lidofinance/lido-ui';
 
 import {
   VaultTxInfo,
@@ -7,6 +6,7 @@ import {
 } from 'features/earn/shared/vault-tx-info';
 import { VaultFormSection } from 'features/earn/shared/vault-form-section';
 import { VaultForm } from 'features/earn/shared/vault-form';
+import { BlockSidePanel } from 'features/earn/shared/v2/block-side-panel/block-side-panel';
 
 import { EthVaultWithdrawFormProvider } from './form-context';
 import { EthVaultWithdrawInput } from './withdraw-input';
@@ -16,9 +16,11 @@ import { EthVaultWithdrawSubmitButton } from './withdraw-submit-button';
 import { EthVaultWithdrawRequests } from './withdraw-requests';
 import { ActionSwitch } from '../components/action-switch';
 
+// TODO: add Withdraw Warning and ability to disable withdraw via config
+
 const EthVaultWithdrawFormContent: FC = () => {
   return (
-    <Block>
+    <BlockSidePanel>
       <VaultForm data-testid="withdraw-form">
         <ActionSwitch isWithdraw />
         <VaultFormSection>
@@ -42,7 +44,7 @@ const EthVaultWithdrawFormContent: FC = () => {
         </VaultTxInfo>
         <EthVaultWithdrawSubmitButton />
       </VaultForm>
-    </Block>
+    </BlockSidePanel>
   );
 };
 

@@ -16,6 +16,7 @@ import {
   VaultIconWrapper,
   CardTitleBadge,
   ChevronsUpIcon,
+  StatValueIcon,
 } from './styles';
 import { LocalLink } from 'shared/components/local-link';
 import { EARN_PATH } from 'consts/urls';
@@ -31,7 +32,7 @@ import { VaultTip } from '../../vault-tip';
 type VaultStats = {
   tvl?: number | null;
   apx?: number | null;
-  apxLabel: 'APY' | 'APR';
+  apxLabel: string;
   isLoading?: boolean;
   apxHint?: React.ReactNode;
   compact?: boolean;
@@ -43,6 +44,7 @@ type VaultPosition = {
   pending?: Array<{ tokenSymbol: string; amount: bigint }>;
   isLoading?: boolean;
   symbol: string;
+  icon?: React.ReactNode;
 };
 
 type VaultCardProps = {
@@ -94,9 +96,7 @@ export const VaultCard: React.FC<VaultCardProps> = ({
         <StatItem data-testid="apx-value">
           <StatLabel>
             {stats.apxLabel}
-            {!stats.isLoading && (
-              <VaultTip placement="bottom">{stats.apxHint}</VaultTip>
-            )}
+            <VaultTip placement="bottom">{stats.apxHint}</VaultTip>
           </StatLabel>
           <StatValue $accent>
             <InlineLoader isLoading={stats.isLoading} width={70}>
@@ -105,7 +105,7 @@ export const VaultCard: React.FC<VaultCardProps> = ({
           </StatValue>
         </StatItem>
         <StatItem data-testid="tvl-value">
-          <StatLabel>TVL</StatLabel>
+          <StatLabel>Total TVL</StatLabel>
           <StatValue>
             <InlineLoader isLoading={stats.isLoading} width={70}>
               <FormatLargeAmount amount={stats.tvl} />
@@ -125,6 +125,9 @@ export const VaultCard: React.FC<VaultCardProps> = ({
                   fallback="—"
                   data-testid={`${position.symbol}-position-amount`}
                 />
+                {position.icon && (
+                  <StatValueIcon>{position.icon}</StatValueIcon>
+                )}
               </InlineLoader>
             </StatValue>
           </StatItem>

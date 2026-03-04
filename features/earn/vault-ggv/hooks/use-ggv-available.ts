@@ -5,6 +5,7 @@ export const useGGVAvailable = () => {
   const {
     isVaultAvailable: isGGVAvailable,
     isDepositEnabled,
+    isVaultDeprecated,
     isWithdrawEnabled,
     depositPauseReasonText,
     withdrawPauseReasonText,
@@ -13,6 +14,7 @@ export const useGGVAvailable = () => {
   return {
     isGGVAvailable,
     isDepositEnabled,
+    isVaultDeprecated,
     isWithdrawEnabled,
     depositPauseReasonText,
     withdrawPauseReasonText,

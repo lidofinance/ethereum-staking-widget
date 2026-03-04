@@ -9,12 +9,15 @@ import {
 } from 'assets/earn-v2';
 import { VaultPage } from 'features/earn/shared/v2/vault-page/vault-page';
 import type { InfoItem } from 'features/earn/shared/v2/vault-page/vault-page';
+import { Disclaimers } from 'features/earn/shared/v2/disclaimers';
 
 import { EthVaultPositionManager } from './position-manager/position-manager';
 import { EarnEthFaq } from './faq/faq';
 import { useEthVaultStats } from './hooks/use-vault-stats';
 import { useEthVaultApy } from './hooks/use-vault-apy';
 import { EARN_VAULT_DEPOSIT_SLUG, EARN_VAULT_WITHDRAW_SLUG } from '../consts';
+import { EthVaultApyHint } from './components/apy-hint';
+import { ETH_VAULT_DESCRIPTION, ETH_VAULT_TITLE } from './consts';
 
 const FEES = [
   { label: 'Performance fee', value: '10%' },
@@ -93,9 +96,8 @@ const RISK_DISCLOSURE = (
 );
 
 const DATA = {
-  title: 'EarnETH',
-  description:
-    'EarnETH is an ETH growth vault allocating ETH and stETH across leading, blue-chip DeFi protocols meant to optimize for capital efficiency',
+  title: ETH_VAULT_TITLE,
+  description: ETH_VAULT_DESCRIPTION,
   logo: VaultEthIcon,
   fees: FEES,
   generalInfoLeft: GENERAL_INFO_LEFT,
@@ -110,15 +112,19 @@ export const EthVaultPage: FC<{
   const { totalTvlUsd, isLoading: isTvlLoading } = useEthVaultStats();
 
   return (
-    <VaultPage
-      {...DATA}
-      apx={apy}
-      tvl={totalTvlUsd}
-      isApxLoading={isApyLoading}
-      isTvlLoading={isTvlLoading}
-      sidePanel={<EthVaultPositionManager action={action} />}
-      vaultName="ethVault"
-      faqContent={<EarnEthFaq />}
-    />
+    <>
+      <VaultPage
+        {...DATA}
+        apx={apy}
+        tvl={totalTvlUsd}
+        isApxLoading={isApyLoading}
+        isTvlLoading={isTvlLoading}
+        apxHint={<EthVaultApyHint />}
+        sidePanel={<EthVaultPositionManager action={action} />}
+        vaultName="ethVault"
+        faqContent={<EarnEthFaq />}
+      />
+      <Disclaimers />
+    </>
   );
 };

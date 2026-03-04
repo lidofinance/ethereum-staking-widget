@@ -9,6 +9,7 @@ import {
   CreatedDate,
   Entry,
   TokenLogo,
+  ActionContainer,
 } from './styles';
 import { FormatToken } from 'shared/formatters';
 import { ButtonInline } from 'shared/components/button-inline';
@@ -42,7 +43,7 @@ export const Request = ({
   actionButtonVariant = 'button',
 }: RequestProps) => {
   const createdDate = createdDateTimestamp
-    ? formatBlockchainTimestamp(createdDateTimestamp)
+    ? formatBlockchainTimestamp(createdDateTimestamp, { locale: 'en-GB' }) // TODO: ensure that we should use 'en-GB' instead of default 'en-US'
     : undefined;
 
   const button =
@@ -51,6 +52,7 @@ export const Request = ({
         $variant="small"
         onClick={actionCallback}
         disabled={actionLoading}
+        style={{ textAlign: 'right' }}
       >
         {actionText}
       </ButtonInline>
@@ -85,8 +87,10 @@ export const Request = ({
             </AmountUSD>
           )}
         </AmountContainer>
-        {createdDate && <CreatedDate>created on {createdDate}</CreatedDate>}
-        {actionText && button}
+        <ActionContainer>
+          {createdDate && <CreatedDate>{createdDate}</CreatedDate>}
+          {actionText && button}
+        </ActionContainer>
       </Entry>
     </RequestContainer>
   );

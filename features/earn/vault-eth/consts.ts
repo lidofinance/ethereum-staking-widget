@@ -2,6 +2,10 @@ import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo/matomo-earn-events';
 import { TOKENS, TOKEN_SYMBOLS } from 'consts/tokens';
 import { ETH_DEPOSIT_PATH, ETH_WITHDRAW_PATH } from '../consts';
 
+export const ETH_VAULT_TITLE = 'EarnETH';
+export const ETH_VAULT_DESCRIPTION =
+  'EarnETH is an ETH growth vault allocating ETH and stETH across leading, blue-chip DeFi protocols meant to optimize for capital efficiency';
+
 export const ETH_VAULT_TOKEN_SYMBOL = TOKEN_SYMBOLS.earneth;
 
 const { eth, wsteth, weth } = TOKEN_SYMBOLS;

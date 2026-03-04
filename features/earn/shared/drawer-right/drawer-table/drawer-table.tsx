@@ -1,31 +1,45 @@
 import React from 'react';
 import { VaultEthIcon } from 'assets/earn-v2';
+import { ReactComponent as ChevronsUp } from 'assets/icons/chevrons-up.svg';
 import {
   Table,
   Tr,
   HeaderTr,
   Tbody,
   Td,
-  HeaderWithIcon,
+  HeaderCell,
   TableHeader,
   MobileCellHeader,
+  HeaderTitle,
+  DrawerBadge,
 } from './styles';
 
 const DATA = [
   {
     header: [
       '',
-      'Single vault',
-      <HeaderWithIcon key="lido-earn-eth">
-        <VaultEthIcon width={28} height={28} />
-        Lido Earn ETH
-      </HeaderWithIcon>,
+      <HeaderCell key="lido-single-vault">
+        <DrawerBadge>Before upgrade</DrawerBadge>
+        <HeaderTitle>Single vault</HeaderTitle>
+      </HeaderCell>,
+      <HeaderCell key="lido-earn-eth">
+        <DrawerBadge
+          variant="gradient"
+          icon={<ChevronsUp width={20} height={20} />}
+        >
+          After upgrade
+        </DrawerBadge>
+        <HeaderTitle>
+          <VaultEthIcon width={28} height={28} />
+          <HeaderTitle>EarnETH</HeaderTitle>
+        </HeaderTitle>
+      </HeaderCell>,
     ],
     rows: [
       {
         cells: [
           'Vault Token',
-          'GG / strETH tokens, represanting shares in the specific vault',
+          'GG / strETH tokens, representing shares in the specific vault',
           'earnETH, representing shares in the ETH meta-vault',
         ],
       },
@@ -33,14 +47,14 @@ const DATA = [
         cells: [
           'Reward Strategy',
           'Earning rewards in a specific strategy/vault',
-          'Continue earning rewards, but in a best strategy available without explicit switching',
+          'Keep earning rewards while we optimize for the best available strategy',
         ],
       },
       {
         cells: [
           'Vault Selection',
           'Manual vault choice',
-          'Constant optimization between best strategies',
+          'Constant optimization between strategies',
         ],
       },
       {
@@ -65,7 +79,7 @@ export const DrawerTable = () => {
   return (
     <div>
       <TableHeader>
-        Comparison between GGV/stRATEGY and the Lido Earn ETH Vault
+        Comparison between GGV/stRATEGY and the EarnETH Vault
       </TableHeader>
       {DATA.map((item) => (
         <Table key={item.header.join('-')}>

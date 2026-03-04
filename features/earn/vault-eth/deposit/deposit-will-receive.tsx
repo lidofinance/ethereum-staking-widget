@@ -26,7 +26,7 @@ export const EthVaultDepositWillReceive = () => {
       isLoading={isLoading}
       help={
         <>
-          The final claimable ${ETH_VAULT_TOKEN_SYMBOL} amount may slightly
+          The final claimable {ETH_VAULT_TOKEN_SYMBOL} amount may slightly
           differ based on the latest token price update
         </>
       }

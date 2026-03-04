@@ -14,6 +14,8 @@ import { UsdVaultWithdrawInput } from './withdraw-input';
 import { UsdVaultWithdrawWillReceive } from './withdraw-will-receive';
 import { UsdVaultWithdrawSubmitButton } from './withdraw-submit-button';
 
+// TODO: add Withdraw Warning and ability to disable withdraw via config
+
 const UsdVaultWithdrawFormContent: FC = () => {
   return (
     <VaultForm data-testid="withdraw-form-usd">

@@ -1,5 +1,4 @@
 import type { FC } from 'react';
-import { Block } from '@lidofinance/lido-ui';
 
 import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo';
 
@@ -12,6 +11,7 @@ import {
   USD_WITHDRAW_PATH,
 } from '../../consts';
 import { SwitchStyled } from './styles';
+import { BlockSidePanel } from 'features/earn/shared/v2/block-side-panel/block-side-panel';
 
 const routes = [
   {
@@ -32,10 +32,10 @@ export const UsdVaultPositionManager: FC<{
   const isDeposit = action === EARN_VAULT_DEPOSIT_SLUG;
   const isWithdraw = action === EARN_VAULT_WITHDRAW_SLUG;
   return (
-    <Block>
+    <BlockSidePanel>
       <SwitchStyled routes={routes} checked={isWithdraw} fullwidth />
       {isDeposit && <UsdVaultDepositForm />}
       {isWithdraw && <UsdVaultWithdrawForm />}
-    </Block>
+    </BlockSidePanel>
   );
 };

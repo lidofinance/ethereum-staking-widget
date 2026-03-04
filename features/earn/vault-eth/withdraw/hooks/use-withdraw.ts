@@ -10,13 +10,14 @@ import {
 } from '../../contracts';
 import { useTxModalStagesWithdraw } from 'modules/mellow-meta-vaults/hooks/use-withdraw-tx-modal';
 import { getTokenSymbol } from 'utils/get-token-symbol';
+import { TOKENS } from 'consts/tokens';
 
 export const useEthVaultWithdraw = (onRetry: () => void) => {
   const { core } = useLidoSDK();
   const { txModalStages } = useTxModalStagesWithdraw({
     stageOperationArgs: {
-      willReceiveToken: getTokenSymbol('wsteth'),
-      token: getTokenSymbol('wsteth'),
+      willReceiveToken: getTokenSymbol(TOKENS.earneth),
+      token: getTokenSymbol(TOKENS.earneth),
       operationText: 'requesting withdrawal for',
     },
   });

@@ -1,5 +1,5 @@
 import { FC } from 'react';
-import { Close, Button } from '@lidofinance/lido-ui';
+import { Close, Button, Link } from '@lidofinance/lido-ui';
 
 import { useEscape } from 'shared/hooks/useEscape';
 
@@ -30,7 +30,7 @@ export const DrawerRight: FC<DrawerRightProps> = ({ onClose, isOpen }) => {
       <DrawerRightWrapper>
         <DrawerRightContent>
           <DrawerRightHeader>
-            <div>What is Lido Earn ETH Vault and how it works</div>
+            <div>What is EarnETH Vault and how it works</div>
             <DrawerRightClose
               icon={<Close />}
               size="xxs"
@@ -39,21 +39,36 @@ export const DrawerRight: FC<DrawerRightProps> = ({ onClose, isOpen }) => {
             />
           </DrawerRightHeader>
           <DrawerDescription>
-            Lido Earn ETH Vault is a «meta-vault» that optimise rewards across
-            Lido Earn products, today it&apos;s GGV and stRATEGY, but we plan to
-            adapt strategies setup to reflect market situation and provide you
-            with the best ballance of risk/reward for the ETH-denominated
-            assets. Meta-vaults are future-proof and helps you to avoid choosing
-            and switching between different available options of
-            strategies/vaults.
+            EarnETH Vault is a meta-vault designed to optimize returns on
+            deployed assets across Lido Earn strategies. Today, it allocates
+            assets across GGV and stRATEGY, with the ability to dynamically
+            evolve its allocation mix. By abstracting strategy selection, the
+            meta-vault provides ETH-denominated exposure to Lido Earn with the
+            objective of balancing different risk and return profiles for
+            ETH-denominated assets.
           </DrawerDescription>
           <DrawerTable />
+          <DrawerDescription>
+            The table above describes structural differences between accessing a
+            single vault strategy and accessing a meta-vault that allocates
+            across multiple strategies. It is provided for informational
+            purposes only and does not constitute a recommendation. Outcomes and
+            rewards may vary based on strategy composition, market conditions,
+            and protocol parameters.
+          </DrawerDescription>
+          <DrawerDescription>
+            All Mellow points you accumulate remain yours, with your balance
+            visible on the{' '}
+            <Link href="https://app.mellow.finance/dashboard">
+              Mellow Dashboard
+            </Link>
+          </DrawerDescription>
           <DrawerRightFooter>
             <LocalLink href={ETH_DEPOSIT_PATH}>
               <Button fullwidth>Upgrade now</Button>
             </LocalLink>
             <Button fullwidth variant="outlined">
-              Ask the Earn team
+              Get in touch
             </Button>
           </DrawerRightFooter>
         </DrawerRightContent>

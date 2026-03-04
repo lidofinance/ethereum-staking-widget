@@ -13,6 +13,9 @@ import { EarnUsdFaq } from './faq/faq';
 import { EARN_VAULT_DEPOSIT_SLUG, EARN_VAULT_WITHDRAW_SLUG } from '../consts';
 import { useUsdVaultStats } from './hooks/use-vault-stats';
 import { useUsdVaultApy } from './hooks/use-vault-apy';
+import { Disclaimers } from '../shared/v2/disclaimers';
+import { UsdVaultApyHint } from './components/apy-hint';
+import { USD_VAULT_DESCRIPTION, USD_VAULT_TITLE } from './consts';
 
 const FEES = [
   { label: 'Performance fee', value: '10%' },
@@ -82,9 +85,8 @@ const RISK_DISCLOSURE = (
 );
 
 const DATA = {
-  title: 'EarnUSD',
-  description:
-    'EarnUSD Vault is curated for USD-denominated assets, designed to target an optimal risk-reward profile without compromising on security, risk controls, or asset quality. It’s built to feel like saving',
+  title: USD_VAULT_TITLE,
+  description: USD_VAULT_DESCRIPTION,
   logo: VaultUsdIcon,
   fees: FEES,
   generalInfoLeft: GENERAL_INFO_LEFT,
@@ -99,15 +101,19 @@ export const VaultPageUSD: FC<{
   const { totalTvlUsd, isLoading: isTvlLoading } = useUsdVaultStats();
 
   return (
-    <VaultPage
-      {...DATA}
-      apx={apy}
-      tvl={totalTvlUsd}
-      isApxLoading={isApyLoading}
-      isTvlLoading={isTvlLoading}
-      sidePanel={<UsdVaultPositionManager action={action} />}
-      vaultName="usdVault"
-      faqContent={<EarnUsdFaq />}
-    />
+    <>
+      <VaultPage
+        {...DATA}
+        apx={apy}
+        tvl={totalTvlUsd}
+        isApxLoading={isApyLoading}
+        isTvlLoading={isTvlLoading}
+        apxHint={<UsdVaultApyHint />}
+        sidePanel={<UsdVaultPositionManager action={action} />}
+        vaultName="usdVault"
+        faqContent={<EarnUsdFaq />}
+      />
+      <Disclaimers />
+    </>
   );
 };

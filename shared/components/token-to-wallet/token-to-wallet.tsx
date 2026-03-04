@@ -27,7 +27,9 @@ const ERC20_METADATA_ABI = [
 ] as const;
 
 export const TokenToWallet: TokenToWalletComponent = ({ address, ...rest }) => {
-  const { watchAssetAsync } = useWatchAsset({ mutation: { retry: false } });
+  const { mutateAsync: watchAssetAsync } = useWatchAsset({
+    mutation: { retry: false },
+  });
   const isLegerLive = useIsLedgerLive();
   const client = usePublicClient();
   const { data: walletClient } = useWalletClient();
@@ -89,7 +91,12 @@ export const TokenToWallet: TokenToWalletComponent = ({ address, ...rest }) => {
 
   return (
     <Tooltip placement="bottomLeft" title="Add tokens to wallet">
-      <TokenToWalletStyle tabIndex={-1} onClick={onClickHandler} {...rest} />
+      <TokenToWalletStyle
+        type="button"
+        tabIndex={-1}
+        onClick={onClickHandler}
+        {...rest}
+      />
     </Tooltip>
   );
 };
