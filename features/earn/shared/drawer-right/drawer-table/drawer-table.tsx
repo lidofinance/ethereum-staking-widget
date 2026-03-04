@@ -1,5 +1,4 @@
 import React from 'react';
-import { Badge, ArrowTop } from '@lidofinance/lido-ui';
 
 import { VaultEthIcon } from 'assets/earn-v2';
 import { ReactComponent as ChevronsUp } from 'assets/icons/chevrons-up.svg';
