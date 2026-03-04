@@ -26,9 +26,9 @@ export const EthVaultDepositRequests = () => {
 
   const {
     data: earnethPositionData,
-    isLoading,
+    isLoading: isPositionLoading,
     usdBalance: usdAmount,
-    usdQuery: { isLoading: isLoadingUsd } = { isLoading: false },
+    usdQuery: { isLoading: isPositionLoadingUsd } = { isLoading: false },
   } = useEthVaultPosition();
 
   const earnethBalance = earnethPositionData?.earnethSharesBalance ?? 0n;
@@ -48,7 +48,7 @@ export const EthVaultDepositRequests = () => {
           token: earnethPositionData?.earnethTokenAddress,
           balance: earnethBalance,
           icon: <TokenEarnEthIcon />,
-          isLoading: isLoading || isLoadingUsd,
+          isLoading: isPositionLoading || isPositionLoadingUsd,
           usdAmount,
         }}
       />
