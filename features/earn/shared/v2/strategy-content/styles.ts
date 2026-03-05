@@ -15,6 +15,7 @@ export const StrategyItemStyled = styled.div`
   display: flex;
   align-items: center;
   gap: ${({ theme }) => theme.spaceMap.sm}px;
+  font-weight: 400;
 `;
 
 export const Container = styled.div`
