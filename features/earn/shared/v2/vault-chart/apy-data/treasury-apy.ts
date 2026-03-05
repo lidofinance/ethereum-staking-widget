@@ -3,7 +3,7 @@ import { TREASURY_YIELD_CURVE_ORIGIN } from '../consts';
 /**
  * Fetches and parses the US Treasury Daily Treasury Rate XML feed.
  * Feed: https://home.treasury.gov/treasury-daily-interest-rate-xml-feed
- * Returns daily 10-year CMT rate for the given time range (for comparison with vault APY).
+ * Returns daily 3-year CMT rate for the given time range (for comparison with vault APY).
  */
 
 export type TreasuryChartPoint = {
@@ -35,7 +35,7 @@ const fetchMonthXml = async (yyyymm: string): Promise<TreasuryChartPoint[]> => {
     if (!props) continue;
 
     const dateEl = props.getElementsByTagNameNS(NS.d, 'NEW_DATE')[0];
-    const rateEl = props.getElementsByTagNameNS(NS.d, 'BC_10YEAR')[0];
+    const rateEl = props.getElementsByTagNameNS(NS.d, 'BC_3YEAR')[0];
     if (!dateEl?.textContent || !rateEl?.textContent) continue;
 
     const dateStr = dateEl.textContent.trim();
