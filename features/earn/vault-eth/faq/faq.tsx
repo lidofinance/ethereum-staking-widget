@@ -26,7 +26,7 @@ import {
 
 export const EarnEthFaq: FC = () => {
   return (
-    <Section title="FAQ" data-testid="vault-faq">
+    <Section data-testid="vault-faq">
       <WhatIsEarnEth />
       <WhatIsApyForEarnEth />
       <WhatFeesAreApplied />

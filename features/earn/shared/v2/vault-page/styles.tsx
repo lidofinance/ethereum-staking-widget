@@ -47,6 +47,7 @@ export const InfoRow = styled.div`
 
 export const InfoRowLabel = styled.span`
   color: var(--lido-color-textSecondary);
+  font-weight: 400;
 `;
 
 export const InfoRowValue = styled.span`
