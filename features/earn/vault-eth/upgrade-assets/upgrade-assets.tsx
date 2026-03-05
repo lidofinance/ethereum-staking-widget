@@ -1,7 +1,7 @@
 import { useCallback, useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { useFormContext } from 'react-hook-form';
-import { useDappStatus } from 'modules/web3';
+import { useDappStatus, useLidoSDK } from 'modules/web3';
 import { TOKENS, TOKEN_SYMBOLS } from 'consts/tokens';
 import { TokenGGIcon, TokenDvstethIcon, TokenStrethIcon } from 'assets/earn-v2';
 import { FormatToken } from 'shared/formatters/format-token';
@@ -22,6 +22,8 @@ import { useEthVaultDeposit } from '../deposit/hooks';
 import { EthDepositTokenUpgradable } from '../types';
 import { ETHDepositFormValues } from '../deposit/form-context/types';
 import { MELLOW_VAULTS_QUERY_SCOPE } from 'modules/mellow-meta-vaults/consts';
+import { getSTGVaultWritableContract } from 'features/earn/vault-stg/contracts';
+import { WalletClient } from 'viem';
 
 const TOKEN_ICON_MAP = {
   [TOKENS.gg]: <TokenGGIcon />,
@@ -42,10 +44,18 @@ const getMatomoEventForToken = (token: EthDepositTokenUpgradable) => {
   }
 };
 
+type UpgradeArgs = {
+  amount: bigint;
+  token: EthDepositTokenUpgradable;
+  claimableStrethShares?: bigint;
+};
+
 export const UpgradeAssetsBlock = () => {
+  const { core } = useLidoSDK();
   const { isWalletConnected } = useDappStatus();
   const queryClient = useQueryClient();
-  const { balances, refetchBalances } = useUpgradableTokenBalances();
+  const { balances, claimableStrethShares, refetchBalances } =
+    useUpgradableTokenBalances();
   const [isUpgrading, setIsUpgrading] = useState(false);
 
   const { watch } = useFormContext<ETHDepositFormValues>();
@@ -55,12 +65,10 @@ export const UpgradeAssetsBlock = () => {
 
   const upgrade = useCallback(
     async ({
+      // TODO: consider getting amount inside upgrade function
       amount,
       token,
-    }: {
-      amount?: bigint; // TODO: consider getting this value inside the function instead of passing it as an argument
-      token: EthDepositTokenUpgradable;
-    }) => {
+    }: UpgradeArgs) => {
       // TODO: use qa helper to set mocked amount instead of using localStorage directly
       const amountMockedString = window.localStorage.getItem(
         '_QA_EarnEthUpgradeDepositAmount',
@@ -78,6 +86,17 @@ export const UpgradeAssetsBlock = () => {
           amount: depositAmount,
           token,
           referral,
+          // For strETH we can claim deposit and then upgrade
+          claimable: claimableStrethShares
+            ? {
+                amount: claimableStrethShares,
+                token: TOKENS.streth,
+                vault: getSTGVaultWritableContract(
+                  core.rpcProvider,
+                  core.web3Provider as WalletClient,
+                ),
+              }
+            : undefined,
         });
         if (isDepositSuccessful) {
           const matomoEvent = getMatomoEventForToken(token);
@@ -94,7 +113,15 @@ export const UpgradeAssetsBlock = () => {
         setIsUpgrading(false);
       }
     },
-    [deposit, queryClient, referral, refetchBalances],
+    [
+      claimableStrethShares,
+      core.rpcProvider,
+      core.web3Provider,
+      deposit,
+      queryClient,
+      referral,
+      refetchBalances,
+    ],
   );
 
   if (!isWalletConnected) return null;
@@ -126,7 +153,14 @@ export const UpgradeAssetsBlock = () => {
             color="primary"
             size="xs"
             variant="translucent"
-            onClick={() => upgrade({ token, amount: balances[token] })}
+            onClick={() =>
+              upgrade({
+                token,
+                amount: balances[token] as bigint,
+                claimableStrethShares:
+                  token === TOKENS.streth ? claimableStrethShares : undefined,
+              })
+            }
             loading={isUpgrading}
           >
             Upgrade

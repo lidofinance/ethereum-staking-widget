@@ -14,12 +14,39 @@ type StageArgs = {
   operationText: string;
 };
 
+const DEFAULT_STAGE_APPROVE_ARGS: StageArgs = {
+  willReceiveToken: 'strETH',
+  operationText: 'Claiming',
+};
+
 const getTxModalStagesRequest = (
   transitStage: TransactionModalTransitStage,
   stageApproveArgs: StageArgs,
   stageOperationArgs: StageArgs,
+  stageClaimArgs = DEFAULT_STAGE_APPROVE_ARGS,
 ) => ({
   ...getGeneralTransactionModalStages(transitStage),
+  // Step for stg-> earn ETH upgrade, where we claim existing deposit and then upgrade it in one flow.
+  // For regular deposit flow, claim stage is not used.
+  signClaim: (amount: bigint, token: Token) =>
+    transitStage(
+      <TxStageSignOperationAmount
+        {...stageClaimArgs}
+        amount={amount}
+        token={TOKEN_SYMBOLS[token]}
+      />,
+    ),
+
+  pendingClaim: (amount: bigint, token: Token, txHash?: Hash) =>
+    transitStage(
+      <TxStageSignOperationAmount
+        {...stageClaimArgs}
+        amount={amount}
+        token={TOKEN_SYMBOLS[token]}
+        isPending
+        txHash={txHash}
+      />,
+    ),
 
   signApproval: (amount: bigint, token: Token) =>
     transitStage(
@@ -77,14 +104,23 @@ const getTxModalStagesRequest = (
     ),
 });
 
+type UseTxModalStagesDepositArgs = {
+  stageOperationArgs: StageArgs;
+  stageApproveArgs: StageArgs;
+  stageClaimArgs?: StageArgs;
+};
+
 export const useTxModalStagesDeposit = ({
   stageOperationArgs,
   stageApproveArgs,
-}: {
-  stageOperationArgs: StageArgs;
-  stageApproveArgs: StageArgs;
-}) => {
+  stageClaimArgs,
+}: UseTxModalStagesDepositArgs) => {
   return useTransactionModalStage((transitStage) =>
-    getTxModalStagesRequest(transitStage, stageApproveArgs, stageOperationArgs),
+    getTxModalStagesRequest(
+      transitStage,
+      stageApproveArgs,
+      stageOperationArgs,
+      stageClaimArgs,
+    ),
   );
 };
