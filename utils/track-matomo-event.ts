@@ -8,8 +8,7 @@ export const trackMatomoEvent = (eventType: MATOMO_EVENT_TYPE) => {
     'mock-qa-helpers-matomo-logging',
   );
   if (enableLogging) {
-    // eslint-disable-next-line no-console
-    console.log(
+    console.info(
       '%cTracking Matomo event:',
       'background:#3152A0;color:#fff;padding:2px 4px;border-radius:2px',
       MATOMO_EVENTS[eventType].join(', '),
