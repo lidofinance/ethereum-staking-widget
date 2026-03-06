@@ -12,6 +12,8 @@ import { ETH_DEPOSIT_PATH } from 'features/earn/consts';
 import { LocalLink } from 'shared/components/local-link';
 import { useUpgradableTokenBalances } from 'features/earn/vault-eth/upgrade-assets/use-upgradable-token-balances';
 import { ETH_VAULT_DEPOSIT_TOKENS_UPGRADABLE } from 'features/earn/vault-eth/consts';
+import { trackMatomoEvent } from 'utils/track-matomo-event';
+import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo/matomo-earn-events';
 
 import {
   UpgradeCardBlock,
@@ -84,6 +86,9 @@ export const UpgradeCard: FC<UpgradeCardProps> = ({ setIsDrawerRightOpen }) => {
             <ButtonInline
               onClick={(event) => {
                 event.preventDefault();
+                trackMatomoEvent(
+                  MATOMO_EARN_EVENTS_TYPES.earnListEarnEthBannerLearnHowItWorks,
+                );
                 setIsDrawerRightOpen(true);
               }}
             >
@@ -97,7 +102,15 @@ export const UpgradeCard: FC<UpgradeCardProps> = ({ setIsDrawerRightOpen }) => {
       </UpgradeContent>
 
       <LocalLink href={ETH_DEPOSIT_PATH}>
-        <UpgradeButton size="lg" fullwidth>
+        <UpgradeButton
+          size="lg"
+          fullwidth
+          onClick={() =>
+            trackMatomoEvent(
+              MATOMO_EARN_EVENTS_TYPES.earnListEarnEthBannerUpgrade,
+            )
+          }
+        >
           Upgrade
         </UpgradeButton>
       </LocalLink>

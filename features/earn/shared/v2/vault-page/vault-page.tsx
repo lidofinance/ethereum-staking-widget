@@ -7,6 +7,9 @@ import {
 } from 'react';
 import { Tab } from '@lidofinance/lido-ui';
 
+import { type MATOMO_EVENT_TYPE } from 'consts/matomo';
+import { trackMatomoEvent } from 'utils/track-matomo-event';
+
 import { VaultChart } from '../vault-chart';
 
 import { SidePanel } from './side-panel';
@@ -54,6 +57,17 @@ type Props = {
   riskDisclosure: ReactNode;
   strategyContent?: ReactNode;
   faqContent?: ReactNode;
+  matomo?: {
+    performanceTabEvent?: MATOMO_EVENT_TYPE;
+    strategyTabEvent?: MATOMO_EVENT_TYPE;
+    faqTabEvent?: MATOMO_EVENT_TYPE;
+    clickChartsTvlTab?: MATOMO_EVENT_TYPE;
+    clickChartsTvl1m?: MATOMO_EVENT_TYPE;
+    clickChartsTvl3m?: MATOMO_EVENT_TYPE;
+    clickChartsApyTab?: MATOMO_EVENT_TYPE;
+    clickChartsApy1m?: MATOMO_EVENT_TYPE;
+    clickChartsApy3m?: MATOMO_EVENT_TYPE;
+  };
 };
 
 const TABS = {
@@ -71,6 +85,8 @@ export const VaultPage: FC<Props> = (props) => {
     strategyContent,
     faqContent,
   } = props;
+  const { performanceTabEvent, strategyTabEvent, faqTabEvent } =
+    props.matomo ?? {};
 
   const [activeTab, setActiveTab] = useState<(typeof TABS)[keyof typeof TABS]>(
     TABS.PERFORMANCE,
@@ -92,19 +108,28 @@ export const VaultPage: FC<Props> = (props) => {
         <TabsStyled>
           <Tab
             active={activeTab === TABS.PERFORMANCE}
-            onClick={() => setActiveTab(TABS.PERFORMANCE)}
+            onClick={() => {
+              setActiveTab(TABS.PERFORMANCE);
+              if (performanceTabEvent) trackMatomoEvent(performanceTabEvent);
+            }}
           >
             Performance
           </Tab>
           <Tab
             active={activeTab === TABS.STRATEGY}
-            onClick={() => setActiveTab(TABS.STRATEGY)}
+            onClick={() => {
+              setActiveTab(TABS.STRATEGY);
+              if (strategyTabEvent) trackMatomoEvent(strategyTabEvent);
+            }}
           >
             Strategy
           </Tab>
           <Tab
             active={activeTab === TABS.FAQ}
-            onClick={() => setActiveTab(TABS.FAQ)}
+            onClick={() => {
+              setActiveTab(TABS.FAQ);
+              if (faqTabEvent) trackMatomoEvent(faqTabEvent);
+            }}
           >
             FAQ
           </Tab>
@@ -112,7 +137,7 @@ export const VaultPage: FC<Props> = (props) => {
 
         {activeTab === TABS.PERFORMANCE && (
           <>
-            <VaultChart vaultName={props.vaultName} />
+            <VaultChart vaultName={props.vaultName} matomo={props.matomo} />
             <Metrics>
               {fees.map((fee, index) => (
                 <InfoRow key={index}>

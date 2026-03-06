@@ -4,6 +4,8 @@ import invariant from 'tiny-invariant';
 
 import { Token } from 'consts/tokens';
 import { useDappStatus, useLidoSDK, useTxFlow } from 'modules/web3';
+import { MATOMO_EVENT_TYPE } from 'consts/matomo';
+import { trackMatomoEvent } from 'utils/track-matomo-event';
 
 import { TxModalStages } from '../types/tx-modal-stages';
 import { DepositQueueGetter } from '../types/deposit-queue-getter';
@@ -13,11 +15,15 @@ export const useDepositCancel = <DepositQueueToken extends string>({
   txModalStages,
   refetchTokenBalance,
   onRetry,
+  matomoEventStart,
+  matomoEventSuccess,
 }: {
   depositQueueGetter: DepositQueueGetter<DepositQueueToken>;
   txModalStages: TxModalStages;
   refetchTokenBalance: (token: DepositQueueToken) => unknown;
   onRetry?: () => void;
+  matomoEventStart?: MATOMO_EVENT_TYPE;
+  matomoEventSuccess?: MATOMO_EVENT_TYPE;
 }) => {
   const { address } = useDappStatus();
   const { core } = useLidoSDK();
@@ -27,6 +33,7 @@ export const useDepositCancel = <DepositQueueToken extends string>({
 
   const cancel = useCallback(
     async (amount: bigint, token: Token) => {
+      if (matomoEventStart) trackMatomoEvent(matomoEventStart);
       invariant(address, 'Address is not available');
 
       try {
@@ -65,6 +72,7 @@ export const useDepositCancel = <DepositQueueToken extends string>({
           onSuccess: async ({ txHash }) => {
             txModalStages.success(amount, token, txHash);
             await refetchTokenBalance(token as DepositQueueToken);
+            if (matomoEventSuccess) trackMatomoEvent(matomoEventSuccess);
           },
         });
 
@@ -85,6 +93,8 @@ export const useDepositCancel = <DepositQueueToken extends string>({
       refetchTokenBalance,
       txFlow,
       txModalStages,
+      matomoEventStart,
+      matomoEventSuccess,
     ],
   );
 

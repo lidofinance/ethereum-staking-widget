@@ -5,6 +5,7 @@ import { useMemo } from 'react';
 import { useTxModalStagesDepositClaim } from 'modules/mellow-meta-vaults/hooks/use-deposit-claim-tx-modal';
 import { useDepositClaim } from 'modules/mellow-meta-vaults/hooks/use-deposit-claim';
 import { useLidoSDK } from 'modules/web3/web3-provider';
+import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo';
 import { getVaultWritableContract } from '../../contracts';
 import { ETH_VAULT_TOKEN_SYMBOL } from '../../consts';
 
@@ -29,5 +30,6 @@ export const useEthVaultDepositClaim = (onRetry?: () => void) => {
     vault,
     txModalStages,
     onRetry,
+    matomoEventSuccess: MATOMO_EARN_EVENTS_TYPES.earnEthDepositClaim,
   });
 };

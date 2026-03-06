@@ -10,6 +10,8 @@ import {
   AACall,
   applyRoundUpGasLimit,
 } from 'modules/web3';
+import { MATOMO_EVENT_TYPE } from 'consts/matomo';
+import { trackMatomoEvent } from 'utils/track-matomo-event';
 import { WithdrawParams } from './use-preview-withdraw';
 import { COLLECTOR_CONFIG } from '../consts';
 import {
@@ -23,11 +25,15 @@ export const useWithdraw = ({
   collector,
   txModalStages,
   onRetry,
+  matomoEventStart,
+  matomoEventSuccess,
 }: {
   redeemQueue: RedeemQueueWritableContract;
   collector: CollectorContract;
   txModalStages: TxModalStages;
   onRetry?: () => void;
+  matomoEventStart?: MATOMO_EVENT_TYPE;
+  matomoEventSuccess?: MATOMO_EVENT_TYPE;
 }) => {
   const { address } = useDappStatus();
   const { core } = useLidoSDK();
@@ -36,7 +42,7 @@ export const useWithdraw = ({
 
   const withdraw = useCallback(
     async ({ amount }: { amount: bigint }): Promise<boolean> => {
-      // trackMatomoEvent(MATOMO_EARN_EVENTS_TYPES.strategyWithdrawalStart); // TODO: add matomo event
+      if (matomoEventStart) trackMatomoEvent(matomoEventStart);
       invariant(address, 'needs address');
       invariant(publicClient, 'Public client is not available');
 
@@ -87,7 +93,7 @@ export const useWithdraw = ({
           },
           onSuccess: async ({ txHash }) => {
             txModalStages.success(amountWstETH, txHash);
-            // trackMatomoEvent(MATOMO_EARN_EVENTS_TYPES.strategyWithdrawalFinish); // TODO: add matomo event
+            if (matomoEventSuccess) trackMatomoEvent(matomoEventSuccess);
           },
           onMultisigDone: () => {
             txModalStages.successMultisig();
@@ -105,6 +111,8 @@ export const useWithdraw = ({
       address,
       collector.read,
       core,
+      matomoEventStart,
+      matomoEventSuccess,
       onRetry,
       publicClient,
       redeemQueue.abi,

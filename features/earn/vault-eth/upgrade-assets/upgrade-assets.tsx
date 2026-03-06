@@ -7,6 +7,8 @@ import { TokenGGIcon, TokenDvstethIcon, TokenStrethIcon } from 'assets/earn-v2';
 import { FormatToken } from 'shared/formatters/format-token';
 import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo/matomo-earn-events';
 import { trackMatomoEvent } from 'utils/track-matomo-event';
+import { MELLOW_VAULTS_QUERY_SCOPE } from 'modules/mellow-meta-vaults/consts';
+import { overrideWithQAMockBigInt } from 'utils/qa';
 
 import {
   UpgradeAssets,
@@ -21,7 +23,6 @@ import { ETH_VAULT_DEPOSIT_TOKENS_UPGRADABLE } from '../consts';
 import { useEthVaultDeposit } from '../deposit/hooks';
 import { EthDepositTokenUpgradable } from '../types';
 import { ETHDepositFormValues } from '../deposit/form-context/types';
-import { MELLOW_VAULTS_QUERY_SCOPE } from 'modules/mellow-meta-vaults/consts';
 
 const TOKEN_ICON_MAP = {
   [TOKENS.gg]: <TokenGGIcon />,
@@ -61,14 +62,10 @@ export const UpgradeAssetsBlock = () => {
       amount?: bigint; // TODO: consider getting this value inside the function instead of passing it as an argument
       token: EthDepositTokenUpgradable;
     }) => {
-      // TODO: use qa helper to set mocked amount instead of using localStorage directly
-      const amountMockedString = window.localStorage.getItem(
-        '_QA_EarnEthUpgradeDepositAmount',
+      const depositAmount = overrideWithQAMockBigInt(
+        amount ?? 0n,
+        'mock-qa-helpers-earn-eth-upgrade-amount',
       );
-      const amountMocked = amountMockedString
-        ? BigInt(amountMockedString)
-        : undefined;
-      const depositAmount = amountMocked ?? amount;
 
       if (!depositAmount) return;
       setIsUpgrading(true);

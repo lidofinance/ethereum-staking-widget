@@ -10,6 +10,7 @@ import { useThemeToggle } from '@lidofinance/lido-ui';
 import { getContractAddress } from 'config/networks/contract-address';
 import { CHAINS } from 'consts/chains';
 import { LOCALE } from 'config/groups/locale';
+import { MATOMO_EVENT_TYPE } from 'consts/matomo';
 
 import {
   VaultChartControls,
@@ -28,10 +29,18 @@ echarts.use([SVGRenderer, LineChart, TooltipComponent, GridComponent]);
 
 type VaultChartProps = {
   vaultName: 'ethVault' | 'usdVault';
+  matomo?: {
+    clickChartsTvlTab?: MATOMO_EVENT_TYPE;
+    clickChartsTvl1m?: MATOMO_EVENT_TYPE;
+    clickChartsTvl3m?: MATOMO_EVENT_TYPE;
+    clickChartsApyTab?: MATOMO_EVENT_TYPE;
+    clickChartsApy1m?: MATOMO_EVENT_TYPE;
+    clickChartsApy3m?: MATOMO_EVENT_TYPE;
+  };
 };
 
 export const VaultChart = (props: VaultChartProps) => {
-  const { vaultName } = props;
+  const { vaultName, matomo } = props;
 
   const { themeName } = useThemeToggle();
   const isDark = themeName === 'dark';
@@ -173,6 +182,7 @@ export const VaultChart = (props: VaultChartProps) => {
       setActiveTimeRange={setActiveTimeRange}
       is3MAvailable={hasMoreThanOneMonthData}
       disableControls={isLoadingError}
+      matomo={matomo}
     >
       {/* Wrapper has fixed height; chart div is absolute so ECharts’ fixed-size SVG doesn’t block flex shrink. Chart stays mounted so init runs once. */}
       <div style={{ position: 'relative', width: '100%', height: '305px' }}>
