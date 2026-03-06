@@ -17,12 +17,14 @@ export const useDepositClaim = ({
   onRetry,
   matomoEventStart,
   matomoEventSuccess,
+  additionalQueryScopes,
 }: {
   vault: VaultWritableContract;
   txModalStages: TxModalStages;
   onRetry?: () => void;
   matomoEventStart?: MATOMO_EVENT_TYPE;
   matomoEventSuccess?: MATOMO_EVENT_TYPE;
+  additionalQueryScopes?: string[];
 }) => {
   const { address } = useDappStatus();
   const { core } = useLidoSDK();
@@ -74,9 +76,17 @@ export const useDepositClaim = ({
           onSuccess: async ({ txHash }) => {
             txModalStages.success(amount, txHash);
             if (matomoEventSuccess) trackMatomoEvent(matomoEventSuccess);
-            await queryClient.refetchQueries(
-              { queryKey: [MELLOW_VAULTS_QUERY_SCOPE] },
-              { cancelRefetch: true, throwOnError: false },
+            const scopesToRefetch = [
+              MELLOW_VAULTS_QUERY_SCOPE,
+              ...(additionalQueryScopes ?? []),
+            ];
+            await Promise.all(
+              scopesToRefetch.map((scope) =>
+                queryClient.refetchQueries(
+                  { queryKey: [scope] },
+                  { cancelRefetch: true, throwOnError: false },
+                ),
+              ),
             );
           },
         });
@@ -92,6 +102,7 @@ export const useDepositClaim = ({
     },
     [
       address,
+      additionalQueryScopes,
       core,
       matomoEventStart,
       matomoEventSuccess,

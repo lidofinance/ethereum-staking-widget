@@ -7,7 +7,7 @@ import { useDepositClaim } from 'modules/mellow-meta-vaults/hooks/use-deposit-cl
 import { useLidoSDK } from 'modules/web3/web3-provider';
 import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo';
 import { getVaultWritableContract } from '../../contracts';
-import { ETH_VAULT_TOKEN_SYMBOL } from '../../consts';
+import { ETH_VAULT_TOKEN_SYMBOL, ETH_VAULT_QUERY_SCOPE } from '../../consts';
 
 export const useEthVaultDepositClaim = (onRetry?: () => void) => {
   const { core } = useLidoSDK();
@@ -31,5 +31,6 @@ export const useEthVaultDepositClaim = (onRetry?: () => void) => {
     txModalStages,
     onRetry,
     matomoEventSuccess: MATOMO_EARN_EVENTS_TYPES.earnEthDepositClaim,
+    additionalQueryScopes: [ETH_VAULT_QUERY_SCOPE],
   });
 };
