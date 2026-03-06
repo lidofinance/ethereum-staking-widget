@@ -22,7 +22,6 @@ export const EthVaultWithdrawRequestClaimable = ({
       tokenAmount={request.assets}
       tokenName={getTokenSymbol('wsteth')}
       tokenAmountUSD={usdAmount}
-      createdDateTimestamp={request.timestamp}
       actionText="Claim"
       actionCallback={claim}
       actionLoading={isClaiming}

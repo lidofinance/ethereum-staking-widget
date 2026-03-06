@@ -1,6 +1,6 @@
 import { useWatch } from 'react-hook-form';
 import { VaultWillReceive } from 'features/earn/shared/vault-will-receive';
-import { TokenWstethIcon } from 'assets/earn';
+import { TokenUsdcIcon } from 'assets/earn-v2';
 import { getTokenSymbol } from 'utils/get-token-symbol';
 import { TOKENS } from 'consts/tokens';
 import { UsdVaultWithdrawFormValues } from './form-context/types';
@@ -14,7 +14,7 @@ export const UsdVaultWithdrawWillReceive = () => {
 
   return (
     <VaultWillReceive
-      icon={<TokenWstethIcon width={16} height={16} viewBox="0 0 20 20" />}
+      icon={<TokenUsdcIcon width={16} height={16} />}
       amount={usdc}
       symbol={getTokenSymbol(TOKENS.usdc)}
       fallbackSecondaryValue="" // TODO: remove if usdAmount is added

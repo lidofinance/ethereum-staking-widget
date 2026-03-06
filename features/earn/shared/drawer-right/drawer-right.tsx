@@ -3,6 +3,11 @@ import { Close, Button, Link } from '@lidofinance/lido-ui';
 
 import { useEscape } from 'shared/hooks/useEscape';
 
+import { LocalLink } from 'shared/components/local-link';
+import { ETH_DEPOSIT_PATH } from 'features/earn/consts';
+import { trackMatomoEvent } from 'utils/track-matomo-event';
+import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo';
+
 import {
   DrawerRightStyled,
   DrawerRightContent,
@@ -13,10 +18,7 @@ import {
   DrawerRightFooter,
   DrawerRightText,
 } from './styles';
-import { LocalLink } from 'shared/components/local-link';
-
 import { DrawerTable } from './drawer-table';
-import { ETH_DEPOSIT_PATH } from 'features/earn/consts';
 
 type DrawerRightProps = {
   onClose: () => void;
@@ -60,17 +62,44 @@ export const DrawerRight: FC<DrawerRightProps> = ({ onClose, isOpen }) => {
           <DrawerRightText>
             All Mellow points you accumulate remain yours, with your balance
             visible on the{' '}
-            <Link href="https://app.mellow.finance/dashboard" target="_blank">
+            <Link
+              href="https://app.mellow.finance/dashboard"
+              target="_blank"
+              onClick={() => {
+                trackMatomoEvent(
+                  MATOMO_EARN_EVENTS_TYPES.earnListWhatIsLidoEarnEthMellowDashboard,
+                );
+              }}
+            >
               Mellow Dashboard
             </Link>
           </DrawerRightText>
           <DrawerRightFooter>
             <LocalLink href={ETH_DEPOSIT_PATH}>
-              <Button fullwidth>Upgrade now</Button>
+              <Button
+                fullwidth
+                onClick={() => {
+                  trackMatomoEvent(
+                    MATOMO_EARN_EVENTS_TYPES.earnListWhatIsLidoEarnEthUpgradeNow,
+                  );
+                }}
+              >
+                Upgrade now
+              </Button>
             </LocalLink>
-            <Button fullwidth variant="outlined">
-              Get in touch
-            </Button>
+            <Link href="https://help.lido.fi/en/#intercom" target="_blank">
+              <Button
+                fullwidth
+                variant="outlined"
+                onClick={() => {
+                  trackMatomoEvent(
+                    MATOMO_EARN_EVENTS_TYPES.earnListWhatIsLidoEarnEthGetInTouch,
+                  );
+                }}
+              >
+                Get in touch
+              </Button>
+            </Link>
           </DrawerRightFooter>
         </DrawerRightContent>
       </DrawerRightWrapper>

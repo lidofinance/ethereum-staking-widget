@@ -8,6 +8,7 @@ import {
 } from 'assets/earn-v2';
 import { VaultPage } from 'features/earn/shared/v2/vault-page/vault-page';
 import { StrategyContent } from 'features/earn/shared/v2/strategy-content';
+import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo';
 
 import { UsdVaultPositionManager } from './position-manager/position-manager';
 import { EarnUsdFaq } from './faq/faq';
@@ -164,6 +165,17 @@ export const VaultPageUSD: FC<{
         strategyContent={
           <StrategyContent allocations={STATIC_ALLOCATIONS_CONTENT} />
         }
+        matomo={{
+          performanceTabEvent: MATOMO_EARN_EVENTS_TYPES.earnUsdPerformance,
+          strategyTabEvent: MATOMO_EARN_EVENTS_TYPES.earnUsdStrategy,
+          faqTabEvent: MATOMO_EARN_EVENTS_TYPES.earnUsdFaq,
+          clickChartsTvlTab: MATOMO_EARN_EVENTS_TYPES.earnUsdPerformanceTvlTab,
+          clickChartsTvl1m: MATOMO_EARN_EVENTS_TYPES.earnUsdPerformanceTvl1m,
+          clickChartsTvl3m: MATOMO_EARN_EVENTS_TYPES.earnUsdPerformanceTvl3m,
+          clickChartsApyTab: MATOMO_EARN_EVENTS_TYPES.earnUsdPerformanceApyTab,
+          clickChartsApy1m: MATOMO_EARN_EVENTS_TYPES.earnUsdPerformanceApy1m,
+          clickChartsApy3m: MATOMO_EARN_EVENTS_TYPES.earnUsdPerformanceApy3m,
+        }}
       />
       <Disclaimers />
     </>

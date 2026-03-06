@@ -7,6 +7,8 @@ import {
   LegalDisclaimer,
   ButtonInline,
 } from 'shared/components';
+import { trackMatomoEvent } from 'utils/track-matomo-event';
+import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo';
 
 import { useEarnState } from '../shared/hooks/use-earn-state';
 import { DrawerRight } from '../shared/drawer-right';
@@ -57,6 +59,7 @@ export const EarnVaultsList: FC = () => {
         <ButtonInline
           onClick={(event) => {
             event.preventDefault();
+            trackMatomoEvent(MATOMO_EARN_EVENTS_TYPES.earnListHowLidoEarnWorks);
             setIsDrawerRightOpen(true);
           }}
         >
