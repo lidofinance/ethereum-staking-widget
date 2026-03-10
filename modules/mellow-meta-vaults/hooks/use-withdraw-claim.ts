@@ -8,6 +8,8 @@ import {
   useLidoSDK,
   useTxFlow,
 } from 'modules/web3';
+import { MATOMO_EVENT_TYPE } from 'consts/matomo';
+import { trackMatomoEvent } from 'utils/track-matomo-event';
 import { TxModalStages } from '../types/tx-modal-stages';
 import { RedeemQueueWritableContract } from '../types/contracts';
 
@@ -17,12 +19,16 @@ export const useWithdrawClaim = <WithdrawToken extends string>({
   txModalStages,
   onRetry,
   refetchTokenBalance,
+  matomoEventStart,
+  matomoEventSuccess,
 }: {
   redeemQueue: RedeemQueueWritableContract;
   token: WithdrawToken;
   txModalStages: TxModalStages;
   refetchTokenBalance: (token: WithdrawToken) => unknown;
   onRetry?: () => void;
+  matomoEventStart?: MATOMO_EVENT_TYPE;
+  matomoEventSuccess?: MATOMO_EVENT_TYPE;
 }) => {
   const { core } = useLidoSDK();
   const { address } = useDappStatus();
@@ -32,6 +38,7 @@ export const useWithdrawClaim = <WithdrawToken extends string>({
 
   const withdrawClaim = useCallback(
     async ({ amount, timestamp }: { amount: bigint; timestamp: number }) => {
+      if (matomoEventStart) trackMatomoEvent(matomoEventStart);
       invariant(address, 'No address provided');
 
       try {
@@ -74,8 +81,8 @@ export const useWithdrawClaim = <WithdrawToken extends string>({
           },
           onSuccess: async ({ txHash }) => {
             txModalStages.success(amount, txHash);
-            // trackMatomoEvent(MATOMO_EARN_EVENTS_TYPES.strategyWithdrawalClaim); // TODO: add matomo event
             await refetchTokenBalance(token);
+            if (matomoEventSuccess) trackMatomoEvent(matomoEventSuccess);
           },
         });
         return true;
@@ -90,8 +97,13 @@ export const useWithdrawClaim = <WithdrawToken extends string>({
     [
       address,
       core,
+      matomoEventStart,
+      matomoEventSuccess,
       onRetry,
-      redeemQueue,
+      redeemQueue.abi,
+      redeemQueue.address,
+      redeemQueue.estimateGas,
+      redeemQueue.write,
       refetchTokenBalance,
       token,
       txFlow,

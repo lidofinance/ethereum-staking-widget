@@ -1,5 +1,4 @@
 import React from 'react';
-import { Badge, ArrowTop } from '@lidofinance/lido-ui';
 
 import { VaultEthIcon } from 'assets/earn-v2';
 import { ReactComponent as ChevronsUp } from 'assets/icons/chevrons-up.svg';
@@ -18,6 +17,7 @@ import {
 
 const DATA = [
   {
+    id: 'upgrade-comparison',
     header: [
       '',
       <HeaderCell key="lido-single-vault">
@@ -84,11 +84,11 @@ export const DrawerTable = () => {
         Comparison between GGV/stRATEGY and the EarnETH Vault
       </TableHeader>
       {DATA.map((item) => (
-        <Table key={item.header.join('-')}>
+        <Table key={item.id}>
           <thead>
             <HeaderTr>
-              {item.header.map((header) => (
-                <th key={header.toString()}>{header}</th>
+              {item.header.map((header, i) => (
+                <th key={i}>{header}</th>
               ))}
             </HeaderTr>
           </thead>

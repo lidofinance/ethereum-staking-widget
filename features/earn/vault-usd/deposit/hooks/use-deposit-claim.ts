@@ -5,8 +5,9 @@ import { useMemo } from 'react';
 import { useTxModalStagesDepositClaim } from 'modules/mellow-meta-vaults/hooks/use-deposit-claim-tx-modal';
 import { useDepositClaim } from 'modules/mellow-meta-vaults/hooks/use-deposit-claim';
 import { useLidoSDK } from 'modules/web3/web3-provider';
+import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo/matomo-earn-events';
 import { getVaultWritableContract } from '../../contracts';
-import { USD_VAULT_TOKEN_SYMBOL } from '../../consts';
+import { USD_VAULT_TOKEN_SYMBOL, USD_VAULT_QUERY_SCOPE } from '../../consts';
 
 export const useUsdVaultDepositClaim = (onRetry?: () => void) => {
   const { core } = useLidoSDK();
@@ -29,5 +30,7 @@ export const useUsdVaultDepositClaim = (onRetry?: () => void) => {
     vault,
     txModalStages,
     onRetry,
+    matomoEventSuccess: MATOMO_EARN_EVENTS_TYPES.earnUsdDepositClaim,
+    additionalQueryScopes: [USD_VAULT_QUERY_SCOPE],
   });
 };

@@ -7,6 +7,8 @@ import { TokenGGIcon, TokenDvstethIcon, TokenStrethIcon } from 'assets/earn-v2';
 import { FormatToken } from 'shared/formatters/format-token';
 import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo/matomo-earn-events';
 import { trackMatomoEvent } from 'utils/track-matomo-event';
+import { MELLOW_VAULTS_QUERY_SCOPE } from 'modules/mellow-meta-vaults/consts';
+import { overrideWithQAMockBigInt } from 'utils/qa';
 
 import {
   UpgradeAssets,
@@ -47,7 +49,6 @@ const getMatomoEventForToken = (token: EthDepositTokenUpgradable) => {
 type UpgradeArgs = {
   amount: bigint;
   token: EthDepositTokenUpgradable;
-  claimableStrethShares?: bigint;
 };
 
 export const UpgradeAssetsBlock = () => {
@@ -69,14 +70,10 @@ export const UpgradeAssetsBlock = () => {
       amount,
       token,
     }: UpgradeArgs) => {
-      // TODO: use qa helper to set mocked amount instead of using localStorage directly
-      const amountMockedString = window.localStorage.getItem(
-        '_QA_EarnEthUpgradeDepositAmount',
+      const depositAmount = overrideWithQAMockBigInt(
+        amount ?? 0n,
+        'mock-qa-helpers-earn-eth-upgrade-amount',
       );
-      const amountMocked = amountMockedString
-        ? BigInt(amountMockedString)
-        : undefined;
-      const depositAmount = amountMocked ?? amount;
 
       if (!depositAmount) return;
       setIsUpgrading(true);

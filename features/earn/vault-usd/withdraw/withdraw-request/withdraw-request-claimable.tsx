@@ -22,7 +22,6 @@ export const UsdVaultWithdrawRequestClaimable = ({
       tokenAmount={request.assets}
       tokenName={getTokenSymbol('usdc')}
       tokenAmountUSD={usdAmount}
-      createdDateTimestamp={request.timestamp}
       actionText="Claim"
       actionCallback={claim}
       actionLoading={isClaiming}
