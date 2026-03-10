@@ -11,6 +11,7 @@ import { VaultPage } from 'features/earn/shared/v2/vault-page/vault-page';
 import type { InfoItem } from 'features/earn/shared/v2/vault-page/vault-page';
 import { Disclaimers } from 'features/earn/shared/v2/disclaimers';
 import { VaultAllocation } from 'features/earn/shared/v2/vault-allocation/vault-allocation';
+import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo/matomo-earn-events';
 
 import { EthVaultPositionManager } from './position-manager/position-manager';
 import { EarnEthFaq } from './faq/faq';
@@ -125,6 +126,17 @@ export const EthVaultPage: FC<{
         vaultName="ethVault"
         faqContent={<EarnEthFaq />}
         strategyContent={<VaultAllocation vaultName="ethVault" apy={apy} />}
+        matomo={{
+          performanceTabEvent: MATOMO_EARN_EVENTS_TYPES.earnEthPerformance,
+          strategyTabEvent: MATOMO_EARN_EVENTS_TYPES.earnEthStrategy,
+          faqTabEvent: MATOMO_EARN_EVENTS_TYPES.earnEthFaq,
+          clickChartsTvlTab: MATOMO_EARN_EVENTS_TYPES.earnEthPerformanceTvlTab,
+          clickChartsTvl1m: MATOMO_EARN_EVENTS_TYPES.earnEthPerformanceTvl1m,
+          clickChartsTvl3m: MATOMO_EARN_EVENTS_TYPES.earnEthPerformanceTvl3m,
+          clickChartsApyTab: MATOMO_EARN_EVENTS_TYPES.earnEthPerformanceApyTab,
+          clickChartsApy1m: MATOMO_EARN_EVENTS_TYPES.earnEthPerformanceApy1m,
+          clickChartsApy3m: MATOMO_EARN_EVENTS_TYPES.earnEthPerformanceApy3m,
+        }}
       />
       <Disclaimers />
     </>

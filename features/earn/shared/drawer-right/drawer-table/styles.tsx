@@ -101,13 +101,6 @@ export const Td = styled.td`
   }
 `;
 
-export const HeaderWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 8px;
-`;
-
 export const HeaderCell = styled.div`
   display: flex;
   flex-direction: column;

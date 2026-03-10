@@ -1,3 +1,4 @@
+import invariant from 'tiny-invariant';
 import { config } from 'config';
 
 export const overrideWithQAMockBoolean = (value: boolean, key: string) => {
@@ -25,6 +26,20 @@ export const overrideWithQAMockString = (value: string, key: string) => {
     const mock = localStorage.getItem(key);
     if (mock) {
       return mock;
+    }
+  }
+  return value;
+};
+
+export const overrideWithQAMockBigInt = (value: bigint, key: string) => {
+  if (config.enableQaHelpers && typeof window !== 'undefined') {
+    const mock = localStorage.getItem(key);
+    if (mock) {
+      try {
+        return BigInt(mock);
+      } catch {
+        invariant(false, `Invalid BigInt QA mock for key "${key}": "${mock}"`);
+      }
     }
   }
   return value;
