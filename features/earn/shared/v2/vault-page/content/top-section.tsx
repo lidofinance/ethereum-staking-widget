@@ -56,7 +56,7 @@ export const TopSection: FC<TopSectionProps> = (props) => {
           </TopSectionStatValue>
         </TopSectionStatItem>
         <TopSectionStatItem>
-          <TopSectionStatLabel>Total TVL</TopSectionStatLabel>
+          <TopSectionStatLabel>TVL</TopSectionStatLabel>
           <TopSectionStatValue>
             <InlineLoader isLoading={isTvlLoading} width={70}>
               <FormatLargeAmount amount={tvl} />

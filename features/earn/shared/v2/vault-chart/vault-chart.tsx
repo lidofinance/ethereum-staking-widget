@@ -165,13 +165,16 @@ export const VaultChart = (props: VaultChartProps) => {
     isETHVault,
   ]);
 
+  const isApyChart = activeChart === CHART_TYPE.apy;
+
   // TODO: break this up into variables for more clear logic
-  const isChartLoading =
-    activeChart === CHART_TYPE.apy
-      ? isVaultLoading ||
-        (isUSDVault && isTreasuryLoading) ||
-        (isETHVault && isStakingLoading)
-      : isVaultLoading;
+  const isChartLoading = isApyChart
+    ? isVaultLoading ||
+      (isUSDVault && isTreasuryLoading) ||
+      (isETHVault && isStakingLoading)
+    : isVaultLoading;
+
+  const isNoDataAvailable = isLoadingError || data?.length === 0;
 
   return (
     <VaultChartControls
@@ -181,13 +184,13 @@ export const VaultChart = (props: VaultChartProps) => {
       activeTimeRange={activeTimeRange}
       setActiveTimeRange={setActiveTimeRange}
       is3MAvailable={hasMoreThanOneMonthData}
-      disableControls={isLoadingError}
+      disableControls={isNoDataAvailable}
       matomo={matomo}
     >
       {/* Wrapper has fixed height; chart div is absolute so ECharts’ fixed-size SVG doesn’t block flex shrink. Chart stays mounted so init runs once. */}
       <div style={{ position: 'relative', width: '100%', height: '305px' }}>
         {isChartLoading && <ChartInlineLoaderStyled />}
-        {isLoadingError && (
+        {isNoDataAvailable && (
           <ErrorMessageStyled>No data available</ErrorMessageStyled>
         )}
         <div
