@@ -43,6 +43,11 @@ const getMatomoEventForToken = (token: EthDepositTokenUpgradable) => {
   }
 };
 
+type UpgradeArgs = {
+  amount: bigint;
+  token: EthDepositTokenUpgradable;
+};
+
 export const UpgradeAssetsBlock = () => {
   const { isWalletConnected } = useDappStatus();
   const queryClient = useQueryClient();
@@ -56,12 +61,10 @@ export const UpgradeAssetsBlock = () => {
 
   const upgrade = useCallback(
     async ({
+      // TODO: consider getting amount inside upgrade function
       amount,
       token,
-    }: {
-      amount?: bigint; // TODO: consider getting this value inside the function instead of passing it as an argument
-      token: EthDepositTokenUpgradable;
-    }) => {
+    }: UpgradeArgs) => {
       const depositAmount = overrideWithQAMockBigInt(
         amount ?? 0n,
         'mock-qa-helpers-earn-eth-upgrade-amount',
@@ -123,7 +126,12 @@ export const UpgradeAssetsBlock = () => {
             color="primary"
             size="xs"
             variant="translucent"
-            onClick={() => upgrade({ token, amount: balances[token] })}
+            onClick={() =>
+              upgrade({
+                token,
+                amount: balances[token] as bigint,
+              })
+            }
             loading={isUpgrading}
           >
             Upgrade
