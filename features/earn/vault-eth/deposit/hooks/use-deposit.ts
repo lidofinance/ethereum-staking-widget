@@ -4,7 +4,6 @@ import { useTxModalStagesDeposit } from 'modules/mellow-meta-vaults/hooks/use-de
 import { ETH_VAULT_TOKEN_SYMBOL } from '../../consts';
 import type { EthDepositToken } from '../../types';
 import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo/matomo-earn-events';
-import { STG_TOKEN_SYMBOL } from 'features/earn/vault-stg/consts';
 
 export const useEthVaultDeposit = (onRetry?: () => void) => {
   const { txModalStages } = useTxModalStagesDeposit({
@@ -15,10 +14,6 @@ export const useEthVaultDeposit = (onRetry?: () => void) => {
     stageApproveArgs: {
       willReceiveToken: ETH_VAULT_TOKEN_SYMBOL,
       operationText: 'Unlocking',
-    },
-    stageClaimArgs: {
-      willReceiveToken: STG_TOKEN_SYMBOL,
-      operationText: 'Claiming',
     },
   });
 

@@ -73,12 +73,12 @@ export const useUpgradableTokenBalances = () => {
 
       const [
         gg,
-        streth,
+        strethActiveShares,
         dvsteth,
         isGgRequestInQueue,
         isStrethRequestInQueue,
         isDvstethRequestInQueue,
-        claimableStrethShares,
+        strethClaimableShares,
       ] = await Promise.all([
         readBalance(ggAddress),
         readBalance(strethAddress),
@@ -91,9 +91,10 @@ export const useUpgradableTokenBalances = () => {
 
       return {
         gg: isGgRequestInQueue ? 0n : gg,
-        streth: isStrethRequestInQueue ? 0n : streth + claimableStrethShares,
+        streth: isStrethRequestInQueue
+          ? 0n
+          : strethActiveShares + strethClaimableShares,
         dvsteth: isDvstethRequestInQueue ? 0n : dvsteth,
-        claimableStrethShares,
       };
     },
   });
@@ -104,7 +105,6 @@ export const useUpgradableTokenBalances = () => {
       [TOKENS.streth]: data?.streth,
       [TOKENS.dvsteth]: data?.dvsteth,
     },
-    claimableStrethShares: data?.claimableStrethShares,
     isLoading,
     refetchBalances: refetch,
   };

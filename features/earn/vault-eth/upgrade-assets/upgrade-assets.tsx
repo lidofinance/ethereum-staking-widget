@@ -1,7 +1,7 @@
 import { useCallback, useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { useFormContext } from 'react-hook-form';
-import { useDappStatus, useLidoSDK } from 'modules/web3';
+import { useDappStatus } from 'modules/web3';
 import { TOKENS, TOKEN_SYMBOLS } from 'consts/tokens';
 import { TokenGGIcon, TokenDvstethIcon, TokenStrethIcon } from 'assets/earn-v2';
 import { FormatToken } from 'shared/formatters/format-token';
@@ -23,9 +23,6 @@ import { ETH_VAULT_DEPOSIT_TOKENS_UPGRADABLE } from '../consts';
 import { useEthVaultDeposit } from '../deposit/hooks';
 import { EthDepositTokenUpgradable } from '../types';
 import { ETHDepositFormValues } from '../deposit/form-context/types';
-import { MELLOW_VAULTS_QUERY_SCOPE } from 'modules/mellow-meta-vaults/consts';
-import { getSTGVaultWritableContract } from 'features/earn/vault-stg/contracts';
-import { WalletClient } from 'viem';
 
 const TOKEN_ICON_MAP = {
   [TOKENS.gg]: <TokenGGIcon />,
@@ -52,11 +49,9 @@ type UpgradeArgs = {
 };
 
 export const UpgradeAssetsBlock = () => {
-  const { core } = useLidoSDK();
   const { isWalletConnected } = useDappStatus();
   const queryClient = useQueryClient();
-  const { balances, claimableStrethShares, refetchBalances } =
-    useUpgradableTokenBalances();
+  const { balances, refetchBalances } = useUpgradableTokenBalances();
   const [isUpgrading, setIsUpgrading] = useState(false);
 
   const { watch } = useFormContext<ETHDepositFormValues>();
@@ -83,17 +78,6 @@ export const UpgradeAssetsBlock = () => {
           amount: depositAmount,
           token,
           referral,
-          // For strETH we can claim deposit and then upgrade
-          claimable: claimableStrethShares
-            ? {
-                amount: claimableStrethShares,
-                token: TOKENS.streth,
-                vault: getSTGVaultWritableContract(
-                  core.rpcProvider,
-                  core.web3Provider as WalletClient,
-                ),
-              }
-            : undefined,
         });
         if (isDepositSuccessful) {
           const matomoEvent = getMatomoEventForToken(token);
@@ -110,15 +94,7 @@ export const UpgradeAssetsBlock = () => {
         setIsUpgrading(false);
       }
     },
-    [
-      claimableStrethShares,
-      core.rpcProvider,
-      core.web3Provider,
-      deposit,
-      queryClient,
-      referral,
-      refetchBalances,
-    ],
+    [deposit, queryClient, referral, refetchBalances],
   );
 
   if (!isWalletConnected) return null;
@@ -154,8 +130,6 @@ export const UpgradeAssetsBlock = () => {
               upgrade({
                 token,
                 amount: balances[token] as bigint,
-                claimableStrethShares:
-                  token === TOKENS.streth ? claimableStrethShares : undefined,
               })
             }
             loading={isUpgrading}

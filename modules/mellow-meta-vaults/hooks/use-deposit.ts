@@ -17,17 +17,11 @@ import { type Token, TOKENS } from 'consts/tokens';
 import { MATOMO_EVENT_TYPE } from 'consts/matomo';
 import { TxModalStages } from '../types/tx-modal-stages';
 import { DepositQueueGetter } from '../types/deposit-queue-getter';
-import type { VaultWritableContract } from '../types/contracts';
 
 type DepositArgs = {
   amount: bigint;
   token: Token;
   referral: string | null;
-  claimable?: {
-    amount: bigint;
-    token: Token;
-    vault: VaultWritableContract;
-  };
 };
 
 export const useDeposit = <DepositQueueToken extends string>({
@@ -48,7 +42,7 @@ export const useDeposit = <DepositQueueToken extends string>({
   const txFlow = useTxFlow();
 
   const deposit = useCallback(
-    async ({ amount, token, referral, claimable }: DepositArgs) => {
+    async ({ amount, token, referral }: DepositArgs) => {
       if (matomoEventStart) trackMatomoEvent(matomoEventStart);
       invariant(address, 'needs address');
       const tokenAddress = getTokenAddress(core.chainId, token);
@@ -99,16 +93,7 @@ export const useDeposit = <DepositQueueToken extends string>({
         await txFlow({
           callsFn: async () => {
             const calls: AACall[] = [];
-            if (claimable) {
-              calls.push({
-                to: claimable.vault.address,
-                data: encodeFunctionData({
-                  abi: claimable.vault.abi,
-                  functionName: 'claimShares',
-                  args: [address] as const,
-                }),
-              });
-            }
+
             if (needsApprove) {
               if (needsApprovalReset) {
                 calls.push({
@@ -145,24 +130,6 @@ export const useDeposit = <DepositQueueToken extends string>({
             return calls;
           },
           sendTransaction: async (txStagesCallback) => {
-            if (claimable) {
-              const vault = claimable.vault;
-              await core.performTransaction({
-                getGasLimit: async (opts) =>
-                  applyRoundUpGasLimit(
-                    await vault.estimateGas.claimShares([address], {
-                      ...opts,
-                    }),
-                  ),
-                sendTransaction: (opts) => {
-                  return vault.write.claimShares([address], {
-                    ...opts,
-                  });
-                },
-                callback: txStagesCallback,
-              });
-            }
-            claimable = undefined;
             if (needsApprove) {
               if (needsApprovalReset) {
                 await core.performTransaction({
@@ -210,9 +177,6 @@ export const useDeposit = <DepositQueueToken extends string>({
             });
           },
           onSign: () => {
-            if (claimable) {
-              return txModalStages.signClaim(claimable.amount, claimable.token);
-            }
             if (needsApprove) {
               return txModalStages.signApproval(amount, token);
             }
@@ -224,14 +188,6 @@ export const useDeposit = <DepositQueueToken extends string>({
                 amount,
                 token,
                 txHashOrCallId,
-              );
-            }
-            if (claimable) {
-              return txModalStages.pendingClaim(
-                claimable.amount,
-                claimable.token,
-                txHashOrCallId,
-                isAA,
               );
             }
             return txModalStages.pending(amount, token, txHashOrCallId, isAA);
