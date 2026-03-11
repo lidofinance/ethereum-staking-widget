@@ -1,9 +1,9 @@
 import { FC } from 'react';
-import { AccordionTransparent } from '@lidofinance/lido-ui';
+import { FaqItem } from 'features/earn/shared/v2/faq';
 
 export const HowDoesWithdrawalWork: FC = () => {
   return (
-    <AccordionTransparent
+    <FaqItem
       summary="How does the withdrawal work?"
       id="earnusd-withdrawal-work"
     >
@@ -19,6 +19,6 @@ export const HowDoesWithdrawalWork: FC = () => {
           has been processed.
         </li>
       </ul>
-    </AccordionTransparent>
+    </FaqItem>
   );
 };

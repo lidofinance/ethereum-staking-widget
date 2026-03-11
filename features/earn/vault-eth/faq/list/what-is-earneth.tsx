@@ -1,12 +1,9 @@
 import { FC } from 'react';
-import { AccordionTransparent } from '@lidofinance/lido-ui';
+import { FaqItem } from 'features/earn/shared/v2/faq';
 
 export const WhatIsEarnEth: FC = () => {
   return (
-    <AccordionTransparent
-      defaultExpanded
-      summary="What is EarnETH, and how does it work?"
-    >
+    <FaqItem defaultExpanded summary="What is EarnETH, and how does it work?">
       <p>
         EarnETH provides on-chain access to strategies involving ETH-denominated
         digital assets. It uses defined asset selection and risk controls,
@@ -19,6 +16,6 @@ export const WhatIsEarnEth: FC = () => {
         UltraYield (by Edge Capital) and Veda are appointed to provide curation
         services for subVaults — stRATEGY and GGV.
       </p>
-    </AccordionTransparent>
+    </FaqItem>
   );
 };

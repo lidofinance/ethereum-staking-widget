@@ -1,9 +1,9 @@
 import { FC } from 'react';
-import { AccordionTransparent } from '@lidofinance/lido-ui';
+import { FaqItem } from 'features/earn/shared/v2/faq';
 
 export const WhoIsCurator: FC = () => {
   return (
-    <AccordionTransparent
+    <FaqItem
       summary="Who is the curator for EarnUSD, and what's their role?"
       id="earnusd-curator"
     >
@@ -12,6 +12,6 @@ export const WhoIsCurator: FC = () => {
         Capital. Their role includes overseeing strategy execution, risk
         management, and overall vault performance.
       </p>
-    </AccordionTransparent>
+    </FaqItem>
   );
 };

@@ -1,9 +1,10 @@
 import { FC } from 'react';
-import { AccordionTransparent } from '@lidofinance/lido-ui';
+import { Link } from '@lidofinance/lido-ui';
+import { FaqItem } from 'features/earn/shared/v2/faq';
 
 export const RisksOfDepositing: FC = () => {
   return (
-    <AccordionTransparent
+    <FaqItem
       summary="What are the risks outlined in the vault, and what's the approach for their mitigation?"
       id="earnusd-risks"
     >
@@ -69,11 +70,11 @@ export const RisksOfDepositing: FC = () => {
           the vault should conduct their own research and seek independent
           professional advice to ensure they fully understand the potential
           risks and implications before participating.{' '}
-          <a href="https://lido.fi/earn/risk-disclosures">
+          <Link target="_blank" href="https://lido.fi/earn/risk-disclosures">
             Learn more about risks.
-          </a>
+          </Link>
         </em>
       </p>
-    </AccordionTransparent>
+    </FaqItem>
   );
 };
