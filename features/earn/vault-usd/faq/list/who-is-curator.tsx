@@ -9,7 +9,7 @@ export const WhoIsCurator: FC = () => {
       id="earnusd-curator"
     >
       <p>
-        The two subVaults are curated by The EarnUSD is curated by{' '}
+        The two EarnUSD subVaults are curated by{' '}
         <Link href="https://mellow.finance/" target="_blank">
           Mellow
         </Link>
