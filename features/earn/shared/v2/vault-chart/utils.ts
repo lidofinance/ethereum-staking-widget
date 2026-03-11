@@ -24,7 +24,7 @@ export const formatTvl = (amount: number) =>
   `$${getShortenedNumber(amount, '0')}`;
 
 /** Format date using ECharts params (all series at this axis point). */
-const formatDate = (timestamp: number) =>
+export const formatDate = (timestamp: number) =>
   new Date(timestamp).toLocaleDateString(LOCALE, {
     year: 'numeric',
     month: 'short',
