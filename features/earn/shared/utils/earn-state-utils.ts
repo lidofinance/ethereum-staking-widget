@@ -20,7 +20,7 @@ export const EARN_STATE_KEYWORDS = [
  * - Earn is ENABLED by default for all integrations.
  * - Ledger Live is always disabled (cannot be overridden via URL).
  * - URL parameter `?earn=disabled` disables earn globally.
- * - URL parameter `?earn=vault1,vault2` disables specific vaults (PARTIAL state).
+ * - URL parameter `?earn=vault1,vault2` shows ONLY those vaults (allowlist); others are hidden.
  * - URL parameter `?earn=enabled` is a no-op (earn is already enabled by default).
  */
 export const computeEarnRuntimeState = ({
@@ -32,18 +32,19 @@ export const computeEarnRuntimeState = ({
   earnParam: string | undefined;
   isReady: boolean;
 }) => {
-  // Parse disabled vaults from URL param: ?earn=vault1,vault2
-  let vaultsDisabledByUrl: string[] = [];
+  // Parse allowlisted vaults from URL param: ?earn=vault1,vault2
+  // Only those vaults will be shown; the rest will be hidden (PARTIAL state)
+  let vaultsEnabledByUrl: string[] = [];
   if (
     isReady &&
     earnParam &&
     typeof earnParam === 'string' &&
     !EARN_STATE_KEYWORDS.includes(earnParam as any) // Only treat as vault names if it's not a keyword (enabled/disabled)
   ) {
-    vaultsDisabledByUrl = earnParam.split(',');
+    vaultsEnabledByUrl = earnParam.split(',');
   }
 
-  const someVaultsDisabledByURL = vaultsDisabledByUrl.length > 0;
+  const someVaultsEnabledByURL = vaultsEnabledByUrl.length > 0;
   const isEarnDisabledByURL = isReady && earnParam === EARN_STATES.DISABLED;
 
   // Earn is disabled by runtime context if:
@@ -51,16 +52,16 @@ export const computeEarnRuntimeState = ({
   // 2. Earn is explicitly disabled via URL (?earn=disabled)
   const isEarnDisabledByRuntimeContext = isLedgerLive || isEarnDisabledByURL;
 
-  const isVaultDisabledByUrl = (vaultName: string) =>
-    vaultsDisabledByUrl.includes(vaultName);
-
   const isVaultEnabledByUrl = (vaultName: string) =>
-    !isVaultDisabledByUrl(vaultName);
+    vaultsEnabledByUrl.includes(vaultName);
+
+  const isVaultDisabledByUrl = (vaultName: string) =>
+    !isVaultEnabledByUrl(vaultName);
 
   return {
     isEarnDisabledByRuntimeContext,
-    someVaultsDisabledByURL,
-    vaultsDisabledByUrl,
+    someVaultsEnabledByURL,
+    vaultsEnabledByUrl,
     isVaultEnabledByUrl,
     isVaultDisabledByUrl,
   };
