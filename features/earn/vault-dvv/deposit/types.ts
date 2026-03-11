@@ -1,16 +1,16 @@
 import type { LIDO_TOKENS } from '@lidofinance/lido-ethereum-sdk/common';
 
-export type DVV_DEPOSIT_TOKENS = (typeof LIDO_TOKENS)['eth'] | 'wETH';
+export type DVVDepositTokens = (typeof LIDO_TOKENS)['eth'] | 'wETH';
 
 export type DVVDepositFormValues = {
   amount: bigint | null;
-  token: DVV_DEPOSIT_TOKENS;
+  token: DVVDepositTokens;
   referral: string | null;
 };
 
 export type DVVDepositFormValidatedValues = {
   amount: bigint;
-  token: DVV_DEPOSIT_TOKENS;
+  token: DVVDepositTokens;
   referral: string | null;
 };
 
@@ -20,20 +20,15 @@ export type DVVDepositFormValidationContext = {
 };
 
 export type DVVDepositFormAsyncValidationContext = {
-  [key in DVV_DEPOSIT_TOKENS]: {
+  [key in DVVDepositTokens]: {
     balance: bigint;
     // null for unlimited deposits
     maxDeposit: bigint | null;
   };
 };
 
-export type DVVDepositLimitReason =
-  | 'non-whitelisted'
-  | 'deposit-paused'
-  | 'deposit-limit-reached';
-
 export type DVVDepositFormContext = {
   maxAmount?: bigint;
-  token: DVV_DEPOSIT_TOKENS;
+  token: DVVDepositTokens;
   isLoading: boolean;
 };

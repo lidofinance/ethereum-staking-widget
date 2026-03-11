@@ -1,4 +1,4 @@
-import { FC } from 'react';
+import { FC, useState } from 'react';
 import { Link } from '@lidofinance/lido-ui';
 
 import { VaultDVVIcon } from 'assets/earn';
@@ -11,6 +11,7 @@ import {
   AprDisclaimer,
   LegalDisclaimer,
 } from 'shared/components';
+import { TOKENS } from 'consts/tokens';
 
 import { VaultDescription } from '../shared/vault-description';
 import { VaultHeader } from '../shared/vault-header';
@@ -39,6 +40,8 @@ import { DVVFaq } from './faq/dvv-faq';
 import { DVVPosition } from './components/dvv-position';
 import { DVVAprBreakdown } from './components/dvv-apr-breakdown';
 import { DVVVaultDetails } from './components/dvv-vault-details';
+import { UpgradeCardVaultPage } from '../shared/upgrade-card-vault-page/upgrade-card-vault-page';
+import { DrawerRight } from '../shared/drawer-right';
 
 const routes = [
   {
@@ -59,6 +62,7 @@ export const VaultPageDVV: FC<{
   const isDeposit = action === EARN_VAULT_DEPOSIT_SLUG;
   const isWithdraw = action === EARN_VAULT_WITHDRAW_SLUG;
   const { tvl, apr, isLoading: isLoadingStats } = useDVVStats();
+  const [isDrawerRightOpen, setIsDrawerRightOpen] = useState(false);
 
   return (
     <>
@@ -70,6 +74,10 @@ export const VaultPageDVV: FC<{
       >
         Back to all vaults
       </ButtonBack>
+      <UpgradeCardVaultPage
+        setIsDrawerRightOpen={setIsDrawerRightOpen}
+        vaultToken={TOKENS.dvsteth}
+      />
       <VaultBlock>
         <VaultBlockHeaderSection>
           <VaultHeader
@@ -129,6 +137,10 @@ export const VaultPageDVV: FC<{
         <AprDisclaimer mentionAPY />
         <LegalDisclaimer />
       </DisclaimerSection>
+      <DrawerRight
+        onClose={() => setIsDrawerRightOpen(false)}
+        isOpen={isDrawerRightOpen}
+      />
     </>
   );
 };

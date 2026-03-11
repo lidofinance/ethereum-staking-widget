@@ -21,15 +21,17 @@ export const Section: SectionComponent = (props) => {
   const hasDecorator = !!headerDecorator;
 
   return (
-    <SectionStyle {...rest}>
-      <SectionHeaderStyle>
-        <SectionTitleStyle>{title}</SectionTitleStyle>
-        {hasDecorator && (
-          <SectionHeaderDecoratorStyle>
-            {headerDecorator}
-          </SectionHeaderDecoratorStyle>
-        )}
-      </SectionHeaderStyle>
+    <SectionStyle $noMargin={!title} {...rest}>
+      {(title || headerDecorator) && (
+        <SectionHeaderStyle>
+          {title && <SectionTitleStyle>{title}</SectionTitleStyle>}
+          {hasDecorator && (
+            <SectionHeaderDecoratorStyle>
+              {headerDecorator}
+            </SectionHeaderDecoratorStyle>
+          )}
+        </SectionHeaderStyle>
+      )}
       <SectionContentStyle>{children}</SectionContentStyle>
     </SectionStyle>
   );

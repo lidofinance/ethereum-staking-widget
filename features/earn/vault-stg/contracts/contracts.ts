@@ -11,7 +11,7 @@ import {
   STG_REDEEM_QUEUE_WSTETH_ABI,
   STG_SHARE_MANAGER_STRETH_ABI,
 } from './abi';
-import { STG_DEPOSIT_TOKENS } from '../deposit/form-context/types';
+import type { STGDepositTokens } from '../deposit/form-context/types';
 
 export const getSTGVaultContract = <TPublicClient extends PublicClient>(
   publicClient: TPublicClient,
@@ -262,7 +262,7 @@ export const getSTGDepositQueueContract = <TPublicClient extends PublicClient>({
   token,
 }: {
   publicClient: TPublicClient;
-  token: STG_DEPOSIT_TOKENS;
+  token: STGDepositTokens;
 }) => {
   let contract;
   switch (token) {
@@ -291,7 +291,7 @@ export const getSTGDepositQueueWritableContract = <
 }: {
   publicClient: TPublicClient;
   walletClient: TWalletClient;
-  token: STG_DEPOSIT_TOKENS;
+  token: STGDepositTokens;
 }) => {
   let contract;
   switch (token) {

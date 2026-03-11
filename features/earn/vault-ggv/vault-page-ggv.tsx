@@ -1,10 +1,10 @@
-import type { FC } from 'react';
+import { useState, type FC } from 'react';
 import { Link } from '@lidofinance/lido-ui';
 
 import { EARN_PATH } from 'consts/urls';
 import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo';
 import { trackMatomoEvent } from 'utils/track-matomo-event';
-
+import { TOKENS } from 'consts/tokens';
 import { TokenGGIcon, VaultGGVIcon } from 'assets/earn';
 import { useDappStatus } from 'modules/web3';
 import { LinkInpageAnchor } from 'shared/components/link-inpage-anchor';
@@ -46,6 +46,8 @@ import {
 import { GGVFaq } from './faq/ggv-faq';
 import { GGVApyHint } from './components/ggv-apy-hint';
 import { GGVVaultDetails } from './components/ggv-vault-details';
+import { UpgradeCardVaultPage } from '../shared/upgrade-card-vault-page/upgrade-card-vault-page';
+import { DrawerRight } from '../shared/drawer-right';
 
 const routes = [
   {
@@ -74,6 +76,7 @@ export const VaultPageGGV: FC<{
     isLoading: isLoadingPosition,
     usdQuery: { isLoading: isLoadingUsd },
   } = useGGVPosition();
+  const [isDrawerRightOpen, setIsDrawerRightOpen] = useState(false);
 
   return (
     <>
@@ -85,6 +88,10 @@ export const VaultPageGGV: FC<{
       >
         Back to all vaults
       </ButtonBack>
+      <UpgradeCardVaultPage
+        setIsDrawerRightOpen={setIsDrawerRightOpen}
+        vaultToken={TOKENS.gg}
+      />
       <VaultBlock>
         <VaultBlockHeaderSection>
           <VaultHeader
@@ -155,6 +162,10 @@ export const VaultPageGGV: FC<{
         <AprDisclaimer mentionAPY />
         <LegalDisclaimer />
       </DisclaimerSection>
+      <DrawerRight
+        onClose={() => setIsDrawerRightOpen(false)}
+        isOpen={isDrawerRightOpen}
+      />
     </>
   );
 };

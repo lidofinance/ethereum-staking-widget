@@ -7,6 +7,7 @@ type VaultAvailableProps = {
   amount?: bigint;
   symbol: string;
   isLoading?: boolean;
+  decimals?: number;
 };
 
 export const VaultAvailable = ({
@@ -14,6 +15,7 @@ export const VaultAvailable = ({
   amount,
   symbol,
   isLoading,
+  decimals,
 }: VaultAvailableProps) => {
   return (
     <VaultAvailableContainer>
@@ -23,6 +25,7 @@ export const VaultAvailable = ({
           fallback="-"
           amount={amount}
           symbol={symbol}
+          decimals={decimals}
           data-testid="amount-available"
         />
       </InlineLoader>

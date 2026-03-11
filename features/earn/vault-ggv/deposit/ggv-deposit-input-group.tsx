@@ -11,7 +11,7 @@ import { trackMatomoEvent } from 'utils/track-matomo-event';
 import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo';
 
 import type { GGVDepositFormValues } from './form-context/types';
-import { GGV_DEPOSABLE_TOKENS } from '../consts';
+import { GGV_DEPOSIT_TOKENS } from '../consts';
 import { useGGVDepositForm } from './form-context';
 import { useGGVDepositEthGasLimit } from './hooks/use-ggv-deposit-eth-gas-limit';
 
@@ -34,7 +34,7 @@ const trackTokenSelect = (value: TOKEN_DISPLAY_NAMES) => {
   }
 };
 
-const OPTIONS = GGV_DEPOSABLE_TOKENS.map((token) => ({ token }));
+const OPTIONS = GGV_DEPOSIT_TOKENS.map((token) => ({ token }));
 
 export const GGVDepositInputGroup: React.FC = () => {
   const token = useWatch<GGVDepositFormValues, 'token'>({ name: 'token' });

@@ -1,9 +1,10 @@
 import { getAddress } from 'viem';
 
 import { config } from 'config';
-import { TOKENS, getTokenAddress } from 'config/networks/token-address';
+import { getTokenAddress } from 'config/networks/token-address';
 import { standardFetcher } from './standardFetcher';
 import { CHAINS } from '@lidofinance/lido-ethereum-sdk/common';
+import { type Token, type TokenSymbol } from 'consts/tokens';
 
 type BebopGetQuotePartial = {
   routes: {
@@ -30,8 +31,8 @@ type RateCalculationResult = { rate: number; toReceive: bigint };
 
 export const getBebopRate = async (
   amount: bigint,
-  fromToken: TOKENS,
-  toToken: TOKENS,
+  fromToken: Token | TokenSymbol,
+  toToken: Token | TokenSymbol,
 ): Promise<RateCalculationResult> => {
   const basePath = 'https://api.bebop.xyz/router/ethereum/v1/quote';
 

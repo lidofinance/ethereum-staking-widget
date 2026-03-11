@@ -2,6 +2,7 @@ import type { Hash } from 'viem';
 import { TxStageSign } from '../tx-stages-basic/tx-stage-sign';
 import { TxStagePending } from '../tx-stages-basic/tx-stage-pending';
 import { TxAmount } from '../tx-stages-parts/tx-amount';
+import { getTokenDecimals } from 'utils/token-decimals';
 
 type TxStageSignOperationAmountProps = {
   amount: bigint;
@@ -26,9 +27,19 @@ export const TxStageSignOperationAmount = ({
   txHash,
   isAA,
 }: TxStageSignOperationAmountProps) => {
-  const amountEl = <TxAmount amount={amount} symbol={token} />;
+  const amountEl = (
+    <TxAmount
+      amount={amount}
+      symbol={token}
+      decimals={getTokenDecimals(token)}
+    />
+  );
   const willReceiveEl = willReceive && willReceiveToken && (
-    <TxAmount amount={willReceive} symbol={willReceiveToken} />
+    <TxAmount
+      amount={willReceive}
+      symbol={willReceiveToken}
+      decimals={getTokenDecimals(willReceiveToken)}
+    />
   );
   const Component = isPending ? TxStagePending : TxStageSign;
 

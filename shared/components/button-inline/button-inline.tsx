@@ -1,6 +1,12 @@
 import styled from 'styled-components';
 
-export const ButtonInline = styled.button.attrs({ type: 'button' })`
+interface ButtonInlineProps {
+  $variant?: 'small';
+}
+
+export const ButtonInline = styled.button.attrs({
+  type: 'button',
+})<ButtonInlineProps>`
   appearance: none;
   background: none;
   border: 0;
@@ -8,7 +14,7 @@ export const ButtonInline = styled.button.attrs({ type: 'button' })`
   padding: 0;
 
   font: inherit;
-  font-size: 12px;
+  font-size: ${(props) => (props.$variant === 'small' ? '12px' : 'inherit')};
   color: var(--lido-color-primary);
 
   cursor: pointer;

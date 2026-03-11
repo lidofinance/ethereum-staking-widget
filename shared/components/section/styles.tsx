@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 
-export const SectionStyle = styled.section`
-  margin: ${({ theme }) => theme.spaceMap.xxl}px 0;
+export const SectionStyle = styled.section<{ $noMargin?: boolean }>`
+  margin: ${({ $noMargin, theme }) => ($noMargin ? 0 : theme.spaceMap.xxl)}px 0;
 `;
 
 export const SectionHeaderStyle = styled.div`

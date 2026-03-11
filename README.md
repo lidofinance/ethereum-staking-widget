@@ -2,6 +2,8 @@
 
 A widget for submitting Ether to the pool based on [Lido Frontend Template](https://github.com/lidofinance/lido-frontend-template).
 
+**Documentation:** [Overview](docs/overview.md) — entry point for architecture, config, features, and testing.
+
 ### Prerequisites
 
 - Node.js v20+

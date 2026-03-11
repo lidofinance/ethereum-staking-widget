@@ -71,7 +71,13 @@ export const formatBalance = (
 
 export const useFormattedBalance: typeof formatBalance = (
   balance = 0n,
-  { maxDecimalDigits = 4, maxTotalLength, adaptiveDecimals, trimEllipsis } = {},
+  {
+    maxDecimalDigits = 4,
+    maxTotalLength,
+    adaptiveDecimals,
+    trimEllipsis,
+    decimals = 18,
+  } = {},
 ) => {
   return useMemo(
     () =>
@@ -80,7 +86,15 @@ export const useFormattedBalance: typeof formatBalance = (
         maxTotalLength,
         adaptiveDecimals,
         trimEllipsis,
+        decimals,
       }),
-    [adaptiveDecimals, balance, trimEllipsis, maxDecimalDigits, maxTotalLength],
+    [
+      adaptiveDecimals,
+      balance,
+      trimEllipsis,
+      maxDecimalDigits,
+      maxTotalLength,
+      decimals,
+    ],
   );
 };

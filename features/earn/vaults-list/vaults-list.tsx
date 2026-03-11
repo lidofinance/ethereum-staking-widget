@@ -1,63 +1,101 @@
-import type { FC } from 'react';
+import { useState, type FC } from 'react';
+import { AccordionTransparent } from '@lidofinance/lido-ui';
 
 import {
   DisclaimerSection,
   AprDisclaimer,
   LegalDisclaimer,
+  ButtonInline,
 } from 'shared/components';
-import { useEarnVaultsTvl } from 'shared/hooks/use-earn-vaults-tvl';
+import { trackMatomoEvent } from 'utils/track-matomo-event';
+import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo';
 
-import { VaultCardGGV } from '../vault-ggv';
-import { VaultCardDVV } from '../vault-dvv';
-import { VaultCardSTG } from '../vault-stg';
-import { VaultCardSkeleton } from '../shared/vault-card-skeleton';
 import { useEarnState } from '../shared/hooks/use-earn-state';
+import { DrawerRight } from '../shared/drawer-right';
+import { UpgradeCardVaultsList } from '../shared/upgrade-card-vaults-list';
 
-import { VaultsListWrapper } from './styles';
+import { VaultCardGGV } from '../vault-ggv/vault-card-ggv-v2';
+import { VaultCardDVV } from '../vault-dvv/vault-card-dvv-v2';
+import { VaultCardSTG } from '../vault-stg/vault-card-stg-v2';
+import { UsdVaultCard } from '../vault-usd';
+import { EthVaultCard } from '../vault-eth';
+
+import {
+  AccordionTitle,
+  CardsStack,
+  ListSubtitle,
+  ListWrapper,
+} from './styles';
 
 const VAULT_CARDS = {
   ggv: VaultCardGGV,
   dvv: VaultCardDVV,
   strategy: VaultCardSTG,
-};
-
-const getTvlSortFn = (tvlData?: Record<string, any>) => {
-  if (tvlData && tvlData.data) {
-    const { data } = tvlData;
-
-    return (a: { name: string }, b: { name: string }) => {
-      const tvlA = BigInt(data[a.name]?.tvlEthWei ?? 0n);
-      const tvlB = BigInt(data[b.name]?.tvlEthWei ?? 0n);
-      if (tvlA > tvlB) return -1;
-      if (tvlA < tvlB) return 1;
-      return 0;
-    };
-  } else {
-    // No sorting as fallback
-    return () => 0;
-  }
+  usd: UsdVaultCard,
+  eth: EthVaultCard,
 };
 
 export const EarnVaultsList: FC = () => {
   const { earnVaultsEnabled } = useEarnState();
-  const { data: tvlData, isLoading: isTvlLoading } = useEarnVaultsTvl();
+  const [isDrawerRightOpen, setIsDrawerRightOpen] = useState(false);
+
+  const actualVaults = [] as typeof earnVaultsEnabled;
+  const deprecatedVaults = [] as typeof earnVaultsEnabled;
+
+  earnVaultsEnabled.forEach((vault) => {
+    if (vault.deprecated) {
+      deprecatedVaults.push(vault);
+    } else {
+      actualVaults.push(vault);
+    }
+  });
 
   return (
     <>
-      <VaultsListWrapper>
-        {isTvlLoading
-          ? earnVaultsEnabled.map((_, index) => (
-              <VaultCardSkeleton key={index} />
-            ))
-          : earnVaultsEnabled.sort(getTvlSortFn(tvlData)).map((vault) => {
+      <ListSubtitle>
+        Deploy ETH and USD stablecoins into DeFi vaults for on-chain rewards
+        through the world&apos;s leading protocols.
+        <br />
+        <ButtonInline
+          onClick={(event) => {
+            event.preventDefault();
+            trackMatomoEvent(MATOMO_EARN_EVENTS_TYPES.earnListHowLidoEarnWorks);
+            setIsDrawerRightOpen(true);
+          }}
+        >
+          How Lido Earn Works
+        </ButtonInline>
+      </ListSubtitle>
+      <ListWrapper>
+        <UpgradeCardVaultsList setIsDrawerRightOpen={setIsDrawerRightOpen} />
+        <CardsStack>
+          {actualVaults.map((vault) => {
+            const VaultCard = VAULT_CARDS[vault.name];
+            return <VaultCard key={vault.name} />;
+          })}
+        </CardsStack>
+
+        <AccordionTransparent
+          summary={<AccordionTitle>Upgrading vaults</AccordionTitle>}
+          withoutBorder
+        >
+          <CardsStack>
+            {deprecatedVaults.map((vault) => {
               const VaultCard = VAULT_CARDS[vault.name];
               return <VaultCard key={vault.name} />;
             })}
-      </VaultsListWrapper>
-      <DisclaimerSection>
-        <AprDisclaimer mentionAPY />
-        <LegalDisclaimer />
-      </DisclaimerSection>
+          </CardsStack>
+        </AccordionTransparent>
+
+        <DisclaimerSection>
+          <AprDisclaimer mentionAPY />
+          <LegalDisclaimer />
+        </DisclaimerSection>
+      </ListWrapper>
+      <DrawerRight
+        onClose={() => setIsDrawerRightOpen(false)}
+        isOpen={isDrawerRightOpen}
+      />
     </>
   );
 };
