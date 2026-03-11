@@ -139,16 +139,6 @@ const STATIC_ALLOCATIONS_CONTENT = [
     badge: 'ethereum',
     name: 'Aura/Balancer USDT/USDC/GHO pool',
   },
-  {
-    protocol: 'Re',
-    badge: 'ethereum',
-    name: 'reUSD',
-  },
-  {
-    protocol: 'Hyperlend',
-    badge: 'Hyperliquid',
-    name: 'HyperLend USDC',
-  },
 ];
 
 export const VaultPageUSD: FC<{

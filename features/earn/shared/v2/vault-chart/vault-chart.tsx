@@ -113,14 +113,21 @@ export const VaultChart = (props: VaultChartProps) => {
         },
         xAxis: {
           type: 'time', // timestamps come from series.data[][0]; xAxis.data is ignored
+          // ECharts places ticks at local-midnight boundaries, but we label them in UTC.
+          // Without minInterval, users with a UTC offset get two ticks per UTC day
+          // (one at 00:00 UTC and one at local midnight) both formatted as the same date.
+          minInterval: 24 * 3600 * 1000,
           axisLine: { show: false },
           axisTick: { show: false },
           axisLabel: {
             hideOverlap: true, // hide labels that overlap when the chart is narrow
+            // timeZone: 'UTC' keeps axis labels consistent with tooltip dates
+            // (see formatDate in utils.ts for the full explanation).
             formatter: (value: number) =>
               new Date(value).toLocaleDateString(LOCALE, {
                 day: 'numeric',
                 month: 'short',
+                timeZone: 'UTC',
               }),
           },
         },
