@@ -10,3 +10,4 @@ export { Banner } from './banner/banner';
 export { AprDisclaimer } from './apr-disclaimer/apr-disclaimer';
 export { LegalDisclaimer } from './legal-disclaimer/legal-disclaimer';
 export { DisclaimerSection } from './disclaimer-section/disclaimer-section';
+export { ButtonInline } from './button-inline/button-inline';

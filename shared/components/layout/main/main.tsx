@@ -5,17 +5,27 @@ import { useRouter } from 'next/router';
 
 import { MainStyle } from './styles';
 import { EARN_PATH } from 'consts/urls';
+import {
+  EARN_VAULTS_V1_DESIGN,
+  EarnVaultV1DesignKey,
+} from 'features/earn/consts';
 
 export const Main: FC<ContainerProps> = (props) => {
   const { size = 'tight', ...rest } = props;
   const { featureFlags } = useConfig().externalConfig;
   const router = useRouter();
-  // Needed only for holiday decor to be displayed correctly on earn page (holidayDecorEnabled)
+
+  const isEarnListPage = router.pathname === EARN_PATH;
   const isEarnVault = router.pathname.includes(`${EARN_PATH}/[vault]/[action]`);
+  const isEarnVaultV1 =
+    isEarnVault &&
+    EARN_VAULTS_V1_DESIGN.includes(router.query.vault as EarnVaultV1DesignKey);
+  const isEarnVaultV2 = isEarnVault && !isEarnVaultV1;
+  const mainSize = isEarnVaultV2 ? 'full' : isEarnListPage ? 'content' : size;
 
   return (
     <MainStyle
-      size={size}
+      size={mainSize}
       forwardedAs="main"
       isHolidayDecorEnabled={featureFlags.holidayDecorEnabled}
       isEarnVault={isEarnVault}

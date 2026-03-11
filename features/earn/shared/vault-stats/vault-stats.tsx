@@ -11,7 +11,6 @@ import {
 
 type VaultStatsProps = {
   tvl?: number | null;
-  apy?: number | null;
   apx?: number | null;
   apxLabel: 'APY' | 'APR';
   isLoading?: boolean;

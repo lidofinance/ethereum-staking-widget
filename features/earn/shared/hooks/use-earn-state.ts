@@ -1,21 +1,13 @@
 import { useConfig } from 'config/use-config';
 import { EARN_PATH } from 'consts/urls';
 import { useRouter } from 'next/router';
-import { useIsIframe } from 'shared/hooks/use-is-iframe';
+import { useIsLedgerLive } from 'shared/hooks/useIsLedgerLive';
 
-export const EARN_STATES = {
-  ENABLED: 'enabled',
-  DISABLED: 'disabled',
-  PARTIAL: 'partial',
-} as const;
-
-type EarnStateKey = keyof typeof EARN_STATES;
-type EarnStateValue = (typeof EARN_STATES)[EarnStateKey];
-
-const EARN_STATE_KEYWORDS = [
-  EARN_STATES.ENABLED,
-  EARN_STATES.DISABLED,
-] as const;
+import {
+  type EarnStateValue,
+  EARN_STATES,
+  computeEarnRuntimeState,
+} from '../utils/earn-state-utils';
 
 /**
  * Helper to cache earn param in global scope to prevent loss in iframe rerenders
@@ -33,23 +25,25 @@ const setCachedEarnParam = (value: string | undefined) => {
 /**
  * Determines the overall earn state based on runtime context and external configuration.
  *
- * Combines runtime state (URL parameters, iframe context) with external config to determine
+ * Combines runtime state (URL parameters, Ledger Live detection) with external config to determine
  * whether earn features are enabled, disabled, or partially enabled.
  *
- * State rules:
- * - **disabled**: Earn is disabled by config or in iframe context (unless opted in via URL) or when `earn=disabled` is set
- * - **partial**: Specific vaults are force-enabled via URL (e.g., `earn=vault1,vault2`)
- * - **enabled**: Earn is fully enabled (default or when `earn=enabled` is explicitly set)
+ * State rules (opt-out):
+ * - **disabled**: Earn is disabled by config, by Ledger Live, or when `?earn=disabled` is set
+ * - **partial**: Only specific vaults are shown via URL allowlist (e.g., `?earn=vault1,vault2`)
+ * - **enabled**: Earn is fully enabled (default for all integrations except Ledger Live)
  */
 export const useEarnState = () => {
   const { pages, earnVaults } = useConfig().externalConfig;
 
+  // useIsLedgerLive adds the Wagmi connector check on top of the appFlag-based check in
+  // useEarnRuntimeState. Both are needed: the flag persists across iframe rerenders,
+  // while the connector check covers cases before ?app=ledger-live is set in the URL.
+  const isLedgerLive = useIsLedgerLive();
   const earnRuntimeState = useEarnRuntimeState();
-  const {
-    isEarnDisabledByRuntimeContext,
-    someVaultsEnabledByURL,
-    isVaultEnabledByUrl,
-  } = earnRuntimeState;
+  const { someVaultsEnabledByURL, isVaultEnabledByUrl } = earnRuntimeState;
+  const isEarnDisabledByRuntimeContext =
+    earnRuntimeState.isEarnDisabledByRuntimeContext || isLedgerLive;
 
   const isEarnDisabledByConfig = pages[EARN_PATH]?.shouldDisable ?? false;
 
@@ -79,6 +73,7 @@ export const useEarnState = () => {
     // If earn is fully enabled, all vaults are enabled
     if (earnState === EARN_STATES.ENABLED) return true;
 
+    // In PARTIAL state: vault is enabled only if it IS in the URL allowlist
     return earnState === EARN_STATES.PARTIAL && isVaultEnabledByUrl(vaultName);
   };
 
@@ -96,20 +91,24 @@ export const useEarnState = () => {
     isEarnEnabled: earnState === EARN_STATES.ENABLED,
     isEarnDisabled,
     isEarnPartial,
-    isEarnVaultsForceEnabledByURL: someVaultsEnabledByURL,
+    isEarnVaultsEnabledByURL: someVaultsEnabledByURL,
     isVaultEnabled,
     isVaultDisabled,
   };
 };
 
 /**
- * Determines the earn state at runtime based on URL parameters and iframe context.
+ * Determines the earn state at runtime based on URL parameters and Ledger Live detection.
  *
  * **WARNING: It doesn't rely on external config, therefore it may not reflect the final earn state!**
  */
 export const useEarnRuntimeState = () => {
   const { query, isReady } = useRouter();
-  const isIframe = useIsIframe();
+  // query.app is read directly from the router (not useAppFlag/useIsLedgerLive) because this
+  // hook is called from useExternalConfigContext inside ConfigProvider, before Web3Provider
+  // (Wagmi) is mounted. The full connector-based check is applied separately in useEarnState.
+  // Reading from query directly (vs AppFlagProvider) also works during SSR.
+  const isLedgerLiveByFlag = query.app === 'ledger-live';
 
   // Cache the earn query param to prevent it from being lost on rerenders in iframe
   // (Next.js Router can have unstable query params in iframe due to History API limitations)
@@ -120,36 +119,9 @@ export const useEarnRuntimeState = () => {
   // Use cached value if current query.earn is undefined, but we had it before
   const earnParam = query.earn || getCachedEarnParam();
 
-  // Parse enabled vaults from URL param: ?earn=vault1,vault2
-  let vaultsEnabledByUrl: string[] = [];
-  if (
-    isReady &&
-    earnParam &&
-    typeof earnParam === 'string' &&
-    !EARN_STATE_KEYWORDS.includes(earnParam as any) // Only treat as vault names if it's not a keyword (enabled/disabled)
-  ) {
-    vaultsEnabledByUrl = earnParam.split(',');
-  }
-
-  const someVaultsEnabledByURL = vaultsEnabledByUrl.length > 0;
-  const isEarnEnabledByURL = isReady && earnParam === EARN_STATES.ENABLED;
-  const isEarnDisabledByURL = isReady && earnParam === EARN_STATES.DISABLED;
-
-  const isEarnDisabledByRuntimeContext =
-    (isReady && isIframe && !isEarnEnabledByURL && !someVaultsEnabledByURL) ||
-    isEarnDisabledByURL;
-
-  const isVaultEnabledByUrl = (vaultName: string) =>
-    vaultsEnabledByUrl.includes(vaultName);
-
-  const isVaultDisabledByUrl = (vaultName: string) =>
-    !isVaultEnabledByUrl(vaultName);
-
-  return {
-    isEarnDisabledByRuntimeContext,
-    someVaultsEnabledByURL,
-    vaultsEnabledByUrl,
-    isVaultEnabledByUrl,
-    isVaultDisabledByUrl,
-  };
+  return computeEarnRuntimeState({
+    isLedgerLive: isLedgerLiveByFlag,
+    earnParam: typeof earnParam === 'string' ? earnParam : undefined,
+    isReady,
+  });
 };

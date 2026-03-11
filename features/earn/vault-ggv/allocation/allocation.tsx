@@ -2,7 +2,7 @@ import { VaultAllocation } from 'features/earn/shared/vault-allocation/vault-all
 import { useGGVAllocation } from './hooks/use-ggv-allocation';
 
 const FOOTER_TEXT =
-  'Data is provided by Veda’s API and reflects the most recent snapshot at the time of update. As a result, the Total TVL shown here may differ from the vault’s TVL due to the data timestamp';
+  'Data is provided by Veda’s API and reflects the most recent snapshot at the time of update. As a result, the TVL shown here may differ from the vault’s TVL due to the data timestamp';
 
 export const Allocation = () => {
   const { data, isLoading, apy } = useGGVAllocation();

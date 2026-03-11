@@ -49,7 +49,11 @@ export const STGRequest = ({
 
   const button =
     actionButtonVariant === 'link-alike' ? (
-      <ButtonInline onClick={actionCallback} disabled={actionLoading}>
+      <ButtonInline
+        $variant="small"
+        onClick={actionCallback}
+        disabled={actionLoading}
+      >
         {actionText}
       </ButtonInline>
     ) : (

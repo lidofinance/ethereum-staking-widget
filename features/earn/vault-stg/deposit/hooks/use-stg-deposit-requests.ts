@@ -1,16 +1,16 @@
 import { useMemo } from 'react';
 import { getTokenAddress } from 'config/networks/token-address';
 import { useDappStatus } from 'modules/web3/hooks';
-import { STG_DEPOSIT_TOKENS } from '../form-context/types';
+import type { STGDepositTokens } from '../form-context/types';
 import { useSTGCollect } from '../../hooks/use-stg-collect';
-import { STG_DEPOSABLE_TOKENS } from '../../consts';
+import { STG_DEPOSIT_TOKENS } from '../../consts';
 
 export type DepositRequest = {
   createdTimestamp: bigint;
   claimableShares: bigint;
   assets: bigint;
   isClaimable: boolean;
-  token: STG_DEPOSIT_TOKENS;
+  token: STGDepositTokens;
 };
 
 export type DepositRequests = Array<DepositRequest>;
@@ -40,7 +40,7 @@ export const useDepositRequests = (): {
       };
     }
 
-    const requests = STG_DEPOSABLE_TOKENS.map((token) => {
+    const requests = STG_DEPOSIT_TOKENS.map((token) => {
       const collectedRequest = collectedRequests.find(
         (request) =>
           request.asset.toLowerCase() ===

@@ -11,6 +11,10 @@ import {
   EARN_VAULT_DEPOSIT_SLUG,
   EARN_VAULT_WITHDRAW_SLUG,
 } from 'features/earn/consts';
+import { EthVaultPage } from 'features/earn/vault-eth';
+import { VaultPageUSD } from 'features/earn/vault-usd';
+import { isV1DesignVault } from 'features/earn/shared/utils/isV1DesignVault';
+import { useEarnVaultGuard } from 'features/earn/shared/hooks/use-earn-vault-guard';
 
 type PageParams = {
   vault: EarnVaultKey;
@@ -18,6 +22,8 @@ type PageParams = {
 };
 
 const VAULT_PAGES = {
+  eth: EthVaultPage,
+  usd: VaultPageUSD,
   ggv: VaultPageGGV,
   dvv: VaultPageDVV,
   strategy: VaultPageSTG,
@@ -62,10 +68,15 @@ export const getStaticProps = getDefaultStaticProps<PageParams, PageParams>(
 );
 
 export default function VaultActionPage({ vault, action }: PageParams) {
+  useEarnVaultGuard(vault);
   const VaultPage = VAULT_PAGES[vault];
   const vaultTitle = vault.toUpperCase();
+
+  // undefined means default container size ('tight' at the moment)
+  const containerSize = isV1DesignVault(vault) ? undefined : 'full';
+
   return (
-    <Layout>
+    <Layout containerSize={containerSize}>
       <Head>
         <title>{`${vaultTitle} ${action} | Earn | Lido`}</title>
         <meta

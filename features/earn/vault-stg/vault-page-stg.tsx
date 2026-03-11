@@ -1,4 +1,4 @@
-import type { FC } from 'react';
+import { useState, type FC } from 'react';
 import { Link } from '@lidofinance/lido-ui';
 
 import { EARN_PATH } from 'consts/urls';
@@ -13,6 +13,7 @@ import {
 import { LinkInpageAnchor } from 'shared/components/link-inpage-anchor';
 import { trackMatomoEvent } from 'utils/track-matomo-event';
 import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo';
+import { TOKENS } from 'consts/tokens';
 
 import { VaultHeader } from '../shared/vault-header';
 import { VaultDescription } from '../shared/vault-description';
@@ -42,6 +43,8 @@ import { STGFaq } from './faq/stg-faq';
 import { STGApyHint } from './components/stg-apy-hint';
 import { STGVaultDetails } from './components/stg-vault-details';
 import { Allocation } from './allocation';
+import { UpgradeCardVaultPage } from '../shared/upgrade-card-vault-page/upgrade-card-vault-page';
+import { DrawerRight } from '../shared/drawer-right';
 
 const routes = [
   {
@@ -65,6 +68,7 @@ export const VaultPageSTG: FC<{
   const { isDappActive } = useDappStatus();
   const { totalTvlUsd, isLoading: isTvlLoading } = useSTGStats();
   const { apy, isLoading: isApyLoading } = useSTGApy();
+  const [isDrawerRightOpen, setIsDrawerRightOpen] = useState(false);
 
   return (
     <>
@@ -76,6 +80,10 @@ export const VaultPageSTG: FC<{
       >
         Back to all vaults
       </ButtonBack>
+      <UpgradeCardVaultPage
+        setIsDrawerRightOpen={setIsDrawerRightOpen}
+        vaultToken={TOKENS.streth}
+      />
       <VaultBlock>
         <VaultBlockHeaderSection>
           <VaultHeader
@@ -134,6 +142,10 @@ export const VaultPageSTG: FC<{
         <AprDisclaimer mentionAPY />
         <LegalDisclaimer />
       </DisclaimerSection>
+      <DrawerRight
+        onClose={() => setIsDrawerRightOpen(false)}
+        isOpen={isDrawerRightOpen}
+      />
     </>
   );
 };

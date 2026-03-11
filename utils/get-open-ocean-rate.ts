@@ -1,12 +1,13 @@
 import { formatEther } from 'viem';
 import { CHAINS } from '@lidofinance/lido-ethereum-sdk/common';
 
-import { TOKENS, getTokenAddress } from 'config/networks/token-address';
+import { getTokenAddress } from 'config/networks/token-address';
 import { standardFetcher } from './standardFetcher';
 import {
   calculateRateReceive,
   RateCalculationResult,
 } from './calculate-rate-to-receive';
+import { type Token, type TokenSymbol } from 'consts/tokens';
 
 type OpenOceanGetGasPartial = {
   without_decimals: {
@@ -38,8 +39,8 @@ type OpenOceanGetQuotePartial = {
 
 export const getOpenOceanRate = async (
   amount: bigint,
-  fromToken: TOKENS,
-  toToken: TOKENS,
+  fromToken: Token | TokenSymbol,
+  toToken: Token | TokenSymbol,
 ): Promise<RateCalculationResult> => {
   const basePath = 'https://open-api.openocean.finance/v3/1';
   const gasData = await standardFetcher<OpenOceanGetGasPartial>(
