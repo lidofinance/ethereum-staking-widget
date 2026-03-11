@@ -5,8 +5,8 @@ import { standardFetcher } from 'utils/standardFetcher';
 
 import { METAVAULT_CHART_ORIGIN } from '../consts';
 
-// We need to cut off data before 11 March 2026 because the API returns incorrect data for that period.
-const TIMESTAMP_11_MARCH_2026 = 1773187200;
+// We need to cut off data before 10 March 2026 because the API returns incorrect data for that period.
+const TIMESTAMP_10_MARCH_2026 = 1773100800;
 
 export const METAVAULT_CHART_DATA_SCHEMA = z.array(
   z.object({
@@ -40,8 +40,8 @@ export const fetchMetavaultChartData = async (
   vaultAddress: string,
 ) => {
   const timestamp =
-    fromTimestamp < TIMESTAMP_11_MARCH_2026
-      ? TIMESTAMP_11_MARCH_2026
+    fromTimestamp < TIMESTAMP_10_MARCH_2026
+      ? TIMESTAMP_10_MARCH_2026
       : fromTimestamp;
   const METAVAULT_CHART_ENDPOINT = `${METAVAULT_CHART_ORIGIN}/v1/chain/${CHAINS.Mainnet}/core-vaults/${vaultAddress}/historical-data?from_timestamp=${timestamp}`;
 
