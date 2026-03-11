@@ -37,7 +37,11 @@ export const UpgradeCardVaultPage: FC<UpgradeCardProps> = ({
   setIsDrawerRightOpen,
   vaultToken,
 }) => {
-  const { balances } = useUpgradableTokenBalances();
+  const { balances, isLoading } = useUpgradableTokenBalances();
+
+  // prevents flashing the card content while loading the balances while pre-fetching the data (isLoading: false, balances undefined)
+  if (Object.values(balances).some((b) => b === undefined) || isLoading)
+    return null;
 
   const balance = balances[vaultToken as keyof typeof balances];
   const hasBalance = balance != null && balance > 0n;
