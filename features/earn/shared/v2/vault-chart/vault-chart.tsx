@@ -104,9 +104,7 @@ export const VaultChart = (props: VaultChartProps) => {
     chart.setOption(
       {
         animation: false,
-        // grid: offsets from container; containLabel: false so labels sit outside the plot area.
-        // left/right: 20 reserves space so edge x-axis labels (first/last date) aren't clipped by the SVG viewport.
-        grid: { left: 20, right: 20, top: 0, bottom: 0, containLabel: false },
+        grid: { left: 0, right: 0, top: 0, bottom: 0, containLabel: false },
         tooltip: {
           trigger: 'axis',
           confine: true,
