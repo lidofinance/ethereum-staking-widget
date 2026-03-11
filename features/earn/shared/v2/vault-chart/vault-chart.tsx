@@ -105,7 +105,8 @@ export const VaultChart = (props: VaultChartProps) => {
       {
         animation: false,
         // grid: offsets from container; containLabel: false so labels sit outside the plot area.
-        grid: { left: 0, right: 0, top: 0, bottom: 0, containLabel: false },
+        // left/right: 20 reserves space so edge x-axis labels (first/last date) aren't clipped by the SVG viewport.
+        grid: { left: 20, right: 20, top: 0, bottom: 0, containLabel: false },
         tooltip: {
           trigger: 'axis',
           confine: true,
@@ -120,9 +121,8 @@ export const VaultChart = (props: VaultChartProps) => {
         },
         xAxis: {
           type: 'time', // timestamps come from series.data[][0]; xAxis.data is ignored
-          // ECharts places ticks at local-midnight boundaries, but we label them in UTC.
-          // Without minInterval, users with a UTC offset get two ticks per UTC day
-          // (one at 00:00 UTC and one at local midnight) both formatted as the same date.
+          // Without minInterval, users with a large UTC offset can get two ticks
+          // per calendar day (local midnight + UTC midnight) formatted as the same date.
           minInterval: 24 * 3600 * 1000,
           axisLine: { show: false },
           axisTick: { show: false },
@@ -132,13 +132,11 @@ export const VaultChart = (props: VaultChartProps) => {
             color: isDark ? 'rgba(255,255,255,0.8)' : '#7A8AA0',
             fontFamily: 'Manrope, sans-serif',
             fontWeight: 400,
-            // timeZone: 'UTC' keeps axis labels consistent with tooltip dates
-            // (see formatDate in utils.ts for the full explanation).
+            // Local timezone matches tick positions (local midnight boundaries).
             formatter: (value: number) =>
               new Date(value).toLocaleDateString(LOCALE, {
                 day: 'numeric',
                 month: 'short',
-                timeZone: 'UTC',
               }),
           },
         },

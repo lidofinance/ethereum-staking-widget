@@ -23,19 +23,12 @@ import {
 export const formatTvl = (amount: number) =>
   `$${getShortenedNumber(amount, '0')}`;
 
-/**
- * Format date using ECharts params (all series at this axis point).
- * timeZone: 'UTC' is intentional — API timestamps represent UTC days.
- * Using local timezone would cause a date mismatch for users with UTC offset
- * (e.g. UTC+7: a point at 16:30 UTC = 23:30 local, tooltip would show
- * the local date while the axis tick next to it would already be the next UTC day).
- */
+/** Format date+time for the tooltip header using the browser's local timezone. */
 export const formatDate = (timestamp: number) =>
-  new Date(timestamp).toLocaleDateString(LOCALE, {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-    timeZone: 'UTC',
+  new Date(timestamp).toLocaleString(LOCALE, {
+    dateStyle: 'medium',
+    timeStyle: 'short',
+    hour12: false,
   });
 
 /** Format tooltip using ECharts params (all series at this axis point). */
