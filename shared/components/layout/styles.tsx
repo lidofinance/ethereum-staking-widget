@@ -2,9 +2,13 @@ import { H1 } from '@lidofinance/lido-ui';
 import styled from 'styled-components';
 import { devicesHeaderMedia } from 'styles/global';
 
-export const LayoutTitleStyle = styled((props) => <H1 {...props} />)`
-  font-weight: 800;
-  font-size: ${({ theme }) => theme.fontSizesMap.xl}px;
+type LayoutTitleProps = { $v2?: boolean } & React.ComponentProps<typeof H1>;
+
+export const LayoutTitleStyle = styled(
+  ({ $v2, ...props }: LayoutTitleProps) => <H1 {...props} />,
+)`
+  font-weight: ${({ $v2 }) => ($v2 ? 700 : 800)};
+  font-size: ${({ $v2, theme }) => ($v2 ? 36 : theme.fontSizesMap.xl)}px;
   margin-bottom: 0.2em;
   line-height: 1.2em;
   text-align: center;
