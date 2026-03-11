@@ -1,7 +1,7 @@
 import { TooltipComponentFormatterCallbackParams } from 'echarts';
 import { LOCALE } from 'config/groups/locale';
 
-import { shortenTokenValue } from 'utils/shortenTokenValue';
+import { getShortenedNumber } from 'shared/formatters/utils';
 import {
   VAULT_CHART_COLOR,
   VAULT_CHART_AREA_COLOR,
@@ -20,10 +20,11 @@ import {
  * Format TVL for display.
  * Expects `amount` already converted to USD (done by the vault data hook before reaching here).
  */
-export const formatTvl = (amount: number) => `$${shortenTokenValue(amount)}`;
+export const formatTvl = (amount: number) =>
+  `$${getShortenedNumber(amount, '0')}`;
 
 /** Format date using ECharts params (all series at this axis point). */
-const formatDate = (timestamp: number) =>
+export const formatDate = (timestamp: number) =>
   new Date(timestamp).toLocaleDateString(LOCALE, {
     year: 'numeric',
     month: 'short',

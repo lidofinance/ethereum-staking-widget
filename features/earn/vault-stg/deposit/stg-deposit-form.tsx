@@ -18,38 +18,44 @@ import { useSTGAvailable } from '../hooks/use-stg-available';
 export const STGDepositForm = () => {
   const { isVaultDeprecated } = useSTGAvailable();
 
+  if (isVaultDeprecated) {
+    return (
+      <STGDepositFormProvider>
+        <VaultFormSection>
+          <STGDepositRequests />
+        </VaultFormSection>
+        <STGDepositWarning />
+      </STGDepositFormProvider>
+    );
+  }
+
   return (
     <STGDepositFormProvider>
       <VaultForm data-testid="deposit-form">
         <STGDepositWarning />
-        {!isVaultDeprecated && (
-          <>
-            <VaultFormSection>
-              <STGDepositRequests />
-              <STGAvailableDeposit />
-              <STGDepositInputGroup />
-            </VaultFormSection>
-            <VaultTxInfo>
-              <STGWillReceive />
-              <VaultTxInfoRow
-                title="Waiting time"
-                help={
-                  <>
-                    Deposits usually complete within 24 hours, often sooner. You
-                    can track progress in the Deposit section of the Lido
-                    stRATEGY UI.
-                  </>
-                }
-              >
-                {'24 hours'}
-              </VaultTxInfoRow>
-            </VaultTxInfo>
-            <VaultWarning variant="info">
-              Withdrawals are only in wstETH, regardless of deposited asset(s).
-            </VaultWarning>
-            <STGDepositSubmitButton />
-          </>
-        )}
+        <VaultFormSection>
+          <STGDepositRequests />
+          <STGAvailableDeposit />
+          <STGDepositInputGroup />
+        </VaultFormSection>
+        <VaultTxInfo>
+          <STGWillReceive />
+          <VaultTxInfoRow
+            title="Waiting time"
+            help={
+              <>
+                Deposits usually complete within 24 hours, often sooner. You can
+                track progress in the Deposit section of the Lido stRATEGY UI.
+              </>
+            }
+          >
+            {'24 hours'}
+          </VaultTxInfoRow>
+        </VaultTxInfo>
+        <VaultWarning variant="info">
+          Withdrawals are only in wstETH, regardless of deposited asset(s).
+        </VaultWarning>
+        <STGDepositSubmitButton />
       </VaultForm>
     </STGDepositFormProvider>
   );

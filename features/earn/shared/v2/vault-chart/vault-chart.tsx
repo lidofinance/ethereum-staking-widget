@@ -20,9 +20,13 @@ import {
   CHART_TYPE,
 } from './vault-chart-controls';
 import { SECONDS_PER_DAY, DAYS_BY_RANGE } from './consts';
-import { buildChartSeries } from './utils';
+import { buildChartSeries, formatDate } from './utils';
 import { useChartData } from './hooks';
-import { ChartInlineLoaderStyled, ErrorMessageStyled } from './styles';
+import {
+  ChartInlineLoaderStyled,
+  ErrorMessageStyled,
+  LastTimestampStyled,
+} from './styles';
 
 // ECharts tree-shaking: register only the components we use. Must run before echarts.init().
 echarts.use([SVGRenderer, LineChart, TooltipComponent, GridComponent]);
@@ -48,13 +52,7 @@ export const VaultChart = (props: VaultChartProps) => {
   const isETHVault = vaultName === 'ethVault';
   const isUSDVault = vaultName === 'usdVault';
 
-  // const vaultAddress = getContractAddress(CHAINS.Mainnet, vaultName);
-  // TODO: REPLACE BEFORE RELEASE
-  const vaultAddress = getContractAddress(
-    CHAINS.Mainnet,
-    //@ts-expect-error currently using test contracts, prod contract addresses are using __ prefix now
-    isETHVault ? 'stgVault' : '__usdVault',
-  );
+  const vaultAddress = getContractAddress(CHAINS.Mainnet, vaultName);
 
   const [activeChart, setActiveChart] = useState<ChartType>(CHART_TYPE.apy);
   const [activeTimeRange, setActiveTimeRange] = useState<ChartTimeRange>(
@@ -112,6 +110,9 @@ export const VaultChart = (props: VaultChartProps) => {
           trigger: 'axis',
           confine: true,
           formatter: tooltipFormatter,
+          textStyle: {
+            fontFamily: 'Manrope, sans-serif',
+          },
           ...(isDark && {
             backgroundColor: '#131317',
             borderColor: '#131317',
@@ -123,6 +124,9 @@ export const VaultChart = (props: VaultChartProps) => {
           axisTick: { show: false },
           axisLabel: {
             hideOverlap: true, // hide labels that overlap when the chart is narrow
+            color: isDark ? 'rgba(255,255,255,0.8)' : '#7A8AA0',
+            fontFamily: 'Manrope, sans-serif',
+            fontWeight: 400,
             formatter: (value: number) =>
               new Date(value).toLocaleDateString(LOCALE, {
                 day: 'numeric',
@@ -133,7 +137,12 @@ export const VaultChart = (props: VaultChartProps) => {
         yAxis: {
           type: 'value',
           position: 'right',
-          axisLabel: { formatter: yAxisFormatter },
+          axisLabel: {
+            formatter: yAxisFormatter,
+            color: isDark ? 'rgba(255,255,255,0.8)' : '#7A8AA0',
+            fontFamily: 'Manrope, sans-serif',
+            fontWeight: 400,
+          },
           splitLine: {
             lineStyle: {
               ...(isDark && { color: '#DAE0E529' }),
@@ -165,40 +174,52 @@ export const VaultChart = (props: VaultChartProps) => {
     isETHVault,
   ]);
 
+  const lastTimeStamp = seriesData?.[seriesData.length - 1]?.[0];
+
+  const isApyChart = activeChart === CHART_TYPE.apy;
+
   // TODO: break this up into variables for more clear logic
-  const isChartLoading =
-    activeChart === CHART_TYPE.apy
-      ? isVaultLoading ||
-        (isUSDVault && isTreasuryLoading) ||
-        (isETHVault && isStakingLoading)
-      : isVaultLoading;
+  const isChartLoading = isApyChart
+    ? isVaultLoading ||
+      (isUSDVault && isTreasuryLoading) ||
+      (isETHVault && isStakingLoading)
+    : isVaultLoading;
+
+  const isNoDataAvailable = isLoadingError || (!!data && data.length === 0);
 
   return (
-    <VaultChartControls
-      isInitialLoading={isInitialLoading}
-      activeChart={activeChart}
-      setActiveChart={setActiveChart}
-      activeTimeRange={activeTimeRange}
-      setActiveTimeRange={setActiveTimeRange}
-      is3MAvailable={hasMoreThanOneMonthData}
-      disableControls={isLoadingError}
-      matomo={matomo}
-    >
-      {/* Wrapper has fixed height; chart div is absolute so ECharts’ fixed-size SVG doesn’t block flex shrink. Chart stays mounted so init runs once. */}
-      <div style={{ position: 'relative', width: '100%', height: '305px' }}>
-        {isChartLoading && <ChartInlineLoaderStyled />}
-        {isLoadingError && (
-          <ErrorMessageStyled>No data available</ErrorMessageStyled>
-        )}
-        <div
-          ref={chartRef}
-          style={{
-            position: 'absolute',
-            inset: 0,
-            opacity: isChartLoading ? 0 : 1,
-          }}
-        />
-      </div>
-    </VaultChartControls>
+    <div>
+      <VaultChartControls
+        isInitialLoading={isInitialLoading}
+        activeChart={activeChart}
+        setActiveChart={setActiveChart}
+        activeTimeRange={activeTimeRange}
+        setActiveTimeRange={setActiveTimeRange}
+        is3MAvailable={hasMoreThanOneMonthData}
+        disableControls={isNoDataAvailable}
+        matomo={matomo}
+      >
+        {/* Wrapper has fixed height; chart div is absolute so ECharts’ fixed-size SVG doesn’t block flex shrink. Chart stays mounted so init runs once. */}
+        <div style={{ position: 'relative', width: '100%', height: '305px' }}>
+          {!isNoDataAvailable && isChartLoading && <ChartInlineLoaderStyled />}
+          {isNoDataAvailable && (
+            <ErrorMessageStyled>No data available</ErrorMessageStyled>
+          )}
+          <div
+            ref={chartRef}
+            style={{
+              position: 'absolute',
+              inset: 0,
+              opacity: isChartLoading ? 0 : 1,
+            }}
+          />
+        </div>
+      </VaultChartControls>
+      {!isNoDataAvailable && lastTimeStamp && (
+        <LastTimestampStyled>
+          Last updated: {formatDate(lastTimeStamp)}
+        </LastTimestampStyled>
+      )}
+    </div>
   );
 };

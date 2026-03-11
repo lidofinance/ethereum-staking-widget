@@ -1,8 +1,7 @@
 import { WalletClient } from 'viem';
-import { usePublicClient } from 'wagmi';
 import invariant from 'tiny-invariant';
 import { useMemo } from 'react';
-import { useLidoSDK } from 'modules/web3';
+import { useLidoSDK, useMainnetOnlyWagmi } from 'modules/web3';
 import { useWithdraw } from 'modules/mellow-meta-vaults/hooks/use-withdraw';
 import { useTxModalStagesWithdraw } from 'modules/mellow-meta-vaults/hooks/use-withdraw-tx-modal';
 import { getTokenSymbol } from 'utils/get-token-symbol';
@@ -22,20 +21,20 @@ export const useEthVaultWithdraw = (onRetry: () => void) => {
       operationText: 'requesting withdrawal for',
     },
   });
-  const publicClient = usePublicClient();
-  invariant(publicClient, 'Public client is not available');
+  const { publicClientMainnet } = useMainnetOnlyWagmi();
+  invariant(publicClientMainnet, 'Public client is not available');
 
   const collector = useMemo(
-    () => getCollectorContract(publicClient),
-    [publicClient],
+    () => getCollectorContract(publicClientMainnet),
+    [publicClientMainnet],
   );
   const redeemQueue = useMemo(
     () =>
       getRedeemQueueWritableContractWSTETH(
-        publicClient,
+        publicClientMainnet,
         core.web3Provider as WalletClient,
       ),
-    [publicClient, core.web3Provider],
+    [publicClientMainnet, core.web3Provider],
   );
 
   return useWithdraw({

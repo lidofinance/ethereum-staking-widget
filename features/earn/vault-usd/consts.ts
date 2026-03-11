@@ -2,7 +2,7 @@ import { TOKEN_SYMBOLS, TOKENS } from 'consts/tokens';
 
 export const USD_VAULT_TITLE = 'EarnUSD';
 export const USD_VAULT_DESCRIPTION =
-  'EarnUSD Vault is curated for USD-denominated assets, designed to target an optimal risk-reward profile without compromising on security, risk controls, or asset quality. It’s built to feel like saving';
+  'EarnUSD delivers access to USD-denominated reward strategies built around transparent asset selection, risk controls and reporting';
 
 export const USD_VAULT_TOKEN_SYMBOL = TOKEN_SYMBOLS.earnusd;
 

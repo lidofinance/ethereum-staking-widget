@@ -36,8 +36,8 @@ export const EthVaultDepositForm = () => {
               help={
                 <>
                   Deposits usually complete within 24 hours, often sooner. You
-                  can track progress in the Deposit section of the Lido stRATEGY
-                  UI.
+                  can track progress in the Deposit section of the current
+                  vault.
                 </>
               }
             >

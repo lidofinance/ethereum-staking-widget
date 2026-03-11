@@ -60,6 +60,10 @@ export { ReactComponent as FelixIcon } from './allocation/felix.svg';
 export { ReactComponent as MonadIcon } from './allocation/nomad.svg';
 export { ReactComponent as HyperliquidIcon } from './allocation/hyperliquid.svg';
 export { ReactComponent as HyperlendIcon } from './allocation/hyperlend.svg';
+export { ReactComponent as EthenaIcon } from './allocation/ethena.svg';
+export { ReactComponent as SyrupIcon } from './allocation/syrup.svg';
+export { ReactComponent as AuraIcon } from './allocation/aura.svg';
+export { ReactComponent as ReIcon } from './allocation/re.svg';
 
 const themedBackground = css`
   path,

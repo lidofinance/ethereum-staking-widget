@@ -1,5 +1,4 @@
 import { useQuery } from '@tanstack/react-query';
-import { usePublicClient } from 'wagmi';
 import invariant from 'tiny-invariant';
 
 import { useDappStatus } from 'modules/web3';
@@ -13,7 +12,6 @@ export const useWithdrawRequests = ({
   redeemQueue: RedeemQueueContract;
 }) => {
   const { address, isDappActive } = useDappStatus();
-  const publicClient = usePublicClient();
 
   const isEnabled = isDappActive && !!address;
 
@@ -26,7 +24,6 @@ export const useWithdrawRequests = ({
     ] as const,
     queryFn: async () => {
       invariant(address, 'No address provided');
-      invariant(publicClient, 'Public client is not available');
 
       // Fetch the first 100 requests (see limit). Pagination is not implemented.
       const requests = (await redeemQueue.read.requestsOf([
