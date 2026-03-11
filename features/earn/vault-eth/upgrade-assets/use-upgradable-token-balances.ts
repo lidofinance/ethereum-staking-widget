@@ -1,3 +1,4 @@
+import invariant from 'tiny-invariant';
 import { useQuery } from '@tanstack/react-query';
 import { erc20abi } from '@lidofinance/lido-ethereum-sdk/erc20';
 
@@ -43,7 +44,7 @@ export const useUpgradableTokenBalances = () => {
       const strethAddress = getTokenAddress(chainId, TOKENS.streth);
       const dvstethAddress = getTokenAddress(chainId, TOKENS.dvsteth);
 
-      const stgVault = getSTGVaultContract(publicClient);
+      const stgVault = getSTGVaultContract(publicClientMainnet);
 
       invariant(ggAddress, 'GG token address is not defined');
       invariant(strethAddress, 'stETH token address is not defined');
