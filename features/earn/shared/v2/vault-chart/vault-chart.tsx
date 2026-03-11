@@ -174,7 +174,7 @@ export const VaultChart = (props: VaultChartProps) => {
       (isETHVault && isStakingLoading)
     : isVaultLoading;
 
-  const isNoDataAvailable = isLoadingError || data?.length === 0;
+  const isNoDataAvailable = isLoadingError || (!!data && data.length === 0);
 
   return (
     <VaultChartControls
@@ -189,7 +189,7 @@ export const VaultChart = (props: VaultChartProps) => {
     >
       {/* Wrapper has fixed height; chart div is absolute so ECharts’ fixed-size SVG doesn’t block flex shrink. Chart stays mounted so init runs once. */}
       <div style={{ position: 'relative', width: '100%', height: '305px' }}>
-        {isChartLoading && <ChartInlineLoaderStyled />}
+        {!isNoDataAvailable && isChartLoading && <ChartInlineLoaderStyled />}
         {isNoDataAvailable && (
           <ErrorMessageStyled>No data available</ErrorMessageStyled>
         )}
