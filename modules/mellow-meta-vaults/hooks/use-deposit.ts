@@ -18,6 +18,12 @@ import { MATOMO_EVENT_TYPE } from 'consts/matomo';
 import { TxModalStages } from '../types/tx-modal-stages';
 import { DepositQueueGetter } from '../types/deposit-queue-getter';
 
+type DepositArgs = {
+  amount: bigint;
+  token: Token;
+  referral: string | null;
+};
+
 export const useDeposit = <DepositQueueToken extends string>({
   depositQueueGetter,
   txModalStages,
@@ -36,15 +42,7 @@ export const useDeposit = <DepositQueueToken extends string>({
   const txFlow = useTxFlow();
 
   const deposit = useCallback(
-    async ({
-      amount,
-      token,
-      referral,
-    }: {
-      amount: bigint;
-      token: Token;
-      referral: string | null;
-    }) => {
+    async ({ amount, token, referral }: DepositArgs) => {
       if (matomoEventStart) trackMatomoEvent(matomoEventStart);
       invariant(address, 'needs address');
       const tokenAddress = getTokenAddress(core.chainId, token);
@@ -95,6 +93,7 @@ export const useDeposit = <DepositQueueToken extends string>({
         await txFlow({
           callsFn: async () => {
             const calls: AACall[] = [];
+
             if (needsApprove) {
               if (needsApprovalReset) {
                 calls.push({

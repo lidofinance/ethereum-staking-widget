@@ -16,6 +16,10 @@ import {
   BaseIcon,
   HyperliquidIcon,
   HyperlendIcon,
+  EthenaIcon,
+  SyrupIcon,
+  AuraIcon,
+  ReIcon,
 } from 'assets/earn';
 
 import { Container, Badge, Content } from './styles';
@@ -37,6 +41,10 @@ const PROTOCOL_ICONS = {
   Felix: <FelixIcon />,
   Euler: <EulerIcon />,
   Hyperlend: <HyperlendIcon />,
+  Ethena: <EthenaIcon />,
+  Syrup: <SyrupIcon />,
+  Aura: <AuraIcon />,
+  Re: <ReIcon />,
 };
 
 export const ICONS_BADGE_MAP = {

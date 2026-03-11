@@ -7,10 +7,11 @@ import { useDappStatus, useMainnetOnlyWagmi } from 'modules/web3';
 import { useGGVUserShareState } from 'features/earn/vault-ggv/withdraw/hooks/use-ggv-shares-state';
 import { useIsUnlocked } from 'features/earn/vault-ggv/withdraw/hooks/use-is-unlocked';
 import { ETH_VAULT_QUERY_SCOPE } from '../consts';
-import invariant from 'tiny-invariant';
+
 import { getDepositQueueContract } from '../contracts';
 import { EthDepositToken } from '../types';
 import { useEthVaultAvailable } from '../hooks/use-vault-available';
+import { getSTGVaultContract } from 'features/earn/vault-stg/contracts';
 
 export const UPGRADABLE_TOKEN_BALANCES_QUERY_KEY = 'upgradable-token-balances';
 
@@ -42,6 +43,8 @@ export const useUpgradableTokenBalances = () => {
       const strethAddress = getTokenAddress(chainId, TOKENS.streth);
       const dvstethAddress = getTokenAddress(chainId, TOKENS.dvsteth);
 
+      const stgVault = getSTGVaultContract(publicClient);
+
       invariant(ggAddress, 'GG token address is not defined');
       invariant(strethAddress, 'stETH token address is not defined');
       invariant(dvstethAddress, 'dvstETH token address is not defined');
@@ -72,11 +75,12 @@ export const useUpgradableTokenBalances = () => {
 
       const [
         gg,
-        streth,
+        strethActiveShares,
         dvsteth,
         isGgRequestInQueue,
         isStrethRequestInQueue,
         isDvstethRequestInQueue,
+        strethClaimableShares,
       ] = await Promise.all([
         readBalance(ggAddress),
         readBalance(strethAddress),
@@ -84,11 +88,14 @@ export const useUpgradableTokenBalances = () => {
         readIsRequestInQueue(TOKENS.gg),
         readIsRequestInQueue(TOKENS.streth),
         readIsRequestInQueue(TOKENS.dvsteth),
+        stgVault.read.claimableSharesOf([address]),
       ]);
 
       return {
         gg: isGgRequestInQueue ? 0n : gg,
-        streth: isStrethRequestInQueue ? 0n : streth,
+        streth: isStrethRequestInQueue
+          ? 0n
+          : strethActiveShares + strethClaimableShares,
         dvsteth: isDvstethRequestInQueue ? 0n : dvsteth,
       };
     },

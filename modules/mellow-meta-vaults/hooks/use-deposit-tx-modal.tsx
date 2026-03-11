@@ -77,13 +77,15 @@ const getTxModalStagesRequest = (
     ),
 });
 
+type UseTxModalStagesDepositArgs = {
+  stageOperationArgs: StageArgs;
+  stageApproveArgs: StageArgs;
+};
+
 export const useTxModalStagesDeposit = ({
   stageOperationArgs,
   stageApproveArgs,
-}: {
-  stageOperationArgs: StageArgs;
-  stageApproveArgs: StageArgs;
-}) => {
+}: UseTxModalStagesDepositArgs) => {
   return useTransactionModalStage((transitStage) =>
     getTxModalStagesRequest(transitStage, stageApproveArgs, stageOperationArgs),
   );

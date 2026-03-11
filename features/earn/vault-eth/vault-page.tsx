@@ -108,17 +108,17 @@ const STATIC_ALLOCATIONS_CONTENT = [
   {
     protocol: 'Aave',
     badge: 'ethereum',
+    name: 'Aave levered wstETH/USD',
+  },
+  {
+    protocol: 'Aave',
+    badge: 'ethereum',
     name: 'Aave levered Ethena',
   },
   {
     protocol: 'Aave',
     badge: 'ethereum',
     name: 'Aave levered rsETH/ETH',
-  },
-  {
-    protocol: 'Aave',
-    badge: 'ethereum',
-    name: 'Aave levered wstETH/USD',
   },
   {
     protocol: 'Aave',
