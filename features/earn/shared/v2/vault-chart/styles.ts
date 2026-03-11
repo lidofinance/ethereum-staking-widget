@@ -77,3 +77,11 @@ export const ErrorMessageStyled = styled(Box)`
     theme.name === 'light' ? '#e1e4e8' : '#273852'};
   border-radius: 10px;
 `;
+
+export const LastTimestampStyled = styled.div`
+  font-weight: 400;
+  font-size: ${({ theme }) => theme.fontSizesMap.xxs}px;
+  color: var(--lido-color-textSecondary);
+  line-height: 20px;
+  margin-top: ${({ theme }) => theme.spaceMap.md}px;
+`;

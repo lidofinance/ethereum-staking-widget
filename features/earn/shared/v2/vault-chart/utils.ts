@@ -30,7 +30,7 @@ export const formatTvl = (amount: number) =>
  * (e.g. UTC+7: a point at 16:30 UTC = 23:30 local, tooltip would show
  * the local date while the axis tick next to it would already be the next UTC day).
  */
-const formatDate = (timestamp: number) =>
+export const formatDate = (timestamp: number) =>
   new Date(timestamp).toLocaleDateString(LOCALE, {
     year: 'numeric',
     month: 'short',
