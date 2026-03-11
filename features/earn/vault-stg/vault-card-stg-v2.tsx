@@ -51,7 +51,11 @@ export const VaultCardSTG = () => {
             }
           : undefined
       }
-      ctaLabel={'Upgrade your assets'}
+      ctaLabel={
+        strethSharesBalance && strethSharesBalance > 0n
+          ? 'Upgrade your assets'
+          : 'View'
+      }
       illustration={<VaultStgIcon />}
       depositLinkCallback={() => {
         trackMatomoEvent(MATOMO_EARN_EVENTS_TYPES.strategyDeposit);
