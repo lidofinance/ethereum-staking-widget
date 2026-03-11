@@ -8,8 +8,8 @@ export const IsThereAFee: FC = () => {
       id="earnusd-deposit-withdraw-fee"
     >
       <p>
-        There&apos;s no additional fees. However, as with any Ethereum
-        transaction, you&apos;ll need to pay a network gas fee.
+        There are no additional fees. However, as with any Ethereum transaction,
+        you&apos;ll need to pay a network gas fee.
       </p>
     </FaqItem>
   );

@@ -12,9 +12,8 @@ export const WhatIsEarnUsd: FC = () => {
       <p>
         EarnUSD consists of two subVaults, each subVault specializes in its
         respective strategy, and combining their strengths aims to deliver
-        risk-adjusted rewards for EarnUSD users&apos; stable assets. UltraYield
-        (by Edge Capital) is appointed to provide curation services for both
-        subVaults.
+        risk-adjusted rewards for EarnUSD users&apos; stable assets. Mellow is
+        appointed to provide curation services for both subVaults.
       </p>
     </FaqItem>
   );

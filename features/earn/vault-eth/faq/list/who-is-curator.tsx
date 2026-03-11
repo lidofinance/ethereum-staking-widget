@@ -8,10 +8,9 @@ export const WhoIsCurator: FC = () => {
       id="earneth-curator"
     >
       <p>
-        One subVault, stRATEGY is curated by UltraYield, a subsidiary of Edge
-        Capital. The second one, GGV, is curated by Veda. Their role includes
-        overseeing strategy execution, risk management, and overall vault
-        performance.
+        One subVault, stRATEGY is curated by Mellow. The second one, GGV, is
+        curated by Mellow as well. Their role includes overseeing strategy
+        execution, risk management, and overall vault performance.
       </p>
     </FaqItem>
   );

@@ -13,8 +13,8 @@ export const WhatIsEarnEth: FC = () => {
         EarnETH consists of two subVaults, each subVault specializes in its
         respective strategy, and combining their strengths aims to deliver
         sustainable, risk-adjusted rewards for EarnETH users&apos; assets.
-        UltraYield (by Edge Capital) and Veda are appointed to provide curation
-        services for subVaults — stRATEGY and GGV.
+        Mellow is appointed to provide curation services for subVaults —
+        stRATEGY and GGV.
       </p>
     </FaqItem>
   );
