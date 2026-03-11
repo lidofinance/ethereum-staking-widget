@@ -37,8 +37,8 @@ export const Providers: FC<PropsWithChildren<ProvidersProps>> = ({
   validationFile,
 }) => (
   <QueryClientProvider client={queryClient}>
-    <ConfigProvider prefetchedManifest={prefetchedManifest}>
-      <AppFlagProvider>
+    <AppFlagProvider>
+      <ConfigProvider prefetchedManifest={prefetchedManifest}>
         <CookieThemeProvider>
           <GlobalStyle />
           <Web3Provider>
@@ -55,7 +55,7 @@ export const Providers: FC<PropsWithChildren<ProvidersProps>> = ({
             </IPFSInfoBoxStatusesProvider>
           </Web3Provider>
         </CookieThemeProvider>
-      </AppFlagProvider>
-    </ConfigProvider>
+      </ConfigProvider>
+    </AppFlagProvider>
   </QueryClientProvider>
 );

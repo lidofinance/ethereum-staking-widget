@@ -31,7 +31,18 @@ export const ExternalForbiddenRouteProvider = ({
         pages[forbiddenPath]?.shouldDisable
       ) {
         setShowContent(false);
-        void router.push(HOME_PATH).finally(() => setShowContent(true));
+        // Extract dynamic path segment names (e.g. [vault], [action]) to exclude them from query
+        const dynamicParams = new Set(
+          router.pathname.match(/\[(\w+)\]/g)?.map((p) => p.slice(1, -1)) ?? [],
+        );
+        const query = Object.fromEntries(
+          Object.entries(router.query).filter(
+            ([key]) => !dynamicParams.has(key),
+          ),
+        );
+        void router
+          .push({ pathname: HOME_PATH, query })
+          .finally(() => setShowContent(true));
       }
     }
   }, [pages, path, router]);

@@ -14,6 +14,7 @@ import {
 import { EthVaultPage } from 'features/earn/vault-eth';
 import { VaultPageUSD } from 'features/earn/vault-usd';
 import { isV1DesignVault } from 'features/earn/shared/utils/isV1DesignVault';
+import { useEarnVaultGuard } from 'features/earn/shared/hooks/use-earn-vault-guard';
 
 type PageParams = {
   vault: EarnVaultKey;
@@ -67,6 +68,7 @@ export const getStaticProps = getDefaultStaticProps<PageParams, PageParams>(
 );
 
 export default function VaultActionPage({ vault, action }: PageParams) {
+  useEarnVaultGuard(vault);
   const VaultPage = VAULT_PAGES[vault];
   const vaultTitle = vault.toUpperCase();
 
