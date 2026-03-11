@@ -7,6 +7,7 @@ import { useDVVPosition } from './hooks/use-dvv-position';
 import { VaultCard } from '../shared/v2/vault-card';
 import { EARN_VAULT_DVV_SLUG } from '../consts';
 import { DVV_TOKEN_SYMBOL, DVV_VAULT_DESCRIPTION } from './consts';
+import { DVVAprBreakdown } from './components/dvv-apr-breakdown';
 
 export const VaultCardDVV = () => {
   const { isWalletConnected } = useDappStatus();
@@ -22,7 +23,7 @@ export const VaultCardDVV = () => {
         tvl: tvl,
         apx: apr,
         apxLabel: 'APR',
-        apxHint: <></>,
+        apxHint: <DVVAprBreakdown />,
         isLoading: isLoadingStats,
       }}
       position={
@@ -34,7 +35,9 @@ export const VaultCardDVV = () => {
             }
           : undefined
       }
-      ctaLabel={'Upgrade your assets'}
+      ctaLabel={
+        sharesBalance && sharesBalance > 0n ? 'Upgrade your assets' : 'View'
+      }
       illustration={<VaultDvvIcon />}
       depositLinkCallback={() => {
         trackMatomoEvent(MATOMO_EARN_EVENTS_TYPES.strategyDeposit);

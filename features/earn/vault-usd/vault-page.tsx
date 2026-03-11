@@ -1,11 +1,8 @@
 import type { FC, ReactNode } from 'react';
 import { Link } from '@lidofinance/lido-ui';
 
-import {
-  PartnerNethermindIconCircle,
-  PartnerUltrafieldsIconCircle,
-  VaultUsdIcon,
-} from 'assets/earn-v2';
+import { PartnerNethermindIconCircle, VaultUsdIcon } from 'assets/earn-v2';
+import { PartnerMellowIcon } from 'assets/earn';
 import { VaultPage } from 'features/earn/shared/v2/vault-page/vault-page';
 import { StrategyContent } from 'features/earn/shared/v2/strategy-content';
 import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo';
@@ -29,8 +26,8 @@ const GENERAL_INFO_LEFT = [
     label: 'Curators',
     value: (
       <>
-        <PartnerUltrafieldsIconCircle width={20} height={20} />{' '}
-        <Link href="https://ultrayield.app/">UltraYield by Edge ↗</Link>
+        <PartnerMellowIcon width={20} height={20} />{' '}
+        <Link href="https://mellow.finance/">Mellow ↗</Link>
       </>
     ),
   },
@@ -76,7 +73,7 @@ const RISK_DISCLOSURE = (
     positions, each carrying smart contract risk and different levels of market
     and economic risk. Its strategies include liquidity provision, which may
     lead to impermanent loss, and the use of leverage, introducing potential
-    liquidation risk. Please note that the Liquid vault is not available to U.S.
+    liquidation risk. Please note that the vault is not available to U.S.
     persons, U.S. residents, or individuals located in other restricted
     jurisdictions.{' '}
     <Link href="https://lido.fi/earn/risk-disclosures">
@@ -141,16 +138,6 @@ const STATIC_ALLOCATIONS_CONTENT = [
     protocol: 'Aura',
     badge: 'ethereum',
     name: 'Aura/Balancer USDT/USDC/GHO pool',
-  },
-  {
-    protocol: 'Re',
-    badge: 'ethereum',
-    name: 'reUSD',
-  },
-  {
-    protocol: 'Hyperlend',
-    badge: 'Hyperliquid',
-    name: 'HyperLend USDC',
   },
 ];
 

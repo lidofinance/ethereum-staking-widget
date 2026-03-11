@@ -17,6 +17,7 @@ import {
   CardTitleBadge,
   ChevronsUpIcon,
   StatValueIcon,
+  StyledTooltip,
 } from './styles';
 import { LocalLink } from 'shared/components/local-link';
 import { EARN_PATH } from 'consts/urls';
@@ -81,10 +82,15 @@ export const VaultCard: React.FC<VaultCardProps> = ({
           <CardTitle>
             {title}
             {isDeprecated && (
-              <CardTitleBadge variant="gradient" icon={<ChevronsUpIcon />}>
-                {' '}
-                Upgrading
-              </CardTitleBadge>
+              <StyledTooltip
+                title="Vault users can upgrade their tokens to the new unified EarnETH vault without withdrawal or downtime in rewards."
+                placement="bottom"
+              >
+                <CardTitleBadge variant="gradient" icon={<ChevronsUpIcon />}>
+                  {' '}
+                  Upgrading
+                </CardTitleBadge>
+              </StyledTooltip>
             )}
           </CardTitle>
           <CardDescription>{description}</CardDescription>

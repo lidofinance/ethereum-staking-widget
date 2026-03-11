@@ -21,6 +21,8 @@ export const EthVaultCard = () => {
   const { data: earnethPositionData, isLoading: isPositionLoading } =
     useEthVaultPosition();
 
+  const sharesBalance = earnethPositionData?.earnethSharesBalance;
+
   return (
     <VaultCard
       title={ETH_VAULT_TITLE}
@@ -34,12 +36,12 @@ export const EthVaultCard = () => {
         isLoading: isApyLoading || isTvlLoading,
       }}
       position={{
-        balance: earnethPositionData?.earnethSharesBalance,
+        balance: sharesBalance,
         symbol: ETH_VAULT_TOKEN_SYMBOL,
         icon: getTokenIcon(ETH_VAULT_TOKEN_SYMBOL),
         isLoading: isPositionLoading,
       }}
-      ctaLabel={'Deposit'}
+      ctaLabel={sharesBalance && sharesBalance > 0n ? 'Manage' : 'Deposit'}
       variant={'eth'}
       illustration={<VaultEthIcon />}
       depositLinkCallback={() => {
