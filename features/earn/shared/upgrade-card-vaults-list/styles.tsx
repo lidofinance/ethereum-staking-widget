@@ -31,7 +31,7 @@ export const UpgradeContent = styled.div`
 
   ${({ theme }) => theme.mediaQueries.md} {
     grid-template-columns: 1fr;
-
+  }
 `;
 
 export const UpgradeColumn = styled.div`

@@ -21,6 +21,8 @@ export const UsdVaultCard = () => {
   const { data: usdPositionData, isLoading: isPositionLoading } =
     useUsdVaultPosition();
 
+  const sharesBalance = usdPositionData?.earnusdSharesBalance;
+
   return (
     <VaultCard
       title={USD_VAULT_TITLE}
@@ -34,12 +36,12 @@ export const UsdVaultCard = () => {
         isLoading: isApyLoading || isTvlLoading,
       }}
       position={{
-        balance: usdPositionData?.earnusdSharesBalance,
+        balance: sharesBalance,
         symbol: USD_VAULT_TOKEN_SYMBOL,
         icon: getTokenIcon(USD_VAULT_TOKEN_SYMBOL),
         isLoading: isPositionLoading,
       }}
-      ctaLabel={'Deposit'}
+      ctaLabel={sharesBalance && sharesBalance > 0n ? 'Manage' : 'Deposit'}
       variant={'usd'}
       illustration={<VaultUsdIcon />}
       depositLinkCallback={() => {
