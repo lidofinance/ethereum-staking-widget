@@ -104,7 +104,6 @@ export const VaultChart = (props: VaultChartProps) => {
     chart.setOption(
       {
         animation: false,
-        // grid: offsets from container; containLabel: false so labels sit outside the plot area.
         grid: { left: 0, right: 0, top: 0, bottom: 0, containLabel: false },
         tooltip: {
           trigger: 'axis',
@@ -120,13 +119,18 @@ export const VaultChart = (props: VaultChartProps) => {
         },
         xAxis: {
           type: 'time', // timestamps come from series.data[][0]; xAxis.data is ignored
+          // Without minInterval, users with a large UTC offset can get two ticks
+          // per calendar day (local midnight + UTC midnight) formatted as the same date.
+          minInterval: 24 * 3600 * 1000,
           axisLine: { show: false },
           axisTick: { show: false },
           axisLabel: {
             hideOverlap: true, // hide labels that overlap when the chart is narrow
+
             color: isDark ? 'rgba(255,255,255,0.8)' : '#7A8AA0',
             fontFamily: 'Manrope, sans-serif',
             fontWeight: 400,
+            // Local timezone matches tick positions (local midnight boundaries).
             formatter: (value: number) =>
               new Date(value).toLocaleDateString(LOCALE, {
                 day: 'numeric',

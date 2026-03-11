@@ -23,12 +23,12 @@ import {
 export const formatTvl = (amount: number) =>
   `$${getShortenedNumber(amount, '0')}`;
 
-/** Format date using ECharts params (all series at this axis point). */
+/** Format date+time for the tooltip header using the browser's local timezone. */
 export const formatDate = (timestamp: number) =>
-  new Date(timestamp).toLocaleDateString(LOCALE, {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
+  new Date(timestamp).toLocaleString(LOCALE, {
+    dateStyle: 'medium',
+    timeStyle: 'short',
+    hour12: false,
   });
 
 /** Format tooltip using ECharts params (all series at this axis point). */
