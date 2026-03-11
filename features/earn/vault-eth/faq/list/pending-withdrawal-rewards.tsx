@@ -1,9 +1,9 @@
 import { FC } from 'react';
-import { AccordionTransparent } from '@lidofinance/lido-ui';
+import { FaqItem } from 'features/earn/shared/v2/faq';
 
 export const PendingWithdrawalRewards: FC = () => {
   return (
-    <AccordionTransparent
+    <FaqItem
       summary="When I request the withdrawal and it's pending, do I still get the rewards?"
       id="earneth-pending-withdrawal"
     >
@@ -13,6 +13,6 @@ export const PendingWithdrawalRewards: FC = () => {
         final claimable amount of wstETH may differ slightly from the initially
         requested seeing amount and it could be higher or lower.
       </p>
-    </AccordionTransparent>
+    </FaqItem>
   );
 };

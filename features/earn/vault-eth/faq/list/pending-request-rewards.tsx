@@ -1,9 +1,9 @@
 import { FC } from 'react';
-import { AccordionTransparent } from '@lidofinance/lido-ui';
+import { FaqItem } from 'features/earn/shared/v2/faq';
 
 export const PendingRequestRewards: FC = () => {
   return (
-    <AccordionTransparent
+    <FaqItem
       summary="When I request the deposit and it's pending, when I start getting the rewards?"
       id="earneth-pending-rewards"
     >
@@ -18,6 +18,6 @@ export const PendingRequestRewards: FC = () => {
           whether or not you claim them!
         </em>
       </p>
-    </AccordionTransparent>
+    </FaqItem>
   );
 };

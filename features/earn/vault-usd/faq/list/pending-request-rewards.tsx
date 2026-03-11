@@ -1,9 +1,9 @@
 import { FC } from 'react';
-import { AccordionTransparent } from '@lidofinance/lido-ui';
+import { FaqItem } from 'features/earn/shared/v2/faq';
 
 export const PendingRequestRewards: FC = () => {
   return (
-    <AccordionTransparent
+    <FaqItem
       summary="When I request the deposit and it's pending, when I start getting the rewards?"
       id="earnusd-pending-rewards"
     >
@@ -13,11 +13,11 @@ export const PendingRequestRewards: FC = () => {
         adjusting over time.
       </p>
       <p>
-        <strong>
+        <i>
           Note that earnUSD tokens continue to accrue rewards in the vault
           whether or not you claim them.
-        </strong>
+        </i>
       </p>
-    </AccordionTransparent>
+    </FaqItem>
   );
 };

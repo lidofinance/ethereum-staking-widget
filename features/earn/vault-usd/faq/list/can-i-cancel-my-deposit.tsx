@@ -1,9 +1,9 @@
 import { FC } from 'react';
-import { AccordionTransparent } from '@lidofinance/lido-ui';
+import { FaqItem } from 'features/earn/shared/v2/faq';
 
 export const CanICancelMyDeposit: FC = () => {
   return (
-    <AccordionTransparent
+    <FaqItem
       summary="Can I cancel my deposit request?"
       id="earnusd-cancel-deposit"
     >
@@ -11,6 +11,6 @@ export const CanICancelMyDeposit: FC = () => {
         Yes. If your deposit request has not yet been fulfilled, you can cancel
         it in the Lido UI.
       </p>
-    </AccordionTransparent>
+    </FaqItem>
   );
 };
