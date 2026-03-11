@@ -1,6 +1,5 @@
 import { useCallback } from 'react';
 import { encodeFunctionData } from 'viem';
-import { usePublicClient } from 'wagmi';
 import invariant from 'tiny-invariant';
 
 import {
@@ -35,13 +34,11 @@ export const useWithdraw = ({
   const { address } = useDappStatus();
   const { core } = useLidoSDK();
   const txFlow = useTxFlow();
-  const publicClient = usePublicClient();
 
   const withdraw = useCallback(
     async ({ amount }: { amount: bigint }): Promise<boolean> => {
       if (matomoEventStart) trackMatomoEvent(matomoEventStart);
       invariant(address, 'needs address');
-      invariant(publicClient, 'Public client is not available');
 
       try {
         const withdrawArgs = [amount] as const;
@@ -103,7 +100,6 @@ export const useWithdraw = ({
       matomoEventStart,
       matomoEventSuccess,
       onRetry,
-      publicClient,
       redeemQueue.abi,
       redeemQueue.address,
       redeemQueue.estimateGas,

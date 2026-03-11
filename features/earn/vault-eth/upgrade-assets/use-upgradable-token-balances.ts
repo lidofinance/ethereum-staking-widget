@@ -1,10 +1,9 @@
 import { useQuery } from '@tanstack/react-query';
-import { usePublicClient } from 'wagmi';
 import { erc20abi } from '@lidofinance/lido-ethereum-sdk/erc20';
 
 import { getTokenAddress } from 'config/networks/token-address';
 import { TOKENS } from 'consts/tokens';
-import { useDappStatus } from 'modules/web3';
+import { useDappStatus, useMainnetOnlyWagmi } from 'modules/web3';
 import { useGGVUserShareState } from 'features/earn/vault-ggv/withdraw/hooks/use-ggv-shares-state';
 import { useIsUnlocked } from 'features/earn/vault-ggv/withdraw/hooks/use-is-unlocked';
 import { ETH_VAULT_QUERY_SCOPE } from '../consts';
@@ -18,7 +17,7 @@ export const UPGRADABLE_TOKEN_BALANCES_QUERY_KEY = 'upgradable-token-balances';
 export const useUpgradableTokenBalances = () => {
   const { address, chainId, isDappActive } = useDappStatus();
   const enabled = isDappActive && !!address;
-  const publicClient = usePublicClient({ chainId });
+  const { publicClientMainnet } = useMainnetOnlyWagmi();
   const vaultAvailable = useEthVaultAvailable();
 
   const ggvShareStateQuery = useGGVUserShareState();
@@ -33,9 +32,10 @@ export const useUpgradableTokenBalances = () => {
       address,
       chainId,
     ],
-    enabled: enabled && !!publicClient && vaultAvailable.isDepositEnabled,
+    enabled:
+      enabled && !!publicClientMainnet && vaultAvailable.isDepositEnabled,
     queryFn: async () => {
-      invariant(publicClient, 'Public client is not defined');
+      invariant(publicClientMainnet, 'Public client is not defined');
       invariant(address, 'Address is not defined');
 
       const ggAddress = getTokenAddress(chainId, TOKENS.gg);
@@ -47,7 +47,7 @@ export const useUpgradableTokenBalances = () => {
       invariant(dvstethAddress, 'dvstETH token address is not defined');
 
       const readBalance = (tokenAddress: typeof ggAddress) =>
-        publicClient.readContract({
+        publicClientMainnet.readContract({
           abi: erc20abi,
           address: tokenAddress,
           functionName: 'balanceOf',
@@ -55,7 +55,10 @@ export const useUpgradableTokenBalances = () => {
         });
 
       const readIsRequestInQueue = async (token: EthDepositToken) => {
-        const contract = getDepositQueueContract({ publicClient, token });
+        const contract = getDepositQueueContract({
+          publicClient: publicClientMainnet,
+          token,
+        });
 
         const [_timestamp, assets] = await contract.read.requestOf([address]);
 

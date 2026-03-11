@@ -1,22 +1,24 @@
 import invariant from 'tiny-invariant';
 import { WalletClient } from 'viem';
-import { usePublicClient } from 'wagmi';
 import { useMemo } from 'react';
 import { useTxModalStagesDepositClaim } from 'modules/mellow-meta-vaults/hooks/use-deposit-claim-tx-modal';
 import { useDepositClaim } from 'modules/mellow-meta-vaults/hooks/use-deposit-claim';
-import { useLidoSDK } from 'modules/web3/web3-provider';
+import { useLidoSDK, useMainnetOnlyWagmi } from 'modules/web3';
 import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo/matomo-earn-events';
 import { getVaultWritableContract } from '../../contracts';
 import { USD_VAULT_TOKEN_SYMBOL, USD_VAULT_QUERY_SCOPE } from '../../consts';
 
 export const useUsdVaultDepositClaim = (onRetry?: () => void) => {
   const { core } = useLidoSDK();
-  const publicClient = usePublicClient();
-  invariant(publicClient, 'Public client is not available');
+  const { publicClientMainnet } = useMainnetOnlyWagmi();
+  invariant(publicClientMainnet, 'Public client is not available');
   const vault = useMemo(
     () =>
-      getVaultWritableContract(publicClient, core.web3Provider as WalletClient),
-    [publicClient, core.web3Provider],
+      getVaultWritableContract(
+        publicClientMainnet,
+        core.web3Provider as WalletClient,
+      ),
+    [publicClientMainnet, core.web3Provider],
   );
 
   const { txModalStages } = useTxModalStagesDepositClaim({

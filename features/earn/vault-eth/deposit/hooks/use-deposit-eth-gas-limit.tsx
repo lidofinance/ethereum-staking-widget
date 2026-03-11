@@ -1,21 +1,21 @@
 import { useMemo } from 'react';
-import { usePublicClient } from 'wagmi';
 import invariant from 'tiny-invariant';
 
 import { useDepositEthGasLimit } from 'modules/mellow-meta-vaults';
+import { useMainnetOnlyWagmi } from 'modules/web3/web3-provider/web3-provider';
 import { getDepositQueueContract } from '../../contracts';
 import { EthDepositToken } from '../../types';
 
 export const useETHDepositEthGasLimit = (token: EthDepositToken) => {
-  const publicClient = usePublicClient();
-  invariant(publicClient, 'Public client is not available');
+  const { publicClientMainnet } = useMainnetOnlyWagmi();
+  invariant(publicClientMainnet, 'Public client is not available');
   const depositContract = useMemo(
     () =>
       getDepositQueueContract({
-        publicClient,
+        publicClient: publicClientMainnet,
         token,
       }),
-    [publicClient, token],
+    [publicClientMainnet, token],
   );
 
   return useDepositEthGasLimit({ depositContract });

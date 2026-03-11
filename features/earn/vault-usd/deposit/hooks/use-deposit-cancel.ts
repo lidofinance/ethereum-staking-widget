@@ -1,5 +1,3 @@
-import invariant from 'tiny-invariant';
-import { usePublicClient } from 'wagmi';
 import { useDepositCancel } from 'modules/mellow-meta-vaults/hooks/use-deposit-cancel';
 import { useTxModalStagesDepositCancel } from 'modules/mellow-meta-vaults/hooks/use-deposit-cancel-tx-modal';
 import { TOKEN_SYMBOLS } from 'consts/tokens';
@@ -9,9 +7,6 @@ import type { UsdDepositToken } from '../../types';
 import { useUsdVaultDepositFormData } from './use-deposit-form-data';
 
 export const useUsdVaultDepositCancel = (onRetry?: () => void) => {
-  const publicClient = usePublicClient();
-  invariant(publicClient, 'Public client is not available');
-
   const { refetchData } = useUsdVaultDepositFormData();
 
   const { txModalStages } = useTxModalStagesDepositCancel({

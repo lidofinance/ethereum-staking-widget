@@ -1,4 +1,3 @@
-import { usePublicClient } from 'wagmi';
 import invariant from 'tiny-invariant';
 import { useQuery } from '@tanstack/react-query';
 
@@ -24,7 +23,6 @@ export const useDepositQueueRequest = <DepositToken extends string>({
   depositQueue: DepositQueueContract;
 }) => {
   const { address, isDappActive } = useDappStatus();
-  const publicClient = usePublicClient();
 
   const isEnabled = isDappActive && !!address;
 
@@ -38,7 +36,6 @@ export const useDepositQueueRequest = <DepositToken extends string>({
     ] as const,
     queryFn: async () => {
       invariant(address, 'No address provided');
-      invariant(publicClient, 'Public client is not available');
 
       const [depositRequest, claimableShares] = await Promise.all([
         (await depositQueue.read.requestOf([address])) as DepositRequest,
