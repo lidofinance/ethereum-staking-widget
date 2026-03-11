@@ -98,49 +98,59 @@ const DATA = {
 
 const STATIC_ALLOCATIONS_CONTENT = [
   {
-    protocol: 'Maple',
+    protocol: 'Aave',
     badge: 'ethereum',
-    name: 'Maple syrupUSDC',
+    name: 'AAVE USDT',
   },
   {
-    protocol: 'Gearbox',
-    badge: 'Monad',
-    name: 'Gearbox Edge UltraYield USDC',
+    protocol: 'Spark',
+    badge: 'ethereum',
+    name: 'Spark USDC',
   },
   {
-    protocol: 'Steakhouse',
+    protocol: 'Spark',
     badge: 'ethereum',
-    name: 'Steakhouse USDC',
+    name: 'Spark USDT',
+  },
+  {
+    protocol: 'Ethena',
+    badge: 'ethereum',
+    name: 'Ethena sUSDE',
+  },
+  {
+    protocol: 'Syrup',
+    badge: 'ethereum',
+    name: 'syrupUSDC',
   },
   {
     protocol: 'Sentora',
     badge: 'ethereum',
-    name: 'Sentora PYUSD Main vault',
-  },
-  {
-    protocol: 'Sky',
-    badge: 'ethereum',
-    name: 'Sky sUSDS Saving',
+    name: 'Sentora  Morpho vault PYUSD',
   },
   {
     protocol: 'Morpho',
     badge: 'base',
-    name: 'Morpho cbBTC/USDC',
+    name: 'Morpho USDC against cbBTC',
   },
   {
-    protocol: 'Felix',
-    badge: 'Hyperliquid',
-    name: 'Felix USDC',
-  },
-  {
-    protocol: 'Euler',
+    protocol: 'Morpho',
     badge: 'ethereum',
-    name: 'Euler Sentora USDC cluster',
+    name: 'Morpho USDC against reUSD',
+  },
+  {
+    protocol: 'Aura',
+    badge: 'ethereum',
+    name: 'Aura/Balancer USDT/USDC/GHO pool',
+  },
+  {
+    protocol: 'Re',
+    badge: 'ethereum',
+    name: 'reUSD',
   },
   {
     protocol: 'Hyperlend',
     badge: 'Hyperliquid',
-    name: 'Hyperlend supply USDC',
+    name: 'HyperLend USDC',
   },
 ];
 

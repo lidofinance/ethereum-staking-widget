@@ -105,7 +105,7 @@ export const VaultCard: React.FC<VaultCardProps> = ({
           </StatValue>
         </StatItem>
         <StatItem data-testid="tvl-value">
-          <StatLabel>Total TVL</StatLabel>
+          <StatLabel>TVL</StatLabel>
           <StatValue>
             <InlineLoader isLoading={stats.isLoading} width={70}>
               <FormatLargeAmount amount={stats.tvl} />

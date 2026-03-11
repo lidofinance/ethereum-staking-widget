@@ -14,6 +14,16 @@ export const Layout = styled.div`
   }
 `;
 
+export const LeftColumn = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: ${({ theme }) => theme.spaceMap.xl}px;
+
+  ${({ theme }) => theme.mediaQueries.xl} {
+    display: contents;
+  }
+`;
+
 export const Description = styled.p`
   color: var(--lido-color-textSecondary);
   font-size: ${({ theme }) => theme.fontSizesMap.xs}px;
