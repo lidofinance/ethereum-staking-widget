@@ -44,6 +44,7 @@ export const useChartData = (props: UseChartDataProps) => {
 
   const {
     data,
+    currentTvlPoint,
     isLoading: isVaultLoading,
     isError,
   } = useMetavaultChartData({
@@ -70,11 +71,12 @@ export const useChartData = (props: UseChartDataProps) => {
 
   const [tvlSeriesData, apySeriesData] = useMemo(() => {
     if (!data) return [[], []];
-    return [
-      data.map((item) => [item.timestampMs, item.tvlUsd]),
-      data.map((item) => [item.timestampMs, item.apyValue]),
-    ];
-  }, [data]);
+    const tvl = data.map((item) => [item.timestampMs, item.tvlUsd]);
+    if (currentTvlPoint) {
+      tvl.push([currentTvlPoint.timestampMs, currentTvlPoint.tvlUsd]);
+    }
+    return [tvl, data.map((item) => [item.timestampMs, item.apyValue])];
+  }, [data, currentTvlPoint]);
 
   // True when fetched data contains points older than 1M → 3M view is meaningful.
   const hasMoreThanOneMonthData = useMemo(() => {

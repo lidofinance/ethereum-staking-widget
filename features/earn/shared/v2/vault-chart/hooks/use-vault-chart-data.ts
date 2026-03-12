@@ -6,7 +6,10 @@ import type { Address } from 'viem';
 import { useEthUsd } from 'shared/hooks/use-eth-usd';
 import { unixTimestampToMs } from 'utils/unix-timestamp-to-ms';
 
-import { fetchMetavaultChartData } from '../apy-data/metavault-apy';
+import {
+  fetchMetavaultChartData,
+  fetchMetavaultCurrentData,
+} from '../apy-data/metavault-apy';
 import { METAVAULT_QUERY_SCOPE } from '../consts';
 
 export type NormalizedVaultChartPoint = {
@@ -51,6 +54,23 @@ export const useMetavaultChartData = ({
   // Globally cached — adding this call causes no extra network requests.
   const { price: ethPrice, isLoading: isEthPriceLoading } = useEthUsd();
 
+  const { data: currentData } = useQuery({
+    queryKey: [METAVAULT_QUERY_SCOPE, 'current-data', vaultAddress],
+    queryFn: async () => {
+      if (!vaultAddress) return null;
+      return fetchMetavaultCurrentData(vaultAddress);
+    },
+    enabled: !!vaultAddress,
+  });
+
+  const currentTvlPoint = useMemo(() => {
+    if (!currentData) return null;
+    return {
+      timestampMs: unixTimestampToMs(currentData.lastUpdate),
+      tvlUsd: Number(formatUnits(BigInt(currentData.totalTvl.usd), 8)),
+    };
+  }, [currentData]);
+
   const data = useMemo((): NormalizedVaultChartPoint[] | null => {
     if (!rawData) return null;
     // For ETH vault, hold off until ETH price is ready; otherwise tvlUsd would be wrong.
@@ -77,6 +97,7 @@ export const useMetavaultChartData = ({
 
   return {
     data,
+    currentTvlPoint,
     // For ETH vault, the chart is not ready until ETH price is also loaded.
     isLoading: isVaultLoading || (isETHVault && isEthPriceLoading),
     isError,
