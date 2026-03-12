@@ -109,10 +109,10 @@ export const UpgradeAssetsBlock = () => {
   if (tokensWithBalance.length === 0) return null;
 
   return (
-    <UpgradeAssets>
+    <UpgradeAssets data-testid={'availableToUpgradeBanner'}>
       <UpgradeAssetsTitle>Assets available to upgrade</UpgradeAssetsTitle>
       {tokensWithBalance.map((token) => (
-        <UpgradeAssetsRow key={token}>
+        <UpgradeAssetsRow key={token} data-testid={token}>
           <UpgradeAssetsAmount>
             <UpgradeAssetsTokenIcon>
               {TOKEN_ICON_MAP[token]}
@@ -120,6 +120,7 @@ export const UpgradeAssetsBlock = () => {
             <FormatToken
               amount={balances[token]}
               symbol={TOKEN_SYMBOLS[token]}
+              data-testid={'amountToUpgrade'}
             />
           </UpgradeAssetsAmount>
           <UpgradeAssetsButton
@@ -133,6 +134,7 @@ export const UpgradeAssetsBlock = () => {
               })
             }
             loading={isUpgrading}
+            data-testid={'upgradeButton'}
           >
             Upgrade
           </UpgradeAssetsButton>
