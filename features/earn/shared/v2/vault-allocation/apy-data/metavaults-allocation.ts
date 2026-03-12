@@ -14,7 +14,7 @@ export const METAVAULTS_ALLOCATION_DATA_SCHEMA = z.object({
         amount: z.string(),
         decimals: z.number(),
       }),
-      type: z.string(),
+      type: z.string().optional().default(''),
       id: z.string(),
       label: z.string(),
       sharePercent: z.number(),
