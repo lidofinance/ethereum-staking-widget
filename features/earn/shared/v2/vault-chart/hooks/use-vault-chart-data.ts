@@ -11,6 +11,7 @@ import {
   fetchMetavaultCurrentData,
 } from '../apy-data/metavault-apy';
 import { METAVAULT_QUERY_SCOPE } from '../consts';
+import { STRATEGY_LAZY } from 'consts/react-query-strategies';
 
 export type NormalizedVaultChartPoint = {
   timestampMs: number;
@@ -42,6 +43,7 @@ export const useMetavaultChartData = ({
       vaultAddress,
       fromTimestamp,
     ],
+    ...STRATEGY_LAZY,
     queryFn: async () => {
       if (!vaultAddress) return null;
 
@@ -54,7 +56,7 @@ export const useMetavaultChartData = ({
   // Globally cached — adding this call causes no extra network requests.
   const { price: ethPrice, isLoading: isEthPriceLoading } = useEthUsd();
 
-  const { data: currentData } = useQuery({
+  const { data: currentData, isLoading: isCurrentDataLoading } = useQuery({
     queryKey: [METAVAULT_QUERY_SCOPE, 'current-tvl-data', vaultAddress],
     queryFn: async () => {
       if (!vaultAddress) return null;
@@ -99,7 +101,10 @@ export const useMetavaultChartData = ({
     data,
     currentTvlPoint,
     // For ETH vault, the chart is not ready until ETH price is also loaded.
-    isLoading: isVaultLoading || (isETHVault && isEthPriceLoading),
+    isLoading:
+      isVaultLoading ||
+      (isETHVault && isEthPriceLoading) ||
+      isCurrentDataLoading,
     isError,
   };
 };
