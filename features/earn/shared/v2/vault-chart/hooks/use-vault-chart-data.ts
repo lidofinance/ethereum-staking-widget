@@ -55,7 +55,7 @@ export const useMetavaultChartData = ({
   const { price: ethPrice, isLoading: isEthPriceLoading } = useEthUsd();
 
   const { data: currentData } = useQuery({
-    queryKey: [METAVAULT_QUERY_SCOPE, 'current-data', vaultAddress],
+    queryKey: [METAVAULT_QUERY_SCOPE, 'current-tvl-data', vaultAddress],
     queryFn: async () => {
       if (!vaultAddress) return null;
       return fetchMetavaultCurrentData(vaultAddress);
