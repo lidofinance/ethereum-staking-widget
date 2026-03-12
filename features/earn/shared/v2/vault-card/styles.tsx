@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { Block, Badge } from '@lidofinance/lido-ui';
+import { Block, Badge, Tooltip } from '@lidofinance/lido-ui';
 import { ReactComponent as ChevronsUp } from 'assets/icons/chevrons-up.svg';
 
 const getBackgroundGradient = (variant: 'eth' | 'usd' | 'default'): string => {
@@ -72,6 +72,7 @@ export const CardTitle = styled.div`
 
 export const CardTitleBadge = styled(Badge)`
   height: 32px;
+  user-select: none;
 `;
 
 export const ChevronsUpIcon = styled(ChevronsUp)`
@@ -201,4 +202,8 @@ export const StatValueIcon = styled.span`
 
 export const CardCta = styled.div`
   margin-top: 32px;
+`;
+
+export const StyledTooltip = styled(Tooltip)`
+  margin-top: ${({ theme }) => theme.spaceMap.xs}px !important;
 `;

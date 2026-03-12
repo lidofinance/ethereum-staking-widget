@@ -12,7 +12,7 @@ import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo';
 
 import { useEarnState } from '../shared/hooks/use-earn-state';
 import { DrawerRight } from '../shared/drawer-right';
-import { UpgradeCard } from '../shared/upgrade-card';
+import { UpgradeCardVaultsList } from '../shared/upgrade-card-vaults-list';
 
 import { VaultCardGGV } from '../vault-ggv/vault-card-ggv-v2';
 import { VaultCardDVV } from '../vault-dvv/vault-card-dvv-v2';
@@ -53,7 +53,7 @@ export const EarnVaultsList: FC = () => {
   return (
     <>
       <ListSubtitle>
-        Deploy ETH and USD stablecoins into DeFi vaults for on-chain yield
+        Deploy ETH and USD stablecoins into DeFi vaults for on-chain rewards
         through the world&apos;s leading protocols.
         <br />
         <ButtonInline
@@ -68,7 +68,7 @@ export const EarnVaultsList: FC = () => {
         </ButtonInline>
       </ListSubtitle>
       <ListWrapper>
-        <UpgradeCard setIsDrawerRightOpen={setIsDrawerRightOpen} />
+        <UpgradeCardVaultsList setIsDrawerRightOpen={setIsDrawerRightOpen} />
         <CardsStack>
           {actualVaults.map((vault) => {
             const VaultCard = VAULT_CARDS[vault.name];

@@ -20,9 +20,13 @@ import {
   CHART_TYPE,
 } from './vault-chart-controls';
 import { SECONDS_PER_DAY, DAYS_BY_RANGE } from './consts';
-import { buildChartSeries } from './utils';
+import { buildChartSeries, formatDate } from './utils';
 import { useChartData } from './hooks';
-import { ChartInlineLoaderStyled, ErrorMessageStyled } from './styles';
+import {
+  ChartInlineLoaderStyled,
+  ErrorMessageStyled,
+  LastTimestampStyled,
+} from './styles';
 
 // ECharts tree-shaking: register only the components we use. Must run before echarts.init().
 echarts.use([SVGRenderer, LineChart, TooltipComponent, GridComponent]);
@@ -48,13 +52,7 @@ export const VaultChart = (props: VaultChartProps) => {
   const isETHVault = vaultName === 'ethVault';
   const isUSDVault = vaultName === 'usdVault';
 
-  // const vaultAddress = getContractAddress(CHAINS.Mainnet, vaultName);
-  // TODO: REPLACE BEFORE RELEASE
-  const vaultAddress = getContractAddress(
-    CHAINS.Mainnet,
-    //@ts-expect-error currently using test contracts, prod contract addresses are using __ prefix now
-    isETHVault ? 'stgVault' : '__usdVault',
-  );
+  const vaultAddress = getContractAddress(CHAINS.Mainnet, vaultName);
 
   const [activeChart, setActiveChart] = useState<ChartType>(CHART_TYPE.apy);
   const [activeTimeRange, setActiveTimeRange] = useState<ChartTimeRange>(
@@ -106,12 +104,14 @@ export const VaultChart = (props: VaultChartProps) => {
     chart.setOption(
       {
         animation: false,
-        // grid: offsets from container; containLabel: false so labels sit outside the plot area.
         grid: { left: 0, right: 0, top: 0, bottom: 0, containLabel: false },
         tooltip: {
           trigger: 'axis',
           confine: true,
           formatter: tooltipFormatter,
+          textStyle: {
+            fontFamily: 'Manrope, sans-serif',
+          },
           ...(isDark && {
             backgroundColor: '#131317',
             borderColor: '#131317',
@@ -119,10 +119,18 @@ export const VaultChart = (props: VaultChartProps) => {
         },
         xAxis: {
           type: 'time', // timestamps come from series.data[][0]; xAxis.data is ignored
+          // Without minInterval, users with a large UTC offset can get two ticks
+          // per calendar day (local midnight + UTC midnight) formatted as the same date.
+          minInterval: 24 * 3600 * 1000,
           axisLine: { show: false },
           axisTick: { show: false },
           axisLabel: {
             hideOverlap: true, // hide labels that overlap when the chart is narrow
+
+            color: isDark ? 'rgba(255,255,255,0.8)' : '#7A8AA0',
+            fontFamily: 'Manrope, sans-serif',
+            fontWeight: 400,
+            // Local timezone matches tick positions (local midnight boundaries).
             formatter: (value: number) =>
               new Date(value).toLocaleDateString(LOCALE, {
                 day: 'numeric',
@@ -133,7 +141,12 @@ export const VaultChart = (props: VaultChartProps) => {
         yAxis: {
           type: 'value',
           position: 'right',
-          axisLabel: { formatter: yAxisFormatter },
+          axisLabel: {
+            formatter: yAxisFormatter,
+            color: isDark ? 'rgba(255,255,255,0.8)' : '#7A8AA0',
+            fontFamily: 'Manrope, sans-serif',
+            fontWeight: 400,
+          },
           splitLine: {
             lineStyle: {
               ...(isDark && { color: '#DAE0E529' }),
@@ -165,6 +178,8 @@ export const VaultChart = (props: VaultChartProps) => {
     isETHVault,
   ]);
 
+  const lastTimeStamp = seriesData?.[seriesData.length - 1]?.[0];
+
   const isApyChart = activeChart === CHART_TYPE.apy;
 
   // TODO: break this up into variables for more clear logic
@@ -177,31 +192,38 @@ export const VaultChart = (props: VaultChartProps) => {
   const isNoDataAvailable = isLoadingError || (!!data && data.length === 0);
 
   return (
-    <VaultChartControls
-      isInitialLoading={isInitialLoading}
-      activeChart={activeChart}
-      setActiveChart={setActiveChart}
-      activeTimeRange={activeTimeRange}
-      setActiveTimeRange={setActiveTimeRange}
-      is3MAvailable={hasMoreThanOneMonthData}
-      disableControls={isNoDataAvailable}
-      matomo={matomo}
-    >
-      {/* Wrapper has fixed height; chart div is absolute so ECharts’ fixed-size SVG doesn’t block flex shrink. Chart stays mounted so init runs once. */}
-      <div style={{ position: 'relative', width: '100%', height: '305px' }}>
-        {!isNoDataAvailable && isChartLoading && <ChartInlineLoaderStyled />}
-        {isNoDataAvailable && (
-          <ErrorMessageStyled>No data available</ErrorMessageStyled>
-        )}
-        <div
-          ref={chartRef}
-          style={{
-            position: 'absolute',
-            inset: 0,
-            opacity: isChartLoading ? 0 : 1,
-          }}
-        />
-      </div>
-    </VaultChartControls>
+    <div>
+      <VaultChartControls
+        isInitialLoading={isInitialLoading}
+        activeChart={activeChart}
+        setActiveChart={setActiveChart}
+        activeTimeRange={activeTimeRange}
+        setActiveTimeRange={setActiveTimeRange}
+        is3MAvailable={hasMoreThanOneMonthData}
+        disableControls={isNoDataAvailable}
+        matomo={matomo}
+      >
+        {/* Wrapper has fixed height; chart div is absolute so ECharts’ fixed-size SVG doesn’t block flex shrink. Chart stays mounted so init runs once. */}
+        <div style={{ position: 'relative', width: '100%', height: '305px' }}>
+          {!isNoDataAvailable && isChartLoading && <ChartInlineLoaderStyled />}
+          {isNoDataAvailable && (
+            <ErrorMessageStyled>No data available</ErrorMessageStyled>
+          )}
+          <div
+            ref={chartRef}
+            style={{
+              position: 'absolute',
+              inset: 0,
+              opacity: isChartLoading ? 0 : 1,
+            }}
+          />
+        </div>
+      </VaultChartControls>
+      {!isNoDataAvailable && lastTimeStamp && (
+        <LastTimestampStyled>
+          Last updated: {formatDate(lastTimeStamp)}
+        </LastTimestampStyled>
+      )}
+    </div>
   );
 };

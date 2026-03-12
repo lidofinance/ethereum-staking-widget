@@ -1,4 +1,3 @@
-import { usePublicClient } from 'wagmi';
 import { useQuery } from '@tanstack/react-query';
 import invariant from 'tiny-invariant';
 
@@ -25,7 +24,6 @@ export const usePreviewWithdraw = ({
   shares: bigint | null | undefined;
 }) => {
   const { isDappActive, address: userAddress } = useDappStatus();
-  const publicClient = usePublicClient();
 
   const isEnabled = isDappActive && shares != null;
 
@@ -44,7 +42,6 @@ export const usePreviewWithdraw = ({
     ] as const,
     enabled: isEnabled,
     queryFn: async () => {
-      invariant(publicClient, 'Public client is not available');
       invariant(userAddress, 'User address is not available');
 
       if (!debouncedStrethShares)

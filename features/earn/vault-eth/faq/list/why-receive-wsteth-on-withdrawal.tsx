@@ -1,9 +1,9 @@
 import { FC } from 'react';
-import { AccordionTransparent } from '@lidofinance/lido-ui';
+import { FaqItem } from 'features/earn/shared/v2/faq/faq-item';
 
 export const WhyReceiveWstethOnWithdrawal: FC = () => {
   return (
-    <AccordionTransparent
+    <FaqItem
       summary="Why, even though deposits are made in ETH, do I only receive wstETH on withdrawal?"
       id="earneth-wsteth-withdrawal"
     >
@@ -11,6 +11,6 @@ export const WhyReceiveWstethOnWithdrawal: FC = () => {
         Withdrawals are processed in wstETH because this format allows the vault
         to reduce the time to claim and complete a withdrawal.
       </p>
-    </AccordionTransparent>
+    </FaqItem>
   );
 };

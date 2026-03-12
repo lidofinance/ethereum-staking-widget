@@ -1,9 +1,9 @@
 import { FC } from 'react';
-import { AccordionTransparent } from '@lidofinance/lido-ui';
+import { FaqItem } from 'features/earn/shared/v2/faq';
 
 export const WhatFeesAreApplied: FC = () => {
   return (
-    <AccordionTransparent
+    <FaqItem
       summary="What fees are applied when I deposit into EarnETH?"
       id="earneth-fees"
     >
@@ -28,6 +28,6 @@ export const WhatFeesAreApplied: FC = () => {
         As a result, your earnETH token balance stays the same, while the value
         per token adjusts over time to account for fees and performance.
       </p>
-    </AccordionTransparent>
+    </FaqItem>
   );
 };

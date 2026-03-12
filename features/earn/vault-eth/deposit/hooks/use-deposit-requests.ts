@@ -1,19 +1,22 @@
 import invariant from 'tiny-invariant';
-import { usePublicClient } from 'wagmi';
 import { useMemo } from 'react';
 import { useDepositRequests } from 'modules/mellow-meta-vaults';
+import { useMainnetOnlyWagmi } from 'modules/web3';
 import { getCollectorContract, getVaultContract } from '../../contracts';
 import { ETH_VAULT_DEPOSIT_TOKENS } from '../../consts';
 
 export const useEthVaultDepositRequests = () => {
-  const publicClient = usePublicClient();
-  invariant(publicClient, 'Public client is not available');
+  const { publicClientMainnet } = useMainnetOnlyWagmi();
+  invariant(publicClientMainnet, 'Public client is not available');
   const collector = useMemo(
-    () => getCollectorContract(publicClient),
-    [publicClient],
+    () => getCollectorContract(publicClientMainnet),
+    [publicClientMainnet],
   );
 
-  const vault = useMemo(() => getVaultContract(publicClient), [publicClient]);
+  const vault = useMemo(
+    () => getVaultContract(publicClientMainnet),
+    [publicClientMainnet],
+  );
 
   return useDepositRequests({
     collector,

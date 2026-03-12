@@ -1,9 +1,10 @@
 import { FC } from 'react';
-import { AccordionTransparent } from '@lidofinance/lido-ui';
+import { FaqItem } from 'features/earn/shared/v2/faq';
+import { Link } from '@lidofinance/lido-ui';
 
 export const WhatIsApyForEarnUsd: FC = () => {
   return (
-    <AccordionTransparent
+    <FaqItem
       summary="What is APY for EarnUSD, and how is it calculated?"
       id="earnusd-apy"
     >
@@ -13,7 +14,10 @@ export const WhatIsApyForEarnUsd: FC = () => {
         provision) within the relevant subVaults. These rewards are
         automatically compounded into the vault, so your earnUSD tokens increase
         in value over time without requiring manual action. Details can be found{' '}
-        <a href="https://metavaults.mellow.finance/apy">here</a>.
+        <Link target="_blank" href="https://metavaults.mellow.finance/apy">
+          here
+        </Link>
+        .
       </p>
       <p>
         <em>
@@ -23,6 +27,6 @@ export const WhatIsApyForEarnUsd: FC = () => {
           changes to blockchain protocols and validator performance.
         </em>
       </p>
-    </AccordionTransparent>
+    </FaqItem>
   );
 };

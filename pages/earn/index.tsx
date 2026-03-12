@@ -12,7 +12,7 @@ const PAGE_DESCRIPTION =
 
 const Earn: FC = () => {
   return (
-    <Layout title={PAGE_TITLE}>
+    <Layout stylesV2 title={PAGE_TITLE}>
       <Head>
         <title>{`${PAGE_TITLE} | Lido`}</title>
         <meta name="description" content={PAGE_DESCRIPTION} />

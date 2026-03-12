@@ -1,6 +1,6 @@
-import { usePublicClient } from 'wagmi';
 import invariant from 'tiny-invariant';
 import { useMemo } from 'react';
+import { useMainnetOnlyWagmi } from 'modules/web3';
 import { usePreviewWithdraw } from 'modules/mellow-meta-vaults/hooks/use-preview-withdraw';
 import { TOKENS } from 'consts/tokens';
 import {
@@ -13,16 +13,16 @@ export const useEthVaultPreviewWithdraw = ({
 }: {
   shares: bigint | null | undefined;
 }) => {
-  const publicClient = usePublicClient();
-  invariant(publicClient, 'Public client is not available');
+  const { publicClientMainnet } = useMainnetOnlyWagmi();
+  invariant(publicClientMainnet, 'Public client is not available');
 
   const collector = useMemo(
-    () => getCollectorContract(publicClient),
-    [publicClient],
+    () => getCollectorContract(publicClientMainnet),
+    [publicClientMainnet],
   );
   const redeemQueue = useMemo(
-    () => getRedeemQueueContractWSTETH(publicClient),
-    [publicClient],
+    () => getRedeemQueueContractWSTETH(publicClientMainnet),
+    [publicClientMainnet],
   );
 
   return usePreviewWithdraw({

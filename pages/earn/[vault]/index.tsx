@@ -39,7 +39,12 @@ export const getStaticProps = getDefaultStaticProps(
 export default function VaultRedirect({ vault }: PageParams) {
   const router = useRouter();
   useEffect(() => {
-    void router.replace(`${EARN_PATH}/${vault}/${EARN_VAULT_DEPOSIT_SLUG}`);
-  }, [router, vault]);
+    if (!router.isReady) return;
+    const { vault: _vault, ...query } = router.query;
+    void router.replace({
+      pathname: `${EARN_PATH}/${vault}/${EARN_VAULT_DEPOSIT_SLUG}`,
+      query,
+    });
+  }, [router, router.isReady, vault]);
   return null;
 }

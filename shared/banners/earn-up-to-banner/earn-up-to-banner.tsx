@@ -49,7 +49,7 @@ export const EarnUpToBanner = (props: EarnUpToBannerProps) => {
               {apy ? (
                 <>
                   <Nowrap>
-                    Earn up to <FormatPercent value={apy} decimals="percent" />*
+                    Earn up to <FormatPercent value={apy} decimals="percent" />{' '}
                     APY*
                   </Nowrap>
                   <br />

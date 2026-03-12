@@ -1,9 +1,10 @@
 import { FC } from 'react';
-import { AccordionTransparent } from '@lidofinance/lido-ui';
+import { Link } from '@lidofinance/lido-ui';
+import { FaqItem } from 'features/earn/shared/v2/faq';
 
 export const RisksOfDepositing: FC = () => {
   return (
-    <AccordionTransparent
+    <FaqItem
       summary="What are the risks outlined in the vault, and what's the approach for their mitigation?"
       id="earnusd-risks"
     >
@@ -37,9 +38,9 @@ export const RisksOfDepositing: FC = () => {
           <strong>Lending Risk:</strong> Lending USDC/USDT in third-party
           protocols carries the risk of bad debt or insolvency events at the
           protocol level. This risk is mitigated by using lending protocols like
-          Aave who have deep liquidity and deep experience in risk management.
-          Curators also provide continuous assessment to collaterals to ensure
-          their risk rating is within acceptable limits.
+          Aave which have deep liquidity and implement their own risk management
+          mechanisms. Curators also provide continuous assessment to collaterals
+          to ensure their risk rating is within acceptable limits.
         </li>
         <li>
           <strong>Leverage Risk:</strong> Leveraged staking may introduce the
@@ -69,11 +70,11 @@ export const RisksOfDepositing: FC = () => {
           the vault should conduct their own research and seek independent
           professional advice to ensure they fully understand the potential
           risks and implications before participating.{' '}
-          <a href="https://lido.fi/earn/risk-disclosures">
+          <Link target="_blank" href="https://lido.fi/earn/risk-disclosures">
             Learn more about risks.
-          </a>
+          </Link>
         </em>
       </p>
-    </AccordionTransparent>
+    </FaqItem>
   );
 };

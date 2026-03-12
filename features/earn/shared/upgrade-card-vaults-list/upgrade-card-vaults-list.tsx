@@ -32,7 +32,9 @@ type UpgradeCardProps = {
   setIsDrawerRightOpen: (isOpen: boolean) => void;
 };
 
-export const UpgradeCard: FC<UpgradeCardProps> = ({ setIsDrawerRightOpen }) => {
+export const UpgradeCardVaultsList: FC<UpgradeCardProps> = ({
+  setIsDrawerRightOpen,
+}) => {
   const { isWalletConnected } = useDappStatus();
   const { balances } = useUpgradableTokenBalances();
 
@@ -82,7 +84,7 @@ export const UpgradeCard: FC<UpgradeCardProps> = ({ setIsDrawerRightOpen }) => {
           <UpgradeParagraph>
             To upgrade you just need to deposit your upgradable tokens into the
             EarnETH Vault and you&apos;ll receive a new earnETH token
-            representing your position in Lido ETH Growth.{' '}
+            representing your position in EarnETH.{' '}
             <ButtonInline
               onClick={(event) => {
                 event.preventDefault();
