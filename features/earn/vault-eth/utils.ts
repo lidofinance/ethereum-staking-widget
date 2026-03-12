@@ -24,6 +24,10 @@ export const ALLOCATION_SCHEMA = z.array(
 export const ETH_VAULT_STATS_SCHEMA = z.object({
   allocations: ALLOCATION_SCHEMA,
   lastUpdate: UNIX_TIMESTAMP_SCHEMA,
+  totalTvl: z.object({
+    usd: z.string(),
+    usd_decimals: z.number(),
+  }),
 });
 
 export type EthVaultStatsFetchedData = z.infer<typeof ETH_VAULT_STATS_SCHEMA>;
