@@ -5,7 +5,8 @@ import type { LineDataWithAllocation } from 'features/earn/shared/vault-allocati
 export type { LineDataWithAllocation };
 
 export type AllocationSubItem = {
-  protocol: string;
+  id: string;
+  label: string;
   chain: string;
   allocation: number;
   tvlUSD: number;

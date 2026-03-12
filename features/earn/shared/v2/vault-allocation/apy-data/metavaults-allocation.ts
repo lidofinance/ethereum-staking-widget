@@ -13,25 +13,21 @@ export const METAVAULTS_ALLOCATION_DATA_SCHEMA = z.object({
         asset: z.string(),
         amount: z.string(),
         decimals: z.number(),
+        usd: z.string(),
+        usd_decimals: z.number(),
       }),
       type: z.string().optional().default(''),
       id: z.string(),
       label: z.string(),
       sharePercent: z.number(),
       chain: z.string(),
-      allocation: z
+      allocations: z
         .array(
           z.object({
-            tvl: z.object({
-              asset: z.string(),
-              amount: z.string(),
-              decimals: z.number(),
-            }),
             sharePercent: z.number(),
             chain: z.string(),
-            protocol: z.string(),
-            icon: z.string(),
             label: z.string(),
+            id: z.string(),
           }),
         )
         .optional()
@@ -39,6 +35,10 @@ export const METAVAULTS_ALLOCATION_DATA_SCHEMA = z.object({
     }),
   ),
   lastUpdate: z.string(),
+  totalTvl: z.object({
+    usd: z.string(),
+    usd_decimals: z.number(),
+  }),
 });
 export type MetavaultsAllocationFetchedData = z.infer<
   typeof METAVAULTS_ALLOCATION_DATA_SCHEMA
@@ -58,7 +58,7 @@ export const fetchMetavaultsAllocationData = async (
     return chartData;
   } catch (error) {
     console.error(
-      '[METAVAULTS_ALLOCATION_DATA] Error fetching metavault allocation data',
+      `[METAVAULTS_ALLOCATION_DATA] Error fetching metavault allocation data ${vaultAddress}`,
       error,
     );
     throw error;

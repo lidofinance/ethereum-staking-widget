@@ -28,16 +28,7 @@ import { useMetavaultAllocation } from './hooks/use-metavault-allocation';
 export const VaultAllocation: FC<VaultAllocationProps> = (props) => {
   const { vaultName, apy, footer } = props;
 
-  const isETHVault = vaultName === 'ethVault';
-  // const isUSDVault = vaultName === 'usdVault';
-
-  // const vaultAddress = getContractAddress(CHAINS.Mainnet, vaultName);
-  // TODO: REPLACE BEFORE RELEASE
-  const vaultAddress = getContractAddress(
-    CHAINS.Mainnet,
-    //@ts-expect-error currently using test contracts, prod contract addresses are using __ prefix now
-    isETHVault ? 'stgVault' : '__usdVault',
-  );
+  const vaultAddress = getContractAddress(CHAINS.Mainnet, vaultName);
 
   const { data, isLoading } = useMetavaultAllocation(vaultAddress);
   const allocationData = useAllocationData(data);

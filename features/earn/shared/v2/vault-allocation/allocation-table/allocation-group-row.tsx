@@ -44,13 +44,13 @@ export const AllocationGroupRow: FC<AllocationGroupRowProps> = ({ group }) => {
       </Tr>
       {open &&
         group.items.map((item) => (
-          <Tr key={`${item.protocol}-${item.chain}`}>
+          <Tr key={`${item.id}-${item.chain}`}>
             <TdWithIconStyled>
               <ProtocolIcon
                 mainIcon={item.icon ? <item.icon /> : null}
                 badge={item.chain}
               />
-              <ProtocolNameStyled>{item.protocol}</ProtocolNameStyled>
+              <ProtocolNameStyled>{item.label}</ProtocolNameStyled>
             </TdWithIconStyled>
             <TdNarrowStyled align="right">
               <FormatPercent value={item.allocation} decimals="percent" />

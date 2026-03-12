@@ -23,19 +23,26 @@ export const useAllocationData = (
     const flatItems: FlatAllocationItem[] = [];
 
     for (const alloc of apiData.allocations) {
-      const tvlUSD = parseTvlUSD(alloc.tvl.amount, alloc.tvl.decimals);
+      const tvlUSD = parseTvlUSD(alloc.tvl.usd, alloc.tvl.usd_decimals);
 
       if (alloc.type === 'nested') {
         groups.push({
           name: alloc.label,
           allocation: alloc.sharePercent,
           tvlUSD,
-          items: alloc.allocation.map((sub) => ({
-            protocol: sub.protocol,
-            chain: sub.chain,
-            allocation: sub.sharePercent,
-            tvlUSD: parseTvlUSD(sub.tvl.amount, sub.tvl.decimals),
-          })),
+          items: alloc.allocations
+            .map((sub) => ({
+              label: sub.label,
+              id: sub.id,
+              chain: sub.chain,
+              allocation: sub.sharePercent,
+              tvlUSD:
+                Number(
+                  formatUnits(BigInt(alloc.tvl.usd), alloc.tvl.usd_decimals),
+                ) *
+                (sub.sharePercent / 100),
+            }))
+            .filter((item) => Number((item.allocation / 100).toFixed(2)) > 0),
         });
       } else {
         flatItems.push({
@@ -46,10 +53,17 @@ export const useAllocationData = (
       }
     }
 
-    const allEntries = [...groups, ...flatItems];
-    const totalTvlUsd = allEntries.reduce(
-      (sum, entry) => sum + entry.tvlUSD,
-      0,
+    const filteredGroups = groups.filter(
+      (item) => Number((item.allocation / 100).toFixed(2)) > 0,
+    );
+    const filteredFlatItems = flatItems.filter(
+      (item) => Number((item.allocation / 100).toFixed(2)) > 0,
+    );
+
+    const allEntries = [...filteredGroups, ...filteredFlatItems];
+    const totalTvlUsd = parseTvlUSD(
+      apiData.totalTvl.usd,
+      apiData.totalTvl.usd_decimals,
     );
 
     const chartData = allEntries.map((entry, index) => {
@@ -67,10 +81,10 @@ export const useAllocationData = (
     });
 
     return {
-      lastUpdated: new Date(apiData.lastUpdate).getTime(),
+      lastUpdated: Number(apiData.lastUpdate),
       chartData,
-      groups,
-      ...(flatItems.length > 0 && { flatItems }),
+      groups: filteredGroups,
+      ...(flatItems.length > 0 && { flatItems: filteredFlatItems }),
       totalTvlUsd,
     };
   }, [apiData]);
