@@ -35,6 +35,7 @@
     "@lidofinance/next-pages": "^0.48.0",
     "@lidofinance/rpc": "^0.48.0",
     "@lidofinance/satanizer": "^0.48.0",
+    "@lifi/widget-light": "4.0.0-alpha.2",
     "@metamask/sdk": "~0.33.1",
     "@safe-global/safe-apps-provider": "~0.18.6",
     "@safe-global/safe-apps-sdk": "^9.1.0",

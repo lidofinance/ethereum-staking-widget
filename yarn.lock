@@ -2450,6 +2450,11 @@
   resolved "https://registry.yarnpkg.com/@lidofinance/satanizer/-/satanizer-0.48.0.tgz#518d1f6574a6a2f38dc80b6dbc3636829eaa95aa"
   integrity sha512-wQ36dV9/C/aliykg1cOeJoCl7yc72bJ8+zekzsIrIu3VExI2eV8rk79HWYNHoGcnhJPPRCGonnJh+0Zx3OF5Gw==
 
+"@lifi/widget-light@4.0.0-alpha.2":
+  version "4.0.0-alpha.2"
+  resolved "https://registry.npmjs.org/@lifi/widget-light/-/widget-light-4.0.0-alpha.2.tgz#f00eb5b0685886119cf71a7b722bf43c83f893f3"
+  integrity sha512-k/EG/E27pWTzaa8jyO/YgUXJ+7WvpcRtR7VophjsFKLTkk/t1ODT8TwI9WYhn2WppbooOfc4+vnCoJyqkv1t8A==
+
 "@lit-labs/ssr-dom-shim@^1.5.0":
   version "1.5.1"
   resolved "https://registry.yarnpkg.com/@lit-labs/ssr-dom-shim/-/ssr-dom-shim-1.5.1.tgz#3166900c0d481f03d6d4133686e0febf760d521d"
