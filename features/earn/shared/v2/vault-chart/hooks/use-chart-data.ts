@@ -72,7 +72,8 @@ export const useChartData = (props: UseChartDataProps) => {
   const [tvlSeriesData, apySeriesData] = useMemo(() => {
     if (!data) return [[], []];
     const tvl = data.map((item) => [item.timestampMs, item.tvlUsd]);
-    if (currentTvlPoint) {
+    const lastTs = tvl.at(-1)?.[0] ?? 0;
+    if (currentTvlPoint && currentTvlPoint.timestampMs > lastTs) {
       tvl.push([currentTvlPoint.timestampMs, currentTvlPoint.tvlUsd]);
     }
     return [tvl, data.map((item) => [item.timestampMs, item.apyValue])];
