@@ -15,12 +15,13 @@
       "earnVaults": [
         { "name": "eth" },
         { "name": "usd" },
-        { "name": "strategy" },
+        { "name": "strategy", "deprecated": true },
         {
           "name": "ggv",
-          "apy": { "type": "weekly_moving_average" }
+          "apy": { "type": "weekly_moving_average" },
+          "deprecated": true
         },
-        { "name": "dvv" }
+        { "name": "dvv", "deprecated": true }
       ],
       "featureFlags": {
         "disableSendCalls": false,
