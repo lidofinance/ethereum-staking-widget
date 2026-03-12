@@ -35,7 +35,9 @@ export const VaultCardDVV = () => {
             }
           : undefined
       }
-      ctaLabel={'Upgrade your assets'}
+      ctaLabel={
+        sharesBalance && sharesBalance > 0n ? 'Upgrade your assets' : 'View'
+      }
       illustration={<VaultDvvIcon />}
       depositLinkCallback={() => {
         trackMatomoEvent(MATOMO_EARN_EVENTS_TYPES.strategyDeposit);

@@ -1,9 +1,9 @@
 import { FC } from 'react';
-import { AccordionTransparent } from '@lidofinance/lido-ui';
+import { FaqItem } from 'features/earn/shared/v2/faq';
 
 export const HowLongToDeposit: FC = () => {
   return (
-    <AccordionTransparent
+    <FaqItem
       summary="How long does it take to deposit?"
       id="earneth-deposit-time"
     >
@@ -11,6 +11,6 @@ export const HowLongToDeposit: FC = () => {
         Deposits are typically fulfilled within ~24 hours under normal
         conditions.
       </p>
-    </AccordionTransparent>
+    </FaqItem>
   );
 };

@@ -1,9 +1,9 @@
 import { FC } from 'react';
-import { AccordionTransparent } from '@lidofinance/lido-ui';
+import { FaqItem } from 'features/earn/shared/v2/faq';
 
 export const CanICreateANewDepositRequest: FC = () => {
   return (
-    <AccordionTransparent
+    <FaqItem
       summary="If I don't claim my deposited amount, can I create a new deposit request?"
       id="earneth-new-deposit-claim"
     >
@@ -13,6 +13,6 @@ export const CanICreateANewDepositRequest: FC = () => {
         amount will be automatically transferred to your wallet as part of the
         new deposit transaction.
       </p>
-    </AccordionTransparent>
+    </FaqItem>
   );
 };

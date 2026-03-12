@@ -70,7 +70,7 @@ export const useMetavaultChartData = ({
       return {
         timestampMs: unixTimestampToMs(Number(item.timestamp)),
         tvlUsd,
-        apyValue: Number(item.apy.value),
+        apyValue: Number(Number(item.apy.value).toFixed(2)),
       };
     });
   }, [rawData, isETHVault, ethPrice]);

@@ -1,9 +1,9 @@
 import { FC } from 'react';
-import { AccordionTransparent } from '@lidofinance/lido-ui';
+import { FaqItem } from 'features/earn/shared/v2/faq';
 
 export const HowManyDepositRequests: FC = () => {
   return (
-    <AccordionTransparent
+    <FaqItem
       summary="How many deposit requests can I have?"
       id="earnusd-deposit-requests"
     >
@@ -13,6 +13,6 @@ export const HowManyDepositRequests: FC = () => {
         the same time, one for USDC and one for USDT. To create a new request
         for a given token, you must cancel the existing request first.
       </p>
-    </AccordionTransparent>
+    </FaqItem>
   );
 };

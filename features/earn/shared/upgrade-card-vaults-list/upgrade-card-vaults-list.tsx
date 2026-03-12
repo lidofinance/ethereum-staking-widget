@@ -32,7 +32,9 @@ type UpgradeCardProps = {
   setIsDrawerRightOpen: (isOpen: boolean) => void;
 };
 
-export const UpgradeCard: FC<UpgradeCardProps> = ({ setIsDrawerRightOpen }) => {
+export const UpgradeCardVaultsList: FC<UpgradeCardProps> = ({
+  setIsDrawerRightOpen,
+}) => {
   const { isWalletConnected } = useDappStatus();
   const { balances } = useUpgradableTokenBalances();
 
