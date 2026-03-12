@@ -62,6 +62,7 @@ export const EarnVaultsList: FC = () => {
             trackMatomoEvent(MATOMO_EARN_EVENTS_TYPES.earnListHowLidoEarnWorks);
             setIsDrawerRightOpen(true);
           }}
+          data-testid={'howLidoEarnWorksButton'}
         >
           How Lido Earn Works
         </ButtonInline>
@@ -76,7 +77,11 @@ export const EarnVaultsList: FC = () => {
         </CardsStack>
 
         <AccordionTransparent
-          summary={<AccordionTitle>Upgrading vaults</AccordionTitle>}
+          summary={
+            <AccordionTitle data-testid={'upgradingVaults'}>
+              Upgrading vaults
+            </AccordionTitle>
+          }
           withoutBorder
         >
           <CardsStack>

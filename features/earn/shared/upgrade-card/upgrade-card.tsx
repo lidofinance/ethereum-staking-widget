@@ -47,7 +47,7 @@ export const UpgradeCard: FC<UpgradeCardProps> = ({ setIsDrawerRightOpen }) => {
   if (upgradableTokens.length === 0) return null;
 
   return (
-    <UpgradeCardBlock>
+    <UpgradeCardBlock data-testid={'upgradeCardBlock'}>
       <UpgradeContent>
         <UpgradeColumn>
           <UpgradeTitle>Upgrade your tokens</UpgradeTitle>
@@ -91,6 +91,7 @@ export const UpgradeCard: FC<UpgradeCardProps> = ({ setIsDrawerRightOpen }) => {
                 );
                 setIsDrawerRightOpen(true);
               }}
+              data-testid={'howItWorksButton'}
             >
               Learn how it works
             </ButtonInline>
@@ -110,6 +111,7 @@ export const UpgradeCard: FC<UpgradeCardProps> = ({ setIsDrawerRightOpen }) => {
               MATOMO_EARN_EVENTS_TYPES.earnListEarnEthBannerUpgrade,
             )
           }
+          data-testid={'upgradeButton'}
         >
           Upgrade
         </UpgradeButton>
