@@ -7,6 +7,7 @@ import { FormatPercent } from 'shared/formatters/format-percent';
 import { useModalActions } from 'providers/modal-provider';
 import { useEarnBannerState } from 'features/earn/shared/hooks/use-earn-banner-state';
 import { useEthVaultApy } from 'features/earn/vault-eth/hooks/use-vault-apy';
+import { useEthVaultAvailable } from 'features/earn/vault-eth/hooks/use-vault-available';
 
 import {
   Message,
@@ -29,9 +30,13 @@ export const EarnUpToBanner = (props: EarnUpToBannerProps) => {
 
   const { showOnStakeForm, showAfterStake } = useEarnBannerState();
 
+  const { isDepositEnabled: isEthVaultDepositEnabled } = useEthVaultAvailable();
+
   const { closeModal } = useModalActions();
 
   const { apy } = useEthVaultApy();
+
+  if (!isEthVaultDepositEnabled) return null;
 
   if (
     (props.placement === 'stakeForm' && !showOnStakeForm) ||
