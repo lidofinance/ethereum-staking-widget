@@ -6,7 +6,7 @@ import { PartnerMellowIcon } from 'assets/earn';
 import { VaultPage } from 'features/earn/shared/v2/vault-page/vault-page';
 import type { InfoItem } from 'features/earn/shared/v2/vault-page/vault-page';
 import { Disclaimers } from 'features/earn/shared/v2/disclaimers';
-import { StrategyContent } from 'features/earn/shared/v2/strategy-content';
+import { VaultAllocation } from 'features/earn/shared/v2/vault-allocation/vault-allocation';
 import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo/matomo-earn-events';
 
 import { EthVaultPositionManager } from './position-manager/position-manager';
@@ -94,39 +94,6 @@ const DATA = {
   riskDisclosure: RISK_DISCLOSURE,
 };
 
-const STATIC_ALLOCATIONS_CONTENT = [
-  {
-    protocol: 'Aave',
-    badge: 'ethereum',
-    name: 'Aave levered wstETH/ETH',
-  },
-  {
-    protocol: 'Spark',
-    badge: 'ethereum',
-    name: 'Spark levered wstETH/ETH',
-  },
-  {
-    protocol: 'Aave',
-    badge: 'ethereum',
-    name: 'Aave levered wstETH/USD',
-  },
-  {
-    protocol: 'Aave',
-    badge: 'ethereum',
-    name: 'Aave levered Ethena',
-  },
-  {
-    protocol: 'Aave',
-    badge: 'ethereum',
-    name: 'Aave levered rsETH/ETH',
-  },
-  {
-    protocol: 'Aave',
-    badge: 'ethereum',
-    name: 'Aave levered weETH/ETH',
-  },
-];
-
 export const EthVaultPage: FC<{
   action: typeof EARN_VAULT_DEPOSIT_SLUG | typeof EARN_VAULT_WITHDRAW_SLUG;
 }> = ({ action }) => {
@@ -145,9 +112,7 @@ export const EthVaultPage: FC<{
         sidePanel={<EthVaultPositionManager action={action} />}
         vaultName="ethVault"
         faqContent={<EarnEthFaq />}
-        strategyContent={
-          <StrategyContent allocations={STATIC_ALLOCATIONS_CONTENT} />
-        }
+        strategyContent={<VaultAllocation vaultName="ethVault" apy={apy} />}
         matomo={{
           performanceTabEvent: MATOMO_EARN_EVENTS_TYPES.earnEthPerformance,
           strategyTabEvent: MATOMO_EARN_EVENTS_TYPES.earnEthStrategy,
