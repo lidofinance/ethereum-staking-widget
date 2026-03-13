@@ -1,9 +1,9 @@
 import { FaqItem } from 'features/earn/shared/v2/faq';
 import { FC } from 'react';
 
-export const HowDoesDepositWork: FC = () => {
+export const HowDoesDepositWork: FC<{ id?: string }> = ({ id }) => {
   return (
-    <FaqItem summary="How does the deposit work?" id="earneth-deposit-work">
+    <FaqItem summary="How does the deposit work?" id={id}>
       <p>
         You can deposit ETH, wstETH, GGV, strETH or DVV to receive earnETH share
         tokens of the EarnETH vault. After submission, your deposit request will

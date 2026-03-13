@@ -1,9 +1,9 @@
 import { FC } from 'react';
 import { FaqItem } from 'features/earn/shared/v2/faq';
 
-export const HowDoesDepositWork: FC = () => {
+export const HowDoesDepositWork: FC<{ id?: string }> = ({ id }) => {
   return (
-    <FaqItem summary="How does the deposit work?" id="earnusd-deposit-work">
+    <FaqItem summary="How does the deposit work?" id={id}>
       <p>
         You can deposit <strong>USDC or USDT</strong> to receive{' '}
         <strong>earnUSD</strong> share tokens of the EarnUSD vault. After

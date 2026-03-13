@@ -1,12 +1,9 @@
 import { FC } from 'react';
 import { FaqItem } from 'features/earn/shared/v2/faq';
 
-export const HowManyDepositRequests: FC = () => {
+export const HowManyDepositRequests: FC<{ id?: string }> = ({ id }) => {
   return (
-    <FaqItem
-      summary="How many deposit requests can I have?"
-      id="earnusd-deposit-requests"
-    >
+    <FaqItem summary="How many deposit requests can I have?" id={id}>
       <p>
         You can have <strong>one active request per depositable token</strong>.
         This means you can have up to <strong>two</strong> deposit requests at

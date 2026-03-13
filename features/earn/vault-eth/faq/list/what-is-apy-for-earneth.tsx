@@ -2,11 +2,11 @@ import { FC } from 'react';
 import { FaqItem } from 'features/earn/shared/v2/faq';
 import { Link } from '@lidofinance/lido-ui';
 
-export const WhatIsApyForEarnEth: FC = () => {
+export const WhatIsApyForEarnEth: FC<{ id?: string }> = ({ id }) => {
   return (
     <FaqItem
       summary="What is APY for EarnETH, and how is it calculated?"
-      id="earneth-apy"
+      id={id}
     >
       <p>
         EarnETH APY comes from continuous reward generation across its
