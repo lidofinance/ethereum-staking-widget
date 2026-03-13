@@ -53,13 +53,13 @@ export const EarnUpToBanner = (props: EarnUpToBannerProps) => {
                     APY*
                   </Nowrap>
                   <br />
-                  <Nowrap>with Lido Earn ETH</Nowrap>
+                  <Nowrap>with EarnETH</Nowrap>
                 </>
               ) : (
                 <>
                   <Nowrap>Earn APY*</Nowrap>
                   <br />
-                  <Nowrap>with Lido Earn ETH</Nowrap>
+                  <Nowrap>with EarnETH</Nowrap>
                 </>
               )}
             </span>
