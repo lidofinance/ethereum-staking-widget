@@ -1,4 +1,6 @@
+import { LinkInpageAnchor } from 'shared/components/link-inpage-anchor';
 import { Container, Section } from './styles';
+import { ETH_DEPOSIT_PATH } from 'features/earn/consts';
 
 export const EthVaultApyHint = () => {
   return (
@@ -13,7 +15,12 @@ export const EthVaultApyHint = () => {
       </Section>
 
       <Section>
-        <span>Learn more in EarnETH FAQ</span>
+        <span>
+          Learn more in{' '}
+          <LinkInpageAnchor pagePath={ETH_DEPOSIT_PATH} hash="#earneth-apy">
+            EarnETH FAQ
+          </LinkInpageAnchor>
+        </span>
       </Section>
     </Container>
   );

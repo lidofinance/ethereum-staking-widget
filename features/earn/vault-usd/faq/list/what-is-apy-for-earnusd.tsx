@@ -2,11 +2,11 @@ import { FC } from 'react';
 import { FaqItem } from 'features/earn/shared/v2/faq';
 import { Link } from '@lidofinance/lido-ui';
 
-export const WhatIsApyForEarnUsd: FC = () => {
+export const WhatIsApyForEarnUsd: FC<{ id?: string }> = ({ id }) => {
   return (
     <FaqItem
       summary="What is APY for EarnUSD, and how is it calculated?"
-      id="earnusd-apy"
+      id={id}
     >
       <p>
         EarnUSD APY comes from continuous reward generation across the
