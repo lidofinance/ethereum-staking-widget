@@ -21,8 +21,8 @@ import { ActionSwitch } from '../components/action-switch';
 const EthVaultWithdrawFormContent: FC = () => {
   return (
     <BlockSidePanel>
+      <ActionSwitch isWithdraw />
       <VaultForm data-testid="withdraw-form">
-        <ActionSwitch isWithdraw />
         <VaultFormSection>
           <EthVaultWithdrawRequests />
           <EthVaultWithdrawAvailable />
