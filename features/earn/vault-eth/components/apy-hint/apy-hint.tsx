@@ -1,12 +1,21 @@
 import { LinkInpageAnchor } from 'shared/components/link-inpage-anchor';
-import { Container, Section } from './styles';
 import { ETH_DEPOSIT_PATH } from 'features/earn/consts';
+import { Container, Section } from './styles';
+import { FAQ_IDS } from '../../faq/faq';
 
 export const EthVaultApyHint = () => {
   return (
     <Container>
       <Section>
-        <span>7-day average APY after fees</span>
+        <span>
+          7-day average APY after{' '}
+          <LinkInpageAnchor
+            pagePath={ETH_DEPOSIT_PATH}
+            hash={`#${FAQ_IDS.fees}`}
+          >
+            fees
+          </LinkInpageAnchor>
+        </span>
       </Section>
       <Section>
         APY is the annual percentage yield including compounding. APY includes
@@ -17,7 +26,10 @@ export const EthVaultApyHint = () => {
       <Section>
         <span>
           Learn more in{' '}
-          <LinkInpageAnchor pagePath={ETH_DEPOSIT_PATH} hash="#earneth-apy">
+          <LinkInpageAnchor
+            pagePath={ETH_DEPOSIT_PATH}
+            hash={`#${FAQ_IDS.apy}`}
+          >
             EarnETH FAQ
           </LinkInpageAnchor>
         </span>

@@ -26,7 +26,7 @@ import {
   HowDoIClaimMyRewards,
 } from './list';
 
-const FAQ_IDS = {
+export const FAQ_IDS = {
   apy: 'faq-apy',
   fees: 'faq-fees',
   risks: 'faq-risks',
