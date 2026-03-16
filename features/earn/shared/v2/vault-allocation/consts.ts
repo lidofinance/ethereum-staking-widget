@@ -64,13 +64,15 @@ export const PENDING_TIP =
 const SUBVAULTS_WITH_TIP = ['earnusdc', 'ggv', 'streth'];
 const USDC_VAULT_TIP =
   'A strategy designed to amplify USD yield by combining low-risk and highly liquid stablecoin strategies with carefully selected DeFi strategies.';
-const GAS_VAULT_TIP = 'GGV';
-const STRATEGY_VAULT_TIP = 'Strategy';
+const GGV_VAULT_TIP =
+  'A legacy vault in its final stage, existing positions are being safely migrated to EarnETH.';
+const STRATEGY_VAULT_TIP =
+  'A professionally curated strategy by Mellow, built around battle-tested DeFi protocols designed to perform steadily across all market conditions.';
 
 export const SUBVAULTS_TIP_BY_ID: {
   [key in (typeof SUBVAULTS_WITH_TIP)[number]]: string;
 } = {
   earnusdc: USDC_VAULT_TIP,
-  ggv: GAS_VAULT_TIP,
+  ggv: GGV_VAULT_TIP,
   streth: STRATEGY_VAULT_TIP,
 };
