@@ -109,7 +109,8 @@ export const useEthVaultDepositFormData = () => {
   const isLoading =
     ethBalanceQuery.isLoading ||
     wstethBalanceQuery.isLoading ||
-    wethBalanceQuery.isLoading;
+    wethBalanceQuery.isLoading ||
+    stethBalanceQuery.isLoading;
 
   return {
     asyncValidationContextValue,

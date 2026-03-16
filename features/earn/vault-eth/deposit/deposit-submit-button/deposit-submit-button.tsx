@@ -9,12 +9,16 @@ import {
   SubmitButtonInnerContainer,
 } from './styles';
 import { asEthDepositToken } from '../../utils';
+import { TOKEN_SYMBOLS } from 'consts/tokens';
 
 export const EthVaultDepositSubmitButton = () => {
   const { disabled } = useFormState();
   const { isDepositLockedForCurrentToken, token } = useETHDepositForm();
+  // stETH deposits go through the wstETH queue, so check wstETH for claimable request state
+  const depositRequestToken =
+    token === TOKEN_SYMBOLS.steth ? TOKEN_SYMBOLS.wsteth : token;
   const depositRequest = useEthVaultDepositRequest({
-    token: asEthDepositToken(token),
+    token: asEthDepositToken(depositRequestToken),
   });
   const { isEthVaultAvailable } = useEthVaultAvailable();
 
