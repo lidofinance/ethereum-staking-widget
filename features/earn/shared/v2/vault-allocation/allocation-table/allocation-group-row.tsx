@@ -56,7 +56,10 @@ export const AllocationGroupRow: FC<AllocationGroupRowProps> = ({ group }) => {
                 mainIcon={item.icon ? <item.icon /> : null}
                 badge={item.chain}
               />
-              <ProtocolNameStyled>{item.label}</ProtocolNameStyled>
+              <ProtocolNameStyled>
+                {item.label}
+                {item.info && <VaultTip>{item.info}</VaultTip>}
+              </ProtocolNameStyled>
             </TdWithIconStyled>
             <TdNarrowStyled align="right">
               <FormatPercent value={item.allocation} decimals="percent" />

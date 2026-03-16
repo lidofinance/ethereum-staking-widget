@@ -13,6 +13,10 @@ import {
   ALLOCATION_ICONS_BY_ID,
   ALLOCATION_PROTOCOL_IDS_KNOWN,
   ALLOCATION_TOKEN_IDS_AVAILABLE,
+  ALLOCATION_PENDING_ID,
+  AVAILABLE_TIP,
+  OTHER_TIP,
+  PENDING_TIP,
 } from '../consts';
 
 const parseTvlUSD = (amount: string, decimals: number): number =>
@@ -29,6 +33,8 @@ export const useAllocationData = (
     const flatItems: FlatAllocationItem[] = [];
     let availableFlatAlloc = 0;
     let availableFlatTvl = 0;
+    let pendingFlatAlloc = 0;
+    let pendingFlatTvl = 0;
     let othersFlatAlloc = 0;
     let othersFlatTvl = 0;
 
@@ -38,6 +44,8 @@ export const useAllocationData = (
       if (alloc.type === 'nested') {
         let availableAlloc = 0;
         let availableTvl = 0;
+        let pendingAlloc = 0;
+        let pendingTvl = 0;
         let othersAlloc = 0;
         let othersTvl = 0;
         const knownItems = [];
@@ -48,6 +56,9 @@ export const useAllocationData = (
           if (ALLOCATION_TOKEN_IDS_AVAILABLE.includes(sub.id)) {
             availableAlloc += sub.sharePercent;
             availableTvl += subTvl;
+          } else if (sub.id === ALLOCATION_PENDING_ID) {
+            pendingAlloc += sub.sharePercent;
+            pendingTvl += subTvl;
           } else if (
             !ALLOCATION_PROTOCOL_IDS_KNOWN.includes(
               sub.id as AllocationProtocolId,
@@ -72,15 +83,27 @@ export const useAllocationData = (
             label: 'Available',
             id: 'available',
             icon: undefined,
+            info: AVAILABLE_TIP,
             chain: '',
             allocation: availableAlloc,
             tvlUSD: availableTvl,
+          });
+        if (pendingAlloc > 0)
+          knownItems.push({
+            label: 'Pending',
+            id: 'pending',
+            icon: undefined,
+            info: PENDING_TIP,
+            chain: '',
+            allocation: pendingAlloc,
+            tvlUSD: pendingTvl,
           });
         if (othersAlloc > 0)
           knownItems.push({
             label: 'Others',
             id: 'others',
             icon: undefined,
+            info: OTHER_TIP,
             chain: '',
             allocation: othersAlloc,
             tvlUSD: othersTvl,
@@ -97,6 +120,9 @@ export const useAllocationData = (
       } else if (ALLOCATION_TOKEN_IDS_AVAILABLE.includes(alloc.id)) {
         availableFlatAlloc += alloc.sharePercent;
         availableFlatTvl += tvlUSD;
+      } else if (alloc.id === ALLOCATION_PENDING_ID) {
+        pendingFlatAlloc += alloc.sharePercent;
+        pendingFlatTvl += tvlUSD;
       } else if (
         !ALLOCATION_PROTOCOL_IDS_KNOWN.includes(
           alloc.id as AllocationProtocolId,
@@ -116,12 +142,21 @@ export const useAllocationData = (
     if (availableFlatAlloc > 0)
       flatItems.push({
         name: 'Available',
+        info: AVAILABLE_TIP,
         allocation: availableFlatAlloc,
         tvlUSD: availableFlatTvl,
+      });
+    if (pendingFlatAlloc > 0)
+      flatItems.push({
+        name: 'Pending',
+        info: PENDING_TIP,
+        allocation: pendingFlatAlloc,
+        tvlUSD: pendingFlatTvl,
       });
     if (othersFlatAlloc > 0)
       flatItems.push({
         name: 'Others',
+        info: OTHER_TIP,
         allocation: othersFlatAlloc,
         tvlUSD: othersFlatTvl,
       });

@@ -32,3 +32,10 @@ export const ALLOCATION_PENDING_ID = 'pending-deposits';
 
 // Assets which are not allocated yet
 export const ALLOCATION_TOKEN_IDS_AVAILABLE = ['eth', 'weth', 'wsteth'];
+
+export const AVAILABLE_TIP =
+  'The amount of tokens available for withdrawals, pending allocation to new strategies, and reserved for liquidity needs';
+export const OTHER_TIP =
+  'The amount of a newly allocated position. Detailed data will be provided soon';
+export const PENDING_TIP =
+  'The amount of tokens in the process of being deposited to the vault';

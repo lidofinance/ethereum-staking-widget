@@ -7,6 +7,7 @@ export type { LineDataWithAllocation };
 export type AllocationSubItem = {
   id: string;
   label: string;
+  info?: ReactNode;
   chain: string;
   allocation: number;
   tvlUSD: number;
