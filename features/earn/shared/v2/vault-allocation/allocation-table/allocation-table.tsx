@@ -15,6 +15,7 @@ import {
   TdNarrowStyled,
   ProtocolNameStyled,
   TdStyled,
+  ProtocolNamePercent,
 } from './styles';
 
 type AllocationTableV2Props = {
@@ -48,13 +49,14 @@ export const AllocationTable: FC<AllocationTableV2Props> = ({
           <Tr key={item.name}>
             <TdStyled>
               <ProtocolNameStyled>
+                <ProtocolNamePercent>
+                  <FormatPercent value={item.allocation} decimals="percent" />
+                </ProtocolNamePercent>
                 {item.name}
                 {item.info && <VaultTip>{item.info}</VaultTip>}
               </ProtocolNameStyled>
             </TdStyled>
-            <TdNarrowStyled align="right">
-              <FormatPercent value={item.allocation} decimals="percent" />
-            </TdNarrowStyled>
+            <TdNarrowStyled align="right"></TdNarrowStyled>
             <TdNarrowStyled align="right">
               <FormatLargeAmount amount={item.tvlUSD} />
             </TdNarrowStyled>

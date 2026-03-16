@@ -74,7 +74,7 @@ export const TdWithIconStyled = styled(TdStyled)`
 export const ProtocolNameStyled = styled.div`
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 8px;
 `;
 
 export const ProtocolNamePercent = styled.span`
