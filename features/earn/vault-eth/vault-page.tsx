@@ -38,13 +38,13 @@ const GENERAL_INFO_LEFT: InfoItem[] = [
     value: (
       <>
         <PartnerNethermindIconCircle width={20} height={20} />
-        <Link href="https://content.gitbook.com/content/PyujKH9RYkVLASDhGflO/blobs/15Q3SGxZgZ9VEWqXueO2/Nethermind_Mellow-Core-Vaults_20250903.pdf">
+        <Link href="https://2485622279-files.gitbook.io/~/files/v0/b/gitbook-x-prod.appspot.com/o/spaces%2FPyujKH9RYkVLASDhGflO%2Fuploads%2F3TMwsLt6Q2z3Wutyewuo%2FNM_0758_Mellow-1.pdf?alt=media&token=187ae9c0-f4fd-44b0-bfd8-d5b003bcd94b">
           Nethermind ↗
         </Link>
       </>
     ),
   },
-  { label: 'Last audit date', value: '21 Jan 2026' },
+  { label: 'Last audit date', value: '02 March 2026' },
 ];
 
 const GENERAL_INFO_RIGHT: Array<{ label: ReactNode; value?: ReactNode }> = [

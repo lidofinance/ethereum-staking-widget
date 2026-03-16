@@ -83,11 +83,12 @@ export const DrawerRight: FC<DrawerRightProps> = ({ onClose, isOpen }) => {
                     MATOMO_EARN_EVENTS_TYPES.earnListWhatIsLidoEarnEthUpgradeNow,
                   );
                 }}
+                data-testid={'upgradeNowButton'}
               >
                 Upgrade now
               </Button>
             </LocalLink>
-            <Link href="https://help.lido.fi/en?chat=open" target="_blank">
+            <Link href="https://help.lido.fi/en" target="_blank">
               <Button
                 fullwidth
                 variant="outlined"
@@ -96,6 +97,7 @@ export const DrawerRight: FC<DrawerRightProps> = ({ onClose, isOpen }) => {
                     MATOMO_EARN_EVENTS_TYPES.earnListWhatIsLidoEarnEthGetInTouch,
                   );
                 }}
+                data-testid={'getInTouchButton'}
               >
                 Get in touch
               </Button>
