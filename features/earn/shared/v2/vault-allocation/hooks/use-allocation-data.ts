@@ -19,6 +19,7 @@ import {
   AVAILABLE_TIP,
   OTHER_TIP,
   PENDING_TIP,
+  SUBVAULTS_TIP_BY_ID,
 } from '../consts';
 
 type ApiAllocation = MetavaultsAllocationFetchedData['allocations'][number];
@@ -108,6 +109,7 @@ const parseNestedGroup = (
     allocation: alloc.sharePercent,
     tvlUSD,
     items: knownItems.filter((item) => isVisible(item.allocation)),
+    info: SUBVAULTS_TIP_BY_ID[alloc.id],
   };
 };
 
@@ -135,7 +137,20 @@ const parseFlatItems = (allocations: ApiAllocation[]): FlatAllocationItem[] => {
       othersAlloc += alloc.sharePercent;
       othersTvl += tvlUSD;
     } else {
-      items.push({ name: alloc.label, allocation: alloc.sharePercent, tvlUSD });
+      // TODO: refactor this
+      if (alloc.id === 'usdc' || alloc.id === 'usdt') {
+        items.push({
+          name: `Available ${alloc.label}`,
+          allocation: alloc.sharePercent,
+          tvlUSD,
+        });
+      } else {
+        items.push({
+          name: alloc.label,
+          allocation: alloc.sharePercent,
+          tvlUSD,
+        });
+      }
     }
   }
 

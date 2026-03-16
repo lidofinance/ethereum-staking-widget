@@ -1,5 +1,14 @@
 import { FC } from 'react';
-import { SparkIcon, AaveV3Icon, FluidIcon } from 'assets/earn';
+import {
+  SparkIcon,
+  AaveV3Icon,
+  FluidIcon,
+  UsdcIcon,
+  SusdeIcon,
+  UsdtIcon,
+  MapleIcon,
+  MorphoIcon,
+} from 'assets/earn';
 
 export const METAVAULT_CHART_ORIGIN = 'https://api.mellow.finance';
 
@@ -14,6 +23,12 @@ export const ALLOCATION_PROTOCOL_IDS_KNOWN = [
   'spark-wsteth-weth',
   'fluid-resolv-usdt',
   'aave-plasma-syrup-usdt-usdt0',
+  'usdc',
+  'usdt',
+  'susde',
+  'ethereum-spark-usdc',
+  'ethereum-maple-syrupusdc',
+  'ethereum-metamorpho-senpyusdmain',
 ] as const;
 
 export const ALLOCATION_ICONS_BY_ID: {
@@ -26,6 +41,12 @@ export const ALLOCATION_ICONS_BY_ID: {
   'spark-wsteth-weth': SparkIcon,
   'fluid-resolv-usdt': FluidIcon,
   'aave-plasma-syrup-usdt-usdt0': AaveV3Icon,
+  usdc: UsdcIcon,
+  usdt: UsdtIcon,
+  susde: SusdeIcon,
+  'ethereum-spark-usdc': SparkIcon,
+  'ethereum-maple-syrupusdc': MapleIcon,
+  'ethereum-metamorpho-senpyusdmain': MorphoIcon,
 };
 
 export const ALLOCATION_PENDING_ID = 'pending-deposits';
@@ -39,3 +60,17 @@ export const OTHER_TIP =
   'The amount of a newly allocated position. Detailed data will be provided soon';
 export const PENDING_TIP =
   'The amount of tokens in the process of being deposited to the vault';
+
+const SUBVAULTS_WITH_TIP = ['earnusdc', 'ggv', 'streth'];
+const USDC_VAULT_TIP =
+  'A strategy designed to amplify USD yield by combining low-risk and highly liquid stablecoin strategies with carefully selected DeFi strategies.';
+const GAS_VAULT_TIP = 'GGV';
+const STRATEGY_VAULT_TIP = 'Strategy';
+
+export const SUBVAULTS_TIP_BY_ID: {
+  [key in (typeof SUBVAULTS_WITH_TIP)[number]]: string;
+} = {
+  earnusdc: USDC_VAULT_TIP,
+  ggv: GAS_VAULT_TIP,
+  streth: STRATEGY_VAULT_TIP,
+};
