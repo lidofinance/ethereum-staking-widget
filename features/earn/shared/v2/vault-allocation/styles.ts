@@ -35,7 +35,6 @@ export const DataTableRowStyled = styled(DataTableRow)`
   font-weight: 700;
   margin-bottom: 0px;
   margin-top: 8px;
-  padding: 10px 0;
 
   & > div:first-child {
     color: ${({ theme }) => theme.colors.text};
@@ -76,4 +75,6 @@ export const EmptyBlockStyled = styled(Block)`
 
 export const Footer = styled.div`
   margin-top: ${({ theme }) => theme.spaceMap.xxl}px;
+  color: ${({ theme }) => theme.colors.textSecondary};
+  font-weight: 400;
 `;

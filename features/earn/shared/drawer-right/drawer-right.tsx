@@ -88,7 +88,7 @@ export const DrawerRight: FC<DrawerRightProps> = ({ onClose, isOpen }) => {
                 Upgrade now
               </Button>
             </LocalLink>
-            <Link href="https://help.lido.fi/en?chat=open" target="_blank">
+            <Link href="https://help.lido.fi/en" target="_blank">
               <Button
                 fullwidth
                 variant="outlined"
