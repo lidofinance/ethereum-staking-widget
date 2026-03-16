@@ -7,6 +7,7 @@ import {
   useWstethBalance,
   useWethBalance,
   useDappStatus,
+  useStethBalance,
 } from 'modules/web3';
 import { MELLOW_VAULTS_QUERY_SCOPE } from 'modules/mellow-meta-vaults/consts';
 
@@ -24,6 +25,7 @@ export const useEthVaultDepositFormData = () => {
   const ethBalanceQuery = useEthereumBalance();
   const wstethBalanceQuery = useWstethBalance();
   const wethBalanceQuery = useWethBalance();
+  const stethBalanceQuery = useStethBalance();
 
   const asyncValidationContextValue:
     | ETHDepositFormAsyncValidationContext
@@ -31,7 +33,8 @@ export const useEthVaultDepositFormData = () => {
     if (
       ethBalanceQuery.data == undefined ||
       wstethBalanceQuery.data == undefined ||
-      wethBalanceQuery.data == undefined
+      wethBalanceQuery.data == undefined ||
+      stethBalanceQuery.data == undefined
     ) {
       return undefined;
     }
@@ -46,8 +49,16 @@ export const useEthVaultDepositFormData = () => {
       [TOKEN_SYMBOLS.weth]: {
         balance: wethBalanceQuery.data,
       },
+      [TOKEN_SYMBOLS.steth]: {
+        balance: stethBalanceQuery.data,
+      },
     };
-  }, [ethBalanceQuery.data, wstethBalanceQuery.data, wethBalanceQuery.data]);
+  }, [
+    ethBalanceQuery.data,
+    wstethBalanceQuery.data,
+    wethBalanceQuery.data,
+    stethBalanceQuery.data,
+  ]);
 
   const asyncContext = useAwaiter(asyncValidationContextValue).awaiter;
 
@@ -63,6 +74,7 @@ export const useEthVaultDepositFormData = () => {
           [TOKEN_SYMBOLS.eth]: ethBalanceQuery.refetch,
           [TOKEN_SYMBOLS.wsteth]: wstethBalanceQuery.refetch,
           [TOKEN_SYMBOLS.weth]: wethBalanceQuery.refetch,
+          [TOKEN_SYMBOLS.steth]: stethBalanceQuery.refetch,
         }[tokenFormValue] ??
         // fallback for upgradable tokens,
         // which are not part of the form validation context and don't require refetching on deposit page after upgrade
@@ -89,6 +101,7 @@ export const useEthVaultDepositFormData = () => {
       ethBalanceQuery.refetch,
       wstethBalanceQuery.refetch,
       wethBalanceQuery.refetch,
+      stethBalanceQuery.refetch,
       queryClient,
     ],
   );
