@@ -43,10 +43,13 @@ export const AllocationTable: FC<AllocationTableV2Props> = ({
       </TheadStyled>
       <Tbody>
         {groups.map((group) => (
-          <AllocationGroupRow key={group.name} group={group} />
+          <AllocationGroupRow
+            key={`${group.name}-${group.allocation}`}
+            group={group}
+          />
         ))}
         {flatItems?.map((item) => (
-          <Tr key={item.name}>
+          <Tr key={`${item.name}-${item.allocation}`}>
             <TdStyled>
               <ProtocolNameStyled>
                 <ProtocolNamePercent>

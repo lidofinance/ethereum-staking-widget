@@ -42,10 +42,7 @@ export const VaultAllocation: FC<VaultAllocationProps> = (props) => {
     );
   }
 
-  if (
-    !allocationData ||
-    (!allocationData.groups?.length && !allocationData.flatItems?.length)
-  ) {
+  if (!allocationData.groups?.length && !allocationData.flatItems?.length) {
     return (
       <Section title="Allocation">
         <EmptyBlockStyled>No data available for now</EmptyBlockStyled>
