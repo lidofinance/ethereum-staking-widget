@@ -13,15 +13,16 @@ type SectionComponent = Component<
   {
     title?: React.ReactNode;
     headerDecorator?: React.ReactNode;
+    $noMargin?: boolean;
   }
 >;
 
 export const Section: SectionComponent = (props) => {
-  const { title, headerDecorator, children, ...rest } = props;
+  const { title, headerDecorator, $noMargin, children, ...rest } = props;
   const hasDecorator = !!headerDecorator;
 
   return (
-    <SectionStyle $noMargin={!title} {...rest}>
+    <SectionStyle $noMargin={!title || $noMargin} {...rest}>
       {(title || headerDecorator) && (
         <SectionHeaderStyle>
           {title && <SectionTitleStyle>{title}</SectionTitleStyle>}

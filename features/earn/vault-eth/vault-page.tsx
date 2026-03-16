@@ -84,6 +84,9 @@ const RISK_DISCLOSURE = (
   </>
 );
 
+const VAULT_ALLOCATION_FOOTER =
+  'Data is provided by Mellow’s API and reflects the most recent snapshot at the time of update. As a result, the TVL shown here may differ from the vault’s TVL due to the data timestamp';
+
 const DATA = {
   title: ETH_VAULT_TITLE,
   description: ETH_VAULT_DESCRIPTION,
@@ -112,7 +115,12 @@ export const EthVaultPage: FC<{
         sidePanel={<EthVaultPositionManager action={action} />}
         vaultName="ethVault"
         faqContent={<EarnEthFaq />}
-        strategyContent={<VaultAllocation vaultName="ethVault" apy={apy} />}
+        strategyContent={
+          <VaultAllocation
+            vaultName="ethVault"
+            footer={VAULT_ALLOCATION_FOOTER}
+          />
+        }
         matomo={{
           performanceTabEvent: MATOMO_EARN_EVENTS_TYPES.earnEthPerformance,
           strategyTabEvent: MATOMO_EARN_EVENTS_TYPES.earnEthStrategy,

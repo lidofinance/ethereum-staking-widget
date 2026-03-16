@@ -1,6 +1,5 @@
 import { FC } from 'react';
 import {
-  Block,
   ChartLine,
   ChartLineBorderType,
   ChartLineThresholdType,
@@ -17,7 +16,7 @@ import {
   LoaderWrapperStyled,
   EmptyBlockStyled,
   Footer,
-} from 'features/earn/shared/vault-allocation/styles';
+} from './styles';
 import { formatLastUpdatedDate } from 'features/earn/shared/vault-allocation/utils';
 
 import { AllocationTable } from './allocation-table/allocation-table';
@@ -26,7 +25,7 @@ import { VaultAllocationProps } from './types';
 import { useMetavaultAllocation } from './hooks/use-metavault-allocation';
 
 export const VaultAllocation: FC<VaultAllocationProps> = (props) => {
-  const { vaultName, apy, footer } = props;
+  const { vaultName, footer } = props;
 
   const vaultAddress = getContractAddress(CHAINS.Mainnet, vaultName);
 
@@ -36,11 +35,9 @@ export const VaultAllocation: FC<VaultAllocationProps> = (props) => {
   if (isLoading) {
     return (
       <Section title="Allocation">
-        <Block>
-          <LoaderWrapperStyled>
-            <Loader />
-          </LoaderWrapperStyled>
-        </Block>
+        <LoaderWrapperStyled>
+          <Loader />
+        </LoaderWrapperStyled>
       </Section>
     );
   }
@@ -58,33 +55,28 @@ export const VaultAllocation: FC<VaultAllocationProps> = (props) => {
 
   return (
     <Section
-      title="Allocation"
+      title=" "
       headerDecorator={
         <LastUpdatedStyled>
           Last updated: {formatLastUpdatedDate(allocationData.lastUpdated)}
         </LastUpdatedStyled>
       }
+      $noMargin
     >
-      <Block>
-        <ChartLine
-          border={ChartLineBorderType.rounded}
-          thresholdType={ChartLineThresholdType.dash}
-          data={allocationData.chartData}
-          height={12}
-          data-testid="allocation-chart"
-        />
-        <AllocationLegend data={allocationData.chartData} />
-        <AllocationTable
-          groups={allocationData.groups}
-          flatItems={allocationData.flatItems}
-        />
-        <AllocationSummary
-          apy={apy}
-          totalTvlUsd={allocationData.totalTvlUsd}
-          totalTvlWei={allocationData.totalTvlWei}
-        />
-        {footer && <Footer>{footer}</Footer>}
-      </Block>
+      <ChartLine
+        border={ChartLineBorderType.rounded}
+        thresholdType={ChartLineThresholdType.dash}
+        data={allocationData.chartData}
+        height={12}
+        data-testid="allocation-chart"
+      />
+      <AllocationLegend data={allocationData.chartData} />
+      <AllocationTable
+        groups={allocationData.groups}
+        flatItems={allocationData.flatItems}
+      />
+      <AllocationSummary totalTvlUsd={allocationData.totalTvlUsd} />
+      {footer && <Footer>{footer}</Footer>}
     </Section>
   );
 };

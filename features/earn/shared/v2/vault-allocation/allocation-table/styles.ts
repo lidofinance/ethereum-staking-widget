@@ -1,10 +1,11 @@
 import styled from 'styled-components';
-import { Table, Thead, Th, Td } from '@lidofinance/lido-ui';
+import { Table, Thead, Th, Td, Tr } from '@lidofinance/lido-ui';
 
 export const TableStyled = styled(Table)`
   width: calc(100% + ${({ theme }) => 2 * theme.spaceMap.xxl}px);
   margin: 0 ${({ theme }) => -theme.spaceMap.xxl}px;
   margin-top: 32px;
+  font-size: ${({ theme }) => theme.fontSizesMap.xs}px;
 
   ${({ theme }) => theme.mediaQueries.md} {
     width: calc(100% + ${({ theme }) => 2 * theme.spaceMap.lg}px);
@@ -43,11 +44,17 @@ export const ThWithTipStyled = styled(ThStyled)`
   }
 `;
 
+export const TrWithShiftStyled = styled(Tr)`
+  & > td:first-child {
+    padding-left: ${({ theme }) => theme.spaceMap.xxl}px;
+  }
+`;
+
 export const TdStyled = styled(Td)`
   font-weight: 400;
   line-height: 24px;
   font-size: ${({ theme }) => theme.fontSizesMap.xs}px;
-  padding: 8px;
+  padding: 14px;
 `;
 
 export const TdNarrowStyled = styled(TdStyled)`
@@ -70,6 +77,10 @@ export const ProtocolNameStyled = styled.div`
   gap: 4px;
 `;
 
+export const ProtocolNamePercent = styled.span`
+  font-weight: 700;
+`;
+
 // Group row styles
 export const GroupTdStyled = styled(TdStyled)`
   cursor: pointer;
@@ -78,35 +89,16 @@ export const GroupTdStyled = styled(TdStyled)`
 export const GroupNameStyled = styled.div`
   display: flex;
   align-items: center;
-  gap: ${({ theme }) => theme.spaceMap.sm}px;
-  font-weight: 700;
-  font-size: ${({ theme }) => theme.fontSizesMap.sm}px;
+  gap: 8px;
 `;
 
-export const ChevronStyled = styled.span<{ $open: boolean }>`
+export const ChevronWrapper = styled.span<{ $open: boolean }>`
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 20px;
-  height: 20px;
   flex-shrink: 0;
+  width: 24px;
+  height: 24px;
   transition: transform 0.2s ease;
-  transform: ${({ $open }) => ($open ? 'rotate(0deg)' : 'rotate(-90deg)')};
-
-  &::after {
-    content: '';
-    display: block;
-    width: 7px;
-    height: 7px;
-    border-right: 2px solid currentColor;
-    border-bottom: 2px solid currentColor;
-    transform: rotate(45deg);
-    margin-top: -4px;
-  }
-`;
-
-// Flat rows (Other allocation, Available) — same weight as group rows
-export const FlatTdStyled = styled(TdStyled)`
-  font-weight: 700;
-  font-size: ${({ theme }) => theme.fontSizesMap.sm}px;
+  transform: ${({ $open }) => ($open ? 'rotate(90deg)' : 'rotate(0deg)')};
 `;

@@ -25,18 +25,31 @@ export const AllocationSummary: FC<AllocationSummaryProps> = ({
     <DataTableStyled>
       <DataTableRowStyled title="Total">
         <DataTableRowContentStyled>
-          <FormatLargeAmount amount={totalTvlUsd} />
-          <FormatTokenStyled
-            amount={totalTvlWei}
-            symbol={'ETH'}
-            shortened
-            data-testid="ggv-allocation-total-tvl-eth"
-          />
+          {totalTvlUsd !== undefined && (
+            <FormatLargeAmount
+              amount={totalTvlUsd}
+              data-testid="vault-allocation-total-tvl-usd"
+            />
+          )}
+          {totalTvlWei !== undefined && (
+            <FormatTokenStyled
+              amount={totalTvlWei}
+              symbol={'ETH'}
+              shortened
+              data-testid="vault-allocation-total-tvl-eth"
+            />
+          )}
         </DataTableRowContentStyled>
       </DataTableRowStyled>
-      <DataTableRowStyled title="APY">
-        <FormatPercent value={apy} decimals="percent" />
-      </DataTableRowStyled>
+      {apy !== undefined && (
+        <DataTableRowStyled title="APY">
+          <FormatPercent
+            value={apy}
+            decimals="percent"
+            data-testid="vault-allocation-apy"
+          />
+        </DataTableRowStyled>
+      )}
     </DataTableStyled>
   );
 };

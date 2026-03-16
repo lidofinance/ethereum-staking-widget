@@ -5,15 +5,18 @@ import { FormatPercent } from 'shared/formatters/format-percent';
 import { FormatLargeAmount } from 'shared/formatters/format-large-amount';
 import { VaultTip } from 'features/earn/shared/vault-tip';
 import { ProtocolIcon } from 'features/earn/shared/vault-allocation/protocol-icon';
+import { ReactComponent as ChevronIcon } from 'assets/icons/chevron-gray-right.svg';
 
 import { AllocationGroup } from '../types';
 import {
-  ChevronStyled,
+  ChevronWrapper,
   GroupTdStyled,
   GroupNameStyled,
   ProtocolNameStyled,
   TdNarrowStyled,
   TdWithIconStyled,
+  TrWithShiftStyled,
+  ProtocolNamePercent,
 } from './styles';
 
 type AllocationGroupRowProps = {
@@ -28,23 +31,26 @@ export const AllocationGroupRow: FC<AllocationGroupRowProps> = ({ group }) => {
       <Tr onClick={() => setOpen((v) => !v)}>
         <GroupTdStyled>
           <GroupNameStyled>
-            <ChevronStyled $open={open} />
+            <ChevronWrapper $open={open}>
+              <ChevronIcon />
+            </ChevronWrapper>
             <ProtocolNameStyled>
+              <ProtocolNamePercent>
+                <FormatPercent value={group.allocation} decimals="percent" />
+              </ProtocolNamePercent>
               {group.name}
               {group.info && <VaultTip>{group.info}</VaultTip>}
             </ProtocolNameStyled>
           </GroupNameStyled>
         </GroupTdStyled>
-        <TdNarrowStyled align="right">
-          <FormatPercent value={group.allocation} decimals="percent" />
-        </TdNarrowStyled>
+        <TdNarrowStyled align="right"></TdNarrowStyled>
         <TdNarrowStyled align="right">
           <FormatLargeAmount amount={group.tvlUSD} />
         </TdNarrowStyled>
       </Tr>
       {open &&
         group.items.map((item) => (
-          <Tr key={`${item.id}-${item.chain}`}>
+          <TrWithShiftStyled key={`${item.id}-${item.chain}`}>
             <TdWithIconStyled>
               <ProtocolIcon
                 mainIcon={item.icon ? <item.icon /> : null}
@@ -58,7 +64,7 @@ export const AllocationGroupRow: FC<AllocationGroupRowProps> = ({ group }) => {
             <TdNarrowStyled align="right">
               <FormatLargeAmount amount={item.tvlUSD} />
             </TdNarrowStyled>
-          </Tr>
+          </TrWithShiftStyled>
         ))}
     </>
   );

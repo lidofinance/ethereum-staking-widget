@@ -8,6 +8,7 @@ import {
   AllocationTableData,
   FlatAllocationItem,
 } from '../types';
+import { ALLOCATION_ICONS_BY_ID, AllocationProtocolId } from '../consts';
 
 const parseTvlUSD = (amount: string, decimals: number): number =>
   Number(formatUnits(BigInt(amount), decimals));
@@ -34,6 +35,7 @@ export const useAllocationData = (
             .map((sub) => ({
               label: sub.label,
               id: sub.id,
+              icon: ALLOCATION_ICONS_BY_ID[sub.id as AllocationProtocolId],
               chain: sub.chain,
               allocation: sub.sharePercent,
               tvlUSD:

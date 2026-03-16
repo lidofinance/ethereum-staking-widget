@@ -83,6 +83,9 @@ const RISK_DISCLOSURE = (
   </>
 );
 
+const VAULT_ALLOCATION_FOOTER =
+  'Data is provided by Mellow’s API and reflects the most recent snapshot at the time of update. As a result, the TVL shown here may differ from the vault’s TVL due to the data timestamp';
+
 const DATA = {
   title: USD_VAULT_TITLE,
   description: USD_VAULT_DESCRIPTION,
@@ -111,7 +114,12 @@ export const VaultPageUSD: FC<{
         sidePanel={<UsdVaultPositionManager action={action} />}
         vaultName="usdVault"
         faqContent={<EarnUsdFaq />}
-        strategyContent={<VaultAllocation vaultName="usdVault" apy={apy} />}
+        strategyContent={
+          <VaultAllocation
+            vaultName="usdVault"
+            footer={VAULT_ALLOCATION_FOOTER}
+          />
+        }
         matomo={{
           performanceTabEvent: MATOMO_EARN_EVENTS_TYPES.earnUsdPerformance,
           strategyTabEvent: MATOMO_EARN_EVENTS_TYPES.earnUsdStrategy,
