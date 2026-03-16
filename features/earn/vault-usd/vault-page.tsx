@@ -4,7 +4,6 @@ import { Link } from '@lidofinance/lido-ui';
 import { PartnerNethermindIconCircle, VaultUsdIcon } from 'assets/earn-v2';
 import { PartnerMellowIcon } from 'assets/earn';
 import { VaultPage } from 'features/earn/shared/v2/vault-page/vault-page';
-import { StrategyContent } from 'features/earn/shared/v2/strategy-content';
 import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo';
 
 import { UsdVaultPositionManager } from './position-manager/position-manager';
@@ -15,6 +14,7 @@ import { useUsdVaultApy } from './hooks/use-vault-apy';
 import { Disclaimers } from '../shared/v2/disclaimers';
 import { UsdVaultApyHint } from './components/apy-hint';
 import { USD_VAULT_DESCRIPTION, USD_VAULT_TITLE } from './consts';
+import { VaultAllocation } from '../shared/v2/vault-allocation/vault-allocation';
 
 const FEES = [
   { label: 'Performance fee', value: '10%' },
@@ -83,6 +83,9 @@ const RISK_DISCLOSURE = (
   </>
 );
 
+const VAULT_ALLOCATION_FOOTER =
+  'Data is provided by Mellow’s API and reflects the most recent snapshot at the time of update. As a result, the TVL shown here may differ from the vault’s TVL due to the data timestamp';
+
 const DATA = {
   title: USD_VAULT_TITLE,
   description: USD_VAULT_DESCRIPTION,
@@ -92,54 +95,6 @@ const DATA = {
   generalInfoRight: GENERAL_INFO_RIGHT,
   riskDisclosure: RISK_DISCLOSURE,
 } as const;
-
-const STATIC_ALLOCATIONS_CONTENT = [
-  {
-    protocol: 'Aave',
-    badge: 'ethereum',
-    name: 'AAVE USDT',
-  },
-  {
-    protocol: 'Spark',
-    badge: 'ethereum',
-    name: 'Spark USDC',
-  },
-  {
-    protocol: 'Spark',
-    badge: 'ethereum',
-    name: 'Spark USDT',
-  },
-  {
-    protocol: 'Ethena',
-    badge: 'ethereum',
-    name: 'Ethena sUSDE',
-  },
-  {
-    protocol: 'Syrup',
-    badge: 'ethereum',
-    name: 'syrupUSDC',
-  },
-  {
-    protocol: 'Sentora',
-    badge: 'ethereum',
-    name: 'Sentora  Morpho vault PYUSD',
-  },
-  {
-    protocol: 'Morpho',
-    badge: 'base',
-    name: 'Morpho USDC against cbBTC',
-  },
-  {
-    protocol: 'Morpho',
-    badge: 'ethereum',
-    name: 'Morpho USDC against reUSD',
-  },
-  {
-    protocol: 'Aura',
-    badge: 'ethereum',
-    name: 'Aura/Balancer USDT/USDC/GHO pool',
-  },
-];
 
 export const VaultPageUSD: FC<{
   action: typeof EARN_VAULT_DEPOSIT_SLUG | typeof EARN_VAULT_WITHDRAW_SLUG;
@@ -160,7 +115,10 @@ export const VaultPageUSD: FC<{
         vaultName="usdVault"
         faqContent={<EarnUsdFaq />}
         strategyContent={
-          <StrategyContent allocations={STATIC_ALLOCATIONS_CONTENT} />
+          <VaultAllocation
+            vaultName="usdVault"
+            footer={VAULT_ALLOCATION_FOOTER}
+          />
         }
         matomo={{
           performanceTabEvent: MATOMO_EARN_EVENTS_TYPES.earnUsdPerformance,
