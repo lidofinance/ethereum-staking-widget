@@ -6,7 +6,7 @@ import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo';
 import { trackMatomoEvent } from 'utils/track-matomo-event';
 import { getSTGDepositQueueWritableContract } from '../../contracts';
 import { useTxModalStagesSTGDepositCancel } from './use-stg-deposit-cancel-tx-modal';
-import { STG_DEPOSIT_TOKENS } from '../form-context/types';
+import type { STGDepositTokens } from '../form-context/types';
 import { useSTGDepositFormData } from './use-stg-deposit-form-data';
 
 export const useSTGDepositCancel = (onRetry?: () => void) => {
@@ -19,7 +19,7 @@ export const useSTGDepositCancel = (onRetry?: () => void) => {
   const [isCanceling, setIsCanceling] = useState(false);
 
   const cancel = useCallback(
-    async (amount: bigint, token: STG_DEPOSIT_TOKENS) => {
+    async (amount: bigint, token: STGDepositTokens) => {
       invariant(address, 'Address is not available');
 
       const depositQueue = getSTGDepositQueueWritableContract({

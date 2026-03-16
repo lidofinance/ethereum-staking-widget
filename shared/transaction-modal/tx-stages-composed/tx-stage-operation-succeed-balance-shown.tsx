@@ -3,6 +3,7 @@ import styled from 'styled-components';
 
 import { InlineLoader } from '@lidofinance/lido-ui';
 import { useTokenAddress } from 'shared/hooks/use-token-address';
+import { getTokenDecimals } from 'utils/token-decimals';
 
 import { TxAmount } from '../tx-stages-parts/tx-amount';
 import { SuccessText } from '../tx-stages-parts/success-text';
@@ -40,7 +41,11 @@ export const TxStageOperationSucceedBalanceShown = ({
   const tokenToWalletAddress = useTokenAddress(balanceToken);
 
   const balanceNode = balance ? (
-    <TxAmount amount={balance} symbol={balanceToken} />
+    <TxAmount
+      amount={balance}
+      symbol={balanceToken}
+      decimals={getTokenDecimals(balanceToken)}
+    />
   ) : (
     <SkeletonBalance />
   );

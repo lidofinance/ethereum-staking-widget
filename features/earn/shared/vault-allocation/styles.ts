@@ -20,6 +20,9 @@ export const AllocationLegendItem = styled.div`
   display: flex;
   align-items: center;
   gap: 4px;
+  font-weight: 400;
+  font-size: ${({ theme }) => theme.fontSizesMap.xxs}px;
+  color: ${({ theme }) => theme.colors.textSecondary};
 `;
 
 export const DataTableStyled = styled(DataTable)`
@@ -32,6 +35,7 @@ export const DataTableRowStyled = styled(DataTableRow)`
   font-weight: 700;
   margin-bottom: 0px;
   margin-top: 8px;
+  padding: 10px 0;
 
   & > div:first-child {
     color: ${({ theme }) => theme.colors.text};

@@ -3,6 +3,7 @@ import { useController } from 'react-hook-form';
 import { InputAmount } from 'shared/components/input-amount';
 
 import { getTokenDisplayName } from 'utils/getTokenDisplayName';
+import { getTokenDecimals } from 'utils/token-decimals';
 import { isValidationErrorTypeValidate } from 'shared/hook-form/validation/validation-error';
 
 type TokenAmountInputHookFormProps = Partial<
@@ -31,6 +32,8 @@ export const TokenAmountInputHookForm = ({
   const hasErrorHighlight = isValidationErrorTypeValidate(error?.type);
   // allows to show error state without message
   const errorMessage = hasErrorHighlight && (error?.message || true);
+  const decimals = getTokenDecimals(token);
+
   return (
     <InputAmount
       {...props}
@@ -40,6 +43,7 @@ export const TokenAmountInputHookForm = ({
       isLocked={isLocked}
       maxValue={maxValue}
       label={`${getTokenDisplayName(token)} amount`}
+      decimals={decimals}
       fullwidth
     />
   );

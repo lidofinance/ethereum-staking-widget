@@ -13,24 +13,28 @@ import { DVVDepositWillReceive } from './dvv-deposit-will-recieve';
 import { DVVDepositWarning } from './dvv-deposit-warning';
 
 export const DVVDepositForm: FC = () => {
-  const { isDVVAvailable } = useDVVAvailable();
+  const { isDVVAvailable, isVaultDeprecated } = useDVVAvailable();
   return (
     <DVVDepositFormProvider>
       <VaultForm data-testid="deposit-form">
         <DVVDepositWarning />
-        <VaultFormSection>
-          <DVVDepositAvailable />
-          <DVVDepositInputGroup />
-        </VaultFormSection>
-        <DVVDepositWillReceive />
-        <VaultWarning variant="info">
-          Withdrawing less than 3 days after deposit reduces rewards.
-          <br />
-          Withdrawals are only in wstETH, regardless of the deposit asset.
-        </VaultWarning>
-        <VaultSubmitButton isAvailable={isDVVAvailable}>
-          Deposit
-        </VaultSubmitButton>
+        {!isVaultDeprecated && (
+          <>
+            <VaultFormSection>
+              <DVVDepositAvailable />
+              <DVVDepositInputGroup />
+            </VaultFormSection>
+            <DVVDepositWillReceive />
+            <VaultWarning variant="info">
+              Withdrawing less than 3 days after deposit reduces rewards.
+              <br />
+              Withdrawals are only in wstETH, regardless of the deposit asset.
+            </VaultWarning>
+            <VaultSubmitButton isAvailable={isDVVAvailable}>
+              Deposit
+            </VaultSubmitButton>
+          </>
+        )}
       </VaultForm>
     </DVVDepositFormProvider>
   );

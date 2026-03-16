@@ -18,10 +18,11 @@ type Props = {
   title?: ReactNode;
   subtitle?: ReactNode;
   containerSize?: ContainerProps['size'];
+  stylesV2?: boolean;
 };
 
 export const Layout: FC<PropsWithChildren<Props>> = (props) => {
-  const { title, subtitle, containerSize } = props;
+  const { title, subtitle, containerSize, stylesV2 } = props;
   const { children } = props;
 
   return (
@@ -33,7 +34,7 @@ export const Layout: FC<PropsWithChildren<Props>> = (props) => {
             <IPFSInfoBox />
           </IPFSInfoBoxOnlyMobileAndPortableWrapper>
         )}
-        <LayoutTitleStyle>{title}</LayoutTitleStyle>
+        <LayoutTitleStyle $v2={stylesV2}>{title}</LayoutTitleStyle>
         <LayoutSubTitleStyle>{subtitle}</LayoutSubTitleStyle>
         {children}
       </Main>

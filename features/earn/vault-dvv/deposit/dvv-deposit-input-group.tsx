@@ -12,7 +12,7 @@ import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo';
 
 import type { DVVDepositFormValues } from './types';
 import { useDVVDepositForm } from './form-context';
-import { DVV_DEPOSABLE_TOKENS } from '../consts';
+import { DVV_DEPOSIT_TOKENS } from '../consts';
 import { useDVVDepositEthGasLimit } from './hooks/use-dvv-deposit-eth-gas-limit';
 
 const trackTokenSelect = (value: TOKEN_DISPLAY_NAMES) => {
@@ -28,7 +28,7 @@ const trackTokenSelect = (value: TOKEN_DISPLAY_NAMES) => {
   }
 };
 
-const OPTIONS = DVV_DEPOSABLE_TOKENS.map((token) => ({ token }));
+const OPTIONS = DVV_DEPOSIT_TOKENS.map((token) => ({ token }));
 
 export const DVVDepositInputGroup: React.FC = () => {
   const token = useWatch<DVVDepositFormValues, 'token'>({ name: 'token' });

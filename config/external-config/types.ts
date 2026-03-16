@@ -24,6 +24,7 @@ export type EarnVaultConfigEntry = {
   withdrawPauseReasonText?: string;
   apy?: VaultAPY;
   showNew?: boolean;
+  deprecated?: boolean;
   disabled?: boolean;
 };
 
@@ -66,6 +67,7 @@ export enum ManifestConfigPageEnum {
   Settings = '/settings',
   Referral = '/referral',
   Earn = '/earn',
+  EarnNew = '/earn-new',
 }
 
 export type ManifestConfigPage = `${ManifestConfigPageEnum}`;

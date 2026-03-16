@@ -3,24 +3,27 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { type QueryKey, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
+  getContract,
+  type Address,
+  type WatchContractEventOnLogsFn,
+} from 'viem';
+import {
   useBalance,
   useReadContract,
   useWatchContractEvent,
   useConnection,
 } from 'wagmi';
-import { erc20abi } from '@lidofinance/lido-ethereum-sdk/erc20';
+import type { GetBalanceData } from 'wagmi/query';
+import {
+  erc20abi,
+  type AbstractLidoSDKErc20,
+} from '@lidofinance/lido-ethereum-sdk/erc20';
 
 import { useDappStatus, useLidoSDK, useLidoSDKL2 } from 'modules/web3';
 import { config } from 'config';
-
-import {
-  getContract,
-  type Address,
-  type WatchContractEventOnLogsFn,
-} from 'viem';
-import type { GetBalanceData } from 'wagmi/query';
-import type { AbstractLidoSDKErc20 } from '@lidofinance/lido-ethereum-sdk/erc20';
 import { getTokenAddress } from 'config/networks/token-address';
+import { Token, TOKEN_SYMBOLS } from 'consts/tokens';
+import { useUsdcUsd } from 'shared/hooks/use-usdc-usd';
 
 const selectBalance = (data: GetBalanceData) => data.value;
 
@@ -195,7 +198,7 @@ export const useTokenTransferSubscription = () => {
 };
 
 // NB: contract can be undefined but for better wagmi typings is casted as NoNNullable
-const useTokenBalance = (
+export const useTokenBalance = (
   contract: TokenContract,
   address?: Address,
   shouldSubscribe = true,
@@ -327,6 +330,49 @@ export const useWethBalance = ({
   return {
     ...balanceData,
     tokenAddress: wethAddress,
+    isLoading: balanceData.isLoading,
+  };
+};
+
+export const useStablecoinBalance = ({
+  token,
+  account,
+  shouldSubscribeToUpdates = true,
+}: {
+  token: Extract<Token, 'usdc' | 'usdt'>;
+  account?: Address;
+  shouldSubscribeToUpdates?: boolean;
+}) => {
+  const { core } = useLidoSDK();
+  const { address, chainId, isChainMatched } = useDappStatus();
+  const mergedAccount = account ?? address;
+
+  const enabled = !!mergedAccount && isChainMatched;
+
+  const tokenAddress = getTokenAddress(chainId, TOKEN_SYMBOLS[token]);
+
+  const contract =
+    tokenAddress && enabled
+      ? getContract({
+          address: tokenAddress,
+          client: core.rpcProvider,
+          abi: erc20abi,
+        })
+      : undefined;
+
+  const balanceData = useTokenBalance(
+    contract as any,
+    mergedAccount,
+    shouldSubscribeToUpdates,
+  );
+
+  const { usdcAmount, usdAmount } = useUsdcUsd(balanceData.data);
+
+  return {
+    ...balanceData,
+    usdcAmount,
+    usdAmount,
+    tokenAddress: contract ? contract.address : undefined,
     isLoading: balanceData.isLoading,
   };
 };

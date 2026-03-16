@@ -25,9 +25,13 @@ export const useVaultAvailable = ({
     !!getContractAddress(chainId, contractName) &&
     isSupportedChain;
 
+  const isVaultDeprecated = vaultConfig?.deprecated === true;
+
   // deposit and withdraw features are enabled by default
   // For disabling a feature - it must be explicitly disabled in the vault config
-  const isDepositEnabled = isVaultAvailable && vaultConfig?.deposit !== false;
+  // 'deprecated' flag is also supported for deposits, as some vaults are no longer accepting deposits but still allow withdrawals
+  const isDepositEnabled =
+    isVaultAvailable && vaultConfig?.deposit !== false && !isVaultDeprecated;
   const isWithdrawEnabled = isVaultAvailable && vaultConfig?.withdraw !== false;
 
   const depositPauseReasonText = vaultConfig?.depositPauseReasonText;
@@ -35,6 +39,7 @@ export const useVaultAvailable = ({
 
   return {
     isVaultAvailable,
+    isVaultDeprecated,
     isDepositEnabled,
     isWithdrawEnabled,
     depositPauseReasonText,

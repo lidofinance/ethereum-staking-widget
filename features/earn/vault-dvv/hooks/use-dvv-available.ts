@@ -4,6 +4,7 @@ import { useVaultAvailable } from 'features/earn/shared/hooks/use-vault-availabl
 export const useDVVAvailable = () => {
   const {
     isVaultAvailable: isDVVAvailable,
+    isVaultDeprecated,
     isDepositEnabled,
     isWithdrawEnabled,
     depositPauseReasonText,
@@ -12,6 +13,7 @@ export const useDVVAvailable = () => {
 
   return {
     isDVVAvailable,
+    isVaultDeprecated,
     isDepositEnabled,
     isWithdrawEnabled,
     depositPauseReasonText,

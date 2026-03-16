@@ -6,13 +6,13 @@ import { Layout } from 'shared/components';
 import { getDefaultStaticProps } from 'utilsApi/get-default-static-props';
 import { EarnVaultsList } from 'features/earn';
 
-const PAGE_TITLE = 'Earn';
+const PAGE_TITLE = 'Lido Earn';
 const PAGE_DESCRIPTION =
-  'Deposit ETH/WETH/stETH/wstETH into vaults to earn higher rewards';
+  "Deploy ETH and USD stablecoins into DeFi vaults for on-chain yield through the world's leading protocols.";
 
 const Earn: FC = () => {
   return (
-    <Layout title={PAGE_TITLE} subtitle={PAGE_DESCRIPTION}>
+    <Layout stylesV2 title={PAGE_TITLE}>
       <Head>
         <title>{`${PAGE_TITLE} | Lido`}</title>
         <meta name="description" content={PAGE_DESCRIPTION} />

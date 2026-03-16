@@ -1,11 +1,13 @@
 import { EARN_PATH } from 'consts/urls';
-import { EarnUpToBannerIcon } from 'assets/earn';
-import { useEarnVaultsApr } from 'shared/hooks/use-earn-vaults-apr';
+import { EARN_VAULT_ETH_SLUG } from 'features/earn/consts';
+import { VaultEthIcon } from 'assets/earn-v2';
 import { trackMatomoEvent } from 'utils/track-matomo-event';
 import { MATOMO_CLICK_EVENTS_TYPES } from 'consts/matomo';
 import { FormatPercent } from 'shared/formatters/format-percent';
 import { useModalActions } from 'providers/modal-provider';
 import { useEarnBannerState } from 'features/earn/shared/hooks/use-earn-banner-state';
+import { useEthVaultApy } from 'features/earn/vault-eth/hooks/use-vault-apy';
+import { useEthVaultAvailable } from 'features/earn/vault-eth/hooks/use-vault-available';
 
 import {
   Message,
@@ -28,9 +30,13 @@ export const EarnUpToBanner = (props: EarnUpToBannerProps) => {
 
   const { showOnStakeForm, showAfterStake } = useEarnBannerState();
 
+  const { isDepositEnabled: isEthVaultDepositEnabled } = useEthVaultAvailable();
+
   const { closeModal } = useModalActions();
 
-  const { maxValue } = useEarnVaultsApr();
+  const { apy } = useEthVaultApy();
+
+  if (!isEthVaultDepositEnabled) return null;
 
   if (
     (props.placement === 'stakeForm' && !showOnStakeForm) ||
@@ -45,20 +51,20 @@ export const EarnUpToBanner = (props: EarnUpToBannerProps) => {
         <MessageContainer>
           <Message>
             <span>
-              {maxValue ? (
+              {apy ? (
                 <>
                   <Nowrap>
-                    Earn up to{' '}
-                    <FormatPercent value={maxValue} decimals="percent" />* APY
+                    Earn up to <FormatPercent value={apy} decimals="percent" />{' '}
+                    APY*
                   </Nowrap>
                   <br />
-                  <Nowrap>with Lido Earn</Nowrap>
+                  <Nowrap>with EarnETH</Nowrap>
                 </>
               ) : (
                 <>
-                  <Nowrap>Earn APY</Nowrap>
+                  <Nowrap>Earn APY*</Nowrap>
                   <br />
-                  <Nowrap>with Lido Earn</Nowrap>
+                  <Nowrap>with EarnETH</Nowrap>
                 </>
               )}
             </span>
@@ -66,12 +72,12 @@ export const EarnUpToBanner = (props: EarnUpToBannerProps) => {
         </MessageContainer>
         <LogoContainer>
           <IconWrapper>
-            <EarnUpToBannerIcon width={114} height={88} />
+            <VaultEthIcon width={140} height={140} />
           </IconWrapper>
         </LogoContainer>
       </InnerContainer>
       <OverlayLink
-        href={EARN_PATH}
+        href={`${EARN_PATH}/${EARN_VAULT_ETH_SLUG}`}
         onClick={() => {
           trackMatomoEvent(matomoEvent);
           closeModal();
