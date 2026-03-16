@@ -8,7 +8,12 @@ import {
   AllocationTableData,
   FlatAllocationItem,
 } from '../types';
-import { ALLOCATION_ICONS_BY_ID, AllocationProtocolId } from '../consts';
+import {
+  type AllocationProtocolId,
+  ALLOCATION_ICONS_BY_ID,
+  ALLOCATION_PROTOCOL_IDS_KNOWN,
+  ALLOCATION_TOKEN_IDS_AVAILABLE,
+} from '../consts';
 
 const parseTvlUSD = (amount: string, decimals: number): number =>
   Number(formatUnits(BigInt(amount), decimals));
@@ -22,30 +27,83 @@ export const useAllocationData = (
 
     const groups: AllocationGroup[] = [];
     const flatItems: FlatAllocationItem[] = [];
+    let availableFlatAlloc = 0;
+    let availableFlatTvl = 0;
+    let othersFlatAlloc = 0;
+    let othersFlatTvl = 0;
 
     for (const alloc of apiData.allocations) {
       const tvlUSD = parseTvlUSD(alloc.tvl.usd, alloc.tvl.usd_decimals);
 
       if (alloc.type === 'nested') {
-        groups.push({
-          name: alloc.label,
-          allocation: alloc.sharePercent,
-          tvlUSD,
-          items: alloc.allocations
-            .map((sub) => ({
+        let availableAlloc = 0;
+        let availableTvl = 0;
+        let othersAlloc = 0;
+        let othersTvl = 0;
+        const knownItems = [];
+
+        for (const sub of alloc.allocations) {
+          const subTvl = tvlUSD * (sub.sharePercent / 100);
+
+          if (ALLOCATION_TOKEN_IDS_AVAILABLE.includes(sub.id)) {
+            availableAlloc += sub.sharePercent;
+            availableTvl += subTvl;
+          } else if (
+            !ALLOCATION_PROTOCOL_IDS_KNOWN.includes(
+              sub.id as AllocationProtocolId,
+            )
+          ) {
+            othersAlloc += sub.sharePercent;
+            othersTvl += subTvl;
+          } else {
+            knownItems.push({
               label: sub.label,
               id: sub.id,
               icon: ALLOCATION_ICONS_BY_ID[sub.id as AllocationProtocolId],
               chain: sub.chain,
               allocation: sub.sharePercent,
-              tvlUSD:
-                Number(
-                  formatUnits(BigInt(alloc.tvl.usd), alloc.tvl.usd_decimals),
-                ) *
-                (sub.sharePercent / 100),
-            }))
-            .filter((item) => Number((item.allocation / 100).toFixed(2)) > 0),
+              tvlUSD: subTvl,
+            });
+          }
+        }
+
+        if (availableAlloc > 0)
+          knownItems.push({
+            label: 'Available',
+            id: 'available',
+            icon: undefined,
+            chain: '',
+            allocation: availableAlloc,
+            tvlUSD: availableTvl,
+          });
+        if (othersAlloc > 0)
+          knownItems.push({
+            label: 'Others',
+            id: 'others',
+            icon: undefined,
+            chain: '',
+            allocation: othersAlloc,
+            tvlUSD: othersTvl,
+          });
+
+        groups.push({
+          name: alloc.label,
+          allocation: alloc.sharePercent,
+          tvlUSD,
+          items: knownItems.filter(
+            (item) => Number((item.allocation / 100).toFixed(2)) > 0,
+          ),
         });
+      } else if (ALLOCATION_TOKEN_IDS_AVAILABLE.includes(alloc.id)) {
+        availableFlatAlloc += alloc.sharePercent;
+        availableFlatTvl += tvlUSD;
+      } else if (
+        !ALLOCATION_PROTOCOL_IDS_KNOWN.includes(
+          alloc.id as AllocationProtocolId,
+        )
+      ) {
+        othersFlatAlloc += alloc.sharePercent;
+        othersFlatTvl += tvlUSD;
       } else {
         flatItems.push({
           name: alloc.label,
@@ -54,6 +112,19 @@ export const useAllocationData = (
         });
       }
     }
+
+    if (availableFlatAlloc > 0)
+      flatItems.push({
+        name: 'Available',
+        allocation: availableFlatAlloc,
+        tvlUSD: availableFlatTvl,
+      });
+    if (othersFlatAlloc > 0)
+      flatItems.push({
+        name: 'Others',
+        allocation: othersFlatAlloc,
+        tvlUSD: othersFlatTvl,
+      });
 
     const filteredGroups = groups.filter(
       (item) => Number((item.allocation / 100).toFixed(2)) > 0,
