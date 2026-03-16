@@ -50,6 +50,8 @@ export const EarnVaultsList: FC = () => {
     }
   });
 
+  const hasDeprecatedVaults = deprecatedVaults.length > 0;
+
   return (
     <>
       <ListSubtitle>
@@ -76,21 +78,23 @@ export const EarnVaultsList: FC = () => {
           })}
         </CardsStack>
 
-        <AccordionTransparent
-          summary={
-            <AccordionTitle data-testid={'upgradingVaults'}>
-              Upgrading vaults
-            </AccordionTitle>
-          }
-          withoutBorder
-        >
-          <CardsStack>
-            {deprecatedVaults.map((vault) => {
-              const VaultCard = VAULT_CARDS[vault.name];
-              return <VaultCard key={vault.name} />;
-            })}
-          </CardsStack>
-        </AccordionTransparent>
+        {hasDeprecatedVaults && (
+          <AccordionTransparent
+            summary={
+              <AccordionTitle data-testid={'upgradingVaults'}>
+                Upgrading vaults
+              </AccordionTitle>
+            }
+            withoutBorder
+          >
+            <CardsStack>
+              {deprecatedVaults.map((vault) => {
+                const VaultCard = VAULT_CARDS[vault.name];
+                return <VaultCard key={vault.name} />;
+              })}
+            </CardsStack>
+          </AccordionTransparent>
+        )}
 
         <DisclaimerSection>
           <AprDisclaimer mentionAPY />
