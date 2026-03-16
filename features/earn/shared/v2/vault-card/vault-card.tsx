@@ -76,7 +76,7 @@ export const VaultCard: React.FC<VaultCardProps> = ({
   )?.deprecated;
 
   return (
-    <CardWrapper $variant={variant}>
+    <CardWrapper $variant={variant} data-testid={`${urlSlug}-vault-card`}>
       <CardHeader>
         <CardHeaderContent>
           <CardTitle>
@@ -143,6 +143,7 @@ export const VaultCard: React.FC<VaultCardProps> = ({
         <LocalLink
           href={`${EARN_PATH}/${urlSlug}/${EARN_VAULT_DEPOSIT_SLUG}`}
           onClick={depositLinkCallback}
+          data-testid={'open-vault-btn'}
         >
           <Button fullwidth variant="translucent">
             {ctaLabel}
