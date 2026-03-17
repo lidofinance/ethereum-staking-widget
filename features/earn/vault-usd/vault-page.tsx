@@ -6,6 +6,8 @@ import { PartnerMellowIcon } from 'assets/earn';
 import { VaultPage } from 'features/earn/shared/v2/vault-page/vault-page';
 import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo';
 
+import { VaultAllocation } from '../shared/v2/vault-allocation/vault-allocation';
+
 import { UsdVaultPositionManager } from './position-manager/position-manager';
 import { EarnUsdFaq } from './faq/faq';
 import { EARN_VAULT_DEPOSIT_SLUG, EARN_VAULT_WITHDRAW_SLUG } from '../consts';
@@ -14,7 +16,7 @@ import { useUsdVaultApy } from './hooks/use-vault-apy';
 import { Disclaimers } from '../shared/v2/disclaimers';
 import { UsdVaultApyHint } from './components/apy-hint';
 import { USD_VAULT_DESCRIPTION, USD_VAULT_TITLE } from './consts';
-import { VaultAllocation } from '../shared/v2/vault-allocation/vault-allocation';
+import { ProtectedTooltip } from './protected-tooltip';
 
 const FEES = [
   { label: 'Performance fee', value: '10%' },
@@ -131,6 +133,7 @@ export const VaultPageUSD: FC<{
           clickChartsApy1m: MATOMO_EARN_EVENTS_TYPES.earnUsdPerformanceApy1m,
           clickChartsApy3m: MATOMO_EARN_EVENTS_TYPES.earnUsdPerformanceApy3m,
         }}
+        protectedBadgeTooltipText={<ProtectedTooltip />}
       />
       <Disclaimers />
     </>

@@ -18,6 +18,8 @@ import {
   ChevronsUpIcon,
   StatValueIcon,
   StyledTooltip,
+  BadgeStyled,
+  TitleTextStyled,
 } from './styles';
 import { LocalLink } from 'shared/components/local-link';
 import { EARN_PATH } from 'consts/urls';
@@ -25,6 +27,7 @@ import { EARN_VAULT_DEPOSIT_SLUG } from 'features/earn/consts';
 import { FormatPercent } from 'shared/formatters/format-percent';
 import { FormatLargeAmount } from 'shared/formatters/format-large-amount';
 import { FormatToken } from 'shared/formatters/format-token';
+import { Badge } from 'features/earn/shared/badge';
 import { getTokenDecimals } from 'utils/token-decimals';
 import { useConfig } from 'config/use-config';
 import { InlineLoader } from '../../inline-loader';
@@ -58,6 +61,7 @@ type VaultCardProps = {
   variant?: 'eth' | 'usd' | 'default';
   illustration?: React.ReactNode;
   depositLinkCallback?: () => void;
+  protectedBadgeTooltipText?: React.ReactNode;
 };
 
 export const VaultCard: React.FC<VaultCardProps> = ({
@@ -70,6 +74,7 @@ export const VaultCard: React.FC<VaultCardProps> = ({
   variant = 'default',
   illustration,
   depositLinkCallback,
+  protectedBadgeTooltipText,
 }) => {
   const isDeprecated = useConfig().externalConfig.earnVaults.find(
     (vault) => vault.name === urlSlug,
@@ -80,7 +85,15 @@ export const VaultCard: React.FC<VaultCardProps> = ({
       <CardHeader>
         <CardHeaderContent>
           <CardTitle>
-            {title}
+            <TitleTextStyled>{title}</TitleTextStyled>
+            {protectedBadgeTooltipText && (
+              <BadgeStyled>
+                <Badge
+                  text="PROTECTED"
+                  tooltipText={protectedBadgeTooltipText}
+                />
+              </BadgeStyled>
+            )}
             {isDeprecated && (
               <StyledTooltip
                 title="Vault users can upgrade their tokens to the new unified EarnETH vault without withdrawal or downtime in rewards."
