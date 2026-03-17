@@ -69,6 +69,7 @@ type Props = {
     clickChartsApy1m?: MATOMO_EVENT_TYPE;
     clickChartsApy3m?: MATOMO_EVENT_TYPE;
   };
+  protectedBadgeTooltipText?: React.ReactNode;
 };
 
 const TABS = {
@@ -85,6 +86,7 @@ export const VaultPage: FC<Props> = (props) => {
     riskDisclosure,
     strategyContent,
     faqContent,
+    protectedBadgeTooltipText,
   } = props;
   const { performanceTabEvent, strategyTabEvent, faqTabEvent } =
     props.matomo ?? {};
@@ -105,6 +107,7 @@ export const VaultPage: FC<Props> = (props) => {
           apxHint={props.apxHint}
           isApxLoading={props.isApxLoading}
           isTvlLoading={props.isTvlLoading}
+          protectedBadgeTooltipText={protectedBadgeTooltipText}
         />
         <VaultPageContent>
           <TabsStyled>
