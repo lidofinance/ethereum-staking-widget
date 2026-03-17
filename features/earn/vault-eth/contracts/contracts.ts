@@ -127,6 +127,7 @@ export const getDepositQueueContractAddress = <
     case TOKENS.weth:
       contractName = 'ethDepositQueueWETH' as const;
       break;
+    case TOKENS.steth:
     case TOKENS.wsteth:
       contractName = 'ethDepositQueueWSTETH' as const;
       break;
