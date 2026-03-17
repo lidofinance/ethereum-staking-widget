@@ -18,6 +18,8 @@ import {
   ChevronsUpIcon,
   StatValueIcon,
   StyledTooltip,
+  BadgeStyled,
+  TitleTextStyled,
 } from './styles';
 import { LocalLink } from 'shared/components/local-link';
 import { EARN_PATH } from 'consts/urls';
@@ -83,9 +85,14 @@ export const VaultCard: React.FC<VaultCardProps> = ({
       <CardHeader>
         <CardHeaderContent>
           <CardTitle>
-            {title}{' '}
+            <TitleTextStyled>{title}</TitleTextStyled>
             {protectedBadgeTooltipText && (
-              <Badge text="PROTECTED" tooltipText={protectedBadgeTooltipText} />
+              <BadgeStyled>
+                <Badge
+                  text="PROTECTED"
+                  tooltipText={protectedBadgeTooltipText}
+                />
+              </BadgeStyled>
             )}
             {isDeprecated && (
               <StyledTooltip
