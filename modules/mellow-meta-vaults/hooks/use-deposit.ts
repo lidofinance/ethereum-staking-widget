@@ -4,7 +4,7 @@ import invariant from 'tiny-invariant';
 
 import {
   AACall,
-  applyRoundUpGasLimit,
+  applyRoundUpTxParameter,
   Erc20AllowanceAbi,
   useDappStatus,
   useLidoSDK,
@@ -161,7 +161,7 @@ export const useDeposit = <DepositQueueToken extends string>({
             needsApprove = false;
             await core.performTransaction({
               getGasLimit: async (opts) =>
-                applyRoundUpGasLimit(
+                applyRoundUpTxParameter(
                   await depositQueue.estimateGas.deposit(depositArgs, {
                     ...opts,
                     value: msgValue,

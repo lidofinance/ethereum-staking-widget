@@ -6,7 +6,7 @@ import type { STGDepositFormValidatedValues } from '../form-context/types';
 
 import {
   AACall,
-  applyRoundUpGasLimit,
+  applyRoundUpTxParameter,
   Erc20AllowanceAbi,
   useDappStatus,
   useLidoSDK,
@@ -109,7 +109,7 @@ export const useSTGDeposit = (onRetry?: () => void) => {
             needsApprove = false;
             await core.performTransaction({
               getGasLimit: async (opts) =>
-                applyRoundUpGasLimit(
+                applyRoundUpTxParameter(
                   await depositContract.estimateGas.deposit(depositArgs, {
                     ...opts,
                     value: msgValue,
