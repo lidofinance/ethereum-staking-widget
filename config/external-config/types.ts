@@ -1,5 +1,4 @@
 import type { UseQueryResult } from '@tanstack/react-query';
-import type { DexWithdrawalApi } from 'features/withdrawals/request/withdrawal-rates';
 import type { EarnVaultKey } from 'features/earn/consts';
 
 export type Manifest = Record<string, ManifestEntry>;
@@ -29,7 +28,7 @@ export type EarnVaultConfigEntry = {
 };
 
 export type ManifestConfig = {
-  enabledWithdrawalDexes: DexWithdrawalApi[];
+  enabledWithdrawalDexes: [];
   multiChainBanner: number[];
   earnVaults: EarnVaultConfigEntry[];
   earnVaultsBanner: {

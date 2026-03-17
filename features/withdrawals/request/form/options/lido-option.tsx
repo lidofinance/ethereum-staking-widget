@@ -11,7 +11,6 @@ import { trackMatomoEvent } from 'utils/track-matomo-event';
 
 import {
   FormatTokenStyled,
-  LidoIcon,
   LidoOptionContainer,
   LidoOptionValue,
   LidoOptionInlineLoader,
@@ -64,8 +63,7 @@ export const LidoOption = () => {
 
   return (
     <LidoOptionContainer data-testid="lidoOptionSection">
-      <LidoIcon />
-      Lido
+      You will receive
       <LidoOptionValue data-testid="lidoOptionAmount">
         {amountLoading && <LidoOptionInlineLoader />}
         {!amountLoading && (

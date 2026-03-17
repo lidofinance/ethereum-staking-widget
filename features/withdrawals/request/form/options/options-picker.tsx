@@ -1,22 +1,12 @@
 import { useWatch } from 'react-hook-form';
-import { parseEther } from 'viem';
 import { Tooltip } from '@lidofinance/lido-ui';
 
 import { MATOMO_CLICK_EVENTS_TYPES } from 'consts/matomo';
-import { DATA_UNAVAILABLE } from 'consts/text';
 
-import { TOKENS_TO_WITHDRAWLS } from 'features/withdrawals/types/tokens-withdrawable';
 import { useWaitingTime } from 'features/withdrawals/hooks/useWaitingTime';
-import { useTvlError } from 'features/withdrawals/hooks/useTvlError';
+
 import { RequestFormInputType } from 'features/withdrawals/request/request-form-context';
-import {
-  getDexConfig,
-  useWithdrawalRates,
-} from 'features/withdrawals/request/withdrawal-rates';
 
-import { useStETHByWstETH } from 'modules/web3';
-
-import { formatBalance } from 'utils/formatBalance';
 import { trackMatomoEvent } from 'utils/track-matomo-event';
 
 import {
@@ -36,27 +26,15 @@ type OptionButtonProps = {
   isActive?: boolean;
 };
 
-const DEFAULT_VALUE_FOR_RATE = parseEther('1');
-
 const LidoButton: React.FC<OptionButtonProps> = ({ isActive, onClick }) => {
-  const [amount, token] = useWatch<RequestFormInputType, ['amount', 'token']>({
-    name: ['amount', 'token'],
+  const [amount] = useWatch<RequestFormInputType, ['amount']>({
+    name: ['amount'],
   });
-  const isSteth = token === TOKENS_TO_WITHDRAWLS.stETH;
   const { isCongested } = useWaitingTime(null);
   const { value: waitingTime, isLoading: isWaitingTimeLoading } =
     useWaitingTime(amount, {
       isApproximate: true,
     });
-  const { data: wstethAsSteth, isLoading: isWstethAsStethLoading } =
-    useStETHByWstETH(DEFAULT_VALUE_FOR_RATE);
-
-  const ratioLoading = !isSteth && isWstethAsStethLoading;
-  const ratio = isSteth
-    ? '1 : 1'
-    : wstethAsSteth
-      ? `1 : ${formatBalance(wstethAsSteth).trimmed}`
-      : DATA_UNAVAILABLE;
 
   return (
     <OptionsPickerButton
@@ -70,10 +48,6 @@ const LidoButton: React.FC<OptionButtonProps> = ({ isActive, onClick }) => {
         <OptionsPickerIcons>
           <LidoIcon />
         </OptionsPickerIcons>
-      </OptionsPickerRow>
-      <OptionsPickerRow data-testid="lidoOptionRate">
-        <OptionsPickerSubLabel>Rate:</OptionsPickerSubLabel>
-        {ratioLoading ? <InlineLoaderSmall /> : ratio}
       </OptionsPickerRow>
       <OptionsPickerRow data-testid="lidoOptionWaitingTime">
         <OptionsPickerSubLabel>
@@ -90,26 +64,7 @@ const LidoButton: React.FC<OptionButtonProps> = ({ isActive, onClick }) => {
   );
 };
 
-const toFloor = (num: number): string =>
-  (Math.floor(num * 10000) / 10000).toString();
-
 const DexButton: React.FC<OptionButtonProps> = ({ isActive, onClick }) => {
-  const { balanceDiffSteth } = useTvlError();
-  const isPausedByTvlError = balanceDiffSteth !== undefined;
-  const { isLoading, bestRate, enabledDexes } = useWithdrawalRates({
-    isPaused: isPausedByTvlError,
-    fallbackValue: DEFAULT_VALUE_FOR_RATE,
-  });
-  const isAnyDexEnabled = enabledDexes.length > 0;
-  const bestRateFloored = bestRate !== null && toFloor(bestRate);
-  const bestRateValue =
-    !isPausedByTvlError &&
-    isAnyDexEnabled &&
-    bestRateFloored &&
-    bestRateFloored !== '0'
-      ? `1 : ${bestRateFloored}`
-      : '—';
-
   return (
     <OptionsPickerButton
       data-testid="dexOptions"
@@ -118,25 +73,12 @@ const DexButton: React.FC<OptionButtonProps> = ({ isActive, onClick }) => {
       onClick={onClick}
     >
       <OptionsPickerRow>
-        <OptionsPickerLabel>Use DEXs</OptionsPickerLabel>
-        <OptionsPickerIcons>
-          {enabledDexes.map((dexKey) => {
-            const Icon = getDexConfig(dexKey).icon;
-            return <Icon key={dexKey}></Icon>;
-          })}
-        </OptionsPickerIcons>
-      </OptionsPickerRow>
-      <OptionsPickerRow data-testid="dexBestRate">
-        <OptionsPickerSubLabel>Best Rate:</OptionsPickerSubLabel>
-        {isLoading && !isPausedByTvlError ? (
-          <InlineLoaderSmall />
-        ) : (
-          bestRateValue
-        )}
+        <OptionsPickerLabel>Use DEX</OptionsPickerLabel>
+        <OptionsPickerIcons>COWICON</OptionsPickerIcons>
       </OptionsPickerRow>
       <OptionsPickerRow data-testid="dexWaitingTime">
         <OptionsPickerSubLabel>Waiting time:</OptionsPickerSubLabel>{' '}
-        {isAnyDexEnabled ? <>~&nbsp;1-5 minutes</> : '—'}
+        <>~&nbsp;1-5 minutes</>
       </OptionsPickerRow>
     </OptionsPickerButton>
   );

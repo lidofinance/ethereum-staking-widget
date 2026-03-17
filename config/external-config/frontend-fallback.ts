@@ -8,7 +8,6 @@ import {
   getManifestKey,
   isManifestValid,
 } from 'config/external-config';
-import { getDexConfig } from 'features/withdrawals/request/withdrawal-rates';
 import { EARN_VAULTS } from 'features/earn/consts';
 
 import FallbackLocalManifest from 'IPFS.json';
@@ -30,9 +29,7 @@ export const getBackwardCompatibleConfig = (
     );
 
   return {
-    enabledWithdrawalDexes: config.enabledWithdrawalDexes?.filter(
-      (dex) => !!getDexConfig(dex),
-    ),
+    enabledWithdrawalDexes: [],
     featureFlags: { ...(config?.featureFlags ?? {}) },
     multiChainBanner: config?.multiChainBanner ?? [],
     earnVaultsBanner: config?.earnVaultsBanner ?? {},
