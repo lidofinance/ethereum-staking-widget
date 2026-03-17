@@ -33,10 +33,12 @@ export const EthVaultDepositSubmitButton = () => {
   }
 
   if (isDepositLockedForCurrentToken) {
+    const isStETH = token === TOKEN_SYMBOLS.steth;
+    const tokenText = isStETH ? 'stETH (which is wrapped into wstETH)' : token;
     return (
       <StyledTooltip
         placement="bottom"
-        title={`You already have a pending request in ${token}. To create a new deposit, please select a different token or cancel the existing deposit.`}
+        title={`You already have a pending request in ${tokenText}. To create a new deposit, please select a different token or cancel the existing deposit.`}
       >
         {/*
           `div` wrapper is required around disabled button for the tooltip to work,
