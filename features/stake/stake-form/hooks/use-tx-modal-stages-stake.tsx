@@ -17,9 +17,9 @@ const STAGE_OPERATION_ARGS = {
   operationText: 'Staking',
 };
 
-const SuccessFooter = ({ stakedAmount }: { stakedAmount: bigint }) => {
+const SuccessFooter = ({ stethBalance }: { stethBalance: bigint }) => {
   const { featureFlags } = useConfig().externalConfig;
-  const whaleBannerConfig = useWhaleBanner(stakedAmount);
+  const whaleBannerConfig = useWhaleBanner(stethBalance);
   return (
     <>
       <EarnUpToBanner
@@ -57,14 +57,14 @@ const getTxModalStagesStake = (transitStage: TransactionModalTransitStage) => ({
       />,
     ),
 
-  success: (balance: bigint, txHash?: Hash, stakedAmount?: bigint) =>
+  success: (balance: bigint, txHash?: Hash) =>
     transitStage(
       <TxStageOperationSucceedBalanceShown
         txHash={txHash}
         balance={balance}
         balanceToken={'stETH'}
         operationText={'Staking'}
-        footer={<SuccessFooter stakedAmount={stakedAmount ?? 0n} />}
+        footer={<SuccessFooter stethBalance={balance} />}
       />,
       {
         isClosableOnLedger: true,
