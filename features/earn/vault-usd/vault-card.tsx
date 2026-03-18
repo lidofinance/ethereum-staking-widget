@@ -14,6 +14,7 @@ import {
   USD_VAULT_TOKEN_SYMBOL,
 } from './consts';
 import { useUsdVaultPosition } from './hooks/use-position';
+import { ProtectedTooltip } from './protected-tooltip';
 
 export const UsdVaultCard = () => {
   const { apy, isLoading: isApyLoading } = useUsdVaultApy();
@@ -47,6 +48,7 @@ export const UsdVaultCard = () => {
       depositLinkCallback={() => {
         trackMatomoEvent(MATOMO_EARN_EVENTS_TYPES.earnListEarnUsdDeposit);
       }}
+      protectedBadgeTooltipText={<ProtectedTooltip />}
     />
   );
 };

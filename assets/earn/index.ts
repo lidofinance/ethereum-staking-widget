@@ -64,6 +64,11 @@ export { ReactComponent as EthenaIcon } from './allocation/ethena.svg';
 export { ReactComponent as SyrupIcon } from './allocation/syrup.svg';
 export { ReactComponent as AuraIcon } from './allocation/aura.svg';
 export { ReactComponent as ReIcon } from './allocation/re.svg';
+export { ReactComponent as UsdcIcon } from './allocation/usdc.svg';
+export { ReactComponent as SusdeIcon } from './allocation/susde.svg';
+export { ReactComponent as UsdtIcon } from './allocation/usdt.svg';
+
+import { ReactComponent as ShieldCheckIcon } from './shield-check.svg';
 
 const themedBackground = css`
   path,
@@ -116,4 +121,5 @@ export {
   NavIconEarn,
   EarnStgBannerIcon,
   EarnUpToBannerIcon,
+  ShieldCheckIcon,
 };

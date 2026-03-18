@@ -9,12 +9,16 @@ import {
   SubmitButtonInnerContainer,
 } from './styles';
 import { asEthDepositToken } from '../../utils';
+import { TOKEN_SYMBOLS } from 'consts/tokens';
 
 export const EthVaultDepositSubmitButton = () => {
   const { disabled } = useFormState();
   const { isDepositLockedForCurrentToken, token } = useETHDepositForm();
+  // stETH deposits go through the wstETH queue, so check wstETH for claimable request state
+  const depositRequestToken =
+    token === TOKEN_SYMBOLS.steth ? TOKEN_SYMBOLS.wsteth : token;
   const depositRequest = useEthVaultDepositRequest({
-    token: asEthDepositToken(token),
+    token: asEthDepositToken(depositRequestToken),
   });
   const { isEthVaultAvailable } = useEthVaultAvailable();
 
@@ -29,10 +33,12 @@ export const EthVaultDepositSubmitButton = () => {
   }
 
   if (isDepositLockedForCurrentToken) {
+    const isStETH = token === TOKEN_SYMBOLS.steth;
+    const tokenText = isStETH ? 'stETH (which is wrapped into wstETH)' : token;
     return (
       <StyledTooltip
         placement="bottom"
-        title={`You already have a pending request in ${token}. To create a new deposit, please select a different token or cancel the existing deposit.`}
+        title={`You already have a pending request in ${tokenText}. To create a new deposit, please select a different token or cancel the existing deposit.`}
       >
         {/*
           `div` wrapper is required around disabled button for the tooltip to work,

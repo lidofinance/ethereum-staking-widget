@@ -2405,13 +2405,13 @@
     ua-parser-js "^1.0.35"
     use-callback-ref "1.2.5"
 
-"@lidofinance/lido-ui@^3.42.0":
-  version "3.42.0"
-  resolved "https://registry.yarnpkg.com/@lidofinance/lido-ui/-/lido-ui-3.42.0.tgz#8ac832a43ab32104a95481df7796e8db8333606d"
-  integrity sha512-oAYnrcU2iFKnYKof8+ajqXUBBtfvc9f6MxiJVNY0jvHBnMPceDpolj08a24QFfcxqarO0zTeTmZvhhFyCmvpHA==
+"@lidofinance/lido-ui@^3.42.1":
+  version "3.42.1"
+  resolved "https://registry.yarnpkg.com/@lidofinance/lido-ui/-/lido-ui-3.42.1.tgz#1e88fc056cd4d5d16b105bacbf76058c6410e527"
+  integrity sha512-Za+YkM+mu0MeIVKtV6vEMW9nnPkynH16E7XRmHwqqw+jH/epqELlW2rrFu7qhe3HRyLghMdwnJQfuWUh35pKiw==
   dependencies:
     "@styled-system/should-forward-prop" "5.1.5"
-    react-collapsed "3.0.2"
+    react-collapsed "4.2.0"
     react-jazzicon "^1.0.4"
     react-toastify "7.0.4"
     react-transition-group "4"
@@ -9893,6 +9893,13 @@ react-collapsed@3.0.2:
   integrity sha512-TecE2O/3b3Szcej2BkWlLIwvLBZBKGzCfcGVDnqrgVsq8SZe9q2uUc9c54qX3ctJ7wbj9yXJd2QgSZwWfRoAvQ==
   dependencies:
     raf "^3.4.1"
+    tiny-warning "^1.0.3"
+
+react-collapsed@4.2.0:
+  version "4.2.0"
+  resolved "https://registry.yarnpkg.com/react-collapsed/-/react-collapsed-4.2.0.tgz#330613bd604e1d8b66832d931efb2b226925cbc0"
+  integrity sha512-8rQuV3wGTjBI4M1WzD5DpqCBRliHNDKEEFeC6tAQEVrRDic46xBOtySgMGjVVacIobEaMf7AiYlI5APCZIZtkg==
+  dependencies:
     tiny-warning "^1.0.3"
 
 react-device-detect@^1.17.0:

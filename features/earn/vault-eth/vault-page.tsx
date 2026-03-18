@@ -6,7 +6,7 @@ import { PartnerMellowIcon } from 'assets/earn';
 import { VaultPage } from 'features/earn/shared/v2/vault-page/vault-page';
 import type { InfoItem } from 'features/earn/shared/v2/vault-page/vault-page';
 import { Disclaimers } from 'features/earn/shared/v2/disclaimers';
-import { StrategyContent } from 'features/earn/shared/v2/strategy-content';
+import { VaultAllocation } from 'features/earn/shared/v2/vault-allocation/vault-allocation';
 import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo/matomo-earn-events';
 
 import { EthVaultPositionManager } from './position-manager/position-manager';
@@ -38,13 +38,13 @@ const GENERAL_INFO_LEFT: InfoItem[] = [
     value: (
       <>
         <PartnerNethermindIconCircle width={20} height={20} />
-        <Link href="https://content.gitbook.com/content/PyujKH9RYkVLASDhGflO/blobs/15Q3SGxZgZ9VEWqXueO2/Nethermind_Mellow-Core-Vaults_20250903.pdf">
+        <Link href="https://2485622279-files.gitbook.io/~/files/v0/b/gitbook-x-prod.appspot.com/o/spaces%2FPyujKH9RYkVLASDhGflO%2Fuploads%2F3TMwsLt6Q2z3Wutyewuo%2FNM_0758_Mellow-1.pdf?alt=media&token=187ae9c0-f4fd-44b0-bfd8-d5b003bcd94b">
           Nethermind ↗
         </Link>
       </>
     ),
   },
-  { label: 'Last audit date', value: '21 Jan 2026' },
+  { label: 'Last audit date', value: '02 March 2026' },
 ];
 
 const GENERAL_INFO_RIGHT: Array<{ label: ReactNode; value?: ReactNode }> = [
@@ -84,6 +84,9 @@ const RISK_DISCLOSURE = (
   </>
 );
 
+const VAULT_ALLOCATION_FOOTER =
+  'Data is provided by Mellow’s API and reflects the most recent snapshot at the time of update. As a result, the TVL shown here may differ from the vault’s TVL due to the data timestamp';
+
 const DATA = {
   title: ETH_VAULT_TITLE,
   description: ETH_VAULT_DESCRIPTION,
@@ -93,39 +96,6 @@ const DATA = {
   generalInfoRight: GENERAL_INFO_RIGHT,
   riskDisclosure: RISK_DISCLOSURE,
 };
-
-const STATIC_ALLOCATIONS_CONTENT = [
-  {
-    protocol: 'Aave',
-    badge: 'ethereum',
-    name: 'Aave levered wstETH/ETH',
-  },
-  {
-    protocol: 'Spark',
-    badge: 'ethereum',
-    name: 'Spark levered wstETH/ETH',
-  },
-  {
-    protocol: 'Aave',
-    badge: 'ethereum',
-    name: 'Aave levered wstETH/USD',
-  },
-  {
-    protocol: 'Aave',
-    badge: 'ethereum',
-    name: 'Aave levered Ethena',
-  },
-  {
-    protocol: 'Aave',
-    badge: 'ethereum',
-    name: 'Aave levered rsETH/ETH',
-  },
-  {
-    protocol: 'Aave',
-    badge: 'ethereum',
-    name: 'Aave levered weETH/ETH',
-  },
-];
 
 export const EthVaultPage: FC<{
   action: typeof EARN_VAULT_DEPOSIT_SLUG | typeof EARN_VAULT_WITHDRAW_SLUG;
@@ -146,7 +116,10 @@ export const EthVaultPage: FC<{
         vaultName="ethVault"
         faqContent={<EarnEthFaq />}
         strategyContent={
-          <StrategyContent allocations={STATIC_ALLOCATIONS_CONTENT} />
+          <VaultAllocation
+            vaultName="ethVault"
+            footer={VAULT_ALLOCATION_FOOTER}
+          />
         }
         matomo={{
           performanceTabEvent: MATOMO_EARN_EVENTS_TYPES.earnEthPerformance,
