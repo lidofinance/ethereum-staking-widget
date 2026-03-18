@@ -3,6 +3,8 @@ import type { ComponentType, FC, SVGProps } from 'react';
 import { FormatLargeAmount, FormatPercent } from 'shared/formatters';
 import { InlineLoader } from 'features/earn/shared/inline-loader';
 import { VaultTip } from 'features/earn/shared/vault-tip';
+import { Badge } from 'features/earn/shared/badge';
+
 import {
   TopSectionStyled,
   TopSectionContent,
@@ -26,11 +28,20 @@ type TopSectionProps = {
   apxHint?: React.ReactNode;
   isApxLoading?: boolean;
   isTvlLoading?: boolean;
+  protectedBadgeTooltipText?: React.ReactNode;
 };
 
 export const TopSection: FC<TopSectionProps> = (props) => {
-  const { title, description, apx, tvl, apxHint, isApxLoading, isTvlLoading } =
-    props;
+  const {
+    title,
+    description,
+    apx,
+    tvl,
+    apxHint,
+    isApxLoading,
+    isTvlLoading,
+    protectedBadgeTooltipText,
+  } = props;
 
   return (
     <TopSectionStyled>
@@ -40,6 +51,9 @@ export const TopSection: FC<TopSectionProps> = (props) => {
             <props.logo />
           </TopSectionHeaderIcon>
           <TopSectionHeaderTitle>{title}</TopSectionHeaderTitle>
+          {protectedBadgeTooltipText && (
+            <Badge text="PROTECTED" tooltipText={protectedBadgeTooltipText} />
+          )}
         </TopSectionHeader>
         <TopSectionDescription>{description}</TopSectionDescription>
       </TopSectionContent>

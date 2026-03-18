@@ -28,6 +28,9 @@ const trackTokenSelect = (value: string) => {
     case TOKENS.wsteth:
       trackMatomoEvent(MATOMO_EARN_EVENTS_TYPES.earnEthSelectTokenWsteth);
       break;
+    case TOKENS.steth:
+      trackMatomoEvent(MATOMO_EARN_EVENTS_TYPES.earnEthSelectTokenSteth);
+      break;
     default:
       break;
   }

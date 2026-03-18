@@ -1,12 +1,9 @@
 import { FC } from 'react';
 import { FaqItem } from 'features/earn/shared/v2/faq';
 
-export const HowDoesWithdrawalWork: FC = () => {
+export const HowDoesWithdrawalWork: FC<{ id?: string }> = ({ id }) => {
   return (
-    <FaqItem
-      summary="How does the withdrawal work?"
-      id="earneth-withdrawal-work"
-    >
+    <FaqItem summary="How does the withdrawal work?" id={id}>
       <p>The withdrawal process has two steps:</p>
       <ul>
         <li>

@@ -41,6 +41,29 @@ const getTxModalStagesRequest = (
       />,
     ),
 
+  signWrap: (amount: bigint, token: Token) =>
+    transitStage(
+      <TxStageSignOperationAmount
+        operationText="Wrapping"
+        willReceiveToken={TOKEN_SYMBOLS.wsteth}
+        showOperationInDescription={true}
+        token={TOKEN_SYMBOLS[token]}
+        amount={amount}
+      />,
+    ),
+
+  pendingWrap: (amount: bigint, token: Token, txHash?: Hash) =>
+    transitStage(
+      <TxStageSignOperationAmount
+        operationText="Wrapping"
+        willReceiveToken={TOKEN_SYMBOLS.wsteth}
+        token={TOKEN_SYMBOLS[token]}
+        amount={amount}
+        isPending
+        txHash={txHash}
+      />,
+    ),
+
   sign: (amount: bigint, token: Token) =>
     transitStage(
       <TxStageSignOperationAmount

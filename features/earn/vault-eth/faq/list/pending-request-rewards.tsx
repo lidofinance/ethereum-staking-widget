@@ -1,11 +1,11 @@
 import { FC } from 'react';
 import { FaqItem } from 'features/earn/shared/v2/faq';
 
-export const PendingRequestRewards: FC = () => {
+export const PendingRequestRewards: FC<{ id?: string }> = ({ id }) => {
   return (
     <FaqItem
       summary="When I request the deposit and it's pending, when I start getting the rewards?"
-      id="earneth-pending-rewards"
+      id={id}
     >
       <p>
         Once your deposit request is processed and earnETH tokens are issued,
