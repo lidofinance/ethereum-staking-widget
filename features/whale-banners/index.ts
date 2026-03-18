@@ -5,3 +5,4 @@ export { useWhaleBanner } from './use-whale-banner';
 export { useWhaleBannerOnConnect } from './use-whale-banner-on-connect';
 export { useWhaleBannerABVariant } from './use-whale-banner-ab-variant';
 export type { WhaleBannerConfig, WhaleBannerABVariant } from './types';
+

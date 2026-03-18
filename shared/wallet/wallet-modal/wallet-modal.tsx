@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import {
   ButtonIcon,
   Modal,
@@ -14,7 +14,7 @@ import { useRouter } from 'next/router';
 import { config, useConfig } from 'config';
 import type { ModalComponentType } from 'providers/modal-provider';
 import { useCopyToClipboard } from 'shared/hooks';
-import { useDappStatus, useStethBalance, useWstethBalance } from 'modules/web3';
+import { useDappStatus, useStethBalance } from 'modules/web3';
 import { getEtherscanAddressLink } from 'utils/etherscan';
 import { openWindow } from 'utils/open-window';
 import { trackMatomoEvent } from 'utils/track-matomo-event';
@@ -39,19 +39,7 @@ export const WalletModal: ModalComponentType = ({ onClose, ...props }) => {
   const { featureFlags } = useConfig().externalConfig;
 
   const { data: stethBalance } = useStethBalance();
-  const { data: wstethBalance } = useWstethBalance();
-
-  // Use the higher of stETH / wstETH balances so holders of either token
-  // see the banner at disconnect time
-  const maxBalance = useMemo(() => {
-    if (stethBalance === undefined && wstethBalance === undefined)
-      return undefined;
-    return (stethBalance ?? 0n) >= (wstethBalance ?? 0n)
-      ? stethBalance
-      : wstethBalance;
-  }, [stethBalance, wstethBalance]);
-
-  const whaleBannerConfig = useWhaleBanner(maxBalance);
+  const whaleBannerConfig = useWhaleBanner(stethBalance);
 
   const isReferralUser = Boolean(query.ref);
   const shouldShowWhaleBanner =

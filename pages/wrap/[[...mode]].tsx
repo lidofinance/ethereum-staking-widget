@@ -20,7 +20,7 @@ const WrapPage: FC<WrapModePageProps> = ({ mode }) => {
         <Head>
           <title>Wrap | Lido</title>
         </Head>
-        <WhaleBannerOnConnectTrigger token="wstETH" />
+        <WhaleBannerOnConnectTrigger />
         <WrapUnwrapTabs mode={mode} />
         <DisclaimerSection>
           <LegalDisclaimer />
