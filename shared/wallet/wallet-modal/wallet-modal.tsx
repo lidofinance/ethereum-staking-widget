@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect } from 'react';
 import {
   ButtonIcon,
   Modal,
@@ -6,7 +6,6 @@ import {
   External,
   Copy,
   Address,
-  Button,
 } from '@lidofinance/lido-ui';
 import { useConnectorInfo, useDisconnect } from 'reef-knot/core-react';
 import { useRouter } from 'next/router';
@@ -47,20 +46,7 @@ export const WalletModal: ModalComponentType = ({ onClose, ...props }) => {
     whaleBannerConfig !== null &&
     !isReferralUser;
 
-  const [isShowingDisconnectBanner, setIsShowingDisconnectBanner] =
-    useState(false);
-
-  const handleDisconnectClick = useCallback(() => {
-    if (shouldShowWhaleBanner) {
-      setIsShowingDisconnectBanner(true);
-    } else {
-      disconnect?.();
-      trackMatomoEvent(MATOMO_CLICK_EVENTS_TYPES.disconnectWalletManually);
-      onClose?.();
-    }
-  }, [disconnect, onClose, shouldShowWhaleBanner]);
-
-  const handleDisconnectConfirm = useCallback(() => {
+  const handleDisconnect = useCallback(() => {
     disconnect?.();
     trackMatomoEvent(MATOMO_CLICK_EVENTS_TYPES.disconnectWalletManually);
     onClose?.();
@@ -106,7 +92,7 @@ export const WalletModal: ModalComponentType = ({ onClose, ...props }) => {
             <WalletModalDisconnectStyle
               size="xs"
               variant="outlined"
-              onClick={handleDisconnectClick}
+              onClick={handleDisconnect}
               data-testid="disconnectBtn"
             >
               Disconnect
@@ -146,20 +132,8 @@ export const WalletModal: ModalComponentType = ({ onClose, ...props }) => {
           </ButtonIcon>
         </WalletModalActionsStyle>
 
-        {isShowingDisconnectBanner && whaleBannerConfig && (
-          <>
-            <WhaleBanner config={whaleBannerConfig} />
-            <Button
-              fullwidth
-              size="xs"
-              variant="outlined"
-              style={{ marginTop: '12px' }}
-              onClick={handleDisconnectConfirm}
-              data-testid="disconnectAnywayBtn"
-            >
-              Disconnect anyway
-            </Button>
-          </>
+        {shouldShowWhaleBanner && whaleBannerConfig && (
+          <WhaleBanner config={whaleBannerConfig} />
         )}
       </WalletModalContentStyle>
     </Modal>
