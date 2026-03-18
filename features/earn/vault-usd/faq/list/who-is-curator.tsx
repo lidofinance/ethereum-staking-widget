@@ -2,11 +2,11 @@ import { FC } from 'react';
 import { FaqItem } from 'features/earn/shared/v2/faq';
 import Link from 'next/link';
 
-export const WhoIsCurator: FC = () => {
+export const WhoIsCurator: FC<{ id?: string }> = ({ id }) => {
   return (
     <FaqItem
       summary="Who is the curator for EarnUSD, and what's their role?"
-      id="earnusd-curator"
+      id={id}
     >
       <p>
         The two EarnUSD subVaults are curated by{' '}

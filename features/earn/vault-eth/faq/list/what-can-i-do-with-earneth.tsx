@@ -1,9 +1,9 @@
 import { FC } from 'react';
 import { FaqItem } from 'features/earn/shared/v2/faq';
 
-export const WhatCanIDoWithEarnEth: FC = () => {
+export const WhatCanIDoWithEarnEth: FC<{ id?: string }> = ({ id }) => {
   return (
-    <FaqItem summary="What can I do with earnETH token?" id="earneth-token-use">
+    <FaqItem summary="What can I do with earnETH token?" id={id}>
       <p>
         You can transfer it between wallets. Over time, it may also become
         usable across DeFi.
