@@ -5,6 +5,7 @@ import Head from 'next/head';
 import { Layout } from 'shared/components';
 import { getDefaultStaticProps } from 'utilsApi/get-default-static-props';
 import { EarnVaultsList } from 'features/earn';
+import { WhaleBannerOnConnectTrigger } from 'features/whale-banners';
 
 const PAGE_TITLE = 'Lido Earn';
 const PAGE_DESCRIPTION =
@@ -17,6 +18,7 @@ const Earn: FC = () => {
         <title>{`${PAGE_TITLE} | Lido`}</title>
         <meta name="description" content={PAGE_DESCRIPTION} />
       </Head>
+      <WhaleBannerOnConnectTrigger />
       <EarnVaultsList />
     </Layout>
   );

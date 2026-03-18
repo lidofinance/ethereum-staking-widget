@@ -6,6 +6,7 @@ import {
   AprDisclaimer,
   LegalDisclaimer,
 } from 'shared/components';
+import { WhaleBannerOnConnectTrigger } from 'features/whale-banners';
 
 import { StakeFaq } from './stake-faq/stake-faq';
 import { LidoStats } from './lido-stats/lido-stats';
@@ -14,6 +15,7 @@ import { StakeForm } from './stake-form';
 export const Stake = () => {
   return (
     <>
+      <WhaleBannerOnConnectTrigger />
       <NoSSRWrapper>
         <StakeForm />
       </NoSSRWrapper>

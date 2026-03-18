@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   ButtonIcon,
   Modal,
@@ -6,17 +6,20 @@ import {
   External,
   Copy,
   Address,
+  Button,
 } from '@lidofinance/lido-ui';
 import { useConnectorInfo, useDisconnect } from 'reef-knot/core-react';
+import { useRouter } from 'next/router';
 
-import { config } from 'config';
+import { config, useConfig } from 'config';
 import type { ModalComponentType } from 'providers/modal-provider';
 import { useCopyToClipboard } from 'shared/hooks';
-import { useDappStatus } from 'modules/web3';
+import { useDappStatus, useStethBalance, useWstethBalance } from 'modules/web3';
 import { getEtherscanAddressLink } from 'utils/etherscan';
 import { openWindow } from 'utils/open-window';
 import { trackMatomoEvent } from 'utils/track-matomo-event';
 import { MATOMO_CLICK_EVENTS_TYPES } from 'consts/matomo';
+import { WhaleBanner, useWhaleBanner } from 'features/whale-banners';
 
 import {
   WalletModalContentStyle,
@@ -32,8 +35,44 @@ export const WalletModal: ModalComponentType = ({ onClose, ...props }) => {
   const { address, walletChainId } = useDappStatus();
   const { connectorName } = useConnectorInfo();
   const { disconnect } = useDisconnect();
+  const { query } = useRouter();
+  const { featureFlags } = useConfig().externalConfig;
 
-  const handleDisconnect = useCallback(() => {
+  const { data: stethBalance } = useStethBalance();
+  const { data: wstethBalance } = useWstethBalance();
+
+  // Use the higher of stETH / wstETH balances so holders of either token
+  // see the banner at disconnect time
+  const maxBalance = useMemo(() => {
+    if (stethBalance === undefined && wstethBalance === undefined)
+      return undefined;
+    return (stethBalance ?? 0n) >= (wstethBalance ?? 0n)
+      ? stethBalance
+      : wstethBalance;
+  }, [stethBalance, wstethBalance]);
+
+  const whaleBannerConfig = useWhaleBanner(maxBalance);
+
+  const isReferralUser = Boolean(query.ref);
+  const shouldShowWhaleBanner =
+    featureFlags.whaleBannerEnabled === true &&
+    whaleBannerConfig !== null &&
+    !isReferralUser;
+
+  const [isShowingDisconnectBanner, setIsShowingDisconnectBanner] =
+    useState(false);
+
+  const handleDisconnectClick = useCallback(() => {
+    if (shouldShowWhaleBanner) {
+      setIsShowingDisconnectBanner(true);
+    } else {
+      disconnect?.();
+      trackMatomoEvent(MATOMO_CLICK_EVENTS_TYPES.disconnectWalletManually);
+      onClose?.();
+    }
+  }, [disconnect, onClose, shouldShowWhaleBanner]);
+
+  const handleDisconnectConfirm = useCallback(() => {
     disconnect?.();
     trackMatomoEvent(MATOMO_CLICK_EVENTS_TYPES.disconnectWalletManually);
     onClose?.();
@@ -79,7 +118,7 @@ export const WalletModal: ModalComponentType = ({ onClose, ...props }) => {
             <WalletModalDisconnectStyle
               size="xs"
               variant="outlined"
-              onClick={handleDisconnect}
+              onClick={handleDisconnectClick}
               data-testid="disconnectBtn"
             >
               Disconnect
@@ -118,6 +157,22 @@ export const WalletModal: ModalComponentType = ({ onClose, ...props }) => {
             View on Etherscan
           </ButtonIcon>
         </WalletModalActionsStyle>
+
+        {isShowingDisconnectBanner && whaleBannerConfig && (
+          <>
+            <WhaleBanner config={whaleBannerConfig} />
+            <Button
+              fullwidth
+              size="xs"
+              variant="outlined"
+              style={{ marginTop: '12px' }}
+              onClick={handleDisconnectConfirm}
+              data-testid="disconnectAnywayBtn"
+            >
+              Disconnect anyway
+            </Button>
+          </>
+        )}
       </WalletModalContentStyle>
     </Modal>
   );

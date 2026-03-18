@@ -91,7 +91,7 @@ export const useStake = ({ onConfirm, onRetry }: StakeOptions) => {
             if (featureFlags.holidayDecorEnabled) {
               bells();
             }
-            txModalStages.success(balance, txHash);
+            txModalStages.success(balance, txHash, amount);
             trackMatomoEvent(MATOMO_TX_EVENTS_TYPES.stakingFinish);
           },
           onFailure: ({ error }) => txModalStages.failed(error, onRetry),

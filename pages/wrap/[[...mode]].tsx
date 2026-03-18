@@ -8,6 +8,7 @@ import { SupportL2Chains } from 'modules/web3';
 import { getDefaultStaticProps } from 'utilsApi/get-default-static-props';
 import { LegalDisclaimer } from 'shared/components/legal-disclaimer';
 import { DisclaimerSection } from 'shared/components/disclaimer-section';
+import { WhaleBannerOnConnectTrigger } from 'features/whale-banners';
 
 const WrapPage: FC<WrapModePageProps> = ({ mode }) => {
   return (
@@ -19,6 +20,7 @@ const WrapPage: FC<WrapModePageProps> = ({ mode }) => {
         <Head>
           <title>Wrap | Lido</title>
         </Head>
+        <WhaleBannerOnConnectTrigger token="wstETH" />
         <WrapUnwrapTabs mode={mode} />
         <DisclaimerSection>
           <LegalDisclaimer />
