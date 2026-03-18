@@ -68,6 +68,13 @@ export const CardTitle = styled.div`
   line-height: 38px;
   font-weight: 700;
   z-index: 1;
+
+  ${({ theme }) => theme.mediaQueries.md} {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: ${({ theme }) => theme.spaceMap.xs}px;
+  }
 `;
 
 export const CardTitleBadge = styled(Badge)`
@@ -206,4 +213,16 @@ export const CardCta = styled.div`
 
 export const StyledTooltip = styled(Tooltip)`
   margin-top: ${({ theme }) => theme.spaceMap.xs}px !important;
+`;
+
+export const BadgeStyled = styled.span`
+  ${({ theme }) => theme.mediaQueries.md} {
+    order: 1;
+  }
+`;
+
+export const TitleTextStyled = styled.span`
+  ${({ theme }) => theme.mediaQueries.md} {
+    order: 2;
+  }
 `;

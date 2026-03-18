@@ -70,8 +70,12 @@ export const EthVaultDepositFormProvider: React.FC<{
   const { setValue } = formObject;
   useQueryParamsReferralForm<ETHDepositFormValues>({ setValue });
 
+  // stETH deposits go through the wstETH deposit queue, so check wstETH queue for pending requests
+  const depositRequestToken =
+    tokenSymbol === TOKEN_SYMBOLS.steth ? TOKEN_SYMBOLS.wsteth : tokenSymbol;
+
   const depositRequest = useEthVaultDepositRequest({
-    token: asEthDepositToken(tokenSymbol),
+    token: asEthDepositToken(depositRequestToken),
   });
 
   const formControllerValue = useMemo(
