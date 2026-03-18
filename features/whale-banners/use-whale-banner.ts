@@ -9,19 +9,23 @@ import {
 } from './consts';
 import { useWhaleBannerABVariant } from './use-whale-banner-ab-variant';
 import type { WhaleBannerConfig } from './types';
+import { overrideWithQAMockEther } from 'utils/qa';
+
+const QA_MOCK_KEY = 'mockWhaleBannerStethBalance';
 
 export const useWhaleBanner = (
   amount: bigint | undefined,
 ): WhaleBannerConfig | null => {
   const variant = useWhaleBannerABVariant();
+  const effectiveAmount = overrideWithQAMockEther(amount, QA_MOCK_KEY);
 
   return useMemo(() => {
-    if (amount === undefined || amount === 0n) return null;
+    if (effectiveAmount === undefined || effectiveAmount === 0n) return null;
 
     const heading = WHALE_BANNER_HEADINGS[variant];
     const body = WHALE_BANNER_BODY_TEXT;
 
-    if (amount >= WHALE_BANNER_THRESHOLD_3) {
+    if (effectiveAmount >= WHALE_BANNER_THRESHOLD_3) {
       return {
         level: 3,
         heading,
@@ -33,7 +37,7 @@ export const useWhaleBanner = (
       };
     }
 
-    if (amount >= WHALE_BANNER_THRESHOLD_2) {
+    if (effectiveAmount >= WHALE_BANNER_THRESHOLD_2) {
       return {
         level: 2,
         heading,
@@ -45,7 +49,7 @@ export const useWhaleBanner = (
       };
     }
 
-    if (amount >= WHALE_BANNER_THRESHOLD_1) {
+    if (effectiveAmount >= WHALE_BANNER_THRESHOLD_1) {
       return {
         level: 1,
         heading,
@@ -57,5 +61,5 @@ export const useWhaleBanner = (
     }
 
     return null;
-  }, [amount, variant]);
+  }, [effectiveAmount, variant]);
 };
