@@ -12,7 +12,7 @@ export const FaqItem = ({
   ...rest
 }: ComponentProps<typeof AccordionTransparent>) => {
   const { hashNav, resetSpecificAnchor } = useInpageNavigation();
-  const { activeItemHash } = useFaqGroup();
+  const { activeItemHash, wasHashControlled } = useFaqGroup();
 
   const handleCollapse = useCallback(() => {
     if (id) resetSpecificAnchor(id);
@@ -21,10 +21,14 @@ export const FaqItem = ({
 
   // When a hash targets an item in this group, it fully controls expansion:
   // only the matching item opens, all others (including defaultExpanded ones) stay closed.
-  // Without an active hash, fall back to the explicit prop.
+  // Once the hash is cleared after hash-navigation, keep all items closed
+  // (prevent the defaultExpanded item from auto-opening again).
+  // Without any prior hash navigation, fall back to the explicit prop.
   const effectiveDefaultExpanded = activeItemHash
     ? !!id && hashNav === id
-    : defaultExpanded;
+    : wasHashControlled
+      ? false
+      : defaultExpanded;
 
   return (
     <AccordionTransparent
