@@ -16,6 +16,7 @@ import { useEthVaultApy } from './hooks/use-vault-apy';
 import { EARN_VAULT_DEPOSIT_SLUG, EARN_VAULT_WITHDRAW_SLUG } from '../consts';
 import { EthVaultApyHint } from './components/apy-hint';
 import { ETH_VAULT_DESCRIPTION, ETH_VAULT_TITLE } from './consts';
+import { ProtectedTooltip } from './protected-tooltip';
 
 const FEES = [
   { label: 'Performance fee', value: '10%' },
@@ -131,6 +132,7 @@ export const EthVaultPage: FC<{
           clickChartsApy1m: MATOMO_EARN_EVENTS_TYPES.earnEthPerformanceApy1m,
           clickChartsApy3m: MATOMO_EARN_EVENTS_TYPES.earnEthPerformanceApy3m,
         }}
+        protectedBadgeTooltipText={<ProtectedTooltip />}
       />
       <Disclaimers />
     </>
