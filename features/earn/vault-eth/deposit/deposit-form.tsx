@@ -1,9 +1,6 @@
 import { VaultFormSection } from 'features/earn/shared/vault-form-section';
 import { VaultForm } from 'features/earn/shared/vault-form';
-import {
-  VaultTxInfo,
-  VaultTxInfoRow,
-} from 'features/earn/shared/vault-tx-info';
+import { VaultTxInfo } from 'features/earn/shared/vault-tx-info';
 import { BlockSidePanel } from 'features/earn/shared/v2/block-side-panel/block-side-panel';
 
 import { EthDepositFormProvider } from './form-context';
@@ -31,18 +28,6 @@ export const EthVaultDepositForm = () => {
           </VaultFormSection>
           <VaultTxInfo>
             <EthVaultDepositWillReceive />
-            <VaultTxInfoRow
-              title="Waiting time"
-              help={
-                <>
-                  Deposits usually complete within 24 hours, often sooner. You
-                  can track progress in the Deposit section of the current
-                  vault.
-                </>
-              }
-            >
-              {'24 hours'}
-            </VaultTxInfoRow>
           </VaultTxInfo>
           <EthVaultDepositSubmitButton />
         </VaultForm>

@@ -13,6 +13,7 @@ import {
   ETH_VAULT_TOKEN_SYMBOL,
 } from './consts';
 import { useEthVaultPosition } from './hooks/use-position';
+import { ProtectedTooltip } from './protected-tooltip';
 
 export const EthVaultCard = () => {
   const { apy, isLoading: isApyLoading } = useEthVaultApy();
@@ -47,6 +48,7 @@ export const EthVaultCard = () => {
       depositLinkCallback={() => {
         trackMatomoEvent(MATOMO_EARN_EVENTS_TYPES.earnListEarnEthDeposit);
       }}
+      protectedBadgeTooltipText={<ProtectedTooltip />}
     />
   );
 };

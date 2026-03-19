@@ -8,7 +8,7 @@ import { MATOMO_EVENT_TYPE } from 'consts/matomo';
 import { trackMatomoEvent } from 'utils/track-matomo-event';
 
 import { TxModalStages } from '../types/tx-modal-stages';
-import { DepositQueueGetter } from '../types/deposit-queue-getter';
+import { AsyncDepositQueueGetter } from '../types/deposit-queue-getter';
 
 export const useDepositCancel = <DepositQueueToken extends string>({
   depositQueueGetter,
@@ -18,7 +18,7 @@ export const useDepositCancel = <DepositQueueToken extends string>({
   matomoEventStart,
   matomoEventSuccess,
 }: {
-  depositQueueGetter: DepositQueueGetter<DepositQueueToken>;
+  depositQueueGetter: AsyncDepositQueueGetter<DepositQueueToken>;
   txModalStages: TxModalStages;
   refetchTokenBalance: (token: DepositQueueToken) => unknown;
   onRetry?: () => void;
