@@ -10,7 +10,7 @@ import { useMemo } from 'react';
 import { useWatch } from 'react-hook-form';
 import { useTheme } from 'styled-components';
 import { formatEther } from 'viem';
-import { useConnection, useWalletClient } from 'wagmi';
+import { ConnectorEventMap, useConnection, useWalletClient } from 'wagmi';
 
 export const DexOption = () => {
   const [token, amount] = useWatch<RequestFormInputType, ['token', 'amount']>({
@@ -23,7 +23,6 @@ export const DexOption = () => {
     () => ({
       appCode: 'Lido Staking Widget', // Name of your app (max 50 characters)
       width: '100%', // Width in pixels (or 100% to use all available space)
-      height: '640px',
       chainId: 1, // 1 (Mainnet), 100 (Gnosis), 11155111 (Sepolia)
       tokenLists: [
         // All default enabled token lists. Also see https://tokenlists.org
@@ -64,9 +63,9 @@ export const DexOption = () => {
     if (!walletClient || !connector) return undefined;
 
     return {
-      request: (args): Promise<any> => walletClient.request(args as any),
-      on: (eventName, arg) => {
-        connector?.emitter.on(eventName as any, arg as any);
+      request: (args: any): Promise<any> => walletClient.request(args),
+      on: (eventName: any, arg: any) => {
+        connector?.emitter.on(eventName as keyof ConnectorEventMap, arg);
       },
     };
   }, [walletClient, connector]);

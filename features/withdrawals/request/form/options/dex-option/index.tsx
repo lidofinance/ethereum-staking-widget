@@ -1,1 +1,1 @@
-export { DexOption } from './dex-options';
+export { DexOption } from './dex-option';
