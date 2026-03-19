@@ -241,14 +241,10 @@ export const getAsyncDepositQueueContractAddress = <
   );
   invariant(
     address,
-    `no legacy ETH Deposit Queue ${token} contract address for ${publicClient.chain?.id}`,
+    `no async ETH Deposit Queue ${token} contract address for ${publicClient.chain?.id}`,
   );
 
-  return getContract({
-    abi: DEPOSIT_QUEUE_ABI,
-    address,
-    client: { public: publicClient },
-  });
+  return address;
 };
 
 /**
@@ -265,7 +261,7 @@ export const getAsyncDepositQueueContract = <
 }) => {
   return getContract({
     abi: DEPOSIT_QUEUE_ABI,
-    address: getSyncDepositQueueContractAddress({ publicClient, token }),
+    address: getAsyncDepositQueueContractAddress({ publicClient, token }),
     client: {
       public: publicClient,
     },
@@ -289,7 +285,7 @@ export const getAsyncDepositQueueWritableContract = <
 }) => {
   return getContract({
     abi: DEPOSIT_QUEUE_ABI,
-    address: getSyncDepositQueueContractAddress({ publicClient, token }),
+    address: getAsyncDepositQueueContractAddress({ publicClient, token }),
     client: {
       public: publicClient,
       wallet: walletClient,
