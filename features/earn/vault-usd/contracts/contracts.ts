@@ -61,104 +61,6 @@ export const getVaultWritableContract = <
   });
 };
 
-export const getSyncDepositQueueContractUSDT = <
-  TPublicClient extends PublicClient,
->(
-  publicClient: TPublicClient,
-) => {
-  const address = getContractAddress(
-    publicClient.chain?.id as number,
-    'usdDepositQueueUSDT',
-  );
-  invariant(
-    address,
-    `no USD Deposit Queue USDT contract address for ${publicClient.chain?.id}`,
-  );
-
-  return getContract({
-    abi: SYNC_DEPOSIT_QUEUE_ABI,
-    address,
-    client: {
-      public: publicClient,
-    },
-  });
-};
-
-export const getSyncDepositQueueWritableContractUSDT = <
-  TPublicClient extends PublicClient,
-  TWalletClient extends WalletClient = WalletClient,
->(
-  publicClient: TPublicClient,
-  walletClient: TWalletClient,
-) => {
-  const address = getContractAddress(
-    publicClient.chain?.id as number,
-    'usdDepositQueueUSDT',
-  );
-  invariant(
-    address,
-    `no USD Deposit Queue USDT contract address for ${publicClient.chain?.id}`,
-  );
-
-  return getContract({
-    abi: SYNC_DEPOSIT_QUEUE_ABI,
-    address,
-    client: {
-      public: publicClient,
-      wallet: walletClient,
-    },
-  });
-};
-
-export const getSyncDepositQueueContractUSDC = <
-  TPublicClient extends PublicClient,
->(
-  publicClient: TPublicClient,
-) => {
-  const address = getContractAddress(
-    publicClient.chain?.id as number,
-    'usdDepositQueueUSDC',
-  );
-  invariant(
-    address,
-    `no USD Deposit Queue USDC contract address for ${publicClient.chain?.id}`,
-  );
-
-  return getContract({
-    abi: SYNC_DEPOSIT_QUEUE_ABI,
-    address,
-    client: {
-      public: publicClient,
-    },
-  });
-};
-
-export const getSyncDepositQueueWritableContractUSDC = <
-  TPublicClient extends PublicClient,
-  TWalletClient extends WalletClient = WalletClient,
->(
-  publicClient: TPublicClient,
-  walletClient: TWalletClient,
-) => {
-  const address = getContractAddress(
-    publicClient.chain?.id as number,
-    'usdDepositQueueUSDC',
-  );
-  invariant(
-    address,
-    `no USD Deposit Queue USDC contract address for ${publicClient.chain?.id}`,
-  );
-
-  return getContract({
-    abi: SYNC_DEPOSIT_QUEUE_ABI,
-    address,
-    client: {
-      public: publicClient,
-      wallet: walletClient,
-    },
-  });
-};
-
 export const getRedeemQueueContractUSDC = <TPublicClient extends PublicClient>(
   publicClient: TPublicClient,
 ) => {
@@ -238,6 +140,38 @@ export const getSyncDepositQueueContractAddress = <
   return address;
 };
 
+export const getAsyncDepositQueueContractAddress = <
+  TPublicClient extends PublicClient,
+>({
+  publicClient,
+  token,
+}: {
+  publicClient: TPublicClient;
+  token: UsdDepositToken;
+}) => {
+  let contractName;
+  switch (token) {
+    case TOKENS.usdt:
+      contractName = 'usdDepositQueueUSDT' as const;
+      break;
+    case TOKENS.usdc:
+      contractName = 'usdDepositQueueUSDC' as const;
+      break;
+    default:
+      throw new Error(`Unsupported token: ${token}`);
+  }
+
+  const address = getContractAddress(
+    publicClient.chain?.id as number,
+    contractName,
+  );
+  invariant(
+    address,
+    `no async USD Deposit Queue ${token} contract address for ${publicClient.chain?.id}`,
+  );
+  return address;
+};
+
 export const getSyncDepositQueueContract = <
   TPublicClient extends PublicClient,
 >({
@@ -295,7 +229,7 @@ export const getAsyncDepositQueueWritableContract = <
 }) => {
   return getContract({
     abi: DEPOSIT_QUEUE_ABI,
-    address: getSyncDepositQueueContractAddress({ publicClient, token }),
+    address: getAsyncDepositQueueContractAddress({ publicClient, token }),
     client: {
       public: publicClient,
       wallet: walletClient,
