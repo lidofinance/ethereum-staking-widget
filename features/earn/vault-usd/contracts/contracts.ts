@@ -6,6 +6,7 @@ import {
   VAULT_ABI,
   COLLECTOR_ABI,
   DEPOSIT_QUEUE_ABI,
+  SYNC_DEPOSIT_QUEUE_ABI,
   REDEEM_QUEUE_ABI,
   SHARE_MANAGER_ABI,
 } from 'modules/mellow-meta-vaults/abi';
@@ -60,7 +61,9 @@ export const getVaultWritableContract = <
   });
 };
 
-export const getDepositQueueContractUSDT = <TPublicClient extends PublicClient>(
+export const getSyncDepositQueueContractUSDT = <
+  TPublicClient extends PublicClient,
+>(
   publicClient: TPublicClient,
 ) => {
   const address = getContractAddress(
@@ -73,7 +76,7 @@ export const getDepositQueueContractUSDT = <TPublicClient extends PublicClient>(
   );
 
   return getContract({
-    abi: DEPOSIT_QUEUE_ABI,
+    abi: SYNC_DEPOSIT_QUEUE_ABI,
     address,
     client: {
       public: publicClient,
@@ -81,7 +84,7 @@ export const getDepositQueueContractUSDT = <TPublicClient extends PublicClient>(
   });
 };
 
-export const getDepositQueueWritableContractUSDT = <
+export const getSyncDepositQueueWritableContractUSDT = <
   TPublicClient extends PublicClient,
   TWalletClient extends WalletClient = WalletClient,
 >(
@@ -98,7 +101,7 @@ export const getDepositQueueWritableContractUSDT = <
   );
 
   return getContract({
-    abi: DEPOSIT_QUEUE_ABI,
+    abi: SYNC_DEPOSIT_QUEUE_ABI,
     address,
     client: {
       public: publicClient,
@@ -107,7 +110,9 @@ export const getDepositQueueWritableContractUSDT = <
   });
 };
 
-export const getDepositQueueContractUSDC = <TPublicClient extends PublicClient>(
+export const getSyncDepositQueueContractUSDC = <
+  TPublicClient extends PublicClient,
+>(
   publicClient: TPublicClient,
 ) => {
   const address = getContractAddress(
@@ -120,7 +125,7 @@ export const getDepositQueueContractUSDC = <TPublicClient extends PublicClient>(
   );
 
   return getContract({
-    abi: DEPOSIT_QUEUE_ABI,
+    abi: SYNC_DEPOSIT_QUEUE_ABI,
     address,
     client: {
       public: publicClient,
@@ -128,7 +133,7 @@ export const getDepositQueueContractUSDC = <TPublicClient extends PublicClient>(
   });
 };
 
-export const getDepositQueueWritableContractUSDC = <
+export const getSyncDepositQueueWritableContractUSDC = <
   TPublicClient extends PublicClient,
   TWalletClient extends WalletClient = WalletClient,
 >(
@@ -145,7 +150,7 @@ export const getDepositQueueWritableContractUSDC = <
   );
 
   return getContract({
-    abi: DEPOSIT_QUEUE_ABI,
+    abi: SYNC_DEPOSIT_QUEUE_ABI,
     address,
     client: {
       public: publicClient,
@@ -201,7 +206,7 @@ export const getRedeemQueueWritableContractUSDC = <
   });
 };
 
-export const getDepositQueueContractAddress = <
+export const getSyncDepositQueueContractAddress = <
   TPublicClient extends PublicClient,
 >({
   publicClient,
@@ -213,10 +218,10 @@ export const getDepositQueueContractAddress = <
   let contractName;
   switch (token) {
     case TOKENS.usdt:
-      contractName = 'usdDepositQueueUSDT' as const;
+      contractName = 'usdSyncDepositQueueUSDT' as const;
       break;
     case TOKENS.usdc:
-      contractName = 'usdDepositQueueUSDC' as const;
+      contractName = 'usdSyncDepositQueueUSDC' as const;
       break;
     default:
       throw new Error(`Unsupported token: ${token}`);
@@ -233,7 +238,9 @@ export const getDepositQueueContractAddress = <
   return address;
 };
 
-export const getDepositQueueContract = <TPublicClient extends PublicClient>({
+export const getSyncDepositQueueContract = <
+  TPublicClient extends PublicClient,
+>({
   publicClient,
   token,
 }: {
@@ -241,15 +248,40 @@ export const getDepositQueueContract = <TPublicClient extends PublicClient>({
   token: UsdDepositToken;
 }) => {
   return getContract({
-    abi: DEPOSIT_QUEUE_ABI,
-    address: getDepositQueueContractAddress({ publicClient, token }),
+    abi: SYNC_DEPOSIT_QUEUE_ABI,
+    address: getSyncDepositQueueContractAddress({ publicClient, token }),
     client: {
       public: publicClient,
     },
   });
 };
 
-export const getDepositQueueWritableContract = <
+export const getSyncDepositQueueWritableContract = <
+  TPublicClient extends PublicClient,
+  TWalletClient extends WalletClient = WalletClient,
+>({
+  publicClient,
+  walletClient,
+  token,
+}: {
+  publicClient: TPublicClient;
+  walletClient: TWalletClient;
+  token: UsdDepositToken;
+}) => {
+  return getContract({
+    abi: SYNC_DEPOSIT_QUEUE_ABI,
+    address: getSyncDepositQueueContractAddress({ publicClient, token }),
+    client: {
+      public: publicClient,
+      wallet: walletClient,
+    },
+  });
+};
+
+/**
+ * @deprecated Use getSyncDepositQueueWritableContract instead
+ */
+export const getAsyncDepositQueueWritableContract = <
   TPublicClient extends PublicClient,
   TWalletClient extends WalletClient = WalletClient,
 >({
@@ -263,7 +295,7 @@ export const getDepositQueueWritableContract = <
 }) => {
   return getContract({
     abi: DEPOSIT_QUEUE_ABI,
-    address: getDepositQueueContractAddress({ publicClient, token }),
+    address: getSyncDepositQueueContractAddress({ publicClient, token }),
     client: {
       public: publicClient,
       wallet: walletClient,

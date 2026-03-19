@@ -1,5 +1,10 @@
 import { useCallback } from 'react';
-import { encodeFunctionData, getContract, WalletClient } from 'viem';
+import {
+  encodeFunctionData,
+  getContract,
+  parseEventLogs,
+  WalletClient,
+} from 'viem';
 import invariant from 'tiny-invariant';
 
 import {
@@ -16,7 +21,7 @@ import { trackMatomoEvent } from 'utils/track-matomo-event';
 import { type Token, TOKENS } from 'consts/tokens';
 import { MATOMO_EVENT_TYPE } from 'consts/matomo';
 import { TxModalStages } from '../types/tx-modal-stages';
-import { DepositQueueGetter } from '../types/deposit-queue-getter';
+import { SyncDepositQueueGetter } from '../types/deposit-queue-getter';
 
 type DepositArgs = {
   amount: bigint;
@@ -31,7 +36,7 @@ export const useDeposit = <DepositQueueToken extends string>({
   matomoEventStart,
   matomoEventSuccess,
 }: {
-  depositQueueGetter: DepositQueueGetter<DepositQueueToken>;
+  depositQueueGetter: SyncDepositQueueGetter<DepositQueueToken>;
   txModalStages: TxModalStages;
   onRetry?: () => void;
   matomoEventStart?: MATOMO_EVENT_TYPE;
@@ -194,7 +199,26 @@ export const useDeposit = <DepositQueueToken extends string>({
           },
           onSuccess: async ({ txHash }) => {
             if (needsApprove) return;
-            txModalStages.success(amount, token, txHash);
+            let receivedShares: bigint | undefined;
+            if (txHash) {
+              try {
+                const receipt = await core.rpcProvider.getTransactionReceipt({
+                  hash: txHash,
+                });
+                const claimedLog = parseEventLogs({
+                  abi: depositQueue.abi,
+                  logs: receipt.logs,
+                  eventName: 'Deposited',
+                }).find(
+                  (log) =>
+                    log.args.account?.toLowerCase() === address?.toLowerCase(),
+                );
+                receivedShares = claimedLog?.args.shares;
+              } catch {
+                // ignore, show fallback title
+              }
+            }
+            txModalStages.success(amount, token, txHash, receivedShares);
             if (matomoEventSuccess) trackMatomoEvent(matomoEventSuccess);
           },
           onMultisigDone: () => {

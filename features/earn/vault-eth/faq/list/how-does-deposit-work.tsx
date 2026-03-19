@@ -8,14 +8,9 @@ export const HowDoesDepositWork: FC<{ id?: string }> = ({ id }) => {
         <p>
           You can deposit ETH, WETH, stETH, or wstETH and, through the upgrade
           flow, also migrate GG, strETH, or DVstETH to receive earnETH share
-          tokens from the EarnETH vault.
-        </p>
-        <p>
-          After submitting a deposit, the request will appear as pending in the
-          Lido UI. For stETH deposits, the asset will first be wrapped, and you
-          will see a pending wstETH deposit. Once the funds are allocated to the
-          vault, earnETH tokens are minted and become available to claim in the
-          UI. Not claiming your tokens does not affect reward accrual.
+          tokens from the EarnETH vault. Once you deposit, earnUSD is issued
+          directly to your wallet, with no pending state or separate claim step
+          required.
         </p>
         <p>Note, that as part of the upgrade:</p>
         <ul>

@@ -9,11 +9,6 @@ import {
   RisksOfDepositing,
   WhoIsCurator,
   HowDoesDepositWork,
-  HowLongToDeposit,
-  PendingRequestRewards,
-  HowManyDepositRequests,
-  CanICancelMyDeposit,
-  CanICreateANewDepositRequest,
   WhatIsEarnUsdToken,
   WhatCanIDoWithEarnUsd,
   HowDoesWithdrawalWork,
@@ -32,11 +27,6 @@ export const FAQ_IDS = {
   risks: 'faq-risks',
   curator: 'faq-curator',
   depositWork: 'faq-deposit-work',
-  depositTime: 'faq-deposit-time',
-  pendingRewards: 'faq-pending-rewards',
-  depositRequests: 'faq-deposit-requests',
-  cancelDeposit: 'faq-cancel-deposit',
-  newDeposit: 'faq-new-deposit',
   token: 'faq-token',
   tokenUse: 'faq-token-use',
   withdrawalWork: 'faq-withdrawal-work',
@@ -66,11 +56,6 @@ export const EarnUsdFaq: FC = () => {
         <RisksOfDepositing id={FAQ_IDS.risks} />
         <WhoIsCurator id={FAQ_IDS.curator} />
         <HowDoesDepositWork id={FAQ_IDS.depositWork} />
-        <HowLongToDeposit id={FAQ_IDS.depositTime} />
-        <PendingRequestRewards id={FAQ_IDS.pendingRewards} />
-        <HowManyDepositRequests id={FAQ_IDS.depositRequests} />
-        <CanICancelMyDeposit id={FAQ_IDS.cancelDeposit} />
-        <CanICreateANewDepositRequest id={FAQ_IDS.newDeposit} />
         <WhatIsEarnUsdToken id={FAQ_IDS.token} />
         <WhatCanIDoWithEarnUsd id={FAQ_IDS.tokenUse} />
         <HowDoesWithdrawalWork id={FAQ_IDS.withdrawalWork} />

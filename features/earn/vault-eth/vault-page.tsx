@@ -48,7 +48,6 @@ const GENERAL_INFO_LEFT: InfoItem[] = [
 ];
 
 const GENERAL_INFO_RIGHT: Array<{ label: ReactNode; value?: ReactNode }> = [
-  { label: 'Deposit wait time', value: '24 hours' },
   { label: 'Withdrawal wait time', value: 'up to 72 hours' },
   {
     label: (
