@@ -122,10 +122,10 @@ export const getSyncDepositQueueContractAddress = <
   let contractName: CONTRACT_NAMES;
   switch (token) {
     case TOKENS.usdt:
-      contractName = 'usdSyncDepositQueueUSDT' as const;
+      contractName = 'usdSyncDepositQueueUSDT';
       break;
     case TOKENS.usdc:
-      contractName = 'usdSyncDepositQueueUSDC' as const;
+      contractName = 'usdSyncDepositQueueUSDC';
       break;
     default:
       throw new Error(`Unsupported token: ${token}`);
@@ -154,10 +154,10 @@ export const getAsyncDepositQueueContractAddress = <
   let contractName: CONTRACT_NAMES;
   switch (token) {
     case TOKENS.usdt:
-      contractName = 'usdDepositQueueUSDT' as const;
+      contractName = 'usdDepositQueueUSDT';
       break;
     case TOKENS.usdc:
-      contractName = 'usdDepositQueueUSDC' as const;
+      contractName = 'usdDepositQueueUSDC';
       break;
     default:
       throw new Error(`Unsupported token: ${token}`);

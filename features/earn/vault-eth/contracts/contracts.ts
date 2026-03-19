@@ -124,23 +124,23 @@ export const getSyncDepositQueueContractAddress = <
   let contractName: CONTRACT_NAMES;
   switch (token) {
     case TOKENS.eth:
-      contractName = 'ethSyncDepositQueueETH' as const;
+      contractName = 'ethSyncDepositQueueETH';
       break;
     case TOKENS.weth:
-      contractName = 'ethSyncDepositQueueWETH' as const;
+      contractName = 'ethSyncDepositQueueWETH';
       break;
     case TOKENS.steth:
     case TOKENS.wsteth:
-      contractName = 'ethSyncDepositQueueWSTETH' as const;
+      contractName = 'ethSyncDepositQueueWSTETH';
       break;
     case TOKENS.gg:
-      contractName = 'ethSyncDepositQueueGG' as const;
+      contractName = 'ethSyncDepositQueueGG';
       break;
     case TOKENS.streth:
-      contractName = 'ethSyncDepositQueueSTRETH' as const;
+      contractName = 'ethSyncDepositQueueSTRETH';
       break;
     case TOKENS.dvsteth:
-      contractName = 'ethSyncDepositQueueDVSTETH' as const;
+      contractName = 'ethSyncDepositQueueDVSTETH';
       break;
     default:
       throw new Error(`Unsupported token: ${token}`);
@@ -214,23 +214,23 @@ export const getAsyncDepositQueueContractAddress = <
   let contractName: CONTRACT_NAMES;
   switch (token) {
     case TOKENS.eth:
-      contractName = 'ethDepositQueueETH' as const;
+      contractName = 'ethDepositQueueETH';
       break;
     case TOKENS.weth:
-      contractName = 'ethDepositQueueWETH' as const;
+      contractName = 'ethDepositQueueWETH';
       break;
     case TOKENS.steth:
     case TOKENS.wsteth:
-      contractName = 'ethDepositQueueWSTETH' as const;
+      contractName = 'ethDepositQueueWSTETH';
       break;
     case TOKENS.gg:
-      contractName = 'ethDepositQueueGG' as const;
+      contractName = 'ethDepositQueueGG';
       break;
     case TOKENS.streth:
-      contractName = 'ethDepositQueueSTRETH' as const;
+      contractName = 'ethDepositQueueSTRETH';
       break;
     case TOKENS.dvsteth:
-      contractName = 'ethDepositQueueDVSTETH' as const;
+      contractName = 'ethDepositQueueDVSTETH';
       break;
     default:
       throw new Error(`Unsupported token: ${token}`);
