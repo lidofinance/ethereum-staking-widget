@@ -11,6 +11,8 @@ import {
   SHARE_MANAGER_ABI,
 } from 'modules/mellow-meta-vaults/abi';
 import { TOKENS } from 'consts/tokens';
+import { CONTRACT_NAMES } from 'config/networks/networks-map';
+
 import type { UsdDepositToken } from '../types';
 
 export const getVaultContract = <TPublicClient extends PublicClient>(
@@ -117,7 +119,7 @@ export const getSyncDepositQueueContractAddress = <
   publicClient: TPublicClient;
   token: UsdDepositToken;
 }) => {
-  let contractName;
+  let contractName: CONTRACT_NAMES;
   switch (token) {
     case TOKENS.usdt:
       contractName = 'usdSyncDepositQueueUSDT' as const;
@@ -149,7 +151,7 @@ export const getAsyncDepositQueueContractAddress = <
   publicClient: TPublicClient;
   token: UsdDepositToken;
 }) => {
-  let contractName;
+  let contractName: CONTRACT_NAMES;
   switch (token) {
     case TOKENS.usdt:
       contractName = 'usdDepositQueueUSDT' as const;

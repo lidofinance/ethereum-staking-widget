@@ -12,6 +12,7 @@ import {
 } from 'modules/mellow-meta-vaults/abi';
 import type { EthDepositToken } from '../types';
 import { TOKENS } from 'consts/tokens';
+import { CONTRACT_NAMES } from 'config/networks/networks-map';
 
 export const getVaultWritableContract = <
   TPublicClient extends PublicClient,
@@ -120,7 +121,7 @@ export const getSyncDepositQueueContractAddress = <
   publicClient: TPublicClient;
   token: EthDepositToken;
 }) => {
-  let contractName;
+  let contractName: CONTRACT_NAMES;
   switch (token) {
     case TOKENS.eth:
       contractName = 'ethSyncDepositQueueETH' as const;
@@ -210,7 +211,7 @@ export const getAsyncDepositQueueContractAddress = <
   publicClient: TPublicClient;
   token: EthDepositToken;
 }) => {
-  let contractName;
+  let contractName: CONTRACT_NAMES;
   switch (token) {
     case TOKENS.eth:
       contractName = 'ethDepositQueueETH' as const;
