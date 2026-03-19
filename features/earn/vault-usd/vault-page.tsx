@@ -52,7 +52,7 @@ const GENERAL_INFO_RIGHT: Array<{ label: ReactNode; value?: ReactNode }> = [
   { label: 'Withdrawal wait time', value: 'up to 72 hours' },
   {
     label: (
-      <Link href="https://etherscan.io/token/0x974D2CD0584b22650B1C9617bb209c5196652c1A">
+      <Link href="https://etherscan.io/address/0x4Ce1ac8F43E0E5BD7A346A98aF777bF8fbeA1981">
         View on Etherscan ↗
       </Link>
     ),
