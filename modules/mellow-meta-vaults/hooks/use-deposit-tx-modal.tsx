@@ -87,12 +87,17 @@ const getTxModalStagesRequest = (
       />,
     ),
 
-  success: (amount: bigint, token: Token, txHash?: Hash) =>
+  success: (
+    _amount: bigint,
+    _token: Token,
+    txHash?: Hash,
+    receivedShares?: bigint,
+  ) =>
     transitStage(
       <DepositTxStageSuccess
         txHash={txHash}
-        amount={amount}
-        token={TOKEN_SYMBOLS[token]}
+        receivedShares={receivedShares}
+        willReceiveToken={stageOperationArgs.willReceiveToken}
       />,
       {
         isClosableOnLedger: true,

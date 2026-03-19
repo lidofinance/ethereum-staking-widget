@@ -4,7 +4,10 @@ import { usePreviewDeposit } from 'modules/mellow-meta-vaults';
 import { useMainnetOnlyWagmi } from 'modules/web3';
 import { useWstethBySteth } from 'modules/web3/hooks/use-wstETH-by-stETH';
 import { TOKENS } from 'consts/tokens';
-import { getCollectorContract, getDepositQueueContract } from '../../contracts';
+import {
+  getCollectorContract,
+  getSyncDepositQueueContract,
+} from '../../contracts';
 import { EthDepositToken } from '../../types';
 
 export const useEthVaultPreviewDeposit = ({
@@ -34,7 +37,7 @@ export const useEthVaultPreviewDeposit = ({
   );
   const depositQueue = useMemo(
     () =>
-      getDepositQueueContract({
+      getSyncDepositQueueContract({
         publicClient: publicClientMainnet,
         token: previewToken,
       }),

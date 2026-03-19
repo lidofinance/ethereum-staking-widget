@@ -9,7 +9,7 @@ import { useGGVUserShareState } from 'features/earn/vault-ggv/withdraw/hooks/use
 import { useIsUnlocked } from 'features/earn/vault-ggv/withdraw/hooks/use-is-unlocked';
 import { ETH_VAULT_QUERY_SCOPE } from '../consts';
 
-import { getDepositQueueContract } from '../contracts';
+import { getAsyncDepositQueueContract } from '../contracts';
 import { EthDepositToken } from '../types';
 import { useEthVaultAvailable } from '../hooks/use-vault-available';
 import { getSTGVaultContract } from 'features/earn/vault-stg/contracts';
@@ -59,7 +59,7 @@ export const useUpgradableTokenBalances = () => {
         });
 
       const readIsRequestInQueue = async (token: EthDepositToken) => {
-        const contract = getDepositQueueContract({
+        const contract = getAsyncDepositQueueContract({
           publicClient: publicClientMainnet,
           token,
         });

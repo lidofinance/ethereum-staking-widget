@@ -1,5 +1,10 @@
 import { useCallback } from 'react';
-import { encodeFunctionData, getContract, WalletClient } from 'viem';
+import {
+  encodeFunctionData,
+  getContract,
+  parseEventLogs,
+  WalletClient,
+} from 'viem';
 import invariant from 'tiny-invariant';
 
 import {
@@ -16,7 +21,7 @@ import { trackMatomoEvent } from 'utils/track-matomo-event';
 import { TOKENS } from 'consts/tokens';
 import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo/matomo-earn-events';
 
-import { getDepositQueueWritableContract } from '../../contracts';
+import { getSyncDepositQueueWritableContract } from '../../contracts';
 import { useTxModalStagesDeposit } from 'modules/mellow-meta-vaults/hooks/use-deposit-tx-modal';
 import { ETH_VAULT_TOKEN_SYMBOL } from '../../consts';
 
@@ -53,7 +58,7 @@ export const useEthVaultDepositSteth = (onRetry?: () => void) => {
       invariant(wstethAddress, 'wstETH address not defined');
 
       try {
-        const depositQueue = getDepositQueueWritableContract({
+        const depositQueue = getSyncDepositQueueWritableContract({
           publicClient: core.rpcProvider,
           walletClient: core.web3Provider as WalletClient,
           token: TOKENS.wsteth,
@@ -228,9 +233,33 @@ export const useEthVaultDepositSteth = (onRetry?: () => void) => {
                 );
             }
           },
-          onSuccess: ({ txHash }) => {
+          onSuccess: async ({ txHash }) => {
             if (currentStage !== 'deposit') return;
-            txModalStages.success(wstethAmount, TOKENS.wsteth, txHash);
+            let receivedShares: bigint | undefined;
+            if (txHash) {
+              try {
+                const receipt = await core.rpcProvider.getTransactionReceipt({
+                  hash: txHash,
+                });
+                const claimedLog = parseEventLogs({
+                  abi: depositQueue.abi,
+                  logs: receipt.logs,
+                  eventName: 'Deposited',
+                }).find(
+                  (log) =>
+                    log.args.account?.toLowerCase() === address?.toLowerCase(),
+                );
+                receivedShares = claimedLog?.args.shares;
+              } catch {
+                // ignore, show fallback title
+              }
+            }
+            txModalStages.success(
+              wstethAmount,
+              TOKENS.wsteth,
+              txHash,
+              receivedShares,
+            );
             trackMatomoEvent(MATOMO_EARN_EVENTS_TYPES.earnEthDepositingFinish);
           },
           onMultisigDone: () => {

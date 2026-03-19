@@ -2,7 +2,7 @@ import { useCallback } from 'react';
 
 import { useDeposit } from 'modules/mellow-meta-vaults/hooks/use-deposit';
 import { useTxModalStagesDeposit } from 'modules/mellow-meta-vaults/hooks/use-deposit-tx-modal';
-import { getDepositQueueWritableContract } from '../../contracts';
+import { getSyncDepositQueueWritableContract } from '../../contracts';
 import { ETH_VAULT_TOKEN_SYMBOL } from '../../consts';
 import type { EthDepositToken } from '../../types';
 import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo/matomo-earn-events';
@@ -22,7 +22,7 @@ export const useEthVaultDeposit = (onRetry?: () => void) => {
   });
 
   const { deposit: depositNormal } = useDeposit<EthDepositToken>({
-    depositQueueGetter: getDepositQueueWritableContract,
+    depositQueueGetter: getSyncDepositQueueWritableContract,
     txModalStages,
     onRetry,
     matomoEventStart: MATOMO_EARN_EVENTS_TYPES.earnEthDepositingStart,

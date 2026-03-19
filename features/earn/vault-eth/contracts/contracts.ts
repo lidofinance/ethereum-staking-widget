@@ -6,11 +6,13 @@ import {
   VAULT_ABI,
   COLLECTOR_ABI,
   DEPOSIT_QUEUE_ABI,
+  SYNC_DEPOSIT_QUEUE_ABI,
   REDEEM_QUEUE_ABI,
   SHARE_MANAGER_ABI,
 } from 'modules/mellow-meta-vaults/abi';
 import type { EthDepositToken } from '../types';
 import { TOKENS } from 'consts/tokens';
+import { CONTRACT_NAMES } from 'config/networks/networks-map';
 
 export const getVaultWritableContract = <
   TPublicClient extends PublicClient,
@@ -110,7 +112,7 @@ export const getRedeemQueueContractWSTETH = <
   });
 };
 
-export const getDepositQueueContractAddress = <
+export const getSyncDepositQueueContractAddress = <
   TPublicClient extends PublicClient,
 >({
   publicClient,
@@ -119,26 +121,26 @@ export const getDepositQueueContractAddress = <
   publicClient: TPublicClient;
   token: EthDepositToken;
 }) => {
-  let contractName;
+  let contractName: CONTRACT_NAMES;
   switch (token) {
     case TOKENS.eth:
-      contractName = 'ethDepositQueueETH' as const;
+      contractName = 'ethSyncDepositQueueETH';
       break;
     case TOKENS.weth:
-      contractName = 'ethDepositQueueWETH' as const;
+      contractName = 'ethSyncDepositQueueWETH';
       break;
     case TOKENS.steth:
     case TOKENS.wsteth:
-      contractName = 'ethDepositQueueWSTETH' as const;
+      contractName = 'ethSyncDepositQueueWSTETH';
       break;
     case TOKENS.gg:
-      contractName = 'ethDepositQueueGG' as const;
+      contractName = 'ethSyncDepositQueueGG';
       break;
     case TOKENS.streth:
-      contractName = 'ethDepositQueueSTRETH' as const;
+      contractName = 'ethSyncDepositQueueSTRETH';
       break;
     case TOKENS.dvsteth:
-      contractName = 'ethDepositQueueDVSTETH' as const;
+      contractName = 'ethSyncDepositQueueDVSTETH';
       break;
     default:
       throw new Error(`Unsupported token: ${token}`);
@@ -155,7 +157,103 @@ export const getDepositQueueContractAddress = <
   return address;
 };
 
-export const getDepositQueueContract = <TPublicClient extends PublicClient>({
+export const getSyncDepositQueueContract = <
+  TPublicClient extends PublicClient,
+>({
+  publicClient,
+  token,
+}: {
+  publicClient: TPublicClient;
+  token: EthDepositToken;
+}) => {
+  return getContract({
+    abi: SYNC_DEPOSIT_QUEUE_ABI,
+    address: getSyncDepositQueueContractAddress({ publicClient, token }),
+    client: {
+      public: publicClient,
+    },
+  });
+};
+
+export const getSyncDepositQueueWritableContract = <
+  TPublicClient extends PublicClient,
+  TWalletClient extends WalletClient = WalletClient,
+>({
+  publicClient,
+  walletClient,
+  token,
+}: {
+  publicClient: TPublicClient;
+  walletClient: TWalletClient;
+  token: EthDepositToken;
+}) => {
+  return getContract({
+    abi: SYNC_DEPOSIT_QUEUE_ABI,
+    address: getSyncDepositQueueContractAddress({ publicClient, token }),
+    client: {
+      public: publicClient,
+      wallet: walletClient,
+    },
+  });
+};
+
+// Returns a contract pointing to the LEGACY async deposit queue.
+// Used only for reading pending state of users who deposited before the sync queue migration.
+/**
+ * @deprecated Use getSyncDepositQueueContractAddress instead
+ */
+export const getAsyncDepositQueueContractAddress = <
+  TPublicClient extends PublicClient,
+>({
+  publicClient,
+  token,
+}: {
+  publicClient: TPublicClient;
+  token: EthDepositToken;
+}) => {
+  let contractName: CONTRACT_NAMES;
+  switch (token) {
+    case TOKENS.eth:
+      contractName = 'ethDepositQueueETH';
+      break;
+    case TOKENS.weth:
+      contractName = 'ethDepositQueueWETH';
+      break;
+    case TOKENS.steth:
+    case TOKENS.wsteth:
+      contractName = 'ethDepositQueueWSTETH';
+      break;
+    case TOKENS.gg:
+      contractName = 'ethDepositQueueGG';
+      break;
+    case TOKENS.streth:
+      contractName = 'ethDepositQueueSTRETH';
+      break;
+    case TOKENS.dvsteth:
+      contractName = 'ethDepositQueueDVSTETH';
+      break;
+    default:
+      throw new Error(`Unsupported token: ${token}`);
+  }
+
+  const address = getContractAddress(
+    publicClient.chain?.id as number,
+    contractName,
+  );
+  invariant(
+    address,
+    `no async ETH Deposit Queue ${token} contract address for ${publicClient.chain?.id}`,
+  );
+
+  return address;
+};
+
+/**
+ * @deprecated Use getSyncDepositQueueContract instead
+ */
+export const getAsyncDepositQueueContract = <
+  TPublicClient extends PublicClient,
+>({
   publicClient,
   token,
 }: {
@@ -164,14 +262,17 @@ export const getDepositQueueContract = <TPublicClient extends PublicClient>({
 }) => {
   return getContract({
     abi: DEPOSIT_QUEUE_ABI,
-    address: getDepositQueueContractAddress({ publicClient, token }),
+    address: getAsyncDepositQueueContractAddress({ publicClient, token }),
     client: {
       public: publicClient,
     },
   });
 };
 
-export const getDepositQueueWritableContract = <
+/**
+ * @deprecated Use getSyncDepositQueueWritableContract instead
+ */
+export const getAsyncDepositQueueWritableContract = <
   TPublicClient extends PublicClient,
   TWalletClient extends WalletClient = WalletClient,
 >({
@@ -185,7 +286,7 @@ export const getDepositQueueWritableContract = <
 }) => {
   return getContract({
     abi: DEPOSIT_QUEUE_ABI,
-    address: getDepositQueueContractAddress({ publicClient, token }),
+    address: getAsyncDepositQueueContractAddress({ publicClient, token }),
     client: {
       public: publicClient,
       wallet: walletClient,
