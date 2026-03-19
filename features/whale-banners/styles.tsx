@@ -1,5 +1,5 @@
 import { ComponentProps, FC } from 'react';
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 import { Text as TextOriginal, themeDefault } from '@lidofinance/lido-ui';
 import { devicesHeaderMedia } from 'styles/global';
 
@@ -10,13 +10,32 @@ export const Text: FC<TextProps> = styled(TextOriginal)<TextProps>`
   color: ${({ color }) => `var(--lido-color-${color ?? 'accentContrast'})`};
 `;
 
-export const Wrap = styled.div`
+export const Wrap = styled.div<{ $withArrow?: boolean }>`
+  position: relative;
   display: flex;
   flex-direction: column;
   gap: 10px;
   padding: ${({ theme }) => theme.spaceMap.md}px;
   background-color: var(--lido-color-accent);
   border-radius: ${({ theme }) => theme.borderRadiusesMap.sm}px;
+
+  ${({ $withArrow }) =>
+    $withArrow &&
+    css`
+      &:after {
+        content: '';
+        position: absolute;
+        top: -6px;
+        right: 68px;
+        display: block;
+        width: 12px;
+        height: 12px;
+        transform: rotate(45deg);
+        flex-shrink: 0;
+        border-radius: 2px 0 0 0;
+        background: var(--lido-color-accent);
+      }
+    `}
 `;
 
 export const CtaGroup = styled.div`
@@ -56,5 +75,26 @@ export const CtaLink = styled.a`
 
   @media ${devicesHeaderMedia.mobile} {
     width: 100%;
+  }
+`;
+
+export const CloseButton = styled.button`
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  color: var(--lido-color-accentContrast);
+  opacity: 0.7;
+
+  &:hover {
+    opacity: 1;
   }
 `;

@@ -5,7 +5,6 @@ import Head from 'next/head';
 import { WithdrawalsTabs } from 'features/withdrawals';
 import { WithdrawalsProvider } from 'features/withdrawals/contexts/withdrawals-context';
 import { Layout, DisclaimerSection, LegalDisclaimer } from 'shared/components';
-import { WhaleBannerOnConnectTrigger } from 'features/whale-banners';
 import { getDefaultStaticProps } from 'utilsApi/get-default-static-props';
 
 const Withdrawals: FC<WithdrawalsModePageParams> = ({ mode }) => {
@@ -17,7 +16,6 @@ const Withdrawals: FC<WithdrawalsModePageParams> = ({ mode }) => {
       <Head>
         <title>Withdrawals | Lido</title>
       </Head>
-      <WhaleBannerOnConnectTrigger />
       <WithdrawalsProvider mode={mode}>
         <WithdrawalsTabs />
       </WithdrawalsProvider>

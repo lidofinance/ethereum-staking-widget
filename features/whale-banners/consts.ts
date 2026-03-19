@@ -17,6 +17,7 @@ export const WHALE_BANNER_LINKS = {
 } as const;
 
 export const WHALE_BANNER_AB_STORAGE_KEY = 'lido-whale-banner-ab-variant';
+export const WHALE_BANNER_DISMISSED_STORAGE_KEY = 'lido-whale-banner-dismissed';
 
 export const WHALE_BANNER_BODY_TEXT =
   'Connect with Lido contributors for opportunities across Lido Earn, V3, and institutional staking.';

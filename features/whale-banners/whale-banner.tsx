@@ -1,13 +1,21 @@
+import { Close } from '@lidofinance/lido-ui';
 import type { WhaleBannerConfig } from './types';
-import { Wrap, Text, CtaGroup, CtaLink } from './styles';
+import { Wrap, Text, CtaGroup, CtaLink, CloseButton } from './styles';
 
 type WhaleBannerProps = {
   config: WhaleBannerConfig;
+  onDismiss?: () => void;
+  withArrow?: boolean;
 };
 
-export const WhaleBanner = ({ config }: WhaleBannerProps) => {
+export const WhaleBanner = ({ config, onDismiss, withArrow }: WhaleBannerProps) => {
   return (
-    <Wrap>
+    <Wrap $withArrow={withArrow}>
+      {onDismiss && (
+        <CloseButton onClick={onDismiss} aria-label="Dismiss">
+          <Close />
+        </CloseButton>
+      )}
       <Text weight={700} size="xs">
         {config.heading}
       </Text>

@@ -10,8 +10,6 @@ import {
   AprDisclaimer,
   LegalDisclaimer,
 } from 'shared/components';
-import { WhaleBannerOnConnectTrigger } from 'features/whale-banners';
-
 import { getDefaultStaticProps } from 'utilsApi/get-default-static-props';
 
 const Rewards: FC = () => {
@@ -30,7 +28,6 @@ const Rewards: FC = () => {
         />
       </Head>
 
-      <WhaleBannerOnConnectTrigger />
       <RewardsHistoryProvider>
         <TopCard />
         <RewardsList />
