@@ -4,35 +4,48 @@ import {
   EthereumProvider,
   TradeType,
 } from '@cowprotocol/widget-react';
-import { RequestFormInputType } from 'features/withdrawals/request/request-form-context';
-import { ONE_stETH } from 'modules/web3';
+
 import { useMemo } from 'react';
-import { useWatch } from 'react-hook-form';
 import { useTheme } from 'styled-components';
-import { formatEther } from 'viem';
 import { ConnectorEventMap, useConnection, useWalletClient } from 'wagmi';
 
 export const DexOption = () => {
-  const [token, amount] = useWatch<RequestFormInputType, ['token', 'amount']>({
-    name: ['token', 'amount'],
-  });
   const { data: walletClient } = useWalletClient();
   const { name: themeName } = useTheme();
 
   const params = useMemo<CowSwapWidgetParams>(
     () => ({
-      appCode: 'Lido Staking Widget', // Name of your app (max 50 characters)
-      width: '100%', // Width in pixels (or 100% to use all available space)
-      chainId: 1, // 1 (Mainnet), 100 (Gnosis), 11155111 (Sepolia)
-      tokenLists: [
-        // All default enabled token lists. Also see https://tokenlists.org
-        'https://files.cow.fi/tokens/CowSwap.json',
+      appCode: 'Lido Staking Widget',
+      width: '100%',
+      // test app
+      baseUrl: 'https://swap-dev-git-feat-widget-lido-1-cowswap-dev.vercel.app',
+      // temp for testing
+      sellTokenLists: [
+        'https://raw.githubusercontent.com/lidofinance/ethereum-staking-widget/refs/heads/feature/si-2468-dex-withdrawal-integration/public/token-lists/withdrawals-dex-sell-tokenlist.json',
       ],
+      buyTokenLists: [
+        'https://raw.githubusercontent.com/lidofinance/ethereum-staking-widget/refs/heads/feature/si-2468-dex-withdrawal-integration/public/token-lists/withdrawals-dex-buy-tokenlist.json',
+      ],
+      partnerFee: {
+        bps: 30,
+        // Lido DAO treasury
+        recipient: '0x3e40d73eb977dc6a537af587d48316fee66e9c8c',
+      },
+      hideRecentTokens: true,
+      hideFavoriteTokens: true,
+      disableTrade: {
+        whenPriceImpactIsUnknown: true,
+        whenPriceImpactIsHigherThan: 0.6,
+      },
+      slippage: {
+        max: 300, // 3%
+      },
+      chainId: 1, // 1 (Mainnet), 100 (Gnosis), 11155111 (Sepolia)
+      disableCrossChainSwap: true,
       tradeType: TradeType.SWAP, // TradeType.SWAP, TradeType.LIMIT or TradeType.ADVANCED
       sell: {
         // Sell token. Optionally add amount for sell orders
-        asset: token,
-        amount: formatEther(amount ?? ONE_stETH),
+        asset: 'STETH',
       },
       buy: {
         // Buy token. Optionally add amount for buy orders
@@ -50,11 +63,8 @@ export const DexOption = () => {
       disableProgressBar: false,
       hideBridgeInfo: false,
       hideOrdersTable: false,
-      images: {},
-      sounds: {},
-      customTokens: [],
     }),
-    [token, amount, themeName],
+    [themeName],
   );
 
   const { connector } = useConnection();
