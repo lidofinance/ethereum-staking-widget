@@ -4,6 +4,10 @@ import { ContainerProps } from '@lidofinance/lido-ui';
 import { config } from 'config';
 
 import { IPFSInfoBox } from 'features/ipfs/ipfs-info-box';
+import {
+  WhaleBanner,
+  useWhaleBannerOnConnectVisibility,
+} from 'features/whale-banners';
 import { Header } from './header/header';
 import { Footer } from './footer/footer';
 import { Main } from './main/main';
@@ -11,6 +15,7 @@ import {
   LayoutTitleStyle,
   LayoutSubTitleStyle,
   IPFSInfoBoxOnlyMobileAndPortableWrapper,
+  WhaleBannerOnlyMobileWrapper,
 } from './styles';
 import { HolidaysDecorFooter } from '../holiday-decor';
 
@@ -25,6 +30,12 @@ export const Layout: FC<PropsWithChildren<Props>> = (props) => {
   const { title, subtitle, containerSize, stylesV2 } = props;
   const { children } = props;
 
+  const {
+    shouldShow: shouldShowWhaleBanner,
+    bannerConfig: whaleBannerConfig,
+    dismiss: dismissWhaleBanner,
+  } = useWhaleBannerOnConnectVisibility();
+
   return (
     <>
       <Header />
@@ -34,6 +45,14 @@ export const Layout: FC<PropsWithChildren<Props>> = (props) => {
             <IPFSInfoBox />
           </IPFSInfoBoxOnlyMobileAndPortableWrapper>
         )}
+        <WhaleBannerOnlyMobileWrapper>
+          {shouldShowWhaleBanner && whaleBannerConfig && (
+            <WhaleBanner
+              config={whaleBannerConfig}
+              onDismiss={dismissWhaleBanner}
+            />
+          )}
+        </WhaleBannerOnlyMobileWrapper>
         <LayoutTitleStyle $v2={stylesV2}>{title}</LayoutTitleStyle>
         <LayoutSubTitleStyle>{subtitle}</LayoutSubTitleStyle>
         {children}
