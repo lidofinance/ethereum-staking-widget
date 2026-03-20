@@ -83,6 +83,7 @@ export const enum MATOMO_EARN_EVENTS_TYPES {
   earnEthSelectTokenEth = 'earnEthSelectTokenEth',
   earnEthSelectTokenWeth = 'earnEthSelectTokenWeth',
   earnEthSelectTokenWsteth = 'earnEthSelectTokenWsteth',
+  earnEthSelectTokenSteth = 'earnEthSelectTokenSteth',
   earnEthDepositMax = 'earnEthDepositMax',
   earnEthDepositingStart = 'earnEthDepositingStart',
   earnEthDepositingFinish = 'earnEthDepositingFinish',
@@ -455,6 +456,11 @@ export const MATOMO_EARN_EVENTS: Record<
     'Ethereum_Earn_Widget',
     'Select wstETH to deposit on Lido Earn ETH',
     'eth_earn_lido_earn_eth_select_token_wsteth',
+  ],
+  [MATOMO_EARN_EVENTS_TYPES.earnEthSelectTokenSteth]: [
+    'Ethereum_Earn_Widget',
+    'Select stETH to deposit on Lido Earn ETH',
+    'eth_earn_lido_earn_eth_select_token_steth',
   ],
   [MATOMO_EARN_EVENTS_TYPES.earnEthDepositMax]: [
     'Ethereum_Earn_Widget',

@@ -1,5 +1,7 @@
 import {
   useState,
+  useEffect,
+  useCallback,
   type ComponentType,
   type FC,
   type ReactNode,
@@ -9,6 +11,7 @@ import { Tab } from '@lidofinance/lido-ui';
 
 import { type MATOMO_EVENT_TYPE } from 'consts/matomo';
 import { trackMatomoEvent } from 'utils/track-matomo-event';
+import { useInpageNavigation } from 'providers/inpage-navigation';
 
 import { VaultChart } from '../vault-chart';
 
@@ -69,6 +72,7 @@ type Props = {
     clickChartsApy1m?: MATOMO_EVENT_TYPE;
     clickChartsApy3m?: MATOMO_EVENT_TYPE;
   };
+  protectedBadgeTooltipText?: React.ReactNode;
 };
 
 const TABS = {
@@ -85,12 +89,32 @@ export const VaultPage: FC<Props> = (props) => {
     riskDisclosure,
     strategyContent,
     faqContent,
+    protectedBadgeTooltipText,
   } = props;
   const { performanceTabEvent, strategyTabEvent, faqTabEvent } =
     props.matomo ?? {};
 
+  const { hashNav, resetInpageAnchor } = useInpageNavigation();
+
   const [activeTab, setActiveTab] = useState<(typeof TABS)[keyof typeof TABS]>(
     TABS.PERFORMANCE,
+  );
+
+  useEffect(() => {
+    if (!hashNav) return;
+    if (hashNav === TABS.STRATEGY) setActiveTab(TABS.STRATEGY);
+    else if (hashNav === TABS.PERFORMANCE) setActiveTab(TABS.PERFORMANCE);
+    else setActiveTab(TABS.FAQ); // handles #faq and any FAQ item hash
+  }, [hashNav]);
+
+  const handleTabClick = useCallback(
+    (tab: (typeof TABS)[keyof typeof TABS], matomoEvent?: MATOMO_EVENT_TYPE) =>
+      () => {
+        setActiveTab(tab);
+        resetInpageAnchor();
+        if (matomoEvent) trackMatomoEvent(matomoEvent);
+      },
+    [resetInpageAnchor],
   );
 
   return (
@@ -105,33 +129,25 @@ export const VaultPage: FC<Props> = (props) => {
           apxHint={props.apxHint}
           isApxLoading={props.isApxLoading}
           isTvlLoading={props.isTvlLoading}
+          protectedBadgeTooltipText={protectedBadgeTooltipText}
         />
         <VaultPageContent>
           <TabsStyled>
             <Tab
               active={activeTab === TABS.PERFORMANCE}
-              onClick={() => {
-                setActiveTab(TABS.PERFORMANCE);
-                if (performanceTabEvent) trackMatomoEvent(performanceTabEvent);
-              }}
+              onClick={handleTabClick(TABS.PERFORMANCE, performanceTabEvent)}
             >
               Performance
             </Tab>
             <Tab
               active={activeTab === TABS.STRATEGY}
-              onClick={() => {
-                setActiveTab(TABS.STRATEGY);
-                if (strategyTabEvent) trackMatomoEvent(strategyTabEvent);
-              }}
+              onClick={handleTabClick(TABS.STRATEGY, strategyTabEvent)}
             >
               Strategy
             </Tab>
             <Tab
               active={activeTab === TABS.FAQ}
-              onClick={() => {
-                setActiveTab(TABS.FAQ);
-                if (faqTabEvent) trackMatomoEvent(faqTabEvent);
-              }}
+              onClick={handleTabClick(TABS.FAQ, faqTabEvent)}
             >
               FAQ
             </Tab>

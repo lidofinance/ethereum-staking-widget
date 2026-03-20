@@ -1,9 +1,14 @@
 import { FC } from 'react';
 import { FaqItem } from 'features/earn/shared/v2/faq';
 
-export const WhatIsEarnUsd: FC = () => {
+export const WhatIsEarnUsd: FC<{ defaultExpanded?: boolean }> = ({
+  defaultExpanded,
+}) => {
   return (
-    <FaqItem defaultExpanded summary="What is EarnUSD, and how does it work?">
+    <FaqItem
+      defaultExpanded={defaultExpanded}
+      summary="What is EarnUSD, and how does it work?"
+    >
       <p>
         EarnUSD provides on-chain access to strategies involving USD-denominated
         digital assets. It uses defined asset selection and risk controls,

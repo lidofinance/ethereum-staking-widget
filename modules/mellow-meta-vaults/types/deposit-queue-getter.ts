@@ -1,7 +1,13 @@
 import { PublicClient, WalletClient } from 'viem';
-import { DepositQueueWritableContract } from './contracts';
+import {
+  AsyncDepositQueueWritableContract,
+  SyncDepositQueueWritableContract,
+} from './contracts';
 
-export type DepositQueueGetter<
+/**
+ * @deprecated Use SyncDepositQueueGetter instead
+ */
+export type AsyncDepositQueueGetter<
   DepositToken extends string,
   TPublicClient extends PublicClient = PublicClient,
   TWalletClient extends WalletClient = WalletClient,
@@ -13,4 +19,18 @@ export type DepositQueueGetter<
   publicClient: TPublicClient;
   walletClient: TWalletClient;
   token: DepositToken;
-}) => DepositQueueWritableContract;
+}) => AsyncDepositQueueWritableContract;
+
+export type SyncDepositQueueGetter<
+  DepositToken extends string,
+  TPublicClient extends PublicClient = PublicClient,
+  TWalletClient extends WalletClient = WalletClient,
+> = ({
+  publicClient,
+  walletClient,
+  token,
+}: {
+  publicClient: TPublicClient;
+  walletClient: TWalletClient;
+  token: DepositToken;
+}) => SyncDepositQueueWritableContract;

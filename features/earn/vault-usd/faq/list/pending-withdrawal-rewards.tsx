@@ -1,11 +1,11 @@
 import { FC } from 'react';
 import { FaqItem } from 'features/earn/shared/v2/faq';
 
-export const PendingWithdrawalRewards: FC = () => {
+export const PendingWithdrawalRewards: FC<{ id?: string }> = ({ id }) => {
   return (
     <FaqItem
       summary="When I request the withdrawal and it's pending, do I still get the rewards?"
-      id="earnusd-pending-withdrawal-rewards"
+      id={id}
     >
       <p>
         Yes. Once you create a withdrawal request, and before your payout is

@@ -16,6 +16,7 @@ import { useEthVaultApy } from './hooks/use-vault-apy';
 import { EARN_VAULT_DEPOSIT_SLUG, EARN_VAULT_WITHDRAW_SLUG } from '../consts';
 import { EthVaultApyHint } from './components/apy-hint';
 import { ETH_VAULT_DESCRIPTION, ETH_VAULT_TITLE } from './consts';
+import { ProtectedTooltip } from './protected-tooltip';
 
 const FEES = [
   { label: 'Performance fee', value: '10%' },
@@ -48,11 +49,10 @@ const GENERAL_INFO_LEFT: InfoItem[] = [
 ];
 
 const GENERAL_INFO_RIGHT: Array<{ label: ReactNode; value?: ReactNode }> = [
-  { label: 'Deposit wait time', value: '24 hours' },
   { label: 'Withdrawal wait time', value: 'up to 72 hours' },
   {
     label: (
-      <Link href="https://etherscan.io/token/0xBBFC8683C8fE8cF73777feDE7ab9574935fea0A4">
+      <Link href="https://etherscan.io/address/0xBBFC8683C8fE8cF73777feDE7ab9574935fea0A4">
         View on Etherscan ↗
       </Link>
     ),
@@ -132,6 +132,7 @@ export const EthVaultPage: FC<{
           clickChartsApy1m: MATOMO_EARN_EVENTS_TYPES.earnEthPerformanceApy1m,
           clickChartsApy3m: MATOMO_EARN_EVENTS_TYPES.earnEthPerformanceApy3m,
         }}
+        protectedBadgeTooltipText={<ProtectedTooltip />}
       />
       <Disclaimers />
     </>

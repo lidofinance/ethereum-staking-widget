@@ -37,6 +37,19 @@ export const InpageNavigationProvider: FC<PropsWithChildren> = ({
     setHash(hash);
   }, [asPath]);
 
+  // Handles same-page hash navigation (address bar edits, plain <a href="#…"> clicks,
+  // browser back/forward). history.pushState used by navigateInpageAnchor does NOT
+  // fire hashchange, so there is no risk of double-updates.
+  useEffect(() => {
+    if (config.ipfsMode) return;
+    const handleHashChange = () => {
+      const hash = window.location.hash.slice(1);
+      setHash(hash);
+    };
+    window.addEventListener('hashchange', handleHashChange);
+    return () => window.removeEventListener('hashchange', handleHashChange);
+  }, []);
+
   const navigateInpageAnchor = useCallback(
     (e: React.MouseEvent<HTMLAnchorElement>) => {
       const href = e.currentTarget.getAttribute('href');
