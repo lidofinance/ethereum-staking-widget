@@ -16,7 +16,7 @@ export const DexOption = () => {
   const params = useMemo<CowSwapWidgetParams>(
     () => ({
       appCode: 'Lido Staking Widget',
-      width: '100%',
+
       // test app
       baseUrl: 'https://swap-dev-git-feat-widget-lido-1-cowswap-dev.vercel.app',
       // temp for testing
@@ -35,14 +35,13 @@ export const DexOption = () => {
       hideFavoriteTokens: true,
       disableTrade: {
         whenPriceImpactIsUnknown: true,
-        whenPriceImpactIsHigherThan: 0.6,
+        whenPriceImpactIsHigherThan: 3,
       },
       slippage: {
         max: 300, // 3%
       },
       chainId: 1, // 1 (Mainnet), 100 (Gnosis), 11155111 (Sepolia)
       disableCrossChainSwap: true,
-      tradeType: TradeType.SWAP, // TradeType.SWAP, TradeType.LIMIT or TradeType.ADVANCED
       sell: {
         // Sell token. Optionally add amount for sell orders
         asset: 'STETH',
@@ -51,12 +50,13 @@ export const DexOption = () => {
         // Buy token. Optionally add amount for buy orders
         asset: 'ETH',
       },
+      tradeType: TradeType.SWAP, // TradeType.SWAP, TradeType.LIMIT or TradeType.ADVANCED
+
       enabledTradeTypes: [
         // TradeType.SWAP, TradeType.LIMIT and/or TradeType.ADVANCED
         TradeType.SWAP,
-        TradeType.LIMIT,
-        TradeType.ADVANCED,
       ],
+      width: '100%',
       theme: themeName === 'dark' ? 'dark' : 'light', // light/dark or provide your own color palette
       standaloneMode: false,
       disableToastMessages: true,
