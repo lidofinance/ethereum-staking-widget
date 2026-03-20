@@ -44,7 +44,7 @@ export type ManifestConfig = {
     rewardsMaintenance?: boolean;
     holidayDecorEnabled?: boolean;
     forceAllowance?: boolean;
-    whaleBannerEnabled?: boolean;
+    amountBannerEnabled?: boolean;
   };
   pages: {
     [page in ManifestConfigPage]?: {

@@ -60,7 +60,7 @@ export const IPFSInfoBoxOnlyDesktopWrapper = styled.div`
   }
 `;
 
-export const WhaleBannerOnlyDesktopWrapper = styled.div`
+export const AmountBannerOnlyDesktopWrapper = styled.div`
   position: absolute;
   right: 0;
   top: calc(100% + 15px);

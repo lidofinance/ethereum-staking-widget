@@ -8,17 +8,16 @@ import {
   Address,
 } from '@lidofinance/lido-ui';
 import { useConnectorInfo, useDisconnect } from 'reef-knot/core-react';
-import { useRouter } from 'next/router';
 
-import { config, useConfig } from 'config';
+import { config } from 'config';
 import type { ModalComponentType } from 'providers/modal-provider';
 import { useCopyToClipboard } from 'shared/hooks';
-import { useDappStatus, useStethBalance } from 'modules/web3';
+import { useDappStatus } from 'modules/web3';
 import { getEtherscanAddressLink } from 'utils/etherscan';
 import { openWindow } from 'utils/open-window';
 import { trackMatomoEvent } from 'utils/track-matomo-event';
 import { MATOMO_CLICK_EVENTS_TYPES } from 'consts/matomo';
-import { WhaleBanner, useWhaleBanner } from 'features/whale-banners';
+import { AmountBanner } from 'shared/banners/amount-banners';
 
 import {
   WalletModalContentStyle,
@@ -34,17 +33,6 @@ export const WalletModal: ModalComponentType = ({ onClose, ...props }) => {
   const { address, walletChainId } = useDappStatus();
   const { connectorName } = useConnectorInfo();
   const { disconnect } = useDisconnect();
-  const { query } = useRouter();
-  const { featureFlags } = useConfig().externalConfig;
-
-  const { data: stethBalance } = useStethBalance();
-  const whaleBannerConfig = useWhaleBanner(stethBalance);
-
-  const isReferralUser = Boolean(query.ref);
-  const shouldShowWhaleBanner =
-    featureFlags.whaleBannerEnabled === true &&
-    whaleBannerConfig !== null &&
-    !isReferralUser;
 
   const handleDisconnect = useCallback(() => {
     disconnect?.();
@@ -132,9 +120,7 @@ export const WalletModal: ModalComponentType = ({ onClose, ...props }) => {
           </ButtonIcon>
         </WalletModalActionsStyle>
       </WalletModalContentStyle>
-      {shouldShowWhaleBanner && whaleBannerConfig && (
-        <WhaleBanner config={whaleBannerConfig} isModal marginTop={28} />
-      )}
+      <AmountBanner isModal marginTop={28} />
     </Modal>
   );
 };

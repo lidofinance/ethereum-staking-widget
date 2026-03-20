@@ -6,31 +6,14 @@ import {
 import { getGeneralTransactionModalStages } from 'shared/transaction-modal/hooks/get-general-transaction-modal-stages';
 import { TxStageSignOperationAmount } from 'shared/transaction-modal/tx-stages-composed/tx-stage-amount-operation';
 import { TxStageOperationSucceedBalanceShown } from 'shared/transaction-modal/tx-stages-composed/tx-stage-operation-succeed-balance-shown';
-import { useConfig } from 'config';
 import { EarnUpToBanner } from 'shared/banners/earn-up-to-banner';
 import { MATOMO_CLICK_EVENTS_TYPES } from 'consts/matomo';
-import { WhaleBanner, useWhaleBanner } from 'features/whale-banners';
+import { AmountBanner } from 'shared/banners/amount-banners';
 
 const STAGE_OPERATION_ARGS = {
   token: 'ETH',
   willReceiveToken: 'stETH',
   operationText: 'Staking',
-};
-
-const SuccessFooter = ({ stethBalance }: { stethBalance: bigint }) => {
-  const { featureFlags } = useConfig().externalConfig;
-  const whaleBannerConfig = useWhaleBanner(stethBalance);
-  return (
-    <>
-      <EarnUpToBanner
-        matomoEvent={MATOMO_CLICK_EVENTS_TYPES.startEarning}
-        placement="afterStake"
-      />
-      {featureFlags.whaleBannerEnabled && whaleBannerConfig && (
-        <WhaleBanner config={whaleBannerConfig} isModal />
-      )}
-    </>
-  );
 };
 
 const getTxModalStagesStake = (transitStage: TransactionModalTransitStage) => ({
@@ -64,7 +47,14 @@ const getTxModalStagesStake = (transitStage: TransactionModalTransitStage) => ({
         balance={balance}
         balanceToken={'stETH'}
         operationText={'Staking'}
-        footer={<SuccessFooter stethBalance={balance} />}
+        footer={
+          <AmountBanner isModal>
+            <EarnUpToBanner
+              matomoEvent={MATOMO_CLICK_EVENTS_TYPES.startEarning}
+              placement="afterStake"
+            />
+          </AmountBanner>
+        }
       />,
       {
         isClosableOnLedger: true,

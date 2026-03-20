@@ -41,7 +41,7 @@ export const IPFSInfoBoxOnlyMobileAndPortableWrapper = styled.div`
   }
 `;
 
-export const WhaleBannerOnlyMobileWrapper = styled.div`
+export const AmountBannerOnlyMobileWrapper = styled.div`
   display: none;
 
   @media ${devicesHeaderMedia.mobile} {

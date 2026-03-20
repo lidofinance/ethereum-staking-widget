@@ -5,27 +5,27 @@ import { useConfig } from 'config';
 import { useDappStatus, useStethBalance } from 'modules/web3';
 import { useLocalStorage } from 'shared/hooks/use-local-storage';
 
-import { WHALE_BANNER_DISMISSED_STORAGE_KEY } from './consts';
-import { useWhaleBanner } from './use-whale-banner';
-import type { WhaleBannerConfig } from './types';
+import { AMOUNT_BANNER_DISMISSED_STORAGE_KEY } from './consts';
+import { useAmountBanner } from './use-amount-banner';
+import type { AmountBannerConfig } from './types';
 
-type WhaleBannerOnConnectVisibility = {
+type AmountBannerOnConnectVisibility = {
   shouldShow: boolean;
-  bannerConfig: WhaleBannerConfig | null;
+  bannerConfig: AmountBannerConfig | null;
   dismiss: () => void;
 };
 
-export const useWhaleBannerOnConnectVisibility =
-  (): WhaleBannerOnConnectVisibility => {
+export const useAmountBannerOnConnectVisibility =
+  (): AmountBannerOnConnectVisibility => {
     const { address } = useDappStatus();
     const { query } = useRouter();
     const { featureFlags } = useConfig().externalConfig;
     const { data: stethBalance } = useStethBalance();
-    const bannerConfig = useWhaleBanner(stethBalance);
+    const bannerConfig = useAmountBanner(stethBalance);
     const isReferralUser = Boolean(query.ref);
 
     const [isDismissed, setDismissed] = useLocalStorage(
-      WHALE_BANNER_DISMISSED_STORAGE_KEY,
+      AMOUNT_BANNER_DISMISSED_STORAGE_KEY,
       false,
     );
 
@@ -34,7 +34,7 @@ export const useWhaleBannerOnConnectVisibility =
     }, [setDismissed]);
 
     const shouldShow =
-      featureFlags.whaleBannerEnabled === true &&
+      featureFlags.amountBannerEnabled === true &&
       !!address &&
       !isReferralUser &&
       stethBalance !== undefined &&

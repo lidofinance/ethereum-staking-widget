@@ -1,5 +1,5 @@
+import { FC, PropsWithChildren } from 'react';
 import { Close } from '@lidofinance/lido-ui';
-import type { WhaleBannerConfig } from './types';
 import {
   Wrapper,
   HeaderStyled,
@@ -8,31 +8,34 @@ import {
   CtaLink,
   CloseButton,
 } from './styles';
+import { useAmountBannerOnConnectVisibility } from './use-amount-banner-on-connect-visibility';
 
-type WhaleBannerProps = {
-  config: WhaleBannerConfig;
-  onDismiss?: () => void;
+type AmountBannerProps = {
   isModal?: boolean;
   marginTop?: number;
 };
 
-export const WhaleBanner = ({
-  config,
-  onDismiss,
+export const AmountBanner: FC<PropsWithChildren<AmountBannerProps>> = ({
   isModal,
   marginTop,
-}: WhaleBannerProps) => {
+  children,
+}) => {
+  const { shouldShow, bannerConfig, dismiss } =
+    useAmountBannerOnConnectVisibility();
+
+  if (!shouldShow || !bannerConfig) return children;
+
   return (
     <Wrapper $isModal={isModal} $marginTop={marginTop}>
-      {onDismiss && (
-        <CloseButton onClick={onDismiss} aria-label="Dismiss">
+      {dismiss && (
+        <CloseButton onClick={dismiss} aria-label="Dismiss">
           <Close width={20} height={20} />
         </CloseButton>
       )}
-      <HeaderStyled>{config.heading}</HeaderStyled>
-      <DescriptionStyled>{config.body}</DescriptionStyled>
+      <HeaderStyled>{bannerConfig.heading}</HeaderStyled>
+      <DescriptionStyled>{bannerConfig.body}</DescriptionStyled>
       <CtaGroup $isModal={isModal}>
-        {config.ctas.map((cta) => (
+        {bannerConfig.ctas.map((cta) => (
           <CtaLink
             key={cta.href}
             href={cta.href}
