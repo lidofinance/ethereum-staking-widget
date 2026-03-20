@@ -21,19 +21,24 @@ import {
 } from './controls/submit-button-request';
 import { TransactionInfo } from './transaction-info';
 import { Hidden } from 'shared/components/hidden';
+import { useConfig } from 'config';
 
 export const RequestForm = () => {
   const { isBunker, isPaused } = useWithdrawals();
   // conditional render breaks useFormState, so it can't be inside SubmitButton
   const submitButtonProps = useRequestSubmitButtonProps();
-  const mode = useWatch<RequestFormInputType, 'mode'>({ name: 'mode' });
+  const modeForm = useWatch<RequestFormInputType, 'mode'>({ name: 'mode' });
+
+  const isDexEnabled = useConfig().externalConfig.withdrawalDex.enabled;
+
+  const mode = isDexEnabled ? modeForm : 'lido';
 
   return (
     <Block data-testid="requestForm">
       {isPaused && <PausedInfo />}
       {isBunker && <BunkerInfo />}
       <FormController>
-        <ModePickerRequest />
+        {isDexEnabled && <ModePickerRequest />}
 
         {/* Lido options is hidden visually to prevent mounting/unmounting of form controllers */}
         <Hidden show={mode === 'lido'}>
@@ -47,7 +52,7 @@ export const RequestForm = () => {
           <TransactionInfo />
         </Hidden>
 
-        {mode === 'dex' && <DexOption />}
+        {isDexEnabled && mode === 'dex' && <DexOption />}
       </FormController>
     </Block>
   );

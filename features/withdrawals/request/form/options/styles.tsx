@@ -3,11 +3,19 @@ import { InlineLoader, Question } from '@lidofinance/lido-ui';
 import { FormatToken } from 'shared/formatters';
 
 import Lido from 'assets/icons/lido.svg';
+import CowSwap from 'assets/partner/cow-swap.svg';
 
 // ICONS
 
 export const LidoIcon = styled.img.attrs({
   src: Lido,
+  alt: '',
+})`
+  display: block;
+`;
+
+export const CowSwapIcon = styled.img.attrs({
+  src: CowSwap,
   alt: '',
 })`
   display: block;

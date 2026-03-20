@@ -27,8 +27,21 @@ export type EarnVaultConfigEntry = {
   disabled?: boolean;
 };
 
+export type WithdrawalDexIntegration = 'cowswap';
+
+type MustIncludeAll<T extends string, U extends T[]> =
+  Exclude<T, U[number]> extends never ? U : never;
+
+export type WithdrawalDexIntegrationList = MustIncludeAll<
+  WithdrawalDexIntegration,
+  ['cowswap']
+>;
+
 export type ManifestConfig = {
-  enabledWithdrawalDexes: [];
+  withdrawalDex: {
+    integration: WithdrawalDexIntegration;
+    enabled: boolean;
+  };
   multiChainBanner: number[];
   earnVaults: EarnVaultConfigEntry[];
   earnVaultsBanner: {

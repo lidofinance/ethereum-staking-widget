@@ -14,6 +14,8 @@ export const getManifestKey = (
   `${defaultChain}` +
   (typeof manifestOverride === 'string' ? `-${manifestOverride}` : '');
 
+// TODO: rework to zod schema validation
+
 export const isMultiChainBannerValid = (config: object) => {
   // allow empty config
   if (!('multiChainBanner' in config) || !config.multiChainBanner) return true;
@@ -54,6 +56,21 @@ export const isPagesValid = (config: object) => {
   return false;
 };
 
+export const isWithdrawalDexValid = (config: object) => {
+  if (!('withdrawalDex' in config)) {
+    return true;
+  }
+
+  const withdrawalDex = config.withdrawalDex as ManifestConfig['withdrawalDex'];
+  if (withdrawalDex && typeof withdrawalDex === 'object') {
+    const isValid =
+      typeof withdrawalDex.enabled === 'boolean' &&
+      typeof withdrawalDex.integration === 'string';
+    return isValid;
+  }
+  return false;
+};
+
 export const isManifestEntryValid = (
   entry?: unknown,
 ): entry is ManifestEntry => {
@@ -68,7 +85,12 @@ export const isManifestEntryValid = (
   ) {
     const config = entry.config;
 
-    return [isMultiChainBannerValid, isFeatureFlagsValid, isPagesValid]
+    return [
+      isMultiChainBannerValid,
+      isFeatureFlagsValid,
+      isPagesValid,
+      isWithdrawalDexValid,
+    ]
       .map((validator) => validator(config))
       .every((isValid) => isValid);
   }

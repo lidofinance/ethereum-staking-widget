@@ -19,6 +19,7 @@ import {
   OptionsPickerRow,
   OptionsPickerSubLabel,
   InlineQuestion,
+  CowSwapIcon,
 } from './styles';
 
 type OptionButtonProps = {
@@ -74,11 +75,13 @@ const DexButton: React.FC<OptionButtonProps> = ({ isActive, onClick }) => {
     >
       <OptionsPickerRow>
         <OptionsPickerLabel>Use DEX</OptionsPickerLabel>
-        <OptionsPickerIcons>COWICON</OptionsPickerIcons>
+        <OptionsPickerIcons>
+          <CowSwapIcon />
+        </OptionsPickerIcons>
       </OptionsPickerRow>
       <OptionsPickerRow data-testid="dexWaitingTime">
         <OptionsPickerSubLabel>Waiting time:</OptionsPickerSubLabel>{' '}
-        <>~&nbsp;1-5 minutes</>
+        <>~&nbsp;30 seconds</>
       </OptionsPickerRow>
     </OptionsPickerButton>
   );
