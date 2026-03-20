@@ -1,0 +1,28 @@
+{
+  "name": "Lido DAO withdrawals DEX Sell Token List",
+  "timestamp": "2026-03-20T18:00:00.000Z",
+  "version": {
+    "major": 0,
+    "minor": 0,
+    "patch": 1
+  },
+  "keywords": [],
+  "tokens": [
+    {
+      "address": "0x7f39c581f595b53c5cb19bd0b3f8da6c935e2ca0",
+      "symbol": "wstETH",
+      "name": "Wrapped liquid staked Ether 2.0",
+      "decimals": 18,
+      "chainId": 1,
+      "logoURI": "https://files.cow.fi/token-lists/images/1/0x7f39c581f595b53c5cb19bd0b3f8da6c935e2ca0/logo.png"
+    },
+    {
+      "address": "0xae7ab96520de3a18e5e111b5eaab095312d7fe84",
+      "symbol": "stETH",
+      "name": "Staked ETH by LIDO",
+      "decimals": 18,
+      "chainId": 1,
+      "logoURI": "https://files.cow.fi/token-lists/images/1/0xae7ab96520de3a18e5e111b5eaab095312d7fe84/logo.png"
+    }
+  ]
+}
