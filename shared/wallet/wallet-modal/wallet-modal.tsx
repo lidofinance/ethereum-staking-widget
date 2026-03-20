@@ -131,11 +131,10 @@ export const WalletModal: ModalComponentType = ({ onClose, ...props }) => {
             View on Etherscan
           </ButtonIcon>
         </WalletModalActionsStyle>
-
-        {shouldShowWhaleBanner && whaleBannerConfig && (
-          <WhaleBanner config={whaleBannerConfig} />
-        )}
       </WalletModalContentStyle>
+      {shouldShowWhaleBanner && whaleBannerConfig && (
+        <WhaleBanner config={whaleBannerConfig} isModal marginTop={28} />
+      )}
     </Modal>
   );
 };

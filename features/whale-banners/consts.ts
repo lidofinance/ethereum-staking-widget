@@ -9,10 +9,8 @@ export const WHALE_BANNER_THRESHOLD_2 = parseEther('500');
 export const WHALE_BANNER_THRESHOLD_3 = parseEther('1000');
 
 export const WHALE_BANNER_LINKS = {
-  GET_IN_TOUCH:
-    'https://share-eu1.hsforms.com/1B8pLtartQYWwLXLw8K8oOw2dywmt',
-  CONTACT_ME:
-    'https://share-eu1.hsforms.com/1H4FscQB8T5i_8t0rNYUkDg2dywmt',
+  GET_IN_TOUCH: 'https://share-eu1.hsforms.com/1B8pLtartQYWwLXLw8K8oOw2dywmt',
+  CONTACT_ME: 'https://share-eu1.hsforms.com/1H4FscQB8T5i_8t0rNYUkDg2dywmt',
   BOOK_A_CALL: 'https://meetings-eu1.hubspot.com/dominic-m/discovery',
 } as const;
 

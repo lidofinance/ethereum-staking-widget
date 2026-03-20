@@ -27,7 +27,7 @@ const SuccessFooter = ({ stethBalance }: { stethBalance: bigint }) => {
         placement="afterStake"
       />
       {featureFlags.whaleBannerEnabled && whaleBannerConfig && (
-        <WhaleBanner config={whaleBannerConfig} />
+        <WhaleBanner config={whaleBannerConfig} isModal />
       )}
     </>
   );

@@ -75,7 +75,6 @@ const HeaderWallet: FC = () => {
           <WhaleBanner
             config={whaleBannerConfig}
             onDismiss={dismissWhaleBanner}
-            withArrow
           />
         </WhaleBannerOnlyDesktopWrapper>
       )}
