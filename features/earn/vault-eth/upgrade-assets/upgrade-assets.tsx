@@ -19,7 +19,10 @@ import {
   UpgradeAssetsTokenIcon,
 } from './styles';
 import { useUpgradableTokenBalances } from './use-upgradable-token-balances';
-import { ETH_VAULT_DEPOSIT_TOKENS_UPGRADABLE } from '../consts';
+import {
+  ETH_VAULT_DEPOSIT_TOKENS_UPGRADABLE,
+  ETH_VAULT_QUERY_SCOPE,
+} from '../consts';
 import { useEthVaultDeposit } from '../deposit/hooks';
 import { EthDepositTokenUpgradable } from '../types';
 import { ETHDepositFormValues } from '../deposit/form-context/types';
@@ -85,10 +88,17 @@ export const UpgradeAssetsBlock = () => {
             trackMatomoEvent(matomoEvent);
           }
           await refetchBalances();
-          await queryClient.refetchQueries(
-            { queryKey: [MELLOW_VAULTS_QUERY_SCOPE] },
-            { cancelRefetch: true, throwOnError: false },
-          );
+          await Promise.all([
+            queryClient.refetchQueries(
+              { queryKey: [MELLOW_VAULTS_QUERY_SCOPE] },
+              { cancelRefetch: true, throwOnError: false },
+            ),
+            // for refetching the vault user balance
+            queryClient.refetchQueries(
+              { queryKey: [ETH_VAULT_QUERY_SCOPE] },
+              { cancelRefetch: true, throwOnError: false },
+            ),
+          ]);
         }
       } finally {
         setIsUpgrading(false);
