@@ -4,7 +4,7 @@ import { parseEther } from 'viem';
 // Tier 1: 150 – ≤500
 // Tier 2: >500 – ≤1,000
 // Tier 3: >1,000
-export const AMOUNT_BANNER_THRESHOLD_1 = parseEther('0.24');
+export const AMOUNT_BANNER_THRESHOLD_1 = parseEther('150');
 export const AMOUNT_BANNER_THRESHOLD_2 = parseEther('500');
 export const AMOUNT_BANNER_THRESHOLD_3 = parseEther('1000');
 
