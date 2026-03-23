@@ -71,10 +71,10 @@ export const useChartData = (props: UseChartDataProps) => {
 
   const [tvlSeriesData, apySeriesData] = useMemo(() => {
     if (!data) return [[], []];
-    const tvl = data.map((item) => [item.timestampMs, item.tvlUsd]);
+    const tvl = data.map((item) => [item.timestampMs, item.tvl]);
     const lastTs = tvl.at(-1)?.[0] ?? 0;
     if (currentTvlPoint && currentTvlPoint.timestampMs > lastTs) {
-      tvl.push([currentTvlPoint.timestampMs, currentTvlPoint.tvlUsd]);
+      tvl.push([currentTvlPoint.timestampMs, currentTvlPoint.tvl]);
     }
     return [tvl, data.map((item) => [item.timestampMs, item.apyValue])];
   }, [data, currentTvlPoint]);
@@ -107,15 +107,15 @@ export const useChartData = (props: UseChartDataProps) => {
   const yAxisFormatter = useMemo(
     () =>
       activeChart === CHART_TYPE.tvl
-        ? (value: number) => formatTvl(value)
+        ? (value: number) => formatTvl(value, isETHVault)
         : (value: string) => `${value}%`,
-    [activeChart],
+    [activeChart, isETHVault],
   );
 
   const tooltipFormatter = useMemo(
     () => (params: TooltipComponentFormatterCallbackParams) =>
-      formatTooltipContent(params, activeChart === CHART_TYPE.tvl),
-    [activeChart],
+      formatTooltipContent(params, activeChart === CHART_TYPE.tvl, isETHVault),
+    [activeChart, isETHVault],
   );
 
   // alignToVaultTimestamps uses filteredApySeriesData so treasury/staking series

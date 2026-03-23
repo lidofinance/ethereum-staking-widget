@@ -3,7 +3,6 @@ import { useQuery } from '@tanstack/react-query';
 import { formatUnits } from 'viem';
 import type { Address } from 'viem';
 
-import { useEthUsd } from 'shared/hooks/use-eth-usd';
 import { unixTimestampToMs } from 'utils/unix-timestamp-to-ms';
 
 import {
@@ -15,8 +14,8 @@ import { STRATEGY_LAZY } from 'consts/react-query-strategies';
 
 export type NormalizedVaultChartPoint = {
   timestampMs: number;
-  /** TVL already converted to USD. */
-  tvlUsd: number;
+  /** TVL: ETH for ETH vaults, USD for USD vaults. */
+  tvl: number;
   /** APY as a plain percentage (e.g. 5.25 for 5.25%). */
   apyValue: number;
 };
@@ -52,10 +51,6 @@ export const useMetavaultChartData = ({
     enabled: !!vaultAddress,
   });
 
-  // ETH price is needed to convert wei TVL to USD for ETH vaults.
-  // Globally cached — adding this call causes no extra network requests.
-  const { price: ethPrice, isLoading: isEthPriceLoading } = useEthUsd();
-
   const { data: currentData, isLoading: isCurrentDataLoading } = useQuery({
     queryKey: [METAVAULT_QUERY_SCOPE, 'current-tvl-data', vaultAddress],
     queryFn: async () => {
@@ -67,44 +62,38 @@ export const useMetavaultChartData = ({
 
   const currentTvlPoint = useMemo(() => {
     if (!currentData) return null;
+    const tvl = isETHVault
+      ? Number(
+          formatUnits(
+            BigInt(currentData.totalTvl.amount),
+            currentData.totalTvl.decimals,
+          ),
+        )
+      : Number(formatUnits(BigInt(currentData.totalTvl.usd), 8));
     return {
       timestampMs: unixTimestampToMs(currentData.lastUpdate),
-      tvlUsd: Number(formatUnits(BigInt(currentData.totalTvl.usd), 8)),
+      tvl,
     };
-  }, [currentData]);
+  }, [currentData, isETHVault]);
 
   const data = useMemo((): NormalizedVaultChartPoint[] | null => {
     if (!rawData) return null;
-    // For ETH vault, hold off until ETH price is ready; otherwise tvlUsd would be wrong.
-    if (isETHVault && !ethPrice) return null;
 
     return rawData.map((item) => {
-      const tvlUsd =
-        isETHVault && ethPrice
-          ? Number(
-              formatUnits(
-                BigInt(item.tvl.amount) * ethPrice.latestAnswer,
-                Number(18n + ethPrice.decimals),
-              ),
-            )
-          : Number(formatUnits(BigInt(item.tvl.amount), item.tvl.decimals));
+      const tvl = Number(formatUnits(BigInt(item.tvl.amount), item.tvl.decimals));
 
       return {
         timestampMs: unixTimestampToMs(Number(item.timestamp)),
-        tvlUsd,
+        tvl,
         apyValue: Number(Number(item.apy.value).toFixed(2)),
       };
     });
-  }, [rawData, isETHVault, ethPrice]);
+  }, [rawData]);
 
   return {
     data,
     currentTvlPoint,
-    // For ETH vault, the chart is not ready until ETH price is also loaded.
-    isLoading:
-      isVaultLoading ||
-      (isETHVault && isEthPriceLoading) ||
-      isCurrentDataLoading,
+    isLoading: isVaultLoading || isCurrentDataLoading,
     isError,
   };
 };

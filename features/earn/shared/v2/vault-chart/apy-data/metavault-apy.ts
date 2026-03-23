@@ -38,6 +38,8 @@ export type MetavaultChartFetchedData = z.infer<
 export const METAVAULT_CURRENT_DATA_SCHEMA = z.object({
   totalTvl: z.object({
     usd: z.string(),
+    amount: z.string(),
+    decimals: z.number(),
   }),
   lastUpdate: UNIX_TIMESTAMP_SCHEMA,
 });
