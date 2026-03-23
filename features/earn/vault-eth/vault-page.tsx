@@ -49,7 +49,12 @@ const GENERAL_INFO_LEFT: InfoItem[] = [
 ];
 
 const GENERAL_INFO_RIGHT: Array<{ label: ReactNode; value?: ReactNode }> = [
-  { label: 'Withdrawal wait time', value: 'up to 72 hours' },
+  {
+    label: 'Withdrawal wait time',
+    value: 'up to 72 hours',
+    tooltip:
+      'Withdrawals take up to 72 hours to process. Once ready, your funds can be claimed in the Lido UI',
+  },
   {
     label: (
       <Link href="https://etherscan.io/address/0xBBFC8683C8fE8cF73777feDE7ab9574935fea0A4">
