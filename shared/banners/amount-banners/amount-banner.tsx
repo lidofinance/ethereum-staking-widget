@@ -13,12 +13,14 @@ import { useAmountBannerOnConnectVisibility } from './use-amount-banner-on-conne
 type AmountBannerProps = {
   isModal?: boolean;
   marginTop?: number;
+  isDismissible?: boolean;
 };
 
 export const AmountBanner: FC<PropsWithChildren<AmountBannerProps>> = ({
   isModal,
   marginTop,
   children,
+  isDismissible = false,
 }) => {
   const { shouldShow, bannerConfig, dismiss } =
     useAmountBannerOnConnectVisibility();
@@ -27,7 +29,7 @@ export const AmountBanner: FC<PropsWithChildren<AmountBannerProps>> = ({
 
   return (
     <Wrapper $isModal={isModal} $marginTop={marginTop}>
-      {dismiss && (
+      {isDismissible && (
         <CloseButton onClick={dismiss} aria-label="Dismiss">
           <Close width={20} height={20} />
         </CloseButton>

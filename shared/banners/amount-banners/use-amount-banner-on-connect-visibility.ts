@@ -9,14 +9,14 @@ import { AMOUNT_BANNER_DISMISSED_STORAGE_KEY } from './consts';
 import { useAmountBanner } from './use-amount-banner';
 import type { AmountBannerConfig } from './types';
 
-type AmountBannerOnConnectVisibility = {
+type UseAmountBannerOnConnectVisibility = () => {
   shouldShow: boolean;
   bannerConfig: AmountBannerConfig | null;
   dismiss: () => void;
 };
 
-export const useAmountBannerOnConnectVisibility =
-  (): AmountBannerOnConnectVisibility => {
+export const useAmountBannerOnConnectVisibility: UseAmountBannerOnConnectVisibility =
+  () => {
     const { address } = useDappStatus();
     const { query } = useRouter();
     const { featureFlags } = useConfig().externalConfig;
@@ -41,5 +41,9 @@ export const useAmountBannerOnConnectVisibility =
       !isDismissed &&
       bannerConfig !== null;
 
-    return { shouldShow, bannerConfig, dismiss };
+    return {
+      shouldShow,
+      bannerConfig,
+      dismiss,
+    };
   };

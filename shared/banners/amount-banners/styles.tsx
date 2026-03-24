@@ -37,7 +37,7 @@ export const Wrapper = styled.div<{ $isModal?: boolean; $marginTop?: number }>`
 export const HeaderStyled = styled.span`
   font-size: ${({ theme }) => theme.fontSizesMap.sm}px;
   line-height: 24px;
-  font-weight: 400;
+  font-weight: 700;
 `;
 
 export const DescriptionStyled = styled.span`

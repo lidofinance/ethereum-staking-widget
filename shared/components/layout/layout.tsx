@@ -37,7 +37,7 @@ export const Layout: FC<PropsWithChildren<Props>> = (props) => {
           </IPFSInfoBoxOnlyMobileAndPortableWrapper>
         )}
         <AmountBannerOnlyMobileWrapper>
-          <AmountBanner />
+          <AmountBanner isDismissible />
         </AmountBannerOnlyMobileWrapper>
         <LayoutTitleStyle $v2={stylesV2}>{title}</LayoutTitleStyle>
         <LayoutSubTitleStyle>{subtitle}</LayoutSubTitleStyle>
