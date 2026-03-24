@@ -18,6 +18,11 @@ export const CardWrapper = styled(Block)<{
   isolation: isolate;
   overflow: hidden;
   color: var(--lido-color-text);
+  transition: box-shadow 0.1s ease;
+
+  &:hover {
+    box-shadow: 0px 4px 64px 0px #a7c9eb66;
+  }
 
   &::before {
     content: '';
