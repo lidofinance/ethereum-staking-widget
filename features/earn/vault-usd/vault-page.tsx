@@ -48,7 +48,11 @@ const GENERAL_INFO_LEFT = [
   { label: 'Last audit date', value: '02 March 2026' },
 ];
 
-const GENERAL_INFO_RIGHT: Array<{ label: ReactNode; value?: ReactNode }> = [
+const GENERAL_INFO_RIGHT: Array<{
+  label: ReactNode;
+  value?: ReactNode;
+  tooltip?: string;
+}> = [
   {
     label: 'Withdrawal wait time',
     value: 'up to 72 hours',
