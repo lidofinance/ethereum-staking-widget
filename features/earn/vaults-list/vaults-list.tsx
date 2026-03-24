@@ -1,5 +1,4 @@
 import { useState, type FC } from 'react';
-import { AccordionTransparent } from '@lidofinance/lido-ui';
 
 import {
   DisclaimerSection,
@@ -25,6 +24,7 @@ import {
   CardsStack,
   ListSubtitle,
   ListWrapper,
+  AccordionTransparentStyled,
 } from './styles';
 
 const VAULT_CARDS = {
@@ -79,7 +79,7 @@ export const EarnVaultsList: FC = () => {
         </CardsStack>
 
         {hasDeprecatedVaults && (
-          <AccordionTransparent
+          <AccordionTransparentStyled
             summary={
               <AccordionTitle data-testid={'upgradingVaults'}>
                 Upgrading vaults
@@ -93,7 +93,7 @@ export const EarnVaultsList: FC = () => {
                 return <VaultCard key={vault.name} />;
               })}
             </CardsStack>
-          </AccordionTransparent>
+          </AccordionTransparentStyled>
         )}
 
         <DisclaimerSection>

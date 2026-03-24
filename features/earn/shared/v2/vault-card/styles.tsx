@@ -15,8 +15,14 @@ export const CardWrapper = styled(Block)<{
   $variant: 'eth' | 'usd' | 'default';
 }>`
   position: relative;
+  isolation: isolate;
   overflow: hidden;
   color: var(--lido-color-text);
+  transition: box-shadow 0.1s ease;
+
+  &:hover {
+    box-shadow: 0px 4px 64px 0px #a7c9eb66;
+  }
 
   &::before {
     content: '';
@@ -30,11 +36,11 @@ export const CardWrapper = styled(Block)<{
     filter: blur(10px);
     background: ${({ $variant }) => getBackgroundGradient($variant)};
     pointer-events: none;
+    z-index: -1;
   }
 
   & > * {
     position: relative;
-    z-index: 1;
   }
 `;
 
@@ -80,6 +86,8 @@ export const CardTitle = styled.div`
 export const CardTitleBadge = styled(Badge)`
   height: 32px;
   user-select: none;
+  position: relative;
+  z-index: 2;
 `;
 
 export const ChevronsUpIcon = styled(ChevronsUp)`
@@ -216,6 +224,9 @@ export const StyledTooltip = styled(Tooltip)`
 `;
 
 export const BadgeStyled = styled.span`
+  position: relative;
+  z-index: 2;
+
   ${({ theme }) => theme.mediaQueries.md} {
     order: 1;
   }
@@ -224,5 +235,13 @@ export const BadgeStyled = styled.span`
 export const TitleTextStyled = styled.span`
   ${({ theme }) => theme.mediaQueries.md} {
     order: 2;
+  }
+`;
+
+export const CardOverlayLink = styled.a`
+  && {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
   }
 `;

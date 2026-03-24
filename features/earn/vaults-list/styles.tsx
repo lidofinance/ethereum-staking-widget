@@ -1,4 +1,9 @@
 import styled from 'styled-components';
+import { AccordionTransparent } from '@lidofinance/lido-ui';
+
+export const AccordionTransparentStyled = styled(AccordionTransparent)`
+  overflow: visible;
+`;
 
 export const ListSubtitle = styled.div`
   text-align: center;
