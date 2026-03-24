@@ -48,7 +48,11 @@ const getTxModalStagesStake = (transitStage: TransactionModalTransitStage) => ({
         balanceToken={'stETH'}
         operationText={'Staking'}
         footer={
-          <AmountBanner isModal initialBalance={preStakeBalance}>
+          <AmountBanner
+            isModal
+            initialBalance={preStakeBalance}
+            placement="after_stake"
+          >
             <EarnUpToBanner
               matomoEvent={MATOMO_CLICK_EVENTS_TYPES.startEarning}
               placement="afterStake"

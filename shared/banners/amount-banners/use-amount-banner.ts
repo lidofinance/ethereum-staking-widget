@@ -35,6 +35,7 @@ export const useAmountBanner = (
     if (effectiveAmount >= AMOUNT_BANNER_THRESHOLD_3) {
       return {
         level: 3,
+        variant,
         heading,
         body,
         ctas: [
@@ -47,6 +48,7 @@ export const useAmountBanner = (
     if (effectiveAmount >= AMOUNT_BANNER_THRESHOLD_2) {
       return {
         level: 2,
+        variant,
         heading,
         body,
         ctas: [
@@ -59,6 +61,7 @@ export const useAmountBanner = (
     if (effectiveAmount >= AMOUNT_BANNER_THRESHOLD_1) {
       return {
         level: 1,
+        variant,
         heading,
         body,
         ctas: [

@@ -9,6 +9,7 @@ export type AmountBannerCta = {
 
 export type AmountBannerConfig = {
   level: AmountBannerThresholdLevel;
+  variant: AmountBannerABVariant;
   heading: string;
   body: string;
   ctas: AmountBannerCta[];

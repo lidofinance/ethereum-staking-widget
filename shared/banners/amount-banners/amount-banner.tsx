@@ -1,5 +1,12 @@
 import { FC, PropsWithChildren } from 'react';
 import { Close } from '@lidofinance/lido-ui';
+
+import {
+  trackAmountBannerCtaClick,
+  type AmountBannerPlacement,
+} from './matomo';
+import { useAmountBannerOnConnectVisibility } from './use-amount-banner-on-connect-visibility';
+
 import {
   Wrapper,
   HeaderStyled,
@@ -8,13 +15,13 @@ import {
   CtaLink,
   CloseButton,
 } from './styles';
-import { useAmountBannerOnConnectVisibility } from './use-amount-banner-on-connect-visibility';
 
 type AmountBannerProps = {
   isModal?: boolean;
   marginTop?: number;
   isDismissible?: boolean;
   initialBalance?: bigint;
+  placement: AmountBannerPlacement;
 };
 
 export const AmountBanner: FC<PropsWithChildren<AmountBannerProps>> = ({
@@ -23,6 +30,7 @@ export const AmountBanner: FC<PropsWithChildren<AmountBannerProps>> = ({
   children,
   isDismissible = false,
   initialBalance,
+  placement,
 }) => {
   const { shouldShow, bannerConfig, dismiss } =
     useAmountBannerOnConnectVisibility({ initialBalance });
@@ -46,6 +54,13 @@ export const AmountBanner: FC<PropsWithChildren<AmountBannerProps>> = ({
             target="_blank"
             rel="noopener noreferrer"
             $isModal={isModal}
+            onClick={() =>
+              trackAmountBannerCtaClick(
+                cta.text,
+                bannerConfig.variant,
+                placement,
+              )
+            }
           >
             {cta.text}
           </CtaLink>

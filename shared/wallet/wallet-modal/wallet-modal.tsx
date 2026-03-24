@@ -120,7 +120,7 @@ export const WalletModal: ModalComponentType = ({ onClose, ...props }) => {
           </ButtonIcon>
         </WalletModalActionsStyle>
       </WalletModalContentStyle>
-      <AmountBanner isModal marginTop={28} />
+      <AmountBanner isModal marginTop={28} placement="disconnect_wallet" />
     </Modal>
   );
 };

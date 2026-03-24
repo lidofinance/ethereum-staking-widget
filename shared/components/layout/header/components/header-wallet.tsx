@@ -63,7 +63,7 @@ const HeaderWallet: FC = () => {
         </IPFSInfoBoxOnlyDesktopWrapper>
       )}
       <AmountBannerOnlyDesktopWrapper>
-        <AmountBanner isDismissible />
+        <AmountBanner isDismissible placement="connect_wallet" />
       </AmountBannerOnlyDesktopWrapper>
     </NoSSRWrapper>
   );
