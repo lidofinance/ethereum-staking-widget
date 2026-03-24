@@ -11,8 +11,10 @@ import type { AmountBannerConfig } from './types';
 
 type UseAmountBannerOnConnectVisibility = ({
   initialBalance,
+  isDismissible,
 }: {
   initialBalance?: bigint;
+  isDismissible?: boolean;
 }) => {
   shouldShow: boolean;
   bannerConfig: AmountBannerConfig | null;
@@ -20,7 +22,7 @@ type UseAmountBannerOnConnectVisibility = ({
 };
 
 export const useAmountBannerOnConnectVisibility: UseAmountBannerOnConnectVisibility =
-  ({ initialBalance }) => {
+  ({ initialBalance, isDismissible }) => {
     const { address } = useDappStatus();
     const { query } = useRouter();
     const { featureFlags } = useConfig().externalConfig;
@@ -37,12 +39,14 @@ export const useAmountBannerOnConnectVisibility: UseAmountBannerOnConnectVisibil
       setDismissed(true);
     }, [setDismissed]);
 
+    const notDismissedOrNotDismissible = !isDismissible || !isDismissed;
+
     const shouldShow =
       featureFlags.amountBannerEnabled === true &&
       !!address &&
       !isReferralUser &&
       stethBalance !== undefined &&
-      !isDismissed &&
+      notDismissedOrNotDismissible &&
       bannerConfig !== null;
 
     return {

@@ -33,7 +33,7 @@ export const AmountBanner: FC<PropsWithChildren<AmountBannerProps>> = ({
   placement,
 }) => {
   const { shouldShow, bannerConfig, dismiss } =
-    useAmountBannerOnConnectVisibility({ initialBalance });
+    useAmountBannerOnConnectVisibility({ initialBalance, isDismissible });
 
   if (!shouldShow || !bannerConfig) return children;
 
