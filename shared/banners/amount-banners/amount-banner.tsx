@@ -14,6 +14,7 @@ type AmountBannerProps = {
   isModal?: boolean;
   marginTop?: number;
   isDismissible?: boolean;
+  initialBalance?: bigint;
 };
 
 export const AmountBanner: FC<PropsWithChildren<AmountBannerProps>> = ({
@@ -21,9 +22,10 @@ export const AmountBanner: FC<PropsWithChildren<AmountBannerProps>> = ({
   marginTop,
   children,
   isDismissible = false,
+  initialBalance,
 }) => {
   const { shouldShow, bannerConfig, dismiss } =
-    useAmountBannerOnConnectVisibility();
+    useAmountBannerOnConnectVisibility({ initialBalance });
 
   if (!shouldShow || !bannerConfig) return children;
 

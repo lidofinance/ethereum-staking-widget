@@ -17,6 +17,7 @@ const QA_MOCK_KEY = 'mockAmountBannerStethBalance';
 
 export const useAmountBanner = (
   amount: bigint | undefined,
+  initialBalance?: bigint,
 ): AmountBannerConfig | null => {
   const variant = useAmountBannerABVariant();
   const effectiveAmount = overrideWithQAMockEther(amount, QA_MOCK_KEY);
@@ -26,6 +27,10 @@ export const useAmountBanner = (
 
     const heading = AMOUNT_BANNER_HEADINGS[variant];
     const body = AMOUNT_BANNER_BODY_TEXT;
+
+    // If the initial balance is greater than the threshold, don't show the banner
+    if (initialBalance && initialBalance >= AMOUNT_BANNER_THRESHOLD_1)
+      return null;
 
     if (effectiveAmount >= AMOUNT_BANNER_THRESHOLD_3) {
       return {
@@ -63,5 +68,5 @@ export const useAmountBanner = (
     }
 
     return null;
-  }, [effectiveAmount, variant]);
+  }, [effectiveAmount, initialBalance, variant]);
 };

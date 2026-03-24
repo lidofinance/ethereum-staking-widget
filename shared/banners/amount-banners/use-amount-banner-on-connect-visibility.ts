@@ -9,19 +9,23 @@ import { AMOUNT_BANNER_DISMISSED_STORAGE_KEY } from './consts';
 import { useAmountBanner } from './use-amount-banner';
 import type { AmountBannerConfig } from './types';
 
-type UseAmountBannerOnConnectVisibility = () => {
+type UseAmountBannerOnConnectVisibility = ({
+  initialBalance,
+}: {
+  initialBalance?: bigint;
+}) => {
   shouldShow: boolean;
   bannerConfig: AmountBannerConfig | null;
   dismiss: () => void;
 };
 
 export const useAmountBannerOnConnectVisibility: UseAmountBannerOnConnectVisibility =
-  () => {
+  ({ initialBalance }) => {
     const { address } = useDappStatus();
     const { query } = useRouter();
     const { featureFlags } = useConfig().externalConfig;
     const { data: stethBalance } = useStethBalance();
-    const bannerConfig = useAmountBanner(stethBalance);
+    const bannerConfig = useAmountBanner(stethBalance, initialBalance);
     const isReferralUser = Boolean(query.ref);
 
     const [isDismissed, setDismissed] = useLocalStorage(

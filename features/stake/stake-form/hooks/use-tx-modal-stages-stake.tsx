@@ -40,7 +40,7 @@ const getTxModalStagesStake = (transitStage: TransactionModalTransitStage) => ({
       />,
     ),
 
-  success: (balance: bigint, txHash?: Hash) =>
+  success: (balance: bigint, preStakeBalance: bigint, txHash?: Hash) =>
     transitStage(
       <TxStageOperationSucceedBalanceShown
         txHash={txHash}
@@ -48,7 +48,7 @@ const getTxModalStagesStake = (transitStage: TransactionModalTransitStage) => ({
         balanceToken={'stETH'}
         operationText={'Staking'}
         footer={
-          <AmountBanner isModal>
+          <AmountBanner isModal initialBalance={preStakeBalance}>
             <EarnUpToBanner
               matomoEvent={MATOMO_CLICK_EVENTS_TYPES.startEarning}
               placement="afterStake"
