@@ -104,6 +104,9 @@ export const TableItem = styled.div`
 
 export const TableLabel = styled.span`
   color: var(--lido-color-textSecondary);
+  display: flex;
+  align-items: center;
+  gap: ${({ theme }) => theme.spaceMap.xs}px;
 `;
 
 export const TableValue = styled.span`

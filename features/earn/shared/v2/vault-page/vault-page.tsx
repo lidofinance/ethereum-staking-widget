@@ -7,7 +7,7 @@ import {
   type ReactNode,
   type SVGProps,
 } from 'react';
-import { Tab } from '@lidofinance/lido-ui';
+import { Tab, Tooltip, Question } from '@lidofinance/lido-ui';
 
 import { type MATOMO_EVENT_TYPE } from 'consts/matomo';
 import { trackMatomoEvent } from 'utils/track-matomo-event';
@@ -42,6 +42,7 @@ type VaultIllustration = ComponentType<SVGProps<SVGSVGElement>>;
 export type InfoItem = {
   label: ReactNode;
   value?: ReactNode;
+  tooltip?: ReactNode;
 };
 
 type Props = {
@@ -172,7 +173,14 @@ export const VaultPage: FC<Props> = (props) => {
                   <TableGroup>
                     {generalInfoLeft.map((item, index) => (
                       <TableItem key={index}>
-                        <TableLabel>{item.label}</TableLabel>
+                        <TableLabel>
+                          {item.label}
+                          {item.tooltip && (
+                            <Tooltip title={item.tooltip}>
+                              <Question />
+                            </Tooltip>
+                          )}
+                        </TableLabel>
                         {item.value != null && (
                           <TableValue>{item.value}</TableValue>
                         )}
@@ -182,7 +190,14 @@ export const VaultPage: FC<Props> = (props) => {
                   <TableGroup>
                     {generalInfoRight.map((item, index) => (
                       <TableItem key={index}>
-                        <TableLabel>{item.label}</TableLabel>
+                        <TableLabel>
+                          {item.label}
+                          {item.tooltip && (
+                            <Tooltip title={item.tooltip}>
+                              <Question />
+                            </Tooltip>
+                          )}
+                        </TableLabel>
                         {item.value != null && (
                           <TableValue>{item.value}</TableValue>
                         )}
