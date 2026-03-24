@@ -40,6 +40,7 @@ export const METAVAULT_CURRENT_DATA_SCHEMA = z.object({
     usd: z.string(),
     amount: z.string(),
     decimals: z.number(),
+    usd_decimals: z.number(),
   }),
   lastUpdate: UNIX_TIMESTAMP_SCHEMA,
 });

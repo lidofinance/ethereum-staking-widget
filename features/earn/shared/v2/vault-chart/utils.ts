@@ -43,11 +43,20 @@ export const formatTooltipContent = (
   const first = params[0];
   const [timestamp] = (first.value as [number, string | number]) ?? [];
   const lines = params.map(({ marker, seriesName, value }) => {
-    const rawValue = (value as [number, string | number])[1];
+    const values = value as (string | number)[];
+    const rawValue = values[1];
+    const usdValue = values[2] as number | undefined;
     const formatted = isTvl
       ? formatTvl(rawValue as number, isETHVault)
       : `${Number(rawValue).toFixed(2)}%`;
-    return `<div style="margin-bottom:4px">${marker}${seriesName}&nbsp;&nbsp;&nbsp;<b>${formatted}</b></div>`;
+
+    let line = `<div style="margin-bottom:4px">${marker}${seriesName}&nbsp;&nbsp;&nbsp;<b>${formatted}</b>`;
+    if (isTvl && isETHVault && usdValue != null) {
+      line += `<div style="text-align:right;opacity:0.6">${formatTvl(usdValue)}</div>`;
+    }
+    line += '</div>';
+
+    return line;
   });
   return `${formatDate(timestamp)}<div style="margin-top:8px">${lines.join('')}</div>`;
 };

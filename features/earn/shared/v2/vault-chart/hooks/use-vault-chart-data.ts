@@ -4,6 +4,7 @@ import { formatUnits } from 'viem';
 import type { Address } from 'viem';
 
 import { unixTimestampToMs } from 'utils/unix-timestamp-to-ms';
+import { useEthUsd } from 'shared/hooks/use-eth-usd';
 
 import {
   fetchMetavaultChartData,
@@ -16,6 +17,8 @@ export type NormalizedVaultChartPoint = {
   timestampMs: number;
   /** TVL: ETH for ETH vaults, USD for USD vaults. */
   tvl: number;
+  /** TVL in USD, only populated for ETH vaults (for the tooltip). */
+  tvlUsd?: number;
   /** APY as a plain percentage (e.g. 5.25 for 5.25%). */
   apyValue: number;
 };
@@ -51,6 +54,10 @@ export const useMetavaultChartData = ({
     enabled: !!vaultAddress,
   });
 
+  // ETH price is used to show a USD equivalent in the TVL tooltip for ETH vaults.
+  // Globally cached — no extra network requests.
+  const { price: ethPrice } = useEthUsd();
+
   const { data: currentData, isLoading: isCurrentDataLoading } = useQuery({
     queryKey: [METAVAULT_QUERY_SCOPE, 'current-tvl-data', vaultAddress],
     queryFn: async () => {
@@ -69,10 +76,25 @@ export const useMetavaultChartData = ({
             currentData.totalTvl.decimals,
           ),
         )
-      : Number(formatUnits(BigInt(currentData.totalTvl.usd), 8));
+      : Number(
+          formatUnits(
+            BigInt(currentData.totalTvl.usd),
+            currentData.totalTvl.usd_decimals,
+          ),
+        );
+
+    const tvlUsd = isETHVault
+      ? Number(
+          formatUnits(
+            BigInt(currentData.totalTvl.usd),
+            currentData.totalTvl.usd_decimals,
+          ),
+        )
+      : undefined;
     return {
       timestampMs: unixTimestampToMs(currentData.lastUpdate),
       tvl,
+      tvlUsd,
     };
   }, [currentData, isETHVault]);
 
@@ -80,15 +102,27 @@ export const useMetavaultChartData = ({
     if (!rawData) return null;
 
     return rawData.map((item) => {
-      const tvl = Number(formatUnits(BigInt(item.tvl.amount), item.tvl.decimals));
+      const tvl = Number(
+        formatUnits(BigInt(item.tvl.amount), item.tvl.decimals),
+      );
+      const tvlUsd =
+        isETHVault && ethPrice
+          ? Number(
+              formatUnits(
+                BigInt(item.tvl.amount) * ethPrice.latestAnswer,
+                Number(18n + ethPrice.decimals),
+              ),
+            )
+          : undefined;
 
       return {
         timestampMs: unixTimestampToMs(Number(item.timestamp)),
         tvl,
+        tvlUsd,
         apyValue: Number(Number(item.apy.value).toFixed(2)),
       };
     });
-  }, [rawData]);
+  }, [rawData, isETHVault, ethPrice]);
 
   return {
     data,
