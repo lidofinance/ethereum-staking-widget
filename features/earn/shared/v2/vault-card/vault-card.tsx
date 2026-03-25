@@ -3,6 +3,7 @@ import { Button } from '@lidofinance/lido-ui';
 
 import {
   CardWrapper,
+  CardOverlayLink,
   CardHeader,
   CardHeaderContent,
   CardTitle,
@@ -80,8 +81,17 @@ export const VaultCard: React.FC<VaultCardProps> = ({
     (vault) => vault.name === urlSlug,
   )?.deprecated;
 
+  const depositHref = `${EARN_PATH}/${urlSlug}/${EARN_VAULT_DEPOSIT_SLUG}`;
+
   return (
     <CardWrapper $variant={variant} data-testid={`${urlSlug}-vault-card`}>
+      <CardOverlayLink
+        as={LocalLink}
+        href={depositHref}
+        onClick={depositLinkCallback}
+        data-testid={'open-vault-btn'}
+        aria-label={title}
+      />
       <CardHeader>
         <CardHeaderContent>
           <CardTitle>
@@ -115,7 +125,9 @@ export const VaultCard: React.FC<VaultCardProps> = ({
         <StatItem data-testid="apx-value">
           <StatLabel>
             {stats.apxLabel}
-            <VaultTip placement="bottom">{stats.apxHint}</VaultTip>
+            <span style={{ position: 'relative', zIndex: 2 }}>
+              <VaultTip placement="bottom">{stats.apxHint}</VaultTip>
+            </span>
           </StatLabel>
           <StatValue $accent>
             <InlineLoader isLoading={stats.isLoading} width={70}>
@@ -131,7 +143,7 @@ export const VaultCard: React.FC<VaultCardProps> = ({
             </InlineLoader>
           </StatValue>
         </StatItem>
-        {position && (
+        {!!position?.balance && (
           <StatItem>
             <StatLabel>My position</StatLabel>
             <StatValue>
@@ -153,11 +165,7 @@ export const VaultCard: React.FC<VaultCardProps> = ({
         )}
       </CardStats>
       <CardCta>
-        <LocalLink
-          href={`${EARN_PATH}/${urlSlug}/${EARN_VAULT_DEPOSIT_SLUG}`}
-          onClick={depositLinkCallback}
-          data-testid={'open-vault-btn'}
-        >
+        <LocalLink href={depositHref} onClick={depositLinkCallback}>
           <Button fullwidth variant="translucent">
             {ctaLabel}
           </Button>

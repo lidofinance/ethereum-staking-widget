@@ -52,9 +52,7 @@ export const VaultCardSTG = () => {
           : undefined
       }
       ctaLabel={
-        strethSharesBalance && strethSharesBalance > 0n
-          ? 'Upgrade your assets'
-          : 'View'
+        strethSharesBalance && strethSharesBalance > 0n ? 'Manage' : 'View'
       }
       illustration={<VaultStgIcon />}
       depositLinkCallback={() => {

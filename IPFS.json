@@ -164,7 +164,8 @@
         "dgWarningState": false,
         "rewardsMaintenance": false,
         "holidayDecorEnabled": false,
-        "forceAllowance": false
+        "forceAllowance": false,
+        "amountBannerEnabled": true
       },
       "earnVaultsBanner": {
         "showOnStakeForm": true,
