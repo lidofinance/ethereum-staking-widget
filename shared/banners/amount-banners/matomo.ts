@@ -1,4 +1,6 @@
 import { trackEvent } from '@lidofinance/analytics-matomo';
+import { overrideWithQAMockBoolean } from 'utils/qa';
+
 import type { AmountBannerABVariant } from './types';
 
 export type AmountBannerPlacement =
@@ -45,8 +47,19 @@ export const trackAmountBannerCtaClick = (
 ) => {
   const slug = CTA_VARIANT_SLUGS[ctaText]?.[variant];
   if (!slug) return;
-
   const action = `Click on "${ctaText}" ${VARIANT_LABELS[variant]} ${PLACEMENT_LABELS[placement]}`;
+
+  const enableLogging = overrideWithQAMockBoolean(
+    false,
+    'mock-qa-helpers-matomo-logging',
+  );
+  if (enableLogging) {
+    console.info(
+      '%cTracking Matomo event:',
+      'background:#3152A0;color:#fff;padding:2px 4px;border-radius:2px',
+      [CATEGORY, action, `eth_widget_${slug}_${placement}`].join(', '),
+    );
+  }
 
   trackEvent(CATEGORY, action, `eth_widget_${slug}_${placement}`);
 };
