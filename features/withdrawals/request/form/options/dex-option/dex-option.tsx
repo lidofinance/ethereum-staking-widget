@@ -1,15 +1,22 @@
 import {
   CowSwapWidget,
   CowSwapWidgetParams,
+  CowSwapWidgetProps,
   EthereumProvider,
   TradeType,
 } from '@cowprotocol/widget-react';
+// eslint-disable-next-line import/no-extraneous-dependencies
+import { CowWidgetEvents } from '@cowprotocol/events';
 
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { useTheme } from 'styled-components';
 import { ConnectorEventMap, useConnection, useWalletClient } from 'wagmi';
+import { useAddressValidation } from 'providers/address-validation-provider';
 
 export const DexOption = () => {
+  const [isQueried, setIsQueried] = useState(false);
+
+  const { validateAddress } = useAddressValidation();
   const { data: walletClient } = useWalletClient();
   const { name: themeName } = useTheme();
 
@@ -80,5 +87,44 @@ export const DexOption = () => {
     };
   }, [walletClient, connector]);
 
-  return <CowSwapWidget params={params} provider={provider} />;
+  const listeners: CowSwapWidgetProps['listeners'] = useMemo(() => {
+    const tryValidateAddress = async () => {
+      // prevents spam to validation api on every event
+      try {
+        if (isQueried) return;
+        setIsQueried(true);
+        await validateAddress(walletClient?.account.address);
+      } catch {
+        setIsQueried(false);
+      }
+    };
+
+    const res: CowSwapWidgetProps['listeners'] = [
+      {
+        event: CowWidgetEvents.ON_POSTED_ORDER,
+        handler: async () => {
+          // TODO: matomo
+          await tryValidateAddress();
+        },
+      },
+      {
+        event: CowWidgetEvents.ON_ONCHAIN_TRANSACTION,
+        handler: async () => {
+          await tryValidateAddress();
+        },
+      },
+      {
+        event: CowWidgetEvents.ON_PRESIGNED_ORDER,
+        handler: async () => {
+          await tryValidateAddress();
+        },
+      },
+    ];
+
+    return res;
+  }, [isQueried, validateAddress, walletClient?.account.address]);
+
+  return (
+    <CowSwapWidget params={params} listeners={listeners} provider={provider} />
+  );
 };

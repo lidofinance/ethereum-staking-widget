@@ -22,14 +22,18 @@ import {
 import { TransactionInfo } from './transaction-info';
 import { Hidden } from 'shared/components/hidden';
 import { useConfig } from 'config';
+import { useAddressValidation } from 'providers/address-validation-provider';
 
 export const RequestForm = () => {
   const { isBunker, isPaused } = useWithdrawals();
+  const { isMarkedInvalid } = useAddressValidation();
+
   // conditional render breaks useFormState, so it can't be inside SubmitButton
   const submitButtonProps = useRequestSubmitButtonProps();
   const modeForm = useWatch<RequestFormInputType, 'mode'>({ name: 'mode' });
 
-  const isDexEnabled = useConfig().externalConfig.withdrawalDex.enabled;
+  const isDexEnabled =
+    useConfig().externalConfig.withdrawalDex.enabled && !isMarkedInvalid;
 
   const mode = isDexEnabled ? modeForm : 'lido';
 
