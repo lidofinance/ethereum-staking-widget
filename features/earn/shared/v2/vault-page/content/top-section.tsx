@@ -60,7 +60,7 @@ export const TopSection: FC<TopSectionProps> = (props) => {
       <TopSectionStatsRow>
         <TopSectionStatItem>
           <TopSectionStatLabel>
-            APY (7d avg.)
+            APY* (7d avg.)
             <VaultTip placement="bottom">{apxHint}</VaultTip>
           </TopSectionStatLabel>
           <TopSectionStatValue $accent>
