@@ -1,7 +1,7 @@
 import { UNIX_TIMESTAMP_SCHEMA } from 'utils/zod';
 import { formatUnits } from 'viem';
 import { useQuery } from '@tanstack/react-query';
-// import { useEthUsd } from 'shared/hooks/use-eth-usd';
+import { useEthUsd } from 'shared/hooks/use-eth-usd';
 import { ETH_VAULT_QUERY_SCOPE } from '../consts';
 import { ALLOCATION_SCHEMA, fetchEthVaultStats } from '../utils';
 import { useEthVaultCollect } from './use-collect';
@@ -31,13 +31,12 @@ export const useEthVaultStats = () => {
   // Temporarily disabled: collector contract TVL (totalTvlWei × ETH price) doesn't yet
   // match the vault's actual TVL. Using the API value (apiUsdTVL) instead as
   // the source of truth until the discrepancy is resolved.
-  // const { usdAmount: totalTvlUsd, isLoading: isEthUsdLoading } =
-  //   useEthUsd(totalTvlWei);
+  const { usdAmount: totalTvlUsd, isLoading: isEthUsdLoading } =
+    useEthUsd(totalTvlWei);
 
   return {
-    // isLoading: isLoading || isCollectorLoading || isEthUsdLoading,
-    isLoading: isLoading || isCollectorLoading,
-    totalTvlUsd: data?.apiUsdTVL,
+    isLoading: isLoading || isCollectorLoading || isEthUsdLoading,
+    totalTvlUsd,
     totalTvlWei,
     fetchedPositions: data?.allocations,
     lastUpdateTimestamp: data?.lastUpdate,

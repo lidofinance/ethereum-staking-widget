@@ -74,6 +74,7 @@ type Props = {
     clickChartsApy3m?: MATOMO_EVENT_TYPE;
   };
   protectedBadgeTooltipText?: React.ReactNode;
+  collectorTvlWei?: bigint;
 };
 
 const TABS = {
@@ -156,7 +157,11 @@ export const VaultPage: FC<Props> = (props) => {
 
           {activeTab === TABS.PERFORMANCE && (
             <>
-              <VaultChart vaultName={props.vaultName} matomo={props.matomo} />
+              <VaultChart
+                vaultName={props.vaultName}
+                matomo={props.matomo}
+                collectorTvlWei={props.collectorTvlWei}
+              />
               <Metrics>
                 {fees.map((fee, index) => (
                   <InfoRow key={index}>

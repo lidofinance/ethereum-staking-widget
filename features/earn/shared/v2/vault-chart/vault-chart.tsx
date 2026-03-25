@@ -33,6 +33,7 @@ echarts.use([SVGRenderer, LineChart, TooltipComponent, GridComponent]);
 
 type VaultChartProps = {
   vaultName: 'ethVault' | 'usdVault';
+  collectorTvlWei?: bigint;
   matomo?: {
     clickChartsTvlTab?: MATOMO_EVENT_TYPE;
     clickChartsTvl1m?: MATOMO_EVENT_TYPE;
@@ -44,7 +45,7 @@ type VaultChartProps = {
 };
 
 export const VaultChart = (props: VaultChartProps) => {
-  const { vaultName, matomo } = props;
+  const { vaultName, matomo, collectorTvlWei } = props;
 
   const { themeName } = useThemeToggle();
   const isDark = themeName === 'dark';
@@ -90,6 +91,7 @@ export const VaultChart = (props: VaultChartProps) => {
     isETHVault,
     activeChart,
     activeTimeRange,
+    collectorTvlWei,
   });
 
   // Distinguish first load (show skeleton for controls + chart) from later loads (controls stay, only chart area shows loading).

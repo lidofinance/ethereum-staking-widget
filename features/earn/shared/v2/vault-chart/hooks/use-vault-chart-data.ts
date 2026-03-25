@@ -27,12 +27,14 @@ type UseMetavaultChartDataProps = {
   fromTimestamp: number;
   vaultAddress?: Address;
   isETHVault: boolean;
+  collectorTvlWei?: bigint;
 };
 
 export const useMetavaultChartData = ({
   fromTimestamp,
   vaultAddress,
   isETHVault,
+  collectorTvlWei,
 }: UseMetavaultChartDataProps) => {
   const {
     data: rawData,
@@ -64,39 +66,39 @@ export const useMetavaultChartData = ({
       if (!vaultAddress) return null;
       return fetchMetavaultCurrentData(vaultAddress);
     },
-    enabled: !!vaultAddress,
+    enabled: !!vaultAddress && !isETHVault,
   });
 
   const currentTvlPoint = useMemo(() => {
-    if (!currentData) return null;
-    const tvl = isETHVault
-      ? Number(
-          formatUnits(
-            BigInt(currentData.totalTvl.amount),
-            currentData.totalTvl.decimals,
-          ),
-        )
-      : Number(
-          formatUnits(
-            BigInt(currentData.totalTvl.usd),
-            currentData.totalTvl.usd_decimals,
-          ),
-        );
+    if (isETHVault) {
+      if (!collectorTvlWei) return null;
+      const tvl = Number(formatUnits(collectorTvlWei, 18));
+      const tvlUsd =
+        ethPrice != undefined
+          ? Number(
+              formatUnits(
+                collectorTvlWei * ethPrice.latestAnswer,
+                Number(18n + ethPrice.decimals),
+              ),
+            )
+          : undefined;
+      return { timestampMs: Date.now(), tvl, tvlUsd };
+    }
 
-    const tvlUsd = isETHVault
-      ? Number(
-          formatUnits(
-            BigInt(currentData.totalTvl.usd),
-            currentData.totalTvl.usd_decimals,
-          ),
-        )
-      : undefined;
+    if (!currentData) return null;
+    const tvl = Number(
+      formatUnits(
+        BigInt(currentData.totalTvl.usd),
+        currentData.totalTvl.usd_decimals,
+      ),
+    );
+
     return {
       timestampMs: unixTimestampToMs(currentData.lastUpdate),
       tvl,
-      tvlUsd,
+      tvlUsd: undefined,
     };
-  }, [currentData, isETHVault]);
+  }, [isETHVault, currentData, collectorTvlWei, ethPrice]);
 
   const data = useMemo((): NormalizedVaultChartPoint[] | null => {
     if (!rawData) return null;
@@ -127,7 +129,9 @@ export const useMetavaultChartData = ({
   return {
     data,
     currentTvlPoint,
-    isLoading: isVaultLoading || isCurrentDataLoading,
+    isLoading:
+      isVaultLoading ||
+      (isETHVault && !collectorTvlWei ? isCurrentDataLoading : false),
     isError,
   };
 };
