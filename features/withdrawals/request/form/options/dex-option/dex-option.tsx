@@ -1,5 +1,6 @@
 import {
   CowSwapWidget,
+  CowSwapWidgetPalette,
   CowSwapWidgetParams,
   CowSwapWidgetProps,
   EthereumProvider,
@@ -12,20 +13,76 @@ import { useMemo, useState } from 'react';
 import { useTheme } from 'styled-components';
 import { ConnectorEventMap, useConnection, useWalletClient } from 'wagmi';
 import { useAddressValidation } from 'providers/address-validation-provider';
+import { themeDark, themeLight } from '@lidofinance/lido-ui';
+import { DexOptionContainer } from './styles';
+import { useDappStatus } from 'modules/web3';
+import { getContractAddress } from 'config/networks/contract-address';
+import invariant from 'tiny-invariant';
+
+const cowSwapThemeDark: CowSwapWidgetPalette = {
+  baseTheme: 'dark',
+  primary: themeDark.colors.primary,
+  background: themeDark.colors.background,
+  paper: '#2D2D35',
+  text: themeDark.colors.text,
+  warning: themeDark.colors.warning,
+  alert: themeDark.colors.warningBackground,
+  danger: themeDark.colors.error,
+  info: themeDark.colors.error,
+  success: themeDark.colors.success,
+};
+
+const cowSwapThemeLight: CowSwapWidgetPalette = {
+  baseTheme: 'light',
+  primary: themeLight.colors.primary,
+  background: '#F2F2F2',
+  paper: themeLight.colors.foreground,
+  text: themeLight.colors.text,
+  warning: themeLight.colors.warning,
+  alert: themeLight.colors.warningBackground,
+  danger: themeLight.colors.error,
+  info: themeLight.colors.error,
+  success: themeLight.colors.success,
+};
 
 export const DexOption = () => {
   const [isQueried, setIsQueried] = useState(false);
+  const { isTestnet, chainId } = useDappStatus();
 
   const { validateAddress } = useAddressValidation();
   const { data: walletClient } = useWalletClient();
   const { name: themeName } = useTheme();
 
+  const daoAgentAddress = getContractAddress(chainId, 'daoAgent');
+  invariant(
+    daoAgentAddress,
+    'DAO Agent address is not defined for current network',
+  );
+
   const params = useMemo<CowSwapWidgetParams>(
     () => ({
+      //
+      // Core options
+      //
       appCode: 'Lido Staking Widget',
-
+      standaloneMode: false,
+      // for testnets only sepolia
+      chainId: isTestnet ? 11155111 : 1,
       // test app
       baseUrl: 'https://swap-dev-git-feat-widget-lido-1-cowswap-dev.vercel.app',
+
+      //
+      // Trading options
+      //
+
+      tradeType: TradeType.SWAP,
+      enabledTradeTypes: [TradeType.SWAP],
+      sell: {
+        asset: 'STETH',
+      },
+      buy: {
+        asset: 'ETH',
+      },
       // temp for testing
       sellTokenLists: [
         'https://raw.githubusercontent.com/lidofinance/ethereum-staking-widget/refs/heads/feature/si-2468-dex-withdrawal-integration/public/token-lists/withdrawals-dex-sell-tokenlist.json',
@@ -33,45 +90,36 @@ export const DexOption = () => {
       buyTokenLists: [
         'https://raw.githubusercontent.com/lidofinance/ethereum-staking-widget/refs/heads/feature/si-2468-dex-withdrawal-integration/public/token-lists/withdrawals-dex-buy-tokenlist.json',
       ],
+      slippage: {
+        max: 300, // 3%
+      },
       partnerFee: {
         bps: 30,
         // Lido DAO treasury
-        recipient: '0x3e40d73eb977dc6a537af587d48316fee66e9c8c',
+        recipient: daoAgentAddress,
       },
-      hideRecentTokens: true,
-      hideFavoriteTokens: true,
       disableTrade: {
         whenPriceImpactIsUnknown: true,
         whenPriceImpactIsHigherThan: 3,
       },
-      slippage: {
-        max: 300, // 3%
-      },
-      chainId: 1, // 1 (Mainnet), 100 (Gnosis), 11155111 (Sepolia)
       disableCrossChainSwap: true,
-      sell: {
-        // Sell token. Optionally add amount for sell orders
-        asset: 'STETH',
-      },
-      buy: {
-        // Buy token. Optionally add amount for buy orders
-        asset: 'ETH',
-      },
-      tradeType: TradeType.SWAP, // TradeType.SWAP, TradeType.LIMIT or TradeType.ADVANCED
 
-      enabledTradeTypes: [
-        // TradeType.SWAP, TradeType.LIMIT and/or TradeType.ADVANCED
-        TradeType.SWAP,
-      ],
+      //
+      // UI options
+      //
+
       width: '100%',
-      theme: themeName === 'dark' ? 'dark' : 'light', // light/dark or provide your own color palette
-      standaloneMode: false,
+      height: '432px',
+      theme: themeName === 'dark' ? cowSwapThemeDark : cowSwapThemeLight,
+      hideRecentTokens: true,
+      hideFavoriteTokens: true,
       disableToastMessages: true,
       disableProgressBar: false,
       hideBridgeInfo: false,
       hideOrdersTable: false,
+      hideNetworkSelector: true,
     }),
-    [themeName],
+    [isTestnet, daoAgentAddress, themeName],
   );
 
   const { connector } = useConnection();
@@ -125,6 +173,12 @@ export const DexOption = () => {
   }, [isQueried, validateAddress, walletClient?.account.address]);
 
   return (
-    <CowSwapWidget params={params} listeners={listeners} provider={provider} />
+    <DexOptionContainer>
+      <CowSwapWidget
+        params={params}
+        listeners={listeners}
+        provider={provider}
+      />
+    </DexOptionContainer>
   );
 };
