@@ -47,10 +47,7 @@ export const overrideWithQAMockBigInt = (value: bigint, key: string) => {
 };
 
 // Accepts ETH value as a decimal string (e.g. "200") for QA ergonomics
-export const overrideWithQAMockEther = (
-  value: bigint | undefined,
-  key: string,
-): bigint | undefined => {
+export const overrideWithQAMockEther = (value: bigint, key: string): bigint => {
   if (config.enableQaHelpers && typeof window !== 'undefined') {
     const mock = localStorage.getItem(key);
     if (mock) {

@@ -22,7 +22,7 @@ export const Wrapper = styled.div<{ $isModal?: boolean; $marginTop?: number }>`
   background: linear-gradient(-115deg, #00a3ff -10%, rgba(0, 163, 255, 0) 60%),
     var(--lido-color-accent);
   color: #fff;
-  width: 260px;
+  width: 240px;
   text-align: left;
 
   ${({ $isModal }) => $isModal && modalStyles}

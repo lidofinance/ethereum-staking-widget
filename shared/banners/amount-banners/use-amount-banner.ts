@@ -13,14 +13,32 @@ import {
 } from './consts';
 import type { AmountBannerConfig } from './types';
 
-const QA_MOCK_KEY = 'mockAmountBannerStethBalance';
+const QA_AMOUNT_MOCK_KEY = 'mockAmountBannerStethBalance';
+const QA_AMOUNT_THRESHOLD_1_MOCK_KEY = 'mockAmountBannerStethBalanceThreshold1';
+const QA_AMOUNT_THRESHOLD_2_MOCK_KEY = 'mockAmountBannerStethBalanceThreshold2';
+const QA_AMOUNT_THRESHOLD_3_MOCK_KEY = 'mockAmountBannerStethBalanceThreshold3';
 
 export const useAmountBanner = (
   amount: bigint | undefined,
   initialBalance?: bigint,
 ): AmountBannerConfig | null => {
   const variant = useAmountBannerABVariant();
-  const effectiveAmount = overrideWithQAMockEther(amount, QA_MOCK_KEY);
+  const effectiveAmount = overrideWithQAMockEther(
+    amount ?? 0n,
+    QA_AMOUNT_MOCK_KEY,
+  );
+  const amountThreshold1 = overrideWithQAMockEther(
+    AMOUNT_BANNER_THRESHOLD_1,
+    QA_AMOUNT_THRESHOLD_1_MOCK_KEY,
+  );
+  const amountThreshold2 = overrideWithQAMockEther(
+    AMOUNT_BANNER_THRESHOLD_2,
+    QA_AMOUNT_THRESHOLD_2_MOCK_KEY,
+  );
+  const amountThreshold3 = overrideWithQAMockEther(
+    AMOUNT_BANNER_THRESHOLD_3,
+    QA_AMOUNT_THRESHOLD_3_MOCK_KEY,
+  );
 
   return useMemo(() => {
     if (effectiveAmount === undefined || effectiveAmount === 0n) return null;
@@ -29,10 +47,9 @@ export const useAmountBanner = (
     const body = AMOUNT_BANNER_BODY_TEXT;
 
     // If the initial balance is greater than the threshold, don't show the banner
-    if (initialBalance && initialBalance >= AMOUNT_BANNER_THRESHOLD_1)
-      return null;
+    if (initialBalance && initialBalance >= amountThreshold1) return null;
 
-    if (effectiveAmount >= AMOUNT_BANNER_THRESHOLD_3) {
+    if (effectiveAmount >= amountThreshold3) {
       return {
         level: 3,
         variant,
@@ -45,7 +62,7 @@ export const useAmountBanner = (
       };
     }
 
-    if (effectiveAmount >= AMOUNT_BANNER_THRESHOLD_2) {
+    if (effectiveAmount >= amountThreshold2) {
       return {
         level: 2,
         variant,
@@ -58,7 +75,7 @@ export const useAmountBanner = (
       };
     }
 
-    if (effectiveAmount >= AMOUNT_BANNER_THRESHOLD_1) {
+    if (effectiveAmount >= amountThreshold1) {
       return {
         level: 1,
         variant,
@@ -71,5 +88,12 @@ export const useAmountBanner = (
     }
 
     return null;
-  }, [effectiveAmount, initialBalance, variant]);
+  }, [
+    amountThreshold1,
+    amountThreshold2,
+    amountThreshold3,
+    effectiveAmount,
+    initialBalance,
+    variant,
+  ]);
 };
