@@ -13,39 +13,46 @@ import { TokenAmountInputRequest } from './controls/token-amount-input-request';
 import { InputGroupRequest } from './controls/input-group-request';
 import { RequestsInfo } from './requests-info';
 import { ModePickerRequest } from './controls/mode-picker-request';
-import { DexOptions } from './options/dex-options';
+import { DexOption } from './options/dex-option';
 import { LidoOption } from './options/lido-option';
 import {
   SubmitButtonRequest,
   useRequestSubmitButtonProps,
 } from './controls/submit-button-request';
 import { TransactionInfo } from './transaction-info';
+import { Hidden } from 'shared/components/hidden';
+import { useConfig } from 'config';
 
 export const RequestForm = () => {
   const { isBunker, isPaused } = useWithdrawals();
   // conditional render breaks useFormState, so it can't be inside SubmitButton
   const submitButtonProps = useRequestSubmitButtonProps();
-  const mode = useWatch<RequestFormInputType, 'mode'>({ name: 'mode' });
+  const modeForm = useWatch<RequestFormInputType, 'mode'>({ name: 'mode' });
+
+  const isDexEnabled = useConfig().externalConfig.withdrawalDex.enabled;
+
+  const mode = isDexEnabled ? modeForm : 'lido';
 
   return (
     <Block data-testid="requestForm">
       {isPaused && <PausedInfo />}
       {isBunker && <BunkerInfo />}
       <FormController>
-        <InputGroupRequest>
-          <TokenSelectRequest />
-          <TokenAmountInputRequest />
-        </InputGroupRequest>
-        {mode === 'lido' && <RequestsInfo />}
-        <ModePickerRequest />
-        {mode === 'lido' && (
-          <>
-            <LidoOption />
-            <SubmitButtonRequest {...submitButtonProps} />
-            <TransactionInfo />
-          </>
-        )}
-        {mode === 'dex' && <DexOptions />}
+        {isDexEnabled && <ModePickerRequest />}
+
+        {/* Lido options is hidden visually to prevent mounting/unmounting of form controllers */}
+        <Hidden show={mode === 'lido'}>
+          <InputGroupRequest>
+            <TokenSelectRequest />
+            <TokenAmountInputRequest />
+          </InputGroupRequest>
+          <RequestsInfo />
+          <LidoOption />
+          <SubmitButtonRequest {...submitButtonProps} />
+          <TransactionInfo />
+        </Hidden>
+
+        {isDexEnabled && mode === 'dex' && <DexOption />}
       </FormController>
     </Block>
   );

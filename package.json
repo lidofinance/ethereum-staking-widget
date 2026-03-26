@@ -22,6 +22,7 @@
   "dependencies": {
     "@base-org/account": "^2.5.1",
     "@coinbase/wallet-sdk": "^4.3.6",
+    "@cowprotocol/widget-react": "^1.1.0",
     "@gemini-wallet/core": "~0.3.1",
     "@lidofinance/analytics-matomo": "^0.56.0",
     "@lidofinance/api-metrics": "^0.48.0",
