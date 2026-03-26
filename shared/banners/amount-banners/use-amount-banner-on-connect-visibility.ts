@@ -24,11 +24,14 @@ type UseAmountBannerOnConnectVisibility = ({
 export const useAmountBannerOnConnectVisibility: UseAmountBannerOnConnectVisibility =
   ({ initialBalance, isDismissible }) => {
     const { address } = useDappStatus();
-    const { query } = useRouter();
+    const { query, pathname } = useRouter();
     const { featureFlags } = useConfig().externalConfig;
     const { data: stethBalance } = useStethBalance();
     const bannerConfig = useAmountBanner(stethBalance, initialBalance);
+
     const isReferralUser = Boolean(query.ref);
+    // Prevent showing banner on earn vault pages
+    const isVaultPage = pathname === '/earn/[vault]/[action]';
 
     const [isDismissed, setDismissed] = useLocalStorage(
       AMOUNT_BANNER_DISMISSED_STORAGE_KEY,
@@ -47,6 +50,7 @@ export const useAmountBannerOnConnectVisibility: UseAmountBannerOnConnectVisibil
       !isReferralUser &&
       stethBalance !== undefined &&
       notDismissedOrNotDismissible &&
+      !isVaultPage &&
       bannerConfig !== null;
 
     return {
