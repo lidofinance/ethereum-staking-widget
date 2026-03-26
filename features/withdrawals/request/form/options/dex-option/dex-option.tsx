@@ -14,10 +14,11 @@ import { useTheme } from 'styled-components';
 import { ConnectorEventMap, useConnection, useWalletClient } from 'wagmi';
 import { useAddressValidation } from 'providers/address-validation-provider';
 import { themeDark, themeLight } from '@lidofinance/lido-ui';
-import { DexOptionContainer } from './styles';
 import { useDappStatus } from 'modules/web3';
 import { getContractAddress } from 'config/networks/contract-address';
 import invariant from 'tiny-invariant';
+import { trackMatomoEvent } from 'utils/track-matomo-event';
+import { MATOMO_TX_EVENTS_TYPES } from 'consts/matomo';
 
 const cowSwapThemeDark: CowSwapWidgetPalette = {
   baseTheme: 'dark',
@@ -151,7 +152,7 @@ export const DexOption = () => {
       {
         event: CowWidgetEvents.ON_POSTED_ORDER,
         handler: async () => {
-          // TODO: matomo
+          trackMatomoEvent(MATOMO_TX_EVENTS_TYPES.withdrawalDexSwapPosted);
           await tryValidateAddress();
         },
       },
@@ -162,9 +163,21 @@ export const DexOption = () => {
         },
       },
       {
-        event: CowWidgetEvents.ON_PRESIGNED_ORDER,
-        handler: async () => {
-          await tryValidateAddress();
+        event: CowWidgetEvents.ON_FULFILLED_ORDER,
+        handler: () => {
+          trackMatomoEvent(MATOMO_TX_EVENTS_TYPES.withdrawalClaimFinish);
+        },
+      },
+      {
+        event: CowWidgetEvents.ON_CANCELLED_ORDER,
+        handler: () => {
+          trackMatomoEvent(MATOMO_TX_EVENTS_TYPES.withdrawalDexSwapCancel);
+        },
+      },
+      {
+        event: CowWidgetEvents.ON_EXPIRED_ORDER,
+        handler: () => {
+          trackMatomoEvent(MATOMO_TX_EVENTS_TYPES.withdrawalDexSwapCancel);
         },
       },
     ];
@@ -173,12 +186,6 @@ export const DexOption = () => {
   }, [isQueried, validateAddress, walletClient?.account.address]);
 
   return (
-    <DexOptionContainer>
-      <CowSwapWidget
-        params={params}
-        listeners={listeners}
-        provider={provider}
-      />
-    </DexOptionContainer>
+    <CowSwapWidget params={params} listeners={listeners} provider={provider} />
   );
 };
