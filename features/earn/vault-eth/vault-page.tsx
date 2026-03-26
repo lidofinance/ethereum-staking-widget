@@ -111,8 +111,9 @@ export const EthVaultPage: FC<{
 }> = ({ action }) => {
   const { apy, isLoading: isApyLoading } = useEthVaultApy();
   const {
-    totalTvlUsd,
-    totalTvlWei,
+    tvlUsd,
+    tvlBaseAsset,
+    tvlUpdateTimestampMs,
     isLoading: isTvlLoading,
   } = useEthVaultStats();
 
@@ -121,12 +122,13 @@ export const EthVaultPage: FC<{
       <VaultPage
         {...DATA}
         apx={apy}
-        tvl={totalTvlUsd}
+        tvlUsd={tvlUsd}
+        tvlBaseAsset={tvlBaseAsset}
+        tvlUpdateTimestampMs={tvlUpdateTimestampMs}
         isApxLoading={isApyLoading}
         isTvlLoading={isTvlLoading}
         apxHint={<EthVaultApyHint />}
         sidePanel={<EthVaultPositionManager action={action} />}
-        collectorTvlWei={totalTvlWei}
         vaultName="ethVault"
         faqContent={<EarnEthFaq />}
         strategyContent={

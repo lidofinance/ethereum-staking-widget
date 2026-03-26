@@ -24,7 +24,7 @@ type TopSectionProps = {
   title: string;
   description: string;
   apx?: number | null;
-  tvl?: number | null;
+  tvlUsd?: number | null;
   apxHint?: React.ReactNode;
   isApxLoading?: boolean;
   isTvlLoading?: boolean;
@@ -36,7 +36,7 @@ export const TopSection: FC<TopSectionProps> = (props) => {
     title,
     description,
     apx,
-    tvl,
+    tvlUsd,
     apxHint,
     isApxLoading,
     isTvlLoading,
@@ -73,7 +73,7 @@ export const TopSection: FC<TopSectionProps> = (props) => {
           <TopSectionStatLabel>TVL</TopSectionStatLabel>
           <TopSectionStatValue>
             <InlineLoader isLoading={isTvlLoading} width={70}>
-              <FormatLargeAmount amount={tvl} />
+              <FormatLargeAmount amount={tvlUsd} />
             </InlineLoader>
           </TopSectionStatValue>
         </TopSectionStatItem>
