@@ -17,6 +17,7 @@ import { getEtherscanAddressLink } from 'utils/etherscan';
 import { openWindow } from 'utils/open-window';
 import { trackMatomoEvent } from 'utils/track-matomo-event';
 import { MATOMO_CLICK_EVENTS_TYPES } from 'consts/matomo';
+import { AmountBanner } from 'shared/banners/amount-banners';
 
 import {
   WalletModalContentStyle,
@@ -119,6 +120,7 @@ export const WalletModal: ModalComponentType = ({ onClose, ...props }) => {
           </ButtonIcon>
         </WalletModalActionsStyle>
       </WalletModalContentStyle>
+      <AmountBanner isModal marginTop={28} placement="disconnect_wallet" />
     </Modal>
   );
 };
