@@ -38,6 +38,7 @@ const VAULT_CARDS = {
 export const EarnVaultsList: FC = () => {
   const { earnVaultsEnabled } = useEarnState();
   const [isDrawerRightOpen, setIsDrawerRightOpen] = useState(false);
+  const [isAccordionAnimating, setIsAccordionAnimating] = useState(false);
 
   const actualVaults = [] as typeof earnVaultsEnabled;
   const deprecatedVaults = [] as typeof earnVaultsEnabled;
@@ -80,6 +81,10 @@ export const EarnVaultsList: FC = () => {
 
         {hasDeprecatedVaults && (
           <AccordionTransparentStyled
+            data-animating={isAccordionAnimating || undefined}
+            onClick={() => setIsAccordionAnimating(true)}
+            onExpand={() => setIsAccordionAnimating(false)}
+            onCollapse={() => setIsAccordionAnimating(false)}
             summary={
               <AccordionTitle data-testid={'upgradingVaults'}>
                 Upgrading vaults

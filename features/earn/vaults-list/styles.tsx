@@ -3,6 +3,14 @@ import { AccordionTransparent } from '@lidofinance/lido-ui';
 
 export const AccordionTransparentStyled = styled(AccordionTransparent)`
   overflow: visible;
+
+  /*
+    Disabling pointer-events while animation is in progress,
+    fixes issue with card shadow on hover caused by inline overflow:hidden during animation
+  */
+  &[data-animating] * {
+    pointer-events: none;
+  }
 `;
 
 export const ListSubtitle = styled.div`
