@@ -1,1 +1,1 @@
-export { DexOption } from './dex-option';
+export { DexOptionWithErrorBoundary } from './error-boundary';

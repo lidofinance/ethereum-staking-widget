@@ -13,7 +13,7 @@ import { TokenAmountInputRequest } from './controls/token-amount-input-request';
 import { InputGroupRequest } from './controls/input-group-request';
 import { RequestsInfo } from './requests-info';
 import { ModePickerRequest } from './controls/mode-picker-request';
-import { DexOption } from './options/dex-option';
+import { DexOptionWithErrorBoundary } from './options/dex-option';
 import { LidoOption } from './options/lido-option';
 import {
   SubmitButtonRequest,
@@ -56,7 +56,7 @@ export const RequestForm = () => {
           <TransactionInfo />
         </Hidden>
 
-        {isDexEnabled && mode === 'dex' && <DexOption />}
+        {isDexEnabled && mode === 'dex' && <DexOptionWithErrorBoundary />}
       </FormController>
     </Block>
   );

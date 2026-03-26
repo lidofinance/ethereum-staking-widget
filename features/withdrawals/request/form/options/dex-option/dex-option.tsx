@@ -147,7 +147,7 @@ export const DexOption = () => {
       }
     };
 
-    const res: CowSwapWidgetProps['listeners'] = [
+    const handlers: CowSwapWidgetProps['listeners'] = [
       {
         event: CowWidgetEvents.ON_POSTED_ORDER,
         handler: async () => {
@@ -169,7 +169,7 @@ export const DexOption = () => {
       },
     ];
 
-    return res;
+    return handlers;
   }, [isQueried, validateAddress, walletClient?.account.address]);
 
   return (
