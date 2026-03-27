@@ -6,6 +6,7 @@ import { CHAINS } from '@lidofinance/lido-ethereum-sdk/common';
 import { config } from 'config';
 import { useUserConfig } from 'config/user-config';
 import { IPFSInfoBox } from 'features/ipfs/ipfs-info-box';
+import { AmountBanner } from 'shared/banners/amount-banners';
 import { useDappStatus } from 'modules/web3';
 import { Button, Connect } from 'shared/wallet';
 import NoSSRWrapper from 'shared/components/no-ssr-wrapper';
@@ -15,6 +16,7 @@ import {
   HeaderWalletChainStyle,
   DotStyle,
   IPFSInfoBoxOnlyDesktopWrapper,
+  AmountBannerOnlyDesktopWrapper,
 } from '../styles';
 
 import { ChainSwitcher } from './chain-switcher/chain-switcher';
@@ -60,6 +62,9 @@ const HeaderWallet: FC = () => {
           <IPFSInfoBox />
         </IPFSInfoBoxOnlyDesktopWrapper>
       )}
+      <AmountBannerOnlyDesktopWrapper>
+        <AmountBanner isDismissible placement="connect_wallet" />
+      </AmountBannerOnlyDesktopWrapper>
     </NoSSRWrapper>
   );
 };

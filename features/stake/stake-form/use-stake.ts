@@ -55,6 +55,7 @@ export const useStake = ({ onConfirm, onRetry }: StakeOptions) => {
           referral,
           stake.core.rpcProvider,
         );
+        const preStakeBalance = await stETH.balance(address);
 
         const onStakeTxConfirmed = async () => {
           const [, balance] = await Promise.all([
@@ -91,7 +92,7 @@ export const useStake = ({ onConfirm, onRetry }: StakeOptions) => {
             if (featureFlags.holidayDecorEnabled) {
               bells();
             }
-            txModalStages.success(balance, txHash);
+            txModalStages.success(balance, preStakeBalance, txHash);
             trackMatomoEvent(MATOMO_TX_EVENTS_TYPES.stakingFinish);
           },
           onFailure: ({ error }) => txModalStages.failed(error, onRetry),
