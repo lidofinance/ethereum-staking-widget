@@ -33,6 +33,9 @@ echarts.use([SVGRenderer, LineChart, TooltipComponent, GridComponent]);
 
 type VaultChartProps = {
   vaultName: 'ethVault' | 'usdVault';
+  tvlUsd: number | null | undefined;
+  tvlBaseAsset: bigint | undefined;
+  tvlUpdateTimestampMs: number | undefined;
   matomo?: {
     clickChartsTvlTab?: MATOMO_EVENT_TYPE;
     clickChartsTvl1m?: MATOMO_EVENT_TYPE;
@@ -44,7 +47,8 @@ type VaultChartProps = {
 };
 
 export const VaultChart = (props: VaultChartProps) => {
-  const { vaultName, matomo } = props;
+  const { vaultName, matomo, tvlUsd, tvlBaseAsset, tvlUpdateTimestampMs } =
+    props;
 
   const { themeName } = useThemeToggle();
   const isDark = themeName === 'dark';
@@ -74,7 +78,6 @@ export const VaultChart = (props: VaultChartProps) => {
     isTreasuryLoading,
     isStakingLoading,
     isLoadingError,
-
     seriesData,
     treasurySeriesData,
     stakingSeriesData,
@@ -90,6 +93,9 @@ export const VaultChart = (props: VaultChartProps) => {
     isETHVault,
     activeChart,
     activeTimeRange,
+    tvlUsd,
+    tvlBaseAsset,
+    tvlUpdateTimestampMs,
   });
 
   // Distinguish first load (show skeleton for controls + chart) from later loads (controls stay, only chart area shows loading).

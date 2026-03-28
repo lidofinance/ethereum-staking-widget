@@ -110,14 +110,21 @@ export const VaultPageUSD: FC<{
   action: typeof EARN_VAULT_DEPOSIT_SLUG | typeof EARN_VAULT_WITHDRAW_SLUG;
 }> = ({ action }) => {
   const { apy, isLoading: isApyLoading } = useUsdVaultApy();
-  const { totalTvlUsd, isLoading: isTvlLoading } = useUsdVaultStats();
+  const {
+    tvlUsd,
+    tvlBaseAsset,
+    tvlUpdateTimestampMs,
+    isLoading: isTvlLoading,
+  } = useUsdVaultStats();
 
   return (
     <>
       <VaultPage
         {...DATA}
         apx={apy}
-        tvl={totalTvlUsd}
+        tvlUsd={tvlUsd}
+        tvlBaseAsset={tvlBaseAsset}
+        tvlUpdateTimestampMs={tvlUpdateTimestampMs}
         isApxLoading={isApyLoading}
         isTvlLoading={isTvlLoading}
         apxHint={<UsdVaultApyHint />}

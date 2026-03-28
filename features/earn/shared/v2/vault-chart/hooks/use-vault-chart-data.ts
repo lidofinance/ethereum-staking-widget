@@ -5,13 +5,10 @@ import type { Address } from 'viem';
 
 import { unixTimestampToMs } from 'utils/unix-timestamp-to-ms';
 import { useEthUsd } from 'shared/hooks/use-eth-usd';
-
-import {
-  fetchMetavaultChartData,
-  fetchMetavaultCurrentData,
-} from '../apy-data/metavault-apy';
-import { METAVAULT_QUERY_SCOPE } from '../consts';
 import { STRATEGY_LAZY } from 'consts/react-query-strategies';
+
+import { fetchMetavaultChartData } from '../apy-data/metavault-apy';
+import { METAVAULT_QUERY_SCOPE } from '../consts';
 
 export type NormalizedVaultChartPoint = {
   timestampMs: number;
@@ -27,12 +24,18 @@ type UseMetavaultChartDataProps = {
   fromTimestamp: number;
   vaultAddress?: Address;
   isETHVault: boolean;
+  tvlUsd?: number | null;
+  tvlBaseAsset?: bigint | null;
+  tvlUpdateTimestampMs?: number | null;
 };
 
 export const useMetavaultChartData = ({
   fromTimestamp,
   vaultAddress,
   isETHVault,
+  tvlUsd,
+  tvlBaseAsset,
+  tvlUpdateTimestampMs,
 }: UseMetavaultChartDataProps) => {
   const {
     data: rawData,
@@ -58,45 +61,24 @@ export const useMetavaultChartData = ({
   // Globally cached — no extra network requests.
   const { price: ethPrice } = useEthUsd();
 
-  const { data: currentData, isLoading: isCurrentDataLoading } = useQuery({
-    queryKey: [METAVAULT_QUERY_SCOPE, 'current-tvl-data', vaultAddress],
-    queryFn: async () => {
-      if (!vaultAddress) return null;
-      return fetchMetavaultCurrentData(vaultAddress);
-    },
-    enabled: !!vaultAddress,
-  });
-
   const currentTvlPoint = useMemo(() => {
-    if (!currentData) return null;
-    const tvl = isETHVault
-      ? Number(
-          formatUnits(
-            BigInt(currentData.totalTvl.amount),
-            currentData.totalTvl.decimals,
-          ),
-        )
-      : Number(
-          formatUnits(
-            BigInt(currentData.totalTvl.usd),
-            currentData.totalTvl.usd_decimals,
-          ),
-        );
+    if (!tvlBaseAsset || !tvlUsd || !tvlUpdateTimestampMs) return null;
 
-    const tvlUsd = isETHVault
-      ? Number(
-          formatUnits(
-            BigInt(currentData.totalTvl.usd),
-            currentData.totalTvl.usd_decimals,
-          ),
-        )
-      : undefined;
+    if (isETHVault) {
+      return {
+        timestampMs: tvlUpdateTimestampMs,
+        tvl: Number(formatUnits(tvlBaseAsset, 18)),
+        tvlUsd: tvlUsd,
+      };
+    }
+
     return {
-      timestampMs: unixTimestampToMs(currentData.lastUpdate),
-      tvl,
-      tvlUsd,
+      timestampMs: tvlUpdateTimestampMs,
+      // USD Vault uses USDC as a base asset, so we can use TVL in USD directly.
+      tvl: tvlUsd,
+      tvlUsd: undefined, // Not needed for USD vault.
     };
-  }, [currentData, isETHVault]);
+  }, [isETHVault, tvlBaseAsset, tvlUsd, tvlUpdateTimestampMs]);
 
   const data = useMemo((): NormalizedVaultChartPoint[] | null => {
     if (!rawData) return null;
@@ -127,7 +109,7 @@ export const useMetavaultChartData = ({
   return {
     data,
     currentTvlPoint,
-    isLoading: isVaultLoading || isCurrentDataLoading,
+    isLoading: isVaultLoading,
     isError,
   };
 };

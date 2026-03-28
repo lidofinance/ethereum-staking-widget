@@ -27,6 +27,9 @@ type UseChartDataProps = {
   isETHVault: boolean;
   activeChart: ChartType;
   activeTimeRange: ChartTimeRange;
+  tvlUsd?: number | null;
+  tvlBaseAsset?: bigint | null;
+  tvlUpdateTimestampMs?: number | null;
 };
 
 export const useChartData = (props: UseChartDataProps) => {
@@ -37,6 +40,9 @@ export const useChartData = (props: UseChartDataProps) => {
     isETHVault,
     activeChart,
     activeTimeRange,
+    tvlUsd,
+    tvlBaseAsset,
+    tvlUpdateTimestampMs,
   } = props;
 
   const chartRef = useRef<HTMLDivElement>(null);
@@ -51,6 +57,9 @@ export const useChartData = (props: UseChartDataProps) => {
     fromTimestamp: fromTimestampSeconds,
     vaultAddress,
     isETHVault,
+    tvlUsd,
+    tvlBaseAsset,
+    tvlUpdateTimestampMs,
   });
   const { data: treasuryData, isLoading: isTreasuryLoading } =
     useTreasuryChartData(
