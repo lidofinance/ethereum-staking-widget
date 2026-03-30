@@ -52,8 +52,6 @@ type Props = {
   apxHint?: React.ReactNode;
   isApxLoading?: boolean;
   tvlUsd?: number | null;
-  tvlBaseAsset?: bigint;
-  tvlUpdateTimestampMs?: number;
   isTvlLoading?: boolean;
   logo: VaultIllustration;
   sidePanel?: ReactNode;
@@ -158,13 +156,7 @@ export const VaultPage: FC<Props> = (props) => {
 
           {activeTab === TABS.PERFORMANCE && (
             <>
-              <VaultChart
-                vaultName={props.vaultName}
-                matomo={props.matomo}
-                tvlUsd={props.tvlUsd}
-                tvlBaseAsset={props.tvlBaseAsset}
-                tvlUpdateTimestampMs={props.tvlUpdateTimestampMs}
-              />
+              <VaultChart vaultName={props.vaultName} matomo={props.matomo} />
               <Metrics>
                 {fees.map((fee, index) => (
                   <InfoRow key={index}>

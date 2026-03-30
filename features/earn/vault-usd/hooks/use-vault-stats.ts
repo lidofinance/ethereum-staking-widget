@@ -1,6 +1,7 @@
 import { convertTotalUsdToNumber } from 'features/earn/shared/utils/collector-totalusd';
 import { unixTimestampToMs } from 'utils/unix-timestamp-to-ms';
 import { useUsdVaultCollect } from './use-collect';
+import { USD_VAULT_BASE_ASSET_DECIMALS } from '../consts';
 
 export const useUsdVaultStats = () => {
   const { data: collectorData, isLoading: isCollectorLoading } =
@@ -17,7 +18,8 @@ export const useUsdVaultStats = () => {
   return {
     isLoading: isCollectorLoading,
     tvlUsd,
-    tvlBaseAsset: totalTvlWei,
+    tvlBaseAsset: totalTvlWei, // uses base asset – USDC
+    tvlBaseAssetDecimals: USD_VAULT_BASE_ASSET_DECIMALS,
     tvlUpdateTimestampMs,
   } as const;
 };
