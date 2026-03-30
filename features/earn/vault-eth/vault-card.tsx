@@ -17,7 +17,7 @@ import { ProtectedTooltip } from './protected-tooltip';
 
 export const EthVaultCard = () => {
   const { apy, isLoading: isApyLoading } = useEthVaultApy();
-  const { totalTvlUsd, isLoading: isTvlLoading } = useEthVaultStats();
+  const { tvlUsd, isLoading: isTvlLoading } = useEthVaultStats();
 
   const { data: earnethPositionData, isLoading: isPositionLoading } =
     useEthVaultPosition();
@@ -30,7 +30,7 @@ export const EthVaultCard = () => {
       description={ETH_VAULT_DESCRIPTION}
       urlSlug={EARN_VAULT_ETH_SLUG}
       stats={{
-        tvl: totalTvlUsd,
+        tvl: tvlUsd,
         apx: apy,
         apxLabel: 'APY* (7d avg.)',
         apxHint: <EthVaultApyHint />,
