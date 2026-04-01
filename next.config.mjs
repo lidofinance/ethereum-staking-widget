@@ -20,9 +20,7 @@ const developmentMode = process.env.NODE_ENV === 'development';
 const isIPFSMode = process.env.IPFS_MODE === 'true';
 const devnetOverrides = process.env.DEVNET_OVERRIDES;
 
-// cache control
-export const CACHE_CONTROL_HEADER = 'x-cache-control';
-export const CACHE_CONTROL_PAGES = [
+export const ALL_PAGES = [
   '/manifest.json',
   '/favicon:size*',
   '/',
@@ -34,6 +32,10 @@ export const CACHE_CONTROL_PAGES = [
   '/withdrawals/claim',
   '/runtime/window-env.js',
 ];
+
+// cache control
+export const CACHE_CONTROL_HEADER = 'x-cache-control';
+export const CACHE_CONTROL_PAGES = ALL_PAGES;
 export const CACHE_CONTROL_VALUE =
   'public, max-age=15, s-max-age=30, stale-if-error=604800, stale-while-revalidate=172800';
 
