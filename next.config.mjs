@@ -20,7 +20,8 @@ const developmentMode = process.env.NODE_ENV === 'development';
 const isIPFSMode = process.env.IPFS_MODE === 'true';
 const devnetOverrides = process.env.DEVNET_OVERRIDES;
 
-export const ALL_PAGES = [
+// cache control
+export const WIDGET_PAGES = [
   '/manifest.json',
   '/favicon:size*',
   '/',
@@ -31,11 +32,19 @@ export const ALL_PAGES = [
   '/withdrawals/request',
   '/withdrawals/claim',
   '/runtime/window-env.js',
+  '/earn',
+  '/earn/strategy/deposit',
+  '/earn/strategy/withdraw',
+  '/earn/dvv/deposit',
+  '/earn/dvv/withdraw',
+  '/earn/ggv/deposit',
+  '/earn/ggv/withdraw',
+  '/earn/usd/deposit',
+  '/earn/usd/withdraw',
+  '/earn/eth/deposit',
+  '/earn/eth/withdraw',
 ];
-
-// cache control
 export const CACHE_CONTROL_HEADER = 'x-cache-control';
-export const CACHE_CONTROL_PAGES = ALL_PAGES;
 export const CACHE_CONTROL_VALUE =
   'public, max-age=15, s-max-age=30, stale-if-error=604800, stale-while-revalidate=172800';
 
@@ -156,7 +165,7 @@ export default withBundleAnalyzer({
         source: '/manifest.json',
         headers: [{ key: 'Access-Control-Allow-Origin', value: '*' }],
       },
-      ...CACHE_CONTROL_PAGES.map((page) => ({
+      ...WIDGET_PAGES.map((page) => ({
         source: page,
         headers: [{ key: CACHE_CONTROL_HEADER, value: CACHE_CONTROL_VALUE }],
       })),
