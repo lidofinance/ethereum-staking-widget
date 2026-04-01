@@ -125,13 +125,16 @@ export const VaultCard: React.FC<VaultCardProps> = ({
         <StatItem data-testid="apx-value">
           <StatLabel>
             {stats.apxLabel}
-            <span style={{ position: 'relative', zIndex: 2 }}>
-              <VaultTip placement="bottom">{stats.apxHint}</VaultTip>
-            </span>
+            <VaultTip
+              placement="bottom"
+              style={{ position: 'relative', zIndex: 2 }}
+            >
+              {stats.apxHint}
+            </VaultTip>
           </StatLabel>
           <StatValue $accent>
             <InlineLoader isLoading={stats.isLoading} width={70}>
-              <FormatPercent value={stats.apx} decimals="percent" />*
+              <FormatPercent value={stats.apx} decimals="percent" />
             </InlineLoader>
           </StatValue>
         </StatItem>
