@@ -40,6 +40,12 @@ export const CardWrapper = styled(Block)<{
     background: ${({ $variant }) => getBackgroundGradient($variant)};
     pointer-events: none;
     z-index: -1;
+
+    ${({ theme }) => theme.mediaQueries.md} {
+      top: -60px;
+      right: 0;
+      left: calc(50% - 120px);
+    }
   }
 
   & > * {
