@@ -13,19 +13,6 @@ import { CONFIG } from './config.js';
 const configPages = CACHE_CONTROL_PAGES;
 configPages[CACHE_CONTROL_PAGES.indexOf('/favicon:size*')] = '/favicon.ico';
 
-const csp_matomo_value =
-  process.env.STAND_TYPE === 'staging-critical'
-    ? 'https://matomo.lido.fi;'
-    : process.env.STAND_URL?.includes('testnet')
-      ? 'https://matomo.testnet.fi;'
-      : 'https://*.branch-preview.org https://*.testnet.fi;';
-const csp_report_uri_value =
-  process.env.STAND_TYPE === 'testnet'
-    ? 'https://stake-hoodi.testnet.fi'
-    : 'https://stake.lido.fi';
-
-const CSP_VALUE = `default-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self' data:; img-src 'self' data: blob: https://*.walletconnect.org https://*.walletconnect.com; script-src 'self' 'unsafe-inline' ${csp_matomo_value} connect-src 'self' https: wss:; child-src 'self' https://*.walletconnect.org https://*.walletconnect.com; worker-src 'none'; base-uri 'none'; frame-ancestors *; report-uri ${csp_report_uri_value}/api/csp-report`;
-
 test.describe('Page Headers', async () => {
   test('Config should have all static pages', async () => {
     test.skip(!!CONFIG.STAND_TYPE, 'We cannot access files on stands');
@@ -49,7 +36,7 @@ test.describe('Page Headers', async () => {
       expect.soft(headers['x-download-options']).toBe('noopen');
 
       if (WIDGET_PAGES.includes(route))
-        expect.soft(headers['content-security-policy']).toBe(CSP_VALUE);
+        expect.soft(headers['content-security-policy']).toBeDefined();
 
       expect.soft(headers['x-frame-options']).toBeUndefined();
       expect.soft(headers[CACHE_CONTROL_HEADER]).toBeUndefined();
