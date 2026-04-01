@@ -42,7 +42,6 @@
     "@walletconnect/ethereum-provider": "^2.23.8",
     "copy-to-clipboard": "^3.3.1",
     "cors": "^2.8.5",
-    "dotenv": "^17.3.1",
     "echarts": "^6.0.0",
     "fs-extra": "^10.1.0",
     "js-cookie": "^3.0.1",
