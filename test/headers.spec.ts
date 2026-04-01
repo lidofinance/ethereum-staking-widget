@@ -22,9 +22,9 @@ const csp_matomo_value =
 const csp_report_uri_value =
   process.env.STAND_TYPE === 'testnet'
     ? 'https://stake-hoodi.testnet.fi'
-    : 'https://stake.lido.fi' + '/api/csp-report';
+    : 'https://stake.lido.fi';
 
-const CSP_VALUE = `default-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self' data:; img-src 'self' data: blob: https://*.walletconnect.org https://*.walletconnect.com; script-src 'self' 'unsafe-inline' ${csp_matomo_value} connect-src 'self' https: wss:; child-src 'self' https://*.walletconnect.org https://*.walletconnect.com; worker-src 'none'; base-uri 'none'; frame-ancestors *; report-uri ${csp_report_uri_value}`;
+const CSP_VALUE = `default-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self' data:; img-src 'self' data: blob: https://*.walletconnect.org https://*.walletconnect.com; script-src 'self' 'unsafe-inline' ${csp_matomo_value} connect-src 'self' https: wss:; child-src 'self' https://*.walletconnect.org https://*.walletconnect.com; worker-src 'none'; base-uri 'none'; frame-ancestors *; report-uri ${csp_report_uri_value}/api/csp-report`;
 
 test.describe('Page Headers', () => {
   test('Config should have all static pages', () => {
@@ -42,7 +42,6 @@ test.describe('Page Headers', () => {
       const headers = resp.headers();
 
       expect.soft(headers['cache-control']).toBe(CACHE_CONTROL_VALUE);
-
       expect.soft(headers['referrer-policy']).toBe('same-origin');
       expect.soft(headers['x-content-type-options']).toBe('nosniff');
       expect.soft(headers['x-xss-protection']).toBe('1');
