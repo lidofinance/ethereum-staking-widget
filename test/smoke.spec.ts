@@ -11,7 +11,7 @@ import { CONFIG } from './config.js';
 
 const validator = new Validator();
 
-test.describe('Smoke GET', () => {
+test.describe('Smoke GET', async () => {
   GET_REQUESTS.forEach((element: GetRequest) => {
     test(element.uri, async ({ request }) => {
       if (CONFIG.STAND_TYPE === 'testnet' && element.skipTestnet) return;
@@ -44,7 +44,7 @@ test.describe('Smoke GET', () => {
   });
 });
 
-test.describe('Smoke POST', () => {
+test.describe('Smoke POST', async () => {
   POST_REQUESTS.forEach((element: PostRequest) => {
     test(element.uri, async ({ request }) => {
       const resp = await request.post(element.uri, { data: element.body });

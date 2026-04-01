@@ -26,8 +26,8 @@ const csp_report_uri_value =
 
 const CSP_VALUE = `default-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self' data:; img-src 'self' data: blob: https://*.walletconnect.org https://*.walletconnect.com; script-src 'self' 'unsafe-inline' ${csp_matomo_value} connect-src 'self' https: wss:; child-src 'self' https://*.walletconnect.org https://*.walletconnect.com; worker-src 'none'; base-uri 'none'; frame-ancestors *; report-uri ${csp_report_uri_value}/api/csp-report`;
 
-test.describe('Page Headers', () => {
-  test('Config should have all static pages', () => {
+test.describe('Page Headers', async () => {
+  test('Config should have all static pages', async () => {
     test.skip(!!CONFIG.STAND_TYPE, 'We cannot access files on stands');
     const pageRoutes = getAllPagesRoutes();
     pageRoutes.forEach((foundPage) =>
