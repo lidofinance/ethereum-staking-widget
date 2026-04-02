@@ -35,7 +35,11 @@ test.describe('Page Headers', async () => {
       expect.soft(headers['x-dns-prefetch-control']).toBe('on');
       expect.soft(headers['x-download-options']).toBe('noopen');
 
-      if (WIDGET_PAGES.includes(route))
+      // except "/manifest.json", "/favicon:size*", "/runtime/window-env.js" urls and preview-stand deploying
+      if (
+        WIDGET_PAGES.includes(route) &&
+        !CONFIG.STAND_URL?.includes('branch-preview')
+      )
         expect.soft(headers['content-security-policy']).toBeDefined();
 
       expect.soft(headers['x-frame-options']).toBeUndefined();
