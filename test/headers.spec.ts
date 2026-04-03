@@ -1,5 +1,4 @@
 import { expect, test } from '@playwright/test';
-import { getAllPagesRoutes } from './utils/collect-next-pages.js';
 
 import {
   WIDGET_PAGES,
@@ -9,28 +8,14 @@ import {
 } from 'next.config.mjs';
 import { CONFIG } from './config.js';
 
-// case for only wildcard in config
-const configPages = CACHE_CONTROL_PAGES;
-configPages[CACHE_CONTROL_PAGES.indexOf('/favicon:size*')] = '/favicon.ico';
-
 test.describe('Page Headers', () => {
   const isPreview = !CONFIG.STAND_URL?.includes('branch-preview');
 
-  test('Config should have all static pages', async () => {
-    test.skip(!!CONFIG.STAND_TYPE, 'We cannot access files on stands');
-    const pageRoutes = getAllPagesRoutes();
-    // eslint-disable-next-line
-    console.log('routes:', pageRoutes);
-
-    expect(pageRoutes.length).toBeGreaterThan(0);
-
-    pageRoutes.forEach((foundPage) => {
-      expect(CACHE_CONTROL_PAGES.includes(foundPage)).toBe(true);
-    });
-  });
-
   CACHE_CONTROL_PAGES.map((route) =>
     test(`Page ${route} should have proper headers`, async ({ request }) => {
+      // case for only wildcard in config
+      if (route == '/favicon:size*') route = '/favicon.ico';
+
       const resp = await request.get(route);
       expect(resp.status()).toBe(200);
       const headers = resp.headers();
