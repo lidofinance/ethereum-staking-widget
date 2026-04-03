@@ -23,7 +23,7 @@
     "@base-org/account": "^2.5.1",
     "@coinbase/wallet-sdk": "^4.3.6",
     "@gemini-wallet/core": "~0.3.1",
-    "@lidofinance/analytics-matomo": "^0.56.0",
+    "@lidofinance/analytics-matomo": "^0.58.0",
     "@lidofinance/api-metrics": "^0.48.0",
     "@lidofinance/api-rpc": "^0.48.0",
     "@lidofinance/eth-api-providers": "^0.48.0",

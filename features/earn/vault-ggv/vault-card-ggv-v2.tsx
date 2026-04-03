@@ -22,7 +22,7 @@ export const VaultCardGGV = () => {
       stats={{
         tvl: tvl,
         apx: apy,
-        apxLabel: 'APY',
+        apxLabel: 'APY* (7d avg.)',
         apxHint: <GGVApyHint />,
         isLoading: isLoadingStats,
       }}
