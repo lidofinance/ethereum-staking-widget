@@ -5,6 +5,7 @@ import Head from 'next/head';
 import { WithdrawalsTabs } from 'features/withdrawals';
 import { WithdrawalsProvider } from 'features/withdrawals/contexts/withdrawals-context';
 import { Layout, DisclaimerSection, LegalDisclaimer } from 'shared/components';
+import { DexDisclaimer } from 'features/withdrawals/request/dex-disclaimer';
 import { getDefaultStaticProps } from 'utilsApi/get-default-static-props';
 
 const Withdrawals: FC<WithdrawalsModePageParams> = ({ mode }) => {
@@ -20,6 +21,7 @@ const Withdrawals: FC<WithdrawalsModePageParams> = ({ mode }) => {
         <WithdrawalsTabs />
       </WithdrawalsProvider>
       <DisclaimerSection>
+        {mode === 'request' && <DexDisclaimer />}
         <LegalDisclaimer />
       </DisclaimerSection>
     </Layout>

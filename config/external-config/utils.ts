@@ -14,6 +14,8 @@ export const getManifestKey = (
   `${defaultChain}` +
   (typeof manifestOverride === 'string' ? `-${manifestOverride}` : '');
 
+// TODO: rework to zod schema validation
+
 export const isMultiChainBannerValid = (config: object) => {
   // allow empty config
   if (!('multiChainBanner' in config) || !config.multiChainBanner) return true;
@@ -40,27 +42,6 @@ export const isFeatureFlagsValid = (config: object) => {
   return !(typeof config.featureFlags !== 'object');
 };
 
-export const isEnabledDexesValid = (config: object) => {
-  if (
-    !(
-      'enabledWithdrawalDexes' in config &&
-      Array.isArray(config.enabledWithdrawalDexes)
-    )
-  )
-    return false;
-
-  const enabledWithdrawalDexes = config.enabledWithdrawalDexes;
-
-  if (
-    !enabledWithdrawalDexes.every(
-      (dex) => typeof dex === 'string' && dex !== '',
-    )
-  )
-    return false;
-
-  return new Set(enabledWithdrawalDexes).size === enabledWithdrawalDexes.length;
-};
-
 export const isPagesValid = (config: object) => {
   if (!('pages' in config)) {
     return true;
@@ -72,6 +53,21 @@ export const isPagesValid = (config: object) => {
     return !pages[ManifestConfigPageEnum.Stake]?.shouldDisable;
   }
 
+  return false;
+};
+
+export const isWithdrawalDexValid = (config: object) => {
+  if (!('withdrawalDex' in config)) {
+    return true;
+  }
+
+  const withdrawalDex = config.withdrawalDex as ManifestConfig['withdrawalDex'];
+  if (withdrawalDex && typeof withdrawalDex === 'object') {
+    const isValid =
+      typeof withdrawalDex.enabled === 'boolean' &&
+      typeof withdrawalDex.integration === 'string';
+    return isValid;
+  }
   return false;
 };
 
@@ -90,10 +86,10 @@ export const isManifestEntryValid = (
     const config = entry.config;
 
     return [
-      isEnabledDexesValid,
       isMultiChainBannerValid,
       isFeatureFlagsValid,
       isPagesValid,
+      isWithdrawalDexValid,
     ]
       .map((validator) => validator(config))
       .every((isValid) => isValid);

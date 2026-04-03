@@ -1,6 +1,7 @@
 {
   "contracts": {
     "lidoLocator": "0xC1d0b3DE6792Bf6b4b37EccdcC24e45978Cfd2Eb",
+    "daoAgent": "0x3e40d73eb977dc6a537af587d48316fee66e9c8c",
     "aggregatorEthUsdPriceFeed": "0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419",
     "aggregatorStEthUsdPriceFeed": "0xcfe54b5cd566ab89272946f602d76ea879cab4a8",
     "stethCurve": "0xDC24316b9AE028F1497c275EB9192a3Ea0f67022",
