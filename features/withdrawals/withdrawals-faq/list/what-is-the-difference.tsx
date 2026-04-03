@@ -23,6 +23,7 @@ export const WhatIsTheDifference: React.FC = () => {
         <li>No waiting period</li>
         <li>Market-based rate (may differ from 1:1)</li>
         <li>Access to multiple assets</li>
+        <li>Powered by CowSwap</li>
       </ol>
     </AccordionNavigatable>
   );

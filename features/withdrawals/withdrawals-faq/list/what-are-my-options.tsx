@@ -14,7 +14,7 @@ export const WhatAreMyOptions: React.FC = () => {
         </li>
         <li>
           <b>Swap via CowSwap</b> - instantly exchange stETH or wstETH into
-          other tokens directly in the Lido UI
+          other tokens directly using CowSwap through the Lido UI
         </li>
       </ol>
     </AccordionNavigatable>
