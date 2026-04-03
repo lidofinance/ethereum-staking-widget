@@ -4,6 +4,7 @@ import { ContainerProps } from '@lidofinance/lido-ui';
 import { config } from 'config';
 
 import { IPFSInfoBox } from 'features/ipfs/ipfs-info-box';
+import { AmountBanner } from 'shared/banners/amount-banners';
 import { Header } from './header/header';
 import { Footer } from './footer/footer';
 import { Main } from './main/main';
@@ -11,6 +12,7 @@ import {
   LayoutTitleStyle,
   LayoutSubTitleStyle,
   IPFSInfoBoxOnlyMobileAndPortableWrapper,
+  AmountBannerOnlyMobileWrapper,
 } from './styles';
 import { HolidaysDecorFooter } from '../holiday-decor';
 
@@ -34,6 +36,9 @@ export const Layout: FC<PropsWithChildren<Props>> = (props) => {
             <IPFSInfoBox />
           </IPFSInfoBoxOnlyMobileAndPortableWrapper>
         )}
+        <AmountBannerOnlyMobileWrapper>
+          <AmountBanner isDismissible placement="connect_wallet" />
+        </AmountBannerOnlyMobileWrapper>
         <LayoutTitleStyle $v2={stylesV2}>{title}</LayoutTitleStyle>
         <LayoutSubTitleStyle>{subtitle}</LayoutSubTitleStyle>
         {children}

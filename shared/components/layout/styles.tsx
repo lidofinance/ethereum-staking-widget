@@ -40,3 +40,13 @@ export const IPFSInfoBoxOnlyMobileAndPortableWrapper = styled.div`
     margin-bottom: 40px;
   }
 `;
+
+export const AmountBannerOnlyMobileWrapper = styled.div`
+  display: none;
+
+  @media ${devicesHeaderMedia.mobile} {
+    display: block;
+    margin-top: -6px;
+    margin-bottom: 40px;
+  }
+`;

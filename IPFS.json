@@ -32,7 +32,8 @@
         "dgBannerEnabled": true,
         "rewardsMaintenance": false,
         "holidayDecorEnabled": false,
-        "forceAllowance": false
+        "forceAllowance": false,
+        "amountBannerEnabled": true
       },
       "pages": {
         "/earn": {
@@ -79,7 +80,8 @@
         "dgBannerEnabled": true,
         "rewardsMaintenance": false,
         "holidayDecorEnabled": false,
-        "forceAllowance": false
+        "forceAllowance": false,
+        "amountBannerEnabled": true
       },
       "pages": {
         "/earn": {

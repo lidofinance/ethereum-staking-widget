@@ -22,7 +22,7 @@ export const VaultCardDVV = () => {
       stats={{
         tvl: tvl,
         apx: apr,
-        apxLabel: 'APR',
+        apxLabel: 'APY* (7d avg.)',
         apxHint: <DVVAprBreakdown />,
         isLoading: isLoadingStats,
       }}

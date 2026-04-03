@@ -74,7 +74,6 @@ export const VaultChart = (props: VaultChartProps) => {
     isTreasuryLoading,
     isStakingLoading,
     isLoadingError,
-
     seriesData,
     treasurySeriesData,
     stakingSeriesData,
