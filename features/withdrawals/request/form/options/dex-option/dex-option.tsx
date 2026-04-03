@@ -7,6 +7,7 @@ import {
   TradeType,
 } from '@cowprotocol/widget-react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { CowWidgetEvents } from '@cowprotocol/events';
 
@@ -57,20 +58,20 @@ const cowSwapThemeLight: CowSwapWidgetPalette = {
 export const DexOption = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [cspBlocked, setCspBlocked] = useState<Error | null>(null);
-  const [useGithubTokenLists, setUseGithubTokenLists] = useState(true);
+
+  // Fall back to self-hosted token lists if GitHub is unavailable
+  const { data: isGithubAvailable = true } = useQuery({
+    queryKey: ['dex-token-list-availability'],
+    queryFn: () =>
+      fetch(DEX_SELL_TOKEN_LIST_URL, { method: 'HEAD' })
+        .then((res) => res.ok)
+        .catch(() => false),
+    staleTime: Infinity,
+  });
 
   useEffect(() => {
     const timer = setTimeout(() => setIsLoading(false), 1500);
     return () => clearTimeout(timer);
-  }, []);
-
-  useEffect(() => {
-    // Fall back to self-hosted token lists if GitHub is unavailable
-    fetch(DEX_SELL_TOKEN_LIST_URL, { method: 'HEAD' })
-      .then((res) => {
-        if (!res.ok) setUseGithubTokenLists(false);
-      })
-      .catch(() => setUseGithubTokenLists(false));
   }, []);
 
   useEffect(() => {
@@ -132,12 +133,12 @@ export const DexOption = () => {
         asset: 'ETH',
       },
       sellTokenLists: [
-        useGithubTokenLists
+        isGithubAvailable
           ? DEX_SELL_TOKEN_LIST_URL
           : `${window.location.origin}/token-lists/withdrawals-dex-sell-tokenlist.json`,
       ],
       buyTokenLists: [
-        useGithubTokenLists
+        isGithubAvailable
           ? DEX_BUY_TOKEN_LIST_URL
           : `${window.location.origin}/token-lists/withdrawals-dex-buy-tokenlist.json`,
       ],
@@ -190,7 +191,7 @@ export const DexOption = () => {
         },
       },
     }),
-    [isTestnet, daoAgentAddress, themeName, validate, useGithubTokenLists],
+    [isTestnet, daoAgentAddress, themeName, validate, isGithubAvailable],
   );
 
   const { connector } = useConnection();
