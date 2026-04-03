@@ -166,7 +166,7 @@ export const DexOption = () => {
       hideRecentTokens: true,
       hideFavoriteTokens: true,
       disableToastMessages: true,
-      disableProgressBar: true,
+      disableProgressBar: false,
       sounds: {
         postOrder: null,
         orderExecuted: null,
