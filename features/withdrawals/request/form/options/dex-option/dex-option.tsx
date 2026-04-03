@@ -57,10 +57,20 @@ const cowSwapThemeLight: CowSwapWidgetPalette = {
 export const DexOption = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [cspBlocked, setCspBlocked] = useState<Error | null>(null);
+  const [useGithubTokenLists, setUseGithubTokenLists] = useState(true);
 
   useEffect(() => {
     const timer = setTimeout(() => setIsLoading(false), 1500);
     return () => clearTimeout(timer);
+  }, []);
+
+  useEffect(() => {
+    // Fall back to self-hosted token lists if GitHub is unavailable
+    fetch(DEX_SELL_TOKEN_LIST_URL, { method: 'HEAD' })
+      .then((res) => {
+        if (!res.ok) setUseGithubTokenLists(false);
+      })
+      .catch(() => setUseGithubTokenLists(false));
   }, []);
 
   useEffect(() => {
@@ -121,8 +131,16 @@ export const DexOption = () => {
       buy: {
         asset: 'ETH',
       },
-      sellTokenLists: [DEX_SELL_TOKEN_LIST_URL],
-      buyTokenLists: [DEX_BUY_TOKEN_LIST_URL],
+      sellTokenLists: [
+        useGithubTokenLists
+          ? DEX_SELL_TOKEN_LIST_URL
+          : `${window.location.origin}/token-lists/withdrawals-dex-sell-tokenlist.json`,
+      ],
+      buyTokenLists: [
+        useGithubTokenLists
+          ? DEX_BUY_TOKEN_LIST_URL
+          : `${window.location.origin}/token-lists/withdrawals-dex-buy-tokenlist.json`,
+      ],
       slippage: {
         max: 300, // 3%
       },
@@ -172,7 +190,7 @@ export const DexOption = () => {
         },
       },
     }),
-    [isTestnet, daoAgentAddress, themeName, validate],
+    [isTestnet, daoAgentAddress, themeName, validate, useGithubTokenLists],
   );
 
   const { connector } = useConnection();
