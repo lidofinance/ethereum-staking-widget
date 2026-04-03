@@ -6,10 +6,11 @@ import {
   EthereumProvider,
   TradeType,
 } from '@cowprotocol/widget-react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { CowWidgetEvents } from '@cowprotocol/events';
 
-import { useMemo, useState } from 'react';
+import { LOCALE } from 'config/groups/locale';
 import { useTheme } from 'styled-components';
 import { ConnectorEventMap, useConnection, useWalletClient } from 'wagmi';
 import { useAddressValidation } from 'providers/address-validation-provider';
@@ -19,6 +20,7 @@ import { getContractAddress } from 'config/networks/contract-address';
 import invariant from 'tiny-invariant';
 import { trackMatomoEvent } from 'utils/track-matomo-event';
 import { MATOMO_TX_EVENTS_TYPES } from 'consts/matomo';
+import { LoaderStyled, DexWrapper } from './styles';
 
 const cowSwapThemeDark: CowSwapWidgetPalette = {
   baseTheme: 'dark',
@@ -31,6 +33,7 @@ const cowSwapThemeDark: CowSwapWidgetPalette = {
   danger: themeDark.colors.error,
   info: themeDark.colors.error,
   success: themeDark.colors.success,
+  boxShadow: '0 12px 12px 0 rgba(5, 43, 101, 0.06)',
 };
 
 const cowSwapThemeLight: CowSwapWidgetPalette = {
@@ -44,10 +47,17 @@ const cowSwapThemeLight: CowSwapWidgetPalette = {
   danger: themeLight.colors.error,
   info: themeLight.colors.error,
   success: themeLight.colors.success,
+  boxShadow: '0 12px 12px 0 rgba(5, 43, 101, 0.06)',
 };
 
 export const DexOption = () => {
-  const [isQueried, setIsQueried] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setIsLoading(false), 1500);
+    return () => clearTimeout(timer);
+  }, []);
+
   const { isTestnet, chainId } = useDappStatus();
 
   const { validateAddress } = useAddressValidation();
@@ -60,6 +70,11 @@ export const DexOption = () => {
     'DAO Agent address is not defined for current network',
   );
 
+  const validate = useCallback(async () => {
+    const isValid = await validateAddress(walletClient?.account.address);
+    return isValid;
+  }, [validateAddress, walletClient?.account.address]);
+
   const params = useMemo<CowSwapWidgetParams>(
     () => ({
       //
@@ -70,7 +85,7 @@ export const DexOption = () => {
       // for testnets only sepolia
       chainId: isTestnet ? 11155111 : 1,
       // test app
-      baseUrl: 'https://swap-dev-git-feat-widget-lido-1-cowswap-dev.vercel.app',
+      baseUrl: 'https://staging.swap.cow.fi', // TODO: change to production
 
       //
       // Trading options
@@ -101,7 +116,7 @@ export const DexOption = () => {
       },
       disableTrade: {
         whenPriceImpactIsUnknown: true,
-        whenPriceImpactIsHigherThan: 3,
+        whenPriceImpactIsHigherThan: 3, // 3%
       },
       disableCrossChainSwap: true,
 
@@ -115,12 +130,31 @@ export const DexOption = () => {
       hideRecentTokens: true,
       hideFavoriteTokens: true,
       disableToastMessages: true,
-      disableProgressBar: false,
+      disableProgressBar: true,
       hideBridgeInfo: false,
       hideOrdersTable: false,
       hideNetworkSelector: true,
+      locale: LOCALE,
+      disableTokenImport: true,
+      hooks: {
+        onBeforeApproval: async () => {
+          return await validate();
+        },
+        onBeforeWrapOrUnwrap: async () => {
+          return await validate();
+        },
+        onBeforeTrade: async () => {
+          return await validate();
+        },
+        onBeforeOrderCancel: async () => {
+          return await validate();
+        },
+        onBeforeOrdersCancel: async () => {
+          return await validate();
+        },
+      },
     }),
-    [isTestnet, daoAgentAddress, themeName],
+    [isTestnet, daoAgentAddress, themeName, validate],
   );
 
   const { connector } = useConnection();
@@ -137,29 +171,17 @@ export const DexOption = () => {
   }, [walletClient, connector]);
 
   const listeners: CowSwapWidgetProps['listeners'] = useMemo(() => {
-    const tryValidateAddress = async () => {
-      // prevents spam to validation api on every event
-      try {
-        if (isQueried) return;
-        setIsQueried(true);
-        await validateAddress(walletClient?.account.address);
-      } catch {
-        setIsQueried(false);
-      }
-    };
-
     const handlers: CowSwapWidgetProps['listeners'] = [
+      {
+        event: CowWidgetEvents.ON_CHANGE_TRADE_PARAMS,
+        handler: () => {
+          setIsLoading(false);
+        },
+      },
       {
         event: CowWidgetEvents.ON_POSTED_ORDER,
         handler: async () => {
           trackMatomoEvent(MATOMO_TX_EVENTS_TYPES.withdrawalDexSwapPosted);
-          await tryValidateAddress();
-        },
-      },
-      {
-        event: CowWidgetEvents.ON_ONCHAIN_TRANSACTION,
-        handler: async () => {
-          await tryValidateAddress();
         },
       },
       {
@@ -183,9 +205,16 @@ export const DexOption = () => {
     ];
 
     return handlers;
-  }, [isQueried, validateAddress, walletClient?.account.address]);
+  }, []);
 
   return (
-    <CowSwapWidget params={params} listeners={listeners} provider={provider} />
+    <DexWrapper>
+      <CowSwapWidget
+        params={params}
+        listeners={listeners}
+        provider={provider}
+      />
+      <LoaderStyled $isVisible={isLoading} />
+    </DexWrapper>
   );
 };
