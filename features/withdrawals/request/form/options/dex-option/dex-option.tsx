@@ -20,6 +20,10 @@ import { getContractAddress } from 'config/networks/contract-address';
 import invariant from 'tiny-invariant';
 import { trackMatomoEvent } from 'utils/track-matomo-event';
 import { MATOMO_TX_EVENTS_TYPES } from 'consts/matomo';
+import {
+  DEX_SELL_TOKEN_LIST_URL,
+  DEX_BUY_TOKEN_LIST_URL,
+} from 'consts/external-links';
 import { LoaderStyled, DexWrapper } from './styles';
 
 const cowSwapThemeDark: CowSwapWidgetPalette = {
@@ -52,11 +56,29 @@ const cowSwapThemeLight: CowSwapWidgetPalette = {
 
 export const DexOption = () => {
   const [isLoading, setIsLoading] = useState(true);
+  const [cspBlocked, setCspBlocked] = useState<Error | null>(null);
 
   useEffect(() => {
     const timer = setTimeout(() => setIsLoading(false), 1500);
     return () => clearTimeout(timer);
   }, []);
+
+  useEffect(() => {
+    const handler = (e: SecurityPolicyViolationEvent) => {
+      if (
+        (e.violatedDirective === 'child-src' ||
+          e.violatedDirective === 'frame-src') &&
+        e.blockedURI.includes('cow.fi')
+      ) {
+        setCspBlocked(new Error('CSP blocked CoW widget iframe'));
+      }
+    };
+    document.addEventListener('securitypolicyviolation', handler);
+    return () =>
+      document.removeEventListener('securitypolicyviolation', handler);
+  }, []);
+
+  if (cspBlocked) throw cspBlocked;
 
   const { isTestnet, chainId } = useDappStatus();
 
@@ -99,13 +121,8 @@ export const DexOption = () => {
       buy: {
         asset: 'ETH',
       },
-      // temp for testing
-      sellTokenLists: [
-        'https://raw.githubusercontent.com/lidofinance/ethereum-staking-widget/refs/heads/feature/si-2468-dex-withdrawal-integration/public/token-lists/withdrawals-dex-sell-tokenlist.json',
-      ],
-      buyTokenLists: [
-        'https://raw.githubusercontent.com/lidofinance/ethereum-staking-widget/refs/heads/feature/si-2468-dex-withdrawal-integration/public/token-lists/withdrawals-dex-buy-tokenlist.json',
-      ],
+      sellTokenLists: [DEX_SELL_TOKEN_LIST_URL],
+      buyTokenLists: [DEX_BUY_TOKEN_LIST_URL],
       slippage: {
         max: 300, // 3%
       },
