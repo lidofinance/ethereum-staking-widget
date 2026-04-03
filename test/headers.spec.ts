@@ -16,6 +16,11 @@ configPages[CACHE_CONTROL_PAGES.indexOf('/favicon:size*')] = '/favicon.ico';
 test.describe('Page Headers', () => {
   const isPreview = !CONFIG.STAND_URL?.includes('branch-preview');
 
+  test.beforeAll(async () => {
+    // eslint-disable-next-line
+    console.log('conf:', CONFIG);
+  });
+
   test('Config should have all static pages', async () => {
     test.skip(!!CONFIG.STAND_TYPE, 'We cannot access files on stands');
     const pageRoutes = getAllPagesRoutes();
