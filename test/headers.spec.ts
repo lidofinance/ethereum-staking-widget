@@ -13,7 +13,7 @@ import { CONFIG } from './config.js';
 const configPages = CACHE_CONTROL_PAGES;
 configPages[CACHE_CONTROL_PAGES.indexOf('/favicon:size*')] = '/favicon.ico';
 
-test.describe('Page Headers', async () => {
+test.describe('Page Headers', () => {
   test('Config should have all static pages', async () => {
     test.skip(!!CONFIG.STAND_TYPE, 'We cannot access files on stands');
     const pageRoutes = getAllPagesRoutes();
@@ -40,7 +40,9 @@ test.describe('Page Headers', async () => {
         WIDGET_PAGES.includes(route) &&
         !CONFIG.STAND_URL?.includes('branch-preview')
       )
-        expect.soft(headers['content-security-policy']).toBeDefined();
+        expect
+          .soft(headers['content-security-policy'])
+          .toContain('default-src');
 
       expect.soft(headers['x-frame-options']).toBeUndefined();
       expect.soft(headers[CACHE_CONTROL_HEADER]).toBeUndefined();

@@ -44,10 +44,10 @@ export const WIDGET_PAGES = [
 // cache control
 export const CACHE_CONTROL_HEADER = 'x-cache-control';
 export const CACHE_CONTROL_PAGES = [
+  ...WIDGET_PAGES,
   '/manifest.json',
   '/favicon:size*',
-  '/runtime/window-env.js',
-  ...WIDGET_PAGES
+  '/runtime/window-env.js'
 ];
 export const CACHE_CONTROL_VALUE =
   'public, max-age=15, s-max-age=30, stale-if-error=604800, stale-while-revalidate=172800';
