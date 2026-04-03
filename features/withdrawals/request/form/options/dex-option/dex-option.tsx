@@ -144,6 +144,7 @@ export const DexOption = () => {
           return await validate();
         },
         onBeforeTrade: async () => {
+          trackMatomoEvent(MATOMO_TX_EVENTS_TYPES.withdrawalDexSwapStart);
           return await validate();
         },
         onBeforeOrderCancel: async () => {
@@ -187,7 +188,7 @@ export const DexOption = () => {
       {
         event: CowWidgetEvents.ON_FULFILLED_ORDER,
         handler: () => {
-          trackMatomoEvent(MATOMO_TX_EVENTS_TYPES.withdrawalClaimFinish);
+          trackMatomoEvent(MATOMO_TX_EVENTS_TYPES.withdrawalDexSwapFinish);
         },
       },
       {
