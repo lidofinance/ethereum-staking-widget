@@ -6,6 +6,8 @@ import { useWithdrawals } from 'features/withdrawals/contexts/withdrawals-contex
 import { useTxModalStagesRequest } from 'features/withdrawals/request/transaction-modal-request/use-tx-modal-stages-request';
 import { useTransactionModal } from 'shared/transaction-modal/transaction-modal';
 import { useAA, useIsSmartAccount, useLidoSDK, useTxFlow } from 'modules/web3';
+import { config } from 'config';
+import { applyRoundUpTxParameter } from 'modules/web3';
 
 import { useWithdrawalRequestTxApprove } from './use-withdrawal-request-tx-approve';
 
@@ -81,8 +83,15 @@ export const useWithdrawalRequest = ({
                 callback: txStagesCallback,
               });
             },
-            onSign: async () => {
-              return txModalStages.sign(amount, token);
+            onSign: async ({ payload }) => {
+              txModalStages.sign(amount, token);
+              const fallback =
+                token === TOKENS_TO_WITHDRAWLS.stETH
+                  ? config.WITHDRAWAL_QUEUE_REQUEST_STETH_APPROVED_GAS_LIMIT_DEFAULT
+                  : config.WITHDRAWAL_QUEUE_REQUEST_WSTETH_APPROVED_GAS_LIMIT_DEFAULT;
+              return applyRoundUpTxParameter(
+                (payload as bigint) ?? fallback * BigInt(requests.length),
+              );
             },
             onReceipt: async ({ payload }) => {
               return txModalStages.pending(amount, token, payload);
@@ -111,7 +120,10 @@ export const useWithdrawalRequest = ({
             },
             sendTransaction: async (txStagesCallback) => {
               // ERC-2612 permit flow for EOAs (no batching)
-              const deadline = BigInt(Math.floor(Date.now() / 1000) + 86_400); // 1 day
+              // deadline always ends in 999 — detectable on-chain as a UI origin flag
+              const deadline = applyRoundUpTxParameter(
+                BigInt(Math.floor(Date.now() / 1000)) + 86_400n, // 1 day
+              );
               await withdraw.request.requestWithdrawalWithPermit({
                 requests,
                 token,
@@ -122,8 +134,15 @@ export const useWithdrawalRequest = ({
             onPermit: async () => {
               txModalStages.signPermit();
             },
-            onSign: async () => {
+            onSign: async ({ payload }) => {
               txModalStages.sign(amount, token);
+              const fallback =
+                token === TOKENS_TO_WITHDRAWLS.stETH
+                  ? config.WITHDRAWAL_QUEUE_REQUEST_STETH_PERMIT_GAS_LIMIT_DEFAULT
+                  : config.WITHDRAWAL_QUEUE_REQUEST_WSTETH_PERMIT_GAS_LIMIT_DEFAULT;
+              return applyRoundUpTxParameter(
+                (payload as bigint) ?? fallback * BigInt(requests.length),
+              );
             },
             onReceipt: async ({ txHashOrCallId }) => {
               txModalStages.pending(amount, token, txHashOrCallId, isAA);
