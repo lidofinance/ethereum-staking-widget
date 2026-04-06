@@ -57,7 +57,7 @@ const cowSwapThemeLight: CowSwapWidgetPalette = {
   paper: themeLight.colors.foreground,
   text: themeLight.colors.text,
   warning: themeLight.colors.warning,
-  alert: themeLight.colors.warningBackground,
+  alert: themeLight.colors.warning,
   danger: themeLight.colors.error,
   info: themeLight.colors.error,
   success: themeLight.colors.success,
