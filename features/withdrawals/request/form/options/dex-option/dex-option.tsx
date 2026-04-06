@@ -16,7 +16,12 @@ import { useTheme } from 'styled-components';
 import { useWalletClient } from 'wagmi';
 import { useAddressValidation } from 'providers/address-validation-provider';
 import { themeDark, themeLight } from '@lidofinance/lido-ui';
-import { useDappStatus } from 'modules/web3';
+import {
+  useDappStatus,
+  useEthereumBalance,
+  useStethBalance,
+  useWstethBalance,
+} from 'modules/web3';
 import { getContractAddress } from 'config/networks/contract-address';
 import invariant from 'tiny-invariant';
 import { trackMatomoEvent } from 'utils/track-matomo-event';
@@ -61,10 +66,17 @@ const cowSwapThemeLight: CowSwapWidgetPalette = {
 };
 
 export const DexOption = () => {
+  const { refetch: refetchSteth } = useStethBalance();
+  const { refetch: refetchWsteth } = useWstethBalance();
+  const { refetch: refetchEth } = useEthereumBalance();
   // state to trigger refreshes to memoized params
   const [refreshId, setRefreshId] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [cspBlocked, setCspBlocked] = useState<Error | null>(null);
+
+  const refreshBalances = useCallback(() => {
+    void Promise.allSettled([refetchSteth(), refetchWsteth(), refetchEth()]);
+  }, [refetchEth, refetchSteth, refetchWsteth]);
 
   // Fall back to self-hosted token lists if GitHub is unavailable
   const { data: isGithubAvailable = true } = useQuery({
@@ -233,6 +245,7 @@ export const DexOption = () => {
       {
         event: CowWidgetEvents.ON_FULFILLED_ORDER,
         handler: () => {
+          refreshBalances();
           trackMatomoEvent(MATOMO_TX_EVENTS_TYPES.withdrawalDexSwapFinish);
         },
       },
@@ -264,7 +277,7 @@ export const DexOption = () => {
     ];
 
     return handlers;
-  }, []);
+  }, [refreshBalances]);
 
   return (
     <DexWrapper>
