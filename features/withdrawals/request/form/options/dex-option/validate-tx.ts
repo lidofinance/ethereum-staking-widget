@@ -5,6 +5,9 @@
 //  Level 3: validate calldata (approve spender, function selector)
 // ================================================================
 
+import mainnetNetwork from 'networks/mainnet.json';
+import sepoliaNetwork from 'networks/sepolia.json';
+
 // ---- CoW Protocol contract addresses ----
 // Same on Mainnet and Sepolia (deterministic CREATE2 deploy).
 // https://etherscan.io/address/0xC92E8bdf79f0507f65a392b0ab4667716BFE0110
@@ -13,25 +16,41 @@
 const COW_VAULT_RELAYER = '0xc92e8bdf79f0507f65a392b0ab4667716bfe0110';
 const COW_SETTLEMENT = '0x9008d19f58aabd9ed0d60971565aa8510560ab41';
 
-// ---- Token addresses (Mainnet) ----
+// ---- Token addresses from network configs ----
 
-const WETH = '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2';
+// Keys from networks/*.json used for DEX token allowlist
+const DEX_TOKEN_KEYS = [
+  'lido', // stETH
+  'wsteth',
+  'weth',
+  'usdc',
+  'usdt',
+  'usds',
+  'wbtc',
+] as const;
 
-const MAINNET_TOKEN_ADDRESSES = new Set([
-  '0xae7ab96520de3a18e5e111b5eaab095312d7fe84', // stETH
-  '0x7f39c581f595b53c5cb19bd0b3f8da6c935e2ca0', // wstETH
-  WETH,
-  '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48', // USDC
-  '0xdac17f958d2ee523a2206206994597c13d831ec7', // USDT
-  '0xdc035d45d973e3ec169d2276ddab16f1e407384f', // USDS
-  '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599', // WBTC
-]);
+const collectTokenAddresses = (
+  contracts: Record<string, string>,
+): Set<string> => {
+  const addresses = new Set<string>();
+  for (const key of DEX_TOKEN_KEYS) {
+    const addr = contracts[key];
+    if (addr) {
+      addresses.add(addr.toLowerCase());
+    }
+  }
+  return addresses;
+};
 
-// ---- Token addresses (Sepolia) ----
+const MAINNET_TOKEN_ADDRESSES = collectTokenAddresses(
+  mainnetNetwork.contracts,
+);
+const MAINNET_WETH = mainnetNetwork.contracts.weth.toLowerCase();
 
-const SEPOLIA_WETH = '0xfff9976782d46cc05630d1f6ebab18b2324d6b14';
-
-const SEPOLIA_TOKEN_ADDRESSES = new Set([SEPOLIA_WETH]);
+const SEPOLIA_TOKEN_ADDRESSES = collectTokenAddresses(
+  sepoliaNetwork.contracts,
+);
+const SEPOLIA_WETH = sepoliaNetwork.contracts.weth.toLowerCase();
 
 // ---- Function selectors (first 4 bytes of keccak256 signature) ----
 
@@ -62,7 +81,7 @@ const getNetworkConfig = (
   if (chainId === 11155111) {
     return { tokens: SEPOLIA_TOKEN_ADDRESSES, weth: SEPOLIA_WETH };
   }
-  return { tokens: MAINNET_TOKEN_ADDRESSES, weth: WETH };
+  return { tokens: MAINNET_TOKEN_ADDRESSES, weth: MAINNET_WETH };
 };
 
 /**

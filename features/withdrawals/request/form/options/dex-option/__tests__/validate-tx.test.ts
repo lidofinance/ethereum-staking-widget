@@ -3,18 +3,23 @@ import {
   validateSendCalls,
 } from '../validate-tx';
 
+import mainnetNetwork from 'networks/mainnet.json';
+import sepoliaNetwork from 'networks/sepolia.json';
+
 const CHAIN_MAINNET = 1;
 const CHAIN_SEPOLIA = 11155111;
 
 const COW_VAULT_RELAYER = '0xc92e8bdf79f0507f65a392b0ab4667716bfe0110';
 const COW_SETTLEMENT = '0x9008d19f58aabd9ed0d60971565aa8510560ab41';
-const STETH = '0xae7ab96520de3a18e5e111b5eaab095312d7fe84';
-const WSTETH = '0x7f39c581f595b53c5cb19bd0b3f8da6c935e2ca0';
-const WETH = '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2';
-const USDC = '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48';
-const USDT = '0xdac17f958d2ee523a2206206994597c13d831ec7';
 
-const SEPOLIA_WETH = '0xfff9976782d46cc05630d1f6ebab18b2324d6b14';
+// Token addresses from network configs (source of truth)
+const STETH = mainnetNetwork.contracts.lido.toLowerCase();
+const WSTETH = mainnetNetwork.contracts.wsteth.toLowerCase();
+const WETH = mainnetNetwork.contracts.weth.toLowerCase();
+const USDC = mainnetNetwork.contracts.usdc.toLowerCase();
+const USDT = mainnetNetwork.contracts.usdt.toLowerCase();
+
+const SEPOLIA_WETH = sepoliaNetwork.contracts.weth.toLowerCase();
 
 const ATTACKER = '0xdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef';
 const UNKNOWN = '0x1111111111111111111111111111111111111111';

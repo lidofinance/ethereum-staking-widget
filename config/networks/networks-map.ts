@@ -52,6 +52,8 @@ export const CONTRACT_NAMES = {
   weth: 'weth',
   usdc: 'usdc',
   usdt: 'usdt',
+  usds: 'usds',
+  wbtc: 'wbtc',
   // GGV
   ggvVault: 'ggvVault',
   ggvTeller: 'ggvTeller',
