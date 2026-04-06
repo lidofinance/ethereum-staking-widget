@@ -52,3 +52,5 @@ export const ETH_VAULT_ROUTES = [
     matomoEvent: MATOMO_EARN_EVENTS_TYPES.earnEthWithdrawalTab,
   },
 ];
+
+export const ETH_VAULT_BASE_ASSET_DECIMALS = 18;

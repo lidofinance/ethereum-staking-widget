@@ -32,7 +32,8 @@
         "dgBannerEnabled": true,
         "rewardsMaintenance": false,
         "holidayDecorEnabled": false,
-        "forceAllowance": false
+        "forceAllowance": false,
+        "amountBannerEnabled": true
       },
       "pages": {
         "/earn": {
@@ -51,7 +52,6 @@
     "cid": "bafybeiecvujvs74xvxgpwctmbfkcucazyaudmwuiw4wfv6ys7uio7o376u",
     "leastSafeVersion": "0.76.1",
     "config": {
-      "enabledWithdrawalDexes": ["one-inch", "paraswap", "bebop", "jumper"],
       "withdrawalDex": {
         "integration": "cowswap",
         "enabled": true
@@ -80,7 +80,8 @@
         "dgBannerEnabled": true,
         "rewardsMaintenance": false,
         "holidayDecorEnabled": false,
-        "forceAllowance": false
+        "forceAllowance": false,
+        "amountBannerEnabled": true
       },
       "pages": {
         "/earn": {

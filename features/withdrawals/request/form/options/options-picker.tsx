@@ -100,7 +100,6 @@ export const OptionsPicker: React.FC<OptionsPickerProps> = ({
     <OptionsPickerContainer>
       <LidoButton
         isActive={selectedOption === 'lido'}
-        data-testid="lidoOption"
         onClick={(e) => {
           e.preventDefault();
           trackMatomoEvent(MATOMO_CLICK_EVENTS_TYPES.withdrawalUseLido);

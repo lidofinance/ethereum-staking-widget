@@ -4,7 +4,7 @@ import Link from 'next/link';
 
 export const WhyWaitingTimeChanged: React.FC = () => {
   return (
-    <Accordion summary="Why my waiting time changed after I submitted the withdrawal request?">
+    <Accordion summary="Why my waiting time changed after I submitted the withdrawal request via Lido?">
       <p>
         The waiting time could be changed due to{' '}
         <Link href={WITHDRAWAL_PERIOD_PATH}>several&nbsp;factors</Link>{' '}

@@ -12,7 +12,9 @@ export const getManifestKey = (
   manifestOverride?: string,
 ) =>
   `${defaultChain}` +
-  (typeof manifestOverride === 'string' ? `-${manifestOverride}` : '');
+  (typeof manifestOverride === 'string' && manifestOverride
+    ? `-${manifestOverride}`
+    : '');
 
 // TODO: rework to zod schema validation
 
@@ -99,13 +101,10 @@ export const isManifestEntryValid = (
 
 export const isManifestValid = (
   manifest: unknown,
-  chain: number,
+  key: string,
 ): manifest is Manifest => {
-  const stringChain = chain.toString();
-  if (manifest && typeof manifest === 'object' && stringChain in manifest)
-    return isManifestEntryValid(
-      (manifest as Record<string, unknown>)[stringChain],
-    );
+  if (manifest && typeof manifest === 'object' && key in manifest)
+    return isManifestEntryValid((manifest as Record<string, unknown>)[key]);
   return false;
 };
 

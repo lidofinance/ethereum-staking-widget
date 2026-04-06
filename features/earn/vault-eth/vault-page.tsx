@@ -110,14 +110,14 @@ export const EthVaultPage: FC<{
   action: typeof EARN_VAULT_DEPOSIT_SLUG | typeof EARN_VAULT_WITHDRAW_SLUG;
 }> = ({ action }) => {
   const { apy, isLoading: isApyLoading } = useEthVaultApy();
-  const { totalTvlUsd, isLoading: isTvlLoading } = useEthVaultStats();
+  const { tvlUsd, isLoading: isTvlLoading } = useEthVaultStats();
 
   return (
     <>
       <VaultPage
         {...DATA}
         apx={apy}
-        tvl={totalTvlUsd}
+        tvlUsd={tvlUsd}
         isApxLoading={isApyLoading}
         isTvlLoading={isTvlLoading}
         apxHint={<EthVaultApyHint />}

@@ -4,7 +4,7 @@ import { NoBr } from '../styles';
 
 export const HowDoesWithdrawalsWork: FC = () => {
   return (
-    <Accordion summary="How does the withdrawal process work?">
+    <Accordion summary="How does the Lido withdrawal process work?">
       <p>The withdrawal process is simple and has two steps:</p>
       <ol>
         <li>

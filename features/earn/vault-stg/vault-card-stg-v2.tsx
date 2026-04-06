@@ -36,7 +36,7 @@ export const VaultCardSTG = () => {
       stats={{
         tvl: totalTvlUsd,
         apx: apy,
-        apxLabel: 'APY',
+        apxLabel: 'APY* (7d avg.)',
         apxHint: <STGApyHint />,
         isLoading: isLoadingApy || isLoadingTvlUsd,
       }}
