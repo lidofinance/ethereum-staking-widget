@@ -3,8 +3,6 @@ import {
   CowSwapWidgetPalette,
   CowSwapWidgetParams,
   CowSwapWidgetProps,
-  EthereumProvider,
-  JsonRpcRequest,
   TradeType,
 } from '@cowprotocol/widget-react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -13,8 +11,9 @@ import { useQuery } from '@tanstack/react-query';
 import { CowWidgetEvents } from '@cowprotocol/events';
 
 import { LOCALE } from 'config/groups/locale';
+import { STRATEGY_IMMUTABLE } from 'consts/react-query-strategies';
 import { useTheme } from 'styled-components';
-import { ConnectorEventMap, useConnection, useWalletClient } from 'wagmi';
+import { useWalletClient } from 'wagmi';
 import { useAddressValidation } from 'providers/address-validation-provider';
 import { themeDark, themeLight } from '@lidofinance/lido-ui';
 import { useDappStatus } from 'modules/web3';
@@ -27,12 +26,9 @@ import {
   DEX_BUY_TOKEN_LIST_URL,
 } from 'consts/external-links';
 
-import {
-  BLOCKED_RPC_METHODS,
-  MAX_SLIPPAGE,
-  WHEN_PRICE_IMPACT_IS_HIGH_THAN,
-} from './consts';
+import { MAX_SLIPPAGE, WHEN_PRICE_IMPACT_IS_HIGH_THAN } from './consts';
 import { LoaderStyled, DexWrapper } from './styles';
+import { useCowSwapEthereumProvider } from './use-cow-swap-ethereum-provider';
 
 const cowSwapThemeDark: CowSwapWidgetPalette = {
   baseTheme: 'dark',
@@ -71,11 +67,11 @@ export const DexOption = () => {
   // Fall back to self-hosted token lists if GitHub is unavailable
   const { data: isGithubAvailable = true } = useQuery({
     queryKey: ['dex-token-list-availability'],
+    ...STRATEGY_IMMUTABLE,
     queryFn: () =>
       fetch(DEX_SELL_TOKEN_LIST_URL, { method: 'HEAD' })
         .then((res) => res.ok)
         .catch(() => false),
-    staleTime: Infinity,
   });
 
   useEffect(() => {
@@ -208,30 +204,7 @@ export const DexOption = () => {
     [isTestnet, daoAgentAddress, themeName, validate, isGithubAvailable],
   );
 
-  const { connector } = useConnection();
-
-  const provider: EthereumProvider | undefined = useMemo(() => {
-    if (!walletClient || !connector) return undefined;
-
-    return {
-      request: <T,>(args: JsonRpcRequest): Promise<T> => {
-        if (BLOCKED_RPC_METHODS.has(args.method)) {
-          return Promise.reject(
-            new Error(`RPC method "${args.method}" is not allowed`),
-          );
-        }
-        return walletClient.request(
-          args as Parameters<typeof walletClient.request>[0],
-        );
-      },
-      on: (eventName: string, handler: unknown) => {
-        connector?.emitter.on(
-          eventName as keyof ConnectorEventMap,
-          handler as never,
-        );
-      },
-    };
-  }, [walletClient, connector]);
+  const provider = useCowSwapEthereumProvider();
 
   const listeners: CowSwapWidgetProps['listeners'] = useMemo(() => {
     const handlers: CowSwapWidgetProps['listeners'] = [
