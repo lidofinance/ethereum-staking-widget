@@ -8,15 +8,7 @@
 import mainnetNetwork from 'networks/mainnet.json';
 import sepoliaNetwork from 'networks/sepolia.json';
 
-// ---- CoW Protocol contract addresses ----
-// Same on Mainnet and Sepolia (deterministic CREATE2 deploy).
-// https://etherscan.io/address/0xC92E8bdf79f0507f65a392b0ab4667716BFE0110
-// https://etherscan.io/address/0x9008D19f58AAbD9eD0D60971565AA8510560ab41
-
-const COW_VAULT_RELAYER = '0xc92e8bdf79f0507f65a392b0ab4667716bfe0110';
-const COW_SETTLEMENT = '0x9008d19f58aabd9ed0d60971565aa8510560ab41';
-
-// ---- Token addresses from network configs ----
+// ---- Contract addresses from network configs ----
 
 // Keys from networks/*.json used for DEX token allowlist
 const DEX_TOKEN_KEYS = [
@@ -42,15 +34,24 @@ const collectTokenAddresses = (
   return addresses;
 };
 
-const MAINNET_TOKEN_ADDRESSES = collectTokenAddresses(
-  mainnetNetwork.contracts,
-);
-const MAINNET_WETH = mainnetNetwork.contracts.weth.toLowerCase();
+type NetworkTxConfig = {
+  tokens: Set<string>;
+  weth: string;
+  cowVaultRelayer: string;
+  cowSettlement: string;
+};
 
-const SEPOLIA_TOKEN_ADDRESSES = collectTokenAddresses(
-  sepoliaNetwork.contracts,
-);
-const SEPOLIA_WETH = sepoliaNetwork.contracts.weth.toLowerCase();
+const buildNetworkTxConfig = (
+  contracts: Record<string, string>,
+): NetworkTxConfig => ({
+  tokens: collectTokenAddresses(contracts),
+  weth: contracts.weth.toLowerCase(),
+  cowVaultRelayer: contracts.cowVaultRelayer.toLowerCase(),
+  cowSettlement: contracts.cowSettlement.toLowerCase(),
+});
+
+const MAINNET_CONFIG = buildNetworkTxConfig(mainnetNetwork.contracts);
+const SEPOLIA_CONFIG = buildNetworkTxConfig(sepoliaNetwork.contracts);
 
 // ---- Function selectors (first 4 bytes of keccak256 signature) ----
 
@@ -75,13 +76,9 @@ export type ValidationResult = {
 
 // ---- Internal helpers ----
 
-const getNetworkConfig = (
-  chainId: number,
-): { tokens: Set<string>; weth: string } => {
-  if (chainId === 11155111) {
-    return { tokens: SEPOLIA_TOKEN_ADDRESSES, weth: SEPOLIA_WETH };
-  }
-  return { tokens: MAINNET_TOKEN_ADDRESSES, weth: MAINNET_WETH };
+const getNetworkTxConfig = (chainId: number): NetworkTxConfig => {
+  if (chainId === 11155111) return SEPOLIA_CONFIG;
+  return MAINNET_CONFIG;
 };
 
 /**
@@ -106,7 +103,10 @@ const hasNonZeroValue = (value: string | undefined): boolean => {
   return stripped.length > 0;
 };
 
-const validateApproveSpender = (data: string): ValidationResult => {
+const validateApproveSpender = (
+  data: string,
+  cowVaultRelayer: string,
+): ValidationResult => {
   const spender = extractAddress(data, 0);
 
   if (!spender) {
@@ -116,12 +116,12 @@ const validateApproveSpender = (data: string): ValidationResult => {
     };
   }
 
-  if (spender !== COW_VAULT_RELAYER) {
+  if (spender !== cowVaultRelayer) {
     return {
       allowed: false,
       reason:
         `approve() spender must be CoW VaultRelayer ` +
-        `(${COW_VAULT_RELAYER}), got ${spender}`,
+        `(${cowVaultRelayer}), got ${spender}`,
     };
   }
 
@@ -160,12 +160,13 @@ export const validateSendTransaction = (
   const data = (tx.data ?? '0x').toLowerCase();
   const selector = data.slice(0, 10);
 
-  const { tokens, weth } = getNetworkConfig(chainId);
+  const { tokens, weth, cowVaultRelayer, cowSettlement } =
+    getNetworkTxConfig(chainId);
 
   const allowedTargets = new Set([
     ...tokens,
-    COW_VAULT_RELAYER,
-    COW_SETTLEMENT,
+    cowVaultRelayer,
+    cowSettlement,
   ]);
 
   if (!allowedTargets.has(to)) {
@@ -178,7 +179,7 @@ export const validateSendTransaction = (
   }
 
   // CoW Protocol contracts — trust any call
-  if (to === COW_VAULT_RELAYER || to === COW_SETTLEMENT) {
+  if (to === cowVaultRelayer || to === cowSettlement) {
     return { allowed: true };
   }
 
@@ -189,7 +190,7 @@ export const validateSendTransaction = (
     }
 
     if (selector === SELECTORS.approve) {
-      return validateApproveSpender(data);
+      return validateApproveSpender(data, cowVaultRelayer);
     }
 
     return {
@@ -218,7 +219,7 @@ export const validateSendTransaction = (
       };
     }
 
-    return validateApproveSpender(data);
+    return validateApproveSpender(data, cowVaultRelayer);
   }
 
   return { allowed: false, reason: `Unexpected target: ${to}` };

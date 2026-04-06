@@ -54,6 +54,9 @@ export const CONTRACT_NAMES = {
   usdt: 'usdt',
   usds: 'usds',
   wbtc: 'wbtc',
+  // CowSwap (DEX withdrawal integration)
+  cowVaultRelayer: 'cowVaultRelayer',
+  cowSettlement: 'cowSettlement',
   // GGV
   ggvVault: 'ggvVault',
   ggvTeller: 'ggvTeller',

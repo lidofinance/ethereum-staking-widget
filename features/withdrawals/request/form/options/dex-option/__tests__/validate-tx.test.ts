@@ -9,10 +9,11 @@ import sepoliaNetwork from 'networks/sepolia.json';
 const CHAIN_MAINNET = 1;
 const CHAIN_SEPOLIA = 11155111;
 
-const COW_VAULT_RELAYER = '0xc92e8bdf79f0507f65a392b0ab4667716bfe0110';
-const COW_SETTLEMENT = '0x9008d19f58aabd9ed0d60971565aa8510560ab41';
+// All addresses from network configs (source of truth)
+const COW_VAULT_RELAYER =
+  mainnetNetwork.contracts.cowVaultRelayer.toLowerCase();
+const COW_SETTLEMENT = mainnetNetwork.contracts.cowSettlement.toLowerCase();
 
-// Token addresses from network configs (source of truth)
 const STETH = mainnetNetwork.contracts.lido.toLowerCase();
 const WSTETH = mainnetNetwork.contracts.wsteth.toLowerCase();
 const WETH = mainnetNetwork.contracts.weth.toLowerCase();

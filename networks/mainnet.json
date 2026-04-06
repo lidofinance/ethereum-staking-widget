@@ -64,7 +64,10 @@
     "usdc": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
     "usdt": "0xdac17f958d2ee523a2206206994597c13d831ec7",
     "usds": "0xdc035d45d973e3ec169d2276ddab16f1e407384f",
-    "wbtc": "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599"
+    "wbtc": "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599",
+
+    "cowVaultRelayer": "0xC92E8bdf79f0507f65a392b0ab4667716BFE0110",
+    "cowSettlement": "0x9008D19f58AAbD9eD0D60971565AA8510560ab41"
   },
   "api": {}
 }
