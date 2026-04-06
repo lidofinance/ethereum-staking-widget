@@ -61,6 +61,8 @@ const cowSwapThemeLight: CowSwapWidgetPalette = {
 };
 
 export const DexOption = () => {
+  // state to trigger refreshes to memoized params
+  const [refreshId, setRefreshId] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [cspBlocked, setCspBlocked] = useState<Error | null>(null);
 
@@ -201,7 +203,15 @@ export const DexOption = () => {
         },
       },
     }),
-    [isTestnet, daoAgentAddress, themeName, validate, isGithubAvailable],
+    // eslint-disable-next-line  react-hooks/exhaustive-deps
+    [
+      isTestnet,
+      daoAgentAddress,
+      themeName,
+      validate,
+      isGithubAvailable,
+      refreshId,
+    ],
   );
 
   const provider = useCowSwapEthereumProvider();
@@ -236,6 +246,19 @@ export const DexOption = () => {
         event: CowWidgetEvents.ON_EXPIRED_ORDER,
         handler: () => {
           trackMatomoEvent(MATOMO_TX_EVENTS_TYPES.withdrawalDexSwapCancel);
+        },
+      },
+      {
+        event: CowWidgetEvents.ON_CHANGE_TRADE_PARAMS,
+        handler: ({ sellToken }) => {
+          // workaround until cow
+          if (
+            !sellToken ||
+            sellToken.symbol.toLowerCase() === 'steth' ||
+            sellToken.symbol.toLowerCase() === 'wsteth'
+          )
+            return;
+          setRefreshId((id) => id + 1);
         },
       },
     ];
