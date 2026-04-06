@@ -1,12 +1,11 @@
-// ================================================================
-//  Deep transaction validation for CowSwap provider bridge
-//
-//  Level 2: validate target address (to ∈ allowlist)
-//  Level 3: validate calldata (approve spender, function selector)
-// ================================================================
+import { decodeFunctionData, erc20Abi } from 'viem';
+import type { Hex } from 'viem';
 
+import { wethABI } from 'abi/weth-abi';
 import mainnetNetwork from 'networks/mainnet.json';
 import sepoliaNetwork from 'networks/sepolia.json';
+
+const ALLOWED_WETH_FUNCTIONS = new Set(['approve', 'deposit', 'withdraw']);
 
 // ---- Contract addresses from network configs ----
 
@@ -27,9 +26,7 @@ const collectTokenAddresses = (
   const addresses = new Set<string>();
   for (const key of DEX_TOKEN_KEYS) {
     const addr = contracts[key];
-    if (addr) {
-      addresses.add(addr.toLowerCase());
-    }
+    if (addr) addresses.add(addr.toLowerCase());
   }
   return addresses;
 };
@@ -53,48 +50,17 @@ const buildNetworkTxConfig = (
 const MAINNET_CONFIG = buildNetworkTxConfig(mainnetNetwork.contracts);
 const SEPOLIA_CONFIG = buildNetworkTxConfig(sepoliaNetwork.contracts);
 
-// ---- Function selectors (first 4 bytes of keccak256 signature) ----
-
-const SELECTORS = {
-  approve: '0x095ea7b3',
-  deposit: '0xd0e30db0',
-  withdraw: '0x2e1a7d4d',
-} as const;
-
 // ---- Types ----
 
-type TxParam = {
-  to?: string;
-  data?: string;
-  value?: string;
-};
+type TxParam = { to?: string; data?: string; value?: string };
 
-export type ValidationResult = {
-  allowed: boolean;
-  reason?: string;
-};
+export type ValidationResult = { allowed: boolean; reason?: string };
 
-// ---- Internal helpers ----
+// ---- Helpers ----
 
 const getNetworkTxConfig = (chainId: number): NetworkTxConfig => {
   if (chainId === 11155111) return SEPOLIA_CONFIG;
   return MAINNET_CONFIG;
-};
-
-/**
- * Extracts an address argument from ABI-encoded calldata.
- *
- * Layout: "0x" (2) + selector (8) + arg0 (64) + arg1 (64) + ...
- * Address occupies last 40 chars of a 64-char slot (first 24 are zero-padding).
- */
-const extractAddress = (data: string, argIndex: number): string | null => {
-  const argStart = 2 + 8 + argIndex * 64;
-  const addressStart = argStart + 24;
-  const addressEnd = addressStart + 40;
-
-  if (data.length < addressEnd) return null;
-
-  return '0x' + data.slice(addressStart, addressEnd).toLowerCase();
 };
 
 const hasNonZeroValue = (value: string | undefined): boolean => {
@@ -107,25 +73,31 @@ const validateApproveSpender = (
   data: string,
   cowVaultRelayer: string,
 ): ValidationResult => {
-  const spender = extractAddress(data, 0);
+  try {
+    const { functionName, args } = decodeFunctionData({
+      abi: erc20Abi,
+      data: data as Hex,
+    });
 
-  if (!spender) {
-    return {
-      allowed: false,
-      reason: 'Cannot parse approve() spender from calldata',
-    };
+    if (functionName !== 'approve' || !args) {
+      return {
+        allowed: false,
+        reason: `Expected approve(), got ${functionName}()`,
+      };
+    }
+
+    const spender = (args[0] as string).toLowerCase();
+    if (spender !== cowVaultRelayer) {
+      return {
+        allowed: false,
+        reason: `approve() spender must be CoW VaultRelayer (${cowVaultRelayer}), got ${spender}`,
+      };
+    }
+
+    return { allowed: true };
+  } catch {
+    return { allowed: false, reason: 'Cannot decode approve() calldata' };
   }
-
-  if (spender !== cowVaultRelayer) {
-    return {
-      allowed: false,
-      reason:
-        `approve() spender must be CoW VaultRelayer ` +
-        `(${cowVaultRelayer}), got ${spender}`,
-    };
-  }
-
-  return { allowed: true };
 };
 
 // ================================================================
@@ -158,23 +130,15 @@ export const validateSendTransaction = (
 
   const to = tx.to.toLowerCase();
   const data = (tx.data ?? '0x').toLowerCase();
-  const selector = data.slice(0, 10);
-
   const { tokens, weth, cowVaultRelayer, cowSettlement } =
     getNetworkTxConfig(chainId);
 
-  const allowedTargets = new Set([
-    ...tokens,
-    cowVaultRelayer,
-    cowSettlement,
-  ]);
+  const allowedTargets = new Set([...tokens, cowVaultRelayer, cowSettlement]);
 
   if (!allowedTargets.has(to)) {
     return {
       allowed: false,
-      reason:
-        `Transaction to ${to} is not allowed. ` +
-        `Only token contracts and CoW Protocol addresses are permitted.`,
+      reason: `Transaction to ${to} is not allowed. Only token contracts and CoW Protocol addresses are permitted.`,
     };
   }
 
@@ -183,35 +147,39 @@ export const validateSendTransaction = (
     return { allowed: true };
   }
 
-  // WETH — approve / deposit / withdraw
+  // WETH — decode with extended ABI (approve + deposit + withdraw)
   if (to === weth) {
-    if (selector === SELECTORS.deposit || selector === SELECTORS.withdraw) {
+    try {
+      const { functionName, args } = decodeFunctionData({
+        abi: wethABI,
+        data: data as Hex,
+      });
+
+      if (!ALLOWED_WETH_FUNCTIONS.has(functionName)) {
+        return {
+          allowed: false,
+          reason: `Only approve(), deposit(), withdraw() allowed on WETH. Got ${functionName}()`,
+        };
+      }
+
+      if (functionName === 'approve' && args) {
+        const spender = (args[0] as string).toLowerCase();
+        if (spender !== cowVaultRelayer) {
+          return {
+            allowed: false,
+            reason: `approve() spender must be CoW VaultRelayer (${cowVaultRelayer}), got ${spender}`,
+          };
+        }
+      }
+
       return { allowed: true };
+    } catch {
+      return { allowed: false, reason: 'Cannot decode WETH calldata' };
     }
-
-    if (selector === SELECTORS.approve) {
-      return validateApproveSpender(data, cowVaultRelayer);
-    }
-
-    return {
-      allowed: false,
-      reason:
-        `Only approve(), deposit(), withdraw() allowed on WETH. ` +
-        `Got selector: ${selector}`,
-    };
   }
 
   // Other tokens — only approve(), no ETH value
   if (tokens.has(to)) {
-    if (selector !== SELECTORS.approve) {
-      return {
-        allowed: false,
-        reason:
-          `Only approve() is allowed on token ${to}. ` +
-          `Got selector: ${selector}`,
-      };
-    }
-
     if (hasNonZeroValue(tx.value)) {
       return {
         allowed: false,
