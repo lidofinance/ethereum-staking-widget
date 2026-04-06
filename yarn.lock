@@ -1603,7 +1603,7 @@
     "@cowprotocol/events" "^4.1.0"
     "@cowprotocol/iframe-transport" "^2.0.10"
 
-"@cowprotocol/widget-react@^1.2.0":
+"@cowprotocol/widget-react@1.2.0":
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/@cowprotocol/widget-react/-/widget-react-1.2.0.tgz#cb6820e88b89129af71ddc2c00e09cd288b5104b"
   integrity sha512-sCC490cfNARXeH/fgyFPS4dsmwSElwAPip6FkiYWF03uwKDw+p0r7Jfwroyq/DnKaNm8nScnCUJO535OfYoSsQ==
