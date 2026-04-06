@@ -104,6 +104,39 @@ const validateApproveSpender = (
 //  Public validation functions
 // ================================================================
 
+const validateWethTransaction = (
+  data: string,
+  cowVaultRelayer: string,
+): ValidationResult => {
+  try {
+    const { functionName, args } = decodeFunctionData({
+      abi: wethABI,
+      data: data as Hex,
+    });
+
+    if (!ALLOWED_WETH_FUNCTIONS.has(functionName)) {
+      return {
+        allowed: false,
+        reason: `Only approve(), deposit(), withdraw() allowed on WETH. Got ${functionName}()`,
+      };
+    }
+
+    if (functionName === 'approve' && args) {
+      const spender = (args[0] as string).toLowerCase();
+      if (spender !== cowVaultRelayer) {
+        return {
+          allowed: false,
+          reason: `approve() spender must be CoW VaultRelayer (${cowVaultRelayer}), got ${spender}`,
+        };
+      }
+    }
+
+    return { allowed: true };
+  } catch {
+    return { allowed: false, reason: 'Cannot decode WETH calldata' };
+  }
+};
+
 /**
  * Validates eth_sendTransaction parameters.
  *
@@ -123,63 +156,33 @@ export const validateSendTransaction = (
   }
 
   const tx = params[0] as TxParam;
+  const txTo = tx.to?.toLowerCase();
+  const data = (tx.data ?? '0x').toLowerCase();
 
-  if (!tx.to) {
+  if (!txTo) {
     return { allowed: false, reason: 'Contract creation is not allowed' };
   }
 
-  const to = tx.to.toLowerCase();
-  const data = (tx.data ?? '0x').toLowerCase();
   const { tokens, weth, cowVaultRelayer, cowSettlement } =
     getNetworkTxConfig(chainId);
-
   const allowedTargets = new Set([...tokens, cowVaultRelayer, cowSettlement]);
 
-  if (!allowedTargets.has(to)) {
+  if (!allowedTargets.has(txTo)) {
     return {
       allowed: false,
-      reason: `Transaction to ${to} is not allowed. Only token contracts and CoW Protocol addresses are permitted.`,
+      reason: `Transaction to ${txTo} is not allowed. Only token contracts and CoW Protocol addresses are permitted.`,
     };
   }
-
+  const isCowSwapContract = txTo === cowVaultRelayer || txTo === cowSettlement;
   // CoW Protocol contracts — trust any call
-  if (to === cowVaultRelayer || to === cowSettlement) {
-    return { allowed: true };
-  }
+  if (isCowSwapContract) return { allowed: true };
 
+  const isWethContract = txTo === weth;
   // WETH — decode with extended ABI (approve + deposit + withdraw)
-  if (to === weth) {
-    try {
-      const { functionName, args } = decodeFunctionData({
-        abi: wethABI,
-        data: data as Hex,
-      });
-
-      if (!ALLOWED_WETH_FUNCTIONS.has(functionName)) {
-        return {
-          allowed: false,
-          reason: `Only approve(), deposit(), withdraw() allowed on WETH. Got ${functionName}()`,
-        };
-      }
-
-      if (functionName === 'approve' && args) {
-        const spender = (args[0] as string).toLowerCase();
-        if (spender !== cowVaultRelayer) {
-          return {
-            allowed: false,
-            reason: `approve() spender must be CoW VaultRelayer (${cowVaultRelayer}), got ${spender}`,
-          };
-        }
-      }
-
-      return { allowed: true };
-    } catch {
-      return { allowed: false, reason: 'Cannot decode WETH calldata' };
-    }
-  }
+  if (isWethContract) return validateWethTransaction(data, cowVaultRelayer);
 
   // Other tokens — only approve(), no ETH value
-  if (tokens.has(to)) {
+  if (tokens.has(txTo)) {
     if (hasNonZeroValue(tx.value)) {
       return {
         allowed: false,
@@ -190,7 +193,7 @@ export const validateSendTransaction = (
     return validateApproveSpender(data, cowVaultRelayer);
   }
 
-  return { allowed: false, reason: `Unexpected target: ${to}` };
+  return { allowed: false, reason: `Unexpected target: ${txTo}` };
 };
 
 /**
