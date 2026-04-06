@@ -1,7 +1,4 @@
-import {
-  validateSendTransaction,
-  validateSendCalls,
-} from '../validate-tx';
+import { validateSendTransaction, validateSendCalls } from '../validate-tx';
 
 import mainnetNetwork from 'networks/mainnet.json';
 import sepoliaNetwork from 'networks/sepolia.json';
@@ -105,29 +102,23 @@ describe('validateSendTransaction', () => {
       },
     );
 
-    it.each(tokens)(
-      'blocks approve(attacker) on %s',
-      (_name, tokenAddr) => {
-        const result = validateSendTransaction(
-          [{ to: tokenAddr, data: buildApprove(ATTACKER) }],
-          CHAIN_MAINNET,
-        );
-        expect(result.allowed).toBe(false);
-        expect(result.reason).toContain('VaultRelayer');
-      },
-    );
+    it.each(tokens)('blocks approve(attacker) on %s', (_name, tokenAddr) => {
+      const result = validateSendTransaction(
+        [{ to: tokenAddr, data: buildApprove(ATTACKER) }],
+        CHAIN_MAINNET,
+      );
+      expect(result.allowed).toBe(false);
+      expect(result.reason).toContain('VaultRelayer');
+    });
 
-    it.each(tokens)(
-      'blocks transfer() on %s',
-      (_name, tokenAddr) => {
-        const result = validateSendTransaction(
-          [{ to: tokenAddr, data: buildTransfer(ATTACKER) }],
-          CHAIN_MAINNET,
-        );
-        expect(result.allowed).toBe(false);
-        expect(result.reason).toContain('Only approve()');
-      },
-    );
+    it.each(tokens)('blocks transfer() on %s', (_name, tokenAddr) => {
+      const result = validateSendTransaction(
+        [{ to: tokenAddr, data: buildTransfer(ATTACKER) }],
+        CHAIN_MAINNET,
+      );
+      expect(result.allowed).toBe(false);
+      expect(result.reason).toContain('Expected approve(), got transfer()');
+    });
 
     it('blocks approve with ETH value on non-WETH token', () => {
       const result = validateSendTransaction(
@@ -159,8 +150,7 @@ describe('validateSendTransaction', () => {
     });
 
     it('handles checksummed address (mixed case to)', () => {
-      const checksummedSteth =
-        '0xae7ab96520DE3A18E5e111B5EaAb095312D7fE84';
+      const checksummedSteth = '0xae7ab96520DE3A18E5e111B5EaAb095312D7fE84';
       const result = validateSendTransaction(
         [{ to: checksummedSteth, data: buildApprove(COW_VAULT_RELAYER) }],
         CHAIN_MAINNET,
@@ -174,7 +164,7 @@ describe('validateSendTransaction', () => {
         CHAIN_MAINNET,
       );
       expect(result.allowed).toBe(false);
-      expect(result.reason).toContain('parse');
+      expect(result.reason).toContain('Cannot decode approve() calldata');
     });
   });
 
@@ -321,9 +311,7 @@ describe('validateSendCalls', () => {
       const result = validateSendCalls(
         [
           {
-            calls: [
-              { to: STETH, data: buildApprove(COW_VAULT_RELAYER) },
-            ],
+            calls: [{ to: STETH, data: buildApprove(COW_VAULT_RELAYER) }],
           },
         ],
         CHAIN_MAINNET,
