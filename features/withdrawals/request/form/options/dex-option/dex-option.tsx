@@ -4,6 +4,7 @@ import {
   CowSwapWidgetParams,
   CowSwapWidgetProps,
   EthereumProvider,
+  JsonRpcRequest,
   TradeType,
 } from '@cowprotocol/widget-react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -25,6 +26,8 @@ import {
   DEX_SELL_TOKEN_LIST_URL,
   DEX_BUY_TOKEN_LIST_URL,
 } from 'consts/external-links';
+
+import { BLOCKED_RPC_METHODS } from './consts';
 import { LoaderStyled, DexWrapper } from './styles';
 
 const cowSwapThemeDark: CowSwapWidgetPalette = {
@@ -118,7 +121,7 @@ export const DexOption = () => {
       // for testnets only sepolia
       chainId: isTestnet ? 11155111 : 1,
       // test app
-      baseUrl: 'https://staging.swap.cow.fi', // TODO: change to production
+      baseUrl: 'https://swap.cow.fi', // TODO: change to production
 
       //
       // Trading options
@@ -205,9 +208,21 @@ export const DexOption = () => {
     if (!walletClient || !connector) return undefined;
 
     return {
-      request: (args: any): Promise<any> => walletClient.request(args),
-      on: (eventName: any, arg: any) => {
-        connector?.emitter.on(eventName as keyof ConnectorEventMap, arg);
+      request: <T,>(args: JsonRpcRequest): Promise<T> => {
+        if (BLOCKED_RPC_METHODS.has(args.method)) {
+          return Promise.reject(
+            new Error(`RPC method "${args.method}" is not allowed`),
+          );
+        }
+        return walletClient.request(
+          args as Parameters<typeof walletClient.request>[0],
+        );
+      },
+      on: (eventName: string, handler: unknown) => {
+        connector?.emitter.on(
+          eventName as keyof ConnectorEventMap,
+          handler as never,
+        );
       },
     };
   }, [walletClient, connector]);
