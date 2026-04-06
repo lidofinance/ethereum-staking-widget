@@ -121,7 +121,7 @@ export const DexOption = () => {
       // for testnets only sepolia
       chainId: isTestnet ? 11155111 : 1,
       // test app
-      baseUrl: 'https://swap.cow.fi', // TODO: change to production
+      baseUrl: 'https://swap.cow.fi',
 
       //
       // Trading options
