@@ -27,7 +27,11 @@ import {
   DEX_BUY_TOKEN_LIST_URL,
 } from 'consts/external-links';
 
-import { BLOCKED_RPC_METHODS } from './consts';
+import {
+  BLOCKED_RPC_METHODS,
+  MAX_SLIPPAGE,
+  WHEN_PRICE_IMPACT_IS_HIGH_THAN,
+} from './consts';
 import { LoaderStyled, DexWrapper } from './styles';
 
 const cowSwapThemeDark: CowSwapWidgetPalette = {
@@ -146,7 +150,7 @@ export const DexOption = () => {
           : `${window.location.origin}/token-lists/withdrawals-dex-buy-tokenlist.json`,
       ],
       slippage: {
-        max: 300, // 3%
+        max: MAX_SLIPPAGE,
       },
       partnerFee: {
         bps: 30,
@@ -155,7 +159,7 @@ export const DexOption = () => {
       },
       disableTrade: {
         whenPriceImpactIsUnknown: true,
-        whenPriceImpactIsHigherThan: 3, // 3%
+        whenPriceImpactIsHigherThan: WHEN_PRICE_IMPACT_IS_HIGH_THAN,
       },
       disableCrossChainSwap: true,
 
