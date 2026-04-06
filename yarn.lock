@@ -1594,23 +1594,23 @@
     "@cowprotocol/sdk-bridging" "3.1.2"
     eventemitter3 "^4.0.0"
 
-"@cowprotocol/widget-lib@^2.1.0":
-  version "2.1.0"
-  resolved "https://registry.yarnpkg.com/@cowprotocol/widget-lib/-/widget-lib-2.1.0.tgz#b4476890abcdb8bae0dd21db57ab1438e8eb70ae"
-  integrity sha512-ognDiqskWJASc1n5b469+OhPQ2Bgti+OLAA+JoeSOZuxkEAhRozAhskEiNZ/dkfNZ0mCtCr9hke+1ZGX36Zdvg==
+"@cowprotocol/widget-lib@^2.1.1":
+  version "2.1.1"
+  resolved "https://registry.yarnpkg.com/@cowprotocol/widget-lib/-/widget-lib-2.1.1.tgz#c0d3dcdb27c21aadefbc57c9b1afd309f0acf310"
+  integrity sha512-KI2khb0saNEG8RCJzpj6as5LI3g9PWq6lw94bYICP1tVu2bioJtnLB7I/841B16Ijlg1c5r3TyvT5gCBVVivDg==
   dependencies:
     "@cowprotocol/cow-sdk" "8.0.3"
     "@cowprotocol/events" "^4.1.0"
     "@cowprotocol/iframe-transport" "^2.0.10"
 
-"@cowprotocol/widget-react@1.2.0":
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/@cowprotocol/widget-react/-/widget-react-1.2.0.tgz#cb6820e88b89129af71ddc2c00e09cd288b5104b"
-  integrity sha512-sCC490cfNARXeH/fgyFPS4dsmwSElwAPip6FkiYWF03uwKDw+p0r7Jfwroyq/DnKaNm8nScnCUJO535OfYoSsQ==
+"@cowprotocol/widget-react@1.2.1":
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/@cowprotocol/widget-react/-/widget-react-1.2.1.tgz#7de7499bf17bf5a11badfef6790f171794c1a323"
+  integrity sha512-BfL2IUg+XanxNEF610u+5P5H2kW/8oKfJfBx6Lm8vNg8tNh7N/23yMPSsiHJ01AtI29Bue7p7/+tZ4eeEASomw==
   dependencies:
     "@cowprotocol/events" "^4.1.0"
     "@cowprotocol/types" "^4.1.0"
-    "@cowprotocol/widget-lib" "^2.1.0"
+    "@cowprotocol/widget-lib" "^2.1.1"
 
 "@dabh/diagnostics@^2.0.2":
   version "2.0.3"
@@ -4346,9 +4346,9 @@
     undici-types "~5.26.4"
 
 "@types/node@>=13.7.0":
-  version "25.5.0"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-25.5.0.tgz#5c99f37c443d9ccc4985866913f1ed364217da31"
-  integrity sha512-jp2P3tQMSxWugkCUKLRPVUpGaL5MVFwF8RDuSRztfwgN1wmqJeMSbKlnEtQqU8UrhTmzEmZdu2I6v2dpp7XIxw==
+  version "25.5.2"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-25.5.2.tgz#94861e32f9ffd8de10b52bbec403465c84fff762"
+  integrity sha512-tO4ZIRKNC+MDWV4qKVZe3Ql/woTnmHDr5JD8UI5hn2pwBrHEwOEMZK7WlNb5RKB6EoJ02gwmQS9OrjuFnZYdpg==
   dependencies:
     undici-types "~7.18.0"
 
