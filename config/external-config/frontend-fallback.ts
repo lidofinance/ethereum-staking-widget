@@ -8,7 +8,6 @@ import {
   getManifestKey,
   isManifestValid,
 } from 'config/external-config';
-import { getDexConfig } from 'features/withdrawals/request/withdrawal-rates';
 import { EARN_VAULTS } from 'features/earn/consts';
 
 import FallbackLocalManifest from 'IPFS.json';
@@ -30,9 +29,13 @@ export const getBackwardCompatibleConfig = (
     );
 
   return {
-    enabledWithdrawalDexes: config.enabledWithdrawalDexes?.filter(
-      (dex) => !!getDexConfig(dex),
-    ),
+    withdrawalDex: {
+      ...(config?.withdrawalDex ?? {
+        // if none provided, disable with default integration
+        enabled: false,
+        integration: 'cowswap',
+      }),
+    },
     featureFlags: { ...(config?.featureFlags ?? {}) },
     multiChainBanner: config?.multiChainBanner ?? [],
     earnVaultsBanner: config?.earnVaultsBanner ?? {},
@@ -50,8 +53,7 @@ export const overrideManifestConfig = (
 ): ManifestEntry['config'] => {
   return {
     ...config,
-    enabledWithdrawalDexes:
-      override.enabledWithdrawalDexes ?? config.enabledWithdrawalDexes,
+    withdrawalDex: { ...config.withdrawalDex, ...override.withdrawalDex },
     featureFlags: { ...config.featureFlags, ...override.featureFlags },
     multiChainBanner: override.multiChainBanner ?? config.multiChainBanner,
     earnVaults: override.earnVaults ?? config.earnVaults,
@@ -66,10 +68,22 @@ export const getFallbackedManifestEntry = (
   defaultChain: number,
   manifestOverride?: string,
 ): ManifestEntry => {
-  const isValid = isManifestValid(prefetchedManifest, defaultChain);
-  return isValid
-    ? prefetchedManifest[getManifestKey(defaultChain, manifestOverride)]
-    : (FallbackLocalManifest as unknown as Manifest)[defaultChain];
+  const manifestKey = getManifestKey(defaultChain, manifestOverride);
+  const localFallback = (FallbackLocalManifest as unknown as Manifest)[
+    manifestKey
+  ];
+
+  const isValid = isManifestValid(prefetchedManifest, manifestKey);
+
+  const fallbacked = isValid ? prefetchedManifest[manifestKey] : localFallback;
+
+  if (!fallbacked) {
+    throw new Error(
+      `[getFallbackedManifestEntry] No valid manifest entry for ${manifestKey} found in remote or local fallback IPFS.json`,
+    );
+  }
+
+  return fallbacked;
 };
 
 export const useFallbackManifestEntry = (

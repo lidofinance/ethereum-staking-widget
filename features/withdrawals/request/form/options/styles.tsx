@@ -3,11 +3,19 @@ import { InlineLoader, Question } from '@lidofinance/lido-ui';
 import { FormatToken } from 'shared/formatters';
 
 import Lido from 'assets/icons/lido.svg';
+import CowSwap from 'assets/partner/cow-swap.svg';
 
 // ICONS
 
 export const LidoIcon = styled.img.attrs({
   src: Lido,
+  alt: '',
+})`
+  display: block;
+`;
+
+export const CowSwapIcon = styled.img.attrs({
+  src: CowSwap,
   alt: '',
 })`
   display: block;
@@ -32,7 +40,6 @@ export const InlineLoaderSmall = styled(InlineLoader)`
 
 export const LidoOptionContainer = styled.div`
   width: 100%;
-  min-height: 82px;
 
   background-color: var(--custom-background-secondary);
   border-radius: ${({ theme }) => theme.borderRadiusesMap.lg}px;
