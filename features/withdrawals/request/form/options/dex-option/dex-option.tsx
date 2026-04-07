@@ -89,11 +89,6 @@ export const DexOption = () => {
   });
 
   useEffect(() => {
-    const timer = setTimeout(() => setIsLoading(false), 1500);
-    return () => clearTimeout(timer);
-  }, []);
-
-  useEffect(() => {
     const handler = (e: SecurityPolicyViolationEvent) => {
       if (
         (e.violatedDirective === 'child-src' ||
@@ -182,6 +177,10 @@ export const DexOption = () => {
       width: '100%',
       height: '432px',
       theme: themeName === 'dark' ? cowSwapThemeDark : cowSwapThemeLight,
+
+      disablePostedOrderConfirmationModal: true,
+      disableTokenImport: true,
+      disablePostTradeTips: true,
       hideRecentTokens: true,
       hideFavoriteTokens: true,
       disableToastMessages: true,
@@ -195,7 +194,7 @@ export const DexOption = () => {
       hideOrdersTable: false,
       hideNetworkSelector: true,
       locale: LOCALE,
-      disableTokenImport: true,
+
       hooks: {
         onBeforeApproval: async () => {
           return await validate();
@@ -230,12 +229,6 @@ export const DexOption = () => {
 
   const listeners: CowSwapWidgetProps['listeners'] = useMemo(() => {
     const handlers: CowSwapWidgetProps['listeners'] = [
-      {
-        event: CowWidgetEvents.ON_CHANGE_TRADE_PARAMS,
-        handler: () => {
-          setIsLoading(false);
-        },
-      },
       {
         event: CowWidgetEvents.ON_POSTED_ORDER,
         handler: async () => {
@@ -285,6 +278,7 @@ export const DexOption = () => {
         params={params}
         listeners={listeners}
         provider={provider}
+        onReady={() => setIsLoading(false)}
       />
       <LoaderStyled $isVisible={isLoading} />
     </DexWrapper>
