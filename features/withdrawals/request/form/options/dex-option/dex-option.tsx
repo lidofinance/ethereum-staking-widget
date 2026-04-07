@@ -44,7 +44,7 @@ const cowSwapThemeDark: CowSwapWidgetPalette = {
   warning: themeDark.colors.warning,
   alert: themeDark.colors.warningBackground,
   danger: themeDark.colors.error,
-  info: themeDark.colors.error,
+  info: themeDark.colors.warning,
   success: themeDark.colors.success,
   // boxShadow: '0 12px 12px 0 rgba(5, 43, 101, 0.06)', // TODO: wait fix from CowSwap team
   boxShadow: 'none',
@@ -59,7 +59,7 @@ const cowSwapThemeLight: CowSwapWidgetPalette = {
   warning: themeLight.colors.warning,
   alert: themeLight.colors.warning,
   danger: themeLight.colors.error,
-  info: themeLight.colors.error,
+  info: themeLight.colors.warning,
   success: themeLight.colors.success,
   // boxShadow: '0 12px 12px 0 rgba(5, 43, 101, 0.06)', // TODO: wait fix from CowSwap team
   boxShadow: 'none',

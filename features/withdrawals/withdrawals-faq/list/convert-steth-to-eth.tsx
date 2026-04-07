@@ -7,7 +7,7 @@ import { LocalLink } from 'shared/components/local-link';
 export const ConvertSTETHtoETH: FC = () => {
   return (
     <Accordion summary="Can I transform my stETH to ETH?">
-      <p>Yes. Stakers can:</p>
+      <p>Yes, stakers can:</p>
       <ol>
         <li>
           transform their stETH to ETH 1:1 using the{' '}
