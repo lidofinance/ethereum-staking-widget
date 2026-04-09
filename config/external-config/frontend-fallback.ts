@@ -30,9 +30,8 @@ export const getBackwardCompatibleConfig = (
     );
 
   return {
-    enabledWithdrawalDexes: config.enabledWithdrawalDexes?.filter(
-      (dex) => !!getDexConfig(dex),
-    ),
+    enabledWithdrawalDexes:
+      config.enabledWithdrawalDexes?.filter((dex) => !!getDexConfig(dex)) ?? [],
     featureFlags: { ...(config?.featureFlags ?? {}) },
     multiChainBanner: config?.multiChainBanner ?? [],
     earnVaultsBanner: config?.earnVaultsBanner ?? {},
@@ -51,7 +50,7 @@ export const overrideManifestConfig = (
   return {
     ...config,
     enabledWithdrawalDexes:
-      override.enabledWithdrawalDexes ?? config.enabledWithdrawalDexes,
+      override.enabledWithdrawalDexes ?? config.enabledWithdrawalDexes ?? [],
     featureFlags: { ...config.featureFlags, ...override.featureFlags },
     multiChainBanner: override.multiChainBanner ?? config.multiChainBanner,
     earnVaults: override.earnVaults ?? config.earnVaults,
