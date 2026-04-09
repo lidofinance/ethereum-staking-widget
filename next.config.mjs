@@ -154,11 +154,6 @@ export default withBundleAnalyzer({
         source: '/manifest.json',
         headers: [{ key: 'Access-Control-Allow-Origin', value: '*' }],
       },
-      {
-        // required for CoW widget iframe (swap.cow.fi) to fetch token lists cross-origin as a fallback
-        source: '/token-lists/:path*',
-        headers: [{ key: 'Access-Control-Allow-Origin', value: '*' }],
-      },
       ...CACHE_CONTROL_PAGES.map((page) => ({
         source: page,
         headers: [{ key: CACHE_CONTROL_HEADER, value: CACHE_CONTROL_VALUE }],

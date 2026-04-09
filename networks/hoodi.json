@@ -1,7 +1,6 @@
 {
   "contracts": {
     "lidoLocator": "0xe2EF9536DAAAEBFf5b1c130957AB3E80056b06D8",
-    "daoAgent": "0x0534aA41907c9631fae990960bCC72d75fA7cfeD",
     "stakingRouter": "0xCc820558B39ee15C7C45B59390B503b83fb499A8",
     "withdrawalQueue": "0xfe56573178f1bcdf53F01A6E9977670dcBBD9186",
     "lido": "0x3508A952176b3c15387C97BE809eaffB1982176a",

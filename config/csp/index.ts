@@ -50,7 +50,6 @@ export const contentSecurityPolicy: ContentSecurityPolicyOption = {
     }),
     childSrc: [
       "'self'",
-      'https://swap.cow.fi', // CowSwap widget iframe baseUrl
       'https://*.walletconnect.org',
       'https://*.walletconnect.com',
     ],
