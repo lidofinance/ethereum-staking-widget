@@ -12,5 +12,9 @@ export {
   isManifestValid,
   getManifestKey,
   isManifestEntryValid,
+  isEnabledDexesValid,
+  isFeatureFlagsValid,
+  isMultiChainBannerValid,
+  isPagesValid,
   shouldRedirectToRoot,
 } from './utils';

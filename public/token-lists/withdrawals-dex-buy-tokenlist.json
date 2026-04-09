@@ -2,9 +2,9 @@
   "name": "Lido withdrawals buy",
   "timestamp": "2026-03-20T18:00:00.000Z",
   "version": {
-    "major": 1,
+    "major": 0,
     "minor": 0,
-    "patch": 0
+    "patch": 1
   },
   "keywords": [],
   "tokens": [

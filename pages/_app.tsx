@@ -3,11 +3,8 @@ import { ErrorBoundary } from 'react-error-boundary';
 import type { AppProps } from 'next/app';
 import 'nprogress/nprogress.css';
 import Head from 'next/head';
+
 import { ToastContainer } from '@lidofinance/lido-ui';
-import { z } from 'zod';
-// Prevents Zod for calling `new Function("")` and causing an CSP error
-// needs to run before importing any other module that imports Zod
-z.config({ jitless: true });
 
 import { config } from 'config';
 import { withCsp } from 'config/csp';
@@ -16,11 +13,15 @@ import { Providers } from 'providers';
 import { BackgroundGradient } from 'shared/components/background-gradient';
 import { ErrorBoundaryFallback } from 'shared/components/error-boundary';
 import { nprogress } from 'utils';
+import { z } from 'zod';
 
 import { AddressValidationFile } from 'utils/address-validation';
 
 // Visualize route changes
 nprogress();
+
+// Prevents Zod for calling `new Function("")` and causing an CSP error
+z.config({ jitless: true });
 
 const App = (props: AppProps) => {
   const { Component, pageProps } = props;

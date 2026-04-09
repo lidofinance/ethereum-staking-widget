@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 import BgSrc from 'assets/icons/swap-banner-bg.svg';
-import OpenOcean from 'assets/partner/open-ocean.svg';
-import OneInch from 'assets/partner/oneinch-circle.svg';
+import OpenOcean from 'assets/icons/open-ocean.svg';
+import OneInch from 'assets/icons/oneinch-circle.svg';
 
 export const Wrap = styled.div`
   position: relative;

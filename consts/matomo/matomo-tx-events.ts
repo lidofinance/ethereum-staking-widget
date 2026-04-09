@@ -20,12 +20,6 @@ export const enum MATOMO_TX_EVENTS_TYPES {
   withdrawalRequestFinish = 'withdrawalRequestFinish',
   withdrawalClaimStart = 'withdrawalClaimStart',
   withdrawalClaimFinish = 'withdrawalClaimFinish',
-
-  // Dex withdrawal
-  withdrawalDexSwapStart = 'withdrawalDexSwapStart',
-  withdrawalDexSwapPosted = 'withdrawalDexSwapPosted',
-  withdrawalDexSwapFinish = 'withdrawalDexSwapFinish',
-  withdrawalDexSwapCancel = 'withdrawalDexSwapCancel',
 }
 
 export const MATOMO_TX_EVENTS: Record<MATOMO_TX_EVENTS_TYPES, MatomoEventType> =
@@ -104,27 +98,5 @@ export const MATOMO_TX_EVENTS: Record<MATOMO_TX_EVENTS_TYPES, MatomoEventType> =
       'Ethereum_Staking_Widget',
       'Finish withdrawal claim request',
       'eth_widget_withdrawal_claim_finish',
-    ],
-
-    // dex withdrawal events
-    [MATOMO_TX_EVENTS_TYPES.withdrawalDexSwapStart]: [
-      'Ethereum_Staking_Widget',
-      'Start swap',
-      'eth_widget_withdrawal_start_swap',
-    ],
-    [MATOMO_TX_EVENTS_TYPES.withdrawalDexSwapPosted]: [
-      'Ethereum_Staking_Widget',
-      'Swap order signed and posted',
-      'eth_widget_withdrawal_swap_order_signed_and_posted',
-    ],
-    [MATOMO_TX_EVENTS_TYPES.withdrawalDexSwapFinish]: [
-      'Ethereum_Staking_Widget',
-      'Swap order succesfully finished',
-      'eth_widget_withdrawal_swap_order_sucessfully_finished',
-    ],
-    [MATOMO_TX_EVENTS_TYPES.withdrawalDexSwapCancel]: [
-      'Ethereum_Staking_Widget',
-      'Swap order rejected',
-      'eth_widget_withdrawal_swap_rejected',
     ],
   };

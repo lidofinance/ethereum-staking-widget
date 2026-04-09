@@ -17,7 +17,7 @@ export const UnstakeAmountBoundaries: React.FC = () => {
   );
 
   return (
-    <Accordion summary="Is there any minimum or maximum amount of stETH/wstETH I can withdraw via Lido?">
+    <Accordion summary="Is there any minimum or maximum amount of stETH/wstETH I can withdraw?">
       <p>
         Request size should be at least {minAmountDisplay} wei (in stETH), and
         at most {maxAmountDisplay} stETH.
