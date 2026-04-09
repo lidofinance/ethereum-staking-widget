@@ -225,7 +225,7 @@ export const DexOption = () => {
     ],
   );
 
-  const provider = useCowSwapEthereumProvider();
+  const provider = useCowSwapEthereumProvider(chainId);
 
   const listeners: CowSwapWidgetProps['listeners'] = useMemo(() => {
     const handlers: CowSwapWidgetProps['listeners'] = [

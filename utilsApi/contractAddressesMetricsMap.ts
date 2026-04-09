@@ -31,7 +31,8 @@ import { PartialStakingRouterAbi } from 'abi/partial-staking-router';
 import { wethABI } from 'abi/weth-abi';
 import { usdtABI } from 'abi/usdt-abi';
 import { usdcABI } from 'abi/usdc-abi';
-
+import { usdsABI } from 'abi/usds-abi';
+import { wbtcABI } from 'abi/wbtc-abi';
 // Earn contracts ABIs
 // GGV
 import {
@@ -64,6 +65,12 @@ import {
   VAULT_ABI,
 } from 'modules/mellow-meta-vaults/abi';
 
+// DEX withdrawal integration
+import {
+  CowVaultRelayerAbi,
+  CowSettlementAbi,
+} from 'features/withdrawals/request/form/options/dex-option/abi';
+
 import { config } from 'config';
 import { CONTRACT_NAMES } from 'config/networks/networks-map';
 import { getContractAddress } from 'config/networks/contract-address';
@@ -95,6 +102,8 @@ export const METRIC_CONTRACT_ABIS = {
   [CONTRACT_NAMES.weth]: wethABI,
   [CONTRACT_NAMES.usdc]: usdcABI,
   [CONTRACT_NAMES.usdt]: usdtABI,
+  [CONTRACT_NAMES.usds]: usdsABI,
+  [CONTRACT_NAMES.wbtc]: wbtcABI,
   // GGV
   [CONTRACT_NAMES.ggvVault]: GGV_VAULT_ABI,
   [CONTRACT_NAMES.ggvTeller]: GGV_TELLER_ABI,
@@ -138,6 +147,10 @@ export const METRIC_CONTRACT_ABIS = {
   [CONTRACT_NAMES.usdSyncDepositQueueUSDC]: SYNC_DEPOSIT_QUEUE_ABI,
   [CONTRACT_NAMES.usdSyncDepositQueueUSDT]: SYNC_DEPOSIT_QUEUE_ABI,
   [CONTRACT_NAMES.usdCollector]: COLLECTOR_ABI,
+
+  // CowSwap
+  [CONTRACT_NAMES.cowVaultRelayer]: CowVaultRelayerAbi,
+  [CONTRACT_NAMES.cowSettlement]: CowSettlementAbi,
 } as const;
 
 export type MetricContractName = keyof typeof CONTRACT_NAMES;
