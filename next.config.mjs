@@ -149,7 +149,7 @@ export default withBundleAnalyzer({
           { key: 'x-download-options', value: 'noopen' },
           { key: 'X-Permitted-Cross-Domain-Policies', value: 'none' },
           { key: 'Cross-Origin-Opener-Policy', value: 'same-origin' },
-          { key: 'Cross-Origin-Embedder-Policy', value: 'require-corp' },
+          { key: 'Cross-Origin-Embedder-Policy', value: 'credentialless' },
           {
             key: 'Permissions-Policy',
             value: [
