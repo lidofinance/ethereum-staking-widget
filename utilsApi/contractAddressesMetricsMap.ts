@@ -72,6 +72,7 @@ export const METRIC_CONTRACT_ABIS = {
   // Lido
   [CONTRACT_NAMES.lidoLocator]: LidoLocatorAbi,
   [CONTRACT_NAMES.lido]: StethAbi,
+  [CONTRACT_NAMES.daoAgent]: [],
   [CONTRACT_NAMES.wsteth]: WstethABI,
   [CONTRACT_NAMES.withdrawalQueue]: WithdrawalQueueAbi,
   [CONTRACT_NAMES.L2stETH]: rebasableL2StethAbi,

@@ -10,7 +10,6 @@ import {
   AprDisclaimer,
   LegalDisclaimer,
 } from 'shared/components';
-
 import { getDefaultStaticProps } from 'utilsApi/get-default-static-props';
 
 const Rewards: FC = () => {

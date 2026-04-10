@@ -22,7 +22,7 @@ export const VaultCardGGV = () => {
       stats={{
         tvl: tvl,
         apx: apy,
-        apxLabel: 'APY',
+        apxLabel: 'APY* (7d avg.)',
         apxHint: <GGVApyHint />,
         isLoading: isLoadingStats,
       }}
@@ -35,9 +35,7 @@ export const VaultCardGGV = () => {
             }
           : undefined
       }
-      ctaLabel={
-        sharesBalance && sharesBalance > 0n ? 'Upgrade your assets' : 'View'
-      }
+      ctaLabel={sharesBalance && sharesBalance > 0n ? 'Manage' : 'View'}
       illustration={<VaultGgvIcon />}
       depositLinkCallback={() => {
         trackMatomoEvent(MATOMO_EARN_EVENTS_TYPES.strategyDeposit);

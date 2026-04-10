@@ -8,6 +8,7 @@ import { TxStageSignOperationAmount } from 'shared/transaction-modal/tx-stages-c
 import { TxStageOperationSucceedBalanceShown } from 'shared/transaction-modal/tx-stages-composed/tx-stage-operation-succeed-balance-shown';
 import { EarnUpToBanner } from 'shared/banners/earn-up-to-banner';
 import { MATOMO_CLICK_EVENTS_TYPES } from 'consts/matomo';
+import { AmountBanner } from 'shared/banners/amount-banners';
 
 const STAGE_OPERATION_ARGS = {
   token: 'ETH',
@@ -39,7 +40,7 @@ const getTxModalStagesStake = (transitStage: TransactionModalTransitStage) => ({
       />,
     ),
 
-  success: (balance: bigint, txHash?: Hash) =>
+  success: (balance: bigint, preStakeBalance: bigint, txHash?: Hash) =>
     transitStage(
       <TxStageOperationSucceedBalanceShown
         txHash={txHash}
@@ -47,10 +48,16 @@ const getTxModalStagesStake = (transitStage: TransactionModalTransitStage) => ({
         balanceToken={'stETH'}
         operationText={'Staking'}
         footer={
-          <EarnUpToBanner
-            matomoEvent={MATOMO_CLICK_EVENTS_TYPES.startEarning}
-            placement="afterStake"
-          />
+          <AmountBanner
+            isModal
+            initialBalance={preStakeBalance}
+            placement="after_stake"
+          >
+            <EarnUpToBanner
+              matomoEvent={MATOMO_CLICK_EVENTS_TYPES.startEarning}
+              placement="afterStake"
+            />
+          </AmountBanner>
         }
       />,
       {
