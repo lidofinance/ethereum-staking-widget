@@ -47,36 +47,40 @@ export const useVersionStatus = () => {
   // ens cid extraction
   const remoteVersionQueryResult = useRemoteVersion();
 
+  // SECURITY: QA overrides below can only escalate to `true` (show warning),
+  // never suppress a real `true` to `false`. This prevents hiding security
+  // banners if QA localStorage keys leak to production.
+
   // update is available
   // for INFRA - leastSafeVersion is not NO_SAFE_VERSION
   // for IPFS - ^this and current cid doesn't match
-  const isUpdateAvailable = overrideWithQAMockBoolean(
-    Boolean(
-      remoteVersionQueryResult.data &&
-        ((currentCidQueryResult.data &&
-          remoteVersionQueryResult.data.cid !== currentCidQueryResult.data) ||
-          !config.ipfsMode) &&
-        remoteVersionQueryResult.data.leastSafeVersion !== NO_SAFE_VERSION,
-    ),
-    'mock-qa-helpers-security-banner-is-update-available',
+  const realIsUpdateAvailable = Boolean(
+    remoteVersionQueryResult.data &&
+      ((currentCidQueryResult.data &&
+        remoteVersionQueryResult.data.cid !== currentCidQueryResult.data) ||
+        !config.ipfsMode) &&
+      remoteVersionQueryResult.data.leastSafeVersion !== NO_SAFE_VERSION,
   );
+  const isUpdateAvailable =
+    realIsUpdateAvailable ||
+    overrideWithQAMockBoolean(false, 'mock-qa-helpers-security-banner-is-update-available');
 
-  const isVersionUnsafe = overrideWithQAMockBoolean(
-    Boolean(
-      remoteVersionQueryResult.data?.leastSafeVersion &&
-        (remoteVersionQueryResult.data.leastSafeVersion === NO_SAFE_VERSION ||
-          isVersionLess(
-            buildInfo.version,
-            remoteVersionQueryResult.data.leastSafeVersion,
-          )),
-    ),
-    'mock-qa-helpers-security-banner-is-version-unsafe',
+  const realIsVersionUnsafe = Boolean(
+    remoteVersionQueryResult.data?.leastSafeVersion &&
+      (remoteVersionQueryResult.data.leastSafeVersion === NO_SAFE_VERSION ||
+        isVersionLess(
+          buildInfo.version,
+          remoteVersionQueryResult.data.leastSafeVersion,
+        )),
   );
+  const isVersionUnsafe =
+    realIsVersionUnsafe ||
+    overrideWithQAMockBoolean(false, 'mock-qa-helpers-security-banner-is-version-unsafe');
 
-  const isNotVerifiable = overrideWithQAMockBoolean(
-    !!remoteVersionQueryResult.error,
-    'mock-qa-helpers-security-banner-is-not-verifiable',
-  );
+  const realIsNotVerifiable = !!remoteVersionQueryResult.error;
+  const isNotVerifiable =
+    realIsNotVerifiable ||
+    overrideWithQAMockBoolean(false, 'mock-qa-helpers-security-banner-is-not-verifiable');
 
   // disconnect wallet and disallow connection for unsafe versions
   useEffect(() => {

@@ -18,7 +18,7 @@ import { ProtectedTooltip } from './protected-tooltip';
 
 export const UsdVaultCard = () => {
   const { apy, isLoading: isApyLoading } = useUsdVaultApy();
-  const { totalTvlUsd, isLoading: isTvlLoading } = useUsdVaultStats();
+  const { tvlUsd, isLoading: isTvlLoading } = useUsdVaultStats();
   const { data: usdPositionData, isLoading: isPositionLoading } =
     useUsdVaultPosition();
 
@@ -30,7 +30,7 @@ export const UsdVaultCard = () => {
       description={USD_VAULT_DESCRIPTION}
       urlSlug={EARN_VAULT_USD_SLUG}
       stats={{
-        tvl: totalTvlUsd,
+        tvl: tvlUsd,
         apx: apy,
         apxLabel: 'APY* (7d avg.)',
         apxHint: <UsdVaultApyHint />,

@@ -81,12 +81,7 @@ export const enum MATOMO_CLICK_EVENTS_TYPES {
   withdrawalMaxInput = 'withdrawalMaxInput',
   withdrawalOtherFactorsTooltipMode = 'withdrawalOtherFactorsTooltipMode',
   withdrawalFAQtooltipEthAmount = 'withdrawalFAQtooltipEthAmount',
-  withdrawalGoTo1inch = 'withdrawalGoTo1inch',
-  withdrawalGoToBebop = 'withdrawalGoToBebop',
-  withdrawalGoToCowSwap = 'withdrawalGoToCowSwap',
-  withdrawalGoToParaswap = 'withdrawalGoToParaswap',
-  withdrawalGoToOpenOcean = 'withdrawalGoToOpenOcean',
-  withdrawalGoToJumper = 'withdrawalGoToJumper',
+
   withdrawalEtherscanSuccessTemplate = 'withdrawalEtherscanSuccessTemplate',
   withdrawalGuideSuccessTemplate = 'withdrawalGuideSuccessTemplate',
 
@@ -454,36 +449,6 @@ export const MATOMO_CLICK_EVENTS: Record<
     'Ethereum_Withdrawals_Widget',
     'Push «FAQ» in tooltip near ETH amount on Request tab',
     'eth_withdrawals_request_FAQ_tooltip_eth_amount',
-  ],
-  [MATOMO_CLICK_EVENTS_TYPES.withdrawalGoTo1inch]: [
-    'Ethereum_Staking_Widget_Withdraw_Use_Aggregators',
-    'Click on «Go to 1inch» in aggregators list on Request tab',
-    'eth_withdrawals_request_go_to_1inch',
-  ],
-  [MATOMO_CLICK_EVENTS_TYPES.withdrawalGoToBebop]: [
-    'Ethereum_Staking_Widget_Withdraw_Use_Aggregators',
-    'Click on «Go to Bebop» in aggregators list on Request tab',
-    'eth_withdrawals_request_go_to_Bebop',
-  ],
-  [MATOMO_CLICK_EVENTS_TYPES.withdrawalGoToCowSwap]: [
-    'Ethereum_Staking_Widget_Withdraw_Use_Aggregators',
-    'Click on «Go to CowSwap» in aggregators list on Request tab',
-    'eth_withdrawals_request_go_to_CowSwap',
-  ],
-  [MATOMO_CLICK_EVENTS_TYPES.withdrawalGoToParaswap]: [
-    'Ethereum_Staking_Widget_Withdraw_Use_Aggregators',
-    'Click on «Go to Paraswap» in aggregators list on Request tab',
-    'eth_withdrawals_request_go_to_Paraswap',
-  ],
-  [MATOMO_CLICK_EVENTS_TYPES.withdrawalGoToOpenOcean]: [
-    'Ethereum_Staking_Widget_Withdraw_Use_Aggregators',
-    'Click on «Go to OpenOcean in aggregators list on Request tab',
-    'eth_withdrawals_request_go_to_OpenOcean',
-  ],
-  [MATOMO_CLICK_EVENTS_TYPES.withdrawalGoToJumper]: [
-    'Ethereum_Staking_Widget_Withdraw_Use_Aggregators',
-    'Click on «Go to Jumper» in aggregators list on Request tab',
-    'eth_withdrawals_request_go_to_Jumper',
   ],
   [MATOMO_CLICK_EVENTS_TYPES.withdrawalEtherscanSuccessTemplate]: [
     'Ethereum_Withdrawals_Widget',

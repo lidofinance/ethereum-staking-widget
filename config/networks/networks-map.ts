@@ -26,8 +26,10 @@ export const API_NAMES = {};
 export const CONTRACT_NAMES = {
   // Main Lido contract
   lido: 'lido',
+  lidoLocator: 'lidoLocator',
   wsteth: 'wsteth',
   withdrawalQueue: 'withdrawalQueue',
+  daoAgent: 'daoAgent',
   // SI
   wstethReferralStaker: 'wstethReferralStaker',
   // DualGovernance
@@ -41,15 +43,21 @@ export const CONTRACT_NAMES = {
   // Aux contracts
   aggregatorEthUsdPriceFeed: 'aggregatorEthUsdPriceFeed',
   aggregatorStEthUsdPriceFeed: 'aggregatorStEthUsdPriceFeed',
+  aggregatorUsdcUsdPriceFeed: 'aggregatorUsdcUsdPriceFeed',
+  aggregatorUsdtUsdPriceFeed: 'aggregatorUsdtUsdPriceFeed',
+  aggregatorDaiUsdPriceFeed: 'aggregatorDaiUsdPriceFeed',
+  aggregatorBtcUsdPriceFeed: 'aggregatorBtcUsdPriceFeed',
   stakingRouter: 'stakingRouter',
   stethCurve: 'stethCurve',
-  lidoLocator: 'lidoLocator',
+
   ensPublicResolver: 'ensPublicResolver',
   ensRegistry: 'ensRegistry',
   // 3rd party tokens
   weth: 'weth',
   usdc: 'usdc',
   usdt: 'usdt',
+  usds: 'usds',
+  wbtc: 'wbtc',
   // GGV
   ggvVault: 'ggvVault',
   ggvTeller: 'ggvTeller',

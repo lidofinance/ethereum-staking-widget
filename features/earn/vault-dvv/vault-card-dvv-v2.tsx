@@ -22,7 +22,7 @@ export const VaultCardDVV = () => {
       stats={{
         tvl: tvl,
         apx: apr,
-        apxLabel: 'APR',
+        apxLabel: 'APY* (7d avg.)',
         apxHint: <DVVAprBreakdown />,
         isLoading: isLoadingStats,
       }}
@@ -35,9 +35,7 @@ export const VaultCardDVV = () => {
             }
           : undefined
       }
-      ctaLabel={
-        sharesBalance && sharesBalance > 0n ? 'Upgrade your assets' : 'View'
-      }
+      ctaLabel={sharesBalance && sharesBalance > 0n ? 'Manage' : 'View'}
       illustration={<VaultDvvIcon />}
       depositLinkCallback={() => {
         trackMatomoEvent(MATOMO_EARN_EVENTS_TYPES.strategyDeposit);

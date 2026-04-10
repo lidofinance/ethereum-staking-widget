@@ -1,45 +1,25 @@
-import { UNIX_TIMESTAMP_SCHEMA } from 'utils/zod';
-import { formatUnits } from 'viem';
-import { useQuery } from '@tanstack/react-query';
-// import { useEthUsd } from 'shared/hooks/use-eth-usd';
-import { ETH_VAULT_QUERY_SCOPE } from '../consts';
-import { ALLOCATION_SCHEMA, fetchEthVaultStats } from '../utils';
+import { useEthUsd } from 'shared/hooks/use-eth-usd';
+import { unixTimestampToMs } from 'utils/unix-timestamp-to-ms';
 import { useEthVaultCollect } from './use-collect';
+import { ETH_VAULT_BASE_ASSET_DECIMALS } from '../consts';
 
 export const useEthVaultStats = () => {
-  const { data, isLoading } = useQuery({
-    queryKey: [ETH_VAULT_QUERY_SCOPE, 'allocations'],
-    queryFn: async () => {
-      const fetchedData = await fetchEthVaultStats();
-      const allocations = ALLOCATION_SCHEMA.parse(fetchedData.allocations);
-      const apiUsdTVL = Number(
-        formatUnits(
-          BigInt(fetchedData.totalTvl.usd),
-          fetchedData.totalTvl.usd_decimals,
-        ),
-      );
-      const lastUpdate = UNIX_TIMESTAMP_SCHEMA.parse(fetchedData.lastUpdate);
-
-      return { allocations, lastUpdate, apiUsdTVL };
-    },
-  });
-
   const { data: collectorData, isLoading: isCollectorLoading } =
     useEthVaultCollect();
   const totalTvlWei = collectorData?.totalTvlWei;
+  const collectorTimestamp = collectorData?.collectorTimestamp; // unix timestamp in seconds
 
-  // Temporarily disabled: collector contract TVL (totalTvlWei × ETH price) doesn't yet
-  // match the vault's actual TVL. Using the API value (apiUsdTVL) instead as
-  // the source of truth until the discrepancy is resolved.
-  // const { usdAmount: totalTvlUsd, isLoading: isEthUsdLoading } =
-  //   useEthUsd(totalTvlWei);
+  const { usdAmount, isLoading: isEthUsdLoading } = useEthUsd(totalTvlWei);
+  const tvlUpdateTimestampMs =
+    collectorTimestamp != null
+      ? unixTimestampToMs(collectorTimestamp)
+      : undefined;
 
   return {
-    // isLoading: isLoading || isCollectorLoading || isEthUsdLoading,
-    isLoading: isLoading || isCollectorLoading,
-    totalTvlUsd: data?.apiUsdTVL,
-    totalTvlWei,
-    fetchedPositions: data?.allocations,
-    lastUpdateTimestamp: data?.lastUpdate,
+    isLoading: isCollectorLoading || isEthUsdLoading,
+    tvlUsd: usdAmount,
+    tvlBaseAsset: totalTvlWei, // uses base asset – ETH
+    tvlBaseAssetDecimals: ETH_VAULT_BASE_ASSET_DECIMALS,
+    tvlUpdateTimestampMs,
   } as const;
 };
