@@ -145,19 +145,52 @@ export default withBundleAnalyzer({
             key: 'x-content-type-options',
             value: 'nosniff',
           },
-          { key: 'x-xss-protection', value: '1' },
+          { key: 'x-xss-protection', value: '1; mode=block' },
           { key: 'x-download-options', value: 'noopen' },
+          { key: 'X-Permitted-Cross-Domain-Policies', value: 'none' },
+          { key: 'Cross-Origin-Opener-Policy', value: 'same-origin' },
+          { key: 'Cross-Origin-Embedder-Policy', value: 'credentialless' },
+          {
+            key: 'Permissions-Policy',
+            value: [
+              'camera=()',
+              'microphone=()',
+              'geolocation=()',
+              'payment=()',
+              'accelerometer=()',
+              'gyroscope=()',
+              'magnetometer=()',
+              'display-capture=()',
+              'encrypted-media=()',
+              'serial=()',
+              'xr-spatial-tracking=()',
+              'browsing-topics=()',
+              // Allow for the page itself; hardware wallets (Ledger/Trezor) may need these
+              'usb=(self)',
+              'bluetooth=(self)',
+              'hid=(self)',
+              'autoplay=(self)',
+              'fullscreen=(self)',
+              'picture-in-picture=(self)',
+            ].join(', '),
+          },
         ],
       },
       {
         // required for gnosis save apps
         source: '/manifest.json',
-        headers: [{ key: 'Access-Control-Allow-Origin', value: '*' }],
+        headers: [
+          { key: 'Access-Control-Allow-Origin', value: '*' },
+          { key: 'Cross-Origin-Resource-Policy', value: 'cross-origin' },
+        ],
       },
       {
         // required for CoW widget iframe (swap.cow.fi) to fetch token lists cross-origin as a fallback
         source: '/token-lists/:path*',
-        headers: [{ key: 'Access-Control-Allow-Origin', value: '*' }],
+        headers: [
+          { key: 'Access-Control-Allow-Origin', value: '*' },
+          { key: 'Cross-Origin-Resource-Policy', value: 'cross-origin' },
+        ],
       },
       ...CACHE_CONTROL_PAGES.map((page) => ({
         source: page,

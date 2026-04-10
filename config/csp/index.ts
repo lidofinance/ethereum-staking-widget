@@ -19,7 +19,7 @@ export const contentSecurityPolicy: ContentSecurityPolicyOption = {
   directives: {
     'default-src': ["'self'"],
     styleSrc: ["'self'", "'unsafe-inline'"],
-    fontSrc: ["'self'", 'data:'],
+    fontSrc: ["'self'", 'data:', 'https://fonts.reown.com'],
     imgSrc: [
       "'self'",
       'data:',
@@ -29,7 +29,6 @@ export const contentSecurityPolicy: ContentSecurityPolicyOption = {
     ],
     scriptSrc: [
       "'self'",
-      "'unsafe-inline'",
       ...(config.developmentMode ? ["'unsafe-eval'"] : []), // for HMR
       ...trustedHosts,
     ],
@@ -48,6 +47,14 @@ export const contentSecurityPolicy: ContentSecurityPolicyOption = {
       frameAncestors: ['*'],
       reportURI: secretConfig.cspReportUri,
     }),
+    // frame-src takes precedence over child-src for iframes in modern browsers
+    frameSrc: [
+      "'self'",
+      'https://swap.cow.fi', // CowSwap widget iframe
+      'https://*.walletconnect.org',
+      'https://*.walletconnect.com',
+    ],
+    // child-src kept as fallback for older browsers
     childSrc: [
       "'self'",
       'https://swap.cow.fi', // CowSwap widget iframe baseUrl
@@ -55,6 +62,12 @@ export const contentSecurityPolicy: ContentSecurityPolicyOption = {
       'https://*.walletconnect.com',
     ],
     workerSrc: ["'none'"],
+    objectSrc: ["'none'"], // Block plugins (Flash etc.)
+    mediaSrc: ["'none'"], // No audio/video sources needed
+    manifestSrc: ["'self'"],
+    formAction: ["'self'"], // Prevent form hijacking via XSS
+    // Block inline event handlers (onclick="...", onerror="..." etc.)
+    'script-src-attr': ["'none'"],
     'base-uri': config.ipfsMode ? undefined : ["'none'"],
   },
   reportOnly: secretConfig.cspReportOnly,
