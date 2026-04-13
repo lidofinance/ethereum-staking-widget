@@ -82,10 +82,8 @@ export const DexOption = () => {
   const [cspBlocked, setCspBlocked] = useState<Error | null>(null);
   const [sellAmountExceeded, setSellAmountExceeded] = useState(false);
   const [maxSellDisplay, setMaxSellDisplay] = useState(DEFAULT_THRESHOLDS.maxSellUnits);
-  // Refs mirror state/callbacks so memoized hooks can read them without re-creating widget params
+  // Ref mirrors state so memoized hooks can read it without re-creating widget params
   const sellAmountExceededRef = useRef(false);
-  const showBlockedMessageRef = useRef(showBlockedMessage);
-  showBlockedMessageRef.current = showBlockedMessage;
 
   const refreshBalances = useCallback(() => {
     void Promise.allSettled([refetchSteth(), refetchWsteth(), refetchEth()]);
@@ -139,6 +137,9 @@ export const DexOption = () => {
     walletAddress: walletClient?.account.address,
     isTestnet,
   });
+  // Ref so memoized hooks can call showBlockedMessage without re-creating widget params
+  const showBlockedMessageRef = useRef(showBlockedMessage);
+  showBlockedMessageRef.current = showBlockedMessage;
 
   const validate = useCallback(async () => {
     const isValid = await validateAddress(walletClient?.account.address);
