@@ -25,10 +25,10 @@ export type Thresholds = {
 };
 
 export const DEFAULT_THRESHOLDS: Thresholds = {
-  fiatDeviationWarning: 2,
+  fiatDeviationWarning: 4,
   fiatDeviationDanger: 5,
   fiatDeviationBlock: 10,
-  oracleDeviationDanger: 3,
+  oracleDeviationDanger: 4,
   oracleDeviationBlock: 5,
   // CowSwap's minimumReceiveBuyAmount includes slippage + partner fee,
   // so the threshold must account for both to avoid false positives
@@ -134,5 +134,8 @@ export const PRICE_BOUNDS: Record<string, { min: bigint; max: bigint }> = {
   USDC_USD: { min: CHAINLINK_SCALE / 2n, max: 2n * CHAINLINK_SCALE },
   USDT_USD: { min: CHAINLINK_SCALE / 2n, max: 2n * CHAINLINK_SCALE },
   DAI_USD: { min: CHAINLINK_SCALE / 2n, max: 2n * CHAINLINK_SCALE },
-  BTC_USD: { min: 1_000n * CHAINLINK_SCALE, max: 1_000_000n * CHAINLINK_SCALE },
+  BTC_USD: {
+    min: 30_000n * CHAINLINK_SCALE,
+    max: 200_000n * CHAINLINK_SCALE,
+  },
 };
