@@ -45,7 +45,7 @@ const COOKIES_THEME_EXPIRES_DAYS = 365;
 export const setCurrencyCookie = (value: string) =>
   Cookies.set(STORAGE_CURRENCY_KEY, value, {
     expires: COOKIES_THEME_EXPIRES_DAYS,
-    secure: true,
+    secure: process.env.NODE_ENV === 'development' ? false : true,
     sameSite: 'strict',
   });
 
