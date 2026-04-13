@@ -2,7 +2,7 @@ import { Accordion } from '@lidofinance/lido-ui';
 
 export const WhySTETH: React.FC = () => {
   return (
-    <Accordion summary="When I try to withdraw wstETH via Lido, why do I see the stETH amount in my request?">
+    <Accordion summary="When I try to withdraw wstETH, why do I see the stETH amount in my request?">
       <p>
         When you request to withdraw wstETH, it is automatically unwrapped into
         stETH, which then gets transformed into ETH. The main withdrawal period

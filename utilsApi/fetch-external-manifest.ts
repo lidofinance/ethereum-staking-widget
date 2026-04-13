@@ -4,11 +4,7 @@ import { responseTimeExternalMetricWrapper } from './fetchApiWrapper';
 import { standardFetcher } from 'utils/standardFetcher';
 
 import { config } from 'config';
-import {
-  isManifestValid,
-  getManifestKey,
-  type Manifest,
-} from 'config/external-config';
+import { isManifestValid, type Manifest } from 'config/external-config';
 
 import FallbackLocalManifest from 'IPFS.json';
 
@@ -46,10 +42,7 @@ export const fetchExternalManifest = async () => {
       if (
         !data ||
         typeof data !== 'object' ||
-        !isManifestValid(
-          data,
-          getManifestKey(config.defaultChain, config.manifestOverride),
-        )
+        !isManifestValid(data, config.defaultChain)
       ) {
         throw new Error(`invalid config received: ${data}`);
       }
