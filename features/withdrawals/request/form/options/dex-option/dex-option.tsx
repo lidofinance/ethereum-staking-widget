@@ -5,7 +5,7 @@ import {
   CowSwapWidgetProps,
   TradeType,
 } from '@cowprotocol/widget-react';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { CowWidgetEvents, OnTradeParamsPayload } from '@cowprotocol/events';
@@ -37,7 +37,9 @@ import {
   WHEN_PRICE_IMPACT_IS_HIGH_THAN,
 } from './consts';
 import { LoaderStyled, DexWrapper, SellAmountWarning } from './styles';
-import { useCowSwapEthereumProvider } from './use-cow-swap-ethereum-provider';
+import { useCowSwapEthereumProvider } from './hooks/use-cow-swap-ethereum-provider';
+import { useCspBlocked } from './hooks/use-csp-blocked';
+
 import { useTradeGuard, TradeGuardModal } from './trade-guard';
 
 const cowSwapThemeDark: CowSwapWidgetPalette = {
@@ -77,7 +79,13 @@ export const DexOption = () => {
   // state to trigger refreshes to memoized params
   const [refreshId, setRefreshId] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
-  const [cspBlocked, setCspBlocked] = useState<Error | null>(null);
+
+  useCspBlocked();
+
+  const { isTestnet, chainId } = useDappStatus();
+  const { validateAddress } = useAddressValidation();
+  const { data: walletClient } = useWalletClient();
+  const { name: themeName } = useTheme();
 
   const refreshBalances = useCallback(() => {
     void Promise.allSettled([refetchSteth(), refetchWsteth(), refetchEth()]);
@@ -92,29 +100,6 @@ export const DexOption = () => {
         .then((res) => res.ok)
         .catch(() => false),
   });
-
-  useEffect(() => {
-    const handler = (e: SecurityPolicyViolationEvent) => {
-      if (
-        (e.violatedDirective === 'child-src' ||
-          e.violatedDirective === 'frame-src') &&
-        e.blockedURI.includes('cow.fi')
-      ) {
-        setCspBlocked(new Error('CSP blocked CoW widget iframe'));
-      }
-    };
-    document.addEventListener('securitypolicyviolation', handler);
-    return () =>
-      document.removeEventListener('securitypolicyviolation', handler);
-  }, []);
-
-  if (cspBlocked) throw cspBlocked;
-
-  const { isTestnet, chainId } = useDappStatus();
-
-  const { validateAddress } = useAddressValidation();
-  const { data: walletClient } = useWalletClient();
-  const { name: themeName } = useTheme();
 
   const daoAgentAddress = getContractAddress(chainId, 'daoAgent');
   invariant(
@@ -214,15 +199,18 @@ export const DexOption = () => {
       hooks: {
         onBeforeApproval: async () => {
           if (!(await checkSellLimit())) return false;
+
           return await validate();
         },
         onBeforeWrapOrUnwrap: async () => {
           if (!(await checkSellLimit())) return false;
+
           return await validate();
         },
         onBeforeTrade: async (payload) => {
           if (!(await checkSellLimit())) return false;
           if (!(await validateTrade(payload))) return false;
+
           trackMatomoEvent(MATOMO_TX_EVENTS_TYPES.withdrawalDexSwapStart);
           return await validate();
         },
@@ -311,9 +299,8 @@ export const DexOption = () => {
       </DexWrapper>
       {sellLimitStatus.exceeded && (
         <SellAmountWarning>
-          Maximum sell amount is{' '}
-          {sellLimitStatus.maxSellUnits.toLocaleString()} tokens per
-          transaction
+          Maximum sell amount is {sellLimitStatus.maxSellUnits.toLocaleString()}{' '}
+          tokens per transaction
         </SellAmountWarning>
       )}
       <TradeGuardModal state={modalState} onClose={handleModalClose} />

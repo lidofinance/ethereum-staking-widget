@@ -253,10 +253,16 @@ export const useTradeGuard = ({
    *  Shows a neutral "limit" modal and returns false when exceeded. */
   const checkSellLimit = useCallback(async (): Promise<boolean> => {
     if (!sellExceededRef.current) return true;
+
     const t = readThresholds();
-    await showModal('limit', [
-      `Sell amount exceeds maximum allowed (${t.maxSellUnits.toLocaleString()} tokens)`,
-    ], false);
+    await showModal(
+      'limit',
+      [
+        `Sell amount exceeds maximum allowed (${t.maxSellUnits.toLocaleString()} tokens)`,
+      ],
+      false,
+    );
+
     return false;
   }, [showModal]);
 

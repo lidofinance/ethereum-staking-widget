@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { EthereumProvider, JsonRpcRequest } from '@cowprotocol/widget-react';
 import { ConnectorEventMap, useConnection, useWalletClient } from 'wagmi';
 
-import { BLOCKED_RPC_METHODS } from './consts';
+import { BLOCKED_RPC_METHODS } from '../consts';
 
 export const useCowSwapEthereumProvider = (): EthereumProvider | undefined => {
   const { data: walletClient } = useWalletClient();
