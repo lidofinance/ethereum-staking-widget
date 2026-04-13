@@ -130,32 +130,33 @@ export default withBundleAnalyzer({
         source: '/(.*)',
         headers: [
           {
-            key: 'X-DNS-Prefetch-Control',
+            key: 'x-dns-prefetch-control',
             value: 'on',
           },
           {
-            key: 'Strict-Transport-Security',
-            value: 'max-age=63072000; includeSubDomains; preload',
+            key: 'strict-transport-security',
+            value: 'max-age=63072000',
           },
           {
-            key: 'Referrer-Policy',
+            key: 'referrer-policy',
             value: 'same-origin',
           },
           {
             key: 'x-content-type-options',
             value: 'nosniff',
           },
-          { key: 'x-xss-protection', value: '1; mode=block' },
+          // if attack is detected, it's filtered but page is still rendered
+          { key: 'x-xss-protection', value: '1' },
           { key: 'x-download-options', value: 'noopen' },
-          { key: 'X-Permitted-Cross-Domain-Policies', value: 'none' },
+          { key: 'x-permitted-cross-domain-policies', value: 'none' },
           {
-            key: 'Cross-Origin-Opener-Policy',
+            key: 'cross-origin-opener-policy',
             value: process.env.CSP_REPORT_URI
               ? 'same-origin; report-to=csp-endpoint'
               : 'same-origin',
           },
           {
-            key: 'Cross-Origin-Embedder-Policy',
+            key: 'cross-origin-embedder-policy',
             value: process.env.CSP_REPORT_URI
               ? 'credentialless; report-to=csp-endpoint'
               : 'credentialless',
@@ -164,7 +165,7 @@ export default withBundleAnalyzer({
           ...(process.env.CSP_REPORT_URI
             ? [
                 {
-                  key: 'Reporting-Endpoints',
+                  key: 'reporting-endpoints',
                   value: `csp-endpoint="${process.env.CSP_REPORT_URI}"`,
                 },
                 // To consider: Network Error Logging (NEL)

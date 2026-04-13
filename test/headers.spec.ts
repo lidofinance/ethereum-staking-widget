@@ -31,20 +31,22 @@ test.describe('Page Headers', () => {
 
       expect(headers['referrer-policy']).toBe('same-origin');
       expect(headers['x-content-type-options']).toBe('nosniff');
-      expect(headers['x-xss-protection']).toBe('1; mode=block');
+      expect(headers['x-xss-protection']).toBe('1');
       expect(headers['x-dns-prefetch-control']).toBe('on');
       expect(headers['x-download-options']).toBe('noopen');
       expect(headers['x-permitted-cross-domain-policies']).toBe('none');
-      expect(headers['cross-origin-embedder-policy']).toBe('credentialless');
-      expect(headers['cross-origin-opener-policy']).toBe('same-origin');
+      expect(headers['cross-origin-embedder-policy']).toBe(
+        'credentialless; report-to=csp-endpoint',
+      );
+      expect(headers['cross-origin-opener-policy']).toBe(
+        'same-origin; report-to=csp-endpoint',
+      );
       expect(headers['permissions-policy']).toBe(
         'camera=(), microphone=(), geolocation=(), payment=(), accelerometer=(), gyroscope=(), magnetometer=(), display-capture=(), encrypted-media=(), serial=(), xr-spatial-tracking=(), browsing-topics=(), usb=(self), bluetooth=(self), hid=(self), autoplay=(self), fullscreen=(self), picture-in-picture=(self)',
       );
 
       expect(headers['reporting-endpoints']).toMatch(/csp-endpoint="[^"]+"/);
-      expect(headers['strict-transport-security']).toBe(
-        'max-age=63072000; includeSubDomains; preload',
-      );
+      expect(headers['strict-transport-security']).toBe('max-age=63072000');
 
       expect(headers['x-frame-options']).toBeUndefined();
       expect(headers[CACHE_CONTROL_HEADER]).toBeUndefined();
