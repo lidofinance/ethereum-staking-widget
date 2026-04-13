@@ -20,8 +20,8 @@ export type Thresholds = {
   oracleDeviationBlock: number;
   minReceiveRatioThreshold: number;
   slippageCheckMinFiat: number;
-  maxSellUnits: number;
-  minSellUnits: number;
+  maxAllowedSellAmount: number;
+  minSellUnitsToTriggerOracle: number;
 };
 
 export const DEFAULT_THRESHOLDS: Thresholds = {
@@ -36,9 +36,10 @@ export const DEFAULT_THRESHOLDS: Thresholds = {
   // Minimum sell fiat ($) for slippage ratio check — below this fixed
   // network costs (~$0.10-0.20) dominate and cause false positives
   slippageCheckMinFiat: 50,
-  maxSellUnits: 5_000,
+  //
+  maxAllowedSellAmount: 5_000,
   // Minimum sell amount (in token units) to trigger Chainlink oracle verification
-  minSellUnits: 1,
+  minSellUnitsToTriggerOracle: 1,
 };
 
 // --- Resolve mainnet addresses from network config ---

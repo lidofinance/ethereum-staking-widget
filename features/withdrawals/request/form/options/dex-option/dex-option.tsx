@@ -302,7 +302,8 @@ export const DexOption = () => {
       </DexWrapper>
       {sellLimitStatus.exceeded && (
         <SellAmountWarning>
-          Maximum sell amount is {sellLimitStatus.maxSellUnits.toLocaleString()}{' '}
+          Maximum sell amount is{' '}
+          {sellLimitStatus.maxAllowedSellAmount.toLocaleString()}{' '}
           {sellLimitStatus.tokenSymbol || 'tokens'} per transaction
         </SellAmountWarning>
       )}

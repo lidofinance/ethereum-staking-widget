@@ -73,12 +73,12 @@ export const analyzeParams = (
 
   // Max sell amount
   const sellUnits = safeParseDecimal(params.sellTokenAmount?.units?.toString());
-  if (sellUnits !== null && sellUnits > t.maxSellUnits) {
+  if (sellUnits !== null && sellUnits > t.maxAllowedSellAmount) {
     return {
       level: 'blocked',
       fiatDeviation: null,
       messages: [
-        `Sell amount (${sellUnits.toFixed(2)}) exceeds maximum allowed (${t.maxSellUnits})`,
+        `Sell amount (${sellUnits.toFixed(2)}) exceeds maximum allowed (${t.maxAllowedSellAmount})`,
       ],
     };
   }

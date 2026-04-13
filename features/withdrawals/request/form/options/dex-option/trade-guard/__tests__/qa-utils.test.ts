@@ -77,20 +77,22 @@ describe('readThresholds', () => {
     );
   });
 
-  it('allows lowering maxSellUnits (tighter)', () => {
+  it('allows lowering maxAllowedSellAmount (tighter)', () => {
     mockNumber.mockImplementation((v: number, key: string) =>
       key.includes('max-sell') ? 1000 : v,
     );
     const t = readThresholds();
-    expect(t.maxSellUnits).toBe(1000);
+    expect(t.maxAllowedSellAmount).toBe(1000);
   });
 
-  it('blocks raising maxSellUnits (looser)', () => {
+  it('blocks raising maxAllowedSellAmount (looser)', () => {
     mockNumber.mockImplementation((v: number, key: string) =>
       key.includes('max-sell') ? 99999 : v,
     );
     const t = readThresholds();
-    expect(t.maxSellUnits).toBe(DEFAULT_THRESHOLDS.maxSellUnits);
+    expect(t.maxAllowedSellAmount).toBe(
+      DEFAULT_THRESHOLDS.maxAllowedSellAmount,
+    );
   });
 
   // --- minReceiveRatioThreshold: higher = stricter → only allow higher ---

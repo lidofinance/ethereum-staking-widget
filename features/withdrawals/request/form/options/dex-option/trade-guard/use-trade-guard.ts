@@ -110,7 +110,7 @@ type UseTradeGuardOptions = {
 
 export type SellLimitStatus = {
   exceeded: boolean;
-  maxSellUnits: number;
+  maxAllowedSellAmount: number;
   tokenSymbol: string;
 };
 
@@ -122,7 +122,7 @@ export const useTradeGuard = ({
     useState<TradeGuardModalState>(MODAL_INITIAL_STATE);
   const [sellLimitStatus, setSellLimitStatus] = useState<SellLimitStatus>({
     exceeded: false,
-    maxSellUnits: readThresholds().maxSellUnits,
+    maxAllowedSellAmount: readThresholds().maxAllowedSellAmount,
     tokenSymbol: '',
   });
   const sellExceededRef = useRef(false);
@@ -189,10 +189,10 @@ export const useTradeGuard = ({
       // QA can only lower the oracle threshold (check smaller trades), never raise it
       const oracleMinSell = Math.min(
         overrideWithQAMockNumber(
-          t.minSellUnits,
-          QA_THRESHOLD_KEYS.minSellUnits,
+          t.minSellUnitsToTriggerOracle,
+          QA_THRESHOLD_KEYS.minSellUnitsToTriggerOracle,
         ),
-        t.minSellUnits,
+        t.minSellUnitsToTriggerOracle,
       );
       const meetsThreshold = sellUnits !== null && sellUnits >= oracleMinSell;
       // QA cannot skip oracle — override only kept for key documentation
@@ -245,16 +245,17 @@ export const useTradeGuard = ({
   // ---------------------------------------------------------------------------
 
   /** Call from ON_CHANGE_TRADE_PARAMS to track current sell amount. */
-  const reportSellAmount = useCallback(
-    (units: number, tokenSymbol: string) => {
-      const t = readThresholds();
-      const exceeded = !isNaN(units) && units > t.maxSellUnits;
-      sellExceededRef.current = exceeded;
-      tokenSymbolRef.current = tokenSymbol;
-      setSellLimitStatus({ exceeded, maxSellUnits: t.maxSellUnits, tokenSymbol });
-    },
-    [],
-  );
+  const reportSellAmount = useCallback((units: number, tokenSymbol: string) => {
+    const t = readThresholds();
+    const exceeded = !isNaN(units) && units > t.maxAllowedSellAmount;
+    sellExceededRef.current = exceeded;
+    tokenSymbolRef.current = tokenSymbol;
+    setSellLimitStatus({
+      exceeded,
+      maxAllowedSellAmount: t.maxAllowedSellAmount,
+      tokenSymbol,
+    });
+  }, []);
 
   /** Stable callback — safe to call from memoized widget hooks.
    *  Shows a neutral "limit" modal and returns false when exceeded. */
@@ -266,7 +267,7 @@ export const useTradeGuard = ({
     await showModal(
       'limit',
       [
-        `Sell amount exceeds maximum allowed (${t.maxSellUnits.toLocaleString()} ${symbol})`,
+        `Sell amount exceeds maximum allowed (${t.maxAllowedSellAmount.toLocaleString()} ${symbol})`,
       ],
       false,
     );
