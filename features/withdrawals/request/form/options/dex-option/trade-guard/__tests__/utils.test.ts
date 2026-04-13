@@ -89,23 +89,23 @@ describe('resolveLevel', () => {
     expect(resolveLevel(null, null)).toBe('safe');
   });
 
-  it('returns warning for fiat deviation >= 2%', () => {
-    expect(resolveLevel(2, null)).toBe('warning');
+  it('returns warning for fiat deviation >= 4%', () => {
+    expect(resolveLevel(4, null)).toBe('warning');
     expect(resolveLevel(4.9, null)).toBe('warning');
   });
 
   it('returns danger for fiat deviation >= 5%', () => {
     expect(resolveLevel(5, null)).toBe('danger');
-    expect(resolveLevel(9.9, null)).toBe('danger');
+    expect(resolveLevel(5.9, null)).toBe('danger');
   });
 
-  it('returns blocked for fiat deviation >= 10%', () => {
-    expect(resolveLevel(10, null)).toBe('blocked');
+  it('returns blocked for fiat deviation >= 6%', () => {
+    expect(resolveLevel(6, null)).toBe('blocked');
     expect(resolveLevel(50, null)).toBe('blocked');
   });
 
-  it('returns danger for oracle deviation >= 3%', () => {
-    expect(resolveLevel(null, 3)).toBe('danger');
+  it('returns danger for oracle deviation >= 4%', () => {
+    expect(resolveLevel(null, 4)).toBe('danger');
     expect(resolveLevel(null, 4.9)).toBe('danger');
   });
 
@@ -114,8 +114,8 @@ describe('resolveLevel', () => {
   });
 
   it('oracle takes precedence over fiat when higher', () => {
-    // fiat = warning (2%), oracle = blocked (5%)
-    expect(resolveLevel(2, 5)).toBe('blocked');
+    // fiat = warning (4%), oracle = blocked (5%)
+    expect(resolveLevel(4, 5)).toBe('blocked');
   });
 
   it('fiat takes precedence when oracle is below threshold', () => {
@@ -124,8 +124,8 @@ describe('resolveLevel', () => {
   });
 
   it('returns blocked when fiat exceeds block even if oracle is at danger', () => {
-    // fiat = blocked (11%), oracle = danger (4%) → must return blocked
-    expect(resolveLevel(11, 4)).toBe('blocked');
+    // fiat = blocked (6%), oracle = danger (4%) → must return blocked
+    expect(resolveLevel(6, 4)).toBe('blocked');
   });
 });
 
@@ -294,44 +294,44 @@ describe('analyzeParams', () => {
     // NOTE: fiat deviation subtracts partner fee (0.3%), so raw deviation
     // of 1% becomes 0.7%, raw 3% becomes 2.7%, etc.
 
-    it('returns safe for small deviation (< 2% after partner fee)', () => {
-      const payload = makePayload({
-        sellTokenFiatAmount: '1000',
-        buyTokenFiatAmount: '990', // raw 1% → 0.7% after fee
-      });
-      const result = analyzeParams(payload, WALLET, false);
-      expect(result.level).toBe('safe');
-      expect(result.fiatDeviation).toBeCloseTo(0.7);
-    });
-
-    it('returns warning for deviation >= 2% after partner fee', () => {
+    it('returns safe for small deviation (< 4% after partner fee)', () => {
       const payload = makePayload({
         sellTokenFiatAmount: '1000',
         buyTokenFiatAmount: '970', // raw 3% → 2.7% after fee
       });
       const result = analyzeParams(payload, WALLET, false);
-      expect(result.level).toBe('warning');
+      expect(result.level).toBe('safe');
       expect(result.fiatDeviation).toBeCloseTo(2.7);
+    });
+
+    it('returns warning for deviation >= 4% after partner fee', () => {
+      const payload = makePayload({
+        sellTokenFiatAmount: '1000',
+        buyTokenFiatAmount: '957', // raw 4.3% → 4.0% after fee
+      });
+      const result = analyzeParams(payload, WALLET, false);
+      expect(result.level).toBe('warning');
+      expect(result.fiatDeviation).toBeCloseTo(4.0);
     });
 
     it('returns danger for deviation >= 5% after partner fee', () => {
       const payload = makePayload({
         sellTokenFiatAmount: '1000',
-        buyTokenFiatAmount: '940', // raw 6% → 5.7% after fee
+        buyTokenFiatAmount: '947', // raw 5.3% → 5.0% after fee
       });
       const result = analyzeParams(payload, WALLET, false);
       expect(result.level).toBe('danger');
-      expect(result.fiatDeviation).toBeCloseTo(5.7);
+      expect(result.fiatDeviation).toBeCloseTo(5.0);
     });
 
-    it('returns blocked for deviation >= 10% after partner fee', () => {
+    it('returns blocked for deviation >= 6% after partner fee', () => {
       const payload = makePayload({
         sellTokenFiatAmount: '1000',
-        buyTokenFiatAmount: '850', // raw 15% → 14.7% after fee
+        buyTokenFiatAmount: '937', // raw 6.3% → 6.0% after fee
       });
       const result = analyzeParams(payload, WALLET, false);
       expect(result.level).toBe('blocked');
-      expect(result.fiatDeviation).toBeCloseTo(14.7);
+      expect(result.fiatDeviation).toBeCloseTo(6.0);
     });
 
     it('flags implausible gain (buyFiat > sellFiat * 1.05)', () => {
