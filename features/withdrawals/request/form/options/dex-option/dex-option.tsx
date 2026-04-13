@@ -126,11 +126,7 @@ export const DexOption = () => {
     'DAO Agent address is not defined for current network',
   );
 
-  const {
-    modalState,
-    handleModalClose,
-    validateTrade,
-  } = useTradeGuard({
+  const { modalState, handleModalClose, validateTrade } = useTradeGuard({
     walletAddress: walletClient?.account.address,
     isTestnet,
   });
@@ -319,7 +315,9 @@ export const DexOption = () => {
       </DexWrapper>
       {sellAmountExceeded && (
         <SellAmountWarning>
-          Maximum sell amount is {DEFAULT_THRESHOLDS.maxSellUnits.toLocaleString()} tokens per transaction
+          Maximum sell amount is{' '}
+          {DEFAULT_THRESHOLDS.maxSellUnits.toLocaleString()} tokens per
+          transaction
         </SellAmountWarning>
       )}
       <TradeGuardModal state={modalState} onClose={handleModalClose} />

@@ -11,7 +11,6 @@ import {
   WSTETH_ADDRESS,
   PARTNER_FEE_PCT,
 } from './consts';
-import type { OnTradeParamsPayload } from './types';
 import { safeParseDecimal } from './utils';
 import {
   isValidRound,
@@ -20,8 +19,9 @@ import {
   WSTETH_SCALE,
   WSTETH_RATE_MIN,
   WSTETH_RATE_MAX,
+  type RoundData,
 } from './oracle-utils';
-import type { RoundData } from './oracle-utils';
+import type { OnTradeParamsPayload } from './types';
 
 export type OracleResult =
   | { ok: true; sellTokenUsd: number; buyTokenUsd: number; deviation: number }
@@ -75,8 +75,10 @@ export const useOracleRates = () => {
 
         // Validate rounds
         const nowSec = BigInt(Math.floor(Date.now() / 1000));
-        if (!isValidRound(sellRoundData, sellFeed.maxStaleness, nowSec)) return FAIL_UNAVAILABLE;
-        if (!isValidRound(buyRoundData, buyFeed.maxStaleness, nowSec)) return FAIL_UNAVAILABLE;
+        if (!isValidRound(sellRoundData, sellFeed.maxStaleness, nowSec))
+          return FAIL_UNAVAILABLE;
+        if (!isValidRound(buyRoundData, buyFeed.maxStaleness, nowSec))
+          return FAIL_UNAVAILABLE;
 
         const sellAnswer = sellRoundData[1];
         const buyAnswer = buyRoundData[1];
@@ -89,14 +91,26 @@ export const useOracleRates = () => {
         let sellPriceScaled = sellAnswer;
         if (isWsteth) {
           if (wstethRate == null) return FAIL_UNAVAILABLE;
-          if (wstethRate < WSTETH_RATE_MIN || wstethRate > WSTETH_RATE_MAX) return FAIL_UNAVAILABLE;
+          if (wstethRate < WSTETH_RATE_MIN || wstethRate > WSTETH_RATE_MAX)
+            return FAIL_UNAVAILABLE;
           sellPriceScaled = (sellPriceScaled * wstethRate) / WSTETH_SCALE;
         }
 
         // Compute deviation
-        const sellUnits = safeParseDecimal(params.sellTokenAmount?.units?.toString());
-        const buyUnits = safeParseDecimal(params.buyTokenAmount?.units?.toString());
-        if (sellUnits === null || sellUnits <= 0 || buyUnits === null || buyUnits <= 0) return FAIL_UNAVAILABLE;
+        const sellUnits = safeParseDecimal(
+          params.sellTokenAmount?.units?.toString(),
+        );
+        const buyUnits = safeParseDecimal(
+          params.buyTokenAmount?.units?.toString(),
+        );
+
+        const isInvalidUnits =
+          sellUnits === null ||
+          sellUnits <= 0 ||
+          buyUnits === null ||
+          buyUnits <= 0;
+
+        if (isInvalidUnits) return FAIL_UNAVAILABLE;
 
         const sellTokenUsd = Number(sellPriceScaled) / Number(CHAINLINK_SCALE);
         const buyTokenUsd = Number(buyAnswer) / Number(CHAINLINK_SCALE);
@@ -106,7 +120,8 @@ export const useOracleRates = () => {
 
         // Subtract partner fee — known fixed cost, not unexpected loss
         const deviation =
-          ((expectedSellUsd - actualBuyUsd) / expectedSellUsd) * 100 - PARTNER_FEE_PCT;
+          ((expectedSellUsd - actualBuyUsd) / expectedSellUsd) * 100 -
+          PARTNER_FEE_PCT;
 
         return { ok: true, sellTokenUsd, buyTokenUsd, deviation };
       } catch {
