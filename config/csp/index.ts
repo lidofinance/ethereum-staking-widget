@@ -40,11 +40,12 @@ export const contentSecurityPolicy: ContentSecurityPolicyOption = {
       'wss:',
       ...(config.developmentMode ? ['ws:'] : []), // for HMR
     ],
-
+    // These directives are ignored when delivered via a <meta> element (IPFS mode).
     ...(!config.ipfsMode && {
-      // CSP directive 'frame-ancestors' is ignored when delivered via a <meta> element.
-      // CSP directive 'report-uri' is ignored when delivered via a <meta> element.
       frameAncestors: ['*'],
+      // Modern way - References the group declared in the Reporting-Endpoints response header
+      ...(secretConfig.cspReportUri && { reportTo: 'csp-endpoint' }),
+      // Legacy way
       reportURI: secretConfig.cspReportUri,
     }),
     // frame-src takes precedence over child-src for iframes in modern browsers

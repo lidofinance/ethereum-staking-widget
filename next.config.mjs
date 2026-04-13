@@ -150,6 +150,15 @@ export default withBundleAnalyzer({
           { key: 'X-Permitted-Cross-Domain-Policies', value: 'none' },
           { key: 'Cross-Origin-Opener-Policy', value: 'same-origin' },
           { key: 'Cross-Origin-Embedder-Policy', value: 'credentialless' },
+          // Reporting API v1 — defines the group referenced by CSP report-to
+          ...(process.env.CSP_REPORT_URI
+            ? [
+                {
+                  key: 'Reporting-Endpoints',
+                  value: `csp-endpoint="${process.env.CSP_REPORT_URI}"`,
+                },
+              ]
+            : []),
           {
             key: 'Permissions-Policy',
             value: [
