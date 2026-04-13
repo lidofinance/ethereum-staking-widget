@@ -476,6 +476,35 @@ describe('PRICE_BOUNDS', () => {
 });
 
 // ---------------------------------------------------------------------------
+// isInBounds
+// ---------------------------------------------------------------------------
+describe('isInBounds', () => {
+  it('returns true for price within bounds', () => {
+    expect(isInBounds(2200n * CHAINLINK_SCALE, 'ETH_USD')).toBe(true);
+  });
+
+  it('returns false for price below min', () => {
+    expect(isInBounds(10n * CHAINLINK_SCALE, 'ETH_USD')).toBe(false);
+  });
+
+  it('returns false for price above max', () => {
+    expect(isInBounds(30_000n * CHAINLINK_SCALE, 'ETH_USD')).toBe(false);
+  });
+
+  it('returns true at exact min boundary', () => {
+    expect(isInBounds(PRICE_BOUNDS['ETH_USD'].min, 'ETH_USD')).toBe(true);
+  });
+
+  it('returns true at exact max boundary', () => {
+    expect(isInBounds(PRICE_BOUNDS['ETH_USD'].max, 'ETH_USD')).toBe(true);
+  });
+
+  it('returns false (fail-closed) for unknown feed key', () => {
+    expect(isInBounds(100n * CHAINLINK_SCALE, 'UNKNOWN_FEED')).toBe(false);
+  });
+});
+
+// ---------------------------------------------------------------------------
 // wstETH rate bounds
 // ---------------------------------------------------------------------------
 describe('wstETH rate bounds', () => {
