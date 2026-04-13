@@ -148,15 +148,26 @@ export default withBundleAnalyzer({
           { key: 'x-xss-protection', value: '1; mode=block' },
           { key: 'x-download-options', value: 'noopen' },
           { key: 'X-Permitted-Cross-Domain-Policies', value: 'none' },
-          { key: 'Cross-Origin-Opener-Policy', value: 'same-origin' },
-          { key: 'Cross-Origin-Embedder-Policy', value: 'credentialless' },
-          // Reporting API v1 — defines the group referenced by CSP report-to
+          {
+            key: 'Cross-Origin-Opener-Policy',
+            value: process.env.CSP_REPORT_URI
+              ? 'same-origin; report-to=csp-endpoint'
+              : 'same-origin',
+          },
+          {
+            key: 'Cross-Origin-Embedder-Policy',
+            value: process.env.CSP_REPORT_URI
+              ? 'credentialless; report-to=csp-endpoint'
+              : 'credentialless',
+          },
+          // Reporting API v1 — defines the group referenced by CSP, COOP, COEP
           ...(process.env.CSP_REPORT_URI
             ? [
                 {
                   key: 'Reporting-Endpoints',
                   value: `csp-endpoint="${process.env.CSP_REPORT_URI}"`,
                 },
+                // To consider: Network Error Logging (NEL)
               ]
             : []),
           {
