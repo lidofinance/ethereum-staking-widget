@@ -58,7 +58,6 @@ export const contentSecurityPolicy: ContentSecurityPolicyOption = {
     // child-src kept as fallback for older browsers
     childSrc: [
       "'self'",
-      'https://swap.cow.fi', // CowSwap widget iframe baseUrl
       'https://*.walletconnect.org',
       'https://*.walletconnect.com',
     ],

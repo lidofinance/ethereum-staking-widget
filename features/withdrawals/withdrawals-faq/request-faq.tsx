@@ -26,10 +26,6 @@ import { HowToAddNFT } from './list/add-nft';
 import { NFTNotChange } from './list/nft-not-change';
 import { WhyWaitingTimeChanged } from './list/why-waiting-time-changed';
 import { RisksOfEngagingWithLido } from './list/risks-of-engaging-with-lido';
-import { WhatAreMyOptions } from './list/what-are-my-options';
-import { WhatIsTheDifference } from './list/what-is-the-difference';
-import { WhichAssets } from './list/which-assets';
-import { HowDoISwap } from './list/how-do-i-swap';
 
 // TODO: Replace this link when it will be finalized
 // const LEARN_MORE_LINK =
@@ -42,12 +38,8 @@ export const RequestFaq: React.FC = () => {
     <Section title="FAQ" onClick={onClickHandler}>
       <RisksOfEngagingWithLido />
       <WhatAreWithdrawals />
-      <WhatAreMyOptions />
-      <WhatIsTheDifference />
-      <WhichAssets />
       <HowDoesWithdrawalsWork />
       <HowToWithdraw />
-      <HowDoISwap />
       <ConvertSTETHtoETH />
       <ConvertWSTETHtoETH />
       <WhySTETH />
@@ -56,7 +48,7 @@ export const RequestFaq: React.FC = () => {
       <RewardsAfterWithdraw />
       <WithdrawalFee />
       <WhyWaitingTimeChanged />
-      <ClaimableAmountDifference title="Why is the claimable amount may differ from my requested amount via Lido?" />
+      <ClaimableAmountDifference title="Why is the claimable amount may differ from my requested amount?" />
       <TurboMode />
       <BunkerMode />
       <BunkerModeReasons />
