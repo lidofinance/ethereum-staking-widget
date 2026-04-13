@@ -112,3 +112,27 @@ export const SELL_TOKEN_FEED_MAP: Record<string, string> = {
 
 // wstETH address for detecting when extra conversion is needed
 export const WSTETH_ADDRESS = c.wsteth.toLowerCase() as Address;
+
+//
+// ---------------------------------------------------------------------------
+// Oracle constants
+// ---------------------------------------------------------------------------
+
+// Chainlink scale (8 decimals)
+export const CHAINLINK_SCALE = 10n ** 8n;
+// wstETH scale (18 decimals)
+export const WSTETH_SCALE = 10n ** 18n;
+// wstETH rate minimum (18 decimals)
+export const WSTETH_RATE_MIN = 10n ** 18n;
+// wstETH rate maximum (18 decimals)
+export const WSTETH_RATE_MAX = 2n * 10n ** 18n; // 2.0 — ~14 years runway at 5% APR
+
+// Per-feed price sanity bounds (8 decimals)
+export const PRICE_BOUNDS: Record<string, { min: bigint; max: bigint }> = {
+  ETH_USD: { min: 1000n * CHAINLINK_SCALE, max: 20_000n * CHAINLINK_SCALE },
+  STETH_USD: { min: 1000n * CHAINLINK_SCALE, max: 20_000n * CHAINLINK_SCALE },
+  USDC_USD: { min: CHAINLINK_SCALE / 2n, max: 2n * CHAINLINK_SCALE },
+  USDT_USD: { min: CHAINLINK_SCALE / 2n, max: 2n * CHAINLINK_SCALE },
+  DAI_USD: { min: CHAINLINK_SCALE / 2n, max: 2n * CHAINLINK_SCALE },
+  BTC_USD: { min: 1_000n * CHAINLINK_SCALE, max: 1_000_000n * CHAINLINK_SCALE },
+};

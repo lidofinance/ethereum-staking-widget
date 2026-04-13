@@ -10,17 +10,17 @@ import {
   BUY_TOKEN_FEED_MAP,
   WSTETH_ADDRESS,
   PARTNER_FEE_PCT,
-} from './consts';
-import { safeParseDecimal } from './utils';
-import {
-  isValidRound,
-  isInBounds,
   CHAINLINK_SCALE,
   WSTETH_SCALE,
   WSTETH_RATE_MIN,
   WSTETH_RATE_MAX,
+} from './consts';
+import {
+  safeParseDecimal,
+  isValidRound,
+  isInBounds,
   type RoundData,
-} from './oracle-utils';
+} from './utils';
 import type { OnTradeParamsPayload } from './types';
 
 export type OracleResult =

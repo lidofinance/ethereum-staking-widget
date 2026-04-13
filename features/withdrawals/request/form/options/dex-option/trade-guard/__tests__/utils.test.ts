@@ -1,14 +1,14 @@
 import { safeParseDecimal } from '../utils/safe-parce-decimal';
 import { resolveLevel } from '../utils/resolve-level';
 import { analyzeParams } from '../utils/analyze-params';
+import { isValidRound } from '../utils/oracle-utils';
 import {
-  isValidRound,
   CHAINLINK_SCALE,
   PRICE_BOUNDS,
   WSTETH_RATE_MIN,
   WSTETH_RATE_MAX,
-} from '../oracle-utils';
-import type { RoundData } from '../oracle-utils';
+} from '../consts';
+import type { RoundData } from '../utils/oracle-utils';
 import type { OnTradeParamsPayload } from '../types';
 
 // stETH and ETH addresses for test fixtures
