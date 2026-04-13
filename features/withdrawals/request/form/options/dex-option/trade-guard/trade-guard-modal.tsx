@@ -20,7 +20,7 @@ const Title = styled.h3<{ $level: 'blocked' | 'limit' | 'warning' }>`
         : 'var(--lido-color-warning, #f5a623)'};
 `;
 
-const MessageList = styled.ul`
+const MessageList = styled.div`
   text-align: left;
   margin: 0 0 24px;
   padding-left: 20px;
@@ -87,7 +87,7 @@ export const TradeGuardModal = ({ state, onClose }: TradeGuardModalProps) => {
 
         <MessageList>
           {messages.map((msg) => (
-            <li key={msg}>{msg}</li>
+            <p key={msg}>{msg}</p>
           ))}
         </MessageList>
 
