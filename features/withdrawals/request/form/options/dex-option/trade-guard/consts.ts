@@ -27,7 +27,7 @@ export type Thresholds = {
 export const DEFAULT_THRESHOLDS: Thresholds = {
   fiatDeviationWarning: 4,
   fiatDeviationDanger: 5,
-  fiatDeviationBlock: 10,
+  fiatDeviationBlock: 6,
   oracleDeviationDanger: 4,
   oracleDeviationBlock: 5,
   // CowSwap's minimumReceiveBuyAmount includes slippage + partner fee,
