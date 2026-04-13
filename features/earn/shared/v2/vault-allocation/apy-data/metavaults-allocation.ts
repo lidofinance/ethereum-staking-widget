@@ -1,4 +1,4 @@
-import z from 'zod';
+import { z } from 'zod';
 import { Address } from 'viem';
 
 import { standardFetcher } from 'utils/standardFetcher';

@@ -1,4 +1,5 @@
 import NextBundleAnalyzer from '@next/bundle-analyzer';
+import { fileURLToPath } from 'url';
 import buildDynamics from './scripts/build-dynamics.mjs';
 import { logEnvironmentVariables } from './scripts/log-environment-variables.mjs';
 import generateBuildId from './scripts/generate-build-id.mjs';
@@ -120,6 +121,13 @@ export default withBundleAnalyzer({
     config.resolve.fallback = {
       '@react-native-async-storage/async-storage': false,
     };
+
+    // Alias exact 'zod' imports to a wrapper that disables Zod's eval-based JIT
+    // as a side-effect on first import, before any schema parsing can occur.
+    // The $ suffix makes this an exact match, leaving 'zod/mini', 'zod/v4', etc. alone.
+    config.resolve.alias['zod$'] = fileURLToPath(
+      new URL('utils/zod-setup.ts', import.meta.url),
+    );
 
     return config;
   },

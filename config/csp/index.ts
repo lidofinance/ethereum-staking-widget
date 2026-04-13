@@ -30,6 +30,8 @@ export const contentSecurityPolicy: ContentSecurityPolicyOption = {
     ],
     scriptSrc: [
       "'self'",
+      // light/dark theme apply
+      "'eval-sha256-+CsItOgDyYUV0cButNNF02fx9NeCL52rS31Mq6+jjQM='",
       ...(config.developmentMode ? ["'unsafe-eval'"] : []), // for HMR
       ...(config.ipfsMode ? [IPFS_BASE_SCRIPT_HASH] : []),
       ...trustedHosts,
