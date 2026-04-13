@@ -30,7 +30,8 @@ export const contentSecurityPolicy: ContentSecurityPolicyOption = {
     ],
     scriptSrc: [
       "'self'",
-      // light/dark theme apply
+      // light/dark theme on pageload apply script
+      // if script changes, new hash must be checked against CSP error and updated
       "'eval-sha256-+CsItOgDyYUV0cButNNF02fx9NeCL52rS31Mq6+jjQM='",
       ...(config.developmentMode ? ["'unsafe-eval'"] : []), // for HMR
       ...(config.ipfsMode ? [IPFS_BASE_SCRIPT_HASH] : []),
