@@ -5,7 +5,7 @@ import {
   CowSwapWidgetProps,
   TradeType,
 } from '@cowprotocol/widget-react';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { CowWidgetEvents, OnTradeParamsPayload } from '@cowprotocol/events';
@@ -39,8 +39,6 @@ import {
 import { LoaderStyled, DexWrapper, SellAmountWarning } from './styles';
 import { useCowSwapEthereumProvider } from './use-cow-swap-ethereum-provider';
 import { useTradeGuard, TradeGuardModal } from './trade-guard';
-import { DEFAULT_THRESHOLDS } from './trade-guard/consts';
-import { readThresholds } from './trade-guard/utils';
 
 const cowSwapThemeDark: CowSwapWidgetPalette = {
   baseTheme: 'dark',
@@ -80,13 +78,6 @@ export const DexOption = () => {
   const [refreshId, setRefreshId] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [cspBlocked, setCspBlocked] = useState<Error | null>(null);
-
-  const [sellAmountExceeded, setSellAmountExceeded] = useState(false);
-  const [maxSellDisplay, setMaxSellDisplay] = useState(
-    DEFAULT_THRESHOLDS.maxSellUnits,
-  );
-  // Ref mirrors state so memoized hooks can read it without re-creating widget params
-  const sellAmountExceededRef = useRef(false);
 
   const refreshBalances = useCallback(() => {
     void Promise.allSettled([refetchSteth(), refetchWsteth(), refetchEth()]);
@@ -131,40 +122,22 @@ export const DexOption = () => {
     'DAO Agent address is not defined for current network',
   );
 
-  const { modalState, handleModalClose, validateTrade, showLimitMessage } =
-    useTradeGuard({
-      walletAddress: walletClient?.account.address,
-      isTestnet,
-    });
-  // Ref so memoized hooks can call showLimitMessage without re-creating widget params
-  const showLimitMessageRef = useRef(showLimitMessage);
-  showLimitMessageRef.current = showLimitMessage;
+  const {
+    modalState,
+    handleModalClose,
+    validateTrade,
+    sellLimitStatus,
+    reportSellAmount,
+    checkSellLimit,
+  } = useTradeGuard({
+    walletAddress: walletClient?.account.address,
+    isTestnet,
+  });
 
   const validate = useCallback(async () => {
     const isValid = await validateAddress(walletClient?.account.address);
     return isValid;
   }, [validateAddress, walletClient?.account.address]);
-
-  const showLimitMessageCallback = useCallback(async () => {
-    const t = readThresholds();
-    await showLimitMessageRef.current([
-      `Sell amount exceeds maximum allowed (${t.maxSellUnits.toLocaleString()} tokens)`,
-    ]);
-
-    return false;
-  }, [showLimitMessageRef]);
-
-  const checkSellAmountExceeded = useCallback(
-    (params: OnTradeParamsPayload) => {
-      const t = readThresholds();
-      const units = Number(params.sellTokenAmount?.units);
-      const exceeded = !isNaN(units) && units > t.maxSellUnits;
-      sellAmountExceededRef.current = exceeded;
-      setSellAmountExceeded(exceeded);
-      setMaxSellDisplay(t.maxSellUnits);
-    },
-    [],
-  );
 
   const params = useMemo<CowSwapWidgetParams>(
     () => ({
@@ -240,23 +213,16 @@ export const DexOption = () => {
 
       hooks: {
         onBeforeApproval: async () => {
-          if (sellAmountExceededRef.current)
-            return await showLimitMessageCallback();
-
+          if (!(await checkSellLimit())) return false;
           return await validate();
         },
         onBeforeWrapOrUnwrap: async () => {
-          if (sellAmountExceededRef.current)
-            return await showLimitMessageCallback();
-
+          if (!(await checkSellLimit())) return false;
           return await validate();
         },
         onBeforeTrade: async (payload) => {
-          if (sellAmountExceededRef.current)
-            return await showLimitMessageCallback();
-
+          if (!(await checkSellLimit())) return false;
           if (!(await validateTrade(payload))) return false;
-
           trackMatomoEvent(MATOMO_TX_EVENTS_TYPES.withdrawalDexSwapStart);
           return await validate();
         },
@@ -313,7 +279,7 @@ export const DexOption = () => {
         event: CowWidgetEvents.ON_CHANGE_TRADE_PARAMS,
         handler: (params: OnTradeParamsPayload) => {
           // Check sell amount against max threshold (QA can only lower)
-          checkSellAmountExceeded(params);
+          reportSellAmount(Number(params.sellTokenAmount?.units));
 
           // Workaround: refresh params if user changes sell token
           const { sellToken } = params;
@@ -343,9 +309,10 @@ export const DexOption = () => {
         />
         <LoaderStyled $isVisible={isLoading} />
       </DexWrapper>
-      {sellAmountExceeded && (
+      {sellLimitStatus.exceeded && (
         <SellAmountWarning>
-          Maximum sell amount is {maxSellDisplay.toLocaleString()} tokens per
+          Maximum sell amount is{' '}
+          {sellLimitStatus.maxSellUnits.toLocaleString()} tokens per
           transaction
         </SellAmountWarning>
       )}

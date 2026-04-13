@@ -108,12 +108,22 @@ type UseTradeGuardOptions = {
   isTestnet?: boolean;
 };
 
+export type SellLimitStatus = {
+  exceeded: boolean;
+  maxSellUnits: number;
+};
+
 export const useTradeGuard = ({
   walletAddress,
   isTestnet = false,
 }: UseTradeGuardOptions) => {
   const [modalState, setModalState] =
     useState<TradeGuardModalState>(MODAL_INITIAL_STATE);
+  const [sellLimitStatus, setSellLimitStatus] = useState<SellLimitStatus>({
+    exceeded: false,
+    maxSellUnits: readThresholds().maxSellUnits,
+  });
+  const sellExceededRef = useRef(false);
   const resolveRef = useRef<((value: boolean) => void) | null>(null);
   const { verifyWithOracle } = useOracleRates();
 
@@ -226,14 +236,36 @@ export const useTradeGuard = ({
     [walletAddress, isTestnet, verifyWithOracle, showModal],
   );
 
-  // Show a neutral "limit" modal (e.g. sell amount exceeded) — not a security
-  // threat, just a boundary value. Uses grey styling instead of red "blocked".
-  const showLimitMessage = useCallback(
-    async (messages: string[]): Promise<void> => {
-      await showModal('limit', messages, false);
-    },
-    [showModal],
-  );
+  // ---------------------------------------------------------------------------
+  // Sell-amount limit — ref lives here so memoized widget hooks can read it
+  // without triggering re-creation of CowSwap params.
+  // ---------------------------------------------------------------------------
 
-  return { modalState, handleModalClose, validateTrade, showLimitMessage };
+  /** Call from ON_CHANGE_TRADE_PARAMS to track current sell amount. */
+  const reportSellAmount = useCallback((units: number) => {
+    const t = readThresholds();
+    const exceeded = !isNaN(units) && units > t.maxSellUnits;
+    sellExceededRef.current = exceeded;
+    setSellLimitStatus({ exceeded, maxSellUnits: t.maxSellUnits });
+  }, []);
+
+  /** Stable callback — safe to call from memoized widget hooks.
+   *  Shows a neutral "limit" modal and returns false when exceeded. */
+  const checkSellLimit = useCallback(async (): Promise<boolean> => {
+    if (!sellExceededRef.current) return true;
+    const t = readThresholds();
+    await showModal('limit', [
+      `Sell amount exceeds maximum allowed (${t.maxSellUnits.toLocaleString()} tokens)`,
+    ], false);
+    return false;
+  }, [showModal]);
+
+  return {
+    modalState,
+    handleModalClose,
+    validateTrade,
+    sellLimitStatus,
+    reportSellAmount,
+    checkSellLimit,
+  };
 };
