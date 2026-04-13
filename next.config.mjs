@@ -143,7 +143,7 @@ export default withBundleAnalyzer({
           },
           {
             key: 'strict-transport-security',
-            value: 'max-age=63072000',
+            value: 'max-age=63072000; includeSubDomains; preload',
           },
           {
             key: 'referrer-policy',

@@ -53,7 +53,9 @@ test.describe('Page Headers', () => {
       );
 
       expect(headers['reporting-endpoints']).toMatch(/csp-endpoint="[^"]+"/);
-      expect(headers['strict-transport-security']).toBe('max-age=63072000');
+      expect(headers['strict-transport-security']).toBe(
+        'max-age=63072000; includeSubDomains; preload',
+      );
 
       expect(headers['x-frame-options']).toBeUndefined();
       expect(headers[CACHE_CONTROL_HEADER]).toBeUndefined();
