@@ -226,5 +226,13 @@ export const useTradeGuard = ({
     [walletAddress, isTestnet, verifyWithOracle, showModal],
   );
 
-  return { modalState, handleModalClose, validateTrade };
+  // Show a blocked modal with custom messages (e.g. sell amount exceeded)
+  const showBlockedMessage = useCallback(
+    async (messages: string[]): Promise<void> => {
+      await showModal('blocked', messages, false);
+    },
+    [showModal],
+  );
+
+  return { modalState, handleModalClose, validateTrade, showBlockedMessage };
 };

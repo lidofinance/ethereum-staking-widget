@@ -40,6 +40,7 @@ import { LoaderStyled, DexWrapper, SellAmountWarning } from './styles';
 import { useCowSwapEthereumProvider } from './use-cow-swap-ethereum-provider';
 import { useTradeGuard, TradeGuardModal } from './trade-guard';
 import { DEFAULT_THRESHOLDS } from './trade-guard/consts';
+import { readThresholds } from './trade-guard/utils';
 
 const cowSwapThemeDark: CowSwapWidgetPalette = {
   baseTheme: 'dark',
@@ -80,8 +81,11 @@ export const DexOption = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [cspBlocked, setCspBlocked] = useState<Error | null>(null);
   const [sellAmountExceeded, setSellAmountExceeded] = useState(false);
-  // Ref mirrors state so memoized hooks can read it without re-creating widget params
+  const [maxSellDisplay, setMaxSellDisplay] = useState(DEFAULT_THRESHOLDS.maxSellUnits);
+  // Refs mirror state/callbacks so memoized hooks can read them without re-creating widget params
   const sellAmountExceededRef = useRef(false);
+  const showBlockedMessageRef = useRef(showBlockedMessage);
+  showBlockedMessageRef.current = showBlockedMessage;
 
   const refreshBalances = useCallback(() => {
     void Promise.allSettled([refetchSteth(), refetchWsteth(), refetchEth()]);
@@ -126,7 +130,12 @@ export const DexOption = () => {
     'DAO Agent address is not defined for current network',
   );
 
-  const { modalState, handleModalClose, validateTrade } = useTradeGuard({
+  const {
+    modalState,
+    handleModalClose,
+    validateTrade,
+    showBlockedMessage,
+  } = useTradeGuard({
     walletAddress: walletClient?.account.address,
     isTestnet,
   });
@@ -210,15 +219,33 @@ export const DexOption = () => {
 
       hooks: {
         onBeforeApproval: async () => {
-          if (sellAmountExceededRef.current) return false;
+          if (sellAmountExceededRef.current) {
+            const t = readThresholds();
+            await showBlockedMessageRef.current([
+              `Sell amount exceeds maximum allowed (${t.maxSellUnits.toLocaleString()} tokens)`,
+            ]);
+            return false;
+          }
           return await validate();
         },
         onBeforeWrapOrUnwrap: async () => {
-          if (sellAmountExceededRef.current) return false;
+          if (sellAmountExceededRef.current) {
+            const t = readThresholds();
+            await showBlockedMessageRef.current([
+              `Sell amount exceeds maximum allowed (${t.maxSellUnits.toLocaleString()} tokens)`,
+            ]);
+            return false;
+          }
           return await validate();
         },
         onBeforeTrade: async (payload) => {
-          if (sellAmountExceededRef.current) return false;
+          if (sellAmountExceededRef.current) {
+            const t = readThresholds();
+            await showBlockedMessageRef.current([
+              `Sell amount exceeds maximum allowed (${t.maxSellUnits.toLocaleString()} tokens)`,
+            ]);
+            return false;
+          }
           if (!(await validateTrade(payload))) return false;
           trackMatomoEvent(MATOMO_TX_EVENTS_TYPES.withdrawalDexSwapStart);
           return await validate();
@@ -278,12 +305,13 @@ export const DexOption = () => {
           sellToken?: { symbol: string };
           sellTokenAmount?: { units: string };
         }) => {
-          // Check sell amount against max threshold
+          // Check sell amount against max threshold (QA can only lower)
+          const t = readThresholds();
           const units = Number(params.sellTokenAmount?.units);
-          const exceeded =
-            !isNaN(units) && units > DEFAULT_THRESHOLDS.maxSellUnits;
+          const exceeded = !isNaN(units) && units > t.maxSellUnits;
           sellAmountExceededRef.current = exceeded;
           setSellAmountExceeded(exceeded);
+          setMaxSellDisplay(t.maxSellUnits);
 
           // Workaround: refresh params if user changes sell token
           const { sellToken } = params;
@@ -315,8 +343,7 @@ export const DexOption = () => {
       </DexWrapper>
       {sellAmountExceeded && (
         <SellAmountWarning>
-          Maximum sell amount is{' '}
-          {DEFAULT_THRESHOLDS.maxSellUnits.toLocaleString()} tokens per
+          Maximum sell amount is {maxSellDisplay.toLocaleString()} tokens per
           transaction
         </SellAmountWarning>
       )}

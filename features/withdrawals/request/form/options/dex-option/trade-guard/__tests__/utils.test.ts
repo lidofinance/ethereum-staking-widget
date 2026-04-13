@@ -1,7 +1,7 @@
 import { safeParseDecimal } from '../utils/safe-parce-decimal';
 import { resolveLevel } from '../utils/resolve-level';
 import { analyzeParams } from '../utils/analyze-params';
-import { isValidRound } from '../utils/oracle-utils';
+import { isValidRound, isInBounds } from '../utils/oracle-utils';
 import {
   CHAINLINK_SCALE,
   PRICE_BOUNDS,
@@ -467,6 +467,11 @@ describe('PRICE_BOUNDS', () => {
 
   it('ETH bounds reject $0', () => {
     expect(0n >= PRICE_BOUNDS['ETH_USD'].min).toBe(false);
+  });
+
+  it('ETH bounds reject $500 (below $1000 min)', () => {
+    const price = 500n * CHAINLINK_SCALE;
+    expect(price >= PRICE_BOUNDS['ETH_USD'].min).toBe(false);
   });
 
   it('USDC bounds reject $3', () => {
