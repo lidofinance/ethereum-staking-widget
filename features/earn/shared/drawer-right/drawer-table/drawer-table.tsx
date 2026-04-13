@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { ReactNode } from 'react';
 
 import { VaultEthIcon } from 'assets/earn-v2';
 import { ReactComponent as ChevronsUp } from 'assets/icons/chevrons-up.svg';
@@ -69,13 +69,25 @@ const DATA = [
       {
         cells: [
           'Fees',
-          '1 % management fee <br /> 10 % performance fee',
-          '1 % management fee <br /> 10 % performance fee',
+          ['1 % management fee', '10 % performance fee'],
+          ['1 % management fee', '10 % performance fee'],
         ],
       },
     ],
   },
 ];
+
+const renderCell = (cell: ReactNode | string[]): ReactNode => {
+  if (Array.isArray(cell)) {
+    return cell.map((line, i) => (
+      <React.Fragment key={i}>
+        {i > 0 && <br />}
+        {line}
+      </React.Fragment>
+    ));
+  }
+  return <>{cell}</>;
+};
 
 export const DrawerTable = () => {
   return (
@@ -98,11 +110,7 @@ export const DrawerTable = () => {
                 {row.cells.map((cell, cellIndex) => (
                   <Td key={cellIndex}>
                     <MobileCellHeader>{row.cells[0]}</MobileCellHeader>
-                    {typeof cell === 'string' ? (
-                      <span dangerouslySetInnerHTML={{ __html: cell }} />
-                    ) : (
-                      <>{cell}</>
-                    )}
+                    {renderCell(cell)}
                   </Td>
                 ))}
               </Tr>
