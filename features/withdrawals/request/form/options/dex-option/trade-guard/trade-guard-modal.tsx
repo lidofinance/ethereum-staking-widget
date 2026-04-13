@@ -8,14 +8,16 @@ const ModalContent = styled.div`
   padding: 0 8px 8px;
 `;
 
-const Title = styled.h3<{ $blocked: boolean }>`
+const Title = styled.h3<{ $level: 'blocked' | 'limit' | 'warning' }>`
   font-size: 18px;
   font-weight: 800;
   margin: 0 0 12px;
-  color: ${({ $blocked }) =>
-    $blocked
+  color: ${({ $level }) =>
+    $level === 'blocked'
       ? 'var(--lido-color-error, #e14d4d)'
-      : 'var(--lido-color-warning, #f5a623)'};
+      : $level === 'limit'
+        ? 'var(--lido-color-textSecondary, #7a8aa0)'
+        : 'var(--lido-color-warning, #f5a623)'};
 `;
 
 const MessageList = styled.ul`
@@ -59,17 +61,24 @@ type TradeGuardModalProps = {
   onClose: (result: boolean) => void;
 };
 
+const TITLE_TEXT: Record<string, string> = {
+  blocked: 'Trade blocked for your protection',
+  limit: 'Amount limit reached',
+  warning: 'Potential value loss detected',
+  danger: 'Potential value loss detected',
+};
+
 export const TradeGuardModal = ({ state, onClose }: TradeGuardModalProps) => {
   const { open, level, messages, oracleVerified } = state;
-  const isBlocked = level === 'blocked';
+  const canProceed = level !== 'blocked' && level !== 'limit';
+  const titleLevel =
+    level === 'blocked' || level === 'limit' ? level : 'warning';
 
   return (
     <Modal open={open} onClose={() => onClose(false)}>
       <ModalContent>
-        <Title $blocked={isBlocked}>
-          {isBlocked
-            ? 'Trade blocked for your protection'
-            : 'Potential value loss detected'}
+        <Title $level={titleLevel}>
+          {TITLE_TEXT[level] ?? TITLE_TEXT.warning}
         </Title>
 
         {oracleVerified && (
@@ -83,7 +92,7 @@ export const TradeGuardModal = ({ state, onClose }: TradeGuardModalProps) => {
         </MessageList>
 
         <ButtonGroup>
-          {!isBlocked && (
+          {canProceed && (
             <Button
               size="sm"
               fullwidth
@@ -100,7 +109,7 @@ export const TradeGuardModal = ({ state, onClose }: TradeGuardModalProps) => {
             variant="filled"
             onClick={() => onClose(false)}
           >
-            {isBlocked ? 'Close' : 'Cancel'}
+            {canProceed ? 'Cancel' : 'Close'}
           </Button>
         </ButtonGroup>
       </ModalContent>

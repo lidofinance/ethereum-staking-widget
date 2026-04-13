@@ -132,14 +132,14 @@ export const DexOption = () => {
     modalState,
     handleModalClose,
     validateTrade,
-    showBlockedMessage,
+    showLimitMessage,
   } = useTradeGuard({
     walletAddress: walletClient?.account.address,
     isTestnet,
   });
-  // Ref so memoized hooks can call showBlockedMessage without re-creating widget params
-  const showBlockedMessageRef = useRef(showBlockedMessage);
-  showBlockedMessageRef.current = showBlockedMessage;
+  // Ref so memoized hooks can call showLimitMessage without re-creating widget params
+  const showLimitMessageRef = useRef(showLimitMessage);
+  showLimitMessageRef.current = showLimitMessage;
 
   const validate = useCallback(async () => {
     const isValid = await validateAddress(walletClient?.account.address);
@@ -222,7 +222,7 @@ export const DexOption = () => {
         onBeforeApproval: async () => {
           if (sellAmountExceededRef.current) {
             const t = readThresholds();
-            await showBlockedMessageRef.current([
+            await showLimitMessageRef.current([
               `Sell amount exceeds maximum allowed (${t.maxSellUnits.toLocaleString()} tokens)`,
             ]);
             return false;
@@ -232,7 +232,7 @@ export const DexOption = () => {
         onBeforeWrapOrUnwrap: async () => {
           if (sellAmountExceededRef.current) {
             const t = readThresholds();
-            await showBlockedMessageRef.current([
+            await showLimitMessageRef.current([
               `Sell amount exceeds maximum allowed (${t.maxSellUnits.toLocaleString()} tokens)`,
             ]);
             return false;
@@ -242,7 +242,7 @@ export const DexOption = () => {
         onBeforeTrade: async (payload) => {
           if (sellAmountExceededRef.current) {
             const t = readThresholds();
-            await showBlockedMessageRef.current([
+            await showLimitMessageRef.current([
               `Sell amount exceeds maximum allowed (${t.maxSellUnits.toLocaleString()} tokens)`,
             ]);
             return false;

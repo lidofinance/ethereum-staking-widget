@@ -226,13 +226,14 @@ export const useTradeGuard = ({
     [walletAddress, isTestnet, verifyWithOracle, showModal],
   );
 
-  // Show a blocked modal with custom messages (e.g. sell amount exceeded)
-  const showBlockedMessage = useCallback(
+  // Show a neutral "limit" modal (e.g. sell amount exceeded) — not a security
+  // threat, just a boundary value. Uses grey styling instead of red "blocked".
+  const showLimitMessage = useCallback(
     async (messages: string[]): Promise<void> => {
-      await showModal('blocked', messages, false);
+      await showModal('limit', messages, false);
     },
     [showModal],
   );
 
-  return { modalState, handleModalClose, validateTrade, showBlockedMessage };
+  return { modalState, handleModalClose, validateTrade, showLimitMessage };
 };
