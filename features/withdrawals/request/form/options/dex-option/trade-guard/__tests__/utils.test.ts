@@ -1,4 +1,6 @@
-import { safeParseDecimal, resolveLevel, analyzeParams } from '../utils';
+import { safeParseDecimal } from '../utils/safe-parce-decimal';
+import { resolveLevel } from '../utils/resolve-level';
+import { analyzeParams } from '../utils/analyze-params';
 import {
   isValidRound,
   CHAINLINK_SCALE,
@@ -211,18 +213,18 @@ describe('analyzeParams', () => {
   });
 
   describe('max sell amount', () => {
-    it('blocks sell amount > 10000', () => {
+    it('blocks sell amount > 5000', () => {
       const payload = makePayload({
-        sellTokenAmount: { units: '10001' } as never,
+        sellTokenAmount: { units: '5001' } as never,
       });
       const result = analyzeParams(payload, WALLET, false);
       expect(result.level).toBe('blocked');
       expect(result.messages[0]).toContain('exceeds maximum');
     });
 
-    it('allows sell amount = 10000', () => {
+    it('allows sell amount = 5000', () => {
       const payload = makePayload({
-        sellTokenAmount: { units: '10000' } as never,
+        sellTokenAmount: { units: '5000' } as never,
       });
       const result = analyzeParams(payload, WALLET, false);
       expect(result.level).not.toBe('blocked');
@@ -246,7 +248,9 @@ describe('analyzeParams', () => {
         minimumReceiveBuyAmount: { units: '9.8' } as never, // 98% > 96.7%
       });
       const result = analyzeParams(payload, WALLET, false);
-      expect(result.messages.find((m) => m.includes('slippage'))).toBeUndefined();
+      expect(
+        result.messages.find((m) => m.includes('slippage')),
+      ).toBeUndefined();
     });
 
     it('skips slippage check for small trades (sellFiat < $50)', () => {
@@ -258,7 +262,9 @@ describe('analyzeParams', () => {
         minimumReceiveBuyAmount: { units: '0.001752' } as never,
       });
       const result = analyzeParams(payload, WALLET, false);
-      expect(result.messages.find((m) => m.includes('slippage'))).toBeUndefined();
+      expect(
+        result.messages.find((m) => m.includes('slippage')),
+      ).toBeUndefined();
     });
 
     it('runs slippage check when sellFiat >= $50', () => {
@@ -358,7 +364,12 @@ describe('isValidRound', () => {
   const MAX_STALENESS = 3900; // 1h + 5min
 
   const makeRound = (
-    overrides: Partial<Record<'roundId' | 'answer' | 'startedAt' | 'updatedAt' | 'answeredInRound', bigint>> = {},
+    overrides: Partial<
+      Record<
+        'roundId' | 'answer' | 'startedAt' | 'updatedAt' | 'answeredInRound',
+        bigint
+      >
+    > = {},
   ): RoundData => [
     overrides.roundId ?? 100n,
     overrides.answer ?? 220000000000n, // $2200
@@ -372,8 +383,12 @@ describe('isValidRound', () => {
   });
 
   it('rejects answer <= 0', () => {
-    expect(isValidRound(makeRound({ answer: 0n }), MAX_STALENESS, NOW)).toBe(false);
-    expect(isValidRound(makeRound({ answer: -1n }), MAX_STALENESS, NOW)).toBe(false);
+    expect(isValidRound(makeRound({ answer: 0n }), MAX_STALENESS, NOW)).toBe(
+      false,
+    );
+    expect(isValidRound(makeRound({ answer: -1n }), MAX_STALENESS, NOW)).toBe(
+      false,
+    );
   });
 
   it('rejects incomplete round (answeredInRound < roundId)', () => {
@@ -424,7 +439,14 @@ describe('isValidRound', () => {
 // ---------------------------------------------------------------------------
 describe('PRICE_BOUNDS', () => {
   it('has bounds for all expected feeds', () => {
-    const expected = ['ETH_USD', 'STETH_USD', 'USDC_USD', 'USDT_USD', 'DAI_USD', 'BTC_USD'];
+    const expected = [
+      'ETH_USD',
+      'STETH_USD',
+      'USDC_USD',
+      'USDT_USD',
+      'DAI_USD',
+      'BTC_USD',
+    ];
     for (const key of expected) {
       expect(PRICE_BOUNDS[key]).toBeDefined();
       expect(PRICE_BOUNDS[key].min).toBeLessThan(PRICE_BOUNDS[key].max);

@@ -3,48 +3,14 @@ import {
   DEFAULT_THRESHOLDS,
   VALID_SELL_TOKENS,
   VALID_BUY_TOKENS,
-} from './consts';
-import type { Thresholds } from './consts';
-import type { TradeGuardLevel, OnTradeParamsPayload } from './types';
+  type Thresholds,
+} from '../consts';
+import type { TradeGuardLevel, OnTradeParamsPayload } from '../types';
+
+import { safeParseDecimal } from './safe-parce-decimal';
+import { resolveLevel } from './resolve-level';
 
 const MAX_PLAUSIBLE_GAIN_RATIO = 1.05;
-
-export const LEVEL_ORDER: TradeGuardLevel[] = ['safe', 'warning', 'danger', 'blocked'];
-
-// Strict decimal parser — rejects scientific notation and partial parses
-const DECIMAL_RE = /^\d{1,20}(\.\d{1,18})?$/;
-export const safeParseDecimal = (
-  value: string | undefined | null,
-): number | null => {
-  if (!value) return null;
-  if (!DECIMAL_RE.test(value)) return null;
-  const n = parseFloat(value);
-  return Number.isFinite(n) && n >= 0 ? n : null;
-};
-
-const higher = (a: TradeGuardLevel, b: TradeGuardLevel): TradeGuardLevel =>
-  LEVEL_ORDER.indexOf(a) >= LEVEL_ORDER.indexOf(b) ? a : b;
-
-export const resolveLevel = (
-  fiatDev: number | null,
-  oracleDev: number | null,
-  t: Thresholds = DEFAULT_THRESHOLDS,
-): TradeGuardLevel => {
-  let level: TradeGuardLevel = 'safe';
-
-  if (oracleDev !== null) {
-    if (oracleDev >= t.oracleDeviationBlock) level = 'blocked';
-    else if (oracleDev >= t.oracleDeviationDanger) level = 'danger';
-  }
-  if (fiatDev !== null) {
-    let fiatLevel: TradeGuardLevel = 'safe';
-    if (fiatDev >= t.fiatDeviationBlock) fiatLevel = 'blocked';
-    else if (fiatDev >= t.fiatDeviationDanger) fiatLevel = 'danger';
-    else if (fiatDev >= t.fiatDeviationWarning) fiatLevel = 'warning';
-    level = higher(level, fiatLevel);
-  }
-  return level;
-};
 
 type AnalysisResult = {
   level: TradeGuardLevel;
@@ -106,9 +72,7 @@ export const analyzeParams = (
   }
 
   // Max sell amount
-  const sellUnits = safeParseDecimal(
-    params.sellTokenAmount?.units?.toString(),
-  );
+  const sellUnits = safeParseDecimal(params.sellTokenAmount?.units?.toString());
   if (sellUnits !== null && sellUnits > t.maxSellUnits) {
     return {
       level: 'blocked',
