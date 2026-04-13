@@ -111,6 +111,7 @@ type UseTradeGuardOptions = {
 export type SellLimitStatus = {
   exceeded: boolean;
   maxSellUnits: number;
+  tokenSymbol: string;
 };
 
 export const useTradeGuard = ({
@@ -122,8 +123,10 @@ export const useTradeGuard = ({
   const [sellLimitStatus, setSellLimitStatus] = useState<SellLimitStatus>({
     exceeded: false,
     maxSellUnits: readThresholds().maxSellUnits,
+    tokenSymbol: '',
   });
   const sellExceededRef = useRef(false);
+  const tokenSymbolRef = useRef('');
   const resolveRef = useRef<((value: boolean) => void) | null>(null);
   const { verifyWithOracle } = useOracleRates();
 
@@ -242,12 +245,16 @@ export const useTradeGuard = ({
   // ---------------------------------------------------------------------------
 
   /** Call from ON_CHANGE_TRADE_PARAMS to track current sell amount. */
-  const reportSellAmount = useCallback((units: number) => {
-    const t = readThresholds();
-    const exceeded = !isNaN(units) && units > t.maxSellUnits;
-    sellExceededRef.current = exceeded;
-    setSellLimitStatus({ exceeded, maxSellUnits: t.maxSellUnits });
-  }, []);
+  const reportSellAmount = useCallback(
+    (units: number, tokenSymbol: string) => {
+      const t = readThresholds();
+      const exceeded = !isNaN(units) && units > t.maxSellUnits;
+      sellExceededRef.current = exceeded;
+      tokenSymbolRef.current = tokenSymbol;
+      setSellLimitStatus({ exceeded, maxSellUnits: t.maxSellUnits, tokenSymbol });
+    },
+    [],
+  );
 
   /** Stable callback — safe to call from memoized widget hooks.
    *  Shows a neutral "limit" modal and returns false when exceeded. */
@@ -255,10 +262,11 @@ export const useTradeGuard = ({
     if (!sellExceededRef.current) return true;
 
     const t = readThresholds();
+    const symbol = tokenSymbolRef.current || 'tokens';
     await showModal(
       'limit',
       [
-        `Sell amount exceeds maximum allowed (${t.maxSellUnits.toLocaleString()} tokens)`,
+        `Sell amount exceeds maximum allowed (${t.maxSellUnits.toLocaleString()} ${symbol})`,
       ],
       false,
     );

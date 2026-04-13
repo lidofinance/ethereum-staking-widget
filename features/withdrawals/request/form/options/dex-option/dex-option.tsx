@@ -267,7 +267,10 @@ export const DexOption = () => {
         event: CowWidgetEvents.ON_CHANGE_TRADE_PARAMS,
         handler: (params: OnTradeParamsPayload) => {
           // Check sell amount against max threshold (QA can only lower)
-          reportSellAmount(Number(params.sellTokenAmount?.units));
+          reportSellAmount(
+            Number(params.sellTokenAmount?.units),
+            params.sellToken?.symbol ?? '',
+          );
 
           // Workaround: refresh params if user changes sell token
           const { sellToken } = params;
@@ -300,7 +303,7 @@ export const DexOption = () => {
       {sellLimitStatus.exceeded && (
         <SellAmountWarning>
           Maximum sell amount is {sellLimitStatus.maxSellUnits.toLocaleString()}{' '}
-          tokens per transaction
+          {sellLimitStatus.tokenSymbol || 'tokens'} per transaction
         </SellAmountWarning>
       )}
       <TradeGuardModal state={modalState} onClose={handleModalClose} />
