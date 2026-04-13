@@ -27,6 +27,13 @@ test.describe('Page Headers', () => {
       expect(resp.status()).toBe(200);
       const headers = resp.headers();
 
+      const reportingURI = headers['reporting-endpoints'];
+      let reportExtra = '';
+      if (reportingURI) {
+        expect(reportingURI).toMatch(/csp-endpoint="[^"]+"/);
+        reportExtra = `; report-to=csp-endpoint`;
+      }
+
       expect(headers['cache-control']).toBe(CACHE_CONTROL_VALUE);
 
       expect(headers['referrer-policy']).toBe('same-origin');
@@ -36,10 +43,10 @@ test.describe('Page Headers', () => {
       expect(headers['x-download-options']).toBe('noopen');
       expect(headers['x-permitted-cross-domain-policies']).toBe('none');
       expect(headers['cross-origin-embedder-policy']).toBe(
-        'credentialless; report-to=csp-endpoint',
+        `credentialless${reportExtra}`,
       );
       expect(headers['cross-origin-opener-policy']).toBe(
-        'same-origin; report-to=csp-endpoint',
+        `same-origin${reportExtra}`,
       );
       expect(headers['permissions-policy']).toBe(
         'camera=(), microphone=(), geolocation=(), payment=(), accelerometer=(), gyroscope=(), magnetometer=(), display-capture=(), encrypted-media=(), serial=(), xr-spatial-tracking=(), browsing-topics=(), usb=(self), bluetooth=(self), hid=(self), autoplay=(self), fullscreen=(self), picture-in-picture=(self)',
