@@ -50,7 +50,8 @@ export const contentSecurityPolicy: ContentSecurityPolicyOption = {
       // Widget can be integrated into may wallets as iframe e.g Ledger Live, Safe Wallet
       frameAncestors: ['*'],
       // Modern way - References the group declared in the Reporting-Endpoints response header
-      ...(secretConfig.cspReportUri && { reportTo: 'csp-endpoint' }),
+      // Unavailable due to next.js and docker environment limitations
+      // ...(secretConfig.cspReportUri && { reportTo: 'csp-endpoint' }),
       // Legacy way
       reportURI: secretConfig.cspReportUri,
     }),

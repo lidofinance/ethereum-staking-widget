@@ -48,7 +48,7 @@ export const CACHE_CONTROL_PAGES = [
   ...WIDGET_PAGES,
   '/manifest.json',
   '/favicon:size*',
-  '/runtime/window-env.js'
+  '/runtime/window-env.js',
 ];
 export const CACHE_CONTROL_VALUE =
   'public, max-age=15, s-max-age=30, stale-if-error=604800, stale-while-revalidate=172800';
@@ -172,28 +172,15 @@ export default withBundleAnalyzer({
           { key: 'x-xss-protection', value: '1' },
           { key: 'x-download-options', value: 'noopen' },
           { key: 'x-permitted-cross-domain-policies', value: 'none' },
+
           {
             key: 'cross-origin-opener-policy',
-            value: process.env.CSP_REPORT_URI
-              ? 'same-origin; report-to=csp-endpoint'
-              : 'same-origin',
+            value: 'same-origin',
           },
           {
             key: 'cross-origin-embedder-policy',
-            value: process.env.CSP_REPORT_URI
-              ? 'credentialless; report-to=csp-endpoint'
-              : 'credentialless',
+            value: 'credentialless',
           },
-          // Reporting API v1 — defines the group referenced by CSP, COOP, COEP
-          ...(process.env.CSP_REPORT_URI
-            ? [
-                {
-                  key: 'reporting-endpoints',
-                  value: `csp-endpoint="${process.env.CSP_REPORT_URI}"`,
-                },
-                // To consider: Network Error Logging (NEL)
-              ]
-            : []),
           {
             key: 'Permissions-Policy',
             value: [
@@ -218,6 +205,13 @@ export default withBundleAnalyzer({
               'picture-in-picture=(self)',
             ].join(', '),
           },
+          // Reporting API — defines the group referenced by CSP, COOP, COEP, NEL(consider for future)
+          // Unavailable due to next.js and docker environment limitations
+          // When available also add ';report-to=csp-endpoint' to COOP and COEP headers
+          // {
+          //   key: 'reporting-endpoints',
+          //   value: `csp-endpoint="${process.env.CSP_REPORT_URI}"`,
+          // },
         ],
       },
       {
