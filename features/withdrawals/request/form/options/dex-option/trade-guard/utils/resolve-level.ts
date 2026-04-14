@@ -3,7 +3,6 @@ import type { TradeGuardLevel } from '../types';
 
 export const LEVEL_ORDER: TradeGuardLevel[] = [
   'safe',
-  'warning',
   'danger',
   'blocked',
 ];
@@ -20,7 +19,6 @@ export const resolveLevel = (
 
   if (oracleDev !== null) {
     if (oracleDev >= t.oracleDeviationBlock) level = 'blocked';
-    else if (oracleDev >= t.oracleDeviationDanger) level = 'danger';
   }
 
   if (fiatDev !== null) {
@@ -28,7 +26,6 @@ export const resolveLevel = (
 
     if (fiatDev >= t.fiatDeviationBlock) fiatLevel = 'blocked';
     else if (fiatDev >= t.fiatDeviationDanger) fiatLevel = 'danger';
-    else if (fiatDev >= t.fiatDeviationWarning) fiatLevel = 'warning';
 
     level = higher(level, fiatLevel);
   }

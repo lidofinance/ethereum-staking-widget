@@ -13,10 +13,8 @@ export const PARTNER_FEE_PCT = PARTNER_FEE_BPS / 100;
 // --- Thresholds ---
 
 export type Thresholds = {
-  fiatDeviationWarning: number;
   fiatDeviationDanger: number;
   fiatDeviationBlock: number;
-  oracleDeviationDanger: number;
   oracleDeviationBlock: number;
   minReceiveRatioThreshold: number;
   slippageCheckMinFiat: number;
@@ -25,11 +23,9 @@ export type Thresholds = {
 };
 
 export const DEFAULT_THRESHOLDS: Thresholds = {
-  fiatDeviationWarning: 4,
-  fiatDeviationDanger: 5,
-  fiatDeviationBlock: 6,
-  oracleDeviationDanger: 4,
-  oracleDeviationBlock: 5,
+  fiatDeviationDanger: 4,
+  fiatDeviationBlock: 5,
+  oracleDeviationBlock: 4,
   // CowSwap's minimumReceiveBuyAmount includes slippage + partner fee,
   // so the threshold must account for both to avoid false positives
   minReceiveRatioThreshold: 1 - (MAX_SLIPPAGE + PARTNER_FEE_BPS) / 10_000,
