@@ -83,6 +83,12 @@ export const contentSecurityPolicy: ContentSecurityPolicyOption = {
 export const withCsp = (app: FC<AppProps>): FC =>
   withSecureHeaders({
     contentSecurityPolicy,
+    // applied manually in next.config.mjs for better control
     frameGuard: false,
-    referrerPolicy: 'same-origin',
+    forceHTTPSRedirect: false,
+    noopen: false,
+    expectCT: false,
+    nosniff: false,
+    xssProtection: false,
+    referrerPolicy: false,
   })(app);
