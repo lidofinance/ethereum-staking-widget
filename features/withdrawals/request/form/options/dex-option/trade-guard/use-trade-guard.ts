@@ -57,16 +57,14 @@ const applyOracleResult = (
       };
     }
 
-    // Trade is below oracle threshold — no concern
+    // Swap is below oracle threshold — no concern
     return { level: 'safe', messages: [], verified: false };
   }
 
   if (result.reason === 'unsupported') {
     return {
       level: 'blocked',
-      messages: [
-        'Oracle price verification not available for this token pair',
-      ],
+      messages: ['Oracle price verification not available for this token pair'],
       verified: false,
     };
   }
@@ -117,13 +115,13 @@ export const useTradeGuard = ({
     [],
   );
 
-  // Trade gate: structural checks → oracle check → modal
+  // Swap gate: structural checks → oracle check → modal
   const validateTrade = useCallback(
     async (payload: OnTradeParamsPayload): Promise<boolean> => {
       if (!walletAddress) {
         await showModal(
           'blocked',
-          ['Wallet address unavailable — cannot verify trade'],
+          ['Wallet address unavailable — cannot verify swap'],
           false,
         );
 
@@ -156,8 +154,7 @@ export const useTradeGuard = ({
         t.minSellUnitsToTriggerOracle,
       );
       const meetsThreshold = sellUnits !== null && sellUnits >= oracleMinSell;
-      const shouldCheckOracle =
-        !isTestnet && !isStructural && meetsThreshold;
+      const shouldCheckOracle = !isTestnet && !isStructural && meetsThreshold;
 
       if (shouldCheckOracle) {
         const result = await verifyWithOracle(payload);
@@ -225,7 +222,11 @@ export const useTradeGuard = ({
   const verifySignedOrder = useCallback(
     (order: OrderFields): string | null => {
       // Static checks (receiver, token whitelist)
-      const staticError = verifyOrderFields(order, walletAddress ?? '', isTestnet);
+      const staticError = verifyOrderFields(
+        order,
+        walletAddress ?? '',
+        isTestnet,
+      );
       if (staticError) return staticError;
 
       // Amount checks against last validated payload

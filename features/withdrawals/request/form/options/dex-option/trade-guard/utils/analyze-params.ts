@@ -30,7 +30,7 @@ export const analyzeParams = (
     return {
       level: 'blocked',
       messages: [
-        'Token information unavailable — trade cannot be fully verified',
+        'Token information unavailable — swap cannot be fully verified',
       ],
       isStructural: true,
     };
@@ -62,18 +62,19 @@ export const analyzeParams = (
   ) {
     return {
       level: 'blocked',
-      messages: ['Trade recipient does not match your wallet address'],
+      messages: ['Swap recipient does not match your wallet address'],
       isStructural: true,
     };
   }
 
   // Max sell amount
   const sellUnits = safeParseDecimal(params.sellTokenAmount?.units?.toString());
+  const symbol = params.sellToken?.symbol;
   if (sellUnits !== null && sellUnits > t.maxAllowedSellAmount) {
     return {
       level: 'blocked',
       messages: [
-        `Sell amount (${sellUnits.toFixed(2)}) exceeds maximum allowed (${t.maxAllowedSellAmount})`,
+        `Single transactions are capped at ${t.maxAllowedSellAmount.toLocaleString()} ${symbol}. This limit exists to protect you from outsized losses due to slippage, MEV, and execution risk. Split your order into smaller trades to continue.`,
       ],
       isStructural: true,
     };
