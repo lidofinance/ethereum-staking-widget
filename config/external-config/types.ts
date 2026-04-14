@@ -27,14 +27,14 @@ export type EarnVaultConfigEntry = {
   disabled?: boolean;
 };
 
-export type WithdrawalDexIntegration = 'cowswap';
+export type WithdrawalDexIntegration = 'cowswap' | 'cowsdk';
 
 type MustIncludeAll<T extends string, U extends T[]> =
   Exclude<T, U[number]> extends never ? U : never;
 
 export type WithdrawalDexIntegrationList = MustIncludeAll<
   WithdrawalDexIntegration,
-  ['cowswap']
+  ['cowswap', 'cowsdk']
 >;
 
 export type ManifestConfig = {

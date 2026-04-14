@@ -1,5 +1,7 @@
 import { ErrorBoundary } from 'react-error-boundary';
+import { useConfig } from 'config';
 import { DexOption } from './dex-option';
+import { DexOptionSdk } from './cow-sdk/dex-option-sdk';
 import { FallbackContainer } from './styles';
 
 const Fallback = () => {
@@ -15,9 +17,12 @@ const Fallback = () => {
 };
 
 export const DexOptionWithErrorBoundary = () => {
+  const integration =
+    useConfig().externalConfig.withdrawalDex.integration;
+
   return (
     <ErrorBoundary FallbackComponent={Fallback}>
-      <DexOption />
+      {integration === 'cowsdk' ? <DexOptionSdk /> : <DexOption />}
     </ErrorBoundary>
   );
 };
