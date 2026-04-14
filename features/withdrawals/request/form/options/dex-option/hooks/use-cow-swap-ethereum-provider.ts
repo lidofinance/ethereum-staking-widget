@@ -3,13 +3,21 @@ import { EthereumProvider, JsonRpcRequest } from '@cowprotocol/widget-react';
 import { ConnectorEventMap, useConnection, useWalletClient } from 'wagmi';
 
 import { BLOCKED_RPC_METHODS } from '../consts';
+import {
+  verifyOrderFields,
+  parseOrderFromSignRequest,
+} from '../trade-guard/utils/verify-order';
 
-export const useCowSwapEthereumProvider = (): EthereumProvider | undefined => {
+export const useCowSwapEthereumProvider = (
+  isTestnet: boolean,
+): EthereumProvider | undefined => {
   const { data: walletClient } = useWalletClient();
   const { connector } = useConnection();
 
   return useMemo(() => {
     if (!walletClient || !connector) return undefined;
+
+    const walletAddress = walletClient.account.address;
 
     return {
       request: <T>(args: JsonRpcRequest): Promise<T> => {
@@ -18,6 +26,20 @@ export const useCowSwapEthereumProvider = (): EthereumProvider | undefined => {
             new Error(`RPC method "${args.method}" is not allowed`),
           );
         }
+
+        // Defense-in-depth: verify CowSwap order before signing
+        if (args.method === 'eth_signTypedData_v4') {
+          const order = parseOrderFromSignRequest(args.params);
+          if (order) {
+            const error = verifyOrderFields(order, walletAddress, isTestnet);
+            if (error) {
+              return Promise.reject(
+                new Error(`Order signing rejected: ${error}`),
+              );
+            }
+          }
+        }
+
         return walletClient.request(
           args as Parameters<typeof walletClient.request>[0],
         );
@@ -29,5 +51,5 @@ export const useCowSwapEthereumProvider = (): EthereumProvider | undefined => {
         );
       },
     };
-  }, [walletClient, connector]);
+  }, [walletClient, connector, isTestnet]);
 };
