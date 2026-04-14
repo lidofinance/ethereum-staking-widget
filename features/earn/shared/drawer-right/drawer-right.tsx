@@ -1,8 +1,8 @@
 import { FC } from 'react';
 import { Close, Button, Link } from '@lidofinance/lido-ui';
 
+import { config } from 'config';
 import { useEscape } from 'shared/hooks/useEscape';
-
 import { LocalLink } from 'shared/components/local-link';
 import { ETH_DEPOSIT_PATH } from 'features/earn/consts';
 import { trackMatomoEvent } from 'utils/track-matomo-event';
@@ -88,7 +88,7 @@ export const DrawerRight: FC<DrawerRightProps> = ({ onClose, isOpen }) => {
                 Upgrade now
               </Button>
             </LocalLink>
-            <Link href="https://help.lido.fi/en" target="_blank">
+            <Link href={`${config.helpOrigin}/en`} target="_blank">
               <Button
                 fullwidth
                 variant="outlined"

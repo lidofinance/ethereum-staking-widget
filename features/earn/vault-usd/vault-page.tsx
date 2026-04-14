@@ -1,6 +1,7 @@
 import type { FC, ReactNode } from 'react';
 import { Link } from '@lidofinance/lido-ui';
 
+import { config } from 'config';
 import { PartnerNethermindIconCircle, VaultUsdIcon } from 'assets/earn-v2';
 import { PartnerMellowIcon } from 'assets/earn';
 import { VaultPage } from 'features/earn/shared/v2/vault-page/vault-page';
@@ -86,7 +87,7 @@ const RISK_DISCLOSURE = (
     liquidation risk. Please note that the vault is not available to U.S.
     persons, U.S. residents, or individuals located in other restricted
     jurisdictions.{' '}
-    <Link href="https://lido.fi/earn/risk-disclosures">
+    <Link href={`${config.rootOrigin}/earn/risk-disclosures`}>
       See this for further disclosures
     </Link>
     .
