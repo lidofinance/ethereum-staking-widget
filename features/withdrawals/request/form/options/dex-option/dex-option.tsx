@@ -114,6 +114,7 @@ export const DexOption = () => {
     sellLimitStatus,
     reportSellAmount,
     checkSellLimit,
+    verifySignedOrder,
   } = useTradeGuard({
     walletAddress: walletClient?.account.address,
     isTestnet,
@@ -234,7 +235,7 @@ export const DexOption = () => {
     ],
   );
 
-  const provider = useCowSwapEthereumProvider(isTestnet);
+  const provider = useCowSwapEthereumProvider(verifySignedOrder);
 
   const listeners: CowSwapWidgetProps['listeners'] = useMemo(() => {
     const handlers: CowSwapWidgetProps['listeners'] = [

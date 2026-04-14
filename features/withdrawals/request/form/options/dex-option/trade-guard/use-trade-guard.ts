@@ -12,7 +12,10 @@ import {
   readThresholds,
   applyQALevelOverride,
   QA_THRESHOLD_KEYS,
+  verifyOrderFields,
+  verifyOrderAmounts,
 } from './utils';
+import type { OrderFields, ValidatedTradeSnapshot } from './utils/verify-order';
 import {
   MODAL_INITIAL_STATE,
   type TradeGuardModalState,
@@ -128,6 +131,7 @@ export const useTradeGuard = ({
   const sellExceededRef = useRef(false);
   const tokenSymbolRef = useRef('');
   const resolveRef = useRef<((value: boolean) => void) | null>(null);
+  const lastValidatedTradeRef = useRef<ValidatedTradeSnapshot | null>(null);
   const { verifyWithOracle } = useOracleRates();
 
   const handleModalClose = useCallback((result: boolean) => {
@@ -231,8 +235,22 @@ export const useTradeGuard = ({
         return false;
       }
       if (finalLevel === 'danger') {
-        return showModal(finalLevel, finalMessages, oracleVerified);
+        const userProceeded = await showModal(
+          finalLevel,
+          finalMessages,
+          oracleVerified,
+        );
+        if (!userProceeded) return false;
       }
+
+      // Store validated params for provider-level EIP-712 verification
+      lastValidatedTradeRef.current = {
+        sellToken: payload.sellToken?.address ?? '',
+        buyToken: payload.buyToken?.address ?? '',
+        sellAmountUnits: payload.sellTokenAmount?.units?.toString() ?? '',
+        buyAmountMinUnits:
+          payload.minimumReceiveBuyAmount?.units?.toString() ?? '',
+      };
 
       return true;
     },
@@ -275,6 +293,24 @@ export const useTradeGuard = ({
     return false;
   }, [showModal]);
 
+  /** Verify EIP-712 order against the last validated onBeforeTrade payload. */
+  const verifySignedOrder = useCallback(
+    (order: OrderFields): string | null => {
+      // Static checks (receiver, token whitelist)
+      const staticError = verifyOrderFields(order, walletAddress ?? '', isTestnet);
+      if (staticError) return staticError;
+
+      // Amount checks against last validated payload
+      const snapshot = lastValidatedTradeRef.current;
+      if (snapshot) {
+        return verifyOrderAmounts(order, snapshot);
+      }
+
+      return null;
+    },
+    [walletAddress, isTestnet],
+  );
+
   return {
     modalState,
     handleModalClose,
@@ -282,5 +318,6 @@ export const useTradeGuard = ({
     sellLimitStatus,
     reportSellAmount,
     checkSellLimit,
+    verifySignedOrder,
   };
 };
