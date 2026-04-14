@@ -177,10 +177,7 @@ export default withBundleAnalyzer({
             key: 'cross-origin-opener-policy',
             value: 'same-origin',
           },
-          {
-            key: 'cross-origin-embedder-policy',
-            value: 'credentialless',
-          },
+
           {
             key: 'Permissions-Policy',
             value: [
@@ -205,12 +202,18 @@ export default withBundleAnalyzer({
               'picture-in-picture=(self)',
             ].join(', '),
           },
+          // DISABLED but left for future consideration
           // Reporting API — defines the group referenced by CSP, COOP, COEP, NEL(consider for future)
           // Unavailable due to next.js and docker environment limitations
           // When available also add ';report-to=csp-endpoint' to COOP and COEP headers
           // {
           //   key: 'reporting-endpoints',
           //   value: `csp-endpoint="${process.env.CSP_REPORT_URI}"`,
+          // }
+          // COEP is great for cross-origin isolation but most resources lack correct CORP response headers
+          // {
+          //   key: 'cross-origin-embedder-policy',
+          //   value: 'credentialless',
           // },
         ],
       },
