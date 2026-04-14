@@ -21,11 +21,7 @@ const developmentMode = process.env.NODE_ENV === 'development';
 const isIPFSMode = process.env.IPFS_MODE === 'true';
 const devnetOverrides = process.env.DEVNET_OVERRIDES;
 
-// cache control
-export const CACHE_CONTROL_HEADER = 'x-cache-control';
-export const CACHE_CONTROL_PAGES = [
-  '/manifest.json',
-  '/favicon:size*',
+export const WIDGET_PAGES = [
   '/',
   '/wrap',
   '/wrap/unwrap',
@@ -33,7 +29,26 @@ export const CACHE_CONTROL_PAGES = [
   '/referral',
   '/withdrawals/request',
   '/withdrawals/claim',
-  '/runtime/window-env.js',
+  '/earn',
+  '/earn/strategy/deposit',
+  '/earn/strategy/withdraw',
+  '/earn/dvv/deposit',
+  '/earn/dvv/withdraw',
+  '/earn/ggv/deposit',
+  '/earn/ggv/withdraw',
+  '/earn/usd/deposit',
+  '/earn/usd/withdraw',
+  '/earn/eth/deposit',
+  '/earn/eth/withdraw',
+];
+
+// cache control
+export const CACHE_CONTROL_HEADER = 'x-cache-control';
+export const CACHE_CONTROL_PAGES = [
+  ...WIDGET_PAGES,
+  '/manifest.json',
+  '/favicon:size*',
+  '/runtime/window-env.js'
 ];
 export const CACHE_CONTROL_VALUE =
   'public, max-age=15, s-max-age=30, stale-if-error=604800, stale-while-revalidate=172800';
