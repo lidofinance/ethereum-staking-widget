@@ -43,7 +43,7 @@ const applyOracleResult = (
     const level =
       oracleLevel === 'safe' && baseLevel !== 'safe' ? baseLevel : oracleLevel;
     const messages =
-      result.deviation >= t.oracleDeviationDanger
+      result.deviation >= t.oracleDeviationBlock
         ? [
             ...baseMessages,
             `Oracle price deviation: ${result.deviation.toFixed(1)}% (Chainlink verification)`,
@@ -73,7 +73,7 @@ const applyOracleResult = (
     if (meetsThreshold) {
       return {
         ...noOracle,
-        level: 'warning',
+        level: 'danger',
         messages: [
           ...baseMessages,
           'Oracle verification temporarily unavailable',
@@ -81,14 +81,14 @@ const applyOracleResult = (
       };
     }
 
-    // Trade is safe and below oracle threshold — no warning needed
+    // Trade is safe and below oracle threshold — no concern
     return noOracle;
   }
 
   if (result.reason === 'unsupported') {
     return {
       ...noOracle,
-      level: baseLevel === 'safe' ? 'warning' : baseLevel,
+      level: baseLevel === 'safe' ? 'danger' : baseLevel,
       messages: [
         ...baseMessages,
         'Oracle price verification not available for this token pair',
@@ -214,11 +214,11 @@ export const useTradeGuard = ({
         oracleVerified = outcome.verified;
       }
 
-      // Small trades: cap at warning — fixed costs inflate deviation, not manipulation.
+      // Small trades: cap at danger — fixed costs inflate deviation, not manipulation.
       // Never downgrade structural blocks (token whitelist, recipient mismatch) —
       // those return blocked with fiatDeviation=null from analyzeParams.
-      if (isSmallTrade && finalLevel !== 'safe' && level !== 'blocked') {
-        finalLevel = 'warning';
+      if (isSmallTrade && finalLevel === 'blocked' && level !== 'blocked') {
+        finalLevel = 'danger';
       }
 
       // QA overrides

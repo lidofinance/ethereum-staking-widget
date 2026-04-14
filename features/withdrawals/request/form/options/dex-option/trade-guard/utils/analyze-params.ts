@@ -10,8 +10,6 @@ import type { TradeGuardLevel, OnTradeParamsPayload } from '../types';
 import { safeParseDecimal } from './safe-parce-decimal';
 import { resolveLevel } from './resolve-level';
 
-const MAX_PLAUSIBLE_GAIN_RATIO = 1.05;
-
 type AnalysisResult = {
   level: TradeGuardLevel;
   fiatDeviation: number | null;
@@ -32,7 +30,7 @@ export const analyzeParams = (
 
   if (!sellAddr || !buyAddr) {
     return {
-      level: 'warning',
+      level: 'danger',
       fiatDeviation: null,
       messages: [
         'Token information unavailable — trade cannot be fully verified',
@@ -89,19 +87,13 @@ export const analyzeParams = (
   let fiatDeviation: number | null = null;
 
   if (sellFiat !== null && buyFiat !== null && sellFiat > 0) {
-    if (buyFiat > sellFiat * MAX_PLAUSIBLE_GAIN_RATIO) {
+    // Subtract partner fee — it's a known fixed cost, not unexpected loss
+    fiatDeviation = ((sellFiat - buyFiat) / sellFiat) * 100 - PARTNER_FEE_PCT;
+    if (fiatDeviation >= t.fiatDeviationDanger) {
       messages.push(
-        'Fiat values appear invalid — oracle verification required',
+        `Fiat value deviation: ${fiatDeviation.toFixed(1)}% loss` +
+          ` (sell $${sellFiat.toFixed(2)} → buy $${buyFiat.toFixed(2)})`,
       );
-    } else {
-      // Subtract partner fee — it's a known fixed cost, not unexpected loss
-      fiatDeviation = ((sellFiat - buyFiat) / sellFiat) * 100 - PARTNER_FEE_PCT;
-      if (fiatDeviation >= t.fiatDeviationWarning) {
-        messages.push(
-          `Fiat value deviation: ${fiatDeviation.toFixed(1)}% loss` +
-            ` (sell $${sellFiat.toFixed(2)} → buy $${buyFiat.toFixed(2)})`,
-        );
-      }
     }
   }
 
@@ -134,7 +126,7 @@ export const analyzeParams = (
   const level = resolveLevel(fiatDeviation, null, t);
 
   return {
-    level: hasHighSlippage && level === 'safe' ? 'warning' : level,
+    level: hasHighSlippage && level === 'safe' ? 'danger' : level,
     fiatDeviation,
     messages,
   };

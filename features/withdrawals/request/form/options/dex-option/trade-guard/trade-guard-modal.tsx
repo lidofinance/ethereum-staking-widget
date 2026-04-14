@@ -8,7 +8,7 @@ const ModalContent = styled.div`
   padding: 0 8px 8px;
 `;
 
-const Title = styled.h3<{ $level: 'blocked' | 'limit' | 'warning' }>`
+const Title = styled.h3<{ $level: 'blocked' | 'limit' | 'danger' }>`
   font-size: 18px;
   font-weight: 800;
   margin: 0 0 12px;
@@ -64,7 +64,6 @@ type TradeGuardModalProps = {
 const TITLE_TEXT: Record<string, string> = {
   blocked: 'Trade blocked for your protection',
   limit: 'Amount limit reached',
-  warning: 'Potential value loss detected',
   danger: 'Potential value loss detected',
 };
 
@@ -72,13 +71,13 @@ export const TradeGuardModal = ({ state, onClose }: TradeGuardModalProps) => {
   const { open, level, messages, oracleVerified } = state;
   const canProceed = level !== 'blocked' && level !== 'limit';
   const titleLevel =
-    level === 'blocked' || level === 'limit' ? level : 'warning';
+    level === 'blocked' || level === 'limit' ? level : 'danger';
 
   return (
     <Modal open={open} onClose={() => onClose(false)}>
       <ModalContent>
         <Title $level={titleLevel}>
-          {TITLE_TEXT[level] ?? TITLE_TEXT.warning}
+          {TITLE_TEXT[level] ?? TITLE_TEXT.danger}
         </Title>
 
         {oracleVerified && (

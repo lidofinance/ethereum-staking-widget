@@ -15,10 +15,8 @@ const QA_KEY_LEVEL = 'mock-qa-helpers-trade-guard-level';
 // ---------------------------------------------------------------------------
 
 export const QA_THRESHOLD_KEYS: Record<keyof Thresholds, string> = {
-  fiatDeviationWarning: 'mock-qa-helpers-trade-guard-fiat-warning',
   fiatDeviationDanger: 'mock-qa-helpers-trade-guard-fiat-danger',
   fiatDeviationBlock: 'mock-qa-helpers-trade-guard-fiat-block',
-  oracleDeviationDanger: 'mock-qa-helpers-trade-guard-oracle-danger',
   oracleDeviationBlock: 'mock-qa-helpers-trade-guard-oracle-block',
   minReceiveRatioThreshold: 'mock-qa-helpers-trade-guard-min-ratio',
   slippageCheckMinFiat: 'mock-qa-helpers-trade-guard-slippage-min-fiat',
