@@ -93,13 +93,9 @@ describe('resolveLevel', () => {
     expect(resolveLevel(3.9, null)).toBe('safe');
   });
 
-  it('returns danger for fiat deviation >= 4%', () => {
-    expect(resolveLevel(4, null)).toBe('danger');
-    expect(resolveLevel(4.9, null)).toBe('danger');
-  });
-
-  it('returns blocked for fiat deviation >= 5%', () => {
-    expect(resolveLevel(5, null)).toBe('blocked');
+  it('returns blocked for fiat deviation >= 4%', () => {
+    expect(resolveLevel(4, null)).toBe('blocked');
+    expect(resolveLevel(4.9, null)).toBe('blocked');
     expect(resolveLevel(50, null)).toBe('blocked');
   });
 
@@ -112,18 +108,16 @@ describe('resolveLevel', () => {
     expect(resolveLevel(null, 3.9)).toBe('safe');
   });
 
-  it('oracle takes precedence over fiat when higher', () => {
-    // fiat = danger (4%), oracle = blocked (4%)
+  it('returns blocked when both exceed thresholds', () => {
     expect(resolveLevel(4, 4)).toBe('blocked');
   });
 
-  it('fiat takes precedence when oracle is below threshold', () => {
-    // fiat = danger (4%), oracle = safe (1%)
-    expect(resolveLevel(4, 1)).toBe('danger');
+  it('fiat blocks even when oracle is below threshold', () => {
+    expect(resolveLevel(4, 1)).toBe('blocked');
   });
 
-  it('returns blocked when both exceed block thresholds', () => {
-    expect(resolveLevel(5, 4)).toBe('blocked');
+  it('oracle blocks even when fiat is below threshold', () => {
+    expect(resolveLevel(1, 4)).toBe('blocked');
   });
 });
 
@@ -132,10 +126,11 @@ describe('resolveLevel', () => {
 // ---------------------------------------------------------------------------
 describe('analyzeParams', () => {
   describe('token validation', () => {
-    it('returns danger when sell token is missing', () => {
+    it('returns blocked when sell token is missing', () => {
       const payload = makePayload({ sellToken: undefined });
       const result = analyzeParams(payload, WALLET, false);
-      expect(result.level).toBe('danger');
+      expect(result.level).toBe('blocked');
+      expect(result.isStructural).toBe(true);
       expect(result.messages[0]).toContain('Token information unavailable');
     });
 
@@ -145,6 +140,7 @@ describe('analyzeParams', () => {
       });
       const result = analyzeParams(payload, WALLET, false);
       expect(result.level).toBe('blocked');
+      expect(result.isStructural).toBe(true);
       expect(result.messages[0]).toContain('Invalid sell token');
     });
 
@@ -154,6 +150,7 @@ describe('analyzeParams', () => {
       });
       const result = analyzeParams(payload, WALLET, false);
       expect(result.level).toBe('blocked');
+      expect(result.isStructural).toBe(true);
       expect(result.messages[0]).toContain('Invalid buy token');
     });
 
@@ -169,6 +166,7 @@ describe('analyzeParams', () => {
     it('accepts valid stETH → ETH pair', () => {
       const result = analyzeParams(makePayload(), WALLET, false);
       expect(result.level).toBe('safe');
+      expect(result.isStructural).toBe(false);
     });
 
     it('accepts wstETH → USDC pair', () => {
@@ -186,6 +184,7 @@ describe('analyzeParams', () => {
       const payload = makePayload({ recipient: '0xAttacker' });
       const result = analyzeParams(payload, WALLET, false);
       expect(result.level).toBe('blocked');
+      expect(result.isStructural).toBe(true);
       expect(result.messages[0]).toContain('recipient does not match');
     });
 
@@ -217,6 +216,7 @@ describe('analyzeParams', () => {
       });
       const result = analyzeParams(payload, WALLET, false);
       expect(result.level).toBe('blocked');
+      expect(result.isStructural).toBe(true);
       expect(result.messages[0]).toContain('exceeds maximum');
     });
 
@@ -230,13 +230,14 @@ describe('analyzeParams', () => {
   });
 
   describe('slippage detection', () => {
-    it('returns danger on high slippage (ratio below MAX_SLIPPAGE + fee threshold)', () => {
+    it('returns blocked on high slippage (ratio below MAX_SLIPPAGE + fee threshold)', () => {
       const payload = makePayload({
         buyTokenAmount: { units: '10' } as never,
         minimumReceiveBuyAmount: { units: '9.5' } as never, // 95% < 96.7%
       });
       const result = analyzeParams(payload, WALLET, false);
-      expect(result.level).toBe('danger');
+      expect(result.level).toBe('blocked');
+      expect(result.isStructural).toBe(false);
       expect(result.messages[0]).toContain('slippage');
     });
 
@@ -302,24 +303,14 @@ describe('analyzeParams', () => {
       expect(result.fiatDeviation).toBeCloseTo(2.7);
     });
 
-    it('returns danger for deviation >= 4% after partner fee', () => {
+    it('returns blocked for deviation >= 4% after partner fee', () => {
       const payload = makePayload({
         sellTokenFiatAmount: '1000',
         buyTokenFiatAmount: '957', // raw 4.3% → 4.0% after fee
       });
       const result = analyzeParams(payload, WALLET, false);
-      expect(result.level).toBe('danger');
-      expect(result.fiatDeviation).toBeCloseTo(4.0);
-    });
-
-    it('returns blocked for deviation >= 5% after partner fee', () => {
-      const payload = makePayload({
-        sellTokenFiatAmount: '1000',
-        buyTokenFiatAmount: '947', // raw 5.3% → 5.0% after fee
-      });
-      const result = analyzeParams(payload, WALLET, false);
       expect(result.level).toBe('blocked');
-      expect(result.fiatDeviation).toBeCloseTo(5.0);
+      expect(result.fiatDeviation).toBeCloseTo(4.0);
     });
 
     it('handles missing fiat values gracefully', () => {

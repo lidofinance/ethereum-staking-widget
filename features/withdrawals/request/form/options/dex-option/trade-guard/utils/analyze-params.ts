@@ -14,6 +14,8 @@ type AnalysisResult = {
   level: TradeGuardLevel;
   fiatDeviation: number | null;
   messages: string[];
+  /** True when the block is structural (token/recipient/wallet/limit) — oracle is irrelevant */
+  isStructural: boolean;
 };
 
 // Shared validation logic used by both the banner and the gate
@@ -30,11 +32,12 @@ export const analyzeParams = (
 
   if (!sellAddr || !buyAddr) {
     return {
-      level: 'danger',
+      level: 'blocked',
       fiatDeviation: null,
       messages: [
         'Token information unavailable — trade cannot be fully verified',
       ],
+      isStructural: true,
     };
   }
 
@@ -45,6 +48,7 @@ export const analyzeParams = (
         level: 'blocked',
         fiatDeviation: null,
         messages: ['Invalid sell token detected'],
+        isStructural: true,
       };
     }
     if (!VALID_BUY_TOKENS.has(buyAddr)) {
@@ -52,6 +56,7 @@ export const analyzeParams = (
         level: 'blocked',
         fiatDeviation: null,
         messages: ['Invalid buy token detected'],
+        isStructural: true,
       };
     }
   }
@@ -66,6 +71,7 @@ export const analyzeParams = (
       level: 'blocked',
       fiatDeviation: null,
       messages: ['Trade recipient does not match your wallet address'],
+      isStructural: true,
     };
   }
 
@@ -78,10 +84,11 @@ export const analyzeParams = (
       messages: [
         `Sell amount (${sellUnits.toFixed(2)}) exceeds maximum allowed (${t.maxAllowedSellAmount})`,
       ],
+      isStructural: true,
     };
   }
 
-  // Fiat deviation
+  // Fiat deviation (safety net — CowSwap may not send fiat data in onBeforeTrade)
   const sellFiat = safeParseDecimal(params.sellTokenFiatAmount);
   const buyFiat = safeParseDecimal(params.buyTokenFiatAmount);
   let fiatDeviation: number | null = null;
@@ -89,7 +96,7 @@ export const analyzeParams = (
   if (sellFiat !== null && buyFiat !== null && sellFiat > 0) {
     // Subtract partner fee — it's a known fixed cost, not unexpected loss
     fiatDeviation = ((sellFiat - buyFiat) / sellFiat) * 100 - PARTNER_FEE_PCT;
-    if (fiatDeviation >= t.fiatDeviationDanger) {
+    if (fiatDeviation >= t.fiatDeviationBlock) {
       messages.push(
         `Fiat value deviation: ${fiatDeviation.toFixed(1)}% loss` +
           ` (sell $${sellFiat.toFixed(2)} → buy $${buyFiat.toFixed(2)})`,
@@ -126,8 +133,9 @@ export const analyzeParams = (
   const level = resolveLevel(fiatDeviation, null, t);
 
   return {
-    level: hasHighSlippage && level === 'safe' ? 'danger' : level,
+    level: hasHighSlippage && level === 'safe' ? 'blocked' : level,
     fiatDeviation,
     messages,
+    isStructural: false,
   };
 };

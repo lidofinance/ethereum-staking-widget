@@ -4,7 +4,7 @@ import type { OnTradeParamsPayload } from '@cowprotocol/events';
 
 export type { OnTradeParamsPayload };
 
-export type TradeGuardLevel = 'safe' | 'danger' | 'blocked' | 'limit';
+export type TradeGuardLevel = 'safe' | 'blocked' | 'limit';
 
 export type ChainlinkFeedConfig = {
   address: Address;

@@ -36,7 +36,7 @@ import {
   PARTNER_FEE_BPS,
   WHEN_PRICE_IMPACT_IS_HIGH_THAN,
 } from './consts';
-import { LoaderStyled, DexWrapper, SellAmountWarning } from './styles';
+import { LoaderStyled, DexWrapper } from './styles';
 import { useCowSwapEthereumProvider } from './hooks/use-cow-swap-ethereum-provider';
 import { useCspBlocked } from './hooks/use-csp-blocked';
 
@@ -111,7 +111,6 @@ export const DexOption = () => {
     modalState,
     handleModalClose,
     validateTrade,
-    sellLimitStatus,
     reportSellAmount,
     checkSellLimit,
     verifySignedOrder,
@@ -301,13 +300,6 @@ export const DexOption = () => {
         />
         <LoaderStyled $isVisible={isLoading} />
       </DexWrapper>
-      {sellLimitStatus.exceeded && (
-        <SellAmountWarning>
-          Maximum sell amount is{' '}
-          {sellLimitStatus.maxAllowedSellAmount.toLocaleString()}{' '}
-          {sellLimitStatus.tokenSymbol || 'tokens'} per transaction
-        </SellAmountWarning>
-      )}
       <TradeGuardModal state={modalState} onClose={handleModalClose} />
     </>
   );

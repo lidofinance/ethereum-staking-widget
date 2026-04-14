@@ -18,13 +18,8 @@ afterEach(() => jest.resetAllMocks());
 // ---------------------------------------------------------------------------
 describe('applyQALevelOverride', () => {
   it('keeps level when QA returns same value', () => {
-    mockString.mockReturnValue('danger');
-    expect(applyQALevelOverride('danger')).toBe('danger');
-  });
-
-  it('allows escalation: danger → blocked', () => {
     mockString.mockReturnValue('blocked');
-    expect(applyQALevelOverride('danger')).toBe('blocked');
+    expect(applyQALevelOverride('blocked')).toBe('blocked');
   });
 
   it('allows escalation: safe → blocked', () => {
@@ -32,19 +27,19 @@ describe('applyQALevelOverride', () => {
     expect(applyQALevelOverride('safe')).toBe('blocked');
   });
 
-  it('blocks de-escalation: danger → safe', () => {
+  it('blocks de-escalation: blocked → safe', () => {
     mockString.mockReturnValue('safe');
-    expect(applyQALevelOverride('danger')).toBe('danger');
-  });
-
-  it('blocks de-escalation: blocked → danger', () => {
-    mockString.mockReturnValue('danger');
     expect(applyQALevelOverride('blocked')).toBe('blocked');
   });
 
   it('ignores invalid level strings', () => {
     mockString.mockReturnValue('invalid');
-    expect(applyQALevelOverride('danger')).toBe('danger');
+    expect(applyQALevelOverride('blocked')).toBe('blocked');
+  });
+
+  it('ignores removed danger level', () => {
+    mockString.mockReturnValue('danger');
+    expect(applyQALevelOverride('safe')).toBe('safe');
   });
 });
 
@@ -59,20 +54,20 @@ describe('readThresholds', () => {
 
   // --- Deviation thresholds: lower = stricter → only allow lower ---
 
-  it('allows lowering fiatDeviationDanger (tighter)', () => {
+  it('allows lowering fiatDeviationBlock (tighter)', () => {
     mockNumber.mockImplementation((v: number, key: string) =>
-      key.includes('fiat-danger') ? 1 : v,
+      key.includes('fiat-block') ? 1 : v,
     );
     const t = readThresholds();
-    expect(t.fiatDeviationDanger).toBe(1);
+    expect(t.fiatDeviationBlock).toBe(1);
   });
 
-  it('blocks raising fiatDeviationDanger (looser)', () => {
+  it('blocks raising fiatDeviationBlock (looser)', () => {
     mockNumber.mockImplementation((v: number, key: string) =>
-      key.includes('fiat-danger') ? 10 : v,
+      key.includes('fiat-block') ? 10 : v,
     );
     const t = readThresholds();
-    expect(t.fiatDeviationDanger).toBe(DEFAULT_THRESHOLDS.fiatDeviationDanger);
+    expect(t.fiatDeviationBlock).toBe(DEFAULT_THRESHOLDS.fiatDeviationBlock);
   });
 
   it('allows lowering maxAllowedSellAmount (tighter)', () => {

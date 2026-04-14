@@ -76,7 +76,7 @@ const applyOracleResult = (
     if (meetsThreshold) {
       return {
         ...noOracle,
-        level: 'danger',
+        level: 'blocked',
         messages: [
           ...baseMessages,
           'Oracle verification temporarily unavailable',
@@ -91,7 +91,7 @@ const applyOracleResult = (
   if (result.reason === 'unsupported') {
     return {
       ...noOracle,
-      level: baseLevel === 'safe' ? 'danger' : baseLevel,
+      level: 'blocked',
       messages: [
         ...baseMessages,
         'Oracle price verification not available for this token pair',
@@ -111,23 +111,12 @@ type UseTradeGuardOptions = {
   isTestnet?: boolean;
 };
 
-export type SellLimitStatus = {
-  exceeded: boolean;
-  maxAllowedSellAmount: number;
-  tokenSymbol: string;
-};
-
 export const useTradeGuard = ({
   walletAddress,
   isTestnet = false,
 }: UseTradeGuardOptions) => {
   const [modalState, setModalState] =
     useState<TradeGuardModalState>(MODAL_INITIAL_STATE);
-  const [sellLimitStatus, setSellLimitStatus] = useState<SellLimitStatus>({
-    exceeded: false,
-    maxAllowedSellAmount: readThresholds().maxAllowedSellAmount,
-    tokenSymbol: '',
-  });
   const sellExceededRef = useRef(false);
   const tokenSymbolRef = useRef('');
   const resolveRef = useRef<((value: boolean) => void) | null>(null);
@@ -156,7 +145,7 @@ export const useTradeGuard = ({
     [],
   );
 
-  // Trade gate: fiat check → oracle check → modal
+  // Trade gate: structural checks → fiat check → oracle check → modal
   const validateTrade = useCallback(
     async (payload: OnTradeParamsPayload): Promise<boolean> => {
       if (!walletAddress) {
@@ -170,7 +159,7 @@ export const useTradeGuard = ({
       }
 
       const t = readThresholds();
-      const { level, fiatDeviation, messages } = analyzeParams(
+      const { level, fiatDeviation, messages, isStructural } = analyzeParams(
         payload,
         walletAddress,
         isTestnet,
@@ -181,12 +170,8 @@ export const useTradeGuard = ({
       let finalMessages = messages;
       let oracleVerified = false;
 
-      // Small trade detection — fixed network costs dominate percentage checks
-      const sellFiat = safeParseDecimal(payload.sellTokenFiatAmount);
-      const isSmallTrade =
-        sellFiat !== null && sellFiat < t.slippageCheckMinFiat;
-
-      // Oracle verification
+      // Oracle verification — skip for structural blocks (oracle is irrelevant
+      // for token whitelist, recipient mismatch, etc.)
       const sellUnits = safeParseDecimal(
         payload.sellTokenAmount?.units?.toString(),
       );
@@ -199,9 +184,8 @@ export const useTradeGuard = ({
         t.minSellUnitsToTriggerOracle,
       );
       const meetsThreshold = sellUnits !== null && sellUnits >= oracleMinSell;
-      // QA cannot skip oracle — override only kept for key documentation
       const shouldCheckOracle =
-        !isTestnet && !isSmallTrade && (meetsThreshold || level !== 'safe');
+        !isTestnet && !isStructural && (meetsThreshold || level !== 'safe');
 
       if (shouldCheckOracle) {
         const result = await verifyWithOracle(payload);
@@ -218,29 +202,13 @@ export const useTradeGuard = ({
         oracleVerified = outcome.verified;
       }
 
-      // Small trades: cap at danger — fixed costs inflate deviation, not manipulation.
-      // Never downgrade structural blocks (token whitelist, recipient mismatch) —
-      // those return blocked with fiatDeviation=null from analyzeParams.
-      if (isSmallTrade && finalLevel === 'blocked' && level !== 'blocked') {
-        finalLevel = 'danger';
-      }
-
       // QA overrides
       finalLevel = applyQALevelOverride(finalLevel);
 
-      // Gate decision
-      if (finalLevel === 'blocked') {
+      // Gate decision — only safe passes, everything else is blocked
+      if (finalLevel !== 'safe') {
         await showModal(finalLevel, finalMessages, oracleVerified);
-
         return false;
-      }
-      if (finalLevel === 'danger') {
-        const userProceeded = await showModal(
-          finalLevel,
-          finalMessages,
-          oracleVerified,
-        );
-        if (!userProceeded) return false;
       }
 
       // Store validated params for provider-level EIP-712 verification
@@ -268,11 +236,6 @@ export const useTradeGuard = ({
     const exceeded = !isNaN(units) && units > t.maxAllowedSellAmount;
     sellExceededRef.current = exceeded;
     tokenSymbolRef.current = tokenSymbol;
-    setSellLimitStatus({
-      exceeded,
-      maxAllowedSellAmount: t.maxAllowedSellAmount,
-      tokenSymbol,
-    });
   }, []);
 
   /** Stable callback — safe to call from memoized widget hooks.
@@ -315,7 +278,6 @@ export const useTradeGuard = ({
     modalState,
     handleModalClose,
     validateTrade,
-    sellLimitStatus,
     reportSellAmount,
     checkSellLimit,
     verifySignedOrder,
