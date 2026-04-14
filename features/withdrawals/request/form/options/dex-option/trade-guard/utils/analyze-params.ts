@@ -1,5 +1,4 @@
 import {
-  PARTNER_FEE_PCT,
   DEFAULT_THRESHOLDS,
   VALID_SELL_TOKENS,
   VALID_BUY_TOKENS,
@@ -8,32 +7,28 @@ import {
 import type { TradeGuardLevel, OnTradeParamsPayload } from '../types';
 
 import { safeParseDecimal } from './safe-parce-decimal';
-import { resolveLevel } from './resolve-level';
 
 type AnalysisResult = {
   level: TradeGuardLevel;
-  fiatDeviation: number | null;
   messages: string[];
   /** True when the block is structural (token/recipient/wallet/limit) — oracle is irrelevant */
   isStructural: boolean;
 };
 
-// Shared validation logic used by both the banner and the gate
+// Structural validation: token whitelist, recipient, sell limit.
+// All price verification is delegated to the Chainlink oracle.
 export const analyzeParams = (
   params: OnTradeParamsPayload,
   walletAddress: string | undefined,
   isTestnet: boolean,
   t: Thresholds = DEFAULT_THRESHOLDS,
 ): AnalysisResult => {
-  const messages: string[] = [];
-
   const sellAddr = params.sellToken?.address.toLowerCase();
   const buyAddr = params.buyToken?.address.toLowerCase();
 
   if (!sellAddr || !buyAddr) {
     return {
       level: 'blocked',
-      fiatDeviation: null,
       messages: [
         'Token information unavailable — trade cannot be fully verified',
       ],
@@ -46,7 +41,6 @@ export const analyzeParams = (
     if (!VALID_SELL_TOKENS.has(sellAddr)) {
       return {
         level: 'blocked',
-        fiatDeviation: null,
         messages: ['Invalid sell token detected'],
         isStructural: true,
       };
@@ -54,7 +48,6 @@ export const analyzeParams = (
     if (!VALID_BUY_TOKENS.has(buyAddr)) {
       return {
         level: 'blocked',
-        fiatDeviation: null,
         messages: ['Invalid buy token detected'],
         isStructural: true,
       };
@@ -69,7 +62,6 @@ export const analyzeParams = (
   ) {
     return {
       level: 'blocked',
-      fiatDeviation: null,
       messages: ['Trade recipient does not match your wallet address'],
       isStructural: true,
     };
@@ -80,7 +72,6 @@ export const analyzeParams = (
   if (sellUnits !== null && sellUnits > t.maxAllowedSellAmount) {
     return {
       level: 'blocked',
-      fiatDeviation: null,
       messages: [
         `Sell amount (${sellUnits.toFixed(2)}) exceeds maximum allowed (${t.maxAllowedSellAmount})`,
       ],
@@ -88,54 +79,5 @@ export const analyzeParams = (
     };
   }
 
-  // Fiat deviation (safety net — CowSwap may not send fiat data in onBeforeTrade)
-  const sellFiat = safeParseDecimal(params.sellTokenFiatAmount);
-  const buyFiat = safeParseDecimal(params.buyTokenFiatAmount);
-  let fiatDeviation: number | null = null;
-
-  if (sellFiat !== null && buyFiat !== null && sellFiat > 0) {
-    // Subtract partner fee — it's a known fixed cost, not unexpected loss
-    fiatDeviation = ((sellFiat - buyFiat) / sellFiat) * 100 - PARTNER_FEE_PCT;
-    if (fiatDeviation >= t.fiatDeviationBlock) {
-      messages.push(
-        `Fiat value deviation: ${fiatDeviation.toFixed(1)}% loss` +
-          ` (sell $${sellFiat.toFixed(2)} → buy $${buyFiat.toFixed(2)})`,
-      );
-    }
-  }
-
-  // Slippage ratio check — skipped for small trades where fixed network costs
-  // (gas paid by solver) dominate and distort the percentage ratio
-  let hasHighSlippage = false;
-  if (sellFiat === null || sellFiat >= t.slippageCheckMinFiat) {
-    const minReceive = safeParseDecimal(
-      params.minimumReceiveBuyAmount?.units?.toString(),
-    );
-    const buyAmount = safeParseDecimal(
-      params.buyTokenAmount?.units?.toString(),
-    );
-    if (
-      minReceive !== null &&
-      buyAmount !== null &&
-      minReceive > 0 &&
-      buyAmount > 0
-    ) {
-      const ratio = minReceive / buyAmount;
-      if (ratio < t.minReceiveRatioThreshold) {
-        hasHighSlippage = true;
-        messages.push(
-          `Unusually high slippage tolerance: minimum receive is ${((1 - ratio) * 100).toFixed(1)}% below quoted amount`,
-        );
-      }
-    }
-  }
-
-  const level = resolveLevel(fiatDeviation, null, t);
-
-  return {
-    level: hasHighSlippage && level === 'safe' ? 'blocked' : level,
-    fiatDeviation,
-    messages,
-    isStructural: false,
-  };
+  return { level: 'safe', messages: [], isStructural: false };
 };

@@ -33,73 +33,45 @@ type OracleOutcome = {
 
 const applyOracleResult = (
   result: OracleResult,
-  baseLevel: TradeGuardLevel,
-  fiatDeviation: number | null,
-  baseMessages: string[],
   meetsThreshold: boolean,
   t: Thresholds,
 ): OracleOutcome => {
   if (result.ok) {
-    const oracleLevel = resolveLevel(fiatDeviation, result.deviation, t);
-
-    // Preserve slippage escalation from analyzeParams as a floor
-    const level =
-      oracleLevel === 'safe' && baseLevel !== 'safe' ? baseLevel : oracleLevel;
+    const level = resolveLevel(result.deviation, t);
     const messages =
       result.deviation >= t.oracleDeviationBlock
         ? [
-            ...baseMessages,
             `Oracle price deviation: ${result.deviation.toFixed(1)}% (Chainlink verification)`,
           ]
-        : baseMessages;
+        : [];
 
     return { level, messages, verified: true };
   }
 
-  const noOracle: OracleOutcome = {
-    level: baseLevel,
-    messages: baseMessages,
-    verified: false,
-  };
-
   if (result.reason === 'unavailable') {
-    if (baseLevel !== 'safe') {
-      return {
-        ...noOracle,
-        messages: [
-          ...baseMessages,
-          'Oracle verification unavailable — proceed with caution',
-        ],
-      };
-    }
-
     if (meetsThreshold) {
       return {
-        ...noOracle,
         level: 'blocked',
-        messages: [
-          ...baseMessages,
-          'Oracle verification temporarily unavailable',
-        ],
+        messages: ['Oracle verification temporarily unavailable'],
+        verified: false,
       };
     }
 
-    // Trade is safe and below oracle threshold — no concern
-    return noOracle;
+    // Trade is below oracle threshold — no concern
+    return { level: 'safe', messages: [], verified: false };
   }
 
   if (result.reason === 'unsupported') {
     return {
-      ...noOracle,
       level: 'blocked',
       messages: [
-        ...baseMessages,
         'Oracle price verification not available for this token pair',
       ],
+      verified: false,
     };
   }
 
-  return noOracle;
+  return { level: 'safe', messages: [], verified: false };
 };
 
 // ---------------------------------------------------------------------------
@@ -145,7 +117,7 @@ export const useTradeGuard = ({
     [],
   );
 
-  // Trade gate: structural checks → fiat check → oracle check → modal
+  // Trade gate: structural checks → oracle check → modal
   const validateTrade = useCallback(
     async (payload: OnTradeParamsPayload): Promise<boolean> => {
       if (!walletAddress) {
@@ -159,7 +131,7 @@ export const useTradeGuard = ({
       }
 
       const t = readThresholds();
-      const { level, fiatDeviation, messages, isStructural } = analyzeParams(
+      const { level, messages, isStructural } = analyzeParams(
         payload,
         walletAddress,
         isTestnet,
@@ -185,18 +157,11 @@ export const useTradeGuard = ({
       );
       const meetsThreshold = sellUnits !== null && sellUnits >= oracleMinSell;
       const shouldCheckOracle =
-        !isTestnet && !isStructural && (meetsThreshold || level !== 'safe');
+        !isTestnet && !isStructural && meetsThreshold;
 
       if (shouldCheckOracle) {
         const result = await verifyWithOracle(payload);
-        const outcome = applyOracleResult(
-          result,
-          level,
-          fiatDeviation,
-          messages,
-          meetsThreshold,
-          t,
-        );
+        const outcome = applyOracleResult(result, meetsThreshold, t);
         finalLevel = outcome.level;
         finalMessages = outcome.messages;
         oracleVerified = outcome.verified;

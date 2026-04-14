@@ -15,10 +15,7 @@ const QA_KEY_LEVEL = 'mock-qa-helpers-trade-guard-level';
 // ---------------------------------------------------------------------------
 
 export const QA_THRESHOLD_KEYS: Record<keyof Thresholds, string> = {
-  fiatDeviationBlock: 'mock-qa-helpers-trade-guard-fiat-block',
   oracleDeviationBlock: 'mock-qa-helpers-trade-guard-oracle-block',
-  minReceiveRatioThreshold: 'mock-qa-helpers-trade-guard-min-ratio',
-  slippageCheckMinFiat: 'mock-qa-helpers-trade-guard-slippage-min-fiat',
   maxAllowedSellAmount: 'mock-qa-helpers-trade-guard-max-sell',
   minSellUnitsToTriggerOracle: 'mock-qa-helpers-trade-guard-min-sell',
 };
@@ -28,7 +25,7 @@ export const applyQALevelOverride = (
 ): TradeGuardLevel => {
   const v = overrideWithQAMockString(level, QA_KEY_LEVEL);
   if (!LEVEL_ORDER.includes(v as TradeGuardLevel)) return level;
-  // QA can only escalate severity, never downgrade (e.g. warning→danger OK, danger→safe NO)
+  // QA can only escalate severity, never downgrade (e.g. safe→blocked OK, blocked→safe NO)
   const qaIdx = LEVEL_ORDER.indexOf(v as TradeGuardLevel);
   const curIdx = LEVEL_ORDER.indexOf(level);
   return qaIdx >= curIdx ? (v as TradeGuardLevel) : level;
@@ -40,11 +37,8 @@ export const readThresholds = (): Thresholds => {
     const qa = overrideWithQAMockNumber(t[key], QA_THRESHOLD_KEYS[key]);
     const dflt = DEFAULT_THRESHOLDS[key];
     // QA overrides can only tighten thresholds, never relax them.
-    // For ratio thresholds, higher = stricter; for all others, lower = stricter.
-    t[key] =
-      key === 'minReceiveRatioThreshold'
-        ? Math.max(qa, dflt)
-        : Math.min(qa, dflt);
+    // For all thresholds, lower = stricter.
+    t[key] = Math.min(qa, dflt);
   }
   return t;
 };

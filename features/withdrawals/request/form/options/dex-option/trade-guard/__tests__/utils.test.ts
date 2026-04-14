@@ -29,8 +29,6 @@ const makePayload = (
     sellTokenAmount: { units: '10' },
     buyTokenAmount: { units: '10' },
     minimumReceiveBuyAmount: { units: '9.8' },
-    sellTokenFiatAmount: '22000',
-    buyTokenFiatAmount: '21800',
     recipient: undefined,
     ...overrides,
   }) as unknown as OnTradeParamsPayload;
@@ -85,39 +83,18 @@ describe('safeParseDecimal', () => {
 // resolveLevel
 // ---------------------------------------------------------------------------
 describe('resolveLevel', () => {
-  it('returns safe when both null', () => {
-    expect(resolveLevel(null, null)).toBe('safe');
-  });
-
-  it('returns safe for fiat deviation below 4%', () => {
-    expect(resolveLevel(3.9, null)).toBe('safe');
-  });
-
-  it('returns blocked for fiat deviation >= 4%', () => {
-    expect(resolveLevel(4, null)).toBe('blocked');
-    expect(resolveLevel(4.9, null)).toBe('blocked');
-    expect(resolveLevel(50, null)).toBe('blocked');
+  it('returns safe when null', () => {
+    expect(resolveLevel(null)).toBe('safe');
   });
 
   it('returns blocked for oracle deviation >= 4%', () => {
-    expect(resolveLevel(null, 4)).toBe('blocked');
-    expect(resolveLevel(null, 4.9)).toBe('blocked');
+    expect(resolveLevel(4)).toBe('blocked');
+    expect(resolveLevel(4.9)).toBe('blocked');
+    expect(resolveLevel(50)).toBe('blocked');
   });
 
   it('returns safe for oracle deviation below 4%', () => {
-    expect(resolveLevel(null, 3.9)).toBe('safe');
-  });
-
-  it('returns blocked when both exceed thresholds', () => {
-    expect(resolveLevel(4, 4)).toBe('blocked');
-  });
-
-  it('fiat blocks even when oracle is below threshold', () => {
-    expect(resolveLevel(4, 1)).toBe('blocked');
-  });
-
-  it('oracle blocks even when fiat is below threshold', () => {
-    expect(resolveLevel(1, 4)).toBe('blocked');
+    expect(resolveLevel(3.9)).toBe('safe');
   });
 });
 
@@ -160,7 +137,7 @@ describe('analyzeParams', () => {
         buyToken: { address: UNKNOWN, symbol: 'Y' } as never,
       });
       const result = analyzeParams(payload, WALLET, true);
-      expect(result.level).not.toBe('blocked');
+      expect(result.level).toBe('safe');
     });
 
     it('accepts valid stETH → ETH pair', () => {
@@ -193,7 +170,7 @@ describe('analyzeParams', () => {
         recipient: WALLET.toUpperCase(),
       });
       const result = analyzeParams(payload, WALLET, false);
-      expect(result.level).not.toBe('blocked');
+      expect(result.level).toBe('safe');
     });
 
     it('passes when recipient is undefined', () => {
@@ -205,7 +182,7 @@ describe('analyzeParams', () => {
     it('skips recipient check when wallet is undefined (banner mode)', () => {
       const payload = makePayload({ recipient: '0xAnyone' });
       const result = analyzeParams(payload, undefined, false);
-      expect(result.level).not.toBe('blocked');
+      expect(result.level).toBe('safe');
     });
   });
 
@@ -225,102 +202,7 @@ describe('analyzeParams', () => {
         sellTokenAmount: { units: '5000' } as never,
       });
       const result = analyzeParams(payload, WALLET, false);
-      expect(result.level).not.toBe('blocked');
-    });
-  });
-
-  describe('slippage detection', () => {
-    it('returns blocked on high slippage (ratio below MAX_SLIPPAGE + fee threshold)', () => {
-      const payload = makePayload({
-        buyTokenAmount: { units: '10' } as never,
-        minimumReceiveBuyAmount: { units: '9.5' } as never, // 95% < 96.7%
-      });
-      const result = analyzeParams(payload, WALLET, false);
-      expect(result.level).toBe('blocked');
-      expect(result.isStructural).toBe(false);
-      expect(result.messages[0]).toContain('slippage');
-    });
-
-    it('no warning when slippage ratio is within MAX_SLIPPAGE + fee limit', () => {
-      const payload = makePayload({
-        buyTokenAmount: { units: '10' } as never,
-        minimumReceiveBuyAmount: { units: '9.8' } as never, // 98% > 96.7%
-      });
-      const result = analyzeParams(payload, WALLET, false);
-      expect(
-        result.messages.find((m) => m.includes('slippage')),
-      ).toBeUndefined();
-    });
-
-    it('skips slippage check for small trades (sellFiat < $50)', () => {
-      const payload = makePayload({
-        sellTokenFiatAmount: '4.09',
-        buyTokenFiatAmount: '4.09',
-        buyTokenAmount: { units: '0.001872' } as never,
-        // 93.6% ratio — would trigger on large trade, but skipped here
-        minimumReceiveBuyAmount: { units: '0.001752' } as never,
-      });
-      const result = analyzeParams(payload, WALLET, false);
-      expect(
-        result.messages.find((m) => m.includes('slippage')),
-      ).toBeUndefined();
-    });
-
-    it('runs slippage check when sellFiat >= $50', () => {
-      const payload = makePayload({
-        sellTokenFiatAmount: '50',
-        buyTokenFiatAmount: '50',
-        buyTokenAmount: { units: '10' } as never,
-        minimumReceiveBuyAmount: { units: '9.3' } as never, // 93% < 96.7%
-      });
-      const result = analyzeParams(payload, WALLET, false);
-      expect(result.messages[0]).toContain('slippage');
-    });
-
-    it('runs slippage check when sellFiat is unavailable', () => {
-      const payload = makePayload({
-        sellTokenFiatAmount: undefined,
-        buyTokenFiatAmount: undefined,
-        buyTokenAmount: { units: '10' } as never,
-        minimumReceiveBuyAmount: { units: '9.3' } as never, // 93% < 96.7%
-      });
-      const result = analyzeParams(payload, WALLET, false);
-      expect(result.messages[0]).toContain('slippage');
-    });
-  });
-
-  describe('fiat deviation', () => {
-    // NOTE: fiat deviation subtracts partner fee (0.3%), so raw deviation
-    // of 1% becomes 0.7%, raw 3% becomes 2.7%, etc.
-
-    it('returns safe for small deviation (< 4% after partner fee)', () => {
-      const payload = makePayload({
-        sellTokenFiatAmount: '1000',
-        buyTokenFiatAmount: '970', // raw 3% → 2.7% after fee
-      });
-      const result = analyzeParams(payload, WALLET, false);
       expect(result.level).toBe('safe');
-      expect(result.fiatDeviation).toBeCloseTo(2.7);
-    });
-
-    it('returns blocked for deviation >= 4% after partner fee', () => {
-      const payload = makePayload({
-        sellTokenFiatAmount: '1000',
-        buyTokenFiatAmount: '957', // raw 4.3% → 4.0% after fee
-      });
-      const result = analyzeParams(payload, WALLET, false);
-      expect(result.level).toBe('blocked');
-      expect(result.fiatDeviation).toBeCloseTo(4.0);
-    });
-
-    it('handles missing fiat values gracefully', () => {
-      const payload = makePayload({
-        sellTokenFiatAmount: undefined,
-        buyTokenFiatAmount: undefined,
-      });
-      const result = analyzeParams(payload, WALLET, false);
-      expect(result.level).toBe('safe');
-      expect(result.fiatDeviation).toBeNull();
     });
   });
 });

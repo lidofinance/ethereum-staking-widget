@@ -52,22 +52,22 @@ describe('readThresholds', () => {
     expect(readThresholds()).toEqual(DEFAULT_THRESHOLDS);
   });
 
-  // --- Deviation thresholds: lower = stricter → only allow lower ---
+  // --- All thresholds: lower = stricter → only allow lower ---
 
-  it('allows lowering fiatDeviationBlock (tighter)', () => {
+  it('allows lowering oracleDeviationBlock (tighter)', () => {
     mockNumber.mockImplementation((v: number, key: string) =>
-      key.includes('fiat-block') ? 1 : v,
+      key.includes('oracle-block') ? 2 : v,
     );
     const t = readThresholds();
-    expect(t.fiatDeviationBlock).toBe(1);
+    expect(t.oracleDeviationBlock).toBe(2);
   });
 
-  it('blocks raising fiatDeviationBlock (looser)', () => {
+  it('blocks raising oracleDeviationBlock (looser)', () => {
     mockNumber.mockImplementation((v: number, key: string) =>
-      key.includes('fiat-block') ? 10 : v,
+      key.includes('oracle-block') ? 10 : v,
     );
     const t = readThresholds();
-    expect(t.fiatDeviationBlock).toBe(DEFAULT_THRESHOLDS.fiatDeviationBlock);
+    expect(t.oracleDeviationBlock).toBe(DEFAULT_THRESHOLDS.oracleDeviationBlock);
   });
 
   it('allows lowering maxAllowedSellAmount (tighter)', () => {
@@ -88,23 +88,21 @@ describe('readThresholds', () => {
     );
   });
 
-  // --- minReceiveRatioThreshold: higher = stricter → only allow higher ---
-
-  it('allows raising minReceiveRatioThreshold (tighter)', () => {
+  it('allows lowering minSellUnitsToTriggerOracle (tighter)', () => {
     mockNumber.mockImplementation((v: number, key: string) =>
-      key.includes('min-ratio') ? 0.99 : v,
+      key.includes('min-sell') ? 0.1 : v,
     );
     const t = readThresholds();
-    expect(t.minReceiveRatioThreshold).toBe(0.99);
+    expect(t.minSellUnitsToTriggerOracle).toBe(0.1);
   });
 
-  it('blocks lowering minReceiveRatioThreshold (looser)', () => {
+  it('blocks raising minSellUnitsToTriggerOracle (looser)', () => {
     mockNumber.mockImplementation((v: number, key: string) =>
-      key.includes('min-ratio') ? 0.5 : v,
+      key.includes('min-sell') ? 100 : v,
     );
     const t = readThresholds();
-    expect(t.minReceiveRatioThreshold).toBe(
-      DEFAULT_THRESHOLDS.minReceiveRatioThreshold,
+    expect(t.minSellUnitsToTriggerOracle).toBe(
+      DEFAULT_THRESHOLDS.minSellUnitsToTriggerOracle,
     );
   });
 });

@@ -2,7 +2,7 @@ import type { Address } from 'viem';
 
 import mainnetConfig from 'networks/mainnet.json';
 
-import { MAX_SLIPPAGE, PARTNER_FEE_BPS } from '../consts';
+import { PARTNER_FEE_BPS } from '../consts';
 
 import type { ChainlinkFeedConfig } from './types';
 
@@ -13,24 +13,13 @@ export const PARTNER_FEE_PCT = PARTNER_FEE_BPS / 100;
 // --- Thresholds ---
 
 export type Thresholds = {
-  fiatDeviationBlock: number;
   oracleDeviationBlock: number;
-  minReceiveRatioThreshold: number;
-  slippageCheckMinFiat: number;
   maxAllowedSellAmount: number;
   minSellUnitsToTriggerOracle: number;
 };
 
 export const DEFAULT_THRESHOLDS: Thresholds = {
-  fiatDeviationBlock: 4,
   oracleDeviationBlock: 4,
-  // CowSwap's minimumReceiveBuyAmount includes slippage + partner fee,
-  // so the threshold must account for both to avoid false positives
-  minReceiveRatioThreshold: 1 - (MAX_SLIPPAGE + PARTNER_FEE_BPS) / 10_000,
-  // Minimum sell fiat ($) for slippage ratio check — below this fixed
-  // network costs (~$0.10-0.20) dominate and cause false positives
-  slippageCheckMinFiat: 50,
-  //
   maxAllowedSellAmount: 5_000,
   // Minimum sell amount (in token units) to trigger Chainlink oracle verification
   minSellUnitsToTriggerOracle: 1,
