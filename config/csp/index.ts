@@ -47,6 +47,7 @@ export const contentSecurityPolicy: ContentSecurityPolicyOption = {
     ],
     // These directives are ignored when delivered via a <meta> element (IPFS mode).
     ...(!config.ipfsMode && {
+      // Widget can be integrated into may wallets as iframe e.g Ledger Live, Safe Wallet
       frameAncestors: ['*'],
       // Modern way - References the group declared in the Reporting-Endpoints response header
       ...(secretConfig.cspReportUri && { reportTo: 'csp-endpoint' }),
