@@ -89,6 +89,7 @@ export const withCsp = (app: FC<AppProps>): FC =>
     noopen: false,
     expectCT: false,
     nosniff: false,
-    xssProtection: false,
+    // there is no way to avoid setting it, so align with next.config.mjs value
+    xssProtection: 'sanitize',
     referrerPolicy: false,
   })(app);
