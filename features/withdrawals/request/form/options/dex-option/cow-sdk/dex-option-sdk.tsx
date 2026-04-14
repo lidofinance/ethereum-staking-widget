@@ -1,10 +1,19 @@
 import { useCallback, useMemo, useState } from 'react';
-import { parseUnits, formatUnits, type Address } from 'viem';
+import { type Address } from 'viem';
 import { useWalletClient } from 'wagmi';
 import styled from 'styled-components';
 import invariant from 'tiny-invariant';
 
-import { Button, DataTableRow, InlineLoader } from '@lidofinance/lido-ui';
+import {
+  Button,
+  DataTable,
+  DataTableRow,
+  InlineLoader,
+  Option,
+  Eth,
+  Steth,
+  Wsteth,
+} from '@lidofinance/lido-ui';
 import {
   useDappStatus,
   useStethBalance,
@@ -12,86 +21,81 @@ import {
   useEthereumBalance,
 } from 'modules/web3';
 import { getContractAddress } from 'config/networks/contract-address';
+import { InputAmount } from 'shared/components/input-amount';
+import { FormatToken } from 'shared/formatters';
+import { Connect } from 'shared/wallet';
+import { WarningBanner } from 'shared/banners/info-banner';
+import { SelectIconStyle } from 'shared/hook-form/controls/token-select-hook-form/styles';
 
-import { SELL_TOKENS, BUY_TOKENS, getDefaultSellToken, getDefaultBuyToken } from './cow-tokens';
+import {
+  SELL_TOKENS,
+  BUY_TOKENS,
+  getDefaultSellToken,
+  getDefaultBuyToken,
+} from './cow-tokens';
 import { useCowQuote } from './use-cow-quote';
 import { useCowApproval } from './use-cow-approval';
 import { useCowOrder } from './use-cow-order';
 import { useCowOrderStatus } from './use-cow-order-status';
 import type { TokenInfo } from './types';
 
-// --- Styled components ---
+// --- Token icon map ---
+
+const TOKEN_ICONS: Record<string, JSX.Element> = {
+  ETH: <Eth />,
+  WETH: <Eth />,
+  stETH: <Steth />,
+  wstETH: <Wsteth />,
+};
+
+// --- Styled components (matching project patterns) ---
 
 const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  padding: 16px 0;
+  gap: ${({ theme }) => theme.spaceMap.md}px;
 `;
 
-const TokenRow = styled.div`
+const InputRow = styled.div`
+  display: flex;
+  align-items: stretch;
+  gap: ${({ theme }) => theme.spaceMap.sm}px;
+`;
+
+const SelectWrapper = styled.div`
+  flex-shrink: 0;
+`;
+
+const InputWrapper = styled.div`
+  flex: 1;
+  min-width: 0;
+`;
+
+const OutputRow = styled.div`
+  flex: 1;
   display: flex;
   align-items: center;
-  gap: 8px;
-`;
-
-const TokenSelect = styled.select`
-  padding: 8px 12px;
-  border-radius: 10px;
-  border: 1px solid var(--lido-color-border);
-  background: var(--custom-background-secondary);
-  color: var(--lido-color-text);
-  font-size: 14px;
-  font-weight: 700;
-  cursor: pointer;
-  min-width: 100px;
-`;
-
-const AmountInput = styled.input`
-  flex: 1;
-  padding: 8px 12px;
-  border-radius: 10px;
-  border: 1px solid var(--lido-color-border);
-  background: var(--custom-background-secondary);
-  color: var(--lido-color-text);
-  font-size: 16px;
-  outline: none;
-
-  &:focus {
-    border-color: var(--lido-color-primary);
-  }
-
-  &::placeholder {
-    color: var(--lido-color-textSecondary);
-  }
-`;
-
-const EstimatedOutput = styled.div`
-  font-size: 14px;
-  color: var(--lido-color-textSecondary);
-  min-width: 120px;
-  text-align: right;
-`;
-
-const Arrow = styled.div`
-  text-align: center;
-  font-size: 20px;
-  color: var(--lido-color-textSecondary);
-`;
-
-const QuoteInfo = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
+  justify-content: space-between;
   padding: 12px 16px;
-  border-radius: 10px;
+  border-radius: ${({ theme }) => theme.borderRadiusesMap.lg}px;
   background: var(--custom-background-secondary);
+`;
+
+const OutputLabel = styled.span`
+  font-size: ${({ theme }) => theme.fontSizesMap.xxs}px;
+  color: var(--lido-color-textSecondary);
+`;
+
+const OutputValue = styled.span`
+  font-size: ${({ theme }) => theme.fontSizesMap.xs}px;
+  font-weight: 700;
+  color: var(--lido-color-text);
 `;
 
 const StatusBanner = styled.div<{ $variant: 'pending' | 'success' | 'error' }>`
   padding: 12px 16px;
-  border-radius: 10px;
-  font-size: 14px;
+  border-radius: ${({ theme }) => theme.borderRadiusesMap.lg}px;
+  font-size: ${({ theme }) => theme.fontSizesMap.xxs}px;
   text-align: center;
   background: ${({ $variant }) =>
     $variant === 'success'
@@ -105,47 +109,52 @@ const StatusBanner = styled.div<{ $variant: 'pending' | 'success' | 'error' }>`
 
 const ErrorText = styled.div`
   color: var(--lido-color-error);
-  font-size: 12px;
+  font-size: ${({ theme }) => theme.fontSizesMap.xxs}px;
   text-align: center;
 `;
 
-const HighImpactWarning = styled.div`
-  color: var(--lido-color-warning);
-  font-size: 12px;
-  padding: 8px;
-  border-radius: 8px;
-  background: var(--lido-color-warningBackground);
+const ArrowDown = styled.div`
   text-align: center;
+  font-size: 20px;
+  color: var(--lido-color-textSecondary);
+  line-height: 1;
 `;
 
 // --- Component ---
 
 export const DexOptionSdk = () => {
-  const { chainId } = useDappStatus();
+  const { chainId, isWalletConnected, isDappActive } = useDappStatus();
   const { data: walletClient } = useWalletClient();
+  const { data: stethBalance } = useStethBalance();
+  const { data: wstethBalance } = useWstethBalance();
   const { refetch: refetchSteth } = useStethBalance();
   const { refetch: refetchWsteth } = useWstethBalance();
   const { refetch: refetchEth } = useEthereumBalance();
 
   const daoAgentAddress = getContractAddress(chainId, 'daoAgent');
-  invariant(daoAgentAddress, 'DAO Agent address is not defined for current network');
+  invariant(
+    daoAgentAddress,
+    'DAO Agent address is not defined for current network',
+  );
 
   // Token selection
   const sellTokens = SELL_TOKENS[chainId] ?? SELL_TOKENS[1];
   const buyTokens = BUY_TOKENS[chainId] ?? BUY_TOKENS[1];
-  const [sellToken, setSellToken] = useState<TokenInfo>(getDefaultSellToken(chainId));
-  const [buyToken, setBuyToken] = useState<TokenInfo>(getDefaultBuyToken(chainId));
+  const [sellToken, setSellToken] = useState<TokenInfo>(
+    getDefaultSellToken(chainId),
+  );
+  const [buyToken, setBuyToken] = useState<TokenInfo>(
+    getDefaultBuyToken(chainId),
+  );
 
-  // Amount input
-  const [amountStr, setAmountStr] = useState('');
-  const sellAmount = useMemo(() => {
-    if (!amountStr || isNaN(Number(amountStr))) return null;
-    try {
-      return parseUnits(amountStr, sellToken.decimals);
-    } catch {
-      return null;
-    }
-  }, [amountStr, sellToken.decimals]);
+  // Amount input (bigint, managed by InputAmount)
+  const [sellAmount, setSellAmount] = useState<bigint | null>(null);
+
+  const maxBalance = useMemo(() => {
+    if (sellToken.symbol === 'stETH') return stethBalance;
+    if (sellToken.symbol === 'wstETH') return wstethBalance;
+    return undefined;
+  }, [sellToken.symbol, stethBalance, wstethBalance]);
 
   const receiver = walletClient?.account?.address as Address | undefined;
 
@@ -176,8 +185,13 @@ export const DexOptionSdk = () => {
   });
 
   // Order
-  const { signAndSubmit, isSubmitting, orderUid, error: orderError, reset: resetOrder } =
-    useCowOrder({ quote, receiver });
+  const {
+    signAndSubmit,
+    isSubmitting,
+    orderUid,
+    error: orderError,
+    reset: resetOrder,
+  } = useCowOrder({ quote, receiver });
 
   // Order status
   const refreshBalances = useCallback(() => {
@@ -192,104 +206,144 @@ export const DexOptionSdk = () => {
   // New swap after completion
   const handleNewSwap = useCallback(() => {
     resetOrder();
-    setAmountStr('');
+    setSellAmount(null);
   }, [resetOrder]);
 
   // Disable swap when price impact too high
   const tradeDisabled = isHighImpact || !quote || !sellAmount;
+  const isOrderActive = !!orderUid && !isTerminal;
+
+  // Rate as bigint for FormatToken
+  const rateBigint = useMemo(() => {
+    if (!rate) return null;
+    try {
+      return BigInt(Math.round(Number(rate) * 10 ** buyToken.decimals));
+    } catch {
+      return null;
+    }
+  }, [rate, buyToken.decimals]);
 
   return (
     <Wrapper>
-      {/* Sell token */}
-      <TokenRow>
-        <TokenSelect
-          value={sellToken.symbol}
-          onChange={(e) => {
-            const t = sellTokens.find((t) => t.symbol === e.target.value);
-            if (t) setSellToken(t);
-          }}
-        >
-          {sellTokens.map((t) => (
-            <option key={t.symbol} value={t.symbol}>
-              {t.symbol}
-            </option>
-          ))}
-        </TokenSelect>
-        <AmountInput
-          type="text"
-          inputMode="decimal"
-          placeholder="0.0"
-          value={amountStr}
-          onChange={(e) => {
-            const val = e.target.value;
-            if (/^[0-9]*[.,]?[0-9]*$/.test(val)) {
-              setAmountStr(val.replace(',', '.'));
-            }
-          }}
-          disabled={!!orderUid && !isTerminal}
-        />
-      </TokenRow>
+      {/* Sell: token select + amount input */}
+      <InputRow>
+        <SelectWrapper>
+          <SelectIconStyle
+            icon={TOKEN_ICONS[sellToken.symbol]}
+            value={sellToken.symbol}
+            onChange={(value) => {
+              const t = sellTokens.find((tk) => tk.symbol === value);
+              if (t) {
+                setSellToken(t);
+                setSellAmount(null);
+              }
+            }}
+            disabled={isOrderActive}
+          >
+            {sellTokens.map((t) => (
+              <Option
+                key={t.symbol}
+                value={t.symbol}
+                leftDecorator={TOKEN_ICONS[t.symbol]}
+              >
+                {t.symbol}
+              </Option>
+            ))}
+          </SelectIconStyle>
+        </SelectWrapper>
+        <InputWrapper>
+          <InputAmount
+            value={sellAmount}
+            onChange={setSellAmount}
+            maxValue={maxBalance}
+            decimals={sellToken.decimals}
+            label={`${sellToken.symbol} amount`}
+            disabled={isOrderActive}
+            fullwidth
+            data-testid="cowSdkAmountInput"
+          />
+        </InputWrapper>
+      </InputRow>
 
-      <Arrow>↓</Arrow>
+      <ArrowDown>↓</ArrowDown>
 
-      {/* Buy token */}
-      <TokenRow>
-        <TokenSelect
-          value={buyToken.symbol}
-          onChange={(e) => {
-            const t = buyTokens.find((t) => t.symbol === e.target.value);
-            if (t) setBuyToken(t);
-          }}
-        >
-          {buyTokens.map((t) => (
-            <option key={t.symbol} value={t.symbol}>
-              {t.symbol}
-            </option>
-          ))}
-        </TokenSelect>
-        <EstimatedOutput>
-          {quoteLoading && <InlineLoader />}
-          {!quoteLoading && buyAmount !== null && (
-            <>≈ {Number(formatUnits(buyAmount, buyToken.decimals)).toFixed(6)} {buyToken.symbol}</>
-          )}
-        </EstimatedOutput>
-      </TokenRow>
+      {/* Buy: token select + estimated output */}
+      <InputRow>
+        <SelectWrapper>
+          <SelectIconStyle
+            icon={TOKEN_ICONS[buyToken.symbol]}
+            value={buyToken.symbol}
+            onChange={(value) => {
+              const t = buyTokens.find((tk) => tk.symbol === value);
+              if (t) setBuyToken(t);
+            }}
+            disabled={isOrderActive}
+          >
+            {buyTokens.map((t) => (
+              <Option
+                key={t.symbol}
+                value={t.symbol}
+                leftDecorator={TOKEN_ICONS[t.symbol]}
+              >
+                {t.symbol}
+              </Option>
+            ))}
+          </SelectIconStyle>
+        </SelectWrapper>
+        <OutputRow>
+          <OutputLabel>You receive</OutputLabel>
+          <OutputValue>
+            {quoteLoading && <InlineLoader />}
+            {!quoteLoading && buyAmount !== null && (
+              <FormatToken
+                amount={buyAmount}
+                symbol={buyToken.symbol}
+                approx
+                decimals={buyToken.decimals}
+                data-testid="cowSdkBuyAmount"
+              />
+            )}
+            {!quoteLoading && buyAmount === null && '—'}
+          </OutputValue>
+        </OutputRow>
+      </InputRow>
 
       {/* Quote details */}
       {quote && !orderUid && (
-        <QuoteInfo>
-          {rate && (
-            <DataTableRow
-              title="Rate"
-              data-testid="cowSdkRate"
-            >
-              1 {sellToken.symbol} ≈ {rate} {buyToken.symbol}
+        <DataTable data-testid="cowSdkQuoteInfo">
+          {rateBigint !== null && (
+            <DataTableRow title="Exchange rate" data-testid="cowSdkRate">
+              1 {sellToken.symbol} ={' '}
+              <FormatToken
+                amount={rateBigint}
+                symbol={buyToken.symbol}
+                decimals={buyToken.decimals}
+              />
             </DataTableRow>
           )}
           {feeAmount !== null && (
-            <DataTableRow
-              title="Fee"
-              data-testid="cowSdkFee"
-            >
-              {Number(formatUnits(feeAmount, sellToken.decimals)).toFixed(6)} {sellToken.symbol}
+            <DataTableRow title="Network fee" data-testid="cowSdkFee">
+              <FormatToken
+                amount={feeAmount}
+                symbol={sellToken.symbol}
+                decimals={sellToken.decimals}
+              />
             </DataTableRow>
           )}
           {priceImpact !== null && (
-            <DataTableRow
-              title="Price Impact"
-              data-testid="cowSdkImpact"
-            >
+            <DataTableRow title="Price impact" data-testid="cowSdkImpact">
               {priceImpact.toFixed(2)}%
             </DataTableRow>
           )}
-        </QuoteInfo>
+        </DataTable>
       )}
 
       {/* High impact warning */}
       {isHighImpact && (
-        <HighImpactWarning>
-          Price impact is too high ({priceImpact?.toFixed(2)}%). Trade disabled for your protection.
-        </HighImpactWarning>
+        <WarningBanner>
+          Price impact is too high ({priceImpact?.toFixed(2)}%). Trade disabled
+          for your protection.
+        </WarningBanner>
       )}
 
       {/* Errors */}
@@ -299,7 +353,7 @@ export const DexOptionSdk = () => {
       {/* Order status */}
       {orderUid && status === 'open' && (
         <StatusBanner $variant="pending">
-          Order pending... Waiting for CoW Protocol to fill your order.
+          Order pending… Waiting for CoW Protocol to fill your order.
         </StatusBanner>
       )}
       {orderUid && status === 'fulfilled' && (
@@ -314,27 +368,29 @@ export const DexOptionSdk = () => {
       )}
 
       {/* Action buttons */}
-      {!orderUid && needsApproval && (
+      {!isWalletConnected && <Connect fullwidth />}
+
+      {isWalletConnected && !orderUid && needsApproval && (
         <Button
           fullwidth
           loading={isApproving}
-          disabled={isApproving}
+          disabled={isApproving || !isDappActive}
           onClick={approve}
           data-testid="cowSdkApproveBtn"
         >
-          {isApproving ? 'Approving...' : `Approve ${sellToken.symbol}`}
+          {isApproving ? 'Approving…' : `Approve ${sellToken.symbol}`}
         </Button>
       )}
 
-      {!orderUid && !needsApproval && (
+      {isWalletConnected && !orderUid && !needsApproval && (
         <Button
           fullwidth
           loading={isSubmitting || quoteLoading}
-          disabled={tradeDisabled || isSubmitting}
+          disabled={tradeDisabled || isSubmitting || !isDappActive}
           onClick={signAndSubmit}
           data-testid="cowSdkSwapBtn"
         >
-          {isSubmitting ? 'Signing...' : 'Swap'}
+          {isSubmitting ? 'Signing…' : 'Swap'}
         </Button>
       )}
 
