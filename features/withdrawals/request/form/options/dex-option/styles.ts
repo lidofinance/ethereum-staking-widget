@@ -1,5 +1,4 @@
-import { Loader } from '@lidofinance/lido-ui';
-import styled, { css, keyframes } from 'styled-components';
+import styled from 'styled-components';
 
 export const FallbackContainer = styled.div`
   display: flex;
@@ -27,39 +26,4 @@ export const FallbackContainer = styled.div`
     font-weight: 400;
     text-align: center;
   }
-`;
-
-export const DexWrapper = styled.div`
-  position: relative;
-  width: 100%;
-  height: 100%;
-`;
-
-const fadeOut = keyframes`
-  from { opacity: 0.8; }
-  to   { opacity: 0; pointer-events: none; }
-`;
-
-export const LoaderStyled = styled(Loader)<{ $isVisible: boolean }>`
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 100;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: var(--custom-background-secondary);
-  border-radius: 24px;
-
-  ${({ $isVisible }) =>
-    $isVisible
-      ? css`
-          opacity: 0.8;
-        `
-      : css`
-          animation: ${fadeOut} 0.3s ease forwards;
-          pointer-events: none;
-        `}
 `;

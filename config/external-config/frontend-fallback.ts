@@ -33,7 +33,7 @@ export const getBackwardCompatibleConfig = (
       ...(config?.withdrawalDex ?? {
         // if none provided, disable with default integration
         enabled: false,
-        integration: 'cowswap',
+        integration: 'cowsdk',
       }),
     },
     featureFlags: { ...(config?.featureFlags ?? {}) },
