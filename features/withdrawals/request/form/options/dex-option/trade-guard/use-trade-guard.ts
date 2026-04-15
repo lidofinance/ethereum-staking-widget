@@ -182,11 +182,6 @@ export const useTradeGuard = ({
   );
 
   // ---------------------------------------------------------------------------
-  // Sell-amount limit — ref lives here so memoized widget hooks can read it
-  // without triggering re-creation of CowSwap params.
-  // ---------------------------------------------------------------------------
-
-  // ---------------------------------------------------------------------------
   // ON_CHANGE_TRADE_PARAMS → store latest payload for pre-approval checks
   // ---------------------------------------------------------------------------
 
