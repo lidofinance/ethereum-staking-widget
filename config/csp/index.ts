@@ -58,7 +58,6 @@ export const contentSecurityPolicy: ContentSecurityPolicyOption = {
     // frame-src takes precedence over child-src for iframes in modern browsers
     frameSrc: [
       "'self'",
-      'https://swap.cow.fi', // CowSwap widget iframe
       'https://*.walletconnect.org',
       'https://*.walletconnect.com',
     ],
@@ -80,6 +79,7 @@ export const contentSecurityPolicy: ContentSecurityPolicyOption = {
   reportOnly: secretConfig.cspReportOnly,
 };
 
+// TODO: remove this HOC for better control over CSP headers when next/runtime-envs situation is fixed
 export const withCsp = (app: FC<AppProps>): FC =>
   withSecureHeaders({
     contentSecurityPolicy,
@@ -90,6 +90,6 @@ export const withCsp = (app: FC<AppProps>): FC =>
     expectCT: false,
     nosniff: false,
     // there is no way to avoid setting it, so align with next.config.mjs value
-    xssProtection: 'sanitize',
+    xssProtection: 'block-rendering',
     referrerPolicy: false,
   })(app);

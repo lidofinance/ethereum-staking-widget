@@ -156,9 +156,10 @@ export default withBundleAnalyzer({
             key: 'x-dns-prefetch-control',
             value: 'on',
           },
+          // This header is overwritten by CF, but we still align value just in case
           {
             key: 'strict-transport-security',
-            value: 'max-age=63072000; includeSubDomains; preload',
+            value: 'max-age=2592000; includeSubDomains; preload',
           },
           {
             key: 'referrer-policy',
@@ -169,7 +170,7 @@ export default withBundleAnalyzer({
             value: 'nosniff',
           },
           // if attack is detected, it's filtered but page is still rendered
-          { key: 'x-xss-protection', value: '1' },
+          { key: 'x-xss-protection', value: '1; mode=block' },
           { key: 'x-download-options', value: 'noopen' },
           { key: 'x-permitted-cross-domain-policies', value: 'none' },
 

@@ -24,12 +24,15 @@ test.describe('Page Headers', () => {
         expect.soft(headers['cache-control']).toBe(CACHE_CONTROL_VALUE);
         expect.soft(headers['referrer-policy']).toBe('same-origin');
         expect.soft(headers['x-content-type-options']).toBe('nosniff');
-        expect.soft(headers['x-xss-protection']).toBe('1');
+        expect.soft(headers['x-xss-protection']).toBe('1; mode=block');
         expect.soft(headers['x-dns-prefetch-control']).toBe('on');
         expect.soft(headers['x-download-options']).toBe('noopen');
+
+        // NB: Controlled by CF
         expect
           .soft(headers['strict-transport-security'])
-          .toBe('max-age=63072000; includeSubDomains; preload');
+          .toBe('max-age=2592000; includeSubDomains; preload');
+
         expect.soft(headers['x-permitted-cross-domain-policies']).toBe('none');
         expect.soft(headers['cross-origin-opener-policy']).toBe(`same-origin`);
         expect
