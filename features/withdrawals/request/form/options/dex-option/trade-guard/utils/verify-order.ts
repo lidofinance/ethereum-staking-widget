@@ -121,8 +121,14 @@ export const verifyOrderAmounts = (
     order.buyToken,
   );
 
-  const orderSell = BigInt(order.sellAmount);
-  const orderBuy = BigInt(order.buyAmount);
+  let orderSell: bigint;
+  let orderBuy: bigint;
+  try {
+    orderSell = BigInt(order.sellAmount);
+    orderBuy = BigInt(order.buyAmount);
+  } catch {
+    return 'Invalid order amount format';
+  }
 
   // Sell amount: order must not sell more than validated
   if (expectedSell !== null && orderSell > expectedSell) {

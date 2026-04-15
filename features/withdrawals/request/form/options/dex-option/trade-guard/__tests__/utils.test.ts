@@ -194,7 +194,7 @@ describe('analyzeParams', () => {
       const result = analyzeParams(payload, WALLET, false);
       expect(result.level).toBe('blocked');
       expect(result.isStructural).toBe(true);
-      expect(result.messages[0]).toContain('exceeds maximum');
+      expect(result.messages[0]).toContain('capped at');
     });
 
     it('allows sell amount = 5000', () => {

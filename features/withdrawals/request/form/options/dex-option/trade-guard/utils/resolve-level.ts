@@ -1,7 +1,7 @@
 import { DEFAULT_THRESHOLDS, type Thresholds } from '../consts';
 import type { TradeGuardLevel } from '../types';
 
-export const LEVEL_ORDER: TradeGuardLevel[] = ['safe', 'blocked'];
+export const LEVEL_ORDER: TradeGuardLevel[] = ['safe', 'limit', 'blocked'];
 
 export const resolveLevel = (
   oracleDev: number | null,

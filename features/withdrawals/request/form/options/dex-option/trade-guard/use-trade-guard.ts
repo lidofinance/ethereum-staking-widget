@@ -1,17 +1,14 @@
 import { useCallback, useRef, useState } from 'react';
 
-import { overrideWithQAMockNumber } from 'utils/qa';
-
-import type { Thresholds } from './consts';
 import type { TradeGuardLevel, OnTradeParamsPayload } from './types';
 import { useOracleRates, type OracleResult } from './use-oracle-rates';
+import type { Thresholds } from './consts';
 import {
   safeParseDecimal,
   resolveLevel,
   analyzeParams,
   readThresholds,
   applyQALevelOverride,
-  QA_THRESHOLD_KEYS,
   verifyOrderFields,
   verifyOrderAmounts,
 } from './utils';
@@ -145,15 +142,9 @@ export const useTradeGuard = ({
       const sellUnits = safeParseDecimal(
         payload.sellTokenAmount?.units?.toString(),
       );
-      // QA can only lower the oracle threshold (check smaller trades), never raise it
-      const oracleMinSell = Math.min(
-        overrideWithQAMockNumber(
-          t.minSellUnitsToTriggerOracle,
-          QA_THRESHOLD_KEYS.minSellUnitsToTriggerOracle,
-        ),
-        t.minSellUnitsToTriggerOracle,
-      );
-      const meetsThreshold = sellUnits !== null && sellUnits >= oracleMinSell;
+      // QA clamping already applied in readThresholds()
+      const meetsThreshold =
+        sellUnits !== null && sellUnits >= t.minSellUnitsToTriggerOracle;
       const shouldCheckOracle = !isTestnet && !isStructural && meetsThreshold;
 
       if (shouldCheckOracle) {
@@ -254,12 +245,10 @@ export const useTradeGuard = ({
   /** Verify EIP-712 order against the last validated onBeforeTrade payload. */
   const verifySignedOrder = useCallback(
     (order: OrderFields): string | null => {
+      if (!walletAddress) return 'Wallet address unavailable';
+
       // Static checks (receiver, token whitelist)
-      const staticError = verifyOrderFields(
-        order,
-        walletAddress ?? '',
-        isTestnet,
-      );
+      const staticError = verifyOrderFields(order, walletAddress, isTestnet);
       if (staticError) return staticError;
 
       // Amount checks against last validated payload
