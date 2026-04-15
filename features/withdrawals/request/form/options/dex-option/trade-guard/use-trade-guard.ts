@@ -192,13 +192,46 @@ export const useTradeGuard = ({
   // without triggering re-creation of CowSwap params.
   // ---------------------------------------------------------------------------
 
-  /** Call from ON_CHANGE_TRADE_PARAMS to track current sell amount. */
-  const reportSellAmount = useCallback((units: number, tokenSymbol: string) => {
+  // ---------------------------------------------------------------------------
+  // ON_CHANGE_TRADE_PARAMS → store latest payload for pre-approval checks
+  // ---------------------------------------------------------------------------
+
+  const lastTradeParamsRef = useRef<OnTradeParamsPayload | null>(null);
+
+  /** Call from ON_CHANGE_TRADE_PARAMS to track current params. */
+  const reportTradeParams = useCallback(
+    (payload: OnTradeParamsPayload) => {
+      lastTradeParamsRef.current = payload;
+
+      // Track sell limit
+      const t = readThresholds();
+      const units = Number(payload.sellTokenAmount?.units);
+      sellExceededRef.current = !isNaN(units) && units > t.maxAllowedSellAmount;
+      tokenSymbolRef.current = payload.sellToken?.symbol ?? '';
+    },
+    [],
+  );
+
+  /** Structural pre-check on approval — uses last ON_CHANGE_TRADE_PARAMS data. */
+  const validateApproval = useCallback(async (): Promise<boolean> => {
+    const payload = lastTradeParamsRef.current;
+    if (!payload) return true; // no params yet — let CowSwap proceed
+
     const t = readThresholds();
-    const exceeded = !isNaN(units) && units > t.maxAllowedSellAmount;
-    sellExceededRef.current = exceeded;
-    tokenSymbolRef.current = tokenSymbol;
-  }, []);
+    const { level, messages } = analyzeParams(
+      payload,
+      walletAddress,
+      isTestnet,
+      t,
+    );
+
+    if (level !== 'safe') {
+      await showModal(level, messages, false);
+      return false;
+    }
+
+    return true;
+  }, [walletAddress, isTestnet, showModal]);
 
   /** Stable callback — safe to call from memoized widget hooks.
    *  Shows a neutral "limit" modal and returns false when exceeded. */
@@ -244,7 +277,8 @@ export const useTradeGuard = ({
     modalState,
     handleModalClose,
     validateTrade,
-    reportSellAmount,
+    validateApproval,
+    reportTradeParams,
     checkSellLimit,
     verifySignedOrder,
   };

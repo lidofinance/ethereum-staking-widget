@@ -111,7 +111,8 @@ export const DexOption = () => {
     modalState,
     handleModalClose,
     validateTrade,
-    reportSellAmount,
+    validateApproval,
+    reportTradeParams,
     checkSellLimit,
     verifySignedOrder,
   } = useTradeGuard({
@@ -199,6 +200,7 @@ export const DexOption = () => {
       hooks: {
         onBeforeApproval: async () => {
           if (!(await checkSellLimit())) return false;
+          if (!(await validateApproval())) return false;
 
           return await validate();
         },
@@ -229,6 +231,7 @@ export const DexOption = () => {
       themeName,
       validate,
       validateTrade,
+      validateApproval,
       isGithubAvailable,
       refreshId,
     ],
@@ -266,11 +269,7 @@ export const DexOption = () => {
       {
         event: CowWidgetEvents.ON_CHANGE_TRADE_PARAMS,
         handler: (params: OnTradeParamsPayload) => {
-          // Check sell amount against max threshold (QA can only lower)
-          reportSellAmount(
-            Number(params.sellTokenAmount?.units),
-            params.sellToken?.symbol ?? '',
-          );
+          reportTradeParams(params);
 
           // Workaround: refresh params if user changes sell token
           const { sellToken } = params;
