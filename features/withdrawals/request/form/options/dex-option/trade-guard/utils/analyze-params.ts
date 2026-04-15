@@ -6,7 +6,7 @@ import {
 } from '../consts';
 import type { TradeGuardLevel, OnTradeParamsPayload } from '../types';
 
-import { safeParseDecimal } from './safe-parce-decimal';
+import { safeParseDecimal } from './safe-parse-decimal';
 
 type AnalysisResult = {
   level: TradeGuardLevel;

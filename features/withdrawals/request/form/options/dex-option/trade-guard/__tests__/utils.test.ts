@@ -1,4 +1,4 @@
-import { safeParseDecimal } from '../utils/safe-parce-decimal';
+import { safeParseDecimal } from '../utils/safe-parse-decimal';
 import { resolveLevel } from '../utils/resolve-level';
 import { analyzeParams } from '../utils/analyze-params';
 import { isValidRound, isInBounds } from '../utils/oracle-utils';

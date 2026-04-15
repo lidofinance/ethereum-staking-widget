@@ -206,7 +206,14 @@ export const useTradeGuard = ({
   /** Structural pre-check on approval — uses last ON_CHANGE_TRADE_PARAMS data. */
   const validateApproval = useCallback(async (): Promise<boolean> => {
     const payload = lastTradeParamsRef.current;
-    if (!payload) return true; // no params yet — let CowSwap proceed
+    if (!payload) {
+      await showModal(
+        'blocked',
+        ['Trade parameters unavailable — cannot verify approval'],
+        false,
+      );
+      return false;
+    }
 
     const t = readThresholds();
     const { level, messages } = analyzeParams(
