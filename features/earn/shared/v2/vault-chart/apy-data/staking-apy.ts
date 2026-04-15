@@ -1,4 +1,4 @@
-import * as z from 'zod';
+import { z } from 'zod';
 
 import { config } from 'config';
 import { standardFetcher } from 'utils/standardFetcher';

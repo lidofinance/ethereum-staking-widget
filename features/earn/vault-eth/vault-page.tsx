@@ -78,19 +78,68 @@ const GENERAL_INFO_RIGHT: Array<{
 
 const RISK_DISCLOSURE = (
   <>
-    The EarnETH vault is designed to optimize ETH-based returns by allocating
-    capital across a diversified selection of DeFi protocols and strategies
-    within the broader ecosystem. The vault provides exposure to multiple DeFi
-    positions, each carrying smart contract risk and different levels of market
-    and economic risk. Its strategies include liquidity provision, which may
-    lead to impermanent loss, and the use of leverage, introducing potential
-    liquidation risk. Please note that the vault is not available to U.S.
-    persons, U.S. residents, or individuals located in other restricted
-    jurisdictions.{' '}
-    <Link href={`${config.rootOrigin}/earn/risk-disclosures`}>
-      See this for further disclosures
-    </Link>
-    .
+    <p>
+      The EarnETH vault is designed to optimize ETH-based returns by allocating
+      capital across a diversified selection of DeFi protocols and strategies
+      within the broader ecosystem.
+      <br />
+      The vault provides exposure to multiple DeFi positions, each carrying
+      smart contract risk and different levels of market and economic risk. Its
+      strategies include liquidity provision, which may lead to impermanent
+      loss, and the use of leverage, introducing potential liquidation risk.
+      Please note that the vault is not available to U.S. persons, U.S.
+      residents, or individuals located in other restricted jurisdictions.{' '}
+      <Link href={`${config.rootOrigin}/earn/risk-disclosures`}>
+        See this for further disclosures
+      </Link>
+      .
+    </p>
+    <br />
+    <p>
+      Lido EarnETH service relies on third-party infrastructure provided by
+      Mellow. By proceeding, you are subject to Mellow&apos;s{' '}
+      <Link href="https://mellow.finance/Runtime-Labs-Vault-Legal-Notice.pdf">
+        Terms of Service
+      </Link>{' '}
+      and{' '}
+      <Link href="https://mellow.finance/Mellow-Privacy-Notice.pdf">
+        Privacy Notice
+      </Link>
+      .
+    </p>
+    <br />
+    <p>
+      By depositing cryptoassets into the Lido EarnETH vault you:
+      <br />- acknowledge and accept Mellow&apos;s{' '}
+      <Link href="https://mellow.finance/Runtime-Labs-Vault-Legal-Notice.pdf">
+        Terms of Use
+      </Link>{' '}
+      and{' '}
+      <Link href="https://mellow.finance/Mellow-Privacy-Notice.pdf">
+        Privacy Notice
+      </Link>
+      ,{' '}
+      <Link href={`${config.rootOrigin}/privacy-notice`}>
+        Lido&apos;s Terms of Use
+      </Link>{' '}
+      and the{' '}
+      <Link href={`${config.rootOrigin}/earn/risk-disclosures`}>Risk Disclosures</Link>
+      .
+      <br />- acknowledge and agree that the Lido EarnETH vault relies on
+      third-party infrastructure provided by Mellow (&quot;Third-Party
+      Services&quot;) and that : (a) the operation, performance, security,
+      legality, or continued availability of any such Third-Party Services
+      cannot be guaranteed; (b) any integration, routing, or utilisation of
+      cryptoassets through such Third-Party Services may result in partial or
+      total loss, inaccessibility, or impairment of cryptoassets, whether due to
+      malfunction, insolvency, security breach, exploit, hack, de-peg, or other
+      technical or operational failure; and (c) you assume all such risks fully
+      and voluntarily. By using or interacting with the vault, you acknowledge
+      that the blockchain and DeFi ecosystems are experimental and inherently
+      risky, and you accept and assume all risks associated with the use of any
+      Third-Party Services, integrations, or protocols, entirely at your own
+      discretion and responsibility.
+    </p>
   </>
 );
 

@@ -1,4 +1,4 @@
-import * as z from 'zod';
+import { z } from 'zod';
 
 // Unix timestamp validator (seconds, valid until year 2286)
 export const UNIX_TIMESTAMP_SCHEMA = z.coerce

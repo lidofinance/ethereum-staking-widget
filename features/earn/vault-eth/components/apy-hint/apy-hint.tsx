@@ -18,7 +18,7 @@ export const EthVaultApyHint = () => {
         </span>
       </Section>
       <Section>
-        APY is the annual percentage yield including compounding. APY includes
+        APY is the annual percentage yield, denominated in ETH, including
         compounding and any current incentive rewards. Rates are not guaranteed
         and may change over time.
       </Section>
