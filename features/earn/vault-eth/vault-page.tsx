@@ -96,8 +96,8 @@ const RISK_DISCLOSURE = (
     </p>
     <br />
     <p>
-      Lido EarnETH service relies on third-party infrastructure provided by
-      Mellow. By proceeding, you are subject to Mellow&apos;s{' '}
+      Lido EarnETH relies on third-party infrastructure provided by Mellow. By
+      proceeding, you are subject to Mellow&apos;s{' '}
       <Link href="https://mellow.finance/Runtime-Labs-Vault-Legal-Notice.pdf">
         Terms of Service
       </Link>{' '}
