@@ -24,9 +24,22 @@ test.describe('Page Headers', () => {
         expect.soft(headers['cache-control']).toBe(CACHE_CONTROL_VALUE);
         expect.soft(headers['referrer-policy']).toBe('same-origin');
         expect.soft(headers['x-content-type-options']).toBe('nosniff');
-        expect.soft(headers['x-xss-protection']).toBe('1');
+        expect.soft(headers['x-xss-protection']).toBe('1; mode=block');
         expect.soft(headers['x-dns-prefetch-control']).toBe('on');
         expect.soft(headers['x-download-options']).toBe('noopen');
+
+        // NB: Controlled by CF
+        expect
+          .soft(headers['strict-transport-security'])
+          .toBe('max-age=2592000; includeSubDomains; preload');
+
+        expect.soft(headers['x-permitted-cross-domain-policies']).toBe('none');
+        expect.soft(headers['cross-origin-opener-policy']).toBe(`same-origin`);
+        expect
+          .soft(headers['permissions-policy'])
+          .toBe(
+            'camera=(), microphone=(), geolocation=(), payment=(), accelerometer=(), gyroscope=(), magnetometer=(), display-capture=(), encrypted-media=(), serial=(), xr-spatial-tracking=(), browsing-topics=(), usb=(self), bluetooth=(self), hid=(self), autoplay=(self), fullscreen=(self), picture-in-picture=(self)',
+          );
 
         // except "/manifest.json", "/favicon:size*", "/runtime/window-env.js" urls and preview-stand deploying
         if (WIDGET_PAGES.includes(route) && isPreview)

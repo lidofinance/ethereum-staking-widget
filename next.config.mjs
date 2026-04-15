@@ -1,4 +1,5 @@
 import NextBundleAnalyzer from '@next/bundle-analyzer';
+import { fileURLToPath } from 'url';
 import buildDynamics from './scripts/build-dynamics.mjs';
 import { logEnvironmentVariables } from './scripts/log-environment-variables.mjs';
 import generateBuildId from './scripts/generate-build-id.mjs';
@@ -47,7 +48,7 @@ export const CACHE_CONTROL_PAGES = [
   ...WIDGET_PAGES,
   '/manifest.json',
   '/favicon:size*',
-  '/runtime/window-env.js'
+  '/runtime/window-env.js',
 ];
 export const CACHE_CONTROL_VALUE =
   'public, max-age=15, s-max-age=30, stale-if-error=604800, stale-while-revalidate=172800';
@@ -136,6 +137,13 @@ export default withBundleAnalyzer({
       '@react-native-async-storage/async-storage': false,
     };
 
+    // Alias exact 'zod' imports to a wrapper that disables Zod's eval-based JIT
+    // as a side-effect on first import, before any schema parsing can occur.
+    // The $ suffix makes this an exact match, leaving 'zod/mini', 'zod/v4', etc. alone.
+    config.resolve.alias['zod$'] = fileURLToPath(
+      new URL('utils/zod-setup.ts', import.meta.url),
+    );
+
     return config;
   },
   async headers() {
@@ -145,29 +153,86 @@ export default withBundleAnalyzer({
         source: '/(.*)',
         headers: [
           {
-            key: 'X-DNS-Prefetch-Control',
+            key: 'x-dns-prefetch-control',
             value: 'on',
           },
+          // This header is overwritten by CF, but we still align value just in case
           {
-            key: 'Strict-Transport-Security',
-            value: 'max-age=63072000; includeSubDomains; preload',
+            key: 'strict-transport-security',
+            value: 'max-age=2592000; includeSubDomains; preload',
           },
           {
-            key: 'Referrer-Policy',
+            key: 'referrer-policy',
             value: 'same-origin',
           },
           {
             key: 'x-content-type-options',
             value: 'nosniff',
           },
-          { key: 'x-xss-protection', value: '1' },
+          // if attack is detected, it's filtered but page is still rendered
+          { key: 'x-xss-protection', value: '1; mode=block' },
           { key: 'x-download-options', value: 'noopen' },
+          { key: 'x-permitted-cross-domain-policies', value: 'none' },
+
+          {
+            key: 'cross-origin-opener-policy',
+            value: 'same-origin',
+          },
+
+          {
+            key: 'Permissions-Policy',
+            value: [
+              'camera=()',
+              'microphone=()',
+              'geolocation=()',
+              'payment=()',
+              'accelerometer=()',
+              'gyroscope=()',
+              'magnetometer=()',
+              'display-capture=()',
+              'encrypted-media=()',
+              'serial=()',
+              'xr-spatial-tracking=()',
+              'browsing-topics=()',
+              // Allow for the page itself; hardware wallets (Ledger/Trezor) may need these
+              'usb=(self)',
+              'bluetooth=(self)',
+              'hid=(self)',
+              'autoplay=(self)',
+              'fullscreen=(self)',
+              'picture-in-picture=(self)',
+            ].join(', '),
+          },
+          // DISABLED but left for future consideration
+          // Reporting API — defines the group referenced by CSP, COOP, COEP, NEL(consider for future)
+          // Unavailable due to next.js and docker environment limitations
+          // When available also add ';report-to=csp-endpoint' to COOP and COEP headers
+          // {
+          //   key: 'reporting-endpoints',
+          //   value: `csp-endpoint="${process.env.CSP_REPORT_URI}"`,
+          // }
+          // COEP is great for cross-origin isolation but most resources lack correct CORP response headers
+          // {
+          //   key: 'cross-origin-embedder-policy',
+          //   value: 'credentialless',
+          // },
         ],
       },
       {
         // required for gnosis save apps
         source: '/manifest.json',
-        headers: [{ key: 'Access-Control-Allow-Origin', value: '*' }],
+        headers: [
+          { key: 'Access-Control-Allow-Origin', value: '*' },
+          { key: 'Cross-Origin-Resource-Policy', value: 'cross-origin' },
+        ],
+      },
+      {
+        // required for CoW widget iframe (swap.cow.fi) to fetch token lists cross-origin as a fallback
+        source: '/token-lists/:path*',
+        headers: [
+          { key: 'Access-Control-Allow-Origin', value: '*' },
+          { key: 'Cross-Origin-Resource-Policy', value: 'cross-origin' },
+        ],
       },
       ...CACHE_CONTROL_PAGES.map((page) => ({
         source: page,
