@@ -1,12 +1,13 @@
 import { z } from 'zod';
 
+import { config } from 'config';
 import { standardFetcher } from 'utils/standardFetcher';
 
 /**
  * Lido Ethereum API — APR for stETH.
  * @see https://eth-api.lido.fi/api#/APR%20for%20Eth%20and%20stEth/ProtocolController_findAPRforSTETH
  */
-const LIDO_STETH_APR_ORIGIN = 'https://eth-api.lido.fi/v1/protocol/steth/apr';
+const LIDO_STETH_APR_ORIGIN = `${config.ethAPIBasePath}/v1/protocol/steth/apr`;
 
 const LidoAprItemSchema = z.object({
   timeUnix: z.number(),

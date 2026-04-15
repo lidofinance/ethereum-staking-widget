@@ -1,6 +1,7 @@
 import { Link } from '@lidofinance/lido-ui';
 import type { FC, ReactNode } from 'react';
 
+import { config } from 'config';
 import { PartnerNethermindIconCircle, VaultEthIcon } from 'assets/earn-v2';
 import { PartnerMellowIcon } from 'assets/earn';
 import { VaultPage } from 'features/earn/shared/v2/vault-page/vault-page';
@@ -88,7 +89,7 @@ const RISK_DISCLOSURE = (
       loss, and the use of leverage, introducing potential liquidation risk.
       Please note that the vault is not available to U.S. persons, U.S.
       residents, or individuals located in other restricted jurisdictions.{' '}
-      <Link href="https://lido.fi/earn/risk-disclosures">
+      <Link href={`${config.rootOrigin}/earn/risk-disclosures`}>
         See this for further disclosures
       </Link>
       .
@@ -118,11 +119,11 @@ const RISK_DISCLOSURE = (
         Privacy Notice
       </Link>
       ,{' '}
-      <Link href="https://lido.fi/privacy-notice">
+      <Link href={`${config.rootOrigin}/privacy-notice`}>
         Lido&apos;s Terms of Use
       </Link>{' '}
       and the{' '}
-      <Link href="https://lido.fi/earn/risk-disclosures">Risk Disclosures</Link>
+      <Link href={`${config.rootOrigin}/earn/risk-disclosures`}>Risk Disclosures</Link>
       .
       <br />- acknowledge and agree that the Lido EarnETH vault relies on
       third-party infrastructure provided by Mellow (&quot;Third-Party
