@@ -77,24 +77,26 @@ export const useWithdrawalRequests = () => {
 
       let wqRequests: { finalizationAt: string; id: string | undefined }[] = [];
 
-      try {
-        const requests =
-          await withdraw.waitingTime.getWithdrawalWaitingTimeByRequestIds({
-            ids: pendingRequestsIds,
-            getCustomApiUrl: getWQApiUrlByChain,
-          });
+      if (pendingRequestsIds.length > 0) {
+        try {
+          const requests =
+            await withdraw.waitingTime.getWithdrawalWaitingTimeByRequestIds({
+              ids: pendingRequestsIds,
+              getCustomApiUrl: getWQApiUrlByChain,
+            });
 
-        wqRequests = requests
-          .filter((request) => request?.requestInfo)
-          .map((request) => ({
-            id: request.requestInfo.requestId,
-            finalizationAt: request.requestInfo.finalizationAt,
-          }));
-      } catch (e) {
-        console.warn(
-          `[useWithdrawalData] Failed to fetch request time for requests ids: ${pendingRequestsIds}. Details:`,
-          e,
-        );
+          wqRequests = requests
+            .filter((request) => request?.requestInfo)
+            .map((request) => ({
+              id: request.requestInfo.requestId,
+              finalizationAt: request.requestInfo.finalizationAt,
+            }));
+        } catch (e) {
+          console.warn(
+            `[useWithdrawalData] Failed to fetch request time for requests ids: ${pendingRequestsIds}. Details:`,
+            e,
+          );
+        }
       }
 
       let pendingAmountOfStETH = 0n;

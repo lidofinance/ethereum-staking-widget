@@ -1,6 +1,7 @@
 import { FC } from 'react';
 import { Link } from '@lidofinance/lido-ui';
 import { FaqItem } from 'features/earn/shared/v2/faq';
+import { config } from 'config';
 
 export const RisksOfDepositing: FC<{ id?: string }> = ({ id }) => {
   return (
@@ -70,7 +71,10 @@ export const RisksOfDepositing: FC<{ id?: string }> = ({ id }) => {
           the vault should conduct their own research and seek independent
           professional advice to ensure they fully understand the potential
           risks and implications before participating.{' '}
-          <Link target="_blank" href="https://lido.fi/earn/risk-disclosures">
+          <Link
+            target="_blank"
+            href={`${config.rootOrigin}/earn/risk-disclosures`}
+          >
             Learn more about risks.
           </Link>
         </em>
