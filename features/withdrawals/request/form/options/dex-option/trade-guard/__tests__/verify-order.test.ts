@@ -133,11 +133,12 @@ describe('verifyOrderAmounts', () => {
     );
   });
 
-  it('skips amount check when token decimals unknown (unknown sell token)', () => {
+  it('rejects when token decimals unknown (fail-closed)', () => {
     const order = makeOrder({ sellToken: UNKNOWN, sellAmount: '999999' });
     const snapshot = makeSnapshot({ sellToken: UNKNOWN });
-    // unitsToRaw returns null for unknown token → check is skipped → null
-    expect(verifyOrderAmounts(order, snapshot)).toBeNull();
+    expect(verifyOrderAmounts(order, snapshot)).toContain(
+      'token decimals unknown',
+    );
   });
 
   describe('USDC (6 decimals)', () => {
@@ -216,5 +217,19 @@ describe('parseOrderFromSignRequest', () => {
 
   it('returns null for empty array', () => {
     expect(parseOrderFromSignRequest([])).toBeNull();
+  });
+
+  it('returns null when fields are non-string types', () => {
+    const data = {
+      primaryType: 'Order',
+      message: {
+        sellToken: 123,
+        buyToken: ETH,
+        receiver: WALLET,
+        sellAmount: '100',
+        buyAmount: '100',
+      },
+    };
+    expect(parseOrderFromSignRequest([WALLET, data])).toBeNull();
   });
 });

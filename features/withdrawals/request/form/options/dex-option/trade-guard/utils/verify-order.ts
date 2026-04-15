@@ -130,13 +130,21 @@ export const verifyOrderAmounts = (
     return 'Invalid order amount format';
   }
 
+  // Fail-closed: if we can't convert units, we can't verify amounts
+  if (expectedSell === null) {
+    return 'Cannot verify sell amount: token decimals unknown';
+  }
+  if (expectedBuyMin === null) {
+    return 'Cannot verify buy amount: token decimals unknown';
+  }
+
   // Sell amount: order must not sell more than validated
-  if (expectedSell !== null && orderSell > expectedSell) {
+  if (orderSell > expectedSell) {
     return `Order sells more than validated (${order.sellAmount} > ${expectedSell})`;
   }
 
   // Buy amount (minimum receive): order must not accept less than validated
-  if (expectedBuyMin !== null && orderBuy < expectedBuyMin) {
+  if (orderBuy < expectedBuyMin) {
     return `Order minimum receive is less than validated (${order.buyAmount} < ${expectedBuyMin})`;
   }
 
@@ -164,11 +172,11 @@ export const parseOrderFromSignRequest = (
     if (typedData?.primaryType === 'Order' && typedData?.message) {
       const msg = typedData.message;
       if (
-        msg.sellToken &&
-        msg.buyToken &&
-        msg.receiver &&
-        msg.sellAmount &&
-        msg.buyAmount
+        typeof msg.sellToken === 'string' &&
+        typeof msg.buyToken === 'string' &&
+        typeof msg.receiver === 'string' &&
+        typeof msg.sellAmount === 'string' &&
+        typeof msg.buyAmount === 'string'
       ) {
         return msg as OrderFields;
       }

@@ -115,6 +115,9 @@ export const useTradeGuard = ({
   // Swap gate: structural checks → oracle check → modal
   const validateTrade = useCallback(
     async (payload: OnTradeParamsPayload): Promise<boolean> => {
+      // Invalidate previous snapshot — prevents stale data if this call fails
+      lastValidatedTradeRef.current = null;
+
       if (!walletAddress) {
         await showModal(
           'blocked',
@@ -196,8 +199,8 @@ export const useTradeGuard = ({
 
       // Track sell limit
       const t = readThresholds();
-      const units = Number(payload.sellTokenAmount?.units);
-      sellExceededRef.current = !isNaN(units) && units > t.maxAllowedSellAmount;
+      const units = safeParseDecimal(payload.sellTokenAmount?.units?.toString());
+      sellExceededRef.current = units !== null && units > t.maxAllowedSellAmount;
       tokenSymbolRef.current = payload.sellToken?.symbol ?? '';
     },
     [],
@@ -205,6 +208,15 @@ export const useTradeGuard = ({
 
   /** Structural pre-check on approval — uses last ON_CHANGE_TRADE_PARAMS data. */
   const validateApproval = useCallback(async (): Promise<boolean> => {
+    if (!walletAddress) {
+      await showModal(
+        'blocked',
+        ['Wallet address unavailable — cannot verify approval'],
+        false,
+      );
+      return false;
+    }
+
     const payload = lastTradeParamsRef.current;
     if (!payload) {
       await showModal(
@@ -260,11 +272,11 @@ export const useTradeGuard = ({
 
       // Amount checks against last validated payload
       const snapshot = lastValidatedTradeRef.current;
-      if (snapshot) {
-        return verifyOrderAmounts(order, snapshot);
+      if (!snapshot) {
+        return 'No validated trade on record — order signing rejected';
       }
 
-      return null;
+      return verifyOrderAmounts(order, snapshot);
     },
     [walletAddress, isTestnet],
   );
