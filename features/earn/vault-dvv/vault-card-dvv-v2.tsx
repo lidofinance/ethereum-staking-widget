@@ -29,8 +29,8 @@ export const VaultCardDVV = () => {
       position={
         isWalletConnected
           ? {
-              balance: sharesBalance,
-              symbol: DVV_TOKEN_SYMBOL,
+              sharesBalance: sharesBalance,
+              sharesSymbol: DVV_TOKEN_SYMBOL,
               isLoading: isLoadingPosition,
             }
           : undefined

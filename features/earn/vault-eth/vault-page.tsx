@@ -14,9 +14,15 @@ import { EthVaultPositionManager } from './position-manager/position-manager';
 import { EarnEthFaq } from './faq/faq';
 import { useEthVaultStats } from './hooks/use-vault-stats';
 import { useEthVaultApy } from './hooks/use-vault-apy';
+import { useEthVaultPosition } from './hooks/use-position';
 import { EARN_VAULT_DEPOSIT_SLUG, EARN_VAULT_WITHDRAW_SLUG } from '../consts';
 import { EthVaultApyHint } from './components/apy-hint';
-import { ETH_VAULT_DESCRIPTION, ETH_VAULT_TITLE } from './consts';
+import {
+  ETH_VAULT_DESCRIPTION,
+  ETH_VAULT_TITLE,
+  ETH_VAULT_TOKEN_SYMBOL,
+} from './consts';
+import { TOKEN_SYMBOLS } from 'consts/tokens';
 import { ProtectedTooltip } from './protected-tooltip';
 
 const FEES = [
@@ -159,6 +165,14 @@ export const EthVaultPage: FC<{
 }> = ({ action }) => {
   const { apy, isLoading: isApyLoading } = useEthVaultApy();
   const { tvlUsd, isLoading: isTvlLoading } = useEthVaultStats();
+  const {
+    data: earnethPositionData,
+    isLoading: isPositionLoading,
+    ethAmount,
+    usdBalance,
+  } = useEthVaultPosition();
+
+  const sharesBalance = earnethPositionData?.earnethSharesBalance;
 
   return (
     <>
@@ -171,6 +185,18 @@ export const EthVaultPage: FC<{
         apxHint={<EthVaultApyHint />}
         sidePanel={<EthVaultPositionManager action={action} />}
         vaultName="ethVault"
+        balance={
+          sharesBalance
+            ? {
+                amount: ethAmount,
+                symbol: TOKEN_SYMBOLS.eth,
+                sharesAmount: sharesBalance,
+                sharesSymbol: ETH_VAULT_TOKEN_SYMBOL,
+                usdAmount: usdBalance,
+                isLoading: isPositionLoading,
+              }
+            : undefined
+        }
         faqContent={<EarnEthFaq />}
         strategyContent={
           <VaultAllocation

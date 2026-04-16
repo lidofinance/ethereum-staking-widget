@@ -1,9 +1,15 @@
 import type { ComponentType, FC, SVGProps } from 'react';
 
-import { FormatLargeAmount, FormatPercent } from 'shared/formatters';
+import {
+  FormatLargeAmount,
+  FormatPercent,
+  FormatToken,
+} from 'shared/formatters';
+import { FormatPrice } from 'shared/formatters/format-price';
 import { InlineLoader } from 'features/earn/shared/inline-loader';
 import { VaultTip } from 'features/earn/shared/vault-tip';
 import { Badge } from 'features/earn/shared/badge';
+import { getTokenDecimals } from 'utils/token-decimals';
 
 import {
   TopSectionStyled,
@@ -15,10 +21,21 @@ import {
   TopSectionStatsRow,
   TopSectionStatItem,
   TopSectionStatLabel,
+  TopSectionStatSubValue,
   TopSectionStatValue,
 } from './styles';
 
 type VaultIllustration = ComponentType<SVGProps<SVGSVGElement>>;
+
+export type VaultBalanceProp = {
+  amount?: bigint;
+  symbol: string;
+  sharesAmount?: bigint;
+  sharesSymbol: string;
+  usdAmount?: number;
+  isLoading?: boolean;
+};
+
 type TopSectionProps = {
   logo: VaultIllustration;
   title: string;
@@ -29,6 +46,7 @@ type TopSectionProps = {
   isApxLoading?: boolean;
   isTvlLoading?: boolean;
   protectedBadgeTooltipText?: React.ReactNode;
+  balance?: VaultBalanceProp;
 };
 
 export const TopSection: FC<TopSectionProps> = (props) => {
@@ -41,6 +59,7 @@ export const TopSection: FC<TopSectionProps> = (props) => {
     isApxLoading,
     isTvlLoading,
     protectedBadgeTooltipText,
+    balance,
   } = props;
 
   return (
@@ -77,6 +96,41 @@ export const TopSection: FC<TopSectionProps> = (props) => {
             </InlineLoader>
           </TopSectionStatValue>
         </TopSectionStatItem>
+        {!!balance?.amount && (
+          <TopSectionStatItem>
+            <TopSectionStatLabel>
+              My balance
+              <VaultTip placement="bottom">
+                You hold{' '}
+                <FormatToken
+                  trimEllipsis
+                  amount={balance.sharesAmount}
+                  symbol={balance.sharesSymbol}
+                  decimals={getTokenDecimals(balance.sharesSymbol)}
+                />
+                .{' '}
+                {balance.usdAmount != null
+                  ? `Shown in ${balance.symbol} and USD at current conversion rates.`
+                  : `Shown in ${balance.symbol} at current conversion rates.`}
+              </VaultTip>
+            </TopSectionStatLabel>
+            <TopSectionStatValue>
+              <InlineLoader isLoading={balance.isLoading} width={70}>
+                <FormatToken
+                  trimEllipsis
+                  amount={balance.amount}
+                  symbol={balance.symbol}
+                  decimals={getTokenDecimals(balance.symbol)}
+                />
+              </InlineLoader>
+            </TopSectionStatValue>
+            {!balance.isLoading && balance.usdAmount != null && (
+              <TopSectionStatSubValue>
+                <FormatPrice amount={balance.usdAmount} />
+              </TopSectionStatSubValue>
+            )}
+          </TopSectionStatItem>
+        )}
       </TopSectionStatsRow>
     </TopSectionStyled>
   );

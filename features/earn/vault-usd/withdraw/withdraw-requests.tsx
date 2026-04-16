@@ -8,22 +8,11 @@ import { UsdVaultWithdrawRequestClaimable } from './withdraw-request/withdraw-re
 import { UsdVaultWithdrawRequestPending } from './withdraw-request/withdraw-request-pending';
 import { useUsdVaultAvailable } from '../hooks/use-vault-available';
 import { useUsdVaultWithdrawClaim } from './hooks/use-withdraw-claim';
-import { TokenEarnUsdIcon } from 'assets/earn-v2';
-import { VaultPosition } from 'features/earn/shared/v2/vault-position/vault-position';
-import { USD_VAULT_TOKEN_SYMBOL } from '../consts';
-import { useUsdVaultPosition } from '../hooks/use-position';
 
 export const UsdVaultWithdrawRequests = () => {
   const { isUsdVaultAvailable } = useUsdVaultAvailable();
   const { data } = useUsdVaultWithdrawRequests();
   const { withdrawClaim, isClaiming } = useUsdVaultWithdrawClaim();
-  const {
-    data: earnusdPositionData,
-    isLoading: isPositionLoading,
-    usdBalance: usdAmount,
-  } = useUsdVaultPosition();
-
-  const earnusdBalance = earnusdPositionData?.earnusdSharesBalance ?? 0n;
 
   const requests = data?.requests || [];
   const claimableRequests = data?.claimableRequests || [];
@@ -32,21 +21,10 @@ export const UsdVaultWithdrawRequests = () => {
   const TOOLTIP_TEXT =
     'The final claimable USDC may differ slightly, since your request continues earning until processing is complete.';
 
-  if ((earnusdBalance === 0n && requests.length === 0) || !isUsdVaultAvailable)
-    return null;
+  if (requests.length === 0 || !isUsdVaultAvailable) return null;
 
   return (
     <RequestsContainer>
-      <VaultPosition
-        position={{
-          symbol: USD_VAULT_TOKEN_SYMBOL,
-          token: earnusdPositionData?.earnusdTokenAddress,
-          balance: earnusdBalance,
-          icon: <TokenEarnUsdIcon />,
-          isLoading: isPositionLoading,
-          usdAmount,
-        }}
-      />
       {claimableRequests.length > 0 && (
         <ActionableTitle>
           Ready to claim{' '}

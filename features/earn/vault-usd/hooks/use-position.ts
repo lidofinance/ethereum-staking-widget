@@ -65,5 +65,6 @@ export const useUsdVaultPosition = () => {
     earnusdSharesBalance: data?.earnusdSharesBalance,
     usdQuery,
     usdBalance: usdAmount ?? 0,
+    usdcAmount: usdc,
   };
 };

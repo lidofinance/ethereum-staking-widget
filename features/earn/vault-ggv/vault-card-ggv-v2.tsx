@@ -29,8 +29,8 @@ export const VaultCardGGV = () => {
       position={
         isWalletConnected
           ? {
-              balance: sharesBalance,
-              symbol: GGV_TOKEN_SYMBOL,
+              sharesBalance: sharesBalance,
+              sharesSymbol: GGV_TOKEN_SYMBOL,
               isLoading: isLoadingPosition,
             }
           : undefined

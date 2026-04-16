@@ -43,8 +43,8 @@ export const VaultCardSTG = () => {
       position={
         isWalletConnected
           ? {
-              balance: strethSharesBalance,
-              symbol: STG_TOKEN_SYMBOL,
+              sharesBalance: strethSharesBalance,
+              sharesSymbol: STG_TOKEN_SYMBOL,
               claimable: totalClaimableStrethShares,
               pending,
               isLoading: isLoadingPosition || isLoadingDepositRequests,
