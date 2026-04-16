@@ -18,8 +18,11 @@ import { useUsdVaultPosition } from '../hooks/use-position';
 export const UsdVaultWithdrawRequests = () => {
   const { isUsdVaultAvailable } = useUsdVaultAvailable();
   const { data } = useUsdVaultWithdrawRequests();
-  const { withdrawClaim, isClaiming } = useUsdVaultWithdrawClaim();
-  const { withdrawClaimAll } = useUsdVaultWithdrawClaimAll();
+  const { withdrawClaim, isClaiming: isClaimingSingle } =
+    useUsdVaultWithdrawClaim();
+  const { withdrawClaimAll, isClaiming: isClaimingAll } =
+    useUsdVaultWithdrawClaimAll();
+  const isClaiming = isClaimingSingle || isClaimingAll;
   const {
     data: earnusdPositionData,
     isLoading: isPositionLoading,

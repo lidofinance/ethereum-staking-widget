@@ -18,8 +18,11 @@ import { ETH_VAULT_TOKEN_SYMBOL } from '../consts';
 export const EthVaultWithdrawRequests = () => {
   const { isEthVaultAvailable } = useEthVaultAvailable();
   const { data: requestsData } = useEthVaultWithdrawRequests();
-  const { withdrawClaim, isClaiming } = useEthVaultWithdrawClaim();
-  const { withdrawClaimAll } = useEthVaultWithdrawClaimAll();
+  const { withdrawClaim, isClaiming: isClaimingSingle } =
+    useEthVaultWithdrawClaim();
+  const { withdrawClaimAll, isClaiming: isClaimingAll } =
+    useEthVaultWithdrawClaimAll();
+  const isClaiming = isClaimingSingle || isClaimingAll;
 
   const {
     data: earnethPositionData,
