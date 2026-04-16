@@ -1,6 +1,12 @@
+import dynamic from 'next/dynamic';
 import { ErrorBoundary } from 'react-error-boundary';
-import { DexOption } from './dex-option';
 import { FallbackContainer } from './styles';
+
+// @cowprotocol/widget-lib accesses `document` at module scope,
+// so the entire CowSwap widget tree must be loaded client-side only.
+const DexOption = dynamic(() => import('./dex-option').then((m) => m.DexOption), {
+  ssr: false,
+});
 
 const Fallback = () => {
   return (
