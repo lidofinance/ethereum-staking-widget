@@ -120,7 +120,6 @@ export const useWithdrawalRequest = ({
             },
             sendTransaction: async (txStagesCallback) => {
               // ERC-2612 permit flow for EOAs (no batching)
-              // deadline always ends in 999 — detectable on-chain as a UI origin flag
               const deadline = applyRoundUpTxParameter(
                 BigInt(Math.floor(Date.now() / 1000)) + 86_400n, // 1 day
               );
