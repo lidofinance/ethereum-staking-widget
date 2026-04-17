@@ -5,10 +5,9 @@ import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo/matomo-earn-events';
 import { useSTGApy } from './hooks/use-stg-apy';
 import { useSTGStats } from './hooks/use-stg-stats';
 import { useSTGPosition } from './hooks/use-stg-position';
-import { VaultCard } from '../shared/v2/vault-card';
+import { LegacyVaultCard } from '../shared/v2/vault-card';
 import { EARN_VAULT_STG_SLUG } from '../consts';
 import { STGApyHint } from './components/stg-apy-hint';
-import { useDepositRequests } from './deposit/hooks';
 import { STG_VAULT_DESCRIPTION, STG_TOKEN_SYMBOL } from './consts';
 
 export const VaultCardSTG = () => {
@@ -17,19 +16,9 @@ export const VaultCardSTG = () => {
   const { apy, isLoading: isLoadingApy } = useSTGApy();
   const { strethSharesBalance, isLoading: isLoadingPosition } =
     useSTGPosition();
-  const {
-    totalClaimableStrethShares,
-    pendingRequests,
-    isLoading: isLoadingDepositRequests,
-  } = useDepositRequests();
-
-  const pending = pendingRequests.map((request) => ({
-    tokenSymbol: request.token,
-    amount: request.assets,
-  }));
 
   return (
-    <VaultCard
+    <LegacyVaultCard
       title="Lido stRATEGY"
       description={STG_VAULT_DESCRIPTION}
       urlSlug={EARN_VAULT_STG_SLUG}
@@ -43,11 +32,9 @@ export const VaultCardSTG = () => {
       position={
         isWalletConnected
           ? {
-              balance: strethSharesBalance,
-              symbol: STG_TOKEN_SYMBOL,
-              claimable: totalClaimableStrethShares,
-              pending,
-              isLoading: isLoadingPosition || isLoadingDepositRequests,
+              sharesBalance: strethSharesBalance,
+              sharesSymbol: STG_TOKEN_SYMBOL,
+              isLoading: isLoadingPosition,
             }
           : undefined
       }

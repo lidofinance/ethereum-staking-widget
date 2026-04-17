@@ -4,7 +4,7 @@ import { trackMatomoEvent } from 'utils/track-matomo-event';
 import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo/matomo-earn-events';
 import { useDVVStats } from './hooks/use-dvv-stats';
 import { useDVVPosition } from './hooks/use-dvv-position';
-import { VaultCard } from '../shared/v2/vault-card';
+import { LegacyVaultCard } from '../shared/v2/vault-card';
 import { EARN_VAULT_DVV_SLUG } from '../consts';
 import { DVV_TOKEN_SYMBOL, DVV_VAULT_DESCRIPTION } from './consts';
 import { DVVAprBreakdown } from './components/dvv-apr-breakdown';
@@ -15,7 +15,7 @@ export const VaultCardDVV = () => {
   const { sharesBalance, isLoading: isLoadingPosition } = useDVVPosition();
 
   return (
-    <VaultCard
+    <LegacyVaultCard
       title="Lido DVV"
       description={DVV_VAULT_DESCRIPTION}
       urlSlug={EARN_VAULT_DVV_SLUG}
@@ -29,8 +29,8 @@ export const VaultCardDVV = () => {
       position={
         isWalletConnected
           ? {
-              balance: sharesBalance,
-              symbol: DVV_TOKEN_SYMBOL,
+              sharesBalance: sharesBalance,
+              sharesSymbol: DVV_TOKEN_SYMBOL,
               isLoading: isLoadingPosition,
             }
           : undefined

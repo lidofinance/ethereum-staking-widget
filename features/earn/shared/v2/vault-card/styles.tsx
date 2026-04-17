@@ -224,6 +224,17 @@ export const StatValueIcon = styled.span`
   height: 24px;
 `;
 
+export const StatSubValue = styled.span`
+  color: var(--lido-color-textSecondary);
+  font-size: ${({ theme }) => theme.fontSizesMap.xs}px;
+  font-weight: 400;
+  line-height: 24px;
+
+  ${({ theme }) => theme.mediaQueries.md} {
+    display: none;
+  }
+`;
+
 export const CardCta = styled.div`
   margin-top: 32px;
 `;
