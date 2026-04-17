@@ -96,7 +96,7 @@ export const TopSection: FC<TopSectionProps> = (props) => {
             </InlineLoader>
           </TopSectionStatValue>
         </TopSectionStatItem>
-        {!!balance?.amount && (
+        {!!balance?.sharesAmount && (
           <TopSectionStatItem>
             <TopSectionStatLabel>
               My balance
