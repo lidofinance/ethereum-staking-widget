@@ -3,6 +3,17 @@ import { useRouter } from 'next/router';
 import { Path, PathValue, UseFormSetValue } from 'react-hook-form';
 import { parseEther } from 'viem';
 
+export const useReferralQueryValue = () => {
+  const { isReady, query } = useRouter();
+  const { ref } = query;
+
+  if (!isReady || typeof ref !== 'string') {
+    return null;
+  }
+
+  return ref;
+};
+
 type UseQueryParamsReferralFormArgs<T extends { referral: string | null }> = {
   setValue: UseFormSetValue<T>;
 };
@@ -12,19 +23,16 @@ export const useQueryParamsReferralForm = <
 >({
   setValue,
 }: UseQueryParamsReferralFormArgs<T>) => {
-  const { isReady, query } = useRouter();
-  const { ref } = query;
+  const referral = useReferralQueryValue();
 
   useEffect(() => {
-    if (!isReady) return;
+    if (!referral) return;
     try {
-      if (typeof ref === 'string') {
-        setValue('referral' as Path<T>, ref as PathValue<T, Path<T>>);
-      }
+      setValue('referral' as Path<T>, referral as PathValue<T, Path<T>>);
     } catch (error) {
       console.warn('Error setting referral value from query params', error);
     }
-  }, [isReady, ref, setValue]);
+  }, [referral, setValue]);
 };
 
 type UseQueryParamsAmountFormArgs<T extends { amount: bigint | null }> = {
