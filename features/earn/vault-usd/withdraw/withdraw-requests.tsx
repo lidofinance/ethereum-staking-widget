@@ -3,20 +3,26 @@ import {
   RequestsContainer,
   ActionableTitle,
 } from 'modules/mellow-meta-vaults/components/request';
+import { ButtonInline } from 'shared/components/button-inline/button-inline';
+import { TokenEarnUsdIcon } from 'assets/earn-v2';
+import { VaultPosition } from 'features/earn/shared/v2/vault-position/vault-position';
 import { useUsdVaultWithdrawRequests } from './hooks/use-withdraw-requests';
 import { UsdVaultWithdrawRequestClaimable } from './withdraw-request/withdraw-request-claimable';
 import { UsdVaultWithdrawRequestPending } from './withdraw-request/withdraw-request-pending';
 import { useUsdVaultAvailable } from '../hooks/use-vault-available';
 import { useUsdVaultWithdrawClaim } from './hooks/use-withdraw-claim';
-import { TokenEarnUsdIcon } from 'assets/earn-v2';
-import { VaultPosition } from 'features/earn/shared/v2/vault-position/vault-position';
+import { useUsdVaultWithdrawClaimAll } from './hooks/use-withdraw-claim-all';
 import { USD_VAULT_TOKEN_SYMBOL } from '../consts';
 import { useUsdVaultPosition } from '../hooks/use-position';
 
 export const UsdVaultWithdrawRequests = () => {
   const { isUsdVaultAvailable } = useUsdVaultAvailable();
   const { data } = useUsdVaultWithdrawRequests();
-  const { withdrawClaim, isClaiming } = useUsdVaultWithdrawClaim();
+  const { withdrawClaim, isClaiming: isClaimingSingle } =
+    useUsdVaultWithdrawClaim();
+  const { withdrawClaimAll, isClaiming: isClaimingAll } =
+    useUsdVaultWithdrawClaimAll();
+  const isClaiming = isClaimingSingle || isClaimingAll;
   const {
     data: earnusdPositionData,
     isLoading: isPositionLoading,
@@ -59,6 +65,15 @@ export const UsdVaultWithdrawRequests = () => {
               }}
             />
           </Tooltip>
+          {claimableRequests.length > 1 && (
+            <ButtonInline
+              $variant="small"
+              disabled={isClaiming}
+              onClick={withdrawClaimAll}
+            >
+              Claim all
+            </ButtonInline>
+          )}
         </ActionableTitle>
       )}
       {claimableRequests?.map((request) => (

@@ -14,8 +14,10 @@ import { useSTGWithdrawClaim } from './hooks/use-stg-withdraw-claim';
 export const STGWithdrawRequests = () => {
   const { isSTGAvailable } = useSTGAvailable();
   const { data } = useSTGWithdrawRequests();
-  const { withdrawClaimAll } = useSTGWithdrawClaimAll();
-  const { withdrawClaim, isClaiming } = useSTGWithdrawClaim();
+  const { withdrawClaimAll, isClaiming: isClaimingAll } =
+    useSTGWithdrawClaimAll();
+  const { withdrawClaim, isClaiming: isClaimingSingle } = useSTGWithdrawClaim();
+  const isClaiming = isClaimingSingle || isClaimingAll;
 
   const requests = data?.requests || [];
   const claimableRequests = data?.claimableRequests || [];
