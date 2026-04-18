@@ -13,11 +13,15 @@
         130, 1135, 1923
       ],
       "earnVaultsBanner": {
-        "showOnStakeForm": true,
-        "showAfterStake": true
+        "showOnStakeForm": false,
+        "showAfterStake": false
       },
       "earnVaults": [
-        { "name": "eth" },
+        {
+          "name": "eth",
+          "deposit": false,
+          "depositPauseReasonText": "Deposits are paused for now"
+        },
         { "name": "usd" },
         { "name": "strategy", "deprecated": true },
         {
