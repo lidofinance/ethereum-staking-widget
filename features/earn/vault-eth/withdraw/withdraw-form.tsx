@@ -15,36 +15,40 @@ import { EthVaultWithdrawWillReceive } from './withdraw-will-receive';
 import { EthVaultWithdrawSubmitButton } from './withdraw-submit-button';
 import { EthVaultWithdrawRequests } from './withdraw-requests';
 import { ActionSwitch } from '../components/action-switch';
+import { UpgradeAssetsBlock } from '../upgrade-assets/upgrade-assets';
 
 // TODO: add Withdraw Warning and ability to disable withdraw via config
 
 const EthVaultWithdrawFormContent: FC = () => {
   return (
-    <BlockSidePanel>
-      <ActionSwitch isWithdraw />
-      <VaultForm data-testid="withdraw-form">
-        <VaultFormSection>
-          <EthVaultWithdrawRequests />
-          <EthVaultWithdrawAvailable />
-          <EthVaultWithdrawInput />
-        </VaultFormSection>
-        <VaultTxInfo>
-          <EthVaultWithdrawWillReceive />
-          <VaultTxInfoRow
-            title="Waiting time"
-            help={
-              <>
-                Withdrawals take up to 72 hours to process. Once ready, your
-                funds can be claimed in the Lido UI
-              </>
-            }
-          >
-            {'up to 72 hours'}
-          </VaultTxInfoRow>
-        </VaultTxInfo>
-        <EthVaultWithdrawSubmitButton />
-      </VaultForm>
-    </BlockSidePanel>
+    <>
+      <UpgradeAssetsBlock />
+      <BlockSidePanel>
+        <ActionSwitch isWithdraw />
+        <VaultForm data-testid="withdraw-form">
+          <VaultFormSection>
+            <EthVaultWithdrawRequests />
+            <EthVaultWithdrawAvailable />
+            <EthVaultWithdrawInput />
+          </VaultFormSection>
+          <VaultTxInfo>
+            <EthVaultWithdrawWillReceive />
+            <VaultTxInfoRow
+              title="Waiting time"
+              help={
+                <>
+                  Withdrawals take up to 72 hours to process. Once ready, your
+                  funds can be claimed in the Lido UI
+                </>
+              }
+            >
+              {'up to 72 hours'}
+            </VaultTxInfoRow>
+          </VaultTxInfo>
+          <EthVaultWithdrawSubmitButton />
+        </VaultForm>
+      </BlockSidePanel>
+    </>
   );
 };
 

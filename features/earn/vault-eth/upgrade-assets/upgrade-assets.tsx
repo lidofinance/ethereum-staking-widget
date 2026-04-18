@@ -1,6 +1,5 @@
 import { useCallback, useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
-import { useFormContext } from 'react-hook-form';
 import { useDappStatus } from 'modules/web3';
 import { TOKENS, TOKEN_SYMBOLS } from 'consts/tokens';
 import { TokenGGIcon, TokenDvstethIcon, TokenStrethIcon } from 'assets/earn-v2';
@@ -9,6 +8,7 @@ import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo/matomo-earn-events';
 import { trackMatomoEvent } from 'utils/track-matomo-event';
 import { MELLOW_VAULTS_QUERY_SCOPE } from 'modules/mellow-meta-vaults/consts';
 import { overrideWithQAMockBigInt } from 'utils/qa';
+import { useReferralQueryValue } from 'shared/hooks/use-query-values-form';
 
 import {
   UpgradeAssets,
@@ -25,7 +25,6 @@ import {
 } from '../consts';
 import { useEthVaultDeposit } from '../deposit/hooks';
 import { EthDepositTokenUpgradable } from '../types';
-import { ETHDepositFormValues } from '../deposit/form-context/types';
 
 const TOKEN_ICON_MAP = {
   [TOKENS.gg]: <TokenGGIcon />,
@@ -56,9 +55,7 @@ export const UpgradeAssetsBlock = () => {
   const queryClient = useQueryClient();
   const { balances, refetchBalances } = useUpgradableTokenBalances();
   const [isUpgrading, setIsUpgrading] = useState(false);
-
-  const { watch } = useFormContext<ETHDepositFormValues>();
-  const referral = watch('referral');
+  const referral = useReferralQueryValue();
 
   const { deposit } = useEthVaultDeposit();
 
