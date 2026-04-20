@@ -3,16 +3,22 @@ import {
   RequestsContainer,
   ActionableTitle,
 } from 'modules/mellow-meta-vaults/components/request';
+import { ButtonInline } from 'shared/components/button-inline/button-inline';
 import { useEthVaultWithdrawRequests } from './hooks/use-withdraw-requests';
 import { EthVaultWithdrawRequestClaimable } from './withdraw-request/withdraw-request-claimable';
 import { EthVaultWithdrawRequestPending } from './withdraw-request/withdraw-request-pending';
 import { useEthVaultAvailable } from '../hooks/use-vault-available';
 import { useEthVaultWithdrawClaim } from './hooks/use-withdraw-claim';
+import { useEthVaultWithdrawClaimAll } from './hooks/use-withdraw-claim-all';
 
 export const EthVaultWithdrawRequests = () => {
   const { isEthVaultAvailable } = useEthVaultAvailable();
   const { data: requestsData } = useEthVaultWithdrawRequests();
-  const { withdrawClaim, isClaiming } = useEthVaultWithdrawClaim();
+  const { withdrawClaim, isClaiming: isClaimingSingle } =
+    useEthVaultWithdrawClaim();
+  const { withdrawClaimAll, isClaiming: isClaimingAll } =
+    useEthVaultWithdrawClaimAll();
+  const isClaiming = isClaimingSingle || isClaimingAll;
 
   const requests = requestsData?.requests || [];
   const claimableRequests = requestsData?.claimableRequests || [];
@@ -37,6 +43,15 @@ export const EthVaultWithdrawRequests = () => {
               }}
             />
           </Tooltip>
+          {claimableRequests.length > 1 && (
+            <ButtonInline
+              $variant="small"
+              disabled={isClaiming}
+              onClick={withdrawClaimAll}
+            >
+              Claim all
+            </ButtonInline>
+          )}
         </ActionableTitle>
       )}
       {claimableRequests?.map((request) => (
