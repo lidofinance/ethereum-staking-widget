@@ -150,7 +150,7 @@ export const VaultCard: React.FC<VaultCardProps> = ({
         {!!position?.sharesBalance && (
           <StatItem>
             <StatLabel>
-              My balance
+              My deposit
               <VaultTip
                 placement="bottom"
                 style={{ position: 'relative', zIndex: 2 }}

@@ -99,7 +99,7 @@ export const TopSection: FC<TopSectionProps> = (props) => {
         {!!balance?.sharesAmount && (
           <TopSectionStatItem>
             <TopSectionStatLabel>
-              My balance
+              My deposit
               <VaultTip placement="bottom">
                 You hold{' '}
                 <FormatToken
