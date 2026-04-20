@@ -1,4 +1,5 @@
 import type { FC } from 'react';
+import { useFormState } from 'react-hook-form';
 
 import { VaultForm } from 'features/earn/shared/vault-form';
 import { VaultSubmitButton } from 'features/earn/shared/vault-submit-button';
@@ -14,6 +15,8 @@ import { DVVDepositWarning } from './dvv-deposit-warning';
 
 export const DVVDepositForm: FC = () => {
   const { isDVVAvailable, isVaultDeprecated } = useDVVAvailable();
+  const { disabled } = useFormState();
+
   return (
     <DVVDepositFormProvider>
       <VaultForm data-testid="deposit-form">
@@ -30,7 +33,7 @@ export const DVVDepositForm: FC = () => {
               <br />
               Withdrawals are only in wstETH, regardless of the deposit asset.
             </VaultWarning>
-            <VaultSubmitButton isAvailable={isDVVAvailable}>
+            <VaultSubmitButton disabled={disabled} isAvailable={isDVVAvailable}>
               Deposit
             </VaultSubmitButton>
           </>

@@ -6,6 +6,8 @@ export const useEthVaultAvailable = () => {
     isVaultAvailable: isEthVaultAvailable,
     isDepositEnabled,
     isWithdrawEnabled,
+    depositPauseReasonText,
+    withdrawPauseReasonText,
   } = useVaultAvailable({
     vaultName: EARN_VAULT_ETH_SLUG,
     contractName: 'ethVault',
@@ -15,5 +17,7 @@ export const useEthVaultAvailable = () => {
     isEthVaultAvailable,
     isDepositEnabled,
     isWithdrawEnabled,
+    depositPauseReasonText,
+    withdrawPauseReasonText,
   };
 };

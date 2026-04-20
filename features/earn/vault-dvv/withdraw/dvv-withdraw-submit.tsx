@@ -2,9 +2,14 @@ import { VaultSubmitButton } from 'features/earn/shared/vault-submit-button';
 import { useDVVAvailable } from '../hooks/use-dvv-available';
 
 export const DVVWithdrawSubmitButton = () => {
-  const { isDVVAvailable } = useDVVAvailable();
+  const { isDVVAvailable, isWithdrawEnabled } = useDVVAvailable();
 
   return (
-    <VaultSubmitButton isAvailable={isDVVAvailable}>Withdraw</VaultSubmitButton>
+    <VaultSubmitButton
+      disabled={!isWithdrawEnabled}
+      isAvailable={isDVVAvailable}
+    >
+      Withdraw
+    </VaultSubmitButton>
   );
 };
