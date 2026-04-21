@@ -34,7 +34,9 @@ test.describe('Page Headers', () => {
           .toBe('max-age=2592000; includeSubDomains; preload');
 
         expect.soft(headers['x-permitted-cross-domain-policies']).toBe('none');
-        expect.soft(headers['cross-origin-opener-policy']).toBe(`same-origin`);
+        expect
+          .soft(headers['cross-origin-opener-policy'])
+          .toBe(`same-origin-allow-popups`);
         expect
           .soft(headers['permissions-policy'])
           .toBe(
