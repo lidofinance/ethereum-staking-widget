@@ -1,12 +1,13 @@
 import { FC } from 'react';
 import { Link } from '@lidofinance/lido-ui';
 import { FaqItem } from 'features/earn/shared/v2/faq';
+import { config } from 'config';
 
-export const RisksOfDepositing: FC = () => {
+export const RisksOfDepositing: FC<{ id?: string }> = ({ id }) => {
   return (
     <FaqItem
       summary="What are the risks outlined in the vault, and what's the approach for their mitigation?"
-      id="earneth-risks"
+      id={id}
     >
       <p>
         As with any DeFi application, there are inherent risks. In this case,
@@ -71,7 +72,10 @@ export const RisksOfDepositing: FC = () => {
           the vault should conduct their own research and seek independent
           professional advice to ensure they fully understand the potential
           risks and implications before participating.{' '}
-          <Link target="_blank" href="https://lido.fi/earn/risk-disclosures">
+          <Link
+            target="_blank"
+            href={`${config.rootOrigin}/earn/risk-disclosures`}
+          >
             Learn more about risks
           </Link>
           .

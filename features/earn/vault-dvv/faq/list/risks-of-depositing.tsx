@@ -1,6 +1,7 @@
 import { FC } from 'react';
 import { Link } from '@lidofinance/lido-ui';
 import { AccordionNavigatable } from 'shared/components/accordion-navigatable';
+import { config } from 'config';
 
 export const RisksOfDepositing: FC = () => {
   return (
@@ -16,7 +17,9 @@ export const RisksOfDepositing: FC = () => {
         <li>Smart contract risk</li>
         <li>Validator slashing risk</li>
         <li>
-          <Link href="https://help.lido.fi/en/articles/5230603-what-are-the-risks-of-staking-with-lido">
+          <Link
+            href={`${config.helpOrigin}/en/articles/5230603-what-are-the-risks-of-staking-with-lido`}
+          >
             Other inherited Lido protocol risks
           </Link>
         </li>

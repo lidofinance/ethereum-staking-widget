@@ -1,14 +1,17 @@
 import {
   useState,
+  useEffect,
+  useCallback,
   type ComponentType,
   type FC,
   type ReactNode,
   type SVGProps,
 } from 'react';
-import { Tab } from '@lidofinance/lido-ui';
+import { Tab, Tooltip, Question } from '@lidofinance/lido-ui';
 
 import { type MATOMO_EVENT_TYPE } from 'consts/matomo';
 import { trackMatomoEvent } from 'utils/track-matomo-event';
+import { useInpageNavigation } from 'providers/inpage-navigation';
 
 import { VaultChart } from '../vault-chart';
 
@@ -39,15 +42,16 @@ type VaultIllustration = ComponentType<SVGProps<SVGSVGElement>>;
 export type InfoItem = {
   label: ReactNode;
   value?: ReactNode;
+  tooltip?: ReactNode;
 };
 
 type Props = {
   title: string;
   description: string;
   apx?: number | null;
-  tvl?: number | null;
   apxHint?: React.ReactNode;
   isApxLoading?: boolean;
+  tvlUsd?: number | null;
   isTvlLoading?: boolean;
   logo: VaultIllustration;
   sidePanel?: ReactNode;
@@ -69,6 +73,7 @@ type Props = {
     clickChartsApy1m?: MATOMO_EVENT_TYPE;
     clickChartsApy3m?: MATOMO_EVENT_TYPE;
   };
+  protectedBadgeTooltipText?: React.ReactNode;
 };
 
 const TABS = {
@@ -85,12 +90,32 @@ export const VaultPage: FC<Props> = (props) => {
     riskDisclosure,
     strategyContent,
     faqContent,
+    protectedBadgeTooltipText,
   } = props;
   const { performanceTabEvent, strategyTabEvent, faqTabEvent } =
     props.matomo ?? {};
 
+  const { hashNav, resetInpageAnchor } = useInpageNavigation();
+
   const [activeTab, setActiveTab] = useState<(typeof TABS)[keyof typeof TABS]>(
     TABS.PERFORMANCE,
+  );
+
+  useEffect(() => {
+    if (!hashNav) return;
+    if (hashNav === TABS.STRATEGY) setActiveTab(TABS.STRATEGY);
+    else if (hashNav === TABS.PERFORMANCE) setActiveTab(TABS.PERFORMANCE);
+    else setActiveTab(TABS.FAQ); // handles #faq and any FAQ item hash
+  }, [hashNav]);
+
+  const handleTabClick = useCallback(
+    (tab: (typeof TABS)[keyof typeof TABS], matomoEvent?: MATOMO_EVENT_TYPE) =>
+      () => {
+        setActiveTab(tab);
+        resetInpageAnchor();
+        if (matomoEvent) trackMatomoEvent(matomoEvent);
+      },
+    [resetInpageAnchor],
   );
 
   return (
@@ -101,37 +126,29 @@ export const VaultPage: FC<Props> = (props) => {
           title={props.title}
           description={props.description}
           apx={props.apx}
-          tvl={props.tvl}
+          tvlUsd={props.tvlUsd}
           apxHint={props.apxHint}
           isApxLoading={props.isApxLoading}
           isTvlLoading={props.isTvlLoading}
+          protectedBadgeTooltipText={protectedBadgeTooltipText}
         />
         <VaultPageContent>
           <TabsStyled>
             <Tab
               active={activeTab === TABS.PERFORMANCE}
-              onClick={() => {
-                setActiveTab(TABS.PERFORMANCE);
-                if (performanceTabEvent) trackMatomoEvent(performanceTabEvent);
-              }}
+              onClick={handleTabClick(TABS.PERFORMANCE, performanceTabEvent)}
             >
               Performance
             </Tab>
             <Tab
               active={activeTab === TABS.STRATEGY}
-              onClick={() => {
-                setActiveTab(TABS.STRATEGY);
-                if (strategyTabEvent) trackMatomoEvent(strategyTabEvent);
-              }}
+              onClick={handleTabClick(TABS.STRATEGY, strategyTabEvent)}
             >
               Strategy
             </Tab>
             <Tab
               active={activeTab === TABS.FAQ}
-              onClick={() => {
-                setActiveTab(TABS.FAQ);
-                if (faqTabEvent) trackMatomoEvent(faqTabEvent);
-              }}
+              onClick={handleTabClick(TABS.FAQ, faqTabEvent)}
             >
               FAQ
             </Tab>
@@ -156,7 +173,14 @@ export const VaultPage: FC<Props> = (props) => {
                   <TableGroup>
                     {generalInfoLeft.map((item, index) => (
                       <TableItem key={index}>
-                        <TableLabel>{item.label}</TableLabel>
+                        <TableLabel>
+                          {item.label}
+                          {item.tooltip && (
+                            <Tooltip title={item.tooltip}>
+                              <Question />
+                            </Tooltip>
+                          )}
+                        </TableLabel>
                         {item.value != null && (
                           <TableValue>{item.value}</TableValue>
                         )}
@@ -166,7 +190,14 @@ export const VaultPage: FC<Props> = (props) => {
                   <TableGroup>
                     {generalInfoRight.map((item, index) => (
                       <TableItem key={index}>
-                        <TableLabel>{item.label}</TableLabel>
+                        <TableLabel>
+                          {item.label}
+                          {item.tooltip && (
+                            <Tooltip title={item.tooltip}>
+                              <Question />
+                            </Tooltip>
+                          )}
+                        </TableLabel>
                         {item.value != null && (
                           <TableValue>{item.value}</TableValue>
                         )}

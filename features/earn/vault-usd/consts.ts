@@ -17,3 +17,5 @@ export const USD_VAULT_DEPOSIT_TOKENS = [TOKENS.usdc, TOKENS.usdt] as const;
 export const USD_VAULT_QUERY_SCOPE = 'earn-vault-usd';
 
 export const USD_VAULT_STATS_ORIGIN = 'https://api.mellow.finance';
+
+export const USD_VAULT_BASE_ASSET_DECIMALS = 6;

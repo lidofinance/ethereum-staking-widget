@@ -13,10 +13,11 @@ import {
   ETH_VAULT_TOKEN_SYMBOL,
 } from './consts';
 import { useEthVaultPosition } from './hooks/use-position';
+import { ProtectedTooltip } from './protected-tooltip';
 
 export const EthVaultCard = () => {
   const { apy, isLoading: isApyLoading } = useEthVaultApy();
-  const { totalTvlUsd, isLoading: isTvlLoading } = useEthVaultStats();
+  const { tvlUsd, isLoading: isTvlLoading } = useEthVaultStats();
 
   const { data: earnethPositionData, isLoading: isPositionLoading } =
     useEthVaultPosition();
@@ -29,7 +30,7 @@ export const EthVaultCard = () => {
       description={ETH_VAULT_DESCRIPTION}
       urlSlug={EARN_VAULT_ETH_SLUG}
       stats={{
-        tvl: totalTvlUsd,
+        tvl: tvlUsd,
         apx: apy,
         apxLabel: 'APY* (7d avg.)',
         apxHint: <EthVaultApyHint />,
@@ -47,6 +48,7 @@ export const EthVaultCard = () => {
       depositLinkCallback={() => {
         trackMatomoEvent(MATOMO_EARN_EVENTS_TYPES.earnListEarnEthDeposit);
       }}
+      protectedBadgeTooltipText={<ProtectedTooltip />}
     />
   );
 };

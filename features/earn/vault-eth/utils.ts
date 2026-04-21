@@ -1,4 +1,4 @@
-import * as z from 'zod';
+import { z } from 'zod';
 import { CHAINS } from 'consts/chains';
 import { getContractAddress } from 'config/networks/contract-address';
 import { standardFetcher } from 'utils/standardFetcher';

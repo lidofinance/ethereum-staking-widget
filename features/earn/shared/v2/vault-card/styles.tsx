@@ -15,8 +15,17 @@ export const CardWrapper = styled(Block)<{
   $variant: 'eth' | 'usd' | 'default';
 }>`
   position: relative;
+  isolation: isolate;
   overflow: hidden;
   color: var(--lido-color-text);
+  transition: box-shadow 0.1s ease;
+  border: 1px solid
+    ${({ theme }) => (theme.name === 'dark' ? '#34343D' : '#fff')};
+
+  &:hover {
+    box-shadow: 0px 4px 64px 0px
+      ${({ theme }) => (theme.name === 'dark' ? '#000' : '#a7c9eb66')};
+  }
 
   &::before {
     content: '';
@@ -30,11 +39,17 @@ export const CardWrapper = styled(Block)<{
     filter: blur(10px);
     background: ${({ $variant }) => getBackgroundGradient($variant)};
     pointer-events: none;
+    z-index: -1;
+
+    ${({ theme }) => theme.mediaQueries.md} {
+      top: -60px;
+      right: 0;
+      left: calc(50% - 120px);
+    }
   }
 
   & > * {
     position: relative;
-    z-index: 1;
   }
 `;
 
@@ -68,11 +83,20 @@ export const CardTitle = styled.div`
   line-height: 38px;
   font-weight: 700;
   z-index: 1;
+
+  ${({ theme }) => theme.mediaQueries.md} {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: ${({ theme }) => theme.spaceMap.xs}px;
+  }
 `;
 
 export const CardTitleBadge = styled(Badge)`
   height: 32px;
   user-select: none;
+  position: relative;
+  z-index: 2;
 `;
 
 export const ChevronsUpIcon = styled(ChevronsUp)`
@@ -206,4 +230,27 @@ export const CardCta = styled.div`
 
 export const StyledTooltip = styled(Tooltip)`
   margin-top: ${({ theme }) => theme.spaceMap.xs}px !important;
+`;
+
+export const BadgeStyled = styled.span`
+  position: relative;
+  z-index: 2;
+
+  ${({ theme }) => theme.mediaQueries.md} {
+    order: 1;
+  }
+`;
+
+export const TitleTextStyled = styled.span`
+  ${({ theme }) => theme.mediaQueries.md} {
+    order: 2;
+  }
+`;
+
+export const CardOverlayLink = styled.a`
+  && {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+  }
 `;

@@ -1,11 +1,11 @@
 import { FC } from 'react';
 import { FaqItem } from 'features/earn/shared/v2/faq';
 
-export const WhatFeesAreApplied: FC = () => {
+export const WhatFeesAreApplied: FC<{ id?: string }> = ({ id }) => {
   return (
     <FaqItem
       summary="What fees are applied when I deposit into EarnETH?"
-      id="earneth-fees"
+      id={id}
     >
       <p>
         When you deposit, you receive earnETH tokens that represent your share

@@ -59,3 +59,15 @@ export const IPFSInfoBoxOnlyDesktopWrapper = styled.div`
     display: none;
   }
 `;
+
+export const AmountBannerOnlyDesktopWrapper = styled.div`
+  position: absolute;
+  right: 0;
+  top: calc(100% + 15px);
+  width: 255px;
+  z-index: 3;
+
+  @media ${devicesHeaderMedia.mobile} {
+    display: none;
+  }
+`;

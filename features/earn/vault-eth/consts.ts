@@ -8,17 +8,19 @@ export const ETH_VAULT_DESCRIPTION =
 
 export const ETH_VAULT_TOKEN_SYMBOL = TOKEN_SYMBOLS.earneth;
 
-const { eth, wsteth, weth } = TOKEN_SYMBOLS;
+const { eth, wsteth, weth, steth } = TOKEN_SYMBOLS;
 export const ETH_VAULT_DEPOSIT_TOKEN_SYMBOLS_FORM = {
   eth,
   wsteth,
   weth,
+  steth,
 } as const;
 
 export const ETH_VAULT_DEPOSIT_TOKENS_FORM = [
   TOKENS.eth,
   TOKENS.weth,
   TOKENS.wsteth,
+  TOKENS.steth,
 ] as const;
 
 // Tokens not available for direct deposit via deposit form,
@@ -50,3 +52,5 @@ export const ETH_VAULT_ROUTES = [
     matomoEvent: MATOMO_EARN_EVENTS_TYPES.earnEthWithdrawalTab,
   },
 ];
+
+export const ETH_VAULT_BASE_ASSET_DECIMALS = 18;

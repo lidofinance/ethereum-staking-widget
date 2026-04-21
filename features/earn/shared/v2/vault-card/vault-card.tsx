@@ -3,6 +3,7 @@ import { Button } from '@lidofinance/lido-ui';
 
 import {
   CardWrapper,
+  CardOverlayLink,
   CardHeader,
   CardHeaderContent,
   CardTitle,
@@ -18,6 +19,8 @@ import {
   ChevronsUpIcon,
   StatValueIcon,
   StyledTooltip,
+  BadgeStyled,
+  TitleTextStyled,
 } from './styles';
 import { LocalLink } from 'shared/components/local-link';
 import { EARN_PATH } from 'consts/urls';
@@ -25,6 +28,7 @@ import { EARN_VAULT_DEPOSIT_SLUG } from 'features/earn/consts';
 import { FormatPercent } from 'shared/formatters/format-percent';
 import { FormatLargeAmount } from 'shared/formatters/format-large-amount';
 import { FormatToken } from 'shared/formatters/format-token';
+import { Badge } from 'features/earn/shared/badge';
 import { getTokenDecimals } from 'utils/token-decimals';
 import { useConfig } from 'config/use-config';
 import { InlineLoader } from '../../inline-loader';
@@ -58,6 +62,7 @@ type VaultCardProps = {
   variant?: 'eth' | 'usd' | 'default';
   illustration?: React.ReactNode;
   depositLinkCallback?: () => void;
+  protectedBadgeTooltipText?: React.ReactNode;
 };
 
 export const VaultCard: React.FC<VaultCardProps> = ({
@@ -70,17 +75,35 @@ export const VaultCard: React.FC<VaultCardProps> = ({
   variant = 'default',
   illustration,
   depositLinkCallback,
+  protectedBadgeTooltipText,
 }) => {
   const isDeprecated = useConfig().externalConfig.earnVaults.find(
     (vault) => vault.name === urlSlug,
   )?.deprecated;
 
+  const depositHref = `${EARN_PATH}/${urlSlug}/${EARN_VAULT_DEPOSIT_SLUG}`;
+
   return (
     <CardWrapper $variant={variant} data-testid={`${urlSlug}-vault-card`}>
+      <CardOverlayLink
+        as={LocalLink}
+        href={depositHref}
+        onClick={depositLinkCallback}
+        data-testid={'open-vault-btn'}
+        aria-label={title}
+      />
       <CardHeader>
         <CardHeaderContent>
           <CardTitle>
-            {title}
+            <TitleTextStyled>{title}</TitleTextStyled>
+            {protectedBadgeTooltipText && (
+              <BadgeStyled>
+                <Badge
+                  text="PROTECTED"
+                  tooltipText={protectedBadgeTooltipText}
+                />
+              </BadgeStyled>
+            )}
             {isDeprecated && (
               <StyledTooltip
                 title="Vault users can upgrade their tokens to the new unified EarnETH vault without withdrawal or downtime in rewards."
@@ -102,11 +125,16 @@ export const VaultCard: React.FC<VaultCardProps> = ({
         <StatItem data-testid="apx-value">
           <StatLabel>
             {stats.apxLabel}
-            <VaultTip placement="bottom">{stats.apxHint}</VaultTip>
+            <VaultTip
+              placement="bottom"
+              style={{ position: 'relative', zIndex: 2 }}
+            >
+              {stats.apxHint}
+            </VaultTip>
           </StatLabel>
           <StatValue $accent>
             <InlineLoader isLoading={stats.isLoading} width={70}>
-              <FormatPercent value={stats.apx} decimals="percent" />*
+              <FormatPercent value={stats.apx} decimals="percent" />
             </InlineLoader>
           </StatValue>
         </StatItem>
@@ -118,7 +146,7 @@ export const VaultCard: React.FC<VaultCardProps> = ({
             </InlineLoader>
           </StatValue>
         </StatItem>
-        {position && (
+        {!!position?.balance && (
           <StatItem>
             <StatLabel>My position</StatLabel>
             <StatValue>
@@ -140,11 +168,7 @@ export const VaultCard: React.FC<VaultCardProps> = ({
         )}
       </CardStats>
       <CardCta>
-        <LocalLink
-          href={`${EARN_PATH}/${urlSlug}/${EARN_VAULT_DEPOSIT_SLUG}`}
-          onClick={depositLinkCallback}
-          data-testid={'open-vault-btn'}
-        >
+        <LocalLink href={depositHref} onClick={depositLinkCallback}>
           <Button fullwidth variant="translucent">
             {ctaLabel}
           </Button>

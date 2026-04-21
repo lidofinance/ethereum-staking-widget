@@ -36,7 +36,7 @@ export const VaultCardSTG = () => {
       stats={{
         tvl: totalTvlUsd,
         apx: apy,
-        apxLabel: 'APY',
+        apxLabel: 'APY* (7d avg.)',
         apxHint: <STGApyHint />,
         isLoading: isLoadingApy || isLoadingTvlUsd,
       }}
@@ -52,9 +52,7 @@ export const VaultCardSTG = () => {
           : undefined
       }
       ctaLabel={
-        strethSharesBalance && strethSharesBalance > 0n
-          ? 'Upgrade your assets'
-          : 'View'
+        strethSharesBalance && strethSharesBalance > 0n ? 'Manage' : 'View'
       }
       illustration={<VaultStgIcon />}
       depositLinkCallback={() => {

@@ -1,11 +1,11 @@
+import { useMemo } from 'react';
 import { WalletClient } from 'viem';
 import invariant from 'tiny-invariant';
-import { useMemo } from 'react';
 import { useLidoSDK, useMainnetOnlyWagmi } from 'modules/web3';
 import { useWithdrawClaim } from 'modules/mellow-meta-vaults/hooks/use-withdraw-claim';
 import { useTxModalStagesWithdrawClaim } from 'modules/mellow-meta-vaults/hooks/use-withdraw-claim-tx-modal';
-import { getTokenSymbol } from 'utils/get-token-symbol';
 import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo/matomo-earn-events';
+import { TOKEN_SYMBOLS } from 'consts/tokens';
 import { getRedeemQueueWritableContractWSTETH } from '../../contracts';
 import { useEthVaultWithdrawFormData } from './use-withdraw-form-data';
 
@@ -16,11 +16,9 @@ export const useEthVaultWithdrawClaim = (onRetry?: () => void) => {
 
   const { refetchData } = useEthVaultWithdrawFormData();
 
-  const token = getTokenSymbol('wsteth');
-
   const { txModalStages } = useTxModalStagesWithdrawClaim({
-    willReceiveToken: getTokenSymbol('wsteth'),
-    token,
+    willReceiveToken: TOKEN_SYMBOLS.wsteth,
+    token: TOKEN_SYMBOLS.wsteth,
     operationText: 'Claiming',
   });
 
@@ -35,7 +33,7 @@ export const useEthVaultWithdrawClaim = (onRetry?: () => void) => {
 
   return useWithdrawClaim({
     redeemQueue,
-    token: getTokenSymbol('wsteth'),
+    token: TOKEN_SYMBOLS.wsteth,
     txModalStages,
     onRetry,
     refetchTokenBalance: refetchData,

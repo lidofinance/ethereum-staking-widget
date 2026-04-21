@@ -1,6 +1,7 @@
 import { useState, type FC } from 'react';
 import { Link } from '@lidofinance/lido-ui';
 
+import { config } from 'config';
 import { EARN_PATH } from 'consts/urls';
 import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo';
 import { trackMatomoEvent } from 'utils/track-matomo-event';
@@ -135,7 +136,7 @@ export const VaultPageGGV: FC<{
                   Privacy Policy
                 </Link>{' '}
                 as well as{' '}
-                <Link href="https://lido.fi/terms-of-use">
+                <Link href={`${config.rootOrigin}/terms-of-use`}>
                   Lido’s Terms of Use
                 </Link>
                 .

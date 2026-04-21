@@ -1,6 +1,7 @@
 import { FC } from 'react';
 import { Accordion, Link } from '@lidofinance/lido-ui';
 import { MATOMO_CLICK_EVENTS_TYPES } from 'consts/matomo';
+import { config } from 'config';
 
 export const WhatSecurityMeasures: FC = () => {
   return (
@@ -37,8 +38,8 @@ export const WhatSecurityMeasures: FC = () => {
       <p>
         Please note that despite these factors potential risks still apply. For
         further information and details please visit the{' '}
-        <Link href={'https://lido.fi/terms-of-use'}>Terms of Use</Link>, and
-        read the risks of staking with Lido referenced below.
+        <Link href={`${config.rootOrigin}/terms-of-use`}>Terms of Use</Link>,
+        and read the risks of staking with Lido referenced below.
       </p>
     </Accordion>
   );

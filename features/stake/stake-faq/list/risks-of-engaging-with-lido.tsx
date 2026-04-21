@@ -2,6 +2,7 @@ import { FC } from 'react';
 import { Link } from '@lidofinance/lido-ui';
 import { MATOMO_CLICK_EVENTS_TYPES } from 'consts/matomo';
 import { AccordionNavigatable } from 'shared/components/accordion-navigatable';
+import { config } from 'config';
 
 export const RisksOfEngagingWithLido: FC = () => {
   return (
@@ -61,7 +62,7 @@ export const RisksOfEngagingWithLido: FC = () => {
       <p>
         For further information and details about these and other potential
         risks, please read carefully the{' '}
-        <Link href={'https://lido.fi/terms-of-use'}>Terms of Use</Link>.
+        <Link href={`${config.rootOrigin}/terms-of-use`}>Terms of Use</Link>.
       </p>
       <p>
         Always conduct your own research and consult your own professional

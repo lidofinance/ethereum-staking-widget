@@ -1,9 +1,6 @@
 import { VaultFormSection } from 'features/earn/shared/vault-form-section';
 import { VaultForm } from 'features/earn/shared/vault-form';
-import {
-  VaultTxInfo,
-  VaultTxInfoRow,
-} from 'features/earn/shared/vault-tx-info';
+import { VaultTxInfo } from 'features/earn/shared/vault-tx-info';
 
 import { UsdVaultDepositFormProvider } from './form-context';
 import { UsdVaultDepositWillReceive } from './deposit-will-receive';
@@ -25,17 +22,6 @@ export const UsdVaultDepositForm = () => {
         </VaultFormSection>
         <VaultTxInfo>
           <UsdVaultDepositWillReceive />
-          <VaultTxInfoRow
-            title="Waiting time"
-            help={
-              <>
-                Deposits usually complete within 24 hours, often sooner. You can
-                track progress in the Deposit section of the current vault.
-              </>
-            }
-          >
-            {'24 hours'}
-          </VaultTxInfoRow>
         </VaultTxInfo>
         <UsdVaultDepositSubmitButton />
       </VaultForm>
