@@ -8,6 +8,7 @@ export const useUsdVaultAvailable = () => {
     isWithdrawEnabled,
     depositPauseReasonText,
     withdrawPauseReasonText,
+    listWarningText,
   } = useVaultAvailable({
     vaultName: EARN_VAULT_USD_SLUG,
     contractName: 'usdVault',
@@ -19,5 +20,6 @@ export const useUsdVaultAvailable = () => {
     isWithdrawEnabled,
     depositPauseReasonText,
     withdrawPauseReasonText,
+    listWarningText,
   };
 };

@@ -2,6 +2,8 @@ import { VaultEthIcon } from 'assets/earn-v2';
 import { trackMatomoEvent } from 'utils/track-matomo-event';
 import { getTokenIcon } from 'utils/get-token-icon';
 import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo';
+import { VaultListWarning } from 'features/earn/shared/v2/vault-warning';
+
 import { VaultCard } from '../shared/v2/vault-card';
 import { EARN_VAULT_ETH_SLUG } from '../consts';
 import { useEthVaultStats } from './hooks/use-vault-stats';
@@ -13,11 +15,13 @@ import {
   ETH_VAULT_TOKEN_SYMBOL,
 } from './consts';
 import { useEthVaultPosition } from './hooks/use-position';
+import { useEthVaultAvailable } from './hooks/use-vault-available';
 import { ProtectedTooltip } from './protected-tooltip';
 
 export const EthVaultCard = () => {
   const { apy, isLoading: isApyLoading } = useEthVaultApy();
   const { tvlUsd, isLoading: isTvlLoading } = useEthVaultStats();
+  const { isEthVaultAvailable, listWarningText } = useEthVaultAvailable();
 
   const { data: earnethPositionData, isLoading: isPositionLoading } =
     useEthVaultPosition();
@@ -49,6 +53,12 @@ export const EthVaultCard = () => {
         trackMatomoEvent(MATOMO_EARN_EVENTS_TYPES.earnListEarnEthDeposit);
       }}
       protectedBadgeTooltipText={<ProtectedTooltip />}
+      warning={
+        <VaultListWarning
+          isVaultAvailable={isEthVaultAvailable}
+          warningText={listWarningText}
+        />
+      }
     />
   );
 };
