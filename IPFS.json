@@ -20,7 +20,7 @@
         {
           "name": "eth",
           "deposit": false,
-          "depositPauseReasonText": "Deposits are paused for now"
+          "depositPauseReasonText": "Deposits for EarnETH are currently paused by the vault curator, pending resolution of the Kelp and Aave incident."
         },
         { "name": "usd" },
         { "name": "strategy", "deprecated": true },
