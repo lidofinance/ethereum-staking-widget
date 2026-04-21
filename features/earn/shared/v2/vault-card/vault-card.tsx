@@ -21,6 +21,7 @@ import {
   StyledTooltip,
   BadgeStyled,
   TitleTextStyled,
+  VaultWarning,
 } from './styles';
 import { LocalLink } from 'shared/components/local-link';
 import { EARN_PATH } from 'consts/urls';
@@ -63,6 +64,7 @@ type VaultCardProps = {
   illustration?: React.ReactNode;
   depositLinkCallback?: () => void;
   protectedBadgeTooltipText?: React.ReactNode;
+  warning?: React.ReactNode;
 };
 
 export const VaultCard: React.FC<VaultCardProps> = ({
@@ -76,6 +78,7 @@ export const VaultCard: React.FC<VaultCardProps> = ({
   illustration,
   depositLinkCallback,
   protectedBadgeTooltipText,
+  warning,
 }) => {
   const isDeprecated = useConfig().externalConfig.earnVaults.find(
     (vault) => vault.name === urlSlug,
@@ -167,6 +170,7 @@ export const VaultCard: React.FC<VaultCardProps> = ({
           </StatItem>
         )}
       </CardStats>
+      {warning && <VaultWarning>{warning}</VaultWarning>}
       <CardCta>
         <LocalLink href={depositHref} onClick={depositLinkCallback}>
           <Button fullwidth variant="translucent">

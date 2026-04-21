@@ -37,6 +37,9 @@ export const useVaultAvailable = ({
   const depositPauseReasonText = vaultConfig?.depositPauseReasonText;
   const withdrawPauseReasonText = vaultConfig?.withdrawPauseReasonText;
 
+  // Warning text on the Earn page (vaults list) - shown on the vault card
+  const listWarningText = vaultConfig?.listWarningText;
+
   return {
     isVaultAvailable,
     isVaultDeprecated,
@@ -44,5 +47,6 @@ export const useVaultAvailable = ({
     isWithdrawEnabled,
     depositPauseReasonText,
     withdrawPauseReasonText,
+    listWarningText,
   };
 };
