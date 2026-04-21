@@ -17,7 +17,6 @@ import {
   VaultIconWrapper,
   CardTitleBadge,
   ChevronsUpIcon,
-  StatSubValue,
   StyledTooltip,
   BadgeStyled,
   TitleTextStyled,
@@ -28,7 +27,6 @@ import { EARN_VAULT_DEPOSIT_SLUG } from 'features/earn/consts';
 import { FormatPercent } from 'shared/formatters/format-percent';
 import { FormatLargeAmount } from 'shared/formatters/format-large-amount';
 import { FormatToken } from 'shared/formatters/format-token';
-import { FormatPrice } from 'shared/formatters/format-price';
 import { Badge } from 'features/earn/shared/badge';
 import { getTokenDecimals } from 'utils/token-decimals';
 import { useConfig } from 'config/use-config';
@@ -41,32 +39,28 @@ type VaultStats = {
   apxLabel: string;
   isLoading?: boolean;
   apxHint?: React.ReactNode;
-  compact?: boolean;
 };
 
-type VaultPosition = {
+type LegacyVaultPosition = {
   sharesBalance?: bigint;
   sharesSymbol: string;
-  baseAmount?: bigint;
-  baseSymbol: string;
-  usdAmount?: number;
   isLoading?: boolean;
 };
 
-type VaultCardProps = {
+type LegacyVaultCardProps = {
   title: string;
   description?: string;
   urlSlug: string;
   stats: VaultStats;
   ctaLabel: string;
-  position?: VaultPosition;
+  position?: LegacyVaultPosition;
   variant?: 'eth' | 'usd' | 'default';
   illustration?: React.ReactNode;
   depositLinkCallback?: () => void;
   protectedBadgeTooltipText?: React.ReactNode;
 };
 
-export const VaultCard: React.FC<VaultCardProps> = ({
+export const LegacyVaultCard: React.FC<LegacyVaultCardProps> = ({
   title,
   description,
   urlSlug,
@@ -150,7 +144,7 @@ export const VaultCard: React.FC<VaultCardProps> = ({
         {!!position?.sharesBalance && (
           <StatItem>
             <StatLabel>
-              My deposit
+              My balance
               <VaultTip
                 placement="bottom"
                 style={{ position: 'relative', zIndex: 2 }}
@@ -163,28 +157,20 @@ export const VaultCard: React.FC<VaultCardProps> = ({
                   decimals={getTokenDecimals(position.sharesSymbol)}
                 />
                 .{' '}
-                {position.usdAmount != null
-                  ? `Shown in ${position.baseSymbol} and USD at current conversion rates.`
-                  : `Shown in ${position.baseSymbol} at current conversion rates.`}
+                {`Shown in ${position.sharesSymbol} at current conversion rates.`}
               </VaultTip>
             </StatLabel>
             <StatValue>
               <InlineLoader width={32} isLoading={position.isLoading}>
                 <FormatToken
                   trimEllipsis
-                  symbol={position.baseSymbol}
-                  decimals={getTokenDecimals(position.baseSymbol)}
-                  amount={position.baseAmount}
+                  symbol={position.sharesSymbol}
+                  decimals={getTokenDecimals(position.sharesSymbol)}
+                  amount={position.sharesBalance}
                   fallback="—"
-                  data-testid={`${position.sharesSymbol}-position-amount`}
                 />
               </InlineLoader>
             </StatValue>
-            {!position.isLoading && position.usdAmount != null && (
-              <StatSubValue>
-                <FormatPrice amount={position.usdAmount} />
-              </StatSubValue>
-            )}
           </StatItem>
         )}
       </CardStats>

@@ -69,22 +69,29 @@ export const TopSectionDescription = styled.p`
 export const TopSectionStatsRow = styled.div`
   display: flex;
   gap: ${({ theme }) => theme.spaceMap.md}px;
-  max-width: 300px;
 `;
 
 export const TopSectionStatItem = styled.div`
   display: flex;
   flex-direction: column;
+  flex: 0 0 160px;
   gap: 4px;
 
-  &:first-child {
-    flex: 1;
+  ${({ theme }) => theme.mediaQueries.md} {
+    flex: 1 0 auto;
   }
 `;
 
 export const TopSectionStatLabel = styled.span`
   display: flex;
   align-items: center;
+  color: var(--lido-color-textSecondary);
+  font-size: ${({ theme }) => theme.fontSizesMap.xs}px;
+  font-weight: 400;
+  line-height: 24px;
+`;
+
+export const TopSectionStatSubValue = styled.span`
   color: var(--lido-color-textSecondary);
   font-size: ${({ theme }) => theme.fontSizesMap.xs}px;
   font-weight: 400;
