@@ -254,3 +254,8 @@ export const CardOverlayLink = styled.a`
     z-index: 1;
   }
 `;
+
+export const VaultWarning = styled.div`
+  margin-top: 32px;
+  z-index: 2;
+`;
