@@ -1,51 +1,13 @@
 import { useMemo } from 'react';
-import {
-  Manifest,
-  ManifestConfig,
-  ManifestConfigPage,
-  ManifestConfigPageList,
-  ManifestEntry,
-  getManifestKey,
-  isManifestValid,
-} from 'config/external-config';
-import { getDexConfig } from 'features/withdrawals/request/withdrawal-rates';
-import { EARN_VAULTS } from 'features/earn/consts';
+import invariant from 'tiny-invariant';
 
-import FallbackLocalManifest from 'IPFS.json';
-
-export const getBackwardCompatibleConfig = (
-  config: ManifestEntry['config'],
-): ManifestEntry['config'] => {
-  const pages = (Object.keys(config?.pages ?? {}) as ManifestConfigPage[])
-    .filter((key) => ManifestConfigPageList.has(key))
-    .reduce(
-      (acc, key) => {
-        if (acc) {
-          acc[key] = { ...config.pages[key] };
-        }
-
-        return acc;
-      },
-      {} as ManifestConfig['pages'],
-    );
-
-  return {
-    enabledWithdrawalDexes:
-      config.enabledWithdrawalDexes?.filter((dex) => !!getDexConfig(dex)) ?? [],
-    featureFlags: { ...(config?.featureFlags ?? {}) },
-    multiChainBanner: config?.multiChainBanner ?? [],
-    earnVaultsBanner: config?.earnVaultsBanner ?? {},
-    earnVaults:
-      config.earnVaults?.filter((vault) => EARN_VAULTS.includes(vault.name)) ??
-      [],
-    pages: { ...pages },
-    api: { ...(config?.api ?? {}) },
-  };
-};
+import { ManifestSchema } from './validate';
+import { getLocalFallbackManifest, getManifestKey } from './utils';
+import type { ManifestConfig, ManifestEntry } from './types';
 
 export const overrideManifestConfig = (
   config: ManifestEntry['config'],
-  override: Partial<ManifestEntry['config']> = {},
+  override: Partial<ManifestConfig> = {},
 ): ManifestEntry['config'] => {
   return {
     ...config,
@@ -65,10 +27,20 @@ export const getFallbackedManifestEntry = (
   defaultChain: number,
   manifestOverride?: string,
 ): ManifestEntry => {
-  const isValid = isManifestValid(prefetchedManifest, defaultChain);
-  return isValid
-    ? prefetchedManifest[getManifestKey(defaultChain, manifestOverride)]
-    : (FallbackLocalManifest as unknown as Manifest)[defaultChain];
+  const key = getManifestKey(defaultChain, manifestOverride);
+  const parsing = ManifestSchema.safeParse(prefetchedManifest);
+
+  if (parsing.success && parsing.data[key]) {
+    return parsing.data[key];
+  }
+
+  const fallbackManifest = getLocalFallbackManifest();
+  invariant(
+    fallbackManifest[key],
+    `Fallback manifest entry not found for key ${key}`,
+  );
+
+  return fallbackManifest[key];
 };
 
 export const useFallbackManifestEntry = (

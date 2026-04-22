@@ -1,65 +1,17 @@
 import type { UseQueryResult } from '@tanstack/react-query';
-import type { DexWithdrawalApi } from 'features/withdrawals/request/withdrawal-rates';
-import type { EarnVaultKey } from 'features/earn/consts';
+import type { z } from 'zod';
+import type { ManifestSchema } from './validate';
 
-export type Manifest = Record<string, ManifestEntry>;
+export type Manifest = z.infer<typeof ManifestSchema>;
 
-export type ManifestEntry = {
-  cid?: string;
-  ens?: string;
-  leastSafeVersion?: string;
-  config: ManifestConfig;
-};
+export type ManifestEntry = NonNullable<Manifest[keyof Manifest]>;
 
-export type VaultAPYType = 'daily' | 'weekly' | 'weekly_moving_average';
-type VaultAPY = {
-  type?: VaultAPYType;
-};
+export type ManifestConfig = ManifestEntry['config'];
 
-export type EarnVaultConfigEntry = {
-  name: EarnVaultKey;
-  deposit?: boolean;
-  withdraw?: boolean;
-  depositPauseReasonText?: string;
-  withdrawPauseReasonText?: string;
-  listWarningText?: string;
-  apy?: VaultAPY;
-  showNew?: boolean;
-  deprecated?: boolean;
-  disabled?: boolean;
-};
+export type EarnVaultConfigEntry =
+  ManifestEntry['config']['earnVaults'][number];
 
-export type ManifestConfig = {
-  enabledWithdrawalDexes: DexWithdrawalApi[];
-  multiChainBanner: number[];
-  earnVaults: EarnVaultConfigEntry[];
-  earnVaultsBanner: {
-    showOnStakeForm: boolean;
-    showAfterStake: boolean;
-  };
-  featureFlags: {
-    ledgerLiveL2?: boolean;
-    disableSendCalls?: boolean;
-    dgBannerEnabled?: boolean;
-    dgWarningState?: boolean;
-    rewardsMaintenance?: boolean;
-    holidayDecorEnabled?: boolean;
-    forceAllowance?: boolean;
-    amountBannerEnabled?: boolean;
-  };
-  pages: {
-    [page in ManifestConfigPage]?: {
-      shouldDisable?: boolean;
-      showNew?: boolean;
-      sections?: [string, ...string[]];
-    };
-  };
-  api: {
-    validation: {
-      version: string;
-    };
-  };
-};
+export type VaultAPYType = EarnVaultConfigEntry['apy']['type'];
 
 export enum ManifestConfigPageEnum {
   Stake = '/',
@@ -72,11 +24,11 @@ export enum ManifestConfigPageEnum {
   EarnNew = '/earn-new',
 }
 
-export type ManifestConfigPage = `${ManifestConfigPageEnum}`;
-
 export const ManifestConfigPageList = new Set<ManifestConfigPage>(
   Object.values(ManifestConfigPageEnum),
 );
+
+export type ManifestConfigPage = `${ManifestConfigPageEnum}`;
 
 export type ExternalConfig = Omit<ManifestEntry, 'config'> &
   ManifestConfig & {
