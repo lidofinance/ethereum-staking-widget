@@ -61,6 +61,29 @@ export const isEnabledDexesValid = (config: object) => {
   return new Set(enabledWithdrawalDexes).size === enabledWithdrawalDexes.length;
 };
 
+const MAX_VAULT_TEXT_LENGTH = 250;
+
+const isOptionalShortString = (value: unknown): boolean =>
+  value === undefined ||
+  (typeof value === 'string' && value.length <= MAX_VAULT_TEXT_LENGTH);
+
+export const isEarnVaultsValid = (config: object): boolean => {
+  // allow empty config
+  if (!('earnVaults' in config) || !config.earnVaults) return true;
+
+  if (!Array.isArray(config.earnVaults)) return false;
+
+  return config.earnVaults.every(
+    (vault) =>
+      vault &&
+      typeof vault === 'object' &&
+      typeof vault.name === 'string' &&
+      isOptionalShortString(vault.depositPauseReasonText) &&
+      isOptionalShortString(vault.withdrawPauseReasonText) &&
+      isOptionalShortString(vault.listWarningText),
+  );
+};
+
 export const isPagesValid = (config: object) => {
   if (!('pages' in config)) {
     return true;
@@ -94,6 +117,7 @@ export const isManifestEntryValid = (
       isMultiChainBannerValid,
       isFeatureFlagsValid,
       isPagesValid,
+      isEarnVaultsValid,
     ]
       .map((validator) => validator(config))
       .every((isValid) => isValid);
