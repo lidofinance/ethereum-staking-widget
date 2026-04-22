@@ -21,7 +21,7 @@ import { ProtectedTooltip } from './protected-tooltip';
 export const EthVaultCard = () => {
   const { apy, isLoading: isApyLoading } = useEthVaultApy();
   const { tvlUsd, isLoading: isTvlLoading } = useEthVaultStats();
-  const { isEthVaultAvailable, listWarningText } = useEthVaultAvailable();
+  const { listWarningText } = useEthVaultAvailable();
 
   const { data: earnethPositionData, isLoading: isPositionLoading } =
     useEthVaultPosition();
@@ -53,12 +53,7 @@ export const EthVaultCard = () => {
         trackMatomoEvent(MATOMO_EARN_EVENTS_TYPES.earnListEarnEthDeposit);
       }}
       protectedBadgeTooltipText={<ProtectedTooltip />}
-      warning={
-        <VaultListWarning
-          isVaultAvailable={isEthVaultAvailable}
-          warningText={listWarningText}
-        />
-      }
+      warning={<VaultListWarning warningText={listWarningText} />}
     />
   );
 };

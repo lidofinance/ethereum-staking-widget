@@ -23,7 +23,7 @@ export const UsdVaultCard = () => {
   const { tvlUsd, isLoading: isTvlLoading } = useUsdVaultStats();
   const { data: usdPositionData, isLoading: isPositionLoading } =
     useUsdVaultPosition();
-  const { isUsdVaultAvailable, listWarningText } = useUsdVaultAvailable();
+  const { listWarningText } = useUsdVaultAvailable();
 
   const sharesBalance = usdPositionData?.earnusdSharesBalance;
 
@@ -52,12 +52,7 @@ export const UsdVaultCard = () => {
         trackMatomoEvent(MATOMO_EARN_EVENTS_TYPES.earnListEarnUsdDeposit);
       }}
       protectedBadgeTooltipText={<ProtectedTooltip />}
-      warning={
-        <VaultListWarning
-          isVaultAvailable={isUsdVaultAvailable}
-          warningText={listWarningText}
-        />
-      }
+      warning={<VaultListWarning warningText={listWarningText} />}
     />
   );
 };

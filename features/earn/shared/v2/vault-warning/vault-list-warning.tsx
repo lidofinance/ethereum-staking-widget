@@ -2,17 +2,10 @@ import { ReactNode } from 'react';
 import { VaultWarning } from 'features/earn/shared/vault-warning';
 
 type VaultListWarningProps = {
-  isVaultAvailable: boolean;
   warningText?: ReactNode;
 };
 
-export const VaultListWarning = ({
-  isVaultAvailable,
-  warningText,
-}: VaultListWarningProps) => {
-  // Without this check, the warning can be displayed even if the vault is generally disabled
-  if (!isVaultAvailable) return null;
-
+export const VaultListWarning = ({ warningText }: VaultListWarningProps) => {
   if (!warningText) return null;
 
   return (
