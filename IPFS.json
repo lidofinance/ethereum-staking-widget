@@ -35,7 +35,7 @@
       "featureFlags": {
         "disableSendCalls": false,
         "dgBannerEnabled": true,
-        "rewardsMaintenance": false,
+        "rewardsMaintenance": true,
         "holidayDecorEnabled": false,
         "forceAllowance": false,
         "amountBannerEnabled": true
