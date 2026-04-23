@@ -116,7 +116,8 @@ export const VaultCard: React.FC<VaultCardProps> = ({
               >
                 <CardTitleBadge
                   variant="gradient"
-                  icon={<ChevronsUpIcon data-testid={'upgradingBadge'} />}
+                  icon={<ChevronsUpIcon />}
+                  data-testid={'upgradingBadge'}
                 >
                   {' '}
                   Upgrading
