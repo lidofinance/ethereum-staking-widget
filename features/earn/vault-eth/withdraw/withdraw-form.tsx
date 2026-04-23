@@ -7,6 +7,7 @@ import {
 import { VaultFormSection } from 'features/earn/shared/vault-form-section';
 import { VaultForm } from 'features/earn/shared/vault-form';
 import { BlockSidePanel } from 'features/earn/shared/v2/block-side-panel/block-side-panel';
+import { VaultWithdrawWarning } from 'features/earn/shared/v2/vault-warning/vault-withdraw-warning';
 
 import { EthVaultWithdrawFormProvider } from './form-context';
 import { EthVaultWithdrawInput } from './withdraw-input';
@@ -15,36 +16,48 @@ import { EthVaultWithdrawWillReceive } from './withdraw-will-receive';
 import { EthVaultWithdrawSubmitButton } from './withdraw-submit-button';
 import { EthVaultWithdrawRequests } from './withdraw-requests';
 import { ActionSwitch } from '../components/action-switch';
-
-// TODO: add Withdraw Warning and ability to disable withdraw via config
+import { UpgradeAssetsBlock } from '../upgrade-assets/upgrade-assets';
+import { useEthVaultAvailable } from '../hooks/use-vault-available';
 
 const EthVaultWithdrawFormContent: FC = () => {
+  const { isEthVaultAvailable, isWithdrawEnabled, withdrawPauseReasonText } =
+    useEthVaultAvailable();
+
   return (
-    <BlockSidePanel>
-      <ActionSwitch isWithdraw />
-      <VaultForm data-testid="withdraw-form">
-        <VaultFormSection>
-          <EthVaultWithdrawRequests />
-          <EthVaultWithdrawAvailable />
-          <EthVaultWithdrawInput />
-        </VaultFormSection>
-        <VaultTxInfo>
-          <EthVaultWithdrawWillReceive />
-          <VaultTxInfoRow
-            title="Waiting time"
-            help={
-              <>
-                Withdrawals take up to 72 hours to process. Once ready, your
-                funds can be claimed in the Lido UI
-              </>
-            }
-          >
-            {'up to 72 hours'}
-          </VaultTxInfoRow>
-        </VaultTxInfo>
-        <EthVaultWithdrawSubmitButton />
-      </VaultForm>
-    </BlockSidePanel>
+    <>
+      <UpgradeAssetsBlock />
+      <BlockSidePanel>
+        <ActionSwitch isWithdraw />
+        <VaultForm data-testid="withdraw-form">
+          <VaultWithdrawWarning
+            isWithdrawEnabled={isWithdrawEnabled}
+            isVaultAvailable={isEthVaultAvailable}
+            withdrawPauseReasonText={withdrawPauseReasonText}
+          />
+
+          <VaultFormSection>
+            <EthVaultWithdrawRequests />
+            <EthVaultWithdrawAvailable />
+            <EthVaultWithdrawInput />
+          </VaultFormSection>
+          <VaultTxInfo>
+            <EthVaultWithdrawWillReceive />
+            <VaultTxInfoRow
+              title="Waiting time"
+              help={
+                <>
+                  Withdrawals take up to 72 hours to process. Once ready, your
+                  funds can be claimed in the Lido UI
+                </>
+              }
+            >
+              {'up to 72 hours'}
+            </VaultTxInfoRow>
+          </VaultTxInfo>
+          <EthVaultWithdrawSubmitButton />
+        </VaultForm>
+      </BlockSidePanel>
+    </>
   );
 };
 

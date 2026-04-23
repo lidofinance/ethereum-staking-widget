@@ -13,11 +13,16 @@
         130, 1135, 1923
       ],
       "earnVaultsBanner": {
-        "showOnStakeForm": true,
-        "showAfterStake": true
+        "showOnStakeForm": false,
+        "showAfterStake": false
       },
       "earnVaults": [
-        { "name": "eth" },
+        {
+          "name": "eth",
+          "deposit": false,
+          "depositPauseReasonText": "Deposits and withdrawal processing for EarnETH are currently paused by the vault curator, pending resolution of the Kelp and Aave incident.",
+          "listWarningText": "Deposits and withdrawal processing for EarnETH are currently paused by the vault curator, pending resolution of the Kelp and Aave incident."
+        },
         { "name": "usd" },
         { "name": "strategy", "deprecated": true },
         {
@@ -30,7 +35,7 @@
       "featureFlags": {
         "disableSendCalls": false,
         "dgBannerEnabled": true,
-        "rewardsMaintenance": false,
+        "rewardsMaintenance": true,
         "holidayDecorEnabled": false,
         "forceAllowance": false,
         "amountBannerEnabled": true
