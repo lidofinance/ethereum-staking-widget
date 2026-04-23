@@ -82,11 +82,13 @@ export const EarnVaultsList: FC = () => {
         {hasDeprecatedVaults && (
           <AccordionTransparentStyled
             data-animating={isAccordionAnimating || undefined}
-            onClick={() => setIsAccordionAnimating(true)}
             onExpand={() => setIsAccordionAnimating(false)}
             onCollapse={() => setIsAccordionAnimating(false)}
             summary={
-              <AccordionTitle data-testid={'upgradingVaults'}>
+              <AccordionTitle
+                data-testid={'upgradingVaults'}
+                onClick={() => setIsAccordionAnimating(true)}
+              >
                 Upgrading vaults
               </AccordionTitle>
             }
