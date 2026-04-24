@@ -3,7 +3,7 @@ import invariant from 'tiny-invariant';
 import { encodeFunctionData } from 'viem';
 
 import {
-  applyRoundUpGasLimit,
+  applyRoundUpTxParameter,
   useDappStatus,
   useLidoSDK,
   useTxFlow,
@@ -60,7 +60,7 @@ export const useWithdrawClaim = <WithdrawToken extends string>({
           sendTransaction: async (txStagesCallback) => {
             await core.performTransaction({
               getGasLimit: async (opts) =>
-                applyRoundUpGasLimit(
+                applyRoundUpTxParameter(
                   await redeemQueue.estimateGas.claim(claimArgs, {
                     ...opts,
                   }),
