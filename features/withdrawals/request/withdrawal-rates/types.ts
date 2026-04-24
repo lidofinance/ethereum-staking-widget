@@ -1,6 +1,10 @@
 import { MATOMO_CLICK_EVENTS_TYPES } from 'consts/matomo';
 import { TOKENS_TO_WITHDRAWLS } from 'features/withdrawals/types/tokens-withdrawable';
 
+import type { ManifestConfigDex } from 'config/external-config';
+
+export type DexWithdrawalApi = ManifestConfigDex;
+
 export type GetWithdrawalRateParams = {
   amount: bigint;
   token: TOKENS_TO_WITHDRAWLS;
@@ -11,13 +15,6 @@ export type SingleWithdrawalRateResult = {
   rate: number | null;
   toReceive: bigint | null;
 };
-
-export type DexWithdrawalApi =
-  | 'paraswap'
-  | 'open-ocean'
-  | 'one-inch'
-  | 'bebop'
-  | 'jumper';
 
 export type DexWithdrawalIntegration = {
   title: string;

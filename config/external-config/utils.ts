@@ -1,8 +1,9 @@
 import invariant from 'tiny-invariant';
 import { config } from 'config';
 
-import { Manifest, ManifestConfigPage, ManifestConfigPageEnum } from './types';
-import { ManifestSchema } from './validate';
+import { ManifestSchema, ManifestConfigPages } from './validate';
+
+import type { Manifest, ManifestConfigPage } from './types';
 
 import FallbackLocalManifest from 'IPFS.json';
 
@@ -34,5 +35,5 @@ export const shouldRedirectToRoot = (
   // https://nextjs.org/docs/messages/gsp-redirect-during-prerender
   const isBuild = process.env.npm_lifecycle_event === 'build';
 
-  return currentPath !== ManifestConfigPageEnum.Stake && isDisabled && !isBuild;
+  return currentPath !== ManifestConfigPages.Stake && isDisabled && !isBuild;
 };

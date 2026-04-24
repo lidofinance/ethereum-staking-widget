@@ -1,11 +1,16 @@
 import { z } from 'zod';
-import { ManifestConfigPageEnum } from './types';
 
 ///
 /// Earn
 ///
 
-const EarnVaultNameSchema = z.enum(['ggv', 'dvv', 'strategy', 'eth', 'usd']);
+export const EarnVaultNameSchema = z.enum([
+  'ggv',
+  'dvv',
+  'strategy',
+  'eth',
+  'usd',
+]);
 
 const EarnVaultConfigApyTypeSchema = z.enum([
   'daily',
@@ -99,13 +104,17 @@ const FeatureFlagsSchema = z
 // Enabled Withdrawal Dexes
 //
 
-const DexWithdrawalsApiSchema = z.enum([
-  'paraswap',
-  'open-ocean',
-  'one-inch',
-  'bebop',
-  'jumper',
-]);
+export const ManifestConfigWithdrawalDexes = {
+  paraswap: 'paraswap',
+  openOcean: 'open-ocean',
+  oneInch: 'one-inch',
+  bebop: 'bebop',
+  jumper: 'jumper',
+} as const;
+
+export const DexWithdrawalsApiSchema = z.enum(
+  Object.values(ManifestConfigWithdrawalDexes),
+);
 
 // Filter out unknown dexes
 const EnabledWithdrawalDexesSchema = z.preprocess(
@@ -128,7 +137,17 @@ const EnabledWithdrawalDexesSchema = z.preprocess(
 // Pages
 //
 
-const PageNameSchema = z.enum(Object.values(ManifestConfigPageEnum));
+export const ManifestConfigPages = {
+  Stake: '/',
+  Wrap: '/wrap',
+  Withdrawals: '/withdrawals',
+  Rewards: '/rewards',
+  Settings: '/settings',
+  Referral: '/referral',
+  Earn: '/earn',
+} as const;
+
+export const PageNameSchema = z.enum(Object.values(ManifestConfigPages));
 
 const PageSchema = z.object({
   shouldDisable: z.boolean().optional().default(false),
@@ -153,7 +172,7 @@ const PagesEntrySchema = z
     z.partialRecord(PageNameSchema, PageSchema),
   )
   .refine((pages) => {
-    const stakePage = pages[ManifestConfigPageEnum.Stake];
+    const stakePage = pages['/'];
     if (stakePage) {
       return !stakePage.shouldDisable;
     }
