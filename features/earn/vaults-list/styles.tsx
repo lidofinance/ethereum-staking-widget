@@ -5,11 +5,13 @@ export const AccordionTransparentStyled = styled(AccordionTransparent)`
   overflow: visible;
 
   /*
-    Disabling pointer-events while animation is in progress,
+    Disabling hover box-shadow for child elements while animation is in progress,
     fixes issue with card shadow on hover caused by inline overflow:hidden during animation
   */
   &[data-animating] * {
-    pointer-events: none;
+    &:hover {
+      box-shadow: none;
+    }
   }
 `;
 

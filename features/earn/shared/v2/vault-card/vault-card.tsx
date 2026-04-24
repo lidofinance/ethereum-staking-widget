@@ -130,7 +130,7 @@ export const VaultCard: React.FC<VaultCardProps> = ({
             {stats.apxLabel}
             <VaultTip
               placement="bottom"
-              style={{ position: 'relative', zIndex: 2 }}
+              style={{ position: 'relative', zIndex: 20 }}
             >
               {stats.apxHint}
             </VaultTip>
