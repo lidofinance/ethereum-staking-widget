@@ -2,7 +2,7 @@ import { type Address } from 'viem';
 import { bnAmountToNumber } from 'utils/bn';
 import { GGV_INCENTIVES, GGV_START_DATE, GGV_STATS_ORIGIN } from './consts';
 import { standardFetcher } from 'utils/standardFetcher';
-import { VaultAPYType } from 'config/external-config/types';
+import { ManifestConfigVaultApyType } from 'config/external-config';
 
 export type SevenSeasAPIDailyResponseItem = {
   block_number: number;
@@ -112,7 +112,7 @@ export const calculateGGVIncentivesAPY = (totalAssets: bigint) => {
 
 export const getGGVApy = async (
   vault: Address,
-  ggvAPYType?: VaultAPYType,
+  ggvAPYType?: ManifestConfigVaultApyType,
 ): Promise<number> => {
   switch (ggvAPYType) {
     case 'weekly':

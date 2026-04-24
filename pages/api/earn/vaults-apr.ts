@@ -23,19 +23,17 @@ import { fetchSTGStatsApr } from 'features/earn/vault-stg/utils';
 import { getGGVApy } from 'features/earn/vault-ggv/utils';
 import { CHAINS } from 'consts/chains';
 import {
-  EarnVaultConfigEntry,
-  VaultAPYType,
-} from 'config/external-config/types';
+  ManifestConfigVaultEntry,
+  ManifestConfigVaultApyType,
+} from 'config/external-config';
 import { getContractAddress } from 'config/networks/contract-address';
-import { Manifest } from 'config/external-config';
+import { getLocalFallbackManifest } from 'config/external-config';
 import { getExternalConfig } from 'utilsApi/get-external-config';
 
 import { fetchDVVStatsApr } from 'features/earn/vault-dvv/utils';
 import { DVV_STATS_ORIGIN } from 'features/earn/vault-dvv/consts';
 import { STG_STATS_ORIGIN } from 'features/earn/vault-stg/consts';
 import { GGV_STATS_ORIGIN } from 'features/earn/vault-ggv/consts';
-
-import LocalManifestRaw from 'IPFS.json';
 
 export type VaultsAprResponse = {
   data: {
@@ -51,9 +49,9 @@ export type VaultsAprResponse = {
 
 const DEFAULT_CACHE_TTL = 60 * 60 * 1000; // 1 hour
 
-const LocalManifest = LocalManifestRaw as unknown as Manifest;
+const LocalManifest = getLocalFallbackManifest();
 const vaultsFromLocalManifest =
-  LocalManifest[CHAINS.Mainnet].config.earnVaults || [];
+  LocalManifest[CHAINS.Mainnet]?.config.earnVaults || [];
 
 const caches: Record<string, CacheClass<string, any>> = {};
 const cacheKeys: Record<string, string> = {};
@@ -68,7 +66,7 @@ vaultsFromLocalManifest.forEach((vault) => {
 
 const fetchers: {
   [key: string]: (
-    vaultConfig: EarnVaultConfigEntry,
+    vaultConfig: ManifestConfigVaultEntry,
   ) => Promise<{ apr: number }>;
 } = {
   ggv: async () => {
@@ -78,10 +76,10 @@ const fetchers: {
     ) as Address;
 
     const manifestConfig = await getExternalConfig();
-    const vaultsFromConfig = manifestConfig?.config?.earnVaults || [];
+    const vaultsFromConfig = manifestConfig.earnVaults || [];
 
-    const ggvApyType = vaultsFromConfig.find((v) => v.name === 'ggv')?.apy
-      ?.type as VaultAPYType;
+    const ggvApyType = vaultsFromConfig.find((vault) => vault.name === 'ggv')
+      ?.apy?.type as ManifestConfigVaultApyType;
 
     return { apr: await getGGVApy(ggvVaultAddress, ggvApyType) };
   },
@@ -98,10 +96,10 @@ const fetchUrlsForMetrics: Record<string, string> = {
 const handler = async (_: NextApiRequest, res: NextApiResponse) => {
   try {
     const manifestConfig = await getExternalConfig();
-    const vaultsFromConfig = manifestConfig?.config.earnVaults || [];
+    const vaultsFromConfig = manifestConfig.earnVaults || [];
 
     // allowing only vaults with defined fetchers
-    const vaults = vaultsFromConfig.filter((v) => v.name in fetchers);
+    const vaults = vaultsFromConfig.filter((vault) => vault.name in fetchers);
 
     const fetchPromises = vaults.map((vault) =>
       fetchWithCache({
@@ -111,7 +109,7 @@ const handler = async (_: NextApiRequest, res: NextApiResponse) => {
         fetcher: async () =>
           responseTimeExternalMetricWrapper({
             payload: fetchUrlsForMetrics[vault.name],
-            request: () => fetchers[vault.name](vault as EarnVaultConfigEntry),
+            request: () => fetchers[vault.name](vault),
           }),
       }),
     );
