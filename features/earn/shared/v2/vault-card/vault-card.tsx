@@ -17,7 +17,6 @@ import {
   VaultIconWrapper,
   CardTitleBadge,
   ChevronsUpIcon,
-  StatSubValue,
   StyledTooltip,
   BadgeStyled,
   TitleTextStyled,
@@ -28,7 +27,6 @@ import { EARN_VAULT_DEPOSIT_SLUG } from 'features/earn/consts';
 import { FormatPercent } from 'shared/formatters/format-percent';
 import { FormatLargeAmount } from 'shared/formatters/format-large-amount';
 import { FormatToken } from 'shared/formatters/format-token';
-import { FormatPrice } from 'shared/formatters/format-price';
 import { Badge } from 'features/earn/shared/badge';
 import { getTokenDecimals } from 'utils/token-decimals';
 import { useConfig } from 'config/use-config';
@@ -49,7 +47,6 @@ type VaultPosition = {
   sharesSymbol: string;
   baseAmount?: bigint;
   baseSymbol: string;
-  usdAmount?: number;
   isLoading?: boolean;
 };
 
@@ -162,10 +159,7 @@ export const VaultCard: React.FC<VaultCardProps> = ({
                   symbol={position.sharesSymbol}
                   decimals={getTokenDecimals(position.sharesSymbol)}
                 />
-                .{' '}
-                {position.usdAmount != null
-                  ? `Shown in ${position.baseSymbol} and USD at current conversion rates.`
-                  : `Shown in ${position.baseSymbol} at current conversion rates.`}
+                . Shown in ${position.baseSymbol} at current conversion rates.
               </VaultTip>
             </StatLabel>
             <StatValue>
@@ -180,11 +174,6 @@ export const VaultCard: React.FC<VaultCardProps> = ({
                 />
               </InlineLoader>
             </StatValue>
-            {!position.isLoading && position.usdAmount != null && (
-              <StatSubValue>
-                <FormatPrice amount={position.usdAmount} />
-              </StatSubValue>
-            )}
           </StatItem>
         )}
       </CardStats>

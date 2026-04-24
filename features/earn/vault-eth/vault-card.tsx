@@ -23,7 +23,6 @@ export const EthVaultCard = () => {
     data: earnethPositionData,
     isLoading: isPositionLoading,
     ethAmount,
-    usdBalance,
   } = useEthVaultPosition();
 
   const sharesBalance = earnethPositionData?.earnethSharesBalance;
@@ -45,7 +44,6 @@ export const EthVaultCard = () => {
         sharesSymbol: ETH_VAULT_TOKEN_SYMBOL,
         baseAmount: ethAmount,
         baseSymbol: TOKEN_SYMBOLS.eth,
-        usdAmount: sharesBalance ? usdBalance : undefined,
         isLoading: isPositionLoading,
       }}
       ctaLabel={sharesBalance && sharesBalance > 0n ? 'Manage' : 'Deposit'}
