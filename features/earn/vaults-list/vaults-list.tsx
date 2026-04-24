@@ -93,6 +93,7 @@ export const EarnVaultsList: FC = () => {
               </AccordionTitle>
             }
             withoutBorder
+            data-testid={'deprecatedVaultsList'}
           >
             <CardsStack>
               {deprecatedVaults.map((vault) => {
