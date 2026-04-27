@@ -23,6 +23,7 @@ import {
   TopSectionStatLabel,
   TopSectionStatSubValue,
   TopSectionStatValue,
+  TopSectionStatValueGroup,
 } from './styles';
 
 type VaultIllustration = ComponentType<SVGProps<SVGSVGElement>>;
@@ -114,21 +115,23 @@ export const TopSection: FC<TopSectionProps> = (props) => {
                   : `Shown in ${balance.symbol} at current conversion rates.`}
               </VaultTip>
             </TopSectionStatLabel>
-            <TopSectionStatValue>
-              <InlineLoader isLoading={balance.isLoading} width={70}>
-                <FormatToken
-                  trimEllipsis
-                  amount={balance.amount}
-                  symbol={balance.symbol}
-                  decimals={getTokenDecimals(balance.symbol)}
-                />
-              </InlineLoader>
-            </TopSectionStatValue>
-            {!balance.isLoading && balance.usdAmount != null && (
-              <TopSectionStatSubValue>
-                <FormatPrice amount={balance.usdAmount} />
-              </TopSectionStatSubValue>
-            )}
+            <TopSectionStatValueGroup>
+              <TopSectionStatValue>
+                <InlineLoader isLoading={balance.isLoading} width={70}>
+                  <FormatToken
+                    trimEllipsis
+                    amount={balance.amount}
+                    symbol={balance.symbol}
+                    decimals={getTokenDecimals(balance.symbol)}
+                  />
+                </InlineLoader>
+              </TopSectionStatValue>
+              {!balance.isLoading && balance.usdAmount != null && (
+                <TopSectionStatSubValue>
+                  <FormatPrice amount={balance.usdAmount} />
+                </TopSectionStatSubValue>
+              )}
+            </TopSectionStatValueGroup>
           </TopSectionStatItem>
         )}
       </TopSectionStatsRow>

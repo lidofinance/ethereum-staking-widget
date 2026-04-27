@@ -84,7 +84,7 @@ export const TopSectionStatItem = styled.div`
   ${({ theme }) => theme.mediaQueries.md} {
     flex-direction: row;
     justify-content: space-between;
-    align-items: center;
+    align-items: flex-start;
     flex: unset;
     gap: ${({ theme }) => theme.spaceMap.sm}px;
   }
@@ -99,15 +99,20 @@ export const TopSectionStatLabel = styled.span`
   line-height: 24px;
 `;
 
+export const TopSectionStatValueGroup = styled.div`
+  display: flex;
+  flex-direction: column;
+
+  ${({ theme }) => theme.mediaQueries.md} {
+    align-items: flex-end;
+  }
+`;
+
 export const TopSectionStatSubValue = styled.span`
   color: var(--lido-color-textSecondary);
   font-size: ${({ theme }) => theme.fontSizesMap.xs}px;
   font-weight: 400;
   line-height: 24px;
-
-  ${({ theme }) => theme.mediaQueries.md} {
-    display: none;
-  }
 `;
 
 export const TopSectionStatValue = styled.span<{ $accent?: boolean }>`
