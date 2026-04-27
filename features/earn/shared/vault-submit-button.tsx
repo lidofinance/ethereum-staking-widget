@@ -1,16 +1,16 @@
-import { useFormState } from 'react-hook-form';
 import { SubmitButtonHookForm } from 'shared/hook-form/controls/submit-button-hook-form';
 
 type VaultSubmitButtonProps = React.PropsWithChildren<{
+  disabled?: boolean;
   isAvailable?: boolean;
 }>;
 
 export const VaultSubmitButton = ({
+  disabled,
   isAvailable,
   children,
 }: VaultSubmitButtonProps) => {
-  const { disabled } = useFormState();
-
+  // If the vault is not available, it usually means the user is on the wrong chain
   const shouldSwitchChain = !isAvailable;
 
   return (
@@ -18,7 +18,7 @@ export const VaultSubmitButton = ({
       disabled={disabled || shouldSwitchChain}
       data-testid="submit-btn"
     >
-      {shouldSwitchChain ? 'Switch to Ethereum Mainnet' : children}
+      {!disabled && shouldSwitchChain ? 'Switch to Ethereum Mainnet' : children}
     </SubmitButtonHookForm>
   );
 };

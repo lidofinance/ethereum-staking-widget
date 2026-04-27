@@ -9,7 +9,7 @@ import {
 import { config } from 'config';
 import { MockLimitReachedError } from 'features/stake/stake-form/utils';
 import {
-  applyRoundUpGasLimit,
+  applyRoundUpTxParameter,
   useDappStatus,
   useLidoSDK,
   useLidoSDKL2,
@@ -141,7 +141,7 @@ export const useWrapFormProcessor = ({
           onSign: async ({ payload }) => {
             txModalStages.sign(amount, token, willReceive);
             if (token === LIDO_TOKENS.eth) {
-              return applyRoundUpGasLimit(
+              return applyRoundUpTxParameter(
                 (payload as bigint) ?? config.WRAP_ETH_GASLIMIT_FALLBACK,
               );
             }

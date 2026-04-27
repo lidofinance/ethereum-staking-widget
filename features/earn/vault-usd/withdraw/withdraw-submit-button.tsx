@@ -3,9 +3,12 @@ import { VaultSubmitButton } from 'features/earn/shared/vault-submit-button';
 import { useUsdVaultAvailable } from '../hooks/use-vault-available';
 
 export const UsdVaultWithdrawSubmitButton: React.FC = () => {
-  const { isUsdVaultAvailable } = useUsdVaultAvailable();
+  const { isUsdVaultAvailable, isWithdrawEnabled } = useUsdVaultAvailable();
   return (
-    <VaultSubmitButton isAvailable={isUsdVaultAvailable}>
+    <VaultSubmitButton
+      disabled={!isWithdrawEnabled}
+      isAvailable={isUsdVaultAvailable}
+    >
       Request withdrawal
     </VaultSubmitButton>
   );
