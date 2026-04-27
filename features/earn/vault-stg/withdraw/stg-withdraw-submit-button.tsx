@@ -3,9 +3,12 @@ import { VaultSubmitButton } from 'features/earn/shared/vault-submit-button';
 import { useSTGAvailable } from '../hooks/use-stg-available';
 
 export const STGWithdrawSubmitButton: React.FC = () => {
-  const { isSTGAvailable } = useSTGAvailable();
+  const { isSTGAvailable, isWithdrawEnabled } = useSTGAvailable();
   return (
-    <VaultSubmitButton isAvailable={isSTGAvailable}>
+    <VaultSubmitButton
+      disabled={!isWithdrawEnabled}
+      isAvailable={isSTGAvailable}
+    >
       Request withdrawal
     </VaultSubmitButton>
   );

@@ -20,6 +20,7 @@ import {
   StyledTooltip,
   BadgeStyled,
   TitleTextStyled,
+  VaultWarning,
 } from './styles';
 import { LocalLink } from 'shared/components/local-link';
 import { EARN_PATH } from 'consts/urls';
@@ -61,6 +62,7 @@ type VaultCardProps = {
   illustration?: React.ReactNode;
   depositLinkCallback?: () => void;
   protectedBadgeTooltipText?: React.ReactNode;
+  warning?: React.ReactNode;
 };
 
 export const VaultCard: React.FC<VaultCardProps> = ({
@@ -74,6 +76,7 @@ export const VaultCard: React.FC<VaultCardProps> = ({
   illustration,
   depositLinkCallback,
   protectedBadgeTooltipText,
+  warning,
 }) => {
   const isDeprecated = useConfig().externalConfig.earnVaults.find(
     (vault) => vault.name === urlSlug,
@@ -93,9 +96,11 @@ export const VaultCard: React.FC<VaultCardProps> = ({
       <CardHeader>
         <CardHeaderContent>
           <CardTitle>
-            <TitleTextStyled>{title}</TitleTextStyled>
+            <TitleTextStyled data-testid={'vaultTitle'}>
+              {title}
+            </TitleTextStyled>
             {protectedBadgeTooltipText && (
-              <BadgeStyled>
+              <BadgeStyled data-testid={'protectedBadge'}>
                 <Badge
                   text="PROTECTED"
                   tooltipText={protectedBadgeTooltipText}
@@ -107,14 +112,20 @@ export const VaultCard: React.FC<VaultCardProps> = ({
                 title="Vault users can upgrade their tokens to the new unified EarnETH vault without withdrawal or downtime in rewards."
                 placement="bottom"
               >
-                <CardTitleBadge variant="gradient" icon={<ChevronsUpIcon />}>
+                <CardTitleBadge
+                  variant="gradient"
+                  icon={<ChevronsUpIcon />}
+                  data-testid={'upgradingBadge'}
+                >
                   {' '}
                   Upgrading
                 </CardTitleBadge>
               </StyledTooltip>
             )}
           </CardTitle>
-          <CardDescription>{description}</CardDescription>
+          <CardDescription data-testid={'vaultDescription'}>
+            {description}
+          </CardDescription>
         </CardHeaderContent>
         <VaultIconWrapper>{illustration}</VaultIconWrapper>
       </CardHeader>
@@ -125,7 +136,7 @@ export const VaultCard: React.FC<VaultCardProps> = ({
             {stats.apxLabel}
             <VaultTip
               placement="bottomLeft"
-              style={{ position: 'relative', zIndex: 2 }}
+              style={{ position: 'relative', zIndex: 20 }}
             >
               {stats.apxHint}
             </VaultTip>
@@ -177,7 +188,8 @@ export const VaultCard: React.FC<VaultCardProps> = ({
           </StatItem>
         )}
       </CardStats>
-      <CardCta>
+      {warning && <VaultWarning>{warning}</VaultWarning>}
+      <CardCta data-testid={'vaultButton'}>
         <LocalLink href={depositHref} onClick={depositLinkCallback}>
           <Button fullwidth variant="translucent">
             {ctaLabel}

@@ -10,6 +10,7 @@ import { useFormControllerRetry } from 'shared/hook-form/form-controller/use-for
 import { useDappStatus } from 'modules/web3/hooks/use-dapp-status';
 import { useEthVaultWithdraw } from '../hooks/use-withdraw';
 import { useEthVaultWithdrawFormData } from '../hooks/use-withdraw-form-data';
+import { useEthVaultAvailable } from '../../hooks/use-vault-available';
 import { ETH_VAULT_TOKEN_SYMBOL } from '../../consts';
 import { EthVaultWithdrawFormValidationResolver } from './validation';
 import type {
@@ -34,6 +35,7 @@ export const EthVaultWithdrawFormProvider: React.FC<{
   children?: React.ReactNode;
 }> = ({ children }) => {
   const { isDappActive, isWalletConnected } = useDappStatus();
+  const { isEthVaultAvailable, isWithdrawEnabled } = useEthVaultAvailable();
 
   const {
     validationContext,
@@ -47,7 +49,9 @@ export const EthVaultWithdrawFormProvider: React.FC<{
 
   const formObject = useForm({
     defaultValues: { amount: null },
-    disabled: isWalletConnected && !isDappActive,
+    disabled:
+      (isWalletConnected && !isDappActive) ||
+      (isEthVaultAvailable && !isWithdrawEnabled),
     criteriaMode: 'firstError',
     mode: 'onChange',
     context: validationContext,

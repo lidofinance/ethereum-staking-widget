@@ -13,8 +13,9 @@ export const BadgeStyled = styled.div`
   font-weight: 700;
   line-height: 10px;
   color: var(--lido-color-success);
+  user-select: none;
 `;
 
 export const TooltipStyled = styled(Tooltip)`
-  margin-top: 16px;
+  margin-top: ${({ theme }) => theme.spaceMap.xs}px !important;
 `;

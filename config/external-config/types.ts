@@ -22,6 +22,7 @@ export type EarnVaultConfigEntry = {
   withdraw?: boolean;
   depositPauseReasonText?: string;
   withdrawPauseReasonText?: string;
+  listWarningText?: string;
   apy?: VaultAPY;
   showNew?: boolean;
   deprecated?: boolean;

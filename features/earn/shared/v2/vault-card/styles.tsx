@@ -82,7 +82,6 @@ export const CardTitle = styled.div`
   font-size: 26px;
   line-height: 38px;
   font-weight: 700;
-  z-index: 1;
 
   ${({ theme }) => theme.mediaQueries.md} {
     flex-direction: column;
@@ -96,7 +95,7 @@ export const CardTitleBadge = styled(Badge)`
   height: 32px;
   user-select: none;
   position: relative;
-  z-index: 2;
+  z-index: 20;
 `;
 
 export const ChevronsUpIcon = styled(ChevronsUp)`
@@ -245,7 +244,7 @@ export const StyledTooltip = styled(Tooltip)`
 
 export const BadgeStyled = styled.span`
   position: relative;
-  z-index: 2;
+  z-index: 20;
 
   ${({ theme }) => theme.mediaQueries.md} {
     order: 1;
@@ -262,6 +261,11 @@ export const CardOverlayLink = styled.a`
   && {
     position: absolute;
     inset: 0;
-    z-index: 1;
+    z-index: 10;
   }
+`;
+
+export const VaultWarning = styled.div`
+  margin-top: 32px;
+  z-index: 20;
 `;

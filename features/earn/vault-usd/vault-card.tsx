@@ -4,6 +4,7 @@ import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo';
 
 import { VaultCard } from '../shared/v2/vault-card';
 import { EARN_VAULT_USD_SLUG } from '../consts';
+import { VaultListWarning } from '../shared/v2/vault-warning';
 import { useUsdVaultApy } from './hooks/use-vault-apy';
 import { useUsdVaultStats } from './hooks/use-vault-stats';
 import { UsdVaultApyHint } from './components/apy-hint';
@@ -15,6 +16,7 @@ import {
 import { TOKEN_SYMBOLS } from 'consts/tokens';
 import { useUsdVaultPosition } from './hooks/use-position';
 import { ProtectedTooltip } from './protected-tooltip';
+import { useUsdVaultAvailable } from './hooks/use-vault-available';
 
 export const UsdVaultCard = () => {
   const { apy, isLoading: isApyLoading } = useUsdVaultApy();
@@ -24,6 +26,7 @@ export const UsdVaultCard = () => {
     isLoading: isPositionLoading,
     usdcAmount,
   } = useUsdVaultPosition();
+  const { listWarningText } = useUsdVaultAvailable();
 
   const sharesBalance = usdPositionData?.earnusdSharesBalance;
 
@@ -53,6 +56,7 @@ export const UsdVaultCard = () => {
         trackMatomoEvent(MATOMO_EARN_EVENTS_TYPES.earnListEarnUsdDeposit);
       }}
       protectedBadgeTooltipText={<ProtectedTooltip />}
+      warning={<VaultListWarning warningText={listWarningText} />}
     />
   );
 };
