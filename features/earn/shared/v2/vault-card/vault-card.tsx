@@ -124,7 +124,7 @@ export const VaultCard: React.FC<VaultCardProps> = ({
           <StatLabel>
             {stats.apxLabel}
             <VaultTip
-              placement="bottom"
+              placement="bottomLeft"
               style={{ position: 'relative', zIndex: 2 }}
             >
               {stats.apxHint}
@@ -149,7 +149,7 @@ export const VaultCard: React.FC<VaultCardProps> = ({
             <StatLabel>
               My deposit
               <VaultTip
-                placement="bottom"
+                placement="bottomLeft"
                 style={{ position: 'relative', zIndex: 2 }}
               >
                 You hold{' '}

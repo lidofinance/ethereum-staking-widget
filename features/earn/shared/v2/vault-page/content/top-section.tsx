@@ -81,7 +81,7 @@ export const TopSection: FC<TopSectionProps> = (props) => {
         <TopSectionStatItem>
           <TopSectionStatLabel>
             APY* (7d avg.)
-            <VaultTip placement="bottom">{apxHint}</VaultTip>
+            <VaultTip placement="bottomLeft">{apxHint}</VaultTip>
           </TopSectionStatLabel>
           <TopSectionStatValue $accent>
             <InlineLoader isLoading={isApxLoading} width={70}>
@@ -101,7 +101,7 @@ export const TopSection: FC<TopSectionProps> = (props) => {
           <TopSectionStatItem>
             <TopSectionStatLabel>
               My deposit
-              <VaultTip placement="bottom">
+              <VaultTip placement="bottomLeft">
                 You hold{' '}
                 <FormatToken
                   trimEllipsis
