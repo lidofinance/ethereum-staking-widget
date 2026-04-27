@@ -22,10 +22,7 @@ import Metrics from 'utilsApi/metrics';
 import { fetchSTGStatsApr } from 'features/earn/vault-stg/utils';
 import { getGGVApy } from 'features/earn/vault-ggv/utils';
 import { CHAINS } from 'consts/chains';
-import {
-  ManifestConfigVaultEntry,
-  ManifestConfigVaultApyType,
-} from 'config/external-config';
+import { ManifestConfigVaultEntry } from 'config/external-config';
 import { getContractAddress } from 'config/networks/contract-address';
 import { getLocalFallbackManifest } from 'config/external-config';
 import { getExternalConfig } from 'utilsApi/get-external-config';
@@ -79,7 +76,7 @@ const fetchers: {
     const vaultsFromConfig = manifestConfig.earnVaults || [];
 
     const ggvApyType = vaultsFromConfig.find((vault) => vault.name === 'ggv')
-      ?.apy?.type as ManifestConfigVaultApyType;
+      ?.apy?.type;
 
     return { apr: await getGGVApy(ggvVaultAddress, ggvApyType) };
   },
