@@ -98,9 +98,11 @@ export const VaultCard: React.FC<VaultCardProps> = ({
       <CardHeader>
         <CardHeaderContent>
           <CardTitle>
-            <TitleTextStyled>{title}</TitleTextStyled>
+            <TitleTextStyled data-testid={'vaultTitle'}>
+              {title}
+            </TitleTextStyled>
             {protectedBadgeTooltipText && (
-              <BadgeStyled>
+              <BadgeStyled data-testid={'protectedBadge'}>
                 <Badge
                   text="PROTECTED"
                   tooltipText={protectedBadgeTooltipText}
@@ -112,14 +114,20 @@ export const VaultCard: React.FC<VaultCardProps> = ({
                 title="Vault users can upgrade their tokens to the new unified EarnETH vault without withdrawal or downtime in rewards."
                 placement="bottom"
               >
-                <CardTitleBadge variant="gradient" icon={<ChevronsUpIcon />}>
+                <CardTitleBadge
+                  variant="gradient"
+                  icon={<ChevronsUpIcon />}
+                  data-testid={'upgradingBadge'}
+                >
                   {' '}
                   Upgrading
                 </CardTitleBadge>
               </StyledTooltip>
             )}
           </CardTitle>
-          <CardDescription>{description}</CardDescription>
+          <CardDescription data-testid={'vaultDescription'}>
+            {description}
+          </CardDescription>
         </CardHeaderContent>
         <VaultIconWrapper>{illustration}</VaultIconWrapper>
       </CardHeader>
@@ -171,7 +179,7 @@ export const VaultCard: React.FC<VaultCardProps> = ({
         )}
       </CardStats>
       {warning && <VaultWarning>{warning}</VaultWarning>}
-      <CardCta>
+      <CardCta data-testid={'vaultButton'}>
         <LocalLink href={depositHref} onClick={depositLinkCallback}>
           <Button fullwidth variant="translucent">
             {ctaLabel}
