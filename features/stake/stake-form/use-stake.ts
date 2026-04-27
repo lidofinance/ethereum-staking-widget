@@ -3,7 +3,7 @@ import invariant from 'tiny-invariant';
 
 import { config, useConfig } from 'config';
 import {
-  applyRoundUpGasLimit,
+  applyRoundUpTxParameter,
   useDappStatus,
   useLidoSDK,
   useAA,
@@ -80,7 +80,7 @@ export const useStake = ({ onConfirm, onRetry }: StakeOptions) => {
           },
           onSign: async ({ payload }) => {
             txModalStages.sign(amount);
-            return applyRoundUpGasLimit(
+            return applyRoundUpTxParameter(
               (payload as bigint) ?? config.STAKE_GASLIMIT_FALLBACK,
             );
           },

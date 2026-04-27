@@ -7,7 +7,7 @@ import {
   useLidoSDK,
   useDappStatus,
   AACall,
-  applyRoundUpGasLimit,
+  applyRoundUpTxParameter,
 } from 'modules/web3';
 import { MATOMO_EVENT_TYPE } from 'consts/matomo';
 import { trackMatomoEvent } from 'utils/track-matomo-event';
@@ -59,7 +59,7 @@ export const useWithdraw = ({
           sendTransaction: async (txStagesCallback) => {
             await core.performTransaction({
               getGasLimit: async (opts) =>
-                applyRoundUpGasLimit(
+                applyRoundUpTxParameter(
                   await redeemQueue.estimateGas.redeem(withdrawArgs, {
                     ...opts,
                   }),

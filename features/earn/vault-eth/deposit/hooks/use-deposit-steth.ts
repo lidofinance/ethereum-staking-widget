@@ -9,7 +9,7 @@ import invariant from 'tiny-invariant';
 
 import {
   AACall,
-  applyRoundUpGasLimit,
+  applyRoundUpTxParameter,
   Erc20AllowanceAbi,
   useDappStatus,
   useLidoSDK,
@@ -184,7 +184,7 @@ export const useEthVaultDepositSteth = (onRetry?: () => void) => {
             // Step 4: Deposit wstETH into queue
             await core.performTransaction({
               getGasLimit: async (opts) =>
-                applyRoundUpGasLimit(
+                applyRoundUpTxParameter(
                   await depositQueue.estimateGas.deposit(depositArgs, opts),
                 ),
               sendTransaction: (opts) =>
