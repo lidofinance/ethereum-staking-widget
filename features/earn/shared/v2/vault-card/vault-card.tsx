@@ -159,7 +159,7 @@ export const VaultCard: React.FC<VaultCardProps> = ({
                   symbol={position.sharesSymbol}
                   decimals={getTokenDecimals(position.sharesSymbol)}
                 />
-                . Shown in ${position.baseSymbol} at current conversion rates.
+                . Shown in {position.baseSymbol} at current conversion rates.
               </VaultTip>
             </StatLabel>
             <StatValue>
