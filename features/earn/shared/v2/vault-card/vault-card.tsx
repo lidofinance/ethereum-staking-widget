@@ -161,7 +161,7 @@ export const VaultCard: React.FC<VaultCardProps> = ({
               My deposit
               <VaultTip
                 placement="bottomLeft"
-                style={{ position: 'relative', zIndex: 2 }}
+                style={{ position: 'relative', zIndex: 20 }}
               >
                 You hold{' '}
                 <FormatToken

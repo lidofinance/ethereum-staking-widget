@@ -121,8 +121,8 @@ export const LegacyVaultCard: React.FC<LegacyVaultCardProps> = ({
           <StatLabel>
             {stats.apxLabel}
             <VaultTip
-              placement="bottom"
-              style={{ position: 'relative', zIndex: 2 }}
+              placement="bottomLeft"
+              style={{ position: 'relative', zIndex: 20 }}
             >
               {stats.apxHint}
             </VaultTip>
@@ -146,8 +146,8 @@ export const LegacyVaultCard: React.FC<LegacyVaultCardProps> = ({
             <StatLabel>
               My balance
               <VaultTip
-                placement="bottom"
-                style={{ position: 'relative', zIndex: 2 }}
+                placement="bottomLeft"
+                style={{ position: 'relative', zIndex: 20 }}
               >
                 You hold{' '}
                 <FormatToken
