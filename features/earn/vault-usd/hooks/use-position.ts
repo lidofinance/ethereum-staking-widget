@@ -60,7 +60,7 @@ export const useUsdVaultPosition = () => {
 
   return {
     ...earnusdBalanceQuery,
-    isLoading: earnusdBalanceQuery.isLoading || earnusdToUsdcQuery.isLoading,
+    isLoading: earnusdBalanceQuery.isLoading || earnusdToUsdcQuery.isPending,
     data,
     earnusdSharesBalance: data?.earnusdSharesBalance,
     usdQuery,

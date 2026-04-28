@@ -63,7 +63,10 @@ export const useEthVaultPosition = () => {
 
   return {
     ...earnethBalanceQuery,
-    isLoading: earnethBalanceQuery.isLoading || earnethToWstethQuery.isLoading,
+    isLoading:
+      earnethBalanceQuery.isLoading ||
+      earnethToWstethQuery.isPending ||
+      usdQuery.isLoading,
     data,
     earnethSharesBalance: data?.earnethSharesBalance,
     usdQuery,
