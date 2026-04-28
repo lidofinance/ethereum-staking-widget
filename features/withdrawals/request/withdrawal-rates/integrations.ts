@@ -21,7 +21,7 @@ import {
 } from './icons';
 
 import type {
-  DexWithdrawalApi,
+  ManifestConfigDex,
   DexWithdrawalIntegrationMap,
   GetRateType,
 } from './types';
@@ -205,7 +205,7 @@ const dexWithdrawalMap: DexWithdrawalIntegrationMap = {
         getTokenAddress(CHAINS.Mainnet, token) as string
       }&toChain=1&toToken=0x0000000000000000000000000000000000000000`,
   },
-} as const;
+};
 
-export const getDexConfig = (dexKey: DexWithdrawalApi) =>
+export const getDexConfig = (dexKey: ManifestConfigDex) =>
   dexWithdrawalMap[dexKey];

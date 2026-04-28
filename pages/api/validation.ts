@@ -42,7 +42,7 @@ if (!secretConfig.validationAPI) {
       const manifestConfig = await getExternalConfig();
 
       // default to version 1 if not set
-      const version = manifestConfig?.config.api?.validation?.version || '1';
+      const version = manifestConfig.api?.validation?.version || '1';
 
       const validatedAddress = validateEthereumAddress(req.query.address);
       if (!validatedAddress) throw new Error('Invalid address'); // This will be caught by the handler
