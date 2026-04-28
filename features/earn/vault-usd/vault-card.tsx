@@ -1,6 +1,5 @@
 import { VaultUsdIcon } from 'assets/earn-v2';
 import { trackMatomoEvent } from 'utils/track-matomo-event';
-import { getTokenIcon } from 'utils/get-token-icon';
 import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo';
 
 import { VaultCard } from '../shared/v2/vault-card';
@@ -14,6 +13,7 @@ import {
   USD_VAULT_TITLE,
   USD_VAULT_TOKEN_SYMBOL,
 } from './consts';
+import { TOKEN_SYMBOLS } from 'consts/tokens';
 import { useUsdVaultPosition } from './hooks/use-position';
 import { ProtectedTooltip } from './protected-tooltip';
 import { useUsdVaultAvailable } from './hooks/use-vault-available';
@@ -21,8 +21,11 @@ import { useUsdVaultAvailable } from './hooks/use-vault-available';
 export const UsdVaultCard = () => {
   const { apy, isLoading: isApyLoading } = useUsdVaultApy();
   const { tvlUsd, isLoading: isTvlLoading } = useUsdVaultStats();
-  const { data: usdPositionData, isLoading: isPositionLoading } =
-    useUsdVaultPosition();
+  const {
+    data: usdPositionData,
+    isLoading: isPositionLoading,
+    usdcAmount,
+  } = useUsdVaultPosition();
   const { listWarningText } = useUsdVaultAvailable();
 
   const sharesBalance = usdPositionData?.earnusdSharesBalance;
@@ -40,9 +43,10 @@ export const UsdVaultCard = () => {
         isLoading: isApyLoading || isTvlLoading,
       }}
       position={{
-        balance: sharesBalance,
-        symbol: USD_VAULT_TOKEN_SYMBOL,
-        icon: getTokenIcon(USD_VAULT_TOKEN_SYMBOL),
+        sharesBalance,
+        sharesSymbol: USD_VAULT_TOKEN_SYMBOL,
+        baseAmount: usdcAmount,
+        baseSymbol: TOKEN_SYMBOLS.usdc,
         isLoading: isPositionLoading,
       }}
       ctaLabel={sharesBalance && sharesBalance > 0n ? 'Manage' : 'Deposit'}

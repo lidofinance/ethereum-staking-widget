@@ -15,6 +15,7 @@ import { useInpageNavigation } from 'providers/inpage-navigation';
 
 import { VaultChart } from '../vault-chart';
 
+import type { VaultBalanceProp } from './content/top-section';
 import { SidePanel } from './side-panel';
 import { VaultPageContent } from './content';
 import { TopSection } from './content/top-section';
@@ -62,6 +63,7 @@ type Props = {
   riskDisclosure: ReactNode;
   strategyContent?: ReactNode;
   faqContent?: ReactNode;
+  balance?: VaultBalanceProp;
   matomo?: {
     performanceTabEvent?: MATOMO_EVENT_TYPE;
     strategyTabEvent?: MATOMO_EVENT_TYPE;
@@ -131,6 +133,7 @@ export const VaultPage: FC<Props> = (props) => {
           isApxLoading={props.isApxLoading}
           isTvlLoading={props.isTvlLoading}
           protectedBadgeTooltipText={protectedBadgeTooltipText}
+          balance={props.balance}
         />
         <VaultPageContent>
           <TabsStyled>
