@@ -143,23 +143,7 @@ export const LegacyVaultCard: React.FC<LegacyVaultCardProps> = ({
         </StatItem>
         {!!position?.sharesBalance && (
           <StatItem>
-            <StatLabel>
-              My balance
-              <VaultTip
-                placement="bottomLeft"
-                style={{ position: 'relative', zIndex: 20 }}
-              >
-                You hold{' '}
-                <FormatToken
-                  trimEllipsis
-                  amount={position.sharesBalance}
-                  symbol={position.sharesSymbol}
-                  decimals={getTokenDecimals(position.sharesSymbol)}
-                />
-                .{' '}
-                {`Shown in ${position.sharesSymbol} at current conversion rates.`}
-              </VaultTip>
-            </StatLabel>
+            <StatLabel>My position</StatLabel>
             <StatValue>
               <InlineLoader width={32} isLoading={position.isLoading}>
                 <FormatToken
