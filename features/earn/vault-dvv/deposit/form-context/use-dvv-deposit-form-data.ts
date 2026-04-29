@@ -13,6 +13,7 @@ import {
 } from '../types';
 import { useAwaiter } from 'shared/hooks/use-awaiter';
 import { useQueryClient } from '@tanstack/react-query';
+import { ETH_VAULT_QUERY_SCOPE } from 'features/earn/vault-eth/consts';
 
 export const useDVVDepositFormData = () => {
   const queryClient = useQueryClient();
@@ -66,6 +67,10 @@ export const useDVVDepositFormData = () => {
         tokenBalanceRefetch(options),
         // refetch all DVV related queries
         queryClient.refetchQueries({ queryKey: ['dvv'] }, options),
+        queryClient.refetchQueries(
+          { queryKey: [ETH_VAULT_QUERY_SCOPE] },
+          options,
+        ),
       ]);
     },
     [queryClient, ethBalanceQuery.refetch, wethBalanceQuery.refetch],

@@ -4,6 +4,7 @@ import { encodeFunctionData, type WalletClient } from 'viem';
 import { useQueryClient } from '@tanstack/react-query';
 
 import { AACall, useDappStatus, useLidoSDK, useTxFlow } from 'modules/web3';
+import { ETH_VAULT_QUERY_SCOPE } from 'features/earn/vault-eth/consts';
 
 import { getGGVQueueWritableContract } from '../../contracts';
 import { useGGVPosition } from '../../hooks/use-ggv-position';
@@ -80,6 +81,10 @@ export const useGGVCancelWithdraw = () => {
             const [newBalance] = await Promise.all([
               positionQuery.refetch(opts),
               queryClient.refetchQueries({ queryKey: ['ggv'] }, opts),
+              queryClient.refetchQueries(
+                { queryKey: [ETH_VAULT_QUERY_SCOPE] },
+                opts,
+              ),
             ]);
             return txModalStages.success(
               newBalance.data?.sharesBalance as bigint,
@@ -98,6 +103,10 @@ export const useGGVCancelWithdraw = () => {
 
         await Promise.all([
           queryClient.refetchQueries({ queryKey: ['ggv'] }, opts),
+          queryClient.refetchQueries(
+            { queryKey: [ETH_VAULT_QUERY_SCOPE] },
+            opts,
+          ),
           positionQuery.refetch(opts),
         ]);
       } catch (error) {

@@ -3,6 +3,7 @@ import { useQueryClient } from '@tanstack/react-query';
 
 import { useAwaiter } from 'shared/hooks/use-awaiter';
 import { useDappStatus } from 'modules/web3';
+import { ETH_VAULT_QUERY_SCOPE } from 'features/earn/vault-eth/consts';
 
 import { useGGVPosition } from '../../hooks/use-ggv-position';
 import { useGGVWithdrawalRequests } from '../hooks/use-ggv-withdrawal-requests';
@@ -109,6 +110,10 @@ export const useGGVWithdrawFormData = () => {
       balanceQuery.refetch(options),
       // refetch all GGV related queries
       queryClient.refetchQueries({ queryKey: ['ggv'] }, options),
+      queryClient.refetchQueries(
+        { queryKey: [ETH_VAULT_QUERY_SCOPE] },
+        options,
+      ),
     ]);
   }, [balanceQuery, queryClient]);
 

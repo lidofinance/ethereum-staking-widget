@@ -46,7 +46,6 @@ const getMatomoEventForToken = (token: EthDepositTokenUpgradable) => {
 };
 
 type UpgradeArgs = {
-  amount: bigint;
   token: EthDepositTokenUpgradable;
 };
 
@@ -60,20 +59,21 @@ export const UpgradeAssetsBlock = () => {
   const { deposit } = useEthVaultDeposit();
 
   const upgrade = useCallback(
-    async ({
-      // TODO: consider getting amount inside upgrade function
-      amount,
-      token,
-    }: UpgradeArgs) => {
-      const depositAmount = overrideWithQAMockBigInt(
-        amount ?? 0n,
-        'mock-qa-helpers-earn-eth-upgrade-amount',
-      );
-
-      if (!depositAmount) return;
+    async ({ token }: UpgradeArgs) => {
       setIsUpgrading(true);
 
       try {
+        const balancesQuery = await refetchBalances();
+        if (!balancesQuery.isSuccess) return;
+
+        const balanceAmount = balancesQuery.data?.[token] ?? 0n;
+        const depositAmount = overrideWithQAMockBigInt(
+          balanceAmount,
+          'mock-qa-helpers-earn-eth-upgrade-amount',
+        );
+
+        if (!depositAmount) return;
+
         const isDepositSuccessful = await deposit({
           amount: depositAmount,
           token,
@@ -137,7 +137,6 @@ export const UpgradeAssetsBlock = () => {
             onClick={() =>
               upgrade({
                 token,
-                amount: balances[token] as bigint,
               })
             }
             loading={isUpgrading}

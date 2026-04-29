@@ -3,6 +3,7 @@ import { encodeFunctionData, WalletClient } from 'viem';
 import { useQueryClient } from '@tanstack/react-query';
 import invariant from 'tiny-invariant';
 import { useDappStatus, useLidoSDK, useTxFlow } from 'modules/web3';
+import { ETH_VAULT_QUERY_SCOPE } from 'features/earn/vault-eth/consts';
 import { getSTGVaultWritableContract } from '../../contracts';
 import { useTxModalStagesSTGDepositClaim } from './use-stg-deposit-claim-tx-modal';
 import { trackMatomoEvent } from 'utils/track-matomo-event';
@@ -64,10 +65,14 @@ export const useSTGDepositClaim = (onRetry?: () => void) => {
           onSuccess: async ({ txHash }) => {
             txModalStages.success(amount, txHash);
             trackMatomoEvent(MATOMO_EARN_EVENTS_TYPES.strategyDepositClaim);
-            await queryClient.refetchQueries(
-              { queryKey: ['stg'] },
-              { cancelRefetch: true, throwOnError: false },
-            );
+            const options = { cancelRefetch: true, throwOnError: false };
+            await Promise.all([
+              queryClient.refetchQueries({ queryKey: ['stg'] }, options),
+              queryClient.refetchQueries(
+                { queryKey: [ETH_VAULT_QUERY_SCOPE] },
+                options,
+              ),
+            ]);
           },
         });
 
