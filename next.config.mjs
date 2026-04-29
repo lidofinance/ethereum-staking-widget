@@ -130,11 +130,16 @@ export default withBundleAnalyzer({
       },
     );
 
-    // Fixes warning about missing dependency @react-native-async-storage/async-storage,
-    // which comes from @metamask/sdk v0.33.1
-    // See https://github.com/MetaMask/metamask-sdk/issues/1376
     config.resolve.fallback = {
+      // Fixes warning about missing dependency @react-native-async-storage/async-storage,
+      // which comes from @metamask/sdk v0.33.1
+      // See https://github.com/MetaMask/metamask-sdk/issues/1376
       '@react-native-async-storage/async-storage': false,
+      // These wallet connectors are not used on the widget and are optional in wagmi v3,
+      // but webpack still tries to resolve them, causing warnings about missing dependencies.
+      porto: false,
+      '@gemini-wallet/core': false,
+      '@base-org/account': false,
     };
 
     // Alias exact 'zod' imports to a wrapper that disables Zod's eval-based JIT
