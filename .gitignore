@@ -7,12 +7,12 @@
 .yalc
 yalc.lock
 tsconfig.tsbuildinfo
-
+dist
 # playwright 
 /test-results/
 /playwright-report/
 /playwright/.cache/
-
+.env
 # testing
 /coverage
 
@@ -25,6 +25,7 @@ tsconfig.tsbuildinfo
 
 # production
 /build
+/.buildx-cache
 
 # misc
 .DS_Store

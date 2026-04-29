@@ -1,9 +1,12 @@
+import { config } from './config';
+
 interface Window {
   // see _document.js for definition
   _paq: undefined | [string, ...unknown[]][];
 }
 
 declare module '*.svg' {
+  import * as React from 'react';
   /**
    * Use `any` to avoid conflicts with
    * `@svgr/webpack` plugin or
@@ -21,11 +24,11 @@ declare module 'next/config' {
     // some properties may be confusing, but that's okay - "serverRuntimeConfig" accepts "process.env" without modification and/or validation.
     // see: config/get-secret-config.ts
     serverRuntimeConfig: {
-      basePath: string | undefined;
+      basePath: string;
       developmentMode: boolean;
-      devnetOverrides: string;
+      devnetOverrides: string | undefined;
 
-      defaultChain: string;
+      defaultChain: string | undefined;
       rpcUrls_1: string | undefined;
       rpcUrls_17000: string | undefined;
       rpcUrls_560048: string | undefined;
@@ -53,10 +56,31 @@ declare module 'next/config' {
       basePath: string | undefined;
       developmentMode: boolean;
       collectMetrics: boolean;
+      ipfsMode: boolean;
+      defaultChain: number;
+      selfOrigin: string;
+      ethAPIBasePath: string;
+      researchOrigin: string;
+      rootOrigin: string;
+      docsOrigin: string;
+      supportedChains: number[];
+      addressApiValidationEnabled: boolean;
+      rewardsBackendBasePath: string | undefined;
+      prefillUnsafeElRpcUrls1: string;
+      prefillUnsafeElRpcUrls17000: string;
+      prefillUnsafeElRpcUrls560048: string;
+      prefillUnsafeElRpcUrls11155111: string;
+      prefillUnsafeElRpcUrls10: string;
+      prefillUnsafeElRpcUrls11155420: string;
+      prefillUnsafeElRpcUrls1868: string;
+      prefillUnsafeElRpcUrls1946: string;
+      prefillUnsafeElRpcUrls130: string;
+      prefillUnsafeElRpcUrls1301: string;
+
+      walletconnectProjectId: config.walletconnectProjectId;
     };
   };
-
-  declare const getConfig: ConfigTypes;
-
-  export default getConfig;
 }
+declare const getConfig: ConfigTypes;
+
+export default getConfig;

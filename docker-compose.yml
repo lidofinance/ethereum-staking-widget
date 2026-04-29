@@ -1,0 +1,80 @@
+version: '3.9'
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: ["/app/infra/api/entrypoint.sh"]
+    env_file:
+      - .env.local
+    environment:
+      - NODE_ENV=production
+      - API_PORT=4000
+      - PORT=4000
+    expose:
+      - "4000"
+    volumes:
+      - widget-dist:/app/dist
+
+  scheduler:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: ["/app/infra/scheduler/entrypoint.sh"]
+    env_file:
+      - .env.local
+    environment:
+      - NODE_ENV=production
+      - SCHEDULER_PORT=3001
+    expose:
+      - "3001"
+    volumes:
+      - widget-dist:/app/dist
+
+  ssr:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: ["yarn", "start"]
+    env_file:
+      - .env.local
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+    expose:
+      - "3000"
+
+  server:
+    image: nginx:1.25.5-alpine
+    ports:
+      - "3005:80"
+    environment:
+      - API_URL=http://api:4000
+      - SCHEDULER_URL=http://scheduler:3001
+      - EARN_URL=http://ssr:3000
+      - HEADER_CACHE_CONTROL=public, max-age=0, must-revalidate
+      - HEADER_X_CONTENT_TYPE_OPTIONS=nosniff
+      - HEADER_X_DNS_PREFETCH_CONTROL=off
+      - HEADER_X_DOWNLOAD_OPTIONS=noopen
+      - HEADER_X_XSS_PROTECTION=1; mode=block
+    volumes:
+      - widget-dist:/app/dist:ro
+      - ./infra/server/default.conf.template:/etc/nginx/templates/default.conf.template:ro
+    depends_on:
+      - api
+      - scheduler
+      - ssr
+
+  pushgateway:
+    image: prom/pushgateway:v1.8.0
+    ports:
+      - "9091:9091"
+
+volumes:
+  widget-dist:
+
+networks:
+  backend:
+  traefik-public:
+    external: true

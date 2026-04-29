@@ -1,25 +1,21 @@
-import getConfigNext from 'next/config';
-import { default as dynamics } from './dynamics';
+import getConfig from 'next/config';
 
-const { publicRuntimeConfig, serverRuntimeConfig } = getConfigNext();
+const { publicRuntimeConfig } = getConfig();
 
 export type PreConfigType = {
   BASE_PATH_ASSET: string;
-} & typeof publicRuntimeConfig &
-  typeof dynamics;
+} & typeof publicRuntimeConfig;
 
 // `getPreConfig()` needs for internal using in 'config/groups/*'
 // Do not use `getPreConfig()` outside of 'config/groups/*'
 export const getPreConfig = (): PreConfigType => {
-  const BASE_PATH_ASSET = dynamics.ipfsMode
+  const BASE_PATH_ASSET = (publicRuntimeConfig as any).ipfsMode
     ? '.'
-    : (serverRuntimeConfig.basePath ?? '') ||
-      (publicRuntimeConfig.basePath ?? '');
+    : publicRuntimeConfig.basePath || '';
 
   return {
     BASE_PATH_ASSET,
     ...publicRuntimeConfig,
-    ...dynamics,
   };
 };
 

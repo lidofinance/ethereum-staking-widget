@@ -1,12 +1,11 @@
 import NextBundleAnalyzer from '@next/bundle-analyzer';
-import buildDynamics from './scripts/build-dynamics.mjs';
 import { logEnvironmentVariables } from './scripts/log-environment-variables.mjs';
 import generateBuildId from './scripts/generate-build-id.mjs';
 import { startupCheckRPCs } from './scripts/startup-checks/rpc.mjs';
 import { startupCheckValidationFile } from './scripts/startup-checks/validation-file.mjs';
+import { clientConfig, serverConfig } from './env-dynamics.mjs';
 
 logEnvironmentVariables();
-buildDynamics();
 
 if (process.env.RUN_STARTUP_CHECKS === 'true') {
   void startupCheckRPCs();
@@ -16,10 +15,7 @@ if (process.env.RUN_STARTUP_CHECKS === 'true') {
 // https://nextjs.org/docs/pages/api-reference/next-config-js/basePath
 const basePath = process.env.BASE_PATH;
 
-const developmentMode = process.env.NODE_ENV === 'development';
 const isIPFSMode = process.env.IPFS_MODE === 'true';
-const devnetOverrides = process.env.DEVNET_OVERRIDES;
-
 // cache control
 export const CACHE_CONTROL_HEADER = 'x-cache-control';
 export const CACHE_CONTROL_PAGES = [
@@ -42,6 +38,7 @@ const withBundleAnalyzer = NextBundleAnalyzer({
 });
 
 export default withBundleAnalyzer({
+  env: clientConfig,
   basePath,
   generateBuildId,
 
@@ -59,6 +56,10 @@ export default withBundleAnalyzer({
   },
   compiler: {
     styledComponents: true,
+  },
+  images: {
+    // Required for static export.
+    unoptimized: true,
   },
   experimental: {
     // Fixes a build error with importing Pure ESM modules, e.g. reef-knot
@@ -138,55 +139,9 @@ export default withBundleAnalyzer({
       })),
     ];
   },
-  redirects: () => [
-    {
-      source: '/withdrawals',
-      destination: '/withdrawals/request',
-      permanent: false,
-    },
-  ],
+  // ATTENTION: If you add a new variable you should declare it in `global.d.ts`
+  serverRuntimeConfig: serverConfig,
 
   // ATTENTION: If you add a new variable you should declare it in `global.d.ts`
-  serverRuntimeConfig: {
-    // https://nextjs.org/docs/pages/api-reference/next-config-js/basePath
-    basePath,
-    developmentMode,
-    devnetOverrides,
-
-    // ETH rpcs
-    defaultChain: process.env.DEFAULT_CHAIN,
-    manifestOverride: process.env.MANIFEST_OVERRIDE,
-    rpcUrls_1: process.env.EL_RPC_URLS_1,
-    rpcUrls_17000: process.env.EL_RPC_URLS_17000,
-    rpcUrls_11155111: process.env.EL_RPC_URLS_11155111,
-    rpcUrls_560048: process.env.EL_RPC_URLS_560048,
-    // Optimism rpcs
-    rpcUrls_10: process.env.EL_RPC_URLS_10,
-    rpcUrls_11155420: process.env.EL_RPC_URLS_11155420,
-    // Soneium rpcs
-    rpcUrls_1868: process.env.EL_RPC_URLS_1868,
-    rpcUrls_1946: process.env.EL_RPC_URLS_1946,
-    // Unichain rpcs
-    rpcUrls_130: process.env.EL_RPC_URLS_130,
-    rpcUrls_1301: process.env.EL_RPC_URLS_1301,
-
-    cspTrustedHosts: process.env.CSP_TRUSTED_HOSTS,
-    cspReportUri: process.env.CSP_REPORT_URI,
-    cspReportOnly: process.env.CSP_REPORT_ONLY,
-
-    rateLimit: process.env.RATE_LIMIT,
-    rateLimitTimeFrame: process.env.RATE_LIMIT_TIME_FRAME,
-
-    ethAPIBasePath: process.env.ETH_API_BASE_PATH,
-    rewardsBackendAPI: process.env.REWARDS_BACKEND,
-    validationAPI: process.env.VALIDATION_SERVICE_BASE_PATH,
-    validationFilePath: process.env.VALIDATION_FILE_PATH,
-  },
-
-  // ATTENTION: If you add a new variable you should declare it in `global.d.ts`
-  publicRuntimeConfig: {
-    basePath,
-    developmentMode,
-    collectMetrics: process.env.COLLECT_METRICS === 'true',
-  },
+  publicRuntimeConfig: clientConfig,
 });

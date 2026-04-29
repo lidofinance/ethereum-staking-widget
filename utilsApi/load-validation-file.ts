@@ -1,9 +1,6 @@
 import { promises as fs } from 'fs';
 import Metrics from 'utilsApi/metrics';
 import { config } from 'config';
-import getConfigNext from 'next/config';
-
-const { serverRuntimeConfig } = getConfigNext();
 
 export interface AddressValidationFile {
   addresses: string[];
@@ -23,11 +20,7 @@ const isValidValidationFile = (
 };
 
 const getValidationFilePath = (): string | undefined => {
-  return (
-    process.env.VALIDATION_FILE_PATH ||
-    config.validationFilePath ||
-    serverRuntimeConfig.validationFilePath
-  );
+  return process.env.VALIDATION_FILE_PATH || config.validationFilePath;
 };
 
 export const loadValidationFile = async (): Promise<AddressValidationFile> => {

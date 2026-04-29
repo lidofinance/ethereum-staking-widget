@@ -1,39 +1,24 @@
-# build env
-FROM node:20-alpine as build
+FROM node:20-alpine
 
 WORKDIR /app
 
 RUN apk add --no-cache git=~2
+
 COPY package.json yarn.lock ./
-
 RUN yarn install --frozen-lockfile --non-interactive --ignore-scripts && yarn cache clean
+
 COPY . .
-RUN NODE_NO_BUILD_DYNAMICS=true yarn build
-# public/runtime is used to inject runtime vars; it should exist and user node should have write access there for it
-RUN rm -rf /app/public/runtime && mkdir /app/public/runtime && chown node /app/public/runtime
 
-# final image
-FROM node:20-alpine as base
+ENV NODE_OPTIONS=--max-old-space-size=6144
+ENV NEXT_TELEMETRY_DISABLED=1
 
-ARG BASE_PATH=""
-ARG SUPPORTED_CHAINS="1"
-ARG DEFAULT_CHAIN="1"
+RUN mkdir -p /app/dist /app/public/runtime /app/.next/cache \
+  && rm -rf /app/public/runtime/* \
+  && chmod 0777 /app/dist /app/public/runtime /app/.next /app/.next/cache \
+  && chmod +x /app/infra/api/entrypoint.sh /app/infra/scheduler/entrypoint.sh
 
-ENV NEXT_TELEMETRY_DISABLED=1 \
-  BASE_PATH=$BASE_PATH \
-  SUPPORTED_CHAINS=$SUPPORTED_CHAINS \
-  DEFAULT_CHAIN=$DEFAULT_CHAIN
+RUN yarn build
+RUN yarn build:api
+RUN yarn build:scheduler
 
-WORKDIR /app
-RUN apk add --no-cache curl=~8 
-    
-COPY --from=build /app /app
-RUN chown -R node:node /app/.next
-
-USER node
-EXPOSE 3000
-
-HEALTHCHECK --interval=10s --timeout=3s \
-  CMD curl -f http://localhost:3000/api/health || exit 1
-
-CMD ["yarn", "start"]
+CMD ["/app/infra/api/entrypoint.sh"]

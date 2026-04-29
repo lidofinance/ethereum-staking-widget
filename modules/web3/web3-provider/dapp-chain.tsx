@@ -141,7 +141,7 @@ export const SupportL2Chains: React.FC<React.PropsWithChildren> = ({
             : undefined,
 
           isChainIdOnL2: isSDKSupportedL2Chain(chainId) ?? false,
-          supportedChainIds: config.supportedChains.filter((chain) =>
+          supportedChainIds: config.supportedChains.filter((chain: number) =>
             isSDKSupportedChain(chain),
           ),
         }),
@@ -200,7 +200,7 @@ export const SupportL1Chains: React.FC<React.PropsWithChildren> = ({
           // only L1 chains
           isChainIdOnL2: false,
           supportedChainIds: config.supportedChains.filter(
-            (chain) =>
+            (chain: number) =>
               isSDKSupportedChain(chain) && !isSDKSupportedL2Chain(chain),
           ),
         }),

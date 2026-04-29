@@ -1,10 +1,10 @@
-import getConfigNext from 'next/config';
 import { type Modify, toBoolean } from './helpers';
+import getConfig from 'next/config';
 
-const { serverRuntimeConfig } = getConfigNext();
+const { serverRuntimeConfig } = getConfig();
 
 export type SecretConfigType = Modify<
-  typeof serverRuntimeConfig,
+  typeof process.env,
   {
     defaultChain: number;
 

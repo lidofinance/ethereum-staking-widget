@@ -1,14 +1,7 @@
 import { GetStaticPaths } from 'next';
-import { useRouter } from 'next/router';
-import { useEffect } from 'react';
-import { EARN_PATH } from 'consts/urls';
 import { getDefaultStaticProps } from 'utilsApi/get-default-static-props';
 
-import {
-  EARN_VAULT_DEPOSIT_SLUG,
-  EARN_VAULTS,
-  EarnVaultKey,
-} from 'features/earn/consts';
+import { EARN_VAULTS, EarnVaultKey } from 'features/earn/consts';
 
 type PageParams = {
   vault: EarnVaultKey;
@@ -37,9 +30,10 @@ export const getStaticProps = getDefaultStaticProps(
 );
 
 export default function VaultRedirect({ vault }: PageParams) {
-  const router = useRouter();
-  useEffect(() => {
-    void router.replace(`${EARN_PATH}/${vault}/${EARN_VAULT_DEPOSIT_SLUG}`);
-  }, [router, vault]);
-  return null;
+  return (
+    <div>
+      This route is redirected to the default vault action by Nginx. Requested
+      vault: {vault}
+    </div>
+  );
 }

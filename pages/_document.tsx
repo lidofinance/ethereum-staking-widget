@@ -130,8 +130,6 @@ export default class MyDocument extends Document {
           <Fonts />
           <LidoUIHead />
           <InsertIpfsBaseScript />
-          {/* eslint-disable-next-line @next/next/no-sync-scripts */}
-          <script src={`${config.BASE_PATH_ASSET}/runtime/window-env.js`} />
         </Head>
         <body>
           <Main />

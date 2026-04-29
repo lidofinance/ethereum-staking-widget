@@ -1,4 +1,5 @@
 import { config } from 'config';
+import { API_ROUTES } from '../../../consts/api';
 
 export type BackendQuery = {
   address: string;
@@ -18,7 +19,7 @@ export const backendRequest = async (query: BackendQuery) => {
   if (config.ipfsMode) {
     apiRewardsUrl = `${config.rewardsBackendBasePath}?${params.toString()}`;
   } else {
-    apiRewardsUrl = `/api/rewards?${params.toString()}`;
+    apiRewardsUrl = `/${API_ROUTES.REWARDS}?${params.toString()}`;
   }
 
   const requested = await fetch(apiRewardsUrl);

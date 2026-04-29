@@ -1,0 +1,138 @@
+version: "3"
+
+services:
+  landing-scheduler:
+    image: lidofinance/landing{{ landing_image_tag }}
+    entrypoint: ["infra/scheduler/entrypoint.sh"]
+    labels:
+      - "prometheus-job=landing-scheduler"
+      - "prometheus-port=3000"
+      - "prometheus-endpoint=/metrics" # custom metrics path
+    deploy:
+      resources:
+        limits:
+          cpus: "{{ landing_scheduler_cpu_limit }}"
+          memory: "{{ landing_scheduler_mem_limit }}"
+    volumes:
+      - "landing-assets:/app/dist"
+      - "landing-datacache:/app/cache"
+      - "landing-nginx-conf:/app/infra/server"
+    networks:
+      - backend
+    environment:
+      - APP_ENV="preview"
+      - NODE_OPTIONS="--max-old-space-size=4096"
+      - PUSHGATEWAY=http://landing-pushgateway:9091
+      - LANDING_URL={{ landing_landing_url }}
+      - V3_LANDING_URL={{ landing_v3_landing_url }}
+      - ETHEREUM_API_URL={{ landing_ethereum_api_url }}
+      - ETHEREUM_STAKE_URL={{ landing_ethereum_stake_url }}
+      - ETHEREUM_DOCS_URL={{ landing_ethereum_docs_url }}
+      - OPERATORPORTAL_URL={{ landing_operatorportal_url }}
+      - DG_URL={{ landing_dg_url }}
+      - VOTE_URL={{ landing_vote_url }}
+      - EASYTRACK_URL={{ landing_easytrack_url }}
+      - HELP_URL={{ landing_help_url }}
+      - OPPORTUNITIES_URL={{ landing_opportunities_url }}
+      - DAO_AGREEMENTS_URL={{ landing_dao_agreements_url }}
+      - RESEARCH_URL={{ landing_research_url }}
+      - BLOG_URL={{ landing_blog_url }}
+      - LEGO_URL={{ landing_lego_url }}
+      - FEES_MONITORING_URL={{ landing_fees_monitoring_url }}
+      - MATOMO_URL={{ landing_matomo_url }}
+      - ACTIVE_CHAIN_ID={{ landing_active_chain_id }}
+      - CONTENT_URL={{ landing_content_url }}
+  {% if landing_subgraph_lido_url|d(False) %}
+- SECRET_SUBGRAPH_LIDO_URL={{ landing_subgraph_lido_url }}
+  {% endif %}
+  {% if landing_chainstack_lido_url|d(False) %}
+- SECRET_CHAINSTACK_URL={{ landing_chainstack_lido_url }}
+  {% endif %}
+- RPC_URLS_1={{ landing_el_rpc_urls_1 | join(',') }}
+  {% if landing_el_rpc_urls_560048|d(False) %}
+- RPC_URLS_560048={{ landing_el_rpc_urls_560048 | join(',') }}
+  {% endif %}
+- DUNE_API_KEY={{ landing_dune_api_key }}
+- SECRET_GHOST_CONTENT_API_KEY={{ landing_ghost_content_api_key }}
+- USE_LOCAL_CONTENT={{ landing_use_local_content }}
+- CLONE_CONTENT_REPO={{ landing_clone_content_repo }}
+- PATH_TO_LOCAL_CONTENT={{ landing_path_to_local_content }}
+  {% if landing_operators_url|d(False) %}
+- OPERATORPORS_URL={{ landing_operators_url }}
+  {% endif %}
+
+landing-pushgateway:
+  image: prom/pushgateway:v1.8.0
+  labels:
+    - "prometheus-job=landing-pushgateway"
+  deploy:
+    resources:
+      limits:
+        cpus: "{{ landing_pushgateway_cpu_limit }}"
+        memory: "{{ landing_pushgateway_mem_limit }}"
+  networks:
+    - backend
+
+landing-api:
+  image: lidofinance/landing{{ landing_image_tag }}
+  entrypoint: ["infra/api/entrypoint.sh"]
+  labels:
+    - "prometheus-job=landing-api"
+    - "prometheus-endpoint=/api/metrics" # custom metrics path
+  deploy:
+    resources:
+      limits:
+        cpus: "{{ landing_api_cpu_limit }}"
+        memory: "{{ landing_api_mem_limit }}"
+  networks:
+    - backend
+
+server:
+  image: nginx:1.25.5-alpine
+  deploy:
+    resources:
+      limits:
+        cpus: "{{ landing_server_cpu_limit }}"
+        memory: "{{ landing_server_mem_limit }}"
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=traefik-public
+      - traefik.constraint-label=traefik-public
+      - traefik.http.routers.landing{{ landing_image_tag }}.entrypoints=https
+      - traefik.http.routers.landing{{ landing_image_tag }}.tls=true
+      - traefik.http.routers.landing{{ landing_image_tag }}.middlewares=admin-auth,https-redirect
+      - traefik.http.services.landing{{ landing_image_tag }}.loadbalancer.server.port=3000
+  # Hack for wait start landing-scheduler container
+  entrypoint: ["/bin/sh", "-c"]
+  command: >
+    "echo 'Start sleep 20' && sleep 20 &&
+    /docker-entrypoint.sh nginx -g 'daemon off;'"
+  volumes:
+    - landing-assets:/app/dist
+    - landing-nginx-conf:/etc/nginx/templates
+  networks:
+    - backend
+    - traefik-public
+  environment:
+    API_URL: http://landing-api:3000
+    SCHEDULER_URL: http://landing-scheduler:3000
+    ETHEREUM_STAKE_URL: {{ landing_ethereum_stake_url }}
+    ETHEREUM_DOCS_URL: {{ landing_ethereum_docs_url }}
+    RESEARCH_URL: {{ landing_research_url }}
+    # headers
+    HEADER_CACHE_CONTROL: "public, s-maxage=60, stale-if-error=604800, stale-while-revalidate=172800"
+    HEADER_REPORT_TO: '{{ proxy_landing_header_report_to }}'
+    HEADER_CONTENT_SECURITY_POLICY: "{{ proxy_landing_header_content_security_policy }}"
+    HEADER_X_CONTENT_TYPE_OPTIONS: "nosniff"
+    HEADER_X_DNS_PREFETCH_CONTROL: "on"
+    HEADER_X_DOWNLOAD_OPTIONS: "noopen"
+    HEADER_X_XSS_PROTECTION: "1"
+
+networks:
+  backend:
+  traefik-public:
+    external: true
+volumes:
+  landing-assets:
+  landing-nginx-conf:
+  landing-datacache:

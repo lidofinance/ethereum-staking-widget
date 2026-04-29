@@ -2,7 +2,7 @@ import type { Address } from 'viem';
 import invariant from 'tiny-invariant';
 import getConfigNext from 'next/config';
 
-const { serverRuntimeConfig } = getConfigNext();
+const { publicRuntimeConfig } = getConfigNext();
 
 import {
   CHAINS,
@@ -75,10 +75,10 @@ export type NetworkConfig = {
 };
 
 const DEVNET_OVERRIDES: Record<number, string> = // Merge client&server values
-  (serverRuntimeConfig.devnetOverrides || getPreConfig().devnetOverrides || '')
+  (publicRuntimeConfig.devnetOverrides || getPreConfig().devnetOverrides || '')
     .split(',')
     .reduce(
-      (acc, override) => {
+      (acc: any, override: any) => {
         const [chainId, setName] = override.split(':');
         if (!isNaN(Number(chainId)) && setName) {
           acc[Number(chainId)] = setName;
