@@ -74,18 +74,10 @@ export const useGGVCancelWithdraw = () => {
             );
           },
           onSuccess: async ({ txHash }) => {
-            const opts = {
+            const newBalance = await positionQuery.refetch({
               cancelRefetch: true,
               throwOnError: false,
-            };
-            const [newBalance] = await Promise.all([
-              positionQuery.refetch(opts),
-              queryClient.refetchQueries({ queryKey: ['ggv'] }, opts),
-              queryClient.refetchQueries(
-                { queryKey: [ETH_VAULT_QUERY_SCOPE] },
-                opts,
-              ),
-            ]);
+            });
             return txModalStages.success(
               newBalance.data?.sharesBalance as bigint,
               txHash,
