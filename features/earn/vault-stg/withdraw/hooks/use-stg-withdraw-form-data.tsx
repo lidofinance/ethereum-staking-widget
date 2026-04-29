@@ -3,6 +3,7 @@ import { useAwaiter } from 'shared/hooks/use-awaiter';
 import { useQueryClient } from '@tanstack/react-query';
 
 import { useDappStatus } from 'modules/web3';
+import { ETH_VAULT_QUERY_SCOPE } from 'features/earn/vault-eth/consts';
 import { useSTGPosition } from '../../hooks/use-stg-position';
 import {
   STGWithdrawFormAsyncValidationContext,
@@ -41,6 +42,12 @@ export const useSTGWithdrawFormData = () => {
     return Promise.all([
       // refetch all STG related queries
       queryClient.refetchQueries({ queryKey: ['stg'] }, options),
+      // strETH is an upgradable EarnETH asset, so STG balance mutations
+      // must refresh the EarnETH upgrade banner.
+      queryClient.refetchQueries(
+        { queryKey: [ETH_VAULT_QUERY_SCOPE] },
+        options,
+      ),
     ]);
   }, [queryClient]);
 

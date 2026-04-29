@@ -8,6 +8,7 @@ import {
   useWethBalance,
   useDappStatus,
 } from 'modules/web3';
+import { ETH_VAULT_QUERY_SCOPE } from 'features/earn/vault-eth/consts';
 import {
   STGDepositFormAsyncValidationContext,
   STGDepositFormValidationContext,
@@ -66,6 +67,10 @@ export const useSTGDepositFormData = () => {
         tokenBalanceRefetch(options),
         // refetch all STG related queries
         queryClient.refetchQueries({ queryKey: ['stg'] }, options),
+        queryClient.refetchQueries(
+          { queryKey: [ETH_VAULT_QUERY_SCOPE] },
+          options,
+        ),
       ]);
     },
     [
