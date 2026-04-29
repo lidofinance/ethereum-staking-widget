@@ -69,22 +69,46 @@ export const TopSectionDescription = styled.p`
 export const TopSectionStatsRow = styled.div`
   display: flex;
   gap: ${({ theme }) => theme.spaceMap.md}px;
-  max-width: 300px;
+
+  ${({ theme }) => theme.mediaQueries.md} {
+    flex-direction: column;
+  }
 `;
 
 export const TopSectionStatItem = styled.div`
   display: flex;
   flex-direction: column;
+  flex: 0 0 160px;
   gap: 4px;
 
-  &:first-child {
-    flex: 1;
+  ${({ theme }) => theme.mediaQueries.md} {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex: unset;
+    gap: ${({ theme }) => theme.spaceMap.sm}px;
   }
 `;
 
 export const TopSectionStatLabel = styled.span`
   display: flex;
   align-items: center;
+  color: var(--lido-color-textSecondary);
+  font-size: ${({ theme }) => theme.fontSizesMap.xs}px;
+  font-weight: 400;
+  line-height: 24px;
+`;
+
+export const TopSectionStatValueGroup = styled.div`
+  display: flex;
+  flex-direction: column;
+
+  ${({ theme }) => theme.mediaQueries.md} {
+    align-items: flex-end;
+  }
+`;
+
+export const TopSectionStatSubValue = styled.span`
   color: var(--lido-color-textSecondary);
   font-size: ${({ theme }) => theme.fontSizesMap.xs}px;
   font-weight: 400;
@@ -99,7 +123,7 @@ export const TopSectionStatValue = styled.span<{ $accent?: boolean }>`
     $accent ? 'var(--lido-color-success)' : 'var(--lido-color-text)'};
 
   ${({ theme }) => theme.mediaQueries.md} {
-    font-size: ${({ theme }) => theme.fontSizesMap.sm}px;
+    font-size: ${({ theme }) => theme.fontSizesMap.xs}px;
     line-height: 24px;
   }
 `;

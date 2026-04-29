@@ -56,17 +56,21 @@ export const useEthVaultPosition = () => {
   const data = isEnabled ? earnethBalanceQuery.data : undefined;
   const wsteth = earnethToWstethQuery.data;
 
-  const { usdAmount, ...usdQuery } = useWstethUsd(
+  const { usdAmount, ethAmount, ...usdQuery } = useWstethUsd(
     wsteth,
     publicClientMainnet.chain?.id,
   );
 
   return {
     ...earnethBalanceQuery,
-    isLoading: earnethBalanceQuery.isLoading || earnethToWstethQuery.isLoading,
+    isLoading:
+      earnethBalanceQuery.isLoading ||
+      earnethToWstethQuery.isPending ||
+      usdQuery.isLoading,
     data,
     earnethSharesBalance: data?.earnethSharesBalance,
     usdQuery,
     usdBalance: usdAmount ?? 0,
+    ethAmount,
   };
 };

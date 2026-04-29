@@ -14,9 +14,15 @@ import { EarnUsdFaq } from './faq/faq';
 import { EARN_VAULT_DEPOSIT_SLUG, EARN_VAULT_WITHDRAW_SLUG } from '../consts';
 import { useUsdVaultStats } from './hooks/use-vault-stats';
 import { useUsdVaultApy } from './hooks/use-vault-apy';
+import { useUsdVaultPosition } from './hooks/use-position';
 import { Disclaimers } from '../shared/v2/disclaimers';
 import { UsdVaultApyHint } from './components/apy-hint';
-import { USD_VAULT_DESCRIPTION, USD_VAULT_TITLE } from './consts';
+import {
+  USD_VAULT_DESCRIPTION,
+  USD_VAULT_TITLE,
+  USD_VAULT_TOKEN_SYMBOL,
+} from './consts';
+import { TOKEN_SYMBOLS } from 'consts/tokens';
 import { ProtectedTooltip } from './protected-tooltip';
 
 const FEES = [
@@ -159,6 +165,13 @@ export const VaultPageUSD: FC<{
 }> = ({ action }) => {
   const { apy, isLoading: isApyLoading } = useUsdVaultApy();
   const { tvlUsd, isLoading: isTvlLoading } = useUsdVaultStats();
+  const {
+    data: earnusdPositionData,
+    isLoading: isPositionLoading,
+    usdcAmount,
+  } = useUsdVaultPosition();
+
+  const sharesBalance = earnusdPositionData?.earnusdSharesBalance;
 
   return (
     <>
@@ -171,6 +184,17 @@ export const VaultPageUSD: FC<{
         apxHint={<UsdVaultApyHint />}
         sidePanel={<UsdVaultPositionManager action={action} />}
         vaultName="usdVault"
+        balance={
+          sharesBalance
+            ? {
+                amount: usdcAmount,
+                symbol: TOKEN_SYMBOLS.usdc,
+                sharesAmount: sharesBalance,
+                sharesSymbol: USD_VAULT_TOKEN_SYMBOL,
+                isLoading: isPositionLoading,
+              }
+            : undefined
+        }
         faqContent={<EarnUsdFaq />}
         strategyContent={
           <VaultAllocation

@@ -1,13 +1,7 @@
 import { z } from 'zod';
 
-import { config } from 'config';
+import { getEthApiPath, ETH_API_ROUTES } from 'consts/api';
 import { standardFetcher } from 'utils/standardFetcher';
-
-/**
- * Lido Ethereum API — APR for stETH.
- * @see https://eth-api.lido.fi/api#/APR%20for%20Eth%20and%20stEth/ProtocolController_findAPRforSTETH
- */
-const LIDO_STETH_APR_ORIGIN = `${config.ethAPIBasePath}/v1/protocol/steth/apr`;
 
 const LidoAprItemSchema = z.object({
   timeUnix: z.number(),
@@ -53,7 +47,13 @@ export const fetchStakingApyData = async (
   fromTimestamp: number,
 ): Promise<StakingApyFetchedData | null> => {
   const endTime = Math.floor(Date.now() / 1000);
-  const url = `${LIDO_STETH_APR_ORIGIN}?startTime=${fromTimestamp}&endTime=${endTime}&page=1&pageSize=${PAGE_SIZE}`;
+  const url = getEthApiPath(ETH_API_ROUTES.STETH_APR, {
+    startTime: fromTimestamp.toString(),
+    endTime: endTime.toString(),
+    page: '1',
+    pageSize: PAGE_SIZE.toString(),
+  });
+  if (!url) return null;
 
   const raw = await standardFetcher<unknown>(url);
   const parsed = LidoStethAprResponseSchema.parse(raw);

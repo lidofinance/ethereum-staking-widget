@@ -20,7 +20,6 @@ import {
   StyledTooltip,
   BadgeStyled,
   TitleTextStyled,
-  VaultWarning,
 } from './styles';
 import { LocalLink } from 'shared/components/local-link';
 import { EARN_PATH } from 'consts/urls';
@@ -40,32 +39,28 @@ type VaultStats = {
   apxLabel: string;
   isLoading?: boolean;
   apxHint?: React.ReactNode;
-  compact?: boolean;
 };
 
-type VaultPosition = {
+type LegacyVaultPosition = {
   sharesBalance?: bigint;
   sharesSymbol: string;
-  baseAmount?: bigint;
-  baseSymbol: string;
   isLoading?: boolean;
 };
 
-type VaultCardProps = {
+type LegacyVaultCardProps = {
   title: string;
   description?: string;
   urlSlug: string;
   stats: VaultStats;
   ctaLabel: string;
-  position?: VaultPosition;
+  position?: LegacyVaultPosition;
   variant?: 'eth' | 'usd' | 'default';
   illustration?: React.ReactNode;
   depositLinkCallback?: () => void;
   protectedBadgeTooltipText?: React.ReactNode;
-  warning?: React.ReactNode;
 };
 
-export const VaultCard: React.FC<VaultCardProps> = ({
+export const LegacyVaultCard: React.FC<LegacyVaultCardProps> = ({
   title,
   description,
   urlSlug,
@@ -76,7 +71,6 @@ export const VaultCard: React.FC<VaultCardProps> = ({
   illustration,
   depositLinkCallback,
   protectedBadgeTooltipText,
-  warning,
 }) => {
   const isDeprecated = useConfig().externalConfig.earnVaults.find(
     (vault) => vault.name === urlSlug,
@@ -96,11 +90,9 @@ export const VaultCard: React.FC<VaultCardProps> = ({
       <CardHeader>
         <CardHeaderContent>
           <CardTitle>
-            <TitleTextStyled data-testid={'vaultTitle'}>
-              {title}
-            </TitleTextStyled>
+            <TitleTextStyled>{title}</TitleTextStyled>
             {protectedBadgeTooltipText && (
-              <BadgeStyled data-testid={'protectedBadge'}>
+              <BadgeStyled>
                 <Badge
                   text="PROTECTED"
                   tooltipText={protectedBadgeTooltipText}
@@ -112,20 +104,14 @@ export const VaultCard: React.FC<VaultCardProps> = ({
                 title="Vault users can upgrade their tokens to the new unified EarnETH vault without withdrawal or downtime in rewards."
                 placement="bottom"
               >
-                <CardTitleBadge
-                  variant="gradient"
-                  icon={<ChevronsUpIcon />}
-                  data-testid={'upgradingBadge'}
-                >
+                <CardTitleBadge variant="gradient" icon={<ChevronsUpIcon />}>
                   {' '}
                   Upgrading
                 </CardTitleBadge>
               </StyledTooltip>
             )}
           </CardTitle>
-          <CardDescription data-testid={'vaultDescription'}>
-            {description}
-          </CardDescription>
+          <CardDescription>{description}</CardDescription>
         </CardHeaderContent>
         <VaultIconWrapper>{illustration}</VaultIconWrapper>
       </CardHeader>
@@ -157,39 +143,22 @@ export const VaultCard: React.FC<VaultCardProps> = ({
         </StatItem>
         {!!position?.sharesBalance && (
           <StatItem>
-            <StatLabel>
-              My deposit
-              <VaultTip
-                placement="bottomLeft"
-                style={{ position: 'relative', zIndex: 20 }}
-              >
-                You hold{' '}
-                <FormatToken
-                  trimEllipsis
-                  amount={position.sharesBalance}
-                  symbol={position.sharesSymbol}
-                  decimals={getTokenDecimals(position.sharesSymbol)}
-                />
-                . Shown in {position.baseSymbol} at current conversion rates.
-              </VaultTip>
-            </StatLabel>
+            <StatLabel>My position</StatLabel>
             <StatValue>
               <InlineLoader width={32} isLoading={position.isLoading}>
                 <FormatToken
                   trimEllipsis
-                  symbol={position.baseSymbol}
-                  decimals={getTokenDecimals(position.baseSymbol)}
-                  amount={position.baseAmount}
+                  symbol={position.sharesSymbol}
+                  decimals={getTokenDecimals(position.sharesSymbol)}
+                  amount={position.sharesBalance}
                   fallback="—"
-                  data-testid={`${position.sharesSymbol}-position-amount`}
                 />
               </InlineLoader>
             </StatValue>
           </StatItem>
         )}
       </CardStats>
-      {warning && <VaultWarning>{warning}</VaultWarning>}
-      <CardCta data-testid={'vaultButton'}>
+      <CardCta>
         <LocalLink href={depositHref} onClick={depositLinkCallback}>
           <Button fullwidth variant="translucent">
             {ctaLabel}
