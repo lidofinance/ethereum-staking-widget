@@ -54,7 +54,10 @@ export const useWithdrawalRequest = ({
       amount: bigint | null;
       token: TOKENS_TO_WITHDRAWLS;
     }) => {
-      invariant(requests && request.length > 0, 'cannot submit empty requests');
+      invariant(
+        requests && requests.length > 0,
+        'cannot submit empty requests',
+      );
       invariant(amount, 'cannot submit empty amount');
 
       try {
