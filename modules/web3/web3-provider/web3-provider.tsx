@@ -55,6 +55,7 @@ const WALLETS_SHOWN: WalletIdsEthereum[] = [
   'safe',
   'dappBrowserInjected',
   'coinbaseSmartWallet',
+  'anchorageDigital',
 ];
 
 type Web3ProviderContextValue = {
