@@ -15,6 +15,7 @@ import type {
 } from '../form-context/types';
 import { useAwaiter } from 'shared/hooks/use-awaiter';
 import { useQueryClient } from '@tanstack/react-query';
+import { ETH_VAULT_QUERY_SCOPE } from 'features/earn/vault-eth/consts';
 
 export const useGGVDepositFormData = () => {
   const queryClient = useQueryClient();
@@ -86,6 +87,10 @@ export const useGGVDepositFormData = () => {
         tokenBalanceRefetch(options),
         // refetch all GGV related queries
         queryClient.refetchQueries({ queryKey: ['ggv'] }, options),
+        queryClient.refetchQueries(
+          { queryKey: [ETH_VAULT_QUERY_SCOPE] },
+          options,
+        ),
       ]);
     },
     [
