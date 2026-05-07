@@ -131,8 +131,8 @@ export const VaultCard: React.FC<VaultCardProps> = ({
       </CardHeader>
       <CardDivider />
       <CardStats>
-        <StatItem data-testid="apx-value">
-          <StatLabel>
+        <StatItem data-testid="apx">
+          <StatLabel data-testid="apx-value">
             {stats.apxLabel}
             <VaultTip
               placement="bottomLeft"
@@ -147,9 +147,9 @@ export const VaultCard: React.FC<VaultCardProps> = ({
             </InlineLoader>
           </StatValue>
         </StatItem>
-        <StatItem data-testid="tvl-value">
+        <StatItem data-testid="tvl">
           <StatLabel>TVL</StatLabel>
-          <StatValue>
+          <StatValue data-testid="tvl-amount">
             <InlineLoader isLoading={stats.isLoading} width={70}>
               <FormatLargeAmount amount={stats.tvl} />
             </InlineLoader>

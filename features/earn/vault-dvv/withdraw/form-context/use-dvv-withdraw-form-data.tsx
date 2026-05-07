@@ -2,6 +2,7 @@ import { useCallback, useMemo } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { useAwaiter } from 'shared/hooks/use-awaiter';
 import { useDappStatus } from 'modules/web3/hooks/use-dapp-status';
+import { ETH_VAULT_QUERY_SCOPE } from 'features/earn/vault-eth/consts';
 import { useDVVPosition } from '../../hooks/use-dvv-position';
 import { useDVVWithdrawLimit } from '../hooks/use-dvv-withdraw-limit';
 import {
@@ -41,6 +42,10 @@ export const useDVVWithdrawFormData = () => {
     return Promise.all([
       balanceQuery.refetch(options), // refetch all DVV related queries
       queryClient.refetchQueries({ queryKey: ['dvv'] }, options),
+      queryClient.refetchQueries(
+        { queryKey: [ETH_VAULT_QUERY_SCOPE] },
+        options,
+      ),
     ]);
   }, [balanceQuery, queryClient]);
 
