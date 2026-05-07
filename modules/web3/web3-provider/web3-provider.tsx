@@ -50,12 +50,12 @@ const WALLETS_SHOWN: WalletIdsEthereum[] = [
   'ledgerLive',
   'walletConnect',
   'bitget',
+  'anchorageDigital',
   'imToken',
   'ambire',
   'safe',
   'dappBrowserInjected',
   'coinbaseSmartWallet',
-  'anchorageDigital',
 ];
 
 type Web3ProviderContextValue = {
