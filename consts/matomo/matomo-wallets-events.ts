@@ -28,6 +28,7 @@ const EVENTS_DATA_CONNECT_START: EventsData = {
   metaMask: ['Metamask', 'metamask'],
   okx: ['OKX', 'okx'],
   walletConnect: ['WalletConnect', 'walletconnect'],
+  anchorageDigital: ['Anchorage Digital', 'anchorage_digital'],
 } as const;
 
 const EVENTS_DATA_CONNECT_SUCCESS: EventsData = {
