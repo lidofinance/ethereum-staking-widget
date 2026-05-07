@@ -50,6 +50,7 @@ const WALLETS_SHOWN: WalletIdsEthereum[] = [
   'ledgerLive',
   'walletConnect',
   'bitget',
+  'anchorageDigital',
   'imToken',
   'ambire',
   'safe',
