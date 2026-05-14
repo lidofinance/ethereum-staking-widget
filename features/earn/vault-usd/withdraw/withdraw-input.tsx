@@ -20,7 +20,7 @@ export const UsdVaultWithdrawInput: React.FC = () => {
         disabled={disabled}
         fieldName="amount"
         token={USD_VAULT_TOKEN_SYMBOL}
-        data-testid="usd-withdraw-input"
+        data-testid="withdraw-input"
         maxValue={maxAmount}
         showErrorMessage={false}
         onMaxClick={() => {

@@ -21,7 +21,7 @@ export const GGVWithdrawInput = () => {
         disabled={disabled}
         fieldName="amount"
         token={'gg'}
-        data-testid="ggv-withdraw-input"
+        data-testid="withdraw-input"
         maxValue={data?.sharesBalance}
         showErrorMessage={false}
         onMaxClick={() => {

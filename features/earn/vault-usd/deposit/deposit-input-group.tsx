@@ -52,7 +52,7 @@ export const UsdVaultDepositInputGroup = () => {
         disabled={disabled}
         fieldName="amount"
         token={tokenSymbol}
-        data-testid="USD-vault-deposit-input"
+        data-testid="deposit-input"
         maxValue={maxAmount}
         showErrorMessage={false}
         onMaxClick={() => {

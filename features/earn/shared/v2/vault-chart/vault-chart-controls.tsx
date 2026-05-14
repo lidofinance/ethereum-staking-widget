@@ -92,13 +92,17 @@ export const VaultChartControls = (
       {isInitialLoading ? (
         <SwitchersInlineLoaderStyled />
       ) : (
-        <SwitcherStyled $disabled={disableControls}>
+        <SwitcherStyled
+          $disabled={disableControls}
+          data-testid={'data-switcher'}
+        >
           <SwitcherItemStyled
             active={activeChart === CHART_TYPE.apy}
             onClick={() => {
               handleChartChange(CHART_TYPE.apy);
               clickChartsApyTab && trackMatomoEvent(clickChartsApyTab);
             }}
+            data-testid={'apy-option'}
           >
             APY
           </SwitcherItemStyled>
@@ -108,6 +112,7 @@ export const VaultChartControls = (
               handleChartChange(CHART_TYPE.tvl);
               clickChartsTvlTab && trackMatomoEvent(clickChartsTvlTab);
             }}
+            data-testid={'tvl-option'}
           >
             TVL
           </SwitcherItemStyled>
@@ -115,13 +120,17 @@ export const VaultChartControls = (
       )}
       {children}
       {!isInitialLoading && is3MAvailable && (
-        <SwitcherStyled $disabled={disableControls}>
+        <SwitcherStyled
+          $disabled={disableControls}
+          data-testid={'time-switcher'}
+        >
           <SwitcherItemStyled
             active={activeTimeRange === CHART_TIME_RANGE['1M']}
             onClick={() => {
               handleTimeRangeChange(CHART_TIME_RANGE['1M']);
               emitMatomoEventForTimeRange(CHART_TIME_RANGE['1M']);
             }}
+            data-testid={'1m-option'}
           >
             1M
           </SwitcherItemStyled>
@@ -131,6 +140,7 @@ export const VaultChartControls = (
               handleTimeRangeChange(CHART_TIME_RANGE['3M']);
               emitMatomoEventForTimeRange(CHART_TIME_RANGE['3M']);
             }}
+            data-testid={'3m-option'}
           >
             3M
           </SwitcherItemStyled>
