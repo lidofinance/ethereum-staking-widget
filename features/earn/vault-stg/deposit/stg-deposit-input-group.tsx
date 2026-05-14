@@ -69,7 +69,7 @@ export const STGDepositInputGroup = () => {
         disabled={disabled}
         fieldName="amount"
         token={token}
-        data-testid="stg-deposit-input"
+        data-testid="deposit-input"
         maxValue={maxTokenAmount}
         showErrorMessage={false}
         onMaxClick={() => {
