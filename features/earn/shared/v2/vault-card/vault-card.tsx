@@ -40,6 +40,8 @@ type VaultStats = {
   apxLabel: string;
   isLoading?: boolean;
   apxHint?: React.ReactNode;
+  apxUpdateTooltipText?: React.ReactNode;
+  isApxStale?: boolean;
   compact?: boolean;
 };
 
@@ -141,11 +143,13 @@ export const VaultCard: React.FC<VaultCardProps> = ({
               {stats.apxHint}
             </VaultTip>
           </StatLabel>
-          <StatValue $accent>
-            <InlineLoader isLoading={stats.isLoading} width={70}>
-              <FormatPercent value={stats.apx} decimals="percent" />
-            </InlineLoader>
-          </StatValue>
+          <StyledTooltip title={stats.apxUpdateTooltipText} placement="top">
+            <StatValue $accent $muted={stats.isApxStale}>
+              <InlineLoader isLoading={stats.isLoading} width={70}>
+                <FormatPercent value={stats.apx} decimals="percent" />
+              </InlineLoader>
+            </StatValue>
+          </StyledTooltip>
         </StatItem>
         <StatItem data-testid="tvl">
           <StatLabel>TVL</StatLabel>

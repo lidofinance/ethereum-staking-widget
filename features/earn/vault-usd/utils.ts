@@ -30,6 +30,7 @@ export type UsdVaultStatsFetchedData = z.infer<typeof USD_VAULT_STATS_SCHEMA>;
 
 export const USD_VAULT_APY_SCHEMA = z.object({
   apy: APY_SCHEMA,
+  apyLastUpdate: UNIX_TIMESTAMP_SCHEMA,
 });
 export type UsdVaultApyFetchedData = z.infer<typeof USD_VAULT_APY_SCHEMA>;
 
@@ -48,8 +49,8 @@ export const fetchUsdVaultStatsApr = async () => {
   const USD_APY_ENDPOINT = `${USD_VAULT_STATS_ORIGIN}/v1/chain/${CHAINS.Mainnet}/core-vaults/${usdVaultAddress}/apy`;
 
   const data = await standardFetcher<UsdVaultApyFetchedData>(USD_APY_ENDPOINT);
-  const apy = USD_VAULT_APY_SCHEMA.parse(data).apy;
-  return apy;
+  const { apy, apyLastUpdate } = USD_VAULT_APY_SCHEMA.parse(data);
+  return { apy, apyLastUpdate };
 };
 
 // Converts a case sensitive TokenSymbol to an UsdDepositToken which must be lowercase.

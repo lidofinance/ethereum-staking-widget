@@ -1,4 +1,5 @@
 import type { ComponentType, FC, SVGProps } from 'react';
+import { Tooltip } from '@lidofinance/lido-ui';
 
 import {
   FormatLargeAmount,
@@ -23,6 +24,7 @@ import {
   TopSectionStatLabel,
   TopSectionStatSubValue,
   TopSectionStatValue,
+  TopSectionStatValueTooltipTarget,
   TopSectionStatValueGroup,
 } from './styles';
 
@@ -44,6 +46,8 @@ type TopSectionProps = {
   apx?: number | null;
   tvlUsd?: number | null;
   apxHint?: React.ReactNode;
+  apxUpdateTooltipText?: React.ReactNode;
+  isApxStale?: boolean;
   isApxLoading?: boolean;
   isTvlLoading?: boolean;
   protectedBadgeTooltipText?: React.ReactNode;
@@ -57,6 +61,8 @@ export const TopSection: FC<TopSectionProps> = (props) => {
     apx,
     tvlUsd,
     apxHint,
+    apxUpdateTooltipText,
+    isApxStale,
     isApxLoading,
     isTvlLoading,
     protectedBadgeTooltipText,
@@ -83,11 +89,15 @@ export const TopSection: FC<TopSectionProps> = (props) => {
             APY* (7d avg.)
             <VaultTip placement="bottomLeft">{apxHint}</VaultTip>
           </TopSectionStatLabel>
-          <TopSectionStatValue $accent>
-            <InlineLoader isLoading={isApxLoading} width={70}>
-              <FormatPercent value={apx} decimals="percent" />
-            </InlineLoader>
-          </TopSectionStatValue>
+          <Tooltip title={apxUpdateTooltipText} placement="top">
+            <TopSectionStatValueTooltipTarget>
+              <TopSectionStatValue $accent $muted={isApxStale}>
+                <InlineLoader isLoading={isApxLoading} width={70}>
+                  <FormatPercent value={apx} decimals="percent" />
+                </InlineLoader>
+              </TopSectionStatValue>
+            </TopSectionStatValueTooltipTarget>
+          </Tooltip>
         </TopSectionStatItem>
         <TopSectionStatItem>
           <TopSectionStatLabel>TVL</TopSectionStatLabel>

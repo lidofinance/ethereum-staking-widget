@@ -198,7 +198,10 @@ export const StatLabel = styled.span`
 `;
 
 export const StatValue = styled.span<{ $accent?: boolean; $muted?: boolean }>`
+  width: fit-content;
   display: inline-flex;
+  position: relative;
+  z-index: 20;
   align-items: center;
   gap: ${({ theme }) => theme.spaceMap.xs}px;
   font-size: ${({ theme }) => theme.fontSizesMap.lg}px;
