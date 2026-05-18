@@ -69,7 +69,8 @@ export const TopSection: FC<TopSectionProps> = (props) => {
     balance,
   } = props;
   const isMobile = useBreakpoint('md');
-  const shouldShowApxUpdateTooltip = !isApxLoading && !!apxUpdateTooltipText;
+  const shouldShowApxUpdateTooltip =
+    !!apx && !isApxLoading && !!apxUpdateTooltipText;
 
   const apxValue = (
     <TopSectionStatValueTooltipTarget>
