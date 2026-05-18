@@ -17,12 +17,7 @@
         "showAfterStake": false
       },
       "earnVaults": [
-        {
-          "name": "eth",
-          "deposit": false,
-          "depositPauseReasonText": "Deposits and withdrawal processing for EarnETH are currently paused by the vault curator, pending resolution of the Kelp and Aave incident.",
-          "listWarningText": "Deposits and withdrawal processing for EarnETH are currently paused by the vault curator, pending resolution of the Kelp and Aave incident."
-        },
+        { "name": "eth" },
         { "name": "usd" },
         { "name": "strategy", "deprecated": true },
         {
