@@ -8,8 +8,9 @@ import {
   getMetricContractAbi,
   MetricContractName,
 } from './contractAddressesMetricsMap';
-import { categorizeReferer, UNKNOWN_LABEL } from './categorize-referer';
 import { getFunctionNameFromAbi } from './get-function-name-from-abi';
+
+const UNKNOWN_LABEL = 'unknown';
 
 /**
  * Increments the eth_call Counter per batch entry. Labels bounded:
@@ -24,16 +25,13 @@ import { getFunctionNameFromAbi } from './get-function-name-from-abi';
  */
 export const collectRequestAddressMetric = async ({
   calls,
-  referer,
   chainId,
   metrics,
 }: {
   calls: any[];
-  referer: string | undefined;
   chainId: CHAINS;
   metrics: Counter<string>;
 }) => {
-  const refererLabel = categorizeReferer(referer);
   calls.forEach((call: any) => {
     try {
       if (
@@ -71,7 +69,6 @@ export const collectRequestAddressMetric = async ({
             ? methodEncoded || UNKNOWN_LABEL
             : UNKNOWN_LABEL,
           methodDecoded: methodDecoded || UNKNOWN_LABEL,
-          referer: refererLabel,
         })
         .inc(1);
     } catch (error) {

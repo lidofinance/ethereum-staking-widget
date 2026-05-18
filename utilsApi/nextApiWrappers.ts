@@ -112,13 +112,11 @@ export const responseTimeMetric =
 export const requestAddressMetric =
   (metrics: Counter<string>): RequestWrapper =>
   async (req, res, next) => {
-    const referer = req.headers.referer as string;
     const chainId = req.query.chainId as unknown as CHAINS;
 
     if (req.body) {
       void collectRequestAddressMetric({
         calls: Array.isArray(req.body) ? req.body : [req.body],
-        referer,
         chainId,
         metrics,
       }).catch(console.error);

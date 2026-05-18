@@ -6,7 +6,7 @@ export class RequestMetrics {
   apiTimingsExternal: Histogram<'hostname' | 'route' | 'entity' | 'status'>;
   requestCounter: Counter<'route'>;
   ethCallToAddress: Counter<
-    'address' | 'contractName' | 'methodEncoded' | 'methodDecoded' | 'referer'
+    'address' | 'contractName' | 'methodEncoded' | 'methodDecoded'
   >;
   ssrCounter: Counter<'revalidate'>;
   validationFileLoadError: Counter<'error'>;
@@ -49,13 +49,7 @@ export class RequestMetrics {
     return new Counter({
       name: METRICS_PREFIX + METRIC_NAMES.ETH_CALL_ADDRESS_TO,
       help: 'eth_call invocations.',
-      labelNames: [
-        'address',
-        'contractName',
-        'methodEncoded',
-        'methodDecoded',
-        'referer',
-      ],
+      labelNames: ['address', 'contractName', 'methodEncoded', 'methodDecoded'],
       registers: [this.registry],
     });
   }

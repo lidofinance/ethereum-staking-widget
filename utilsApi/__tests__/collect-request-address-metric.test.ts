@@ -50,7 +50,6 @@ describe('collectRequestAddressMetric', () => {
     const { counter, recorded } = makeCounterMock();
     await collectRequestAddressMetric({
       calls: [makeEthCall(VALID_UNKNOWN_TO)],
-      referer: 'https://stake.lido.fi/',
       chainId: CHAINS.Mainnet,
       metrics: counter,
     });
@@ -61,7 +60,6 @@ describe('collectRequestAddressMetric', () => {
     const { counter, recorded } = makeCounterMock();
     await collectRequestAddressMetric({
       calls: [makeEthCall(VALID_UNKNOWN_TO)],
-      referer: 'https://stake.lido.fi/',
       chainId: CHAINS.Mainnet,
       metrics: counter,
     });
@@ -70,19 +68,7 @@ describe('collectRequestAddressMetric', () => {
       contractName: 'unknown',
       methodEncoded: 'unknown',
       methodDecoded: 'unknown',
-      referer: 'stake.lido.fi',
     });
-  });
-
-  it('categorizes off-allow-list Referer to "unknown"', async () => {
-    const { counter, recorded } = makeCounterMock();
-    await collectRequestAddressMetric({
-      calls: [makeEthCall(VALID_UNKNOWN_TO)],
-      referer: 'https://external.example/',
-      chainId: CHAINS.Mainnet,
-      metrics: counter,
-    });
-    expect(recorded[0].referer).toBe('unknown');
   });
 
   it('does NOT abort the batch when one entry has an invalid `to` address', async () => {
@@ -95,7 +81,6 @@ describe('collectRequestAddressMetric', () => {
         makeEthCall('not-a-valid-0x-address'),
         makeEthCall(VALID_UNKNOWN_TO),
       ],
-      referer: 'https://stake.lido.fi/',
       chainId: CHAINS.Mainnet,
       metrics: counter,
     });
@@ -110,7 +95,6 @@ describe('collectRequestAddressMetric', () => {
         makeEthCall(VALID_UNKNOWN_TO),
         { method: 'eth_blockNumber', params: [] },
       ],
-      referer: 'https://stake.lido.fi/',
       chainId: CHAINS.Mainnet,
       metrics: counter,
     });
@@ -124,7 +108,6 @@ describe('collectRequestAddressMetric', () => {
         { method: 'eth_call', params: [{ data: '0x' }, 'latest'] },
         makeEthCall(VALID_UNKNOWN_TO),
       ],
-      referer: 'https://stake.lido.fi/',
       chainId: CHAINS.Mainnet,
       metrics: counter,
     });
@@ -135,7 +118,6 @@ describe('collectRequestAddressMetric', () => {
     const { counter, recorded } = makeCounterMock();
     await collectRequestAddressMetric({
       calls: [null, makeEthCall(VALID_UNKNOWN_TO), undefined],
-      referer: 'https://stake.lido.fi/',
       chainId: CHAINS.Mainnet,
       metrics: counter,
     });
@@ -146,21 +128,9 @@ describe('collectRequestAddressMetric', () => {
     const { counter, recorded } = makeCounterMock();
     await collectRequestAddressMetric({
       calls: ['garbage', makeEthCall(VALID_UNKNOWN_TO), 42],
-      referer: 'https://stake.lido.fi/',
       chainId: CHAINS.Mainnet,
       metrics: counter,
     });
     expect(recorded.length).toBe(1);
-  });
-
-  it('passes through with undefined referer (logs as "none")', async () => {
-    const { counter, recorded } = makeCounterMock();
-    await collectRequestAddressMetric({
-      calls: [makeEthCall(VALID_UNKNOWN_TO)],
-      referer: undefined,
-      chainId: CHAINS.Mainnet,
-      metrics: counter,
-    });
-    expect(recorded[0].referer).toBe('none');
   });
 });
