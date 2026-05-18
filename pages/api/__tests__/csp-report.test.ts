@@ -60,7 +60,6 @@ describe('cspReportHandler', () => {
   });
 
   it('does NOT allow attacker to shadow the synthetic `type` field', async () => {
-    // Attacker tries to inject a different `type` to mis-tag the log entry.
     const body = {
       type: 'AccessLog',
       userId: 'admin',
@@ -71,12 +70,9 @@ describe('cspReportHandler', () => {
 
     expect(warnSpy).toHaveBeenCalledTimes(1);
     const logged = warnSpy.mock.calls[0][0];
-    // Synthetic discriminator unchanged.
     expect(logged.type).toBe('CSP Violation');
-    // Attacker payload still recorded — but under the `violation` key.
     expect(logged.violation).toEqual(body);
     expect(logged.violation.type).toBe('AccessLog');
-    // No top-level keys other than `type` and `violation` (no spread leakage).
     expect(Object.keys(logged).sort()).toEqual(['type', 'violation']);
   });
 
@@ -99,8 +95,6 @@ describe('cspReportHandler', () => {
     const malformed = '{ not json';
     const res = makeRes();
 
-    // Must not throw — design intent in services-map: "must accept malformed
-    // gracefully (a 500 poisons telemetry)".
     await expect(
       cspReportHandler(makeReq(malformed), res),
     ).resolves.toBeUndefined();

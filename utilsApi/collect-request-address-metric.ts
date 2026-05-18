@@ -12,26 +12,14 @@ import { categorizeReferer, UNKNOWN_LABEL } from './categorize-referer';
 import { getFunctionNameFromAbi } from './get-function-name-from-abi';
 
 /**
- * Increment the eth_call address Counter for each call in a JSON-RPC batch.
+ * Increments the eth_call Counter per batch entry. Labels bounded:
+ * `address` / `methodEncoded` are kept raw only for allow-listed contracts;
+ * for unknown contracts both collapse to `UNKNOWN_LABEL` so attackers can't
+ * grow prom-client's in-memory store via random `to` / selectors.
  *
- * Labels are bounded:
- * - `address` / `methodEncoded` are kept RAW only when the contract is in
- *   `METRIC_CONTRACT_ADDRESSES` (then cardinality is bounded by allow-list ×
- *   known function selectors). For unknown contracts both collapse to
- *   `UNKNOWN_LABEL` — attackers can't blow up prom-client's in-memory store by
- *   padding arbitrary `to` / 4-byte selectors. Recover raw values during
- *   forensic investigation of an `'unknown'` spike from nginx access logs.
- * - `referer` is mapped through `categorizeReferer` to a small allow-listed
- *   keyspace.
+ * Per-call try/catch: a malformed entry can't drop metrics for siblings.
  *
- * Per-call isolation: a malformed entry in a batch (e.g. invalid `to` that
- * makes `getAddress` throw) does NOT abort metric collection for the
- * following legitimate calls. Without this, a single bad entry would silently
- * drop metrics for the rest of the batch.
- *
- * Lives in its own file so unit tests can import it without pulling in the
- * `utilsApi` index re-export chain (which transitively imports project `.mjs`
- * ESM files that Jest can't parse without extra config).
+ * Separate file: lets tests import without pulling in `utilsApi`'s ESM chain.
  */
 export const collectRequestAddressMetric = async ({
   calls,

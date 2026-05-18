@@ -1,13 +1,10 @@
 import type { NextApiRequest } from 'next';
 
 /**
- * Builds the URLSearchParams used for both the cache key and the upstream URL
- * inside `createCachedProxy`. When `allowedQueryParams` is set, any query key
- * outside the allow-list is dropped.
+ * Builds URLSearchParams for the cache key and upstream URL.
+ * When `allowedQueryParams` is set, any other key is dropped.
  *
- * Lives in its own file so unit tests can import it without pulling in the
- * `utilsApi` index re-export chain (which transitively imports project `.mjs`
- * ESM files that Jest can't parse without extra config).
+ * Separate file: lets tests import without pulling in `utilsApi`'s ESM chain.
  */
 export const buildParams = (
   query: NextApiRequest['query'],

@@ -57,8 +57,6 @@ describe('categorizeReferer', () => {
   });
 
   it('does not match attacker-controlled "*.ipfs.*" subdomains', () => {
-    // Regression test — earlier draft had `/\.ipfs\.[a-z0-9.-]+$/i` which
-    // accepted arbitrary attacker subdomains and created unbounded cardinality.
     expect(categorizeReferer('https://evil.ipfs.attacker.example/')).toBe(
       REFERER_UNKNOWN,
     );
@@ -86,7 +84,6 @@ describe('categorizeReferer', () => {
   });
 
   it('strips port from the URL host before matching the allow-list', () => {
-    // .hostname must be used (not .host) so non-default-port URLs still match.
     expect(categorizeReferer('https://stake.lido.fi:8443/')).toBe(
       'stake.lido.fi',
     );

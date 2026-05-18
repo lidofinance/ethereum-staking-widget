@@ -1,9 +1,6 @@
 import { type Abi, toFunctionSelector } from 'viem';
 
-/**
- * Resolve a 4-byte function selector to its function name by walking an ABI.
- * Returns `null` when no function in the ABI matches the selector.
- */
+/** Resolves a 4-byte selector to its function name; null if not in ABI. */
 export const getFunctionNameFromAbi = (
   abi: Abi,
   methodEncoded: string,

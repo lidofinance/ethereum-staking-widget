@@ -64,7 +64,7 @@ describe('createRewardsHandler', () => {
     );
   });
 
-  it('returns 400 on limit above MAX_LIMIT (the #72809 bounty payload)', async () => {
+  it('returns 400 on limit above MAX_LIMIT', async () => {
     const proxy = jest.fn();
     const handler = createRewardsHandler(proxy);
     const res = makeRes();
@@ -75,7 +75,7 @@ describe('createRewardsHandler', () => {
     expect(res._status).toBe(400);
   });
 
-  it('returns 400 on unknown query keys (strict mode — F8 defense-in-depth)', async () => {
+  it('returns 400 on unknown query keys (strict mode)', async () => {
     const proxy = jest.fn();
     const handler = createRewardsHandler(proxy);
     const res = makeRes();

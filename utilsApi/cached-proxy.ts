@@ -9,7 +9,6 @@ import { FetcherError } from 'utils/fetcherError';
 import { ETH_API_ROUTES, getEthApiPath } from 'consts/api';
 import { buildParams } from './cached-proxy-build-params';
 
-// Re-export for callers who don't want to reach into the build-params module.
 export { buildParams } from './cached-proxy-build-params';
 
 const DEFAULT_CACHE_MAX_ENTRIES = 200;
@@ -19,20 +18,11 @@ type ProxyOptions = {
   cacheTTL: number;
   timeout?: number;
   ignoreParams?: boolean;
-  /**
-   * Whitelist of query keys forwarded to the upstream and included in the
-   * cache key. When undefined, all query params are used (backwards-compatible).
-   * Prevents cache-key cardinality blow-up via padded query strings AND
-   * stops attacker-padded keys from reaching the upstream service.
-   */
+  /** Whitelist of query keys used in cache key + upstream URL. Unset = all. */
   allowedQueryParams?: string[];
   transformData?: (data: any) => any;
   metricsHost?: string;
-  /**
-   * Hard ceiling on cache entries. Prevents memory pressure under high
-   * RPS / wide query keyspaces. Defaults to 200 — covers any realistic
-   * concurrency for our routes.
-   */
+  /** Hard cap on cache entries. Default 200. */
   cacheMaxEntries?: number;
 };
 

@@ -1,23 +1,15 @@
 import { z } from 'zod';
+import { isAddress } from 'viem';
 
-/**
- * Query-parameter schema for `/api/rewards`.
- *
- * Bounds (`limit`, `skip`) are sized to the widget's own usage:
- * - UI paginates at `PAGE_ITEMS = 10` (features/rewards/constants.ts).
- * - CSV export issues a single `limit`-less request (relies on backend default).
- *
- * `MAX_LIMIT = 100` gives a 10× margin against UI growth while preventing
- * attacker-driven response inflation against the upstream rewards backend.
- * `.strict()` rejects unknown keys — defense-in-depth against query-string
- * padding attacks (separate from the cache-key whitelist).
- */
+// MAX_LIMIT: 10× UI page size (PAGE_ITEMS=10 in features/rewards/constants.ts).
+// MAX_SKIP:  ~10k pages — well above any realistic UI deep-paging.
+// .strict() below rejects unknown keys (also prevents cache-key padding).
 export const MAX_LIMIT = 100;
 export const MAX_SKIP = 100_000;
 
 export const rewardsQuerySchema = z
   .object({
-    address: z.string().regex(/^0x[a-fA-F0-9]{40}$/, 'invalid address'),
+    address: z.string().refine(isAddress, 'invalid address'),
     currency: z.string().max(8).optional(),
     skip: z.coerce.number().int().min(0).max(MAX_SKIP).optional(),
     limit: z.coerce.number().int().min(1).max(MAX_LIMIT).optional(),

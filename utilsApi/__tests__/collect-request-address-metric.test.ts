@@ -1,11 +1,7 @@
 import { CHAINS } from '@lidofinance/lido-ethereum-sdk/common';
 
-// Mock the contract-address map so the `collect-request-address-metric`
-// module does NOT pull in the project's `config/` chain at import time
-// (which transitively imports `env-dynamics.mjs` — Jest can't parse it
-// without ESM config). The mocked map is intentionally empty: tests cover
-// the UNKNOWN-contract code path, which is the one the security batch
-// hardened (`address` / `methodEncoded` collapse to `'unknown'`).
+// Empty map → tests cover the unknown-contract path. Mock also avoids
+// pulling in `config/` which transitively imports `env-dynamics.mjs`.
 jest.mock('../contractAddressesMetricsMap', () => ({
   METRIC_CONTRACT_ADDRESSES: {},
   getMetricContractAbi: () => null,
@@ -25,17 +21,12 @@ const makeEthCall = (to: string, data: string = ETH_CALL_SELECTOR) => ({
 
 type LabelArgs = Record<string, string>;
 
-/**
- * Minimal mock of prom-client Counter that records each .labels(...).inc(1)
- * invocation so tests can assert label tuples.
- */
 const makeCounterMock = () => {
   const recorded: LabelArgs[] = [];
   const counter: any = {
     labels(labels: LabelArgs) {
       return {
         inc: (n: number) => {
-          // store a snapshot — labels may be reused if the caller is sloppy
           recorded.push({ ...labels, __inc: String(n) });
         },
       };
@@ -77,7 +68,7 @@ describe('collectRequestAddressMetric', () => {
     expect(recorded[0]).toMatchObject({
       address: 'unknown',
       contractName: 'unknown',
-      methodEncoded: 'unknown', // bounded — selector NOT kept for unknown contracts
+      methodEncoded: 'unknown',
       methodDecoded: 'unknown',
       referer: 'stake.lido.fi',
     });
@@ -94,26 +85,20 @@ describe('collectRequestAddressMetric', () => {
     expect(recorded[0].referer).toBe('unknown');
   });
 
-  // ---- batch-poisoning regression tests (the M-NEW / H2 fix) ----
-
   it('does NOT abort the batch when one entry has an invalid `to` address', async () => {
-    // `getAddress('not-a-valid-0x-address')` throws — without the try/catch
-    // around forEach body, this used to silently drop metrics for the
-    // remaining calls in the batch.
+    // getAddress() throws on the middle entry; the two valid calls around
+    // it must still be counted.
     const { counter, recorded } = makeCounterMock();
     await collectRequestAddressMetric({
       calls: [
-        makeEthCall(VALID_UNKNOWN_TO), // OK
-        makeEthCall('not-a-valid-0x-address'), // throws inside forEach
-        makeEthCall(VALID_UNKNOWN_TO), // must still be counted
+        makeEthCall(VALID_UNKNOWN_TO),
+        makeEthCall('not-a-valid-0x-address'),
+        makeEthCall(VALID_UNKNOWN_TO),
       ],
       referer: 'https://stake.lido.fi/',
       chainId: CHAINS.Mainnet,
       metrics: counter,
     });
-
-    // Two valid calls → two increments. The poisoned middle entry is skipped
-    // (it's logged via console.warn, but does NOT throw out of forEach).
     expect(recorded.length).toBe(2);
   });
 
@@ -136,7 +121,7 @@ describe('collectRequestAddressMetric', () => {
     const { counter, recorded } = makeCounterMock();
     await collectRequestAddressMetric({
       calls: [
-        { method: 'eth_call', params: [{ data: '0x' }, 'latest'] }, // no `to`
+        { method: 'eth_call', params: [{ data: '0x' }, 'latest'] },
         makeEthCall(VALID_UNKNOWN_TO),
       ],
       referer: 'https://stake.lido.fi/',

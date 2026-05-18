@@ -32,10 +32,6 @@ if (!secretConfig.rewardsBackendAPI) {
     proxyUrl: secretConfig.rewardsBackendAPI + '/',
     cacheTTL: 1000,
     ignoreParams: false,
-    // Whitelist matches `BackendQuery` in features/rewards/fetchers/backend.ts.
-    // Any extra param is rejected by `rewardsQuerySchema.strict()` inside
-    // `createRewardsHandler` before reaching this proxy; the whitelist is
-    // defense-in-depth at the cache key and upstream URL layer.
     allowedQueryParams: REWARDS_ALLOWED_QUERY_PARAMS,
     metricsHost: secretConfig.rewardsBackendAPI,
     timeout: 10_000,

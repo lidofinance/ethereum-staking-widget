@@ -4,14 +4,9 @@ import type { API } from '@lidofinance/next-api-wrapper';
 import { rewardsQuerySchema } from './rewards-query-schema';
 
 /**
- * Returns the `/api/rewards` request handler. The handler runs the zod
- * `rewardsQuerySchema` first — on validation failure it responds with `400`
- * and a structured `details` payload listing each schema issue. On success
- * it forwards the request to the cached proxy.
- *
- * Extracted into a factory so it can be unit-tested without going through
- * the `wrapNextRequest([...])` middleware chain or instantiating an actual
- * cached proxy with live upstream config.
+ * `/api/rewards` handler: validates query against `rewardsQuerySchema`,
+ * returns 400 with structured `details` on failure, forwards to `proxy` otherwise.
+ * Factory form keeps the proxy injectable for tests.
  */
 export const createRewardsHandler =
   (proxy: API): API =>

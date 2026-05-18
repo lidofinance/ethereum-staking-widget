@@ -1,20 +1,11 @@
 import type { API } from '@lidofinance/next-api-wrapper';
 
 /**
- * Handler for `/api/csp-report`.
+ * Handler for `/api/csp-report`. Nests payload under `violation` (never spread)
+ * so attacker keys can't shadow the `type` log discriminator. Parses string
+ * bodies in try/catch and always answers 200 — a 500 would poison telemetry.
  *
- * Extracted from the route file so it can be unit-tested without pulling in
- * the `utilsApi` index re-export chain (which transitively imports project
- * `.mjs` ESM files that Jest can't parse without extra config).
- *
- * Defensive choices documented inline:
- * - User payload is nested under `violation`, never spread, so attacker-
- *   controlled keys (notably `type`) cannot shadow the synthetic log
- *   discriminator that downstream log shipping routes on.
- * - String bodies are parsed in try/catch — malformed input is logged as
- *   `{ parseError: true, bodyLen }` and answered with 200. This matches the
- *   services-map design intent ("must accept malformed gracefully — a 500
- *   poisons telemetry").
+ * Separate file: lets tests import without pulling in `utilsApi`'s ESM chain.
  */
 export const cspReportHandler: API = async (req, res) => {
   let violation: unknown = {};
