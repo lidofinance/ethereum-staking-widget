@@ -62,8 +62,8 @@ export const DrawerRight: FC<DrawerRightProps> = ({ onClose, isOpen }) => {
             and protocol parameters.
           </DrawerRightText>
           <DrawerRightText data-testid={'mellow-points-text'}>
-            All Mellow points you accumulate remain yours, with your balance
-            visible on the{' '}
+            All accumulated Mellow points, as well as Obol and SSV rewards,
+            remain yours. Your Mellow points balance is visible on the{' '}
             <Link
               href="https://app.mellow.finance/dashboard"
               target="_blank"
@@ -75,6 +75,18 @@ export const DrawerRight: FC<DrawerRightProps> = ({ onClose, isOpen }) => {
             >
               Mellow Dashboard
             </Link>
+            . Obol rewards can be claimed{' '}
+            <Link
+              href="https://launchpad.obol.org/cluster/list/"
+              target="_blank"
+            >
+              here
+            </Link>
+            , and SSV rewards can be claimed{' '}
+            <Link href="https://www.ssvrewards.com/" target="_blank">
+              here
+            </Link>
+            .
           </DrawerRightText>
           <DrawerRightFooter>
             <LocalLink href={ETH_DEPOSIT_PATH}>
