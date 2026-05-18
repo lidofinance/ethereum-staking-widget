@@ -17,6 +17,14 @@ export const DVVAprBreakdown = () => {
       <BreakdownSection>
         APR is the annual percentage rate without compounding
       </BreakdownSection>
+      <BreakdownSection>
+        <LinkInpageAnchor
+          pagePath={DVV_DEPOSIT_PATH}
+          hash={'#what-is-apr-for-dvv'}
+        >
+          Learn more in Lido DVV FAQ
+        </LinkInpageAnchor>
+      </BreakdownSection>
     </BreakdownContainer>
   );
 };

@@ -28,12 +28,8 @@ import { Link } from '@lidofinance/lido-ui';
 
 const DvvRewardsTip = () => (
   <>
-    <p>
-      Obol rewards <b>update weekly</b> and must be claimed manually.
-    </p>
-    <p>
-      SSV rewards <b>update monthly</b> and must be claimed manually.
-    </p>
+    <p>Obol rewards must be claimed manually.</p>
+    <p>SSV rewards must be claimed manually.</p>
     <Link href="https://docs.mellow.finance/points/overview">Learn more</Link>
   </>
 );
