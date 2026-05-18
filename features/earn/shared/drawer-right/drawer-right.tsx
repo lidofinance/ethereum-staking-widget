@@ -29,8 +29,13 @@ export const DrawerRight: FC<DrawerRightProps> = ({ onClose, isOpen }) => {
   const { handleKeyDown } = useEscape({ onClose });
 
   return (
-    <DrawerRightStyled onKeyDown={handleKeyDown} tabIndex={-1} isOpen={isOpen}>
-      <DrawerRightWrapper>
+    <DrawerRightStyled
+      onKeyDown={handleKeyDown}
+      onClick={onClose}
+      tabIndex={-1}
+      isOpen={isOpen}
+    >
+      <DrawerRightWrapper isOpen={isOpen} onClick={(e) => e.stopPropagation()}>
         <DrawerRightContent data-testid={'earn-side-panel'}>
           <DrawerRightHeader>
             <div data-testid={'title'}>
