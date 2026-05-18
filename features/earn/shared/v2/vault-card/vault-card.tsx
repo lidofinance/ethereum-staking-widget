@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button } from '@lidofinance/lido-ui';
+import { Button, useBreakpoint } from '@lidofinance/lido-ui';
 
 import {
   CardWrapper,
@@ -86,6 +86,19 @@ export const VaultCard: React.FC<VaultCardProps> = ({
 
   const depositHref = `${EARN_PATH}/${urlSlug}/${EARN_VAULT_DEPOSIT_SLUG}`;
 
+  const isMobile = useBreakpoint('md');
+
+  const shouldShowApxUpdateTooltip =
+    !stats.isLoading && !!stats.apxUpdateTooltipText;
+
+  const apxValue = (
+    <StatValue $accent $muted={stats.isApxStale}>
+      <InlineLoader isLoading={stats.isLoading} width={70}>
+        <FormatPercent value={stats.apx} decimals="percent" />
+      </InlineLoader>
+    </StatValue>
+  );
+
   return (
     <CardWrapper $variant={variant} data-testid={`${urlSlug}-vault-card`}>
       <CardOverlayLink
@@ -143,13 +156,16 @@ export const VaultCard: React.FC<VaultCardProps> = ({
               {stats.apxHint}
             </VaultTip>
           </StatLabel>
-          <StyledTooltip title={stats.apxUpdateTooltipText} placement="top">
-            <StatValue $accent $muted={stats.isApxStale}>
-              <InlineLoader isLoading={stats.isLoading} width={70}>
-                <FormatPercent value={stats.apx} decimals="percent" />
-              </InlineLoader>
-            </StatValue>
-          </StyledTooltip>
+          {shouldShowApxUpdateTooltip ? (
+            <StyledTooltip
+              title={stats.apxUpdateTooltipText}
+              placement={isMobile ? 'topRight' : 'topLeft'}
+            >
+              {apxValue}
+            </StyledTooltip>
+          ) : (
+            apxValue
+          )}
         </StatItem>
         <StatItem data-testid="tvl">
           <StatLabel>TVL</StatLabel>

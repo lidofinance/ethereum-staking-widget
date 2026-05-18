@@ -1,5 +1,5 @@
 import type { ComponentType, FC, SVGProps } from 'react';
-import { Tooltip } from '@lidofinance/lido-ui';
+import { Tooltip, useBreakpoint } from '@lidofinance/lido-ui';
 
 import {
   FormatLargeAmount,
@@ -68,6 +68,18 @@ export const TopSection: FC<TopSectionProps> = (props) => {
     protectedBadgeTooltipText,
     balance,
   } = props;
+  const isMobile = useBreakpoint('md');
+  const shouldShowApxUpdateTooltip = !isApxLoading && !!apxUpdateTooltipText;
+
+  const apxValue = (
+    <TopSectionStatValueTooltipTarget>
+      <TopSectionStatValue $accent $muted={isApxStale}>
+        <InlineLoader isLoading={isApxLoading} width={70}>
+          <FormatPercent value={apx} decimals="percent" />
+        </InlineLoader>
+      </TopSectionStatValue>
+    </TopSectionStatValueTooltipTarget>
+  );
 
   return (
     <TopSectionStyled>
@@ -89,15 +101,16 @@ export const TopSection: FC<TopSectionProps> = (props) => {
             APY* (7d avg.)
             <VaultTip placement="bottomLeft">{apxHint}</VaultTip>
           </TopSectionStatLabel>
-          <Tooltip title={apxUpdateTooltipText} placement="top">
-            <TopSectionStatValueTooltipTarget>
-              <TopSectionStatValue $accent $muted={isApxStale}>
-                <InlineLoader isLoading={isApxLoading} width={70}>
-                  <FormatPercent value={apx} decimals="percent" />
-                </InlineLoader>
-              </TopSectionStatValue>
-            </TopSectionStatValueTooltipTarget>
-          </Tooltip>
+          {shouldShowApxUpdateTooltip ? (
+            <Tooltip
+              title={apxUpdateTooltipText}
+              placement={isMobile ? 'topRight' : 'topLeft'}
+            >
+              {apxValue}
+            </Tooltip>
+          ) : (
+            apxValue
+          )}
         </TopSectionStatItem>
         <TopSectionStatItem>
           <TopSectionStatLabel>TVL</TopSectionStatLabel>
