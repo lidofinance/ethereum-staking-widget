@@ -1,3 +1,4 @@
+import { ButtonInline } from 'shared/components/button-inline/button-inline';
 import styled, { css } from 'styled-components';
 import { Block, Button } from '@lidofinance/lido-ui';
 
@@ -22,10 +23,22 @@ export const UpgradeAssets = styled(Block)`
   color: var(--lido-color-text);
 `;
 
+export const UpgradeAssetsHeader = styled.div`
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: ${({ theme }) => theme.spaceMap.md}px;
+  margin: 0 0 ${({ theme }) => theme.spaceMap.sm}px;
+`;
+
 export const UpgradeAssetsTitle = styled.div`
   font-size: ${({ theme }) => theme.fontSizesMap.xs}px;
   font-weight: 700;
-  margin: 0 0 ${({ theme }) => theme.spaceMap.sm}px;
+  margin: 0;
+`;
+
+export const UpgradeAssetsHowItWorksButton = styled(ButtonInline)`
+  font-weight: 700;
 `;
 
 export const UpgradeAssetsAmount = styled.div`

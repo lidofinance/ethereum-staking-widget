@@ -25,6 +25,8 @@ import {
 } from './consts';
 import { TOKEN_SYMBOLS } from 'consts/tokens';
 import { ProtectedTooltip } from './protected-tooltip';
+import { DrawerRight } from '../shared/drawer-right';
+import { EthVaultDrawerProvider, useEthVaultDrawer } from './drawer-context';
 
 const FEES = [
   { label: 'Performance fee', value: '10%' },
@@ -161,9 +163,10 @@ const DATA = {
   riskDisclosure: RISK_DISCLOSURE,
 };
 
-export const EthVaultPage: FC<{
+const EthVaultPageContent: FC<{
   action: typeof EARN_VAULT_DEPOSIT_SLUG | typeof EARN_VAULT_WITHDRAW_SLUG;
 }> = ({ action }) => {
+  const { isDrawerOpen, closeDrawer } = useEthVaultDrawer();
   const {
     apy,
     apyUpdateTimestampMs,
@@ -227,7 +230,18 @@ export const EthVaultPage: FC<{
         }}
         protectedBadgeTooltipText={<ProtectedTooltip />}
       />
+      <DrawerRight onClose={closeDrawer} isOpen={isDrawerOpen} />
       <Disclaimers />
     </>
+  );
+};
+
+export const EthVaultPage: FC<{
+  action: typeof EARN_VAULT_DEPOSIT_SLUG | typeof EARN_VAULT_WITHDRAW_SLUG;
+}> = ({ action }) => {
+  return (
+    <EthVaultDrawerProvider>
+      <EthVaultPageContent action={action} />
+    </EthVaultDrawerProvider>
   );
 };

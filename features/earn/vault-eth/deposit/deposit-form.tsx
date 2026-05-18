@@ -1,3 +1,5 @@
+import type { FC } from 'react';
+
 import { VaultFormSection } from 'features/earn/shared/vault-form-section';
 import { VaultForm } from 'features/earn/shared/vault-form';
 import { VaultTxInfo } from 'features/earn/shared/vault-tx-info';
@@ -14,7 +16,7 @@ import { ActionSwitch } from '../components/action-switch';
 import { UpgradeAssetsBlock } from '../upgrade-assets/upgrade-assets';
 import { useEthVaultAvailable } from '../hooks/use-vault-available';
 
-export const EthVaultDepositForm = () => {
+export const EthVaultDepositForm: FC = () => {
   const { isEthVaultAvailable, isDepositEnabled, depositPauseReasonText } =
     useEthVaultAvailable();
 
