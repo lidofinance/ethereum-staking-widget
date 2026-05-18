@@ -19,7 +19,6 @@ import type {
   ManifestConfigPage,
   ManifestEntry,
 } from 'config/external-config';
-import { getBackwardCompatibleConfig } from 'config/external-config/frontend-fallback';
 
 type PreviewData = { manifest: ManifestEntry };
 
@@ -77,7 +76,6 @@ export const getDefaultStaticProps = <
         config.defaultChain,
         config.manifestOverride,
       );
-      ssrManifest.config = getBackwardCompatibleConfig(ssrManifest.config);
 
       const { props: customProps, ...rest } = (await custom({
         ...context,

@@ -5,7 +5,7 @@ import { useRouterPath } from 'shared/hooks/use-router-path';
 import { useConfig } from 'config';
 import {
   ManifestConfigPage,
-  ManifestConfigPageEnum,
+  ManifestConfigPages,
 } from 'config/external-config';
 import { HOME_PATH } from 'consts/urls';
 
@@ -27,7 +27,7 @@ export const ExternalForbiddenRouteProvider = ({
       const forbiddenPath = paths.find((pathKey) => path.includes(pathKey));
       if (
         forbiddenPath &&
-        forbiddenPath !== ManifestConfigPageEnum.Stake &&
+        forbiddenPath !== ManifestConfigPages.Stake &&
         pages[forbiddenPath]?.shouldDisable
       ) {
         setShowContent(false);
