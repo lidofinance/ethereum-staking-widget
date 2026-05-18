@@ -1,7 +1,7 @@
 /**
  * Maps the `Referer` header to a small allow-listed keyspace to bound
  * Prometheus label cardinality. Anything off the list collapses to 'unknown';
- * recover originals from nginx access logs if needed.
+ * raw values can be recovered from nginx access logs when needed.
  *
  * IPFS gateways are intentionally NOT matched — IPFS builds are static and
  * don't call `/api/*`, so an IPFS-Referer on a server route is anomalous.

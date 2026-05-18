@@ -3,7 +3,7 @@ import { isAddress } from 'viem';
 
 // MAX_LIMIT: 10× UI page size (PAGE_ITEMS=10 in features/rewards/constants.ts).
 // MAX_SKIP:  ~10k pages — well above any realistic UI deep-paging.
-// .strict() below rejects unknown keys (also prevents cache-key padding).
+// .strict() below rejects unknown keys (keeps the cache keyspace bounded).
 export const MAX_LIMIT = 100;
 export const MAX_SKIP = 100_000;
 

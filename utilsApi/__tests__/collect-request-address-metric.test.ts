@@ -74,11 +74,11 @@ describe('collectRequestAddressMetric', () => {
     });
   });
 
-  it('categorizes attacker-controlled Referer to "unknown"', async () => {
+  it('categorizes off-allow-list Referer to "unknown"', async () => {
     const { counter, recorded } = makeCounterMock();
     await collectRequestAddressMetric({
       calls: [makeEthCall(VALID_UNKNOWN_TO)],
-      referer: 'https://attacker.example/',
+      referer: 'https://external.example/',
       chainId: CHAINS.Mainnet,
       metrics: counter,
     });

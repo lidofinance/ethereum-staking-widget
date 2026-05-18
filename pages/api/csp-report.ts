@@ -8,7 +8,7 @@ import {
 import { cspReportHandler } from 'utilsApi/csp-report-handler';
 
 // 32KB fits original-policy + Reporting API v1 batched reports;
-// well under Next.js' 1MB default to limit large-body abuse.
+// well under Next.js' 1MB default to keep body sizes bounded.
 export const config = {
   api: {
     bodyParser: { sizeLimit: '32kb' },

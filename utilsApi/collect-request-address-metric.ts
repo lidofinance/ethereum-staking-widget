@@ -14,10 +14,11 @@ import { getFunctionNameFromAbi } from './get-function-name-from-abi';
 /**
  * Increments the eth_call Counter per batch entry. Labels bounded:
  * `address` / `methodEncoded` are kept raw only for allow-listed contracts;
- * for unknown contracts both collapse to `UNKNOWN_LABEL` so attackers can't
- * grow prom-client's in-memory store via random `to` / selectors.
+ * for unknown contracts both collapse to `UNKNOWN_LABEL` so prom-client's
+ * in-memory label store stays bounded regardless of incoming traffic shape.
  *
- * Per-call try/catch: a malformed entry can't drop metrics for siblings.
+ * Per-call try/catch isolates each entry: a malformed call cannot drop
+ * metrics for siblings in the same batch.
  *
  * Separate file: lets tests import without pulling in `utilsApi`'s ESM chain.
  */

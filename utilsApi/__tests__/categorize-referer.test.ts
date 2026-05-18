@@ -56,29 +56,29 @@ describe('categorizeReferer', () => {
     );
   });
 
-  it('does not match attacker-controlled "*.ipfs.*" subdomains', () => {
-    expect(categorizeReferer('https://evil.ipfs.attacker.example/')).toBe(
+  it('does not match arbitrary "*.ipfs.*" subdomains', () => {
+    expect(categorizeReferer('https://foo.ipfs.external.example/')).toBe(
       REFERER_UNKNOWN,
     );
     expect(
-      categorizeReferer('https://stake.lido.fi.ipfs.attacker.example/'),
+      categorizeReferer('https://stake.lido.fi.ipfs.external.example/'),
     ).toBe(REFERER_UNKNOWN);
   });
 
   it('collapses arbitrary external hosts to "unknown"', () => {
-    expect(categorizeReferer('https://attacker.example/')).toBe(
+    expect(categorizeReferer('https://external.example/')).toBe(
       REFERER_UNKNOWN,
     );
     expect(
-      categorizeReferer('https://attacker.example/?ip=' + 'x'.repeat(100)),
+      categorizeReferer('https://external.example/?ip=' + 'x'.repeat(100)),
     ).toBe(REFERER_UNKNOWN);
-    expect(categorizeReferer('https://lido.fi.attacker.example/')).toBe(
+    expect(categorizeReferer('https://lido.fi.external.example/')).toBe(
       REFERER_UNKNOWN,
     );
   });
 
   it('rejects look-alike hosts that pass naive substring matching', () => {
-    expect(categorizeReferer('https://fake-stake.lido.fi.evil.example/')).toBe(
+    expect(categorizeReferer('https://fake-stake.lido.fi.other.example/')).toBe(
       REFERER_UNKNOWN,
     );
   });

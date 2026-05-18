@@ -2,8 +2,9 @@ import type { API } from '@lidofinance/next-api-wrapper';
 
 /**
  * Handler for `/api/csp-report`. Nests payload under `violation` (never spread)
- * so attacker keys can't shadow the `type` log discriminator. Parses string
- * bodies in try/catch and always answers 200 — a 500 would poison telemetry.
+ * so user-controlled keys cannot shadow the `type` log discriminator. Parses
+ * string bodies in try/catch and always answers 200 — a 500 would poison
+ * telemetry.
  *
  * Separate file: lets tests import without pulling in `utilsApi`'s ESM chain.
  */

@@ -59,7 +59,7 @@ describe('cspReportHandler', () => {
     expect(res._sent).toEqual({ status: 'ok' });
   });
 
-  it('does NOT allow attacker to shadow the synthetic `type` field', async () => {
+  it('nests payload so caller `type` cannot shadow the synthetic discriminator', async () => {
     const body = {
       type: 'AccessLog',
       userId: 'admin',

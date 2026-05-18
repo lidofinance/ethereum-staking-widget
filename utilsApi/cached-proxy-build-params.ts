@@ -2,7 +2,8 @@ import type { NextApiRequest } from 'next';
 
 /**
  * Builds URLSearchParams for the cache key and upstream URL.
- * When `allowedQueryParams` is set, any other key is dropped.
+ * When `allowedQueryParams` is set, any other key is dropped — keeps the cache
+ * keyspace bounded and the upstream URL deterministic.
  *
  * Separate file: lets tests import without pulling in `utilsApi`'s ESM chain.
  */
