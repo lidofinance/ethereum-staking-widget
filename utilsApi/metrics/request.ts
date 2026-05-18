@@ -48,7 +48,7 @@ export class RequestMetrics {
   ethCallToAddressInit() {
     return new Counter({
       name: METRICS_PREFIX + METRIC_NAMES.ETH_CALL_ADDRESS_TO,
-      help: 'eth_call invocations. Labels are bounded: address / methodEncoded are kept raw only when the contract is in METRIC_CONTRACT_ADDRESSES allow-list (so cardinality is bounded by the allow-list × known selectors). For unknown contracts they collapse to "unknown" — recover specific raw values from nginx access logs by timestamp.',
+      help: 'eth_call invocations.',
       labelNames: [
         'address',
         'contractName',

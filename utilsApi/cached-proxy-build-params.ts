@@ -3,8 +3,7 @@ import type { NextApiRequest } from 'next';
 /**
  * Builds the URLSearchParams used for both the cache key and the upstream URL
  * inside `createCachedProxy`. When `allowedQueryParams` is set, any query key
- * outside the allow-list is dropped — this prevents attacker-padded query
- * strings from blowing up cache cardinality AND from reaching the upstream.
+ * outside the allow-list is dropped.
  *
  * Lives in its own file so unit tests can import it without pulling in the
  * `utilsApi` index re-export chain (which transitively imports project `.mjs`
