@@ -1,43 +1,58 @@
 import type { NextApiRequest } from 'next';
 import { API } from '@lidofinance/next-api-wrapper';
-import { Cache } from 'memory-cache';
+import { LRUCache } from 'lru-cache';
+
 import { responseTimeExternalMetricWrapper } from './fetchApiWrapper';
 import { standardFetcher } from 'utils/standardFetcher';
 import { config } from 'config';
 import { FetcherError } from 'utils/fetcherError';
 import { ETH_API_ROUTES, getEthApiPath } from 'consts/api';
+import { buildParams } from './cached-proxy-build-params';
+
+// Re-export for callers who don't want to reach into the build-params module.
+export { buildParams } from './cached-proxy-build-params';
+
+const DEFAULT_CACHE_MAX_ENTRIES = 200;
 
 type ProxyOptions = {
   proxyUrl: string | ((req: NextApiRequest) => Promise<string>);
   cacheTTL: number;
   timeout?: number;
   ignoreParams?: boolean;
+  /**
+   * Whitelist of query keys forwarded to the upstream and included in the
+   * cache key. When undefined, all query params are used (backwards-compatible).
+   * Prevents cache-key cardinality blow-up via padded query strings AND
+   * stops attacker-padded keys from reaching the upstream service.
+   */
+  allowedQueryParams?: string[];
   transformData?: (data: any) => any;
   metricsHost?: string;
+  /**
+   * Hard ceiling on cache entries. Prevents memory pressure under high
+   * RPS / wide query keyspaces. Defaults to 200 — covers any realistic
+   * concurrency for our routes.
+   */
+  cacheMaxEntries?: number;
 };
 
 export const createCachedProxy = ({
   cacheTTL,
   proxyUrl,
   ignoreParams,
+  allowedQueryParams,
   timeout = 5000,
   transformData = (data) => data,
   metricsHost,
+  cacheMaxEntries = DEFAULT_CACHE_MAX_ENTRIES,
 }: ProxyOptions): API => {
-  const cache = new Cache<string, any>();
+  const cache = new LRUCache<string, any>({
+    max: cacheMaxEntries,
+    ttl: cacheTTL,
+  });
   return async (req, res) => {
-    const params =
-      ignoreParams || Object.keys(req.query).length === 0
-        ? null
-        : new URLSearchParams(
-            Object.entries(req.query).reduce(
-              (obj, [k, v]) => {
-                if (typeof v === 'string') obj[k] = v;
-                return obj;
-              },
-              {} as Record<string, string>,
-            ),
-          );
+    const params = buildParams(req.query, ignoreParams, allowedQueryParams);
+
     // Generate the actual proxy URL, passing req if the function accepts it
     const proxyUrlString =
       typeof proxyUrl === 'function' ? await proxyUrl(req) : proxyUrl;
@@ -66,7 +81,7 @@ export const createCachedProxy = ({
 
       const transformedData = transformData(data) ?? data;
 
-      cache.put(cacheKey, transformedData, cacheTTL);
+      cache.set(cacheKey, transformedData);
       res.json(transformedData);
     } catch (e) {
       if (e instanceof FetcherError && e.status >= 400 && e.status < 500) {

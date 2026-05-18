@@ -1,5 +1,4 @@
 import type { Histogram, Counter } from 'prom-client';
-import { type Abi, getAddress, toFunctionSelector } from 'viem';
 
 import { getStatusLabel } from '@lidofinance/api-metrics';
 import {
@@ -14,11 +13,9 @@ import { CHAINS } from '@lidofinance/lido-ethereum-sdk/common';
 
 import { config, secretConfig } from 'config';
 
-import {
-  METRIC_CONTRACT_ADDRESSES,
-  getMetricContractAbi,
-  MetricContractName,
-} from './contractAddressesMetricsMap';
+import { collectRequestAddressMetric } from './collect-request-address-metric';
+
+export { getFunctionNameFromAbi } from './get-function-name-from-abi';
 
 export enum HttpMethod {
   GET = 'GET',
@@ -31,23 +28,6 @@ export enum HttpMethod {
   TRACE = 'TRACE',
   PATCH = 'PATCH',
 }
-
-export const getFunctionNameFromAbi = (
-  abi: Abi,
-  methodEncoded: string,
-): string | null => {
-  for (const item of abi) {
-    if (item.type === 'function') {
-      const selector = toFunctionSelector(
-        `${item.name}(${item.inputs.map((i: any) => i.type).join(',')})`,
-      );
-      if (selector === methodEncoded) {
-        return item.name;
-      }
-    }
-  }
-  return null;
-};
 
 export const extractErrorMessage = (
   error: unknown,
@@ -128,75 +108,6 @@ export const responseTimeMetric =
       endMetric({ status });
     }
   };
-
-const parseRefererUrl = (referer: string) => {
-  if (!referer) return null;
-  try {
-    const url = new URL(referer);
-    return `${url.origin}${url.pathname}`;
-  } catch (error) {
-    return null;
-  }
-};
-
-const collectRequestAddressMetric = async ({
-  calls,
-  referer,
-  chainId,
-  metrics,
-}: {
-  calls: any[];
-  referer: string;
-  chainId: CHAINS;
-  metrics: Counter<string>;
-}) => {
-  const refererUrlParsed = parseRefererUrl(referer);
-  calls.forEach((call: any) => {
-    if (
-      typeof call === 'object' &&
-      call.method === 'eth_call' &&
-      call.params[0].to
-    ) {
-      const { to, data } = call.params[0];
-      const address = getAddress(to);
-      const contractName = METRIC_CONTRACT_ADDRESSES?.[chainId]?.[address];
-      const methodEncoded = data?.slice(0, 10); // `0x` and 8 next symbols
-
-      let methodDecoded = 'N/A';
-      if (!methodEncoded || methodEncoded.length !== 10) {
-        console.warn(`Invalid methodEncoded: ${methodEncoded}`);
-      } else {
-        try {
-          if (contractName) {
-            const abi = getMetricContractAbi(
-              contractName as MetricContractName,
-            );
-            if (!abi) {
-              console.warn(`ABI not found for contract: ${contractName}`);
-            } else {
-              const functionName = getFunctionNameFromAbi(abi, methodEncoded);
-              methodDecoded = functionName || 'Unknown Function';
-            }
-          }
-        } catch (error) {
-          console.warn(
-            `[collectRequestAddressMetric] failed to decode ${methodEncoded} method for ${contractName}: ${error}`,
-          );
-        }
-      }
-
-      metrics
-        .labels({
-          address,
-          referer: refererUrlParsed || 'N/A',
-          contractName: contractName || 'N/A',
-          methodEncoded: methodEncoded || 'N/A',
-          methodDecoded: methodDecoded || 'N/A',
-        })
-        .inc(1);
-    }
-  });
-};
 
 export const requestAddressMetric =
   (metrics: Counter<string>): RequestWrapper =>

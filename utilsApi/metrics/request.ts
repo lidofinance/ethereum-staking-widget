@@ -5,7 +5,9 @@ export class RequestMetrics {
   apiTimings: Histogram<'hostname' | 'route' | 'entity' | 'status'>;
   apiTimingsExternal: Histogram<'hostname' | 'route' | 'entity' | 'status'>;
   requestCounter: Counter<'route'>;
-  ethCallToAddress: Counter<'address' | 'referrer'>;
+  ethCallToAddress: Counter<
+    'address' | 'contractName' | 'methodEncoded' | 'methodDecoded' | 'referer'
+  >;
   ssrCounter: Counter<'revalidate'>;
   validationFileLoadError: Counter<'error'>;
 
@@ -46,13 +48,13 @@ export class RequestMetrics {
   ethCallToAddressInit() {
     return new Counter({
       name: METRICS_PREFIX + METRIC_NAMES.ETH_CALL_ADDRESS_TO,
-      help: 'Addresses presented as "to" in eth_call requests',
+      help: 'eth_call invocations. Labels are bounded: address / methodEncoded are kept raw only when the contract is in METRIC_CONTRACT_ADDRESSES allow-list (so cardinality is bounded by the allow-list × known selectors). For unknown contracts they collapse to "unknown" — recover specific raw values from nginx access logs by timestamp.',
       labelNames: [
         'address',
-        'referer',
         'contractName',
         'methodEncoded',
         'methodDecoded',
+        'referer',
       ],
       registers: [this.registry],
     });
