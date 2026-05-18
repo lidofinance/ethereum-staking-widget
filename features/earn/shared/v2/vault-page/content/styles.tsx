@@ -115,12 +115,24 @@ export const TopSectionStatSubValue = styled.span`
   line-height: 24px;
 `;
 
-export const TopSectionStatValue = styled.span<{ $accent?: boolean }>`
+export const TopSectionStatValueTooltipTarget = styled.span`
+  width: fit-content;
+  display: inline-flex;
+`;
+
+export const TopSectionStatValue = styled.span<{
+  $accent?: boolean;
+  $muted?: boolean;
+}>`
   font-weight: 700;
   font-size: ${({ theme }) => theme.fontSizesMap.lg}px;
   line-height: 28px;
-  color: ${({ $accent }) =>
-    $accent ? 'var(--lido-color-success)' : 'var(--lido-color-text)'};
+  color: ${({ $accent, $muted }) =>
+    $muted
+      ? 'var(--lido-color-textSecondary)'
+      : $accent
+        ? 'var(--lido-color-success)'
+        : 'var(--lido-color-text)'};
 
   ${({ theme }) => theme.mediaQueries.md} {
     font-size: ${({ theme }) => theme.fontSizesMap.xs}px;

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button } from '@lidofinance/lido-ui';
+import { Button, useBreakpoint } from '@lidofinance/lido-ui';
 
 import {
   CardWrapper,
@@ -40,6 +40,8 @@ type VaultStats = {
   apxLabel: string;
   isLoading?: boolean;
   apxHint?: React.ReactNode;
+  apxUpdateTooltipText?: React.ReactNode;
+  isApxStale?: boolean;
   compact?: boolean;
 };
 
@@ -83,6 +85,19 @@ export const VaultCard: React.FC<VaultCardProps> = ({
   )?.deprecated;
 
   const depositHref = `${EARN_PATH}/${urlSlug}/${EARN_VAULT_DEPOSIT_SLUG}`;
+
+  const isMobile = useBreakpoint('md');
+
+  const shouldShowApxUpdateTooltip =
+    !!stats.apx && !stats.isLoading && !!stats.apxUpdateTooltipText;
+
+  const apxValue = (
+    <StatValue $accent $muted={stats.isApxStale}>
+      <InlineLoader isLoading={stats.isLoading} width={70}>
+        <FormatPercent value={stats.apx} decimals="percent" />
+      </InlineLoader>
+    </StatValue>
+  );
 
   return (
     <CardWrapper $variant={variant} data-testid={`${urlSlug}-vault-card`}>
@@ -141,11 +156,16 @@ export const VaultCard: React.FC<VaultCardProps> = ({
               {stats.apxHint}
             </VaultTip>
           </StatLabel>
-          <StatValue $accent>
-            <InlineLoader isLoading={stats.isLoading} width={70}>
-              <FormatPercent value={stats.apx} decimals="percent" />
-            </InlineLoader>
-          </StatValue>
+          {shouldShowApxUpdateTooltip ? (
+            <StyledTooltip
+              title={stats.apxUpdateTooltipText}
+              placement={isMobile ? 'topRight' : 'topLeft'}
+            >
+              {apxValue}
+            </StyledTooltip>
+          ) : (
+            apxValue
+          )}
         </StatItem>
         <StatItem data-testid="tvl">
           <StatLabel>TVL</StatLabel>

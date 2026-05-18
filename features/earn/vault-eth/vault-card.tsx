@@ -8,6 +8,7 @@ import { EARN_VAULT_ETH_SLUG } from '../consts';
 import { useEthVaultStats } from './hooks/use-vault-stats';
 import { useEthVaultApy } from './hooks/use-vault-apy';
 import { EthVaultApyHint } from './components/apy-hint';
+import { ApyUpdateTooltipText } from '../shared/v2/apy-update-tooltip-text';
 import {
   ETH_VAULT_DESCRIPTION,
   ETH_VAULT_TITLE,
@@ -19,7 +20,12 @@ import { useEthVaultAvailable } from './hooks/use-vault-available';
 import { ProtectedTooltip } from './protected-tooltip';
 
 export const EthVaultCard = () => {
-  const { apy, isLoading: isApyLoading } = useEthVaultApy();
+  const {
+    apy,
+    apyUpdateTimestampMs,
+    isApyStale,
+    isLoading: isApyLoading,
+  } = useEthVaultApy();
   const { tvlUsd, isLoading: isTvlLoading } = useEthVaultStats();
   const { listWarningText } = useEthVaultAvailable();
 
@@ -41,6 +47,10 @@ export const EthVaultCard = () => {
         apx: apy,
         apxLabel: 'APY* (7d avg.)',
         apxHint: <EthVaultApyHint />,
+        apxUpdateTooltipText: (
+          <ApyUpdateTooltipText timestampMs={apyUpdateTimestampMs} />
+        ),
+        isApxStale: isApyStale,
         isLoading: isApyLoading || isTvlLoading,
       }}
       position={{

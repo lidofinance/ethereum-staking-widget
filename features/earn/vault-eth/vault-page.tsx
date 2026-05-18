@@ -17,6 +17,7 @@ import { useEthVaultApy } from './hooks/use-vault-apy';
 import { useEthVaultPosition } from './hooks/use-position';
 import { EARN_VAULT_DEPOSIT_SLUG, EARN_VAULT_WITHDRAW_SLUG } from '../consts';
 import { EthVaultApyHint } from './components/apy-hint';
+import { ApyUpdateTooltipText } from '../shared/v2/apy-update-tooltip-text';
 import {
   ETH_VAULT_DESCRIPTION,
   ETH_VAULT_TITLE,
@@ -163,7 +164,12 @@ const DATA = {
 export const EthVaultPage: FC<{
   action: typeof EARN_VAULT_DEPOSIT_SLUG | typeof EARN_VAULT_WITHDRAW_SLUG;
 }> = ({ action }) => {
-  const { apy, isLoading: isApyLoading } = useEthVaultApy();
+  const {
+    apy,
+    apyUpdateTimestampMs,
+    isApyStale,
+    isLoading: isApyLoading,
+  } = useEthVaultApy();
   const { tvlUsd, isLoading: isTvlLoading } = useEthVaultStats();
   const {
     data: earnethPositionData,
@@ -183,6 +189,10 @@ export const EthVaultPage: FC<{
         isApxLoading={isApyLoading}
         isTvlLoading={isTvlLoading}
         apxHint={<EthVaultApyHint />}
+        apxUpdateTooltipText={
+          <ApyUpdateTooltipText timestampMs={apyUpdateTimestampMs} />
+        }
+        isApxStale={isApyStale}
         sidePanel={<EthVaultPositionManager action={action} />}
         vaultName="ethVault"
         balance={

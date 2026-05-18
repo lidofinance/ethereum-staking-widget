@@ -34,6 +34,7 @@ export type EthVaultStatsFetchedData = z.infer<typeof ETH_VAULT_STATS_SCHEMA>;
 
 export const ETH_VAULT_APY_SCHEMA = z.object({
   apy: APY_SCHEMA,
+  apyLastUpdate: UNIX_TIMESTAMP_SCHEMA,
 });
 export type EthVaultApyFetchedData = z.infer<typeof ETH_VAULT_APY_SCHEMA>;
 
@@ -52,8 +53,8 @@ export const fetchEthVaultStatsApr = async () => {
   const ETH_APY_ENDPOINT = `${ETH_VAULT_STATS_ORIGIN}/v1/chain/${CHAINS.Mainnet}/core-vaults/${ethVaultAddress}/apy`;
 
   const data = await standardFetcher<EthVaultApyFetchedData>(ETH_APY_ENDPOINT);
-  const apy = ETH_VAULT_APY_SCHEMA.parse(data).apy;
-  return apy;
+  const { apy, apyLastUpdate } = ETH_VAULT_APY_SCHEMA.parse(data);
+  return { apy, apyLastUpdate };
 };
 
 // Converts a case sensitive TokenSymbol to an EthDepositToken which must be lowercase.
