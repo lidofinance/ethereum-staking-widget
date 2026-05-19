@@ -28,22 +28,14 @@ import { Link } from '@lidofinance/lido-ui';
 
 const DvvRewardsTip = () => (
   <>
-    <p>
-      Obol rewards <b>update weekly</b> and must be claimed manually.
-    </p>
-    <p>
-      SSV rewards <b>update monthly</b> and must be claimed manually.
-    </p>
+    <p>Obol rewards must be claimed manually.</p>
+    <p>SSV rewards must be claimed manually.</p>
     <Link href="https://docs.mellow.finance/points/overview">Learn more</Link>
   </>
 );
 
 const DvvPointsTip = () => (
   <p>
-    Points are <b>updated every hour</b>.
-    <br />
-    0.00025 points per hour per 1$.
-    <br />
     For more information about how Mellow points work, please visit{' '}
     <Link href="https://docs.mellow.finance/points/overview">
       the Mellow website
