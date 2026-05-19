@@ -1,20 +1,23 @@
 export { useExternalConfigContext } from './use-external-config-context';
 export { getFallbackedManifestEntry } from './frontend-fallback';
 export type {
-  ManifestConfig,
   Manifest,
   ManifestEntry,
   ExternalConfig,
+  ManifestConfig,
+  ManifestConfigVaultEntry,
+  ManifestConfigVaultApyType,
   ManifestConfigPage,
+  ManifestConfigDex,
+  ManifestConfigEarnVault,
 } from './types';
-export { ManifestConfigPageList, ManifestConfigPageEnum } from './types';
 export {
-  isManifestValid,
   getManifestKey,
-  isManifestEntryValid,
-  isEnabledDexesValid,
-  isFeatureFlagsValid,
-  isMultiChainBannerValid,
-  isPagesValid,
+  getLocalFallbackManifest,
   shouldRedirectToRoot,
 } from './utils';
+export {
+  ManifestSchema,
+  ManifestConfigPages,
+  ManifestConfigWithdrawalDexes,
+} from './validate';

@@ -17,6 +17,7 @@ import { useUsdVaultApy } from './hooks/use-vault-apy';
 import { useUsdVaultPosition } from './hooks/use-position';
 import { Disclaimers } from '../shared/v2/disclaimers';
 import { UsdVaultApyHint } from './components/apy-hint';
+import { ApyUpdateTooltipText } from '../shared/v2/apy-update-tooltip-text';
 import {
   USD_VAULT_DESCRIPTION,
   USD_VAULT_TITLE,
@@ -163,7 +164,12 @@ const DATA = {
 export const VaultPageUSD: FC<{
   action: typeof EARN_VAULT_DEPOSIT_SLUG | typeof EARN_VAULT_WITHDRAW_SLUG;
 }> = ({ action }) => {
-  const { apy, isLoading: isApyLoading } = useUsdVaultApy();
+  const {
+    apy,
+    apyUpdateTimestampMs,
+    isApyStale,
+    isLoading: isApyLoading,
+  } = useUsdVaultApy();
   const { tvlUsd, isLoading: isTvlLoading } = useUsdVaultStats();
   const {
     data: earnusdPositionData,
@@ -182,6 +188,10 @@ export const VaultPageUSD: FC<{
         isApxLoading={isApyLoading}
         isTvlLoading={isTvlLoading}
         apxHint={<UsdVaultApyHint />}
+        apxUpdateTooltipText={
+          <ApyUpdateTooltipText timestampMs={apyUpdateTimestampMs} />
+        }
+        isApxStale={isApyStale}
         sidePanel={<UsdVaultPositionManager action={action} />}
         vaultName="usdVault"
         balance={

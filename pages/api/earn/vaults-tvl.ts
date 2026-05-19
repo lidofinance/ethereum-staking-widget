@@ -8,9 +8,8 @@ import {
 } from '@lidofinance/next-api-wrapper';
 import { LidoSDKWrap } from '@lidofinance/lido-ethereum-sdk/wrap';
 
+import { getLocalFallbackManifest } from 'config/external-config';
 import { getExternalConfig } from 'utilsApi/get-external-config';
-
-import LocalManifestRaw from 'IPFS.json';
 
 import { config, secretConfig } from 'config';
 import { API_ROUTES } from 'consts/api';
@@ -25,7 +24,6 @@ import {
 } from 'utilsApi';
 import Metrics from 'utilsApi/metrics';
 import { CHAINS } from 'consts/chains';
-import { Manifest } from 'config/external-config/types';
 
 import {
   getGGVAccountantContract,
@@ -49,9 +47,9 @@ export type VaultsTvlResponse = {
 
 const DEFAULT_CACHE_TTL = 10 * 60 * 1000; // 10 minutes
 
-const LocalManifest = LocalManifestRaw as unknown as Manifest;
+const LocalManifest = getLocalFallbackManifest();
 const vaultsFromLocalManifest =
-  LocalManifest[CHAINS.Mainnet].config.earnVaults || [];
+  LocalManifest[CHAINS.Mainnet]?.config.earnVaults || [];
 
 const caches: Record<string, CacheClass<string, any>> = {};
 const cacheKeys: Record<string, string> = {};
@@ -135,8 +133,8 @@ const fetchers: {
 const handler = async (_: NextApiRequest, res: NextApiResponse) => {
   try {
     const manifestConfig = await getExternalConfig();
-    const vaultsFromConfig = manifestConfig?.config.earnVaults || [];
-    const vaults = vaultsFromConfig.filter((v) => v.name in fetchers);
+    const vaultsFromConfig = manifestConfig.earnVaults || [];
+    const vaults = vaultsFromConfig.filter((vault) => vault.name in fetchers);
 
     const fetchPromises = vaults.map((vault) =>
       fetchWithCache({
