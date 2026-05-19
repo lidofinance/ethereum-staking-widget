@@ -44,6 +44,7 @@ const EthVaultWithdrawFormContent: FC = () => {
             <EthVaultWithdrawWillReceive />
             <VaultTxInfoRow
               title="Waiting time"
+              data-testId={'waiting-time'}
               help={
                 <>
                   Withdrawals take up to 72 hours to process. Once ready, your

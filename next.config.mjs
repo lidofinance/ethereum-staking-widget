@@ -144,6 +144,17 @@ export default withBundleAnalyzer({
       new URL('utils/zod-setup.ts', import.meta.url),
     );
 
+    // Deduplicate @noble/hashes and @noble/curves: ox@0.9.3 inside @walletconnect/utils
+    // bundles a stale @noble/hashes@1.5.0 that is missing `anumber`, which
+    // @noble/curves@1.9.1 (also nested there) calls at runtime.
+    // Force webpack to resolve both to the root-level copies (1.8.0 / 1.9.1).
+    config.resolve.alias['@noble/hashes'] = fileURLToPath(
+      new URL('node_modules/@noble/hashes', import.meta.url),
+    );
+    config.resolve.alias['@noble/curves'] = fileURLToPath(
+      new URL('node_modules/@noble/curves', import.meta.url),
+    );
+
     return config;
   },
   async headers() {

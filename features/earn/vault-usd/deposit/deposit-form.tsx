@@ -17,7 +17,7 @@ export const UsdVaultDepositForm = () => {
 
   return (
     <UsdVaultDepositFormProvider>
-      <VaultForm data-testid="deposit-form-usd">
+      <VaultForm data-testid="deposit-form">
         <VaultDepositWarning
           isDepositEnabled={isDepositEnabled}
           isVaultAvailable={isUsdVaultAvailable}
