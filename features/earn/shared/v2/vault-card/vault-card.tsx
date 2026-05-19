@@ -89,7 +89,10 @@ export const VaultCard: React.FC<VaultCardProps> = ({
   const isMobile = useBreakpoint('md');
 
   const shouldShowApxUpdateTooltip =
-    !!stats.apx && !stats.isLoading && !!stats.apxUpdateTooltipText;
+    stats.apx != null &&
+    Number.isFinite(stats.apx) &&
+    !stats.isLoading &&
+    !!stats.apxUpdateTooltipText;
 
   const apxValue = (
     <StatValue $accent $muted={stats.isApxStale} data-testid="apx-value">

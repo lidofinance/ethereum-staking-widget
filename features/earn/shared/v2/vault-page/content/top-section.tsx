@@ -70,7 +70,10 @@ export const TopSection: FC<TopSectionProps> = (props) => {
   } = props;
   const isMobile = useBreakpoint('md');
   const shouldShowApxUpdateTooltip =
-    !!apx && !isApxLoading && !!apxUpdateTooltipText;
+    apx != null &&
+    Number.isFinite(apx) &&
+    !isApxLoading &&
+    !!apxUpdateTooltipText;
 
   const apxValue = (
     <TopSectionStatValueTooltipTarget>
