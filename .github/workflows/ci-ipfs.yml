@@ -27,7 +27,7 @@ jobs:
       - name: Install node
         uses: actions/setup-node@v6
         with:
-          node-version: 20
+          node-version: 24
           cache: 'yarn'
       - name: Set tag, commit and branch name
         if: env.is_create_release == 'true'
