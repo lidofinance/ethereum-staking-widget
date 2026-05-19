@@ -1,4 +1,5 @@
 import type { ComponentType, FC, SVGProps } from 'react';
+import { Tooltip, useBreakpoint } from '@lidofinance/lido-ui';
 
 import {
   FormatLargeAmount,
@@ -23,6 +24,7 @@ import {
   TopSectionStatLabel,
   TopSectionStatSubValue,
   TopSectionStatValue,
+  TopSectionStatValueTooltipTarget,
   TopSectionStatValueGroup,
 } from './styles';
 
@@ -44,6 +46,8 @@ type TopSectionProps = {
   apx?: number | null;
   tvlUsd?: number | null;
   apxHint?: React.ReactNode;
+  apxUpdateTooltipText?: React.ReactNode;
+  isApxStale?: boolean;
   isApxLoading?: boolean;
   isTvlLoading?: boolean;
   protectedBadgeTooltipText?: React.ReactNode;
@@ -57,11 +61,30 @@ export const TopSection: FC<TopSectionProps> = (props) => {
     apx,
     tvlUsd,
     apxHint,
+    apxUpdateTooltipText,
+    isApxStale,
     isApxLoading,
     isTvlLoading,
     protectedBadgeTooltipText,
     balance,
   } = props;
+  const isMobile = useBreakpoint('md');
+  const shouldShowApxUpdateTooltip =
+    !!apx && !isApxLoading && !!apxUpdateTooltipText;
+
+  const apxValue = (
+    <TopSectionStatValueTooltipTarget>
+      <TopSectionStatValue
+        $accent
+        $muted={isApxStale}
+        data-testId={'apx-value'}
+      >
+        <InlineLoader isLoading={isApxLoading} width={70}>
+          <FormatPercent value={apx} decimals="percent" />
+        </InlineLoader>
+      </TopSectionStatValue>
+    </TopSectionStatValueTooltipTarget>
+  );
 
   return (
     <TopSectionStyled>
@@ -87,11 +110,16 @@ export const TopSection: FC<TopSectionProps> = (props) => {
             APY* (7d avg.)
             <VaultTip placement="bottomLeft">{apxHint}</VaultTip>
           </TopSectionStatLabel>
-          <TopSectionStatValue $accent data-testId={'apx-value'}>
-            <InlineLoader isLoading={isApxLoading} width={70}>
-              <FormatPercent value={apx} decimals="percent" />
-            </InlineLoader>
-          </TopSectionStatValue>
+          {shouldShowApxUpdateTooltip ? (
+            <Tooltip
+              title={apxUpdateTooltipText}
+              placement={isMobile ? 'topRight' : 'topLeft'}
+            >
+              {apxValue}
+            </Tooltip>
+          ) : (
+            apxValue
+          )}
         </TopSectionStatItem>
         <TopSectionStatItem>
           <TopSectionStatLabel data-testId={'tvl-label'}>

@@ -8,6 +8,7 @@ import { VaultListWarning } from '../shared/v2/vault-warning';
 import { useUsdVaultApy } from './hooks/use-vault-apy';
 import { useUsdVaultStats } from './hooks/use-vault-stats';
 import { UsdVaultApyHint } from './components/apy-hint';
+import { ApyUpdateTooltipText } from '../shared/v2/apy-update-tooltip-text';
 import {
   USD_VAULT_DESCRIPTION,
   USD_VAULT_TITLE,
@@ -19,7 +20,12 @@ import { ProtectedTooltip } from './protected-tooltip';
 import { useUsdVaultAvailable } from './hooks/use-vault-available';
 
 export const UsdVaultCard = () => {
-  const { apy, isLoading: isApyLoading } = useUsdVaultApy();
+  const {
+    apy,
+    apyUpdateTimestampMs,
+    isApyStale,
+    isLoading: isApyLoading,
+  } = useUsdVaultApy();
   const { tvlUsd, isLoading: isTvlLoading } = useUsdVaultStats();
   const {
     data: usdPositionData,
@@ -40,6 +46,10 @@ export const UsdVaultCard = () => {
         apx: apy,
         apxLabel: 'APY* (7d avg.)',
         apxHint: <UsdVaultApyHint />,
+        apxUpdateTooltipText: (
+          <ApyUpdateTooltipText timestampMs={apyUpdateTimestampMs} />
+        ),
+        isApxStale: isApyStale,
         isLoading: isApyLoading || isTvlLoading,
       }}
       position={{

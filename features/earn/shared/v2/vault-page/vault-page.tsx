@@ -51,6 +51,8 @@ type Props = {
   description: string;
   apx?: number | null;
   apxHint?: React.ReactNode;
+  apxUpdateTooltipText?: React.ReactNode;
+  isApxStale?: boolean;
   isApxLoading?: boolean;
   tvlUsd?: number | null;
   isTvlLoading?: boolean;
@@ -130,6 +132,8 @@ export const VaultPage: FC<Props> = (props) => {
           apx={props.apx}
           tvlUsd={props.tvlUsd}
           apxHint={props.apxHint}
+          apxUpdateTooltipText={props.apxUpdateTooltipText}
+          isApxStale={props.isApxStale}
           isApxLoading={props.isApxLoading}
           isTvlLoading={props.isTvlLoading}
           protectedBadgeTooltipText={protectedBadgeTooltipText}
