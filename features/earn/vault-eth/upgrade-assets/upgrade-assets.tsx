@@ -132,7 +132,7 @@ export const UpgradeAssetsBlock: FC = () => {
           }}
           data-testid={'howItWorksButton'}
         >
-          How it works?
+          How it works
         </UpgradeAssetsHowItWorksButton>
       </UpgradeAssetsHeader>
       {tokensWithBalance.map((token) => (
