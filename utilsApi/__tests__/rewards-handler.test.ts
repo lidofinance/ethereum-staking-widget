@@ -30,7 +30,7 @@ const makeReq = (query: Record<string, string>): NextApiRequest =>
 
 describe('createRewardsHandler', () => {
   it('forwards valid request to the proxy without touching response itself', async () => {
-    const proxy = jest
+    const proxy = vi
       .fn()
       .mockImplementation(
         async (_req: NextApiRequest, res: NextApiResponse) => {
@@ -51,7 +51,7 @@ describe('createRewardsHandler', () => {
   });
 
   it('returns 400 and does NOT invoke the proxy on invalid address', async () => {
-    const proxy = jest.fn();
+    const proxy = vi.fn();
     const handler = createRewardsHandler(proxy);
     const res = makeRes();
 
@@ -65,7 +65,7 @@ describe('createRewardsHandler', () => {
   });
 
   it('returns 400 on limit above MAX_LIMIT', async () => {
-    const proxy = jest.fn();
+    const proxy = vi.fn();
     const handler = createRewardsHandler(proxy);
     const res = makeRes();
 
@@ -76,7 +76,7 @@ describe('createRewardsHandler', () => {
   });
 
   it('returns 400 on unknown query keys (strict mode)', async () => {
-    const proxy = jest.fn();
+    const proxy = vi.fn();
     const handler = createRewardsHandler(proxy);
     const res = makeRes();
 
@@ -90,7 +90,7 @@ describe('createRewardsHandler', () => {
   });
 
   it('returns 400 on missing required `address`', async () => {
-    const proxy = jest.fn();
+    const proxy = vi.fn();
     const handler = createRewardsHandler(proxy);
     const res = makeRes();
 
@@ -101,7 +101,7 @@ describe('createRewardsHandler', () => {
   });
 
   it('forwards minimal valid request (address only) to proxy', async () => {
-    const proxy = jest
+    const proxy = vi
       .fn()
       .mockImplementation(
         async (_req: NextApiRequest, res: NextApiResponse) => {
@@ -118,7 +118,7 @@ describe('createRewardsHandler', () => {
   });
 
   it('returns 400 response body contains a `details` array of zod issues', async () => {
-    const proxy = jest.fn();
+    const proxy = vi.fn();
     const handler = createRewardsHandler(proxy);
     const res = makeRes();
 

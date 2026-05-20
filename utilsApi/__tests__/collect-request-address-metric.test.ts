@@ -1,8 +1,9 @@
 import { CHAINS } from '@lidofinance/lido-ethereum-sdk/common';
+import type { MockInstance } from 'vitest';
 
 // Empty map → tests cover the unknown-contract path. Mock also avoids
 // pulling in `config/` which transitively imports `env-dynamics.mjs`.
-jest.mock('../contractAddressesMetricsMap', () => ({
+vi.mock('../contractAddressesMetricsMap', () => ({
   METRIC_CONTRACT_ADDRESSES: {},
   getMetricContractAbi: () => null,
 }));
@@ -36,10 +37,10 @@ const makeCounterMock = () => {
 };
 
 describe('collectRequestAddressMetric', () => {
-  let warnSpy: jest.SpyInstance;
+  let warnSpy: MockInstance;
 
   beforeEach(() => {
-    warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => undefined);
+    warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
   });
 
   afterEach(() => {

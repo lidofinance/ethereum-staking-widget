@@ -1,4 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
+import type { MockInstance } from 'vitest';
 
 import { cspReportHandler } from 'utilsApi/csp-report-handler';
 
@@ -36,10 +37,10 @@ const makeReq = (body: unknown, method = 'POST'): NextApiRequest =>
   }) as unknown as NextApiRequest;
 
 describe('cspReportHandler', () => {
-  let warnSpy: jest.SpyInstance;
+  let warnSpy: MockInstance;
 
   beforeEach(() => {
-    warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => undefined);
+    warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
   });
 
   afterEach(() => {

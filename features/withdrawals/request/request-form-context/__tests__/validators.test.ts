@@ -1,6 +1,5 @@
-/* eslint-disable jest/expect-expect */
-/* eslint-disable jest/no-conditional-expect */
 import { TvlErrorPayload, __test__export } from '../validators';
+
 const {
   ValidationSplitRequest,
   ValidationTvlJoke,
@@ -11,34 +10,41 @@ const {
 const field = 'test_field';
 const balance = 5n;
 
+const getThrownError = (fn: () => void): unknown => {
+  try {
+    fn();
+  } catch (error) {
+    return error;
+  }
+
+  throw new Error('Expected function to throw');
+};
+
 describe('tvlJokeValidate', () => {
   it('should work', () => {
-    tvlJokeValidate(field, 10n, 12n, balance);
+    expect(() => tvlJokeValidate(field, 10n, 12n, balance)).not.toThrow();
   });
 
   it('should throw right error', () => {
     const value = 20n;
     const tvl = 10n;
     const fn = () => tvlJokeValidate(field, value, tvl, balance);
-    expect(fn).toThrow();
-    try {
-      fn();
-    } catch (e) {
-      expect(e).toMatchObject({
-        field,
-        type: ValidationTvlJoke.type,
-      });
-      expect(e).toHaveProperty('payload.balanceDiffSteth');
-      expect(
-        value - balance ===
-          (e as { payload: TvlErrorPayload }).payload.balanceDiffSteth,
-      ).toBe(true);
+    const error = getThrownError(fn);
 
-      expect(e).toHaveProperty('payload.tvlDiff');
-      expect(
-        value - tvl === (e as { payload: TvlErrorPayload }).payload.tvlDiff,
-      ).toBe(true);
-    }
+    expect(error).toMatchObject({
+      field,
+      type: ValidationTvlJoke.type,
+    });
+    expect(error).toHaveProperty('payload.balanceDiffSteth');
+    expect(
+      value - balance ===
+        (error as { payload: TvlErrorPayload }).payload.balanceDiffSteth,
+    ).toBe(true);
+
+    expect(error).toHaveProperty('payload.tvlDiff');
+    expect(
+      value - tvl === (error as { payload: TvlErrorPayload }).payload.tvlDiff,
+    ).toBe(true);
   });
 });
 
@@ -109,17 +115,14 @@ describe('validateSplitRequests', () => {
         minAmountPerRequest,
         maxRequestCount,
       );
-    expect(fn).toThrow();
-    try {
-      fn();
-    } catch (e) {
-      expect(e).toMatchObject({
-        field,
-        type: ValidationSplitRequest.type,
-      });
-      expect(e).toHaveProperty('payload.requestCount');
-      expect((e as any).payload.requestCount).toBe(maxRequestCount + 1);
-    }
+    const error = getThrownError(fn);
+
+    expect(error).toMatchObject({
+      field,
+      type: ValidationSplitRequest.type,
+    });
+    expect(error).toHaveProperty('payload.requestCount');
+    expect((error as any).payload.requestCount).toBe(maxRequestCount + 1);
   });
 
   it('should throw right error when cannot split because of left over', () => {
@@ -131,14 +134,11 @@ describe('validateSplitRequests', () => {
         minAmountPerRequest,
         maxRequestCount,
       );
-    expect(fn).toThrow();
-    try {
-      fn();
-    } catch (e) {
-      expect(e).toMatchObject({
-        field,
-        type: ValidationSplitRequest.type,
-      });
-    }
+    const error = getThrownError(fn);
+
+    expect(error).toMatchObject({
+      field,
+      type: ValidationSplitRequest.type,
+    });
   });
 });

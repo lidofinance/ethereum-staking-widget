@@ -159,6 +159,15 @@ export const extractCodeFromError = (
     return extractCodeFromError(error.error, false);
   }
 
+  if (
+    'data' in error &&
+    shouldDig &&
+    Array.isArray(error.data) &&
+    error.data[0]
+  ) {
+    return extractCodeFromError(error.data[0], false);
+  }
+
   return 0;
 };
 
