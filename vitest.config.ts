@@ -30,10 +30,6 @@ export default defineConfig({
   plugins: [react()],
   resolve: {
     alias: [
-      {
-        find: 'assets/earn',
-        replacement: resolve(projectRoot, 'test-utils/mocks/assets-earn.tsx'),
-      },
       ...projectAliases,
       {
         find: 'assets',
