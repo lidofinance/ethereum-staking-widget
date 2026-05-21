@@ -7,7 +7,7 @@ import { WITHDRAWALS_REQUEST_PATH } from 'consts/urls';
 
 export const HowLongToWithdraw: FC = () => {
   return (
-    <Accordion summary="How long does it take to withdraw?">
+    <Accordion summary="How long does it take to withdraw via Lido?">
       <p>
         On{' '}
         <LocalLink href={WITHDRAWALS_REQUEST_PATH}>Request&nbsp;tab</LocalLink>{' '}

@@ -16,23 +16,21 @@ import {
 import { useApiAddressValidation } from 'shared/hooks/use-api-address-validation';
 import { Address } from 'viem';
 
-const AddressValidationContext = createContext<{
+type AddressValidationContextType = {
   isValidAddress: boolean;
   setIsValidAddress: (show: boolean) => void;
   validateAddress: (address?: Address) => Promise<boolean>;
-}>({
-  isValidAddress: true,
-  setIsValidAddress: () => {},
-  validateAddress: async () => {
-    return true;
-  },
-});
+  isMarkedInvalid: boolean;
+};
+
+const AddressValidationContext =
+  createContext<AddressValidationContextType | null>(null);
 AddressValidationContext.displayName = 'AddressValidationContext';
 
 export const useAddressValidation = () => {
   const value = useContext(AddressValidationContext);
   invariant(
-    value !== null,
+    value,
     'useAddressValidation was used used outside of AddressValidationProvider',
   );
   return value;
@@ -155,7 +153,10 @@ export const AddressValidationProvider = ({
   validationFile?: AddressValidationFile;
 }) => {
   const validateAddressAPI = useApiAddressValidation();
+  // Tracks UI state, can be reset
   const [isValidAddress, setIsValidAddress] = useState(true);
+  // Track address state, cannot be reset by user action
+  const [isMarkedInvalid, setIsMarkedInvalid] = useState(false);
   const queryClient = useQueryClient();
 
   // File validation query (works independently of API settings)
@@ -202,7 +203,7 @@ export const AddressValidationProvider = ({
         // API responded successfully - use API result
         if (apiResult !== null && apiResult.isValid !== undefined) {
           setIsValidAddress(apiResult.isValid);
-
+          setIsMarkedInvalid(!apiResult.isValid);
           return apiResult.isValid;
         }
 
@@ -210,19 +211,21 @@ export const AddressValidationProvider = ({
         if (apiResult === null && validationFile) {
           const fileResult = await validateAddressFile(addressToValidate);
           setIsValidAddress(fileResult.isValid);
-
+          setIsMarkedInvalid(!fileResult.isValid);
           return fileResult.isValid;
         }
       } else if (validationFile) {
         // Case 2: API is disabled - use file validation when available
         const fileResult = await validateAddressFile(addressToValidate);
         setIsValidAddress(fileResult.isValid);
+        setIsMarkedInvalid(!fileResult.isValid);
 
         return fileResult.isValid;
       }
 
       // Default to valid if no validation data available
       setIsValidAddress(true);
+      setIsMarkedInvalid(false);
       return true;
     },
     [validateAddressAPI, validateAddressFile, validationFile],
@@ -233,6 +236,7 @@ export const AddressValidationProvider = ({
       value={{
         isValidAddress,
         setIsValidAddress,
+        isMarkedInvalid,
         validateAddress,
       }}
     >

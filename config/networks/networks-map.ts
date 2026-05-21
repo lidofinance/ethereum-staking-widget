@@ -26,6 +26,8 @@ export const API_NAMES = {};
 export const CONTRACT_NAMES = {
   // Main Lido contract
   lido: 'lido',
+  lidoLocator: 'lidoLocator',
+  daoAgent: 'daoAgent',
   wsteth: 'wsteth',
   withdrawalQueue: 'withdrawalQueue',
   // SI
@@ -43,7 +45,7 @@ export const CONTRACT_NAMES = {
   aggregatorStEthUsdPriceFeed: 'aggregatorStEthUsdPriceFeed',
   stakingRouter: 'stakingRouter',
   stethCurve: 'stethCurve',
-  lidoLocator: 'lidoLocator',
+
   ensPublicResolver: 'ensPublicResolver',
   ensRegistry: 'ensRegistry',
   // 3rd party tokens
