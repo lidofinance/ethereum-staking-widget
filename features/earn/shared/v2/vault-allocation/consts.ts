@@ -21,14 +21,17 @@ export const ALLOCATION_PROTOCOL_IDS_KNOWN = [
   'aave-rseth-weth',
   'aave-ethena',
   'spark-wsteth-weth',
+  'spark-wsteth-usd',
   'fluid-resolv-usdt',
   'aave-plasma-syrup-usdt-usdt0',
   'usdc',
   'usdt',
   'susde',
+  'ethereum-aave-usdt',
   'ethereum-spark-usdc',
   'ethereum-maple-syrupusdc',
   'ethereum-metamorpho-senpyusdmain',
+  'ethereum-morpho-pt-reusd-usdc',
 ] as const;
 
 export const ALLOCATION_ICONS_BY_ID: {
@@ -39,14 +42,17 @@ export const ALLOCATION_ICONS_BY_ID: {
   'aave-rseth-weth': AaveV3Icon,
   'aave-ethena': AaveV3Icon,
   'spark-wsteth-weth': SparkIcon,
+  'spark-wsteth-usd': SparkIcon,
   'fluid-resolv-usdt': FluidIcon,
   'aave-plasma-syrup-usdt-usdt0': AaveV3Icon,
   usdc: UsdcIcon,
   usdt: UsdtIcon,
   susde: SusdeIcon,
+  'ethereum-aave-usdt': AaveV3Icon,
   'ethereum-spark-usdc': SparkIcon,
   'ethereum-maple-syrupusdc': MapleIcon,
   'ethereum-metamorpho-senpyusdmain': MorphoIcon,
+  'ethereum-morpho-pt-reusd-usdc': MorphoIcon,
 };
 
 export const ALLOCATION_PENDING_ID = 'pending-deposits';

@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { type FC, useCallback, useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { useDappStatus } from 'modules/web3';
 import { TOKENS, TOKEN_SYMBOLS } from 'consts/tokens';
@@ -12,7 +12,9 @@ import { useReferralQueryValue } from 'shared/hooks/use-query-values-form';
 
 import {
   UpgradeAssets,
+  UpgradeAssetsHeader,
   UpgradeAssetsTitle,
+  UpgradeAssetsHowItWorksButton,
   UpgradeAssetsRow,
   UpgradeAssetsAmount,
   UpgradeAssetsButton,
@@ -23,6 +25,7 @@ import {
   ETH_VAULT_DEPOSIT_TOKENS_UPGRADABLE,
   ETH_VAULT_QUERY_SCOPE,
 } from '../consts';
+import { useEthVaultDrawer } from '../drawer-context';
 import { useEthVaultDeposit } from '../deposit/hooks';
 import { EthDepositTokenUpgradable } from '../types';
 
@@ -49,12 +52,13 @@ type UpgradeArgs = {
   token: EthDepositTokenUpgradable;
 };
 
-export const UpgradeAssetsBlock = () => {
+export const UpgradeAssetsBlock: FC = () => {
   const { isWalletConnected } = useDappStatus();
   const queryClient = useQueryClient();
   const { balances, refetchBalances } = useUpgradableTokenBalances();
   const [isUpgrading, setIsUpgrading] = useState(false);
   const referral = useReferralQueryValue();
+  const { openDrawer: openDrawerRight } = useEthVaultDrawer();
 
   const { deposit } = useEthVaultDeposit();
 
@@ -116,8 +120,21 @@ export const UpgradeAssetsBlock = () => {
   if (tokensWithBalance.length === 0) return null;
 
   return (
-    <UpgradeAssets data-testid={'availableToUpgradeBanner'}>
-      <UpgradeAssetsTitle>Assets available to upgrade</UpgradeAssetsTitle>
+    <UpgradeAssets data-testid="upgradable-tokens-banner">
+      <UpgradeAssetsHeader>
+        <UpgradeAssetsTitle>Assets available to upgrade</UpgradeAssetsTitle>
+        <UpgradeAssetsHowItWorksButton
+          onClick={() => {
+            trackMatomoEvent(
+              MATOMO_EARN_EVENTS_TYPES.earnListEarnEthBannerLearnHowItWorks,
+            );
+            openDrawerRight({ hideUpgradeNowButton: true });
+          }}
+          data-testid={'howItWorksButton'}
+        >
+          How it works
+        </UpgradeAssetsHowItWorksButton>
+      </UpgradeAssetsHeader>
       {tokensWithBalance.map((token) => (
         <UpgradeAssetsRow key={token} data-testid={token}>
           <UpgradeAssetsAmount>
@@ -127,7 +144,7 @@ export const UpgradeAssetsBlock = () => {
             <FormatToken
               amount={balances[token]}
               symbol={TOKEN_SYMBOLS[token]}
-              data-testid={'amountToUpgrade'}
+              data-testid="amount-to-upgrade"
             />
           </UpgradeAssetsAmount>
           <UpgradeAssetsButton
@@ -140,7 +157,7 @@ export const UpgradeAssetsBlock = () => {
               })
             }
             loading={isUpgrading}
-            data-testid={'upgradeButton'}
+            data-testid="upgrade-button"
           >
             Upgrade
           </UpgradeAssetsButton>

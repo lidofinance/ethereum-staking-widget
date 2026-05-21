@@ -1,4 +1,4 @@
-import { FC } from 'react';
+import { FC, useEffect } from 'react';
 import { Close, Button, Link } from '@lidofinance/lido-ui';
 
 import { config } from 'config';
@@ -23,17 +23,40 @@ import { DrawerTable } from './drawer-table';
 type DrawerRightProps = {
   onClose: () => void;
   isOpen: boolean;
+  shouldHideUpgradeNowButton?: boolean;
 };
 
-export const DrawerRight: FC<DrawerRightProps> = ({ onClose, isOpen }) => {
+export const DrawerRight: FC<DrawerRightProps> = ({
+  onClose,
+  isOpen,
+  shouldHideUpgradeNowButton = false,
+}) => {
   const { handleKeyDown } = useEscape({ onClose });
 
+  // Prevent the page behind the drawer from scrolling while the drawer is open.
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const { body } = document;
+    const previousOverflow = body.style.overflow;
+    body.style.overflow = 'hidden';
+
+    return () => {
+      body.style.overflow = previousOverflow;
+    };
+  }, [isOpen]);
+
   return (
-    <DrawerRightStyled onKeyDown={handleKeyDown} tabIndex={-1} isOpen={isOpen}>
-      <DrawerRightWrapper>
-        <DrawerRightContent data-testid={'earn-side-panel'}>
+    <DrawerRightStyled
+      onKeyDown={handleKeyDown}
+      onClick={onClose}
+      tabIndex={-1}
+      isOpen={isOpen}
+    >
+      <DrawerRightWrapper isOpen={isOpen} onClick={(e) => e.stopPropagation()}>
+        <DrawerRightContent data-testid="earn-side-panel">
           <DrawerRightHeader>
-            <div data-testid={'title'}>
+            <div data-testid="title">
               What is EarnETH Vault and how it works
             </div>
             <DrawerRightClose
@@ -43,7 +66,7 @@ export const DrawerRight: FC<DrawerRightProps> = ({ onClose, isOpen }) => {
               onClick={onClose}
             />
           </DrawerRightHeader>
-          <DrawerDescription data-testid={'description'}>
+          <DrawerDescription data-testid="description">
             EarnETH Vault is a meta-vault designed to optimize returns on
             deployed assets across Lido Earn strategies. Today, it allocates
             assets across GGV and stRATEGY, with the ability to dynamically
@@ -53,7 +76,7 @@ export const DrawerRight: FC<DrawerRightProps> = ({ onClose, isOpen }) => {
             ETH-denominated assets.
           </DrawerDescription>
           <DrawerTable />
-          <DrawerRightText data-testid={'table-description'}>
+          <DrawerRightText data-testid="table-description">
             The table above describes structural differences between accessing a
             single vault strategy and accessing a meta-vault that allocates
             across multiple strategies. It is provided for informational
@@ -61,9 +84,9 @@ export const DrawerRight: FC<DrawerRightProps> = ({ onClose, isOpen }) => {
             rewards may vary based on strategy composition, market conditions,
             and protocol parameters.
           </DrawerRightText>
-          <DrawerRightText data-testid={'mellow-points-text'}>
-            All Mellow points you accumulate remain yours, with your balance
-            visible on the{' '}
+          <DrawerRightText data-testid="mellow-points-text">
+            All accumulated Mellow points, as well as Obol and SSV rewards,
+            remain yours. Your Mellow points balance is visible on the{' '}
             <Link
               href="https://app.mellow.finance/dashboard"
               target="_blank"
@@ -75,21 +98,35 @@ export const DrawerRight: FC<DrawerRightProps> = ({ onClose, isOpen }) => {
             >
               Mellow Dashboard
             </Link>
+            . Obol rewards can be claimed{' '}
+            <Link
+              href="https://launchpad.obol.org/cluster/list/"
+              target="_blank"
+            >
+              here
+            </Link>
+            , and SSV rewards can be claimed{' '}
+            <Link href="https://www.ssvrewards.com/" target="_blank">
+              here
+            </Link>
+            .
           </DrawerRightText>
           <DrawerRightFooter>
-            <LocalLink href={ETH_DEPOSIT_PATH}>
-              <Button
-                fullwidth
-                onClick={() => {
-                  trackMatomoEvent(
-                    MATOMO_EARN_EVENTS_TYPES.earnListWhatIsLidoEarnEthUpgradeNow,
-                  );
-                }}
-                data-testid={'upgradeNowButton'}
-              >
-                Upgrade now
-              </Button>
-            </LocalLink>
+            {!shouldHideUpgradeNowButton && (
+              <LocalLink href={ETH_DEPOSIT_PATH}>
+                <Button
+                  fullwidth
+                  onClick={() => {
+                    trackMatomoEvent(
+                      MATOMO_EARN_EVENTS_TYPES.earnListWhatIsLidoEarnEthUpgradeNow,
+                    );
+                  }}
+                  data-testid="upgrade-now-button"
+                >
+                  Upgrade now
+                </Button>
+              </LocalLink>
+            )}
             <Link href={`${config.helpOrigin}/en`} target="_blank">
               <Button
                 fullwidth
@@ -99,7 +136,7 @@ export const DrawerRight: FC<DrawerRightProps> = ({ onClose, isOpen }) => {
                     MATOMO_EARN_EVENTS_TYPES.earnListWhatIsLidoEarnEthGetInTouch,
                   );
                 }}
-                data-testid={'getInTouchButton'}
+                data-testid="get-in-touch-button"
               >
                 Get in touch
               </Button>

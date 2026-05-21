@@ -8,7 +8,7 @@ export const HowDoesDepositWork: FC<{ id?: string }> = ({ id }) => {
         <p>
           You can deposit ETH, WETH, stETH, or wstETH and, through the upgrade
           flow, also migrate GG, strETH, or DVstETH to receive earnETH share
-          tokens from the EarnETH vault. Once you deposit, earnUSD is issued
+          tokens from the EarnETH vault. Once you deposit, earnETH is issued
           directly to your wallet, with no pending state or separate claim step
           required.
         </p>

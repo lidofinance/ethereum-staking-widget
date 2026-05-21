@@ -4,27 +4,19 @@ import { ButtonIcon } from '@lidofinance/lido-ui';
 export const DrawerRightStyled = styled.div<{ isOpen: boolean }>`
   position: fixed;
   top: 0;
-  right: ${({ isOpen }) => (isOpen ? '0' : '-600px')};
+  right: 0;
   bottom: 0;
+  left: 0;
   z-index: 300;
-  box-shadow: -2px 0 2px 0 var(--lido-color-shadowLight);
-  width: 600px;
   outline: none;
-  transition: right 0.15s ease-out;
-  display: flex;
-  flex-direction: column;
+  background-color: ${({ isOpen }) =>
+    isOpen ? 'rgba(0, 0, 0, 0.5)' : 'rgba(0, 0, 0, 0)'};
+  pointer-events: ${({ isOpen }) => (isOpen ? 'auto' : 'none')};
+  transition: background-color 0.15s ease-out;
 
   @media (max-width: 600px) {
-    top: ${({ isOpen }) => (isOpen ? '0' : '100%')};
-    left: 0;
-    right: auto;
-    width: 100%;
     background-color: ${({ isOpen }) =>
-      isOpen ? 'rgba(0, 0, 0, 0.7)' : 'transparent'};
-    transition:
-      top 0.15s ease-out,
-      background-color
-        ${({ isOpen }) => (isOpen ? '0.15s ease-out 0.15s' : '0s')};
+      isOpen ? 'rgba(0, 0, 0, 0.5)' : 'rgba(0, 0, 0, 0)'};
   }
 `;
 
@@ -33,10 +25,21 @@ export const DrawerRightClose = styled(ButtonIcon)`
   color: var(--lido-color-textSecondary);
 `;
 
-export const DrawerRightWrapper = styled.div`
-  flex-grow: 1;
-  position: relative;
-  z-index: 1;
+export const DrawerRightWrapper = styled.div<{ isOpen: boolean }>`
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 600px;
+  box-shadow: -2px 0 2px 0 var(--lido-color-shadowLight);
+  transform: translateX(${({ isOpen }) => (isOpen ? '0' : '100%')});
+  transition: transform 0.15s ease-out;
+
+  @media (max-width: 600px) {
+    left: 0;
+    width: 100%;
+    transform: translateY(${({ isOpen }) => (isOpen ? '0' : '100%')});
+  }
 `;
 
 export const DrawerRightContent = styled.div`
