@@ -223,20 +223,21 @@ export const CowswapFrame = () => {
         },
       },
     }),
-    // eslint-disable-next-line  react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [
       isTestnet,
+      isGithubAvailable,
       daoAgentAddress,
       themeName,
+      checkSellLimit,
+      validateApproval,
       validate,
       validateTrade,
-      validateApproval,
-      isGithubAvailable,
       refreshId,
     ],
   );
 
-  const provider = useCowSwapEthereumProvider(verifySignedOrder);
+  const provider = useCowSwapEthereumProvider(chainId, verifySignedOrder);
 
   const listeners: CowSwapWidgetProps['listeners'] = useMemo(() => {
     const handlers: CowSwapWidgetProps['listeners'] = [

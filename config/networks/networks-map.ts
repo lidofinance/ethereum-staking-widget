@@ -51,6 +51,8 @@ export const CONTRACT_NAMES = {
   stethCurve: 'stethCurve',
   ensPublicResolver: 'ensPublicResolver',
   ensRegistry: 'ensRegistry',
+  cowVaultRelayer: 'cowVaultRelayer',
+  cowSettlement: 'cowSettlement',
   // 3rd party tokens
   weth: 'weth',
   usdc: 'usdc',

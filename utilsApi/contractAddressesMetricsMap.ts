@@ -28,6 +28,11 @@ import { ENSRegistryAbi } from 'abi/ens-registry-abi';
 import { ENSResolverAbi } from 'abi/ens-resolver-abi';
 import { PartialCurveAbi } from 'abi/partial-curve-abi';
 import { PartialStakingRouterAbi } from 'abi/partial-staking-router';
+import {
+  CowSettlementAbi,
+  CowVaultRelayerAbi,
+} from 'features/dex-withdrawals/cowswap';
+// Tokens ABIs
 import { wethABI } from 'abi/weth-abi';
 import { usdtABI } from 'abi/usdt-abi';
 import { usdcABI } from 'abi/usdc-abi';
@@ -97,6 +102,8 @@ export const METRIC_CONTRACT_ABIS = {
   [CONTRACT_NAMES.stethCurve]: PartialCurveAbi,
   [CONTRACT_NAMES.ensPublicResolver]: ENSResolverAbi,
   [CONTRACT_NAMES.ensRegistry]: ENSRegistryAbi,
+  [CONTRACT_NAMES.cowVaultRelayer]: CowVaultRelayerAbi,
+  [CONTRACT_NAMES.cowSettlement]: CowSettlementAbi,
   // 3rd party tokens
   [CONTRACT_NAMES.weth]: wethABI,
   [CONTRACT_NAMES.usdc]: usdcABI,

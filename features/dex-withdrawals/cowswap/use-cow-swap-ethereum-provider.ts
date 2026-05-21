@@ -3,12 +3,13 @@ import { EthereumProvider, JsonRpcRequest } from '@cowprotocol/widget-react';
 import { ConnectorEventMap, useConnection, useWalletClient } from 'wagmi';
 
 import { BLOCKED_RPC_METHODS } from './consts';
-import { parseOrderFromSignRequest } from './trade-guard/utils/verify-order';
-import type { OrderFields } from './trade-guard/utils/verify-order';
+import { validateSendTransaction, validateSendCalls } from './validate-tx';
+import { OrderFields, parseOrderFromSignRequest } from './trade-guard/utils';
 
 type VerifyOrder = (order: OrderFields) => string | null;
 
 export const useCowSwapEthereumProvider = (
+  chainId: number,
   verifySignedOrder: VerifyOrder,
 ): EthereumProvider | undefined => {
   const { data: walletClient } = useWalletClient();
@@ -19,6 +20,7 @@ export const useCowSwapEthereumProvider = (
 
     return {
       request: <T>(args: JsonRpcRequest): Promise<T> => {
+        // Level 1: block dangerous RPC methods
         if (BLOCKED_RPC_METHODS.has(args.method)) {
           return Promise.reject(
             new Error(`RPC method "${args.method}" is not allowed`),
@@ -38,6 +40,23 @@ export const useCowSwapEthereumProvider = (
           }
         }
 
+        // Level 2+3: deep transaction parameter validation
+        if (args.method === 'eth_sendTransaction') {
+          const result = validateSendTransaction(args.params, chainId);
+          if (!result.allowed) {
+            console.warn('[DEX Provider] Transaction blocked:', result.reason);
+            return Promise.reject(new Error(result.reason));
+          }
+        }
+
+        if (args.method === 'wallet_sendCalls') {
+          const result = validateSendCalls(args.params, chainId);
+          if (!result.allowed) {
+            console.warn('[DEX Provider] Batch call blocked:', result.reason);
+            return Promise.reject(new Error(result.reason));
+          }
+        }
+
         return walletClient.request(
           args as Parameters<typeof walletClient.request>[0],
         );
@@ -49,5 +68,5 @@ export const useCowSwapEthereumProvider = (
         );
       },
     };
-  }, [walletClient, connector, verifySignedOrder]);
+  }, [walletClient, connector, chainId, verifySignedOrder]);
 };
