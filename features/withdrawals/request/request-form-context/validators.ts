@@ -15,11 +15,11 @@ import {
   ValidationError,
   handleResolverValidationError,
 } from 'shared/hook-form/validation/validation-error';
-import { getTokenDisplayName } from 'utils/getTokenDisplayName';
 import { awaitWithTimeout } from 'utils/await-with-timeout';
 import { validateEtherAmount } from 'shared/hook-form/validation/validate-ether-amount';
 import { validateBigintMin } from 'shared/hook-form/validation/validate-bigint-min';
 import { validateBigintMax } from 'shared/hook-form/validation/validate-bigint-max';
+import { getTokenSymbol } from 'utils/get-token-symbol';
 
 // helpers that should be shared when adding next hook-form
 
@@ -50,14 +50,10 @@ export class ValidationSplitRequest extends ValidationError {
 }
 
 const messageMinUnstake = (min: bigint, token: TOKENS_TO_WITHDRAWLS) =>
-  `Minimum withdraw amount is ${formatEther(min)} ${getTokenDisplayName(
-    token,
-  )}`;
+  `Minimum withdraw amount is ${formatEther(min)} ${getTokenSymbol(token)}`;
 
 const messageMaxAmount = (max: bigint, token: TOKENS_TO_WITHDRAWLS) =>
-  `Entered ${getTokenDisplayName(
-    token,
-  )} amount exceeds your available balance of ${formatEther(max)}`;
+  `Entered ${getTokenSymbol(token)} amount exceeds your available balance of ${formatEther(max)}`;
 
 const validateSplitRequests = (
   field: string,

@@ -18,6 +18,7 @@ import {
   TOKEN_DISPLAY_NAMES,
   getTokenDisplayName,
 } from 'utils/getTokenDisplayName';
+import { TOKEN_SYMBOLS } from 'consts/tokens';
 
 const messageMaxBalance = (max: bigint, token: TOKEN_DISPLAY_NAMES) =>
   `Entered ${getTokenDisplayName(
@@ -39,7 +40,7 @@ export const GGVWithdrawalFormValidationResolver: Resolver<
 
     // this check does not require async context and can be placed first
     // also limits async context missing edge cases on page start
-    validateEtherAmount('amount', amount, 'gg');
+    validateEtherAmount('amount', amount, TOKEN_SYMBOLS.gg);
 
     // early return
     if (!context.isWalletActive) return { values, errors: {} };
@@ -63,7 +64,7 @@ export const GGVWithdrawalFormValidationResolver: Resolver<
       'amount',
       amount,
       balance,
-      messageMaxBalance(balance, 'gg'),
+      messageMaxBalance(balance, TOKEN_SYMBOLS.gg),
     );
 
     maxWithdrawal &&
@@ -71,7 +72,7 @@ export const GGVWithdrawalFormValidationResolver: Resolver<
         'amount',
         amount,
         maxWithdrawal,
-        messageMaxCapacity(maxWithdrawal, 'gg'),
+        messageMaxCapacity(maxWithdrawal, TOKEN_SYMBOLS.gg),
       );
 
     return {

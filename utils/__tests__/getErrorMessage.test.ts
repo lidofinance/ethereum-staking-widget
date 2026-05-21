@@ -4,7 +4,7 @@ import {
   extractCodeFromError,
 } from '../getErrorMessage';
 
-console.error = jest.fn();
+console.error = vi.fn();
 
 describe('getErrorMessage', () => {
   it('should return NOT_ENOUGH_ETHER error message when error code is -32000', () => {
