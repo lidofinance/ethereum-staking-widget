@@ -11,6 +11,7 @@ import {
   getTokenDisplayName,
   TOKEN_DISPLAY_NAMES,
 } from 'utils/getTokenDisplayName';
+import { TOKEN_SYMBOLS } from 'consts/tokens';
 import {
   DVVWithdrawalFormValidationContext,
   DVVWithdrawalFormValues,
@@ -32,7 +33,7 @@ export const DVVWithdrawalFormValidationResolver: Resolver<
 
     // this check does not require async context and can be placed first
     // also limits async context missing edge cases on page start
-    validateEtherAmount('amount', amount, 'dvstETH');
+    validateEtherAmount('amount', amount, TOKEN_SYMBOLS.dvsteth);
 
     // early return
     if (!context.isWalletActive) return { values, errors: {} };
@@ -59,7 +60,7 @@ export const DVVWithdrawalFormValidationResolver: Resolver<
       'amount',
       amount,
       balance,
-      messageMaxBalance(balance, 'dvstETH'),
+      messageMaxBalance(balance, TOKEN_SYMBOLS.dvsteth),
     );
 
     return {

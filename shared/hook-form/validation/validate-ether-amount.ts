@@ -1,8 +1,6 @@
 import { maxUint256 } from 'viem';
-import {
-  getTokenDisplayName,
-  TOKEN_DISPLAY_NAMES,
-} from 'utils/getTokenDisplayName';
+import type { TokenSymbol } from 'consts/tokens';
+import { getTokenSymbol } from 'utils/get-token-symbol';
 import { ValidationError } from './validation-error';
 
 // asserts only work with function declaration
@@ -10,7 +8,7 @@ import { ValidationError } from './validation-error';
 export function validateEtherAmount(
   field: string,
   amount: bigint | undefined | null,
-  token: TOKEN_DISPLAY_NAMES,
+  token: TokenSymbol,
 ): asserts amount is bigint {
   // also checks undefined
   if (amount == null) throw new ValidationError(field, '');
@@ -18,12 +16,12 @@ export function validateEtherAmount(
   if (amount <= 0n)
     throw new ValidationError(
       field,
-      `Enter ${getTokenDisplayName(token)} ${field} greater than 0`,
+      `Enter ${getTokenSymbol(token)} ${field} greater than 0`,
     );
 
   if (amount > maxUint256)
     throw new ValidationError(
       field,
-      `${getTokenDisplayName(token)} ${field} is not valid`,
+      `${getTokenSymbol(token)} ${field} is not valid`,
     );
 }
