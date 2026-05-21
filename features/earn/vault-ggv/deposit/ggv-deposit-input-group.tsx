@@ -73,7 +73,7 @@ export const GGVDepositInputGroup: React.FC = () => {
         disabled={disabled}
         fieldName="amount"
         token={token}
-        data-testid="ggv-deposit-input"
+        data-testid="deposit-input"
         maxValue={maxTokenAmount}
         showErrorMessage={false}
         onMaxClick={() => {

@@ -31,9 +31,9 @@ export const DrawerRight: FC<DrawerRightProps> = ({ onClose, isOpen }) => {
   return (
     <DrawerRightStyled onKeyDown={handleKeyDown} tabIndex={-1} isOpen={isOpen}>
       <DrawerRightWrapper>
-        <DrawerRightContent data-testid={'earn-side-panel'}>
+        <DrawerRightContent data-testid="earn-side-panel">
           <DrawerRightHeader>
-            <div data-testid={'title'}>
+            <div data-testid="title">
               What is EarnETH Vault and how it works
             </div>
             <DrawerRightClose
@@ -43,7 +43,7 @@ export const DrawerRight: FC<DrawerRightProps> = ({ onClose, isOpen }) => {
               onClick={onClose}
             />
           </DrawerRightHeader>
-          <DrawerDescription data-testid={'description'}>
+          <DrawerDescription data-testid="description">
             EarnETH Vault is a meta-vault designed to optimize returns on
             deployed assets across Lido Earn strategies. Today, it allocates
             assets across GGV and stRATEGY, with the ability to dynamically
@@ -53,7 +53,7 @@ export const DrawerRight: FC<DrawerRightProps> = ({ onClose, isOpen }) => {
             ETH-denominated assets.
           </DrawerDescription>
           <DrawerTable />
-          <DrawerRightText data-testid={'table-description'}>
+          <DrawerRightText data-testid="table-description">
             The table above describes structural differences between accessing a
             single vault strategy and accessing a meta-vault that allocates
             across multiple strategies. It is provided for informational
@@ -61,7 +61,7 @@ export const DrawerRight: FC<DrawerRightProps> = ({ onClose, isOpen }) => {
             rewards may vary based on strategy composition, market conditions,
             and protocol parameters.
           </DrawerRightText>
-          <DrawerRightText data-testid={'mellow-points-text'}>
+          <DrawerRightText data-testid="mellow-points-text">
             All Mellow points you accumulate remain yours, with your balance
             visible on the{' '}
             <Link
@@ -85,7 +85,7 @@ export const DrawerRight: FC<DrawerRightProps> = ({ onClose, isOpen }) => {
                     MATOMO_EARN_EVENTS_TYPES.earnListWhatIsLidoEarnEthUpgradeNow,
                   );
                 }}
-                data-testid={'upgradeNowButton'}
+                data-testid="upgrade-now-button"
               >
                 Upgrade now
               </Button>
@@ -99,7 +99,7 @@ export const DrawerRight: FC<DrawerRightProps> = ({ onClose, isOpen }) => {
                     MATOMO_EARN_EVENTS_TYPES.earnListWhatIsLidoEarnEthGetInTouch,
                   );
                 }}
-                data-testid={'getInTouchButton'}
+                data-testid="get-in-touch-button"
               >
                 Get in touch
               </Button>

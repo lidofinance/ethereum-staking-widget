@@ -84,17 +84,15 @@ export const LegacyVaultCard: React.FC<LegacyVaultCardProps> = ({
         as={LocalLink}
         href={depositHref}
         onClick={depositLinkCallback}
-        data-testid={'open-vault-btn'}
+        data-testid="open-vault-btn"
         aria-label={title}
       />
       <CardHeader>
         <CardHeaderContent>
           <CardTitle>
-            <TitleTextStyled data-testid={'vaultTitle'}>
-              {title}
-            </TitleTextStyled>
+            <TitleTextStyled data-testid="vaultTitle">{title}</TitleTextStyled>
             {protectedBadgeTooltipText && (
-              <BadgeStyled data-testid={'protectedBadge'}>
+              <BadgeStyled data-testid="protected-badge">
                 <Badge
                   text="PROTECTED"
                   tooltipText={protectedBadgeTooltipText}
@@ -109,7 +107,7 @@ export const LegacyVaultCard: React.FC<LegacyVaultCardProps> = ({
                 <CardTitleBadge
                   variant="gradient"
                   icon={<ChevronsUpIcon />}
-                  data-testid={'upgradingBadge'}
+                  data-testid="upgrading-badge"
                 >
                   {' '}
                   Upgrading
@@ -117,7 +115,7 @@ export const LegacyVaultCard: React.FC<LegacyVaultCardProps> = ({
               </StyledTooltip>
             )}
           </CardTitle>
-          <CardDescription data-testid={'vaultDescription'}>
+          <CardDescription data-testid="vault-description">
             {description}
           </CardDescription>
         </CardHeaderContent>
@@ -126,7 +124,7 @@ export const LegacyVaultCard: React.FC<LegacyVaultCardProps> = ({
       <CardDivider />
       <CardStats>
         <StatItem data-testid="apx">
-          <StatLabel data-testid="apx-value">
+          <StatLabel>
             {stats.apxLabel}
             <VaultTip
               placement="bottomLeft"
@@ -135,7 +133,7 @@ export const LegacyVaultCard: React.FC<LegacyVaultCardProps> = ({
               {stats.apxHint}
             </VaultTip>
           </StatLabel>
-          <StatValue $accent>
+          <StatValue $accent data-testid="apx-value">
             <InlineLoader isLoading={stats.isLoading} width={70}>
               <FormatPercent value={stats.apx} decimals="percent" />
             </InlineLoader>
@@ -167,7 +165,7 @@ export const LegacyVaultCard: React.FC<LegacyVaultCardProps> = ({
           </StatItem>
         )}
       </CardStats>
-      <CardCta data-testid={'vaultButton'}>
+      <CardCta data-testid="vault-button">
         <LocalLink href={depositHref} onClick={depositLinkCallback}>
           <Button fullwidth variant="translucent">
             {ctaLabel}
