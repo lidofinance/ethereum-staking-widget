@@ -1,9 +1,9 @@
-import { useConfig } from 'config';
+import { useWithdrawalDex } from 'features/dex-withdrawals';
 
 export const DexDisclaimer = () => {
-  const isDexEnabled = useConfig().externalConfig.withdrawalDex.enabled;
+  const { enabled, label } = useWithdrawalDex();
 
-  if (!isDexEnabled) return null;
+  if (!enabled) return null;
 
-  return <p>Withdrawals performed by swaps are powered by CowSwap.</p>;
+  return <p>Withdrawals performed by swaps are powered by {label}.</p>;
 };

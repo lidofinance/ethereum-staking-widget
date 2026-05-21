@@ -1,6 +1,16 @@
 import { Loader } from '@lidofinance/lido-ui';
 import styled, { css, keyframes } from 'styled-components';
 
+export const SellAmountWarning = styled.div`
+  padding: 12px 16px;
+  border-radius: 10px;
+  background-color: var(--lido-color-errorBackground, #fde8e8);
+  color: var(--lido-color-error, #e14d4d);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.4;
+`;
+
 export const FallbackContainer = styled.div`
   display: flex;
 

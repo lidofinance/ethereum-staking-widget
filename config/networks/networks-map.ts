@@ -30,6 +30,7 @@ export const CONTRACT_NAMES = {
   daoAgent: 'daoAgent',
   wsteth: 'wsteth',
   withdrawalQueue: 'withdrawalQueue',
+  stakingRouter: 'stakingRouter',
   // SI
   wstethReferralStaker: 'wstethReferralStaker',
   // DualGovernance
@@ -40,18 +41,22 @@ export const CONTRACT_NAMES = {
   // l2 contracts
   L2stETH: 'L2stETH',
   L2wstETH: 'L2wstETH',
-  // Aux contracts
+  // 3rd party contracts
   aggregatorEthUsdPriceFeed: 'aggregatorEthUsdPriceFeed',
   aggregatorStEthUsdPriceFeed: 'aggregatorStEthUsdPriceFeed',
-  stakingRouter: 'stakingRouter',
+  aggregatorUsdcUsdPriceFeed: 'aggregatorUsdcUsdPriceFeed',
+  aggregatorUsdtUsdPriceFeed: 'aggregatorUsdtUsdPriceFeed',
+  aggregatorDaiUsdPriceFeed: 'aggregatorDaiUsdPriceFeed',
+  aggregatorBtcUsdPriceFeed: 'aggregatorBtcUsdPriceFeed',
   stethCurve: 'stethCurve',
-
   ensPublicResolver: 'ensPublicResolver',
   ensRegistry: 'ensRegistry',
   // 3rd party tokens
   weth: 'weth',
   usdc: 'usdc',
   usdt: 'usdt',
+  usds: 'usds',
+  wbtc: 'wbtc',
   // GGV
   ggvVault: 'ggvVault',
   ggvTeller: 'ggvTeller',

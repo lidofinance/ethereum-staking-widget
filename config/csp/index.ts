@@ -58,6 +58,7 @@ export const contentSecurityPolicy: ContentSecurityPolicyOption = {
     // frame-src takes precedence over child-src for iframes in modern browsers
     frameSrc: [
       "'self'",
+      'https://swap.cow.fi',
       'https://*.walletconnect.org',
       'https://*.walletconnect.com',
     ],

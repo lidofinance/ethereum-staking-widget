@@ -31,6 +31,8 @@ import { PartialStakingRouterAbi } from 'abi/partial-staking-router';
 import { wethABI } from 'abi/weth-abi';
 import { usdtABI } from 'abi/usdt-abi';
 import { usdcABI } from 'abi/usdc-abi';
+import { usdsABI } from 'abi/usds-abi';
+import { wbtcABI } from 'abi/wbtc-abi';
 
 // Earn contracts ABIs
 // GGV
@@ -87,6 +89,10 @@ export const METRIC_CONTRACT_ABIS = {
   // Side contracts ABIs
   [CONTRACT_NAMES.aggregatorEthUsdPriceFeed]: AggregatorAbi,
   [CONTRACT_NAMES.aggregatorStEthUsdPriceFeed]: AggregatorAbi,
+  [CONTRACT_NAMES.aggregatorUsdcUsdPriceFeed]: AggregatorAbi,
+  [CONTRACT_NAMES.aggregatorUsdtUsdPriceFeed]: AggregatorAbi,
+  [CONTRACT_NAMES.aggregatorDaiUsdPriceFeed]: AggregatorAbi,
+  [CONTRACT_NAMES.aggregatorBtcUsdPriceFeed]: AggregatorAbi,
   [CONTRACT_NAMES.stakingRouter]: PartialStakingRouterAbi,
   [CONTRACT_NAMES.stethCurve]: PartialCurveAbi,
   [CONTRACT_NAMES.ensPublicResolver]: ENSResolverAbi,
@@ -95,6 +101,8 @@ export const METRIC_CONTRACT_ABIS = {
   [CONTRACT_NAMES.weth]: wethABI,
   [CONTRACT_NAMES.usdc]: usdcABI,
   [CONTRACT_NAMES.usdt]: usdtABI,
+  [CONTRACT_NAMES.usds]: usdsABI,
+  [CONTRACT_NAMES.wbtc]: wbtcABI,
   // GGV
   [CONTRACT_NAMES.ggvVault]: GGV_VAULT_ABI,
   [CONTRACT_NAMES.ggvTeller]: GGV_TELLER_ABI,

@@ -5,10 +5,10 @@ import {
   CowSwapWidgetProps,
   TradeType,
 } from '@cowprotocol/widget-react';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { CowWidgetEvents } from '@cowprotocol/events';
+import { CowWidgetEvents, OnTradeParamsPayload } from '@cowprotocol/events';
 
 import { LOCALE } from 'config/groups/locale';
 import { STRATEGY_IMMUTABLE } from 'consts/react-query-strategies';
@@ -26,16 +26,20 @@ import { getContractAddress } from 'config/networks/contract-address';
 import invariant from 'tiny-invariant';
 import { trackMatomoEvent } from 'utils/track-matomo-event';
 import { MATOMO_TX_EVENTS_TYPES } from 'consts/matomo';
+import {} from 'consts/external-links';
 
 import {
   MAX_SLIPPAGE,
-  WHEN_PRICE_IMPACT_IS_HIGH_THAN,
+  PARTNER_FEE_BPS,
   DEX_SELL_TOKEN_LIST_URL,
   DEX_BUY_TOKEN_LIST_URL,
+  WHEN_PRICE_IMPACT_IS_HIGH_THAN,
 } from './consts';
-
 import { LoaderStyled, DexWrapper } from './styles';
 import { useCowSwapEthereumProvider } from './use-cow-swap-ethereum-provider';
+import { useCspBlocked } from './use-csp-blocked';
+
+import { useTradeGuard, TradeGuardModal } from './trade-guard';
 
 const cowSwapThemeDark: CowSwapWidgetPalette = {
   baseTheme: 'dark',
@@ -74,7 +78,13 @@ export const CowswapFrame = () => {
   // state to trigger refreshes to memoized params
   const [refreshId, setRefreshId] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
-  const [cspBlocked, setCspBlocked] = useState<Error | null>(null);
+
+  useCspBlocked();
+
+  const { isTestnet, chainId } = useDappStatus();
+  const { validateAddress } = useAddressValidation();
+  const { data: walletClient } = useWalletClient();
+  const { name: themeName } = useTheme();
 
   const refreshBalances = useCallback(() => {
     void Promise.allSettled([refetchSteth(), refetchWsteth(), refetchEth()]);
@@ -90,34 +100,24 @@ export const CowswapFrame = () => {
         .catch(() => false),
   });
 
-  useEffect(() => {
-    const handler = (e: SecurityPolicyViolationEvent) => {
-      if (
-        (e.violatedDirective === 'child-src' ||
-          e.violatedDirective === 'frame-src') &&
-        e.blockedURI.includes('cow.fi')
-      ) {
-        setCspBlocked(new Error('CSP blocked CoW widget iframe'));
-      }
-    };
-    document.addEventListener('securitypolicyviolation', handler);
-    return () =>
-      document.removeEventListener('securitypolicyviolation', handler);
-  }, []);
-
-  if (cspBlocked) throw cspBlocked;
-
-  const { isTestnet, chainId } = useDappStatus();
-
-  const { validateAddress } = useAddressValidation();
-  const { data: walletClient } = useWalletClient();
-  const { name: themeName } = useTheme();
-
   const daoAgentAddress = getContractAddress(chainId, 'daoAgent');
   invariant(
     daoAgentAddress,
     'DAO Agent address is not defined for current network',
   );
+
+  const {
+    modalState,
+    handleModalClose,
+    validateTrade,
+    validateApproval,
+    reportTradeParams,
+    checkSellLimit,
+    verifySignedOrder,
+  } = useTradeGuard({
+    walletAddress: walletClient?.account.address,
+    isTestnet,
+  });
 
   const validate = useCallback(async () => {
     const isValid = await validateAddress(walletClient?.account.address);
@@ -162,8 +162,7 @@ export const CowswapFrame = () => {
         max: MAX_SLIPPAGE,
       },
       partnerFee: {
-        bps: 30,
-        // Lido DAO treasury
+        bps: PARTNER_FEE_BPS,
         recipient: daoAgentAddress,
       },
       disableTrade: {
@@ -171,9 +170,6 @@ export const CowswapFrame = () => {
         whenPriceImpactIsHigherThan: WHEN_PRICE_IMPACT_IS_HIGH_THAN,
       },
       disableCrossChainSwap: true,
-      disablePostedOrderConfirmationModal: true,
-      disableTokenImport: true,
-      disablePostTradeTips: true,
 
       //
       // UI options
@@ -182,6 +178,10 @@ export const CowswapFrame = () => {
       width: '100%',
       height: '432px',
       theme: themeName === 'dark' ? cowSwapThemeDark : cowSwapThemeLight,
+
+      disablePostedOrderConfirmationModal: true,
+      disableTokenImport: true,
+      disablePostTradeTips: true,
       hideRecentTokens: true,
       hideFavoriteTokens: true,
       disableToastMessages: true,
@@ -198,12 +198,20 @@ export const CowswapFrame = () => {
 
       hooks: {
         onBeforeApproval: async () => {
+          if (!(await checkSellLimit())) return false;
+          if (!(await validateApproval())) return false;
+
           return await validate();
         },
         onBeforeWrapOrUnwrap: async () => {
+          if (!(await checkSellLimit())) return false;
+
           return await validate();
         },
-        onBeforeTrade: async () => {
+        onBeforeTrade: async (payload) => {
+          if (!(await checkSellLimit())) return false;
+          if (!(await validateTrade(payload))) return false;
+
           trackMatomoEvent(MATOMO_TX_EVENTS_TYPES.withdrawalDexSwapStart);
           return await validate();
         },
@@ -221,12 +229,14 @@ export const CowswapFrame = () => {
       daoAgentAddress,
       themeName,
       validate,
+      validateTrade,
+      validateApproval,
       isGithubAvailable,
       refreshId,
     ],
   );
 
-  const provider = useCowSwapEthereumProvider();
+  const provider = useCowSwapEthereumProvider(verifySignedOrder);
 
   const listeners: CowSwapWidgetProps['listeners'] = useMemo(() => {
     const handlers: CowSwapWidgetProps['listeners'] = [
@@ -257,8 +267,11 @@ export const CowswapFrame = () => {
       },
       {
         event: CowWidgetEvents.ON_CHANGE_TRADE_PARAMS,
-        handler: ({ sellToken }) => {
-          // workaround until cow
+        handler: (params: OnTradeParamsPayload) => {
+          reportTradeParams(params);
+
+          // Workaround: refresh params if user changes sell token
+          const { sellToken } = params;
           if (
             !sellToken ||
             sellToken.symbol.toLowerCase() === 'steth' ||
@@ -271,17 +284,21 @@ export const CowswapFrame = () => {
     ];
 
     return handlers;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [refreshBalances]);
 
   return (
-    <DexWrapper>
-      <CowSwapWidget
-        params={params}
-        listeners={listeners}
-        provider={provider}
-        onReady={() => setIsLoading(false)}
-      />
-      <LoaderStyled $isVisible={isLoading} />
-    </DexWrapper>
+    <>
+      <DexWrapper>
+        <CowSwapWidget
+          params={params}
+          listeners={listeners}
+          provider={provider}
+          onReady={() => setIsLoading(false)}
+        />
+        <LoaderStyled $isVisible={isLoading} />
+      </DexWrapper>
+      <TradeGuardModal state={modalState} onClose={handleModalClose} />
+    </>
   );
 };
