@@ -166,7 +166,8 @@ const DATA = {
 const EthVaultPageContent: FC<{
   action: typeof EARN_VAULT_DEPOSIT_SLUG | typeof EARN_VAULT_WITHDRAW_SLUG;
 }> = ({ action }) => {
-  const { isDrawerOpen, closeDrawer } = useEthVaultDrawer();
+  const { isDrawerOpen, closeDrawer, shouldHideUpgradeNowButton } =
+    useEthVaultDrawer();
   const {
     apy,
     apyUpdateTimestampMs,
@@ -230,7 +231,11 @@ const EthVaultPageContent: FC<{
         }}
         protectedBadgeTooltipText={<ProtectedTooltip />}
       />
-      <DrawerRight onClose={closeDrawer} isOpen={isDrawerOpen} />
+      <DrawerRight
+        onClose={closeDrawer}
+        isOpen={isDrawerOpen}
+        shouldHideUpgradeNowButton={shouldHideUpgradeNowButton}
+      />
       <Disclaimers />
     </>
   );

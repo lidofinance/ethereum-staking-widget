@@ -23,9 +23,14 @@ import { DrawerTable } from './drawer-table';
 type DrawerRightProps = {
   onClose: () => void;
   isOpen: boolean;
+  shouldHideUpgradeNowButton?: boolean;
 };
 
-export const DrawerRight: FC<DrawerRightProps> = ({ onClose, isOpen }) => {
+export const DrawerRight: FC<DrawerRightProps> = ({
+  onClose,
+  isOpen,
+  shouldHideUpgradeNowButton = false,
+}) => {
   const { handleKeyDown } = useEscape({ onClose });
 
   return (
@@ -94,19 +99,21 @@ export const DrawerRight: FC<DrawerRightProps> = ({ onClose, isOpen }) => {
             .
           </DrawerRightText>
           <DrawerRightFooter>
-            <LocalLink href={ETH_DEPOSIT_PATH}>
-              <Button
-                fullwidth
-                onClick={() => {
-                  trackMatomoEvent(
-                    MATOMO_EARN_EVENTS_TYPES.earnListWhatIsLidoEarnEthUpgradeNow,
-                  );
-                }}
-                data-testid={'upgradeNowButton'}
-              >
-                Upgrade now
-              </Button>
-            </LocalLink>
+            {!shouldHideUpgradeNowButton && (
+              <LocalLink href={ETH_DEPOSIT_PATH}>
+                <Button
+                  fullwidth
+                  onClick={() => {
+                    trackMatomoEvent(
+                      MATOMO_EARN_EVENTS_TYPES.earnListWhatIsLidoEarnEthUpgradeNow,
+                    );
+                  }}
+                  data-testid={'upgradeNowButton'}
+                >
+                  Upgrade now
+                </Button>
+              </LocalLink>
+            )}
             <Link href={`${config.helpOrigin}/en`} target="_blank">
               <Button
                 fullwidth

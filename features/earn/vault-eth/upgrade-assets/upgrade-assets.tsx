@@ -128,7 +128,7 @@ export const UpgradeAssetsBlock: FC = () => {
             trackMatomoEvent(
               MATOMO_EARN_EVENTS_TYPES.earnListEarnEthBannerLearnHowItWorks,
             );
-            openDrawerRight();
+            openDrawerRight({ hideUpgradeNowButton: true });
           }}
           data-testid={'howItWorksButton'}
         >

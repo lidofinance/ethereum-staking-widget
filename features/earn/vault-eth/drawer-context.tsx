@@ -9,8 +9,13 @@ import {
 
 type EthVaultDrawerContextValue = {
   isDrawerOpen: boolean;
-  openDrawer: () => void;
+  shouldHideUpgradeNowButton: boolean;
+  openDrawer: (options?: { hideUpgradeNowButton?: boolean }) => void;
   closeDrawer: () => void;
+};
+
+type OpenDrawerOptions = {
+  hideUpgradeNowButton?: boolean;
 };
 
 const EthVaultDrawerContext = createContext<EthVaultDrawerContextValue | null>(
@@ -31,14 +36,22 @@ export const useEthVaultDrawer = () => {
 
 export const EthVaultDrawerProvider: FC<PropsWithChildren> = ({ children }) => {
   const [isDrawerOpen, setIsDrawerRight] = useState(false);
+  const [shouldHideUpgradeNowButton, setShouldHideUpgradeNowButton] =
+    useState(false);
 
   const value = useMemo(
     () => ({
       isDrawerOpen,
-      openDrawer: () => setIsDrawerRight(true),
-      closeDrawer: () => setIsDrawerRight(false),
+      shouldHideUpgradeNowButton,
+      openDrawer: (options?: OpenDrawerOptions) => {
+        setShouldHideUpgradeNowButton(options?.hideUpgradeNowButton ?? false);
+        setIsDrawerRight(true);
+      },
+      closeDrawer: () => {
+        setIsDrawerRight(false);
+      },
     }),
-    [isDrawerOpen],
+    [isDrawerOpen, shouldHideUpgradeNowButton],
   );
 
   return (
