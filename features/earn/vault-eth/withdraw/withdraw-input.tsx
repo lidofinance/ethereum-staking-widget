@@ -20,7 +20,7 @@ export const EthVaultWithdrawInput: React.FC = () => {
         disabled={disabled}
         fieldName="amount"
         token={ETH_VAULT_TOKEN_SYMBOL}
-        data-testid="eth-withdraw-input"
+        data-testid="withdraw-input"
         maxValue={maxAmount}
         showErrorMessage={false}
         onMaxClick={() => {

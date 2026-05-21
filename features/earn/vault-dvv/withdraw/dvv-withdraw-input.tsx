@@ -19,7 +19,7 @@ export const DVVWithdrawInput = () => {
       disabled={disabled}
       fieldName="amount"
       token={'dvstETH'}
-      data-testid="dvv-withdraw-input"
+      data-testid="withdraw-input"
       maxValue={data?.sharesBalance}
       onMaxClick={() => {
         trackMatomoEvent(MATOMO_EARN_EVENTS_TYPES.dvvWithdrawInputMaxClick);

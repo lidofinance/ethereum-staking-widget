@@ -82,7 +82,7 @@ export const EthVaultDepositInputGroup = () => {
         disabled={disabled}
         fieldName="amount"
         token={tokenSymbol}
-        data-testid="ETH-vault-deposit-input"
+        data-testid="deposit-input"
         maxValue={maxTokenAmount}
         showErrorMessage={false}
         onMaxClick={() => {
