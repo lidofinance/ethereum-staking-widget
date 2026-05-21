@@ -144,18 +144,21 @@ export const VaultPage: FC<Props> = (props) => {
             <Tab
               active={activeTab === TABS.PERFORMANCE}
               onClick={handleTabClick(TABS.PERFORMANCE, performanceTabEvent)}
+              data-testid="performance-tab"
             >
               Performance
             </Tab>
             <Tab
               active={activeTab === TABS.STRATEGY}
               onClick={handleTabClick(TABS.STRATEGY, strategyTabEvent)}
+              data-testid="strategy-tab"
             >
               Strategy
             </Tab>
             <Tab
               active={activeTab === TABS.FAQ}
               onClick={handleTabClick(TABS.FAQ, faqTabEvent)}
+              data-testid="faq-tab"
             >
               FAQ
             </Tab>
@@ -166,7 +169,7 @@ export const VaultPage: FC<Props> = (props) => {
               <VaultChart vaultName={props.vaultName} matomo={props.matomo} />
               <Metrics>
                 {fees.map((fee, index) => (
-                  <InfoRow key={index}>
+                  <InfoRow key={index} data-testid="fee">
                     <InfoRowLabel>{fee.label}</InfoRowLabel>
                     {fee.value != null && (
                       <InfoRowValue>{fee.value}</InfoRowValue>
@@ -174,12 +177,14 @@ export const VaultPage: FC<Props> = (props) => {
                   </InfoRow>
                 ))}
               </Metrics>
-              <Section>
-                <SectionTitle>General Information</SectionTitle>
-                <Table>
+              <Section data-testid="general-info">
+                <SectionTitle data-testid="general-info-title">
+                  General Information
+                </SectionTitle>
+                <Table data-testid="general-info-table">
                   <TableGroup>
                     {generalInfoLeft.map((item, index) => (
-                      <TableItem key={index}>
+                      <TableItem key={index} data-testid="table-item">
                         <TableLabel>
                           {item.label}
                           {item.tooltip && (
@@ -196,7 +201,7 @@ export const VaultPage: FC<Props> = (props) => {
                   </TableGroup>
                   <TableGroup>
                     {generalInfoRight.map((item, index) => (
-                      <TableItem key={index}>
+                      <TableItem key={index} data-testid="table-item">
                         <TableLabel>
                           {item.label}
                           {item.tooltip && (
@@ -213,7 +218,7 @@ export const VaultPage: FC<Props> = (props) => {
                   </TableGroup>
                 </Table>
               </Section>
-              <RiskSection>
+              <RiskSection data-testid="risk-disclosure">
                 <SectionTitle>Risk Disclosures</SectionTitle>
                 <Description>{riskDisclosure}</Description>
               </RiskSection>

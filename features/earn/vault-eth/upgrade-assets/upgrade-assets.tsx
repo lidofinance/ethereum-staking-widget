@@ -120,7 +120,7 @@ export const UpgradeAssetsBlock: FC = () => {
   if (tokensWithBalance.length === 0) return null;
 
   return (
-    <UpgradeAssets data-testid={'availableToUpgradeBanner'}>
+    <UpgradeAssets data-testid="upgradable-tokens-banner">
       <UpgradeAssetsHeader>
         <UpgradeAssetsTitle>Assets available to upgrade</UpgradeAssetsTitle>
         <UpgradeAssetsHowItWorksButton
@@ -144,7 +144,7 @@ export const UpgradeAssetsBlock: FC = () => {
             <FormatToken
               amount={balances[token]}
               symbol={TOKEN_SYMBOLS[token]}
-              data-testid={'amountToUpgrade'}
+              data-testid="amount-to-upgrade"
             />
           </UpgradeAssetsAmount>
           <UpgradeAssetsButton
@@ -157,7 +157,7 @@ export const UpgradeAssetsBlock: FC = () => {
               })
             }
             loading={isUpgrading}
-            data-testid={'upgradeButton'}
+            data-testid="upgrade-button"
           >
             Upgrade
           </UpgradeAssetsButton>

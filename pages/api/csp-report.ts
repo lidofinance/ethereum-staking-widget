@@ -1,22 +1,24 @@
 import { wrapRequest as wrapNextRequest } from '@lidofinance/next-api-wrapper';
-import { defaultErrorHandler, rateLimit } from 'utilsApi';
-import { API } from 'types';
+import {
+  defaultErrorHandler,
+  rateLimit,
+  httpMethodGuard,
+  HttpMethod,
+} from 'utilsApi';
+import { cspReportHandler } from 'utilsApi/csp-report-handler';
 
-const cspReport: API = async (req, res) => {
-  let violation = {};
-
-  if (typeof req.body == 'object') {
-    violation = req.body;
-  } else if (typeof req.body === 'string') {
-    violation = JSON.parse(req.body);
-  }
-
-  console.warn({
-    type: 'CSP Violation',
-    ...violation,
-  });
-
-  res.status(200).send({ status: 'ok' });
+// 32KB fits original-policy + Reporting API v1 batched reports;
+// well under Next.js' 1MB default to keep body sizes bounded.
+export const config = {
+  api: {
+    bodyParser: { sizeLimit: '32kb' },
+  },
 };
 
-export default wrapNextRequest([rateLimit, defaultErrorHandler])(cspReport);
+export { cspReportHandler };
+
+export default wrapNextRequest([
+  httpMethodGuard([HttpMethod.POST]),
+  rateLimit,
+  defaultErrorHandler,
+])(cspReportHandler);

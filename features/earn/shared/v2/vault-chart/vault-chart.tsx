@@ -209,7 +209,9 @@ export const VaultChart = (props: VaultChartProps) => {
         <div style={{ position: 'relative', width: '100%', height: '305px' }}>
           {!isNoDataAvailable && isChartLoading && <ChartInlineLoaderStyled />}
           {isNoDataAvailable && (
-            <ErrorMessageStyled>No data available</ErrorMessageStyled>
+            <ErrorMessageStyled data-testid="no-metric-data">
+              No data available
+            </ErrorMessageStyled>
           )}
           <div
             ref={chartRef}
@@ -218,11 +220,12 @@ export const VaultChart = (props: VaultChartProps) => {
               inset: 0,
               opacity: isChartLoading ? 0 : 1,
             }}
+            data-testid="metrics"
           />
         </div>
       </VaultChartControls>
       {!isNoDataAvailable && lastTimeStamp && (
-        <LastTimestampStyled>
+        <LastTimestampStyled data-testid="last-updated">
           Last updated: {formatDate(lastTimeStamp)}
         </LastTimestampStyled>
       )}

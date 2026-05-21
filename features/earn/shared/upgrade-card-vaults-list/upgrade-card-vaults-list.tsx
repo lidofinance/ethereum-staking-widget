@@ -49,7 +49,7 @@ export const UpgradeCardVaultsList: FC<UpgradeCardProps> = ({
   if (upgradableTokens.length === 0) return null;
 
   return (
-    <UpgradeCardBlock data-testid={'upgradeCardBlock'}>
+    <UpgradeCardBlock data-testid="upgrade-card-block">
       <UpgradeContent>
         <UpgradeColumn>
           <UpgradeTitle>Upgrade your tokens</UpgradeTitle>
@@ -93,7 +93,7 @@ export const UpgradeCardVaultsList: FC<UpgradeCardProps> = ({
                 );
                 setIsDrawerRightOpen(true);
               }}
-              data-testid={'howItWorksButton'}
+              data-testid="how-it-works-button"
             >
               Learn how it works
             </ButtonInline>
@@ -113,7 +113,7 @@ export const UpgradeCardVaultsList: FC<UpgradeCardProps> = ({
               MATOMO_EARN_EVENTS_TYPES.earnListEarnEthBannerUpgrade,
             )
           }
-          data-testid={'upgradeButton'}
+          data-testid="upgrade-button"
         >
           Upgrade
         </UpgradeButton>

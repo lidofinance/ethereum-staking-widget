@@ -19,7 +19,7 @@ export const STGWithdrawInput: React.FC = () => {
         disabled={disabled}
         fieldName="amount"
         token={'strETH'}
-        data-testid="stg-withdraw-input"
+        data-testid="withdraw-input"
         maxValue={maxAmount}
         showErrorMessage={false}
         onMaxClick={() => {
