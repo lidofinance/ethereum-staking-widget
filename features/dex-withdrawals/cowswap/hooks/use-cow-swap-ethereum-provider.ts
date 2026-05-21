@@ -2,16 +2,21 @@ import { useMemo } from 'react';
 import { EthereumProvider, JsonRpcRequest } from '@cowprotocol/widget-react';
 import { ConnectorEventMap, useConnection, useWalletClient } from 'wagmi';
 
-import { BLOCKED_RPC_METHODS } from './consts';
-import { validateSendTransaction, validateSendCalls } from './validate-tx';
-import { OrderFields, parseOrderFromSignRequest } from './trade-guard/utils';
+import { useDappStatus } from 'modules/web3';
+
+import { BLOCKED_RPC_METHODS } from '../consts';
+import {
+  validateSendTransaction,
+  validateSendCalls,
+} from '../validate-tx/validate-tx';
+import { OrderFields, parseOrderFromSignRequest } from '../trade-guard/utils';
 
 type VerifyOrder = (order: OrderFields) => string | null;
 
 export const useCowSwapEthereumProvider = (
-  chainId: number,
   verifySignedOrder: VerifyOrder,
 ): EthereumProvider | undefined => {
+  const { chainId } = useDappStatus();
   const { data: walletClient } = useWalletClient();
   const { connector } = useConnection();
 

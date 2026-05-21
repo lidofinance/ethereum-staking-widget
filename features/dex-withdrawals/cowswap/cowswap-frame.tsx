@@ -26,7 +26,6 @@ import { getContractAddress } from 'config/networks/contract-address';
 import invariant from 'tiny-invariant';
 import { trackMatomoEvent } from 'utils/track-matomo-event';
 import { MATOMO_TX_EVENTS_TYPES } from 'consts/matomo';
-import {} from 'consts/external-links';
 
 import {
   MAX_SLIPPAGE,
@@ -36,8 +35,7 @@ import {
   WHEN_PRICE_IMPACT_IS_HIGH_THAN,
 } from './consts';
 import { LoaderStyled, DexWrapper } from './styles';
-import { useCowSwapEthereumProvider } from './use-cow-swap-ethereum-provider';
-import { useCspBlocked } from './use-csp-blocked';
+import { useCowSwapEthereumProvider, useCspBlocked } from './hooks';
 
 import { useTradeGuard, TradeGuardModal } from './trade-guard';
 
@@ -237,7 +235,7 @@ export const CowswapFrame = () => {
     ],
   );
 
-  const provider = useCowSwapEthereumProvider(chainId, verifySignedOrder);
+  const provider = useCowSwapEthereumProvider(verifySignedOrder);
 
   const listeners: CowSwapWidgetProps['listeners'] = useMemo(() => {
     const handlers: CowSwapWidgetProps['listeners'] = [
