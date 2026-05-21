@@ -74,11 +74,7 @@ export const TopSection: FC<TopSectionProps> = (props) => {
 
   const apxValue = (
     <TopSectionStatValueTooltipTarget>
-      <TopSectionStatValue
-        $accent
-        $muted={isApxStale}
-        data-testId={'apx-value'}
-      >
+      <TopSectionStatValue $accent $muted={isApxStale} data-testId="apx-value">
         <InlineLoader isLoading={isApxLoading} width={70}>
           <FormatPercent value={apx} decimals="percent" />
         </InlineLoader>
@@ -93,20 +89,20 @@ export const TopSection: FC<TopSectionProps> = (props) => {
           <TopSectionHeaderIcon aria-hidden>
             <props.logo />
           </TopSectionHeaderIcon>
-          <TopSectionHeaderTitle data-testId={'vault-title'}>
+          <TopSectionHeaderTitle data-testId="vault-title">
             {title}
           </TopSectionHeaderTitle>
           {protectedBadgeTooltipText && (
             <Badge text="PROTECTED" tooltipText={protectedBadgeTooltipText} />
           )}
         </TopSectionHeader>
-        <TopSectionDescription data-testId={'vault-description'}>
+        <TopSectionDescription data-testId="vault-description">
           {description}
         </TopSectionDescription>
       </TopSectionContent>
       <TopSectionStatsRow>
         <TopSectionStatItem>
-          <TopSectionStatLabel data-testId={'apx-label'}>
+          <TopSectionStatLabel data-testId="apx-label">
             APY* (7d avg.)
             <VaultTip placement="bottomLeft">{apxHint}</VaultTip>
           </TopSectionStatLabel>
@@ -122,10 +118,8 @@ export const TopSection: FC<TopSectionProps> = (props) => {
           )}
         </TopSectionStatItem>
         <TopSectionStatItem>
-          <TopSectionStatLabel data-testId={'tvl-label'}>
-            TVL
-          </TopSectionStatLabel>
-          <TopSectionStatValue data-testId={'tvl-amount'}>
+          <TopSectionStatLabel data-testId="tvl-label">TVL</TopSectionStatLabel>
+          <TopSectionStatValue data-testId="tvl-amount">
             <InlineLoader isLoading={isTvlLoading} width={70}>
               <FormatLargeAmount amount={tvlUsd} />
             </InlineLoader>
@@ -133,7 +127,7 @@ export const TopSection: FC<TopSectionProps> = (props) => {
         </TopSectionStatItem>
         {!!balance?.sharesAmount && (
           <TopSectionStatItem>
-            <TopSectionStatLabel data-testId={'my-deposit-label'}>
+            <TopSectionStatLabel data-testId="my-deposit-label">
               My deposit
               <VaultTip placement="bottomLeft">
                 You hold{' '}
@@ -150,7 +144,7 @@ export const TopSection: FC<TopSectionProps> = (props) => {
               </VaultTip>
             </TopSectionStatLabel>
             <TopSectionStatValueGroup>
-              <TopSectionStatValue data-testId={'my-deposit-value'}>
+              <TopSectionStatValue data-testId="my-deposit-value">
                 <InlineLoader isLoading={balance.isLoading} width={70}>
                   <FormatToken
                     trimEllipsis
@@ -161,7 +155,7 @@ export const TopSection: FC<TopSectionProps> = (props) => {
                 </InlineLoader>
               </TopSectionStatValue>
               {!balance.isLoading && balance.usdAmount != null && (
-                <TopSectionStatSubValue data-testId={'my-deposit-usd-value'}>
+                <TopSectionStatSubValue data-testId="my-deposit-usd-value">
                   <FormatPrice amount={balance.usdAmount} />
                 </TopSectionStatSubValue>
               )}

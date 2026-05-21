@@ -10,7 +10,7 @@ type BadgeProps = {
 export const Badge = ({ text, tooltipText }: BadgeProps) => {
   return (
     <TooltipStyled title={tooltipText} placement="bottom">
-      <BadgeStyled data-testid={'badge'}>
+      <BadgeStyled data-testid="badge">
         <ShieldCheckIcon />
         {text}
       </BadgeStyled>

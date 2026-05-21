@@ -105,17 +105,15 @@ export const VaultCard: React.FC<VaultCardProps> = ({
         as={LocalLink}
         href={depositHref}
         onClick={depositLinkCallback}
-        data-testid={'open-vault-btn'}
+        data-testid="open-vault-btn"
         aria-label={title}
       />
       <CardHeader>
         <CardHeaderContent>
           <CardTitle>
-            <TitleTextStyled data-testid={'vaultTitle'}>
-              {title}
-            </TitleTextStyled>
+            <TitleTextStyled data-testid="vaultTitle">{title}</TitleTextStyled>
             {protectedBadgeTooltipText && (
-              <BadgeStyled data-testid={'protectedBadge'}>
+              <BadgeStyled data-testid="protected-badge">
                 <Badge
                   text="PROTECTED"
                   tooltipText={protectedBadgeTooltipText}
@@ -130,7 +128,7 @@ export const VaultCard: React.FC<VaultCardProps> = ({
                 <CardTitleBadge
                   variant="gradient"
                   icon={<ChevronsUpIcon />}
-                  data-testid={'upgradingBadge'}
+                  data-testid="upgrading-badge"
                 >
                   {' '}
                   Upgrading
@@ -138,7 +136,7 @@ export const VaultCard: React.FC<VaultCardProps> = ({
               </StyledTooltip>
             )}
           </CardTitle>
-          <CardDescription data-testid={'vaultDescription'}>
+          <CardDescription data-testid="vault-description">
             {description}
           </CardDescription>
         </CardHeaderContent>
@@ -209,7 +207,7 @@ export const VaultCard: React.FC<VaultCardProps> = ({
         )}
       </CardStats>
       {warning && <VaultWarning>{warning}</VaultWarning>}
-      <CardCta data-testid={'vaultButton'}>
+      <CardCta data-testid="vault-button">
         <LocalLink href={depositHref} onClick={depositLinkCallback}>
           <Button fullwidth variant="translucent">
             {ctaLabel}

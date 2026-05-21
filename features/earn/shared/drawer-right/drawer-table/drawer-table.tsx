@@ -92,7 +92,7 @@ const renderCell = (cell: ReactNode | string[]): ReactNode => {
 export const DrawerTable = () => {
   return (
     <div>
-      <TableHeader data-testid={'table-title'}>
+      <TableHeader data-testid="table-title">
         Comparison between GGV/stRATEGY and the EarnETH Vault
       </TableHeader>
       {DATA.map((item) => (

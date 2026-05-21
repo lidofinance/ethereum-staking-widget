@@ -69,7 +69,7 @@ export const RequestItem = forwardRef<HTMLInputElement, RequestItemProps>(
     );
 
     const requestBody = (
-      <RequestStyled data-testid={'requestItem'} $disabled={isDisabled}>
+      <RequestStyled data-testid="request-item" $disabled={isDisabled}>
         <Checkbox
           {...props}
           data-testid="requestCheckbox"
