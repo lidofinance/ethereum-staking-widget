@@ -1,7 +1,7 @@
 import { maxUint256 } from 'viem';
-import { ValidationError } from './validation-error';
+import type { TokenSymbol } from 'consts/tokens';
 import { getTokenSymbol } from 'utils/get-token-symbol';
-import { type TokenSymbol } from 'consts/tokens';
+import { ValidationError } from './validation-error';
 
 // asserts only work with function declaration
 // eslint-disable-next-line func-style
