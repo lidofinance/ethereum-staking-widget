@@ -1,4 +1,4 @@
-import { FC } from 'react';
+import { FC, useEffect } from 'react';
 import { Close, Button, Link } from '@lidofinance/lido-ui';
 
 import { config } from 'config';
@@ -32,6 +32,19 @@ export const DrawerRight: FC<DrawerRightProps> = ({
   shouldHideUpgradeNowButton = false,
 }) => {
   const { handleKeyDown } = useEscape({ onClose });
+
+  // Prevent the page behind the drawer from scrolling while the drawer is open.
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const { body } = document;
+    const previousOverflow = body.style.overflow;
+    body.style.overflow = 'hidden';
+
+    return () => {
+      body.style.overflow = previousOverflow;
+    };
+  }, [isOpen]);
 
   return (
     <DrawerRightStyled
