@@ -1,17 +1,19 @@
+import { vi, afterEach, describe, it, expect, type Mock } from 'vitest';
+
 // Mock utils/qa to break the ESM config chain (env-dynamics.mjs)
-jest.mock('utils/qa', () => ({
-  overrideWithQAMockString: jest.fn((value: string) => value),
-  overrideWithQAMockNumber: jest.fn((value: number) => value),
+vi.mock('utils/qa', () => ({
+  overrideWithQAMockString: vi.fn((value: string) => value),
+  overrideWithQAMockNumber: vi.fn((value: number) => value),
 }));
 
 import { overrideWithQAMockString, overrideWithQAMockNumber } from 'utils/qa';
 import { applyQALevelOverride, readThresholds } from '../utils/qa-utils';
 import { DEFAULT_THRESHOLDS } from '../consts';
 
-const mockString = overrideWithQAMockString as jest.Mock;
-const mockNumber = overrideWithQAMockNumber as jest.Mock;
+const mockString = overrideWithQAMockString as Mock;
+const mockNumber = overrideWithQAMockNumber as Mock;
 
-afterEach(() => jest.resetAllMocks());
+afterEach(() => vi.resetAllMocks());
 
 // ---------------------------------------------------------------------------
 // applyQALevelOverride

@@ -176,7 +176,7 @@ export const CowswapFrame = () => {
       width: '100%',
       height: '432px',
       theme: themeName === 'dark' ? cowSwapThemeDark : cowSwapThemeLight,
-
+      disableWindowOpen: true,
       disablePostedOrderConfirmationModal: true,
       disableTokenImport: true,
       disablePostTradeTips: true,
