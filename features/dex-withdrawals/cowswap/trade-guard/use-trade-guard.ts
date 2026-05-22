@@ -74,14 +74,10 @@ const applyOracleResult = (
 // ---------------------------------------------------------------------------
 
 type UseTradeGuardOptions = {
-  walletAddress?: string;
   isTestnet?: boolean;
 };
 
-export const useTradeGuard = ({
-  walletAddress,
-  isTestnet = false,
-}: UseTradeGuardOptions) => {
+export const useTradeGuard = ({ isTestnet = false }: UseTradeGuardOptions) => {
   const [modalState, setModalState] =
     useState<TradeGuardModalState>(MODAL_INITIAL_STATE);
   const sellExceededRef = useRef(false);
@@ -118,22 +114,10 @@ export const useTradeGuard = ({
       // Invalidate previous snapshot — prevents stale data if this call fails
       lastValidatedTradeRef.current = null;
 
-      if (!walletAddress) {
-        await showModal(
-          'blocked',
-          ['Wallet address unavailable — cannot verify swap'],
-          false,
-        );
-
-        return false;
-      }
-
-      const t = readThresholds();
+      const tradeThresholds = readThresholds();
       const { level, messages, isStructural } = analyzeParams(
         payload,
-        walletAddress,
-        isTestnet,
-        t,
+        tradeThresholds,
       );
 
       let finalLevel = level;
@@ -147,12 +131,17 @@ export const useTradeGuard = ({
       );
       // QA clamping already applied in readThresholds()
       const meetsThreshold =
-        sellUnits !== null && sellUnits >= t.minSellUnitsToTriggerOracle;
+        sellUnits !== null &&
+        sellUnits >= tradeThresholds.minSellUnitsToTriggerOracle;
       const shouldCheckOracle = !isTestnet && !isStructural && meetsThreshold;
 
       if (shouldCheckOracle) {
         const result = await verifyWithOracle(payload);
-        const outcome = applyOracleResult(result, meetsThreshold, t);
+        const outcome = applyOracleResult(
+          result,
+          meetsThreshold,
+          tradeThresholds,
+        );
         finalLevel = outcome.level;
         finalMessages = outcome.messages;
         oracleVerified = outcome.verified;
@@ -178,7 +167,7 @@ export const useTradeGuard = ({
 
       return true;
     },
-    [walletAddress, isTestnet, verifyWithOracle, showModal],
+    [isTestnet, verifyWithOracle, showModal],
   );
 
   // ---------------------------------------------------------------------------
@@ -200,15 +189,6 @@ export const useTradeGuard = ({
 
   /** Structural pre-check on approval — uses last ON_CHANGE_TRADE_PARAMS data. */
   const validateApproval = useCallback(async (): Promise<boolean> => {
-    if (!walletAddress) {
-      await showModal(
-        'blocked',
-        ['Wallet address unavailable — cannot verify approval'],
-        false,
-      );
-      return false;
-    }
-
     const payload = lastTradeParamsRef.current;
     if (!payload) {
       await showModal(
@@ -219,13 +199,8 @@ export const useTradeGuard = ({
       return false;
     }
 
-    const t = readThresholds();
-    const { level, messages } = analyzeParams(
-      payload,
-      walletAddress,
-      isTestnet,
-      t,
-    );
+    const tradeThresholds = readThresholds();
+    const { level, messages } = analyzeParams(payload, tradeThresholds);
 
     if (level !== 'safe') {
       await showModal(level, messages, false);
@@ -233,19 +208,19 @@ export const useTradeGuard = ({
     }
 
     return true;
-  }, [walletAddress, isTestnet, showModal]);
+  }, [showModal]);
 
   /** Stable callback — safe to call from memoized widget hooks.
    *  Shows a neutral "limit" modal and returns false when exceeded. */
   const checkSellLimit = useCallback(async (): Promise<boolean> => {
     if (!sellExceededRef.current) return true;
 
-    const t = readThresholds();
+    const tradeThresholds = readThresholds();
     const symbol = tokenSymbolRef.current || 'tokens';
     await showModal(
       'limit',
       [
-        `Sell amount exceeds maximum allowed (${t.maxAllowedSellAmount.toLocaleString()} ${symbol})`,
+        `Sell amount exceeds maximum allowed (${tradeThresholds.maxAllowedSellAmount.toLocaleString()} ${symbol})`,
       ],
       false,
     );

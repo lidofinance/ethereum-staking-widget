@@ -114,7 +114,6 @@ export const CowswapFrame = () => {
     checkSellLimit,
     verifySignedOrder,
   } = useTradeGuard({
-    walletAddress: walletClient?.account.address,
     isTestnet,
   });
 
@@ -132,7 +131,6 @@ export const CowswapFrame = () => {
       standaloneMode: false,
       // for testnets only sepolia
       chainId: isTestnet ? 11155111 : 1,
-      // test app
       baseUrl: 'https://swap.cow.fi',
 
       //
