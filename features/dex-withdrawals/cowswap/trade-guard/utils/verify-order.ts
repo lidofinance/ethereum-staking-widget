@@ -2,21 +2,11 @@ import { parseUnits } from 'viem';
 
 import mainnetConfig from 'networks/mainnet.json';
 
-import { VALID_SELL_TOKENS, VALID_BUY_TOKENS } from '../consts';
+import type { OrderData } from '../../validate-tx';
 
 // ---------------------------------------------------------------------------
 // Types
 // ---------------------------------------------------------------------------
-
-type OrderFields = {
-  sellToken: string;
-  buyToken: string;
-  receiver: string;
-  sellAmount: string;
-  buyAmount: string;
-};
-
-export type { OrderFields };
 
 /** Snapshot of the validated onBeforeTrade payload (human-readable units). */
 export type ValidatedTradeSnapshot = {
@@ -42,37 +32,6 @@ const TOKEN_DECIMALS: Record<string, number> = {
   [c.usdt.toLowerCase()]: 6, // USDT
   [c.usds.toLowerCase()]: 18, // USDS
   [c.wbtc.toLowerCase()]: 8, // WBTC
-};
-
-// ---------------------------------------------------------------------------
-// Static field verification (addresses only)
-// ---------------------------------------------------------------------------
-
-/**
- * Defense-in-depth: verifies that an EIP-712 CowSwap order
- * matches the expected constraints before signing.
- *
- * Returns null if OK, or an error message if verification fails.
- */
-export const verifyOrderFields = (
-  order: OrderFields,
-  walletAddress: string,
-  isTestnet: boolean,
-): string | null => {
-  if (order.receiver.toLowerCase() !== walletAddress.toLowerCase()) {
-    return 'Order receiver does not match wallet address';
-  }
-
-  if (!isTestnet) {
-    if (!VALID_SELL_TOKENS.has(order.sellToken.toLowerCase())) {
-      return 'Invalid sell token in order';
-    }
-    if (!VALID_BUY_TOKENS.has(order.buyToken.toLowerCase())) {
-      return 'Invalid buy token in order';
-    }
-  }
-
-  return null;
 };
 
 // ---------------------------------------------------------------------------
@@ -103,7 +62,7 @@ const unitsToRaw = (units: string, tokenAddress: string): bigint | null => {
  * Returns null if OK, or an error message if verification fails.
  */
 export const verifyOrderAmounts = (
-  order: OrderFields,
+  order: OrderData,
   snapshot: ValidatedTradeSnapshot,
 ): string | null => {
   // Token addresses must match
@@ -118,14 +77,8 @@ export const verifyOrderAmounts = (
   const expectedSell = unitsToRaw(snapshot.sellAmountUnits, order.sellToken);
   const expectedBuyMin = unitsToRaw(snapshot.buyAmountMinUnits, order.buyToken);
 
-  let orderSell: bigint;
-  let orderBuy: bigint;
-  try {
-    orderSell = BigInt(order.sellAmount);
-    orderBuy = BigInt(order.buyAmount);
-  } catch {
-    return 'Invalid order amount format';
-  }
+  const orderSell = order.sellAmount;
+  const orderBuy = order.buyAmount;
 
   // Fail-closed: if we can't convert units, we can't verify amounts
   if (expectedSell === null) {
@@ -145,41 +98,5 @@ export const verifyOrderAmounts = (
     return `Order minimum receive is less than validated (${order.buyAmount} < ${expectedBuyMin})`;
   }
 
-  return null;
-};
-
-// ---------------------------------------------------------------------------
-// EIP-712 parsing
-// ---------------------------------------------------------------------------
-
-/**
- * Attempts to extract CowSwap Order fields from eth_signTypedData_v4 params.
- * Returns null if the request is not a CowSwap Order signing request.
- */
-export const parseOrderFromSignRequest = (
-  params: unknown,
-): OrderFields | null => {
-  try {
-    const [, typedDataRaw] = params as [string, string | object];
-    const typedData =
-      typeof typedDataRaw === 'string'
-        ? JSON.parse(typedDataRaw)
-        : typedDataRaw;
-
-    if (typedData?.primaryType === 'Order' && typedData?.message) {
-      const msg = typedData.message;
-      if (
-        typeof msg.sellToken === 'string' &&
-        typeof msg.buyToken === 'string' &&
-        typeof msg.receiver === 'string' &&
-        typeof msg.sellAmount === 'string' &&
-        typeof msg.buyAmount === 'string'
-      ) {
-        return msg as OrderFields;
-      }
-    }
-  } catch {
-    // Not valid typed data — ignore
-  }
   return null;
 };

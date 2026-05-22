@@ -5,6 +5,7 @@ import mainnetConfig from 'networks/mainnet.json';
 import { PARTNER_FEE_BPS } from '../consts';
 
 import type { ChainlinkFeedConfig } from './types';
+import { getTokenAddress } from 'config/networks/token-address';
 
 // Partner fee as a percentage (0.3%) — subtracted from deviation calculations
 // because it's a known fixed cost the user has agreed to, not an unexpected loss
@@ -29,24 +30,7 @@ export const DEFAULT_THRESHOLDS: Thresholds = {
 
 const c = mainnetConfig.contracts;
 
-// --- Valid token addresses (mainnet, lowercased) ---
-
-// CowSwap native ETH placeholder — not a real contract, no entry in network config
-const ETH_PLACEHOLDER = '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee';
-
-export const VALID_SELL_TOKENS = new Set<string>([
-  c.lido.toLowerCase(), // stETH
-  c.wsteth.toLowerCase(), // wstETH
-]);
-
-export const VALID_BUY_TOKENS = new Set<string>([
-  ETH_PLACEHOLDER,
-  c.weth.toLowerCase(),
-  c.usdc.toLowerCase(),
-  c.usdt.toLowerCase(),
-  c.usds.toLowerCase(),
-  c.wbtc.toLowerCase(),
-]);
+const ETH_PLACEHOLDER = (getTokenAddress(1, 'ETH') as string).toLowerCase();
 
 // --- Chainlink Price Feeds (Mainnet) ---
 

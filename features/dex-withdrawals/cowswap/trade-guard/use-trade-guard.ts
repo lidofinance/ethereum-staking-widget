@@ -9,10 +9,10 @@ import {
   analyzeParams,
   readThresholds,
   applyQALevelOverride,
-  verifyOrderFields,
   verifyOrderAmounts,
 } from './utils';
-import type { OrderFields, ValidatedTradeSnapshot } from './utils/verify-order';
+import type { ValidatedTradeSnapshot } from './utils/verify-order';
+import type { OrderData } from '../validate-tx';
 import {
   MODAL_INITIAL_STATE,
   type TradeGuardModalState,
@@ -254,24 +254,15 @@ export const useTradeGuard = ({
   }, [showModal]);
 
   /** Verify EIP-712 order against the last validated onBeforeTrade payload. */
-  const verifySignedOrder = useCallback(
-    (order: OrderFields): string | null => {
-      if (!walletAddress) return 'Wallet address unavailable';
+  const verifySignedOrder = useCallback((order: OrderData): string | null => {
+    // Amount checks against last validated payload
+    const snapshot = lastValidatedTradeRef.current;
+    if (!snapshot) {
+      return 'No validated trade on record — order signing rejected';
+    }
 
-      // Static checks (receiver, token whitelist)
-      const staticError = verifyOrderFields(order, walletAddress, isTestnet);
-      if (staticError) return staticError;
-
-      // Amount checks against last validated payload
-      const snapshot = lastValidatedTradeRef.current;
-      if (!snapshot) {
-        return 'No validated trade on record — order signing rejected';
-      }
-
-      return verifyOrderAmounts(order, snapshot);
-    },
-    [walletAddress, isTestnet],
-  );
+    return verifyOrderAmounts(order, snapshot);
+  }, []);
 
   return {
     modalState,

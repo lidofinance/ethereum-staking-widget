@@ -33,6 +33,7 @@ import {
   DEX_SELL_TOKEN_LIST_URL,
   DEX_BUY_TOKEN_LIST_URL,
   WHEN_PRICE_IMPACT_IS_HIGH_THAN,
+  LIDO_APP_CODE,
 } from './consts';
 import { LoaderStyled, DexWrapper } from './styles';
 import { useCowSwapEthereumProvider, useCspBlocked } from './hooks';
@@ -127,7 +128,7 @@ export const CowswapFrame = () => {
       //
       // Core options
       //
-      appCode: 'Lido Staking Widget',
+      appCode: LIDO_APP_CODE,
       standaloneMode: false,
       // for testnets only sepolia
       chainId: isTestnet ? 11155111 : 1,

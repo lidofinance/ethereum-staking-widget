@@ -8,10 +8,11 @@ import { BLOCKED_RPC_METHODS } from '../consts';
 import {
   validateSendTransaction,
   validateSendCalls,
+  validateSignTypedData,
+  OrderData,
 } from '../validate-tx/validate-tx';
-import { OrderFields, parseOrderFromSignRequest } from '../trade-guard/utils';
 
-type VerifyOrder = (order: OrderFields) => string | null;
+type VerifyOrder = (order: OrderData) => string | null;
 
 export const useCowSwapEthereumProvider = (
   verifySignedOrder: VerifyOrder,
@@ -31,30 +32,34 @@ export const useCowSwapEthereumProvider = (
             new Error(`RPC method "${args.method}" is not allowed`),
           );
         }
-
         // Defense-in-depth: verify CowSwap order before signing
-        if (args.method === 'eth_signTypedData_v4') {
-          const order = parseOrderFromSignRequest(args.params);
-          if (order) {
-            const error = verifySignedOrder(order);
-            if (error) {
-              return Promise.reject(
-                new Error(`Order signing rejected: ${error}`),
-              );
-            }
+        else if (args.method === 'eth_signTypedData_v4') {
+          const {
+            allowed,
+            result: order,
+            reason,
+          } = validateSignTypedData(args.params, {
+            chainId,
+            signer: walletClient.account.address,
+          });
+          if (!allowed) {
+            console.warn('[DEX Provider] Signing Typed Data blocked:', reason);
+            return Promise.reject(new Error(reason));
           }
-        }
+          const error = verifySignedOrder(order);
 
-        // Level 2+3: deep transaction parameter validation
-        if (args.method === 'eth_sendTransaction') {
+          if (error) {
+            return Promise.reject(
+              new Error(`Order signing rejected: ${error}`),
+            );
+          }
+        } else if (args.method === 'eth_sendTransaction') {
           const result = validateSendTransaction(args.params, chainId);
           if (!result.allowed) {
             console.warn('[DEX Provider] Transaction blocked:', result.reason);
             return Promise.reject(new Error(result.reason));
           }
-        }
-
-        if (args.method === 'wallet_sendCalls') {
+        } else if (args.method === 'wallet_sendCalls') {
           const result = validateSendCalls(args.params, chainId);
           if (!result.allowed) {
             console.warn('[DEX Provider] Batch call blocked:', result.reason);
