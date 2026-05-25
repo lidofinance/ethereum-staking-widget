@@ -179,7 +179,6 @@ const sendTransactionParamsSchema = z.tuple([
  * - Contract creation (no `to`): blocked
  * - Unknown target address: blocked
  * - CoW Protocol contracts (Settlement, VaultRelayer): any call allowed
- * - WETH: approve() / deposit() / withdraw() only
  * - Other tokens: approve() only, spender must be VaultRelayer, no ETH value
  */
 export const validateSendTransaction = (

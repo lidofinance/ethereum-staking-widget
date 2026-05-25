@@ -1,4 +1,4 @@
-import { safeParseDecimal } from '../utils/safe-parse-decimal.ts';
+import { safeParseDecimal } from '../utils/safe-parse-decimal';
 import { resolveLevel } from '../utils/resolve-level';
 import { analyzeParams } from '../utils/analyze-params';
 import { isValidRound, isInBounds } from '../utils/oracle-utils';
@@ -16,9 +16,6 @@ const STETH = '0xae7ab96520de3a18e5e111b5eaab095312d7fe84';
 const WSTETH = '0x7f39c581f595b53c5cb19bd0b3f8da6c935e2ca0';
 const ETH = '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee';
 const USDC = '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48';
-const UNKNOWN = '0x0000000000000000000000000000000000000001';
-
-const WALLET = '0xUserWalletAddress';
 
 const makePayload = (
   overrides: Partial<OnTradeParamsPayload> = {},
@@ -102,46 +99,24 @@ describe('resolveLevel', () => {
 // analyzeParams
 // ---------------------------------------------------------------------------
 describe('analyzeParams', () => {
-  describe('token validation', () => {
+  describe('token presence', () => {
     it('returns blocked when sell token is missing', () => {
       const payload = makePayload({ sellToken: undefined });
-      const result = analyzeParams(payload, WALLET, false);
+      const result = analyzeParams(payload);
       expect(result.level).toBe('blocked');
       expect(result.isStructural).toBe(true);
       expect(result.messages[0]).toContain('Token information unavailable');
     });
 
-    it('blocks invalid sell token on mainnet', () => {
-      const payload = makePayload({
-        sellToken: { address: UNKNOWN, symbol: 'X' } as never,
-      });
-      const result = analyzeParams(payload, WALLET, false);
+    it('returns blocked when buy token is missing', () => {
+      const payload = makePayload({ buyToken: undefined });
+      const result = analyzeParams(payload);
       expect(result.level).toBe('blocked');
       expect(result.isStructural).toBe(true);
-      expect(result.messages[0]).toContain('Invalid sell token');
-    });
-
-    it('blocks invalid buy token on mainnet', () => {
-      const payload = makePayload({
-        buyToken: { address: UNKNOWN, symbol: 'X' } as never,
-      });
-      const result = analyzeParams(payload, WALLET, false);
-      expect(result.level).toBe('blocked');
-      expect(result.isStructural).toBe(true);
-      expect(result.messages[0]).toContain('Invalid buy token');
-    });
-
-    it('skips token whitelist on testnet', () => {
-      const payload = makePayload({
-        sellToken: { address: UNKNOWN, symbol: 'X' } as never,
-        buyToken: { address: UNKNOWN, symbol: 'Y' } as never,
-      });
-      const result = analyzeParams(payload, WALLET, true);
-      expect(result.level).toBe('safe');
     });
 
     it('accepts valid stETH → ETH pair', () => {
-      const result = analyzeParams(makePayload(), WALLET, false);
+      const result = analyzeParams(makePayload());
       expect(result.level).toBe('safe');
       expect(result.isStructural).toBe(false);
     });
@@ -151,37 +126,7 @@ describe('analyzeParams', () => {
         sellToken: { address: WSTETH, symbol: 'wstETH' } as never,
         buyToken: { address: USDC, symbol: 'USDC' } as never,
       });
-      const result = analyzeParams(payload, WALLET, false);
-      expect(result.level).toBe('safe');
-    });
-  });
-
-  describe('recipient validation', () => {
-    it('blocks when recipient mismatches wallet', () => {
-      const payload = makePayload({ recipient: '0xAttacker' });
-      const result = analyzeParams(payload, WALLET, false);
-      expect(result.level).toBe('blocked');
-      expect(result.isStructural).toBe(true);
-      expect(result.messages[0]).toContain('recipient does not match');
-    });
-
-    it('passes when recipient matches wallet (case-insensitive)', () => {
-      const payload = makePayload({
-        recipient: WALLET.toUpperCase(),
-      });
-      const result = analyzeParams(payload, WALLET, false);
-      expect(result.level).toBe('safe');
-    });
-
-    it('passes when recipient is undefined', () => {
-      const payload = makePayload({ recipient: undefined });
-      const result = analyzeParams(payload, WALLET, false);
-      expect(result.level).toBe('safe');
-    });
-
-    it('skips recipient check when wallet is undefined (banner mode)', () => {
-      const payload = makePayload({ recipient: '0xAnyone' });
-      const result = analyzeParams(payload, undefined, false);
+      const result = analyzeParams(payload);
       expect(result.level).toBe('safe');
     });
   });
@@ -191,7 +136,7 @@ describe('analyzeParams', () => {
       const payload = makePayload({
         sellTokenAmount: { units: '5001' } as never,
       });
-      const result = analyzeParams(payload, WALLET, false);
+      const result = analyzeParams(payload);
       expect(result.level).toBe('blocked');
       expect(result.isStructural).toBe(true);
       expect(result.messages[0]).toContain('capped at');
@@ -201,7 +146,7 @@ describe('analyzeParams', () => {
       const payload = makePayload({
         sellTokenAmount: { units: '5000' } as never,
       });
-      const result = analyzeParams(payload, WALLET, false);
+      const result = analyzeParams(payload);
       expect(result.level).toBe('safe');
     });
   });
