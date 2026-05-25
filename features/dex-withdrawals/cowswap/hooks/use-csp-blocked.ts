@@ -19,8 +19,4 @@ export const useCspBlocked = () => {
   }, []);
 
   if (cspBlocked) throw cspBlocked;
-
-  return {
-    cspBlocked,
-  };
 };

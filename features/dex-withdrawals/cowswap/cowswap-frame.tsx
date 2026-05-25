@@ -6,24 +6,15 @@ import {
   TradeType,
 } from '@cowprotocol/widget-react';
 import { useCallback, useMemo, useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { CowWidgetEvents, OnTradeParamsPayload } from '@cowprotocol/events';
 
 import { LOCALE } from 'config/groups/locale';
-import { STRATEGY_IMMUTABLE } from 'consts/react-query-strategies';
 import { useTheme } from 'styled-components';
 import { useWalletClient } from 'wagmi';
 import { useAddressValidation } from 'providers/address-validation-provider';
 import { themeDark, themeLight } from '@lidofinance/lido-ui';
-import {
-  useDappStatus,
-  useEthereumBalance,
-  useStethBalance,
-  useWstethBalance,
-} from 'modules/web3';
-import { getContractAddress } from 'config/networks/contract-address';
-import invariant from 'tiny-invariant';
+import { useDappStatus } from 'modules/web3';
 import { trackMatomoEvent } from 'utils/track-matomo-event';
 import { MATOMO_TX_EVENTS_TYPES } from 'consts/matomo';
 
@@ -36,7 +27,14 @@ import {
   LIDO_APP_CODE,
 } from './consts';
 import { LoaderStyled, DexWrapper } from './styles';
-import { useCowSwapEthereumProvider, useCspBlocked } from './hooks';
+import {
+  useCowSwapEthereumProvider,
+  useCspBlocked,
+  useFeeRecipient,
+  useIsGhAvailable,
+  useLoadingTimeout,
+  useRefetchBalances,
+} from './hooks';
 
 import { useTradeGuard, TradeGuardModal } from './trade-guard';
 
@@ -71,39 +69,20 @@ const cowSwapThemeLight: CowSwapWidgetPalette = {
 };
 
 export const CowswapFrame = () => {
-  const { refetch: refetchSteth } = useStethBalance();
-  const { refetch: refetchWsteth } = useWstethBalance();
-  const { refetch: refetchEth } = useEthereumBalance();
-  // state to trigger refreshes to memoized params
-  const [refreshId, setRefreshId] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
 
-  useCspBlocked();
-
-  const { isTestnet, chainId } = useDappStatus();
+  const { isTestnet } = useDappStatus();
   const { validateAddress } = useAddressValidation();
   const { data: walletClient } = useWalletClient();
   const { name: themeName } = useTheme();
-
-  const refreshBalances = useCallback(() => {
-    void Promise.allSettled([refetchSteth(), refetchWsteth(), refetchEth()]);
-  }, [refetchEth, refetchSteth, refetchWsteth]);
-
   // Fall back to self-hosted token lists if GitHub is unavailable
-  const { data: isGithubAvailable = true } = useQuery({
-    queryKey: ['dex-token-list-availability'],
-    ...STRATEGY_IMMUTABLE,
-    queryFn: () =>
-      fetch(DEX_SELL_TOKEN_LIST_URL, { method: 'HEAD' })
-        .then((res) => res.ok)
-        .catch(() => false),
-  });
-
-  const daoAgentAddress = getContractAddress(chainId, 'daoAgent');
-  invariant(
-    daoAgentAddress,
-    'DAO Agent address is not defined for current network',
-  );
+  const isGithubAvailable = useIsGhAvailable();
+  const refreshBalances = useRefetchBalances();
+  const daoAgentAddress = useFeeRecipient();
+  // throw on CSP violation
+  useCspBlocked();
+  // throw on loading timeout
+  useLoadingTimeout(isLoading);
 
   const {
     modalState,
@@ -121,6 +100,8 @@ export const CowswapFrame = () => {
     const isValid = await validateAddress(walletClient?.account.address);
     return isValid;
   }, [validateAddress, walletClient?.account.address]);
+
+  const provider = useCowSwapEthereumProvider(verifySignedOrder);
 
   const params = useMemo<CowSwapWidgetParams>(
     () => ({
@@ -220,7 +201,6 @@ export const CowswapFrame = () => {
         },
       },
     }),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     [
       isTestnet,
       isGithubAvailable,
@@ -230,11 +210,8 @@ export const CowswapFrame = () => {
       validateApproval,
       validate,
       validateTrade,
-      refreshId,
     ],
   );
-
-  const provider = useCowSwapEthereumProvider(verifySignedOrder);
 
   const listeners: CowSwapWidgetProps['listeners'] = useMemo(() => {
     const handlers: CowSwapWidgetProps['listeners'] = [
@@ -247,7 +224,7 @@ export const CowswapFrame = () => {
       {
         event: CowWidgetEvents.ON_FULFILLED_ORDER,
         handler: () => {
-          refreshBalances();
+          void refreshBalances();
           trackMatomoEvent(MATOMO_TX_EVENTS_TYPES.withdrawalDexSwapFinish);
         },
       },
@@ -265,33 +242,22 @@ export const CowswapFrame = () => {
       },
       {
         event: CowWidgetEvents.ON_CHANGE_TRADE_PARAMS,
-        handler: (params: OnTradeParamsPayload) => {
-          reportTradeParams(params);
-
-          // Workaround: refresh params if user changes sell token
-          const { sellToken } = params;
-          if (
-            !sellToken ||
-            sellToken.symbol.toLowerCase() === 'steth' ||
-            sellToken.symbol.toLowerCase() === 'wsteth'
-          )
-            return;
-          setRefreshId((id) => id + 1);
+        handler: async (payload: OnTradeParamsPayload) => {
+          reportTradeParams(payload);
         },
       },
     ];
 
     return handlers;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [refreshBalances]);
+  }, [refreshBalances, reportTradeParams]);
 
   return (
     <>
       <DexWrapper>
         <CowSwapWidget
+          provider={provider}
           params={params}
           listeners={listeners}
-          provider={provider}
           onReady={() => setIsLoading(false)}
         />
         <LoaderStyled $isVisible={isLoading} />

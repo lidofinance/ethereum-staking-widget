@@ -15,6 +15,7 @@ export const MAX_SLIPPAGE = 300; // 3% (bps)
 export const PARTNER_FEE_BPS = 30; // 0.3% — Lido DAO treasury
 export const WHEN_PRICE_IMPACT_IS_HIGH_THAN = 3; // 3%
 export const LIDO_APP_CODE = 'Lido Staking Widget';
+export const COWSWAP_WIDGET_LOADING_TIMEOUT_MS = 1_000 * 60 * 2; // 2 minutes
 
 export const DEX_SELL_TOKEN_LIST_URL = `${GITHUB_RAW_MAIN_PATH}/public/token-lists/withdrawals-dex-sell-tokenlist.json`;
 export const DEX_BUY_TOKEN_LIST_URL = `${GITHUB_RAW_MAIN_PATH}/public/token-lists/withdrawals-dex-buy-tokenlist.json`;
