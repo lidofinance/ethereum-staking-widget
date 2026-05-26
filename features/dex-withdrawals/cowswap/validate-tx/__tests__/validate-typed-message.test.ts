@@ -143,7 +143,7 @@ const buildTypedDataParams = (overrides: OrderOverrides = {}) => {
       buyToken: overrides.buyToken ?? WETH,
       sellAmount: '1000000000000000000',
       buyAmount: '950000000000000000',
-      validTo: 9999999999,
+      validTo: Math.floor(Date.now() / 1000) + 3600,
       kind: overrides.kind ?? 'sell',
       partiallyFillable: overrides.partiallyFillable ?? false,
       appData:
@@ -514,13 +514,13 @@ describe('validateSignTypedData — wstETH permit', () => {
       expect(result.reason).toContain('Permit value must be greater than 0');
     });
 
-    it('rejects when deadline is in the past', () => {
+    it('allows permit even when original deadline is in the past (deadline is overridden)', () => {
+      // validateSignTypedData always overrides the permit deadline before validation
       const result = validateSignTypedData(
         buildPermitParams({ deadline: 1000 }),
         mainnetCtx,
       );
-      expect(result.allowed).toBe(false);
-      expect(result.reason).toContain('Permit deadline has passed');
+      expect(result.allowed).toBe(true);
     });
   });
 });
