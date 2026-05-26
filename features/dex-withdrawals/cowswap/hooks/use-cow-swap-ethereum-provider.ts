@@ -4,13 +4,17 @@ import { ConnectorEventMap, useConnection, useWalletClient } from 'wagmi';
 
 import { useDappStatus } from 'modules/web3';
 
-import { BLOCKED_RPC_METHODS } from '../consts';
+import {
+  BLOCKED_RPC_METHODS,
+  BLOCKED_RPC_NAMESPACES,
+  COWSWAP_WIDGET_ALLOWED_RPC_METHODS,
+} from '../consts';
 import {
   validateSendTransaction,
   validateSendCalls,
-  validateSignTypedData,
   OrderData,
-} from '../validate-tx/validate-tx';
+  validateSignTypedData,
+} from '../validate-tx';
 
 type VerifyOrder = (order: OrderData) => string | null;
 
@@ -34,6 +38,7 @@ export const useCowSwapEthereumProvider = (
         }
         // Defense-in-depth: verify CowSwap order before signing
         else if (args.method === 'eth_signTypedData_v4') {
+          // !NB: this validation modifies the params to override the wstETH permit deadline
           const {
             allowed,
             result: order,
@@ -42,16 +47,19 @@ export const useCowSwapEthereumProvider = (
             chainId,
             signer: walletClient.account.address,
           });
+
           if (!allowed) {
             console.warn('[DEX Provider] Signing Typed Data blocked:', reason);
             return Promise.reject(new Error(reason));
           }
-          const error = verifySignedOrder(order);
+          if (order) {
+            const error = verifySignedOrder(order);
 
-          if (error) {
-            return Promise.reject(
-              new Error(`Order signing rejected: ${error}`),
-            );
+            if (error) {
+              return Promise.reject(
+                new Error(`Order signing rejected: ${error}`),
+              );
+            }
           }
         } else if (args.method === 'eth_sendTransaction') {
           const result = validateSendTransaction(args.params, chainId);
@@ -65,6 +73,19 @@ export const useCowSwapEthereumProvider = (
             console.warn('[DEX Provider] Batch call blocked:', result.reason);
             return Promise.reject(new Error(result.reason));
           }
+        }
+        // Last line of defense, against unexpected RPC methods
+        //  that don't pass namespace filter and are not explicitly allowed
+        else if (
+          BLOCKED_RPC_NAMESPACES.test(args.method) &&
+          !COWSWAP_WIDGET_ALLOWED_RPC_METHODS.has(args.method)
+        ) {
+          console.warn(
+            `[DEX Provider] RPC method "${args.method}" blocked by namespace filter`,
+          );
+          return Promise.reject(
+            new Error(`RPC method "${args.method}" is not allowed`),
+          );
         }
 
         return walletClient.request(
