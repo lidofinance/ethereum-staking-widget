@@ -1,6 +1,16 @@
 import invariant from 'tiny-invariant';
-import { isAddressEqual, Address } from 'viem';
+import {
+  isAddressEqual,
+  Address,
+  keccak256,
+  toHex,
+  hexToBytes,
+  Hex,
+} from 'viem';
 import z from 'zod';
+
+// eslint-disable-next-line import/no-extraneous-dependencies
+import { MetadataApi } from '@cowprotocol/sdk-app-data';
 
 import { getTokenAddress } from 'config/networks/token-address';
 
@@ -14,7 +24,13 @@ import {
 import {
   MAX_WSTETH_PERMIT_AGE_SECONDS,
   MAX_ORDER_AGE_SECONDS,
+  LIDO_APP_CODE,
+  PARTNER_FEE_BPS,
+  MAX_SLIPPAGE,
+  COWSWAP_APPDATA_API,
 } from '../consts';
+
+import { standardFetcher } from 'utils/standardFetcher';
 
 const jsonStringSchema = <T extends z.ZodTypeAny>(schema: T) =>
   z
@@ -134,10 +150,55 @@ type ValidationContext = {
 
 export type OrderData = z.infer<typeof cowSwapOrderSchema>['message'];
 
-const validateCowSwapOrder = (
+const AppDataApiResponseSchema = z.object({
+  fullAppData: jsonStringSchema(
+    z.object({
+      appCode: z.literal(LIDO_APP_CODE),
+      metadata: z.object({
+        orderClass: z.object({
+          orderClass: z.enum(['market']),
+        }),
+        partnerFee: z.object({
+          recipient: addressSchema,
+          volumeBps: z.literal(PARTNER_FEE_BPS),
+        }),
+        quote: z.object({
+          slippageBips: z.number().lte(MAX_SLIPPAGE),
+          smartSlippage: z.boolean(),
+        }),
+        widget: z.object({
+          appCode: z.string(),
+          environment: z.string(),
+        }),
+      }),
+      version: z.string(),
+    }),
+  ),
+});
+
+const fetchAppData = async (
+  appDataHex: string,
+  chainId: number,
+): Promise<z.infer<typeof AppDataApiResponseSchema>['fullAppData']> => {
+  const environment = chainId === 11155111 ? 'sepolia' : 'mainnet';
+
+  const result = await standardFetcher(
+    COWSWAP_APPDATA_API(appDataHex, environment),
+    { method: 'GET' },
+  );
+  const parseResult = AppDataApiResponseSchema.safeParse(result);
+
+  if (!parseResult.success) {
+    throw new Error(`Invalid app data response: ${parseResult.error}`);
+  }
+
+  return parseResult.data.fullAppData;
+};
+
+const validateCowSwapOrder = async (
   order: z.infer<typeof cowSwapOrderSchema>,
   ctx: ValidationContext,
-): ValidationResult<OrderData> => {
+): Promise<ValidationResult<OrderData>> => {
   if (order.domain.chainId !== ctx.chainId) {
     return {
       allowed: false,
@@ -145,9 +206,8 @@ const validateCowSwapOrder = (
     };
   }
 
-  const { sellTokens, buyTokens, cowSettlement } = getNetworkTxConfig(
-    ctx.chainId,
-  );
+  const { sellTokens, buyTokens, cowSettlement, feeRecipient } =
+    getNetworkTxConfig(ctx.chainId);
 
   if (!isAddressEqual(order.domain.verifyingContract, cowSettlement)) {
     return {
@@ -189,6 +249,41 @@ const validateCowSwapOrder = (
     return {
       allowed: false,
       reason: `Order validTo has already passed. validTo: ${order.message.validTo}, now: ${nowSeconds}`,
+    };
+  }
+
+  const appData = await fetchAppData(order.message.appData, ctx.chainId);
+
+  if (!isAddressEqual(appData.metadata.partnerFee.recipient, feeRecipient)) {
+    return {
+      allowed: false,
+      reason: `Partner fee recipient mismatch. Expected ${feeRecipient}, got ${appData.metadata.partnerFee.recipient}`,
+    };
+  }
+
+  try {
+    const api = new MetadataApi({
+      // This crude hack absolves us from installing ethers.js
+      utils: {
+        // this two just pipe into each other so no need to match interface exactly between them
+        toUtf8Bytes: (str: string): Hex => toHex(str),
+        keccak256: (data: Hex): Hex => keccak256(data), //  just output hex string,
+        // this is used later and must match interface
+        arrayify: (hexString: Hex): Uint8Array => hexToBytes(hexString),
+      },
+    } as any);
+    const info = await api.getAppDataInfo(appData);
+
+    if (info.appDataHex !== order.message.appData) {
+      return {
+        allowed: false,
+        reason: `App data mismatch. Expected ${order.message.appData}, got ${info.appDataHex}`,
+      };
+    }
+  } catch (error) {
+    return {
+      allowed: false,
+      reason: `Failed to fetch or validate app data: ${(error as Error).message}`,
     };
   }
 
@@ -285,10 +380,10 @@ const overridePermitDeadline = (params: any): number => {
  * Validates eth_signTypedData_v4 (EIP-712) parameters.
  * Returns the parsed OrderFields so that order values can be checked via trade guard
  */
-export const validateSignTypedData = (
+export const validateSignTypedData = async (
   params: unknown,
   ctx: ValidationContext,
-): ValidationResult<OrderData | undefined> => {
+): Promise<ValidationResult<OrderData | undefined>> => {
   const parseResult = typedMessageSchema.safeParse(params);
 
   if (!parseResult.success) {
@@ -309,7 +404,7 @@ export const validateSignTypedData = (
   }
 
   if (order.primaryType === 'Order') {
-    return validateCowSwapOrder(order, ctx);
+    return await validateCowSwapOrder(order, ctx);
   }
 
   if (order.primaryType === 'Permit') {

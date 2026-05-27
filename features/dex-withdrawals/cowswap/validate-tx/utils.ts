@@ -57,6 +57,7 @@ type NetworkTxConfig = {
   buyTokens: Set<Address>;
   cowVaultRelayer: Address;
   cowSettlement: Address;
+  feeRecipient: Address;
 };
 
 const buildNetworkTxConfig = (
@@ -67,6 +68,7 @@ const buildNetworkTxConfig = (
   buyTokens: collectBuyTokenAddresses(contracts),
   cowVaultRelayer: contracts.cowVaultRelayer.toLowerCase() as Address,
   cowSettlement: contracts.cowSettlement.toLowerCase() as Address,
+  feeRecipient: contracts.daoAgent.toLowerCase() as Address,
 });
 
 const MAINNET_CONFIG = buildNetworkTxConfig(
