@@ -66,8 +66,8 @@
     "tiny-async-pool": "^1.2.0",
     "tiny-invariant": "^1.1.0",
     "uuid": "^14.0.0",
-    "viem": "2.45.0",
-    "wagmi": "3.4.1",
+    "viem": "2.50.4",
+    "wagmi": "3.4.4",
     "zod": "^4.1.12"
   },
   "devDependencies": {
