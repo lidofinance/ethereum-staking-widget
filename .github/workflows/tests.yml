@@ -17,7 +17,24 @@ on:
         type: boolean
 
 jobs:
-  test:
+  unit-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+
+      - name: Install dependencies
+        run: yarn install --immutable
+
+      - name: Run unit tests
+        run: yarn test:unit
+
+  e2e-tests:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
@@ -36,7 +53,7 @@ jobs:
 
       - name: Run tests on preview stand
         if: ${{ inputs.on_preview_stand }}
-        run: yarn test
+        run: yarn test:e2e
         env:
           STAND_URL: ${{ inputs.stand_url }}
           STAND_TYPE: ${{ inputs.stand_type }}
@@ -45,7 +62,7 @@ jobs:
 
       - name: Run tests on testnet/staging
         if: ${{ !inputs.on_preview_stand }}
-        run: yarn test
+        run: yarn test:e2e
         env:
           STAND_URL: ${{ inputs.stand_url }}
           STAND_TYPE: ${{ inputs.stand_type }}
