@@ -1,4 +1,6 @@
 import { validateSendTransaction, validateSendCalls } from '../validate-tx';
+import { encodeFunctionData } from 'viem';
+import { CowSettlementAbi } from '../../abi';
 
 import mainnetNetwork from 'networks/mainnet.json';
 import sepoliaNetwork from 'networks/sepolia.json';
@@ -31,6 +33,14 @@ const buildApprove = (spender: string): string =>
 // Helper: build transfer(address to, uint256 amount) calldata
 const buildTransfer = (to: string): string =>
   '0xa9059cbb' + to.slice(2).toLowerCase().padStart(64, '0') + '0'.repeat(64);
+
+// Helper: build setPreSignature(bytes orderUid, bool signed) calldata
+const buildSetPreSignature = (signed = true): string =>
+  encodeFunctionData({
+    abi: CowSettlementAbi,
+    functionName: 'setPreSignature',
+    args: [('0x' + '00'.repeat(56)) as `0x${string}`, signed],
+  });
 
 // Selectors
 const DEPOSIT_SELECTOR = '0xd0e30db0';
@@ -219,29 +229,49 @@ describe('validateSendTransaction', () => {
   });
 
   describe('CoW Protocol contracts', () => {
-    it('allows any call to GPv2Settlement', () => {
+    it('allows setPreSignature(signed=true) on GPv2Settlement', () => {
       const result = validateSendTransaction(
-        [{ to: COW_SETTLEMENT, data: '0xabcdef12' }],
+        [{ to: COW_SETTLEMENT, data: buildSetPreSignature() }],
         CHAIN_MAINNET,
       );
       expect(result.allowed).toBe(true);
     });
 
-    it('allows any call to GPv2VaultRelayer', () => {
+    it('rejects direct call to CoW VaultRelayer (removed from allowedTargets)', () => {
       const result = validateSendTransaction(
         [{ to: COW_VAULT_RELAYER, data: '0x12345678' }],
         CHAIN_MAINNET,
       );
-      expect(result.allowed).toBe(true);
+      expect(result.allowed).toBe(false);
+      expect(result.reason).toContain('not allowed');
     });
 
     it('allows call with checksummed CoW Settlement address', () => {
       const checksummed = '0x9008D19f58AAbD9eD0D60971565AA8510560ab41';
       const result = validateSendTransaction(
-        [{ to: checksummed, data: '0xabcdef12' }],
+        [{ to: checksummed, data: buildSetPreSignature() }],
         CHAIN_MAINNET,
       );
       expect(result.allowed).toBe(true);
+    });
+
+    it('rejects setPreSignature with signed=false on CoW Settlement', () => {
+      const result = validateSendTransaction(
+        [{ to: COW_SETTLEMENT, data: buildSetPreSignature(false) }],
+        CHAIN_MAINNET,
+      );
+      expect(result.allowed).toBe(false);
+    });
+
+    it('rejects non-setPreSignature calldata on CoW Settlement', () => {
+      const result = validateSendTransaction(
+        [{ to: COW_SETTLEMENT, data: '0xabcdef12' }],
+        CHAIN_MAINNET,
+      );
+      expect(result.allowed).toBe(false);
+      expect(result.reason).toContain(
+        'Cannot decode setPreSignature() calldata',
+      );
     });
   });
 
@@ -272,7 +302,7 @@ describe('validateSendTransaction', () => {
 
     it('allows CoW Settlement on Sepolia (same address)', () => {
       const result = validateSendTransaction(
-        [{ to: COW_SETTLEMENT, data: '0xabcdef12' }],
+        [{ to: COW_SETTLEMENT, data: buildSetPreSignature() }],
         CHAIN_SEPOLIA,
       );
       expect(result.allowed).toBe(true);
@@ -293,7 +323,7 @@ describe('validateSendTransaction', () => {
         [{ to: COW_SETTLEMENT, data: '0x' }],
         CHAIN_MAINNET,
       );
-      expect(result.allowed).toBe(true);
+      expect(result.allowed).toBe(false);
     });
 
     it('rejects null param', () => {
@@ -323,7 +353,7 @@ describe('validateSendCalls', () => {
           {
             calls: [
               { to: STETH, data: buildApprove(COW_VAULT_RELAYER) },
-              { to: COW_SETTLEMENT, data: '0x12345678' },
+              { to: COW_SETTLEMENT, data: buildSetPreSignature() },
             ],
           },
         ],
@@ -370,8 +400,8 @@ describe('validateSendCalls', () => {
         [
           {
             calls: [
-              { to: COW_SETTLEMENT, data: '0x12345678' },
-              { to: COW_SETTLEMENT, data: '0x12345678' },
+              { to: COW_SETTLEMENT, data: buildSetPreSignature() },
+              { to: COW_SETTLEMENT, data: buildSetPreSignature() },
               { to: UNKNOWN, data: '0x' },
             ],
           },
@@ -412,7 +442,7 @@ describe('validateSendCalls', () => {
           {
             calls: [
               { to: SEPOLIA_WETH, data: buildApprove(COW_VAULT_RELAYER) },
-              { to: COW_SETTLEMENT, data: '0x12345678' },
+              { to: COW_SETTLEMENT, data: buildSetPreSignature() },
             ],
           },
         ],

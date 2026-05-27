@@ -125,7 +125,7 @@ export const validateSendTransaction = (
 
   const { tokens, cowVaultRelayer, cowSettlement } =
     getNetworkTxConfig(chainId);
-  const allowedTargets = new Set([...tokens, cowVaultRelayer, cowSettlement]);
+  const allowedTargets = new Set([...tokens, cowSettlement]);
 
   if (!allowedTargets.has(txTo.toLocaleLowerCase() as Address)) {
     return {

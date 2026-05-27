@@ -1,4 +1,26 @@
+/* eslint-disable func-style */
+/* eslint-disable import/no-extraneous-dependencies */
+import {
+  vi,
+  describe,
+  it,
+  expect,
+  beforeEach,
+  afterEach,
+  type Mock,
+} from 'vitest';
+
+vi.mock('utils/standardFetcher', () => ({
+  standardFetcher: vi.fn(),
+}));
+
+vi.mock('@cowprotocol/sdk-app-data', () => ({
+  MetadataApi: vi.fn(),
+}));
+
 import { validateSignTypedData } from '../validate-typed-message';
+import { standardFetcher } from 'utils/standardFetcher';
+import { MetadataApi } from '@cowprotocol/sdk-app-data';
 
 import mainnetNetwork from 'networks/mainnet.json';
 import sepoliaNetwork from 'networks/sepolia.json';
@@ -8,38 +30,81 @@ const CHAIN_SEPOLIA = 11155111;
 
 // All addresses from network configs (source of truth)
 const COW_SETTLEMENT = mainnetNetwork.contracts.cowSettlement.toLowerCase();
-
 const STETH = mainnetNetwork.contracts.lido.toLowerCase();
 const WSTETH = mainnetNetwork.contracts.wsteth.toLowerCase();
 const WETH = mainnetNetwork.contracts.weth.toLowerCase();
 const USDC = mainnetNetwork.contracts.usdc.toLowerCase();
 const USDT = mainnetNetwork.contracts.usdt.toLowerCase();
+const USDS = mainnetNetwork.contracts.usds.toLowerCase();
+const WBTC = mainnetNetwork.contracts.wbtc.toLowerCase();
+const FEE_RECIPIENT = mainnetNetwork.contracts.daoAgent.toLowerCase();
+
 const SEPOLIA_STETH = sepoliaNetwork.contracts.lido.toLowerCase();
 const SEPOLIA_COW_SETTLEMENT =
   sepoliaNetwork.contracts.cowSettlement.toLowerCase();
-
-const USDS = mainnetNetwork.contracts.usds.toLowerCase();
-const WBTC = mainnetNetwork.contracts.wbtc.toLowerCase();
-const ETH_ADDRESS = '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee';
-
 const SEPOLIA_WETH = sepoliaNetwork.contracts.weth.toLowerCase();
 const SEPOLIA_WSTETH = sepoliaNetwork.contracts.wsteth.toLowerCase();
+const SEPOLIA_COW_VAULT_RELAYER =
+  sepoliaNetwork.contracts.cowVaultRelayer.toLowerCase();
+const SEPOLIA_FEE_RECIPIENT = sepoliaNetwork.contracts.daoAgent.toLowerCase();
 
 const COW_VAULT_RELAYER =
   mainnetNetwork.contracts.cowVaultRelayer.toLowerCase();
-const SEPOLIA_COW_VAULT_RELAYER =
-  sepoliaNetwork.contracts.cowVaultRelayer.toLowerCase();
 
+const ETH_ADDRESS = '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee';
 const ATTACKER = '0xdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef';
 const SIGNER = '0x2222222222222222222222222222222222222222';
 
 const mainnetCtx = { chainId: CHAIN_MAINNET, signer: SIGNER as `0x${string}` };
-const sepoliaCtx = {
-  chainId: CHAIN_SEPOLIA,
-  signer: SIGNER as `0x${string}`,
+const sepoliaCtx = { chainId: CHAIN_SEPOLIA, signer: SIGNER as `0x${string}` };
+
+// ---- App data response helper ----
+
+const APP_DATA =
+  '0x0000000000000000000000000000000000000000000000000000000000000000';
+
+type AppDataOverrides = {
+  appCode?: string;
+  orderClass?: string;
+  volumeBps?: number;
+  slippageBips?: number;
+  smartSlippage?: boolean;
 };
 
-// ---- validateSignTypedData ----
+const buildAppDataResponse = (
+  feeRecipient: string,
+  overrides: AppDataOverrides = {},
+) => {
+  const fullAppData = JSON.stringify({
+    appCode: overrides.appCode ?? 'Lido Staking Widget',
+    metadata: {
+      orderClass: { orderClass: overrides.orderClass ?? 'market' },
+      partnerFee: {
+        recipient: feeRecipient,
+        volumeBps: overrides.volumeBps ?? 30,
+      },
+      quote: {
+        slippageBips: overrides.slippageBips ?? 100,
+        smartSlippage: overrides.smartSlippage ?? false,
+      },
+      widget: {
+        appCode: 'Lido Staking Widget',
+        environment: 'mainnet',
+      },
+    },
+    version: '1.0.0',
+  });
+  return { fullAppData };
+};
+
+const buildMetadataApiMock = (appDataHex: string = APP_DATA) => {
+  function MockMetadataApi(this: any) {
+    this.getAppDataInfo = vi.fn().mockResolvedValue({ appDataHex });
+  }
+  return MockMetadataApi;
+};
+
+// ---- EIP-712 type definitions ----
 
 const EIP712_DOMAIN_TYPES = [
   { name: 'name', type: 'string' },
@@ -70,6 +135,8 @@ const ORDER_TYPES = [
   { name: 'sellTokenBalance', type: 'string' },
   { name: 'buyTokenBalance', type: 'string' },
 ] as const;
+
+// ---- Param builders ----
 
 type PermitOverrides = {
   signer?: string;
@@ -127,10 +194,12 @@ type OrderOverrides = {
   partiallyFillable?: boolean;
   sellTokenBalance?: string;
   buyTokenBalance?: string;
+  validTo?: number;
 };
 
 const buildTypedDataParams = (overrides: OrderOverrides = {}) => {
   const signer = overrides.signer ?? SIGNER;
+  const defaultValidTo = Math.floor(Date.now() / 1000) + 3600;
   const order = {
     domain: {
       name: overrides.domainName ?? 'Gnosis Protocol',
@@ -143,11 +212,10 @@ const buildTypedDataParams = (overrides: OrderOverrides = {}) => {
       buyToken: overrides.buyToken ?? WETH,
       sellAmount: '1000000000000000000',
       buyAmount: '950000000000000000',
-      validTo: Math.floor(Date.now() / 1000) + 3600,
+      validTo: overrides.validTo ?? defaultValidTo,
       kind: overrides.kind ?? 'sell',
       partiallyFillable: overrides.partiallyFillable ?? false,
-      appData:
-        '0x0000000000000000000000000000000000000000000000000000000000000000',
+      appData: APP_DATA,
       receiver: overrides.receiver ?? signer,
       feeAmount: '0',
       sellTokenBalance: overrides.sellTokenBalance ?? 'erc20',
@@ -162,55 +230,76 @@ const buildTypedDataParams = (overrides: OrderOverrides = {}) => {
   return [signer, JSON.stringify(order)];
 };
 
+// ---- Setup / teardown ----
+
+beforeEach(() => {
+  vi.mocked(standardFetcher).mockResolvedValue(
+    buildAppDataResponse(FEE_RECIPIENT),
+  );
+  (MetadataApi as unknown as Mock).mockImplementation(
+    buildMetadataApiMock(APP_DATA),
+  );
+});
+
+afterEach(() => vi.resetAllMocks());
+
+// ================================================================
+
 describe('validateSignTypedData', () => {
   describe('happy path', () => {
-    it('allows valid stETH → WETH order on mainnet', () => {
-      const result = validateSignTypedData(buildTypedDataParams(), mainnetCtx);
+    it('allows valid stETH → WETH order on mainnet', async () => {
+      const result = await validateSignTypedData(
+        buildTypedDataParams(),
+        mainnetCtx,
+      );
       expect(result.allowed).toBe(true);
     });
 
-    it('allows wstETH → USDC order', () => {
-      const result = validateSignTypedData(
+    it('allows wstETH → USDC order', async () => {
+      const result = await validateSignTypedData(
         buildTypedDataParams({ sellToken: WSTETH, buyToken: USDC }),
         mainnetCtx,
       );
       expect(result.allowed).toBe(true);
     });
 
-    it('allows stETH → USDT order', () => {
-      const result = validateSignTypedData(
+    it('allows stETH → USDT order', async () => {
+      const result = await validateSignTypedData(
         buildTypedDataParams({ buyToken: USDT }),
         mainnetCtx,
       );
       expect(result.allowed).toBe(true);
     });
 
-    it('allows stETH → USDS order', () => {
-      const result = validateSignTypedData(
+    it('allows stETH → USDS order', async () => {
+      const result = await validateSignTypedData(
         buildTypedDataParams({ buyToken: USDS }),
         mainnetCtx,
       );
       expect(result.allowed).toBe(true);
     });
 
-    it('allows stETH → WBTC order', () => {
-      const result = validateSignTypedData(
+    it('allows stETH → WBTC order', async () => {
+      const result = await validateSignTypedData(
         buildTypedDataParams({ buyToken: WBTC }),
         mainnetCtx,
       );
       expect(result.allowed).toBe(true);
     });
 
-    it('allows stETH → ETH (0xeeee) order', () => {
-      const result = validateSignTypedData(
+    it('allows stETH → ETH (0xeeee) order', async () => {
+      const result = await validateSignTypedData(
         buildTypedDataParams({ buyToken: ETH_ADDRESS }),
         mainnetCtx,
       );
       expect(result.allowed).toBe(true);
     });
 
-    it('allows valid order on Sepolia', () => {
-      const result = validateSignTypedData(
+    it('allows valid order on Sepolia', async () => {
+      vi.mocked(standardFetcher).mockResolvedValue(
+        buildAppDataResponse(SEPOLIA_FEE_RECIPIENT),
+      );
+      const result = await validateSignTypedData(
         buildTypedDataParams({
           chainId: CHAIN_SEPOLIA,
           verifyingContract: SEPOLIA_COW_SETTLEMENT,
@@ -222,9 +311,9 @@ describe('validateSignTypedData', () => {
       expect(result.allowed).toBe(true);
     });
 
-    it('normalises checksummed signer address', () => {
+    it('normalises checksummed signer address', async () => {
       const checksummed = '0xF39Fd6e51aad88F6f4ce6aB8827279cffFb92266';
-      const result = validateSignTypedData(
+      const result = await validateSignTypedData(
         buildTypedDataParams({ signer: checksummed }),
         { chainId: CHAIN_MAINNET, signer: checksummed as `0x${string}` },
       );
@@ -233,8 +322,11 @@ describe('validateSignTypedData', () => {
   });
 
   describe('result shape', () => {
-    it('returns parsed order message as result on success', () => {
-      const result = validateSignTypedData(buildTypedDataParams(), mainnetCtx);
+    it('returns parsed order message as result on success', async () => {
+      const result = await validateSignTypedData(
+        buildTypedDataParams(),
+        mainnetCtx,
+      );
       expect(result.allowed).toBe(true);
       if (!result.allowed) return;
       expect(result.result).toBeDefined();
@@ -250,73 +342,76 @@ describe('validateSignTypedData', () => {
   });
 
   describe('invalid params', () => {
-    it('rejects undefined params', () => {
-      const result = validateSignTypedData(undefined, mainnetCtx);
+    it('rejects undefined params', async () => {
+      const result = await validateSignTypedData(undefined, mainnetCtx);
       expect(result.allowed).toBe(false);
       expect(result.reason).toContain('Invalid signTypedData parameters');
     });
 
-    it('rejects non-array params', () => {
-      const result = validateSignTypedData({}, mainnetCtx);
+    it('rejects non-array params', async () => {
+      const result = await validateSignTypedData({}, mainnetCtx);
       expect(result.allowed).toBe(false);
     });
 
-    it('rejects when signer element is not an address', () => {
-      const result = validateSignTypedData(
+    it('rejects when signer element is not an address', async () => {
+      const result = await validateSignTypedData(
         ['not-an-address', '{}'],
         mainnetCtx,
       );
       expect(result.allowed).toBe(false);
     });
 
-    it('rejects when typed data element is not a JSON string', () => {
-      const result = validateSignTypedData([SIGNER, 'not-json{{{'], mainnetCtx);
+    it('rejects when typed data element is not a JSON string', async () => {
+      const result = await validateSignTypedData(
+        [SIGNER, 'not-json{{{'],
+        mainnetCtx,
+      );
       expect(result.allowed).toBe(false);
       expect(result.reason).toContain('Invalid signTypedData parameters');
     });
 
-    it('rejects when typed data JSON has wrong domain name', () => {
-      const result = validateSignTypedData(
+    it('rejects when typed data JSON has wrong domain name', async () => {
+      const result = await validateSignTypedData(
         buildTypedDataParams({ domainName: 'Evil Protocol' }),
         mainnetCtx,
       );
       expect(result.allowed).toBe(false);
     });
 
-    it('rejects when typed data JSON has wrong version', () => {
-      const result = validateSignTypedData(
+    it('rejects when typed data JSON has wrong version', async () => {
+      const result = await validateSignTypedData(
         buildTypedDataParams({ version: 'v1' }),
         mainnetCtx,
       );
       expect(result.allowed).toBe(false);
     });
 
-    it('rejects when primaryType is not Order', () => {
-      const result = validateSignTypedData(
+    it('rejects when primaryType is not Order', async () => {
+      const result = await validateSignTypedData(
         buildTypedDataParams({ primaryType: 'Transfer' }),
         mainnetCtx,
       );
       expect(result.allowed).toBe(false);
     });
 
-    it('rejects when kind is not sell', () => {
-      const result = validateSignTypedData(
+    it('rejects when kind is not sell', async () => {
+      const result = await validateSignTypedData(
         buildTypedDataParams({ kind: 'buy' }),
         mainnetCtx,
       );
       expect(result.allowed).toBe(false);
     });
 
-    it('rejects when partiallyFillable is true', () => {
-      const result = validateSignTypedData(
+    it('rejects when partiallyFillable is true', async () => {
+      const result = await validateSignTypedData(
         buildTypedDataParams({ partiallyFillable: true }),
         mainnetCtx,
       );
       expect(result.allowed).toBe(false);
     });
 
-    it('rejects when sellTokenBalance is not erc20', () => {
-      const result = validateSignTypedData(
+    it('rejects when sellTokenBalance is not erc20', async () => {
+      const result = await validateSignTypedData(
         buildTypedDataParams({ sellTokenBalance: 'external' }),
         mainnetCtx,
       );
@@ -325,8 +420,8 @@ describe('validateSignTypedData', () => {
   });
 
   describe('signer / chain / contract checks', () => {
-    it('rejects when params signer differs from ctx.signer', () => {
-      const result = validateSignTypedData(
+    it('rejects when params signer differs from ctx.signer', async () => {
+      const result = await validateSignTypedData(
         buildTypedDataParams({ signer: ATTACKER }),
         mainnetCtx,
       );
@@ -334,8 +429,8 @@ describe('validateSignTypedData', () => {
       expect(result.reason).toContain('Signer address mismatch');
     });
 
-    it('rejects when domain chainId differs from ctx.chainId', () => {
-      const result = validateSignTypedData(
+    it('rejects when domain chainId differs from ctx.chainId', async () => {
+      const result = await validateSignTypedData(
         buildTypedDataParams({ chainId: CHAIN_SEPOLIA }),
         mainnetCtx,
       );
@@ -343,8 +438,8 @@ describe('validateSignTypedData', () => {
       expect(result.reason).toContain('Chain ID mismatch');
     });
 
-    it('rejects when verifyingContract is not CoW Settlement', () => {
-      const result = validateSignTypedData(
+    it('rejects when verifyingContract is not CoW Settlement', async () => {
+      const result = await validateSignTypedData(
         buildTypedDataParams({ verifyingContract: ATTACKER }),
         mainnetCtx,
       );
@@ -354,8 +449,8 @@ describe('validateSignTypedData', () => {
   });
 
   describe('token allowlist', () => {
-    it('rejects sell token not in allowlist', () => {
-      const result = validateSignTypedData(
+    it('rejects sell token not in allowlist', async () => {
+      const result = await validateSignTypedData(
         buildTypedDataParams({ sellToken: WETH }),
         mainnetCtx,
       );
@@ -364,8 +459,8 @@ describe('validateSignTypedData', () => {
       expect(result.reason).toContain('not in the allowed list');
     });
 
-    it('rejects buy token not in allowlist', () => {
-      const result = validateSignTypedData(
+    it('rejects buy token not in allowlist', async () => {
+      const result = await validateSignTypedData(
         buildTypedDataParams({ buyToken: STETH }),
         mainnetCtx,
       );
@@ -374,16 +469,16 @@ describe('validateSignTypedData', () => {
       expect(result.reason).toContain('not in the allowed list');
     });
 
-    it('rejects arbitrary attacker address as sell token', () => {
-      const result = validateSignTypedData(
+    it('rejects arbitrary attacker address as sell token', async () => {
+      const result = await validateSignTypedData(
         buildTypedDataParams({ sellToken: ATTACKER }),
         mainnetCtx,
       );
       expect(result.allowed).toBe(false);
     });
 
-    it('rejects mainnet sell token on Sepolia', () => {
-      const result = validateSignTypedData(
+    it('rejects mainnet sell token on Sepolia', async () => {
+      const result = await validateSignTypedData(
         buildTypedDataParams({
           chainId: CHAIN_SEPOLIA,
           verifyingContract: SEPOLIA_COW_SETTLEMENT,
@@ -398,8 +493,8 @@ describe('validateSignTypedData', () => {
   });
 
   describe('receiver validation', () => {
-    it('rejects when receiver differs from signer', () => {
-      const result = validateSignTypedData(
+    it('rejects when receiver differs from signer', async () => {
+      const result = await validateSignTypedData(
         buildTypedDataParams({ receiver: ATTACKER }),
         mainnetCtx,
       );
@@ -407,17 +502,128 @@ describe('validateSignTypedData', () => {
       expect(result.reason).toContain('Receiver address cannot be different');
     });
   });
+
+  describe('validTo checks', () => {
+    it('rejects expired validTo', async () => {
+      const expiredValidTo = Math.floor(Date.now() / 1000) - 60;
+      const result = await validateSignTypedData(
+        buildTypedDataParams({ validTo: expiredValidTo }),
+        mainnetCtx,
+      );
+      expect(result.allowed).toBe(false);
+      expect(result.reason).toContain('validTo has already passed');
+    });
+
+    it('rejects validTo too far in future (> MAX_ORDER_AGE_SECONDS = 86400s)', async () => {
+      const tooFarValidTo = Math.floor(Date.now() / 1000) + 86400 + 3600;
+      const result = await validateSignTypedData(
+        buildTypedDataParams({ validTo: tooFarValidTo }),
+        mainnetCtx,
+      );
+      expect(result.allowed).toBe(false);
+      expect(result.reason).toContain('too far in the future');
+    });
+  });
+
+  describe('appData validation', () => {
+    it('throws when fetch fails (network error)', async () => {
+      vi.mocked(standardFetcher).mockRejectedValue(new Error('Network error'));
+      await expect(
+        validateSignTypedData(buildTypedDataParams(), mainnetCtx),
+      ).rejects.toThrow('Network error');
+    });
+
+    it('throws when appData response has wrong appCode (schema fail)', async () => {
+      vi.mocked(standardFetcher).mockResolvedValue(
+        buildAppDataResponse(FEE_RECIPIENT, { appCode: 'Evil App' }),
+      );
+      await expect(
+        validateSignTypedData(buildTypedDataParams(), mainnetCtx),
+      ).rejects.toThrow('Invalid app data response');
+    });
+
+    it('throws when partnerFee.volumeBps is wrong', async () => {
+      vi.mocked(standardFetcher).mockResolvedValue(
+        buildAppDataResponse(FEE_RECIPIENT, { volumeBps: 50 }),
+      );
+      await expect(
+        validateSignTypedData(buildTypedDataParams(), mainnetCtx),
+      ).rejects.toThrow('Invalid app data response');
+    });
+
+    it('throws when slippageBips > 300', async () => {
+      vi.mocked(standardFetcher).mockResolvedValue(
+        buildAppDataResponse(FEE_RECIPIENT, { slippageBips: 301 }),
+      );
+      await expect(
+        validateSignTypedData(buildTypedDataParams(), mainnetCtx),
+      ).rejects.toThrow('Invalid app data response');
+    });
+
+    it('throws when orderClass is not market', async () => {
+      vi.mocked(standardFetcher).mockResolvedValue(
+        buildAppDataResponse(FEE_RECIPIENT, { orderClass: 'limit' }),
+      );
+      await expect(
+        validateSignTypedData(buildTypedDataParams(), mainnetCtx),
+      ).rejects.toThrow('Invalid app data response');
+    });
+
+    it('rejects when partner fee recipient mismatches feeRecipient', async () => {
+      vi.mocked(standardFetcher).mockResolvedValue(
+        buildAppDataResponse(ATTACKER),
+      );
+      const result = await validateSignTypedData(
+        buildTypedDataParams(),
+        mainnetCtx,
+      );
+      expect(result.allowed).toBe(false);
+      expect(result.reason).toContain('Partner fee recipient mismatch');
+    });
+
+    it('rejects when appData hash mismatches order.appData (MetadataApi returns different hash)', async () => {
+      const wrongHash =
+        '0x1111111111111111111111111111111111111111111111111111111111111111';
+      (MetadataApi as unknown as Mock).mockImplementation(
+        buildMetadataApiMock(wrongHash),
+      );
+      const result = await validateSignTypedData(
+        buildTypedDataParams(),
+        mainnetCtx,
+      );
+      expect(result.allowed).toBe(false);
+      expect(result.reason).toContain('App data mismatch');
+    });
+
+    it('rejects when MetadataApi throws', async () => {
+      function ThrowingMetadataApi(this: any) {
+        this.getAppDataInfo = vi
+          .fn()
+          .mockRejectedValue(new Error('MetadataApi error'));
+      }
+      (MetadataApi as unknown as Mock).mockImplementation(ThrowingMetadataApi);
+      const result = await validateSignTypedData(
+        buildTypedDataParams(),
+        mainnetCtx,
+      );
+      expect(result.allowed).toBe(false);
+      expect(result.reason).toContain('Failed to fetch or validate app data');
+    });
+  });
 });
 
 describe('validateSignTypedData — wstETH permit', () => {
   describe('happy path', () => {
-    it('allows valid wstETH permit on mainnet', () => {
-      const result = validateSignTypedData(buildPermitParams(), mainnetCtx);
+    it('allows valid wstETH permit on mainnet', async () => {
+      const result = await validateSignTypedData(
+        buildPermitParams(),
+        mainnetCtx,
+      );
       expect(result.allowed).toBe(true);
     });
 
-    it('allows valid wstETH permit on Sepolia', () => {
-      const result = validateSignTypedData(
+    it('allows valid wstETH permit on Sepolia', async () => {
+      const result = await validateSignTypedData(
         buildPermitParams({
           chainId: CHAIN_SEPOLIA,
           verifyingContract: SEPOLIA_WSTETH,
@@ -430,8 +636,8 @@ describe('validateSignTypedData — wstETH permit', () => {
   });
 
   describe('schema validation', () => {
-    it('rejects wrong domain name', () => {
-      const result = validateSignTypedData(
+    it('rejects wrong domain name', async () => {
+      const result = await validateSignTypedData(
         buildPermitParams({ domainName: 'Evil Token' }),
         mainnetCtx,
       );
@@ -439,16 +645,16 @@ describe('validateSignTypedData — wstETH permit', () => {
       expect(result.reason).toContain('Invalid signTypedData parameters');
     });
 
-    it('rejects wrong domain version', () => {
-      const result = validateSignTypedData(
+    it('rejects wrong domain version', async () => {
+      const result = await validateSignTypedData(
         buildPermitParams({ version: '2' }),
         mainnetCtx,
       );
       expect(result.allowed).toBe(false);
     });
 
-    it('rejects unknown primaryType', () => {
-      const result = validateSignTypedData(
+    it('rejects unknown primaryType', async () => {
+      const result = await validateSignTypedData(
         buildPermitParams({ primaryType: 'Transfer' }),
         mainnetCtx,
       );
@@ -458,8 +664,8 @@ describe('validateSignTypedData — wstETH permit', () => {
   });
 
   describe('signer / chain / contract checks', () => {
-    it('rejects when signer differs from ctx.signer', () => {
-      const result = validateSignTypedData(
+    it('rejects when signer differs from ctx.signer', async () => {
+      const result = await validateSignTypedData(
         buildPermitParams({ signer: ATTACKER }),
         mainnetCtx,
       );
@@ -467,8 +673,8 @@ describe('validateSignTypedData — wstETH permit', () => {
       expect(result.reason).toContain('Signer address mismatch');
     });
 
-    it('rejects when domain chainId differs from ctx.chainId', () => {
-      const result = validateSignTypedData(
+    it('rejects when domain chainId differs from ctx.chainId', async () => {
+      const result = await validateSignTypedData(
         buildPermitParams({ chainId: CHAIN_SEPOLIA }),
         mainnetCtx,
       );
@@ -476,8 +682,8 @@ describe('validateSignTypedData — wstETH permit', () => {
       expect(result.reason).toContain('Chain ID mismatch');
     });
 
-    it('rejects when verifyingContract is not wstETH', () => {
-      const result = validateSignTypedData(
+    it('rejects when verifyingContract is not wstETH', async () => {
+      const result = await validateSignTypedData(
         buildPermitParams({ verifyingContract: ATTACKER }),
         mainnetCtx,
       );
@@ -487,8 +693,8 @@ describe('validateSignTypedData — wstETH permit', () => {
   });
 
   describe('permit field checks', () => {
-    it('rejects when owner is not the signer', () => {
-      const result = validateSignTypedData(
+    it('rejects when owner is not the signer', async () => {
+      const result = await validateSignTypedData(
         buildPermitParams({ owner: ATTACKER }),
         mainnetCtx,
       );
@@ -496,8 +702,8 @@ describe('validateSignTypedData — wstETH permit', () => {
       expect(result.reason).toContain('Owner address cannot be different');
     });
 
-    it('rejects when spender is not CoW VaultRelayer', () => {
-      const result = validateSignTypedData(
+    it('rejects when spender is not CoW VaultRelayer', async () => {
+      const result = await validateSignTypedData(
         buildPermitParams({ spender: ATTACKER }),
         mainnetCtx,
       );
@@ -505,8 +711,8 @@ describe('validateSignTypedData — wstETH permit', () => {
       expect(result.reason).toContain('Spender must be CoW VaultRelayer');
     });
 
-    it('rejects when value is zero', () => {
-      const result = validateSignTypedData(
+    it('rejects when value is zero', async () => {
+      const result = await validateSignTypedData(
         buildPermitParams({ value: '0' }),
         mainnetCtx,
       );
@@ -514,9 +720,9 @@ describe('validateSignTypedData — wstETH permit', () => {
       expect(result.reason).toContain('Permit value must be greater than 0');
     });
 
-    it('allows permit even when original deadline is in the past (deadline is overridden)', () => {
+    it('allows permit even when original deadline is in the past (deadline is overridden)', async () => {
       // validateSignTypedData always overrides the permit deadline before validation
-      const result = validateSignTypedData(
+      const result = await validateSignTypedData(
         buildPermitParams({ deadline: 1000 }),
         mainnetCtx,
       );
