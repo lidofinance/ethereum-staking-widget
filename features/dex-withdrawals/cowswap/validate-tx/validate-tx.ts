@@ -13,6 +13,7 @@ import {
   hexSchema,
   ValidationResult,
 } from './utils';
+import { CowSettlementAbi } from '../abi';
 
 // ================================================================
 //  Public validation functions
@@ -29,13 +30,13 @@ const sendTransactionParamsSchema = z.tuple([
 ]);
 
 const validateApproveSpender = (
-  data: string,
+  data: Hex,
   cowVaultRelayer: Address,
 ): ValidationResult => {
   try {
     const { functionName, args } = decodeFunctionData({
       abi: erc20Abi,
-      data: data as Hex,
+      data: data,
     });
 
     if (functionName !== 'approve' || !args) {
@@ -56,6 +57,38 @@ const validateApproveSpender = (
     return { allowed: true };
   } catch {
     return { allowed: false, reason: 'Cannot decode approve() calldata' };
+  }
+};
+
+const validateSettlerSignature = (data: Hex): ValidationResult => {
+  try {
+    const { functionName, args } = decodeFunctionData({
+      abi: CowSettlementAbi,
+      data: data,
+    });
+
+    if (functionName !== 'setPreSignature' || !args) {
+      return {
+        allowed: false,
+        reason: `Expected setPreSignature(), got ${functionName}()`,
+      };
+    }
+
+    const [orderUid, signature] = args;
+
+    if (!orderUid || !signature) {
+      return {
+        allowed: false,
+        reason: `setPreSignature() requires orderUid and signature arguments`,
+      };
+    }
+
+    return { allowed: true };
+  } catch {
+    return {
+      allowed: false,
+      reason: 'Cannot decode setPreSignature() calldata',
+    };
   }
 };
 
@@ -100,11 +133,10 @@ export const validateSendTransaction = (
       reason: `Transaction to ${txTo} is not allowed. Only token contracts and CoW Protocol addresses are permitted.`,
     };
   }
-  const isCowSwapContract =
-    isAddressEqual(txTo, cowVaultRelayer) ||
-    isAddressEqual(txTo, cowSettlement);
+
   // CoW Protocol contracts — trust any call
-  if (isCowSwapContract) return { allowed: true };
+  if (isAddressEqual(txTo, cowSettlement))
+    return validateSettlerSignature(data);
 
   // Other tokens — only approve(), no ETH value
   if (tokens.has(txTo)) {

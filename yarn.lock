@@ -1576,7 +1576,7 @@
     "@cowprotocol/events" "^4.4.1"
     "@cowprotocol/iframe-transport" "^2.2.6"
 
-"@cowprotocol/widget-react@^3.0.5":
+"@cowprotocol/widget-react@3.0.5":
   version "3.0.5"
   resolved "https://registry.npmjs.org/@cowprotocol/widget-react/-/widget-react-3.0.5.tgz#2a33dcaf34c4e21b4a977117b53469c9d87e1f2b"
   integrity sha512-rLXtaJBiW5qoEa6yZajw/4onLSYAK00yEk0xeSS7OShjpLgV7MrB1FINf0puivPP+cA4hulkJEHbPRxFFuc47Q==
