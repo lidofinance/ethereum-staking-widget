@@ -4455,15 +4455,15 @@
     convert-source-map "^2.0.0"
     tinyrainbow "^3.1.0"
 
-"@wagmi/connectors@7.1.5":
-  version "7.1.5"
-  resolved "https://registry.yarnpkg.com/@wagmi/connectors/-/connectors-7.1.5.tgz#1fa833851b71c2dba131fd35e5b630e4899dec39"
-  integrity sha512-+hrb4RJywjGtUsDZNLSc4eOF+jD6pVkCZ/KFi24p993u0ymsm/kGTLXjhYx5r8Rf/cxFHEiaQaRnEfB9qyDJyw==
+"@wagmi/connectors@7.2.0":
+  version "7.2.0"
+  resolved "https://registry.yarnpkg.com/@wagmi/connectors/-/connectors-7.2.0.tgz#1e5f9375062ba3888f1d44e76d7ff3f39e93d0d4"
+  integrity sha512-QhMPNwUjKn6Gb7xlzlo0iv5UrWq4ATaC1xArElliaMcdO+FgJqKQLVUtkywly+xNuQ6aXvm8UAbWPZwkKX1hWQ==
 
-"@wagmi/core@3.3.1":
-  version "3.3.1"
-  resolved "https://registry.yarnpkg.com/@wagmi/core/-/core-3.3.1.tgz#c9445ecbd37efe7cc8aae14cf62100fa8c1a22ec"
-  integrity sha512-0Q8VYnVNPHe/gZsvj+Zddt8VpmKoMHXoVd887svL21QGKXEIVYiV/8R3qMv0SyC7q+GbQ5x9xezB56u3S8bWAQ==
+"@wagmi/core@3.3.4":
+  version "3.3.4"
+  resolved "https://registry.yarnpkg.com/@wagmi/core/-/core-3.3.4.tgz#9a4ddfb18f853cc65036acf540a44aec77be954c"
+  integrity sha512-ulG2C3z6SKPYkliWtZMUuY1IoZSIhgDziO7Vh9CWk5pyZSNe3uthWnXBYnzcVe6BUpc3UeDio3GDqBWC09rH7A==
   dependencies:
     eventemitter3 "5.0.1"
     mipd "0.0.7"
@@ -8976,6 +8976,20 @@ ox@0.11.3:
     abitype "^1.2.3"
     eventemitter3 "5.0.1"
 
+ox@0.14.22:
+  version "0.14.22"
+  resolved "https://registry.yarnpkg.com/ox/-/ox-0.14.22.tgz#ec4bbb5cfbdb8fbd03ec23cfe0732263a7c14697"
+  integrity sha512-nb5msL8qWbPglhIfZbGJAfw3cqiJjFMiWmACt7kgyWtLib12tcctbHufMT9Hb0Lr6Pt4k9I3dbpueTpbhvbqvA==
+  dependencies:
+    "@adraffy/ens-normalize" "^1.11.0"
+    "@noble/ciphers" "^1.3.0"
+    "@noble/curves" "1.9.1"
+    "@noble/hashes" "^1.8.0"
+    "@scure/bip32" "^1.7.0"
+    "@scure/bip39" "^1.6.0"
+    abitype "^1.2.3"
+    eventemitter3 "5.0.1"
+
 ox@0.14.7:
   version "0.14.7"
   resolved "https://registry.yarnpkg.com/ox/-/ox-0.14.7.tgz#efe6770f7a138f823fb2df26001b679c2565b0a4"
@@ -10889,10 +10903,10 @@ vary@^1:
   resolved "https://registry.yarnpkg.com/vary/-/vary-1.1.2.tgz#2299f02c6ded30d4a5961b0b9f74524a18f634fc"
   integrity sha512-BNGbWLfd0eUPabhkXUVm0j8uuvREyTh5ovRa/dyow/BqAbZJyC+5fU+IzQOzmAKzYqYRAISoRhdQr3eIZ/PXqg==
 
-viem@2.45.0, viem@^2.1.1, viem@^2.21.26, viem@^2.27.2, viem@^2.31.7:
-  version "2.45.0"
-  resolved "https://registry.yarnpkg.com/viem/-/viem-2.45.0.tgz#5f7f28b639193b783b7fbb6bef7575e9cc8d6f86"
-  integrity sha512-iVA9qrAgRdtpWa80lCZ6Jri6XzmLOwwA1wagX2HnKejKeliFLpON0KOdyfqvcy+gUpBVP59LBxP2aKiL3aj8fg==
+viem@2.50.4:
+  version "2.50.4"
+  resolved "https://registry.yarnpkg.com/viem/-/viem-2.50.4.tgz#2fe61b1667c924234f31a1aa181957ac07adb1ee"
+  integrity sha512-rf98F4s3Vlb+uJZEKfay3IbBw3CNCbVtx5Y3UIljlO2tSX420g/J0WQSYsjzBSasUFgxgsXabji14O9kGbiqgg==
   dependencies:
     "@noble/curves" "1.9.1"
     "@noble/hashes" "1.8.0"
@@ -10900,8 +10914,8 @@ viem@2.45.0, viem@^2.1.1, viem@^2.21.26, viem@^2.27.2, viem@^2.31.7:
     "@scure/bip39" "1.6.0"
     abitype "1.2.3"
     isows "1.0.7"
-    ox "0.11.3"
-    ws "8.18.3"
+    ox "0.14.22"
+    ws "8.20.1"
 
 viem@>=2.37.9:
   version "2.47.6"
@@ -10915,6 +10929,20 @@ viem@>=2.37.9:
     abitype "1.2.3"
     isows "1.0.7"
     ox "0.14.7"
+    ws "8.18.3"
+
+viem@^2.1.1, viem@^2.21.26, viem@^2.27.2, viem@^2.31.7:
+  version "2.45.0"
+  resolved "https://registry.yarnpkg.com/viem/-/viem-2.45.0.tgz#5f7f28b639193b783b7fbb6bef7575e9cc8d6f86"
+  integrity sha512-iVA9qrAgRdtpWa80lCZ6Jri6XzmLOwwA1wagX2HnKejKeliFLpON0KOdyfqvcy+gUpBVP59LBxP2aKiL3aj8fg==
+  dependencies:
+    "@noble/curves" "1.9.1"
+    "@noble/hashes" "1.8.0"
+    "@scure/bip32" "1.7.0"
+    "@scure/bip39" "1.6.0"
+    abitype "1.2.3"
+    isows "1.0.7"
+    ox "0.11.3"
     ws "8.18.3"
 
 "vite@^6.0.0 || ^7.0.0 || ^8.0.0":
@@ -10956,13 +10984,13 @@ vitest@^4.1.7:
     vite "^6.0.0 || ^7.0.0 || ^8.0.0"
     why-is-node-running "^2.3.0"
 
-wagmi@3.4.1:
-  version "3.4.1"
-  resolved "https://registry.yarnpkg.com/wagmi/-/wagmi-3.4.1.tgz#c2f9771802d15c4379e25b67e0696231ab6fa7ae"
-  integrity sha512-v6svxWxfIqV82lXNclOMn+h0SYCtXtxf0HWCwyjIJPZH1SR7yRqyQguWUDQtzvNSefFQEoCk+MVOX9nTR5d4Zw==
+wagmi@3.4.4:
+  version "3.4.4"
+  resolved "https://registry.yarnpkg.com/wagmi/-/wagmi-3.4.4.tgz#922b26abf7c356004f037a658ec28cae7103b646"
+  integrity sha512-Shffoh5I7XrhJsPRstsGpeh43wXnrsWPOuc/brekL1H9fg8C3ISNpyq6tY2rlNNYEXIrErB05xAKagl/OVOLbg==
   dependencies:
-    "@wagmi/connectors" "7.1.5"
-    "@wagmi/core" "3.3.1"
+    "@wagmi/connectors" "7.2.0"
+    "@wagmi/core" "3.3.4"
     use-sync-external-store "1.4.0"
 
 wcwidth@^1.0.1:
@@ -11191,6 +11219,11 @@ ws@8.18.3, ws@~8.18.3:
   version "8.18.3"
   resolved "https://registry.yarnpkg.com/ws/-/ws-8.18.3.tgz#b56b88abffde62791c639170400c93dcb0c95472"
   integrity sha512-PEIGCY5tSlUt50cqyMXfCzX+oOPqN0vuGqWzbcJ2xvnkzkq46oOpz7dQaTDBdfICb4N14+GARUDw2XV2N4tvzg==
+
+ws@8.20.1:
+  version "8.20.1"
+  resolved "https://registry.yarnpkg.com/ws/-/ws-8.20.1.tgz#91a9ae2b312ccf98e0a85ec499b48cef45ab0ddb"
+  integrity sha512-It4dO0K5v//JtTXuPkfEOaI3uUN87iYPnqo/ZzqCoG3g8uhA66QUMs/SrM0YK7/NAu+r4LMh/9dq2A7k+rHs+w==
 
 ws@^7.3.1:
   version "7.5.9"
