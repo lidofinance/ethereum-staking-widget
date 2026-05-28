@@ -30,44 +30,50 @@ export const useCowSwapEthereumProvider = (
 
     return {
       request: async <T>(args: JsonRpcRequest): Promise<T> => {
+        const ctx = {
+          chainId,
+          signer: walletClient.account.address,
+        };
+
+        let order: OrderData | undefined = undefined;
+
         // Level 1: block dangerous RPC methods
         if (BLOCKED_RPC_METHODS.has(args.method)) {
           throw new Error(`RPC method "${args.method}" is not allowed`);
         }
+
         // Defense-in-depth: verify CowSwap order before signing
         else if (args.method === 'eth_signTypedData_v4') {
           // !NB: this validation modifies the params to override the wstETH permit deadline
-          const {
-            allowed,
-            result: order,
-            reason,
-          } = await validateSignTypedData(args.params, {
-            chainId,
-            signer: walletClient.account.address,
-          });
+          const { allowed, result, reason } = await validateSignTypedData(
+            args.params,
+            ctx,
+          );
 
           if (!allowed) {
             console.warn('[DEX Provider] Signing Typed Data blocked:', reason);
             throw new Error(reason);
           }
-          if (order) {
-            const error = verifySignedOrder(order);
-
-            if (error) {
-              throw new Error(`Order signing rejected: ${error}`);
-            }
+          if (result) {
+            order = result;
           }
         } else if (args.method === 'eth_sendTransaction') {
-          const result = validateSendTransaction(args.params, chainId);
+          const result = await validateSendTransaction(args.params, ctx);
           if (!result.allowed) {
             console.warn('[DEX Provider] Transaction blocked:', result.reason);
             throw new Error(result.reason);
           }
+          if (result.result) {
+            order = result.result;
+          }
         } else if (args.method === 'wallet_sendCalls') {
-          const result = validateSendCalls(args.params, chainId);
+          const result = await validateSendCalls(args.params, ctx);
           if (!result.allowed) {
             console.warn('[DEX Provider] Batch call blocked:', result.reason);
             throw new Error(result.reason);
+          }
+          if (result.result) {
+            order = result.result;
           }
         }
         // Last line of defense, against unexpected RPC methods
@@ -80,6 +86,15 @@ export const useCowSwapEthereumProvider = (
             `[DEX Provider] RPC method "${args.method}" blocked by namespace filter`,
           );
           throw new Error(`RPC method "${args.method}" is not allowed`);
+        }
+
+        // Validate order trade  params, order can be recovered from different signing methods
+        if (order) {
+          const error = verifySignedOrder(order);
+
+          if (error) {
+            throw new Error(`Order signing rejected: ${error}`);
+          }
         }
 
         return walletClient.request(

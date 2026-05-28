@@ -1,107 +1,28 @@
 import invariant from 'tiny-invariant';
-import {
-  isAddressEqual,
-  Address,
-  keccak256,
-  toHex,
-  hexToBytes,
-  Hex,
-} from 'viem';
+import { isAddressEqual } from 'viem';
 import z from 'zod';
-
-// eslint-disable-next-line import/no-extraneous-dependencies
-import { MetadataApi } from '@cowprotocol/sdk-app-data';
 
 import { getTokenAddress } from 'config/networks/token-address';
 
 import {
   addressSchema,
   bigintStringSchema,
-  hexSchema,
   getNetworkTxConfig,
   ValidationResult,
+  jsonStringSchema,
+  AppDataSchema,
+  getAppDataHex,
+  cowSwapOrderSchema,
+  ValidationContext,
+  OrderData,
 } from './utils';
 import {
   MAX_WSTETH_PERMIT_AGE_SECONDS,
   MAX_ORDER_AGE_SECONDS,
-  LIDO_APP_CODE,
-  PARTNER_FEE_BPS,
-  MAX_SLIPPAGE,
   COWSWAP_APPDATA_API,
 } from '../consts';
 
 import { standardFetcher } from 'utils/standardFetcher';
-
-const jsonStringSchema = <T extends z.ZodTypeAny>(schema: T) =>
-  z
-    .string()
-    .transform((str, ctx) => {
-      try {
-        return JSON.parse(str);
-      } catch {
-        ctx.addIssue({ code: 'custom', message: 'Invalid JSON' });
-        return z.NEVER;
-      }
-    })
-    .pipe(schema);
-
-const cowSwapOrderSchema = z.object({
-  domain: z.object({
-    name: z.literal('Gnosis Protocol'),
-    version: z.literal('v2'),
-    chainId: z.number(),
-    verifyingContract: addressSchema,
-  }),
-  message: z.object({
-    sellToken: addressSchema,
-    buyToken: addressSchema,
-    sellAmount: bigintStringSchema,
-    buyAmount: bigintStringSchema,
-    validTo: z.number(),
-    kind: z.literal('sell'),
-    partiallyFillable: z.literal(false),
-    appData: hexSchema,
-    receiver: addressSchema,
-    feeAmount: bigintStringSchema,
-    sellTokenBalance: z.literal('erc20'),
-    buyTokenBalance: z.literal('erc20'),
-  }),
-  primaryType: z.literal('Order'),
-  types: z.object({
-    EIP712Domain: z.tuple([
-      z.object({ name: z.literal('name'), type: z.literal('string') }),
-      z.object({ name: z.literal('version'), type: z.literal('string') }),
-      z.object({ name: z.literal('chainId'), type: z.literal('uint256') }),
-      z.object({
-        name: z.literal('verifyingContract'),
-        type: z.literal('address'),
-      }),
-    ]),
-    Order: z.tuple([
-      z.object({ name: z.literal('sellToken'), type: z.literal('address') }),
-      z.object({ name: z.literal('buyToken'), type: z.literal('address') }),
-      z.object({ name: z.literal('receiver'), type: z.literal('address') }),
-      z.object({ name: z.literal('sellAmount'), type: z.literal('uint256') }),
-      z.object({ name: z.literal('buyAmount'), type: z.literal('uint256') }),
-      z.object({ name: z.literal('validTo'), type: z.literal('uint32') }),
-      z.object({ name: z.literal('appData'), type: z.literal('bytes32') }),
-      z.object({ name: z.literal('feeAmount'), type: z.literal('uint256') }),
-      z.object({ name: z.literal('kind'), type: z.literal('string') }),
-      z.object({
-        name: z.literal('partiallyFillable'),
-        type: z.literal('bool'),
-      }),
-      z.object({
-        name: z.literal('sellTokenBalance'),
-        type: z.literal('string'),
-      }),
-      z.object({
-        name: z.literal('buyTokenBalance'),
-        type: z.literal('string'),
-      }),
-    ]),
-  }),
-});
 
 const wstethPermitSchema = z.object({
   domain: z.object({
@@ -143,37 +64,8 @@ const typedMessageSchema = z.tuple([
   jsonStringSchema(z.union([cowSwapOrderSchema, wstethPermitSchema])),
 ]);
 
-type ValidationContext = {
-  chainId: number;
-  signer: Address;
-};
-
-export type OrderData = z.infer<typeof cowSwapOrderSchema>['message'];
-
 const AppDataApiResponseSchema = z.object({
-  fullAppData: jsonStringSchema(
-    z.object({
-      appCode: z.literal(LIDO_APP_CODE),
-      metadata: z.object({
-        orderClass: z.object({
-          orderClass: z.enum(['market']),
-        }),
-        partnerFee: z.object({
-          recipient: addressSchema,
-          volumeBps: z.literal(PARTNER_FEE_BPS),
-        }),
-        quote: z.object({
-          slippageBips: z.number().lte(MAX_SLIPPAGE),
-          smartSlippage: z.boolean(),
-        }),
-        widget: z.object({
-          appCode: z.string(),
-          environment: z.string(),
-        }),
-      }),
-      version: z.string(),
-    }),
-  ),
+  fullAppData: jsonStringSchema(AppDataSchema),
 });
 
 const fetchAppData = async (
@@ -195,42 +87,30 @@ const fetchAppData = async (
   return parseResult.data.fullAppData;
 };
 
-const validateCowSwapOrder = async (
-  order: z.infer<typeof cowSwapOrderSchema>,
+export const validateCowSwapOrderMessage = async (
+  orderMessage: z.infer<typeof cowSwapOrderSchema>['message'],
   ctx: ValidationContext,
+  appDataPrefetched?: z.infer<typeof AppDataApiResponseSchema>['fullAppData'],
 ): Promise<ValidationResult<OrderData>> => {
-  if (order.domain.chainId !== ctx.chainId) {
+  const { sellTokens, buyTokens, feeRecipient } = getNetworkTxConfig(
+    ctx.chainId,
+  );
+
+  if (!sellTokens.has(orderMessage.sellToken)) {
     return {
       allowed: false,
-      reason: `Chain ID mismatch. Expected ${ctx.chainId}, got ${order.domain.chainId}`,
+      reason: `Sell token ${orderMessage.sellToken} is not in the allowed list`,
     };
   }
 
-  const { sellTokens, buyTokens, cowSettlement, feeRecipient } =
-    getNetworkTxConfig(ctx.chainId);
-
-  if (!isAddressEqual(order.domain.verifyingContract, cowSettlement)) {
+  if (!buyTokens.has(orderMessage.buyToken)) {
     return {
       allowed: false,
-      reason: `Verifying contract mismatch. Expected ${cowSettlement}, got ${order.domain.verifyingContract}`,
+      reason: `Buy token ${orderMessage.buyToken} is not in the allowed list`,
     };
   }
 
-  if (!sellTokens.has(order.message.sellToken)) {
-    return {
-      allowed: false,
-      reason: `Sell token ${order.message.sellToken} is not in the allowed list`,
-    };
-  }
-
-  if (!buyTokens.has(order.message.buyToken)) {
-    return {
-      allowed: false,
-      reason: `Buy token ${order.message.buyToken} is not in the allowed list`,
-    };
-  }
-
-  if (!isAddressEqual(order.message.receiver, ctx.signer)) {
+  if (!isAddressEqual(orderMessage.receiver, ctx.signer)) {
     return {
       allowed: false,
       reason: `Receiver address cannot be different from the signer address`,
@@ -239,45 +119,60 @@ const validateCowSwapOrder = async (
 
   const nowSeconds = Math.floor(Date.now() / 1000);
 
-  if (order.message.validTo - nowSeconds > MAX_ORDER_AGE_SECONDS) {
+  if (orderMessage.validTo - nowSeconds > MAX_ORDER_AGE_SECONDS) {
     return {
       allowed: false,
-      reason: `Order validTo is too far in the future. validTo: ${order.message.validTo}, now: ${nowSeconds}`,
+      reason: `Order validTo is too far in the future. validTo: ${orderMessage.validTo}, now: ${nowSeconds}`,
     };
   }
-  if (order.message.validTo < nowSeconds) {
+  if (orderMessage.validTo < nowSeconds) {
     return {
       allowed: false,
-      reason: `Order validTo has already passed. validTo: ${order.message.validTo}, now: ${nowSeconds}`,
+      reason: `Order validTo has already passed. validTo: ${orderMessage.validTo}, now: ${nowSeconds}`,
     };
   }
 
-  const appData = await fetchAppData(order.message.appData, ctx.chainId);
-
-  if (!isAddressEqual(appData.metadata.partnerFee.recipient, feeRecipient)) {
-    return {
-      allowed: false,
-      reason: `Partner fee recipient mismatch. Expected ${feeRecipient}, got ${appData.metadata.partnerFee.recipient}`,
-    };
+  if (appDataPrefetched) {
+    const parseResult = AppDataSchema.safeParse(appDataPrefetched); // validate prefetched app data
+    if (!parseResult.success) {
+      return {
+        allowed: false,
+        reason: `Invalid order appData: ${parseResult.error}`,
+      };
+    }
   }
 
   try {
-    const api = new MetadataApi({
-      // This crude hack absolves us from installing ethers.js
-      utils: {
-        // this two just pipe into each other so no need to match interface exactly between them
-        toUtf8Bytes: (str: string): Hex => toHex(str),
-        keccak256: (data: Hex): Hex => keccak256(data), //  just output hex string,
-        // this is used later and must match interface
-        arrayify: (hexString: Hex): Uint8Array => hexToBytes(hexString),
-      },
-    } as any);
-    const info = await api.getAppDataInfo(appData);
+    const appData =
+      appDataPrefetched ??
+      (await fetchAppData(orderMessage.appData, ctx.chainId));
 
-    if (info.appDataHex !== order.message.appData) {
+    if (!isAddressEqual(appData.metadata.partnerFee.recipient, feeRecipient)) {
       return {
         allowed: false,
-        reason: `App data mismatch. Expected ${order.message.appData}, got ${info.appDataHex}`,
+        reason: `Partner fee recipient mismatch. Expected ${feeRecipient}, got ${appData.metadata.partnerFee.recipient}`,
+      };
+    }
+
+    // Disallow hooks
+    // NB! we can allow specific hooks later like permit applying to wstETH
+    if (
+      appData.metadata.hooks &&
+      ((appData.metadata.hooks.pre?.length ?? 0) > 0 ||
+        (appData.metadata.hooks.post?.length ?? 0) > 0)
+    ) {
+      return {
+        allowed: false,
+        reason: `Pre/Post Hooks are not allowed`,
+      };
+    }
+
+    const appDataHex = await getAppDataHex(appData);
+
+    if (appDataHex !== orderMessage.appData) {
+      return {
+        allowed: false,
+        reason: `App data mismatch. Expected ${orderMessage.appData}, got ${appDataHex}`,
       };
     }
   } catch (error) {
@@ -290,11 +185,39 @@ const validateCowSwapOrder = async (
   return {
     allowed: true,
     result: {
-      ...order.message,
+      ...orderMessage,
     },
   };
 };
 
+export const validateCowSwapOrder = async (
+  order: z.infer<typeof cowSwapOrderSchema>,
+  ctx: ValidationContext,
+): Promise<ValidationResult<OrderData>> => {
+  if (order.domain.chainId !== ctx.chainId) {
+    return {
+      allowed: false,
+      reason: `Chain ID mismatch. Expected ${ctx.chainId}, got ${order.domain.chainId}`,
+    };
+  }
+
+  const { cowSettlement } = getNetworkTxConfig(ctx.chainId);
+
+  if (!isAddressEqual(order.domain.verifyingContract, cowSettlement)) {
+    return {
+      allowed: false,
+      reason: `Verifying contract mismatch. Expected ${cowSettlement}, got ${order.domain.verifyingContract}`,
+    };
+  }
+
+  return await validateCowSwapOrderMessage(order.message, ctx);
+};
+
+/**
+ *
+ * Used to validate wsteth permits if they are allowed
+ */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const validateWstEthPermit = (
   permit: z.infer<typeof wstethPermitSchema>,
   ctx: ValidationContext,
@@ -365,6 +288,7 @@ const validateWstEthPermit = (
  * Overrides the deadline of a wstETH permit to be ~2 days from now.
  * Returns new deadline timestamp
  */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const overridePermitDeadline = (params: any): number => {
   const newDeadline =
     Math.floor(Date.now() / 1000) + MAX_WSTETH_PERMIT_AGE_SECONDS;
@@ -407,11 +331,19 @@ export const validateSignTypedData = async (
     return await validateCowSwapOrder(order, ctx);
   }
 
+  /** 
+
+  NB! we disallow permits in cow swap widget config
+  but if we want to allow them in the future, we can validate them here and override the deadline to prevent stale permits from being used
+  will also need to add preHook validation in appData where permit is applied before trade
+  
   if (order.primaryType === 'Permit') {
     const deadline = overridePermitDeadline(params);
     order.message.deadline = deadline;
     return validateWstEthPermit(order, ctx);
   }
+    
+  */
 
   invariant(false, 'Unreachable code');
 };

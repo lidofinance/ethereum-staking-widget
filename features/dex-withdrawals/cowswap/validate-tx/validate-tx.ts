@@ -9,11 +9,21 @@ import {
 import z from 'zod';
 import {
   addressSchema,
+  AppDataSchema,
+  bigintStringSchema,
+  calculateOrderUID,
+  getAppDataHex,
   getNetworkTxConfig,
+  hashCowswapOrder,
   hexSchema,
+  jsonStringSchema,
+  OrderData,
+  ValidationContext,
   ValidationResult,
 } from './utils';
 import { CowSettlementAbi } from '../abi';
+import { standardFetcher } from 'utils/standardFetcher';
+import { validateCowSwapOrderMessage } from './validate-typed-message';
 
 // ================================================================
 //  Public validation functions
@@ -28,6 +38,124 @@ const sendTransactionParamsSchema = z.tuple([
     value: hexSchema.optional(),
   }),
 ]);
+
+const CowSwapGetOrderResponseSchema = z.object({
+  creationDate: z.string(),
+  owner: addressSchema,
+  uid: hexSchema,
+  availableBalance: z.string().nullable(),
+  executedBuyAmount: z.string(),
+  executedSellAmount: z.string(),
+  executedSellAmountBeforeFees: z.string(),
+  executedFeeAmount: z.string(),
+  executedFee: z.string(),
+  executedFeeToken: addressSchema,
+  invalidated: z.boolean(),
+  status: z.string(),
+  class: z.string(),
+  settlementContract: addressSchema,
+  isLiquidityOrder: z.boolean(),
+  fullAppData: jsonStringSchema(AppDataSchema),
+  quote: z.object({
+    gasAmount: bigintStringSchema,
+    gasPrice: bigintStringSchema,
+    sellTokenPrice: z.string(),
+    sellAmount: bigintStringSchema,
+    buyAmount: bigintStringSchema,
+    feeAmount: bigintStringSchema,
+    solver: addressSchema,
+    verified: z.unknown(),
+    metadata: z.unknown(),
+  }),
+  sellToken: addressSchema,
+  buyToken: addressSchema,
+  receiver: addressSchema,
+  sellAmount: bigintStringSchema,
+  buyAmount: bigintStringSchema,
+  validTo: z.number(),
+  appData: hexSchema,
+  feeAmount: bigintStringSchema,
+  kind: z.literal('sell'),
+  partiallyFillable: z.literal(false),
+  sellTokenBalance: z.literal('erc20'),
+  buyTokenBalance: z.literal('erc20'),
+  signingScheme: z.string(),
+  signature: z.unknown(),
+  interactions: z.object({
+    pre: z.array(z.unknown()).length(0),
+    post: z.array(z.unknown()).length(0),
+  }),
+});
+
+const fetchOrderByUid = async (orderUid: Hex, chainId: number) => {
+  const environment = chainId === 11155111 ? 'sepolia' : 'mainnet';
+  const result = await standardFetcher(
+    `https://api.cow.fi/${environment}/api/v1/orders/${orderUid}`,
+  );
+
+  return CowSwapGetOrderResponseSchema.parse(result);
+};
+
+const validatePreSetSignature = async (
+  orderUID: Hex,
+  ctx: ValidationContext,
+): Promise<ValidationResult<OrderData>> => {
+  const { chainId } = ctx;
+  try {
+    const orderData = await fetchOrderByUid(orderUID, chainId); // or 'staging' based on your environment
+
+    const appDataHex = await getAppDataHex(orderData.fullAppData);
+
+    const { cowSettlement } = getNetworkTxConfig(chainId);
+
+    const order: OrderData = {
+      appData: appDataHex,
+      buyAmount: orderData.buyAmount,
+      buyToken: orderData.buyToken,
+      feeAmount: orderData.feeAmount,
+      receiver: orderData.receiver,
+      sellAmount: orderData.sellAmount,
+      sellToken: orderData.sellToken,
+      validTo: orderData.validTo,
+      buyTokenBalance: 'erc20',
+      kind: 'sell',
+      partiallyFillable: false,
+      sellTokenBalance: 'erc20',
+    };
+
+    const orderHex = hashCowswapOrder(order, chainId, cowSettlement);
+
+    const orderUIDRecalculated = calculateOrderUID(
+      orderHex,
+      orderData.owner,
+      orderData.validTo,
+    );
+
+    if (orderUIDRecalculated !== orderUID) {
+      return {
+        allowed: false,
+        reason: `Order UID mismatch. Expected ${orderUID}, got ${orderUIDRecalculated}`,
+      };
+    }
+
+    const cowSwapValidationResult = await validateCowSwapOrderMessage(
+      order,
+      ctx,
+      orderData.fullAppData,
+    );
+
+    if (!cowSwapValidationResult.allowed) {
+      return cowSwapValidationResult;
+    }
+
+    return { allowed: true, result: order };
+  } catch (error) {
+    return {
+      allowed: false,
+      reason: `Failed to fetch order data for UID ${orderUID}: ${error}`,
+    };
+  }
+};
 
 const validateApproveSpender = (
   data: Hex,
@@ -60,7 +188,10 @@ const validateApproveSpender = (
   }
 };
 
-const validateSettlerSignature = (data: Hex): ValidationResult => {
+const validateSettlerSignature = async (
+  data: Hex,
+  ctx: ValidationContext,
+): Promise<ValidationResult<OrderData>> => {
   try {
     const { functionName, args } = decodeFunctionData({
       abi: CowSettlementAbi,
@@ -83,7 +214,7 @@ const validateSettlerSignature = (data: Hex): ValidationResult => {
       };
     }
 
-    return { allowed: true };
+    return validatePreSetSignature(orderUid, ctx);
   } catch {
     return {
       allowed: false,
@@ -101,10 +232,11 @@ const validateSettlerSignature = (data: Hex): ValidationResult => {
  * - CoW Protocol contracts (Settlement, VaultRelayer): any call allowed
  * - Other tokens: approve() only, spender must be VaultRelayer, no ETH value
  */
-export const validateSendTransaction = (
+export const validateSendTransaction = async (
   params: unknown,
-  chainId: number,
-): ValidationResult => {
+  ctx: ValidationContext,
+): Promise<ValidationResult<OrderData | undefined>> => {
+  const { chainId } = ctx;
   const parseResult = sendTransactionParamsSchema.safeParse(params);
 
   if (!parseResult.success) {
@@ -136,11 +268,14 @@ export const validateSendTransaction = (
 
   // CoW Protocol contracts — trust any call
   if (isAddressEqual(txTo, cowSettlement))
-    return validateSettlerSignature(data);
+    return validateSettlerSignature(data, ctx);
 
   // Other tokens — only approve(), no ETH value
   if (tokens.has(txTo)) {
-    return validateApproveSpender(data, cowVaultRelayer);
+    return {
+      ...validateApproveSpender(data, cowVaultRelayer),
+      result: undefined,
+    };
   }
 
   return { allowed: false, reason: `Unexpected target: ${txTo}` };
@@ -165,10 +300,10 @@ const sendCallsParamsSchema = z.tuple([
  * Validates wallet_sendCalls (EIP-5792 batch) parameters.
  * Each call in the batch is validated with the same rules as eth_sendTransaction.
  */
-export const validateSendCalls = (
+export const validateSendCalls = async (
   params: unknown,
-  chainId: number,
-): ValidationResult => {
+  ctx: ValidationContext,
+): Promise<ValidationResult<OrderData>> => {
   const parseResult = sendCallsParamsSchema.safeParse(params);
 
   if (!parseResult.success) {
@@ -180,15 +315,33 @@ export const validateSendCalls = (
 
   const calls = parseResult.data[0].calls;
 
+  let order: OrderData | undefined = undefined;
+
   for (const [i, call] of calls.entries()) {
-    const result = validateSendTransaction([call], chainId);
+    const result = await validateSendTransaction([call], ctx);
     if (!result.allowed) {
       return {
         allowed: false,
         reason: `Call #${i} in batch blocked: ${result.reason}`,
       };
     }
+    if (result.result) {
+      if (order) {
+        return {
+          allowed: false,
+          reason: `Multiple order messages in batch calls are not allowed`,
+        };
+      }
+      order = result.result;
+    }
   }
 
-  return { allowed: true };
+  if (!order) {
+    return {
+      allowed: false,
+      reason: `Batch calls must include at least one valid order message transaction`,
+    };
+  }
+
+  return { allowed: true, result: order };
 };
