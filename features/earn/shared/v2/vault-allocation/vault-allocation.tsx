@@ -44,7 +44,7 @@ export const VaultAllocation: FC<VaultAllocationProps> = (props) => {
 
   if (!allocationData.groups?.length && !allocationData.flatItems?.length) {
     return (
-      <Section title="Allocation" data-testId="no-allocation-data">
+      <Section title="Allocation" data-testid="no-allocation-data">
         <EmptyBlockStyled>No data available for now</EmptyBlockStyled>
       </Section>
     );
@@ -59,7 +59,7 @@ export const VaultAllocation: FC<VaultAllocationProps> = (props) => {
         </LastUpdatedStyled>
       }
       $noMargin
-      data-testId="allocation"
+      data-testid="allocation"
     >
       <ChartLine
         border={ChartLineBorderType.rounded}
@@ -74,7 +74,7 @@ export const VaultAllocation: FC<VaultAllocationProps> = (props) => {
         flatItems={allocationData.flatItems}
       />
       <AllocationSummary totalTvlUsd={allocationData.totalTvlUsd} />
-      {footer && <Footer data-testId="allocation-disclaimer">{footer}</Footer>}
+      {footer && <Footer data-testid="allocation-disclaimer">{footer}</Footer>}
     </Section>
   );
 };

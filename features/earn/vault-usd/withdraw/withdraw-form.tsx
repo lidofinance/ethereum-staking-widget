@@ -36,7 +36,7 @@ const UsdVaultWithdrawFormContent: FC = () => {
         <UsdVaultWithdrawWillReceive />
         <VaultTxInfoRow
           title="Waiting time"
-          data-testId="waiting-time"
+          data-testid="waiting-time"
           help={
             <>
               Withdrawals take up to 72 hours to process. Once ready, your funds
