@@ -7,11 +7,10 @@ import { useDVVPosition } from './hooks/use-dvv-position';
 import { LegacyVaultCard } from '../shared/v2/vault-card';
 import { EARN_VAULT_DVV_SLUG } from '../consts';
 import { DVV_TOKEN_SYMBOL, DVV_VAULT_DESCRIPTION } from './consts';
-import { DVVAprBreakdown } from './components/dvv-apr-breakdown';
 
 export const VaultCardDVV = () => {
   const { isWalletConnected } = useDappStatus();
-  const { tvl, apr, isLoading: isLoadingStats } = useDVVStats();
+  const { tvl, isLoading: isLoadingStats } = useDVVStats();
   const { sharesBalance, isLoading: isLoadingPosition } = useDVVPosition();
 
   return (
@@ -21,9 +20,6 @@ export const VaultCardDVV = () => {
       urlSlug={EARN_VAULT_DVV_SLUG}
       stats={{
         tvl: tvl,
-        apx: apr,
-        apxLabel: 'APY* (7d avg.)',
-        apxHint: <DVVAprBreakdown />,
         isLoading: isLoadingStats,
       }}
       position={

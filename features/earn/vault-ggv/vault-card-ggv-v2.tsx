@@ -4,14 +4,13 @@ import { trackMatomoEvent } from 'utils/track-matomo-event';
 import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo/matomo-earn-events';
 import { LegacyVaultCard } from '../shared/v2/vault-card';
 import { EARN_VAULT_GGV_SLUG } from '../consts';
-import { GGVApyHint } from './components/ggv-apy-hint';
 import { GGV_VAULT_DESCRIPTION, GGV_TOKEN_SYMBOL } from './consts';
 import { useGGVStats } from './hooks/use-ggv-stats';
 import { useGGVPosition } from './hooks/use-ggv-position';
 
 export const VaultCardGGV = () => {
   const { isWalletConnected } = useDappStatus();
-  const { tvl, apy, isLoading: isLoadingStats } = useGGVStats();
+  const { tvl, isLoading: isLoadingStats } = useGGVStats();
   const { sharesBalance, isLoading: isLoadingPosition } = useGGVPosition();
 
   return (
@@ -21,9 +20,6 @@ export const VaultCardGGV = () => {
       urlSlug={EARN_VAULT_GGV_SLUG}
       stats={{
         tvl: tvl,
-        apx: apy,
-        apxLabel: 'APY* (7d avg.)',
-        apxHint: <GGVApyHint />,
         isLoading: isLoadingStats,
       }}
       position={

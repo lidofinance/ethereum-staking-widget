@@ -7,7 +7,6 @@ import {
 } from 'assets/earn';
 
 import { useDappStatus } from 'modules/web3';
-import { useSTGApy } from './hooks/use-stg-apy';
 import { useSTGStats } from './hooks/use-stg-stats';
 import { useSTGPosition } from './hooks/use-stg-position';
 import { VaultCard } from '../shared/vault-card';
@@ -17,7 +16,6 @@ import {
   STG_PARTNERS,
   STG_TOKEN_SYMBOL,
 } from './consts';
-import { STGApyHint } from './components/stg-apy-hint';
 import { trackMatomoEvent } from 'utils/track-matomo-event';
 import { MATOMO_EARN_EVENTS_TYPES } from 'consts/matomo/matomo-earn-events';
 import { useDepositRequests } from './deposit/hooks';
@@ -25,7 +23,6 @@ import { useDepositRequests } from './deposit/hooks';
 export const VaultCardSTG = () => {
   const { isWalletConnected } = useDappStatus();
   const { totalTvlUsd, isLoading: isLoadingTvlUsd } = useSTGStats();
-  const { apy, isLoading: isLoadingApy } = useSTGApy();
   const { strethSharesBalance, isLoading: isLoadingPosition } =
     useSTGPosition();
   const {
@@ -66,10 +63,7 @@ export const VaultCardSTG = () => {
       }
       stats={{
         tvl: totalTvlUsd,
-        apx: apy,
-        apxLabel: 'APY',
-        apxHint: <STGApyHint />,
-        isLoading: isLoadingApy || isLoadingTvlUsd,
+        isLoading: isLoadingTvlUsd,
       }}
       logo={<VaultSTGIcon />}
       depositLinkCallback={() => {

@@ -10,13 +10,11 @@ import { createAllocationsChartData } from 'features/earn/shared/vault-allocatio
 
 import { getGGVVaultContract } from '../../contracts';
 import { fetchDailyGGVChainData, fetchGGVPerformance } from '../../utils';
-import { useGGVApy } from '../../hooks/use-ggv-stats';
 
 import { getAllocationData, createAllocationsData } from '../utils';
 
 export const useGGVAllocation = () => {
   const { publicClientMainnet } = useMainnetOnlyWagmi();
-  const apy = useGGVApy();
 
   const allocation = useQuery({
     queryKey: ['ggv', 'stats', 'allocation'],
@@ -74,5 +72,5 @@ export const useGGVAllocation = () => {
     },
   });
 
-  return { ...allocation, apy: apy.data };
+  return allocation;
 };

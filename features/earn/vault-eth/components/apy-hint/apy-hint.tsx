@@ -8,7 +8,7 @@ export const EthVaultApyHint = () => {
     <Container>
       <Section>
         <span>
-          7-day average APY after{' '}
+          14-day average APY after{' '}
           <LinkInpageAnchor
             pagePath={ETH_DEPOSIT_PATH}
             hash={`#${FAQ_IDS.fees}`}

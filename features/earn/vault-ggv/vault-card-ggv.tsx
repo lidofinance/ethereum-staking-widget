@@ -20,11 +20,10 @@ import {
   GGV_PARTNERS,
   GGV_TOKEN_SYMBOL,
 } from './consts';
-import { GGVApyHint } from './components/ggv-apy-hint';
 
 export const VaultCardGGV = () => {
   const { isWalletConnected } = useDappStatus();
-  const { tvl, apy, isLoading: isLoadingStats } = useGGVStats();
+  const { tvl, isLoading: isLoadingStats } = useGGVStats();
   const { sharesBalance, isLoading: isLoadingPosition } = useGGVPosition();
   return (
     <VaultCard
@@ -50,10 +49,7 @@ export const VaultCardGGV = () => {
       }
       stats={{
         tvl,
-        apx: apy,
-        apxLabel: 'APY',
         isLoading: isLoadingStats,
-        apxHint: <GGVApyHint />,
       }}
       logo={<VaultGGVIcon />}
       depositLinkCallback={() => {

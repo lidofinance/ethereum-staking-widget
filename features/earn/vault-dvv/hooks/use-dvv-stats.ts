@@ -124,11 +124,9 @@ export const useDVVApr = () => {
 
 export const useDVVStats = () => {
   const { data: tvl, isLoading: isTvlLoading } = useDVVTvl();
-  const { data: apr, isLoading: isAprLoading } = useDVVApr();
 
   return {
-    isLoading: isTvlLoading || isAprLoading,
+    isLoading: isTvlLoading,
     tvl: tvl?.tvlUSD,
-    apr: apr?.apr,
   };
 };

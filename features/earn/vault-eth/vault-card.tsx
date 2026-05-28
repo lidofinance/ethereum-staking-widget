@@ -45,7 +45,7 @@ export const EthVaultCard = () => {
       stats={{
         tvl: tvlUsd,
         apx: apy,
-        apxLabel: 'APY* (7d avg.)',
+        apxLabel: 'APY* (14d avg.)',
         apxHint: <EthVaultApyHint />,
         apxUpdateTooltipText: (
           <ApyUpdateTooltipText timestampMs={apyUpdateTimestampMs} />
