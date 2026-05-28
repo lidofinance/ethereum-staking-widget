@@ -35,12 +35,10 @@ import {
 
 import { STGDepositForm } from './deposit';
 import { STGWithdrawForm } from './withdraw';
-import { useSTGApy } from './hooks/use-stg-apy';
 import { useSTGStats } from './hooks/use-stg-stats';
 import { STG_VAULT_DESCRIPTION, STG_PARTNERS } from './consts';
 import { STGPosition } from './components/stg-position';
 import { STGFaq } from './faq/stg-faq';
-import { STGApyHint } from './components/stg-apy-hint';
 import { STGVaultDetails } from './components/stg-vault-details';
 import { Allocation } from './allocation';
 import { UpgradeCardVaultPage } from '../shared/upgrade-card-vault-page/upgrade-card-vault-page';
@@ -67,7 +65,6 @@ export const VaultPageSTG: FC<{
 
   const { isDappActive } = useDappStatus();
   const { totalTvlUsd, isLoading: isTvlLoading } = useSTGStats();
-  const { apy, isLoading: isApyLoading } = useSTGApy();
   const [isDrawerRightOpen, setIsDrawerRightOpen] = useState(false);
 
   return (
@@ -91,14 +88,7 @@ export const VaultPageSTG: FC<{
             logo={<VaultSTGIcon />}
             partners={STG_PARTNERS}
           />
-          <VaultStats
-            compact
-            tvl={totalTvlUsd}
-            apxLabel="APY"
-            apx={apy}
-            apxHint={<STGApyHint />}
-            isLoading={isApyLoading || isTvlLoading}
-          />
+          <VaultStats compact tvl={totalTvlUsd} isLoading={isTvlLoading} />
           <VaultDescription description={STG_VAULT_DESCRIPTION} />
         </VaultBlockHeaderSection>
         {isDappActive && <STGPosition />}
@@ -139,7 +129,7 @@ export const VaultPageSTG: FC<{
       <Allocation />
       <STGFaq />
       <DisclaimerSection>
-        <AprDisclaimer mentionAPY />
+        <AprDisclaimer />
         <LegalDisclaimer />
       </DisclaimerSection>
       <DrawerRight

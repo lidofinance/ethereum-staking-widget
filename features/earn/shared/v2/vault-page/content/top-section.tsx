@@ -45,6 +45,7 @@ type TopSectionProps = {
   title: string;
   description: string;
   apx?: number | null;
+  apxLabel?: string;
   tvlUsd?: number | null;
   apxHint?: React.ReactNode;
   apxUpdateTooltipText?: React.ReactNode;
@@ -60,6 +61,7 @@ export const TopSection: FC<TopSectionProps> = (props) => {
     title,
     description,
     apx,
+    apxLabel = 'APY* (14d avg.)',
     tvlUsd,
     apxHint,
     apxUpdateTooltipText,
@@ -105,22 +107,24 @@ export const TopSection: FC<TopSectionProps> = (props) => {
         </TopSectionDescription>
       </TopSectionContent>
       <TopSectionStatsRow>
-        <TopSectionStatItem>
-          <TopSectionStatLabel data-testId="apx-label">
-            APY* (7d avg.)
-            <VaultTip placement="bottomLeft">{apxHint}</VaultTip>
-          </TopSectionStatLabel>
-          {showApxUpdateTooltip ? (
-            <Tooltip
-              title={apxUpdateTooltipText}
-              placement={isMobile ? 'topRight' : 'topLeft'}
-            >
-              {apxValue}
-            </Tooltip>
-          ) : (
-            apxValue
-          )}
-        </TopSectionStatItem>
+        {apxLabel && (
+          <TopSectionStatItem>
+            <TopSectionStatLabel data-testId="apx-label">
+              {apxLabel}
+              <VaultTip placement="bottomLeft">{apxHint}</VaultTip>
+            </TopSectionStatLabel>
+            {shouldShowApxUpdateTooltip ? (
+              <Tooltip
+                title={apxUpdateTooltipText}
+                placement={isMobile ? 'topRight' : 'topLeft'}
+              >
+                {apxValue}
+              </Tooltip>
+            ) : (
+              apxValue
+            )}
+          </TopSectionStatItem>
+        )}
         <TopSectionStatItem>
           <TopSectionStatLabel data-testId="tvl-label">TVL</TopSectionStatLabel>
           <TopSectionStatValue data-testId="tvl-amount">

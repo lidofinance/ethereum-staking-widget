@@ -38,7 +38,6 @@ import { DVV_PARTNERS, DVV_VAULT_DESCRIPTION } from './consts';
 import { trackMatomoEvent } from 'utils/track-matomo-event';
 import { DVVFaq } from './faq/dvv-faq';
 import { DVVPosition } from './components/dvv-position';
-import { DVVAprBreakdown } from './components/dvv-apr-breakdown';
 import { DVVVaultDetails } from './components/dvv-vault-details';
 import { UpgradeCardVaultPage } from '../shared/upgrade-card-vault-page/upgrade-card-vault-page';
 import { DrawerRight } from '../shared/drawer-right';
@@ -61,7 +60,7 @@ export const VaultPageDVV: FC<{
 }> = ({ action }) => {
   const isDeposit = action === EARN_VAULT_DEPOSIT_SLUG;
   const isWithdraw = action === EARN_VAULT_WITHDRAW_SLUG;
-  const { tvl, apr, isLoading: isLoadingStats } = useDVVStats();
+  const { tvl, isLoading: isLoadingStats } = useDVVStats();
   const [isDrawerRightOpen, setIsDrawerRightOpen] = useState(false);
 
   return (
@@ -85,14 +84,7 @@ export const VaultPageDVV: FC<{
             logo={<VaultDVVIcon />}
             partners={DVV_PARTNERS}
           />
-          <VaultStats
-            compact
-            tvl={tvl}
-            apxLabel="APR"
-            apx={apr}
-            apxHint={<DVVAprBreakdown />}
-            isLoading={isLoadingStats}
-          />
+          <VaultStats compact tvl={tvl} isLoading={isLoadingStats} />
 
           <VaultDescription description={DVV_VAULT_DESCRIPTION} />
         </VaultBlockHeaderSection>
@@ -134,7 +126,7 @@ export const VaultPageDVV: FC<{
       <DVVVaultDetails />
       <DVVFaq />
       <DisclaimerSection>
-        <AprDisclaimer mentionAPY />
+        <AprDisclaimer />
         <LegalDisclaimer />
       </DisclaimerSection>
       <DrawerRight

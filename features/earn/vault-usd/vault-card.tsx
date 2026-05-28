@@ -44,7 +44,7 @@ export const UsdVaultCard = () => {
       stats={{
         tvl: tvlUsd,
         apx: apy,
-        apxLabel: 'APY* (7d avg.)',
+        apxLabel: 'APY* (14d avg.)',
         apxHint: <UsdVaultApyHint />,
         apxUpdateTooltipText: (
           <ApyUpdateTooltipText timestampMs={apyUpdateTimestampMs} />

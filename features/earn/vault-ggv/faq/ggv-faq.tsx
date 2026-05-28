@@ -2,7 +2,6 @@ import { FC } from 'react';
 import { Section } from 'shared/components';
 import {
   WhatIsLidoGGV,
-  WhatIsApyForGGV,
   WhatAreTheRisksOutlinedInTheVault,
   IsGGVAudited,
   DepositFee,
@@ -26,7 +25,6 @@ export const GGVFaq: FC = () => {
   return (
     <Section title="FAQ" data-testid="vault-faq">
       <WhatIsLidoGGV />
-      <WhatIsApyForGGV />
       <DepositFee />
       <WhatAreTheRisksOutlinedInTheVault />
       <IsGGVAudited />

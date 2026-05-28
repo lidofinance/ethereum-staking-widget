@@ -2,7 +2,6 @@ import { FC } from 'react';
 import { Section } from 'shared/components';
 import {
   WhatAreMellowPoints,
-  WhatIsAPYForStrategy,
   WhatIsLidoStrategy,
   WhatFeesAreApplied,
   RisksOfDepositing,
@@ -29,7 +28,6 @@ export const STGFaq: FC = () => {
   return (
     <Section title="FAQ" data-testid="vault-faq">
       <WhatIsLidoStrategy />
-      <WhatIsAPYForStrategy />
       <WhatAreMellowPoints />
       <WhatFeesAreApplied />
       <RisksOfDepositing />

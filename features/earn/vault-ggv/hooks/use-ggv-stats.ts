@@ -83,11 +83,9 @@ export const useGGVApy = () => {
 
 export const useGGVStats = () => {
   const { data: tvl, isLoading: isTvlLoading } = useGGVTvl();
-  const { data: apy, isLoading: isApyLoading } = useGGVApy();
 
   return {
-    isLoading: isTvlLoading || isApyLoading,
+    isLoading: isTvlLoading,
     tvl: tvl?.tvlUSD,
-    apy: apy,
   };
 };
