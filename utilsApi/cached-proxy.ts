@@ -4,9 +4,7 @@ import { LRUCache } from 'lru-cache';
 
 import { responseTimeExternalMetricWrapper } from './fetchApiWrapper';
 import { standardFetcher } from 'utils/standardFetcher';
-import { config } from 'config';
 import { FetcherError } from 'utils/fetcherError';
-import { ETH_API_ROUTES, getEthApiPath } from 'consts/api';
 import { buildParams } from './cached-proxy-build-params';
 
 export { buildParams } from './cached-proxy-build-params';
@@ -85,36 +83,4 @@ export const createCachedProxy = ({
       throw e;
     }
   };
-};
-
-type EthApiProxyOptions = Pick<
-  ProxyOptions,
-  'transformData' | 'ignoreParams' | 'cacheTTL'
-> & {
-  endpoint: ETH_API_ROUTES;
-};
-
-export const createEthApiProxy = ({
-  endpoint,
-  cacheTTL,
-  ignoreParams,
-  transformData,
-}: EthApiProxyOptions): API => {
-  const proxyUrl = getEthApiPath(endpoint);
-
-  if (!proxyUrl) {
-    console.error('[createEthApiProxy] Skipped setup: EthApiPath is null');
-    return (_req, res) => {
-      res.status(404).end();
-    };
-  }
-
-  return createCachedProxy({
-    cacheTTL,
-    ignoreParams,
-    transformData,
-    proxyUrl: async () => proxyUrl, // Wrap string in function
-    metricsHost: config.ethAPIBasePath,
-    timeout: 5000,
-  });
 };
